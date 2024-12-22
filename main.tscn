@@ -34,7 +34,6 @@ shadow_enabled = true
 player = NodePath("../CharacterBody3D")
 noise_terrain = "res://noise_terrain.tres"
 chunk_script = "res://chunk.gd"
-optimised_collision = false
 
 [node name="CharacterBody3D" type="CharacterBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10, 0)
