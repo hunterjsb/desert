@@ -1,10 +1,10 @@
-[gd_scene load_steps=7 format=3 uid="uid://c42xsl3j0hohs"]
+[gd_scene load_steps=9 format=3 uid="uid://c42xsl3j0hohs"]
 
 [ext_resource type="Script" path="res://shield.gd" id="1_ajwb2"]
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_k6gxy"]
-height = 0.1
-radius = 0.1
+height = 0.2
+radius = 0.2
 
 [sub_resource type="Gradient" id="Gradient_la2j3"]
 
@@ -23,15 +23,34 @@ material = SubResource("StandardMaterial3D_fm4ma")
 top_radius = 0.2
 bottom_radius = 0.2
 height = 0.2
+radial_segments = 16
+rings = 1
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pr2vs"]
+albedo_color = Color(0.306292, 0.387894, 0.52633, 1)
+metallic = 0.55
+metallic_specular = 0.76
+roughness = 0.2
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_bdgwa"]
+material = SubResource("StandardMaterial3D_pr2vs")
+top_radius = 0.05
+bottom_radius = 0.05
+height = 0.02
+radial_segments = 24
+rings = 1
 
 [node name="RigidBody3D" type="RigidBody3D"]
 collision_layer = 2
-collision_mask = 2
 script = ExtResource("1_ajwb2")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("CylinderShape3D_k6gxy")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.364979, 0, 0, 0, 0.0840821, 0, 0, 0, 0.349898, 0, 0, 0)
+[node name="Top" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.364979, 0, 0, 0, 0.0840821, 0, 0, 0, 0.349898, 0, 0.0636732, 0)
 mesh = SubResource("CylinderMesh_7s7pd")
+
+[node name="Body" type="MeshInstance3D" parent="."]
+transform = Transform3D(3.28973, 0, 0, 0, 5.8872, 0, 0, 0, 3.17285, 0, -0.00463906, 0)
+mesh = SubResource("CylinderMesh_bdgwa")

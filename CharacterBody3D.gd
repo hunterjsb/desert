@@ -35,8 +35,6 @@ func _ready():
 	carried_shield = shield_scene.instantiate()
 	carried_shield.freeze = true
 	carried_shield.freeze_mode = RigidBody3D.FREEZE_MODE_STATIC
-	carried_shield.collision_layer = 2
-	carried_shield.collision_mask = 2
 	$Camera3D/HandPoint.add_child(carried_shield)
 
 func _physics_process(delta):

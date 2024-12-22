@@ -34,6 +34,7 @@ shadow_enabled = true
 player = NodePath("../CharacterBody3D")
 noise_terrain = "res://noise_terrain.tres"
 chunk_script = "res://chunk.gd"
+optimised_collision = false
 
 [node name="CharacterBody3D" type="CharacterBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10, 0)
@@ -47,7 +48,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.70056, 0)
 attributes = SubResource("CameraAttributesPractical_g0irq")
 
 [node name="HandPoint" type="Marker3D" parent="CharacterBody3D/Camera3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.101826, 0.0660305, -1.1772)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.101826, -0.214317, -1.1772)
 
 [node name="Environment" type="Node3D" parent="."]
 
