@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://c42xsl3j0hohs"]
+[gd_scene load_steps=12 format=3 uid="uid://c42xsl3j0hohs"]
 
 [ext_resource type="Script" path="res://shield.gd" id="1_ajwb2"]
 
@@ -40,7 +40,23 @@ height = 0.02
 radial_segments = 24
 rings = 1
 
-[node name="RigidBody3D" type="RigidBody3D"]
+[sub_resource type="SphereShape3D" id="SphereShape3D_pbiye"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7lrs4"]
+transparency = 1
+blend_mode = 2
+cull_mode = 2
+albedo_color = Color(1, 0.231373, 0, 0.733333)
+metallic = 1.0
+
+[sub_resource type="SphereMesh" id="SphereMesh_mwb6o"]
+material = SubResource("StandardMaterial3D_7lrs4")
+radius = 6.0
+height = 12.0
+radial_segments = 24
+rings = 16
+
+[node name="RigidBody3D" type="RigidBody3D" groups=["interactable"]]
 collision_layer = 2
 script = ExtResource("1_ajwb2")
 
@@ -54,3 +70,12 @@ mesh = SubResource("CylinderMesh_7s7pd")
 [node name="Body" type="MeshInstance3D" parent="."]
 transform = Transform3D(3.28973, 0, 0, 0, 5.8872, 0, 0, 0, 3.17285, 0, -0.00463906, 0)
 mesh = SubResource("CylinderMesh_bdgwa")
+
+[node name="BubbleShield" type="Area3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="BubbleShield"]
+transform = Transform3D(12, 0, 0, 0, 12, 0, 0, 0, 12, 0, 0, 0)
+shape = SubResource("SphereShape3D_pbiye")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="BubbleShield"]
+mesh = SubResource("SphereMesh_mwb6o")

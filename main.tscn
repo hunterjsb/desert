@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://detacysixr15p"]
+[gd_scene load_steps=11 format=3 uid="uid://detacysixr15p"]
 
 [ext_resource type="Environment" uid="uid://gejkg4ou3v7t" path="res://env.tres" id="1_rmrta"]
 [ext_resource type="Script" path="res://CharacterBody3D.gd" id="2_kxns7"]
@@ -23,6 +23,8 @@ shader = ExtResource("4_3swfu")
 shader_parameter/noise_scale = 0.005
 shader_parameter/flatness = 10.0
 shader_parameter/noise_tex = SubResource("NoiseTexture2D_ypoqb")
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_p0jmp"]
 
 [node name="main" type="Node3D"]
 
@@ -49,6 +51,11 @@ attributes = SubResource("CameraAttributesPractical_g0irq")
 [node name="HandPoint" type="Marker3D" parent="CharacterBody3D/Camera3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.101826, -0.214317, -1.1772)
 
+[node name="RayCast3D" type="RayCast3D" parent="CharacterBody3D/Camera3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.242661, -1)
+target_position = Vector3(0, 0, -2)
+collision_mask = 2
+
 [node name="Environment" type="Node3D" parent="."]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="Environment"]
@@ -58,5 +65,11 @@ environment = ExtResource("1_rmrta")
 transform = Transform3D(8.14421, 0, 0, 0, 5.0336, 0, 0, 0, 15.2468, 152.888, 48.9819, 21.348)
 size = Vector3(20, 20, 20)
 material = SubResource("ShaderMaterial_r32j0")
+
+[node name="Area3D" type="Area3D" parent="Environment/FogVolume"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Environment/FogVolume/Area3D"]
+transform = Transform3D(21, 0, 0, 0, 21, 0, 0, 0, 21, 0, 0, 0)
+shape = SubResource("BoxShape3D_p0jmp")
 
 [connection signal="map_ready" from="terrain" to="CharacterBody3D" method="_on_terrain_map_ready"]
