@@ -23,6 +23,7 @@ window/size/viewport_height=960
 [global_group]
 
 interactable="can be picked up and whatnot"
+bubble_shield=""
 
 [input]
 

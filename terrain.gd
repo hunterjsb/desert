@@ -5,7 +5,7 @@ extends Node3D
 @export var chunk_size = 16
 @export_range(0,100) var terrain_height = 5
 @export_range(3, 99, 4) var render_distance : int = 19
-@export var terrain_seed = 5902
+@export var terrain_seed = 5902/2
 @export_range(0.0,10.0, 0.5) var LOD = 1.0
 
 @export_category("Settings")

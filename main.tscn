@@ -1,9 +1,10 @@
-[gd_scene load_steps=11 format=3 uid="uid://detacysixr15p"]
+[gd_scene load_steps=12 format=3 uid="uid://detacysixr15p"]
 
 [ext_resource type="Environment" uid="uid://gejkg4ou3v7t" path="res://env.tres" id="1_rmrta"]
 [ext_resource type="Script" path="res://CharacterBody3D.gd" id="2_kxns7"]
 [ext_resource type="PackedScene" uid="uid://ry3c5djemip2" path="res://terrain.tscn" id="2_vayhu"]
 [ext_resource type="Shader" path="res://fog01.gdshader" id="4_3swfu"]
+[ext_resource type="Script" path="res://sand_storm.gd" id="4_x3xaf"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ipq3q"]
 
@@ -12,6 +13,8 @@ dof_blur_far_enabled = true
 dof_blur_far_distance = 50.0
 dof_blur_far_transition = 20.0
 dof_blur_amount = 0.02
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_p0jmp"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_u5smw"]
 
@@ -24,8 +27,6 @@ shader_parameter/noise_scale = 0.005
 shader_parameter/flatness = 10.0
 shader_parameter/noise_tex = SubResource("NoiseTexture2D_ypoqb")
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_p0jmp"]
-
 [node name="main" type="Node3D"]
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
@@ -33,26 +34,26 @@ transform = Transform3D(-0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, 0.75
 shadow_enabled = true
 
 [node name="terrain" parent="." node_paths=PackedStringArray("player") instance=ExtResource("2_vayhu")]
-player = NodePath("../CharacterBody3D")
+player = NodePath("../Player")
 noise_terrain = "res://noise_terrain.tres"
 chunk_script = "res://chunk.gd"
 
-[node name="CharacterBody3D" type="CharacterBody3D" parent="."]
+[node name="Player" type="CharacterBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10, 0)
 script = ExtResource("2_kxns7")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="CharacterBody3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Player"]
 shape = SubResource("CapsuleShape3D_ipq3q")
 
-[node name="Camera3D" type="Camera3D" parent="CharacterBody3D"]
+[node name="Camera3D" type="Camera3D" parent="Player"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.70056, 0)
 attributes = SubResource("CameraAttributesPractical_g0irq")
 
-[node name="HandPoint" type="Marker3D" parent="CharacterBody3D/Camera3D"]
+[node name="HandPoint" type="Marker3D" parent="Player/Camera3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.101826, -0.214317, -1.1772)
 
-[node name="RayCast3D" type="RayCast3D" parent="CharacterBody3D/Camera3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.242661, -1)
+[node name="RayCast3D" type="RayCast3D" parent="Player/Camera3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0858533, -0.242661, -1)
 target_position = Vector3(0, 0, -2)
 collision_mask = 2
 
@@ -61,15 +62,17 @@ collision_mask = 2
 [node name="WorldEnvironment" type="WorldEnvironment" parent="Environment"]
 environment = ExtResource("1_rmrta")
 
-[node name="FogVolume" type="FogVolume" parent="Environment"]
-transform = Transform3D(8.14421, 0, 0, 0, 5.0336, 0, 0, 0, 15.2468, 152.888, 48.9819, 21.348)
+[node name="SandStorm" type="Area3D" parent="Environment"]
+transform = Transform3D(15, 0, 0, 0, 15, 0, 0, 0, 15, 212.447, 115.262, 19.359)
+script = ExtResource("4_x3xaf")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Environment/SandStorm"]
+transform = Transform3D(19, 0, 0, 0, 19, 0, 0, 0, 19, 0, 0, 0)
+shape = SubResource("BoxShape3D_p0jmp")
+
+[node name="FogVolume" type="FogVolume" parent="Environment/SandStorm"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 size = Vector3(20, 20, 20)
 material = SubResource("ShaderMaterial_r32j0")
 
-[node name="Area3D" type="Area3D" parent="Environment/FogVolume"]
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Environment/FogVolume/Area3D"]
-transform = Transform3D(21, 0, 0, 0, 21, 0, 0, 0, 21, 0, 0, 0)
-shape = SubResource("BoxShape3D_p0jmp")
-
-[connection signal="map_ready" from="terrain" to="CharacterBody3D" method="_on_terrain_map_ready"]
+[connection signal="map_ready" from="terrain" to="Player" method="_on_terrain_map_ready"]
