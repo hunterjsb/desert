@@ -1,10 +1,14 @@
-[gd_scene load_steps=12 format=3 uid="uid://detacysixr15p"]
+[gd_scene load_steps=16 format=3 uid="uid://detacysixr15p"]
 
+[ext_resource type="Script" path="res://main.gd" id="1_7asmc"]
 [ext_resource type="Environment" uid="uid://gejkg4ou3v7t" path="res://env.tres" id="1_rmrta"]
 [ext_resource type="Script" path="res://CharacterBody3D.gd" id="2_kxns7"]
 [ext_resource type="PackedScene" uid="uid://ry3c5djemip2" path="res://terrain.tscn" id="2_vayhu"]
+[ext_resource type="PackedScene" uid="uid://dl4jetqhbaqxp" path="res://texture/bigwheel.fbx" id="3_jboed"]
 [ext_resource type="Shader" path="res://fog01.gdshader" id="4_3swfu"]
+[ext_resource type="AudioStream" uid="uid://e2m7xn1nnp5u" path="res://audio/sand_footsteps.wav" id="4_oy0yn"]
 [ext_resource type="Script" path="res://sand_storm.gd" id="4_x3xaf"]
+[ext_resource type="AudioStream" uid="uid://bgr1j23n4wnh2" path="res://audio/sandstorm.wav" id="8_aiej0"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ipq3q"]
 
@@ -28,6 +32,10 @@ shader_parameter/flatness = 10.0
 shader_parameter/noise_tex = SubResource("NoiseTexture2D_ypoqb")
 
 [node name="main" type="Node3D"]
+script = ExtResource("1_7asmc")
+
+[node name="bigwheel" parent="." instance=ExtResource("3_jboed")]
+transform = Transform3D(397.435, -212.762, 216.282, -3.93578e-06, 356.442, 350.641, -303.39, -278.714, 283.325, 730.48, 121.328, -2999.19)
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(-0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, 0.75, -0.433013, 0, 0, 0)
@@ -51,12 +59,16 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.70056, 0)
 attributes = SubResource("CameraAttributesPractical_g0irq")
 
 [node name="HandPoint" type="Marker3D" parent="Player/Camera3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.101826, -0.214317, -1.1772)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0294777, -0.0451317, -1.1772)
 
 [node name="RayCast3D" type="RayCast3D" parent="Player/Camera3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0858533, -0.242661, -1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0361086, -0.0187893, -1)
 target_position = Vector3(0, 0, -2)
 collision_mask = 2
+
+[node name="FootstepAudio" type="AudioStreamPlayer3D" parent="Player"]
+stream = ExtResource("4_oy0yn")
+volume_db = 10.0
 
 [node name="Environment" type="Node3D" parent="."]
 
@@ -74,5 +86,8 @@ shape = SubResource("BoxShape3D_p0jmp")
 [node name="FogVolume" type="FogVolume" parent="Environment/SandStorm"]
 size = Vector3(20, 20, 20)
 material = SubResource("ShaderMaterial_r32j0")
+
+[node name="SandStormAudio" type="AudioStreamPlayer2D" parent="Environment/SandStorm"]
+stream = ExtResource("8_aiej0")
 
 [connection signal="map_ready" from="terrain" to="Player" method="_on_terrain_map_ready"]

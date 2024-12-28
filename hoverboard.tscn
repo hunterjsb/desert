@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=3 uid="uid://dad8rghl2innd"]
+
+[ext_resource type="PackedScene" uid="uid://cckfjxlxmq1bo" path="res://texture/hoverboard.fbx" id="1_jgyk8"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_bkjr0"]
+
+[node name="Hoverboard" type="RigidBody3D" groups=["interactable"]]
+collision_layer = 2
+
+[node name="hoverboard" parent="." instance=ExtResource("1_jgyk8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0133777, 0.0165905, 0.00578393)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -0.0104019, 0.999946, 0, -0.999946, -0.0104019, -0.0135871, 0.0401814, 0)
+shape = SubResource("CapsuleShape3D_bkjr0")

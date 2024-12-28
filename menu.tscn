@@ -1,0 +1,25 @@
+[gd_scene load_steps=2 format=3 uid="uid://diypg6xn6wpio"]
+
+[ext_resource type="Script" path="res://menu.gd" id="1_ctugu"]
+
+[node name="CanvasLayer" type="CanvasLayer"]
+script = ExtResource("1_ctugu")
+
+[node name="MenuButton" type="MenuButton" parent="."]
+offset_left = 1148.0
+offset_top = 261.0
+offset_right = 1248.0
+offset_bottom = 311.0
+scale = Vector2(2, 2)
+text = "PRESS ME"
+
+[node name="SensitivitySlider" type="HSlider" parent="."]
+offset_left = 1085.0
+offset_top = 873.0
+offset_right = 1411.0
+offset_bottom = 1010.0
+max_value = 5.0
+step = 0.05
+value = 2.0
+
+[connection signal="pressed" from="MenuButton" to="." method="_on_menu_button_pressed"]

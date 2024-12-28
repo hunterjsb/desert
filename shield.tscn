@@ -1,8 +1,11 @@
-[gd_scene load_steps=9 format=3 uid="uid://c42xsl3j0hohs"]
+[gd_scene load_steps=12 format=3 uid="uid://c42xsl3j0hohs"]
 
 [ext_resource type="Script" path="res://shield.gd" id="1_ajwb2"]
-[ext_resource type="PackedScene" uid="uid://0w1fepdw3urm" path="res://shieldgentex.fbx" id="2_pljuj"]
+[ext_resource type="PackedScene" uid="uid://0w1fepdw3urm" path="res://texture/shieldgentex.fbx" id="2_pljuj"]
 [ext_resource type="Shader" path="res://bubbleshield01.gdshader" id="2_tlq22"]
+[ext_resource type="AudioStream" uid="uid://d210wmjbixl28" path="res://audio/shield-boot.wav" id="4_o6rvc"]
+[ext_resource type="AudioStream" uid="uid://b71qph3huh4ic" path="res://audio/shield-sustain.mp3" id="5_rou4d"]
+[ext_resource type="AudioStream" uid="uid://e55al1ajores" path="res://audio/shield-powerdown.wav" id="6_euxvd"]
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_k6gxy"]
 height = 0.2
@@ -17,10 +20,10 @@ shader_parameter/base_color = Color(0, 0.5, 1, 1)
 shader_parameter/pulse_color = Color(0.5, 0.7, 1, 1)
 shader_parameter/speed = 1.0
 shader_parameter/scale = 1.0
-shader_parameter/distortion = 0.5
-shader_parameter/shield_power = 0.3
-shader_parameter/rim_power = 1.0
-shader_parameter/pulse_frequency = 1.0
+shader_parameter/distortion = 2.0
+shader_parameter/shield_power = 0.2
+shader_parameter/rim_power = 1.5
+shader_parameter/pulse_frequency = 0.75
 
 [sub_resource type="SphereMesh" id="SphereMesh_mwb6o"]
 material = SubResource("ShaderMaterial_og3ex")
@@ -55,3 +58,19 @@ mesh = SubResource("SphereMesh_mwb6o")
 size = Vector3(10, 10, 10)
 shape = 0
 material = SubResource("FogMaterial_l34c4")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="BubbleShield"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0920065, 0)
+light_color = Color(0.247059, 0.67451, 0.87451, 1)
+light_energy = 2.0
+light_volumetric_fog_energy = 2.0
+light_size = 1.0
+
+[node name="ShieldActivateAudio" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("4_o6rvc")
+
+[node name="ShieldHumAudio" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("5_rou4d")
+
+[node name="ShieldDeactivateAudio" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("6_euxvd")

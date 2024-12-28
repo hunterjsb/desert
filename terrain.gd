@@ -38,6 +38,10 @@ func load_noise():
 	noise = load(noise_terrain)
 	noise.seed = terrain_seed
 	return noise
+	
+func randomize_seed():
+	RandomNumberGenerator.new().randomize()
+	terrain_seed = randi()
 
 func create_chunk_section(c_position=Vector3.ZERO, start=false):
 	var half_render_distance = render_distance / 2
@@ -82,6 +86,8 @@ func _ready():
 		push_error("Noise for terrain is not defined. Check terrain right panel to set noise.")
 		queue_free()
 		return
+		
+	randomize_seed()
 	load_noise()
 	chunk_script = load(chunk_script)
 	create_raycast()

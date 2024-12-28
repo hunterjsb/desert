@@ -9,6 +9,7 @@ var players_in_storm: Array = []
 var time_accum = 0.0
 
 @onready var sun = $"../../DirectionalLight3D"
+@onready var storm_audio = $SandStormAudio   # AudioStreamPlayer2D
 
 func _ready() -> void:
 	# Use the correct syntax for connecting signals:
@@ -35,6 +36,9 @@ func _on_sand_storm_body_entered(body: Node):
 		print("Player entered the Sand Storm")
 		var t = create_tween()
 		t.tween_property(sun, "light_energy", 1 - storm_darkening, storm_darkening_time)
+		
+		if not storm_audio.playing:
+			storm_audio.play()
 
 func _on_sand_storm_body_exited(body: Node):
 	if body.name == "Player":
@@ -42,3 +46,6 @@ func _on_sand_storm_body_exited(body: Node):
 		print("Player exited the Sand Storm")
 		var t = create_tween()
 		t.tween_property(sun, "light_energy", 1, storm_darkening_time)
+		
+		if players_in_storm.size() == 0:
+			storm_audio.stop()
