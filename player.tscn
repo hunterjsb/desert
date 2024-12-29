@@ -1,0 +1,38 @@
+[gd_scene load_steps=5 format=3 uid="uid://ch0krls6y12y8"]
+
+[ext_resource type="Script" path="res://CharacterBody3D.gd" id="1_ohtfq"]
+[ext_resource type="AudioStream" uid="uid://e2m7xn1nnp5u" path="res://audio/sand_footsteps.wav" id="2_c2uh1"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ipq3q"]
+
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_g0irq"]
+dof_blur_far_enabled = true
+dof_blur_far_distance = 50.0
+dof_blur_far_transition = 20.0
+dof_blur_amount = 0.02
+
+[node name="Player" type="CharacterBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10, 0)
+script = ExtResource("1_ohtfq")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("CapsuleShape3D_ipq3q")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.70056, 0)
+attributes = SubResource("CameraAttributesPractical_g0irq")
+
+[node name="HandPoint" type="Marker3D" parent="Camera3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0294777, -0.0451317, -1.1772)
+
+[node name="RayCast3D" type="RayCast3D" parent="Camera3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0361086, -0.0187893, -1)
+target_position = Vector3(0, 0, -2)
+collision_mask = 2
+
+[node name="FootstepAudio" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("2_c2uh1")
+volume_db = 10.0
+
+[node name="Feet" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0623875, -0.794848, 0.000357628)

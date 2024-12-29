@@ -31,7 +31,26 @@ animation/trimming=true
 animation/remove_immutable_tracks=true
 animation/import_rest_as_RESET=false
 import_script/path=""
-_subresources={}
+_subresources={
+"nodes": {
+"PATH:Mesh1_Mesh1_002": {
+"decomposition/advanced": true,
+"decomposition/convexhull_downsampling": 2,
+"decomposition/max_convex_hulls": 4,
+"decomposition/max_num_vertices_per_convex_hull": 64,
+"decomposition/min_volume_per_convex_hull": 1.0,
+"decomposition/mode": 1,
+"decomposition/normalize_mesh": true,
+"decomposition/plane_downsampling": 2,
+"decomposition/resolution": 5000,
+"decomposition/symmetry_planes_clipping_bias": 1.0,
+"generate/physics": true,
+"physics/body_type": 1,
+"physics/physics_material_override": null,
+"primitive/size": Vector3(1, 1, 1)
+}
+}
+}
 fbx/importer=0
 fbx/allow_geometry_helper_nodes=false
 fbx/embedded_image_handling=1

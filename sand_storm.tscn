@@ -1,0 +1,33 @@
+[gd_scene load_steps=8 format=3 uid="uid://b0gsf4ppmuj2h"]
+
+[ext_resource type="Script" path="res://sand_storm.gd" id="1_2s428"]
+[ext_resource type="Shader" path="res://fog01.gdshader" id="2_ulbh7"]
+[ext_resource type="AudioStream" uid="uid://bgr1j23n4wnh2" path="res://audio/sandstorm.wav" id="3_xuq3t"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_p0jmp"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_u5smw"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_ypoqb"]
+noise = SubResource("FastNoiseLite_u5smw")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_r32j0"]
+shader = ExtResource("2_ulbh7")
+shader_parameter/noise_scale = 0.005
+shader_parameter/flatness = 10.0
+shader_parameter/noise_tex = SubResource("NoiseTexture2D_ypoqb")
+
+[node name="SandStorm" type="Area3D"]
+transform = Transform3D(15, 0, 0, 0, 15, 0, 0, 0, 15, 212.447, 115.262, 19.359)
+script = ExtResource("1_2s428")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(19, 0, 0, 0, 19, 0, 0, 0, 19, 0, 0, 0)
+shape = SubResource("BoxShape3D_p0jmp")
+
+[node name="FogVolume" type="FogVolume" parent="."]
+size = Vector3(20, 20, 20)
+material = SubResource("ShaderMaterial_r32j0")
+
+[node name="SandStormAudio" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("3_xuq3t")

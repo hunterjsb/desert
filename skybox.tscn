@@ -1,0 +1,53 @@
+[gd_scene load_steps=9 format=3 uid="uid://31vsdnsofoou"]
+
+[ext_resource type="PackedScene" uid="uid://ch0krls6y12y8" path="res://player.tscn" id="1_l1y63"]
+[ext_resource type="PackedScene" uid="uid://bmi4yxmcc2m0d" path="res://hoverboard.tscn" id="2_sibpl"]
+[ext_resource type="PackedScene" uid="uid://dlgxashpwucl5" path="res://radio.tscn" id="3_cgl1j"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_yaa1h"]
+sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+ground_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+
+[sub_resource type="Sky" id="Sky_d0i6j"]
+sky_material = SubResource("ProceduralSkyMaterial_yaa1h")
+
+[sub_resource type="Environment" id="Environment_uog07"]
+background_mode = 2
+sky = SubResource("Sky_d0i6j")
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="QuadMesh" id="QuadMesh_oy20x"]
+
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_y4tmv"]
+data = PackedVector3Array(0.5, -0.5, 0, -0.5, -0.5, 0, 0.5, 0.5, 0, -0.5, -0.5, 0, -0.5, 0.5, 0, 0.5, 0.5, 0)
+
+[node name="Skybox" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_uog07")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.866023, -0.433016, 0.250001, 0, 0.499998, 0.866027, -0.500003, 0.749999, -0.43301, 0, 0, 0)
+shadow_enabled = true
+
+[node name="StaticBody3D" type="StaticBody3D" parent="."]
+transform = Transform3D(50, 0, 0, 0, 50, 0, 0, 0, 50, 0, -0.0652623, 0)
+collision_layer = 3
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 5.96046e-08, 1, 0, -1, 5.96046e-08, 0, 0, 0)
+mesh = SubResource("QuadMesh_oy20x")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 5.96046e-08, 1, 0, -1, 5.96046e-08, 0, 0, 0)
+shape = SubResource("ConcavePolygonShape3D_y4tmv")
+
+[node name="Player" parent="." instance=ExtResource("1_l1y63")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.531002, 0.454737, 1.75178)
+
+[node name="hoverboard" parent="." instance=ExtResource("2_sibpl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1341, 5.28166, -4.62028)
+
+[node name="radio" parent="." instance=ExtResource("3_cgl1j")]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, -0.709186, 2.38249, -4.7428)

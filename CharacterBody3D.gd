@@ -37,8 +37,9 @@ var is_carrying_item: bool = false
 @onready var menu = preload("res://menu.tscn").instantiate()
 @onready var hud = preload("res://hud.tscn").instantiate()
 
-# Track whether the player can move while the menu is visible
+# movement controls
 var can_move = true
+var on_hoverboard = false
 
 
 func _ready():
@@ -160,6 +161,9 @@ func pick_up_item(item: Node3D):
 
 	carried_item = item
 	is_carrying_item = true
+	
+	if "on_pickup" in item:
+		item.on_pickup(self)
 	if "item_type" in item:
 		carried_item_type = item.item_type
 	else:

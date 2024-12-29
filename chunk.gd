@@ -67,12 +67,12 @@ func create_lod(pos):
 	mesh.subdivide_depth = terrain.chunk_size / lod
 	return mesh
 
-func create_noise_terrain(mesh):
+func create_noise_terrain(_mesh):
 	var sTool = SurfaceTool.new()
 	var dataTool = MeshDataTool.new()
 	terrain.noise.offset = position
 	sTool.clear()
-	sTool.create_from(mesh, 0)
+	sTool.create_from(_mesh, 0)
 	var arrayMash = sTool.commit()
 	dataTool.clear()
 	dataTool.create_from_surface(arrayMash, 0)
