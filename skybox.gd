@@ -12,4 +12,4 @@ func _ready() -> void:
 
 func _initialize_storm(storm: Node3D) -> void:
 	pass
-	storm.global_transform.origin = Vector3(300, 90, -300)
+	# storm.global_transform.origin = Vector3(1, 10, 1)

@@ -10,7 +10,7 @@
 [node name="Mesh1_Mesh1_108" parent="." index="0" groups=["interactable"]]
 transform = Transform3D(1, 0, 0, 0, 1, 7.54979e-08, 0, -7.54979e-08, 1, 0, 0, 0)
 collision_layer = 2
-mass = 0.2
+mass = 0.5
 script = ExtResource("2_wmiq8")
 
 [node name="Music" type="AudioStreamPlayer3D" parent="Mesh1_Mesh1_108" index="2"]

@@ -1,5 +1,7 @@
 extends Node3D
 
+@export var move_speed_multiplier = 8
+
 @onready var collision = $CollisionShape3D
 
 var attached: bool = false
@@ -20,7 +22,7 @@ func interact(player: Node):
 
 	# -1 if currently attached (=> detaching), otherwise +1 for attaching
 	_attached_mod = -1 if attached else 1
-	player.sprint_multiplier += _attached_mod * 2
+	player.sprint_multiplier += _attached_mod * move_speed_multiplier
 	
 	# Remove from old parent
 	var old_parent = self.get_parent()

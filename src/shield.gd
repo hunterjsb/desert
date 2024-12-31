@@ -1,4 +1,4 @@
-extends RigidBody3D
+extends Node3D
 
 signal player_entered_bubble(player)
 signal player_exited_bubble(player)
@@ -78,3 +78,6 @@ func toggle_bubble_shield():
 
 func interact(player: Node):
 	toggle_bubble_shield()
+	
+func pickup(player: Node):
+	pass

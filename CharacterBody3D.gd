@@ -51,8 +51,8 @@ func _ready():
 	original_camera_local_pos = $Camera3D.transform.origin
 
 	# Example: spawn a shield in the player's hand
-	var shield_scene = preload("res://shield.tscn")
-	var start_shield = shield_scene.instantiate()
+	var shield_scene = preload("res://src/shield.tscn")
+	var start_shield = shield_scene.instantiate().get_node("Mesh0")
 	pick_up_item(start_shield)
 	carried_item_type = "shield"
 
@@ -143,8 +143,11 @@ func _input(event):
 func get_ray_collider(group: String) -> Node:
 	if ray.is_colliding():
 		var collider = ray.get_collider()
+		print(group, " trying to collide with ", collider)
 		if collider and collider.is_in_group(group):
 			return collider
+		else:
+			print("not in group")
 	return null
 
 #
@@ -155,6 +158,7 @@ func pick_up_item(item: Node3D):
 		item.get_parent().remove_child(item)
 	$Camera3D/HandPoint.add_child(item)
 	item.transform = Transform3D()
+	item.rotation_degrees = Vector3(90, 0, 0)
 
 	if item is RigidBody3D:
 		item.freeze = true

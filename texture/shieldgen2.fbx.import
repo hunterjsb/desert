@@ -3,20 +3,20 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://0uhvyadqalf4"
-path="res://.godot/imported/radio.fbx-d7622c30ddd02010dd315d9f07419505.scn"
+uid="uid://bx4f447gbcnko"
+path="res://.godot/imported/shieldgen2.fbx-f4df21e67ad6f526ff49af3c15a84cdc.scn"
 
 [deps]
 
-source_file="res://texture/radio.fbx"
-dest_files=["res://.godot/imported/radio.fbx-d7622c30ddd02010dd315d9f07419505.scn"]
+source_file="res://texture/shieldgen2.fbx"
+dest_files=["res://.godot/imported/shieldgen2.fbx-f4df21e67ad6f526ff49af3c15a84cdc.scn"]
 
 [params]
 
 nodes/root_type=""
 nodes/root_name=""
 nodes/apply_root_scale=true
-nodes/root_scale=30.0
+nodes/root_scale=1.0
 nodes/import_as_skeleton_bones=false
 meshes/ensure_tangents=true
 meshes/generate_lods=true
@@ -33,17 +33,11 @@ animation/import_rest_as_RESET=false
 import_script/path=""
 _subresources={
 "nodes": {
-"PATH:Mesh1_Mesh1_108": {
+"PATH:Mesh0": {
 "decomposition/advanced": true,
-"decomposition/convexhull_downsampling": 12,
-"decomposition/max_convex_hulls": 10,
-"decomposition/max_num_vertices_per_convex_hull": 64,
-"decomposition/min_volume_per_convex_hull": 1.0,
-"decomposition/mode": 1,
-"decomposition/plane_downsampling": 12,
-"decomposition/resolution": 100000,
 "generate/physics": true,
-"physics/body_type": 1
+"physics/body_type": 1,
+"physics/shape_type": 0
 }
 }
 }
