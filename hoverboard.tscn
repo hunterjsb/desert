@@ -1,7 +1,22 @@
-[gd_scene load_steps=3 format=3 uid="uid://bmi4yxmcc2m0d"]
+[gd_scene load_steps=5 format=3 uid="uid://bmi4yxmcc2m0d"]
 
 [ext_resource type="PackedScene" uid="uid://cckfjxlxmq1bo" path="res://texture/hoverboard.fbx" id="1_wkpy2"]
+[ext_resource type="Shader" path="res://outline01.gdshader" id="3_b4six"]
 [ext_resource type="Script" path="res://hoverboard_mesh.gd" id="3_vovvo"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_pxdf3"]
+render_priority = 0
+shader = ExtResource("3_b4six")
+shader_parameter/border_width = null
+shader_parameter/color = Vector4(1, 1, 0.1, 1)
+shader_parameter/pattern = null
+shader_parameter/line_number = null
+shader_parameter/line_sharpness = null
+shader_parameter/pulse = null
+shader_parameter/pulse_speed = null
+shader_parameter/line_movement = null
+shader_parameter/line_movement_speed = null
+shader_parameter/wave = null
 
 [node name="hoverboard" instance=ExtResource("1_wkpy2")]
 
@@ -12,6 +27,7 @@ script = ExtResource("3_vovvo")
 
 [node name="Mesh1_Mesh1_002" parent="Mesh1_Mesh1_002" index="0"]
 transform = Transform3D(100, 0, 0, 0, 100, 0, 0, 0, 100, 0, 0, 0)
+material_overlay = SubResource("ShaderMaterial_pxdf3")
 
 [node name="CollisionShape3D" parent="Mesh1_Mesh1_002" index="1"]
 transform = Transform3D(100, 0, 0, 0, 100, 0, 0, 0, 100, 0, 0, 0)

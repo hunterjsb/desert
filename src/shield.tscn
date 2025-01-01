@@ -1,11 +1,26 @@
-[gd_scene load_steps=11 format=3 uid="uid://csgdtb8pbgwjj"]
+[gd_scene load_steps=13 format=3 uid="uid://csgdtb8pbgwjj"]
 
 [ext_resource type="PackedScene" uid="uid://bx4f447gbcnko" path="res://texture/shieldgen2.fbx" id="1_c48y0"]
 [ext_resource type="Script" path="res://src/shield.gd" id="2_27f83"]
 [ext_resource type="Shader" path="res://bubbleshield01.gdshader" id="2_ipuh3"]
+[ext_resource type="Shader" path="res://outline01.gdshader" id="3_u1ogl"]
 [ext_resource type="AudioStream" uid="uid://d210wmjbixl28" path="res://audio/shield-boot.wav" id="3_us5ol"]
 [ext_resource type="AudioStream" uid="uid://b71qph3huh4ic" path="res://audio/shield-sustain.mp3" id="4_jbxk1"]
 [ext_resource type="AudioStream" uid="uid://e55al1ajores" path="res://audio/shield-powerdown.wav" id="5_fyjak"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_cbqmf"]
+render_priority = 0
+shader = ExtResource("3_u1ogl")
+shader_parameter/border_width = null
+shader_parameter/color = Vector4(0, 0.5, 1.5, 1)
+shader_parameter/pattern = null
+shader_parameter/line_number = null
+shader_parameter/line_sharpness = null
+shader_parameter/pulse = null
+shader_parameter/pulse_speed = null
+shader_parameter/line_movement = null
+shader_parameter/line_movement_speed = null
+shader_parameter/wave = null
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_6es2b"]
 
@@ -40,6 +55,7 @@ script = ExtResource("2_27f83")
 
 [node name="Mesh0" parent="Mesh0" index="0"]
 transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 0, 0, 0)
+material_overlay = SubResource("ShaderMaterial_cbqmf")
 
 [node name="CollisionShape3D" parent="Mesh0" index="1"]
 transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 0, 0, 0)
@@ -66,6 +82,9 @@ stream = ExtResource("3_us5ol")
 [node name="ShieldHumAudio" type="AudioStreamPlayer3D" parent="Mesh0" index="4"]
 transform = Transform3D(0.0833333, 0, 0, 0, -0.0022483, 0.083303, 0, -0.083303, -0.0022483, -0.00489555, -0.000858848, 0.00157718)
 stream = ExtResource("4_jbxk1")
+volume_db = -20.0
+pitch_scale = 0.9
+parameters/looping = false
 
 [node name="ShieldDeactivateAudio" type="AudioStreamPlayer3D" parent="Mesh0" index="5"]
 transform = Transform3D(0.0833333, 0, 0, 0, -0.0022483, 0.083303, 0, -0.083303, -0.0022483, -0.00489555, -0.000858848, 0.00157718)

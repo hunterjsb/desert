@@ -1,29 +1,63 @@
-[gd_scene load_steps=14 format=3 uid="uid://31vsdnsofoou"]
+[gd_scene load_steps=19 format=3 uid="uid://31vsdnsofoou"]
 
 [ext_resource type="PackedScene" uid="uid://ch0krls6y12y8" path="res://player.tscn" id="1_l1y63"]
 [ext_resource type="Script" path="res://skybox.gd" id="1_pgrb5"]
+[ext_resource type="PackedScene" uid="uid://b0gsf4ppmuj2h" path="res://sand_storm.tscn" id="1_qsy6h"]
 [ext_resource type="PackedScene" uid="uid://bmi4yxmcc2m0d" path="res://hoverboard.tscn" id="2_sibpl"]
 [ext_resource type="PackedScene" uid="uid://dlgxashpwucl5" path="res://radio.tscn" id="3_cgl1j"]
+[ext_resource type="PackedScene" uid="uid://bounpd4i1v5pf" path="res://src/hud_dev.tscn" id="3_ntfw2"]
 [ext_resource type="Script" path="res://wind_manager.gd" id="5_0otb4"]
+[ext_resource type="Script" path="res://day_night.gd" id="6_aefkn"]
 [ext_resource type="Script" path="res://wind_body.gd" id="6_g1hy4"]
+[ext_resource type="Shader" path="res://sky.gdshader" id="9_7spnk"]
+[ext_resource type="Texture2D" uid="uid://bmoh66spei4tg" path="res://stars.png" id="10_d5qnc"]
 
 [sub_resource type="QuadMesh" id="QuadMesh_oy20x"]
 
 [sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_y4tmv"]
 data = PackedVector3Array(0.5, -0.5, 0, -0.5, -0.5, 0, 0.5, 0.5, 0, -0.5, -0.5, 0, -0.5, 0.5, 0, 0.5, 0.5, 0)
 
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_yaa1h"]
-sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
-ground_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_n2vah"]
+shader = ExtResource("9_7spnk")
+shader_parameter/day_top_color = Color(0.1, 0.6, 1, 1)
+shader_parameter/day_bottom_color = Color(0.4, 0.8, 1, 1)
+shader_parameter/sunset_top_color = Color(0.7, 0.75, 1, 1)
+shader_parameter/sunset_bottom_color = Color(1, 0.5, 0.7, 1)
+shader_parameter/night_top_color = Color(0.02, 0, 0.04, 1)
+shader_parameter/night_bottom_color = Color(0.1, 0, 0.2, 1)
+shader_parameter/horizon_color = Color(0, 0.7, 0.8, 1)
+shader_parameter/horizon_blur = 0.05
+shader_parameter/sun_color = Color(10, 8, 1, 1)
+shader_parameter/sun_sunset_color = Color(10, 0, 0, 1)
+shader_parameter/sun_size = 0.2
+shader_parameter/sun_blur = 10.0
+shader_parameter/moon_color = Color(1, 0.95, 0.7, 1)
+shader_parameter/moon_size = 0.06
+shader_parameter/moon_blur = 0.1
+shader_parameter/clouds_edge_color = Color(0.8, 0.8, 0.98, 1)
+shader_parameter/clouds_top_color = Color(1, 1, 1, 1)
+shader_parameter/clouds_middle_color = Color(0.92, 0.92, 0.98, 1)
+shader_parameter/clouds_bottom_color = Color(0.83, 0.83, 0.94, 1)
+shader_parameter/clouds_speed = 2.0
+shader_parameter/clouds_direction = 0.2
+shader_parameter/clouds_scale = 1.0
+shader_parameter/clouds_cutoff = 0.3
+shader_parameter/clouds_fuzziness = 0.5
+shader_parameter/clouds_weight = 0.0
+shader_parameter/clouds_blur = 0.25
+shader_parameter/stars_speed = 1.0
+shader_parameter/stars_scale = 1.0
+shader_parameter/stars_opacity = 1.0
+shader_parameter/stars_texture = ExtResource("10_d5qnc")
+shader_parameter/overwritten_time = 0.0
 
-[sub_resource type="Sky" id="Sky_d0i6j"]
-sky_material = SubResource("ProceduralSkyMaterial_yaa1h")
+[sub_resource type="Sky" id="Sky_hpyh2"]
+sky_material = SubResource("ShaderMaterial_n2vah")
 
-[sub_resource type="Environment" id="Environment_uog07"]
+[sub_resource type="Environment" id="Environment_kyd2a"]
 background_mode = 2
-sky = SubResource("Sky_d0i6j")
-tonemap_mode = 2
-glow_enabled = true
+sky = SubResource("Sky_hpyh2")
+ambient_light_source = 3
 volumetric_fog_enabled = true
 volumetric_fog_density = 0.0
 
@@ -50,6 +84,10 @@ shape = SubResource("ConcavePolygonShape3D_y4tmv")
 [node name="Player" parent="." instance=ExtResource("1_l1y63")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.531002, 0.454737, 1.75178)
 
+[node name="DevHUD" parent="Player" node_paths=PackedStringArray("player", "environment") instance=ExtResource("3_ntfw2")]
+player = NodePath("..")
+environment = NodePath("../../Environment")
+
 [node name="hoverboard" parent="." instance=ExtResource("2_sibpl")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1341, 5.28166, -4.62028)
 
@@ -57,16 +95,32 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1341, 5.28166, -4.62028)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.248756, 1.93474, -5.07413)
 
 [node name="Environment" type="Node3D" parent="."]
-
-[node name="WorldEnvironment" type="WorldEnvironment" parent="Environment"]
-environment = SubResource("Environment_uog07")
-
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="Environment"]
-transform = Transform3D(-0.866024, -0.433016, 0.250001, 0, 0.499998, 0.866026, -0.500003, 0.749999, -0.43301, 0, 0, 0)
-shadow_enabled = true
+script = ExtResource("6_aefkn")
+day_time = 5.5
 
 [node name="WindManager" type="Node3D" parent="Environment"]
 script = ExtResource("5_0otb4")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="Environment"]
+environment = SubResource("Environment_kyd2a")
+
+[node name="Sun" type="DirectionalLight3D" parent="Environment"]
+transform = Transform3D(0.920752, 0, -0.39015, -0.0509248, 0.991445, -0.120182, 0.386812, 0.130526, 0.912874, 0, 0, 0)
+rotation_order = 4
+light_energy = 0.0
+shadow_enabled = true
+shadow_opacity = 0.75
+shadow_blur = 5.0
+
+[node name="Moon" type="DirectionalLight3D" parent="Environment"]
+transform = Transform3D(0.950518, 0, -0.310668, 0.287019, -0.382683, 0.878165, -0.118887, -0.923879, -0.363748, 0, 0, 0)
+rotation_order = 4
+light_color = Color(1, 1, 0.6, 1)
+light_energy = 0.0
+shadow_enabled = true
+shadow_opacity = 0.25
+shadow_blur = 5.0
+directional_shadow_fade_start = 0.1
 
 [node name="WindyBody" type="RigidBody3D" parent="."]
 script = ExtResource("6_g1hy4")
@@ -82,6 +136,11 @@ shape = SubResource("ConvexPolygonShape3D_wga7v")
 [node name="VelocityLabel3D" type="Label3D" parent="WindyBody"]
 transform = Transform3D(-0.0248684, 0, -0.999691, 0, 1, 0, 0.999691, 0, -0.0248684, 3.02699, 2.6444, 0.0413471)
 text = "HELLO WORLD"
+
+[node name="SandStorm" parent="." node_paths=PackedStringArray("wind_manager", "sun") instance=ExtResource("1_qsy6h")]
+transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 133.825, 100, 0)
+wind_manager = NodePath("../Environment/WindManager")
+sun = NodePath("../Environment/Sun")
 
 [connection signal="cardinal_direction_changed" from="Environment/WindManager" to="WindyBody" method="_on_cardinal_direction_changed"]
 [connection signal="gust_ended" from="Environment/WindManager" to="WindyBody" method="_on_gust_ended"]

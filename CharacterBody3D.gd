@@ -14,33 +14,38 @@ extends CharacterBody3D
 @export var sprint_sway_intensity = 0.08
 @export var sprint_sway_frequency = 2.5
 
-#==> HEALTH & SHIELD <==#
+# hp
 var max_health = 100
 var current_health = 100
 
+# movement
 var gravity = 0.0
 var walk_cycle_time = 0.0
 var original_camera_local_pos
 var is_sprinting = false
 
-# Bubble shield counters
+# bubble shield counters
 var inside_bubble_count: int = 0
 var is_in_bubble_shield: bool = false
 
-#==> GENERIC ITEM PICKUP LOGIC <==#
+# item carrying
 var carried_item: Node3D = null
 var carried_item_type: String = ""
 var is_carrying_item: bool = false
 
 # RayCast for item detection
 @onready var ray = $Camera3D/RayCast3D
+
+# UI's
 @onready var menu = preload("res://menu.tscn").instantiate()
 @onready var hud = preload("res://hud.tscn").instantiate()
 
-# movement controls
+# Movement controls
 var can_move = true
 var on_hoverboard = false
 
+# Track which item is currently outlined
+var last_highlighted_item: Node = null
 
 func _ready():
 	# Instantiate and attach HUD
@@ -61,13 +66,29 @@ func _ready():
 		shield.player_entered_bubble.connect(_on_player_entered_bubble)
 		shield.player_exited_bubble.connect(_on_player_exited_bubble)
 
-	menu.name = "Menu"   # or menu.set_name("Menu")
+	menu.name = "Menu"
 	add_child(menu)
 	menu.hide()
 
 func _physics_process(delta):
 	if not can_move:
 		return  # Don't move if the menu is open
+		
+	# Check the item under the crosshair
+	var collider = get_ray_collider("interactable")
+
+	# If we are hovering an item AND it's not the one we're carrying -> highlight it
+	if collider and collider != carried_item:
+		# If we were highlighting a different item, reset it
+		if collider != last_highlighted_item and last_highlighted_item:
+			reset_outline(last_highlighted_item)
+		apply_outline(collider)
+		last_highlighted_item = collider
+	else:
+		# If we are no longer hovering over an item or we are hovering over the carried item
+		if last_highlighted_item:
+			reset_outline(last_highlighted_item)
+			last_highlighted_item = null
 
 	# Apply gravity
 	velocity.y += -gravity * delta
@@ -111,12 +132,10 @@ func _physics_process(delta):
 func _input(event):
 	if event.is_action_pressed("esc"):
 		if menu:
-			print("menu :)")
 			menu.toggle_menu()
 			can_move = !can_move
-		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED if Input.mouse_mode == Input.MOUSE_MODE_VISIBLE else Input.MOUSE_MODE_VISIBLE
+		Input.mouse_mode = (Input.MOUSE_MODE_CAPTURED if Input.mouse_mode == Input.MOUSE_MODE_VISIBLE else Input.MOUSE_MODE_VISIBLE)
 		
-	
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		rotate_y(-event.relative.x * mouse_sensitivity / 1000)
 		$Camera3D.rotate_x(-event.relative.y * mouse_sensitivity / 1000)
@@ -143,11 +162,8 @@ func _input(event):
 func get_ray_collider(group: String) -> Node:
 	if ray.is_colliding():
 		var collider = ray.get_collider()
-		print(group, " trying to collide with ", collider)
 		if collider and collider.is_in_group(group):
 			return collider
-		else:
-			print("not in group")
 	return null
 
 #
@@ -192,6 +208,30 @@ func interact_with_item(item: Node3D):
 		item.interact(self)
 	else:
 		print("Item does not implement interact().")
+		
+func apply_outline(obj: Node):
+	var mesh = find_mesh_instance(obj)
+	if mesh and mesh.material_overlay:
+		var mat = mesh.material_overlay
+		if mat is ShaderMaterial:
+			mat.set_shader_parameter("border_width", 0.03)
+
+func reset_outline(obj: Node):
+	var mesh = find_mesh_instance(obj)
+	if mesh and mesh.material_overlay:
+		var mat = mesh.material_overlay
+		if mat is ShaderMaterial:
+			mat.set_shader_parameter("border_width", 0.0)  # Disable the outline
+
+func find_mesh_instance(obj: Node) -> MeshInstance3D:
+	# Recursively search for the first MeshInstance3D in the object's hierarchy
+	if obj is MeshInstance3D:
+		return obj
+	for child in obj.get_children():
+		var result = find_mesh_instance(child)
+		if result:
+			return result
+	return null
 
 #
 # ==> TERRAIN READY (HOVERBOARD SPAWN) <==

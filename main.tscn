@@ -1,11 +1,14 @@
-[gd_scene load_steps=8 format=3 uid="uid://detacysixr15p"]
+[gd_scene load_steps=14 format=3 uid="uid://detacysixr15p"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_7asmc"]
-[ext_resource type="Environment" uid="uid://gejkg4ou3v7t" path="res://env.tres" id="1_rmrta"]
 [ext_resource type="PackedScene" uid="uid://ry3c5djemip2" path="res://terrain.tscn" id="2_vayhu"]
 [ext_resource type="PackedScene" uid="uid://dl4jetqhbaqxp" path="res://texture/bigwheel.fbx" id="3_jboed"]
 [ext_resource type="PackedScene" uid="uid://ch0krls6y12y8" path="res://player.tscn" id="4_rrvx7"]
+[ext_resource type="PackedScene" uid="uid://bounpd4i1v5pf" path="res://src/hud_dev.tscn" id="5_7jr5i"]
+[ext_resource type="Script" path="res://day_night.gd" id="6_q0lrl"]
 [ext_resource type="Script" path="res://wind_manager.gd" id="6_xst0i"]
+[ext_resource type="Shader" path="res://sky.gdshader" id="8_a4qdo"]
+[ext_resource type="Texture2D" uid="uid://bmoh66spei4tg" path="res://stars.png" id="9_shxyi"]
 
 [sub_resource type="GDScript" id="GDScript_4h4sp"]
 script/source = "extends Node
@@ -21,6 +24,50 @@ func _process(delta: float) -> void:
 	pass
 "
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_kbo5r"]
+shader = ExtResource("8_a4qdo")
+shader_parameter/day_top_color = Color(0.1, 0.6, 1, 1)
+shader_parameter/day_bottom_color = Color(0.4, 0.8, 1, 1)
+shader_parameter/sunset_top_color = Color(0.7, 0.75, 1, 1)
+shader_parameter/sunset_bottom_color = Color(1, 0.5, 0.7, 1)
+shader_parameter/night_top_color = Color(0.02, 0, 0.04, 1)
+shader_parameter/night_bottom_color = Color(0.1, 0, 0.2, 1)
+shader_parameter/horizon_color = Color(0, 0.7, 0.8, 1)
+shader_parameter/horizon_blur = 0.05
+shader_parameter/sun_color = Color(10, 8, 1, 1)
+shader_parameter/sun_sunset_color = Color(10, 0, 0, 1)
+shader_parameter/sun_size = 0.2
+shader_parameter/sun_blur = 10.0
+shader_parameter/moon_color = Color(1, 0.95, 0.7, 1)
+shader_parameter/moon_size = 0.06
+shader_parameter/moon_blur = 0.1
+shader_parameter/clouds_edge_color = Color(0.8, 0.8, 0.98, 1)
+shader_parameter/clouds_top_color = Color(1, 1, 1, 1)
+shader_parameter/clouds_middle_color = Color(0.92, 0.92, 0.98, 1)
+shader_parameter/clouds_bottom_color = Color(0.83, 0.83, 0.94, 1)
+shader_parameter/clouds_speed = 2.0
+shader_parameter/clouds_direction = 0.2
+shader_parameter/clouds_scale = 1.0
+shader_parameter/clouds_cutoff = 0.3
+shader_parameter/clouds_fuzziness = 0.5
+shader_parameter/clouds_weight = 0.0
+shader_parameter/clouds_blur = 0.25
+shader_parameter/stars_speed = 1.0
+shader_parameter/stars_scale = 1.0
+shader_parameter/stars_opacity = 1.0
+shader_parameter/stars_texture = ExtResource("9_shxyi")
+shader_parameter/overwritten_time = 0.0
+
+[sub_resource type="Sky" id="Sky_q13r3"]
+sky_material = SubResource("ShaderMaterial_kbo5r")
+
+[sub_resource type="Environment" id="Environment_1ucfk"]
+background_mode = 2
+sky = SubResource("Sky_q13r3")
+ambient_light_source = 3
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.0
+
 [node name="main" type="Node3D"]
 script = ExtResource("1_7asmc")
 
@@ -34,10 +81,14 @@ chunk_script = "res://chunk.gd"
 
 [node name="Player" parent="." instance=ExtResource("4_rrvx7")]
 
-[node name="Environment" type="Node3D" parent="."]
+[node name="DevHUD" parent="Player" node_paths=PackedStringArray("player", "environment") instance=ExtResource("5_7jr5i")]
+player = NodePath("..")
+environment = NodePath("../../Environment")
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="Environment"]
-environment = ExtResource("1_rmrta")
+[node name="Environment" type="Node3D" parent="."]
+script = ExtResource("6_q0lrl")
+day_time = 18.0
+time_scale = 0.8
 
 [node name="StormManager" type="Node3D" parent="Environment"]
 script = SubResource("GDScript_4h4sp")
@@ -45,9 +96,25 @@ script = SubResource("GDScript_4h4sp")
 [node name="WindManager" type="Node3D" parent="Environment"]
 script = ExtResource("6_xst0i")
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="Environment"]
-transform = Transform3D(-0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, 0.75, -0.433013, 0, 0, 0)
-light_volumetric_fog_energy = 0.9
+[node name="Sun" type="DirectionalLight3D" parent="Environment"]
+transform = Transform3D(0.921045, 0, -0.389458, -3.40475e-08, -1, -8.05202e-08, -0.389458, 8.74228e-08, -0.921044, 0, 0, 0)
+rotation_order = 4
 shadow_enabled = true
+shadow_opacity = 0.75
+shadow_blur = 5.0
+
+[node name="Moon" type="DirectionalLight3D" parent="Environment"]
+transform = Transform3D(0.878149, 0, 0.478385, 0.445537, 0.36416, -0.817853, -0.174209, 0.931336, 0.319788, 0, 0, 0)
+rotation_order = 4
+light_color = Color(1, 1, 0.6, 1)
+light_energy = 0.1
+shadow_enabled = true
+shadow_opacity = 0.25
+shadow_blur = 5.0
+directional_shadow_fade_start = 0.1
+sky_mode = 1
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="Environment"]
+environment = SubResource("Environment_1ucfk")
 
 [connection signal="map_ready" from="terrain" to="Player" method="_on_terrain_map_ready"]

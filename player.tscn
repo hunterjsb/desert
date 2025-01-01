@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://ch0krls6y12y8"]
+[gd_scene load_steps=8 format=3 uid="uid://ch0krls6y12y8"]
 
 [ext_resource type="Script" path="res://CharacterBody3D.gd" id="1_ohtfq"]
 [ext_resource type="AudioStream" uid="uid://e2m7xn1nnp5u" path="res://audio/sand_footsteps.wav" id="2_c2uh1"]
+[ext_resource type="Shader" path="res://shader/heat_haze.gdshader" id="2_m3jaj"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ipq3q"]
 
@@ -10,6 +11,17 @@ dof_blur_far_enabled = true
 dof_blur_far_distance = 50.0
 dof_blur_far_transition = 20.0
 dof_blur_amount = 0.02
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_siur6"]
+render_priority = 0
+shader = ExtResource("2_m3jaj")
+shader_parameter/wave_amplitude = 0.001
+shader_parameter/wave_frequency = 24.0
+shader_parameter/wave_speed = 4.0
+
+[sub_resource type="QuadMesh" id="QuadMesh_0hi3f"]
+material = SubResource("ShaderMaterial_siur6")
+size = Vector2(2, 2)
 
 [node name="Player" type="CharacterBody3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10, 0)
@@ -29,6 +41,12 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0294777, -0.0451317, -1.177
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0361086, -0.0187893, -1)
 target_position = Vector3(0, 0, -2)
 collision_mask = 2
+
+[node name="HeatHaze" type="MeshInstance3D" parent="Camera3D"]
+process_priority = 1
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0380768, -0.00210381, -1.57595)
+visible = false
+mesh = SubResource("QuadMesh_0hi3f")
 
 [node name="FootstepAudio" type="AudioStreamPlayer3D" parent="."]
 stream = ExtResource("2_c2uh1")

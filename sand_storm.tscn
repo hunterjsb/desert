@@ -34,9 +34,9 @@ shader_parameter/radius_noise_strength = 2.0
 shader_parameter/vertical_warp_strength = 1.0
 shader_parameter/twist_noise_strength = 0.5
 shader_parameter/fresnel_power = 5.0
-shader_parameter/distance_fade_start = 50.0
-shader_parameter/distance_fade_end = 150.0
-shader_parameter/vertical_fade_height = 0.0
+shader_parameter/distance_fade_start = 300.0
+shader_parameter/distance_fade_end = 600.0
+shader_parameter/vertical_fade_height = 300.0
 
 [sub_resource type="SphereMesh" id="SphereMesh_wkjre"]
 material = SubResource("ShaderMaterial_44kwu")

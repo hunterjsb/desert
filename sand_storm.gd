@@ -1,8 +1,9 @@
 extends Area3D
 
-@export_group("Storm")
+@export_group("Environment")
 @export var wind_manager: Node3D
-@export var environment_parent: String = "main"  # temporary
+@export var environment_parent: String = "main"  # for fallback
+@export var sun: DirectionalLight3D
 
 @export_group("Damage")
 @export var damage = 1
@@ -22,20 +23,20 @@ var time_accum = 0.0
 
 var velocity: Vector3 = Vector3.ZERO
 
-@onready var sun = get_node(
-	"/root/%s/Environment/DirectionalLight3D" % environment_parent
-	) as DirectionalLight3D
 @onready var storm_audio = $SandStormAudio
 
 func _ready() -> void:
 	# Connect to wind_manager signals to log or respond
 	if not wind_manager:
-		wind_manager = get_node(
-			"/root/%s/Environment/WindManager" % environment_parent)
+		wind_manager = get_node("/root/%s/Environment/WindManager" % environment_parent)
 		print("windman fallback to ", wind_manager)
 	wind_manager.cardinal_direction_changed.connect(_on_wind_cardinal_change)
 	wind_manager.gust_started.connect(_on_wind_gust_started)
 	wind_manager.gust_ended.connect(_on_wind_gust_ended)
+	
+	if not sun:
+		sun = get_node("/root/%s/Environment/Sun" % environment_parent)
+		print("sun fallback to ", sun)
 
 	# Update velocity to match current wind at spawn
 	velocity = wind_manager.get_wind_vector()

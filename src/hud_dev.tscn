@@ -1,0 +1,38 @@
+[gd_scene load_steps=2 format=3 uid="uid://bounpd4i1v5pf"]
+
+[ext_resource type="Script" path="res://src/hud_dev.gd" id="1_nxgpj"]
+
+[node name="DevHUD" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_nxgpj")
+
+[node name="CoordsLabel" type="Label" parent="."]
+layout_mode = 0
+offset_left = 23.0
+offset_top = 24.0
+offset_right = 193.0
+offset_bottom = 58.0
+theme_override_font_sizes/font_size = 24
+text = "hello.. world.."
+
+[node name="TimeLabel" type="Label" parent="."]
+offset_left = 22.0
+offset_top = 59.0
+offset_right = 96.0
+offset_bottom = 93.0
+theme_override_font_sizes/font_size = 24
+text = "12:00"
+
+[node name="WindLabel" type="Label" parent="."]
+offset_left = 98.0
+offset_top = 58.0
+offset_right = 193.0
+offset_bottom = 92.0
+theme_override_font_sizes/font_size = 24
+text = "Wind: W"
+horizontal_alignment = 2
