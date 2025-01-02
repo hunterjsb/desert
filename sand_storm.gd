@@ -74,7 +74,8 @@ func _physics_process(delta: float) -> void:
 	# 4) Move the storm by velocity
 	global_transform.origin += velocity * delta
 
-	# 5) Check for unusual velocity
+	# 5) Check for unusual velocity and remove y component
+	velocity *= Vector3(1, 0, 1)
 	if velocity.length() > unusual_velocity_threshold:
 		print("[Sandstorm] Unusual velocity detected! v=", velocity)
 
@@ -108,7 +109,7 @@ func _on_sand_storm_body_entered(body: Node):
 		print("Player entered the Sand Storm")
 
 		var t = create_tween()
-		t.tween_property(sun, "light_energy", 1 - storm_darkening, storm_darkening_time)
+		t.tween_property(sun, "light_energy", sun.light_energy*(1 - storm_darkening), storm_darkening_time)
 
 		if not storm_audio.playing:
 			storm_audio.play()

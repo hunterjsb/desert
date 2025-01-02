@@ -81,7 +81,7 @@ mesh = SubResource("QuadMesh_oy20x")
 transform = Transform3D(1, 0, 0, 0, 5.96046e-08, 1, 0, -1, 5.96046e-08, 0, 0, 0)
 shape = SubResource("ConcavePolygonShape3D_y4tmv")
 
-[node name="Player" parent="." instance=ExtResource("1_l1y63")]
+[node name="Player" parent="." groups=["Player"] instance=ExtResource("1_l1y63")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.531002, 0.454737, 1.75178)
 gravity = 9.8
 
@@ -138,6 +138,7 @@ shape = SubResource("ConvexPolygonShape3D_wga7v")
 
 [node name="VelocityLabel3D" type="Label3D" parent="WindyBody"]
 transform = Transform3D(-0.0248684, 0, -0.999691, 0, 1, 0, 0.999691, 0, -0.0248684, 3.02699, 2.6444, 0.0413471)
+render_priority = 2
 text = "HELLO WORLD"
 
 [node name="SandStorm" parent="." node_paths=PackedStringArray("wind_manager", "sun") instance=ExtResource("1_qsy6h")]
@@ -146,7 +147,6 @@ wind_manager = NodePath("../Environment/WindManager")
 sun = NodePath("../Environment/Sun")
 storm_darkening = 0.95
 enable_player_tracking = true
-player_track_strength = 100.0
 
 [connection signal="cardinal_direction_changed" from="Environment/WindManager" to="WindyBody" method="_on_cardinal_direction_changed"]
 [connection signal="gust_ended" from="Environment/WindManager" to="WindyBody" method="_on_gust_ended"]

@@ -57,7 +57,7 @@ func _ready():
 
 	var shield_scene = preload("res://src/shield.tscn")
 	var start_shield = shield_scene.instantiate().get_node("Mesh0")
-	start_shield.energy = 99
+	start_shield.starting_energy = 10_000
 	pick_up_item(start_shield)
 	carried_item_type = "shield"
 

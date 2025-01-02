@@ -56,21 +56,12 @@ func _initialize_storm(
 	# Move it up to avoid spawning underground
 	var y_offset = height * 5
 	storm.global_transform.origin.y += y_offset
-
-	# OPTIONAL: Enable player tracking on each storm
-	# (Make sure your sand_storm.gd has these exports!)
 	storm.enable_player_tracking = true
 
-	# Scale player tracking by storm size: bigger storm = stronger pull
-	# Tweak the factor (0.001, 0.005, etc.) for desired intensity
-	var size_factor = (area + height) * 0.5
-	storm.player_track_strength = size_factor * 10.0
-
-	# Additional tweaks if desired:
-	# storm.min_speed = ...
-	# storm.damage = ...
-	# etc.
-
+	# Scale player tracking by storm size
+	storm.player_track_strength = area / (4.0 * (storm_area_max + storm_height_max))
+	# storm.storm_darkening = sun.light_energy - 0.1
+	
 	print(
 		"SAND STORM spawned at (",
 		x, ", ", storm.global_transform.origin.y, ", ", z,

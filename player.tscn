@@ -23,7 +23,7 @@ shader_parameter/wave_speed = 4.0
 material = SubResource("ShaderMaterial_siur6")
 size = Vector2(2, 2)
 
-[node name="Player" type="CharacterBody3D"]
+[node name="Player" type="CharacterBody3D" groups=["Player"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10, 0)
 script = ExtResource("1_ohtfq")
 
