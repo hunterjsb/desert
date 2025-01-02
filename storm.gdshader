@@ -16,7 +16,7 @@ void fragment() {
     // Scroll the main texture
     uv.x -= TIME * scroll_speed;
     uv = fract(uv);
-    
+
     vec4 tex_color = texture(storm_texture, uv);
 
     // Distance from center for radial fade

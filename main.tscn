@@ -81,7 +81,7 @@ moon_base_enegry = 0.1
 script = ExtResource("6_xst0i")
 
 [node name="Sun" type="DirectionalLight3D" parent="Environment"]
-transform = Transform3D(0.920775, 0, -0.390096, 0.0509177, 0.991445, 0.120185, 0.386759, -0.130526, 0.912897, 0, 0, 0)
+transform = Transform3D(0.920775, 0, -0.390096, 0.0509178, 0.991445, 0.120185, 0.386759, -0.130526, 0.912897, 0, 0, 0)
 rotation_order = 4
 light_color = Color(1, 1, 0.882353, 1)
 light_energy = 2.0

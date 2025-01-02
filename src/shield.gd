@@ -26,19 +26,28 @@ func _ready():
 
 	bubble_shield_area.body_entered.connect(_on_bubble_body_entered)
 	bubble_shield_area.body_exited.connect(_on_bubble_body_exited)
+	
+	set_energy_label_visible(false)
+
 
 func _process(delta):
 	if is_active:
 		energy -= energy_cost
-	
+		if energy <= 0:
+			energy = 0
+			if is_active:  # Shield still on? Turn it off.
+				toggle_bubble_shield()
+
 	if global_position.y < -100:
 		print("shield probably fell out of the world")
+
 
 func _on_bubble_body_entered(body: Node):
 	# Only emit signal if it's specifically the Player
 	if body.name == "Player":
 		emit_signal("player_entered_bubble", body)
 		print("Player entered the bubble shield!")
+
 
 func _on_bubble_body_exited(body: Node):
 	if body.name == "Player":
@@ -87,8 +96,14 @@ func toggle_bubble_shield():
 		if $ShieldHumAudio.playing:
 			$ShieldHumAudio.stop()
 
+
 func interact(player: Node):
 	toggle_bubble_shield()
-	
+
 func pickup(player: Node):
 	pass
+
+
+# Helper so we can show/hide the energy label easily
+func set_energy_label_visible(make_visible: bool) -> void:
+	$EnergyLabel.visible = make_visible

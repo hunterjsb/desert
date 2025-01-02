@@ -1,4 +1,4 @@
-extends Node3D
+wextends Node3D
 
 func _ready() -> void:
 	pass

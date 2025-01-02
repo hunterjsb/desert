@@ -35,6 +35,13 @@ _subresources={
 "nodes": {
 "PATH:Mesh0": {
 "decomposition/advanced": true,
+"decomposition/convexhull_approximation": false,
+"decomposition/max_num_vertices_per_convex_hull": 64,
+"decomposition/mode": 1,
+"decomposition/normalize_mesh": true,
+"decomposition/plane_downsampling": 2,
+"decomposition/project_hull_vertices": false,
+"decomposition/resolution": 50000,
 "generate/physics": true,
 "physics/body_type": 1,
 "physics/shape_type": 0

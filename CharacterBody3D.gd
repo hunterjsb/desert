@@ -1,58 +1,46 @@
 extends CharacterBody3D
 
-#==> EXPORT <==#
 @export var speed = 5
 @export var jump_speed = 5
 @export var mouse_sensitivity = 2
 
-# Sprinting parameters
 @export var sprint_multiplier = 1.8
 
-# Gait (sway/bob) parameters
 @export var walk_sway_intensity = 0.05
 @export var walk_sway_frequency = 2.0
 @export var sprint_sway_intensity = 0.08
 @export var sprint_sway_frequency = 2.5
 
-# Jump / Crouch / Slide parameters
 @export var crouch_speed = 3
-@export var crouch_offset = 0.4           # how far camera moves down when crouching
-@export var slide_duration = 0.6          # seconds the slide lasts
-@export var slide_boost_multiplier = 1.2  # slide speed = sprint speed * this
-@export var slide_cooldown = 0.2          # small delay before you can slide again (optional)
+@export var crouch_offset = 0.4
+@export var slide_duration = 0.6
+@export var slide_boost_multiplier = 1.2
+@export var slide_cooldown = 0.2
 
-# HP
 var max_health = 100
 var current_health = 100
 
-# Movement / gravity
 @export var gravity = 0.0
 var walk_cycle_time = 0.0
 var original_camera_local_pos
 var is_sprinting = false
 
-# Bubble shield counters
 var inside_bubble_count: int = 0
 var is_in_bubble_shield: bool = false
 
-# Item carrying
 var carried_item: Node3D = null
 var carried_item_type: String = ""
 var is_carrying_item: bool = false
 
-# RayCast for item detection
 @onready var ray = $Camera3D/RayCast3D
 
-# UI's
 @onready var menu = preload("res://menu.tscn").instantiate()
 @onready var hud = preload("res://hud.tscn").instantiate()
 
-# Movement states
 var can_move = true
 var on_hoverboard = false
 var last_highlighted_item: Node = null
 
-# Crouch / Slide states
 var is_crouching = false
 var is_sliding = false
 var slide_timer = 0.0
@@ -67,9 +55,9 @@ func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	original_camera_local_pos = $Camera3D.transform.origin
 
-	# Example: spawn a shield in player's hand
 	var shield_scene = preload("res://src/shield.tscn")
 	var start_shield = shield_scene.instantiate().get_node("Mesh0")
+	start_shield.energy = 99
 	pick_up_item(start_shield)
 	carried_item_type = "shield"
 
@@ -93,7 +81,7 @@ func _physics_process(delta):
 		if slide_cooldown_timer <= 0:
 			slide_on_cooldown = false
 
-	# Highlight logic
+	# HOVER LOGIC (highlight + show label if has energy)
 	var collider = get_ray_collider("interactable")
 	if collider and collider != carried_item:
 		if collider != last_highlighted_item and last_highlighted_item:
@@ -159,7 +147,7 @@ func _physics_process(delta):
 		if $FootstepAudio.playing:
 			$FootstepAudio.stop()
 
-	# Disable camera sway if sliding
+	# Camera sway
 	var hv = Vector2(velocity.x, velocity.z).length()
 	if is_sliding:
 		_reset_camera_sway()
@@ -177,7 +165,7 @@ func _input(event):
 	if event.is_action_pressed("esc"):
 		if menu:
 			menu.toggle_menu()
-			can_move = !can_move
+			can_move = not can_move
 		Input.mouse_mode = (
 			Input.MOUSE_MODE_CAPTURED if Input.mouse_mode == Input.MOUSE_MODE_VISIBLE
 			else Input.MOUSE_MODE_VISIBLE
@@ -188,14 +176,14 @@ func _input(event):
 		rotate_y(-event.relative.x * mouse_sensitivity / 1000)
 		$Camera3D.rotate_x(-event.relative.y * mouse_sensitivity / 1000)
 		$Camera3D.rotation.x = clampf($Camera3D.rotation.x, -deg_to_rad(70), deg_to_rad(70))
-	
+
 	# Pan Gesture Rotation for Held Items
 	if event is InputEventPanGesture and is_carrying_item:
 		var pan_delta = event.get_delta()
-		if pan_delta.x != 0.0:  # Rotate horizontally based on X-axis pan
+		if pan_delta.x != 0.0:
 			rotate_held_item(pan_delta.x * 0.01)
-		if pan_delta.y != 0.0:  # Rotate vertically based on Y-axis pan
-			rotate_held_item(pan_delta.y * 0.01, "x")  # Rotate around X-axis
+		if pan_delta.y != 0.0:
+			rotate_held_item(pan_delta.y * 0.01, "x")
 
 	# 1) PICK UP OR THROW ITEM
 	if event.is_action_pressed("throw_shield"):
@@ -228,17 +216,18 @@ func _input(event):
 		if not is_sliding:
 			is_crouching = false
 
+
 func rotate_held_item(direction: float, axis: String = "y") -> void:
-	# Rotate the held item based on the axis
-	var angle_deg = direction * 90.0  # Adjust sensitivity here
+	var angle_deg = direction * 90.0
 	var angle_rad = deg_to_rad(angle_deg)
 
 	if axis == "y":
-		carried_item.rotate_y(angle_rad)  # Rotate around Y-axis
+		carried_item.rotate_y(angle_rad)
 	elif axis == "x":
-		carried_item.rotate_x(angle_rad)  # Rotate around X-axis
+		carried_item.rotate_x(angle_rad)
 	elif axis == "z":
-		carried_item.rotate_z(angle_rad)  # Rotate around Z-axis
+		carried_item.rotate_z(angle_rad)
+
 
 func _update_crouch_height():
 	var cam_transform = $Camera3D.transform
@@ -275,7 +264,7 @@ func pick_up_item(item: Node3D):
 
 	carried_item = item
 	is_carrying_item = true
-	
+
 	if "on_pickup" in item:
 		item.on_pickup(self)
 	if "item_type" in item:
@@ -306,12 +295,18 @@ func interact_with_item(item: Node3D):
 		print("Item does not implement interact().")
 
 
+#
+# ==> SHIELD LABEL VISIBILITY ON HOVER <==
+#
 func apply_outline(obj: Node):
 	var mesh = find_mesh_instance(obj)
 	if mesh and mesh.material_overlay:
 		var mat = mesh.material_overlay
 		if mat is ShaderMaterial:
 			mat.set_shader_parameter("border_width", 0.03)
+
+	if "set_energy_label_visible" in obj:
+		obj.set_energy_label_visible(true)
 
 
 func reset_outline(obj: Node):
@@ -322,6 +317,10 @@ func reset_outline(obj: Node):
 			mat.set_shader_parameter("border_width", 0.0)
 
 
+	if "set_energy_label_visible" in obj:
+		obj.set_energy_label_visible(false)
+
+
 func find_mesh_instance(obj: Node) -> MeshInstance3D:
 	if obj is MeshInstance3D:
 		return obj
@@ -330,7 +329,6 @@ func find_mesh_instance(obj: Node) -> MeshInstance3D:
 		if result:
 			return result
 	return null
-
 
 #
 # ==> HOVERBOARD / TERRAIN

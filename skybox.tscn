@@ -83,6 +83,7 @@ shape = SubResource("ConcavePolygonShape3D_y4tmv")
 
 [node name="Player" parent="." instance=ExtResource("1_l1y63")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.531002, 0.454737, 1.75178)
+gravity = 9.8
 
 [node name="DevHUD" parent="Player" node_paths=PackedStringArray("player", "environment") instance=ExtResource("3_ntfw2")]
 player = NodePath("..")
@@ -115,7 +116,7 @@ shadow_opacity = 0.75
 shadow_blur = 5.0
 
 [node name="Moon" type="DirectionalLight3D" parent="Environment"]
-transform = Transform3D(0.995978, 0, 0.0895896, -0.028138, 0.949397, 0.312814, -0.0850561, -0.314077, 0.94558, 0, 0, 0)
+transform = Transform3D(0.995977, 0, 0.0895897, -0.028138, 0.949397, 0.312814, -0.0850561, -0.314077, 0.94558, 0, 0, 0)
 rotation_order = 4
 light_color = Color(1, 1, 0.6, 1)
 light_energy = 0.1
