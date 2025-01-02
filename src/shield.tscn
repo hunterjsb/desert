@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://csgdtb8pbgwjj"]
+[gd_scene load_steps=14 format=3 uid="uid://csgdtb8pbgwjj"]
 
 [ext_resource type="PackedScene" uid="uid://bx4f447gbcnko" path="res://texture/shieldgen2.fbx" id="1_c48y0"]
 [ext_resource type="Script" path="res://src/shield.gd" id="2_27f83"]
@@ -7,6 +7,7 @@
 [ext_resource type="AudioStream" uid="uid://d210wmjbixl28" path="res://audio/shield-boot.wav" id="3_us5ol"]
 [ext_resource type="AudioStream" uid="uid://b71qph3huh4ic" path="res://audio/shield-sustain.mp3" id="4_jbxk1"]
 [ext_resource type="AudioStream" uid="uid://e55al1ajores" path="res://audio/shield-powerdown.wav" id="5_fyjak"]
+[ext_resource type="Script" path="res://src/shield_battery_label.gd" id="8_k1323"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_cbqmf"]
 render_priority = 0
@@ -94,3 +95,8 @@ stream = ExtResource("5_fyjak")
 transform = Transform3D(1, 0, 0, 0, -0.0269796, 0.999636, 0, -0.999636, -0.0269796, -0.00490491, -0.0093839, -0.0942185)
 light_color = Color(0.247059, 0.67451, 0.87451, 1)
 light_energy = 0.5
+
+[node name="EnergyLabel" type="Label3D" parent="Mesh0" index="7"]
+transform = Transform3D(1, 0, 0, 0, 0.0449447, 0.998989, 0, -0.998989, 0.0449447, -0.00625966, 5.21535e-09, -0.164074)
+text = "100%"
+script = ExtResource("8_k1323")

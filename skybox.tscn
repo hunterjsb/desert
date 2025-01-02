@@ -96,7 +96,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.248756, 1.93474, -5.07413)
 
 [node name="Environment" type="Node3D" parent="."]
 script = ExtResource("6_aefkn")
-day_time = 5.5
+day_time = 12.0
+time_scale = 0.1
+sun_base_enegry = 1.0
+moon_base_enegry = 0.1
 
 [node name="WindManager" type="Node3D" parent="Environment"]
 script = ExtResource("5_0otb4")
@@ -105,18 +108,17 @@ script = ExtResource("5_0otb4")
 environment = SubResource("Environment_kyd2a")
 
 [node name="Sun" type="DirectionalLight3D" parent="Environment"]
-transform = Transform3D(0.920752, 0, -0.39015, -0.0509248, 0.991445, -0.120182, 0.386812, 0.130526, 0.912874, 0, 0, 0)
+transform = Transform3D(0.920903, 0, -0.389794, 0.389794, -4.37114e-08, 0.920902, -1.70384e-08, -1, -4.02539e-08, 0, 0, 0)
 rotation_order = 4
-light_energy = 0.0
 shadow_enabled = true
 shadow_opacity = 0.75
 shadow_blur = 5.0
 
 [node name="Moon" type="DirectionalLight3D" parent="Environment"]
-transform = Transform3D(0.950518, 0, -0.310668, 0.287019, -0.382683, 0.878165, -0.118887, -0.923879, -0.363748, 0, 0, 0)
+transform = Transform3D(0.995978, 0, 0.0895896, -0.028138, 0.949397, 0.312814, -0.0850561, -0.314077, 0.94558, 0, 0, 0)
 rotation_order = 4
 light_color = Color(1, 1, 0.6, 1)
-light_energy = 0.0
+light_energy = 0.1
 shadow_enabled = true
 shadow_opacity = 0.25
 shadow_blur = 5.0
@@ -138,9 +140,12 @@ transform = Transform3D(-0.0248684, 0, -0.999691, 0, 1, 0, 0.999691, 0, -0.02486
 text = "HELLO WORLD"
 
 [node name="SandStorm" parent="." node_paths=PackedStringArray("wind_manager", "sun") instance=ExtResource("1_qsy6h")]
-transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 133.825, 100, 0)
+transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 133.825, 82.0078, 0)
 wind_manager = NodePath("../Environment/WindManager")
 sun = NodePath("../Environment/Sun")
+storm_darkening = 0.95
+enable_player_tracking = true
+player_track_strength = 100.0
 
 [connection signal="cardinal_direction_changed" from="Environment/WindManager" to="WindyBody" method="_on_cardinal_direction_changed"]
 [connection signal="gust_ended" from="Environment/WindManager" to="WindyBody" method="_on_gust_ended"]

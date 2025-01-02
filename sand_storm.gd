@@ -18,12 +18,16 @@ extends Area3D
 @export var velocity_lerp_factor = 2.0 # How fast the storm velocity lerps to the new wind velocity
 @export var unusual_velocity_threshold = 10.0
 
+@export_group("Player Tracking")
+@export var enable_player_tracking: bool = false
+@export var player_track_strength: float = 0.2
+
 var players_in_storm: Array = []
 var time_accum = 0.0
-
 var velocity: Vector3 = Vector3.ZERO
 
 @onready var storm_audio = $SandStormAudio
+
 
 func _ready() -> void:
 	# Connect to wind_manager signals to log or respond
@@ -47,24 +51,34 @@ func _ready() -> void:
 	body_entered.connect(_on_sand_storm_body_entered)
 	body_exited.connect(_on_sand_storm_body_exited)
 
+
 func _physics_process(delta: float) -> void:
 	# 1) Lerp velocity towards current wind
 	var target_wind = wind_manager.get_wind_vector()
 	velocity = velocity.lerp(target_wind, velocity_lerp_factor * delta)
 
-	# 2) Enforce minimum speed
+	# 2) Add a small "pull" toward the player if enabled
+	if enable_player_tracking:
+		var players_list = get_tree().get_nodes_in_group("Player")
+		if players_list.size() > 0:
+			var target_player = players_list[0]
+			var to_player = target_player.global_transform.origin - global_transform.origin
+			# Add a small pull toward the player's position
+			velocity += to_player.normalized() * player_track_strength
+
+	# 3) Enforce minimum speed
 	var spd = velocity.length()
 	if spd < min_speed and spd > 0.001:
 		velocity = velocity.normalized() * min_speed
 
-	# 3) Move the storm by velocity
+	# 4) Move the storm by velocity
 	global_transform.origin += velocity * delta
 
-	# 4) Check for unusual velocity
+	# 5) Check for unusual velocity
 	if velocity.length() > unusual_velocity_threshold:
 		print("[Sandstorm] Unusual velocity detected! v=", velocity)
 
-	# 5) Damage Ticking
+	# 6) Damage Ticking
 	time_accum += delta
 	var tick_interval = 1.0 / float(damage_ticks)
 	while time_accum >= tick_interval:

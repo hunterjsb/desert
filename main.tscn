@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://detacysixr15p"]
+[gd_scene load_steps=13 format=3 uid="uid://detacysixr15p"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_7asmc"]
 [ext_resource type="PackedScene" uid="uid://ry3c5djemip2" path="res://terrain.tscn" id="2_vayhu"]
@@ -9,20 +9,6 @@
 [ext_resource type="Script" path="res://wind_manager.gd" id="6_xst0i"]
 [ext_resource type="Shader" path="res://sky.gdshader" id="8_a4qdo"]
 [ext_resource type="Texture2D" uid="uid://bmoh66spei4tg" path="res://stars.png" id="9_shxyi"]
-
-[sub_resource type="GDScript" id="GDScript_4h4sp"]
-script/source = "extends Node
-
-
-# Called when the node enters the scene tree for the first time.
-func _ready() -> void:
-	pass # Replace with function body.
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	pass
-"
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_kbo5r"]
 shader = ExtResource("8_a4qdo")
@@ -91,21 +77,20 @@ day_time = 6.5
 sun_base_enegry = 2.0
 moon_base_enegry = 0.1
 
-[node name="StormManager" type="Node3D" parent="Environment"]
-script = SubResource("GDScript_4h4sp")
-
 [node name="WindManager" type="Node3D" parent="Environment"]
 script = ExtResource("6_xst0i")
 
 [node name="Sun" type="DirectionalLight3D" parent="Environment"]
 transform = Transform3D(0.920775, 0, -0.390096, 0.0509177, 0.991445, 0.120185, 0.386759, -0.130526, 0.912897, 0, 0, 0)
 rotation_order = 4
+light_color = Color(1, 1, 0.882353, 1)
+light_energy = 2.0
 shadow_enabled = true
 shadow_opacity = 0.75
 shadow_blur = 5.0
 
 [node name="Moon" type="DirectionalLight3D" parent="Environment"]
-transform = Transform3D(0.950518, 0, -0.310668, 0.307638, -0.13932, 0.941249, -0.043282, -0.990247, -0.132426, 0, 0, 0)
+transform = Transform3D(0.950518, 0, -0.310667, 0.307638, -0.13932, 0.941248, -0.043282, -0.990247, -0.132426, 0, 0, 0)
 rotation_order = 4
 light_color = Color(1, 1, 0.6, 1)
 light_energy = 0.1

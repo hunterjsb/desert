@@ -1,13 +1,21 @@
 extends Node3D
 
+@export_group("Energy")
+@export var starting_energy = 999
+@export var energy_cost = 0.01
+
+@export_group("Visual")
+@export var tween_time = 0.6
+
+@onready var energy = starting_energy
+@onready var bubble_shield_area = $BubbleShield
+const MIN_SCALE = 0.001
+
+var is_active := false
+
 signal player_entered_bubble(player)
 signal player_exited_bubble(player)
 
-@onready var bubble_shield_area = $BubbleShield
-var is_active := false
-
-const MIN_SCALE = 0.001
-@export var tween_time = 0.6
 
 func _ready():
 	# BubbleShield area is hidden by default
@@ -20,6 +28,9 @@ func _ready():
 	bubble_shield_area.body_exited.connect(_on_bubble_body_exited)
 
 func _process(delta):
+	if is_active:
+		energy -= energy_cost
+	
 	if global_position.y < -100:
 		print("shield probably fell out of the world")
 
