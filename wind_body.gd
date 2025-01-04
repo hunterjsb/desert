@@ -1,6 +1,6 @@
 extends RigidBody3D
 
-@onready var wind_manager = $"../Environment/WindManager"
+@onready var wind_manager = $"../../Environment/WindManager"
 @onready var velocity_label_3d = $VelocityLabel3D
 
 @export var wind_force_multiplier: float = 2.0

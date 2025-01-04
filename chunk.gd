@@ -38,6 +38,7 @@ func _process(_delta):
 	if dist > (terrain.render_distance*terrain.chunk_size)/1.25:
 		remove_chunk()
 		return
+
 	if dist/terrain.chunk_size <= 3:
 		autoLOD = 0.5
 	if dist/terrain.chunk_size <= 6 and dist/terrain.chunk_size > 3:
@@ -50,6 +51,7 @@ func _process(_delta):
 		autoLOD = 4
 	if dist/terrain.chunk_size > 40:
 		autoLOD = 6
+
 	if oldLod != autoLOD:
 		oldLod = autoLOD
 		for child in get_children():
@@ -80,7 +82,7 @@ func create_noise_terrain(_mesh):
 	for i in range(vertex_count):
 		var vertex = dataTool.get_vertex(i)
 		var value = terrain.noise.get_noise_3d(vertex.x, vertex.y, vertex.z)
-		vertex.y =  value * terrain.terrain_height
+		vertex.y = value * terrain.terrain_height
 		dataTool.set_vertex(i, vertex)
 	arrayMash.clear_surfaces()
 	dataTool.commit_to_surface(arrayMash)
@@ -92,15 +94,35 @@ func create_noise_terrain(_mesh):
 	
 func create_chunk(pos):
 	position = pos
-	var cName = "c_"+str(pos.x)+"X"+str(pos.z)
+	var cName = "c_" + str(pos.x) + "X" + str(pos.z)
 	transparency = 1
 	terrain.noise.offset = pos
 	mesh = PlaneMesh.new()
-	mesh.size = Vector2(terrain.chunk_size,terrain.chunk_size)
+	mesh.size = Vector2(terrain.chunk_size, terrain.chunk_size)
 	name = cName
 	mesh = create_lod(pos)
 	material_override = load("res://texture/desert.tres")
 	var terrain_chunk = create_noise_terrain(mesh)
 	mesh = terrain_chunk
+
 	terrain.chunk_list.append(cName)
+
+	if randi() % 500 < 1:		
+		var random_rotation = randf() * 360.0
+		var random_scale = 2 + randf() * 1.5
+		spawn_structure(position + Vector3(terrain.chunk_size * 0.5, 4 * random_scale, terrain.chunk_size * 0.5), 
+		random_rotation, random_scale)
+
 	return self
+
+
+func spawn_structure(position: Vector3, rotation_y: float, scale_factor: float):
+	var ruins = preload("res://src/structure/ruins/ruins_01.tscn").instantiate()
+	add_child(ruins)
+
+	# Use a single deferred call to set position, rotation, and scale
+	ruins.call_deferred("_set_transform", position, rotation_y, scale_factor)
+	if randi() % 100 < 100:  # 1% chance
+		var radio = preload("res://src/objects/radio.tscn").instantiate()
+		ruins.add_child(radio)
+		radio.call_deferred("_set_scale", 0.1)
