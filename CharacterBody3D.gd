@@ -337,12 +337,18 @@ func find_mesh_instance(obj: Node) -> MeshInstance3D:
 #
 func _on_terrain_map_ready():
 	gravity = 9.8
-	var hoverboard_scene = preload("res://hoverboard.tscn")
-	var hoverboard = hoverboard_scene.instantiate()
+	
+	var hoverboard = preload("res://hoverboard.tscn").instantiate()
 	var spawn_offset = Vector3(2, 1, 0)
 	var spawn_position = global_transform.origin + spawn_offset
 	get_parent().add_child(hoverboard)
 	hoverboard.call_deferred("set_global_position", spawn_position)
+	
+	var bplanter = preload("res://src/objects/bubbleplanter.tscn").instantiate()
+	var bp_spawn_offset = Vector3(2, -1, 1)
+	var bp_spawn_position = global_transform.origin + bp_spawn_offset
+	get_parent().add_child(bplanter)
+	bplanter.call_deferred("set_global_position", bp_spawn_position)
 
 
 #

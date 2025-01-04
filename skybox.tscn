@@ -1,7 +1,6 @@
-[gd_scene load_steps=22 format=3 uid="uid://31vsdnsofoou"]
+[gd_scene load_steps=21 format=3 uid="uid://31vsdnsofoou"]
 
 [ext_resource type="PackedScene" uid="uid://ch0krls6y12y8" path="res://player.tscn" id="1_l1y63"]
-[ext_resource type="Script" path="res://skybox.gd" id="1_pgrb5"]
 [ext_resource type="PackedScene" uid="uid://b0gsf4ppmuj2h" path="res://sand_storm.tscn" id="1_qsy6h"]
 [ext_resource type="PackedScene" uid="uid://bmi4yxmcc2m0d" path="res://hoverboard.tscn" id="2_sibpl"]
 [ext_resource type="PackedScene" uid="uid://dlgxashpwucl5" path="res://src/objects/radio.tscn" id="3_cgl1j"]
@@ -70,7 +69,6 @@ volumetric_fog_density = 0.0
 points = PackedVector3Array(0, 0.5, 0.5, 0.5, -0.5, 0.5, 0, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, -0.5)
 
 [node name="Skybox" type="Node3D"]
-script = ExtResource("1_pgrb5")
 
 [node name="Floor" type="StaticBody3D" parent="."]
 transform = Transform3D(500, 0, 0, 0, 500, 0, 0, 0, 500, 0, -0.0652623, 0)
