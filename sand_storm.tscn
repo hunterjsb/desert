@@ -83,6 +83,7 @@ material = SubResource("ShaderMaterial_r32j0")
 
 [node name="SandStormAudio" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("3_xuq3t")
+bus = &"Storm"
 
 [node name="OuterStormMesh" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -9.72364, 0)
