@@ -51,8 +51,7 @@ transform = Transform3D(12, 0, 0, 0, -5.24537e-07, -12, 0, 12, -5.24537e-07, 0, 
 
 [node name="Mesh0" parent="." index="0" groups=["bubble_shield", "interactable"]]
 transform = Transform3D(1, 0, 0, 0, 1, 7.54979e-08, 0, -7.54979e-08, 1, 0, 0, 0)
-collision_layer = 6
-collision_mask = 5
+collision_layer = 2
 script = ExtResource("2_27f83")
 starting_energy = 10
 

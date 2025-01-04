@@ -56,8 +56,6 @@ volumetric_fog_density = 0.0
 
 [node name="main" type="Node3D"]
 script = ExtResource("1_7asmc")
-min_storms = 0
-max_storms = 0
 
 [node name="bigwheel" parent="." instance=ExtResource("3_jboed")]
 transform = Transform3D(397.435, -212.762, 216.282, -3.93578e-06, 356.442, 350.641, -303.39, -278.714, 283.325, 730.48, 121.328, -2999.19)
@@ -92,7 +90,7 @@ shadow_opacity = 0.75
 shadow_blur = 5.0
 
 [node name="Moon" type="DirectionalLight3D" parent="Environment"]
-transform = Transform3D(0.950518, 0, -0.310667, 0.307638, -0.13932, 0.941248, -0.0432821, -0.990247, -0.132426, 0, 0, 0)
+transform = Transform3D(0.950518, 0, -0.310667, 0.307638, -0.13932, 0.941248, -0.043282, -0.990247, -0.132426, 0, 0, 0)
 rotation_order = 4
 light_color = Color(1, 1, 0.6, 1)
 light_energy = 0.1

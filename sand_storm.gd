@@ -30,8 +30,7 @@ var velocity: Vector3 = Vector3.ZERO
 
 
 func _ready() -> void:
-	storm_audio.bus = "Storm"
-	
+	# Connect to wind_manager signals to log or respond
 	if not wind_manager:
 		wind_manager = get_node("/root/%s/Environment/WindManager" % environment_parent)
 		print("windman fallback to ", wind_manager)
@@ -53,7 +52,7 @@ func _ready() -> void:
 	body_exited.connect(_on_sand_storm_body_exited)
 
 
-func _process(delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	# 1) Lerp velocity towards current wind
 	var target_wind = wind_manager.get_wind_vector()
 	velocity = velocity.lerp(target_wind, velocity_lerp_factor * delta)
@@ -64,6 +63,7 @@ func _process(delta: float) -> void:
 		if players_list.size() > 0:
 			var target_player = players_list[0]
 			var to_player = target_player.global_transform.origin - global_transform.origin
+			# Add a small pull toward the player's position
 			velocity += to_player.normalized() * player_track_strength
 
 	# 3) Enforce minimum speed
@@ -105,7 +105,6 @@ func _on_wind_gust_ended() -> void:
 ### AREA3D callbacks
 func _on_sand_storm_body_entered(body: Node):
 	if body.name == "Player":
-		body.is_in_storm = true
 		players_in_storm.append(body)
 		print("Player entered the Sand Storm")
 
@@ -115,14 +114,8 @@ func _on_sand_storm_body_entered(body: Node):
 		if not storm_audio.playing:
 			storm_audio.play()
 
-		# IMPORTANT: Update player's Storm audio state
-		if "update_storm_audio" in body:
-			body.update_storm_audio()
-
-
 func _on_sand_storm_body_exited(body: Node):
 	if body.name == "Player":
-		body.is_in_storm = false
 		players_in_storm.erase(body)
 		print("Player exited the Sand Storm")
 
@@ -131,7 +124,3 @@ func _on_sand_storm_body_exited(body: Node):
 
 		if players_in_storm.size() == 0:
 			storm_audio.stop()
-
-		# IMPORTANT: Update player's Storm audio state
-		if "update_storm_audio" in body:
-			body.update_storm_audio()

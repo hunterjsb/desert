@@ -26,8 +26,7 @@ var original_camera_local_pos
 var is_sprinting = false
 
 var inside_bubble_count: int = 0
-var is_in_bubble_shield: bool = false   # <--- If True, the player is inside bubble
-var is_in_storm: bool = false           # <--- If True, the player is inside storm
+var is_in_bubble_shield: bool = false
 
 var carried_item: Node3D = null
 var carried_item_type: String = ""
@@ -48,8 +47,6 @@ var slide_timer = 0.0
 var slide_on_cooldown = false
 var slide_cooldown_timer = 0.0
 
-# Index of the low-pass filter effect on the Storm bus (adjust if needed)
-var storm_filter_effect_index = 0
 
 func _ready():
 	add_child(hud)
@@ -128,6 +125,7 @@ func _physics_process(delta):
 			is_sliding = false
 			slide_on_cooldown = true
 			slide_cooldown_timer = slide_cooldown
+			$SlideAudio.stop()
 	else:
 		# Normal input
 		var input_dir = Input.get_vector("a", "d", "w", "s")
@@ -149,7 +147,8 @@ func _physics_process(delta):
 	else:
 		if $FootstepAudio.playing:
 			$FootstepAudio.stop()
-
+			
+	
 	# Camera sway
 	var hv = Vector2(velocity.x, velocity.z).length()
 	if is_sliding:
@@ -212,6 +211,7 @@ func _input(event):
 			is_sliding = true
 			is_crouching = false
 			slide_timer = slide_duration
+			$SlideAudio.play()
 		else:
 			is_crouching = true
 
@@ -319,6 +319,7 @@ func reset_outline(obj: Node):
 		if mat is ShaderMaterial:
 			mat.set_shader_parameter("border_width", 0.0)
 
+
 	if "set_energy_label_visible" in obj:
 		obj.set_energy_label_visible(false)
 
@@ -337,18 +338,12 @@ func find_mesh_instance(obj: Node) -> MeshInstance3D:
 #
 func _on_terrain_map_ready():
 	gravity = 9.8
-	
-	var hoverboard = preload("res://hoverboard.tscn").instantiate()
+	var hoverboard_scene = preload("res://hoverboard.tscn")
+	var hoverboard = hoverboard_scene.instantiate()
 	var spawn_offset = Vector3(2, 1, 0)
 	var spawn_position = global_transform.origin + spawn_offset
 	get_parent().add_child(hoverboard)
 	hoverboard.call_deferred("set_global_position", spawn_position)
-	
-	var bplanter = preload("res://src/objects/bubbleplanter.tscn").instantiate()
-	var bp_spawn_offset = Vector3(2, -1, 1)
-	var bp_spawn_position = global_transform.origin + bp_spawn_offset
-	get_parent().add_child(bplanter)
-	bplanter.call_deferred("set_global_position", bp_spawn_position)
 
 
 #
@@ -403,28 +398,4 @@ func _on_player_exited_bubble(player: Node) -> void:
 
 func _set_in_bubble(value: bool) -> void:
 	is_in_bubble_shield = value
-	update_storm_audio()  # <--- Update audio bus whenever we change bubble state
 	print("Player is_in_bubble_shield: ", is_in_bubble_shield)
-
-
-#
-# ==> AUDIO CONTROL FOR STORM BUS
-#
-func update_storm_audio() -> void:
-	var storm_bus_idx = AudioServer.get_bus_index("Storm")
-
-	# If the player is in the storm and inside the bubble shield:
-	if is_in_storm and is_in_bubble_shield:
-		# Enable Low-Pass filter effect on the Storm bus (assumes effect is at index storm_filter_effect_index)
-		AudioServer.set_bus_volume_db(storm_bus_idx, -18.0)  # turn volume down
-		AudioServer.set_bus_effect_enabled(storm_bus_idx, storm_filter_effect_index, true)
-	
-	# If the player is in the storm but NOT inside the bubble
-	elif is_in_storm and not is_in_bubble_shield:
-		AudioServer.set_bus_volume_db(storm_bus_idx, 0.0)  # normal volume
-		AudioServer.set_bus_effect_enabled(storm_bus_idx, storm_filter_effect_index, false)
-	
-	# If the player isn't in the storm at all
-	else:
-		AudioServer.set_bus_volume_db(storm_bus_idx, 0.0)   # normal volume (or fade out if you prefer)
-		AudioServer.set_bus_effect_enabled(storm_bus_idx, storm_filter_effect_index, false)

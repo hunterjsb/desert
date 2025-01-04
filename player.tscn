@@ -1,8 +1,9 @@
-[gd_scene load_steps=8 format=3 uid="uid://ch0krls6y12y8"]
+[gd_scene load_steps=9 format=3 uid="uid://ch0krls6y12y8"]
 
 [ext_resource type="Script" path="res://CharacterBody3D.gd" id="1_ohtfq"]
-[ext_resource type="AudioStream" uid="uid://e2m7xn1nnp5u" path="res://audio/sand_footsteps.wav" id="2_c2uh1"]
+[ext_resource type="AudioStream" uid="uid://e2m7xn1nnp5u" path="res://audio/player_sand_footsteps.wav" id="2_c2uh1"]
 [ext_resource type="Shader" path="res://shader/heat_haze.gdshader" id="2_m3jaj"]
+[ext_resource type="AudioStream" uid="uid://mgg3pnho13bu" path="res://player-slide.wav" id="4_r2phr"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ipq3q"]
 
@@ -51,6 +52,9 @@ mesh = SubResource("QuadMesh_0hi3f")
 [node name="FootstepAudio" type="AudioStreamPlayer3D" parent="."]
 stream = ExtResource("2_c2uh1")
 volume_db = 10.0
+
+[node name="SlideAudio" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("4_r2phr")
 
 [node name="Feet" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0623875, -0.794848, 0.000357628)

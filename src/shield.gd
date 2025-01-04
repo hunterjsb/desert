@@ -2,7 +2,7 @@ extends Node3D
 
 @export_group("Energy")
 @export var starting_energy = 999
-@export var energy_cost = 1
+@export var energy_cost = 0.01
 
 @export_group("Visual")
 @export var tween_time = 0.6
@@ -28,12 +28,11 @@ func _ready():
 	bubble_shield_area.body_exited.connect(_on_bubble_body_exited)
 	
 	set_energy_label_visible(false)
-	add_to_group("bubble_shield")  # So Player can find & connect to these if needed.
 
 
 func _process(delta):
 	if is_active:
-		energy -= energy_cost * delta
+		energy -= energy_cost
 		if energy <= 0:
 			energy = 0
 			if is_active:  # Shield still on? Turn it off.

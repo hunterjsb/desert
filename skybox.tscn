@@ -1,18 +1,16 @@
-[gd_scene load_steps=21 format=3 uid="uid://31vsdnsofoou"]
+[gd_scene load_steps=19 format=3 uid="uid://31vsdnsofoou"]
 
 [ext_resource type="PackedScene" uid="uid://ch0krls6y12y8" path="res://player.tscn" id="1_l1y63"]
+[ext_resource type="Script" path="res://skybox.gd" id="1_pgrb5"]
 [ext_resource type="PackedScene" uid="uid://b0gsf4ppmuj2h" path="res://sand_storm.tscn" id="1_qsy6h"]
 [ext_resource type="PackedScene" uid="uid://bmi4yxmcc2m0d" path="res://hoverboard.tscn" id="2_sibpl"]
-[ext_resource type="PackedScene" uid="uid://dlgxashpwucl5" path="res://src/objects/radio.tscn" id="3_cgl1j"]
+[ext_resource type="PackedScene" uid="uid://dlgxashpwucl5" path="res://radio.tscn" id="3_cgl1j"]
 [ext_resource type="PackedScene" uid="uid://bounpd4i1v5pf" path="res://src/hud_dev.tscn" id="3_ntfw2"]
 [ext_resource type="Script" path="res://wind_manager.gd" id="5_0otb4"]
 [ext_resource type="Script" path="res://day_night.gd" id="6_aefkn"]
 [ext_resource type="Script" path="res://wind_body.gd" id="6_g1hy4"]
 [ext_resource type="Shader" path="res://sky.gdshader" id="9_7spnk"]
 [ext_resource type="Texture2D" uid="uid://bmoh66spei4tg" path="res://stars.png" id="10_d5qnc"]
-[ext_resource type="PackedScene" uid="uid://bxi6whsespwpy" path="res://texture/structure/ruins/ruins01.fbx" id="12_bd0gj"]
-[ext_resource type="PackedScene" uid="uid://be15buugjnenc" path="res://texture/structure/ruins/ruins03.fbx" id="12_vg0di"]
-[ext_resource type="PackedScene" uid="uid://d2iuna8o6eky0" path="res://src/objects/bubbleplanter.tscn" id="13_w5l2x"]
 
 [sub_resource type="QuadMesh" id="QuadMesh_oy20x"]
 
@@ -69,26 +67,33 @@ volumetric_fog_density = 0.0
 points = PackedVector3Array(0, 0.5, 0.5, 0.5, -0.5, 0.5, 0, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, -0.5)
 
 [node name="Skybox" type="Node3D"]
+script = ExtResource("1_pgrb5")
 
 [node name="Floor" type="StaticBody3D" parent="."]
-transform = Transform3D(500, 0, 0, 0, 500, 0, 0, 0, 500, 0, -0.0652623, 0)
+transform = Transform3D(200, 0, 0, 0, 200, 0, 0, 0, 200, 0, -0.0652623, 0)
 collision_layer = 3
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Floor"]
 transform = Transform3D(1, 0, 0, 0, 5.96046e-08, 1, 0, -1, 5.96046e-08, 0, 0, 0)
 mesh = SubResource("QuadMesh_oy20x")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor"]
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="Floor"]
 transform = Transform3D(1, 0, 0, 0, 5.96046e-08, 1, 0, -1, 5.96046e-08, 0, 0, 0)
 shape = SubResource("ConcavePolygonShape3D_y4tmv")
 
 [node name="Player" parent="." instance=ExtResource("1_l1y63")]
-transform = Transform3D(0.258819, 0, 0.965926, 0, 1, 0, -0.965926, 0, 0.258819, 0.531002, 0.454737, 1.75178)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.531002, 0.454737, 1.75178)
 gravity = 9.8
 
 [node name="DevHUD" parent="Player" node_paths=PackedStringArray("player", "environment") instance=ExtResource("3_ntfw2")]
 player = NodePath("..")
 environment = NodePath("../../Environment")
+
+[node name="hoverboard" parent="." instance=ExtResource("2_sibpl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1341, 5.28166, -4.62028)
+
+[node name="radio" parent="." instance=ExtResource("3_cgl1j")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.248756, 1.93474, -5.07413)
 
 [node name="Environment" type="Node3D" parent="."]
 script = ExtResource("6_aefkn")
@@ -120,46 +125,30 @@ shadow_opacity = 0.25
 shadow_blur = 5.0
 directional_shadow_fade_start = 0.1
 
-[node name="SandStorm" parent="." node_paths=PackedStringArray("wind_manager", "sun") instance=ExtResource("1_qsy6h")]
-transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 179.945, 82.0078, 0)
-wind_manager = NodePath("../Environment/WindManager")
-sun = NodePath("../Environment/Sun")
-storm_darkening = 0.95
-
-[node name="ruins03" parent="." instance=ExtResource("12_vg0di")]
-transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 1.94333, 3.40192, -18.7616)
-
-[node name="ruins01" parent="." instance=ExtResource("12_bd0gj")]
-transform = Transform3D(0.657863, 0, 9.97834, 0, 10, 0, -9.97834, 0, 0.657863, -1.578, 5.5, 16.901)
-
-[node name="Objects" type="Node3D" parent="."]
-
-[node name="WindyBody" type="RigidBody3D" parent="Objects"]
+[node name="WindyBody" type="RigidBody3D" parent="."]
 script = ExtResource("6_g1hy4")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Objects/WindyBody"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="WindyBody"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.19843, 1.99198, 0)
 mesh = SubResource("PrismMesh_i1obt")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Objects/WindyBody"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WindyBody"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.19843, 1.99198, 0)
 shape = SubResource("ConvexPolygonShape3D_wga7v")
 
-[node name="VelocityLabel3D" type="Label3D" parent="Objects/WindyBody"]
+[node name="VelocityLabel3D" type="Label3D" parent="WindyBody"]
 transform = Transform3D(-0.0248684, 0, -0.999691, 0, 1, 0, 0.999691, 0, -0.0248684, 3.02699, 2.6444, 0.0413471)
 render_priority = 2
 text = "HELLO WORLD"
 
-[node name="hoverboard" parent="Objects" instance=ExtResource("2_sibpl")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1341, 5.28166, -4.62028)
+[node name="SandStorm" parent="." node_paths=PackedStringArray("wind_manager", "sun") instance=ExtResource("1_qsy6h")]
+transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 133.825, 82.0078, 0)
+wind_manager = NodePath("../Environment/WindManager")
+sun = NodePath("../Environment/Sun")
+storm_darkening = 0.95
+enable_player_tracking = true
 
-[node name="bubbleplanter" parent="Objects" instance=ExtResource("13_w5l2x")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.23981, 3.19715, 1)
-
-[node name="radio" parent="Objects" instance=ExtResource("3_cgl1j")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.248756, 1.93474, -5.07413)
-
-[connection signal="cardinal_direction_changed" from="Environment/WindManager" to="Objects/WindyBody" method="_on_cardinal_direction_changed"]
-[connection signal="gust_ended" from="Environment/WindManager" to="Objects/WindyBody" method="_on_gust_ended"]
+[connection signal="cardinal_direction_changed" from="Environment/WindManager" to="WindyBody" method="_on_cardinal_direction_changed"]
+[connection signal="gust_ended" from="Environment/WindManager" to="WindyBody" method="_on_gust_ended"]
 [connection signal="gust_started" from="Environment/WindManager" to="." method="_on_wind_manager_gust_started"]
-[connection signal="gust_started" from="Environment/WindManager" to="Objects/WindyBody" method="_on_gust_started"]
+[connection signal="gust_started" from="Environment/WindManager" to="WindyBody" method="_on_gust_started"]

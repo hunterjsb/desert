@@ -10,14 +10,10 @@ config_version=5
 
 [application]
 
-config/name="Sand Game"
+config/name="Procedurally Generated Terrain - Godot 4.2"
 run/main_scene="res://main.tscn"
 config/features=PackedStringArray("4.3", "Forward Plus")
 config/icon="res://icon.svg"
-
-[global]
-
-Storm=false
 
 [global_group]
 
