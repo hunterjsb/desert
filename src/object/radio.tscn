@@ -1,9 +1,9 @@
 [gd_scene load_steps=8 format=3 uid="uid://dlgxashpwucl5"]
 
 [ext_resource type="PackedScene" uid="uid://0uhvyadqalf4" path="res://texture/radio.fbx" id="1_ykkyc"]
-[ext_resource type="Script" path="res://src/objects/radio.gd" id="2_hnmmv"]
+[ext_resource type="Script" path="res://src/object/radio.gd" id="2_hnmmv"]
 [ext_resource type="AudioStream" uid="uid://dakm0fpcsi8om" path="res://audio/sandy andy.mp3" id="2_hsget"]
-[ext_resource type="Script" path="res://src/objects/radio_mesh.gd" id="2_wmiq8"]
+[ext_resource type="Script" path="res://src/object/radio_mesh.gd" id="2_wmiq8"]
 [ext_resource type="Shader" path="res://outline01.gdshader" id="3_sht45"]
 [ext_resource type="AudioStream" uid="uid://vmq1ky2lrtby" path="res://audio/static.mp3" id="4_t0b2n"]
 

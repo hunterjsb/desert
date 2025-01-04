@@ -4,12 +4,12 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://bx4f447gbcnko"
-path="res://.godot/imported/shieldgen2.fbx-f4df21e67ad6f526ff49af3c15a84cdc.scn"
+path="res://.godot/imported/shieldgen2.fbx-b0e6db368a08ae4136d8af5ab9edbebf.scn"
 
 [deps]
 
-source_file="res://texture/shieldgen2.fbx"
-dest_files=["res://.godot/imported/shieldgen2.fbx-f4df21e67ad6f526ff49af3c15a84cdc.scn"]
+source_file="res://texture/objects/shieldgen2.fbx"
+dest_files=["res://.godot/imported/shieldgen2.fbx-b0e6db368a08ae4136d8af5ab9edbebf.scn"]
 
 [params]
 

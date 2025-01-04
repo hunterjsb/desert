@@ -26,8 +26,8 @@ var original_camera_local_pos
 var is_sprinting = false
 
 var inside_bubble_count: int = 0
-var is_in_bubble_shield: bool = false   # <--- If True, the player is inside bubble
-var is_in_storm: bool = false           # <--- If True, the player is inside storm
+var is_in_bubble_shield: bool = false
+var is_in_storm: bool = false
 
 var carried_item: Node3D = null
 var carried_item_type: String = ""
@@ -57,13 +57,10 @@ func _ready():
 
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	original_camera_local_pos = $Camera3D.transform.origin
-
-	var shield_scene = preload("res://src/shield.tscn")
-	var start_shield = shield_scene.instantiate().get_node("Mesh0")
-	start_shield.starting_energy = 10_000
-	pick_up_item(start_shield)
-	carried_item_type = "shield"
-
+	
+	var starter_shield: InteractableBody3D = preload("res://src/object/shield.tscn").instantiate().get_node("Mesh0")
+	starter_shield.pickup(self)
+	
 	# Connect bubble shield signals
 	for shield in get_tree().get_nodes_in_group("bubble_shield"):
 		shield.player_entered_bubble.connect(_on_player_entered_bubble)
@@ -193,9 +190,10 @@ func _input(event):
 		if is_carrying_item:
 			throw_item()
 		else:
-			var collider = get_ray_collider("interactable")
-			if collider:
-				pick_up_item(collider)
+			var obj: InteractableBody3D = get_ray_collider("interactable")
+			if obj:
+				var can_pickup = obj.try_pickup(obj)
+				obj.pickup(self) if can_pickup else print("TOO WEAK")
 
 	# 2) INTERACT
 	elif event.is_action_pressed("interact"):
@@ -255,27 +253,6 @@ func get_ray_collider(group: String) -> Node:
 #
 # ==> PICKUP / THROW / INTERACT <==
 #
-func pick_up_item(item: Node3D):
-	if item.get_parent():
-		item.get_parent().remove_child(item)
-	$Camera3D/HandPoint.add_child(item)
-	item.transform = Transform3D()
-	item.rotation_degrees = Vector3(90, 0, 0)
-
-	if item is RigidBody3D:
-		item.freeze = true
-
-	carried_item = item
-	is_carrying_item = true
-
-	if "on_pickup" in item:
-		item.on_pickup(self)
-	if "item_type" in item:
-		carried_item_type = item.item_type
-	else:
-		carried_item_type = "unknown"
-
-
 func throw_item():
 	$Camera3D/HandPoint.remove_child(carried_item)
 	get_parent().add_child(carried_item)
@@ -344,7 +321,7 @@ func _on_terrain_map_ready():
 	get_parent().add_child(hoverboard)
 	hoverboard.call_deferred("set_global_position", spawn_position)
 	
-	var bplanter = preload("res://src/objects/bubbleplanter.tscn").instantiate()
+	var bplanter = preload("res://src/object/bubbleplanter.tscn").instantiate()
 	var bp_spawn_offset = Vector3(2, -1, 1)
 	var bp_spawn_position = global_transform.origin + bp_spawn_offset
 	get_parent().add_child(bplanter)
@@ -403,7 +380,7 @@ func _on_player_exited_bubble(player: Node) -> void:
 
 func _set_in_bubble(value: bool) -> void:
 	is_in_bubble_shield = value
-	update_storm_audio()  # <--- Update audio bus whenever we change bubble state
+	update_storm_audio()
 	print("Player is_in_bubble_shield: ", is_in_bubble_shield)
 
 

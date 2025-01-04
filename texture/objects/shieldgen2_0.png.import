@@ -2,20 +2,20 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bkrbs7nso5v0m"
-path.s3tc="res://.godot/imported/shieldgentex_0.png-c24e5941e2f531547e1d869e1b43c6bb.s3tc.ctex"
+uid="uid://c8l130lyjqsxg"
+path.s3tc="res://.godot/imported/shieldgen2_0.png-a73a610f6cdcbe556d5824e5d1e96b3c.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 generator_parameters={
-"md5": "15f35ae28b36417bbc5da7a831ecf656"
+"md5": "e299cb596e67a473f36747ce1addbf00"
 }
 
 [deps]
 
-source_file="res://texture/shieldgentex_0.png"
-dest_files=["res://.godot/imported/shieldgentex_0.png-c24e5941e2f531547e1d869e1b43c6bb.s3tc.ctex"]
+source_file="res://texture/objects/shieldgen2_0.png"
+dest_files=["res://.godot/imported/shieldgen2_0.png-a73a610f6cdcbe556d5824e5d1e96b3c.s3tc.ctex"]
 
 [params]
 

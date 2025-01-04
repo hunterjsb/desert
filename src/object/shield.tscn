@@ -1,13 +1,14 @@
-[gd_scene load_steps=14 format=3 uid="uid://csgdtb8pbgwjj"]
+[gd_scene load_steps=15 format=3 uid="uid://csgdtb8pbgwjj"]
 
-[ext_resource type="PackedScene" uid="uid://bx4f447gbcnko" path="res://texture/shieldgen2.fbx" id="1_c48y0"]
-[ext_resource type="Script" path="res://src/shield.gd" id="2_27f83"]
+[ext_resource type="PackedScene" uid="uid://bx4f447gbcnko" path="res://texture/objects/shieldgen2.fbx" id="1_c48y0"]
+[ext_resource type="Script" path="res://src/object/shield.gd" id="2_27f83"]
 [ext_resource type="Shader" path="res://bubbleshield01.gdshader" id="2_ipuh3"]
+[ext_resource type="Script" path="res://src/object/shield_tln.gd" id="2_m7qbd"]
 [ext_resource type="Shader" path="res://outline01.gdshader" id="3_u1ogl"]
 [ext_resource type="AudioStream" uid="uid://d210wmjbixl28" path="res://audio/shield-boot.wav" id="3_us5ol"]
 [ext_resource type="AudioStream" uid="uid://b71qph3huh4ic" path="res://audio/shield-sustain.mp3" id="4_jbxk1"]
 [ext_resource type="AudioStream" uid="uid://e55al1ajores" path="res://audio/shield-powerdown.wav" id="5_fyjak"]
-[ext_resource type="Script" path="res://src/shield_battery_label.gd" id="8_k1323"]
+[ext_resource type="Script" path="res://src/object/shield_battery_label.gd" id="8_k1323"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_cbqmf"]
 render_priority = 0
@@ -48,6 +49,7 @@ edge_fade = 0.00625002
 
 [node name="Shield" instance=ExtResource("1_c48y0")]
 transform = Transform3D(12, 0, 0, 0, -5.24537e-07, -12, 0, 12, -5.24537e-07, 0, 0, 0)
+script = ExtResource("2_m7qbd")
 
 [node name="Mesh0" parent="." index="0" groups=["bubble_shield", "interactable"]]
 transform = Transform3D(1, 0, 0, 0, 1, 7.54979e-08, 0, -7.54979e-08, 1, 0, 0, 0)

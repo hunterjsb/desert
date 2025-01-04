@@ -1,16 +1,14 @@
-[gd_scene load_steps=5 format=3 uid="uid://d2iuna8o6eky0"]
+[gd_scene load_steps=4 format=3 uid="uid://d2iuna8o6eky0"]
 
 [ext_resource type="PackedScene" uid="uid://rx0ubc8acef8" path="res://texture/objects/bubbleplanter.fbx" id="1_vlgc0"]
-[ext_resource type="Script" path="res://src/objects/bubbleplanter_mesh.gd" id="2_3n1h8"]
-[ext_resource type="Script" path="res://src/objects/bubbleplanter.gd" id="2_hancd"]
+[ext_resource type="Script" path="res://src/object/bubbleplanter_mesh.gd" id="2_3n1h8"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_86miw"]
 friction = 0.1
 
 [node name="bubbleplanter" instance=ExtResource("1_vlgc0")]
-script = ExtResource("2_hancd")
 
-[node name="Mesh1_Mesh1_016" parent="." index="0"]
+[node name="Mesh1_Mesh1_016" parent="." index="0" groups=["interactable"]]
 transform = Transform3D(1, 0, 0, 0, 1, 7.54979e-08, 0, -7.54979e-08, 1, 0, 0, 0)
 collision_layer = 6
 collision_mask = 5

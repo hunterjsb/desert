@@ -1,18 +1,19 @@
-[gd_scene load_steps=21 format=3 uid="uid://31vsdnsofoou"]
+[gd_scene load_steps=22 format=3 uid="uid://31vsdnsofoou"]
 
 [ext_resource type="PackedScene" uid="uid://ch0krls6y12y8" path="res://player.tscn" id="1_l1y63"]
 [ext_resource type="PackedScene" uid="uid://b0gsf4ppmuj2h" path="res://sand_storm.tscn" id="1_qsy6h"]
 [ext_resource type="PackedScene" uid="uid://bmi4yxmcc2m0d" path="res://hoverboard.tscn" id="2_sibpl"]
-[ext_resource type="PackedScene" uid="uid://dlgxashpwucl5" path="res://src/objects/radio.tscn" id="3_cgl1j"]
+[ext_resource type="PackedScene" uid="uid://dlgxashpwucl5" path="res://src/object/radio.tscn" id="3_cgl1j"]
 [ext_resource type="PackedScene" uid="uid://bounpd4i1v5pf" path="res://src/hud_dev.tscn" id="3_ntfw2"]
 [ext_resource type="Script" path="res://wind_manager.gd" id="5_0otb4"]
 [ext_resource type="Script" path="res://day_night.gd" id="6_aefkn"]
 [ext_resource type="Script" path="res://wind_body.gd" id="6_g1hy4"]
-[ext_resource type="Shader" path="res://sky.gdshader" id="9_7spnk"]
-[ext_resource type="Texture2D" uid="uid://bmoh66spei4tg" path="res://stars.png" id="10_d5qnc"]
+[ext_resource type="Shader" path="res://src/environment/sky.gdshader" id="9_7spnk"]
+[ext_resource type="Texture2D" uid="uid://bmoh66spei4tg" path="res://src/environment/stars.png" id="10_d5qnc"]
 [ext_resource type="PackedScene" uid="uid://bxi6whsespwpy" path="res://texture/structure/ruins/ruins01.fbx" id="12_bd0gj"]
 [ext_resource type="PackedScene" uid="uid://be15buugjnenc" path="res://texture/structure/ruins/ruins03.fbx" id="12_vg0di"]
-[ext_resource type="PackedScene" uid="uid://d2iuna8o6eky0" path="res://src/objects/bubbleplanter.tscn" id="13_w5l2x"]
+[ext_resource type="PackedScene" uid="uid://d2iuna8o6eky0" path="res://src/object/bubbleplanter.tscn" id="13_w5l2x"]
+[ext_resource type="PackedScene" uid="uid://csgdtb8pbgwjj" path="res://src/object/shield.tscn" id="14_q30jn"]
 
 [sub_resource type="QuadMesh" id="QuadMesh_oy20x"]
 
@@ -154,10 +155,13 @@ text = "HELLO WORLD"
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1341, 5.28166, -4.62028)
 
 [node name="bubbleplanter" parent="Objects" instance=ExtResource("13_w5l2x")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.23981, 3.19715, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.23981, 3.19715, -1)
 
 [node name="radio" parent="Objects" instance=ExtResource("3_cgl1j")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.248756, 1.93474, -5.07413)
+
+[node name="Shield" parent="Objects" instance=ExtResource("14_q30jn")]
+transform = Transform3D(3, 0, 0, 0, -1.31134e-07, -3, 0, 3, -1.31134e-07, -5, 1, 2)
 
 [connection signal="cardinal_direction_changed" from="Environment/WindManager" to="Objects/WindyBody" method="_on_cardinal_direction_changed"]
 [connection signal="gust_ended" from="Environment/WindManager" to="Objects/WindyBody" method="_on_gust_ended"]
