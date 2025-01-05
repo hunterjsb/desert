@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://cckfjxlxmq1bo" path="res://texture/object/hoverboard.fbx" id="1_wkpy2"]
 [ext_resource type="Shader" path="res://outline01.gdshader" id="3_b4six"]
-[ext_resource type="Script" path="res://texture/object/hoverboard_mesh.gd" id="3_vovvo"]
+[ext_resource type="Script" path="res://src/object/hoverboard_mesh.gd" id="3_vovvo"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_pxdf3"]
 render_priority = 0

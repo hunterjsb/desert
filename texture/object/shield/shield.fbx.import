@@ -4,12 +4,12 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://bx4f447gbcnko"
-path="res://.godot/imported/shield.fbx-42ec769ddcccc8075514a6c76d95019d.scn"
+path="res://.godot/imported/shield.fbx-1c0918c63fba6e0aa464e20323a45bc2.scn"
 
 [deps]
 
-source_file="res://texture/object/shield.fbx"
-dest_files=["res://.godot/imported/shield.fbx-42ec769ddcccc8075514a6c76d95019d.scn"]
+source_file="res://texture/object/shield/shield.fbx"
+dest_files=["res://.godot/imported/shield.fbx-1c0918c63fba6e0aa464e20323a45bc2.scn"]
 
 [params]
 
@@ -36,9 +36,8 @@ _subresources={
 "PATH:Mesh0": {
 "decomposition/advanced": true,
 "decomposition/convexhull_approximation": false,
-"decomposition/max_num_vertices_per_convex_hull": 16,
+"decomposition/max_num_vertices_per_convex_hull": 64,
 "decomposition/min_volume_per_convex_hull": 1.0,
-"decomposition/normalize_mesh": true,
 "decomposition/project_hull_vertices": false,
 "decomposition/revolution_axes_clipping_bias": 0.05,
 "decomposition/symmetry_planes_clipping_bias": 0.05,
@@ -46,7 +45,7 @@ _subresources={
 "physics/body_type": 1,
 "physics/layer": 6,
 "physics/mask": 5,
-"physics/shape_type": 1
+"physics/shape_type": 0
 }
 }
 }

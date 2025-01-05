@@ -1,0 +1,23 @@
+[gd_scene load_steps=5 format=3 uid="uid://do55p45srpd2h"]
+
+[ext_resource type="Script" path="res://src/object/shield_gen.gd" id="1_27twc"]
+[ext_resource type="PackedScene" uid="uid://b77lwaqii4v50" path="res://texture/object/shield/shield_gen_base.fbx" id="2_g1gyc"]
+[ext_resource type="Script" path="res://src/object/shield_gen_base.gd" id="2_lucqr"]
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_27m44"]
+
+[node name="Shield" type="Node3D"]
+transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0)
+script = ExtResource("1_27twc")
+
+[node name="ShieldGenBase" type="RigidBody3D" parent="." groups=["interactable"]]
+collision_layer = 6
+collision_mask = 5
+script = ExtResource("2_lucqr")
+
+[node name="shield_gen_base" parent="ShieldGenBase" instance=ExtResource("2_g1gyc")]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ShieldGenBase"]
+transform = Transform3D(1, 0, 0, 0, 0.707107, -0.707107, 0, 0.707107, 0.707107, 0, 0, 0)
+shape = SubResource("ConvexPolygonShape3D_27m44")

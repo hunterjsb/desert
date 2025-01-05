@@ -1,6 +1,6 @@
 [gd_scene load_steps=15 format=3 uid="uid://csgdtb8pbgwjj"]
 
-[ext_resource type="PackedScene" uid="uid://bx4f447gbcnko" path="res://texture/object/shield.fbx" id="1_c48y0"]
+[ext_resource type="PackedScene" uid="uid://bx4f447gbcnko" path="res://texture/object/shield/shield.fbx" id="1_c48y0"]
 [ext_resource type="Script" path="res://src/object/shield.gd" id="2_27f83"]
 [ext_resource type="Shader" path="res://shader/bubbleshield01.gdshader" id="2_ipuh3"]
 [ext_resource type="Script" path="res://src/object/shield_tln.gd" id="2_m7qbd"]
