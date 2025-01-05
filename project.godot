@@ -11,9 +11,10 @@ config_version=5
 [application]
 
 config/name="Sand Game"
-run/main_scene="res://main.tscn"
+config/description="A desert game. Survive the sands."
+run/main_scene="res://main_menu.tscn"
 config/features=PackedStringArray("4.3", "Forward Plus")
-config/icon="res://icon.svg"
+config/icon="res://texture/bsg.webp"
 
 [global]
 

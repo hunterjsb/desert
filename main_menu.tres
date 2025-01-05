@@ -1,0 +1,9 @@
+[gd_resource type="Theme" load_steps=2 format=3 uid="uid://bvl8bwpd1nryk"]
+
+[ext_resource type="FontFile" uid="uid://domeq6ikwiya1" path="res://texture/font/Funnel_Display/FunnelDisplay-VariableFont_wght.ttf" id="1_y1mot"]
+
+[resource]
+default_font = ExtResource("1_y1mot")
+default_font_size = 32
+Button/fonts/font = ExtResource("1_y1mot")
+Button/styles/normal = null

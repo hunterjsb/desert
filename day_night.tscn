@@ -28,7 +28,7 @@ shader_parameter/clouds_bottom_color = Color(0.83, 0.83, 0.94, 1)
 shader_parameter/clouds_speed = 2.0
 shader_parameter/clouds_direction = 0.2
 shader_parameter/clouds_scale = 1.0
-shader_parameter/clouds_cutoff = 0.3
+shader_parameter/clouds_cutoff = 0.75
 shader_parameter/clouds_fuzziness = 0.5
 shader_parameter/clouds_weight = 0.0
 shader_parameter/clouds_blur = 0.25
@@ -36,7 +36,7 @@ shader_parameter/stars_speed = 1.0
 shader_parameter/stars_scale = 1.0
 shader_parameter/stars_opacity = 1.0
 shader_parameter/stars_texture = ExtResource("3_xqhtc")
-shader_parameter/overwritten_time = 2900.0
+shader_parameter/overwritten_time = 4150.0
 
 [sub_resource type="Sky" id="Sky_m1irh"]
 sky_material = SubResource("ShaderMaterial_msgkm")
@@ -78,3 +78,4 @@ directional_shadow_fade_start = 0.1
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.866025, -0.5, 0, 0.5, 0.866025, 0, 3, 6)
+visible = false

@@ -1,58 +1,35 @@
 extends Control
 
-@onready var camera_3d: Camera3D = $Camera3D
-@onready var body_3d: Node3D = $Shield/Mesh0
-@export var rotation_speed := 0.5
+@onready var camera_3d: Camera3D = $MenuScene3D/Camera3D
+@onready var body_3d: Node3D = $MenuScene3D/Shield/Mesh0
 
-var is_rotating = false
+@export var max_tilt_degrees := 30.0
+@export var tilt_lerp_speed := 0.1
 
-func _input(event: InputEvent) -> void:
-	if event is InputEventMouseButton:
-		if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
-			print("MBLEFTPRESSED")
-			if event.pressed:
-				# 1) Check if the click hits our 3D body
-				if _is_mouse_over_body(event.position):
-					print("Start rotating!")
-					is_rotating = true
-			else:
-				# Left mouse button released - stop rotating
-				print("Stop rotating!")
-				is_rotating = false
+func _process(delta: float) -> void:
+	# 1) Find how far the mouse is from the screen's center (normalized to [-1..1])
+	var screen_size = get_viewport().get_size()
+	var screen_center = screen_size * 0.5
+	var mouse_pos = get_viewport().get_mouse_position()
 
-	elif event is InputEventMouseMotion and is_rotating:
-		# 2) Rotate the body as the mouse moves
-		var mouse_delta = event.relative
-		print("Rotating: ", mouse_delta)
+	var offset_x = (mouse_pos.x - screen_center.x) / screen_center.x
+	var offset_y = (mouse_pos.y - screen_center.y) / screen_center.y
 
-		# Rotate horizontally around the Y-axis
-		body_3d.rotate_y(-mouse_delta.x * rotation_speed)
+	# 2) Convert offsets to tilt angles
+	#    - Usually, tilt around X is driven by -offset_y (moving mouse up tilts the top away)
+	#    - Tilt around Z is driven by offset_x (moving mouse right tilts the right side away)
+	var target_rot_x = deg_to_rad(clamp(-offset_y * max_tilt_degrees, -max_tilt_degrees, max_tilt_degrees))
+	var target_rot_z = deg_to_rad(clamp(offset_x * max_tilt_degrees, -max_tilt_degrees, max_tilt_degrees))
 
-		# Rotate vertically around the X-axis
-		body_3d.rotate_x(-mouse_delta.y * rotation_speed)
+	# 3) Lerp from current rotation to target rotation for smoothness
+	#    Keep Y at 180°, so the front is always facing the camera
+	# body_3d.rotation_degrees.y = 180.0
+	body_3d.rotation.x = lerp(body_3d.rotation.x, target_rot_x, tilt_lerp_speed)
+	body_3d.rotation.z = lerp(body_3d.rotation.z, target_rot_z, tilt_lerp_speed)
 
-func _is_mouse_over_body(screen_pos: Vector2) -> bool:
-	"""
-	Raycast from the camera into the 3D world to see if we hit 'body_3d'.
-	"""
-	var from = camera_3d.project_ray_origin(screen_pos)
-	var to = from + camera_3d.project_ray_normal(screen_pos) * 1000.0
+func _on_start_pressed() -> void:
+	get_tree().change_scene_to_file("res://main.tscn")
 
-	# Create the raycast parameters
-	var query = PhysicsRayQueryParameters3D.new()
-	query.from = from
-	query.to = to
 
-	# Perform the raycast
-	var space_state = camera_3d.get_world_3d().direct_space_state
-	var result = space_state.intersect_ray(query)
-
-	print("Raycast result: ", result)
-
-	# Check if the ray hit the target object
-	if result.has("collider"):
-		print("Hit object: ", result.collider)
-		if result.collider == body_3d:
-			return true
-
-	return false
+func _on_skybox_pressed() -> void:
+	get_tree().change_scene_to_file("res://skybox.tscn")
