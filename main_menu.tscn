@@ -13,7 +13,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_5vwaj")
 
-[node name="Button" type="Button" parent="."]
+[node name="Start" type="Button" parent="."]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -29,13 +29,33 @@ grow_vertical = 2
 text = "START"
 
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2)
+transform = Transform3D(1, 0, 0, 0, 0.907558, -0.419927, 0, 0.419927, 0.907558, 0, -0.468633, 2)
 
 [node name="Shield" parent="." instance=ExtResource("2_qpg2t")]
-transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 1.99999, 0, 0, 0)
+transform = Transform3D(2, 0, 0, 0, 1.66893, -1.10212, 0, 1.10213, 1.66892, 0, 0.221367, 1)
 gravity = 0.0
 
 [node name="Environment" parent="." instance=ExtResource("3_ynbn5")]
-time_scale = 0.25
+day_time = 17.5
+clouds_cutoff = 0.75
+time_scale = 0.05
+sun_base_enegry = 0.9
+moon_base_enegry = 0.3
 
-[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
+[node name="Button" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -125.0
+offset_top = -99.0
+offset_right = 125.0
+offset_bottom = -49.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "SKYBOX"
+
+[connection signal="pressed" from="Start" to="." method="_on_start_pressed"]
+[connection signal="pressed" from="Button" to="." method="_on_skybox_pressed"]

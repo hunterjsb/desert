@@ -27,5 +27,9 @@ func _process(delta: float) -> void:
 	body_3d.rotation.x = lerp(body_3d.rotation.x, target_rot_x, tilt_lerp_speed)
 	body_3d.rotation.z = lerp(body_3d.rotation.z, target_rot_z, tilt_lerp_speed)
 
-func _on_button_pressed() -> void:
+func _on_start_pressed() -> void:
 	get_tree().change_scene_to_file("res://main.tscn")
+
+
+func _on_skybox_pressed() -> void:
+	get_tree().change_scene_to_file("res://skybox.tscn")
