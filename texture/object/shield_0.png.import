@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c8l130lyjqsxg"
-path.s3tc="res://.godot/imported/shieldgen2_0.png-95bd5018221744cebda8be4f07407dfa.s3tc.ctex"
+uid="uid://fksln0mpygp"
+path.s3tc="res://.godot/imported/shield_0.png-f2428705b1d56fed840b6de02c0a3f38.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -14,8 +14,8 @@ generator_parameters={
 
 [deps]
 
-source_file="res://texture/object/shieldgen2_0.png"
-dest_files=["res://.godot/imported/shieldgen2_0.png-95bd5018221744cebda8be4f07407dfa.s3tc.ctex"]
+source_file="res://texture/object/shield_0.png"
+dest_files=["res://.godot/imported/shield_0.png-f2428705b1d56fed840b6de02c0a3f38.s3tc.ctex"]
 
 [params]
 

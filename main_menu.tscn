@@ -64,7 +64,7 @@ text = "skybox"
 transform = Transform3D(1, 0, 0, 0, 0.907558, -0.419927, 0, 0.419927, 0.907558, 0, -0.468633, 2)
 
 [node name="Shield" parent="MenuScene3D" instance=ExtResource("2_qpg2t")]
-transform = Transform3D(-2, 1.00288e-07, -1.43224e-07, 0, 1.63831, 1.14715, 1.74846e-07, 1.14716, -1.6383, 0, 0.221367, 1)
+transform = Transform3D(-2, 1.00288e-07, -1.43224e-07, 0, 1.63831, 1.14715, 1.74846e-07, 1.14716, -1.6383, 0, 0.68789, 0.0811507)
 gravity = 0.0
 
 [node name="Environment" parent="MenuScene3D" instance=ExtResource("3_ynbn5")]
