@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bgsibhj0ph87a"
-path="res://.godot/imported/shieldgen2.png-3a0017ebecd6a53d2bd1ba0817b3bb37.ctex"
+uid="uid://bxuqvxgdgsmpt"
+path="res://.godot/imported/radio.png-9cc36f371a27dd16f05bc78578a8118f.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://texture/object/shieldgen2.png"
-dest_files=["res://.godot/imported/shieldgen2.png-3a0017ebecd6a53d2bd1ba0817b3bb37.ctex"]
+source_file="res://texture/object/radio.png"
+dest_files=["res://.godot/imported/radio.png-9cc36f371a27dd16f05bc78578a8118f.ctex"]
 
 [params]
 

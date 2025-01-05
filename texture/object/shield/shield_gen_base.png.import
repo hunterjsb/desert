@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bhxxww8ti1ca1"
-path="res://.godot/imported/sandrake.png-c4962a6815e9a458b0399ab56b062851.ctex"
+uid="uid://cr2c5743umwjv"
+path="res://.godot/imported/shield_gen_base.png-da511d1c6a3f7d093ae8216c4111d523.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://texture/sandrake.png"
-dest_files=["res://.godot/imported/sandrake.png-c4962a6815e9a458b0399ab56b062851.ctex"]
+source_file="res://texture/object/shield/shield_gen_base.png"
+dest_files=["res://.godot/imported/shield_gen_base.png-da511d1c6a3f7d093ae8216c4111d523.ctex"]
 
 [params]
 

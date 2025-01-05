@@ -2,20 +2,20 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ra431eloq12h"
-path.s3tc="res://.godot/imported/radio_0.png-4a8658fb9312812a30e83acb3c0bc6c7.s3tc.ctex"
+uid="uid://ck14haw2vadxm"
+path.s3tc="res://.godot/imported/sg3_0.png-631bc2c1e08af5b55588a89c55fa0abe.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 generator_parameters={
-"md5": "865239b64d352b6c0518c640805a1e78"
+"md5": "aaa5ee5cd8bcf134a3c8e1d19b32fcd3"
 }
 
 [deps]
 
-source_file="res://texture/radio_0.png"
-dest_files=["res://.godot/imported/radio_0.png-4a8658fb9312812a30e83acb3c0bc6c7.s3tc.ctex"]
+source_file="res://texture/object/shield/sg3_0.png"
+dest_files=["res://.godot/imported/sg3_0.png-631bc2c1e08af5b55588a89c55fa0abe.s3tc.ctex"]
 
 [params]
 

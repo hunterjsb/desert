@@ -101,10 +101,6 @@ func toggle_bubble_shield():
 func interact(player: Node):
 	toggle_bubble_shield()
 
-func pickup(player: Node):
-	super(player)
-	transform.basis = transform.basis.rotated(Vector3(1, 0, 0), 1.75)
-
 # Helper so we can show/hide the energy label easily
 func set_energy_label_visible(make_visible: bool) -> void:
 	$EnergyLabel.visible = make_visible

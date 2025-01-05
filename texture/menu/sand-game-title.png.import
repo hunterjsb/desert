@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c2fnhgggk1eyh"
-path="res://.godot/imported/bigwheel.png-6f6c8a6a6b5e92ff34245709c67ddcc1.ctex"
+uid="uid://bhigegemvbhwj"
+path="res://.godot/imported/sand-game-title.png-42584b2e66864223030b7fa05528ddde.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://texture/bigwheel.png"
-dest_files=["res://.godot/imported/bigwheel.png-6f6c8a6a6b5e92ff34245709c67ddcc1.ctex"]
+source_file="res://texture/menu/sand-game-title.png"
+dest_files=["res://.godot/imported/sand-game-title.png-42584b2e66864223030b7fa05528ddde.ctex"]
 
 [params]
 

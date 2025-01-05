@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://dl4jetqhbaqxp"
-path="res://.godot/imported/bigwheel.fbx-65463f5dde8edcf4e765737b993fa481.scn"
+uid="uid://b77lwaqii4v50"
+path="res://.godot/imported/shield_gen_base.fbx-9924cda661fdca432d4f009bc339e993.scn"
 
 [deps]
 
-source_file="res://texture/bigwheel.fbx"
-dest_files=["res://.godot/imported/bigwheel.fbx-65463f5dde8edcf4e765737b993fa481.scn"]
+source_file="res://texture/object/shield/shield_gen_base.fbx"
+dest_files=["res://.godot/imported/shield_gen_base.fbx-9924cda661fdca432d4f009bc339e993.scn"]
 
 [params]
 

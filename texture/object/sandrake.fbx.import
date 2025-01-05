@@ -4,12 +4,12 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://diwetx37xsmt4"
-path="res://.godot/imported/sandrake.fbx-0a1f03dd84c9bd5a0e32964987728a6b.scn"
+path="res://.godot/imported/sandrake.fbx-54337ba905022018b1c5e8138a014e6e.scn"
 
 [deps]
 
-source_file="res://texture/sandrake.fbx"
-dest_files=["res://.godot/imported/sandrake.fbx-0a1f03dd84c9bd5a0e32964987728a6b.scn"]
+source_file="res://texture/object/sandrake.fbx"
+dest_files=["res://.godot/imported/sandrake.fbx-54337ba905022018b1c5e8138a014e6e.scn"]
 
 [params]
 

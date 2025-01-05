@@ -1,11 +1,12 @@
-[gd_scene load_steps=13 format=3 uid="uid://detacysixr15p"]
+[gd_scene load_steps=14 format=3 uid="uid://detacysixr15p"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_7asmc"]
 [ext_resource type="PackedScene" uid="uid://ry3c5djemip2" path="res://terrain.tscn" id="2_vayhu"]
-[ext_resource type="PackedScene" uid="uid://dl4jetqhbaqxp" path="res://texture/bigwheel.fbx" id="3_jboed"]
+[ext_resource type="PackedScene" uid="uid://dl4jetqhbaqxp" path="res://texture/structure/bigwheel.fbx" id="3_jboed"]
 [ext_resource type="PackedScene" uid="uid://ch0krls6y12y8" path="res://player.tscn" id="4_rrvx7"]
 [ext_resource type="PackedScene" uid="uid://bounpd4i1v5pf" path="res://src/hud_dev.tscn" id="5_7jr5i"]
 [ext_resource type="Script" path="res://day_night.gd" id="6_q0lrl"]
+[ext_resource type="PackedScene" uid="uid://diypg6xn6wpio" path="res://menu.tscn" id="6_tpmk5"]
 [ext_resource type="Script" path="res://wind_manager.gd" id="6_xst0i"]
 [ext_resource type="Shader" path="res://src/environment/sky.gdshader" id="8_a4qdo"]
 [ext_resource type="Texture2D" uid="uid://bmoh66spei4tg" path="res://src/environment/stars.png" id="9_shxyi"]
@@ -73,6 +74,10 @@ chunk_script = "res://chunk.gd"
 player = NodePath("..")
 environment = NodePath("../../Environment")
 
+[node name="Menu" parent="Player" node_paths=PackedStringArray("player") instance=ExtResource("6_tpmk5")]
+visible = false
+player = NodePath("..")
+
 [node name="Environment" type="Node3D" parent="."]
 script = ExtResource("6_q0lrl")
 day_time = 6.5
@@ -92,7 +97,7 @@ shadow_opacity = 0.75
 shadow_blur = 5.0
 
 [node name="Moon" type="DirectionalLight3D" parent="Environment"]
-transform = Transform3D(0.950518, 0, -0.310667, 0.307638, -0.13932, 0.941248, -0.043282, -0.990247, -0.132426, 0, 0, 0)
+transform = Transform3D(0.950518, 0, -0.310667, 0.307638, -0.13932, 0.941248, -0.0432821, -0.990247, -0.132426, 0, 0, 0)
 rotation_order = 4
 light_color = Color(1, 1, 0.6, 1)
 light_energy = 0.1

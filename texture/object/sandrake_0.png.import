@@ -2,20 +2,20 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c8l130lyjqsxg"
-path.s3tc="res://.godot/imported/shieldgen2_0.png-95bd5018221744cebda8be4f07407dfa.s3tc.ctex"
+uid="uid://d024rxv4d7rd8"
+path.s3tc="res://.godot/imported/sandrake_0.png-24ac90bfdd7a9e5eaa53de76ac201aa9.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 generator_parameters={
-"md5": "e299cb596e67a473f36747ce1addbf00"
+"md5": "60068098a0ed2417fc80de3c461022f0"
 }
 
 [deps]
 
-source_file="res://texture/object/shieldgen2_0.png"
-dest_files=["res://.godot/imported/shieldgen2_0.png-95bd5018221744cebda8be4f07407dfa.s3tc.ctex"]
+source_file="res://texture/object/sandrake_0.png"
+dest_files=["res://.godot/imported/sandrake_0.png-24ac90bfdd7a9e5eaa53de76ac201aa9.s3tc.ctex"]
 
 [params]
 
