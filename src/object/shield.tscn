@@ -5,9 +5,9 @@
 [ext_resource type="Shader" path="res://bubbleshield01.gdshader" id="2_ipuh3"]
 [ext_resource type="Script" path="res://src/object/shield_tln.gd" id="2_m7qbd"]
 [ext_resource type="Shader" path="res://outline01.gdshader" id="3_u1ogl"]
-[ext_resource type="AudioStream" uid="uid://d210wmjbixl28" path="res://audio/shield-boot.wav" id="3_us5ol"]
-[ext_resource type="AudioStream" uid="uid://b71qph3huh4ic" path="res://audio/shield-sustain.mp3" id="4_jbxk1"]
-[ext_resource type="AudioStream" uid="uid://e55al1ajores" path="res://audio/shield-powerdown.wav" id="5_fyjak"]
+[ext_resource type="AudioStream" uid="uid://d210wmjbixl28" path="res://audio/object_shield-boot.wav" id="3_us5ol"]
+[ext_resource type="AudioStream" uid="uid://bhyqhoi2wcg0n" path="res://audio/object_shield-sustain.mp3.mp3" id="7_or1yn"]
+[ext_resource type="AudioStream" uid="uid://c0g6frcanbuaw" path="res://audio/object_shield-powerdown.wav.wav" id="8_caqhe"]
 [ext_resource type="Script" path="res://src/object/shield_battery_label.gd" id="8_k1323"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_cbqmf"]
@@ -86,14 +86,13 @@ stream = ExtResource("3_us5ol")
 
 [node name="ShieldHumAudio" type="AudioStreamPlayer3D" parent="Mesh0" index="4"]
 transform = Transform3D(0.0833333, 0, 0, 0, -0.0022483, 0.083303, 0, -0.083303, -0.0022483, -0.00489555, -0.000858848, 0.00157718)
-stream = ExtResource("4_jbxk1")
+stream = ExtResource("7_or1yn")
 volume_db = -20.0
 pitch_scale = 0.9
-parameters/looping = false
 
 [node name="ShieldDeactivateAudio" type="AudioStreamPlayer3D" parent="Mesh0" index="5"]
 transform = Transform3D(0.0833333, 0, 0, 0, -0.0022483, 0.083303, 0, -0.083303, -0.0022483, -0.00489555, -0.000858848, 0.00157718)
-stream = ExtResource("5_fyjak")
+stream = ExtResource("8_caqhe")
 
 [node name="OmniLight3D" type="OmniLight3D" parent="Mesh0" index="6"]
 transform = Transform3D(1, 0, 0, 0, -0.0269796, 0.999636, 0, -0.999636, -0.0269796, -0.00490491, -0.0093839, -0.0942185)
