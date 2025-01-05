@@ -30,8 +30,8 @@ var velocity: Vector3 = Vector3.ZERO
 
 
 func _ready() -> void:
-	storm_audio.bus = "Storm"
-	
+	$SandStormAudio.play()
+	$EyeAudio.play()
 	if not wind_manager:
 		wind_manager = get_node("/root/%s/Environment/WindManager" % environment_parent)
 		print("windman fallback to ", wind_manager)
@@ -112,9 +112,6 @@ func _on_sand_storm_body_entered(body: Node):
 		var t = create_tween()
 		t.tween_property(sun, "light_energy", sun.light_energy*(1 - storm_darkening), storm_darkening_time)
 
-		if not storm_audio.playing:
-			storm_audio.play()
-
 		# IMPORTANT: Update player's Storm audio state
 		if "update_storm_audio" in body:
 			body.update_storm_audio()
@@ -128,9 +125,6 @@ func _on_sand_storm_body_exited(body: Node):
 
 		var t = create_tween()
 		t.tween_property(sun, "light_energy", 1, storm_darkening_time)
-
-		if players_in_storm.size() == 0:
-			storm_audio.stop()
 
 		# IMPORTANT: Update player's Storm audio state
 		if "update_storm_audio" in body:

@@ -12,7 +12,7 @@ dest_files=["res://.godot/imported/object_shield-sustain.mp3.mp3-28158fc93ceddd6
 
 [params]
 
-loop=false
+loop=true
 loop_offset=0
 bpm=0
 beat_count=0

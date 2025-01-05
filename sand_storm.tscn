@@ -1,9 +1,10 @@
-[gd_scene load_steps=13 format=3 uid="uid://b0gsf4ppmuj2h"]
+[gd_scene load_steps=14 format=3 uid="uid://b0gsf4ppmuj2h"]
 
 [ext_resource type="Script" path="res://sand_storm.gd" id="1_2s428"]
 [ext_resource type="Shader" path="res://fog01.gdshader" id="2_ulbh7"]
-[ext_resource type="AudioStream" uid="uid://bgr1j23n4wnh2" path="res://audio/sandstorm.wav" id="3_xuq3t"]
+[ext_resource type="AudioStream" uid="uid://bgr1j23n4wnh2" path="res://audio/object_sandstorm.wav" id="3_xuq3t"]
 [ext_resource type="Shader" path="res://sand_storm_mesh.gdshader" id="4_ibm10"]
+[ext_resource type="AudioStream" uid="uid://cyxtb05412s57" path="res://audio/object_sandstorm2.wav" id="5_r1ikw"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_p0jmp"]
 
@@ -81,10 +82,6 @@ shape = SubResource("BoxShape3D_p0jmp")
 size = Vector3(20, 20, 20)
 material = SubResource("ShaderMaterial_r32j0")
 
-[node name="SandStormAudio" type="AudioStreamPlayer2D" parent="."]
-stream = ExtResource("3_xuq3t")
-bus = &"Storm"
-
 [node name="OuterStormMesh" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -9.72364, 0)
 mesh = SubResource("SphereMesh_wkjre")
@@ -94,3 +91,17 @@ transform = Transform3D(0.75, 0, 0, 0, 0.75, 0, 0, 0, 0.75, 0, -9.556, 0)
 visible = false
 mesh = SubResource("SphereMesh_fjae6")
 skeleton = NodePath("../OuterStormMesh")
+
+[node name="SandStormAudio" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("3_xuq3t")
+volume_db = 12.19
+unit_size = 31.88
+pitch_scale = 0.81
+max_distance = 200.0
+panning_strength = 0.0
+bus = &"Storm"
+
+[node name="EyeAudio" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("5_r1ikw")
+volume_db = 15.238
+max_distance = 100.0

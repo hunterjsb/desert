@@ -411,7 +411,7 @@ func calculate_fall_damage():
 func update_storm_audio() -> void:
 	var storm_bus_idx = AudioServer.get_bus_index("Storm")
 
-	# If the player is in the storm and inside the bubble shield:
+	# If the player is inside the bubble shield:
 	if is_in_bubble_shield:
 		# Enable Low-Pass filter effect on the Storm bus (assumes effect is at index storm_filter_effect_index)
 		AudioServer.set_bus_volume_db(storm_bus_idx, -18.0)  # turn volume down
