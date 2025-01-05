@@ -1,5 +1,9 @@
 extends CharacterBody3D
 
+@export var fall_damage_threshold = -10.0
+@export var fall_damage_multiplier = 2.0
+var peak_fall_speed: float = 0.0
+
 @export var speed = 5
 @export var jump_speed = 5
 @export var mouse_sensitivity = 2
@@ -52,6 +56,7 @@ var slide_cooldown_timer = 0.0
 var storm_filter_effect_index = 0
 
 func _ready():
+	$AmbientAudio.play()
 	add_child(hud)
 	_update_health_bar()
 
@@ -75,6 +80,13 @@ func _physics_process(delta):
 	if not can_move:
 		return
 
+	if velocity.y < peak_fall_speed:
+		peak_fall_speed = velocity.y  
+		print("peak: ", peak_fall_speed)
+	if peak_fall_speed < -3 and is_on_floor():  
+				$LandingAudio.play()
+				peak_fall_speed = 0.0  
+	
 	# Slide cooldown
 	if slide_on_cooldown:
 		slide_cooldown_timer -= delta
@@ -122,6 +134,7 @@ func _physics_process(delta):
 			velocity.x = -forward_dir.x * boosted_speed
 			velocity.z = -forward_dir.z * boosted_speed
 		else:
+			$SlideAudio.stop()
 			is_sliding = false
 			slide_on_cooldown = true
 			slide_cooldown_timer = slide_cooldown
@@ -210,6 +223,7 @@ func _input(event):
 			is_sliding = true
 			is_crouching = false
 			slide_timer = slide_duration
+			$SlideAudio.play()
 		else:
 			is_crouching = true
 
@@ -382,6 +396,12 @@ func _set_in_bubble(value: bool) -> void:
 	is_in_bubble_shield = value
 	update_storm_audio()
 	print("Player is_in_bubble_shield: ", is_in_bubble_shield)
+	
+func calculate_fall_damage():
+	var fall_damage = (peak_fall_speed + fall_damage_threshold) * fall_damage_multiplier
+	if fall_damage > 0:
+		print("Player took ", fall_damage, " fall damage.")
+		fall_damage = 0
 
 
 #
@@ -391,7 +411,7 @@ func update_storm_audio() -> void:
 	var storm_bus_idx = AudioServer.get_bus_index("Storm")
 
 	# If the player is in the storm and inside the bubble shield:
-	if is_in_storm and is_in_bubble_shield:
+	if is_in_bubble_shield:
 		# Enable Low-Pass filter effect on the Storm bus (assumes effect is at index storm_filter_effect_index)
 		AudioServer.set_bus_volume_db(storm_bus_idx, -18.0)  # turn volume down
 		AudioServer.set_bus_effect_enabled(storm_bus_idx, storm_filter_effect_index, true)
