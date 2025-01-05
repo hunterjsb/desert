@@ -36,17 +36,15 @@ _subresources={
 "PATH:Mesh1_Mesh1_002": {
 "decomposition/advanced": true,
 "decomposition/convexhull_downsampling": 2,
-"decomposition/max_convex_hulls": 4,
-"decomposition/max_num_vertices_per_convex_hull": 64,
+"decomposition/max_num_vertices_per_convex_hull": 128,
 "decomposition/min_volume_per_convex_hull": 1.0,
-"decomposition/mode": 1,
-"decomposition/normalize_mesh": true,
 "decomposition/plane_downsampling": 2,
-"decomposition/resolution": 5000,
+"decomposition/project_hull_vertices": false,
 "decomposition/symmetry_planes_clipping_bias": 1.0,
 "generate/physics": true,
 "physics/body_type": 1,
 "physics/physics_material_override": null,
+"physics/shape_type": 0,
 "primitive/size": Vector3(1, 1, 1)
 }
 }

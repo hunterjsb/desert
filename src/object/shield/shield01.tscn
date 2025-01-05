@@ -1,0 +1,92 @@
+[gd_scene load_steps=13 format=3 uid="uid://ickso2cui7ul"]
+
+[ext_resource type="PackedScene" uid="uid://c2gtirb2ia0tf" path="res://texture/object/shield/sg3.fbx" id="1_8j70j"]
+[ext_resource type="Script" path="res://src/object/shield/shield.gd" id="1_ajbgd"]
+[ext_resource type="Shader" path="res://shader/bubbleshield01.gdshader" id="3_hrbf4"]
+[ext_resource type="AudioStream" uid="uid://d210wmjbixl28" path="res://audio/object_shield-boot.wav" id="4_f1357"]
+[ext_resource type="AudioStream" uid="uid://bhyqhoi2wcg0n" path="res://audio/object_shield-sustain.mp3.mp3" id="5_nbm1r"]
+[ext_resource type="AudioStream" uid="uid://c0g6frcanbuaw" path="res://audio/object_shield-powerdown.wav.wav" id="6_otc6l"]
+[ext_resource type="Script" path="res://src/object/shield/shield_battery_label.gd" id="7_nlwhq"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_6y8gw"]
+height = 0.5
+radius = 1.0
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_yk2ce"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_og3ex"]
+render_priority = 0
+shader = ExtResource("3_hrbf4")
+shader_parameter/base_color = Color(0, 0.5, 1, 1)
+shader_parameter/pulse_color = Color(0.5, 0.7, 1, 1)
+shader_parameter/speed = 1.0
+shader_parameter/scale = 1.0
+shader_parameter/distortion = 2.0
+shader_parameter/shield_power = 0.2
+shader_parameter/rim_power = 1.5
+shader_parameter/pulse_frequency = 0.75
+
+[sub_resource type="SphereMesh" id="SphereMesh_og3py"]
+material = SubResource("ShaderMaterial_og3ex")
+radius = 6.0
+height = 12.0
+
+[sub_resource type="FogMaterial" id="FogMaterial_5yi0c"]
+density = -8.0
+edge_fade = 0.00625002
+
+[node name="Shield" type="RigidBody3D" groups=["interactable"]]
+collision_layer = 6
+collision_mask = 5
+mass = 2.0
+script = ExtResource("1_ajbgd")
+
+[node name="ShieldMesh" parent="." instance=ExtResource("1_8j70j")]
+transform = Transform3D(0.25, 0, 0, 0, -1.09278e-08, -0.25, 0, 0.25, -1.09278e-08, 0, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 0, 0, 0)
+shape = SubResource("CylinderShape3D_6y8gw")
+
+[node name="BubbleShield" type="Area3D" parent="."]
+transform = Transform3D(4, 0, 0, 0, -0.107918, 3.99854, 0, -3.99854, -0.107918, -0.00490491, 0.000545263, 0.0015772)
+visible = false
+collision_layer = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="BubbleShield"]
+transform = Transform3D(12, 0, 0, 0, 12, 0, 0, 0, 12, 0, 0, 0)
+shape = SubResource("SphereShape3D_yk2ce")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="BubbleShield"]
+mesh = SubResource("SphereMesh_og3py")
+
+[node name="FogVolume" type="FogVolume" parent="BubbleShield"]
+size = Vector3(10, 10, 10)
+shape = 0
+material = SubResource("FogMaterial_5yi0c")
+
+[node name="ShieldActivateAudio" type="AudioStreamPlayer3D" parent="."]
+transform = Transform3D(0.0833333, 0, 0, 0, -0.0022483, 0.083303, 0, -0.083303, -0.0022483, -0.00489555, -0.000858848, 0.00157718)
+stream = ExtResource("4_f1357")
+
+[node name="ShieldHumAudio" type="AudioStreamPlayer3D" parent="."]
+transform = Transform3D(0.0833333, 0, 0, 0, -0.0022483, 0.083303, 0, -0.083303, -0.0022483, -0.00489555, -0.000858848, 0.00157718)
+stream = ExtResource("5_nbm1r")
+volume_db = -20.0
+pitch_scale = 0.9
+
+[node name="ShieldDeactivateAudio" type="AudioStreamPlayer3D" parent="."]
+transform = Transform3D(0.0833333, 0, 0, 0, -0.0022483, 0.083303, 0, -0.083303, -0.0022483, -0.00489555, -0.000858848, 0.00157718)
+stream = ExtResource("6_otc6l")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -0.0269796, 0.999636, 0, -0.999636, -0.0269796, -0.00490491, -0.0093839, -0.0942185)
+light_color = Color(0.247059, 0.67451, 0.87451, 1)
+light_energy = 0.5
+
+[node name="EnergyLabel" type="Label3D" parent="."]
+transform = Transform3D(0.568005, 0, 0, 0, 0.0288253, 1.01511, 0, -0.640702, 0.0456699, -0.00625966, 3.45969e-09, -0.108841)
+render_priority = 2
+outline_render_priority = 1
+text = "100%"
+script = ExtResource("7_nlwhq")
