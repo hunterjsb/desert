@@ -143,6 +143,7 @@ func _physics_process(delta):
 		# Normal input
 		var input_dir = Input.get_vector("a", "d", "w", "s")
 		var direction = transform.basis * Vector3(input_dir.x, 0, input_dir.y)
+		# print(direction.x, current_speed)
 		velocity.x = direction.x * current_speed
 		velocity.z = direction.z * current_speed
 
@@ -330,7 +331,7 @@ func find_mesh_instance(obj: Node) -> MeshInstance3D:
 func _on_terrain_map_ready():
 	gravity = 9.8
 	
-	var hoverboard = preload("res://hoverboard.tscn").instantiate()
+	var hoverboard = preload("res://src/object/hoverboard.tscn").instantiate()
 	var spawn_offset = Vector3(2, 1, 0)
 	var spawn_position = global_transform.origin + spawn_offset
 	get_parent().add_child(hoverboard)

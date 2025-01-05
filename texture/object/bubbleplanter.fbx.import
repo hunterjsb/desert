@@ -3,20 +3,20 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://bx4f447gbcnko"
-path="res://.godot/imported/shieldgen2.fbx-b0e6db368a08ae4136d8af5ab9edbebf.scn"
+uid="uid://rx0ubc8acef8"
+path="res://.godot/imported/bubbleplanter.fbx-788e2dbf1d24922c8d1bc0c98200d842.scn"
 
 [deps]
 
-source_file="res://texture/objects/shieldgen2.fbx"
-dest_files=["res://.godot/imported/shieldgen2.fbx-b0e6db368a08ae4136d8af5ab9edbebf.scn"]
+source_file="res://texture/object/bubbleplanter.fbx"
+dest_files=["res://.godot/imported/bubbleplanter.fbx-788e2dbf1d24922c8d1bc0c98200d842.scn"]
 
 [params]
 
 nodes/root_type=""
 nodes/root_name=""
 nodes/apply_root_scale=true
-nodes/root_scale=1.0
+nodes/root_scale=100.0
 nodes/import_as_skeleton_bones=false
 meshes/ensure_tangents=true
 meshes/generate_lods=true
@@ -33,17 +33,20 @@ animation/import_rest_as_RESET=false
 import_script/path=""
 _subresources={
 "nodes": {
-"PATH:Mesh0": {
+"PATH:Mesh1_Mesh1_016": {
 "decomposition/advanced": true,
 "decomposition/convexhull_approximation": false,
+"decomposition/convexhull_downsampling": 12,
+"decomposition/max_concavity": 0.0,
+"decomposition/max_convex_hulls": 6,
 "decomposition/max_num_vertices_per_convex_hull": 64,
-"decomposition/mode": 1,
-"decomposition/normalize_mesh": true,
-"decomposition/plane_downsampling": 2,
-"decomposition/project_hull_vertices": false,
-"decomposition/resolution": 50000,
+"decomposition/min_volume_per_convex_hull": 0.0,
+"decomposition/plane_downsampling": 12,
+"decomposition/resolution": 500000,
+"decomposition/symmetry_planes_clipping_bias": 0.05,
 "generate/physics": true,
 "physics/body_type": 1,
+"physics/layer": 2,
 "physics/shape_type": 0
 }
 }

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bgsibhj0ph87a"
-path="res://.godot/imported/shieldgen2.png-9afc7f1e4f24b6a61780ec1f7afab73b.ctex"
+uid="uid://ddrirt3nikc08"
+path="res://.godot/imported/bubbleplanter.png-a64b2fbf04d2647ed40561a2f9707c85.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://texture/objects/shieldgen2.png"
-dest_files=["res://.godot/imported/shieldgen2.png-9afc7f1e4f24b6a61780ec1f7afab73b.ctex"]
+source_file="res://texture/object/bubbleplanter.png"
+dest_files=["res://.godot/imported/bubbleplanter.png-a64b2fbf04d2647ed40561a2f9707c85.ctex"]
 
 [params]
 

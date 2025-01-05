@@ -1,8 +1,8 @@
-[gd_scene load_steps=22 format=3 uid="uid://31vsdnsofoou"]
+[gd_scene load_steps=27 format=3 uid="uid://31vsdnsofoou"]
 
 [ext_resource type="PackedScene" uid="uid://ch0krls6y12y8" path="res://player.tscn" id="1_l1y63"]
 [ext_resource type="PackedScene" uid="uid://b0gsf4ppmuj2h" path="res://sand_storm.tscn" id="1_qsy6h"]
-[ext_resource type="PackedScene" uid="uid://bmi4yxmcc2m0d" path="res://hoverboard.tscn" id="2_sibpl"]
+[ext_resource type="PackedScene" uid="uid://bmi4yxmcc2m0d" path="res://src/object/hoverboard.tscn" id="2_sibpl"]
 [ext_resource type="PackedScene" uid="uid://dlgxashpwucl5" path="res://src/object/radio.tscn" id="3_cgl1j"]
 [ext_resource type="PackedScene" uid="uid://bounpd4i1v5pf" path="res://src/hud_dev.tscn" id="3_ntfw2"]
 [ext_resource type="Script" path="res://wind_manager.gd" id="5_0otb4"]
@@ -14,6 +14,8 @@
 [ext_resource type="PackedScene" uid="uid://be15buugjnenc" path="res://texture/structure/ruins/ruins03.fbx" id="12_vg0di"]
 [ext_resource type="PackedScene" uid="uid://d2iuna8o6eky0" path="res://src/object/bubbleplanter.tscn" id="13_w5l2x"]
 [ext_resource type="PackedScene" uid="uid://csgdtb8pbgwjj" path="res://src/object/shield.tscn" id="14_q30jn"]
+[ext_resource type="Shader" path="res://outline01.gdshader" id="15_6iddm"]
+[ext_resource type="Script" path="res://rigid_body_3d.gd" id="15_lda6m"]
 
 [sub_resource type="QuadMesh" id="QuadMesh_oy20x"]
 
@@ -68,6 +70,25 @@ volumetric_fog_density = 0.0
 
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_wga7v"]
 points = PackedVector3Array(0, 0.5, 0.5, 0.5, -0.5, 0.5, 0, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, -0.5)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_n7v7n"]
+render_priority = 0
+shader = ExtResource("15_6iddm")
+shader_parameter/border_width = null
+shader_parameter/color = Vector4(1, 0, 0.5, 1)
+shader_parameter/pattern = null
+shader_parameter/line_number = null
+shader_parameter/line_sharpness = null
+shader_parameter/pulse = null
+shader_parameter/pulse_speed = null
+shader_parameter/line_movement = null
+shader_parameter/line_movement_speed = null
+shader_parameter/wave = null
+
+[sub_resource type="BoxMesh" id="BoxMesh_midvi"]
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_366on"]
+points = PackedVector3Array(0.5, 0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5)
 
 [node name="Skybox" type="Node3D"]
 
@@ -161,7 +182,21 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.23981, 3.19715, -1)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.248756, 1.93474, -5.07413)
 
 [node name="Shield" parent="Objects" instance=ExtResource("14_q30jn")]
-transform = Transform3D(3, 0, 0, 0, -1.31134e-07, -3, 0, 3, -1.31134e-07, -5, 1, 2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 1, 2)
+
+[node name="CompanionCube" type="RigidBody3D" parent="Objects" groups=["interactable"]]
+collision_layer = 6
+collision_mask = 5
+script = ExtResource("15_lda6m")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Objects/CompanionCube"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.96583, 0.907602, -3.63597)
+material_overlay = SubResource("ShaderMaterial_n7v7n")
+mesh = SubResource("BoxMesh_midvi")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Objects/CompanionCube"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.96583, 0.907602, -3.63597)
+shape = SubResource("ConvexPolygonShape3D_366on")
 
 [connection signal="cardinal_direction_changed" from="Environment/WindManager" to="Objects/WindyBody" method="_on_cardinal_direction_changed"]
 [connection signal="gust_ended" from="Environment/WindManager" to="Objects/WindyBody" method="_on_gust_ended"]

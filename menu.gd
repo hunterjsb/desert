@@ -7,7 +7,7 @@ var player_ref: Node = null
 
 func _ready():
 	# Dynamically locate the player node in the scene tree
-	player_ref = find_player()
+	player_ref = $Player
 	
 	if player_ref and sensitivity_slider:
 		sensitivity_slider.value = player_ref.mouse_sensitivity

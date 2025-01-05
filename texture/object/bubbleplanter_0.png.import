@@ -2,20 +2,20 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c8l130lyjqsxg"
-path.s3tc="res://.godot/imported/shieldgen2_0.png-a73a610f6cdcbe556d5824e5d1e96b3c.s3tc.ctex"
+uid="uid://dkjw7ov4mfhnx"
+path.s3tc="res://.godot/imported/bubbleplanter_0.png-d41c61460db861a54e7bd71c840b3b08.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 generator_parameters={
-"md5": "e299cb596e67a473f36747ce1addbf00"
+"md5": "8310557f0bad352cc756c29aab1bc827"
 }
 
 [deps]
 
-source_file="res://texture/objects/shieldgen2_0.png"
-dest_files=["res://.godot/imported/shieldgen2_0.png-a73a610f6cdcbe556d5824e5d1e96b3c.s3tc.ctex"]
+source_file="res://texture/object/bubbleplanter_0.png"
+dest_files=["res://.godot/imported/bubbleplanter_0.png-d41c61460db861a54e7bd71c840b3b08.s3tc.ctex"]
 
 [params]
 

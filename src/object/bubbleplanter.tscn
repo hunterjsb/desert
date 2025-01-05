@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://d2iuna8o6eky0"]
 
-[ext_resource type="PackedScene" uid="uid://rx0ubc8acef8" path="res://texture/objects/bubbleplanter.fbx" id="1_vlgc0"]
+[ext_resource type="PackedScene" uid="uid://rx0ubc8acef8" path="res://texture/object/bubbleplanter.fbx" id="1_vlgc0"]
 [ext_resource type="Script" path="res://src/object/bubbleplanter_mesh.gd" id="2_3n1h8"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_86miw"]
