@@ -15,21 +15,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_5vwaj")
 
-[node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.907558, -0.419927, 0, 0.419927, 0.907558, 0, -0.468633, 2)
-
-[node name="Shield" parent="." instance=ExtResource("2_qpg2t")]
-transform = Transform3D(2, 0, 0, 0, 1.66893, -1.10212, 0, 1.10213, 1.66892, 0, 0.221367, 1)
-gravity = 0.0
-
-[node name="Environment" parent="." instance=ExtResource("3_ynbn5")]
-day_time = 17.5
-clouds_cutoff = 0.75
-time_scale = 0.05
-sun_base_enegry = 0.9
-moon_base_enegry = 0.3
-
-[node name="HBoxContainer" type="HBoxContainer" parent="."]
+[node name="Title" type="HBoxContainer" parent="."]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
@@ -39,11 +25,11 @@ offset_right = 300.0
 offset_bottom = 200.0
 grow_horizontal = 2
 
-[node name="TextureRect" type="TextureRect" parent="HBoxContainer"]
+[node name="TextureRect" type="TextureRect" parent="Title"]
 layout_mode = 2
 texture = ExtResource("4_8yi4g")
 
-[node name="VBoxMenuButtons" type="VBoxContainer" parent="."]
+[node name="MenuButtons" type="VBoxContainer" parent="."]
 layout_mode = 1
 anchors_preset = 7
 anchor_left = 0.5
@@ -57,20 +43,43 @@ grow_horizontal = 2
 grow_vertical = 0
 theme = ExtResource("2_0doh3")
 
-[node name="MCStart" type="MarginContainer" parent="VBoxMenuButtons"]
+[node name="MCStart" type="MarginContainer" parent="MenuButtons"]
 layout_mode = 2
 
-[node name="Start" type="Button" parent="VBoxMenuButtons/MCStart"]
+[node name="Start" type="Button" parent="MenuButtons/MCStart"]
 layout_mode = 2
 text = "start"
 
-[node name="MCSkybox" type="MarginContainer" parent="VBoxMenuButtons"]
+[node name="MCSkybox" type="MarginContainer" parent="MenuButtons"]
 layout_mode = 2
 theme_override_constants/margin_top = 10
 
-[node name="Skybox" type="Button" parent="VBoxMenuButtons/MCSkybox"]
+[node name="Skybox" type="Button" parent="MenuButtons/MCSkybox"]
 layout_mode = 2
 text = "skybox"
 
-[connection signal="pressed" from="VBoxMenuButtons/MCStart/Start" to="." method="_on_start_pressed"]
-[connection signal="pressed" from="VBoxMenuButtons/MCSkybox/Skybox" to="." method="_on_skybox_pressed"]
+[node name="MenuScene3D" type="Node3D" parent="."]
+
+[node name="Camera3D" type="Camera3D" parent="MenuScene3D"]
+transform = Transform3D(1, 0, 0, 0, 0.907558, -0.419927, 0, 0.419927, 0.907558, 0, -0.468633, 2)
+
+[node name="Shield" parent="MenuScene3D" instance=ExtResource("2_qpg2t")]
+transform = Transform3D(-2, 1.00288e-07, -1.43224e-07, 0, 1.63831, 1.14715, 1.74846e-07, 1.14716, -1.6383, 0, 0.221367, 1)
+gravity = 0.0
+
+[node name="Environment" parent="MenuScene3D" instance=ExtResource("3_ynbn5")]
+day_time = 17.5
+clouds_cutoff = 0.75
+time_scale = 0.05
+sun_base_enegry = 0.9
+moon_base_enegry = 0.3
+
+[node name="SpotLight3D" type="SpotLight3D" parent="MenuScene3D"]
+transform = Transform3D(1, 0, 0, 0, 0.819152, -0.573576, 0, 0.573576, 0.819152, 0, -1.3236, 3.29256)
+visible = false
+light_color = Color(0.961352, 0.426769, 0.523916, 1)
+light_energy = 0.5
+light_specular = 1.0
+
+[connection signal="pressed" from="MenuButtons/MCStart/Start" to="." method="_on_start_pressed"]
+[connection signal="pressed" from="MenuButtons/MCSkybox/Skybox" to="." method="_on_skybox_pressed"]

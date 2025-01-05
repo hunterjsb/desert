@@ -1,7 +1,7 @@
 extends Control
 
-@onready var camera_3d: Camera3D = $Camera3D
-@onready var body_3d: Node3D = $Shield/Mesh0
+@onready var camera_3d: Camera3D = $MenuScene3D/Camera3D
+@onready var body_3d: Node3D = $MenuScene3D/Shield/Mesh0
 
 @export var max_tilt_degrees := 30.0
 @export var tilt_lerp_speed := 0.1
@@ -23,7 +23,7 @@ func _process(delta: float) -> void:
 
 	# 3) Lerp from current rotation to target rotation for smoothness
 	#    Keep Y at 180°, so the front is always facing the camera
-	body_3d.rotation_degrees.y = 180.0
+	# body_3d.rotation_degrees.y = 180.0
 	body_3d.rotation.x = lerp(body_3d.rotation.x, target_rot_x, tilt_lerp_speed)
 	body_3d.rotation.z = lerp(body_3d.rotation.z, target_rot_z, tilt_lerp_speed)
 
