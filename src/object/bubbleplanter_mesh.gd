@@ -1,5 +1,5 @@
 # bubbleplanter.gd
-extends RigidBody3D
+extends InteractableBody3D
 
 @export var float_height = 2.0       # Desired hover height above terrain
 @export var float_stiffness = 15.0   # Strength of the "spring" force
@@ -80,3 +80,9 @@ func _integrate_forces(state: PhysicsDirectBodyState3D):
 		# If the RayCast doesn’t collide (off a cliff?), apply gravity or do nothing
 		# apply_central_force(Vector3(0, -9.8, 0))  # if you want fallback gravity
 		pass
+		
+func try_pickup(player: Node):
+	return false
+		
+func interact(player: Node):
+	pass # attach tether

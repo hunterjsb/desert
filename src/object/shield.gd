@@ -1,4 +1,4 @@
-extends Node3D
+extends InteractableBody3D
 
 @export_group("Energy")
 @export var starting_energy = 999
@@ -100,9 +100,6 @@ func toggle_bubble_shield():
 
 func interact(player: Node):
 	toggle_bubble_shield()
-
-func pickup(player: Node):
-	pass
 
 
 # Helper so we can show/hide the energy label easily

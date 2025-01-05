@@ -1,4 +1,4 @@
-extends RigidBody3D
+extends InteractableBody3D
 
 @onready var theme: AudioStreamPlayer3D = $Music
 @onready var static_noise: AudioStreamPlayer3D = $Static
@@ -10,7 +10,7 @@ func _ready() -> void:
 	static_noise.volume_db = -80
 
 
-func interact(player: CharacterBody3D) -> void:
+func interact(player: Node) -> void:
 	if theme.volume_db == 0:
 		theme.volume_db = -80
 	else:

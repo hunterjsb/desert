@@ -7,8 +7,8 @@
 [ext_resource type="PackedScene" uid="uid://bounpd4i1v5pf" path="res://src/hud_dev.tscn" id="5_7jr5i"]
 [ext_resource type="Script" path="res://day_night.gd" id="6_q0lrl"]
 [ext_resource type="Script" path="res://wind_manager.gd" id="6_xst0i"]
-[ext_resource type="Shader" path="res://sky.gdshader" id="8_a4qdo"]
-[ext_resource type="Texture2D" uid="uid://bmoh66spei4tg" path="res://stars.png" id="9_shxyi"]
+[ext_resource type="Shader" path="res://src/environment/sky.gdshader" id="8_a4qdo"]
+[ext_resource type="Texture2D" uid="uid://bmoh66spei4tg" path="res://src/environment/stars.png" id="9_shxyi"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_kbo5r"]
 shader = ExtResource("8_a4qdo")
@@ -56,8 +56,8 @@ volumetric_fog_density = 0.0
 
 [node name="main" type="Node3D"]
 script = ExtResource("1_7asmc")
-min_storms = 0
-max_storms = 0
+min_storms = 1
+max_storms = 2
 
 [node name="bigwheel" parent="." instance=ExtResource("3_jboed")]
 transform = Transform3D(397.435, -212.762, 216.282, -3.93578e-06, 356.442, 350.641, -303.39, -278.714, 283.325, 730.48, 121.328, -2999.19)

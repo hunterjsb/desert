@@ -1,8 +1,8 @@
 [gd_scene load_steps=7 format=3 uid="uid://bdcr8aj5rbgm3"]
 
 [ext_resource type="Script" path="res://day_night.gd" id="1_6r0ue"]
-[ext_resource type="Shader" path="res://sky.gdshader" id="2_ktngh"]
-[ext_resource type="Texture2D" uid="uid://bmoh66spei4tg" path="res://stars.png" id="3_xqhtc"]
+[ext_resource type="Shader" path="res://src/environment/sky.gdshader" id="2_ktngh"]
+[ext_resource type="Texture2D" uid="uid://bmoh66spei4tg" path="res://src/environment/stars.png" id="3_xqhtc"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_msgkm"]
 shader = ExtResource("2_ktngh")

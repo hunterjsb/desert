@@ -1,4 +1,4 @@
-extends Node3D
+extends InteractableBody3D
 
 @export var move_speed_multiplier = 8
 
@@ -9,12 +9,6 @@ var _attached_mod: int = 1
 
 var prev_walk_sway: float
 var prev_sprint_sway: float
-
-func _ready() -> void:
-	pass
-
-func _process(delta: float) -> void:
-	pass
 
 func interact(player: Node):
 	# Determine if we are attaching or detaching
