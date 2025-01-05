@@ -61,10 +61,11 @@ transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 0, 0, 0)
 material_overlay = SubResource("ShaderMaterial_cbqmf")
 
 [node name="CollisionShape3D" parent="Mesh0" index="1"]
-transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 0, 0, 0)
+transform = Transform3D(11, 0, 0, 0, 11, 0, 0, 0, 11, 0, 0, 0)
 
 [node name="BubbleShield" type="Area3D" parent="Mesh0" index="2"]
 transform = Transform3D(4, 0, 0, 0, -0.107918, 3.99854, 0, -3.99854, -0.107918, -0.00490491, 0.000545263, 0.0015772)
+visible = false
 collision_layer = 2
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Mesh0/BubbleShield" index="0"]

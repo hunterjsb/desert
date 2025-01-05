@@ -16,7 +16,7 @@ dest_files=["res://.godot/imported/shieldgen2.fbx-369e3b806a434e415999bf0361efff
 nodes/root_type=""
 nodes/root_name=""
 nodes/apply_root_scale=true
-nodes/root_scale=1.0
+nodes/root_scale=2.0
 nodes/import_as_skeleton_bones=false
 meshes/ensure_tangents=true
 meshes/generate_lods=true
@@ -36,21 +36,17 @@ _subresources={
 "PATH:Mesh0": {
 "decomposition/advanced": true,
 "decomposition/convexhull_approximation": false,
-"decomposition/convexhull_downsampling": 1,
-"decomposition/max_concavity": 0.0,
-"decomposition/max_num_vertices_per_convex_hull": 12,
+"decomposition/max_num_vertices_per_convex_hull": 16,
 "decomposition/min_volume_per_convex_hull": 1.0,
 "decomposition/normalize_mesh": true,
-"decomposition/plane_downsampling": 1,
 "decomposition/project_hull_vertices": false,
-"decomposition/resolution": 1000,
 "decomposition/revolution_axes_clipping_bias": 0.05,
 "decomposition/symmetry_planes_clipping_bias": 0.05,
 "generate/physics": true,
 "physics/body_type": 1,
 "physics/layer": 6,
 "physics/mask": 5,
-"physics/shape_type": 0
+"physics/shape_type": 1
 }
 }
 }
