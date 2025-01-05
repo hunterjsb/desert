@@ -3,20 +3,20 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://cckfjxlxmq1bo"
-path="res://.godot/imported/hoverboard.fbx-aec2c6f22670bd9b96d2665a7bb1dce2.scn"
+uid="uid://0uhvyadqalf4"
+path="res://.godot/imported/radio.fbx-cc3673c3ca836ce60aa73390a2bc9d0e.scn"
 
 [deps]
 
-source_file="res://texture/hoverboard.fbx"
-dest_files=["res://.godot/imported/hoverboard.fbx-aec2c6f22670bd9b96d2665a7bb1dce2.scn"]
+source_file="res://texture/object/radio.fbx"
+dest_files=["res://.godot/imported/radio.fbx-cc3673c3ca836ce60aa73390a2bc9d0e.scn"]
 
 [params]
 
 nodes/root_type=""
 nodes/root_name=""
 nodes/apply_root_scale=true
-nodes/root_scale=1.0
+nodes/root_scale=30.0
 nodes/import_as_skeleton_bones=false
 meshes/ensure_tangents=true
 meshes/generate_lods=true
@@ -33,21 +33,17 @@ animation/import_rest_as_RESET=false
 import_script/path=""
 _subresources={
 "nodes": {
-"PATH:Mesh1_Mesh1_002": {
+"PATH:Mesh1_Mesh1_108": {
 "decomposition/advanced": true,
-"decomposition/convexhull_downsampling": 2,
-"decomposition/max_convex_hulls": 4,
+"decomposition/convexhull_downsampling": 12,
+"decomposition/max_convex_hulls": 10,
 "decomposition/max_num_vertices_per_convex_hull": 64,
 "decomposition/min_volume_per_convex_hull": 1.0,
 "decomposition/mode": 1,
-"decomposition/normalize_mesh": true,
-"decomposition/plane_downsampling": 2,
-"decomposition/resolution": 5000,
-"decomposition/symmetry_planes_clipping_bias": 1.0,
+"decomposition/plane_downsampling": 12,
+"decomposition/resolution": 100000,
 "generate/physics": true,
-"physics/body_type": 1,
-"physics/physics_material_override": null,
-"primitive/size": Vector3(1, 1, 1)
+"physics/body_type": 1
 }
 }
 }

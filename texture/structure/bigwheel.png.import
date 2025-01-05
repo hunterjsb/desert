@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://itha86ufpvd7"
-path="res://.godot/imported/hoverboard.png-baf9960b421108c0143791f427d7c566.ctex"
+uid="uid://c2fnhgggk1eyh"
+path="res://.godot/imported/bigwheel.png-48b00fd49ce6794d39792af2fd1cc8d4.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://texture/hoverboard.png"
-dest_files=["res://.godot/imported/hoverboard.png-baf9960b421108c0143791f427d7c566.ctex"]
+source_file="res://texture/structure/bigwheel.png"
+dest_files=["res://.godot/imported/bigwheel.png-48b00fd49ce6794d39792af2fd1cc8d4.ctex"]
 
 [params]
 

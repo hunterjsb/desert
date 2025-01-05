@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://dl4jetqhbaqxp"
-path="res://.godot/imported/bigwheel.fbx-65463f5dde8edcf4e765737b993fa481.scn"
+uid="uid://diwetx37xsmt4"
+path="res://.godot/imported/sandrake.fbx-54337ba905022018b1c5e8138a014e6e.scn"
 
 [deps]
 
-source_file="res://texture/bigwheel.fbx"
-dest_files=["res://.godot/imported/bigwheel.fbx-65463f5dde8edcf4e765737b993fa481.scn"]
+source_file="res://texture/object/sandrake.fbx"
+dest_files=["res://.godot/imported/sandrake.fbx-54337ba905022018b1c5e8138a014e6e.scn"]
 
 [params]
 

@@ -2,20 +2,20 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://d024rxv4d7rd8"
-path.s3tc="res://.godot/imported/sandrake_0.png-24230de3b9951a743697280b4c3ebf25.s3tc.ctex"
+uid="uid://8cgngj1ctjub"
+path.s3tc="res://.godot/imported/bigwheel_0.png-6db9a9230c559dfe26f0973ff72eb599.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 generator_parameters={
-"md5": "60068098a0ed2417fc80de3c461022f0"
+"md5": "6ba8985e873eae5ba0362bb269adbf03"
 }
 
 [deps]
 
-source_file="res://texture/sandrake_0.png"
-dest_files=["res://.godot/imported/sandrake_0.png-24230de3b9951a743697280b4c3ebf25.s3tc.ctex"]
+source_file="res://texture/structure/bigwheel_0.png"
+dest_files=["res://.godot/imported/bigwheel_0.png-6db9a9230c559dfe26f0973ff72eb599.s3tc.ctex"]
 
 [params]
 

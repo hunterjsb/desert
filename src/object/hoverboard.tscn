@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://bmi4yxmcc2m0d"]
 
-[ext_resource type="PackedScene" uid="uid://cckfjxlxmq1bo" path="res://texture/hoverboard.fbx" id="1_wkpy2"]
+[ext_resource type="PackedScene" uid="uid://cckfjxlxmq1bo" path="res://texture/object/hoverboard.fbx" id="1_wkpy2"]
 [ext_resource type="Shader" path="res://outline01.gdshader" id="3_b4six"]
 [ext_resource type="Script" path="res://texture/object/hoverboard_mesh.gd" id="3_vovvo"]
 

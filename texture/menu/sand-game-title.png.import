@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bxuqvxgdgsmpt"
-path="res://.godot/imported/radio.png-642a8d42ea8bd1f3ecfe33e35944dd32.ctex"
+uid="uid://bhigegemvbhwj"
+path="res://.godot/imported/sand-game-title.png-42584b2e66864223030b7fa05528ddde.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://texture/radio.png"
-dest_files=["res://.godot/imported/radio.png-642a8d42ea8bd1f3ecfe33e35944dd32.ctex"]
+source_file="res://texture/menu/sand-game-title.png"
+dest_files=["res://.godot/imported/sand-game-title.png-42584b2e66864223030b7fa05528ddde.ctex"]
 
 [params]
 

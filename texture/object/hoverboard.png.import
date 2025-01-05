@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bhigegemvbhwj"
-path="res://.godot/imported/sand-game-title.png-f98c0b766ef8e9586dbd938578ddeefb.ctex"
+uid="uid://itha86ufpvd7"
+path="res://.godot/imported/hoverboard.png-125adb5bc5c22e1371d4287411fb0009.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://texture/sand-game-title.png"
-dest_files=["res://.godot/imported/sand-game-title.png-f98c0b766ef8e9586dbd938578ddeefb.ctex"]
+source_file="res://texture/object/hoverboard.png"
+dest_files=["res://.godot/imported/hoverboard.png-125adb5bc5c22e1371d4287411fb0009.ctex"]
 
 [params]
 

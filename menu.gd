@@ -1,6 +1,7 @@
 extends CanvasLayer
 
 signal game_unpaused
+
 @export var player: Node3D
 
 @onready var sensitivity_slider = $SensitivitySlider
