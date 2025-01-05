@@ -64,7 +64,7 @@ func _ready():
 	original_camera_local_pos = $Camera3D.transform.origin
 	
 	var starter_shield: InteractableBody3D = preload("res://src/object/shield.tscn").instantiate().get_node("Mesh0")
-	starter_shield.pickup(self)
+	#starter_shield.pickup(self)
 	starter_shield.energy = 10_000
 	
 	# Connect bubble shield signals
@@ -332,10 +332,11 @@ func _on_terrain_map_ready():
 	gravity = 9.8
 	
 	var hoverboard = preload("res://src/object/hoverboard.tscn").instantiate()
-	var spawn_offset = Vector3(2, 1, 0)
-	var spawn_position = global_transform.origin + spawn_offset
-	get_parent().add_child(hoverboard)
-	hoverboard.call_deferred("set_global_position", spawn_position)
+	#var spawn_offset = Vector3(2, 1, 0)
+	#var spawn_position = global_transform.origin + spawn_offset
+	#get_parent().add_child(hoverboard)
+	#hoverboard.call_deferred("set_global_position", spawn_position)
+	hoverboard.get_node("Mesh1_Mesh1_002").pickup(self)
 	
 	var bplanter = preload("res://src/object/bubbleplanter.tscn").instantiate()
 	var bp_spawn_offset = Vector3(2, -1, 1)

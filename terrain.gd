@@ -13,6 +13,8 @@ extends Node3D
 @export_file("*.tres") var noise_terrain
 @export_file("*.gd") var chunk_script
 
+@export var env: Node3D
+
 @export_category("Other Settings")
 @export var optimised_collision = true
 @export var chunk_create_speed = 0.05

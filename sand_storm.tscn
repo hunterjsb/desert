@@ -104,6 +104,6 @@ bus = &"Storm"
 
 [node name="EyeAudio" type="AudioStreamPlayer3D" parent="."]
 stream = ExtResource("5_r1ikw")
-volume_db = 15.238
+volume_db = 21.333
 max_distance = 100.0
 max_polyphony = 3
