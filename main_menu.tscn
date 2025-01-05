@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://l6stmnql0rim"]
+[gd_scene load_steps=4 format=3 uid="uid://l6stmnql0rim"]
 
 [ext_resource type="Script" path="res://main_menu.gd" id="1_5vwaj"]
 [ext_resource type="PackedScene" uid="uid://csgdtb8pbgwjj" path="res://src/object/shield.tscn" id="2_qpg2t"]
+[ext_resource type="PackedScene" uid="uid://bdcr8aj5rbgm3" path="res://day_night.tscn" id="3_ynbn5"]
 
 [node name="Control" type="Control"]
 layout_mode = 3
@@ -31,7 +32,10 @@ text = "START"
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2)
 
 [node name="Shield" parent="." instance=ExtResource("2_qpg2t")]
-transform = Transform3D(1.55745, -1.24934, 0.11614, -0.627365, -0.935704, -1.65253, 1.08663, 1.25044, -1.12055, 0, 0, 0)
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 1.99999, 0, 0, 0)
 gravity = 0.0
+
+[node name="Environment" parent="." instance=ExtResource("3_ynbn5")]
+time_scale = 0.25
 
 [connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
