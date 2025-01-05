@@ -98,10 +98,12 @@ volume_db = 12.19
 unit_size = 31.88
 pitch_scale = 0.81
 max_distance = 200.0
+max_polyphony = 3
 panning_strength = 0.0
 bus = &"Storm"
 
 [node name="EyeAudio" type="AudioStreamPlayer3D" parent="."]
 stream = ExtResource("5_r1ikw")
-volume_db = 15.238
+volume_db = 21.333
 max_distance = 100.0
+max_polyphony = 3

@@ -14,6 +14,7 @@ extends Node3D
 @onready var moon = $Environment/Moon
 
 func _ready() -> void:
+		
 	# Ensure random generation differs each run
 	randomize()
 

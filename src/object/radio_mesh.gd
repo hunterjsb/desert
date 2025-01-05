@@ -1,20 +1,34 @@
 extends InteractableBody3D
 
-@onready var theme: AudioStreamPlayer3D = $Music
+var env: Node3D
+@onready var daytheme: AudioStreamPlayer3D = $SandyAndy
+@onready var nightheme: AudioStreamPlayer3D = $WaitingontheSun
 @onready var static_noise: AudioStreamPlayer3D = $Static
 
+@export var is_playing: bool = false
+
 func _ready() -> void:
-	theme.play()
+	daytheme.play()
+	nightheme.play()
 	static_noise.play()
-	theme.volume_db = -80
+	daytheme.volume_db = -80
+	nightheme.volume_db = -80
 	static_noise.volume_db = -80
 
-
+func is_day():
+	return (18 > env.day_time) and (6 < env.day_time)
+	
 func interact(player: Node) -> void:
-	if theme.volume_db == 0:
-		theme.volume_db = -80
+	if not is_playing:
+		is_playing = true
+		if is_day():
+			daytheme.volume_db = 0
+		else:
+			nightheme.volume_db = 0
 	else:
-		theme.volume_db = 0
+		is_playing = false
+		daytheme.volume_db = -80
+		nightheme.volume_db = -80
 	
 	# play some static
 	var random_offset = randf_range(0, static_noise.stream.get_length() - 1)

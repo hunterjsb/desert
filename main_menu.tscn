@@ -70,7 +70,7 @@ gravity = 0.0
 [node name="Environment" parent="MenuScene3D" instance=ExtResource("3_ynbn5")]
 day_time = 17.5
 clouds_cutoff = 0.75
-time_scale = 0.05
+time_scale = 0.1
 sun_base_enegry = 0.9
 moon_base_enegry = 0.3
 
