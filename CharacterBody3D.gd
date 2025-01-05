@@ -65,6 +65,7 @@ func _ready():
 	
 	var starter_shield: InteractableBody3D = preload("res://src/object/shield.tscn").instantiate().get_node("Mesh0")
 	starter_shield.pickup(self)
+	starter_shield.energy = 10_000
 	
 	# Connect bubble shield signals
 	for shield in get_tree().get_nodes_in_group("bubble_shield"):
