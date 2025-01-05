@@ -63,7 +63,7 @@ func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	original_camera_local_pos = $Camera3D.transform.origin
 	
-	var starter_shield: InteractableBody3D = preload("res://src/object/shield.tscn").instantiate().get_node("Mesh0")
+	var starter_shield: InteractableBody3D = preload("res://src/object/shield/shield01.tscn").instantiate()
 	starter_shield.pickup(self)
 	starter_shield.energy = 10_000
 	

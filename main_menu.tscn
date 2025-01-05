@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://main_menu.gd" id="1_5vwaj"]
 [ext_resource type="Theme" uid="uid://bvl8bwpd1nryk" path="res://main_menu.tres" id="2_0doh3"]
-[ext_resource type="PackedScene" uid="uid://csgdtb8pbgwjj" path="res://src/object/shield.tscn" id="2_qpg2t"]
+[ext_resource type="PackedScene" uid="uid://csgdtb8pbgwjj" path="res://src/object/shield/shield00.tscn" id="2_qpg2t"]
 [ext_resource type="PackedScene" uid="uid://bdcr8aj5rbgm3" path="res://day_night.tscn" id="3_ynbn5"]
 [ext_resource type="Texture2D" uid="uid://bhigegemvbhwj" path="res://texture/menu/sand-game-title.png" id="4_8yi4g"]
 

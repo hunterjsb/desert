@@ -16,7 +16,7 @@
 [ext_resource type="PackedScene" uid="uid://d2iuna8o6eky0" path="res://src/object/bubbleplanter.tscn" id="13_w5l2x"]
 [ext_resource type="Shader" path="res://outline01.gdshader" id="15_6iddm"]
 [ext_resource type="Script" path="res://rigid_body_3d.gd" id="15_lda6m"]
-[ext_resource type="PackedScene" uid="uid://ickso2cui7ul" path="res://src/object/sg4.tscn" id="17_8ikjw"]
+[ext_resource type="PackedScene" uid="uid://ickso2cui7ul" path="res://src/object/shield/shield01.tscn" id="17_8ikjw"]
 
 [sub_resource type="QuadMesh" id="QuadMesh_oy20x"]
 
