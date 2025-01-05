@@ -1,7 +1,7 @@
 [gd_scene load_steps=8 format=3 uid="uid://ch0krls6y12y8"]
 
 [ext_resource type="Script" path="res://CharacterBody3D.gd" id="1_ohtfq"]
-[ext_resource type="AudioStream" uid="uid://e2m7xn1nnp5u" path="res://audio/sand_footsteps.wav" id="2_c2uh1"]
+[ext_resource type="AudioStream" uid="uid://e2m7xn1nnp5u" path="res://audio/player_sand_footsteps.wav" id="2_c2uh1"]
 [ext_resource type="Shader" path="res://shader/heat_haze.gdshader" id="2_m3jaj"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ipq3q"]
