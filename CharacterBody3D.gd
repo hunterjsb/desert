@@ -72,10 +72,6 @@ func _ready():
 		shield.player_entered_bubble.connect(_on_player_entered_bubble)
 		shield.player_exited_bubble.connect(_on_player_exited_bubble)
 
-	menu.name = "Menu"
-	add_child(menu)
-	menu.hide()
-
 
 func _physics_process(delta):
 	if not can_move:
@@ -175,17 +171,7 @@ func _physics_process(delta):
 	# Crouch camera adjust
 	_update_crouch_height()
 
-
 func _input(event):
-	if event.is_action_pressed("esc"):
-		if menu:
-			menu.toggle_menu()
-			can_move = not can_move
-		Input.mouse_mode = (
-			Input.MOUSE_MODE_CAPTURED if Input.mouse_mode == Input.MOUSE_MODE_VISIBLE
-			else Input.MOUSE_MODE_VISIBLE
-		)
-
 	# Mouse look
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		rotate_y(-event.relative.x * mouse_sensitivity / 1000)

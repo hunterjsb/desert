@@ -1,8 +1,9 @@
-[gd_scene load_steps=27 format=3 uid="uid://31vsdnsofoou"]
+[gd_scene load_steps=28 format=3 uid="uid://31vsdnsofoou"]
 
 [ext_resource type="PackedScene" uid="uid://ch0krls6y12y8" path="res://player.tscn" id="1_l1y63"]
 [ext_resource type="PackedScene" uid="uid://b0gsf4ppmuj2h" path="res://sand_storm.tscn" id="1_qsy6h"]
 [ext_resource type="PackedScene" uid="uid://bmi4yxmcc2m0d" path="res://src/object/hoverboard.tscn" id="2_sibpl"]
+[ext_resource type="PackedScene" uid="uid://diypg6xn6wpio" path="res://menu.tscn" id="3_6prh2"]
 [ext_resource type="PackedScene" uid="uid://dlgxashpwucl5" path="res://src/object/radio.tscn" id="3_cgl1j"]
 [ext_resource type="PackedScene" uid="uid://bounpd4i1v5pf" path="res://src/hud_dev.tscn" id="3_ntfw2"]
 [ext_resource type="Script" path="res://wind_manager.gd" id="5_0otb4"]
@@ -111,6 +112,10 @@ gravity = 9.8
 [node name="DevHUD" parent="Player" node_paths=PackedStringArray("player", "environment") instance=ExtResource("3_ntfw2")]
 player = NodePath("..")
 environment = NodePath("../../Environment")
+
+[node name="Menu" parent="Player" node_paths=PackedStringArray("player") instance=ExtResource("3_6prh2")]
+visible = false
+player = NodePath("..")
 
 [node name="Environment" type="Node3D" parent="."]
 script = ExtResource("6_aefkn")
