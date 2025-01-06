@@ -28,7 +28,6 @@ var velocity: Vector3 = Vector3.ZERO
 
 @onready var storm_audio = $SandStormAudio
 
-
 func _ready() -> void:
 	$SandStormAudio.play()
 	$EyeAudio.play()

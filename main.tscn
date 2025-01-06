@@ -58,15 +58,16 @@ volumetric_fog_density = 0.0
 [node name="main" type="Node3D"]
 script = ExtResource("1_7asmc")
 min_storms = 1
-max_storms = 2
+max_storms = 1
 
 [node name="bigwheel" parent="." instance=ExtResource("3_jboed")]
 transform = Transform3D(397.435, -212.762, 216.282, -3.93578e-06, 356.442, 350.641, -303.39, -278.714, 283.325, 730.48, 121.328, -2999.19)
 
-[node name="terrain" parent="." node_paths=PackedStringArray("player") instance=ExtResource("2_vayhu")]
+[node name="terrain" parent="." node_paths=PackedStringArray("player", "env") instance=ExtResource("2_vayhu")]
 player = NodePath("../Player")
 noise_terrain = "res://noise_terrain.tres"
 chunk_script = "res://chunk.gd"
+env = NodePath("../Environment")
 
 [node name="Player" parent="." instance=ExtResource("4_rrvx7")]
 
