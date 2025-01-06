@@ -316,7 +316,7 @@ func find_mesh_instance(obj: Node) -> MeshInstance3D:
 func _on_terrain_map_ready():
 	gravity = 9.8
 	
-	var hoverboard = preload("res://src/object/hoverboard.tscn").instantiate()
+	var hoverboard = preload("res://src/object/hoverboard/hoverboard.tscn").instantiate()
 	var spawn_offset = Vector3(2, 1, 0)
 	var spawn_position = global_transform.origin + spawn_offset
 	get_parent().add_child(hoverboard)
