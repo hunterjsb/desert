@@ -8,6 +8,7 @@ extends InteractableBody3D
 @export var rotation_smooth_speed = 0.1  # Slerp factor for smooth rotation
 
 @onready var raycast_down: RayCast3D = $RayCast3D
+@onready var rope_scene = preload("res://src/object/rope/Rope.tscn")
 
 # We'll keep track of the last frame's normal to reduce jitter
 var last_normal = Vector3.UP
@@ -78,7 +79,6 @@ func _integrate_forces(state: PhysicsDirectBodyState3D):
 			global_transform.basis = Basis(slerped_quat).orthonormalized()
 	else:
 		# If the RayCast doesn’t collide (off a cliff?), apply gravity or do nothing
-		# apply_central_force(Vector3(0, -9.8, 0))  # if you want fallback gravity
 		pass
 		
 func try_pickup(player: Node):
