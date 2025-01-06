@@ -102,7 +102,7 @@ func create_raycast():
 	player.add_child(ray)
 
 func _on_chunk_change():
-	print("[LOG] - Another Chunk")
+	# print("[LOG] - Another Chunk")
 	pass
 
 func _on_map_ready():

@@ -79,7 +79,6 @@ func _physics_process(delta):
 
 	if velocity.y < peak_fall_speed:
 		peak_fall_speed = velocity.y  
-		print("peak: ", peak_fall_speed)
 	if peak_fall_speed < -3 and is_on_floor():  
 				$LandingAudio.play()
 				peak_fall_speed = 0.0  
