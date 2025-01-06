@@ -79,7 +79,6 @@ func _physics_process(delta):
 
 	if velocity.y < peak_fall_speed:
 		peak_fall_speed = velocity.y  
-		print("peak: ", peak_fall_speed)
 	if peak_fall_speed < -3 and is_on_floor():  
 				$LandingAudio.play()
 				peak_fall_speed = 0.0  
@@ -317,12 +316,11 @@ func find_mesh_instance(obj: Node) -> MeshInstance3D:
 func _on_terrain_map_ready():
 	gravity = 9.8
 	
-	var hoverboard = preload("res://src/object/hoverboard.tscn").instantiate()
-	#var spawn_offset = Vector3(2, 1, 0)
-	#var spawn_position = global_transform.origin + spawn_offset
-	#get_parent().add_child(hoverboard)
-	#hoverboard.call_deferred("set_global_position", spawn_position)
-	hoverboard.get_node("Mesh1_Mesh1_002").pickup(self)
+	var hoverboard = preload("res://src/object/hoverboard/hoverboard.tscn").instantiate()
+	var spawn_offset = Vector3(2, 1, 0)
+	var spawn_position = global_transform.origin + spawn_offset
+	get_parent().add_child(hoverboard)
+	hoverboard.call_deferred("set_global_position", spawn_position)
 	
 	var bplanter = preload("res://src/object/bubbleplanter.tscn").instantiate()
 	var bp_spawn_offset = Vector3(2, -1, 1)

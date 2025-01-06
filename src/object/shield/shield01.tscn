@@ -80,12 +80,12 @@ transform = Transform3D(0.0833333, 0, 0, 0, -0.0022483, 0.083303, 0, -0.083303, 
 stream = ExtResource("6_otc6l")
 
 [node name="OmniLight3D" type="OmniLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -0.0269796, 0.999636, 0, -0.999636, -0.0269796, -0.00490491, -0.0093839, -0.0942185)
+transform = Transform3D(1, 0, 0, 0, -0.0269796, 0.999636, 0, -0.999636, -0.0269796, -0.00490491, 0.0933054, 0.0064987)
 light_color = Color(0.247059, 0.67451, 0.87451, 1)
 light_energy = 0.5
 
 [node name="EnergyLabel" type="Label3D" parent="."]
-transform = Transform3D(0.568005, 0, 0, 0, 0.0288253, 1.01511, 0, -0.640702, 0.0456699, -0.00625966, 3.45969e-09, -0.108841)
+transform = Transform3D(0.568005, 0, 0, 0, 0.636004, 0.130927, 0, -0.0826363, 1.00767, 0.00718937, 0.12886, -0.00603247)
 render_priority = 2
 outline_render_priority = 1
 text = "100%"

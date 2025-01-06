@@ -107,7 +107,7 @@ func create_chunk(pos):
 
 	terrain.chunk_list.append(cName)
 
-	if randi() % 500 < 1:		
+	if randi() % 200 < 1:		
 		var random_rotation = randf() * 360.0
 		var random_scale = 2 + randf() * 1.5
 		spawn_structure(position + Vector3(terrain.chunk_size * 0.5, 4 * random_scale, terrain.chunk_size * 0.5), 
@@ -123,7 +123,4 @@ func spawn_structure(position: Vector3, rotation_y: float, scale_factor: float):
 	# Use a single deferred call to set position, rotation, and scale
 	ruins.call_deferred("_set_transform", position, rotation_y, scale_factor)
 	if randi() % 100 < 100:  # 1% chance
-		var radio = preload("res://src/object/radio.tscn").instantiate()
-		radio.env = terrain.env
-		ruins.add_child(radio)
-		radio.call_deferred("_set_scale", 0.1)
+		ruins.spawn_loot(position)
