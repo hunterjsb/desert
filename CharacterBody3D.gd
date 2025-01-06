@@ -52,14 +52,15 @@ var slide_timer = 0.0
 var slide_on_cooldown = false
 var slide_cooldown_timer = 0.0
 
+@export var AmbientAudio : AudioStreamPlayer3D
+
 # Index of the low-pass filter effect on the Storm bus (adjust if needed)
 var storm_filter_effect_index = 0
 
 func _ready():
-	$AmbientAudio.play()
 	add_child(hud)
 	_update_health_bar()
-
+	AmbientAudio.play()
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	original_camera_local_pos = $Camera3D.transform.origin
 

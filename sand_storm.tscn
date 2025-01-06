@@ -93,17 +93,20 @@ mesh = SubResource("SphereMesh_fjae6")
 skeleton = NodePath("../OuterStormMesh")
 
 [node name="SandStormAudio" type="AudioStreamPlayer3D" parent="."]
+transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0)
 stream = ExtResource("3_xuq3t")
 volume_db = 12.19
 unit_size = 31.88
-pitch_scale = 0.81
-max_distance = 200.0
+max_distance = 800.0
 max_polyphony = 3
 panning_strength = 0.0
 bus = &"Storm"
 
 [node name="EyeAudio" type="AudioStreamPlayer3D" parent="."]
+transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0)
 stream = ExtResource("5_r1ikw")
-volume_db = 21.333
-max_distance = 100.0
+volume_db = 20.0
+pitch_scale = 0.89
+max_distance = 500.0
 max_polyphony = 3
+bus = &"Storm"

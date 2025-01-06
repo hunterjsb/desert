@@ -26,11 +26,7 @@ var players_in_storm: Array = []
 var time_accum = 0.0
 var velocity: Vector3 = Vector3.ZERO
 
-@onready var storm_audio = $SandStormAudio
-
 func _ready() -> void:
-	$SandStormAudio.play()
-	$EyeAudio.play()
 	if not wind_manager:
 		wind_manager = get_node("/root/%s/Environment/WindManager" % environment_parent)
 		print("windman fallback to ", wind_manager)
@@ -53,9 +49,11 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
+	play_storm_audio()
 	# 1) Lerp velocity towards current wind
 	var target_wind = wind_manager.get_wind_vector()
 	velocity = velocity.lerp(target_wind, velocity_lerp_factor * delta)
+
 
 	# 2) Add a small "pull" toward the player if enabled
 	if enable_player_tracking:
@@ -128,3 +126,10 @@ func _on_sand_storm_body_exited(body: Node):
 		# IMPORTANT: Update player's Storm audio state
 		if "update_storm_audio" in body:
 			body.update_storm_audio()
+
+func play_storm_audio():
+	if not $SandStormAudio.playing:
+		$SandStormAudio.play()
+		$EyeAudio.play()
+	else:
+		print("yep")

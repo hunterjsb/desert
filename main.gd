@@ -13,6 +13,7 @@ extends Node3D
 @onready var sun = $Environment/Sun
 @onready var moon = $Environment/Moon
 
+
 func _ready() -> void:
 		
 	# Ensure random generation differs each run
@@ -29,7 +30,7 @@ func _ready() -> void:
 		storm.sun = sun  # So the storm can darken the sun
 
 		add_child(storm)
-
+		
 		# Randomize each storm's size and position
 		var random_area = randf_range(storm_area_min, storm_area_max)
 		var random_height = randf_range(storm_height_min, storm_height_max)
@@ -53,12 +54,11 @@ func _initialize_storm(
 
 	# Position the storm in the world
 	storm.global_transform.origin = Vector3(x, height + 70, z)
-
+	
 	# Move it up to avoid spawning underground
 	var y_offset = height * 5
 	storm.global_transform.origin.y += y_offset
 	storm.enable_player_tracking = true
-
 	# Scale player tracking by storm size
 	storm.player_track_strength = area / (4.0 * (storm_area_max + storm_height_max))
 	# storm.storm_darkening = sun.light_energy - 0.1
