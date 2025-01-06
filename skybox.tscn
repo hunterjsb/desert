@@ -228,6 +228,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.52901, 0.585488, 2.19524)
 [node name="Rope" parent="Objects" node_paths=PackedStringArray("start_point", "end_point") instance=ExtResource("17_i4vci")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2909, 0.879572, 0.698084)
 start_point = NodePath("../ShieldGen")
+start_is_rigidbody = true
 end_point = NodePath("../BubblePlanter/RopeAnchor")
 
 [node name="Hoverboard2" parent="." instance=ExtResource("17_oul0n")]
