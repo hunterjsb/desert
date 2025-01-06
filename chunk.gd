@@ -124,5 +124,7 @@ func spawn_structure(position: Vector3, rotation_y: float, scale_factor: float):
 	ruins.call_deferred("_set_transform", position, rotation_y, scale_factor)
 	if randi() % 100 < 100:  # 1% chance
 		var radio = preload("res://src/object/radio.tscn").instantiate()
-		ruins.add_child(radio)
-		radio.call_deferred("_set_scale", 0.1)
+		add_child(radio)
+		radio.call_deferred("set_global_position", position)
+		radio.call_deferred("freeze")
+		# radio.call_deferred("_set_scale", 0.1)
