@@ -28,7 +28,7 @@ shader_parameter/clouds_bottom_color = Color(0.83, 0.83, 0.94, 1)
 shader_parameter/clouds_speed = 2.0
 shader_parameter/clouds_direction = 0.2
 shader_parameter/clouds_scale = 1.0
-shader_parameter/clouds_cutoff = 0.75
+shader_parameter/clouds_cutoff = 0.3
 shader_parameter/clouds_fuzziness = 0.5
 shader_parameter/clouds_weight = 0.0
 shader_parameter/clouds_blur = 0.25
@@ -36,7 +36,7 @@ shader_parameter/stars_speed = 1.0
 shader_parameter/stars_scale = 1.0
 shader_parameter/stars_opacity = 1.0
 shader_parameter/stars_texture = ExtResource("3_xqhtc")
-shader_parameter/overwritten_time = 4150.0
+shader_parameter/overwritten_time = 2400.0
 
 [sub_resource type="Sky" id="Sky_m1irh"]
 sky_material = SubResource("ShaderMaterial_msgkm")
@@ -51,7 +51,6 @@ volumetric_fog_density = 0.0
 [node name="Main" type="Node3D"]
 script = ExtResource("1_6r0ue")
 use_day_time_for_shader = true
-time_scale = 0.5
 sun_base_enegry = 1.0
 moon_base_enegry = 0.1
 
