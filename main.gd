@@ -13,7 +13,6 @@ extends Node3D
 @onready var sun = $Environment/Sun
 @onready var moon = $Environment/Moon
 
-
 func _ready() -> void:
 		
 	# Ensure random generation differs each run

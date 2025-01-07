@@ -131,5 +131,3 @@ func play_storm_audio():
 	if not $SandStormAudio.playing:
 		$SandStormAudio.play()
 		$EyeAudio.play()
-	else:
-		print("yep")
