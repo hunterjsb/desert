@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://d0ie30wbqk3jp"]
+
+[ext_resource type="PackedScene" uid="uid://1e1oop6fyqdd" path="res://texture/object/tower/Object_Tower.fbx" id="1_hj7px"]
+
+[node name="Object_Tower" instance=ExtResource("1_hj7px")]
+
+[node name="Mesh1_Mesh1_008" parent="." index="0"]
+transform = Transform3D(300, 0, 0, 0, 300, 2.26494e-05, 0, -2.26494e-05, 300, 0, 2.47044, -0.007)

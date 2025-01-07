@@ -13,7 +13,7 @@ dest_files=["res://.godot/imported/object_sandstorm2.wav-c821eba717a3c0e0f6fa250
 [params]
 
 force/8_bit=false
-force/mono=true
+force/mono=false
 force/max_rate=false
 force/max_rate_hz=44100
 edit/trim=false
