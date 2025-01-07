@@ -324,6 +324,7 @@ func _on_terrain_map_ready():
 	hoverboard.call_deferred("set_global_position", spawn_position)
 	
 	var bplanter = preload("res://src/object/bubbleplanter.tscn").instantiate()
+	bplanter.wind_manager = $"../Environment/WindManager"
 	var bp_spawn_offset = Vector3(2, -1, 1)
 	var bp_spawn_position = global_transform.origin + bp_spawn_offset
 	get_parent().add_child(bplanter)
