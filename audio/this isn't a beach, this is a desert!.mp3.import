@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://b0hhv7mqeh5t6"
+path="res://.godot/imported/this isn't a beach, this is a desert!.mp3-3ff24125e2352bebd3f92781aed24167.mp3str"
+
+[deps]
+
+source_file="res://audio/this isn't a beach, this is a desert!.mp3"
+dest_files=["res://.godot/imported/this isn't a beach, this is a desert!.mp3-3ff24125e2352bebd3f92781aed24167.mp3str"]
+
+[params]
+
+loop=true
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

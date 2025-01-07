@@ -22,8 +22,9 @@ shader_parameter/line_movement = null
 shader_parameter/line_movement_speed = null
 shader_parameter/wave = null
 
-[node name="radio" instance=ExtResource("1_ykkyc")]
+[node name="radio" node_paths=PackedStringArray("env") instance=ExtResource("1_ykkyc")]
 script = ExtResource("2_hnmmv")
+env = NodePath("Mesh1_Mesh1_108")
 
 [node name="Mesh1_Mesh1_108" parent="." index="0" groups=["interactable"]]
 transform = Transform3D(1, 0, 0, 0, 1, 7.54979e-08, 0, -7.54979e-08, 1, 0, 0, 0)
