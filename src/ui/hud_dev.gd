@@ -18,6 +18,8 @@ func _process(delta: float) -> void:
 		
 		var wind_angle = wind_man.major_dir_angle_current
 		wind.text = "Wind: %s (%d)" % [deg_to_compass(wind_angle), wind_angle]
+		
+		hunger.text = "Hunger: %d" % player.hunger
 	
 func deg_to_compass(degrees: float) -> String:
 	var compass = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"]
