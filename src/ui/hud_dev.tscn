@@ -36,10 +36,10 @@ text = "12hr
 
 [node name="WindLabel" type="Label" parent="."]
 layout_mode = 0
-offset_left = 226.0
-offset_top = 22.0
-offset_right = 321.0
-offset_bottom = 56.0
+offset_left = 294.0
+offset_top = 26.0
+offset_right = 389.0
+offset_bottom = 60.0
 theme_override_font_sizes/font_size = 24
 text = "Wind: W"
 
