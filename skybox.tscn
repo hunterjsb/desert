@@ -19,7 +19,7 @@
 [ext_resource type="PackedScene" uid="uid://ickso2cui7ul" path="res://src/object/shield/shield01.tscn" id="17_8ikjw"]
 [ext_resource type="PackedScene" uid="uid://dsqljfot4jffp" path="res://src/object/rope/Rope.tscn" id="17_i4vci"]
 [ext_resource type="PackedScene" uid="uid://kmmdmjoujgr6" path="res://src/object/hoverboard/hoverboard.tscn" id="17_oul0n"]
-[ext_resource type="PackedScene" uid="uid://dotdv60184fyp" path="res://src/object/food/carrot_01.tscn" id="20_rjruf"]
+[ext_resource type="PackedScene" uid="uid://dotdv60184fyp" path="res://src/object/food/carrot.tscn" id="20_rjruf"]
 
 [sub_resource type="QuadMesh" id="QuadMesh_oy20x"]
 
