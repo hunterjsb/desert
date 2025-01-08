@@ -24,6 +24,11 @@ var peak_fall_speed: float = 0.0
 var max_health = 100
 var current_health = 100
 
+var hunger: int = 100
+var previous_hunger_state: String = ""
+var hunger_timer: float = 0.0
+@export var hunger_tick_rate: float = 5.0  # time (seconds) between hunger decreases
+
 @export var gravity = 0.0
 var walk_cycle_time = 0.0
 var original_camera_local_pos
@@ -75,6 +80,14 @@ func _ready():
 
 
 func _physics_process(delta):
+	hunger_timer += delta
+	if hunger_timer >= hunger_tick_rate:
+		hunger_timer = 0.0
+		hunger -= 1
+		if hunger < 0:
+			hunger = 0
+		_update_hunger_label()
+	
 	if not can_move:
 		return
 
@@ -139,7 +152,6 @@ func _physics_process(delta):
 		# Normal input
 		var input_dir = Input.get_vector("a", "d", "w", "s")
 		var direction = transform.basis * Vector3(input_dir.x, 0, input_dir.y)
-		# print(direction.x, current_speed)
 		velocity.x = direction.x * current_speed
 		velocity.z = direction.z * current_speed
 
@@ -219,6 +231,23 @@ func _input(event):
 		if not is_sliding:
 			is_crouching = false
 
+func _update_hunger_label(force_update: bool = false) -> void:
+	var current_state = _get_hunger_state()
+	if current_state != previous_hunger_state or force_update:
+		previous_hunger_state = current_state
+		var hunger_label = hud.get_node("HungerLabel") if hud.has_node("HungerLabel") else null
+		if hunger_label:
+			hunger_label.text = current_state
+		print(current_state)  # For debug/logging
+
+func _get_hunger_state() -> String:
+	# You can tweak these thresholds to taste
+	if hunger <= 25:
+		return "You are starving"
+	elif hunger <= 75:
+		return "You are hungry"
+	else:
+		return "You are full"
 
 func rotate_held_item(direction: float, axis: String = "y") -> void:
 	var angle_deg = direction * 90.0
@@ -361,8 +390,8 @@ func take_damage(amount: int) -> void:
 
 
 func _update_health_bar() -> void:
-	if hud and hud.has_node("ProgressBar"):
-		var health_bar = hud.get_node("ProgressBar")
+	if hud and hud.has_node("HealthBar"):
+		var health_bar = hud.get_node("HealthBar")
 		health_bar.value = current_health
 
 
