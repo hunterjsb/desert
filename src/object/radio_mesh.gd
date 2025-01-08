@@ -43,3 +43,8 @@ func interact(player: Node) -> void:
 		static_noise.volume_db = -80
 		timer.queue_free()
 	)
+
+
+func _on_area_3d_area_entered(area):
+	SoundManager.randomclank(self)
+	print("collision detected")

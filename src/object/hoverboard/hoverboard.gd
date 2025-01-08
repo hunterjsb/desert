@@ -45,3 +45,7 @@ func interact(player: Node):
 func on_pickup(player: Node):
 	if attached:
 		interact(player)
+
+
+func _on_area_3d_area_entered(area: Area3D) -> void:
+	SoundManager.randomclank(self)

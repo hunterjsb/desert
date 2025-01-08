@@ -16,7 +16,6 @@ var is_active := false
 signal player_entered_bubble(player)
 signal player_exited_bubble(player)
 
-
 func _ready():
 	# BubbleShield area is hidden by default
 	bubble_shield_area.visible = false
@@ -41,6 +40,7 @@ func _process(delta):
 
 	if global_position.y < -100:
 		print("shield probably fell out of the world")
+
 
 
 func _on_bubble_body_entered(body: Node):
@@ -104,3 +104,7 @@ func interact(player: Node):
 # Helper so we can show/hide the energy label easily
 func set_energy_label_visible(make_visible: bool) -> void:
 	$EnergyLabel.visible = make_visible
+
+
+func _on_area_3d_area_entered(area: Area3D) -> void:
+	SoundManager.randomclank(self)
