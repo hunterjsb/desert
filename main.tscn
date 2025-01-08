@@ -7,7 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://ch0krls6y12y8" path="res://player.tscn" id="4_rrvx7"]
 [ext_resource type="PackedScene" uid="uid://bounpd4i1v5pf" path="res://src/ui/hud_dev.tscn" id="5_7jr5i"]
 [ext_resource type="Script" path="res://day_night.gd" id="6_q0lrl"]
-[ext_resource type="PackedScene" uid="uid://diypg6xn6wpio" path="res://menu.tscn" id="6_tpmk5"]
+[ext_resource type="PackedScene" uid="uid://diypg6xn6wpio" path="res://src/ui/menu.tscn" id="6_tpmk5"]
 [ext_resource type="Script" path="res://wind_manager.gd" id="6_xst0i"]
 [ext_resource type="Shader" path="res://src/environment/sky.gdshader" id="8_a4qdo"]
 [ext_resource type="Texture2D" uid="uid://bmoh66spei4tg" path="res://src/environment/stars.png" id="9_shxyi"]

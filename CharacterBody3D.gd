@@ -39,8 +39,8 @@ var is_carrying_item: bool = false
 
 @onready var ray = $Camera3D/RayCast3D
 
-@onready var menu = preload("res://menu.tscn").instantiate()
-@onready var hud = preload("res://hud.tscn").instantiate()
+@onready var menu = $Menu
+@onready var hud = preload("res://src/ui/hud.tscn").instantiate()
 
 var can_move = true
 var on_hoverboard = false
