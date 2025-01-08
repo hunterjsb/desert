@@ -115,6 +115,7 @@ shape = SubResource("ConcavePolygonShape3D_y4tmv")
 
 [node name="Player" parent="." instance=ExtResource("1_l1y63")]
 transform = Transform3D(0.258819, 0, 0.965926, 0, 1, 0, -0.965926, 0, 0.258819, 0.531002, 0.454737, 1.75178)
+hunger_tick_rate = 1.0
 gravity = 9.8
 
 [node name="DevHUD" parent="Player" node_paths=PackedStringArray("player", "environment") instance=ExtResource("3_ntfw2")]
