@@ -1,4 +1,4 @@
-[gd_scene load_steps=32 format=3 uid="uid://31vsdnsofoou"]
+[gd_scene load_steps=33 format=3 uid="uid://31vsdnsofoou"]
 
 [ext_resource type="PackedScene" uid="uid://ch0krls6y12y8" path="res://player.tscn" id="1_l1y63"]
 [ext_resource type="PackedScene" uid="uid://b0gsf4ppmuj2h" path="res://sand_storm.tscn" id="1_qsy6h"]
@@ -19,6 +19,7 @@
 [ext_resource type="PackedScene" uid="uid://ickso2cui7ul" path="res://src/object/shield/shield01.tscn" id="17_8ikjw"]
 [ext_resource type="PackedScene" uid="uid://dsqljfot4jffp" path="res://src/object/rope/Rope.tscn" id="17_i4vci"]
 [ext_resource type="PackedScene" uid="uid://kmmdmjoujgr6" path="res://src/object/hoverboard/hoverboard.tscn" id="17_oul0n"]
+[ext_resource type="PackedScene" uid="uid://dotdv60184fyp" path="res://src/object/food/carrot_01.tscn" id="20_rjruf"]
 
 [sub_resource type="QuadMesh" id="QuadMesh_oy20x"]
 
@@ -240,6 +241,9 @@ end_point = NodePath("../BubblePlanter/RopeAnchor")
 
 [node name="Hoverboard2" parent="Objects" instance=ExtResource("17_oul0n")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.98076, 0.506934, -1.54647)
+
+[node name="Carrot" parent="." instance=ExtResource("20_rjruf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 2, 1)
 
 [connection signal="cardinal_direction_changed" from="Environment/WindManager" to="Objects/WindyBody" method="_on_cardinal_direction_changed"]
 [connection signal="gust_ended" from="Environment/WindManager" to="Objects/WindyBody" method="_on_gust_ended"]
