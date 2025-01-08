@@ -30,9 +30,7 @@ func _ready() -> void:
 	# end at end point
 	joints.append(end_point)
 	# create cable segments
-	print("NUM SEGS ", number_of_segments)
 	for s in number_of_segments:
-		print("ON SEG ", s)
 		segments.append(cable_mesh.instantiate())
 		self.add_child(segments[s])
 		# position segments between the joints
