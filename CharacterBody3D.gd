@@ -114,14 +114,19 @@ func _physics_process(delta):
 	# HOVER LOGIC (highlight + show label if has energy)
 	var collider = get_ray_collider("interactable")
 	if collider and collider != carried_item:
-		if collider != last_highlighted_item and last_highlighted_item:
-			reset_outline(last_highlighted_item)
+		if last_highlighted_item and last_highlighted_item != collider:
+			if is_instance_valid(last_highlighted_item):
+				reset_outline(last_highlighted_item)
+		# Highlight the new collider
 		apply_outline(collider)
 		last_highlighted_item = collider
 	else:
+		# Reset the outline if there's no valid collider
 		if last_highlighted_item:
-			reset_outline(last_highlighted_item)
+			if is_instance_valid(last_highlighted_item):
+				reset_outline(last_highlighted_item)
 			last_highlighted_item = null
+
 
 	# Gravity
 	velocity.y -= gravity * delta
@@ -468,6 +473,9 @@ func calculate_fall_damage():
 		print("Player took ", fall_damage, " fall damage.")
 		fall_damage = 0
 
+func eat_food(amount: int) -> void:
+	hunger = clamp(hunger + amount, 0, 100)
+	show_hunger_message("It's a little dry...") 
 
 #
 # ==> AUDIO CONTROL FOR STORM BUS
