@@ -8,13 +8,14 @@ extends Node3D
 @export var storm_area_max := 60
 @export var storm_height_min := 20
 @export var storm_height_max := 40
+@export var min_spawn_distance := 600 # Minimum distance from the player
 
 @onready var wind_manager = $Environment/WindManager
 @onready var sun = $Environment/Sun
 @onready var moon = $Environment/Moon
+@onready var player = $Player  # maybe export
 
 func _ready() -> void:
-
 	# Ensure random generation differs each run
 	randomize()
 
@@ -34,12 +35,25 @@ func _ready() -> void:
 		var random_area = randf_range(storm_area_min, storm_area_max)
 		var random_height = randf_range(storm_height_min, storm_height_max)
 
-		var random_x = randf_range(-spawn_radius, spawn_radius)
-		var random_z = randf_range(-spawn_radius, spawn_radius)
+		# Ensure storm spawns far enough from the player
+		var position = get_valid_storm_position(random_height)
 
 		# Defer initialization so the node is fully added before changes
-		call_deferred("_initialize_storm", storm, random_area, random_height, random_x, random_z)
+		call_deferred("_initialize_storm", storm, random_area, random_height, position.x, position.z)
 
+func get_valid_storm_position(height: float) -> Vector3:
+	var position: Vector3
+	while true:
+		var random_x = randf_range(-spawn_radius, spawn_radius)
+		var random_z = randf_range(-spawn_radius, spawn_radius)
+		position = Vector3(random_x, height + 70, random_z)
+		print("POSIT... ", position.distance_to(player.global_transform.origin))
+		
+		# Check distance from player
+		if position.distance_to(player.global_transform.origin) >= min_spawn_distance:
+			break  # Position is valid
+	print("GOOD POS ", position.distance_to(player.global_transform.origin))
+	return position
 
 func _initialize_storm(
 		storm: Node3D,
@@ -60,7 +74,6 @@ func _initialize_storm(
 	storm.enable_player_tracking = true
 	# Scale player tracking by storm size
 	storm.player_track_strength = area / (4.0 * (storm_area_max + storm_height_max))
-	# storm.storm_darkening = sun.light_energy - 0.1
 	
 	print(
 		"SAND STORM spawned at (",
