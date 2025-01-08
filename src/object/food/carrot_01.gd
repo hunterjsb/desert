@@ -4,8 +4,12 @@ extends InteractableBody3D
 
 
 func interact(player: Node) -> void:
-	if not player:
-		return
-	if "eat_food" in player:
-		player.eat_food(hunger_restore_amount)
+	# add food to player
+	player.eat_food(hunger_restore_amount)
+	
+	# clear hand
+	if player.is_carrying_item and player.carried_item == self:
+		player.clear_hand()
+		
+	# delete item
 	queue_free()

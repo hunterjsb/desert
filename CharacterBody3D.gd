@@ -244,6 +244,17 @@ func _input(event):
 		if not is_sliding:
 			is_crouching = false
 
+func clear_hand() -> void:
+	if is_carrying_item:
+		# Ensure any carried item reference is cleared
+		carried_item = null
+		carried_item_type = ""
+		is_carrying_item = false
+		
+		# Optionally: Update visuals or hand state
+		print("Player's hand is now empty.")
+
+
 func _update_hunger_label(force_update: bool = false) -> void:
 	var current_state = _get_hunger_state()
 	if current_state != previous_hunger_state or force_update:
@@ -337,18 +348,19 @@ func get_ray_collider(group: String) -> Node:
 # ==> PICKUP / THROW / INTERACT <==
 #
 func throw_item():
-	$Camera3D/HandPoint.remove_child(carried_item)
-	get_parent().add_child(carried_item)
-	carried_item.global_transform = $Camera3D/HandPoint.global_transform
+	if is_carrying_item:
+		# Remove the item from the player's hand
+		$Camera3D/HandPoint.remove_child(carried_item)
+		get_parent().add_child(carried_item)
+		carried_item.global_transform = $Camera3D/HandPoint.global_transform
 
-	if carried_item is RigidBody3D:
-		carried_item.freeze = false
-		var throw_dir = -$Camera3D.global_transform.basis.z.normalized()
-		carried_item.apply_central_impulse(throw_dir * 5.0)
+		if carried_item is RigidBody3D:
+			carried_item.freeze = false
+			var throw_dir = -$Camera3D.global_transform.basis.z.normalized()
+			carried_item.apply_central_impulse(throw_dir * 5.0)
 
-	carried_item = null
-	carried_item_type = ""
-	is_carrying_item = false
+		# Clear the hand state
+		clear_hand()
 
 
 func interact_with_item(item: Node3D):

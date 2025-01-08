@@ -27,6 +27,9 @@ func interact(player: Node):
 	
 	# === Only reset transform if attaching ===
 	if !attached:
+		# remove from hand if carrying
+		if player.is_carrying_item and player.carried_item == self:
+			player.clear_hand()
 		# *Attaching* => optionally reset local position
 		self.transform = Transform3D()
 		prev_sprint_sway = player.sprint_sway_intensity
