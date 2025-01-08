@@ -2,8 +2,7 @@ extends Area3D
 
 @export_group("Environment")
 @export var wind_manager: Node3D
-@export var environment_parent: String = "main"  # for fallback
-@export var sun: DirectionalLight3D
+@export var env: Node3D
 
 @export_group("Damage")
 @export var damage = 1
@@ -14,8 +13,8 @@ extends Area3D
 @export var storm_darkening_time = 1.0
 
 @export_group("Movement")
-@export var min_speed = 0.5            # Minimum speed the storm travels
-@export var velocity_lerp_factor = 2.0 # How fast the storm velocity lerps to the new wind velocity
+@export var min_speed = 0.5
+@export var velocity_lerp_factor = 2.0
 @export var unusual_velocity_threshold = 10.0
 
 @export_group("Player Tracking")
@@ -27,17 +26,10 @@ var time_accum = 0.0
 var velocity: Vector3 = Vector3.ZERO
 
 func _ready() -> void:
-	if not wind_manager:
-		wind_manager = get_node("/root/%s/Environment/WindManager" % environment_parent)
-		print("windman fallback to ", wind_manager)
 	wind_manager.cardinal_direction_changed.connect(_on_wind_cardinal_change)
 	wind_manager.gust_started.connect(_on_wind_gust_started)
 	wind_manager.gust_ended.connect(_on_wind_gust_ended)
 	
-	if not sun:
-		sun = get_node("/root/%s/Environment/Sun" % environment_parent)
-		print("sun fallback to ", sun)
-
 	# Update velocity to match current wind at spawn
 	velocity = wind_manager.get_wind_vector()
 	if velocity.length() < min_speed:
@@ -50,12 +42,12 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	play_storm_audio()
-	# 1) Lerp velocity towards current wind
+
+	# 1) Lerp velocity toward current wind
 	var target_wind = wind_manager.get_wind_vector()
 	velocity = velocity.lerp(target_wind, velocity_lerp_factor * delta)
 
-
-	# 2) Add a small "pull" toward the player if enabled
+	# 2) Optionally add a small "pull" toward the player
 	if enable_player_tracking:
 		var players_list = get_tree().get_nodes_in_group("Player")
 		if players_list.size() > 0:
@@ -68,10 +60,10 @@ func _process(delta: float) -> void:
 	if spd < min_speed and spd > 0.001:
 		velocity = velocity.normalized() * min_speed
 
-	# 4) Move the storm by velocity
+	# 4) Move the storm
 	global_transform.origin += velocity * delta
 
-	# 5) Check for unusual velocity and remove y component
+	# 5) Zero out Y velocity if it's unusual
 	velocity *= Vector3(1, 0, 1)
 	if velocity.length() > unusual_velocity_threshold:
 		print("[Sandstorm] Unusual velocity detected! v=", velocity)
@@ -85,19 +77,17 @@ func _process(delta: float) -> void:
 			if not player.is_in_bubble_shield:
 				player.take_damage(damage)
 
-
 ### SIGNAL HANDLERS
 func _on_wind_cardinal_change(new_dir: float) -> void:
 	print("[Sandstorm] Cardinal wind direction changed to: ", new_dir)
 
 func _on_wind_gust_started() -> void:
-	pass
 	# print("[Sandstorm] Gust started! Watch out!")
+	pass
 
 func _on_wind_gust_ended() -> void:
-	pass
 	# print("[Sandstorm] Gust ended.")
-
+	pass
 
 ### AREA3D callbacks
 func _on_sand_storm_body_entered(body: Node):
@@ -106,13 +96,13 @@ func _on_sand_storm_body_entered(body: Node):
 		players_in_storm.append(body)
 		print("Player entered the Sand Storm")
 
+		# Instead of tweening sun.light_energy, we tween day_night's storm_multiplier
 		var t = create_tween()
-		t.tween_property(sun, "light_energy", sun.light_energy*(1 - storm_darkening), storm_darkening_time)
+		t.tween_property(env, "storm_multiplier", 1.0 - storm_darkening, storm_darkening_time)
 
 		# IMPORTANT: Update player's Storm audio state
 		if "update_storm_audio" in body:
 			body.update_storm_audio()
-
 
 func _on_sand_storm_body_exited(body: Node):
 	if body.name == "Player":
@@ -120,8 +110,9 @@ func _on_sand_storm_body_exited(body: Node):
 		players_in_storm.erase(body)
 		print("Player exited the Sand Storm")
 
+		# Tween storm_multiplier back to 1.0 for normal brightness
 		var t = create_tween()
-		t.tween_property(sun, "light_energy", 1, storm_darkening_time)
+		t.tween_property(env, "storm_multiplier", 1.0, storm_darkening_time)
 
 		# IMPORTANT: Update player's Storm audio state
 		if "update_storm_audio" in body:
