@@ -13,7 +13,7 @@ extends Node3D
 @onready var wind_manager = $Environment/WindManager
 @onready var sun = $Environment/Sun
 @onready var moon = $Environment/Moon
-@onready var player = $Player  # maybe export
+@onready var player = $Player
 
 func _ready() -> void:
 	# Ensure random generation differs each run
