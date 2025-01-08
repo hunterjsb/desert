@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://ry3c5djemip2" path="res://terrain.tscn" id="2_vayhu"]
 [ext_resource type="PackedScene" uid="uid://dl4jetqhbaqxp" path="res://texture/structure/bigwheel.fbx" id="3_jboed"]
 [ext_resource type="PackedScene" uid="uid://ch0krls6y12y8" path="res://player.tscn" id="4_rrvx7"]
-[ext_resource type="PackedScene" uid="uid://bounpd4i1v5pf" path="res://src/hud_dev.tscn" id="5_7jr5i"]
+[ext_resource type="PackedScene" uid="uid://bounpd4i1v5pf" path="res://src/ui/hud_dev.tscn" id="5_7jr5i"]
 [ext_resource type="Script" path="res://day_night.gd" id="6_q0lrl"]
 [ext_resource type="PackedScene" uid="uid://diypg6xn6wpio" path="res://menu.tscn" id="6_tpmk5"]
 [ext_resource type="Script" path="res://wind_manager.gd" id="6_xst0i"]
