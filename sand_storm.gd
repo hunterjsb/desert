@@ -9,8 +9,8 @@ extends Area3D
 @export var damage_ticks = 3
 
 @export_group("Lighting")
-@export var storm_darkening = 0.8
-@export var storm_darkening_time = 1.0
+@export var storm_darkening = 0.9
+@export var storm_darkening_time = 3.0
 
 @export_group("Movement")
 @export var min_speed = 0.5
@@ -63,7 +63,7 @@ func _process(delta: float) -> void:
 	# 4) Move the storm
 	global_transform.origin += velocity * delta
 
-	# 5) Zero out Y velocity if it's unusual
+	# 5) Zero out Y velocity
 	velocity *= Vector3(1, 0, 1)
 	if velocity.length() > unusual_velocity_threshold:
 		print("[Sandstorm] Unusual velocity detected! v=", velocity)
@@ -96,11 +96,12 @@ func _on_sand_storm_body_entered(body: Node):
 		players_in_storm.append(body)
 		print("Player entered the Sand Storm")
 
-		# Instead of tweening sun.light_energy, we tween day_night's storm_multiplier
+		# Adjust the storm multiplier based on the current sun light energy
+		var target_multiplier = env.sun_base_energy * (1.0 - storm_darkening)
 		var t = create_tween()
-		t.tween_property(env, "storm_multiplier", 1.0 - storm_darkening, storm_darkening_time)
+		t.tween_property(env, "storm_multiplier", target_multiplier, storm_darkening_time)
 
-		# IMPORTANT: Update player's Storm audio state
+		# Update player's Storm audio state
 		if "update_storm_audio" in body:
 			body.update_storm_audio()
 
@@ -110,11 +111,11 @@ func _on_sand_storm_body_exited(body: Node):
 		players_in_storm.erase(body)
 		print("Player exited the Sand Storm")
 
-		# Tween storm_multiplier back to 1.0 for normal brightness
+		# Restore the multiplier to match the current sun light energy
 		var t = create_tween()
-		t.tween_property(env, "storm_multiplier", 1.0, storm_darkening_time)
+		t.tween_property(env, "storm_multiplier", env.sun_base_energy, storm_darkening_time)
 
-		# IMPORTANT: Update player's Storm audio state
+		# Update player's Storm audio state
 		if "update_storm_audio" in body:
 			body.update_storm_audio()
 

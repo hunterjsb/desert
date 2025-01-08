@@ -59,9 +59,9 @@ const DAYS_IN_YEAR : int = 365
 	set( value ) :
 		time_scale = value
 
-@export_range( 0.0, 10.0, 0.01 ) var sun_base_enegry : float = 0.0 :
+@export_range( 0.0, 10.0, 0.01 ) var sun_base_energy : float = 0.0 :
 	set( value ) :
-		sun_base_enegry = value
+		sun_base_energy = value
 		_update_shader()
 
 @export_range( 0.0, 10.0, 0.01 ) var moon_base_enegry : float = 0.0 :
@@ -83,8 +83,8 @@ func _ready() -> void :
 		sun.position = Vector3( 0.0, 0.0, 0.0 )
 		sun.rotation = Vector3( 0.0, 0.0, 0.0 )
 		sun.rotation_order = EULER_ORDER_ZXY
-		if sun_base_enegry == 0.0 :
-			sun_base_enegry = sun.light_energy
+		if sun_base_energy == 0.0 :
+			sun_base_energy = sun.light_energy
 	if is_instance_valid(moon):
 		moon.position = Vector3( 0.0, 0.0, 0.0 )
 		moon.rotation = Vector3( 0.0, 0.0, 0.0 )
@@ -116,7 +116,7 @@ func _update_sun() -> void :
 
 		var sun_direction = sun.to_global(Vector3(0.0, 0.0, 1.0)).normalized()
 		# Base day-night logic
-		var day_night_energy = smoothstep(-0.05, 0.1, sun_direction.y) * sun_base_enegry
+		var day_night_energy = smoothstep(-0.05, 0.1, sun_direction.y) * sun_base_energy
 
 		# ------------------------------------------
 		# Multiply by storm_multiplier, so it dims if storm_multiplier < 1

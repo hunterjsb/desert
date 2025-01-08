@@ -129,9 +129,8 @@ player = NodePath("..")
 script = ExtResource("6_aefkn")
 day_time = 12.0
 time_scale = 0.1
-sun_base_enegry = 1.0
+sun_base_energy = 1.0
 moon_base_enegry = 0.1
-storm_multiplier = null
 
 [node name="WindManager" type="Node3D" parent="Environment"]
 script = ExtResource("5_0otb4")
@@ -156,10 +155,10 @@ shadow_opacity = 0.25
 shadow_blur = 5.0
 directional_shadow_fade_start = 0.1
 
-[node name="SandStorm" parent="." node_paths=PackedStringArray("wind_manager") instance=ExtResource("1_qsy6h")]
+[node name="SandStorm" parent="." node_paths=PackedStringArray("wind_manager", "env") instance=ExtResource("1_qsy6h")]
 transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 179.945, 82.0078, 0)
 wind_manager = NodePath("../Environment/WindManager")
-storm_darkening = 0.95
+env = NodePath("../Environment")
 
 [node name="ruins03" parent="." instance=ExtResource("12_vg0di")]
 transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 1.94333, 3.40192, -18.7616)
