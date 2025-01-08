@@ -16,18 +16,14 @@ extends Node3D
 @onready var player = $Player
 
 func _ready() -> void:
-	# Ensure random generation differs each run
 	randomize()
-
 	var storm_scene = load("res://sand_storm.tscn")
-
-	# Randomly pick how many storms to spawn
 	var storms_to_spawn = int(randf_range(min_storms, max_storms + 1))
 
 	for i in range(storms_to_spawn):
-		# Create a new storm instance
 		var storm = storm_scene.instantiate()
-		storm.sun = sun  # So the storm can darken the sun
+		storm.env = $Environment
+		storm.wind_manager = wind_manager
 
 		add_child(storm)
 		
@@ -47,12 +43,10 @@ func get_valid_storm_position(height: float) -> Vector3:
 		var random_x = randf_range(-spawn_radius, spawn_radius)
 		var random_z = randf_range(-spawn_radius, spawn_radius)
 		position = Vector3(random_x, height + 70, random_z)
-		print("POSIT... ", position.distance_to(player.global_transform.origin))
 		
 		# Check distance from player
 		if position.distance_to(player.global_transform.origin) >= min_spawn_distance:
 			break  # Position is valid
-	print("GOOD POS ", position.distance_to(player.global_transform.origin))
 	return position
 
 func _initialize_storm(

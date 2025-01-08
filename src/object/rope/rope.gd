@@ -34,7 +34,6 @@ func _ready() -> void:
 		segments.append(cable_mesh.instantiate())
 		self.add_child(segments[s])
 		# position segments between the joints
-		print("POSING ", segments[s])
 		segments[s].global_position = joints[s].global_position + (joints[s+1].global_position - joints[s].global_position)/2
 		segments[s].get_child(0).mesh.top_radius = cable_thickness/2.0
 		segments[s].get_child(0).mesh.bottom_radius = cable_thickness/2.0

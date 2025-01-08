@@ -83,6 +83,7 @@ script = ExtResource("6_q0lrl")
 day_time = 6.5
 sun_base_enegry = 2.0
 moon_base_enegry = 0.1
+storm_multiplier = null
 
 [node name="WindManager" type="Node3D" parent="Environment"]
 script = ExtResource("6_xst0i")
