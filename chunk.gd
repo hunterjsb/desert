@@ -122,6 +122,5 @@ func spawn_structure(position: Vector3, rotation_y: float, scale_factor: float):
 
 	# Use a single deferred call to set position, rotation, and scale
 	ruins.call_deferred("_set_transform", position, rotation_y, scale_factor)
-	if randi() % 100 < 100:  # 1% chance
-		ruins.env = terrain.env
-		ruins.spawn_loot(position)
+	ruins.env = terrain.env
+	ruins.spawn_loot(position)

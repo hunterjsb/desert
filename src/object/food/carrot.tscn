@@ -1,6 +1,6 @@
 [gd_scene load_steps=9 format=4 uid="uid://dotdv60184fyp"]
 
-[ext_resource type="Script" path="res://src/object/food/carrot_01.gd" id="1_mccko"]
+[ext_resource type="Script" path="res://src/object/food/carrot.gd" id="1_mccko"]
 [ext_resource type="Texture2D" uid="uid://dwt5xt10qvnbj" path="res://texture/object/food/carrot_01.png" id="2_173mi"]
 [ext_resource type="Shader" path="res://outline01.gdshader" id="2_gecxf"]
 
@@ -55,6 +55,7 @@ shadow_mesh = SubResource("ArrayMesh_1bc84")
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_k5qw6"]
 radius = 0.25
+height = 1.5
 
 [node name="Carrot" type="RigidBody3D" groups=["interactable"]]
 collision_layer = 6
@@ -69,5 +70,5 @@ mesh = SubResource("ArrayMesh_xm40q")
 skeleton = NodePath("")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-transform = Transform3D(0.259808, 0.15, 0, -0.15, 0.259808, 0, 0, 0, 0.3, 0.000275552, 0.00424697, 0)
+transform = Transform3D(0.433013, 0.25, 0, -0.25, 0.433013, 0, 0, 0, 0.5, 0.000275552, 0.00424697, 0)
 shape = SubResource("CapsuleShape3D_k5qw6")
