@@ -16,3 +16,11 @@ transform = Transform3D(1, 0, 0, 0, 0.0458512, 0.998948, 0, -0.998948, 0.0458512
 shape = SubResource("CapsuleShape3D_1v2vm")
 
 [node name="HoverboardMesh" parent="." instance=ExtResource("2_uhxb8")]
+
+[node name="Area3D" type="Area3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
+transform = Transform3D(1, 0, 0, 0, 0.0458512, 0.998948, 0, -0.998948, 0.0458512, 0, 0, 0)
+shape = SubResource("CapsuleShape3D_1v2vm")
+
+[connection signal="area_entered" from="Area3D" to="." method="_on_area_3d_area_entered"]

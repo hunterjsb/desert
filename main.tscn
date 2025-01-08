@@ -1,8 +1,9 @@
-[gd_scene load_steps=14 format=3 uid="uid://detacysixr15p"]
+[gd_scene load_steps=15 format=3 uid="uid://detacysixr15p"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_7asmc"]
 [ext_resource type="PackedScene" uid="uid://ry3c5djemip2" path="res://terrain.tscn" id="2_vayhu"]
 [ext_resource type="PackedScene" uid="uid://dl4jetqhbaqxp" path="res://texture/structure/bigwheel.fbx" id="3_jboed"]
+[ext_resource type="Script" path="res://sound_manager.gd" id="4_8cf7n"]
 [ext_resource type="PackedScene" uid="uid://ch0krls6y12y8" path="res://player.tscn" id="4_rrvx7"]
 [ext_resource type="PackedScene" uid="uid://bounpd4i1v5pf" path="res://src/ui/hud_dev.tscn" id="5_7jr5i"]
 [ext_resource type="Script" path="res://day_night.gd" id="6_q0lrl"]
@@ -67,6 +68,9 @@ player = NodePath("../Player")
 noise_terrain = "res://noise_terrain.tres"
 chunk_script = "res://chunk.gd"
 env = NodePath("../Environment")
+
+[node name="SoundManager" type="Node3D" parent="."]
+script = ExtResource("4_8cf7n")
 
 [node name="Player" parent="." instance=ExtResource("4_rrvx7")]
 

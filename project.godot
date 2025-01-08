@@ -16,6 +16,10 @@ run/main_scene="res://src/ui/main_menu.tscn"
 config/features=PackedStringArray("4.3", "Forward Plus")
 config/icon="res://texture/bsg.webp"
 
+[autoload]
+
+SoundManager="*res://sound_manager.gd"
+
 [global]
 
 Storm=false
