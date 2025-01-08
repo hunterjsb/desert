@@ -24,6 +24,19 @@ var peak_fall_speed: float = 0.0
 var max_health = 100
 var current_health = 100
 
+var hunger: int = 100
+var previous_hunger_state: String = ""
+var hunger_timer: float = 0.0
+@export var hunger_tick_rate: float = 5.0  # time (seconds) between hunger decreases
+
+# Fade settings (tweak to taste)
+@export var fade_in_time: float = 0.5
+@export var display_time: float = 2.0
+@export var fade_out_time: float = 0.5
+
+# We'll store a reference to our active Tween so we can cancel it if needed
+var hunger_fade_tween: Tween = null
+
 @export var gravity = 0.0
 var walk_cycle_time = 0.0
 var original_camera_local_pos
@@ -39,8 +52,8 @@ var is_carrying_item: bool = false
 
 @onready var ray = $Camera3D/RayCast3D
 
-@onready var menu = preload("res://menu.tscn").instantiate()
-@onready var hud = preload("res://hud.tscn").instantiate()
+@onready var menu = $Menu
+@onready var hud = preload("res://src/ui/hud.tscn").instantiate()
 
 var can_move = true
 var on_hoverboard = false
@@ -75,6 +88,14 @@ func _ready():
 
 
 func _physics_process(delta):
+	hunger_timer += delta
+	if hunger_timer >= hunger_tick_rate:
+		hunger_timer = 0.0
+		hunger -= 1
+		if hunger < 0:
+			hunger = 0
+		_update_hunger_label()
+	
 	if not can_move:
 		return
 
@@ -93,14 +114,19 @@ func _physics_process(delta):
 	# HOVER LOGIC (highlight + show label if has energy)
 	var collider = get_ray_collider("interactable")
 	if collider and collider != carried_item:
-		if collider != last_highlighted_item and last_highlighted_item:
-			reset_outline(last_highlighted_item)
+		if last_highlighted_item and last_highlighted_item != collider:
+			if is_instance_valid(last_highlighted_item):
+				reset_outline(last_highlighted_item)
+		# Highlight the new collider
 		apply_outline(collider)
 		last_highlighted_item = collider
 	else:
+		# Reset the outline if there's no valid collider
 		if last_highlighted_item:
-			reset_outline(last_highlighted_item)
+			if is_instance_valid(last_highlighted_item):
+				reset_outline(last_highlighted_item)
 			last_highlighted_item = null
+
 
 	# Gravity
 	velocity.y -= gravity * delta
@@ -139,7 +165,6 @@ func _physics_process(delta):
 		# Normal input
 		var input_dir = Input.get_vector("a", "d", "w", "s")
 		var direction = transform.basis * Vector3(input_dir.x, 0, input_dir.y)
-		# print(direction.x, current_speed)
 		velocity.x = direction.x * current_speed
 		velocity.z = direction.z * current_speed
 
@@ -219,6 +244,74 @@ func _input(event):
 		if not is_sliding:
 			is_crouching = false
 
+func clear_hand() -> void:
+	if is_carrying_item:
+		# Ensure any carried item reference is cleared
+		carried_item = null
+		carried_item_type = ""
+		is_carrying_item = false
+		
+		# Optionally: Update visuals or hand state
+		print("Player's hand is now empty.")
+
+
+func _update_hunger_label(force_update: bool = false) -> void:
+	var current_state = _get_hunger_state()
+	if current_state != previous_hunger_state or force_update:
+		previous_hunger_state = current_state
+		show_hunger_message(current_state)
+
+func _get_hunger_state() -> String:
+	if hunger <= 25:
+		return "You are starving"
+	elif hunger <= 75:
+		return "You are hungry"
+	else:
+		return "You are full"
+
+func show_hunger_message(new_text: String) -> void:
+	# Retrieve label
+	if not hud or not hud.has_node("HungerLabel"):
+		return
+	
+	var hunger_label = hud.get_node("HungerLabel") as Label
+	hunger_label.text = new_text
+	hunger_label.visible = true
+
+	# Immediately kill any existing tween to avoid overlap
+	if hunger_fade_tween and hunger_fade_tween.is_running():
+		hunger_fade_tween.kill()
+
+	# Reset alpha to 0 for the fade-in
+	hunger_label.modulate.a = 0
+
+	# Create a new tween for fade in -> wait -> fade out
+	hunger_fade_tween = get_tree().create_tween()
+	hunger_fade_tween.tween_property(
+		hunger_label, "modulate:a", 1.0, fade_in_time
+	)
+
+	# Pause for display_time seconds, then fade out
+	hunger_fade_tween.tween_callback(Callable(self, "_on_hunger_pause")).set_delay(display_time)
+
+	hunger_fade_tween.tween_property(
+		hunger_label, "modulate:a", 0.0, fade_out_time
+	)
+
+	# When fade out finishes, hide the label
+	hunger_fade_tween.tween_callback(Callable(self, "_on_hunger_fade_complete"))
+
+
+func _on_hunger_pause() -> void:
+	# Called once the fade in completes and we’ve waited display_time
+	# No-op, but you could do something here if you like.
+	pass
+
+func _on_hunger_fade_complete() -> void:
+	if not hud or not hud.has_node("HungerLabel"):
+		return
+	var hunger_label = hud.get_node("HungerLabel") as Label
+	hunger_label.visible = false
 
 func rotate_held_item(direction: float, axis: String = "y") -> void:
 	var angle_deg = direction * 90.0
@@ -230,7 +323,6 @@ func rotate_held_item(direction: float, axis: String = "y") -> void:
 		carried_item.rotate_x(angle_rad)
 	elif axis == "z":
 		carried_item.rotate_z(angle_rad)
-
 
 func _update_crouch_height():
 	var cam_transform = $Camera3D.transform
@@ -256,18 +348,19 @@ func get_ray_collider(group: String) -> Node:
 # ==> PICKUP / THROW / INTERACT <==
 #
 func throw_item():
-	$Camera3D/HandPoint.remove_child(carried_item)
-	get_parent().add_child(carried_item)
-	carried_item.global_transform = $Camera3D/HandPoint.global_transform
+	if is_carrying_item:
+		# Remove the item from the player's hand
+		$Camera3D/HandPoint.remove_child(carried_item)
+		get_parent().add_child(carried_item)
+		carried_item.global_transform = $Camera3D/HandPoint.global_transform
 
-	if carried_item is RigidBody3D:
-		carried_item.freeze = false
-		var throw_dir = -$Camera3D.global_transform.basis.z.normalized()
-		carried_item.apply_central_impulse(throw_dir * 5.0)
+		if carried_item is RigidBody3D:
+			carried_item.freeze = false
+			var throw_dir = -$Camera3D.global_transform.basis.z.normalized()
+			carried_item.apply_central_impulse(throw_dir * 5.0)
 
-	carried_item = null
-	carried_item_type = ""
-	is_carrying_item = false
+		# Clear the hand state
+		clear_hand()
 
 
 func interact_with_item(item: Node3D):
@@ -361,8 +454,8 @@ func take_damage(amount: int) -> void:
 
 
 func _update_health_bar() -> void:
-	if hud and hud.has_node("ProgressBar"):
-		var health_bar = hud.get_node("ProgressBar")
+	if hud and hud.has_node("HealthBar"):
+		var health_bar = hud.get_node("HealthBar")
 		health_bar.value = current_health
 
 
@@ -392,6 +485,9 @@ func calculate_fall_damage():
 		print("Player took ", fall_damage, " fall damage.")
 		fall_damage = 0
 
+func eat_food(amount: int) -> void:
+	hunger = clamp(hunger + amount, 0, 100)
+	show_hunger_message("It's a little dry...") 
 
 #
 # ==> AUDIO CONTROL FOR STORM BUS

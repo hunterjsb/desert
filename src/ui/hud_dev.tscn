@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://bounpd4i1v5pf"]
 
-[ext_resource type="Script" path="res://src/hud_dev.gd" id="1_nxgpj"]
+[ext_resource type="Script" path="res://src/ui/hud_dev.gd" id="1_nxgpj"]
 
 [node name="DevHUD" type="Control"]
 layout_mode = 3
@@ -21,23 +21,32 @@ offset_top = 24.0
 offset_right = 193.0
 offset_bottom = 58.0
 theme_override_font_sizes/font_size = 24
-text = "hello.. world.."
+text = "hello.. world......
+"
 
 [node name="TimeLabel" type="Label" parent="."]
 layout_mode = 0
-offset_left = 22.0
-offset_top = 59.0
-offset_right = 96.0
-offset_bottom = 93.0
+offset_left = 30.0
+offset_top = 58.0
+offset_right = 90.0
+offset_bottom = 92.0
 theme_override_font_sizes/font_size = 24
-text = "12:00"
+text = "12hr
+"
 
 [node name="WindLabel" type="Label" parent="."]
 layout_mode = 0
-offset_left = 98.0
-offset_top = 58.0
-offset_right = 193.0
-offset_bottom = 92.0
+offset_left = 294.0
+offset_top = 26.0
+offset_right = 389.0
+offset_bottom = 60.0
 theme_override_font_sizes/font_size = 24
 text = "Wind: W"
-horizontal_alignment = 2
+
+[node name="HungerLabel" type="Label" parent="."]
+offset_left = 114.0
+offset_top = 58.0
+offset_right = 251.0
+offset_bottom = 92.0
+theme_override_font_sizes/font_size = 24
+text = "Hunger: 111"

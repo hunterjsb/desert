@@ -1,10 +1,10 @@
-[gd_scene load_steps=32 format=3 uid="uid://31vsdnsofoou"]
+[gd_scene load_steps=33 format=3 uid="uid://31vsdnsofoou"]
 
 [ext_resource type="PackedScene" uid="uid://ch0krls6y12y8" path="res://player.tscn" id="1_l1y63"]
 [ext_resource type="PackedScene" uid="uid://b0gsf4ppmuj2h" path="res://sand_storm.tscn" id="1_qsy6h"]
-[ext_resource type="PackedScene" uid="uid://diypg6xn6wpio" path="res://menu.tscn" id="3_6prh2"]
+[ext_resource type="PackedScene" uid="uid://diypg6xn6wpio" path="res://src/ui/menu.tscn" id="3_6prh2"]
 [ext_resource type="PackedScene" uid="uid://dlgxashpwucl5" path="res://src/object/radio.tscn" id="3_cgl1j"]
-[ext_resource type="PackedScene" uid="uid://bounpd4i1v5pf" path="res://src/hud_dev.tscn" id="3_ntfw2"]
+[ext_resource type="PackedScene" uid="uid://bounpd4i1v5pf" path="res://src/ui/hud_dev.tscn" id="3_ntfw2"]
 [ext_resource type="Script" path="res://wind_manager.gd" id="5_0otb4"]
 [ext_resource type="Script" path="res://day_night.gd" id="6_aefkn"]
 [ext_resource type="Script" path="res://wind_body.gd" id="6_g1hy4"]
@@ -19,6 +19,7 @@
 [ext_resource type="PackedScene" uid="uid://ickso2cui7ul" path="res://src/object/shield/shield01.tscn" id="17_8ikjw"]
 [ext_resource type="PackedScene" uid="uid://dsqljfot4jffp" path="res://src/object/rope/Rope.tscn" id="17_i4vci"]
 [ext_resource type="PackedScene" uid="uid://kmmdmjoujgr6" path="res://src/object/hoverboard/hoverboard.tscn" id="17_oul0n"]
+[ext_resource type="PackedScene" uid="uid://dotdv60184fyp" path="res://src/object/food/carrot.tscn" id="20_rjruf"]
 
 [sub_resource type="QuadMesh" id="QuadMesh_oy20x"]
 
@@ -114,6 +115,7 @@ shape = SubResource("ConcavePolygonShape3D_y4tmv")
 
 [node name="Player" parent="." instance=ExtResource("1_l1y63")]
 transform = Transform3D(0.258819, 0, 0.965926, 0, 1, 0, -0.965926, 0, 0.258819, 0.531002, 0.454737, 1.75178)
+hunger_tick_rate = 1.0
 gravity = 9.8
 
 [node name="DevHUD" parent="Player" node_paths=PackedStringArray("player", "environment") instance=ExtResource("3_ntfw2")]
@@ -128,7 +130,7 @@ player = NodePath("..")
 script = ExtResource("6_aefkn")
 day_time = 12.0
 time_scale = 0.1
-sun_base_enegry = 1.0
+sun_base_energy = 1.0
 moon_base_enegry = 0.1
 
 [node name="WindManager" type="Node3D" parent="Environment"]
@@ -154,11 +156,10 @@ shadow_opacity = 0.25
 shadow_blur = 5.0
 directional_shadow_fade_start = 0.1
 
-[node name="SandStorm" parent="." node_paths=PackedStringArray("wind_manager", "sun") instance=ExtResource("1_qsy6h")]
+[node name="SandStorm" parent="." node_paths=PackedStringArray("wind_manager", "env") instance=ExtResource("1_qsy6h")]
 transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 179.945, 82.0078, 0)
 wind_manager = NodePath("../Environment/WindManager")
-sun = NodePath("../Environment/Sun")
-storm_darkening = 0.95
+env = NodePath("../Environment")
 
 [node name="ruins03" parent="." instance=ExtResource("12_vg0di")]
 transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 1.94333, 3.40192, -18.7616)
@@ -234,6 +235,9 @@ end_point = NodePath("../BubblePlanter/RopeAnchor")
 
 [node name="Hoverboard2" parent="Objects" instance=ExtResource("17_oul0n")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.98076, 0.506934, -1.54647)
+
+[node name="Carrot" parent="." instance=ExtResource("20_rjruf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 2, 1)
 
 [connection signal="cardinal_direction_changed" from="Environment/WindManager" to="Objects/WindyBody" method="_on_cardinal_direction_changed"]
 [connection signal="gust_ended" from="Environment/WindManager" to="Objects/WindyBody" method="_on_gust_ended"]

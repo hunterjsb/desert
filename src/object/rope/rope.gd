@@ -30,13 +30,10 @@ func _ready() -> void:
 	# end at end point
 	joints.append(end_point)
 	# create cable segments
-	print("NUM SEGS ", number_of_segments)
 	for s in number_of_segments:
-		print("ON SEG ", s)
 		segments.append(cable_mesh.instantiate())
 		self.add_child(segments[s])
 		# position segments between the joints
-		print("POSING ", segments[s])
 		segments[s].global_position = joints[s].global_position + (joints[s+1].global_position - joints[s].global_position)/2
 		segments[s].get_child(0).mesh.top_radius = cable_thickness/2.0
 		segments[s].get_child(0).mesh.bottom_radius = cable_thickness/2.0
