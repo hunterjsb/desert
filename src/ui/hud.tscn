@@ -37,7 +37,6 @@ offset_top = -23.0
 offset_right = 149.0
 grow_horizontal = 2
 grow_vertical = 0
-text = "yer a wizard harry"
 horizontal_alignment = 1
 
 [node name="ColorRect" type="ColorRect" parent="."]

@@ -29,6 +29,14 @@ var previous_hunger_state: String = ""
 var hunger_timer: float = 0.0
 @export var hunger_tick_rate: float = 5.0  # time (seconds) between hunger decreases
 
+# Fade settings (tweak to taste)
+@export var fade_in_time: float = 0.5
+@export var display_time: float = 2.0
+@export var fade_out_time: float = 0.5
+
+# We'll store a reference to our active Tween so we can cancel it if needed
+var hunger_fade_tween: Tween = null
+
 @export var gravity = 0.0
 var walk_cycle_time = 0.0
 var original_camera_local_pos
@@ -235,19 +243,59 @@ func _update_hunger_label(force_update: bool = false) -> void:
 	var current_state = _get_hunger_state()
 	if current_state != previous_hunger_state or force_update:
 		previous_hunger_state = current_state
-		var hunger_label = hud.get_node("HungerLabel") if hud.has_node("HungerLabel") else null
-		if hunger_label:
-			hunger_label.text = current_state
-		print(current_state)  # For debug/logging
+		show_hunger_message(current_state)
 
 func _get_hunger_state() -> String:
-	# You can tweak these thresholds to taste
 	if hunger <= 25:
 		return "You are starving"
 	elif hunger <= 75:
 		return "You are hungry"
 	else:
 		return "You are full"
+
+func show_hunger_message(new_text: String) -> void:
+	# Retrieve label
+	if not hud or not hud.has_node("HungerLabel"):
+		return
+	
+	var hunger_label = hud.get_node("HungerLabel") as Label
+	hunger_label.text = new_text
+	hunger_label.visible = true
+
+	# Immediately kill any existing tween to avoid overlap
+	if hunger_fade_tween and hunger_fade_tween.is_running():
+		hunger_fade_tween.kill()
+
+	# Reset alpha to 0 for the fade-in
+	hunger_label.modulate.a = 0
+
+	# Create a new tween for fade in -> wait -> fade out
+	hunger_fade_tween = get_tree().create_tween()
+	hunger_fade_tween.tween_property(
+		hunger_label, "modulate:a", 1.0, fade_in_time
+	)
+
+	# Pause for display_time seconds, then fade out
+	hunger_fade_tween.tween_callback(Callable(self, "_on_hunger_pause")).set_delay(display_time)
+
+	hunger_fade_tween.tween_property(
+		hunger_label, "modulate:a", 0.0, fade_out_time
+	)
+
+	# When fade out finishes, hide the label
+	hunger_fade_tween.tween_callback(Callable(self, "_on_hunger_fade_complete"))
+
+
+func _on_hunger_pause() -> void:
+	# Called once the fade in completes and we’ve waited display_time
+	# No-op, but you could do something here if you like.
+	pass
+
+func _on_hunger_fade_complete() -> void:
+	if not hud or not hud.has_node("HungerLabel"):
+		return
+	var hunger_label = hud.get_node("HungerLabel") as Label
+	hunger_label.visible = false
 
 func rotate_held_item(direction: float, axis: String = "y") -> void:
 	var angle_deg = direction * 90.0
@@ -259,7 +307,6 @@ func rotate_held_item(direction: float, axis: String = "y") -> void:
 		carried_item.rotate_x(angle_rad)
 	elif axis == "z":
 		carried_item.rotate_z(angle_rad)
-
 
 func _update_crouch_height():
 	var cam_transform = $Camera3D.transform
