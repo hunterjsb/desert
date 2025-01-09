@@ -18,6 +18,8 @@ shape = SubResource("CapsuleShape3D_1v2vm")
 [node name="HoverboardMesh" parent="." instance=ExtResource("2_uhxb8")]
 
 [node name="Area3D" type="Area3D" parent="."]
+collision_layer = 8
+collision_mask = 8
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
 transform = Transform3D(1, 0, 0, 0, 0.0458512, 0.998948, 0, -0.998948, 0.0458512, 0, 0, 0)

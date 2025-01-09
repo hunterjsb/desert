@@ -54,6 +54,8 @@ stream = ExtResource("4_t0b2n")
 parameters/looping = true
 
 [node name="Area3D" type="Area3D" parent="Mesh1_Mesh1_108" index="5"]
+collision_layer = 8
+collision_mask = 8
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Mesh1_Mesh1_108/Area3D" index="0"]
 shape = SubResource("ConvexPolygonShape3D_m3trc")
