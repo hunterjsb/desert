@@ -47,4 +47,3 @@ func interact(player: Node) -> void:
 
 func _on_area_3d_area_entered(area):
 	SoundManager.randomclank(self)
-	print("collision detected")
