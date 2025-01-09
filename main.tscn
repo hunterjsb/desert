@@ -85,7 +85,6 @@ player = NodePath("..")
 [node name="Environment" type="Node3D" parent="."]
 script = ExtResource("6_q0lrl")
 day_time = 6.5
-sun_base_energy = 2.0
 moon_base_enegry = 0.1
 
 [node name="WindManager" type="Node3D" parent="Environment"]
