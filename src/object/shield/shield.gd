@@ -98,7 +98,7 @@ func toggle_bubble_shield():
 			$ShieldHumAudio.stop()
 
 
-func interact(player: Node):
+func interact(_player: Node):
 	toggle_bubble_shield()
 
 # Helper so we can show/hide the energy label easily
@@ -106,5 +106,5 @@ func set_energy_label_visible(make_visible: bool) -> void:
 	$EnergyLabel.visible = make_visible
 
 
-func _on_area_3d_area_entered(area: Area3D) -> void:
+func _on_area_3d_area_entered(_area: Area3D) -> void:
 	SoundManager.randomclank(self)

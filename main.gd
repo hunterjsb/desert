@@ -32,10 +32,10 @@ func _ready() -> void:
 		var random_height = randf_range(storm_height_min, storm_height_max)
 
 		# Ensure storm spawns far enough from the player
-		var position = get_valid_storm_position(random_height)
+		var pos = get_valid_storm_position(random_height)
 
 		# Defer initialization so the node is fully added before changes
-		call_deferred("_initialize_storm", storm, random_area, random_height, position.x, position.z)
+		call_deferred("_initialize_storm", storm, random_area, random_height, pos.x, pos.z)
 
 func get_valid_storm_position(height: float) -> Vector3:
 	var position: Vector3
