@@ -37,5 +37,7 @@ func _on_quit_button_pressed():
 	get_tree().quit()
 
 func _on_menu_button_pressed():
-	pass
-	# toggle_menu()
+	get_tree().change_scene_to_file("res://src/ui/main_menu.tscn")
+
+func _on_new_run_pressed() -> void:
+	get_tree().change_scene_to_file("res://main.tscn")

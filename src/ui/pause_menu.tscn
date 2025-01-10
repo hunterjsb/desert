@@ -79,3 +79,7 @@ grow_horizontal = 2
 [node name="TextureRect" type="TextureRect" parent="Title"]
 layout_mode = 2
 texture = ExtResource("3_hjx16")
+
+[connection signal="pressed" from="VBoxContainer/MainMenuContainer/MainMenu" to="." method="_on_menu_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/RestartRunContainer/NewRun" to="." method="_on_new_run_pressed"]
+[connection signal="pressed" from="VBoxContainer/QuitContainer/Quit" to="." method="_on_quit_button_pressed"]

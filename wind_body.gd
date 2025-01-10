@@ -8,7 +8,7 @@ extends RigidBody3D
 func _ready() -> void:
 	pass
 
-func _physics_process(delta: float) -> void:
+func _physics_process(_delta: float) -> void:
 	# Get wind vector and apply force
 	var wind_vector = wind_manager.get_wind_vector()
 	apply_central_force(wind_vector * wind_force_multiplier)
