@@ -219,7 +219,10 @@ func _input(event):
 			var obj: InteractableBody3D = get_ray_collider("interactable")
 			if obj:
 				var can_pickup = obj.try_pickup(obj)
-				obj.pickup(self) if can_pickup else print("TOO WEAK")
+				if can_pickup:
+					obj.pickup(self)
+				else:
+					print("TOO WEAK")
 
 	# 2) INTERACT
 	elif event.is_action_pressed("interact"):

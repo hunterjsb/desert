@@ -18,7 +18,7 @@ func _ready():
 	linear_damp = 0.2
 	angular_damp = 0.2
 
-func _integrate_forces(state: PhysicsDirectBodyState3D):
+func _integrate_forces(_state: PhysicsDirectBodyState3D):
 	if raycast_down.is_colliding():
 		# 1) Get the collision data
 		var collision_point = raycast_down.get_collision_point()
@@ -81,8 +81,8 @@ func _integrate_forces(state: PhysicsDirectBodyState3D):
 		# If the RayCast doesn’t collide (off a cliff?), apply gravity or do nothing
 		pass
 		
-func try_pickup(player: Node):
+func try_pickup(_player: Node):
 	return false
 		
-func interact(player: Node):
+func interact(_player: Node):
 	pass # attach tether

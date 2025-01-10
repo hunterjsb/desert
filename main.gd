@@ -38,16 +38,16 @@ func _ready() -> void:
 		call_deferred("_initialize_storm", storm, random_area, random_height, pos.x, pos.z)
 
 func get_valid_storm_position(height: float) -> Vector3:
-	var position: Vector3
+	var pos: Vector3
 	while true:
 		var random_x = randf_range(-spawn_radius, spawn_radius)
 		var random_z = randf_range(-spawn_radius, spawn_radius)
-		position = Vector3(random_x, height + 70, random_z)
+		pos = Vector3(random_x, height + 70, random_z)
 		
 		# Check distance from player
-		if position.distance_to(player.global_transform.origin) >= min_spawn_distance:
+		if pos.distance_to(player.global_transform.origin) >= min_spawn_distance:
 			break  # Position is valid
-	return position
+	return pos
 
 func _initialize_storm(
 		storm: Node3D,

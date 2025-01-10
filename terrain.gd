@@ -67,7 +67,7 @@ func create_chunk(pos):
 	var terrain = chunk.create_chunk(pos)
 	if terrain:
 		if not transparent_chunk:
-			await create_tween().tween_property(terrain, "transparency", 0, chunk_show_speed).set_trans(Tween.TRANS_LINEAR)
+			create_tween().tween_property(terrain, "transparency", 0, chunk_show_speed).set_trans(Tween.TRANS_LINEAR)
 		add_child(terrain)
 		terrain.global_position = pos
 
