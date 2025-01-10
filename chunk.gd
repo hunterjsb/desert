@@ -62,8 +62,8 @@ func _process(_delta):
 		elif not terrain.optimised_collision:
 			kreiraj_custom_col(true)
 
-func create_lod(pos):
-	var dist = get_distance()
+func create_lod(_pos):
+	# var dist = get_distance()
 	var lod = 1
 	mesh.subdivide_width = terrain.chunk_size / lod
 	mesh.subdivide_depth = terrain.chunk_size / lod
@@ -116,11 +116,10 @@ func create_chunk(pos):
 	return self
 
 
-func spawn_structure(position: Vector3, rotation_y: float, scale_factor: float):
+func spawn_structure(pos: Vector3, rotation_y: float, scale_factor: float):
 	var ruins = preload("res://src/structure/ruins/ruins_01.tscn").instantiate()
 	add_child(ruins)
 
-	# Use a single deferred call to set position, rotation, and scale
-	ruins.call_deferred("_set_transform", position, rotation_y, scale_factor)
+	ruins.call_deferred("_set_transform", pos, rotation_y, scale_factor)
 	ruins.env = terrain.env
-	ruins.spawn_loot(position)
+	ruins.spawn_loot(pos)

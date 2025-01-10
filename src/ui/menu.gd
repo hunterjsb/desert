@@ -29,7 +29,7 @@ func _on_sensitivity_changed(value):
 func toggle_menu():
 	if is_visible():
 		hide()
-		emit_signal("game_unpaused")
+		game_unpaused.emit()
 	else:
 		show()
 

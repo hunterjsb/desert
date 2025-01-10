@@ -31,7 +31,7 @@ func spawn_loot(pos: Vector3):
 	if "_freeze" in spawned_loot:
 		spawned_loot.call_deferred("_freeze")
 
-func _on_body_entered(body: Node3D) -> void:
+func _on_body_entered(_body: Node3D) -> void:
 	# Unfreeze the loot if it has the method
 	if spawned_loot and "_unfreeze" in spawned_loot:
 		spawned_loot._unfreeze()

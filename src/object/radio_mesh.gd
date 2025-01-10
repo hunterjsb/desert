@@ -18,7 +18,7 @@ func _ready() -> void:
 func is_day():
 	return (18 > env.day_time) and (6 < env.day_time)
 	
-func interact(player: Node) -> void:
+func interact(_player: Node) -> void:
 	if not is_playing:
 		is_playing = true
 		if is_day():
@@ -45,5 +45,5 @@ func interact(player: Node) -> void:
 	)
 
 
-func _on_area_3d_area_entered(area):
+func _on_area_3d_area_entered(_area):
 	SoundManager.randomclank(self)

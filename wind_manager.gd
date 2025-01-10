@@ -81,9 +81,8 @@ func _process(delta: float) -> void:
 		var old_angle = major_dir_angle_target
 		major_dir_angle_target = pick_new_cardinal_angle()
 
-		# If you want to note a cardinal direction change, let's do it when we pick a new target
 		if major_dir_angle_target != old_angle:
-			emit_signal("cardinal_direction_changed", major_dir_angle_target)
+			cardinal_direction_changed.emit(major_dir_angle_target)
 
 	# LERP (SLOWLY) TOWARD THE MAJOR DIRECTION
 	major_dir_angle_current = lerp_angle(major_dir_angle_current, major_dir_angle_target, delta * major_dir_rotate_speed)
@@ -118,11 +117,11 @@ func start_gust():
 	gust_timer = gust_duration
 	var t = create_timer(gust_duration)
 	t.timeout.connect(_end_gust)
-	emit_signal("gust_started")
+	gust_started.emit()
 
 func _end_gust():
 	is_gusting = false
-	emit_signal("gust_ended")
+	gust_ended.emit()
 
 func get_wind_vector() -> Vector3:
 	return current_wind_vector

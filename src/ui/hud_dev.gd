@@ -10,7 +10,7 @@ extends Control
 @onready var hunger = $HungerLabel
 
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	if visible:
 		coords.text = "%s" % snapped(player.global_position, Vector3(0.01, 0.01, 0.01))
 		
