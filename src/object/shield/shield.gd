@@ -46,13 +46,13 @@ func _process(delta):
 func _on_bubble_body_entered(body: Node):
 	# Only emit signal if it's specifically the Player
 	if body.name == "Player":
-		emit_signal("player_entered_bubble", body)
+		player_entered_bubble.emit(body)
 		print("Player entered the bubble shield!")
 
 
 func _on_bubble_body_exited(body: Node):
 	if body.name == "Player":
-		emit_signal("player_exited_bubble", body)
+		player_exited_bubble.emit(body)
 		print("Player exited the bubble shield!")
 
 

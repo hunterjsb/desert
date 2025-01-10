@@ -34,6 +34,6 @@ func pickup(player: Node) -> void:
 		# Reset local transform so it appears nicely in the hand
 		transform = Transform3D()
 
-func interact(player: Node) -> void:
+func interact(_player: Node) -> void:
 	# Default "interact" behavior (many objects might override this).
 	print("Interacting with base InteractableBody3D. Override me if needed!")

@@ -6,7 +6,7 @@ extends Control
 @export var max_tilt_degrees := 30.0
 @export var tilt_lerp_speed := 0.1
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	# 1) Find how far the mouse is from the screen's center (normalized to [-1..1])
 	var screen_size = get_viewport().get_size()
 	var screen_center = screen_size * 0.5
