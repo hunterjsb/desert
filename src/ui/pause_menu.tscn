@@ -57,6 +57,7 @@ theme_override_constants/margin_top = 20
 
 [node name="Controls" type="Button" parent="VBoxContainer/ControlsContainer"]
 layout_mode = 2
+disabled = true
 text = "controls"
 
 [node name="QuitContainer" type="MarginContainer" parent="VBoxContainer"]
