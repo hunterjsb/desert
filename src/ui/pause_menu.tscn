@@ -1,36 +1,13 @@
-[gd_scene load_steps=3 format=3 uid="uid://bga2uqyynwha4"]
+[gd_scene load_steps=4 format=3 uid="uid://bga2uqyynwha4"]
 
 [ext_resource type="Script" path="res://src/ui/pause_menu.gd" id="1_61kwv"]
 [ext_resource type="Theme" uid="uid://bvl8bwpd1nryk" path="res://main_menu.tres" id="2_0doh3"]
+[ext_resource type="Texture2D" uid="uid://bhigegemvbhwj" path="res://texture/menu/sand-game-title.png" id="3_hjx16"]
 
-[node name="PauseMenu" type="Control"]
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+[node name="PauseMenu" type="CanvasLayer"]
 script = ExtResource("1_61kwv")
 
-[node name="MenuButton" type="MenuButton" parent="."]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -82.0
-offset_top = -25.0
-offset_right = 82.0
-offset_bottom = 25.0
-grow_horizontal = 2
-grow_vertical = 2
-scale = Vector2(2, 2)
-theme = ExtResource("2_0doh3")
-text = "PRESS ME"
-
 [node name="SensitivitySlider" type="HSlider" parent="."]
-layout_mode = 1
 anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
@@ -44,3 +21,61 @@ grow_vertical = 0
 max_value = 5.0
 step = 0.05
 value = 2.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -88.0
+offset_top = -48.0
+offset_right = 88.0
+offset_bottom = 92.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_0doh3")
+
+[node name="MainMenuContainer" type="MarginContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="MainMenu" type="Button" parent="VBoxContainer/MainMenuContainer"]
+layout_mode = 2
+text = "main menu"
+
+[node name="RestartRunContainer" type="MarginContainer" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_top = 20
+
+[node name="NewRun" type="Button" parent="VBoxContainer/RestartRunContainer"]
+layout_mode = 2
+text = "restart run"
+
+[node name="ControlsContainer" type="MarginContainer" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_top = 20
+
+[node name="Controls" type="Button" parent="VBoxContainer/ControlsContainer"]
+layout_mode = 2
+text = "controls"
+
+[node name="QuitContainer" type="MarginContainer" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_top = 20
+
+[node name="Quit" type="Button" parent="VBoxContainer/QuitContainer"]
+layout_mode = 2
+text = "controls"
+
+[node name="Title" type="HBoxContainer" parent="."]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -300.0
+offset_right = 300.0
+offset_bottom = 200.0
+grow_horizontal = 2
+
+[node name="TextureRect" type="TextureRect" parent="Title"]
+layout_mode = 2
+texture = ExtResource("3_hjx16")
