@@ -52,7 +52,7 @@ var is_carrying_item: bool = false
 
 @onready var ray = $Camera3D/RayCast3D
 
-@onready var menu = $Menu
+@onready var menu = $PauseMenu
 @onready var hud = preload("res://src/ui/hud.tscn").instantiate()
 
 var can_move = true
