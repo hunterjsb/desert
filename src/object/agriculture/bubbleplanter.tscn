@@ -7,7 +7,7 @@
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_86miw"]
 friction = 0.1
 
-[node name="bubbleplanter" instance=ExtResource("1_vlgc0")]
+[node name="BubblePlanter" instance=ExtResource("1_vlgc0")]
 script = ExtResource("2_07oga")
 
 [node name="Mesh1_Mesh1_016" parent="." index="0" groups=["interactable"]]
