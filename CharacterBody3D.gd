@@ -444,13 +444,18 @@ func _reset_camera_sway():
 #
 # ==> HEALTH/BUBBLE LOGIC
 #
-func take_damage(amount: int) -> void:
-	current_health -= amount
+func take_damage(base_amount: int) -> void:
+	# Grab the multiplier from Hunger
+	var dmg_mult = hunger.get_damage_multiplier()
+	var final_damage = int(base_amount * dmg_mult)
+	
+	current_health -= final_damage
 	if current_health < 0:
 		current_health = 0
 		if not dead:
 			die()
 	_update_health_bar()
+
 
 
 func die():
