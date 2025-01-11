@@ -41,16 +41,22 @@ func load_noise():
 	noise.seed = terrain_seed
 	return noise
 	
+
 func randomize_seed():
 	RandomNumberGenerator.new().randomize()
 	terrain_seed = randi()
 
-func create_chunk_section(c_position=Vector3.ZERO, start=false):
+
+func create_chunk_section(c_position = Vector3.ZERO, start = false):
 	var half_render_distance = render_distance / 2
 	for i in range(render_distance * render_distance):
-		var half_pozicija = Vector3(((i % render_distance) - (render_distance / 2)) * chunk_size,0,((i / render_distance) - (render_distance / 2)) * chunk_size)
+		var half_pozicija = Vector3(
+			((i % render_distance) - (render_distance / 2)) * chunk_size,
+			0,
+			floor(i / render_distance - (render_distance / 2)) * chunk_size
+		)
 		var offset = c_position + Vector3(half_pozicija.x, 0, half_pozicija.z)
-		var cName = "c_"+str(offset.x)+"X"+str(offset.z)
+		var cName = "c_" + str(offset.x) + "X" + str(offset.z)
 		if cName in chunk_list:
 			continue
 		create_chunk(offset)
@@ -60,16 +66,18 @@ func create_chunk_section(c_position=Vector3.ZERO, start=false):
 		map_created = true
 		map_ready.emit()
 
+
 func create_chunk(pos):
 	var chunk = MeshInstance3D.new()
 	chunk.set_script(chunk_script)
 	chunk.terrain = self
-	var terrain = chunk.create_chunk(pos)
-	if terrain:
+	var terrain_chunk = chunk.create_chunk(pos)
+	if terrain_chunk:
 		if not transparent_chunk:
-			create_tween().tween_property(terrain, "transparency", 0, chunk_show_speed).set_trans(Tween.TRANS_LINEAR)
-		add_child(terrain)
-		terrain.global_position = pos
+			create_tween().tween_property(terrain_chunk, "transparency", 0, chunk_show_speed).set_trans(Tween.TRANS_LINEAR)
+		add_child(terrain_chunk)
+		terrain_chunk.global_position = pos
+
 
 func _process(_delta):
 	if not map_created:
@@ -78,6 +86,7 @@ func _process(_delta):
 		lastChunk = ray.get_collider()
 		create_chunk_section(lastChunk.global_position)
 		chunk_change.emit()
+
 
 func _ready():
 	if not player:
@@ -88,12 +97,13 @@ func _ready():
 		push_error("Noise for terrain is not defined. Check terrain right panel to set noise.")
 		queue_free()
 		return
-		
+
 	randomize_seed()
 	load_noise()
 	chunk_script = load(chunk_script)
 	create_raycast()
-	create_chunk_section(player.global_position if map_under_player else Vector3.ZERO, true) 
+	create_chunk_section(player.global_position if map_under_player else Vector3.ZERO, true)
+
 
 func create_raycast():
 	ray = RayCast3D.new()
@@ -103,10 +113,12 @@ func create_raycast():
 	ray.debug_shape_thickness = 5
 	player.add_child(ray)
 
+
 func _on_chunk_change():
-	# print("[LOG] - Another Chunk")
+	# Called whenever a new chunk is created around the player
 	pass
+
 
 func _on_map_ready():
 	print("[LOG] - Map Ready")
-	pass 
+	pass
