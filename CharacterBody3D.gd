@@ -25,17 +25,10 @@ var max_health = 100
 var current_health = 100
 var dead = false
 
-var hunger: int = 100
-var previous_hunger_state: String = ""
-var hunger_timer: float = 0.0
-@export var hunger_tick_rate: float = 5.0  # time (seconds) between hunger decreases
-
-# Fade settings (tweak to taste)
+# Fade settings
 @export var fade_in_time: float = 0.5
 @export var display_time: float = 2.0
 @export var fade_out_time: float = 0.5
-
-# We'll store a reference to our active Tween so we can cancel it if needed
 var hunger_fade_tween: Tween = null
 
 @export var gravity = 0.0
@@ -55,6 +48,7 @@ var is_carrying_item: bool = false
 
 @onready var menu = $PauseMenu
 @onready var hud = preload("res://src/ui/hud/hud.tscn").instantiate()
+@onready var hunger: Hunger = $Hunger
 
 var can_move = true
 var on_hoverboard = false
@@ -89,14 +83,6 @@ func _ready():
 
 
 func _physics_process(delta):
-	hunger_timer += delta
-	if hunger_timer >= hunger_tick_rate:
-		hunger_timer = 0.0
-		hunger -= 1
-		if hunger < 0:
-			hunger = 0
-		_update_hunger_label()
-	
 	if not can_move:
 		return
 
@@ -271,14 +257,14 @@ func clear_hand() -> void:
 
 func _update_hunger_label(force_update: bool = false) -> void:
 	var current_state = _get_hunger_state()
-	if current_state != previous_hunger_state or force_update:
-		previous_hunger_state = current_state
+	if hunger.current_state != hunger.previous_hunger_state or force_update:
+		hunger.previous_hunger_state = current_state
 		show_hunger_message(current_state)
 
 func _get_hunger_state() -> String:
-	if hunger <= 25:
+	if hunger.hunger <= 25:
 		return "You are starving"
-	elif hunger <= 75:
+	elif hunger.hunger <= 75:
 		return "You are hungry"
 	else:
 		return "You are full"
@@ -518,7 +504,7 @@ func calculate_fall_damage():
 		fall_damage = 0
 
 func eat_food(amount: int) -> void:
-	hunger = clamp(hunger + amount, 0, 100)
+	hunger.hunger = clamp(hunger.hunger + amount, 0, 100)
 	show_hunger_message("It's a little dry...") 
 
 #
