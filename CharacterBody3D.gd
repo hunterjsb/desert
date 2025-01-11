@@ -470,14 +470,13 @@ func take_damage(amount: int) -> void:
 func die():
 	print("Player has died.")
 
-	# Disable player controls
+	dead = true
 	can_move = false
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 
 	$FootstepAudio.stop()
 	AmbientAudio.stop()
 
-	# Show a death screen or fade out the world
 	show_death_screen()
 
 
