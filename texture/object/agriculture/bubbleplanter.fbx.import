@@ -4,12 +4,12 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://rx0ubc8acef8"
-path="res://.godot/imported/bubbleplanter.fbx-788e2dbf1d24922c8d1bc0c98200d842.scn"
+path="res://.godot/imported/bubbleplanter.fbx-4dedd785762b9e957ed0074dc3927c52.scn"
 
 [deps]
 
-source_file="res://texture/object/bubbleplanter.fbx"
-dest_files=["res://.godot/imported/bubbleplanter.fbx-788e2dbf1d24922c8d1bc0c98200d842.scn"]
+source_file="res://texture/object/agriculture/bubbleplanter.fbx"
+dest_files=["res://.godot/imported/bubbleplanter.fbx-4dedd785762b9e957ed0074dc3927c52.scn"]
 
 [params]
 

@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://dfuxrm7tjavcw"]
+
+[ext_resource type="PackedScene" uid="uid://dq8cwhsqc1t3d" path="res://texture/object/agriculture/yucca.fbx" id="1_ojseb"]
+
+[node name="yucca" instance=ExtResource("1_ojseb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)

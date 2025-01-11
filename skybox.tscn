@@ -1,4 +1,4 @@
-[gd_scene load_steps=32 format=3 uid="uid://31vsdnsofoou"]
+[gd_scene load_steps=33 format=3 uid="uid://31vsdnsofoou"]
 
 [ext_resource type="PackedScene" uid="uid://ch0krls6y12y8" path="res://player.tscn" id="1_l1y63"]
 [ext_resource type="PackedScene" uid="uid://b0gsf4ppmuj2h" path="res://sand_storm.tscn" id="1_qsy6h"]
@@ -12,12 +12,13 @@
 [ext_resource type="PackedScene" uid="uid://bxi6whsespwpy" path="res://texture/structure/ruins/ruins01.fbx" id="12_bd0gj"]
 [ext_resource type="PackedScene" uid="uid://be15buugjnenc" path="res://texture/structure/ruins/ruins03.fbx" id="12_vg0di"]
 [ext_resource type="Script" path="res://pin_joint_3d.gd" id="13_foon7"]
-[ext_resource type="PackedScene" uid="uid://d2iuna8o6eky0" path="res://src/object/bubbleplanter.tscn" id="13_w5l2x"]
+[ext_resource type="PackedScene" uid="uid://d2iuna8o6eky0" path="res://src/object/agriculture/bubbleplanter.tscn" id="13_w5l2x"]
 [ext_resource type="Shader" path="res://outline01.gdshader" id="15_6iddm"]
 [ext_resource type="Script" path="res://rigid_body_3d.gd" id="15_lda6m"]
 [ext_resource type="PackedScene" uid="uid://ickso2cui7ul" path="res://src/object/shield/shield01.tscn" id="17_8ikjw"]
 [ext_resource type="PackedScene" uid="uid://dsqljfot4jffp" path="res://src/object/rope/Rope.tscn" id="17_i4vci"]
 [ext_resource type="PackedScene" uid="uid://kmmdmjoujgr6" path="res://src/object/hoverboard/hoverboard.tscn" id="17_oul0n"]
+[ext_resource type="PackedScene" uid="uid://b15288jke7rif" path="res://src/object/food/yucca_fruit.tscn" id="20_d28ju"]
 [ext_resource type="PackedScene" uid="uid://dotdv60184fyp" path="res://src/object/food/carrot.tscn" id="20_rjruf"]
 
 [sub_resource type="QuadMesh" id="QuadMesh_oy20x"]
@@ -235,7 +236,10 @@ end_point = NodePath("../BubblePlanter/RopeAnchor")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.98076, 0.506934, -1.54647)
 
 [node name="Carrot" parent="." instance=ExtResource("20_rjruf")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 2, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 1.16894, 1)
+
+[node name="YuccaFruit" parent="." instance=ExtResource("20_d28ju")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.60401, 0.66643, 1.48696)
 
 [connection signal="cardinal_direction_changed" from="Environment/WindManager" to="Objects/WindyBody" method="_on_cardinal_direction_changed"]
 [connection signal="gust_ended" from="Environment/WindManager" to="Objects/WindyBody" method="_on_gust_ended"]
