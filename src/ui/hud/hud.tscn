@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://fs6xxgwy38ae"]
 
-[ext_resource type="FontFile" uid="uid://domeq6ikwiya1" path="res://texture/font/Funnel_Display/FunnelDisplay-VariableFont_wght.ttf" id="1_33e7l"]
+[ext_resource type="FontFile" uid="uid://domeq6ikwiya1" path="res://texture/font/Funnel_Display/FunnelDisplay-VariableFont_wght.ttf" id="1_pw8pj"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ijlk5"]
 bg_color = Color(0.301961, 0.0901961, 0.113725, 0.776471)
@@ -9,7 +9,7 @@ bg_color = Color(0.301961, 0.0901961, 0.113725, 0.776471)
 ProgressBar/styles/fill = SubResource("StyleBoxFlat_ijlk5")
 
 [sub_resource type="Theme" id="Theme_x3853"]
-default_font = ExtResource("1_33e7l")
+default_font = ExtResource("1_pw8pj")
 Label/colors/font_color = Color(0, 0, 0, 1)
 
 [node name="Hud" type="Control"]

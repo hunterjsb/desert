@@ -16,11 +16,12 @@ func _ready():
 func _input(event):
 	if event.is_action_pressed("esc"):
 		toggle_menu()
-		player.can_move = not player.can_move
-		Input.mouse_mode = (
-			Input.MOUSE_MODE_CAPTURED if Input.mouse_mode == Input.MOUSE_MODE_VISIBLE
-			else Input.MOUSE_MODE_VISIBLE
-		)
+		if player.current_health > 0:
+			player.can_move = not player.can_move
+			Input.mouse_mode = (
+				Input.MOUSE_MODE_CAPTURED if Input.mouse_mode == Input.MOUSE_MODE_VISIBLE
+				else Input.MOUSE_MODE_VISIBLE
+			)
 
 func _on_sensitivity_changed(value):
 	if player:

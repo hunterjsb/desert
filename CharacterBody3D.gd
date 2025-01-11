@@ -23,6 +23,7 @@ var peak_fall_speed: float = 0.0
 
 var max_health = 100
 var current_health = 100
+var dead = false
 
 var hunger: int = 100
 var previous_hunger_state: String = ""
@@ -53,7 +54,7 @@ var is_carrying_item: bool = false
 @onready var ray = $Camera3D/RayCast3D
 
 @onready var menu = $PauseMenu
-@onready var hud = preload("res://src/ui/hud.tscn").instantiate()
+@onready var hud = preload("res://src/ui/hud/hud.tscn").instantiate()
 
 var can_move = true
 var on_hoverboard = false
@@ -100,10 +101,20 @@ func _physics_process(delta):
 		return
 
 	if velocity.y < peak_fall_speed:
-		peak_fall_speed = velocity.y  
-	if peak_fall_speed < -3 and is_on_floor():  
-				$LandingAudio.play()
-				peak_fall_speed = 0.0  
+		peak_fall_speed = velocity.y
+		
+	if peak_fall_speed < -3 and is_on_floor():
+		# The moment we land, see if we should apply fall damage
+		var fall_damage = (abs(peak_fall_speed) - abs(fall_damage_threshold)) * fall_damage_multiplier
+
+		if fall_damage > 0:
+			# If the calculated damage is positive, apply it
+			take_damage(int(fall_damage))
+			print("Player took ", int(fall_damage), " fall damage.")
+
+		$LandingAudio.play()
+		peak_fall_speed = 0.0
+
 	
 	# Slide cooldown
 	if slide_on_cooldown:
@@ -307,7 +318,6 @@ func show_hunger_message(new_text: String) -> void:
 
 func _on_hunger_pause() -> void:
 	# Called once the fade in completes and we’ve waited display_time
-	# No-op, but you could do something here if you like.
 	pass
 
 func _on_hunger_fade_complete() -> void:
@@ -452,14 +462,34 @@ func take_damage(amount: int) -> void:
 	current_health -= amount
 	if current_health < 0:
 		current_health = 0
-		# TODO: handle Player death or game-over
+		if not dead:
+			die()
 	_update_health_bar()
+
+
+func die():
+	print("Player has died.")
+
+	# Disable player controls
+	can_move = false
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+
+	$FootstepAudio.stop()
+	AmbientAudio.stop()
+
+	# Show a death screen or fade out the world
+	show_death_screen()
 
 
 func _update_health_bar() -> void:
 	if hud and hud.has_node("HealthBar"):
 		var health_bar = hud.get_node("HealthBar")
 		health_bar.value = current_health
+
+
+func show_death_screen():
+	var death_screen = preload("res://src/ui/death_screen.tscn").instantiate()
+	get_tree().get_current_scene().add_child(death_screen)
 
 
 func _on_player_entered_bubble(player: Node) -> void:
