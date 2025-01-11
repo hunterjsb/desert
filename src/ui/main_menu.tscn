@@ -1,10 +1,9 @@
-[gd_scene load_steps=8 format=3 uid="uid://l6stmnql0rim"]
+[gd_scene load_steps=7 format=3 uid="uid://l6stmnql0rim"]
 
 [ext_resource type="Script" path="res://src/ui/main_menu.gd" id="1_5vwaj"]
 [ext_resource type="Theme" uid="uid://bvl8bwpd1nryk" path="res://main_menu.tres" id="2_0doh3"]
 [ext_resource type="PackedScene" uid="uid://csgdtb8pbgwjj" path="res://src/object/shield/shield00.tscn" id="2_qpg2t"]
 [ext_resource type="PackedScene" uid="uid://bdcr8aj5rbgm3" path="res://day_night.tscn" id="3_ynbn5"]
-[ext_resource type="Script" path="res://camera_3d.gd" id="4_1pwih"]
 [ext_resource type="Texture2D" uid="uid://bhigegemvbhwj" path="res://texture/menu/sand-game-title.png" id="4_8yi4g"]
 [ext_resource type="PackedScene" uid="uid://dlgxashpwucl5" path="res://src/object/radio.tscn" id="6_mo31w"]
 
@@ -68,7 +67,6 @@ env = NodePath("../Environment")
 
 [node name="Camera3D" type="Camera3D" parent="MenuScene3D"]
 transform = Transform3D(1, 0, 0, 0, 0.907558, -0.419927, 0, 0.419927, 0.907558, 0, -0.468633, 2)
-script = ExtResource("4_1pwih")
 
 [node name="Shield" parent="MenuScene3D" instance=ExtResource("2_qpg2t")]
 transform = Transform3D(-2, 1.00288e-07, -1.43224e-07, 0, 1.63831, 1.14715, 1.74846e-07, 1.14716, -1.6383, 0, 0.68789, 0.0811507)

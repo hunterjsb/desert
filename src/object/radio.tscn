@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://dlgxashpwucl5"]
+[gd_scene load_steps=11 format=3 uid="uid://dlgxashpwucl5"]
 
 [ext_resource type="PackedScene" uid="uid://0uhvyadqalf4" path="res://texture/object/radio.fbx" id="1_ykkyc"]
 [ext_resource type="Script" path="res://src/object/radio.gd" id="2_hnmmv"]
@@ -7,6 +7,7 @@
 [ext_resource type="AudioStream" uid="uid://vmq1ky2lrtby" path="res://audio/static.mp3" id="4_t0b2n"]
 [ext_resource type="AudioStream" uid="uid://bxmv4r463s3w4" path="res://audio/object_radio_sandy_andy.wav" id="5_fpm8w"]
 [ext_resource type="AudioStream" uid="uid://clt60a4wnwhlt" path="res://audio/object_radio_waiting_on_the_sun.mp3" id="6_4u482"]
+[ext_resource type="AudioStream" uid="uid://fovci7bf01sj" path="res://audio/object_radio_interference.wav" id="8_girmx"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_7e5dn"]
 render_priority = 0
@@ -53,7 +54,10 @@ stream = ExtResource("6_4u482")
 stream = ExtResource("4_t0b2n")
 parameters/looping = true
 
-[node name="Area3D" type="Area3D" parent="Mesh1_Mesh1_108" index="5"]
+[node name="Interference" type="AudioStreamPlayer3D" parent="Mesh1_Mesh1_108" index="5"]
+stream = ExtResource("8_girmx")
+
+[node name="Area3D" type="Area3D" parent="Mesh1_Mesh1_108" index="6"]
 collision_layer = 8
 collision_mask = 8
 

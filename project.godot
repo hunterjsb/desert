@@ -19,6 +19,7 @@ config/icon="res://texture/bsg.webp"
 [autoload]
 
 SoundManager="*res://sound_manager.gd"
+StormsTracker="*res://storms_tracker.gd"
 
 [global]
 

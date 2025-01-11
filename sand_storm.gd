@@ -26,6 +26,7 @@ var time_accum = 0.0
 var velocity: Vector3 = Vector3.ZERO
 
 func _ready() -> void:
+	StormsTracker.register_sandstorm(self)
 	wind_manager.cardinal_direction_changed.connect(_on_wind_cardinal_change)
 	wind_manager.gust_started.connect(_on_wind_gust_started)
 	wind_manager.gust_ended.connect(_on_wind_gust_ended)
