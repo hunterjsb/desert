@@ -49,8 +49,7 @@ transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 0, 0, 0)
 shape = SubResource("CylinderShape3D_6y8gw")
 
 [node name="BubbleShield" type="Area3D" parent="."]
-transform = Transform3D(4, 0, 0, 0, -0.107918, 3.99854, 0, -3.99854, -0.107918, -0.00490491, 0.000545263, 0.0015772)
-visible = false
+transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 4, -0.00490491, 0.000545263, 0.0015772)
 collision_layer = 2
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="BubbleShield"]
