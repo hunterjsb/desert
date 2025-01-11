@@ -6,6 +6,9 @@ extends Control
 @export var max_tilt_degrees := 30.0
 @export var tilt_lerp_speed := 0.1
 
+func _ready() -> void:
+	$MenuScene3D/radio._freeze()
+	
 func _process(_elta: float) -> void:
 	# 1) Find how far the mouse is from the screen's center (normalized to [-1..1])
 	var screen_size = get_viewport().get_size()

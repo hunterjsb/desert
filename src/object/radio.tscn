@@ -6,7 +6,7 @@
 [ext_resource type="Shader" path="res://outline01.gdshader" id="3_sht45"]
 [ext_resource type="AudioStream" uid="uid://vmq1ky2lrtby" path="res://audio/static.mp3" id="4_t0b2n"]
 [ext_resource type="AudioStream" uid="uid://bxmv4r463s3w4" path="res://audio/object_radio_sandy_andy.wav" id="5_fpm8w"]
-[ext_resource type="AudioStream" uid="uid://bktu58jpiynea" path="res://audio/object_radio_waiting_on_the_sun.mp3" id="6_4u482"]
+[ext_resource type="AudioStream" uid="uid://clt60a4wnwhlt" path="res://audio/object_radio_waiting_on_the_sun.mp3" id="6_4u482"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_7e5dn"]
 render_priority = 0
