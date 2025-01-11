@@ -17,7 +17,7 @@ extends Node3D
 
 func _ready() -> void:
 	randomize()
-	var storm_scene = load("res://sand_storm.tscn")
+	var storm_scene = load("res://src/environment/sand_storm.tscn")
 	var storms_to_spawn = int(randf_range(min_storms, max_storms + 1))
 
 	for i in range(storms_to_spawn):
