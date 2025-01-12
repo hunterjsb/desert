@@ -1,13 +1,18 @@
 extends Control
 
 @onready var camera_3d: Camera3D = $MenuScene3D/Camera3D
-@onready var body_3d: Node3D = $MenuScene3D/Shield/Mesh0
+# @onready var shield: Node3D = $MenuScene3D/Shield/Mesh0
+# I know these are named "MeshX" but they're RigidBody3D's (actually InteracableBody3D's)
+# but I can't change the name from the imported fbx model
+@onready var rotatables: Array[RigidBody3D] = [$MenuScene3D/Shield/Mesh0, $MenuScene3D/radio/Mesh1_Mesh1_108]
+var last_highlighted_item = null
 
 @export var max_tilt_degrees := 30.0
 @export var tilt_lerp_speed := 0.1
 
 func _ready() -> void:
-	$MenuScene3D/radio._freeze()
+	for body_3d in rotatables:
+		body_3d.freeze = true
 	
 func _process(_elta: float) -> void:
 	# 1) Find how far the mouse is from the screen's center (normalized to [-1..1])
@@ -27,12 +32,69 @@ func _process(_elta: float) -> void:
 	# 3) Lerp from current rotation to target rotation for smoothness
 	#    Keep Y at 180°, so the front is always facing the camera
 	# body_3d.rotation_degrees.y = 180.0
-	body_3d.rotation.x = lerp(body_3d.rotation.x, target_rot_x, tilt_lerp_speed)
-	body_3d.rotation.z = lerp(body_3d.rotation.z, target_rot_z, tilt_lerp_speed)
+	for body_3d in rotatables:
+		body_3d.rotation.x = lerp(body_3d.rotation.x, target_rot_x, tilt_lerp_speed)
+		body_3d.rotation.z = lerp(body_3d.rotation.z, target_rot_z, tilt_lerp_speed)
+		
+	# Raycast
+	# var mouse_pos = get_viewport().get_mouse_position()
+	var ray_origin = camera_3d.project_ray_origin(mouse_pos)
+	var ray_direction = camera_3d.project_ray_normal(mouse_pos)
+	var ray_end = ray_origin + ray_direction * 1000.0
 
-func _on_start_pressed() -> void:
-	get_tree().change_scene_to_file("res://main.tscn")
+	var space_state = camera_3d.get_world_3d().direct_space_state
+	var query = PhysicsRayQueryParameters3D.create(ray_origin, ray_end)
+	var result = space_state.intersect_ray(query)
 
+	if result:
+		var hit_collider = result.collider
+		# highlight if it's in rotatables
+		if rotatables.has(hit_collider):
+			if last_highlighted_item != hit_collider:
+				# un-highlight previous
+				if last_highlighted_item:
+					reset_outline(last_highlighted_item)
+				# highlight this one
+				apply_outline(hit_collider)
+				last_highlighted_item = hit_collider
+		else:
+			if last_highlighted_item:
+				reset_outline(last_highlighted_item)
+			last_highlighted_item = null
+	else:
+		if last_highlighted_item:
+			reset_outline(last_highlighted_item)
+		last_highlighted_item = null
 
-func _on_skybox_pressed() -> void:
-	get_tree().change_scene_to_file("res://skybox.tscn")
+func _input(event):
+	if event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+			if last_highlighted_item:
+				if "interact" in last_highlighted_item:
+					last_highlighted_item.interact(self)
+				else:
+					print("No interact() method on hovered item!")
+
+# Outline helper methods
+func apply_outline(obj: Node) -> void:
+	var mesh = find_mesh_instance(obj)
+	if mesh and mesh.material_overlay:
+		var mat = mesh.material_overlay
+		if mat is ShaderMaterial:
+			mat.set_shader_parameter("border_width", 0.03)
+
+func reset_outline(obj: Node) -> void:
+	var mesh = find_mesh_instance(obj)
+	if mesh and mesh.material_overlay:
+		var mat = mesh.material_overlay
+		if mat is ShaderMaterial:
+			mat.set_shader_parameter("border_width", 0.0)
+
+func find_mesh_instance(obj: Node) -> MeshInstance3D:
+	if obj is MeshInstance3D:
+		return obj
+	for child in obj.get_children():
+		var found = find_mesh_instance(child)
+		if found:
+			return found
+	return null

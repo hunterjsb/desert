@@ -75,7 +75,7 @@ transform = Transform3D(-2, 1.00288e-07, -1.43224e-07, 0, 1.63831, 1.14715, 1.74
 gravity = 0.0
 
 [node name="Environment" parent="MenuScene3D" instance=ExtResource("3_ynbn5")]
-day_time = 17.5
+day_time = 16.0
 clouds_cutoff = 0.75
 time_scale = 0.05
 moon_base_enegry = 0.3
