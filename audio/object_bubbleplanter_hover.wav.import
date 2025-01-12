@@ -2,7 +2,7 @@
 
 importer="wav"
 type="AudioStreamWAV"
-uid="uid://ca6b44hicucxo"
+uid="uid://dwls5lei5fud"
 path="res://.godot/imported/object_bubbleplanter_hover.wav-b5eba65c42d9d47a9af9fc9918714dd4.sample"
 
 [deps]
@@ -20,5 +20,5 @@ edit/trim=false
 edit/normalize=false
 edit/loop_mode=2
 edit/loop_begin=0
-edit/loop_end=-36000
+edit/loop_end=-1
 compress/mode=0
