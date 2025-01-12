@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=3 uid="uid://d2iuna8o6eky0"]
+[gd_scene load_steps=6 format=3 uid="uid://d2iuna8o6eky0"]
 
 [ext_resource type="PackedScene" uid="uid://rx0ubc8acef8" path="res://texture/object/agriculture/bubbleplanter.fbx" id="1_vlgc0"]
 [ext_resource type="Script" path="res://src/object/agriculture/bubbleplanter_mesh.gd" id="2_3n1h8"]
 [ext_resource type="Script" path="res://src/object/agriculture/bubbleplanter.gd" id="2_07oga"]
+[ext_resource type="AudioStream" uid="uid://ca6b44hicucxo" path="res://audio/object_bubbleplanter_hover.wav" id="4_7g62f"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_86miw"]
 friction = 0.1
@@ -19,3 +20,7 @@ script = ExtResource("2_3n1h8")
 
 [node name="RayCast3D" type="RayCast3D" parent="Mesh1_Mesh1_016" index="7"]
 transform = Transform3D(2, 0, 0, 0, 2, -1.89478e-14, 0, 1.89478e-14, 2, 0, -0.9, 0)
+
+[node name="HoverSound" type="AudioStreamPlayer3D" parent="Mesh1_Mesh1_016" index="8"]
+stream = ExtResource("4_7g62f")
+doppler_tracking = 2
