@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://wleocw1ehqh8"]
+
+[ext_resource type="Script" path="res://src/object/agriculture/yucca.gd" id="1_c3pr1"]
+[ext_resource type="PackedScene" uid="uid://d3cpd3peh1jsc" path="res://texture/object/structure/post01.fbx" id="2_12iso"]
+
+[node name="Post3" type="Node3D"]
+script = ExtResource("1_c3pr1")
+
+[node name="post01" parent="." instance=ExtResource("2_12iso")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0795777, 0)

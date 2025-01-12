@@ -5,6 +5,15 @@ var terrain = null
 var autoLOD = 10
 var oldLod = 0
 
+#==> SCENES <==#
+var ruins_scene = preload("res://src/structure/ruins/ruins_01.tscn")
+var yucca_scene = preload("res://src/object/agriculture/yucca.tscn")
+var post_scene = preload("res://src/structure/post.tscn")
+
+#==> SPAWNABLES + CHANCES <==#
+var spawnables = [yucca_scene, post_scene] 
+var spawn_chances = [0.01, 0.5]
+
 #==> CODE <==#
 func get_distance():
 	var player_pos = terrain.player.global_position
@@ -22,11 +31,19 @@ func kreiraj_noise_teren():
 
 
 func kreiraj_custom_col(trimesh = false):
-	var Newmsh = kreiraj_noise_teren()
-	var trn = create_noise_terrain(Newmsh)
+	# Rebuild the terrain mesh
+	var new_mesh = kreiraj_noise_teren()
+	var trn = create_noise_terrain(new_mesh)
 	mesh = trn
+
 	if trimesh:
+		# This built-in function creates a StaticBody3D + CollisionShape3D child for us
 		create_trimesh_collision()
+
+		# Give the terrain collision a unique name so we only remove it (and not spawned objects)
+		for child in get_children():
+			if child.get_class() == "StaticBody3D":
+				child.name = "TerrainCollision"
 
 
 func remove_chunk():
@@ -39,28 +56,37 @@ func remove_chunk():
 
 func _process(_delta):
 	var dist = get_distance()
+
+	# If chunk is too far away, remove it entirely
 	if dist > (terrain.render_distance * terrain.chunk_size) / 1.25:
 		remove_chunk()
 		return
 
+	# Adjust LOD by distance
 	if dist / terrain.chunk_size <= 3:
 		autoLOD = 0.5
-	if dist / terrain.chunk_size <= 6 and dist / terrain.chunk_size > 3:
+	elif dist / terrain.chunk_size <= 6:
 		autoLOD = 1
-	if dist / terrain.chunk_size <= 10 and dist / terrain.chunk_size > 6:
+	elif dist / terrain.chunk_size <= 10:
 		autoLOD = 2
-	if dist / terrain.chunk_size > 10:
+	else:
 		autoLOD = 3
 	if dist / terrain.chunk_size > 20:
 		autoLOD = 4
 	if dist / terrain.chunk_size > 40:
 		autoLOD = 6
 
+	# Rebuild terrain collision if LOD changed
 	if oldLod != autoLOD:
 		oldLod = autoLOD
+
+		# IMPORTANT FIX:
+		# Only remove the terrain collision body, not every StaticBody3D
 		for child in get_children():
-			if child.get_class() == "StaticBody3D":
+			if child.get_class() == "StaticBody3D" and child.name == "TerrainCollision":
 				child.free()
+
+		# Re-create collision if needed
 		if autoLOD < 1 and terrain.optimised_collision:
 			kreiraj_custom_col(true)
 		elif not terrain.optimised_collision:
@@ -90,7 +116,6 @@ func create_noise_terrain(_mesh):
 	var vertex_count = dataTool.get_vertex_count()
 	for i in range(vertex_count):
 		var vertex = dataTool.get_vertex(i)
-		# Sample noise for vertex
 		var value = terrain.noise.get_noise_3d(vertex.x, vertex.y, vertex.z)
 		vertex.y = value * terrain.terrain_height
 		dataTool.set_vertex(i, vertex)
@@ -105,8 +130,6 @@ func create_noise_terrain(_mesh):
 
 
 func get_terrain_height(world_x: float, world_z: float) -> float:
-	# Because we set 'terrain.noise.offset = position' before building,
-	# the actual local coordinates for sampling are (world_x - position.x, world_z - position.z).
 	var local_x = world_x - position.x
 	var local_z = world_z - position.z
 	var noise_value = terrain.noise.get_noise_3d(local_x, 0, local_z)
@@ -129,18 +152,20 @@ func create_chunk(pos: Vector3):
 
 	terrain.chunk_list.append(cName)
 
-	if randi() % 100 < 1:
+	# Randomly spawn a plant or post
+	if randi() % 100 < 10:
 		var random_x = randf_range(0, terrain.chunk_size)
 		var random_z = randf_range(0, terrain.chunk_size)
 		var world_x = pos.x + random_x
 		var world_z = pos.z + random_z
 		var height_y = get_terrain_height(world_x, world_z)
 		var spawn_pos = Vector3(world_x, height_y, world_z)
-		
+
 		var random_rotation = randf() * 360.0
 		var random_scale = 1.0
-		spawn_plant(spawn_pos + Vector3(0, 0.75, 0), random_rotation, random_scale)
+		spawn_body(spawn_pos + Vector3(0, 0.75, 0), random_rotation, random_scale)
 
+	# Randomly spawn a ruin or structure
 	if randi() % 300 < 1:
 		var random_rotation = randf() * 360.0
 		var random_scale = 2 + randf() * 1.5
@@ -154,17 +179,31 @@ func create_chunk(pos: Vector3):
 
 
 func spawn_structure(pos: Vector3, rotation_y: float, scale_factor: float):
-	var ruins = preload("res://src/structure/ruins/ruins_01.tscn").instantiate()
+	var ruins = ruins_scene.instantiate()
 	add_child(ruins)
-
 	ruins.call_deferred("_set_transform", pos, rotation_y, scale_factor)
 	ruins.env = terrain.env
 	ruins.spawn_loot(pos)
 
 
-func spawn_plant(pos: Vector3, rotation_y: float, scale_factor: float):
-	var yucca = preload("res://src/object/agriculture/yucca.tscn").instantiate()
-	add_child(yucca)
+func spawn_body(pos: Vector3, rotation_y: float, scale_factor: float):
+	# Weighted selection from spawnables
+	var total_chance = 0.0
+	for chance in spawn_chances:
+		total_chance += chance
 
-	# We'll call a custom method _set_transform() in the yucca scene
-	yucca.call_deferred("_set_transform", pos, rotation_y, scale_factor)
+	var roll = randf() * total_chance
+	var cumulative = 0.0
+	var chosen_index = 0
+
+	for i in range(spawnables.size()):
+		cumulative += spawn_chances[i]
+		if roll <= cumulative:
+			chosen_index = i
+			break
+
+	var selected_scene = spawnables[chosen_index].instantiate()
+	add_child(selected_scene)
+
+	# We'll call a custom method _set_transform() in the spawnable scene
+	selected_scene.call_deferred("_set_transform", pos, rotation_y, scale_factor)
