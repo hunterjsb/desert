@@ -1,4 +1,4 @@
-[gd_scene load_steps=34 format=3 uid="uid://31vsdnsofoou"]
+[gd_scene load_steps=35 format=3 uid="uid://31vsdnsofoou"]
 
 [ext_resource type="PackedScene" uid="uid://ch0krls6y12y8" path="res://player.tscn" id="1_l1y63"]
 [ext_resource type="PackedScene" uid="uid://b0gsf4ppmuj2h" path="res://src/environment/sand_storm.tscn" id="1_qsy6h"]
@@ -21,6 +21,7 @@
 [ext_resource type="PackedScene" uid="uid://b15288jke7rif" path="res://src/object/food/yucca_fruit.tscn" id="20_d28ju"]
 [ext_resource type="PackedScene" uid="uid://dotdv60184fyp" path="res://src/object/food/carrot.tscn" id="20_rjruf"]
 [ext_resource type="PackedScene" uid="uid://dfuxrm7tjavcw" path="res://src/object/agriculture/yucca.tscn" id="21_64xmc"]
+[ext_resource type="PackedScene" uid="uid://dpa5driu6t5g5" path="res://src/structure/post.tscn" id="22_nwsvy"]
 
 [sub_resource type="QuadMesh" id="QuadMesh_oy20x"]
 
@@ -244,6 +245,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.60401, 0.66643, -3.51304)
 
 [node name="yucca" parent="." instance=ExtResource("21_64xmc")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 0.601411, 2)
+
+[node name="Post" parent="." instance=ExtResource("22_nwsvy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.52666, 0.899146, 0.0860295)
 
 [connection signal="cardinal_direction_changed" from="Environment/WindManager" to="Objects/WindyBody" method="_on_cardinal_direction_changed"]
 [connection signal="gust_ended" from="Environment/WindManager" to="Objects/WindyBody" method="_on_gust_ended"]
