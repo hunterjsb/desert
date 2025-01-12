@@ -6,7 +6,7 @@
 [ext_resource type="Shader" path="res://outline01.gdshader" id="3_sht45"]
 [ext_resource type="AudioStream" uid="uid://vmq1ky2lrtby" path="res://audio/static.mp3" id="4_t0b2n"]
 [ext_resource type="AudioStream" uid="uid://bxmv4r463s3w4" path="res://audio/object_radio_sandy_andy.wav" id="5_fpm8w"]
-[ext_resource type="AudioStream" uid="uid://bktu58jpiynea" path="res://audio/object_radio_waiting_on_the_sun.mp3" id="6_4u482"]
+[ext_resource type="AudioStream" uid="uid://chchk3ut0xcjq" path="res://audio/object_radio_waiting_on_the_sun.wav" id="6_6kw0u"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_7e5dn"]
 render_priority = 0
@@ -47,7 +47,7 @@ stream = ExtResource("5_fpm8w")
 max_distance = 60.0
 
 [node name="WaitingontheSun" type="AudioStreamPlayer3D" parent="Mesh1_Mesh1_108" index="3"]
-stream = ExtResource("6_4u482")
+stream = ExtResource("6_6kw0u")
 
 [node name="Static" type="AudioStreamPlayer3D" parent="Mesh1_Mesh1_108" index="4"]
 stream = ExtResource("4_t0b2n")
