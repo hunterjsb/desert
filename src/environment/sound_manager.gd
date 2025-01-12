@@ -21,3 +21,4 @@ func randomclank(body: InteractableBody3D):
 	audio_player.stream = collision_sounds[randi() % collision_sounds.size()]
 	audio_player.play()
 	audio_player.finished.connect(audio_player.queue_free)
+	audio_player.volume_db = -24
