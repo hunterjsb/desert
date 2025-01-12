@@ -7,6 +7,7 @@ extends InteractableBody3D
 @export var align_with_slope = true  # Align with the terrain slope
 @export var rotation_smooth_speed = 0.1  # Slerp factor for smooth rotation
 
+@onready var hoverAudio = $HoverSound
 @onready var raycast_down: RayCast3D = $RayCast3D
 @onready var rope_scene = preload("res://src/object/rope/Rope.tscn")
 
@@ -17,6 +18,7 @@ func _ready():
 	# A bit of damping to reduce infinite sliding or spinning
 	linear_damp = 0.2
 	angular_damp = 0.2
+	hoverAudio.play()
 
 func _integrate_forces(_state: PhysicsDirectBodyState3D):
 	if raycast_down.is_colliding():
