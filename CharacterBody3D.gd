@@ -368,10 +368,7 @@ func interact_with_item(item: Node3D):
 	else:
 		print("Item does not implement interact().")
 
-
-#
-# ==> SHIELD LABEL VISIBILITY ON HOVER <==
-#
+# HOVER VIZ
 func apply_outline(obj: Node):
 	var mesh = find_mesh_instance(obj)
 	if mesh and mesh.material_overlay:

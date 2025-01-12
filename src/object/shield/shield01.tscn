@@ -4,8 +4,8 @@
 [ext_resource type="Script" path="res://src/object/shield/shield.gd" id="1_ajbgd"]
 [ext_resource type="Shader" path="res://shader/bubbleshield01.gdshader" id="3_hrbf4"]
 [ext_resource type="AudioStream" uid="uid://d210wmjbixl28" path="res://audio/object_shield-boot.wav" id="4_f1357"]
-[ext_resource type="AudioStream" uid="uid://bhyqhoi2wcg0n" path="res://audio/object_shield-sustain.mp3.mp3" id="5_nbm1r"]
-[ext_resource type="AudioStream" uid="uid://c0g6frcanbuaw" path="res://audio/object_shield-powerdown.wav.wav" id="6_otc6l"]
+[ext_resource type="AudioStream" uid="uid://q8mu5unw2sn" path="res://audio/object_shield-sustain.mp3.mp3" id="5_nbm1r"]
+[ext_resource type="AudioStream" uid="uid://bspkp1ei708qu" path="res://audio/object_shield-powerdown.wav.wav" id="6_otc6l"]
 [ext_resource type="Script" path="res://src/object/shield/shield_battery_label.gd" id="7_nlwhq"]
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_6y8gw"]

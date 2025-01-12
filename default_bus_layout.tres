@@ -4,11 +4,12 @@
 resource_name = "LowPassFilter"
 
 [resource]
+bus/0/volume_db = -5.93425
 bus/1/name = &"Storm"
 bus/1/solo = false
 bus/1/mute = false
 bus/1/bypass_fx = false
-bus/1/volume_db = 0.265018
+bus/1/volume_db = -5.625
 bus/1/send = &"Master"
 bus/1/effect/0/effect = SubResource("AudioEffectLowPassFilter_tb1gy")
 bus/1/effect/0/enabled = true
