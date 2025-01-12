@@ -18,7 +18,7 @@ config/icon="res://texture/bsg.webp"
 
 [autoload]
 
-SoundManager="*res://sound_manager.gd"
+SoundManager="*res://src/environment/sound_manager.gd"
 
 [global]
 

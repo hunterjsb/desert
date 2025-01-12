@@ -1,9 +1,9 @@
 [gd_scene load_steps=14 format=3 uid="uid://b0gsf4ppmuj2h"]
 
-[ext_resource type="Script" path="res://sand_storm.gd" id="1_2s428"]
+[ext_resource type="Script" path="res://src/environment/sand_storm.gd" id="1_2s428"]
 [ext_resource type="Shader" path="res://fog01.gdshader" id="2_ulbh7"]
 [ext_resource type="AudioStream" uid="uid://bgr1j23n4wnh2" path="res://audio/object_sandstorm.wav" id="3_xuq3t"]
-[ext_resource type="Shader" path="res://sand_storm_mesh.gdshader" id="4_ibm10"]
+[ext_resource type="Shader" path="res://src/environment/sand_storm_mesh.gdshader" id="4_ibm10"]
 [ext_resource type="AudioStream" uid="uid://cyxtb05412s57" path="res://audio/object_sandstorm2.wav" id="5_r1ikw"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_p0jmp"]

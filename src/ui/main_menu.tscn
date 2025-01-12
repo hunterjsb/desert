@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://src/ui/main_menu.gd" id="1_5vwaj"]
 [ext_resource type="Theme" uid="uid://bvl8bwpd1nryk" path="res://main_menu.tres" id="2_0doh3"]
 [ext_resource type="PackedScene" uid="uid://csgdtb8pbgwjj" path="res://src/object/shield/shield00.tscn" id="2_qpg2t"]
-[ext_resource type="PackedScene" uid="uid://bdcr8aj5rbgm3" path="res://day_night.tscn" id="3_ynbn5"]
+[ext_resource type="PackedScene" uid="uid://bdcr8aj5rbgm3" path="res://src/environment/day_night.tscn" id="3_ynbn5"]
 [ext_resource type="Script" path="res://camera_3d.gd" id="4_1pwih"]
 [ext_resource type="Texture2D" uid="uid://bhigegemvbhwj" path="res://texture/menu/sand-game-title.png" id="4_8yi4g"]
 [ext_resource type="PackedScene" uid="uid://dlgxashpwucl5" path="res://src/object/radio.tscn" id="6_mo31w"]
@@ -63,7 +63,7 @@ text = "skybox"
 [node name="MenuScene3D" type="Node3D" parent="."]
 
 [node name="radio" parent="MenuScene3D" node_paths=PackedStringArray("env") instance=ExtResource("6_mo31w")]
-transform = Transform3D(-0.0973918, 0, 0.995246, 0, 1, 0, -0.995246, 0, -0.0973918, -1.10024, -0.550182, 0.528188)
+transform = Transform3D(-0.997801, 0.0662739, 7.16125e-08, 0.0542884, 0.817351, 0.573576, 0.0380131, 0.572315, -0.819152, -0.405766, 0.67306, -0.113961)
 env = NodePath("../Environment")
 
 [node name="Camera3D" type="Camera3D" parent="MenuScene3D"]
@@ -71,11 +71,11 @@ transform = Transform3D(1, 0, 0, 0, 0.907558, -0.419927, 0, 0.419927, 0.907558, 
 script = ExtResource("4_1pwih")
 
 [node name="Shield" parent="MenuScene3D" instance=ExtResource("2_qpg2t")]
-transform = Transform3D(-2, 1.00288e-07, -1.43224e-07, 0, 1.63831, 1.14715, 1.74846e-07, 1.14716, -1.6383, 0, 0.68789, 0.0811507)
+transform = Transform3D(-2, 1.00288e-07, -1.43224e-07, 0, 1.63831, 1.14715, 1.74846e-07, 1.14716, -1.6383, 0.605128, 0.68789, -0.31436)
 gravity = 0.0
 
 [node name="Environment" parent="MenuScene3D" instance=ExtResource("3_ynbn5")]
-day_time = 17.5
+day_time = 16.0
 clouds_cutoff = 0.75
 time_scale = 0.05
 moon_base_enegry = 0.3
