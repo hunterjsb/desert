@@ -1,24 +1,33 @@
 extends MeshInstance3D
 
-#==> OTHER <==#
+# ==> OTHER <== #
 var terrain = null
 var autoLOD = 10
 var oldLod = 0
 
-#==> SCENES <==#
+# ==> SCENES <== #
 var ruins_scene = preload("res://src/structure/ruins/ruins_01.tscn")
 var yucca_scene = preload("res://src/object/agriculture/yucca.tscn")
 var post_scene = preload("res://src/structure/post.tscn")
 
-#==> SPAWNABLES + CHANCES <==#
-var spawnables = [yucca_scene, post_scene] 
-var spawn_chances = [0.001, 0.001]
+# ==> SPAWNABLES + CHANCES <== #
+# We'll add a "null" (skip) entry so that most of the time we spawn nothing.
+# By default, total chance = 0.0001 + 0.0001 + 0.9998 = 1.0
+# Adjust these to your liking.
+var spawnables = [
+	yucca_scene,
+	post_scene,
+	null  # <-- skip spawning
+]
+var spawn_chances = [
+	0.1,  # chance for yucca
+	0.1,  # chance for post
+	0.001   # chance for skip
+]
 
-#==> CODE <==#
 func get_distance():
 	var player_pos = terrain.player.global_position
 	return int(player_pos.distance_to(position))
-
 
 func kreiraj_noise_teren():
 	var chunk_size = terrain.chunk_size
@@ -28,7 +37,6 @@ func kreiraj_noise_teren():
 	mesh.subdivide_depth = subdivide_size
 	mesh.subdivide_width = subdivide_size
 	return mesh
-
 
 func kreiraj_custom_col(trimesh = false):
 	# Rebuild the terrain mesh
@@ -45,14 +53,12 @@ func kreiraj_custom_col(trimesh = false):
 			if child.get_class() == "StaticBody3D":
 				child.name = "TerrainCollision"
 
-
 func remove_chunk():
 	var cName = "c_" + str(global_position.x) + "X" + str(global_position.z)
 	terrain.chunk_list.erase(cName)
 	create_tween().tween_property(self, "transparency", 1, terrain.chunk_show_speed).set_trans(Tween.TRANS_LINEAR)
 	await get_tree().create_timer(terrain.chunk_show_speed).timeout
 	queue_free()
-
 
 func _process(_delta):
 	var dist = get_distance()
@@ -71,6 +77,7 @@ func _process(_delta):
 		autoLOD = 2
 	else:
 		autoLOD = 3
+
 	if dist / terrain.chunk_size > 20:
 		autoLOD = 4
 	if dist / terrain.chunk_size > 40:
@@ -80,7 +87,6 @@ func _process(_delta):
 	if oldLod != autoLOD:
 		oldLod = autoLOD
 
-		# IMPORTANT FIX:
 		# Only remove the terrain collision body, not every StaticBody3D
 		for child in get_children():
 			if child.get_class() == "StaticBody3D" and child.name == "TerrainCollision":
@@ -92,13 +98,11 @@ func _process(_delta):
 		elif not terrain.optimised_collision:
 			kreiraj_custom_col(true)
 
-
 func create_lod(_pos):
 	var lod = 1
 	mesh.subdivide_width = terrain.chunk_size / lod
 	mesh.subdivide_depth = terrain.chunk_size / lod
 	return mesh
-
 
 func create_noise_terrain(_mesh):
 	var sTool = SurfaceTool.new()
@@ -128,13 +132,11 @@ func create_noise_terrain(_mesh):
 	sTool.generate_normals()
 	return sTool.commit()
 
-
 func get_terrain_height(world_x: float, world_z: float) -> float:
 	var local_x = world_x - position.x
 	var local_z = world_z - position.z
 	var noise_value = terrain.noise.get_noise_3d(local_x, 0, local_z)
 	return noise_value * terrain.terrain_height
-
 
 func create_chunk(pos: Vector3):
 	position = pos
@@ -152,8 +154,8 @@ func create_chunk(pos: Vector3):
 
 	terrain.chunk_list.append(cName)
 
-	# Randomly spawn a plant or post
-	if randi() % 100 < 10:
+	# Example: Now let's make the chunk-level spawn chance 1%:
+	if randf() < 0.01:
 		var random_x = randf_range(0, terrain.chunk_size)
 		var random_z = randf_range(0, terrain.chunk_size)
 		var world_x = pos.x + random_x
@@ -165,8 +167,8 @@ func create_chunk(pos: Vector3):
 		var random_scale = 1.0
 		spawn_body(spawn_pos + Vector3(0, 0.75, 0), random_rotation, random_scale)
 
-	# Randomly spawn a ruin or structure
-	if randi() % 600 < 1:
+	# Randomly spawn a ruin or structure (same old 1 in 300 chance here)
+	if randi() % 300 < 1:
 		var random_rotation = randf() * 360.0
 		var random_scale = 2 + randf() * 1.5
 		spawn_structure(
@@ -177,7 +179,6 @@ func create_chunk(pos: Vector3):
 
 	return self
 
-
 func spawn_structure(pos: Vector3, rotation_y: float, scale_factor: float):
 	var ruins = ruins_scene.instantiate()
 	add_child(ruins)
@@ -185,16 +186,15 @@ func spawn_structure(pos: Vector3, rotation_y: float, scale_factor: float):
 	ruins.env = terrain.env
 	ruins.spawn_loot(pos)
 
-
 func spawn_body(pos: Vector3, rotation_y: float, scale_factor: float):
-	# Weighted selection from spawnables
+	# Weighted selection from spawnables, including a "skip" entry
 	var total_chance = 0.0
 	for chance in spawn_chances:
 		total_chance += chance
 
 	var roll = randf() * total_chance
 	var cumulative = 0.0
-	var chosen_index = 0
+	var chosen_index = -1
 
 	for i in range(spawnables.size()):
 		cumulative += spawn_chances[i]
@@ -202,8 +202,11 @@ func spawn_body(pos: Vector3, rotation_y: float, scale_factor: float):
 			chosen_index = i
 			break
 
+	# If the chosen spawnable is null, then we skip spawning entirely
+	if chosen_index == -1 or spawnables[chosen_index] == null:
+		return  # do nothing
+
+	# Otherwise, spawn the chosen scene
 	var selected_scene = spawnables[chosen_index].instantiate()
 	add_child(selected_scene)
-
-	# We'll call a custom method _set_transform() in the spawnable scene
 	selected_scene.call_deferred("_set_transform", pos, rotation_y, scale_factor)
