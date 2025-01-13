@@ -31,7 +31,9 @@ var dead = false
 @export var fade_out_time: float = 0.5
 var hunger_fade_tween: Tween = null
 
+# We will set gravity to 0 initially to keep player suspended
 @export var gravity = 0.0
+
 var walk_cycle_time = 0.0
 var original_camera_local_pos
 var is_sprinting = false
@@ -45,12 +47,15 @@ var carried_item_type: String = ""
 var is_carrying_item: bool = false
 
 @onready var ray = $Camera3D/RayCast3D
-
 @onready var menu = $PauseMenu
 @onready var hud = preload("res://src/ui/hud/hud.tscn").instantiate()
 @onready var hunger: Hunger = $Hunger
 
 var can_move = true
+
+# Used to know if the terrain is done loading
+var terrain_loaded = false
+
 var on_hoverboard = false
 var last_highlighted_item: Node = null
 
@@ -65,17 +70,27 @@ var slide_cooldown_timer = 0.0
 # Index of the low-pass filter effect on the Storm bus (adjust if needed)
 var storm_filter_effect_index = 0
 
+
 func _ready():
 	add_child(hud)
 	_update_health_bar()
 	AmbientAudio.play()
+
+	# Hide the mouse
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+
+	# Store original local position of camera for sway/crouch logic
 	original_camera_local_pos = $Camera3D.transform.origin
+
+	# Force the player to be suspended: no movement allowed until terrain loads
+	# can_move = false
+	gravity = 0.0
+	velocity = Vector3.ZERO
 
 	var starter_shield: InteractableBody3D = preload("res://src/object/shield/shield01.tscn").instantiate()
 	starter_shield.pickup(self)
 	starter_shield.energy = 10_000
-	
+
 	# Connect bubble shield signals
 	for shield in get_tree().get_nodes_in_group("bubble_shield"):
 		shield.player_entered_bubble.connect(_on_player_entered_bubble)
@@ -83,6 +98,13 @@ func _ready():
 
 
 func _physics_process(delta):
+	# If terrain not loaded yet, skip all normal movement and keep velocity at zero
+	if not terrain_loaded:
+		velocity = Vector3.ZERO
+		move_and_slide()
+		return
+
+	# From here on, terrain_loaded == true, so normal logic is allowed:
 	if not can_move:
 		return
 
@@ -114,16 +136,13 @@ func _physics_process(delta):
 		if last_highlighted_item and last_highlighted_item != collider:
 			if is_instance_valid(last_highlighted_item):
 				reset_outline(last_highlighted_item)
-		# Highlight the new collider
 		apply_outline(collider)
 		last_highlighted_item = collider
 	else:
-		# Reset the outline if there's no valid collider
 		if last_highlighted_item:
 			if is_instance_valid(last_highlighted_item):
 				reset_outline(last_highlighted_item)
 			last_highlighted_item = null
-
 
 	# Gravity
 	velocity.y -= gravity * delta
@@ -193,11 +212,12 @@ func _physics_process(delta):
 	# Crouch camera adjust
 	_update_crouch_height()
 
+
 func _input(event):
 	# Mouse look
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
-		rotate_y(-event.relative.x * mouse_sensitivity / 1000)
-		$Camera3D.rotate_x(-event.relative.y * mouse_sensitivity / 1000)
+		rotate_y(-event.relative.x * mouse_sensitivity / 1000)             # Yaw
+		$Camera3D.rotate_x(-event.relative.y * mouse_sensitivity / 1000)   # Pitch
 		$Camera3D.rotation.x = clampf($Camera3D.rotation.x, -deg_to_rad(70), deg_to_rad(70))
 
 	# Pan Gesture Rotation for Held Items
@@ -244,14 +264,33 @@ func _input(event):
 		if not is_sliding:
 			is_crouching = false
 
+
+func _on_terrain_map_ready():
+	# This is called once your terrain is loaded.
+	# Now we allow normal movement and set gravity.
+	terrain_loaded = true
+	can_move = true
+	gravity = 9.8
+
+	var hoverboard = preload("res://src/object/hoverboard/hoverboard.tscn").instantiate()
+	var spawn_offset = Vector3(2, 1, 0)
+	var spawn_position = global_transform.origin + spawn_offset
+	get_parent().add_child(hoverboard)
+	hoverboard.call_deferred("set_global_position", spawn_position)
+	
+	var bplanter = preload("res://src/object/agriculture/bubbleplanter.tscn").instantiate()
+	bplanter.wind_manager = $"../../../Environment/WindManager"
+	var bp_spawn_offset = Vector3(2, -1, 1)
+	var bp_spawn_position = global_transform.origin + bp_spawn_offset
+	get_parent().add_child(bplanter)
+	bplanter.call_deferred("set_global_position", bp_spawn_position)
+
+
 func clear_hand() -> void:
 	if is_carrying_item:
-		# Ensure any carried item reference is cleared
 		carried_item = null
 		carried_item_type = ""
 		is_carrying_item = false
-		
-		# Optionally: Update visuals or hand state
 		print("Player's hand is now empty.")
 
 
@@ -261,6 +300,7 @@ func _update_hunger_label(force_update: bool = false) -> void:
 		hunger.previous_hunger_state = current_state
 		show_hunger_message(current_state)
 
+
 func _get_hunger_state() -> String:
 	if hunger.hunger <= 25:
 		return "You are starving"
@@ -269,8 +309,8 @@ func _get_hunger_state() -> String:
 	else:
 		return "You are full"
 
+
 func show_hunger_message(new_text: String) -> void:
-	# Retrieve label
 	if not hud or not hud.has_node("HungerLabel"):
 		return
 	
@@ -278,39 +318,27 @@ func show_hunger_message(new_text: String) -> void:
 	hunger_label.text = new_text
 	hunger_label.visible = true
 
-	# Immediately kill any existing tween to avoid overlap
 	if hunger_fade_tween and hunger_fade_tween.is_running():
 		hunger_fade_tween.kill()
 
-	# Reset alpha to 0 for the fade-in
 	hunger_label.modulate.a = 0
-
-	# Create a new tween for fade in -> wait -> fade out
 	hunger_fade_tween = get_tree().create_tween()
-	hunger_fade_tween.tween_property(
-		hunger_label, "modulate:a", 1.0, fade_in_time
-	)
-
-	# Pause for display_time seconds, then fade out
+	hunger_fade_tween.tween_property(hunger_label, "modulate:a", 1.0, fade_in_time)
 	hunger_fade_tween.tween_callback(Callable(self, "_on_hunger_pause")).set_delay(display_time)
-
-	hunger_fade_tween.tween_property(
-		hunger_label, "modulate:a", 0.0, fade_out_time
-	)
-
-	# When fade out finishes, hide the label
+	hunger_fade_tween.tween_property(hunger_label, "modulate:a", 0.0, fade_out_time)
 	hunger_fade_tween.tween_callback(Callable(self, "_on_hunger_fade_complete"))
 
 
 func _on_hunger_pause() -> void:
-	# Called once the fade in completes and we’ve waited display_time
 	pass
+
 
 func _on_hunger_fade_complete() -> void:
 	if not hud or not hud.has_node("HungerLabel"):
 		return
 	var hunger_label = hud.get_node("HungerLabel") as Label
 	hunger_label.visible = false
+
 
 func rotate_held_item(direction: float, axis: String = "y") -> void:
 	var angle_deg = direction * 90.0
@@ -322,6 +350,7 @@ func rotate_held_item(direction: float, axis: String = "y") -> void:
 		carried_item.rotate_x(angle_rad)
 	elif axis == "z":
 		carried_item.rotate_z(angle_rad)
+
 
 func _update_crouch_height():
 	var cam_transform = $Camera3D.transform
@@ -343,12 +372,8 @@ func get_ray_collider(group: String) -> Node:
 	return null
 
 
-#
-# ==> PICKUP / THROW / INTERACT <==
-#
 func throw_item():
 	if is_carrying_item:
-		# Remove the item from the player's hand
 		$Camera3D/HandPoint.remove_child(carried_item)
 		get_parent().add_child(carried_item)
 		carried_item.global_transform = $Camera3D/HandPoint.global_transform
@@ -358,7 +383,6 @@ func throw_item():
 			var throw_dir = -$Camera3D.global_transform.basis.z.normalized()
 			carried_item.apply_central_impulse(throw_dir * 5.0)
 
-		# Clear the hand state
 		clear_hand()
 
 
@@ -368,7 +392,7 @@ func interact_with_item(item: Node3D):
 	else:
 		print("Item does not implement interact().")
 
-# HOVER VIZ
+
 func apply_outline(obj: Node):
 	var mesh = find_mesh_instance(obj)
 	if mesh and mesh.material_overlay:
@@ -400,29 +424,7 @@ func find_mesh_instance(obj: Node) -> MeshInstance3D:
 			return result
 	return null
 
-#
-# ==> HOVERBOARD / TERRAIN
-#
-func _on_terrain_map_ready():
-	gravity = 9.8
-	
-	var hoverboard = preload("res://src/object/hoverboard/hoverboard.tscn").instantiate()
-	var spawn_offset = Vector3(2, 1, 0)
-	var spawn_position = global_transform.origin + spawn_offset
-	get_parent().add_child(hoverboard)
-	hoverboard.call_deferred("set_global_position", spawn_position)
-	
-	var bplanter = preload("res://src/object/agriculture/bubbleplanter.tscn").instantiate()
-	bplanter.wind_manager = $"../Environment/WindManager"
-	var bp_spawn_offset = Vector3(2, -1, 1)
-	var bp_spawn_position = global_transform.origin + bp_spawn_offset
-	get_parent().add_child(bplanter)
-	bplanter.call_deferred("set_global_position", bp_spawn_position)
 
-
-#
-# ==> CAMERA SWAY
-#
 func _update_camera_sway():
 	var intensity = sprint_sway_intensity if is_sprinting else walk_sway_intensity
 	var frequency = sprint_sway_frequency if is_sprinting else walk_sway_frequency
@@ -438,14 +440,11 @@ func _reset_camera_sway():
 	# We'll keep the Y offset from crouch logic.
 
 
-#
-# ==> HEALTH/BUBBLE LOGIC
-#
 func take_damage(base_amount: int) -> void:
 	# Grab the multiplier from Hunger
 	var dmg_mult = hunger.get_damage_multiplier()
 	var final_damage = int(base_amount * dmg_mult)
-	
+
 	current_health -= final_damage
 	if current_health < 0:
 		current_health = 0
@@ -454,10 +453,8 @@ func take_damage(base_amount: int) -> void:
 	_update_health_bar()
 
 
-
 func die():
 	print("Player has died.")
-
 	dead = true
 	can_move = false
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
@@ -498,35 +495,34 @@ func _set_in_bubble(value: bool) -> void:
 	is_in_bubble_shield = value
 	update_storm_audio()
 	print("Player is_in_bubble_shield: ", is_in_bubble_shield)
-	
+
+
 func calculate_fall_damage():
 	var fall_damage = (peak_fall_speed + fall_damage_threshold) * fall_damage_multiplier
 	if fall_damage > 0:
 		print("Player took ", fall_damage, " fall damage.")
 		fall_damage = 0
 
+
 func eat_food(amount: int) -> void:
 	hunger.hunger = clamp(hunger.hunger + amount, 0, 100)
 	show_hunger_message("It's a little dry...") 
 
-#
-# ==> AUDIO CONTROL FOR STORM BUS
-#
+
 func update_storm_audio() -> void:
 	var storm_bus_idx = AudioServer.get_bus_index("Storm")
 
 	# If the player is inside the bubble shield:
 	if is_in_bubble_shield:
-		# Enable Low-Pass filter effect on the Storm bus (assumes effect is at index storm_filter_effect_index)
-		AudioServer.set_bus_volume_db(storm_bus_idx, -18.0)  # turn volume down
+		AudioServer.set_bus_volume_db(storm_bus_idx, -18.0)
 		AudioServer.set_bus_effect_enabled(storm_bus_idx, storm_filter_effect_index, true)
-	
+
 	# If the player is in the storm but NOT inside the bubble
 	elif is_in_storm and not is_in_bubble_shield:
-		AudioServer.set_bus_volume_db(storm_bus_idx, 0.0)  # normal volume
+		AudioServer.set_bus_volume_db(storm_bus_idx, 0.0)
 		AudioServer.set_bus_effect_enabled(storm_bus_idx, storm_filter_effect_index, false)
-	
+
 	# If the player isn't in the storm at all
 	else:
-		AudioServer.set_bus_volume_db(storm_bus_idx, 0.0)   # normal volume (or fade out if you prefer)
+		AudioServer.set_bus_volume_db(storm_bus_idx, 0.0)
 		AudioServer.set_bus_effect_enabled(storm_bus_idx, storm_filter_effect_index, false)

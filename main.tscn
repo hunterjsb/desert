@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://detacysixr15p"]
+[gd_scene load_steps=15 format=3 uid="uid://detacysixr15p"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_7asmc"]
 [ext_resource type="PackedScene" uid="uid://ry3c5djemip2" path="res://terrain.tscn" id="2_vayhu"]
@@ -10,6 +10,7 @@
 [ext_resource type="Script" path="res://src/environment/wind_manager.gd" id="6_xst0i"]
 [ext_resource type="Shader" path="res://src/environment/sky.gdshader" id="8_a4qdo"]
 [ext_resource type="Texture2D" uid="uid://bmoh66spei4tg" path="res://src/environment/stars.png" id="9_shxyi"]
+[ext_resource type="Material" uid="uid://hr7ak7fusra5" path="res://celshadermat.tres" id="9_ugv5w"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_kbo5r"]
 shader = ExtResource("8_a4qdo")
@@ -63,20 +64,13 @@ min_storms = 1
 transform = Transform3D(397.435, -212.762, 216.282, -3.93578e-06, 356.442, 350.641, -303.39, -278.714, 283.325, 730.48, 121.328, -2999.19)
 
 [node name="terrain" parent="." node_paths=PackedStringArray("player", "env") instance=ExtResource("2_vayhu")]
-player = NodePath("../Player")
+player = NodePath("../SubViewportContainer/SubViewport/Player")
 noise_terrain = "res://noise_terrain.tres"
 chunk_script = "res://chunk.gd"
 env = NodePath("../Environment")
 
 [node name="SoundManager" type="Node3D" parent="."]
 script = ExtResource("4_8cf7n")
-
-[node name="Player" parent="." instance=ExtResource("4_rrvx7")]
-
-[node name="DevHUD" parent="Player" node_paths=PackedStringArray("player", "environment") instance=ExtResource("5_7jr5i")]
-visible = false
-player = NodePath("..")
-environment = NodePath("../../Environment")
 
 [node name="Environment" type="Node3D" parent="."]
 script = ExtResource("6_q0lrl")
@@ -97,7 +91,7 @@ shadow_opacity = 0.75
 shadow_blur = 5.0
 
 [node name="Moon" type="DirectionalLight3D" parent="Environment"]
-transform = Transform3D(0.950518, 0, -0.310667, 0.307638, -0.13932, 0.941248, -0.0432821, -0.990247, -0.132426, 0, 0, 0)
+transform = Transform3D(0.950518, 0, -0.310667, 0.307638, -0.13932, 0.941248, -0.043282, -0.990247, -0.132426, 0, 0, 0)
 rotation_order = 4
 light_color = Color(1, 1, 0.6, 1)
 light_energy = 0.1
@@ -110,4 +104,25 @@ sky_mode = 1
 [node name="WorldEnvironment" type="WorldEnvironment" parent="Environment"]
 environment = SubResource("Environment_1ucfk")
 
-[connection signal="map_ready" from="terrain" to="Player" method="_on_terrain_map_ready"]
+[node name="SubViewportContainer" type="SubViewportContainer" parent="."]
+material = ExtResource("9_ugv5w")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="SubViewportContainer"]
+handle_input_locally = false
+size = Vector2i(1152, 648)
+render_target_update_mode = 4
+
+[node name="Player" parent="SubViewportContainer/SubViewport" instance=ExtResource("4_rrvx7")]
+
+[node name="DevHUD" parent="SubViewportContainer/SubViewport/Player" node_paths=PackedStringArray("player", "environment") instance=ExtResource("5_7jr5i")]
+visible = false
+player = NodePath("..")
+environment = NodePath("../../../../Environment")
+
+[connection signal="map_ready" from="terrain" to="SubViewportContainer/SubViewport/Player" method="_on_terrain_map_ready"]

@@ -25,15 +25,15 @@ render_priority = 0
 shader = ExtResource("4_ibm10")
 shader_parameter/sand_color = Color(0.8, 0.7, 0.5, 1)
 shader_parameter/highlight_color = Color(1, 0.9, 0.6, 1)
-shader_parameter/burn = 0.9
-shader_parameter/emission_strength = 3.0
-shader_parameter/noise_scale = 1.0
-shader_parameter/swirl_speed = 2.0
-shader_parameter/swirl_amount = 1.0
-shader_parameter/swirl_frequency = 2.0
+shader_parameter/burn = 0.0
+shader_parameter/emission_strength = 0.0
+shader_parameter/noise_scale = 2.0
+shader_parameter/swirl_speed = 0.01
+shader_parameter/swirl_amount = 0.696
+shader_parameter/swirl_frequency = 1.0
 shader_parameter/radius_noise_strength = 2.0
 shader_parameter/vertical_warp_strength = 1.0
-shader_parameter/twist_noise_strength = 0.5
+shader_parameter/twist_noise_strength = 0.3
 shader_parameter/fresnel_power = 5.0
 shader_parameter/distance_fade_start = 300.0
 shader_parameter/distance_fade_end = 600.0
@@ -45,30 +45,29 @@ radius = 9.0
 height = 12.0
 is_hemisphere = true
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_1j2o4"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_6meu1"]
 render_priority = 0
 shader = ExtResource("4_ibm10")
-shader_parameter/sand_color = Color(0.8, 0.7, 0.5, 1)
-shader_parameter/highlight_color = Color(1, 0.9, 0.6, 1)
-shader_parameter/burn = 0.3
-shader_parameter/emission_strength = 0.5
-shader_parameter/noise_scale = 8.6
-shader_parameter/swirl_speed = 3.0
-shader_parameter/swirl_amount = 2.0
-shader_parameter/swirl_frequency = 2.0
+shader_parameter/sand_color = Color(0.741176, 0.517647, 0.235294, 1)
+shader_parameter/highlight_color = Color(0.258824, 0.196078, 0.101961, 1)
+shader_parameter/burn = 0.5
+shader_parameter/emission_strength = 2.6
+shader_parameter/noise_scale = 2.0
+shader_parameter/swirl_speed = 0.0
+shader_parameter/swirl_amount = 1.0
+shader_parameter/swirl_frequency = 5.0
 shader_parameter/radius_noise_strength = 2.0
 shader_parameter/vertical_warp_strength = 1.0
-shader_parameter/twist_noise_strength = 1.682
-shader_parameter/fresnel_power = 4.253
+shader_parameter/twist_noise_strength = 2.0
+shader_parameter/fresnel_power = 5.0
 shader_parameter/distance_fade_start = 50.0
 shader_parameter/distance_fade_end = 150.0
 shader_parameter/vertical_fade_height = 0.0
 
-[sub_resource type="SphereMesh" id="SphereMesh_fjae6"]
-material = SubResource("ShaderMaterial_1j2o4")
-radius = 12.0
-height = 15.0
-is_hemisphere = true
+[sub_resource type="TorusMesh" id="TorusMesh_sg6sm"]
+material = SubResource("ShaderMaterial_6meu1")
+inner_radius = 4.0
+outer_radius = 12.0
 
 [node name="SandStorm" type="Area3D"]
 transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 0, 100, 0)
@@ -87,9 +86,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -9.72364, 0)
 mesh = SubResource("SphereMesh_wkjre")
 
 [node name="InnerStormMesh" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.75, 0, 0, 0, 0.75, 0, 0, 0, 0.75, 0, -9.556, 0)
-visible = false
-mesh = SubResource("SphereMesh_fjae6")
+transform = Transform3D(0.75, 0, 0, 0, 0.75, 0, 0, 0, 0.75, 0, -7.13489, 0)
+mesh = SubResource("TorusMesh_sg6sm")
 skeleton = NodePath("../OuterStormMesh")
 
 [node name="SandStormAudio" type="AudioStreamPlayer3D" parent="."]

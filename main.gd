@@ -13,7 +13,7 @@ extends Node3D
 @onready var wind_manager = $Environment/WindManager
 @onready var sun = $Environment/Sun
 @onready var moon = $Environment/Moon
-@onready var player = $Player
+@onready var player = $SubViewportContainer/SubViewport/Player
 
 func _ready() -> void:
 	randomize()
