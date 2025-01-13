@@ -12,7 +12,7 @@ var post_scene = preload("res://src/structure/post.tscn")
 
 #==> SPAWNABLES + CHANCES <==#
 var spawnables = [yucca_scene, post_scene] 
-var spawn_chances = [0.01, 0.5]
+var spawn_chances = [0.001, 0.001]
 
 #==> CODE <==#
 func get_distance():
@@ -166,7 +166,7 @@ func create_chunk(pos: Vector3):
 		spawn_body(spawn_pos + Vector3(0, 0.75, 0), random_rotation, random_scale)
 
 	# Randomly spawn a ruin or structure
-	if randi() % 300 < 1:
+	if randi() % 600 < 1:
 		var random_rotation = randf() * 360.0
 		var random_scale = 2 + randf() * 1.5
 		spawn_structure(

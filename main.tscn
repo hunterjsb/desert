@@ -36,7 +36,7 @@ shader_parameter/clouds_bottom_color = Color(0.83, 0.83, 0.94, 1)
 shader_parameter/clouds_speed = 2.0
 shader_parameter/clouds_direction = 0.2
 shader_parameter/clouds_scale = 1.0
-shader_parameter/clouds_cutoff = 0.3
+shader_parameter/clouds_cutoff = 0.49
 shader_parameter/clouds_fuzziness = 0.5
 shader_parameter/clouds_weight = 0.0
 shader_parameter/clouds_blur = 0.25
@@ -69,12 +69,10 @@ noise_terrain = "res://noise_terrain.tres"
 chunk_script = "res://chunk.gd"
 env = NodePath("../Environment")
 
-[node name="SoundManager" type="Node3D" parent="."]
-script = ExtResource("4_8cf7n")
-
 [node name="Environment" type="Node3D" parent="."]
 script = ExtResource("6_q0lrl")
-day_time = 6.5
+day_time = 8.0
+clouds_cutoff = 0.49
 sun_base_energy = 2.0
 moon_base_enegry = 0.1
 
@@ -82,7 +80,7 @@ moon_base_enegry = 0.1
 script = ExtResource("6_xst0i")
 
 [node name="Sun" type="DirectionalLight3D" parent="Environment"]
-transform = Transform3D(0.920775, 0, -0.390096, 0.0509178, 0.991445, 0.120185, 0.386759, -0.130526, 0.912897, 0, 0, 0)
+transform = Transform3D(0.92081, 0, -0.390014, 0.195007, 0.866026, 0.460405, 0.337762, -0.5, 0.797444, 0, 0, 0)
 rotation_order = 4
 light_color = Color(1, 1, 0.882353, 1)
 light_energy = 2.0
@@ -91,7 +89,7 @@ shadow_opacity = 0.75
 shadow_blur = 5.0
 
 [node name="Moon" type="DirectionalLight3D" parent="Environment"]
-transform = Transform3D(0.950518, 0, -0.310667, 0.307638, -0.13932, 0.941248, -0.043282, -0.990247, -0.132426, 0, 0, 0)
+transform = Transform3D(0.9652, 0, -0.261509, 0.254038, 0.237327, 0.937624, 0.0620631, -0.971429, 0.229068, 0, 0, 0)
 rotation_order = 4
 light_color = Color(1, 1, 0.6, 1)
 light_energy = 0.1
@@ -117,6 +115,9 @@ stretch = true
 handle_input_locally = false
 size = Vector2i(1152, 648)
 render_target_update_mode = 4
+
+[node name="SoundManager" type="Node3D" parent="SubViewportContainer/SubViewport"]
+script = ExtResource("4_8cf7n")
 
 [node name="Player" parent="SubViewportContainer/SubViewport" instance=ExtResource("4_rrvx7")]
 
