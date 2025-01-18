@@ -1,7 +1,7 @@
 shader_type canvas_item;
 render_mode unshaded;
 
-#define MAX_PALETTE_COLORS 16
+#define MAX_PALETTE_COLORS 20
 
 uniform bool enabled = true;
 
