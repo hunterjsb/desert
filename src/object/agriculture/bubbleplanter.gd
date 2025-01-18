@@ -10,5 +10,5 @@ extends Node3D
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta: float) -> void:
-	var wind_vector = wind_manager.get_wind_vector()
+	var wind_vector = wind_manager.get_wind_vector() / 2
 	body.apply_central_force(wind_vector * wind_force_multiplier)
