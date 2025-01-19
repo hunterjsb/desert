@@ -1,9 +1,12 @@
 extends Node3D
+
 @export var env: Node3D
+@export var is_playing: bool = false
 @onready var body = $Mesh1_Mesh1_108
 
 func _ready():
 	body.env = env
+	body.is_playing = is_playing
 
 func _set_transform(pos: Vector3, rotation_y: float, scale_factor: float):
 	global_transform.origin = pos
