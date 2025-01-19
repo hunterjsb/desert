@@ -1,8 +1,8 @@
-[gd_scene load_steps=43 format=3 uid="uid://31vsdnsofoou"]
+[gd_scene load_steps=42 format=3 uid="uid://31vsdnsofoou"]
 
 [ext_resource type="PackedScene" uid="uid://ch0krls6y12y8" path="res://player.tscn" id="1_l1y63"]
 [ext_resource type="PackedScene" uid="uid://b0gsf4ppmuj2h" path="res://src/environment/sand_storm.tscn" id="1_qsy6h"]
-[ext_resource type="PackedScene" uid="uid://dlgxashpwucl5" path="res://src/object/radio.tscn" id="3_cgl1j"]
+[ext_resource type="PackedScene" uid="uid://dlgxashpwucl5" path="res://src/object/radio/radio.tscn" id="3_cgl1j"]
 [ext_resource type="PackedScene" uid="uid://bounpd4i1v5pf" path="res://src/ui/hud/hud_dev.tscn" id="3_ntfw2"]
 [ext_resource type="Script" path="res://src/environment/wind_manager.gd" id="5_0otb4"]
 [ext_resource type="Script" path="res://day_night.gd" id="6_aefkn"]
@@ -101,9 +101,6 @@ shader_parameter/line_movement_speed = null
 shader_parameter/wave = null
 
 [sub_resource type="BoxMesh" id="BoxMesh_midvi"]
-
-[sub_resource type="CylinderShape3D" id="CylinderShape3D_27q4j"]
-radius = 0.3
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rvtu1"]
 transparency = 1
@@ -266,16 +263,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 0.601411, 2)
 [node name="Post" parent="Objects" instance=ExtResource("22_nwsvy")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.52666, 0.899146, 0.0860295)
 
-[node name="Area3D" type="Area3D" parent="Objects/Post"]
-collision_layer = 8
-collision_mask = 8
-
-[node name="SnapAnchor" type="CollisionShape3D" parent="Objects/Post/Area3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0321217, 0, 0)
-shape = SubResource("CylinderShape3D_27q4j")
-
 [node name="SnappyBody" type="RigidBody3D" parent="Objects" groups=["interactable"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.64505, 0.579832, 3.27832)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.19289, 0.579832, 0.208088)
 collision_layer = 6
 collision_mask = 5
 script = ExtResource("23_bggvu")
@@ -310,4 +299,4 @@ transform = Transform3D(0.657863, 0, 9.97834, 0, 10, 0, -9.97834, 0, 0.657863, -
 [connection signal="gust_ended" from="Environment/WindManager" to="Objects/WindyBody" method="_on_gust_ended"]
 [connection signal="gust_started" from="Environment/WindManager" to="." method="_on_wind_manager_gust_started"]
 [connection signal="gust_started" from="Environment/WindManager" to="Objects/WindyBody" method="_on_gust_started"]
-[connection signal="area_entered" from="Objects/Post/Area3D" to="Objects/SnappyBody" method="_on_snap"]
+[connection signal="area_entered" from="Objects/SnappyBody/SnapArea" to="Objects/SnappyBody" method="_on_snap_area_area_entered"]

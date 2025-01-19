@@ -10,7 +10,8 @@ var env: Node3D
 var last_day_state: bool
 
 func is_day() -> bool:
-	if not env:
+	if not env: # Doesn't have env on ready for some reason...
+		print("no env found, assuming day")
 		return true
 	return env.day_time >= 6 and env.day_time < 18
 
