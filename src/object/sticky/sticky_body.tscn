@@ -1,0 +1,47 @@
+[gd_scene load_steps=8 format=3 uid="uid://bu1eyksqmxfpe"]
+
+[ext_resource type="Script" path="res://src/object/sticky/snappy_body.gd" id="1_faup6"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rvtu1"]
+transparency = 1
+albedo_color = Color(0.517647, 0.662745, 0.384314, 0.862745)
+
+[sub_resource type="BoxMesh" id="BoxMesh_fpaar"]
+material = SubResource("StandardMaterial3D_rvtu1")
+size = Vector3(0.15, 0.15, 0.14)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_yq4lk"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jxt4b"]
+albedo_color = Color(1, 0.515387, 0.125878, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_l5vg2"]
+material = SubResource("StandardMaterial3D_jxt4b")
+size = Vector3(0.16, 0.1, 0.16)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_sl56w"]
+
+[node name="SnappyBody" type="RigidBody3D" groups=["interactable"]]
+collision_layer = 6
+collision_mask = 5
+script = ExtResource("1_faup6")
+
+[node name="Body" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_fpaar")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(0.15, 0, 0, 0, 0.15, 0, 0, 0, 0.15, 0, 0, 0)
+shape = SubResource("BoxShape3D_yq4lk")
+
+[node name="Ring" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_l5vg2")
+
+[node name="SnapArea" type="Area3D" parent="."]
+collision_layer = 8
+collision_mask = 8
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SnapArea"]
+transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0, 0, 0)
+shape = SubResource("BoxShape3D_sl56w")
+
+[connection signal="area_entered" from="SnapArea" to="." method="_on_snap_area_area_entered"]

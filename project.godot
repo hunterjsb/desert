@@ -29,6 +29,7 @@ Storm=false
 interactable="can be picked up and whatnot"
 bubble_shield=""
 Player=""
+sticky="objects can stick to this surface"
 
 [input]
 

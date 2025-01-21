@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://d2iuna8o6eky0"]
+[gd_scene load_steps=7 format=3 uid="uid://d2iuna8o6eky0"]
 
 [ext_resource type="PackedScene" uid="uid://rx0ubc8acef8" path="res://texture/object/agriculture/bubbleplanter.fbx" id="1_vlgc0"]
 [ext_resource type="Script" path="res://src/object/agriculture/bubbleplanter_mesh.gd" id="2_3n1h8"]
@@ -7,6 +7,9 @@
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_86miw"]
 friction = 0.1
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_3hbd6"]
+size = Vector3(2, 0.6, 2)
 
 [node name="BubblePlanter" instance=ExtResource("1_vlgc0")]
 script = ExtResource("2_07oga")
@@ -34,3 +37,11 @@ shadow_enabled = true
 spot_range = 6.143
 spot_attenuation = 1.33
 spot_angle = 90.0
+
+[node name="StickyArea" type="Area3D" parent="." index="1" groups=["sticky"]]
+collision_layer = 8
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StickyArea" index="0" groups=["sticky"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.639423, 0)
+shape = SubResource("BoxShape3D_3hbd6")

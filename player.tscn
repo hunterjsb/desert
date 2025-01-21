@@ -6,7 +6,7 @@
 [ext_resource type="AudioStream" uid="uid://di13c6oiknb72" path="res://audio/ambient_desertwind.wav" id="4_5wqms"]
 [ext_resource type="AudioStream" uid="uid://dlxe78bb7hnlf" path="res://audio/player_impact1.wav" id="5_qu7o0"]
 [ext_resource type="AudioStream" uid="uid://cnosyu33jvqfu" path="res://audio/player_slide.wav" id="6_tkypw"]
-[ext_resource type="Script" path="res://hunger.gd" id="8_akq40"]
+[ext_resource type="Script" path="res://src/object/food/hunger.gd" id="8_akq40"]
 [ext_resource type="PackedScene" uid="uid://bga2uqyynwha4" path="res://src/ui/pause_menu.tscn" id="8_mi6vp"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ipq3q"]
