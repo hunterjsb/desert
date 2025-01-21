@@ -38,10 +38,11 @@ spot_range = 6.143
 spot_attenuation = 1.33
 spot_angle = 90.0
 
-[node name="StickyArea" type="Area3D" parent="." index="1" groups=["sticky"]]
+[node name="StickyArea" type="Area3D" parent="Mesh1_Mesh1_016" index="10" groups=["sticky"]]
+transform = Transform3D(1, 0, 0, 0, 1, -7.54979e-08, 0, 7.54979e-08, 1, 0, 0, 0)
 collision_layer = 8
-collision_mask = 0
+collision_mask = 8
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="StickyArea" index="0" groups=["sticky"]]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Mesh1_Mesh1_016/StickyArea" index="0"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.639423, 0)
 shape = SubResource("BoxShape3D_3hbd6")
