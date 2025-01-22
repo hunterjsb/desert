@@ -18,7 +18,8 @@ render_mode unshaded, cull_front;
 
 
 uniform float border_width : hint_range(0,1,0.001);
-uniform vec4 color = vec4(1.0);
+uniform vec4 color : source_color = vec4(0.8, 0.7, 0.5, 1.0);uniform sampler2D noise_tex : repeat_enable;
+
 
 uniform bool pattern;
 uniform float line_number : hint_range(0,100,1);

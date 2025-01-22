@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://main.gd" id="1_7asmc"]
 [ext_resource type="PackedScene" uid="uid://ry3c5djemip2" path="res://terrain.tscn" id="2_vayhu"]
-[ext_resource type="PackedScene" uid="uid://dl4jetqhbaqxp" path="res://texture/object/structure/bigwheel.fbx" id="3_jboed"]
+[ext_resource type="PackedScene" uid="uid://dl4jetqhbaqxp" path="res://texture/structure/bigwheel.fbx" id="3_jboed"]
 [ext_resource type="Script" path="res://src/environment/sound_manager.gd" id="4_8cf7n"]
 [ext_resource type="PackedScene" uid="uid://ch0krls6y12y8" path="res://player.tscn" id="4_rrvx7"]
 [ext_resource type="PackedScene" uid="uid://bounpd4i1v5pf" path="res://src/ui/hud/hud_dev.tscn" id="5_7jr5i"]

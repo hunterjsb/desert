@@ -1,6 +1,6 @@
 [gd_scene load_steps=6 format=3 uid="uid://hxqvvv5elegq"]
 
-[ext_resource type="PackedScene" uid="uid://bxi6whsespwpy" path="res://texture/object/structure/ruins/ruins01.fbx" id="1_n4w2k"]
+[ext_resource type="PackedScene" uid="uid://bxi6whsespwpy" path="res://texture/structure/ruins/ruins01.fbx" id="1_n4w2k"]
 [ext_resource type="Script" path="res://src/structure/ruins/ruins_01.gd" id="2_5e32q"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_fs73w"]

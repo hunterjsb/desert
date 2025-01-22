@@ -1,0 +1,22 @@
+[gd_scene load_steps=5 format=3 uid="uid://b46n1rqsodfog"]
+
+[ext_resource type="PackedScene" uid="uid://dpa5driu6t5g5" path="res://src/structure/post/post.tscn" id="1_dvg11"]
+[ext_resource type="PackedScene" uid="uid://bp51h44xo36ir" path="res://texture/structure/rope_coil_0122042647_texture.fbx" id="2_krbxb"]
+[ext_resource type="PackedScene" uid="uid://dsqljfot4jffp" path="res://src/object/rope/Rope.tscn" id="3_1vb2q"]
+[ext_resource type="PackedScene" uid="uid://bu1eyksqmxfpe" path="res://src/object/sticky/sticky_body.tscn" id="4_k53gp"]
+
+[node name="Post" instance=ExtResource("1_dvg11")]
+
+[node name="Coil" parent="." index="0" instance=ExtResource("2_krbxb")]
+transform = Transform3D(0.33, 0, 0, 0, 0.33, 0, 0, 0, 0.33, -0.0232576, 0.573955, -0.0257978)
+
+[node name="Tether" type="Node3D" parent="." index="3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.536265, 0)
+
+[node name="Rope" parent="Tether" index="0" node_paths=PackedStringArray("start_point", "end_point") instance=ExtResource("3_1vb2q")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.548934, 1)
+start_point = NodePath("..")
+end_point = NodePath("../SnappyBody")
+
+[node name="SnappyBody" parent="Tether" index="1" instance=ExtResource("4_k53gp")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.45706)

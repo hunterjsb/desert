@@ -1,9 +1,23 @@
-[gd_scene load_steps=8 format=3 uid="uid://bu1eyksqmxfpe"]
+[gd_scene load_steps=10 format=3 uid="uid://bu1eyksqmxfpe"]
 
 [ext_resource type="Script" path="res://src/object/sticky/snappy_body.gd" id="1_faup6"]
+[ext_resource type="Shader" path="res://outline01.gdshader" id="2_qkhfx"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_8nq7v"]
+render_priority = 0
+shader = ExtResource("2_qkhfx")
+shader_parameter/border_width = 0.0
+shader_parameter/color = Color(1, 0.503425, 0.209163, 1)
+shader_parameter/pattern = false
+shader_parameter/line_number = null
+shader_parameter/line_sharpness = 5.091
+shader_parameter/pulse = false
+shader_parameter/pulse_speed = null
+shader_parameter/line_movement = false
+shader_parameter/line_movement_speed = null
+shader_parameter/wave = false
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rvtu1"]
-transparency = 1
 albedo_color = Color(0.517647, 0.662745, 0.384314, 0.862745)
 
 [sub_resource type="BoxMesh" id="BoxMesh_fpaar"]
@@ -27,6 +41,7 @@ collision_mask = 5
 script = ExtResource("1_faup6")
 
 [node name="Body" type="MeshInstance3D" parent="."]
+material_overlay = SubResource("ShaderMaterial_8nq7v")
 mesh = SubResource("BoxMesh_fpaar")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
