@@ -19,6 +19,13 @@ var joints : Array
 func _ready() -> void:
 	var distance = (end_point.global_position - start_point.global_position).length()
 	var direction = (end_point.global_position - start_point.global_position).normalized()
+	
+	# Notify attachment points that they're tethered
+	if start_point.has_method("set_tethered"):
+		start_point.set_tethered(true)
+	if end_point.has_method("set_tethered"):
+		end_point.set_tethered(true)
+	
 	# start at start point
 	joints.append(start_point)
 	# create joints
@@ -60,17 +67,19 @@ func _physics_process(delta: float) -> void:
 				joints[i].global_position.y = lerp(joints[i].global_position.y, joints[i].global_position.y - 1, cable_gravity_amp * delta/2.0)
 			# stretch
 			joints[i].global_position = lerp(joints[i].global_position, joints[i-1].global_position + (joints[i+1].global_position - joints[i-1].global_position)/2.0, cable_springiness * delta)
-	# Retract
+	# Retract with damping to reduce oscillation
 	if end_is_rigidbody:
 		if (end_point.global_position - joints[0].global_position).length() >= segment_stretch * number_of_segments:
 			var modifier = (end_point.global_position - joints[0].global_position).length() - segment_stretch * number_of_segments
 			modifier = clamp(modifier, 0.0, cable_springiness)
-			end_point.linear_velocity -= (end_point.global_position - joints[-2].global_position)*modifier
+			var force = (end_point.global_position - joints[-2].global_position) * modifier * 0.5  # Add damping
+			end_point.linear_velocity -= force
 	if start_is_rigidbody:
 		if (end_point.global_position - joints[0].global_position).length() >= segment_stretch * number_of_segments:
 			var modifier = (end_point.global_position - joints[0].global_position).length() - segment_stretch * number_of_segments
 			modifier = clamp(modifier, 0.0, cable_springiness)
-			joints[0].linear_velocity -= (joints[0].global_position - joints[1].global_position)*modifier
+			var force = (joints[0].global_position - joints[1].global_position) * modifier * 0.5  # Add damping
+			joints[0].linear_velocity -= force
 
 func safe_look_at(node : Node3D, target : Vector3) -> void:
 	var origin : Vector3 = node.global_transform.origin
