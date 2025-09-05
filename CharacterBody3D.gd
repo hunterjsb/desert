@@ -363,7 +363,7 @@ func throw_item():
 
 
 func interact_with_item(item: Node3D):
-	if "interact" in item:
+	if item.has_method("interact"):
 		item.interact(self)
 	else:
 		print("Item does not implement interact().")

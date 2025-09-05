@@ -1,14 +1,14 @@
 [gd_scene load_steps=14 format=3 uid="uid://detacysixr15p"]
 
-[ext_resource type="Script" path="res://main.gd" id="1_7asmc"]
+[ext_resource type="Script" uid="uid://by4oy8b31fh3k" path="res://main.gd" id="1_7asmc"]
 [ext_resource type="PackedScene" uid="uid://ry3c5djemip2" path="res://terrain.tscn" id="2_vayhu"]
 [ext_resource type="PackedScene" uid="uid://dl4jetqhbaqxp" path="res://texture/structure/bigwheel.fbx" id="3_jboed"]
-[ext_resource type="Script" path="res://src/environment/sound_manager.gd" id="4_8cf7n"]
+[ext_resource type="Script" uid="uid://kndejhy4b4gx" path="res://src/environment/sound_manager.gd" id="4_8cf7n"]
 [ext_resource type="PackedScene" uid="uid://ch0krls6y12y8" path="res://player.tscn" id="4_rrvx7"]
 [ext_resource type="PackedScene" uid="uid://bounpd4i1v5pf" path="res://src/ui/hud/hud_dev.tscn" id="5_7jr5i"]
-[ext_resource type="Script" path="res://day_night.gd" id="6_q0lrl"]
-[ext_resource type="Script" path="res://src/environment/wind_manager.gd" id="6_xst0i"]
-[ext_resource type="Shader" path="res://src/environment/sky.gdshader" id="8_a4qdo"]
+[ext_resource type="Script" uid="uid://ds003gn4rrjnj" path="res://day_night.gd" id="6_q0lrl"]
+[ext_resource type="Script" uid="uid://cn31l3jhjlq26" path="res://src/environment/wind_manager.gd" id="6_xst0i"]
+[ext_resource type="Shader" uid="uid://b0wugvdviekxb" path="res://src/environment/sky.gdshader" id="8_a4qdo"]
 [ext_resource type="Texture2D" uid="uid://bmoh66spei4tg" path="res://src/environment/stars.png" id="9_shxyi"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_kbo5r"]
@@ -39,10 +39,10 @@ shader_parameter/clouds_cutoff = 0.3
 shader_parameter/clouds_fuzziness = 0.5
 shader_parameter/clouds_weight = 0.0
 shader_parameter/clouds_blur = 0.25
+shader_parameter/stars_texture = ExtResource("9_shxyi")
 shader_parameter/stars_speed = 1.0
 shader_parameter/stars_scale = 1.0
 shader_parameter/stars_opacity = 1.0
-shader_parameter/stars_texture = ExtResource("9_shxyi")
 shader_parameter/overwritten_time = 0.0
 
 [sub_resource type="Sky" id="Sky_w381f"]

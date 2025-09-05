@@ -4,16 +4,16 @@
 [ext_resource type="PackedScene" uid="uid://b0gsf4ppmuj2h" path="res://src/environment/sand_storm.tscn" id="1_qsy6h"]
 [ext_resource type="PackedScene" uid="uid://dlgxashpwucl5" path="res://src/object/radio/radio.tscn" id="3_cgl1j"]
 [ext_resource type="PackedScene" uid="uid://bounpd4i1v5pf" path="res://src/ui/hud/hud_dev.tscn" id="3_ntfw2"]
-[ext_resource type="Script" path="res://src/environment/wind_manager.gd" id="5_0otb4"]
-[ext_resource type="Script" path="res://day_night.gd" id="6_aefkn"]
-[ext_resource type="Script" path="res://wind_body.gd" id="6_g1hy4"]
-[ext_resource type="Shader" path="res://src/environment/sky.gdshader" id="9_7spnk"]
+[ext_resource type="Script" uid="uid://cn31l3jhjlq26" path="res://src/environment/wind_manager.gd" id="5_0otb4"]
+[ext_resource type="Script" uid="uid://ds003gn4rrjnj" path="res://day_night.gd" id="6_aefkn"]
+[ext_resource type="Script" uid="uid://d3gitkq6oxt82" path="res://wind_body.gd" id="6_g1hy4"]
+[ext_resource type="Shader" uid="uid://b0wugvdviekxb" path="res://src/environment/sky.gdshader" id="9_7spnk"]
 [ext_resource type="Texture2D" uid="uid://bmoh66spei4tg" path="res://src/environment/stars.png" id="10_d5qnc"]
 [ext_resource type="PackedScene" uid="uid://bxi6whsespwpy" path="res://texture/structure/ruins/ruins01.fbx" id="12_bd0gj"]
 [ext_resource type="PackedScene" uid="uid://be15buugjnenc" path="res://texture/structure/ruins/ruins03.fbx" id="12_vg0di"]
 [ext_resource type="PackedScene" uid="uid://d2iuna8o6eky0" path="res://src/object/agriculture/bubbleplanter.tscn" id="13_w5l2x"]
-[ext_resource type="Shader" path="res://outline01.gdshader" id="15_6iddm"]
-[ext_resource type="Script" path="res://rigid_body_3d.gd" id="15_lda6m"]
+[ext_resource type="Shader" uid="uid://ddjxtytcedpsa" path="res://outline01.gdshader" id="15_6iddm"]
+[ext_resource type="Script" uid="uid://dxg0l3eo6rbcj" path="res://rigid_body_3d.gd" id="15_lda6m"]
 [ext_resource type="PackedScene" uid="uid://dsqljfot4jffp" path="res://src/object/rope/Rope.tscn" id="17_i4vci"]
 [ext_resource type="PackedScene" uid="uid://kmmdmjoujgr6" path="res://src/object/hoverboard/hoverboard.tscn" id="17_oul0n"]
 [ext_resource type="PackedScene" uid="uid://b15288jke7rif" path="res://src/object/food/yucca_fruit.tscn" id="20_d28ju"]
@@ -56,10 +56,10 @@ shader_parameter/clouds_cutoff = 0.3
 shader_parameter/clouds_fuzziness = 0.5
 shader_parameter/clouds_weight = 0.0
 shader_parameter/clouds_blur = 0.25
+shader_parameter/stars_texture = ExtResource("10_d5qnc")
 shader_parameter/stars_speed = 1.0
 shader_parameter/stars_scale = 1.0
 shader_parameter/stars_opacity = 1.0
-shader_parameter/stars_texture = ExtResource("10_d5qnc")
 shader_parameter/overwritten_time = 0.0
 
 [sub_resource type="Sky" id="Sky_hpyh2"]
@@ -83,16 +83,16 @@ points = PackedVector3Array(0.5, 0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_n7v7n"]
 render_priority = 0
 shader = ExtResource("15_6iddm")
-shader_parameter/border_width = null
+shader_parameter/border_width = 0.0
 shader_parameter/color = Color(0.8, 0.7, 0.5, 1)
-shader_parameter/pattern = null
-shader_parameter/line_number = null
-shader_parameter/line_sharpness = null
-shader_parameter/pulse = null
-shader_parameter/pulse_speed = null
-shader_parameter/line_movement = null
-shader_parameter/line_movement_speed = null
-shader_parameter/wave = null
+shader_parameter/pattern = false
+shader_parameter/line_number = 0.0
+shader_parameter/line_sharpness = 0.0
+shader_parameter/pulse = false
+shader_parameter/pulse_speed = 0.0
+shader_parameter/line_movement = false
+shader_parameter/line_movement_speed = 0.0
+shader_parameter/wave = false
 
 [sub_resource type="BoxMesh" id="BoxMesh_midvi"]
 
@@ -230,10 +230,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.35703, 0.716409, -0.615473
 [node name="Ruins" type="Node3D" parent="."]
 
 [node name="ruins03" parent="Ruins" instance=ExtResource("12_vg0di")]
-transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 1.94333, 3.40192, -18.7616)
+transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, -53.7551, 3.40192, -57.5517)
 
 [node name="ruins01" parent="Ruins" instance=ExtResource("12_bd0gj")]
-transform = Transform3D(0.657863, 0, 9.97834, 0, 10, 0, -9.97834, 0, 0.657863, -1.578, 5.5, 16.901)
+transform = Transform3D(0.657863, 0, 9.97834, 0, 10, 0, -9.97834, 0, 0.657863, 84.1416, 5.5, 16.901)
 
 [connection signal="cardinal_direction_changed" from="Environment/WindManager" to="Objects/WindyBody" method="_on_cardinal_direction_changed"]
 [connection signal="gust_ended" from="Environment/WindManager" to="Objects/WindyBody" method="_on_gust_ended"]

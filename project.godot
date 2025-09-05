@@ -13,7 +13,7 @@ config_version=5
 config/name="Sand Game"
 config/description="A desert game. Survive the sands."
 run/main_scene="res://src/ui/main_menu.tscn"
-config/features=PackedStringArray("4.3", "Forward Plus")
+config/features=PackedStringArray("4.4", "Forward Plus")
 config/icon="res://texture/bsg.webp"
 
 [autoload]
@@ -96,4 +96,4 @@ scroll_down={
 
 [physics]
 
-3d/physics_engine="JoltPhysics3D"
+3d/physics_engine="Jolt Physics"

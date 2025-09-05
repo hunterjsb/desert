@@ -8,7 +8,7 @@ var oldLod = 0
 #==> SCENES <==#
 var ruins_scene = preload("res://src/structure/ruins/ruins_01.tscn")
 var yucca_scene = preload("res://src/object/agriculture/yucca.tscn")
-var post_scene = preload("res://src/structure/post.tscn")
+var post_scene = preload("res://src/structure/post/post.tscn")
 
 #==> SPAWNABLES + CHANCES <==#
 var spawnables = [yucca_scene, post_scene] 

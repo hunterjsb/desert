@@ -20,7 +20,7 @@ func spawn_loot(pos: Vector3):
 		spawned_loot = preload("res://src/object/food/carrot.tscn").instantiate()
 	else:
 		# 10% chance: Spawn a radio
-		spawned_loot = preload("res://src/object/radio/dradio.tscn").instantiate()
+		spawned_loot = preload("res://src/object/radio/radio.tscn").instantiate()
 		spawned_loot.env = env
 
 	# Add the loot to the parent and set position

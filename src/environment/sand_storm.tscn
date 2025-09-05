@@ -1,9 +1,9 @@
 [gd_scene load_steps=14 format=3 uid="uid://b0gsf4ppmuj2h"]
 
-[ext_resource type="Script" path="res://src/environment/sand_storm.gd" id="1_2s428"]
-[ext_resource type="Shader" path="res://fog01.gdshader" id="2_ulbh7"]
+[ext_resource type="Script" uid="uid://c4a53gjhf2811" path="res://src/environment/sand_storm.gd" id="1_2s428"]
+[ext_resource type="Shader" uid="uid://crgi2g5ja3y3d" path="res://fog01.gdshader" id="2_ulbh7"]
 [ext_resource type="AudioStream" uid="uid://bgr1j23n4wnh2" path="res://audio/object_sandstorm.wav" id="3_xuq3t"]
-[ext_resource type="Shader" path="res://src/environment/sand_storm_mesh.gdshader" id="4_ibm10"]
+[ext_resource type="Shader" uid="uid://dt4bpqcwqhh1u" path="res://src/environment/sand_storm_mesh.gdshader" id="4_ibm10"]
 [ext_resource type="AudioStream" uid="uid://cyxtb05412s57" path="res://audio/object_sandstorm2.wav" id="5_r1ikw"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_p0jmp"]
@@ -16,9 +16,9 @@ noise = SubResource("FastNoiseLite_u5smw")
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_r32j0"]
 shader = ExtResource("2_ulbh7")
 shader_parameter/albedo_color = Color(0.8, 0.7, 0.5, 1)
+shader_parameter/noise_tex = SubResource("NoiseTexture2D_ypoqb")
 shader_parameter/noise_scale = 0.005
 shader_parameter/flatness = 10.0
-shader_parameter/noise_tex = SubResource("NoiseTexture2D_ypoqb")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_44kwu"]
 render_priority = 0

@@ -1,7 +1,7 @@
 [gd_scene load_steps=7 format=3 uid="uid://bdcr8aj5rbgm3"]
 
-[ext_resource type="Script" path="res://day_night.gd" id="1_6r0ue"]
-[ext_resource type="Shader" path="res://src/environment/sky.gdshader" id="2_ktngh"]
+[ext_resource type="Script" uid="uid://ds003gn4rrjnj" path="res://day_night.gd" id="1_6r0ue"]
+[ext_resource type="Shader" uid="uid://b0wugvdviekxb" path="res://src/environment/sky.gdshader" id="2_ktngh"]
 [ext_resource type="Texture2D" uid="uid://bmoh66spei4tg" path="res://src/environment/stars.png" id="3_xqhtc"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_msgkm"]
@@ -32,10 +32,10 @@ shader_parameter/clouds_cutoff = 0.3
 shader_parameter/clouds_fuzziness = 0.5
 shader_parameter/clouds_weight = 0.0
 shader_parameter/clouds_blur = 0.25
+shader_parameter/stars_texture = ExtResource("3_xqhtc")
 shader_parameter/stars_speed = 1.0
 shader_parameter/stars_scale = 1.0
 shader_parameter/stars_opacity = 1.0
-shader_parameter/stars_texture = ExtResource("3_xqhtc")
 shader_parameter/overwritten_time = 2400.0
 
 [sub_resource type="Sky" id="Sky_m1irh"]

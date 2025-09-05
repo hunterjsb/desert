@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://dq8cwhsqc1t3d" path="res://texture/object/agriculture/yucca.fbx" id="1_ojseb"]
 [ext_resource type="PackedScene" uid="uid://b15288jke7rif" path="res://src/object/food/yucca_fruit.tscn" id="2_k51ap"]
-[ext_resource type="Script" path="res://src/object/agriculture/yucca.gd" id="2_lmycj"]
+[ext_resource type="Script" uid="uid://bnaajw73bbap2" path="res://src/object/agriculture/yucca.gd" id="2_lmycj"]
 
 [node name="yucca" instance=ExtResource("1_ojseb")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)

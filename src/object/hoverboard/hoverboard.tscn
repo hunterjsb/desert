@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://kmmdmjoujgr6"]
 
 [ext_resource type="PackedScene" uid="uid://8uvth1jms4eq" path="res://src/object/hoverboard/hoverboard_mesh.tscn" id="2_uhxb8"]
-[ext_resource type="Script" path="res://src/object/hoverboard/hoverboard.gd" id="3_vovvo"]
+[ext_resource type="Script" uid="uid://buu1xr47dmous" path="res://src/object/hoverboard/hoverboard.gd" id="3_vovvo"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1v2vm"]
 radius = 0.25
