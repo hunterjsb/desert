@@ -87,4 +87,4 @@ func try_pickup(_player: Node):
 	return false
 		
 func interact(_player: Node):
-	pass # attach tether
+	pass # No special interaction needed - sticky body handles its own pickup
