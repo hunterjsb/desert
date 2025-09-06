@@ -1,18 +1,23 @@
 extends InteractableBody3D
 
-
 @onready var snap_area = $SnapArea
-var attached_tether_component: TetherComponent = null
-
+var attached_object: Node3D = null  # The object this sticky body is attached to
+var anchor_object: Node3D = null    # The anchor point (other end of rope)
 
 func _ready() -> void:
 	pass
 
 func pickup(player: Node) -> void:
-	# Untether before being picked up
-	if attached_tether_component:
-		attached_tether_component.set_tethered(false)
-		attached_tether_component = null
+	# Clean registry-based detachment
+	if attached_object and TetherRegistry:
+		# Find the anchor by tracing the rope connection
+		var anchor = find_rope_anchor()
+		if anchor:
+			TetherRegistry.unregister_tether(attached_object, anchor)
+	
+	# Clear references
+	attached_object = null
+	anchor_object = null
 	
 	# Call parent pickup method
 	super.pickup(player)
@@ -32,52 +37,37 @@ func _on_snap_area_area_entered(area: Area3D) -> void:
 	call_deferred("reparent", target_object)
 	freeze = true
 	
-	# Check if we're attaching to a static object (like a post)
-	if target_object is StaticBody3D:
-		# When attaching to a static object, just stay frozen in place
-		# The post becomes the anchor, and this sticky body stays put
-		print("STICKY: Attached to static object (post) - staying frozen")
-		
-		# Play attachment sound
-		var attach_audio = get_node_or_null("AttachAudio")
-		if attach_audio:
-			attach_audio.play()
+	# Store reference to attached object
+	attached_object = target_object
+	
+	# Find the rope's other endpoint (anchor)
+	var anchor = find_rope_anchor()
+	if not anchor:
+		print("StickyBody: Could not find rope anchor")
 		return
 	
-	# For dynamic objects (like bubble planters), do the full tether setup
-	# Find the tether anchor (post) by finding the rope's start point
-	var tether_anchor = find_tether_anchor()
+	anchor_object = anchor
 	
-	# Notify the target object that it's now tethered using the component system
-	var tether_component = find_tether_component(target_object)
+	# Register the tether in the central registry
+	if TetherRegistry:
+		# For static objects (posts), they become the anchor
+		# For dynamic objects (bubble planters), they get constrained to the anchor
+		if target_object is StaticBody3D:
+			# Target is static - it serves as the anchor point
+			print("StickyBody: Attached to static anchor ", target_object.name)
+		else:
+			# Target is dynamic - register it as tethered to the anchor
+			TetherRegistry.register_tether(target_object, anchor)
+			print("StickyBody: Registered tether - ", target_object.name, " -> ", anchor.name)
 	
-	# If not found in target, try target's parent (bubble planter main node)
-	if not tether_component and target_object.get_parent():
-		tether_component = find_tether_component(target_object.get_parent())
-	
-	if tether_component and tether_anchor:
-		tether_component.set_tethered(true, tether_anchor, 10.0, self)  # Pass self as snappy_body
-		attached_tether_component = tether_component  # Remember this for when we detach
-		
-		# Play attachment sound
-		var attach_audio = get_node_or_null("AttachAudio")
-		if attach_audio:
-			attach_audio.play()
+	# Play attachment sound
+	var attach_audio = get_node_or_null("AttachAudio")
+	if attach_audio:
+		attach_audio.play()
 
-func find_tether_component(obj: Node) -> TetherComponent:
-	# Look for TetherComponent in the object or its children
-	if obj.has_method("get_tether_component"):
-		return obj.get_tether_component()
-	
-	for child in obj.get_children():
-		if child is TetherComponent:
-			return child
-	
-	return null
-
-func find_tether_anchor() -> Node3D:
-	# The sticky body should already be connected to a rope
-	# We need to find the rope that has this sticky body as end_point
+func find_rope_anchor() -> Node3D:
+	# Find the rope that has this sticky body as an endpoint
+	# and return the OTHER endpoint (the anchor)
 	var current_scene = get_tree().current_scene
 	return find_rope_with_endpoint(current_scene, self)
 

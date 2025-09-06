@@ -15,16 +15,11 @@ func _ready() -> void:
 	add_child(tether_component)
 
 func _process(_delta: float) -> void:
-	# Don't apply wind forces if this planter is tethered
-	var is_tethered = tether_component and tether_component.is_tethered
+	# Don't apply wind forces if this planter is tethered (check registry)
+	var is_tethered = TetherRegistry and TetherRegistry.is_tethered(self)
 	if not is_tethered:
 		var wind_vector = wind_manager.get_wind_vector() / 2
 		body.apply_central_force(wind_vector * wind_force_multiplier)
-
-# Legacy compatibility - route to tether component
-func set_tethered(tethered: bool) -> void:
-	if tether_component:
-		tether_component.set_tethered(tethered)
 
 func get_tether_component() -> TetherComponent:
 	return tether_component

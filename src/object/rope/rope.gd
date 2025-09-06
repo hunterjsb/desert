@@ -90,12 +90,12 @@ func _process(_delta: float) -> void:
 		# set length to the distance between the joints
 		segments[i].get_child(0).mesh.height = (joints[i+1].global_position - joints[i].global_position).length()
 	
-	# Update debug display - show tether component status
+	# Update debug display - show registry-based tether status
 	if debug_label and debug_enabled and start_point and end_point:
 		var current_distance = (end_point.global_position - start_point.global_position).length()
-		var tether_info = get_tether_component_info(end_point)
+		var tether_info = get_registry_tether_info()
 		
-		debug_label.text = "Rope Dist: %.1f\n%s" % [current_distance, tether_info]
+		debug_label.text = "Rope: %.1f\n%s" % [current_distance, tether_info]
 		debug_label.global_position = start_point.global_position + (end_point.global_position - start_point.global_position) * 0.5
 
 
@@ -182,6 +182,32 @@ func _physics_process(delta: float) -> void:
 			end_point.linear_velocity *= 0.9  # Light damping
 			end_point.angular_velocity *= 0.9
 
+func get_registry_tether_info() -> String:
+	# Get tether info directly from registry - much more efficient
+	if not TetherRegistry:
+		return "No Registry"
+	
+	# Check what objects are connected by this rope
+	var info_parts = []
+	
+	# Check if end_point's parent is tethered
+	if end_point and end_point.get_parent():
+		var parent = end_point.get_parent()
+		if TetherRegistry.is_tethered(parent):
+			var count = TetherRegistry.get_tether_count(parent)
+			info_parts.append("%s: %d" % [parent.name, count])
+	
+	# Check if start_point's parent is tethered  
+	if start_point and start_point.get_parent():
+		var parent = start_point.get_parent()
+		if TetherRegistry.is_tethered(parent):
+			var count = TetherRegistry.get_tether_count(parent)
+			info_parts.append("%s: %d" % [parent.name, count])
+	
+	if info_parts.is_empty():
+		return "Not Tethered"
+	
+	return "\n".join(info_parts)
 
 func safe_look_at(node : Node3D, target : Vector3) -> void:
 	var origin : Vector3 = node.global_transform.origin

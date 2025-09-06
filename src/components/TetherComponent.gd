@@ -1,23 +1,18 @@
 extends Node
 class_name TetherComponent
 
-# Tethering component that can be attached to any object
-# Handles tethering state and distance constraints
+# Simple, reliable tether component
+# Direct registry queries, position-based constraints, center-to-center measurements
 
-@export var is_tethered: bool = false
-@export var tether_anchor: Node3D = null
-@export var max_tether_distance: float = 5.0
+@export var max_tether_distance: float = 10.0
 @export var enable_distance_constraint: bool = true
 
 var parent_rigidbody: RigidBody3D = null
-var attached_snappy_bodies: Array[RigidBody3D] = []
 var tension_audio: AudioStreamPlayer3D = null
 
 func _ready() -> void:
-	# Find the associated RigidBody3D (could be parent, sibling, or child)
+	# Find the associated RigidBody3D
 	parent_rigidbody = find_rigidbody_in_hierarchy(get_parent())
-	# Start with physics processing disabled for performance
-	set_physics_process(false)
 	
 	# Create tension audio
 	tension_audio = AudioStreamPlayer3D.new()
@@ -25,6 +20,11 @@ func _ready() -> void:
 	tension_audio.volume_db = -15.0
 	tension_audio.autoplay = false
 	add_child(tension_audio)
+	
+	# Enable physics processing only if we have a rigidbody to constrain
+	set_physics_process(parent_rigidbody != null)
+	
+	print("TetherComponent ready for: ", get_parent().name, " rigidbody: ", parent_rigidbody != null)
 
 func find_rigidbody_in_hierarchy(node: Node) -> RigidBody3D:
 	if not node:
@@ -44,100 +44,100 @@ func find_rigidbody_in_hierarchy(node: Node) -> RigidBody3D:
 	if parent:
 		return find_rigidbody_in_hierarchy(parent)
 	
-	# For static objects like posts, return null (they don't need physics constraints)
 	return null
 
-func set_tethered(tethered: bool, anchor: Node3D = null, distance: float = 5.0, snappy_body: RigidBody3D = null) -> void:
-	if tethered:
-		# Adding a new tether
-		if not is_tethered:
-			# First tether - set up initial state
-			is_tethered = true
-			tether_anchor = anchor
-			max_tether_distance = distance
-			set_physics_process(true)
-		
-		# Add this snappy body to the list if not already there
-		if snappy_body and snappy_body not in attached_snappy_bodies:
-			attached_snappy_bodies.append(snappy_body)
-		
-		print("TETHER: Added attachment, total: ", attached_snappy_bodies.size())
-	else:
-		# Removing a tether
-		if snappy_body and snappy_body in attached_snappy_bodies:
-			attached_snappy_bodies.erase(snappy_body)
-			print("TETHER: Removed attachment, remaining: ", attached_snappy_bodies.size())
-		
-		# Only disable tethering if no attachments remain
-		if attached_snappy_bodies.is_empty():
-			is_tethered = false
-			tether_anchor = null
-			max_tether_distance = 0.0
-			set_physics_process(false)
-			
-			# Stop tension audio when fully untethered
-			if tension_audio and tension_audio.playing:
-				tension_audio.stop()
-			
-			print("TETHER: Fully untethered")
-
 func _physics_process(delta: float) -> void:
-	# For static objects (like posts), we don't need physics processing - they serve as anchor points
-	if not is_tethered or not tether_anchor or not enable_distance_constraint:
+	# Early exit if no physics body to constrain
+	if not enable_distance_constraint or not parent_rigidbody:
 		return
 	
-	# If this is a static object (no parent_rigidbody), skip physics processing
-	if not parent_rigidbody:
+	# Direct registry query - no caching complexity
+	if not TetherRegistry:
 		return
 	
-	# Use distance_squared_to for better performance (avoids sqrt)
-	var distance_sq = parent_rigidbody.global_position.distance_squared_to(tether_anchor.global_position)
-	var max_distance_sq = max_tether_distance * max_tether_distance
-	var current_distance = sqrt(distance_sq)
-	
-	# Play tension audio as we approach max distance (starts at 80% of max distance)
-	# BUT only if we're actually tethered!
-	var tension_threshold = max_tether_distance * 0.8
-	if is_tethered and current_distance > tension_threshold:
-		if tension_audio:
-			var tension_amount = (current_distance - tension_threshold) / (max_tether_distance - tension_threshold)
-			tension_amount = clamp(tension_amount, 0.0, 1.0)
-			
-			if not tension_audio.playing:
-				tension_audio.play()
-			
-			# Modulate audio based on how close we are to max distance
-			tension_audio.volume_db = lerp(-25.0, -10.0, tension_amount)  # Louder as we approach limit
-			tension_audio.pitch_scale = lerp(0.8, 1.3, tension_amount)    # Higher pitch as we approach limit
-	else:
-		# Stop tension audio when not tethered or not under stress
+	# The registry stores the RigidBody3D (Mesh1_Mesh1_016), not the parent BubblePlanter
+	# So check if our RigidBody3D is tethered, not the parent
+	if not TetherRegistry.is_tethered(parent_rigidbody):
+		# Stop audio if not tethered
 		if tension_audio and tension_audio.playing:
 			tension_audio.stop()
+		return
 	
-	# Only apply constraint if beyond max distance
-	if distance_sq > max_distance_sq:
-		var direction_to_anchor = (tether_anchor.global_position - parent_rigidbody.global_position) / current_distance
-		var constrained_position = tether_anchor.global_position - direction_to_anchor * max_tether_distance
+	# Get current anchor positions directly from registry using the RigidBody3D
+	var anchor_positions = TetherRegistry.get_anchor_positions(parent_rigidbody)
+	if anchor_positions.is_empty():
+		return
+	
+	var object_center = parent_rigidbody.global_position
+	var max_tension = 0.0
+	var closest_distance = max_tether_distance
+	var needs_constraint = false
+	var closest_anchor: Vector3
+	
+	# Check all anchors for constraint violations
+	for anchor_pos in anchor_positions:
+		var distance = object_center.distance_to(anchor_pos)
 		
+		if distance > max_tether_distance:
+			needs_constraint = true
+			if distance < closest_distance or closest_distance == max_tether_distance:
+				closest_distance = distance
+				closest_anchor = anchor_pos
+		
+		# Track tension for audio (even if not violating)
+		if distance > max_tether_distance * 0.8:
+			var tension = (distance - max_tether_distance * 0.8) / (max_tether_distance * 0.2)
+			max_tension = max(max_tension, tension)
+	
+	# Apply position-based constraint to prevent momentum buildup
+	if needs_constraint:
+		# Calculate constrained position from object center to closest anchor
+		var direction_to_anchor = (closest_anchor - object_center).normalized()
+		var constrained_position = closest_anchor - direction_to_anchor * max_tether_distance
+		
+		# Apply constraint
 		parent_rigidbody.global_position = constrained_position
 		
-		# Moderate damping - enough to reduce oscillation but not kill all movement
-		parent_rigidbody.linear_velocity *= 0.7  # Less aggressive damping
-		parent_rigidbody.angular_velocity *= 0.7
+		# Apply heavy damping to prevent oscillation and explosions
+		parent_rigidbody.linear_velocity *= 0.2
+		parent_rigidbody.angular_velocity *= 0.2
 		
-		# Apply the same constraint to all attached snappy bodies
-		for snappy_body in attached_snappy_bodies:
-			if snappy_body and is_instance_valid(snappy_body):
-				snappy_body.global_position = constrained_position
-				# Moderate damping on snappy body too - don't kill all velocity
-				snappy_body.linear_velocity *= 0.5  # More damping on rope end
-				snappy_body.angular_velocity *= 0.5
+		print("CONSTRAINT: Moved center from %.1f to %.1f from anchor" % [closest_distance, max_tether_distance])
+	
+	# Handle audio based on tension
+	if max_tension > 0.1:
+		if tension_audio and not tension_audio.playing:
+			tension_audio.play()
+		
+		if tension_audio:
+			tension_audio.volume_db = lerp(-25.0, -10.0, clamp(max_tension, 0.0, 1.0))
+			tension_audio.pitch_scale = lerp(0.8, 1.3, clamp(max_tension, 0.0, 1.0))
+	else:
+		if tension_audio and tension_audio.playing:
+			tension_audio.stop()
 
-
+# Simple API for debugging
 func get_tether_status() -> Dictionary:
+	# Use the RigidBody3D for registry queries, not the parent
+	var is_tethered_val = TetherRegistry and TetherRegistry.is_tethered(parent_rigidbody)
+	var tether_count = 0
+	var closest_distance = 0.0
+	
+	if is_tethered_val and parent_rigidbody:
+		tether_count = TetherRegistry.get_tether_count(parent_rigidbody)
+		var anchors = TetherRegistry.get_anchor_positions(parent_rigidbody)
+		for anchor_pos in anchors:
+			var dist = parent_rigidbody.global_position.distance_to(anchor_pos)
+			closest_distance = min(closest_distance, dist) if closest_distance > 0 else dist
+	
 	return {
-		"is_tethered": is_tethered,
-		"anchor_name": tether_anchor.name if tether_anchor else "none",
-		"distance": (parent_rigidbody.global_position - tether_anchor.global_position).length() if is_tethered and tether_anchor and parent_rigidbody else 0.0,
+		"is_tethered": is_tethered_val,
+		"tether_count": tether_count,
+		"distance": closest_distance,
 		"max_distance": max_tether_distance
 	}
+
+func _exit_tree() -> void:
+	# Clean up when destroyed
+	if TetherRegistry:
+		TetherRegistry.unregister_all_tethers(get_parent())

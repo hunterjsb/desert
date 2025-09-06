@@ -20,6 +20,7 @@ config/icon="res://texture/bsg.webp"
 
 SoundManager="*res://src/environment/sound_manager.gd"
 DebugManager="*res://src/debug/DebugManager.gd"
+TetherRegistry="*res://src/core/TetherRegistry.gd"
 
 [global]
 
