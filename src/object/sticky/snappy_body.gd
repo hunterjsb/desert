@@ -32,6 +32,19 @@ func _on_snap_area_area_entered(area: Area3D) -> void:
 	call_deferred("reparent", target_object)
 	freeze = true
 	
+	# Check if we're attaching to a static object (like a post)
+	if target_object is StaticBody3D:
+		# When attaching to a static object, just stay frozen in place
+		# The post becomes the anchor, and this sticky body stays put
+		print("STICKY: Attached to static object (post) - staying frozen")
+		
+		# Play attachment sound
+		var attach_audio = get_node_or_null("AttachAudio")
+		if attach_audio:
+			attach_audio.play()
+		return
+	
+	# For dynamic objects (like bubble planters), do the full tether setup
 	# Find the tether anchor (post) by finding the rope's start point
 	var tether_anchor = find_tether_anchor()
 	
