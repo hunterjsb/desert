@@ -363,7 +363,7 @@ func throw_item():
 
 
 func interact_with_item(item: Node3D):
-	if "interact" in item:
+	if item.has_method("interact"):
 		item.interact(self)
 	else:
 		print("Item does not implement interact().")
@@ -374,7 +374,7 @@ func apply_outline(obj: Node):
 	if mesh and mesh.material_overlay:
 		var mat = mesh.material_overlay
 		if mat is ShaderMaterial:
-			mat.set_shader_parameter("border_width", 0.03)
+			mat.set_shader_parameter("border_width", 0.1)
 
 	if "set_energy_label_visible" in obj:
 		obj.set_energy_label_visible(true)
@@ -435,7 +435,6 @@ func _update_camera_sway():
 
 func _reset_camera_sway():
 	$Camera3D.transform.origin.x = original_camera_local_pos.x
-	# We'll keep the Y offset from crouch logic.
 
 
 #
@@ -452,7 +451,6 @@ func take_damage(base_amount: int) -> void:
 		if not dead:
 			die()
 	_update_health_bar()
-
 
 
 func die():

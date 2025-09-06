@@ -9,16 +9,42 @@ extends Node3D
 @export var cable_gravity_amp = 0.245
 @export var cable_thickness = 0.1
 @export var cable_springiness = 9.81*2
+@export var rope_material: Material = null
 @onready var cable_mesh := preload("res://src/object/rope/mesh_instance_3d.tscn")
-@onready var segment_stretch = float(cable_length/number_of_segments)
+var segment_stretch: float
 # instances
 var segments : Array
 var joints : Array
+# debug display
+var debug_label : Label3D
+var debug_enabled: bool = false
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	# Ensure parameters have valid values
+	if number_of_segments == null or number_of_segments <= 0:
+		number_of_segments = 10
+	if cable_length == null or cable_length <= 0:
+		cable_length = 5.0
+	if cable_gravity_amp == null:
+		cable_gravity_amp = 0.245
+	if cable_thickness == null:
+		cable_thickness = 0.1
+	if cable_springiness == null:
+		cable_springiness = 9.81 * 2
+	
+	# Calculate segment stretch
+	segment_stretch = float(cable_length) / float(number_of_segments)
+	
 	var distance = (end_point.global_position - start_point.global_position).length()
 	var direction = (end_point.global_position - start_point.global_position).normalized()
+	
+	# Notify attachment points that they're tethered
+	if start_point.has_method("set_tethered"):
+		start_point.set_tethered(true)
+	if end_point.has_method("set_tethered"):
+		end_point.set_tethered(true)
+	
 	# start at start point
 	joints.append(start_point)
 	# create joints
@@ -37,6 +63,22 @@ func _ready() -> void:
 		segments[s].global_position = joints[s].global_position + (joints[s+1].global_position - joints[s].global_position)/2
 		segments[s].get_child(0).mesh.top_radius = cable_thickness/2.0
 		segments[s].get_child(0).mesh.bottom_radius = cable_thickness/2.0
+		
+		# Apply rope material if provided
+		if rope_material:
+			segments[s].get_child(0).material_override = rope_material
+	
+	# Create debug label
+	debug_label = Label3D.new()
+	debug_label.text = "Rope Dist: 0.0"
+	debug_label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	debug_label.visible = false  # Start hidden
+	self.add_child(debug_label)
+	
+	# Connect to debug manager
+	if DebugManager:
+		DebugManager.debug_display_toggled.connect(_on_debug_toggled)
+		debug_enabled = DebugManager.is_debug_enabled()
 
 func _process(_delta: float) -> void:
 	# Make segments point at their target and stretch/squash to their desired length
@@ -47,30 +89,99 @@ func _process(_delta: float) -> void:
 		safe_look_at(segments[i], joints[i+1].global_position + Vector3(0.0001, 0, -0.0001))
 		# set length to the distance between the joints
 		segments[i].get_child(0).mesh.height = (joints[i+1].global_position - joints[i].global_position).length()
+	
+	# Update debug display - show tether component status
+	if debug_label and debug_enabled and start_point and end_point:
+		var current_distance = (end_point.global_position - start_point.global_position).length()
+		var tether_info = get_tether_component_info(end_point)
+		
+		debug_label.text = "Rope Dist: %.1f\n%s" % [current_distance, tether_info]
+		debug_label.global_position = start_point.global_position + (end_point.global_position - start_point.global_position) * 0.5
+
+
+func get_tether_component_info(node: Node) -> String:
+	# Look for tether component in the node hierarchy
+	var tether_component = find_tether_component_in_hierarchy(node)
+	
+	if tether_component:
+		var status = tether_component.get_tether_status()
+		return "Tethered: %s\nTo: %s\nDist: %.1f/%.1f" % [
+			status.is_tethered, 
+			status.anchor_name, 
+			status.distance, 
+			status.max_distance
+		]
+	else:
+		return "No Tether Component"
+
+func find_tether_component_in_hierarchy(node: Node) -> TetherComponent:
+	if not node:
+		return null
+		
+	# Check the node itself
+	if node.has_method("get_tether_component"):
+		return node.get_tether_component()
+	
+	# Check direct children
+	for child in node.get_children():
+		if child is TetherComponent:
+			return child
+	
+	# IMPORTANT: Check parent (for sticky body attached to bubble planter)
+	var parent = node.get_parent()
+	if parent and not parent is Window:
+		var parent_component = find_tether_component_in_hierarchy(parent)
+		if parent_component:
+			return parent_component
+	
+	return null
+
+func _on_debug_toggled(enabled: bool) -> void:
+	debug_enabled = enabled
+	if debug_label:
+		debug_label.visible = enabled
 
 func _physics_process(delta: float) -> void:
-	# fake physics
+	# Restore proper rope physics but with some optimizations
 	for i in number_of_segments:
 		if i != 0:
-			# collision
-			var query = PhysicsRayQueryParameters3D.create(joints[i].global_position, joints[i].global_position - Vector3(0,cable_thickness, 0))
-			var raycast = get_world_3d().direct_space_state.intersect_ray(query)
-			# Gravity
-			if raycast.get("collider") == null:
+			# Skip expensive collision detection every frame - only check every 3rd frame
+			if Engine.get_process_frames() % 3 == 0:
+				var query = PhysicsRayQueryParameters3D.create(joints[i].global_position, joints[i].global_position - Vector3(0,cable_thickness, 0))
+				var raycast = get_world_3d().direct_space_state.intersect_ray(query)
+				# Gravity
+				if raycast.get("collider") == null:
+					joints[i].global_position.y = lerp(joints[i].global_position.y, joints[i].global_position.y - 1, cable_gravity_amp * delta/2.0)
+			else:
+				# Always apply gravity, just skip collision detection
 				joints[i].global_position.y = lerp(joints[i].global_position.y, joints[i].global_position.y - 1, cable_gravity_amp * delta/2.0)
-			# stretch
+			
+			# Restore proper stretch constraint for rope tautness
 			joints[i].global_position = lerp(joints[i].global_position, joints[i-1].global_position + (joints[i+1].global_position - joints[i-1].global_position)/2.0, cable_springiness * delta)
-	# Retract
-	if end_is_rigidbody:
-		if (end_point.global_position - joints[0].global_position).length() >= segment_stretch * number_of_segments:
-			var modifier = (end_point.global_position - joints[0].global_position).length() - segment_stretch * number_of_segments
-			modifier = clamp(modifier, 0.0, cable_springiness)
-			end_point.linear_velocity -= (end_point.global_position - joints[-2].global_position)*modifier
-	if start_is_rigidbody:
-		if (end_point.global_position - joints[0].global_position).length() >= segment_stretch * number_of_segments:
-			var modifier = (end_point.global_position - joints[0].global_position).length() - segment_stretch * number_of_segments
-			modifier = clamp(modifier, 0.0, cable_springiness)
-			joints[0].linear_velocity -= (joints[0].global_position - joints[1].global_position)*modifier
+	
+	# Calculate distance (using squared distance check first for performance)
+	var endpoint_distance_sq = start_point.global_position.distance_squared_to(end_point.global_position)
+	var segment_length_total = segment_stretch * number_of_segments
+	var segment_length_total_sq = segment_length_total * segment_length_total
+	
+	if debug_label:
+		debug_label.modulate = Color.WHITE
+	
+	# Only apply rope tension if stretched beyond normal length
+	if end_is_rigidbody and endpoint_distance_sq > segment_length_total_sq:
+		var current_distance = sqrt(endpoint_distance_sq)
+		var modifier = current_distance - segment_length_total
+		modifier = clamp(modifier, 0.0, cable_springiness)
+		
+		# Apply rope tension but with moderate damping to prevent extreme oscillation
+		var force = (end_point.global_position - joints[-2].global_position) * modifier * 0.3  # Reduced from 0.5 to 0.3
+		end_point.linear_velocity -= force
+		
+		# Only apply damping when the rope is being stretched significantly
+		if modifier > segment_length_total * 0.2:  # 20% overstretched
+			end_point.linear_velocity *= 0.9  # Light damping
+			end_point.angular_velocity *= 0.9
+
 
 func safe_look_at(node : Node3D, target : Vector3) -> void:
 	var origin : Vector3 = node.global_transform.origin

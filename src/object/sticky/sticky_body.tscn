@@ -1,0 +1,62 @@
+[gd_scene load_steps=10 format=3 uid="uid://bu1eyksqmxfpe"]
+
+[ext_resource type="Script" uid="uid://3g5ulp4ni0m7" path="res://src/object/sticky/snappy_body.gd" id="1_faup6"]
+[ext_resource type="Shader" uid="uid://ddjxtytcedpsa" path="res://outline01.gdshader" id="2_qkhfx"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_8nq7v"]
+render_priority = 0
+shader = ExtResource("2_qkhfx")
+shader_parameter/border_width = 0.0
+shader_parameter/color = Color(1, 0.503425, 0.209163, 1)
+shader_parameter/pattern = false
+shader_parameter/line_number = 0.0
+shader_parameter/line_sharpness = 5.091
+shader_parameter/pulse = false
+shader_parameter/pulse_speed = 0.0
+shader_parameter/line_movement = false
+shader_parameter/line_movement_speed = 0.0
+shader_parameter/wave = false
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rvtu1"]
+albedo_color = Color(0.517647, 0.662745, 0.384314, 0.862745)
+
+[sub_resource type="BoxMesh" id="BoxMesh_fpaar"]
+material = SubResource("StandardMaterial3D_rvtu1")
+size = Vector3(0.15, 0.15, 0.14)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_yq4lk"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jxt4b"]
+albedo_color = Color(1, 0.515387, 0.125878, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_l5vg2"]
+material = SubResource("StandardMaterial3D_jxt4b")
+size = Vector3(0.16, 0.1, 0.16)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_sl56w"]
+
+[node name="SnappyBody" type="RigidBody3D" groups=["interactable"]]
+collision_layer = 6
+collision_mask = 5
+script = ExtResource("1_faup6")
+
+[node name="Body" type="MeshInstance3D" parent="."]
+material_overlay = SubResource("ShaderMaterial_8nq7v")
+mesh = SubResource("BoxMesh_fpaar")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(0.15, 0, 0, 0, 0.15, 0, 0, 0, 0.15, 0, 0, 0)
+shape = SubResource("BoxShape3D_yq4lk")
+
+[node name="Ring" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_l5vg2")
+
+[node name="SnapArea" type="Area3D" parent="."]
+collision_layer = 8
+collision_mask = 8
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SnapArea"]
+transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0, 0, 0)
+shape = SubResource("BoxShape3D_sl56w")
+
+[connection signal="area_entered" from="SnapArea" to="." method="_on_snap_area_area_entered"]

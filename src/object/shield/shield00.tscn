@@ -1,28 +1,28 @@
 [gd_scene load_steps=16 format=3 uid="uid://csgdtb8pbgwjj"]
 
 [ext_resource type="PackedScene" uid="uid://bx4f447gbcnko" path="res://texture/object/shield/shield.fbx" id="1_y7ksg"]
-[ext_resource type="Script" path="res://src/object/shield/shield_tln.gd" id="2_vamx3"]
-[ext_resource type="Script" path="res://src/object/shield/shield.gd" id="3_dvq4e"]
-[ext_resource type="Shader" path="res://outline01.gdshader" id="4_07d0x"]
-[ext_resource type="Shader" path="res://shader/bubbleshield01.gdshader" id="5_1d4fc"]
+[ext_resource type="Script" uid="uid://dx2gtiybudo00" path="res://src/object/shield/shield_tln.gd" id="2_vamx3"]
+[ext_resource type="Script" uid="uid://bb7rom6upewjn" path="res://src/object/shield/shield.gd" id="3_dvq4e"]
+[ext_resource type="Shader" uid="uid://ddjxtytcedpsa" path="res://outline01.gdshader" id="4_07d0x"]
+[ext_resource type="Shader" uid="uid://dcrj0dv7itbu7" path="res://shader/bubbleshield01.gdshader" id="5_1d4fc"]
 [ext_resource type="AudioStream" uid="uid://d210wmjbixl28" path="res://audio/object_shield-boot.wav" id="6_fg3e0"]
 [ext_resource type="AudioStream" uid="uid://q8mu5unw2sn" path="res://audio/object_shield-sustain.mp3.mp3" id="7_2wm2v"]
 [ext_resource type="AudioStream" uid="uid://bspkp1ei708qu" path="res://audio/object_shield-powerdown.wav.wav" id="8_y4n14"]
-[ext_resource type="Script" path="res://src/object/shield/shield_battery_label.gd" id="9_rsm24"]
+[ext_resource type="Script" uid="uid://bi73j4gh8p4cr" path="res://src/object/shield/shield_battery_label.gd" id="9_rsm24"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_cbqmf"]
 render_priority = 0
 shader = ExtResource("4_07d0x")
-shader_parameter/border_width = null
-shader_parameter/color = Vector4(0, 0.5, 1.5, 1)
-shader_parameter/pattern = null
-shader_parameter/line_number = null
-shader_parameter/line_sharpness = null
-shader_parameter/pulse = null
-shader_parameter/pulse_speed = null
-shader_parameter/line_movement = null
-shader_parameter/line_movement_speed = null
-shader_parameter/wave = null
+shader_parameter/border_width = 0.0
+shader_parameter/color = Color(0.8, 0.7, 0.5, 1)
+shader_parameter/pattern = false
+shader_parameter/line_number = 0.0
+shader_parameter/line_sharpness = 0.0
+shader_parameter/pulse = false
+shader_parameter/pulse_speed = 0.0
+shader_parameter/line_movement = false
+shader_parameter/line_movement_speed = 0.0
+shader_parameter/wave = false
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_6es2b"]
 
