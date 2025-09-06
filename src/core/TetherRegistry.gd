@@ -13,7 +13,6 @@ var tethered_objects: Dictionary = {}  # Node3D -> Array[Vector3] (anchor positi
 var object_to_anchors: Dictionary = {}  # Node3D -> Array[Node3D] (anchor nodes)
 
 func _ready():
-	print("TetherRegistry: Initialized")
 	# Update anchor positions every few frames for performance
 	var timer = Timer.new()
 	timer.wait_time = 0.1  # Update 10 times per second
@@ -44,8 +43,6 @@ func register_tether(object: Node3D, anchor: Node3D) -> void:
 		tether_registered.emit(object, anchor)
 		tethers_changed.emit(object)
 		
-		print("TetherRegistry: Registered tether - ", object.name, " -> ", anchor.name)
-		print("TetherRegistry: Anchor position cached at: ", anchor.global_position)
 
 # Unregister a tether connection
 func unregister_tether(object: Node3D, anchor: Node3D) -> void:
@@ -70,7 +67,6 @@ func unregister_tether(object: Node3D, anchor: Node3D) -> void:
 		tether_unregistered.emit(object, anchor)
 		tethers_changed.emit(object)
 		
-		print("TetherRegistry: Unregistered tether - ", object.name, " -> ", anchor.name)
 
 # Unregister all tethers for an object (when object is destroyed/picked up)
 func unregister_all_tethers(object: Node3D) -> void:
@@ -85,7 +81,6 @@ func unregister_all_tethers(object: Node3D) -> void:
 	object_to_anchors.erase(object)
 	tethers_changed.emit(object)
 	
-	print("TetherRegistry: Unregistered all tethers for ", object.name)
 
 # Get cached anchor positions for efficient physics (O(1) lookup)
 func get_anchor_positions(object: Node3D) -> Array[Vector3]:
@@ -94,9 +89,7 @@ func get_anchor_positions(object: Node3D) -> Array[Vector3]:
 		var positions = tethered_objects[object]
 		for pos in positions:
 			result.append(pos as Vector3)
-		print("TetherRegistry: get_anchor_positions for ", object.name, " -> ", result.size(), " positions")
 		return result
-	print("TetherRegistry: get_anchor_positions for ", object.name, " -> NOT FOUND")
 	return result
 
 # Get anchor nodes (for debugging/inspection)

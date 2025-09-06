@@ -99,42 +99,6 @@ func _process(_delta: float) -> void:
 		debug_label.global_position = start_point.global_position + (end_point.global_position - start_point.global_position) * 0.5
 
 
-func get_tether_component_info(node: Node) -> String:
-	# Look for tether component in the node hierarchy
-	var tether_component = find_tether_component_in_hierarchy(node)
-	
-	if tether_component:
-		var status = tether_component.get_tether_status()
-		return "Tethered: %s\nTo: %s\nDist: %.1f/%.1f" % [
-			status.is_tethered, 
-			status.anchor_name, 
-			status.distance, 
-			status.max_distance
-		]
-	else:
-		return "No Tether Component"
-
-func find_tether_component_in_hierarchy(node: Node) -> TetherComponent:
-	if not node:
-		return null
-		
-	# Check the node itself
-	if node.has_method("get_tether_component"):
-		return node.get_tether_component()
-	
-	# Check direct children
-	for child in node.get_children():
-		if child is TetherComponent:
-			return child
-	
-	# IMPORTANT: Check parent (for sticky body attached to bubble planter)
-	var parent = node.get_parent()
-	if parent and not parent is Window:
-		var parent_component = find_tether_component_in_hierarchy(parent)
-		if parent_component:
-			return parent_component
-	
-	return null
 
 func _on_debug_toggled(enabled: bool) -> void:
 	debug_enabled = enabled

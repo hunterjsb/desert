@@ -24,7 +24,6 @@ func _ready() -> void:
 	# Enable physics processing only if we have a rigidbody to constrain
 	set_physics_process(parent_rigidbody != null)
 	
-	print("TetherComponent ready for: ", get_parent().name, " rigidbody: ", parent_rigidbody != null)
 
 func find_rigidbody_in_hierarchy(node: Node) -> RigidBody3D:
 	if not node:
@@ -102,7 +101,6 @@ func _physics_process(delta: float) -> void:
 		parent_rigidbody.linear_velocity *= 0.2
 		parent_rigidbody.angular_velocity *= 0.2
 		
-		print("CONSTRAINT: Moved center from %.1f to %.1f from anchor" % [closest_distance, max_tether_distance])
 	
 	# Handle audio based on tension
 	if max_tension > 0.1:

@@ -43,7 +43,6 @@ func _on_snap_area_area_entered(area: Area3D) -> void:
 	# Find the rope's other endpoint (anchor)
 	var anchor = find_rope_anchor()
 	if not anchor:
-		print("StickyBody: Could not find rope anchor")
 		return
 	
 	anchor_object = anchor
@@ -53,12 +52,11 @@ func _on_snap_area_area_entered(area: Area3D) -> void:
 		# For static objects (posts), they become the anchor
 		# For dynamic objects (bubble planters), they get constrained to the anchor
 		if target_object is StaticBody3D:
-			# Target is static - it serves as the anchor point
-			print("StickyBody: Attached to static anchor ", target_object.name)
+			# Target is static - it serves as the anchor point (no constraints needed)
+			pass
 		else:
 			# Target is dynamic - register it as tethered to the anchor
 			TetherRegistry.register_tether(target_object, anchor)
-			print("StickyBody: Registered tether - ", target_object.name, " -> ", anchor.name)
 	
 	# Play attachment sound
 	var attach_audio = get_node_or_null("AttachAudio")
