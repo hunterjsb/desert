@@ -126,37 +126,45 @@ func find_tether_component_in_hierarchy(node: Node) -> TetherComponent:
 	return null
 
 func _physics_process(delta: float) -> void:
-	# fake physics
+	# Restore proper rope physics but with some optimizations
 	for i in number_of_segments:
 		if i != 0:
-			# collision
-			var query = PhysicsRayQueryParameters3D.create(joints[i].global_position, joints[i].global_position - Vector3(0,cable_thickness, 0))
-			var raycast = get_world_3d().direct_space_state.intersect_ray(query)
-			# Gravity
-			if raycast.get("collider") == null:
+			# Skip expensive collision detection every frame - only check every 3rd frame
+			if Engine.get_process_frames() % 3 == 0:
+				var query = PhysicsRayQueryParameters3D.create(joints[i].global_position, joints[i].global_position - Vector3(0,cable_thickness, 0))
+				var raycast = get_world_3d().direct_space_state.intersect_ray(query)
+				# Gravity
+				if raycast.get("collider") == null:
+					joints[i].global_position.y = lerp(joints[i].global_position.y, joints[i].global_position.y - 1, cable_gravity_amp * delta/2.0)
+			else:
+				# Always apply gravity, just skip collision detection
 				joints[i].global_position.y = lerp(joints[i].global_position.y, joints[i].global_position.y - 1, cable_gravity_amp * delta/2.0)
-			# stretch
+			
+			# Restore proper stretch constraint for rope tautness
 			joints[i].global_position = lerp(joints[i].global_position, joints[i-1].global_position + (joints[i+1].global_position - joints[i-1].global_position)/2.0, cable_springiness * delta)
-	# Calculate distance for rope physics
-	var current_distance = (end_point.global_position - start_point.global_position).length()
 	
-	# Simple debug display for now - no tethering logic in rope
+	# Calculate distance (using squared distance check first for performance)
+	var endpoint_distance_sq = start_point.global_position.distance_squared_to(end_point.global_position)
+	var segment_length_total = segment_stretch * number_of_segments
+	var segment_length_total_sq = segment_length_total * segment_length_total
+	
 	if debug_label:
 		debug_label.modulate = Color.WHITE
 	
-	# Retract with damping to reduce oscillation (existing soft constraint)
-	if end_is_rigidbody:
-		if current_distance >= segment_stretch * number_of_segments:
-			var modifier = current_distance - segment_stretch * number_of_segments
-			modifier = clamp(modifier, 0.0, cable_springiness)
-			var force = (end_point.global_position - joints[-2].global_position) * modifier * 0.5  # Add damping
-			end_point.linear_velocity -= force
-	if start_is_rigidbody:
-		if current_distance >= segment_stretch * number_of_segments:
-			var modifier = current_distance - segment_stretch * number_of_segments
-			modifier = clamp(modifier, 0.0, cable_springiness)
-			var force = (joints[0].global_position - joints[1].global_position) * modifier * 0.5  # Add damping
-			joints[0].linear_velocity -= force
+	# Only apply rope tension if stretched beyond normal length
+	if end_is_rigidbody and endpoint_distance_sq > segment_length_total_sq:
+		var current_distance = sqrt(endpoint_distance_sq)
+		var modifier = current_distance - segment_length_total
+		modifier = clamp(modifier, 0.0, cable_springiness)
+		
+		# Apply rope tension but with moderate damping to prevent extreme oscillation
+		var force = (end_point.global_position - joints[-2].global_position) * modifier * 0.3  # Reduced from 0.5 to 0.3
+		end_point.linear_velocity -= force
+		
+		# Only apply damping when the rope is being stretched significantly
+		if modifier > segment_length_total * 0.2:  # 20% overstretched
+			end_point.linear_velocity *= 0.9  # Light damping
+			end_point.angular_velocity *= 0.9
 
 
 func safe_look_at(node : Node3D, target : Vector3) -> void:
