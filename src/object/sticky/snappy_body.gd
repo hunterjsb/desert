@@ -45,6 +45,11 @@ func _on_snap_area_area_entered(area: Area3D) -> void:
 	if tether_component and tether_anchor:
 		tether_component.set_tethered(true, tether_anchor, 10.0, self)  # Pass self as snappy_body
 		attached_tether_component = tether_component  # Remember this for when we detach
+		
+		# Play attachment sound
+		var attach_audio = get_node_or_null("AttachAudio")
+		if attach_audio:
+			attach_audio.play()
 
 func find_tether_component(obj: Node) -> TetherComponent:
 	# Look for TetherComponent in the object or its children
