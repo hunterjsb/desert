@@ -17,6 +17,7 @@ var segments : Array
 var joints : Array
 # debug display
 var debug_label : Label3D
+var debug_enabled: bool = false
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -69,9 +70,15 @@ func _ready() -> void:
 	
 	# Create debug label
 	debug_label = Label3D.new()
-	debug_label.text = "Distance: 0.0"
+	debug_label.text = "Rope Dist: 0.0"
 	debug_label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	debug_label.visible = false  # Start hidden
 	self.add_child(debug_label)
+	
+	# Connect to debug manager
+	if DebugManager:
+		DebugManager.debug_display_toggled.connect(_on_debug_toggled)
+		debug_enabled = DebugManager.is_debug_enabled()
 
 func _process(_delta: float) -> void:
 	# Make segments point at their target and stretch/squash to their desired length
@@ -84,10 +91,9 @@ func _process(_delta: float) -> void:
 		segments[i].get_child(0).mesh.height = (joints[i+1].global_position - joints[i].global_position).length()
 	
 	# Update debug display - show tether component status
-	if debug_label and start_point and end_point:
+	if debug_label and debug_enabled and start_point and end_point:
 		var current_distance = (end_point.global_position - start_point.global_position).length()
 		var tether_info = get_tether_component_info(end_point)
-		
 		
 		debug_label.text = "Rope Dist: %.1f\n%s" % [current_distance, tether_info]
 		debug_label.global_position = start_point.global_position + (end_point.global_position - start_point.global_position) * 0.5
@@ -129,6 +135,11 @@ func find_tether_component_in_hierarchy(node: Node) -> TetherComponent:
 			return parent_component
 	
 	return null
+
+func _on_debug_toggled(enabled: bool) -> void:
+	debug_enabled = enabled
+	if debug_label:
+		debug_label.visible = enabled
 
 func _physics_process(delta: float) -> void:
 	# Restore proper rope physics but with some optimizations
