@@ -1,6 +1,8 @@
-[gd_scene load_steps=2 format=3 uid="uid://dsqljfot4jffp"]
+[gd_scene load_steps=3 format=3 uid="uid://dsqljfot4jffp"]
 
 [ext_resource type="Script" uid="uid://bh2mmmqvoq43a" path="res://src/object/rope/rope.gd" id="1_lc7xr"]
+[ext_resource type="Material" uid="uid://d0s1338fcpvox" path="res://texture/object/rope/rope.tres" id="2_ft3sw"]
 
 [node name="Rope" type="Node3D"]
 script = ExtResource("1_lc7xr")
+rope_material = ExtResource("2_ft3sw")

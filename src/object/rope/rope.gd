@@ -9,6 +9,7 @@ extends Node3D
 @export var cable_gravity_amp = 0.245
 @export var cable_thickness = 0.1
 @export var cable_springiness = 9.81*2
+@export var rope_material: Material = null
 @onready var cable_mesh := preload("res://src/object/rope/mesh_instance_3d.tscn")
 var segment_stretch: float
 # instances
@@ -61,6 +62,10 @@ func _ready() -> void:
 		segments[s].global_position = joints[s].global_position + (joints[s+1].global_position - joints[s].global_position)/2
 		segments[s].get_child(0).mesh.top_radius = cable_thickness/2.0
 		segments[s].get_child(0).mesh.bottom_radius = cable_thickness/2.0
+		
+		# Apply rope material if provided
+		if rope_material:
+			segments[s].get_child(0).material_override = rope_material
 	
 	# Create debug label
 	debug_label = Label3D.new()

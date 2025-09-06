@@ -1,0 +1,44 @@
+
+name: Godot Export
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  export-windows:
+    runs-on: ubuntu-latest
+    name: Export for Windows
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up Godot
+        uses: chicken-with-lips/godot-export@v1
+        with:
+          godot_version: '4.4'
+          platform: 'windows'
+          export_preset: 'Windows Desktop'
+          
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} 
+          asset_path: ./sandgame_zeta3.exe
+          asset_name: sandgame-windows.exe
+          asset_content_type: application/octet-stream
