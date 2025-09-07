@@ -15,11 +15,9 @@ func _ready() -> void:
 	add_child(tether_component)
 
 func _process(_delta: float) -> void:
-	# Don't apply wind forces if this planter is tethered (check registry)
-	var is_tethered = TetherRegistry and TetherRegistry.is_tethered(self)
-	if not is_tethered:
-		var wind_vector = wind_manager.get_wind_vector() / 2
-		body.apply_central_force(wind_vector * wind_force_multiplier)
+	# Always apply wind forces - tethered objects can still be affected by wind
+	var wind_vector = wind_manager.get_wind_vector() / 2
+	body.apply_central_force(wind_vector * wind_force_multiplier)
 
 func get_tether_component() -> TetherComponent:
 	return tether_component
