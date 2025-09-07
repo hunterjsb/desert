@@ -88,18 +88,31 @@ func _physics_process(delta: float) -> void:
 			var tension = (distance - max_tether_distance * 0.8) / (max_tether_distance * 0.2)
 			max_tension = max(max_tension, tension)
 	
-	# Apply position-based constraint to prevent momentum buildup
+	# Apply gradual spring forces instead of teleportation
 	if needs_constraint:
-		# Calculate constrained position from object center to closest anchor
-		var direction_to_anchor = (closest_anchor - object_center).normalized()
-		var constrained_position = closest_anchor - direction_to_anchor * max_tether_distance
+		# Calculate total spring force from all violating anchors
+		var total_spring_force = Vector3.ZERO
 		
-		# Apply constraint
-		parent_rigidbody.global_position = constrained_position
+		for anchor_pos in anchor_positions:
+			var to_anchor = anchor_pos - object_center
+			var distance = to_anchor.length()
+			
+			if distance > max_tether_distance:
+				var violation = distance - max_tether_distance
+				var direction = to_anchor / distance  # Normalized direction
+				
+				# Strong spring force proportional to violation distance
+				var spring_force = direction * violation * 100.0  # Spring constant
+				total_spring_force += spring_force
 		
-		# Apply heavy damping to prevent oscillation and explosions
-		parent_rigidbody.linear_velocity *= 0.2
-		parent_rigidbody.angular_velocity *= 0.2
+		# Apply accumulated spring forces
+		parent_rigidbody.apply_central_force(total_spring_force)
+		
+		# Progressive damping based on constraint violation severity
+		var max_violation = closest_distance - max_tether_distance
+		var damping = lerp(0.98, 0.85, clamp(max_violation / max_tether_distance, 0.0, 1.0))
+		parent_rigidbody.linear_velocity *= damping
+		parent_rigidbody.angular_velocity *= damping
 		
 	
 	# Handle audio based on tension
