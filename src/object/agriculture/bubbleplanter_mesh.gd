@@ -13,6 +13,7 @@ extends InteractableBody3D
 
 # We'll keep track of the last frame's normal to reduce jitter
 var last_normal = Vector3.UP
+var hover_enabled = true  # Toggle for hover mode
 
 func _ready():
 	# A bit of damping to reduce infinite sliding or spinning
@@ -21,6 +22,10 @@ func _ready():
 	hoverAudio.play()
 
 func _integrate_forces(_state: PhysicsDirectBodyState3D):
+	# Only apply hover physics if hover mode is enabled
+	if not hover_enabled:
+		return
+	
 	if raycast_down.is_colliding():
 		# 1) Get the collision data
 		var collision_point = raycast_down.get_collision_point()
@@ -87,4 +92,17 @@ func try_pickup(_player: Node):
 	return false
 		
 func interact(_player: Node):
-	pass # No special interaction needed - sticky body handles its own pickup
+	# Toggle hover mode
+	hover_enabled = not hover_enabled
+	
+	if hover_enabled:
+		# Enable hover mode
+		hoverAudio.play()
+		print("BubblePlanter: Hover mode ENABLED")
+	else:
+		# Disable hover mode - let it settle to ground
+		hoverAudio.stop()
+		print("BubblePlanter: Hover mode DISABLED")
+	
+	# Audio feedback for toggle
+	# TODO: Add toggle sound effect here if desired
