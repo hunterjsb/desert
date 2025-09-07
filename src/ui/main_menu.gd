@@ -2,6 +2,7 @@ extends Control
 
 @onready var camera_3d: Camera3D = $MenuScene3D/Camera3D
 @onready var rotatables: Array[RigidBody3D] = [$MenuScene3D/Shield/Mesh0, $MenuScene3D/radio/Mesh1_Mesh1_108]
+@onready var dev_mode_indicator: Label = $DevModeIndicator
 var last_highlighted_item = null
 
 @export var max_tilt_degrees := 30.0
@@ -16,6 +17,11 @@ var grab_offset_in_object_space: Vector3 = Vector3.ZERO
 func _ready() -> void:
 	for body_3d in rotatables:
 		body_3d.freeze = true
+	
+	# Connect to dev mode changes and set initial state
+	if DebugManager:
+		DebugManager.dev_mode_changed.connect(_on_dev_mode_changed)
+		dev_mode_indicator.visible = DebugManager.is_dev_mode()
 	
 func _process(delta: float) -> void:
 	# --- Mouse tilt logic ---
@@ -128,8 +134,12 @@ func find_mesh_instance(obj: Node) -> MeshInstance3D:
 	return null
 
 func _on_start_pressed() -> void:
+	# Dev mode is controlled by F3 toggle in DebugManager
 	get_tree().change_scene_to_file("res://main.tscn")
 
 
 func _on_skybox_pressed() -> void:
 	get_tree().change_scene_to_file("res://skybox.tscn")
+
+func _on_dev_mode_changed(enabled: bool) -> void:
+	dev_mode_indicator.visible = enabled

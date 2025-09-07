@@ -17,7 +17,7 @@ extends Node3D
 
 @export_category("Other Settings")
 @export var optimised_collision = true
-@export var chunk_create_speed = 0.05
+@export var chunk_create_speed = 0.015
 @export var chunk_show_speed = 1.0
 @export var map_under_player = false
 

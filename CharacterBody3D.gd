@@ -406,18 +406,20 @@ func find_mesh_instance(obj: Node) -> MeshInstance3D:
 func _on_terrain_map_ready():
 	gravity = 9.8
 	
-	var hoverboard = preload("res://src/object/hoverboard/hoverboard.tscn").instantiate()
-	var spawn_offset = Vector3(2, 1, 0)
-	var spawn_position = global_transform.origin + spawn_offset
-	get_parent().add_child(hoverboard)
-	hoverboard.call_deferred("set_global_position", spawn_position)
-	
-	var bplanter = preload("res://src/object/agriculture/bubbleplanter.tscn").instantiate()
-	bplanter.wind_manager = $"../Environment/WindManager"
-	var bp_spawn_offset = Vector3(2, -1, 1)
-	var bp_spawn_position = global_transform.origin + bp_spawn_offset
-	get_parent().add_child(bplanter)
-	bplanter.call_deferred("set_global_position", bp_spawn_position)
+	# Only spawn dev items if dev mode is enabled
+	if DebugManager and DebugManager.is_dev_mode():
+		var hoverboard = preload("res://src/object/hoverboard/hoverboard.tscn").instantiate()
+		var spawn_offset = Vector3(2, 1, 0)
+		var spawn_position = global_transform.origin + spawn_offset
+		get_parent().add_child(hoverboard)
+		hoverboard.call_deferred("set_global_position", spawn_position)
+		
+		var bplanter = preload("res://src/object/agriculture/bubbleplanter.tscn").instantiate()
+		bplanter.wind_manager = $"../Environment/WindManager"
+		var bp_spawn_offset = Vector3(2, -1, 1)
+		var bp_spawn_position = global_transform.origin + bp_spawn_offset
+		get_parent().add_child(bplanter)
+		bplanter.call_deferred("set_global_position", bp_spawn_position)
 
 
 #
