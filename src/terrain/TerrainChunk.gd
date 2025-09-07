@@ -1,8 +1,22 @@
 extends MeshInstance3D
 
+# Constants for better code clarity
+const DEFAULT_AUTO_LOD = 10
+const OBJECT_SPAWN_CHANCE = 10  # Percentage chance (10%)
+const STRUCTURE_SPAWN_CHANCE = 1  # Per 300 attempts
+const YUCCA_SPAWN_WEIGHT = 0.01
+const POST_SPAWN_WEIGHT = 0.5
+
+# LOD distance thresholds
+const LOD_DISTANCE_CLOSE = 3
+const LOD_DISTANCE_MEDIUM = 6  
+const LOD_DISTANCE_FAR = 10
+const LOD_DISTANCE_VERY_FAR = 20
+const LOD_DISTANCE_EXTREME = 40
+
 #==> OTHER <==#
 var terrain = null
-var autoLOD = 10
+var autoLOD = DEFAULT_AUTO_LOD
 var oldLod = 0
 
 #==> SCENES <==#
@@ -12,7 +26,7 @@ var post_scene = preload("res://src/structure/post/post.tscn")
 
 #==> SPAWNABLES + CHANCES <==#
 var spawnables = [yucca_scene, post_scene] 
-var spawn_chances = [0.01, 0.5]
+var spawn_chances = [YUCCA_SPAWN_WEIGHT, POST_SPAWN_WEIGHT]
 
 #==> CODE <==#
 func get_distance():
@@ -20,7 +34,7 @@ func get_distance():
 	return int(player_pos.distance_to(position))
 
 
-func kreiraj_noise_teren():
+func create_base_mesh():
 	var chunk_size = terrain.chunk_size
 	var subdivide_size = chunk_size / (autoLOD * terrain.LOD)
 	mesh = PlaneMesh.new()
@@ -30,11 +44,11 @@ func kreiraj_noise_teren():
 	return mesh
 
 
-func kreiraj_custom_col(trimesh = false):
+func create_collision_mesh(trimesh = false):
 	# Rebuild the terrain mesh
-	var new_mesh = kreiraj_noise_teren()
-	var trn = create_noise_terrain(new_mesh)
-	mesh = trn
+	var new_mesh = create_base_mesh()
+	var terrain_mesh = create_noise_terrain(new_mesh)
+	mesh = terrain_mesh
 
 	if trimesh:
 		# This built-in function creates a StaticBody3D + CollisionShape3D child for us
@@ -62,19 +76,20 @@ func _process(_delta):
 		remove_chunk()
 		return
 
-	# Adjust LOD by distance
-	if dist / terrain.chunk_size <= 3:
+	# Adjust LOD by distance using constants
+	var distance_ratio = dist / terrain.chunk_size
+	if distance_ratio <= LOD_DISTANCE_CLOSE:
 		autoLOD = 0.5
-	elif dist / terrain.chunk_size <= 6:
+	elif distance_ratio <= LOD_DISTANCE_MEDIUM:
 		autoLOD = 1
-	elif dist / terrain.chunk_size <= 10:
+	elif distance_ratio <= LOD_DISTANCE_FAR:
 		autoLOD = 2
+	elif distance_ratio <= LOD_DISTANCE_VERY_FAR:
+		autoLOD = 4
+	elif distance_ratio <= LOD_DISTANCE_EXTREME:
+		autoLOD = 6
 	else:
 		autoLOD = 3
-	if dist / terrain.chunk_size > 20:
-		autoLOD = 4
-	if dist / terrain.chunk_size > 40:
-		autoLOD = 6
 
 	# Rebuild terrain collision if LOD changed
 	if oldLod != autoLOD:
@@ -88,9 +103,9 @@ func _process(_delta):
 
 		# Re-create collision if needed
 		if autoLOD < 1 and terrain.optimised_collision:
-			kreiraj_custom_col(true)
+			create_collision_mesh(true)
 		elif not terrain.optimised_collision:
-			kreiraj_custom_col(true)
+			create_collision_mesh(true)
 
 
 func create_lod(_pos):
@@ -101,32 +116,32 @@ func create_lod(_pos):
 
 
 func create_noise_terrain(_mesh):
-	var sTool = SurfaceTool.new()
-	var dataTool = MeshDataTool.new()
+	var surface_tool = SurfaceTool.new()
+	var data_tool = MeshDataTool.new()
 
 	terrain.noise.offset = position  # Important for chunk-level noise offset
 
-	sTool.clear()
-	sTool.create_from(_mesh, 0)
-	var arrayMash = sTool.commit()
+	surface_tool.clear()
+	surface_tool.create_from(_mesh, 0)
+	var array_mesh = surface_tool.commit()
 
-	dataTool.clear()
-	dataTool.create_from_surface(arrayMash, 0)
+	data_tool.clear()
+	data_tool.create_from_surface(array_mesh, 0)
 
-	var vertex_count = dataTool.get_vertex_count()
+	var vertex_count = data_tool.get_vertex_count()
 	for i in range(vertex_count):
-		var vertex = dataTool.get_vertex(i)
+		var vertex = data_tool.get_vertex(i)
 		var value = terrain.noise.get_noise_3d(vertex.x, vertex.y, vertex.z)
 		vertex.y = value * terrain.terrain_height
-		dataTool.set_vertex(i, vertex)
+		data_tool.set_vertex(i, vertex)
 
-	arrayMash.clear_surfaces()
-	dataTool.commit_to_surface(arrayMash)
-	sTool.clear()
-	sTool.begin(Mesh.PRIMITIVE_TRIANGLES)
-	sTool.create_from(arrayMash, 0)
-	sTool.generate_normals()
-	return sTool.commit()
+	array_mesh.clear_surfaces()
+	data_tool.commit_to_surface(array_mesh)
+	surface_tool.clear()
+	surface_tool.begin(Mesh.PRIMITIVE_TRIANGLES)
+	surface_tool.create_from(array_mesh, 0)
+	surface_tool.generate_normals()
+	return surface_tool.commit()
 
 
 func get_terrain_height(world_x: float, world_z: float) -> float:
@@ -153,7 +168,7 @@ func create_chunk(pos: Vector3):
 	terrain.chunk_list.append(cName)
 
 	# Randomly spawn a plant or post
-	if randi() % 100 < 10:
+	if randi() % 100 < OBJECT_SPAWN_CHANCE:
 		var random_x = randf_range(0, terrain.chunk_size)
 		var random_z = randf_range(0, terrain.chunk_size)
 		var world_x = pos.x + random_x
@@ -166,7 +181,7 @@ func create_chunk(pos: Vector3):
 		spawn_body(spawn_pos + Vector3(0, 0.75, 0), random_rotation, random_scale)
 
 	# Randomly spawn a ruin or structure
-	if randi() % 300 < 1:
+	if randi() % 300 < STRUCTURE_SPAWN_CHANCE:
 		var random_rotation = randf() * 360.0
 		var random_scale = 2 + randf() * 1.5
 		spawn_structure(

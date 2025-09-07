@@ -65,7 +65,7 @@ transform = Transform3D(397.435, -212.762, 216.282, -3.93578e-06, 356.442, 350.6
 [node name="terrain" parent="." node_paths=PackedStringArray("player", "env") instance=ExtResource("2_vayhu")]
 player = NodePath("../Player")
 noise_terrain = "res://noise_terrain.tres"
-chunk_script = "res://chunk.gd"
+chunk_script = "res://src/terrain/TerrainChunk.gd"
 env = NodePath("../Environment")
 
 [node name="SoundManager" type="Node3D" parent="."]
