@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://ch0krls6y12y8"]
+[gd_scene load_steps=17 format=3 uid="uid://ch0krls6y12y8"]
 
 [ext_resource type="Script" uid="uid://b8r5iregkq4q4" path="res://CharacterBody3D.gd" id="1_ohtfq"]
 [ext_resource type="AudioStream" uid="uid://e2m7xn1nnp5u" path="res://audio/player_sand_footsteps.wav" id="2_c2uh1"]
@@ -8,6 +8,7 @@
 [ext_resource type="AudioStream" uid="uid://cnosyu33jvqfu" path="res://audio/player_slide.wav" id="6_tkypw"]
 [ext_resource type="Script" uid="uid://da7cr2vcg768b" path="res://src/object/food/hunger.gd" id="8_akq40"]
 [ext_resource type="PackedScene" uid="uid://bga2uqyynwha4" path="res://src/ui/pause_menu.tscn" id="8_mi6vp"]
+[ext_resource type="Script" uid="uid://c1hahncyfb8f0" path="res://src/environment/wind_particles.gd" id="9_b26j0"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ipq3q"]
 
@@ -27,6 +28,29 @@ shader_parameter/wave_speed = 4.0
 [sub_resource type="QuadMesh" id="QuadMesh_0hi3f"]
 material = SubResource("ShaderMaterial_siur6")
 size = Vector2(2, 2)
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_dw050"]
+lifetime_randomness = 0.2
+emission_shape = 1
+emission_sphere_radius = 2.0
+direction = Vector3(0, 1, 0)
+spread = 10.0
+initial_velocity_min = 10.0
+initial_velocity_max = 10.0
+turbulence_influence_min = 0.0
+turbulence_influence_max = 0.139
+turbulence_initial_displacement_min = -11.8
+turbulence_initial_displacement_max = 48.4
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dw050"]
+blend_mode = 1
+metallic_specular = 0.0
+use_particle_trails = true
+
+[sub_resource type="RibbonTrailMesh" id="RibbonTrailMesh_b26j0"]
+material = SubResource("StandardMaterial3D_dw050")
+size = 0.1
+section_length = 0.1
 
 [node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("AmbientAudio") groups=["Player"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10, 0)
@@ -82,3 +106,14 @@ player = NodePath("..")
 
 [node name="Hunger" type="Node3D" parent="."]
 script = ExtResource("8_akq40")
+
+[node name="WindParticles" type="GPUParticles3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.412791, -3.9411)
+amount = 4
+randomness = 0.5
+trail_enabled = true
+trail_lifetime = 0.8
+process_material = SubResource("ParticleProcessMaterial_dw050")
+draw_pass_1 = SubResource("RibbonTrailMesh_b26j0")
+script = ExtResource("9_b26j0")
