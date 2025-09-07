@@ -32,6 +32,8 @@ interactable="can be picked up and whatnot"
 bubble_shield=""
 Player=""
 sticky="objects can stick to this surface"
+large_plant_slot=""
+small_plant_slot=""
 
 [input]
 

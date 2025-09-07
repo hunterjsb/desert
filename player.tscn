@@ -125,7 +125,6 @@ player = NodePath("..")
 script = ExtResource("8_akq40")
 
 [node name="WindParticles" type="GPUParticles3D" parent="."]
-unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 16.974, -21.0515)
 amount = 4
 lifetime = 3.0

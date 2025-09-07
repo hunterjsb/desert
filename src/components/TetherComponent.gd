@@ -54,7 +54,7 @@ func _physics_process(delta: float) -> void:
 	if not TetherRegistry:
 		return
 	
-	# The registry stores the RigidBody3D (Mesh1_Mesh1_016), not the parent BubblePlanter
+	# The registry stores the RigidBody3D, not parent nodes
 	# So check if our RigidBody3D is tethered, not the parent
 	if not TetherRegistry.is_tethered(parent_rigidbody):
 		# Stop audio if not tethered

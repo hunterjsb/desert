@@ -11,13 +11,13 @@
 [ext_resource type="Texture2D" uid="uid://bmoh66spei4tg" path="res://src/environment/stars.png" id="10_d5qnc"]
 [ext_resource type="PackedScene" uid="uid://bxi6whsespwpy" path="res://texture/structure/ruins/ruins01.fbx" id="12_bd0gj"]
 [ext_resource type="PackedScene" uid="uid://be15buugjnenc" path="res://texture/structure/ruins/ruins03.fbx" id="12_vg0di"]
-[ext_resource type="PackedScene" uid="uid://d2iuna8o6eky0" path="res://src/object/agriculture/bubbleplanter.tscn" id="13_w5l2x"]
 [ext_resource type="Shader" uid="uid://ddjxtytcedpsa" path="res://outline01.gdshader" id="15_6iddm"]
 [ext_resource type="Script" uid="uid://dxg0l3eo6rbcj" path="res://rigid_body_3d.gd" id="15_lda6m"]
 [ext_resource type="PackedScene" uid="uid://dsqljfot4jffp" path="res://src/object/rope/Rope.tscn" id="17_i4vci"]
 [ext_resource type="PackedScene" uid="uid://kmmdmjoujgr6" path="res://src/object/hoverboard/hoverboard.tscn" id="17_oul0n"]
 [ext_resource type="PackedScene" uid="uid://b15288jke7rif" path="res://src/object/food/yucca_fruit.tscn" id="20_d28ju"]
 [ext_resource type="PackedScene" uid="uid://b46n1rqsodfog" path="res://src/structure/post/post_with_tether.tscn" id="20_oh1pw"]
+[ext_resource type="PackedScene" uid="uid://yvco2rinqerg" path="res://src/object/agriculture/bubbleplanter03.tscn" id="20_pm6d3"]
 [ext_resource type="PackedScene" uid="uid://dotdv60184fyp" path="res://src/object/food/carrot.tscn" id="20_rjruf"]
 [ext_resource type="PackedScene" uid="uid://dfuxrm7tjavcw" path="res://src/object/agriculture/yucca.tscn" id="21_64xmc"]
 [ext_resource type="PackedScene" uid="uid://bu1eyksqmxfpe" path="res://src/object/sticky/sticky_body.tscn" id="21_kgewf"]
@@ -177,10 +177,6 @@ transform = Transform3D(-0.0248684, 0, -0.999691, 0, 1, 0, 0.999691, 0, -0.02486
 render_priority = 2
 text = "HELLO WORLD"
 
-[node name="BubblePlanter" parent="Objects" node_paths=PackedStringArray("wind_manager") instance=ExtResource("13_w5l2x")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.23981, 3.19715, -1)
-wind_manager = NodePath("../../Environment/WindManager")
-
 [node name="Radio" parent="Objects" node_paths=PackedStringArray("env") instance=ExtResource("3_cgl1j")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.248756, 1.93474, -5.07413)
 env = NodePath("../../Environment")
@@ -210,7 +206,7 @@ start_is_rigidbody = true
 end_point = NodePath("../Sticky")
 
 [node name="Hoverboard2" parent="Objects" instance=ExtResource("17_oul0n")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.98076, 0.506934, -1.54647)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.98076, 0.506934, 3.9178)
 
 [node name="Carrot" parent="Objects" instance=ExtResource("20_rjruf")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 1.16894, 1)
@@ -232,6 +228,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 1, 1)
 
 [node name="TetherPost" parent="Objects" instance=ExtResource("20_oh1pw")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.35703, 0.716409, -0.615473)
+
+[node name="BubblePlanter" parent="Objects" node_paths=PackedStringArray("wind_manager") instance=ExtResource("20_pm6d3")]
+transform = Transform3D(1, 0, 0, 0, 1, 7.54979e-08, 0, -7.54979e-08, 1, -2.61415, 1.69839, -1.70984)
+wind_manager = NodePath("../../Environment/WindManager")
 
 [node name="Ruins" type="Node3D" parent="."]
 
