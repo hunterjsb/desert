@@ -15,7 +15,6 @@ const UPRIGHT_DAMPING := 0.7
 const SPIN_DRAG := 2.0
 
 var world: World
-var _gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 
 
 func _physics_process(_delta: float) -> void:
@@ -23,8 +22,9 @@ func _physics_process(_delta: float) -> void:
 		return
 	var omega := TAU * HOVER_HERTZ
 	var low := world.height_under(global_position) + HOVER - global_position.y
-	var lift := mass * (_gravity + omega * omega * low - 2.0 * HOVER_DAMPING * omega * linear_velocity.y)
-	apply_central_force(Vector3.UP * clampf(lift, 0.0, MAX_LIFT * mass * _gravity))
+	var gravity := world.gravity
+	var lift := mass * (gravity + omega * omega * low - 2.0 * HOVER_DAMPING * omega * linear_velocity.y)
+	apply_central_force(Vector3.UP * clampf(lift, 0.0, MAX_LIFT * mass * gravity))
 	# Upright like a tray on a gimbal, but free to turn: lines twist it to face the wind.
 	var turn := TAU * UPRIGHT_HERTZ
 	var up := global_basis.y.normalized()

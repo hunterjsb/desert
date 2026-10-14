@@ -14,7 +14,6 @@ var mode := "stand"
 var storm_harm := 0.0
 
 var _tuning := Tuning.current()
-var _gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 
 @onready var camera: Camera3D = $Camera3D
 
@@ -72,7 +71,7 @@ func _physics_process(delta: float) -> void:
 		velocity.z += shove.z
 	velocity += get_meta(&"rope_drag", Vector3.ZERO)
 	mode = "sprint" if sprinting else ("walk" if moving else "stand")
-	velocity.y = 0.0 if is_on_floor() else velocity.y - _gravity * delta
+	velocity.y = 0.0 if is_on_floor() else velocity.y - world.gravity * delta
 	move_and_slide()
 
 	if sprinting:

@@ -14,6 +14,7 @@ const KEYS := {
 	"fly_up": KEY_SPACE,
 	"fly_down": KEY_CTRL,
 	"dev_time_warp": KEY_F5,
+	"dev_gravity": KEY_F6,
 }
 
 

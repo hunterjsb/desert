@@ -9,6 +9,8 @@ signal origin_shifted(by: Vector2i)
 
 ## Dev only: F5 runs the clock faster so storms and days pass while you watch.
 const TIME_WARPS: Array[float] = [1.0, 10.0, 60.0]
+## Dev only: F6 swaps to the body research's leaning, about 0.45 g, to feel it.
+const LOW_GRAVITY := 4.4
 
 var tuning := Tuning.current()
 var run_seed: int
@@ -20,6 +22,8 @@ var origin_chunk := Vector2i.ZERO
 var time := 0.0
 ## How many seconds the clock moves per second; 0 stops it.
 var time_warp := 1.0
+## m/s², for everything here: bodies through the physics space, the player directly.
+var gravity: float
 
 @onready var terrain: Terrain = $Terrain
 @onready var content: Node3D = $Content
@@ -38,6 +42,7 @@ func _ready() -> void:
 	shape = TerrainShape.new(run_seed, tuning)
 	moon = MoonPosition.new(tuning)
 	player.world = self
+	set_gravity(tuning.gravity)
 	terrain.setup(self)
 	weather.setup(self)
 	_set_scene()
@@ -109,9 +114,16 @@ func shift_origin(by: Vector2i) -> void:
 	origin_shifted.emit(by)
 
 
+func set_gravity(g: float) -> void:
+	gravity = g
+	PhysicsServer3D.area_set_param(get_world_3d().space, PhysicsServer3D.AREA_PARAM_GRAVITY, g)
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("dev_time_warp"):
 		time_warp = TIME_WARPS[(TIME_WARPS.find(time_warp) + 1) % TIME_WARPS.size()]
+	elif event.is_action_pressed("dev_gravity"):
+		set_gravity(LOW_GRAVITY if gravity == tuning.gravity else tuning.gravity)
 
 
 func _physics_process(delta: float) -> void:
@@ -130,6 +142,7 @@ func _physics_process(delta: float) -> void:
 	time += delta * time_warp
 
 	Dev.put("world/seed", "%d" % run_seed)
+	Dev.put("world/g", "%.2fg" % (gravity / 9.8))
 	Dev.put("world/pos", "%.0f,%.0f" % [x, z])
 	Dev.put("world/ll", "%.3f,%.3f" % [rad_to_deg(moon.latitude), rad_to_deg(moon.longitude)])
 	Dev.put("world/dist", "%.2fkm" % (moon.distance_from_spawn() / 1000.0))

@@ -8,6 +8,7 @@ run_seed = 0
 moon_circumference = 150000.0
 spawn_latitude_degrees = 0.0
 spawn_longitude_degrees = 0.0
+gravity = 9.8
 origin_shift_chunks = 4
 chunk_size = 64
 near_radius = 2
