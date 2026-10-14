@@ -27,11 +27,7 @@ uniform float camera_sun = 1.0;
 // The sun's disc is drawn here, not by the sky, so the wall can cover it.
 uniform vec3 sun_disc = vec3(14.0, 12.5, 10.5);
 
-const int STEPS = 96;
-
-float dither(vec2 p) {
-	return fract(52.9829189 * fract(dot(p, vec2(0.06711056, 0.00583715))));
-}
+const int STEPS = 128;
 
 float phase_hg(float c, float g) {
 	float g2 = g * g;
@@ -104,7 +100,7 @@ void fragment() {
 	vec3 scene = texture(screen_tex, SCREEN_UV).rgb;
 	if (z <= 0.0) {
 		float c = dot(rd, sun_dir);
-		scene += sun_disc * (smoothstep(0.99994, 0.99997, c) + 0.01 * pow(max(c, 0.0), 400.0));
+		scene += sun_disc * (smoothstep(0.99994, 0.99997, c) + 0.015 * pow(max(c, 0.0), 700.0) + 0.003 * pow(max(c, 0.0), 40.0));
 	} else {
 		// The storm's shadow on the ground, relative to the light already there.
 		float tp = sun_through(storm_sun_path(qo + qd * scene_t, sq));
@@ -121,14 +117,17 @@ void fragment() {
 		t_end = 0.0;
 	}
 	float t = t_end > 0.0 ? storm_entry(qo, qd, t_end) : -1.0;
+	// Stagger starts inside the storm a little, so steps never line up into bands.
+	t += t == 0.0 ? 0.5 * fract(52.9829189 * fract(dot(FRAGCOORD.xy, vec2(0.06711056, 0.00583715)))) : 0.0;
 	vec3 light = vec3(0.0);
 	float trans = 1.0;
+	// Where the ray first meets the face; the ground dust runs up to it.
+	float face_t = min(scene_t, 4000.0);
 	if (t >= 0.0) {
 		float cos_sun = dot(rd, sun_dir);
 		float phase = mix(1.0, phase_hg(cos_sun, 0.6), 0.45);
 		// Sky light comes from above and in front of the face.
 		vec3 open_dir = normalize(vec3(0.0, 0.8, 0.6));
-		float jitter = dither(FRAGCOORD.xy);
 		float prev_t = t;
 		bool outside = true;
 		float edge = -1.0;
@@ -140,13 +139,16 @@ void fragment() {
 			}
 			// Fine near the camera, a few metres through the face, coarser far off.
 			float fine = min(0.5 + t * 0.05, max(4.0, t * 0.004));
-			vec2 lod = vec2(1.0 - smoothstep(1500.0, 4000.0, t), 1.0 - smoothstep(150.0, 600.0, t));
+			// Small octaves only where their texels are bigger than a few pixels.
+			vec2 lod = vec2(1.0 - smoothstep(500.0, 1600.0, t), 1.0 - smoothstep(120.0, 450.0, t));
 			sigma = storm_density(qo + qd * t, lod, edge);
 			if (edge < 0.0) {
-				// Clear air: the edge is roughly the distance to the face.
+				// Clear air: the edge is roughly the distance to the face. Strides
+				// also grow with distance, so rays grazing along the face still
+				// reach it far off instead of running out of steps.
 				outside = true;
 				prev_t = t;
-				t += max(fine, -edge * 0.4);
+				t += max(fine, max(-edge * 0.45, t * 0.03));
 				continue;
 			}
 			if (outside && i > 0) {
@@ -162,22 +164,32 @@ void fragment() {
 						hi = mid;
 					}
 				}
-				t = hi + fine * jitter;
+				t = hi;
 				sigma = storm_density(qo + qd * t, lod, edge);
+			}
+			if (outside) {
+				face_t = min(face_t, t);
 			}
 			outside = false;
 			vec3 q = qo + qd * t;
-			float dt = sigma < 0.01 ? fine * 2.5 : fine;
+			// Thin dust and a spent budget both take longer strides, so rays
+			// skimming the face still reach what's behind.
+			float dt = fine * (sigma < 0.01 ? 2.5 : 1.0) * (1.0 + float(i) / 48.0);
 			if (sigma > 1.0e-4) {
-				// One tap toward the sun and one toward the open sky: billows shade each other.
+				// One tap toward the sun and one toward the open sky: billows shade
+				// each other. Far off the taps reach further, so shading follows
+				// the big masses rather than every lump.
 				float top;
-				float e_sun = storm_edge(q + sq * 45.0, vec2(0.0), top);
-				float e_open = storm_edge(q + open_dir * 40.0, vec2(0.0), top);
-				float sun_t = sun_through(storm_sun_path(q, sq)) * exp(-max(e_sun, 0.0) * 0.04);
+				float reach = max(1.0, t / 1500.0);
+				float e_sun = storm_edge(q + sq * 45.0 * reach, vec2(0.0), top) / reach;
+				float e_open = storm_edge(q + open_dir * 40.0 * reach, vec2(0.0), top) / reach;
+				// Shading stays soft: the wall reads as one mass, the billows as
+				// relief moving within it.
+				float sun_t = sun_through(storm_sun_path(q, sq)) * mix(0.35, 1.0, exp(-max(e_sun, 0.0) * 0.04));
 				float open = exp(-max(e_open, 0.0) * 0.02);
-				float sky = mix(storm_glow, 1.0, open) * mix(0.55, 1.0, smoothstep(0.0, 600.0, q.y));
+				float sky = mix(storm_glow, 1.0, open) * mix(0.6, 1.0, smoothstep(0.0, 600.0, q.y));
 				// Thick parcels shade themselves; thin ones glow.
-				sky *= mix(1.6, 0.6, smoothstep(0.05, 0.25, sigma));
+				sky *= mix(1.25, 0.8, smoothstep(0.05, 0.25, sigma));
 				s = dust_albedo * (sun_light * sun_t * phase + sky_light * sky);
 				s = mix(s, haze_color, haze_at(t, q.y));
 				float a = 1.0 - exp(-sigma * dt);
@@ -199,6 +211,17 @@ void fragment() {
 			trans *= 1.0 - a;
 		}
 	}
-	ALBEDO = light + trans * scene;
+	vec3 color = light + trans * scene;
+	if (storm_skirt > 0.0) {
+		float tau = storm_skirt_depth(qo, qd, face_t);
+		vec3 qs = qo + qd * face_t;
+		qs.y = 3.0;
+		float sun_t = sun_through(storm_sun_path(qs, sq));
+		vec3 s = dust_albedo * (sun_light * sun_t * mix(1.0, phase_hg(dot(rd, sun_dir), 0.6), 0.45) + sky_light);
+		s = mix(s, haze_color, haze_at(face_t * 0.7, 0.0));
+		float a = 1.0 - exp(-tau);
+		color = mix(color, s, a);
+	}
+	ALBEDO = color;
 	ALPHA = 1.0;
 }

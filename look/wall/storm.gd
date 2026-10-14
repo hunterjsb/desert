@@ -6,6 +6,13 @@ extends Node3D
 
 ## Twin of STORM_BODY_WEIGHT: a metre of body shades like this many of roof.
 const BODY_WEIGHT := 25.0
+## Twin of STORM_SKIN: metres over which the face thickens to full density.
+const SKIN := 30.0
+## Twins of STORM_TILT_A and B. GLSL's mat3 takes columns, as Basis does.
+const TILT_A := Basis(Vector3(0.8253, 0.0, -0.5646), Vector3(0.2134, 0.9259, 0.3119),
+	Vector3(0.5228, -0.3779, 0.7642))
+const TILT_B := Basis(Vector3(0.6967, 0.3307, 0.6366), Vector3(-0.4258, 0.9047, 0.0144),
+	Vector3(-0.5711, -0.2689, 0.7756))
 
 ## About 8 minutes from the horizon to you.
 @export var speed := 10.0
@@ -14,10 +21,12 @@ const BODY_WEIGHT := 25.0
 @export var start_distance := 5000.0
 ## Compass heading the front travels toward, degrees from +Z.
 @export var heading_degrees := 12.0
-## Radius of the front's bow, metres. Big enough to fill any view.
-@export var radius := 80000.0
+## Radius of the front's bow, metres. Negative cups it round you, so looking
+## along it the wall runs on into the haze on both sides; positive bows it
+## toward you, so it falls away out of sight past 90 degrees.
+@export var radius := -40000.0
 @export var height := 1800.0
-@export var roof_soft := 220.0
+@export var roof_soft := 450.0
 ## Extinction per metre inside; visibility is about 3 / sigma.
 @export var sigma := 0.15
 
@@ -43,18 +52,27 @@ var _noise_bytes := PackedByteArray()
 @onready var streamers: GPUParticles3D = $Streamers
 ## Dust tearing past once you're in it.
 @onready var dust: GPUParticles3D = $Dust
+## Parcels of thicker dust, so the wind shows inside the murk.
+@onready var puffs: GPUParticles3D = $Puffs
+## Sand Game's recordings: the wind rising ahead of the face, the roar inside.
+@onready var wind_sound: AudioStreamPlayer = $Wind
+@onready var roar: AudioStreamPlayer = $Roar
 
 
 func setup(the_world: World, seed_value: int) -> void:
 	world = the_world
+	for player: AudioStreamPlayer in [wind_sound, roar]:
+		(player.stream as AudioStreamOggVorbis).loop = true
 	var a := deg_to_rad(heading_degrees)
 	dir = Vector2(sin(a), cos(a))
 	perp = Vector2(-dir.y, dir.x)
 	var rng := RandomNumberGenerator.new()
 	rng.seed = seed_value
-	# Lobes kilometres wide, so no stretch of the front is a straight ruled line.
-	var amplitudes := [240.0, 110.0, 45.0, 18.0]
-	var wavelengths := [7000.0, 2700.0, 1100.0, 430.0]
+	# Lobes kilometres wide, so no stretch of the front is a straight ruled line,
+	# but never turning the face more than ~20 degrees: steeper, and looking
+	# along the front shows a lobe's limb, which reads as the wall ending.
+	var amplitudes := [260.0, 70.0, 16.0, 0.0]
+	var wavelengths := [8000.0, 3000.0, 1200.0, 500.0]
 	for i in 4:
 		_lobe_a[i] = amplitudes[i]
 		_lobe_k[i] = TAU / (wavelengths[i] * rng.randf_range(0.8, 1.25))
@@ -147,14 +165,19 @@ func _roof_path(h: float) -> float:
 ## sits behind the billowed face.
 func edge_at(q: Vector3) -> float:
 	var t := clock
-	var w := _sample(Vector3(q.x + t * 3.0, q.y - t * 1.5, q.z) / 3100.0)
-	var qw := q + Vector3(w.r - 0.5, w.g - 0.5, w.a - 0.5) * Vector3(320.0, 260.0, 200.0)
-	var g1 := _sample(Vector3(qw.x, qw.y - t * 2.2, qw.z) / 2300.0).g
-	var g2 := _sample(Vector3(qw.x + t * 0.8, qw.y - t * 4.0, qw.z - t * 1.0) / 760.0).g
-	var g3 := _sample(Vector3(qw.x - t * 1.4, qw.y - t * 6.0, qw.z - t * 2.0) / 240.0).b
-	var g4 := _sample(Vector3(qw.x + t * 2.5, qw.y - t * 7.5, qw.z - t * 3.0) / 75.0).g
-	var bulge := 250.0 * (g1 - 0.5) + 95.0 * (g2 - 0.5) + 34.0 * (g3 - 0.5) + 12.0 * (g4 - 0.5)
+	var w := _sample(TILT_B * Vector3(q.x + t * 3.0, q.y - t * 1.5, q.z) / 3700.0)
+	var qw := q + Vector3(w.r - 0.5, w.g - 0.5, w.a - 0.5) * Vector3(260.0, 140.0, 160.0)
+	var b1 := _billow(_sample(TILT_A * Vector3(qw.x, qw.y - t * 2.2, qw.z) / 2300.0).g)
+	var b2 := _billow(_sample(TILT_B * Vector3(qw.x + t * 0.8, qw.y - t * 4.0, qw.z - t * 1.0) / 760.0).g)
+	var b3 := _billow(_sample(TILT_A * Vector3(qw.x - t * 1.4, qw.y - t * 6.0, qw.z - t * 2.0) / 240.0).b)
+	var b4 := _billow(_sample(TILT_B * Vector3(qw.x + t * 2.5, qw.y - t * 7.5, qw.z - t * 3.0) / 75.0).b)
+	var bulge := 300.0 * b1 + 70.0 * b2 + 22.0 * b3 + 12.0 * b4
 	return front(q.x) - q.z + bulge - 0.07 * maxf(q.y - 120.0, 0.0)
+
+
+static func _billow(n: float) -> float:
+	var x := 2.0 * n - 1.0
+	return sqrt(x * x + 0.02) - 0.35
 
 
 ## Storm-frame point of the camera.
@@ -199,24 +222,32 @@ func follow(camera: Camera3D, wind_now: Vector2, inside: float, running: bool) -
 	var blow := wind_now.length()
 	var heading := Vector3(wind_now.x, 0.0, wind_now.y) / maxf(blow, 0.01)
 	var outflow := exp(-maxf(face_distance(), 0.0) / 350.0)
-	for system: GPUParticles3D in [streamers, dust]:
+	for system: GPUParticles3D in [streamers, dust, puffs]:
 		var process := system.process_material as ParticleProcessMaterial
 		process.direction = heading
 		process.initial_velocity_min = blow * 0.8
 		process.initial_velocity_max = blow * 1.15
 		system.speed_scale = 1.0 if running else 0.0
+	for system: GPUParticles3D in [streamers, dust]:
 		var material := (system.draw_pass_1 as QuadMesh).material as ShaderMaterial
 		# About a twelfth of a second of motion blur.
 		material.set_shader_parameter("streak_length", clampf(blow * 0.09, 0.4, 2.6))
 	var ground := world.height_under(p)
 	streamers.global_position = Vector3(p.x, ground + 0.35, p.z) - heading * blow * streamers.lifetime * 0.5
 	dust.global_position = p - heading * blow * dust.lifetime * 0.5
+	puffs.global_position = p - heading * blow * puffs.lifetime * 0.5
 	_set_ratio(streamers, smoothstep(0.1, 0.5, outflow) * (1.0 - 0.6 * inside))
 	_set_ratio(dust, maxf(inside, 0.2 * smoothstep(0.55, 0.95, outflow)))
+	_set_ratio(puffs, inside)
+	# The roar grows as the face nears and fills everything once inside.
+	wind_sound.volume_db = linear_to_db(clampf(blow / 25.0, 0.0, 1.0) * (1.0 - inside) * 0.7 + 0.0001)
+	roar.volume_db = linear_to_db(maxf(inside, 0.5 * smoothstep(0.3, 1.0, outflow)) + 0.0001)
+	wind_sound.stream_paused = not running
+	roar.stream_paused = not running
 
 
 func set_dust(light: Vector3, camera_sigma: float) -> void:
-	for system: GPUParticles3D in [streamers, dust]:
+	for system: GPUParticles3D in [streamers, dust, puffs]:
 		var material := (system.draw_pass_1 as QuadMesh).material as ShaderMaterial
 		material.set_shader_parameter("dust_light", light)
 		material.set_shader_parameter("camera_sigma", camera_sigma)
@@ -249,15 +280,16 @@ func set_light(param: StringName, value: Variant) -> void:
 		material.set_shader_parameter(param, value)
 
 
-## Four tiling noises in one 3D texture: R smooth (warp), G big puffs, B small
-## puffs, A gusts. Puffs are inverted cellular, so billows come out round.
+## Four tiling noises in one 3D texture: R warp, G big billows, B small billows,
+## A gusts. All smooth: tiling blends a band at the edges, which leaves a crease
+## in cellular noise but nothing visible in smooth noise.
 func _make_noise(seed_value: int) -> ImageTexture3D:
 	const N := 64
 	var layers: Array = []
 	var kinds := [
 		[FastNoiseLite.TYPE_PERLIN, 0.05, 3],
-		[FastNoiseLite.TYPE_CELLULAR, 0.07, 2],
-		[FastNoiseLite.TYPE_CELLULAR, 0.14, 2],
+		[FastNoiseLite.TYPE_SIMPLEX_SMOOTH, 0.06, 2],
+		[FastNoiseLite.TYPE_SIMPLEX_SMOOTH, 0.12, 2],
 		[FastNoiseLite.TYPE_SIMPLEX_SMOOTH, 0.08, 3],
 	]
 	for i in kinds.size():
@@ -267,9 +299,7 @@ func _make_noise(seed_value: int) -> ImageTexture3D:
 		noise.frequency = kinds[i][1]
 		noise.fractal_type = FastNoiseLite.FRACTAL_FBM
 		noise.fractal_octaves = kinds[i][2]
-		noise.cellular_return_type = FastNoiseLite.RETURN_DISTANCE
-		var invert: bool = kinds[i][0] == FastNoiseLite.TYPE_CELLULAR
-		layers.append(noise.get_seamless_image_3d(N, N, N, invert, 0.1, true))
+		layers.append(noise.get_seamless_image_3d(N, N, N, false, 0.1, true))
 	var slices: Array[Image] = []
 	var bytes := PackedByteArray()
 	bytes.resize(N * N * 4)

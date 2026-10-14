@@ -34,6 +34,9 @@ var world: World
 var time_scale := 1.0
 var paused := false
 
+var _buffet := FastNoiseLite.new()
+var _buffet_time := 0.0
+
 @onready var storm: WallStorm = $Storm
 @onready var atmosphere: WallAtmosphere = $Atmosphere
 @onready var readout: Label = $Hud/Readout
@@ -64,6 +67,7 @@ func _process(delta: float) -> void:
 	var camera := get_viewport().get_camera_3d()
 	atmosphere.apply(camera)
 	storm.follow(camera, storm.wind(), atmosphere.inside, running)
+	_buffet_camera(camera, delta if running else 0.0)
 	readout.text = _readout()
 
 
@@ -86,6 +90,14 @@ func _unhandled_input(event: InputEvent) -> void:
 		atmosphere.next_sun()
 	elif code == KEY_H:
 		$Hud.visible = not $Hud.visible
+
+
+## The wind shoves you: a small roll that grows with it. The player never sets
+## roll, so this can't fight the mouse.
+func _buffet_camera(camera: Camera3D, delta: float) -> void:
+	_buffet_time += delta
+	var strength := smoothstep(7.0, 22.0, storm.wind().length())
+	camera.rotation.z = deg_to_rad(0.5) * strength * _buffet.get_noise_1d(_buffet_time * 90.0)
 
 
 ## Turns the player to look toward where the storm comes from, then by yaw.
@@ -127,6 +139,8 @@ func _readout() -> String:
 ## Jumps through SHOTS, saving a PNG of each and printing frame times. Renders
 ## at exactly 1920x1080 inside a small window, so it stays out of the way.
 func _capture(out_dir: String, only: PackedStringArray) -> void:
+	# Screenshots are silent: the roar shouldn't play through his speakers.
+	AudioServer.set_bus_mute(0, true)
 	DirAccess.make_dir_recursive_absolute(out_dir)
 	var window := get_window()
 	window.size = Vector2i(960, 540)
@@ -135,10 +149,9 @@ func _capture(out_dir: String, only: PackedStringArray) -> void:
 	$Hud.visible = false
 	var rid := get_viewport().get_viewport_rid()
 	RenderingServer.viewport_set_measure_render_time(rid, true)
-	for i in 1800:
+	var waited := Time.get_ticks_msec()
+	while not world.terrain.is_idle() and Time.get_ticks_msec() - waited < 20000:
 		await get_tree().process_frame
-		if world.terrain.is_idle():
-			break
 	print("capture: %s at %s" % [out_dir, get_viewport().get_visible_rect().size])
 	var worst_ms := 0.0
 	var worst_gpu := 0.0

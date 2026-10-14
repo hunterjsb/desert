@@ -4,6 +4,8 @@ extends Node
 ## the sun, ambient, sky, haze, and the light the storm shaders are lit by.
 ## Anything else driving the World's sun or environment must be off while this runs.
 
+## The ground's colour, from the terrain's material.
+const SAND := Color(0.86, 0.72, 0.52)
 ## [name, degrees round from where the storm comes from, degrees up]
 const SUNS := [
 	["over the storm", 40.0, 30.0],
@@ -15,7 +17,7 @@ const SUNS := [
 @export var sun_energy := 1.0
 @export var ambient_color := Color(0.8, 0.72, 0.62)
 @export var ambient_energy := 0.75
-@export var dust_color := Color(0.7, 0.56, 0.42)
+@export var dust_color := Color(0.62, 0.47, 0.34)
 @export var haze_color := Color(0.86, 0.76, 0.62)
 @export var haze_begin := 400.0
 @export var haze_end := 9000.0
@@ -44,6 +46,15 @@ var _sun: DirectionalLight3D
 func setup(world: World, storm: WallStorm) -> void:
 	_world = world
 	_storm = storm
+	# The game's Weather drives this same sun, sky and fog from its own storm
+	# field, and draws its own crude wall and dust. Here this script does, so it
+	# sleeps. (The player still reads its wind and harm; nothing shows them.)
+	var weather := world.get_node_or_null("Weather")
+	if weather != null:
+		weather.process_mode = Node.PROCESS_MODE_DISABLED
+		for child in weather.get_children():
+			if child is Node3D:
+				child.visible = false
 	_env = (world.get_node("WorldEnvironment") as WorldEnvironment).environment
 	_sun = world.get_node("Sun")
 	_env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
@@ -81,13 +92,12 @@ func sun_direction() -> Vector3:
 
 func apply(camera: Camera3D) -> void:
 	var to_sun := sun_direction()
-	_sun.global_basis = Basis.looking_at(-to_sun, Vector3.UP)
 
 	var q := _storm.camera_frame(camera)
 	var edge := _storm.edge_at(q)
 	var distance := _storm.face_distance()
 	# The same billow that engulfs you on screen sets the light, not a trigger.
-	inside = smoothstep(0.0, 55.0, edge)
+	inside = smoothstep(0.0, WallStorm.SKIN, edge)
 	camera_sigma = _storm.sigma * inside
 	camera_sun = maxf(_storm.sun_through(_storm.sun_path(q, to_sun)), 0.02)
 	# Half the sky is wall once it towers overhead; all of it once you're in.
@@ -96,7 +106,12 @@ func apply(camera: Camera3D) -> void:
 
 	var dim := lerpf(1.0, inside_light, inside)
 	var sky_left := 1.0 - 0.55 * coverage
-	_sun.light_energy = sun_energy * camera_sun * dim
+	# Inside, the light is the storm glowing from above: the sun light turns
+	# overhead and soft, so dunes keep their shape while their shadows go.
+	var overhead := Vector3(to_sun.x * 0.15, 1.0, to_sun.z * 0.15).normalized()
+	var light_from := to_sun.slerp(overhead, inside)
+	_sun.global_basis = Basis.looking_at(-light_from, Vector3.UP)
+	_sun.light_energy = sun_energy * maxf(camera_sun, inside * 0.6) * dim
 	_env.ambient_light_color = ambient_color
 	_env.ambient_light_energy = ambient_energy * sky_left * dim
 	_env.background_energy_multiplier = lerpf(1.0, 0.45, coverage) * dim
@@ -105,14 +120,16 @@ func apply(camera: Camera3D) -> void:
 	var dust := _linear(dust_color)
 	var sun_light := _linear(sun_color) * sun_energy
 	# A wall faces half the sky, so it gets less than open ground.
-	var sky_light := _linear(ambient_color) * ambient_energy * 0.75
+	var sky_light := _linear(ambient_color) * ambient_energy * 0.6
 	_storm.set_light("sun_dir", to_sun)
 	_storm.set_light("sun_light", sun_light)
 	_storm.set_light("sky_light", sky_light)
 	_storm.set_light("camera_sun", camera_sun)
 	_storm.set_light("haze_color", _linear(haze_color) * sky_left * dim)
-	# Grains catch more light than the haze they fly through.
-	_storm.set_dust(dust * (sun_light * camera_sun * 0.5 + sky_light * sky_left) * dim * 1.8, camera_sigma)
+	# Grains are sand, lit like the ground they came off.
+	var sand := _linear(SAND)
+	_storm.set_dust(sand * (sun_light * maxf(camera_sun, inside * 0.6) * 0.6 + sky_light * sky_left) * dim,
+		camera_sigma)
 
 	Dev.put("wall/sun", sun_name())
 	Dev.put("wall/camera_sun", camera_sun)

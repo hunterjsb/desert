@@ -5,6 +5,9 @@
 [ext_resource type="Script" path="res://look/wall/atmosphere.gd" id="3_atmosphere"]
 [ext_resource type="Shader" path="res://look/wall/face.gdshader" id="4_face"]
 [ext_resource type="Shader" path="res://look/wall/dust.gdshader" id="5_dust"]
+[ext_resource type="Shader" path="res://look/wall/puff.gdshader" id="6_puff"]
+[ext_resource type="AudioStream" path="res://assets/audio/wind.ogg" id="7_wind"]
+[ext_resource type="AudioStream" path="res://assets/audio/storm.ogg" id="8_roar"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_face"]
 render_priority = -100
@@ -60,11 +63,35 @@ turbulence_influence_max = 0.15
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_dust"]
 shader = ExtResource("5_dust")
 shader_parameter/streak_length = 2.0
-shader_parameter/streak_width = 0.03
-shader_parameter/opacity = 0.3
+shader_parameter/streak_width = 0.06
+shader_parameter/opacity = 0.45
 
 [sub_resource type="QuadMesh" id="QuadMesh_dust"]
 material = SubResource("ShaderMaterial_dust")
+size = Vector2(1, 1)
+
+[sub_resource type="ParticleProcessMaterial" id="Process_puffs"]
+emission_shape = 3
+emission_box_extents = Vector3(26, 7, 26)
+direction = Vector3(0, 0, 1)
+spread = 10.0
+initial_velocity_min = 16.0
+initial_velocity_max = 24.0
+gravity = Vector3(0, 0, 0)
+scale_min = 2.5
+scale_max = 7.0
+turbulence_enabled = true
+turbulence_noise_strength = 1.0
+turbulence_noise_scale = 8.0
+turbulence_influence_min = 0.03
+turbulence_influence_max = 0.08
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_puffs"]
+shader = ExtResource("6_puff")
+shader_parameter/opacity = 0.28
+
+[sub_resource type="QuadMesh" id="QuadMesh_puffs"]
+material = SubResource("ShaderMaterial_puffs")
 size = Vector2(1, 1)
 
 [node name="WallTest" type="Node"]
@@ -99,6 +126,27 @@ local_coords = false
 visibility_aabb = AABB(-50, -25, -50, 100, 50, 100)
 process_material = SubResource("Process_dust")
 draw_pass_1 = SubResource("QuadMesh_dust")
+
+[node name="Puffs" type="GPUParticles3D" parent="Storm"]
+cast_shadow = 0
+amount = 400
+amount_ratio = 0.0
+lifetime = 1.8
+preprocess = 1.8
+local_coords = false
+visibility_aabb = AABB(-60, -25, -60, 120, 50, 120)
+process_material = SubResource("Process_puffs")
+draw_pass_1 = SubResource("QuadMesh_puffs")
+
+[node name="Wind" type="AudioStreamPlayer" parent="Storm"]
+stream = ExtResource("7_wind")
+volume_db = -80.0
+autoplay = true
+
+[node name="Roar" type="AudioStreamPlayer" parent="Storm"]
+stream = ExtResource("8_roar")
+volume_db = -80.0
+autoplay = true
 
 [node name="Atmosphere" type="Node" parent="."]
 script = ExtResource("3_atmosphere")
