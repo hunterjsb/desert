@@ -134,6 +134,12 @@ static var _current: Tuning
 @export var hold_distance: float = 0.9
 ## How far you can reach to grab, m.
 @export var reach: float = 2.5
+## A fitted part slides out of its socket in this long, s.
+@export var take_seconds: float = 0.12
+## The tug leans a part all the way home in this long, and lets go as fast, s.
+@export var tug_seconds: float = 0.2
+## A throw, m/s, on top of how you're moving.
+@export var throw_speed: float = 6.0
 
 @export_group("Loose objects")
 ## Drag per (m/s)^2 of wind on a loose object: half the air density times drag

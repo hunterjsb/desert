@@ -4,7 +4,8 @@ extends Node
 
 ## What F1 lists, before whatever the scene adds.
 const HELP := [
-	["click", "look"], ["WASD", "move"], ["Shift", "sprint"], ["Esc", "free the mouse"],
+	["click", "look, or throw what you hold"], ["WASD", "move"], ["Shift", "sprint"],
+	["E", "pick up, take out, fit"], ["G", "drop"], ["Esc", "free the mouse"],
 	["F1", "these keys"], ["F2", "scenarios"], ["F3", "numbers"],
 	["F4", "fly: Space up, Ctrl down"], ["F5", "speed up time"], ["F6", "low gravity"],
 ]
@@ -23,6 +24,13 @@ const KEYS := {
 	"fly_down": KEY_CTRL,
 	"dev_time_warp": KEY_F5,
 	"dev_gravity": KEY_F6,
+	"hands_grab": KEY_E,
+	"hands_drop": KEY_G,
+}
+
+## Mouse buttons, the same way.
+const BUTTONS := {
+	"hands_throw": MOUSE_BUTTON_LEFT,
 }
 
 
@@ -34,3 +42,10 @@ func _enter_tree() -> void:
 		event.physical_keycode = KEYS[action]
 		InputMap.add_action(action)
 		InputMap.action_add_event(action, event)
+	for action: String in BUTTONS:
+		if InputMap.has_action(action):
+			continue
+		var click := InputEventMouseButton.new()
+		click.button_index = BUTTONS[action]
+		InputMap.add_action(action)
+		InputMap.action_add_event(action, click)

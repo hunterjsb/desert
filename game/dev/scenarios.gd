@@ -6,8 +6,9 @@ extends RefCounted
 
 ## kind: "spawn", "clear", "front" (a storm `distance` m upwind, coming at
 ## you), "deep" (inside, far from any edge), "back" (inside, clear air
-## `distance` m upwind) or "sky" (clear, for the light). day is the window of
-## time of day to look in: 0 is midnight, 0.5 noon.
+## `distance` m upwind), "sky" (clear, for the light) or "kit" (clear, with the
+## test kit dropped in front of you). day is the window of time of day to look
+## in: 0 is midnight, 0.5 noon.
 const LIST: Array[Dictionary] = [
 	{"key": "spawn", "label": "spawn: where and when the run began", "kind": "spawn"},
 	{"key": "clear", "label": "clear day, no storm for 10 min", "kind": "clear", "day": [0.42, 0.55]},
@@ -19,6 +20,17 @@ const LIST: Array[Dictionary] = [
 	{"key": "clearing", "label": "storm about to clear, 100 m", "kind": "back", "distance": 100.0, "day": [0.35, 0.55]},
 	{"key": "dusk", "label": "dusk, sun on the horizon", "kind": "sky", "day": [0.733, 0.745]},
 	{"key": "night", "label": "night", "kind": "sky", "day": [0.85, 0.95]},
+	{"key": "kit", "label": "test kit: devices and parts, clear day", "kind": "kit", "day": [0.42, 0.55]},
+]
+
+## The test kit, as [catalog id, metres to your right, metres ahead]: an empty
+## crate frame and planter, and parts for every kind of socket on them.
+const KIT_DEVICES := [[&"crate_frame", -1.0, 3.0], [&"planter", 1.2, 3.2]]
+const KIT_PARTS := [
+	[&"battery", -1.6, 1.6], [&"big_battery", -1.2, 1.7], [&"hook", -0.8, 1.6], [&"hook", -0.55, 1.7],
+	[&"lamp", -0.25, 1.6], [&"seedling", 0.1, 1.7], [&"seedling", 0.35, 1.6], [&"seedling", 0.6, 1.7],
+	[&"sapling", 0.95, 1.6], [&"battery", 1.3, 1.7], [&"hover_tray", -2.6, 2.4],
+	[&"hover_tray", 2.8, 2.6], [&"solar_panel", -2.6, 3.6],
 ]
 
 ## How far upwind a search looks for edges, and its step.
@@ -63,7 +75,7 @@ static func find(world: World, scenario: Dictionary) -> Dictionary:
 static func _place(field: WeatherField, scenario: Dictionary, from: Vector2, upwind: Vector2,
 		t: float) -> Dictionary:
 	match scenario.kind:
-		"clear", "sky":
+		"clear", "sky", "kit":
 			if field.raw_storm_at(from.x, from.y, t) <= 0.0 \
 					and (scenario.kind == "sky" or field.next_change(from.x, from.y, t, 600.0, 10.0) == INF):
 				return {"x": from.x, "z": from.y}
@@ -120,3 +132,29 @@ static func _refine(field: WeatherField, from: Vector2, along: Vector2, lo: floa
 ## Dusk faces the sunset in the west; night faces east, toward the dawn.
 static func _yaw_to_sun(scenario: Dictionary) -> float:
 	return PI / 2.0 if scenario.key == "dusk" else -PI / 2.0
+
+
+## Drops the test kit on the sand in front of the player, squared to them,
+## parts lying socket side down. Returns what it dropped.
+static func kit(world: World) -> Array[Node3D]:
+	var player := world.player
+	var yaw := Basis(Vector3.UP, player.global_rotation.y)
+	var dropped: Array[Node3D] = []
+	for entry: Array in KIT_DEVICES:
+		var device := Catalog.device(entry[0])
+		var size: Vector3 = Catalog.DEVICES[entry[0]].size
+		_drop(world, device, Transform3D(yaw, Vector3(0.0, size.y * 0.5, 0.0)), entry[1], entry[2])
+		dropped.append(device)
+	for entry: Array in KIT_PARTS:
+		var part := Catalog.part(entry[0])
+		_drop(world, part, Transform3D(yaw * Basis(Vector3.RIGHT, -PI / 2.0), Vector3.ZERO), entry[1], entry[2])
+		dropped.append(part)
+	return dropped
+
+
+static func _drop(world: World, body: Node3D, pose: Transform3D, right: float, ahead: float) -> void:
+	var player := world.player
+	var at := player.global_position + player.global_basis.x * right - player.global_basis.z * ahead
+	at.y = world.height_under(at) + 0.02
+	world.content.add_child(body)
+	body.global_transform = pose.translated(at)
