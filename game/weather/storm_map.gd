@@ -53,8 +53,10 @@ func update(t: float, warp: float) -> void:
 	var span := maxf(1.0, warp)
 	var air := _air(_world.player_world_x(), _world.player_world_z(), t)
 	var centre := Vector2(origin_x, origin_z) + Vector2.ONE * cell * (size - 1) * 0.5
-	var strayed := absf(air.x - centre.x) > cell * size * 0.15 or absf(air.y - centre.y) > cell * size * 0.15
-	if not ready or t < t0 - 0.001 or t > t1 + span * 2.0 or (strayed and _task == -1):
+	var off := maxf(absf(air.x - centre.x), absf(air.y - centre.y)) / (cell * size)
+	# Straying re-centres on a worker while the old map still covers you; only
+	# nearly running off its edge is worth a hitch.
+	if not ready or t < t0 - 0.001 or t > t1 + span * 2.0 or off > 0.45:
 		if _task != -1:
 			WorkerThreadPool.wait_for_task_completion(_task)
 			_task = -1
@@ -62,7 +64,7 @@ func update(t: float, warp: float) -> void:
 		_build(at.x, at.y, t, t + span)
 		_collect()
 		rebuilds += 1
-	elif _task == -1 and t >= (t0 + t1) * 0.5:
+	elif _task == -1 and (off > 0.15 or t >= (t0 + t1) * 0.5):
 		var at := _origin_for(air)
 		_task = WorkerThreadPool.add_task(_build.bind(at.x, at.y, t, t + span))
 

@@ -99,15 +99,20 @@ time, and overwhelmingly massive as it comes into view. The crude in-game wall, 
 curtain on the front, looks nothing like it, so the full wall is built from the
 look-test.
 
-**Approach.**
-- **From a distance:** a giant curtain built along the front, wherever the field crosses
-  the threshold. It's found by sampling outward from the player in every direction, so
-  it follows the storm's true shape. A shader gives the face its billowing, layered
-  for depth.
-- **As the face arrives:** Godot's volumetric fog (which only works close to the camera)
-  takes over, along with particles and the darkening.
-- **The hand-off between the two** is the moment the wall reaches you. That's where the
-  enclosure lives, and it's the riskiest visual in the game.
+**Approach** (as built by the look-test, 2026-10-14).
+- **One pass, from 5 km to inside.** Every pixel marches a ray through the storm, so the
+  face never changes renderer and there's no hand-off to hide at contact. Godot's
+  volumetric fog isn't used.
+- **The face billows around the field's front.** Rounded heads with creases between
+  them, at several sizes rising at different speeds. Small detail fades with distance,
+  so far off the wall stays one mass.
+- **A storm map carries the field to the GPU.** A worker samples `storm_at` round you
+  every second, in the air's own frame, so storms ride the drift exactly. The field
+  stays the one truth.
+- **The game and the senses.** The game plays by the field: the storm state, harm,
+  shelter. The senses follow the drawn face where your eyes are: light, fog, dust and
+  sound. The darkness lands exactly when the dust visibly swallows you. The light dims
+  in stages before that, as the wall blots out the sun and then towers over the sky.
 
 **An early look-test** (decided). A standalone scene whose only job is making the wall
 feel right, built alongside the skeleton. It isn't meat on the bones. It's finding out
@@ -146,7 +151,7 @@ These are owned by their own PRDs and listed here so the field serves them all.
 
 - `wind_at` and `storm_at` from the run's seed. One slowly drifting prevailing wind,
   simple gusts, and a storm field carried by the wind with a sharp threshold.
-- A crude wall: a big dark curtain along the front, visible from far away.
+- The wall: the look-test's billowed face, drawn from the field through the storm map.
 - Inside a storm:
   - darkness, and fog closing in to the shield
   - wind force on the player and on loose objects
@@ -176,10 +181,12 @@ All run without a window, with a fixed seed.
 2. **Storms ride the wind.** A front's measured motion matches the prevailing wind.
 3. **Forecasts are honest.** Sampling the field ahead in time predicts when a front
    reaches a fixed point, within a tolerance.
-4. **The wall is where the field says.** The curtain's distance in each direction
-   matches the threshold crossing.
-5. **Inside means inside.** Darkness, visibility and damage switch on exactly when the
-   field at the player crosses the threshold, and switch off when it drops back.
+4. **The wall is where the field says.** The storm map holds the field's own values, its
+   fronts land on the field's in every direction (within a fifth of a map cell, before
+   the billows), and the renderer finds the map through an origin shift.
+5. **Inside means inside.** The storm state, harm and the far ring switch on exactly
+   when the field at the player crosses the threshold. Fog and light switch exactly
+   when the drawn face reaches your eyes. Both switch off when it passes.
 6. **Wind pushes.** A loose box drifts downwind at the expected rate.
 7. **Clear skies are earned.** Over a long simulated run, four reference travellers
    (sitting still, drifting with the wind, chasing gaps on foot, chasing gaps by sand
