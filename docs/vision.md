@@ -90,7 +90,8 @@ upgrade the camp → the camp sustains more of itself → go further, or into th
 - **Infinite desert** with simple procedural terrain. Solo, first-person 3D, Godot 4.7.
 - **Only what's around the player exists.** There can be exceptions, like a farm left
   running on purpose, but never as the rule. A solo player who abuses that only hurts
-  their own frame rate.
+  their own frame rate. Ride too far from your camp and it's forgotten, but the game
+  always warns you clearly first.
 - **Stateless.** The dunes are featureless and shift out of sight, so nothing beyond
   render distance is stored. Turn back far enough and the land has changed.
 - **It's a moon, not a plane.** Your position is tracked as latitude and longitude, so
@@ -163,7 +164,7 @@ the start.
 6. [Power](prd/power.md)
 7. [Survival](prd/survival.md)
 8. [Farming](prd/farming.md)
-9. Movement (on foot, hoverboard)
+9. [Movement](prd/movement.md)
 10. [Salvage & ruins](prd/salvage-and-ruins.md)
 11. Radio, sound & atmosphere
 
