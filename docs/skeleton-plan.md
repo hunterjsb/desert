@@ -3,8 +3,8 @@
 *Draft, 2026-10-13. How we build the skeleton described in [the vision](vision.md): every
 system in rough form, wired into one complete loop, before anything gets polished.*
 
-**Where we are:** Stages 0 and 1 passed the gate on 2026-10-14. Stage 2 is built and
-waiting at the gate. Its wall look-test is being built alongside.
+**Where we are:** Stages 0 and 1 passed the gate on 2026-10-14. Stage 2 is built, and the
+look-test's wall is being brought into it before the gate.
 
 ## The loop we're building toward
 
@@ -85,6 +85,10 @@ readout.
 **The wall look-test starts here** and runs alongside every stage that follows. It's a
 separate scene with one job: making the wall feel right. It has no probes. You judge it
 by eye, and what it learns feeds the full version of the wall.
+
+**Pulled forward** (decided 2026-10-14). The look-test's first version was the feeling
+right away, so its wall replaces the crude curtain inside Stage 2, drawn from the game's
+own storm field so the wall and the probes agree.
 
 **You play:** watch storms roll in and over you. Read the wind. Get pushed around.
 
