@@ -46,8 +46,9 @@ upgrade the camp → the camp sustains more of itself → go further, or into th
 - **It floats when there's power for it.** When there isn't, you haul it. Running low on
   power should feel like a slowdown, not a wall.
 - **Power sources trade off against movement** (leaning, not settled). Solar builds
-  power by day but is useless in a storm. Heavy gear, like something on caterpillar
-  tracks, is strong for the camp but slows you down.
+  power by day but is useless in a storm. Wind power is strongest in a storm, but it
+  has to be planted, so you either stay or leave it behind. Heavy gear, like something
+  on caterpillar tracks, is strong for the camp but slows you down.
 - **About five inventory slots, and almost no menus.** Things live in the world and in
   your hands, not in an inventory screen.
 
@@ -115,7 +116,7 @@ the start.
 ## PRDs to write
 
 1. [World & terrain](prd/world-and-terrain.md)
-2. Wind & storms
+2. [Wind & storms](prd/wind-and-storms.md)
 3. Rope & tethering
 4. Bubble shield & the travelling camp
 5. Power
