@@ -11,5 +11,6 @@ void fragment() {
 	float emerge = clamp((reach - distance_from_eye) / (reach * 0.3), 0.0, 1.0);
 	float top = 1.0 - smoothstep(0.55, 1.0, UV.y);
 	ALBEDO = color;
-	ALPHA = 0.95 * emerge * top;
+	// COLOR.a fades the ends of each run of curtain.
+	ALPHA = 0.95 * emerge * top * COLOR.a;
 }

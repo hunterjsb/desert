@@ -191,4 +191,8 @@ All run without a window, with a fixed seed.
 ## Open questions
 
 - **What target bands for clear skies** should each reference traveller get? Set them
-  once the skeleton can measure them.
+  once the skeleton can measure them. The skeleton starts here: someone sitting still
+  is in a storm 70% of the time, the median storm lasts 17 minutes, 71% pass within a
+  base shield's 30, and the longest run past 3 hours. Storms ride a prevailing wind of
+  10 m/s that swings by up to 6 either way, so a wall first seen 3.5 km out arrives in
+  4 to 16 minutes.

@@ -81,25 +81,34 @@ func _cast(i: int, x: float, z: float, t: float) -> void:
 	distances[i] = -1.0
 
 
-## Neighbouring rays are joined only where they plausibly hit the same front.
+## Neighbouring rays are joined only where they plausibly hit the same front,
+## and each run of joined rays fades out over its end steps, so the curtain
+## never ends in a hard edge.
 func rebuild() -> void:
+	var count := distances.size()
+	var joined: Array[bool] = []
+	for i in count:
+		var a := distances[i]
+		var b := distances[(i + 1) % count]
+		joined.append(a > 0.0 and b > 0.0 and absf(a - b) <= maxf(300.0, 0.35 * minf(a, b)))
 	var vertices := PackedVector3Array()
 	var uvs := PackedVector2Array()
-	var count := distances.size()
+	var colors := PackedColorArray()
+	var up := Vector3(0.0, _tuning.wall_height, 0.0)
 	for i in count:
-		var j := (i + 1) % count
-		var a := distances[i]
-		var b := distances[j]
-		if a <= 0.0 or b <= 0.0 or absf(a - b) > maxf(300.0, 0.35 * minf(a, b)):
+		if not joined[i]:
 			continue
+		var j := (i + 1) % count
 		var bottom_a := _base(front_point(i))
 		var bottom_b := _base(front_point(j))
-		var up := Vector3(0.0, _tuning.wall_height, 0.0)
 		var u_a := float(i) / count * 40.0
 		var u_b := float(i + 1) / count * 40.0
+		var fade_a := Color(1, 1, 1, 1.0 if joined[(i - 1 + count) % count] else 0.0)
+		var fade_b := Color(1, 1, 1, 1.0 if joined[j] else 0.0)
 		vertices.append_array([bottom_a, bottom_b, bottom_b + up, bottom_a, bottom_b + up, bottom_a + up])
 		uvs.append_array([Vector2(u_a, 0), Vector2(u_b, 0), Vector2(u_b, 1), Vector2(u_a, 0),
 			Vector2(u_b, 1), Vector2(u_a, 1)])
+		colors.append_array([fade_a, fade_b, fade_b, fade_a, fade_b, fade_a])
 	if vertices.is_empty():
 		mesh = null
 		return
@@ -107,6 +116,7 @@ func rebuild() -> void:
 	arrays.resize(Mesh.ARRAY_MAX)
 	arrays[Mesh.ARRAY_VERTEX] = vertices
 	arrays[Mesh.ARRAY_TEX_UV] = uvs
+	arrays[Mesh.ARRAY_COLOR] = colors
 	var built := ArrayMesh.new()
 	built.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
 	built.surface_set_material(0, _material)

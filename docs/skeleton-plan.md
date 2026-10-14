@@ -3,7 +3,8 @@
 *Draft, 2026-10-13. How we build the skeleton described in [the vision](vision.md): every
 system in rough form, wired into one complete loop, before anything gets polished.*
 
-**Where we are:** Stages 0 and 1 passed the gate on 2026-10-14. Stage 2 is being built.
+**Where we are:** Stages 0 and 1 passed the gate on 2026-10-14. Stage 2 is built and
+waiting at the gate. Its wall look-test is being built alongside.
 
 ## The loop we're building toward
 
