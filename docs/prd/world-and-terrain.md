@@ -112,10 +112,11 @@ Built after the skeleton loop works end to end, in roughly this order:
   climb slip faces, which puts the difficulty dial into the ground itself. Dunes face the
   long-term prevailing wind of their region, not the day's wind, so they stay stable and
   seams stay exact.
-- **Latitude and the poles.** Climate varies with latitude, so the poles are a
-  different place, though whether they're harsher or calmer is still open. Fixed fields
-  get sampled from the true point on the moon, and each new chunk copies its shared
-  edges from loaded neighbours so seams stay exact.
+- **Latitude and the poles** (decided). Toward the poles, storms weaken and the
+  temperature swings get wider (see the vision). This system supplies latitude; Wind &
+  storms and Survival read it. Fixed fields get sampled from the true point on the
+  moon, and each new chunk copies its shared edges from loaded neighbours so seams stay
+  exact.
 - **Shifting dunes.** Land generated after a storm passes comes out different. This
   only affects newly generated chunks; rule 2 still holds.
 - **Distance rendering.** This is core, not polish, because the clear-day view is a
@@ -166,9 +167,8 @@ fail.
 
 ## Open questions
 
-- **What are the poles like?** This depends on the moon's configuration (tidal locking,
-  its lost magnetic field), which is being brainstormed.
-- **Does difficulty scale with distance from spawn?** (Latitude will matter either way.)
+- **Does difficulty also scale with distance from spawn?** Latitude already scales it
+  (see above).
 
 Chunk size and the exact view distance are tuning decisions. The skeleton measures
 them; they aren't design questions.

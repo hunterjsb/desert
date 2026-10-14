@@ -72,8 +72,13 @@ upgrade the camp → the camp sustains more of itself → go further, or into th
 - **Stateless.** The dunes are featureless and shift out of sight, so nothing beyond
   render distance is stored. Turn back far enough and the land has changed.
 - **It's a moon, not a plane.** Your position is tracked as latitude and longitude, so
-  walking far enough brings you back round, the poles are real places, and climate can
-  change with latitude. The ground near you is still flat.
+  walking far enough brings you back round and the poles are real places. The ground
+  near you is still flat.
+- **Latitude is the second difficulty dial.** Toward the poles, storms weaken but the
+  temperature swings get wider: hotter days, colder nights. Difficulty changes kind
+  rather than amount. The equator is stormy and mild, while the poles are clear and
+  extreme, so the big views are more common there and you pay for them in heat and
+  cold.
 - **World coordinates are always tracked**, so distance from spawn is known even
   though the land isn't kept. A fixed underlying topography (the large shapes the dunes
   sit on) may come later.

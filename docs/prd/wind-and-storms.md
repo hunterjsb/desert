@@ -149,7 +149,9 @@ These are owned by their own PRDs and listed here so the field serves them all.
 
 - The wall, built from what the look-test learns.
 - The staged arrival: light, wind shift, ground dust, sound.
-- Prevailing wind bands by latitude, and the poles (calmer or harsher, still open).
+- Storms weaken toward the poles (decided). The field's coverage and intensity fall
+  with latitude, so the poles are clear and calm, and their price is temperature (owned
+  by Survival). Prevailing wind bands by latitude.
 - Storm sizes, from dust haze to an ordinary storm to a great wall.
 - Instruments and forecasts.
 - Real dune shapes facing the prevailing wind (decided; see World & terrain).
@@ -183,5 +185,3 @@ All run without a window, with a fixed seed.
 
 - **What target bands for clear skies** should each reference traveller get? Set them
   once the skeleton can measure them.
-- **What are the poles like?** This depends on the moon's configuration, which is being
-  brainstormed (carried over from World & terrain).
