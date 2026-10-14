@@ -22,7 +22,6 @@ var damping := 0.7
 var max_stretch := 0.1
 ## Newtons of sustained load that snap it.
 var breaking := 1500.0
-var label := ""
 
 ## Pull this tick, and the load sustained long enough to break things, N.
 var tension := 0.0

@@ -64,13 +64,12 @@ func setup(on: World) -> void:
 	waist = RopeEnd.make(world.player, Vector3(0.0, 0.95, 0.0), false)
 
 
-func tie(a: RopeEnd, b: RopeEnd, length: float, breaking := BREAKING, label := "") -> Rope:
+func tie(a: RopeEnd, b: RopeEnd, length: float, breaking := BREAKING) -> Rope:
 	var rope := Rope.new()
 	rope.a = a
 	rope.b = b
 	rope.length = length
 	rope.breaking = breaking
-	rope.label = label
 	rope.strand = RopeStrand.new()
 	add_child(rope.strand)
 	rope.strand.hang(world, length, a, b)
