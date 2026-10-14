@@ -12,7 +12,11 @@ reliability first and beauty second.
 
 ## What the player experiences
 
-- Rolling dunes in every direction, fading into haze. There's no edge and no seam.
+- On a clear day, a **big, lonely, epic view**: dunes out to a horizon blurred by heat
+  shimmer and the flatness of the land. Clear skies are rare and earned. They come from
+  diligence, and some luck, in staying clear of the storms.
+- In a storm, you can barely see past your own shield. That's where it gets cozy.
+- There's no edge and no seam in either case.
 - Walking, sliding and hoverboarding over sand that always holds you.
 - Anything you drop lands on the sand and stays there.
 - A sense of distance travelled. The game always knows how far you are from where the
@@ -60,6 +64,11 @@ updated from how you move. Everything a sphere does follows from that. Walk far 
 east and you come back to where you started. Circling the moon is shorter near the
 poles. Walk over a pole and you come down the other side, with north becoming south.
 
+**The moon is about 150 km round** (a radius of about 24 km). That's around 30 hours
+on foot, and about 37 km from the equator to a pole. Circling it is an epic a long run
+can achieve. A real sphere this small would put the horizon about 300 m away. We render
+the ground flat precisely so the big views stay possible.
+
 The dunes don't need to wrap, because they're stateless and shifting anyway. What
 wraps is everything fixed: the coordinates, the underlying topography and climate by
 latitude. Those are sampled from your true point on the moon, so they're seamless all
@@ -79,8 +88,11 @@ This is the minimum that makes the whole game loop possible. Every item gets bui
   of the player, visible ground out to about 8 chunks.
 - Collision from the same samples as the visible mesh up close, so what you see is
   exactly what you stand on.
-- Haze that hides the edge of the loaded world. It's atmosphere and engineering at
-  once.
+- A **crude far ring**: low-detail ground, visual only, reaching a few kilometres
+  out. It proves early that the far view is cheap and stays separate from collision
+  (rule 2), because the big views depend on it.
+- Distance haze that hides the edge of the loaded world: thin in clear weather, thick
+  enough in a storm that you can barely see past the shield.
 - The scene shifts back toward the origin in whole-chunk steps. The player's latitude
   and longitude are tracked from movement in double precision. A debug readout shows
   them, along with distance from spawn measured around the moon.
@@ -102,8 +114,10 @@ Built after the skeleton loop works end to end, in roughly this order:
   edges from loaded neighbours so seams stay exact.
 - **Shifting dunes.** Land generated after a storm passes comes out different. This
   only affects newly generated chunks; rule 2 still holds.
-- **Distance rendering.** Lower-detail rings for far chunks (with skirts so no gaps
-  show), generation on worker threads, and a view distance tuned against the haze.
+- **Distance rendering.** This is core, not polish, because the clear-day view is a
+  reward. Lower-detail rings out to the horizon (with skirts so no gaps show),
+  generation on worker threads, and heat shimmer softening the far edge. In a storm,
+  the far rings can be dropped entirely.
 - **Sand that looks like sand.** Wind ripples, colour variation, a shimmer at
   distance.
 
@@ -148,12 +162,8 @@ fail.
 
 ## Open questions
 
-- **How big is the moon?** Put another way: how long does it take to walk all the way
-  round? This decides whether circling it is an epic a long run can achieve or
-  something effectively impossible.
 - **Are the poles harsher or calmer?**
 - **Does difficulty scale with distance from spawn?** (Latitude will matter either way.)
-- **How far can you see on a clear day?** Close and hazy, or wide vistas?
 - **Should dunes have real shapes,** with gentle windward slopes and steep slip faces,
   so that walking into the wind means climbing?
 

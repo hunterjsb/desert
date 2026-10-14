@@ -30,6 +30,14 @@ let it run.
 Wander → find what the wind uncovers → bring it into the bubble → grow, power and
 upgrade the camp → the camp sustains more of itself → go further, or into the wind.
 
+## Two moods
+
+- **Clear skies:** big, lonely, epic views to a horizon blurred by heat shimmer. These
+  are rare, and you earn them with diligence and some luck in staying away from the
+  storms.
+- **Inside a storm:** you can barely see past your shield, if at all. This is where it
+  gets cozy.
+
 ## The camp
 
 - **The camp is several physical things, not one building.** The shield is small enough
