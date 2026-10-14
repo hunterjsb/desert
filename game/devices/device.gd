@@ -47,7 +47,7 @@ func parts() -> Array[Part]:
 
 ## The socket a fitted shape or mesh belongs to, or null for the frame itself.
 func socket_of(node: Node) -> Socket:
-	return node.get_meta(&"socket", null) if node != null else null
+	return node.get_meta(&"socket") if node != null and node.has_meta(&"socket") else null
 
 
 ## Moves a part into a free socket of its kind: its shapes and meshes join this

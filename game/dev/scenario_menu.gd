@@ -1,9 +1,12 @@
 extends CanvasLayer
-## Dev: F2 lists the scenarios and a number key drops you into one. Launching
-## with `-- --scenario=<key>` starts in one directly.
+## Dev: F2 lists the scenarios and a number key drops you into one; past the
+## tenth, the first letter of its key. Launching with `-- --scenario=<key>`
+## starts in one directly.
 
 @onready var _world: World = $"../World"
 var _list: Label
+## The test kit last dropped, cleared when another scenario starts.
+var _kit: Array[Node3D] = []
 
 
 func _ready() -> void:
@@ -17,7 +20,7 @@ func _ready() -> void:
 	_list.add_theme_constant_override("outline_size", 4)
 	var lines := PackedStringArray(["SCENARIOS  F2 closes"])
 	for i in Scenarios.LIST.size():
-		lines.append("%d  %s" % [(i + 1) % 10, Scenarios.LIST[i].label])
+		lines.append("%s  %s" % [_hotkey(i), Scenarios.LIST[i].label])
 	_list.text = "\n".join(lines)
 	add_child(_list)
 	for arg in OS.get_cmdline_user_args():
@@ -37,15 +40,29 @@ func apply(scenario: Dictionary) -> void:
 		return
 	_world.respawn(place.x, place.z, place.yaw, place.time)
 	Dev.put("world/scn", scenario.key)
+	for body in _kit:
+		if is_instance_valid(body):
+			body.queue_free()
+	_kit.clear()
+	if scenario.kind == "kit":
+		# Bodies dropped before the sand under them has collision would be frozen or forgotten.
+		while not _world.terrain.is_settled_around(place.x, place.z):
+			await get_tree().physics_frame
+		_kit = Scenarios.kit(_world)
+
+
+func _hotkey(index: int) -> String:
+	return str((index + 1) % 10) if index < 10 else Scenarios.LIST[index].key.left(1).to_upper()
 
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("dev_scenarios"):
 		visible = not visible
 	elif visible and event is InputEventKey and event.pressed and not event.echo:
-		var digit: int = event.physical_keycode - KEY_0
-		if digit >= 0 and digit <= 9:
-			var index := (digit + 9) % 10
-			if index < Scenarios.LIST.size():
+		var pressed := OS.get_keycode_string(event.physical_keycode)
+		for index in Scenarios.LIST.size():
+			if _hotkey(index) == pressed:
 				visible = false
+				get_viewport().set_input_as_handled()
 				apply(Scenarios.LIST[index])
+				return

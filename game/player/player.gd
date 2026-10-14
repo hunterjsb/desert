@@ -16,6 +16,7 @@ var storm_harm := 0.0
 var _tuning := Tuning.current()
 
 @onready var camera: Camera3D = $Camera3D
+@onready var hands: Hands = $Hands
 
 
 func _ready() -> void:

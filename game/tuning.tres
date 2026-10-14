@@ -76,4 +76,7 @@ snap_reach = 0.3
 snap_home = 0.04
 hold_distance = 0.9
 reach = 2.5
+take_seconds = 0.12
+tug_seconds = 0.2
+throw_speed = 6.0
 loose_wind_catch = 0.05

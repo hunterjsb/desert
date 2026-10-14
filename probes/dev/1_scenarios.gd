@@ -1,7 +1,8 @@
 extends WeatherProbe
 ## Dev probe 1: every scenario drops you where it says. A storm 100 m away is
-## 100 m upwind and you face it; deep is deep; dusk is dusk. Checked against
-## the field itself and against what the game then shows.
+## 100 m upwind and you face it; deep is deep; dusk is dusk; the test kit lands
+## in front of you. Checked against the field itself and against what the game
+## then shows.
 
 const SLACK := 1.0
 
@@ -32,9 +33,11 @@ func run() -> void:
 			"spawn":
 				check(at.distance_to(Vector2.ONE * Tuning.current().chunk_size * 0.5) < 0.01 and t == 0.0,
 					"spawn: where and when the run began")
-			"clear":
+			"clear", "kit":
 				check(not stormy and field.next_change(at.x, at.y, t, 600.0, 5.0) == INF,
-					"clear: no storm for 10 minutes")
+					"%s: no storm for 10 minutes" % what)
+				if scenario.kind == "kit":
+					await _kit_lands_near_you()
 			"front", "back":
 				check(stormy == (scenario.kind == "back"), "%s: on the right side of the edge" % what)
 				check(ahead.dot(upwind) > 0.999, "%s: facing upwind, where it comes from" % what)
@@ -61,3 +64,28 @@ func _edge(from: Vector2, along: Vector2, t: float, inside: bool) -> float:
 		if (field.raw_storm_at(p.x, p.y, t) > 0.0) != inside:
 			return d
 	return INF
+
+
+## Two devices and every kit part land on the sand in front of you, within a
+## few steps. Light parts may then slide off on the wind, which is real.
+func _kit_lands_near_you() -> void:
+	await settle(true)
+	var kit := Scenarios.kit(world)
+	await physics_frames(30)
+	var player := world.player
+	var ahead := -player.global_basis.z
+	var devices := 0
+	var parts := 0
+	var strays := PackedStringArray()
+	for body in kit:
+		var off := body.global_position - player.global_position
+		var c := clearance(body)
+		devices += 1 if body is Device else 0
+		parts += 1 if body is Part else 0
+		if off.dot(ahead) < 1.0 or Vector2(off.x, off.z).length() > 5.0 or c < -0.05 or c > 0.6:
+			strays.append("%s %.1fm %.2fm up" % [body.get("label"), Vector2(off.x, off.z).length(), c])
+	check(devices == Scenarios.KIT_DEVICES.size() and parts == Scenarios.KIT_PARTS.size(),
+		"kit: both devices and every part dropped")
+	check(strays.is_empty(), "kit: all of it on the sand within 5 m in front of you (%s)" % ", ".join(strays))
+	for body in kit:
+		body.free()
