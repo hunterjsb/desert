@@ -93,6 +93,13 @@ like a wall when:
    depths, not one scrolling texture.
 5. **It encloses you.** Once you're inside, the shield's edge is the edge of the world.
 
+**What already lands** (the Stage 2 playtest). The crude wall's approach is the feeling:
+a huge wall of dust, uniform and infinitely complex at the same time, and overwhelmingly
+massive as it comes into view. That was a flat curtain on the front, with streaming dust
+and the roar once it reached you. The full wall adds motion to the face without losing
+the uniform mass: no visible tiling, and no busy small-scale detail that makes it read
+as a smaller thing.
+
 **Approach.**
 - **From a distance:** a giant curtain built along the front, wherever the field crosses
   the threshold. It's found by sampling outward from the player in every direction, so
