@@ -1,9 +1,0 @@
-# Godot 4+ specific ignores
-.godot/
-godot-jolt/
-addons/
-combined.txt
-game.console.exe
-game.exe
-game.pck
-godot-jolt_windows-x64_editor.dll
