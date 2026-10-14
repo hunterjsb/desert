@@ -1,0 +1,137 @@
+# PRD: Salvage & ruins
+
+*Draft, 2026-10-13. Answers to [the vision](../vision.md).*
+
+## Why this system exists
+
+Parts are found, never crafted, so **salvage is the whole economy**. Every upgrade,
+every new device and every better battery comes out of the sand. Salvage is also how
+the moon tells its story: in what you find, in the order you find it, and in the hints
+that someone else might still be out there.
+
+## What you find
+
+- **Parts:** batteries, hooks, hover trays, panels, instruments. These are the things
+  that fit sockets (Devices & mods).
+- **Whole devices,** often with parts missing. You can haul one around (tray or rope)
+  until you find what it needs, or strip it and fit its parts to your own devices.
+- **Fuel:** rare consumables, and fissile material if you're very lucky (Power).
+- **Seeds** (Farming).
+- **Lore:** fragments of what happened here.
+- **Radio frequencies** to tune into (Radio, sound & atmosphere).
+- **Water:** still open. How you get it and how you make it is a hard question that
+  belongs to Survival.
+
+## How finds show up
+
+- **Half-buried in the sand.** Things stick out of the dunes, part-hidden. Burying is
+  done by *placing* things partly below the surface, never by reshaping the ground
+  (World & terrain, rule 2).
+- **Ruins you can walk into.** These are structures sitting in the dunes, with sand
+  drifted against their walls. Everything is above ground: there's no digging and
+  nothing underground.
+- **Storms uncover things.** The harder the weather that exposed a place, the deeper
+  the layer it reached.
+
+## History runs backwards in the ground
+
+The deeper the layer, the older the find, and the better its technology:
+
+1. **Surface:** recent traces, and rare hints of holdouts.
+2. **The second empire.**
+3. **The first empire.**
+4. **Colonial:** the original colonists' technology. It's the oldest, the rarest and
+   the best.
+
+**The weather decides how deep the sand is stripped.** Stronger storms and fiercer
+winds expose deeper layers. Venture into the storm, or travel into the wind, and you
+find older, better things. Both difficulty dials pay out in salvage.
+
+Technically, a chunk's finds are placed when it loads, from the run's seed, the chunk's
+coordinates and how hard the weather there has been. Like everything else, they're
+stateless (World & terrain). Loot regenerating behind you isn't an exploit, because the
+land ahead is always as rich.
+
+## People: only hinted
+
+There are no NPCs. The moon is empty, or *almost* empty, and we only ever hint at it:
+
+- A hatch standing open in the distance, just out of reach.
+- A ruin where something has been used recently and left behind.
+- Maybe a voice on the radio.
+
+The game never answers the question.
+
+## What Sand Game taught us
+
+Walk-in ruins had collision trouble, for the same reasons the terrain did:
+
+- **Ruins were placed at a fixed height** (8–14 m above the chunk's origin), ignoring
+  the dunes entirely, so they floated or sank.
+- **Collision came straight from the imported model,** which gives thin, one-sided
+  surfaces.
+- **Each ruin was scaled up at random by 2–3.5×,** collision included.
+- **Loot spawned at the ruin's own center,** inside the walls, frozen until you came
+  near.
+
+## Rules
+
+1. **Ruins are part of the ground's one function.** A ruin's footprint is built into
+   `height_at`, so the sand meets its floor and drifts up its walls exactly. Its
+   position comes from the same seed and coordinates as the terrain around it.
+2. **Ruin collision is simple shapes** (boxes and slabs), built for walking: floors,
+   walls and doorways. Never collision taken from a detailed mesh.
+3. **Nothing physical is ever scaled at runtime.** Different sizes are different pieces.
+4. **Ruins never move.** They're static, never physics objects.
+5. **Finds are placed, not dropped.** Every find sits at its intended depth: on the
+   sand, partly buried, or on a ruin's floor. Loose finds settle from a few centimetres,
+   never from metres.
+6. **Finds are typed parts and devices** (Devices & mods), so anything salvaged works
+   with your sockets the moment you pick it up.
+
+## Skeleton version
+
+- Finds placed when a chunk loads, from the seed and the chunk's coordinates: loose
+  parts and whole devices, partly buried.
+- Two layers: a common surface layer and a better deep layer, with exposure driven by
+  the storm field.
+- One walk-in ruin type made of simple shapes, with its footprint built into
+  `height_at`.
+- Stripping parts out of found devices.
+- The probes below, all passing.
+
+## Full version
+
+- **All four layers,** from recent traces down to colonial.
+- **Things surfacing during a storm.** Sand pours off something new right beside you.
+  It's placed, not dug.
+- **Many ruin types,** part-buried, with interiors (all above ground).
+- **Lore fragments and radio frequencies.**
+- **The hints of people.**
+
+## Probes
+
+1. **Deterministic.** The same seed, chunk and weather always give the same finds.
+2. **Finds sit where they should.** Every find rests at its intended depth, never
+   floating and never buried out of reach. Loose finds settle without falling through.
+3. **Ruins sit in the sand.** Every ruin floor meets the sand within tolerance.
+4. **The walk-through.** A probe walks every doorway and floor of every ruin type. The
+   player never snags, never gets stuck, and never falls through.
+5. **Harder weather, better finds.** Across many chunks, the average find tier rises
+   with storm and wind exposure.
+6. **Strip and fit.** Every part in a found device can be taken out and fitted to one of
+   yours.
+7. **Nothing leaks.** On the 20 km walk, the number of finds in memory stays bounded.
+
+## Out of scope
+
+- Digging, and anything underground.
+- NPCs, trading and crafting.
+
+## Open questions
+
+- **What do the poles offer?** They're calm, and storms are what uncover finds.
+  Maybe the calm preserves things the storms would scour, or the cold keeps something
+  intact.
+- **How rare is colonial technology?** It should be rare enough to remember finding.
+- **How is lore presented?** Logs you read, recordings you play, inscriptions on walls?

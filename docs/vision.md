@@ -118,6 +118,10 @@ The strangeness at its heart is that **history runs backwards in the ground.** T
 oldest, rarest ruins hold the most advanced technology, because they come from the
 original colonists. Everything built after them is cruder.
 
+**People are only ever hinted at.** A hatch open in the distance, just out of reach. A
+ruin with something recently used left behind. Maybe a voice on the radio. There are no
+NPCs, and the game never answers the question.
+
 Lore gets worked out loosely alongside the systems so that it stays consistent from
 the start.
 
@@ -151,7 +155,7 @@ the start.
 7. Survival needs (heat, thirst, hunger)
 8. Farming
 9. Movement (on foot, hoverboard)
-10. Salvage & ruins
+10. [Salvage & ruins](prd/salvage-and-ruins.md)
 11. Radio, sound & atmosphere
 
 ## Open questions
