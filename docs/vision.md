@@ -48,7 +48,8 @@ upgrade the camp → the camp sustains more of itself → go further, or into th
   storm.
 - **Shields open up the map.** The base shield keeps out wind and dust but not heat or
   cold, so it pushes you into the storms early. Shields that hold back temperature are
-  what open up the poles.
+  what open up the poles. Late game, shields nest: a big wind shield around the camp,
+  with a smaller temperature shield around the farm.
 - **It floats when there's power for it.** When there isn't, you haul it. Running low on
   power should feel like a slowdown, not a wall.
 - **Power sources trade off against movement** (leaning, not settled). Solar builds

@@ -36,10 +36,22 @@ shields block which.
 | **Storm** | Dust and sand scouring you inside a storm | Yes |
 | **Temperature** | Heat and cold, which get worse toward the poles | **No** |
 
+**Shields protect per harm, at levels:** immune, strong, weak or none.
+
 **Shields open up the map.** The base shield is very power-efficient, reliable, light,
 easy to carry and quick to start, but it does nothing about temperature. That pushes you
 into the storms early. Later shields that also hold back heat and cold are what open up
 the poles.
+
+**Late game, shields nest.** One example is a two-shield setup:
+- A big **wind shield** around the whole camp: immune to wind, no help with
+  temperature.
+- A smaller **temperature shield** inside it, around the farm: strong against
+  temperature, weak to wind.
+
+Farming is a subset of the camp, so the temperature shield sets how big the farm can be,
+and it's usually smaller than the wind shield. A **combo shield** is strong against both
+but immune to neither.
 
 ## What Sand Game taught us
 
@@ -58,7 +70,8 @@ sounds, the muffled storm inside, and the shader. What was missing:
    sheltered?" at any moment and get the true answer.
 2. **The bubble edits the weather.** Every system reads the *felt* weather: the wind
    and storm fields (Wind & storms) with shelter applied. Inside a base shield, wind
-   and storm read zero. So rope loads, damage, dust, fog, sound and power all agree
+   and storm read zero. When bubbles nest, each harm gets the strongest protection
+   among the bubbles you're inside. So rope loads, damage, dust, fog, sound and power all agree
    about where the bubble is, because they ask the same question.
 3. **Everything inside is protected,** camp pieces as well as you.
 4. **Light passes through,** so solar still works inside, as far as the storm allows.
@@ -79,23 +92,29 @@ The shield decides how much of it is safe. All three grow with upgrades.
 ## Power
 
 - **The base shield sips power.**
-- **Draw rises with what it's holding back** (proposal). Running in a storm costs more
-  than running in calm, and a bigger bubble costs more than a small one. That makes a
-  long storm a slow drain, which is where power gets its tension.
+- **Draw depends on the shield type.** Some types draw more in storms or at larger
+  sizes, and the system plans for that, but the main way to save power is simple:
+  switch the shield off, and stay out of storms.
+- **A full base shield lasts about 30 minutes in a storm.** That's a starting value to
+  tune.
+- **The wind doesn't push the base bubble.** Some later types might, which would make
+  them want staking.
 - **Low power gives warning.** The hum drops and the bubble flickers before it fails.
   The generator shows its charge on itself, with no menu.
 - **An empty shield collapses.** Shelter switches off for everything at the same moment.
 
 ## Skeleton version
 
-- One shield type that blocks wind and storm but not temperature.
+- One shield type that blocks wind and storm but not temperature. Protection is per
+  harm from day one, so later types and nesting slot in without rework.
 - Carry it, place it, and switch it on or off. It blooms in about 0.6 s and keeps
   running while carried.
 - Shelter computed from distance, plus a felt-weather wrapper that rope wind loads,
   damage, fog, dust and sound all read.
 - Wind and storm damage to you and to objects outside, with placeholder durability.
   Objects inside are safe.
-- A battery that drains faster in storms, and collapses the bubble when it's empty.
+- A battery that lasts about 30 minutes in a storm, and collapses the bubble when it's
+  empty.
 - A charge readout on the generator itself.
 - Sand Game's activate, hum and shutdown sounds, and the muffled storm inside.
 - Sand Game's shield shader as the starting look. Fog and dust are carved out inside
@@ -105,7 +124,9 @@ The shield decides how much of it is safe. All three grow with upgrades.
 ## Full version
 
 - **Shield types:** thermal shields that hold back heat and cold and open the poles,
-  plus bigger radii, upgrades and mods.
+  combo shields, and types that catch the wind. Plus bigger radii, upgrades and mods.
+- **Nested setups,** like a wind shield around the camp with a temperature shield around
+  the farm.
 - **The warning and the collapse, staged:** the hum sagging, the flicker, the roar
   flooding in.
 - **The edge of the world in a storm.** Dust churns right against the bubble's
@@ -128,18 +149,14 @@ The shield decides how much of it is safe. All three grow with upgrades.
    consumer on the same frame.
 6. **Fast boot.** The bubble is protecting within its boot time.
 7. **Origin shifts are invisible.** Shelter is unaffected by a shift.
+8. **Nesting takes the best of each.** Inside both a wind shield and a temperature
+   shield, each harm gets the stronger protection. Inside only the outer one,
+   temperature reaches you.
 
 ## Out of scope
 
 - Blocking projectiles, or any shield combat. There are no enemies.
-- Interactions between overlapping shields. Being inside any running bubble counts as
-  sheltered.
 
 ## Open questions
 
-- **Does the wind push on the bubble?** If it does, a big bubble in a storm catches a
-  lot of wind and wants staking. That's a second force keeping camps small, and it ties
-  the shield to the rope, but it could also feel punishing.
-- **Should storms drain power faster?** I lean yes (see Power).
-- **How long does the base shield last** on a full charge in a storm? This is tuning,
-  but it sets how long a storm you can sit out.
+None right now. The shield's power numbers get settled alongside the Power PRD.
