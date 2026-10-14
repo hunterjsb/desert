@@ -12,8 +12,8 @@ PRD sets the systems and stays loose on the art.
 
 ## The radio
 
-A device you carry or mount (Devices & mods). Better radios and antenna mods reach
-further and hear more clearly. Tune it, and you find:
+A device you carry or mount (Devices & mods). **Its reach is huge,** with the exact
+range still to tune. Better radios and antenna mods hear more clearly. Tune it, and you find:
 
 - **Music, for the vibes.** Sand Game's tracks carry over: "Sandy Andy" by day and
   "Waiting on the Sun" by night. More channels come later.
@@ -86,7 +86,7 @@ Everything that matters can be heard, so you can read the world by ear:
 
 ## Full version
 
-- **More music channels.**
+- **More music channels,** with more tracks from Hunter.
 - **Lore channels, and the maybe-voice.**
 - **Frequencies as finds,** and antenna mods.
 - **Distorted tracks in storms.**
@@ -111,5 +111,4 @@ Everything that matters can be heard, so you can read the world by ear:
 ## Open questions
 
 - **How are broadcasts delivered?** An automated voice, text on the radio, or tones?
-- **How far does a radio reach,** and how much does an antenna add?
-- **More music:** will you make more tracks?
+- **Exactly how far does a radio reach,** and how much does an antenna add?
