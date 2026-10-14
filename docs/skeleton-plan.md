@@ -3,6 +3,8 @@
 *Draft, 2026-10-13. How we build the skeleton described in [the vision](vision.md): every
 system in rough form, wired into one complete loop, before anything gets polished.*
 
+**Where we are:** Stage 0 is built and waiting at the gate.
+
 ## The loop we're building toward
 
 Walk out with the camp in tow. A storm wall appears, so you batten down: stake the

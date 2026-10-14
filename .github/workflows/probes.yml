@@ -1,0 +1,29 @@
+name: Probes
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  probes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install the pinned Godot
+        run: |
+          v=$(cat .godot-version)
+          base=https://github.com/godotengine/godot/releases/download/$v-stable
+          zip=Godot_v$v-stable_linux.x86_64.zip
+          curl -fsSLO "$base/$zip"
+          curl -fsSL "$base/SHA512-SUMS.txt" | grep " $zip\$" | sha512sum -c -
+          unzip -q "$zip"
+          sudo install -m 755 "Godot_v$v-stable_linux.x86_64" /usr/local/bin/godot
+          godot --version
+
+      - name: The runner can fail
+        run: scripts/probe.sh selftest
+
+      - name: Probes
+        run: scripts/probe.sh
