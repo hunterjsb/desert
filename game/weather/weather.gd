@@ -60,6 +60,12 @@ func felt_light(at: Vector3) -> float:
 		* (1.0 - _tuning.storm_darkness * felt_storm(at))
 
 
+## The clock jumped: forecast again on the next tick.
+func forecast_now() -> void:
+	_forecast_due = 0.0
+	next_change_time = INF
+
+
 func _ready() -> void:
 	# After the player moves, before the world shifts and the clock moves on.
 	process_physics_priority = 100

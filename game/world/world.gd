@@ -47,6 +47,21 @@ func _ready() -> void:
 	_last_z = player_world_z()
 
 
+## Dev: puts the player down at a world place and run time, facing yaw, as a
+## fresh spawn: distance from spawn and the moon position start over there.
+func respawn(x: float, z: float, yaw: float, at_time: float) -> void:
+	time = at_time
+	time_warp = 1.0
+	player.global_position = Vector3(engine_x(x), height_at(x, z) + 0.1, engine_z(z))
+	player.velocity = Vector3.ZERO
+	player.rotation.y = yaw
+	player.camera.rotation.x = 0.0
+	moon = MoonPosition.new(tuning)
+	_last_x = x
+	_last_z = z
+	weather.forecast_now()
+
+
 func world_x(engine_x: float) -> float:
 	return origin_chunk.x * tuning.chunk_size + engine_x
 

@@ -8,6 +8,7 @@ const KEYS := {
 	"move_left": KEY_A,
 	"move_right": KEY_D,
 	"sprint": KEY_SHIFT,
+	"dev_scenarios": KEY_F2,
 	"toggle_dev_overlay": KEY_F3,
 	"dev_fly": KEY_F4,
 	"fly_up": KEY_SPACE,
