@@ -52,6 +52,19 @@ steps. Meanwhile the true world position is tracked separately in double precisi
 That gives us **distance from spawn** for free, plus the hook for an underlying
 topography later.
 
+### A moon, not a plane
+
+The desert is a moon, and the coordinates behave like it. The ground near you is flat
+(we don't render the curve), but your position is tracked as **latitude and longitude**,
+updated from how you move. Everything a sphere does follows from that. Walk far enough
+east and you come back to where you started. Circling the moon is shorter near the
+poles. Walk over a pole and you come down the other side, with north becoming south.
+
+The dunes don't need to wrap, because they're stateless and shifting anyway. What
+wraps is everything fixed: the coordinates, the underlying topography and climate by
+latitude. Those are sampled from your true point on the moon, so they're seamless all
+the way round and over the poles.
+
 Loot regenerating behind you isn't an exploit. In an endless desert, the land ahead is
 always as rich as the land behind.
 
@@ -68,9 +81,9 @@ This is the minimum that makes the whole game loop possible. Every item gets bui
   exactly what you stand on.
 - Haze that hides the edge of the loaded world. It's atmosphere and engineering at
   once.
-- The scene shifts back toward the origin in whole-chunk steps. World coordinates are
-  tracked in double precision, and a debug readout shows world position and distance
-  from spawn.
+- The scene shifts back toward the origin in whole-chunk steps. The player's latitude
+  and longitude are tracked from movement in double precision. A debug readout shows
+  them, along with distance from spawn measured around the moon.
 - A flat sand-coloured material.
 - The probes below, all passing.
 
@@ -83,6 +96,10 @@ Built after the skeleton loop works end to end, in roughly this order:
   run.
 - **Dunes shaped by the wind.** Crests run across the prevailing wind, and steep slip
   faces sit downwind. This connects to the Wind & storms PRD.
+- **Latitude and the poles.** Climate varies with latitude, so the poles are a
+  different place, though whether they're harsher or calmer is still open. Fixed fields
+  get sampled from the true point on the moon, and each new chunk copies its shared
+  edges from loaded neighbours so seams stay exact.
 - **Shifting dunes.** Land generated after a storm passes comes out different. This
   only affects newly generated chunks; rule 2 still holds.
 - **Distance rendering.** Lower-detail rings for far chunks (with skirts so no gaps
@@ -93,7 +110,8 @@ Built after the skeleton loop works end to end, in roughly this order:
 ## What other systems get from this one
 
 - `height_at(x, z)`: the one height function.
-- World position and distance from spawn, in double precision.
+- Position on the moon (latitude, longitude) and distance from spawn, in double
+  precision.
 - Signals when a chunk loads, when a chunk unloads, and when the origin shifts. Salvage
   places finds when a chunk loads, seeded from the chunk's coordinates. Anything that
   caches positions listens for the origin shift.
@@ -130,9 +148,14 @@ fail.
 
 ## Open questions
 
-- Does distance from spawn matter to gameplay, like harsher weather or richer finds
-  further out, or is it only a number?
-- What are the right chunk size and view distance? The skeleton will tell us. The
-  numbers above are starting values.
-- How steep can a dune get before you can't walk up it, and how smooth does the sand
-  need to be for the hoverboard?
+- **How big is the moon?** Put another way: how long does it take to walk all the way
+  round? This decides whether circling it is an epic a long run can achieve or
+  something effectively impossible.
+- **Are the poles harsher or calmer?**
+- **Does difficulty scale with distance from spawn?** (Latitude will matter either way.)
+- **How far can you see on a clear day?** Close and hazy, or wide vistas?
+- **Should dunes have real shapes,** with gentle windward slopes and steep slip faces,
+  so that walking into the wind means climbing?
+
+Chunk size and the exact view distance are tuning decisions. The skeleton measures
+them; they aren't design questions.
