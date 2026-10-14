@@ -14,6 +14,13 @@ says so. Hunter's year-old vision board is folded in at section 4.*
   explains picking a barren body: sterile, a blank slate, cut off from the rest of the
   system. It could be both.
 - Method: we know the feel we want, so we pick the physics that match it.
+- Leaning on the arc: **a transit port first.** A poor system on an interstellar trade
+  route: a hot, Venus-like inner world and a gas giant nobody lands on, so the stop has
+  to be a moon, the best of a bad set. An outpost becomes a refinery and port town,
+  investment piles up until shielding the whole moon pays, towns become cities, and
+  under the shield it becomes kind of nice. Then the collapse. The desert is what the
+  failing shield left behind; it wasn't a desert before. The sealed garden may be a
+  second thread.
 
 *The sections below were written for the literal 24 km, 1 g moon. Their physics of
 escape and the dense core no longer apply, but their stories, radiation, UV, wind and
