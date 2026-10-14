@@ -66,6 +66,6 @@ gives water a daily rhythm:
 A day lasts about 20 minutes, start to finish. That's compressed game time, the way
 most survival games handle days.
 
-**Open: seasons.** The skeleton gives the moon no axial tilt, so the sun rises due east,
+**Open: seasons** (deferred by Hunter, 2026-10-14). The skeleton gives the moon no axial tilt, so the sun rises due east,
 sets due west, and climbs only as high as the latitude allows. Nights aren't pitch
 black: the gas giant lights them faintly. A tilt would add seasons.
