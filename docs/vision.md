@@ -114,7 +114,11 @@ A colonized desert moon in the Xandaris universe, Kenshi in spirit. A high-tech
 spacefaring society settled it and then collapsed to its own AI. Later civilizations
 rose and fell in turn (a first and a second empire), leaving an apocalypse world.
 Three thousand years after that, the moon has reverted to near-uninhabitable: ruins,
-dunes, maybe a few holdouts.
+dunes, maybe a few holdouts. The air is thin and fading, the days scorch, the nights
+freeze, and water goes through all three phases every day. The physics is in
+[the moon](the-moon.md).
+
+You're a **scavenger in a suit**, because nobody survives here without one.
 
 The strangeness at its heart is that **history runs backwards in the ground.** The
 oldest, rarest ruins hold the most advanced technology, because they come from the
@@ -154,7 +158,7 @@ the start.
 4. [Bubble shield & the travelling camp](prd/bubble-shield-and-camp.md)
 5. [Devices & mods](prd/devices-and-mods.md)
 6. [Power](prd/power.md)
-7. Survival needs (heat, thirst, hunger)
+7. [Survival](prd/survival.md)
 8. Farming
 9. Movement (on foot, hoverboard)
 10. [Salvage & ruins](prd/salvage-and-ruins.md)
@@ -162,6 +166,6 @@ the start.
 
 ## Open questions
 
-- Who is the player, and why are they out here?
+- Why is the scavenger out here?
 - If a good camp reaches steady state, what ends a run? Being endless, cozy and
   permadeath pull against each other.
