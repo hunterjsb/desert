@@ -35,7 +35,8 @@ func run() -> void:
 		if absf(crate.mass - expected) > 1e-4:
 			wrong += 1
 		var stats := crate.stats()
-		var draw := expected * Tuning.current().hover_watts_per_kg if stats["hovering"] else 0.0
+		# What floating it would draw, whether or not a battery lets it.
+		var draw := expected * Tuning.current().hover_watts_per_kg if stats["can_float"] else 0.0
 		if absf(stats["hover_w"] - draw) > 1e-3:
 			draw_wrong += 1
 		# The engine's own weight: a known sideways impulse, up in still air

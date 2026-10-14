@@ -141,6 +141,12 @@ static var _current: Tuning
 ## A throw, m/s, on top of how you're moving.
 @export var throw_speed: float = 6.0
 
+@export_group("Power")
+## Seconds of world time per power tick.
+@export var power_tick: float = 0.25
+## A turbine's output, W per (m/s)³ of felt wind, up to its rating.
+@export var turbine_watts_per_cubic: float = 0.0128
+
 @export_group("Loose objects")
 ## Drag per (m/s)^2 of wind on a loose object: half the air density times drag
 ## coefficient times area. Thin air, a half-metre box.

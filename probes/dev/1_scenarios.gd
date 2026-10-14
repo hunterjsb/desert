@@ -78,14 +78,17 @@ func _kit_lands_near_you() -> void:
 	var parts := 0
 	var strays := PackedStringArray()
 	for body in kit:
+		if body is Cable:
+			continue
 		var off := body.global_position - player.global_position
 		var c := clearance(body)
 		devices += 1 if body is Device else 0
 		parts += 1 if body is Part else 0
 		if off.dot(ahead) < 1.0 or Vector2(off.x, off.z).length() > 5.0 or c < -0.05 or c > 0.6:
 			strays.append("%s %.1fm %.2fm up" % [body.get("label"), Vector2(off.x, off.z).length(), c])
-	check(devices == Scenarios.KIT_DEVICES.size() and parts == Scenarios.KIT_PARTS.size(),
-		"kit: both devices and every part dropped")
+	# Every part, plus the cable's two plugs.
+	check(devices == Scenarios.KIT_DEVICES.size() and parts == Scenarios.KIT_PARTS.size() + 2,
+		"kit: every device and part dropped")
 	check(strays.is_empty(), "kit: all of it on the sand within 5 m in front of you (%s)" % ", ".join(strays))
 	for body in kit:
 		body.free()

@@ -5,7 +5,8 @@ system in rough form, wired into one complete loop, before anything gets polishe
 
 **Where we are:** Stages 0 and 1 passed the gate on 2026-10-14, and Stage 2 passed later
 the same day, with the look-test's wall in the game. Stage 3 passed that evening ("works.
-nice."). Stage 4 is being built. The rope look-test is done and waiting for Stage 5.
+nice."). Stage 4 is built and waiting at the gate (F2, K drops the kit with a charger,
+a turbine and a cable). The rope look-test is done and waiting for Stage 5.
 
 ## The loop we're building toward
 

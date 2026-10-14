@@ -14,6 +14,8 @@ const CATCH_AREA := 0.25
 ## What it gives a device: capacity_wh, hooks, lift_kg, solar_w, light_w,
 ## plants, catch (wind catch).
 @export var stats: Dictionary = {}
+## The socket it's fitted in, or null while loose.
+var socket: Socket
 
 
 ## Loose, the wind grabs a part by its size, so a seedling doesn't blow away in

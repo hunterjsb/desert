@@ -79,4 +79,6 @@ reach = 2.5
 take_seconds = 0.12
 tug_seconds = 0.2
 throw_speed = 6.0
+power_tick = 0.25
+turbine_watts_per_cubic = 0.0128
 loose_wind_catch = 0.05

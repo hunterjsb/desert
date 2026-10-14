@@ -29,6 +29,7 @@ var gravity: float
 @onready var content: Node3D = $Content
 @onready var player: Player = $Content/Player
 @onready var weather: Weather = $Weather
+@onready var power: Power = $Power
 
 var _last_x: float
 var _last_z: float
@@ -45,6 +46,7 @@ func _ready() -> void:
 	set_gravity(tuning.gravity)
 	terrain.setup(self)
 	weather.setup(self)
+	power.setup(self)
 	_set_scene()
 	var half := tuning.chunk_size * 0.5
 	player.global_position = Vector3(half, shape.height_at(half, half) + 0.1, half)

@@ -4,7 +4,7 @@ extends WorldProbe
 
 ## The part that goes in each kind of socket when a device is fitted out.
 const FILL := {&"battery": &"battery", &"ring": &"hook", &"bottom": &"hover_tray", &"top": &"solar_panel",
-	&"plant_small": &"seedling", &"plant_large": &"sapling"}
+	&"plant_small": &"seedling", &"plant_large": &"sapling", &"port": &"plug"}
 
 
 ## A device of the catalog, dropped in front of the player at a height, with
@@ -20,6 +20,18 @@ func spawn_device(id: StringName, ahead := 4.0, above := 1.0, filled := true) ->
 			world.content.add_child(part)
 			device.fit(part, socket)
 	return device
+
+
+## Fits a fresh catalog part into the device's first free socket of its kind.
+func fit_part(device: Device, part_id: StringName) -> Part:
+	var part := Catalog.part(part_id)
+	world.content.add_child(part)
+	for socket in device.sockets():
+		if socket.kind == part.kind and socket.part == null:
+			device.fit(part, socket)
+			return part
+	check(false, "%s has a free socket for a %s" % [device.label, part.label])
+	return part
 
 
 ## Runs the physics k times faster than real time without changing a tick's

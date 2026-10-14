@@ -12,6 +12,7 @@ const KINDS := {
 	&"top": Color(0.4, 0.9, 0.5),
 	&"plant_small": Color(0.55, 0.85, 0.3),
 	&"plant_large": Color(0.35, 0.65, 0.2),
+	&"port": Color(1.0, 0.5, 0.1),
 }
 
 ## Parts: the socket kind they fit, weight, size (z is how far they stand out
@@ -33,6 +34,8 @@ const PARTS := {
 		"color": Color(0.3, 0.7, 0.2), "stats": {"plants": 1}},
 	&"sapling": {"kind": &"plant_large", "label": "Sapling", "mass": 1.2, "size": Vector3(0.18, 0.18, 0.4),
 		"color": Color(0.2, 0.55, 0.15), "stats": {"plants": 1}},
+	&"plug": {"kind": &"port", "label": "Cable plug", "mass": 0.2, "size": Vector3(0.06, 0.06, 0.09),
+		"color": Color(1.0, 0.5, 0.1), "stats": {}},
 }
 
 ## Frames: their box, weight, wind catch and sockets as [kind, position, outward].
@@ -44,6 +47,7 @@ const DEVICES := {
 			[&"ring", Vector3(-0.4, 0.0, 0.0), Vector3.LEFT],
 			[&"bottom", Vector3(0.0, -0.25, 0.0), Vector3.DOWN],
 			[&"top", Vector3(0.0, 0.25, 0.0), Vector3.UP],
+			[&"port", Vector3(0.25, 0.1, -0.4), Vector3.FORWARD],
 		]},
 	&"planter": {"label": "Planter", "size": Vector3(1.0, 0.35, 0.6), "mass": 10.0, "catch": 0.06,
 		"sockets": [
@@ -55,13 +59,28 @@ const DEVICES := {
 			[&"ring", Vector3(0.0, 0.0, 0.3), Vector3.BACK],
 			[&"ring", Vector3(0.0, 0.0, -0.3), Vector3.FORWARD],
 			[&"bottom", Vector3(0.0, -0.175, 0.0), Vector3.DOWN],
+			[&"port", Vector3(0.5, 0.0, 0.0), Vector3.RIGHT],
+		]},
+	# Put a panel on top and a battery in front, and it charges the battery in the sun.
+	&"charger": {"label": "Charger", "size": Vector3(0.45, 0.25, 0.35), "mass": 5.0, "catch": 0.02,
+		"sockets": [
+			[&"battery", Vector3(0.0, 0.0, 0.175), Vector3.BACK],
+			[&"top", Vector3(0.0, 0.125, 0.0), Vector3.UP],
+			[&"port", Vector3(0.225, 0.0, 0.0), Vector3.RIGHT],
+		]},
+	# Strongest in a storm, and only while planted on the sand.
+	&"turbine": {"label": "Wind turbine", "size": Vector3(0.5, 0.3, 0.5), "mass": 18.0, "catch": 0.12,
+		"stats": {"turbine_w": 200.0}, "mast": 1.6,
+		"sockets": [
+			[&"battery", Vector3(0.0, 0.0, 0.25), Vector3.BACK],
+			[&"port", Vector3(0.25, 0.0, 0.0), Vector3.RIGHT],
 		]},
 }
 
 
 static func part(id: StringName) -> Part:
 	var spec: Dictionary = PARTS[id]
-	var made := Part.new()
+	var made: Part = Battery.new() if spec.kind == &"battery" else Part.new()
 	made.kind = spec.kind
 	made.label = spec.label
 	made.mass = spec.mass
@@ -69,6 +88,32 @@ static func part(id: StringName) -> Part:
 	var size: Vector3 = spec.size
 	# Standing out from its socket along +Z.
 	_add_box(made, size, Vector3(0.0, 0.0, size.z * 0.5), spec.color)
+	if made is Battery:
+		# Found full, for now; salvage will find them at any charge.
+		made.charge_wh = made.capacity()
+		made.light = ChargeLight.make(Vector3(size.x * 0.7, 0.02, 0.01))
+		made.light.position = Vector3(0.0, size.y * 0.3, size.z + 0.005)
+		made.add_child(made.light)
+		made.show_charge()
+	if made.stats.get("light_w", 0.0) > 0.0:
+		var lamp := OmniLight3D.new()
+		lamp.light_color = Color(1.0, 0.85, 0.6)
+		lamp.omni_range = 7.0
+		lamp.position = Vector3(0.0, 0.0, size.z + 0.1)
+		made.add_child(lamp)
+	return made
+
+
+## A cable and its two plugs, dropped together at a place; both plugs go loose
+## in the world as parts and the cable draws the wire between them.
+static func cable(world: World, at: Vector3) -> Cable:
+	var made := Cable.new()
+	world.content.add_child(made)
+	for side in [-0.2, 0.2]:
+		var plug := part(&"plug")
+		world.content.add_child(plug)
+		plug.global_position = at + Vector3(side, 0.05, 0.0)
+		made.plugs.append(plug)
 	return made
 
 
@@ -78,7 +123,15 @@ static func device(id: StringName) -> Device:
 	made.label = spec.label
 	made.frame_mass = spec.mass
 	made.frame_catch = spec.catch
-	_add_box(made, spec.size, Vector3.ZERO, Color(0.55, 0.55, 0.55))
+	made.frame_stats = spec.get("stats", {}).duplicate()
+	var size: Vector3 = spec.size
+	_add_box(made, size, Vector3.ZERO, Color(0.55, 0.55, 0.55))
+	if spec.has("mast"):
+		_add_mast(made, size, spec.mast)
+	if spec.sockets.any(func(e: Array) -> bool: return e[0] == &"battery"):
+		made.charge_light = ChargeLight.make(Vector3(0.05, 0.05, 0.05))
+		made.charge_light.position = Vector3(size.x * 0.5 - 0.05, size.y * 0.5 + 0.025, size.z * 0.5 - 0.05)
+		made.add_child(made.charge_light)
 	for entry: Array in spec.sockets:
 		var socket := Socket.new()
 		socket.kind = entry[0]
@@ -98,6 +151,24 @@ static func device(id: StringName) -> Device:
 		socket.marker = tell
 		made.add_child(socket)
 	return made
+
+
+## The turbine's mast and blades: something to see turn into the wind, not to touch.
+static func _add_mast(device: Device, base: Vector3, height: float) -> void:
+	var mast := MeshInstance3D.new()
+	var pole := CylinderMesh.new()
+	pole.top_radius = 0.03
+	pole.bottom_radius = 0.04
+	pole.height = height
+	mast.mesh = pole
+	mast.position = Vector3(0.0, base.y * 0.5 + height * 0.5, 0.0)
+	device.add_child(mast)
+	var blades := MeshInstance3D.new()
+	var vane := BoxMesh.new()
+	vane.size = Vector3(1.2, 0.08, 0.02)
+	blades.mesh = vane
+	blades.position = Vector3(0.0, base.y * 0.5 + height, 0.06)
+	device.add_child(blades)
 
 
 ## A basis whose +Z points along outward.

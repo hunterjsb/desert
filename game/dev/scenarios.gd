@@ -25,12 +25,15 @@ const LIST: Array[Dictionary] = [
 
 ## The test kit, as [catalog id, metres to your right, metres ahead]: an empty
 ## crate frame and planter, and parts for every kind of socket on them.
-const KIT_DEVICES := [[&"crate_frame", -1.0, 3.0], [&"planter", 1.2, 3.2]]
+const KIT_DEVICES := [[&"crate_frame", -1.0, 3.0], [&"planter", 1.2, 3.2], [&"charger", -2.4, 1.5],
+	[&"turbine", 2.6, 1.6]]
+## Cables dropped with the kit, right and ahead, and how many.
+const KIT_CABLE := [0.0, 2.3]
 const KIT_PARTS := [
 	[&"battery", -1.6, 1.6], [&"big_battery", -1.2, 1.7], [&"hook", -0.8, 1.6], [&"hook", -0.55, 1.7],
 	[&"lamp", -0.25, 1.6], [&"seedling", 0.1, 1.7], [&"seedling", 0.35, 1.6], [&"seedling", 0.6, 1.7],
 	[&"sapling", 0.95, 1.6], [&"battery", 1.3, 1.7], [&"hover_tray", -2.6, 2.4],
-	[&"hover_tray", 2.8, 2.6], [&"solar_panel", -2.6, 3.6],
+	[&"hover_tray", 2.8, 2.6], [&"solar_panel", -2.6, 3.6], [&"solar_panel", -3.0, 2.2],
 ]
 
 ## How far upwind a search looks for edges, and its step.
@@ -149,6 +152,11 @@ static func kit(world: World) -> Array[Node3D]:
 		var part := Catalog.part(entry[0])
 		_drop(world, part, Transform3D(yaw * Basis(Vector3.RIGHT, -PI / 2.0), Vector3.ZERO), entry[1], entry[2])
 		dropped.append(part)
+	var at := player.global_position + player.global_basis.x * KIT_CABLE[0] - player.global_basis.z * KIT_CABLE[1]
+	at.y = world.height_under(at)
+	var cable := Catalog.cable(world, at)
+	dropped.append(cable)
+	dropped.append_array(cable.plugs)
 	return dropped
 
 

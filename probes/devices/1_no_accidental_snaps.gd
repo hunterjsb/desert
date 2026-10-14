@@ -180,8 +180,9 @@ func _settle(seconds: float) -> void:
 ## The control: held and aimed, parts do fit.
 func _held_and_aimed_fits() -> void:
 	var fits_before := _hand_fits
+	# The planter gets a battery too: a tray only floats a device with power.
 	for job: Array in [[_crate, &"battery", false], [_planter, &"plant_small", false],
-			[_planter, &"bottom", true]]:
+			[_planter, &"battery", false], [_planter, &"bottom", true]]:
 		var owner: Device = job[0]
 		var socket: Socket
 		for each in owner.sockets():
@@ -203,7 +204,7 @@ func _held_and_aimed_fits() -> void:
 			look(at * middle(lying) + at.basis.z * 1.0 + Vector3.UP * 0.4, at * middle(lying))
 			await simulate(0.6)
 		check(socket.part == lying, "a held %s, aimed, fits %s's %s socket" % [lying.label, owner.label, socket.kind])
-	check(_hand_fits - fits_before == 3, "through the hands")
+	check(_hand_fits - fits_before == 4, "through the hands")
 	await simulate(2.0)
 	check(_planter.stats().hovering and _planter.global_position.y > world.height_under(_planter.global_position) + 0.8,
 		"the planter floats on the tray slid under it")

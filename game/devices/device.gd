@@ -2,7 +2,8 @@ class_name Device
 extends RigidBody3D
 ## A frame with sockets. A fitted part becomes part of the device: its shapes
 ## and weight join this body, never through a joint, so there's nothing left to
-## wobble. Everything the device can do is computed from what's fitted.
+## wobble. Everything the device can do is computed from what's fitted. Power
+## (Stage 4) says whether it's running; a dark device can't float or shine.
 
 signal parts_changed
 
@@ -10,6 +11,13 @@ signal parts_changed
 ## The bare frame's weight, kg, and how much the wind grabs it.
 @export var frame_mass := 15.0
 @export var frame_catch := 0.05
+## What the bare frame does by itself, like a turbine's turbine_w.
+@export var frame_stats: Dictionary = {}
+
+## Set by Power each tick: false once its battery and sources can't meet its draw.
+var powered := true
+## Its charge light, showing the fitted battery's charge.
+var charge_light: MeshInstance3D
 
 var world: World
 var _hovering := false
@@ -35,6 +43,41 @@ func sockets() -> Array[Socket]:
 		if child is Socket:
 			found.append(child)
 	return found
+
+
+## The battery in its battery slot, or null.
+func battery() -> Battery:
+	for socket in sockets():
+		if socket.kind == &"battery" and socket.part is Battery:
+			return socket.part
+	return null
+
+
+## What it generates, W, from the felt weather where it stands, now or at
+## world time t.
+func production_w(t := NAN) -> float:
+	if world == null:
+		return 0.0
+	var now := stats()
+	var watts: float = now["solar_w"] * world.weather.felt_light(global_position + Vector3.UP * 0.5, t)
+	# A turbine works planted: resting on the sand, not floating or being carried.
+	if now["turbine_w"] > 0.0 and not now["can_float"] and linear_velocity.length() < 0.3:
+		var wind := world.weather.felt_wind(global_position, t).length()
+		watts += minf(now["turbine_w"], world.tuning.turbine_watts_per_cubic * wind * wind * wind)
+	return watts
+
+
+## What it would draw now, W, if it had the power.
+func demand_w() -> float:
+	var now := stats()
+	return now["hover_w"] + now["light_w"]
+
+
+func set_powered(on: bool) -> void:
+	if on == powered:
+		return
+	powered = on
+	_recompute()
 
 
 func parts() -> Array[Part]:
@@ -67,6 +110,7 @@ func fit(part: Part, socket: Socket) -> void:
 	if part.get_parent() != null:
 		part.get_parent().remove_child(part)
 	socket.part = part
+	part.socket = socket
 	if socket.marker != null:
 		socket.marker.visible = false
 	_rise_clear_of_sand(socket.fitted)
@@ -104,6 +148,7 @@ func take(socket: Socket) -> Part:
 		node.transform = local
 	socket.fitted.clear()
 	socket.part = null
+	part.socket = null
 	if socket.marker != null:
 		socket.marker.visible = true
 	get_parent().add_child(part)
@@ -116,12 +161,16 @@ func take(socket: Socket) -> Part:
 ## Everything the device can do, from the frame and what's fitted.
 func stats() -> Dictionary:
 	var total := {"mass": mass, "catch": frame_catch, "capacity_wh": 0.0, "hooks": 0,
-		"lift_kg": 0.0, "solar_w": 0.0, "light_w": 0.0, "plants": 0}
-	for part in parts():
-		for key: String in part.stats:
-			total[key] = total.get(key, 0) + part.stats[key]
-	total["hovering"] = total["lift_kg"] >= mass
-	total["hover_w"] = mass * world.tuning.hover_watts_per_kg if total["hovering"] and world != null else 0.0
+		"lift_kg": 0.0, "solar_w": 0.0, "light_w": 0.0, "plants": 0, "turbine_w": 0.0}
+	for source: Dictionary in [frame_stats] + parts().map(func(p: Part) -> Dictionary: return p.stats):
+		for key: String in source:
+			total[key] = total.get(key, 0) + source[key]
+	total["can_float"] = total["lift_kg"] >= mass
+	total["hovering"] = total["can_float"] and powered
+	total["hover_w"] = mass * world.tuning.hover_watts_per_kg if total["can_float"] and world != null else 0.0
+	var cell := battery()
+	if cell != null:
+		total["charge_wh"] = cell.charge_wh
 	return total
 
 
@@ -136,6 +185,11 @@ func _recompute() -> void:
 	center_of_mass = moment / weight
 	var now := stats()
 	_hovering = now["hovering"]
+	# Lamps shine only while it has the power.
+	for socket in sockets():
+		for node in socket.fitted:
+			if node is Light3D:
+				node.visible = powered
 	# A resting body sleeps, and a sleeping one ignores the tray's lift.
 	can_sleep = not _hovering
 	if _hovering:

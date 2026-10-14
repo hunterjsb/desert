@@ -94,6 +94,22 @@ the felt-weather rule.
 - A fixed-rate power tick.
 - The probes below, all passing.
 
+**As built (2026-10-14):**
+- **The light solar panel is the panel part.** Carry it and fit it on any device's top
+  mount; it powers that device. A small **charger** frame (a top mount and a battery
+  slot) is how you charge a loose battery in the sun.
+- **Cables are two plugs on 6 m of wire.** Each plug snaps into a port socket like any
+  part, so wiring is the same act as fitting. Pull a cable too far and a loose plug is
+  dragged along; with both ends held fast, a plug pops out.
+- **Cabled devices share one pool.** What they make feeds what they draw, then fills
+  their batteries, and any surplus is spilled. A pool that can't meet its draw goes
+  dark, so a crate's tray stops and it settles to the sand. A dark pool runs nothing
+  and lets its sources recharge it, and restarts once its batteries hold 5%.
+- **The tick reads each source at its own world time**, four times a second of world
+  time, so F5 charges faster and 30, 60 or 120 frames a second give the same charge to
+  the bit.
+- **The turbine** makes up to 200 W in a gale and nothing while it's being moved.
+
 ## Full version
 
 - **Battery tiers,** chargers, wires, and central capacitors built from them.
@@ -129,6 +145,7 @@ the felt-weather rule.
 ## Open questions
 
 - **Are wires their own item, or can a rope carry power** (conductive cable as an
-  upgrade), so tying things together and wiring them up are the same act?
+  upgrade), so tying things together and wiring them up are the same act? The skeleton
+  makes cables their own item, with plugs that snap like rope ends will.
 - **What other sources are there?** Salvaged colonial power cells, for example, since
   the best tech is the oldest.

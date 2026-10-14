@@ -154,14 +154,19 @@ static func describe(label: String, mass: float, stats: Dictionary) -> String:
 	var bits := PackedStringArray([label, ("%d kg" % roundi(mass)) if is_equal_approx(mass, roundf(mass))
 		else ("%.1f kg" % mass)])
 	if stats.get("capacity_wh", 0.0) > 0.0:
-		bits.append("%d Wh" % roundi(stats.capacity_wh))
+		if stats.has("charge_wh"):
+			bits.append("%d/%d Wh" % [floori(stats.charge_wh), roundi(stats.capacity_wh)])
+		else:
+			bits.append("%d Wh" % roundi(stats.capacity_wh))
 	var hooks: int = stats.get("hooks", 0)
 	if hooks > 0:
 		bits.append("%d hook%s" % [hooks, "" if hooks == 1 else "s"])
 	if stats.get("lift_kg", 0.0) > 0.0:
 		bits.append("floats %d kg" % roundi(stats.lift_kg))
-	if stats.get("hover_w", 0.0) > 0.0:
-		bits.append("%d W" % roundi(stats.hover_w))
+	if stats.get("in_w", 0.0) > 0.0 or stats.get("out_w", 0.0) > 0.0:
+		bits.append("in %d W · out %d W" % [roundi(stats.get("in_w", 0.0)), roundi(stats.get("out_w", 0.0))])
+	if stats.get("dark", false):
+		bits.append("DARK")
 	if stats.get("solar_w", 0.0) > 0.0:
 		bits.append("%d W solar" % roundi(stats.solar_w))
 	if stats.get("light_w", 0.0) > 0.0:
@@ -644,14 +649,26 @@ func _build_hud() -> void:
 	hud.add_child(_readout)
 
 
+## A part's stats, with a battery's charge as it stands.
+func _part_stats(part: Part) -> Dictionary:
+	if part is Battery:
+		var with_charge := part.stats.duplicate()
+		with_charge["charge_wh"] = part.charge_wh
+		return with_charge
+	return part.stats
+
+
 func _show(delta: float) -> void:
 	var line := ""
 	if look_part != null:
-		line = describe(look_part.label, look_part.mass, look_part.stats)
+		line = describe(look_part.label, look_part.mass, _part_stats(look_part))
 	elif look_socket != null and look_socket.part != null:
-		line = describe(look_socket.part.label, look_socket.part.mass, look_socket.part.stats)
+		line = describe(look_socket.part.label, look_socket.part.mass, _part_stats(look_socket.part))
 	elif look_device != null:
 		var stats := look_device.stats()
+		stats["in_w"] = look_device.production_w()
+		stats["out_w"] = look_device.demand_w() if look_device.powered else 0.0
+		stats["dark"] = not look_device.powered
 		line = describe(look_device.label, stats.mass, stats)
 	if line != "" and line != _readout.text:
 		_readout.text = line

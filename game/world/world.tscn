@@ -4,6 +4,7 @@
 [ext_resource type="Script" path="res://game/world/terrain.gd" id="2_terrain"]
 [ext_resource type="PackedScene" path="res://game/player/player.tscn" id="3_player"]
 [ext_resource type="Script" path="res://game/weather/weather.gd" id="4_weather"]
+[ext_resource type="Script" path="res://game/power/power.gd" id="9_power"]
 [ext_resource type="Script" path="res://game/weather/storm_face.gd" id="5_face"]
 [ext_resource type="Script" path="res://game/weather/atmosphere.gd" id="6_atmosphere"]
 
@@ -41,6 +42,9 @@ script = ExtResource("5_face")
 
 [node name="Atmosphere" type="Node3D" parent="Weather"]
 script = ExtResource("6_atmosphere")
+
+[node name="Power" type="Node" parent="."]
+script = ExtResource("9_power")
 
 [node name="Content" type="Node3D" parent="."]
 

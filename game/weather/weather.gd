@@ -72,20 +72,25 @@ func setup(world: World) -> void:
 	face.setup(world, field, map)
 
 
-func felt_storm(at: Vector3) -> float:
-	return field.storm_at(_world.world_x(at.x), _world.world_z(at.z), _world.time)
+## Each felt_*() reads now, or a given world time t: power ticks read theirs.
+func felt_storm(at: Vector3, t := NAN) -> float:
+	return field.storm_at(_world.world_x(at.x), _world.world_z(at.z), _when(t))
 
 
 ## Horizontal wind, m/s, in engine axes.
-func felt_wind(at: Vector3) -> Vector3:
-	var w := field.wind_at(_world.world_x(at.x), _world.world_z(at.z), _world.time)
+func felt_wind(at: Vector3, t := NAN) -> Vector3:
+	var w := field.wind_at(_world.world_x(at.x), _world.world_z(at.z), _when(t))
 	return Vector3(w.x, 0.0, w.y)
 
 
 ## Sunlight reaching a place, 0 to 1: the sky's share after the storm takes its own.
-func felt_light(at: Vector3) -> float:
-	return day.sunlight(_world.time, _world.moon.latitude) \
-		* (1.0 - _tuning.storm_darkness * felt_storm(at))
+func felt_light(at: Vector3, t := NAN) -> float:
+	return day.sunlight(_when(t), _world.moon.latitude) \
+		* (1.0 - _tuning.storm_darkness * felt_storm(at, t))
+
+
+func _when(t: float) -> float:
+	return _world.time if is_nan(t) else t
 
 
 ## The clock jumped: forecast again on the next tick.
