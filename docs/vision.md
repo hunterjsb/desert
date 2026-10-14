@@ -169,7 +169,7 @@ the start.
 8. [Farming](prd/farming.md)
 9. [Movement](prd/movement.md)
 10. [Salvage & ruins](prd/salvage-and-ruins.md)
-11. Radio, sound & atmosphere
+11. [Radio, sound & atmosphere](prd/radio-sound-and-atmosphere.md)
 
 ## Open questions
 
