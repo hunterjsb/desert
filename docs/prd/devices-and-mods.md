@@ -79,6 +79,16 @@ satisfying, every single time.
   enough to turn. A staked or heavy device stays put, so you walk round to the part.
 - **Speed:** a battery swap should take a second or two.
 
+**As built in the skeleton (2026-10-14):**
+- **The tug follows your aim, not the part's position.** A part held at arm's length
+  can never get within 30 cm of a socket on a crate sitting on the sand. So a free
+  socket tugs when your line of sight passes within reach of where the part would sit,
+  and you're on its open side.
+- **Sliding a tray under a resting device** works from the side, and lifts the device
+  onto it.
+- **The device doesn't turn toward you on removal yet;** it holds still while the part
+  slides out.
+
 ## Where parts come from, and how they wear
 
 - **Parts are found, never crafted,** at least for now. Salvage is the only source,
