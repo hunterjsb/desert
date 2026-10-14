@@ -100,6 +100,8 @@ static func part(id: StringName) -> Part:
 		lamp.light_color = Color(1.0, 0.85, 0.6)
 		lamp.omni_range = 7.0
 		lamp.position = Vector3(0.0, 0.0, size.z + 0.1)
+		# Dark until a powered device runs it.
+		lamp.visible = false
 		made.add_child(lamp)
 	return made
 

@@ -146,6 +146,9 @@ func take(socket: Socket) -> Part:
 		node.remove_meta(&"socket")
 		part.add_child(node)
 		node.transform = local
+		# Out of a device, nothing powers its lamp.
+		if node is Light3D:
+			node.visible = false
 	socket.fitted.clear()
 	socket.part = null
 	part.socket = null
