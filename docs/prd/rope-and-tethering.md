@@ -95,9 +95,13 @@ core action:
 - **Travelling:** unstaked and towed. The pieces follow on their lines, swing with the
   gusts, and pull on whatever tows them.
 
-**What does the towing**, owned by Movement and Camp, with the rope serving all of them:
+Early on, a **post or a ruin** to tie more of the camp to when a storm hits is worth a
+lot.
 
-- **You.** You hold the lead and feel the pull.
+**What does the towing**, owned by Movement and Camp, with the rope serving all of them.
+The hoverboard tows nothing.
+
+- **You.** You hold the lead and feel the pull. You're the most reliable tower.
 - **A mechanical beast.** It follows at a distance and carries or tows things. A rusty
   robot made of stiff, separate parts needs no skin rigging at all, which sidesteps the
   problem that sank Delve.

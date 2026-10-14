@@ -63,8 +63,13 @@ This also explains *why* the wind is the difficulty dial, without any extra rule
 Travel downwind and storms behind you close in slowly, because you're moving with
 them. Travel upwind and you meet storms head-on, at their speed plus yours. You face
 more storms, so you uncover more finds. The risk and the reward both come out of the
-same field. The faster you travel, the stronger the dial: on foot, storms still catch
-you from behind, but on a hoverboard you can nearly keep pace.
+same field. The faster the camp travels, the stronger the dial: on foot, storms catch
+you whatever you do, but the sand yacht can nearly keep pace.
+
+**How long storms last** is a tuning target. Sitting a storm out is the main move early
+on (Movement), so a typical storm should pass within a full base shield's 30 minutes.
+Longer storms are the real danger, the kind that makes you carry spare batteries or
+plant a turbine. Late-game camps can sustain through storms that last for days.
 
 **How rare clear skies are isn't a number we set.** It comes out of how much of the
 moon is stormy, how big gaps are and how long they last, how fast storms move, and how
@@ -171,9 +176,11 @@ All run without a window, with a fixed seed.
    field at the player crosses the threshold, and switch off when it drops back.
 6. **Wind pushes.** A loose box drifts downwind at the expected rate.
 7. **Clear skies are earned.** Over a long simulated run, four reference travellers
-   (sitting still, drifting with the wind, chasing gaps on foot, chasing gaps on a
-   hoverboard) each spend a share of time in the clear that lands inside their target
-   band. The share has to rise with skill and speed.
+   (sitting still, drifting with the wind, chasing gaps on foot, chasing gaps by sand
+   yacht) each spend a share of time in the clear that lands inside their target band.
+   The share has to rise with skill and speed.
+8. **Storms pass.** For a traveller sitting still, most storms pass within a full base
+   shield's charge, and longer ones exist.
 
 ## Out of scope
 

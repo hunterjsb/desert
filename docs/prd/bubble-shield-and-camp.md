@@ -21,9 +21,10 @@ shield you can move through a storm.
 - **Outside the bubble, the weather hurts.** You take damage, and so do camp pieces left
   out. They wear down and eventually get destroyed.
 - **When the power dies in a storm, it's a tough place to be.** The bubble collapses
-  and the storm floods in. You'd better have some juice left in the hoverboard, because
-  you have to run. If you got here, you've probably used up every other option, and it
-  might be GG.
+  and the storm floods in. If you've found a hoverboard, you'd better have some juice
+  left in it, because you have to run. Without one, you'd better be near the storm's
+  edge. If you got here, you've probably used up every other option, and it might be
+  GG.
 
 ## What hurts you out there
 

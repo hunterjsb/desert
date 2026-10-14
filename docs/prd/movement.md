@@ -5,31 +5,72 @@
 ## Why this system exists
 
 Moving is most of what you do: wandering, choosing a direction against the wind, towing
-the camp, and running when the shield dies. Movement is where both difficulty dials
+the camp, and deciding how to meet each storm. Movement is where both difficulty dials
 are felt in your body. It's also where the game has to be most fun from second to
 second, because you'll spend hours doing it.
+
+## The split
+
+**The camp moves at walking pace. The board is just for you. Storms are weathered, not
+outrun,** at least until the late-game haulers arrive.
 
 ## On foot
 
 - **Walking, about 5 km/h, and sprinting,** which costs stamina.
+- **You tow the camp.** You're the most reliable thing to tow with: bubble up, planters
+  floating on short lines (Rope & tethering).
 - **The dunes push back.** Gentle windward slopes are easy. Climbing a steep slip face
   is slow and costs stamina, and travelling into the wind means climbing them.
 - **The wind pushes you,** using your wind catch and the felt weather. Inside a shield,
   it doesn't.
-- **Lines pull you.** A strong gust on a line drags you, and a waist tie slows you down
-  (Rope & tethering).
+- **Lines pull you.** A strong gust on a line drags you, and a waist tie slows you down.
+
+## Meeting a storm
+
+Storms are faster than anyone walks, and the wall gives you about 5 minutes. That's time
+to batten down, not to run. Pull the planters in, stake what needs staking, shield up.
+Then choose:
+
+- **Sit it out** and let it pass.
+- **Walk through it** inside your moving bubble.
+- **Head into the wind** to come out the back sooner. It's the hard way.
+- **Sidestep an edge** on foot, if you read the storm early enough.
+
+**Early on, weathering is hard,** and anchors are precious. A post or a ruin to tie more
+of the camp to when a storm hits is worth a lot. Every storm is a judgment call, based on
+how fast it looks like it's moving and what your instruments tell you: stay here for
+this one, or push through?
+
+**Later, it gets easier.** Bigger setups let you keep moving and sustain through storms,
+even storms that last for days.
 
 ## The hoverboard
 
+- **It's a find, not a starting item.** Finding one is a moment of freedom.
 - **Fast and floaty.** It skims the dunes, and it's fun to turn, with a little give and
   rotation on the curve of a dune so you can do tricks.
-- **It's your escape.** Unloaded and charged, it outruns a storm front, which moves at
-  20–40 km/h. It runs on its own battery.
-- **It can tow, but only in a pinch.** Towing slows the board, the drag climbs steeply
-  with what you're pulling, and it eats power. That's what makes the escape a choice:
-  - Not deep in the storm and running low? Grab a hover planter and run.
-  - Too deep? You need every bit of charge and the board can't afford the slowdown.
-    Leave the planter, take the board and go, and hope you find another one out there.
+- **It's for scouting and escaping.** Unloaded and charged, it outruns a storm front. It
+  runs on its own battery.
+- **It tows nothing.** That keeps it fun, and it keeps it from competing with the camp.
+  When the shield dies deep in a storm, you take what's in your hand and go. Before you
+  find a board, a shield failure deep in a storm is fatal, so early runs stay in
+  shallow storms and carry spare batteries.
+
+## Haulers: moving the base faster
+
+The base gets faster through a progression of haulers:
+
+1. **On foot,** from the start: reliable and slow.
+2. **The mechanical beast.** Walking pace, but it carries a lot and follows you on its
+   own. It's made of stiff parts, so it needs no skin rigging.
+3. **The sand yacht.** The real fast base-mover. It runs on the wind, so it belongs in
+   this world. It's fast with the wind, it can zigzag upwind (tacking), and a real land
+   yacht can go faster than the wind itself. A good one might outrun a storm with the
+   camp aboard.
+4. **Big carriers,** like the walker farmer, that carry the farm and the shield.
+
+Early on you weather storms. Later, the yacht lets you choose between weathering one
+and outrunning it.
 
 ## Leaving your camp behind
 
@@ -41,31 +82,22 @@ forgotten. That's fine, as long as it's never a surprise:
 - **Warnings are timed by speed, not just distance.** Even at full speed on the board,
   you get enough seconds to turn back.
 
-## Later movers
-
-- **The mechanical beast** follows at a distance and carries or tows things. It's made
-  of stiff parts, so it needs no skin rigging.
-- **The sand yacht** rides the wind. It can zigzag upwind (tacking), and a real land
-  yacht can go faster than the wind itself, so a good one might outrun a storm.
-- **Big carriers,** like the walker farmer, that can carry the farm and the shield.
-
 ## Rules
 
 1. **The board floats on the ground's one function.** Its hover height follows
    `height_at`, so it never catches on collision seams between chunks. It only collides
    with objects and ruins.
 2. **Movement reads the felt wind,** so shelter applies to it.
-3. **Tow drag rises steeply with load,** and power draw rises with it.
-4. **Frame-rate proof.** The same input gives the same path at any frame rate.
-5. **Never silently lose the camp.** Leaving camp range always comes with warnings, with
+3. **Frame-rate proof.** The same input gives the same path at any frame rate.
+4. **Never silently lose the camp.** Leaving camp range always comes with warnings, with
    enough time to react at any speed.
 
 ## Skeleton version
 
 - Walking, sprinting and stamina, with slip faces costing more.
+- Towing the camp on foot.
 - Wind pushing you, and lines dragging you.
-- The hoverboard: fast, floaty and carving, with its own battery, and towing with steep
-  drag.
+- The hoverboard: fast, floaty and carving, with its own battery.
 - Camp-range warnings.
 - Getting on and off the board quickly.
 - The probes below, all passing.
@@ -81,12 +113,11 @@ forgotten. That's fine, as long as it's never a surprise:
 
 1. **The long ride.** Ride 20 km of dunes, slip faces and chunk seams at top speed. The
    board never dips below the sand, never launches unexpectedly, and never jitters.
-2. **The escape is real.** An unloaded board on a full charge escapes a storm front from
-   a set distance. The same board towing a loaded planter doesn't.
-3. **Towing costs what it should.** Speed and power draw follow the designed curve as the
-   towed weight rises.
-4. **The wind dial on foot.** Crossing the same dunes takes more time and stamina upwind
+2. **The escape is real.** A charged board escapes a storm front from a set distance.
+3. **The wind dial on foot.** Crossing the same dunes takes more time and stamina upwind
    than downwind.
+4. **The camp follows on foot.** Tow the reference camp 2 km on foot, through a storm,
+   with the bubble up. Everything arrives, inside the bubble and undamaged.
 5. **The warnings always come first.** At every speed up to full, the camp-range
    warnings fire with enough time to react before the camp is lost.
 6. **Frame-rate proof.** The same ride at 30, 60 and 120 frames per second follows the
@@ -100,7 +131,7 @@ forgotten. That's fine, as long as it's never a surprise:
 
 ## Open questions
 
-- **How fast is the board, and how far does a charge go?** It has to beat a storm front
-  unloaded. The rest is tuning.
+- **How fast is the board, and how far does a charge go?** It has to beat a storm front.
+  The rest is tuning.
 - **Do tricks do anything,** or are they just for fun?
 - **How do the warnings show up?** Sound, the suit, the radio, a visible edge?

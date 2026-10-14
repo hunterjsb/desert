@@ -62,10 +62,14 @@ upgrade the camp → the camp sustains more of itself → go further, or into th
   on caterpillar tracks, is strong for the camp but slows you down.
 - **Parts are found, never crafted** (for now), and they wear out only from the
   elements. Salvage is the whole economy.
-- **Things can pull the camp for you** (ideas, not settled). One is a rusty mechanical
-  beast that follows at a distance and carries or tows. It's made of stiff parts, so it
-  needs no skin rigging. Another is a sand yacht that rides the wind, can zigzag upwind,
-  and is fast.
+- **The camp moves at walking pace, and storms are weathered, not outrun.** Each storm
+  is a judgment call: stay and let it pass, or push through inside the bubble. Early on,
+  a post or ruin to tie to is precious.
+- **Haulers make the base faster later:** a rusty mechanical beast that follows and
+  carries (stiff parts, so no skin rigging), a sand yacht that rides the wind and might
+  outrun a storm with the camp aboard, and big carriers.
+- **The hoverboard is just for you:** fast, floaty and fun, for scouting and escaping. It
+  tows nothing.
 - **Your hands plus about five inventory slots, and almost no menus.** Things live in
   the world and in your hands, not in an inventory screen.
 
