@@ -70,6 +70,7 @@ func _physics_process(delta: float) -> void:
 		var shove := wind.normalized() * beyond * _tuning.wind_push
 		velocity.x += shove.x
 		velocity.z += shove.z
+	velocity += get_meta(&"rope_drag", Vector3.ZERO)
 	mode = "sprint" if sprinting else ("walk" if moving else "stand")
 	velocity.y = 0.0 if is_on_floor() else velocity.y - _gravity * delta
 	move_and_slide()
