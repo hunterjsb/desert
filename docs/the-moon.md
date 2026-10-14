@@ -10,16 +10,14 @@ A moon of a gas giant, with the giant orbiting in the warm part of its star's ha
 zone. Moons like this are a real idea in planetary science: a moon can get Earth-like
 sunlight from its star, plus some warmth from its planet's tides.
 
-## The one cheat: size
+## The one cheat: compressed distance
 
-The moon is **about 150 km round** for gameplay: circling it is an epic, and the poles
-are reachable. A real body that small would have almost no gravity, about 0.2% of
-Earth's. It couldn't hold any air at all; a thrown rock would reach escape speed. To
-keep an atmosphere at these temperatures, a moon has to be roughly Mars-sized (about
-21,000 km round).
-
-We keep the 150 km anyway, with ordinary gravity, and never draw attention to it. Games
-with walkable planets routinely cheat this way. **Everything else stays honest.**
+A lap of the moon is **about 150 km** in the game, so circling it is an epic and the
+poles are reachable. That's compressed distance, the same way the 20-minute day is
+compressed time. **The real body is far bigger** (decided 2026-10-14): nobody in the
+world lives on a 24 km rock. A body that small couldn't hold gravity or air. The real
+size is whatever makes the rest of this profile honest; [the body research](body-research.md)
+works it out from the feel we want. **Everything else stays honest.**
 
 ## The air: thin, unbreathable, fading
 
