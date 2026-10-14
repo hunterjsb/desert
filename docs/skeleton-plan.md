@@ -3,8 +3,9 @@
 *Draft, 2026-10-13. How we build the skeleton described in [the vision](vision.md): every
 system in rough form, wired into one complete loop, before anything gets polished.*
 
-**Where we are:** Stages 0 and 1 passed the gate on 2026-10-14. Stage 2 is built, and the
-look-test's wall is being brought into it before the gate.
+**Where we are:** Stages 0 and 1 passed the gate on 2026-10-14, and Stage 2 passed later
+the same day, with the look-test's wall in the game. Stage 3 is being built. The rope
+look-test is done and waiting for Stage 5.
 
 ## The loop we're building toward
 
