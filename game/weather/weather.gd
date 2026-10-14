@@ -4,23 +4,44 @@ extends Node
 ## the player stands. Every system asks felt_*() at its own position and never
 ## reads the field directly, so when shelter arrives (the bubble shield) it
 ## edits the answers here and everything agrees about where the bubble is.
+##
+## The game plays by the field at the player: in_storm, harm, the far ring,
+## wind. The senses follow seen_storm, the dust at the camera as the screen
+## draws it, so the light drops exactly when the dust visibly swallows you.
+## This is the one owner of the sun, sky, haze and the storm walls' light.
 
 ## Planetshine: the night side still catches light off the planet.
 const NIGHT_LIGHT := 0.08
 ## How far ahead the readout forecasts, and the shortest change it can see.
 const FORECAST_HORIZON := 3600.0
 const FORECAST_STEP := 5.0
+## A clear day's light, which storms dim.
+const SUN_COLOR := Color(1.0, 0.95, 0.86)
+const AMBIENT_COLOR := Color(0.8, 0.72, 0.62)
+const AMBIENT_ENERGY := 0.75
+## The sand's colour, from the terrain's material: what blown grains look like.
+const SAND := Color(0.86, 0.72, 0.52)
+## The sun's disc, which the storm pass draws so a wall can cover it.
+const SUN_DISC := Vector3(14.0, 12.5, 10.5)
 
 var field: WeatherField
 var day: DayCycle
-## The weather at the player this frame, which the screen shows.
+var map: StormMap
+## The weather at the player this tick, which the game plays by.
 var storm := 0.0
 var in_storm := false
 var wind := Vector3.ZERO
+## How far into the dust the camera is, 0 to 1, by the same billows the screen
+## draws. What the senses follow.
+var seen_storm := 0.0
+## Sunlight reaching the camera past the storms, 0 to 1.
+var seen_sun := 1.0
+## Signed metres from the camera to the nearest front, positive inside.
+var seen_front := -INF
 ## World time the storm state at the player next flips; INF beyond the horizon.
 var next_change_time := INF
 
-@onready var wall: StormWall = $StormWall
+@onready var face: StormFace = $StormFace
 @onready var atmosphere: Atmosphere = $Atmosphere
 
 var _world: World
@@ -37,11 +58,18 @@ func setup(world: World) -> void:
 	_tuning = world.tuning
 	field = WeatherField.new(world.run_seed, _tuning)
 	day = DayCycle.new(_tuning)
+	map = StormMap.new(world, field)
 	_environment = (world.get_node("WorldEnvironment") as WorldEnvironment).environment
 	_sun = world.get_node("Sun")
 	_sun_energy = _sun.light_energy
+	_sun.light_color = SUN_COLOR
+	# The storm pass draws the disc, so a wall can cover it.
+	_sun.sky_mode = DirectionalLight3D.SKY_MODE_LIGHT_ONLY
 	_haze_color = _environment.fog_light_color
-	wall.setup(world, field)
+	_environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+	_environment.reflected_light_source = Environment.REFLECTION_SOURCE_DISABLED
+	_environment.fog_density = _tuning.haze_strength
+	face.setup(world, field, map)
 
 
 func felt_storm(at: Vector3) -> float:
@@ -84,9 +112,19 @@ func _physics_process(delta: float) -> void:
 		_forecast_due = 1.0
 		next_change_time = t + field.next_change(x, z, t, FORECAST_HORIZON, FORECAST_STEP)
 	_blow_loose_bodies()
-	wall.step(x, z, t)
-	_show()
+	map.update(t, _world.time_warp)
+	_show(delta)
 	_report()
+
+
+func _exit_tree() -> void:
+	if map != null:
+		map.finish()
+
+
+## Every drawn frame, after the world has moved and shifted.
+func _process(_delta: float) -> void:
+	face.sync(_world.time)
 
 
 ## Loose bodies feel drag: a push along the air's speed past them, growing
@@ -102,29 +140,60 @@ func _blow_loose_bodies() -> void:
 		body.apply_central_force(past * past.length() * catch)
 
 
-func _show() -> void:
+func _show(delta: float) -> void:
 	var t := _world.time
+	var camera := _world.player.camera
+	var eye := camera.global_position
 	var sun := day.sun_direction(t, _world.moon.latitude)
-	_sun.global_basis = Basis.looking_at(-sun, Vector3.UP if absf(sun.y) < 0.9 else Vector3.FORWARD)
-	var clear := 1.0 - _tuning.storm_darkness * storm
-	_sun.light_energy = _sun_energy * smoothstep(-0.02, 0.1, sun.y) * clear
+	var risen := smoothstep(-0.02, 0.1, sun.y)
 	var daylight := lerpf(NIGHT_LIGHT, 1.0, smoothstep(-0.1, 0.2, sun.y))
-	var brightness := daylight * clear
-	_environment.background_energy_multiplier = brightness
-	_environment.ambient_light_energy = brightness
-	# Dust in the air scatters what light there is, so a storm glows brown
-	# while the ground under it goes dark.
-	var dust_color := _haze_color.lerp(_tuning.storm_fog_color, storm) * daylight * (1.0 - 0.4 * storm)
-	_environment.fog_light_color = dust_color
-	# Visibility falls geometrically, so it collapses within seconds of the front.
-	var visibility := _tuning.haze_end * pow(_tuning.storm_visibility / _tuning.haze_end, storm)
-	_environment.fog_depth_end = visibility
-	_environment.fog_depth_begin = _tuning.haze_begin * (visibility / _tuning.haze_end) * (1.0 - storm)
-	_environment.fog_sky_affect = lerpf(0.6, 1.0, storm)
+	seen_storm = face.seen_at(eye)
+	seen_sun = maxf(face.sun_at(eye, sun), 0.02)
+	seen_front = face.front_at(eye).x if map.ready else -INF
+
+	# The light dims in stages: a wall blots out the sun, then towers over half
+	# the sky, then swallows you. Inside, the light is the storm glowing from
+	# above, so the sun light turns overhead and soft: dunes keep their shape
+	# while their shadows go.
+	var towering := atan2(_tuning.wall_height - eye.y, maxf(-seen_front, 1.0)) / (PI * 0.5)
+	var coverage := lerpf(clampf(towering, 0.0, 1.0) * 0.5, 1.0, seen_storm)
+	var dim := lerpf(1.0, 1.0 - _tuning.storm_darkness, seen_storm)
+	var sky_left := 1.0 - 0.55 * coverage
+	var overhead := Vector3(sun.x * 0.15, 1.0, sun.z * 0.15).normalized()
+	var light_from := sun.slerp(overhead, seen_storm * risen)
+	_sun.global_basis = Basis.looking_at(-light_from, Vector3.UP if absf(light_from.y) < 0.9 else Vector3.FORWARD)
+	_sun.light_energy = _sun_energy * risen * maxf(seen_sun, seen_storm * 0.6) * dim
+	_environment.ambient_light_color = AMBIENT_COLOR
+	_environment.ambient_light_energy = AMBIENT_ENERGY * daylight * sky_left * dim
+	_environment.background_energy_multiplier = daylight * lerpf(1.0, 0.45, coverage) * dim
+
+	# The clear day's haze, dimmed with the light and browned by the dust. The
+	# dust itself is the storm pass's; the haze only closes in behind it, never
+	# within the few metres the dust leaves.
+	var haze_light := daylight * sky_left * dim
+	var haze_color := _haze_color.lerp(_tuning.storm_fog_color, seen_storm)
+	_environment.fog_light_color = haze_color
+	_environment.fog_light_energy = haze_light
+	_environment.fog_depth_begin = lerpf(_tuning.haze_begin, 50.0, seen_storm)
+	_environment.fog_depth_end = lerpf(_tuning.haze_end, 400.0, seen_storm)
 	_world.terrain.show_far(not in_storm)
-	wall.visible = not in_storm
-	wall.set_light(brightness, _tuning.storm_fog_color)
-	atmosphere.show_weather(_world.player.global_position + Vector3.UP * 1.5, wind, storm, dust_color)
+
+	var sun_light := _linear(SUN_COLOR) * _sun_energy * risen
+	var sky_light := _linear(AMBIENT_COLOR) * AMBIENT_ENERGY * daylight
+	face.set_light("sun_dir", sun)
+	face.set_light("sun_light", sun_light)
+	# A wall faces half the sky, so it gets less than open ground.
+	face.set_light("sky_light", sky_light * 0.6)
+	face.set_light("camera_sun", seen_sun)
+	face.set_light("sun_disc", SUN_DISC * risen)
+	face.set_light("haze_color", _linear(haze_color) * haze_light)
+	face.set_light("haze", Vector3(_environment.fog_depth_begin, _environment.fog_depth_end,
+		_environment.fog_density))
+
+	var grains := _linear(SAND) * (sun_light * maxf(seen_sun, seen_storm * 0.6) * 0.6 + sky_light * sky_left) * dim
+	var near := exp(minf(seen_front, 0.0) / 350.0) if map.ready else 0.0
+	atmosphere.show_weather(camera, _world.height_under(eye), wind, seen_storm, near, grains,
+		face.sigma() * seen_storm, _world.time_warp > 0.0, delta)
 
 
 func _report() -> void:
@@ -136,12 +205,16 @@ func _report() -> void:
 	var from := fposmod(rad_to_deg(atan2(-wind.x, wind.z)), 360.0)
 	Dev.put("weather/wind", "%.1fm/s %03d" % [wind.length(), roundi(from) % 360])
 	Dev.put("weather/stm", "%d%%" % roundi(storm * 100.0) if in_storm else "clear")
-	var nearest := INF
-	for d in wall.distances:
-		if d > 0.0:
-			nearest = minf(nearest, d)
-	Dev.put("weather/wall", "here" if in_storm else ("-" if nearest == INF else "%dm" % nearest))
+	Dev.put("weather/wall", "-" if seen_front == -INF else ("in %dm" % roundi(seen_front)
+		if seen_front >= 0.0 else "%dm" % roundi(-seen_front)))
+	Dev.put("weather/seen", "%d%%" % roundi(seen_storm * 100.0))
 	var eta := next_change_time - t
 	Dev.put("weather/next", "%s %s" % ["clr" if in_storm else "stm",
 		">1h" if eta == INF else "%d:%02d" % [floori(eta / 60.0), floori(fmod(eta, 60.0))]])
 	Dev.put("weather/sun", "%d%%" % roundi(felt_light(_world.player.global_position) * 100.0))
+	Dev.put("weather/map", "%.1fms" % map.max_upload_ms)
+
+
+static func _linear(color: Color) -> Vector3:
+	var c := color.srgb_to_linear()
+	return Vector3(c.r, c.g, c.b)
