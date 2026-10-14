@@ -1,0 +1,157 @@
+# PRD: Rope & tethering
+
+*Draft, 2026-10-13. Answers to [the vision](../vision.md).*
+
+## Why this system exists
+
+Your home goes with you, and rope is how. It holds the camp down against the wind, it's
+how you move the camp, and it ties the camp to whatever pulls it. The game's base
+mechanic is built on it, so it has to be **reliable before anything else**. It should
+never be laggy, never bug out, and never go crazy, from a calm afternoon to the worst
+storm.
+
+## What the player experiences
+
+- **Tying things together is simple and physical.** You hold a coil, look at a thing,
+  and attach. You walk to another thing and attach the other end.
+- **Ropes behave like rope.** Slack rope sags onto the sand and stirs in the wind. Taut
+  rope goes straight, creaks and hums. You can read the load by eye and ear, with no
+  meters.
+- **Wind loads everything, and rope carries that load to the anchors.** A gust swings
+  the floating planter out on its line, the rope takes up the strain, and it holds.
+- **More rope means more strength.** Two lines share a load one line couldn't hold.
+  Lines on opposite sides pin something in place instead of letting it swing.
+- **When it's too much, a rope snaps. It doesn't explode.** You hear it go, and whatever
+  it held is gone downwind. In a stateless world, gone means gone.
+
+## What Sand Game taught us
+
+The rope was three systems that disagreed:
+
+1. **The rope you saw** was drawn by nudging points toward each other at a speed tied
+   to the frame rate. At a low frame rate the nudge overshoots, which is the "going
+   crazy".
+2. **The pull on the far end** edited the object's speed directly. It ignored the
+   object's weight and the frame rate, and only one end ever felt the pull.
+3. **A separate tether component** applied its own spring to the same object, with a
+   *different* rope length (10 m against the drawn rope's 5 m). It also bled 2–15% of
+   the object's speed every physics tick, which also smothered the wind, hence the
+   "re-enable wind when tethered" fix.
+
+## Rules
+
+1. **One rope, one truth.** Each rope is a single constraint that does the holding,
+   plus a drawn rope that shows it. They share one length and always agree. When the
+   constraint is taut, the drawn rope is straight. Nothing else pulls on a tethered
+   object.
+2. **Stiffness is a feel, not a force.** A rope is defined by how fast it springs back
+   and how much it bounces. It's solved the way physics engines solve soft joints,
+   from both ends' masses, so it can't gain energy. A lantern and a loaded planter on
+   the same rope type both behave sanely.
+3. **Equal and opposite.** A rope pulls both ends equally, at the attachment points, so
+   loads twist things realistically and anchors feel what they hold.
+4. **Frame-rate proof.** The same setup behaves the same at any frame rate.
+5. **Too much load breaks something; it never explodes.** Every rope has a breaking
+   strength and every anchor has a holding strength. A brief spike doesn't snap a rope,
+   only sustained load past its limit does.
+6. **Ropes only touch the sand.** Drawn rope rests on `height_at` from World & terrain.
+   That's a cheap lookup with no raycasts. Ropes pass through objects and each other,
+   which means no tangling and no snagging, and none of the bugs those bring.
+7. **Ropes belong to the camp, not the land.** They move with origin shifts and never
+   belong to a chunk.
+
+## Wind on tethered things
+
+Every object that can be tethered has a **wind catch**: how much the wind grabs it,
+alongside its weight. The force comes from `wind_at` (Wind & storms), so gusts and
+storm outflow load the ropes for free. A floating planter catches a lot and weighs
+little, while a crate catches little and weighs a lot. Rope's job is to carry that load
+to the anchors without drama.
+
+## Moving the camp
+
+Rope is how the camp travels. There are two states, and the switch between them is a
+core action:
+
+- **Camped:** staked down, with lines out against the wind.
+- **Travelling:** unstaked and towed. The pieces follow on their lines, swing with the
+  gusts, and pull on whatever tows them.
+
+**What does the towing**, owned by Movement and Camp, with the rope serving all of them:
+
+- **You.** You hold the lead and feel the pull.
+- **A mechanical beast.** It follows at a distance and carries or tows things. A rusty
+  robot made of stiff, separate parts needs no skin rigging at all, which sidesteps the
+  problem that sank Delve.
+- **A sand yacht.** It rides the wind, fast. No sail goes straight into the wind, but it
+  can zigzag upwind (tacking), so it makes travelling into the wind possible at speed.
+
+## Skeleton version
+
+- One rope type, attachable between the player, objects and stakes.
+- A constraint that's slack below its length and an elastic spring past it, defined by
+  springiness and bounce, with a hard maximum stretch. It pulls both ends at their
+  attachment points (rules 1–4).
+- Breaking strength on ropes, and holding strength on stakes.
+- A drawn rope that sags, rests on the sand, stirs in the wind and goes straight when
+  taut.
+- A player holding a rope feels the pull and can let go.
+- Wind catch on objects, driven by `wind_at`.
+- One test floater: a hovering box that stands in for camp pieces.
+- Camped and travelling: stake, unstake, tow.
+- A tension creak (Sand Game's recording) that rises with load.
+- The probes below, all passing.
+
+## Full version
+
+- **Rope types** that trade strength, stretch, weight and length. The best one might be
+  colonial cable, since history runs backwards in the ground.
+- **Anchors** of different holding strengths: a stake in soft sand, a stake in hard
+  flats, a post, a heavy object, a buried ruin.
+- **Reeling in and out**, so a winch can pull the camp in or let it out.
+- **Towing by movers:** the beast and the sand yacht.
+- **Snaps with weight to them:** the whip, the crack, and whatever it held lost
+  downwind.
+- **Load you can read at a glance:** vibration, hum and the rope straightening.
+
+## Probes
+
+Reliability is the whole point here, so this list is long. All run without a window.
+
+1. **Nothing goes crazy.** Run every combination of wind (calm up to the worst storm
+   gust), weight (lightest object to heaviest) and number of lines (1 to 4) for several
+   simulated minutes. No speed spikes, no energy appearing from nowhere, no invalid
+   numbers, and under steady wind everything settles.
+2. **Frame-rate proof.** The same setup at 30, 60 and 120 physics ticks comes to rest in
+   the same place.
+3. **Equal and opposite.** The force on the anchor matches the pull on the object.
+4. **Lines share load.** Two identical parallel lines each carry about half. A load
+   that snaps one line holds on two.
+5. **Snaps cleanly.** Raise the wind until a line passes its breaking strength. It
+   snaps, the object drifts downwind, and nothing spikes.
+6. **What you see is what holds.** Drawn rope ends sit on the attachment points every
+   frame, the drawn length matches the constraint, and a taut constraint means a
+   straight drawn rope.
+7. **Rope rests on sand.** No drawn rope ever dips below `height_at`.
+8. **Origin shifts are invisible.** A wind-loaded, staked camp crosses an origin shift
+   with no jump in tension.
+9. **The long tow.** Tow a floater 5 km over dunes through gusts. It arrives, and its
+   tension never spikes past a set bound.
+10. **Cheap enough.** Thirty ropes in storm wind update within the frame budget.
+
+Every probe is first run against a deliberately broken rope, to prove it can fail.
+
+## Out of scope
+
+- Ropes colliding with objects or each other, tangling and knots.
+- Climbing, swinging and grappling.
+- Cutting ropes to arbitrary lengths with physics. Lengths are set when you attach.
+
+## Open questions
+
+- **Where do ropes attach?** Fixed points on each object (rings, hooks) are reliable
+  and readable. Attaching anywhere is more flexible but fiddlier. I'd lean toward
+  fixed points.
+- **Can a strong gust drag you** when you're holding a line, or are you always the
+  immovable anchor? Being dragged is dramatic, but it's also a way to lose a run.
+- **Does a coil of rope take one of your five slots,** and how much rope do you carry?

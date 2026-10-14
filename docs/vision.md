@@ -49,6 +49,10 @@ upgrade the camp → the camp sustains more of itself → go further, or into th
   power by day but is useless in a storm. Wind power is strongest in a storm, but it
   has to be planted, so you either stay or leave it behind. Heavy gear, like something
   on caterpillar tracks, is strong for the camp but slows you down.
+- **Things can pull the camp for you** (ideas, not settled). One is a rusty mechanical
+  beast that follows at a distance and carries or tows. It's made of stiff parts, so it
+  needs no skin rigging. Another is a sand yacht that rides the wind, can zigzag upwind,
+  and is fast.
 - **About five inventory slots, and almost no menus.** Things live in the world and in
   your hands, not in an inventory screen.
 
@@ -122,7 +126,7 @@ the start.
 
 1. [World & terrain](prd/world-and-terrain.md)
 2. [Wind & storms](prd/wind-and-storms.md)
-3. Rope & tethering
+3. [Rope & tethering](prd/rope-and-tethering.md)
 4. Bubble shield & the travelling camp
 5. Power
 6. Survival needs (heat, thirst, hunger)
