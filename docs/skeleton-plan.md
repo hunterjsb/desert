@@ -117,7 +117,10 @@ wiring, a charger, swapping by hand, charge lights and the fixed power tick.
 
 ## Stage 5: Rope & tethering
 
-This is the riskiest system after the wall, so it comes early.
+This is the riskiest system after the wall, so it comes early. **A rope look-test runs
+ahead of it** (decided 2026-10-14), alongside Stage 2. It's a separate scene with
+stand-ins to tether: the test floater, a crate, stakes and you. It answers whether rope
+can feel right, and probes 1, 2, 3 and 5 answer whether it's reliable.
 
 **Builds:**
 - The rope constraint and the drawn rope, fixed attachment points (hooks), breaking
