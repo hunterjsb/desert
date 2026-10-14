@@ -118,7 +118,10 @@ dunes, maybe a few holdouts. The air is thin and fading, the days scorch, the ni
 freeze, and water goes through all three phases every day. The physics is in
 [the moon](the-moon.md).
 
-You're a **scavenger in a suit**, because nobody survives here without one.
+You're a **scavenger and a survivor, in a suit**, because nobody survives here without
+one. The suit is the one gift this world gives you. Why you're out here gets revealed
+over the course of the game, never up front. First and foremost, you're out here to
+survive.
 
 The strangeness at its heart is that **history runs backwards in the ground.** The
 oldest, rarest ruins hold the most advanced technology, because they come from the
@@ -166,6 +169,7 @@ the start.
 
 ## Open questions
 
-- Why is the scavenger out here?
+- Why is the scavenger out here? The game reveals it over time, and we don't need the
+  answer yet.
 - If a good camp reaches steady state, what ends a run? Being endless, cozy and
   permadeath pull against each other.

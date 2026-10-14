@@ -11,13 +11,19 @@ worry. A well-built camp handles them without you, until going AFK costs nothing
 
 ## Who you are
 
-**A scavenger in a suit.** Nobody survives on this moon without one: the air is too thin
-to breathe, the days are scorching, the nights freeze, and radiation reaches the
-ground. Why you're out here is still open.
+**A scavenger and a survivor, in a suit.** Nobody survives on this moon without one:
+the air is too thin to breathe, the days are scorching, the nights freeze, and
+radiation reaches the ground.
+
+**Why you're out here** gets revealed over the course of the game, never up front.
+First and foremost, you're out here to survive.
 
 ## The suit
 
-- **You can't survive outside it.** It supplies your air and shields you from radiation.
+- **The suit is the one gift this brutal world gives you.** Its air and radiation
+  protection are free, with no power and no bar. You have a sick suit, and you're not
+  dead.
+- **Losing the suit kills you.** For now that's the whole rule.
 - **It's a device like any other,** with sockets (Devices & mods) plus some built-in
   features. Fit a heater, a cooler, a water reclaimer, a better battery or harness
   hooks.
@@ -92,7 +98,8 @@ Death means a new run (see Runs in the vision).
 
 - Health, hunger, thirst and stamina, shown as bars.
 - The three harms, through the felt weather.
-- The suit as a device with a battery and a couple of sockets, supplying air.
+- The suit as a device with a couple of sockets. Its air and radiation protection are
+  free built-ins.
 - Auto-eat and auto-drink from inventory.
 - Sealed water in ruins, and one crude condenser.
 - Death starts a new run.
@@ -106,6 +113,8 @@ Death means a new run (see Runs in the vision).
 - **Water-storing plants.**
 - **Farm automation that delivers to you** (Farming).
 - **Needs you can read without bars:** breathing, vision, sound, suit readouts.
+- **Radiation as a harm** (an idea for later), maybe combined with storm and heat
+  damage. For now the suit handles it.
 
 ## Probes
 
@@ -125,9 +134,5 @@ Death means a new run (see Runs in the vision).
 
 ## Open questions
 
-- **Is air a need of its own,** or does the suit's air simply run on its battery? I'd
-  lean toward the battery: losing power then means losing air, which is plenty of
-  pressure without another bar.
-- **Is radiation a fourth harm,** or something the suit always handles? I'd lean toward
-  the suit handling it, at least for now.
-- **Why is the scavenger out here?**
+- **Why is the scavenger out here?** The game reveals it over time. We don't need the
+  answer yet.
