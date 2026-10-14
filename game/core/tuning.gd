@@ -39,8 +39,10 @@ static var _current: Tuning
 @export var frame_upload_budget_ms: float = 4.0
 ## No single chunk upload may block the main thread longer than this.
 @export var chunk_upload_max_ms: float = 4.0
-@export var haze_begin: float = 800.0
-@export var haze_end: float = 3000.0
+@export var haze_begin: float = 400.0
+@export var haze_end: float = 9000.0
+## Most of the view the haze ever hides, at haze_end and beyond.
+@export var haze_strength: float = 0.7
 
 @export_group("Weather")
 ## One full day and night, start to finish.
@@ -72,19 +74,30 @@ static var _current: Tuning
 @export var gust_evolve_speed: float = 4.0
 
 @export_group("Storm")
-## How far you can see at full storm, in metres.
-@export var storm_visibility: float = 25.0
+## How far you can see inside a storm, in metres.
+@export var storm_visibility: float = 20.0
 ## Share of the light a full storm takes.
-@export var storm_darkness: float = 0.7
+@export var storm_darkness: float = 0.78
 @export var storm_fog_color: Color = Color(0.62, 0.4, 0.2)
 ## Placeholder harm per second at full storm, until Survival has health.
 @export var storm_harm_rate: float = 1.0
-@export var wall_directions: int = 64
-## Directions resampled per physics frame; a full sweep takes directions / this.
-@export var wall_directions_per_frame: int = 8
-@export var wall_reach: float = 4000.0
-@export var wall_march_step: float = 50.0
-@export var wall_height: float = 1500.0
+
+@export_group("Storm wall")
+## Top of a storm's dust wall, metres. It dissolves over roof_soft either side.
+@export var wall_height: float = 1800.0
+@export var wall_roof_soft: float = 450.0
+@export var wall_dust_color: Color = Color(0.62, 0.47, 0.34)
+## How bright the heart of a storm glows from light scattered many times.
+@export var wall_glow: float = 0.3
+## Share of the ground's light that comes straight from the sun; a wall's
+## shadow takes that share away.
+@export var wall_sun_share: float = 0.7
+## Walls dissolve into the haze between these distances, metres.
+@export var wall_fade_begin: float = 11000.0
+@export var wall_fade_end: float = 15000.0
+## The storm map the GPU reads: cells a side, and metres it reaches each way.
+@export var storm_map_cells: int = 128
+@export var storm_map_reach: float = 20000.0
 
 @export_group("Player")
 ## About 5 km/h, the pace the moon's size was set against.

@@ -4,7 +4,7 @@
 [ext_resource type="Script" path="res://game/world/terrain.gd" id="2_terrain"]
 [ext_resource type="PackedScene" path="res://game/player/player.tscn" id="3_player"]
 [ext_resource type="Script" path="res://game/weather/weather.gd" id="4_weather"]
-[ext_resource type="Script" path="res://game/weather/storm_wall.gd" id="5_wall"]
+[ext_resource type="Script" path="res://game/weather/storm_face.gd" id="5_face"]
 [ext_resource type="Script" path="res://game/weather/atmosphere.gd" id="6_atmosphere"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
@@ -36,8 +36,8 @@ script = ExtResource("2_terrain")
 [node name="Weather" type="Node" parent="."]
 script = ExtResource("4_weather")
 
-[node name="StormWall" type="MeshInstance3D" parent="Weather"]
-script = ExtResource("5_wall")
+[node name="StormFace" type="MeshInstance3D" parent="Weather"]
+script = ExtResource("5_face")
 
 [node name="Atmosphere" type="Node3D" parent="Weather"]
 script = ExtResource("6_atmosphere")
