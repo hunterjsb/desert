@@ -21,6 +21,13 @@ says so. Hunter's year-old vision board is folded in at section 4.*
   under the shield it becomes kind of nice. Then the collapse. The desert is what the
   failing shield left behind; it wasn't a desert before. The sealed garden may be a
   second thread.
+- After [the body research](body-research.md): **a large natural moon with its own
+  atmosphere** is favoured. That makes it a better space hub and a better candidate for
+  long-term colonisation. It also leaves time: a small moon's shield collapse would be
+  too fast for later, bronze-age-like civilisations to rise and fall, but a big moon
+  whose sky freezes back onto its poles over thousands of years gives the empires
+  room. The biotech company may go. Its one pull is explaining the seed packets, which
+  a colony's own seed stores could do.
 
 *The sections below were written for the literal 24 km, 1 g moon. Their physics of
 escape and the dense core no longer apply, but their stories, radiation, UV, wind and
