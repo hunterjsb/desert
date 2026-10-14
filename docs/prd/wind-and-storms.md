@@ -52,12 +52,24 @@ read it. Nothing computes storminess any other way.
   slowly), plus gusts, plus storm outflow (the wind blows hardest just ahead of and
   inside a front).
 - **Storms travel with the prevailing wind**, so reading the wind is reading the weather.
+- **Storms move fast.** It's 5–10 minutes or less from first seeing the wall to impact.
+  With the wall first visible a few kilometres out, that means roughly 20–40 km/h. You
+  can't outrun one on foot. On a hoverboard, maybe.
+- **The field also changes over time.** Gaps open and close, storms grow and fade. A
+  clear gap travels with the wind, so matching the wind keeps you in the clear, but
+  only until the gap closes.
 
 This also explains *why* the wind is the difficulty dial, without any extra rules.
 Travel downwind and storms behind you close in slowly, because you're moving with
 them. Travel upwind and you meet storms head-on, at their speed plus yours. You face
 more storms, so you uncover more finds. The risk and the reward both come out of the
-same field.
+same field. The faster you travel, the stronger the dial: on foot, storms still catch
+you from behind, but on a hoverboard you can nearly keep pace.
+
+**How rare clear skies are isn't a number we set.** It comes out of how much of the
+moon is stormy, how big gaps are and how long they last, how fast storms move, and how
+fast and how cleverly you travel. We tune the field, then measure what reference
+travellers actually experience (probe 7). Skill has to visibly earn more clear sky.
 
 ## The wall
 
@@ -86,7 +98,7 @@ like a wall when:
 - **The hand-off between the two** is the moment the wall reaches you. That's where the
   enclosure lives, and it's the riskiest visual in the game.
 
-**Proposal: an early look-test.** A standalone scene whose only job is making the wall
+**An early look-test** (decided). A standalone scene whose only job is making the wall
 feel right, built alongside the skeleton. It isn't meat on the bones. It's finding out
 whether the hardest thing is possible before we depend on it.
 
@@ -140,7 +152,7 @@ These are owned by their own PRDs and listed here so the field serves them all.
 - Prevailing wind bands by latitude, and the poles (calmer or harsher, still open).
 - Storm sizes, from dust haze to an ordinary storm to a great wall.
 - Instruments and forecasts.
-- Dunes shaped by the prevailing wind (World & terrain).
+- Real dune shapes facing the prevailing wind (decided; see World & terrain).
 - Wind particles and sound, with Sand Game's particles and recordings as the reference.
 
 ## Probes
@@ -156,8 +168,10 @@ All run without a window, with a fixed seed.
 5. **Inside means inside.** Darkness, visibility and damage switch on exactly when the
    field at the player crosses the threshold, and switch off when it drops back.
 6. **Wind pushes.** A loose box drifts downwind at the expected rate.
-7. **Clear skies exist.** Over a long simulated run, the share of time spent in the
-   clear lands inside the target band: rare, but real.
+7. **Clear skies are earned.** Over a long simulated run, four reference travellers
+   (sitting still, drifting with the wind, chasing gaps on foot, chasing gaps on a
+   hoverboard) each spend a share of time in the clear that lands inside their target
+   band. The share has to rise with skill and speed.
 
 ## Out of scope
 
@@ -167,10 +181,7 @@ All run without a window, with a fixed seed.
 
 ## Open questions
 
-- **How rare are clear skies?** For example, one hour in ten? This sets the mood.
-- **How long from first seeing the wall to impact?** A starting value is 10–15 minutes,
-  enough to batten down without waiting around.
-- **The look-test:** OK to build it alongside the skeleton?
-- **Should dunes have real shapes** (gentle windward slopes, steep slip faces)? This
-  question is carried over from World & terrain, and it gets decided here.
-- **Are the poles calmer or harsher?** Also carried over.
+- **What target bands for clear skies** should each reference traveller get? Set them
+  once the skeleton can measure them.
+- **What are the poles like?** This depends on the moon's configuration, which is being
+  brainstormed (carried over from World & terrain).

@@ -106,8 +106,12 @@ Built after the skeleton loop works end to end, in roughly this order:
 - **Underlying topography.** Large, fixed shapes the dunes sit on: dune seas, hard
   flats, basins, ridges. These are the bones of the land, and they're stable across a
   run.
-- **Dunes shaped by the wind.** Crests run across the prevailing wind, and steep slip
-  faces sit downwind. This connects to the Wind & storms PRD.
+- **Real dune shapes** (decided). Windward slopes are gentle (about 5–15°), and slip
+  faces sit downwind at the steepest angle loose sand holds (about 33°). Travelling with
+  the wind, you walk up gentle slopes and slide down steep faces. Travelling into it, you
+  climb slip faces, which puts the difficulty dial into the ground itself. Dunes face the
+  long-term prevailing wind of their region, not the day's wind, so they stay stable and
+  seams stay exact.
 - **Latitude and the poles.** Climate varies with latitude, so the poles are a
   different place, though whether they're harsher or calmer is still open. Fixed fields
   get sampled from the true point on the moon, and each new chunk copies its shared
@@ -162,10 +166,9 @@ fail.
 
 ## Open questions
 
-- **Are the poles harsher or calmer?**
+- **What are the poles like?** This depends on the moon's configuration (tidal locking,
+  its lost magnetic field), which is being brainstormed.
 - **Does difficulty scale with distance from spawn?** (Latitude will matter either way.)
-- **Should dunes have real shapes,** with gentle windward slopes and steep slip faces,
-  so that walking into the wind means climbing?
 
 Chunk size and the exact view distance are tuning decisions. The skeleton measures
 them; they aren't design questions.
