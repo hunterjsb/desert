@@ -50,6 +50,9 @@ upgrade the camp → the camp sustains more of itself → go further, or into th
 - **Death means a new run.** Whatever you had stays out there in theory but is
   practically unreachable. With RNG driving both the terrain and the finds, this is
   roguelite territory.
+- **Permadeath is the intended mode, and it's what we balance around.** An optional
+  mode allows saving and reloading, but turning it on disables achievements, the way
+  Project Zomboid-style games treat their custom difficulty settings.
 
 ## The world
 
@@ -57,9 +60,11 @@ upgrade the camp → the camp sustains more of itself → go further, or into th
 - **Only what's around the player exists.** There can be exceptions, like a farm left
   running on purpose, but never as the rule. A solo player who abuses that only hurts
   their own frame rate.
-- **Possibly stateless** (undecided). The dunes are featureless and shift out of sight,
-  so nothing beyond render distance would need storing. Turn back far enough and the
-  land has changed. That's a shortcut the fiction supports.
+- **Stateless.** The dunes are featureless and shift out of sight, so nothing beyond
+  render distance is stored. Turn back far enough and the land has changed.
+- **World coordinates are always tracked**, so distance from spawn is known even
+  though the land isn't kept. A fixed underlying topography (the large shapes the dunes
+  sit on) may come later.
 - **No AI enemies**, so no creature rigging.
 
 ## Setting (working sketch, not canon)
@@ -83,8 +88,11 @@ the start.
   sounds), all wired into one complete loop, before any single system gets polished.
   Then muscle, then looks. Sand Game and Delve both died from stacking finished
   features on a weak frame.
-- **A PRD before code.** Each system gets a PRD describing its skeleton version and
-  its full version. It's approved before anything is built.
+- **A PRD before code.** Each system gets a PRD in `docs/prd/` describing its skeleton
+  version and its full version. It's approved before anything is built.
+- **Headless probes prove it works.** Every system ships with automated checks that run
+  the game without a window and assert on what happened. In Delve they caught almost
+  every bug, and almost none of those bugs were visible by reading the code.
 - **The ground is one function.** A single height function is the truth for the
   terrain mesh, its collision and object placement. Collision is built once per chunk
   and is never rebuilt under the player. World state lives apart from the chunks.
@@ -95,7 +103,7 @@ the start.
 
 ## PRDs to write
 
-1. World & terrain
+1. [World & terrain](prd/world-and-terrain.md)
 2. Wind & storms
 3. Rope & tethering
 4. Bubble shield & the travelling camp
@@ -111,4 +119,3 @@ the start.
 - Who is the player, and why are they out here?
 - If a good camp reaches steady state, what ends a run? Being endless, cozy and
   permadeath pull against each other.
-- Stateless desert: yes or no?
