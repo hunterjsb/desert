@@ -43,6 +43,12 @@ upgrade the camp → the camp sustains more of itself → go further, or into th
 - **The camp is several physical things, not one building.** The shield is small enough
   to carry. Planters, power and the rest are objects in the world that you tether
   together.
+- **The shield decides how big the camp can be.** Whatever is outside the bubble in a
+  storm gets destroyed, so the camp is as big as the best shield you can move through a
+  storm.
+- **Shields open up the map.** The base shield keeps out wind and dust but not heat or
+  cold, so it pushes you into the storms early. Shields that hold back temperature are
+  what open up the poles.
 - **It floats when there's power for it.** When there isn't, you haul it. Running low on
   power should feel like a slowdown, not a wall.
 - **Power sources trade off against movement** (leaning, not settled). Solar builds
@@ -127,7 +133,7 @@ the start.
 1. [World & terrain](prd/world-and-terrain.md)
 2. [Wind & storms](prd/wind-and-storms.md)
 3. [Rope & tethering](prd/rope-and-tethering.md)
-4. Bubble shield & the travelling camp
+4. [Bubble shield & the travelling camp](prd/bubble-shield-and-camp.md)
 5. Power
 6. Survival needs (heat, thirst, hunger)
 7. Farming
