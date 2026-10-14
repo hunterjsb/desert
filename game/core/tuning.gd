@@ -42,6 +42,50 @@ static var _current: Tuning
 @export var haze_begin: float = 800.0
 @export var haze_end: float = 3000.0
 
+@export_group("Weather")
+## One full day and night, start to finish.
+@export var day_minutes: float = 20.0
+## Where in the day a run begins: 0 is midnight, 0.5 is noon.
+@export var start_time_of_day: float = 0.3
+## Mean prevailing wind, m/s. Storms ride it, so this sets how fast walls arrive.
+@export var prevailing_speed: float = 10.0
+## How far the prevailing wind swings round its mean, m/s. Kept under 0.6 of
+## the mean so the wind never stops or reverses.
+@export var prevailing_sway: float = 4.0
+@export var prevailing_sway_minutes: float = 50.0
+## Size of the storm field's features: storms and the gaps between them.
+@export var storm_wavelength: float = 16000.0
+@export var storm_octaves: int = 3
+## How fast storms grow, fade and change shape, as metres of travel through the field.
+@export var storm_evolve_speed: float = 1.5
+## Field level that is the front. Lower means more of the moon is stormy.
+@export var storm_threshold: float = -0.15
+## Field rise from the front to full intensity: smaller makes a harder wall.
+@export var storm_ramp: float = 0.04
+## Extra wind at full storm, m/s, along the prevailing wind.
+@export var storm_outflow_speed: float = 14.0
+## How far ahead of the front, in field units, the outflow starts rising.
+@export var storm_outflow_lead: float = 0.04
+@export var gust_strength: float = 0.25
+@export var gust_storm_strength: float = 0.5
+@export var gust_wavelength: float = 80.0
+@export var gust_evolve_speed: float = 4.0
+
+@export_group("Storm")
+## How far you can see at full storm, in metres.
+@export var storm_visibility: float = 25.0
+## Share of the light a full storm takes.
+@export var storm_darkness: float = 0.7
+@export var storm_fog_color: Color = Color(0.62, 0.4, 0.2)
+## Placeholder harm per second at full storm, until Survival has health.
+@export var storm_harm_rate: float = 1.0
+@export var wall_directions: int = 64
+## Directions resampled per physics frame; a full sweep takes directions / this.
+@export var wall_directions_per_frame: int = 8
+@export var wall_reach: float = 4000.0
+@export var wall_march_step: float = 50.0
+@export var wall_height: float = 1500.0
+
 @export_group("Player")
 ## About 5 km/h, the pace the moon's size was set against.
 @export var walk_speed: float = 1.4
@@ -54,6 +98,15 @@ static var _current: Tuning
 @export var stamina_regen: float = 5.0
 @export var mouse_sensitivity: float = 0.002
 @export var dev_fly_speed: float = 60.0
+## Wind below this, m/s, doesn't move you; above it, it shoves.
+@export var wind_resist_speed: float = 12.0
+## Shove, m/s, per m/s of wind beyond what you can resist.
+@export var wind_push: float = 0.08
+
+@export_group("Loose objects")
+## Drag per (m/s)^2 of wind on a loose object: half the air density times drag
+## coefficient times area. Thin air, a half-metre box.
+@export var loose_wind_catch: float = 0.05
 
 
 ## One shared instance, held here so probe overrides can't be dropped by the

@@ -55,10 +55,10 @@ func _process(_delta: float) -> void:
 	_collect()
 	_retire()
 	_update_far()
-	Dev.put("terrain/chunks", _chunks.size())
-	Dev.put("terrain/with_collision", collision_count())
-	Dev.put("terrain/building", _tasks.size() + _wanted.size())
-	Dev.put("terrain/max_upload_ms", max_upload_ms)
+	Dev.put("terrain/chk", "%d" % _chunks.size())
+	Dev.put("terrain/col", "%d" % collision_count())
+	Dev.put("terrain/bld", "%d" % (_tasks.size() + _wanted.size()))
+	Dev.put("terrain/upl", "%.1fms" % max_upload_ms)
 
 
 func _exit_tree() -> void:
@@ -112,6 +112,15 @@ func collision_count() -> int:
 		if chunk.has_collision():
 			count += 1
 	return count
+
+
+## Storms hide the far ring: nobody inside one can see that far.
+func show_far(shown: bool) -> void:
+	_far.visible = shown
+
+
+func is_far_shown() -> bool:
+	return _far.visible
 
 
 ## The world's origin moved; put every chunk back at its world position.

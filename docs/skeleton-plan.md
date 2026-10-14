@@ -3,7 +3,8 @@
 *Draft, 2026-10-13. How we build the skeleton described in [the vision](vision.md): every
 system in rough form, wired into one complete loop, before anything gets polished.*
 
-**Where we are:** Stages 0 and 1 passed the gate on 2026-10-14. Stage 2 is being built.
+**Where we are:** Stages 0 and 1 passed the gate on 2026-10-14. Stage 2 is built and
+waiting at the gate. Its wall look-test is being built alongside.
 
 ## The loop we're building toward
 
@@ -27,6 +28,10 @@ PRD passes.
   Looks come after the loop works.
 - **Tuning lives in one file.** Chunk size, storm speed, shield life and every other
   number sits in one tuning file, so tuning never means editing code.
+- **Scenarios for every playtest.** F2 drops you into a starting condition, like a storm
+  100 m away and coming at you, found in the run's own weather rather than faked. Each
+  stage adds the scenarios its playtest needs, and a probe checks that each one
+  delivers what it says.
 
 ## Stage 0: Foundation
 
@@ -68,8 +73,14 @@ readout.
 - A felt-weather wrapper, with no shelter yet, so everything built from here reads
   weather the right way from day one.
 - The 20-minute day and night, which solar will need.
-- A mode readout on screen (walking, sprinting, flying). The Stage 1 playtest found it
-  hard to tell which one you're in.
+- A mode readout (walking, sprinting, flying) on the F3 overlay. The Stage 1 playtest
+  found it hard to tell which one you're in, and the Stage 2 playtest wanted it off the
+  screen.
+- Enough storm to know you're in one: dust streaming on the wind, a brown glow, and Sand
+  Game's storm roar and desert wind. The Stage 2 playtest found darkness alone read as
+  night.
+- Scenarios: a clear day, a wall on the horizon, storms 500, 100 and 20 m away, deep in a
+  storm, a storm about to clear, dusk and night.
 
 **The wall look-test starts here** and runs alongside every stage that follows. It's a
 separate scene with one job: making the wall feel right. It has no probes. You judge it
@@ -77,8 +88,8 @@ by eye, and what it learns feeds the full version of the wall.
 
 **You play:** watch storms roll in and over you. Read the wind. Get pushed around.
 
-**Probes:** Wind & storms 1–6 and 8. Probe 7 waits for the full version, because its
-fourth traveller needs the sand yacht.
+**Probes:** Wind & storms 1–6 and 8, and the scenarios probe. Probe 7 waits for the full
+version, because its fourth traveller needs the sand yacht.
 
 ## Stage 3: Devices & mods
 

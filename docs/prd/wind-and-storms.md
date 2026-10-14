@@ -93,6 +93,13 @@ like a wall when:
    depths, not one scrolling texture.
 5. **It encloses you.** Once you're inside, the shield's edge is the edge of the world.
 
+**What already lands** (the Stage 2 playtest). The crude wall's approach is the feeling:
+a huge wall of dust, uniform and infinitely complex at the same time, and overwhelmingly
+massive as it comes into view. That was a flat curtain on the front, with streaming dust
+and the roar once it reached you. The full wall adds motion to the face without losing
+the uniform mass: no visible tiling, and no busy small-scale detail that makes it read
+as a smaller thing.
+
 **Approach.**
 - **From a distance:** a giant curtain built along the front, wherever the field crosses
   the threshold. It's found by sampling outward from the player in every direction, so
@@ -191,4 +198,8 @@ All run without a window, with a fixed seed.
 ## Open questions
 
 - **What target bands for clear skies** should each reference traveller get? Set them
-  once the skeleton can measure them.
+  once the skeleton can measure them. The skeleton starts here: someone sitting still
+  is in a storm 70% of the time, the median storm lasts 17 minutes, 71% pass within a
+  base shield's 30, and the longest run past 3 hours. Storms ride a prevailing wind of
+  10 m/s that swings by up to 6 either way, so a wall first seen 3.5 km out arrives in
+  4 to 16 minutes.
