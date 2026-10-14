@@ -114,6 +114,15 @@ func collision_count() -> int:
 	return count
 
 
+## Storms hide the far ring: nobody inside one can see that far.
+func show_far(shown: bool) -> void:
+	_far.visible = shown
+
+
+func is_far_shown() -> bool:
+	return _far.visible
+
+
 ## The world's origin moved; put every chunk back at its world position.
 func reposition() -> void:
 	for chunk: TerrainChunk in _chunks.values():

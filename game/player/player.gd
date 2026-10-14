@@ -1,12 +1,17 @@
 class_name Player
 extends CharacterBody3D
-## The scavenger on foot. Walks at about 5 km/h, sprints on stamina, and pays for
-## every climb. Never moves where the ground has no collision yet.
+## The scavenger on foot. Walks at about 5 km/h, sprints on stamina, pays for
+## every climb, and gets shoved by wind too strong to stand against. Never moves
+## where the ground has no collision yet.
 
 var world: World
 var stamina: float
 ## Dev only: F4 flies through the world, for checking the far view.
 var flying := false
+## How you're moving, for the screen: standing, walking, sprinting or flying.
+var mode := "standing"
+## Placeholder harm taken from storms, until Survival brings health.
+var storm_harm := 0.0
 
 var _tuning := Tuning.current()
 var _gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
@@ -33,7 +38,10 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _physics_process(delta: float) -> void:
 	var input := Input.get_vector("move_left", "move_right", "move_forward", "move_back")
+	if world != null and not flying:
+		storm_harm += world.weather.felt_storm(global_position) * _tuning.storm_harm_rate * delta
 	if flying:
+		mode = "flying"
 		var boost := 5.0 if Input.is_action_pressed("sprint") else 1.0
 		global_position += camera.global_basis * Vector3(input.x, 0.0, input.y) \
 			* _tuning.dev_fly_speed * boost * delta
@@ -54,6 +62,13 @@ func _physics_process(delta: float) -> void:
 		speed *= maxf(0.4, 1.0 - climb * _tuning.uphill_slowdown)
 	velocity.x = direction.x * speed
 	velocity.z = direction.z * speed
+	var wind := world.weather.felt_wind(global_position)
+	var beyond := wind.length() - _tuning.wind_resist_speed
+	if beyond > 0.0:
+		var shove := wind.normalized() * beyond * _tuning.wind_push
+		velocity.x += shove.x
+		velocity.z += shove.z
+	mode = "sprinting" if sprinting else ("walking" if moving else "standing")
 	velocity.y = 0.0 if is_on_floor() else velocity.y - _gravity * delta
 	move_and_slide()
 
@@ -67,4 +82,4 @@ func _physics_process(delta: float) -> void:
 
 	Dev.put("player/stamina", stamina)
 	Dev.put("player/speed_kmh", Vector2(velocity.x, velocity.z).length() * 3.6)
-	Dev.put("player/flying", flying)
+	Dev.put("player/storm_harm", storm_harm)

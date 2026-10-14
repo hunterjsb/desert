@@ -22,3 +22,4 @@ Dev="*res://game/core/dev.gd"
 [physics]
 
 3d/physics_engine="Jolt Physics"
+3d/default_linear_damp=0.0

@@ -8,8 +8,14 @@ const BOX_SIZE := 0.5
 var world: World
 
 
-func load_world(run_seed := 1234) -> void:
-	Tuning.current().run_seed = run_seed
+## Ground probes run in still air, so the wind can't move what they measure.
+func load_world(run_seed := 1234, still_air := true) -> void:
+	var tuning := Tuning.current()
+	tuning.run_seed = run_seed
+	if still_air:
+		tuning.prevailing_speed = 0.0
+		tuning.prevailing_sway = 0.0
+		tuning.storm_outflow_speed = 0.0
 	world = WORLD_SCENE.instantiate()
 	add_child(world)
 	await settle()
