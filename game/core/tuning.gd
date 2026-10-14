@@ -118,6 +118,23 @@ static var _current: Tuning
 ## Shove, m/s, per m/s of wind beyond what you can resist.
 @export var wind_push: float = 0.08
 
+@export_group("Devices")
+## A hover tray holds a device's middle this high over the sand, m.
+@export var hover_height: float = 1.2
+@export var hover_hertz: float = 1.0
+@export var hover_damping: float = 0.8
+@export var hover_upright_hertz: float = 1.6
+## What hovering costs, W per kg floated. Power (Stage 4) drains it.
+@export var hover_watts_per_kg: float = 2.0
+## The magnetic tug reaches this far from a free socket, m.
+@export var snap_reach: float = 0.3
+## Inside this, the part snaps home on its own, m.
+@export var snap_home: float = 0.04
+## Hands hold a part this far in front of the eyes, m.
+@export var hold_distance: float = 0.9
+## How far you can reach to grab, m.
+@export var reach: float = 2.5
+
 @export_group("Loose objects")
 ## Drag per (m/s)^2 of wind on a loose object: half the air density times drag
 ## coefficient times area. Thin air, a half-metre box.

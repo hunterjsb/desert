@@ -67,6 +67,13 @@ func respawn(x: float, z: float, yaw: float, at_time: float) -> void:
 	weather.forecast_now()
 
 
+## The World a node lives in, found by climbing its parents.
+static func of(node: Node) -> World:
+	while node != null and not node is World:
+		node = node.get_parent()
+	return node
+
+
 func world_x(engine_x: float) -> float:
 	return origin_chunk.x * tuning.chunk_size + engine_x
 
