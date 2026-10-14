@@ -8,6 +8,7 @@ extends MeshInstance3D
 ## Twins of the shader's constants.
 const BODY_WEIGHT := 25.0
 const SKIN := 30.0
+const SWELL := 180.0
 const TILT_A := Basis(Vector3(0.8253, 0.0, -0.5646), Vector3(0.2134, 0.9259, 0.3119),
 	Vector3(0.5228, -0.3779, 0.7642))
 const TILT_B := Basis(Vector3(0.6967, 0.3307, 0.6366), Vector3(-0.4258, 0.9047, 0.0144),
@@ -135,7 +136,17 @@ func _bulge(p: Vector3, t: float) -> float:
 	var b2 := _billow(_sample(TILT_B * Vector3(qw.x + t * 0.8, qw.y - t * 4.0, qw.z - t * 1.0) / 760.0).g)
 	var b3 := _billow(_sample(TILT_A * Vector3(qw.x - t * 1.4, qw.y - t * 6.0, qw.z - t * 2.0) / 240.0).b)
 	var b4 := _billow(_sample(TILT_B * Vector3(qw.x + t * 2.5, qw.y - t * 7.5, qw.z - t * 3.0) / 75.0).b)
-	return 300.0 * b1 + 70.0 * b2 + 22.0 * b3 + 12.0 * b4 - 0.07 * maxf(p.y - 120.0, 0.0)
+	return 300.0 * b1 + 70.0 * b2 + 22.0 * b3 + 12.0 * b4 + _head(q, p.y)
+
+
+## Twin of storm_head.
+func _head(q: Vector3, h: float) -> float:
+	var s := _sample(Vector3(q.x, 0.0, q.z) / 9000.0)
+	var swell := clampf((s.r - 0.5) * 3.0, -1.0, 1.0)
+	var lean := 0.12 + clampf((s.a - 0.5) * 3.0, -1.0, 1.0) * 0.12
+	var nose := 90.0 * clampf((s.g - 0.5) * 3.0 + 0.5, 0.0, 1.0)
+	return SWELL * swell * sin(3.14159 * clampf(h / _tuning.wall_height, 0.0, 1.0)) \
+		- lean * maxf(h - 120.0, 0.0) - nose * exp(-maxf(h, 0.0) / 90.0)
 
 
 static func _billow(n: float) -> float:

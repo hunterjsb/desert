@@ -34,8 +34,12 @@ uniform float storm_skirt_height = 10.0;
 // Twins in StormMap and StormFace.
 const float STORM_SLOPE_FLOOR = 2.0e-5;
 const float STORM_FAR = 40000.0;
-// Furthest a billow pokes ahead of its front.
-const float STORM_REACH = 190.0;
+// How far a head swells out at mid height, metres.
+const float STORM_SWELL = 180.0;
+// Furthest a billow pokes ahead of its front: the billows' amplitudes (300,
+// 70, 22 and 12 m) times a billow's peak (sqrt(1.02) - 0.35), plus a head's
+// full swell. Less, and the march starts inside billows and slices them flat.
+const float STORM_REACH = 450.0;
 // A metre of body shades the sun like this many of roof.
 const float STORM_BODY_WEIGHT = 25.0;
 // Metres over which a face thickens to full density.
@@ -139,11 +143,30 @@ float storm_billow(float n) {
 	return sqrt(x * x + 0.02) - 0.35;
 }
 
+// The head's shape, which changes slowly along a front: here it leans well
+// back, there it swells at mid height, and its nose rides up off the ground
+// by more or less. A wall seen edge-on shows the furthest billow along
+// kilometres of face, the same at every height, so a vertical face draws a
+// ruled line; a head that leans, swells and lifts its nose draws a curve.
+// The head's slow field at an engine-space point: one read per sample, which
+// the shading taps a few tens of metres away share.
+vec4 storm_head_field(vec3 p) {
+	return texture(storm_noise, vec3(p.x + storm_air.x, 0.0, p.z + storm_air.y) * (1.0 / 9000.0));
+}
+
+float storm_head(vec4 s, float h) {
+	float swell = clamp((s.r - 0.5) * 3.0, -1.0, 1.0);
+	float lean = 0.12 + clamp((s.a - 0.5) * 3.0, -1.0, 1.0) * 0.12;
+	float nose = 90.0 * clamp((s.g - 0.5) * 3.0 + 0.5, 0.0, 1.0);
+	return STORM_SWELL * swell * sin(3.14159 * clamp(h / storm_height, 0.0, 1.0))
+		- lean * max(h - 120.0, 0.0) - nose * exp(-max(h, 0.0) / 90.0);
+}
+
 // How far the billowed face pokes out past the front at p, in metres, and the
 // top of the wall there. Big billows rise slowly, smaller puffs rise faster and
 // drift; a moving warp makes them churn instead of scroll. lod.x keeps the
 // small puffs, lod.y the smallest, which only read up close.
-float storm_bulge(vec3 p, vec2 lod, out float top) {
+float storm_bulge(vec3 p, vec2 lod, vec4 head, out float top) {
 	float t = storm_time;
 	vec3 q = vec3(p.x + storm_air.x, p.y, p.z + storm_air.y);
 	vec4 w = texture(storm_noise, STORM_TILT_B * vec3(q.x + t * 3.0, q.y - t * 1.5, q.z) * (1.0 / 3700.0));
@@ -161,18 +184,21 @@ float storm_bulge(vec3 p, vec2 lod, out float top) {
 	}
 	// Broad rounded heads that dissolve upward, never a crisp skyline.
 	top = storm_height + 600.0 * (w.r - 0.5) + 220.0 * b1;
-	// Leans back a little with height, like the head of a gravity current.
-	return bulge - 0.07 * max(p.y - 120.0, 0.0);
+	return bulge + storm_head(head, p.y);
 }
 
-// How far p sits behind its billowed face, in metres (negative = ahead), and
-// the dust there. f is storm_front at p.
-float storm_density(vec3 p, vec3 f, vec2 lod, out float edge) {
+// How far p sits inside its storm's dust, in metres, behind the billowed face
+// and under the roof (negative = out in clear air), and the dust there. f is
+// storm_front at p.
+float storm_density(vec3 p, vec3 f, vec2 lod, vec4 head, out float edge) {
 	float top;
-	edge = f.x + storm_bulge(p, lod, top);
+	edge = f.x + storm_bulge(p, lod, head, top);
 	// A soft skin: the outer metres are thin enough to see into.
 	float body = smoothstep(0.0, STORM_SKIN, edge);
 	float roof = smoothstep(top + storm_roof_soft, top - storm_roof_soft, p.y);
+	// Above the roof is clear air too: the edge counts it, so a ray climbing
+	// over a storm strides by its height above the dust, not in small steps.
+	edge = min(edge, top + storm_roof_soft - p.y);
 	float sigma = storm_sigma * body * roof * storm_map_ready;
 	if (lod.y > 0.0 && edge > 10.0 && sigma > 0.0) {
 		// Gusts inside: parcels of thicker and thinner dust racing past.

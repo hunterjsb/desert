@@ -48,7 +48,6 @@ func run() -> void:
 	var environment: Environment = (world.get_node("WorldEnvironment") as WorldEnvironment).environment
 	var haze_end := Tuning.current().haze_end
 	var clear_light := INF
-	var darkest := INF
 	wrong.clear()
 	inside = 0
 	steps = 0
@@ -60,8 +59,6 @@ func run() -> void:
 		inside += int(swallowed)
 		if offset == -20:
 			clear_light = minf(clear_light, environment.ambient_light_energy)
-		if world.weather.seen_storm >= 0.99:
-			darkest = minf(darkest, environment.ambient_light_energy)
 		var seen := {
 			"seen_storm": world.weather.seen_storm > 0.0,
 			"fog closes in": environment.fog_depth_end < haze_end,
@@ -71,6 +68,15 @@ func run() -> void:
 				wrong.append("%s was %s at %+d m" % [what, seen[what], offset])
 	check(inside > 5 and inside < steps - 5, "the walk crossed the drawn face both ways")
 	check(wrong.is_empty(), "the senses switched exactly at the drawn face: %s" % ", ".join(wrong))
+	# Deep in the dust: on past the face until it has swallowed you whole. The
+	# face's skin and billows can take more than the walk's 20 m to get there.
+	var darkest := INF
+	for d in range(25, 205, 5):
+		teleport(px + face_at + d, pz)
+		await physics_frames(2)
+		if world.weather.seen_storm >= 0.99:
+			darkest = environment.ambient_light_energy
+			break
 	check(darkest < clear_light, "deep in the dust is darker than outside (%.2f vs %.2f)" % [darkest, clear_light])
 
 

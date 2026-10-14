@@ -27,6 +27,13 @@ const SHOTS := [
 	["front", 300.0, 0.0, 18.0, "300m"],
 	["front", 300.0, 75.0, 8.0, "300m_along_the_front"],
 	["front", 300.0, 180.0, 5.0, "300m_looking_away"],
+	# Along fronts and past storms' ends, where a wall's side shows.
+	["front", 3000.0, -50.0, 4.0, "3km_left"],
+	["front", 3000.0, 50.0, 4.0, "3km_right"],
+	["front", 1000.0, -70.0, 6.0, "1km_along_left"],
+	["front", 1000.0, 70.0, 6.0, "1km_along_right"],
+	["front", 300.0, -75.0, 8.0, "300m_along_left"],
+	["front", 300.0, 120.0, 5.0, "300m_past_the_end"],
 	["front", 100.0, 0.0, 20.0, "100m"],
 	["front", 50.0, 0.0, 15.0, "50m"],
 	["front", 20.0, 0.0, 8.0, "20m"],

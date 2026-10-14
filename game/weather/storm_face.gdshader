@@ -47,16 +47,38 @@ float sun_through(float path) {
 	return min(1.0, exp(-0.004 * path) + 0.3 * exp(-0.0008 * path));
 }
 
-// First t where the ray may be in a storm, or -1. The field is smooth, so its
-// distance estimate strides through clear air, then bisection finds the spot.
-float storm_entry(vec3 ro, vec3 rd, float t_end) {
-	float t = 0.0;
-	float prev = 0.0;
+// First t from t0 where the ray may be in a storm, or -1. The field's distance
+// estimate strides through clear air, but it is first order: round a storm's
+// end it overestimates, and a stride that leaps the storm whole makes the next
+// pixel see the wall behind instead, a cut straight up the screen. So strides
+// are capped, and wherever the ray closes on a front then turns away between
+// two samples, the gap between them is walked finely.
+float storm_entry(vec3 ro, vec3 rd, float t0, float t_end) {
+	float t = t0;
+	float prev = t0;
+	float d_prev = 0.0;
+	float slope_prev = 0.0;
 	for (int i = 0; i < 64; i++) {
-		float d = storm_front((ro + rd * t).xz).x + STORM_REACH;
+		vec3 f = storm_front((ro + rd * t).xz);
+		float d = f.x + STORM_REACH;
+		float slope = dot(f.yz, rd.xz);
+		if (d <= 0.0 && i > 0 && slope_prev > 0.0 && slope < 0.0) {
+			// The tangents from both ends meet at the nearest approach between.
+			float tm = clamp((d - d_prev + slope_prev * prev - slope * t) / (slope_prev - slope), prev, t);
+			if (d_prev + slope_prev * (tm - prev) > 0.0) {
+				for (int k = 1; k <= 8; k++) {
+					float tk = mix(prev, t, float(k) / 9.0);
+					if (storm_front((ro + rd * tk).xz).x + STORM_REACH > 0.0) {
+						t = tk;
+						d = 1.0;
+						break;
+					}
+				}
+			}
+		}
 		if (d > 0.0) {
 			if (i == 0) {
-				return 0.0;
+				return t0;
 			}
 			float lo = prev;
 			float hi = t;
@@ -74,8 +96,9 @@ float storm_entry(vec3 ro, vec3 rd, float t_end) {
 			break;
 		}
 		prev = t;
-		// A first-order distance can overshoot round a bend, so stride short of it.
-		t = min(t + max(max(25.0, t * 0.04), -d * 0.6), t_end);
+		d_prev = d;
+		slope_prev = slope;
+		t = min(t + clamp(-d * 0.6, max(25.0, t * 0.04), max(150.0, t * 0.05)), t_end);
 	}
 	return -1.0;
 }
@@ -120,7 +143,7 @@ void fragment() {
 	} else if (ro.y > roof_max) {
 		t_end = 0.0;
 	}
-	float t = t_end > 0.0 && storm_map_ready > 0.0 ? storm_entry(ro, rd, t_end) : -1.0;
+	float t = t_end > 0.0 && storm_map_ready > 0.0 ? storm_entry(ro, rd, 0.0, t_end) : -1.0;
 	// Stagger starts inside a storm a little, so steps never line up into bands.
 	t += t == 0.0 ? 0.5 * fract(52.9829189 * fract(dot(FRAGCOORD.xy, vec2(0.06711056, 0.00583715)))) : 0.0;
 	vec3 light = vec3(0.0);
@@ -131,6 +154,9 @@ void fragment() {
 		float cos_sun = dot(rd, sun_dir);
 		float phase = mix(1.0, phase_hg(cos_sun, 0.6), 0.45);
 		float prev_t = t;
+		vec4 head = vec4(0.5);
+		// Step at which the march reached the storm it's in now.
+		int since = 0;
 		bool outside = true;
 		float edge = -1.0;
 		float sigma = 0.0;
@@ -140,19 +166,37 @@ void fragment() {
 				break;
 			}
 			// Fine near the camera, a few metres through the face, coarser far off.
-			float fine = min(0.5 + t * 0.05, max(4.0, t * 0.004));
+			float fine = min(0.75 + t * 0.06, max(4.0, t * 0.004));
 			// Small octaves only where their texels are bigger than a few pixels.
 			vec2 lod = vec2(1.0 - smoothstep(500.0, 1600.0, t), 1.0 - smoothstep(120.0, 450.0, t));
 			vec3 p = ro + rd * t;
 			vec3 f = storm_front(p.xz);
-			sigma = storm_density(p, f, lod, edge);
+			if (f.x + STORM_REACH < 0.0) {
+				edge = f.x + STORM_REACH;
+				sigma = 0.0;
+			} else {
+				head = storm_head_field(p);
+				sigma = storm_density(p, f, lod, head, edge);
+			}
 			if (edge < 0.0) {
-				// Clear air: the edge is roughly the distance to the face. Strides
-				// also grow with distance, so rays grazing along a face still
-				// reach it far off instead of running out of steps.
 				outside = true;
+				if (f.x + STORM_REACH < 0.0) {
+					// Past this storm's reach: look for the next one along the ray.
+					float next = storm_entry(ro, rd, t, t_end);
+					if (next < 0.0) {
+						break;
+					}
+					prev_t = next;
+					t = next + fine;
+					since = i;
+					continue;
+				}
+				// Among the billows: the edge is roughly the distance to the face.
+				// Strides grow with distance, and with a long run beside one
+				// storm, so a ray grazing kilometres along its side still takes a
+				// few dozen steps; the bisection above finds a surface exactly.
 				prev_t = t;
-				t += max(fine, max(-edge * 0.45, t * 0.03));
+				t += max(fine, max(-edge * 0.45, t * 0.05)) * (1.0 + float(i - since) / 24.0);
 				continue;
 			}
 			if (outside && i > 0) {
@@ -163,7 +207,7 @@ void fragment() {
 					float mid = 0.5 * (lo + hi);
 					vec3 pm = ro + rd * mid;
 					float top;
-					if (storm_front(pm.xz).x + storm_bulge(pm, lod, top) < 0.0) {
+					if (storm_front(pm.xz).x + storm_bulge(pm, lod, head, top) < 0.0) {
 						lo = mid;
 					} else {
 						hi = mid;
@@ -172,44 +216,54 @@ void fragment() {
 				t = hi;
 				p = ro + rd * t;
 				f = storm_front(p.xz);
-				sigma = storm_density(p, f, lod, edge);
+				sigma = storm_density(p, f, lod, head, edge);
 			}
 			if (outside) {
 				face_t = min(face_t, t);
 			}
 			outside = false;
-			// Thin dust and a spent budget both take longer strides, so rays
-			// skimming a face still reach what's behind.
-			float dt = fine * (sigma < 0.01 ? 2.5 : 1.0) * (1.0 + float(i) / 48.0);
+			// Thin dust and a long run in one storm take longer strides: the
+			// thinner, the longer, so a kilometre of roof haze doesn't eat the
+			// budget, and rays skimming a face still reach what's behind. The
+			// run counts from this storm only: carried over from one passed on
+			// the way, every ray that grazed it would sample the next wall
+			// coarser than its neighbour, and the edge of that graze shows as
+			// a straight cut.
+			float thin = clamp(0.015 / max(sigma, 1.0e-4), 1.0, 6.0);
+			float dt = fine * thin * (1.0 + float(i - since) / 48.0);
 			sigma *= 1.0 - smoothstep(far_fade.x, far_fade.y, t);
 			if (sigma > 1.0e-4) {
-				// One tap toward the sun and one toward the open sky: billows shade
-				// each other. Far off the taps reach further, so shading follows
-				// the big masses rather than every lump. Both read the front
-				// here and lean on its slope, rather than fetching the map again.
-				float reach = max(1.0, t / 1500.0);
-				vec3 open_dir = normalize(vec3(-f.y * 0.6, 0.8, -f.z * 0.6));
-				vec3 to_sun = sun_dir * 45.0 * reach;
-				vec3 to_open = open_dir * 40.0 * reach;
-				float top;
-				float e_sun = (f.x + dot(f.yz, to_sun.xz) + storm_bulge(p + to_sun, vec2(0.0), top)) / reach;
-				float e_open = (f.x + dot(f.yz, to_open.xz) + storm_bulge(p + to_open, vec2(0.0), top)) / reach;
-				// Shading stays soft: the wall reads as one mass, the billows as
-				// relief moving within it.
-				// Far off the relief flattens out, so a distant wall stays one mass
-				// whichever way the sun falls on it.
-				float relief = 1.0 - 0.6 * smoothstep(1000.0, 5000.0, t);
-				// Depth for the sun counts from the billowed surface, so a lump set
-				// back behind the front is lit like any other part of the face.
-				float sun_t = sun_through(storm_sun_path(p, vec3(edge, f.yz), sun_dir))
-					* mix(1.0 - 0.65 * relief, 1.0, exp(-max(e_sun, 0.0) * 0.04));
-				float open = mix(1.0, exp(-max(e_open, 0.0) * 0.02), relief);
-				float sky = mix(storm_glow, 1.0, open) * mix(0.6, 1.0, smoothstep(0.0, 600.0, p.y));
-				// Thick parcels shade themselves; thin ones glow.
-				sky *= mix(1.25, 0.8, smoothstep(0.05, 0.25, sigma));
-				s = dust_albedo * (sun_light * sun_t * phase + sky_light * sky);
-				s = mix(s, haze_color, haze_at(t, p.y));
 				float a = 1.0 - exp(-sigma * dt);
+				// A wisp that adds next to nothing keeps the last light worked out;
+				// it's refreshed every few steps, so a long run of thin dust
+				// can't drift far from it.
+				if (trans * a > 0.006 || (i & 3) == 0 || s == vec3(0.0)) {
+					// One tap toward the sun and one toward the open sky: billows shade
+					// each other. Far off the taps reach further, so shading follows
+					// the big masses rather than every lump. Both read the front
+					// here and lean on its slope, rather than fetching the map again.
+					float reach = max(1.0, t / 1500.0);
+					vec3 open_dir = normalize(vec3(-f.y * 0.6, 0.8, -f.z * 0.6));
+					vec3 to_sun = sun_dir * 45.0 * reach;
+					vec3 to_open = open_dir * 40.0 * reach;
+					float top;
+					float e_sun = (f.x + dot(f.yz, to_sun.xz) + storm_bulge(p + to_sun, vec2(0.0), head, top)) / reach;
+					float e_open = (f.x + dot(f.yz, to_open.xz) + storm_bulge(p + to_open, vec2(0.0), head, top)) / reach;
+					// Shading stays soft, and flattens further off, so a wall reads as
+					// one mass whichever way the sun falls, the billows as relief
+					// moving within it.
+					float relief = 1.0 - 0.6 * smoothstep(1000.0, 5000.0, t);
+					// Depth for the sun counts from the billowed surface, so a lump set
+					// back behind the front is lit like any other part of the face.
+					float sun_t = sun_through(storm_sun_path(p, vec3(edge, f.yz), sun_dir))
+						* mix(1.0 - 0.65 * relief, 1.0, exp(-max(e_sun, 0.0) * 0.04));
+					float open = mix(1.0, exp(-max(e_open, 0.0) * 0.02), relief);
+					float sky = mix(storm_glow, 1.0, open) * mix(0.6, 1.0, smoothstep(0.0, 600.0, p.y));
+					// Thick parcels shade themselves; thin ones glow.
+					sky *= mix(1.25, 0.8, smoothstep(0.05, 0.25, sigma));
+					s = dust_albedo * (sun_light * sun_t * phase + sky_light * sky);
+					s = mix(s, haze_color, haze_at(t, p.y));
+				}
 				light += trans * a * s;
 				trans *= 1.0 - a;
 				if (trans < 0.004) {
