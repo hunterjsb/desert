@@ -3,7 +3,7 @@
 *Draft, 2026-10-13. How we build the skeleton described in [the vision](vision.md): every
 system in rough form, wired into one complete loop, before anything gets polished.*
 
-**Where we are:** Stage 0 is built. Stage 1 is built and waiting at the gate.
+**Where we are:** Stages 0 and 1 passed the gate on 2026-10-14. Stage 2 is being built.
 
 ## The loop we're building toward
 
@@ -68,6 +68,8 @@ readout.
 - A felt-weather wrapper, with no shelter yet, so everything built from here reads
   weather the right way from day one.
 - The 20-minute day and night, which solar will need.
+- A mode readout on screen (walking, sprinting, flying). The Stage 1 playtest found it
+  hard to tell which one you're in.
 
 **The wall look-test starts here** and runs alongside every stage that follows. It's a
 separate scene with one job: making the wall feel right. It has no probes. You judge it
