@@ -79,6 +79,14 @@ satisfying, every single time.
   enough to turn. A staked or heavy device stays put, so you walk round to the part.
 - **Speed:** a battery swap should take a second or two.
 
+## Where parts come from, and how they wear
+
+- **Parts are found, never crafted,** at least for now. Salvage is the only source,
+  which makes every find matter.
+- **Parts wear out only from the elements:** wind, storm and temperature, through the
+  felt weather. Use never wears them. A part sheltered from a harm doesn't wear from
+  it, so the shield protects your parts as well as you.
+
 ## Socket types to start
 
 | Socket | Takes | Owned by |
@@ -109,6 +117,8 @@ hook. That's how found mods expand a device.
 - **Parts that add sockets,** like the extra-hook mod.
 - **Part tiers and upgrades.**
 - **More part types,** as the other PRDs need them.
+- **Per-part wear from the elements.** In the skeleton, wear is a single durability on
+  the whole device (Bubble shield & camp).
 
 ## Probes
 
@@ -129,10 +139,8 @@ hook. That's how found mods expand a device.
 
 ## Out of scope
 
-- Where parts come from. That's Salvage & ruins, plus crafting if it exists.
+- Crafting, for now. Parts come from Salvage & ruins.
 
 ## Open questions
 
-- **Are parts found only, or crafted too?**
-- **Do parts wear out or get damaged on their own,** like a solar panel scoured by a
-  storm?
+None right now.

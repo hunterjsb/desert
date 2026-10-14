@@ -60,6 +60,8 @@ upgrade the camp → the camp sustains more of itself → go further, or into th
   power by day but is useless in a storm. Wind power is strongest in a storm, but it
   has to be planted, so you either stay or leave it behind. Heavy gear, like something
   on caterpillar tracks, is strong for the camp but slows you down.
+- **Parts are found, never crafted** (for now), and they wear out only from the
+  elements. Salvage is the whole economy.
 - **Things can pull the camp for you** (ideas, not settled). One is a rusty mechanical
   beast that follows at a distance and carries or tows. It's made of stiff parts, so it
   needs no skin rigging. Another is a sand yacht that rides the wind, can zigzag upwind,
