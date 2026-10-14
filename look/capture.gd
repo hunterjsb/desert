@@ -13,7 +13,9 @@ func _ready() -> void:
 	var pitch := float(args[2]) if args.size() > 2 else -5.0
 	var lift := float(args[3]) if args.size() > 3 else 0.0
 	var time := float(args[4]) if args.size() > 4 else 0.0
-	# Screenshots are silent: the storm roar shouldn't play through his speakers.
+	# Hunter may be playing in another window while this runs: never take his
+	# focus or his keys, and stay silent.
+	get_window().unfocusable = true
 	AudioServer.set_bus_mute(0, true)
 	Tuning.current().run_seed = 1234
 	var world: World = WORLD_SCENE.instantiate()
@@ -24,6 +26,8 @@ func _ready() -> void:
 			break
 	world.time = time
 	world.player.flying = true
+	world.player.set_process_unhandled_input(false)
+	world.player.set_physics_process(false)
 	world.player.global_position.y += lift
 	world.player.rotation_degrees.y = yaw
 	world.player.camera.rotation_degrees.x = pitch
