@@ -15,8 +15,8 @@ camp you can walk away from.
 - **Every device has its own battery,** and you can see its charge on the device itself.
   There's no menu.
 - **You start with a light solar panel** that you can set down and pick back up. Out of
-  the storm, you sit for a moment and recharge the shield or the hoverboard. The
-  hoverboard matters most, because storms outrun you on foot.
+  the storm, you sit for a moment and recharge the shield, or the hoverboard once
+  you've found one.
 - **The rudimentary setup** wires a source straight into a device: a solar panel into the
   shield. It works while the sun shines.
 - **Then batteries.** You charge them at a source and swap them by hand. Carrying a fresh

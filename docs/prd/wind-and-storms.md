@@ -52,9 +52,9 @@ read it. Nothing computes storminess any other way.
   slowly), plus gusts, plus storm outflow (the wind blows hardest just ahead of and
   inside a front).
 - **Storms travel with the prevailing wind**, so reading the wind is reading the weather.
-- **Storms move fast.** It's 5–10 minutes or less from first seeing the wall to impact.
-  With the wall first visible a few kilometres out, that means roughly 20–40 km/h. You
-  can't outrun one on foot. On a hoverboard, maybe.
+- **Storms usually move fast.** It's normally about 5 minutes from first seeing the
+  wall to impact, and up to 20 minutes in rare cases. Most storms move faster than
+  anyone can walk.
 - **The field also changes over time.** Gaps open and close, storms grow and fade. A
   clear gap travels with the wind, so matching the wind keeps you in the clear, but
   only until the gap closes.
