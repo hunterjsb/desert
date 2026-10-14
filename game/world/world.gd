@@ -114,13 +114,11 @@ func _physics_process(delta: float) -> void:
 	_keep_bodies_on_ground()
 	time += delta * time_warp
 
-	Dev.put("world/seed", run_seed)
-	Dev.put("world/x", snappedf(x, 0.1))
-	Dev.put("world/z", snappedf(z, 0.1))
-	Dev.put("world/origin_chunk", origin_chunk)
-	Dev.put("world/latitude", snappedf(rad_to_deg(moon.latitude), 0.0001))
-	Dev.put("world/longitude", snappedf(rad_to_deg(moon.longitude), 0.0001))
-	Dev.put("world/from_spawn_km", moon.distance_from_spawn() / 1000.0)
+	Dev.put("world/seed", "%d" % run_seed)
+	Dev.put("world/position", "%.0f, %.0f m" % [x, z])
+	Dev.put("world/lat_long", "%.3f, %.3f" % [rad_to_deg(moon.latitude), rad_to_deg(moon.longitude)])
+	Dev.put("world/from_spawn", "%.2f km" % (moon.distance_from_spawn() / 1000.0))
+	Dev.put("world/origin_chunk", "%d, %d" % [origin_chunk.x, origin_chunk.y])
 
 
 ## Nothing physical is ever outside collision: a body whose ground is gone is

@@ -43,7 +43,8 @@ func _physics_process(delta: float) -> void:
 	if flying:
 		mode = "flying"
 		var boost := 5.0 if Input.is_action_pressed("sprint") else 1.0
-		global_position += camera.global_basis * Vector3(input.x, 0.0, input.y) \
+		var rise := Input.get_axis("fly_down", "fly_up")
+		global_position += (camera.global_basis * Vector3(input.x, 0.0, input.y) + Vector3.UP * rise) \
 			* _tuning.dev_fly_speed * boost * delta
 		velocity = Vector3.ZERO
 		return
@@ -80,6 +81,6 @@ func _physics_process(delta: float) -> void:
 		stamina += _tuning.stamina_regen * delta
 	stamina = clampf(stamina, 0.0, _tuning.stamina_max)
 
-	Dev.put("player/stamina", stamina)
-	Dev.put("player/speed_kmh", Vector2(velocity.x, velocity.z).length() * 3.6)
-	Dev.put("player/storm_harm", storm_harm)
+	Dev.put("player/stamina", "%d of %d" % [stamina, _tuning.stamina_max])
+	Dev.put("player/speed", "%.1f km/h" % (Vector2(velocity.x, velocity.z).length() * 3.6))
+	Dev.put("player/storm_harm", "%.0f" % storm_harm)

@@ -10,6 +10,8 @@ const KEYS := {
 	"sprint": KEY_SHIFT,
 	"toggle_dev_overlay": KEY_F3,
 	"dev_fly": KEY_F4,
+	"fly_up": KEY_SPACE,
+	"fly_down": KEY_CTRL,
 	"dev_time_warp": KEY_F5,
 }
 

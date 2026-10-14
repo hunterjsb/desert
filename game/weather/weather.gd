@@ -118,19 +118,17 @@ func _show() -> void:
 func _report() -> void:
 	var t := _world.time
 	var hours := day.time_of_day(t) * 24.0
-	Dev.put("weather/time", "day %d  %02d:%02d" % [day.day(t), floori(hours), floori(fmod(hours, 1.0) * 60.0)])
-	Dev.put("weather/time_warp", _world.time_warp)
+	Dev.put("weather/time", "day %d, %02d:%02d" % [day.day(t), floori(hours), floori(fmod(hours, 1.0) * 60.0)])
 	# Compass bearing the wind comes from; north is -z.
 	var from := fposmod(rad_to_deg(atan2(-wind.x, wind.z)), 360.0)
 	Dev.put("weather/wind", "%.1f m/s from %03d" % [wind.length(), roundi(from) % 360])
-	Dev.put("weather/storm", storm)
-	Dev.put("weather/in_storm", in_storm)
+	Dev.put("weather/storm", "%d%%" % roundi(storm * 100.0) if in_storm else "clear")
 	var nearest := INF
 	for d in wall.distances:
 		if d > 0.0:
 			nearest = minf(nearest, d)
-	Dev.put("weather/front_m", "inside" if in_storm else ("none" if nearest == INF else "%d" % nearest))
+	Dev.put("weather/wall", "on you" if in_storm else ("none in sight" if nearest == INF else "%d m" % nearest))
 	var eta := next_change_time - t
 	Dev.put("weather/next", "%s in %s" % ["clears" if in_storm else "storm",
 		"over an hour" if eta == INF else "%d:%02d" % [floori(eta / 60.0), floori(fmod(eta, 60.0))]])
-	Dev.put("weather/sunlight", felt_light(_world.player.global_position))
+	Dev.put("weather/sunlight", "%d%%" % roundi(felt_light(_world.player.global_position) * 100.0))
