@@ -15,7 +15,8 @@ let it run.
 1. **Steady state is the reward.** Getting stronger means getting more self-sufficient,
    not more powerful in a fight. A well-run camp reaches a steady state where going AFK
    costs nothing. That's the satisfaction of a Satisfactory factory or a Minecraft AFK
-   farm, at the size of one traveller.
+   farm, at the size of one traveller. In practice, it's a power budget that balances
+   through day, night and storm.
 2. **Your home goes with you.** There's no base to return to. The shield, the planters
    and the power all travel with you, tethered against the wind. You pick the direction.
 3. **The wind is the difficulty dial.** Drift with the wind and life is calm. Push into
@@ -40,6 +41,9 @@ upgrade the camp → the camp sustains more of itself → go further, or into th
 
 ## The camp
 
+- **Editing your devices is the gameplay.** Every device is modular, with sockets for a
+  battery, rope hooks, a hover tray and better parts. Fitting a hook, a tray, a better
+  battery or a charged one is how you progress.
 - **The camp is several physical things, not one building.** The shield is small enough
   to carry. Planters, power and the rest are objects in the world that you tether
   together.
@@ -135,12 +139,13 @@ the start.
 2. [Wind & storms](prd/wind-and-storms.md)
 3. [Rope & tethering](prd/rope-and-tethering.md)
 4. [Bubble shield & the travelling camp](prd/bubble-shield-and-camp.md)
-5. Power
-6. Survival needs (heat, thirst, hunger)
-7. Farming
-8. Movement (on foot, hoverboard)
-9. Salvage & ruins
-10. Radio, sound & atmosphere
+5. Devices & mods
+6. [Power](prd/power.md)
+7. Survival needs (heat, thirst, hunger)
+8. Farming
+9. Movement (on foot, hoverboard)
+10. Salvage & ruins
+11. Radio, sound & atmosphere
 
 ## Open questions
 
