@@ -9,15 +9,3 @@
 
 [node name="Scenarios" type="CanvasLayer" parent="."]
 script = ExtResource("2_scenarios")
-
-[node name="Hud" type="CanvasLayer" parent="."]
-
-[node name="Hint" type="Label" parent="Hud"]
-anchors_preset = 2
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_left = 12.0
-offset_top = -36.0
-offset_bottom = -12.0
-grow_vertical = 0
-text = "Stage 2: weather and the day. Click to look, WASD, Shift sprints, F2 scenarios, F3 numbers, F4 fly (Space up, Ctrl down), F5 speeds up time, F6 low gravity."

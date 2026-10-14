@@ -2,6 +2,7 @@ extends Node
 ## Every number the game wants seen: systems put() values here, F3 draws them,
 ## and probes read() the same values the player would see. Keys are
 ## "group/name"; each group gets its own column, so nothing runs off screen.
+## F1 lists the keys, one per line; on screen there's only a hint that it does.
 
 ## Columns left to right, with their headings; unlisted groups follow, alphabetically.
 const GROUPS := {"weather": "WX", "player": "YOU", "world": "WLD", "terrain": "TER", "engine": "ENG"}
@@ -10,6 +11,10 @@ var _values: Dictionary = {}
 var _layer: CanvasLayer
 var _columns: HBoxContainer
 var _bodies: Dictionary = {}
+var _keys_layer: CanvasLayer
+var _keys: Label
+var _hint: Label
+var _scene_keys: Array = []
 
 
 func _ready() -> void:
@@ -23,6 +28,24 @@ func _ready() -> void:
 	_columns.add_theme_constant_override("separation", 14)
 	_layer.add_child(_columns)
 
+	var hint_layer := CanvasLayer.new()
+	hint_layer.layer = 100
+	add_child(hint_layer)
+	_hint = _text(Color(1, 1, 1, 0.7))
+	_hint.text = "F1 keys"
+	_hint.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT, Control.PRESET_MODE_MINSIZE, 10)
+	_hint.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	hint_layer.add_child(_hint)
+	_keys_layer = CanvasLayer.new()
+	_keys_layer.layer = 100
+	_keys_layer.visible = false
+	add_child(_keys_layer)
+	_keys = _text(Color.WHITE)
+	_keys.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT, Control.PRESET_MODE_MINSIZE, 10)
+	_keys.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	_keys_layer.add_child(_keys)
+	_write_keys()
+
 
 func put(key: String, value: Variant) -> void:
 	_values[key] = value
@@ -30,6 +53,26 @@ func put(key: String, value: Variant) -> void:
 
 func read(key: String, default: Variant = null) -> Variant:
 	return _values.get(key, default)
+
+
+## A scene's own keys, as [key, what it does] pairs, listed after the game's.
+func set_scene_keys(keys: Array) -> void:
+	_scene_keys = keys
+	_write_keys()
+
+
+## Captures want a clean frame.
+func hide_overlays() -> void:
+	_layer.visible = false
+	_keys_layer.visible = false
+	_hint.visible = false
+
+
+func _write_keys() -> void:
+	var lines := PackedStringArray()
+	for pair: Array in Controls.HELP + _scene_keys:
+		lines.append("%s  %s" % pair)
+	_keys.text = "\n".join(lines)
 
 
 func _process(_delta: float) -> void:
@@ -45,6 +88,9 @@ func _process(_delta: float) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("toggle_dev_overlay"):
 		_layer.visible = not _layer.visible
+	elif event.is_action_pressed("toggle_keys"):
+		_keys_layer.visible = not _keys_layer.visible
+		_hint.visible = not _keys_layer.visible
 
 
 func _draw_columns() -> void:

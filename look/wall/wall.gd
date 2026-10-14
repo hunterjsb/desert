@@ -15,8 +15,11 @@ const JUMPS := {
 	KEY_5: ["front", 3000.0], KEY_6: ["front", 1000.0], KEY_7: ["front", 300.0],
 	KEY_8: ["front", 50.0], KEY_9: ["front", 0.0], KEY_0: ["deep", 0.0], KEY_MINUS: ["back", 100.0],
 }
-const KEYS_HELP := "1-4 time ×1 ×5 ×20 ×60 · Space pause · jump: 5 3 km  6 1 km  7 300 m  8 50 m  " \
-	+ "9 contact  0 deep  - clearing · R spawn · H hide · F2 scenarios · F3 numbers · F4 fly"
+const KEYS := [
+	["1-4", "time x1, x5, x20, x60"], ["Space", "pause"],
+	["5-9", "a front at 3 km, 1 km, 300 m, 50 m, contact"], ["0", "deep in the storm"],
+	["-", "a storm about to clear"], ["R", "back to spawn"], ["H", "hide the readout"],
+]
 ## Capture mode's shots: scenario kind, distance, yaw from facing it, pitch, name.
 const SHOTS := [
 	["front", 5000.0, 0.0, 3.0, "5km"],
@@ -48,11 +51,10 @@ var _jump := ""
 
 @onready var world: World = $World
 @onready var readout: Label = $Hud/Readout
-@onready var keys: Label = $Hud/Keys
 
 
 func _ready() -> void:
-	keys.text = KEYS_HELP
+	Dev.set_scene_keys(KEYS)
 	var args := OS.get_cmdline_user_args()
 	var at := args.find("--capture")
 	if at != -1:
@@ -153,6 +155,7 @@ func _capture(out_dir: String, only: PackedStringArray) -> void:
 	world.player.set_process_unhandled_input(false)
 	world.player.set_physics_process(false)
 	$Hud.visible = false
+	Dev.hide_overlays()
 	DirAccess.make_dir_recursive_absolute(out_dir)
 	var rid := get_viewport().get_viewport_rid()
 	RenderingServer.viewport_set_measure_render_time(rid, true)

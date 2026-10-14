@@ -17,6 +17,7 @@ func _ready() -> void:
 	# focus or his keys, and stay silent.
 	get_window().unfocusable = true
 	AudioServer.set_bus_mute(0, true)
+	Dev.hide_overlays()
 	Tuning.current().run_seed = 1234
 	var world: World = WORLD_SCENE.instantiate()
 	add_child(world)

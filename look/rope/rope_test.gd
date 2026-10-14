@@ -1,7 +1,7 @@
 extends Node
 ## The rope look-test: the test floater, a crate, stakes and you, tied up round
 ## spawn in the real world and its weather, to judge whether rope can feel
-## right. Keys are on screen; probes/rope/ judge whether it's reliable.
+## right. F1 lists the keys; probes/rope/ judge whether it's reliable.
 ##   godot --path . res://look/rope/rope.tscn
 ##   godot --path . res://look/rope/rope.tscn -- --capture <dir>
 ##   godot --headless --path . res://look/rope/rope.tscn -- --bench
@@ -18,9 +18,11 @@ const REACH := 3.0
 const GUST := Vector3(1.5, 3.0, 2.0)
 ## The snap rig's line: holds a storm's mean, not its big gusts.
 const WEAK := 550.0
-const KEYS_HELP := "wind: 1 calm  2 breeze  3 storm  4 worst gust  5 real · go to: 6 deep in a storm  " \
-	+ "7 a storm 100 m off  8 a clear day · H hand/waist · Q let go · E take up a staked line · " \
-	+ "F stake your lines here · R reset · click to look, WASD, F3 numbers"
+const KEYS := [
+	["1-5", "wind: calm, breeze, storm, worst gust, real"], ["6", "go deep into a storm"],
+	["7", "go to a storm 100 m off"], ["8", "go to a clear day"], ["H", "line in hand or at waist"],
+	["Q", "let go"], ["E", "take up a staked line"], ["F", "stake your lines here"], ["R", "reset"],
+]
 
 var world: World
 var ropes: Ropes
@@ -41,7 +43,6 @@ var _down := Vector3.FORWARD
 var _across := Vector3.RIGHT
 
 @onready var readout: Label = $Hud/Readout
-@onready var keys: Label = $Hud/Keys
 
 
 func _ready() -> void:
@@ -59,7 +60,7 @@ func _ready() -> void:
 	add_child(ropes)
 	ropes.setup(world)
 	ropes.snapped.connect(func(rope: Rope) -> void: _gone[rope] = "SNAPPED")
-	keys.text = KEYS_HELP
+	Dev.set_scene_keys(KEYS)
 	var args := OS.get_cmdline_user_args()
 	if args.has("--bench"):
 		_bench()
@@ -300,9 +301,8 @@ func _process(_delta: float) -> void:
 func _readout() -> String:
 	var lines := PackedStringArray()
 	var blowing := world.weather.felt_wind(world.player.global_position)
+	# Each setup's load floats over it; this is only what isn't on any object.
 	lines.append("wind %s %d m/s%s" % [wind_mode, roundi(blowing.length()), "  GUST" if _gusting() else ""])
-	for setup in _setups:
-		lines.append("%s   %s" % [setup.label, _states(setup.lines)])
 	var you := "free"
 	if not ropes.lines_on(ropes.waist).is_empty():
 		you = "untying %.1f s" % _untie if _untie >= 0.0 else "waist-tied"
@@ -316,7 +316,6 @@ func _readout() -> String:
 			pulled += 1
 	if pulled > 0:
 		lines.append("%d stake%s pulled out" % [pulled, "" if pulled == 1 else "s"])
-	lines.append("ropes %.2f ms a tick" % ropes.cost_ms)
 	if _note != "":
 		lines.append(_note)
 	return "\n".join(lines)
@@ -381,7 +380,7 @@ func _capture(out_dir: String) -> void:
 	window.size = Vector2i(960, 540)
 	window.content_scale_mode = Window.CONTENT_SCALE_MODE_VIEWPORT
 	window.content_scale_size = Vector2i(1920, 1080)
-	keys.visible = false
+	Dev.hide_overlays()
 	var camera := Camera3D.new()
 	camera.far = 5000.0
 	add_child(camera)
