@@ -115,10 +115,10 @@ func _physics_process(delta: float) -> void:
 	time += delta * time_warp
 
 	Dev.put("world/seed", "%d" % run_seed)
-	Dev.put("world/position", "%.0f, %.0f m" % [x, z])
-	Dev.put("world/lat_long", "%.3f, %.3f" % [rad_to_deg(moon.latitude), rad_to_deg(moon.longitude)])
-	Dev.put("world/from_spawn", "%.2f km" % (moon.distance_from_spawn() / 1000.0))
-	Dev.put("world/origin_chunk", "%d, %d" % [origin_chunk.x, origin_chunk.y])
+	Dev.put("world/pos", "%.0f,%.0f" % [x, z])
+	Dev.put("world/ll", "%.3f,%.3f" % [rad_to_deg(moon.latitude), rad_to_deg(moon.longitude)])
+	Dev.put("world/dist", "%.2fkm" % (moon.distance_from_spawn() / 1000.0))
+	Dev.put("world/orig", "%d,%d" % [origin_chunk.x, origin_chunk.y])
 
 
 ## Nothing physical is ever outside collision: a body whose ground is gone is

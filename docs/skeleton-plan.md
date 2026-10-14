@@ -69,8 +69,12 @@ readout.
 - A felt-weather wrapper, with no shelter yet, so everything built from here reads
   weather the right way from day one.
 - The 20-minute day and night, which solar will need.
-- A mode readout on screen (walking, sprinting, flying). The Stage 1 playtest found it
-  hard to tell which one you're in.
+- A mode readout (walking, sprinting, flying) on the F3 overlay. The Stage 1 playtest
+  found it hard to tell which one you're in, and the Stage 2 playtest wanted it off the
+  screen.
+- Enough storm to know you're in one: dust streaming on the wind, a brown glow, and Sand
+  Game's storm roar and desert wind. The Stage 2 playtest found darkness alone read as
+  night.
 
 **The wall look-test starts here** and runs alongside every stage that follows. It's a
 separate scene with one job: making the wall feel right. It has no probes. You judge it

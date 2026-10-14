@@ -3,8 +3,8 @@ extends Node
 ## and probes read() the same values the player would see. Keys are
 ## "group/name"; each group gets its own column, so nothing runs off screen.
 
-## Columns left to right; groups not listed follow in alphabetical order.
-const GROUPS: Array[String] = ["weather", "player", "world", "terrain", "engine"]
+## Columns left to right, with their headings; unlisted groups follow, alphabetically.
+const GROUPS := {"weather": "WX", "player": "YOU", "world": "WLD", "terrain": "TER", "engine": "ENG"}
 
 var _values: Dictionary = {}
 var _layer: CanvasLayer
@@ -20,7 +20,7 @@ func _ready() -> void:
 	add_child(_layer)
 	_columns = HBoxContainer.new()
 	_columns.position = Vector2(8, 8)
-	_columns.add_theme_constant_override("separation", 8)
+	_columns.add_theme_constant_override("separation", 14)
 	_layer.add_child(_columns)
 
 
@@ -34,10 +34,10 @@ func read(key: String, default: Variant = null) -> Variant:
 
 func _process(_delta: float) -> void:
 	put("engine/fps", "%d" % Engine.get_frames_per_second())
-	put("engine/frame", "%.1f ms" % (Performance.get_monitor(Performance.TIME_PROCESS) * 1000.0))
-	put("engine/physics", "%.1f ms" % (Performance.get_monitor(Performance.TIME_PHYSICS_PROCESS) * 1000.0))
-	put("engine/objects", "%d" % Performance.get_monitor(Performance.OBJECT_COUNT))
-	put("engine/memory", "%.0f MB" % (Performance.get_monitor(Performance.MEMORY_STATIC) / 1048576.0))
+	put("engine/frm", "%.1fms" % (Performance.get_monitor(Performance.TIME_PROCESS) * 1000.0))
+	put("engine/phy", "%.1fms" % (Performance.get_monitor(Performance.TIME_PHYSICS_PROCESS) * 1000.0))
+	put("engine/obj", "%d" % Performance.get_monitor(Performance.OBJECT_COUNT))
+	put("engine/mem", "%.0fMB" % (Performance.get_monitor(Performance.MEMORY_STATIC) / 1048576.0))
 	if _layer.visible:
 		_draw_columns()
 
@@ -56,39 +56,41 @@ func _draw_columns() -> void:
 			continue
 		if not lines.has(group):
 			lines[group] = []
-		lines[group].append("%s  %s" % [key.get_slice("/", 1).replace("_", " "), _format(_values[key])])
-	var order: Array = GROUPS.filter(func(g: String) -> bool: return lines.has(g))
+		lines[group].append("%s %s" % [key.get_slice("/", 1), _format(_values[key])])
+	var order: Array = GROUPS.keys().filter(func(g: String) -> bool: return lines.has(g))
 	var rest: Array = lines.keys().filter(func(g: String) -> bool: return not GROUPS.has(g))
 	rest.sort()
 	order.append_array(rest)
 	for i in order.size():
 		var body := _body(order[i])
 		body.text = "\n".join(PackedStringArray(lines[order[i]]))
-		_columns.move_child(body.get_parent().get_parent(), i)
+		_columns.move_child(body.get_parent(), i)
 
 
+## A column is bare outlined text, so the world shows through it.
 func _body(group: String) -> Label:
 	if _bodies.has(group):
 		return _bodies[group]
-	var panel := PanelContainer.new()
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0, 0, 0, 0.6)
-	style.set_corner_radius_all(4)
-	style.set_content_margin_all(8)
-	panel.add_theme_stylebox_override("panel", style)
 	var stack := VBoxContainer.new()
-	var header := Label.new()
-	header.text = group.to_upper()
-	header.add_theme_font_size_override("font_size", 13)
-	header.add_theme_color_override("font_color", Color(1.0, 0.8, 0.5))
-	var body := Label.new()
-	body.add_theme_font_size_override("font_size", 14)
+	stack.add_theme_constant_override("separation", 0)
+	var header := _text(Color(1.0, 0.8, 0.5))
+	header.text = GROUPS.get(group, group.to_upper())
+	var body := _text(Color.WHITE)
 	stack.add_child(header)
 	stack.add_child(body)
-	panel.add_child(stack)
-	_columns.add_child(panel)
+	_columns.add_child(stack)
 	_bodies[group] = body
 	return body
+
+
+func _text(color: Color) -> Label:
+	var label := Label.new()
+	label.add_theme_font_size_override("font_size", 12)
+	label.add_theme_constant_override("line_spacing", 0)
+	label.add_theme_color_override("font_color", color)
+	label.add_theme_color_override("font_outline_color", Color.BLACK)
+	label.add_theme_constant_override("outline_size", 4)
+	return label
 
 
 func _format(value: Variant) -> String:

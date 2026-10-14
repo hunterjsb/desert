@@ -8,8 +8,8 @@ var world: World
 var stamina: float
 ## Dev only: F4 flies through the world, for checking the far view.
 var flying := false
-## How you're moving, for the screen: standing, walking, sprinting or flying.
-var mode := "standing"
+## How you're moving: stand, walk, sprint or fly.
+var mode := "stand"
 ## Placeholder harm taken from storms, until Survival brings health.
 var storm_harm := 0.0
 
@@ -41,7 +41,8 @@ func _physics_process(delta: float) -> void:
 	if world != null and not flying:
 		storm_harm += world.weather.felt_storm(global_position) * _tuning.storm_harm_rate * delta
 	if flying:
-		mode = "flying"
+		mode = "fly"
+		Dev.put("player/mode", mode)
 		var boost := 5.0 if Input.is_action_pressed("sprint") else 1.0
 		var rise := Input.get_axis("fly_down", "fly_up")
 		global_position += (camera.global_basis * Vector3(input.x, 0.0, input.y) + Vector3.UP * rise) \
@@ -69,7 +70,7 @@ func _physics_process(delta: float) -> void:
 		var shove := wind.normalized() * beyond * _tuning.wind_push
 		velocity.x += shove.x
 		velocity.z += shove.z
-	mode = "sprinting" if sprinting else ("walking" if moving else "standing")
+	mode = "sprint" if sprinting else ("walk" if moving else "stand")
 	velocity.y = 0.0 if is_on_floor() else velocity.y - _gravity * delta
 	move_and_slide()
 
@@ -81,6 +82,7 @@ func _physics_process(delta: float) -> void:
 		stamina += _tuning.stamina_regen * delta
 	stamina = clampf(stamina, 0.0, _tuning.stamina_max)
 
-	Dev.put("player/stamina", "%d of %d" % [stamina, _tuning.stamina_max])
-	Dev.put("player/speed", "%.1f km/h" % (Vector2(velocity.x, velocity.z).length() * 3.6))
-	Dev.put("player/storm_harm", "%.0f" % storm_harm)
+	Dev.put("player/mode", mode)
+	Dev.put("player/stam", "%d/%d" % [stamina, _tuning.stamina_max])
+	Dev.put("player/spd", "%.1fkm/h" % (Vector2(velocity.x, velocity.z).length() * 3.6))
+	Dev.put("player/harm", "%.0f" % storm_harm)

@@ -21,6 +21,7 @@ var wind := Vector3.ZERO
 var next_change_time := INF
 
 @onready var wall: StormWall = $StormWall
+@onready var atmosphere: Atmosphere = $Atmosphere
 
 var _world: World
 var _tuning: Tuning
@@ -101,10 +102,14 @@ func _show() -> void:
 	_sun.global_basis = Basis.looking_at(-sun, Vector3.UP if absf(sun.y) < 0.9 else Vector3.FORWARD)
 	var clear := 1.0 - _tuning.storm_darkness * storm
 	_sun.light_energy = _sun_energy * smoothstep(-0.02, 0.1, sun.y) * clear
-	var brightness := lerpf(NIGHT_LIGHT, 1.0, smoothstep(-0.1, 0.2, sun.y)) * clear
+	var daylight := lerpf(NIGHT_LIGHT, 1.0, smoothstep(-0.1, 0.2, sun.y))
+	var brightness := daylight * clear
 	_environment.background_energy_multiplier = brightness
 	_environment.ambient_light_energy = brightness
-	_environment.fog_light_color = _haze_color.lerp(_tuning.storm_fog_color, storm) * brightness
+	# Dust in the air scatters what light there is, so a storm glows brown
+	# while the ground under it goes dark.
+	var dust_color := _haze_color.lerp(_tuning.storm_fog_color, storm) * daylight * (1.0 - 0.4 * storm)
+	_environment.fog_light_color = dust_color
 	# Visibility falls geometrically, so it collapses within seconds of the front.
 	var visibility := _tuning.haze_end * pow(_tuning.storm_visibility / _tuning.haze_end, storm)
 	_environment.fog_depth_end = visibility
@@ -113,22 +118,24 @@ func _show() -> void:
 	_world.terrain.show_far(not in_storm)
 	wall.visible = not in_storm
 	wall.set_light(brightness, _tuning.storm_fog_color)
+	atmosphere.show_weather(_world.player.global_position + Vector3.UP * 1.5, wind, storm, dust_color)
 
 
 func _report() -> void:
 	var t := _world.time
 	var hours := day.time_of_day(t) * 24.0
-	Dev.put("weather/time", "day %d, %02d:%02d" % [day.day(t), floori(hours), floori(fmod(hours, 1.0) * 60.0)])
+	var warp := "" if _world.time_warp == 1.0 else " x%d" % _world.time_warp
+	Dev.put("weather/t", "d%d %02d:%02d%s" % [day.day(t), floori(hours), floori(fmod(hours, 1.0) * 60.0), warp])
 	# Compass bearing the wind comes from; north is -z.
 	var from := fposmod(rad_to_deg(atan2(-wind.x, wind.z)), 360.0)
-	Dev.put("weather/wind", "%.1f m/s from %03d" % [wind.length(), roundi(from) % 360])
-	Dev.put("weather/storm", "%d%%" % roundi(storm * 100.0) if in_storm else "clear")
+	Dev.put("weather/wind", "%.1fm/s %03d" % [wind.length(), roundi(from) % 360])
+	Dev.put("weather/stm", "%d%%" % roundi(storm * 100.0) if in_storm else "clear")
 	var nearest := INF
 	for d in wall.distances:
 		if d > 0.0:
 			nearest = minf(nearest, d)
-	Dev.put("weather/wall", "on you" if in_storm else ("none in sight" if nearest == INF else "%d m" % nearest))
+	Dev.put("weather/wall", "here" if in_storm else ("-" if nearest == INF else "%dm" % nearest))
 	var eta := next_change_time - t
-	Dev.put("weather/next", "%s in %s" % ["clears" if in_storm else "storm",
-		"over an hour" if eta == INF else "%d:%02d" % [floori(eta / 60.0), floori(fmod(eta, 60.0))]])
-	Dev.put("weather/sunlight", "%d%%" % roundi(felt_light(_world.player.global_position) * 100.0))
+	Dev.put("weather/next", "%s %s" % ["clr" if in_storm else "stm",
+		">1h" if eta == INF else "%d:%02d" % [floori(eta / 60.0), floori(fmod(eta, 60.0))]])
+	Dev.put("weather/sun", "%d%%" % roundi(felt_light(_world.player.global_position) * 100.0))

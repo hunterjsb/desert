@@ -75,8 +75,8 @@ static var _current: Tuning
 ## How far you can see at full storm, in metres.
 @export var storm_visibility: float = 25.0
 ## Share of the light a full storm takes.
-@export var storm_darkness: float = 0.85
-@export var storm_fog_color: Color = Color(0.36, 0.25, 0.16)
+@export var storm_darkness: float = 0.7
+@export var storm_fog_color: Color = Color(0.62, 0.4, 0.2)
 ## Placeholder harm per second at full storm, until Survival has health.
 @export var storm_harm_rate: float = 1.0
 @export var wall_directions: int = 64

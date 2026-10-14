@@ -55,10 +55,10 @@ func _process(_delta: float) -> void:
 	_collect()
 	_retire()
 	_update_far()
-	Dev.put("terrain/chunks", "%d" % _chunks.size())
-	Dev.put("terrain/solid", "%d" % collision_count())
-	Dev.put("terrain/building", "%d" % (_tasks.size() + _wanted.size()))
-	Dev.put("terrain/worst_upload", "%.1f ms" % max_upload_ms)
+	Dev.put("terrain/chk", "%d" % _chunks.size())
+	Dev.put("terrain/col", "%d" % collision_count())
+	Dev.put("terrain/bld", "%d" % (_tasks.size() + _wanted.size()))
+	Dev.put("terrain/upl", "%.1fms" % max_upload_ms)
 
 
 func _exit_tree() -> void:
