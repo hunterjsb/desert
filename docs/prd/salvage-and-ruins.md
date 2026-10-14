@@ -16,7 +16,8 @@ that someone else might still be out there.
 - **Whole devices,** often with parts missing. You can haul one around (tray or rope)
   until you find what it needs, or strip it and fit its parts to your own devices.
 - **Fuel:** rare consumables, and fissile material if you're very lucky (Power).
-- **Seeds** (Farming).
+- **Seeds,** mostly in ruins (Farming).
+- **Survival kits:** a common find, usually holding seeds and water.
 - **Lore:** fragments of what happened here.
 - **Radio frequencies** to tune into (Radio, sound & atmosphere).
 - **Water:** still open. How you get it and how you make it is a hard question that

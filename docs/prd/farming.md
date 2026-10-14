@@ -22,6 +22,13 @@ day-night temperature swing (see [the moon](../the-moon.md)). Inside a long stor
 ordinary crops starve for light while fungus gets the darkness and the steady
 temperature it wants. Away from the equator the swings get too wide for it.
 
+**Every crop needs water.** A planter holds its own water, which you top up from
+sealed containers or a condenser. That ties the farm to the daily water rhythm: water
+you harvest at dawn keeps the crops alive through the heat.
+
+**Seeds are found,** mostly in ruins. Survival kits are a common find, usually with
+seeds and water in them.
+
 **The poles make farming hard.** Outside a thermal shield, nothing grows there. That's
 why the temperature shield sets how big the farm can be (Bubble shield & camp).
 
@@ -39,7 +46,9 @@ why the temperature shield sets how big the farm can be (Bubble shield & camp).
 
 1. **By hand at first.** Pick what's ripe.
 2. **A harvester mod** ends manual harvesting. Ripe crops go straight into the planter's
-   own storage, with no hoppers and no conveyors.
+   own storage, with no hoppers and no conveyors. It also replants, and you set the
+   split on the planter itself: how much of each harvest gets replanted, and how much
+   gets stored. Set it right and the farm keeps itself going.
 3. **Dropping food onto you** completes the AFK promise (Survival). The planter drops
    produce to you, you pick it up, and auto-eating does the rest.
 
@@ -68,11 +77,11 @@ that ignored the weather.
 
 ## Skeleton version
 
-- The hover planter with small and large slots.
+- The hover planter with small and large slots and a water tank.
 - One light-needing crop, and fungus, to prove both sets of conditions.
 - Growth from felt light and temperature.
-- Harvesting by hand, the harvester mod into the planter's storage, and dropping food
-  onto you.
+- Harvesting by hand, the harvester mod (into storage, with the replant split), and
+  dropping food onto you.
 - The probes below, all passing.
 
 ## Full version
@@ -91,11 +100,13 @@ that ignored the weather.
    storms than in clear weather.
 3. **The poles need a thermal shield.** Crops at a pole fail outside a thermal shield and
    grow inside one.
-4. **The harvester misses nothing.** Over a long run, everything that ripens ends up in
-   storage.
-5. **The AFK promise feeds you.** This is shared with Survival: an automated farm keeps
+4. **The harvester misses nothing.** Over a long run, everything that ripens is either
+   replanted or stored, in the split you set, and a farm set to replant enough never
+   runs out of plants.
+5. **No water, no growth.** A crop whose planter runs dry stops growing.
+6. **The AFK promise feeds you.** This is shared with Survival: an automated farm keeps
    an idle player fed.
-6. **Frame-rate proof.** Growth is the same at 30, 60 and 120 frames per second.
+7. **Frame-rate proof.** Growth is the same at 30, 60 and 120 frames per second.
 
 ## Out of scope
 
@@ -104,6 +115,4 @@ that ignored the weather.
 
 ## Open questions
 
-- **Do crops need water?** That would tie the farm to the daily water rhythm.
-- **Where do seeds come from?** Found only, like parts, or can crops give seeds back?
-- **How much automation is there,** beyond the harvester and dropping food onto you?
+None right now.

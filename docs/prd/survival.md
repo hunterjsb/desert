@@ -53,7 +53,8 @@ These come from the Bubble shield PRD, applied to you through the felt weather:
 Water freezes overnight, melts at dawn and boils off by afternoon (see the moon).
 Sources, from early to late:
 
-1. **Sealed fresh water in ruins.** This is what you live on at first.
+1. **Sealed fresh water in ruins and survival kits.** This is what you live on at
+   first.
 2. **Frost and dew,** harvested in the cold hours. There's more toward the poles.
 3. **Condensers,** found, powered and towable. They work best at night.
 4. **Water-storing plants,** like the yucca.
