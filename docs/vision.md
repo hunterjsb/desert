@@ -144,7 +144,7 @@ the start.
 2. [Wind & storms](prd/wind-and-storms.md)
 3. [Rope & tethering](prd/rope-and-tethering.md)
 4. [Bubble shield & the travelling camp](prd/bubble-shield-and-camp.md)
-5. Devices & mods
+5. [Devices & mods](prd/devices-and-mods.md)
 6. [Power](prd/power.md)
 7. Survival needs (heat, thirst, hunger)
 8. Farming
