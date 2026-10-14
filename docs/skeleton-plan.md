@@ -120,7 +120,10 @@ wiring, a charger, swapping by hand, charge lights and the fixed power tick.
 This is the riskiest system after the wall, so it comes early. **A rope look-test runs
 ahead of it** (decided 2026-10-14), alongside Stage 2. It's a separate scene with
 stand-ins to tether: the test floater, a crate, stakes and you. It answers whether rope
-can feel right, and probes 1, 2, 3 and 5 answer whether it's reliable.
+can feel right, and probes 1, 2, 3 and 5 answer whether it's reliable. Built
+2026-10-14 (`look/rope`): all four probes pass, each proven against a broken rope; it
+reads as rope except that light lines look as straight as loaded ones (see the PRD's
+open questions).
 
 **Builds:**
 - The rope constraint and the drawn rope, fixed attachment points (hooks), breaking

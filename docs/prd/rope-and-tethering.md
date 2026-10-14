@@ -178,6 +178,13 @@ Every probe is first run against a deliberately broken rope, to prove it can fai
 
 ## Open questions
 
+- **Should rope have weight?** The look-test's rope is weightless: slack below its
+  length, a spring past it. So a line at 2% load looks as ruler-straight as one at 70%,
+  and after the wind dies a floater hangs on a straight, unloaded line. Giving the
+  constraint the rope's weight would make light lines droop and straighten as load
+  rises, the way real rope reads. It bends rule 1's "taut means straight" into
+  "straight only under load". Decide by Stage 5.
+
 - **How quickly can you untie from your waist** when a gust hits? Instant makes it
   safe. A moment's delay makes it a real risk you choose.
 - **How much rope do you carry,** and is every coil the same length?
