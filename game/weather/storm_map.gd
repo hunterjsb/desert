@@ -26,6 +26,8 @@ var texture_a := ImageTexture.new()
 var texture_b := ImageTexture.new()
 ## Slowest main-thread upload so far, ms.
 var max_upload_ms := 0.0
+## Builds done on the main thread because time or place jumped.
+var rebuilds := 0
 
 var _world: World
 var _field: WeatherField
@@ -59,6 +61,7 @@ func update(t: float, warp: float) -> void:
 		var at := _origin_for(air)
 		_build(at.x, at.y, t, t + span)
 		_collect()
+		rebuilds += 1
 	elif _task == -1 and t >= (t0 + t1) * 0.5:
 		var at := _origin_for(air)
 		_task = WorkerThreadPool.add_task(_build.bind(at.x, at.y, t, t + span))

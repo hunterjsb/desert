@@ -212,7 +212,7 @@ func _report() -> void:
 	Dev.put("weather/next", "%s %s" % ["clr" if in_storm else "stm",
 		">1h" if eta == INF else "%d:%02d" % [floori(eta / 60.0), floori(fmod(eta, 60.0))]])
 	Dev.put("weather/sun", "%d%%" % roundi(felt_light(_world.player.global_position) * 100.0))
-	Dev.put("weather/map", "%.1fms" % map.max_upload_ms)
+	Dev.put("weather/map", "%.1fms %d jumps" % [map.max_upload_ms, map.rebuilds])
 
 
 static func _linear(color: Color) -> Vector3:

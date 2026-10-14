@@ -190,7 +190,8 @@ func _capture(out_dir: String, only: PackedStringArray) -> void:
 		get_viewport().get_texture().get_image().save_png(path)
 		print("  %-24s front %8.1f m  seen %3d%%  %-15s frame %5.2f ms (worst %5.2f)  gpu %5.2f ms" % [shot[4],
 			-world.weather.seen_front, roundi(world.weather.seen_storm * 100.0), stage(), average, longest, gpu])
-	print("capture: worst average frame %.2f ms, worst gpu %.2f ms%s" % [worst_ms, worst_gpu, _shared_gpu()])
+	print("capture: worst average frame %.2f ms, worst gpu %.2f ms; storm map upload worst %.2f ms, %d jump rebuilds%s"
+		% [worst_ms, worst_gpu, world.weather.map.max_upload_ms, world.weather.map.rebuilds, _shared_gpu()])
 	get_tree().quit()
 
 
