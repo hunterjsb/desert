@@ -12,8 +12,13 @@ storm.
 
 ## What the player experiences
 
-- **Tying things together is simple and physical.** You hold a coil, look at a thing,
-  and attach. You walk to another thing and attach the other end.
+- **Tying things together is simple and physical.** A rope in use takes your hand
+  slot. Look at an attachment point and attach, then walk to another and attach the
+  other end. Coil a rope to stow it in your inventory.
+- **You can tie a line round your waist** to free your hands for towing. The price is
+  that it drags you back and the wind grabs you harder.
+- **A strong gust can drag you** if you're on the end of a line. You can let go of a
+  line in your hand at any time.
 - **Ropes behave like rope.** Slack rope sags onto the sand and stirs in the wind. Taut
   rope goes straight, creaks and hums. You can read the load by eye and ear, with no
   meters.
@@ -60,6 +65,19 @@ The rope was three systems that disagreed:
 7. **Ropes belong to the camp, not the land.** They move with origin shifts and never
    belong to a chunk.
 
+## Attachment points
+
+Ropes attach only at **fixed points** on each object: rings and hooks you can see. That
+keeps attaching reliable and easy to read. A basic object has one or two. Upgrades add
+more, like an upgraded hover planter, and so do found mods, like an extra hook you fit
+yourself.
+
+## You on the end of a line
+
+The player is a rope end like any other, with a weight and a wind catch, so a strong
+enough pull drags you. Held in your hand, a line can be dropped instantly. Tied round
+your waist, it frees your hands but slows you down and raises your wind catch.
+
 ## Wind on tethered things
 
 Every object that can be tethered has a **wind catch**: how much the wind grabs it,
@@ -95,8 +113,11 @@ core action:
 - Breaking strength on ropes, and holding strength on stakes.
 - A drawn rope that sags, rests on the sand, stirs in the wind and goes straight when
   taut.
-- A player holding a rope feels the pull and can let go.
+- A player on the end of a line feels the pull and gets dragged by a strong one. A
+  line can be held (dropped instantly) or tied round the waist (hands free, slower,
+  more wind catch).
 - Wind catch on objects, driven by `wind_at`.
+- Fixed attachment points.
 - One test floater: a hovering box that stands in for camp pieces.
 - Camped and travelling: stake, unstake, tow.
 - A tension creak (Sand Game's recording) that rises with load.
@@ -104,6 +125,7 @@ core action:
 
 ## Full version
 
+- **More attachment points** from upgrades and found mods, like an extra hook.
 - **Rope types** that trade strength, stretch, weight and length. The best one might be
   colonial cable, since history runs backwards in the ground.
 - **Anchors** of different holding strengths: a stake in soft sand, a stake in hard
@@ -138,6 +160,9 @@ Reliability is the whole point here, so this list is long. All run without a win
 9. **The long tow.** Tow a floater 5 km over dunes through gusts. It arrives, and its
    tension never spikes past a set bound.
 10. **Cheap enough.** Thirty ropes in storm wind update within the frame budget.
+11. **Dragged, not launched.** A player on a line in the worst gust gets dragged at a
+    bounded speed, with no launching and no jitter. That's held or waist-tied, on flat
+    sand and on a slip face.
 
 Every probe is first run against a deliberately broken rope, to prove it can fail.
 
@@ -149,9 +174,6 @@ Every probe is first run against a deliberately broken rope, to prove it can fai
 
 ## Open questions
 
-- **Where do ropes attach?** Fixed points on each object (rings, hooks) are reliable
-  and readable. Attaching anywhere is more flexible but fiddlier. I'd lean toward
-  fixed points.
-- **Can a strong gust drag you** when you're holding a line, or are you always the
-  immovable anchor? Being dragged is dramatic, but it's also a way to lose a run.
-- **Does a coil of rope take one of your five slots,** and how much rope do you carry?
+- **How quickly can you untie from your waist** when a gust hits? Instant makes it
+  safe. A moment's delay makes it a real risk you choose.
+- **How much rope do you carry,** and is every coil the same length?

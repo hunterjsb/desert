@@ -53,8 +53,8 @@ upgrade the camp → the camp sustains more of itself → go further, or into th
   beast that follows at a distance and carries or tows. It's made of stiff parts, so it
   needs no skin rigging. Another is a sand yacht that rides the wind, can zigzag upwind,
   and is fast.
-- **About five inventory slots, and almost no menus.** Things live in the world and in
-  your hands, not in an inventory screen.
+- **Your hands plus about five inventory slots, and almost no menus.** Things live in
+  the world and in your hands, not in an inventory screen.
 
 ## Runs
 
