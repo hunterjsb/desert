@@ -106,7 +106,7 @@ void fragment() {
 	} else if (storm_map_ready > 0.0) {
 		// A storm's shadow on the ground, relative to the light already there.
 		vec3 pg = ro + rd * scene_t;
-		float tp = sun_through(storm_sun_path(pg, storm_front(pg.xz), sun_dir));
+		float tp = sun_through(storm_sun_path(pg, storm_front_exact(pg.xz), sun_dir));
 		float lit = 1.0 - sun_share + sun_share * tp;
 		scene *= lit / (1.0 - sun_share + sun_share * camera_sun);
 	}
@@ -233,7 +233,7 @@ void fragment() {
 		float tau = storm_skirt_depth(ro, rd, face_t) * (1.0 - smoothstep(far_fade.x, far_fade.y, face_t));
 		vec3 ps = ro + rd * face_t;
 		ps.y = 3.0;
-		float sun_t = sun_through(storm_sun_path(ps, storm_front(ps.xz), sun_dir));
+		float sun_t = sun_through(storm_sun_path(ps, storm_front_exact(ps.xz), sun_dir));
 		vec3 s = dust_albedo * (sun_light * sun_t * mix(1.0, phase_hg(dot(rd, sun_dir), 0.6), 0.45) + sky_light);
 		s = mix(s, haze_color, haze_at(face_t * 0.7, 0.0));
 		color = mix(color, s, 1.0 - exp(-tau));

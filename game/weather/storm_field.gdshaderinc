@@ -12,6 +12,7 @@ uniform float storm_map_blend;
 // Engine xz + shift, over extent, is the map's uv.
 uniform vec2 storm_map_shift;
 uniform float storm_map_extent = 40000.0;
+uniform int storm_map_cells = 128;
 uniform float storm_map_ready = 0.0;
 // Engine xz + this is the air frame, where billows are sampled.
 uniform vec2 storm_air;
@@ -55,12 +56,32 @@ vec3 storm_front(vec2 p) {
 	return vec3(d, steep > 0.0 ? m.yz / steep : vec2(0.0));
 }
 
+// The same, filtered here in full float. Hardware filtering weighs texels in
+// 1/256 steps, a metre or so of the map; that vanishes under the billows but
+// shows as tiles where the ground's light leans hard on the distance.
+vec3 storm_front_exact(vec2 p) {
+	vec2 at = (p + storm_map_shift) / storm_map_extent * float(storm_map_cells) - 0.5;
+	ivec2 i = ivec2(floor(at));
+	vec2 w = at - vec2(i);
+	ivec2 top = ivec2(storm_map_cells - 1);
+	ivec2 i0 = clamp(i, ivec2(0), top);
+	ivec2 i1 = clamp(i + 1, ivec2(0), top);
+	vec4 a = mix(mix(texelFetch(storm_map_a, i0, 0), texelFetch(storm_map_a, ivec2(i1.x, i0.y), 0), w.x),
+		mix(texelFetch(storm_map_a, ivec2(i0.x, i1.y), 0), texelFetch(storm_map_a, i1, 0), w.x), w.y);
+	vec4 b = mix(mix(texelFetch(storm_map_b, i0, 0), texelFetch(storm_map_b, ivec2(i1.x, i0.y), 0), w.x),
+		mix(texelFetch(storm_map_b, ivec2(i0.x, i1.y), 0), texelFetch(storm_map_b, i1, 0), w.x), w.y);
+	vec4 m = mix(a, b, storm_map_blend);
+	float steep = length(m.yz);
+	float d = clamp(m.x / max(steep, STORM_SLOPE_FLOOR), -STORM_FAR, STORM_FAR);
+	return vec3(d, steep > 0.0 ? m.yz / steep : vec2(0.0));
+}
+
 // Optical depth of the ground dust along a ray from 0 to tb, in closed form:
 // exponential in height and in distance ahead of the front, which is taken as
 // straight where the ray ends. Streaks race along the ground with the wind.
 float storm_skirt_depth(vec3 ro, vec3 rd, float tb) {
 	vec3 pb = ro + rd * tb;
-	vec3 f = storm_front(pb.xz);
+	vec3 f = storm_front_exact(pb.xz);
 	float slope = dot(f.yz, rd.xz);
 	float ahead_o = f.x - slope * tb;
 	float k = slope / storm_skirt_reach - rd.y / storm_skirt_height;
@@ -73,9 +94,10 @@ float storm_skirt_depth(vec3 ro, vec3 rd, float tb) {
 	vec2 across = vec2(-storm_wind_dir.y, storm_wind_dir.x);
 	float streak = texture(storm_noise, vec3(dot(a, across) / 180.0, pb.y / 40.0,
 		dot(a, storm_wind_dir) / 1300.0)).b;
-	// Streaks only read near the ground close by.
+	// Streaks only read near the ground close by, and stay gentle: pushed
+	// harder, the noise's texel grid shows as tiles on the sand.
 	float contrast = exp(-tb / 250.0);
-	return tau * mix(1.0, mix(0.35, 1.8, smoothstep(0.3, 0.8, streak)), contrast) * storm_map_ready;
+	return tau * mix(1.0, mix(0.7, 1.35, streak), contrast) * storm_map_ready;
 }
 
 // Metres of full-density roof above h: the sun's path out over the top.

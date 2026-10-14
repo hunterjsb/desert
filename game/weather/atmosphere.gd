@@ -20,9 +20,9 @@ var _buffet_time := 0.0
 
 func _ready() -> void:
 	_streamers = _particles(2500, 1.6, Vector3(40, 0.35, 40), 4.0, Vector2(0.6, 1.6),
-		Vector2(0.02, 0.06), _streaks(0.12, 0.35))
+		Vector2(0.02, 0.06), _streaks(0.12, 0.25))
 	_grit = _particles(6000, 1.0, Vector3(22, 9, 22), 8.0, Vector2(0.5, 1.5),
-		Vector2(0.05, 0.15), _streaks(0.06, 0.45))
+		Vector2(0.05, 0.15), _streaks(0.06, 0.35))
 	_puffs = _particles(400, 1.8, Vector3(26, 7, 26), 10.0, Vector2(2.5, 7.0),
 		Vector2(0.03, 0.08), _puff_look())
 	# Streaks stretch along their flight; puffs face the camera in the shader.
@@ -65,7 +65,7 @@ func show_weather(camera: Camera3D, ground: float, wind: Vector3, seen: float, n
 	_puffs.global_position = p - heading * blow * _puffs.lifetime * 0.5
 	_ratio(_streamers, smoothstep(0.1, 0.5, near) * (1.0 - 0.6 * seen))
 	# Grit rides every strong wind a little, thickens as a face nears, fills a storm.
-	_ratio(_grit, maxf(maxf(seen, 0.2 * smoothstep(0.55, 0.95, near)), clampf((blow - 6.0) / 60.0, 0.0, 0.15)))
+	_ratio(_grit, maxf(maxf(seen, 0.1 * smoothstep(0.55, 0.95, near)), clampf((blow - 6.0) / 60.0, 0.0, 0.1)))
 	_ratio(_puffs, seen)
 	# The roar grows as a face nears and fills everything once inside.
 	_wind_sound.volume_db = linear_to_db(clampf(blow / 25.0, 0.0, 1.0) * (1.0 - seen) * 0.7 + 0.0001)

@@ -98,6 +98,7 @@ func uniforms(t: float) -> Dictionary:
 		"storm_map_blend": _blend(t),
 		"storm_map_shift": Vector2(air_x - origin_x + cell * 0.5, air_z - origin_z + cell * 0.5),
 		"storm_map_extent": cell * size,
+		"storm_map_cells": size,
 		"storm_map_ready": 1.0 if ready else 0.0,
 		"storm_air": Vector2(air_x, air_z),
 	}
