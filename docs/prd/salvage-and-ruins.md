@@ -41,11 +41,17 @@ The deeper the layer, the older the find, and the better its technology:
 2. **The second empire.**
 3. **The first empire.**
 4. **Colonial:** the original colonists' technology. It's the oldest, the rarest and
-   the best.
+   the best. You'll almost never find it in shallow erosion; it practically requires
+   deep erosion.
 
 **The weather decides how deep the sand is stripped.** Stronger storms and fiercer
 winds expose deeper layers. Venture into the storm, or travel into the wind, and you
 find older, better things. Both difficulty dials pay out in salvage.
+
+**Latitude gives two play styles.** The stormy equator is choppy and rich in salvage.
+The calm poles have less loot, and nothing unique, but much more stability. That's where
+you build big, with large solar farms and a thermal shield inside a wind shield, and
+outpace the storms reliably.
 
 Technically, a chunk's finds are placed when it loads, from the run's seed, the chunk's
 coordinates and how hard the weather there has been. Like everything else, they're
@@ -106,7 +112,8 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
 - **Things surfacing during a storm.** Sand pours off something new right beside you.
   It's placed, not dug.
 - **Many ruin types,** part-buried, with interiors (all above ground).
-- **Lore fragments and radio frequencies.**
+- **Lore through item descriptions** that hint and never state.
+- **Radio frequencies.**
 - **The hints of people.**
 
 ## Probes
@@ -128,10 +135,11 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
 - Digging, and anything underground.
 - NPCs, trading and crafting.
 
+## Lore
+
+Lore starts in **item descriptions**. They hint and never state. The game never says
+outright what happened here.
+
 ## Open questions
 
-- **What do the poles offer?** They're calm, and storms are what uncover finds.
-  Maybe the calm preserves things the storms would scour, or the cold keeps something
-  intact.
-- **How rare is colonial technology?** It should be rare enough to remember finding.
-- **How is lore presented?** Logs you read, recordings you play, inscriptions on walls?
+None right now.

@@ -100,7 +100,9 @@ upgrade the camp → the camp sustains more of itself → go further, or into th
   temperature swings get wider: hotter days, colder nights. Difficulty changes kind
   rather than amount. The equator is stormy and mild, while the poles are clear and
   extreme, so the big views are more common there and you pay for them in heat and
-  cold.
+  cold. It also gives two play styles: the equator is choppy and rich in salvage, while
+  the poles have less loot but more stability, which suits building big and outpacing
+  the storms.
 - **World coordinates are always tracked**, so distance from spawn is known even
   though the land isn't kept. A fixed underlying topography (the large shapes the dunes
   sit on) may come later.
