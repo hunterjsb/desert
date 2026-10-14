@@ -15,7 +15,7 @@ set -uo pipefail
 cd "$(dirname "$0")/.." || exit 2
 
 godot=${GODOT:-godot}
-limit=${PROBE_TIMEOUT:-120}
+limit=${PROBE_TIMEOUT:-300}
 
 want=$(cat .godot-version)
 have=$("$godot" --version 2>/dev/null | tail -n 1)

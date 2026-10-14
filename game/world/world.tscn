@@ -1,0 +1,35 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://game/world/world.gd" id="1_world"]
+[ext_resource type="Script" path="res://game/world/terrain.gd" id="2_terrain"]
+[ext_resource type="PackedScene" path="res://game/player/player.tscn" id="3_player"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
+sky_horizon_color = Color(0.86, 0.78, 0.66, 1)
+ground_horizon_color = Color(0.86, 0.78, 0.66, 1)
+
+[sub_resource type="Sky" id="Sky_sky"]
+sky_material = SubResource("ProceduralSkyMaterial_sky")
+
+[sub_resource type="Environment" id="Environment_world"]
+background_mode = 2
+sky = SubResource("Sky_sky")
+tonemap_mode = 2
+fog_light_color = Color(0.86, 0.76, 0.62, 1)
+fog_sky_affect = 0.6
+
+[node name="World" type="Node3D"]
+script = ExtResource("1_world")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_world")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+shadow_enabled = true
+
+[node name="Terrain" type="Node3D" parent="."]
+script = ExtResource("2_terrain")
+
+[node name="Content" type="Node3D" parent="."]
+
+[node name="Player" parent="Content" instance=ExtResource("3_player")]

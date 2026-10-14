@@ -3,7 +3,7 @@
 *Draft, 2026-10-13. How we build the skeleton described in [the vision](vision.md): every
 system in rough form, wired into one complete loop, before anything gets polished.*
 
-**Where we are:** Stage 0 is built and waiting at the gate.
+**Where we are:** Stage 0 is built. Stage 1 is built and waiting at the gate.
 
 ## The loop we're building toward
 
@@ -57,7 +57,7 @@ PRD passes.
 **You play:** walk the dunes. Do they feel solid? Check the far view and the debug
 readout.
 
-**Probes:** World & terrain 1–7.
+**Probes:** World & terrain 1–8.
 
 ## Stage 2: The weather and the day
 

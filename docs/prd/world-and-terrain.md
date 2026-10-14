@@ -153,6 +153,9 @@ All of these run without a window, use a fixed seed, and assert:
 6. **Deterministic.** The same seed and coordinates always give the same heights.
 7. **No hitches.** No single chunk build blocks the main thread for longer than a set
    budget.
+8. **A sphere underfoot.** Dead reckoning behaves like the moon: a lap of the equator
+   comes home, a lap at 60° is half as long, and walking over a pole comes down the
+   other side.
 
 Every probe gets checked against a deliberately broken build first, to prove it can
 fail.

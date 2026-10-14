@@ -9,12 +9,6 @@ var _label: Label
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
-	if not InputMap.has_action("toggle_dev_overlay"):
-		var f3 := InputEventKey.new()
-		f3.keycode = KEY_F3
-		InputMap.add_action("toggle_dev_overlay")
-		InputMap.action_add_event("toggle_dev_overlay", f3)
-
 	_layer = CanvasLayer.new()
 	_layer.layer = 100
 	_layer.visible = false
