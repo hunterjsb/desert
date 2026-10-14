@@ -31,11 +31,13 @@ func run() -> void:
 	await _stake_pulls_out()
 
 
-## The wind rises steadily until `done` says stop, or it reaches 40 m/s.
-func _rise_until(done: Callable) -> void:
+## The wind rises steadily until `done` says stop, or it reaches 40 m/s;
+## `each` is called after every tick.
+func _rise_until(done: Callable, each: Callable) -> void:
 	var h := 1.0 / ticks_per_second()
 	while not done.call() and _blowing < 40.0:
 		await get_tree().physics_frame
+		each.call()
 		_blowing += RISE * h
 
 
@@ -53,15 +55,17 @@ func _line_snaps() -> void:
 	check(peak.pull > WEAK, "the spike really pulled past the breaking strength")
 	check(ropes.ropes.has(rope), "and the line held, since it wasn't sustained")
 
-	await _rise_until(func() -> bool: return _snapped_in > 0.0)
+	# Watched from before the snap, so the tick it lets go is seen too.
 	var h := 1.0 / ticks_per_second()
 	var seen := {"fastest": -INF, "kick": 0.0, "last": floater.linear_velocity}
-	var from := floater.global_position
-	await simulate(4.0, func() -> void:
+	var watch := func() -> void:
 		var v := floater.linear_velocity
 		seen.fastest = maxf(seen.fastest, v.length() - _blowing)
 		seen.kick = maxf(seen.kick, (v - seen.last).length() / h)
-		seen.last = v)
+		seen.last = v
+	await _rise_until(func() -> bool: return _snapped_in > 0.0, watch)
+	var from := floater.global_position
+	await simulate(4.0, watch)
 	var drift := floater.global_position - from
 	var load_at_snap: float = floater.get_meta(&"wind_catch") * _snapped_in * _snapped_in
 	print("snapped in a %.1f m/s wind (%.0f N on a %.0f N line); drifted %.1f m, %.0f° off downwind;"
@@ -81,13 +85,14 @@ func _stake_pulls_out() -> void:
 	var rope := stake_line(spot(0.0, 0.0), floater, 0.3, INF, WEAK)
 	var stake: RigidBody3D = rope.a.holder
 	await simulate(4.0)
-	await _rise_until(func() -> bool: return stake.pulled)
-	var gave := _blowing
 	var seen := {"fastest": -INF}
-	var from := stake.global_position
-	await simulate(4.0, func() -> void:
+	var watch := func() -> void:
 		for body: RigidBody3D in [floater, stake]:
-			seen.fastest = maxf(seen.fastest, body.linear_velocity.length() - _blowing))
+			seen.fastest = maxf(seen.fastest, body.linear_velocity.length() - _blowing)
+	await _rise_until(func() -> bool: return stake.pulled, watch)
+	var gave := _blowing
+	var from := stake.global_position
+	await simulate(4.0, watch)
 	var dragged := stake.global_position - from
 	print("the stake pulled out in a %.1f m/s wind and was dragged %.1f m; fastest %.2f m/s past the wind"
 		% [gave, dragged.length(), seen.fastest])

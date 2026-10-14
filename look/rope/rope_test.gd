@@ -16,10 +16,10 @@ const UNTIE := 1.0
 const REACH := 3.0
 ## A worst gust's rise, hold and fall, s.
 const GUST := Vector3(1.5, 3.0, 2.0)
-## The snap rig's line: holds a storm's mean, not its gusts.
-const WEAK := 450.0
-const KEYS_HELP := "wind: 1 calm  2 breeze  3 storm  4 worst gust  5 real · storms: 6 deep in one  " \
-	+ "7 one 100 m off  8 spawn · H hand/waist · Q let go · E take up a staked line · " \
+## The snap rig's line: holds a storm's mean, not its big gusts.
+const WEAK := 550.0
+const KEYS_HELP := "wind: 1 calm  2 breeze  3 storm  4 worst gust  5 real · go to: 6 deep in a storm  " \
+	+ "7 a storm 100 m off  8 a clear day · H hand/waist · Q let go · E take up a staked line · " \
 	+ "F stake your lines here · R reset · click to look, WASD, F3 numbers"
 
 var world: World
@@ -64,8 +64,8 @@ func _ready() -> void:
 	if args.has("--bench"):
 		_bench()
 		return
-	await _ground()
-	build()
+	# A clear day to start, so the wind keys are judged in good light.
+	await _go("clear")
 	var at := args.find("--capture")
 	if at != -1:
 		_capture(args[at + 1] if args.size() > at + 1 else "user://rope")
@@ -74,14 +74,7 @@ func _ready() -> void:
 ## Ties up every setup round where you stand, laid out along the wind, and
 ## turns you to face across it so the lines run left to right.
 func build() -> void:
-	ropes.clear()
-	for prop in _props:
-		if is_instance_valid(prop):
-			prop.queue_free()
-	_props.clear()
-	_setups.clear()
-	_gone.clear()
-	_untie = -1.0
+	_tear_down()
 	var player := world.player
 	_origin = player.global_position
 	var toward := wind.prevailing_at(world.time).normalized()
@@ -108,6 +101,17 @@ func build() -> void:
 	_setup("tow", tow, [_line(_stake(-4.0, -7.0), tow, 0.5)])
 
 
+func _tear_down() -> void:
+	ropes.clear()
+	for prop in _props:
+		if is_instance_valid(prop):
+			prop.queue_free()
+	_props.clear()
+	_setups.clear()
+	_gone.clear()
+	_untie = -1.0
+
+
 func _floater(f: float, s: float) -> RigidBody3D:
 	var body := Props.floater(world, _spot(f, s))
 	_props.append(body)
@@ -130,9 +134,10 @@ func _setup(label: String, body: Node3D, lines: Array) -> void:
 	var tag := Label3D.new()
 	tag.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	tag.top_level = true
-	tag.font_size = 40
-	tag.outline_size = 10
-	tag.pixel_size = 0.006
+	tag.fixed_size = true
+	tag.font_size = 24
+	tag.outline_size = 8
+	tag.pixel_size = 0.0012
 	tag.no_depth_test = true
 	body.add_child(tag)
 	_setups.append({"label": label, "body": body, "lines": lines, "tag": tag})
@@ -193,11 +198,11 @@ func _unhandled_input(event: InputEvent) -> void:
 		KEY_5:
 			_set_wind("real")
 		KEY_6:
-			_storm("deep")
+			_go("deep")
 		KEY_7:
-			_storm("storm_100")
+			_go("storm_100")
 		KEY_8:
-			_storm("spawn")
+			_go("clear")
 		KEY_H:
 			_hand_or_waist()
 		KEY_Q:
@@ -251,13 +256,14 @@ func _stake_here() -> void:
 	_untie = -1.0
 
 
-## Drops you into one of the run's own storms and ties everything up again there.
-func _storm(key: String) -> void:
+## Drops you into one of the run's own moments, found by its scenario, and
+## ties everything up again there.
+func _go(key: String) -> void:
 	var place := Scenarios.find(world, Scenarios.by_key(key))
 	if place.is_empty():
 		_note = "no %s in this run's first three days" % key
 		return
-	ropes.clear()
+	_tear_down()
 	world.respawn(place.x, place.z, place.yaw, place.time)
 	_set_wind("real")
 	_note = Scenarios.by_key(key).label
@@ -283,9 +289,9 @@ func _physics_process(delta: float) -> void:
 func _process(_delta: float) -> void:
 	readout.text = _readout()
 	for setup in _setups:
-		var body: Node3D = setup.body
-		if not is_instance_valid(body):
+		if not is_instance_valid(setup.body):
 			continue
+		var body: Node3D = setup.body
 		var tag: Label3D = setup.tag
 		tag.global_position = body.global_position + Vector3.UP * 1.3
 		tag.text = "%s\n%s" % [setup.label, _states(setup.lines)]
@@ -304,8 +310,10 @@ func _readout() -> String:
 		you = "holding"
 	var drag: Vector3 = world.player.get_meta(&"rope_drag", Vector3.ZERO)
 	lines.append("you: %s, dragged %.1f m/s" % [you, Vector2(drag.x, drag.z).length()])
-	var pulled := _props.filter(func(prop: Node3D) -> bool:
-		return is_instance_valid(prop) and prop is Stake and prop.pulled).size()
+	var pulled := 0
+	for prop in _props:
+		if is_instance_valid(prop) and prop is Stake and prop.pulled:
+			pulled += 1
 	if pulled > 0:
 		lines.append("%d stake%s pulled out" % [pulled, "" if pulled == 1 else "s"])
 	lines.append("ropes %.2f ms a tick" % ropes.cost_ms)
@@ -394,7 +402,7 @@ func _capture(out_dir: String) -> void:
 	await _wait(10.0)
 	await _shot(out_dir, "04_storm", camera, overview)
 	await _shot(out_dir, "05_storm_taut_close", camera, one_line)
-	await _shot(out_dir, "06_storm_pinned_and_crate", camera, [Vector3(0.0, 9.0, 3.5), Vector3(0.0, 20.0, 0.5)])
+	await _shot(out_dir, "06_storm_pinned_and_crate", camera, [Vector3(0.0, 12.5, 3.0), Vector3(0.0, 19.0, 0.5)])
 	_gust_now()
 	await _wait(1.6)
 	await _shot(out_dir, "07_gust_rising", camera, overview)
@@ -418,9 +426,7 @@ func _capture(out_dir: String) -> void:
 	_let_go()
 	await _walk_tow(camera)
 	await _shot(out_dir, "12_towing", camera, [])
-	_storm("deep")
-	await _wait(1.0)
-	await _ground()
+	await _go("deep")
 	await _wait(8.0)
 	await _shot(out_dir, "13_deep_storm", camera, overview)
 	await _shot(out_dir, "14_deep_storm_one_line", camera, one_line)

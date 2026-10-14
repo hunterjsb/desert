@@ -25,9 +25,9 @@ static func floater(world: World, at: Vector3, mass := FLOATER_MASS, catch := FL
 	body.world = world
 	_box(body, size, mass, Color(0.33, 0.52, 0.6))
 	body.set_meta(&"wind_catch", catch)
-	# A ring low on each side face.
+	# A ring a little below the middle of each side face.
 	for side: Vector3 in [Vector3.RIGHT, Vector3.LEFT, Vector3.FORWARD, Vector3.BACK]:
-		RopeEnd.make(body, side * size * 0.5 + Vector3.DOWN * size.y * 0.3)
+		RopeEnd.make(body, side * size * 0.5 + Vector3.DOWN * size.y * 0.15)
 	_place(world, body, at, Floater.HOVER)
 	return body
 

@@ -6,6 +6,7 @@ extends RefCounted
 var node: Node3D
 var rigid: RigidBody3D
 var player: Player
+var stake := false
 ## Per axis, so the player can feel a pull along the ground but not off it.
 var inv_mass := Vector3.ZERO
 ## World frame.

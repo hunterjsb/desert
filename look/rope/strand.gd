@@ -5,9 +5,11 @@ extends MeshInstance3D
 ## sags, rests on the sand (height_at, never a raycast), stirs in the wind and
 ## lies straight the moment its rope is taut. It never pulls anything.
 
-const MAX_POINTS := 13
-const SEGMENT := 0.6
-const RADIUS := 0.02
+## Points stepped on the CPU; the shader draws a smooth curve through them.
+const MAX_POINTS := 11
+const SEGMENT := 0.9
+const RINGS_PER_LINK := 4
+const RADIUS := 0.024
 const STEP := 1.0 / 60.0
 const ITERATIONS := 4
 ## Real rope sags a long way until its last percent of slack, then goes
@@ -54,7 +56,7 @@ func hang(on: World, rope_length: float, end_a: Node3D, end_b: Node3D) -> void:
 	b = end_b
 	var from := a.global_position
 	var to := b.global_position
-	var segments := clampi(roundi(length / SEGMENT), 4, MAX_POINTS - 1)
+	var segments := clampi(roundi(length / SEGMENT), 3, MAX_POINTS - 1)
 	var span := from.distance_to(to)
 	var sag := sqrt(maxf(0.0, 3.0 * span * (length - span) / 8.0))
 	points.resize(segments + 1)
@@ -220,17 +222,19 @@ func _fit() -> void:
 	_look.set_shader_parameter("points", points)
 
 
-## A tube of `rings` rings; the shader puts each ring on its point.
-static func _tube(rings: int) -> ArrayMesh:
-	if _meshes.has(rings):
-		return _meshes[rings]
+## A tube through `count` points; each ring carries where along the points it
+## sits, and the shader places it on the curve through them.
+static func _tube(count: int) -> ArrayMesh:
+	if _meshes.has(count):
+		return _meshes[count]
+	var rings := (count - 1) * RINGS_PER_LINK + 1
 	var vertices := PackedVector3Array()
 	var uvs := PackedVector2Array()
 	var indices := PackedInt32Array()
 	for r in rings:
 		for s in SIDES + 1:
 			vertices.append(Vector3.ZERO)
-			uvs.append(Vector2(float(s) / SIDES, r))
+			uvs.append(Vector2(float(s) / SIDES, float(r) / RINGS_PER_LINK))
 	for r in rings - 1:
 		for s in SIDES:
 			var i := r * (SIDES + 1) + s
@@ -243,5 +247,5 @@ static func _tube(rings: int) -> ArrayMesh:
 	arrays[Mesh.ARRAY_INDEX] = indices
 	var tube := ArrayMesh.new()
 	tube.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
-	_meshes[rings] = tube
+	_meshes[count] = tube
 	return tube

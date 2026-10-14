@@ -11,7 +11,7 @@ signal snapped(rope: Rope)
 const Stake := preload("res://look/rope/stake.gd")
 
 ## Passes over every rope per tick, so lines sharing a load agree on it.
-const ITERATIONS := 4
+const ITERATIONS := 2
 ## Load is averaged over this long before it breaks anything, so a spike
 ## shorter than it can't.
 const LOAD_SECONDS := 0.3
@@ -190,13 +190,14 @@ func _body(holder: Node3D, h: float) -> RopeBody:
 		body.node = holder
 		body.rigid = holder as RigidBody3D
 		body.player = holder as Player
+		body.stake = holder is Stake
 		_bodies[id] = body
 	body.tick = _tick
-	body.center = holder.global_position
 	body.expected = Vector3.ZERO
 	body.expected_spin = Vector3.ZERO
 	var rigid := body.rigid
 	if rigid != null and not rigid.freeze:
+		body.center = holder.global_position
 		body.inv_mass = Vector3.ONE / rigid.mass
 		body.inv_inertia = _inverse_inertia(rigid)
 		body.velocity = rigid.linear_velocity
@@ -208,6 +209,7 @@ func _body(holder: Node3D, h: float) -> RopeBody:
 			body.spin += body.expected_spin
 	elif body.player != null and not body.player.flying:
 		# The ground holds you up, so a line can only pull you along it.
+		body.center = holder.global_position
 		body.inv_mass = Vector3(1.0, 0.0, 1.0) / PLAYER_MASS
 		body.inv_inertia = NO_TURN
 		body.velocity = body.player.velocity
@@ -235,7 +237,7 @@ func _deliver(body: RopeBody, push: Vector3, at: Vector3, h: float) -> void:
 			body.rigid.apply_impulse(push, at - body.center)
 		else:
 			_drag += body.inv_mass * push
-	elif body.node is Stake:
+	elif body.stake:
 		_pulls[body.node] = _pulls.get(body.node, Vector3.ZERO) + push / h
 
 
@@ -243,7 +245,11 @@ func _deliver(body: RopeBody, push: Vector3, at: Vector3, h: float) -> void:
 ## through its one hook, the rope_drag meta.
 func _drag_player(h: float) -> void:
 	var player := world.player
-	var tied := not lines_on(waist).is_empty()
+	var tied := false
+	for rope in ropes:
+		if rope.a == waist or rope.b == waist:
+			tied = true
+			break
 	var own: Vector3 = player.velocity - player.get_meta(&"rope_drag", Vector3.ZERO)
 	own.y = 0.0
 	if tied:
@@ -255,7 +261,9 @@ func _drag_player(h: float) -> void:
 		var floor_speed := GRIP / GRIP_PER_SPEED
 		var after := maxf(0.0, (speed + floor_speed) * exp(-GRIP_PER_SPEED * h) - floor_speed)
 		_drag *= after / speed
-	player.set_meta(&"rope_drag", _drag - own * WAIST_SLOW if tied else _drag)
+	# Slower only while you walk, so the wind's own shove on you isn't eased.
+	var walking := player.mode == "walk" or player.mode == "sprint"
+	player.set_meta(&"rope_drag", _drag - own * WAIST_SLOW if tied and walking else _drag)
 
 
 ## Sustained load breaks ropes and pulls stakes; a spike alone never does.
@@ -278,8 +286,10 @@ func _draw(h: float) -> void:
 		if strand.b != null and not _attached(strand.b):
 			strand.b = null
 		var middle := strand.points[strand.points.size() / 2]
-		# Gone with the ground it lay on.
-		if not world.terrain.is_loaded_at(world.world_x(middle.x), world.world_z(middle.z)):
+		# A loose strand is gone with the ground it lay on. A held one goes
+		# loose first, when the world forgets what it hangs from.
+		if (strand.a == null or strand.b == null) \
+				and not world.terrain.is_loaded_at(world.world_x(middle.x), world.world_z(middle.z)):
 			strands.erase(strand)
 			strand.queue_free()
 			continue
@@ -288,8 +298,9 @@ func _draw(h: float) -> void:
 		if rope.creak == null:
 			continue
 		var strain := smoothstep(0.08, 0.9, rope.share()) if rope.is_taut() else 0.0
+		# Paused, not stopped, so a line flicking taut and slack never seeks the stream.
+		rope.creak.stream_paused = strain <= 0.0
 		if strain <= 0.0:
-			rope.creak.stop()
 			continue
 		rope.creak.global_position = rope.strand.points[rope.strand.points.size() / 2]
 		rope.creak.volume_db = lerpf(-26.0, 2.0, strain)
