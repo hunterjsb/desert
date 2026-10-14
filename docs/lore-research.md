@@ -29,6 +29,33 @@ says so. Hunter's year-old vision board is folded in at section 4.*
   room. The biotech company may go. Its one pull is explaining the seed packets, which
   a colony's own seed stores could do.
 
+**How [the science brief](science-brief.md) fits** (Hunter's lore dump, 2026-10-14;
+loose):
+- **The brief is the moon's natural baseline.** A big, volatile-rich moon with
+  nitrogen air from formation, topped up by volcanoes, tidal heating from its
+  neighbours, and dust from fracturing, impacts and abrasion. That's what the moon is
+  without anyone on it, and what it falls back to as the shield fails. The shield era
+  sat on top of it, and the brief's "no terraforming machines needed" holds for today's
+  desert, though not for its history.
+- **A possible trigger for the collapse:** the brief's resonance shift. More tidal
+  heating means quakes and new vents, which crack the shield's emitters and start the
+  failure. It's slow, it's natural, and it leaves the AI collapse free to be a cause
+  or a consequence. Open.
+- **Size conflicts.** The brief suggests Titan size (0.14 g). The body research needs
+  about 0.4-0.5 g for thin air to shove you and for water to boil off by afternoon,
+  and at Titan size a warm nitrogen atmosphere only lasts with heavy topping-up. The
+  body research's size fits the feel better.
+- **Seasons conflict.** The brief uses the giant's tilt for seasons; the body
+  research leans to near-zero tilt, with the missing sky frozen at the poles.
+- **Worth taking for the game:**
+  - volcanic regions as terrain variety (vents, sulphur colours, haze, ash layers
+    under younger dust);
+  - dust availability that varies by ground, so bedrock storms are weaker than
+    dust-plain storms;
+  - dust on solar panels and in filters as wear;
+  - storms arriving in readable stages, through more instruments;
+  - terrain exposure and shelter in the lee of ridges.
+
 *The sections below were written for the literal 24 km, 1 g moon. Their physics of
 escape and the dense core no longer apply, but their stories, radiation, UV, wind and
 vision-board threads still do.*
