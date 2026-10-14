@@ -13,8 +13,8 @@ storm.
 ## What the player experiences
 
 - **Tying things together is simple and physical.** A rope in use takes your hand
-  slot. Look at an attachment point and attach, then walk to another and attach the
-  other end. Coil a rope to stow it in your inventory.
+  slot. Snap its end onto a ring, then walk to another and snap the other end on. Pick
+  up any loose end, wherever it lies. Coil a rope to stow it in your inventory.
 - **You can tie a line round your waist** to free your hands for towing. The price is
   that it drags you back and the wind grabs you harder.
 - **A strong gust can drag you** if you're on the end of a line. You can let go of a
@@ -72,6 +72,18 @@ keeps attaching reliable and easy to read. A basic object has one or two. Upgrad
 more, like an upgraded hover planter, and so do found mods, like an extra hook you fit
 yourself.
 
+**Attaching is the snap system** (decided 2026-10-14, from the rope look-test). A rope
+end is held like a part and snaps onto a ring with the magnetic snap from
+[Devices & mods](devices-and-mods.md): it needs intent, lands exactly, and pulls off
+the same way. That works on any ring: a stake's, an object's hook, your hand or waist.
+**Any loose end can be picked up,** whether it was dropped, is dragging behind
+something, or is half of a snapped rope.
+
+**Stakes are their own item.** Equip one, drive it into the sand where you stand, and
+pull it back out to move on. Its ring is just another attachment point, so staking and
+tying are separate acts. In the look-test, picking up a line only worked on staked
+ones, so a dragging line could never be caught.
+
 ## You on the end of a line
 
 The player is a rope end like any other, with a weight and a wind catch, so a strong
@@ -121,7 +133,8 @@ The hoverboard tows nothing.
   line can be held (dropped instantly) or tied round the waist (hands free, slower,
   more wind catch).
 - Wind catch on objects, driven by `wind_at`.
-- Fixed attachment points.
+- Fixed attachment points, with rope ends snapping on and off through the snap system.
+- Stakes as their own item: equip, drive in, pull out.
 - One test floater: a hovering box that stands in for camp pieces.
 - Camped and travelling: stake, unstake, tow.
 - A tension creak (Sand Game's recording) that rises with load.

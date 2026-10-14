@@ -123,7 +123,9 @@ stand-ins to tether: the test floater, a crate, stakes and you. It answers wheth
 can feel right, and probes 1, 2, 3 and 5 answer whether it's reliable. Built
 2026-10-14 (`look/rope`): all four probes pass, each proven against a broken rope; it
 reads as rope except that light lines look as straight as loaded ones (see the PRD's
-open questions).
+open questions). Hunter's verdict: "SO GOOD", no bugs found. His one change: stakes
+are their own item, and rope ends snap on and off with the devices' snap system, so
+any loose end can be picked up. That makes Stage 5 lean on Stage 3's snapping.
 
 **Builds:**
 - The rope constraint and the drawn rope, fixed attachment points (hooks), breaking
