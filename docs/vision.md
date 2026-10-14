@@ -157,7 +157,7 @@ the start.
   branch) for feel, and the source of its sounds, models and shaders. Its code isn't
   reused.
 
-## PRDs to write
+## PRDs
 
 1. [World & terrain](prd/world-and-terrain.md)
 2. [Wind & storms](prd/wind-and-storms.md)
@@ -170,6 +170,8 @@ the start.
 9. [Movement](prd/movement.md)
 10. [Salvage & ruins](prd/salvage-and-ruins.md)
 11. [Radio, sound & atmosphere](prd/radio-sound-and-atmosphere.md)
+
+The order we build them in is the [skeleton plan](skeleton-plan.md).
 
 ## Open questions
 
