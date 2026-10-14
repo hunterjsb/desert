@@ -74,12 +74,17 @@ upgrade the camp → the camp sustains more of itself → go further, or into th
 - **Death means a new run.** Whatever you had stays out there in theory but is
   practically unreachable. With RNG driving both the terrain and the finds, this is
   roguelite territory.
+- **You start with the essentials** (leaning): a base shield, a light solar panel you
+  can set down and pick back up, and a hoverboard. The hoverboard is key, because
+  storms outrun you on foot.
 - **Permadeath is the intended mode, and it's what we balance around.** An optional
   mode allows saving and reloading, but turning it on disables achievements, the way
   Project Zomboid-style games treat their custom difficulty settings.
 
 ## The world
 
+- **A day lasts about 20 minutes,** start to finish. That drives solar and the
+  temperature swings.
 - **Infinite desert** with simple procedural terrain. Solo, first-person 3D, Godot 4.7.
 - **Only what's around the player exists.** There can be exceptions, like a farm left
   running on purpose, but never as the rule. A solo player who abuses that only hurts

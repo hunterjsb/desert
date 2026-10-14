@@ -14,13 +14,17 @@ camp you can walk away from.
 
 - **Every device has its own battery,** and you can see its charge on the device itself.
   There's no menu.
+- **You start with a light solar panel** that you can set down and pick back up. Out of
+  the storm, you sit for a moment and recharge the shield or the hoverboard. The
+  hoverboard matters most, because storms outrun you on foot.
 - **The rudimentary setup** wires a source straight into a device: a solar panel into the
   shield. It works while the sun shines.
 - **Then batteries.** You charge them at a source and swap them by hand. Carrying a fresh
   battery to the shield in the middle of a storm is a scene. A charged battery in your
   hand is stored power.
 - **Late game, a central capacitor** feeds the camp, and you stop swapping by hand.
-  That's where steady state lives.
+  It isn't one item. It's an arrangement of batteries and wires you build, so its size
+  and shape are up to you. That's where steady state lives.
 - **Swapping is physical.** You pull the battery out and put another one in, and it
   passes through your hand slot like anything else.
 
@@ -36,7 +40,20 @@ PRD; this PRD owns what flows through the battery slot.
 |---|---|---|---|
 | **Solar** | Clear skies, daytime, toward the poles | Storms (some types keep a little), night | None, beyond the weather |
 | **Wind** | Storms, toward the stormy equator | Calm | It has to be planted to work, so you stay or leave it behind |
-| **Heavy generator** | Always: strong and steady | — | It rides on caterpillar tracks and slows the camp |
+| **Heavy generator** | Always: strong and steady | Out of fuel | It rides on caterpillar tracks, slows the camp, and burns fuel |
+
+**Solar comes in forms that trade portability for output:**
+- **Light:** placeable and picked back up. This is the starting source.
+- **Tracked:** heavier and stronger.
+- **Mounted:** fitted on top of a device, like a hover planter. Its weight raises that
+  device's hover draw.
+
+**Fuel is rare, and it's mostly found:**
+- **Rare consumable fuels.**
+- **Fissile material,** if you're lucky, and something that can burn it, if you're
+  luckier.
+- **Fuel grown from plants,** at various grades of usefulness, which ties power to
+  farming.
 
 **Turbines have to brave the storm.** Because the bubble edits the weather (Bubble
 shield PRD), a turbine inside a wind shield feels no wind and makes nothing. It has to
@@ -48,7 +65,8 @@ the felt-weather rule.
 
 - **Shields,** by type. A full base shield lasts about 30 minutes in a storm. The main
   way to save power is to switch it off and stay out of storms.
-- **Hover trays** keep camp pieces floating. Without enough power, you haul.
+- **Hover trays** keep camp pieces floating, and their draw rises with the weight they
+  carry, mounts included. Without enough power, you haul.
 - **The hoverboard** has its own battery. That's your escape when the shield dies.
 - **Instruments, farming gear and tools** draw small amounts.
 
@@ -67,8 +85,9 @@ the felt-weather rule.
 
 - Batteries as items with a charge and a capacity. Every powered device has one
   battery slot.
-- One crude solar panel and one crude wind turbine, each reading the felt weather. A
-  source can be wired straight into a device or into a charger.
+- The light solar panel (place it, pick it up) and one crude wind turbine, each reading
+  the felt weather. A source can be wired straight into a device or into a charger.
+- A day-night cycle of about 20 minutes driving solar output.
 - Swapping batteries by hand.
 - The shield, the test floater and the hoverboard all draw from their batteries.
 - A simple charge light on every device.
@@ -77,10 +96,12 @@ the felt-weather rule.
 
 ## Full version
 
-- **Battery tiers,** chargers and the central capacitor.
+- **Battery tiers,** chargers, wires, and central capacitors built from them.
+- **Tracked and mounted solar.**
 - **Priorities.** When the capacitor runs low, the shield is the last thing to lose
   power.
-- **The heavy generator** on caterpillar tracks.
+- **The heavy generator** on caterpillar tracks, with fuels: rare consumables,
+  fissile material with something to burn it, and fuel grown from plants.
 - **Draw by state:** idle, active, holding back a storm.
 - **More sources,** still to be designed.
 
@@ -107,10 +128,7 @@ the felt-weather rule.
 
 ## Open questions
 
-- **How long is a day?** Solar needs it, and so do the temperature swings.
-- **How does the central capacitor reach devices?** By cable? Could the rope itself
-  carry power, with conductive cable as an upgrade, so tying things together and wiring
-  them up are the same act?
-- **What fuels the heavy generator,** if anything?
+- **Are wires their own item, or can a rope carry power** (conductive cable as an
+  upgrade), so tying things together and wiring them up are the same act?
 - **What other sources are there?** Salvaged colonial power cells, for example, since
   the best tech is the oldest.
