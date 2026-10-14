@@ -4,6 +4,9 @@ extends Node3D
 ## snaps into a port like any other, so wiring is the same act as fitting.
 ## While its plugs sit in two different devices, Power pools them.
 
+## How hard an overstretched wire pulls its loose end back, 1/s.
+const PULL := 10.0
+
 var plugs: Array[Part] = []
 var length := 6.0
 var _wire: MeshInstance3D
@@ -52,14 +55,19 @@ func _process(_delta: float) -> void:
 	_draw(end_of(plugs[0]), end_of(plugs[1]))
 
 
-## Too far: a loose end is dragged along; with both ends held fast, a plug pops out.
+## Too far: a loose end is pulled along, as a physical tug that the sand can
+## stop, never a jump that could land it inside the sand; with both ends held
+## fast, a plug pops out.
 func _overstretched(a: Vector3, b: Vector3) -> void:
 	for i in 2:
 		var plug := plugs[i]
 		var other := plugs[1 - i]
 		if plug.socket == null and not plug.freeze:
 			var anchor := end_of(other)
-			plug.global_position = anchor + (plug.global_position - anchor).normalized() * length
+			var toward := (anchor - plug.global_position).normalized()
+			var over := plug.global_position.distance_to(anchor) - length
+			var closing := plug.linear_velocity.dot(toward)
+			plug.linear_velocity += toward * maxf(over * PULL - closing, 0.0)
 			return
 	for plug in plugs:
 		if plug.socket != null:

@@ -40,6 +40,13 @@ These rules come straight from Sand Game's failure, and they don't bend.
    forgets everything in it.
 5. **Loading follows coordinates, not collisions.** Which chunks exist is decided by
    the player's grid position, never by what a raycast happens to hit.
+6. **The sand is a hard floor** (added 2026-10-14, after a battery fell through the
+   map in the Stage 4 playtest). Jolt's heightmap is a skin with no inside, so a thin
+   part pressed more than halfway into it, say under a crate that lost power and
+   dropped on it, went out the bottom. Now no corner of a loose body may sink more
+   than Jolt's few-centimetre slop below `height_at`. Anything whose middle still ends
+   up below the sand is put back on top and **counted**. Every world probe fails if
+   that count isn't zero, and it shows on F3.
 
 ## Stateless, but located
 

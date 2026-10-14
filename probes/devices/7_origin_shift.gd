@@ -12,6 +12,8 @@ func run() -> void:
 		var box := drop_box(world.world_x(crate.global_position.x), world.world_z(crate.global_position.z), 0.0)
 		# On the solar panel, whose face is 0.29 m above the crate's middle.
 		box.global_position = crate.global_transform * Vector3(0.0, 0.29 + BOX_SIZE * 0.5 + 0.01 + i * (BOX_SIZE + 0.02), 0.0)
+		# Light enough that the tray floats the crate and its load at its set height.
+		box.mass = 2.0
 		stack.append(box)
 	await physics_frames(600)
 	var fitted: Array[Node3D] = []

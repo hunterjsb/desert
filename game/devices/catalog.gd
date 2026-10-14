@@ -27,7 +27,7 @@ const PARTS := {
 	&"hover_tray": {"kind": &"bottom", "label": "Hover tray", "mass": 6.0, "size": Vector3(0.7, 0.7, 0.08),
 		"color": Color(0.25, 0.45, 0.6), "stats": {"lift_kg": 80.0}},
 	&"solar_panel": {"kind": &"top", "label": "Solar panel", "mass": 5.0, "size": Vector3(0.8, 0.6, 0.04),
-		"color": Color(0.1, 0.15, 0.35), "stats": {"solar_w": 60.0, "catch": 0.08}},
+		"color": Color(0.1, 0.15, 0.35), "stats": {"solar_w": 60.0}},
 	&"lamp": {"kind": &"top", "label": "Lamp", "mass": 1.0, "size": Vector3(0.12, 0.12, 0.25),
 		"color": Color(0.95, 0.9, 0.6), "stats": {"light_w": 5.0}},
 	&"seedling": {"kind": &"plant_small", "label": "Seedling", "mass": 0.3, "size": Vector3(0.1, 0.1, 0.18),
@@ -40,7 +40,7 @@ const PARTS := {
 
 ## Frames: their box, weight, wind catch and sockets as [kind, position, outward].
 const DEVICES := {
-	&"crate_frame": {"label": "Crate frame", "size": Vector3(0.8, 0.5, 0.8), "mass": 15.0, "catch": 0.05,
+	&"crate_frame": {"label": "Crate frame", "size": Vector3(0.8, 0.5, 0.8), "mass": 15.0,
 		"sockets": [
 			[&"battery", Vector3(0.0, 0.0, 0.4), Vector3.BACK],
 			[&"ring", Vector3(0.4, 0.0, 0.0), Vector3.RIGHT],
@@ -49,7 +49,7 @@ const DEVICES := {
 			[&"top", Vector3(0.0, 0.25, 0.0), Vector3.UP],
 			[&"port", Vector3(0.25, 0.1, -0.4), Vector3.FORWARD],
 		]},
-	&"planter": {"label": "Planter", "size": Vector3(1.0, 0.35, 0.6), "mass": 10.0, "catch": 0.06,
+	&"planter": {"label": "Planter", "size": Vector3(1.0, 0.35, 0.6), "mass": 10.0,
 		"sockets": [
 			[&"plant_small", Vector3(-0.3, 0.175, -0.12), Vector3.UP],
 			[&"plant_small", Vector3(-0.3, 0.175, 0.12), Vector3.UP],
@@ -62,14 +62,14 @@ const DEVICES := {
 			[&"port", Vector3(0.5, 0.0, 0.0), Vector3.RIGHT],
 		]},
 	# Put a panel on top and a battery in front, and it charges the battery in the sun.
-	&"charger": {"label": "Charger", "size": Vector3(0.45, 0.25, 0.35), "mass": 5.0, "catch": 0.02,
+	&"charger": {"label": "Charger", "size": Vector3(0.45, 0.25, 0.35), "mass": 5.0,
 		"sockets": [
 			[&"battery", Vector3(0.0, 0.0, 0.175), Vector3.BACK],
 			[&"top", Vector3(0.0, 0.125, 0.0), Vector3.UP],
 			[&"port", Vector3(0.225, 0.0, 0.0), Vector3.RIGHT],
 		]},
 	# Strongest in a storm, and only while planted on the sand.
-	&"turbine": {"label": "Wind turbine", "size": Vector3(0.5, 0.3, 0.5), "mass": 18.0, "catch": 0.12,
+	&"turbine": {"label": "Wind turbine", "size": Vector3(0.5, 0.3, 0.5), "mass": 18.0,
 		"stats": {"turbine_w": 200.0}, "mast": 1.6,
 		"sockets": [
 			[&"battery", Vector3(0.0, 0.0, 0.25), Vector3.BACK],
@@ -124,7 +124,6 @@ static func device(id: StringName) -> Device:
 	var made := Device.new()
 	made.label = spec.label
 	made.frame_mass = spec.mass
-	made.frame_catch = spec.catch
 	made.frame_stats = spec.get("stats", {}).duplicate()
 	var size: Vector3 = spec.size
 	_add_box(made, size, Vector3.ZERO, Color(0.55, 0.55, 0.55))

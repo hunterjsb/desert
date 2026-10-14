@@ -15,6 +15,8 @@ var _world: World
 var _tuning: Tuning
 var _size: int
 var _material: StandardMaterial3D
+## What every chunk's collision is made of.
+var _sand := PhysicsMaterial.new()
 var _indices := {}
 var _chunks := {}
 var _tasks := {}
@@ -37,6 +39,8 @@ func setup(world: World) -> void:
 	_material = StandardMaterial3D.new()
 	_material.albedo_color = Color(0.86, 0.72, 0.52)
 	_material.roughness = 1.0
+	# Squared: Jolt takes the geometric mean against a body's own 1.0.
+	_sand.friction = _tuning.sand_friction * _tuning.sand_friction
 	for step in [NEAR_STEP, _tuning.mid_step]:
 		_indices[step] = ChunkBuild.indices_for(_size / step)
 	_far = MeshInstance3D.new()
@@ -201,7 +205,7 @@ func _upload(build: ChunkBuild) -> void:
 		_place(chunk)
 	chunk.show_build(build, _material)
 	if build.step == NEAR_STEP and d <= _tuning.near_radius and not chunk.has_collision():
-		chunk.add_collision(_size)
+		chunk.add_collision(_size, _sand)
 	max_upload_ms = maxf(max_upload_ms, (Time.get_ticks_usec() - started) / 1000.0)
 
 
@@ -217,7 +221,7 @@ func _retire() -> void:
 				chunk.remove_collision()
 		elif d <= _tuning.near_radius and chunk.step == NEAR_STEP and not chunk.has_collision():
 			# Back in range after leaving it: the same samples, so the same ground.
-			chunk.add_collision(_size)
+			chunk.add_collision(_size, _sand)
 
 
 func _update_far() -> void:

@@ -26,7 +26,7 @@ func show_build(build: ChunkBuild, material: Material) -> void:
 
 
 ## Needs 1 m samples: a heightmap's samples are one unit apart.
-func add_collision(size: int) -> void:
+func add_collision(size: int, sand: PhysicsMaterial) -> void:
 	_shape = HeightMapShape3D.new()
 	_shape.map_width = size + 1
 	_shape.map_depth = size + 1
@@ -36,6 +36,7 @@ func add_collision(size: int) -> void:
 	# A heightmap is centred on its node; the chunk's origin is its corner.
 	holder.position = Vector3(size * 0.5, 0.0, size * 0.5)
 	_body = StaticBody3D.new()
+	_body.physics_material_override = sand
 	_body.add_child(holder)
 	add_child(_body)
 

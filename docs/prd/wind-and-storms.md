@@ -129,6 +129,13 @@ whether the hardest thing is possible before we depend on it.
 - **A lore hook (loose):** history runs backwards in the ground, so the best forecasts
   could come from the rarest finds, like a colonial weather station still broadcasting.
 
+**How the wind moves things** (decided 2026-10-14, from the Stage 4 playtest). It's a
+function of friction. Everything catches wind by its size: drag grows with the square
+of the wind and with a thing's biggest face, at the rate the rope look-test's floater
+was tuned to. Resting on sand, a thing has a friction of 0.5 to beat, so a breeze
+leaves a crate be and a storm slides it. Floating, nothing holds it, so it drifts off
+downwind unless it's tied down. That's what rope is for.
+
 ## What storms do to everything else
 
 These are owned by their own PRDs and listed here so the field serves them all.

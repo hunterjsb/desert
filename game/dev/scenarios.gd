@@ -20,7 +20,9 @@ const LIST: Array[Dictionary] = [
 	{"key": "clearing", "label": "storm about to clear, 100 m", "kind": "back", "distance": 100.0, "day": [0.35, 0.55]},
 	{"key": "dusk", "label": "dusk, sun on the horizon", "kind": "sky", "day": [0.733, 0.745]},
 	{"key": "night", "label": "night", "kind": "sky", "day": [0.85, 0.95]},
-	{"key": "kit", "label": "test kit: devices and parts, clear day", "kind": "kit", "day": [0.42, 0.55]},
+	# Calm, so a floating device doesn't drift off before there's rope to hold it.
+	{"key": "kit", "label": "test kit: devices and parts, clear and calm", "kind": "kit", "day": [0.42, 0.55],
+		"calm": 6.0},
 ]
 
 ## The test kit, as [catalog id, metres to your right, metres ahead]: an empty
@@ -80,6 +82,7 @@ static func _place(field: WeatherField, scenario: Dictionary, from: Vector2, upw
 	match scenario.kind:
 		"clear", "sky", "kit":
 			if field.raw_storm_at(from.x, from.y, t) <= 0.0 \
+					and field.wind_at(from.x, from.y, t).length() < scenario.get("calm", INF) \
 					and (scenario.kind == "sky" or field.next_change(from.x, from.y, t, 600.0, 10.0) == INF):
 				return {"x": from.x, "z": from.y}
 		"front", "back":

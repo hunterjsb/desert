@@ -4,6 +4,8 @@ extends Probe
 
 const WORLD_SCENE := preload("res://game/world/world.tscn")
 const BOX_SIZE := 0.5
+## A half-metre crate, not a cardboard box a breeze would carry off.
+const BOX_MASS := 10.0
 
 var world: World
 
@@ -32,6 +34,12 @@ func settle(only_near := false, max_frames := 1200) -> void:
 	check(false, "terrain settled within %d frames" % max_frames)
 
 
+## Nothing may ever have gone through the sand, in any world probe.
+func before_finish() -> void:
+	if world != null and is_instance_valid(world):
+		check(world.rescued == 0, "nothing went through the sand (%d rescued)" % world.rescued)
+
+
 ## Puts the player on the sand at a world position.
 func teleport(x: float, z: float) -> void:
 	world.player.global_position = Vector3(world.engine_x(x), world.height_at(x, z) + 0.1,
@@ -46,6 +54,7 @@ func drop_box(x: float, z: float, above := 1.0) -> RigidBody3D:
 	box.size = Vector3.ONE * BOX_SIZE
 	holder.shape = box
 	body.add_child(holder)
+	body.mass = BOX_MASS
 	world.content.add_child(body)
 	body.global_position = Vector3(world.engine_x(x), world.height_at(x, z) + above, world.engine_z(z))
 	return body

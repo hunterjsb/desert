@@ -35,7 +35,7 @@ func run() -> void:
 	var seconds := 4.0
 	await physics_frames(roundi(seconds * Engine.physics_ticks_per_second))
 	# Quadratic drag from rest in a steady wind w: x = w t - (m/c) ln(1 + c w t / m).
-	var k := tuning.loose_wind_catch / floater.mass
+	var k := world.weather.catch_of(floater) / floater.mass
 	var w := wind.length()
 	var expected := w * seconds - log(1.0 + k * w * seconds) / k
 	var moved := floater.global_position - floater_from

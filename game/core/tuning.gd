@@ -148,9 +148,14 @@ static var _current: Tuning
 @export var turbine_watts_per_cubic: float = 0.0128
 
 @export_group("Loose objects")
-## Drag per (m/s)^2 of wind on a loose object: half the air density times drag
-## coefficient times area. Thin air, a half-metre box.
-@export var loose_wind_catch: float = 0.05
+## Wind drag per (m/s)² per m² of a thing's biggest face: half the air density
+## times its drag coefficient. Matched to the rope look-test's floater, the feel
+## Hunter judged, so floating things swing and drift and resting ones slide
+## only when the wind beats their friction.
+@export var wind_catch_per_m2: float = 0.5
+## What something resting on the sand feels. Jolt takes the geometric mean of
+## two frictions, so the sand itself is this squared, against a body's 1.0.
+@export var sand_friction: float = 0.5
 
 
 ## One shared instance, held here so probe overrides can't be dropped by the

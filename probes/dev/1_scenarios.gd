@@ -37,6 +37,7 @@ func run() -> void:
 				check(not stormy and field.next_change(at.x, at.y, t, 600.0, 5.0) == INF,
 					"%s: no storm for 10 minutes" % what)
 				if scenario.kind == "kit":
+					check(field.wind_at(at.x, at.y, t).length() < scenario.calm, "kit: a calm spell")
 					await _kit_lands_near_you()
 			"front", "back":
 				check(stormy == (scenario.kind == "back"), "%s: on the right side of the edge" % what)

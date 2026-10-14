@@ -15,6 +15,9 @@ func run() -> void:
 	fit_part(panel, &"solar_panel")
 	var turbine := spawn_device(&"turbine", -2.0, 0.2, false)
 	await physics_frames(60)
+	# Staked, as a planted turbine will be: a gale slides a loose one on the sand.
+	turbine.freeze = true
+	turbine.linear_velocity = Vector3.ZERO
 	var at := func(hour: float, stormy: bool) -> float:
 		var t := 0.0
 		while t < 3.0 * 24.0 * 3600.0:
@@ -54,6 +57,7 @@ func run() -> void:
 		world.time = when[1]
 		await get_tree().physics_frame
 		output[when[0]] = turbine.production_w()
+	turbine.freeze = false
 	turbine.linear_velocity = Vector3(1.0, 0.0, 0.0)
 	output["carried"] = turbine.production_w()
 	print("turbine: %s" % output)

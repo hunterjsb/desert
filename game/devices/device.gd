@@ -8,9 +8,8 @@ extends RigidBody3D
 signal parts_changed
 
 @export var label := "device"
-## The bare frame's weight, kg, and how much the wind grabs it.
+## The bare frame's weight, kg.
 @export var frame_mass := 15.0
-@export var frame_catch := 0.05
 ## What the bare frame does by itself, like a turbine's turbine_w.
 @export var frame_stats: Dictionary = {}
 
@@ -163,7 +162,9 @@ func take(socket: Socket) -> Part:
 
 ## Everything the device can do, from the frame and what's fitted.
 func stats() -> Dictionary:
-	var total := {"mass": mass, "catch": frame_catch, "capacity_wh": 0.0, "hooks": 0,
+	# The wind grabs the frame and everything fitted, by their size.
+	var catch := Weather.biggest_face(self) * world.tuning.wind_catch_per_m2 if world != null else 0.0
+	var total := {"mass": mass, "catch": catch, "capacity_wh": 0.0, "hooks": 0,
 		"lift_kg": 0.0, "solar_w": 0.0, "light_w": 0.0, "plants": 0, "turbine_w": 0.0}
 	for source: Dictionary in [frame_stats] + parts().map(func(p: Part) -> Dictionary: return p.stats):
 		for key: String in source:

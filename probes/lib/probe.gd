@@ -33,7 +33,13 @@ func physics_frames(count: int) -> void:
 		await get_tree().physics_frame
 
 
+## Checks every probe of a kind makes before its verdict.
+func before_finish() -> void:
+	pass
+
+
 func _finish() -> void:
+	before_finish()
 	var probe_name := (get_script() as Script).resource_path
 	if _failures.is_empty():
 		print("PROBE PASS ", probe_name)

@@ -132,6 +132,26 @@ func _process(_delta: float) -> void:
 	face.sync(_world.time)
 
 
+## How much the wind grabs a body: its own say if it has one, else its
+## biggest face at the world's rate.
+func catch_of(body: CollisionObject3D) -> float:
+	if not body.has_meta(&"wind_catch"):
+		body.set_meta(&"wind_catch", _tuning.wind_catch_per_m2 * biggest_face(body))
+	return body.get_meta(&"wind_catch")
+
+
+## The biggest face of each of a body's shapes, summed, m².
+static func biggest_face(body: Node) -> float:
+	var total := 0.0
+	for child in body.get_children():
+		var shape := child as CollisionShape3D
+		if shape == null or shape.shape == null:
+			continue
+		var size := shape.shape.get_debug_mesh().get_aabb().size
+		total += maxf(size.x * size.y, maxf(size.y * size.z, size.x * size.z))
+	return total
+
+
 ## Loose bodies feel drag: a push along the air's speed past them, growing
 ## with its square, so a breeze leaves a box be and a storm slides it.
 func _blow_loose_bodies() -> void:
@@ -139,7 +159,7 @@ func _blow_loose_bodies() -> void:
 		var body := child as RigidBody3D
 		if body == null or body.freeze:
 			continue
-		var catch: float = body.get_meta(&"wind_catch", _tuning.loose_wind_catch)
+		var catch := catch_of(body)
 		var past := felt_wind(body.global_position) - body.linear_velocity
 		past.y = 0.0
 		body.apply_central_force(past * past.length() * catch)

@@ -112,6 +112,16 @@ func has_ground_under(engine_position: Vector3) -> bool:
 	return terrain.has_collision_at(world_x(engine_position.x), world_z(engine_position.z))
 
 
+## A body whose middle sinks this far below the sand has gone through it.
+const BELOW_SAND := 0.3
+## How far a corner may rest in the sand: Jolt lets contacts sink 2 cm.
+const SAND_SLOP := 0.04
+
+## Bodies found below the sand and put back on top. Never zero means a bug:
+## every world probe fails on it, and it's on F3.
+var rescued := 0
+
+
 ## Moves the engine origin by whole chunks. Everything keeps its world position.
 func shift_origin(by: Vector2i) -> void:
 	origin_chunk += by
@@ -151,6 +161,8 @@ func _physics_process(delta: float) -> void:
 	time += delta * time_warp
 
 	Dev.put("world/seed", "%d" % run_seed)
+	if rescued > 0:
+		Dev.put("world/RESCUED", "%d" % rescued)
 	Dev.put("world/g", "%.2fg" % (gravity / 9.8))
 	Dev.put("world/pos", "%.0f,%.0f" % [x, z])
 	Dev.put("world/ll", "%.3f,%.3f" % [rad_to_deg(moon.latitude), rad_to_deg(moon.longitude)])
@@ -176,6 +188,35 @@ func _keep_bodies_on_ground() -> void:
 		elif body.get_meta(&"frozen_by_world", false):
 			body.freeze = false
 			body.remove_meta(&"frozen_by_world")
+		elif not body.freeze and body.global_position.y < height_under(body.global_position) - BELOW_SAND:
+			# Sand Game died of things falling through; here it's caught, put back and counted.
+			body.global_position.y = height_under(body.global_position) + 0.5
+			body.linear_velocity = Vector3.ZERO
+			body.angular_velocity = Vector3.ZERO
+			rescued += 1
+			push_warning("rescued %s from below the sand" % (body.get("label") if "label" in body else body.name))
+		elif not body.freeze:
+			_hold_above_sand(body)
+
+
+## The sand is the ground's one function, so it's also a hard floor: no corner
+## of a loose body may sink more than SAND_SLOP into it. Jolt's heightmap is a
+## skin with no inside, so a thin part pressed past halfway (a crate that lost
+## power dropping onto a panel) would otherwise go out the bottom.
+func _hold_above_sand(body: RigidBody3D) -> void:
+	var deepest := 0.0
+	for child in body.get_children():
+		var shape := child as CollisionShape3D
+		if shape == null or not shape.shape is BoxShape3D:
+			continue
+		var half: Vector3 = (shape.shape as BoxShape3D).size * 0.5
+		var to_world := body.global_transform * shape.transform
+		for i in 8:
+			var corner := to_world * Vector3(half.x * (1 - (i & 1) * 2), half.y * (1 - (i & 2)), half.z * (1 - (i & 4) / 2))
+			deepest = maxf(deepest, height_under(corner) - corner.y)
+	if deepest > SAND_SLOP:
+		body.global_position.y += deepest - SAND_SLOP * 0.5
+		body.linear_velocity.y = maxf(body.linear_velocity.y, 0.0)
 
 
 func _set_scene() -> void:

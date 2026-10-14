@@ -5,9 +5,6 @@ extends RigidBody3D
 ## the tree until it comes back out. Its geometry sits on its +Z side, outside
 ## whatever it's fitted to.
 
-## The loose-object catch is for a half-metre box, a quarter square metre.
-const CATCH_AREA := 0.25
-
 ## The socket kind it fits.
 @export var kind: StringName
 @export var label := "part"
@@ -22,18 +19,7 @@ var socket: Socket
 ## a breeze that leaves a crate be.
 func _ready() -> void:
 	if not has_meta(&"wind_catch"):
-		set_meta(&"wind_catch", Tuning.current().loose_wind_catch * _face_area() / CATCH_AREA)
-
-
-## Its biggest face, m²: what it shows the wind at worst.
-func _face_area() -> float:
-	var biggest := 0.0
-	for child in get_children():
-		var shape := child as CollisionShape3D
-		if shape != null and shape.shape is BoxShape3D:
-			var size: Vector3 = shape.shape.size
-			biggest = maxf(biggest, maxf(size.x * size.y, maxf(size.y * size.z, size.x * size.z)))
-	return biggest
+		set_meta(&"wind_catch", Tuning.current().wind_catch_per_m2 * Weather.biggest_face(self))
 
 
 ## How far it slides out of its socket before it's clear of the device, metres.
