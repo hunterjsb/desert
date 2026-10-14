@@ -162,7 +162,7 @@ the start.
 5. [Devices & mods](prd/devices-and-mods.md)
 6. [Power](prd/power.md)
 7. [Survival](prd/survival.md)
-8. Farming
+8. [Farming](prd/farming.md)
 9. Movement (on foot, hoverboard)
 10. [Salvage & ruins](prd/salvage-and-ruins.md)
 11. Radio, sound & atmosphere
