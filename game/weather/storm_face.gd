@@ -94,9 +94,9 @@ func edge_at(p: Vector3) -> float:
 
 
 ## How far into the dust a point is, 0 to 1, as the shader draws it: none
-## inside a shelter, whose sphere the dust never enters.
+## inside a shelter that stops the storm, whose sphere the dust never enters.
 func seen_at(p: Vector3) -> float:
-	return 0.0 if _world.weather.shelter_at(p) > 0.0 else open_at(p)
+	return 0.0 if _world.weather.shelter_at(p, &"storm") >= 1.0 else open_at(p)
 
 
 ## The same with every shelter down: the storm's own dust there.

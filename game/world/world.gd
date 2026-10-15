@@ -30,6 +30,7 @@ var gravity: float
 @onready var player: Player = $Content/Player
 @onready var weather: Weather = $Weather
 @onready var power: Power = $Power
+@onready var wear: Wear = $Wear
 @onready var ropes: Ropes = $Ropes
 
 var _last_x: float
@@ -48,6 +49,7 @@ func _ready() -> void:
 	terrain.setup(self)
 	weather.setup(self)
 	power.setup(self)
+	wear.setup(self)
 	ropes.setup(self)
 	_set_scene()
 	var half := tuning.chunk_size * 0.5

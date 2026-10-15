@@ -32,8 +32,8 @@ uniform float camera_sun = 1.0;
 uniform vec3 sun_disc = vec3(14.0, 12.5, 10.5);
 
 // The shells round shelters, from Weather: each one's glow (1 steady, more
-// as it blooms), the light round the camera that their glass catches, and
-// the shield's own colour.
+// as it blooms, less as it flickers), the light round the camera that their
+// glass catches, and the shield's own colour.
 uniform float shell_glow[SHELTER_MAX];
 uniform vec3 shell_light = vec3(0.5);
 // Sand Game's shield blue.
@@ -198,8 +198,9 @@ vec4 shell_look(vec3 ro, vec3 rd, float tc, int i, float dust, vec3 lit) {
 		/ max(facing, 0.15);
 	float film = 1.0 - exp(-coat);
 	float glass = 0.015 + 0.3 * pow(rim, 4.0);
-	vec3 sheen = shell_color * (shell_light * 0.8 * rim * rim + 0.03 * (0.15 + pow(rim, 3.0))
-		+ 0.04 * flare * (0.3 + rim * rim));
+	// A flicker dims it below steady, never past dark.
+	vec3 sheen = shell_color * max(shell_light * 0.8 * rim * rim + 0.03 * (0.15 + pow(rim, 3.0))
+		+ 0.04 * flare * (0.3 + rim * rim), vec3(0.0));
 	// Grains on the glass are close and dense, so they catch more light than the murk.
 	return vec4(film * lit * 1.6 + (1.0 - film) * sheen, 1.0 - (1.0 - film) * (1.0 - glass));
 }

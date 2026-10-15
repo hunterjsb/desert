@@ -70,12 +70,22 @@ const DEVICES := {
 			[&"top", Vector3(0.0, 0.125, 0.0), Vector3.UP],
 			[&"port", Vector3(0.225, 0.0, 0.0), Vector3.RIGHT],
 		]},
-	# Strongest in a storm, and only while planted on the sand.
+	# Strongest in a storm, and only while planted on the sand; built to stand
+	# out in one, so the weather wears it four times slower.
 	&"turbine": {"label": "Wind turbine", "size": Vector3(0.5, 0.3, 0.5), "mass": 18.0,
-		"stats": {"turbine_w": 200.0}, "mast": 1.6,
+		"stats": {"turbine_w": 200.0, "toughness": 4.0}, "mast": 1.6,
 		"sockets": [
 			[&"battery", Vector3(0.0, 0.0, 0.25), Vector3.BACK],
 			[&"port", Vector3(0.25, 0.0, 0.0), Vector3.RIGHT],
+		]},
+	# The base shield: small and light, F switches it, and its bubble keeps
+	# out wind and storm wherever it goes.
+	&"shield": {"label": "Shield generator", "size": Vector3(0.4, 0.42, 0.4), "mass": 6.0, "shield": true,
+		"sockets": [
+			[&"battery", Vector3(0.0, -0.05, 0.2), Vector3.BACK],
+			[&"ring", Vector3(-0.2, -0.05, 0.0), Vector3.LEFT],
+			[&"bottom", Vector3(0.0, -0.21, 0.0), Vector3.DOWN],
+			[&"port", Vector3(0.2, -0.05, 0.0), Vector3.RIGHT],
 		]},
 }
 
@@ -126,7 +136,7 @@ static func cable(world: World, at: Vector3, strong := false) -> Cable:
 
 static func device(id: StringName) -> Device:
 	var spec: Dictionary = DEVICES[id]
-	var made := Device.new()
+	var made: Device = ShieldGenerator.new() if spec.get("shield", false) else Device.new()
 	made.label = spec.label
 	made.frame_mass = spec.mass
 	made.frame_stats = spec.get("stats", {}).duplicate()

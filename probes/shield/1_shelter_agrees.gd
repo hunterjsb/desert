@@ -1,16 +1,14 @@
 extends WeatherProbe
-## Bubble shield probe 1, as far as the look-test reaches (the device, harm
-## and power arrive with Stage 6): deep in a storm, a standing bubble is still,
-## clear air, and everything that reads the weather switches exactly at its
-## shell. Walk out through the shell and back a quarter metre at a time. The
-## game reads it at your feet: the wind on you and the storm's harm. The senses
-## read it at your eyes: seen_storm, the fog and the muffled roar. Light passes
-## through, so the light doesn't switch at all. And the storm pass is told
-## where the bubble is, through an origin shift.
+## Bubble shield probe 1: shelter agrees everywhere. Deep in a storm, a shield
+## generator switched on with F blooms a bubble of still, clear air, and
+## everything that reads the weather switches exactly at its shell. Walk out
+## through the shell and back a quarter metre at a time. The game reads it at
+## your feet: the wind on you, the storm's harm, and the wear on a device
+## standing there. The senses read it at your eyes: seen_storm, the fog and
+## the muffled roar. Light passes through, so the light doesn't switch at all.
+## And the storm pass is told where the bubble is, through an origin shift.
 
 const STEP := 0.25
-## The bubble's centre stands this far over the sand, as on a generator.
-const CORE := 0.25
 
 
 func run() -> void:
@@ -22,12 +20,18 @@ func run() -> void:
 	world.respawn(place.x, place.z, place.yaw, place.time)
 	world.time_warp = 0.0
 	await settle(true)
-	var shelter := Shelter.new()
-	world.content.add_child(shelter)
-	shelter.global_position = Vector3(world.engine_x(place.x), world.height_at(place.x, place.z) + CORE,
+	# Set down beside you, opposite the way the walk goes.
+	var generator := Catalog.device(&"shield") as ShieldGenerator
+	world.content.add_child(generator)
+	generator.global_position = Vector3(world.engine_x(place.x - 2.0), world.height_at(place.x - 2.0, place.z) + 0.22,
 		world.engine_z(place.z))
-	shelter.radius = Tuning.current().shield_radius
-	await physics_frames(3)
+	var cell := Catalog.part(&"battery")
+	world.content.add_child(cell)
+	generator.fit(cell, generator.sockets().filter(func(s: Socket) -> bool: return s.kind == &"battery")[0])
+	check(generator.interact(world.player), "F switches the shield on")
+	await physics_frames(roundi((Tuning.current().shield_bloom_seconds + 0.1) * Engine.physics_ticks_per_second))
+	var shelter := generator.shelter
+	check(generator.running() and shelter.radius == generator.size, "the bubble bloomed open")
 	check(world.weather.map.ready, "the storm map is ready")
 
 	# The game, by the shell at your feet.
@@ -49,6 +53,7 @@ func run() -> void:
 			"no storm felt": world.weather.felt_storm(at) == 0.0,
 			"no wind felt": world.weather.felt_wind(at) == Vector3.ZERO,
 			"no harm": world.player.storm_harm == harm,
+			"no wear": world.wear.rate_at(at) == 0.0,
 		}
 		for what: String in seen:
 			if seen[what] != sheltered:

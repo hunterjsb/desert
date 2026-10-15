@@ -106,6 +106,22 @@ static var _current: Tuning
 @export var shield_radius: float = 7.0
 ## The bubble blooms open, and collapses, in this long.
 @export var shield_bloom_seconds: float = 0.6
+## What the base shield draws running in the clear, W: a sip.
+@export var shield_clear_w: float = 10.0
+## What it draws holding back a full storm, W: a base battery's 100 Wh lasts
+## thirty minutes. A lesser storm costs between the two.
+@export var shield_storm_w: float = 200.0
+## With this little left at what it draws now, s of world time, its hum sags
+## and its shell flickers.
+@export var shield_warning_seconds: float = 120.0
+## Placeholder wear on devices outside a bubble, until parts wear on their
+## own: a full storm wrecks one in this many minutes, times its toughness.
+@export var storm_wreck_minutes: float = 10.0
+## Wind past this, m/s, wears devices too; a storm's blows about 24.
+@export var wind_harm_speed: float = 20.0
+## Wind 10 m/s past that wrecks a device by itself in this many minutes;
+## harder wind, faster in proportion.
+@export var wind_wreck_minutes: float = 30.0
 
 @export_group("Player")
 ## About 5 km/h, the pace the moon's size was set against.
