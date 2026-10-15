@@ -20,11 +20,11 @@ const FORECAST_STEP := 5.0
 ## A clear day's light, which storms dim.
 const SUN_COLOR := Color(1.0, 0.95, 0.86)
 const AMBIENT_COLOR := Color(0.8, 0.72, 0.62)
-const AMBIENT_ENERGY := 0.75
 ## Light that has come through a storm's dust is reddened by it, as the dust is.
 const STORM_TINT := Color(0.95, 0.8, 0.62)
-## The sand's colour, from the terrain's material: what blown grains look like.
-const SAND := Color(0.86, 0.72, 0.52)
+## Grains in the air are lit from every side and throw the sun forward, so they
+## show half again brighter than the same sand lying on the ground.
+const GRAIN_GLOW := 1.5
 ## The sun's disc, which the storm pass draws so a wall can cover it.
 const SUN_DISC := Vector3(14.0, 12.5, 10.5)
 
@@ -76,6 +76,7 @@ func setup(world: World) -> void:
 	_environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	_environment.reflected_light_source = Environment.REFLECTION_SOURCE_DISABLED
 	_environment.fog_density = _tuning.haze_strength
+	_environment.tonemap_exposure = _tuning.exposure
 	face.setup(world, field, map)
 
 
@@ -257,7 +258,7 @@ func _show(delta: float) -> void:
 	var tint := Color.WHITE.lerp(STORM_TINT, seen_shade)
 	_sun.light_color = SUN_COLOR * tint
 	_environment.ambient_light_color = AMBIENT_COLOR * tint
-	_environment.ambient_light_energy = AMBIENT_ENERGY * daylight * sky_left * dim
+	_environment.ambient_light_energy = _tuning.sky_fill * daylight * sky_left * dim
 	_environment.background_energy_multiplier = daylight * lerpf(1.0, 0.45, coverage) * dim
 
 	# The clear day's haze, dimmed with the light and browned by the dust. The
@@ -272,7 +273,7 @@ func _show(delta: float) -> void:
 	_world.terrain.show_far(not in_storm)
 
 	var sun_light := _linear(SUN_COLOR) * _sun_energy * risen
-	var sky_light := _linear(AMBIENT_COLOR) * AMBIENT_ENERGY * daylight
+	var sky_light := _linear(AMBIENT_COLOR) * _tuning.sky_fill * daylight
 	face.set_light("sun_dir", sun)
 	face.set_light("sun_light", sun_light)
 	# A wall faces half the sky, so it gets less than open ground.
@@ -287,7 +288,8 @@ func _show(delta: float) -> void:
 
 	# Outside a bubble the dust is the storm's own: it rides the field's wind
 	# and thickens with the storm, and the bubble only carves it out.
-	var grains := _linear(SAND) * (sun_light * maxf(seen_sun, seen_shade * 0.6) * 0.6 + sky_light * sky_left) * dim
+	var grains := _linear(_tuning.sand_color) * GRAIN_GLOW \
+		* (sun_light * maxf(seen_sun, seen_shade * 0.6) * 0.6 + sky_light * sky_left) * dim
 	var near := exp(minf(seen_front, 0.0) / 350.0) if map.ready else 0.0
 	atmosphere.show_weather(camera, _world.height_under(eye), field_wind(_world.player.global_position),
 		shelter_at(eye, &"storm"), seen_shade, near, grains, face.sigma() * seen_shade, _world.time_warp > 0.0, delta)

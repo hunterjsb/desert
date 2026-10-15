@@ -315,12 +315,13 @@ func _build_far(center: Vector2i, mesh: RID) -> void:
 func _sand_look() -> Material:
 	if not _tuning.sand_shader:
 		var flat := StandardMaterial3D.new()
-		flat.albedo_color = Color(0.86, 0.72, 0.52)
+		flat.albedo_color = _tuning.sand_color
 		flat.roughness = 1.0
 		return flat
 	var sand := ShaderMaterial.new()
 	sand.shader = SAND_SHADER
 	sand.set_shader_parameter("downwind", Vector2.from_angle(WeatherField.mean_heading(_world.run_seed)))
+	sand.set_shader_parameter("sand", _tuning.sand_color)
 	return sand
 
 
