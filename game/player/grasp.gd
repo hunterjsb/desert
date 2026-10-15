@@ -13,6 +13,9 @@ const SLIP_SECONDS := 0.5
 ## Your hands turn it as if gripping it this far from its middle, m: a lever on
 ## your strength.
 const LEVER := 0.5
+## Its speed catches up this many times faster than its place does, so it
+## settles where you'd have it without swinging past.
+const DAMPED := 3.0
 
 var body: RigidBody3D
 var _player: Player
@@ -61,7 +64,7 @@ func step(h: float) -> void:
 	if _slipping > SLIP_SECONDS:
 		body = null
 		return
-	var share := 1.0 - exp(-tuning.hold_rate * h)
+	var share := 1.0 - exp(-tuning.hold_rate * DAMPED * h)
 	var mine := _player.velocity + Vector3.UP.cross(beside) * turning
 	var miss := mine + (off * tuning.hold_rate).limit_length(tuning.hold_speed) - body.linear_velocity
 	miss.y = 0.0

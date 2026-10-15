@@ -86,7 +86,7 @@ func _take_and_refit(owner: Device, socket: Socket, k: int, tally: Dictionary) -
 	if hands.phase != Hands.Phase.HELD:
 		tally.slow += 1
 	# Aim away, then back at its empty seat, and fit it now.
-	look(eye_at, eye_at + Vector3.UP)
+	look(eye_at, eye_at * 2.0 - middle)
 	await simulate(1.0 / 60.0)
 	look(eye_at, middle)
 	await simulate(2.0 / 60.0)
