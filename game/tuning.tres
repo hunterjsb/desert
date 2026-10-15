@@ -47,7 +47,6 @@ gust_evolve_speed = 4.0
 storm_visibility = 20.0
 storm_darkness = 0.78
 storm_fog_color = Color(0.62, 0.4, 0.2, 1)
-storm_harm_rate = 1.0
 wall_height = 1800.0
 wall_roof_soft = 450.0
 wall_dust_color = Color(0.62, 0.47, 0.34, 1)

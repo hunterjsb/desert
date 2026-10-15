@@ -10,6 +10,7 @@ extends RefCounted
 ## test kit dropped in front of you). day is the window of time of day to look
 ## in: 0 is midnight, 0.5 noon. "camp" drops a floating camp in front of you,
 ## each piece on one line to a stake, with stakes and coils to add more.
+## "survive" starts you over on sealed water, with a crude camp to keep you.
 const LIST: Array[Dictionary] = [
 	{"key": "spawn", "label": "spawn: where and when the run began", "kind": "spawn"},
 	{"key": "clear", "label": "clear day, no storm for 10 min", "kind": "clear", "day": [0.42, 0.55]},
@@ -26,6 +27,8 @@ const LIST: Array[Dictionary] = [
 		"calm": 6.0},
 	{"key": "camp", "label": "camp to stake: floaters on one line each, a shield, a storm 500 m off", "kind": "front",
 		"distance": 500.0, "day": [0.35, 0.55], "camp": true},
+	{"key": "survive", "label": "survive a few days: sealed water, a crude condenser, a shield, at dawn", "kind": "clear",
+		"day": [0.25, 0.3], "survive": true},
 ]
 
 ## The test kit, as [catalog id, metres to your right, metres ahead]: empty
@@ -52,6 +55,13 @@ const CAMP_SHIELD := [0.0, 2.6]
 const CAMP_STAKE_AHEAD := 3.0
 const CAMP_STAKES := [[-0.6, 1.2], [-0.6, 1.35], [-0.6, 1.5], [-0.6, 1.65]]
 const CAMP_COILS := [[0.4, 1.2], [0.9, 1.2], [1.4, 1.2]]
+
+## Survival's start, right and ahead: the condenser, the shield generator, the
+## cable to join them, and spare rations.
+const SURVIVE_CONDENSER := [-0.9, 2.6]
+const SURVIVE_SHIELD := [0.9, 2.3]
+const SURVIVE_CABLE := [0.0, 1.7]
+const SURVIVE_RATIONS := [[0.35, 1.3], [0.6, 1.3]]
 
 ## How far upwind a search looks for edges, and its step.
 const REACH := 6000.0
@@ -207,17 +217,48 @@ static func camp(world: World) -> Array[Node3D]:
 		stake.drive(at, world.height_under(at))
 		Line.between(world, device.free_tie(stake.global_position), stake.free_tie(device.global_position), 0.5)
 		dropped.append_array([device, stake])
-	var shield := Catalog.device(&"shield")
-	var size: Vector3 = Catalog.DEVICES[&"shield"].size
-	_drop(world, shield, Transform3D(yaw, Vector3(0.0, size.y * 0.5, 0.0)), CAMP_SHIELD[0], CAMP_SHIELD[1])
-	for socket in shield.sockets():
-		if socket.kind == &"battery":
-			var cell := Catalog.part(&"battery")
-			world.content.add_child(cell)
-			shield.fit(cell, socket)
-	dropped.append(shield)
+	dropped.append(_standing(world, &"shield", [&"battery"], CAMP_SHIELD))
 	dropped.append_array(_stakes_and_coils(world, CAMP_STAKES, CAMP_COILS))
 	return dropped
+
+
+## A run's sealed-water start: you fed, watered and whole, a fresh suit's kit
+## in your slots, and on the sand in front of you a crude condenser with a
+## battery, a panel and an empty canister, a charged shield generator, a
+## cable to join them, and spare rations. Returns what it dropped.
+static func survive(world: World) -> Array[Node3D]:
+	world.player.vitals.fresh()
+	var condenser := _standing(world, &"condenser", [&"battery", &"solar_panel", &"canister"], SURVIVE_CONDENSER)
+	(condenser as Condenser).canister().drain(INF)
+	var dropped: Array[Node3D] = [condenser, _standing(world, &"shield", [&"battery"], SURVIVE_SHIELD)]
+	var player := world.player
+	var at := player.global_position + player.global_basis.x * SURVIVE_CABLE[0] - player.global_basis.z * SURVIVE_CABLE[1]
+	at.y = world.height_under(at)
+	var cable := Catalog.cable(world, at)
+	dropped.append(cable)
+	dropped.append_array(cable.plugs)
+	var yaw := Basis(Vector3.UP, player.global_rotation.y)
+	for entry: Array in SURVIVE_RATIONS:
+		var ration := Catalog.part(&"ration")
+		_drop(world, ration, Transform3D(yaw * Basis(Vector3.RIGHT, -PI / 2.0), Vector3.ZERO), entry[0], entry[1])
+		dropped.append(ration)
+	return dropped
+
+
+## A device standing on the sand, squared to you, with these parts fitted.
+static func _standing(world: World, id: StringName, parts: Array, where: Array) -> Device:
+	var device := Catalog.device(id)
+	var size: Vector3 = Catalog.DEVICES[id].size
+	_drop(world, device, Transform3D(Basis(Vector3.UP, world.player.global_rotation.y),
+		Vector3(0.0, size.y * 0.5, 0.0)), where[0], where[1])
+	for part_id: StringName in parts:
+		var part := Catalog.part(part_id)
+		world.content.add_child(part)
+		for socket in device.sockets():
+			if socket.kind == part.kind and socket.part == null:
+				device.fit(part, socket)
+				break
+	return device
 
 
 ## Stakes lying flat across your way and coils lying on their backs.

@@ -107,6 +107,63 @@ Death means a new run (see Runs in the vision).
 - A dev overlay showing every number.
 - The probes below, all passing.
 
+**As built in the skeleton (2026-10-15):**
+- **Your inventory is five slots on the suit, plus your waist** (Hunter's direction,
+  2026-10-15, loose). There's no inventory screen to manage. The inventory action opens a
+  very minimal view of the slots and what's tied at your waist. While it's open, looking
+  across picks a slot instead of turning you, and take puts what you hold into the
+  picked slot (or the first free one), or takes what's in it into your hands. Any part
+  with nothing fastened to it fits, so not a line's end or a cable's plug. Whether
+  putting something down while the view is open is the way things go in is still open.
+  Menus mostly come as devices. There's no main menu yet.
+- **The suit** is those slots plus its built-ins: air and radiation protection, free and
+  drained by nothing. Its sockets for mods (heater, cooler, reclaimer, battery, harness
+  hooks) wait for the full version, so in the skeleton the suit isn't a device yet.
+- **Sealed water and food.** A canister holds 2 L and a ration 1,000 kcal, found sealed and
+  full. Like a battery, a canister carries what's in it and its light shows how full it
+  is. A ration eaten to the end is gone; an empty canister stays, to be filled again.
+  Ruins don't exist yet, so for now every run starts with one canister and one ration in
+  your slots.
+- **Needs** are health, hunger and thirst out of 100, on the same fixed tick of world
+  time as power, so the dev time warp runs them with everything else. Hunger empties in
+  two days and thirst in one, up to twice as fast in the heat (from 30 °C up to the suit's
+  hot limit). A full thirst bar is 1.5 L and a full stomach 2,000 kcal. Stamina stays
+  Movement's.
+- **Auto-eating and drinking:** below 80% thirst or 60% hunger, the suit tops you up to
+  full from your slots, from the least full canister or ration first, so one empties and
+  frees up before the next is opened. Use a canister or ration you hold to drink or eat
+  your fill.
+- **The three harms,** in health a second: the storm 0.25 at full intensity, wind 0.01 for
+  each m/s past 20, and temperature 0.05 for each degree past the suit's limits of −40 and
+  75 °C. Empty, starving takes 0.1 and thirst 0.3. Unharmed, fed and watered, you heal
+  from nothing to full in a day. Caught in the open, a full storm and its wind kill you
+  in five or six minutes. With nothing left to drink, you have five more once thirst runs
+  out. Falls don't hurt yet.
+- **Temperature joins the felt weather.** At the equator in the clear it swings between
+  −25 and 65 °C, peaking mid-afternoon. The swing widens toward the poles (twice as wide
+  at a pole) and a full storm halves it. A bubble holds its share of the way to 20 °C.
+  At the equator the suit keeps you within its limits; the heat starts to harm about
+  13° out (5 km), and the cold about 20° out. Temperature is what the poles cost.
+- **The crude condenser** is a catalog device with a canister socket, a battery slot, a top
+  mount for a panel, a port, a ring mount and a bottom mount. It runs whenever it has
+  power and a canister with room, drawing 40 W, and makes 10 L an hour of world time in
+  air at 0 °C or colder, falling to a fifth of that at 40 °C, by the felt temperature
+  where it stands. At the equator in the clear that's about 2 L a day. You drink about
+  1.8 L a day there, less under a storm's blanket, so one condenser just keeps you, if it keeps its power and stays
+  inside the bubble when a storm comes.
+- **How long sealed water lasts:** a full canister and a full thirst bar see you through
+  about two days at the equator. Each more canister is about another day.
+- **Death starts a new run.** The world goes with everything in it, and a fresh one on a
+  new seed takes its place. You start at its spawn, fed and watered, with only the
+  canister and the ration.
+- **The playtest scenario** ("survive a few days", in the dev menu) starts you over at a
+  clear dawn, with a condenser in front of you (a battery, a panel and an empty
+  canister fitted), a charged shield generator, a cable and two spare rations. A
+  simulated run of it on the probes' seed: standing in the open, a storm kills you on
+  day two. With the shield alone, a long storm drains it on day three. With the shield
+  and the condenser cabled into one pool, and canisters swapped as they run dry, you're
+  alive after three days with a quarter of the power left.
+
 ## Full version
 
 - **Suit mods:** heater, cooler, water reclaimer, harness hooks.

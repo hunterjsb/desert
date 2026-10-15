@@ -119,6 +119,12 @@ func demand_w(_t := NAN) -> float:
 	return now["hover_w"] + now["light_w"]
 
 
+## What it does with a power tick it had the power for, `seconds` long at
+## world time t, like a condenser filling its canister.
+func work(_seconds: float, _t: float) -> void:
+	pass
+
+
 func set_powered(on: bool) -> void:
 	if on == powered:
 		return

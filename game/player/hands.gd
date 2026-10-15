@@ -238,6 +238,12 @@ static func describe(label: String, mass: float, stats: Dictionary) -> String:
 		bits.append("floats %d kg" % roundi(stats.lift_kg))
 	if stats.get("in_w", 0.0) > 0.0 or stats.get("out_w", 0.0) > 0.0:
 		bits.append("in %d W · out %d W" % [roundi(stats.get("in_w", 0.0)), roundi(stats.get("out_w", 0.0))])
+	if stats.has("water_l"):
+		bits.append("%.2f/%.1f L" % [stats.get("water_left_l", 0.0), stats.water_l])
+	if stats.has("food_kcal"):
+		bits.append("%d/%d kcal" % [stats.get("food_left_kcal", 0.0), stats.food_kcal])
+	if stats.has("making_lph"):
+		bits.append("making %.1f L/h" % stats.making_lph)
 	if stats.get("dark", false):
 		bits.append("DARK")
 	if stats.get("solar_w", 0.0) > 0.0:
@@ -325,8 +331,20 @@ func _look() -> void:
 		look_part = body
 	elif body is Device:
 		look_device = body
-		look_socket = look_device.socket_of(
-			look_device.shape_owner_get_owner(look_device.shape_find_owner(hit.shape)) as Node)
+		look_socket = _outermost(look_device.socket_of(
+			look_device.shape_owner_get_owner(look_device.shape_find_owner(hit.shape)) as Node))
+
+
+## Last on, first off: aimed at a hook with a line tied to it, it's the line's
+## end you take, and the hook once it's bare.
+static func _outermost(socket: Socket) -> Socket:
+	if socket == null or socket.part == null:
+		return socket
+	for node in socket.fitted:
+		var added := node as Socket
+		if added != null and added.part != null:
+			return _outermost(added)
+	return socket
 
 
 ## Aiming at the sand near a small loose thing takes it, so a battery lying

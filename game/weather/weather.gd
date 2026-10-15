@@ -109,6 +109,21 @@ func field_wind(at: Vector3, t := NAN) -> Vector3:
 	return Vector3(w.x, 0.0, w.y)
 
 
+## The air's temperature at a place, °C, as if no shelter stood: the day's
+## swing round its mean, wider toward the poles and blanketed by the storm's dust.
+func field_temperature(at: Vector3, t := NAN) -> float:
+	var swing := _tuning.temperature_swing \
+		* (1.0 + _tuning.temperature_pole_widen * absf(sin(_world.moon.latitude))) \
+		* (1.0 - _tuning.temperature_storm_blanket * field_storm(at, t))
+	return _tuning.temperature_mean + swing * cos(TAU * (day.time_of_day(_when(t)) - _tuning.temperature_peak))
+
+
+## The temperature as a place feels it, °C: a bubble holds its share of the
+## way from the air outside to its own inside.
+func felt_temperature(at: Vector3, t := NAN) -> float:
+	return lerpf(field_temperature(at, t), _tuning.sheltered_temperature, shelter_at(at, &"temperature"))
+
+
 ## How sheltered a place is from a harm (&"wind", &"storm", &"temperature"),
 ## 0 to 1: the most that any shelter whose live radius it's within blocks of
 ## it, so nested bubbles give each harm the best of them. Asked of the
@@ -295,6 +310,7 @@ func _report() -> void:
 	Dev.put("weather/next", "%s %s" % ["clr" if in_storm else "stm",
 		">1h" if eta == INF else "%d:%02d" % [floori(eta / 60.0), floori(fmod(eta, 60.0))]])
 	Dev.put("weather/sun", "%d%%" % roundi(felt_light(_world.player.global_position) * 100.0))
+	Dev.put("weather/temp", "%d°C" % roundi(felt_temperature(_world.player.global_position)))
 	Dev.put("weather/map", "%.1fms %d jumps" % [map.max_upload_ms, map.rebuilds])
 
 

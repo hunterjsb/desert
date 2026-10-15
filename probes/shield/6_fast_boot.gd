@@ -25,8 +25,8 @@ func run() -> void:
 	var centre := generator.shelter.global_position
 	var edge := centre + Vector3(0.0, 0.0, -0.97 * generator.size)
 	world.time_warp = 1.0
-	check(generator.interact(world.player) and generator.on, "F switches it on")
-	check(dud.interact(world.player), "F on one with no battery does something: it fizzles")
+	check(generator.interact(world.player) and generator.on, "use switches it on")
+	check(dud.interact(world.player), "use on one with no battery does something: it fizzles")
 	var crate_at := INF
 	var edge_at := INF
 	var first_edge := true

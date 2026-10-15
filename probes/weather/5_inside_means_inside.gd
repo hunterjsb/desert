@@ -23,16 +23,14 @@ func run() -> void:
 	var steps := 0
 	for offset: int in _there_and_back():
 		teleport(px + _crossing(px, pz, start, _field_side) + offset - 0.5, pz)
-		await get_tree().physics_frame
-		var harm := world.player.storm_harm
-		await get_tree().physics_frame
+		await physics_frames(2)
 		var stormy := field.storm_at(world.player_world_x(), world.player_world_z(), world.time) > 0.0
 		steps += 1
 		inside += int(stormy)
 		var seen := {
 			"in_storm": world.weather.in_storm,
 			"far ring hidden": not world.terrain.is_far_shown(),
-			"harm": world.player.storm_harm > harm,
+			"harm": world.player.vitals.harms[&"storm"] > 0.0,
 		}
 		for what: String in seen:
 			if seen[what] != stormy:

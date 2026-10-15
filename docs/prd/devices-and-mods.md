@@ -87,7 +87,8 @@ it, take hold of it, and let go.
    wind catch and weight are all computed from what's fitted. Change the parts and the
    device changes.
 5. **Parts come out the way they went in.** Removing a part never passes it through the
-   device.
+   device. Last on, first off: aimed at a hook with a line tied to it, take unties the line,
+   and the hook once it's bare (Hunter, 2026-10-15: untying kept taking the hook).
 6. **Parts are typed.** Nothing is ever matched by its name.
 7. **Loose stacking is plain physics.** There's no special code for it, but it has to
    be stable.

@@ -13,7 +13,7 @@ func run() -> void:
 	# A power tick or two, so its light shows the battery.
 	await physics_frames(40)
 	var green := _shown(generator)
-	check(generator.interact(world.player), "F switches it on")
+	check(generator.interact(world.player), "use switches it on")
 	var start := world.time
 	var at := {}
 	var flickers: Array[float] = []

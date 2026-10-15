@@ -3,7 +3,7 @@ extends WeatherProbe
 ## generator switched on with use blooms a bubble of still, clear air, and
 ## everything that reads the weather switches exactly at its shell. Walk out
 ## through the shell and back a quarter metre at a time. The game reads it at
-## your feet: the wind on you, the storm's harm, and the wear on a device
+## your feet: the wind on you, the wind's and the storm's harm, and the wear on a device
 ## standing there. The senses read it at your eyes: seen_storm, the fog and
 ## the muffled roar. Light passes through, so the light doesn't switch at all.
 ## And the storm pass is told where the bubble is, through an origin shift.
@@ -28,7 +28,7 @@ func run() -> void:
 	var cell := Catalog.part(&"battery")
 	world.content.add_child(cell)
 	generator.fit(cell, generator.sockets().filter(func(s: Socket) -> bool: return s.kind == &"battery")[0])
-	check(generator.interact(world.player), "F switches the shield on")
+	check(generator.interact(world.player), "use switches the shield on")
 	await physics_frames(roundi((Tuning.current().shield_bloom_seconds + 0.1) * Engine.physics_ticks_per_second))
 	var shelter := generator.shelter
 	check(generator.running() and shelter.radius == generator.size, "the bubble bloomed open")
@@ -42,9 +42,7 @@ func run() -> void:
 	var cross := _crossing(place, shelter, feet)
 	for offset: float in _there_and_back():
 		teleport(place.x + cross + offset, place.z)
-		await get_tree().physics_frame
-		var harm := world.player.storm_harm
-		await get_tree().physics_frame
+		await physics_frames(2)
 		var at := world.player.global_position
 		var sheltered := _inside(shelter, at)
 		steps += 1
@@ -52,7 +50,7 @@ func run() -> void:
 		var seen := {
 			"no storm felt": world.weather.felt_storm(at) == 0.0,
 			"no wind felt": world.weather.felt_wind(at) == Vector3.ZERO,
-			"no harm": world.player.storm_harm == harm,
+			"no harm": world.player.vitals.harms[&"wind"] + world.player.vitals.harms[&"storm"] == 0.0,
 			"no wear": world.wear.rate_at(at) == 0.0,
 		}
 		for what: String in seen:

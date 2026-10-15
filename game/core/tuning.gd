@@ -87,8 +87,20 @@ static var _current: Tuning
 ## Share of the light a full storm takes.
 @export var storm_darkness: float = 0.78
 @export var storm_fog_color: Color = Color(0.62, 0.4, 0.2)
-## Placeholder harm per second at full storm, until Survival has health.
-@export var storm_harm_rate: float = 1.0
+
+@export_group("Temperature")
+## The day's mean at the equator, °C, and how far it swings either side of it
+## in the clear: hot enough by afternoon to boil open water, freezing by night.
+@export var temperature_mean: float = 20.0
+@export var temperature_swing: float = 45.0
+## The hottest time of day (0.5 is noon); the coldest is half a day on.
+@export var temperature_peak: float = 0.6
+## Toward the poles the swing widens, by this share more at a pole.
+@export var temperature_pole_widen: float = 1.0
+## A full storm's dust blankets the swing by this share.
+@export var temperature_storm_blanket: float = 0.5
+## A bubble that holds back temperature holds this inside, °C.
+@export var sheltered_temperature: float = 20.0
 
 @export_group("Storm wall")
 ## Top of a storm's dust wall, metres. It dissolves over roof_soft either side.
@@ -294,6 +306,49 @@ static var _current: Tuning
 @export var power_tick: float = 0.25
 ## A turbine's output, W per (m/s)³ of felt wind, up to its rating.
 @export var turbine_watts_per_cubic: float = 0.0128
+
+@export_group("Survival")
+## Full to empty in the mild, in days: hunger, and thirst, which runs faster in
+## the heat, from thirst_heat_from °C up to heat_thirst times as fast at the
+## suit's hot limit.
+@export var hunger_days: float = 2.0
+@export var thirst_days: float = 1.0
+@export var thirst_heat_from: float = 30.0
+@export var heat_thirst: float = 2.0
+## What fills you from empty: litres of water, kcal of food.
+@export var thirst_litres: float = 1.5
+@export var hunger_kcal: float = 2000.0
+## The suit gives you water when you fall below this share, and food below
+## this, back up to full.
+@export var drink_below: float = 0.8
+@export var eat_below: float = 0.6
+## Health a second, of 100: at a full storm; per m/s of wind past
+## wind_hurts_from; per degree past the suit's limits.
+@export var storm_harm: float = 0.25
+@export var wind_hurts_from: float = 20.0
+@export var wind_harm: float = 0.01
+@export var temperature_harm: float = 0.05
+## Health a second with nothing left in you to eat, or to drink.
+@export var starving_harm: float = 0.1
+@export var parched_harm: float = 0.3
+## Unharmed, fed and watered, you heal from nothing to full in this many days.
+@export var heal_days: float = 1.0
+## The suit keeps you safe between these, °C; past them the temperature harms you.
+@export var suit_cold: float = -40.0
+@export var suit_hot: float = 75.0
+## The suit's slots: all you carry besides your hands and your waist.
+@export var suit_slots: int = 5
+## A sealed canister holds this much water, L, and a ration this much food, kcal.
+@export var canister_litres: float = 2.0
+@export var ration_kcal: float = 1000.0
+## The crude condenser: what it draws running, W, and the water it makes at
+## its best, L an hour of world time, in air at or below condenser_cold °C.
+## Warmer air gives up less, down to condenser_hot_share of it at condenser_hot.
+@export var condenser_w: float = 40.0
+@export var condenser_litres_per_hour: float = 10.0
+@export var condenser_cold: float = 0.0
+@export var condenser_hot: float = 40.0
+@export var condenser_hot_share: float = 0.2
 
 @export_group("Loose objects")
 ## Wind drag per (m/s)² per m² of a thing's biggest face: half the air density
