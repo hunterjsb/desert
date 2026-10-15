@@ -89,12 +89,11 @@ func _start_of(next: World) -> Dictionary:
 	for part in you.suit.slots:
 		slots.append("-" if part == null else "%s %.2f" % [part.label,
 			(part as Supply).amount / (part as Supply).capacity() if part is Supply else -1.0])
-	var spawn := Vector2.ONE * next.tuning.chunk_size * 0.5
 	return {
 		"you": [vitals.health, vitals.hunger, vitals.thirst, vitals.dead, vitals.drunk, vitals.eaten]
 			+ vitals.taken.values() + [you.hands.held, you.waist.tied.size()],
 		"slots": slots,
-		"spawn": Vector2(next.player_world_x(), next.player_world_z()).distance_to(spawn),
+		"spawn": Vector2(next.player_world_x(), next.player_world_z()).distance_to(next.spawn),
 		"time": next.time,
 	}
 

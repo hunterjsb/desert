@@ -1,8 +1,8 @@
 shader_type spatial;
-// Look-test sand: the flat colour plus what makes dune shapes read. Slip faces
-// are smooth avalanche sand, a shade lighter and warmer; gentler slopes carry
-// wind ripples across the wind, faded out before they alias; crests catch a
-// thin highlight; and broad patches vary the colour so distance reads.
+// The sand: the flat colour plus what makes dune shapes read. Slip faces are
+// smooth avalanche sand, a shade lighter and warmer; gentler slopes carry wind
+// ripples across the wind, faded out before they alias; crests catch a thin
+// highlight; and broad patches vary the colour so distance reads.
 
 uniform vec3 sand : source_color = vec3(0.86, 0.72, 0.52);
 uniform vec3 slip_sand : source_color = vec3(0.93, 0.77, 0.55);

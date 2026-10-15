@@ -14,7 +14,9 @@ const NEAR_STEP := 1
 var frame_ms := 0.0
 var slowest_frame_ms := 0.0
 
-## The sand's look: flat colour unless a look-test sets another before setup.
+const SAND_SHADER := preload("res://game/world/sand.gdshader")
+
+## The sand's look, chosen at setup; a look-test may set its own first.
 var sand_material: Material
 
 var _world: World
@@ -48,10 +50,7 @@ func setup(world: World) -> void:
 	_tuning = world.tuning
 	_size = _tuning.chunk_size
 	if sand_material == null:
-		var flat := StandardMaterial3D.new()
-		flat.albedo_color = Color(0.86, 0.72, 0.52)
-		flat.roughness = 1.0
-		sand_material = flat
+		sand_material = _sand_look()
 	# Compiles the sand's shader now, while the world loads: otherwise the first
 	# chunk to arrive stalls its frame on it (18 ms on an RTX 3070).
 	_material_rid = sand_material.get_rid()
@@ -104,6 +103,26 @@ func _exit_tree() -> void:
 			RenderingServer.free_rid(mesh)
 	_far_next = RID()
 	_far_mesh = RID()
+
+
+## The ground's one function at a world place, read from a loaded chunk's
+## 1 m samples where there is one: the numbers the mesh and collision were
+## built from, without computing them again.
+func height_at(world_x: float, world_z: float) -> float:
+	var coord := chunk_at(world_x, world_z)
+	var chunk: TerrainChunk = _chunks.get(coord)
+	if chunk == null or chunk.step != NEAR_STEP:
+		return _world.shape.height_at(world_x, world_z)
+	var x := world_x - coord.x * _size
+	var z := world_z - coord.y * _size
+	var i := floori(x)
+	var j := floori(z)
+	var fx := x - i
+	var fz := z - j
+	var w := _size + 1
+	var k := j * w + i
+	var h := chunk.heights
+	return TerrainShape.across(fx, fz, h[k + 1], h[k + w], h[k] if fx + fz <= 1.0 else h[k + w + 1])
 
 
 func chunk_at(world_x: float, world_z: float) -> Vector2i:
@@ -163,6 +182,9 @@ func reposition() -> void:
 	for chunk: TerrainChunk in _chunks.values():
 		_place(chunk)
 	_place_far()
+	# The sand's patterns are drawn in world metres, not the engine's.
+	if sand_material is ShaderMaterial:
+		sand_material.set_shader_parameter("origin", Vector2(_world.origin_chunk) * _size)
 
 
 func _distance(coord: Vector2i) -> int:
@@ -288,6 +310,18 @@ func _update_far() -> void:
 
 func _build_far(center: Vector2i, mesh: RID) -> void:
 	ChunkBuild.fill(mesh, FarRing.make(_world.shape, center, _tuning), _material_rid)
+
+
+func _sand_look() -> Material:
+	if not _tuning.sand_shader:
+		var flat := StandardMaterial3D.new()
+		flat.albedo_color = Color(0.86, 0.72, 0.52)
+		flat.roughness = 1.0
+		return flat
+	var sand := ShaderMaterial.new()
+	sand.shader = SAND_SHADER
+	sand.set_shader_parameter("downwind", Vector2.from_angle(WeatherField.mean_heading(_world.run_seed)))
+	return sand
 
 
 func _place(chunk: TerrainChunk) -> void:

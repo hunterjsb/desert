@@ -283,20 +283,20 @@ func drawn(i: int, t: float) -> Vector3:
 	return p
 
 
-## Hands the points to the shader, with how the sand bulges under each link:
-## estimated from the ground read under its two points, whose planes overshoot
-## a crest's middle by as much as the straight line between them undershoots it.
+## Hands the points to the shader, with how far each link lying near the sand
+## must bow up so every ring the shader draws clears it: the sand is read under
+## each ring, since a crest's shape between two points can't be told from them.
 func _show() -> void:
 	for i in points.size() - 1:
 		_bulge[i] = 0.0
 		if _near[i] == 0 or _near[i + 1] == 0:
 			continue
-		var p1 := points[i]
-		var p2 := points[i + 1]
-		var middle := (p1 + p2) * 0.5
-		var planes := (_floor(i, middle) + _floor(i + 1, middle)) * 0.5
-		var straight := (_floor(i, p1) + _floor(i + 1, p2)) * 0.5
-		_bulge[i] = maxf(0.0, (planes + straight) * 0.5 - middle.y)
+		var bow := 0.0
+		for r in range(1, RINGS_PER_LINK):
+			var t := float(r) / RINGS_PER_LINK
+			var short := world.height_under(drawn(i, t)) + RADIUS - lerpf(points[i].y, points[i + 1].y, t)
+			bow = maxf(bow, short / (4.0 * t * (1.0 - t)))
+		_bulge[i] = bow
 	_look.set_shader_parameter("points", points)
 	_look.set_shader_parameter("bulge", _bulge)
 

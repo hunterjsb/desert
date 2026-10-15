@@ -11,7 +11,9 @@ rope, then the shield generator. Movement on foot (slide, jump, crouch, digging 
 built alongside them. Shield probe 4, which carries the shield 2 km through a storm with a
 crate on a waist line, stands in for Movement 4 until the full camp exists. Stage 7,
 survival, is built (2026-10-15) and waits at the gate behind them, with the inventory as
-five slots on the suit.
+five slots on the suit. The real dune shapes were pulled forward the same day: a
+look-test put candidate dunes in the real world, Hunter picked Ridges, and they're the
+game's ground now, with a sand shader on by default that one switch turns off.
 
 ## The loop we're building toward
 

@@ -53,7 +53,7 @@ func part(id: StringName, pose: Transform3D) -> Part:
 ## A place on the sand in engine coordinates, `x` and `z` metres from where
 ## the world put the player.
 func spot(x: float, z: float) -> Vector3:
-	var at := Vector3(world.tuning.chunk_size * 0.5 + x, 0.0, world.tuning.chunk_size * 0.5 + z)
+	var at := Vector3(world.engine_x(world.spawn.x) + x, 0.0, world.engine_z(world.spawn.y) + z)
 	at.y = world.height_under(at)
 	return at
 

@@ -7,8 +7,7 @@ extends Node
 ## no GPU, so run it by hand after touching terrain streaming; exit code 0 passes:
 ##   godot --path . res://look/stream/stream.tscn
 ## Renders 1920x1080 in a small window that never takes focus; nothing but this
-## script moves the player, and it's silent. A dune style on trial can fly too:
-##   godot --path . res://look/stream/stream.tscn -- --style Ridges
+## script moves the player, and it's silent.
 
 const WORLD_SCENE := preload("res://game/world/world.tscn")
 const FLY_SECONDS := 20.0
@@ -29,9 +28,6 @@ func _ready() -> void:
 	AudioServer.set_bus_mute(0, true)
 	Dev.hide_overlays()
 	Tuning.current().run_seed = 1234
-	var args := OS.get_cmdline_user_args()
-	if args.has("--style"):
-		Tuning.current().dune_style = TerrainShape.Style.keys().find(args[args.find("--style") + 1].to_upper())
 	_world = WORLD_SCENE.instantiate()
 	add_child(_world)
 	var player := _world.player

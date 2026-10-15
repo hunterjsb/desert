@@ -1,14 +1,12 @@
 extends Node
-## The dune look-test's numbers, headless. For each style, over several seeds
-## and tiles spread across ~10 km, sampled at the collision's 1 m: the share
-## of ground over 15°, 28° and 33°, the steepest, the share you could camp on
-## (a shield-sized square all under 5°), how far the 1 m mesh strays from
-## height_at between samples (world probe 1 allows 1 cm), and the costs.
-##   godot --headless --path . res://look/dunes/measure.tscn -- stats [styles] [seeds]
+## The dunes' numbers, headless. Over several seeds and tiles spread across
+## ~10 km, sampled at the collision's 1 m: the share of ground over 15°, 28°
+## and 33°, the steepest, the share you could camp on (a shield-sized square
+## all under 5°), and what the ground costs to compute.
+##   godot --headless --path . res://look/dunes/measure.tscn -- stats [seeds]
 ## And a top-down map, low sun from across the wind, slip faces tinted:
-##   godot --headless --path . res://look/dunes/measure.tscn -- map <style> <seed> <x> <z> <size m> <m per px> <out.png>
+##   godot --headless --path . res://look/dunes/measure.tscn -- map <seed> <x> <z> <size m> <m per px> <out.png>
 
-const STYLES := ["Noise", "Ridges", "Crescents", "Scalloped", "Regions"]
 const SEEDS := [1234, 7, 42, 2026]
 ## Tiles a side per seed, and their size and spacing, m.
 const TILES := 3
@@ -22,23 +20,13 @@ const CAMP_DEGREES := 5.0
 func _ready() -> void:
 	var args := OS.get_cmdline_user_args()
 	if args.is_empty() or args[0] == "stats":
-		var styles := Array(args[1].split(",")) if args.size() > 1 else STYLES
-		var seeds := Array(args[2].split(",")).map(func(s: String) -> int: return int(s)) if args.size() > 2 else SEEDS
-		for style: String in styles:
-			_stats(style, seeds)
+		_stats(Array(args[1].split(",")).map(func(s: String) -> int: return int(s)) if args.size() > 1 else SEEDS)
 	elif args[0] == "map":
-		_map(args[1], int(args[2]), float(args[3]), float(args[4]), float(args[5]), float(args[6]), args[7])
+		_map(int(args[1]), float(args[2]), float(args[3]), float(args[4]), float(args[5]), args[6])
 	get_tree().quit()
 
 
-func _shape(style: String, run_seed: int) -> TerrainShape:
-	var tuning := Tuning.current()
-	tuning.dune_style = STYLES.find(style)
-	assert(tuning.dune_style >= 0, "no dune style %s" % style)
-	return TerrainShape.new(run_seed, tuning)
-
-
-func _stats(style: String, seeds: Array) -> void:
+func _stats(seeds: Array) -> void:
 	var over := [0, 0, 0]
 	var limits := [tan(deg_to_rad(15.0)), tan(deg_to_rad(28.0)), tan(deg_to_rad(33.0))]
 	var steepest := 0.0
@@ -46,9 +34,8 @@ func _stats(style: String, seeds: Array) -> void:
 	var camp := 0
 	var camp_total := 0
 	var relief := 0.0
-	var gap := 0.0
 	for run_seed: int in seeds:
-		var shape := _shape(style, run_seed)
+		var shape := TerrainShape.new(run_seed, Tuning.current())
 		for tj in TILES:
 			for ti in TILES:
 				var x0 := (ti - 1) * TILE_SPACING
@@ -77,36 +64,16 @@ func _stats(style: String, seeds: Array) -> void:
 						high = maxf(high, h[k])
 				total += TILE * TILE
 				relief = maxf(relief, high - low)
-				gap = maxf(gap, _mesh_gap(shape, h, n, x0, z0))
 				var sites := _camp_sites(grade)
 				camp += sites.x
 				camp_total += sites.y
-	var cost := _cost(_shape(style, SEEDS[0]))
-	var reference := _cost(_shape("Noise", SEEDS[0]))
-	var builds := _builds(_shape(style, SEEDS[0]))
-	print("%-10s %5.1f km²  >15° %5.2f%%  >28° %5.2f%%  >33° %5.3f%%  max %4.1f°  camp %5.1f%%  relief %5.1f m  mesh gap %4.1f cm  %5.2f µs/call (%.1fx)  near chunk %3.0f ms  far ring %4.0f ms"
-		% [style, total / 1e6, 100.0 * over[0] / total, 100.0 * over[1] / total, 100.0 * over[2] / total,
-			rad_to_deg(atan(steepest)), 100.0 * camp / camp_total, relief, gap * 100.0, cost, cost / reference,
-			builds.x, builds.y])
-
-
-## The most height_at differs from the 1 m mesh's triangles at random points
-## between samples, m: what collision and the eye see there.
-func _mesh_gap(shape: TerrainShape, h: PackedFloat32Array, n: int, x0: float, z0: float) -> float:
-	var rng := RandomNumberGenerator.new()
-	rng.seed = int(x0 * 31.0 + z0)
-	var worst := 0.0
-	for k in 20000:
-		var i := rng.randi_range(1, TILE - 1)
-		var j := rng.randi_range(1, TILE - 1)
-		var fx := rng.randf()
-		var fz := rng.randf()
-		var a := j * n + i
-		# The mesh's split: (i+1, j) to (i, j+1).
-		var mesh := h[a] + fx * (h[a + 1] - h[a]) + fz * (h[a + n] - h[a]) if fx + fz <= 1.0 \
-			else h[a + n + 1] + (1.0 - fx) * (h[a + n] - h[a + n + 1]) + (1.0 - fz) * (h[a + 1] - h[a + n + 1])
-		worst = maxf(worst, absf(shape.height_at(x0 + i - 1 + fx, z0 + j - 1 + fz) - mesh))
-	return worst
+	var shape := TerrainShape.new(SEEDS[0], Tuning.current())
+	var builds := _builds(shape)
+	print("%.1f km²  >15° %5.2f%%  >28° %5.2f%%  >33° %5.3f%%  max %4.1f°  camp %5.1f%%  relief %5.1f m" % [total / 1e6,
+		100.0 * over[0] / total, 100.0 * over[1] / total, 100.0 * over[2] / total, rad_to_deg(atan(steepest)),
+		100.0 * camp / camp_total, relief])
+	print("height_at %.2f µs on a lattice point, %.2f µs between; a near chunk %.0f ms, a mid chunk %.0f ms, the far ring %.0f ms"
+		% [_cost(shape, 1.0), _cost(shape, 0.37), builds.x, builds.y, builds.z])
 
 
 ## Of the points with a whole camp square inside the tile, how many have it all under CAMP_DEGREES.
@@ -137,32 +104,37 @@ func _camp_sites(grade: PackedFloat32Array) -> Vector2i:
 	return Vector2i(good, all)
 
 
-## Microseconds per height_at at scattered points, best of three.
-func _cost(shape: TerrainShape) -> float:
+## Microseconds per height_at at scattered points `step` m apart, best of three.
+func _cost(shape: TerrainShape, step: float) -> float:
 	var best := INF
 	for round in 3:
 		var started := Time.get_ticks_usec()
 		for i in 50000:
-			shape.height_at(i * 7.31 - 9000.0, i * 3.17 + 500.0)
+			shape.height_at(-9000.0 + i * 7.0 * step, 500.0 + i * 3.0 * step)
 		best = minf(best, (Time.get_ticks_usec() - started) / 50000.0)
 	return best
 
 
-## A worker's time to build one near chunk and one far ring, ms.
-func _builds(shape: TerrainShape) -> Vector2:
+## A worker's time to build a near chunk, a mid chunk and the far ring, ms.
+func _builds(shape: TerrainShape) -> Vector3:
 	var tuning := Tuning.current()
-	var indices := ChunkBuild.indices_for(tuning.chunk_size)
+	var size := tuning.chunk_size
+	var took := Vector3()
+	for k in 2:
+		var step := 1 if k == 0 else tuning.mid_step
+		var indices := ChunkBuild.indices_for(size / step)
+		var started := Time.get_ticks_usec()
+		for i in 4:
+			ChunkBuild.make(shape, Vector2i(i, 3), size, step, tuning.skirt_depth, indices)
+		took[k] = (Time.get_ticks_usec() - started) / 4000.0
 	var started := Time.get_ticks_usec()
-	for i in 4:
-		ChunkBuild.make(shape, Vector2i(i, 3), tuning.chunk_size, 1, tuning.skirt_depth, indices)
-	var near := (Time.get_ticks_usec() - started) / 4000.0
-	started = Time.get_ticks_usec()
 	FarRing.make(shape, Vector2i(2, 5), tuning)
-	return Vector2(near, (Time.get_ticks_usec() - started) / 1000.0)
+	took.z = (Time.get_ticks_usec() - started) / 1000.0
+	return took
 
 
-func _map(style: String, run_seed: int, x0: float, z0: float, size: float, per_px: float, out: String) -> void:
-	var shape := _shape(style, run_seed)
+func _map(run_seed: int, x0: float, z0: float, size: float, per_px: float, out: String) -> void:
+	var shape := TerrainShape.new(run_seed, Tuning.current())
 	var px := int(size / per_px)
 	var n := px + 2
 	var h := PackedFloat32Array()
@@ -188,5 +160,5 @@ func _map(style: String, run_seed: int, x0: float, z0: float, size: float, per_p
 				colour = colour.lerp(Color(0.85, 0.25, 0.15), 0.45)
 			image.set_pixel(i, j, colour)
 	image.save_png(out)
-	print("map %s seed %d: %s, downwind (%.2f, %.2f), heights %.1f to %.1f m" % [style, run_seed, out,
+	print("map seed %d: %s, downwind (%.2f, %.2f), heights %.1f to %.1f m" % [run_seed, out,
 		down.x, down.y, Array(h).min(), Array(h).max()])

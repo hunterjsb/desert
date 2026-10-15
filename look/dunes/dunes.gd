@@ -1,15 +1,14 @@
 extends Node
-## Look-test: the dune styles in the real world on seed 1234, from the same
-## spots at the same moments, so they can be judged side by side. Walk or fly
-## it by hand with a style, or capture every shot:
-##   godot --path . res://look/dunes/dunes.tscn -- --style Ridges [--sand]
-##   godot --path . --disable-vsync res://look/dunes/dunes.tscn -- --style Ridges [--sand] --capture <dir> [--only sea_eye_upwind]
-## --sand swaps in the look-test's sand shader (slip faces, ripples, crests);
-## --tune name=value overrides one tuning value, such as mid_step=2.
-## look/dunes/shoot.sh runs every style and builds the contact sheets.
+## Look-test: the dunes in the real world on seed 1234 under clear skies, from
+## the same spots at the same moments, so a change can be judged against the
+## last. Walk or fly it by hand, or capture every shot:
+##   godot --path . res://look/dunes/dunes.tscn [-- --tune name=value ...]
+##   godot --path . --disable-vsync res://look/dunes/dunes.tscn -- [--tune name=value ...] --capture <dir> [--only sea_eye_upwind_dusk]
+## Each --tune overrides one tuning value, such as sand_shader=false or mid_step=4.
+## look/dunes/shoot.sh shoots with the sand shader and without, and builds the
+## contact sheets.
 
 const SEED := 1234
-const SAND := preload("res://look/dunes/sand.gdshader")
 ## Times of day to shoot: low morning sun, noon, and dusk's low sun.
 const MOMENTS := [["morning", 0.285], ["noon", 0.5], ["dusk", 0.715]]
 ## Spots, by how much sand lies there: deep in a dune sea, and at a sea's edge.
@@ -27,39 +26,23 @@ const EDGE_VIEWS := ["eye_upwind", "200m"]
 const SEARCH := 2500.0
 const SEARCH_STEP := 50.0
 
-var _style := 0
-var _shaded := false
-
 @onready var world: World = $World
 
 
 func _enter_tree() -> void:
-	var args := OS.get_cmdline_user_args()
-	var at := args.find("--style")
-	if at != -1:
-		_style = TerrainShape.Style.keys().find((args[at + 1] as String).to_upper())
-		assert(_style != -1, "no dune style %s" % args[at + 1])
-	_shaded = args.has("--sand")
 	# Before the World's _ready builds the ground and weather from them.
 	var tuning := Tuning.current()
 	tuning.run_seed = SEED
-	tuning.dune_style = _style
 	# Clear skies: this judges the dunes, and the equator is stormy.
 	tuning.storm_threshold = 0.9
-	var tune := args.find("--tune")
-	if tune != -1:
-		var pair := (args[tune + 1] as String).split("=")
-		tuning.set(pair[0], str_to_var(pair[1]))
-	if _shaded:
-		var sand := ShaderMaterial.new()
-		sand.shader = SAND
-		var down := Vector2.from_angle(WeatherField.mean_heading(SEED))
-		sand.set_shader_parameter("downwind", down)
-		$World/Terrain.sand_material = sand
+	var args := OS.get_cmdline_user_args()
+	for i in args.size() - 1:
+		if args[i] == "--tune":
+			var pair := args[i + 1].split("=")
+			tuning.set(pair[0], str_to_var(pair[1]))
 
 
 func _ready() -> void:
-	world.origin_shifted.connect(_on_origin_shifted)
 	var args := OS.get_cmdline_user_args()
 	var at := args.find("--capture")
 	if at == -1:
@@ -69,17 +52,9 @@ func _ready() -> void:
 		args[only + 1].split(",") if only != -1 and args.size() > only + 1 else PackedStringArray())
 
 
-func _on_origin_shifted(_by: Vector2i) -> void:
-	var sand := $World/Terrain.sand_material as ShaderMaterial
-	if sand:
-		sand.set_shader_parameter("origin", Vector2(world.origin_chunk) * world.tuning.chunk_size)
-
-
-## The same spots for every style: read from the sand field, which they share.
+## The spots, read from the sand field.
 static func spots() -> Dictionary:
-	var tuning := Tuning.current().duplicate() as Tuning
-	tuning.dune_style = TerrainShape.Style.RIDGES
-	var shape := TerrainShape.new(SEED, tuning)
+	var shape := TerrainShape.new(SEED, Tuning.current())
 	var found := {}
 	for spot: Array in SPOTS:
 		var best := Vector2.ZERO
@@ -88,7 +63,7 @@ static func spots() -> Dictionary:
 		while x <= SEARCH:
 			var z := -SEARCH
 			while z <= SEARCH:
-				var off := absf(shape._sand_at(x, z, shape._land.get_noise_2d(x, z)) - spot[1])
+				var off := absf(shape.sand_at(x, z) - spot[1])
 				if off < miss - 1e-4:
 					miss = off
 					best = Vector2(x, z)
@@ -98,7 +73,7 @@ static func spots() -> Dictionary:
 	return found
 
 
-## A run time on the first day at each time of day, the same for every style.
+## A run time on the first day at each time of day.
 func moments() -> Dictionary:
 	var found := {}
 	for moment: Array in MOMENTS:
@@ -121,12 +96,14 @@ func _capture(out_dir: String, only: PackedStringArray) -> void:
 	world.player.flying = true
 	world.set_process_unhandled_input(false)
 	Dev.hide_overlays()
+	# Only the dunes: the survival bars and any other screen layer go.
+	for layer: CanvasLayer in world.find_children("*", "CanvasLayer", true, false):
+		layer.visible = false
 	DirAccess.make_dir_recursive_absolute(out_dir)
 	var rid := get_viewport().get_viewport_rid()
 	RenderingServer.viewport_set_measure_render_time(rid, true)
-	var style: String = TerrainShape.Style.keys()[_style].capitalize()
-	print("dunes: %s%s into %s at %s%s" % [style, " with sand shader" if _shaded else "", out_dir,
-		get_viewport().get_visible_rect().size, _shared_gpu()])
+	print("dunes: sand shader %s, mid step %d m, into %s at %s%s" % ["on" if world.tuning.sand_shader else "off",
+		world.tuning.mid_step, out_dir, get_viewport().get_visible_rect().size, _shared_gpu()])
 	var places := spots()
 	var when := moments()
 	var upwind := -Vector2.from_angle(WeatherField.mean_heading(SEED))

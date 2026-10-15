@@ -54,6 +54,8 @@ func _trace(route: Array, rate: int) -> Array[Vector3]:
 	# A new tick rate takes hold a frame late, so it's set before you're placed.
 	set_rate(rate, 4)
 	await place(route[0].x, route[0].y, route[1])
+	# Every trace starts rested: one that runs out of stamina can't sprint.
+	player.stamina = world.tuning.stamina_max
 	var steps: Array = route[2]
 	var path: Array[Vector3] = [where()]
 	var at := {"tick": 0, "step": 0}

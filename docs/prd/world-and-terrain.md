@@ -18,7 +18,8 @@ reliability first and beauty second.
 - In a storm, you can barely see past your own shield. That's where it gets cozy.
 - There's no edge and no seam in either case.
 - Walking, sliding and hoverboarding over sand that always holds you.
-- Anything you drop lands on the sand and stays there.
+- Anything you drop lands on the sand and stays there. On a slip face it slides to the
+  foot first, as it would on real sand.
 - A sense of distance travelled. The game always knows how far you are from where the
   run began, even though the land behind you isn't kept.
 
@@ -28,7 +29,10 @@ These rules come straight from Sand Game's failure, and they don't bend.
 
 1. **The ground is one function.** `height_at(x, z)` is the single source of truth. The
    visible mesh, the collision and the placement of every object all read it. Nothing
-   computes height any other way.
+   computes height any other way. Between its 1 m lattice points the ground is the
+   lattice's triangles, split the way the mesh and collision split each square, so all
+   three agree exactly, even on a sharp crest. On loaded ground the world reads the
+   chunk's own samples instead of computing them again: the same numbers, cheaper.
 2. **Loaded ground never changes.** A chunk's collision is built once, when it comes
    into range, and it's never rebuilt or reshaped while it exists. Detail levels only
    change how the ground looks, never how it collides.
@@ -89,7 +93,7 @@ always as rich as the land behind.
 This is the minimum that makes the whole game loop possible. Every item gets built.
 
 - `height_at(x, z)` from seeded noise. One layer of gentle dunes, the same for the
-  same seed every time.
+  same seed every time. *(Replaced by the full version's Ridges, 2026-10-15.)*
 - A square chunk grid that streams around the player by grid position. Starting
   values to tune: **64 m chunks with 1 m height samples**, collision within 2 chunks
   of the player, visible ground out to about 8 chunks.
@@ -103,7 +107,8 @@ This is the minimum that makes the whole game loop possible. Every item gets bui
 - The scene shifts back toward the origin in whole-chunk steps. The player's latitude
   and longitude are tracked from movement in double precision. A debug readout shows
   them, along with distance from spawn measured around the moon.
-- A flat sand-coloured material.
+- A flat sand-coloured material. *(Replaced by the sand shader, 2026-10-15; see the full
+  version.)*
 - The probes below, all passing.
 
 ## Full version
@@ -112,7 +117,10 @@ Built after the skeleton loop works end to end, in roughly this order:
 
 - **Underlying topography.** Large, fixed shapes the dunes sit on: dune seas, hard
   flats, basins, ridges. These are the bones of the land, and they're stable across a
-  run.
+  run. *(A first pass came with Ridges: land of broad basins and rises about 12 m high and
+  never steeper than about 1°, and a sand-supply field a few kilometres across that makes
+  dune seas where it's high and bare flats where it's low. Sand gathers in the basins.
+  Both are still sampled from flat world coordinates, not yet from the moon.)*
 - **Real dune shapes** (decided). Windward slopes are gentle (about 5–15°), and slip
   faces sit downwind at the steepest angle loose sand holds (about 33°). Travelling with
   the wind, you walk up gentle slopes and slide down steep faces. Travelling into it, you
@@ -125,6 +133,20 @@ Built after the skeleton loop works end to end, in roughly this order:
   look-test's sheets): long ridges across the long-term wind, up to about 40 m where sand
   is plentiful, shrinking into flat corridors where it's short, crests that wander, dip
   and fork, gentle windward ramps and slip faces near 32°.
+
+  **Built** (2026-10-15), and the game's ground. Ridges stand about 260 m apart across
+  the run's mean wind, the same mean the weather blows round. Each has a windward ramp of
+  up to 14° where sand is plentiful, a crest rounded over a metre or two, and a slip face
+  at 31.5°. A bare flat comes before the next ramp: wide where sand is short, a sliver in
+  a dune sea. Crest lines wander about 70 m over 600 m, rise and dip along their length,
+  and fork where a second set of crests grows in patches. Everything is built from ramps
+  measured in true metres and joined so nothing gets steeper, so no ground passes 33°.
+  Measured over 5.8 km² at the collision's 1 m: 10% of the ground is over 15°, 7% over
+  28° (enough to slide you), the steepest is 32.5°, and half of it is flat enough to
+  camp on (a shield-sized square under 5°). The skeleton's noise had nothing over 14°
+  and only 15% of it was camp-flat. A run starts on flat ground near the first chunk's
+  middle, never on a slip face. The numbers live in Tuning's Terrain group, and
+  `look/dunes` shoots and measures them.
 - **Latitude and the poles** (decided). Toward the poles, storms weaken and the
   temperature swings get wider (see the vision). This system supplies latitude; Wind &
   storms and Survival read it. Fixed fields get sampled from the true point on the
@@ -135,9 +157,13 @@ Built after the skeleton loop works end to end, in roughly this order:
 - **Distance rendering.** This is core, not polish, because the clear-day view is a
   reward. Lower-detail rings out to the horizon (with skirts so no gaps show),
   generation on worker threads, and heat shimmer softening the far edge. In a storm,
-  the far rings can be dropped entirely.
+  the far rings can be dropped entirely. *(Mid-distance chunks went from 4 m to 2 m
+  samples with Ridges: at 4 m, sharp crests staircase past 100 m.)*
 - **Sand that looks like sand.** Wind ripples, colour variation, a shimmer at
-  distance.
+  distance. *(A first pass, built 2026-10-15 and on by default: ripples across the wind
+  on gentler slopes, fading out before they flicker; slip faces a shade lighter and
+  smoother; a thin highlight on crests; broad patches of colour. Tuning's `sand_shader`
+  switches back to the flat colour. Hunter hasn't ruled on it yet.)*
 
 ## What other systems get from this one
 
@@ -188,6 +214,13 @@ fail.
 
 - **Does difficulty also scale with distance from spawn?** Latitude already scales it
   (see above).
+- **Is the ground cheap enough for the hoverboard?** Ridges' `height_at` takes about
+  3 µs at a lattice point and 8 µs between points, against 0.3 µs for the skeleton's
+  noise. Reads on loaded ground come from the chunk's samples, at about 1 µs. The main
+  thread doesn't feel it, since chunks are built on workers. But flying at dev speed,
+  the ground round you is still being built in almost half the frames, against a fifth
+  with the old noise. The hoverboard's top speed will need it cheaper: a native port of
+  the shape, or fewer noise calls.
 
 Chunk size and the exact view distance are tuning decisions. The skeleton measures
 them; they aren't design questions.
