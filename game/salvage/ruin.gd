@@ -175,6 +175,13 @@ static func _span(along_u: bool, a0: float, a1: float, b0: float, b1: float, y0:
 	return AABB(Vector3(b0, y0, a0), Vector3(b1 - b0, y1 - y0, a1 - a0))
 
 
+## Builds what every ruin shares, its look and its shapes, so the first chunk
+## with a ruin doesn't pay for it inside the streaming budget.
+static func prepare() -> void:
+	_shared_mesh()
+	_shared_shapes()
+
+
 ## Its look, placed at `at` in its chunk's frame: one mesh every ruin shares.
 func view(at: Vector3) -> MeshInstance3D:
 	var made := MeshInstance3D.new()
@@ -187,17 +194,22 @@ func view(at: Vector3) -> MeshInstance3D:
 ## body's frame. The sand and the ruin are one ground.
 func add_shapes(body: StaticBody3D, at: Vector3) -> void:
 	var all := boxes()
-	if _shapes.is_empty():
-		for box in all:
-			var shape := BoxShape3D.new()
-			shape.size = box.size
-			_shapes.append(shape)
+	var shapes := _shared_shapes()
 	var placed := Transform3D(_turned(turn), at)
 	for i in all.size():
 		var holder := CollisionShape3D.new()
-		holder.shape = _shapes[i]
+		holder.shape = shapes[i]
 		holder.transform = placed.translated_local(all[i].get_center())
 		body.add_child(holder)
+
+
+static func _shared_shapes() -> Array[BoxShape3D]:
+	if _shapes.is_empty():
+		for box in boxes():
+			var shape := BoxShape3D.new()
+			shape.size = box.size
+			_shapes.append(shape)
+	return _shapes
 
 
 ## A quarter-turn basis, exact.

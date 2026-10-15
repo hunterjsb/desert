@@ -53,6 +53,24 @@ func setup(world: World) -> void:
 	world.terrain.grounded.connect(_on_grounded)
 	world.terrain.ungrounded.connect(_on_ungrounded)
 	world.terrain.unloaded.connect(_on_unloaded)
+	if _tuning.salvage:
+		_first_time()
+
+
+## The first find laid out in a run pays for everything done the first time,
+## a millisecond; a stand-in pays it now, while the world loads, as the
+## sand's shader does. So does the first ruin.
+func _first_time() -> void:
+	Ruin.prepare()
+	var spec := {"id": &"crate_frame", "device": true, "layer": Finds.DEEP, "x": 0.0, "z": 0.0, "yaw": 0.0,
+		"lean": 0.0, "lean_by": 0.0, "bury": 0.3, "sound": 0.5, "charge": 0.5,
+		"fill": [[0, &"battery", 0.5], [1, &"hook", 0.0], [3, &"hover_tray", 0.0], [4, &"solar_panel", 0.0]]}
+	var stand_in := Finds.make(spec)
+	stand_in.transform = Finds.pose(stand_in, spec, func(_x: float, _z: float) -> float: return -1000.0)
+	stand_in.freeze = true
+	_world.content.add_child(stand_in)
+	Finds.age(stand_in, spec.sound)
+	stand_in.free()
 
 
 func _ready() -> void:
