@@ -44,7 +44,7 @@ func end_of(plug: Part) -> Vector3:
 
 
 func _process(_delta: float) -> void:
-	if not plugs.all(func(p: Part) -> bool: return is_instance_valid(p)):
+	if not plugs.all(func(p: Variant) -> bool: return is_instance_valid(p)):
 		queue_free()
 		return
 	var a := end_of(plugs[0])

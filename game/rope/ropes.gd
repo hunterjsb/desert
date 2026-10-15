@@ -3,37 +3,24 @@ extends Node3D
 ## Every rope in the camp, solved together once a physics tick before anything
 ## else moves: you, the wind and the physics engine all act after it. Ropes
 ## belong to the camp, not the land, so they live here, never in a chunk, and
-## their strands move with every origin shift. The numbers live here until
-## Stage 5 moves them into Tuning.
+## their strands move with every origin shift. Whatever is in your hands or
+## at your waist is you, as far as a rope is concerned: its pull lands on you.
 
 signal snapped(rope: Rope)
 
-const Stake := preload("res://game/rope/stake.gd")
-
 ## Passes over every rope per tick, so lines sharing a load agree on it.
 const ITERATIONS := 2
-## Load is averaged over this long before it breaks anything, so a spike
-## shorter than it can't.
-const LOAD_SECONDS := 0.3
 ## Cap on how much a body is expected to change speed in a tick, m/s² and
 ## rad/s², so one hard landing can't mislead the rope about the next.
 const MAX_EXPECTED := 80.0
 const MAX_EXPECTED_SPIN := 80.0
-const BREAKING := 1500.0
 const NO_TURN := Basis(Vector3.ZERO, Vector3.ZERO, Vector3.ZERO)
-
-## You on a line: your weight in the suit, and your feet's hold against a
-## pull, which grows the faster you're dragged, as when you dig in and stumble.
-const PLAYER_MASS := 90.0
-const GRIP := 4.0
-const GRIP_PER_SPEED := 2.0
-## Tied round your waist: the share of your walking it costs, and the wind it
-## adds to what pulls you.
-const WAIST_SLOW := 0.3
-## Where a line in your hand ties on, in your own frame, unless what you hold
-## carries its own end (a strong cable's plug does).
+## Where a bare line in your hand ties on, in your own frame (the look-test's);
+## a line's own end in your hand ties on where your hand holds it.
 const HAND_AT := Vector3(0.3, 1.1, -0.35)
-const WAIST_CATCH := 0.12
+const WAIST_AT := Vector3(0.0, 0.95, 0.0)
+## A line's end in your hand can swing this share past its length.
+const SWING_SLACK := 0.02
 
 var world: World
 var ropes: Array[Rope] = []
@@ -48,38 +35,56 @@ var creak: AudioStream
 var tick_ms := 0.0
 var cost_ms := 0.0
 
+var _tuning: Tuning
 var _bodies := {}
 var _tick := 0
 var _pulls := {}
 var _drag := Vector3.ZERO
+var _sags := {}
 var _clock := 0.0
 var _crack: AudioStreamWAV
 
 
 func _ready() -> void:
 	process_physics_priority = -10
+	# After the hands have placed what they hold this frame.
+	process_priority = 10
 
 
 func setup(on: World) -> void:
 	world = on
+	_tuning = world.tuning
 	var groan: AudioStreamOggVorbis = preload("res://assets/audio/creak.ogg")
 	groan.loop = true
 	creak = groan
 	world.origin_shifted.connect(_on_origin_shifted)
 	hand = RopeEnd.make(world.player, HAND_AT, false)
-	waist = RopeEnd.make(world.player, Vector3(0.0, 0.95, 0.0), false)
+	waist = RopeEnd.make(world.player, WAIST_AT, false)
 
 
-func tie(a: RopeEnd, b: RopeEnd, length: float, breaking := BREAKING) -> Rope:
+## A line between two ends; NAN breaking is common rope's. A strand already
+## drawn (half of a snapped line) can carry on as this one's.
+func tie(a: RopeEnd, b: RopeEnd, length: float, breaking := NAN, strand: RopeStrand = null) -> Rope:
 	var rope := Rope.new()
 	rope.a = a
 	rope.b = b
-	rope.length = length
-	rope.breaking = breaking
-	rope.strand = RopeStrand.new()
-	add_child(rope.strand)
-	rope.strand.hang(world, length, a, b)
-	strands.append(rope.strand)
+	# Never none at all: a line of no length has no catenary to hang.
+	rope.length = maxf(length, 0.05)
+	rope.breaking = _tuning.rope_breaking if is_nan(breaking) else breaking
+	rope.kg_per_m = _tuning.rope_kg_per_m
+	rope.frequency = _tuning.rope_hertz
+	rope.damping = _tuning.rope_damping
+	rope.max_stretch = _tuning.rope_max_stretch
+	if strand == null:
+		strand = RopeStrand.new()
+		add_child(strand)
+		strand.hang(world, length, a, b)
+	else:
+		strand.a = a
+		strand.b = b
+	rope.strand = strand
+	if not strands.has(strand):
+		strands.append(strand)
 	if creak != null:
 		rope.creak = AudioStreamPlayer3D.new()
 		rope.creak.stream = creak
@@ -107,7 +112,16 @@ func let_go(rope: Rope, end: RopeEnd) -> void:
 	_drop(rope)
 
 
-func snap(rope: Rope) -> void:
+## A line gone altogether, rope and strand: rolled up into its coil.
+func untie(rope: Rope) -> void:
+	_drop(rope)
+	strands.erase(rope.strand)
+	rope.strand.queue_free()
+
+
+## A line breaks in two; whatever owns it makes lines of the halves unless
+## `halves` is false.
+func snap(rope: Rope, halves := true) -> void:
 	var tail := rope.strand.cut(rope.strand.points.size() / 2)
 	add_child(tail)
 	strands.append(tail)
@@ -115,10 +129,44 @@ func snap(rope: Rope) -> void:
 		_crack_at(tail.points[0])
 	_drop(rope)
 	snapped.emit(rope)
+	if halves and rope.parted.is_valid():
+		rope.parted.call(rope.strand, tail)
 
 
 func lines_on(end: RopeEnd) -> Array[Rope]:
 	return ropes.filter(func(rope: Rope) -> bool: return rope.a == end or rope.b == end)
+
+
+## Whether a body is on you: in your hands or at your waist.
+func on_you(body: Node) -> bool:
+	var player := world.player
+	return body == player or (body != null and (body == player.hands.held or player.waist.holds(body)))
+
+
+## Whether a line ties to your waist with its other end off you: what slows you.
+func at_waist(rope: Rope) -> bool:
+	var a_waist := _waist_end(rope.a)
+	var b_waist := _waist_end(rope.b)
+	return (a_waist and not on_you(rope.b.holder)) or (b_waist and not on_you(rope.a.holder))
+
+
+## Where a line's end in your hand can be, wanting to be at `want`: no further
+## from the other end of each of its lines than the line reaches, or than
+## your body is less an arm's length. Holding a loaded line your arm follows
+## it, so turning round swings your view, never a yank down the line.
+func reach(end: RopeEnd, want: Vector3) -> Vector3:
+	var body := world.player.global_position + Vector3.UP * HAND_AT.y
+	for rope in lines_on(end):
+		var other := (rope.b if rope.a == end else rope.a).global_position
+		var most := maxf(rope.length * (1.0 + SWING_SLACK), other.distance_to(body) - _tuning.hold_distance)
+		var off := want - other
+		if off.length() > most:
+			want = other + off.normalized() * most
+	return want
+
+
+func _waist_end(end: RopeEnd) -> bool:
+	return end == waist or world.player.waist.holds(end.holder)
 
 
 func clear() -> void:
@@ -131,6 +179,14 @@ func clear() -> void:
 	strands.clear()
 	_bodies.clear()
 	_drag = Vector3.ZERO
+
+
+## Every drawn frame, a line's ends are drawn where its rings are now: after
+## the physics step has moved them, and where your hand has what you hold.
+func _process(_delta: float) -> void:
+	for rope in ropes:
+		if is_instance_valid(rope.a) and is_instance_valid(rope.b):
+			rope.strand.pin_ends(rope.a.global_position, rope.b.global_position)
 
 
 func _physics_process(delta: float) -> void:
@@ -165,7 +221,13 @@ func _solve(h: float) -> void:
 			continue
 		rope.body_a = _body(rope.a.holder, h)
 		rope.body_b = _body(rope.b.holder, h)
-		rope.prepare(h)
+		rope.prepare(h, world.gravity)
+		if rope.torn():
+			# Its ends jumped apart (a dev teleport): no rope stretches to twice
+			# its length, so it parts rather than fling what's on it, with no
+			# break anywhere to leave new ends at.
+			snap(rope, false)
+			continue
 		live.append(rope)
 	for rope in live:
 		rope.warm_start()
@@ -191,6 +253,8 @@ func _solve(h: float) -> void:
 ## A moving body expects this tick's push from everything else to match
 ## last tick's: how far its velocity moved from where the ropes left it.
 func _body(holder: Node3D, h: float) -> RopeBody:
+	if on_you(holder):
+		holder = world.player
 	var id := holder.get_instance_id()
 	var body: RopeBody = _bodies.get(id)
 	if body != null and body.tick == _tick:
@@ -221,7 +285,7 @@ func _body(holder: Node3D, h: float) -> RopeBody:
 	elif body.player != null and not body.player.flying:
 		# The ground holds you up, so a line can only pull you along it.
 		body.center = holder.global_position
-		body.inv_mass = Vector3(1.0, 0.0, 1.0) / PLAYER_MASS
+		body.inv_mass = Vector3(1.0, 0.0, 1.0) / _tuning.player_mass
 		body.inv_inertia = NO_TURN
 		body.velocity = body.player.velocity
 		body.spin = Vector3.ZERO
@@ -256,30 +320,26 @@ func _deliver(body: RopeBody, push: Vector3, at: Vector3, h: float) -> void:
 ## through its one hook, the rope_drag meta.
 func _drag_player(h: float) -> void:
 	var player := world.player
-	var tied := false
-	for rope in ropes:
-		if rope.a == waist or rope.b == waist:
-			tied = true
-			break
+	var tied := ropes.any(at_waist)
 	var own: Vector3 = player.velocity - player.get_meta(&"rope_drag", Vector3.ZERO)
 	own.y = 0.0
 	if tied:
 		var wind := world.weather.felt_wind(player.global_position)
-		_drag += wind * wind.length() * WAIST_CATCH * h / PLAYER_MASS
+		_drag += wind * wind.length() * _tuning.waist_catch * h / _tuning.player_mass
 	# Exact over the tick, so dragging plays out the same at any tick rate.
 	var speed := _drag.length()
 	if speed > 0.0:
-		var floor_speed := GRIP / GRIP_PER_SPEED
-		var after := maxf(0.0, (speed + floor_speed) * exp(-GRIP_PER_SPEED * h) - floor_speed)
+		var floor_speed := _tuning.grip / _tuning.grip_per_speed
+		var after := maxf(0.0, (speed + floor_speed) * exp(-_tuning.grip_per_speed * h) - floor_speed)
 		_drag *= after / speed
 	# Slower only while you walk, so the wind's own shove on you isn't eased.
 	var walking := player.mode == "walk" or player.mode == "sprint"
-	player.set_meta(&"rope_drag", _drag - own * WAIST_SLOW if tied and walking else _drag)
+	player.set_meta(&"rope_drag", _drag - own * _tuning.waist_slow if tied and walking else _drag)
 
 
 ## Sustained load breaks ropes and pulls stakes; a spike alone never does.
 func _bear(h: float) -> void:
-	var alpha := 1.0 - exp(-h / LOAD_SECONDS)
+	var alpha := 1.0 - exp(-h / _tuning.rope_load_seconds)
 	for rope: Rope in ropes.duplicate():
 		rope.sustained += (rope.tension - rope.sustained) * alpha
 		if rope.sustained > rope.breaking:
@@ -291,6 +351,9 @@ func _bear(h: float) -> void:
 
 func _draw(h: float) -> void:
 	_clock += h
+	_sags.clear()
+	for rope in ropes:
+		_sags[rope.strand] = rope.sag
 	for strand: RopeStrand in strands.duplicate():
 		if strand.a != null and not _attached(strand.a):
 			strand.a = null
@@ -304,7 +367,7 @@ func _draw(h: float) -> void:
 			strands.erase(strand)
 			strand.queue_free()
 			continue
-		strand.step(h, world.weather.felt_wind(middle), _clock)
+		strand.step(h, world.weather.felt_wind(middle), _clock, _sags.get(strand, NAN))
 	for rope in ropes:
 		if rope.creak == null:
 			continue

@@ -1,19 +1,26 @@
 class_name Rope
 extends RefCounted
 ## One rope: a single constraint that does all the holding, and the strand that
-## draws it. Both use `length`. Slack below it; past it, a spring defined by how
-## fast it springs back and how much it bounces, solved from both ends' masses
-## with Catto's soft step, so it can only take energy out. A hard stop sits at
-## max_stretch. Tension pulls both ends equally, at the attachment points.
+## draws it. Both use `length`. The rope has weight, so it hangs in a catenary
+## and pulls a little even short of its length; the pull straightens it, then
+## a spring defined by how fast it springs back and how much it bounces takes
+## over. Solved from both ends' masses with Catto's soft step, so it can only
+## take energy out. A hard stop sits at max_stretch. Tension pulls both ends
+## equally, at the attachment points.
 
 ## The hard stop's own softness: stiff enough to read as a wall, soft enough
 ## that hitting it never kicks back.
 const STOP_HERTZ := 20.0
 const STOP_DAMPING := 1.0
+## Drooping this far short of its length, as a share of it, a line pulls
+## nothing: its weight lies on the sand or hangs off its ends.
+const SLACK_SHARE := 0.1
 
 var a: RopeEnd
 var b: RopeEnd
 var length: float
+## Its own weight, kg per metre; 0 is the look-test's weightless line.
+var kg_per_m := 0.0
 ## Springs back this many times a second when stretched, whatever hangs on it.
 var frequency := 3.0
 ## 1 settles without bouncing; below 1 it bounces.
@@ -22,6 +29,9 @@ var damping := 0.7
 var max_stretch := 0.1
 ## Newtons of sustained load that snap it.
 var breaking := 1500.0
+## Called with the two halves' strands when it snaps, if whatever owns it
+## makes something of them.
+var parted := Callable()
 
 ## Pull this tick, and the load sustained long enough to break things, N.
 var tension := 0.0
@@ -35,7 +45,11 @@ var body_b: RopeBody
 var normal := Vector3.UP
 var point_a := Vector3.ZERO
 var point_b := Vector3.ZERO
+## How far the spring is from letting go, m: past it, it pulls.
 var stretch := 0.0
+## How far the middle hangs below the line between its ends, by its weight and
+## the pull, m; NAN for a weightless line, which the strand drapes by its length.
+var sag := NAN
 ## Spring and stop impulses, N·s. Kept between ticks to warm-start the next.
 var spring_impulse := 0.0
 var stop_impulse := 0.0
@@ -66,12 +80,17 @@ func is_taut() -> bool:
 	return stretch > 0.0
 
 
+## Stretched to twice its length: past anything a rope survives.
+func torn() -> bool:
+	return _beyond > length * (1.0 - max_stretch)
+
+
 ## Share of breaking strength the sustained load has reached.
 func share() -> float:
 	return sustained / breaking
 
 
-func prepare(h: float) -> void:
+func prepare(h: float, gravity: float) -> void:
 	point_a = a.global_position
 	point_b = b.global_position
 	_ra = point_a - body_a.center
@@ -79,7 +98,6 @@ func prepare(h: float) -> void:
 	var along := point_b - point_a
 	var distance := along.length()
 	normal = along / distance if distance > 1e-5 else Vector3.UP
-	stretch = distance - length
 	_beyond = distance - length * (1.0 + max_stretch)
 	var arm_a := _ra.cross(normal)
 	var arm_b := _rb.cross(normal)
@@ -88,10 +106,47 @@ func prepare(h: float) -> void:
 	var k := normal.dot(body_a.inv_mass * normal) + arm_a.dot(_turn_a) \
 		+ normal.dot(body_b.inv_mass * normal) + arm_b.dot(_turn_b)
 	_mass = 1.0 / k if k > 1e-9 else 0.0
-	if h != _h or _soft == Vector3.ZERO:
-		_soft = soft_step(frequency, damping, h)
+	if h != _h or _stop == Vector3.ZERO:
 		_stop = soft_step(STOP_HERTZ, STOP_DAMPING, h)
 	_h = h
+	var weight := kg_per_m * gravity
+	if weight <= 0.0 or _mass == 0.0:
+		stretch = distance - length
+		sag = NAN
+		_soft = soft_step(frequency, damping, h)
+		return
+	# Hanging: the spring is linearised about where the ends are now, with the
+	# stiffness the catenary and the stretch have there, so it settles exactly
+	# where the full law says at any tick rate.
+	var spring := _mass * (TAU * frequency) ** 2
+	var c := weight * weight * length * length * length / 24.0
+	var pull := catenary_pull(distance, length, c, spring)
+	sag = weight * distance * distance / (8.0 * pull)
+	var stiff := 1.0 / (2.0 * c / (pull * pull * pull) + 1.0 / spring)
+	pull -= sqrt(c / (SLACK_SHARE * length))
+	stretch = pull / stiff
+	if pull <= 0.0:
+		# Too slack for the shallow catenary: the strand drapes it by its length.
+		sag = NAN
+	_soft = soft_step(sqrt(stiff / _mass) / TAU, damping, h)
+
+
+## The pull, N, on a line of this length and weight (c = w²L³/24, w in N/m)
+## whose ends are `chord` apart, sagging and stretching as a spring of
+## stiffness `spring`: chord = length - c/pull² + pull/spring. The shallow
+## catenary, so it holds while the sag is a small share of the span.
+static func catenary_pull(chord: float, line: float, c: float, spring: float) -> float:
+	# Started right of the answer: the first step lands left of it, and the
+	# law is concave, so every step after closes in from the left.
+	var pull := pow(c * spring, 1.0 / 3.0) + spring * maxf(chord - line, 0.0)
+	if chord < line:
+		pull = minf(pull, sqrt(c / (line - chord)))
+	for i in 8:
+		var off := line - c / (pull * pull) + pull / spring - chord
+		pull -= off / (2.0 * c / (pull * pull * pull) + 1.0 / spring)
+		if absf(off) < 1e-7 * line:
+			break
+	return pull
 
 
 func warm_start() -> void:

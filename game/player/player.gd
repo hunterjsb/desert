@@ -17,6 +17,7 @@ var _tuning := Tuning.current()
 
 @onready var camera: Camera3D = $Camera3D
 @onready var hands: Hands = $Hands
+@onready var waist: Waist = $Waist
 
 
 func _ready() -> void:

@@ -45,6 +45,8 @@ func run() -> void:
 				var edge := _edge(at, upwind, t, stormy)
 				check(absf(edge - scenario.distance) < SLACK,
 					"%s: the edge is %.0f m upwind (%.2f m)" % [what, scenario.distance, edge])
+				if scenario.get("camp", false):
+					await _camp_lands()
 			"deep":
 				check(field.storm_at(at.x, at.y, t) == 1.0, "deep: full storm")
 				check(_edge(at, upwind, t, true) > 250.0 and _edge(at, -upwind, t, true) > 250.0,
@@ -87,9 +89,31 @@ func _kit_lands_near_you() -> void:
 		parts += 1 if body is Part else 0
 		if off.dot(ahead) < 1.0 or Vector2(off.x, off.z).length() > 5.0 or c < -0.05 or c > 0.6:
 			strays.append("%s %.1fm %.2fm up" % [body.get("label"), Vector2(off.x, off.z).length(), c])
-	# Every part, plus both cables' plugs.
-	check(devices == Scenarios.KIT_DEVICES.size() and parts == Scenarios.KIT_PARTS.size() + 4,
-		"kit: every device and part dropped")
+	# Every part and coil, plus both cables' plugs; stakes are devices.
+	check(devices == Scenarios.KIT_DEVICES.size() + Scenarios.KIT_STAKES.size()
+		and parts == Scenarios.KIT_PARTS.size() + Scenarios.KIT_COILS.size() + 4,
+		"kit: every device, part, stake and coil dropped")
 	check(strays.is_empty(), "kit: all of it on the sand within 5 m in front of you (%s)" % ", ".join(strays))
 	for body in kit:
 		body.free()
+
+
+## The camp floats in front of you, each piece on a line to a driven stake
+## upwind, with spare stakes and coils at your feet.
+func _camp_lands() -> void:
+	await settle(true)
+	var camp := Scenarios.camp(world)
+	await physics_frames(180)
+	var floating := camp.filter(func(b: Node3D) -> bool: return b is Device and not b is Stake \
+		and b.stats().hovering and clearance(b) > 0.8)
+	var driven := camp.filter(func(b: Node3D) -> bool: return b is Stake and b.driven)
+	var lines := world.ropes.ropes.size()
+	var spares := camp.filter(func(b: Node3D) -> bool: return (b is Stake and not b.driven) or b.has_meta(&"line"))
+	check(floating.size() == Scenarios.CAMP_DEVICES.size() and driven.size() == floating.size() and lines == floating.size(),
+		"camp: each piece floats on its line to a driven stake (%d floating, %d driven, %d lines)"
+		% [floating.size(), driven.size(), lines])
+	check(spares.size() == Scenarios.CAMP_STAKES.size() + Scenarios.CAMP_COILS.size(),
+		"camp: spare stakes and coils at your feet")
+	for body in camp:
+		if is_instance_valid(body):
+			body.free()
