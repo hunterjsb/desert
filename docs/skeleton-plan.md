@@ -6,7 +6,7 @@ system in rough form, wired into one complete loop, before anything gets polishe
 **Where we are:** Stages 0 and 1 passed the gate on 2026-10-14, and Stage 2 passed later
 the same day, with the look-test's wall in the game. Stage 3 passed that evening ("works.
 nice."). Stage 4 passed on 2026-10-15 ("feeling great!"), with a strong cable that's
-also a rope. Stage 5 is next; the rope core is already in the game.
+also a rope. Stage 5 is built (2026-10-15) and waits at the gate.
 
 ## The loop we're building toward
 

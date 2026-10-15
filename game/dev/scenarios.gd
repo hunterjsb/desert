@@ -8,7 +8,8 @@ extends RefCounted
 ## you), "deep" (inside, far from any edge), "back" (inside, clear air
 ## `distance` m upwind), "sky" (clear, for the light) or "kit" (clear, with the
 ## test kit dropped in front of you). day is the window of time of day to look
-## in: 0 is midnight, 0.5 noon.
+## in: 0 is midnight, 0.5 noon. "camp" drops a floating camp in front of you,
+## each piece on one line to a stake, with stakes and coils to add more.
 const LIST: Array[Dictionary] = [
 	{"key": "spawn", "label": "spawn: where and when the run began", "kind": "spawn"},
 	{"key": "clear", "label": "clear day, no storm for 10 min", "kind": "clear", "day": [0.42, 0.55]},
@@ -23,6 +24,8 @@ const LIST: Array[Dictionary] = [
 	# Calm, so a floating device doesn't drift off before there's rope to hold it.
 	{"key": "kit", "label": "test kit: devices and parts, clear and calm", "kind": "kit", "day": [0.42, 0.55],
 		"calm": 6.0},
+	{"key": "camp", "label": "camp to stake: floaters on one line each, a storm 500 m off", "kind": "front",
+		"distance": 500.0, "day": [0.35, 0.55], "camp": true},
 ]
 
 ## The test kit, as [catalog id, metres to your right, metres ahead]: an empty
@@ -37,7 +40,17 @@ const KIT_PARTS := [
 	[&"lamp", -0.25, 1.6], [&"seedling", 0.1, 1.7], [&"seedling", 0.35, 1.6], [&"seedling", 0.6, 1.7],
 	[&"sapling", 0.95, 1.6], [&"battery", 1.3, 1.7], [&"hover_tray", -2.6, 2.4],
 	[&"hover_tray", 2.8, 2.6], [&"solar_panel", -2.6, 3.6], [&"solar_panel", -3.0, 2.2],
+	[&"hook", 1.65, 1.7], [&"hook", 1.95, 1.6],
 ]
+## Stakes lying across your way, and rope coils, right and ahead.
+const KIT_STAKES := [[-1.3, 1.15], [-1.3, 1.3], [-1.3, 1.45]]
+const KIT_COILS := [[0.6, 1.2], [1.2, 1.2]]
+## The camp: floating devices [catalog id, right, ahead] each on a line to a
+## stake further upwind, and spare stakes and coils by your feet.
+const CAMP_DEVICES := [[&"planter", -2.0, 4.0], [&"crate_frame", 2.0, 4.0]]
+const CAMP_STAKE_AHEAD := 3.0
+const CAMP_STAKES := [[-0.6, 1.2], [-0.6, 1.35], [-0.6, 1.5], [-0.6, 1.65]]
+const CAMP_COILS := [[0.4, 1.2], [0.9, 1.2], [1.4, 1.2]]
 
 ## How far upwind a search looks for edges, and its step.
 const REACH := 6000.0
@@ -156,6 +169,7 @@ static func kit(world: World) -> Array[Node3D]:
 		var part := Catalog.part(entry[0])
 		_drop(world, part, Transform3D(yaw * Basis(Vector3.RIGHT, -PI / 2.0), Vector3.ZERO), entry[1], entry[2])
 		dropped.append(part)
+	dropped.append_array(_stakes_and_coils(world, KIT_STAKES, KIT_COILS))
 	var at := player.global_position + player.global_basis.x * KIT_CABLE[0] - player.global_basis.z * KIT_CABLE[1]
 	at.y = world.height_under(at)
 	var cable := Catalog.cable(world, at)
@@ -166,6 +180,51 @@ static func kit(world: World) -> Array[Node3D]:
 	var strong := Catalog.cable(world, at, true)
 	dropped.append(strong)
 	dropped.append_array(strong.plugs)
+	return dropped
+
+
+## Drops the camp in front of the player: each floating device, its battery
+## and tray fitted and a hook on every ring mount, on one line from a hook to
+## a stake driven upwind of it. Returns what it dropped.
+static func camp(world: World) -> Array[Node3D]:
+	var player := world.player
+	var yaw := Basis(Vector3.UP, player.global_rotation.y)
+	var dropped: Array[Node3D] = []
+	for entry: Array in CAMP_DEVICES:
+		var device := Catalog.device(entry[0])
+		_drop(world, device, Transform3D(yaw, Vector3(0.0, world.tuning.hover_height, 0.0)), entry[1], entry[2])
+		for socket in device.sockets():
+			var fill: Variant = {&"battery": &"battery", &"bottom": &"hover_tray", &"ring": &"hook"}.get(socket.kind)
+			if fill != null:
+				var part := Catalog.part(fill)
+				world.content.add_child(part)
+				device.fit(part, socket)
+		var stake := Catalog.stake()
+		var at := device.global_position - player.global_basis.z * CAMP_STAKE_AHEAD
+		world.content.add_child(stake)
+		stake.drive(at, world.height_under(at))
+		Line.between(world, device.free_tie(stake.global_position), stake.free_tie(device.global_position), 0.5)
+		dropped.append_array([device, stake])
+	dropped.append_array(_stakes_and_coils(world, CAMP_STAKES, CAMP_COILS))
+	return dropped
+
+
+## Stakes lying flat across your way and coils lying on their backs.
+static func _stakes_and_coils(world: World, stakes: Array, coils: Array) -> Array[Node3D]:
+	var player := world.player
+	var yaw := Basis(Vector3.UP, player.global_rotation.y)
+	var dropped: Array[Node3D] = []
+	for entry: Array in stakes:
+		var stake := Catalog.stake()
+		_drop(world, stake, Transform3D(yaw * Basis(Vector3.BACK, PI / 2.0), Vector3(0.0, 0.035, 0.0)),
+			entry[0], entry[1])
+		dropped.append(stake)
+	for entry: Array in coils:
+		var line := Line.make(world, world.tuning.rope_coil_length)
+		var at: Vector3 = player.global_position + player.global_basis.x * entry[0] - player.global_basis.z * entry[1]
+		at.y = world.height_under(at) + 0.02
+		line.coil.global_transform = Transform3D(yaw * Basis(Vector3.RIGHT, -PI / 2.0), at)
+		dropped.append(line.coil)
 	return dropped
 
 

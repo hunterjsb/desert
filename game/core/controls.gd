@@ -5,7 +5,8 @@ extends Node
 ## What F1 lists, before whatever the scene adds.
 const HELP := [
 	["click", "look, or throw what you hold"], ["WASD", "move"], ["Shift", "sprint"],
-	["E", "pick up, take out, fit"], ["G", "drop"], ["Esc", "free the mouse"],
+	["E", "pick up, take out, fit; drive a held stake"], ["G", "drop"],
+	["H", "line in hand to your waist, or back"], ["Q", "let go of every line"], ["Esc", "free the mouse"],
 	["F1", "these keys"], ["F2", "scenarios"], ["F3", "numbers"],
 	["F4", "fly: Space up, Ctrl down"], ["F5", "speed up time"], ["F6", "low gravity"],
 ]
@@ -26,6 +27,8 @@ const KEYS := {
 	"dev_gravity": KEY_F6,
 	"hands_grab": KEY_E,
 	"hands_drop": KEY_G,
+	"tie_line": KEY_H,
+	"let_go": KEY_Q,
 }
 
 ## Mouse buttons, the same way.

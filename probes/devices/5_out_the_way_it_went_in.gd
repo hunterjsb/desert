@@ -22,9 +22,12 @@ func run() -> void:
 	await simulate(3.0)
 	check(crate.stats().hovering and planter.stats().hovering, "both devices float, fully fitted")
 	var tally := {"taken": 0, "inside": 0, "astray": 0, "slow": 0, "back": 0, "short": 0}
+	var filled := 0
 	for each: Device in [crate, planter]:
 		var home := each.global_transform
-		for socket in each.sockets():
+		# A hook's own tie socket is a socket too, with nothing in it here.
+		for socket in each.sockets().filter(func(s: Socket) -> bool: return s.part != null):
+			filled += 1
 			var reached := 0
 			for k in ANGLES:
 				each.global_transform = home
@@ -39,7 +42,7 @@ func run() -> void:
 	print("%d removals; %d ticks overlapping the device, %d off the straight line, %d slow; %d refitted"
 		% [tally.taken, tally.inside, tally.astray, tally.slow, tally.back])
 	check(tally.short == 0, "every socket was reached from at least %d of %d directions" % [SEEN, ANGLES])
-	check(tally.taken >= (crate.sockets().size() + planter.sockets().size()) * SEEN,
+	check(tally.taken >= filled * SEEN,
 		"parts were taken out (%d)" % tally.taken)
 	check(tally.inside == 0, "no part ever overlapped its device on the way out")
 	check(tally.astray == 0, "every part slid straight out along its socket's +Z")

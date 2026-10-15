@@ -88,6 +88,8 @@ satisfying, every single time.
   onto it.
 - **The device doesn't turn toward you on removal yet;** it holds still while the part
   slides out.
+- **A hook adds a socket** (2026-10-15): a tie socket on its ring while it's fitted,
+  where a line's end snaps on. Taking the hook out takes the line's end off first.
 
 ## Where parts come from, and how they wear
 

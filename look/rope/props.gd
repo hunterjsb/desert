@@ -4,7 +4,6 @@ extends RefCounted
 ## are engine coordinates; each sits on or above the sand under it.
 
 const Floater := preload("res://look/rope/floater.gd")
-const Stake := preload("res://game/rope/stake.gd")
 
 const FLOATER_SIZE := Vector3(1.2, 0.8, 1.2)
 const FLOATER_MASS := 20.0
@@ -14,9 +13,6 @@ const CRATE_SIZE := Vector3(1.0, 0.7, 0.7)
 const CRATE_MASS := 60.0
 const CRATE_CATCH := 0.15
 const SAND_FRICTION := 0.5
-const STAKE_HOLDING := 2500.0
-## How far a stake's ring stands above the sand.
-const STAKE_RING := 0.3
 
 
 static func floater(world: World, at: Vector3, mass := FLOATER_MASS, catch := FLOATER_CATCH,
@@ -45,30 +41,15 @@ static func crate(world: World, at: Vector3, mass := CRATE_MASS, catch := CRATE_
 	return body
 
 
-static func stake(world: World, at: Vector3, holding := STAKE_HOLDING) -> RigidBody3D:
-	var body: RigidBody3D = Stake.new()
-	body.holding = holding
-	body.mass = 2.0
-	body.freeze = true
-	body.can_sleep = false
-	body.set_meta(&"wind_catch", 0.01)
-	var shape := CollisionShape3D.new()
-	var post := CylinderShape3D.new()
-	post.radius = 0.04
-	post.height = 0.8
-	shape.shape = post
-	body.add_child(shape)
-	var look := MeshInstance3D.new()
-	var mesh := CylinderMesh.new()
-	mesh.top_radius = 0.035
-	mesh.bottom_radius = 0.02
-	mesh.height = 0.8
-	look.mesh = mesh
-	look.material_override = _material(Color(0.3, 0.27, 0.24))
-	body.add_child(look)
-	body.ring = RopeEnd.make(body, Vector3.UP * (STAKE_RING - 0.1))
-	# Driven in so its middle is just under the sand and the ring stands clear.
-	_place(world, body, at, 0.1)
+## The game's stake, driven in at a place; NAN holding is the game's. Its
+## lines are taken up with the look-test's own key, so it isn't picked up.
+static func stake(world: World, at: Vector3, holding := NAN) -> Stake:
+	var body := Catalog.stake()
+	body.carryable = false
+	if not is_nan(holding):
+		body.holding = holding
+	world.content.add_child(body)
+	body.drive(at, world.height_under(at))
 	return body
 
 

@@ -7,7 +7,6 @@ extends Node
 ##   godot --headless --path . res://look/rope/rope.tscn -- --bench
 
 const Props := preload("res://look/rope/props.gd")
-const Stake := preload("res://game/rope/stake.gd")
 const WORLD_SCENE := preload("res://game/world/world.tscn")
 const SEED := 1234
 ## A waist tie takes this long to undo, s. The PRD leaves it open; feel it here.
@@ -115,13 +114,13 @@ func _floater(f: float, s: float) -> RigidBody3D:
 
 
 func _stake(f: float, s: float) -> RopeEnd:
-	var stake: RigidBody3D = Props.stake(world, _spot(f, s))
+	var stake := Props.stake(world, _spot(f, s))
 	_props.append(stake)
 	return stake.ring
 
 
 ## A line from a ring to the body's ring that faces it, with this much slack.
-func _line(from: RopeEnd, body: Node3D, slack: float, breaking := Ropes.BREAKING) -> Rope:
+func _line(from: RopeEnd, body: Node3D, slack: float, breaking := NAN) -> Rope:
 	var ring := Props.ring_toward(body, from.global_position)
 	return ropes.tie(from, ring, ring.global_position.distance_to(from.global_position) + slack, breaking)
 
@@ -244,7 +243,7 @@ func _take_up() -> void:
 
 func _stake_here() -> void:
 	var player := world.player
-	var stake: RigidBody3D = Props.stake(world, player.global_position - player.global_basis.z * 0.8)
+	var stake := Props.stake(world, player.global_position - player.global_basis.z * 0.8)
 	_props.append(stake)
 	for end in [ropes.hand, ropes.waist]:
 		for rope in ropes.lines_on(end):
@@ -339,7 +338,7 @@ func _bench() -> void:
 		var body := Props.floater(world, center)
 		_props.append(body)
 		for k in 3:
-			var stake: RigidBody3D = Props.stake(world, center + Vector3.FORWARD.rotated(Vector3.UP, TAU * k / 3.0) * 6.0)
+			var stake := Props.stake(world, center + Vector3.FORWARD.rotated(Vector3.UP, TAU * k / 3.0) * 6.0)
 			_props.append(stake)
 			_line(stake.ring, body, 0.3)
 	for i in 120:

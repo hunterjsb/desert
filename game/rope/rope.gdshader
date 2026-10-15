@@ -7,6 +7,8 @@ render_mode world_vertex_coords;
 const int MAX_POINTS = 11;
 
 uniform vec3 points[MAX_POINTS];
+// How far the sand rises above each link's straight line, at its middle.
+uniform float bulge[MAX_POINTS - 1];
 uniform int count = 2;
 uniform float radius = 0.02;
 uniform float segment = 0.5;
@@ -24,6 +26,9 @@ void vertex() {
 	vec3 a = 2.0 * p0 - 5.0 * p1 + 4.0 * p2 - p3;
 	vec3 b = -p0 + 3.0 * p1 - 3.0 * p2 + p3;
 	vec3 p = 0.5 * (2.0 * p1 + (p2 - p0) * t + a * t * t + b * t * t * t);
+	// Never below the straight line between two points, or the sand rising
+	// over it: a curve through points lying on the sand would dip into it.
+	p.y = max(p.y, mix(p1.y, p2.y, t) + bulge[i] * 4.0 * t * (1.0 - t));
 	vec3 d = 0.5 * ((p2 - p0) + 2.0 * a * t + 3.0 * b * t * t);
 	d = length(d) > 1e-5 ? normalize(d) : vec3(0.0, 0.0, 1.0);
 	vec3 side = cross(d, vec3(0.0, 1.0, 0.0));

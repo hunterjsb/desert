@@ -143,6 +143,23 @@ The hoverboard tows nothing.
 - A tension creak (Sand Game's recording) that rises with load.
 - The probes below, all passing.
 
+**As built in the skeleton (2026-10-15):**
+- **Weight** makes each line an elastic catenary: it pulls a little short of its
+  length and straightens as the pull builds, and its drawn sag is the one its weight
+  and pull imply. A line slack enough to lie on the sand pulls nothing.
+- **A coil** gives you its first end when you pick it up, with the rest on your belt.
+  Once that end is on a ring (or tied at your waist), the coil comes to your hand and
+  pays out as you walk, up to 12 m. The line's length is set wherever its second end
+  goes. Taking up an end of a line lying loose at both ends rolls it back up; dropping
+  the first end before it's on anything puts the coil down whole.
+- **Rings** are tie sockets: a hook adds one while it's fitted, and a stake has one on
+  its eye. You're a ring in your hand, and at your waist with H. Untying takes a second
+  (`untie_seconds`), and Q lets go of every line.
+- **A stake** is a small device you can carry. E drives it into the sand where you
+  look. E on a driven stake pulls it into your hand with its lines still on its ring,
+  pulling on you now, so one gesture unstakes them and the next stakes them again.
+- **A snapped line** parts into two lines, each with a loose end where it broke.
+
 ## Full version
 
 - **More attachment points** from upgrades and found mods, like an extra hook.
@@ -172,8 +189,8 @@ Reliability is the whole point here, so this list is long. All run without a win
 5. **Snaps cleanly.** Raise the wind until a line passes its breaking strength. It
    snaps, the object drifts downwind, and nothing spikes.
 6. **What you see is what holds.** Drawn rope ends sit on the attachment points every
-   frame, the drawn length matches the constraint, and a taut constraint means a
-   straight drawn rope.
+   frame, the drawn length matches the constraint, and the drawn rope hangs as its
+   weight and pull say: straight only under real load.
 7. **Rope rests on sand.** No drawn rope ever dips below `height_at`.
 8. **Origin shifts are invisible.** A wind-loaded, staked camp crosses an origin shift
    with no jump in tension.
@@ -194,6 +211,5 @@ Every probe is first run against a deliberately broken rope, to prove it can fai
 
 ## Open questions
 
-- **How quickly can you untie from your waist** when a gust hits? Instant makes it
-  safe. A moment's delay makes it a real risk you choose.
-- **How much rope do you carry,** and is every coil the same length?
+- **How much rope do you carry,** and is every coil the same length? The skeleton's
+  coils are all 12 m.
