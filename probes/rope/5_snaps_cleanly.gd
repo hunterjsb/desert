@@ -115,12 +115,17 @@ func _stake_pulls_out() -> void:
 
 
 func _strands_sane() -> void:
-	var bad := 0
+	var bad: Array[String] = []
 	for strand in ropes.strands:
-		for p in strand.points:
-			if not finite(p) or p.y < world.height_under(p) - 0.001:
-				bad += 1
-	check(bad == 0, "every drawn strand is finite and on or above the sand (%d points off)" % bad)
+		var last := strand.points.size() - 1
+		for i in strand.points.size():
+			var p := strand.points[i]
+			# The ends ride rings on bodies, which may rest SAND_SLOP into it.
+			var under := world.height_under(p) - p.y
+			var allowed := World.SAND_SLOP if i == 0 or i == last else 0.001
+			if not finite(p) or under > allowed:
+				bad.append("point %d of %d, %.3f m under" % [i, last, under])
+	check(bad.is_empty(), "every drawn strand is finite and on or above the sand %s" % [bad])
 
 
 func _line_parts() -> void:
