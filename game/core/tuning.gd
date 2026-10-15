@@ -126,6 +126,80 @@ static var _current: Tuning
 @export var wind_resist_speed: float = 12.0
 ## Shove, m/s, per m/s of wind beyond what you can resist.
 @export var wind_push: float = 0.08
+## How long your feet take to settle into a new pace, s: what a landing or a
+## slide's end carries runs out over about this.
+@export var pace_seconds: float = 0.1
+## Crouched, you walk this fast, m/s, and the wind catches this share of you:
+## its force goes with the area you show it.
+@export var crouch_speed: float = 0.7
+@export var crouch_catch: float = 0.45
+## Takeoff is the same on any moon, so this is the height at 1 g, m; lower
+## gravity throws you higher and keeps you up longer.
+@export var jump_height: float = 0.45
+@export var jump_stamina: float = 6.0
+## A jump still works this long after the ground goes, and a press this long
+## before you land jumps as you touch down, s.
+@export var coyote_seconds: float = 0.12
+@export var jump_buffer_seconds: float = 0.15
+## How hard you can steer in the air, m/s², and never past your walking pace.
+@export var air_control: float = 1.5
+## Sand steeper than this, degrees, won't hold you: you slide down it. Slip
+## faces lie at about 33°, windward slopes well under 20°.
+@export var slip_angle: float = 28.0
+## The sand's grip on a slide on your seat, and skidding on your feet: tan of
+## the slope that just keeps a slide going. Steeper gains speed.
+@export var slide_friction: float = 0.1
+@export var slip_friction: float = 0.35
+## Ploughing sand, per m: drag of speed², which sets a slope's top speed.
+@export var slide_drag: float = 0.02
+## Crouch this fast or faster, m/s, and you slide; slower, only downhill.
+@export var slide_start_speed: float = 2.2
+## The push you throw into a slide, m/s.
+@export var slide_kick: float = 0.4
+## A slide on the flat ends below this, m/s; on your feet you can run out anything
+## slower than a sprint.
+@export var slide_stop_speed: float = 0.5
+## How fast you can steer a slide, rad/s, and the extra grip of digging your heels in.
+@export var slide_turn: float = 0.8
+@export var slide_brake: float = 0.3
+## Hauling: a line has to take this share of your pace before your feet dig
+## in; fully dug in you lose this share of it and tire this much faster, per s.
+@export var haul_from: float = 0.35
+@export var haul_slow: float = 0.35
+@export var haul_stamina_drain: float = 10.0
+## How quickly you dig in and come back up, s.
+@export var haul_seconds: float = 0.4
+
+@export_group("Body feel")
+## Everything here moves only the camera and makes only sound, never you.
+## Eye height comes down this far crouched, and sunk in hauling, m.
+@export var crouch_drop: float = 0.55
+@export var haul_sink: float = 0.07
+## A step's length at walking pace, m; it lengthens with speed.
+@export var step_length: float = 0.75
+## Head bob, sway and roll at walking pace: they grow with speed.
+@export var bob_height: float = 0.03
+@export var bob_sway: float = 0.02
+@export var bob_roll_degrees: float = 0.5
+## The head's spring: how fast it swings back, and how much it bounces (1 never does).
+@export var spring_hertz: float = 2.5
+@export var spring_damping: float = 0.45
+## Head speed, m/s, per m/s of a landing, a footfall, or a change of pace.
+@export var land_dip: float = 0.3
+@export var step_dip: float = 0.02
+@export var lurch: float = 0.12
+## Landings faster than this, m/s, thud: about a 0.8 m fall at 1 g.
+@export var hard_landing: float = 4.0
+## Leaning into the wind you can just stand against, m upwind and degrees of roll.
+@export var wind_lean: float = 0.04
+@export var wind_lean_degrees: float = 2.0
+## Head speed per m/s a gust rises by.
+@export var gust_nudge: float = 0.03
+## Extra field of view at a sprint, and at a fast slide, degrees.
+@export var sprint_fov: float = 3.0
+@export var slide_fov: float = 8.0
+@export var step_db: float = -16.0
+@export var slide_db: float = -8.0
 
 @export_group("Devices")
 ## A hover tray holds a device's middle this high over the sand, m.
