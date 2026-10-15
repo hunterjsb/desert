@@ -22,6 +22,11 @@ func _ready() -> void:
 		set_meta(&"wind_catch", Tuning.current().wind_catch_per_m2 * Weather.biggest_face(self))
 
 
+## F while you hold it, aiming at `at`. Says whether it did anything.
+func use(_by: Player, _at: Vector3) -> bool:
+	return false
+
+
 ## How far it slides out of its socket before it's clear of the device, metres.
 func depth() -> float:
 	var deepest := 0.0

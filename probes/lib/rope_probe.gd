@@ -56,9 +56,8 @@ func spot(x: float, z: float) -> Vector3:
 
 
 ## A line from a stake at `from` to the body's facing ring, with this much slack.
-func stake_line(from: Vector3, body: Node3D, slack := 0.0, breaking := Ropes.BREAKING,
-		holding := Props.STAKE_HOLDING) -> Rope:
-	var stake: RigidBody3D = Props.stake(world, from, holding)
+func stake_line(from: Vector3, body: Node3D, slack := 0.0, breaking := NAN, holding := NAN) -> Rope:
+	var stake := Props.stake(world, from, holding)
 	var ring := Props.ring_toward(body, stake.ring.global_position)
 	return ropes.tie(stake.ring, ring, ring.global_position.distance_to(stake.ring.global_position) + slack,
 		breaking)

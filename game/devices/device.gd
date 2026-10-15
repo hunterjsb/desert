@@ -17,6 +17,8 @@ const WORN := Color(0.24, 0.15, 0.1)
 @export var frame_mass := 15.0
 ## What the bare frame does by itself, like a turbine's turbine_w.
 @export var frame_stats: Dictionary = {}
+## Small enough to pick up and carry in your hands, like a stake.
+@export var carryable := false
 
 ## Set by Power each tick: false once its battery and sources can't meet its draw.
 var powered := true
@@ -61,6 +63,29 @@ func sockets() -> Array[Socket]:
 		if child is Socket:
 			found.append(child)
 	return found
+
+
+## F on it while you look at it: what it does when worked, like a shield
+## switching. Says whether it did anything.
+func interact(_by: Player) -> bool:
+	return false
+
+
+## F while you hold it, aiming at `at`. Says whether it did anything.
+func use(_by: Player, _at: Vector3) -> bool:
+	return false
+
+
+## The free tie socket nearest a place, or null: where a line would go.
+func free_tie(near: Vector3) -> Socket:
+	var best: Socket = null
+	var nearest := INF
+	for socket in sockets():
+		var d := socket.global_position.distance_to(near)
+		if socket.kind == &"tie" and socket.part == null and d < nearest:
+			nearest = d
+			best = socket
+	return best
 
 
 ## The battery in its battery slot, or null.
@@ -181,10 +206,15 @@ func _rise_clear_of_sand(nodes: Array[Node3D]) -> void:
 
 
 ## Takes a fitted part back out as a body again, sitting exactly in its socket;
-## the caller slides it out along the socket's +Z.
+## the caller slides it out along the socket's +Z. Whatever sits in a socket
+## the part added (a line's end on a hook's ring) comes off first, loose.
 func take(socket: Socket) -> Part:
 	var part := socket.part
 	assert(part != null)
+	for node in socket.fitted:
+		var added := node as Socket
+		if added != null and added.part != null:
+			take(added)
 	for node in socket.fitted:
 		var local := socket.transform.affine_inverse() * node.transform
 		remove_child(node)

@@ -1,27 +1,22 @@
 extends Node
 ## The rope look-test: the test floater, a crate, stakes and you, tied up round
 ## spawn in the real world and its weather, to judge whether rope can feel
-## right. F1 lists the keys; probes/rope/ judge whether it's reliable.
+## right. Your line and the tow are the game's own, so E, F and G work them as
+## they do anywhere; F1 lists the keys; probes/rope/ judge whether it's reliable.
 ##   godot --path . res://look/rope/rope.tscn
 ##   godot --path . res://look/rope/rope.tscn -- --capture <dir>
 ##   godot --headless --path . res://look/rope/rope.tscn -- --bench
 
 const Props := preload("res://look/rope/props.gd")
-const Stake := preload("res://game/rope/stake.gd")
 const WORLD_SCENE := preload("res://game/world/world.tscn")
 const SEED := 1234
-## A waist tie takes this long to undo, s. The PRD leaves it open; feel it here.
-const UNTIE := 1.0
-## How near a stake you have to be to take up its line, m.
-const REACH := 3.0
 ## A worst gust's rise, hold and fall, s.
 const GUST := Vector3(1.5, 3.0, 2.0)
 ## The snap rig's line: holds a storm's mean, not its big gusts.
 const WEAK := 550.0
 const KEYS := [
 	["1-5", "wind: calm, breeze, storm, worst gust, real"], ["6", "go deep into a storm"],
-	["7", "go to a storm 100 m off"], ["8", "go to a clear day"], ["H", "line in hand or at waist"],
-	["Q", "let go"], ["E", "take up a staked line"], ["F", "stake your lines here"], ["R", "reset"],
+	["7", "go to a storm 100 m off"], ["8", "go to a clear day"], ["R", "reset"],
 ]
 
 var world: World
@@ -32,7 +27,6 @@ var wind_mode := "real"
 var _base := Callable()
 var _gust_from := -INF
 var _gust := Vector2.ZERO
-var _untie := -1.0
 var _setups: Array[Dictionary] = []
 ## Why a rope stopped holding.
 var _gone := {}
@@ -89,23 +83,64 @@ func build() -> void:
 	var crate := Props.crate(world, _spot(6.0, 19.0))
 	_props.append(crate)
 	_setup("crate", crate, [_line(_stake(2.5, 17.0), crate, 0.2), _line(_stake(2.5, 21.0), crate, 0.2)])
-	var yours := _floater(5.0, 0.8)
-	var ring := Props.ring_toward(yours, ropes.hand.global_position)
-	_setup("your line", yours, [ropes.tie(ropes.hand, ring,
-		ring.global_position.distance_to(ropes.hand.global_position) + 0.5)])
-	var tow := _floater(2.5, -7.0)
-	_setup("tow", tow, [_line(_stake(-4.0, -7.0), tow, 0.5)])
+	var yours := _floating(5.0, 0.8)
+	_setup("your line", yours, [_in_hand(yours)])
+	var tow := _floating(2.5, -7.0)
+	var tow_stake := Catalog.stake()
+	world.content.add_child(tow_stake)
+	tow_stake.drive(_spot(-4.0, -7.0), world.height_under(_spot(-4.0, -7.0)))
+	_props.append(tow_stake)
+	_setup("tow", tow, [Line.between(world, tow.free_tie(tow_stake.global_position),
+		tow_stake.free_tie(tow.global_position), 0.5).rope])
 
 
 func _tear_down() -> void:
+	var player := world.player
+	for body in [player.hands.stow()] + player.waist.tied.duplicate():
+		if body != null:
+			player.waist.untie(body)
+			body.queue_free()
 	ropes.clear()
+	# Lines and their loose ends, with the props their other ends were on.
+	for node in world.content.get_children():
+		if node is Line or (node is Part and node.has_meta(&"line")):
+			node.queue_free()
 	for prop in _props:
 		if is_instance_valid(prop):
 			prop.queue_free()
 	_props.clear()
 	_setups.clear()
 	_gone.clear()
-	_untie = -1.0
+
+
+## A floating planter, the game's own: tray, battery, a hook on each ring mount.
+func _floating(f: float, s: float) -> Device:
+	var planter := Catalog.device(&"planter")
+	world.content.add_child(planter)
+	planter.global_position = _spot(f, s, world.tuning.hover_height)
+	for id: StringName in [&"hover_tray", &"battery", &"hook", &"hook"]:
+		var part := Catalog.part(id)
+		world.content.add_child(part)
+		for socket in planter.sockets():
+			if socket.kind == part.kind and socket.part == null:
+				planter.fit(part, socket)
+				break
+	_props.append(planter)
+	return planter
+
+
+## A line from the device to your hand, a little slack: laid to a stake where
+## your hand is, its end taken off it into your hand.
+func _in_hand(device: Device) -> Rope:
+	var hands := world.player.hands
+	var spare := Catalog.stake()
+	world.content.add_child(spare)
+	spare.global_position = world.player.global_transform * Ropes.HAND_AT
+	spare.freeze = true
+	var line := Line.between(world, device.free_tie(spare.global_position), spare.free_tie(device.global_position), 0.5)
+	hands.hold(spare.take(spare.sockets()[0]))
+	spare.queue_free()
+	return line.rope
 
 
 func _floater(f: float, s: float) -> RigidBody3D:
@@ -115,13 +150,13 @@ func _floater(f: float, s: float) -> RigidBody3D:
 
 
 func _stake(f: float, s: float) -> RopeEnd:
-	var stake: RigidBody3D = Props.stake(world, _spot(f, s))
+	var stake := Props.stake(world, _spot(f, s))
 	_props.append(stake)
 	return stake.ring
 
 
 ## A line from a ring to the body's ring that faces it, with this much slack.
-func _line(from: RopeEnd, body: Node3D, slack: float, breaking := Ropes.BREAKING) -> Rope:
+func _line(from: RopeEnd, body: Node3D, slack: float, breaking := NAN) -> Rope:
 	var ring := Props.ring_toward(body, from.global_position)
 	return ropes.tie(from, ring, ring.global_position.distance_to(from.global_position) + slack, breaking)
 
@@ -199,57 +234,8 @@ func _unhandled_input(event: InputEvent) -> void:
 			_go("storm_100")
 		KEY_8:
 			_go("clear")
-		KEY_H:
-			_hand_or_waist()
-		KEY_Q:
-			_let_go()
-		KEY_E:
-			_take_up()
-		KEY_F:
-			_stake_here()
 		KEY_R:
 			build()
-
-
-func _hand_or_waist() -> void:
-	var held := ropes.lines_on(ropes.hand)
-	if not held.is_empty():
-		for rope in held:
-			ropes.move_end(rope, ropes.hand, ropes.waist)
-	else:
-		for rope in ropes.lines_on(ropes.waist):
-			ropes.move_end(rope, ropes.waist, ropes.hand)
-	_untie = -1.0
-
-
-## A line in your hand drops at once; one round your waist takes a moment.
-func _let_go() -> void:
-	for rope in ropes.lines_on(ropes.hand):
-		_gone[rope] = "let go"
-		ropes.let_go(rope, ropes.hand)
-	if not ropes.lines_on(ropes.waist).is_empty() and _untie < 0.0:
-		_untie = UNTIE
-
-
-func _take_up() -> void:
-	var me := world.player.global_position
-	var carry := ropes.hand if ropes.lines_on(ropes.waist).is_empty() else ropes.waist
-	for prop in _props:
-		var stake := prop as Stake
-		if stake == null or stake.pulled or stake.global_position.distance_to(me) > REACH:
-			continue
-		for rope in ropes.lines_on(stake.ring):
-			ropes.move_end(rope, stake.ring, carry)
-
-
-func _stake_here() -> void:
-	var player := world.player
-	var stake: RigidBody3D = Props.stake(world, player.global_position - player.global_basis.z * 0.8)
-	_props.append(stake)
-	for end in [ropes.hand, ropes.waist]:
-		for rope in ropes.lines_on(end):
-			ropes.move_end(rope, end, stake.ring)
-	_untie = -1.0
 
 
 ## Drops you into one of the run's own moments, found by its scenario, and
@@ -272,16 +258,6 @@ func _ground() -> void:
 		await get_tree().process_frame
 
 
-func _physics_process(delta: float) -> void:
-	if _untie < 0.0:
-		return
-	_untie -= delta
-	if _untie < 0.0:
-		for rope in ropes.lines_on(ropes.waist):
-			_gone[rope] = "untied"
-			ropes.let_go(rope, ropes.waist)
-
-
 func _process(_delta: float) -> void:
 	readout.text = _readout()
 	for setup in _setups:
@@ -299,9 +275,11 @@ func _readout() -> String:
 	# Each setup's load floats over it; this is only what isn't on any object.
 	lines.append("wind %s %d m/s%s" % [wind_mode, roundi(blowing.length()), "  GUST" if _gusting() else ""])
 	var you := "free"
-	if not ropes.lines_on(ropes.waist).is_empty():
-		you = "untying %.1f s" % _untie if _untie >= 0.0 else "waist-tied"
-	elif not ropes.lines_on(ropes.hand).is_empty():
+	var waist := world.player.waist
+	var held := world.player.hands.held
+	if not waist.tied.is_empty():
+		you = "untying %.1f s" % waist.untying if waist.untying >= 0.0 else "waist-tied"
+	elif held != null and waist.carries_line(held):
 		you = "holding"
 	var drag: Vector3 = world.player.get_meta(&"rope_drag", Vector3.ZERO)
 	lines.append("you: %s, dragged %.1f m/s" % [you, Vector2(drag.x, drag.z).length()])
@@ -339,7 +317,7 @@ func _bench() -> void:
 		var body := Props.floater(world, center)
 		_props.append(body)
 		for k in 3:
-			var stake: RigidBody3D = Props.stake(world, center + Vector3.FORWARD.rotated(Vector3.UP, TAU * k / 3.0) * 6.0)
+			var stake := Props.stake(world, center + Vector3.FORWARD.rotated(Vector3.UP, TAU * k / 3.0) * 6.0)
 			_props.append(stake)
 			_line(stake.ring, body, 0.3)
 	for i in 120:
@@ -406,18 +384,17 @@ func _capture(out_dir: String) -> void:
 	await _shot(out_dir, "09_after_gust_snap_rig", camera, [Vector3(4.0, 4.0, 2.2), Vector3(7.0, 10.0, 0.4)])
 	var eye: Transform3D = world.player.camera.global_transform
 	camera.global_transform = eye
-	camera.look_at(ropes.lines_on(ropes.hand)[0].strand.points[0].lerp(
-		ropes.lines_on(ropes.hand)[0].strand.points[-1], 0.6))
+	var yours: Rope = _setups.filter(func(s: Dictionary) -> bool: return s.label == "your line")[0].lines[0]
+	camera.look_at(yours.strand.points[0].lerp(yours.strand.points[-1], 0.6))
 	await _shot(out_dir, "10_your_line_in_storm", camera, [])
-	_hand_or_waist()
+	world.player.waist.take_from_hands()
 	await _wait(3.0)
 	camera.global_transform = eye
 	camera.rotate_object_local(Vector3.RIGHT, deg_to_rad(-35.0))
 	camera.rotate_y(deg_to_rad(-40.0))
 	await _shot(out_dir, "11_waist_tied", camera, [])
 	_set_wind("breeze")
-	_hand_or_waist()
-	_let_go()
+	world.player.waist.let_go()
 	await _walk_tow(camera)
 	await _shot(out_dir, "12_towing", camera, [])
 	await _go("deep")
@@ -431,11 +408,13 @@ func _wait(seconds: float) -> void:
 	await get_tree().create_timer(seconds, true, true).timeout
 
 
-## Takes up the tow line and walks you upwind with it, by script.
+## Takes the tow line's end off its stake into your hand and walks you upwind
+## with it, by script.
 func _walk_tow(camera: Camera3D) -> void:
 	var player := world.player
 	player.global_position = _spot(-4.0, -5.5)
-	_take_up()
+	var stake: Stake = _props.filter(func(p: Node3D) -> bool: return p is Stake and p.carryable)[0]
+	player.hands.hold(stake.take(stake.sockets()[0]))
 	var seconds := 7.0
 	while seconds > 0.0:
 		var delta := get_physics_process_delta_time()

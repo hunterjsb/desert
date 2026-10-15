@@ -64,17 +64,14 @@ class LastInFrame extends Node:
 		each.call()
 
 
-## How far the drawn cable's end is from where the held plug ties on.
+## How far the drawn cable's nearer end is from where the held plug ties on.
 func _drawn_end_gap(held: Dictionary) -> float:
 	var cable: StrongCable = held.cable
 	if cable.rope == null or world.player.hands.held != held.plug:
 		return 0.0
-	var strand := cable.rope.strand
-	var hand := world.ropes.hand
-	if strand.a != hand and strand.b != hand:
-		return 0.0
-	var end := strand.points[0] if strand.a == hand else strand.points[strand.points.size() - 1]
-	return end.distance_to(held.plug.global_transform * StrongCable.END_AT)
+	var points := cable.rope.strand.points
+	var tip: Vector3 = held.plug.global_transform * StrongCable.END_AT
+	return minf(points[0].distance_to(tip), points[points.size() - 1].distance_to(tip))
 
 
 ## A floating planter 3 m downwind of you on a strong cable, its other plug in your hand.

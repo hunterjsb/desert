@@ -14,7 +14,10 @@ static func make(on: Node3D, at: Vector3, ring := true) -> RopeEnd:
 	var end := RopeEnd.new()
 	end.position = at
 	if ring:
-		end.add_child(_ring())
+		var shown := ring_mesh()
+		# Stood on edge, so it reads as a ring from the side.
+		shown.rotation = Vector3(PI / 2.0, 0.0, 0.0)
+		end.add_child(shown)
 	on.add_child(end)
 	return end
 
@@ -25,7 +28,8 @@ func _enter_tree() -> void:
 		holder = holder.get_parent() as Node3D
 
 
-static func _ring() -> MeshInstance3D:
+## The ring you see, lying flat until it's turned.
+static func ring_mesh() -> MeshInstance3D:
 	if _ring_mesh == null:
 		_ring_mesh = TorusMesh.new()
 		_ring_mesh.inner_radius = 0.035
@@ -39,6 +43,4 @@ static func _ring() -> MeshInstance3D:
 	var ring := MeshInstance3D.new()
 	ring.mesh = _ring_mesh
 	ring.material_override = _ring_look
-	# Stood on edge, so it reads as a ring from the side.
-	ring.rotation = Vector3(PI / 2.0, 0.0, 0.0)
 	return ring

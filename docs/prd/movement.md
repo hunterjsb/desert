@@ -24,6 +24,16 @@ outrun,** at least until the late-game haulers arrive.
 - **The wind pushes you,** using your wind catch and the felt weather. Inside a shield,
   it doesn't.
 - **Lines pull you.** A strong gust on a line drags you, and a waist tie slows you down.
+- **Sliding** (decided 2026-10-15, from Hunter's old vision board: "sand game has a lot
+  of sand so sliding will be an important mechanic"). Passive: a slope too steep to
+  stand on slides you down it. Active: slide on purpose and build momentum downhill.
+  Momentum is the reward.
+- **Jump and crouch** (decided 2026-10-15). A small, honest jump that shows the moon's
+  gravity. Crouching makes you smaller to the wind, so you brace against a storm.
+- **Your feet sink when you haul** (decided 2026-10-15). Walking or sprinting against a
+  heavy pull on a line, you dig in: you sink a little, slow down and tire faster.
+- **The body feels it:** sway as you walk, a spring in the step, a dip when you land,
+  and a lean into strong wind. Sand Game's footstep, slide and impact recordings.
 
 ## Meeting a storm
 
