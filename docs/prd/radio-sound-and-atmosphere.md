@@ -10,6 +10,12 @@ building, a rope taking load, a shield running low. Atmosphere is the feel of th
 moods. Hunter has a vision for the look and feel that gets built in as we go, so this
 PRD sets the systems and stays loose on the art.
 
+**In the world.** The radio hears what survived: StarCom stations, beacons left running, and
+local models that drifted. The far end of the lane, if it is ever heard at all, is one very
+rare, coherent, unanswering frequency, unlike the drifting oracles, and its purpose is never
+stated or confirmed in-game (a standing rule from the lore session). See [the lore
+research](../lore-research.md).
+
 ## The radio
 
 A device you carry or mount (Devices & mods). **Its reach is huge,** with the exact

@@ -122,7 +122,8 @@ and rose and fell in turn, leaving an apocalypse world. Roughly three thousand y
 later, the moon has reverted to near-uninhabitable: ruins, dunes, maybe a few holdouts.
 The air is thin and fading, the days scorch, the nights freeze, and water goes through
 all three phases every day. The physics is in [the moon](the-moon.md), and the history
-is in [the lore session](lore-session-2026-10-14.md) and [the lore research](lore-research.md).
+is in the lore session ([part 1](lore-session-2026-10-14.md), [part
+2](lore-session-2026-10-14-part-2.md)) and [the lore research](lore-research.md).
 
 You're a **scavenger and a survivor, in a suit**, because nobody survives here without
 one. The suit is the one gift this world gives you. Why you're out here gets revealed

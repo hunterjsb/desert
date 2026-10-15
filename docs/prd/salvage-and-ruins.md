@@ -9,6 +9,14 @@ every new device and every better battery comes out of the sand. Salvage is also
 the moon tells its story: in what you find, in the order you find it, and in the hints
 that someone else might still be out there.
 
+**In the world.** The moon never made anything high-tech. It was an assembly-and-operations
+economy at the far end of a manufacturing chain, so after the cut it could fit and repair
+parts but never fabricate them. Stamps come at two levels: the assembler's mark on a whole
+device, and each component's own maker inside it. Why a find is rare depends on why it's on the
+moon: ordinary goods are common, goods only the hub ran on were only ever made in small
+numbers, and contraband, such as a deserter's military kit, is rare because someone carried it
+in. See [the lore research](../lore-research.md).
+
 ## What you find
 
 - **Parts:** batteries, hooks, hover trays, panels, instruments. These are the things
@@ -19,11 +27,13 @@ that someone else might still be out there.
 - **Seeds,** mostly in ruins (Farming).
 - **Survival kits:** a common find, usually holding seeds and water.
 - **Lore:** fragments of what happened here.
-- **Maker's marks:** everything found carries the mark of whoever made it, such as a
+- **Maker's marks:** almost everything found carries the mark of whoever made it, such as a
   government seal, a regulator's stamp, a shipyard logo, a contractor's tag, a comms
-  casing or an improvised skimmer-crew patch. The player reconstructs the supply chain
+  casing or an improvised skimmer-crew patch. Commodity parts such as batteries carry none,
+  so a mark means something where it appears. The player reconstructs the supply chain
   from salvage alone, with no exposition. The entities are in
-  [the lore session](../lore-session-2026-10-14.md).
+  [the lore session](../lore-session-2026-10-14.md), and the makers beneath them in
+  [part 2](../lore-session-2026-10-14-part-2.md).
 - **Radio frequencies** to tune into (Radio, sound & atmosphere).
 - **Water:** still open. How you get it and how you make it is a hard question that
   belongs to Survival.
@@ -158,7 +168,9 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
 ## Lore
 
 Lore starts in **item descriptions**. They hint and never state. The game never says
-outright what happened here.
+outright what happened here. In the world, spelling carries age: X-spelled names
+(XN-118-7, Xanathivin) are old and official, and the Z-spelled Zan is late and colloquial
+([the lore research](../lore-research.md#names-the-ug-catalog-and-the-moon)).
 
 ## Open questions
 
