@@ -87,6 +87,16 @@ func cut(at: int) -> RopeStrand:
 	return tail
 
 
+## Draws an end exactly at a place this frame, ahead of the next tick: a held
+## plug moves with your view between ticks, and the strand must meet it.
+func pin(end: Node3D, at: Vector3) -> void:
+	var i := 0 if a == end else (points.size() - 1 if b == end else -1)
+	if i == -1:
+		return
+	points[i] = at
+	_look.set_shader_parameter("points", points)
+
+
 func let_go(end: Node3D) -> void:
 	if a == end:
 		a = null

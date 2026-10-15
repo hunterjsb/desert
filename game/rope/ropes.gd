@@ -30,6 +30,9 @@ const GRIP_PER_SPEED := 2.0
 ## Tied round your waist: the share of your walking it costs, and the wind it
 ## adds to what pulls you.
 const WAIST_SLOW := 0.3
+## Where a line in your hand ties on, in your own frame, unless what you hold
+## carries its own end (a strong cable's plug does).
+const HAND_AT := Vector3(0.3, 1.1, -0.35)
 const WAIST_CATCH := 0.12
 
 var world: World
@@ -63,7 +66,7 @@ func setup(on: World) -> void:
 	groan.loop = true
 	creak = groan
 	world.origin_shifted.connect(_on_origin_shifted)
-	hand = RopeEnd.make(world.player, Vector3(0.3, 1.1, -0.35), false)
+	hand = RopeEnd.make(world.player, HAND_AT, false)
 	waist = RopeEnd.make(world.player, Vector3(0.0, 0.95, 0.0), false)
 
 

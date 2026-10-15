@@ -19,6 +19,10 @@ func run() -> void:
 	var strong := _rig(true, Vector3(downwind.z, 0, -downwind.x) * 6.0, downwind)
 	var common := _rig(false, Vector3(-downwind.z, 0, downwind.x) * 6.0, downwind)
 	var held := await _held_rig(downwind)
+	# As drawn: sampled last thing each frame, after everything has moved.
+	var last := LastInFrame.new()
+	last.each = func() -> void: _gap = maxf(_gap, _drawn_end_gap(held))
+	add_child(last)
 	var pulled := 0.0
 	var farthest := 0.0
 	for i in 20 * 60:
@@ -37,12 +41,40 @@ func run() -> void:
 		"and its planter blew away")
 	check(world.player.hands.held == held.plug, "you held on to the plug")
 	check(pulled > 0.0, "holding it, the planter pulled on you (%.3f m/s a tick)" % pulled)
+	check(_gap < 0.05, "the drawn cable runs to the plug in your hand (%.3f m off at worst)" % _gap)
 	world.player.hands.drop()
 	await physics_frames(5)
 	world.player.remove_meta(&"rope_drag")
 	await physics_frames(5)
 	check((world.player.get_meta(&"rope_drag", Vector3.ZERO) as Vector3).length() == 0.0,
 		"let go, it pulls on you no more")
+
+
+var _gap := 0.0
+
+
+## Runs after every other node's _process in a frame.
+class LastInFrame extends Node:
+	var each: Callable
+
+	func _ready() -> void:
+		process_priority = 1000
+
+	func _process(_delta: float) -> void:
+		each.call()
+
+
+## How far the drawn cable's end is from where the held plug ties on.
+func _drawn_end_gap(held: Dictionary) -> float:
+	var cable: StrongCable = held.cable
+	if cable.rope == null or world.player.hands.held != held.plug:
+		return 0.0
+	var strand := cable.rope.strand
+	var hand := world.ropes.hand
+	if strand.a != hand and strand.b != hand:
+		return 0.0
+	var end := strand.points[0] if strand.a == hand else strand.points[strand.points.size() - 1]
+	return end.distance_to(held.plug.global_transform * StrongCable.END_AT)
 
 
 ## A floating planter 3 m downwind of you on a strong cable, its other plug in your hand.

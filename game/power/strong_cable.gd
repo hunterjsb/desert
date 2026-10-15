@@ -9,6 +9,8 @@ extends Cable
 
 ## Stronger than common rope: it's meant to hold a floating camp piece in a storm.
 const BREAKING := 4000.0
+## Where a plug ties on, in its own frame: just inside its back face.
+const END_AT := Vector3(0.0, 0.0, 0.045)
 
 var rope: Rope
 var _world: World
@@ -21,7 +23,7 @@ var _in_hand := -1
 func bind(world: World) -> void:
 	_world = world
 	for plug in plugs:
-		_plug_ends.append(RopeEnd.make(plug, Vector3(0.0, 0.0, 0.045), false))
+		_plug_ends.append(RopeEnd.make(plug, END_AT, false))
 	rope = world.ropes.tie(_plug_ends[0], _plug_ends[1], length, BREAKING)
 	world.ropes.snapped.connect(_on_snapped)
 	_wire.visible = false
@@ -33,8 +35,10 @@ func joined() -> Array[Device]:
 
 
 func _ready() -> void:
-	# The hand-off happens before the ropes are solved each tick.
+	# The hand-off happens before the ropes are solved each tick; the drawn
+	# end is pinned after the hands have placed the plug each frame.
 	process_physics_priority = -20
+	process_priority = 10
 
 
 func _process(_delta: float) -> void:
@@ -43,20 +47,27 @@ func _process(_delta: float) -> void:
 			_world.ropes.let_go(rope, rope.a)
 			rope = null
 		queue_free()
+		return
+	if rope != null and _in_hand != -1:
+		rope.strand.pin(_world.ropes.hand, plugs[_in_hand].global_transform * END_AT)
 
 
 func _physics_process(_delta: float) -> void:
 	if rope == null or not plugs.all(func(p: Part) -> bool: return is_instance_valid(p)):
 		return
 	var holding := plugs.find(_world.player.hands.held)
-	if holding == _in_hand:
-		return
 	var hand := _world.ropes.hand
+	if holding != _in_hand:
+		if _in_hand != -1:
+			_world.ropes.move_end(rope, hand, _plug_ends[_in_hand])
+			hand.position = Ropes.HAND_AT
+		if holding != -1:
+			_world.ropes.move_end(rope, _plug_ends[holding], hand)
+		_in_hand = holding
+	# The cable runs to the plug in your hand, wherever you hold it; the pull
+	# still lands on you.
 	if _in_hand != -1:
-		_world.ropes.move_end(rope, hand, _plug_ends[_in_hand])
-	if holding != -1:
-		_world.ropes.move_end(rope, _plug_ends[holding], hand)
-	_in_hand = holding
+		hand.global_position = plugs[_in_hand].global_transform * END_AT
 
 
 ## The rope holds instead: it never pops a plug.
