@@ -16,6 +16,10 @@ const KICK := 4.0
 const SETTLED := 0.05
 
 var _rows: Array[Dictionary] = []
+## Per floater: where its tray last held it, and the work the tray has done
+## since, following the sand up and down under it.
+var _rest := {}
+var _tray_work := {}
 
 
 func run() -> void:
@@ -77,7 +81,7 @@ func run() -> void:
 				bad.unsettled += 1
 				worst.unsettled[rig.what] = maxf(worst.unsettled.get(rig.what, 0.0), v.length())
 		if tick % window == 0:
-			energy.append(0.0)
+			energy.append(-INF)
 		energy[-1] = maxf(energy[-1], calm)
 		for rope in ropes.ropes:
 			if not is_finite(rope.tension):
@@ -91,7 +95,7 @@ func run() -> void:
 	check(bad.fast == 0, "nothing faster than its wind could carry it")
 	var grew := 0
 	for i in range(1, energy.size()):
-		if energy[i] > energy[i - 1] * 1.02:
+		if energy[i] > energy[i - 1] + absf(energy[i - 1]) * 0.02:
 			grew += 1
 	check(grew == 0, "a kicked rig in calm only loses energy (%d windows gained)" % grew)
 	check(energy[-1] < energy[0] * 0.25, "and keeps losing it")
@@ -127,15 +131,20 @@ func _rig(row: int, weight: int, lines: int) -> Dictionary:
 		_rows[row].name], "limit": KICK + 0.5 if top == 0.0 else top * 1.1 + 1.0}
 
 
-## Moving energy, plus what the hover tray holds as a spring.
+## Moving energy, plus what the hover tray holds as a spring, less what the
+## tray has put in: its spring rests a set height over the sand, so over a
+## slope it lifts and lowers what it holds. Called once a tick.
 func _energy(body: RigidBody3D) -> float:
 	var spin := body.angular_velocity
 	var total := 0.5 * body.mass * body.linear_velocity.length_squared() \
 		+ 0.5 * spin.dot(Vector3(body.inertia.x * spin.x, body.inertia.y * spin.y, body.inertia.z * spin.z))
 	if body is Props.Floater:
 		var omega := TAU * Props.Floater.HOVER_HERTZ
-		var off := body.global_position.y - world.height_under(body.global_position) - Props.Floater.HOVER
-		total += 0.5 * body.mass * omega * omega * off * off
+		var rest := world.height_under(body.global_position) + Props.Floater.HOVER
+		var off := body.global_position.y - rest
+		_tray_work[body] = _tray_work.get(body, 0.0) - body.mass * omega * omega * off * (rest - _rest.get(body, rest))
+		_rest[body] = rest
+		total += 0.5 * body.mass * omega * omega * off * off - _tray_work[body]
 	return total
 
 

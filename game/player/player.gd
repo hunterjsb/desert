@@ -49,6 +49,9 @@ var _tuning := Tuning.current()
 var _sliding := false
 var _jumped := false
 var _since_ground := 0.0
+## How long before this tick began your feet really touched down, s, when the
+## last one landed you: negative when the floor caught you a moment early.
+var _touchdown := 0.0
 var _jump_buffer := 0.0
 var _jump_was := false
 var _jump_queued := false
@@ -149,7 +152,7 @@ func _physics_process(delta: float) -> void:
 				climb = maxf(0.0, world.height_under(global_position + ahead) - world.height_under(global_position))
 				pace *= maxf(0.4, 1.0 - climb * _tuning.uphill_slowdown)
 			pace = _haul(dir, pace, delta)
-			step = _walk(delta, dir * pace)
+			step = _walk(delta, dir * pace, _touchdown)
 	else:
 		_sliding = false
 		sink = _ease(sink, 0.0, _tuning.haul_seconds, delta)
@@ -269,9 +272,12 @@ func _slide(delta: float, dir: Vector2, crouch: bool) -> Vector2:
 
 ## Your legs take up the pace they want over pace_seconds, exactly over the
 ## tick: a landing or a slide's end runs out the same way at any tick rate.
-func _walk(delta: float, target: Vector2) -> Vector2:
-	var fade := exp(-delta / _tuning.pace_seconds)
-	var moved := target * delta + (own - target) * _tuning.pace_seconds * (1.0 - fade)
+## Landed `early` s before the tick, you've walked since the touchdown, not
+## since the tick that noticed it.
+func _walk(delta: float, target: Vector2, early := 0.0) -> Vector2:
+	var walked := delta + early
+	var fade := exp(-walked / _tuning.pace_seconds)
+	var moved := target * walked + (own - target) * _tuning.pace_seconds * (1.0 - fade) - own * early
 	own = target + (own - target) * fade
 	return moved / delta
 
@@ -332,8 +338,15 @@ func _after_move(from: Vector3, meant: Vector2, delta: float, was_on_floor: bool
 		velocity.z = meant.y / delta
 	if is_on_ceiling():
 		vy = minf(vy, 0.0)
+	_touchdown = 0.0
 	if is_on_floor():
 		if not was_on_floor:
+			# The fall's own time to the sand within the tick: a landing comes a
+			# tick late at a slow rate, a snap a little early at a fast one.
+			var start := vy + world.gravity * delta
+			var drop := from.y - global_position.y
+			var fall := (start + sqrt(maxf(start * start + 2.0 * world.gravity * drop, 0.0))) / world.gravity
+			_touchdown = clampf(delta - fall, -delta, delta)
 			landed.emit(maxf(0.0, -vy))
 			# Land crouched at speed and the slide goes on; land faster than you
 			# can run and you skid.

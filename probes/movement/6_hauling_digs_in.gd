@@ -15,7 +15,8 @@ func run() -> void:
 	world.ropes.set_physics_process(false)
 	set_rate(60, 4)
 	var t := world.tuning
-	var flat := flat_place(world.player_world_x(), world.player_world_z(), 150.0, 4.0)
+	# Flat for all of a two-second sprint: a slope changes how deep you dig in.
+	var flat := flat_place(world.player_world_x(), world.player_world_z(), 150.0, 10.0)
 	var ahead := Vector2(1.0, 0.0)
 
 	var free := await _walk(flat, ahead, ["move_forward"], Vector2.ZERO)
@@ -27,8 +28,9 @@ func run() -> void:
 	check(free.eye - hauling.eye > t.haul_sink * 0.8, "and sink in (%.3f m)" % (free.eye - hauling.eye))
 	check(hauling.spent > free.spent + t.haul_stamina_drain * 0.6 * 2.0, "and tire faster (%.1f stamina against %.1f)"
 		% [hauling.spent, free.spent])
-	var sprinting := await _walk(flat, ahead, ["move_forward", "sprint"], -ahead * HEAVY * 2.0)
-	check(sprinting.sink > 0.9, "sprinting against a heavier pull digs you in all the way (%.2f)" % sprinting.sink)
+	var sprinting := await _walk(flat, ahead, ["move_forward", "sprint"], -ahead * t.sprint_speed)
+	check(sprinting.sink > 0.9, "sprinting against a pull that takes your whole pace digs you in all the way (%.2f)"
+		% sprinting.sink)
 
 	player.set_meta(&"rope_drag", Vector3.ZERO)
 	await simulate(2.0)

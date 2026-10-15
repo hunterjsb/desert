@@ -31,7 +31,7 @@ func run() -> void:
 			check(hour >= scenario.day[0] and hour <= scenario.day[1], "%s: at the right time of day (%.3f)" % [what, hour])
 		match scenario.kind:
 			"spawn":
-				check(at.distance_to(Vector2.ONE * Tuning.current().chunk_size * 0.5) < 0.01 and t == 0.0,
+				check(at.distance_to(world.spawn) < 0.01 and t == 0.0,
 					"spawn: where and when the run began")
 			"clear", "kit":
 				check(not stormy and field.next_change(at.x, at.y, t, 600.0, 5.0) == INF,

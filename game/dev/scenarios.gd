@@ -83,7 +83,7 @@ static func by_key(key: String) -> Dictionary:
 ## Where to put the player: {x, z, yaw, time}, or {} if this run's weather has
 ## no such moment in three days.
 static func find(world: World, scenario: Dictionary) -> Dictionary:
-	var spawn := Vector2(world.tuning.chunk_size, world.tuning.chunk_size) * 0.5
+	var spawn := world.spawn
 	if scenario.kind == "spawn":
 		return {"x": spawn.x, "z": spawn.y, "yaw": 0.0, "time": 0.0}
 	var field := world.weather.field

@@ -80,6 +80,8 @@ func _measure(phase: String, missed_ms: float, done: Callable) -> void:
 	var frames: Array[float] = []
 	var streaming: Array[float] = []
 	var gpu := 0.0
+	# Workers falling behind leave you over ground with no collision yet.
+	var behind := 0
 	var last := Time.get_ticks_usec()
 	while not done.call():
 		await get_tree().process_frame
@@ -88,10 +90,12 @@ func _measure(phase: String, missed_ms: float, done: Callable) -> void:
 		last = now
 		streaming.append(_world.terrain.frame_ms)
 		gpu = maxf(gpu, RenderingServer.viewport_get_measured_render_time_gpu(rid))
+		if not _world.terrain.is_settled_around(_world.player_world_x(), _world.player_world_z()):
+			behind += 1
 	var misses := frames.filter(func(ms: float) -> bool: return ms > missed_ms).size()
-	print("  %-4s %5d frames  p99 %5.2f  worst %5.2f ms  missed %3d  gpu worst %5.2f  streaming p99 %4.2f worst %4.2f ms  pipelines %d"
+	print("  %-4s %5d frames  p99 %5.2f  worst %5.2f ms  missed %3d  gpu worst %5.2f  streaming p99 %4.2f worst %4.2f ms  pipelines %d  ground behind %d frames"
 		% [phase, frames.size(), _p99(frames), frames.max(), misses, gpu, _p99(streaming), streaming.max(),
-			_pipelines() - pipelines])
+			_pipelines() - pipelines, behind])
 
 
 func _for(seconds: float) -> Callable:

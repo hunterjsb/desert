@@ -71,7 +71,7 @@ func _line_snaps() -> void:
 	var seen := {"fastest": -INF, "kick": 0.0, "last": floater.linear_velocity}
 	var watch := func() -> void:
 		var v := floater.linear_velocity
-		seen.fastest = maxf(seen.fastest, v.length() - _blowing)
+		seen.fastest = maxf(seen.fastest, _past_wind(v))
 		seen.kick = maxf(seen.kick, (v - seen.last).length() / h)
 		seen.last = v
 	await _rise_until(func() -> bool: return _snapped_in > 0.0, watch)
@@ -99,7 +99,7 @@ func _stake_pulls_out() -> void:
 	var seen := {"fastest": -INF}
 	var watch := func() -> void:
 		for body: RigidBody3D in [floater, stake]:
-			seen.fastest = maxf(seen.fastest, body.linear_velocity.length() - _blowing)
+			seen.fastest = maxf(seen.fastest, _past_wind(body.linear_velocity))
 	await _rise_until(func() -> bool: return stake.pulled, watch)
 	var gave := _blowing
 	var from := stake.global_position
@@ -112,6 +112,12 @@ func _stake_pulls_out() -> void:
 		"and went downwind with the floater")
 	check(seen.fastest < FLUNG, "with nothing flung")
 	_strands_sane()
+
+
+## How much faster than the wind something goes, m/s. The wind is level, so
+## only level speed counts: what it carries over a dune rises and falls too.
+func _past_wind(v: Vector3) -> float:
+	return Vector2(v.x, v.z).length() - _blowing
 
 
 func _strands_sane() -> void:
@@ -150,7 +156,7 @@ func _line_parts() -> void:
 	await simulate(4.0, func() -> void:
 		for node in world.content.get_children():
 			if node is Part:
-				fastest.v = maxf(fastest.v, node.linear_velocity.length() - _blowing))
+				fastest.v = maxf(fastest.v, _past_wind(node.linear_velocity)))
 	var lines := world.content.get_children().filter(func(n: Node) -> bool: return n is Line)
 	var loose := world.content.get_children().filter(func(n: Node) -> bool:
 		return n is Part and n.has_meta(&"line") and n.socket == null)

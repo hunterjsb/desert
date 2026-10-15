@@ -154,6 +154,5 @@ forgotten. That's fine, as long as it's never a surprise:
   The rest is tuning.
 - **Do tricks do anything,** or are they just for fun?
 - **How do the warnings show up?** Sound, the suit, the radio, a visible edge?
-- **Slip faces steep enough to slide you:** yes (Hunter, 2026-10-15). Today's steepest
-  ground is about 16°, so the passive slide (above 28°) waits for the real dune shapes
-  (World & terrain). Until then the probes test it on dunes raised three times higher.
+- **Slip faces steep enough to slide you:** yes (Hunter, 2026-10-15). The Ridges dunes
+  (World & terrain) have them, at 31.5°, and the probes find them near spawn.

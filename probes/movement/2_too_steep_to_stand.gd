@@ -1,12 +1,10 @@
 extends MovementProbe
-## Movement probe 2: a slip face won't hold you. Today's dunes top out near
-## 16°, so the dunes here are raised threefold, until slip faces appear.
-## Stand on one and you slide down it on your own; try to walk up it and you
-## still go down. A steep windward slope under the slip angle holds you still.
+## Movement probe 2: a slip face won't hold you. Stand on one and you slide
+## down it on your own; try to walk up it and you still go down. A steep slope
+## under the slip angle holds you still.
 
 
 func run() -> void:
-	Tuning.current().dune_amplitude = 18.0
 	await load_moving()
 	set_rate(60, 4)
 	var x := world.player_world_x()

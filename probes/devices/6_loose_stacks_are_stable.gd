@@ -23,7 +23,9 @@ func run() -> void:
 		# Light enough that the tray floats the crate and its load at its set height.
 		box.mass = 2.0
 		stack.append(box)
-	await fast_forward(10.0)
+	# A minute for the tray's gimbal to take the stack's weight: the crate leans
+	# a degree under it, and the stack settles with it.
+	await fast_forward(60.0)
 	var settled := stack.map(func(b: RigidBody3D) -> Transform3D: return relative(crate, b))
 	var fastest := 0.0
 	var invalid := false

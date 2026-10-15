@@ -16,6 +16,8 @@ var tuning := Tuning.current()
 ## The tuning's, or a fresh one each run when it's 0; a new run sets its own.
 var run_seed := 0
 var shape: TerrainShape
+## Where the run began, in world metres: flat ground, never a slip face.
+var spawn: Vector2
 var moon: MoonPosition
 ## The chunk the engine origin sits on. Engine position + this = world position.
 var origin_chunk := Vector2i.ZERO
@@ -55,7 +57,8 @@ func _ready() -> void:
 	ropes.setup(self)
 	_set_scene()
 	var half := tuning.chunk_size * 0.5
-	player.global_position = Vector3(half, shape.height_at(half, half) + 0.1, half)
+	spawn = _flat_near(half, half)
+	player.global_position = Vector3(engine_x(spawn.x), height_at(spawn.x, spawn.y) + 0.1, engine_z(spawn.y))
 	_last_x = player_world_x()
 	_last_z = player_world_z()
 
@@ -73,6 +76,37 @@ func respawn(x: float, z: float, yaw: float, at_time: float) -> void:
 	_last_x = x
 	_last_z = z
 	weather.forecast_now()
+
+
+## A run starts on ground this flat: a camp-sized patch whose sand rises no
+## more than FLAT_RISE m across FLAT_SPAN m, found within FLAT_SEARCH m.
+const FLAT_SPAN := 10.0
+const FLAT_RISE := 0.5
+const FLAT_SEARCH := 300.0
+
+
+## The nearest flat ground to a world place, looking outward in square rings;
+## the place itself if there's none.
+func _flat_near(x: float, z: float) -> Vector2:
+	var from := Vector2(roundf(x), roundf(z))
+	var step := FLAT_SPAN * 0.5
+	for ring in int(FLAT_SEARCH / step) + 1:
+		for dz in range(-ring, ring + 1):
+			for dx in range(-ring, ring + 1):
+				if maxi(absi(dx), absi(dz)) == ring and _flat(from + Vector2(dx, dz) * step):
+					return from + Vector2(dx, dz) * step
+	return Vector2(x, z)
+
+
+func _flat(at: Vector2) -> bool:
+	var low := INF
+	var high := -INF
+	for j in 3:
+		for i in 3:
+			var h := shape.height_at(at.x + (i - 1) * FLAT_SPAN * 0.5, at.y + (j - 1) * FLAT_SPAN * 0.5)
+			low = minf(low, h)
+			high = maxf(high, h)
+	return high - low < FLAT_RISE
 
 
 ## The World a node lives in, found by climbing its parents.
@@ -107,7 +141,7 @@ func player_world_z() -> float:
 
 
 func height_at(x: float, z: float) -> float:
-	return shape.height_at(x, z)
+	return terrain.height_at(x, z)
 
 
 func height_under(engine_position: Vector3) -> float:

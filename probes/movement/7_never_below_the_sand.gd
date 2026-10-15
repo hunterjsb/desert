@@ -1,27 +1,26 @@
 extends MovementProbe
-## Movement probe 7: nothing goes through the sand, you included. On dunes
-## raised until slip faces appear, slide flat out down the steepest, jumping
-## mid-slide and landing crouched into the next, at 1 g and at 0.45 g, and
-## off crests at speed. Every tick your feet stay on the sand, never in it,
-## and nothing had to be rescued from below it.
+## Movement probe 7: nothing goes through the sand, you included. Slide flat
+## out down a slip face, jumping mid-slide and landing crouched into the
+## next, at 1 g and at 0.45 g, and off crests at speed. Every tick your feet
+## stay on the sand, never in it, and nothing had to be rescued from below it.
 
 const RUNS := 6
 
 
 func run() -> void:
-	Tuning.current().dune_amplitude = 18.0
 	await load_moving()
 	set_rate(60, 4)
 	var x := world.player_world_x()
 	var z := world.player_world_z()
 	var seen := {"fastest": 0.0, "landing": 0.0}
 	player.landed.connect(func(speed: float) -> void: seen.landing = maxf(seen.landing, speed))
+	var face := slope_between(x, z, 250.0, 25.0, 40.0, 6.0)
+	check(not face.is_empty(), "a slip face near spawn")
+	if face.is_empty():
+		return
 	for i in RUNS:
 		var g := Player.ONE_G if i % 2 == 0 else World.LOW_GRAVITY
 		world.set_gravity(g)
-		var face := slope_between(x + i * 40.0, z, 60.0, 25.0, 40.0, 6.0)
-		if face.is_empty():
-			continue
 		var down: Vector2 = face.downhill
 		await place(face.x - down.x * 2.0, face.z - down.y * 2.0, down)
 		player.stamina = world.tuning.stamina_max

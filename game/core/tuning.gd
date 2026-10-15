@@ -27,15 +27,39 @@ static var _current: Tuning
 @export var near_radius: int = 2
 ## Chunks within this many of the player's are drawn.
 @export var view_radius: int = 8
-@export var mid_step: int = 4
+@export var mid_step: int = 2
 @export var far_step: int = 32
 @export var far_radius: float = 3000.0
 ## The far ring sits this far below the chunks it overlaps, so they win.
 @export var far_drop: float = 1.0
 @export var skirt_depth: float = 2.0
-@export var dune_amplitude: float = 6.0
-@export var dune_wavelength: float = 160.0
-@export var dune_octaves: int = 3
+## The dunes: ridges across the run's long-term wind, this far apart, m.
+@export var dune_spacing: float = 260.0
+## Their windward ramps where sand is plentiful, and their slip faces, degrees.
+## Slip faces sit under sand's 33° so wandering crests never tip one past it.
+@export var dune_windward_degrees: float = 14.0
+@export var dune_slip_degrees: float = 31.5
+## Crests are rounded over about this much height, m, feet a little less, so
+## 1 m samples don't facet them.
+@export var dune_rounding: float = 1.6
+## Crest lines wander this far, m, over this length along a crest. Sharper
+## wandering tips slip faces past 33°: look/dunes/measure checks.
+@export var dune_wander: float = 70.0
+@export var dune_wander_wavelength: float = 600.0
+## Crests rise and dip along their length over about this far, m.
+@export var dune_saddle_wavelength: float = 900.0
+## Patches about this big, m, grow a second set of crests: where one runs into
+## a ridge, the crest forks.
+@export var dune_fork_wavelength: float = 700.0
+## Sand supply: dune seas where it's high, bare flats where low, over about
+## this far, m. Sand gathers in the land's basins.
+@export var sand_wavelength: float = 2600.0
+## The land under the dunes: broad basins and rises, about 1° at most.
+@export var land_height: float = 12.0
+@export var land_wavelength: float = 7000.0
+## The sand's look: ripples on windward slopes, lighter slip faces, light on
+## crests. Off is the skeleton's flat colour.
+@export var sand_shader: bool = true
 @export var builds_in_flight: int = 8
 ## Main-thread time streaming may take per frame: attaching finished chunks,
 ## building their collision, retiring old ground, swapping the far ring. A

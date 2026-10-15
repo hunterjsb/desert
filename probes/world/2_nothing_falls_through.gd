@@ -1,6 +1,6 @@
 extends WorldProbe
 ## World & terrain probe 2: boxes dropped at random points in collision range all
-## come to rest on the sand.
+## come to rest on the sand, those on slip faces once they've slid down them.
 
 
 func run() -> void:
@@ -13,6 +13,11 @@ func run() -> void:
 	for i in 100:
 		boxes.append(drop_box(px + randf_range(-reach, reach) * 0.9, pz + randf_range(-reach, reach) * 0.9))
 	await physics_frames(240)
+	# Slip faces are steeper than the sand's grip: what lands there slides to the foot.
+	for i in 20:
+		if boxes.all(func(box: RigidBody3D) -> bool: return box.linear_velocity.length() <= 0.05):
+			break
+		await physics_frames(60)
 	var below := 0
 	var floating := 0
 	var moving := 0

@@ -5,11 +5,13 @@ extends LineProbe
 ## line at its breaking strength and the wind's own shove could; you never
 ## leave the sand, and the drag never judders back and forth. Held in your hand
 ## and tied at your waist, on the flattest sand near spawn and down the
-## steepest slope, its slip face. Holding it in your hand, you turn round and
+## steepest slope a skid stops on. Holding it in your hand, you turn round and
 ## back again and again, and the line is never yanked: turning swings your
 ## hand, never the line past its reach.
 
 const RISE := 1.5
+## The gust drags you about this far, m.
+const DRAG := 50
 const HOLD := 6.0
 ## Lifted off the sand at most this far, m; changing speed by at most this
 ## much a tick, m/s, and turning back against the drag at most this often.
@@ -36,9 +38,11 @@ func run() -> void:
 	speed_up(1)
 
 
-## Flattest or steepest within 120 m of spawn, with the way downhill:
-## [where, downhill, grade].
+## Flattest within 120 m of spawn, or steepest that a skid still stops on all
+## the way down a drag (a steeper one drags you faster than any line), with the
+## way downhill: [where, downhill, grade].
 func _site(steep: bool) -> Array:
+	var stands := world.tuning.slip_friction
 	var best := spot(0.0, 0.0)
 	var best_slope := INF if not steep else -INF
 	var downhill := Vector3.RIGHT
@@ -47,11 +51,23 @@ func _site(steep: bool) -> Array:
 			var at := spot(i * 4.0 - 120.0, j * 4.0 - 120.0)
 			var grade := Vector3(world.height_under(at + Vector3.RIGHT) - world.height_under(at - Vector3.RIGHT),
 				0.0, world.height_under(at + Vector3.BACK) - world.height_under(at - Vector3.BACK)) * 0.5
-			if (steep and grade.length() > best_slope) or (not steep and grade.length() < best_slope):
+			if (steep and grade.length() > best_slope and _under(at, -grade.normalized(), stands)) \
+					or (not steep and grade.length() < best_slope):
 				best_slope = grade.length()
 				best = at
 				downhill = -grade.normalized() if grade.length() > 1e-4 else Vector3.RIGHT
 	return [best, downhill, best_slope]
+
+
+## Whether the sand stays under `grade` for DRAG m along `way` from `at`.
+func _under(at: Vector3, way: Vector3, grade: float) -> bool:
+	for d in DRAG:
+		var p := at + way * d
+		var rise := Vector2(world.height_under(p + Vector3.RIGHT) - world.height_under(p - Vector3.RIGHT),
+			world.height_under(p + Vector3.BACK) - world.height_under(p - Vector3.BACK)) * 0.5
+		if rise.length() >= grade:
+			return false
+	return true
 
 
 func _dragged(where: String, site: Array, waist: bool) -> void:
