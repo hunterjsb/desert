@@ -158,8 +158,11 @@ All of these run without a window, use a fixed seed, and assert:
    an origin shift without moving relative to the ground or to each other.
 5. **No seams.** Neighbouring chunks agree exactly on their shared edge.
 6. **Deterministic.** The same seed and coordinates always give the same heights.
-7. **No hitches.** No single chunk build blocks the main thread for longer than a set
-   budget.
+7. **No hitches.** No frame spends longer than a set line of main-thread time on
+   streaming, from the first chunk on. Headless runs can't see the shader compile or
+   the GPU's side of an upload, so `look/stream` holds a real window to the line, by
+   hand. Headless, one frame over is allowed: a busy machine can pause the main
+   thread, while streaming that overruns does it at every chunk.
 8. **A sphere underfoot.** Dead reckoning behaves like the moon: a lap of the equator
    comes home, a lap at 60° is half as long, and walking over a pole comes down the
    other side.
