@@ -3,7 +3,8 @@ extends ShieldProbe
 ## wherever its generator is. Every reading at world places in and round a
 ## running shield is the same before and after the engine origin shifts under
 ## it. Move the generator and the bubble is there at once, before another tick
-## runs: shelter is asked of the distance, never told by an event.
+## runs: shelter is asked of the distance, never told by an event. Free it
+## mid-frame and the bubble is gone at once.
 
 const WIND := 15.0
 
@@ -49,6 +50,13 @@ func run() -> void:
 		"the bubble is at once where the generator went")
 	check(weather.shelter_at(from, &"storm") == 0.0 and weather.felt_storm(from) > 0.0 and world.wear.rate_at(from) > 0.0,
 		"and gone from where it was")
+
+	# Freed partway through a frame, it's gone at once, and nothing that asks
+	# after shelters, then or in the frames after, trips over it.
+	generator.free()
+	check(weather.shelter_at(to, &"storm") == 0.0 and world.wear.rate_at(to) > 0.0, "freed, its bubble is gone at once")
+	await get_tree().process_frame
+	await physics_frames(2)
 
 
 ## Everything that asks about shelter, at a world place.
