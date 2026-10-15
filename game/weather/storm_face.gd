@@ -57,8 +57,10 @@ func sigma() -> float:
 	return 3.0 / _tuning.storm_visibility
 
 
-## Pushes the map and the clock to the shader. Every frame, after the world moved.
-func sync(t: float) -> void:
+## Pushes the map, the clock and the shelters to the shader. Every frame,
+## after the world moved. holes are each shelter's centre and live radius,
+## glows how brightly its shell shows.
+func sync(t: float, holes: PackedVector4Array, glows: PackedFloat32Array) -> void:
 	var values := _map.uniforms(t)
 	for key: String in values:
 		material.set_shader_parameter(key, values[key])
@@ -66,6 +68,11 @@ func sync(t: float) -> void:
 	var wind := _field.prevailing_at(t)
 	material.set_shader_parameter("storm_wind_dir", wind.normalized())
 	material.set_shader_parameter("storm_gust_shift", gust_shift(t))
+	material.set_shader_parameter("shelter_count", holes.size())
+	material.set_shader_parameter("shelters", Shelter.padded(holes))
+	var glow := glows.duplicate()
+	glow.resize(Shelter.MAX)
+	material.set_shader_parameter("shell_glow", glow)
 
 
 ## How far the gusts inside a storm have run through the air: the outflow on
@@ -86,8 +93,14 @@ func edge_at(p: Vector3) -> float:
 	return front.x + _bulge(p, t)
 
 
-## How far into the dust a point is, 0 to 1, as the shader draws it.
+## How far into the dust a point is, 0 to 1, as the shader draws it: none
+## inside a shelter, whose sphere the dust never enters.
 func seen_at(p: Vector3) -> float:
+	return 0.0 if _world.weather.shelter_at(p) > 0.0 else open_at(p)
+
+
+## The same with every shelter down: the storm's own dust there.
+func open_at(p: Vector3) -> float:
 	return smoothstep(0.0, SKIN, edge_at(p)) if _map.ready else 0.0
 
 

@@ -189,8 +189,8 @@ float storm_bulge(vec3 p, vec2 lod, vec4 head, out float top) {
 
 // How far p sits inside its storm's dust, in metres, behind the billowed face
 // and under the roof (negative = out in clear air), and the dust there. f is
-// storm_front at p.
-float storm_density(vec3 p, vec3 f, vec2 lod, vec4 head, out float edge) {
+// storm_front at p; gusts is how strongly the parcels show, 0 to 1.
+float storm_density(vec3 p, vec3 f, vec2 lod, vec4 head, float gusts, out float edge) {
 	float top;
 	edge = f.x + storm_bulge(p, lod, head, top);
 	// A soft skin: the outer metres are thin enough to see into.
@@ -200,12 +200,12 @@ float storm_density(vec3 p, vec3 f, vec2 lod, vec4 head, out float edge) {
 	// over a storm strides by its height above the dust, not in small steps.
 	edge = min(edge, top + storm_roof_soft - p.y);
 	float sigma = storm_sigma * body * roof * storm_map_ready;
-	if (lod.y > 0.0 && edge > 10.0 && sigma > 0.0) {
+	if (gusts > 0.0 && edge > 10.0 && sigma > 0.0) {
 		// Gusts inside: parcels of thicker and thinner dust racing past.
 		vec3 q = vec3(p.x + storm_air.x - storm_gust_shift.x, p.y, p.z + storm_air.y - storm_gust_shift.y);
 		float g = texture(storm_noise, q * (1.0 / 140.0)).a * 0.6
 			+ texture(storm_noise, (q + vec3(0.0, storm_time * 2.0, 0.0)) * (1.0 / 38.0)).b * 0.4;
-		sigma *= mix(1.0, 0.25 + 1.5 * smoothstep(0.25, 0.75, g), lod.y * smoothstep(10.0, 40.0, edge));
+		sigma *= mix(1.0, 0.25 + 1.5 * smoothstep(0.25, 0.75, g), gusts * smoothstep(10.0, 40.0, edge));
 	}
 	return sigma;
 }
