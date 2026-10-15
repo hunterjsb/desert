@@ -121,7 +121,10 @@ Built after the skeleton loop works end to end, in roughly this order:
   seams stay exact. **Pulled forward** (Hunter, 2026-10-15): he wants the dunes bigger and
   steeper in places, as long as they look good. A dune look-test (`look/dunes`) runs
   ahead, as the storm wall's did: candidate shapes in the real world, judged by eye,
-  before any becomes the default.
+  before any becomes the default. **Hunter picked Ridges** (2026-10-15, from the
+  look-test's sheets): long ridges across the long-term wind, up to about 40 m where sand
+  is plentiful, shrinking into flat corridors where it's short, crests that wander, dip
+  and fork, gentle windward ramps and slip faces near 32°.
 - **Latitude and the poles** (decided). Toward the poles, storms weaken and the
   temperature swings get wider (see the vision). This system supplies latitude; Wind &
   storms and Survival read it. Fixed fields get sampled from the true point on the
