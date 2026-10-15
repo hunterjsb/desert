@@ -38,9 +38,14 @@ func work(seconds: float, t: float) -> void:
 		made_l += made - canister().fill(made)
 
 
+## What it's making now, L an hour: nothing dark, wrecked or full.
+func making() -> float:
+	return making_lph() if powered and _room() and not wrecked() else 0.0
+
+
 func stats() -> Dictionary:
 	var now := super()
-	now["making_lph"] = making_lph() if powered and _room() and not wrecked() else 0.0
+	now["making_lph"] = making()
 	return now
 
 

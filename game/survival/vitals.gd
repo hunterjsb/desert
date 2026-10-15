@@ -144,26 +144,18 @@ func _auto(kind: StringName, level: float, below: float) -> void:
 func _report() -> void:
 	var tuning := _player.world.tuning
 	var at := _player.global_position
-	var water := 0.0
-	var food := 0.0
-	for part in _player.suit.slots:
-		if part is Supply:
-			if part.kind == &"water":
-				water += part.amount
-			else:
-				food += part.amount
 	var making := 0.0
 	var made := 0.0
 	for node in _player.world.content.get_children():
 		if node is Condenser:
-			making += node.stats().making_lph
+			making += node.making()
 			made += node.made_l
 	Dev.put("survival/hp", "%.1f" % health)
 	Dev.put("survival/hunger", "%.1f" % hunger)
 	Dev.put("survival/thirst", "%.1f x%.2f" % [thirst, thirsting(at)])
 	Dev.put("survival/harm", "w%.2f s%.2f t%.2f/s" % [harms.wind, harms.storm, harms.temperature])
 	Dev.put("survival/taken", "w%.1f s%.1f t%.1f" % [taken.wind, taken.storm, taken.temperature])
-	Dev.put("survival/slots", "%.2fL %dkcal" % [water, food])
+	Dev.put("survival/slots", "%.2fL %dkcal" % [_player.suit.stock(&"water"), _player.suit.stock(&"food")])
 	Dev.put("survival/had", "%.2fL %dkcal" % [drunk, eaten])
 	Dev.put("survival/cond", "%.1fL/h %.2fL" % [making, made])
 	Dev.put("survival/suit", Suit.BUILT_IN if not dead else "dead")

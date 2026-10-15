@@ -15,7 +15,7 @@ const BUILT_IN := "air, radiation"
 const KIT: Array[StringName] = [&"canister", &"ration"]
 ## Looking this far across, px, picks the next slot.
 const PICK_PX := 80.0
-const SLOT := Vector2(84.0, 40.0)
+const SLOT := Vector2(100.0, 40.0)
 const GAP := 6.0
 
 ## What each slot holds, or null. Stowed things wait off the tree, as fitted
@@ -76,6 +76,15 @@ func supply(kind: StringName) -> Supply:
 		if it != null and it.kind == kind and it.amount > 0.0 and (best == null or it.amount < best.amount):
 			best = it
 	return best
+
+
+## All the water, L, or food, kcal, in your slots.
+func stock(kind: StringName) -> float:
+	var total := 0.0
+	for part in slots:
+		if part is Supply and part.kind == kind:
+			total += part.amount
+	return total
 
 
 ## A ration eaten to the end is gone, from a slot or your hands.
@@ -145,8 +154,8 @@ func _draw_view() -> void:
 	var corner := Vector2((size.x - row) * 0.5, size.y * 0.68)
 	for i in slots.size():
 		var box := Rect2(corner + Vector2(i * (SLOT.x + GAP), 0.0), SLOT)
-		_view.draw_rect(box, Color(0.0, 0.0, 0.0, 0.45))
-		_view.draw_rect(box, Color(1.0, 0.85, 0.55) if i == picked else Color(1.0, 1.0, 1.0, 0.3), false, 2.0 if i == picked else 1.0)
+		_view.draw_rect(box, Color(0.0, 0.0, 0.0, 0.6 if i == picked else 0.4))
+		_view.draw_rect(box, Color(1.0, 1.0, 1.0, 1.0 if i == picked else 0.25), false, 2.0 if i == picked else 1.0)
 		var part := slots[i]
 		if part != null:
 			_text(font, box.position + Vector2(5.0, 15.0), part.label, SLOT.x - 10.0)

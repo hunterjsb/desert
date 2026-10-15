@@ -31,18 +31,10 @@ func _process(_delta: float) -> void:
 
 func _draw_bars() -> void:
 	var player := vitals.get_parent() as Player
-	var water := 0.0
-	var food := 0.0
-	for part in player.suit.slots:
-		if part is Supply:
-			if part.kind == &"water":
-				water += part.amount
-			else:
-				food += part.amount
 	var rows := [
 		["health", vitals.health / Vitals.FULL, RED, ""],
-		["hunger", vitals.hunger / Vitals.FULL, AMBER, "%d kcal" % roundi(food)],
-		["thirst", vitals.thirst / Vitals.FULL, BLUE, "%.1f L" % water],
+		["hunger", vitals.hunger / Vitals.FULL, AMBER, "%d kcal" % roundi(player.suit.stock(&"food"))],
+		["thirst", vitals.thirst / Vitals.FULL, BLUE, "%.1f L" % player.suit.stock(&"water")],
 		["stamina", player.stamina / player.world.tuning.stamina_max, PALE, ""],
 	] if player.world != null else []
 	var font := ThemeDB.fallback_font
