@@ -27,11 +27,13 @@ const YANK := 1.5
 
 func run() -> void:
 	await load_lines()
+	speed_up(4)
 	var flat_at := _site(false)
 	var slope_at := _site(true)
 	for site: Array in [["flat sand", flat_at], ["the steepest slope", slope_at]]:
 		for waist in [false, true]:
 			await _dragged(site[0], site[1], waist)
+	speed_up(1)
 
 
 ## Flattest or steepest within 120 m of spawn, with the way downhill:

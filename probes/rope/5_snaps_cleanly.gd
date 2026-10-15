@@ -22,7 +22,7 @@ var _snapped_in := -1.0
 
 func run() -> void:
 	await load_ropes()
-	set_rate(60, 2)
+	set_rate(60, 4)
 	wind.override = func(_x: float, _z: float, _t: float) -> Vector2: return Vector2(_blowing, 0.0)
 	ropes.snapped.connect(func(_rope: Rope) -> void: _snapped_in = _blowing)
 	await _line_snaps()

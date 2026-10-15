@@ -240,8 +240,8 @@ func _facing(at: Vector3, out: Vector3) -> Transform3D:
 	return Transform3D(Basis.looking_at(-out, up), at)
 
 
-## One of its ends is gone with the land it lay on: so is the line. What's
-## left is a bare end.
+## Its rope is gone without parting (torn by a teleport), or an end is gone
+## with the land it lay on: so is the line. What's left is a bare end.
 func _lost() -> void:
 	if rope != null and _world.ropes.ropes.has(rope):
 		_world.ropes.untie(rope)
