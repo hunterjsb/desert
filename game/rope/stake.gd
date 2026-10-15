@@ -9,8 +9,9 @@ extends Device
 ## a little under it, so most of it is buried, m.
 const LENGTH := 0.8
 const DRIVEN_AT := -0.05
-## Its eye, on top, in its own frame: 0.4 m above the sand driven in.
-const RING := Vector3(0.0, 0.45, 0.0)
+## Its eye, on the spike's head in its own frame: 0.35 m above the sand driven
+## in. On the head, not past it, so a dragged stake can't dip its eye in the sand.
+const RING := Vector3(0.0, 0.4, 0.0)
 
 ## Newtons of sustained pull it holds.
 var holding := 2500.0

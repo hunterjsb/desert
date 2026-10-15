@@ -28,9 +28,12 @@ const SIDES := 6
 ## The ground under a point is read with its slope, and again only once the
 ## point has moved a hand's breadth; between reads it's the plane through the
 ## last read, true to well under a millimetre on any dune. A point further
-## than CLEAR above it can't reach it within a tick, so isn't read at all.
+## than CLEAR above it can't reach it within a tick, so isn't read at all,
+## until it has gone REACH from the last read: past that the plane can miss a
+## dune rising under it.
 const RESAMPLE := 0.1
 const CLEAR := 0.3
+const REACH := 1.0
 
 static var _meshes := {}
 static var _shader: Shader = preload("res://game/rope/rope.gdshader")
@@ -314,7 +317,7 @@ func _sand(first: int, stop: int) -> void:
 		var moved := at.distance_to(_sampled[i])
 		_near[i] = 0
 		if moved > RESAMPLE:
-			if is_finite(_ground[i]) and p.y > _ground[i] + _slope[i].length() * moved + CLEAR:
+			if moved < REACH and is_finite(_ground[i]) and p.y > _ground[i] + _slope[i].length() * moved + CLEAR:
 				continue
 			var x := p.x + ox
 			var z := p.z + oz

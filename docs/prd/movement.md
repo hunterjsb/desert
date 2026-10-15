@@ -35,6 +35,13 @@ outrun,** at least until the late-game haulers arrive.
 - **The body feels it:** sway as you walk, a spring in the step, a dip when you land,
   and a lean into strong wind. Sand Game's footstep, slide and impact recordings.
 
+**Built (2026-10-15, `game/player/feel.gd`, `probes/movement/`).** Space jumps, Ctrl
+crouches. Crouching at a run or heading downhill turns into a slide. Slides gain speed
+above about 6°, and sand steeper than 28° slides you whatever you do. The jump is 0.45 m
+at 1 g and 1.0 m at 0.45 g, because the push-off is the same on any moon. Crouching cuts
+your wind catch to 45%. Hauling hard against a line digs you in: up to 35% slower, and
+your stamina drains faster. The feel settings live in their own "Body feel" tuning group.
+
 ## Meeting a storm
 
 Storms are faster than anyone walks, and the wall gives you about 5 minutes. That's time
@@ -145,3 +152,6 @@ forgotten. That's fine, as long as it's never a surprise:
   The rest is tuning.
 - **Do tricks do anything,** or are they just for fun?
 - **How do the warnings show up?** Sound, the suit, the radio, a visible edge?
+- **Should the dunes have slip faces steep enough to slide you?** Today's steepest
+  ground is about 16°, so the passive slide (above 28°) never happens. The probes test it
+  on dunes raised three times higher.

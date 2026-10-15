@@ -9,6 +9,7 @@ const HELP := [
 	["G", "drop; empty-handed, let go of your waist"], ["Esc", "free the mouse"],
 	["F1", "these keys"], ["F2", "scenarios"], ["F3", "numbers"],
 	["F4", "fly: Space up, Ctrl down"], ["F5", "speed up time"], ["F6", "low gravity"],
+	["Space", "jump"], ["Ctrl", "crouch; at a run or downhill, slide"],
 ]
 
 const KEYS := {
@@ -23,6 +24,8 @@ const KEYS := {
 	"dev_fly": KEY_F4,
 	"fly_up": KEY_SPACE,
 	"fly_down": KEY_CTRL,
+	"jump": KEY_SPACE,
+	"crouch": KEY_CTRL,
 	"dev_time_warp": KEY_F5,
 	"dev_gravity": KEY_F6,
 	"hands_grab": KEY_E,
