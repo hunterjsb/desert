@@ -57,7 +57,7 @@ func run() -> void:
 	await simulate(0.4)
 	look(spot(-2.0, -7.5) + Vector3.UP * 1.65, spot(-2.0, -9.0))
 	await simulate(0.1)
-	check(hands.interact() and stake.driven and hands.held == null, "F drives it into the sand where you look")
+	check(hands.interact() and stake.driven and hands.held == null, "use drives it into the sand where you look")
 	look(spot(-1.2, -4.2) + Vector3.UP * 1.65, coil.coil.global_position)
 	await simulate(0.2)
 
