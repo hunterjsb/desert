@@ -10,6 +10,12 @@ practice: **steady state is a power budget that balances** through day, night an
 A camp that generates more than it draws, and stores enough to cover the gaps, is a
 camp you can walk away from.
 
+**In the world.** The colony bought its power gear, like everything else. Solar comes from a big
+commodity maker: everywhere, cheap and useless in storms, which is why it's the common starting
+power. Wind comes from a different maker: planted gear that's strong in storms and ties you
+down. Batteries are anonymous commodity infrastructure, like screws or rope, and carry no
+maker's mark. See [the lore research](../lore-research.md).
+
 ## What the player experiences
 
 - **Every device has its own battery,** and you can see its charge on the device itself.

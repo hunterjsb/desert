@@ -5,6 +5,20 @@
 what real system, body and failing shield would produce the feel in
 [the vision](vision.md), [the moon](the-moon.md) and the PRDs.*
 
+> **Superseded by the lore session.** [The 2026-10-14 lore session](lore-session-2026-10-14.md)
+> drops the sky shield, and with it the story told here about the air. The air is the
+> moon's own: outgassed during an eccentric-orbit phase, then lost to a very slow escape as
+> tidal heating fades. So these no longer hold: the shield-era air and the "kind of nice"
+> cities (§1, §2's growth arc), the second tenant on the far side (§2), the dead garden as
+> the dust source and the poles holding the missing air (§3), the shield (§5), the
+> air going back into the poles (§6), and today's air of 0.15-0.2 bar (§1, §6), now about
+> 0.3 bar or more. §2's "mild tidal heating" describes the calm state before the sister
+> moon is lost. What stands: the system and route reasoning, the radiation numbers, the
+> gravity and pressure window (§3, which is the thin-air table the session points to) and
+> the candidate bodies (§4). Its escape figures stand too, because the session's loss is
+> geological, not 3,000 years. The text below is left as written, and the notes mark the
+> spots. [The lore research](lore-research.md) has the current picture.
+
 ## 1. The short answer
 
 **Leaning: a moon between Mars-sized and a bit bigger, at 0.4–0.5 g.** It orbits a giant
@@ -86,6 +100,10 @@ and water locked in the polar caps: barren, sterile, a blank slate.
 
 ### The growth arc
 
+> **Superseded by the lore session** from "The shield" row down, and for the two paragraphs
+> after the table. The outpost, refinery and port town stand as the hub's early growth, but
+> with the moon's own air at the baseline and no shield to follow.
+
 | Stage | What's built | The air |
 |---|---|---|
 | Outpost | An orbital fuel depot and an ice mine | Natural: ~0.1 bar of nitrogen, cold, UV straight to the ground |
@@ -109,6 +127,10 @@ caps breathed out, and the refinery topped up the nitrogen. That's also exactly 
 unwinds.
 
 ### The sealed garden: a second company
+
+> **Superseded by the lore session.** Its entity stack has no biotech company, so the
+> far-side tenant is dropped, and ruin type follows the terrain rather than the side. The
+> agriculture company appears only in the session's AI-provenance example.
 
 Hunter thinks both could be cool, and longitude makes room for both:
 - **The port takes the near side,** where the giant hangs permanently overhead for
@@ -237,6 +259,10 @@ would take ~10,000 tonnes a second.
 
 ## 5. The shield: what it did and how it fails
 
+> **Superseded by the lore session.** The agreed arc has no sky shield, so the air is not
+> frozen back onto the poles or rusted into the sand. It is lost to a slow escape as tidal
+> heating fades. The numbers below remain valid as physics.
+
 | Candidate job | Honest at these sizes? |
 |---|---|
 | **(a) Held a thicker atmosphere that relaxes back** | **Yes, reframed.** The extra air doesn't leak to space; it **freezes back onto the poles.** Mars's surface pressure swings by about a quarter each year as CO₂ freezes onto its caps and sublimes back, and its buried CO₂ ice could roughly double its air (Phillips 2011; Bierson 2016). Condensation is fast (decades), so **the shield's decay sets the pace**: emitters fail over centuries, and the air follows. Nitrogen doesn't freeze, so it's the floor. |
@@ -250,6 +276,10 @@ shield is the sky's job at camp scale. **The fading is (a) plus (c):** the air g
 into the poles and the sand.
 
 ## 6. The leaning and Hunter's decisions
+
+> **Superseded by the lore session** on two points. Decision 2 (the air goes back into the
+> poles) is replaced by the slow escape, and "today's air: 0.15-0.2 bar" by about 0.3 bar
+> or more. Gravity stays Hunter's call.
 
 **Leaning:**
 - **A moon of 0.4–0.5 g** (radius ~3,500–3,900 km), **around a ~4–6 Jupiter-mass
@@ -269,6 +299,11 @@ It's the middle of the window. Walking stays a walk, dust walls come in at about
    frozen.
 
 ## 7. What's now wrong in the-moon.md
+
+> **Superseded by the lore session** in part. The first bullet's "it isn't leaking to
+> space" no longer holds: under the session it does leak, very slowly and without any
+> shield. The third bullet's 0.15-0.2 bar is now about 0.3 bar or more. [The
+> moon](the-moon.md) has been updated to match.
 
 - **"Still slowly leaking away since their magnetic shield failed."** It isn't leaking
   to space. It's freezing onto the poles and rusting into the sand, and the shield was a

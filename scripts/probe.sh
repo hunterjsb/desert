@@ -8,9 +8,12 @@
 #
 #   scripts/probe.sh                  every probe except the selftest
 #   scripts/probe.sh probes/a/b.gd    just the named probes
+#   scripts/probe.sh probes/a         every probe in a folder
 #   scripts/probe.sh selftest         proves the runner itself can fail
 #
 # GODOT picks the binary (default: godot on PATH). PROBE_TIMEOUT is in seconds.
+# PROBE_EXCEPT lists folders to leave out of a full run, so CI can split the
+# suite into parallel jobs and still catch every folder nobody listed.
 set -uo pipefail
 cd "$(dirname "$0")/.." || exit 2
 
@@ -78,11 +81,27 @@ if [[ ${1:-} == selftest ]]; then
 	exit "$ok"
 fi
 
+every_probe() {
+	find "$@" -name '*.gd' -not -path 'probes/lib/*' -not -path 'probes/selftest/*' | sort
+}
+
+probes=()
 if (($# > 0)); then
-	probes=("$@")
+	for arg in "$@"; do
+		if [[ -d $arg ]]; then
+			mapfile -t -O "${#probes[@]}" probes < <(every_probe "$arg")
+		else
+			probes+=("$arg")
+		fi
+	done
 else
-	mapfile -t probes < <(find probes -name '*.gd' \
-		-not -path 'probes/lib/*' -not -path 'probes/selftest/*' | sort)
+	mapfile -t probes < <(every_probe probes)
+	for skip in ${PROBE_EXCEPT:-}; do
+		mapfile -t probes < <(printf '%s\n' "${probes[@]}" | grep -v "^${skip%/}/" || true)
+	done
+	if ((${#probes[@]} == 1)) && [[ -z ${probes[0]} ]]; then
+		probes=()
+	fi
 fi
 
 failed=0

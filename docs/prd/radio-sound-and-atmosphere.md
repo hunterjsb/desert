@@ -10,6 +10,12 @@ building, a rope taking load, a shield running low. Atmosphere is the feel of th
 moods. Hunter has a vision for the look and feel that gets built in as we go, so this
 PRD sets the systems and stays loose on the art.
 
+**In the world.** The radio hears what survived: StarCom stations, beacons left running, and
+local models that drifted. The far end of the lane, if it is ever heard at all, is one very
+rare, coherent, unanswering frequency, unlike the drifting oracles, and its purpose is never
+stated or confirmed in-game (a standing rule from the lore session). See [the lore
+research](../lore-research.md).
+
 ## The radio
 
 A device you carry or mount (Devices & mods). **Its reach is huge,** with the exact
@@ -23,6 +29,12 @@ range still to tune. Better radios and antenna mods hear more clearly. Tune it, 
 - **Loot beacons.** Automated signals that give a bearing to something worth finding,
   like "a signal, north-north-east."
 - **Lore.** Garbled fragments that hint and never state.
+- **Squatting oracles.** Degraded local models that survived, such as a weather
+  forecaster or an agricultural system, have taken over dead StarCom stations and
+  broadcast strange, fragmentary material. Taken as scripture it's noise. Decoded, it's
+  real information, like planting timing or storm precursors, so **decoding the signal is
+  a skill.** Rule 1 still holds: what decodes is true to the real systems. See
+  [the lore session](../lore-session-2026-10-14.md).
 - **Maybe a voice.** One of the hints that someone might still be out there (Salvage &
   ruins). It's never confirmed.
 
@@ -87,7 +99,7 @@ Everything that matters can be heard, so you can read the world by ear:
 ## Full version
 
 - **More music channels,** with more tracks from Hunter.
-- **Lore channels, and the maybe-voice.**
+- **Lore channels, the squatting oracles and signal decoding, and the maybe-voice.**
 - **Frequencies as finds,** and antenna mods.
 - **Distorted tracks in storms.**
 - **The storm's approach staged in sound,** to match the wall.

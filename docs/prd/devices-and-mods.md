@@ -10,6 +10,12 @@ a charged one is how you progress, how you adapt the camp, and how you get out o
 pinch. So fitting and removing parts has to feel great: intuitive, reactive and
 satisfying, every single time.
 
+**In the world.** Fitting is what the colony could always do, and making is what it never
+could: the moon had no fabs, so every part came from somewhere else. Each part carries its own
+maker's stamp, separate from the mark of whoever assembled the device around it. A shield
+housing might name the contractor while its core names a maker most settlers never heard of.
+Batteries are the exception and carry no stamp. See [the lore research](../lore-research.md).
+
 ## What the player experiences
 
 - **Magnetic snapping.** Bring a part you're holding near a device. As you approach a

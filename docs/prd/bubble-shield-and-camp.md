@@ -10,6 +10,13 @@ fulcrum the camp balances on. You can drag a lot of stuff around, but whatever i
 outside the bubble when a storm hits gets destroyed. So your camp is as big as the best
 shield you can move through a storm.
 
+**In the world.** Shield generators are ordinary commercial goods from a main maker, found all
+over the moon, and the one you start with is its common model. A rival maker sells a different
+design philosophy at the same tier, and a couple of small makers sell niche builds. The rarest
+shield is military: government-issue, off the supply chain, carried here by a deserter, and it
+blocks heat and dust together, which commercial shields can't. Maker names are placeholders,
+and none of this is final canon; see [the lore research](../lore-research.md).
+
 ## What the player experiences
 
 - **The shield is a small, light generator.** You carry it or set it down, switch it
