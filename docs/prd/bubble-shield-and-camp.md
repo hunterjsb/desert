@@ -129,6 +129,27 @@ The shield decides how much of it is safe. All three grow with upgrades.
   the bubble.
 - The probes below, all passing.
 
+**As built in the skeleton (2026-10-15):**
+- **The generator** is a catalog device you can carry: 6 kg, 10 kg with its battery,
+  with a battery slot, a ring mount, a bottom mount and a port, so it can be tied,
+  floated, cabled and charged like any device. F on it, or in your hands, switches it;
+  with nothing to run on it only fizzles. Its light shows its charge.
+- **Draw by state:** off it draws nothing; running it sips 10 W in the clear and draws
+  200 W holding back a full storm, between the two in a lesser one, so a base battery
+  lasts thirty minutes in a storm. A wider bubble costs more by its shell's area.
+- **The warning** comes over the last two minutes at what it's drawing: the hum sags
+  and the shell flickers, more and more often. Flat, it collapses over 0.6 s and every
+  consumer agrees at every moment, since they all read the same shrinking radius. It
+  blooms again by itself once its pool has power, if it's still switched on.
+- **Protection is a share per harm,** 0 to 1, carried by each bubble; the levels
+  (immune, strong, weak) are numbers on it. Only a bubble that stops the storm outright
+  carves the dust out of the storm pass.
+- **Wear:** one durability per device, until parts wear on their own. A full storm
+  wrecks a device in 10 minutes; wind past 20 m/s wears it too (10 m/s past, 30
+  minutes). The turbine, built to stand out in storms, is four times tougher. Wrecked,
+  a device is dark for good and rusts over. Your own harm stays the storm's alone until
+  Survival brings the three harms.
+
 ## Full version
 
 - **Shield types:** thermal shields that hold back heat and cold and open the poles,

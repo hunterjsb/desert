@@ -41,6 +41,11 @@ var _light: OmniLight3D
 var _band: StandardMaterial3D
 
 
+func _init() -> void:
+	# Small and light: it goes in your hands, and its bubble with it.
+	carryable = true
+
+
 func _ready() -> void:
 	super()
 	add_child(shelter)
@@ -77,6 +82,11 @@ func _ready() -> void:
 func _exit_tree() -> void:
 	# A looping stream still playing at quit holds its resources past exit.
 	hum.stop()
+
+
+## F in your hands switches it just the same.
+func use(by: Player, _at: Vector3) -> bool:
+	return interact(by)
 
 
 ## F: switches it. With nothing to run on it won't start, only fizzle, and the

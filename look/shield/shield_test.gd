@@ -1,11 +1,12 @@
 extends Node
 ## Look-test: the real shield generator and a camp of catalog devices in the
 ## game's own storms on seed 1234. Sit inside while a wall rolls over and
-## engulfs it, walk out into the storm and look back, switch it off and on for
-## the bloom. The storm pass, its CPU twin, the particles and the sound all
-## carve the bubble out through Weather's shelters; nothing here draws dust of
-## its own. The generator runs on its battery like anywhere else, so a long
-## stay deep in a storm runs it flat: C brings a fresh one.
+## engulfs it, walk out into the storm and look back, switch it off and on
+## with F for the bloom, or carry it. The storm pass, its CPU twin, the
+## particles and the sound all carve the bubble out through Weather's
+## shelters; nothing here draws dust of its own. The generator runs on its
+## battery like anywhere else, so a long stay deep in a storm runs it flat: C
+## brings a fresh one.
 ##   godot --path . res://look/shield/shield.tscn
 ##   godot --path . --disable-vsync res://look/shield/shield.tscn -- --capture <dir> [--only in_deep,bloom_0.25s]
 
@@ -15,7 +16,7 @@ const WARPS := {KEY_1: 1.0, KEY_2: 5.0, KEY_3: 20.0, KEY_4: 60.0}
 ## Keys to scenarios: a front at a distance (contact is 0), or deep inside.
 const JUMPS := {KEY_5: ["front", 300.0], KEY_6: ["front", 50.0], KEY_7: ["front", 0.0], KEY_8: ["deep", 0.0]}
 const KEYS := [
-	["F", "shield on and off (stand-in)"], ["C", "the camp to you, fresh battery"],
+	["C", "the camp to you, fresh battery"],
 	["1-4", "time x1, x5, x20, x60"], ["Space", "pause"], ["5-8", "a front at 300 m, 50 m, contact, deep"],
 	["H", "hide the readout"],
 ]
@@ -94,11 +95,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	if key == null or not key.pressed or key.echo or $Scenarios.visible or not is_instance_valid(generator):
 		return
 	var code := key.physical_keycode
-	if code == KEY_F:
-		# Dev stand-in until Stage 5's hands call interact() on F: delete with
-		# that merge. Hands that take F first leave it unhandled here.
-		generator.interact(world.player)
-	elif code == KEY_C:
+	if code == KEY_C:
 		camp_to_player()
 	elif WARPS.has(code):
 		world.time_warp = WARPS[code]

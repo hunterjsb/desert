@@ -126,12 +126,6 @@ func set_powered(on: bool) -> void:
 	_recompute()
 
 
-## F: what it does when you interact with it or use it in your hand. Says
-## whether it did anything; most devices do nothing.
-func interact(by: Player) -> bool:
-	return false
-
-
 func wrecked() -> bool:
 	return durability <= 0.0
 

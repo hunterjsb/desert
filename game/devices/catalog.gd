@@ -166,6 +166,8 @@ static func stake() -> Stake:
 	made.label = "Stake"
 	made.frame_mass = 2.0
 	made.carryable = true
+	# A spike of iron: nothing in it the weather wears out.
+	made.frame_stats = {"toughness": INF}
 	made.holding = Tuning.current().stake_holding
 	_add_box(made, Vector3(0.06, Stake.LENGTH, 0.06), Vector3.ZERO, Color(0.3, 0.27, 0.24))
 	_add_tie(made, Stake.RING, Vector3.UP)
