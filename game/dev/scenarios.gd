@@ -29,8 +29,9 @@ const LIST: Array[Dictionary] = [
 ## crate frame and planter, and parts for every kind of socket on them.
 const KIT_DEVICES := [[&"crate_frame", -1.0, 3.0], [&"planter", 1.2, 3.2], [&"charger", -2.4, 1.5],
 	[&"turbine", 2.6, 1.6]]
-## Cables dropped with the kit, right and ahead, and how many.
+## Where the kit's common cable and strong cable land, right and ahead.
 const KIT_CABLE := [0.0, 2.3]
+const KIT_STRONG_CABLE := [0.0, 1.6]
 const KIT_PARTS := [
 	[&"battery", -1.6, 1.6], [&"big_battery", -1.2, 1.7], [&"hook", -0.8, 1.6], [&"hook", -0.55, 1.7],
 	[&"lamp", -0.25, 1.6], [&"seedling", 0.1, 1.7], [&"seedling", 0.35, 1.6], [&"seedling", 0.6, 1.7],
@@ -160,6 +161,11 @@ static func kit(world: World) -> Array[Node3D]:
 	var cable := Catalog.cable(world, at)
 	dropped.append(cable)
 	dropped.append_array(cable.plugs)
+	at = player.global_position + player.global_basis.x * KIT_STRONG_CABLE[0] - player.global_basis.z * KIT_STRONG_CABLE[1]
+	at.y = world.height_under(at)
+	var strong := Catalog.cable(world, at, true)
+	dropped.append(strong)
+	dropped.append_array(strong.plugs)
 	return dropped
 
 

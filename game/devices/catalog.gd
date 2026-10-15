@@ -36,6 +36,8 @@ const PARTS := {
 		"color": Color(0.2, 0.55, 0.15), "stats": {"plants": 1}},
 	&"plug": {"kind": &"port", "label": "Cable plug", "mass": 0.2, "size": Vector3(0.06, 0.06, 0.09),
 		"color": Color(1.0, 0.5, 0.1), "stats": {}},
+	&"strong_plug": {"kind": &"port", "label": "Strong cable plug", "mass": 0.3, "size": Vector3(0.07, 0.07, 0.1),
+		"color": Color(0.7, 0.15, 0.1), "stats": {}},
 }
 
 ## Frames: their box, weight, wind catch and sockets as [kind, position, outward].
@@ -107,15 +109,18 @@ static func part(id: StringName) -> Part:
 
 
 ## A cable and its two plugs, dropped together at a place; both plugs go loose
-## in the world as parts and the cable draws the wire between them.
-static func cable(world: World, at: Vector3) -> Cable:
-	var made := Cable.new()
+## in the world as parts and the cable draws the wire between them. A strong
+## cable is also a rope, holding what it's plugged into.
+static func cable(world: World, at: Vector3, strong := false) -> Cable:
+	var made: Cable = StrongCable.new() if strong else Cable.new()
 	world.content.add_child(made)
 	for side in [-0.2, 0.2]:
-		var plug := part(&"plug")
+		var plug := part(&"strong_plug" if strong else &"plug")
 		world.content.add_child(plug)
 		plug.global_position = at + Vector3(side, 0.05, 0.0)
 		made.plugs.append(plug)
+	if strong:
+		(made as StrongCable).bind(world)
 	return made
 
 

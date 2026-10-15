@@ -8,7 +8,7 @@ extends Node3D
 
 signal snapped(rope: Rope)
 
-const Stake := preload("res://look/rope/stake.gd")
+const Stake := preload("res://game/rope/stake.gd")
 
 ## Passes over every rope per tick, so lines sharing a load agree on it.
 const ITERATIONS := 2
@@ -59,6 +59,9 @@ func _ready() -> void:
 
 func setup(on: World) -> void:
 	world = on
+	var groan: AudioStreamOggVorbis = preload("res://assets/audio/creak.ogg")
+	groan.loop = true
+	creak = groan
 	world.origin_shifted.connect(_on_origin_shifted)
 	hand = RopeEnd.make(world.player, Vector3(0.3, 1.1, -0.35), false)
 	waist = RopeEnd.make(world.player, Vector3(0.0, 0.95, 0.0), false)
@@ -147,7 +150,13 @@ func _solve(h: float) -> void:
 	_pulls.clear()
 	var live: Array[Rope] = []
 	for rope: Rope in ropes.duplicate():
-		var lost := _lost_end(rope)
+		if not is_instance_valid(rope.a) or not is_instance_valid(rope.b):
+			# What it was tied to is gone altogether: so is the rope.
+			_drop(rope)
+			strands.erase(rope.strand)
+			rope.strand.queue_free()
+			continue
+		var lost: RopeEnd = _lost_end(rope)
 		if lost != null:
 			let_go(rope, lost)
 			continue
@@ -322,7 +331,7 @@ func _lost_end(rope: Rope) -> RopeEnd:
 	return null
 
 
-func _attached(end: Node3D) -> bool:
+func _attached(end: Object) -> bool:
 	return is_instance_valid(end) and end.is_inside_tree() and is_instance_valid((end as RopeEnd).holder)
 
 

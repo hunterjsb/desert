@@ -7,7 +7,7 @@ extends Node
 ##   godot --headless --path . res://look/rope/rope.tscn -- --bench
 
 const Props := preload("res://look/rope/props.gd")
-const Stake := preload("res://look/rope/stake.gd")
+const Stake := preload("res://game/rope/stake.gd")
 const WORLD_SCENE := preload("res://game/world/world.tscn")
 const SEED := 1234
 ## A waist tie takes this long to undo, s. The PRD leaves it open; feel it here.
@@ -53,12 +53,7 @@ func _ready() -> void:
 	wind = RopeWind.new(world.run_seed, world.tuning)
 	world.weather.field = wind
 	wind.override = _blow
-	ropes = Ropes.new()
-	var creak: AudioStreamOggVorbis = preload("res://look/rope/creak.ogg")
-	creak.loop = true
-	ropes.creak = creak
-	add_child(ropes)
-	ropes.setup(world)
+	ropes = world.ropes
 	ropes.snapped.connect(func(rope: Rope) -> void: _gone[rope] = "SNAPPED")
 	Dev.set_scene_keys(KEYS)
 	var args := OS.get_cmdline_user_args()

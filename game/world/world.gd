@@ -30,6 +30,7 @@ var gravity: float
 @onready var player: Player = $Content/Player
 @onready var weather: Weather = $Weather
 @onready var power: Power = $Power
+@onready var ropes: Ropes = $Ropes
 
 var _last_x: float
 var _last_z: float
@@ -47,6 +48,7 @@ func _ready() -> void:
 	terrain.setup(self)
 	weather.setup(self)
 	power.setup(self)
+	ropes.setup(self)
 	_set_scene()
 	var half := tuning.chunk_size * 0.5
 	player.global_position = Vector3(half, shape.height_at(half, half) + 0.1, half)
@@ -207,12 +209,15 @@ func _hold_above_sand(body: RigidBody3D) -> void:
 	var deepest := 0.0
 	for child in body.get_children():
 		var shape := child as CollisionShape3D
-		if shape == null or not shape.shape is BoxShape3D:
+		if shape == null or shape.shape == null:
 			continue
-		var half: Vector3 = (shape.shape as BoxShape3D).size * 0.5
+		# Any shape, by its bounds: a stake dragged by its line is a cylinder.
+		if not shape.has_meta(&"sand_box"):
+			shape.set_meta(&"sand_box", shape.shape.get_debug_mesh().get_aabb())
+		var box: AABB = shape.get_meta(&"sand_box")
 		var to_world := body.global_transform * shape.transform
 		for i in 8:
-			var corner := to_world * Vector3(half.x * (1 - (i & 1) * 2), half.y * (1 - (i & 2)), half.z * (1 - (i & 4) / 2))
+			var corner := to_world * box.get_endpoint(i)
 			deepest = maxf(deepest, height_under(corner) - corner.y)
 	if deepest > SAND_SLOP:
 		body.global_position.y += deepest - SAND_SLOP * 0.5

@@ -87,8 +87,8 @@ func _kit_lands_near_you() -> void:
 		parts += 1 if body is Part else 0
 		if off.dot(ahead) < 1.0 or Vector2(off.x, off.z).length() > 5.0 or c < -0.05 or c > 0.6:
 			strays.append("%s %.1fm %.2fm up" % [body.get("label"), Vector2(off.x, off.z).length(), c])
-	# Every part, plus the cable's two plugs.
-	check(devices == Scenarios.KIT_DEVICES.size() and parts == Scenarios.KIT_PARTS.size() + 2,
+	# Every part, plus both cables' plugs.
+	check(devices == Scenarios.KIT_DEVICES.size() and parts == Scenarios.KIT_PARTS.size() + 4,
 		"kit: every device and part dropped")
 	check(strays.is_empty(), "kit: all of it on the sand within 5 m in front of you (%s)" % ", ".join(strays))
 	for body in kit:

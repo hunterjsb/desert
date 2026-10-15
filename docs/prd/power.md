@@ -109,6 +109,12 @@ the felt-weather rule.
   time, so F5 charges faster and 30, 60 or 120 frames a second give the same charge to
   the bit.
 - **The turbine** makes up to 200 W in a gale and nothing while it's being moved.
+- **Two kinds of cable** (decided 2026-10-14, from the Stage 4 playtest). **Common
+  wiring** pops a plug when pulled too hard, and Hunter likes that: a floating planter
+  blown off a turbine unplugs itself. A **strong cable** is also a rope, so it holds
+  what it's plugged into and powers it. It never pops; too much load snaps it at
+  4,000 N. While you hold one of its plugs, the rope pulls on you, not on the plug in
+  your grip.
 
 ## Full version
 
@@ -137,6 +143,10 @@ the felt-weather rule.
 5. **Clean swaps.** A swapped battery takes effect immediately, and no charge is counted
    twice.
 6. **Thirty minutes.** A full base shield in a storm lasts about 30 minutes.
+7. **A strong cable holds.** In a 20 m/s wind, a floating planter on a strong cable
+   to a staked turbine stays on the end of it, joined and powered. On a common cable
+   the same rig pops a plug and blows away. Holding a strong cable's plug, the
+   planter pulls on you.
 
 ## Out of scope
 
@@ -145,7 +155,7 @@ the felt-weather rule.
 ## Open questions
 
 - **Are wires their own item, or can a rope carry power** (conductive cable as an
-  upgrade), so tying things together and wiring them up are the same act? The skeleton
-  makes cables their own item, with plugs that snap like rope ends will.
+  upgrade), so tying things together and wiring them up are the same act? **Answered:
+  both.** Common wiring is its own item; the strong cable is a rope that carries power.
 - **What other sources are there?** Salvaged colonial power cells, for example, since
   the best tech is the oldest.

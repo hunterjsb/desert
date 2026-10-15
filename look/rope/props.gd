@@ -4,7 +4,7 @@ extends RefCounted
 ## are engine coordinates; each sits on or above the sand under it.
 
 const Floater := preload("res://look/rope/floater.gd")
-const Stake := preload("res://look/rope/stake.gd")
+const Stake := preload("res://game/rope/stake.gd")
 
 const FLOATER_SIZE := Vector3(1.2, 0.8, 1.2)
 const FLOATER_MASS := 20.0

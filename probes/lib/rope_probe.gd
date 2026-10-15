@@ -17,9 +17,7 @@ func load_ropes(run_seed := 1234) -> void:
 	wind = RopeWind.new(world.run_seed, world.tuning)
 	world.weather.field = wind
 	blow(Vector2.ZERO)
-	ropes = Ropes.new()
-	add_child(ropes)
-	ropes.setup(world)
+	ropes = world.ropes
 	# You stay out of it unless a probe ties you in.
 	world.player.set_physics_process(false)
 

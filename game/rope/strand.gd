@@ -23,7 +23,7 @@ const STIR := 0.35
 const SIDES := 6
 
 static var _meshes := {}
-static var _shader: Shader = preload("res://look/rope/rope.gdshader")
+static var _shader: Shader = preload("res://game/rope/rope.gdshader")
 
 var world: World
 var length: float

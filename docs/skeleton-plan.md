@@ -128,6 +128,8 @@ reads as rope except that light lines look as straight as loaded ones (see the P
 open questions). Hunter's verdict: "SO GOOD", no bugs found. His one change: stakes
 are their own item, and rope ends snap on and off with the devices' snap system, so
 any loose end can be picked up. That makes Stage 5 lean on Stage 3's snapping.
+**The rope core is in the game** (2026-10-14, pulled in for Stage 4's strong cable).
+The world owns the ropes and the look-test uses them; Stage 5 builds the rest on top.
 
 **Builds:**
 - The rope constraint and the drawn rope, fixed attachment points (hooks), breaking
