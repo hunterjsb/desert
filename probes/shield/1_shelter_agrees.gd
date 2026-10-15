@@ -28,7 +28,7 @@ func run() -> void:
 	var cell := Catalog.part(&"battery")
 	world.content.add_child(cell)
 	generator.fit(cell, generator.sockets().filter(func(s: Socket) -> bool: return s.kind == &"battery")[0])
-	check(generator.interact(world.player), "F switches the shield on")
+	check(generator.interact(world.player), "use switches the shield on")
 	await physics_frames(roundi((Tuning.current().shield_bloom_seconds + 0.1) * Engine.physics_ticks_per_second))
 	var shelter := generator.shelter
 	check(generator.running() and shelter.radius == generator.size, "the bubble bloomed open")

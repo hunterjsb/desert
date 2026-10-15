@@ -325,8 +325,20 @@ func _look() -> void:
 		look_part = body
 	elif body is Device:
 		look_device = body
-		look_socket = look_device.socket_of(
-			look_device.shape_owner_get_owner(look_device.shape_find_owner(hit.shape)) as Node)
+		look_socket = _outermost(look_device.socket_of(
+			look_device.shape_owner_get_owner(look_device.shape_find_owner(hit.shape)) as Node))
+
+
+## Last on, first off: aimed at a hook with a line tied to it, it's the line's
+## end you take, and the hook once it's bare.
+static func _outermost(socket: Socket) -> Socket:
+	if socket == null or socket.part == null:
+		return socket
+	for node in socket.fitted:
+		var added := node as Socket
+		if added != null and added.part != null:
+			return _outermost(added)
+	return socket
 
 
 ## Aiming at the sand near a small loose thing takes it, so a battery lying
