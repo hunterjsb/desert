@@ -3,7 +3,10 @@ extends CanvasLayer
 ## tenth, the first letter of its key. Launching with `-- --scenario=<key>`
 ## starts in one directly.
 
-@onready var _world: World = $"../World"
+## Whichever world is running: a new run brings a new one.
+var _world: World:
+	get:
+		return get_node("../World")
 var _list: Label
 ## The test kit last dropped, cleared when another scenario starts.
 var _kit: Array[Node3D] = []
@@ -44,11 +47,12 @@ func apply(scenario: Dictionary) -> void:
 		if is_instance_valid(body):
 			body.queue_free()
 	_kit.clear()
-	if scenario.kind == "kit" or scenario.get("camp", false):
+	if scenario.kind == "kit" or scenario.get("camp", false) or scenario.get("survive", false):
 		# Bodies dropped before the sand under them has collision would be frozen or forgotten.
 		while not _world.terrain.is_settled_around(place.x, place.z):
 			await get_tree().physics_frame
-		_kit = Scenarios.kit(_world) if scenario.kind == "kit" else Scenarios.camp(_world)
+		_kit = Scenarios.kit(_world) if scenario.kind == "kit" \
+			else (Scenarios.camp(_world) if scenario.get("camp", false) else Scenarios.survive(_world))
 
 
 func _hotkey(index: int) -> String:

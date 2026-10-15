@@ -13,7 +13,8 @@ const TIME_WARPS: Array[float] = [1.0, 10.0, 60.0]
 const LOW_GRAVITY := 4.4
 
 var tuning := Tuning.current()
-var run_seed: int
+## The tuning's, or a fresh one each run when it's 0; a new run sets its own.
+var run_seed := 0
 var shape: TerrainShape
 var moon: MoonPosition
 ## The chunk the engine origin sits on. Engine position + this = world position.
@@ -41,7 +42,8 @@ func _ready() -> void:
 	# Last in the tick: a shift or a moon step sees this frame's movement, and
 	# the clock moves on only after everything has felt this moment's weather.
 	process_physics_priority = 200
-	run_seed = tuning.run_seed if tuning.run_seed != 0 else randi()
+	if run_seed == 0:
+		run_seed = tuning.run_seed if tuning.run_seed != 0 else randi()
 	shape = TerrainShape.new(run_seed, tuning)
 	moon = MoonPosition.new(tuning)
 	player.world = self

@@ -14,6 +14,7 @@ const KINDS := {
 	&"plant_large": Color(0.35, 0.65, 0.2),
 	&"port": Color(1.0, 0.5, 0.1),
 	&"tie": Color(0.42, 0.31, 0.2),
+	&"water": Color(0.3, 0.6, 1.0),
 }
 
 ## Parts: the socket kind they fit, weight, size (z is how far they stand out
@@ -45,6 +46,11 @@ const PARTS := {
 	# Nothing takes a coil: picked up, it gives you its first end.
 	&"coil": {"kind": &"coil", "label": "Rope coil", "mass": 1.5, "size": Vector3(0.34, 0.34, 0.07),
 		"color": Color(0.42, 0.31, 0.2), "stats": {}},
+	# Sealed water, and sealed food, which no socket takes: they live in your slots.
+	&"canister": {"kind": &"water", "label": "Water canister", "mass": 2.4, "size": Vector3(0.12, 0.12, 0.26),
+		"color": Color(0.55, 0.62, 0.68), "stats": {}},
+	&"ration": {"kind": &"food", "label": "Ration", "mass": 0.5, "size": Vector3(0.16, 0.1, 0.06),
+		"color": Color(0.45, 0.42, 0.25), "stats": {}},
 }
 
 ## Frames: their box, weight, wind catch and sockets as [kind, position, outward].
@@ -85,6 +91,16 @@ const DEVICES := {
 			[&"battery", Vector3(0.0, 0.0, 0.25), Vector3.BACK],
 			[&"port", Vector3(0.25, 0.0, 0.0), Vector3.RIGHT],
 		]},
+	# Pulls water out of the air into the canister fitted in it, best in the cold of the night.
+	&"condenser": {"label": "Condenser", "size": Vector3(0.6, 0.7, 0.6), "mass": 14.0, "condenser": true,
+		"sockets": [
+			[&"water", Vector3(0.0, -0.1, 0.3), Vector3.BACK],
+			[&"battery", Vector3(0.3, -0.1, 0.0), Vector3.RIGHT],
+			[&"top", Vector3(0.0, 0.35, 0.0), Vector3.UP],
+			[&"port", Vector3(-0.3, 0.1, 0.0), Vector3.LEFT],
+			[&"ring", Vector3(-0.3, -0.15, 0.0), Vector3.LEFT],
+			[&"bottom", Vector3(0.0, -0.35, 0.0), Vector3.DOWN],
+		]},
 	# The base shield: small and light, F switches it, and its bubble keeps
 	# out wind and storm wherever it goes.
 	&"shield": {"label": "Shield generator", "size": Vector3(0.4, 0.42, 0.4), "mass": 6.0, "shield": true,
@@ -99,7 +115,8 @@ const DEVICES := {
 
 static func part(id: StringName) -> Part:
 	var spec: Dictionary = PARTS[id]
-	var made: Part = Battery.new() if spec.kind == &"battery" else Part.new()
+	var made: Part = Battery.new() if spec.kind == &"battery" \
+		else (Supply.new() if Supply.HOLDS.has(spec.kind) else Part.new())
 	made.kind = spec.kind
 	made.label = spec.label
 	made.mass = spec.mass
@@ -114,6 +131,11 @@ static func part(id: StringName) -> Part:
 		made.light.position = Vector3(0.0, size.y * 0.3, size.z + 0.005)
 		made.add_child(made.light)
 		made.show_charge()
+	if made is Supply:
+		made.light = ChargeLight.make(Vector3(size.x * 0.7, 0.02, 0.01))
+		made.light.position = Vector3(0.0, size.y * 0.5 + 0.005, size.z * 0.6)
+		made.add_child(made.light)
+		made.seal()
 	if spec.kind == &"tie":
 		# A line's end is small and gets dragged over the dunes at the wind's
 		# speed: swept, so it can't step through the sand in a tick.
@@ -189,7 +211,8 @@ static func _add_tie(body: Node3D, at: Vector3, outward: Vector3) -> void:
 
 static func device(id: StringName) -> Device:
 	var spec: Dictionary = DEVICES[id]
-	var made: Device = ShieldGenerator.new() if spec.get("shield", false) else Device.new()
+	var made: Device = ShieldGenerator.new() if spec.get("shield", false) \
+		else (Condenser.new() if spec.get("condenser", false) else Device.new())
 	made.label = spec.label
 	made.frame_mass = spec.mass
 	made.frame_stats = spec.get("stats", {}).duplicate()

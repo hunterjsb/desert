@@ -90,6 +90,8 @@ func _tick(seconds: float, t: float) -> void:
 				on = false
 		for device: Device in pool:
 			device.set_powered(on)
+			if on:
+				device.work(seconds, t)
 			if device.charge_light != null:
 				var cell := device.battery()
 				ChargeLight.paint(device.charge_light, cell.charge_wh / maxf(cell.capacity(), 1e-9) if cell != null else 0.0)
