@@ -1,0 +1,154 @@
+class_name Waist
+extends Node3D
+## Your waist: a line tied on here leaves your hands free, at the price of
+## walking slower and catching more wind. F with a line in your hand and
+## nothing to work ties it on, and with your hands empty takes the last one
+## back into them; G with your hands empty lets go of them all. Tying is
+## instant; untying takes a moment, so a gust can catch you still tied on.
+
+## Where things tied on sit, in your own frame.
+const AT := Vector3(0.0, 0.95, -0.15)
+
+## What's tied on: line ends, or a stake with its lines.
+var tied: Array[RigidBody3D] = []
+## Seconds left untying, or -1; and whether it ends in your hand or on the sand.
+var untying := -1.0
+var _to_hand := false
+var _player: Player
+var _tuning := Tuning.current()
+var _was := {}
+## Let fall, and not yet clear of you.
+var _falling: Array[RigidBody3D] = []
+
+
+func _ready() -> void:
+	_player = get_parent() as Player
+
+
+func holds(body: Object) -> bool:
+	return body is RigidBody3D and tied.has(body)
+
+
+## Ties a body on: it rides at your waist, touching nothing.
+func tie(body: RigidBody3D) -> void:
+	if body == null or tied.has(body):
+		return
+	_was[body] = {"layer": body.collision_layer, "mask": body.collision_mask, "mode": body.freeze_mode}
+	body.freeze_mode = RigidBody3D.FREEZE_MODE_KINEMATIC
+	body.freeze = true
+	body.collision_layer = 0
+	body.collision_mask = 0
+	tied.append(body)
+	_place()
+
+
+## Takes a body off, a body again where it sat; returns it.
+func untie(body: RigidBody3D) -> RigidBody3D:
+	tied.erase(body)
+	var was: Dictionary = _was.get(body, {})
+	_was.erase(body)
+	if is_instance_valid(body) and not was.is_empty():
+		body.freeze = false
+		body.freeze_mode = was.mode
+		body.collision_layer = was.layer
+		body.collision_mask = was.mask
+	return body
+
+
+## The line in your hand onto your waist. Says whether there was one.
+func take_from_hands() -> bool:
+	var hands := _player.hands
+	if untying >= 0.0 or hands.held == null or not carries_line(hands.held):
+		return false
+	tie(hands.stow())
+	return true
+
+
+## The last line tied on back into your hands, once it's untied. Says whether
+## there was one to untie.
+func give_back() -> bool:
+	if untying >= 0.0 or tied.is_empty() or _player.hands.held != null:
+		return false
+	untying = _tuning.untie_seconds
+	_to_hand = true
+	return true
+
+
+## Lets go of every line tied on, once they're untied. Says whether there was any.
+func let_go() -> bool:
+	if tied.is_empty() or (untying >= 0.0 and not _to_hand):
+		return false
+	if untying < 0.0:
+		untying = _tuning.untie_seconds
+	_to_hand = false
+	return true
+
+
+## Whether a body has a live line on it.
+func carries_line(body: Node) -> bool:
+	var ropes := _player.world.ropes
+	for child in body.get_children():
+		if child is RopeEnd and not ropes.lines_on(child).is_empty():
+			return true
+	return false
+
+
+func _physics_process(delta: float) -> void:
+	for i in range(tied.size() - 1, -1, -1):
+		if not is_instance_valid(tied[i]):
+			_was.erase(tied[i])
+			tied.remove_at(i)
+	if untying >= 0.0:
+		untying -= delta
+		if tied.is_empty():
+			untying = -1.0
+		elif untying < 0.0:
+			_undone()
+	_place()
+	_clear_of_you()
+	Dev.put("player/waist", "untying %.1fs" % maxf(untying, 0.0) if untying >= 0.0
+		else ("%d tied" % tied.size() if not tied.is_empty() else "-"))
+
+
+func _process(_delta: float) -> void:
+	_place()
+
+
+func _undone() -> void:
+	var hands := _player.hands
+	if _to_hand and hands.held == null:
+		hands.hold(untie(tied.back()))
+		return
+	for body: RigidBody3D in tied.duplicate():
+		untie(body)
+		# Down at your feet, moving as you were; it can't push you until it's clear.
+		body.linear_velocity = _player.velocity
+		body.add_collision_exception_with(_player)
+		_falling.append(body)
+
+
+func _clear_of_you() -> void:
+	for i in range(_falling.size() - 1, -1, -1):
+		if not is_instance_valid(_falling[i]):
+			_falling.remove_at(i)
+			continue
+		var body := _falling[i]
+		var off := body.global_position - _player.global_position
+		if Vector2(off.x, off.z).length() > 0.8 or off.y < -0.3:
+			body.remove_collision_exception_with(_player)
+			_falling.remove_at(i)
+
+
+## Each tied body sits with its tie point at your waist, facing out in front.
+func _place() -> void:
+	var facing := Basis(Vector3.UP, _player.global_rotation.y + PI)
+	var at := _player.global_transform * AT
+	for body in tied:
+		if not is_instance_valid(body):
+			continue
+		var tie_at := Vector3.ZERO
+		for child in body.get_children():
+			if child is RopeEnd:
+				tie_at = (child as RopeEnd).position
+				break
+		body.global_transform = Transform3D(facing, at - facing * tie_at)

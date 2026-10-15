@@ -1,10 +1,12 @@
 class_name Hands
 extends Node3D
-## Your hands, with room for one part. Look at a loose part and take it, or at
-## a fitted one and it slides out the way it went in. Carry it in front of your
-## eyes and aim at a free socket of its kind: aimed within reach of where it
-## would sit, it leans in, a ghost shows the spot, and it snaps home with a
-## clunk. Only a part held here ever snaps; nothing fits by being bumped.
+## Your hands, with room for one thing: a part, or a device small enough to
+## carry, like a stake. Look at a loose part and take it, or at a fitted one and
+## it slides out the way it went in. Carry it in front of your eyes and aim at
+## a free socket of its kind: aimed within reach of where it would sit, it
+## leans in, a ghost shows the spot, and it snaps home with a clunk. Only a part
+## held here ever snaps; nothing fits by being bumped. E picks up, takes out and
+## puts in; F works what you look at or uses what you hold; G drops.
 
 signal fitted(part: Part, device: Device, socket: Socket)
 signal taken(part: Part, device: Device, socket: Socket)
@@ -34,13 +36,14 @@ const OUT_DB := -12.0
 ## The magnetic hum at a full tug; it fades with the tug.
 const HUM_DB := 0.0
 
-var held: Part
+var held: RigidBody3D
 var phase := Phase.EMPTY
 ## What the look ray hits: a loose part, or a device and, when it's a fitted
-## part, that part's socket; and where it hit.
+## part, that part's socket, or the sand; and where it hit.
 var look_part: Part
 var look_device: Device
 var look_socket: Socket
+var look_sand := false
 var look_point := Vector3.ZERO
 var look_normal := Vector3.UP
 ## Your line of sight, from your eyes to whatever it stops at, or as far as you reach.
@@ -136,7 +139,52 @@ func grab() -> bool:
 	if look_socket != null and look_socket.part != null:
 		_take_out(look_device, look_socket)
 		return true
+	if look_device != null and look_device.carryable:
+		_pick_up(look_device)
+		return true
 	return false
+
+
+## F: work the device you look at, or use what you hold. Holding a line with
+## nothing else to do, it goes on your waist; empty-handed, the last line at
+## your waist comes back to your hands. Says whether it did anything.
+func interact() -> bool:
+	_look()
+	if look_device != null and look_device.interact(_player):
+		return true
+	if held == null:
+		return _player.waist.give_back()
+	if phase != Phase.HELD:
+		return false
+	var used := false
+	if held is Part:
+		used = (held as Part).use(_player, look_point)
+	elif held is Device:
+		used = (held as Device).use(_player, look_point)
+	return used or _player.waist.take_from_hands()
+
+
+## A clunk, for something put home by hand.
+func clunk() -> void:
+	_play(CLUNKS[_clunks % CLUNKS.size()], CLUNK_DB)
+	_clunks += 1
+
+
+## Takes a body straight into your hands from wherever it is, if they're free:
+## a coil's rest once its first end is on, a line untied from your waist.
+func hold(body: RigidBody3D) -> void:
+	if held != null or body == null:
+		return
+	_grip(body)
+	_arrive_from(body.global_transform)
+
+
+## Lets go of what you hold without dropping it, for something else to take.
+func stow() -> RigidBody3D:
+	var body := held
+	if body != null:
+		_let_go()
+	return body
 
 
 ## G: let go, moving as you were.
@@ -153,6 +201,13 @@ func throw() -> void:
 static func describe(label: String, mass: float, stats: Dictionary) -> String:
 	var bits := PackedStringArray([label, ("%d kg" % roundi(mass)) if is_equal_approx(mass, roundf(mass))
 		else ("%.1f kg" % mass)])
+	if stats.has("rope_m"):
+		bits.append("%d m line" % roundi(stats.rope_m) if stats.get("paying", 0.0) <= 0.0
+			else "%d of %d m out" % [roundi(stats.rope_m), roundi(stats.paying)])
+	if stats.has("holding"):
+		bits.append("holds %.1f kN" % (stats.holding / 1000.0))
+	if stats.has("load"):
+		bits.append("load %d%%" % roundi(stats.load * 100.0))
 	if stats.get("capacity_wh", 0.0) > 0.0:
 		if stats.has("charge_wh"):
 			bits.append("%d/%d Wh" % [floori(stats.charge_wh), roundi(stats.capacity_wh)])
@@ -181,9 +236,16 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("hands_grab"):
 		if grab():
 			get_viewport().set_input_as_handled()
-	elif event.is_action_pressed("hands_drop") and held != null:
-		drop()
-		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("interact"):
+		if interact():
+			get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("hands_drop"):
+		# Empty-handed, it lets go of what's at your waist.
+		if held != null:
+			drop()
+			get_viewport().set_input_as_handled()
+		elif _player.waist.let_go():
+			get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("hands_throw") and held != null \
 			and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		throw()
@@ -213,7 +275,7 @@ func _physics_process(delta: float) -> void:
 			_arrive(delta)
 		Phase.HELD:
 			_tug(delta)
-			held.global_transform = _pose()
+			held.global_transform = _within_reach(_pose())
 			if socket != null and _home():
 				_fit(socket)
 	_unblock_released()
@@ -223,13 +285,14 @@ func _physics_process(delta: float) -> void:
 ## Frame by frame too, so a held part never trails your view as you turn.
 func _process(_delta: float) -> void:
 	if phase == Phase.HELD and is_instance_valid(held):
-		held.global_transform = _pose()
+		held.global_transform = _within_reach(_pose())
 
 
 func _look() -> void:
 	look_part = null
 	look_device = null
 	look_socket = null
+	look_sand = false
 	var eye := _player.camera.global_transform
 	sight_from = eye.origin
 	sight_to = eye.origin - eye.basis.z * _tuning.reach
@@ -242,6 +305,7 @@ func _look() -> void:
 	look_point = hit.position
 	look_normal = hit.normal
 	var body: Object = hit.collider
+	look_sand = body is StaticBody3D
 	if body is Part:
 		look_part = body
 	elif body is Device:
@@ -250,9 +314,14 @@ func _look() -> void:
 			look_device.shape_owner_get_owner(look_device.shape_find_owner(hit.shape)) as Node)
 
 
-func _pick_up(part: Part) -> void:
-	_grip(part)
-	_arrive_from(part.global_transform)
+func _pick_up(body: RigidBody3D) -> void:
+	var stake := body as Stake
+	if stake != null and stake.driven:
+		# Pulled up out of the sand first, so its way to your hand is clear.
+		stake.driven = false
+		stake.global_position.y = _player.world.height_under(stake.global_position) + Stake.LENGTH * 0.5 + 0.02
+	_grip(body)
+	_arrive_from(body.global_transform)
 
 
 ## The device holds still while the part slides straight out along its
@@ -272,7 +341,7 @@ func _take_out(device: Device, from: Socket) -> void:
 	taken.emit(part, device, from)
 
 
-func _grip(part: Part) -> void:
+func _grip(part: RigidBody3D) -> void:
 	held = part
 	_layers = Vector2i(part.collision_layer, part.collision_mask)
 	_freeze_mode = part.freeze_mode
@@ -313,7 +382,7 @@ func _arrive_from(pose: Transform3D) -> void:
 ## blocked too long it skips to your hand, which is always clear.
 func _arrive(delta: float) -> void:
 	var next := minf(_t + delta / ARRIVE, 1.0)
-	var pose := _blend(_from, _hand(), smoothstep(0.0, 1.0, next))
+	var pose := _within_reach(_blend(_from, _hand(), smoothstep(0.0, 1.0, next)))
 	if _clear(pose):
 		_t = next
 		_stuck = 0.0
@@ -322,7 +391,7 @@ func _arrive(delta: float) -> void:
 		_stuck += delta
 		if _stuck > STUCK:
 			_t = 1.0
-			held.global_transform = _hand()
+			held.global_transform = _within_reach(_hand())
 	if _t >= 1.0:
 		phase = Phase.HELD
 		_release_source()
@@ -347,16 +416,17 @@ func _find_socket() -> void:
 		_rearm = null
 	var best: Socket = null
 	var nearest := INF
+	var kind: StringName = held.kind if held is Part else &""
 	for child in _player.world.content.get_children():
 		var device := child as Device
 		if device == null or device.global_position.distance_to(sight_from) > _tuning.reach + 2.0:
 			continue
 		for each in device.sockets():
-			if each.part != null or each.kind != held.kind or each == _rearm:
+			if each.part != null or each.kind != kind or each == _rearm:
 				continue
 			var seat := _seat(each)
 			var d := _sight_gap(seat)
-			if d < nearest and _open(seat, device):
+			if d < nearest and _open(seat, device) and _within_reach(seat) == seat:
 				nearest = d
 				best = each
 	gap = nearest
@@ -426,7 +496,7 @@ func _home() -> bool:
 
 func _fit(into: Socket) -> void:
 	var device := into.get_parent() as Device
-	var part := held
+	var part := held as Part
 	_let_go()
 	device.fit(part, into)
 	_play(CLUNKS[_clunks % CLUNKS.size()], CLUNK_DB)
@@ -484,13 +554,13 @@ func _unblock_released() -> void:
 		if not is_instance_valid(gone.part):
 			_released.remove_at(i)
 			continue
-		var part: Part = gone.part
+		var part: RigidBody3D = gone.part
 		var off: Vector3 = part.global_transform * gone.middle - _player.global_position
 		if Vector2(off.x, off.z).length() > _body_radius + gone.radius or off.y < -gone.radius or off.y > 2.5:
 			_unblock(part)
 
 
-func _unblock(part: Part) -> void:
+func _unblock(part: RigidBody3D) -> void:
 	for i in range(_released.size() - 1, -1, -1):
 		if is_instance_valid(_released[i].part) and _released[i].part == part:
 			_released.remove_at(i)
@@ -512,6 +582,17 @@ func _hand() -> Transform3D:
 	var ahead := -eye.basis.z.normalized() * _tuning.hold_distance
 	var start := Transform3D(basis, eye.origin - basis * _middle)
 	return start.translated(ahead * _sweep(start, ahead))
+
+
+## A pose for what you hold, kept within reach of its lines: turning round or
+## a tug toward a ring further off can't stretch a line, only your body can.
+func _within_reach(pose: Transform3D) -> Transform3D:
+	for child in held.get_children():
+		var end := child as RopeEnd
+		if end != null:
+			var at := pose * end.position
+			pose.origin += _player.world.ropes.reach(end, at) - at
+	return pose
 
 
 ## How far along motion the held part can move from start before it touches
@@ -596,7 +677,7 @@ func _on_origin_shifted(by: Vector2i) -> void:
 	_lean.origin -= offset
 
 
-func _build_ghost(part: Part) -> void:
+func _build_ghost(part: RigidBody3D) -> void:
 	_clear_ghost()
 	for child in part.get_children():
 		var mesh := child as MeshInstance3D
@@ -649,13 +730,14 @@ func _build_hud() -> void:
 	hud.add_child(_readout)
 
 
-## A part's stats, with a battery's charge as it stands.
+## A part's stats as they stand: a battery's charge, a line's length and load.
 func _part_stats(part: Part) -> Dictionary:
+	var now := part.stats.duplicate()
 	if part is Battery:
-		var with_charge := part.stats.duplicate()
-		with_charge["charge_wh"] = part.charge_wh
-		return with_charge
-	return part.stats
+		now["charge_wh"] = part.charge_wh
+	if part.has_meta(&"line"):
+		now.merge((part.get_meta(&"line") as Line).readout())
+	return now
 
 
 func _show(delta: float) -> void:
@@ -678,6 +760,12 @@ func _show(delta: float) -> void:
 	if socket != null:
 		_ghost.global_transform = _seat(socket)
 		_ghost_look.albedo_color.a = 0.2 + 0.3 * pull
+	elif held is Stake and phase == Phase.HELD and look_sand:
+		# Where it will go in.
+		_ghost.visible = true
+		_ghost.global_transform = Transform3D(Basis(Vector3.UP, held.global_rotation.y),
+			Vector3(look_point.x, _player.world.height_under(look_point) + Stake.DRIVEN_AT, look_point.z))
+		_ghost_look.albedo_color.a = 0.3
 	if pull > 0.01:
 		_hum.volume_db = HUM_DB + linear_to_db(pull)
 		if not _hum.playing:
@@ -685,5 +773,5 @@ func _show(delta: float) -> void:
 	elif _hum.playing:
 		_hum.stop()
 
-	Dev.put("hands/held", held.label if held != null else "-")
+	Dev.put("hands/held", held.get(&"label") if held != null else "-")
 	Dev.put("hands/tug", "%.2f %.2fm" % [pull, gap] if socket != null else "-")

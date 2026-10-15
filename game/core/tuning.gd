@@ -224,6 +224,39 @@ static var _current: Tuning
 ## A throw, m/s, on top of how you're moving.
 @export var throw_speed: float = 6.0
 
+@export_group("Rope")
+## A line's own weight, kg per metre. It's what makes a lightly loaded line
+## droop and straighten only as the pull builds, so the load reads by eye.
+@export var rope_kg_per_m: float = 0.12
+## How many times a second a stretched line springs back, whatever hangs on it,
+## and how much it bounces (1 settles without bouncing).
+@export var rope_hertz: float = 3.0
+@export var rope_damping: float = 0.7
+## Share of its length a line stretches before the hard stop.
+@export var rope_max_stretch: float = 0.1
+## Newtons of sustained load that snap a line, and how long load is averaged
+## before it breaks anything, so a shorter spike can't, s.
+@export var rope_breaking: float = 1500.0
+@export var strong_cable_breaking: float = 4000.0
+@export var rope_load_seconds: float = 0.3
+## A found coil's length, m: the longest line it lays.
+@export var rope_coil_length: float = 12.0
+## A line paying out of the coil in your hand runs this much longer than the
+## way from its first end to you, m.
+@export var rope_pay_slack: float = 0.5
+## Newtons of sustained pull a driven stake holds before it pulls out.
+@export var stake_holding: float = 2500.0
+## You on a line: your weight in the suit, and your feet's hold against a
+## pull, which grows the faster you're dragged, as when you dig in and stumble.
+@export var player_mass: float = 90.0
+@export var grip: float = 4.0
+@export var grip_per_speed: float = 2.0
+## Tied round your waist: the share of your walking it costs, the wind it adds
+## to what pulls you, and how long untying takes, s.
+@export var waist_slow: float = 0.3
+@export var waist_catch: float = 0.12
+@export var untie_seconds: float = 1.0
+
 @export_group("Power")
 ## Seconds of world time per power tick.
 @export var power_tick: float = 0.25

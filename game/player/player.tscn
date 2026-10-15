@@ -1,7 +1,8 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://game/player/player.gd" id="1_player"]
 [ext_resource type="Script" path="res://game/player/hands.gd" id="2_hands"]
+[ext_resource type="Script" path="res://game/player/waist.gd" id="3_waist"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.35
@@ -21,3 +22,6 @@ far = 5000.0
 
 [node name="Hands" type="Node3D" parent="."]
 script = ExtResource("2_hands")
+
+[node name="Waist" type="Node3D" parent="."]
+script = ExtResource("3_waist")
