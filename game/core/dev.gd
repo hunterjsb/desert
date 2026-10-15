@@ -55,6 +55,13 @@ func read(key: String, default: Variant = null) -> Variant:
 	return _values.get(key, default)
 
 
+## A new run: nothing the last one put is left showing.
+func clear() -> void:
+	_values.clear()
+	for group: String in _bodies:
+		_bodies[group].text = ""
+
+
 ## A scene's own keys, as [key, what it does] pairs, listed after the game's.
 func set_scene_keys(keys: Array) -> void:
 	_scene_keys = keys

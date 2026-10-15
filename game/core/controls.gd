@@ -6,7 +6,7 @@ extends Node
 const HELP := [
 	["click", "look, or throw what you hold"], ["WASD", "move"], ["Shift", "sprint"],
 	["E", "pick up, take out, put in, put down"], ["F", "use what you look at or hold: switch a shield, drive a stake, waist a line"],
-	["Esc", "free the mouse"],
+	["Tab", "your slots and waist: look across to pick a slot, E puts in or takes out"], ["Esc", "free the mouse"],
 	["F1", "these keys"], ["F2", "scenarios"], ["F3", "numbers"],
 	["F4", "fly: Space up, C down"], ["F5", "speed up time"], ["F6", "low gravity"],
 	["Space", "jump"], ["C", "crouch; at a run or downhill, slide"],
@@ -30,6 +30,7 @@ const KEYS := {
 	"dev_gravity": KEY_F6,
 	"hands_grab": KEY_E,
 	"interact": KEY_F,
+	"inventory": KEY_TAB,
 }
 
 ## Mouse buttons, the same way.

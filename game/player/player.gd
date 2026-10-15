@@ -32,8 +32,6 @@ var flying := false
 ## is still a walk; `crouched` says you're low.
 var mode := "stand"
 var crouched := false
-## Placeholder harm taken from storms, until Survival brings health.
-var storm_harm := 0.0
 ## Your own way over the ground, m/s along engine x and z: what your legs, a
 ## slide or a leap carry, without the wind's shove or a line's drag.
 var own := Vector2.ZERO
@@ -63,6 +61,8 @@ var _left := Vector3.ZERO
 @onready var camera: Camera3D = $Camera3D
 @onready var hands: Hands = $Hands
 @onready var waist: Waist = $Waist
+@onready var suit: Suit = $Suit
+@onready var vitals: Vitals = $Vitals
 
 
 func _ready() -> void:
@@ -89,8 +89,6 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _physics_process(delta: float) -> void:
 	var input := Input.get_vector("move_left", "move_right", "move_forward", "move_back")
-	if world != null and not flying:
-		storm_harm += world.weather.felt_storm(global_position) * _tuning.storm_harm_rate * delta
 	if flying:
 		mode = "fly"
 		Dev.put("player/mode", mode)
@@ -195,7 +193,6 @@ func _physics_process(delta: float) -> void:
 		else mode)
 	Dev.put("player/stam", "%d/%d" % [stamina, _tuning.stamina_max])
 	Dev.put("player/spd", "%.1fkm/h" % (Vector2(velocity.x, velocity.z).length() * 3.6))
-	Dev.put("player/harm", "%.0f" % storm_harm)
 	Dev.put("player/slope", "%d°" % roundi(rad_to_deg(atan(slope.length()))))
 	Dev.put("player/sink", "%d%%" % roundi(sink * 100.0))
 
