@@ -163,7 +163,7 @@ Built after the skeleton loop works end to end, in roughly this order:
   distance. *(A first pass, built 2026-10-15 and on by default: ripples across the wind
   on gentler slopes, fading out before they flicker; slip faces a shade deeper, warmer
   and smoother; a thin highlight on crests; broad patches of colour. Tuning's
-  `sand_shader` switches back to the flat colour. Hunter hasn't ruled on it yet.)*
+  `sand_shader` switches back to the flat colour. Hunter kept it on, 2026-10-15.)*
 - **Light on the ground.** The sun, plus a warm fill from the dusty sky at three
   quarters of it, which lights every slope alike. The sand sends back about a third of
   the light, as real desert sand does: when it was paler, sunlit ground ran into the
