@@ -1,13 +1,14 @@
 extends Node
-## Look-test: a bubble shield in the game's own storms on seed 1234. Sit inside
-## while a wall rolls over and engulfs it, walk out into the storm and look
-## back, switch it off and on for the bloom. The storm pass, its CPU twin, the
-## particles and the sound all carve the bubble out through Weather's shelters;
-## nothing here draws dust of its own.
+## Look-test: the real shield generator and a camp of catalog devices in the
+## game's own storms on seed 1234. Sit inside while a wall rolls over and
+## engulfs it, walk out into the storm and look back, switch it off and on
+## with F for the bloom, or carry it. The storm pass, its CPU twin, the
+## particles and the sound all carve the bubble out through Weather's
+## shelters; nothing here draws dust of its own. The generator runs on its
+## battery like anywhere else, so a long stay deep in a storm runs it flat: C
+## brings a fresh one.
 ##   godot --path . res://look/shield/shield.tscn
 ##   godot --path . --disable-vsync res://look/shield/shield.tscn -- --capture <dir> [--only in_deep,bloom_0.25s]
-
-const Generator := preload("res://look/shield/generator.gd")
 
 const SEED := 1234
 const DAYTIME := [0.35, 0.55]
@@ -15,21 +16,21 @@ const WARPS := {KEY_1: 1.0, KEY_2: 5.0, KEY_3: 20.0, KEY_4: 60.0}
 ## Keys to scenarios: a front at a distance (contact is 0), or deep inside.
 const JUMPS := {KEY_5: ["front", 300.0], KEY_6: ["front", 50.0], KEY_7: ["front", 0.0], KEY_8: ["deep", 0.0]}
 const KEYS := [
-	["B", "shield on and off"], ["C", "the camp to you"], ["1-4", "time x1, x5, x20, x60"],
-	["Space", "pause"], ["5-8", "a front at 300 m, 50 m, contact, deep"], ["H", "hide the readout"],
+	["C", "the camp to you, fresh battery"],
+	["1-4", "time x1, x5, x20, x60"], ["Space", "pause"], ["5-8", "a front at 300 m, 50 m, contact, deep"],
+	["H", "hide the readout"],
 ]
 ## The generator sits this far ahead of you after a jump, m.
 const AHEAD := 2.0
-## The camp round the generator, as [size, colour, metres right, metres ahead, yaw degrees].
+## The camp round the generator, as [catalog id, metres right, metres ahead,
+## yaw degrees, parts fitted]: a crate, a floating crate, a planted planter and
+## a charger with its panel.
 const CAMP := [
-	[Vector3(1.0, 0.7, 0.7), Color(0.45, 0.33, 0.22), -2.2, 1.0, 15.0],
-	[Vector3(0.7, 0.5, 0.6), Color(0.4, 0.3, 0.2), -2.9, 1.9, -20.0],
-	[Vector3(1.4, 0.45, 0.6), Color(0.35, 0.3, 0.26), 2.4, 0.6, -10.0],
-	[Vector3(0.9, 0.05, 0.7), Color(0.12, 0.16, 0.32), 1.2, -1.4, 30.0],
-	[Vector3(0.12, 1.1, 0.12), Color(0.5, 0.5, 0.52), 3.6, 2.6, 0.0],
+	[&"crate_frame", -2.2, 1.0, 15.0, [&"battery", &"hook", &"hook"]],
+	[&"crate_frame", -2.9, 2.6, -20.0, [&"battery", &"hover_tray", &"hook"]],
+	[&"planter", 2.4, 0.6, -10.0, [&"battery", &"seedling", &"seedling", &"seedling", &"sapling"]],
+	[&"charger", 1.4, -1.6, 30.0, [&"battery", &"solar_panel"]],
 ]
-## The planter's green, on the third box.
-const GREEN := Color(0.25, 0.5, 0.18)
 ## Capture mode's shots: scenario kind, front distance, metres the camera
 ## stands back from the generator (2 is inside, by the camp), yaw from facing
 ## the front, pitch, the shield ("on", "off", "bloom:<s>" or "collapse:<s>"
@@ -54,8 +55,10 @@ const SHOTS := [
 	["deep", 0.0, 2.0, 0.0, 2.0, "collapse:0.4", "collapse_0.4s"],
 ]
 
-var generator: Generator
-var camp := Node3D.new()
+var generator: ShieldGenerator
+var camp: Array[Device] = []
+## Each camp device's catalog id, for its size.
+var _ids := {}
 
 var _paused_warp := 1.0
 var _jump := ""
@@ -71,37 +74,13 @@ func _enter_tree() -> void:
 
 func _ready() -> void:
 	Dev.set_scene_keys(KEYS)
-	generator = Generator.new()
-	world.content.add_child(generator)
-	world.content.add_child(camp)
-	for i in CAMP.size():
-		var entry: Array = CAMP[i]
-		var box := MeshInstance3D.new()
-		var mesh := BoxMesh.new()
-		mesh.size = entry[0]
-		var look := StandardMaterial3D.new()
-		look.albedo_color = entry[1]
-		look.roughness = 0.85
-		mesh.material = look
-		box.mesh = mesh
-		box.position = Vector3(entry[2], 0.0, -entry[3])
-		box.rotation.y = deg_to_rad(entry[4])
-		camp.add_child(box)
-		if i == 2:
-			var leaves := MeshInstance3D.new()
-			var blob := SphereMesh.new()
-			blob.radius = 0.32
-			blob.height = 0.4
-			var green := StandardMaterial3D.new()
-			green.albedo_color = GREEN
-			blob.material = green
-			leaves.mesh = blob
-			leaves.position.y = 0.3
-			box.add_child(leaves)
-	camp_to_player()
-	generator.set_now(true)
 	var args := OS.get_cmdline_user_args()
 	var at := args.find("--capture")
+	if at != -1:
+		_quiet()
+	await _ground()
+	camp_to_player()
+	generator.stand(true)
 	if at != -1:
 		var only := args.find("--only")
 		_capture(args[at + 1] if args.size() > at + 1 else "user://shield",
@@ -109,23 +88,25 @@ func _ready() -> void:
 
 
 func _process(_delta: float) -> void:
-	readout.text = _readout()
+	if is_instance_valid(generator):
+		readout.text = _readout()
 
 
 func _unhandled_input(event: InputEvent) -> void:
 	var key := event as InputEventKey
-	if key == null or not key.pressed or key.echo or $Scenarios.visible:
+	if key == null or not key.pressed or key.echo or $Scenarios.visible or not is_instance_valid(generator):
 		return
 	var code := key.physical_keycode
-	if code == KEY_B:
-		generator.switch(not generator.on)
-	elif code == KEY_C:
+	if code == KEY_C:
 		camp_to_player()
 	elif WARPS.has(code):
 		world.time_warp = WARPS[code]
 	elif JUMPS.has(code):
 		jump(JUMPS[code][0], JUMPS[code][1])
+		var was := generator.running()
+		await _ground()
 		camp_to_player()
+		generator.stand(was)
 	elif code == KEY_SPACE and not world.player.flying:
 		if world.time_warp > 0.0:
 			_paused_warp = world.time_warp
@@ -147,29 +128,73 @@ func jump(kind: String, distance: float) -> Dictionary:
 	return place
 
 
-## Sets the generator down AHEAD m in front of you, the camp round it.
+## Sets the generator down AHEAD m in front of you with a fresh battery, the
+## camp round it.
 func camp_to_player() -> void:
 	var player := world.player
 	var ahead := -player.global_basis.z
 	ahead.y = 0.0
 	place_camp(player.global_position + ahead.normalized() * AHEAD, player.global_rotation.y)
+	generator.battery().charge_wh = generator.battery().capacity()
 
 
 func place_camp(at: Vector3, yaw: float) -> void:
-	generator.global_position = Vector3(at.x, world.height_under(at), at.z)
-	camp.global_position = generator.global_position
-	camp.global_rotation = Vector3(0.0, yaw, 0.0)
-	for box: MeshInstance3D in camp.get_children():
-		var size: Vector3 = (box.mesh as BoxMesh).size
-		box.global_position.y = world.height_under(box.global_position) + size.y * 0.5 - 0.03
+	var turn := Basis(Vector3.UP, yaw)
+	_set_down(generator, at, turn)
+	for i in CAMP.size():
+		var entry: Array = CAMP[i]
+		var spot: Vector3 = at + turn * Vector3(entry[1], 0.0, -entry[2])
+		_set_down(camp[i], spot, turn * Basis(Vector3.UP, deg_to_rad(entry[3])))
+
+
+## A device on the sand at a place, or at its float height if it floats.
+func _set_down(device: Device, at: Vector3, turn: Basis) -> void:
+	var half: float = Catalog.DEVICES[_ids[device]].size.y * 0.5
+	var above := world.tuning.hover_height if device.stats()["can_float"] else half + 0.02
+	device.global_transform = Transform3D(turn, Vector3(at.x, world.height_under(at) + above, at.z))
+	device.linear_velocity = Vector3.ZERO
+	device.angular_velocity = Vector3.ZERO
+
+
+## Waits for the ground under you, then builds the camp afresh there: bodies
+## left on ground that's gone are forgotten with it.
+func _ground() -> void:
+	var player := world.player
+	while not world.terrain.is_settled_around(world.player_world_x(), world.player_world_z()):
+		await get_tree().physics_frame
+	for device in camp + ([generator] if generator != null else []):
+		if is_instance_valid(device):
+			device.queue_free()
+	camp.clear()
+	_ids.clear()
+	generator = _device(&"shield", [&"battery"]) as ShieldGenerator
+	for entry: Array in CAMP:
+		camp.append(_device(entry[0], entry[4]))
+	player.velocity = Vector3.ZERO
+
+
+func _device(id: StringName, fitted: Array) -> Device:
+	var made := Catalog.device(id)
+	world.content.add_child(made)
+	_ids[made] = id
+	made.global_position = world.player.global_position + Vector3.UP * 50.0
+	for part_id: StringName in fitted:
+		var part := Catalog.part(part_id)
+		world.content.add_child(part)
+		for socket in made.sockets():
+			if socket.kind == part.kind and socket.part == null:
+				made.fit(part, socket)
+				break
+	return made
 
 
 func _readout() -> String:
 	var weather := world.weather
 	var eye := world.player.camera.global_position
 	var shell := eye.distance_to(generator.shelter.global_position) - generator.shelter.radius
-	var shield := "shield %s" % ("on" if generator.on else "off")
-	var where := "inside" if weather.shelter_at(eye) > 0.0 else "%d m out" % roundi(shell) \
+	var cell := generator.battery()
+	var shield := "shield %s %d Wh" % ["on" if generator.running() else "off", floori(cell.charge_wh) if cell != null else 0]
+	var where := "inside" if weather.shelter_at(eye, &"storm") > 0.0 else "%d m out" % roundi(shell) \
 		if generator.shelter.radius > 0.0 else "-"
 	var front := weather.seen_front
 	var shown := "-" if front == -INF else ("in %d m" % roundi(front) if front >= 0.0 else "%d m" % roundi(-front))
@@ -178,10 +203,9 @@ func _readout() -> String:
 		roundi(weather.seen_storm * 100.0), roundi(weather.wind.length()), _jump]
 
 
-## Walks SHOTS, saving a PNG of each with its frame times. Renders 1920x1080 in
-## a small window that can't take focus; nothing but this script moves the
-## camera, and it's silent.
-func _capture(out_dir: String, only: PackedStringArray) -> void:
+## Capture mode from the first frame: a small window that can't take focus,
+## nothing but this script moving the camera, and silence.
+func _quiet() -> void:
 	var window := get_window()
 	window.unfocusable = true
 	window.size = Vector2i(960, 540)
@@ -194,6 +218,10 @@ func _capture(out_dir: String, only: PackedStringArray) -> void:
 	world.player.set_physics_process(false)
 	$Hud.visible = false
 	Dev.hide_overlays()
+
+
+## Walks SHOTS, saving a PNG of each with its frame times, rendered at 1920x1080.
+func _capture(out_dir: String, only: PackedStringArray) -> void:
 	DirAccess.make_dir_recursive_absolute(out_dir)
 	var rid := get_viewport().get_viewport_rid()
 	RenderingServer.viewport_set_measure_render_time(rid, true)
@@ -209,12 +237,13 @@ func _capture(out_dir: String, only: PackedStringArray) -> void:
 			print("  %-22s none in this run's weather" % shot[6])
 			continue
 		var upwind := Vector3(-sin(place.yaw), 0.0, -cos(place.yaw))
+		await _ground()
 		var at := world.player.global_position + upwind * AHEAD
 		place_camp(at, place.yaw)
 		var stand: Vector3 = generator.global_position - upwind * float(shot[2])
 		world.player.global_position = Vector3(stand.x, world.height_under(stand) + 0.1, stand.z)
 		var action: String = shot[5]
-		generator.set_now(action == "on" or action.begins_with("collapse"))
+		generator.stand(action == "on" or action.begins_with("collapse"))
 		# Hold the clock while the ground streams in, then run up to the moment.
 		world.time_warp = 0.0
 		var waited := Time.get_ticks_msec()
@@ -245,7 +274,7 @@ func _capture(out_dir: String, only: PackedStringArray) -> void:
 			worst_ms = maxf(worst_ms, average)
 			worst_gpu = maxf(worst_gpu, gpu)
 		else:
-			generator.switch(action.begins_with("bloom"))
+			generator.interact(world.player)
 			for i in roundi(float(action.get_slice(":", 1)) * Engine.physics_ticks_per_second):
 				await get_tree().physics_frame
 			await get_tree().process_frame

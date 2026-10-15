@@ -7,11 +7,14 @@ var ropes: Ropes
 var wind: RopeWind
 
 
-## The world in still air with a wind of the probe's choosing; you go where
-## the probe puts you, as in the hands probes.
+## The world in still air with a wind of the probe's choosing, under clear
+## skies; you go where the probe puts you, as in the hands probes.
 func load_lines(run_seed := 1234) -> void:
 	# The winds a probe picks are the field's own: a breeze, a storm, the worst gust.
 	var tuning := Tuning.current()
+	# Still air parks the run's storms where they stand, and a long one would
+	# wear out what's on the lines.
+	tuning.storm_threshold = 2.0
 	var kept := [tuning.prevailing_speed, tuning.prevailing_sway, tuning.storm_outflow_speed]
 	await load_hands(run_seed)
 	tuning.prevailing_speed = kept[0]

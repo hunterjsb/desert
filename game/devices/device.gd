@@ -4,8 +4,13 @@ extends RigidBody3D
 ## and weight join this body, never through a joint, so there's nothing left to
 ## wobble. Everything the device can do is computed from what's fitted. Power
 ## (Stage 4) says whether it's running; a dark device can't float or shine.
+## Outside a bubble the weather wears it down (Wear), and wrecked it's dark
+## for good.
 
 signal parts_changed
+
+## Rust: what a wrecked frame looks like.
+const WORN := Color(0.24, 0.15, 0.1)
 
 @export var label := "device"
 ## The bare frame's weight, kg.
@@ -19,14 +24,28 @@ signal parts_changed
 var powered := true
 ## Its charge light, showing the fitted battery's charge.
 var charge_light: MeshInstance3D
+## How sound it is, 1 to 0: one placeholder durability for the frame and
+## everything fitted, until parts wear on their own.
+var durability := 1.0
 
 var world: World
 var _hovering := false
+## The frame's look, which darkens as it wears, and its colour new.
+var _frame_look: StandardMaterial3D
+var _frame_color: Color
 
 
 func _ready() -> void:
 	world = World.of(self)
 	center_of_mass_mode = RigidBody3D.CENTER_OF_MASS_MODE_CUSTOM
+	# The frame's box is its first mesh; parts and lights come after it.
+	for child in get_children():
+		var mesh := child as MeshInstance3D
+		if mesh != null and mesh != charge_light and mesh.mesh is PrimitiveMesh:
+			_frame_look = (mesh.mesh as PrimitiveMesh).material as StandardMaterial3D
+			if _frame_look != null:
+				_frame_color = _frame_look.albedo_color
+			break
 	_recompute()
 
 
@@ -80,7 +99,7 @@ func battery() -> Battery:
 ## What it generates, W, from the felt weather where it stands, now or at
 ## world time t.
 func production_w(t := NAN) -> float:
-	if world == null:
+	if world == null or wrecked():
 		return 0.0
 	var now := stats()
 	var watts: float = now["solar_w"] * world.weather.felt_light(global_position + Vector3.UP * 0.5, t)
@@ -91,8 +110,11 @@ func production_w(t := NAN) -> float:
 	return watts
 
 
-## What it would draw now, W, if it had the power.
-func demand_w() -> float:
+## What it would draw, W, if it had the power, now or at world time t: some
+## devices draw by the weather they hold back.
+func demand_w(_t := NAN) -> float:
+	if wrecked():
+		return 0.0
 	var now := stats()
 	return now["hover_w"] + now["light_w"]
 
@@ -102,6 +124,24 @@ func set_powered(on: bool) -> void:
 		return
 	powered = on
 	_recompute()
+
+
+func wrecked() -> bool:
+	return durability <= 0.0
+
+
+## The weather takes a share of a new device's life, less for a tough one; at
+## nothing it's wrecked, dark for good.
+func wear(share: float) -> void:
+	if share <= 0.0 or wrecked():
+		return
+	durability = maxf(durability - share / frame_stats.get("toughness", 1.0), 0.0)
+	if _frame_look != null:
+		_frame_look.albedo_color = _frame_color.lerp(WORN, 1.0 - durability)
+	if wrecked():
+		set_powered(false)
+		if charge_light != null:
+			ChargeLight.paint(charge_light, 0.0)
 
 
 func parts() -> Array[Part]:
@@ -205,6 +245,7 @@ func stats() -> Dictionary:
 	var cell := battery()
 	if cell != null:
 		total["charge_wh"] = cell.charge_wh
+	total["durability"] = durability
 	return total
 
 

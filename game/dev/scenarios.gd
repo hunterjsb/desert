@@ -28,10 +28,10 @@ const LIST: Array[Dictionary] = [
 		"distance": 500.0, "day": [0.35, 0.55], "camp": true},
 ]
 
-## The test kit, as [catalog id, metres to your right, metres ahead]: an empty
-## crate frame and planter, and parts for every kind of socket on them.
+## The test kit, as [catalog id, metres to your right, metres ahead]: empty
+## frames, a shield generator among them, and parts for every kind of socket.
 const KIT_DEVICES := [[&"crate_frame", -1.0, 3.0], [&"planter", 1.2, 3.2], [&"charger", -2.4, 1.5],
-	[&"turbine", 2.6, 1.6]]
+	[&"turbine", 2.6, 1.6], [&"shield", 0.05, 3.2]]
 ## Where the kit's common cable and strong cable land, right and ahead.
 const KIT_CABLE := [0.0, 2.3]
 const KIT_STRONG_CABLE := [0.0, 1.6]

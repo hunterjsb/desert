@@ -58,7 +58,7 @@ var _sun_energy: float
 var _haze_color: Color
 var _forecast_due := 0.0
 var _shelters: Array[Node] = []
-var _shelters_frame := -1
+var _shelters_seen := -1
 
 
 func setup(world: World) -> void:
@@ -82,12 +82,12 @@ func setup(world: World) -> void:
 ## Each felt_*() reads now, or a given world time t: power ticks read theirs.
 ## Shelter is always as it stands now.
 func felt_storm(at: Vector3, t := NAN) -> float:
-	return field_storm(at, t) * (1.0 - shelter_at(at))
+	return field_storm(at, t) * (1.0 - shelter_at(at, &"storm"))
 
 
 ## Horizontal wind, m/s, in engine axes.
 func felt_wind(at: Vector3, t := NAN) -> Vector3:
-	return field_wind(at, t) * (1.0 - shelter_at(at))
+	return field_wind(at, t) * (1.0 - shelter_at(at, &"wind"))
 
 
 ## Sunlight reaching a place, 0 to 1: the sky's share after the storm takes
@@ -109,22 +109,24 @@ func field_wind(at: Vector3, t := NAN) -> Vector3:
 	return Vector3(w.x, 0.0, w.y)
 
 
-## How sheltered a place is, 0 or 1: 1 within the live radius of any shelter.
-## Asked of the distance, never of events. The base shield blocks wind and
-## storm alike; shields that differ per harm come with the device (Stage 6).
-func shelter_at(at: Vector3) -> float:
+## How sheltered a place is from a harm (&"wind", &"storm", &"temperature"),
+## 0 to 1: the most that any shelter whose live radius it's within blocks of
+## it, so nested bubbles give each harm the best of them. Asked of the
+## distance, never of events.
+func shelter_at(at: Vector3, harm: StringName) -> float:
+	var best := 0.0
 	for shelter: Shelter in shelters():
 		if at.distance_squared_to(shelter.global_position) < shelter.radius * shelter.radius:
-			return 1.0
-	return 0.0
+			best = maxf(best, shelter.blocks.get(harm, 0.0))
+	return best
 
 
-## Every shelter in the world, standing or down, gathered once a frame: ropes
-## and loose bodies ask many times a tick.
+## Every shelter in the world, standing or down, gathered again only when one
+## comes or goes: ropes and loose bodies ask many times a tick.
 func shelters() -> Array[Node]:
-	if _shelters_frame != Engine.get_process_frames():
-		_shelters_frame = Engine.get_process_frames()
-		_shelters = get_tree().get_nodes_in_group(Shelter.GROUP) if is_inside_tree() else []
+	if _shelters_seen != Shelter.changes and is_inside_tree():
+		_shelters_seen = Shelter.changes
+		_shelters = get_tree().get_nodes_in_group(Shelter.GROUP)
 	return _shelters
 
 
@@ -172,7 +174,7 @@ func _process(_delta: float) -> void:
 	var holes := PackedVector4Array()
 	var glows := PackedFloat32Array()
 	for shelter: Shelter in shelters():
-		if shelter.radius > 0.0 and holes.size() < Shelter.MAX:
+		if shelter.carves() and holes.size() < Shelter.MAX:
 			var c := shelter.global_position
 			holes.append(Vector4(c.x, c.y, c.z, shelter.radius))
 			glows.append(shelter.glow)
@@ -273,7 +275,7 @@ func _show(delta: float) -> void:
 	var grains := _linear(SAND) * (sun_light * maxf(seen_sun, seen_shade * 0.6) * 0.6 + sky_light * sky_left) * dim
 	var near := exp(minf(seen_front, 0.0) / 350.0) if map.ready else 0.0
 	atmosphere.show_weather(camera, _world.height_under(eye), field_wind(_world.player.global_position),
-		shelter_at(eye), seen_shade, near, grains, face.sigma() * seen_shade, _world.time_warp > 0.0, delta)
+		shelter_at(eye, &"storm"), seen_shade, near, grains, face.sigma() * seen_shade, _world.time_warp > 0.0, delta)
 
 
 func _report() -> void:
@@ -288,7 +290,7 @@ func _report() -> void:
 	Dev.put("weather/wall", "-" if seen_front == -INF else ("in %dm" % roundi(seen_front)
 		if seen_front >= 0.0 else "%dm" % roundi(-seen_front)))
 	Dev.put("weather/seen", "%d%%" % roundi(seen_storm * 100.0))
-	Dev.put("weather/shel", "in" if shelter_at(_world.player.global_position) > 0.0 else "-")
+	Dev.put("weather/shel", "in" if shelter_at(_world.player.global_position, &"storm") > 0.0 else "-")
 	var eta := next_change_time - t
 	Dev.put("weather/next", "%s %s" % ["clr" if in_storm else "stm",
 		">1h" if eta == INF else "%d:%02d" % [floori(eta / 60.0), floori(fmod(eta, 60.0))]])

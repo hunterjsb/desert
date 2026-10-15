@@ -1,0 +1,202 @@
+class_name ShieldGenerator
+extends Device
+## The bubble shield: a small generator you carry, set down and switch on with
+## F. Running, it holds a Shelter centred on itself, so the bubble goes
+## wherever it does, carried or not, and keeps out what the shelter blocks. It
+## draws by what it's doing: a sip in the clear, the most while it holds back
+## a storm. Low on power its hum sags and its shell flickers; flat, the bubble
+## collapses for everything at once, and blooms again once there's power.
+
+const BOOT := preload("res://assets/audio/shield_boot.ogg")
+const HUM := preload("res://assets/audio/shield_hum.ogg")
+const DOWN := preload("res://assets/audio/shield_down.ogg")
+## Sand Game's shield blue.
+const BLUE := Color(0.25, 0.67, 0.87)
+## A fresh bloom flares the shell, settling over this long, s.
+const FLARE := 1.2
+## The hum's pitch running steady, where it sags to as the power runs out,
+## and where it ends as the bubble goes.
+const HUM_PITCH := 0.9
+const SAG_PITCH := 0.65
+const GONE_PITCH := 0.5
+## How dim the shell drops in a flicker.
+const FLICKER := 0.25
+
+## The switch, which F flips. The bubble stands while it's on and has power.
+var on := false
+## Metres to the shell, fully open.
+var size := Tuning.current().shield_radius
+var shelter := Shelter.new()
+var hum: AudioStreamPlayer3D
+
+var _tuning := Tuning.current()
+## Whether the bubble is opening or open, rather than going or gone, and the
+## seconds since that last changed.
+var _up := false
+var _since := INF
+var _pitch := HUM_PITCH
+var _boot: AudioStreamPlayer3D
+var _down: AudioStreamPlayer3D
+var _light: OmniLight3D
+var _band: StandardMaterial3D
+
+
+func _init() -> void:
+	# Small and light: it goes in your hands, and its bubble with it.
+	carryable = true
+
+
+func _ready() -> void:
+	super()
+	add_child(shelter)
+	var housing := Vector3.ONE * 0.4
+	for child in get_children():
+		if child is CollisionShape3D:
+			housing = (child as CollisionShape3D).shape.get_debug_mesh().get_aabb().size
+			break
+	var band := MeshInstance3D.new()
+	var ring := BoxMesh.new()
+	ring.size = Vector3(housing.x + 0.012, 0.05, housing.z + 0.012)
+	_band = StandardMaterial3D.new()
+	_band.albedo_color = Color(0.1, 0.12, 0.14)
+	_band.emission_enabled = true
+	_band.emission = BLUE
+	ring.material = _band
+	band.mesh = ring
+	band.position.y = housing.y * 0.2
+	add_child(band)
+	_light = OmniLight3D.new()
+	_light.light_color = BLUE
+	_light.omni_range = 4.0
+	_light.position.y = housing.y * 0.5 + 0.2
+	_light.shadow_enabled = false
+	add_child(_light)
+	_boot = _sound(BOOT, 0.0)
+	var looping := HUM.duplicate() as AudioStreamOggVorbis
+	looping.loop = true
+	hum = _sound(looping, -12.0)
+	_down = _sound(DOWN, 0.0)
+	_show()
+
+
+func _exit_tree() -> void:
+	# A looping stream still playing at quit holds its resources past exit.
+	hum.stop()
+
+
+## F in your hands switches it just the same.
+func use(by: Player, _at: Vector3) -> bool:
+	return interact(by)
+
+
+## F: switches it. With nothing to run on it won't start, only fizzle, and the
+## switch stays off. Wrecked, it does nothing.
+func interact(_by: Player) -> bool:
+	if wrecked():
+		return false
+	if on:
+		on = false
+	elif powered and (world.power.pool_wh(self) > 0.0 or production_w() > 0.0):
+		on = true
+	else:
+		_down.play()
+		return true
+	_follow()
+	return true
+
+
+## Whether its bubble stands: switched on, powered and whole.
+func running() -> bool:
+	return on and powered and not wrecked()
+
+
+## Straight to standing open, or down, with no bloom and no sound: for
+## scenarios and look-tests that start mid-storm.
+func stand(up: bool) -> void:
+	on = up
+	_up = running()
+	_since = INF
+	if _up and not hum.playing:
+		hum.pitch_scale = HUM_PITCH
+		hum.play()
+	elif not _up:
+		hum.stop()
+	_show()
+
+
+## A sip in the clear, the most holding back a full storm, by the storm where
+## it stands; a wider bubble costs more by its shell's area. Off, only what
+## its parts draw.
+func demand_w(t := NAN) -> float:
+	var parts_w := super(t)
+	if not on or wrecked() or world == null:
+		return parts_w
+	var storm := world.weather.field_storm(global_position, t)
+	return parts_w + lerpf(_tuning.shield_clear_w, _tuning.shield_storm_w, storm) \
+		* pow(size / _tuning.shield_radius, 2.0)
+
+
+## Seconds of world time its battery lasts at what it draws now, less what it
+## makes; INF while it isn't running down.
+func seconds_left() -> float:
+	var cell := battery()
+	var net := demand_w() - production_w()
+	if cell == null or net <= 0.0:
+		return INF
+	return cell.charge_wh / net * 3600.0
+
+
+func _physics_process(delta: float) -> void:
+	super(delta)
+	_follow()
+	_since += delta
+	_show()
+
+
+## Blooms the bubble open, or collapses it, as soon as whether it should
+## stand changes: switched, or its power come or gone.
+func _follow() -> void:
+	var up := running()
+	if up == _up:
+		return
+	_up = up
+	_since = 0.0
+	if up:
+		_boot.play()
+		hum.pitch_scale = HUM_PITCH
+		hum.play()
+	else:
+		_pitch = hum.pitch_scale
+		_down.play()
+
+
+func _show() -> void:
+	var x := clampf(_since / _tuning.shield_bloom_seconds, 0.0, 1.0)
+	# Sand Game's tween: out fast and settle on the way up, gather then go on
+	# the way down.
+	var open := 1.0 - (1.0 - x) * (1.0 - x) if _up else 1.0 - x * x
+	shelter.radius = size * open
+	var glow := 1.0 + 2.5 * (1.0 - smoothstep(0.0, FLARE, _since)) if _up else 1.0 + 1.5 * x * (1.0 - x)
+	if _up:
+		# Over the last of its power the hum sags, and the shell flickers more
+		# and more often.
+		var low := clampf(1.0 - seconds_left() / _tuning.shield_warning_seconds, 0.0, 1.0)
+		hum.pitch_scale = lerpf(HUM_PITCH, SAG_PITCH, low)
+		if low > 0.0 and randf() < 0.1 + 0.4 * low:
+			glow *= FLICKER
+	elif hum.playing:
+		hum.pitch_scale = lerpf(_pitch, GONE_PITCH, x)
+		if x >= 1.0:
+			hum.stop()
+	shelter.glow = glow
+	_light.light_energy = 0.35 * open * glow
+	_band.emission_energy_multiplier = 0.3 + 2.0 * open * glow
+
+
+func _sound(stream: AudioStream, db: float) -> AudioStreamPlayer3D:
+	var player := AudioStreamPlayer3D.new()
+	player.stream = stream
+	player.volume_db = db
+	player.unit_size = 4.0
+	add_child(player)
+	return player

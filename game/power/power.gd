@@ -64,7 +64,7 @@ func _tick(seconds: float, t: float) -> void:
 		var cells: Array[Battery] = []
 		for device: Device in pool:
 			made += device.production_w(t) * seconds / 3600.0
-			wanted += device.demand_w() * seconds / 3600.0
+			wanted += device.demand_w(t) * seconds / 3600.0
 			var cell := device.battery()
 			if cell != null:
 				cells.append(cell)
@@ -128,12 +128,24 @@ func _share(wh: float, cells: Array[Battery], filling: bool) -> float:
 	return left if filling else given
 
 
-## Devices grouped by the cables joining them; an unjoined device is its own pool.
+## What the batteries in a device's pool hold now, Wh: all it could draw on.
+func pool_wh(device: Device) -> float:
+	for pool: Array in _pools():
+		if pool.has(device):
+			var held := 0.0
+			for each: Device in pool:
+				held += each.battery().charge_wh if each.battery() != null else 0.0
+			return held
+	return 0.0
+
+
+## Devices grouped by the cables joining them; an unjoined device is its own
+## pool. A wrecked one is in none: it neither makes nor draws, ever again.
 func _pools() -> Array:
 	var devices: Array[Device] = []
 	var cables: Array[Cable] = []
 	for node in _world.content.get_children():
-		if node is Device:
+		if node is Device and not node.wrecked():
 			devices.append(node)
 		elif node is Cable:
 			cables.append(node)

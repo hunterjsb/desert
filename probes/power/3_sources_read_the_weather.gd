@@ -57,9 +57,21 @@ func run() -> void:
 		world.time = when[1]
 		await get_tree().physics_frame
 		output[when[0]] = turbine.production_w()
+	var shield := Catalog.device(&"shield") as ShieldGenerator
+	world.content.add_child(shield)
+	shield.global_position = turbine.global_position + Vector3(2.0, 0.0, 0.0)
+	fit_part(shield, &"battery")
+	shield.stand(true)
+	await get_tree().physics_frame
+	output["in a bubble"] = turbine.production_w()
+	shield.stand(false)
+	await get_tree().physics_frame
+	output["bubble down"] = turbine.production_w()
 	turbine.freeze = false
 	turbine.linear_velocity = Vector3(1.0, 0.0, 0.0)
 	output["carried"] = turbine.production_w()
 	print("turbine: %s" % output)
 	check(output["gale"] > output["calm"] * 10.0, "a turbine makes the most in a storm")
 	check(output["carried"] == 0.0, "and nothing while it's moving")
+	check(output["in a bubble"] == 0.0 and output["bubble down"] > output["gale"] * 0.9,
+		"nothing inside a base shield's bubble, all of it again once the bubble is down")

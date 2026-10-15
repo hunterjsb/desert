@@ -1,7 +1,9 @@
 extends DeviceProbe
 ## Devices & mods probe 6: loose things stacked on a floating device sit still
 ## under plain physics for ten minutes of still air, with no jitter, no creep
-## and no explosions; then a gust knocks them off cleanly.
+## and no explosions; then a gust knocks them off cleanly. Under clear skies:
+## still air parks storms where they stand, and ten minutes of one would wear
+## the crate out.
 
 const MINUTES := 10.0
 ## A gale outside any shield, m/s.
@@ -9,6 +11,7 @@ const GUST := 30.0
 
 
 func run() -> void:
+	Tuning.current().storm_threshold = 2.0
 	await load_world()
 	var crate := spawn_device(&"crate_frame", 4.0, 1.5)
 	await fast_forward(5.0)
