@@ -14,6 +14,8 @@
 # GODOT picks the binary (default: godot on PATH). PROBE_TIMEOUT is in seconds.
 # PROBE_EXCEPT lists folders to leave out of a full run, so CI can split the
 # suite into parallel jobs and still catch every folder nobody listed.
+# PROBE_JOBS probes run at once (default 4); a probe whose header says
+# "## Runs alone" times real frames, so it runs after the rest, by itself.
 set -uo pipefail
 cd "$(dirname "$0")/.." || exit 2
 
@@ -104,13 +106,41 @@ else
 	fi
 fi
 
-failed=0
-for probe in "${probes[@]}"; do
-	run_probe "$probe"
+reports=$(mktemp -d)
+trap 'rm -rf -- "${reports:?}"' EXIT
+trap 'kill $(jobs -p) 2>/dev/null; exit 130' INT TERM
+
+# One probe's verdict, with its output if it didn't pass, printed whole as it
+# finishes so parallel reports never interleave.
+report() {
+	run_probe "$2" >"$reports/$1"
 	if [[ $verdict != pass ]]; then
-		show_output
-		failed=$((failed + 1))
+		show_output >>"$reports/$1"
+		touch "$reports/$1.failed"
+	fi
+	flock "$reports/.lock" cat "$reports/$1"
+}
+
+together=()
+alone=()
+for probe in "${probes[@]}"; do
+	if grep -q '^## Runs alone' "$probe"; then
+		alone+=("$probe")
+	else
+		together+=("$probe")
 	fi
 done
+n=0
+for probe in "${together[@]}"; do
+	while (($(jobs -rp | wc -l) >= ${PROBE_JOBS:-4})); do
+		wait -n
+	done
+	report $((n++)) "$probe" &
+done
+wait
+for probe in "${alone[@]}"; do
+	report $((n++)) "$probe"
+done
+failed=$(find "$reports" -name '*.failed' | wc -l)
 echo "${#probes[@]} probes, $failed not passing"
 ((failed == 0))

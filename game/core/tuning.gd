@@ -239,6 +239,14 @@ static var _current: Tuning
 @export var tug_seconds: float = 0.2
 ## A throw, m/s, on top of how you're moving.
 @export var throw_speed: float = 6.0
+## Your strength on what you hold too heavy to carry, or walk into, N.
+@export var hand_strength: float = 400.0
+## How fast what you hold comes to where you'd have it, 1/s, and the most it
+## comes faster than you, m/s, so nothing you swing round is flung.
+@export var hold_rate: float = 4.0
+@export var hold_speed: float = 2.0
+## What you hold slips from your hands this far from where you'd have it, m.
+@export var hold_slip: float = 1.5
 
 @export_group("Rope")
 ## A line's own weight, kg per metre. It's what makes a lightly loaded line

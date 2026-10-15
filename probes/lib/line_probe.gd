@@ -66,7 +66,7 @@ func take(body: Node3D) -> bool:
 
 
 ## Holding a line's end, looks at a tie socket from its open side and lets the
-## tug snap it home, pressing E if it doesn't on its own. Says whether it's on.
+## tug snap it home, pressing take if it doesn't on its own. Says whether it's on.
 func snap_onto(socket: Socket) -> bool:
 	var at := seat(socket)
 	look(at.origin + at.basis.z * 0.9 + Vector3.UP * 0.5, at.origin)

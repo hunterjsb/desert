@@ -153,12 +153,12 @@ The hoverboard tows nothing.
   goes. Taking up an end of a line lying loose at both ends rolls it back up; dropping
   the first end before it's on anything puts the coil down whole.
 - **Rings** are tie sockets: a hook adds one while it's fitted, and a stake has one on
-  its eye. You're a ring in your hand, and at your waist: F with a line in your hand
-  and nothing to work ties it on, and F empty-handed takes it back after a second's
-  untying (`untie_seconds`). G drops a line in your hand at once, and empty-handed lets
-  go of your waist, after the same second.
-- **A stake** is a small device you can carry. F drives it into the sand where you
-  look. E on a driven stake pulls it into your hand with its lines still on its ring,
+  its eye. You're a ring in your hand, and at your waist: use with a line in your hand
+  and nothing to work ties it on, and use empty-handed takes it back after a second's
+  untying (`untie_seconds`). Take puts a line in your hand down at once, so letting go
+  of your waist is use, then take.
+- **A stake** is a small device you can carry. Use drives it into the sand where you
+  look. Take on a driven stake pulls it into your hand with its lines still on its ring,
   pulling on you now, so one gesture unstakes them and the next stakes them again.
 - **A snapped line** parts into two lines, each with a loose end where it broke.
 

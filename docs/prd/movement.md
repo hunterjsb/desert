@@ -16,7 +16,9 @@ outrun,** at least until the late-game haulers arrive.
 
 ## On foot
 
-- **Walking, about 5 km/h, and sprinting,** which costs stamina.
+- **Walking, about 6.5 km/h, and sprinting at about 14 km/h,** which costs stamina.
+  Raised at the Stage 5 gate, where both felt slow and a slide was hard to justify
+  (Hunter, 2026-10-15); the head's sway stays as it was.
 - **You tow the camp.** You're the most reliable thing to tow with: bubble up, planters
   floating on short lines (Rope & tethering).
 - **The dunes push back.** Gentle windward slopes are easy. Climbing a steep slip face
@@ -35,8 +37,8 @@ outrun,** at least until the late-game haulers arrive.
 - **The body feels it:** sway as you walk, a spring in the step, a dip when you land,
   and a lean into strong wind. Sand Game's footstep, slide and impact recordings.
 
-**Built (2026-10-15, `game/player/feel.gd`, `probes/movement/`).** Space jumps, Ctrl
-crouches. Crouching at a run or heading downhill turns into a slide. Slides gain speed
+**Built (2026-10-15, `game/player/feel.gd`, `probes/movement/`).** Jump and crouch are
+their own actions. Crouching at a run or heading downhill turns into a slide. Slides gain speed
 above about 6°, and sand steeper than 28° slides you whatever you do. The jump is 0.45 m
 at 1 g and 1.0 m at 0.45 g, because the push-off is the same on any moon. Crouching cuts
 your wind catch to 45%. Hauling hard against a line digs you in: up to 35% slower, and
@@ -152,6 +154,6 @@ forgotten. That's fine, as long as it's never a surprise:
   The rest is tuning.
 - **Do tricks do anything,** or are they just for fun?
 - **How do the warnings show up?** Sound, the suit, the radio, a visible edge?
-- **Should the dunes have slip faces steep enough to slide you?** Today's steepest
-  ground is about 16°, so the passive slide (above 28°) never happens. The probes test it
-  on dunes raised three times higher.
+- **Slip faces steep enough to slide you:** yes (Hunter, 2026-10-15). Today's steepest
+  ground is about 16°, so the passive slide (above 28°) waits for the real dune shapes
+  (World & terrain). Until then the probes test it on dunes raised three times higher.

@@ -1,6 +1,6 @@
 extends LineProbe
 ## Bubble shield probe 4: the moving bubble. Deep in a storm that never ends,
-## in a gusting gale, you pick up a running shield with E and walk 2 km at
+## in a gusting gale, you pick up a running shield and walk 2 km at
 ## walking pace, a floating crate on a short line at your waist. The bubble
 ## goes with the generator in your hands: the crate never leaves it, never
 ## feels the wind or the storm, never wears, and the shield runs all the way.

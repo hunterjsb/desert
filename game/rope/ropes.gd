@@ -316,6 +316,11 @@ func _deliver(body: RopeBody, push: Vector3, at: Vector3, h: float) -> void:
 		_pulls[body.node] = _pulls.get(body.node, Vector3.ZERO) + push / h
 
 
+## A pull on you from your hands, N·s: it drags you as a line's would.
+func pull_player(impulse: Vector3) -> void:
+	_drag += impulse / _tuning.player_mass
+
+
 ## Your share of the pull, plus the waist tie's price. The player applies it
 ## through its one hook, the rope_drag meta.
 func _drag_player(h: float) -> void:

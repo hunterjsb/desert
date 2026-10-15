@@ -4,6 +4,7 @@ extends WorldProbe
 ## pause the main thread mid-piece, while streaming that overruns its budget does
 ## it at every chunk crossed. Headless runs skip the shader compile and the GPU's
 ## side of an upload; look/stream holds a real window to the line, strictly.
+## Runs alone: it times real frames.
 
 var _limit := Tuning.current().stream_frame_max_ms
 var _over := 0

@@ -194,7 +194,7 @@ func _held_and_aimed_fits() -> void:
 		var lying := await _take_in_hand(FILL[socket.kind])
 		var at := seat(socket)
 		if job[2]:
-			# Under a resting device: aim low at its side, just off its front face, and press E.
+			# Under a resting device: aim low at its side, just off its front face, and press take.
 			var side := owner.global_position + owner.global_basis.z * 0.31 + Vector3.DOWN * 0.12
 			look(side + owner.global_basis.z * 1.2 + Vector3.UP * 0.9, side)
 			await simulate(0.1)

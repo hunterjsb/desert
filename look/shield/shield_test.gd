@@ -2,7 +2,7 @@ extends Node
 ## Look-test: the real shield generator and a camp of catalog devices in the
 ## game's own storms on seed 1234. Sit inside while a wall rolls over and
 ## engulfs it, walk out into the storm and look back, switch it off and on
-## with F for the bloom, or carry it. The storm pass, its CPU twin, the
+## with use for the bloom, or carry it. The storm pass, its CPU twin, the
 ## particles and the sound all carve the bubble out through Weather's
 ## shelters; nothing here draws dust of its own. The generator runs on its
 ## battery like anywhere else, so a long stay deep in a storm runs it flat: C

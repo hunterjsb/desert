@@ -32,10 +32,23 @@ Batteries are the exception and carry no stamp. See [the lore research](../lore-
 
 ## How you handle things
 
-Four inputs cover everything, with no keys for particular features (decided 2026-10-15):
-**E** picks up, takes out and puts in; **F** interacts with what you're looking at or
-uses what you hold (switch a shield, drive a stake); **G** drops; **click** throws. A new
-device or tool answers these; it never adds a key of its own.
+Three actions cover everything, with none for particular features (decided 2026-10-15).
+A new device or tool answers these; it never adds an action of its own. The docs name
+actions, never keys: keys are only defaults, set in `game/core/controls.gd` and listed
+in the game.
+- **Take** picks up, takes out, puts in and puts down. One action takes and lets go
+  (Hunter, 2026-10-15, at the Stage 5 gate). Taking something too heavy to carry takes
+  hold of it: it follows where you face and turns as you turn, as far as your strength
+  drags it, and taking again lets go. That's how you arrange a camp of floating things
+  too heavy to lift. Walk off from something you can't shift and it slips from your
+  hands.
+- **Use** works what you're looking at, or uses what you hold: switch a shield, drive a
+  stake.
+- **Throw** throws what you hold.
+
+Walking into a loose thing pushes it, with the same strength. A floating thing you
+push keeps gliding, as the wind would carry it anyway; to set one down where you want
+it, take hold of it, and let go.
 
 ## How things join
 
@@ -62,8 +75,10 @@ device or tool answers these; it never adds a key of its own.
 
 ## Rules
 
-1. **Snapping needs intent.** Only a part you're holding snaps, and only into a free
-   socket of its type. Nothing snaps by being bumped.
+1. **Snapping needs intent.** Only a part you're holding snaps, only into a free
+   socket of its type, and only when you take it home: the tug leans it in and shows the
+   spot, and take seats it (Hunter, 2026-10-15: "add a little more player agency").
+   Nothing snaps by being bumped, or by drifting close.
 2. **Sockets are defined spots,** with a position and a facing. A fitted part sits
    exactly there.
 3. **A fitted part is part of the device.** Its collision and weight merge into the
@@ -82,8 +97,9 @@ device or tool answers these; it never adds a key of its own.
 - **The tug** starts within roughly 30 cm of a free socket the part fits, while it's
   facing roughly the right way. The part eases toward the socket, the ghost appears, and
   you hear a faint magnetic hum.
-- **The snap** happens closer in, or on a press. A clunk (Sand Game's metal clanks), and
-  it's home.
+- **The snap** happens on a press of take, never on its own, so the tug can afford to
+  reach a little further and pull a little harder. A clunk (Sand Game's metal clanks),
+  and it's home.
 - **Letting go:** pull back out of range and the tug releases smoothly. It never yanks
   the part back.
 - **Several sockets nearby:** the nearest well-aligned one wins, and the ghost shows
@@ -91,6 +107,10 @@ device or tool answers these; it never adds a key of its own.
 - **Removing:** the device turns the socket's side toward you if it's free and light
   enough to turn. A staked or heavy device stays put, so you walk round to the part.
 - **Speed:** a battery swap should take a second or two.
+- **Picking up small things is forgiving** (Hunter, 2026-10-15). Aim near a small loose
+  thing and it's the one you'd take, without pixel-perfect aim; a big one you look right
+  at. Among several small things together, the one nearest your aim wins, and it doesn't
+  flicker between them as your aim wavers. Picking from a tight cluster is still open.
 
 **As built in the skeleton (2026-10-14):**
 - **The tug follows your aim, not the part's position.** A part held at arm's length
@@ -161,6 +181,11 @@ hook. That's how found mods expand a device.
    shield, a gust knocks them off cleanly.
 7. **Origin shifts are invisible.** Fitted parts and loose stacks come through a shift
    untouched.
+8. **Nothing falls through.** No device or part ever ends up under the sand.
+9. **Arranging by hand.** Walking into a floating device pushes it no faster than you
+   walk. Taking hold of one, it follows as you back away and swings round as you turn,
+   and let go it stops rather than flies. One too heavy to drag barely moves and slips
+   from your hands.
 
 ## Out of scope
 

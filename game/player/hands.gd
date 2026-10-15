@@ -5,8 +5,8 @@ extends Node3D
 ## it slides out the way it went in. Carry it in front of your eyes and aim at
 ## a free socket of its kind: aimed within reach of where it would sit, it
 ## leans in, a ghost shows the spot, and it snaps home with a clunk. Only a part
-## held here ever snaps; nothing fits by being bumped. E picks up, takes out and
-## puts in; F works what you look at or uses what you hold; G drops.
+## held here ever snaps; nothing fits by being bumped. Take picks up, takes out,
+## puts in and puts down; use works what you look at or uses what you hold.
 
 signal fitted(part: Part, device: Device, socket: Socket)
 signal taken(part: Part, device: Device, socket: Socket)
@@ -38,6 +38,8 @@ const HUM_DB := 0.0
 
 var held: RigidBody3D
 var phase := Phase.EMPTY
+## What you hold that's too heavy to carry.
+var grasp: Grasp
 ## What the look ray hits: a loose part, or a device and, when it's a fitted
 ## part, that part's socket, or the sand; and where it hit.
 var look_part: Part
@@ -99,6 +101,7 @@ var _inside := PhysicsShapeQueryParameters3D.new()
 
 func _ready() -> void:
 	_player = get_parent() as Player
+	grasp = Grasp.new(_player)
 	for child in _player.get_children():
 		var body := child as CollisionShape3D
 		if body != null and body.shape is CapsuleShape3D:
@@ -124,14 +127,21 @@ func _ready() -> void:
 	_build_hud()
 
 
-## E: take what you're looking at, or, holding a part, fit it now if a socket
-## is in tug range. Says whether it did anything.
+## Take: take what you're looking at, or, holding something, fit it if a socket
+## is in tug range and put it down if not. Something too heavy to carry, you
+## take hold of instead, and taking again lets go. Says whether it did anything.
 func grab() -> bool:
+	if grasp.body != null:
+		grasp.let_go()
+		return true
 	if held != null:
-		if phase == Phase.HELD and socket != null:
+		if phase != Phase.HELD:
+			return false
+		if socket != null:
 			_fit(socket)
-			return true
-		return false
+		else:
+			drop()
+		return true
 	_look()
 	if look_part != null:
 		_pick_up(look_part)
@@ -142,10 +152,13 @@ func grab() -> bool:
 	if look_device != null and look_device.carryable:
 		_pick_up(look_device)
 		return true
+	if look_device != null and not look_device.freeze:
+		grasp.take(look_device)
+		return true
 	return false
 
 
-## F: work the device you look at, or use what you hold. Holding a line with
+## Use: work the device you look at, or use what you hold. Holding a line with
 ## nothing else to do, it goes on your waist; empty-handed, the last line at
 ## your waist comes back to your hands. Says whether it did anything.
 func interact() -> bool:
@@ -153,7 +166,7 @@ func interact() -> bool:
 	if look_device != null and look_device.interact(_player):
 		return true
 	if held == null:
-		return _player.waist.give_back()
+		return grasp.body == null and _player.waist.give_back()
 	if phase != Phase.HELD:
 		return false
 	var used := false
@@ -175,6 +188,7 @@ func clunk() -> void:
 func hold(body: RigidBody3D) -> void:
 	if held != null or body == null:
 		return
+	grasp.let_go()
 	_grip(body)
 	_arrive_from(body.global_transform)
 
@@ -187,7 +201,7 @@ func stow() -> RigidBody3D:
 	return body
 
 
-## G: let go, moving as you were.
+## Let go, moving as you were.
 func drop() -> void:
 	_release(_player.velocity)
 
@@ -239,13 +253,6 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed("interact"):
 		if interact():
 			get_viewport().set_input_as_handled()
-	elif event.is_action_pressed("hands_drop"):
-		# Empty-handed, it lets go of what's at your waist.
-		if held != null:
-			drop()
-			get_viewport().set_input_as_handled()
-		elif _player.waist.let_go():
-			get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("hands_throw") and held != null \
 			and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		throw()
@@ -278,6 +285,7 @@ func _physics_process(delta: float) -> void:
 			held.global_transform = _within_reach(_pose())
 			if socket != null and _home():
 				_fit(socket)
+	grasp.step(delta)
 	_unblock_released()
 	_show(delta)
 
@@ -773,5 +781,6 @@ func _show(delta: float) -> void:
 	elif _hum.playing:
 		_hum.stop()
 
-	Dev.put("hands/held", held.get(&"label") if held != null else "-")
+	Dev.put("hands/held", held.get(&"label") if held != null
+		else ("hold " + str(grasp.body.get(&"label")) if grasp.body != null else "-"))
 	Dev.put("hands/tug", "%.2f %.2fm" % [pull, gap] if socket != null else "-")

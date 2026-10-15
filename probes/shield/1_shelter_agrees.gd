@@ -1,6 +1,6 @@
 extends WeatherProbe
 ## Bubble shield probe 1: shelter agrees everywhere. Deep in a storm, a shield
-## generator switched on with F blooms a bubble of still, clear air, and
+## generator switched on with use blooms a bubble of still, clear air, and
 ## everything that reads the weather switches exactly at its shell. Walk out
 ## through the shell and back a quarter metre at a time. The game reads it at
 ## your feet: the wind on you, the storm's harm, and the wear on a device

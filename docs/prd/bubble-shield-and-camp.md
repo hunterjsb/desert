@@ -132,7 +132,7 @@ The shield decides how much of it is safe. All three grow with upgrades.
 **As built in the skeleton (2026-10-15):**
 - **The generator** is a catalog device you can carry: 6 kg, 10 kg with its battery,
   with a battery slot, a ring mount, a bottom mount and a port, so it can be tied,
-  floated, cabled and charged like any device. F on it, or in your hands, switches it;
+  floated, cabled and charged like any device. Use on it, or in your hands, switches it;
   with nothing to run on it only fizzles. Its light shows its charge.
 - **Draw by state:** off it draws nothing; running it sips 10 W in the clear and draws
   200 W holding back a full storm, between the two in a lesser one, so a base battery
