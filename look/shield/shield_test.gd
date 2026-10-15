@@ -74,11 +74,13 @@ func _enter_tree() -> void:
 
 func _ready() -> void:
 	Dev.set_scene_keys(KEYS)
+	var args := OS.get_cmdline_user_args()
+	var at := args.find("--capture")
+	if at != -1:
+		_quiet()
 	await _ground()
 	camp_to_player()
 	generator.stand(true)
-	var args := OS.get_cmdline_user_args()
-	var at := args.find("--capture")
 	if at != -1:
 		var only := args.find("--only")
 		_capture(args[at + 1] if args.size() > at + 1 else "user://shield",
@@ -201,10 +203,9 @@ func _readout() -> String:
 		roundi(weather.seen_storm * 100.0), roundi(weather.wind.length()), _jump]
 
 
-## Walks SHOTS, saving a PNG of each with its frame times. Renders 1920x1080 in
-## a small window that can't take focus; nothing but this script moves the
-## camera, and it's silent.
-func _capture(out_dir: String, only: PackedStringArray) -> void:
+## Capture mode from the first frame: a small window that can't take focus,
+## nothing but this script moving the camera, and silence.
+func _quiet() -> void:
 	var window := get_window()
 	window.unfocusable = true
 	window.size = Vector2i(960, 540)
@@ -217,6 +218,10 @@ func _capture(out_dir: String, only: PackedStringArray) -> void:
 	world.player.set_physics_process(false)
 	$Hud.visible = false
 	Dev.hide_overlays()
+
+
+## Walks SHOTS, saving a PNG of each with its frame times, rendered at 1920x1080.
+func _capture(out_dir: String, only: PackedStringArray) -> void:
 	DirAccess.make_dir_recursive_absolute(out_dir)
 	var rid := get_viewport().get_viewport_rid()
 	RenderingServer.viewport_set_measure_render_time(rid, true)
