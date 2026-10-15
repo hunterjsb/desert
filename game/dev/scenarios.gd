@@ -24,7 +24,7 @@ const LIST: Array[Dictionary] = [
 	# Calm, so a floating device doesn't drift off before there's rope to hold it.
 	{"key": "kit", "label": "test kit: devices and parts, clear and calm", "kind": "kit", "day": [0.42, 0.55],
 		"calm": 6.0},
-	{"key": "camp", "label": "camp to stake: floaters on one line each, a storm 500 m off", "kind": "front",
+	{"key": "camp", "label": "camp to stake: floaters on one line each, a shield, a storm 500 m off", "kind": "front",
 		"distance": 500.0, "day": [0.35, 0.55], "camp": true},
 ]
 
@@ -46,8 +46,9 @@ const KIT_PARTS := [
 const KIT_STAKES := [[-1.3, 1.15], [-1.3, 1.3], [-1.3, 1.45]]
 const KIT_COILS := [[0.6, 1.2], [1.2, 1.2]]
 ## The camp: floating devices [catalog id, right, ahead] each on a line to a
-## stake further upwind, and spare stakes and coils by your feet.
+## stake further upwind, a charged shield generator, and spare stakes and coils by your feet.
 const CAMP_DEVICES := [[&"planter", -2.0, 4.0], [&"crate_frame", 2.0, 4.0]]
+const CAMP_SHIELD := [0.0, 2.6]
 const CAMP_STAKE_AHEAD := 3.0
 const CAMP_STAKES := [[-0.6, 1.2], [-0.6, 1.35], [-0.6, 1.5], [-0.6, 1.65]]
 const CAMP_COILS := [[0.4, 1.2], [0.9, 1.2], [1.4, 1.2]]
@@ -185,7 +186,8 @@ static func kit(world: World) -> Array[Node3D]:
 
 ## Drops the camp in front of the player: each floating device, its battery
 ## and tray fitted and a hook on every ring mount, on one line from a hook to
-## a stake driven upwind of it. Returns what it dropped.
+## a stake driven upwind of it, and a shield generator with a full battery,
+## switched off. Returns what it dropped.
 static func camp(world: World) -> Array[Node3D]:
 	var player := world.player
 	var yaw := Basis(Vector3.UP, player.global_rotation.y)
@@ -205,6 +207,15 @@ static func camp(world: World) -> Array[Node3D]:
 		stake.drive(at, world.height_under(at))
 		Line.between(world, device.free_tie(stake.global_position), stake.free_tie(device.global_position), 0.5)
 		dropped.append_array([device, stake])
+	var shield := Catalog.device(&"shield")
+	var size: Vector3 = Catalog.DEVICES[&"shield"].size
+	_drop(world, shield, Transform3D(yaw, Vector3(0.0, size.y * 0.5, 0.0)), CAMP_SHIELD[0], CAMP_SHIELD[1])
+	for socket in shield.sockets():
+		if socket.kind == &"battery":
+			var cell := Catalog.part(&"battery")
+			world.content.add_child(cell)
+			shield.fit(cell, socket)
+	dropped.append(shield)
 	dropped.append_array(_stakes_and_coils(world, CAMP_STAKES, CAMP_COILS))
 	return dropped
 

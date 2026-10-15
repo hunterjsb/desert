@@ -99,7 +99,7 @@ func _kit_lands_near_you() -> void:
 
 
 ## The camp floats in front of you, each piece on a line to a driven stake
-## upwind, with spare stakes and coils at your feet.
+## upwind, with a charged shield, spare stakes and coils at your feet.
 func _camp_lands() -> void:
 	await settle(true)
 	var camp := Scenarios.camp(world)
@@ -114,6 +114,9 @@ func _camp_lands() -> void:
 		% [floating.size(), driven.size(), lines])
 	check(spares.size() == Scenarios.CAMP_STAKES.size() + Scenarios.CAMP_COILS.size(),
 		"camp: spare stakes and coils at your feet")
+	var shields := camp.filter(func(b: Node3D) -> bool: return b is ShieldGenerator and b.battery() != null \
+		and b.battery().charge_wh >= b.battery().capacity())
+	check(shields.size() == 1, "camp: a charged shield generator to switch on")
 	for body in camp:
 		if is_instance_valid(body):
 			body.free()
