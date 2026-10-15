@@ -46,6 +46,17 @@ func sockets() -> Array[Socket]:
 	return found
 
 
+## F on it while you look at it: what it does when worked, like a shield
+## switching. Says whether it did anything.
+func interact(_by: Player) -> bool:
+	return false
+
+
+## F while you hold it, aiming at `at`. Says whether it did anything.
+func use(_by: Player, _at: Vector3) -> bool:
+	return false
+
+
 ## The free tie socket nearest a place, or null: where a line would go.
 func free_tie(near: Vector3) -> Socket:
 	var best: Socket = null

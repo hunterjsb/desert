@@ -1,8 +1,9 @@
 extends LineProbe
 ## Rope & tethering probe 6: what you see is what holds. Lines laid through
-## your hands (a coil picked up, its first end snapped onto a floating
-## planter's hook, the rest paid out as you walk to a stake and snapped onto
-## its ring), and one taken back off its stake into your hand, in a wind that
+## your hands (a stake taken up and driven into the sand where you look, a
+## coil picked up, its first end snapped onto a floating planter's hook, the
+## rest paid out as you walk to the stake and snapped onto its ring), and one
+## taken back off its stake into your hand, in a wind that
 ## rises from calm through a breeze to a gusting storm, through which you tow
 ## the line in your hand back and forth. Every drawn frame each strand's ends
 ## sit on its line's attachment points, held or not, and its drawn length
@@ -42,12 +43,23 @@ func run() -> void:
 	# Downwind is +z: planters float downwind of their stakes.
 	var planter := floating(&"planter", spot(-2.0, -2.0))
 	var other := floating(&"planter", spot(3.0, -2.0))
-	var stake := driven_stake(spot(-2.0, -9.0))
+	var stake := Catalog.stake()
+	world.content.add_child(stake)
+	stake.global_transform = Transform3D(Basis(Vector3.BACK, PI / 2.0), spot(-1.2, -5.0) + Vector3.UP * 0.04)
 	var far_stake := driven_stake(spot(3.0, -9.0))
 	var coil := Line.make(world, world.tuning.rope_coil_length)
 	coil.coil.global_transform = Transform3D(Basis(Vector3.RIGHT, -PI / 2.0), spot(-1.2, -3.2) + Vector3.UP * 0.05)
 	look(spot(-1.2, -4.2) + Vector3.UP * 1.65, coil.coil.global_position)
 	await simulate(1.0)
+
+	# A stake taken up with E and driven with F where you look.
+	check(await take(stake), "you take up a stake")
+	await simulate(0.4)
+	look(spot(-2.0, -7.5) + Vector3.UP * 1.65, spot(-2.0, -9.0))
+	await simulate(0.1)
+	check(hands.interact() and stake.driven and hands.held == null, "F drives it into the sand where you look")
+	look(spot(-1.2, -4.2) + Vector3.UP * 1.65, coil.coil.global_position)
+	await simulate(0.2)
 
 	# Laid through the hands, ring to ring.
 	check(await take(coil.coil), "you pick up the coil")

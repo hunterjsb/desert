@@ -54,6 +54,16 @@ func drive(at: Vector3, ground: float) -> void:
 	sustained = 0.0
 
 
+## F held over the sand: it goes in where you look.
+func use(by: Player, at: Vector3) -> bool:
+	if not by.hands.look_sand:
+		return false
+	by.hands.stow()
+	drive(at, by.world.height_under(at))
+	by.hands.clunk()
+	return true
+
+
 func stats() -> Dictionary:
 	var now := super()
 	if driven:

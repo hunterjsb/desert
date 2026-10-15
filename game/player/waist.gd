@@ -1,10 +1,10 @@
 class_name Waist
 extends Node3D
 ## Your waist: a line tied on here leaves your hands free, at the price of
-## walking slower and catching more wind. H ties the line in your hand on, or
-## with your hands empty takes the last one back into them; Q lets go of every
-## line, the one in your hand at once. Tying is instant; untying takes a
-## moment, so a gust can catch you still tied on.
+## walking slower and catching more wind. F with a line in your hand and
+## nothing to work ties it on, and with your hands empty takes the last one
+## back into them; G with your hands empty lets go of them all. Tying is
+## instant; untying takes a moment, so a gust can catch you still tied on.
 
 ## Where things tied on sit, in your own frame.
 const AT := Vector3(0.0, 0.95, -0.15)
@@ -55,34 +55,33 @@ func untie(body: RigidBody3D) -> RigidBody3D:
 	return body
 
 
-## H: the line in your hand onto your waist, or the last one back into your
-## hand. Says whether it did anything.
-func tie_or_untie() -> bool:
+## The line in your hand onto your waist. Says whether there was one.
+func take_from_hands() -> bool:
 	var hands := _player.hands
-	if untying >= 0.0:
+	if untying >= 0.0 or hands.held == null or not carries_line(hands.held):
 		return false
-	if hands.held != null and carries_line(hands.held):
-		tie(hands.stow())
-		return true
-	if hands.held == null and not tied.is_empty():
-		untying = _tuning.untie_seconds
-		_to_hand = true
-		return true
-	return false
+	tie(hands.stow())
+	return true
 
 
-## Q: let go of every line. Says whether there was any to let go of.
+## The last line tied on back into your hands, once it's untied. Says whether
+## there was one to untie.
+func give_back() -> bool:
+	if untying >= 0.0 or tied.is_empty() or _player.hands.held != null:
+		return false
+	untying = _tuning.untie_seconds
+	_to_hand = true
+	return true
+
+
+## Lets go of every line tied on, once they're untied. Says whether there was any.
 func let_go() -> bool:
-	var hands := _player.hands
-	var any := false
-	if hands.held != null and carries_line(hands.held):
-		hands.drop()
-		any = true
-	if not tied.is_empty() and (untying < 0.0 or _to_hand):
-		untying = _tuning.untie_seconds if untying < 0.0 else untying
-		_to_hand = false
-		any = true
-	return any
+	if tied.is_empty() or (untying >= 0.0 and not _to_hand):
+		return false
+	if untying < 0.0:
+		untying = _tuning.untie_seconds
+	_to_hand = false
+	return true
 
 
 ## Whether a body has a live line on it.
@@ -92,15 +91,6 @@ func carries_line(body: Node) -> bool:
 		if child is RopeEnd and not ropes.lines_on(child).is_empty():
 			return true
 	return false
-
-
-func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed("tie_line"):
-		if tie_or_untie():
-			get_viewport().set_input_as_handled()
-	elif event.is_action_pressed("let_go"):
-		if let_go():
-			get_viewport().set_input_as_handled()
 
 
 func _physics_process(delta: float) -> void:

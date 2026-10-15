@@ -48,7 +48,9 @@ func run() -> void:
 		check(hands.grab(), "you take up a towed line's stake")
 		await simulate(0.5)
 		if i == 0:
-			check(world.player.waist.tie_or_untie(), "and tie it at your waist")
+			# Looking up, not at the sand where F would drive it: F ties it on.
+			look(eye(), eye() + Vector3(0.0, 1.0, -1.0))
+			check(hands.interact() and world.player.waist.holds(spare), "and tie it at your waist")
 			await simulate(0.2)
 	blow(Vector2(0.0, wind.storm_speed()))
 	await simulate(20.0)

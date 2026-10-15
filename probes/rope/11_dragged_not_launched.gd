@@ -66,7 +66,8 @@ func _dragged(where: String, site: Array, waist: bool) -> void:
 	await simulate(0.5)
 	var line := await lead(planter)
 	if waist:
-		check(player.waist.tie_or_untie(), "you tie it at your waist")
+		# F with nothing to work ties the line in your hand on.
+		check(hands.interact(), "you tie it at your waist")
 	# Set up where the probe put you; dragged, you move as you really move.
 	player.set_physics_process(true)
 	player.collision_layer = 1

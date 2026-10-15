@@ -5,8 +5,8 @@ extends Node3D
 ## it slides out the way it went in. Carry it in front of your eyes and aim at
 ## a free socket of its kind: aimed within reach of where it would sit, it
 ## leans in, a ghost shows the spot, and it snaps home with a clunk. Only a part
-## held here ever snaps; nothing fits by being bumped. A stake held over the
-## sand goes in where you look.
+## held here ever snaps; nothing fits by being bumped. E picks up, takes out and
+## puts in; F works what you look at or uses what you hold; G drops.
 
 signal fitted(part: Part, device: Device, socket: Socket)
 signal taken(part: Part, device: Device, socket: Socket)
@@ -125,15 +125,11 @@ func _ready() -> void:
 
 
 ## E: take what you're looking at, or, holding a part, fit it now if a socket
-## is in tug range, or, holding a stake, drive it into the sand you look at.
-## Says whether it did anything.
+## is in tug range. Says whether it did anything.
 func grab() -> bool:
 	if held != null:
 		if phase == Phase.HELD and socket != null:
 			_fit(socket)
-			return true
-		if phase == Phase.HELD and held is Stake and look_sand:
-			_drive(held)
 			return true
 		return false
 	_look()
@@ -147,6 +143,31 @@ func grab() -> bool:
 		_pick_up(look_device)
 		return true
 	return false
+
+
+## F: work the device you look at, or use what you hold. Holding a line with
+## nothing else to do, it goes on your waist; empty-handed, the last line at
+## your waist comes back to your hands. Says whether it did anything.
+func interact() -> bool:
+	_look()
+	if look_device != null and look_device.interact(_player):
+		return true
+	if held == null:
+		return _player.waist.give_back()
+	if phase != Phase.HELD:
+		return false
+	var used := false
+	if held is Part:
+		used = (held as Part).use(_player, look_point)
+	elif held is Device:
+		used = (held as Device).use(_player, look_point)
+	return used or _player.waist.take_from_hands()
+
+
+## A clunk, for something put home by hand.
+func clunk() -> void:
+	_play(CLUNKS[_clunks % CLUNKS.size()], CLUNK_DB)
+	_clunks += 1
 
 
 ## Takes a body straight into your hands from wherever it is, if they're free:
@@ -215,9 +236,16 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("hands_grab"):
 		if grab():
 			get_viewport().set_input_as_handled()
-	elif event.is_action_pressed("hands_drop") and held != null:
-		drop()
-		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("interact"):
+		if interact():
+			get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("hands_drop"):
+		# Empty-handed, it lets go of what's at your waist.
+		if held != null:
+			drop()
+			get_viewport().set_input_as_handled()
+		elif _player.waist.let_go():
+			get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("hands_throw") and held != null \
 			and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		throw()
@@ -294,16 +322,6 @@ func _pick_up(body: RigidBody3D) -> void:
 		stake.global_position.y = _player.world.height_under(stake.global_position) + Stake.LENGTH * 0.5 + 0.02
 	_grip(body)
 	_arrive_from(body.global_transform)
-
-
-## A held stake goes into the sand where you look, upright, and holds there.
-func _drive(stake: Stake) -> void:
-	var world := _player.world
-	var at := look_point
-	_let_go()
-	stake.drive(at, world.height_under(at))
-	_play(CLUNKS[_clunks % CLUNKS.size()], CLUNK_DB)
-	_clunks += 1
 
 
 ## The device holds still while the part slides straight out along its
