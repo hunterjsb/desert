@@ -148,7 +148,9 @@ The world owns the ropes and the look-test uses them; Stage 5 builds the rest on
 while the storm wall engulfs it reads right. Shelters are spheres Weather reads by
 distance and the storm shaders carve (up to 8, so bubbles nest); inside, the felt storm
 and wind are zero, the senses read clear and the light still follows the open storm.
-Stage 6 builds the shield device on that.
+Stage 6 builds the shield device on that. The look-test's shield is a fixed prop with a
+key, only for judging the look; the real one is an object, a generator you carry, set
+down and switch on, with the bubble following it (Hunter, 2026-10-15).
 
 **Builds:**
 - The shield device: carried, placed, toggled, the 0.6 s bloom.
