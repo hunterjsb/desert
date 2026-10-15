@@ -7,8 +7,8 @@ extends DeviceProbe
 var hands: Hands
 
 
-func load_hands(run_seed := 1234) -> void:
-	await load_world(run_seed)
+func load_hands(run_seed := 1234, salvage := false) -> void:
+	await load_world(run_seed, true, salvage)
 	hands = world.player.hands
 	# You go where the probe puts you, and touch nothing on the way.
 	world.player.set_physics_process(false)

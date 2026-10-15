@@ -10,10 +10,13 @@ const BOX_MASS := 10.0
 var world: World
 
 
-## Ground probes run in still air, so the wind can't move what they measure.
-func load_world(run_seed := 1234, still_air := true) -> void:
+## Ground probes run in still air, so the wind can't move what they measure,
+## and without ruins and finds, so nothing found stands in it; salvage's own
+## probes ask for them.
+func load_world(run_seed := 1234, still_air := true, salvage := false) -> void:
 	var tuning := Tuning.current()
 	tuning.run_seed = run_seed
+	tuning.salvage = salvage
 	if still_air:
 		tuning.prevailing_speed = 0.0
 		tuning.prevailing_sway = 0.0

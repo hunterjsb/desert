@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="Script" path="res://game/world/world.gd" id="1_world"]
 [ext_resource type="Script" path="res://game/world/terrain.gd" id="2_terrain"]
@@ -9,6 +9,7 @@
 [ext_resource type="Script" path="res://game/shield/wear.gd" id="11_wear"]
 [ext_resource type="Script" path="res://game/weather/storm_face.gd" id="5_face"]
 [ext_resource type="Script" path="res://game/weather/atmosphere.gd" id="6_atmosphere"]
+[ext_resource type="Script" path="res://game/salvage/salvage.gd" id="12_salvage"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
 sky_horizon_color = Color(0.86, 0.78, 0.66, 1)
@@ -53,6 +54,9 @@ script = ExtResource("11_wear")
 
 [node name="Ropes" type="Node3D" parent="."]
 script = ExtResource("10_ropes")
+
+[node name="Salvage" type="Node" parent="."]
+script = ExtResource("12_salvage")
 
 [node name="Content" type="Node3D" parent="."]
 

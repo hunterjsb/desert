@@ -3,6 +3,8 @@ extends RefCounted
 ## The crude far view: one coarse, visual-only mesh out to the haze, with a hole
 ## where the chunks are. It overlaps the outermost chunk ring by one chunk and sits
 ## a little lower, so a ring that lags the player by a chunk still shows no gap.
+## Its samples are 32 m apart and on the lattice, so it reads the dunes alone: a
+## ruin is too small to show this far.
 
 
 static func make(shape: TerrainShape, center: Vector2i, tuning: Tuning) -> Array:
@@ -21,7 +23,7 @@ static func make(shape: TerrainShape, center: Vector2i, tuning: Tuning) -> Array
 	bordered.resize(w * w)
 	for j in w:
 		for i in w:
-			bordered[j * w + i] = shape.height_at(x0 + lo + (i - 1) * step, z0 + lo + (j - 1) * step)
+			bordered[j * w + i] = shape.dunes(x0 + lo + (i - 1) * step, z0 + lo + (j - 1) * step)
 
 	var vertices := PackedVector3Array()
 	var normals := PackedVector3Array()

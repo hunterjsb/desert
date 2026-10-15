@@ -12,8 +12,8 @@ var wind: RopeWind
 var deepest := 0.0
 
 
-func load_moving(run_seed := 1234) -> void:
-	await load_world(run_seed)
+func load_moving(run_seed := 1234, salvage := false) -> void:
+	await load_world(run_seed, true, salvage)
 	player = world.player
 	hold([])
 

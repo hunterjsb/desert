@@ -382,6 +382,31 @@ static var _current: Tuning
 @export var condenser_hot: float = 40.0
 @export var condenser_hot_share: float = 0.2
 
+@export_group("Salvage")
+## Ruins and finds. Probes of other systems switch them off, as ground probes
+## still the air, so a buried crate never stands in what they measure.
+@export var salvage: bool = true
+## Finds in a chunk of open sand, on average, and at most.
+@export var finds_per_chunk: float = 1.5
+@export var finds_most: int = 4
+## Share of finds from the deep layer where the weather has been calm, and
+## where it has stormed the whole time; between, by how hard it's been.
+@export var deep_calm: float = 0.05
+@export var deep_storm: float = 0.6
+## How far back the weather counts toward what a place shows, hours, read
+## every this many minutes of world time.
+@export var exposure_hours: float = 2.0
+@export var exposure_step_minutes: float = 10.0
+## Wind this hard uncovers nothing, and this hard as much as a storm, m/s.
+@export var exposure_calm_wind: float = 6.0
+@export var exposure_gale_wind: float = 24.0
+## At most one ruin in each square this many chunks a side.
+@export var ruin_cell_chunks: int = 5
+## A ruin stands only where the dunes over its ground rise no more than
+## this, m, and are nowhere steeper than this, degrees.
+@export var ruin_max_rise: float = 1.5
+@export var ruin_max_degrees: float = 20.0
+
 @export_group("Loose objects")
 ## Wind drag per (m/s)² per m² of a thing's biggest face: half the air density
 ## times its drag coefficient. Matched to the rope look-test's floater, the feel

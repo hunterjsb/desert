@@ -2,8 +2,15 @@ class_name Terrain
 extends Node3D
 ## Streams square chunks around the player by grid position, never by what a
 ## raycast happens to hit. Workers compute the arrays and convert them into
-## meshes; the main thread only attaches them, retires old ground and swaps the
-## far ring, all inside one time budget per frame.
+## meshes; the main thread only attaches them, retires old ground, swaps the
+## far ring and lays out what lies on the ground, all inside one time budget
+## per frame.
+
+## A chunk's ground became solid, or stopped being solid, or the chunk was
+## forgotten: what lies on the ground comes and goes with it.
+signal grounded(chunk: TerrainChunk)
+signal ungrounded(chunk: TerrainChunk)
+signal unloaded(coord: Vector2i)
 
 ## Collision samples are 1 m apart, so near chunks are too: what you see is
 ## exactly what you stand on.
@@ -78,6 +85,7 @@ func _process(_delta: float) -> void:
 	_retire()
 	_update_far()
 	_collect()
+	_world.salvage.stream(_deadline)
 	frame_ms = (Time.get_ticks_usec() - started) / 1000.0
 	slowest_frame_ms = maxf(slowest_frame_ms, frame_ms)
 	Dev.put("terrain/chk", "%d" % _chunks.size())
@@ -262,12 +270,14 @@ func _upload(build: ChunkBuild) -> void:
 	if chunk == null:
 		chunk = TerrainChunk.new()
 		chunk.coord = build.coord
+		chunk.side = _size
 		_chunks[build.coord] = chunk
 		add_child(chunk)
 		_place(chunk)
 	chunk.show_build(build)
 	if build.step == NEAR_STEP and d <= _tuning.near_radius and not chunk.has_collision():
 		chunk.add_collision(_size, _sand)
+		grounded.emit(chunk)
 
 
 func _retire() -> void:
@@ -278,15 +288,18 @@ func _retire() -> void:
 			continue
 		var d := _distance(coord)
 		if d > _tuning.view_radius + 1:
+			unloaded.emit(coord)
 			# Freed now, not queued, so the cost lands inside the budget.
 			chunk.free()
 			_chunks.erase(coord)
 		elif d > _tuning.near_radius + 1:
 			if chunk.has_collision():
+				ungrounded.emit(chunk)
 				chunk.remove_collision()
 		elif d <= _tuning.near_radius and chunk.step == NEAR_STEP and not chunk.has_collision():
 			# Back in range after leaving it: the same samples, so the same ground.
 			chunk.add_collision(_size, _sand)
+			grounded.emit(chunk)
 
 
 func _update_far() -> void:

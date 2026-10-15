@@ -7,7 +7,8 @@ extends Node3D
 ## leans in, a ghost shows the spot, and take snaps it home with a clunk. Only
 ## a part held here ever snaps, and only when you take it home; nothing fits by
 ## being bumped. Take picks up, takes out, puts in and puts down; use works what
-## you look at or uses what you hold.
+## you look at or uses what you hold. Finds lying in the sand are taken the same
+## way, and whatever you take, take from, fit to or use becomes yours.
 
 signal fitted(part: Part, device: Device, socket: Socket)
 signal taken(part: Part, device: Device, socket: Socket)
@@ -147,16 +148,22 @@ func grab() -> bool:
 			drop()
 		return true
 	_look()
+	var salvage := _player.world.salvage
 	if look_part != null:
+		salvage.unbury(look_part)
 		_pick_up(look_part)
 		return true
 	if look_socket != null and look_socket.part != null:
+		salvage.claim(look_device)
 		_take_out(look_device, look_socket)
 		return true
 	if look_device != null and look_device.carryable:
+		salvage.unbury(look_device)
 		_pick_up(look_device)
 		return true
-	if look_device != null and not look_device.freeze:
+	if look_device != null and (not look_device.freeze or salvage.lying(look_device)):
+		# Something found comes up out of the sand as you take hold of it.
+		salvage.unbury(look_device)
 		grasp.take(look_device)
 		return true
 	return false
@@ -168,6 +175,7 @@ func grab() -> bool:
 func interact() -> bool:
 	_look()
 	if look_device != null and look_device.interact(_player):
+		_player.world.salvage.claim(look_device)
 		return true
 	if held == null:
 		return grasp.body == null and _player.waist.give_back()
@@ -244,6 +252,8 @@ static func describe(label: String, mass: float, stats: Dictionary) -> String:
 		bits.append("%d/%d kcal" % [stats.get("food_left_kcal", 0.0), stats.food_kcal])
 	if stats.has("making_lph"):
 		bits.append("making %.1f L/h" % stats.making_lph)
+	if stats.has("found"):
+		bits.append("%s find" % stats.found)
 	if stats.get("dark", false):
 		bits.append("DARK")
 	if stats.get("solar_w", 0.0) > 0.0:
@@ -359,7 +369,9 @@ func _assist(eye: Transform3D) -> void:
 	var best: RigidBody3D = null
 	var best_score := INF
 	var kept := INF
-	for child in _player.world.content.get_children():
+	if not is_instance_valid(_picked):
+		_picked = null
+	for child in _player.world.content.get_children() + _player.world.salvage.near(eye.origin):
 		var body := child as RigidBody3D
 		if body == null or not (body is Part or (body is Device and (body as Device).carryable)):
 			continue
@@ -511,7 +523,7 @@ func _find_socket() -> void:
 	var best: Socket = null
 	var nearest := INF
 	var kind: StringName = held.kind if held is Part else &""
-	for child in _player.world.content.get_children():
+	for child in _player.world.content.get_children() + _player.world.salvage.near(sight_from):
 		var device := child as Device
 		if device == null or device.global_position.distance_to(sight_from) > _tuning.reach + 2.0:
 			continue
@@ -584,6 +596,7 @@ func _settle_in(seat: Transform3D) -> Transform3D:
 func _fit(into: Socket) -> void:
 	var device := into.get_parent() as Device
 	var part := held as Part
+	_player.world.salvage.claim(device)
 	_let_go()
 	device.fit(part, into)
 	_play(CLUNKS[_clunks % CLUNKS.size()], CLUNK_DB)
@@ -817,13 +830,16 @@ func _build_hud() -> void:
 	hud.add_child(_readout)
 
 
-## A part's stats as they stand: a battery's charge, a line's length and load.
+## A part's stats as they stand: a battery's charge, a line's length and
+## load, the layer it was found in.
 func _part_stats(part: Part) -> Dictionary:
 	var now := part.stats.duplicate()
 	if part is Battery:
 		now["charge_wh"] = part.charge_wh
 	if part.has_meta(&"line"):
 		now.merge((part.get_meta(&"line") as Line).readout())
+	if part.has_meta(&"layer"):
+		now["found"] = part.get_meta(&"layer")
 	return now
 
 
@@ -838,6 +854,8 @@ func _show(delta: float) -> void:
 		stats["in_w"] = look_device.production_w()
 		stats["out_w"] = look_device.demand_w() if look_device.powered else 0.0
 		stats["dark"] = not look_device.powered
+		if look_device.has_meta(&"layer"):
+			stats["found"] = look_device.get_meta(&"layer")
 		line = describe(look_device.label, stats.mass, stats)
 	if line != "" and line != _readout.text:
 		_readout.text = line

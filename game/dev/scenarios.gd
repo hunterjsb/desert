@@ -11,6 +11,8 @@ extends RefCounted
 ## in: 0 is midnight, 0.5 noon. "camp" drops a floating camp in front of you,
 ## each piece on one line to a stake, with stakes and coils to add more.
 ## "survive" starts you over on sealed water, with a crude camp to keep you.
+## "ruin" stands you in front of the ruin nearest where the run began, clear
+## and calm, with finds round it and a bare crate frame of your own.
 const LIST: Array[Dictionary] = [
 	{"key": "spawn", "label": "spawn: where and when the run began", "kind": "spawn"},
 	{"key": "clear", "label": "clear day, no storm for 10 min", "kind": "clear", "day": [0.42, 0.55]},
@@ -29,6 +31,8 @@ const LIST: Array[Dictionary] = [
 		"distance": 500.0, "day": [0.35, 0.55], "camp": true},
 	{"key": "survive", "label": "survive a few days: sealed water, a crude condenser, a shield, at dawn", "kind": "clear",
 		"day": [0.25, 0.3], "survive": true},
+	{"key": "ruin", "label": "go looking: a ruin and finds near you, your own bare crate frame, clear and calm",
+		"kind": "ruin", "day": [0.35, 0.5], "calm": 6.0},
 ]
 
 ## The test kit, as [catalog id, metres to your right, metres ahead]: empty
@@ -63,6 +67,11 @@ const SURVIVE_SHIELD := [0.9, 2.3]
 const SURVIVE_CABLE := [0.0, 1.7]
 const SURVIVE_RATIONS := [[0.35, 1.3], [0.6, 1.3]]
 
+## Your own frame, to fit what you find to: right and ahead.
+const YOURS := [1.5, 2.5]
+## How far from where the run began to look for a ruin, m.
+const RUIN_SEARCH := 4000.0
+
 ## How far upwind a search looks for edges, and its step.
 const REACH := 6000.0
 const STEP := 25.0
@@ -86,6 +95,8 @@ static func find(world: World, scenario: Dictionary) -> Dictionary:
 	var spawn := world.spawn
 	if scenario.kind == "spawn":
 		return {"x": spawn.x, "z": spawn.y, "yaw": 0.0, "time": 0.0}
+	if scenario.kind == "ruin":
+		return _at_ruin(world, scenario)
 	var field := world.weather.field
 	var day := world.weather.day
 	var t := 0.0
@@ -105,7 +116,7 @@ static func find(world: World, scenario: Dictionary) -> Dictionary:
 static func _place(field: WeatherField, scenario: Dictionary, from: Vector2, upwind: Vector2,
 		t: float) -> Dictionary:
 	match scenario.kind:
-		"clear", "sky", "kit":
+		"clear", "sky", "kit", "ruin":
 			if field.raw_storm_at(from.x, from.y, t) <= 0.0 \
 					and field.wind_at(from.x, from.y, t).length() < scenario.get("calm", INF) \
 					and (scenario.kind == "sky" or field.next_change(from.x, from.y, t, 600.0, 10.0) == INF):
@@ -139,6 +150,24 @@ static func _place(field: WeatherField, scenario: Dictionary, from: Vector2, upw
 					var at := from + upwind * (d - DEEP)
 					return {"x": at.x, "z": at.y}
 				d += STEP
+	return {}
+
+
+## In front of the nearest ruin's door, facing it, at a moment in the day's
+## window that's clear and calm there and stays clear ten minutes.
+static func _at_ruin(world: World, scenario: Dictionary) -> Dictionary:
+	var field := world.weather.field
+	var day := world.weather.day
+	for ruin in world.shape.ruins.around(world.spawn.x, world.spawn.y, RUIN_SEARCH):
+		var at := ruin.to_world(Ruin.APPROACH)
+		var door := ruin.to_world(Ruin.DOORS[0][0])
+		var t := 0.0
+		while t < HORIZON:
+			var hour := day.time_of_day(t)
+			if hour >= scenario.day[0] and hour <= scenario.day[1] and not _place(field, scenario, at, Vector2.ZERO, t).is_empty():
+				var facing := (door - at).normalized()
+				return {"x": at.x, "z": at.y, "yaw": atan2(-facing.x, -facing.y), "time": t}
+			t += TIME_STEP
 	return {}
 
 
@@ -243,6 +272,11 @@ static func survive(world: World) -> Array[Node3D]:
 		_drop(world, ration, Transform3D(yaw * Basis(Vector3.RIGHT, -PI / 2.0), Vector3.ZERO), entry[0], entry[1])
 		dropped.append(ration)
 	return dropped
+
+
+## Your own bare crate frame on the sand beside you, to fit what you find to.
+static func yours(world: World) -> Array[Node3D]:
+	return [_standing(world, &"crate_frame", [], YOURS)]
 
 
 ## A device standing on the sand, squared to you, with these parts fitted.

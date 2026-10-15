@@ -1,9 +1,12 @@
 class_name TerrainChunk
 extends Node3D
-## One square of ground. Its collision is built once from the same samples as its
-## mesh, and never reshaped while it exists.
+## One square of ground, and the ruin standing on it if there is one. Its
+## collision is built once from the same samples as its mesh, with the ruin's
+## boxes in the same body, and never reshaped while it exists.
 
 var coord: Vector2i
+## Metres a side.
+var side := 64
 ## Metres between samples; 0 until the first build arrives.
 var step := 0
 var heights: PackedFloat32Array
@@ -13,6 +16,10 @@ var _view: GeometryInstance3D
 var _mesh: RID
 var _body: StaticBody3D
 var _shape: HeightMapShape3D
+## The ruin standing on it, part of its ground: drawn from the first build,
+## solid with the sand.
+var _ruin: Ruin
+var _ruin_view: MeshInstance3D
 
 
 func show_build(build: ChunkBuild) -> void:
@@ -26,6 +33,10 @@ func show_build(build: ChunkBuild) -> void:
 	build.mesh = RID()
 	step = build.step
 	heights = build.heights
+	if build.ruin != null and _ruin_view == null:
+		_ruin = build.ruin
+		_ruin_view = _ruin.view(_ruin_at())
+		add_child(_ruin_view)
 
 
 ## Needs 1 m samples: a heightmap's samples are one unit apart.
@@ -41,6 +52,8 @@ func add_collision(size: int, sand: PhysicsMaterial) -> void:
 	_body = StaticBody3D.new()
 	_body.physics_material_override = sand
 	_body.add_child(holder)
+	if _ruin != null:
+		_ruin.add_shapes(_body, _ruin_at())
 	add_child(_body)
 
 
@@ -54,6 +67,15 @@ func remove_collision() -> void:
 
 func has_collision() -> bool:
 	return _body != null
+
+
+func ruin() -> Ruin:
+	return _ruin
+
+
+## Where its ruin's frame sits in this chunk's.
+func _ruin_at() -> Vector3:
+	return Vector3(_ruin.center.x - coord.x * side, _ruin.floor_y, _ruin.center.y - coord.y * side)
 
 
 func collision_data() -> PackedFloat32Array:

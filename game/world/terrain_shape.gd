@@ -9,7 +9,8 @@ extends RefCounted
 ## steepen what they join, so nothing passes sand's 33° (look/dunes/measure
 ## checks). Between the 1 m lattice points the ground is the lattice's
 ## triangles, split as the mesh and collision split them, so all three agree
-## exactly, crests included.
+## exactly, crests included. Ruins are part of it: each one's footprint is
+## pressed into the dunes it stands in (Ruin).
 
 ## The wander changes this much slower down the wind than along a crest, so
 ## neighbouring crests wander together, as real ones do.
@@ -39,6 +40,8 @@ var _meander := FastNoiseLite.new()
 var _fork_meander := FastNoiseLite.new()
 var _fork_patch := FastNoiseLite.new()
 var _saddle := FastNoiseLite.new()
+## Where this run's ruins stand.
+var ruins: RuinSites
 
 
 func _init(run_seed: int, tuning: Tuning) -> void:
@@ -56,6 +59,7 @@ func _init(run_seed: int, tuning: Tuning) -> void:
 	_field(_fork_meander, run_seed + 14, tuning.dune_wander_wavelength * 0.8, 1)
 	_field(_fork_patch, run_seed + 15, tuning.dune_fork_wavelength, 1)
 	_field(_saddle, run_seed + 16, tuning.dune_saddle_wavelength, 1)
+	ruins = RuinSites.new(run_seed, tuning, self)
 
 
 static func _field(noise: FastNoiseLite, noise_seed: int, wavelength: float, octaves: int) -> void:
@@ -69,14 +73,15 @@ static func _field(noise: FastNoiseLite, noise_seed: int, wavelength: float, oct
 ## World coordinates in metres. FastNoiseLite takes 32-bit inputs, so detail
 ## coarsens after ~1000 km of travel, but every reader still agrees exactly.
 func height_at(x: float, z: float) -> float:
+	var ruin := ruins.covering(x, z)
 	var i := floorf(x)
 	var j := floorf(z)
 	var fx := x - i
 	var fz := z - j
 	if fx == 0.0 and fz == 0.0:
-		return sample(i, j)
-	return across(fx, fz, sample(i + 1.0, j), sample(i, j + 1.0),
-		sample(i, j) if fx + fz <= 1.0 else sample(i + 1.0, j + 1.0))
+		return sample(i, j, ruin)
+	return across(fx, fz, sample(i + 1.0, j, ruin), sample(i, j + 1.0, ruin),
+		sample(i, j, ruin) if fx + fz <= 1.0 else sample(i + 1.0, j + 1.0, ruin))
 
 
 ## Between lattice points: the triangle a point falls in, split from (i+1, j)
@@ -88,13 +93,20 @@ static func across(fx: float, fz: float, east: float, south: float, corner: floa
 	return corner + (1.0 - fx) * (south - corner) + (1.0 - fz) * (east - corner)
 
 
-## The ground at a lattice point.
-func sample(x: float, z: float) -> float:
+## The ground at a lattice point, with the footprint of the ruin whose
+## ground it might be on, if any: RuinSites says which.
+func sample(x: float, z: float, ruin: Ruin = null) -> float:
 	var land := _land.get_noise_2d(x, z)
 	# Down the wind, and across it.
 	var u := x * _down.x + z * _down.y
 	var v := z * _down.x - x * _down.y
-	return land * _land_height + _ridges(u, v, _sand_on(x, z, land))
+	var h := land * _land_height + _ridges(u, v, _sand_on(x, z, land))
+	return h if ruin == null else ruin.sand(x, z, h)
+
+
+## The dunes alone at a lattice point, before any ruin.
+func dunes(x: float, z: float) -> float:
+	return sample(x, z)
 
 
 ## How much sand lies here, 0 to 1: dune seas where it's high.
