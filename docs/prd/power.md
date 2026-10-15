@@ -112,7 +112,7 @@ the felt-weather rule.
   dark, so a crate's tray stops and it settles to the sand. A dark pool runs nothing
   and lets its sources recharge it, and restarts once its batteries hold 5%.
 - **The tick reads each source at its own world time**, four times a second of world
-  time, so F5 charges faster and 30, 60 or 120 frames a second give the same charge to
+  time, so the dev time warp charges faster and 30, 60 or 120 frames a second give the same charge to
   the bit.
 - **The turbine** makes up to 200 W in a gale and nothing while it's being moved.
 - **Two kinds of cable** (decided 2026-10-14, from the Stage 4 playtest). **Common

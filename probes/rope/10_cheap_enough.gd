@@ -3,6 +3,7 @@ extends LineProbe
 ## devices each on two lines to stakes upwind, in a gusting storm, cost the
 ## rope system a small share of a 60 fps frame every tick: solving, bearing and
 ## drawing them, and pinning their ends each frame.
+## Runs alone: it times real frames.
 
 const DEVICES := 15
 ## A quarter of a 60 fps frame's 16.7 ms on average, and half of it in the

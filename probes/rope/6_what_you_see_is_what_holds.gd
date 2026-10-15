@@ -52,7 +52,7 @@ func run() -> void:
 	look(spot(-1.2, -4.2) + Vector3.UP * 1.65, coil.coil.global_position)
 	await simulate(1.0)
 
-	# A stake taken up with E and driven with F where you look.
+	# A stake taken up and driven with use where you look.
 	check(await take(stake), "you take up a stake")
 	await simulate(0.4)
 	look(spot(-2.0, -7.5) + Vector3.UP * 1.65, spot(-2.0, -9.0))

@@ -321,6 +321,9 @@ func _after_move(from: Vector3, meant: Vector2, delta: float, was_on_floor: bool
 			open = open and sand
 			continue
 		open = false
+		var loose := hit.get_collider() as RigidBody3D
+		if loose != null and not loose.freeze:
+			_shove(loose, hit.get_position(), -normal, meant / delta, delta)
 		var across := Vector2(normal.x, normal.z)
 		if across.length() > 0.1:
 			across = across.normalized()
@@ -340,6 +343,18 @@ func _after_move(from: Vector3, meant: Vector2, delta: float, was_on_floor: bool
 			_sliding = (crouched and own.length() >= _tuning.slide_start_speed) or own.length() > _tuning.sprint_speed
 		vy = 0.0
 	velocity.y = vy
+
+
+## Walking into a loose thing pushes it on at the pace you meant, as hard as
+## your strength allows, so a heavy one barely moves and a floating one goes.
+func _shove(body: RigidBody3D, at: Vector3, into: Vector3, meant: Vector2, delta: float) -> void:
+	into.y = 0.0
+	if into.length() < 0.1:
+		return
+	into = into.normalized()
+	var short := Vector3(meant.x, 0.0, meant.y).dot(into) - body.linear_velocity.dot(into)
+	if short > 0.0:
+		body.apply_impulse(into * minf(body.mass * short, _tuning.hand_strength * delta), at - body.global_position)
 
 
 ## The sand is a hard floor: Jolt's heightmap is a skin, so anything that got

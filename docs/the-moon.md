@@ -21,7 +21,7 @@ world lives on a 24 km rock. A body that small couldn't hold gravity or air. The
 size is whatever makes the rest of this profile honest; [the body research](body-research.md)
 works it out from the feel we want. The leaning is **0.4–0.5 g** (a radius of roughly
 3,500–3,900 km), pending Hunter's call. The game's gravity is unchanged for now, and the
-F6 toggle tries the lower value. **Everything else stays honest.**
+dev gravity toggle tries the lower value. **Everything else stays honest.**
 
 ## The air: thin, unbreathable, fading
 

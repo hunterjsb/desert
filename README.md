@@ -10,7 +10,8 @@ Sand Game, the prototype this replaces, lives on the
 ## Working on it
 
 - **Godot 4.7.2**, pinned in `.godot-version`. Open the project in the editor and press
-  F5. **F3** toggles the dev overlay, which shows every number the game publishes.
+  F5. The dev overlay shows every number the game publishes; the game lists its keys,
+  which are defaults set in `game/core/controls.gd`.
 - **Tuning** lives in `game/tuning.tres`. Change numbers there, never in code.
 - **Probes** are headless checks, one folder per PRD under `probes/`. Run them with
   `scripts/probe.sh`; it needs a `godot` binary on your PATH, or set `GODOT`.

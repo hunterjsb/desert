@@ -177,7 +177,7 @@ func _settle(seconds: float) -> void:
 		_devices[i].angular_velocity = Vector3.ZERO
 
 
-## The control: held and aimed, parts do fit.
+## The control: held, aimed and taken home, parts do fit.
 func _held_and_aimed_fits() -> void:
 	var fits_before := _hand_fits
 	# The planter gets a battery too: a tray only floats a device with power.
@@ -194,7 +194,7 @@ func _held_and_aimed_fits() -> void:
 		var lying := await _take_in_hand(FILL[socket.kind])
 		var at := seat(socket)
 		if job[2]:
-			# Under a resting device: aim low at its side, just off its front face, and press E.
+			# Under a resting device: aim low at its side, just off its front face, and press take.
 			var side := owner.global_position + owner.global_basis.z * 0.31 + Vector3.DOWN * 0.12
 			look(side + owner.global_basis.z * 1.2 + Vector3.UP * 0.9, side)
 			await simulate(0.1)
@@ -203,6 +203,9 @@ func _held_and_aimed_fits() -> void:
 		else:
 			look(at * middle(lying) + at.basis.z * 1.0 + Vector3.UP * 0.4, at * middle(lying))
 			await simulate(0.6)
+			check(socket.part == null and hands.socket == socket,
+				"a held %s leans into %s's %s socket and waits for take" % [lying.label, owner.label, socket.kind])
+			hands.grab()
 		check(socket.part == lying, "a held %s, aimed, fits %s's %s socket" % [lying.label, owner.label, socket.kind])
 	check(_hand_fits - fits_before == 4, "through the hands")
 	await simulate(2.0)

@@ -46,7 +46,7 @@ These rules come straight from Sand Game's failure, and they don't bend.
    dropped on it, went out the bottom. Now no corner of a loose body may sink more
    than Jolt's few-centimetre slop below `height_at`. Anything whose middle still ends
    up below the sand is put back on top and **counted**. Every world probe fails if
-   that count isn't zero, and it shows on F3.
+   that count isn't zero, and it shows on the dev overlay.
 
 ## Stateless, but located
 
@@ -118,7 +118,10 @@ Built after the skeleton loop works end to end, in roughly this order:
   the wind, you walk up gentle slopes and slide down steep faces. Travelling into it, you
   climb slip faces, which puts the difficulty dial into the ground itself. Dunes face the
   long-term prevailing wind of their region, not the day's wind, so they stay stable and
-  seams stay exact.
+  seams stay exact. **Pulled forward** (Hunter, 2026-10-15): he wants the dunes bigger and
+  steeper in places, as long as they look good. A dune look-test (`look/dunes`) runs
+  ahead, as the storm wall's did: candidate shapes in the real world, judged by eye,
+  before any becomes the default.
 - **Latitude and the poles** (decided). Toward the poles, storms weaken and the
   temperature swings get wider (see the vision). This system supplies latitude; Wind &
   storms and Survival read it. Fixed fields get sampled from the true point on the

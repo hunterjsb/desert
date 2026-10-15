@@ -22,7 +22,7 @@ const GONE_PITCH := 0.5
 ## How dim the shell drops in a flicker.
 const FLICKER := 0.25
 
-## The switch, which F flips. The bubble stands while it's on and has power.
+## The switch, which use flips. The bubble stands while it's on and has power.
 var on := false
 ## Metres to the shell, fully open.
 var size := Tuning.current().shield_radius
@@ -89,7 +89,7 @@ func use(by: Player, _at: Vector3) -> bool:
 	return interact(by)
 
 
-## F: switches it. With nothing to run on it won't start, only fizzle, and the
+## Use: switches it. With nothing to run on it won't start, only fizzle, and the
 ## switch stays off. Wrecked, it does nothing.
 func interact(_by: Player) -> bool:
 	if wrecked():

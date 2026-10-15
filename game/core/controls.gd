@@ -5,11 +5,11 @@ extends Node
 ## What F1 lists, before whatever the scene adds.
 const HELP := [
 	["click", "look, or throw what you hold"], ["WASD", "move"], ["Shift", "sprint"],
-	["E", "pick up, take out, put in"], ["F", "use what you look at or hold: switch a shield, drive a stake, waist a line"],
-	["G", "drop; empty-handed, let go of your waist"], ["Esc", "free the mouse"],
+	["E", "pick up, take out, put in, put down"], ["F", "use what you look at or hold: switch a shield, drive a stake, waist a line"],
+	["Esc", "free the mouse"],
 	["F1", "these keys"], ["F2", "scenarios"], ["F3", "numbers"],
-	["F4", "fly: Space up, Ctrl down"], ["F5", "speed up time"], ["F6", "low gravity"],
-	["Space", "jump"], ["Ctrl", "crouch; at a run or downhill, slide"],
+	["F4", "fly: Space up, C down"], ["F5", "speed up time"], ["F6", "low gravity"],
+	["Space", "jump"], ["C", "crouch; at a run or downhill, slide"],
 ]
 
 const KEYS := {
@@ -23,13 +23,12 @@ const KEYS := {
 	"toggle_dev_overlay": KEY_F3,
 	"dev_fly": KEY_F4,
 	"fly_up": KEY_SPACE,
-	"fly_down": KEY_CTRL,
+	"fly_down": KEY_C,
 	"jump": KEY_SPACE,
-	"crouch": KEY_CTRL,
+	"crouch": KEY_C,
 	"dev_time_warp": KEY_F5,
 	"dev_gravity": KEY_F6,
 	"hands_grab": KEY_E,
-	"hands_drop": KEY_G,
 	"interact": KEY_F,
 }
 

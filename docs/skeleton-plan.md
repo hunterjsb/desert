@@ -33,7 +33,7 @@ PRD passes.
   Looks come after the loop works.
 - **Tuning lives in one file.** Chunk size, storm speed, shield life and every other
   number sits in one tuning file, so tuning never means editing code.
-- **Scenarios for every playtest.** F2 drops you into a starting condition, like a storm
+- **Scenarios for every playtest.** A dev menu drops you into a starting condition, like a storm
   100 m away and coming at you, found in the run's own weather rather than faked. Each
   stage adds the scenarios its playtest needs, and a probe checks that each one
   delivers what it says.
@@ -52,7 +52,7 @@ PRD passes.
   failed, because a script error hangs instead of crashing. Seeds are fixed, and nothing
   is ever counted by node name.
 - **CI** runs every probe on every push.
-- **A dev overlay** (F3, as in Sand Game) shows every number. Probes read the same
+- **A dev overlay** (as in Sand Game) shows every number. Probes read the same
   values.
 
 **You play:** nothing yet. You check the layout and the runner.
@@ -78,7 +78,7 @@ readout.
 - A felt-weather wrapper, with no shelter yet, so everything built from here reads
   weather the right way from day one.
 - The 20-minute day and night, which solar will need.
-- A mode readout (walking, sprinting, flying) on the F3 overlay. The Stage 1 playtest
+- A mode readout (walking, sprinting, flying) on the dev overlay. The Stage 1 playtest
   found it hard to tell which one you're in, and the Stage 2 playtest wanted it off the
   screen.
 - Enough storm to know you're in one: dust streaming on the wind, a brown glow, and Sand

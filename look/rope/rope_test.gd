@@ -1,8 +1,8 @@
 extends Node
 ## The rope look-test: the test floater, a crate, stakes and you, tied up round
 ## spawn in the real world and its weather, to judge whether rope can feel
-## right. Your line and the tow are the game's own, so E, F and G work them as
-## they do anywhere; F1 lists the keys; probes/rope/ judge whether it's reliable.
+## right. Your line and the tow are the game's own, so take, use and throw work
+## them as they do anywhere; the game lists the keys; probes/rope/ judge whether it's reliable.
 ##   godot --path . res://look/rope/rope.tscn
 ##   godot --path . res://look/rope/rope.tscn -- --capture <dir>
 ##   godot --headless --path . res://look/rope/rope.tscn -- --bench

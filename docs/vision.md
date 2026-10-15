@@ -71,7 +71,11 @@ upgrade the camp → the camp sustains more of itself → go further, or into th
 - **The hoverboard is just for you:** fast, floaty and fun, for scouting and escaping. It
   tows nothing.
 - **Your hands plus about five inventory slots, and almost no menus.** Things live in
-  the world and in your hands, not in an inventory screen.
+  the world and in your hands, not in an inventory screen. (Hunter, 2026-10-15, loose:
+  one action brings up a very minimal overlay of your few slots and what's at your waist,
+  tied into the world rather than managed. Maybe putting something down while it's open
+  stows it. Most menus come as devices. A main menu exists for new run, resume and
+  options.)
 
 ## Runs
 

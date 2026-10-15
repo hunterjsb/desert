@@ -41,7 +41,7 @@ implies it. **Open: how far "or more" goes.** Water boils at about 69 °C at 0.3
 ground runs 60-90 °C in the afternoon, so much more air and the daily boil-off fades.
 
 **Leaning: 0.4-0.5 g, a radius of roughly 3,500-3,900 km.** The sessions say only "large";
-gravity is Hunter's call, and the F6 toggle lets him feel it. Caveat: 0.52 g implies a density
+gravity is Hunter's call, and the dev gravity toggle lets him feel it. Caveat: 0.52 g implies a density
 near 4,800 kg/m³, denser than Mars, while "volatile-rich" suggests lighter. At 3,000 kg/m³,
 0.45 g needs a radius near 5,000 km and a giant of 9-10 Jupiter masses. Arability is
 unchanged: natural regolith isn't soil, and you farm in planters with your own soil.
@@ -382,7 +382,7 @@ live there.*
 
 15. **Seasons and the poles:** near-zero tilt (the body research's leaning) or a tilt? Without
     one, "hotter days at the poles" needs a reason or goes.
-16. **Gravity and density:** 0.4-0.5 g via F6, and a bigger moon or a heavier giant.
+16. **Gravity and density:** 0.4-0.5 g via the dev gravity toggle, and a bigger moon or a heavier giant.
 17. **The lap:** the sessions call circumnavigation impractical or impossible, but the vision
     and [the moon](the-moon.md) have a walkable 150 km lap with reachable poles. Which holds?
 18. **The air over time:** how far above 0.3 bar, how thick at the eruptive peak, the
