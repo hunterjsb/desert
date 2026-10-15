@@ -302,7 +302,7 @@ static func bounds(body: Node) -> AABB:
 	for child in body.get_children():
 		var shape := child as CollisionShape3D
 		if shape != null and shape.shape != null:
-			var each := shape.transform * shape.shape.get_debug_mesh().get_aabb()
+			var each := shape.transform * Catalog.bounds(shape.shape)
 			box = each if first else box.merge(each)
 			first = false
 	return box

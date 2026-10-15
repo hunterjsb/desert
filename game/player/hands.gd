@@ -414,7 +414,7 @@ static func _box_of(body: RigidBody3D) -> AABB:
 	for child in body.get_children():
 		var shape := child as CollisionShape3D
 		if shape != null and shape.shape != null:
-			var each := shape.transform * shape.shape.get_debug_mesh().get_aabb()
+			var each := shape.transform * Catalog.bounds(shape.shape)
 			box = each if first else box.merge(each)
 			first = false
 	body.set_meta(&"hands_box", box)
@@ -466,7 +466,7 @@ func _grip(part: RigidBody3D) -> void:
 			continue
 		_shapes.append(shape)
 		_skins.append(_skin(shape.shape))
-		var box := shape.transform * shape.shape.get_debug_mesh().get_aabb()
+		var box := shape.transform * Catalog.bounds(shape.shape)
 		_bounds = box if first else _bounds.merge(box)
 		first = false
 	_middle = _bounds.get_center()

@@ -256,7 +256,7 @@ func _hold_above_sand(body: RigidBody3D) -> void:
 			continue
 		# Any shape, by its bounds: a stake dragged by its line is a cylinder.
 		if not shape.has_meta(&"sand_box"):
-			shape.set_meta(&"sand_box", shape.shape.get_debug_mesh().get_aabb())
+			shape.set_meta(&"sand_box", Catalog.bounds(shape.shape))
 		var box: AABB = shape.get_meta(&"sand_box")
 		var to_world := body.global_transform * shape.transform
 		for i in 8:

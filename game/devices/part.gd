@@ -33,6 +33,6 @@ func depth() -> float:
 	for child in get_children():
 		var shape := child as CollisionShape3D
 		if shape != null and shape.shape != null:
-			var box := shape.transform * shape.shape.get_debug_mesh().get_aabb()
+			var box := shape.transform * Catalog.bounds(shape.shape)
 			deepest = maxf(deepest, box.end.z)
 	return deepest + 0.02

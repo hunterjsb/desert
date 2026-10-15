@@ -197,7 +197,7 @@ func _rise_clear_of_sand(nodes: Array[Node3D]) -> void:
 		var shape := node as CollisionShape3D
 		if shape == null:
 			continue
-		var box := shape.shape.get_debug_mesh().get_aabb()
+		var box := Catalog.bounds(shape.shape)
 		for i in 8:
 			var corner := global_transform * shape.transform * box.get_endpoint(i)
 			deepest = maxf(deepest, world.height_under(corner) - corner.y)

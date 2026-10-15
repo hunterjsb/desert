@@ -279,6 +279,16 @@ static func _facing(outward: Vector3) -> Basis:
 	return Basis.looking_at(-outward, up)
 
 
+## A shape's bounds in its own frame. Everything here is built of boxes,
+## whose bounds are their size; anything else asks its debug mesh, which
+## stalls the main thread on the render thread the first time, a whole frame.
+static func bounds(shape: Shape3D) -> AABB:
+	var box := shape as BoxShape3D
+	if box != null:
+		return AABB(-box.size * 0.5, box.size)
+	return shape.get_debug_mesh().get_aabb()
+
+
 static func _add_box(body: CollisionObject3D, size: Vector3, at: Vector3, color: Color) -> void:
 	var shape := CollisionShape3D.new()
 	var box := BoxShape3D.new()

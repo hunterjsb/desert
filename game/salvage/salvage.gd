@@ -21,6 +21,9 @@ var _world: World
 var _tuning: Tuning
 var _lots := {}
 var _queue: Array[Piece] = []
+## Finds forgotten, freed one at a time inside the budget: a chunk's all at
+## once would overrun the frame it leaves in.
+var _forgotten: Array = []
 ## Loose finds settling: [body, seconds since placed, seconds still].
 var _settling: Array[Array] = []
 
@@ -82,11 +85,20 @@ func _ready() -> void:
 func _exit_tree() -> void:
 	while not _queue.is_empty():
 		_drop(0)
+	for body: Variant in _forgotten:
+		if is_instance_valid(body):
+			body.free()
+	_forgotten.clear()
 
 
 ## Called by the terrain each frame with its budget's deadline (usec).
 func stream(deadline: int) -> void:
 	var started := Time.get_ticks_usec()
+	while not _forgotten.is_empty() and Time.get_ticks_usec() < deadline:
+		# Its chunk may have gone first, and taken it along.
+		var body: Variant = _forgotten.pop_back()
+		if is_instance_valid(body):
+			body.free()
 	while not _queue.is_empty() and Time.get_ticks_usec() < deadline:
 		var piece: Piece = _queue[0]
 		var lot: Lot = _lots.get(piece.coord)
@@ -222,13 +234,17 @@ func _on_unloaded(coord: Vector2i) -> void:
 func _forget(coord: Vector2i, lot: Lot) -> void:
 	for body in lot.finds:
 		if is_instance_valid(body):
-			body.free()
+			# Out of sight and touching nothing until it's freed.
+			body.freeze = true
+			body.visible = false
+			body.collision_layer = 0
+			_forgotten.append(body)
 	lot.finds.clear()
 	for i in range(_queue.size() - 1, -1, -1):
 		if _queue[i].coord == coord:
 			_drop(i)
 	for i in range(_settling.size() - 1, -1, -1):
-		if not is_instance_valid(_settling[i][0]):
+		if not is_instance_valid(_settling[i][0]) or _settling[i][0].freeze:
 			_settling.remove_at(i)
 
 
@@ -279,10 +295,10 @@ func _lay_out(coord: Vector2i, lot: Lot, spec: Dictionary, body: RigidBody3D) ->
 func _physics_process(delta: float) -> void:
 	for i in range(_settling.size() - 1, -1, -1):
 		var each: Array = _settling[i]
-		var body: RigidBody3D = each[0]
-		if not is_instance_valid(body):
+		if not is_instance_valid(each[0]):
 			_settling.remove_at(i)
 			continue
+		var body: RigidBody3D = each[0]
 		each[1] += delta
 		var still := body.linear_velocity.length() < STILL_SPEED and body.angular_velocity.length() < STILL_SPEED * 4.0
 		each[2] = each[2] + delta if still else 0.0

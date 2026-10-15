@@ -213,7 +213,7 @@ static func biggest_face(body: Node) -> float:
 		var shape := child as CollisionShape3D
 		if shape == null or shape.shape == null:
 			continue
-		var size := shape.shape.get_debug_mesh().get_aabb().size
+		var size := Catalog.bounds(shape.shape).size
 		total += maxf(size.x * size.y, maxf(size.y * size.z, size.x * size.z))
 	return total
 
