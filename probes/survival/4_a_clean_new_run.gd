@@ -13,6 +13,8 @@ const DAYS := 3.0
 
 func run() -> void:
 	Tuning.current().run_seed = 1234
+	# Nothing found lies in the old run to count among what it left.
+	Tuning.current().salvage = false
 	var main := MAIN.instantiate()
 	add_child(main)
 	world = _world_in(main)
