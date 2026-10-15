@@ -4,9 +4,10 @@ extends RefCounted
 ## object read height_at(); nothing computes height any other way.
 ##
 ## Shaped dunes (every style but Noise) are ramps measured in true metres,
-## joined with min and max, which never steepen what they join: a slip face is
-## SLIP and nothing else on the ground is steeper. They face the run's mean
-## wind, so they hold still while the day's wind swings.
+## joined with min and max, which never steepen what they join: slip faces lie
+## at SLIP and nothing on the ground passes sand's 33° (look/dunes/measure
+## checks). They face the run's mean wind, so they hold still while the day's
+## wind swings.
 
 enum Style { NOISE, RIDGES, CRESCENTS, SCALLOPED, REGIONS }
 

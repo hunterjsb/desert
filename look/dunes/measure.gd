@@ -2,7 +2,8 @@ extends Node
 ## The dune look-test's numbers, headless. For each style, over several seeds
 ## and tiles spread across ~10 km, sampled at the collision's 1 m: the share
 ## of ground over 15°, 28° and 33°, the steepest, the share you could camp on
-## (a shield-sized square all under 5°), and height_at's cost per call.
+## (a shield-sized square all under 5°), how far the 1 m mesh strays from
+## height_at between samples (world probe 1 allows 1 cm), and the costs.
 ##   godot --headless --path . res://look/dunes/measure.tscn -- stats [styles] [seeds]
 ## And a top-down map, low sun from across the wind, slip faces tinted:
 ##   godot --headless --path . res://look/dunes/measure.tscn -- map <style> <seed> <x> <z> <size m> <m per px> <out.png>
@@ -45,6 +46,7 @@ func _stats(style: String, seeds: Array) -> void:
 	var camp := 0
 	var camp_total := 0
 	var relief := 0.0
+	var gap := 0.0
 	for run_seed: int in seeds:
 		var shape := _shape(style, run_seed)
 		for tj in TILES:
@@ -75,15 +77,36 @@ func _stats(style: String, seeds: Array) -> void:
 						high = maxf(high, h[k])
 				total += TILE * TILE
 				relief = maxf(relief, high - low)
+				gap = maxf(gap, _mesh_gap(shape, h, n, x0, z0))
 				var sites := _camp_sites(grade)
 				camp += sites.x
 				camp_total += sites.y
 	var cost := _cost(_shape(style, SEEDS[0]))
 	var reference := _cost(_shape("Noise", SEEDS[0]))
 	var builds := _builds(_shape(style, SEEDS[0]))
-	print("%-10s %5.1f km²  >15° %5.2f%%  >28° %5.2f%%  >33° %5.3f%%  max %4.1f°  camp %5.1f%%  relief %5.1f m  %5.2f µs/call (%.1fx)  near chunk %3.0f ms  far ring %4.0f ms"
+	print("%-10s %5.1f km²  >15° %5.2f%%  >28° %5.2f%%  >33° %5.3f%%  max %4.1f°  camp %5.1f%%  relief %5.1f m  mesh gap %4.1f cm  %5.2f µs/call (%.1fx)  near chunk %3.0f ms  far ring %4.0f ms"
 		% [style, total / 1e6, 100.0 * over[0] / total, 100.0 * over[1] / total, 100.0 * over[2] / total,
-			rad_to_deg(atan(steepest)), 100.0 * camp / camp_total, relief, cost, cost / reference, builds.x, builds.y])
+			rad_to_deg(atan(steepest)), 100.0 * camp / camp_total, relief, gap * 100.0, cost, cost / reference,
+			builds.x, builds.y])
+
+
+## The most height_at differs from the 1 m mesh's triangles at random points
+## between samples, m: what collision and the eye see there.
+func _mesh_gap(shape: TerrainShape, h: PackedFloat32Array, n: int, x0: float, z0: float) -> float:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = int(x0 * 31.0 + z0)
+	var worst := 0.0
+	for k in 20000:
+		var i := rng.randi_range(1, TILE - 1)
+		var j := rng.randi_range(1, TILE - 1)
+		var fx := rng.randf()
+		var fz := rng.randf()
+		var a := j * n + i
+		# The mesh's split: (i+1, j) to (i, j+1).
+		var mesh := h[a] + fx * (h[a + 1] - h[a]) + fz * (h[a + n] - h[a]) if fx + fz <= 1.0 \
+			else h[a + n + 1] + (1.0 - fx) * (h[a + n] - h[a + n + 1]) + (1.0 - fz) * (h[a + 1] - h[a + n + 1])
+		worst = maxf(worst, absf(shape.height_at(x0 + i - 1 + fx, z0 + j - 1 + fz) - mesh))
+	return worst
 
 
 ## Of the points with a whole camp square inside the tile, how many have it all under CAMP_DEGREES.
