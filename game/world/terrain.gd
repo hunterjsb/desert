@@ -1,20 +1,24 @@
 class_name Terrain
 extends Node3D
 ## Streams square chunks around the player by grid position, never by what a
-## raycast happens to hit. Workers compute the arrays; the main thread only
-## uploads them, inside a time budget.
+## raycast happens to hit. Workers compute the arrays and convert them into
+## meshes; the main thread only attaches them, retires old ground and swaps the
+## far ring, all inside one time budget per frame.
 
 ## Collision samples are 1 m apart, so near chunks are too: what you see is
 ## exactly what you stand on.
 const NEAR_STEP := 1
 
-## The slowest single chunk upload on the main thread so far, for the hitch probe.
-var max_upload_ms := 0.0
+## Main-thread time streaming took this frame, and the most it has in any one:
+## the hitch probe and F3 read them.
+var frame_ms := 0.0
+var slowest_frame_ms := 0.0
 
 var _world: World
 var _tuning: Tuning
 var _size: int
 var _material: StandardMaterial3D
+var _material_rid: RID
 ## What every chunk's collision is made of.
 var _sand := PhysicsMaterial.new()
 var _indices := {}
@@ -25,11 +29,16 @@ var _mutex := Mutex.new()
 var _center := Vector2i.ZERO
 var _planned := false
 var _wanted: Array[Vector3i] = []
-var _far: MeshInstance3D
+## Chunks to look over since the centre last moved: distances change only then.
+var _to_retire: Array = []
+## When this frame's budget runs out, in Time ticks (usec).
+var _deadline := 0
+var _far: GeometryInstance3D
+var _far_mesh: RID
 var _far_center := Vector2i.ZERO
 var _far_building := Vector2i.ZERO
 var _far_task := -1
-var _far_arrays: Array = []
+var _far_next: RID
 
 
 func setup(world: World) -> void:
@@ -39,30 +48,39 @@ func setup(world: World) -> void:
 	_material = StandardMaterial3D.new()
 	_material.albedo_color = Color(0.86, 0.72, 0.52)
 	_material.roughness = 1.0
+	# Compiles the sand's shader now, while the world loads: otherwise the first
+	# chunk to arrive stalls its frame on it (18 ms on an RTX 3070).
+	_material_rid = _material.get_rid()
 	# Squared: Jolt takes the geometric mean against a body's own 1.0.
 	_sand.friction = _tuning.sand_friction * _tuning.sand_friction
 	for step in [NEAR_STEP, _tuning.mid_step]:
 		_indices[step] = ChunkBuild.indices_for(_size / step)
-	_far = MeshInstance3D.new()
+	_far = GeometryInstance3D.new()
 	add_child(_far)
 
 
 func _process(_delta: float) -> void:
 	if _world == null:
 		return
+	var started := Time.get_ticks_usec()
+	_deadline = started + int(_tuning.stream_budget_ms * 1000.0)
 	var here := chunk_at(_world.player_world_x(), _world.player_world_z())
 	if here != _center or not _planned:
 		_center = here
 		_planned = true
 		_plan()
 	_launch()
-	_collect()
+	# Retiring first: uploads arrive nearly every frame in fast flight and
+	# would starve it, leaving old ground loaded.
 	_retire()
 	_update_far()
+	_collect()
+	frame_ms = (Time.get_ticks_usec() - started) / 1000.0
+	slowest_frame_ms = maxf(slowest_frame_ms, frame_ms)
 	Dev.put("terrain/chk", "%d" % _chunks.size())
 	Dev.put("terrain/col", "%d" % collision_count())
 	Dev.put("terrain/bld", "%d" % (_tasks.size() + _wanted.size()))
-	Dev.put("terrain/upl", "%.1fms" % max_upload_ms)
+	Dev.put("terrain/upl", "%.1fms" % slowest_frame_ms)
 
 
 func _exit_tree() -> void:
@@ -73,6 +91,15 @@ func _exit_tree() -> void:
 	if _far_task != -1:
 		WorkerThreadPool.wait_for_task_completion(_far_task)
 		_far_task = -1
+	# Meshes the workers filled that nothing took.
+	for build: ChunkBuild in _results.values():
+		RenderingServer.free_rid(build.mesh)
+	_results.clear()
+	for mesh: RID in [_far_next, _far_mesh]:
+		if mesh.is_valid():
+			RenderingServer.free_rid(mesh)
+	_far_next = RID()
+	_far_mesh = RID()
 
 
 func chunk_at(world_x: float, world_z: float) -> Vector2i:
@@ -103,7 +130,7 @@ func is_settled_around(world_x: float, world_z: float) -> bool:
 ## Nothing left to build, near or far.
 func is_idle() -> bool:
 	return _planned and _tasks.is_empty() and _wanted.is_empty() and _far_task == -1 \
-		and _far.mesh != null and _far_center == _center
+		and _far_mesh.is_valid() and _far_center == _center
 
 
 func chunks() -> Array:
@@ -139,9 +166,14 @@ func _distance(coord: Vector2i) -> int:
 
 
 func _plan() -> void:
+	_to_retire = _chunks.keys()
 	_wanted.clear()
 	var r := _tuning.view_radius
-	var by_distance := []
+	# Ring by ring outward, so the nearest ground is built first; bucketed, not
+	# sorted, because this runs on the main thread at every chunk crossed.
+	var rings: Array[Array] = []
+	for d in r + 1:
+		rings.append([])
 	for dz in range(-r, r + 1):
 		for dx in range(-r, r + 1):
 			var coord := _center + Vector2i(dx, dz)
@@ -150,10 +182,15 @@ func _plan() -> void:
 			var chunk: TerrainChunk = _chunks.get(coord)
 			if chunk and chunk.step != 0 and chunk.step <= step:
 				continue
-			by_distance.append([d, Vector3i(coord.x, coord.y, step)])
-	by_distance.sort_custom(func(a: Array, b: Array) -> bool: return a[0] < b[0])
-	for entry: Array in by_distance:
-		_wanted.append(entry[1])
+			rings[d].append(Vector3i(coord.x, coord.y, step))
+	for ring in rings:
+		_wanted.append_array(ring)
+
+
+## Checked before each piece of main-thread work, so a frame overruns its
+## budget by one piece at most.
+func _out_of_time() -> bool:
+	return Time.get_ticks_usec() >= _deadline
 
 
 func _launch() -> void:
@@ -161,20 +198,23 @@ func _launch() -> void:
 		var key: Vector3i = _wanted.pop_front()
 		if _tasks.has(key):
 			continue
-		_tasks[key] = WorkerThreadPool.add_task(_build.bind(key))
+		_tasks[key] = WorkerThreadPool.add_task(_build.bind(key, RenderingServer.mesh_create()))
 
 
-func _build(key: Vector3i) -> void:
+func _build(key: Vector3i, mesh: RID) -> void:
 	var build := ChunkBuild.make(_world.shape, Vector2i(key.x, key.y), _size, key.z,
 		_tuning.skirt_depth, _indices[key.z])
+	ChunkBuild.fill(mesh, build.arrays, _material_rid)
+	build.mesh = mesh
 	_mutex.lock()
 	_results[key] = build
 	_mutex.unlock()
 
 
 func _collect() -> void:
-	var started := Time.get_ticks_usec()
 	for key: Vector3i in _tasks.keys():
+		if _out_of_time():
+			return
 		if not WorkerThreadPool.is_task_completed(_tasks[key]):
 			continue
 		WorkerThreadPool.wait_for_task_completion(_tasks[key])
@@ -185,36 +225,35 @@ func _collect() -> void:
 		_mutex.unlock()
 		if build:
 			_upload(build)
-		if (Time.get_ticks_usec() - started) / 1000.0 > _tuning.frame_upload_budget_ms:
-			break
 
 
 func _upload(build: ChunkBuild) -> void:
 	var d := _distance(build.coord)
-	if d > _tuning.view_radius + 1:
-		return
 	var chunk: TerrainChunk = _chunks.get(build.coord)
-	if chunk and chunk.step != 0 and chunk.step <= build.step:
+	if d > _tuning.view_radius + 1 or (chunk and chunk.step != 0 and chunk.step <= build.step):
+		RenderingServer.free_rid(build.mesh)
 		return
-	var started := Time.get_ticks_usec()
 	if chunk == null:
 		chunk = TerrainChunk.new()
 		chunk.coord = build.coord
 		_chunks[build.coord] = chunk
 		add_child(chunk)
 		_place(chunk)
-	chunk.show_build(build, _material)
+	chunk.show_build(build)
 	if build.step == NEAR_STEP and d <= _tuning.near_radius and not chunk.has_collision():
 		chunk.add_collision(_size, _sand)
-	max_upload_ms = maxf(max_upload_ms, (Time.get_ticks_usec() - started) / 1000.0)
 
 
 func _retire() -> void:
-	for coord: Vector2i in _chunks.keys():
-		var chunk: TerrainChunk = _chunks[coord]
+	while not _to_retire.is_empty() and not _out_of_time():
+		var coord: Vector2i = _to_retire.pop_back()
+		var chunk: TerrainChunk = _chunks.get(coord)
+		if chunk == null:
+			continue
 		var d := _distance(coord)
 		if d > _tuning.view_radius + 1:
-			chunk.queue_free()
+			# Freed now, not queued, so the cost lands inside the budget.
+			chunk.free()
 			_chunks.erase(coord)
 		elif d > _tuning.near_radius + 1:
 			if chunk.has_collision():
@@ -226,30 +265,25 @@ func _retire() -> void:
 
 func _update_far() -> void:
 	if _far_task != -1:
-		if not WorkerThreadPool.is_task_completed(_far_task):
+		if _out_of_time() or not WorkerThreadPool.is_task_completed(_far_task):
 			return
 		WorkerThreadPool.wait_for_task_completion(_far_task)
 		_far_task = -1
-		_mutex.lock()
-		var arrays := _far_arrays
-		_far_arrays = []
-		_mutex.unlock()
-		var mesh := ArrayMesh.new()
-		mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
-		mesh.surface_set_material(0, _material)
-		_far.mesh = mesh
+		_far.set_base(_far_next)
+		if _far_mesh.is_valid():
+			RenderingServer.free_rid(_far_mesh)
+		_far_mesh = _far_next
+		_far_next = RID()
 		_far_center = _far_building
 		_place_far()
-	if _far.mesh == null or _far_center != _center:
+	if not _far_mesh.is_valid() or _far_center != _center:
 		_far_building = _center
-		_far_task = WorkerThreadPool.add_task(_build_far.bind(_center))
+		_far_next = RenderingServer.mesh_create()
+		_far_task = WorkerThreadPool.add_task(_build_far.bind(_center, _far_next))
 
 
-func _build_far(center: Vector2i) -> void:
-	var arrays := FarRing.make(_world.shape, center, _tuning)
-	_mutex.lock()
-	_far_arrays = arrays
-	_mutex.unlock()
+func _build_far(center: Vector2i, mesh: RID) -> void:
+	ChunkBuild.fill(mesh, FarRing.make(_world.shape, center, _tuning), _material_rid)
 
 
 func _place(chunk: TerrainChunk) -> void:

@@ -8,6 +8,8 @@ var step: int
 ## (n+1)^2 samples in rows along z: the collision data and the seam check.
 var heights: PackedFloat32Array
 var arrays: Array
+## The arrays as a RenderingServer mesh, once a worker has filled it.
+var mesh: RID
 
 
 static func make(shape: TerrainShape, coord: Vector2i, size: int, step: int, skirt: float,
@@ -55,6 +57,16 @@ static func make(shape: TerrainShape, coord: Vector2i, size: int, step: int, ski
 	build.arrays[Mesh.ARRAY_NORMAL] = normals
 	build.arrays[Mesh.ARRAY_INDEX] = indices
 	return build
+
+
+## Converting arrays to the GPU's layout is most of an upload, so a worker does it,
+## into a mesh the main thread made: making RIDs off the main thread isn't safe in
+## every renderer. All that's left for the main thread is the copy into video
+## memory, which the RenderingServer queues for its next call there, outside the
+## streaming budget.
+static func fill(into: RID, mesh_arrays: Array, material: RID) -> void:
+	RenderingServer.mesh_add_surface_from_arrays(into, RenderingServer.PRIMITIVE_TRIANGLES, mesh_arrays)
+	RenderingServer.mesh_surface_set_material(into, 0, material)
 
 
 ## Triangle indices for a chunk of n cells a side, shared by every chunk of that size.

@@ -30,6 +30,13 @@ Batteries are the exception and carry no stamp. See [the lore research](../lore-
 - **Parts change the device.** More hooks, a hover tray, a bigger battery, a solar
   mount. Their weight adds up too, which raises the hover draw.
 
+## How you handle things
+
+Four inputs cover everything, with no keys for particular features (decided 2026-10-15):
+**E** picks up, takes out and puts in; **F** interacts with what you're looking at or
+uses what you hold (switch a shield, drive a stake); **G** drops; **click** throws. A new
+device or tool answers these; it never adds a key of its own.
+
 ## How things join
 
 1. **Fitted into a socket.** A battery into its slot, a hook onto a ring mount, a hover
