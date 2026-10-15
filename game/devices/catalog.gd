@@ -53,6 +53,8 @@ const PARTS := {
 		"color": Color(0.45, 0.42, 0.25), "stats": {}},
 }
 
+static var _tells := {}
+
 ## Frames: their box, weight, wind catch and sockets as [kind, position, outward].
 const DEVICES := {
 	&"crate_frame": {"label": "Crate frame", "size": Vector3(0.8, 0.5, 0.8), "mass": 15.0,
@@ -230,19 +232,27 @@ static func device(id: StringName) -> Device:
 		var outward: Vector3 = entry[2]
 		socket.transform = Transform3D(_facing(outward), entry[1])
 		var tell := MeshInstance3D.new()
-		var plate := BoxMesh.new()
-		plate.size = Vector3(0.1, 0.1, 0.01)
-		var look := StandardMaterial3D.new()
-		look.albedo_color = KINDS[socket.kind]
-		look.emission_enabled = true
-		look.emission = KINDS[socket.kind] * 0.3
-		plate.material = look
-		tell.mesh = plate
+		tell.mesh = _tell(socket.kind)
 		tell.position = Vector3(0.0, 0.0, 0.005)
 		socket.add_child(tell)
 		socket.marker = tell
 		made.add_child(socket)
 	return made
+
+
+## The flat tell a free socket of a kind shows, one shared by every socket of
+## that kind: nothing ever changes one.
+static func _tell(kind: StringName) -> BoxMesh:
+	if not _tells.has(kind):
+		var plate := BoxMesh.new()
+		plate.size = Vector3(0.1, 0.1, 0.01)
+		var look := StandardMaterial3D.new()
+		look.albedo_color = KINDS[kind]
+		look.emission_enabled = true
+		look.emission = KINDS[kind] * 0.3
+		plate.material = look
+		_tells[kind] = plate
+	return _tells[kind]
 
 
 ## The turbine's mast and blades: something to see turn into the wind, not to touch.

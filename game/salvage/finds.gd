@@ -63,9 +63,10 @@ const DROP := 0.03
 
 
 ## How hard the weather has been at a place, 0 to 1: over the last
-## exposure_hours, the mean of the storm there or the wind past calm,
-## whichever was harder. Read on fixed ticks of world time, so a chunk loaded
-## any time within one tick reads the same.
+## exposure_hours, the mean of how deep into a storm it was or how far the
+## wind blew past the prevailing wind's strongest, whichever was harder. Read
+## on fixed ticks of world time, so a chunk loaded any time within one tick
+## reads the same.
 static func exposure(field: WeatherField, x: float, z: float, t: float, tuning: Tuning) -> float:
 	var step := tuning.exposure_step_minutes * 60.0
 	var count := maxi(1, roundi(tuning.exposure_hours * 60.0 / tuning.exposure_step_minutes))
@@ -75,8 +76,9 @@ static func exposure(field: WeatherField, x: float, z: float, t: float, tuning: 
 	var sum := 0.0
 	for k in count:
 		var at := last - k * step
+		var storm := clampf(field.raw_storm_at(x, z, at) / tuning.exposure_storm_full, 0.0, 1.0)
 		var gale := clampf((field.wind_at(x, z, at).length() - calm) / span, 0.0, 1.0)
-		sum += maxf(field.storm_at(x, z, at), gale)
+		sum += maxf(storm, gale)
 	return sum / count
 
 
@@ -193,24 +195,42 @@ static func _grade(height: Callable, x: float, z: float) -> Vector2:
 	return Vector2(height.call(x + 0.5, z) - height.call(x - 0.5, z), height.call(x, z + 0.5) - height.call(x, z - 0.5))
 
 
-## The body a find is made of: dark, since nothing found runs until it's
-## yours, with the parts it was found with fitted.
+## The body a find is made of, with the parts it was found with fitted, dark.
 static func make(spec: Dictionary) -> RigidBody3D:
-	var layer: StringName = spec.layer
+	var body := bare(spec)
+	for k in spec.fill.size():
+		fit(body as Device, spec, k)
+	dark(body)
+	return body
+
+
+## A find's body before its parts: a part whole, or a device's bare frame.
+## Making one is split this way so no piece of the streaming budget is long.
+static func bare(spec: Dictionary) -> RigidBody3D:
 	if not spec.device:
-		return _part(spec.id, spec.charge, layer)
+		return _part(spec.id, spec.charge, spec.layer)
 	var device := Catalog.stake() if spec.id == &"stake" else Catalog.device(spec.id)
 	# Fitted before it's in the world, so before its _ready would set this.
 	device.center_of_mass_mode = RigidBody3D.CENTER_OF_MASS_MODE_CUSTOM
-	var sockets := device.sockets()
-	for entry: Array in spec.fill:
-		device.fit(_part(entry[1], entry[2], layer), sockets[entry[0]])
+	device.set_meta(&"layer", spec.layer)
+	return device
+
+
+## Fits the k-th part a device was found with.
+static func fit(device: Device, spec: Dictionary, k: int) -> void:
+	var entry: Array = spec.fill[k]
+	device.fit(_part(entry[1], entry[2], spec.layer), device.sockets()[entry[0]])
+
+
+## Nothing found runs until it's yours; its light still shows what it holds.
+static func dark(body: RigidBody3D) -> void:
+	var device := body as Device
+	if device == null:
+		return
 	device.set_powered(false)
 	if device.charge_light != null:
 		var cell := device.battery()
 		ChargeLight.paint(device.charge_light, cell.charge_wh / cell.capacity() if cell != null else 0.0)
-	device.set_meta(&"layer", layer)
-	return device
 
 
 ## A found device wears its years in the weather, a deep one fewer. Once it's

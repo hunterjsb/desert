@@ -390,16 +390,21 @@ static var _current: Tuning
 @export var finds_per_chunk: float = 1.5
 @export var finds_most: int = 4
 ## Share of finds from the deep layer where the weather has been calm, and
-## where it has stormed the whole time; between, by how hard it's been.
-@export var deep_calm: float = 0.05
+## where it has been as hard as it gets the whole time; between, by how hard
+## it's been.
+@export var deep_calm: float = 0.0
 @export var deep_storm: float = 0.6
 ## How far back the weather counts toward what a place shows, hours, read
 ## every this many minutes of world time.
 @export var exposure_hours: float = 2.0
 @export var exposure_step_minutes: float = 10.0
-## Wind this hard uncovers nothing, and this hard as much as a storm, m/s.
-@export var exposure_calm_wind: float = 6.0
-@export var exposure_gale_wind: float = 24.0
+## The storm field this far past its front counts as a storm's heart: as hard
+## as storms uncover.
+@export var exposure_storm_full: float = 0.4
+## Wind up to this uncovers nothing, the prevailing wind's strongest, and
+## this hard as much as a storm's heart, m/s.
+@export var exposure_calm_wind: float = 16.0
+@export var exposure_gale_wind: float = 30.0
 ## At most one ruin in each square this many chunks a side.
 @export var ruin_cell_chunks: int = 5
 ## A ruin stands only where the dunes over its ground rise no more than

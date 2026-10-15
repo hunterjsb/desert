@@ -20,9 +20,7 @@ var slowest_ms := 0.0
 var _world: World
 var _tuning: Tuning
 var _lots := {}
-## Pieces of work for the streaming budget: [coord, null] plans a chunk,
-## [coord, spec] lays out one find.
-var _queue: Array[Array] = []
+var _queue: Array[Piece] = []
 ## Loose finds settling: [body, seconds since placed, seconds still].
 var _settling: Array[Array] = []
 
@@ -34,6 +32,19 @@ class Lot:
 	var taken := {}
 	var finds: Array[RigidBody3D] = []
 	var chunk: TerrainChunk
+
+
+## Work for the streaming budget: planning a chunk (no spec), or one step of
+## laying out a find: its body, each part it was found with, then into the world.
+class Piece:
+	var coord: Vector2i
+	var spec: Dictionary
+	var body: RigidBody3D
+	var fitted := 0
+
+	func _init(at: Vector2i, find := {}) -> void:
+		coord = at
+		spec = find
 
 
 func setup(world: World) -> void:
@@ -49,18 +60,32 @@ func _ready() -> void:
 	process_physics_priority = 120
 
 
+## Finds half made wait off the tree, so nothing else would free them.
+func _exit_tree() -> void:
+	while not _queue.is_empty():
+		_drop(0)
+
+
 ## Called by the terrain each frame with its budget's deadline (usec).
 func stream(deadline: int) -> void:
 	var started := Time.get_ticks_usec()
 	while not _queue.is_empty() and Time.get_ticks_usec() < deadline:
-		var piece: Array = _queue.pop_front()
-		var lot: Lot = _lots.get(piece[0])
+		var piece: Piece = _queue[0]
+		var lot: Lot = _lots.get(piece.coord)
 		if lot == null or not is_instance_valid(lot.chunk) or not lot.chunk.has_collision():
-			continue
-		if piece[1] == null:
-			_plan(piece[0], lot)
+			_drop(0)
+		elif piece.spec.is_empty():
+			_queue.pop_front()
+			_plan(piece.coord, lot)
+		elif piece.body == null:
+			piece.body = Finds.bare(piece.spec)
+		elif piece.fitted < piece.spec.fill.size():
+			Finds.fit(piece.body as Device, piece.spec, piece.fitted)
+			piece.fitted += 1
 		else:
-			lay(piece[0], piece[1])
+			_queue.pop_front()
+			Finds.dark(piece.body)
+			_lay_out(piece.coord, lot, piece.spec, piece.body)
 	slowest_ms = maxf(slowest_ms, (Time.get_ticks_usec() - started) / 1000.0)
 
 
@@ -157,7 +182,7 @@ func _on_grounded(chunk: TerrainChunk) -> void:
 		lot = Lot.new()
 		_lots[chunk.coord] = lot
 	lot.chunk = chunk
-	_queue.append([chunk.coord, null])
+	_queue.append(Piece.new(chunk.coord))
 
 
 ## Its ground stops being solid: what lies there goes, to come back as it
@@ -182,8 +207,8 @@ func _forget(coord: Vector2i, lot: Lot) -> void:
 			body.free()
 	lot.finds.clear()
 	for i in range(_queue.size() - 1, -1, -1):
-		if _queue[i][0] == coord:
-			_queue.remove_at(i)
+		if _queue[i].coord == coord:
+			_drop(i)
 	for i in range(_settling.size() - 1, -1, -1):
 		if not is_instance_valid(_settling[i][0]):
 			_settling.remove_at(i)
@@ -199,13 +224,23 @@ func _plan(coord: Vector2i, lot: Lot) -> void:
 	var specs := Finds.plan(_world.run_seed, coord, lot.exposure, _tuning, _world.height_at, lot.chunk.ruin())
 	for spec in specs:
 		if not lot.taken.has(spec.index):
-			_queue.append([coord, spec])
+			_queue.append(Piece.new(coord, spec))
 
 
-## Lays out one find of a solid chunk's plan, as it lies there.
+## A piece of work no longer wanted, and whatever it had begun to make.
+func _drop(at: int) -> void:
+	var piece := _queue[at]
+	if piece.body != null:
+		piece.body.free()
+	_queue.remove_at(at)
+
+
+## Lays out one find of a solid chunk's plan at once, as it lies there.
 func lay(coord: Vector2i, spec: Dictionary) -> RigidBody3D:
-	var lot: Lot = _lots[coord]
-	var body := Finds.make(spec)
+	return _lay_out(coord, _lots[coord], spec, Finds.make(spec))
+
+
+func _lay_out(coord: Vector2i, lot: Lot, spec: Dictionary, body: RigidBody3D) -> RigidBody3D:
 	var pose := Finds.pose(body, spec, _world.height_at)
 	var at := Vector3(_world.engine_x(pose.origin.x), pose.origin.y, _world.engine_z(pose.origin.z))
 	body.transform = Transform3D(pose.basis, at - lot.chunk.position)
