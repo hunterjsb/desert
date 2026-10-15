@@ -39,6 +39,8 @@ func run() -> void:
 				if scenario.kind == "kit":
 					check(field.wind_at(at.x, at.y, t).length() < scenario.calm, "kit: a calm spell")
 					await _kit_lands_near_you()
+				if scenario.get("survive", false):
+					await _survival_starts()
 			"front", "back":
 				check(stormy == (scenario.kind == "back"), "%s: on the right side of the edge" % what)
 				check(ahead.dot(upwind) > 0.999, "%s: facing upwind, where it comes from" % what)
@@ -96,6 +98,37 @@ func _kit_lands_near_you() -> void:
 	check(strays.is_empty(), "kit: all of it on the sand within 5 m in front of you (%s)" % ", ".join(strays))
 	for body in kit:
 		body.free()
+
+
+## You start over on sealed water: fed, watered and whole with a fresh suit's
+## kit, a condenser in front of you making water into its empty canister, a
+## charged shield generator beside it, and spare rations.
+func _survival_starts() -> void:
+	await settle(true)
+	var vitals := world.player.vitals
+	vitals.health = 10.0
+	vitals.thirst = 90.0
+	world.player.suit.slots[2] = Catalog.part(&"battery")
+	var dropped := Scenarios.survive(world)
+	world.time_warp = 1.0
+	await physics_frames(60)
+	world.time_warp = 0.0
+	var condenser: Condenser = dropped.filter(func(b: Node3D) -> bool: return b is Condenser)[0]
+	var shields := dropped.filter(func(b: Node3D) -> bool: return b is ShieldGenerator and b.battery() != null \
+		and b.battery().charge_wh >= b.battery().capacity())
+	var rations := dropped.filter(func(b: Node3D) -> bool: return b is Supply and b.kind == &"food")
+	var slots := world.player.suit.slots.map(func(p: Part) -> String: return "-" if p == null else p.label)
+	check(vitals.health > 99.0 and vitals.hunger > 99.0 and vitals.thirst > 99.0
+		and slots == ["Water canister", "Ration", "-", "-", "-"] and world.player.suit.supply(&"water").amount > 1.99,
+		"survive: you start fed, watered and whole, on sealed water and a ration (%s)" % ", ".join(slots))
+	check(condenser.powered and condenser.canister().amount > 0.0 and condenser.canister().amount < 0.01
+		and condenser.stats().solar_w > 0.0, "survive: the condenser is filling its empty canister (%.4f L)"
+		% condenser.canister().amount)
+	check(shields.size() == 1 and rations.size() == Scenarios.SURVIVE_RATIONS.size(),
+		"survive: a charged shield generator and spare rations")
+	for body in dropped:
+		if is_instance_valid(body):
+			body.free()
 
 
 ## The camp floats in front of you, each piece on a line to a driven stake
