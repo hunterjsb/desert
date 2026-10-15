@@ -4,9 +4,10 @@ extends Node3D
 ## carry, like a stake. Look at a loose part and take it, or at a fitted one and
 ## it slides out the way it went in. Carry it in front of your eyes and aim at
 ## a free socket of its kind: aimed within reach of where it would sit, it
-## leans in, a ghost shows the spot, and it snaps home with a clunk. Only a part
-## held here ever snaps; nothing fits by being bumped. Take picks up, takes out,
-## puts in and puts down; use works what you look at or uses what you hold.
+## leans in, a ghost shows the spot, and take snaps it home with a clunk. Only
+## a part held here ever snaps, and only when you take it home; nothing fits by
+## being bumped. Take picks up, takes out, puts in and puts down; use works what
+## you look at or uses what you hold.
 
 signal fitted(part: Part, device: Device, socket: Socket)
 signal taken(part: Part, device: Device, socket: Socket)
@@ -19,10 +20,11 @@ const ARRIVE := 0.12
 const STUCK := 0.3
 ## Aiming from this far behind a socket's face still counts as its open side, m.
 const OPEN_MARGIN := 0.05
-## A tugged part this close in angle to its seat is home: about 10°.
-const HOME_ANGLE := 0.17
 ## How fast the tug swings over when a nearer socket wins, 1/s.
 const SWING := 16.0
+## The small thing your aim settled on stays the one until another is this much
+## nearer your aim, so a wavering aim doesn't flicker between them.
+const STICKY := 0.7
 ## Shapes are shrunk this much a side when asking whether a part is inside
 ## something, so resting against it doesn't count, m.
 const SKIN := 0.005
@@ -86,6 +88,8 @@ var _source_was := {}
 ## The socket a part just came out of: it won't tug again until you aim away.
 var _rearm: Socket
 var _aim := Vector3.ZERO
+## The small loose thing your aim settled on.
+var _picked: RigidBody3D
 ## Parts just let go, which can't push you until they're clear of you.
 var _released: Array[Dictionary] = []
 var _body_radius := 0.35
@@ -289,8 +293,6 @@ func _physics_process(delta: float) -> void:
 		Phase.HELD:
 			_tug(delta)
 			held.global_transform = _within_reach(_pose())
-			if socket != null and _home():
-				_fit(socket)
 	grasp.step(delta)
 	_unblock_released()
 	_show(delta)
@@ -313,6 +315,8 @@ func _look() -> void:
 	var ray := PhysicsRayQueryParameters3D.create(sight_from, sight_to)
 	ray.exclude = _exclusions()
 	var hit := get_world_3d().direct_space_state.intersect_ray(ray)
+	if hit.is_empty() or hit.collider is StaticBody3D:
+		_assist(eye)
 	if hit.is_empty():
 		return
 	sight_to = hit.position
@@ -320,6 +324,9 @@ func _look() -> void:
 	look_normal = hit.normal
 	var body: Object = hit.collider
 	look_sand = body is StaticBody3D
+	if look_part != null or look_device != null:
+		# Assisted: the small thing you aimed near, not the sand under it.
+		return
 	if body is Part:
 		look_part = body
 	elif body is Device:
@@ -327,6 +334,67 @@ func _look() -> void:
 		look_socket = look_device.socket_of(
 			look_device.shape_owner_get_owner(look_device.shape_find_owner(hit.shape)) as Node)
 
+
+## Aiming at the sand near a small loose thing takes it, so a battery lying
+## there needs no pixel-perfect aim: the nearest your aim among those you can
+## see, and the one it settled on until another is clearly nearer.
+func _assist(eye: Transform3D) -> void:
+	if held != null:
+		_picked = null
+		return
+	var forward := -eye.basis.z
+	var space := get_world_3d().direct_space_state
+	var best: RigidBody3D = null
+	var best_score := INF
+	var kept := INF
+	for child in _player.world.content.get_children():
+		var body := child as RigidBody3D
+		if body == null or not (body is Part or (body is Device and (body as Device).carryable)):
+			continue
+		var box := _box_of(body)
+		var size := box.size.length() * 0.5
+		if size * 2.0 > _tuning.pick_small:
+			continue
+		var middle := body.global_transform * box.get_center()
+		var along := (middle - eye.origin).dot(forward)
+		if along <= 0.0 or along > _tuning.reach:
+			continue
+		var score := (middle - eye.origin - forward * along).length() / (size + _tuning.pick_assist)
+		if score > 1.0 or score >= best_score and body != _picked:
+			continue
+		var ray := PhysicsRayQueryParameters3D.create(eye.origin, middle)
+		ray.exclude = _exclusions()
+		var seen := space.intersect_ray(ray)
+		if not seen.is_empty() and seen.collider != body:
+			continue
+		if body == _picked:
+			kept = score
+		if score < best_score:
+			best_score = score
+			best = body
+	if best != _picked and kept <= 1.0 and best_score > kept * STICKY:
+		best = _picked
+	_picked = best
+	if best is Part:
+		look_part = best
+	elif best is Device:
+		look_device = best
+
+
+## A body's bounds in its own frame, kept once worked out.
+static func _box_of(body: RigidBody3D) -> AABB:
+	if body.has_meta(&"hands_box"):
+		return body.get_meta(&"hands_box")
+	var box := AABB()
+	var first := true
+	for child in body.get_children():
+		var shape := child as CollisionShape3D
+		if shape != null and shape.shape != null:
+			var each := shape.transform * shape.shape.get_debug_mesh().get_aabb()
+			box = each if first else box.merge(each)
+			first = false
+	body.set_meta(&"hands_box", box)
+	return box
 
 func _pick_up(body: RigidBody3D) -> void:
 	var stake := body as Stake
@@ -499,13 +567,6 @@ func _settle_in(seat: Transform3D) -> Transform3D:
 			nearest = angle
 			best = Transform3D(basis, seat * _middle - basis * _middle)
 	return best
-
-
-func _home() -> bool:
-	var seat := _settle_in(_seat(socket))
-	var at := held.global_transform
-	return (at * _middle).distance_to(seat * _middle) <= _tuning.snap_home \
-		and at.basis.get_rotation_quaternion().angle_to(seat.basis.get_rotation_quaternion()) <= HOME_ANGLE
 
 
 func _fit(into: Socket) -> void:

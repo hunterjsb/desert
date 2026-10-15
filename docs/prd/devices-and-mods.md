@@ -94,7 +94,7 @@ it, take hold of it, and let go.
 
 ## The feel, in detail
 
-- **The tug** starts within roughly 30 cm of a free socket the part fits, while it's
+- **The tug** starts within roughly 40 cm of a free socket the part fits, while it's
   facing roughly the right way. The part eases toward the socket, the ghost appears, and
   you hear a faint magnetic hum.
 - **The snap** happens on a press of take, never on its own, so the tug can afford to
@@ -186,6 +186,9 @@ hook. That's how found mods expand a device.
    walk. Taking hold of one, it follows as you back away and swings round as you turn,
    and let go it stops rather than flies. One too heavy to drag barely moves and slips
    from your hands.
+10. **Small things come easy.** Aim at the sand beside a small loose thing and it's the
+    one you'd take; between two, a wavering aim settles on one. Nothing is taken through
+    something in the way.
 
 ## Out of scope
 

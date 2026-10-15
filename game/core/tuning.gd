@@ -140,8 +140,8 @@ static var _current: Tuning
 
 @export_group("Player")
 ## About 5 km/h, the pace the moon's size was set against.
-@export var walk_speed: float = 1.4
-@export var sprint_speed: float = 3.0
+@export var walk_speed: float = 1.8
+@export var sprint_speed: float = 3.9
 ## Speed lost per metre of rise per metre walked.
 @export var uphill_slowdown: float = 1.5
 @export var stamina_max: float = 100.0
@@ -204,7 +204,7 @@ static var _current: Tuning
 @export var crouch_drop: float = 0.55
 @export var haul_sink: float = 0.07
 ## A step's length at walking pace, m; it lengthens with speed.
-@export var step_length: float = 0.75
+@export var step_length: float = 0.85
 ## Head bob, sway and roll at walking pace: they grow with speed.
 @export var bob_height: float = 0.03
 @export var bob_sway: float = 0.02
@@ -238,9 +238,14 @@ static var _current: Tuning
 ## What hovering costs, W per kg floated. Power (Stage 4) drains it.
 @export var hover_watts_per_kg: float = 2.0
 ## The magnetic tug reaches this far from a free socket, m.
-@export var snap_reach: float = 0.3
-## Inside this, the part snaps home on its own, m.
-@export var snap_home: float = 0.04
+@export var snap_reach: float = 0.4
+## Inside this, the tug leans the part all the way into its seat, ready for
+## take to seat it; nothing seats on its own, m.
+@export var snap_home: float = 0.12
+## Aiming within this of a small loose thing, m on top of its own size, takes
+## it; things bigger than pick_small across you look right at.
+@export var pick_assist: float = 0.15
+@export var pick_small: float = 0.6
 ## Hands hold a part this far in front of the eyes, m.
 @export var hold_distance: float = 0.9
 ## How far you can reach to grab, m.

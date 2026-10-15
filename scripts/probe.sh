@@ -80,6 +80,13 @@ if [[ ${1:-} == selftest ]]; then
 	expect .probe_tmp/parse_error.gd error
 	rm -f .probe_tmp/parse_error.gd
 	rmdir .probe_tmp 2>/dev/null
+	# Run side by side, every failure still counts as its own.
+	together=$(PROBE_TIMEOUT=15 "$0" probes/selftest/fail.gd probes/selftest/pass.gd probes/selftest/fail.gd 2>&1)
+	if ! grep -q '^3 probes, 2 not passing$' <<<"$together"; then
+		echo "    expected 3 probes, 2 not passing, side by side" >&2
+		sed 's/^/    /' <<<"$together"
+		ok=1
+	fi
 	exit "$ok"
 fi
 
@@ -130,16 +137,20 @@ for probe in "${probes[@]}"; do
 		together+=("$probe")
 	fi
 done
+# Numbered here, not in the background job: a job's own arithmetic happens in
+# its subshell and never reaches the next one.
 n=0
 for probe in "${together[@]}"; do
 	while (($(jobs -rp | wc -l) >= ${PROBE_JOBS:-4})); do
 		wait -n
 	done
-	report $((n++)) "$probe" &
+	report "$n" "$probe" &
+	n=$((n + 1))
 done
 wait
 for probe in "${alone[@]}"; do
-	report $((n++)) "$probe"
+	report "$n" "$probe"
+	n=$((n + 1))
 done
 failed=$(find "$reports" -name '*.failed' | wc -l)
 echo "${#probes[@]} probes, $failed not passing"
