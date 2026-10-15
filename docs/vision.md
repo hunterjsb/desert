@@ -115,12 +115,14 @@ upgrade the camp → the camp sustains more of itself → go further, or into th
 ## Setting (working sketch, not canon)
 
 A colonized desert moon in the Xandaris universe, Kenshi in spirit. A high-tech
-spacefaring society settled it and then collapsed to its own AI. Later civilizations
-rose and fell in turn (a first and a second empire), leaving an apocalypse world.
-Three thousand years after that, the moon has reverted to near-uninhabitable: ruins,
-dunes, maybe a few holdouts. The air is thin and fading, the days scorch, the nights
-freeze, and water goes through all three phases every day. The physics is in
-[the moon](the-moon.md).
+spacefaring society built a transit hub there, and then a war cut the lane and orphaned
+it. It became a smuggler moon, until a volcanic paroxysm cut every outside link and took
+most of the people who understood the machines. Bronze Age empires rebuilt in the ashes
+and rose and fell in turn, leaving an apocalypse world. Roughly three thousand years
+later, the moon has reverted to near-uninhabitable: ruins, dunes, maybe a few holdouts.
+The air is thin and fading, the days scorch, the nights freeze, and water goes through
+all three phases every day. The physics is in [the moon](the-moon.md), and the history
+is in [the lore session](lore-session-2026-10-14.md) and [the lore research](lore-research.md).
 
 You're a **scavenger and a survivor, in a suit**, because nobody survives here without
 one. The suit is the one gift this world gives you. Why you're out here gets revealed
@@ -178,4 +180,5 @@ The order we build them in is the [skeleton plan](skeleton-plan.md).
 - Why is the scavenger out here? The game reveals it over time, and we don't need the
   answer yet.
 - If a good camp reaches steady state, what ends a run? Being endless, cozy and
-  permadeath pull against each other.
+  permadeath pull against each other. A long-horizon backdrop for any answer: the moon
+  itself has an end state, a calm, stable desert once its orbit recircularises.

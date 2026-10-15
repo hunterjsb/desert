@@ -1,244 +1,299 @@
 # Lore research: why anyone lives on this moon
 
-*Research memo, rewritten 2026-10-14. Loose: options and leanings, none of it canon until
-Hunter says so. It joins [the body research](body-research.md), [the science
-brief](science-brief.md) and the vision's lore into one history, with the old vision-board
-threads folded in at section 4.*
+*Research memo, rewritten 2026-10-14 after [the lore session](lore-session-2026-10-14.md),
+which holds the direction Hunter agreed to. Loose: none of it is canon until Hunter says so,
+and every name is a working name. It joins [the body research](body-research.md), [the
+science brief](science-brief.md) and the vision's lore into one history.*
 
-## Hunter's direction (2026-10-14)
+**Tags.** **Agreed** is from the session, which has the full detail. **Leaning** is a
+research option this memo favours, not decided. **Open** is unresolved. Where the older
+research disagrees with the session, the session wins;
+[section 10](#10-what-the-session-replaced) lists what it replaced.
 
-- **The 150 km lap is a game abstraction, not the body's size.** The real moon is big,
-  leaning 0.4-0.5 g and roughly 3,500-3,900 km in radius. Gravity is Hunter's call, and
-  the game's F6 toggle already lets him feel it.
-- **A large natural moon with its own atmosphere.** It's a better space hub and a better
-  long-term colony, and its slow fade gives later, cruder, bronze-age-like civilisations
-  time to rise and fall. A shield collapse wouldn't allow enough time on a small moon.
-- **A transit port first.** A poor system on a trade route, where you have to stop at a
-  moon, the best of a bad set. An outpost becomes a refinery and port town, investment
-  piles up until shielding the whole moon pays, towns become cities, and under the shield
-  it's kind of nice. Then the collapse, still undefined. The desert is what the failing
-  shield left behind; it wasn't a desert before.
-- **A refinery town explains the heavy investment.** The biotech company may be dropped.
-  Seed packets can be the colony's own sealed seed stores, and the best seed stock is the
-  oldest, which fits "history runs backwards".
-- **Arability.** A natural moon's regolith isn't soil. Colonists made soil locally, and
-  today you farm in planters with your own soil and water.
-- **Method:** we know the feel we want, so we pick the physics that match it.
+## 1. The shape of it
 
-**How [the science brief](science-brief.md) fits** (loose):
-- **It's the moon's natural baseline,** what it falls back to without the shield:
-  nitrogen air from formation topped up by volcanoes, tidal heating from its neighbours,
-  and dust from fracturing, impacts and abrasion. The shield era sat on top of it. The
-  brief's "no terraforming machines needed" holds for today's desert, not its history.
-- **Its resonance shift is a candidate collapse trigger** (section 2).
-- **Size:** the body research's 0.4-0.5 g wins over the brief's Titan size (0.14 g),
-  where thin air couldn't shove you and a warm nitrogen sky needs heavy topping-up.
-- **Seasons are deferred and open.** The brief uses the giant's tilt. The body research
-  leans toward near-zero tilt, which keeps the poles cold enough to hold the missing sky.
-- **Worth taking for the game:** volcanic terrain variety (vents, sulphur colours, haze,
-  ash layers under younger dust); dust that varies by ground, so bedrock storms are weaker
-  than dust-plain storms; dust on panels and filters as wear; storms in readable stages
-  through more instruments; shelter in the lee of ridges.
+- **A big natural moon with its own air,** in a poor system on an interstellar lane. No
+  shield holds the sky up, and no terraforming machine made it.
+- **Two clocks.** A slow geological one: a lost sister moon leaves the survivor eccentric,
+  tides heat it, volcanoes and erosion make the sand, then the orbit recircularises and
+  the moon settles colder, drier and calmer. A sudden political one: a transit hub, a war
+  that severs the lane, a smuggler moon, a paroxysm that cuts all outside comms, then
+  Bronze Age empires in the ash.
+- **We arrive late in the wind-down,** about 3,000 years on: mostly sand, air still
+  present, storms still roaming. The desert is a phase, not an ending.
+- **History runs backwards in the ground,** with the ash band as its page break.
+- **No AI uprising.** The minds left are narrow local models that cults treat as oracles.
 
-## 1. Where we've landed
+## 2. The body
 
-Leaning toward, all loose:
-- **A big moon that can't leak its air away:** Mars-sized or a bit bigger, tidally locked
-  to a super-Jupiter of 4-6 Jupiter masses in a K dwarf's habitable zone. Its real day is
-  5-7 Earth days, squeezed into 20 minutes.
-- **A shield that filtered rather than held:** UV out, heat in, plasma turned away, with
-  gravity holding the air. Under it the poles warmed, the caps breathed out, and pressure
-  climbed from about 0.1 bar to 0.4-0.5.
-- **A slow collapse and a slower fade:** the air froze back onto the poles and the oxygen
-  rusted into the sand. It never escaped to space.
-- **Colonists, then two shrinking empires, then ruins,** all inside that fade.
-- **Today:** about 0.15-0.2 bar of nitrogen, no oxygen, UV to the ground, and still
-  sinking toward a floor of 0.1-0.15 bar.
+**Agreed: large, natural, with its own atmosphere.** The in-game size is an abstraction,
+and circumnavigation is impractical or impossible. The small, lappable moon is dropped
+because it can't hold air. [The science brief](science-brief.md) is the physical baseline:
+a volatile-rich moon of a gas giant, nitrogen air, tidal heating, volcanism, and dust from
+fracturing, impacts and abrasion. Its line holds for the whole history: no ancient
+terraforming machines needed.
 
-## 2. The arc, as one history
+**Agreed: the present-day air is about 0.3 bar or more,** so wind can honestly shove the
+player. The pressure needed for an Earth-gale shove, from [the body
+research](body-research.md#gravity-and-the-pressure-window):
 
-### The system and the route
+| Gravity | Pressure for the shove (36 / 30 m/s gusts) |
+|---|---|
+| 0.38 g | 0.12 / 0.17 bar |
+| 0.52 g | 0.16 / 0.23 bar |
+| 0.88 g | 0.27 / 0.38 bar |
 
-The star is a K dwarf, longer-lived and calmer than a red dwarf. Inside, a Venus-like
-rock at about 0.25 AU: 90 bar of acid at 460 °C. At about 0.5 AU, a super-Jupiter that
-migrated in and swept the habitable zone clean of any Earth (HD 28185 is a real system
-much like it). The system is poor, but it sits on a route. Lanes are few, fuel is limited
-and hyperspace storms close lanes, so this stop may be the only link between two good
-regions. It sells helium-3 and hydrogen from the giant, ice-water, repairs, crew rest and
-shelter from lane storms.
+At 0.3 bar the strongest gusts shove at any of these gravities, so the air no longer
+depends on the gravity call. The game's `loose_wind_catch` already implies about 0.3 bar.
+**Open: how far "or more" goes.** Open water boils at about 69 °C at 0.3 bar, and clear
+ground runs 60-90 °C in the afternoon. Much above 0.3 bar and the daily boil-off fades.
 
-The giant has no surface and the Venus is a furnace, so the stop is a moon. The inner
-moons sit in a deadly belt (Io's bare surface takes about 36 Sv a day, Europa's about
-5.4). Ours sits at 15-20 giant radii, where a bare surface takes 0.08 to 0.0001 Sv a day,
-and it's the one moon big enough to keep air. Best of a bad set.
+**Leaning: 0.4-0.5 g, a radius of roughly 3,500-3,900 km.** The session says only
+"large". Gravity is Hunter's call, and the F6 toggle lets him feel it. The brief's Titan
+size (0.14 g) holds a warm nitrogen sky less easily. One caveat: the body research's 0.52 g
+row implies a density near 4,800 kg/m³, denser than Mars, but "volatile-rich" suggests a
+lighter body. At 3,000 kg/m³, 0.45 g needs a radius near 5,000 km and a giant of 9-10
+Jupiter masses.
 
-### Why this moon
+**Open: seasons.** The brief uses the giant's tilt. The body research leans near-zero tilt,
+which keeps the poles cold. Deferred.
 
-It's natural, not made. It formed icy, was dragged in with its giant and baked dry, and
-kept a thin nitrogen sky of about 0.1 bar, with CO₂ and water locked in polar caps. Mild
-tidal heating from a weak resonance gave it enough geology to outgas that sky and top it
-up. At this size, gravity keeps air for billions of years, which makes it a place to
-settle, not just pass through.
+**Worth taking from the brief:** volcanic terrain variety (vents, sulphur colours, haze,
+ash layers under younger dust); bedrock storms weaker than dust-plain storms; dust on
+panels and filters as wear; storms in readable stages; shelter in the lee of ridges.
+Arability is unchanged: natural regolith isn't soil, colonists made it locally, and today
+you farm in planters with your own soil and water.
 
-### Outpost to shielded cities
+## 3. The geological clock: a lost sister moon
 
-- **Outpost:** a fuel depot and an ice mine, under cold natural air with UV straight to
-  the ground.
-- **Refinery and port town:** skimmers to the giant, crustal organics refined into fuel,
-  domes, docks and yards. Investment piles up here.
-- **The shield:** once domes would cover enough of the moon, a sky-wide field costs less
-  per square metre than more domes. It lets sunlight in, keeps UV out, holds heat in and
-  turns the giant's plasma aside. It never held pressure; gravity does that. But the
-  greenhouse warmed the poles, the caps gave up their CO₂ and water, and the sky thickened
-  to 0.4-0.5 bar. Terraforming came almost free.
-- **Kind of nice:** towns become cities, with lakes, parks, gardens and air that needs
-  only a light breather outdoors.
-- **A second tenant, maybe.** The port takes the near side, under the giant. A biotech
-  company, if it stays, takes the dark far side and splits the shield bill. If it goes,
-  the far side is just the colony's farms and seed stores.
+**Agreed correction:** moons don't "collapse". Resonances are entered or left as moons
+migrate. The framing is:
 
-### The collapse
+1. The moon sits in a calm, near-circular orbit for a long time, with a high-relief
+   surface.
+2. **A sister moon is destroyed or lost.**
+3. The system's balance changes, and the survivor is pushed into an **eccentric orbit**.
+4. The giant squeezes it every lap, and **tidal heating spikes** as on Io. The crust cracks
+   and volcanoes outgas trapped volatiles, which the moon is big enough to hold as a thick
+   atmosphere.
+5. The same activity drives massive erosion: mountains and crater rims become sand, dunes
+   and basins, with bedrock where wind scours.
+6. **Tidal friction slowly recircularises the orbit.** Heating fades, and topping-up of the
+   air falls behind escape.
+7. A **new stable state:** colder, drier, calmer.
 
-Candidate triggers, which can stack:
-- **Resonance and tidal heating (the brief).** The moons' orbits drift, tidal heating
-  rises, and the crust fractures. Vents open and quakes crack the emitters. It's natural
-  and slow, so it arrives as a rising tide of repairs, not one bang. It's also the moon's
-  own baseline reasserting itself.
-- **The AI collapse (the vision).** The colonists leaned on an AI to run the port, the
-  shield and the repairs, and lost it: it failed, withdrew or locked them out. Without it
-  nobody can keep the emitters up. In the Xandaris sim, tech decays when the Electronics
-  supply stops, and a poor system loses its chips first.
-- **Both (leaning).** Quakes crack the emitters, and the one mind that could have fixed
-  them is gone, or was part of the damage. A natural cause meets a human failure, and the
-  AI is free to be the cause, the consequence or neither.
+**Leaning: three physics checks.**
+- **The trigger.** Losing a resonant partner usually removes forced eccentricity, as Io
+  would circularise without Europa, so a plain destruction doesn't pump the survivor. An
+  ejection after a close encounter can, or a capture into a new resonance. That favours
+  "ejection" for open question 1.
+- **The brief's caution.** It argued against a single impact as the trigger. Here the
+  impact is on the sister, and the survivor heats gradually from its new orbit.
+- **The clocks.** Recircularisation takes millions of years, against a human story of a few
+  thousand, so the colony, the paroxysm and the present all sit in one long tail. Read the
+  paroxysm as an eruptive episode (Io's are episodic), not the peak of heating. Escape is
+  no faster: about 25 million years for 0.2 bar at Io's stripping rate (body research). The
+  end state is a backdrop the player never sees.
 
-A cheaper fourth option is that the route moved on, the stop stopped paying, and the
-investment dried up.
+## 4. The system and the route
 
-### The long fade
+**Agreed.** The system is poor: a hot, Venus-like inner world, an unlandable gas giant, and
+this moon as the only ground. It sits on an interstellar lane midway between powers, a stop
+on the way to civilisation and not the customs port into United Government space. The first
+presence is boring infrastructure: a beacon, a depot, a relay and a survey crew. The lane
+carries **helium-3**. Skimming it from the giant is risky, equipment-destroying work for
+small outfits betting their gear, not the official reason the hub exists.
 
-The shield dies emitter by emitter, over centuries and then millennia. Leaning: the
-oldest, best emitters last longest, so history runs backwards in the sky too.
-- **The poles cool first.** CO₂ and water freeze back onto the caps. Mars's pressure
-  already swings by about a quarter each year as its caps freeze and sublime. Freezing
-  takes decades, so the shield's slow death sets the pace.
-- **UV returns.** With no ozone, it reaches the ground and browns the gardens.
-- **The oxygen rusts.** Rusting 0.1 bar of oxygen into about 90 m of sand in 3,000 years
-  is fast, but it works if the colonial air was only a few percent oxygen, or most of it
-  went while the garden was dying.
-- **The dust is born.** Dead gardens and dry lakes become dust bowls, as the Aral Sea
-  became the Aralkum, and the brief's volcanic ash and abrasion add to them.
-- **Nitrogen stays.** It doesn't freeze, so it's the floor.
+**Leaning: the numbers, from the body research.**
+- A **K dwarf**, a Venus at about 0.25 AU (90 bar of acid at 460 °C), and a super-Jupiter
+  of 3-6 Jupiter masses at about 0.5 AU that swept the habitable zone clean. HD 28185 is a
+  real system much like it.
+- The moon sits at 15-20 giant radii, where a bare surface takes 0.08 to 0.0001 Sv a day,
+  against 36 on Io.
 
-No size makes air leak away in 3,000 years. This isn't a leak, but a sky going back into
-the ground.
+**Agreed: the analysis versus the people.** The top knew. TILG and the IOU saw the heavy
+volcanism, identified the transitional eccentric phase, and approved an **intermediate
+transit hub, explicitly not for settlement,** knowing it would dry up without interstellar
+support. The ground didn't care. A corporate town grew anyway, **never registered** with
+the local government, and the Skimmers Association arrived. Nobody thinks in millennia, and
+the knowledge lives at corporate altitude.
 
-### The empires, inside the fade
+## 5. Who's there
 
-- **The first empire** inherits the cities and the working emitters. It can run colonial
-  machines but not repair them, and the sky thins under it.
-- **The second empire** runs on first-empire scrap and is bronze-age in spirit. Storms and
-  dust bowls begin under it. Its imitations don't quite work, and its tools are
-  hand-fitted.
-- **Both fall to weather rather than war,** because the air kept thinning. Each is smaller
-  and cruder than the last.
-- **Then 3,000 years of ruin.** The Forge's rule is that no line survives a silent
-  millennium, while halls stand about 5,000 years. So the ruins stand, with no living
-  memory.
+**Agreed (working names; the table is in [session §4](lore-session-2026-10-14.md)).** Eleven
+entities stack from sovereign to software: the **United Government**, a **regional
+interstellar government**, the **Interstellar Operations Union (IOU)** that approves
+operations, the semi-compliant **Skimmers Association**, the prime operator **TILG**, the
+**Remote Moon Contractor** that builds, **StarCom** comms, a spaceship builder, tritium
+refineries, a moon regional government, and an interconnected software company.
 
-A rough shape, for Hunter's call: a few centuries of colony, a century or two of
-collapse, a few centuries for each empire, then the vision's 3,000 years. Whether that
-clock starts at the collapse or the second empire's end is open.
+**Agreed: every entity leaves its maker's mark,** so the player reconstructs the supply
+chain from salvage alone. Ruins follow the terrain: skimmer cradles and catch stations on
+high ground, refineries near vents, tank farms in basins, port cradles and beacons on the
+heights, garden and power around the town, and improvised skimmer-crew wreckage as a
+scrappier texture. The keystone fragility is that **the hub makes nothing high-tech
+itself.** Every controller, skimmer and beacon runs on imported chips. (Xandaris's
+`tech_level.go` already decays tech when Electronics supply stops.)
 
-### Today
+**Leaning:** TILG is a general contractor with many maker's marks, not vertically
+integrated.
 
-You, in a suit, on a moon still losing its sky. Vents rumble somewhere, and a few of the
-oldest emitters may still flicker.
+## 6. The political clock: the fall
 
-## 3. What each era leaves in the ground
+**Agreed.** Four phases:
+1. **Orphaned.** A war breaks out and the lane stops being valid. Nothing ran out; a
+   political event elsewhere made the moon pointless. Then the chips stop, and machines go
+   dark one by one.
+2. **The smuggler moon** (the first fallen empire). Illegal trade becomes one of the only
+   ways anyone deals with the place. Deserters and war refugees come because it's remote
+   and unchecked, and the Skimmers Association inherits it. Knowledge isn't lost yet.
+3. **The paroxysm.** The worst eruptive episode of the transition. A mountain with major
+   StarCom installations explodes. Ashfall buries the lowlands, the air is lethal for a
+   time, and storms peak. **Outside comms are cut instantly.** The survivors are the
+   scattered, because the expertise was at the port where the blast hit hardest, so
+   civilisation restarts from the people who understood the machines least and rebuilds in
+   the ashes. The war reaching the moon, and the software layer failing in the crisis, are
+   secondary hints.
+4. **Bronze Age empires and holdouts.** The second and later civilisations rise and fall on
+   a drying, harsher world, scavenging ruins they can't repair. **The eruption becomes
+   myth:** a mountain of fire that ate the sky and silenced the voices. The blast zone is
+   cursed ground, which is where the best salvage is, so their superstition is the
+   player's inverted treasure map.
 
-History runs backwards: the deeper the sand, the older and better the find, and harder
-storms strip down to deeper layers, as shifting dunes have uncovered real ruins.
+## 7. The ground: strata and the oldest tech
 
-- **Colonial (deepest, rarest, best).** Sealed seed vaults (the colony's own stock, and
-  the oldest seed is the best seed), shield emitters, company-marked parts, helium-3
-  fusion cells (the Power PRD's colonial cells) and sealed fresh water. Near side: docks,
-  cradles, fuel tanks, skimmer parts and beacons still calling ships home. Far side:
-  hydroponics and the feral descendants of colonial crops, like the yucca.
-- **The first empire.** Colonial kit, patched by people who didn't understand it. It
-  still works, and nobody knows why. Guild marks, hand-made adaptors, fortified emitter
-  stations.
-- **The second empire.** Scrap-built, crude, hand-forged: windbreaks, wind-wagons, and
-  imitations of machines that no longer exist. Seed was money here, which can stay lore
-  in item text, not a trading system.
-- **The surface.** Recent traces, and rare hints of holdouts.
+**Agreed: history runs backwards in the ground.** Top to bottom:
+1. **Surface:** Bronze Age mud, scrap and cult works.
+2. **The ash band:** the paroxysm, the page break of the whole history, and a readable depth
+   cue in storm-cut dunes.
+3. **Below:** the buried colonial world, advanced and sealed by the disaster that ended it.
 
-The strata tell the story: dark garden soil at the bottom, a **red band** where the sand
-ate the oxygen during the decline, pale dust and ash above it, and today's dunes on top.
-Storm-cut dunes show the red line like a geological marker.
+This fits the Salvage PRD's four layers, with the ash band between the second empire (Bronze
+Age) and the first (the smuggler moon). The session doesn't place the smuggler era in its
+three strata, but it predates the paroxysm, so it sits below the ash.
 
-**What the later people believed.** "Simulation" and "purgatory" can live in the world as
-belief, never as answer, scrawled in ruins by people who couldn't explain the sky or the
-machines. An endless desert, endless runs and a history running backwards do read like
-purgatory. Taken literally, "it's all a computer" would overrule the careful physics, so
-leave it as something the moon makes people say.
+**Agreed: the oldest tech is StarCom and the Remote Moon Contractor's build-out,**
+overbuilt for these exact conditions by spec, while everything later was built for a world
+that no longer exists. **StarCom is precious because it's fragmentary:** its flagship
+stood on the mountain that blew, so the player finds shards, relays and hardened modules,
+never a whole StarCom.
 
-## 4. What it gives the game
+**Leaning (kept):**
+- Harder storms strip down to deeper layers, as shifting dunes have uncovered real ruins.
+- The colonial layer holds sealed fresh water, helium-3 fusion cells (the Power PRD's
+  colonial cells) and the colony's sealed seed stores, where the oldest seed is the best
+  seed. The agriculture company of §8 could own them. Seed as Bronze Age money can stay
+  lore in item text, not a trading system.
+- Ruins last: halls stand about 5,000 years (the Forge's rule).
+- "Simulation" and "purgatory" can live in the world as belief, never as answer, scrawled by
+  people who couldn't explain the sky. Taken literally they'd overrule the physics.
 
-- **The latitude dial: the frozen poles hold the missing sky.** The caps hold the CO₂ and
-  water frost that was once the colonial air, at the CO₂ frost point (about 170-177 K).
-  The poles are calm and clear, with the widest swings at 50-70°. The equator is stormy
-  and mild under its dust blanket (about -20 to +40 °C), while clear latitudes see 60-90
-  °C days and -60 to -100 °C nights. That fits the PRDs: choppy and rich in salvage at the
-  equator, stable and sparse at the poles.
-- **The longitude dial: lit side, dark side.** The near side has the giant fixed in the
-  sky, 6-8° across (11-15 times the full Moon), lighting nights at about 150-270 lux,
-  hundreds of times moonlight. Every noon brings an eclipse of 2-3 real hours, about
-  20-25 game seconds. The far side has truly dark nights. Near-side ruins are industrial,
-  far-side ruins biological, and the trailing hemisphere is the one the giant's plasma
-  darkens.
-- **Storms.** Dust walls 1-2 km tall at 10-12 m/s, gusts of 30-36 m/s that shove like an
-  Earth gale at about 0.2 bar, and dust that hangs 1.9-2.6 times longer than on Earth.
-  Dead gardens and lake beds feed them, and the equator's storms feed themselves.
-  Colliding sand charges up, so radio static is a storm precursor. Merging storms have
-  calm eyes ringed by the fiercest winds, so loot in the eye is the salvage rule at its
-  limit.
-- **Water.** Frost and dew form in the cold hours, harvested at dawn. Open water boils at
-  about 54-60 °C at 0.15-0.2 bar, so it boils off by afternoon and freezes overnight. The
-  poles hold the ice, and sealed colonial stores keep you going early on.
+## 8. The minds: AI after the cut
+
+**Agreed.** Frontier AI was never on the moon. It came down the lane through StarCom and
+went dark the day StarCom did. What's left are whatever **local models** survived: a
+refinery controller, a logistics scheduler, a weather forecaster, a skimmer crew's
+assistant. Promoted to oracles out of domain, on failing hardware, they drift into
+eccentricity. **AI cults, not an uprising.** Intelligence decays in the strata too, from
+traces of frontier AI at the bottom to cult-kept oracles at the surface.
+
+**Agreed: model provenance as archaeology.** Each model has a lineage and each layer leaves
+a mark. One example: a base model trained under United Government oversight, fine-tuned
+by a second company, running on an agriculture company's platform, owned at the end by
+whoever acquired that company. Three thousand years on, this agricultural AI has taken over
+a local StarCom station and broadcasts fragments that, read correctly, are still useful:
+planting timing, storm precursors, which feral strains tolerate ash soil. The cult hears
+scripture and an attentive player hears a planting calendar, so **decoding the oracle is a
+skill.** Nobody built a prophet; procurement did.
+
+**Open: the maybe-voice.** The leading candidate is the software company's orchestration
+layer, the most general surviving model, still optimising a supply chain that doesn't exist
+and likely the centre of the biggest cult. The game never says whether anyone is there.
+
+## 9. What it gives the game
+
+*Kept from the body research and the earlier memo, re-checked against the session. The
+numbers are research estimates.*
+
+- **The latitude dial.** The poles are calm and clear, with the widest swings at 50-70°.
+  The equator is stormy and mild under its dust blanket (about -20 to +40 °C), while clear
+  ground sees 60-90 °C days and -60 to -100 °C nights. That fits the PRDs: choppy and rich
+  in salvage at the equator, stable and sparse at the poles. The caps are ordinary polar
+  frost now (CO₂ at about 170-177 K), not the missing sky. **Open: "hotter days at the
+  poles" needs a reason or should go.** With near-zero tilt the noon sun stands at 90°
+  minus latitude, so the poles get less sun, not more. What holds is a wider swing, from
+  clear air and long nights.
+- **The longitude dial.** The near side has the giant fixed in the sky, 6-8° across (11-15
+  times the full Moon), lighting nights at about 150-270 lux, with a noon eclipse of 2-3
+  real hours (20-25 game seconds). The far side has truly dark nights. The old
+  near-industrial, far-biological split came from a biotech tenant that the session's
+  stack lacks, and ruins now follow the terrain.
+- **Storms.** Dust walls 1-2 km tall at 10-12 m/s, gusts of 30-36 m/s, and dust that hangs
+  1.9-2.6 times longer than on Earth. The dust is ground-down relief, ash and abrasion.
+  Colliding sand charges up, so radio static is a storm precursor. Merging storms have calm
+  eyes ringed by the fiercest winds, so loot in the eye is the salvage rule at its limit.
+- **Water.** Frost and dew form in the cold hours, harvested at dawn. On clear ground open
+  water boils off by afternoon and freezes overnight. The poles hold the ice, and sealed
+  colonial stores keep you going early on.
 - **UV, and why the suit.** With no oxygen there's no ozone, so UV reaches the ground
-  unfiltered, as on Mars, where it sterilises the surface. Storm dust is shade, and nights
-  are cold but UV-free. The giant's belts are mild here, and 400-540 g/cm² of air (Earth
-  has 1,030) stops most particles, so the suit's lining is mostly about the sun. The fast
-  killer is the air: above 0.063 bar your blood doesn't boil, but you suffocate in a
-  minute or two.
-- **Radio broadcasters.** Colonial services on autopilot, like a weather service
-  forecasting weather it no longer controls, traffic beacons and an archive. Maybe
-  empire-era repeaters. And the maybe-voice, a holdout or the AI, never answered.
-- **The rest of the vision board.** The colonists were megacorps and the empires
-  scavenged them, with one company's marks on the deepest salvage and knock-offs above.
-  The system is off the main lanes and silent from outside, so the world is forgotten.
-  Today's wear is sandblasting and the daily freeze-and-boil, while the old rust is red.
-  Each longitude keeps its own sun time, and colonial devices keep company time.
+  unfiltered, as on Mars. Storm dust is shade, and nights are cold but UV-free. About
+  600-750 g/cm² of air (at 0.3 bar and 0.4-0.5 g; Earth has 1,030) stops most particles, so
+  the suit's lining is mostly about the sun. The fast killer is the air: above 0.063 bar
+  your blood doesn't boil, but you suffocate in a minute or two.
+- **Radio.** StarCom stations squatted by local models (§8), a weather forecaster that
+  still forecasts, beacons left running, and the maybe-voice, never answered.
+- **The rest of the vision board.** Many makers' marks on the deepest salvage, and knock-offs
+  above. The moon has been silent from outside since the paroxysm. Today's wear is
+  sandblasting and the daily freeze-and-boil, while the old rust is red. Each longitude
+  keeps its own sun time, and colonial devices keep company time.
 - **Why you're out here (FICSIT).** Your kit reads like company issue: a shield, a light
   solar panel, a suit with free air. Who sent you is open.
 
-## 5. Open questions for Hunter
+## 10. What the session replaced
 
-1. **The timeline:** how long was the colony, the collapse, each empire, and the ruin?
-   Does 3,000 years run from the collapse or from the second empire's end?
-2. **The collapse trigger:** resonance and tidal heating, the AI collapse, both, or the
-   route moving on?
-3. **The AI's role:** did it take over, fail, withdraw, or was it just an economy? Is it
-   the voice on the radio?
-4. **Who sent the player:** the company or its buyer back for a forgotten moon, a colonial
-   vat that grows workers (permadeath as lore), or never said?
-5. **Seasons:** deferred. Near-zero tilt, as the body research leans, or a tilt?
-6. **Also pending:** gravity (0.4-0.5 g, via F6), and whether the far side keeps a second
-   company.
+- **The sky shield and the shield era:** the shield as the air's container, the 0.4-0.5 bar
+  it bought, and the "kind of nice" garden cities. Whether any lesser shield survives in the
+  lore is open; the game's camp bubbles are unaffected.
+- **The collapse and the long fade:** dying emitters, poles cooling first, CO₂ freezing back,
+  UV browning the gardens, oxygen rusting into the sand and the red band. The wind-down,
+  the paroxysm and the ash band replace them.
+- **0.15-0.2 bar sinking to a floor of 0.1-0.15:** about 0.3 bar or more replaces it.
+- **The AI collapse as the trigger:** local models and cults replace it.
+- **Two empires fading to weather:** the hub, smuggler moon, paroxysm and Bronze Age arc.
+- **A biotech tenant on the far side,** and **dead gardens and dry lakes as the dust
+  source:** the entity stack and the eccentric phase replace them.
+
+## 11. Open questions for Hunter
+
+*From the session, merged with the earlier list.*
+1. **What destroyed the sister moon:** impact, collision or ejection (the physics favours
+   ejection)? Is it still visible in the sky: a ring, debris, a gap?
+2. **The paroxysm's name,** as the survivors pass it down.
+3. **Which surviving model is the maybe-voice?** The orchestration layer, or something
+   stranger.
+4. **How fast did literacy and technical knowledge fall** after the paroxysm?
+5. **Is TILG a general contractor** (the session leans yes) or vertically integrated?
+6. **Who sent the player:** ship crew, the company or its buyer back for a forgotten moon,
+   a colonial vat that grows workers (permadeath as lore), or never said?
+7. **The timeline in years:** colonial founding, the war, the smuggler era, the paroxysm,
+   the Bronze Age empires and the player's arrival. Does the 3,000 years run from the
+   paroxysm or from the last empire's fall?
+8. **What the war was, and between whom.**
+
+*Carried over, and raised by this rewrite.*
+
+9. **Seasons:** near-zero tilt, as the body research leans, or a tilt?
+10. **Gravity and density:** 0.4-0.5 g via F6, and whether "volatile-rich" means a bigger
+    moon or a heavier giant.
+11. **The size of the lap:** the session calls circumnavigation impractical or impossible,
+    but the vision and [the moon](the-moon.md) have a walkable 150 km lap with reachable
+    poles. Which holds?
+12. **Hotter days at the poles:** a reason (a tilt?) or drop it.
+13. **The air over time:** how far above 0.3 bar before the daily boil fades, how thick the
+    air was at the eruptive peak, and the end-state floor.
+14. **Do the near and far sides differ in ruins at all,** now the stack has no biotech tenant?
 
 **Sources:** [dust charging](https://public.websites.umich.edu/~atreya/Articles/2003_Electrical_Discharges.pdf),
-[Aralkum](https://earthobservatory.nasa.gov/images/146487/a-dusty-day-over-the-aral-sea),
 [Europa's dose](https://europa.nasa.gov/news/17/radiation-maps-of-europa-key-to-future-missions),
 [ruins uncovered by dunes](https://en.wikipedia.org/wiki/Dandan_Oilik). The rest are in
 [the body research](body-research.md).

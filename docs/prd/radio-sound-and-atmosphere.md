@@ -23,6 +23,12 @@ range still to tune. Better radios and antenna mods hear more clearly. Tune it, 
 - **Loot beacons.** Automated signals that give a bearing to something worth finding,
   like "a signal, north-north-east."
 - **Lore.** Garbled fragments that hint and never state.
+- **Squatting oracles.** Degraded local models that survived, such as a weather
+  forecaster or an agricultural system, have taken over dead StarCom stations and
+  broadcast strange, fragmentary material. Taken as scripture it's noise. Decoded, it's
+  real information, like planting timing or storm precursors, so **decoding the signal is
+  a skill.** Rule 1 still holds: what decodes is true to the real systems. See
+  [the lore session](../lore-session-2026-10-14.md).
 - **Maybe a voice.** One of the hints that someone might still be out there (Salvage &
   ruins). It's never confirmed.
 
@@ -87,7 +93,7 @@ Everything that matters can be heard, so you can read the world by ear:
 ## Full version
 
 - **More music channels,** with more tracks from Hunter.
-- **Lore channels, and the maybe-voice.**
+- **Lore channels, the squatting oracles and signal decoding, and the maybe-voice.**
 - **Frequencies as finds,** and antenna mods.
 - **Distorted tracks in storms.**
 - **The storm's approach staged in sound,** to match the wall.

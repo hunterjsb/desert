@@ -19,6 +19,11 @@ that someone else might still be out there.
 - **Seeds,** mostly in ruins (Farming).
 - **Survival kits:** a common find, usually holding seeds and water.
 - **Lore:** fragments of what happened here.
+- **Maker's marks:** everything found carries the mark of whoever made it, such as a
+  government seal, a regulator's stamp, a shipyard logo, a contractor's tag, a comms
+  casing or an improvised skimmer-crew patch. The player reconstructs the supply chain
+  from salvage alone, with no exposition. The entities are in
+  [the lore session](../lore-session-2026-10-14.md).
 - **Radio frequencies** to tune into (Radio, sound & atmosphere).
 - **Water:** still open. How you get it and how you make it is a hard question that
   belongs to Survival.
@@ -31,6 +36,12 @@ that someone else might still be out there.
 - **Ruins you can walk into.** These are structures sitting in the dunes, with sand
   drifted against their walls. Everything is above ground: there's no digging and
   nothing underground.
+- **Ruin types follow the terrain.** Skimmer cradles, tethers and catch stations stand on
+  high ground, refineries cluster near volcanic vents, tank farms sit buried in basins,
+  and port cradles and beacons stand on the heights. Gardens, water-cracking and power
+  gather around the town sites. Improvised skimmer-crew wreckage is a separate, scrappier
+  texture from the institutional ruins. Placing them needs the underlying topography
+  (World & terrain), so it belongs to the full version.
 - **Storms uncover things.** The harder the weather that exposed a place, the deeper
   the layer it reached.
 
@@ -43,7 +54,13 @@ The deeper the layer, the older the find, and the better its technology:
 3. **The first empire.**
 4. **Colonial:** the original colonists' technology. It's the oldest, the rarest and
    the best. You'll almost never find it in shallow erosion; it practically requires
-   deep erosion.
+   deep erosion. The best of it is **StarCom**, overbuilt for these exact conditions, but
+   it turns up only as rare fragments (shards, relays and hardened modules), never a whole
+   one.
+
+**The ash band** sits between the second and first empire layers. It's the paroxysm, the
+page break of the whole history, and a readable depth cue in storm-cut dunes. The second
+empire is the Bronze Age above it, and the first is the smuggler era below.
 
 **The weather decides how deep the sand is stripped.** Stronger storms and fiercer
 winds expose deeper layers. Venture into the storm, or travel into the wind, and you
@@ -109,10 +126,12 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
 
 ## Full version
 
-- **All four layers,** from recent traces down to colonial.
+- **All four layers,** from recent traces down to colonial, with the ash band between the
+  second and first empire.
 - **Things surfacing during a storm.** Sand pours off something new right beside you.
   It's placed, not dug.
-- **Many ruin types,** part-buried, with interiors (all above ground).
+- **Many ruin types,** part-buried, with interiors (all above ground), placed by terrain
+  and carrying their makers' marks.
 - **Lore through item descriptions** that hint and never state.
 - **Radio frequencies.**
 - **The hints of people.**
