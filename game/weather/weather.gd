@@ -2,13 +2,15 @@ class_name Weather
 extends Node
 ## The weather as everything in the world feels it, and as it looks from where
 ## the player stands. Every system asks felt_*() at its own position and never
-## reads the field directly, so when shelter arrives (the bubble shield) it
-## edits the answers here and everything agrees about where the bubble is.
+## reads the field directly. Shelters (running shields' bubbles) edit the
+## answers here, so everything agrees about where a bubble is.
 ##
 ## The game plays by the field at the player: in_storm, harm, the far ring,
 ## wind. The senses follow seen_storm, the dust at the camera as the screen
 ## draws it, so the light drops exactly when the dust visibly swallows you.
-## This is the one owner of the sun, sky, haze and the storm walls' light.
+## Light passes through a bubble, so inside one the air is clear but the light
+## is the storm's. This is the one owner of the sun, sky, haze and the storm
+## walls' light.
 
 ## Planetshine: the night side still catches light off the planet.
 const NIGHT_LIGHT := 0.08
@@ -19,6 +21,8 @@ const FORECAST_STEP := 5.0
 const SUN_COLOR := Color(1.0, 0.95, 0.86)
 const AMBIENT_COLOR := Color(0.8, 0.72, 0.62)
 const AMBIENT_ENERGY := 0.75
+## Light that has come through a storm's dust is reddened by it, as the dust is.
+const STORM_TINT := Color(0.95, 0.8, 0.62)
 ## The sand's colour, from the terrain's material: what blown grains look like.
 const SAND := Color(0.86, 0.72, 0.52)
 ## The sun's disc, which the storm pass draws so a wall can cover it.
@@ -32,8 +36,10 @@ var storm := 0.0
 var in_storm := false
 var wind := Vector3.ZERO
 ## How far into the dust the camera is, 0 to 1, by the same billows the screen
-## draws. What the senses follow.
+## draws, with shelters clear. What the senses follow.
 var seen_storm := 0.0
+## The same as if no shelter stood: what the light follows.
+var seen_shade := 0.0
 ## Sunlight reaching the camera past the storms, 0 to 1.
 var seen_sun := 1.0
 ## Signed metres from the camera to the nearest front, positive inside.
@@ -51,6 +57,8 @@ var _sun: DirectionalLight3D
 var _sun_energy: float
 var _haze_color: Color
 var _forecast_due := 0.0
+var _shelters: Array[Node] = []
+var _shelters_frame := -1
 
 
 func setup(world: World) -> void:
@@ -62,7 +70,6 @@ func setup(world: World) -> void:
 	_environment = (world.get_node("WorldEnvironment") as WorldEnvironment).environment
 	_sun = world.get_node("Sun")
 	_sun_energy = _sun.light_energy
-	_sun.light_color = SUN_COLOR
 	# The storm pass draws the disc, so a wall can cover it.
 	_sun.sky_mode = DirectionalLight3D.SKY_MODE_LIGHT_ONLY
 	_haze_color = _environment.fog_light_color
@@ -73,20 +80,52 @@ func setup(world: World) -> void:
 
 
 ## Each felt_*() reads now, or a given world time t: power ticks read theirs.
+## Shelter is always as it stands now.
 func felt_storm(at: Vector3, t := NAN) -> float:
-	return field.storm_at(_world.world_x(at.x), _world.world_z(at.z), _when(t))
+	return field_storm(at, t) * (1.0 - shelter_at(at))
 
 
 ## Horizontal wind, m/s, in engine axes.
 func felt_wind(at: Vector3, t := NAN) -> Vector3:
+	return field_wind(at, t) * (1.0 - shelter_at(at))
+
+
+## Sunlight reaching a place, 0 to 1: the sky's share after the storm takes
+## its own. Light passes through a shield, so shelter changes nothing here.
+func felt_light(at: Vector3, t := NAN) -> float:
+	return day.sunlight(_when(t), _world.moon.latitude) \
+		* (1.0 - _tuning.storm_darkness * field_storm(at, t))
+
+
+## The storm the field makes at a place, as if no shelter stood.
+func field_storm(at: Vector3, t := NAN) -> float:
+	return field.storm_at(_world.world_x(at.x), _world.world_z(at.z), _when(t))
+
+
+## The wind the field blows at a place, as if no shelter stood: what the dust
+## outside a bubble rides.
+func field_wind(at: Vector3, t := NAN) -> Vector3:
 	var w := field.wind_at(_world.world_x(at.x), _world.world_z(at.z), _when(t))
 	return Vector3(w.x, 0.0, w.y)
 
 
-## Sunlight reaching a place, 0 to 1: the sky's share after the storm takes its own.
-func felt_light(at: Vector3, t := NAN) -> float:
-	return day.sunlight(_when(t), _world.moon.latitude) \
-		* (1.0 - _tuning.storm_darkness * felt_storm(at, t))
+## How sheltered a place is, 0 or 1: 1 within the live radius of any shelter.
+## Asked of the distance, never of events. The base shield blocks wind and
+## storm alike; shields that differ per harm come with the device (Stage 6).
+func shelter_at(at: Vector3) -> float:
+	for shelter: Shelter in shelters():
+		if at.distance_squared_to(shelter.global_position) < shelter.radius * shelter.radius:
+			return 1.0
+	return 0.0
+
+
+## Every shelter in the world, standing or down, gathered once a frame: ropes
+## and loose bodies ask many times a tick.
+func shelters() -> Array[Node]:
+	if _shelters_frame != Engine.get_process_frames():
+		_shelters_frame = Engine.get_process_frames()
+		_shelters = get_tree().get_nodes_in_group(Shelter.GROUP) if is_inside_tree() else []
+	return _shelters
 
 
 func _when(t: float) -> float:
@@ -106,7 +145,8 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	var player := _world.player.global_position
-	storm = felt_storm(player)
+	# A bubble shelters you from the storm, not the place: you're still in it.
+	storm = field_storm(player)
 	in_storm = storm > 0.0
 	wind = felt_wind(player)
 	var x := _world.player_world_x()
@@ -129,7 +169,15 @@ func _exit_tree() -> void:
 
 ## Every drawn frame, after the world has moved and shifted.
 func _process(_delta: float) -> void:
-	face.sync(_world.time)
+	var holes := PackedVector4Array()
+	var glows := PackedFloat32Array()
+	for shelter: Shelter in shelters():
+		if shelter.radius > 0.0 and holes.size() < Shelter.MAX:
+			var c := shelter.global_position
+			holes.append(Vector4(c.x, c.y, c.z, shelter.radius))
+			glows.append(shelter.glow)
+	face.sync(_world.time, holes, glows)
+	atmosphere.carve(holes)
 
 
 ## How much the wind grabs a body: its own say if it has one, else its
@@ -173,22 +221,25 @@ func _show(delta: float) -> void:
 	var risen := smoothstep(-0.02, 0.1, sun.y)
 	var daylight := lerpf(NIGHT_LIGHT, 1.0, smoothstep(-0.1, 0.2, sun.y))
 	seen_storm = face.seen_at(eye)
+	seen_shade = face.open_at(eye)
 	seen_sun = maxf(face.sun_at(eye, sun), 0.02)
 	seen_front = face.front_at(eye).x if map.ready else -INF
 
 	# The light dims in stages: a wall blots out the sun, then towers over half
 	# the sky, then swallows you. Inside, the light is the storm glowing from
 	# above, so the sun light turns overhead and soft: dunes keep their shape
-	# while their shadows go.
+	# while their shadows go. A bubble clears the air, not the light.
 	var towering := atan2(_tuning.wall_height - eye.y, maxf(-seen_front, 1.0)) / (PI * 0.5)
-	var coverage := lerpf(clampf(towering, 0.0, 1.0) * 0.5, 1.0, seen_storm)
-	var dim := lerpf(1.0, 1.0 - _tuning.storm_darkness, seen_storm)
+	var coverage := lerpf(clampf(towering, 0.0, 1.0) * 0.5, 1.0, seen_shade)
+	var dim := lerpf(1.0, 1.0 - _tuning.storm_darkness, seen_shade)
 	var sky_left := 1.0 - 0.55 * coverage
 	var overhead := Vector3(sun.x * 0.15, 1.0, sun.z * 0.15).normalized()
-	var light_from := sun.slerp(overhead, seen_storm * risen)
+	var light_from := sun.slerp(overhead, seen_shade * risen)
 	_sun.global_basis = Basis.looking_at(-light_from, Vector3.UP if absf(light_from.y) < 0.9 else Vector3.FORWARD)
-	_sun.light_energy = _sun_energy * risen * maxf(seen_sun, seen_storm * 0.6) * dim
-	_environment.ambient_light_color = AMBIENT_COLOR
+	_sun.light_energy = _sun_energy * risen * maxf(seen_sun, seen_shade * 0.6) * dim
+	var tint := Color.WHITE.lerp(STORM_TINT, seen_shade)
+	_sun.light_color = SUN_COLOR * tint
+	_environment.ambient_light_color = AMBIENT_COLOR * tint
 	_environment.ambient_light_energy = AMBIENT_ENERGY * daylight * sky_left * dim
 	_environment.background_energy_multiplier = daylight * lerpf(1.0, 0.45, coverage) * dim
 
@@ -214,11 +265,15 @@ func _show(delta: float) -> void:
 	face.set_light("haze_color", _linear(haze_color) * haze_light)
 	face.set_light("haze", Vector3(_environment.fog_depth_begin, _environment.fog_depth_end,
 		_environment.fog_density))
+	# The light round the camera, which a shell's glass catches.
+	face.set_light("shell_light", _linear(_environment.ambient_light_color) * _environment.ambient_light_energy)
 
-	var grains := _linear(SAND) * (sun_light * maxf(seen_sun, seen_storm * 0.6) * 0.6 + sky_light * sky_left) * dim
+	# Outside a bubble the dust is the storm's own: it rides the field's wind
+	# and thickens with the storm, and the bubble only carves it out.
+	var grains := _linear(SAND) * (sun_light * maxf(seen_sun, seen_shade * 0.6) * 0.6 + sky_light * sky_left) * dim
 	var near := exp(minf(seen_front, 0.0) / 350.0) if map.ready else 0.0
-	atmosphere.show_weather(camera, _world.height_under(eye), wind, seen_storm, near, grains,
-		face.sigma() * seen_storm, _world.time_warp > 0.0, delta)
+	atmosphere.show_weather(camera, _world.height_under(eye), field_wind(_world.player.global_position),
+		shelter_at(eye), seen_shade, near, grains, face.sigma() * seen_shade, _world.time_warp > 0.0, delta)
 
 
 func _report() -> void:
@@ -233,6 +288,7 @@ func _report() -> void:
 	Dev.put("weather/wall", "-" if seen_front == -INF else ("in %dm" % roundi(seen_front)
 		if seen_front >= 0.0 else "%dm" % roundi(-seen_front)))
 	Dev.put("weather/seen", "%d%%" % roundi(seen_storm * 100.0))
+	Dev.put("weather/shel", "in" if shelter_at(_world.player.global_position) > 0.0 else "-")
 	var eta := next_change_time - t
 	Dev.put("weather/next", "%s %s" % ["clr" if in_storm else "stm",
 		">1h" if eta == INF else "%d:%02d" % [floori(eta / 60.0), floori(fmod(eta, 60.0))]])
