@@ -64,8 +64,8 @@ func _ready() -> void:
 	hiss.loop = true
 	_slide = _voice(hiss)
 	_thud = _voice(THUD)
-	_spray = _sand(40, 0.8, false)
-	_puff = _sand(28, 0.7, true)
+	_spray = _sand(64, 0.8, false)
+	_puff = _sand(32, 0.7, true)
 	_player.landed.connect(_on_landed)
 	_player.jumped.connect(_on_jumped)
 
@@ -210,7 +210,7 @@ func _throw_sand(sliding: bool, own: Vector2, speed: float) -> void:
 	if not _spray.emitting:
 		return
 	var heading := Vector3(own.x, 0.0, own.y) / speed
-	_spray.scale_amount_max = 0.06 + 0.1 * clampf(speed / FAST, 0.0, 1.0)
+	_spray.scale_amount_max = 0.04 + 0.04 * clampf(speed / FAST, 0.0, 1.0)
 	_spray.global_position = _player.global_position + heading * 0.45 + Vector3.UP * 0.05
 	_spray.direction = (heading * 0.4 + Vector3.UP).normalized()
 	_spray.initial_velocity_min = 0.5 + speed * 0.15
@@ -225,7 +225,8 @@ func _voice(stream: AudioStream) -> AudioStreamPlayer:
 	return voice
 
 
-## Grains of the sand's own colour that fade as they fall.
+## Soft grains of the sand's own colour, thrown from across your width, that
+## fade as they fall.
 func _sand(amount: int, lifetime: float, burst: bool) -> CPUParticles3D:
 	var sand := CPUParticles3D.new()
 	sand.amount = amount
@@ -234,21 +235,34 @@ func _sand(amount: int, lifetime: float, burst: bool) -> CPUParticles3D:
 	sand.explosiveness = 1.0 if burst else 0.0
 	sand.emitting = false
 	sand.local_coords = false
+	sand.emission_shape = CPUParticles3D.EMISSION_SHAPE_BOX
+	sand.emission_box_extents = Vector3(0.3, 0.02, 0.3)
 	sand.direction = Vector3.UP
 	sand.spread = 80.0 if burst else 45.0
 	sand.initial_velocity_min = 0.6
 	sand.initial_velocity_max = 1.6
-	sand.scale_amount_min = 0.04
-	sand.scale_amount_max = 0.12
+	sand.scale_amount_min = 0.02
+	sand.scale_amount_max = 0.1 if burst else 0.05
 	var fade := Gradient.new()
-	fade.set_color(0, Color(Weather.SAND, 0.6))
+	fade.set_color(0, Color(Weather.SAND, 0.5))
 	fade.set_color(1, Color(Weather.SAND, 0.0))
 	sand.color_ramp = fade
+	var round := Gradient.new()
+	round.set_color(0, Color.WHITE)
+	round.set_color(1, Color(1.0, 1.0, 1.0, 0.0))
+	var dot := GradientTexture2D.new()
+	dot.gradient = round
+	dot.fill = GradientTexture2D.FILL_RADIAL
+	dot.fill_from = Vector2(0.5, 0.5)
+	dot.fill_to = Vector2(0.5, 0.0)
+	dot.width = 32
+	dot.height = 32
 	var grain := QuadMesh.new()
 	var look := StandardMaterial3D.new()
 	look.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
 	look.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	look.vertex_color_use_as_albedo = true
+	look.albedo_texture = dot
 	grain.material = look
 	sand.mesh = grain
 	sand.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
