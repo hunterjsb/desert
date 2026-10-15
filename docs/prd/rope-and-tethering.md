@@ -46,23 +46,26 @@ The rope was three systems that disagreed:
 ## Rules
 
 1. **One rope, one truth.** Each rope is a single constraint that does the holding,
-   plus a drawn rope that shows it. They share one length and always agree. When the
-   constraint is taut, the drawn rope is straight. Nothing else pulls on a tethered
-   object.
-2. **Stiffness is a feel, not a force.** A rope is defined by how fast it springs back
+   plus a drawn rope that shows it. They share one length and always agree. Nothing else
+   pulls on a tethered object.
+2. **Rope has weight** (decided 2026-10-15). A lightly loaded line droops and
+   straightens as the pull builds, so you read the load by eye. Only a line under
+   real load runs straight. The look-test's weightless line looked as straight at 2%
+   load as at 70%.
+3. **Stiffness is a feel, not a force.** A rope is defined by how fast it springs back
    and how much it bounces. It's solved the way physics engines solve soft joints,
    from both ends' masses, so it can't gain energy. A lantern and a loaded planter on
    the same rope type both behave sanely.
-3. **Equal and opposite.** A rope pulls both ends equally, at the attachment points, so
+4. **Equal and opposite.** A rope pulls both ends equally, at the attachment points, so
    loads twist things realistically and anchors feel what they hold.
-4. **Frame-rate proof.** The same setup behaves the same at any frame rate.
-5. **Too much load breaks something; it never explodes.** Every rope has a breaking
+5. **Frame-rate proof.** The same setup behaves the same at any frame rate.
+6. **Too much load breaks something; it never explodes.** Every rope has a breaking
    strength and every anchor has a holding strength. A brief spike doesn't snap a rope,
    only sustained load past its limit does.
-6. **Ropes only touch the sand.** Drawn rope rests on `height_at` from World & terrain.
+7. **Ropes only touch the sand.** Drawn rope rests on `height_at` from World & terrain.
    That's a cheap lookup with no raycasts. Ropes pass through objects and each other,
    which means no tangling and no snagging, and none of the bugs those bring.
-7. **Ropes belong to the camp, not the land.** They move with origin shifts and never
+8. **Ropes belong to the camp, not the land.** They move with origin shifts and never
    belong to a chunk.
 
 ## Attachment points
@@ -190,13 +193,6 @@ Every probe is first run against a deliberately broken rope, to prove it can fai
 - Cutting ropes to arbitrary lengths with physics. Lengths are set when you attach.
 
 ## Open questions
-
-- **Should rope have weight?** The look-test's rope is weightless: slack below its
-  length, a spring past it. So a line at 2% load looks as ruler-straight as one at 70%,
-  and after the wind dies a floater hangs on a straight, unloaded line. Giving the
-  constraint the rope's weight would make light lines droop and straighten as load
-  rises, the way real rope reads. It bends rule 1's "taut means straight" into
-  "straight only under load". Decide by Stage 5.
 
 - **How quickly can you untie from your waist** when a gust hits? Instant makes it
   safe. A moment's delay makes it a real risk you choose.
