@@ -52,7 +52,7 @@ func _ready() -> void:
 	var housing := Vector3.ONE * 0.4
 	for child in get_children():
 		if child is CollisionShape3D:
-			housing = (child as CollisionShape3D).shape.get_debug_mesh().get_aabb().size
+			housing = Catalog.bounds((child as CollisionShape3D).shape).size
 			break
 	var band := MeshInstance3D.new()
 	var ring := BoxMesh.new()

@@ -177,9 +177,10 @@ Built after the skeleton loop works end to end, in roughly this order:
 - `height_at(x, z)`: the one height function.
 - Position on the moon (latitude, longitude) and distance from spawn, in double
   precision.
-- Signals when a chunk loads, when a chunk unloads, and when the origin shifts. Salvage
-  places finds when a chunk loads, seeded from the chunk's coordinates. Anything that
-  caches positions listens for the origin shift.
+- Signals when a chunk's ground becomes solid, when it stops being solid, when a chunk
+  is forgotten, and when the origin shifts. Salvage lays out finds when a chunk's ground
+  becomes solid, seeded from the chunk's coordinates. Anything that caches positions
+  listens for the origin shift.
 - A guarantee: inside the collision range, the ground is solid and doesn't move.
 
 ## Probes (how we know it works)
@@ -223,7 +224,7 @@ fail.
   (see above).
 - **Is the ground cheap enough for the hoverboard?** Ridges' `height_at` takes about
   3 µs at a lattice point and 8 µs between points, against 0.3 µs for the skeleton's
-  noise. Reads on loaded ground come from the chunk's samples, at about 1 µs. The main
+  noise; the ruins' check adds half a microsecond more (Salvage & ruins). Reads on loaded ground come from the chunk's samples, at about 1 µs. The main
   thread doesn't feel it, since chunks are built on workers. But flying at dev speed,
   the ground round you is still being built in almost half the frames, against a fifth
   with the old noise. The hoverboard's top speed will need it cheaper: a native port of

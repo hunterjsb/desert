@@ -70,6 +70,8 @@ var _jump := ""
 func _enter_tree() -> void:
 	# Before the World's _ready builds the weather from it.
 	Tuning.current().run_seed = SEED
+	# Its own props only: nothing found lies among them.
+	Tuning.current().salvage = false
 
 
 func _ready() -> void:

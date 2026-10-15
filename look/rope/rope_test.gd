@@ -41,6 +41,8 @@ var _across := Vector3.RIGHT
 
 func _ready() -> void:
 	Tuning.current().run_seed = SEED
+	# Its own props only: nothing found lies among them.
+	Tuning.current().salvage = false
 	world = WORLD_SCENE.instantiate()
 	add_child(world)
 	move_child(world, 0)

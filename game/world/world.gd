@@ -35,6 +35,7 @@ var gravity: float
 @onready var power: Power = $Power
 @onready var wear: Wear = $Wear
 @onready var ropes: Ropes = $Ropes
+@onready var salvage: Salvage = $Salvage
 
 var _last_x: float
 var _last_z: float
@@ -55,6 +56,7 @@ func _ready() -> void:
 	power.setup(self)
 	wear.setup(self)
 	ropes.setup(self)
+	salvage.setup(self)
 	_set_scene()
 	var half := tuning.chunk_size * 0.5
 	spawn = _flat_near(half, half)
@@ -79,7 +81,8 @@ func respawn(x: float, z: float, yaw: float, at_time: float) -> void:
 
 
 ## A run starts on ground this flat: a camp-sized patch whose sand rises no
-## more than FLAT_RISE m across FLAT_SPAN m, found within FLAT_SEARCH m.
+## more than FLAT_RISE m across FLAT_SPAN m, found within FLAT_SEARCH m, and
+## never on a ruin's ground.
 const FLAT_SPAN := 10.0
 const FLAT_RISE := 0.5
 const FLAT_SEARCH := 300.0
@@ -99,6 +102,8 @@ func _flat_near(x: float, z: float) -> Vector2:
 
 
 func _flat(at: Vector2) -> bool:
+	if shape.ruins.covering(at.x, at.y) != null:
+		return false
 	var low := INF
 	var high := -INF
 	for j in 3:
@@ -251,7 +256,7 @@ func _hold_above_sand(body: RigidBody3D) -> void:
 			continue
 		# Any shape, by its bounds: a stake dragged by its line is a cylinder.
 		if not shape.has_meta(&"sand_box"):
-			shape.set_meta(&"sand_box", shape.shape.get_debug_mesh().get_aabb())
+			shape.set_meta(&"sand_box", Catalog.bounds(shape.shape))
 		var box: AABB = shape.get_meta(&"sand_box")
 		var to_world := body.global_transform * shape.transform
 		for i in 8:

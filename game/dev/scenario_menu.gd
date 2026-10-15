@@ -47,12 +47,16 @@ func apply(scenario: Dictionary) -> void:
 		if is_instance_valid(body):
 			body.queue_free()
 	_kit.clear()
-	if scenario.kind == "kit" or scenario.get("camp", false) or scenario.get("survive", false):
+	if scenario.kind in ["kit", "ruin"] or scenario.get("camp", false) or scenario.get("survive", false):
 		# Bodies dropped before the sand under them has collision would be frozen or forgotten.
 		while not _world.terrain.is_settled_around(place.x, place.z):
 			await get_tree().physics_frame
-		_kit = Scenarios.kit(_world) if scenario.kind == "kit" \
-			else (Scenarios.camp(_world) if scenario.get("camp", false) else Scenarios.survive(_world))
+		if scenario.kind == "ruin":
+			_kit = Scenarios.yours(_world)
+		elif scenario.kind == "kit":
+			_kit = Scenarios.kit(_world)
+		else:
+			_kit = Scenarios.camp(_world) if scenario.get("camp", false) else Scenarios.survive(_world)
 
 
 func _hotkey(index: int) -> String:

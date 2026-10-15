@@ -5,8 +5,8 @@ extends WorldProbe
 var field: WeatherField
 
 
-func load_weather(run_seed := 1234) -> void:
-	await load_world(run_seed, false)
+func load_weather(run_seed := 1234, salvage := false) -> void:
+	await load_world(run_seed, false, salvage)
 	field = world.weather.field
 
 

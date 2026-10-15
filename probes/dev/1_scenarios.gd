@@ -1,14 +1,15 @@
 extends WeatherProbe
 ## Dev probe 1: every scenario drops you where it says. A storm 100 m away is
 ## 100 m upwind and you face it; deep is deep; dusk is dusk; the test kit lands
-## in front of you. Checked against the field itself and against what the game
-## then shows.
+## in front of you; going looking stands you before a ruin's door with finds
+## round it. Checked against the field itself and against what the game then
+## shows.
 
 const SLACK := 1.0
 
 
 func run() -> void:
-	await load_weather()
+	await load_weather(1234, true)
 	world.player.set_physics_process(false)
 	for scenario in Scenarios.LIST:
 		var place := Scenarios.find(world, scenario)
@@ -33,9 +34,12 @@ func run() -> void:
 			"spawn":
 				check(at.distance_to(world.spawn) < 0.01 and t == 0.0,
 					"spawn: where and when the run began")
-			"clear", "kit":
+			"clear", "kit", "ruin":
 				check(not stormy and field.next_change(at.x, at.y, t, 600.0, 5.0) == INF,
 					"%s: no storm for 10 minutes" % what)
+				if scenario.kind == "ruin":
+					check(field.wind_at(at.x, at.y, t).length() < scenario.calm, "ruin: a calm spell")
+					await _ruin_ahead(at, ahead)
 				if scenario.kind == "kit":
 					check(field.wind_at(at.x, at.y, t).length() < scenario.calm, "kit: a calm spell")
 					await _kit_lands_near_you()
@@ -69,6 +73,37 @@ func _edge(from: Vector2, along: Vector2, t: float, inside: bool) -> float:
 		if (field.raw_storm_at(p.x, p.y, t) > 0.0) != inside:
 			return d
 	return INF
+
+
+## A ruin's front door stands in front of you, finds lie round it, one on
+## its floor a device with parts to strip, and your own bare frame lands
+## beside you.
+func _ruin_ahead(at: Vector2, ahead: Vector2) -> void:
+	var ruin := world.shape.ruins.around(at.x, at.y, 30.0)
+	check(not ruin.is_empty(), "ruin: a ruin stands near you")
+	if ruin.is_empty():
+		return
+	var door := ruin[0].to_world(Ruin.DOORS[0][0]) - at
+	check(ahead.dot(door.normalized()) > 0.999 and door.length() < 20.0,
+		"ruin: its front door is in front of you (%.1f m)" % door.length())
+	await settle(true)
+	for i in 600:
+		if world.salvage.is_idle():
+			break
+		await get_tree().process_frame
+	var mine := Scenarios.yours(world)
+	var coord := world.terrain.chunk_at(ruin[0].center.x, ruin[0].center.y)
+	var finds := world.salvage.finds()
+	var on_floor := finds.filter(func(b: Node) -> bool:
+		return b.get_meta(&"find")[0] == coord and b.get_meta(&"find")[1] >= Finds.IN_RUIN)
+	var strippable := on_floor.filter(func(b: Node) -> bool: return b is Device and not (b as Device).parts().is_empty())
+	check(finds.size() >= 5 and on_floor.size() >= 3 and not strippable.is_empty(),
+		"ruin: finds lie round you (%d), on its floor (%d), a device among them with parts to strip"
+		% [finds.size(), on_floor.size()])
+	check(mine.size() == 1 and mine[0] is Device and (mine[0] as Device).parts().is_empty() and clearance(mine[0]) < 0.6,
+		"ruin: your own bare frame lands beside you")
+	for body in mine:
+		body.free()
 
 
 ## Two devices and every kit part land on the sand in front of you, within a

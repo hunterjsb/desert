@@ -134,6 +134,83 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
 - Stripping parts out of found devices.
 - The probes below, all passing.
 
+**Built** (2026-10-15), waiting at the gate.
+
+- **Finds** are laid out when a chunk's ground becomes solid, from the run's seed, the
+  chunk's coordinates and how hard the weather has been there, and go when it stops
+  being solid. While the chunk stays loaded it remembers what you took, so its finds
+  come back as they were less that; once the chunk is forgotten, so is that. Open sand
+  holds 1.5 finds a chunk on average, at most 4. Each find draws from its own stream of
+  the seed, where it lies first, so the weather changes what a find is but never where it
+  lies.
+- **Partly buried.** A buried part stands on end and a device stands upright, both
+  leaning with the sand and up to 15° more their own way: a quarter to a half of its
+  height under the sand in the surface layer, 40 to 65% in the deep, and always at least
+  35% of it and 10 cm showing. A quarter of the parts on open sand lie loose on top
+  instead, and everything on a ruin's floor lies loose: loose finds are set down 3 cm up,
+  settle, and then hold where they settled.
+- **A find is part of its chunk** until it's yours: frozen where it lies, dark, and left
+  out of power, wear and the wind. Whatever you take, take from, fit to, use or take hold
+  of becomes yours, an ordinary thing in the world. Taking hold of a buried device pulls
+  it up out of the sand onto it.
+- **What's found** is the catalog's own parts and devices. The surface layer holds
+  batteries, hooks, lamps and empty canisters (where water comes from is Survival's
+  question), and crate frames, chargers, planters and stakes. The deep layer holds big
+  batteries, batteries, hover trays, solar panels and hooks, and crate frames, wind
+  turbines, condensers and shield generators. A device comes with some of its sockets
+  filled from its own layer, a third of them at the surface and three in five deep.
+  Deep things were kept from the weather longer: batteries 30 to 100% charged against
+  up to 40% at the surface, devices 70 to 100% sound against 35 to 75%. The look-at line
+  says which layer a find came from.
+- **How hard the weather has been** at a place is read over the last two hours, every
+  10 minutes of world time: the mean of how deep into a storm it was or how far the wind
+  blew past the prevailing wind's strongest, 16 m/s (toward 30 m/s, as hard as a storm's
+  heart), whichever was harder. Fixed ticks of world time mean a chunk loaded any time
+  within one reads the same. Over thousands of chunks it runs from 0.06 to 0.92, half
+  of them over 0.55, and the deep layer's share runs with it from none to 60%: 19% of
+  finds where storms touched half the hours or less, 53% where one sat the whole two
+  hours. Changed on the way: storm or wind past 6 m/s barely varied, since storms cover
+  70% of the time and the prevailing wind always counted, so the deep layer came out
+  half of everything.
+- **The ruin** is a thick-walled building 18 × 12 m: a 10 × 10 m hall open to the sky,
+  two 6 × 5 m roofed rooms behind it, a door front and back and three inside (1.4 m wide,
+  2.3 m high), walls 3 m. It's 18 boxes and slabs in its chunk's own collision body,
+  built and gone with the sand's. At most one stands in each square of 5 × 5 chunks,
+  wholly inside one chunk, where the dunes over its ground rise no more than 1.5 m and
+  are nowhere steeper than 20°: about 2.3 a km², one every 650 m or so. It turns only
+  in quarter turns, so its walls stand on the lattice. A run never starts on a ruin's
+  ground.
+- **Its footprint in `height_at`:** inside, the sand lies 3 cm under the floor; outside,
+  it drifts 0.7 m up the walls, gone 4 m out, and lies level with the floor in front of
+  each outer door; 12 m out the dunes have their own shape back. The outer walls are a
+  metre thick and stand on whole metres, so the sand's rise from floor to drift happens
+  inside a wall. The steepest ground round any ruin is 21.6°, under the 28° that slides
+  you. **Cost:** one table lookup per call. `height_at` takes 3.4 µs at a lattice point
+  (2.9 before) and 8.9 µs between points (8.2). A chunk build asks once, so it costs the
+  same as before, and the far ring reads the dunes alone. Each candidate's ground is
+  surveyed once a run, about 1 ms on a worker.
+- **Stripping** needed nothing new: take a part out of a found device and fit it to
+  yours, as with any device. A part in a socket buried in the sand can't be seen until
+  you take hold of the device.
+- **Streaming:** laying out a find is split into pieces of at most about half a
+  millisecond (a device's frame, each part it was found with, then into the world), and
+  a chunk's finds are freed one at a time. The worst streaming frame is 1.0 to 1.1 ms
+  headless (world probe 7) and 1.3 to 1.4 ms in a real window (`look/stream`, 1.55 ms in
+  the same run with salvage off). Found on the way: asking a shape for its bounds
+  through its debug mesh made the main thread wait for the render thread, about 6 ms,
+  the first time for each shape; a box's bounds come from its size now. Charge lights and
+  socket tells share their looks.
+- **The scenario menu's "go looking"** stands you 12 m out from the front door of the
+  ruin nearest the run's start, facing it, at a clear and calm moment (no storm for ten
+  minutes, wind under 6 m/s), with a bare crate frame of your own beside you. The
+  ruin's hall always holds a device with at least two parts to strip. The dev overlay's
+  salvage column shows the finds in memory, and how hard the weather has been where you
+  stand with the deep layer's share there.
+- **Probes** 1 to 7 pass, each checked against a deliberately broken build. Probes of
+  other systems run without ruins and finds, as ground probes run in still air; salvage's
+  own, the scenario probe and the hitch probe run with them. On the 20 km walk at most 66
+  finds are in memory at once.
+
 ## Full version
 
 - **All four layers,** from recent traces down to colonial, with the ash band between the

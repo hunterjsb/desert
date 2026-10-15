@@ -5,6 +5,8 @@ extends RefCounted
 
 var coord: Vector2i
 var step: int
+## The ruin standing on it, or null: its ground is in the heights already.
+var ruin: Ruin
 ## (n+1)^2 samples in rows along z: the collision data and the seam check.
 var heights: PackedFloat32Array
 var arrays: Array
@@ -20,6 +22,8 @@ static func make(shape: TerrainShape, coord: Vector2i, size: int, step: int, ski
 	var n := size / step
 	var x0 := float(coord.x * size)
 	var z0 := float(coord.y * size)
+	# A ruin's ground never leaves its chunk, so it's the only one these samples can meet.
+	build.ruin = shape.ruins.in_chunk(coord)
 
 	# One sample of border, so edge normals match the neighbour's.
 	var w := n + 3
@@ -27,7 +31,7 @@ static func make(shape: TerrainShape, coord: Vector2i, size: int, step: int, ski
 	bordered.resize(w * w)
 	for j in w:
 		for i in w:
-			bordered[j * w + i] = shape.height_at(x0 + (i - 1) * step, z0 + (j - 1) * step)
+			bordered[j * w + i] = shape.sample(x0 + (i - 1) * step, z0 + (j - 1) * step, build.ruin)
 
 	var grid := (n + 1) * (n + 1)
 	build.heights.resize(grid)
