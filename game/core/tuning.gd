@@ -104,6 +104,12 @@ static var _current: Tuning
 @export var storm_map_cells: int = 128
 @export var storm_map_reach: float = 20000.0
 
+@export_group("Shield")
+## The base shield's bubble, metres from the generator to the shell.
+@export var shield_radius: float = 7.0
+## The bubble blooms open, and collapses, in this long.
+@export var shield_bloom_seconds: float = 0.6
+
 @export_group("Player")
 ## About 5 km/h, the pace the moon's size was set against.
 @export var walk_speed: float = 1.4

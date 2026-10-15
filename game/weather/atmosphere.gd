@@ -4,10 +4,19 @@ extends Node3D
 ## ground as a front's outflow arrives, grit on every wind and filling a storm,
 ## parcels of dust tearing past inside one, the wind shoving the view, Sand
 ## Game's desert wind in the clear and its storm roar. It follows what you see,
-## the dust at the camera, not the field at your feet.
+## the dust at the camera, not the field at your feet. Inside a bubble the
+## dust outside still blows past, carved away at the shell, and the sound is
+## muffled.
 
 const STREAK := preload("res://game/weather/streak.gdshader")
 const PUFF := preload("res://game/weather/puff.gdshader")
+## The weather's sounds play through this bus, whose low-pass muffles them
+## inside a bubble.
+const BUS := &"Weather"
+## Muffled: what of the sound gets through a shell, its loudness and its top.
+const MUFFLED_GAIN := 0.4
+const MUFFLED_HZ := 600.0
+const OPEN_HZ := 20000.0
 
 var _streamers: GPUParticles3D
 var _grit: GPUParticles3D
@@ -16,6 +25,7 @@ var _wind_sound: AudioStreamPlayer
 var _roar: AudioStreamPlayer
 var _buffet := FastNoiseLite.new()
 var _buffet_time := 0.0
+var _muffle: AudioEffectLowPassFilter
 
 
 func _ready() -> void:
@@ -28,6 +38,7 @@ func _ready() -> void:
 	# Streaks stretch along their flight; puffs face the camera in the shader.
 	(_streamers.process_material as ParticleProcessMaterial).particle_flag_align_y = true
 	(_grit.process_material as ParticleProcessMaterial).particle_flag_align_y = true
+	_muffle = _weather_bus()
 	_wind_sound = _loop(preload("res://assets/audio/wind.ogg"))
 	_roar = _loop(preload("res://assets/audio/storm.ogg"))
 
@@ -38,12 +49,14 @@ func _exit_tree() -> void:
 	_roar.stop()
 
 
-## Called each tick. wind is at the player; seen is how far into the dust the
-## camera is (0 to 1); near is how close the nearest face is (0 far, 1 here);
-## light is what the dust grains catch; sigma the dust's extinction round the
-## camera; running is false while the clock is stopped.
-func show_weather(camera: Camera3D, ground: float, wind: Vector3, seen: float, near: float,
-		light: Vector3, sigma: float, running: bool, delta: float) -> void:
+## Called each tick. wind is the field's at the player, sheltered or not;
+## sheltered is 1 when the camera is inside a bubble; seen is how far into the
+## storm's dust the camera is (0 to 1), as if no bubble stood; near is how
+## close the nearest face is (0 far, 1 here); light is what the dust grains
+## catch; sigma the storm's extinction round the camera; running is false
+## while the clock is stopped.
+func show_weather(camera: Camera3D, ground: float, wind: Vector3, sheltered: float, seen: float,
+		near: float, light: Vector3, sigma: float, running: bool, delta: float) -> void:
 	var p := camera.global_position
 	var blow := wind.length()
 	var heading := wind / blow if blow > 0.01 else Vector3.FORWARD
@@ -67,15 +80,48 @@ func show_weather(camera: Camera3D, ground: float, wind: Vector3, seen: float, n
 	# Grit rides every strong wind a little, thickens as a face nears, fills a storm.
 	_ratio(_grit, maxf(maxf(seen, 0.1 * smoothstep(0.55, 0.95, near)), clampf((blow - 6.0) / 60.0, 0.0, 0.1)))
 	_ratio(_puffs, seen)
-	# The roar grows as a face nears and fills everything once inside.
-	_wind_sound.volume_db = linear_to_db(clampf(blow / 25.0, 0.0, 1.0) * (1.0 - seen) * 0.7 + 0.0001)
-	_roar.volume_db = linear_to_db(maxf(seen, 0.5 * smoothstep(0.3, 1.0, near)) + 0.0001)
+	# The roar grows as a face nears and fills everything once inside. A
+	# shell takes its edge off at once: inside is a place.
+	var through := lerpf(1.0, MUFFLED_GAIN, sheltered)
+	_muffle.cutoff_hz = OPEN_HZ * pow(MUFFLED_HZ / OPEN_HZ, sheltered)
+	_wind_sound.volume_db = linear_to_db(clampf(blow / 25.0, 0.0, 1.0) * (1.0 - seen) * 0.7 * through + 0.0001)
+	_roar.volume_db = linear_to_db(maxf(seen, 0.5 * smoothstep(0.3, 1.0, near)) * through + 0.0001)
 	_wind_sound.stream_paused = not running
 	_roar.stream_paused = not running
-	# The wind shoves the view: a small roll that grows with it. Nothing else
-	# sets the camera's roll, so this can't fight the mouse.
+	# The wind shoves the view: a small roll that grows with it, and none in
+	# a bubble's still air. Nothing else sets the camera's roll, so this
+	# can't fight the mouse.
 	_buffet_time += delta if running else 0.0
-	camera.rotation.z = deg_to_rad(0.5) * smoothstep(7.0, 22.0, blow) * _buffet.get_noise_1d(_buffet_time * 90.0)
+	camera.rotation.z = deg_to_rad(0.5) * smoothstep(7.0, 22.0, blow) * (1.0 - sheltered) \
+		* _buffet.get_noise_1d(_buffet_time * 90.0)
+
+
+## How far the sound is muffled now: 0 open, 1 inside a bubble.
+func muffled() -> float:
+	return log(_muffle.cutoff_hz / OPEN_HZ) / log(MUFFLED_HZ / OPEN_HZ)
+
+
+## Every drawn frame: the shelters' spheres, which no grain enters.
+func carve(holes: PackedVector4Array) -> void:
+	var padded := Shelter.padded(holes)
+	for system: GPUParticles3D in [_streamers, _grit, _puffs]:
+		var look := (system.draw_pass_1 as QuadMesh).material as ShaderMaterial
+		look.set_shader_parameter("shelters", padded)
+		look.set_shader_parameter("shelter_count", holes.size())
+
+
+## The weather's own bus, made once, with its muffling low-pass.
+static func _weather_bus() -> AudioEffectLowPassFilter:
+	var index := AudioServer.get_bus_index(BUS)
+	if index == -1:
+		AudioServer.add_bus()
+		index = AudioServer.bus_count - 1
+		AudioServer.set_bus_name(index, BUS)
+		AudioServer.set_bus_send(index, &"Master")
+		var low_pass := AudioEffectLowPassFilter.new()
+		low_pass.cutoff_hz = OPEN_HZ
+		AudioServer.add_bus_effect(index, low_pass)
+	return AudioServer.get_bus_effect(index, 0) as AudioEffectLowPassFilter
 
 
 func _ratio(system: GPUParticles3D, ratio: float) -> void:
@@ -133,6 +179,7 @@ func _loop(sound: AudioStreamOggVorbis) -> AudioStreamPlayer:
 	sound.loop = true
 	var player := AudioStreamPlayer.new()
 	player.stream = sound
+	player.bus = BUS
 	player.volume_db = -80.0
 	player.autoplay = true
 	add_child(player)

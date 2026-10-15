@@ -1,0 +1,29 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://look/shield/shield_test.gd" id="1_shield"]
+[ext_resource type="PackedScene" path="res://game/world/world.tscn" id="2_world"]
+[ext_resource type="Script" path="res://game/dev/scenario_menu.gd" id="3_scenarios"]
+
+[node name="ShieldTest" type="Node"]
+script = ExtResource("1_shield")
+
+[node name="World" parent="." instance=ExtResource("2_world")]
+
+[node name="Scenarios" type="CanvasLayer" parent="."]
+script = ExtResource("3_scenarios")
+
+[node name="Hud" type="CanvasLayer" parent="."]
+
+[node name="Readout" type="Label" parent="Hud"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -820.0
+offset_top = 12.0
+offset_right = -16.0
+offset_bottom = 64.0
+grow_horizontal = 0
+horizontal_alignment = 2
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 20
