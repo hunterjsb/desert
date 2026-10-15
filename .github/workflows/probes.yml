@@ -6,12 +6,36 @@ on:
 
 jobs:
   probes:
+    # The suite split by folder so it runs side by side; "the rest" runs any
+    # folder not listed here, so a new one is never skipped. Keep REST_EXCEPT
+    # in step with the groups.
+    strategy:
+      fail-fast: false
+      matrix:
+        group:
+          - probes/foundation probes/world probes/dev
+          - probes/weather
+          - probes/devices
+          - probes/power
+          - probes/rope
+          - the rest
+    name: ${{ matrix.group }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    env:
+      REST_EXCEPT: probes/foundation probes/world probes/dev probes/weather probes/devices probes/power probes/rope
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install the pinned Godot
+      - name: Cache the pinned Godot
+        id: godot-cache
+        uses: actions/cache@v4
+        with:
+          path: godot-bin
+          key: godot-${{ hashFiles('.godot-version') }}
+
+      - name: Download the pinned Godot
+        if: steps.godot-cache.outputs.cache-hit != 'true'
         run: |
           v=$(cat .godot-version)
           base=https://github.com/godotengine/godot/releases/download/$v-stable
@@ -19,11 +43,29 @@ jobs:
           curl -fsSLO "$base/$zip"
           curl -fsSL "$base/SHA512-SUMS.txt" | grep " $zip\$" | sha512sum -c -
           unzip -q "$zip"
-          sudo install -m 755 "Godot_v$v-stable_linux.x86_64" /usr/local/bin/godot
+          mkdir -p godot-bin
+          mv "Godot_v$v-stable_linux.x86_64" godot-bin/godot
+
+      - name: Install it
+        run: |
+          sudo install -m 755 godot-bin/godot /usr/local/bin/godot
           godot --version
 
+      - name: Cache imported assets
+        uses: actions/cache@v4
+        with:
+          path: .godot
+          key: import-${{ hashFiles('.godot-version', 'project.godot', '**/*.import', '**/*.gdshader', '**/*.gdshaderinc') }}
+          restore-keys: import-
+
       - name: The runner can fail
+        if: matrix.group == 'probes/foundation probes/world probes/dev'
         run: scripts/probe.sh selftest
 
       - name: Probes
-        run: scripts/probe.sh
+        run: |
+          if [[ "${{ matrix.group }}" == "the rest" ]]; then
+            PROBE_EXCEPT="$REST_EXCEPT" scripts/probe.sh
+          else
+            scripts/probe.sh ${{ matrix.group }}
+          fi
