@@ -14,10 +14,12 @@ const NEAR_STEP := 1
 var frame_ms := 0.0
 var slowest_frame_ms := 0.0
 
+## The sand's look: flat colour unless a look-test sets another before setup.
+var sand_material: Material
+
 var _world: World
 var _tuning: Tuning
 var _size: int
-var _material: StandardMaterial3D
 var _material_rid: RID
 ## What every chunk's collision is made of.
 var _sand := PhysicsMaterial.new()
@@ -45,12 +47,14 @@ func setup(world: World) -> void:
 	_world = world
 	_tuning = world.tuning
 	_size = _tuning.chunk_size
-	_material = StandardMaterial3D.new()
-	_material.albedo_color = Color(0.86, 0.72, 0.52)
-	_material.roughness = 1.0
+	if sand_material == null:
+		var flat := StandardMaterial3D.new()
+		flat.albedo_color = Color(0.86, 0.72, 0.52)
+		flat.roughness = 1.0
+		sand_material = flat
 	# Compiles the sand's shader now, while the world loads: otherwise the first
 	# chunk to arrive stalls its frame on it (18 ms on an RTX 3070).
-	_material_rid = _material.get_rid()
+	_material_rid = sand_material.get_rid()
 	# Squared: Jolt takes the geometric mean against a body's own 1.0.
 	_sand.friction = _tuning.sand_friction * _tuning.sand_friction
 	for step in [NEAR_STEP, _tuning.mid_step]:

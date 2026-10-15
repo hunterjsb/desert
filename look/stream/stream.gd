@@ -7,7 +7,8 @@ extends Node
 ## no GPU, so run it by hand after touching terrain streaming; exit code 0 passes:
 ##   godot --path . res://look/stream/stream.tscn
 ## Renders 1920x1080 in a small window that never takes focus; nothing but this
-## script moves the player, and it's silent.
+## script moves the player, and it's silent. A dune style on trial can fly too:
+##   godot --path . res://look/stream/stream.tscn -- --style Ridges
 
 const WORLD_SCENE := preload("res://game/world/world.tscn")
 const FLY_SECONDS := 20.0
@@ -28,6 +29,9 @@ func _ready() -> void:
 	AudioServer.set_bus_mute(0, true)
 	Dev.hide_overlays()
 	Tuning.current().run_seed = 1234
+	var args := OS.get_cmdline_user_args()
+	if args.has("--style"):
+		Tuning.current().dune_style = TerrainShape.Style.keys().find(args[args.find("--style") + 1].to_upper())
 	_world = WORLD_SCENE.instantiate()
 	add_child(_world)
 	var player := _world.player
@@ -80,6 +84,8 @@ func _measure(phase: String, missed_ms: float, done: Callable) -> void:
 	var frames: Array[float] = []
 	var streaming: Array[float] = []
 	var gpu := 0.0
+	# Workers falling behind leave you over ground with no collision yet.
+	var behind := 0
 	var last := Time.get_ticks_usec()
 	while not done.call():
 		await get_tree().process_frame
@@ -88,10 +94,12 @@ func _measure(phase: String, missed_ms: float, done: Callable) -> void:
 		last = now
 		streaming.append(_world.terrain.frame_ms)
 		gpu = maxf(gpu, RenderingServer.viewport_get_measured_render_time_gpu(rid))
+		if not _world.terrain.is_settled_around(_world.player_world_x(), _world.player_world_z()):
+			behind += 1
 	var misses := frames.filter(func(ms: float) -> bool: return ms > missed_ms).size()
-	print("  %-4s %5d frames  p99 %5.2f  worst %5.2f ms  missed %3d  gpu worst %5.2f  streaming p99 %4.2f worst %4.2f ms  pipelines %d"
+	print("  %-4s %5d frames  p99 %5.2f  worst %5.2f ms  missed %3d  gpu worst %5.2f  streaming p99 %4.2f worst %4.2f ms  pipelines %d  ground behind %d frames"
 		% [phase, frames.size(), _p99(frames), frames.max(), misses, gpu, _p99(streaming), streaming.max(),
-			_pipelines() - pipelines])
+			_pipelines() - pipelines, behind])
 
 
 func _for(seconds: float) -> Callable:

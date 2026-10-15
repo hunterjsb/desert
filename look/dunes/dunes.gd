@@ -1,0 +1,182 @@
+extends Node
+## Look-test: the dune styles in the real world on seed 1234, from the same
+## spots at the same moments, so they can be judged side by side. Walk or fly
+## it by hand with a style, or capture every shot:
+##   godot --path . res://look/dunes/dunes.tscn -- --style Ridges [--sand]
+##   godot --path . --disable-vsync res://look/dunes/dunes.tscn -- --style Ridges [--sand] --capture <dir> [--only sea_eye_upwind]
+## --sand swaps in the look-test's sand shader (slip faces, ripples, crests);
+## --tune name=value overrides one tuning value, such as mid_step=2.
+## look/dunes/shoot.sh runs every style and builds the contact sheets.
+
+const SEED := 1234
+const SAND := preload("res://look/dunes/sand.gdshader")
+## Times of day to shoot: low morning sun, noon, and dusk's low sun.
+const MOMENTS := [["morning", 0.285], ["noon", 0.5], ["dusk", 0.715]]
+## Spots, by how much sand lies there: deep in a dune sea, and at a sea's edge.
+const SPOTS := [["sea", 1.0], ["edge", 0.45]]
+## Shots at each spot: name, metres up, yaw from facing upwind, pitch.
+const VIEWS := [
+	["eye_upwind", 0.0, 0.0, 2.0],
+	["eye_downwind", 0.0, 180.0, 2.0],
+	["30m", 30.0, 35.0, -12.0],
+	["200m", 200.0, 20.0, -9.0],
+]
+## The edge spot only needs to show the change from sea to flats.
+const EDGE_VIEWS := ["eye_upwind", "200m"]
+## Spots are looked for within this far of spawn, m, on this grid.
+const SEARCH := 2500.0
+const SEARCH_STEP := 50.0
+
+var _style := 0
+var _shaded := false
+
+@onready var world: World = $World
+
+
+func _enter_tree() -> void:
+	var args := OS.get_cmdline_user_args()
+	var at := args.find("--style")
+	if at != -1:
+		_style = TerrainShape.Style.keys().find((args[at + 1] as String).to_upper())
+		assert(_style != -1, "no dune style %s" % args[at + 1])
+	_shaded = args.has("--sand")
+	# Before the World's _ready builds the ground and weather from them.
+	var tuning := Tuning.current()
+	tuning.run_seed = SEED
+	tuning.dune_style = _style
+	# Clear skies: this judges the dunes, and the equator is stormy.
+	tuning.storm_threshold = 0.9
+	var tune := args.find("--tune")
+	if tune != -1:
+		var pair := (args[tune + 1] as String).split("=")
+		tuning.set(pair[0], str_to_var(pair[1]))
+	if _shaded:
+		var sand := ShaderMaterial.new()
+		sand.shader = SAND
+		var down := Vector2.from_angle(WeatherField.mean_heading(SEED))
+		sand.set_shader_parameter("downwind", down)
+		$World/Terrain.sand_material = sand
+
+
+func _ready() -> void:
+	world.origin_shifted.connect(_on_origin_shifted)
+	var args := OS.get_cmdline_user_args()
+	var at := args.find("--capture")
+	if at == -1:
+		return
+	var only := args.find("--only")
+	_capture(args[at + 1] if args.size() > at + 1 else "user://dunes",
+		args[only + 1].split(",") if only != -1 and args.size() > only + 1 else PackedStringArray())
+
+
+func _on_origin_shifted(_by: Vector2i) -> void:
+	var sand := $World/Terrain.sand_material as ShaderMaterial
+	if sand:
+		sand.set_shader_parameter("origin", Vector2(world.origin_chunk) * world.tuning.chunk_size)
+
+
+## The same spots for every style: read from the sand field, which they share.
+static func spots() -> Dictionary:
+	var tuning := Tuning.current().duplicate() as Tuning
+	tuning.dune_style = TerrainShape.Style.RIDGES
+	var shape := TerrainShape.new(SEED, tuning)
+	var found := {}
+	for spot: Array in SPOTS:
+		var best := Vector2.ZERO
+		var miss := INF
+		var x := -SEARCH
+		while x <= SEARCH:
+			var z := -SEARCH
+			while z <= SEARCH:
+				var off := absf(shape._sand_at(x, z, shape._land.get_noise_2d(x, z)) - spot[1])
+				if off < miss - 1e-4:
+					miss = off
+					best = Vector2(x, z)
+				z += SEARCH_STEP
+			x += SEARCH_STEP
+		found[spot[0]] = best
+	return found
+
+
+## A run time on the first day at each time of day, the same for every style.
+func moments() -> Dictionary:
+	var found := {}
+	for moment: Array in MOMENTS:
+		found[moment[0]] = fposmod(moment[1] - world.tuning.start_time_of_day, 1.0) * world.tuning.day_minutes * 60.0
+	return found
+
+
+## A small window that can't take focus, nothing but this script moving the
+## camera, and silence; then every shot, rendered at 1920x1080.
+func _capture(out_dir: String, only: PackedStringArray) -> void:
+	var window := get_window()
+	window.unfocusable = true
+	window.size = Vector2i(960, 540)
+	window.content_scale_mode = Window.CONTENT_SCALE_MODE_VIEWPORT
+	window.content_scale_size = Vector2i(1920, 1080)
+	AudioServer.set_bus_mute(0, true)
+	world.player.set_process_unhandled_input(false)
+	world.player.hands.set_process_unhandled_input(false)
+	world.player.set_physics_process(false)
+	world.player.flying = true
+	world.set_process_unhandled_input(false)
+	Dev.hide_overlays()
+	DirAccess.make_dir_recursive_absolute(out_dir)
+	var rid := get_viewport().get_viewport_rid()
+	RenderingServer.viewport_set_measure_render_time(rid, true)
+	var style: String = TerrainShape.Style.keys()[_style].capitalize()
+	print("dunes: %s%s into %s at %s%s" % [style, " with sand shader" if _shaded else "", out_dir,
+		get_viewport().get_visible_rect().size, _shared_gpu()])
+	var places := spots()
+	var when := moments()
+	var upwind := -Vector2.from_angle(WeatherField.mean_heading(SEED))
+	var worst_gpu := 0.0
+	for spot: String in places:
+		var at: Vector2 = places[spot]
+		var views := VIEWS.filter(func(view: Array) -> bool: return spot == "sea" or EDGE_VIEWS.has(view[0]))
+		var wanted := views.filter(func(view: Array) -> bool:
+			return only.is_empty() or MOMENTS.any(func(m: Array) -> bool: return only.has("%s_%s_%s" % [spot, view[0], m[0]])))
+		if wanted.is_empty():
+			continue
+		world.respawn(at.x, at.y, atan2(-upwind.x, -upwind.y), when.values()[0])
+		world.time_warp = 0.0
+		# The terrain plans the new ground on its next frame; until then it
+		# reports the old ground as finished.
+		await get_tree().process_frame
+		await get_tree().process_frame
+		var waited := Time.get_ticks_msec()
+		while not world.terrain.is_idle() and Time.get_ticks_msec() - waited < 60000:
+			await get_tree().process_frame
+		if not world.terrain.is_idle():
+			print("  %s: ground still building after 60 s" % spot)
+		var ground := world.height_at(at.x, at.y)
+		for moment: Array in MOMENTS:
+			for view: Array in wanted:
+				var name := "%s_%s_%s" % [spot, view[0], moment[0]]
+				if not only.is_empty() and not only.has(name):
+					continue
+				world.time = when[moment[0]]
+				world.player.global_position.y = ground + 0.1 + view[1]
+				world.player.rotation.y = atan2(-upwind.x, -upwind.y) + deg_to_rad(view[2])
+				world.player.camera.rotation_degrees.x = view[3]
+				# Physics ticks, not frames: the light follows the clock on the tick.
+				for i in 20:
+					await get_tree().physics_frame
+				var gpu := 0.0
+				for i in 10:
+					await get_tree().process_frame
+					gpu = maxf(gpu, RenderingServer.viewport_get_measured_render_time_gpu(rid))
+				worst_gpu = maxf(worst_gpu, gpu)
+				get_viewport().get_texture().get_image().save_png(out_dir.path_join(name + ".png"))
+				print("  %-28s ground %6.1f m  gpu %5.2f ms" % [name, ground, gpu])
+	print("dunes: worst gpu %.2f ms, slowest streaming frame %.2f ms%s" % [worst_gpu,
+		world.terrain.slowest_frame_ms, _shared_gpu()])
+	get_tree().quit()
+
+
+## Another Godot on the same GPU skews frame times; say so beside them.
+func _shared_gpu() -> String:
+	var out: Array = []
+	OS.execute("pgrep", ["-x", "godot"], out)
+	var count := (out[0] as String).strip_edges().split("\n", false).size() if not out.is_empty() else 0
+	return "  [%d other Godot running: times may be skewed]" % (count - 1) if count > 1 else ""

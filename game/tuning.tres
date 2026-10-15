@@ -21,6 +21,7 @@ skirt_depth = 2.0
 dune_amplitude = 6.0
 dune_wavelength = 160.0
 dune_octaves = 3
+dune_style = 0
 builds_in_flight = 8
 stream_budget_ms = 0.5
 stream_frame_max_ms = 2.0

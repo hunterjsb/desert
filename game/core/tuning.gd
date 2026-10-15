@@ -36,6 +36,9 @@ static var _current: Tuning
 @export var dune_amplitude: float = 6.0
 @export var dune_wavelength: float = 160.0
 @export var dune_octaves: int = 3
+## Noise is today's ground and what the amplitude, wavelength and octaves
+## shape; the rest are shaped dunes on trial in look/dunes.
+@export_enum("Noise", "Ridges", "Crescents", "Scalloped", "Regions") var dune_style: int = 0
 @export var builds_in_flight: int = 8
 ## Main-thread time streaming may take per frame: attaching finished chunks,
 ## building their collision, retiring old ground, swapping the far ring. A

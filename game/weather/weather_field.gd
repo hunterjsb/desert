@@ -42,11 +42,23 @@ func _init(run_seed: int, tuning: Tuning) -> void:
 
 	var rng := RandomNumberGenerator.new()
 	rng.seed = run_seed
-	_mean = Vector2.from_angle(rng.randf() * TAU) * tuning.prevailing_speed
+	_mean = Vector2.from_angle(_heading(rng)) * tuning.prevailing_speed
 	var period := tuning.prevailing_sway_minutes * 60.0
 	# Counter-rotating, at periods that never line up.
 	_sway.append(Vector3(tuning.prevailing_sway, TAU / period, rng.randf() * TAU))
 	_sway.append(Vector3(tuning.prevailing_sway * 0.6, -TAU / (period * 2.7), rng.randf() * TAU))
+
+
+## The run's long-term wind heading, radians: the dunes face it.
+static func mean_heading(run_seed: int) -> float:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = run_seed
+	return _heading(rng)
+
+
+## The seed's first draw, so the weather and the dunes agree.
+static func _heading(rng: RandomNumberGenerator) -> float:
+	return rng.randf() * TAU
 
 
 ## How far the air, and every storm in it, has moved since the run began.
