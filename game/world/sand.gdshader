@@ -1,12 +1,14 @@
 shader_type spatial;
 // The sand: the flat colour plus what makes dune shapes read. Slip faces are
-// smooth avalanche sand, a shade lighter and warmer; gentler slopes carry wind
-// ripples across the wind, faded out before they alias; crests catch a thin
-// highlight; and broad patches vary the colour so distance reads.
+// smooth avalanche sand, a shade deeper and warmer, so they read even under a
+// noon sun that lights every face alike; gentler slopes carry wind ripples
+// across the wind, faded out before they alias; crests catch a thin highlight;
+// and broad patches vary the colour so distance reads.
 
-uniform vec3 sand : source_color = vec3(0.86, 0.72, 0.52);
-uniform vec3 slip_sand : source_color = vec3(0.93, 0.77, 0.55);
-uniform vec3 trough_sand : source_color = vec3(0.82, 0.67, 0.48);
+uniform vec3 sand : source_color = vec3(0.71, 0.59, 0.43);
+// Shares of the sand's colour each channel keeps on slip faces and in troughs.
+uniform vec3 slip_shade = vec3(0.9, 0.8, 0.7);
+uniform vec3 trough_shade = vec3(0.9, 0.85, 0.83);
 // Downwind in world x and z; ripple crests run across it.
 uniform vec2 downwind = vec2(1.0, 0.0);
 // The engine origin's world position, m, so patterns hold still through origin shifts.
@@ -44,9 +46,9 @@ void fragment() {
 	float lee = smoothstep(0.42, 0.55, grade) * smoothstep(-0.2, 0.3, dot(normalize(n.xz + 1e-5), downwind));
 
 	float broad = value_noise(at / 90.0) * 0.6 + value_noise(at / 23.0) * 0.4;
-	vec3 colour = mix(trough_sand, sand, smoothstep(0.2, 0.8, broad) * 0.5 + 0.5);
+	vec3 colour = sand * mix(trough_shade, vec3(1.0), smoothstep(0.2, 0.8, broad) * 0.5 + 0.5);
 	colour *= 1.0 + (value_noise(at / 7.0) - 0.5) * patchiness;
-	colour = mix(colour, slip_sand, lee * 0.8);
+	colour *= mix(vec3(1.0), slip_shade, lee * 0.8);
 
 	// Convex where the normal turns the way the surface runs: a crest.
 	vec3 dpx = dFdx(world_pos);

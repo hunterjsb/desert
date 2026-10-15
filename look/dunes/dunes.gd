@@ -9,8 +9,9 @@ extends Node
 ## contact sheets.
 
 const SEED := 1234
-## Times of day to shoot: low morning sun, noon, and dusk's low sun.
-const MOMENTS := [["morning", 0.285], ["noon", 0.5], ["dusk", 0.715]]
+## Times of day to shoot: low morning sun, the camp's mid-morning, noon, and
+## dusk's low sun.
+const MOMENTS := [["morning", 0.285], ["midmorning", 0.4], ["noon", 0.5], ["dusk", 0.715]]
 ## Spots, by how much sand lies there: deep in a dune sea, and at a sea's edge.
 const SPOTS := [["sea", 1.0], ["edge", 0.45]]
 ## Shots at each spot: name, metres up, yaw from facing upwind, pitch.
@@ -108,6 +109,7 @@ func _capture(out_dir: String, only: PackedStringArray) -> void:
 	var when := moments()
 	var upwind := -Vector2.from_angle(WeatherField.mean_heading(SEED))
 	var worst_gpu := 0.0
+	var sums := {}
 	for spot: String in places:
 		var at: Vector2 = places[spot]
 		var views := VIEWS.filter(func(view: Array) -> bool: return spot == "sea" or EDGE_VIEWS.has(view[0]))
@@ -144,11 +146,45 @@ func _capture(out_dir: String, only: PackedStringArray) -> void:
 					await get_tree().process_frame
 					gpu = maxf(gpu, RenderingServer.viewport_get_measured_render_time_gpu(rid))
 				worst_gpu = maxf(worst_gpu, gpu)
-				get_viewport().get_texture().get_image().save_png(out_dir.path_join(name + ".png"))
-				print("  %-28s ground %6.1f m  gpu %5.2f ms" % [name, ground, gpu])
+				var image := get_viewport().get_texture().get_image()
+				image.save_png(out_dir.path_join(name + ".png"))
+				var seen := readability(image)
+				sums[moment[0]] = sums.get(moment[0], Vector4()) + Vector4(seen.x, seen.y, seen.z, 1.0)
+				print("  %-28s ground %6.1f m  gpu %5.2f ms  L* %4.1f  spread %4.1f  near white %5.1f%%" % [name,
+					ground, gpu, seen.x, seen.y, seen.z])
+	for moment: String in sums:
+		var s: Vector4 = sums[moment] / sums[moment].w
+		print("dunes: %-10s mean L* %4.1f  spread %4.1f  near white %5.1f%%" % [moment, s.x, s.y, s.z])
 	print("dunes: worst gpu %.2f ms, slowest streaming frame %.2f ms%s" % [worst_gpu,
 		world.terrain.slowest_frame_ms, _shared_gpu()])
 	get_tree().quit()
+
+
+## How well the ground reads, over the lower 40% of the frame, which is ground
+## in every view: its mean lightness (CIE L*), the spread of lightness from the
+## 5th to the 95th percentile at an eighth scale (dune forms, not ripples), and
+## the share of pixels with a channel within 4% of white, where shading clips.
+static func readability(image: Image) -> Vector3:
+	var size := image.get_size()
+	var ground := image.get_region(Rect2i(0, int(size.y * 0.6), size.x, size.y - int(size.y * 0.6)))
+	ground.convert(Image.FORMAT_RGB8)
+	ground.resize(ground.get_width() / 8, ground.get_height() / 8, Image.INTERPOLATE_BILINEAR)
+	var lightness := PackedFloat32Array()
+	var white := 0
+	for j in ground.get_height():
+		for i in ground.get_width():
+			var c := ground.get_pixel(i, j)
+			if maxf(c.r, maxf(c.g, c.b)) >= 0.96:
+				white += 1
+			var lin := c.srgb_to_linear()
+			var y := 0.2126 * lin.r + 0.7152 * lin.g + 0.0722 * lin.b
+			lightness.append(116.0 * pow(y, 1.0 / 3.0) - 16.0 if y > 0.008856 else 903.3 * y)
+	lightness.sort()
+	var n := lightness.size()
+	var mean := 0.0
+	for l in lightness:
+		mean += l
+	return Vector3(mean / n, lightness[int(n * 0.95)] - lightness[int(n * 0.05)], 100.0 * white / n)
 
 
 ## Another Godot on the same GPU skews frame times; say so beside them.

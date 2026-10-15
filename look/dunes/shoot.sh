@@ -11,7 +11,7 @@ out=${1:?an output directory}
 shift
 godot=${GODOT:-godot}
 shots=(sea_eye_upwind sea_eye_downwind sea_30m sea_200m edge_eye_upwind edge_200m)
-moments=(morning noon dusk)
+moments=(morning midmorning noon dusk)
 looks=(shader flat)
 
 gaming() {

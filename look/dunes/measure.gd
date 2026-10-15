@@ -148,6 +148,7 @@ func _map(run_seed: int, x0: float, z0: float, size: float, per_px: float, out: 
 	sun = (sun * cos(deg_to_rad(30.0)) + Vector3.UP * sin(deg_to_rad(30.0))).normalized()
 	var image := Image.create(px, px, false, Image.FORMAT_RGB8)
 	var slip := tan(deg_to_rad(28.0))
+	var sand := Tuning.current().sand_color
 	for j in px:
 		for i in px:
 			var k := (j + 1) * n + i + 1
@@ -155,7 +156,7 @@ func _map(run_seed: int, x0: float, z0: float, size: float, per_px: float, out: 
 			var gz := (h[k + n] - h[k - n]) / (2.0 * per_px)
 			var normal := Vector3(-gx, 1.0, -gz).normalized()
 			var light := clampf(normal.dot(sun) / sun.y, 0.0, 2.0) * 0.45 + 0.3
-			var colour := Color(0.86, 0.72, 0.52) * light
+			var colour := sand * light
 			if Vector2(gx, gz).length() > slip:
 				colour = colour.lerp(Color(0.85, 0.25, 0.15), 0.45)
 			image.set_pixel(i, j, colour)

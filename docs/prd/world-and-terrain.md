@@ -161,9 +161,16 @@ Built after the skeleton loop works end to end, in roughly this order:
   samples with Ridges: at 4 m, sharp crests staircase past 100 m.)*
 - **Sand that looks like sand.** Wind ripples, colour variation, a shimmer at
   distance. *(A first pass, built 2026-10-15 and on by default: ripples across the wind
-  on gentler slopes, fading out before they flicker; slip faces a shade lighter and
-  smoother; a thin highlight on crests; broad patches of colour. Tuning's `sand_shader`
-  switches back to the flat colour. Hunter hasn't ruled on it yet.)*
+  on gentler slopes, fading out before they flicker; slip faces a shade deeper, warmer
+  and smoother; a thin highlight on crests; broad patches of colour. Tuning's
+  `sand_shader` switches back to the flat colour. Hunter hasn't ruled on it yet.)*
+- **Light on the ground.** The sun, plus a warm fill from the dusty sky at three
+  quarters of it, which lights every slope alike. The sand sends back about a third of
+  the light, as real desert sand does: when it was paler, sunlit ground ran into the
+  tonemap's white and every dune washed out to one pale colour. At the equator the noon
+  sun stands overhead and lights every face alike, so slip faces' deeper colour is what
+  shows the dunes then. Tuning's Light group holds the sand's colour, the sky's fill
+  and the exposure; look/dunes prints how well the ground reads in each view.
 
 ## What other systems get from this one
 

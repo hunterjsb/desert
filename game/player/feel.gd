@@ -244,8 +244,8 @@ func _sand(amount: int, lifetime: float, burst: bool) -> CPUParticles3D:
 	sand.scale_amount_min = 0.02
 	sand.scale_amount_max = 0.1 if burst else 0.05
 	var fade := Gradient.new()
-	fade.set_color(0, Color(Weather.SAND, 0.5))
-	fade.set_color(1, Color(Weather.SAND, 0.0))
+	fade.set_color(0, Color(_tuning.sand_color, 0.5))
+	fade.set_color(1, Color(_tuning.sand_color, 0.0))
 	sand.color_ramp = fade
 	var round := Gradient.new()
 	round.set_color(0, Color.WHITE)

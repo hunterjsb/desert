@@ -73,6 +73,17 @@ static var _current: Tuning
 ## Most of the view the haze ever hides, at haze_end and beyond.
 @export var haze_strength: float = 0.7
 
+@export_group("Light")
+## The sand in full light, before the sun and sky light it. Real desert sand
+## sends back about a third of the light; paler pushes sunlit ground into the
+## tonemap's white, where the dunes wash out.
+@export var sand_color: Color = Color(0.71, 0.59, 0.43)
+## The dusty sky's light on everything, beside a sun of 1. It lights every
+## slope alike, so more of it flattens the dunes and lifts their shade sides.
+@export var sky_fill: float = 0.75
+## The camera's exposure: everything on screen, sky and storms with the ground.
+@export var exposure: float = 1.0
+
 @export_group("Weather")
 ## One full day and night, start to finish.
 @export var day_minutes: float = 20.0
