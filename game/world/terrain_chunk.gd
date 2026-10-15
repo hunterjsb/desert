@@ -8,19 +8,22 @@ var coord: Vector2i
 var step := 0
 var heights: PackedFloat32Array
 
-var _mesh_instance: MeshInstance3D
+var _view: GeometryInstance3D
+## A RenderingServer mesh, owned here: a worker made it, so no Mesh resource does.
+var _mesh: RID
 var _body: StaticBody3D
 var _shape: HeightMapShape3D
 
 
-func show_build(build: ChunkBuild, material: Material) -> void:
-	var mesh := ArrayMesh.new()
-	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, build.arrays)
-	mesh.surface_set_material(0, material)
-	if _mesh_instance == null:
-		_mesh_instance = MeshInstance3D.new()
-		add_child(_mesh_instance)
-	_mesh_instance.mesh = mesh
+func show_build(build: ChunkBuild) -> void:
+	if _view == null:
+		_view = GeometryInstance3D.new()
+		add_child(_view)
+	_view.set_base(build.mesh)
+	if _mesh.is_valid():
+		RenderingServer.free_rid(_mesh)
+	_mesh = build.mesh
+	build.mesh = RID()
 	step = build.step
 	heights = build.heights
 
@@ -41,9 +44,10 @@ func add_collision(size: int, sand: PhysicsMaterial) -> void:
 	add_child(_body)
 
 
+## Freed now, not queued, so the cost lands inside the terrain's frame budget.
 func remove_collision() -> void:
 	if _body:
-		_body.queue_free()
+		_body.free()
 	_body = null
 	_shape = null
 
@@ -54,3 +58,8 @@ func has_collision() -> bool:
 
 func collision_data() -> PackedFloat32Array:
 	return _shape.map_data if _shape else PackedFloat32Array()
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_PREDELETE and _mesh.is_valid():
+		RenderingServer.free_rid(_mesh)

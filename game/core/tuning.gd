@@ -37,10 +37,13 @@ static var _current: Tuning
 @export var dune_wavelength: float = 160.0
 @export var dune_octaves: int = 3
 @export var builds_in_flight: int = 8
-## Main-thread time spent uploading finished chunks, per frame.
-@export var frame_upload_budget_ms: float = 4.0
-## No single chunk upload may block the main thread longer than this.
-@export var chunk_upload_max_ms: float = 4.0
+## Main-thread time streaming may take per frame: attaching finished chunks,
+## building their collision, retiring old ground, swapping the far ring. A
+## 144 Hz frame is 6.9 ms, and the GPU wants most of it.
+@export var stream_budget_ms: float = 0.5
+## The hitch line: no frame may spend longer than this on streaming. look/stream
+## holds a real window to it; probe 7 holds headless runs to it, bar one frame.
+@export var stream_frame_max_ms: float = 2.0
 @export var haze_begin: float = 400.0
 @export var haze_end: float = 9000.0
 ## Most of the view the haze ever hides, at haze_end and beyond.
