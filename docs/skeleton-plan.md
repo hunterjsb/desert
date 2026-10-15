@@ -6,14 +6,15 @@ system in rough form, wired into one complete loop, before anything gets polishe
 **Where we are:** Stages 0 and 1 passed the gate on 2026-10-14, and Stage 2 passed later
 the same day, with the look-test's wall in the game. Stage 3 passed that evening ("works.
 nice."). Stage 4 passed on 2026-10-15 ("feeling great!"), with a strong cable that's
-also a rope. Stages 5 and 6 are built (2026-10-15) and wait at the gate, in order: the
-rope, then the shield generator. Movement on foot (slide, jump, crouch, digging in) was
-built alongside them. Shield probe 4, which carries the shield 2 km through a storm with a
-crate on a waist line, stands in for Movement 4 until the full camp exists. Stage 7,
-survival, passed the same day, with the inventory as five slots on the suit: hunger,
-thirst, the condenser and death into a new run all worked when Hunter played it. The real dune shapes were pulled forward the same day: a
-look-test put candidate dunes in the real world, Hunter picked Ridges, and they're the
-game's ground now, with the sand shader he chose to keep.
+also a rope. Stages 5 to 7 passed the same day: the rope ("feels good"), the shield
+generator ("the shield feels good too") and survival, with the inventory as five slots
+on the suit (hunger, thirst, the condenser and death into a new run all worked when
+Hunter played it). Movement on foot (slide, jump, crouch, digging in) was built
+alongside them. Shield probe 4, which carries the shield 2 km through a storm with a
+crate on a waist line, stands in for Movement 4 until the full camp exists. The real
+dune shapes were pulled forward the same day: a look-test put candidate dunes in the
+real world, Hunter picked Ridges, and they're the game's ground now, with the sand
+shader he chose to keep. Stage 8, salvage and ruins, is next.
 
 ## The loop we're building toward
 
