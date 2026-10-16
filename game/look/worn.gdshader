@@ -29,7 +29,7 @@ uniform sampler2D noise : repeat_enable, filter_linear_mipmap;
 // Maker's marks, a column each and a row per era (marks.py): red the mark's
 // own ink, green a hand-mixed daub.
 uniform sampler2D marks : hint_default_black, repeat_disable, filter_linear_mipmap;
-const vec2 MARK_CELLS = vec2(5.0, 3.0);
+const vec2 MARK_CELLS = vec2(6.0, 3.0);
 const vec3 DARK_INK = vec3(0.007, 0.007, 0.006);
 const vec3 PALE_INK = vec3(0.52, 0.48, 0.37);
 const vec3 DAUB = vec3(0.5, 0.13, 0.03);

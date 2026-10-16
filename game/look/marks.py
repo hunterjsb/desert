@@ -13,7 +13,7 @@ import random
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 CELL = (256, 128)
-COLS = 5
+COLS = 6
 ROWS = 3
 HERE = os.path.dirname(os.path.abspath(__file__))
 FONT = os.path.join(HERE, "..", "..", "assets", "fonts", "GeistMono-Regular.ttf")
@@ -143,7 +143,18 @@ def patch(ink, daub, rng):
         brush(ink, [(170 + k * 16, 44), (166 + k * 16, 88)], 8, rng, wobble=1.0)
 
 
-MARKS = [contractor, shield_maker, wind_maker, consignment, skimmer_crew]
+def member_state(ink, daub, rng):
+    """A member state's seal, from before the UG stood as one: rings round a chevron."""
+    w, h = CELL
+    cx, cy = w / 2, h / 2
+    ink.ellipse([cx - 56, cy - 56, cx + 56, cy + 56], outline=255, width=8)
+    ink.ellipse([cx - 44, cy - 44, cx + 44, cy + 44], outline=255, width=3)
+    ink.line([(cx - 26, cy + 14), (cx, cy - 18), (cx + 26, cy + 14)], fill=255, width=11, joint="curve")
+    for dx in (-18, 0, 18):
+        ink.ellipse([cx + dx - 4, cy + 22, cx + dx + 4, cy + 30], fill=255)
+
+
+MARKS = [contractor, shield_maker, wind_maker, consignment, skimmer_crew, member_state]
 # The marks that change from era to era take the row and give the drawing.
 BY_ERA = (consignment, skimmer_crew)
 

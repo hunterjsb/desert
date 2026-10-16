@@ -25,7 +25,7 @@ const ERA_NEW := 0.15
 const WEATHERED := 0.8
 ## Maker's marks, by column of the atlas (marks.py). Batteries and the like
 ## carry none, so a mark means something where it's found.
-enum Mark { CONTRACTOR, SHIELD_MAKER, WIND_MAKER, CONSIGNMENT, SKIMMER_CREW }
+enum Mark { CONTRACTOR, SHIELD_MAKER, WIND_MAKER, CONSIGNMENT, SKIMMER_CREW, MEMBER_STATE }
 enum Ink { DARK, PALE }
 ## Each era's row of the atlas: the hands its marks were put on by.
 const MARK_ROW := {&"surface": 1, &"deep": 2}

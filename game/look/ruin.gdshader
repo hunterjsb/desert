@@ -1,16 +1,17 @@
 shader_type spatial;
 // The colonial ruin as poured, overbuilt concrete. Formwork seams in a grid,
-// a faded painted band at head height, the contractor's tag and its stencilled
-// number by each corner, the foot stained where the sand drifts, and the
-// windward faces scoured pale. Read from the ruin's own plan frame, where the
+// a faded painted band at head height, by each corner the contractor's tag
+// and its stencilled number beside a member state's seal (early marks don't
+// match), the foot stained where the sand drifts, and the windward faces
+// scoured pale. Read from the ruin's own plan frame, where the
 // floor's top is at 0.
 
 uniform vec3 concrete : source_color = vec3(0.64, 0.58, 0.5);
 uniform vec3 band : source_color = vec3(0.2, 0.38, 0.4);
 uniform vec3 wind_dir = vec3(0.0, 0.0, 1.0);
 uniform sampler2D noise : repeat_enable, filter_linear_mipmap;
-// The worn shader's maker's marks: the contractor's tag is the first column,
-// its deep row the colonial one.
+// The worn shader's maker's marks, whose deep row is the colonial one: the
+// contractor's tag is the first column, the member state's seal the last.
 uniform sampler2D marks : hint_default_black, repeat_disable, filter_linear_mipmap;
 // Half its plan to the outer faces, m: where the stencils go.
 uniform vec2 half_plan = vec2(9.0, 6.0);
@@ -69,20 +70,27 @@ void fragment() {
 	float painted = wall ? in_band * smoothstep(0.35, 0.55, fine + 0.3 * coarse) : 0.0;
 	col = mix(col, band * (0.9 + 0.2 * grain), painted * 0.85);
 	// On an outer face, read left to right from outside, 1.6 m in from its
-	// corner, with the tag beside it: 0.7 by 0.35 m.
+	// corner, with the tag beside it, 0.7 by 0.35 m, and the seal, 0.4 across.
 	vec2 out_n = vec2(ln.x, ln.z);
 	float reach = abs(out_n.x) > 0.5 ? half_plan.x : half_plan.y;
 	float right = lp.x * out_n.y - lp.z * out_n.x;
 	float across = abs(out_n.x) > 0.5 ? half_plan.y : half_plan.x;
 	vec2 on_tag = vec2(right - (across - 3.4), 1.675 - lp.y) / vec2(0.7, 0.35);
 	vec2 in_tag = clamp(on_tag, 0.0, 1.0);
-	float tag = texture(marks, in_tag / vec2(5.0, 3.0) + vec2(0.0, 2.0 / 3.0)).r;
+	float tag = texture(marks, in_tag / vec2(6.0, 3.0) + vec2(0.0, 2.0 / 3.0)).r;
 	float tag_e = max(fwidth(tag), 0.08);
+	vec2 on_seal = vec2(right - (across - 4.3), 1.7 - lp.y) / vec2(0.8, 0.4);
+	vec2 in_seal = clamp(on_seal, 0.0, 1.0);
+	float seal = texture(marks, (in_seal + vec2(5.0, 2.0)) / vec2(6.0, 3.0)).r;
+	float seal_e = max(fwidth(seal), 0.08);
 	vec2 px_mark = vec2(fwidth(right), px_y) * 0.75;
 	if (wall && abs(dot(lp.xz, out_n) - reach) < 0.05) {
 		float mark = stencil(vec2(right - (across - 2.44), lp.y - 1.2), px_mark);
 		mark = max(mark, all(equal(in_tag, on_tag)) ? smoothstep(0.5 - tag_e, 0.5 + tag_e, tag + 0.2 * (grain - 0.5)) : 0.0);
 		col = mix(col, vec3(0.25, 0.22, 0.2), mark * smoothstep(0.25, 0.6, fine + 0.2 * coarse) * 0.8);
+		// Another hand's paint, in the band's colour.
+		float sealed = all(equal(in_seal, on_seal)) ? smoothstep(0.5 - seal_e, 0.5 + seal_e, seal + 0.2 * (grain - 0.5)) : 0.0;
+		col = mix(col, band * 0.85, sealed * smoothstep(0.3, 0.65, fine + 0.2 * coarse) * 0.6);
 	}
 	float windward = clamp(dot(normalize(wn), -normalize(wind_dir)), 0.0, 1.0);
 	col = mix(col, col * 1.12 + 0.03, windward * (0.5 + 0.5 * grain));
