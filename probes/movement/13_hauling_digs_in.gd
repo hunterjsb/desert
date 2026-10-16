@@ -1,5 +1,5 @@
 extends MovementProbe
-## Movement probe 6: your feet sink when you haul. Walk or sprint against a
+## Movement probe 13: your feet sink when you haul. Walk or sprint against a
 ## line pulling you back, as its drag on you says, and you dig in: you go
 ## slower, your eyes drop a few centimetres, and you tire faster. The load
 ## gone, you come back up. A line pulling you along, a light pull, or a pull

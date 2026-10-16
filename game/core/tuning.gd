@@ -233,6 +233,59 @@ static var _current: Tuning
 ## How quickly you dig in and come back up, s.
 @export var haul_seconds: float = 0.4
 
+@export_group("Hoverboard")
+## Flat out on the flat in still air, m/s: 72 km/h, faster than any storm
+## front rides the wind (the prevailing wind's 10 m/s swings up to 14).
+@export var board_top_speed: float = 20.0
+## The push from a standstill, m/s²; drag grows with speed² until it matches
+## the push at top speed.
+@export var board_push: float = 5.0
+## The share of that drag that's the air's, felt against the wind: a tailwind
+## carries you faster, a headwind holds you back, and a tuck shows it less.
+@export var board_air_share: float = 0.35
+## Back against your way brakes this hard, m/s²; coasting, the hover's own
+## drag slows you this much, m/s².
+@export var board_brake: float = 8.0
+@export var board_coast: float = 0.3
+## How fast the board turns under you, rad/s; the most sideways pull its
+## hover grips with, m/s², before a carve slides out into a drift; and the
+## share of its speed a full sideways drift bleeds a second.
+@export var board_turn_rate: float = 2.5
+@export var board_grip: float = 18.0
+@export var board_drift_drag: float = 1.0
+## Its underside rides this high over the sand, m, and never comes nearer than this.
+@export var board_ride_height: float = 0.35
+@export var board_clearance: float = 0.08
+## The hover's spring: stiff pressed toward the sand, softer lifting off it,
+## so it skims a slope and floats off a crest; how much it bounces (1 never
+## does), at the stiff spring's rate.
+@export var board_hover_hertz: float = 2.5
+@export var board_settle_hertz: float = 2.0
+@export var board_hover_damping: float = 0.8
+## The most the hover pulls you back down beyond gravity, m/s²: more and it
+## hugs a crest, less and it sails off. A hop gives that up, and falls at
+## this share of gravity: floaty.
+@export var board_hold: float = 15.0
+@export var board_hop_fall: float = 0.6
+## It reads the sand this many seconds of travel ahead and behind, so it
+## rounds a dip's bottom instead of slamming into it.
+@export var board_look_seconds: float = 0.45
+## A hop, m/s up.
+@export var board_hop: float = 3.0
+## What it draws, W: floating, and on top of that at full push. A base
+## battery's 100 Wh lasts twenty minutes flat out, about 24 km.
+@export var board_hover_w: float = 40.0
+@export var board_push_w: float = 260.0
+
+@export_group("Camp range")
+## Leaving your camp behind: one warning this many seconds from losing it at
+## your pace, or this near the edge, m; a last one this many seconds or
+## metres from it.
+@export var range_first_seconds: float = 20.0
+@export var range_first_m: float = 40.0
+@export var range_last_seconds: float = 8.0
+@export var range_last_m: float = 12.0
+
 @export_group("Body feel")
 ## Everything here moves only the camera and makes only sound, never you.
 ## Eye height comes down this far crouched, and sunk in hauling, m.

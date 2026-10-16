@@ -40,6 +40,8 @@ const LIST: Array[Dictionary] = [
 	# clear minutes.
 	{"key": "farm", "label": "farm: carrots ripening in the clear, fungus for the storm due in minutes, a harvester, a shield",
 		"kind": "clear", "day": [0.33, 0.37], "due": [90.0, 200.0], "farm": true},
+	{"key": "board", "label": "ride: a charged hoverboard at your feet by a small camp, a shield and a crate, clear and calm",
+		"kind": "clear", "day": [0.35, 0.5], "calm": 6.0, "board": true},
 ]
 
 ## The test kit, as [catalog id, metres to your right, metres ahead]: empty
@@ -85,6 +87,11 @@ const FARM_SHIELD := [0.0, 2.0]
 const FARM_CANISTER := [-0.5, 1.3]
 const FARM_CROPS := [&"carrot", &"carrot", &"carrot", &"fungus"]
 const FARM_GROWN := {&"carrot": 0.85, &"fungus": 0.5}
+
+## The board, nose ahead, and the small camp beside you: right and ahead.
+const BOARD_AT := [0.0, 1.3]
+const BOARD_SHIELD := [-2.0, 3.0]
+const BOARD_CRATE := [2.2, 3.4]
 
 ## Your own frame, to fit what you find to: right and ahead.
 const YOURS := [1.5, 2.5]
@@ -336,6 +343,14 @@ static func farm(world: World) -> Array[Node3D]:
 	_drop(world, canister, Transform3D(yaw * Basis(Vector3.RIGHT, -PI / 2.0), Vector3.ZERO), FARM_CANISTER[0], FARM_CANISTER[1])
 	dropped.append(canister)
 	return dropped
+
+
+## A hoverboard lying at your feet, nose ahead, a full battery in it, and a
+## small camp beside you for the range warnings to watch: a charged shield
+## generator, switched off, and a bare crate frame. Returns what it dropped.
+static func board(world: World) -> Array[Node3D]:
+	return [_standing(world, &"board", [&"battery"], BOARD_AT), _standing(world, &"shield", [&"battery"], BOARD_SHIELD),
+		_standing(world, &"crate_frame", [], BOARD_CRATE)]
 
 
 ## Your own bare crate frame on the sand beside you, to fit what you find to.

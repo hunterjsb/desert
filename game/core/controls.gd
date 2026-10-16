@@ -10,6 +10,7 @@ const HELP := [
 	["F1", "these keys"], ["F2", "scenarios"], ["F3", "numbers"],
 	["F4", "fly: Space up, C down"], ["F5", "speed up time"], ["F6", "low gravity"],
 	["Space", "jump"], ["C", "crouch; at a run or downhill, slide"],
+	["R", "get on or off a hoverboard; riding, move keys push and carve where they point, S against your way brakes, Space hops, C tucks"],
 ]
 
 const KEYS := {
@@ -31,6 +32,7 @@ const KEYS := {
 	"hands_grab": KEY_E,
 	"interact": KEY_F,
 	"inventory": KEY_TAB,
+	"ride": KEY_R,
 }
 
 ## Mouse buttons, the same way.

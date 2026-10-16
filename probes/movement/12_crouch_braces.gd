@@ -1,5 +1,5 @@
 extends MovementProbe
-## Movement probe 5: crouching makes you smaller to the wind. In a steady
+## Movement probe 12: crouching makes you smaller to the wind. In a steady
 ## storm wind, standing, the wind shoves you as it always has; crouched, it
 ## catches less of you and shoves you much less. It goes through the felt
 ## wind, so inside a bubble neither moves you. Crouched, you're lower and

@@ -19,7 +19,7 @@ const PARTS := {
 }
 const DEVICES := {
 	SURFACE: [[&"crate_frame", 3], [&"charger", 2], [&"planter", 2], [&"stake", 2]],
-	DEEP: [[&"crate_frame", 2], [&"turbine", 2], [&"condenser", 2], [&"shield", 2]],
+	DEEP: [[&"crate_frame", 2], [&"turbine", 2], [&"condenser", 2], [&"shield", 2], [&"board", 1]],
 }
 ## What a found device's sockets hold, by socket kind; a kind not listed is
 ## found empty.
@@ -153,7 +153,8 @@ static func _fill(spec: Dictionary, rng: RandomNumberGenerator, least := 0) -> v
 	spec.sound = rng.randf_range(kind.sound.x, kind.sound.y)
 	if not spec.device:
 		return
-	if least > 0 and spec.id == &"stake":
+	# A ruin's hall promises parts to strip, more than a stake or a board holds.
+	if least > 0 and spec.id in [&"stake", &"board"]:
 		spec.id = &"crate_frame"
 	if spec.id == &"stake":
 		return
@@ -253,8 +254,8 @@ static func _part(id: StringName, charge: float, layer: StringName) -> Part:
 	return part
 
 
-## Where a find lies, world metres. Buried, a part stands on end and anything
-## leans with the sand and a little more, its lowest point under the sand at
+## Where a find lies, world metres. Buried, a part or a board stands on end
+## and anything leans with the sand and a little more, its lowest point under the sand at
 ## its middle by its share of its height. Loose, it rests a few centimetres
 ## above what's under it, a part on its socket side, to settle.
 static func pose(body: RigidBody3D, spec: Dictionary, height: Callable) -> Transform3D:
@@ -264,7 +265,8 @@ static func pose(body: RigidBody3D, spec: Dictionary, height: Callable) -> Trans
 		var slope := _grade(height, spec.x, spec.z)
 		var up := Vector3.UP.slerp(Vector3(-slope.x, 1.0, -slope.y).normalized(), WITH_SLOPE)
 		up = up.rotated(Vector3(cos(spec.lean), 0.0, sin(spec.lean)), spec.lean_by)
-		turn = _up_to(up) * Basis(Vector3.UP, spec.yaw) * (Basis.IDENTITY if spec.device else _on_end(box))
+		var on_end: bool = not spec.device or Catalog.DEVICES.get(spec.id, {}).get("on_end", false)
+		turn = _up_to(up) * Basis(Vector3.UP, spec.yaw) * (_on_end(box) if on_end else Basis.IDENTITY)
 	else:
 		turn = Basis(Vector3.UP, spec.yaw) * (Basis.IDENTITY if spec.device else Basis(Vector3.RIGHT, -PI / 2.0))
 	var low := INF

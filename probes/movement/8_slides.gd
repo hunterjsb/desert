@@ -1,5 +1,5 @@
 extends MovementProbe
-## Movement probe 1: momentum is the reward. Sprint down the steepest real
+## Movement probe 8: momentum is the reward. Sprint down the steepest real
 ## slope near spawn and crouch: you slide, and the slope keeps adding speed
 ## past anything your legs can do. Sprint on the flat and crouch: you slide
 ## on what you brought, slower every second, and stop in about the distance

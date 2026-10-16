@@ -70,6 +70,7 @@ func _ready() -> void:
 ## Dev: puts the player down at a world place and run time, facing yaw, as a
 ## fresh spawn: distance from spawn and the moon position start over there.
 func respawn(x: float, z: float, yaw: float, at_time: float) -> void:
+	player.step_off()
 	time = at_time
 	time_warp = 1.0
 	player.global_position = Vector3(engine_x(x), height_at(x, z) + 0.1, engine_z(z))

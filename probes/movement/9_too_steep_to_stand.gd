@@ -1,5 +1,5 @@
 extends MovementProbe
-## Movement probe 2: a slip face won't hold you. Stand on one and you slide
+## Movement probe 9: a slip face won't hold you. Stand on one and you slide
 ## down it on your own; try to walk up it and you still go down. A steep slope
 ## under the slip angle holds you still.
 
