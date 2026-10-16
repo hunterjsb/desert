@@ -6,6 +6,7 @@ extends MovementProbe
 ## away under it, and then not far. It never judders: the facets of the
 ## ground's lattice never reach you, and it never slams. The ground under you
 ## is solid all the way: the board never waits.
+## Time limit: 600 s (about 80 s alone; a busy machine stretches it past 300)
 
 const DISTANCE := 20000.0
 const LEG := 2500.0

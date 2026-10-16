@@ -26,13 +26,16 @@ picking by hand, the harvester mod with its replant split, food dropped onto you
 built too. On 2026-10-16 a normal run became playable end to end: rope, cables, seeds,
 survival kits and the harvester are found, every run starts with its kit (data: water, a
 ration, a light shield, a light solar panel and a short coil), and a shield seats on a
-crate, which has more sockets. Stage 10, the hoverboard and camp range, was built the
-same day and waits at the gate behind Stage 9: a board found in the deep layer, buried
-nose down, that skims the dunes at 72 km/h on its own battery, carves and drifts, floats
-off crests and tows nothing, and the camp-range warnings, a chime and a line of text
-timed by your speed, 20 s and then 8 s before you'd lose the camp. "Ride" in the
-scenario menu lays a charged board at your feet by a small camp. The Movement PRD's
-probes keep their numbers, 1 to 7; the on-foot probes built with Stage 5 are 8 to 14.
+crate, which has more sockets. The same day the run save and the profile were built
+(Profile & saves): Save & quit and Resume, a minute after resuming matching one never
+saved, and discoveries recorded across runs. Stage 10, the hoverboard and camp range,
+was built the same day too and waits at the gate behind Stage 9: a board found in the
+deep layer, buried nose down, that skims the dunes at 72 km/h on its own battery,
+carves and drifts, floats off crests and tows nothing, and the camp-range warnings, a
+chime and a line of text timed by your speed, 20 s and then 8 s before you'd lose the
+camp. "Ride" in the scenario menu lays a charged board at your feet by a small camp.
+The Movement PRD's probes keep their numbers, 1 to 7; the on-foot probes built with
+Stage 5 are 8 to 14.
 
 ## The loop we're building toward
 
