@@ -10,6 +10,9 @@ var player: Player
 var wind: RopeWind
 ## The lowest your feet have been below the sand, m, on any tick watched.
 var deepest := 0.0
+## Milliseconds each frame waits while a fast ride is held back for the
+## ground to catch up.
+var _braking := 0
 
 
 func load_moving(run_seed := 1234, salvage := false) -> void:
@@ -54,6 +57,8 @@ func simulate(seconds: float, each := Callable()) -> void:
 		deepest = minf(deepest, clearance(player))
 		if each.is_valid():
 			each.call()
+	_braking = 0
+	Engine.max_physics_steps_per_frame = 8 * roundi(Engine.time_scale)
 
 
 ## Puts you at rest on the sand at a world place, facing along `facing`.
@@ -130,6 +135,78 @@ func _holds(x: float, z: float, low: float, run: float) -> bool:
 
 func flat_speed() -> float:
 	return Vector2(player.velocity.x, player.velocity.z).length()
+
+
+## A hoverboard lying at your feet, nose your way, with a full battery of this kind.
+func board_here(cell := &"battery") -> Hoverboard:
+	var made := Catalog.device(&"board") as Hoverboard
+	world.content.add_child(made)
+	var part := Catalog.part(cell)
+	world.content.add_child(part)
+	made.fit(part, made.sockets()[0])
+	made.global_transform = Transform3D(Basis(Vector3.UP, player.rotation.y), player.global_position + Vector3.UP * 0.06)
+	return made
+
+
+## On a charged board at your feet, as the ride action puts you, settled on its hover.
+func ride_here(cell := &"battery") -> Hoverboard:
+	var made := board_here(cell)
+	check(player.get_on(made) and player.board == made, "you step onto the board")
+	await simulate(1.0)
+	return made
+
+
+## Ticks the ride moves you for, as simulate() does for simulated time: a
+## tick the board waits for ground not yet solid isn't one. `each` is called
+## after every tick it moved you. Paced, a fast ride is held to the ground's
+## pace, so it never waits; unpaced, it waits for the ground as the game does,
+## which changes when it gets there but never where it goes, so a ride that
+## nothing else moves around can go as fast as the machine allows.
+func ride_for(seconds: float, each := Callable(), paced := true) -> void:
+	var ride := player.ride
+	if ride == null:
+		check(false, "you're on the board")
+		return
+	var until := ride.ticks + roundi(seconds * ticks_per_second())
+	while player.ride == ride and ride.ticks < until:
+		var was := ride.ticks
+		await get_tree().physics_frame
+		if paced:
+			keep_pace()
+		elif (ride.ticks == was) != (_braking > 0):
+			# Waiting, it hands the machine to the workers building the ground.
+			_braking = 4 if ride.ticks == was else 0
+			Engine.max_physics_steps_per_frame = 1 if _braking > 0 else 8 * roundi(Engine.time_scale)
+		if ride.ticks == was:
+			continue
+		deepest = minf(deepest, clearance(player))
+		if each.is_valid():
+			each.call()
+	_braking = 0
+	Engine.max_physics_steps_per_frame = 8 * roundi(Engine.time_scale)
+
+
+## Whether the ground is solid this far along your way, m.
+func solid_ahead(metres: float) -> bool:
+	var way := Vector2(player.velocity.x, player.velocity.z)
+	var to := Vector2(world.player_world_x(), world.player_world_z()) + way.normalized() * metres
+	return world.terrain.has_collision_at(to.x, to.y)
+
+
+## As fast as set_rate allows while the ground is solid well along your way;
+## one tick a frame, at sixty frames a second or slower, while it catches up,
+## as a game would run. The tick rate never changes, so the ride's path is the
+## same whatever the machine's load: only how fast it gets through it.
+func keep_pace() -> void:
+	# Collision reaches two chunks past yours, 128 to 192 m ahead once built;
+	# flat out a board crosses 40 m in two seconds of the ride.
+	_braking = 0 if solid_ahead(80.0) else (16 if solid_ahead(40.0) else 100)
+	Engine.max_physics_steps_per_frame = 1 if _braking > 0 else 8 * roundi(Engine.time_scale)
+
+
+func _process(_delta: float) -> void:
+	if _braking > 0:
+		OS.delay_msec(_braking)
 
 
 ## Your feet in world coordinates.

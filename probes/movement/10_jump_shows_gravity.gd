@@ -1,5 +1,5 @@
 extends MovementProbe
-## Movement probe 3: a jump shows the moon's gravity. Legs push off the same
+## Movement probe 10: a jump shows the moon's gravity. Legs push off the same
 ## anywhere, so at 1 g you rise the tuned height and at 0.45 g, F6's lean,
 ## 9.8/4.4 times as high and for as much longer. A second press in the air
 ## does nothing; a press just before you land jumps as you touch down; a

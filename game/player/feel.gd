@@ -2,9 +2,11 @@ class_name Feel
 extends Node3D
 ## How moving feels: the head's bob and sway, a spring on footfalls, landings
 ## and changes of pace, a lean into strong wind with gusts nudging it, a wider
-## view at speed, footsteps, and a slide's hiss and spray. It reads the player
-## and never writes to it, so none of it can change where you go: it moves
-## only the camera, and makes only sound and dust.
+## view at speed, footsteps, and a slide's hiss and spray; on a board, a lean
+## into the carve, and your view smoothed between ticks, which at its speed
+## would otherwise stutter. It reads the player and never writes to it, so
+## none of it can change where you go: it moves only the camera, and makes
+## only sound and dust.
 
 const STEPS: Array[AudioStream] = [preload("res://assets/audio/step_a.ogg"),
 	preload("res://assets/audio/step_b.ogg"), preload("res://assets/audio/step_c.ogg"),
@@ -25,6 +27,8 @@ const LEAN_SECONDS := 0.5
 const VIEW_SECONDS := 0.3
 ## A slide this fast, m/s, hisses loudest and widens the view most.
 const FAST := 10.0
+## The share of a board's lean into its carve your view leans with it.
+const BANK_SHARE := 0.35
 
 var _player: Player
 var _tuning := Tuning.current()
@@ -38,6 +42,7 @@ var _spring_v := Vector3.ZERO
 var _lean := Vector3.ZERO
 var _roll := 0.0
 var _widen := 0.0
+var _bank := 0.0
 var _hiss := 0.0
 var _clock := 0.0
 var _last_own := Vector2.ZERO
@@ -68,6 +73,8 @@ func _ready() -> void:
 	_puff = _sand(32, 0.7, true)
 	_player.landed.connect(_on_landed)
 	_player.jumped.connect(_on_jumped)
+	# Before the hands draw what you hold from where your eyes are this frame.
+	process_priority = -1
 
 
 ## Your eyes in your own frame as the ticks know them: lowered by a crouch or
@@ -95,6 +102,7 @@ func _process(delta: float) -> void:
 	var speed := own.length()
 	var to_you := _player.global_basis.inverse()
 	var striding := _player.mode == "walk" or _player.mode == "sprint"
+	var ride := _player.ride
 	_clock += delta
 
 	# The stride follows ground covered, so footfalls come where feet land.
@@ -130,17 +138,23 @@ func _process(delta: float) -> void:
 
 	_drop = _ease(_drop, _eye_drop(), EYE_SECONDS, delta)
 	var widen := 0.0
+	var fast := t.board_top_speed if ride != null else FAST
 	if speed > t.walk_speed:
 		widen = t.sprint_fov * clampf((speed - t.walk_speed) / (t.sprint_speed - t.walk_speed), 0.0, 1.0) \
-			+ (t.slide_fov - t.sprint_fov) * clampf((speed - t.sprint_speed) / (FAST - t.sprint_speed), 0.0, 1.0)
+			+ (t.slide_fov - t.sprint_fov) * clampf((speed - t.sprint_speed) / (fast - t.sprint_speed), 0.0, 1.0)
 	_widen = _ease(_widen, widen, VIEW_SECONDS, delta)
+	# Drawn where you were between the last tick and this one, as the board is.
+	var between := Vector3.ZERO
+	if ride != null:
+		between = to_you * -ride.last_step * (1.0 - Engine.get_physics_interpolation_fraction())
+	_bank = _ease(_bank, -ride.bank * BANK_SHARE if ride != null else 0.0, EYE_SECONDS, delta)
 
 	var sliding := _player.mode == "slide"
 	# The sand judders through you on a fast slide.
 	var judder := Vector3(sin(_clock * 41.0), sin(_clock * 53.0 + 1.3), 0.0) * 0.003 \
 		* clampf(speed / FAST, 0.0, 1.0) if sliding else Vector3.ZERO
-	camera.position = _rest + bob + _spring + _lean + judder + Vector3.DOWN * _drop
-	camera.rotation.z = roll + _roll
+	camera.position = _rest + bob + _spring + _lean + judder + Vector3.DOWN * _drop + between
+	camera.rotation.z = roll + _roll + _bank
 	camera.fov = _fov + _widen
 	_sound_slide(sliding, speed, delta)
 	_throw_sand(sliding, own, speed)

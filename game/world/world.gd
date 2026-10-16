@@ -70,6 +70,7 @@ func _ready() -> void:
 ## Dev: puts the player down at a world place and run time, facing yaw, as a
 ## fresh spawn: distance from spawn and the moon position start over there.
 func respawn(x: float, z: float, yaw: float, at_time: float) -> void:
+	player.step_off()
 	time = at_time
 	time_warp = 1.0
 	player.global_position = Vector3(engine_x(x), height_at(x, z) + 0.1, engine_z(z))
@@ -237,7 +238,8 @@ func _physics_process(delta: float) -> void:
 func _keep_bodies_on_ground() -> void:
 	for child in content.get_children():
 		var body := child as RigidBody3D
-		if body == null:
+		# What's on you, or under you on a board, goes where you go.
+		if body == null or body == player.board or ropes.on_you(body):
 			continue
 		var x := world_x(body.global_position.x)
 		var z := world_z(body.global_position.z)

@@ -5,8 +5,9 @@ extends CharacterBody3D
 ## steep to stand on slides you down it; crouch at a run or downhill and you
 ## slide on purpose, keeping what the slope gives. A small jump shows the
 ## moon's gravity, crouching makes you smaller to the wind, and hauling
-## against a line you dig in. Never moves where the ground has no collision
-## yet, and never ends up in the sand. How it feels is Feel's: the camera's.
+## against a line you dig in. On a hoverboard the ride moves you instead.
+## Never moves where the ground has no collision yet, and never ends up in
+## the sand. How it feels is Feel's: the camera's.
 
 ## Touched down from the air at this speed, m/s.
 signal landed(speed: float)
@@ -23,13 +24,15 @@ const LOW_SECONDS := 0.12
 ## Slip faces let go of you at the slip angle and take you back this much
 ## shallower, degrees, so the edge of one doesn't flicker.
 const SLIP_HOLD := 2.0
+## A board this near your feet, m, is one you can step onto.
+const BOARD_REACH := 1.5
 
 var world: World
 var stamina: float
 ## Dev only: the fly action flies through the world, for checking the far view.
 var flying := false
-## How you're moving: stand, walk, sprint, slide, air or fly. A crouched walk
-## is still a walk; `crouched` says you're low.
+## How you're moving: stand, walk, sprint, slide, air, ride or fly. A
+## crouched walk is still a walk; `crouched` says you're low.
 var mode := "stand"
 var crouched := false
 ## Your own way over the ground, m/s along engine x and z: what your legs, a
@@ -44,6 +47,9 @@ var low := 0.0
 ## How far your feet have dug in hauling against a line, 0 to 1.
 var sink := 0.0
 var feel: Feel
+## The board you ride, or null, and the ride that moves you on it.
+var board: Hoverboard
+var ride: Ride
 
 var _tuning := Tuning.current()
 var _sliding := false
@@ -60,12 +66,17 @@ var _on_sand := true
 ## The velocity as this left it, so a change from outside (a respawn, a
 ## probe) is seen and taken as where you now are.
 var _left := Vector3.ZERO
+## The board you'll step onto once your waist is untied, and the one you
+## just stepped off, which can't touch you until it's clear of you.
+var _boarding: Hoverboard
+var _stepped_off: Hoverboard
 
 @onready var camera: Camera3D = $Camera3D
 @onready var hands: Hands = $Hands
 @onready var waist: Waist = $Waist
 @onready var suit: Suit = $Suit
 @onready var vitals: Vitals = $Vitals
+@onready var camp_range: CampRange = $CampRange
 
 
 func _ready() -> void:
@@ -80,7 +91,11 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed("ui_cancel"):
 		Controls.free_mouse(true)
 	elif event.is_action_pressed("dev_fly"):
+		step_off()
 		flying = not flying
+	elif event.is_action_pressed("ride"):
+		if toggle_board():
+			get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("jump"):
 		# A tap shorter than a tick still counts.
 		_jump_queued = true
@@ -101,6 +116,16 @@ func _physics_process(delta: float) -> void:
 			* _tuning.dev_fly_speed * boost * delta
 		_stop()
 		return
+	_clear_of_board()
+	# A board freed under you (a scenario's, say) still leaves a ride to end.
+	if ride != null:
+		_ride(delta, input)
+		return
+	if _boarding != null:
+		if not is_instance_valid(_boarding) or _boarding.global_position.distance_to(global_position) > BOARD_REACH * 2.0:
+			_boarding = null
+		elif waist.tied.is_empty():
+			get_on(_boarding)
 	if world == null or not world.has_ground_under(global_position):
 		_stop()
 		return
@@ -205,6 +230,136 @@ func _stop() -> void:
 	own = Vector2.ZERO
 	_sliding = false
 	_left = velocity
+
+
+## Ride: riding, step off; otherwise step onto the board in your hands, the
+## one you look at, or the nearest at your feet. Says whether it did anything.
+func toggle_board() -> bool:
+	if board != null:
+		step_off()
+		return true
+	return get_on(_board_near())
+
+
+## Onto a board, if it has the charge to carry you. It tows nothing, so you
+## let go of what you hold on a line or drag; a line at your waist has to be
+## untied first, and you step on once it is.
+func get_on(on: Hoverboard) -> bool:
+	_boarding = null
+	if on == null or board != null or flying:
+		return false
+	if world.salvage.lying(on):
+		world.salvage.unbury(on)
+	if not on.can_run():
+		return false
+	if hands.held == on:
+		hands.stow()
+	hands.grasp.let_go()
+	if hands.held != null and waist.carries_line(hands.held):
+		hands.drop()
+	if not waist.tied.is_empty():
+		waist.let_go()
+		_boarding = on
+		return true
+	board = on
+	ride = Ride.new(self, on)
+	on.carry(self)
+	motion_mode = MOTION_MODE_FLOATING
+	_sliding = false
+	_jumped = false
+	return true
+
+
+## Off the board onto the sand, keeping your way: faster than you can run,
+## you skid. The board goes on as it was going, a body again.
+func step_off() -> void:
+	if board == null:
+		return
+	var going := Vector3(ride.velocity.x, ride.vy, ride.velocity.y)
+	if is_instance_valid(board):
+		board.global_transform = ride.board_pose(false)
+		board.set_down(going)
+		board.add_collision_exception_with(self)
+		_stepped_off = board
+	board = null
+	ride = null
+	motion_mode = MOTION_MODE_GROUNDED
+	velocity = Vector3(going.x, 0.0, going.z)
+	own = Vector2(going.x, going.z)
+	_left = velocity
+	_since_ground = INF
+
+
+## A tick on the board: your keys say where it pushes and carves, a jump
+## hops, a crouch tucks you small to the wind. Out of charge, you step off.
+func _ride(delta: float, input: Vector2) -> void:
+	if not is_instance_valid(board):
+		board = null
+		ride = null
+		motion_mode = MOTION_MODE_GROUNDED
+		_stop()
+		return
+	# Never onto ground that isn't solid yet: the board waits for it.
+	if not world.has_ground_under(global_position):
+		ride.waited += 1
+		ride.last_step = Vector3.ZERO
+		return
+	var wish := global_basis * Vector3(input.x, 0.0, input.y)
+	var crouch := Input.is_action_pressed("crouch")
+	var jump := Input.is_action_pressed("jump")
+	var hop := _jump_queued or (jump and not _jump_was)
+	_jump_queued = false
+	_jump_was = jump
+	_crouch_was = crouch
+	crouched = crouch
+	low = _ease(low, 1.0 if crouch else 0.0, LOW_SECONDS, delta)
+	ride.step(delta, Vector2(wish.x, wish.z).normalized(), hop)
+	own = ride.velocity
+	wind = world.weather.felt_wind(global_position)
+	sink = 0.0
+	_hold_above_sand()
+	_left = velocity
+	mode = "ride"
+	stamina = minf(stamina + _tuning.stamina_regen * delta, _tuning.stamina_max)
+	if not board.powered or board.wrecked():
+		step_off()
+	Dev.put("player/mode", "ride")
+	Dev.put("player/spd", "%.1fkm/h" % (own.length() * 3.6))
+	Dev.put("player/stam", "%d/%d" % [stamina, _tuning.stamina_max])
+	if ride != null:
+		Dev.put("player/board", "%.2fm up, %d%%" % [ride.gap + _tuning.board_ride_height,
+			roundi(100.0 * board.charge_share())])
+
+
+## The board in your hands, the one you look at, or the nearest lying at your feet.
+func _board_near() -> Hoverboard:
+	if hands.held is Hoverboard:
+		return hands.held
+	if hands.look_device is Hoverboard:
+		return hands.look_device
+	var best: Hoverboard = null
+	var nearest := BOARD_REACH
+	for node in world.content.get_children() + world.salvage.near(global_position):
+		var each := node as Hoverboard
+		if each == null or each == hands.held:
+			continue
+		var off := each.global_position - global_position
+		var d := Vector2(off.x, off.z).length()
+		if d < nearest and absf(off.y) < 1.0:
+			nearest = d
+			best = each
+	return best
+
+
+## The board you stepped off touches you again once it's clear of you.
+func _clear_of_board() -> void:
+	if _stepped_off == null:
+		return
+	if not is_instance_valid(_stepped_off):
+		_stepped_off = null
+	elif _stepped_off.global_position.distance_to(global_position + Vector3.UP * 0.9) > 1.6:
+		_stepped_off.remove_collision_exception_with(self)
+		_stepped_off = null
 
 
 ## Legs push off the same on any moon; a tired push is a hop.
@@ -326,7 +481,7 @@ func _after_move(from: Vector3, meant: Vector2, delta: float, was_on_floor: bool
 		open = false
 		var loose := hit.get_collider() as RigidBody3D
 		if loose != null and not loose.freeze:
-			_shove(loose, hit.get_position(), -normal, meant / delta, delta)
+			shove(loose, hit.get_position(), -normal, meant / delta, delta)
 		var across := Vector2(normal.x, normal.z)
 		if across.length() > 0.1:
 			across = across.normalized()
@@ -357,7 +512,7 @@ func _after_move(from: Vector3, meant: Vector2, delta: float, was_on_floor: bool
 
 ## Walking into a loose thing pushes it on at the pace you meant, as hard as
 ## your strength allows, so a heavy one barely moves and a floating one goes.
-func _shove(body: RigidBody3D, at: Vector3, into: Vector3, meant: Vector2, delta: float) -> void:
+func shove(body: RigidBody3D, at: Vector3, into: Vector3, meant: Vector2, delta: float) -> void:
 	into.y = 0.0
 	if into.length() < 0.1:
 		return

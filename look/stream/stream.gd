@@ -1,8 +1,9 @@
 extends Node
 ## Hitch check in a real window, which headless probe 7 can't be: the shader
 ## compile and the GPU's side of an upload only happen here. On seed 1234 it
-## flies 6 km at full dev speed (F4 + Shift), then walks over a chunk edge, and
-## fails if any frame from the first chunk on spent longer than
+## flies 6 km at full dev speed (the fly action, sprinting), then walks over a
+## chunk edge, then rides a hoverboard flat out for 20 s, and fails if any
+## frame from the first chunk on spent longer than
 ## stream_frame_max_ms streaming. Whole-frame times are printed beside it. CI has
 ## no GPU, so run it by hand after touching terrain streaming; exit code 0 passes:
 ##   godot --path . res://look/stream/stream.tscn
@@ -12,6 +13,7 @@ extends Node
 const WORLD_SCENE := preload("res://game/world/world.tscn")
 const FLY_SECONDS := 20.0
 const WALK_SECONDS := 15.0
+const RIDE_SECONDS := 20.0
 const PIPELINES := [Performance.PIPELINE_COMPILATIONS_CANVAS, Performance.PIPELINE_COMPILATIONS_MESH,
 	Performance.PIPELINE_COMPILATIONS_SURFACE, Performance.PIPELINE_COMPILATIONS_DRAW,
 	Performance.PIPELINE_COMPILATIONS_SPECIALIZATION]
@@ -63,6 +65,23 @@ func _ready() -> void:
 	Input.action_press("move_forward")
 	await _measure("walk", missed, _for(WALK_SECONDS))
 	Input.action_release("move_forward")
+
+	# Onto a charged board at your feet, flat out downwind: its fastest.
+	var board := Catalog.device(&"board") as Hoverboard
+	_world.content.add_child(board)
+	var cell := Catalog.part(&"battery")
+	_world.content.add_child(cell)
+	board.fit(cell, board.sockets()[0])
+	board.global_position = player.global_position + Vector3.UP * 0.06
+	await get_tree().physics_frame
+	var from := Vector2(_world.player_world_x(), _world.player_world_z())
+	var down := _world.weather.field.wind_at(from.x, from.y, _world.time)
+	player.rotation.y = atan2(-down.x, -down.y)
+	print("  ride: on the board: %s" % player.get_on(board))
+	Input.action_press("move_forward")
+	await _measure("ride", missed, _for(RIDE_SECONDS))
+	Input.action_release("move_forward")
+	print("  ride: %.0f m" % from.distance_to(Vector2(_world.player_world_x(), _world.player_world_z())))
 
 	var limit := Tuning.current().stream_frame_max_ms
 	var slowest := _world.terrain.slowest_frame_ms

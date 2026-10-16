@@ -1,5 +1,5 @@
 extends MovementProbe
-## Movement probe 7: nothing goes through the sand, you included. Slide flat
+## Movement probe 14: nothing goes through the sand, you included. Slide flat
 ## out down a slip face, jumping mid-slide and landing crouched into the
 ## next, at 1 g and at 0.45 g, and off crests at speed. Every tick your feet
 ## stay on the sand, never in it, and nothing had to be rescued from below it.

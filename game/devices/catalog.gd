@@ -164,6 +164,15 @@ const DEVICES := {
 			[&"plant_small", Vector3(0.0, 0.125, 0.0), Vector3.UP],
 			[&"plant_large", Vector3(0.15, 0.125, 0.0), Vector3.UP],
 		]},
+	# Just for you: it runs on its own battery, at its nose, and nothing ties
+	# to it, so it tows nothing. Its port charges it from a cable. Found buried
+	# on end, nose down. Lying flat, the wind meets its edge.
+	&"board": {"label": "Hoverboard", "size": Vector3(0.36, 0.08, 1.3), "mass": 7.0, "board": true, "on_end": true,
+		"carryable": true, "stats": {"face_m2": 0.1},
+		"sockets": [
+			[&"battery", Vector3(0.0, 0.04, -0.5), Vector3.UP],
+			[&"port", Vector3(0.0, 0.0, 0.65), Vector3.BACK],
+		]},
 }
 
 
@@ -283,7 +292,8 @@ static func device(id: StringName) -> Device:
 	var spec: Dictionary = DEVICES[id]
 	var made: Device = ShieldGenerator.new() if spec.get("shield", false) \
 		else (Condenser.new() if spec.get("condenser", false) \
-		else (Planter.new() if spec.get("planter", false) else Device.new()))
+		else (Planter.new() if spec.get("planter", false) \
+		else (Hoverboard.new() if spec.get("board", false) else Device.new())))
 	made.set_meta(&"catalog", id)
 	made.label = spec.label
 	made.frame_mass = spec.mass

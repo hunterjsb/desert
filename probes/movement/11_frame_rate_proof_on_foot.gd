@@ -1,5 +1,5 @@
 extends MovementProbe
-## Movement probe 4: frame-rate proof. The same keys held over the same dunes,
+## Movement probe 11: frame-rate proof. The same keys held over the same dunes,
 ## at 30, 60 and 120 physics ticks a second, trace the same path: a walk that
 ## turns, a sprint into a slide down the steepest slope near spawn that turns
 ## too, and a walk with two jumps in it, one landed into a sprint. Then the

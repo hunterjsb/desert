@@ -128,6 +128,10 @@ the felt-weather rule.
   time, so the dev time warp charges faster and 30, 60 or 120 frames a second give the same charge to
   the bit.
 - **The turbine** makes up to 200 W in a gale and nothing while it's being moved.
+- **The hoverboard** (Stage 10) draws 40 W floating and up to 260 W more at full push,
+  so a base battery lasts about twenty minutes flat out. What it draws is metered tick
+  by tick in world time and read by each power tick for its own quarter second, so its
+  charge comes out the same at 30, 60 or 120 ticks a second.
 - **Two kinds of cable** (decided 2026-10-14, from the Stage 4 playtest). **Common
   wiring** pops a plug when pulled too hard, and Hunter likes that: a floating planter
   blown off a turbine unplugs itself. A **strong cable** is also a rope, so it holds

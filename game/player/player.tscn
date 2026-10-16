@@ -1,10 +1,11 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://game/player/player.gd" id="1_player"]
 [ext_resource type="Script" path="res://game/player/hands.gd" id="2_hands"]
 [ext_resource type="Script" path="res://game/player/waist.gd" id="3_waist"]
 [ext_resource type="Script" path="res://game/survival/suit.gd" id="4_suit"]
 [ext_resource type="Script" path="res://game/survival/vitals.gd" id="5_vitals"]
+[ext_resource type="Script" path="res://game/player/camp_range.gd" id="6_range"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.35
@@ -33,3 +34,6 @@ script = ExtResource("4_suit")
 
 [node name="Vitals" type="Node" parent="."]
 script = ExtResource("5_vitals")
+
+[node name="CampRange" type="Node" parent="."]
+script = ExtResource("6_range")

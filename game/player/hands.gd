@@ -158,22 +158,35 @@ func grab() -> bool:
 		return true
 	_look()
 	var salvage := _player.world.salvage
+	# The board tows nothing: riding, you take only what comes off no line,
+	# loose, into your hands.
+	var riding := _player.board != null
 	if look_device != null and look_device.host() != null:
+		if riding:
+			return false
 		# Last on, first off: a seated device comes off whole, whatever of it you aim at.
 		_take_off(look_device)
 		return true
 	if look_part != null:
+		if riding and _player.waist.carries_line(look_part):
+			return false
 		salvage.unbury(look_part)
 		_pick_up(look_part)
 		return true
 	if look_socket != null and look_socket.part != null:
+		if riding:
+			return false
 		salvage.claim(look_device)
 		_take_out(look_device, look_socket)
 		return true
 	if look_device != null and look_device.carryable:
+		if riding and _player.waist.carries_line(look_device):
+			return false
 		salvage.unbury(look_device)
 		_pick_up(look_device)
 		return true
+	if riding:
+		return false
 	if look_device != null and (not look_device.freeze or salvage.lying(look_device)):
 		# Something found comes up out of the sand as you take hold of it.
 		salvage.unbury(look_device)
