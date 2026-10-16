@@ -32,8 +32,10 @@ Batteries are the exception and carry no stamp. See [the lore research](../lore-
 
 ## How you handle things
 
-Three actions cover everything, with none for particular features (decided 2026-10-15).
-A new device or tool answers these; it never adds an action of its own. The docs name
+Four actions cover handling, with none for particular features: take, use and throw
+(decided 2026-10-15), and rotate (Hunter, 2026-10-16). A new device or tool answers these;
+it never adds an action of its own. (Getting on and off the hoverboard is movement, with
+its own ride action.) The docs name
 actions, never keys: keys are only defaults, set in `game/core/controls.gd` and listed
 in the game. On screen, a key is always read from the live bindings and coloured to stand
 out, never written into the text (Hunter, 2026-10-16), even before players can remap.
