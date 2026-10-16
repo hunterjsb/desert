@@ -14,8 +14,8 @@ alongside them. Shield probe 4, which carries the shield 2 km through a storm wi
 crate on a waist line, stands in for Movement 4 until the full camp exists. The real
 dune shapes were pulled forward the same day: a look-test put candidate dunes in the
 real world, Hunter picked Ridges, and they're the game's ground now, with the sand
-shader he chose to keep. Stage 8, salvage and ruins, was built the same day and is
-waiting at the gate: finds half-buried in the dunes from the seed and how hard the
+shader he chose to keep. Stage 8, salvage and ruins, was built the same day and passed
+on 2026-10-16 (strip and fit, the ruin's walk-through and finds outside all "works"): finds half-buried in the dunes from the seed and how hard the
 weather has been, a deep layer harder weather uncovers more often, one walk-in ruin
 pressed into the ground's one function, and "go looking" in the scenario menu.
 

@@ -134,7 +134,7 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
 - Stripping parts out of found devices.
 - The probes below, all passing.
 
-**Built** (2026-10-15), waiting at the gate.
+**Built** (2026-10-15), passed the gate 2026-10-16.
 
 - **Finds** are laid out when a chunk's ground becomes solid, from the run's seed, the
   chunk's coordinates and how hard the weather has been there, and go when it stops
