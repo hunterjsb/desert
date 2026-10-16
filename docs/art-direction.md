@@ -142,6 +142,11 @@ saturated kind-coloured parts (amber batteries, bright hooks) that survive the d
 storm. A shows what generated models look like here: a striking ruin, but a camp that
 doesn't hang together. D needs the world restyled along with it.
 
+## Where Hunter is
+
+He likes all four. He's choosing between B and C, with D as the runner-up, and may ask
+the community (2026-10-16).
+
 ## Open questions
 
 - Which direction, or which mix?
