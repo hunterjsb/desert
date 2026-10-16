@@ -4,7 +4,8 @@ extends RefCounted
 ## their own small file, apart from the profile and the run, and written only
 ## when someone changes one.
 
-const PATH := "user://settings.cfg"
+## Where they're kept; probes and look-tests point it at a folder of their own.
+static var path := "user://settings.cfg"
 const SCALES: Array[float] = [0.5, 0.75, 1.0]
 
 static var volume := 1.0
@@ -16,7 +17,7 @@ static var render_scale := 1.0
 
 static func load_saved() -> void:
 	var file := ConfigFile.new()
-	if file.load(PATH) != OK:
+	if file.load(path) != OK:
 		return
 	volume = clampf(file.get_value("audio", "volume", volume), 0.0, 1.0)
 	fullscreen = file.get_value("graphics", "fullscreen", fullscreen)
@@ -30,7 +31,7 @@ static func save() -> void:
 	file.set_value("graphics", "fullscreen", fullscreen)
 	file.set_value("graphics", "vsync", vsync)
 	file.set_value("graphics", "render_scale", render_scale)
-	file.save(PATH)
+	file.save(path)
 
 
 static func apply(window: Window) -> void:
