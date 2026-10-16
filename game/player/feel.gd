@@ -141,7 +141,7 @@ func _process(delta: float) -> void:
 	var between := Vector3.ZERO
 	if ride != null:
 		between = to_you * -ride.last_step * (1.0 - Engine.get_physics_interpolation_fraction())
-	_bank = _ease(_bank, -ride.bank * BANK_SHARE if ride != null else 0.0, EYE_SECONDS, delta)
+	_bank = _ease(_bank, -ride.tilt(true).z * BANK_SHARE if ride != null else 0.0, EYE_SECONDS, delta)
 
 	var sliding := _player.mode == "slide"
 	# The sand judders through you on a fast slide.
