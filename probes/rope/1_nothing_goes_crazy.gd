@@ -6,7 +6,9 @@ extends RopeProbe
 ## than its wind could carry it, a kicked rig in calm only ever loses energy,
 ## and under steady wind everything settles. Drawn strands stay finite, on or
 ## above the sand, and within reach of their ends. Lines and stakes are
-## unbreakable here, so only the constraint itself is on trial.
+## unbreakable here, so only the constraint itself is on trial. This half runs
+## the calm and the breeze; `1b_nothing_goes_crazy_in_storms` runs the storms,
+## so the two halves share the suite's cores.
 
 const MINUTES := 2.0
 const SPACING := 16.0
@@ -25,7 +27,7 @@ var _tray_work := {}
 func run() -> void:
 	await load_ropes()
 	set_rate(60, 6)
-	_rows = [
+	var every: Array[Dictionary] = [
 		# In still air only drag slows a rig swinging round its stake, so calm
 		# proves energy only ever goes, not that it's all gone.
 		{"name": "calm", "speed": 0.0, "gusts": 0.0, "settles": false},
@@ -34,6 +36,8 @@ func run() -> void:
 			"settles": false},
 		{"name": "worst gust", "speed": wind.worst_gust(), "gusts": 0.0, "settles": true},
 	]
+	_rows.assign(every.filter(func(row: Dictionary) -> bool: return row.name in _winds()))
+	var calm_row := _rows.any(func(row: Dictionary) -> bool: return row.name == "calm")
 	var home_z := world.player_world_z()
 	var blows: Array[Callable] = []
 	for row in _rows:
@@ -88,19 +92,26 @@ func run() -> void:
 				bad.invalid += 1
 		if tick % 30 == 0:
 			bad.strands += _strands_off()
-	print("calm rigs' most energy per 5 s, J: ", energy.map(func(e: float) -> String: return "%.1f" % e))
+	if calm_row:
+		print("calm rigs' most energy per 5 s, J: ", energy.map(func(e: float) -> String: return "%.1f" % e))
 	print("invalid %d, too fast %d (worst %.2f m/s over, %s), strands off %d, unsettled %s"
 		% [bad.invalid, bad.fast, worst.speed, worst.fast_what, bad.strands, worst.unsettled])
 	check(bad.invalid == 0, "no invalid numbers")
 	check(bad.fast == 0, "nothing faster than its wind could carry it")
-	var grew := 0
-	for i in range(1, energy.size()):
-		if energy[i] > energy[i - 1] + absf(energy[i - 1]) * 0.02:
-			grew += 1
-	check(grew == 0, "a kicked rig in calm only loses energy (%d windows gained)" % grew)
-	check(energy[-1] < energy[0] * 0.25, "and keeps losing it")
+	if calm_row:
+		var grew := 0
+		for i in range(1, energy.size()):
+			if energy[i] > energy[i - 1] + absf(energy[i - 1]) * 0.02:
+				grew += 1
+		check(grew == 0, "a kicked rig in calm only loses energy (%d windows gained)" % grew)
+		check(energy[-1] < energy[0] * 0.25, "and keeps losing it")
 	check(bad.unsettled == 0, "everything settles under steady wind")
 	check(bad.strands == 0, "every drawn strand stays finite, above the sand and within reach of its ends")
+
+
+## The rows this half runs.
+func _winds() -> Array[String]:
+	return ["calm", "breeze"]
 
 
 func _row_at(z: float) -> int:
