@@ -93,7 +93,7 @@ func begin(data: Dictionary) -> Array[Vector2]:
 	world.power.spilled_wh = data.ledger[2]
 	var you: Dictionary = data.player
 	var player := world.player
-	player.global_transform = _transform_in(you.at)
+	world.teleport(player, _transform_in(you.at))
 	player.camera.rotation.x = you.pitch
 	player.velocity = you.v
 	for key: String in you.state:

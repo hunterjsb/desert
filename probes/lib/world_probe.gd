@@ -48,8 +48,8 @@ func before_finish() -> void:
 
 ## Puts the player on the sand at a world position.
 func teleport(x: float, z: float) -> void:
-	world.player.global_position = Vector3(world.engine_x(x), world.height_at(x, z) + 0.1,
-		world.engine_z(z))
+	world.teleport(world.player, Transform3D(world.player.global_basis,
+		Vector3(world.engine_x(x), world.height_at(x, z) + 0.1, world.engine_z(z))))
 	world.player.velocity = Vector3.ZERO
 
 
