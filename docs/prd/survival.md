@@ -111,20 +111,29 @@ Death means a new run (see Runs in the vision).
 - **Your inventory is five slots on the suit, plus your waist** (Hunter's direction,
   2026-10-15, loose). There's no inventory screen to manage. The inventory action opens a
   very minimal view of the slots and what's tied at your waist. Any part with nothing
-  fastened to it fits, so not a line's end or a cable's plug. Menus mostly come as
+  fastened to it fits, and rope and wire go in rolled up (below). Menus mostly come as
   devices. There's no main menu yet.
 - **The inventory by mouse** (Hunter, 2026-10-16, replacing the look-across picking): the
   inventory action frees the mouse. Clicking a slot with something in it brings it to
-  your empty hands; clicking an empty slot puts what you hold into it.
-- **Rope goes in as a coil** (Hunter, 2026-10-16: "i cant put rope in my inv"): a rope you
-  hold but haven't laid, its first end in your hand and the rest at your belt, rolls back
-  up into its coil and goes in a slot; taken out, it's its first end in your hand again.
-  A cable plugged into nothing goes in the same way. A laid or tied line stays out until
-  it's taken up. Clicking a full
+  your empty hands; clicking an empty slot puts what you hold into it. Clicking a full
   slot while you hold something that fits swaps them. The slot under the mouse is lit,
   and a click anywhere else in the view does nothing. You don't turn while it's open, and
   take works on the world as ever, not on the slots. Closing it captures the mouse again,
   as does a run ending while it's open.
+- **Rope goes in as a coil** (Hunter, 2026-10-16: "i cant put rope in my inv"): a rope you
+  hold but haven't laid, its first end in your hand and the rest at your belt, rolls back
+  up into its coil, the belt end comes off, and the coil goes in the slot. Taken out, it
+  comes to your hands and uncoils as ever, its first end in your hand again. A cable
+  plugged into nothing goes in the same way, as one piece; taken out, you hold a plug
+  with the other plug and its cable following, as with a found one. A laid or tied line
+  stays out until it's taken up, and so does one paying out or being let go at your
+  waist, a cable plugged in at either end, a plug off any cable, and a strong cable that
+  has snapped. Stowed rope and wire lie rolled up as found ones do, as one body: the
+  line or cable itself is gone until it's taken out, so nothing of it is left behind to
+  go with the land as you travel. The coil keeps the line's length, so the kit's comes
+  out 6 m, a found one 12 m and the half of a snapped line its own length, and a save
+  keeps it too. The view shows a coil with its length (Rope coil, 6 m) and a stowed
+  cable as a cable.
 - **The suit** is those slots plus its built-ins: air and radiation protection, free and
   drained by nothing. Its sockets for mods (heater, cooler, reclaimer, battery, harness
   hooks) wait for the full version, so in the skeleton the suit isn't a device yet.
@@ -221,7 +230,11 @@ Death means a new run (see Runs in the vision).
    and boils off by afternoon.
 6. **The inventory by mouse.** The inventory action frees the mouse and closing it
    captures it again. Clicks move things between your hands and your slots as they
-   should, and a plug never fits.
+   should, and a plug off any cable never fits.
+7. **Rope goes in as a coil.** The kit's 6 m coil and a found 12 m one each go in a slot,
+   and a kilometre on come out, pay out to the same length and tie onto stakes; paying
+   out or laid, a line stays out. A cable plugged into nothing goes in and comes out
+   whole, a strong one too; plugged in at one end, it stays out.
 
 ## Out of scope
 

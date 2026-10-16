@@ -159,7 +159,8 @@ The hoverboard tows nothing.
   Once that end is on a ring (or tied at your waist), the coil comes to your hand and
   pays out as you walk, up to 12 m. The line's length is set wherever its second end
   goes. Taking up an end of a line lying loose at both ends rolls it back up; dropping
-  the first end before it's on anything puts the coil down whole.
+  the first end before it's on anything puts the coil down whole, and putting it in a
+  suit slot stows the coil there (Survival).
 - **Rings** are tie sockets: a hook adds one while it's fitted, and a stake has one on
   its eye. You're a ring in your hand, and at your waist: use with a line in your hand
   and nothing to work ties it on, and use empty-handed takes it back after a second's

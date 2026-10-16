@@ -345,9 +345,12 @@ func _body(body: RigidBody3D, loose: bool) -> Dictionary:
 		out.world_froze = body.get_meta(&"frozen_by_world", false)
 	if body.has_meta(&"layer"):
 		out.found = body.get_meta(&"layer")
-	# Packed in a found case, it unrolls into a line or a cable once taken out.
+	# Found or stowed, it unrolls into a line or a cable once taken out, a
+	# stowed line as long as it was.
 	if body.has_meta(&"rolled"):
 		out.rolled = body.get_meta(&"rolled")
+	if body.has_meta(&"rolled_m"):
+		out.rolled_m = body.get_meta(&"rolled_m")
 	if body is Device:
 		var filled := []
 		var frame := (body as Device).sockets().filter(func(s: Socket) -> bool: return not s.has_meta(&"socket"))
@@ -447,6 +450,8 @@ func _make(rec: Dictionary) -> RigidBody3D:
 		Finds.mark(body, rec.found)
 	if rec.has("rolled"):
 		body.set_meta(&"rolled", rec.rolled)
+	if rec.has("rolled_m"):
+		body.set_meta(&"rolled_m", rec.rolled_m)
 	var device := body as Device
 	if device != null:
 		device.center_of_mass_mode = RigidBody3D.CENTER_OF_MASS_MODE_CUSTOM

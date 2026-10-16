@@ -335,16 +335,19 @@ static func _part(id: StringName, charge: float, layer: StringName, sealed := fa
 	return part
 
 
-## Found rope and wire lie as one body until they're yours: a coil, and a
-## cable's first plug with the rest of it behind. Then a coil becomes a line
-## to lay, and a plug pulls its cable and second plug up out of the sand.
+## Found rope and wire lie as one body until they're yours, and stowed they
+## go back to one: a coil, and a cable's first plug with the rest of it
+## behind. Then a coil becomes a line to lay, as long as the one stowed,
+## and a plug pulls its cable and second plug up out of the sand.
 static func unroll(world: World, body: Node) -> void:
 	if not body.has_meta(&"rolled"):
 		return
 	var id: StringName = body.get_meta(&"rolled")
+	var metres: float = body.get_meta(&"rolled_m", world.tuning.rope_coil_length)
 	body.remove_meta(&"rolled")
+	body.remove_meta(&"rolled_m")
 	if id == &"coil":
-		Line.make(world, world.tuning.rope_coil_length, body as Part)
+		Line.make(world, metres, body as Part)
 	else:
 		Catalog.cable(world, (body as Part).global_position, id == &"strong_plug", body as Part)
 
