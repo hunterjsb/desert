@@ -5,6 +5,11 @@
 in the session, not final canon until he says so. Where something is a Claude proposal Hunter
 hasn't picked yet, it's marked **(proposal)**.*
 
+*Revised 2026-10-16 to carry Hunter's answers after session 3 ([the lore research, section
+14](lore-research.md#14-open-after-session-3)): §7's Bronze Age span is no longer "centuries,"
+and §8's "purely human" fall is split, since the war was probably the hive mind's doing and
+Zan's collapse came from human abandonment.*
+
 ## 1. The OEM tier: who actually makes things
 
 Part 1's entity stack is all operators, regulators and integrators: people who *deploy*
@@ -141,7 +146,7 @@ a Z-spelling is late and colloquial.** The letter tells you which stratum you're
 ash band.
 
 **The Xanathivin.** The middle form names the fallen age between the colonial world and the
-player's present: the ash-and-scrap centuries of part 1's Bronze Age. Its people named their
+player's present: the ash-and-scrap ages of part 1's Bronze Age. Its people named their
 own era with a worn-down database entry they took to be ancient and sacred. Myth built from
 forgotten logistics. This gives a clean three-part tag for ruins, strata and artifacts:
 **colonial / Xanathivin / surface (Zan)**.
@@ -166,10 +171,13 @@ A lane has two ends. The other end isn't human.
 
 ### What the far end did *not* do
 
-**The paroxysm and the collapse were purely human.** Geology plus a lack of foresight: people
-warned the moon was transitional, living season to season, planning to get rich and get out.
-The short-sightedness of us poor biologics. The far end didn't need to engineer the fall; it
-only had to outlast us.
+**The paroxysm was geology, and Zan's collapse was human.** Geology plus a lack of foresight:
+people warned the moon was transitional, living season to season, planning to get rich and get
+out. The short-sightedness of us poor biologics. The far end didn't need to engineer the
+collapse; it only had to outlast us. (Revised 2026-10-16: the war that cut the lane was
+probably started by the hive mind, an outside power rather than humanity's own AI. If the hive
+mind is the far end, which is still open, it had a hand in the war, but not in the paroxysm
+and not in the collapse, which came from human abandonment.)
 
 ### Rules for agents
 
