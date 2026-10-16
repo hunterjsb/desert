@@ -61,6 +61,8 @@ static var _named := RegEx.create_from_string("\\{(\\w+)\\}")
 ## Whether the mouse is free to click, rather than captured to look. Kept
 ## here, since a headless run never captures it.
 var mouse_free := true
+## The menus' root while the game has one. Probes of a bare world have none.
+var ui: UIRoot
 
 
 func _enter_tree() -> void:
@@ -88,6 +90,17 @@ func _enter_tree() -> void:
 func free_mouse(free: bool) -> void:
 	mouse_free = free
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE if free else Input.MOUSE_MODE_CAPTURED
+
+
+## Whether what you hold down reaches the game. A menu up, or the screen
+## fading, holds it back; the world runs on without you.
+func playing() -> bool:
+	return ui == null or not ui.holds_input()
+
+
+## An action held down, as the game hears it.
+func held(action: StringName) -> bool:
+	return playing() and Input.is_action_pressed(action)
 
 
 ## The key or mouse button bound to an action now, as it's named on screen.

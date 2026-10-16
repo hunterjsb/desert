@@ -68,7 +68,7 @@ Menus & UI calls them from Save & quit, Resume, New game and Options.
 
 - **What a save holds:** you (where you stand, which way you face and look, how you're
   moving, stamina, your bars, your slots, what's in your hands, at your waist or being
-  hauled), the clock, the moon position, the engine's origin, and where power, wear,
+  hauled, and the board you ride with its ride as it stood), the clock, the moon position, the engine's origin, and where power, wear,
   farming and your body are in their ticks. Then everything of yours: each thing by its
   catalog id, where it is and how it's moving, its wear, charge, water, growth and
   harvests, a shield's switch and how far its bubble has bloomed, a stake driven or not,
@@ -82,7 +82,9 @@ Menus & UI calls them from Save & quit, Resume, New game and Options.
 - **Resume** happens on a world built on the save's seed once it has settled. The fresh
   world's own things (its kit) go; the clock, you and the finds' memory are back at once,
   and your things follow as soon as the ground under them is solid, the clock held still
-  until then (`Saves.restored` says when). A resumed run gets no new kit.
+  until then (`Saves.restored` says when). A resumed run gets no new kit. Saved mid-ride,
+  you're back on the board going as you were; a board that can't carry you then is set
+  down as stepping off would leave it, and comes down on the sand.
 - **Versioned:** each file opens with what it is and its version, and one of another
   version, or not a save at all, is refused with the reason (`refused`) before any of it
   is read. A refused profile is never written over, except by a reset.
@@ -111,6 +113,9 @@ Menus & UI calls them from Save & quit, Resume, New game and Options.
 4. **Versions.** A save or profile from an unknown version is refused with a message,
    never half-loaded.
 5. **Discoveries are recorded once,** survive a new run, and reset empties them.
+6. **Saved mid-ride.** Resumed, you're back on the board at the saved speed and ride on
+   where the run never saved went; with the ride dropped from the save, the board comes
+   down on the sand instead of hanging in the air.
 
 ## Out of scope
 

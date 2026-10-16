@@ -106,12 +106,13 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _physics_process(delta: float) -> void:
-	var input := Input.get_vector("move_left", "move_right", "move_forward", "move_back")
+	var input := Input.get_vector("move_left", "move_right", "move_forward", "move_back") \
+		if Controls.playing() else Vector2.ZERO
 	if flying:
 		mode = "fly"
 		Dev.put("player/mode", mode)
-		var boost := 5.0 if Input.is_action_pressed("sprint") else 1.0
-		var rise := Input.get_axis("fly_down", "fly_up")
+		var boost := 5.0 if Controls.held("sprint") else 1.0
+		var rise := Input.get_axis("fly_down", "fly_up") if Controls.playing() else 0.0
 		global_position += (camera.global_basis * Vector3(input.x, 0.0, input.y) + Vector3.UP * rise) \
 			* _tuning.dev_fly_speed * boost * delta
 		_stop()
@@ -139,10 +140,10 @@ func _physics_process(delta: float) -> void:
 	_since_ground = 0.0 if on_floor else _since_ground + delta
 	if on_floor:
 		_jumped = false
-	var crouch := Input.is_action_pressed("crouch")
+	var crouch := Controls.held("crouch")
 	var pressed := crouch and not _crouch_was
 	_crouch_was = crouch
-	var jump := Input.is_action_pressed("jump")
+	var jump := Controls.held("jump")
 	if _jump_queued or (jump and not _jump_was):
 		_jump_buffer = _tuning.jump_buffer_seconds
 	_jump_queued = false
@@ -170,7 +171,7 @@ func _physics_process(delta: float) -> void:
 			step = _slide(delta, dir, crouch)
 			sink = _ease(sink, 0.0, _tuning.haul_seconds, delta)
 		else:
-			sprinting = dir != Vector2.ZERO and Input.is_action_pressed("sprint") and stamina > 0.0 and not crouch
+			sprinting = dir != Vector2.ZERO and Controls.held("sprint") and stamina > 0.0 and not crouch
 			var pace := _tuning.crouch_speed if crouch else (_tuning.sprint_speed if sprinting else _tuning.walk_speed)
 			if dir != Vector2.ZERO:
 				var ahead := Vector3(dir.x, 0.0, dir.y)
@@ -305,8 +306,8 @@ func _ride(delta: float, input: Vector2) -> void:
 		ride.last_step = Vector3.ZERO
 		return
 	var wish := global_basis * Vector3(input.x, 0.0, input.y)
-	var crouch := Input.is_action_pressed("crouch")
-	var jump := Input.is_action_pressed("jump")
+	var crouch := Controls.held("crouch")
+	var jump := Controls.held("jump")
 	var hop := _jump_queued or (jump and not _jump_was)
 	_jump_queued = false
 	_jump_was = jump
