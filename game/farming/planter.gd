@@ -132,12 +132,12 @@ func _harvest(plant: Plant) -> void:
 	_count(replanted, crop, seed)
 	_count(banked, crop, plant.harvest - seed)
 	_count(stored, crop, plant.harvest - seed)
+	plant.set_growth(0.0)
 	if seed > 0:
-		plant.set_growth(0.0)
+		# Sown again where it stood.
 		_count(seeds, crop, seed - 1)
 	else:
 		# Not ripe now, so it comes out whole, and goes.
-		plant.set_growth(0.0)
 		take(plant.socket).free()
 
 
