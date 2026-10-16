@@ -91,7 +91,13 @@ func _held_rig(downwind: Vector3) -> Dictionary:
 	var to := plug.global_position - eye
 	player.rotation = Vector3(0.0, atan2(-to.x, -to.z), 0.0)
 	player.camera.rotation = Vector3(atan2(to.y, Vector2(to.x, to.z).length()), 0.0, 0.0)
-	check(player.hands.grab(), "you pick up the strong cable's plug")
+	var took := player.hands.grab()
+	if not took:
+		# It fails now and then on CI only; say where the plug was.
+		print("the plug: %.2f m off, %.3f m over the sand, moving %.2f m/s; %d rescued so far" % [
+			plug.global_position.distance_to(eye), plug.global_position.y - world.height_under(plug.global_position),
+			plug.linear_velocity.length(), world.rescued])
+	check(took, "you pick up the strong cable's plug")
 	return {"planter": planter, "cable": cable, "plug": plug}
 
 
