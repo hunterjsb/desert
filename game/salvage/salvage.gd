@@ -188,6 +188,20 @@ func claim(body: Node) -> void:
 	body.reparent(_world.content)
 	if body is Device:
 		_world.power.wake(body)
+	_discovered(body)
+
+
+## Every kind of thing a find held, reported to the profile: the first of
+## each kind is a discovery.
+func _discovered(body: Node) -> void:
+	var profile := get_node_or_null(^"/root/Profile")
+	if profile == null:
+		return
+	if body.has_meta(&"catalog"):
+		profile.discover(str(body.get_meta(&"catalog")))
+	for child in body.get_children():
+		if child is Socket and child.part != null:
+			_discovered(child.part)
 
 
 ## Takes something up out of the sand onto it, loose and yours: a buried
@@ -313,3 +327,39 @@ func _physics_process(delta: float) -> void:
 	Dev.put("salvage/finds", "%d" % count())
 	Dev.put("salvage/exp", "-" if is_nan(exposed) else "%d%% deep %d%%"
 		% [roundi(exposed * 100.0), roundi(Finds.deep_share(exposed, _tuning) * 100.0)])
+
+
+## What a save keeps of the finds, for each chunk remembered: [coord, how
+## hard the weather had been when it came near, the finds taken from it].
+func memories() -> Array:
+	var out := []
+	for coord: Vector2i in _lots:
+		var lot: Lot = _lots[coord]
+		if not is_nan(lot.exposure):
+			out.append([coord, lot.exposure, lot.taken.keys()])
+	return out
+
+
+## A resumed run's finds as they were: a remembered chunk within view of
+## `around` lays its finds out again by its own weather, less what was taken;
+## any other loaded now comes near afresh, at this moment.
+func recall(memories: Array, around: Vector2i) -> void:
+	var reach := _tuning.view_radius
+	var kept := {}
+	for each: Array in memories:
+		var coord: Vector2i = each[0]
+		if maxi(absi(coord.x - around.x), absi(coord.y - around.y)) <= reach:
+			kept[coord] = each
+	for coord: Vector2i in _lots.keys() + kept.keys():
+		var lot: Lot = _lots.get(coord)
+		if lot == null:
+			lot = Lot.new()
+			_lots[coord] = lot
+		_forget(coord, lot)
+		lot.exposure = kept[coord][1] if kept.has(coord) else NAN
+		lot.taken = {}
+		var taken: Array = kept[coord][2] if kept.has(coord) else []
+		for index: int in taken:
+			lot.taken[index] = true
+		if is_instance_valid(lot.chunk) and lot.chunk.has_collision():
+			_queue.append(Piece.new(coord))

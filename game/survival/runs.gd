@@ -41,6 +41,10 @@ func _watch() -> void:
 
 
 func _over() -> void:
+	# Death ends the run, and its save with it.
+	var saves := get_node_or_null(^"/root/Saves")
+	if saves != null:
+		saves.delete()
 	var old := world()
 	var parent := old.get_parent()
 	var at := old.get_index()

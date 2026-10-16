@@ -18,6 +18,8 @@ config/features=PackedStringArray("4.7", "Forward Plus")
 
 Controls="*res://game/core/controls.gd"
 Dev="*res://game/core/dev.gd"
+Saves="*res://game/saves/saves.gd"
+Profile="*res://game/saves/profile.gd"
 
 [physics]
 
