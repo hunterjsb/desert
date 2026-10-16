@@ -179,28 +179,52 @@ Death means a new run (see Runs in the vision).
 - **Death starts a new run.** The world goes with everything in it, and a fresh one on a
   new seed takes its place. You start at its spawn, fed and watered, with the canister
   and the ration in your slots.
-- **The starting kit** (Hunter, 2026-10-16: "start with the shield and solar panel",
-  then five things: water, one ration, a weak shield, a light solar panel and a short
-  rope coil). The kit is data, `game/survival/standard_kit.tres` (a `Kit`: what's carried
-  into the suit's slots and what's set down beside you, by catalog id and how many, how
-  full its batteries start, how long its coil is, and whether it starts cabled). Only
-  this standard kit is balanced; choosing a kit waits. Every run, the first and every
-  one after a death, begins on a clear morning with the first storm due in three to
-  eight minutes, facing where it will come from (Hunter, 2026-10-16: "it spawns me in a
-  storm!"), and starts with it: the canister and the ration in your slots, and on
-  the sand beside you, once the ground there is solid, a **light shield generator** with
-  its battery half charged, switched off, the **light solar panel** cabled into its port,
-  and a **6 m rope coil** (a found one lays 12 m). The light shield is clearly weaker
-  than a found one: a 4 m bubble against 7 m (a third of the room for a camp), and it
-  lets half the wind through, so lines inside still take load. It's built light enough
-  that the light panel keeps it going: it sips 2 W in the clear and draws 20 W holding
-  back a full storm. On the probes' seed, a day of the run's own weather at the spawn
-  (a quarter of it under a storm) ran it from 50.0 to 50.9 Wh, the panel making 3.0 Wh
-  to the shield's 2.1, never lower than 49.8. A clear day gains about 2.5 Wh; a day of
-  full storm loses about 6, which its half battery covers for a week of them. No shield
-  of any kind goes in your slots; you carry one in your hands. A dev scenario that
-  drops its own camp clears the run's kit first. Survival probe 4 checks both runs start
-  with it and runs the light shield for a day.
+- **The starting kit** (Hunter, 2026-10-16, after playing the first one: "start the
+  player with floating crate, shield and hoverboard already mounted ... we should at
+  least add a hook so we can tow it"). The kit is data, `game/survival/standard_kit.tres`
+  (a `Kit`: what's carried into the suit's slots, what's set down beside you and where,
+  what comes assembled, socket by socket, which lines are laid, how full its batteries
+  start and how long its line is). Only this standard kit is balanced; choosing a kit
+  waits. Every run, the first and every one after a death, begins on a clear morning
+  with the sun well up, a third of the way through the day, so the panel makes about
+  half its 30 W from the first minute, and the first storm due in three to eight
+  minutes, facing where it will come from (Hunter, 2026-10-16: "it spawns me in a
+  storm!"), and starts with it: the canister and the ration in your slots, and beside
+  you, once the ground there is solid:
+  - **a floating crate** at your front right: a crate frame with a hover tray, a
+    battery half charged and a hook on its back, floating at the tray's height. The
+    **light shield generator**, switched off, sits on its front top mount and the
+    **light solar panel** on its back one, both on the crate's power. The light panel
+    is half a crate's top, the same footprint as a found panel, so the two sit 5 cm
+    apart and clear of everything else on the crate (survival probe 4 checks it by
+    their bounds).
+  - **moored to a stake** driven upwind of it, by the hook, on the kit's **6 m line**
+    (a found coil lays 12 m). Floating, nothing holds a crate but its lines: loose in
+    the start's 10 to 13 m/s breeze it was gone in seconds. To travel, take up the
+    stake and tie it at your waist, and the crate follows on its line with its bubble
+    (survival probe 8); to camp, drive the stake again.
+  - **a hoverboard** lying at your left, its battery half charged, ready to ride.
+  None of it overlaps you or each other at the start, and neither the crate, the
+  board, the panel nor any shield goes in your slots; you carry a shield in your hands.
+  The light shield is clearly weaker than a found one: a 4 m bubble against 7 m (a third
+  of the room for a camp), and it lets 15% of the wind through where a found one stills
+  it (Hunter, 2026-10-16: blocks most of the wind, so you barely drift inside). It sips
+  2 W in the clear and draws 20 W holding back a full storm. The crate's tray draws
+  about 70 W floating everything on it, more than the 30 W panel can keep up, so the
+  crate floats on what its battery holds, and the shield ranks above the tray: the tray
+  never takes the battery's last quarter (Power). On the probes' seed, over the run's
+  own first day (a storm from 0.33 days in, through the night) the crate floated all
+  day, and at 1.00 days, in the storm, with the battery at 25 Wh,
+  it settled onto the sand; the shield ran on, 23.8 Wh left at 1.25 days, the panel
+  having made 3.3 Wh to the shield's 6.3. That storm sits on the spawn for more than
+  three and a half days, and the shield was still up at 4 days with 7.1 Wh left. Under
+  clear skies the panel brings the battery from a quarter back to 30% in 1.38 days and
+  the crate floats again until it's back at a quarter: a clear day is worth about three
+  minutes of floating. The quarter kept back runs the light shield for 75 minutes of
+  full storm with no sun, almost four days of it. A dev scenario that drops its own
+  camp clears the run's kit first.
+  Survival probe 4 checks both runs start with it and runs the light shield into the
+  second morning.
 - **Food and water from salvage:** no new food was needed. Survival kits, common on
   ruins' floors and sometimes on open sand, hold a sealed canister and a ration three
   times in four, and seeds for a planter; loose rations and seeds lie on ruins' floors.
@@ -236,10 +260,13 @@ Death means a new run (see Runs in the vision).
 6. **The inventory by mouse.** The inventory action frees the mouse and closing it
    captures it again. Clicks move things between your hands and your slots as they
    should, and a plug off any cable never fits.
-7. **Rope goes in as a coil.** The kit's 6 m coil and a found 12 m one each go in a slot,
-   and a kilometre on come out, pay out to the same length and tie onto stakes; paying
-   out or laid, a line stays out. A cable plugged into nothing goes in and comes out
-   whole, a strong one too; plugged in at one end, it stays out.
+7. **Rope goes in as a coil.** A 6 m coil, the kit's length, and a found 12 m one each go
+   in a slot, and a kilometre on come out, pay out to the same length and tie onto
+   stakes; paying out or laid, a line stays out. A cable plugged into nothing goes in
+   and comes out whole, a strong one too; plugged in at one end, it stays out.
+8. **The kit in tow.** In a crosswind you take up the kit's stake, tie it at your waist
+   and walk off: the crate follows on its line, floating all the way, its shield's
+   bubble with it.
 9. **Stakes go in.** A found stake and a loose one, each taken up, go in a slot and come
    out ready to drive; driven, each holds a crate floating on a line in a breeze, the
    found one after a save and a resume too. A driven stake, or one with a line on its
