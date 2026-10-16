@@ -190,6 +190,7 @@ it, take hold of it, and let go.
 | Ring mount | Rope hooks | Rope & tethering |
 | Bottom mount | Hover trays | Bubble shield & camp |
 | Top mount | Solar panels, instruments, lamps, the shield generator | Power and others |
+| Rack | The hoverboard, seated along a crate's side, riding and charging with it (Hunter, 2026-10-16) | Movement |
 | Plant slot (small, large) | Seedlings | Farming |
 
 **As built, what each frame has** (2026-10-16):

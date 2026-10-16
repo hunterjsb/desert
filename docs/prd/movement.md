@@ -71,6 +71,10 @@ even storms that last for days.
 - **It's for scouting and escaping.** Unloaded and charged, it outruns a storm front. It
   runs on its own battery.
 - **It tows nothing.** That keeps it fun, and it keeps it from competing with the camp.
+- **It travels racked** (Hunter, 2026-10-16: "i like a rack"). A crate frame has a rack
+  along its side; the board seats in it the way the shield seats on a top mount, rides
+  wherever the crate goes, and charges from the camp's power, after the shield. Pack up
+  and walk with the camp, and the board comes; take it off the rack to scout.
   When the shield dies deep in a storm, you take what's in your hand and go. Before you
   find a board, a shield failure deep in a storm is fatal, so early runs stay in
   shallow storms and carry spare batteries.
