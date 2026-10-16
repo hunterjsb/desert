@@ -4,7 +4,7 @@ extends Node3D
 ## carry, like a stake. Look at a loose part and take it, or at a fitted one and
 ## it slides out the way it went in. Carry it in front of your eyes and aim at
 ## a free socket of its kind: aimed within reach of where it would sit, it
-## leans in, a ghost shows the spot, and take snaps it home with a clunk. Only
+## leans in, a ghost shows the spot, and take seats it home with a soft click. Only
 ## a part held here ever snaps, and only when you take it home; nothing fits by
 ## being bumped. Take picks up, takes out, puts in and puts down; use works what
 ## you look at or uses what you hold. Finds lying in the sand are taken the same
@@ -32,14 +32,6 @@ const STICKY := 0.7
 ## something, so resting against it doesn't count, m.
 const SKIN := 0.005
 const GHOST := Color(0.75, 0.95, 1.0)
-const CLUNKS: Array[AudioStream] = [preload("res://assets/audio/clunk_a.ogg"),
-	preload("res://assets/audio/clunk_b.ogg")]
-const CLANK_OUT: AudioStream = preload("res://assets/audio/clank_out.ogg")
-const HUM: AudioStreamOggVorbis = preload("res://assets/audio/hum.ogg")
-const CLUNK_DB := -3.0
-const OUT_DB := -12.0
-## The magnetic hum at a full tug; it fades with the tug.
-const HUM_DB := 0.0
 
 var held: RigidBody3D
 var phase := Phase.EMPTY
@@ -107,7 +99,7 @@ var _ghost_look: StandardMaterial3D
 var _readout: Label
 var _sound: AudioStreamPlayer
 var _hum: AudioStreamPlayer
-var _clunks := 0
+var _seated_count := 0
 var _cast := PhysicsShapeQueryParameters3D.new()
 var _inside := PhysicsShapeQueryParameters3D.new()
 
@@ -131,11 +123,13 @@ func _ready() -> void:
 	_ghost_look.albedo_color = GHOST
 	_sound = AudioStreamPlayer.new()
 	_sound.max_polyphony = 2
+	_sound.bus = Sounds.WORLD
 	add_child(_sound)
-	var hum: AudioStreamOggVorbis = HUM
+	var hum: AudioStreamOggVorbis = Sounds.TUG
 	hum.loop = true
 	_hum = AudioStreamPlayer.new()
 	_hum.stream = hum
+	_hum.bus = Sounds.WORLD
 	add_child(_hum)
 	_build_hud()
 	get_tree().physics_frame.connect(_back_to_tick)
@@ -215,12 +209,6 @@ func interact() -> bool:
 	return used or _player.waist.take_from_hands()
 
 
-## A clunk, for something put home by hand.
-func clunk() -> void:
-	_play(CLUNKS[_clunks % CLUNKS.size()], CLUNK_DB)
-	_clunks += 1
-
-
 ## Takes a body straight into your hands from wherever it is, if they're free:
 ## a coil's rest once its first end is on, a line untied from your waist.
 func hold(body: RigidBody3D) -> void:
@@ -241,11 +229,15 @@ func stow() -> RigidBody3D:
 
 ## Let go, moving as you were.
 func drop() -> void:
+	_landing()
 	_release(_player.velocity)
 
 
 ## Throw: let go with a throw along your aim.
 func throw() -> void:
+	if held != null:
+		_play(Sounds.THROW)
+	_landing()
 	_release(_player.velocity - _player.camera.global_basis.z * _tuning.throw_speed)
 
 
@@ -472,6 +464,7 @@ func _pick_up(body: RigidBody3D) -> void:
 		stake.global_position.y = _player.world.height_under(stake.global_position) + Stake.LENGTH * 0.5 + 0.02
 	_grip(body)
 	_arrive_from(body.global_transform)
+	_play(Sounds.SAND_TAKE)
 
 
 ## Its host holds still while a seated device lifts straight off along the
@@ -493,7 +486,7 @@ func _take_off(device: Device) -> void:
 	_t = 0.0
 	phase = Phase.TAKING
 	_rearm = from
-	_play(CLANK_OUT, OUT_DB)
+	_play(Sounds.UNSEAT)
 
 
 ## The device holds still while the part slides straight out along its
@@ -510,7 +503,7 @@ func _take_out(device: Device, from: Socket) -> void:
 	_t = 0.0
 	phase = Phase.TAKING
 	_rearm = from
-	_play(CLANK_OUT, OUT_DB)
+	_play(Sounds.PICK if device is Planter and part.kind == &"food" else Sounds.UNSEAT)
 	taken.emit(part, device, from)
 
 
@@ -667,13 +660,15 @@ func _fit(into: Socket) -> void:
 		var seated := held as Device
 		_let_go()
 		device.mount(seated, into)
-		clunk()
+		_seat_sound()
 		return
 	var part := held as Part
 	_let_go()
 	device.fit(part, into)
-	_play(CLUNKS[_clunks % CLUNKS.size()], CLUNK_DB)
-	_clunks += 1
+	if part.has_meta(&"line"):
+		_play(Sounds.TIE)
+	else:
+		_seat_sound()
 	fitted.emit(part, device, into)
 
 
@@ -883,10 +878,20 @@ func _clear_ghost() -> void:
 	_ghost.visible = false
 
 
-func _play(stream: AudioStream, db: float) -> void:
+func _play(stream: AudioStream) -> void:
 	_sound.stream = stream
-	_sound.volume_db = db
 	_sound.play()
+
+
+func _seat_sound() -> void:
+	_play(Sounds.SEAT[_seated_count % Sounds.SEAT.size()])
+	_seated_count += 1
+
+
+## What you let go of lands softly in the sand, heard where it does.
+func _landing() -> void:
+	if held != null and phase == Phase.HELD:
+		Sounds.on_landing(held, self)
 
 
 ## A dot where you aim and, under it, one short line about what it's on.
@@ -961,7 +966,7 @@ func _show(delta: float) -> void:
 			Vector3(look_point.x, _player.world.height_under(look_point) + Stake.DRIVEN_AT, look_point.z))
 		_ghost_look.albedo_color.a = 0.3
 	if pull > 0.01:
-		_hum.volume_db = HUM_DB + linear_to_db(pull)
+		_hum.volume_db = linear_to_db(pull)
 		if not _hum.playing:
 			_hum.play()
 	elif _hum.playing:

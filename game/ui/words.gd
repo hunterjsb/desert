@@ -3,7 +3,7 @@ extends Control
 ## A menu as a few small words low on the screen, over whatever is behind
 ## them. The highlighted word is bright and the rest dim, never boxed. Menu up
 ## and down move the highlight, confirm triggers it, and left and right change
-## a setting's value. The mouse can pick too.
+## a setting's value, each with a very quiet click. The mouse can pick too.
 
 ## Back never closes it: the main menu is the bottom of the stack.
 var root := false
@@ -65,10 +65,16 @@ func add(text: Variant, act: Callable, step := Callable()) -> Button:
 	var item := {"button": word, "text": text, "act": act, "step": step}
 	_items.append(item)
 	word.pressed.connect(func() -> void:
+		_click(Sounds.MENU_CONFIRM)
 		act.call()
 		refresh())
 	word.mouse_entered.connect(word.grab_focus)
-	word.focus_entered.connect(func() -> void: _was = _items.find(item))
+	word.focus_entered.connect(func() -> void:
+		# Opening or uncovering lands on the word it was on, silently.
+		var at := _items.find(item)
+		if at != _was:
+			_click(Sounds.MENU_MOVE)
+		_was = at)
 	word.focus_exited.connect(_keep_focus, CONNECT_DEFERRED)
 	word.gui_input.connect(func(event: InputEvent) -> void: _on_word_input(item, event))
 	_list.add_child(word)
@@ -140,5 +146,11 @@ func _on_word_input(item: Dictionary, event: InputEvent) -> void:
 	for way in [[&"ui_left", -1], [&"ui_right", 1]]:
 		if event.is_action_pressed(way[0], true):
 			step.call(way[1])
+			_click(Sounds.MENU_MOVE)
 			refresh()
 			accept_event()
+
+
+## From the tree's root, so a click outlives the menu it closes.
+func _click(stream: AudioStream) -> void:
+	Sounds.play(get_tree().root, stream, Sounds.UI)

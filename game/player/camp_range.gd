@@ -7,8 +7,8 @@ extends Node
 ## crossing it loses that device. This watches the edge nearest along your way
 ## and warns you twice before you cross it, timed by your speed: once as you
 ## near it, and a last time with enough left to turn back even flat out on a
-## board. The look is a skeleton's (Movement PRD, open question): a chime and
-## one line of the suit's text at the top of the view.
+## board. The look is a skeleton's (Movement PRD, open question): a soft chime
+## and one line of the suit's text at the top of the view.
 
 signal warned(level: int)
 signal lost(labels: PackedStringArray)
@@ -20,8 +20,6 @@ const LAST := 2
 const REARM := 1.25
 ## A loss is told this long, s.
 const LOST_SECONDS := 5.0
-## The chimes are made at this many samples a second.
-const RATE := 22050
 ## The first in the theme's plain text, the last and a loss as its warning,
 ## in the one accent it keeps for power and danger (Menus & UI).
 const DANGER := &"Warning"
@@ -58,11 +56,11 @@ func _ready() -> void:
 	_line.modulate.a = 0.0
 	layer.add_child(_line)
 	_voice = AudioStreamPlayer.new()
-	_voice.volume_db = -8.0
+	_voice.bus = Sounds.UI
 	add_child(_voice)
-	_chimes[FIRST] = _tones([660.0, 880.0], 0.16)
-	_chimes[LAST] = _tones([990.0, 990.0, 990.0], 0.09)
-	_chimes[0] = _tones([660.0, 440.0], 0.3)
+	_chimes[FIRST] = Sounds.CHIME_FIRST
+	_chimes[LAST] = Sounds.CHIME_LAST
+	_chimes[0] = Sounds.CHIME_LOST
 
 
 ## Your devices lying in the world: not in your hands, at your waist or under you.
@@ -151,20 +149,3 @@ static func _out(at: Vector2, way: Vector2, low: Vector2, high: Vector2) -> floa
 		elif way[axis] < -1e-6:
 			most = minf(most, (low[axis] - at[axis]) / way[axis])
 	return maxf(most, 0.0)
-
-
-## A chime: these notes, each this long, as a soft-edged sine.
-static func _tones(notes: Array, each: float) -> AudioStreamWAV:
-	var count := int(each * RATE)
-	var data := PackedByteArray()
-	data.resize(notes.size() * count * 2)
-	for k in notes.size():
-		for i in count:
-			var s := float(i) / RATE
-			var edge := minf(1.0, minf(s / 0.01, (each - s) / 0.04))
-			data.encode_s16((k * count + i) * 2, int(sin(TAU * notes[k] * s) * edge * 0.5 * 32767.0))
-	var wav := AudioStreamWAV.new()
-	wav.format = AudioStreamWAV.FORMAT_16_BITS
-	wav.mix_rate = RATE
-	wav.data = data
-	return wav
