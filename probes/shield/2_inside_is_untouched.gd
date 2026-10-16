@@ -21,13 +21,21 @@ func run() -> void:
 	var felt := 0.0
 	var made := 0.0
 	var dropped := 0
+	# The first moment anything felt the weather, to tell a flake's cause.
+	var first := ""
 	# Each second of physics is ten of world time: weather, wear and power.
 	world.time_warp = 10.0
 	for second in roundi(MINUTES * 60.0 / world.time_warp):
 		await fast_forward(1.0)
 		for device in camp + [generator]:
-			felt = maxf(felt, world.weather.felt_wind(device.global_position).length()
-				+ world.weather.felt_storm(device.global_position))
+			var here := world.weather.felt_wind(device.global_position).length() \
+				+ world.weather.felt_storm(device.global_position)
+			if here > 0.0 and first.is_empty():
+				first = "%s at %d s: %.2f m from the shield, moving %.2f m/s; shield %s, radius %.2f, moved %.2f m" % [
+					device.label, second * roundi(world.time_warp), device.global_position.distance_to(generator.global_position),
+					device.linear_velocity.length(), "up" if generator.running() else "down", generator.shelter.radius,
+					generator.global_position.distance_to(start[generator])]
+			felt = maxf(felt, here)
 		made = maxf(made, turbine.production_w())
 		dropped += int(not generator.running())
 	world.time_warp = 0.0
@@ -40,6 +48,8 @@ func run() -> void:
 		drift = maxf(drift, Vector2(moved.x, moved.z).length())
 	print("after %.0f min: felt %.3f, drift %.3f m, turbine %.2f W, shield %.1f Wh left"
 		% [world.time / 60.0, felt, drift, made, generator.battery().charge_wh])
+	if not first.is_empty():
+		print("first felt: ", first)
 	check(world.weather.field_storm(middle) == 1.0 and world.weather.field_wind(middle).length() >= WIND - 0.01,
 		"outside is the worst storm, in a gale")
 	check(dropped == 0, "the shield held the whole time")

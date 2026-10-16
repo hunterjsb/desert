@@ -112,6 +112,8 @@ func _unhandled_input(event: InputEvent) -> void:
 func show_main_menu(note := "") -> void:
 	close_all()
 	Dev.show_hint(false)
+	if note == "" and main.save_refused() != "":
+		note = "Your saved run can't be resumed: " + main.save_refused()
 	var menu := Words.new(note, &"Shade")
 	menu.root = true
 	if main.has_save():

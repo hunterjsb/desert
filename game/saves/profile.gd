@@ -1,0 +1,92 @@
+extends Node
+## You across runs, at /root/Profile: one local file, apart from the run
+## save, with no accounts. It only ever grows, by unlock() and by
+## discovering a kind of thing for the first time, and only reset() empties
+## it. Every unlock goes through unlock(), so achievements or cloud sync
+## attach there and nowhere else. A profile from another version is refused
+## with a reason and left untouched on disk.
+
+signal unlocked(id: String)
+signal discovered(kind: String)
+
+const KIND := "sandgame profile"
+const VERSION := 1
+
+## Where the profile lives; probes point it somewhere of their own.
+var dir := "user://":
+	set(to):
+		dir = to
+		_loaded = false
+## Why the profile on disk can't be read, or "". While it's refused nothing
+## is written over it, short of a reset.
+var refused := ""
+
+## Unix time each was first unlocked, and each kind first found.
+var _unlocks := {}
+var _found := {}
+var _loaded := false
+
+
+func path() -> String:
+	return dir.path_join("profile.save")
+
+
+## Says whether it's new.
+func unlock(id: String) -> bool:
+	_load()
+	if _unlocks.has(id):
+		return false
+	_unlocks[id] = Time.get_unix_time_from_system()
+	_write()
+	unlocked.emit(id)
+	return true
+
+
+## A kind of thing found: recorded the first time only. Says whether it's new.
+func discover(kind: String) -> bool:
+	_load()
+	if _found.has(kind):
+		return false
+	_found[kind] = Time.get_unix_time_from_system()
+	_write()
+	discovered.emit(kind)
+	return true
+
+
+## Unlocked, or a kind found.
+func has(id: String) -> bool:
+	_load()
+	return _unlocks.has(id) or _found.has(id)
+
+
+## Every kind found, first found first.
+func discoveries() -> Array:
+	_load()
+	var kinds := _found.keys()
+	kinds.sort_custom(func(a: String, b: String) -> bool: return _found[a] < _found[b])
+	return kinds
+
+
+## Empties it, over a refused one too: Options asks first.
+func reset() -> void:
+	_unlocks.clear()
+	_found.clear()
+	_loaded = true
+	refused = ""
+	_write()
+
+
+func _load() -> void:
+	if _loaded:
+		return
+	_loaded = true
+	var got := SaveFile.read(path(), KIND, VERSION)
+	refused = got.refused
+	var data: Dictionary = got.data
+	_unlocks = data.get("unlocks", {})
+	_found = data.get("found", {})
+
+
+func _write() -> void:
+	if refused == "":
+		SaveFile.write(path(), KIND, VERSION, {"unlocks": _unlocks, "found": _found})

@@ -1,9 +1,9 @@
 extends MenuProbe
-## Menus & UI probe 3: the menu's default. With no save, Resume is absent, New
-## game is highlighted, and confirm starts a run. Save & quit from that run
-## makes a save, and back on the menu Resume is there and highlighted; confirm
-## resumes it: a world built on the saved run's seed, put back once the sand
-## round you has settled. The saves here are a stand-in.
+## Menus & UI probe 3: the menu's default, end to end. With no save, Resume is
+## absent, New game is highlighted, and confirm starts a run. Save & quit from
+## that run, somewhere out on the sand, and back on the menu Resume is there
+## and highlighted; confirm resumes it, putting you back where you were, on
+## the saved run's seed and clock.
 
 
 func run() -> void:
@@ -16,21 +16,33 @@ func run() -> void:
 	check(main.in_run() and main.view == null and not main.ui.is_open() and not Controls.mouse_free,
 		"confirm starts a run, the menu's world gone and the mouse captured")
 
-	var saves := await fake_saves(false)
-	var played := main.world()
+	# The ground takes as long to build as the machine takes: out from the
+	# spawn at time zero, so where you end up never depends on it.
+	world.respawn(world.spawn.x, world.spawn.y, 0.0, 0.0)
+	teleport(world.spawn.x + 6.0, world.spawn.y - 9.0)
+	await physics_frames(30)
 	press(&"ui_cancel")
 	check(main.ui.top().words() == PackedStringArray(["OPTIONS", "SAVE & QUIT"]), "the system menu holds Options and Save & quit")
 	press(&"ui_down")
+	var stood := Vector2(world.player_world_x(), world.player_world_z())
+	var clock := world.time
+	var played_on := world.run_seed
 	press(&"ui_accept")
 	await faded_in()
 	menu = main.ui.top()
-	check(saves.saved == played and not main.in_run() and menu != null and menu.root,
+	check(saves().has_run() and not main.in_run() and menu != null and menu.root,
 		"Save & quit saves the run and goes back to the main menu")
 	check(menu.words() == PackedStringArray(["RESUME", "NEW GAME", "OPTIONS", "QUIT"]) and menu.highlighted() == 0,
 		"with a save, Resume is there and highlighted (%s)" % ", ".join(menu.words()))
+
+	var back := {}
+	saves().restored.connect(func(at: World) -> void:
+		back.merge({"at": Vector2(at.player_world_x(), at.player_world_z()), "time": at.time, "seed": at.run_seed}),
+		CONNECT_ONE_SHOT)
 	press(&"ui_accept")
 	await faded_in()
-	check(main.in_run() and saves.restored == main.world() and main.world().run_seed == FakeSaves.SEED,
-		"confirm resumes it, on the saved run's seed")
-	check(saves.settled_then and saves.deleted == 0, "put back on settled sand, and never deleted")
-	saves.free()
+	print("saved at %.2f, %.2f, %.2f s; back at %.2f, %.2f, %.2f s" % [stood.x, stood.y, clock,
+		back.get("at", Vector2.INF).x, back.get("at", Vector2.INF).y, back.get("time", INF)])
+	check(main.in_run() and back.get("seed") == played_on, "confirm resumes it, on the saved run's seed")
+	check(back.get("at", Vector2.INF).distance_to(stood) < 0.1 and absf(back.get("time", INF) - clock) < 0.1,
+		"you're back where you were, when you were")

@@ -26,9 +26,11 @@ picking by hand, the harvester mod with its replant split, food dropped onto you
 built too. On 2026-10-16 a normal run became playable end to end: rope, cables, seeds,
 survival kits and the harvester are found, every run starts with its kit (data: water, a
 ration, a light shield, a light solar panel and a short coil), and a shield seats on a
-crate, which has more sockets. The menus were built the same day, ahead of Stage 12: the
+crate, which has more sockets. The same day the run save and the profile were built
+(Profile & saves): Save & quit and Resume, a minute after resuming matching one never
+saved, and discoveries recorded across runs. So were the menus, ahead of Stage 12: the
 main menu over a live desert, the system menu, options and one theme in Geist (Menus &
-UI 1–5), with Resume waiting on the saves.
+UI 1–5).
 
 ## The loop we're building toward
 
@@ -52,7 +54,10 @@ PRD passes.
   Looks come after the loop works. The art direction is settled alongside the build
   (Hunter's call, 2026-10-16): a look-test of candidate styles, so real assets start
   from decisions already made, while everything in the game stays grey. He picked B,
-  chunky worn industrial, for now ([art direction](art-direction.md)).
+  chunky worn industrial, for now ([art direction](art-direction.md)). One step further,
+  left to Claude by Hunter the same day: a paint pass puts B's palette and its UV-less wear
+  shader on today's shapes, so playtests look like the game. It makes no models, so
+  nothing is lost when shapes change.
 - **Tuning lives in one file.** Chunk size, storm speed, shield life and every other
   number sits in one tuning file, so tuning never means editing code.
 - **Scenarios for every playtest.** A dev menu drops you into a starting condition, like a storm

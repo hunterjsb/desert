@@ -64,6 +64,12 @@ func has_save() -> bool:
 	return store != null and store.has_run()
 
 
+## Why a saved run on disk can't be resumed, or "".
+func save_refused() -> String:
+	var store := saves()
+	return "" if store == null or store.has_run() else str(store.get(&"refused"))
+
+
 ## A fresh run on a fresh seed; the saved one, if any, is gone.
 func new_game() -> void:
 	var store := saves()
@@ -109,7 +115,8 @@ func _quit_to_menu() -> void:
 
 ## Fades to black, swaps the menu's world for the run, and fades back in once
 ## the sand round you is solid. A resumed run is put back first, on settled
-## ground, and the sand where it puts you settles too.
+## ground, everything of yours back before the screen is; a refused one goes
+## back to the menu saying why.
 func _into(next: Node, resuming: bool) -> void:
 	await ui.fade(true)
 	ui.close_all()
@@ -117,12 +124,15 @@ func _into(next: Node, resuming: bool) -> void:
 	_begin(next)
 	await _settled()
 	if resuming:
-		if not saves().restore(world()):
+		var store := saves()
+		if not store.restore(world()):
 			_end_run()
 			_show_view()
-			ui.show_main_menu("Couldn't resume that run")
+			ui.show_main_menu("Couldn't resume: %s" % store.get(&"refused"))
 			await ui.fade(false)
 			return
+		if store.get(&"restoring"):
+			await store.restored
 		await _settled()
 	Dev.show_hint(true)
 	Controls.free_mouse(false)

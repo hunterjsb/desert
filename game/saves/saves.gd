@@ -1,0 +1,102 @@
+extends Node
+## The run save, at /root/Saves. One at a time: Save & quit suspends the run
+## into it, Resume puts it back on a world built on its seed, and death
+## deletes it, since permadeath is the intended mode. It holds only what you
+## changed (Snapshot). A save from another version is refused with a reason,
+## never half-read.
+
+## Everything resumed and running again.
+signal restored(world: World)
+
+const KIND := "sandgame run"
+const VERSION := 1
+
+## Where the save lives; probes point it somewhere of their own.
+var dir := "user://"
+## Why the save on disk can't be resumed, or "".
+var refused := ""
+## A resume is waiting for the ground under the camp.
+var restoring := false
+
+
+func path() -> String:
+	return dir.path_join("run.save")
+
+
+## A save that this build can resume.
+func has_run() -> bool:
+	return not _read().is_empty()
+
+
+func run_seed() -> int:
+	return _read().get("seed", 0)
+
+
+## Suspends the run: safe at any moment, mid-storm included, and it changes
+## nothing in the world. A dead run isn't saved.
+func save(world: World) -> bool:
+	if world == null or world.player.vitals.dead:
+		return false
+	return SaveFile.write(path(), KIND, VERSION, Snapshot.take(world))
+
+
+## Puts the saved run back on a world built on run_seed() that has settled.
+## You, the clock and the finds' memory are back at once; your things follow
+## as soon as the ground under them is solid, with the clock held until then,
+## and `restored` says when. False, with `refused` saying why, if it can't.
+func restore(world: World) -> bool:
+	var data := _read()
+	if data.is_empty():
+		return false
+	if data.seed != world.run_seed:
+		refused = "the save is for seed %d, the world is on %d" % [data.seed, world.run_seed]
+	else:
+		refused = Snapshot.problem(data)
+	if refused != "":
+		push_warning("refused: " + refused)
+		return false
+	var snapshot := Snapshot.new(world)
+	var places := snapshot.begin(data)
+	if _ready_at(world, places):
+		snapshot.finish(data)
+		restored.emit.call_deferred(world)
+	else:
+		_finish_later(world, snapshot, data, places)
+	return true
+
+
+func delete() -> void:
+	SaveFile.remove(path())
+	refused = ""
+
+
+func _read() -> Dictionary:
+	var got := SaveFile.read(path(), KIND, VERSION)
+	refused = got.refused
+	return got.data
+
+
+## The ground is solid round you and loaded under everything of yours.
+func _ready_at(world: World, places: Array[Vector2]) -> bool:
+	if not world.terrain.is_settled_around(places[0].x, places[0].y):
+		return false
+	return places.all(func(p: Vector2) -> bool: return world.terrain.is_loaded_at(p.x, p.y))
+
+
+## Holds the clock and you still until the ground is there, then puts
+## everything back in the gap between two ticks.
+func _finish_later(world: World, snapshot: Snapshot, data: Dictionary, places: Array[Vector2]) -> void:
+	restoring = true
+	var warp := world.time_warp
+	var moving := world.player.is_physics_processing()
+	world.time_warp = 0.0
+	world.player.set_physics_process(false)
+	while is_instance_valid(world) and not _ready_at(world, places):
+		await get_tree().physics_frame
+	restoring = false
+	if not is_instance_valid(world):
+		return
+	snapshot.finish(data)
+	world.time_warp = warp
+	world.player.set_physics_process(moving)
+	restored.emit(world)

@@ -11,7 +11,8 @@
 #   scripts/probe.sh probes/a         every probe in a folder
 #   scripts/probe.sh selftest         proves the runner itself can fail
 #
-# GODOT picks the binary (default: godot on PATH). PROBE_TIMEOUT is in seconds.
+# GODOT picks the binary (default: godot on PATH). PROBE_TIMEOUT is in seconds;
+# a probe whose header says "## Time limit: N s" gets N instead.
 # PROBE_EXCEPT lists folders to leave out of a full run, so CI can split the
 # suite into parallel jobs and still catch every folder nobody listed.
 # PROBE_JOBS probes run at once (default one per physical core, at least 4),
@@ -40,8 +41,9 @@ verdict=""
 output=""
 took=0
 run_probe() {
-	local started=$SECONDS code
-	output=$(timeout --kill-after=5 "$limit" "$godot" --headless --path . \
+	local started=$SECONDS code own
+	own=$(sed -n 's/^## Time limit: \([0-9]\+\) s.*/\1/p' "$1" 2>/dev/null | head -n 1)
+	output=$(timeout --kill-after=5 "${own:-$limit}" "$godot" --headless --path . \
 		res://probes/lib/host.tscn -- "res://$1" 2>&1)
 	code=$?
 	if grep -qE 'SCRIPT ERROR|Parse Error|Failed to load script' <<<"$output"; then

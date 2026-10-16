@@ -2,43 +2,11 @@ class_name MenuProbe
 extends WorldProbe
 ## For probes of the menus: the game as it runs, opened on the main menu or
 ## straight into a run, driven by its actions as a player would press them.
-## Saves, where a probe wants them, are a stand-in, never the real ones.
+## Its saves and profile are the real ones, kept in the probe's own folder.
 
 const MAIN := preload("res://game/main.tscn")
 
 var main: Main
-
-
-## A stand-in for the saves: one run, kept in memory, every call recorded.
-class FakeSaves:
-	extends Node
-	const SEED := 4321
-	var has := false
-	var saved: World
-	var restored: World
-	var deleted := 0
-	## Whether the sand round you had settled when the run was put back.
-	var settled_then := false
-
-	func has_run() -> bool:
-		return has
-
-	func save(world: World) -> bool:
-		saved = world
-		has = true
-		return true
-
-	func run_seed() -> int:
-		return SEED
-
-	func restore(world: World) -> bool:
-		restored = world
-		settled_then = world.terrain.is_settled_around(world.player_world_x(), world.player_world_z())
-		return true
-
-	func delete() -> void:
-		deleted += 1
-		has = false
 
 
 ## The game on a fixed seed, without finds: on its main menu, or in a run.
@@ -54,14 +22,9 @@ func open_main(on_menu := true) -> Main:
 	return main
 
 
-## Beside the game's autoloads, where the real one will be.
-func fake_saves(has: bool) -> FakeSaves:
-	var saves := FakeSaves.new()
-	saves.name = "Saves"
-	saves.has = has
-	get_tree().root.add_child.call_deferred(saves)
-	await get_tree().process_frame
-	return saves
+## The game's saves, in the probe's own folder.
+func saves() -> Node:
+	return get_node(^"/root/Saves")
 
 
 ## The first key or button bound to an action, pressed and let go.

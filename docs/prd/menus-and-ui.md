@@ -94,11 +94,15 @@ safe at any moment, mid-storm included (Profile & saves).
   a profile.
 - **Saves and the profile** are reached only through `/root/Saves` and `/root/Profile`
   (Profile & saves), and a missing one means there are none: no Resume, and Save & quit
-  becomes Quit to menu. A save that fails keeps you in the run and asks.
+  becomes Quit to menu. Resume builds the world on the save's seed, puts the run back
+  once the sand has settled, and comes back from black only when everything of yours is
+  back. A save that can't be resumed says why on the main menu, and a save that fails
+  keeps you in the run and asks.
 - The dev scenarios (`-- --scenario=<key>`) still start straight into a run.
 - `look/menus` shoots the main menu and the system menu, to judge by eye.
-- Probes 1–5 pass, each proven against a broken build. Probes 3 and 4 use a stand-in
-  for the saves, never the real ones.
+- Probes 1–5 pass, each proven against a broken build. Probes 3 and 4 use the real
+  saves, kept in each probe's own folder; probe 3 is the whole trip: New game, Save &
+  quit out on the sand, Resume, and you're back where you were.
 
 ## Full version
 
