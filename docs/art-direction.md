@@ -162,6 +162,16 @@ as they were. The ruin is poured concrete, with formwork seams, tie holes, a fad
 a stencilled number by each corner. Maker's marks came next (below). To shoot the camp,
 finds and ruin before and after: `look/paint`.
 
+**Flicker,** fixed after Hunter's first play (2026-10-16). Pieces of one look that shared a
+face's plane fought over its pixels as the camera moved. These were the crate's corner caps
+against its posts and rails, the condenser's lid against its posts, the planter's rim against
+its tub, the light panel's base against its rails, the hoverboard's nose band inside its deck,
+and a socket tell's tab against its plate. Each now stands a few millimetres proud or inside.
+The ruin's formwork seams, tie holes, band and stencils, and the paint's chips, now soften by a
+pixel's footprint, and the seams fade out by about 30 m, as the sand's ripples do. To shoot the
+runs that show it, use `look/marks` with `--motion`. What still crawls is the edges of thin
+pieces, such as rope and louvres: the project draws without antialiasing.
+
 ## Maker's marks
 
 *2026-10-16. Loose, not canon. The names are the lore's working names, and every design is a

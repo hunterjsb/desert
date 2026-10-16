@@ -104,7 +104,9 @@ void fragment() {
 	float windward = clamp(dot(wn, -normalize(wind_dir)), 0.0, 1.0);
 	float edge = 1.0 - smoothstep(0.0, chip_width * (0.4 + 1.2 * coarse), edge_d);
 	float worn = (edge * (0.55 + 0.9 * fine) + corner * 0.4 + windward * 0.35 * fine) * amount;
-	float chip = smoothstep(0.5, 0.56, worn);
+	// Softened by a pixel's footprint, so chips finer than one don't sparkle.
+	float aa = fwidth(worn);
+	float chip = smoothstep(0.5 - aa, 0.56 + aa, worn);
 	float old = smoothstep(0.62, 0.8, worn + 0.25 * grain) * smoothstep(0.35, 0.65, coarse);
 	// Scoured: pale, flat and fine-pitted where the sand strikes.
 	float scour = windward * amount * (0.55 + 0.45 * grain);

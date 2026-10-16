@@ -3,8 +3,11 @@ extends "res://look/style/style.gd"
 ## camp with its mark toward the camera, crates of each era side by side, and
 ## the ruin's wall by its corner; each shot close up and from 5 m, so a sheet
 ## sets the game before marks beside after.
-##   godot --path . --disable-vsync res://look/marks/marks.tscn -- --look grey --capture <dir>
-## look/marks/shoot.sh shoots it and builds the sheets.
+##   godot --path . --disable-vsync res://look/marks/marks.tscn -- --look grey --capture <dir> [--motion]
+## look/marks/shoot.sh shoots it and builds the sheets. --motion shoots
+## instead runs of frames for spotting flicker: the camera creeping past the
+## camp and the ruin's wall a couple of millimetres a frame, and then still
+## with the clock running.
 
 ## The row, camp frame: catalog id, layer ("" yours, new), soundness, x, how
 ## it's turned to show its mark, and how deep it's buried.
@@ -72,6 +75,50 @@ func _shots() -> Array:
 		var eye: Vector2 = mark + out_n * far[1]
 		out.append([far[0], "noon", Vector3(eye.x, far[2], eye.y), Vector3(mark.x, 0.65, mark.y)])
 	return out
+
+
+## Flicker runs: name, moment, camera and target in the camp's frame, and its
+## creep each frame, m.
+func _runs() -> Array:
+	var mark := _camp(ruin.to_world(Vector2(Ruin.HALF.x, -Ruin.HALF.y + 2.45)))
+	var out_n := _camp(ruin.to_world(Vector2(Ruin.HALF.x + 1.0, -Ruin.HALF.y + 2.45))) - mark
+	var along := Vector3(out_n.y, 0.0, -out_n.x)
+	var wall := Vector3(mark.x, 1.0, mark.y)
+	return [
+		["camp", "midmorning", Vector3(1.6, 1.7, 8.0), Vector3(0.0, 0.5, 0.0), Vector3(0.002, 0.0, 0.0)],
+		["row", "midmorning", Vector3(0.3, 1.2, ROW_Z + 2.2), Vector3(0.3, 0.3, ROW_Z), Vector3(0.002, 0.0, 0.0)],
+		["wall8", "noon", wall + Vector3(out_n.x * 8.0, 0.7, out_n.y * 8.0), wall, along * 0.002],
+		["wall15", "noon", wall + Vector3(out_n.x * 15.0 + along.x * 4.0, 0.7, out_n.y * 15.0 + along.z * 4.0), wall,
+			along * 0.01],
+		["clock", "midmorning", Vector3(1.6, 1.7, 8.0), Vector3(0.0, 0.5, 0.0), Vector3.ZERO],
+	]
+
+
+func _capture(out_dir: String, only: PackedStringArray) -> void:
+	if not OS.get_cmdline_user_args().has("--motion"):
+		await super(out_dir, only)
+		return
+	DirAccess.make_dir_recursive_absolute(out_dir)
+	for run: Array in _runs():
+		world.time = _run_time(MOMENTS[run[1]])
+		world.time_warp = 1.0 if run[0] == "clock" else 0.0
+		for i in 6:
+			var eye := _engine(run[2] + run[4] * i)
+			world.player.global_position = eye - _eye
+			if i == 0:
+				await _ground()
+				for k in 20:
+					await get_tree().physics_frame
+				eye = _engine(run[2])
+				world.player.global_position = eye - _eye
+			var to := _engine(run[3] + run[4] * i) - eye
+			world.player.rotation.y = atan2(-to.x, -to.z)
+			world.player.camera.rotation.x = atan2(to.y, Vector2(to.x, to.z).length())
+			await get_tree().process_frame
+			await get_tree().process_frame
+			get_viewport().get_texture().get_image().save_png(out_dir.path_join("%s_%d.png" % [run[0], i]))
+	print("style: done")
+	get_tree().quit()
 
 
 ## A world place, x and z, in the camp's frame.
