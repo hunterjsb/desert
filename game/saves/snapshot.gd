@@ -247,7 +247,7 @@ func _take() -> Dictionary:
 				rec.w = hands._source_was.spin
 	data.things = things
 	data.order = order
-	data.slots = player.suit.slots.map(func(p: Part) -> Variant: return _body(p, false) if p != null else null)
+	data.slots = player.suit.slots.map(func(p: Part) -> Variant: return _body(p, false) if _known(p) else null)
 	var strands := ropes.strands.filter(func(s: RopeStrand) -> bool: return is_instance_valid(s))
 	data.lines = lines.map(func(line: Line) -> Dictionary: return {"state": line.state, "full": line.full,
 		"first": line._first, "coil": _ref(line.coil) if is_instance_valid(line.coil) else null,
@@ -320,7 +320,7 @@ func _body(body: RigidBody3D, loose: bool) -> Dictionary:
 ## What sits in a socket: a part, and whatever sits in the sockets it added
 ## (a line's end on a hook's ring); or a small device seated there.
 func _socket_out(socket: Socket) -> Dictionary:
-	if socket.part != null:
+	if _known(socket.part):
 		var out := _body(socket.part, false)
 		var added := socket.fitted.filter(func(n: Node) -> bool: return n is Socket)
 		var inner := []
