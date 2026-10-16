@@ -73,6 +73,9 @@ var _layers := Vector2i.ZERO
 var _freeze_mode := RigidBody3D.FREEZE_MODE_STATIC
 ## How the held part is turned relative to your heading.
 var _carry := Basis.IDENTITY
+## Where the held part is as the simulation knows it: placed by the tick
+## alone, so its lines pull the same at any frame rate.
+var _ticked := Transform3D.IDENTITY
 ## Where the tug leans the part, swung smoothly between sockets.
 var _lean := Transform3D.IDENTITY
 ## Progress through sliding out or arriving, 0 to 1; where arriving began, and
@@ -130,6 +133,7 @@ func _ready() -> void:
 	_hum.stream = hum
 	add_child(_hum)
 	_build_hud()
+	get_tree().physics_frame.connect(_back_to_tick)
 
 
 ## Take: take what you're looking at, or, holding something, fit it if a socket
@@ -302,16 +306,25 @@ func _physics_process(delta: float) -> void:
 			_arrive(delta)
 		Phase.HELD:
 			_tug(delta)
-			held.global_transform = _within_reach(_pose())
+			held.global_transform = _within_reach(_pose(false))
+	if phase == Phase.HELD:
+		_ticked = held.global_transform
 	grasp.step(delta)
 	_unblock_released()
 	_show(delta)
 
 
-## Frame by frame too, so a held part never trails your view as you turn.
+## Drawn frame by frame too, so a held part never trails your view as you
+## turn; the next tick puts it back where the last one left it.
 func _process(_delta: float) -> void:
 	if phase == Phase.HELD and is_instance_valid(held):
-		held.global_transform = _within_reach(_pose())
+		held.global_transform = _within_reach(_pose(true))
+
+
+## Before anything reads it this tick.
+func _back_to_tick() -> void:
+	if phase == Phase.HELD and is_instance_valid(held):
+		held.global_transform = _ticked
 
 
 func _look() -> void:
@@ -488,7 +501,7 @@ func _arrive_from(pose: Transform3D) -> void:
 ## blocked too long it skips to your hand, which is always clear.
 func _arrive(delta: float) -> void:
 	var next := minf(_t + delta / ARRIVE, 1.0)
-	var pose := _within_reach(_blend(_from, _hand(), smoothstep(0.0, 1.0, next)))
+	var pose := _within_reach(_blend(_from, _hand(false), smoothstep(0.0, 1.0, next)))
 	if _clear(pose):
 		_t = next
 		_stuck = 0.0
@@ -497,7 +510,7 @@ func _arrive(delta: float) -> void:
 		_stuck += delta
 		if _stuck > STUCK:
 			_t = 1.0
-			held.global_transform = _within_reach(_hand())
+			held.global_transform = _within_reach(_hand(false))
 	if _t >= 1.0:
 		phase = Phase.HELD
 		_release_source()
@@ -668,16 +681,18 @@ func _unblock(part: RigidBody3D) -> void:
 
 
 ## Where the held part sits: in your hand, leaning toward a socket as hard as
-## the tug pulls.
-func _pose() -> Transform3D:
-	var hand := _hand()
+## the tug pulls; as drawn this frame, or as the tick knows it.
+func _pose(drawn: bool) -> Transform3D:
+	var hand := _hand(drawn)
 	return hand if pull <= 0.0 else _blend(hand, _lean, smoothstep(0.0, 1.0, pull))
 
 
 ## hold_distance in front of your eyes, turned with you, and stopped short of
 ## anything in the way, so it never ends up inside the sand or a device.
-func _hand() -> Transform3D:
+func _hand(drawn: bool) -> Transform3D:
 	var eye := _player.camera.global_transform
+	if not drawn:
+		eye.origin = _player.global_transform * _player.feel.steady_eye()
 	var basis := Basis(Vector3.UP, _player.global_rotation.y) * _carry
 	var ahead := -eye.basis.z.normalized() * _tuning.hold_distance
 	var start := Transform3D(basis, eye.origin - basis * _middle)
@@ -775,6 +790,7 @@ func _on_origin_shifted(by: Vector2i) -> void:
 	var offset := Vector3(by.x, 0.0, by.y) * _tuning.chunk_size
 	_from.origin -= offset
 	_lean.origin -= offset
+	_ticked.origin -= offset
 
 
 func _build_ghost(part: RigidBody3D) -> void:

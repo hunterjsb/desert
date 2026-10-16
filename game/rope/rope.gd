@@ -12,6 +12,10 @@ extends RefCounted
 ## that hitting it never kicks back.
 const STOP_HERTZ := 20.0
 const STOP_DAMPING := 1.0
+## Fastest the stop pulls the ends back together, m/s, however far past it they
+## are: a loose end snagged while the other end drives on is dragged free,
+## never slung. It still stops them parting any further at once.
+const STOP_SPEED := 3.0
 ## Drooping this far short of its length, as a share of it, a line pulls
 ## nothing: its weight lies on the sand or hangs off its ends.
 const SLACK_SHARE := 0.1
@@ -171,7 +175,7 @@ func solve() -> void:
 		# Short of the stop: only pull if this tick would carry it past.
 		stop = maxf(0.0, stop_impulse + _mass * (rate + _beyond / _h))
 	else:
-		stop = maxf(0.0, stop_impulse + _mass * _stop.y * (rate + _stop.x * _beyond)
+		stop = maxf(0.0, stop_impulse + _mass * _stop.y * (rate + minf(_stop.x * _beyond, STOP_SPEED))
 			- _stop.z * stop_impulse)
 	change += stop - stop_impulse
 	spring_impulse = spring

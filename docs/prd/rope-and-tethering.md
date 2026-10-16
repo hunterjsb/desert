@@ -161,6 +161,12 @@ The hoverboard tows nothing.
   look. Take on a driven stake pulls it into your hand with its lines still on its ring,
   pulling on you now, so one gesture unstakes them and the next stakes them again.
 - **A snapped line** parts into two lines, each with a loose end where it broke.
+- **The hard stop** stops a line stretching any further at once, but pulls its ends
+  back together no faster than 3 m/s, so a loose end snagged on a dune while the
+  other end drives on is dragged free, never flung.
+- **A line in your hand** pulls from where the last physics tick put your hand, at
+  your eyes' steady height. Drawn frames show what you hold following your view and
+  your head's bob and sway between ticks, and the line never feels them.
 
 ## Full version
 
@@ -189,7 +195,8 @@ Reliability is the whole point here, so this list is long. All run without a win
 4. **Lines share load.** Two identical parallel lines each carry about half. A load
    that snaps one line holds on two.
 5. **Snaps cleanly.** Raise the wind until a line passes its breaking strength. It
-   snaps, the object drifts downwind, and nothing spikes.
+   snaps, the object drifts downwind, and nothing spikes. A loose end that snags as
+   it's dragged off is dragged free, never flung.
 6. **What you see is what holds.** Drawn rope ends sit on the attachment points every
    frame, the drawn length matches the constraint, and the drawn rope hangs as its
    weight and pull say: straight only under real load.

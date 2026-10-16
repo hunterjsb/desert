@@ -70,6 +70,17 @@ func _ready() -> void:
 	_player.jumped.connect(_on_jumped)
 
 
+## Your eyes in your own frame as the ticks know them: lowered by a crouch or
+## a haul, never swayed. What you hold is placed from here, so the sway drawn
+## each frame never moves what its lines pull.
+func steady_eye() -> Vector3:
+	return _rest + Vector3.DOWN * _eye_drop()
+
+
+func _eye_drop() -> float:
+	return _tuning.crouch_drop * _player.low + _tuning.haul_sink * _player.sink
+
+
 func _process(delta: float) -> void:
 	var camera := _player.camera
 	if _player.flying or _player.world == null:
@@ -117,7 +128,7 @@ func _process(delta: float) -> void:
 	_lean = _lean.lerp(upwind * t.wind_lean * strength, 1.0 - exp(-delta / LEAN_SECONDS))
 	_roll = _ease(_roll, -deg_to_rad(t.wind_lean_degrees) * upwind.x * strength, LEAN_SECONDS, delta)
 
-	_drop = _ease(_drop, t.crouch_drop * _player.low + t.haul_sink * _player.sink, EYE_SECONDS, delta)
+	_drop = _ease(_drop, _eye_drop(), EYE_SECONDS, delta)
 	var widen := 0.0
 	if speed > t.walk_speed:
 		widen = t.sprint_fov * clampf((speed - t.walk_speed) / (t.sprint_speed - t.walk_speed), 0.0, 1.0) \
