@@ -172,8 +172,8 @@ func lying(body: Node) -> bool:
 
 
 ## A find becomes yours: out of its chunk into the world, an ordinary thing
-## from now on, running if its battery can, and its chunk won't lay it out
-## again while it's loaded.
+## from now on, loose unless the sand still holds it, running if its battery
+## can, and its chunk won't lay it out again while it's loaded.
 func claim(body: Node) -> void:
 	if body == null or not body.has_meta(&"find"):
 		return
@@ -187,6 +187,10 @@ func claim(body: Node) -> void:
 		if _settling[i][0] == body:
 			_settling.remove_at(i)
 	body.reparent(_world.content)
+	# Only the sand holds a find still: left frozen, one you'd stripped or tied
+	# a line to could never be taken hold of, pushed or towed.
+	if not body.has_meta(&"buried"):
+		body.freeze = false
 	Finds.unroll(_world, body)
 	if body is Device:
 		_world.power.wake(body)

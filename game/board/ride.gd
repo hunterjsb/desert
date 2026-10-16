@@ -2,7 +2,12 @@ class_name Ride
 extends RefCounted
 ## You on the hoverboard. It pushes where your keys point and turns under you
 ## as fast as it can, its hover gripping sideways so a carve holds until it
-## slides out into a drift. Slopes pull it along as they pull a slide, drag
+## slides out into a skid; crouched into a hard turn it drifts instead, a
+## slide that keeps its speed. Move back brakes, sprint kicks off the sand on
+## your stamina, and standing up as the hover presses into a dip (crouching
+## as it unloads over a crest) pumps speed into it, as on a skateboard in a
+## bowl. Its tilt settles onto the sand and into a carve as a spring would,
+## so it never twitches. Slopes pull it along as they pull a slide, drag
 ## holds it to its top speed, and the air's share of that drag is felt
 ## against the felt wind, so shelter applies to it. Its hover rides the
 ## ground's one function, never the sand's collision, so no seam between
@@ -19,6 +24,14 @@ const BANK := PI / 6.0
 const REACH := 1.5
 ## Touching its clearance faster than this, m/s, it bottoms out.
 const BUMP := 0.5
+## A kick's push lasts this long, s, and your foot reaches the sand only this
+## near the board's ride height, m.
+const KICK_SECONDS := 0.25
+const KICK_REACH := 0.3
+## Crouched with the board this far off your way, radians, you drift, until
+## it comes back this near.
+const DRIFT_FROM := deg_to_rad(20.0)
+const DRIFT_TO := deg_to_rad(8.0)
 ## Where the sand under it and the sand round it meet, the ground it rides
 ## is eased over about this much height, m.
 const EASE := 0.4
@@ -40,6 +53,12 @@ var last_step := Vector3.ZERO
 var bank := 0.0
 var pitch := 0.0
 var roll := 0.0
+## How hard its hover holds you beyond your weight, m/s², over the last tick:
+## more pressed into a dip, less unloading over a crest.
+var pressing := 0.0
+## Whether it's drifting, and the kicks you've made.
+var drifting := false
+var kicks := 0
 ## Times it bottomed out on its clearance, and the hardest, m/s.
 var bottomed := 0
 var hardest := 0.0
@@ -62,6 +81,14 @@ var _around := PathMean.new()
 ## How far it has come, m.
 var _came := 0.0
 var _hopping := false
+## How fast its pitch, roll and lean are changing, rad/s; and those three and
+## its nose as the last tick left them, which drawing eases from.
+var _tilting := Vector3.ZERO
+var _tilt_was := Vector3.ZERO
+var _ahead_was := Vector2(0.0, -1.0)
+## Steps until you can kick again, and steps left of a kick's push.
+var _kick_wait := 0
+var _stroke := 0
 
 
 func _init(by: Player, on: Hoverboard) -> void:
@@ -70,12 +97,15 @@ func _init(by: Player, on: Hoverboard) -> void:
 	velocity = by.own
 	var facing := -by.global_basis.z
 	ahead = Vector2(facing.x, facing.z).normalized()
+	_ahead_was = ahead
 	var at := Vector2(by.global_position.x, by.global_position.z)
 	y = maxf(by.global_position.y - _thick, _floor(at))
 
 
-## One tick: `dir` is where your keys point, flat; `hop` a jump pressed.
-func step(delta: float, dir: Vector2, hop: bool) -> void:
+## One tick: `dir` is where your keys steer, flat, forward and to the sides;
+## `brake` how hard move back is held, 0 to 1; `hop` a jump pressed; `kick`
+## sprint held; `crouch` crouch held.
+func step(delta: float, dir: Vector2, hop: bool, brake := 0.0, kick := false, crouch := false) -> void:
 	var world := player.world
 	var t := _tuning
 	var g := world.gravity
@@ -86,13 +116,13 @@ func step(delta: float, dir: Vector2, hop: bool) -> void:
 	var at := Vector2(from.x, from.z)
 	# Drag of speed² that just matches the push at top speed.
 	var drag := t.board_push / (t.board_top_speed * t.board_top_speed)
-	var catch := lerpf(1.0, t.crouch_catch, player.low)
+	var low_to := 1.0 if crouch else 0.0
+	var getting_low := exp(-h / Player.LOW_SECONDS)
 	var pushed := 0.0
-	var turned := 0.0
 	var hit := 0.0
-	var nose := 0.0
-	var tail := 0.0
-	var across := 0.0
+	pressing = 0.0
+	_tilt_was = Vector3(pitch, roll, bank)
+	_ahead_was = ahead
 	if hop and gap < 0.2 and not _hopping:
 		vy += t.board_hop
 		_hopping = true
@@ -104,9 +134,9 @@ func step(delta: float, dir: Vector2, hop: bool) -> void:
 		var south := _height(at + Vector2(0.0, _half))
 		var north := _height(at - Vector2(0.0, _half))
 		var grade := Vector2(east - west, south - north) / (2.0 * _half)
-		across = grade.dot(Vector2(-ahead.y, ahead.x))
-		nose = _height(at + ahead * _half)
-		tail = _height(at - ahead * _half)
+		var across := grade.dot(Vector2(-ahead.y, ahead.x))
+		var nose := _height(at + ahead * _half)
+		var tail := _height(at - ahead * _half)
 		# The hover feels the sand along its whole length, so the lattice's
 		# facets never judder it. A dip's bottom is read as the sand round it,
 		# so it's rounded, not slammed into; a crest as it is, so you float off.
@@ -140,52 +170,117 @@ func step(delta: float, dir: Vector2, hop: bool) -> void:
 			y = lowest
 			vy = maxf(vy, rise)
 		var contact := clampf(1.0 - gap / REACH, 0.0, 1.0)
+		pressing += lift * contact / n
+
+		# Your legs work against what the hover holds you with beyond your
+		# weight: stand up as a dip presses it, or get low as a crest unloads
+		# it, and that work goes into your way. Your weight's own share comes
+		# back each time you crouch again, so only the pressing counts.
+		var was_low := player.low
+		player.low = low_to + (player.low - low_to) * getting_low
+		var pumped := lift * (was_low - player.low) * t.board_pump_rise * contact
 
 		# The slope pulls it down, as it pulls a slide.
 		velocity -= grade * g / (1.0 + grade.length_squared()) * contact * h
-		var pushing := 0.0
-		if dir != Vector2.ZERO:
-			speed = velocity.length()
-			if speed > 1.0 and dir.dot(velocity / speed) < -0.5:
-				velocity = velocity.move_toward(Vector2.ZERO, t.board_brake * contact * h)
-			else:
-				ahead = ahead.rotated(clampf(ahead.angle_to(dir), -t.board_turn_rate * h, t.board_turn_rate * h))
-				pushing = clampf(ahead.dot(dir), 0.0, 1.0) * contact
-				velocity += ahead * t.board_push * pushing * h
-		pushed += pushing / n
-		# Its hover grips sideways, so your way follows the board round, as
-		# far as its grip; past that it drifts, and a drift bleeds speed.
 		speed = velocity.length()
+		var axis := ahead if velocity.dot(ahead) >= 0.0 else -ahead
+		var slip := (velocity / speed).angle_to(axis) if speed > 0.05 else 0.0
+		# Crouched into a hard turn, its grip lets go on purpose and it slides.
+		if drifting:
+			drifting = crouch and absf(slip) > DRIFT_TO and speed > 2.0
+		else:
+			drifting = crouch and contact > 0.5 and speed > t.board_drift_speed and absf(slip) > DRIFT_FROM \
+				and dir != Vector2.ZERO
+		var pushing := 0.0
+		var stopping := brake
+		if dir != Vector2.ZERO:
+			if speed > 1.0 and dir.dot(velocity / speed) < -0.5:
+				stopping = 1.0
+			else:
+				var swing := (t.board_drift_turn if drifting else t.board_turn_rate) * h
+				ahead = ahead.rotated(clampf(ahead.angle_to(dir), -swing, swing))
+				pushing = clampf(ahead.dot(dir), 0.0, 1.0) * contact * (1.0 - stopping)
+				velocity += ahead * t.board_push * pushing * h
+		if stopping > 0.0:
+			velocity = velocity.move_toward(Vector2.ZERO, t.board_brake * stopping * contact * h)
+		pushed += pushing / n
+		# A kick off the sand, like a skateboard's: from rest it gets you
+		# going, and up a slope it keeps you going; at top speed your foot
+		# can't add anything.
+		_kick_wait = maxi(0, _kick_wait - 1)
+		if kick and _kick_wait == 0 and stopping == 0.0 and gap < KICK_REACH \
+				and player.stamina >= t.board_kick_stamina:
+			player.stamina -= t.board_kick_stamina
+			_kick_wait = roundi(t.board_kick_every * STEP_HZ)
+			_stroke = roundi(KICK_SECONDS * STEP_HZ)
+			kicks += 1
+		if _stroke > 0:
+			_stroke -= 1
+			var spare := clampf(1.0 - velocity.length() / t.board_top_speed, 0.0, 1.0)
+			velocity += ahead * t.board_kick / KICK_SECONDS * spare * contact * h
+		if not kick:
+			player.stamina = minf(player.stamina + t.stamina_regen * h, t.stamina_max)
+		# Its hover grips sideways, so your way follows the board round, as
+		# far as its grip; past that it skids, and a skid bleeds speed. A
+		# drift grips less and bleeds far less.
+		speed = velocity.length()
+		var turn := 0.0
 		if speed > 0.05 and contact > 0.0:
-			var axis := ahead if velocity.dot(ahead) >= 0.0 else -ahead
-			var slip := (velocity / speed).angle_to(axis)
-			var most := t.board_grip * contact * h / speed
-			var turn := clampf(slip, -most, most)
+			axis = ahead if velocity.dot(ahead) >= 0.0 else -ahead
+			slip = (velocity / speed).angle_to(axis)
+			var most := (t.board_drift_grip if drifting else t.board_grip) * contact * h / speed
+			turn = clampf(slip, -most, most)
 			velocity = velocity.rotated(turn)
-			turned += turn
-			velocity *= maxf(0.0, 1.0 - t.board_drift_drag * absf(sin(slip - turn)) * contact * h)
+			var bleed := t.board_drift_slide if drifting else t.board_drift_drag
+			velocity *= maxf(0.0, 1.0 - bleed * absf(sin(slip - turn)) * contact * h)
 		# The hover's drag is against the ground, the air's against the wind.
 		var wind := world.weather.felt_wind(Vector3(at.x, y + 1.0, at.y), when)
 		var air := velocity - Vector2(wind.x, wind.z)
+		var catch := lerpf(1.0, t.crouch_catch, player.low)
 		speed = velocity.length()
 		velocity -= (drag * (1.0 - t.board_air_share) * speed * velocity
 			+ drag * t.board_air_share * catch * air.length() * air) * h
-		if pushing == 0.0:
+		if pushing == 0.0 and _stroke == 0:
 			velocity = velocity.move_toward(Vector2.ZERO, t.board_coast * contact * h)
+		if pumped != 0.0:
+			speed = velocity.length()
+			if speed > 0.05:
+				velocity *= sqrt(maxf(0.0, speed * speed + 2.0 * pumped)) / speed
+		# It lies along the sand and leans into the carve as its hover pulls
+		# you round, each settling as a spring would: never a snap.
+		var lean := clampf(atan2(turn / h * velocity.length(), g), -BANK, BANK)
+		_settle(Vector3(lerpf(pitch, atan((nose - tail) / (2.0 * _half)), contact),
+			lerpf(roll, atan(across), contact), lean), h)
 		at += velocity * h
 		_came += velocity.length() * h
 
 	board.push = pushed
 	board.meter(world.time, world.time + delta * world.time_warp, delta)
-	bank = clampf(atan2(turned / delta * velocity.length(), g), -BANK, BANK)
-	var contact := clampf(1.0 - gap / REACH, 0.0, 1.0)
-	pitch = lerpf(pitch, atan((nose - tail) / (2.0 * _half)), contact)
-	roll = lerpf(roll, atan(across), contact)
 	if hit > BUMP:
 		bottomed += 1
 		hardest = maxf(hardest, hit)
 		player.landed.emit(hit)
 	_move(from, at - Vector2(from.x, from.z), delta)
+
+
+## Pitch, roll and lean one step on toward where they'd lie, critically
+## damped: they start gently, follow, and never overshoot.
+func _settle(toward: Vector3, h: float) -> void:
+	var now := Vector3(pitch, roll, bank)
+	var w := TAU * Vector3(_tuning.board_tilt_hertz, _tuning.board_tilt_hertz, _tuning.board_lean_hertz)
+	_tilting += (w * w * (toward - now) - 2.0 * w * _tilting) * h
+	now += _tilting * h
+	pitch = now.x
+	roll = now.y
+	bank = clampf(now.z, -BANK, BANK)
+
+
+## A tick it waited for ground not yet solid: nothing moved, nothing to draw.
+func wait() -> void:
+	waited += 1
+	last_step = Vector3.ZERO
+	_tilt_was = Vector3(pitch, roll, bank)
+	_ahead_was = ahead
 
 
 ## Carries you there: exactly, over open sand, so the path is the same at any
@@ -218,14 +313,27 @@ func _move(from: Vector3, moved: Vector2, delta: float) -> void:
 
 
 ## Where the board is under your feet, as the tick knows it or as drawn this
-## frame, smoothed between the last tick and this one.
+## frame, smoothed between the last tick and this one, its tilt and its turn
+## too.
 func board_pose(drawn: bool) -> Transform3D:
 	var at := player.global_position + Vector3.DOWN * _thick * 0.5
+	var nose := ahead
+	var lie := Vector3(pitch, roll, bank)
 	if drawn:
-		at -= last_step * (1.0 - Engine.get_physics_interpolation_fraction())
-	var turn := Basis(Vector3.UP, atan2(-ahead.x, -ahead.y)) * Basis(Vector3.RIGHT, pitch) \
-		* Basis(Vector3.BACK, roll - bank)
+		var f := Engine.get_physics_interpolation_fraction()
+		at -= last_step * (1.0 - f)
+		nose = _ahead_was.slerp(ahead, f)
+		lie = tilt(true)
+	var turn := Basis(Vector3.UP, atan2(-nose.x, -nose.y)) * Basis(Vector3.RIGHT, lie.x) \
+		* Basis(Vector3.BACK, lie.y - lie.z)
 	return Transform3D(turn, at)
+
+
+## Its pitch, roll and lean, radians, as the tick left them or as drawn this
+## frame between the last tick and this one.
+func tilt(drawn: bool) -> Vector3:
+	var now := Vector3(pitch, roll, bank)
+	return _tilt_was.lerp(now, Engine.get_physics_interpolation_fraction()) if drawn else now
 
 
 ## The lowest its underside may come at a place, engine metres.
