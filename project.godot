@@ -21,6 +21,10 @@ Dev="*res://game/core/dev.gd"
 Saves="*res://game/saves/saves.gd"
 Profile="*res://game/saves/profile.gd"
 
+[gui]
+
+theme/custom="res://game/ui/theme.tres"
+
 [physics]
 
 3d/physics_engine="Jolt Physics"

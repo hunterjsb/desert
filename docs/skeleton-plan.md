@@ -28,7 +28,9 @@ survival kits and the harvester are found, every run starts with its kit (data: 
 ration, a light shield, a light solar panel and a short coil), and a shield seats on a
 crate, which has more sockets. The same day the run save and the profile were built
 (Profile & saves): Save & quit and Resume, a minute after resuming matching one never
-saved, and discoveries recorded across runs.
+saved, and discoveries recorded across runs. So were the menus, ahead of Stage 12: the
+main menu over a live desert, the system menu, options and one theme in Geist (Menus &
+UI 1–5).
 
 ## The loop we're building toward
 
