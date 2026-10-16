@@ -127,8 +127,8 @@ static func kit(world: World, from: Kit = Kit.standard()) -> Array[Node]:
 		else:
 			var spec: Dictionary = from.assembled.get(id, {"frame": id, "sockets": {}})
 			var device := Catalog.device(spec.frame)
+			# Down before anything's fitted, so nothing fitted starts under the sand.
 			_set_down(world, device, where)
-			made.append(device)
 			var sockets := device.sockets()
 			var filling: Dictionary = spec.sockets
 			for k: int in filling:
@@ -144,6 +144,8 @@ static func kit(world: World, from: Kit = Kit.standard()) -> Array[Node]:
 					if socket.kind == &"battery":
 						_fit(world, device, Catalog.part(&"battery"), socket, from.charge)
 			_set_down(world, device, where)
+			# After what's seated on it, so freeing the kit in order frees each once.
+			made.append(device)
 			named[id] = device
 	for id in from.lines:
 		var a: Device = named[id]

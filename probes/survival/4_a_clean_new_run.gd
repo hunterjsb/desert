@@ -6,10 +6,12 @@ extends WorldProbe
 ## driven stake on the kit's short line, and a hoverboard ready to ride; none
 ## of it overlaps you or each other, and none of it goes in the suit's slots.
 ## The light shield is clearly weaker than a found one. Switched on, it runs
-## the run's first day in its own weather on the crate's power without going
-## dark, the tray never taking the battery's last quarter. Then a run lived
-## in: the sealed-water start set down, its shield up, a line between two
-## stakes, a ration in your hands, a canister half drunk, the clock days on.
+## the run's first day and into the next morning in its own weather on the
+## crate's power without going dark: the crate floats until the battery is
+## down to its last quarter, then settles and leaves it to the shield. Then a
+## run lived in: the sealed-water start set down, its shield up, a line
+## between two stakes, a ration in your hands, a canister half drunk, the
+## clock days on.
 ## Then you die, by your own body's tick. A new run starts on a new seed, and
 ## nothing of the old one is left anywhere, not a device, a part, a line, a
 ## bubble or a watt-hour. You start at the beginning, fed and watered, with
@@ -18,8 +20,8 @@ extends WorldProbe
 const MAIN := preload("res://game/run.tscn")
 const DAYS := 3.0
 ## How long the kit's shield runs on, in days, and the world's time warp
-## while it does.
-const KIT_DAYS := 1.0
+## while it does: past the first day, to when its tray gives way.
+const KIT_DAYS := 1.25
 const WARP := 60.0
 
 
@@ -286,11 +288,12 @@ func _run_the_day(kit: Array) -> void:
 	world.player.vitals.set_physics_process(true)
 	var end := cell.charge_wh
 	var reserve := Power.RESERVE * cell.capacity()
-	print(("the kit's first day, %d%% of it under a storm: the crate floated %d%% of it%s; its battery %.1f to %.1f Wh"
+	print(("the kit's first %.2f days, %d%% of it under a storm: the crate floated %d%% of it%s; its battery %.1f to %.1f Wh"
 		+ " (lowest %.1f, floating %.1f); the panel made %.1f Wh, the shield drew %.1f")
-		% [roundi(100.0 * stormy / frames), roundi(100.0 * floated / frames),
-			", settling at %.2f of the day" % settled if settled >= 0.0 else "", from, end, lowest, floating_low,
+		% [KIT_DAYS, roundi(100.0 * stormy / frames), roundi(100.0 * floated / frames),
+			", settling at %.2f days" % (settled * KIT_DAYS) if settled >= 0.0 else "", from, end, lowest, floating_low,
 			world.power.generated_wh - made, shield_wh])
-	check(dark == 0, "the kit keeps its shield up for a day (%d frames dark)" % dark)
-	check(floating_low >= reserve - 0.1, "the tray never takes the shield's reserve (floating down to %.2f Wh)" % floating_low)
+	check(dark == 0, "the kit keeps its shield up all day (%d frames dark)" % dark)
+	check(settled >= 0.0 and floating_low >= reserve - 0.1 and lowest < reserve,
+		"the tray gives way at the shield's reserve (floating down to %.2f Wh) and the shield runs on" % floating_low)
 	shield.interact(world.player)

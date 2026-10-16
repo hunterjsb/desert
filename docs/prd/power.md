@@ -105,9 +105,11 @@ the felt-weather rule.
   mount; it powers that device. A small **charger** frame (a top mount and a battery
   slot) is how you charge a loose battery in the sun.
 - **The starting light panel** (2026-10-16) is a small device of its own: a 30 W panel,
-  half a found one, built into a flat frame with a port, 5 kg, that you carry, set down
-  and pick back up. Lying flat, the wind meets its edge, so a breeze doesn't skate it
-  off. Every run starts with it cabled into the light shield (Survival).
+  half a found one, built into a flat frame with a port, 5 kg, that you carry, set down,
+  pick back up or seat on a top mount. It's half a crate's top, like a found panel, so
+  it rides beside a shield. Lying flat, the wind meets its edge, so a breeze doesn't
+  skate it off. Every run starts with it seated on the kit's floating crate beside the
+  light shield (Survival).
 - **The starting power margin** (2026-10-16): over a clear equator day the light panel
   makes about 3.2 Wh against the light shield's 0.7, and on the probes' seed a day a
   quarter stormy made 3.0 Wh against 2.1, so the battery ends the day a little fuller.
@@ -124,6 +126,14 @@ the felt-weather rule.
   their batteries, and any surplus is spilled. A pool that can't meet its draw goes
   dark, so a crate's tray stops and it settles to the sand. A dark pool runs nothing
   and lets its sources recharge it, and restarts once its batteries hold 5%.
+- **The shield comes first** (2026-10-16, pulled forward from the full version for
+  the floating kit crate). Every device has a rank, and a shield ranks above everything
+  else. When a pool runs short, a device that ranks below the highest in it stops
+  drawing once the pool's batteries are down to a quarter, which is kept for the higher
+  ranks, unless its sources alone carry everything; it starts again once they hold
+  30%. So a crate's tray lets the crate settle onto the sand and leaves the last quarter
+  to the shield seated on it, and a condenser cabled to a shield stops at a quarter the
+  same way. A pool with nothing ranked above the rest runs down as before.
 - **The tick reads each source at its own world time**, four times a second of world
   time, so the dev time warp charges faster and 30, 60 or 120 frames a second give the same charge to
   the bit.
@@ -144,8 +154,8 @@ the felt-weather rule.
 
 - **Battery tiers,** chargers, wires, and central capacitors built from them.
 - **Tracked and mounted solar.**
-- **Priorities.** When the capacitor runs low, the shield is the last thing to lose
-  power.
+- **Priorities beyond the shield's.** When the capacitor runs low, the shield is the
+  last thing to lose power (begun in the skeleton: two ranks, one reserve).
 - **The heavy generator** on caterpillar tracks, with fuels: rare consumables,
   fissile material with something to burn it, and fuel grown from plants.
 - **Draw by state:** idle, active, holding back a storm.
@@ -175,6 +185,10 @@ the felt-weather rule.
    plug over the dunes and round your legs, from several starts and winds. The plug
    never closes on the port dragging it much faster than 3 m/s, and never outruns
    the wind.
+9. **The shield comes first.** The run's kit crate under clear skies, its shield on and
+   its battery just above a quarter: its tray gives way at a quarter and it settles on
+   the sand while the shield keeps running, and the light panel brings the battery back
+   until it floats again.
 
 ## Out of scope
 

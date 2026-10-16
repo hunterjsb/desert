@@ -106,7 +106,7 @@ func _tick(seconds: float, t: float) -> void:
 			cell.show_charge()
 
 
-## The devices in a pool that draw this tick, `wants` what each would, Wh:
+## The devices in a pool that draw this tick, `wants` what each would draw:
 ## all but the lower ranks that give way to the highest while it runs short.
 func _running(pool: Array, wants: Dictionary, made: float, share: float) -> Array:
 	var top: int = pool[0].rank
