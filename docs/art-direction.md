@@ -1,8 +1,9 @@
 # Art direction
 
-*Draft, 2026-10-16. Nothing here is decided. It lays out candidate looks for the game's
-things, shot side by side in the real world, so a choice can be made before any real asset
-is. Every game object stays a grey box until then; the look-test is `look/style`.*
+*Draft, 2026-10-16. Hunter picked **B, chunky worn industrial, for now**. It lays out the
+candidate looks for the game's things, shot side by side in the real world, so the choice
+came before any real asset. Every game object stays a grey box until the loop works; the
+look-test is `look/style`.*
 
 ## The test
 
@@ -144,12 +145,13 @@ doesn't hang together. D needs the world restyled along with it.
 
 ## Where Hunter is
 
-He likes all four. He's choosing between B and C, with D as the runner-up, and may ask
-the community (2026-10-16).
+He liked all four, weighed B against C with D as the runner-up, and went with **B for now**
+(2026-10-16). "For now" keeps it open to the community's view and to C's readable parts.
 
 ## Open questions
 
-- Which direction, or which mix?
+- Is B final, or does it take C's bright, kind-coloured parts so they read through the dirt
+  and the storm?
 - Should wear be one value per find, from its layer and how long it's been out, so the
   colonial-against-crude look comes from the same number that says how sound it is?
 - Should parts be coloured by their socket kind everywhere, as the tells already are?

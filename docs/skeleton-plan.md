@@ -46,7 +46,8 @@ PRD passes.
 - **Nothing gets polished.** Grey boxes, placeholder materials, Sand Game's sounds.
   Looks come after the loop works. The art direction is settled alongside the build
   (Hunter's call, 2026-10-16): a look-test of candidate styles, so real assets start
-  from decisions already made, while everything in the game stays grey.
+  from decisions already made, while everything in the game stays grey. He picked B,
+  chunky worn industrial, for now ([art direction](art-direction.md)).
 - **Tuning lives in one file.** Chunk size, storm speed, shield life and every other
   number sits in one tuning file, so tuning never means editing code.
 - **Scenarios for every playtest.** A dev menu drops you into a starting condition, like a storm
