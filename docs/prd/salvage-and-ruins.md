@@ -156,6 +156,14 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
   of becomes yours, an ordinary thing in the world, and runs at once if its battery can:
   a found shield generator switches on with the first use. Taking hold of a buried
   device pulls it up out of the sand onto it.
+- **Yours, it's loose.** Anything not buried can be taken hold of, pushed or towed from
+  the moment it's yours, however it became yours. A find still buried stays as the sand
+  holds it until you take hold of it: a line tied to it holds fast, as on a stake. Found
+  in Hunter's playtest (2026-10-16): a find you'd taken from or tied a line to stayed
+  frozen, so a stripped device on a ruin's floor could never be taken hold of, and a line
+  tied to one held you as an anchor would. Nothing found is too heavy to drag by hand:
+  the heaviest, a crate with every socket filled, is 51 kg, 250 N of your 400 N on a
+  ruin's floor or the sand.
 - **What's found** is the catalog's own parts and devices. The surface layer holds
   batteries, hooks, lamps, empty canisters, rope coils and cable plugs, and crate frames,
   chargers, planters, stakes and survival kits. The deep layer holds big batteries,
@@ -234,7 +242,10 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
   in ruins and the harvester is the rarest part; **probe 2** lays by hand any kind its
   walk didn't meet; **probe 6** strips a survival kit and unrolls a found coil, plug and
   strong plug through the hands.
-- **Probes** 1 to 7 pass, each checked against a deliberately broken build. Probes of
+- **Probe 8** walks the heaviest find, stripped of a part, out of the ruin's front door
+  in your hands, and tows a found crate out of a roofed room and the back door on a line
+  tied at your waist, dragged first into line with the door.
+- **Probes** 1 to 8 pass, each checked against a deliberately broken build. Probes of
   other systems run without ruins and finds, as ground probes run in still air; salvage's
   own, the scenario probe and the hitch probe run with them. On the 20 km walk at most 66
   finds are in memory at once.
@@ -264,6 +275,8 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
 6. **Strip and fit.** Every part in a found device can be taken out and fitted to one of
    yours.
 7. **Nothing leaks.** On the 20 km walk, the number of finds in memory stays bounded.
+8. **Out the door.** A found device, once yours, can be taken hold of and walked out of
+   a ruin's doors, and towed out of them on a line.
 
 ## Out of scope
 
