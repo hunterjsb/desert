@@ -84,6 +84,70 @@ that ignored the weather.
   dropping food onto you.
 - The probes below, all passing.
 
+**As built in the skeleton (2026-10-16):**
+- **The planter** is the catalog's planter: three small slots and a large one on top, a
+  battery slot, two ring mounts, a bottom mount for a hover tray and a port, as before,
+  plus its own 4 L water tank and a new **mod mount** on its back. It's found with an
+  empty tank. Use a canister you hold on it to pour in as much as fits.
+- **Two crops:** carrots in the small slots, fungus in the large one. Each is a part of
+  its crop, so nothing is matched by name. Sown it stands short; it grows taller and
+  fuller as it grows, and ripe it turns its ripe colour (carrots orange, fungus pale).
+- **Growth** ticks on power's tick of world time, so the dev time warp grows crops with
+  everything else and the frame rate never changes a harvest. It reads the felt light
+  where the planter stands (the sun, dimmed by the storm, and still the storm's inside
+  a bubble) and the felt temperature (a bubble that holds back temperature holds its
+  own). It doesn't need power.
+  - **Carrots** start growing at a felt light of 0.25 and grow full from 0.6. A full
+    storm leaves 0.22, so they starve in one. They grow between −10 and 60 °C and
+    ripen after three minutes of full growth. At the equator that's about one and a
+    half harvests a clear day: they grow through the morning, stall in the noon heat
+    and pick up again late in the afternoon.
+  - **Fungus** grows full in a felt light of 0.25 or less (night, or a storm's dark) and
+    not at all from 0.5. It grows between −5 and 45 °C and ripens after six minutes. A
+    storm at the equator blankets the swing to between −2.5 and 42.5 °C, so it grows the
+    whole time and ripens in six minutes.
+  - **Past its hardy limits a crop wilts,** losing growth at twice its best rate, down
+    to nothing but never dying: carrots below −30 or above 70 °C, fungus below −15 or
+    above 55. That's what "fails" means. In the clear at the equator, fungus grows in
+    the evening, then the night's cold wilts it back, and its best is 0.62 of ripe. In
+    a storm 60° out, the wider swing does the same and its best is 0.68. At 60° in the
+    clear both crops wilt to nothing by the end of a day; inside a thermal shield both
+    ripen within one.
+  - **A ripe crop stops,** and holds through any weather until it's picked.
+- **Water:** a crop drinks as it grows, 0.25 L for a carrot to ripen and 0.3 L for a
+  fungus. With the tank dry it stops exactly where the water ran out.
+- **By hand:** take on a ripe crop and its harvest comes to your hands as food
+  (carrots or fungus caps, four units of 150 kcal), and its slot is free. Food is like a
+  ration: put it in your slots and the suit eats it, or use it to eat your fill. Take
+  on a crop that isn't ripe and it comes out whole, to sow somewhere else.
+- **The harvester** fits the mod mount. With it fitted, a crop is harvested the tick it
+  ripens: its share of seed goes straight back into its slot, any more into free slots
+  that fit, and seed with no free slot is kept for one. The rest is stored as food in
+  the planter. Use on the planter steps the share it replants through 0, 25, 50, 75 and
+  100%. It starts at 25%, one of a harvest of four, which keeps every slot sown. A
+  share that doesn't make a whole seed is carried over, so the split holds over many
+  harvests. It draws no power yet.
+- **Dropping food onto you:** within 6 m, while your slots hold less than 2,000 kcal of
+  food (a full stomach) and one is free, the planter drops a harvest's worth into it,
+  one drop a tick, and you see it fall onto you. Auto-eating does the rest.
+- **What one planter gives:** a harvester planter of three carrots and a fungus at 25%,
+  at the equator, stores about 1,900 kcal a day in the clear (all carrots) and 1,400 in
+  a storm (all fungus). You eat 1,000. It drinks 1 to 1.3 L a day, so a full tank lasts
+  three or four days, and one condenser can't keep you and it both.
+- **Wear:** a planter outside a bubble in a storm wears like any device, and a wrecked
+  one grows nothing.
+- **Seeds aren't in salvage yet.** For now the scenario hands them to you.
+- **The playtest scenario** ("farm" in the scenario menu) starts you fed and watered on
+  a clear morning with a storm due in one and a half to three minutes. Two hover
+  planters float in front of you, each on a line to a stake, sown with three carrots
+  and a fungus started part grown: the carrots at 85%, so they ripen within a minute in
+  the clear, and the fungus at half, so it ripens a few minutes into the storm. One is
+  yours to pick by hand, its tank half full, with a full canister by your feet to top
+  it up; the other has a harvester and a full tank. A charged shield generator stands
+  between them, switched off, and its bubble takes both. A spare carrot is in your
+  slots.
+- **Probe 3 is built** with a test-only thermal shield. Probe 6 waits for stage 12.
+
 ## Full version
 
 - **Yucca,** with its water and regrowing fruit.
