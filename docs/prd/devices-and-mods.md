@@ -125,6 +125,11 @@ it, take hold of it, and let go.
   slides out.
 - **A hook adds a socket** (2026-10-15): a tie socket on its ring while it's fitted,
   where a line's end snaps on. Taking the hook out takes the line's end off first.
+- **Keys on screen come from the bindings** (2026-10-16). The keys list and its hint,
+  the inventory view and the scenario menu read each action's key from the live bindings
+  and draw it in one colour. Rebinding an action changes all of them, and a mouse button
+  is named as one, like "click". The look-tests' own keys aren't actions, so they're
+  coloured but written as they are.
 
 ## Where parts come from, and how they wear
 
@@ -191,6 +196,8 @@ hook. That's how found mods expand a device.
 10. **Small things come easy.** Aim at the sand beside a small loose thing and it's the
     one you'd take; between two, a wavering aim settles on one. Nothing is taken through
     something in the way.
+11. **Keys come from the bindings.** Rebind an action and every key shown for it
+    follows, a mouse button too, and the new key works.
 
 ## Out of scope
 

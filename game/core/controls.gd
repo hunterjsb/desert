@@ -1,16 +1,24 @@
 extends Node
 ## Every input binding, registered in code so they live in one readable place.
-## Physical keys, so WASD sits in the same spot on any keyboard layout.
+## Physical keys, so movement sits in the same spot on any keyboard layout.
 
-## What F1 lists, before whatever the scene adds.
+## What the keys list shows, before whatever the scene adds: each {action}
+## is drawn as its key.
 const HELP := [
-	["click", "look, or throw what you hold"], ["WASD", "move"], ["Shift", "sprint"],
-	["E", "pick up, take out, put in, put down"], ["F", "use what you look at or hold: switch a shield, drive a stake, waist a line, water a planter, set its replant share"],
-	["Tab", "your slots and waist: look across to pick one; take puts in or takes out"], ["Esc", "free the mouse"],
-	["F1", "these keys"], ["F2", "scenarios"], ["F3", "numbers"],
-	["F4", "fly: Space up, C down"], ["F5", "speed up time"], ["F6", "low gravity"],
-	["Space", "jump"], ["C", "crouch; at a run or downhill, slide"],
+	["{hands_throw}", "throw what you hold"],
+	["{move_forward} {move_left} {move_back} {move_right}", "move"], ["{sprint}", "sprint"],
+	["{hands_grab}", "pick up, take out, put in, put down"], ["{interact}", "use what you look at or hold: switch a shield, drive a stake, waist a line, water a planter, set its replant share"],
+	["{inventory}", "your slots and waist, by mouse: click a slot to take out, put in or swap"], ["{ui_cancel}", "free the mouse; click to look again"],
+	["{toggle_keys}", "these keys"], ["{dev_scenarios}", "scenarios"], ["{toggle_dev_overlay}", "numbers"],
+	["{dev_fly}", "fly: {fly_up} up, {fly_down} down"], ["{dev_time_warp}", "speed up time"], ["{dev_gravity}", "low gravity"],
+	["{jump}", "jump"], ["{crouch}", "crouch; at a run or downhill, slide"],
 ]
+## Keys on screen stand out in this.
+const KEY_COLOR := Color(0.45, 0.85, 1.0)
+const BUTTON_NAMES := {
+	MOUSE_BUTTON_LEFT: "click", MOUSE_BUTTON_RIGHT: "right click", MOUSE_BUTTON_MIDDLE: "middle click",
+	MOUSE_BUTTON_WHEEL_UP: "wheel up", MOUSE_BUTTON_WHEEL_DOWN: "wheel down",
+}
 
 const KEYS := {
 	"move_forward": KEY_W,
@@ -38,6 +46,12 @@ const BUTTONS := {
 	"hands_throw": MOUSE_BUTTON_LEFT,
 }
 
+static var _named := RegEx.create_from_string("\\{(\\w+)\\}")
+
+## Whether the mouse is free to click, rather than captured to look. Kept
+## here, since a headless run never captures it.
+var mouse_free := true
+
 
 func _enter_tree() -> void:
 	for action: String in KEYS:
@@ -54,3 +68,75 @@ func _enter_tree() -> void:
 		click.button_index = BUTTONS[action]
 		InputMap.add_action(action)
 		InputMap.action_add_event(action, click)
+
+
+## Frees the mouse to click, or captures it to look.
+func free_mouse(free: bool) -> void:
+	mouse_free = free
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE if free else Input.MOUSE_MODE_CAPTURED
+
+
+## The key or mouse button bound to an action now, as it's named on screen.
+static func key_for(action: StringName) -> String:
+	for event in InputMap.action_get_events(action):
+		var key := event as InputEventKey
+		if key != null and key.physical_keycode != KEY_NONE:
+			# Named as the player's own layout labels it.
+			return OS.get_keycode_string(key.physical_keycode if DisplayServer.get_name() == "headless"
+				else DisplayServer.keyboard_get_label_from_physical(key.physical_keycode))
+		if key != null:
+			return OS.get_keycode_string(key.keycode)
+		var button := event as InputEventMouseButton
+		if button != null:
+			return BUTTON_NAMES.get(button.button_index, "mouse %d" % button.button_index)
+	return "unbound"
+
+
+## A key's name, coloured, as BBCode.
+static func tint(key: String) -> String:
+	return "[color=#%s]%s[/color]" % [KEY_COLOR.to_html(false), key]
+
+
+## Text with each {action} in it as that action's key, coloured, as BBCode.
+static func bbcode(text: String) -> String:
+	var out := ""
+	var from := 0
+	for found in _named.search_all(text):
+		out += text.substr(from, found.get_start() - from) + tint(key_for(found.get_string(1)))
+		from = found.get_end()
+	return out + text.substr(from)
+
+
+## Outlined text for bbcode(), sized to what it says, never in the mouse's way.
+static func keys_label(color := Color.WHITE) -> RichTextLabel:
+	var label := RichTextLabel.new()
+	label.bbcode_enabled = true
+	label.fit_content = true
+	label.autowrap_mode = TextServer.AUTOWRAP_OFF
+	label.scroll_active = false
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	label.add_theme_font_size_override("normal_font_size", 12)
+	label.add_theme_constant_override("line_separation", 0)
+	label.add_theme_color_override("default_color", color)
+	label.add_theme_color_override("font_outline_color", Color.BLACK)
+	label.add_theme_constant_override("outline_size", 4)
+	return label
+
+
+## Draws text with each {action} in it as that action's key, coloured, all
+## outlined alike.
+static func draw_keys(on: CanvasItem, font: Font, at: Vector2, text: String, size: int,
+		color := Color.WHITE) -> void:
+	var x := at.x
+	var from := 0
+	for found in _named.search_all(text):
+		x += _draw_run(on, font, Vector2(x, at.y), text.substr(from, found.get_start() - from), size, color)
+		x += _draw_run(on, font, Vector2(x, at.y), key_for(found.get_string(1)), size, KEY_COLOR)
+		from = found.get_end()
+	_draw_run(on, font, Vector2(x, at.y), text.substr(from), size, color)
+
+
+static func _draw_run(on: CanvasItem, font: Font, at: Vector2, run: String, size: int, color: Color) -> float:
+	on.draw_string_outline(font, at, run, HORIZONTAL_ALIGNMENT_LEFT, -1, size, 4, Color.BLACK)
+	on.draw_string(font, at, run, HORIZONTAL_ALIGNMENT_LEFT, -1, size, color)
+	return font.get_string_size(run, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x

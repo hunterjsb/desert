@@ -84,6 +84,9 @@ var _t := 0.0
 var _from := Transform3D.IDENTITY
 var _stuck := 0.0
 var _slide := 0.0
+## How far from its socket a part starts sliding out: past the crop, when
+## picking leaves one there.
+var _slide_from := 0.0
 ## The device a part is coming out of, held still meanwhile so it can't drop
 ## onto the part, and what it was doing before.
 var _source: Device
@@ -222,7 +225,7 @@ func drop() -> void:
 	_release(_player.velocity)
 
 
-## Click: let go with a throw along your aim.
+## Throw: let go with a throw along your aim.
 func throw() -> void:
 	_release(_player.velocity - _player.camera.global_basis.z * _tuning.throw_speed)
 
@@ -287,8 +290,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed("interact"):
 		if interact():
 			get_viewport().set_input_as_handled()
-	elif event.is_action_pressed("hands_throw") and held != null \
-			and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
+	elif event.is_action_pressed("hands_throw") and held != null and not Controls.mouse_free:
 		throw()
 		get_viewport().set_input_as_handled()
 
@@ -463,6 +465,7 @@ func _take_out(device: Device, from: Socket) -> void:
 	var part := device.take(from)
 	_grip(part)
 	_slide = part.depth()
+	_slide_from = from.part.depth() if from.part != null else 0.0
 	_t = 0.0
 	phase = Phase.TAKING
 	_rearm = from
@@ -749,7 +752,7 @@ func _clear(pose: Transform3D) -> bool:
 
 func _sliding() -> Transform3D:
 	var out := 1.0 - (1.0 - _t) * (1.0 - _t)
-	return _seat(_source_socket).translated_local(Vector3(0.0, 0.0, _slide * out))
+	return _seat(_source_socket).translated_local(Vector3(0.0, 0.0, _slide_from + _slide * out))
 
 
 ## Where a part sits in a socket, in the world.
