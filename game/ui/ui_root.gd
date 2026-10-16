@@ -87,6 +87,7 @@ func close_all() -> void:
 func back() -> void:
 	if not _menus.is_empty():
 		if not top().root:
+			Sounds.play(get_tree().root, Sounds.MENU_BACK, Sounds.UI)
 			close_top()
 		return
 	for panel in get_tree().get_nodes_in_group(PANELS):

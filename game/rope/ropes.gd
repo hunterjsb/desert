@@ -53,7 +53,7 @@ func _ready() -> void:
 func setup(on: World) -> void:
 	world = on
 	_tuning = world.tuning
-	var groan: AudioStreamOggVorbis = preload("res://assets/audio/creak.ogg")
+	var groan: AudioStreamOggVorbis = Sounds.CREAK
 	groan.loop = true
 	creak = groan
 	world.origin_shifted.connect(_on_origin_shifted)
@@ -85,10 +85,7 @@ func tie(a: RopeEnd, b: RopeEnd, length: float, breaking := NAN, strand: RopeStr
 	if not strands.has(strand):
 		strands.append(strand)
 	if creak != null:
-		rope.creak = AudioStreamPlayer3D.new()
-		rope.creak.stream = creak
-		rope.creak.unit_size = 5.0
-		rope.creak.max_db = 4.0
+		rope.creak = Sounds.world_voice(creak, 0.0, 5.0)
 		add_child(rope.creak)
 	ropes.append(rope)
 	return rope
@@ -381,7 +378,7 @@ func _draw(h: float) -> void:
 		if strain <= 0.0:
 			continue
 		rope.creak.global_position = rope.strand.points[rope.strand.points.size() / 2]
-		rope.creak.volume_db = lerpf(-26.0, 2.0, strain)
+		rope.creak.volume_db = lerpf(-30.0, -2.0, strain)
 		rope.creak.pitch_scale = lerpf(0.85, 1.25, strain)
 		if not rope.creak.playing:
 			rope.creak.play(randf() * 20.0)
@@ -415,10 +412,8 @@ func _on_origin_shifted(by: Vector2i) -> void:
 func _crack_at(at: Vector3) -> void:
 	if _crack == null:
 		_crack = _crack_sound()
-	var crack := AudioStreamPlayer3D.new()
-	crack.stream = _crack
-	crack.unit_size = 8.0
-	crack.max_db = 6.0
+	# Startling, as a snap should be, but well short of the old clank.
+	var crack := Sounds.world_voice(_crack, -10.0, 8.0)
 	add_child(crack)
 	crack.global_position = at
 	crack.finished.connect(crack.queue_free)

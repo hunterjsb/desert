@@ -77,8 +77,10 @@ func harvests() -> bool:
 func interact(by: Player) -> bool:
 	var can := by.hands.held as Supply
 	if can != null and can.kind == &"water":
-		tank_l += can.drain(world.tuning.planter_tank_litres - tank_l)
-		by.hands.clunk()
+		var poured := can.drain(world.tuning.planter_tank_litres - tank_l)
+		tank_l += poured
+		if poured > 0.0:
+			Sounds.play_at(self, Sounds.POUR)
 		return true
 	if harvests():
 		split = SPLITS[(SPLITS.find(split) + 1) % SPLITS.size()]
@@ -201,7 +203,6 @@ func _fall(part: Part, onto: Player) -> void:
 	falling.offset = global_position + CROWN - onto.global_position - Falling.CHEST
 	world.content.add_child(falling)
 	falling.global_position = global_position + CROWN
-	onto.hands.clunk()
 
 
 ## Only drawn: it touches nothing and the simulation never reads it.
@@ -216,6 +217,8 @@ class Falling extends MeshInstance3D:
 	func _process(delta: float) -> void:
 		_t = minf(_t + delta / SECONDS, 1.0)
 		if not is_instance_valid(onto) or _t >= 1.0:
+			if is_instance_valid(onto):
+				Sounds.play(onto, Sounds.FOOD_DROP)
 			queue_free()
 			return
 		global_position = onto.global_position + CHEST + offset * (1.0 - _t) + Vector3.UP * sin(PI * _t) * 0.6
