@@ -78,10 +78,14 @@ func _drawn_end_gap(held: Dictionary) -> float:
 func _held_rig(downwind: Vector3) -> Dictionary:
 	var player := world.player
 	var planter := spawn_device(&"planter", 0.0, 1.2, false)
-	planter.global_position = player.global_position + downwind * 3.0 + Vector3.UP * 1.5
+	# Over the sand where it floats, not over your feet: the dunes rise.
+	var floats := player.global_position + downwind * 3.0
+	planter.global_position = Vector3(floats.x, world.height_under(floats) + 1.5, floats.z)
 	fit_part(planter, &"hover_tray")
 	fit_part(planter, &"battery")
-	var cable := Catalog.cable(world, player.global_position - downwind * 1.0, true)
+	var lies := player.global_position - downwind * 1.0
+	lies.y = world.height_under(lies)
+	var cable := Catalog.cable(world, lies, true)
 	planter.fit(cable.plugs[1], planter.sockets().filter(func(s: Socket) -> bool: return s.kind == &"port")[0])
 	var plug := cable.plugs[0]
 	await physics_frames(30)
