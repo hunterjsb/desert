@@ -91,10 +91,12 @@ upgrade the camp → the camp sustains more of itself → go further, or into th
   and panel lay on the sand and the board was only a find). The shield and panel are
   clearly worse than anything found deep, so the first deep find reads as an upgrade,
   and the kit can never leave the shield without power.
-- **Permadeath is the intended mode, and it's what we balance around.** Save & quit only
-  suspends a run: one save per run, and death ends it ([Profile & saves](prd/profile-and-saves.md)).
-  An optional mode allows saving and reloading, but turning it on disables achievements,
-  the way Project Zomboid-style games treat their custom difficulty settings.
+- **Saving and loading is the default; Ironman is its own mode** (Hunter, 2026-10-16,
+  after a fun run that dying wiped: "dying actually hurt"). By default you save when you
+  like, the game saves for you every few minutes and when you quit, and death offers to
+  load your last save. Ironman, chosen at New game, is the old rule: Save & quit only
+  suspends the run, and death ends it ([Profile & saves](prd/profile-and-saves.md)).
+  Whether achievements care which mode a run is in is still open.
 
 ## The world
 

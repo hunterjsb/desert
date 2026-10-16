@@ -23,6 +23,13 @@ const ERA := {&"deep": 0.05, &"surface": 0.5}
 const ERA_NEW := 0.15
 ## What a lifetime in the weather adds, from sound to wrecked.
 const WEATHERED := 0.8
+## Maker's marks, by column of the atlas (marks.py). Batteries and the like
+## carry none, so a mark means something where it's found.
+enum Mark { CONTRACTOR, SHIELD_MAKER, WIND_MAKER, CONSIGNMENT, SKIMMER_CREW, MEMBER_STATE }
+enum Ink { DARK, PALE }
+## Each era's row of the atlas: the hands its marks were put on by.
+const MARK_ROW := {&"surface": 1, &"deep": 2}
+const MARKS := preload("res://game/look/marks.png")
 
 static var _worn: ShaderMaterial
 static var _ruin: ShaderMaterial
@@ -37,6 +44,7 @@ static func worn() -> ShaderMaterial:
 		_worn.set_shader_parameter("paint", Color.WHITE)
 		_worn.set_shader_parameter("wear", 1.0)
 		_worn.set_shader_parameter("noise", noise())
+		_worn.set_shader_parameter("marks", MARKS)
 	return _worn
 
 
@@ -46,6 +54,7 @@ static func ruin() -> ShaderMaterial:
 		_ruin = ShaderMaterial.new()
 		_ruin.shader = preload("res://game/look/ruin.gdshader")
 		_ruin.set_shader_parameter("noise", noise())
+		_ruin.set_shader_parameter("marks", MARKS)
 	return _ruin
 
 
@@ -73,6 +82,11 @@ static func face_wind(heading: float) -> void:
 ## How worn something looks, 0 to 1: its era's paint, then what the weather took.
 static func age_of(layer: StringName, sound: float) -> float:
 	return clampf(ERA.get(layer, ERA_NEW) + (1.0 - sound) * WEATHERED, 0.0, 1.0)
+
+
+## Which era's marks a find of this layer carries.
+static func era_of(layer: StringName) -> float:
+	return MARK_ROW.get(layer, 0)
 
 
 ## Shows an age on every worn mesh among a body's own children.
@@ -116,6 +130,10 @@ class Pieces:
 	var _tool := SurfaceTool.new()
 	var _any := false
 	var _foot: float
+	var _stamp: Transform3D
+	var _facing: Vector3
+	var _mark := -1
+	var _ink := 0
 
 	## `foot` is where the whole thing meets the sand, in its own frame;
 	## without one, nothing drifts against its foot.
@@ -160,6 +178,15 @@ class Pieces:
 		m.rings = 6
 		_add(m.get_mesh_arrays(), Transform3D(turn * Basis.from_scale(scale), at), look, Vector3.ONE, 1.0)
 
+	## Paints a mark on the next piece's faces turned to `turn`'s +Z, centred
+	## at `at`, `width` across its x and half that up its y.
+	func stamp(mark: Mark, at: Vector3, width: float, turn := Basis.IDENTITY, ink := Ink.DARK) -> Pieces:
+		_mark = mark
+		_ink = ink
+		_stamp = Transform3D(turn * Basis.from_scale(Vector3(width, width * 0.5, 1.0)), at).affine_inverse()
+		_facing = turn.z.normalized()
+		return self
+
 	func commit() -> ArrayMesh:
 		var made := _tool.commit() if _any else ArrayMesh.new()
 		if made.get_surface_count() > 0:
@@ -175,16 +202,26 @@ class Pieces:
 		var turn := place.basis.inverse().transposed()
 		# The palette is picked by eye, in sRGB; the shader lights in linear.
 		var paint := look.color.srgb_to_linear()
-		for k in order:
+		# Only the faces turned to the mark take it.
+		var marked := false
+		for i in order.size():
+			var k := order[i]
 			var v := verts[k]
+			var placed := place * v
+			if i % 3 == 0 and _mark >= 0:
+				var n := normals[k] + normals[order[i + 1]] + normals[order[i + 2]]
+				marked = (turn * n).normalized().dot(_facing) > 0.7
+			var on := _stamp * placed if marked else Vector3.ZERO
+			_tool.set_uv(Vector2(on.x + 0.5, 0.5 - on.y))
+			_tool.set_uv2(Vector2(_mark + 1, _ink) if marked else Vector2.ZERO)
 			_tool.set_color(paint)
 			_tool.set_custom(0, Color(v.x, v.y, v.z, shape))
 			_tool.set_custom(1, Color(half.x, half.y, half.z, look.metal))
 			_tool.set_custom(2, Color(look.rough, look.dust, look.glow, look.share))
-			var placed := place * v
 			_tool.set_custom(3, Color(placed.y - _foot if is_finite(_foot) else 1e3, 0.0, 0.0))
 			_tool.set_normal((turn * normals[k]).normalized())
 			_tool.add_vertex(placed)
+		_mark = -1
 
 	## A chamfered box's triangles, flat-shaded, in its own frame.
 	static func _chamfer(size: Vector3, cut: float) -> Array:
