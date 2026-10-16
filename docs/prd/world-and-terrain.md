@@ -230,8 +230,8 @@ fail.
   with the old noise. The hoverboard's top speed will need it cheaper: a native port of
   the shape, or fewer noise calls. *Measured at Stage 10: cheap enough for now. Flat out
   on the board, 20 m/s, at sixty frames a second, the ground was solid at least 120 m
-  ahead the whole way (Movement probe 7), and the worst streaming frame was 1.17 ms
-  headless, against 1.16 ms walking (probe 7 here) and the 2.0 ms line. The board reads
+  ahead the whole way (Movement probe 7), and the worst streaming frame was 1.17 to
+  1.28 ms headless, against 1.16 ms walking (probe 7 here) and the 2.0 ms line. The board reads
   loaded ground, about a dozen reads a step at 240 steps a second, 0.15 ms a tick.*
 
 Chunk size and the exact view distance are tuning decisions. The skeleton measures

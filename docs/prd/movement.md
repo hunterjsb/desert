@@ -209,7 +209,7 @@ All built: on foot alongside Stage 5, the board and the camp-range warnings at S
    to a board's 26 m/s with a tailwind, along the chunk grid and across it, the first
    warning comes 20 s or more before the edge and the last 8 s or more, and past it the
    camp is lost and you're told. Turning back flat out at the last warning, you come no
-   nearer the edge than 138 m.)*
+   nearer the edge than 139 m.)*
 6. **Frame-rate proof.** The same ride at 30, 60 and 120 frames per second follows the
    same path. *(Built: a push, a carve each way, a hop, a tuck, a coast and a brake over
    90 m: at most 4 mm apart, with the same charge left, and the same path to the bit
@@ -218,7 +218,7 @@ All built: on foot alongside Stage 5, the board and the camp-range warnings at S
    and no jump. *(Built: flat out in real time at sixty frames a second, ruins and finds
    laid out as you go, across four shifts in 1.1 km: your way changes no more at a shift
    than anywhere, the ground stays solid 120 m ahead, and no frame spends longer than
-   1.2 ms streaming headless, against the 2.0 ms line. `look/stream` now rides a board
+   1.2 to 1.3 ms streaming headless, against the 2.0 ms line. `look/stream` now rides a board
    flat out downwind too, for the real window's number.)*
 
 Movement on foot, built alongside Stage 5, has its own:
