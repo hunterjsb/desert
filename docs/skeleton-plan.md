@@ -238,12 +238,16 @@ storm, and a sound pass over everything built so far, using Sand Game's recordin
 
 ## Stage 12: The loop
 
-**Builds:** nothing new. This stage wires up the reference camp (shield, floater,
-planters, panels, turbine and batteries) and plays the whole loop.
+**Builds:** the menus, the run save and the profile ([Menus & UI](prd/menus-and-ui.md),
+[Profile & saves](prd/profile-and-saves.md); pulled forward 2026-10-16 and built alongside
+stages 10 and 11), then nothing new: this stage wires up the reference camp (shield,
+floater, planters, panels, turbine and batteries) and plays the whole loop.
 
-**You play:** a full run, start to death or to AFK.
+**You play:** a full run from the main menu, start to death or to AFK, with a save &
+quit and a resume along the way.
 
 **Probes:**
+- Menus & UI 1–5 and Profile & saves 1–5.
 - The AFK promise, three ways: Power 4, Survival 1 and Farming 6.
 - Every probe from every earlier stage, passing together.
 
