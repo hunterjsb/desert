@@ -4,7 +4,8 @@ extends SalvageProbe
 ## behind: every find in memory lies in a chunk whose ground is solid, there
 ## are never more than those chunks can hold, the chunks remembered are never
 ## more than are loaded, and the object count and memory stay flat as finds
-## are laid out ahead and forgotten behind.
+## are laid out ahead and forgotten behind: back where the count began,
+## arriving the same way, it's the count it was.
 
 const STEP := 32.0
 
@@ -27,6 +28,7 @@ func run() -> void:
 	var adrift := 0
 	var baseline_objects := 0
 	var baseline_memory := 0.0
+	var base := Vector2.ZERO
 	while walked < 20000.0:
 		if walked >= 10000.0 and fmod(walked, 512.0) < STEP:
 			heading = randf() * TAU
@@ -49,8 +51,11 @@ func run() -> void:
 			salvage.unbury(finds[0])
 			taken += 1
 		if baseline_objects == 0 and walked >= 2000.0:
+			base = Vector2(x, z)
+			await _arrive(base)
 			baseline_objects = int(Performance.get_monitor(Performance.OBJECT_COUNT))
 			baseline_memory = Performance.get_monitor(Performance.MEMORY_STATIC)
+	await _arrive(base)
 	var objects := int(Performance.get_monitor(Performance.OBJECT_COUNT))
 	var memory := Performance.get_monitor(Performance.MEMORY_STATIC)
 	print("finds in memory <= %d (of %d allowed), chunks remembered <= %d, %d taken, objects %d -> %d, memory %.1f -> %.1f MB"
@@ -61,3 +66,12 @@ func run() -> void:
 	check(taken >= 15, "finds were taken along the way (%d)" % taken)
 	check(objects < baseline_objects * 1.1, "object count stays flat (%d -> %d)" % [baseline_objects, objects])
 	check(memory < baseline_memory + 64.0 * 1048576.0, "memory stays flat")
+
+
+## Arrives at a place from far off, everything built and laid out: what's
+## loaded then depends on the place alone, not on the way you came.
+func _arrive(at: Vector2) -> void:
+	for x in [at.x + 3000.0, at.x]:
+		teleport(x, at.y)
+		await settle()
+		await settle_finds()
