@@ -116,6 +116,21 @@ func _flat(at: Vector2) -> bool:
 	return high - low < FLAT_RISE
 
 
+## Every device that's yours: those in the world, and those seated on them.
+func devices() -> Array[Device]:
+	var found: Array[Device] = []
+	for node in content.get_children():
+		if node is Device:
+			_with_seated(node, found)
+	return found
+
+
+func _with_seated(device: Device, found: Array[Device]) -> void:
+	found.append(device)
+	for each in device.mounted():
+		_with_seated(each, found)
+
+
 ## The World a node lives in, found by climbing its parents.
 static func of(node: Node) -> World:
 	while node != null and not node is World:

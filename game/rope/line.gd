@@ -28,13 +28,18 @@ var _first := 0
 var _world: World
 
 
-## A coil of `length` metres, lying loose; place it with `coil`.
-static func make(world: World, length: float) -> Line:
+## A coil of `length` metres, lying loose; place it with `coil`. Given a
+## found coil, it's that one.
+static func make(world: World, length: float, found: Part = null) -> Line:
 	var line := Line.new()
 	line._world = world
 	line.full = length
 	world.content.add_child(line)
-	line._coil_up()
+	if found != null:
+		line.coil = found
+		found.set_meta(&"line", line)
+	else:
+		line._coil_up()
 	return line
 
 

@@ -44,6 +44,11 @@ func apply(scenario: Dictionary) -> void:
 		# Bodies dropped before the sand under them has collision would be frozen or forgotten.
 		while not _world.terrain.is_settled_around(place.x, place.z):
 			await get_tree().physics_frame
+		# Its own kit takes the place of the run's, gone before anything lands on it.
+		for body: Node in _world.get_meta(&"kit", []):
+			if is_instance_valid(body):
+				body.free()
+		_world.remove_meta(&"kit")
 		if scenario.kind == "ruin":
 			_kit = Scenarios.yours(_world)
 		elif scenario.kind == "kit":
