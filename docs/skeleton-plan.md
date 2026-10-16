@@ -18,7 +18,7 @@ shader he chose to keep. Stage 8, salvage and ruins, was built the same day and 
 on 2026-10-16 (strip and fit, the ruin's walk-through and finds outside all "works"): finds half-buried in the dunes from the seed and how hard the
 weather has been, a deep layer harder weather uncovers more often, one walk-in ruin
 pressed into the ground's one function, and "go looking" in the scenario menu. Stage 9,
-farming, was built on 2026-10-16 and is waiting at the gate too: the hover planter
+farming, was built on 2026-10-16 and is waiting at the gate: the hover planter
 with its water tank, carrots that want the clear day and fungus that wants the
 storm's dark, growing by felt light and temperature and wilting past their limits,
 picking by hand, the harvester mod with its replant split, food dropped onto you, and
