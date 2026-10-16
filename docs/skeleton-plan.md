@@ -52,7 +52,10 @@ PRD passes.
   Looks come after the loop works. The art direction is settled alongside the build
   (Hunter's call, 2026-10-16): a look-test of candidate styles, so real assets start
   from decisions already made, while everything in the game stays grey. He picked B,
-  chunky worn industrial, for now ([art direction](art-direction.md)).
+  chunky worn industrial, for now ([art direction](art-direction.md)). One step further,
+  left to Claude by Hunter the same day: a paint pass puts B's palette and its UV-less wear
+  shader on today's shapes, so playtests look like the game. It makes no models, so
+  nothing is lost when shapes change.
 - **Tuning lives in one file.** Chunk size, storm speed, shield life and every other
   number sits in one tuning file, so tuning never means editing code.
 - **Scenarios for every playtest.** A dev menu drops you into a starting condition, like a storm
