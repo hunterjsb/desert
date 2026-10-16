@@ -72,6 +72,14 @@ The deeper the layer, the older the find, and the better its technology:
 page break of the whole history, and a readable depth cue in storm-cut dunes. The second
 empire is the Bronze Age above it, and the first is the smuggler era below.
 
+**In the world (Agreed, session 3).** Corporate tech lies deepest and rarest, skimmer-era
+salvage in the middle, and Bronze Age forged goods near the surface. Dry, low-oxygen sand
+preserves ruins, and migrating dunes and storms expose and rebury them, which is why harsher
+weather uncovers deeper loot. How the three strata line up with the four layers above is open,
+and so is whether "second empire" and "first empire" still name the right eras, since session 3
+has two Bronze Age eras (see [the lore research](../lore-research.md#14-open-after-session-3)).
+No layer here has been changed.
+
 **The weather decides how deep the sand is stripped.** Stronger storms and fiercer
 winds expose deeper layers. Venture into the storm, or travel into the wind, and you
 find older, better things. Both difficulty dials pay out in salvage.
@@ -288,7 +296,10 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
 Lore starts in **item descriptions**. They hint and never state. The game never says
 outright what happened here. In the world, spelling carries age: X-spelled names
 (XN-118-7, Xanathivin) are old and official, and the Z-spelled Zan is late and colloquial
-([the lore research](../lore-research.md#names-the-ug-catalog-and-the-moon)).
+([the lore research](../lore-research.md#names-the-ug-catalog-and-the-moon)). Session 3 adds
+that the forms between them, skimmer-era slang and Bronze Age variants, date a ruin too, and
+that the giant's name, Tu, wears down the same way from a designation number
+([the names](../lore-research.md#hierarchy-and-the-name-decay-agreed-session-3)).
 
 ## Open questions
 

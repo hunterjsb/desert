@@ -132,8 +132,9 @@ and rose and fell in turn, leaving an apocalypse world. Roughly three thousand y
 later, the moon has reverted to near-uninhabitable: ruins, dunes, maybe a few holdouts.
 The air is thin and fading, the days scorch, the nights freeze, and water goes through
 all three phases every day. The physics is in [the moon](the-moon.md), and the history
-is in the lore session ([part 1](lore-session-2026-10-14.md), [part
-2](lore-session-2026-10-14-part-2.md)) and [the lore research](lore-research.md).
+is in the lore sessions ([part 1](lore-session-2026-10-14.md), [part
+2](lore-session-2026-10-14-part-2.md), [session 3](lore-session-2026-10-16.md)) and [the lore
+research](lore-research.md).
 
 You're a **scavenger and a survivor, in a suit**, because nobody survives here without
 one. The suit is the one gift this world gives you. Why you're out here gets revealed
@@ -142,7 +143,8 @@ survive.
 
 The strangeness at its heart is that **history runs backwards in the ground.** The
 oldest, rarest ruins hold the most advanced technology, because they come from the
-original colonists. Everything built after them is cruder.
+original colonists. Everything built after them is cruder: corporate tech lies deepest,
+skimmer-era salvage in the middle and Bronze Age forged goods near the surface.
 
 **People are only ever hinted at.** A hatch open in the distance, just out of reach. A
 ruin with something recently used left behind. Maybe a voice on the radio. There are no
