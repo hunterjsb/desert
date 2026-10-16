@@ -115,7 +115,12 @@ Death means a new run (see Runs in the vision).
   devices. There's no main menu yet.
 - **The inventory by mouse** (Hunter, 2026-10-16, replacing the look-across picking): the
   inventory action frees the mouse. Clicking a slot with something in it brings it to
-  your empty hands; clicking an empty slot puts what you hold into it. Clicking a full
+  your empty hands; clicking an empty slot puts what you hold into it.
+- **Rope goes in as a coil** (Hunter, 2026-10-16: "i cant put rope in my inv"): a rope you
+  hold but haven't laid, its first end in your hand and the rest at your belt, rolls back
+  up into its coil and goes in a slot; taken out, it's its first end in your hand again.
+  A cable plugged into nothing goes in the same way. A laid or tied line stays out until
+  it's taken up. Clicking a full
   slot while you hold something that fits swaps them. The slot under the mouse is lit,
   and a click anywhere else in the view does nothing. You don't turn while it's open, and
   take works on the world as ever, not on the slots. Closing it captures the mouse again,

@@ -184,6 +184,10 @@ Built after the skeleton loop works end to end, in roughly this order:
   becomes solid, seeded from the chunk's coordinates. Anything that caches positions
   listens for the origin shift.
 - A guarantee: inside the collision range, the ground is solid and doesn't move.
+- `teleport(body, to)`: the one way to put a body somewhere at once, as a respawn, a
+  resumed save and an origin shift do. Left to the physics, a kinematic body (you, a
+  board you ride, a device seated on another) is carried there within one tick at
+  whatever speed that takes, and throws whatever touched it where it was.
 
 ## Probes (how we know it works)
 
@@ -208,6 +212,8 @@ All of these run without a window, use a fixed seed, and assert:
 8. **A sphere underfoot.** Dead reckoning behaves like the moon: a lap of the equator
    comes home, a lap at 60° is half as long, and walking over a pole comes down the
    other side.
+9. **Moving you shoves nothing.** A box standing against you stays put when a respawn
+   puts you ten metres away.
 
 Every probe gets checked against a deliberately broken build first, to prove it can
 fail.
