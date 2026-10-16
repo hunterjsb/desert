@@ -127,6 +127,10 @@ it, take hold of it, and let go.
   can never get within 30 cm of a socket on a crate sitting on the sand. So a free
   socket tugs when your line of sight passes within reach of where the part would sit,
   and you're on its open side.
+- **No crouching to fit** (Hunter, 2026-10-16: "im also having to crouch for a lot of
+  mods, like the hover tray and hooks"). Looking at a device with a part in hand offers
+  the free socket that part fits, standing: the only one of its kind, or of several the
+  one nearest your aim and facing you. The ghost shows where it goes, and take seats it.
 - **Sliding a tray under a resting device** works from the side, and lifts the device
   onto it.
 - **The device doesn't turn toward you on removal yet;** it holds still while the part
