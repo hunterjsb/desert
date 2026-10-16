@@ -27,8 +27,9 @@ const PLAYER := ["stamina", "flying", "mode", "crouched", "own", "slope", "wind"
 	"_jumped", "_since_ground", "_touchdown", "_jump_buffer", "_jump_was", "_jump_queued", "_crouch_was",
 	"_on_sand", "_left"]
 ## A ride's own state, besides its running means of the sand.
-const RIDE := ["velocity", "ahead", "y", "vy", "gap", "last_step", "bank", "pitch", "roll", "bottomed", "hardest",
-	"ticks", "waited", "_ground", "_came", "_hopping"]
+const RIDE := ["velocity", "ahead", "y", "vy", "gap", "last_step", "bank", "pitch", "roll", "drifting", "kicks",
+	"bottomed", "hardest", "ticks", "waited", "_ground", "_came", "_hopping", "_tilting", "_tilt_was", "_ahead_was",
+	"_kick_wait", "_stroke"]
 const VITALS := ["health", "hunger", "thirst", "dead", "harms", "taken", "drunk", "eaten", "_next"]
 const ROPE := ["length", "kg_per_m", "breaking", "frequency", "damping", "max_stretch", "tension", "sustained",
 	"spring_impulse", "stop_impulse"]
@@ -308,8 +309,10 @@ func _ride_out(ride: Ride) -> Dictionary:
 
 
 func _ride_in(ride: Ride, rec: Dictionary) -> void:
+	# An older save lacks the newer of these: they start as a new ride does.
 	for key: String in RIDE:
-		ride.set(key, rec[key])
+		if rec.has(key):
+			ride.set(key, rec[key])
 	for key: String in ["_under", "_around"]:
 		var mean: Ride.PathMean = ride.get(key)
 		mean._at.assign(Array(rec[key][0]))

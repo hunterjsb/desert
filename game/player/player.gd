@@ -293,8 +293,9 @@ func step_off() -> void:
 	_since_ground = INF
 
 
-## A tick on the board: your keys say where it pushes and carves, a jump
-## hops, a crouch tucks you small to the wind. Out of charge, you step off.
+## A tick on the board: your keys say where it pushes and carves, move back
+## brakes, sprint kicks, a jump hops, a crouch tucks you small to the wind
+## and drifts a hard turn. Out of charge, you step off.
 func _ride(delta: float, input: Vector2) -> void:
 	if not is_instance_valid(board):
 		board = null
@@ -304,10 +305,10 @@ func _ride(delta: float, input: Vector2) -> void:
 		return
 	# Never onto ground that isn't solid yet: the board waits for it.
 	if not world.has_ground_under(global_position):
-		ride.waited += 1
-		ride.last_step = Vector3.ZERO
+		ride.wait()
 		return
-	var wish := global_basis * Vector3(input.x, 0.0, input.y)
+	# Move back only brakes: it never steers you round into reverse.
+	var wish := global_basis * Vector3(input.x, 0.0, minf(input.y, 0.0))
 	var crouch := Controls.held("crouch")
 	var jump := Controls.held("jump")
 	var hop := _jump_queued or (jump and not _jump_was)
@@ -315,15 +316,13 @@ func _ride(delta: float, input: Vector2) -> void:
 	_jump_was = jump
 	_crouch_was = crouch
 	crouched = crouch
-	low = _ease(low, 1.0 if crouch else 0.0, LOW_SECONDS, delta)
-	ride.step(delta, Vector2(wish.x, wish.z).normalized(), hop)
+	ride.step(delta, Vector2(wish.x, wish.z).normalized(), hop, maxf(input.y, 0.0), Controls.held("sprint"), crouch)
 	own = ride.velocity
 	wind = world.weather.felt_wind(global_position)
 	sink = 0.0
 	_hold_above_sand()
 	_left = velocity
 	mode = "ride"
-	stamina = minf(stamina + _tuning.stamina_regen * delta, _tuning.stamina_max)
 	if not board.powered or board.wrecked():
 		step_off()
 	Dev.put("player/mode", "ride")

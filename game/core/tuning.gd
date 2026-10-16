@@ -243,16 +243,38 @@ static var _current: Tuning
 ## The share of that drag that's the air's, felt against the wind: a tailwind
 ## carries you faster, a headwind holds you back, and a tuck shows it less.
 @export var board_air_share: float = 0.35
-## Back against your way brakes this hard, m/s²; coasting, the hover's own
-## drag slows you this much, m/s².
+## Move back brakes this hard, m/s²; coasting, the hover's own drag slows
+## you this much, m/s².
 @export var board_brake: float = 8.0
 @export var board_coast: float = 0.3
 ## How fast the board turns under you, rad/s; the most sideways pull its
-## hover grips with, m/s², before a carve slides out into a drift; and the
-## share of its speed a full sideways drift bleeds a second.
+## hover grips with, m/s², before a carve slides out into a skid; and the
+## share of its speed a full sideways skid bleeds a second.
 @export var board_turn_rate: float = 2.5
 @export var board_grip: float = 18.0
 @export var board_drift_drag: float = 1.0
+## A drift, crouched into a hard turn: the board swings round this fast,
+## rad/s, its hover grips this hard, m/s², and a full sideways slide bleeds
+## this share of its speed a second. It starts this fast or faster, m/s.
+@export var board_drift_turn: float = 3.5
+@export var board_drift_grip: float = 14.0
+@export var board_drift_slide: float = 0.25
+@export var board_drift_speed: float = 8.0
+## A kick off the sand: m/s along the board from rest, less the faster you
+## go and nothing at top speed; one this often while sprint is held, s, for
+## this much stamina. Kicking, you don't get your breath back.
+@export var board_kick: float = 2.5
+@export var board_kick_every: float = 0.6
+@export var board_kick_stamina: float = 6.0
+## Standing up from a crouch lifts your weight this far over the board, m:
+## against a hover pressed into a dip it adds speed, and crouching as it
+## unloads over a crest does too. The wrong way round it costs.
+@export var board_pump_rise: float = 0.5
+## How fast the board's tilt settles onto the sand, Hz: slower and its ends
+## would dip into it. And how fast it leans into a carve: slower and it
+## floats, faster and it twitches.
+@export var board_tilt_hertz: float = 5.0
+@export var board_lean_hertz: float = 1.2
 ## Its underside rides this high over the sand, m, and never comes nearer than this.
 @export var board_ride_height: float = 0.35
 @export var board_clearance: float = 0.08

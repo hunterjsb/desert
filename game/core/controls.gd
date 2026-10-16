@@ -13,7 +13,7 @@ const HELP := [
 	["{toggle_keys}", "these keys"], ["{dev_scenarios}", "scenarios"], ["{toggle_dev_overlay}", "numbers"],
 	["{dev_fly}", "fly: {fly_up} up, {fly_down} down"], ["{dev_time_warp}", "speed up time"], ["{dev_gravity}", "low gravity"],
 	["{jump}", "jump"], ["{crouch}", "crouch; at a run or downhill, slide"],
-	["{ride}", "get on or off a hoverboard; riding, the move keys push and carve where they point, {move_back} against your way brakes, {jump} hops, {crouch} tucks"],
+	["{ride}", "get on or off a hoverboard; riding, the move keys push and carve where they point but {move_back} only brakes, {sprint} kicks off the sand, {jump} hops, {crouch} tucks, and crouched into a hard carve you drift"],
 ]
 ## Keys on screen stand out in the theme's key colour.
 static var KEY_COLOR: Color:
