@@ -136,10 +136,10 @@ const DEVICES := {
 			[&"bottom", Vector3(0.0, -0.21, 0.0), Vector3.DOWN],
 			[&"port", Vector3(0.2, -0.05, 0.0), Vector3.RIGHT],
 		]},
-	# The light shield you start with: a smaller bubble that lets half the wind
-	# through, built light enough that the light panel keeps it going.
+	# The light shield you start with: a smaller bubble that lets a little of
+	# the wind through, built light enough that the light panel keeps it going.
 	&"light_shield": {"label": "Light shield generator", "size": Vector3(0.3, 0.32, 0.3), "mass": 4.0, "shield": true,
-		"fits": &"top", "stats": {"radius_m": 4.0, "clear_w": 2.0, "storm_w": 20.0, "wind_block": 0.5},
+		"fits": &"top", "stats": {"radius_m": 4.0, "clear_w": 2.0, "storm_w": 20.0, "wind_block": 0.85},
 		"sockets": [
 			[&"battery", Vector3(0.0, -0.04, 0.15), Vector3.BACK],
 			[&"ring", Vector3(-0.15, -0.04, 0.0), Vector3.LEFT],
