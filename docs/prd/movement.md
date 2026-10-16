@@ -93,10 +93,12 @@ even storms that last for days.
   pull it as they pull a slide, so it runs past top speed down a slip face (22.8 m/s on
   the long ride) and slows climbing one, to about 11 m/s in still air.
 - **Carving.** The move keys push where they point from your view, as walking does. The
-  board turns under you at up to 2.5 rad/s, and its hover grips sideways up to 18 m/s²,
-  a carve about 22 m round flat out, before the turn slides out into a drift, which
-  bleeds speed. Back against your way brakes; a jump hops.
-- **Floaty.** Its underside rides 0.35 m over the sand and never nearer than 8 cm. The
+  board swings round under you at up to 2.5 rad/s and your way follows it as hard as its
+  hover grips sideways, 18 m/s², so a gentle turn holds and a sharp one drifts: flat out,
+  a hard turn comes round 90° in about 3 s, the board up to 48° ahead of your way, and
+  you come out of it at 18 m/s from 20. Back against your way brakes; a jump hops.
+- **Floaty.** Its underside rides 0.35 m over the sand and keeps 8 cm clear of it,
+  about 6 cm at a corner. The
   spring is stiff pressed down and softer lifting off, and pulls you back down at most
   15 m/s² past gravity, so off a big crest at top speed you float a metre or two; a hop
   falls at 0.6 g. It feels the sand along its own length, and the sand round it from
@@ -215,7 +217,9 @@ All built: on foot alongside Stage 5, the board and the camp-range warnings at S
 7. **Origin shift at speed.** Riding across an origin shift at top speed causes no hitch
    and no jump. *(Built: flat out in real time at sixty frames a second, ruins and finds
    laid out as you go, across four shifts in 1.1 km: your way changes no more at a shift
-   than anywhere, the ground stays solid 120 m ahead, and STREAMING.)*
+   than anywhere, the ground stays solid 120 m ahead, and no frame spends longer than
+   1.2 ms streaming headless, against the 2.0 ms line. `look/stream` rides too, in a
+   real window: WINDOW.)*
 
 Movement on foot, built alongside Stage 5, has its own:
 

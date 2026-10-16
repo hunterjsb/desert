@@ -57,6 +57,8 @@ func simulate(seconds: float, each := Callable()) -> void:
 		deepest = minf(deepest, clearance(player))
 		if each.is_valid():
 			each.call()
+	_braking = 0
+	Engine.max_physics_steps_per_frame = 8 * roundi(Engine.time_scale)
 
 
 ## Puts you at rest on the sand at a world place, facing along `facing`.
@@ -172,6 +174,8 @@ func ride_for(seconds: float, each := Callable()) -> void:
 		deepest = minf(deepest, clearance(player))
 		if each.is_valid():
 			each.call()
+	_braking = 0
+	Engine.max_physics_steps_per_frame = 8 * roundi(Engine.time_scale)
 
 
 ## Whether the ground is solid this far along your way, m.
@@ -186,8 +190,9 @@ func solid_ahead(metres: float) -> bool:
 ## as a game would run. The tick rate never changes, so the ride's path is the
 ## same whatever the machine's load: only how fast it gets through it.
 func keep_pace() -> void:
-	# Collision reaches two chunks past yours: 128 to 192 m ahead, built.
-	_braking = 0 if solid_ahead(110.0) else (16 if solid_ahead(60.0) else 100)
+	# Collision reaches two chunks past yours, 128 to 192 m ahead once built;
+	# flat out a board crosses 40 m in two seconds of the ride.
+	_braking = 0 if solid_ahead(80.0) else (16 if solid_ahead(40.0) else 100)
 	Engine.max_physics_steps_per_frame = 1 if _braking > 0 else 8 * roundi(Engine.time_scale)
 
 

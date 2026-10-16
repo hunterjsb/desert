@@ -116,7 +116,7 @@ func _process(delta: float) -> void:
 	_shown -= delta
 	if told > 0:
 		var when := "lost in %d s" % ceili(seconds) if seconds < INF and _player.velocity.length() > 0.5 \
-			else "the edge %d m away" % ceili(near)
+			else "%d m from the edge" % ceili(near)
 		_line.text = ("LAST WARNING · camp %s · turn back" if told == LAST else "Leaving camp range · %s") % when
 		_line.add_theme_color_override("font_color", Color(1.0, 0.35, 0.25) if told == LAST else Color(1.0, 0.8, 0.35))
 		_shown = 0.0

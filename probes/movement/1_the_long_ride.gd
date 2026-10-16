@@ -32,6 +32,8 @@ func run() -> void:
 	tuning.storm_threshold = 2.0
 	await load_moving()
 	set_rate(60, 16)
+	# The weather does only what the ride feels: nothing, in still air.
+	world.weather.set_physics_process(false)
 	var board := await ride_here(&"big_battery")
 	var ride := player.ride
 	var down := Vector2.from_angle(WeatherField.mean_heading(world.run_seed))
