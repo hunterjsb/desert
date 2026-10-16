@@ -142,9 +142,9 @@ forgotten. That's fine, as long as it's never a surprise:
 
 **Built (2026-10-16, Stage 10, `game/player/camp_range.gd`).** The camp is every device
 of yours lying in the world, anything not in your hands, at your waist or under your
-feet. Each is forgotten once your chunk is more than nine from its own (the view's eight,
-and one more before a chunk is let go), so each has an edge 576 to 640 m out along the
-chunk grid, further on the diagonal. The warnings watch the edge you're heading for: the
+feet, the run's starting kit included. Each is forgotten once your chunk is more than
+nine from its own (the view's eight, and one more before a chunk is let go), so each has
+an edge 576 to 640 m out along the chunk grid, further on the diagonal. The warnings watch the edge you're heading for: the
 first comes 20 s before you reach it at your pace, or 40 m from it at any pace; the last
 at 8 s or 12 m. Cross it and you're told what was lost. Clear of it again, it can warn
 again. Flat out on the board that's the first warning about 400 m before the edge, so a

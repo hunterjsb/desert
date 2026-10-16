@@ -26,9 +26,10 @@ const JUDDER := 8.0
 
 func run() -> void:
 	var tuning := Tuning.current()
-	# Ground to see is no part of this: only the ground under the ride. Nor
-	# are storms, which would wear the board out over a ride this long.
+	# Ground to see is no part of this, near or far: only the ground under the
+	# ride. Nor are storms, which would wear the board out over a ride this long.
 	tuning.view_radius = tuning.near_radius
+	tuning.far_radius = (tuning.view_radius + 1) * tuning.chunk_size
 	tuning.storm_threshold = 2.0
 	await load_moving()
 	set_rate(60, 16)

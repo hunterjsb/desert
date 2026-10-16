@@ -20,6 +20,7 @@ const LAST := 2
 const REARM := 1.25
 ## A loss is told this long, s.
 const LOST_SECONDS := 5.0
+## The chimes are made at this many samples a second.
 const RATE := 22050
 ## Off-white for the first, the one accent the UI keeps for danger for the
 ## last and for a loss (Menus & UI).

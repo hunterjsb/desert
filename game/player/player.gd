@@ -247,7 +247,8 @@ func get_on(on: Hoverboard) -> bool:
 	_boarding = null
 	if on == null or board != null or flying:
 		return false
-	world.salvage.unbury(on)
+	if world.salvage.lying(on):
+		world.salvage.unbury(on)
 	if not on.can_run():
 		return false
 	if hands.held == on:
@@ -300,6 +301,7 @@ func _ride(delta: float, input: Vector2) -> void:
 	# Never onto ground that isn't solid yet: the board waits for it.
 	if not world.has_ground_under(global_position):
 		ride.waited += 1
+		ride.last_step = Vector3.ZERO
 		return
 	var wish := global_basis * Vector3(input.x, 0.0, input.y)
 	var crouch := Input.is_action_pressed("crouch")

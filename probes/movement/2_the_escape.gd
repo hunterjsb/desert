@@ -45,7 +45,8 @@ func run() -> void:
 	check(not seen.caught, "the storm never reached you on the board")
 	check(gaps.slice(1).all(func(g: float) -> bool: return g > DISTANCE) and gaps[-1] > gaps[1],
 		"the front fell further and further behind")
-	check(left > 0.0 and player.ride != null and player.ride.waited == 0, "with charge to spare (%.0f Wh)" % left)
+	check(left > 0.0, "with charge to spare (%.0f Wh)" % left)
+	check(player.ride != null and player.ride.waited == 0, "the ground was solid under you all the way")
 
 	await _arrive(start)
 	world.time_warp = 1.0

@@ -31,7 +31,7 @@ func run() -> void:
 	var board := await ride_here()
 	set_rate(60, 1)
 	Engine.max_fps = 60
-	var shifts := {"count": 0, "ticks": []}
+	var shifts := {"count": 0}
 	world.origin_shifted.connect(func(_by: Vector2i) -> void: shifts.count += 1)
 	var seen := {"last": where(), "step": Vector3.ZERO, "worst": 0.0, "at_shift": 0.0, "short": 0, "nearest": INF,
 		"shifts": 0, "ticks": 0}
