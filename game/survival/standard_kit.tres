@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="Kit" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://game/survival/kit.gd" id="1_kit"]
+
+[resource]
+script = ExtResource("1_kit")
+carried = Dictionary[StringName, int]({
+&"canister": 1,
+&"ration": 1
+})
+beside = Dictionary[StringName, int]({
+&"light_shield": 1,
+&"light_panel": 1,
+&"coil": 1
+})
+charge = 0.5
+rope_m = 6.0
+wired = true

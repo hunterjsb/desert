@@ -22,7 +22,9 @@ func run() -> void:
 	var pair: Array[Rope] = []
 	for crate: Device in [two, one]:
 		for socket in crate.sockets():
-			if socket.kind != &"tie" or (crate == one and socket.global_position.x < crate.global_position.x):
+			# The hooks on its two sides, not those on its front and back.
+			var side := crate.to_local(socket.global_position).x
+			if socket.kind != &"tie" or absf(side) < 0.3 or (crate == one and side < 0.0):
 				continue
 			var stake := driven_stake(socket.global_position + Vector3(0.0, 0.0, -5.0))
 			var line := Line.between(world, socket, stake.free_tie(socket.global_position), 0.2)

@@ -33,7 +33,11 @@ func joined() -> Array[Device]:
 func _process(_delta: float) -> void:
 	if not plugs.all(func(p: Variant) -> bool: return is_instance_valid(p)):
 		if rope != null:
-			_world.ropes.let_go(rope, rope.a)
+			# A plug gone with the land it lay on takes its end with it.
+			if is_instance_valid(rope.a):
+				_world.ropes.let_go(rope, rope.a)
+			else:
+				_world.ropes.untie(rope)
 			rope = null
 		queue_free()
 
