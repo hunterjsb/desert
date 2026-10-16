@@ -20,10 +20,10 @@ Shots, each candidate beside today's grey boxes: the camp from 8 m at morning, m
 noon and dusk; from 50 m, and that frame's middle blown up two times; the crate from 5 m,
 also blown up; the crate close up; the two finds; and from inside the bubble in a storm.
 
-    look/style/shoot.sh ~/Desktop/code/desert-wt-style-shots
+    look/style/shoot.sh <out dir>
 
-The sheets are `~/Desktop/style_<shot>.png`, with full-size frames in
-`~/Desktop/code/desert-wt-style-shots/<candidate>/`.
+The sheets are `~/Desktop/style_<shot>.png`; the full-size frames weren't kept, and the
+command above shoots them again.
 
 The stencilled marks (RMC, B-07, FIELD UNIT T2, SC HM-3, HYDRO-4) are placeholders that
 show where marks would go, not names.

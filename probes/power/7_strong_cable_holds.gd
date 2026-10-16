@@ -78,20 +78,32 @@ func _drawn_end_gap(held: Dictionary) -> float:
 func _held_rig(downwind: Vector3) -> Dictionary:
 	var player := world.player
 	var planter := spawn_device(&"planter", 0.0, 1.2, false)
-	planter.global_position = player.global_position + downwind * 3.0 + Vector3.UP * 1.5
+	# Over the sand where it floats, not over your feet: the dunes rise.
+	var floats := player.global_position + downwind * 3.0
+	planter.global_position = Vector3(floats.x, world.height_under(floats) + 1.5, floats.z)
 	fit_part(planter, &"hover_tray")
 	fit_part(planter, &"battery")
-	var cable := Catalog.cable(world, player.global_position - downwind * 1.0, true)
+	var lies := player.global_position - downwind * 1.0
+	lies.y = world.height_under(lies)
+	var cable := Catalog.cable(world, lies, true)
 	planter.fit(cable.plugs[1], planter.sockets().filter(func(s: Socket) -> bool: return s.kind == &"port")[0])
 	var plug := cable.plugs[0]
-	await physics_frames(30)
+	# Taken before the planter has drifted the cable taut: a loose plug yanked
+	# along the sand is the slingshot case, which is its own problem.
+	await physics_frames(5)
 	# Look down at the plug lying by your feet and take it, aiming as you reach:
 	# the wind slides a light plug along the sand.
 	var eye := player.camera.global_position
 	var to := plug.global_position - eye
 	player.rotation = Vector3(0.0, atan2(-to.x, -to.z), 0.0)
 	player.camera.rotation = Vector3(atan2(to.y, Vector2(to.x, to.z).length()), 0.0, 0.0)
-	check(player.hands.grab(), "you pick up the strong cable's plug")
+	var took := player.hands.grab()
+	if not took:
+		# It fails now and then on CI only; say where the plug was.
+		print("the plug: %.2f m off, %.3f m over the sand, moving %.2f m/s; %d rescued so far" % [
+			plug.global_position.distance_to(eye), plug.global_position.y - world.height_under(plug.global_position),
+			plug.linear_velocity.length(), world.rescued])
+	check(took, "you pick up the strong cable's plug")
 	return {"planter": planter, "cable": cable, "plug": plug}
 
 

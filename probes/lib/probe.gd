@@ -15,6 +15,7 @@ func _ready() -> void:
 		var node := get_node_or_null(keeper)
 		if node != null:
 			node.dir = user_dir
+	Settings.path = user_dir.path_join("settings.cfg")
 	await run()
 	_finish()
 
