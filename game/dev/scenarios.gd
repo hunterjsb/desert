@@ -35,9 +35,11 @@ const LIST: Array[Dictionary] = [
 		"day": [0.25, 0.3], "survive": true},
 	{"key": "ruin", "label": "go looking: a ruin and finds near you, your own bare crate frame, clear and calm",
 		"kind": "ruin", "day": [0.35, 0.5], "calm": 6.0},
-	# A clear morning, before the heat stops carrots growing, with the storm far enough off to pick them first.
-	{"key": "farm", "label": "farm: carrots ripening in the clear, fungus for the storm 1.5 km off, a harvester, a shield",
-		"kind": "front", "distance": 1500.0, "day": [0.35, 0.4], "farm": true},
+	# A clear morning, with a storm due in time to pick the carrots first and
+	# before the noon heat that wilts fungus: "due" is when, s, in place of ten
+	# clear minutes.
+	{"key": "farm", "label": "farm: carrots ripening in the clear, fungus for the storm due in minutes, a harvester, a shield",
+		"kind": "clear", "day": [0.33, 0.37], "due": [90.0, 200.0], "farm": true},
 ]
 
 ## The test kit, as [catalog id, metres to your right, metres ahead]: empty
@@ -73,15 +75,14 @@ const SURVIVE_CABLE := [0.0, 1.7]
 const SURVIVE_RATIONS := [[0.35, 1.3], [0.6, 1.3]]
 
 ## The farm, right and ahead: a planter to pick by hand, one with a
-## harvester, the shield generator between them so its bubble takes both, a
-## canister to water them, and spare carrots to sow. Its crops start part
-## grown, so the carrots ripen within a minute in the clear and the fungus
-## within a few once the storm's dark is on it.
+## harvester, the shield generator between them so its bubble takes both and
+## their stakes, and a canister to water them. Its crops start part grown, so
+## the carrots ripen within a minute in the clear and the fungus within a few
+## once the storm's dark is on it.
 const FARM_BY_HAND := [-1.6, 2.8]
 const FARM_HARVESTER := [1.6, 2.8]
 const FARM_SHIELD := [0.0, 2.0]
 const FARM_CANISTER := [-0.5, 1.3]
-const FARM_SEEDS := [[0.2, 1.3], [0.45, 1.3]]
 const FARM_CROPS := [&"carrot", &"carrot", &"carrot", &"fungus"]
 const FARM_GROWN := {&"carrot": 0.85, &"fungus": 0.5}
 
@@ -135,9 +136,11 @@ static func _place(field: WeatherField, scenario: Dictionary, from: Vector2, upw
 		t: float) -> Dictionary:
 	match scenario.kind:
 		"clear", "sky", "kit", "ruin":
+			# No storm for ten minutes, or one due within the window asked.
+			var due: Array = scenario.get("due", [INF, INF])
 			if field.raw_storm_at(from.x, from.y, t) <= 0.0 \
 					and field.wind_at(from.x, from.y, t).length() < scenario.get("calm", INF) \
-					and (scenario.kind == "sky" or field.next_change(from.x, from.y, t, 600.0, 10.0) == INF):
+					and (scenario.kind == "sky" or _within(field.next_change(from.x, from.y, t, minf(due[1], 600.0), 10.0), due)):
 				return {"x": from.x, "z": from.y}
 		"front", "back":
 			# March upwind for an edge with enough of the other side behind it.
@@ -187,6 +190,10 @@ static func _at_ruin(world: World, scenario: Dictionary) -> Dictionary:
 				return {"x": at.x, "z": at.y, "yaw": atan2(-facing.x, -facing.y), "time": t}
 			t += TIME_STEP
 	return {}
+
+
+static func _within(value: float, span: Array) -> bool:
+	return value >= span[0] and value <= span[1]
 
 
 static func _stormy(field: WeatherField, from: Vector2, along: Vector2, d: float, t: float) -> bool:
@@ -246,27 +253,34 @@ static func kit(world: World) -> Array[Node3D]:
 ## a stake driven upwind of it, and a shield generator with a full battery,
 ## switched off. Returns what it dropped.
 static func camp(world: World) -> Array[Node3D]:
-	var player := world.player
-	var yaw := Basis(Vector3.UP, player.global_rotation.y)
 	var dropped: Array[Node3D] = []
 	for entry: Array in CAMP_DEVICES:
-		var device := Catalog.device(entry[0])
-		_drop(world, device, Transform3D(yaw, Vector3(0.0, world.tuning.hover_height, 0.0)), entry[1], entry[2])
-		for socket in device.sockets():
-			var fill: Variant = {&"battery": &"battery", &"bottom": &"hover_tray", &"ring": &"hook"}.get(socket.kind)
-			if fill != null:
-				var part := Catalog.part(fill)
-				world.content.add_child(part)
-				device.fit(part, socket)
-		var stake := Catalog.stake()
-		var at := device.global_position - player.global_basis.z * CAMP_STAKE_AHEAD
-		world.content.add_child(stake)
-		stake.drive(at, world.height_under(at))
-		Line.between(world, device.free_tie(stake.global_position), stake.free_tie(device.global_position), 0.5)
-		dropped.append_array([device, stake])
+		dropped.append_array(_tethered(world, entry[0], entry[1], entry[2]))
 	dropped.append(_standing(world, &"shield", [&"battery"], CAMP_SHIELD))
 	dropped.append_array(_stakes_and_coils(world, CAMP_STAKES, CAMP_COILS))
 	return dropped
+
+
+## A device floating in front of you, its battery and tray fitted and a hook
+## on every ring mount, on one line from a hook to a stake driven upwind of
+## it: [device, stake].
+static func _tethered(world: World, id: StringName, right: float, ahead: float) -> Array[Node3D]:
+	var player := world.player
+	var device := Catalog.device(id)
+	_drop(world, device, Transform3D(Basis(Vector3.UP, player.global_rotation.y),
+		Vector3(0.0, world.tuning.hover_height, 0.0)), right, ahead)
+	for socket in device.sockets():
+		var fill: Variant = {&"battery": &"battery", &"bottom": &"hover_tray", &"ring": &"hook"}.get(socket.kind)
+		if fill != null:
+			var part := Catalog.part(fill)
+			world.content.add_child(part)
+			device.fit(part, socket)
+	var stake := Catalog.stake()
+	var at := device.global_position - player.global_basis.z * CAMP_STAKE_AHEAD
+	world.content.add_child(stake)
+	stake.drive(at, world.height_under(at))
+	Line.between(world, device.free_tie(stake.global_position), stake.free_tie(device.global_position), 0.5)
+	return [device, stake]
 
 
 ## A run's sealed-water start: you fed, watered and whole, a fresh suit's kit
@@ -292,32 +306,35 @@ static func survive(world: World) -> Array[Node3D]:
 	return dropped
 
 
-## Two planters on the sand in front of you, sown with carrots and a fungus
-## part grown, one tank full and one half: one to pick by hand, and one with
-## a harvester that keeps its slots sown and drops food onto you. A charged
-## shield generator, switched off, stands between them, with a full canister
-## and spare carrots by your feet. You start fed, watered and whole, on a
-## fresh suit's kit. Returns what it dropped.
+## Two hover planters floating in front of you, each on a line to a stake as
+## in the camp, sown with carrots and a fungus part grown, one tank full and
+## one half: one to pick by hand, and one with a harvester that keeps its
+## slots sown and drops food onto you. A charged shield generator, switched
+## off, stands between them, with a full canister by your feet. You start
+## fed, watered and whole, on a fresh suit's kit and a spare carrot to sow.
+## Returns what it dropped.
 static func farm(world: World) -> Array[Node3D]:
 	world.player.vitals.fresh()
+	world.player.suit.slots[world.player.suit.slots.find(null)] = Catalog.part(&"carrot")
 	var dropped: Array[Node3D] = []
 	for where: Array in [FARM_BY_HAND, FARM_HARVESTER]:
-		var parts: Array = FARM_CROPS + ([&"harvester"] if where == FARM_HARVESTER else [])
-		var planter := _standing(world, &"planter", parts, where) as Planter
+		var tied := _tethered(world, &"planter", where[0], where[1])
+		var planter := tied[0] as Planter
+		for id: StringName in FARM_CROPS + ([&"harvester"] if where == FARM_HARVESTER else []):
+			var part := Catalog.part(id)
+			for socket in planter.sockets():
+				if socket.kind == part.kind and socket.part == null:
+					planter.fit(part, socket)
+					break
 		for plant in planter.plants():
 			plant.set_growth(FARM_GROWN[plant.crop])
 		planter.tank_l = world.tuning.planter_tank_litres * (1.0 if planter.harvests() else 0.5)
-		dropped.append(planter)
+		dropped.append_array(tied)
 	dropped.append(_standing(world, &"shield", [&"battery"], FARM_SHIELD))
 	var yaw := Basis(Vector3.UP, world.player.global_rotation.y)
-	var lying := Transform3D(yaw * Basis(Vector3.RIGHT, -PI / 2.0), Vector3.ZERO)
 	var canister := Catalog.part(&"canister")
-	_drop(world, canister, lying, FARM_CANISTER[0], FARM_CANISTER[1])
+	_drop(world, canister, Transform3D(yaw * Basis(Vector3.RIGHT, -PI / 2.0), Vector3.ZERO), FARM_CANISTER[0], FARM_CANISTER[1])
 	dropped.append(canister)
-	for entry: Array in FARM_SEEDS:
-		var seed := Catalog.part(&"carrot")
-		_drop(world, seed, lying, entry[0], entry[1])
-		dropped.append(seed)
 	return dropped
 
 

@@ -40,12 +40,13 @@ var _owed := {}
 ## The farm's tick: the crops grow, and with a harvester the ripe ones are
 ## harvested, seed is sown and food dropped.
 func tick(seconds: float, t: float) -> void:
-	var at := global_position + CROWN
-	var lit := world.weather.felt_light(at, t)
-	var warmth := world.weather.felt_temperature(at, t)
 	var crops := plants()
-	for plant in crops:
-		tank_l = maxf(tank_l - plant.grow(seconds, lit, warmth, tank_l), 0.0)
+	if not crops.is_empty():
+		var at := global_position + CROWN
+		var lit := world.weather.felt_light(at, t)
+		var warmth := world.weather.felt_temperature(at, t)
+		for plant in crops:
+			tank_l = maxf(tank_l - plant.grow(seconds, lit, warmth, tank_l), 0.0)
 	if not harvests():
 		return
 	for plant in crops:
@@ -106,12 +107,17 @@ func stats() -> Dictionary:
 	now["water_left_l"] = tank_l
 	if now.get("harvester", 0) > 0:
 		now["replant"] = split
-		var kcal := 0.0
-		for crop: StringName in stored:
-			kcal += stored[crop] * _gives[crop][2]
-		now["stored_kcal"] = kcal
+		now["stored_kcal"] = stored_kcal()
 		now["seeds"] = seeds.values().reduce(func(a: int, b: int) -> int: return a + b, 0)
 	return now
+
+
+## The food in its storage, kcal.
+func stored_kcal() -> float:
+	var kcal := 0.0
+	for crop: StringName in stored:
+		kcal += stored[crop] * _gives[crop][2]
+	return kcal
 
 
 ## A ripe crop's harvest: its share of seed goes back in, first into its own

@@ -46,8 +46,7 @@ func _report() -> void:
 			ripe += 1 if plant.ripe() else 0
 			growing += 1 if plant.state == Plant.GROWING else 0
 		water += planter.tank_l
-		var now := planter.stats()
-		stored += now.get("stored_kcal", 0.0)
+		stored += planter.stored_kcal()
 		fed += planter.fed_kcal
 	Dev.put("farm/crops", "%d growing %d ripe" % [growing, ripe])
 	Dev.put("farm/water", "%.2fL" % water)

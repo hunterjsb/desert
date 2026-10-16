@@ -847,6 +847,7 @@ func _part_stats(part: Part) -> Dictionary:
 	if part is Battery:
 		now["charge_wh"] = part.charge_wh
 	if part is Plant:
+		now.erase("plants")
 		now["growth"] = part.growth
 		if part.socket != null:
 			now["growing"] = part.state
