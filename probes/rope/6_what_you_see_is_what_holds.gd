@@ -95,7 +95,7 @@ func run() -> void:
 		blow(Vector2(0.0, phase[1]), phase[2])
 		await simulate(phase[3])
 		print("%-6s %s" % [phase[0], "  ".join(ropes.ropes.map(func(r: Rope) -> String:
-			return "%d%% %.2fm sag" % [roundi(r.share() * 100.0), _drawn_sag(r.strand.points)]))])
+			return "%d%% %.2fm sag" % [roundi(r.share() * 100.0), _drawn_sag(r.strand.shown())]))])
 	# Towing it across the wind and back, the end in your hand moving with you.
 	var from := world.player.global_position
 	for leg in [Vector3(-3.0, 0.0, 0.0), Vector3.ZERO]:
@@ -115,7 +115,7 @@ func run() -> void:
 func _watch() -> void:
 	_seen.frames += 1
 	for rope in ropes.ropes:
-		var points := rope.strand.points
+		var points := rope.strand.shown()
 		var n := points.size()
 		_seen.ring = maxf(_seen.ring, maxf(points[0].distance_to(rope.a.global_position),
 			points[n - 1].distance_to(rope.b.global_position)))
