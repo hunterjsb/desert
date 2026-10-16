@@ -92,19 +92,46 @@ even storms that last for days.
   holds you back, and a tuck (crouch) shows the wind less, about 22 m/s flat out. Slopes
   pull it as they pull a slide, so it runs past top speed down a slip face (22.8 m/s on
   the long ride) and slows climbing one, to about 11 m/s in still air.
-- **Carving.** The move keys push where they point from your view, as walking does. The
-  board swings round under you at up to 2.5 rad/s and your way follows it as hard as its
-  hover grips sideways, 18 m/s², so a gentle turn holds and a sharp one drifts: flat out,
-  a hard turn comes round 90° in about 3 s, the board up to 48° ahead of your way, and
-  you come out of it at 18 m/s from 20. Back against your way brakes; a jump hops.
-- **After Hunter's first ride** (2026-10-16: "feels really nice"), five changes:
-  - **The tilt settles,** never twitches: the board's lean and pitch over the sand ease.
-  - **Move back only brakes,** never pushes you in reverse.
-  - **Sprint kicks off the ground,** a push for a start or up a hill, paid in stamina.
-  - **Pumping:** a crouch down a slope gathers a little more speed, and standing as the
-    ground curves back up turns it into more. There's a rhythm to find.
-  - **A drift** on a hard turn, the board sliding out under you, as something to do on
-    purpose.
+- **Carving.** Move forward and the sideways moves push and carve where they point from
+  your view, as walking does. The board swings round under you at up to 2.5 rad/s and
+  your way follows it as hard as its hover grips sideways, 18 m/s², so a gentle turn
+  holds and a sharp one skids: flat out, a hard turn comes round 90° in about 3 s, the
+  board up to 48° ahead of your way, and you come out of it at 18 m/s from 20. Steering
+  back against your way, move forward while looking behind you, brakes too; a jump hops.
+- **After Hunter's first ride** (2026-10-16: "feels really nice. a little twitchy on the
+  tilt"), five changes, built the same day:
+  - **The tilt settles,** never twitches. Its pitch and roll over the sand settle as a
+    critically damped spring at 5 Hz, in about an eighth of a second, and its lean into
+    a carve at 1.2 Hz, so going from one hard carve to the other (60°) takes about half a
+    second. Both are stepped with the ride, and drawn smoothed between ticks with its
+    turn, as its place already was; your view leans with a share of the drawn lean. Flat
+    out across the ridges, carving hard each way, the lean changes at most 2.9° a tick at
+    sixty ticks (it snapped up to 60° before), the pitch at most 1.4°.
+  - **Move back only brakes,** 8 m/s², from 13 m/s to a stop in about 1.5 s whichever
+    way you look; from rest it does nothing. It never steers you round into reverse, and
+    the sideways moves still carve while it brakes.
+  - **Sprint kicks off the sand,** like a skateboard push: 2.5 m/s along the board from
+    rest, less the faster you go and nothing at top speed, a kick every 0.6 s while it's
+    held, 6 stamina each, and only with the board near the sand. Holding it you don't get
+    your breath back, so a full bar is 16 kicks, about ten seconds. From rest to 10 m/s
+    takes 0.8 s instead of 1.25 s; up a 32° slip face from its foot you climb 13.9 m in
+    3 s instead of 8.8 m. Top speed and range don't change.
+  - **Pumping.** Your legs work against what the hover holds you with beyond your weight:
+    standing up as it presses into a dip, or getting low as it unloads over a crest, puts
+    that work into your way; standing lifts your weight 0.5 m. Flat out at 20 m/s a good
+    crouch over a crest gains about 0.25 m/s and standing into the dip that follows about
+    0.45 m/s, some 3.5% for the pair, and the wrong way round costs as much. Drag takes
+    each surge back within a couple of seconds, so over 30 s of ridges pushing flat out a
+    rider in rhythm goes 0.8% further than one standing still (the tuck aside). The tuck
+    is still the most speed there is flat out: tucked all the way goes 10% further than
+    standing, pumping with the tuck 5%.
+  - **A drift.** Crouch into a hard carve, 8 m/s or faster with the board swung 20° off
+    your way, and the board slides out on purpose: it swings round at 3.5 rad/s, grips at
+    14 m/s², and a slide fully sideways bleeds a quarter of its speed a second instead of
+    all of it. Steer it with the move keys; it ends when you stand up or the board comes
+    back within 8° of your way. From 19.4 m/s, a hard turn standing skids round 80° in
+    1.05 s and comes out at 12.9 m/s, sliding 46° at most; drifting it comes round in
+    1.4 s at 16.6 m/s, sliding 60°.
 - **Floaty.** Its underside rides 0.35 m over the sand and keeps 8 cm clear of it,
   about 6 cm at a corner. The
   spring is stiff pressed down and softer lifting off, and pulls you back down at most
@@ -117,8 +144,9 @@ even storms that last for days.
 - **Its own battery.** It draws 40 W floating and up to 260 W more at full push (Power):
   a base battery lasts about twenty minutes flat out, about 23 km over the dunes. Out of
   charge, you step off. Outside a bubble the weather wears it like any device.
-- **Frame-rate proof.** It's stepped 240 times a second inside each tick. At its speed
-  your view would stutter between ticks, so Feel draws you, and the board, smoothed
+- **Frame-rate proof.** It's stepped 240 times a second inside each tick, your crouch,
+  its tilt, its kicks and your stamina on it too. At its speed your view would stutter
+  between ticks, so Feel draws you, and the board, its tilt and its turn, smoothed
   between the last tick and this one; the ticks never see it.
 - The numbers are in Tuning's Hoverboard group.
 
@@ -219,9 +247,9 @@ All built: on foot alongside Stage 5, the board and the camp-range warnings at S
    camp is lost and you're told. Turning back flat out at the last warning, you come no
    nearer the edge than 139 m.)*
 6. **Frame-rate proof.** The same ride at 30, 60 and 120 frames per second follows the
-   same path. *(Built: a push, a carve each way, a hop, a tuck, a coast and a brake over
-   90 m: at most 4 mm apart, with the same charge left, and the same path to the bit
-   with the drawing switched off.)*
+   same path. *(Built: kicks from rest, a push, a carve, a hop, a drift, a coast and a
+   brake over 85 m: the same path to a tenth of a millimetre, with the same charge and
+   stamina left, and the same path to the bit with the drawing switched off.)*
 7. **Origin shift at speed.** Riding across an origin shift at top speed causes no hitch
    and no jump. *(Built: flat out in real time at sixty frames a second, ruins and finds
    laid out as you go, across four shifts in 1.1 km: your way changes no more at a shift
@@ -245,6 +273,24 @@ Movement on foot, built alongside Stage 5, has its own:
 13. **Hauling digs in.** Against a heavy line you sink, slow and tire faster.
 14. **Never below the sand.** Slides, jumps and landings at 1 g and 0.45 g never put you
     in the sand.
+
+The board after Hunter's first ride has its own:
+
+15. **Move back brakes.** From rest it never moves you; riding, it stops you and never
+    reverses you, even looking off your way. *(Built: from 13.4 m/s, stopped in 1.45 s,
+    looking along your way or 34° off it.)*
+16. **The kick.** From rest a kick gets you going and costs stamina, with none there's no
+    kick, and kicking climbs a slip face faster. *(Built: kicks alone, 6.8 m/s in 2 s for
+    24 stamina; up a 31.7° slip face from its foot in 3 s, 13.9 m against 8.8 m.)*
+17. **Pumping.** Over the ridges flat out, a rider in rhythm beats one standing still, but
+    only a little, and the wrong way round loses. *(Built: with the tuck switched off,
+    30 s, 546.8 m against 542.4 m, +0.8%; the wrong way round 538.1 m.)*
+18. **The drift.** A hard turn crouched slides further out and keeps more speed than the
+    same turn skidding, and standing up grips again. *(Built: from 19.4 m/s, out at
+    16.6 m/s against 12.9, sliding 60° against 46°.)*
+19. **The tilt settles.** Flat out across the ridges, carving hard each way, the board's
+    pitch and lean never jump. *(Built: at sixty ticks, the lean at most 2.9° a tick, the
+    pitch 1.4°; before, the lean snapped up to 60° and the pitch moved up to 1.8°.)*
 
 ## Out of scope
 
