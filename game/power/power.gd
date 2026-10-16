@@ -130,6 +130,26 @@ func _share(wh: float, cells: Array[Battery], filling: bool) -> float:
 	return left if filling else given
 
 
+## A device just become yours runs now if its pool can, as the next tick
+## would have it, rather than a tick late.
+func wake(device: Device) -> void:
+	for pool: Array in _pools():
+		if not pool.has(device):
+			continue
+		var made := 0.0
+		var wanted := 0.0
+		var cells: Array[Battery] = []
+		for each: Device in pool:
+			made += each.production_w()
+			wanted += each.demand_w()
+			if each.battery() != null:
+				cells.append(each.battery())
+		if made >= wanted or _fraction(cells) >= RESTART:
+			for each: Device in pool:
+				each.set_powered(true)
+		return
+
+
 ## What the batteries in a device's pool hold now, Wh: all it could draw on.
 func pool_wh(device: Device) -> float:
 	for pool: Array in _pools():

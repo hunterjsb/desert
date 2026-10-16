@@ -43,15 +43,20 @@ func end_of(plug: Part) -> Vector3:
 	return plug.socket.global_position if plug.socket != null else plug.global_position
 
 
+## The tug on the tick, so it pulls the same at any frame rate.
+func _physics_process(_delta: float) -> void:
+	if not plugs.all(func(p: Variant) -> bool: return is_instance_valid(p)):
+		return
+	var a := end_of(plugs[0])
+	var b := end_of(plugs[1])
+	if a.distance_to(b) > length:
+		_overstretched(a, b)
+
+
 func _process(_delta: float) -> void:
 	if not plugs.all(func(p: Variant) -> bool: return is_instance_valid(p)):
 		queue_free()
 		return
-	var a := end_of(plugs[0])
-	var b := end_of(plugs[1])
-	var span := a.distance_to(b)
-	if span > length:
-		_overstretched(a, b)
 	_draw(end_of(plugs[0]), end_of(plugs[1]))
 
 

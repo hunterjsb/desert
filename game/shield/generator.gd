@@ -94,6 +94,8 @@ func use(by: Player, _at: Vector3) -> bool:
 func interact(_by: Player) -> bool:
 	if wrecked():
 		return false
+	# Found in the sand, it's yours as you use it, so this use can start it.
+	world.salvage.claim(self)
 	if on:
 		on = false
 	elif powered and (world.power.pool_wh(self) > 0.0 or production_w() > 0.0):

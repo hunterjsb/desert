@@ -9,6 +9,9 @@ var hands: Hands
 
 func load_hands(run_seed := 1234, salvage := false) -> void:
 	await load_world(run_seed, true, salvage)
+	# The ground takes as long to build as the machine takes, and the clock
+	# runs meanwhile: every run starts at the spawn, at time zero.
+	world.respawn(world.spawn.x, world.spawn.y, 0.0, 0.0)
 	hands = world.player.hands
 	# You go where the probe puts you, and touch nothing on the way.
 	world.player.set_physics_process(false)

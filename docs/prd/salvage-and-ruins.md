@@ -151,8 +151,9 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
   settle, and then hold where they settled.
 - **A find is part of its chunk** until it's yours: frozen where it lies, dark, and left
   out of power, wear and the wind. Whatever you take, take from, fit to, use or take hold
-  of becomes yours, an ordinary thing in the world. Taking hold of a buried device pulls
-  it up out of the sand onto it.
+  of becomes yours, an ordinary thing in the world, and runs at once if its battery can:
+  a found shield generator switches on with the first use. Taking hold of a buried
+  device pulls it up out of the sand onto it.
 - **What's found** is the catalog's own parts and devices. The surface layer holds
   batteries, hooks, lamps and empty canisters (where water comes from is Survival's
   question), and crate frames, chargers, planters and stakes. The deep layer holds big

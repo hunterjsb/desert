@@ -4,7 +4,8 @@ extends SalvageProbe
 ## the hands, every part comes out of it, as it lies where your eyes can reach
 ## its socket, or once you've taken hold of the device and pulled it up out of
 ## the sand where they can't, and goes into a device of your own. What you
-## take from becomes yours; nothing is left in the find.
+## take from becomes yours; nothing is left in the find. A found shield
+## generator, used as it lies, starts on that first use.
 
 ## Your eyes look at a socket from this far off, from any of these many sides
 ## round its opening, these far off its axis, rad; from beside it, a little higher.
@@ -60,6 +61,12 @@ func _strip(id: StringName, k: int, tally: Dictionary) -> void:
 	tally.parts += parts.size()
 	var mine := device(id, spot(4.0 * k - 10.0, -2.5), Catalog.DEVICES[id].size.y * 0.5 + 0.02)
 	await simulate(0.5)
+	if found is ShieldGenerator:
+		var top := found.global_transform * Vector3(0.0, 0.15, 0.0)
+		look(top + Vector3(0.0, 1.0, 1.0), top)
+		await simulate(1.0 / 60.0)
+		check(hands.interact() and found.running(), "a found shield generator starts on the first use")
+		hands.interact()
 	for part in parts:
 		var socket := part.socket
 		if not await _take(found, socket):
