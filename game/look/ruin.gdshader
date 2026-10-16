@@ -1,14 +1,17 @@
 shader_type spatial;
 // The colonial ruin as poured, overbuilt concrete. Formwork seams in a grid,
-// a faded painted band at head height, a contractor's stencilled number by
-// each corner, the foot stained where the sand drifts, and the windward faces
-// scoured pale. Read from the ruin's own plan frame, where the floor's top is
-// at 0.
+// a faded painted band at head height, the contractor's tag and its stencilled
+// number by each corner, the foot stained where the sand drifts, and the
+// windward faces scoured pale. Read from the ruin's own plan frame, where the
+// floor's top is at 0.
 
 uniform vec3 concrete : source_color = vec3(0.64, 0.58, 0.5);
 uniform vec3 band : source_color = vec3(0.2, 0.38, 0.4);
 uniform vec3 wind_dir = vec3(0.0, 0.0, 1.0);
 uniform sampler2D noise : repeat_enable, filter_linear_mipmap;
+// The worn shader's maker's marks: the contractor's tag is the first column,
+// its deep row the colonial one.
+uniform sampler2D marks : hint_default_black, repeat_disable, filter_linear_mipmap;
 // Half its plan to the outer faces, m: where the stencils go.
 uniform vec2 half_plan = vec2(9.0, 6.0);
 
@@ -55,13 +58,18 @@ void fragment() {
 	vec3 col = concrete * (0.86 + 0.2 * coarse + 0.08 * grain);
 	float painted = wall && lp.y > 1.95 && lp.y < 2.2 ? smoothstep(0.35, 0.55, fine + 0.3 * coarse) : 0.0;
 	col = mix(col, band * (0.9 + 0.2 * grain), painted * 0.85);
-	// On an outer face, read left to right from outside, 1.6 m in from its corner.
+	// On an outer face, read left to right from outside, 1.6 m in from its
+	// corner, with the tag beside it: 0.7 by 0.35 m.
 	vec2 out_n = vec2(ln.x, ln.z);
 	float reach = abs(out_n.x) > 0.5 ? half_plan.x : half_plan.y;
+	float right = lp.x * out_n.y - lp.z * out_n.x;
+	float across = abs(out_n.x) > 0.5 ? half_plan.y : half_plan.x;
+	vec2 on_tag = vec2(right - (across - 3.4), 1.675 - lp.y) / vec2(0.7, 0.35);
+	vec2 in_tag = clamp(on_tag, 0.0, 1.0);
+	float tag = texture(marks, in_tag / vec2(5.0, 3.0) + vec2(0.0, 2.0 / 3.0)).r;
 	if (wall && abs(dot(lp.xz, out_n) - reach) < 0.05) {
-		float right = lp.x * out_n.y - lp.z * out_n.x;
-		float across = abs(out_n.x) > 0.5 ? half_plan.y : half_plan.x;
 		float mark = stencil(vec2(right - (across - 2.44), lp.y - 1.2));
+		mark = max(mark, all(equal(in_tag, on_tag)) ? smoothstep(0.42, 0.58, tag + 0.2 * (grain - 0.5)) : 0.0);
 		col = mix(col, vec3(0.25, 0.22, 0.2), mark * smoothstep(0.25, 0.6, fine + 0.2 * coarse) * 0.8);
 	}
 	float windward = clamp(dot(normalize(wn), -normalize(wind_dir)), 0.0, 1.0);

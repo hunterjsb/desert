@@ -159,8 +159,78 @@ its wear, so the weather chips it, rusts it and finally takes it down to the met
 find's layer sets where its paint starts: a deep one is crisp and a surface one rusty.
 Free sockets show a dark bezel with a tab in their kind's colour, and charge lights are
 as they were. The ruin is poured concrete, with formwork seams, tie holes, a faded band and
-a stencilled number by each corner. There are no maker's marks yet. To shoot the camp,
+a stencilled number by each corner. Maker's marks came next (below). To shoot the camp,
 finds and ruin before and after: `look/paint`.
+
+## Maker's marks
+
+*2026-10-16. Loose, not canon. The names are the lore's working names, and every design is a
+rough placeholder.*
+
+Five rough marks on a few things: a contractor's tag, two makers' signs, a crate's label
+and a crew's patch. Each is painted where its lore says it belongs, so a mark means
+something wherever it appears. They're stencilled or stamped on with the paint, so the same
+wear chips, scours and dusts them: a deep find's mark is crisp, and a surface one's is
+ragged and flaked in patches. They read close up; at 5 m they're a smudge.
+
+| Mark | What it stands for | Carried by |
+|---|---|---|
+| **Contractor's tag:** "RMC" on a notched plate | The Remote Moon Contractor, who built the hub's infrastructure and fitted what was bought in ([part 1 §4](lore-session-2026-10-14.md#4-whos-there-the-entity-stack), [part 2 §1](lore-session-2026-10-14-part-2.md#1-the-oem-tier-who-actually-makes-things)) | The condenser; a found shield's housing; the ruin, beside each stencilled 07 |
+| **Shield maker's sign:** a bubble on its ground, the emitter beneath | The main shield OEM, the common make; it's unnamed, and "Acme Shield Corporation" is the lore's own placeholder ([part 2 §3](lore-session-2026-10-14-part-2.md#3-shields)) | The light shield you start with, on its body; a found shield, small, on its emitter cap |
+| **Wind maker's sign:** three vanes in a ring | Wind's maker, a different one from solar's ([part 2 §4](lore-session-2026-10-14-part-2.md#4-power)) | The turbine |
+| **Consignment label,** by era | The box says who ordered it; the parts inside say who made them ([part 2 §1](lore-session-2026-10-14-part-2.md#1-the-oem-tier-who-actually-makes-things)) | The crate frame's two ring sides |
+| **Skimmer crew's patch,** painted by hand: the giant, a dive across it, a tally | The hoverboard as skimmer-culture personal gear, not official issue ([lore research, question 11](lore-research.md#13-open-questions-for-hunter)) | The hoverboard's tail, which is what shows when it's found nose-down |
+
+**Why these.** The marks go where the lore names a maker or issuer. The contractor's tag ties
+the oldest layer together: its build-out is the overbuilt colonial tech ([part 1
+§6](lore-session-2026-10-14.md#6-history-runs-backwards-in-the-ground)), so the same tag on
+the ruin and on the devices found in the sand lets the player link them. The two shields show
+issuer against maker. The light shield was bought new, so it carries only its maker's sign. A
+found one carries the tag of the contractor who fitted it, with the maker's sign small on the
+core inside. The crate is the lore's own example of the box and its label.
+
+**Left blank on purpose.** Batteries and the other commodity parts carry no mark ([part 2
+§4](lore-session-2026-10-14-part-2.md#4-power)). So do the survival kit and the charger, since
+the lore doesn't say who made them, and inventing an issuer would be making canon. The
+planter (ag-tech issue) and the solar panels (a big commodity OEM) are the next candidates,
+left out to keep this to a few.
+
+**How era shows.** The atlas has a row per era: a recent make (yours), the surface and the
+deep. A found device takes its layer's row, so far only the crate's label changes:
+
+- **Deep:** "TILG" over "XN 0217", the prime operator's consignment stencil, crisp, routed by
+  the United Government's sector code. The X is old and official ([lore research
+  §8](lore-research.md#names-the-ug-catalog-and-the-moon)).
+- **Surface:** "ZN" daubed back on by hand in rust red: a copy from memory, with the X said and
+  written as a Z, late and colloquial.
+- **Yours:** a plain batch number, "LOT 3127", for a recent, cheap make.
+
+Wear does the rest, from the same amount that wears the paint: ragged edges, patches flaked
+away, scour on the windward side and sand on what faces up.
+
+**Placeholders.** Every design and ink colour is a placeholder. So are these:
+
+- "RMC" and "TILG" are working names, and TILG's acronym is still TBD in the lore.
+- In "XN 0217", only XN comes from the lore; the number is invented. The moon's own
+  designation, XN-118-7, stays off crates, since each of its names should surface about once.
+- "ZN" is an invented example of the X-to-Z drift on something that isn't a name.
+- "LOT 3127" and the patch's design are invented too.
+
+**How it's built.** It's one atlas, `game/look/marks.png` (five columns by three rows, 1280 ×
+384), drawn by `game/look/marks.py` (Python 3 with Pillow, lettered in the repo's Geist Mono).
+Red is each mark's own ink (dark or pale), and green a hand-mixed daub. `Paint.Pieces.stamp()`
+paints a mark on the next piece's faces that turn its way, and the marks travel as UVs on the
+merged meshes, so there are no new meshes, materials or per-instance textures. The worn and
+ruin shaders share the atlas.
+
+**Cost.** Against master, every shot draws the same calls and triangles. The GPU time was 1.5
+to 3.2 ms against master's 1.8 to 3.7 ms, but other Godots were running probe suites
+alongside, so the times are rough. Each pixel of worn paint or ruin costs one more texture
+read. The atlas is under 3 MB of video memory with its mipmaps, loaded with the paint.
+
+**Shots.** `look/marks/shoot.sh <dir>` shoots this build; `--sheets <before> <after>` builds
+`~/Desktop/marks_<thing>.png`. Each marked thing is shot close up and from 5 m, and a deep and
+a surface crate side by side.
 
 ## Open questions
 
@@ -169,3 +239,5 @@ finds and ruin before and after: `look/paint`.
 - Should wear be one value per find, from its layer and how long it's been out, so the
   colonial-against-crude look comes from the same number that says how sound it is?
 - Should parts be coloured by their socket kind everywhere, as the tells already are?
+- Which makers get names, and in what register, before a mark's letters stop being
+  placeholders?

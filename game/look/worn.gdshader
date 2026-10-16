@@ -9,7 +9,8 @@ shader_type spatial;
 // its piece: CUSTOM0 the point in the piece's frame (w: 1 a box, 2 a drum),
 // CUSTOM1 the piece's half extents (w: metalness), CUSTOM2 roughness, dust,
 // glow and its share of the wear, CUSTOM3 its height over the whole thing's
-// foot, and COLOR its paint. A mesh without them, a
+// foot, COLOR its paint, and UV and UV2 a maker's mark painted on it: where on
+// the mark, and which mark (0 for none) in what ink. A mesh without them, a
 // look-test's loose piece, takes the uniforms instead.
 
 uniform vec3 paint : source_color = vec3(0.72, 0.68, 0.58);
@@ -25,6 +26,13 @@ uniform float dust_amount = 1.0;
 // Downwind, world; faces turned against it take the sand.
 uniform vec3 wind_dir = vec3(0.0, 0.0, 1.0);
 uniform sampler2D noise : repeat_enable, filter_linear_mipmap;
+// Maker's marks, a column each and a row per era (marks.py): red the mark's
+// own ink, green a hand-mixed daub.
+uniform sampler2D marks : hint_default_black, repeat_disable, filter_linear_mipmap;
+const vec2 MARK_CELLS = vec2(5.0, 3.0);
+const vec3 DARK_INK = vec3(0.007, 0.007, 0.006);
+const vec3 PALE_INK = vec3(0.52, 0.48, 0.37);
+const vec3 DAUB = vec3(0.5, 0.13, 0.03);
 // The piece's half extents in its own frame, so edges are found without UVs;
 // round_xz measures x and z as a cylinder's radius.
 instance uniform vec3 half_size = vec3(0.5);
@@ -33,6 +41,8 @@ instance uniform float round_xz = 0.0;
 // soundness. `lit` lights its glowing pieces, while it runs.
 instance uniform float age = 1.0;
 instance uniform float lit = 0.0;
+// Whose hands its mark is from: 0 a recent make, 1 the surface's, 2 the deep's.
+instance uniform float era = 0.0;
 
 varying vec3 obj_pos;
 varying vec3 obj_n;
@@ -41,6 +51,7 @@ varying vec3 piece_pos;
 varying vec4 piece;
 varying vec4 finish;
 varying float above;
+varying vec4 stamp;
 
 void vertex() {
 	obj_pos = VERTEX;
@@ -51,6 +62,7 @@ void vertex() {
 	piece = kit ? vec4(CUSTOM1.xyz, CUSTOM0.w > 1.5 ? 1.0 : 0.0) : vec4(half_size, round_xz);
 	finish = kit ? vec4(CUSTOM1.w, CUSTOM2.x, CUSTOM2.y, CUSTOM2.w) : vec4(paint_metal, paint_rough, dust_amount, 1.0);
 	above = kit ? CUSTOM3.x : piece_pos.y + piece.y;
+	stamp = kit ? vec4(UV, UV2) : vec4(0.0);
 	// The colour's alpha carries the piece's glow on.
 	COLOR.a = kit ? CUSTOM2.z : 0.0;
 }
@@ -78,6 +90,16 @@ void fragment() {
 	float coarse = tri(obj_pos, obj_n, 2.3);
 	float fine = tri(obj_pos, obj_n, 9.0);
 	float grain = tri(obj_pos, obj_n, 31.0);
+	// The mark went on with the paint, so it chips, scours and dusts with it;
+	// its edges go ragged and it flakes away in patches as the years add up.
+	vec2 on_mark = clamp(stamp.xy, 0.0, 1.0);
+	vec2 cover = texture(marks, (vec2(max(stamp.z - 1.0, 0.0), era) + on_mark) / MARK_CELLS).rg;
+	float marked = stamp.z > 0.5 && all(equal(on_mark, stamp.xy)) ? 1.0 : 0.0;
+	vec2 cut = max(fwidth(cover) * 0.75, vec2(0.03));
+	vec2 ink = max(smoothstep(0.5 - cut, 0.5 + cut, cover + (grain - 0.5) * (0.06 + 0.3 * amount)), cover * 0.25);
+	ink *= marked * (1.0 - smoothstep(0.6, 1.4, amount * (0.5 + 0.8 * fine) + 0.25 * (coarse - 0.5)));
+	base = mix(base, DAUB, ink.g);
+	base = mix(base, stamp.w > 0.5 ? PALE_INK : DARK_INK, ink.r);
 	vec3 wn = normalize(world_n);
 	float windward = clamp(dot(wn, -normalize(wind_dir)), 0.0, 1.0);
 	float edge = 1.0 - smoothstep(0.0, chip_width * (0.4 + 1.2 * coarse), edge_d);
