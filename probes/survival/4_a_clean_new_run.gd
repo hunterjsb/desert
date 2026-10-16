@@ -7,7 +7,7 @@ extends WorldProbe
 ## bubble or a watt-hour. You start at the beginning, fed and watered, with
 ## only a fresh suit's kit in your slots.
 
-const MAIN := preload("res://game/main.tscn")
+const MAIN := preload("res://game/run.tscn")
 const DAYS := 3.0
 
 

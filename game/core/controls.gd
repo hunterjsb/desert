@@ -8,13 +8,15 @@ const HELP := [
 	["{hands_throw}", "throw what you hold"],
 	["{move_forward} {move_left} {move_back} {move_right}", "move"], ["{sprint}", "sprint"],
 	["{hands_grab}", "pick up, take out, put in, put down"], ["{interact}", "use what you look at or hold: switch a shield, drive a stake, waist a line, water a planter, set its replant share"],
-	["{inventory}", "your slots and waist, by mouse: click a slot to take out, put in or swap"], ["{ui_cancel}", "free the mouse; click to look again"],
+	["{inventory}", "your slots and waist, by mouse: click a slot to take out, put in or swap"], ["{ui_cancel}", "back: close what's open, or the menu"],
 	["{toggle_keys}", "these keys"], ["{dev_scenarios}", "scenarios"], ["{toggle_dev_overlay}", "numbers"],
 	["{dev_fly}", "fly: {fly_up} up, {fly_down} down"], ["{dev_time_warp}", "speed up time"], ["{dev_gravity}", "low gravity"],
 	["{jump}", "jump"], ["{crouch}", "crouch; at a run or downhill, slide"],
 ]
-## Keys on screen stand out in this.
-const KEY_COLOR := Color(0.45, 0.85, 1.0)
+## Keys on screen stand out in the theme's key colour.
+static var KEY_COLOR: Color:
+	get:
+		return ThemeDB.get_project_theme().get_color(&"key", &"Palette")
 const BUTTON_NAMES := {
 	MOUSE_BUTTON_LEFT: "click", MOUSE_BUTTON_RIGHT: "right click", MOUSE_BUTTON_MIDDLE: "middle click",
 	MOUSE_BUTTON_WHEEL_UP: "wheel up", MOUSE_BUTTON_WHEEL_DOWN: "wheel down",
@@ -46,6 +48,12 @@ const BUTTONS := {
 	"hands_throw": MOUSE_BUTTON_LEFT,
 }
 
+## A gamepad works the menus too; its D-pad already moves them.
+const PADS := {
+	"ui_accept": JOY_BUTTON_A,
+	"ui_cancel": JOY_BUTTON_B,
+}
+
 static var _named := RegEx.create_from_string("\\{(\\w+)\\}")
 
 ## Whether the mouse is free to click, rather than captured to look. Kept
@@ -68,6 +76,10 @@ func _enter_tree() -> void:
 		click.button_index = BUTTONS[action]
 		InputMap.add_action(action)
 		InputMap.action_add_event(action, click)
+	for action: String in PADS:
+		var pad := InputEventJoypadButton.new()
+		pad.button_index = PADS[action]
+		InputMap.action_add_event(action, pad)
 
 
 ## Frees the mouse to click, or captures it to look.
@@ -107,36 +119,34 @@ static func bbcode(text: String) -> String:
 	return out + text.substr(from)
 
 
-## Outlined text for bbcode(), sized to what it says, never in the mouse's way.
-static func keys_label(color := Color.WHITE) -> RichTextLabel:
+## Text for bbcode(), in the theme, sized to what it says, never in the mouse's way.
+static func keys_label() -> RichTextLabel:
 	var label := RichTextLabel.new()
 	label.bbcode_enabled = true
 	label.fit_content = true
 	label.autowrap_mode = TextServer.AUTOWRAP_OFF
 	label.scroll_active = false
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	label.add_theme_font_size_override("normal_font_size", 12)
-	label.add_theme_constant_override("line_separation", 0)
-	label.add_theme_color_override("default_color", color)
-	label.add_theme_color_override("font_outline_color", Color.BLACK)
-	label.add_theme_constant_override("outline_size", 4)
 	return label
 
 
-## Draws text with each {action} in it as that action's key, coloured, all
-## outlined alike.
-static func draw_keys(on: CanvasItem, font: Font, at: Vector2, text: String, size: int,
-		color := Color.WHITE) -> void:
+## Draws text on a control, in its theme's text, with each {action} in it as
+## that action's key, coloured.
+static func draw_keys(on: Control, at: Vector2, text: String) -> void:
 	var x := at.x
 	var from := 0
+	var color := on.get_theme_color(&"text", &"Palette")
 	for found in _named.search_all(text):
-		x += _draw_run(on, font, Vector2(x, at.y), text.substr(from, found.get_start() - from), size, color)
-		x += _draw_run(on, font, Vector2(x, at.y), key_for(found.get_string(1)), size, KEY_COLOR)
+		x += _draw_run(on, Vector2(x, at.y), text.substr(from, found.get_start() - from), color)
+		x += _draw_run(on, Vector2(x, at.y), key_for(found.get_string(1)), KEY_COLOR)
 		from = found.get_end()
-	_draw_run(on, font, Vector2(x, at.y), text.substr(from), size, color)
+	_draw_run(on, Vector2(x, at.y), text.substr(from), color)
 
 
-static func _draw_run(on: CanvasItem, font: Font, at: Vector2, run: String, size: int, color: Color) -> float:
-	on.draw_string_outline(font, at, run, HORIZONTAL_ALIGNMENT_LEFT, -1, size, 4, Color.BLACK)
+static func _draw_run(on: Control, at: Vector2, run: String, color: Color) -> float:
+	var font := on.get_theme_font(&"font", &"Label")
+	var size := on.get_theme_font_size(&"font_size", &"Label")
+	on.draw_string_outline(font, at, run, HORIZONTAL_ALIGNMENT_LEFT, -1, size,
+		on.get_theme_constant(&"outline_size", &"Label"), on.get_theme_color(&"shadow", &"Palette"))
 	on.draw_string(font, at, run, HORIZONTAL_ALIGNMENT_LEFT, -1, size, color)
 	return font.get_string_size(run, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x

@@ -7,10 +7,8 @@ extends CanvasLayer
 const WIDTH := 110.0
 const ROW := 14.0
 const NAME := 52.0
-const RED := Color(0.9, 0.28, 0.22)
-const AMBER := Color(0.92, 0.68, 0.25)
-const BLUE := Color(0.35, 0.65, 1.0)
-const PALE := Color(0.85, 0.85, 0.8)
+## Health, hunger or thirst this low is danger, and shows in the accent.
+const LOW := 0.25
 
 var vitals: Vitals
 var _view: Control
@@ -32,25 +30,29 @@ func _process(_delta: float) -> void:
 func _draw_bars() -> void:
 	var player := vitals.get_parent() as Player
 	var rows := [
-		["health", vitals.health / Vitals.FULL, RED, ""],
-		["hunger", vitals.hunger / Vitals.FULL, AMBER, "%d kcal" % roundi(player.suit.stock(&"food"))],
-		["thirst", vitals.thirst / Vitals.FULL, BLUE, "%.1f L" % player.suit.stock(&"water")],
-		["stamina", player.stamina / player.world.tuning.stamina_max, PALE, ""],
+		["health", vitals.health / Vitals.FULL, true, ""],
+		["hunger", vitals.hunger / Vitals.FULL, true, "%d kcal" % roundi(player.suit.stock(&"food"))],
+		["thirst", vitals.thirst / Vitals.FULL, true, "%.1f L" % player.suit.stock(&"water")],
+		["stamina", player.stamina / player.world.tuning.stamina_max, false, ""],
 	] if player.world != null else []
-	var font := ThemeDB.fallback_font
 	var size := _view.get_rect().size
 	var corner := Vector2(size.x - NAME - WIDTH - 70.0, size.y - rows.size() * ROW - 12.0)
 	for i in rows.size():
 		var row: Array = rows[i]
 		var at := corner + Vector2(0.0, i * ROW)
-		_text(font, at + Vector2(0.0, 9.0), row[0])
+		_text(&"Label", at + Vector2(0.0, 9.0), row[0])
 		var bar := Rect2(at + Vector2(NAME, 3.0), Vector2(WIDTH, 6.0))
-		_view.draw_rect(bar.grow(1.0), Color(0.0, 0.0, 0.0, 0.5))
-		_view.draw_rect(Rect2(bar.position, Vector2(WIDTH * clampf(row[1], 0.0, 1.0), bar.size.y)), row[2])
+		_view.draw_rect(bar.grow(1.0), _view.get_theme_color(&"panel", &"Palette"))
+		var fill := _view.get_theme_color(&"accent" if row[2] and row[1] < LOW else &"text", &"Palette")
+		_view.draw_rect(Rect2(bar.position, Vector2(WIDTH * clampf(row[1], 0.0, 1.0), bar.size.y)), fill)
 		if row[3] != "":
-			_text(font, at + Vector2(NAME + WIDTH + 6.0, 9.0), row[3])
+			_text(&"Readout", at + Vector2(NAME + WIDTH + 6.0, 9.0), row[3])
 
 
-func _text(font: Font, at: Vector2, line: String) -> void:
-	_view.draw_string_outline(font, at, line, HORIZONTAL_ALIGNMENT_LEFT, -1, 11, 4, Color.BLACK)
-	_view.draw_string(font, at, line, HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Color(1.0, 1.0, 1.0, 0.85))
+## In the theme: names as text, amounts as a readout.
+func _text(type: StringName, at: Vector2, line: String) -> void:
+	var font := _view.get_theme_font(&"font", type)
+	var size := _view.get_theme_font_size(&"font_size", type)
+	_view.draw_string_outline(font, at, line, HORIZONTAL_ALIGNMENT_LEFT, -1, size,
+		_view.get_theme_constant(&"outline_size", &"Label"), _view.get_theme_color(&"shadow", &"Palette"))
+	_view.draw_string(font, at, line, HORIZONTAL_ALIGNMENT_LEFT, -1, size, _view.get_theme_color(&"text", &"Palette"))

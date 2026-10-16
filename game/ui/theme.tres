@@ -1,0 +1,112 @@
+[gd_resource type="Theme" format=3]
+
+[ext_resource type="FontFile" path="res://assets/fonts/Geist-Light.ttf" id="1_drud1"]
+[ext_resource type="FontFile" path="res://assets/fonts/GeistMono-Regular.ttf" id="2_7y804"]
+[ext_resource type="FontFile" path="res://assets/fonts/Geist-Regular.ttf" id="3_ixh7b"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_o035o"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_5mt7h"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_c0k8g"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_fd5p1"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_iqa2u"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_h0vmm"]
+
+[sub_resource type="FontVariation" id="FontVariation_mippt"]
+base_font = ExtResource("1_drud1")
+spacing_glyph = 3
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ta3wi"]
+bg_color = Color(0, 0, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_v71b0"]
+bg_color = Color(0.03, 0.04, 0.05, 0.7)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rajry"]
+content_margin_left = 14.0
+content_margin_top = 14.0
+content_margin_right = 14.0
+content_margin_bottom = 14.0
+bg_color = Color(0.03, 0.04, 0.05, 0.7)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dtkh1"]
+bg_color = Color(0, 0, 0, 0.35)
+
+[resource]
+default_font = ExtResource("3_ixh7b")
+default_font_size = 12
+Button/colors/font_color = Color(0.92, 0.92, 0.9, 0.45)
+Button/colors/font_disabled_color = Color(0.92, 0.92, 0.9, 0.22)
+Button/colors/font_focus_color = Color(0.92, 0.92, 0.9, 1)
+Button/colors/font_hover_color = Color(0.92, 0.92, 0.9, 1)
+Button/colors/font_hover_pressed_color = Color(0.92, 0.92, 0.9, 1)
+Button/colors/font_outline_color = Color(0, 0, 0, 0.35)
+Button/colors/font_pressed_color = Color(0.92, 0.92, 0.9, 1)
+Button/constants/outline_size = 3
+Button/styles/disabled = SubResource("StyleBoxEmpty_o035o")
+Button/styles/focus = SubResource("StyleBoxEmpty_5mt7h")
+Button/styles/hover = SubResource("StyleBoxEmpty_c0k8g")
+Button/styles/hover_pressed = SubResource("StyleBoxEmpty_fd5p1")
+Button/styles/normal = SubResource("StyleBoxEmpty_iqa2u")
+Button/styles/pressed = SubResource("StyleBoxEmpty_h0vmm")
+Caption/base_type = &"Label"
+Caption/font_sizes/font_size = 18
+Caption/fonts/font = SubResource("FontVariation_mippt")
+Column/base_type = &"VBoxContainer"
+Column/constants/separation = 0
+Columns/base_type = &"HBoxContainer"
+Columns/constants/separation = 14
+Fade/base_type = &"Panel"
+Fade/styles/panel = SubResource("StyleBoxFlat_ta3wi")
+Hint/base_type = &"RichTextLabel"
+Hint/colors/default_color = Color(0.92, 0.92, 0.9, 0.7)
+Label/colors/font_color = Color(0.92, 0.92, 0.9, 1)
+Label/colors/font_outline_color = Color(0, 0, 0, 0.6)
+Label/constants/line_spacing = 0
+Label/constants/outline_size = 3
+MenuList/base_type = &"VBoxContainer"
+MenuList/constants/separation = 7
+MenuNote/base_type = &"Label"
+MenuNote/colors/font_color = Color(0.92, 0.92, 0.9, 0.45)
+MenuNote/font_sizes/font_size = 12
+MenuNote/fonts/font = SubResource("FontVariation_mippt")
+MenuWord/base_type = &"Button"
+MenuWord/font_sizes/font_size = 12
+MenuWord/fonts/font = SubResource("FontVariation_mippt")
+Palette/colors/accent = Color(0.25, 0.86, 0.8, 1)
+Palette/colors/dim = Color(0.92, 0.92, 0.9, 0.45)
+Palette/colors/faint = Color(0.92, 0.92, 0.9, 0.22)
+Palette/colors/key = Color(0.74, 0.69, 1, 1)
+Palette/colors/panel = Color(0.03, 0.04, 0.05, 0.7)
+Palette/colors/shadow = Color(0, 0, 0, 0.6)
+Palette/colors/text = Color(0.92, 0.92, 0.9, 1)
+Panel/styles/panel = SubResource("StyleBoxFlat_v71b0")
+PanelContainer/styles/panel = SubResource("StyleBoxFlat_rajry")
+Readout/base_type = &"Label"
+Readout/font_sizes/font_size = 11
+Readout/fonts/font = ExtResource("2_7y804")
+ReadoutHead/base_type = &"Label"
+ReadoutHead/colors/font_color = Color(0.92, 0.92, 0.9, 0.45)
+ReadoutHead/font_sizes/font_size = 11
+RichTextLabel/colors/default_color = Color(0.92, 0.92, 0.9, 1)
+RichTextLabel/colors/font_outline_color = Color(0, 0, 0, 0.6)
+RichTextLabel/constants/line_separation = 0
+RichTextLabel/constants/outline_size = 3
+RichTextLabel/fonts/mono_font = ExtResource("2_7y804")
+Scrim/base_type = &"Panel"
+Scrim/styles/panel = SubResource("StyleBoxFlat_dtkh1")
+Warning/base_type = &"Label"
+Warning/colors/font_color = Color(0.25, 0.86, 0.8, 1)
+Warning/font_sizes/font_size = 16
