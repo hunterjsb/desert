@@ -12,15 +12,73 @@ extends RefCounted
 
 const SURFACE := &"surface"
 const DEEP := &"deep"
-## What each layer holds, as [catalog id, weight]: loose parts, and whole devices.
+## What each layer holds, as [catalog id, weight]: loose parts, and whole
+## devices. Rope and wire are common; a harvester is a rare, better part.
 const PARTS := {
-	SURFACE: [[&"battery", 4], [&"hook", 4], [&"lamp", 2], [&"canister", 2]],
-	DEEP: [[&"big_battery", 3], [&"battery", 2], [&"hover_tray", 3], [&"solar_panel", 3], [&"hook", 1]],
+	SURFACE: [
+		[&"battery", 4],
+		[&"hook", 4],
+		[&"lamp", 2],
+		[&"canister", 2],
+		[&"coil", 3],
+		[&"plug", 3],
+	],
+	DEEP: [
+		[&"big_battery", 3],
+		[&"battery", 2],
+		[&"hover_tray", 3],
+		[&"solar_panel", 3],
+		[&"hook", 1],
+		[&"strong_plug", 2],
+		[&"harvester", 1],
+	],
 }
 const DEVICES := {
-	SURFACE: [[&"crate_frame", 3], [&"charger", 2], [&"planter", 2], [&"stake", 2]],
-	DEEP: [[&"crate_frame", 2], [&"turbine", 2], [&"condenser", 2], [&"shield", 2]],
+	SURFACE: [
+		[&"crate_frame", 3],
+		[&"charger", 2],
+		[&"planter", 2],
+		[&"stake", 2],
+		[&"survival_kit", 1],
+	],
+	DEEP: [
+		[&"crate_frame", 2],
+		[&"turbine", 2],
+		[&"condenser", 2],
+		[&"shield", 2],
+	],
 }
+## What a ruin's floor holds besides, by layer: seeds and rations, kept from
+## the weather, and the survival kits they're mostly found in.
+const IN_RUINS := {
+	SURFACE: {
+		"parts": [
+			[&"carrot", 6],
+			[&"fungus", 4],
+			[&"ration", 2],
+		],
+		"devices": [
+			[&"survival_kit", 4],
+		],
+	},
+	DEEP: {
+		"parts": [
+			[&"carrot", 4],
+			[&"fungus", 4],
+			[&"ration", 1],
+		],
+		"devices": [
+			[&"survival_kit", 2],
+		],
+	},
+}
+## What a survival kit holds, by socket kind, and the share of its slots
+## found filled: it was packed to be found. Seeds keep only out of the
+## weather, so a kit lying on open sand has mostly lost them.
+const KIT := {&"water": [&"canister"], &"food": [&"ration"], &"plant_small": [&"carrot"],
+	&"plant_large": [&"fungus"]}
+const KIT_FILL := 0.75
+const KIT_SEEDS_IN_THE_OPEN := 0.1
 ## What a found device's sockets hold, by socket kind; a kind not listed is
 ## found empty.
 const FILLS := {
@@ -113,6 +171,9 @@ static func plan(run_seed: int, coord: Vector2i, exposed: float, tuning: Tuning,
 		spec.loose = not spec.device and rng.randf() < LOOSE_SHARE
 		var bury := rng.randf()
 		_fill(spec, rng)
+		# Too short to stand in the sand and still show enough, like a plug.
+		if not spec.device and _longest(spec.id) <= SHOWING:
+			spec.loose = true
 		var depths: Vector2 = LAYER[spec.layer].bury
 		spec.bury = 0.0 if spec.loose else lerpf(depths.x, depths.y, bury)
 		found.append(spec)
@@ -128,7 +189,7 @@ static func plan(run_seed: int, coord: Vector2i, exposed: float, tuning: Tuning,
 			spec.loose = true
 			spec.bury = 0.0
 			spec.floor = ruin.floor_y
-			_fill(spec, each, HALL_PARTS if k == 0 else 0)
+			_fill(spec, each, HALL_PARTS if k == 0 else 0, true)
 			found.append(spec)
 	return found
 
@@ -144,10 +205,13 @@ static func _lying(rng: RandomNumberGenerator, at: Vector2, deep: float, device 
 
 
 ## What it is, and for a device what it was found with.
-static func _fill(spec: Dictionary, rng: RandomNumberGenerator, least := 0) -> void:
+static func _fill(spec: Dictionary, rng: RandomNumberGenerator, least := 0, in_ruin := false) -> void:
 	var layer: StringName = spec.layer
 	var kind: Dictionary = LAYER[layer]
-	spec.id = _pick(rng, DEVICES[layer] if spec.device else PARTS[layer])
+	var table: Array = DEVICES[layer] if spec.device else PARTS[layer]
+	if in_ruin:
+		table = table + IN_RUINS[layer]["devices" if spec.device else "parts"]
+	spec.id = _pick(rng, table)
 	spec.fill = []
 	spec.charge = rng.randf_range(kind.charge.x, kind.charge.y)
 	spec.sound = rng.randf_range(kind.sound.x, kind.sound.y)
@@ -157,13 +221,17 @@ static func _fill(spec: Dictionary, rng: RandomNumberGenerator, least := 0) -> v
 		spec.id = &"crate_frame"
 	if spec.id == &"stake":
 		return
-	var fills: Dictionary = FILLS[layer]
+	var packed: bool = spec.id == &"survival_kit"
+	var fills: Dictionary = KIT if packed else FILLS[layer]
 	var sockets: Array = Catalog.DEVICES[spec.id].sockets
 	var open: Array[int] = []
 	for i in sockets.size():
 		if not fills.has(sockets[i][0]):
 			continue
-		if rng.randf() < kind.fill:
+		var share: float = kind.fill
+		if packed:
+			share = KIT_SEEDS_IN_THE_OPEN if sockets[i][0] in [&"plant_small", &"plant_large"] and not in_ruin else KIT_FILL
+		if rng.randf() < share:
 			spec.fill.append([i, _any(rng, fills[sockets[i][0]]), rng.randf_range(kind.charge.x, kind.charge.y)])
 		else:
 			open.append(i)
@@ -219,7 +287,7 @@ static func bare(spec: Dictionary) -> RigidBody3D:
 ## Fits the k-th part a device was found with.
 static func fit(device: Device, spec: Dictionary, k: int) -> void:
 	var entry: Array = spec.fill[k]
-	device.fit(_part(entry[1], entry[2], spec.layer), device.sockets()[entry[0]])
+	device.fit(_part(entry[1], entry[2], spec.layer, spec.id == &"survival_kit"), device.sockets()[entry[0]])
 
 
 ## Nothing found runs until it's yours; its light still shows what it holds.
@@ -229,8 +297,7 @@ static func dark(body: RigidBody3D) -> void:
 		return
 	device.set_powered(false)
 	if device.charge_light != null:
-		var cell := device.battery()
-		ChargeLight.paint(device.charge_light, cell.charge_wh / cell.capacity() if cell != null else 0.0)
+		ChargeLight.paint(device.charge_light, device.charge_share())
 
 
 ## A found device wears its years in the weather, a deep one fewer. Once it's
@@ -241,16 +308,32 @@ static func age(device: Device, sound: float) -> void:
 		device.wear((1.0 - sound) * tough)
 
 
-static func _part(id: StringName, charge: float, layer: StringName) -> Part:
+static func _part(id: StringName, charge: float, layer: StringName, sealed := false) -> Part:
 	var part := Catalog.part(id)
 	if part is Battery:
 		part.charge_wh = part.capacity() * charge
 		part.show_charge()
-	elif part is Supply:
-		# Found empty: where water comes from is Survival's question.
+	elif part is Supply and part.kind == &"water" and not sealed:
+		# Open water boils off: only a kit's canister is found sealed and full.
 		(part as Supply).drain(INF)
 	part.set_meta(&"layer", layer)
+	if id in [&"coil", &"plug", &"strong_plug"]:
+		part.set_meta(&"rolled", id)
 	return part
+
+
+## Found rope and wire lie as one body until they're yours: a coil, and a
+## cable's first plug with the rest of it behind. Then a coil becomes a line
+## to lay, and a plug pulls its cable and second plug up out of the sand.
+static func unroll(world: World, body: Node) -> void:
+	if not body.has_meta(&"rolled"):
+		return
+	var id: StringName = body.get_meta(&"rolled")
+	body.remove_meta(&"rolled")
+	if id == &"coil":
+		Line.make(world, world.tuning.rope_coil_length, body as Part)
+	else:
+		Catalog.cable(world, (body as Part).global_position, id == &"strong_plug", body as Part)
 
 
 ## Where a find lies, world metres. Buried, a part stands on end and anything
@@ -324,6 +407,11 @@ static func _up_to(up: Vector3) -> Basis:
 	if axis.length() < 1e-6:
 		return Basis.IDENTITY
 	return Basis(axis.normalized(), Vector3.UP.angle_to(up))
+
+
+static func _longest(id: StringName) -> float:
+	var size: Vector3 = Catalog.PARTS[id].size
+	return maxf(size.x, maxf(size.y, size.z))
 
 
 static func _stream(run_seed: int, coord: Vector2i, i: int) -> RandomNumberGenerator:

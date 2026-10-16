@@ -3,7 +3,8 @@ extends Node
 ## Power, as cheap arithmetic on a fixed tick of world time, so the frame rate
 ## never changes a charge and F5 speeds charging like everything else. Devices
 ## joined by cables share one pool: what they make feeds what they draw, then
-## fills their batteries; a pool that can't meet its draw goes dark. A ledger
+## fills their batteries; a pool that can't meet its draw goes dark. A device
+## seated on another, like a shield on a crate, shares its pool. A ledger
 ## proves no energy appears from nowhere.
 
 ## A dark pool waits until its batteries hold this share before it tries again.
@@ -48,10 +49,9 @@ func stored_wh() -> float:
 	for node in _world.content.get_children():
 		if node is Battery:
 			total += node.charge_wh
-		elif node is Device:
-			var cell: Battery = node.battery()
-			if cell != null:
-				total += cell.charge_wh
+	for device in _world.devices():
+		for cell in device.batteries():
+			total += cell.charge_wh
 	return total
 
 
@@ -65,9 +65,7 @@ func _tick(seconds: float, t: float) -> void:
 		for device: Device in pool:
 			made += device.production_w(t) * seconds / 3600.0
 			wanted += device.demand_w(t) * seconds / 3600.0
-			var cell := device.battery()
-			if cell != null:
-				cells.append(cell)
+			cells.append_array(device.batteries())
 		generated_wh += made
 		var on := true
 		if not pool.all(func(d: Device) -> bool: return d.powered) and made < wanted \
@@ -93,8 +91,7 @@ func _tick(seconds: float, t: float) -> void:
 			if on:
 				device.work(seconds, t)
 			if device.charge_light != null:
-				var cell := device.battery()
-				ChargeLight.paint(device.charge_light, cell.charge_wh / maxf(cell.capacity(), 1e-9) if cell != null else 0.0)
+				ChargeLight.paint(device.charge_light, device.charge_share())
 		for cell in cells:
 			cell.show_charge()
 
@@ -142,8 +139,7 @@ func wake(device: Device) -> void:
 		for each: Device in pool:
 			made += each.production_w()
 			wanted += each.demand_w()
-			if each.battery() != null:
-				cells.append(each.battery())
+			cells.append_array(each.batteries())
 		if made >= wanted or _fraction(cells) >= RESTART:
 			for each: Device in pool:
 				each.set_powered(true)
@@ -156,28 +152,36 @@ func pool_wh(device: Device) -> float:
 		if pool.has(device):
 			var held := 0.0
 			for each: Device in pool:
-				held += each.battery().charge_wh if each.battery() != null else 0.0
+				for cell in each.batteries():
+					held += cell.charge_wh
 			return held
 	return 0.0
 
 
-## Devices grouped by the cables joining them; an unjoined device is its own
-## pool. A wrecked one is in none: it neither makes nor draws, ever again.
+## Devices grouped by the cables joining them and the devices seated on them;
+## an unjoined device is its own pool. A wrecked one is in none: it neither
+## makes nor draws, ever again.
 func _pools() -> Array:
 	var devices: Array[Device] = []
 	var cables: Array[Cable] = []
+	for device in _world.devices():
+		if not device.wrecked():
+			devices.append(device)
 	for node in _world.content.get_children():
-		if node is Device and not node.wrecked():
-			devices.append(node)
-		elif node is Cable:
+		if node is Cable:
 			cables.append(node)
 	var root := {}
 	for device in devices:
 		root[device] = device
 	var find := func(d: Device, f: Callable) -> Device:
 		return d if root[d] == d else f.call(root[d], f)
+	var joins: Array = []
 	for cable in cables:
-		var ends := cable.joined()
+		joins.append(cable.joined())
+	for device in devices:
+		if device.host() != null:
+			joins.append([device, device.host()])
+	for ends: Array in joins:
 		if ends.size() == 2 and root.has(ends[0]) and root.has(ends[1]):
 			root[find.call(ends[0], find)] = find.call(ends[1], find)
 	var pools := {}

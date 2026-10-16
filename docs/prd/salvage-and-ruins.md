@@ -147,19 +147,35 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
   leaning with the sand and up to 15° more their own way: a quarter to a half of its
   height under the sand in the surface layer, 40 to 65% in the deep, and always at least
   35% of it and 10 cm showing. A quarter of the parts on open sand lie loose on top
-  instead, and everything on a ruin's floor lies loose: loose finds are set down 3 cm up,
-  settle, and then hold where they settled.
+  instead, as do parts too short to bury and still show 10 cm (hooks and plugs), and
+  everything on a ruin's floor lies loose: loose finds are set down 3 cm up, settle, and
+  then hold where they settled.
 - **A find is part of its chunk** until it's yours: frozen where it lies, dark, and left
   out of power, wear and the wind. Whatever you take, take from, fit to, use or take hold
   of becomes yours, an ordinary thing in the world, and runs at once if its battery can:
   a found shield generator switches on with the first use. Taking hold of a buried
   device pulls it up out of the sand onto it.
 - **What's found** is the catalog's own parts and devices. The surface layer holds
-  batteries, hooks, lamps and empty canisters (where water comes from is Survival's
-  question), and crate frames, chargers, planters and stakes. The deep layer holds big
-  batteries, batteries, hover trays, solar panels and hooks, and crate frames, wind
-  turbines, condensers and shield generators. A device comes with some of its sockets
-  filled from its own layer, a third of them at the surface and three in five deep.
+  batteries, hooks, lamps, empty canisters, rope coils and cable plugs, and crate frames,
+  chargers, planters, stakes and survival kits. The deep layer holds big batteries,
+  batteries, hover trays, solar panels, hooks, strong cable plugs and harvesters, and
+  crate frames, wind turbines, condensers and shield generators. A ruin's floor holds all
+  its layer's finds and more: seeds (carrots and fungus), sealed rations and survival
+  kits. A device comes with some of its sockets filled from its own layer, a third of
+  them at the surface and three in five deep. Over 3,000 chunks on two seeds, rope coils
+  and plugs are each about one find in fourteen, strong plugs one in thirty-five, survival
+  kits one in thirty-three (a seventh of them on ruins' floors), and the harvester, at one in
+  sixty, is the rarest part on open sand (2026-10-16).
+- **Rope and wire** lie as one body until they're yours. A coil, taken, gives you a
+  line's first end to lay, the rest on your belt. A plug standing in the sand is a
+  cable's first end: take it and its 6 m cable and second plug come up with it, a strong
+  cable's from the deep layer.
+- **A survival kit** is a small sealed case you can carry, 3 kg, with a water socket, a
+  food socket and three plant slots. It's found with each filled three times in four, and
+  its canister and ration sealed and full: what you live on at first. Seeds keep only out
+  of the weather, so a kit on open sand holds a seed in a slot only one time in ten. Over
+  the same chunks, 58 of 99 seeds were in ruins. Rations are found sealed wherever they
+  lie; a loose canister is found empty, since open water boils off.
   Deep things were kept from the weather longer: batteries 30 to 100% charged against
   up to 40% at the surface, devices 70 to 100% sound against 35 to 75%. The look-at line
   says which layer a find came from.
@@ -207,6 +223,10 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
   ruin's hall always holds a device with at least two parts to strip. The dev overlay's
   salvage column shows the finds in memory, and how hard the weather has been where you
   stand with the deep layer's share there.
+- **Probe 5** also checks every kind turns up, rope and wire are common, seeds are mostly
+  in ruins and the harvester is the rarest part; **probe 2** lays by hand any kind its
+  walk didn't meet; **probe 6** strips a survival kit and unrolls a found coil, plug and
+  strong plug through the hands.
 - **Probes** 1 to 7 pass, each checked against a deliberately broken build. Probes of
   other systems run without ruins and finds, as ground probes run in still air; salvage's
   own, the scenario probe and the hitch probe run with them. On the 20 km walk at most 66

@@ -1,8 +1,8 @@
 class_name Catalog
 extends RefCounted
 ## Every device frame and part the skeleton knows, built in code as grey boxes
-## with their sockets in defined spots. Salvage (Stage 8) will find them; until
-## then the test kit scenario drops a set round you.
+## with their sockets in defined spots. Salvage finds them, and the test kit
+## scenario drops a set round you.
 
 ## Socket kinds, with the colour of the tell that marks a free one.
 const KINDS := {
@@ -16,6 +16,7 @@ const KINDS := {
 	&"tie": Color(0.42, 0.31, 0.2),
 	&"water": Color(0.3, 0.6, 1.0),
 	&"mod": Color(0.75, 0.35, 0.7),
+	&"food": Color(0.8, 0.7, 0.35),
 }
 
 ## Parts: the socket kind they fit, weight, size (z is how far they stand out
@@ -30,7 +31,8 @@ const PARTS := {
 		"color": Color(0.6, 0.6, 0.65), "stats": {"hooks": 1}, "tie": Vector3(0.0, 0.0, 0.16)},
 	&"hover_tray": {"kind": &"bottom", "label": "Hover tray", "mass": 6.0, "size": Vector3(0.7, 0.7, 0.08),
 		"color": Color(0.25, 0.45, 0.6), "stats": {"lift_kg": 80.0}},
-	&"solar_panel": {"kind": &"top", "label": "Solar panel", "mass": 5.0, "size": Vector3(0.8, 0.6, 0.04),
+	# Half a crate's top, so two ride side by side.
+	&"solar_panel": {"kind": &"top", "label": "Solar panel", "mass": 5.0, "size": Vector3(0.8, 0.4, 0.04),
 		"color": Color(0.1, 0.15, 0.35), "stats": {"solar_w": 60.0}},
 	&"lamp": {"kind": &"top", "label": "Lamp", "mass": 1.0, "size": Vector3(0.12, 0.12, 0.25),
 		"color": Color(0.95, 0.9, 0.6), "stats": {"light_w": 5.0}},
@@ -54,7 +56,8 @@ const PARTS := {
 	# Nothing takes a coil: picked up, it gives you its first end.
 	&"coil": {"kind": &"coil", "label": "Rope coil", "mass": 1.5, "size": Vector3(0.34, 0.34, 0.07),
 		"color": Color(0.42, 0.31, 0.2), "stats": {}},
-	# Sealed water, and sealed food, which no socket takes: they live in your slots.
+	# Sealed water, and sealed food, which only a survival kit's slot takes:
+	# they live in your slots.
 	&"canister": {"kind": &"water", "label": "Water canister", "mass": 2.4, "size": Vector3(0.12, 0.12, 0.26),
 		"color": Color(0.55, 0.62, 0.68), "stats": {}},
 	&"ration": {"kind": &"food", "label": "Ration", "mass": 0.5, "size": Vector3(0.16, 0.1, 0.06),
@@ -70,14 +73,20 @@ static var _tells := {}
 
 ## Frames: their box, weight, wind catch and sockets as [kind, position, outward].
 const DEVICES := {
+	# Two batteries, a ring on every side, a tray under it and two top mounts,
+	# so a panel rides beside a lamp or a shield.
 	&"crate_frame": {"label": "Crate frame", "size": Vector3(0.8, 0.5, 0.8), "mass": 15.0,
 		"sockets": [
-			[&"battery", Vector3(0.0, 0.0, 0.4), Vector3.BACK],
+			[&"battery", Vector3(-0.2, 0.0, 0.4), Vector3.BACK],
 			[&"ring", Vector3(0.4, 0.0, 0.0), Vector3.RIGHT],
 			[&"ring", Vector3(-0.4, 0.0, 0.0), Vector3.LEFT],
 			[&"bottom", Vector3(0.0, -0.25, 0.0), Vector3.DOWN],
-			[&"top", Vector3(0.0, 0.25, 0.0), Vector3.UP],
+			[&"top", Vector3(0.0, 0.25, -0.2), Vector3.UP],
 			[&"port", Vector3(0.25, 0.1, -0.4), Vector3.FORWARD],
+			[&"battery", Vector3(0.2, 0.0, 0.4), Vector3.BACK],
+			[&"ring", Vector3(0.0, 0.15, 0.4), Vector3.BACK],
+			[&"ring", Vector3(-0.2, 0.0, -0.4), Vector3.FORWARD],
+			[&"top", Vector3(0.0, 0.25, 0.2), Vector3.UP],
 		]},
 	# Its own water tank, and a mod mount on its back for a harvester.
 	&"planter": {"label": "Planter", "size": Vector3(1.0, 0.35, 0.6), "mass": 10.0, "planter": true,
@@ -118,14 +127,31 @@ const DEVICES := {
 			[&"ring", Vector3(-0.3, -0.15, 0.0), Vector3.LEFT],
 			[&"bottom", Vector3(0.0, -0.35, 0.0), Vector3.DOWN],
 		]},
-	# The base shield: small and light, F switches it, and its bubble keeps
-	# out wind and storm wherever it goes.
+	# The base shield: small and light, use switches it, and its bubble keeps
+	# out wind and storm wherever it goes, a crate's top mount included.
 	&"shield": {"label": "Shield generator", "size": Vector3(0.4, 0.42, 0.4), "mass": 6.0, "shield": true,
+		"fits": &"top",
 		"sockets": [
 			[&"battery", Vector3(0.0, -0.05, 0.2), Vector3.BACK],
 			[&"ring", Vector3(-0.2, -0.05, 0.0), Vector3.LEFT],
 			[&"bottom", Vector3(0.0, -0.21, 0.0), Vector3.DOWN],
 			[&"port", Vector3(0.2, -0.05, 0.0), Vector3.RIGHT],
+		]},
+	# The light solar panel you start with: set it down, cable it in, pick it
+	# up again. Lying flat, the wind meets its edge.
+	&"light_panel": {"label": "Light solar panel", "size": Vector3(0.8, 0.05, 0.6), "mass": 5.0, "carryable": true,
+		"stats": {"solar_w": 60.0, "face_m2": 0.04},
+		"sockets": [
+			[&"port", Vector3(0.4, 0.0, 0.0), Vector3.RIGHT],
+		]},
+	# A sealed case of what keeps you going: a canister, a ration and seeds.
+	&"survival_kit": {"label": "Survival kit", "size": Vector3(0.5, 0.25, 0.35), "mass": 3.0, "carryable": true,
+		"sockets": [
+			[&"water", Vector3(-0.13, 0.0, 0.175), Vector3.BACK],
+			[&"food", Vector3(0.13, 0.0, 0.175), Vector3.BACK],
+			[&"plant_small", Vector3(-0.15, 0.125, 0.0), Vector3.UP],
+			[&"plant_small", Vector3(0.0, 0.125, 0.0), Vector3.UP],
+			[&"plant_large", Vector3(0.15, 0.125, 0.0), Vector3.UP],
 		]},
 }
 
@@ -193,14 +219,18 @@ static func food(id: StringName, kcal: float) -> Supply:
 
 ## A cable and its two plugs, dropped together at a place; both plugs go loose
 ## in the world as parts and the cable draws the wire between them. A strong
-## cable is also a rope, holding what it's plugged into.
-static func cable(world: World, at: Vector3, strong := false) -> Cable:
+## cable is also a rope, holding what it's plugged into. Given its first plug,
+## a found one, it makes only the second, beside it.
+static func cable(world: World, at: Vector3, strong := false, first: Part = null) -> Cable:
 	var made: Cable = StrongCable.new() if strong else Cable.new()
 	world.content.add_child(made)
 	for side in [-0.2, 0.2]:
-		var plug := part(&"strong_plug" if strong else &"plug")
-		world.content.add_child(plug)
-		plug.global_position = at + Vector3(side, 0.05, 0.0)
+		var plug := first if first != null and made.plugs.is_empty() else part(&"strong_plug" if strong else &"plug")
+		if plug.get_parent() == null:
+			world.content.add_child(plug)
+			plug.global_position = at + Vector3(side, 0.05, 0.0)
+			if first != null:
+				plug.global_position.y = world.height_under(plug.global_position) + 0.05
 		made.plugs.append(plug)
 	if strong:
 		(made as StrongCable).bind(world)
@@ -243,13 +273,17 @@ static func device(id: StringName) -> Device:
 	made.label = spec.label
 	made.frame_mass = spec.mass
 	made.frame_stats = spec.get("stats", {}).duplicate()
+	made.kind = spec.get("fits", &"")
+	if spec.get("carryable", false):
+		made.carryable = true
 	var size: Vector3 = spec.size
 	_add_box(made, size, Vector3.ZERO, Color(0.55, 0.55, 0.55))
 	if spec.has("mast"):
 		_add_mast(made, size, spec.mast)
 	if spec.sockets.any(func(e: Array) -> bool: return e[0] == &"battery"):
 		made.charge_light = ChargeLight.make(Vector3(0.05, 0.05, 0.05))
-		made.charge_light.position = Vector3(size.x * 0.5 - 0.05, size.y * 0.5 + 0.025, size.z * 0.5 - 0.05)
+		# High on its right side, where nothing on its top mounts covers it.
+		made.charge_light.position = Vector3(size.x * 0.5 + 0.025, size.y * 0.5 - 0.05, size.z * 0.5 - 0.05)
 		made.add_child(made.charge_light)
 	for entry: Array in spec.sockets:
 		var socket := Socket.new()

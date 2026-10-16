@@ -144,6 +144,13 @@ The shield decides how much of it is safe. All three grow with upgrades.
 - **Protection is a share per harm,** 0 to 1, carried by each bubble; the levels
   (immune, strong, weak) are numbers on it. Only a bubble that stops the storm outright
   carves the dust out of the storm pass.
+- **Seated on a crate** (2026-10-16): the generator fits a top mount (a crate's, a
+  charger's or a condenser's) and the bubble rides with it, so towing or dragging the
+  crate on its line carries the bubble (shield probe 4 tows one 200 m through a storm).
+  Seated, it shares the device's power pool: with no battery of its own it runs on the
+  crate's, at the same 10 W sip in the clear, and a panel on the crate's other top mount
+  charges the generator's own battery in the sun (shield probe 5). Use still switches
+  it, and take lifts it off whole, running. Its warning reads the whole pool's charge.
 - **Wear:** one durability per device, until parts wear on their own. A full storm
   wrecks a device in 10 minutes; wind past 20 m/s wears it too (10 m/s past, 30
   minutes). The turbine, built to stand out in storms, is four times tougher. Wrecked,

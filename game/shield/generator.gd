@@ -1,8 +1,9 @@
 class_name ShieldGenerator
 extends Device
-## The bubble shield: a small generator you carry, set down and switch on with
-## F. Running, it holds a Shelter centred on itself, so the bubble goes
-## wherever it does, carried or not, and keeps out what the shelter blocks. It
+## The bubble shield: a small generator you carry, set down or seat on a top
+## mount, and switch with use. Running, it holds a Shelter centred on itself, so
+## the bubble goes wherever it does, carried or not, and keeps out what the
+## shelter blocks. Seated on a crate, it runs on the crate's power too. It
 ## draws by what it's doing: a sip in the clear, the most while it holds back
 ## a storm. Low on power its hum sags and its shell flickers; flat, the bubble
 ## collapses for everything at once, and blooms again once there's power.
@@ -84,7 +85,20 @@ func _exit_tree() -> void:
 	hum.stop()
 
 
-## F in your hands switches it just the same.
+## Seated on a device or taken off one, it leaves the tree and comes back
+## running as it was.
+func _enter_tree() -> void:
+	if hum != null and _up:
+		# Its sounds come into the tree after it does.
+		_resume.call_deferred()
+
+
+func _resume() -> void:
+	if is_inside_tree() and _up and not hum.playing:
+		hum.play()
+
+
+## Use in your hands switches it just the same.
 func use(by: Player, _at: Vector3) -> bool:
 	return interact(by)
 
@@ -138,14 +152,13 @@ func demand_w(t := NAN) -> float:
 		* pow(size / _tuning.shield_radius, 2.0)
 
 
-## Seconds of world time its battery lasts at what it draws now, less what it
-## makes; INF while it isn't running down.
+## Seconds of world time its pool's batteries last at what it draws now, less
+## what it makes; INF while it isn't running down.
 func seconds_left() -> float:
-	var cell := battery()
 	var net := demand_w() - production_w()
-	if cell == null or net <= 0.0:
+	if net <= 0.0:
 		return INF
-	return cell.charge_wh / net * 3600.0
+	return world.power.pool_wh(self) / net * 3600.0
 
 
 func _physics_process(delta: float) -> void:

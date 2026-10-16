@@ -124,6 +124,20 @@ it, take hold of it, and let go.
   slides out.
 - **A hook adds a socket** (2026-10-15): a tie socket on its ring while it's fitted,
   where a line's end snaps on. Taking the hook out takes the line's end off first.
+- **A small device can fit a socket** (2026-10-16, Hunter: "can we make the shield
+  snappable to the crate like lights are? so we can mount and charge it and drag it
+  around?"). The shield generator fits a top mount the way a lamp does: the tug leans it
+  in, upright, and take seats it. Seated, it stays a body of its own, held fast on the
+  device and touching nothing of it, so it carries on working as itself: it rides with
+  the device, adds its weight, shares the device's power pool, and use still switches it.
+  Take lifts it straight off, whole, whatever of it you aim at. Its own sockets wait
+  until it's off again.
+- **The crate frame has more sockets** (2026-10-16, Hunter: "i feel like the crate
+  should have more slots"): two battery slots on its back, a ring mount on every side,
+  a bottom mount, two top mounts side by side and a port. The solar panel is 0.8 × 0.4 m
+  now, half the crate's top, so a panel rides beside a lamp, a shield or a second panel.
+  Fitted out with two big batteries, four hooks, a tray, a panel and a shield, a crate
+  weighs 56 kg, under a tray's 80 kg of lift, and floating draws 112 W.
 
 ## Where parts come from, and how they wear
 
@@ -140,8 +154,21 @@ it, take hold of it, and let go.
 | Battery slot | Batteries | Power |
 | Ring mount | Rope hooks | Rope & tethering |
 | Bottom mount | Hover trays | Bubble shield & camp |
-| Top mount | Solar panels, instruments, lamps | Power and others |
+| Top mount | Solar panels, instruments, lamps, the shield generator | Power and others |
 | Plant slot (small, large) | Seedlings | Farming |
+
+**As built, what each frame has** (2026-10-16):
+
+| Frame | Battery | Ring | Bottom | Top | Port | Other |
+|---|---|---|---|---|---|---|
+| Crate frame | 2 | 4 | 1 | 2 | 1 | |
+| Planter | 1 | 2 | 1 | | 1 | 3 small and 1 large plant slot, a mod mount |
+| Charger | 1 | | | 1 | 1 | |
+| Wind turbine | 1 | | | | 1 | |
+| Condenser | 1 | 1 | 1 | 1 | 1 | a water socket |
+| Shield generator | 1 | 1 | 1 | | 1 | fits a top mount itself |
+| Light solar panel | | | | | 1 | |
+| Survival kit | | | | | | a water and a food socket, 2 small and 1 large plant slot |
 
 Some parts **add sockets of their own**. An extra-hook mod fits a mount and provides a
 hook. That's how found mods expand a device.

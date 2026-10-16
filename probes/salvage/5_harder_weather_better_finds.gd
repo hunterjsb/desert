@@ -5,6 +5,8 @@ extends Probe
 ## with how hard the weather has been: from the calmest third to the middle
 ## to the hardest. A chunk a storm has sat on all of the last hours shows more
 ## of the deep layer than one a storm has touched for half of them or less.
+## And every kind the sand holds turns up: rope and wire commonly, seeds mostly
+## on ruins' floors (loose and in survival kits), the harvester rarely.
 
 const SEEDS := [1234, 7]
 const CHUNKS_PER_SEED := 1500
@@ -33,6 +35,7 @@ func run() -> void:
 			var specs := Finds.plan(run_seed, coord, exposed, tuning, shape.height_at, shape.ruins.in_chunk(coord))
 			for spec in specs:
 				samples.append(Vector2(exposed, Finds.tier(spec)))
+				_tally(spec)
 			# The two ends of the weather, read straight from the field.
 			var hours := _hours(field, middle, t, tuning)
 			var into: Array = stormed if hours == 1.0 else (calm if hours <= CALM else [])
@@ -60,6 +63,45 @@ func run() -> void:
 	check(thirds[2] - thirds[0] >= RISE, "the hardest third beats the calmest by %.2f tier (%.3f)" % [RISE, thirds[2] - thirds[0]])
 	check(stormed[1] >= 50 and calm[1] >= 50, "both ends of the weather were met (%d stormed, %d calm)" % [stormed[1], calm[1]])
 	check(deep_stormed > deep_calm + RISE, "hours under a storm show more of the deep layer than hours mostly clear")
+	var where := func(id: StringName) -> String:
+		return "%d (%d on ruins' floors)" % [_kinds.get(id, [0, 0])[0], _kinds.get(id, [0, 0])[1]]
+	print("of %d finds: %s coils, %s plugs, %s strong plugs, %s survival kits, %s harvesters; seeds %d on open sand, %d in ruins"
+		% [samples.size(), where.call(&"coil"), where.call(&"plug"), where.call(&"strong_plug"),
+			where.call(&"survival_kit"), where.call(&"harvester"), _seeds[0], _seeds[1]])
+	var missing: Array[StringName] = []
+	for layer: StringName in Finds.PARTS:
+		for table: Array in [Finds.PARTS[layer], Finds.DEVICES[layer], Finds.IN_RUINS[layer].parts, Finds.IN_RUINS[layer].devices]:
+			for entry: Array in table:
+				if _kinds.get(entry[0], [0, 0])[0] == 0 and not missing.has(entry[0]):
+					missing.append(entry[0])
+	check(missing.is_empty(), "every kind the sand holds turns up (never: %s)" % ", ".join(missing))
+	check(_kinds[&"coil"][0] > samples.size() / 20 and _kinds[&"plug"][0] > samples.size() / 20,
+		"rope and wire are common finds")
+	check(_seeds[1] > _seeds[0], "seeds are mostly found in ruins (%d against %d)" % [_seeds[1], _seeds[0]])
+	var commoner := 0
+	for layer: StringName in Finds.PARTS:
+		for entry: Array in Finds.PARTS[layer]:
+			commoner += int(entry[0] != &"harvester" and _kinds.get(entry[0], [0, 0])[0] > _kinds[&"harvester"][0])
+	check(commoner == Finds.PARTS[Finds.SURFACE].size() + Finds.PARTS[Finds.DEEP].size() - 1,
+		"the harvester is the rarest part on open sand")
+
+
+## Finds by kind, [all, on ruins' floors], and seeds [on open sand, in ruins],
+## loose or in a kit.
+var _kinds := {}
+var _seeds := [0, 0]
+
+
+func _tally(spec: Dictionary) -> void:
+	var in_ruin := int(spec.has("floor"))
+	var count: Array = _kinds.get(spec.id, [0, 0])
+	count[0] += 1
+	count[1] += in_ruin
+	_kinds[spec.id] = count
+	var held: Array = [spec.id] + spec.fill.map(func(f: Array) -> StringName: return f[1])
+	for id: StringName in held:
+		if id in [&"carrot", &"fungus"]:
+			_seeds[in_ruin] += 1
 
 
 ## The share of the hours a chunk's exposure reads that a storm sat on it.

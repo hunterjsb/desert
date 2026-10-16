@@ -1,14 +1,21 @@
 extends WorldProbe
-## Survival probe 4: a clean new run. The game as it runs, with a run lived
+## Survival probe 4: a clean new run. The game as it runs: the run starts
+## with its kit on the sand beside you, a shield with a full battery and the
+## light solar panel cabled into it, and switched on, the kit keeps the
+## bubble up through the run's first day in its own weather. Then a run lived
 ## in: the sealed-water start set down, its shield up, a line between two
 ## stakes, a ration in your hands, a canister half drunk, the clock days on.
 ## Then you die, by your own body's tick. A new run starts on a new seed, and
 ## nothing of the old one is left anywhere, not a device, a part, a line, a
 ## bubble or a watt-hour. You start at the beginning, fed and watered, with
-## only a fresh suit's kit in your slots.
+## only a fresh suit's kit in your slots and the run's kit beside you.
 
 const MAIN := preload("res://game/main.tscn")
 const DAYS := 3.0
+## How long the kit's shield runs on, in days, and the world's time warp
+## while it does.
+const KIT_DAYS := 1.0
+const WARP := 60.0
 
 
 func run() -> void:
@@ -21,6 +28,13 @@ func run() -> void:
 	await settle(true)
 	var player := world.player
 	var lived: Array = []
+	var kit := await _kit_in(world)
+	_check_kit(kit, "the first run")
+	await _run_the_day(kit)
+	lived.append_array(kit)
+	# The sealed-water start goes down clear of the kit.
+	teleport(world.spawn.x, world.spawn.y + 12.0)
+	await physics_frames(5)
 	lived.append_array(Scenarios.survive(world))
 	await physics_frames(30)
 	for body: Node in lived:
@@ -45,8 +59,8 @@ func run() -> void:
 	await physics_frames(10)
 	var old := world
 	var old_seed := world.run_seed
-	check(world.ropes.ropes.size() == 1 and player.hands.held == ration and world.weather.shelters().size() == 1,
-		"the old run has a line, a ration in hand and a bubble up")
+	check(world.ropes.ropes.size() == 1 and player.hands.held == ration and world.weather.shelters().size() == 2,
+		"the old run has a line, a ration in hand and its shields")
 
 	# What the new run holds the moment it starts, before its own weather touches it.
 	var fresh := {}
@@ -71,10 +85,14 @@ func run() -> void:
 	for thing in lived:
 		left += int(is_instance_valid(thing))
 	check(left == 0, "nothing of the old run is left (%d things)" % left)
-	var strays := world.content.get_children().filter(func(n: Node) -> bool: return n != world.player)
-	check(strays.is_empty() and world.ropes.ropes.is_empty() and get_tree().get_nodes_in_group(Shelter.GROUP).is_empty()
-		and world.power.stored_wh() == 0.0 and world.power.generated_wh == 0.0,
-		"the new world has nothing in it but you (%d things, %d lines)" % [strays.size(), world.ropes.ropes.size()])
+	var fresh_kit := await _kit_in(world)
+	_check_kit(fresh_kit, "the run after death")
+	var strays := world.content.get_children().filter(func(n: Node) -> bool:
+		return n != world.player and not fresh_kit.has(n))
+	var bubbles := get_tree().get_nodes_in_group(Shelter.GROUP)
+	check(strays.is_empty() and world.ropes.ropes.is_empty() and bubbles.size() == 1
+		and bubbles[0].get_parent() == fresh_kit[0] and absf(world.power.stored_wh() - fresh_kit[0].battery().capacity()) < 1e-6,
+		"the new world has nothing in it but you and the kit (%d things, %d lines)" % [strays.size(), world.ropes.ropes.size()])
 	print("the new run began with %s" % fresh)
 	check(fresh.get("you") == [Vitals.FULL, Vitals.FULL, Vitals.FULL, false, 0.0, 0.0, 0.0, 0.0, 0.0, null, 0]
 		and fresh.get("spawn", INF) < 1.0 and fresh.get("time", INF) == 0.0,
@@ -106,3 +124,65 @@ func _world_in(main: Node) -> World:
 		if child is World and not child.is_queued_for_deletion():
 			return child
 	return null
+
+
+## The run's kit once it's down beside where the run began: [shield, panel,
+## cable], or as much of it as there is.
+func _kit_in(at: World) -> Array:
+	for i in 600:
+		var found := [null, null, null]
+		for node in at.content.get_children():
+			if node is ShieldGenerator:
+				found[0] = node
+			elif node is Device and node.label == "Light solar panel":
+				found[1] = node
+			elif node is Cable:
+				found[2] = node
+		if not found.has(null):
+			return found
+		await get_tree().physics_frame
+	return []
+
+
+func _check_kit(kit: Array, run: String) -> void:
+	check(kit.size() == 3, "%s starts with the shield, the light panel and a cable beside you" % run)
+	if kit.size() != 3:
+		return
+	var shield: ShieldGenerator = kit[0]
+	var panel: Device = kit[1]
+	var cable: Cable = kit[2]
+	var start := Vector3(world.engine_x(world.spawn.x), 0.0, world.engine_z(world.spawn.y))
+	var near := [shield, panel].all(func(d: Device) -> bool:
+		return Vector2(d.global_position.x - start.x, d.global_position.z - start.z).length() < 3.5)
+	check(near and shield.battery() != null and shield.charge_share() > 0.99 and not shield.on and panel.carryable
+		and cable.joined().has(shield) and cable.joined().has(panel),
+		"%s: a full shield, switched off, cabled to a panel you can pick up, beside where you begin" % run)
+
+
+## Switched on, the kit's shield runs a day of the run's own weather at the
+## spawn without going dark; the panel feeds what it draws.
+func _run_the_day(kit: Array) -> void:
+	if kit.size() != 3:
+		return
+	var shield: ShieldGenerator = kit[0]
+	# The ground took as long to build as the machine took: the day starts at time zero.
+	world.respawn(world.spawn.x, world.spawn.y, 0.0, 0.0)
+	await physics_frames(2)
+	check(shield.interact(world.player), "use switches the kit's shield on")
+	var made := world.power.generated_wh
+	var lowest := INF
+	var dark := 0
+	var stormy := 0
+	var ticks := Engine.physics_ticks_per_second
+	world.time_warp = WARP
+	for i in roundi(KIT_DAYS * world.tuning.day_minutes * 60.0 / WARP * ticks):
+		await get_tree().physics_frame
+		lowest = minf(lowest, shield.charge_share())
+		dark += int(not shield.running())
+		stormy += int(world.weather.field_storm(shield.global_position) > 0.0)
+	world.time_warp = 1.0
+	print("the kit's shield ran %.1f day(s), %d%% of it under a storm: lowest charge %.0f%%, the panel made %.1f Wh"
+		% [KIT_DAYS, roundi(100.0 * stormy / maxf(KIT_DAYS * world.tuning.day_minutes * 60.0 / WARP * ticks, 1.0)),
+			lowest * 100.0, world.power.generated_wh - made])
+	check(dark == 0, "the kit keeps its shield up for a day (%d frames dark)" % dark)
+	shield.interact(world.player)

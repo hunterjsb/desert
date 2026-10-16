@@ -122,8 +122,8 @@ Death means a new run (see Runs in the vision).
 - **Sealed water and food.** A canister holds 2 L and a ration 1,000 kcal, found sealed and
   full. Like a battery, a canister carries what's in it and its light shows how full it
   is. A ration eaten to the end is gone; an empty canister stays, to be filled again.
-  Ruins don't exist yet, so for now every run starts with one canister and one ration in
-  your slots.
+  Every run starts with one canister and one ration in your slots. Sealed water is found
+  in survival kits, and sealed rations in kits and on ruins' floors (Salvage).
 - **Needs** are health, hunger and thirst out of 100, on the same fixed tick of world
   time as power, so the dev time warp runs them with everything else. Hunger empties in
   two days and thirst in one, up to twice as fast in the heat (from 30 °C up to the suit's
@@ -154,8 +154,19 @@ Death means a new run (see Runs in the vision).
 - **How long sealed water lasts:** a full canister and a full thirst bar see you through
   about two days at the equator. Each more canister is about another day.
 - **Death starts a new run.** The world goes with everything in it, and a fresh one on a
-  new seed takes its place. You start at its spawn, fed and watered, with only the
-  canister and the ration.
+  new seed takes its place. You start at its spawn, fed and watered, with the canister
+  and the ration in your slots.
+- **The starting kit** (Hunter, 2026-10-16: "start with the shield and solar panel").
+  Every run, the first and every one after a death, starts with the kit on the sand
+  beside you, once the ground there is solid: a base shield generator with a full
+  battery, switched off, and the light solar panel cabled into its port. Use switches
+  the shield on; pick up the panel, the shield or the cable's plugs to move them. It keeps
+  the bubble up for a day whatever the weather, but the panel can't refill the battery
+  after a storm (Power). A dev scenario that drops its own camp clears the run's kit
+  first. Survival probe 4 checks both runs start with it and runs its shield for a day.
+- **Food and water from salvage:** no new food was needed. Survival kits, common on
+  ruins' floors and sometimes on open sand, hold a sealed canister and a ration three
+  times in four, and seeds for a planter; loose rations and seeds lie on ruins' floors.
 - **The playtest scenario** ("survive a few days", in the dev menu) starts you over at a
   clear dawn, with a condenser in front of you (a battery, a panel and an empty
   canister fitted), a charged shield generator, a cable and two spare rations. A

@@ -5,7 +5,9 @@ extends SalvageProbe
 ## its socket, or once you've taken hold of the device and pulled it up out of
 ## the sand where they can't, and goes into a device of your own. What you
 ## take from becomes yours; nothing is left in the find. A found shield
-## generator, used as it lies, starts on that first use.
+## generator, used as it lies, starts on that first use. A found coil, taken,
+## gives you a line's first end to lay, and a found plug brings its cable and
+## second plug up out of the sand with it.
 
 ## Your eyes look at a socket from this far off, from any of these many sides
 ## round its opening, these far off its axis, rad; from beside it, a little higher.
@@ -38,6 +40,38 @@ func run() -> void:
 	check(tally.out == tally.parts, "every part came out of its find (%d of %d)" % [tally.out, tally.parts])
 	check(tally.fitted == tally.parts, "every part went into a device of yours (%d of %d)" % [tally.fitted, tally.parts])
 	check(tally.yours == ids.size(), "every find you took from became yours (%d of %d)" % [tally.yours, ids.size()])
+	await _unrolls(&"coil", 0)
+	await _unrolls(&"plug", 1)
+	await _unrolls(&"strong_plug", 2)
+
+
+## A found coil or plug lying loose a step ahead, taken through the hands.
+func _unrolls(id: StringName, k: int) -> void:
+	var here := Vector2(world.player_world_x(), world.player_world_z())
+	var at := here + Vector2(1.5 * k - 1.5, -2.0)
+	var spec := {"index": 950 + k, "id": id, "device": false, "layer": Finds.SURFACE, "x": at.x, "z": at.y,
+		"yaw": 0.3, "lean": 0.0, "lean_by": 0.0, "bury": 0.0, "loose": true, "sound": 1.0, "charge": 0.0, "fill": []}
+	var found := salvage.lay(world.terrain.chunk_at(at.x, at.y), spec) as Part
+	await simulate(1.0)
+	var middle := found.global_transform * Finds.bounds(found).get_center()
+	look(middle + Vector3(0.0, 1.2, 0.8), middle)
+	await simulate(1.0 / 60.0)
+	check(hands.grab(), "take picks up a found %s" % found.label)
+	await simulate(0.5)
+	if id == &"coil":
+		var line := hands.held.get_meta(&"line") as Line if hands.held != null and hands.held.has_meta(&"line") else null
+		check(line != null and line.state == Line.State.FIRST and hands.held.kind == &"tie"
+			and world.player.waist.holds(line.ends[1]), "a found coil gives you its first end, the rest on your belt")
+	else:
+		var cable: Cable = null
+		for node in world.content.get_children():
+			if node is Cable and (node as Cable).plugs.has(found):
+				cable = node
+		check(hands.held == found and cable != null and cable.plugs.size() == 2 and (cable is StrongCable) == (id == &"strong_plug")
+			and cable.plugs[1].global_position.distance_to(found.global_position) < cable.length,
+			"a found %s brings its cable and second plug with it" % found.label)
+	hands.drop()
+	await simulate(0.3)
 
 
 ## One found device of a kind, every fillable socket full from both layers'
@@ -51,9 +85,10 @@ func _strip(id: StringName, k: int, tally: Dictionary) -> void:
 	var sockets: Array = Catalog.DEVICES[id].sockets
 	for i in sockets.size():
 		var kind: StringName = sockets[i][0]
-		for layer: StringName in [Finds.DEEP, Finds.SURFACE]:
-			if Finds.FILLS[layer].has(kind):
-				spec.fill.append([i, Finds.FILLS[layer][kind][0], 0.5])
+		var fills: Array = [Finds.KIT] if id == &"survival_kit" else [Finds.FILLS[Finds.DEEP], Finds.FILLS[Finds.SURFACE]]
+		for each: Dictionary in fills:
+			if each.has(kind):
+				spec.fill.append([i, each[kind][0], 0.5])
 				break
 	var coord := world.terrain.chunk_at(at.x, at.y)
 	var found := salvage.lay(coord, spec) as Device
