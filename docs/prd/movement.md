@@ -140,7 +140,9 @@ even storms that last for days.
   about 6 cm at a corner. The
   spring is stiff pressed down and softer lifting off, and pulls you back down at most
   15 m/s² past gravity, so off a big crest at top speed you float a metre or two; a hop
-  falls at 0.6 g. It feels the sand along its own length, and the sand round it from
+  falls at 0.6 g. *(Hunter, 2026-10-16: "it doesnt really seem like we can catch air on
+  the board". It should leave the sand off crests at speed and give real air on a hop,
+  so the spring's pull-down eases once you're clear of the sand.)* It feels the sand along its own length, and the sand round it from
   0.45 s of travel behind to 0.45 s ahead, both as running means along the way it went,
   so the ground's lattice never judders it and a dip's bottom is rounded instead of
   slammed into. Climbing flat out straight into a slip face's foot is the hardest it
