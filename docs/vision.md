@@ -84,8 +84,10 @@ upgrade the camp → the camp sustains more of itself → go further, or into th
 - **Death means a new run.** Whatever you had stays out there in theory but is
   practically unreachable. With RNG driving both the terrain and the finds, this is
   roguelite territory.
-- **You start with the essentials** (leaning): a base shield, and a light solar panel
-  you can set down and pick back up. The hoverboard is a find, not a starting item.
+- **You start with the essentials:** a base shield, and a light solar panel you can set
+  down and pick back up ("start with the shield and solar panel", Hunter, 2026-10-16),
+  with sealed water and a ration in the suit. The hoverboard is a find, not a starting
+  item.
 - **Permadeath is the intended mode, and it's what we balance around.** An optional
   mode allows saving and reloading, but turning it on disables achievements, the way
   Project Zomboid-style games treat their custom difficulty settings.

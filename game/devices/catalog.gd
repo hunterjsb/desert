@@ -37,13 +37,13 @@ const PARTS := {
 	&"lamp": {"kind": &"top", "label": "Lamp", "mass": 1.0, "size": Vector3(0.12, 0.12, 0.25),
 		"color": Color(0.95, 0.9, 0.6), "stats": {"light_w": 5.0}},
 	# Crops, sown in a planter's slots: "crop" names their tuning numbers, and
-	# a harvest comes out as their "food".
+	# a harvest comes out as their "food". One that "regrows" fruits again when picked.
 	&"carrot": {"kind": &"plant_small", "label": "Carrot", "mass": 0.3, "size": Vector3(0.1, 0.1, 0.18),
 		"color": Color(0.3, 0.7, 0.2), "ripe": Color(0.95, 0.5, 0.1), "stats": {"plants": 1},
 		"crop": &"carrot", "food": &"carrots"},
 	&"fungus": {"kind": &"plant_large", "label": "Fungus", "mass": 1.2, "size": Vector3(0.18, 0.18, 0.4),
 		"color": Color(0.4, 0.36, 0.3), "ripe": Color(0.9, 0.85, 0.7), "stats": {"plants": 1},
-		"crop": &"fungus", "food": &"fungus_caps"},
+		"crop": &"fungus", "food": &"fungus_caps", "regrows": true},
 	# Fits a planter's mod mount: ripe crops go into the planter's own storage.
 	&"harvester": {"kind": &"mod", "label": "Harvester", "mass": 1.5, "size": Vector3(0.22, 0.14, 0.1),
 		"color": Color(0.5, 0.3, 0.45), "stats": {"harvester": 1}},

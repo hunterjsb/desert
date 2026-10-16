@@ -6,7 +6,8 @@ extends FarmProbe
 ## light, not at all where it's too dark, too bright, too hot or too cold, and
 ## past its hardy limits it wilts back at the wilting rate. Ripe, it stops and
 ## holds through weather that would wilt it, until it's picked: taken by hand,
-## its harvest comes out as food and its slot is free.
+## its harvest comes out as food and the farm goes on. A carrot's seed goes
+## into a slot of yours, and fungus stays in its slot and fruits again.
 
 const SPAN := 25.0
 ## [what, storm, time of day, °C, the carrot's rate, the fungus's], as shares
@@ -76,4 +77,26 @@ func run() -> void:
 	print("picked by hand: %s" % (Hands.describe(food.label, food.mass, food.stats) if food != null else "nothing"))
 	check(food != null and food.kind == &"food" and food.amount == harvest and hands.phase == Hands.Phase.HELD,
 		"its harvest comes to your hands as food, %d kcal" % harvest)
-	check(socket.part == null and planter.picked.get(&"carrot", 0) == units, "and its slot is free")
+	var seeds := world.player.suit.slots.filter(func(p: Part) -> bool: return p is Plant)
+	check(socket.part == null and planter.picked.get(&"carrot", 0) == units and seeds.size() == 1
+		and seeds[0].crop == &"carrot" and seeds[0].growth == 0.0, "its slot is free and its seed is in a slot of yours")
+
+	hands.stow().free()
+	var fungus := plants[1]
+	fungus.set_growth(1.0)
+	at = middle_of(fungus.socket)
+	aim(at + Vector3(0.0, 0.9, 0.5), at)
+	await physics_frames(2)
+	check(hands.grab(), "you take the ripe fungus")
+	await physics_frames(40)
+	var caps := hands.held as Supply
+	print("picked by hand: %s" % (Hands.describe(caps.label, caps.mass, caps.stats) if caps != null else "nothing"))
+	check(caps != null and caps.amount == fungus.harvest * fungus.kcal and hands.phase == Hands.Phase.HELD,
+		"its caps come to your hands, %d kcal" % (fungus.harvest * fungus.kcal))
+	check(fungus.socket != null and fungus.growth == 0.0 and planter.picked.get(&"fungus", 0) == fungus.harvest,
+		"and what's left of it stays in its slot")
+	weather_everywhere(1.0)
+	Tuning.current().sheltered_temperature = 20.0
+	await pass_time(SPAN)
+	print("picked fungus after %d s in the dark: %.3f %s" % [SPAN, fungus.growth, fungus.state])
+	check(is_equal_approx(fungus.growth, SPAN / fungus.ripen_seconds), "it fruits again, at its full rate in the dark")
