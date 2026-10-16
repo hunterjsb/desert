@@ -898,13 +898,11 @@ func _build_hud() -> void:
 	dot.set_anchors_preset(Control.PRESET_CENTER)
 	dot.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	dot.draw.connect(func() -> void:
-		dot.draw_circle(Vector2.ZERO, 2.5, Color(0.0, 0.0, 0.0, 0.7))
-		dot.draw_circle(Vector2.ZERO, 1.5, Color.WHITE))
+		dot.draw_circle(Vector2.ZERO, 2.5, dot.get_theme_color(&"shadow", &"Palette"))
+		dot.draw_circle(Vector2.ZERO, 1.5, dot.get_theme_color(&"text", &"Palette")))
 	hud.add_child(dot)
 	_readout = Label.new()
-	_readout.add_theme_font_size_override("font_size", 12)
-	_readout.add_theme_color_override("font_outline_color", Color.BLACK)
-	_readout.add_theme_constant_override("outline_size", 4)
+	_readout.theme_type_variation = &"Readout"
 	_readout.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_readout.set_anchors_preset(Control.PRESET_CENTER)
 	_readout.offset_left = -400.0

@@ -158,8 +158,11 @@ func ride_here(cell := &"battery") -> Hoverboard:
 
 ## Ticks the ride moves you for, as simulate() does for simulated time: a
 ## tick the board waits for ground not yet solid isn't one. `each` is called
-## after every tick it moved you. A fast ride is held to the ground's pace.
-func ride_for(seconds: float, each := Callable()) -> void:
+## after every tick it moved you. Paced, a fast ride is held to the ground's
+## pace, so it never waits; unpaced, it waits for the ground as the game does,
+## which changes when it gets there but never where it goes, so a ride that
+## nothing else moves around can go as fast as the machine allows.
+func ride_for(seconds: float, each := Callable(), paced := true) -> void:
 	var ride := player.ride
 	if ride == null:
 		check(false, "you're on the board")
@@ -168,7 +171,12 @@ func ride_for(seconds: float, each := Callable()) -> void:
 	while player.ride == ride and ride.ticks < until:
 		var was := ride.ticks
 		await get_tree().physics_frame
-		keep_pace()
+		if paced:
+			keep_pace()
+		elif (ride.ticks == was) != (_braking > 0):
+			# Waiting, it hands the machine to the workers building the ground.
+			_braking = 4 if ride.ticks == was else 0
+			Engine.max_physics_steps_per_frame = 1 if _braking > 0 else 8 * roundi(Engine.time_scale)
 		if ride.ticks == was:
 			continue
 		deepest = minf(deepest, clearance(player))

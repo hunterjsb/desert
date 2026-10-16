@@ -29,6 +29,7 @@ var _view: Control
 
 func _ready() -> void:
 	_player = get_parent() as Player
+	add_to_group(UIRoot.PANELS)
 	slots.resize(Tuning.current().suit_slots)
 	_layer = CanvasLayer.new()
 	_layer.layer = 98
@@ -113,6 +114,14 @@ func show_view(to: bool) -> void:
 	Controls.free_mouse(to)
 
 
+## Back closes the view first, before any menu. Says whether it was open.
+func close() -> bool:
+	if not open:
+		return false
+	show_view(false)
+	return true
+
+
 ## A slot clicked: empty-handed, what's in it comes to your hands; holding
 ## something that fits, it goes in, swapping with what's there. Says whether
 ## it did anything.
@@ -176,28 +185,33 @@ func _process(_delta: float) -> void:
 ## A row of slots low in the middle of the view, the one under the mouse
 ## lit, and what's at your waist under it.
 func _draw_view() -> void:
-	var font := ThemeDB.fallback_font
 	var corner := slot_rect(0).position
 	var row := slot_rect(slots.size() - 1).end.x - corner.x
+	var panel := _view.get_theme_color(&"panel", &"Palette")
 	for i in slots.size():
 		var box := slot_rect(i)
-		_view.draw_rect(box, Color(0.0, 0.0, 0.0, 0.6 if i == hover else 0.4))
-		_view.draw_rect(box, Color(1.0, 1.0, 1.0, 1.0 if i == hover else 0.25), false, 2.0 if i == hover else 1.0)
+		_view.draw_rect(box, panel)
+		_view.draw_rect(box, _view.get_theme_color(&"text" if i == hover else &"faint", &"Palette"), false,
+			2.0 if i == hover else 1.0)
 		var part := slots[i]
 		if part != null:
-			_text(font, box.position + Vector2(5.0, 15.0), part.label, SLOT.x - 10.0)
-			_text(font, box.position + Vector2(5.0, 31.0), _brief(part), SLOT.x - 10.0)
+			_text(&"Label", box.position + Vector2(5.0, 15.0), part.label, SLOT.x - 10.0)
+			_text(&"Readout", box.position + Vector2(5.0, 31.0), _brief(part), SLOT.x - 10.0)
 	var tied := PackedStringArray()
 	for body in _player.waist.tied:
 		if is_instance_valid(body):
 			tied.append(str(body.get(&"label")))
-	_text(font, corner + Vector2(0.0, SLOT.y + 16.0), "waist: " + (", ".join(tied) if not tied.is_empty() else "-"), row)
-	Controls.draw_keys(_view, font, corner + Vector2(0.0, SLOT.y + 30.0), HINT, 11)
+	_text(&"Label", corner + Vector2(0.0, SLOT.y + 16.0), "waist: " + (", ".join(tied) if not tied.is_empty() else "-"), row)
+	Controls.draw_keys(_view, corner + Vector2(0.0, SLOT.y + 30.0), HINT)
 
 
-func _text(font: Font, at: Vector2, line: String, width: float) -> void:
-	_view.draw_string_outline(font, at, line, HORIZONTAL_ALIGNMENT_LEFT, width, 11, 4, Color.BLACK)
-	_view.draw_string(font, at, line, HORIZONTAL_ALIGNMENT_LEFT, width, 11, Color.WHITE)
+## In the theme: names as text, amounts as a readout.
+func _text(type: StringName, at: Vector2, line: String, width: float) -> void:
+	var font := _view.get_theme_font(&"font", type)
+	var size := _view.get_theme_font_size(&"font_size", type)
+	_view.draw_string_outline(font, at, line, HORIZONTAL_ALIGNMENT_LEFT, width, size,
+		_view.get_theme_constant(&"outline_size", &"Label"), _view.get_theme_color(&"shadow", &"Palette"))
+	_view.draw_string(font, at, line, HORIZONTAL_ALIGNMENT_LEFT, width, size, _view.get_theme_color(&"text", &"Palette"))
 
 
 ## What's in a part that you'd want to know at a glance.

@@ -12,7 +12,7 @@ extends WorldProbe
 ## bubble or a watt-hour. You start at the beginning, fed and watered, with
 ## only what the kit carries in your slots and the rest of it beside you.
 
-const MAIN := preload("res://game/main.tscn")
+const MAIN := preload("res://game/run.tscn")
 const DAYS := 3.0
 ## How long the kit's shield runs on, in days, and the world's time warp
 ## while it does.

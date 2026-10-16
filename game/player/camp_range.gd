@@ -22,10 +22,9 @@ const REARM := 1.25
 const LOST_SECONDS := 5.0
 ## The chimes are made at this many samples a second.
 const RATE := 22050
-## Off-white for the first, the one accent the UI keeps for danger for the
-## last and for a loss (Menus & UI).
-const PLAIN := Color(0.92, 0.92, 0.9)
-const DANGER := Color(0.3, 0.85, 0.85)
+## The first in the theme's plain text, the last and a loss as its warning,
+## in the one accent it keeps for power and danger (Menus & UI).
+const DANGER := &"Warning"
 
 ## What's been told since you were last clear: 0, FIRST or LAST.
 var told := 0
@@ -50,9 +49,6 @@ func _ready() -> void:
 	layer.layer = 98
 	add_child(layer)
 	_line = Label.new()
-	_line.add_theme_font_size_override("font_size", 18)
-	_line.add_theme_color_override("font_outline_color", Color.BLACK)
-	_line.add_theme_constant_override("outline_size", 6)
 	_line.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_line.set_anchors_preset(Control.PRESET_CENTER_TOP)
 	_line.offset_left = -400.0
@@ -123,7 +119,7 @@ func _process(delta: float) -> void:
 		var when := "lost in %d s" % ceili(seconds) if seconds < INF and _player.velocity.length() > 0.5 \
 			else "%d m from the edge" % ceili(near)
 		_line.text = ("LAST WARNING · camp %s · turn back" if told == LAST else "Leaving camp range · %s") % when
-		_line.add_theme_color_override("font_color", DANGER if told == LAST else PLAIN)
+		_line.theme_type_variation = DANGER if told == LAST else &""
 		_shown = 0.0
 	_line.modulate.a = move_toward(_line.modulate.a, 1.0 if told > 0 or _shown > 0.0 else 0.0, delta * 6.0)
 
@@ -139,7 +135,7 @@ func _tell_losses(watching: Dictionary, here: Vector2i, keep: int) -> void:
 	if gone.is_empty():
 		return
 	_line.text = "Camp lost · %s" % ", ".join(gone)
-	_line.add_theme_color_override("font_color", DANGER)
+	_line.theme_type_variation = DANGER
 	_shown = LOST_SECONDS
 	_voice.stream = _chimes[0]
 	_voice.play()

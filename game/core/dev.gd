@@ -26,13 +26,14 @@ func _ready() -> void:
 	add_child(_layer)
 	_columns = HBoxContainer.new()
 	_columns.position = Vector2(8, 8)
-	_columns.add_theme_constant_override("separation", 14)
+	_columns.theme_type_variation = &"Columns"
 	_layer.add_child(_columns)
 
 	var hint_layer := CanvasLayer.new()
 	hint_layer.layer = 100
 	add_child(hint_layer)
-	_hint = Controls.keys_label(Color(1, 1, 1, 0.7))
+	_hint = Controls.keys_label()
+	_hint.theme_type_variation = &"Hint"
 	_hint.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT, Control.PRESET_MODE_MINSIZE, 10)
 	_hint.grow_vertical = Control.GROW_DIRECTION_BEGIN
 	hint_layer.add_child(_hint)
@@ -73,6 +74,11 @@ func hide_overlays() -> void:
 	_layer.visible = false
 	_keys_layer.visible = false
 	_hint.visible = false
+
+
+## The hint of how to open the keys list, off while the main menu is up.
+func show_hint(on: bool) -> void:
+	_hint.visible = on and not _keys_layer.visible
 
 
 ## Written again whenever it shows, so a key rebound is listed as it is now.
@@ -137,25 +143,17 @@ func _body(group: String) -> Label:
 	if _bodies.has(group):
 		return _bodies[group]
 	var stack := VBoxContainer.new()
-	stack.add_theme_constant_override("separation", 0)
-	var header := _text(Color(1.0, 0.8, 0.5))
+	stack.theme_type_variation = &"Column"
+	var header := Label.new()
+	header.theme_type_variation = &"ReadoutHead"
 	header.text = GROUPS.get(group, group.to_upper())
-	var body := _text(Color.WHITE)
+	var body := Label.new()
+	body.theme_type_variation = &"Readout"
 	stack.add_child(header)
 	stack.add_child(body)
 	_columns.add_child(stack)
 	_bodies[group] = body
 	return body
-
-
-func _text(color: Color) -> Label:
-	var label := Label.new()
-	label.add_theme_font_size_override("font_size", 12)
-	label.add_theme_constant_override("line_spacing", 0)
-	label.add_theme_color_override("font_color", color)
-	label.add_theme_color_override("font_outline_color", Color.BLACK)
-	label.add_theme_constant_override("outline_size", 4)
-	return label
 
 
 func _format(value: Variant) -> String:

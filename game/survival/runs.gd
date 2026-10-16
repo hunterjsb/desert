@@ -27,9 +27,8 @@ func _ready() -> void:
 	add_child(layer)
 	_caption = Label.new()
 	_caption.text = "You died. A new run."
-	_caption.add_theme_font_size_override("font_size", 22)
-	_caption.add_theme_color_override("font_outline_color", Color.BLACK)
-	_caption.add_theme_constant_override("outline_size", 6)
+	_caption.theme_type_variation = &"Caption"
+	_caption.uppercase = true
 	_caption.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
 	_caption.grow_horizontal = Control.GROW_DIRECTION_BOTH
 	_caption.modulate.a = 0.0
