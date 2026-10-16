@@ -84,12 +84,13 @@ upgrade the camp → the camp sustains more of itself → go further, or into th
 - **Death means a new run.** Whatever you had stays out there in theory but is
   practically unreachable. With RNG driving both the terrain and the finds, this is
   roguelite territory.
-- **You start with the essentials:** a weak shield, a light solar panel you can set down
-  and pick back up, and a short rope coil ("start with the shield and solar panel",
-  Hunter, 2026-10-16), with sealed water and a ration in the suit. The shield and panel
-  are clearly worse than anything found deep, so the first deep find reads as an upgrade,
-  and the panel can always keep the shield going, if only barely. The hoverboard is a
-  find, not a starting item.
+- **You start with the essentials:** a floating crate with a weak shield and a light
+  solar panel mounted on top and a hook to tow it by, a hoverboard beside it, a short
+  rope coil, and sealed water and a ration in the suit (Hunter, 2026-10-16: "start the
+  player with floating crate, shield and hoverboard"; earlier the same day the shield
+  and panel lay on the sand and the board was only a find). The shield and panel are
+  clearly worse than anything found deep, so the first deep find reads as an upgrade,
+  and the kit can never leave the shield without power.
 - **Permadeath is the intended mode, and it's what we balance around.** Save & quit only
   suspends a run: one save per run, and death ends it ([Profile & saves](prd/profile-and-saves.md)).
   An optional mode allows saving and reloading, but turning it on disables achievements,
