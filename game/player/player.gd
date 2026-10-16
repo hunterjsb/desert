@@ -117,7 +117,8 @@ func _physics_process(delta: float) -> void:
 		_stop()
 		return
 	_clear_of_board()
-	if board != null:
+	# A board freed under you (a scenario's, say) still leaves a ride to end.
+	if ride != null:
 		_ride(delta, input)
 		return
 	if _boarding != null:
