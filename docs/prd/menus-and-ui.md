@@ -41,7 +41,9 @@ A few small words at the bottom of the screen, over the live desert. No backgrou
 no panels, no big centred buttons.
 
 - **The scene** is the real world seen from a fixed camera, with no player spawned and
-  the weather running at normal speed. It keeps its simulation cheap.
+  the weather running at normal speed. It keeps its simulation cheap, and it's silent:
+  a storm at the menu is only to look at (Hunter, 2026-10-16: "super super loud").
+  Sound comes back with the run.
 - **The words:** Resume (only when a save exists), New game, Options, Quit.
 - **Confirm** triggers the highlighted word. Resume is highlighted when a save exists,
   otherwise New game.
