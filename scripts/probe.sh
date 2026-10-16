@@ -14,8 +14,8 @@
 # GODOT picks the binary (default: godot on PATH). PROBE_TIMEOUT is in seconds.
 # PROBE_EXCEPT lists folders to leave out of a full run, so CI can split the
 # suite into parallel jobs and still catch every folder nobody listed.
-# PROBE_JOBS probes run at once (default 4), the slowest first by the last
-# run's times; a probe whose header says "## Runs alone" times real frames, so
+# PROBE_JOBS probes run at once (default one per physical core, at least 4),
+# the slowest first by the last run's times; a probe whose header says "## Runs alone" times real frames, so
 # it runs after the rest, by itself.
 set -uo pipefail
 cd "$(dirname "$0")/.." || exit 2
@@ -152,8 +152,10 @@ fi
 # Numbered here, not in the background job: a job's own arithmetic happens in
 # its subshell and never reaches the next one.
 n=0
+cores=$(($(nproc) / 2))
+jobs_at_once=${PROBE_JOBS:-$((cores > 4 ? cores : 4))}
 for probe in "${together[@]}"; do
-	while (($(jobs -rp | wc -l) >= ${PROBE_JOBS:-4})); do
+	while (($(jobs -rp | wc -l) >= jobs_at_once)); do
 		wait -n
 	done
 	report "$n" "$probe" &
