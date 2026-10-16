@@ -12,6 +12,11 @@ func _ready() -> void:
 	# focus or his keys, and stay silent.
 	get_window().unfocusable = true
 	AudioServer.set_bus_mute(0, true)
+	# New game deletes a save: never the player's own.
+	var away := OS.get_temp_dir().path_join("sandgame-look-menus")
+	DirAccess.make_dir_recursive_absolute(away)
+	for keeper in [^"/root/Saves", ^"/root/Profile"]:
+		get_node(keeper).dir = away
 	Tuning.current().run_seed = 1234
 	var main: Main = MAIN.instantiate()
 	add_child(main)
