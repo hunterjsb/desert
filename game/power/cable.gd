@@ -10,6 +10,9 @@ const PULL := 10.0
 var plugs: Array[Part] = []
 var length := 6.0
 var _wire: MeshInstance3D
+## Where its ends were last tick, and how fast each moved since.
+var _was: Array[Vector3] = []
+var _moving: Array[Vector3] = [Vector3.ZERO, Vector3.ZERO]
 
 
 func _init() -> void:
@@ -44,11 +47,14 @@ func end_of(plug: Part) -> Vector3:
 
 
 ## The tug on the tick, so it pulls the same at any frame rate.
-func _physics_process(_delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	if not plugs.all(func(p: Variant) -> bool: return is_instance_valid(p)):
 		return
 	var a := end_of(plugs[0])
 	var b := end_of(plugs[1])
+	if _was.size() == 2:
+		_moving = [(a - _was[0]) / delta, (b - _was[1]) / delta]
+	_was = [a, b]
 	if a.distance_to(b) > length:
 		_overstretched(a, b)
 
@@ -61,8 +67,9 @@ func _process(_delta: float) -> void:
 
 
 ## Too far: a loose end is pulled along, as a physical tug that the sand can
-## stop, never a jump that could land it inside the sand; with both ends held
-## fast, a plug pops out.
+## stop, never a jump that could land it inside the sand, and never faster
+## than the other end drags it, give or take a rope's closing speed, however
+## long it was snagged; with both ends held fast, a plug pops out.
 func _overstretched(a: Vector3, b: Vector3) -> void:
 	for i in 2:
 		var plug := plugs[i]
@@ -72,7 +79,9 @@ func _overstretched(a: Vector3, b: Vector3) -> void:
 			var toward := (anchor - plug.global_position).normalized()
 			var over := plug.global_position.distance_to(anchor) - length
 			var closing := plug.linear_velocity.dot(toward)
-			plug.linear_velocity += toward * maxf(over * PULL - closing, 0.0)
+			var drags := maxf(_moving[1 - i].dot(toward), 0.0)
+			var want := minf(over * PULL, drags + Rope.CLOSING_SPEED)
+			plug.linear_velocity += toward * maxf(want - closing, 0.0)
 			return
 	for plug in plugs:
 		if plug.socket != null:
