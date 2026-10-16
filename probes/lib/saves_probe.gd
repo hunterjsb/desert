@@ -30,6 +30,8 @@ func load_camp(settle_seconds := 10.0) -> void:
 	tuning.gust_storm_strength = 0.5
 	await load_world(1234, false)
 	var player := world.player
+	# However long the ground took to build, you start the camp fresh.
+	player.vitals.fresh()
 	var here := player.global_position
 	var downwind := world.weather.field_wind(here).normalized()
 	var east := Vector3.RIGHT
