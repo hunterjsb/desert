@@ -15,6 +15,7 @@ const KINDS := {
 	&"port": Color(1.0, 0.5, 0.1),
 	&"tie": Color(0.42, 0.31, 0.2),
 	&"water": Color(0.3, 0.6, 1.0),
+	&"mod": Color(0.75, 0.35, 0.7),
 }
 
 ## Parts: the socket kind they fit, weight, size (z is how far they stand out
@@ -33,10 +34,17 @@ const PARTS := {
 		"color": Color(0.1, 0.15, 0.35), "stats": {"solar_w": 60.0}},
 	&"lamp": {"kind": &"top", "label": "Lamp", "mass": 1.0, "size": Vector3(0.12, 0.12, 0.25),
 		"color": Color(0.95, 0.9, 0.6), "stats": {"light_w": 5.0}},
-	&"seedling": {"kind": &"plant_small", "label": "Seedling", "mass": 0.3, "size": Vector3(0.1, 0.1, 0.18),
-		"color": Color(0.3, 0.7, 0.2), "stats": {"plants": 1}},
-	&"sapling": {"kind": &"plant_large", "label": "Sapling", "mass": 1.2, "size": Vector3(0.18, 0.18, 0.4),
-		"color": Color(0.2, 0.55, 0.15), "stats": {"plants": 1}},
+	# Crops, sown in a planter's slots: "crop" names their tuning numbers, and
+	# a harvest comes out as their "food".
+	&"carrot": {"kind": &"plant_small", "label": "Carrot", "mass": 0.3, "size": Vector3(0.1, 0.1, 0.18),
+		"color": Color(0.3, 0.7, 0.2), "ripe": Color(0.95, 0.5, 0.1), "stats": {"plants": 1},
+		"crop": &"carrot", "food": &"carrots"},
+	&"fungus": {"kind": &"plant_large", "label": "Fungus", "mass": 1.2, "size": Vector3(0.18, 0.18, 0.4),
+		"color": Color(0.4, 0.36, 0.3), "ripe": Color(0.9, 0.85, 0.7), "stats": {"plants": 1},
+		"crop": &"fungus", "food": &"fungus_caps"},
+	# Fits a planter's mod mount: ripe crops go into the planter's own storage.
+	&"harvester": {"kind": &"mod", "label": "Harvester", "mass": 1.5, "size": Vector3(0.22, 0.14, 0.1),
+		"color": Color(0.5, 0.3, 0.45), "stats": {"harvester": 1}},
 	&"plug": {"kind": &"port", "label": "Cable plug", "mass": 0.2, "size": Vector3(0.06, 0.06, 0.09),
 		"color": Color(1.0, 0.5, 0.1), "stats": {}},
 	&"strong_plug": {"kind": &"port", "label": "Strong cable plug", "mass": 0.3, "size": Vector3(0.07, 0.07, 0.1),
@@ -51,6 +59,11 @@ const PARTS := {
 		"color": Color(0.55, 0.62, 0.68), "stats": {}},
 	&"ration": {"kind": &"food", "label": "Ration", "mass": 0.5, "size": Vector3(0.16, 0.1, 0.06),
 		"color": Color(0.45, 0.42, 0.25), "stats": {}},
+	# What a harvest gives: food like a ration, holding the harvest's kcal.
+	&"carrots": {"kind": &"food", "label": "Carrots", "mass": 0.6, "size": Vector3(0.16, 0.1, 0.08),
+		"color": Color(0.95, 0.5, 0.1), "stats": {}},
+	&"fungus_caps": {"kind": &"food", "label": "Fungus caps", "mass": 0.4, "size": Vector3(0.14, 0.1, 0.08),
+		"color": Color(0.85, 0.8, 0.65), "stats": {}},
 }
 
 static var _tells := {}
@@ -66,7 +79,8 @@ const DEVICES := {
 			[&"top", Vector3(0.0, 0.25, 0.0), Vector3.UP],
 			[&"port", Vector3(0.25, 0.1, -0.4), Vector3.FORWARD],
 		]},
-	&"planter": {"label": "Planter", "size": Vector3(1.0, 0.35, 0.6), "mass": 10.0,
+	# Its own water tank, and a mod mount on its back for a harvester.
+	&"planter": {"label": "Planter", "size": Vector3(1.0, 0.35, 0.6), "mass": 10.0, "planter": true,
 		"sockets": [
 			[&"plant_small", Vector3(-0.3, 0.175, -0.12), Vector3.UP],
 			[&"plant_small", Vector3(-0.3, 0.175, 0.12), Vector3.UP],
@@ -77,6 +91,7 @@ const DEVICES := {
 			[&"ring", Vector3(0.0, 0.0, -0.3), Vector3.FORWARD],
 			[&"bottom", Vector3(0.0, -0.175, 0.0), Vector3.DOWN],
 			[&"port", Vector3(0.5, 0.0, 0.0), Vector3.RIGHT],
+			[&"mod", Vector3(0.3, 0.0, 0.3), Vector3.BACK],
 		]},
 	# Put a panel on top and a battery in front, and it charges the battery in the sun.
 	&"charger": {"label": "Charger", "size": Vector3(0.45, 0.25, 0.35), "mass": 5.0,
@@ -118,7 +133,7 @@ const DEVICES := {
 static func part(id: StringName) -> Part:
 	var spec: Dictionary = PARTS[id]
 	var made: Part = Battery.new() if spec.kind == &"battery" \
-		else (Supply.new() if Supply.HOLDS.has(spec.kind) else Part.new())
+		else (Supply.new() if Supply.HOLDS.has(spec.kind) else (Plant.new() if spec.has("crop") else Part.new()))
 	made.kind = spec.kind
 	made.label = spec.label
 	made.mass = spec.mass
@@ -138,6 +153,8 @@ static func part(id: StringName) -> Part:
 		made.light.position = Vector3(0.0, size.y * 0.5 + 0.005, size.z * 0.6)
 		made.add_child(made.light)
 		made.seal()
+	if made is Plant:
+		(made as Plant).sow(spec.crop, spec.food, spec.color, spec.ripe)
 	if spec.kind == &"tie":
 		# A line's end is small and gets dragged over the dunes at the wind's
 		# speed: swept, so it can't step through the sand in a tick.
@@ -164,6 +181,13 @@ static func part(id: StringName) -> Part:
 		# Dark until a powered device runs it.
 		lamp.visible = false
 		made.add_child(lamp)
+	return made
+
+
+## Food holding this many kcal: a harvest, picked or dropped onto you.
+static func food(id: StringName, kcal: float) -> Supply:
+	var made := part(id) as Supply
+	made.seal(kcal)
 	return made
 
 
@@ -214,7 +238,8 @@ static func _add_tie(body: Node3D, at: Vector3, outward: Vector3) -> void:
 static func device(id: StringName) -> Device:
 	var spec: Dictionary = DEVICES[id]
 	var made: Device = ShieldGenerator.new() if spec.get("shield", false) \
-		else (Condenser.new() if spec.get("condenser", false) else Device.new())
+		else (Condenser.new() if spec.get("condenser", false) \
+		else (Planter.new() if spec.get("planter", false) else Device.new()))
 	made.label = spec.label
 	made.frame_mass = spec.mass
 	made.frame_stats = spec.get("stats", {}).duplicate()

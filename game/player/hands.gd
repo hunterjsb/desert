@@ -252,6 +252,16 @@ static func describe(label: String, mass: float, stats: Dictionary) -> String:
 		bits.append("%d/%d kcal" % [stats.get("food_left_kcal", 0.0), stats.food_kcal])
 	if stats.has("making_lph"):
 		bits.append("making %.1f L/h" % stats.making_lph)
+	if stats.has("growth"):
+		bits.append("ripe" if stats.growth >= 1.0 else "%d%% grown" % floori(stats.growth * 100.0))
+	if stats.has("growing") and stats.growing != Plant.RIPE:
+		bits.append(str(stats.growing))
+	if stats.has("replant"):
+		bits.append("replants %d%%" % roundi(stats.replant * 100.0))
+	if stats.get("stored_kcal", 0.0) > 0.0:
+		bits.append("%d kcal stored" % roundi(stats.stored_kcal))
+	if stats.get("seeds", 0) > 0:
+		bits.append("%d seed%s" % [stats.seeds, "" if stats.seeds == 1 else "s"])
 	if stats.has("found"):
 		bits.append("%s find" % stats.found)
 	if stats.get("dark", false):
@@ -836,6 +846,10 @@ func _part_stats(part: Part) -> Dictionary:
 	var now := part.stats.duplicate()
 	if part is Battery:
 		now["charge_wh"] = part.charge_wh
+	if part is Plant:
+		now["growth"] = part.growth
+		if part.socket != null:
+			now["growing"] = part.state
 	if part.has_meta(&"line"):
 		now.merge((part.get_meta(&"line") as Line).readout())
 	if part.has_meta(&"layer"):

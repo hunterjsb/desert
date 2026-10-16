@@ -36,6 +36,7 @@ var gravity: float
 @onready var wear: Wear = $Wear
 @onready var ropes: Ropes = $Ropes
 @onready var salvage: Salvage = $Salvage
+@onready var farm: Farm = $Farm
 
 var _last_x: float
 var _last_z: float
@@ -57,6 +58,7 @@ func _ready() -> void:
 	wear.setup(self)
 	ropes.setup(self)
 	salvage.setup(self)
+	farm.setup(self)
 	_set_scene()
 	var half := tuning.chunk_size * 0.5
 	spawn = _flat_near(half, half)

@@ -47,7 +47,8 @@ func apply(scenario: Dictionary) -> void:
 		if is_instance_valid(body):
 			body.queue_free()
 	_kit.clear()
-	if scenario.kind in ["kit", "ruin"] or scenario.get("camp", false) or scenario.get("survive", false):
+	if scenario.kind in ["kit", "ruin"] or scenario.get("camp", false) or scenario.get("survive", false) \
+			or scenario.get("farm", false):
 		# Bodies dropped before the sand under them has collision would be frozen or forgotten.
 		while not _world.terrain.is_settled_around(place.x, place.z):
 			await get_tree().physics_frame
@@ -55,6 +56,8 @@ func apply(scenario: Dictionary) -> void:
 			_kit = Scenarios.yours(_world)
 		elif scenario.kind == "kit":
 			_kit = Scenarios.kit(_world)
+		elif scenario.get("farm", false):
+			_kit = Scenarios.farm(_world)
 		else:
 			_kit = Scenarios.camp(_world) if scenario.get("camp", false) else Scenarios.survive(_world)
 

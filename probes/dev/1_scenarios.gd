@@ -2,7 +2,7 @@ extends WeatherProbe
 ## Dev probe 1: every scenario drops you where it says. A storm 100 m away is
 ## 100 m upwind and you face it; deep is deep; dusk is dusk; the test kit lands
 ## in front of you; going looking stands you before a ruin's door with finds
-## round it. Checked against the field itself and against what the game then
+## round it; the farm stands in front of you growing. Checked against the field itself and against what the game then
 ## shows.
 
 const SLACK := 1.0
@@ -53,6 +53,8 @@ func run() -> void:
 					"%s: the edge is %.0f m upwind (%.2f m)" % [what, scenario.distance, edge])
 				if scenario.get("camp", false):
 					await _camp_lands()
+				if scenario.get("farm", false):
+					await _farm_lands()
 			"deep":
 				check(field.storm_at(at.x, at.y, t) == 1.0, "deep: full storm")
 				check(_edge(at, upwind, t, true) > 250.0 and _edge(at, -upwind, t, true) > 250.0,
@@ -73,6 +75,42 @@ func _edge(from: Vector2, along: Vector2, t: float, inside: bool) -> float:
 		if (field.raw_storm_at(p.x, p.y, t) > 0.0) != inside:
 			return d
 	return INF
+
+
+## Two planters stand on the sand in front of you, sown and part grown, one
+## with a harvester and a full tank, the other's half full, their carrots
+## growing in the clear; a charged shield generator stands between them,
+## switched off, near enough for its bubble to take both, with a full
+## canister and spare carrots by your feet.
+func _farm_lands() -> void:
+	await settle(true)
+	var dropped := Scenarios.farm(world)
+	world.time_warp = 1.0
+	await physics_frames(60)
+	world.time_warp = 0.0
+	var planters := dropped.filter(func(b: Node3D) -> bool: return b is Planter)
+	var shield: ShieldGenerator = dropped.filter(func(b: Node3D) -> bool: return b is ShieldGenerator)[0]
+	var radius := world.tuning.shield_radius
+	var tanks := planters.map(func(p: Planter) -> float: return snappedf(p.tank_l / world.tuning.planter_tank_litres, 0.1))
+	var growing := 0
+	for planter: Planter in planters:
+		for plant in planter.plants():
+			growing += 1 if plant.crop == &"carrot" and plant.state == Plant.GROWING and plant.growth > 0.85 else 0
+			check(plant.growth >= 0.5 and not plant.ripe(), "farm: %s sown part grown (%.2f)" % [plant.label, plant.growth])
+		check(planter.plants().size() == 4 and clearance(planter) < 0.4
+			and planter.global_position.distance_to(shield.global_position) < radius - 1.0,
+			"farm: a planter sown on the sand, inside where the bubble will stand")
+	check(planters.size() == 2 and planters.filter(func(p: Planter) -> bool: return p.harvests()).size() == 1
+		and tanks.has(1.0) and tanks.has(0.5), "farm: two planters, one with a harvester, tanks full and half (%s)" % [tanks])
+	check(growing == 6, "farm: the carrots are growing in the clear (%d)" % growing)
+	check(not shield.on and shield.battery().charge_wh >= shield.battery().capacity(),
+		"farm: a charged shield generator, switched off")
+	var loose := dropped.filter(func(b: Node3D) -> bool: return b is Supply and b.kind == &"water" and b.amount >= 2.0)
+	var seeds := dropped.filter(func(b: Node3D) -> bool: return b is Plant)
+	check(loose.size() == 1 and seeds.size() == Scenarios.FARM_SEEDS.size(), "farm: a full canister and spare carrots")
+	for body in dropped:
+		if is_instance_valid(body):
+			body.free()
 
 
 ## A ruin's front door stands in front of you, finds lie round it, one on

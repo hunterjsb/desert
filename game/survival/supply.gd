@@ -17,10 +17,10 @@ var amount := 0.0
 var light: MeshInstance3D
 
 
-## Sealed and full, as it's found.
-func seal() -> void:
+## Sealed and full, as it's found, or holding `holding` as a harvest does.
+func seal(holding := NAN) -> void:
 	var holds: Array = HOLDS[kind]
-	stats[holds[0]] = Tuning.current().get(holds[2])
+	stats[holds[0]] = Tuning.current().get(holds[2]) if is_nan(holding) else holding
 	_keep(capacity())
 
 

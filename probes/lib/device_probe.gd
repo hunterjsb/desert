@@ -4,7 +4,7 @@ extends WorldProbe
 
 ## The part that goes in each kind of socket when a device is fitted out.
 const FILL := {&"battery": &"battery", &"ring": &"hook", &"bottom": &"hover_tray", &"top": &"solar_panel",
-	&"plant_small": &"seedling", &"plant_large": &"sapling", &"port": &"plug"}
+	&"plant_small": &"carrot", &"plant_large": &"fungus", &"port": &"plug", &"mod": &"harvester"}
 
 
 ## A device of the catalog, dropped in front of the player at a height, with

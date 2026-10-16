@@ -5,7 +5,7 @@ extends Node
 ## What F1 lists, before whatever the scene adds.
 const HELP := [
 	["click", "look, or throw what you hold"], ["WASD", "move"], ["Shift", "sprint"],
-	["E", "pick up, take out, put in, put down"], ["F", "use what you look at or hold: switch a shield, drive a stake, waist a line"],
+	["E", "pick up, take out, put in, put down"], ["F", "use what you look at or hold: switch a shield, drive a stake, waist a line, water a planter, set its replant share"],
 	["Tab", "your slots and waist: look across to pick one; take puts in or takes out"], ["Esc", "free the mouse"],
 	["F1", "these keys"], ["F2", "scenarios"], ["F3", "numbers"],
 	["F4", "fly: Space up, C down"], ["F5", "speed up time"], ["F6", "low gravity"],

@@ -179,4 +179,6 @@ static func _brief(part: Part) -> String:
 		return ("%.2f L" if part.kind == &"water" else "%d kcal") % part.amount
 	if part is Battery:
 		return "%d Wh" % floori(part.charge_wh)
+	if part is Plant:
+		return "%d%% grown" % floori(part.growth * 100.0)
 	return ""

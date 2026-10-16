@@ -12,7 +12,9 @@ extends RefCounted
 ## each piece on one line to a stake, with stakes and coils to add more.
 ## "survive" starts you over on sealed water, with a crude camp to keep you.
 ## "ruin" stands you in front of the ruin nearest where the run began, clear
-## and calm, with finds round it and a bare crate frame of your own.
+## and calm, with finds round it and a bare crate frame of your own. "farm"
+## sets two planters growing in front of you, one with a harvester, and a
+## shield for the storm on its way.
 const LIST: Array[Dictionary] = [
 	{"key": "spawn", "label": "spawn: where and when the run began", "kind": "spawn"},
 	{"key": "clear", "label": "clear day, no storm for 10 min", "kind": "clear", "day": [0.42, 0.55]},
@@ -33,6 +35,9 @@ const LIST: Array[Dictionary] = [
 		"day": [0.25, 0.3], "survive": true},
 	{"key": "ruin", "label": "go looking: a ruin and finds near you, your own bare crate frame, clear and calm",
 		"kind": "ruin", "day": [0.35, 0.5], "calm": 6.0},
+	# A clear morning, before the heat stops carrots growing, with the storm far enough off to pick them first.
+	{"key": "farm", "label": "farm: carrots ripening in the clear, fungus for the storm 1.5 km off, a harvester, a shield",
+		"kind": "front", "distance": 1500.0, "day": [0.35, 0.4], "farm": true},
 ]
 
 ## The test kit, as [catalog id, metres to your right, metres ahead]: empty
@@ -44,8 +49,8 @@ const KIT_CABLE := [0.0, 2.3]
 const KIT_STRONG_CABLE := [0.0, 1.6]
 const KIT_PARTS := [
 	[&"battery", -1.6, 1.6], [&"big_battery", -1.2, 1.7], [&"hook", -0.8, 1.6], [&"hook", -0.55, 1.7],
-	[&"lamp", -0.25, 1.6], [&"seedling", 0.1, 1.7], [&"seedling", 0.35, 1.6], [&"seedling", 0.6, 1.7],
-	[&"sapling", 0.95, 1.6], [&"battery", 1.3, 1.7], [&"hover_tray", -2.6, 2.4],
+	[&"lamp", -0.25, 1.6], [&"carrot", 0.1, 1.7], [&"carrot", 0.35, 1.6], [&"carrot", 0.6, 1.7],
+	[&"fungus", 0.95, 1.6], [&"battery", 1.3, 1.7], [&"hover_tray", -2.6, 2.4],
 	[&"hover_tray", 2.8, 2.6], [&"solar_panel", -2.6, 3.6], [&"solar_panel", -3.0, 2.2],
 	[&"hook", 1.65, 1.7], [&"hook", 1.95, 1.6],
 ]
@@ -66,6 +71,19 @@ const SURVIVE_CONDENSER := [-0.9, 2.6]
 const SURVIVE_SHIELD := [0.9, 2.3]
 const SURVIVE_CABLE := [0.0, 1.7]
 const SURVIVE_RATIONS := [[0.35, 1.3], [0.6, 1.3]]
+
+## The farm, right and ahead: a planter to pick by hand, one with a
+## harvester, the shield generator between them so its bubble takes both, a
+## canister to water them, and spare carrots to sow. Its crops start part
+## grown, so the carrots ripen within a minute in the clear and the fungus
+## within a few once the storm's dark is on it.
+const FARM_BY_HAND := [-1.6, 2.8]
+const FARM_HARVESTER := [1.6, 2.8]
+const FARM_SHIELD := [0.0, 2.0]
+const FARM_CANISTER := [-0.5, 1.3]
+const FARM_SEEDS := [[0.2, 1.3], [0.45, 1.3]]
+const FARM_CROPS := [&"carrot", &"carrot", &"carrot", &"fungus"]
+const FARM_GROWN := {&"carrot": 0.85, &"fungus": 0.5}
 
 ## Your own frame, to fit what you find to: right and ahead.
 const YOURS := [1.5, 2.5]
@@ -271,6 +289,35 @@ static func survive(world: World) -> Array[Node3D]:
 		var ration := Catalog.part(&"ration")
 		_drop(world, ration, Transform3D(yaw * Basis(Vector3.RIGHT, -PI / 2.0), Vector3.ZERO), entry[0], entry[1])
 		dropped.append(ration)
+	return dropped
+
+
+## Two planters on the sand in front of you, sown with carrots and a fungus
+## part grown, one tank full and one half: one to pick by hand, and one with
+## a harvester that keeps its slots sown and drops food onto you. A charged
+## shield generator, switched off, stands between them, with a full canister
+## and spare carrots by your feet. You start fed, watered and whole, on a
+## fresh suit's kit. Returns what it dropped.
+static func farm(world: World) -> Array[Node3D]:
+	world.player.vitals.fresh()
+	var dropped: Array[Node3D] = []
+	for where: Array in [FARM_BY_HAND, FARM_HARVESTER]:
+		var parts: Array = FARM_CROPS + ([&"harvester"] if where == FARM_HARVESTER else [])
+		var planter := _standing(world, &"planter", parts, where) as Planter
+		for plant in planter.plants():
+			plant.set_growth(FARM_GROWN[plant.crop])
+		planter.tank_l = world.tuning.planter_tank_litres * (1.0 if planter.harvests() else 0.5)
+		dropped.append(planter)
+	dropped.append(_standing(world, &"shield", [&"battery"], FARM_SHIELD))
+	var yaw := Basis(Vector3.UP, world.player.global_rotation.y)
+	var lying := Transform3D(yaw * Basis(Vector3.RIGHT, -PI / 2.0), Vector3.ZERO)
+	var canister := Catalog.part(&"canister")
+	_drop(world, canister, lying, FARM_CANISTER[0], FARM_CANISTER[1])
+	dropped.append(canister)
+	for entry: Array in FARM_SEEDS:
+		var seed := Catalog.part(&"carrot")
+		_drop(world, seed, lying, entry[0], entry[1])
+		dropped.append(seed)
 	return dropped
 
 
