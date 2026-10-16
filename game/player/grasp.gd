@@ -87,7 +87,7 @@ func recall(what: RigidBody3D, kept: Dictionary) -> void:
 
 
 ## One physics tick: steers it toward where you'd have it, moving and turning
-## with you, the same share of the way each second at any tick rate.
+## with you, its place the same share of the way each second at any tick rate.
 func step(h: float) -> void:
 	if body == null:
 		return
