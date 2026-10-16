@@ -100,6 +100,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		# A tap shorter than a tick still counts.
 		_jump_queued = true
 	elif event is InputEventMouseMotion and not Controls.mouse_free:
+		if hands.turn(event.relative * _tuning.mouse_sensitivity):
+			return
 		rotate_y(-event.relative.x * _tuning.mouse_sensitivity)
 		camera.rotation.x = clampf(camera.rotation.x - event.relative.y * _tuning.mouse_sensitivity,
 			-1.5, 1.5)

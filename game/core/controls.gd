@@ -6,6 +6,7 @@ extends Node
 ## is drawn as its key.
 const HELP := [
 	["{hands_throw}", "throw what you hold"],
+	["{hands_rotate}", "held, the mouse turns what you hold or have hold of, not your view: right what's tipped over"],
 	["{move_forward} {move_left} {move_back} {move_right}", "move"], ["{sprint}", "sprint"],
 	["{hands_grab}", "pick up, take out, put in, put down"], ["{interact}", "use what you look at or hold: switch a shield, drive a stake, waist a line, water a planter, set its replant share"],
 	["{inventory}", "your slots and waist, by mouse: click a slot to take out, put in or swap"], ["{ui_cancel}", "back: close what's open, or the menu"],
@@ -48,6 +49,7 @@ const KEYS := {
 ## Mouse buttons, the same way.
 const BUTTONS := {
 	"hands_throw": MOUSE_BUTTON_LEFT,
+	"hands_rotate": MOUSE_BUTTON_RIGHT,
 }
 
 ## A gamepad works the menus too; its D-pad already moves them.

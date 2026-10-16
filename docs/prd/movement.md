@@ -97,6 +97,14 @@ even storms that last for days.
   hover grips sideways, 18 m/s², so a gentle turn holds and a sharp one drifts: flat out,
   a hard turn comes round 90° in about 3 s, the board up to 48° ahead of your way, and
   you come out of it at 18 m/s from 20. Back against your way brakes; a jump hops.
+- **After Hunter's first ride** (2026-10-16: "feels really nice"), five changes:
+  - **The tilt settles,** never twitches: the board's lean and pitch over the sand ease.
+  - **Move back only brakes,** never pushes you in reverse.
+  - **Sprint kicks off the ground,** a push for a start or up a hill, paid in stamina.
+  - **Pumping:** a crouch down a slope gathers a little more speed, and standing as the
+    ground curves back up turns it into more. There's a rhythm to find.
+  - **A drift** on a hard turn, the board sliding out under you, as something to do on
+    purpose.
 - **Floaty.** Its underside rides 0.35 m over the sand and keeps 8 cm clear of it,
   about 6 cm at a corner. The
   spring is stiff pressed down and softer lifting off, and pulls you back down at most
