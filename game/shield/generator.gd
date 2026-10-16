@@ -65,8 +65,13 @@ func _ready() -> void:
 			housing = Catalog.bounds((child as CollisionShape3D).shape).size
 			break
 	var band := MeshInstance3D.new()
-	var ring := BoxMesh.new()
-	ring.size = Vector3(housing.x + 0.012, 0.05, housing.z + 0.012)
+	# A collar round its round body.
+	var ring := CylinderMesh.new()
+	ring.top_radius = housing.x * 0.44 + 0.006
+	ring.bottom_radius = ring.top_radius
+	ring.height = 0.05
+	ring.radial_segments = 24
+	ring.rings = 1
 	_band = StandardMaterial3D.new()
 	_band.albedo_color = Color(0.1, 0.12, 0.14)
 	_band.emission_enabled = true

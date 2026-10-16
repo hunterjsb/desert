@@ -1,8 +1,8 @@
 class_name Catalog
 extends RefCounted
-## Every device frame and part the skeleton knows, built in code as grey boxes
-## with their sockets in defined spots. Salvage finds them, and the test kit
-## scenario drops a set round you.
+## Every device frame and part the skeleton knows, built in code as boxes
+## with their sockets in defined spots, and drawn in B's paint (Dress). Salvage
+## finds them, and the test kit scenario drops a set round you.
 
 ## Socket kinds, with the colour of the tell that marks a free one.
 const KINDS := {
@@ -68,8 +68,6 @@ const PARTS := {
 	&"fungus_caps": {"kind": &"food", "label": "Fungus caps", "mass": 0.4, "size": Vector3(0.14, 0.1, 0.08),
 		"color": Color(0.85, 0.8, 0.65), "stats": {}},
 }
-
-static var _tells := {}
 
 ## Frames: their box, weight, wind catch and sockets as [kind, position, outward].
 const DEVICES := {
@@ -188,7 +186,8 @@ static func part(id: StringName) -> Part:
 	made.stats = spec.stats.duplicate()
 	var size: Vector3 = spec.size
 	# Standing out from its socket along +Z.
-	_add_box(made, size, Vector3(0.0, 0.0, size.z * 0.5), spec.color)
+	_add_box(made, size, Vector3(0.0, 0.0, size.z * 0.5), spec.color, Dress.part(id, size))
+	Paint.show_age(made, Paint.age_of(&"", 1.0))
 	if made is Battery:
 		# Found full, for now; salvage will find them at any charge.
 		made.charge_wh = made.capacity()
@@ -212,15 +211,6 @@ static func part(id: StringName) -> Part:
 	if spec.kind == &"coil":
 		# It lies flat, so the wind meets its edge, not its face.
 		made.set_meta(&"wind_catch", Tuning.current().wind_catch_per_m2 * size.x * size.z)
-		# Drawn as a coil lying on its back, not the box it's held by.
-		for child in made.get_children():
-			if child is MeshInstance3D:
-				var torus := TorusMesh.new()
-				torus.inner_radius = 0.09
-				torus.outer_radius = 0.17
-				torus.material = (child.mesh as BoxMesh).material
-				child.mesh = torus
-				child.rotation = Vector3(PI / 2.0, 0.0, 0.0)
 	if made.stats.get("light_w", 0.0) > 0.0:
 		var lamp := OmniLight3D.new()
 		lamp.light_color = Color(1.0, 0.85, 0.6)
@@ -270,9 +260,11 @@ static func stake() -> Stake:
 	# A spike of iron: nothing in it the weather wears out.
 	made.frame_stats = {"toughness": INF}
 	made.holding = Tuning.current().stake_holding
-	_add_box(made, Vector3(0.06, Stake.LENGTH, 0.06), Vector3.ZERO, Color(0.3, 0.27, 0.24))
+	var spike := Vector3(0.06, Stake.LENGTH, 0.06)
+	made.frame_view = _add_box(made, spike, Vector3.ZERO, Color(0.3, 0.27, 0.24), Dress.frame(&"stake", spike))
 	_add_tie(made, Stake.RING, Vector3.UP)
 	made.ring = RopeEnd.make(made, Stake.RING, false)
+	made.show_wear()
 	return made
 
 
@@ -302,9 +294,7 @@ static func device(id: StringName) -> Device:
 	if spec.get("carryable", false):
 		made.carryable = true
 	var size: Vector3 = spec.size
-	_add_box(made, size, Vector3.ZERO, Color(0.55, 0.55, 0.55))
-	if spec.has("mast"):
-		_add_mast(made, size, spec.mast)
+	made.frame_view = _add_box(made, size, Vector3.ZERO, Color(0.55, 0.55, 0.55), Dress.frame(id, size, spec.get("mast", 0.0)))
 	if spec.sockets.any(func(e: Array) -> bool: return e[0] == &"battery"):
 		made.charge_light = ChargeLight.make(Vector3(0.05, 0.05, 0.05))
 		# High on its right side, where nothing on its top mounts covers it.
@@ -316,45 +306,14 @@ static func device(id: StringName) -> Device:
 		var outward: Vector3 = entry[2]
 		socket.transform = Transform3D(_facing(outward), entry[1])
 		var tell := MeshInstance3D.new()
-		tell.mesh = _tell(socket.kind)
-		tell.position = Vector3(0.0, 0.0, 0.005)
+		tell.mesh = Dress.tell(socket.kind)
+		# Its tab glows a little, so a free socket reads at dusk.
+		tell.set_instance_shader_parameter(&"lit", 1.0)
 		socket.add_child(tell)
 		socket.marker = tell
 		made.add_child(socket)
+	made.show_wear()
 	return made
-
-
-## The flat tell a free socket of a kind shows, one shared by every socket of
-## that kind: nothing ever changes one.
-static func _tell(kind: StringName) -> BoxMesh:
-	if not _tells.has(kind):
-		var plate := BoxMesh.new()
-		plate.size = Vector3(0.1, 0.1, 0.01)
-		var look := StandardMaterial3D.new()
-		look.albedo_color = KINDS[kind]
-		look.emission_enabled = true
-		look.emission = KINDS[kind] * 0.3
-		plate.material = look
-		_tells[kind] = plate
-	return _tells[kind]
-
-
-## The turbine's mast and blades: something to see turn into the wind, not to touch.
-static func _add_mast(device: Device, base: Vector3, height: float) -> void:
-	var mast := MeshInstance3D.new()
-	var pole := CylinderMesh.new()
-	pole.top_radius = 0.03
-	pole.bottom_radius = 0.04
-	pole.height = height
-	mast.mesh = pole
-	mast.position = Vector3(0.0, base.y * 0.5 + height * 0.5, 0.0)
-	device.add_child(mast)
-	var blades := MeshInstance3D.new()
-	var vane := BoxMesh.new()
-	vane.size = Vector3(1.2, 0.08, 0.02)
-	blades.mesh = vane
-	blades.position = Vector3(0.0, base.y * 0.5 + height, 0.06)
-	device.add_child(blades)
 
 
 ## A basis whose +Z points along outward.
@@ -373,7 +332,9 @@ static func bounds(shape: Shape3D) -> AABB:
 	return shape.get_debug_mesh().get_aabb()
 
 
-static func _add_box(body: CollisionObject3D, size: Vector3, at: Vector3, color: Color) -> void:
+## Its box, and what you see of it: its painted look, in the body's own
+## frame, or a grey box where it has none yet.
+static func _add_box(body: CollisionObject3D, size: Vector3, at: Vector3, color: Color, look: Mesh = null) -> MeshInstance3D:
 	var shape := CollisionShape3D.new()
 	var box := BoxShape3D.new()
 	box.size = size
@@ -381,11 +342,15 @@ static func _add_box(body: CollisionObject3D, size: Vector3, at: Vector3, color:
 	shape.position = at
 	body.add_child(shape)
 	var mesh := MeshInstance3D.new()
-	var cube := BoxMesh.new()
-	cube.size = size
-	var look := StandardMaterial3D.new()
-	look.albedo_color = color
-	cube.material = look
-	mesh.mesh = cube
-	mesh.position = at
+	if look != null:
+		mesh.mesh = look
+	else:
+		var cube := BoxMesh.new()
+		cube.size = size
+		var flat := StandardMaterial3D.new()
+		flat.albedo_color = color
+		cube.material = flat
+		mesh.mesh = cube
+		mesh.position = at
 	body.add_child(mesh)
+	return mesh

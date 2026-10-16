@@ -5,8 +5,8 @@ extends "res://look/style/look.gd"
 ## frames, teal panels, safety yellow, and the shield's own OEM in bone white.
 ## Every socket has a dark bezel with a tab in its kind's colour.
 
-const WORN := preload("res://look/style/worn.gdshader")
-const RUIN_SHADER := preload("res://look/style/ruin_b.gdshader")
+const WORN := preload("res://game/look/worn.gdshader")
+const RUIN_SHADER := preload("res://game/look/ruin.gdshader")
 
 const GUNMETAL := Color(0.26, 0.28, 0.29)
 const TEAL := Color(0.18, 0.4, 0.43)
@@ -145,9 +145,9 @@ func part(id: StringName, size: Vector3) -> Node3D:
 				for j in 3:
 					_piece(root, Vector3(0.18, 0.18, 0.006), _cells(), Vector3(-0.285 + i * 0.19, -0.19 + j * 0.19, 0.032), 0.001)
 			_drum(root, 0.025, 0.06, _paint(GUNMETAL), Vector3(0.0, 0.0, -0.01), Basis(Vector3.RIGHT, PI / 2.0))
-		&"seedling":
+		&"seedling", &"carrot":
 			_plant(root, 0.14, 4, 0.07)
-		&"sapling":
+		&"sapling", &"fungus":
 			_plant(root, 0.38, 7, 0.12)
 		_:
 			return null

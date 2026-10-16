@@ -230,10 +230,8 @@ static func _shared_mesh() -> ArrayMesh:
 		_add_box(tool, all[i])
 	tool.index()
 	_mesh = tool.commit()
-	var look := StandardMaterial3D.new()
-	look.vertex_color_use_as_albedo = true
-	look.roughness = 1.0
-	_mesh.surface_set_material(0, look)
+	# Poured concrete; the floor's darker colour tells the shader it's floor.
+	_mesh.surface_set_material(0, Paint.ruin())
 	return _mesh
 
 

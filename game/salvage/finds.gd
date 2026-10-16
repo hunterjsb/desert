@@ -282,8 +282,19 @@ static func bare(spec: Dictionary) -> RigidBody3D:
 	var device := Catalog.stake() if spec.id == &"stake" else Catalog.device(spec.id)
 	# Fitted before it's in the world, so before its _ready would set this.
 	device.center_of_mass_mode = RigidBody3D.CENTER_OF_MASS_MODE_CUSTOM
-	device.set_meta(&"layer", spec.layer)
+	mark(device, spec.layer)
 	return device
+
+
+## A find's layer, which its paint shows: older is better. A part has no
+## soundness of its own yet, so it looks the middle of its layer's.
+static func mark(body: Node, layer: StringName) -> void:
+	body.set_meta(&"layer", layer)
+	if body is Device:
+		(body as Device).show_wear()
+		return
+	var sound: Vector2 = LAYER[layer].sound if LAYER.has(layer) else Vector2.ONE
+	Paint.show_age(body, Paint.age_of(layer, (sound.x + sound.y) * 0.5))
 
 
 ## Fits the k-th part a device was found with.
@@ -318,7 +329,7 @@ static func _part(id: StringName, charge: float, layer: StringName, sealed := fa
 	elif part is Supply and part.kind == &"water" and not sealed:
 		# Open water boils off: only a kit's canister is found sealed and full.
 		(part as Supply).drain(INF)
-	part.set_meta(&"layer", layer)
+	mark(part, layer)
 	if id in [&"coil", &"plug", &"strong_plug"]:
 		part.set_meta(&"rolled", id)
 	return part

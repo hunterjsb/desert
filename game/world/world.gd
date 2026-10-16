@@ -49,6 +49,7 @@ func _ready() -> void:
 	if run_seed == 0:
 		run_seed = tuning.run_seed if tuning.run_seed != 0 else randi()
 	shape = TerrainShape.new(run_seed, tuning)
+	Paint.face_wind(WeatherField.mean_heading(run_seed))
 	moon = MoonPosition.new(tuning)
 	player.world = self
 	set_gravity(tuning.gravity)

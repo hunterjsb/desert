@@ -9,9 +9,6 @@ extends RigidBody3D
 
 signal parts_changed
 
-## Rust: what a wrecked frame looks like.
-const WORN := Color(0.24, 0.15, 0.1)
-
 @export var label := "device"
 ## The bare frame's weight, kg.
 @export var frame_mass := 15.0
@@ -27,8 +24,13 @@ var powered := true
 ## Its charge light, showing the fitted battery's charge.
 var charge_light: MeshInstance3D
 ## How sound it is, 1 to 0: one placeholder durability for the frame and
-## everything fitted, until parts wear on their own.
-var durability := 1.0
+## everything fitted, until parts wear on their own. Its paint shows it.
+var durability := 1.0:
+	set(to):
+		durability = to
+		show_wear()
+## Its painted frame.
+var frame_view: MeshInstance3D
 
 var world: World
 var _hovering := false
@@ -36,22 +38,11 @@ var _hovering := false
 var _seats: Array[Socket] = []
 ## How it froze before it was seated on another device.
 var _unseated_mode := RigidBody3D.FREEZE_MODE_STATIC
-## The frame's look, which darkens as it wears, and its colour new.
-var _frame_look: StandardMaterial3D
-var _frame_color: Color
 
 
 func _ready() -> void:
 	world = World.of(self)
 	center_of_mass_mode = RigidBody3D.CENTER_OF_MASS_MODE_CUSTOM
-	# The frame's box is its first mesh; parts and lights come after it.
-	for child in get_children():
-		var mesh := child as MeshInstance3D
-		if mesh != null and mesh != charge_light and mesh.mesh is PrimitiveMesh:
-			_frame_look = (mesh.mesh as PrimitiveMesh).material as StandardMaterial3D
-			if _frame_look != null:
-				_frame_color = _frame_look.albedo_color
-			break
 	_recompute()
 
 
@@ -181,12 +172,21 @@ func wear(share: float) -> void:
 	if share <= 0.0 or wrecked():
 		return
 	durability = maxf(durability - share / frame_stats.get("toughness", 1.0), 0.0)
-	if _frame_look != null:
-		_frame_look.albedo_color = _frame_color.lerp(WORN, 1.0 - durability)
 	if wrecked():
 		set_powered(false)
 		if charge_light != null:
 			ChargeLight.paint(charge_light, 0.0)
+
+
+## Its paint: its make's era, then what the weather took, so a deep find is
+## crisp, a surface one rusty, and a wrecked frame down to the metal.
+func show_wear() -> void:
+	var amount := Paint.age_of(get_meta(&"layer", &""), durability)
+	if frame_view != null:
+		frame_view.set_instance_shader_parameter(&"age", amount)
+	for socket in sockets():
+		if socket.marker != null:
+			socket.marker.set_instance_shader_parameter(&"age", amount)
 
 
 func parts() -> Array[Part]:
@@ -327,6 +327,8 @@ func take(socket: Socket) -> Part:
 		# Out of a device, nothing powers its lamp.
 		if node is Light3D:
 			node.visible = false
+		elif Paint.is_worn(node):
+			(node as GeometryInstance3D).set_instance_shader_parameter(&"lit", 0.0)
 	socket.fitted.clear()
 	socket.part = null
 	part.socket = null
@@ -374,11 +376,16 @@ func _recompute() -> void:
 	center_of_mass = moment / weight
 	var now := stats()
 	_hovering = now["hovering"]
-	# Lamps shine only while it has the power.
+	# Lamps shine, and lenses and emitters glow, only while it has the power.
+	var lit := 1.0 if powered else 0.0
+	if frame_view != null:
+		frame_view.set_instance_shader_parameter(&"lit", lit)
 	for socket in sockets():
 		for node in socket.fitted:
 			if node is Light3D:
 				node.visible = powered
+			elif Paint.is_worn(node):
+				(node as GeometryInstance3D).set_instance_shader_parameter(&"lit", lit)
 	# A resting body sleeps, and a sleeping one ignores the tray's lift.
 	can_sleep = not _hovering
 	if _hovering:
