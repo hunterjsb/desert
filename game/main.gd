@@ -162,10 +162,10 @@ func _end_run() -> void:
 
 ## The real world from a fixed camera: no one stands there, nothing of yours
 ## is in it, and only the weather moves, at its own pace, without a sound: a
-## storm at the menu is only to look at.
+## storm at the menu is only to look at, while the menu's own words are heard.
 func _show_view() -> void:
 	Dev.clear()
-	AudioServer.set_bus_mute(0, true)
+	AudioServer.set_bus_mute(AudioServer.get_bus_index(Sounds.WORLD), true)
 	view = _make(WORLD) as World
 	view.name = "View"
 	add_child(view)
@@ -197,7 +197,7 @@ static func _make(path: String) -> Node:
 
 
 func _drop_view() -> void:
-	AudioServer.set_bus_mute(0, false)
+	AudioServer.set_bus_mute(AudioServer.get_bus_index(Sounds.WORLD), false)
 	remove_child(view)
 	view.queue_free()
 	view = null

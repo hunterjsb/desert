@@ -6,8 +6,15 @@ extends Device
 ## easily, so it makes the most at night and little in the afternoon heat:
 ## all by the felt temperature where it stands.
 
+## Seconds between drips into its canister making its most, and at a trickle.
+const DRIP_FAST := 1.5
+const DRIP_SLOW := 6.0
+
 ## Water it has made since it was found, L.
 var made_l := 0.0
+
+var _drip_in := 0.0
+var _drips := 0
 
 
 ## The canister in its water socket, or null.
@@ -52,3 +59,15 @@ func stats() -> Dictionary:
 func _room() -> bool:
 	var cell := canister()
 	return cell != null and cell.amount < cell.capacity()
+
+
+## Heard only: it drips while it makes water, faster the more it makes.
+func _process(delta: float) -> void:
+	_drip_in -= delta
+	if _drip_in > 0.0 or world == null:
+		return
+	var share := making() / world.tuning.condenser_litres_per_hour
+	_drip_in = lerpf(DRIP_SLOW, DRIP_FAST, clampf(share, 0.0, 1.0))
+	if share > 0.0:
+		Sounds.play_at(self, Sounds.DRIPS[_drips % Sounds.DRIPS.size()])
+		_drips += 1

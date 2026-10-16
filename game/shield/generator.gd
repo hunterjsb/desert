@@ -8,9 +8,6 @@ extends Device
 ## a storm. Low on power its hum sags and its shell flickers; flat, the bubble
 ## collapses for everything at once, and blooms again once there's power.
 
-const BOOT := preload("res://assets/audio/shield_boot.ogg")
-const HUM := preload("res://assets/audio/shield_hum.ogg")
-const DOWN := preload("res://assets/audio/shield_down.ogg")
 ## Sand Game's shield blue.
 const BLUE := Color(0.25, 0.67, 0.87)
 ## A fresh bloom flares the shell, settling over this long, s.
@@ -88,11 +85,11 @@ func _ready() -> void:
 	_light.position.y = housing.y * 0.5 + 0.2
 	_light.shadow_enabled = false
 	add_child(_light)
-	_boot = _sound(BOOT, 0.0)
-	var looping := HUM.duplicate() as AudioStreamOggVorbis
+	_boot = _sound(Sounds.SHIELD_BOOT)
+	var looping := Sounds.SHIELD_HUM.duplicate() as AudioStreamOggVorbis
 	looping.loop = true
-	hum = _sound(looping, -12.0)
-	_down = _sound(DOWN, 0.0)
+	hum = _sound(looping)
+	_down = _sound(Sounds.SHIELD_DOWN)
 	_show()
 
 
@@ -223,10 +220,8 @@ func _show() -> void:
 	_band.emission_energy_multiplier = 0.3 + 2.0 * open * glow
 
 
-func _sound(stream: AudioStream, db: float) -> AudioStreamPlayer3D:
-	var player := AudioStreamPlayer3D.new()
-	player.stream = stream
-	player.volume_db = db
-	player.unit_size = 4.0
+## Heard at its level anywhere inside the bubble.
+func _sound(stream: AudioStream) -> AudioStreamPlayer3D:
+	var player := Sounds.world_voice(stream, 0.0, 4.0)
 	add_child(player)
 	return player

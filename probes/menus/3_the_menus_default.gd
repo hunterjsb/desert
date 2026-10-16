@@ -11,12 +11,13 @@ func run() -> void:
 	var menu := main.ui.top()
 	check(menu.words() == PackedStringArray(["NEW GAME", "OPTIONS", "QUIT"]) and menu.highlighted() == 0,
 		"with no save, Resume is absent and New game is highlighted (%s)" % ", ".join(menu.words()))
-	check(AudioServer.is_bus_mute(0), "the menu's storm makes no sound")
+	check(AudioServer.is_bus_mute(AudioServer.get_bus_index(Sounds.WORLD)) and not AudioServer.is_bus_mute(0),
+		"the menu's storm makes no sound, and its words can")
 	press(&"ui_accept")
 	await faded_in()
 	check(main.in_run() and main.view == null and not main.ui.is_open() and not Controls.mouse_free,
 		"confirm starts a run, the menu's world gone and the mouse captured")
-	check(not AudioServer.is_bus_mute(0), "and the run is heard")
+	check(not AudioServer.is_bus_mute(AudioServer.get_bus_index(Sounds.WORLD)), "and the run is heard")
 
 	# The ground takes as long to build as the machine takes: out from the
 	# spawn at time zero, so where you end up never depends on it.

@@ -8,13 +8,14 @@ extends Device
 ## both. What it draws is metered tick by tick in world time, so its charge
 ## comes out the same at any frame rate.
 
-const HUM := preload("res://assets/audio/hum.ogg")
-## The hum's pitch at rest and at top speed, and how far it sags as the
-## battery runs out over its last WARNING seconds.
-const HUM_REST := 0.7
-const HUM_FAST := 1.3
+## The hover's pitch at rest and at top speed, and how far it sags as the
+## battery runs out over its last WARNING seconds, ticking faster as it goes.
+const HUM_REST := 0.8
+const HUM_FAST := 1.4
 const HUM_SAG := 0.7
 const WARNING := 60.0
+const TICK_SLOW := 2.0
+const TICK_FAST := 0.5
 
 ## Whoever rides it, or null.
 var rider: Player
@@ -27,6 +28,7 @@ var _tuning := Tuning.current()
 var _drawn: Array[Array] = []
 var _layers := Vector2i.ONE
 var _hum: AudioStreamPlayer
+var _tick_in := 0.0
 
 
 func _init() -> void:
@@ -67,13 +69,14 @@ func carry(by: Player) -> void:
 	# Made the first time it's ridden: a find lying in the sand is laid out
 	# inside the streaming budget.
 	if _hum == null:
-		var looping := HUM.duplicate() as AudioStreamOggVorbis
+		var looping := Sounds.HOVER.duplicate() as AudioStreamOggVorbis
 		looping.loop = true
 		_hum = AudioStreamPlayer.new()
 		_hum.stream = looping
-		_hum.volume_db = -14.0
+		_hum.bus = Sounds.WORLD
 		add_child(_hum)
 	_hum.play()
+	Sounds.play(self, Sounds.BOARD_ON)
 
 
 ## Off your feet and a body again, moving as it was.
@@ -87,6 +90,7 @@ func set_down(velocity: Vector3) -> void:
 	linear_velocity = velocity
 	angular_velocity = Vector3.ZERO
 	_hum.stop()
+	Sounds.play(self, Sounds.BOARD_OFF)
 
 
 ## What it draws riding now, W.
@@ -131,13 +135,17 @@ func seconds_left() -> float:
 
 
 ## Drawn each frame where the ride draws it, between ticks.
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	if rider == null or rider.ride == null:
 		return
 	global_transform = rider.ride.board_pose(true)
 	var speed := rider.ride.velocity.length() / _tuning.board_top_speed
 	var low := clampf(1.0 - seconds_left() / WARNING, 0.0, 1.0)
 	_hum.pitch_scale = lerpf(HUM_REST, HUM_FAST, clampf(speed, 0.0, 1.2)) * lerpf(1.0, HUM_SAG, low)
+	_tick_in -= delta
+	if low > 0.0 and _tick_in <= 0.0:
+		Sounds.play(self, Sounds.LOW_TICK)
+		_tick_in = lerpf(TICK_SLOW, TICK_FAST, low)
 
 
 ## Before anything reads it this tick, back where the tick put it.
