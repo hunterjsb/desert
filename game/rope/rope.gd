@@ -12,10 +12,11 @@ extends RefCounted
 ## that hitting it never kicks back.
 const STOP_HERTZ := 20.0
 const STOP_DAMPING := 1.0
-## Fastest the stop pulls the ends back together, m/s, however far past it they
-## are: a loose end snagged while the other end drives on is dragged free,
-## never slung. It still stops them parting any further at once.
-const STOP_SPEED := 3.0
+## Fastest the rope pulls its ends together, m/s, however far it's stretched:
+## a loose end snagged while the other end drives on is dragged free, never
+## slung, by the stop or the spring. The stop still keeps them from parting
+## any further at once.
+const CLOSING_SPEED := 3.0
 ## Drooping this far short of its length, as a share of it, a line pulls
 ## nothing: its weight lies on the sand or hangs off its ends.
 const SLACK_SHARE := 0.1
@@ -164,6 +165,10 @@ func solve() -> void:
 	var bb := body_b
 	# How fast the ends move apart along the rope, at the attachment points.
 	var rate := normal.dot(bb.velocity + bb.spin.cross(_rb) - ba.velocity - ba.spin.cross(_ra))
+	# Against the ends as they move, not as the rope expects them to: a snag can
+	# push back harder than it credits, and lets go all at once.
+	var expected := normal.dot(bb.expected + bb.expected_spin.cross(_rb) - ba.expected - ba.expected_spin.cross(_ra))
+	var most := _mass * (rate - expected + CLOSING_SPEED)
 	var spring := 0.0
 	if stretch > 0.0:
 		spring = maxf(0.0, spring_impulse + _mass * _soft.y * (rate + _soft.x * stretch)
@@ -175,9 +180,16 @@ func solve() -> void:
 		# Short of the stop: only pull if this tick would carry it past.
 		stop = maxf(0.0, stop_impulse + _mass * (rate + _beyond / _h))
 	else:
-		stop = maxf(0.0, stop_impulse + _mass * _stop.y * (rate + minf(_stop.x * _beyond, STOP_SPEED))
+		stop = maxf(0.0, stop_impulse + _mass * _stop.y * (rate + minf(_stop.x * _beyond, CLOSING_SPEED))
 			- _stop.z * stop_impulse)
 	change += stop - stop_impulse
+	if change > most:
+		# Closing as fast as it may, nothing parts: the stop gives way first.
+		var over := change - most
+		var eased := minf(over, stop)
+		stop -= eased
+		spring = maxf(0.0, spring - (over - eased))
+		change = spring - spring_impulse + stop - stop_impulse
 	spring_impulse = spring
 	stop_impulse = stop
 	_push(change)

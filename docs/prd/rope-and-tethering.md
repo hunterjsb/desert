@@ -169,9 +169,10 @@ The hoverboard tows nothing.
   look. Take on a driven stake pulls it into your hand with its lines still on its ring,
   pulling on you now, so one gesture unstakes them and the next stakes them again.
 - **A snapped line** parts into two lines, each with a loose end where it broke.
-- **The hard stop** stops a line stretching any further at once, but pulls its ends
-  back together no faster than 3 m/s, so a loose end snagged on a dune while the
-  other end drives on is dragged free, never flung.
+- **The hard stop** stops a line stretching any further at once. Nothing in a line,
+  its spring or its stop, pulls its ends together faster than 3 m/s, however far it
+  stretched: a loose end snagged on a dune or round your legs while the other end
+  drives on is dragged free when it comes loose, never flung.
 - **A line in your hand** pulls from where the last physics tick put your hand, at
   your eyes' steady height. Drawn frames show what you hold following your view and
   your head's bob and sway between ticks, and the line never feels them.
