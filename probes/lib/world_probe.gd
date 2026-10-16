@@ -24,6 +24,9 @@ func load_world(run_seed := 1234, still_air := true, salvage := false) -> void:
 	world = WORLD_SCENE.instantiate()
 	add_child(world)
 	await settle()
+	# The ground takes as long to build as the machine takes, and you can drift
+	# and the clock runs meanwhile: every run starts at the spawn, at time zero.
+	world.respawn(world.spawn.x, world.spawn.y, 0.0, 0.0)
 
 
 ## Waits until the ground round the player has collision and, unless only_near,
