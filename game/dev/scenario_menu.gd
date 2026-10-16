@@ -1,13 +1,13 @@
 extends CanvasLayer
-## Dev: F2 lists the scenarios and a number key drops you into one; past the
-## tenth, the first letter of its key. Launching with `-- --scenario=<key>`
-## starts in one directly.
+## Dev: the scenarios action lists the scenarios and a number key drops you
+## into one; past the tenth, the first letter of its key. Launching with
+## `-- --scenario=<key>` starts in one directly.
 
 ## Whichever world is running: a new run brings a new one.
 var _world: World:
 	get:
 		return get_node("../World")
-var _list: Label
+var _list: RichTextLabel
 ## The test kit last dropped, cleared when another scenario starts.
 var _kit: Array[Node3D] = []
 
@@ -15,16 +15,8 @@ var _kit: Array[Node3D] = []
 func _ready() -> void:
 	layer = 101
 	visible = false
-	_list = Label.new()
+	_list = Controls.keys_label()
 	_list.position = Vector2(8, 150)
-	_list.add_theme_font_size_override("font_size", 12)
-	_list.add_theme_constant_override("line_spacing", 0)
-	_list.add_theme_color_override("font_outline_color", Color.BLACK)
-	_list.add_theme_constant_override("outline_size", 4)
-	var lines := PackedStringArray(["SCENARIOS  F2 closes"])
-	for i in Scenarios.LIST.size():
-		lines.append("%s  %s" % [_hotkey(i), Scenarios.LIST[i].label])
-	_list.text = "\n".join(lines)
 	add_child(_list)
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--scenario="):
@@ -64,6 +56,14 @@ func apply(scenario: Dictionary) -> void:
 			_kit = Scenarios.camp(_world) if scenario.get("camp", false) else Scenarios.survive(_world)
 
 
+## Written as it opens, so a rebound key shows as it is now.
+func _write() -> void:
+	var lines := PackedStringArray([Controls.bbcode("SCENARIOS  {dev_scenarios} closes")])
+	for i in Scenarios.LIST.size():
+		lines.append("%s  %s" % [Controls.tint(_hotkey(i)), Scenarios.LIST[i].label])
+	_list.text = "\n".join(lines)
+
+
 func _hotkey(index: int) -> String:
 	return str((index + 1) % 10) if index < 10 else Scenarios.LIST[index].key.left(1).to_upper()
 
@@ -71,6 +71,8 @@ func _hotkey(index: int) -> String:
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("dev_scenarios"):
 		visible = not visible
+		if visible:
+			_write()
 	elif visible and event is InputEventKey and event.pressed and not event.echo:
 		var pressed := OS.get_keycode_string(event.physical_keycode)
 		for index in Scenarios.LIST.size():

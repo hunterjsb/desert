@@ -4,17 +4,16 @@ extends Node
 ## the sun's radiation are built in and free, with no power and no bar. It
 ## carries a few slots, all you carry besides your hands and your waist, and
 ## feeds you from the water and food in them. The inventory action opens a
-## small view of the slots and your waist; while it's open, looking picks a
-## slot instead of turning you, and take puts what you hold into it or takes
-## what's in it into your hands. It hears take before your hands do, being
-## after them under you.
+## small view of the slots and your waist and frees the mouse to click them:
+## a slot with something in it gives it to your empty hands, an empty one
+## takes what you hold, and a full one swaps with it. Closing it captures the
+## mouse again, to look.
 
 ## Built in and free, so nothing ever drains them.
 const BUILT_IN := "air, radiation"
 ## What a new suit carries: a run starts on sealed water and a ration.
 const KIT: Array[StringName] = [&"canister", &"ration"]
-## Looking this far across, px, picks the next slot.
-const PICK_PX := 80.0
+const HINT := "click a slot to take out, put in or swap · {inventory} closes"
 const SLOT := Vector2(100.0, 40.0)
 const GAP := 6.0
 
@@ -22,10 +21,10 @@ const GAP := 6.0
 ## parts do.
 var slots: Array[Part] = []
 var open := false
-var picked := 0
+## The slot under the mouse, or -1.
+var hover := -1
 
 var _player: Player
-var _drift := 0.0
 var _layer: CanvasLayer
 var _view: Control
 
@@ -39,10 +38,19 @@ func _ready() -> void:
 	add_child(_layer)
 	_view = Control.new()
 	_view.set_anchors_preset(Control.PRESET_FULL_RECT)
-	_view.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	# Open, it takes every click, so none reaches the world to throw or look.
+	_view.mouse_filter = Control.MOUSE_FILTER_STOP
 	_view.draw.connect(_draw_view)
+	_view.gui_input.connect(_on_view_input)
+	_view.mouse_exited.connect(func() -> void: hover = -1)
 	_layer.add_child(_view)
 	restock()
+
+
+func _exit_tree() -> void:
+	# A run ending with the view open leaves the next one looking.
+	if open:
+		show_view(false)
 
 
 func _notification(what: int) -> void:
@@ -97,47 +105,68 @@ func discard(part: Part) -> void:
 	part.free()
 
 
-## Take, while the view is open: what you hold goes into the picked slot, or
-## the first free one; empty-handed, what's in the picked slot comes to your
-## hands. Says whether it did anything.
-func take_or_put() -> bool:
+## The view open, the mouse free to click its slots; or closed, and the
+## mouse captured to look.
+func show_view(to: bool) -> void:
+	open = to
+	hover = -1
+	_layer.visible = to
+	Controls.free_mouse(to)
+
+
+## A slot clicked: empty-handed, what's in it comes to your hands; holding
+## something that fits, it goes in, swapping with what's there. Says whether
+## it did anything.
+func click(at: int) -> bool:
 	var hands := _player.hands
+	if at < 0 or at >= slots.size() or hands.grasp.body != null:
+		return false
+	var out := slots[at]
 	if hands.held != null:
 		if hands.phase != Hands.Phase.HELD or not fits(hands.held):
-			return false
-		var at := picked if slots[picked] == null else slots.find(null)
-		if at == -1:
 			return false
 		var part := hands.stow() as Part
 		part.get_parent().remove_child(part)
 		slots[at] = part
 		hands.clunk()
-		return true
-	var part := slots[picked]
-	if part == null:
+	elif out != null:
+		slots[at] = null
+	else:
 		return false
-	slots[picked] = null
-	_player.world.content.add_child(part)
-	part.global_transform = _player.camera.global_transform.translated_local(Vector3(0.0, -0.2, -0.5))
-	hands.hold(part)
+	if out != null:
+		_player.world.content.add_child(out)
+		out.global_transform = _player.camera.global_transform.translated_local(Vector3(0.0, -0.2, -0.5))
+		hands.hold(out)
 	return true
+
+
+## Where a slot is drawn, and clicked, in the view.
+func slot_rect(at: int) -> Rect2:
+	var size := _view.get_rect().size
+	var row := slots.size() * SLOT.x + (slots.size() - 1) * GAP
+	return Rect2(Vector2((size.x - row) * 0.5 + at * (SLOT.x + GAP), size.y * 0.68), SLOT)
+
+
+func _slot_at(point: Vector2) -> int:
+	for i in slots.size():
+		if slot_rect(i).has_point(point):
+			return i
+	return -1
 
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("inventory"):
-		open = not open
-		_layer.visible = open
+		show_view(not open)
 		get_viewport().set_input_as_handled()
-	elif not open:
-		return
-	elif event is InputEventMouseMotion:
-		_drift += event.relative.x
-		while absf(_drift) >= PICK_PX:
-			picked = posmod(picked + (1 if _drift > 0.0 else -1), slots.size())
-			_drift -= signf(_drift) * PICK_PX
-		get_viewport().set_input_as_handled()
-	elif event.is_action_pressed("hands_grab") and _player.hands.grasp.body == null and take_or_put():
-		get_viewport().set_input_as_handled()
+
+
+func _on_view_input(event: InputEvent) -> void:
+	if event is InputEventMouseMotion:
+		hover = _slot_at(event.position)
+	elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		hover = _slot_at(event.position)
+		click(hover)
+	_view.accept_event()
 
 
 func _process(_delta: float) -> void:
@@ -145,17 +174,16 @@ func _process(_delta: float) -> void:
 		_view.queue_redraw()
 
 
-## A row of slots low in the middle of the view, the picked one lit, and
-## what's at your waist under it.
+## A row of slots low in the middle of the view, the one under the mouse
+## lit, and what's at your waist under it.
 func _draw_view() -> void:
 	var font := ThemeDB.fallback_font
-	var size := _view.get_rect().size
-	var row := slots.size() * SLOT.x + (slots.size() - 1) * GAP
-	var corner := Vector2((size.x - row) * 0.5, size.y * 0.68)
+	var corner := slot_rect(0).position
+	var row := slot_rect(slots.size() - 1).end.x - corner.x
 	for i in slots.size():
-		var box := Rect2(corner + Vector2(i * (SLOT.x + GAP), 0.0), SLOT)
-		_view.draw_rect(box, Color(0.0, 0.0, 0.0, 0.6 if i == picked else 0.4))
-		_view.draw_rect(box, Color(1.0, 1.0, 1.0, 1.0 if i == picked else 0.25), false, 2.0 if i == picked else 1.0)
+		var box := slot_rect(i)
+		_view.draw_rect(box, Color(0.0, 0.0, 0.0, 0.6 if i == hover else 0.4))
+		_view.draw_rect(box, Color(1.0, 1.0, 1.0, 1.0 if i == hover else 0.25), false, 2.0 if i == hover else 1.0)
 		var part := slots[i]
 		if part != null:
 			_text(font, box.position + Vector2(5.0, 15.0), part.label, SLOT.x - 10.0)
@@ -165,7 +193,7 @@ func _draw_view() -> void:
 		if is_instance_valid(body):
 			tied.append(str(body.get(&"label")))
 	_text(font, corner + Vector2(0.0, SLOT.y + 16.0), "waist: " + (", ".join(tied) if not tied.is_empty() else "-"), row)
-	_text(font, corner + Vector2(0.0, SLOT.y + 30.0), "take puts in or takes out · look across to pick", row)
+	Controls.draw_keys(_view, font, corner + Vector2(0.0, SLOT.y + 30.0), HINT, 11)
 
 
 func _text(font: Font, at: Vector2, line: String, width: float) -> void:

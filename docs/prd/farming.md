@@ -117,9 +117,17 @@ that ignored the weather.
 - **Water:** a crop drinks as it grows, 0.25 L for a carrot to ripen and 0.3 L for a
   fungus. With the tank dry it stops exactly where the water ran out.
 - **By hand:** take on a ripe crop and its harvest comes to your hands as food
-  (carrots or fungus caps, four units of 150 kcal), and its slot is free. Food is like a
-  ration: put it in your slots and the suit eats it, or use it to eat your fill. Take
-  on a crop that isn't ripe and it comes out whole, to sow somewhere else.
+  (carrots or fungus caps, four units of 150 kcal). Food is like a ration: put it in your
+  slots and the suit eats it, or use it to eat your fill. Take on a crop that isn't ripe
+  and it comes out whole, to sow somewhere else.
+- **Picking by hand keeps the farm going** (Hunter, 2026-10-16): picked fungus regrows
+  from what's left in the slot, fruiting again the way mushrooms do; a picked carrot gives
+  its seed with the food, to sow where you like. The harvester still saves you the work
+  and drops the food on you. As built, the fungus stays in its slot and grows again from
+  nothing, as fast as a new one. The carrot's seed falls into a free slot of yours, as
+  the harvester's food does, since your hands are full of the food. With no slot free it
+  goes back into its own slot, sown again, and you can still take it out to sow
+  elsewhere.
 - **The harvester** fits the mod mount. With it fitted, a crop is harvested the tick it
   ripens: its share of seed goes straight back into its slot, any more into free slots
   that fit, and seed with no free slot is kept for one. The rest is stored as food in
@@ -159,7 +167,8 @@ that ignored the weather.
 ## Probes
 
 1. **Growth follows conditions.** Each crop grows at the expected rate under each mix of
-   light and temperature, and stops where it should.
+   light and temperature, and stops where it should. Picked by hand, a carrot gives its
+   food and its seed, and fungus gives its caps and fruits again.
 2. **Fungus stays near the equator.** It fails far from the equator, and does better in
    storms than in clear weather.
 3. **The poles need a thermal shield.** Crops at a pole fail outside a thermal shield and

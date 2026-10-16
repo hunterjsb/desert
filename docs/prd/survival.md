@@ -110,12 +110,16 @@ Death means a new run (see Runs in the vision).
 **As built in the skeleton (2026-10-15):**
 - **Your inventory is five slots on the suit, plus your waist** (Hunter's direction,
   2026-10-15, loose). There's no inventory screen to manage. The inventory action opens a
-  very minimal view of the slots and what's tied at your waist. While it's open, looking
-  across picks a slot instead of turning you, and take puts what you hold into the
-  picked slot (or the first free one), or takes what's in it into your hands. Any part
-  with nothing fastened to it fits, so not a line's end or a cable's plug. Whether
-  putting something down while the view is open is the way things go in is still open.
-  Menus mostly come as devices. There's no main menu yet.
+  very minimal view of the slots and what's tied at your waist. Any part with nothing
+  fastened to it fits, so not a line's end or a cable's plug. Menus mostly come as
+  devices. There's no main menu yet.
+- **The inventory by mouse** (Hunter, 2026-10-16, replacing the look-across picking): the
+  inventory action frees the mouse. Clicking a slot with something in it brings it to
+  your empty hands; clicking an empty slot puts what you hold into it. Clicking a full
+  slot while you hold something that fits swaps them. The slot under the mouse is lit,
+  and a click anywhere else in the view does nothing. You don't turn while it's open, and
+  take works on the world as ever, not on the slots. Closing it captures the mouse again,
+  as does a run ending while it's open.
 - **The suit** is those slots plus its built-ins: air and radiation protection, free and
   drained by nothing. Its sockets for mods (heater, cooler, reclaimer, battery, harness
   hooks) wait for the full version, so in the skeleton the suit isn't a device yet.
@@ -185,6 +189,9 @@ Death means a new run (see Runs in the vision).
 4. **A clean new run.** Death starts a new run with nothing left over from the old one.
 5. **Water's daily rhythm** (once adopted). At the equator, open water freezes at night
    and boils off by afternoon.
+6. **The inventory by mouse.** The inventory action frees the mouse and closing it
+   captures it again. Clicks move things between your hands and your slots as they
+   should, and a plug never fits.
 
 ## Out of scope
 

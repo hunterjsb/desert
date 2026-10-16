@@ -4,10 +4,10 @@ extends Device
 ## on its back. On the farm's tick its crops grow by the light and the
 ## temperature where it stands, drinking from the tank, whether or not it has
 ## power. Use a canister of water on it to pour it in. A ripe crop taken by
-## hand comes out as its food. With a harvester fitted, ripe crops go into
-## its own storage instead, the share you set going back in as seed (use on
-## it steps the share), and it drops food onto you when you're near and your
-## slots run low.
+## hand comes out as its food and starts again. With a harvester fitted, ripe
+## crops go into its own storage instead, the share you set going back in as
+## seed (use on it steps the share), and it drops food onto you when you're
+## near and your slots run low.
 
 ## The shares use steps through.
 const SPLITS: Array[float] = [0.0, 0.25, 0.5, 0.75, 1.0]
@@ -87,14 +87,22 @@ func interact(by: Player) -> bool:
 
 
 ## Taken by hand, a ripe crop comes out as its harvest, food in your hands,
-## and its slot is free to sow again.
+## and starts again: fungus fruits again where it stands, and another crop's
+## seed goes into a free slot of yours, or with none free back into its own.
 func take(socket: Socket) -> Part:
 	var plant := socket.part as Plant
 	if plant == null or not plant.ripe():
 		return super(socket)
 	var food := Catalog.food(plant.food, plant.harvest * plant.kcal)
 	_count(picked, plant.crop, plant.harvest)
-	super(socket).free()
+	plant.set_growth(0.0)
+	var player := world.player
+	var free := player.suit.slots.find(null)
+	if not plant.regrows and free != -1:
+		var seed := super(socket)
+		seed.get_parent().remove_child(seed)
+		player.suit.slots[free] = seed
+		_fall(seed, player)
 	get_parent().add_child(food)
 	food.global_transform = global_transform * socket.transform
 	food.linear_velocity = linear_velocity
@@ -182,10 +190,10 @@ func _count(tally: Dictionary, crop: StringName, units: int) -> void:
 	tally[crop] = tally.get(crop, 0) + units
 
 
-## Something to see: the food falling from the planter onto you.
-func _fall(food: Supply, onto: Player) -> void:
+## Something to see: food or seed falling from the planter onto you.
+func _fall(part: Part, onto: Player) -> void:
 	var falling := Falling.new()
-	for child in food.get_children():
+	for child in part.get_children():
 		if child is MeshInstance3D:
 			falling.mesh = (child as MeshInstance3D).mesh
 			break
