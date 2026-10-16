@@ -1,0 +1,9 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://look/style/style.gd" id="1_style"]
+[ext_resource type="PackedScene" path="res://game/world/world.tscn" id="2_world"]
+
+[node name="StyleTest" type="Node"]
+script = ExtResource("1_style")
+
+[node name="World" parent="." instance=ExtResource("2_world")]
