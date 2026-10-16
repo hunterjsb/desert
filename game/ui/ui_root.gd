@@ -18,6 +18,15 @@ var _fade: Panel
 var _fading := false
 
 
+func _enter_tree() -> void:
+	Controls.ui = self
+
+
+func _exit_tree() -> void:
+	if Controls.ui == self:
+		Controls.ui = null
+
+
 func _ready() -> void:
 	layer = 110
 	Settings.load_saved()
@@ -32,6 +41,12 @@ func _ready() -> void:
 
 func is_open() -> bool:
 	return not _menus.is_empty()
+
+
+## Nothing you hold down acts in the game meanwhile: the move keys polled
+## each tick never come as events this could stop.
+func holds_input() -> bool:
+	return is_open() or _fading
 
 
 func top() -> Words:
