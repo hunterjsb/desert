@@ -26,7 +26,9 @@ picking by hand, the harvester mod with its replant split, food dropped onto you
 built too. On 2026-10-16 a normal run became playable end to end: rope, cables, seeds,
 survival kits and the harvester are found, every run starts with its kit (data: water, a
 ration, a light shield, a light solar panel and a short coil), and a shield seats on a
-crate, which has more sockets.
+crate, which has more sockets. The menus were built the same day, ahead of Stage 12: the
+main menu over a live desert, the system menu, options and one theme in Geist (Menus &
+UI 1–5), with Resume waiting on the saves.
 
 ## The loop we're building toward
 

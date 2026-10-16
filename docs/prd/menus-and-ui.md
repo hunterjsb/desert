@@ -61,16 +61,44 @@ safe at any moment, mid-storm included (Profile & saves).
 
 ## Skeleton version
 
-- The theme, with Geist and Geist Mono, used by every existing UI: the bars, the
-  inventory view, the key list, the look-at readout, the warnings, and the dev overlay
-  and scenario menu.
-- The UI root, owning focus and the back action, closing the topmost panel first.
-- The main menu over the live desert, as above, starting the game when the project runs.
-  The dev scenarios still start straight into a run (`--scenario=…`), skipping it.
-- The system menu with Options and Save & quit, never pausing.
-- Options: audio volume, a few graphics settings, and a read-only controls list (keys
-  from the bindings). Remapping comes later.
-- The probes below, all passing.
+*As built, 2026-10-16.*
+
+- **One theme** (`game/ui/theme.tres`, set as the project's) used by every UI: the
+  survival bars, the inventory view, the look-at readout, the keys list, the death
+  caption, the dev overlay and the scenario menu. Geist for text, Geist Mono for
+  readouts (the bars' water and food, what's in a slot, the look-at line, the dev
+  overlay's numbers), from the official release, with their licence, in `assets/fonts/`.
+  Off-white text, dark semi-transparent panels, and the teal accent for danger: a bar
+  under a quarter (health, hunger or thirst) turns teal. Keys on screen are a soft
+  lavender for now, one colour in the theme (`Palette/key`), until the open question
+  below is settled.
+- **The UI root** (`game/ui/ui_root.gd`) owns focus and the back action. Back closes a
+  menu over a menu, then a panel of the game's (the inventory), and in a run with
+  nothing open brings up the system menu. While a menu is up nothing pressed reaches
+  the game behind it and the mouse is free; closing the last one in a run captures it
+  again. A gamepad's face buttons confirm and go back, and its D-pad moves the selection.
+- **The main menu** is the game's own scene (`game/main.tscn`): the real world on a seed
+  of its own, from a fixed camera on the highest sand near its spawn, facing upwind
+  where the weather comes from. No one stands there and nothing of yours is in it; only
+  the weather moves, at its own pace. A low shade under the words keeps them readable
+  over bright sand. The selection shows by brightness alone. New game over a save asks
+  "this ends your saved run" with the safe answer highlighted, and back declines too.
+  Into the game: a fade to black, the run built (`game/run.tscn`, which is what
+  `main.tscn` used to be), and back from black once the sand round you is solid.
+- **The system menu**, over the running game under a dark wash: Options, and Save &
+  quit. Nothing pauses.
+- **Options:** volume, fullscreen, vsync and render scale (confirm steps a value on,
+  menu left and right change it either way), kept on this machine in
+  `user://settings.cfg`, apart from the profile; the controls list, read-only, every key
+  read from the bindings; and Reset profile behind a question, shown only when there is
+  a profile.
+- **Saves and the profile** are reached only through `/root/Saves` and `/root/Profile`
+  (Profile & saves), and a missing one means there are none: no Resume, and Save & quit
+  becomes Quit to menu. A save that fails keeps you in the run and asks.
+- The dev scenarios (`-- --scenario=<key>`) still start straight into a run.
+- `look/menus` shoots the main menu and the system menu, to judge by eye.
+- Probes 1–5 pass, each proven against a broken build. Probes 3 and 4 use a stand-in
+  for the saves, never the real ones.
 
 ## Full version
 
@@ -101,4 +129,6 @@ safe at any moment, mid-storm included (Profile & saves).
 
 - **Key hints and the accent.** Hunter asked for keys on screen to be coloured; the
   look reserves the one accent for power and danger. Keys could take the accent too,
-  stand out by brightness in a thin keycap instead, or keep a colour of their own.
+  stand out by brightness in a thin keycap instead, or keep a colour of their own. For
+  now they keep a colour of their own, a soft lavender, one entry in the theme, so
+  trying another is a one-line change.
