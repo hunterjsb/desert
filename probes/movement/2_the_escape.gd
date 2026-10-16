@@ -16,7 +16,7 @@ const AHEAD_SPEED := 18.0
 
 func run() -> void:
 	var tuning := Tuning.current()
-	tuning.view_radius = tuning.near_radius + 1
+	tuning.view_radius = tuning.near_radius
 	await load_world(1234, false)
 	player = world.player
 	hold([])

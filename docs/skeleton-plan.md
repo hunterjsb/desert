@@ -23,7 +23,13 @@ with its water tank, carrots that want the clear day and fungus that wants the
 storm's dark, growing by felt light and temperature and wilting past their limits,
 picking by hand, the harvester mod with its replant split, food dropped onto you, and
 "farm" in the scenario menu. Probe 3 was cheap with a test-only thermal shield, so it's
-built too.
+built too. Stage 10, the hoverboard and camp range, was built the same day and waits at
+the gate behind it: a board found in the deep layer, buried nose down, that skims the
+dunes at 72 km/h on its own battery, carves and drifts, floats off crests and tows
+nothing, and the camp-range warnings, a chime and a line of text timed by your speed,
+20 s and then 8 s before you'd lose the camp. "Ride" in the scenario menu lays a charged
+board at your feet by a small camp. The Movement PRD's probes keep their numbers, 1 to
+7; the on-foot probes built with Stage 5 are 8 to 14.
 
 ## The loop we're building toward
 

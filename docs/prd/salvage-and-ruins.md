@@ -143,7 +143,8 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
   holds 1.5 finds a chunk on average, at most 4. Each find draws from its own stream of
   the seed, where it lies first, so the weather changes what a find is but never where it
   lies.
-- **Partly buried.** A buried part stands on end and a device stands upright, both
+- **Partly buried.** A buried part stands on end and a device stands upright (a
+  hoverboard stands on end, nose down, as a board stuck in snow does), all
   leaning with the sand and up to 15° more their own way: a quarter to a half of its
   height under the sand in the surface layer, 40 to 65% in the deep, and always at least
   35% of it and 10 cm showing. A quarter of the parts on open sand lie loose on top
@@ -158,7 +159,9 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
   batteries, hooks, lamps and empty canisters (where water comes from is Survival's
   question), and crate frames, chargers, planters and stakes. The deep layer holds big
   batteries, batteries, hover trays, solar panels and hooks, and crate frames, wind
-  turbines, condensers and shield generators. A device comes with some of its sockets
+  turbines, condensers, shield generators and, rarer, hoverboards (Stage 10, one in nine
+  of the deep layer's devices; a ruin's hall never holds one, since it promises parts
+  to strip). A device comes with some of its sockets
   filled from its own layer, a third of them at the surface and three in five deep.
   Deep things were kept from the weather longer: batteries 30 to 100% charged against
   up to 40% at the surface, devices 70 to 100% sound against 35 to 75%. The look-at line

@@ -37,17 +37,12 @@ func _init() -> void:
 
 func _ready() -> void:
 	super()
-	var looping := HUM.duplicate() as AudioStreamOggVorbis
-	looping.loop = true
-	_hum = AudioStreamPlayer.new()
-	_hum.stream = looping
-	_hum.volume_db = -14.0
-	add_child(_hum)
 	get_tree().physics_frame.connect(_back_to_tick)
 
 
 func _exit_tree() -> void:
-	_hum.stop()
+	if _hum != null:
+		_hum.stop()
 
 
 ## Whether it would carry you now: whole, with charge to run on.
@@ -70,6 +65,15 @@ func carry(by: Player) -> void:
 	freeze = true
 	collision_layer = 0
 	collision_mask = 0
+	# Made the first time it's ridden: a find lying in the sand is laid out
+	# inside the streaming budget.
+	if _hum == null:
+		var looping := HUM.duplicate() as AudioStreamOggVorbis
+		looping.loop = true
+		_hum = AudioStreamPlayer.new()
+		_hum.stream = looping
+		_hum.volume_db = -14.0
+		add_child(_hum)
 	_hum.play()
 
 

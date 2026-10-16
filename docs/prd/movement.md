@@ -75,6 +75,43 @@ even storms that last for days.
   find a board, a shield failure deep in a storm is fatal, so early runs stay in
   shallow storms and carry spare batteries.
 
+**Built (2026-10-16, Stage 10, `game/board/`).**
+- **A find.** The board is a catalog device in salvage's deep layer, one in nine of its
+  devices, found buried on end, nose down. Its battery sits at its nose and comes filled
+  like any deep find's; its port charges it from a cable. The scenario menu's "ride"
+  lays a charged one at your feet.
+- **On and off.** The ride action steps you onto the board in your hands, the one you
+  look at, or the nearest at your feet, if it has charge, and steps you off again,
+  keeping your way: faster than you can run, you skid, and the board goes on as a body.
+  It tows nothing: a line or a grip in your hands is let go, a line at your waist is
+  untied first (it takes its moment) and you step on once it's free, and riding you
+  take only loose things on no line.
+- **Fast.** 20 m/s, 72 km/h, flat out on the flat in still air, against storm fronts
+  riding the prevailing wind at 6 to 14 m/s. Drag grows with speed², and a third of it
+  is the air's, felt against the felt wind: a tailwind carries you faster and a headwind
+  holds you back, and a tuck (crouch) shows the wind less, about 22 m/s flat out. Slopes
+  pull it as they pull a slide, so it runs past top speed down a slip face (23.8 m/s on
+  the long ride) and slows climbing one.
+- **Carving.** The move keys push where they point from your view, as walking does. The
+  board turns under you at up to 2.5 rad/s, and its hover grips sideways up to 18 m/s²,
+  a carve about 22 m round flat out, before the turn slides out into a drift, which
+  bleeds speed. Back against your way brakes; a jump hops.
+- **Floaty.** Its underside rides 0.35 m over the sand and never nearer than 8 cm. The
+  spring is stiff pressed down and softer lifting off, and pulls you back down at most
+  15 m/s² past gravity, so off a big crest at top speed you float a metre or two; a hop
+  falls at 0.6 g. It feels the sand along its own length, and the sand round it from
+  0.45 s of travel behind to 0.45 s ahead, both as running means along the way it went,
+  so the ground's lattice never judders it and a dip's bottom is rounded instead of
+  slammed into. Climbing flat out straight into a slip face's foot is the hardest it
+  gets, about 5 g for a moment.
+- **Its own battery.** It draws 40 W floating and up to 260 W more at full push (Power):
+  a base battery lasts about twenty minutes flat out, about 22 km over the dunes. Out of
+  charge, you step off. Outside a bubble the weather wears it like any device.
+- **Frame-rate proof.** It's stepped 240 times a second inside each tick. At its speed
+  your view would stutter between ticks, so Feel draws you, and the board, smoothed
+  between the last tick and this one; the ticks never see it.
+- The numbers are in Tuning's Hoverboard group.
+
 ## Haulers: moving the base faster
 
 The base gets faster through a progression of haulers:
@@ -101,6 +138,21 @@ forgotten. That's fine, as long as it's never a surprise:
 - **Warnings are timed by speed, not just distance.** Even at full speed on the board,
   you get enough seconds to turn back.
 
+**Built (2026-10-16, Stage 10, `game/player/camp_range.gd`).** The camp is every device
+of yours lying in the world, anything not in your hands, at your waist or under your
+feet. Each is forgotten once your chunk is more than nine from its own (the view's eight,
+and one more before a chunk is let go), so each has an edge 576 to 640 m out along the
+chunk grid, further on the diagonal. The warnings watch the edge you're heading for: the
+first comes 20 s before you reach it at your pace, or 40 m from it at any pace; the last
+at 8 s or 12 m. Cross it and you're told what was lost. Clear of it again, it can warn
+again. Flat out on the board that's the first warning about 400 m before the edge, so a
+couple of hundred metres from camp, and the last 160 m before it; braking and turning
+back takes about 20 m. The look is a skeleton's, until the open question below is
+answered: a chime (three quick beeps for the last, a falling tone for a loss) and one
+line of text at the top of the view, "Leaving camp range · lost in 18 s", "LAST WARNING ·
+camp lost in 6 s · turn back", "Camp lost · Crate frame". The numbers are in Tuning's
+Camp range group.
+
 ## Rules
 
 1. **The board floats on the ground's one function.** Its hover height follows
@@ -121,6 +173,8 @@ forgotten. That's fine, as long as it's never a surprise:
 - Getting on and off the board quickly.
 - The probes below, all passing.
 
+All built: on foot alongside Stage 5, the board and the camp-range warnings at Stage 10.
+
 ## Full version
 
 - **Tricks.**
@@ -132,17 +186,50 @@ forgotten. That's fine, as long as it's never a surprise:
 
 1. **The long ride.** Ride 20 km of dunes, slip faces and chunk seams at top speed. The
    board never dips below the sand, never launches unexpectedly, and never jitters.
+   *(Built: half across the ridges with the wind and against it, half wandering, over
+   406 chunk seams. The underside never came nearer the sand than 7.6 cm; 51 launches,
+   every one off a crest, at most 1.9 m over its ride height; no judder; the hardest
+   moment 5.1 g, climbing into a slip face; the ground solid under you all the way.)*
 2. **The escape is real.** A charged board escapes a storm front from a set distance.
+   *(Built: in the run's own weather, a front 50 m upwind. Flat out downwind on a base
+   battery, the front falls behind at about 11 m/s, 2 km behind after three minutes, with
+   86 Wh of 100 left. Sprinting the same way on foot, it catches you in 6.5 s.)*
 3. **The wind dial on foot.** Crossing the same dunes takes more time and stamina upwind
-   than downwind.
+   than downwind. *(Built: 60 m of dunes near spawn you can cross both ways, in a 20 m/s
+   gale: 13.4 s and 112 stamina with it, 20.1 s and 178 into it. A ridge itself you can't
+   cross into the wind on foot at all: its slip face is too steep to climb.)*
 4. **The camp follows on foot.** Tow the reference camp 2 km on foot, through a storm,
-   with the bubble up. Everything arrives, inside the bubble and undamaged.
+   with the bubble up. Everything arrives, inside the bubble and undamaged. *(Shield
+   probe 4 stands in until the full camp exists.)*
 5. **The warnings always come first.** At every speed up to full, the camp-range
-   warnings fire with enough time to react before the camp is lost.
+   warnings fire with enough time to react before the camp is lost. *(Built: from 1 m/s
+   to a board's 26 m/s with a tailwind, along the chunk grid and across it, the first
+   warning comes 20 s or more before the edge and the last 8 s or more, and past it the
+   camp is lost and you're told. Turning back flat out at the last warning, you come no
+   nearer the edge than 138 m.)*
 6. **Frame-rate proof.** The same ride at 30, 60 and 120 frames per second follows the
-   same path.
+   same path. *(Built: a push, a carve each way, a hop, a tuck, a coast and a brake over
+   79 m: at most 3 mm apart, with the same charge left, and the same path to the bit
+   with the drawing switched off.)*
 7. **Origin shift at speed.** Riding across an origin shift at top speed causes no hitch
-   and no jump.
+   and no jump. *(Built: flat out in real time at sixty frames a second, ruins and finds
+   laid out as you go, across four shifts in 1.1 km: your way changes no more at a shift
+   than anywhere, the ground stays solid 120 m ahead, and STREAMING.)*
+
+Movement on foot, built alongside Stage 5, has its own:
+
+8. **Slides.** Momentum is the reward: down a real slope a crouch at a sprint slides
+   you past anything your legs can do; on the flat a slide stops about where the sand's
+   friction says.
+9. **Too steep to stand.** A slip face won't hold you.
+10. **A jump shows gravity.** The same push-off on any moon: 0.45 m at 1 g, 1.0 m at
+    0.45 g.
+11. **Frame-rate proof on foot.** The same keys at 30, 60 and 120 ticks trace the same
+    path, walking, sliding and jumping.
+12. **Crouching braces.** Crouched, the wind catches less of you.
+13. **Hauling digs in.** Against a heavy line you sink, slow and tire faster.
+14. **Never below the sand.** Slides, jumps and landings at 1 g and 0.45 g never put you
+    in the sand.
 
 ## Out of scope
 
@@ -151,8 +238,13 @@ forgotten. That's fine, as long as it's never a surprise:
 ## Open questions
 
 - **How fast is the board, and how far does a charge go?** It has to beat a storm front.
-  The rest is tuning.
+  The rest is tuning. *First numbers (Stage 10): 20 m/s flat out, about 22 km on a base
+  battery; it outruns a front by about 11 m/s with the wind behind it.*
 - **Do tricks do anything,** or are they just for fun?
-- **How do the warnings show up?** Sound, the suit, the radio, a visible edge?
+- **How do the warnings show up?** Sound, the suit, the radio, a visible edge? *The
+  skeleton chimes and puts one line of text at the top of the view, as a stand-in.*
+- **How far can the board scout?** The camp is forgotten about 600 m out, half a minute
+  flat out, so scouting on the board is out and back within that, or with the camp in
+  tow on foot.
 - **Slip faces steep enough to slide you:** yes (Hunter, 2026-10-15). The Ridges dunes
   (World & terrain) have them, at 31.5°, and the probes find them near spawn.

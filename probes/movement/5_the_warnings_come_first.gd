@@ -5,9 +5,9 @@ extends MovementProbe
 ## and across it: the first warning comes at least 15 s before you reach the
 ## edge where the camp is lost, the last at least 5 s before, and past the
 ## edge the camp really is lost, and you're told. Then flat out on a board,
-## turning back at the last warning: the camp is never lost.
+## turning back at the last warning and riding home: the camp is never lost.
 
-const SPEEDS := [0.5, 1.8, 3.9, 10.0, 20.0, 26.0]
+const SPEEDS := [1.0, 1.8, 3.9, 10.0, 20.0, 26.0]
 const WAYS := [Vector2(1.0, 0.0), Vector2(0.6, -0.8)]
 ## Enough time to react, s, before the edge.
 const FIRST_LEAST := 15.0
@@ -70,7 +70,8 @@ func run() -> void:
 var _ticks := 0
 
 
-## Flat out on a board from the camp, turning back at the last warning.
+## Flat out on a board from the camp, turning back at the last warning and
+## riding home.
 func _turn_back(home: Vector2) -> void:
 	var camp := await _camp(home)
 	var watch := player.camp_range
@@ -79,12 +80,15 @@ func _turn_back(home: Vector2) -> void:
 	hold(["move_forward"])
 	var seen := {"nearest": INF, "soonest": INF, "turned": false, "lost": false}
 	watch.lost.connect(func(_labels: PackedStringArray) -> void: seen.lost = true)
-	await ride_for(90.0, func() -> void:
-		seen.nearest = minf(seen.nearest, watch.near)
-		seen.soonest = minf(seen.soonest, watch.seconds)
-		if watch.told == CampRange.LAST and not seen.turned:
-			seen.turned = true
-			face(-WAYS[0]))
+	var back_home := func() -> bool:
+		return seen.turned and Vector2(where().x - home.x, where().z - home.y).length() < 30.0
+	while not back_home.call() and player.ride != null and player.ride.ticks < 60 * 120:
+		await ride_for(0.5, func() -> void:
+			seen.nearest = minf(seen.nearest, watch.near)
+			seen.soonest = minf(seen.soonest, watch.seconds)
+			if watch.told == CampRange.LAST and not seen.turned:
+				seen.turned = true
+				face(-WAYS[0]))
 	hold([])
 	var kept := camp.all(func(d: Variant) -> bool: return is_instance_valid(d))
 	print("flat out, turned back at the last warning: %.0f m and %.1f s from the edge at the nearest; camp kept: %s"

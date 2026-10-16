@@ -40,7 +40,7 @@ func run() -> void:
 	hold(["move_forward"])
 	await ride_for(60.0, func() -> void:
 		var at := where()
-		var step := at - seen.last
+		var step: Vector3 = at - seen.last
 		seen.last = at
 		seen.ticks += 1
 		if seen.ticks > 1:

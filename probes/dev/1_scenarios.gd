@@ -2,8 +2,9 @@ extends WeatherProbe
 ## Dev probe 1: every scenario drops you where it says. A storm 100 m away is
 ## 100 m upwind and you face it; deep is deep; dusk is dusk; the test kit lands
 ## in front of you; going looking stands you before a ruin's door with finds
-## round it; the farm stands in front of you growing. Checked against the field itself and against what the game then
-## shows.
+## round it; the farm stands in front of you growing; a charged board lies at
+## your feet by a small camp. Checked against the field itself and against
+## what the game then shows.
 
 const SLACK := 1.0
 
@@ -52,6 +53,9 @@ func run() -> void:
 					await _survival_starts()
 				if scenario.get("farm", false):
 					await _farm_lands()
+				if scenario.get("board", false):
+					check(field.wind_at(at.x, at.y, t).length() < scenario.calm, "board: a calm spell")
+					await _board_lands()
 			"front", "back":
 				check(stormy == (scenario.kind == "back"), "%s: on the right side of the edge" % what)
 				check(ahead.dot(upwind) > 0.999, "%s: facing upwind, where it comes from" % what)
@@ -80,6 +84,36 @@ func _edge(from: Vector2, along: Vector2, t: float, inside: bool) -> float:
 		if (field.raw_storm_at(p.x, p.y, t) > 0.0) != inside:
 			return d
 	return INF
+
+
+## A hoverboard lies at your feet in front of you, nose ahead, a full battery
+## in it, and the ride action takes you onto it; beside you stand a charged
+## shield generator, switched off, and a crate frame: the camp the range
+## warnings watch, with none of them warning yet.
+func _board_lands() -> void:
+	await settle(true)
+	var dropped := Scenarios.board(world)
+	await physics_frames(60)
+	var player := world.player
+	var ahead := -player.global_basis.z
+	var board: Hoverboard = dropped[0]
+	var off := board.global_position - player.global_position
+	check(off.dot(ahead) > 0.5 and Vector2(off.x, off.z).length() < 2.0 and clearance(board) < 0.2,
+		"board: lying at your feet in front of you (%.1f m)" % Vector2(off.x, off.z).length())
+	check(board.battery() != null and board.battery().charge_wh >= board.battery().capacity() and board.can_run(),
+		"board: charged, ready to ride")
+	var shield: ShieldGenerator = dropped[1]
+	check(not shield.on and shield.battery().charge_wh >= shield.battery().capacity()
+		and dropped[2].label == "Crate frame" and dropped.all(func(b: Node3D) -> bool:
+			return b.global_position.distance_to(player.global_position) < 6.0),
+		"board: a small camp beside you, a charged shield and a crate")
+	check(player.camp_range.camp().size() == dropped.size() and player.camp_range.told == 0,
+		"board: the range warnings watch it, quiet so near")
+	check(player.toggle_board() and player.board == board, "board: the ride action takes you onto it")
+	player.step_off()
+	for body in dropped:
+		if is_instance_valid(body):
+			body.free()
 
 
 ## Two planters float in front of you, each on its line to a driven stake,

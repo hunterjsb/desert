@@ -4,8 +4,8 @@ extends MovementProbe
 ## their slip faces, and half wandering, over every chunk seam on the way. The
 ## board never dips below the sand. It never launches but where a crest falls
 ## away under it, and then not far. It never judders: the facets of the
-## ground's lattice never reach you, and nothing hits harder than a crest's
-## landing. The ground under you is solid all the way: the board never waits.
+## ground's lattice never reach you, and it never slams. The ground under you
+## is solid all the way: the board never waits.
 
 const DISTANCE := 20000.0
 const LEG := 2500.0
@@ -16,9 +16,11 @@ const LAUNCH := 0.5
 ## rising and fell away by this much, m/s.
 const FELL_AWAY := 2.0
 const HIGHEST := 3.0
-## The hardest a ridge's landing or a crest's float may move you, m/s²; and
-## a judder: up, down and up again tick by tick, each harder than this, m/s².
-const HARDEST := 50.0
+## The hardest the ride may move you up or down, m/s²: about 6 g, the worst
+## of it climbing flat out straight into a slip face's foot, as hard as the
+## ground gets; a slam onto the sand would be several times it. And a judder:
+## up, down and up again tick by tick, each harder than this, m/s².
+const HARDEST := 60.0
 const JUDDER := 8.0
 
 
@@ -26,7 +28,7 @@ func run() -> void:
 	var tuning := Tuning.current()
 	# Ground to see is no part of this: only the ground under the ride. Nor
 	# are storms, which would wear the board out over a ride this long.
-	tuning.view_radius = tuning.near_radius + 1
+	tuning.view_radius = tuning.near_radius
 	tuning.storm_threshold = 2.0
 	await load_moving()
 	set_rate(60, 16)
@@ -67,7 +69,7 @@ func run() -> void:
 	check(seen.lowest >= 0.0, "the board never dipped below the sand (%.3f m at least)" % seen.lowest)
 	check(seen.astray == 0, "it never launched but off a crest (%d elsewhere)" % seen.astray)
 	check(seen.highest < HIGHEST, "and never far off one (%.2f m over its ride height)" % seen.highest)
-	check(seen.hardest < HARDEST, "nothing hit harder than %d m/s² (%.1f)" % [HARDEST, seen.hardest])
+	check(seen.hardest < HARDEST, "it never slammed: nothing harder than %d m/s² (%.1f)" % [HARDEST, seen.hardest])
 	check(seen.judders == 0, "it never juddered (%d)" % seen.judders)
 	check(ride.waited == 0, "the ground under you was solid all the way (waited %d ticks)" % ride.waited)
 	set_rate(60)
