@@ -11,8 +11,6 @@ extends Node
 
 ## Built in and free, so nothing ever drains them.
 const BUILT_IN := "air, radiation"
-## What a new suit carries: a run starts on sealed water and a ration.
-const KIT: Array[StringName] = [&"canister", &"ration"]
 const HINT := "click a slot to take out, put in or swap · {inventory} closes"
 const SLOT := Vector2(100.0, 40.0)
 const GAP := 6.0
@@ -60,12 +58,13 @@ func _notification(what: int) -> void:
 				part.free()
 
 
-## A fresh suit's slots: the kit, and nothing else.
+## A fresh suit's slots: what the run's kit carries, and nothing else.
 func restock() -> void:
+	var kit := Kit.standard().slots()
 	for i in slots.size():
 		if slots[i] != null:
 			slots[i].free()
-		slots[i] = Catalog.part(KIT[i]) if i < KIT.size() else null
+		slots[i] = Catalog.part(kit[i]) if i < kit.size() else null
 
 
 ## Whether a slot can take it: a part with nothing fastened to it, since a

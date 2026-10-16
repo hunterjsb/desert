@@ -144,6 +144,12 @@ The shield decides how much of it is safe. All three grow with upgrades.
 - **Protection is a share per harm,** 0 to 1, carried by each bubble; the levels
   (immune, strong, weak) are numbers on it. Only a bubble that stops the storm outright
   carves the dust out of the storm pass.
+- **The light shield** (2026-10-16) is the one every run starts with (Survival): a
+  smaller generator, 4 kg, with a 4 m bubble that keeps out the storm outright but only
+  half the wind, so lines inside still take load and loose things still drift. It sips
+  2 W in the clear and draws 20 W holding back a full storm, so the 30 W light panel
+  keeps it going. The base shield, found in the deep layer, is the upgrade: a 7 m
+  bubble of still air. Its numbers are its frame's own stats, so another kind is data.
 - **Seated on a crate** (2026-10-16): the generator fits a top mount (a crate's, a
   charger's or a condenser's) and the bubble rides with it, so towing or dragging the
   crate on its line carries the bubble (shield probe 4 tows one 200 m through a storm).

@@ -3,7 +3,8 @@ extends Node
 ## One run at a time. When you die the run is over: the world goes, with
 ## everything you had in it, and a fresh one on a new seed takes its place,
 ## so nothing carries over. It sits beside the world, never in it. Every run
-## starts with the kit on the sand beside you, as well as the suit's.
+## starts with its kit (Kit, data): some in the suit's slots, the rest on the
+## sand beside you.
 
 signal started(world: World)
 ## The run's kit is down beside you.
@@ -12,11 +13,9 @@ signal equipped(world: World)
 const WORLD := preload("res://game/world/world.tscn")
 ## The word that the last run is over shows this long, s.
 const CAPTION_SECONDS := 4.0
-## The kit, right and ahead of you, m: the base shield with a full battery,
-## switched off, and the light solar panel cabled into it, so the sun keeps
-## its battery up.
-const KIT_SHIELD := [0.8, 2.0]
-const KIT_PANEL := [-1.0, 2.2]
+## What's beside you lies in a row this far ahead, this far apart, m.
+const KIT_AHEAD := 2.0
+const KIT_APART := 1.2
 
 ## Runs since the game began, this one included.
 var count := 1
@@ -86,19 +85,42 @@ func _equip(at: World) -> void:
 		equipped.emit(at)
 
 
-## The run's kit on the sand beside where you begin: [shield, panel, cable].
-static func kit(world: World) -> Array[Node]:
-	var shield := Catalog.device(&"shield")
-	_set_down(world, shield, KIT_SHIELD)
-	var cell := Catalog.part(&"battery")
-	world.content.add_child(cell)
-	shield.fit(cell, _socket(shield, &"battery"))
-	var panel := Catalog.device(&"light_panel")
-	_set_down(world, panel, KIT_PANEL)
-	var cable := Catalog.cable(world, _beside(world, [0.0, 1.4]))
-	shield.fit(cable.plugs[0], _socket(shield, &"port"))
-	panel.fit(cable.plugs[1], _socket(panel, &"port"))
-	return [shield, panel, cable]
+## The kit's things on the sand beside where you begin, every battery in them
+## as full as the kit says, cabled together if it says so: all it made.
+static func kit(world: World, from: Kit = Kit.standard()) -> Array[Node]:
+	var made: Array[Node] = []
+	var ids: Array[StringName] = []
+	for id in from.beside:
+		for i in from.beside[id]:
+			ids.append(id)
+	var powered: Array[Device] = []
+	for k in ids.size():
+		var where := [(k - (ids.size() - 1) * 0.5) * KIT_APART, KIT_AHEAD]
+		var id := ids[k]
+		if id == &"coil":
+			var line := Line.make(world, from.rope_m)
+			line.coil.global_transform = Transform3D(Basis(Vector3.UP, world.player.global_rotation.y)
+				* Basis(Vector3.RIGHT, -PI / 2.0), _beside(world, where) + Vector3.UP * 0.02)
+			made.append_array([line, line.coil])
+			continue
+		var device := Catalog.device(id)
+		_set_down(world, device, where)
+		for socket in device.sockets():
+			if socket.kind == &"battery":
+				var cell := Catalog.part(&"battery") as Battery
+				cell.charge_wh = cell.capacity() * from.charge
+				world.content.add_child(cell)
+				device.fit(cell, socket)
+				cell.show_charge()
+		if _socket(device, &"port") != null:
+			powered.append(device)
+		made.append(device)
+	for k in range(1, powered.size() if from.wired else 0):
+		var cable := Catalog.cable(world, _beside(world, [0.0, KIT_AHEAD * 0.7]))
+		powered[0].fit(cable.plugs[0], _socket(powered[0], &"port"))
+		powered[k].fit(cable.plugs[1], _socket(powered[k], &"port"))
+		made.append(cable)
+	return made
 
 
 ## A place on the sand right and ahead of where the run begins, facing as you do.

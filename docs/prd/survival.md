@@ -160,14 +160,26 @@ Death means a new run (see Runs in the vision).
 - **Death starts a new run.** The world goes with everything in it, and a fresh one on a
   new seed takes its place. You start at its spawn, fed and watered, with the canister
   and the ration in your slots.
-- **The starting kit** (Hunter, 2026-10-16: "start with the shield and solar panel").
-  Every run, the first and every one after a death, starts with the kit on the sand
-  beside you, once the ground there is solid: a base shield generator with a full
-  battery, switched off, and the light solar panel cabled into its port. Use switches
-  the shield on; pick up the panel, the shield or the cable's plugs to move them. It keeps
-  the bubble up for a day whatever the weather, but the panel can't refill the battery
-  after a storm (Power). A dev scenario that drops its own camp clears the run's kit
-  first. Survival probe 4 checks both runs start with it and runs its shield for a day.
+- **The starting kit** (Hunter, 2026-10-16: "start with the shield and solar panel",
+  then five things: water, one ration, a weak shield, a light solar panel and a short
+  rope coil). The kit is data, `game/survival/standard_kit.tres` (a `Kit`: what's carried
+  into the suit's slots and what's set down beside you, by catalog id and how many, how
+  full its batteries start, how long its coil is, and whether it starts cabled). Only
+  this standard kit is balanced; choosing a kit waits. Every run, the first and every
+  one after a death, starts with it: the canister and the ration in your slots, and on
+  the sand beside you, once the ground there is solid, a **light shield generator** with
+  its battery half charged, switched off, the **light solar panel** cabled into its port,
+  and a **6 m rope coil** (a found one lays 12 m). The light shield is clearly weaker
+  than a found one: a 4 m bubble against 7 m (a third of the room for a camp), and it
+  lets half the wind through, so lines inside still take load. It's built light enough
+  that the light panel keeps it going: it sips 2 W in the clear and draws 20 W holding
+  back a full storm. On the probes' seed, a day of the run's own weather at the spawn
+  (a quarter of it under a storm) ran it from 50.0 to 50.9 Wh, the panel making 3.0 Wh
+  to the shield's 2.1, never lower than 49.8. A clear day gains about 2.5 Wh; a day of
+  full storm loses about 6, which its half battery covers for a week of them. No shield
+  of any kind goes in your slots; you carry one in your hands. A dev scenario that
+  drops its own camp clears the run's kit first. Survival probe 4 checks both runs start
+  with it and runs the light shield for a day.
 - **Food and water from salvage:** no new food was needed. Survival kits, common on
   ruins' floors and sometimes on open sand, hold a sealed canister and a ration three
   times in four, and seeds for a planter; loose rations and seeds lie on ruins' floors.

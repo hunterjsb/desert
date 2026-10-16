@@ -74,18 +74,19 @@ static var _tells := {}
 ## Frames: their box, weight, wind catch and sockets as [kind, position, outward].
 const DEVICES := {
 	# Two batteries, a ring on every side, a tray under it and two top mounts,
-	# so a panel rides beside a lamp or a shield.
+	# so a panel rides beside a lamp or a shield. The first battery sits in the
+	# middle of its back, so a crate with one hangs level on its lines.
 	&"crate_frame": {"label": "Crate frame", "size": Vector3(0.8, 0.5, 0.8), "mass": 15.0,
 		"sockets": [
-			[&"battery", Vector3(-0.2, 0.0, 0.4), Vector3.BACK],
+			[&"battery", Vector3(0.0, 0.0, 0.4), Vector3.BACK],
 			[&"ring", Vector3(0.4, 0.0, 0.0), Vector3.RIGHT],
 			[&"ring", Vector3(-0.4, 0.0, 0.0), Vector3.LEFT],
 			[&"bottom", Vector3(0.0, -0.25, 0.0), Vector3.DOWN],
 			[&"top", Vector3(0.0, 0.25, -0.2), Vector3.UP],
 			[&"port", Vector3(0.25, 0.1, -0.4), Vector3.FORWARD],
-			[&"battery", Vector3(0.2, 0.0, 0.4), Vector3.BACK],
+			[&"battery", Vector3(-0.15, 0.0, -0.4), Vector3.FORWARD],
 			[&"ring", Vector3(0.0, 0.15, 0.4), Vector3.BACK],
-			[&"ring", Vector3(-0.2, 0.0, -0.4), Vector3.FORWARD],
+			[&"ring", Vector3(0.25, -0.1, -0.4), Vector3.FORWARD],
 			[&"top", Vector3(0.0, 0.25, 0.2), Vector3.UP],
 		]},
 	# Its own water tank, and a mod mount on its back for a harvester.
@@ -137,10 +138,20 @@ const DEVICES := {
 			[&"bottom", Vector3(0.0, -0.21, 0.0), Vector3.DOWN],
 			[&"port", Vector3(0.2, -0.05, 0.0), Vector3.RIGHT],
 		]},
-	# The light solar panel you start with: set it down, cable it in, pick it
-	# up again. Lying flat, the wind meets its edge.
+	# The light shield you start with: a smaller bubble that lets half the wind
+	# through, built light enough that the light panel keeps it going.
+	&"light_shield": {"label": "Light shield generator", "size": Vector3(0.3, 0.32, 0.3), "mass": 4.0, "shield": true,
+		"fits": &"top", "stats": {"radius_m": 4.0, "clear_w": 2.0, "storm_w": 20.0, "wind_block": 0.5},
+		"sockets": [
+			[&"battery", Vector3(0.0, -0.04, 0.15), Vector3.BACK],
+			[&"ring", Vector3(-0.15, -0.04, 0.0), Vector3.LEFT],
+			[&"bottom", Vector3(0.0, -0.16, 0.0), Vector3.DOWN],
+			[&"port", Vector3(0.15, -0.04, 0.0), Vector3.RIGHT],
+		]},
+	# The light solar panel you start with, half a found panel: set it down,
+	# cable it in, pick it up again. Lying flat, the wind meets its edge.
 	&"light_panel": {"label": "Light solar panel", "size": Vector3(0.8, 0.05, 0.6), "mass": 5.0, "carryable": true,
-		"stats": {"solar_w": 60.0, "face_m2": 0.04},
+		"stats": {"solar_w": 30.0, "face_m2": 0.04},
 		"sockets": [
 			[&"port", Vector3(0.4, 0.0, 0.0), Vector3.RIGHT],
 		]},

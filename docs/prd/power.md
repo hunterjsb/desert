@@ -104,18 +104,17 @@ the felt-weather rule.
 - **The light solar panel is the panel part.** Carry it and fit it on any device's top
   mount; it powers that device. A small **charger** frame (a top mount and a battery
   slot) is how you charge a loose battery in the sun.
-- **The starting light panel** (2026-10-16) is a small device of its own: the panel
-  built into a flat frame with a port, 5 kg, that you carry, set down and pick back up.
-  Lying flat, the wind meets its edge, so a breeze doesn't skate it off. Every run
-  starts with it cabled into the base shield (Survival).
-- **What the starting kit can do** (2026-10-16): a full base battery holds a running
-  shield for 30 minutes of the worst storm, longer than the 20-minute day, so the kit
-  keeps its bubble up for a day whatever the weather. On the probes' seed the run's first
-  day at the spawn was a quarter stormy, and the battery never fell below 86%. The
-  panel's 60 W only keeps up with the shield's 10 W sip by day: over a clear equator day
-  it makes about 6.4 Wh against the shield's 3.3, so it can't put back a storm's drain
-  in any useful time (about 33 clear days for a full battery). "Sit for a moment and
-  recharge the shield" would want about 1 kW of panel, or a shorter storm draw.
+- **The starting light panel** (2026-10-16) is a small device of its own: a 30 W panel,
+  half a found one, built into a flat frame with a port, 5 kg, that you carry, set down
+  and pick back up. Lying flat, the wind meets its edge, so a breeze doesn't skate it
+  off. Every run starts with it cabled into the light shield (Survival).
+- **The starting power margin** (2026-10-16): over a clear equator day the light panel
+  makes about 3.2 Wh against the light shield's 0.7, and on the probes' seed a day a
+  quarter stormy made 3.0 Wh against 2.1, so the battery ends the day a little fuller.
+  A day of full storm costs about 6 Wh net. Against the base shield it would fall short:
+  even a 60 W panel makes about 6.4 Wh a clear day against the base shield's 3.3, and a
+  full storm drains 100 Wh in 30 minutes, so "sit for a moment and recharge the shield"
+  would want about 1 kW of panel for the base shield.
 - **Two battery slots on one device** share its pool like any two batteries; its charge
   light shows them together.
 - **Cables are two plugs on 6 m of wire.** Each plug snaps into a port socket like any

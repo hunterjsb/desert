@@ -24,8 +24,9 @@ storm's dark, growing by felt light and temperature and wilting past their limit
 picking by hand, the harvester mod with its replant split, food dropped onto you, and
 "farm" in the scenario menu. Probe 3 was cheap with a test-only thermal shield, so it's
 built too. On 2026-10-16 a normal run became playable end to end: rope, cables, seeds,
-survival kits and the harvester are found, every run starts with the shield and the
-light solar panel beside you, and the shield seats on a crate, which has more sockets.
+survival kits and the harvester are found, every run starts with its kit (data: water, a
+ration, a light shield, a light solar panel and a short coil), and a shield seats on a
+crate, which has more sockets.
 
 ## The loop we're building toward
 

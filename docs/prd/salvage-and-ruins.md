@@ -170,6 +170,9 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
   line's first end to lay, the rest on your belt. A plug standing in the sand is a
   cable's first end: take it and its 6 m cable and second plug come up with it, a strong
   cable's from the deep layer.
+- **The first deep shield is an upgrade.** A found shield generator is the base shield:
+  a 7 m bubble of still air against the 4 m, half-windy light shield every run starts
+  with (Survival), and a found solar panel makes 60 W against the light panel's 30.
 - **A survival kit** is a small sealed case you can carry, 3 kg, with a water socket, a
   food socket and three plant slots. It's found with each filled three times in four, and
   its canister and ration sealed and full: what you live on at first. Seeds keep only out

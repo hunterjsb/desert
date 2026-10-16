@@ -85,7 +85,7 @@ func _strip(id: StringName, k: int, tally: Dictionary) -> void:
 	var sockets: Array = Catalog.DEVICES[id].sockets
 	for i in sockets.size():
 		var kind: StringName = sockets[i][0]
-		var fills: Array = [Finds.KIT] if id == &"survival_kit" else [Finds.FILLS[Finds.DEEP], Finds.FILLS[Finds.SURFACE]]
+		var fills: Array = [Finds.SURVIVAL_KIT] if id == &"survival_kit" else [Finds.FILLS[Finds.DEEP], Finds.FILLS[Finds.SURFACE]]
 		for each: Dictionary in fills:
 			if each.has(kind):
 				spec.fill.append([i, each[kind][0], 0.5])

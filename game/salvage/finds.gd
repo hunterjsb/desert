@@ -75,7 +75,7 @@ const IN_RUINS := {
 ## What a survival kit holds, by socket kind, and the share of its slots
 ## found filled: it was packed to be found. Seeds keep only out of the
 ## weather, so a kit lying on open sand has mostly lost them.
-const KIT := {&"water": [&"canister"], &"food": [&"ration"], &"plant_small": [&"carrot"],
+const SURVIVAL_KIT := {&"water": [&"canister"], &"food": [&"ration"], &"plant_small": [&"carrot"],
 	&"plant_large": [&"fungus"]}
 const KIT_FILL := 0.75
 const KIT_SEEDS_IN_THE_OPEN := 0.1
@@ -222,7 +222,7 @@ static func _fill(spec: Dictionary, rng: RandomNumberGenerator, least := 0, in_r
 	if spec.id == &"stake":
 		return
 	var packed: bool = spec.id == &"survival_kit"
-	var fills: Dictionary = KIT if packed else FILLS[layer]
+	var fills: Dictionary = SURVIVAL_KIT if packed else FILLS[layer]
 	var sockets: Array = Catalog.DEVICES[spec.id].sockets
 	var open: Array[int] = []
 	for i in sockets.size():

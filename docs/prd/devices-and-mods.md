@@ -129,12 +129,14 @@ it, take hold of it, and let go.
   snappable to the crate like lights are? so we can mount and charge it and drag it
   around?"). The shield generator fits a top mount the way a lamp does: the tug leans it
   in, upright, and take seats it. Seated, it stays a body of its own, held fast on the
-  device and touching nothing of it, so it carries on working as itself: it rides with
-  the device, adds its weight, shares the device's power pool, and use still switches it.
+  device and touching nothing of it, so it carries on working as itself and the camp
+  stays fully simulated: it rides with the device, adds its weight, shares the device's
+  power pool through Power's own pooling, and use still switches it. It's the lamp's
+  top mount, tug and take; any device with a socket kind to fit would seat the same way.
   Take lifts it straight off, whole, whatever of it you aim at. Its own sockets wait
   until it's off again.
 - **The crate frame has more sockets** (2026-10-16, Hunter: "i feel like the crate
-  should have more slots"): two battery slots on its back, a ring mount on every side,
+  should have more slots"): a battery slot front and back, a ring mount on every side,
   a bottom mount, two top mounts side by side and a port. The solar panel is 0.8 × 0.4 m
   now, half the crate's top, so a panel rides beside a lamp, a shield or a second panel.
   Fitted out with two big batteries, four hooks, a tray, a panel and a shield, a crate
@@ -173,6 +175,7 @@ it, take hold of it, and let go.
 | Wind turbine | 1 | | | | 1 | |
 | Condenser | 1 | 1 | 1 | 1 | 1 | a water socket |
 | Shield generator | 1 | 1 | 1 | | 1 | fits a top mount itself |
+| Light shield generator | 1 | 1 | 1 | | 1 | fits a top mount itself |
 | Light solar panel | | | | | 1 | |
 | Survival kit | | | | | | a water and a food socket, 2 small and 1 large plant slot |
 

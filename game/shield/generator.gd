@@ -25,12 +25,15 @@ const FLICKER := 0.25
 
 ## The switch, which use flips. The bubble stands while it's on and has power.
 var on := false
-## Metres to the shell, fully open.
+## Metres to the shell, fully open: its kind's, unless widened.
 var size := Tuning.current().shield_radius
 var shelter := Shelter.new()
 var hum: AudioStreamPlayer3D
 
 var _tuning := Tuning.current()
+var _radius := _tuning.shield_radius
+var _clear_w := _tuning.shield_clear_w
+var _storm_w := _tuning.shield_storm_w
 ## Whether the bubble is opening or open, rather than going or gone, and the
 ## seconds since that last changed.
 var _up := false
@@ -49,6 +52,12 @@ func _init() -> void:
 
 func _ready() -> void:
 	super()
+	# A lighter kind says its own bubble, draw and hold; the base shield's are tuning.
+	_radius = frame_stats.get("radius_m", _tuning.shield_radius)
+	size = _radius
+	_clear_w = frame_stats.get("clear_w", _tuning.shield_clear_w)
+	_storm_w = frame_stats.get("storm_w", _tuning.shield_storm_w)
+	shelter.blocks[&"wind"] = frame_stats.get("wind_block", 1.0)
 	add_child(shelter)
 	var housing := Vector3.ONE * 0.4
 	for child in get_children():
@@ -148,8 +157,7 @@ func demand_w(t := NAN) -> float:
 	if not on or wrecked() or world == null:
 		return parts_w
 	var storm := world.weather.field_storm(global_position, t)
-	return parts_w + lerpf(_tuning.shield_clear_w, _tuning.shield_storm_w, storm) \
-		* pow(size / _tuning.shield_radius, 2.0)
+	return parts_w + lerpf(_clear_w, _storm_w, storm) * pow(size / _radius, 2.0)
 
 
 ## Seconds of world time its pool's batteries last at what it draws now, less
