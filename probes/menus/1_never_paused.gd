@@ -24,8 +24,15 @@ func run() -> void:
 ## TICKS ticks from the run's beginning.
 func _measure(menu: bool) -> Array:
 	await open_main(false)
-	# Nothing left to build, so the ground can't differ between the two by load.
+	# Nothing left to build, so the ground can't differ between the two by load,
+	# and no kit, which lands whenever the sand is ready.
 	await settle()
+	while not world.has_meta(&"kit"):
+		await get_tree().physics_frame
+	for body: Node in world.get_meta(&"kit", []):
+		if is_instance_valid(body):
+			body.free()
+	world.remove_meta(&"kit")
 	world.respawn(world.spawn.x, world.spawn.y, 0.0, 0.0)
 	var crate := drop_box(world.spawn.x + 2.0, world.spawn.y - 3.0, 0.6)
 	# Heavy enough that the storm can't carry it off past the ground's collision.
