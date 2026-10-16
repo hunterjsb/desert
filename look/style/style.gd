@@ -28,7 +28,7 @@ const CAMP_TURN := 12.0
 ## id, x, z, yaw degrees, parts. The crate floats; the rest stand on the sand.
 const CAMP := [
 	[&"crate_frame", -1.9, 0.6, 25.0, [&"battery", &"hover_tray"]],
-	[&"planter", 2.0, 0.7, -18.0, [&"battery", &"seedling", &"seedling", &"seedling", &"sapling"]],
+	[&"planter", 2.0, 0.7, -18.0, [&"battery", &"carrot", &"carrot", &"carrot", &"fungus"]],
 	[&"charger", 1.1, -1.6, 35.0, [&"battery", &"solar_panel"]],
 	[&"shield", 0.0, 0.0, 10.0, [&"battery"]],
 ]
@@ -287,7 +287,7 @@ func _capture(out_dir: String, only: PackedStringArray) -> void:
 	var rid := get_viewport().get_viewport_rid()
 	RenderingServer.viewport_set_measure_render_time(rid, true)
 	var storm_at := world.time
-	for shot: Array in SHOTS:
+	for shot: Array in _shots():
 		if (shot[1] == "storm") != storm or (not only.is_empty() and not only.has(shot[0])):
 			continue
 		generator.battery().charge_wh = generator.battery().capacity()
@@ -321,6 +321,11 @@ func _capture(out_dir: String, only: PackedStringArray) -> void:
 		print("  %-18s gpu %5.2f ms  draws %5d  triangles %8d" % [shot[0], gpu, calls, prims])
 	print("style: done%s" % _shared_gpu())
 	get_tree().quit()
+
+
+## The shots to take: name, moment, camera and target in the camp's frame.
+func _shots() -> Array:
+	return SHOTS
 
 
 ## Another Godot on the same GPU skews frame times; say so beside them.

@@ -1,7 +1,7 @@
 extends RefCounted
 ## One candidate art direction: what it draws for each frame, part, socket and
-## the ruin, in place of the grey boxes. This one draws nothing, so the grey
-## boxes stand: the baseline every candidate is judged against.
+## the ruin, in place of the game's own. This one draws nothing, so the game
+## stands as it is: grey boxes when the candidates were shot, B's paint since.
 
 const Shapes := preload("res://look/style/shapes.gd")
 
@@ -10,7 +10,7 @@ var wind := Vector3(0.0, 0.0, 1.0)
 
 
 func title() -> String:
-	return "grey boxes (today)"
+	return "the game (today)"
 
 
 ## A frame's look in its own frame, or null to keep its grey box.

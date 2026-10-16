@@ -84,9 +84,9 @@ func part(id: StringName, size: Vector3) -> Node3D:
 			_block(root, Vector3(size.x - 0.06, size.y - 0.06, 0.012), &"navy", Vector3(0.0, 0.0, 0.035), 0.004)
 			for i in 3:
 				_block(root, Vector3(0.012, size.y - 0.07, 0.014), &"cream", Vector3(-0.19 + i * 0.19, 0.0, 0.038), 0.002)
-		&"seedling":
+		&"seedling", &"carrot":
 			_solid(root, Shapes.cylinder(0.05, 0.14, 4, 0.0), &"sage", Vector3(0.0, 0.0, 0.07), Basis(Vector3.RIGHT, PI / 2.0))
-		&"sapling":
+		&"sapling", &"fungus":
 			_solid(root, Shapes.cylinder(0.02, 0.18, 4), &"charcoal", Vector3(0.0, 0.0, 0.09), Basis(Vector3.RIGHT, PI / 2.0))
 			_solid(root, Shapes.sphere(0.11, 6, 3), &"sage", Vector3(0.0, 0.0, 0.26))
 			_solid(root, Shapes.sphere(0.07, 5, 3), &"sage", Vector3(0.06, 0.03, 0.36))

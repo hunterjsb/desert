@@ -1,0 +1,9 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://look/paint/paint.gd" id="1_paint"]
+[ext_resource type="PackedScene" path="res://game/world/world.tscn" id="2_world"]
+
+[node name="PaintTest" type="Node"]
+script = ExtResource("1_paint")
+
+[node name="World" parent="." instance=ExtResource("2_world")]

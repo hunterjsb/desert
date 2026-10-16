@@ -2,8 +2,8 @@
 
 *Draft, 2026-10-16. Hunter picked **B, chunky worn industrial, for now**. It lays out the
 candidate looks for the game's things, shot side by side in the real world, so the choice
-came before any real asset. Every game object stays a grey box until the loop works; the
-look-test is `look/style`.*
+came before any real asset. Every game object keeps its grey-box shape until the loop
+works, now painted in B (below); the look-test is `look/style`.*
 
 ## The test
 
@@ -149,6 +149,18 @@ He liked all four, weighed B against C with D as the runner-up, and went with **
 (2026-10-16). "For now" keeps it open to the community's view and to C's readable parts.
 A paint pass brings B's palette and wear shader onto the game's grey shapes ahead of any
 real asset (left to Claude, 2026-10-16); models wait for the loop.
+
+## As painted
+
+*2026-10-16.* The game wears B on its grey-box shapes, which are unchanged, collision
+included. The shaders live in `game/look/`, and the look-test reads the same copies. Each
+device and part is one merged mesh in one shared material. How sound a device is drives
+its wear, so the weather chips it, rusts it and finally takes it down to the metal. A
+find's layer sets where its paint starts: a deep one is crisp and a surface one rusty.
+Free sockets show a dark bezel with a tab in their kind's colour, and charge lights are
+as they were. The ruin is poured concrete, with formwork seams, tie holes, a faded band and
+a stencilled number by each corner. There are no maker's marks yet. To shoot the camp,
+finds and ruin before and after: `look/paint`.
 
 ## Open questions
 

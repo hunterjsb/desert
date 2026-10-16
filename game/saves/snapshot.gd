@@ -379,8 +379,6 @@ func _set_state(body: RigidBody3D, rec: Dictionary) -> void:
 	if device == null:
 		return
 	device.durability = state.durability
-	if device._frame_look != null:
-		device._frame_look.albedo_color = device._frame_color.lerp(Device.WORN, 1.0 - device.durability)
 	device.set_powered(state.powered)
 	var shield := device as ShieldGenerator
 	if shield != null:
@@ -404,7 +402,7 @@ func _make(rec: Dictionary) -> RigidBody3D:
 		_made[rec.ref] = body
 	_states.append([body, rec])
 	if rec.has("found"):
-		body.set_meta(&"layer", rec.found)
+		Finds.mark(body, rec.found)
 	if rec.has("rolled"):
 		body.set_meta(&"rolled", rec.rolled)
 	var device := body as Device

@@ -16,7 +16,7 @@ looks=("$@")
 [[ ${looks[0]} == --sheets ]] && looks=()
 all=(grey a b c d)
 shots=(camp8_morning camp8_midmorning camp8_noon camp8_dusk camp50 crate5 crate finds storm)
-declare -A titles=([grey]="grey boxes (today)" [a]="A: Sand Game's models" [b]="B: chunky worn industrial"
+declare -A titles=([grey]="the game (today)" [a]="A: Sand Game's models" [b]="B: chunky worn industrial"
 	[c]="C: low-poly, flat, tight palette" [d]="D: cel-shaded, inked")
 
 gaming() {

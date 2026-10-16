@@ -62,9 +62,10 @@ func setup(world: World) -> void:
 
 ## The first find laid out in a run pays for everything done the first time,
 ## a millisecond; a stand-in pays it now, while the world loads, as the
-## sand's shader does. So does the first ruin.
+## sand's shader does. So do the first ruin and the first of each painted look.
 func _first_time() -> void:
 	Ruin.prepare()
+	Dress.prepare()
 	var spec := {"id": &"crate_frame", "device": true, "layer": Finds.DEEP, "x": 0.0, "z": 0.0, "yaw": 0.0,
 		"lean": 0.0, "lean_by": 0.0, "bury": 0.3, "sound": 0.5, "charge": 0.5,
 		"fill": [[0, &"battery", 0.5], [1, &"hook", 0.0], [3, &"hover_tray", 0.0], [4, &"solar_panel", 0.0]]}
