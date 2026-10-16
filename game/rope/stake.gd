@@ -61,7 +61,7 @@ func use(by: Player, at: Vector3) -> bool:
 		return false
 	by.hands.stow()
 	drive(at, by.world.height_under(at))
-	by.hands.clunk()
+	Sounds.play_at(self, Sounds.STAKE)
 	return true
 
 

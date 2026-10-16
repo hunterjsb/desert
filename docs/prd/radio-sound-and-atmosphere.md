@@ -67,6 +67,32 @@ Everything that matters can be heard, so you can read the world by ear:
 - the rope creak, the metal clanks, the static and radio interference
 - the sand footsteps and slide, and the planter's hover hum
 
+**As built (2026-10-16, the sound pass pulled forward from Stage 11):**
+- **Soft hands.** Fitting a part or a mod is a soft seat with a small click: a Sand
+  Game clank with its ring cut off. Taking one out is its lighter match, and a line's
+  end tied on creaks instead. Taking something off the sand is a sift, and what you put
+  down or throw lands with a soft crunch where it lands; a throw whooshes.
+- **Softer suit.** The slots are a pouch, in and out, and the inventory opens and
+  closes with a cloth rustle. These are the quietest things in the world.
+- **New:** a stake driven in, water poured into a planter, a crop picked, the
+  harvester's food landing on you, the condenser's drip (quicker the more it makes),
+  soft bell chimes for the camp-range warnings, the board's ride (the planter's hover,
+  pitched by speed), getting on and off it, and a tick in its last minute of battery
+  that quickens as it runs out. The menus click very quietly as you move and confirm,
+  and on back.
+- **The mix.** Buses: World (and Weather inside it, whose low-pass is the bubble's
+  muffle) and UI, under a limiter on Master; the options' volume is Master's. The main
+  menu mutes World only, so its desert's storm is silent and its words are heard.
+  Every file is levelled to how loud it's heard, with the table in
+  `assets/audio/CREDITS.md`: the storm roars at -20 LUFS in the open and -32 inside a
+  running bubble, the wind reaches -30 at a gale, a walking step is -36, fitting -30,
+  the suit -38 and the menus -40 to -49. Small world sounds are heard at their level
+  from 2 m and fade past it.
+- **One table.** Every sound's file is named once, in `game/core/sounds.gd`, and a
+  probe checks that each one the game names loads and that the buses exist.
+- **Not yet:** a turbine's whir by its speed, clanks when things knock together, and
+  the radio itself (Stage 11).
+
 ## Atmosphere
 
 - **Clear skies:** big, lonely views, heat shimmer at the horizon, and quiet apart from

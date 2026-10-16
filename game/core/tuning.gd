@@ -314,8 +314,9 @@ static var _current: Tuning
 ## Extra field of view at a sprint, and at a fast slide, degrees.
 @export var sprint_fov: float = 3.0
 @export var slide_fov: float = 8.0
-@export var step_db: float = -16.0
-@export var slide_db: float = -8.0
+## A walking step and a full slide, dB over how loud their files are heard.
+@export var step_db: float = 0.0
+@export var slide_db: float = 0.0
 
 @export_group("Devices")
 ## A hover tray holds a device's middle this high over the sand, m.

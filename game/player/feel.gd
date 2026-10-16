@@ -8,12 +8,6 @@ extends Node3D
 ## none of it can change where you go: it moves only the camera, and makes
 ## only sound and dust.
 
-const STEPS: Array[AudioStream] = [preload("res://assets/audio/step_a.ogg"),
-	preload("res://assets/audio/step_b.ogg"), preload("res://assets/audio/step_c.ogg"),
-	preload("res://assets/audio/step_d.ogg"), preload("res://assets/audio/step_e.ogg"),
-	preload("res://assets/audio/step_f.ogg")]
-const HISS: AudioStreamOggVorbis = preload("res://assets/audio/slide.ogg")
-const THUD: AudioStream = preload("res://assets/audio/impact.ogg")
 ## Landings slower than this, m/s, are settling, like a respawn's drop.
 const SOFTEST := 1.5
 ## The spring never carries the head further than this, m.
@@ -65,10 +59,10 @@ func _ready() -> void:
 	_rng.seed = 7
 	for i in 2:
 		_feet.append(_voice(null))
-	var hiss := HISS
+	var hiss: AudioStreamOggVorbis = Sounds.SLIDE
 	hiss.loop = true
 	_slide = _voice(hiss)
-	_thud = _voice(THUD)
+	_thud = _voice(Sounds.LANDING)
 	_spray = _sand(64, 0.8, false)
 	_puff = _sand(32, 0.7, true)
 	_player.landed.connect(_on_landed)
@@ -169,13 +163,13 @@ func _footfall(speed: float) -> void:
 
 ## A step sound, never the same one twice running, on alternate feet.
 func _step(db: float) -> void:
-	var pick := _rng.randi_range(0, STEPS.size() - 2)
+	var pick := _rng.randi_range(0, Sounds.STEPS.size() - 2)
 	if pick >= _last_step:
 		pick += 1
 	_last_step = pick
 	_foot = 1 - _foot
 	var foot := _feet[_foot]
-	foot.stream = STEPS[pick]
+	foot.stream = Sounds.STEPS[pick]
 	foot.pitch_scale = _rng.randf_range(0.9, 1.1)
 	foot.volume_db = db + _rng.randf_range(-1.5, 1.5)
 	foot.play()
@@ -193,7 +187,7 @@ func _on_landed(speed: float) -> void:
 		_step(_tuning.step_db + 3.0)
 		return
 	_thud.pitch_scale = _rng.randf_range(0.92, 1.05)
-	_thud.volume_db = linear_to_db(clampf(speed / (_tuning.hard_landing * 2.0), 0.4, 1.0)) - 4.0
+	_thud.volume_db = linear_to_db(clampf(speed / (_tuning.hard_landing * 2.0), 0.4, 1.0))
 	_thud.play()
 	_puff.global_position = _player.global_position + Vector3.UP * 0.1
 	_puff.gravity = Vector3.DOWN * _player.world.gravity
@@ -246,6 +240,7 @@ func _throw_sand(sliding: bool, own: Vector2, speed: float) -> void:
 func _voice(stream: AudioStream) -> AudioStreamPlayer:
 	var voice := AudioStreamPlayer.new()
 	voice.stream = stream
+	voice.bus = Sounds.WORLD
 	add_child(voice)
 	return voice
 
