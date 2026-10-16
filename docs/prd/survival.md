@@ -115,6 +115,9 @@ Death means a new run (see Runs in the vision).
   picked slot (or the first free one), or takes what's in it into your hands. Any part
   with nothing fastened to it fits, so not a line's end or a cable's plug. Whether
   putting something down while the view is open is the way things go in is still open.
+- **The inventory by mouse** (Hunter, 2026-10-16, replacing the look-across picking): the
+  inventory action frees the mouse. Clicking a slot with something in it brings it to
+  your empty hands; clicking an empty slot puts what you hold into it.
   Menus mostly come as devices. There's no main menu yet.
 - **The suit** is those slots plus its built-ins: air and radiation protection, free and
   drained by nothing. Its sockets for mods (heater, cooler, reclaimer, battery, harness

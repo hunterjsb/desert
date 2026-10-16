@@ -120,6 +120,10 @@ that ignored the weather.
   (carrots or fungus caps, four units of 150 kcal), and its slot is free. Food is like a
   ration: put it in your slots and the suit eats it, or use it to eat your fill. Take
   on a crop that isn't ripe and it comes out whole, to sow somewhere else.
+- **Picking by hand keeps the farm going** (Hunter, 2026-10-16): picked fungus regrows
+  from what's left in the slot, fruiting again the way mushrooms do; a picked carrot gives
+  its seed with the food, to sow where you like. The harvester still saves you the work
+  and drops the food on you.
 - **The harvester** fits the mod mount. With it fitted, a crop is harvested the tick it
   ripens: its share of seed goes straight back into its slot, any more into free slots
   that fit, and seed with no free slot is kept for one. The rest is stored as food in

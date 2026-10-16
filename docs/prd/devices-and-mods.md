@@ -35,7 +35,8 @@ Batteries are the exception and carry no stamp. See [the lore research](../lore-
 Three actions cover everything, with none for particular features (decided 2026-10-15).
 A new device or tool answers these; it never adds an action of its own. The docs name
 actions, never keys: keys are only defaults, set in `game/core/controls.gd` and listed
-in the game.
+in the game. On screen, a key is always read from the live bindings and coloured to stand
+out, never written into the text (Hunter, 2026-10-16), even before players can remap.
 - **Take** picks up, takes out, puts in and puts down. One action takes and lets go
   (Hunter, 2026-10-15, at the Stage 5 gate). Taking something too heavy to carry takes
   hold of it: it follows where you face and turns as you turn, as far as your strength
