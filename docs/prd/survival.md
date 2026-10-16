@@ -120,6 +120,9 @@ Death means a new run (see Runs in the vision).
   and a click anywhere else in the view does nothing. You don't turn while it's open, and
   take works on the world as ever, not on the slots. Closing it captures the mouse again,
   as does a run ending while it's open.
+- **Stakes go in too** (Hunter, 2026-10-16: "we should be able to put stakes in our inv"):
+  a stake that isn't driven and has nothing tied to it goes in a slot, and comes out
+  ready to drive.
 - **Rope goes in as a coil** (Hunter, 2026-10-16: "i cant put rope in my inv"): a rope you
   hold but haven't laid, its first end in your hand and the rest at your belt, rolls back
   up into its coil, the belt end comes off, and the coil goes in the slot. Taken out, it
