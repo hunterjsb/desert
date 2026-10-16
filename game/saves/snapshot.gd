@@ -203,12 +203,7 @@ func finish(data: Dictionary) -> void:
 		hands._ticked = body.global_transform
 	var grasped: Variant = data.grasp.get("body")
 	if grasped != null and _made.has(grasped):
-		var grasp := hands.grasp
-		grasp.body = _made[grasped]
-		grasp._beside = data.grasp.beside
-		grasp._turned = data.grasp.turned
-		grasp._heading = data.grasp.heading
-		grasp._slipping = data.grasp.slipping
+		hands.grasp.recall(_made[grasped], data.grasp)
 
 
 func _take() -> Dictionary:
@@ -294,8 +289,8 @@ func _take() -> Dictionary:
 	var grasp := hands.grasp
 	data.grasp = {}
 	if is_instance_valid(grasp.body) and _known(grasp.body):
-		data.grasp = {"body": _ref(grasp.body), "beside": grasp._beside, "turned": grasp._turned,
-			"heading": grasp._heading, "slipping": grasp._slipping}
+		data.grasp = grasp.memory()
+		data.grasp.body = _ref(grasp.body)
 	data.finds = world.salvage.memories()
 	return data
 

@@ -3,10 +3,12 @@ extends RefCounted
 ## Your hands on something too heavy to carry. Taken, it's kept where it was
 ## beside you, turned as it was, as you walk and turn, as hard as your
 ## strength allows: a floating thing comes along and turns as you turn, and
-## one on the sand drags if you can beat its friction. Only sideways and about
-## the vertical: its weight and hover keep its height and keep it level. Walk
-## off from what you can't shift and it slips from your hands. It pulls back on
-## you the way a line does, so hauling something heavy digs you in.
+## one on the sand drags if you can beat its friction. It rises and sinks as
+## you look up and down, so you can lift it, or haul it up a slope, if you can
+## take its weight; your hands only ever lift, and its weight lets it down.
+## Rotate turns how you'd have it, so you roll a tipped thing back upright.
+## Walk off from what you can't shift and it slips from your hands. It pulls
+## back on you the way a line does, so hauling something heavy digs you in.
 
 ## Held farther than hold_slip from where you'd have it this long, it slips, s.
 const SLIP_SECONDS := 0.5
@@ -16,12 +18,23 @@ const LEVER := 0.5
 ## Its speed catches up this many times faster than its place does, so it
 ## settles where you'd have it without swinging past.
 const DAMPED := 3.0
+## You lift it no higher than this above your eyes, m, unless it was higher
+## when you took hold of it.
+const OVERHEAD := 0.3
+## How you'd have it turned runs at most this far ahead of how it is, rad: a
+## turn it can't follow is lost, not wound up.
+const LEAD := PI / 2.0
 
 var body: RigidBody3D
 var _player: Player
-## Where it sits beside you and how it's turned, in your flat frame.
+## Where it sits beside you, in your flat frame, and how far from your eyes.
 var _beside := Vector3.ZERO
-var _turned := 0.0
+var _reach := 0.0
+## How far above your look it sits, rad, and the highest above your eyes you'd lift it, m.
+var _above := 0.0
+var _highest := OVERHEAD
+## How it's turned in your flat frame.
+var _hold := Basis.IDENTITY
 var _heading := 0.0
 var _slipping := 0.0
 
@@ -33,16 +46,44 @@ func _init(player: Player) -> void:
 func take(what: RigidBody3D) -> void:
 	body = what
 	_heading = _player.global_rotation.y
+	var flat := Basis(Vector3.UP, -_heading)
 	var off := what.global_position - _player.global_position
 	off.y = 0.0
-	_beside = Basis(Vector3.UP, -_heading) * off
-	_turned = angle_difference(_heading, what.global_rotation.y)
+	_beside = flat * off
+	var seen := what.global_position - _eye()
+	_reach = seen.length()
+	_above = atan2(seen.y, Vector2(seen.x, seen.z).length()) - _player.camera.rotation.x
+	_highest = maxf(seen.y, OVERHEAD)
+	_hold = flat * what.global_basis.orthonormalized()
 	_slipping = 0.0
 	what.sleeping = false
 
 
 func let_go() -> void:
 	body = null
+
+
+## Rotate: turns how you'd have it by `by`, a turn in your flat frame.
+func turn(by: Basis) -> void:
+	_hold = (by * _hold).orthonormalized()
+
+
+## What a save keeps of it, and puts back: everything else comes from where
+## it and you are.
+func memory() -> Dictionary:
+	return {"beside": _beside, "reach": _reach, "above": _above, "highest": _highest, "hold": _hold,
+		"heading": _heading, "slipping": _slipping}
+
+
+func recall(what: RigidBody3D, kept: Dictionary) -> void:
+	take(what)
+	_beside = kept.get("beside", _beside)
+	_reach = kept.get("reach", _reach)
+	_above = kept.get("above", _above)
+	_highest = kept.get("highest", _highest)
+	_hold = kept.get("hold", Basis(Vector3.UP, kept.turned) if kept.has("turned") else _hold)
+	_heading = kept.get("heading", _heading)
+	_slipping = kept.get("slipping", _slipping)
 
 
 ## One physics tick: steers it toward where you'd have it, moving and turning
@@ -57,23 +98,57 @@ func step(h: float) -> void:
 	var heading := _player.global_rotation.y
 	var turning := angle_difference(_heading, heading) / h
 	_heading = heading
-	var beside := Basis(Vector3.UP, heading) * _beside
+	var facing := Basis(Vector3.UP, heading)
+	var beside := facing * _beside
 	var off := _player.global_position + beside - body.global_position
-	off.y = 0.0
-	_slipping = _slipping + h if off.length() > tuning.hold_slip else 0.0
+	off.y = _eye().y + _rise() - body.global_position.y
+	_slipping = _slipping + h if Vector2(off.x, off.z).length() > tuning.hold_slip else 0.0
 	if _slipping > SLIP_SECONDS:
 		body = null
 		return
 	var share := 1.0 - exp(-tuning.hold_rate * DAMPED * h)
-	var mine := _player.velocity + Vector3.UP.cross(beside) * turning
+	var mine := Vector3(_player.velocity.x, 0.0, _player.velocity.z) + Vector3.UP.cross(beside) * turning
 	var miss := mine + (off * tuning.hold_rate).limit_length(tuning.hold_speed) - body.linear_velocity
-	miss.y = 0.0
-	var force := (miss * body.mass * share / h).limit_length(tuning.hand_strength)
+	var force := miss * body.mass * share / h
+	# On the sand it's never pressed in, so dragging is no harder for looking down.
+	force.y = maxf(force.y, 0.0)
+	force = force.limit_length(tuning.hand_strength)
 	body.apply_central_force(force)
-	_player.world.ropes.pull_player(-force * h)
+	_player.world.ropes.pull_player(-Vector3(force.x, 0.0, force.z) * h)
+
+	var now := body.global_basis.orthonormalized()
+	var as_held := (facing.inverse() * now).get_rotation_quaternion()
+	var wanted := _hold.get_rotation_quaternion()
+	var ahead := as_held.angle_to(wanted)
+	if ahead > LEAD:
+		_hold = Basis(as_held.slerp(wanted, LEAD / ahead))
+	var swing := _turn_between(now, facing * _hold)
+	var spin := Vector3.UP * turning + (swing * tuning.hold_rate).limit_length(tuning.hold_speed / LEVER)
+	# Its spin is set the whole way each tick, not a share: on the sand it turns
+	# against friction and tips about an edge, lifting its own weight, and a
+	# gentler turn would stall short on a light thing.
 	var state := PhysicsServer3D.body_get_direct_state(body.get_rid())
-	var spin_give := maxf((state.inverse_inertia_tensor * Vector3.UP).dot(Vector3.UP), 1e-6)
-	var swing := angle_difference(body.global_rotation.y, heading + _turned)
-	var twist := (turning + swing * tuning.hold_rate - body.angular_velocity.y) * share / (h * spin_give)
-	var most := tuning.hand_strength * LEVER
-	body.apply_torque(Vector3.UP * clampf(twist, -most, most))
+	var twist := state.inverse_inertia_tensor.inverse() * (spin - body.angular_velocity) / h
+	body.apply_torque(twist.limit_length(tuning.hand_strength * LEVER))
+
+
+## Where you'd have it above your eyes, m: as far up or down as you look, at
+## the reach you took it at.
+func _rise() -> float:
+	var up := clampf(_player.camera.rotation.x + _above, -PI / 2.0, PI / 2.0)
+	return minf(_reach * sin(up), _highest)
+
+
+## Your eyes as the tick knows them, steady of any sway.
+func _eye() -> Vector3:
+	return _player.global_transform * _player.feel.steady_eye()
+
+
+## The turn from one way to another, as an axis scaled by its angle, rad.
+static func _turn_between(from: Basis, to: Basis) -> Vector3:
+	var q := (to * from.inverse()).get_rotation_quaternion()
+	if q.w < 0.0:
+		q = -q
+	var axis := Vector3(q.x, q.y, q.z)
+	var s := axis.length()
+	return axis * (2.0 * atan2(s, q.w) / s) if s > 1e-9 else axis * 2.0
