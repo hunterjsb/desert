@@ -212,14 +212,14 @@ All built: on foot alongside Stage 5, the board and the camp-range warnings at S
    nearer the edge than 138 m.)*
 6. **Frame-rate proof.** The same ride at 30, 60 and 120 frames per second follows the
    same path. *(Built: a push, a carve each way, a hop, a tuck, a coast and a brake over
-   79 m: at most 3 mm apart, with the same charge left, and the same path to the bit
+   90 m: at most 4 mm apart, with the same charge left, and the same path to the bit
    with the drawing switched off.)*
 7. **Origin shift at speed.** Riding across an origin shift at top speed causes no hitch
    and no jump. *(Built: flat out in real time at sixty frames a second, ruins and finds
    laid out as you go, across four shifts in 1.1 km: your way changes no more at a shift
    than anywhere, the ground stays solid 120 m ahead, and no frame spends longer than
-   1.2 ms streaming headless, against the 2.0 ms line. `look/stream` rides too, in a
-   real window: WINDOW.)*
+   1.2 ms streaming headless, against the 2.0 ms line. `look/stream` now rides a board
+   flat out downwind too, for the real window's number.)*
 
 Movement on foot, built alongside Stage 5, has its own:
 

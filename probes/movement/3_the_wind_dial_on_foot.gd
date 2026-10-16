@@ -29,7 +29,7 @@ func run() -> void:
 	blow(down * WIND)
 	var with: Dictionary = await _cross(stretch.from, stretch.from + down * LENGTH)
 	var against: Dictionary = await _cross(stretch.from + down * LENGTH, stretch.from)
-	print("%.0f m of dunes rising and falling %.1f m, %.1f m higher downwind, in a %.0f m/s gale: with it %.1f s and %.0f stamina, into it %.1f s and %.0f"
+	print("%.0f m of dunes rising and falling %.1f m, ending %+.1f m from its start downwind, in a %.0f m/s gale: with it %.1f s and %.0f stamina, into it %.1f s and %.0f"
 		% [LENGTH, stretch.relief, stretch.rise, WIND, with.seconds, with.stamina, against.seconds, against.stamina])
 	check(with.crossed and against.crossed, "you crossed it both ways")
 	check(against.seconds > with.seconds * 1.15, "into the wind takes longer (%.1f s against %.1f)"
