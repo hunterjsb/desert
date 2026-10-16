@@ -14,8 +14,9 @@
 # GODOT picks the binary (default: godot on PATH). PROBE_TIMEOUT is in seconds.
 # PROBE_EXCEPT lists folders to leave out of a full run, so CI can split the
 # suite into parallel jobs and still catch every folder nobody listed.
-# PROBE_JOBS probes run at once (default 4); a probe whose header says
-# "## Runs alone" times real frames, so it runs after the rest, by itself.
+# PROBE_JOBS probes run at once (default 4), the slowest first by the last
+# run's times; a probe whose header says "## Runs alone" times real frames, so
+# it runs after the rest, by itself.
 set -uo pipefail
 cd "$(dirname "$0")/.." || exit 2
 
@@ -37,6 +38,7 @@ fi
 
 verdict=""
 output=""
+took=0
 run_probe() {
 	local started=$SECONDS code
 	output=$(timeout --kill-after=5 "$limit" "$godot" --headless --path . \
@@ -51,7 +53,8 @@ run_probe() {
 	else
 		verdict=fail
 	fi
-	printf '%-8s %s (%ds)\n' "${verdict^^}" "$1" $((SECONDS - started))
+	took=$((SECONDS - started))
+	printf '%-8s %s (%ds)\n' "${verdict^^}" "$1" "$took"
 }
 
 show_output() {
@@ -121,6 +124,7 @@ trap 'kill $(jobs -p) 2>/dev/null; exit 130' INT TERM
 # finishes so parallel reports never interleave.
 report() {
 	run_probe "$2" >"$reports/$1"
+	echo "$took $2" >"$reports/$1.took"
 	if [[ $verdict != pass ]]; then
 		show_output >>"$reports/$1"
 		touch "$reports/$1.failed"
@@ -137,6 +141,14 @@ for probe in "${probes[@]}"; do
 		together+=("$probe")
 	fi
 done
+# Slowest first, so a long probe never starts last and runs on by itself; one
+# never timed counts as slowest.
+times=.godot/probe_times
+if ((${#together[@]} > 0)); then
+	mapfile -t together < <(printf '%s\n' "${together[@]}" |
+		awk -v f="$times" 'BEGIN { while ((getline line < f) > 0) { split(line, a, " "); took[a[2]] = a[1] } }
+			{ print ($0 in took ? took[$0] : 999999), $0 }' | sort -s -rn -k1,1 | cut -d' ' -f2-)
+fi
 # Numbered here, not in the background job: a job's own arithmetic happens in
 # its subshell and never reaches the next one.
 n=0
@@ -152,6 +164,8 @@ for probe in "${alone[@]}"; do
 	report "$n" "$probe"
 	n=$((n + 1))
 done
+# This run's times, then the last known for any probe it didn't run.
+{ cat "$reports"/*.took "$times" 2>/dev/null || true; } | awk '!seen[$2]++' >"$reports/times" && mv "$reports/times" "$times"
 failed=$(find "$reports" -name '*.failed' | wc -l)
 echo "${#probes[@]} probes, $failed not passing"
 ((failed == 0))
