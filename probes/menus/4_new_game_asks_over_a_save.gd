@@ -33,7 +33,7 @@ func run() -> void:
 	press(&"ui_down")
 	press(&"ui_accept")
 	await faded_in()
-	check(main.in_run() and not saves().has_run() and world.time < 60.0,
+	check(main.in_run() and not saves().has_run() and not world.has_meta(&"resumed"),
 		"accepting deletes the save and starts a fresh run")
 
 

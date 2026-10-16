@@ -166,7 +166,9 @@ Death means a new run (see Runs in the vision).
   into the suit's slots and what's set down beside you, by catalog id and how many, how
   full its batteries start, how long its coil is, and whether it starts cabled). Only
   this standard kit is balanced; choosing a kit waits. Every run, the first and every
-  one after a death, starts with it: the canister and the ration in your slots, and on
+  one after a death, begins on a clear morning with the first storm due in three to
+  eight minutes, facing where it will come from (Hunter, 2026-10-16: "it spawns me in a
+  storm!"), and starts with it: the canister and the ration in your slots, and on
   the sand beside you, once the ground there is solid, a **light shield generator** with
   its battery half charged, switched off, the **light solar panel** cabled into its port,
   and a **6 m rope coil** (a found one lays 12 m). The light shield is clearly weaker

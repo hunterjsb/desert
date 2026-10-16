@@ -11,6 +11,10 @@ signal started(world: World)
 const WORLD := preload("res://game/world/world.tscn")
 ## The word that the last run is over shows this long, s.
 const CAPTION_SECONDS := 4.0
+## A run begins on a clear morning with the first storm due in three to eight
+## minutes, facing where it will come from: time to set the kit up and batten
+## down, not a storm on arrival.
+const START := {"key": "start", "kind": "clear", "day": [0.25, 0.45], "due": [180.0, 480.0]}
 ## What's beside you lies in a row this far ahead, this far apart, m.
 const KIT_AHEAD := 2.0
 const KIT_APART := 1.2
@@ -80,10 +84,21 @@ func _equip(at: World) -> void:
 	while is_instance_valid(at) and not at.is_queued_for_deletion() \
 			and not at.terrain.is_settled_around(at.spawn.x, at.spawn.y):
 		await get_tree().physics_frame
-	# A resumed run has its own things already.
+	# A resumed run has its own things already, and its own moment.
 	if is_instance_valid(at) and not at.is_queued_for_deletion() and not at.has_meta(&"resumed"):
+		_begin(at)
 		# Kept on the world, so a dev scenario can clear it for its own.
 		at.set_meta(&"kit", kit(at))
+
+
+## Puts a new run at its starting moment, unless a dev scenario sets its own.
+func _begin(at: World) -> void:
+	for arg in OS.get_cmdline_user_args():
+		if arg.begins_with("--scenario="):
+			return
+	var place := Scenarios.find(at, START)
+	if not place.is_empty():
+		at.respawn(place.x, place.z, place.yaw, place.time)
 
 
 ## The kit's things on the sand beside where you begin, every battery in them
