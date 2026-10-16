@@ -125,6 +125,7 @@ func close() -> bool:
 	if not open:
 		return false
 	show_view(false)
+	Sounds.play(self, Sounds.BAG_CLOSE)
 	return true
 
 
@@ -140,7 +141,7 @@ func click(at: int) -> bool:
 		if hands.phase != Hands.Phase.HELD or not fits(hands.held):
 			return false
 		slots[at] = _rolled(hands.stow() as Part)
-		hands.clunk()
+		Sounds.play(self, Sounds.POUCH_IN)
 	elif out != null:
 		slots[at] = null
 	else:
@@ -150,6 +151,7 @@ func click(at: int) -> bool:
 		out.global_transform = _player.camera.global_transform.translated_local(Vector3(0.0, -0.2, -0.5))
 		Finds.unroll(_player.world, out)
 		hands.hold(out)
+		Sounds.play(self, Sounds.POUCH_OUT)
 	return true
 
 
@@ -207,6 +209,7 @@ func _slot_at(point: Vector2) -> int:
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("inventory"):
 		show_view(not open)
+		Sounds.play(self, Sounds.BAG_OPEN if open else Sounds.BAG_CLOSE)
 		get_viewport().set_input_as_handled()
 
 
