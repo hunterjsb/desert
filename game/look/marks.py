@@ -123,8 +123,16 @@ def consignment(row):
     return draw
 
 
-def skimmer_crew(ink, daub, rng):
-    """A skimmer crew's patch, painted by hand: the giant, a dive across it, a tally."""
+def skimmer_crew(row):
+    """A skimmer crew's patch, painted by hand: the giant, a dive across it, a tally.
+    A board of your own is new, so it's plain: nobody has painted it yet."""
+    def draw(ink, daub, rng):
+        if row > 0:
+            patch(ink, daub, rng)
+    return draw
+
+
+def patch(ink, daub, rng):
     w, h = CELL
     cx, cy = 96, 64
     rim = [(x + rng.uniform(-2.5, 2.5), y + rng.uniform(-2.5, 2.5)) for x, y in arc(cx, cy, 40, 0, 360, 36)]
@@ -135,7 +143,9 @@ def skimmer_crew(ink, daub, rng):
         brush(ink, [(170 + k * 16, 44), (166 + k * 16, 88)], 8, rng, wobble=1.0)
 
 
-MARKS = [contractor, shield_maker, wind_maker, None, skimmer_crew]
+MARKS = [contractor, shield_maker, wind_maker, consignment, skimmer_crew]
+# The marks that change from era to era take the row and give the drawing.
+BY_ERA = (consignment, skimmer_crew)
 
 
 def main():
@@ -146,7 +156,7 @@ def main():
         for col in range(COLS):
             ink_cell = Image.new("L", CELL)
             daub_cell = Image.new("L", CELL)
-            mark = MARKS[col] or consignment(row)
+            mark = MARKS[col](row) if MARKS[col] in BY_ERA else MARKS[col]
             mark(ImageDraw.Draw(ink_cell), ImageDraw.Draw(daub_cell), rng)
             red.paste(ink_cell, (col * CELL[0], row * CELL[1]))
             green.paste(daub_cell, (col * CELL[0], row * CELL[1]))

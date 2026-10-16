@@ -189,7 +189,7 @@ ragged and flaked in patches. They read close up; at 5 m they're a smudge.
 | **Shield maker's sign:** a bubble on its ground, the emitter beneath | The main shield OEM, the common make; it's unnamed, and "Acme Shield Corporation" is the lore's own placeholder ([part 2 §3](lore-session-2026-10-14-part-2.md#3-shields)) | The light shield you start with, on its body; a found shield, small, on its emitter cap |
 | **Wind maker's sign:** three vanes in a ring | Wind's maker, a different one from solar's ([part 2 §4](lore-session-2026-10-14-part-2.md#4-power)) | The turbine |
 | **Consignment label,** by era | The box says who ordered it; the parts inside say who made them ([part 2 §1](lore-session-2026-10-14-part-2.md#1-the-oem-tier-who-actually-makes-things)) | The crate frame's two ring sides |
-| **Skimmer crew's patch,** painted by hand: the giant, a dive across it, a tally | The hoverboard as skimmer-culture personal gear, not official issue ([lore research, question 11](lore-research.md#13-open-questions-for-hunter)) | The hoverboard's tail, which is what shows when it's found nose-down |
+| **Skimmer crew's patch,** painted by hand: the giant, a dive across it, a tally | The hoverboard as skimmer-culture personal gear, not official issue ([lore research, question 11](lore-research.md#13-open-questions-for-hunter)) | A found hoverboard's tail, which is what shows when it's found nose-down; a board of your own is new and plain |
 
 **Why these.** The marks go where the lore names a maker or issuer. The contractor's tag ties
 the oldest layer together: its build-out is the overbuilt colonial tech ([part 1
@@ -206,8 +206,8 @@ planter (ag-tech issue) and the solar panels (a big commodity OEM) are the next 
 left out to keep this to a few.
 
 **How era shows.** The atlas has a row per era: a recent make (yours), the surface and the
-deep. A found device takes its layer's row. So far only the crate's label differs from row
-to row:
+deep. A found device takes its layer's row. So far the crate's label is the mark that changes
+most from row to row:
 
 - **Deep:** "TILG" over "XN 0217", the prime operator's consignment stencil, crisp, routed by
   the United Government's sector code. The X is old and official ([lore research
@@ -215,6 +215,9 @@ to row:
 - **Surface:** "ZN" daubed back on by hand in rust red: a copy from memory, with the X said and
   written as a Z, late and colloquial.
 - **Yours:** a plain batch number, "LOT 3127", for a recent, cheap make.
+
+The crew's patch has only two states: a found board carries it, and a board of your own is
+plain, since nobody has painted it yet.
 
 Wear does the rest, from the same amount that wears the paint: ragged edges, patches flaked
 away, scour on the windward side and sand on what faces up.
