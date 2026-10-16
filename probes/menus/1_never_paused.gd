@@ -24,8 +24,12 @@ func run() -> void:
 ## TICKS ticks from the run's beginning.
 func _measure(menu: bool) -> Array:
 	await open_main(false)
+	# Nothing left to build, so the ground can't differ between the two by load.
+	await settle()
 	world.respawn(world.spawn.x, world.spawn.y, 0.0, 0.0)
 	var crate := drop_box(world.spawn.x + 2.0, world.spawn.y - 3.0, 0.6)
+	# Heavy enough that the storm can't carry it off past the ground's collision.
+	crate.mass = 80.0
 	crate.linear_velocity = Vector3(3.0, 1.0, -2.0)
 	crate.angular_velocity = Vector3(2.0, 0.0, 1.0)
 	var start := _from_spawn(crate.global_position)

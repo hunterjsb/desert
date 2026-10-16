@@ -112,7 +112,7 @@ func _unhandled_input(event: InputEvent) -> void:
 func show_main_menu(note := "") -> void:
 	close_all()
 	Dev.show_hint(false)
-	var menu := Words.new(note)
+	var menu := Words.new(note, &"Shade")
 	menu.root = true
 	if main.has_save():
 		menu.add("Resume", main.resume)
@@ -124,14 +124,14 @@ func show_main_menu(note := "") -> void:
 
 ## Options and Save & quit, over the running game.
 func system_menu() -> Words:
-	var menu := Words.new("", true)
+	var menu := Words.new("")
 	menu.add("Options", func() -> void: open(options()))
 	menu.add("Save & quit" if main.saves() != null else "Quit to menu", main.save_and_quit)
 	return menu
 
 
 func options() -> Words:
-	var menu := Words.new("Options", true)
+	var menu := Words.new("Options")
 	menu.add(func() -> String: return "Volume   %d%%" % roundi(Settings.volume * 100.0),
 		_change.bind(1, &"volume", true), _change.bind(&"volume", false))
 	menu.add(func() -> String: return "Fullscreen   %s" % _on(Settings.fullscreen),
@@ -150,7 +150,7 @@ func options() -> Words:
 
 ## Every key as it's bound now, to read; remapping comes later.
 func controls() -> Words:
-	var menu := Words.new("Controls", true)
+	var menu := Words.new("Controls")
 	var list := Controls.keys_label()
 	var lines := PackedStringArray()
 	for pair: Array in Controls.HELP:
@@ -165,7 +165,7 @@ func controls() -> Words:
 
 ## A question with the safe answer highlighted; back also declines.
 func confirm(question: String, no: String, yes: String, act: Callable) -> Words:
-	var menu := Words.new(question, true)
+	var menu := Words.new(question)
 	menu.add(no, close_top)
 	menu.add(yes, func() -> void:
 		close_top()

@@ -10,22 +10,23 @@ var root := false
 
 var _list: VBoxContainer
 var _items: Array[Dictionary] = []
-## The word highlighted when another menu covered this one.
+## The word last highlighted.
 var _was := 0
 
 
-## A question or a note above the words, and a dark wash under them when the
-## game shows through.
-func _init(note := "", scrim := false) -> void:
+## A question or a note above the words. Under them, a dark wash over the
+## running game (Scrim), or only a shade low down, over the menu's desert (Shade).
+func _init(note := "", under := &"Scrim") -> void:
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 	# Every click lands here, so none reaches the world to throw or look.
 	mouse_filter = Control.MOUSE_FILTER_STOP
-	if scrim:
-		var wash := Panel.new()
-		wash.theme_type_variation = &"Scrim"
-		wash.set_anchors_preset(Control.PRESET_FULL_RECT)
-		wash.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		add_child(wash)
+	var wash := Panel.new()
+	wash.theme_type_variation = under
+	wash.set_anchors_preset(Control.PRESET_FULL_RECT)
+	if under == &"Shade":
+		wash.anchor_top = 0.6
+	wash.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(wash)
 	_list = VBoxContainer.new()
 	_list.theme_type_variation = &"MenuList"
 	_list.anchor_left = 0.0
@@ -67,6 +68,8 @@ func add(text: Variant, act: Callable, step := Callable()) -> Button:
 		act.call()
 		refresh())
 	word.mouse_entered.connect(word.grab_focus)
+	word.focus_entered.connect(func() -> void: _was = _items.find(item))
+	word.focus_exited.connect(_keep_focus, CONNECT_DEFERRED)
 	word.gui_input.connect(func(event: InputEvent) -> void: _on_word_input(item, event))
 	_list.add_child(word)
 	_wrap()
@@ -97,7 +100,7 @@ func highlighted() -> int:
 	return -1
 
 
-## The first word, or the one highlighted when this was last covered.
+## The first word, or the one last highlighted.
 func highlight() -> void:
 	if not _items.is_empty():
 		(_items[clampi(_was, 0, _items.size() - 1)].button as Button).grab_focus()
@@ -105,13 +108,19 @@ func highlight() -> void:
 
 ## Another menu opens over this one.
 func cover() -> void:
-	_was = maxi(highlighted(), 0)
 	visible = false
 
 
 func uncover() -> void:
 	visible = true
 	highlight()
+
+
+## A click on nothing, or the window losing focus, never leaves the menu
+## with no word highlighted.
+func _keep_focus() -> void:
+	if is_visible_in_tree() and get_viewport().gui_get_focus_owner() == null:
+		highlight()
 
 
 ## Up from the top word goes round to the bottom, and down from the bottom to the top.
