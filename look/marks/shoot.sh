@@ -28,7 +28,7 @@ if [[ ${1:-} == --sheets ]]; then
 				args+=(-label "$side, ${shot//_/ }" "$file")
 			done
 		done
-		montage "${args[@]}" -tile 2x3 -geometry 960x540+4+4 -pointsize 24 -background '#f4efe6' \
+		montage "${args[@]}" -tile 2x3 -geometry 1120x630+4+4 -pointsize 24 -background '#f4efe6' \
 			-title "${thing//_/ }" -depth 8 "$HOME/Desktop/marks_$thing.png"
 		echo "sheet: $HOME/Desktop/marks_$thing.png ($(du -h "$HOME/Desktop/marks_$thing.png" | cut -f1))"
 	done

@@ -196,7 +196,8 @@ planter (ag-tech issue) and the solar panels (a big commodity OEM) are the next 
 left out to keep this to a few.
 
 **How era shows.** The atlas has a row per era: a recent make (yours), the surface and the
-deep. A found device takes its layer's row, so far only the crate's label changes:
+deep. A found device takes its layer's row. So far only the crate's label differs from row
+to row:
 
 - **Deep:** "TILG" over "XN 0217", the prime operator's consignment stencil, crisp, routed by
   the United Government's sector code. The X is old and official ([lore research
