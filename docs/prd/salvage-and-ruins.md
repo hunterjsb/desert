@@ -60,25 +60,35 @@ in. See [the lore research](../lore-research.md).
 The deeper the layer, the older the find, and the better its technology:
 
 1. **Surface:** recent traces, and rare hints of holdouts.
-2. **The second empire.**
-3. **The first empire.**
-4. **Colonial:** the original colonists' technology. It's the oldest, the rarest and
-   the best. You'll almost never find it in shallow erosion; it practically requires
-   deep erosion. The best of it is **StarCom**, overbuilt for these exact conditions, but
-   it turns up only as rare fragments (shards, relays and hardened modules), never a whole
-   one.
+2. **Bronze Age:** forged goods and cult works from the two Bronze Age feudal eras, which
+   share this layer.
+3. **Skimmer era:** skimmer-era salvage, in the middle.
+4. **Colonial:** the original colonists' technology, which session 3 calls corporate tech.
+   It's the oldest, the rarest and the best. You'll almost never find it in shallow erosion;
+   it practically requires deep erosion. The best of it is **StarCom**, overbuilt for these
+   exact conditions, but it turns up only as rare fragments (shards, relays and hardened
+   modules), never a whole one.
 
-**The ash band** sits between the second and first empire layers. It's the paroxysm, the
-page break of the whole history, and a readable depth cue in storm-cut dunes. The second
-empire is the Bronze Age above it, and the first is the smuggler era below.
+**Renamed (Agreed, Hunter, 2026-10-16, after session 3).** The list used to read Surface, the
+second empire, the first empire and Colonial. "The second empire," the Bronze Age above the
+ash band, is now **Bronze Age** and holds both feudal eras. "The first empire," which the PRD
+called the smuggler era below the ash band, is now **Skimmer era**; whether the two names
+cover the same years is open (ambiguity D in [the lore
+research](../lore-research.md#14-open-after-session-3)). **Surface** and **Colonial** keep
+their names, and Colonial is the corporate tech. Nothing else about the layers changed, and
+the skeleton's two layers are untouched.
+
+**The ash band** is the paroxysm, and a readable depth cue in storm-cut dunes. It no longer
+has to divide the Bronze Age layer from the Skimmer era one, and where it sits among the
+layers is an open item (Agreed, Hunter, 2026-10-16, after session 3), so the full version's
+ash band waits on the answer.
 
 **In the world (Agreed, session 3).** Corporate tech lies deepest and rarest, skimmer-era
 salvage in the middle, and Bronze Age forged goods near the surface. Dry, low-oxygen sand
 preserves ruins, and migrating dunes and storms expose and rebury them, which is why harsher
-weather uncovers deeper loot. How the three strata line up with the four layers above is open,
-and so is whether "second empire" and "first empire" still name the right eras, since session 3
-has two Bronze Age eras (see [the lore research](../lore-research.md#14-open-after-session-3)).
-No layer here has been changed.
+weather uncovers deeper loot. The four layers above are these three strata with a surface
+layer on top. How finds from the two Bronze Age eras differ inside their one layer is not
+said, so this PRD doesn't try.
 
 **The weather decides how deep the sand is stripped.** Stronger storms and fiercer
 winds expose deeper layers. Venture into the storm, or travel into the wind, and you
@@ -260,8 +270,8 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
 
 ## Full version
 
-- **All four layers,** from recent traces down to colonial, with the ash band between the
-  second and first empire.
+- **All four layers,** from recent traces down to colonial: Surface, Bronze Age, Skimmer era
+  and Colonial, with the ash band's place still open.
 - **Things surfacing during a storm.** Sand pours off something new right beside you.
   It's placed, not dug.
 - **Many ruin types,** part-buried, with interiors (all above ground), placed by terrain
@@ -303,4 +313,6 @@ that the giant's name, Tu, wears down the same way from a designation number
 
 ## Open questions
 
-None right now.
+- Where the ash band sits among the four layers. It used to divide the second and first
+  empire layers, and no longer has to ([the lore
+  research](../lore-research.md#14-open-after-session-3), ambiguity D).

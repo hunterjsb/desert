@@ -127,9 +127,10 @@ upgrade the camp → the camp sustains more of itself → go further, or into th
 A colonized desert moon in the Xandaris universe, Kenshi in spirit. A high-tech
 spacefaring society built a transit hub there, and then a war cut the lane and orphaned
 it. It became a smuggler moon, until a volcanic paroxysm cut every outside link and took
-most of the people who understood the machines. Bronze Age empires rebuilt in the ashes
-and rose and fell in turn, leaving an apocalypse world. Roughly three thousand years
-later, the moon has reverted to near-uninhabitable: ruins, dunes, maybe a few holdouts.
+most of the people who understood the machines. Two Bronze Age feudal eras rebuilt in the
+ashes and rose and fell in turn, leaving an apocalypse world. `{YEARS_SINCE_FALL}` after the
+last survivors, a time not yet set ([placeholders](lore-research.md#placeholders)), the moon
+has reverted to near-uninhabitable: ruins, dunes, maybe a few holdouts.
 The air is thin and fading, the days scorch, the nights freeze, and water goes through
 all three phases every day. The physics is in [the moon](the-moon.md), and the history
 is in the lore sessions ([part 1](lore-session-2026-10-14.md), [part
