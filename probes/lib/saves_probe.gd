@@ -96,6 +96,7 @@ func _waist_line(spot: Vector3) -> void:
 ## A fresh world on the same seed, the old one gone, settled as a menu would leave it.
 func fresh_world() -> void:
 	var seed_was := world.run_seed
+	remove_child(world)
 	world.queue_free()
 	await get_tree().process_frame
 	world = WORLD_SCENE.instantiate()

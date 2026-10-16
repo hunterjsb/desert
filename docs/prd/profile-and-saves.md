@@ -62,6 +62,39 @@ between them are deferred until discoveries can unlock them.
 - The default kit as a data resource.
 - The probes below, all passing.
 
+**Built** (2026-10-16), waiting at the gate. Two autoloads: `Saves` (`has_run`, `save`,
+`run_seed`, `restore`, `delete`) and `Profile` (`unlock`, `discover`, `has`, `reset`).
+Menus & UI calls them from Save & quit, Resume, New game and Options.
+
+- **What a save holds:** you (where you stand, which way you face and look, how you're
+  moving, stamina, your bars, your slots, what's in your hands, at your waist or being
+  hauled), the clock, the moon position, the engine's origin, and where power, wear,
+  farming and your body are in their ticks. Then everything of yours: each thing by its
+  catalog id, where it is and how it's moving, its wear, charge, water, growth and
+  harvests, a shield's switch and how far its bubble has bloomed, a stake driven or not,
+  and every part in every socket, down to a line's end on a hook's ring and a shield
+  seated on a crate. Every line and strong cable with its ends, length and load, and its
+  strand's points as drawn, so nothing snaps or flings on resume. Of the finds, only the
+  chunks near you: how hard the weather had been when each came near, and which finds were
+  taken. No ground, no weather, no untouched find. A camp mid-storm saves in about 15 KB.
+- **Places are world metres,** in doubles, and the engine's origin is kept, so a resumed
+  run computes in the same numbers as the one saved.
+- **Resume** happens on a world built on the save's seed once it has settled. The fresh
+  world's own things (its kit) go; the clock, you and the finds' memory are back at once,
+  and your things follow as soon as the ground under them is solid, the clock held still
+  until then (`Saves.restored` says when). A resumed run gets no new kit.
+- **Versioned:** each file opens with what it is and its version, and one of another
+  version, or not a save at all, is refused with the reason (`refused`) before any of it
+  is read. A refused profile is never written over, except by a reset.
+- **Death deletes the save,** so the main menu offers only New game.
+- **The profile** is `profile.save` beside the run save. Taking a find reports every kind
+  it held, the first of each being a discovery. `has(id)` answers for unlocks and
+  discoveries alike.
+- **The default kit** is the starting kit's data resource (`game/survival/standard_kit.tres`).
+- **Probes** run on a folder of their own, never the player's save or profile.
+- **Found along the way:** a device seated on another trailed its seat a little every
+  tick, which added up on a floating crate; it's held on its seat every tick now.
+
 ## Full version
 
 - Kits unlocked by discoveries, and choosing one at New game.
