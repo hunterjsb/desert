@@ -88,7 +88,9 @@ func _held_rig(downwind: Vector3) -> Dictionary:
 	var cable := Catalog.cable(world, lies, true)
 	planter.fit(cable.plugs[1], planter.sockets().filter(func(s: Socket) -> bool: return s.kind == &"port")[0])
 	var plug := cable.plugs[0]
-	await physics_frames(30)
+	# Taken before the planter has drifted the cable taut: a loose plug yanked
+	# along the sand is the slingshot case, which is its own problem.
+	await physics_frames(5)
 	# Look down at the plug lying by your feet and take it, aiming as you reach:
 	# the wind slides a light plug along the sand.
 	var eye := player.camera.global_position
