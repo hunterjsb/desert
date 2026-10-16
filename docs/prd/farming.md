@@ -144,7 +144,11 @@ that ignored the weather.
   three or four days, and one condenser can't keep you and it both.
 - **Wear:** a planter outside a bubble in a storm wears like any device, and a wrecked
   one grows nothing.
-- **Seeds aren't in salvage yet.** For now the scenario hands them to you.
+- **Seeds are found** (2026-10-16): carrots and fungus lie loose on ruins' floors, and in
+  survival kits. Seeds keep only out of the weather, so a kit on open sand has mostly
+  lost its seeds and one on a ruin's floor holds them. Over thousands of chunks, 58 of
+  99 seeds were in ruins. A found seed is a seedling at nothing grown, ready to sow. The
+  harvester is a rare deep part, the rarest part on open sand.
 - **The playtest scenario** ("farm" in the scenario menu) starts you fed and watered on
   a clear morning with a storm due in one and a half to three minutes. Two hover
   planters float in front of you, each on a line to a stake, sown with three carrots

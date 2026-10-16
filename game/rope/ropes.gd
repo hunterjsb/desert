@@ -115,7 +115,8 @@ func let_go(rope: Rope, end: RopeEnd) -> void:
 func untie(rope: Rope) -> void:
 	_drop(rope)
 	strands.erase(rope.strand)
-	rope.strand.queue_free()
+	if is_instance_valid(rope.strand):
+		rope.strand.queue_free()
 
 
 ## A line breaks in two; whatever owns it makes lines of the halves unless

@@ -186,6 +186,7 @@ func claim(body: Node) -> void:
 		if _settling[i][0] == body:
 			_settling.remove_at(i)
 	body.reparent(_world.content)
+	Finds.unroll(_world, body)
 	if body is Device:
 		_world.power.wake(body)
 	_discovered(body)

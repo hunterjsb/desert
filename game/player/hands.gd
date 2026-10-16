@@ -8,7 +8,9 @@ extends Node3D
 ## a part held here ever snaps, and only when you take it home; nothing fits by
 ## being bumped. Take picks up, takes out, puts in and puts down; use works what
 ## you look at or uses what you hold. Finds lying in the sand are taken the same
-## way, and whatever you take, take from, fit to or use becomes yours.
+## way, and whatever you take, take from, fit to or use becomes yours. A small
+## device that seats in a socket, like a shield on a top mount, fits the same
+## way, and take lifts it off again whole.
 
 signal fitted(part: Part, device: Device, socket: Socket)
 signal taken(part: Part, device: Device, socket: Socket)
@@ -156,6 +158,10 @@ func grab() -> bool:
 		return true
 	_look()
 	var salvage := _player.world.salvage
+	if look_device != null and look_device.host() != null:
+		# Last on, first off: a seated device comes off whole, whatever of it you aim at.
+		_take_off(look_device)
+		return true
 	if look_part != null:
 		salvage.unbury(look_part)
 		_pick_up(look_part)
@@ -455,6 +461,28 @@ func _pick_up(body: RigidBody3D) -> void:
 	_arrive_from(body.global_transform)
 
 
+## Its host holds still while a seated device lifts straight off along the
+## socket's +Z, then it comes to your hand.
+func _take_off(device: Device) -> void:
+	var host := device.host()
+	var from: Socket = null
+	for each in host.sockets():
+		if each.mounted == device:
+			from = each
+	_source = host
+	_source_socket = from
+	_source_was = {"freeze": host.freeze, "velocity": host.linear_velocity, "spin": host.angular_velocity}
+	host.freeze = true
+	host.dismount(from)
+	_grip(device)
+	_slide = _bounds.size.y + 0.02
+	_slide_from = 0.0
+	_t = 0.0
+	phase = Phase.TAKING
+	_rearm = from
+	_play(CLANK_OUT, OUT_DB)
+
+
 ## The device holds still while the part slides straight out along its
 ## socket's +Z, then the part comes to your hand.
 func _take_out(device: Device, from: Socket) -> void:
@@ -543,22 +571,22 @@ func _tug(delta: float) -> void:
 ## the devices in reach, reached from its open side: measured from where the
 ## part would sit there, so aiming at the spot or at the ghost is the same.
 func _find_socket() -> void:
-	if _rearm != null and (not is_instance_valid(_rearm) or _rearm.part != null
+	if _rearm != null and (not is_instance_valid(_rearm) or not _rearm.is_open()
 			or _sight_gap(_seat(_rearm)) > _tuning.snap_reach):
 		_rearm = null
 	var best: Socket = null
 	var nearest := INF
-	var kind: StringName = held.kind if held is Part else &""
+	var kind: StringName = held.get(&"kind")
 	for child in _player.world.content.get_children() + _player.world.salvage.near(sight_from):
 		var device := child as Device
-		if device == null or device.global_position.distance_to(sight_from) > _tuning.reach + 2.0:
+		if device == null or device == held or device.global_position.distance_to(sight_from) > _tuning.reach + 2.0:
 			continue
 		for each in device.sockets():
-			if each.part != null or each.kind != kind or each == _rearm:
+			if not each.is_open() or each.kind != kind or each == _rearm:
 				continue
 			var seat := _seat(each)
 			var d := _sight_gap(seat)
-			if d < nearest and _open(seat, device) and _within_reach(seat) == seat:
+			if d < nearest and _open(_frame_of(each), device) and _within_reach(seat) == seat:
 				nearest = d
 				best = each
 	gap = nearest
@@ -621,8 +649,14 @@ func _settle_in(seat: Transform3D) -> Transform3D:
 
 func _fit(into: Socket) -> void:
 	var device := into.get_parent() as Device
-	var part := held as Part
 	_player.world.salvage.claim(device)
+	if held is Device:
+		var seated := held as Device
+		_let_go()
+		device.mount(seated, into)
+		clunk()
+		return
+	var part := held as Part
 	_let_go()
 	device.fit(part, into)
 	_play(CLUNKS[_clunks % CLUNKS.size()], CLUNK_DB)
@@ -752,12 +786,22 @@ func _clear(pose: Transform3D) -> bool:
 
 func _sliding() -> Transform3D:
 	var out := 1.0 - (1.0 - _t) * (1.0 - _t)
-	return _seat(_source_socket).translated_local(Vector3(0.0, 0.0, _slide_from + _slide * out))
+	return _frame_of(_source_socket).translated_local(Vector3(0.0, 0.0, _slide_from + _slide * out)) * _seated()
 
 
-## Where a part sits in a socket, in the world.
+## Where what you hold sits in a socket, in the world.
 func _seat(into: Socket) -> Transform3D:
+	return _frame_of(into) * _seated()
+
+
+## A socket's frame in the world: where a part's own frame sits in it.
+func _frame_of(into: Socket) -> Transform3D:
 	return ((into.get_parent() as Node3D).global_transform * into.transform).orthonormalized()
+
+
+## Where what you hold sits in a socket's frame: a part on it, a device upright on it.
+func _seated() -> Transform3D:
+	return (held as Device).seat() if held is Device else Transform3D.IDENTITY
 
 
 ## Between two poses of the held part, turning about its own middle.
