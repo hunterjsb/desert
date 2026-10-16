@@ -74,9 +74,9 @@ func respawn(x: float, z: float, yaw: float, at_time: float) -> void:
 	player.step_off()
 	time = at_time
 	time_warp = 1.0
-	player.global_position = Vector3(engine_x(x), height_at(x, z) + 0.1, engine_z(z))
+	var at := Vector3(engine_x(x), height_at(x, z) + 0.1, engine_z(z))
+	teleport(player, Transform3D(Basis(Vector3.UP, yaw), at))
 	player.velocity = Vector3.ZERO
-	player.rotation.y = yaw
 	player.camera.rotation.x = 0.0
 	moon = MoonPosition.new(tuning)
 	_last_x = x
@@ -191,10 +191,29 @@ func shift_origin(by: Vector2i) -> void:
 	origin_chunk += by
 	var offset := Vector3(by.x * tuning.chunk_size, 0.0, by.y * tuning.chunk_size)
 	for child in content.get_children():
-		if child is Node3D:
+		if child is PhysicsBody3D:
+			teleport(child, child.global_transform.translated(-offset))
+		elif child is Node3D:
 			child.global_position -= offset
+	# Seated devices follow their hosts, and are kinematic too.
+	for device in devices():
+		if device.host() != null:
+			teleport(device, device.global_transform)
 	terrain.reposition()
 	origin_shifted.emit(by)
+
+
+## Puts a body somewhere at once. Left to Jolt, a kinematic one (you, a ridden
+## board) is carried there within a tick, throwing whatever it touched.
+func teleport(body: PhysicsBody3D, to: Transform3D) -> void:
+	body.global_transform = to
+	var rid := body.get_rid()
+	var mode := PhysicsServer3D.body_get_mode(rid)
+	if mode == PhysicsServer3D.BODY_MODE_KINEMATIC:
+		# Static for a moment it jumps there, and kinematic again it stays.
+		PhysicsServer3D.body_set_mode(rid, PhysicsServer3D.BODY_MODE_STATIC)
+		PhysicsServer3D.body_set_state(rid, PhysicsServer3D.BODY_STATE_TRANSFORM, to)
+		PhysicsServer3D.body_set_mode(rid, mode)
 
 
 func set_gravity(g: float) -> void:

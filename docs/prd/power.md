@@ -137,7 +137,8 @@ the felt-weather rule.
   blown off a turbine unplugs itself. A **strong cable** is also a rope, so it holds
   what it's plugged into and powers it. It never pops; too much load snaps it at
   4,000 N. While you hold one of its plugs, the rope pulls on you, not on the plug in
-  your grip.
+  your grip. A loose plug on either kind is dragged along by what drifts off with
+  the other end, never slung, however long it was caught.
 
 ## Full version
 
@@ -170,6 +171,10 @@ the felt-weather rule.
    to a staked turbine stays on the end of it, joined and powered. On a common cable
    the same rig pops a plug and blows away. Holding a strong cable's plug, the
    planter pulls on you.
+8. **Dragged, not slung.** In a gale a floating planter drags a strong cable's loose
+   plug over the dunes and round your legs, from several starts and winds. The plug
+   never closes on the port dragging it much faster than 3 m/s, and never outruns
+   the wind.
 
 ## Out of scope
 

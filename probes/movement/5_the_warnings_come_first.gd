@@ -50,6 +50,11 @@ func run() -> void:
 				if past.edge == INF and at.distance_to(home) >= edge:
 					past.edge = _ticks
 			player.velocity = Vector3.ZERO
+			if heard.lost == 0:
+				# Past the edge the camp's chunk goes as streaming gets to it, on its
+				# own budget: a slow machine gets there later, never not at all.
+				await settle()
+				await physics_frames(5)
 			player.set_physics_process(true)
 			var first := _when(heard.levels, CampRange.FIRST)
 			var last := _when(heard.levels, CampRange.LAST)
