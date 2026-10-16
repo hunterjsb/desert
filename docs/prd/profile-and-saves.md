@@ -76,7 +76,7 @@ Menus & UI calls them from Save & quit, Resume, New game and Options.
   seated on a crate. Every line and strong cable with its ends, length and load, and its
   strand's points as drawn, so nothing snaps or flings on resume. Of the finds, only the
   chunks near you: how hard the weather had been when each came near, and which finds were
-  taken. No ground, no weather, no untouched find. A camp mid-storm saves in about 15 KB.
+  taken. No ground, no weather, no untouched find. A camp mid-storm saves in about 13 KB.
 - **Places are world metres,** in doubles, and the engine's origin is kept, so a resumed
   run computes in the same numbers as the one saved.
 - **Resume** happens on a world built on the save's seed once it has settled. The fresh
