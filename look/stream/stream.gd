@@ -66,7 +66,7 @@ func _ready() -> void:
 	await _measure("walk", missed, _for(WALK_SECONDS))
 	Input.action_release("move_forward")
 
-	# Onto a charged board at your feet, flat out.
+	# Onto a charged board at your feet, flat out downwind: its fastest.
 	var board := Catalog.device(&"board") as Hoverboard
 	_world.content.add_child(board)
 	var cell := Catalog.part(&"battery")
@@ -74,10 +74,14 @@ func _ready() -> void:
 	board.fit(cell, board.sockets()[0])
 	board.global_position = player.global_position + Vector3.UP * 0.06
 	await get_tree().physics_frame
-	player.get_on(board)
+	var from := Vector2(_world.player_world_x(), _world.player_world_z())
+	var down := _world.weather.field.wind_at(from.x, from.y, _world.time)
+	player.rotation.y = atan2(-down.x, -down.y)
+	print("  ride: on the board: %s" % player.get_on(board))
 	Input.action_press("move_forward")
 	await _measure("ride", missed, _for(RIDE_SECONDS))
 	Input.action_release("move_forward")
+	print("  ride: %.0f m" % from.distance_to(Vector2(_world.player_world_x(), _world.player_world_z())))
 
 	var limit := Tuning.current().stream_frame_max_ms
 	var slowest := _world.terrain.slowest_frame_ms

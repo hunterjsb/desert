@@ -90,8 +90,8 @@ even storms that last for days.
   riding the prevailing wind at 6 to 14 m/s. Drag grows with speed², and a third of it
   is the air's, felt against the felt wind: a tailwind carries you faster and a headwind
   holds you back, and a tuck (crouch) shows the wind less, about 22 m/s flat out. Slopes
-  pull it as they pull a slide, so it runs past top speed down a slip face (23.8 m/s on
-  the long ride) and slows climbing one.
+  pull it as they pull a slide, so it runs past top speed down a slip face (22.8 m/s on
+  the long ride) and slows climbing one, to about 11 m/s in still air.
 - **Carving.** The move keys push where they point from your view, as walking does. The
   board turns under you at up to 2.5 rad/s, and its hover grips sideways up to 18 m/s²,
   a carve about 22 m round flat out, before the turn slides out into a drift, which
@@ -105,7 +105,7 @@ even storms that last for days.
   slammed into. Climbing flat out straight into a slip face's foot is the hardest it
   gets, about 5 g for a moment.
 - **Its own battery.** It draws 40 W floating and up to 260 W more at full push (Power):
-  a base battery lasts about twenty minutes flat out, about 22 km over the dunes. Out of
+  a base battery lasts about twenty minutes flat out, about 23 km over the dunes. Out of
   charge, you step off. Outside a bubble the weather wears it like any device.
 - **Frame-rate proof.** It's stepped 240 times a second inside each tick. At its speed
   your view would stutter between ticks, so Feel draws you, and the board, smoothed
@@ -187,13 +187,14 @@ All built: on foot alongside Stage 5, the board and the camp-range warnings at S
 1. **The long ride.** Ride 20 km of dunes, slip faces and chunk seams at top speed. The
    board never dips below the sand, never launches unexpectedly, and never jitters.
    *(Built: half across the ridges with the wind and against it, half wandering, over
-   406 chunk seams. The underside never came nearer the sand than 7.6 cm; 51 launches,
-   every one off a crest, at most 1.9 m over its ride height; no judder; the hardest
-   moment 5.1 g, climbing into a slip face; the ground solid under you all the way.)*
+   411 chunk seams, 18.8 m/s on average. The underside never came nearer the sand than
+   5.8 cm; 55 launches, every one off a crest, at most 1.9 m over its ride height; no
+   judder; the hardest moment 5.3 g, climbing into a slip face; the ground solid under
+   you all the way.)*
 2. **The escape is real.** A charged board escapes a storm front from a set distance.
    *(Built: in the run's own weather, a front 50 m upwind. Flat out downwind on a base
-   battery, the front falls behind at about 11 m/s, 2 km behind after three minutes, with
-   86 Wh of 100 left. Sprinting the same way on foot, it catches you in 6.5 s.)*
+   battery, the front falls behind at about 11 m/s, 2.1 km behind after three minutes,
+   with 86 Wh of 100 left. Sprinting the same way on foot, it catches you in 6 s.)*
 3. **The wind dial on foot.** Crossing the same dunes takes more time and stamina upwind
    than downwind. *(Built: 60 m of dunes near spawn you can cross both ways, in a 20 m/s
    gale: 13.4 s and 112 stamina with it, 20.1 s and 178 into it. A ridge itself you can't
@@ -238,7 +239,7 @@ Movement on foot, built alongside Stage 5, has its own:
 ## Open questions
 
 - **How fast is the board, and how far does a charge go?** It has to beat a storm front.
-  The rest is tuning. *First numbers (Stage 10): 20 m/s flat out, about 22 km on a base
+  The rest is tuning. *First numbers (Stage 10): 20 m/s flat out, about 23 km on a base
   battery; it outruns a front by about 11 m/s with the wind behind it.*
 - **Do tricks do anything,** or are they just for fun?
 - **How do the warnings show up?** Sound, the suit, the radio, a visible edge? *The

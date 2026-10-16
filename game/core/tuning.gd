@@ -238,8 +238,8 @@ static var _current: Tuning
 ## front rides the wind (the prevailing wind's 10 m/s swings up to 14).
 @export var board_top_speed: float = 20.0
 ## The push from a standstill, m/s²; drag grows with speed² until it matches
-## the push at top speed.
-@export var board_push: float = 5.0
+## the push at top speed. Enough to climb a slip face at about 11 m/s.
+@export var board_push: float = 6.5
 ## The share of that drag that's the air's, felt against the wind: a tailwind
 ## carries you faster, a headwind holds you back, and a tuck shows it less.
 @export var board_air_share: float = 0.35
