@@ -57,6 +57,11 @@ toward the moon's natural nitrogen floor, at the pace of the shield's slow death
 
 ### Why ships stop here at all
 
+> **Session 3 keeps this.** The [FTL ruling](lore-research.md#4-the-system-the-lane-and-the-harbor)
+> replaces "no FTL" with two regimes: information crosses near-instantly and anything with
+> mass crosses at one fixed slow rate, so lane crossings take years. The refuelling rationale
+> below stands as written.
+
 In the Xandaris space sim, ships jump along hyperlanes. A cargo hauler carries 400 fuel
 and burns 25 a jump. Ships refuel only from a world's Fuel stores. Each system gets only
 a few lanes (galaxy generation links each to its 3 nearest), and hyperspace storms close

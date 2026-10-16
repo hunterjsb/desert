@@ -30,7 +30,10 @@ dev gravity toggle tries the lower value. **Everything else stays honest.**
 - **It's thin:** about 0.3 bar or more, around a third of Earth's pressure, mostly
   nitrogen. It's the moon's own air: what it formed with, topped up by volcanoes during
   its long eccentric-orbit phase. As the tidal heating fades, topping-up falls behind a
-  very slow escape, which is a geological backdrop, not something you'd see.
+  very slow escape, which is a geological backdrop, not something you'd see. **Agreed
+  (session 3):** the lore reads the leak as a clock. Storms last only while air remains, and
+  the player arrives with the window closing ([the lore
+  research](lore-research.md#the-surface-today-agreed-session-3)).
 - **Thin air still makes real wind.** Mars, at under 1% of Earth's pressure, has global
   dust storms and moving dunes, but its winds would barely push you. At 0.3 bar, 130 km/h
   gusts push like an Earth gale even at near-Earth gravity (at the leaning 0.4–0.5 g,
