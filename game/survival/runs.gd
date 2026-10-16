@@ -15,9 +15,6 @@ const CAPTION_SECONDS := 4.0
 ## minutes, facing where it will come from: time to set the kit up and batten
 ## down, not a storm on arrival.
 const START := {"key": "start", "kind": "clear", "day": [0.25, 0.45], "due": [180.0, 480.0]}
-## What's beside you lies in a row this far ahead, this far apart, m.
-const KIT_AHEAD := 2.0
-const KIT_APART := 1.2
 
 ## Runs since the game began, this one included.
 var count := 1
@@ -101,69 +98,91 @@ func _begin(at: World) -> void:
 		at.respawn(place.x, place.z, place.yaw, place.time)
 
 
-## The kit's things on the sand beside where you begin, every battery in them
-## as full as the kit says, cabled together if it says so: all it made.
+## The kit's things beside where you begin, each at its place, put together
+## as it says, every battery as full as it says, a floater floating, and its
+## lines laid: all it made.
 static func kit(world: World, from: Kit = Kit.standard()) -> Array[Node]:
 	var made: Array[Node] = []
-	var ids: Array[StringName] = []
+	var named := {}
 	for id in from.beside:
-		for i in from.beside[id]:
-			ids.append(id)
-	var powered: Array[Device] = []
-	for k in ids.size():
-		var where := [(k - (ids.size() - 1) * 0.5) * KIT_APART, KIT_AHEAD]
-		var id := ids[k]
+		var where: Vector2 = from.beside[id]
 		var lying := Transform3D(Basis(Vector3.UP, world.player.global_rotation.y) * Basis(Vector3.RIGHT, -PI / 2.0),
 			_beside(world, where) + Vector3.UP * 0.02)
 		if id == &"coil":
 			var line := Line.make(world, from.rope_m)
 			line.coil.global_transform = lying
 			made.append_array([line, line.coil])
-			continue
-		if Catalog.PARTS.has(id):
+		elif id == &"stake":
+			var stake := Catalog.stake()
+			world.content.add_child(stake)
+			var at := _beside(world, where)
+			stake.drive(at, at.y)
+			named[id] = stake
+			made.append(stake)
+		elif Catalog.PARTS.has(id):
 			var part := Catalog.part(id)
 			world.content.add_child(part)
 			part.global_transform = lying
 			made.append(part)
-			continue
-		var device := Catalog.device(id)
-		_set_down(world, device, where)
-		for socket in device.sockets():
-			if socket.kind == &"battery":
-				var cell := Catalog.part(&"battery") as Battery
-				cell.charge_wh = cell.capacity() * from.charge
-				world.content.add_child(cell)
-				device.fit(cell, socket)
-				cell.show_charge()
-		if _socket(device, &"port") != null:
-			powered.append(device)
-		made.append(device)
-	for k in range(1, powered.size() if from.wired else 0):
-		var cable := Catalog.cable(world, _beside(world, [0.0, KIT_AHEAD * 0.7]))
-		powered[0].fit(cable.plugs[0], _socket(powered[0], &"port"))
-		powered[k].fit(cable.plugs[1], _socket(powered[k], &"port"))
-		made.append(cable)
+		else:
+			var spec: Dictionary = from.assembled.get(id, {"frame": id, "sockets": {}})
+			var device := Catalog.device(spec.frame)
+			_set_down(world, device, where)
+			made.append(device)
+			var sockets := device.sockets()
+			var filling: Dictionary = spec.sockets
+			for k: int in filling:
+				if Catalog.PARTS.has(filling[k]):
+					_fit(world, device, Catalog.part(filling[k]), sockets[k], from.charge)
+				else:
+					var seated := Catalog.device(filling[k])
+					device.mount(seated, sockets[k])
+					made.append(seated)
+			# A plain device comes with its batteries.
+			if not from.assembled.has(id):
+				for socket in sockets:
+					if socket.kind == &"battery":
+						_fit(world, device, Catalog.part(&"battery"), socket, from.charge)
+			_set_down(world, device, where)
+			named[id] = device
+	for id in from.lines:
+		var a: Device = named[id]
+		var b: Device = named[from.lines[id]]
+		# Laid the way the wind will pull it, its tie toward the other end.
+		var tie := a.free_tie(b.global_position)
+		var want := b.global_position - a.global_position
+		a.global_basis = Basis(Vector3.UP, atan2(want.x, want.z) - atan2(tie.position.x, tie.position.z))
+		tie = a.free_tie(b.global_position)
+		var other := b.free_tie(tie.global_position)
+		var span := (tie.global_transform * Line.END_AT).distance_to(other.global_transform * Line.END_AT)
+		made.append(Line.between(world, tie, other, maxf(from.rope_m - span, 0.0)))
 	return made
 
 
 ## A place on the sand right and ahead of where the run begins, facing as you do.
-static func _beside(world: World, where: Array) -> Vector3:
+static func _beside(world: World, where: Vector2) -> Vector3:
 	var start := Vector3(world.engine_x(world.spawn.x), 0.0, world.engine_z(world.spawn.y))
 	var facing := Basis(Vector3.UP, world.player.global_rotation.y)
-	var at: Vector3 = start + facing.x * where[0] - facing.z * where[1]
+	var at: Vector3 = start + facing.x * where.x - facing.z * where.y
 	at.y = world.height_under(at)
 	return at
 
 
-static func _set_down(world: World, device: Device, where: Array) -> void:
+## Facing as you do: resting on the sand, or held at the tray's height if it floats.
+static func _set_down(world: World, device: Device, where: Vector2) -> void:
 	var at := _beside(world, where)
-	world.content.add_child(device)
-	device.global_transform = Transform3D(Basis(Vector3.UP, world.player.global_rotation.y),
-		at + Vector3.UP * (Finds.bounds(device).size.y * 0.5 + 0.02))
+	if device.get_parent() == null:
+		world.content.add_child(device)
+	var up := world.tuning.hover_height if device.stats().can_float \
+		else -Finds.bounds(device).position.y + 0.02
+	device.global_transform = Transform3D(Basis(Vector3.UP, world.player.global_rotation.y), at + Vector3.UP * up)
 
 
-static func _socket(device: Device, kind: StringName) -> Socket:
-	for socket in device.sockets():
-		if socket.kind == kind and socket.is_open():
-			return socket
-	return null
+static func _fit(world: World, device: Device, part: Part, socket: Socket, charge: float) -> void:
+	var cell := part as Battery
+	if cell != null:
+		cell.charge_wh = cell.capacity() * charge
+	world.content.add_child(part)
+	device.fit(part, socket)
+	if cell != null:
+		cell.show_charge()

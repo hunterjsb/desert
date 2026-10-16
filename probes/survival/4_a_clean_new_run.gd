@@ -1,10 +1,13 @@
 extends WorldProbe
 ## Survival probe 4: a clean new run. The game as it runs: the run starts
-## with its kit (Kit, data) on the sand beside you, a light shield, clearly
-## weaker than a found one, with its battery half charged, the light solar
-## panel cabled into it, and a short coil; no shield of any kind goes in the
-## suit's slots. Switched on, the light shield runs the run's first day in its
-## own weather, the panel keeping its battery up. Then a run lived
+## with its kit (Kit, data) beside you: a crate floating on its hover tray,
+## its battery half charged, the light shield and the light solar panel
+## seated on its two top mounts clear of each other, moored by its hook to a
+## driven stake on the kit's short line, and a hoverboard ready to ride; none
+## of it overlaps you or each other, and none of it goes in the suit's slots.
+## The light shield is clearly weaker than a found one. Switched on, it runs
+## the run's first day in its own weather on the crate's power without going
+## dark, the tray never taking the battery's last quarter. Then a run lived
 ## in: the sealed-water start set down, its shield up, a line between two
 ## stakes, a ration in your hands, a canister half drunk, the clock days on.
 ## Then you die, by your own body's tick. A new run starts on a new seed, and
@@ -34,8 +37,9 @@ func run() -> void:
 	_check_kit(kit, "the first run")
 	await _run_the_day(kit)
 	lived.append_array(kit)
-	# The sealed-water start goes down clear of the kit.
-	teleport(world.spawn.x, world.spawn.y + 12.0)
+	# The sealed-water start goes down clear of the kit, well behind you.
+	var behind := Vector3(world.engine_x(world.spawn.x), 0.0, world.engine_z(world.spawn.y)) + player.global_basis.z * 20.0
+	teleport(world.world_x(behind.x), world.world_z(behind.z))
 	await physics_frames(5)
 	lived.append_array(Scenarios.survive(world))
 	await physics_frames(30)
@@ -61,8 +65,8 @@ func run() -> void:
 	await physics_frames(10)
 	var old := world
 	var old_seed := world.run_seed
-	check(world.ropes.ropes.size() == 1 and player.hands.held == ration and world.weather.shelters().size() == 2,
-		"the old run has a line, a ration in hand and its shields")
+	check(world.ropes.ropes.size() == 2 and player.hands.held == ration and world.weather.shelters().size() == 2,
+		"the old run has its lines, a ration in hand and its shields")
 
 	# What the new run holds the moment it starts, before its own weather touches it.
 	var fresh := {}
@@ -91,10 +95,15 @@ func run() -> void:
 	var strays := world.content.get_children().filter(func(n: Node) -> bool:
 		return n != world.player and not fresh_kit.has(n))
 	var bubbles := get_tree().get_nodes_in_group(Shelter.GROUP)
-	var kit_shield: Node = _pieces(fresh_kit)[0] if _pieces(fresh_kit).size() == 3 else null
-	check(strays.is_empty() and world.ropes.ropes.is_empty() and bubbles.size() == 1
-		and bubbles[0].get_parent() == kit_shield and world.power.stored_wh() <= 100.0 + 1e-6
-		and world.power.stored_wh() >= 100.0 * Kit.standard().charge - 1e-6,
+	var pieces := _pieces(fresh_kit)
+	var kit_wh := 0.0
+	for node: Node in fresh_kit:
+		if node is Device:
+			for cell in (node as Device).batteries():
+				kit_wh += cell.capacity() * Kit.standard().charge
+	check(strays.is_empty() and world.ropes.ropes.size() == 1 and bubbles.size() == 1
+		and bubbles[0].get_parent() == pieces.get("shield") and world.power.stored_wh() <= kit_wh + 1e-6
+		and world.power.stored_wh() >= kit_wh - 1.0,
 		"the new world has nothing in it but you and the kit (%d things, %d lines)" % [strays.size(), world.ropes.ropes.size()])
 	print("the new run began with %s" % fresh)
 	check(fresh.get("you") == [Vitals.FULL, Vitals.FULL, Vitals.FULL, false, 0.0, 0.0, 0.0, 0.0, 0.0, null, 0]
@@ -139,17 +148,23 @@ func _kit_in(at: World) -> Array:
 	return []
 
 
-## [the shield, the panel, the line] of a kit, or [] if any is missing.
-func _pieces(kit: Array) -> Array:
-	var found := [null, null, null]
+## A kit's crate, shield, panel, board, stake and line by name, or {} if any is missing.
+func _pieces(kit: Array) -> Dictionary:
+	var found := {}
 	for node: Node in kit:
 		if node is ShieldGenerator:
-			found[0] = node
-		elif node is Device and (node as Device).stats().solar_w > 0.0:
-			found[1] = node
+			found.shield = node
+		elif node is Hoverboard:
+			found.board = node
+		elif node is Stake:
+			found.stake = node
 		elif node is Line:
-			found[2] = node
-	return [] if found.has(null) else found
+			found.line = node
+		elif node is Device and (node as Device).stats().solar_w > 0.0:
+			found.panel = node
+		elif node is Device and (node as Device).stats().lift_kg > 0.0:
+			found.crate = node
+	return found if found.size() == 6 else {}
 
 
 func _check_kit(kit: Array, run: String) -> void:
@@ -162,24 +177,47 @@ func _check_kit(kit: Array, run: String) -> void:
 		"%s begins on a clear morning (%.2f of the day), the first storm due in %.0f s" % [run, hour, due])
 	var standard := Kit.standard()
 	var pieces := _pieces(kit)
-	check(pieces.size() == 3, "%s starts with the light shield, the light panel and a coil beside you" % run)
-	if pieces.size() != 3:
+	check(not pieces.is_empty(), "%s starts with a crate, a light shield, a light panel, a board, a stake and a line" % run)
+	if pieces.is_empty():
 		return
-	var shield: ShieldGenerator = pieces[0]
-	var panel: Device = pieces[1]
-	var line: Line = pieces[2]
-	var cable: Cable = null
-	for node: Node in kit:
-		if node is Cable:
-			cable = node
+	var crate: Device = pieces.crate
+	var shield: ShieldGenerator = pieces.shield
+	var panel: Device = pieces.panel
+	var board: Hoverboard = pieces.board
+	var stake: Stake = pieces.stake
+	var line: Line = pieces.line
+	var now := crate.stats()
+	check(now.hovering and absf(clearance(crate) - world.tuning.hover_height) < 0.1 and now.hooks == 1
+		and crate.charge_share() >= standard.charge - 0.01 and crate.charge_share() <= standard.charge,
+		"%s: the crate floats %.2f m up on its tray, a hook fitted, its battery %d%% charged"
+			% [run, clearance(crate), roundi(standard.charge * 100.0)])
+	check(shield.host() == crate and panel.host() == crate and not shield.on and shield.battery() == null,
+		"%s: the light shield, switched off, and the light panel are seated on the crate, on its power" % run)
+	check(line.state == Line.State.LAID and absf(line.full - standard.rope_m) < 1e-3 and stake.driven
+		and line.ends.any(func(e: Part) -> bool: return e.socket.get_parent() == crate)
+		and line.ends.any(func(e: Part) -> bool: return e.socket.get_parent() == stake),
+		"%s: the crate is moored by its hook to a driven stake on a %d m line" % [run, roundi(standard.rope_m)])
+	check(board.battery() != null and board.can_run(), "%s: the hoverboard lies ready to ride" % run)
 	var start := Vector3(world.engine_x(world.spawn.x), 0.0, world.engine_z(world.spawn.y))
-	var near := [shield, panel, line.coil].all(func(b: Node3D) -> bool:
-		return Vector2(b.global_position.x - start.x, b.global_position.z - start.z).length() < 3.5)
-	check(near and shield.battery() != null and shield.charge_share() >= standard.charge - 1e-6 and not shield.on
-		and panel.carryable and cable != null and cable.joined().has(shield) and cable.joined().has(panel)
-		and line.state == Line.State.COILED and line.full == standard.rope_m,
-		"%s: the shield's battery %d%% charged, switched off, cabled to a panel you can pick up, and a %d m coil"
-			% [run, roundi(standard.charge * 100.0), roundi(standard.rope_m)])
+	check([crate, board].all(func(b: Node3D) -> bool:
+		return Vector2(b.global_position.x - start.x, b.global_position.z - start.z).length() < 3.5),
+		"%s: the crate and the board are beside you" % run)
+	# Seated side by side, nothing of one inside the other or the crate.
+	var tops := [_box_in(crate, shield), _box_in(crate, panel)]
+	var frame := Finds.bounds(crate).grow(-1e-4)
+	check(not tops[0].intersects(tops[1]) and tops.all(func(b: AABB) -> bool: return not b.intersects(frame)),
+		"%s: the shield and the panel sit clear on the two top mounts (%.3f m apart)"
+			% [run, maxf(tops[1].position.z - tops[0].end.z, tops[0].position.z - tops[1].end.z)])
+	var bodies: Array[AABB] = [_box_in(null, world.player), _box_in(null, crate), _box_in(null, shield),
+		_box_in(null, panel), _box_in(null, board), _box_in(null, stake)]
+	var clashes := 0
+	for i in bodies.size():
+		for j in range(i + 1, bodies.size()):
+			# What's seated touches its crate by design.
+			if i >= 1 and i <= 3 and j <= 3:
+				continue
+			clashes += int(bodies[i].intersects(bodies[j]))
+	check(clashes == 0, "%s: none of the kit overlaps you or anything else of it (%d)" % [run, clashes])
 	var base := Catalog.device(&"shield") as ShieldGenerator
 	var deep_panel := Catalog.part(&"solar_panel")
 	world.content.add_child(base)
@@ -187,49 +225,72 @@ func _check_kit(kit: Array, run: String) -> void:
 		and panel.stats().solar_w <= deep_panel.stats.solar_w * 0.5,
 		"%s: the kit's shield and panel are clearly weaker than found ones (%.0f m against %.0f m, %d W against %d W)"
 			% [run, shield.size, base.size, panel.stats().solar_w, deep_panel.stats.solar_w])
-	var crate := Catalog.device(&"crate_frame")
-	world.content.add_child(crate)
-	var seated := Catalog.device(&"shield")
-	world.content.add_child(seated)
-	crate.mount(seated, crate.sockets().filter(func(s: Socket) -> bool: return s.kind == &"top")[0])
-	check(not world.player.suit.fits(shield) and not world.player.suit.fits(base) and not world.player.suit.fits(seated),
-		"%s: no shield goes in the suit's slots, the kit's, a found one or one seated on a crate" % run)
+	var suit := world.player.suit
+	check([crate, board, shield, panel, base, stake].all(func(b: Object) -> bool: return not suit.fits(b)),
+		"%s: neither the crate, the board, a shield of any kind nor the panel goes in the suit's slots" % run)
 	base.free()
 	deep_panel.free()
-	crate.free()
 
 
-## Switched on, the kit's shield runs a day of the run's own weather at the
-## spawn without going dark, and the light panel keeps it going: its battery
-## ends the day no lower than it began.
+## A body's shapes' bounds, in another's frame, or in the world's given null.
+func _box_in(frame: Node3D, body: Node3D) -> AABB:
+	var to := body.global_transform if frame == null else frame.global_transform.affine_inverse() * body.global_transform
+	return (to * Finds.bounds(body)).grow(-1e-4)
+
+
+## Switched on, the kit's shield runs a day of the run's own weather from its
+## start without going dark, on the crate's battery and the light panel: the
+## crate floats while the battery holds more than its reserve, then settles
+## onto the sand and leaves the rest to the shield.
 func _run_the_day(kit: Array) -> void:
 	var pieces := _pieces(kit)
-	if pieces.size() != 3:
+	if pieces.is_empty():
 		return
-	var shield: ShieldGenerator = pieces[0]
-	# The ground took as long to build as the machine took: the day starts at time zero.
-	world.respawn(world.spawn.x, world.spawn.y, 0.0, 0.0)
+	var crate: Device = pieces.crate
+	var shield: ShieldGenerator = pieces.shield
+	var cell := crate.battery()
+	# The run's own moment, with the kit as it was laid: the ground took as
+	# long to build as the machine took.
+	var begin: Dictionary = Scenarios.find(world, Runs.START)
+	world.respawn(world.spawn.x, world.spawn.y, world.player.global_rotation.y, begin.time)
+	cell.charge_wh = cell.capacity() * Kit.standard().charge
+	# The day is the kit's: nothing of yours ends it.
+	world.player.vitals.set_physics_process(false)
 	await physics_frames(2)
 	check(shield.interact(world.player), "use switches the kit's shield on")
 	var made := world.power.generated_wh
-	var used := world.power.used_wh
-	var from := shield.battery().charge_wh
+	var from := cell.charge_wh
 	var lowest := INF
+	var floating_low := INF
 	var dark := 0
 	var stormy := 0
+	var floated := 0
+	var settled := -1.0
+	var shield_wh := 0.0
 	var ticks := Engine.physics_ticks_per_second
 	var frames := roundi(KIT_DAYS * world.tuning.day_minutes * 60.0 / WARP * ticks)
+	var step := WARP / ticks / 3600.0
 	world.time_warp = WARP
 	for i in frames:
 		await get_tree().physics_frame
-		lowest = minf(lowest, shield.battery().charge_wh)
+		lowest = minf(lowest, cell.charge_wh)
 		dark += int(not shield.running())
 		stormy += int(world.weather.field_storm(shield.global_position) > 0.0)
+		shield_wh += shield.demand_w() * step * int(shield.running())
+		if crate.powered:
+			floated += 1
+			floating_low = minf(floating_low, cell.charge_wh)
+		elif settled < 0.0:
+			settled = float(i) / frames
 	world.time_warp = 1.0
-	var end := shield.battery().charge_wh
-	print("the kit's shield ran %.1f day, %d%% of it under a storm: its battery %.2f to %.2f Wh (lowest %.2f); the panel made %.2f Wh, the shield drew %.2f"
-		% [KIT_DAYS, roundi(100.0 * stormy / frames), from, end, lowest, world.power.generated_wh - made,
-			world.power.used_wh - used])
+	world.player.vitals.set_physics_process(true)
+	var end := cell.charge_wh
+	var reserve := Power.RESERVE * cell.capacity()
+	print(("the kit's first day, %d%% of it under a storm: the crate floated %d%% of it%s; its battery %.1f to %.1f Wh"
+		+ " (lowest %.1f, floating %.1f); the panel made %.1f Wh, the shield drew %.1f")
+		% [roundi(100.0 * stormy / frames), roundi(100.0 * floated / frames),
+			", settling at %.2f of the day" % settled if settled >= 0.0 else "", from, end, lowest, floating_low,
+			world.power.generated_wh - made, shield_wh])
 	check(dark == 0, "the kit keeps its shield up for a day (%d frames dark)" % dark)
-	check(end >= from, "the light panel keeps the light shield going: the day ends no lower than it began (%.2f to %.2f Wh)" % [from, end])
+	check(floating_low >= reserve - 0.1, "the tray never takes the shield's reserve (floating down to %.2f Wh)" % floating_low)
 	shield.interact(world.player)

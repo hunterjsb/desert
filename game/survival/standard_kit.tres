@@ -8,11 +8,25 @@ carried = Dictionary[StringName, int]({
 &"canister": 1,
 &"ration": 1
 })
-beside = Dictionary[StringName, int]({
-&"light_shield": 1,
-&"light_panel": 1,
-&"coil": 1
+beside = Dictionary[StringName, Vector2]({
+&"floating_crate": Vector2(1.8, 1.8),
+&"board": Vector2(-1.4, 1.2),
+&"stake": Vector2(1.8, 8.2)
+})
+assembled = Dictionary[StringName, Dictionary]({
+&"floating_crate": {
+"frame": &"crate_frame",
+"sockets": {
+0: &"battery",
+3: &"hover_tray",
+4: &"light_shield",
+7: &"hook",
+9: &"light_panel"
+}
+}
+})
+lines = Dictionary[StringName, StringName]({
+&"floating_crate": &"stake"
 })
 charge = 0.5
 rope_m = 6.0
-wired = true

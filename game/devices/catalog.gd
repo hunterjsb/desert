@@ -146,10 +146,11 @@ const DEVICES := {
 			[&"bottom", Vector3(0.0, -0.16, 0.0), Vector3.DOWN],
 			[&"port", Vector3(0.15, -0.04, 0.0), Vector3.RIGHT],
 		]},
-	# The light solar panel you start with, half a found panel: set it down,
-	# cable it in, pick it up again. Lying flat, the wind meets its edge.
-	&"light_panel": {"label": "Light solar panel", "size": Vector3(0.8, 0.05, 0.6), "mass": 5.0, "carryable": true,
-		"stats": {"solar_w": 30.0, "face_m2": 0.04},
+	# The light solar panel you start with, half a found panel's watts on half
+	# a crate's top, so it rides beside a shield: seat it, set it down, cable
+	# it in, pick it up again. Lying flat, the wind meets its edge.
+	&"light_panel": {"label": "Light solar panel", "size": Vector3(0.8, 0.05, 0.4), "mass": 5.0, "carryable": true,
+		"fits": &"top", "stats": {"solar_w": 30.0, "face_m2": 0.04},
 		"sockets": [
 			[&"port", Vector3(0.4, 0.0, 0.0), Vector3.RIGHT],
 		]},

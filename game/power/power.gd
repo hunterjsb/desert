@@ -4,11 +4,16 @@ extends Node
 ## never changes a charge and F5 speeds charging like everything else. Devices
 ## joined by cables share one pool: what they make feeds what they draw, then
 ## fills their batteries; a pool that can't meet its draw goes dark. A device
-## seated on another, like a shield on a crate, shares its pool. A ledger
-## proves no energy appears from nowhere.
+## seated on another, like a shield on a crate, shares its pool. Running short,
+## a pool's lower-ranked devices give way first, like a crate's tray to the
+## shield on it. A ledger proves no energy appears from nowhere.
 
 ## A dark pool waits until its batteries hold this share before it tries again.
 const RESTART := 0.05
+## A device ranked below the highest in its pool stops drawing once the pool's
+## batteries are down to this share, kept for the higher ones, unless the
+## sources alone carry everything; it runs again once they hold RESTART more.
+const RESERVE := 0.25
 
 ## Energy in, Wh, since the run began, and where it all went.
 var generated_wh := 0.0
@@ -60,15 +65,19 @@ func stored_wh() -> float:
 func _tick(seconds: float, t: float) -> void:
 	for pool in _pools():
 		var made := 0.0
-		var wanted := 0.0
+		var wants := {}
 		var cells: Array[Battery] = []
 		for device: Device in pool:
 			made += device.production_w(t) * seconds / 3600.0
-			wanted += device.demand_w(t) * seconds / 3600.0
+			wants[device] = device.demand_w(t) * seconds / 3600.0
 			cells.append_array(device.batteries())
 		generated_wh += made
+		var running := _running(pool, wants, made, _fraction(cells))
+		var wanted := 0.0
+		for device: Device in running:
+			wanted += wants[device]
 		var on := true
-		if not pool.all(func(d: Device) -> bool: return d.powered) and made < wanted \
+		if not running.all(func(d: Device) -> bool: return d.powered) and made < wanted \
 				and _fraction(cells) < RESTART:
 			# Dark stays dark, with nothing running, until there's enough to restart:
 			# everything made goes into the batteries meanwhile.
@@ -87,13 +96,27 @@ func _tick(seconds: float, t: float) -> void:
 				used_wh += made + given
 				on = false
 		for device: Device in pool:
-			device.set_powered(on)
-			if on:
+			var runs := on and running.has(device)
+			device.set_powered(runs)
+			if runs:
 				device.work(seconds, t)
 			if device.charge_light != null:
 				ChargeLight.paint(device.charge_light, device.charge_share())
 		for cell in cells:
 			cell.show_charge()
+
+
+## The devices in a pool that draw this tick, `wants` what each would, Wh:
+## all but the lower ranks that give way to the highest while it runs short.
+func _running(pool: Array, wants: Dictionary, made: float, share: float) -> Array:
+	var top: int = pool[0].rank
+	var all := 0.0
+	for device: Device in pool:
+		top = maxi(top, device.rank)
+		all += wants[device]
+	return pool.filter(func(d: Device) -> bool:
+		return d.rank >= top or wants[d] <= 0.0 or made >= all \
+			or share > RESERVE + (0.0 if d.powered else RESTART))
 
 
 func _fraction(cells: Array[Battery]) -> float:
@@ -135,13 +158,15 @@ func wake(device: Device) -> void:
 			continue
 		var made := 0.0
 		var wanted := 0.0
+		var wants := {}
 		var cells: Array[Battery] = []
 		for each: Device in pool:
 			made += each.production_w()
-			wanted += each.demand_w()
+			wants[each] = each.demand_w()
+			wanted += wants[each]
 			cells.append_array(each.batteries())
 		if made >= wanted or _fraction(cells) >= RESTART:
-			for each: Device in pool:
+			for each: Device in _running(pool, wants, made, _fraction(cells)):
 				each.set_powered(true)
 		return
 
