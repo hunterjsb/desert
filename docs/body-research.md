@@ -16,8 +16,9 @@ what real system, body and failing shield would produce the feel in
 > moon is lost. What stands: the system and route reasoning, the radiation numbers, the
 > gravity and pressure window (§3, which is the thin-air table the session points to) and
 > the candidate bodies (§4). Its escape figures stand too, because the session's loss is
-> geological, not 3,000 years. The text below is left as written, and the notes mark the
-> spots. [The lore research](lore-research.md) has the current picture.
+> geological, not on the scale of `{YEARS_SINCE_FALL}`. The text below is left as written,
+> and the notes mark the spots. [The lore research](lore-research.md) has the current
+> picture.
 
 ## 1. The short answer
 
@@ -117,7 +118,7 @@ and water locked in the polar caps: barren, sterile, a blank slate.
 | The shield | A sky-wide filter: UV out, heat in, plasma turned away | The poles warm, the caps give up their CO₂ and water, and pressure climbs to ~0.4–0.5 bar |
 | Kind of nice | Towns become cities: lakes, parks, the garden | Warm, open water, a light breather outdoors |
 | The collapse and the empires | Emitters fail one by one | The poles cool first, the CO₂ freezes back, UV gets through, the garden browns, oxygen goes into rust, dust bowls form |
-| Now, 3,000 years on | Ruins | ~0.15–0.2 bar, mostly nitrogen, no oxygen: the desert |
+| Now, `{YEARS_SINCE_FALL}` on | Ruins | ~0.15–0.2 bar, mostly nitrogen, no oxygen: the desert |
 | Ahead | — | Slowly toward the ~0.1–0.15 bar nitrogen floor. Fading, never gone |
 
 **When a whole-moon shield beats domes:** at this size the moon's gravity holds the air,
@@ -259,8 +260,9 @@ In all three, thermal escape is irrelevant. Even with a hot 1,000 K upper atmosp
 the Jeans parameter for nitrogen is 40 (Mars-sized), 63 and 161, so 0.2 bar lasts
 10¹³ years or more. Inside a giant's magnetosphere, plasma could strip ~1 tonne a second
 (Io's rate), and even that would take ~25 million years to remove 0.2 bar from a
-Mars-sized moon. **No size makes the air leak away in 3,000 years.** Fading it that fast
-would take ~10,000 tonnes a second.
+Mars-sized moon. **No size makes the air leak away in `{YEARS_SINCE_FALL}`.** Fading it that
+fast would take ~10,000 tonnes a second (worked for the span this memo first assumed; redo
+when the placeholder is set).
 
 ## 5. The shield: what it did and how it fails
 
@@ -272,7 +274,7 @@ would take ~10,000 tonnes a second.
 |---|---|
 | **(a) Held a thicker atmosphere that relaxes back** | **Yes, reframed.** The extra air doesn't leak to space; it **freezes back onto the poles.** Mars's surface pressure swings by about a quarter each year as CO₂ freezes onto its caps and sublimes back, and its buried CO₂ ice could roughly double its air (Phillips 2011; Bierson 2016). Condensation is fast (decades), so **the shield's decay sets the pace**: emitters fail over centuries, and the air follows. Nitrogen doesn't freeze, so it's the floor. |
 | **(b) Turned the giant's plasma and sputtering away** | **A real job, but not the fading.** It protected ships in orbit and the upper air over millions of years. At 15–20 giant radii the moon sits inside the giant's magnetosphere (Jupiter's would shrink to ~20–47 radii this close to a star), sheltered from the stellar wind. |
-| **(c) Kept the UV out, and the oxygen with it** | **Yes in direction, stretched in pace.** It's why the air is unbreathable while the pressure stays. Rusting away 0.1 bar of oxygen at 0.38 g means oxidising ~90 m of sand in 3,000 years, about 1,000 times Earth's weathering rate. It fits better if the colonial air was only a few percent oxygen, or if most of it went while the garden was dying. |
+| **(c) Kept the UV out, and the oxygen with it** | **Yes in direction, stretched in pace.** It's why the air is unbreathable while the pressure stays. Rusting away 0.1 bar of oxygen at 0.38 g means oxidising ~90 m of sand in `{YEARS_SINCE_FALL}`, about 1,000 times Earth's weathering rate (both figures worked for the span this memo first assumed; redo when it is set). It fits better if the colonial air was only a few percent oxygen, or if most of it went while the garden was dying. |
 
 **Leaning: one shield, all three jobs.** It's a filter over the sky, like greenhouse
 glass: sunlight in, UV out, heat kept in, plasma turned away. The game's own shields

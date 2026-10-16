@@ -4,20 +4,39 @@
 (the moon, the stack, the fall, the minds) and [part 2](lore-session-2026-10-14-part-2.md)
 (makers, freighters, the port, names, the far end). Both hold direction Hunter agreed to.
 Session 3 ([2026-10-16](lore-session-2026-10-16.md): names and hierarchy, the FTL ruling, the
-factions, the six eras of Zan, the surface today) is folded in below. Loose: none of it is
-canon until he says so, and every name is a working name. It joins [the body
+factions, the six eras of Zan, the surface today) is folded in below, and so are Hunter's
+answers to six of its seven conflicts with earlier text, given the same day after the session
+([section 14](#14-open-after-session-3)). Loose: none of it is canon until he says so, and
+every name is a working name. It joins [the body
 research](body-research.md), [the science brief](science-brief.md) and the vision's lore into
 one history.*
 
 **Tags.** **Agreed** is from the first two sessions, which have the full detail. **Agreed
-(session 3)** is from the third, which works the same way. **Proposal** is a Claude
-suggestion in the sessions that Hunter hasn't picked. **Leaning** is a research option this
-memo favours, not decided. **Open** is unresolved. Where older research disagrees with the
+(session 3)** is from the third, which works the same way. **Agreed (Hunter, 2026-10-16, after
+session 3)** is his answer to a conflict that session left open, given the same day.
+**Proposal** is a Claude suggestion in the sessions that Hunter hasn't picked. **Leaning** is
+a research option this memo favours, not decided. **Open** is unresolved. Where older research disagrees with the
 sessions, the sessions win, and where part 2 refines part 1, part 2 wins;
 [section 12](#12-what-the-sessions-replaced) lists what changed. Session 3 refines both, with
 one exception to that rule: where it gives its own resolution (the FTL ruling, the paroxysm)
-that is applied, and every other clash with earlier text is left standing on both sides and
-listed in [section 14](#14-open-after-session-3), not settled.
+that is applied. Every other clash with earlier text was left standing on both sides, and
+Hunter has since answered six of the seven; those answers are applied everywhere they appear
+and listed in [section 14](#14-open-after-session-3), which keeps the seventh, the end state,
+open.
+
+## Placeholders
+
+**Agreed (Hunter, 2026-10-16, after session 3):** the time spans are redacted until he sets
+them. Every lore and game doc uses these names and carries no figure, and they are defined
+only here. Both are **unset**: don't guess a value.
+
+- **`{YEARS_SINCE_FALL}`** (unset). The time from the last survivors to the player's arrival.
+  It stands in for every earlier figure for how long ago the fall was. Where a sentence only
+  worked with a number it is reworded around the placeholder, so ruins now last "longer than
+  `{YEARS_SINCE_FALL}`."
+- **`{BRONZE_AGE_SPAN}`** (unset). How long the two Bronze Age feudal eras last, until the last
+  survivors die out. It stands in for session 3's figure for their span, and it ends where
+  `{YEARS_SINCE_FALL}` begins.
 
 ## 1. The shape of it
 
@@ -25,16 +44,19 @@ listed in [section 14](#14-open-after-session-3), not settled.
   shield holds the sky up and no terraforming machine made it.
 - **Two clocks.** A slow geological one: a lost sister moon leaves the survivor eccentric,
   tides heat it, and the orbit later recircularises. A sudden political one: a transit hub, a
-  war that severs the lane, a smuggler moon, a paroxysm, then Bronze Age empires in the ash.
+  war that severs the lane, a smuggler moon, a paroxysm, then two Bronze Age feudal eras in
+  the ash.
 - **A supply chain under both.** The moon never made anything high-tech, and every part's
   maker's stamp tells the story.
 - **Information is fast and mass is slow (Agreed, session 3).** Messages cross the lane
   near-instantly and anything with mass takes years ([section 4](#4-the-system-the-lane-and-the-harbor)).
-- **We arrive about 3,000 years on,** late in the wind-down (session 3 reads far longer; see
-  [section 14](#14-open-after-session-3)). The desert is a phase, not an ending, and history
-  runs backwards in the ground, with the ash band as its page break.
-- **No AI uprising,** only local models that cults treat as oracles. **The lane has two
-  ends,** and the far one isn't human.
+- **We arrive `{YEARS_SINCE_FALL}` after the last survivors,** late in the wind-down (the
+  span is unset: [Placeholders](#placeholders)). The desert is a phase, not an ending, and
+  history runs backwards in the ground, with the ash band a readable cue in it and its place
+  among the strata open ([section 8](#8-the-ground-strata-the-oldest-tech-and-names)).
+- **No AI uprising,** only local models that cults treat as oracles. The war that cut the lane
+  was probably an outside power's doing (**Leaning**: the hive mind, not humanity's own AI).
+  **The lane has two ends,** and the far one isn't human.
 
 ## 2. The body
 
@@ -68,8 +90,8 @@ air falls behind escape, and the moon settles **colder, drier and calmer**.
 **Leaning: two physics checks.** *The trigger:* losing a resonant partner usually removes
 forced eccentricity (Io would circularise without Europa), so plain destruction doesn't pump
 the survivor. An ejection after a close encounter can, which favours "ejection" for question
-1. *The clocks:* recircularisation takes millions of years against a human story of a few
-thousand, so the paroxysm should read as an episodic eruption (Io's are), not the peak of
+1. *The clocks:* recircularisation takes millions of years against a human story far
+shorter, so the paroxysm should read as an episodic eruption (Io's are), not the peak of
 heating.
 
 ## 4. The system, the lane and the harbor
@@ -82,12 +104,14 @@ lane carries **helium-3**; skimming it from the giant is risky, equipment-destro
 small outfits, not the official reason the hub exists.
 
 **Agreed: the analysis versus the people.** The top knew. TILG and the IOU saw the heavy
-volcanism and approved an **intermediate transit hub, explicitly not for settlement.** The
-ground didn't care: a corporate town grew anyway, **never registered** with the local
+volcanism and approved an **intermediate transit hub, explicitly not for settlement.**
+**Agreed (Hunter, 2026-10-16, after session 3):** TILG's "temporary hub" label was a pretext,
+not the result of a proper analysis. It cited the unstable orbit to dodge the Provisional's
+military upkeep ([section 5](#factions-agreed-session-3)), and the excuse turned out to be
+true. The IOU's part is as written here; whether it knew the label was a pretext is not said.
+The ground didn't care: a corporate town grew anyway, **never registered** with the local
 government, and the Skimmers Association arrived. Nobody thinks in millennia, and the
-knowledge lives at corporate altitude. **Agreed (session 3):** the town is **Port Morgan**, and
-TILG's reason for registering the hub as temporary is in
-[section 5](#factions-agreed-session-3).
+knowledge lives at corporate altitude. **Agreed (session 3):** the town is **Port Morgan**.
 
 **Agreed (session 3): the FTL ruling, which replaces part 2's "no FTL".** Two regimes:
 - **Information** crosses near-instantly, through quantum channels.
@@ -192,8 +216,10 @@ is open ([section 14](#14-open-after-session-3)).
 - **TILG.** The rising giant shipping line (a Hapag-Lloyd analogue), thriving in peacetime
   with bigger, modern ships. It registers Zan only as a *temporary transshipment hub*, citing
   the unstable orbit to avoid the Provisional's military upkeep: troop stations, customs, a de
-  facto second tax. The excuse turns out to be true. This adds a shape and a motive to the
-  TILG of part 1 §4 and part 2 §1; it doesn't restate their roles.
+  facto second tax. The excuse turns out to be true. **Agreed (Hunter, 2026-10-16, after
+  session 3):** the label is a pretext, and part 1's "proper analysis" wording is updated to
+  match ([section 4](#4-the-system-the-lane-and-the-harbor)). This adds a shape and a motive to
+  the TILG of part 1 §4 and part 2 §1; it doesn't restate their roles.
 - **Standard Freight.** A former giant line from before unification, tied to the vanished
   state the Provisional replaced. Its fleet is older and more militarised, with compliant,
   federally aligned ships. It has been losing to TILG for about a century because it won't
@@ -201,8 +227,10 @@ is open ([section 14](#14-open-after-session-3)).
   the governor has ties to it. The war gives it a brief, bitter comeback. Its ruins are heavy,
   overbuilt, plainly stamped hulls.
 - **The AI hive mind.** It exported He-3 to humans (it doesn't need it as they do) and
-  imported human goods to study humanity in order to conquer it. It started the war. It also
-  gave the moon its ancient name before humans arrived (deep lore, see
+  imported human goods to study humanity in order to conquer it. It probably started the war
+  (**Leaning**, Hunter, 2026-10-16: probably, not certain). It is an outside power, not
+  humanity's own AI rebelling, so "no AI uprising" stays true. It also gave the moon its
+  ancient name before humans arrived (deep lore, see
   [the names](#hierarchy-and-the-name-decay-agreed-session-3)). The session doesn't say
   whether this is the far end of the lane in [section 10](#10-the-far-end-of-the-lane); the
   name and the trade say so, and the reading is flagged in section 14.
@@ -243,29 +271,41 @@ No shield maker is named; "Acme Shield Corporation" is a placeholder.
 ## 7. The political clock: the fall
 
 **Agreed.** Four phases:
-1. **Orphaned.** A war breaks out and the lane stops being valid. Nothing ran out; a political
+1. **Orphaned.** A war breaks out and the lane stops being valid (probably the hive mind's
+   doing: **Leaning**, [section 5](#factions-agreed-session-3)). Nothing ran out; a political
    event elsewhere made the moon pointless, and the harbor's tide stopped. Then the chips stop
    and machines go dark one by one.
-2. **The smuggler moon** (the first fallen empire). Illegal trade becomes one of the only ways
-   anyone deals with the place. Deserters and refugees come because it's remote and unchecked,
-   bringing the off-supply-chain gear of section 5, and the Skimmers Association inherits it.
-   Knowledge isn't lost yet.
+2. **The smuggler moon.** Illegal trade becomes one of the only ways anyone deals with the
+   place. Deserters and refugees come because it's remote and unchecked, bringing the
+   off-supply-chain gear of section 5, and the Skimmers Association inherits it. Knowledge
+   isn't lost yet.
 3. **The paroxysm.** The worst eruptive episode of the transition: a mountain with major
    StarCom installations explodes. Ashfall buries the lowlands, the air is lethal for a time,
-   and **outside comms are cut instantly.** The expertise was at the port, where the blast hit
-   hardest, so the survivors are the scattered, and civilisation restarts in the ashes from
-   the people who understood the machines least. The war reaching the moon and the software
-   layer failing are secondary hints. **Agreed (session 3):** the paroxysm stays canon, and
-   the collapse is read as eruption plus abandonment (era 5 below), not a new catastrophe.
-4. **Bronze Age empires and holdouts.** The second and later civilisations rise and fall on a
-   drying, harsher world, scavenging ruins they can't repair. **The eruption becomes myth:** a
+   and **outside comms are cut instantly.** Some of the expertise was still at the port, where
+   the blast hit hardest, even after the federal order evacuated the port station (era 2
+   below), and that loss came on top of the evacuation (**Agreed**, Hunter, 2026-10-16, after
+   session 3; how many stayed is not said). So the survivors are the scattered, and
+   civilisation restarts in the ashes from the people who understood the machines least. The
+   software layer failing is a secondary hint, and so is the war: **Agreed (Hunter,
+   2026-10-16, after session 3):** it affects Zan through the lane dying, the evacuation, the
+   tithe, deserters and the withdrawal, but no war battles happen on Zan. **Agreed (session
+   3):** the paroxysm stays canon, and the collapse is read as eruption plus abandonment (era 5
+   below), not a new catastrophe.
+4. **Two Bronze Age feudal eras and holdouts.** Two Bronze Age-like eras rise and fall on a
+   drying, harsher world, scavenging ruins they can't repair (**Agreed**, Hunter, 2026-10-16,
+   after session 3: the older "Bronze Age empires" and "second and later civilisations" are
+   refitted to session 3's two eras, era 6 below). **The eruption becomes myth:** a
    mountain of fire that ate the sky and silenced the voices. The blast zone is cursed ground
    with the best salvage, so their superstition is the player's inverted treasure map.
 
-**Agreed (part 2): the fall was purely human.** Geology plus a lack of foresight: people were
-warned the moon was transitional, lived season to season, and planned to get rich and get
-out. The far end of the lane (section 10) had no hand in it. (Session 3 has the hive mind
-starting the war; see [section 14](#14-open-after-session-3).)
+**Agreed (part 2), revised (Hunter, 2026-10-16, after session 3): Zan's collapse was human
+abandonment, not an AI uprising.** Geology plus a lack of foresight: people were warned the
+moon was transitional, lived season to season, and planned to get rich and get out. The war
+that cut the lane was probably the hive mind's doing (**Leaning**; an outside power, section
+5), but the collapse of Zan itself came from human abandonment: the Provisional's withdrawal,
+with no supply chain behind the infrastructure (era 5 below). The older text said the far end
+"had no hand in it" and the fall was "purely human"; the war is the exception now, and whether
+the hive mind is the far end is still ambiguity A ([section 14](#14-open-after-session-3)).
 
 ### The six eras of Zan (Agreed, session 3)
 
@@ -276,9 +316,10 @@ the four phases have no withdrawal, so how the two cuts line up is listed in
 1. **Colonist era.** UG governments and corporations survey Zan, know about the changing orbit
    and the volcanism, and build for eruptions. Port Morgan grows unregistered beyond the
    approved hub. This is the best loot.
-2. **War.** The hive mind attacks and the lane dies. A federal order evacuates the port
-   station. Unregistered residents can dodge the draft, so Zan becomes a relative refuge and a
-   hive of scum and villainy.
+2. **War.** The hive mind attacks (it probably started the war: **Leaning**, Hunter,
+   2026-10-16) and the lane dies. A federal order evacuates the port station. Unregistered
+   residents can dodge the draft, so Zan becomes a relative refuge and a hive of scum and
+   villainy.
 3. **Tithe and mercenary era.** The Provisional tolerates Zan by squeezing it: a war tithe of
    He-3 and refinery output. Zan works with the Provisional as mercenaries and as an
    off-the-books back door, and the Provisional runs a black-site prison on Zan. Tithe visits
@@ -290,17 +331,23 @@ the four phases have no withdrawal, so how the two cuts line up is listed in
    imports, and the overgrown population collapses within a generation or two. **The
    paroxysm stays canon; abandonment is the real killer.**
 6. **Bronze Age eras.** Scattered survivors rebuild through two Bronze Age-like feudal eras
-   (Kenshi-like), dying out over 10-15k years to the changing environment.
+   (Kenshi-like), dying out over `{BRONZE_AGE_SPAN}` to the changing environment.
 
-The war itself stays offstage. It reaches Zan only through who shows up.
+The war itself stays offstage, and **Agreed (Hunter, 2026-10-16, after session 3):** no war
+battles happen on Zan. It still affects the moon, through the lane dying, the evacuation, the
+tithe, deserters and the withdrawal.
 
 ## 8. The ground: strata, the oldest tech and names
 
-**Agreed: history runs backwards in the ground.** Top to bottom: the **surface** (Bronze Age
-mud, scrap and cult works); **the ash band** (the paroxysm, the page break of the whole
-history, and a readable depth cue in storm-cut dunes); and **below**, the buried colonial
-world, sealed by the disaster that ended it. The Salvage PRD's four layers fit, with the
-smuggler moon below the ash.
+**Agreed: history runs backwards in the ground.** Top to bottom, by session 3's strata: Bronze
+Age mud, scrap, forged goods and cult works near the **surface** (the two feudal eras);
+skimmer-era salvage in the middle; and corporate tech deepest, the buried colonial world,
+sealed by the disaster that ended it. **The ash band** is the paroxysm, and a readable depth
+cue in storm-cut dunes. **Agreed (Hunter, 2026-10-16, after session 3):** it no longer has to
+divide the Bronze Age from what lies below, and where it sits among the strata is an open
+item (ambiguity D in [section 14](#14-open-after-session-3)). The Salvage PRD's four layers
+are refitted to the same strata and renamed Surface, Bronze Age, Skimmer era and Colonial; the
+PRD says how.
 
 **Agreed: the oldest tech is StarCom and the Remote Moon Contractor's build-out,** overbuilt
 for these exact conditions while everything later was built for a world that no longer
@@ -313,7 +360,7 @@ that blew, so the player finds shards, relays and hardened modules, never a whol
 - The colonial layer holds sealed fresh water, helium-3 fusion cells (the Power PRD's colonial
   cells, with the freighter core of section 6 at the apex) and sealed seed stores, where the
   oldest seed is the best seed. Seed as Bronze Age money stays lore in item text.
-- Ruins last: halls stand about 5,000 years (the Forge's rule).
+- Ruins last: halls stand longer than `{YEARS_SINCE_FALL}` (the Forge's rule).
 - "Simulation" and "purgatory" can live in the world as belief, never as answer.
 
 ### The surface today (Agreed, session 3)
@@ -324,12 +371,13 @@ that blew, so the player finds shards, relays and hardened modules, never a whol
   and sealed casings. Migrating dunes and storms expose and rebury sites, which is the
   harsher-weather-uncovers-deeper-loot mechanic.
 - **Loot strata.** Corporate tech is deepest and rarest, skimmer-era salvage lies in the
-  middle, and Bronze Age forged goods lie near the surface. How these three line up with the
-  four layers of the Salvage PRD and the ash band is flagged in
-  [section 14](#14-open-after-session-3).
+  middle, and Bronze Age forged goods lie near the surface. **Agreed (Hunter, 2026-10-16,
+  after session 3):** the Salvage PRD's four layers are refitted to these strata (Surface,
+  Bronze Age, Skimmer era, Colonial). The ash band's place among them is open
+  ([section 14](#14-open-after-session-3)).
 - **The clock.** The outgassed atmosphere is slowly leaking to space, and storms last only
-  while air remains. The player arrives tens of thousands of years after the last survivors,
-  with the window closing. Why the player is there is deliberately unknown.
+  while air remains. The player arrives `{YEARS_SINCE_FALL}` after the last survivors, with
+  the window closing. Why the player is there is deliberately unknown.
 
 ### Names: the UG catalog and the moon
 
@@ -358,13 +406,13 @@ early, but writing kept the X for centuries. So an X-spelling is old and officia
 Z-spelling late and colloquial, and like the ash band, the letter tells you the stratum.
 
 **The Xanathivin age.** The middle form names the fallen age between the colonial world and
-the present, the ash-and-scrap centuries of the Bronze Age. Its people named their era with a
+the present, the ash-and-scrap ages of the Bronze Age. Its people named their era with a
 worn-down database entry they took to be ancient and sacred: myth built from forgotten
 logistics. That gives ruins, strata and artifacts a three-part tag, **colonial / Xanathivin /
-surface (Zan)**. **Leaning: how it meets the four layers.** Colonial and the smuggler era sit
-below the ash, Xanathivin is the Bronze Age above it, and Zan is the surface. Part 2 doesn't
-place the smuggler era, and X marks colonial and Xanathivin alike, so only the form separates
-them: a coordinate versus a fused word.
+surface (Zan)**. **Leaning: how it meets the four layers.** Colonial and the smuggler era lie
+below, Xanathivin is the Bronze Age, and Zan is the surface; where the ash band falls among
+them is open. Part 2 doesn't place the smuggler era, and X marks colonial and Xanathivin
+alike, so only the form separates them: a coordinate versus a fused word.
 
 ### Hierarchy and the name decay (Agreed, session 3)
 
@@ -400,7 +448,7 @@ into eccentricity. **AI cults, not an uprising.**
 **Agreed: model provenance as archaeology.** Each model has a lineage and each layer leaves a
 mark, as the hardware does. One example: a base model trained under United Government
 oversight, fine-tuned by a second company, running on an agriculture company's platform, owned
-at the end by whoever acquired that company. Three thousand years on, it has taken over a
+at the end by whoever acquired that company. `{YEARS_SINCE_FALL}` on, it has taken over a
 local StarCom station and broadcasts fragments that, read correctly, are still useful:
 planting timing, storm precursors, which feral strains tolerate ash soil. The cult hears
 scripture and an attentive player hears a planting calendar, so **decoding the oracle is a
@@ -429,10 +477,11 @@ The game never says whether anyone is there.
 **Agreed (session 3): the hive mind as a faction.** Session 3 has an AI hive mind that the
 UG's federal customs port faces. Its trade matches this far end (it exports He-3 and imports
 human goods to study humanity in order to conquer it), and it gave the moon its ancient name.
-It also started the war. The entry is under [Factions](#factions-agreed-session-3). Whether
-it is this far end, and how it squares with "never confront anyone" and "no hand in it", is in
-[section 14](#14-open-after-session-3). The aim to conquer is background for agents and stays
-under rule 1: it is never said in-game.
+It also probably started the war (**Leaning**, Hunter, 2026-10-16: probably, not certain; an
+outside power, not humanity's own AI). The entry is under
+[Factions](#factions-agreed-session-3). Whether it is this far end, and how a war squares with
+"never confront anyone", is ambiguity A in [section 14](#14-open-after-session-3). The aim to
+conquer is background for agents and stays under rule 1: it is never said in-game.
 
 **Rules for agents (Agreed, part 2).**
 1. **The far end's purpose is never stated in-game.** At most it surfaces as a very rare,
@@ -483,6 +532,15 @@ live there.*
   stays.
 - **The collapse as one event (session 3):** the paroxysm stays canon, but the collapse is now
   eruption plus abandonment, with the Provisional's withdrawal behind it (section 7).
+- **Part 2's "the fall was purely human" and the far end's "no hand in it" (Hunter,
+  2026-10-16, after session 3):** the hive mind probably started the war, as an outside
+  power, and Zan's collapse came from human abandonment. There is still no AI uprising
+  (section 7).
+- **"Bronze Age empires," "second and later civilisations" and the Salvage PRD's "second
+  empire / first empire" (Hunter, 2026-10-16, after session 3):** refitted to two Bronze Age
+  feudal eras and session 3's three strata (sections 7 and 8).
+- **Every earlier figure for time since the fall (Hunter, 2026-10-16, after session 3):**
+  replaced by two unset placeholders ([Placeholders](#placeholders)).
 
 ## 13. Open questions for Hunter
 
@@ -495,10 +553,11 @@ questions, and what it left unsettled, are in [section 14](#14-open-after-sessio
 2. **The paroxysm:** its name, as the survivors pass it down, and how fast literacy and
    technical knowledge fell after it.
 3. **The maybe-voice:** which model, and does it stay distinct from the far end's signal?
-4. **The timeline and the war:** dates from founding to arrival (does the 3,000 years run from
-   the paroxysm or the last empire's fall?), and what the war was, between whom. (Session 3
-   says the hive mind started it, but gives no dates, and its timescale clashes with the 3,000
-   years: section 14.)
+4. **The timeline and the war:** dates from founding to arrival (the span from the last
+   survivors to arrival is `{YEARS_SINCE_FALL}` and the Bronze Age eras' is
+   `{BRONZE_AGE_SPAN}`, both unset), and what the war was, between whom. (Session 3 says the
+   hive mind started it and Hunter says probably, as an outside power, but there are no
+   dates.)
 5. **Who sent the player:** ship crew, the company, a colonial vat that grows workers
    (permadeath as lore), or never said. Still deferred; session 3 calls it deliberately
    unknown (section 14).
@@ -543,48 +602,50 @@ questions, and what it left unsettled, are in [section 14](#14-open-after-sessio
 
 ## 14. Open after session 3
 
-*Nothing here is decided. Where session 3 clashes with earlier text and gave no resolution,
-both statements stand until Hunter picks, and neither has been edited to match the other. The
-session's own resolutions (the FTL ruling and the paroxysm) are applied above and not listed
-again.*
+*On 2026-10-16, after session 3, Hunter answered six of its seven conflicts with earlier text.
+Those are resolved below and applied throughout the docs. The seventh, the end state, is still
+open, with a suggestion pending his call. The ambiguities and the session's own open questions
+are as they were, except where an answer narrowed one (A, C and D say so). The session's own
+resolutions (the FTL ruling and the paroxysm) are applied above and not listed again.*
 
-**Conflicts with earlier text**
+**Resolved (Agreed, Hunter, 2026-10-16, after session 3)**
 
-1. **How long ago.** Earlier: "We arrive about 3,000 years on" (section 1; also section 9,
-   "Three thousand years on"; [the vision's](vision.md) setting, "Roughly three thousand years
-   later"; [part 1](lore-session-2026-10-14.md) section 5, "3,000 years later (approx.), the
-   player arrives"). Session 3: "The player arrives tens of thousands of years after the last
-   survivors," and the Bronze Age eras die out "over 10-15k years." It also strains "halls
-   stand about 5,000 years" (section 8). Question 4's "does the 3,000 years run from the
-   paroxysm or the last empire's fall?" is part of this.
-2. **The hive mind and the fall.** Earlier: "the fall was purely human" and "The far end of the
-   lane (section 10) had no hand in it" (section 7; [part 2](lore-session-2026-10-14-part-2.md)
-   section 8, "The paroxysm and the collapse were purely human"), "it will never confront
-   anyone. It plans across eons" (section 10), and "No AI uprising" (section 1). Session 3:
-   the AI hive mind "started the war," and in era 2 "The hive mind attacks; the lane dies."
-   This rests on the hive mind being the far end (ambiguity A). Part 1's phase 1, "a political
-   event elsewhere made the moon pointless," is silent on who.
-3. **Does the war reach the moon.** Earlier: "The war reaching the moon and the software layer
-   failing are secondary hints" (section 7, phase 3; part 1 section 5). Session 3: "the enemy
-   never invades" (era 4) and the war "reaches Zan only through who shows up," with whether it
-   reaches XN-118 as one of its open questions.
-4. **The port at the paroxysm.** Earlier: "The expertise was at the port, where the blast hit
-   hardest" (section 7, phase 3). Session 3: "A federal order evacuates the port station"
-   (era 2), and the Provisional withdraws in era 4. Who was left at the port when the mountain
-   blew is unsettled.
-5. **TILG's reason for the label.** Earlier: "TILG and the IOU saw the heavy volcanism and
-   approved an **intermediate transit hub, explicitly not for settlement**" after "a proper
-   analysis" (section 4; part 1 section 3). Session 3: TILG registers Zan "only as a
-   *temporary transshipment hub*, citing the unstable orbit to avoid the Provisional's military
-   upkeep... The excuse turns out to be true." A real finding or a pretext, and the IOU's part,
-   are both left open.
-6. **Empires, feudal eras and the Salvage PRD's layers.** Earlier: "Bronze Age empires and
-   holdouts. The second and later civilisations rise and fall" (section 7, phase 4); the
-   vision's "Bronze Age empires rebuilt in the ashes"; the [Salvage
-   PRD's](prd/salvage-and-ruins.md) "The second empire is the Bronze Age above it, and the
-   first is the smuggler era below." Session 3: "two Bronze Age-like feudal eras
-   (Kenshi-like)," both after the collapse. The PRD's layer list is game design, so it was not
-   edited.
+1. **How long ago.** Redacted. The earlier docs, session 3, the Bronze Age eras and the ruins
+   rule gave time figures that could not all hold, so no doc states one (the session 3 record
+   is left as written). Two named placeholders stand in, both unset and defined once, in
+   [Placeholders](#placeholders): `{YEARS_SINCE_FALL}` and `{BRONZE_AGE_SPAN}`. "Halls stand
+   longer than `{YEARS_SINCE_FALL}`" replaces the old ruin figure. Which event the span runs
+   from is now set by its definition: the last survivors. Applied in sections 1, 3, 7, 8, 9 and 13 above,
+   [the vision](vision.md), [part 1](lore-session-2026-10-14.md) and [the body
+   research](body-research.md).
+2. **The hive mind and the fall.** The hive mind probably started the war (**Leaning**, not
+   certain). It is an outside power, not humanity's own AI rebelling, so "no AI uprising"
+   stands. The war was its doing, and Zan's collapse came from human abandonment. "Had no hand
+   in it" and "purely human" are rewritten. Applied in sections 1, 5, 7, 10 and 12 and [part
+   2](lore-session-2026-10-14-part-2.md) section 8. Whether the hive mind is the far end is
+   still ambiguity A.
+3. **Does the war reach the moon.** It affects Zan through the lane dying, the evacuation, the
+   tithe, deserters and the withdrawal, but no war battles happen on Zan. The "secondary hint"
+   is rewritten to match. Applied in section 7 (phase 3 and the closing lines of the six eras)
+   and part 1 section 5. It answers session 3's open question 4 for the moon only.
+4. **The port at the paroxysm.** The federal evacuation of the port station stands, and some
+   expertise was still at the port when the blast hit it hardest; that loss came on top of the
+   evacuation. One account, in section 7 (phase 3) and part 1 phase 3. How many stayed is not
+   said, and whether the port station and Port Morgan are one place is still ambiguity C.
+5. **TILG's label.** A pretext to dodge the military upkeep, and it turns out to be true. The
+   older "proper analysis" wording is updated. Applied in sections 4 and 5 and part 1 section
+   3. The IOU's part stays as written (it approved the hub), and whether it knew the label was
+   a pretext is not said.
+6. **Empires, feudal eras and the Salvage PRD's layers.** The older "second empire / first
+   empire" wording is refitted to the agreed eras: corporate tech deepest, skimmer-era
+   salvage in the middle, two Bronze Age feudal eras near the surface. The PRD's four layers
+   are renamed Surface, Bronze Age, Skimmer era and Colonial (its history section says
+   exactly how). The ash band no longer has to divide them, and its place is now an open item
+   (ambiguity D). Applied in sections 1, 7 and 8, [the Salvage PRD](prd/salvage-and-ruins.md),
+   [the vision](vision.md) and parts 1 and 2.
+
+**Still open**
+
 7. **The end state.** Earlier: "the moon itself has an end state, a calm, stable desert once
    its orbit recircularises" (the vision's open questions) and "the moon settles **colder,
    drier and calmer**" (section 3). Session 3: "storms last only while air remains," with
@@ -594,13 +655,23 @@ again.*
    you'd see". The open part is whether the story ends in a calm, stable desert or in the air
    running out.
 
+   **Proposal, pending Hunter's call (not agreed):** a calm, near-airless desert, reached as
+   the orbit settles and the air leaks away; the player arrives late, while storms still turn
+   up the ground. It would hold both sides: the orbit recircularises and the desert goes calm,
+   while the air thins toward nothing and the player's day is the late stretch in which storms
+   still strip the dunes. Until he picks, the vision, [the moon](the-moon.md) and section 3
+   stand as written.
+
 **Ambiguities in the merge**
 
 A. **The hive mind and the far end.** Session 3 says "AI hive mind." Section 10 says "an
    ancient civilisation... that succumbed to or merged into its own collective intelligence,"
    chosen "over a human faction that broke off into a hive mind." The matching trade and the
    moon's name given before humans arrived point to one entity, so they are shown side by side
-   but not merged. Is it an AI, a merged civilisation, or both?
+   but not merged. Is it an AI, a merged civilisation, or both? *Narrowed by resolved item 2
+   (Hunter, 2026-10-16): the hive mind is an outside power, not humanity's own AI. Still open:
+   whether it is the far end, and, if so, how its starting a war squares with section 10's "it
+   will never confront anyone."*
 B. **The Provisional State against part 1's tiers.** Part 1 has a "Regional interstellar
    government... Does the actual regulating day to day" and a "Moon regional government...
    Forms once there are enough permanent residents," and section 4 has the town "never
@@ -610,12 +681,15 @@ B. **The Provisional State against part 1's tiers.** Part 1 has a "Regional inte
    the UG's founding, not the war-era hardening.
 C. **The port station.** Session 3's "port station" (evacuated in era 2), "the approved hub"
    (era 1) and Port Morgan: are the station and the hub one place, on the ground or in orbit,
-   and is Port Morgan evacuated too?
-D. **Skimmer-era and the layers.** Session 3's strata are corporate, skimmer-era, Bronze Age.
-   Elsewhere: the PRD's four layers with the ash band between the second and first empires,
-   and the three-part tag "colonial / Xanathivin / surface (Zan)" (section 8). Which eras
-   "skimmer-era" covers, where the ash band sits among the three strata, and whether the tag
-   changes are not said.
+   and is Port Morgan evacuated too? *Resolved item 4 says "the port" and "the port station"
+   as the sources do, and does not settle this.*
+D. **Skimmer-era and the layers.** *Narrowed by resolved item 6 (Hunter, 2026-10-16): the
+   Salvage PRD's four layers are refitted to session 3's strata (Surface, Bronze Age, Skimmer
+   era, Colonial), so they no longer clash.* Still not said: which eras "skimmer-era" covers
+   (and whether it is part 1's smuggler moon, which E also asks), where the ash band sits
+   among the strata (an open item, since it no longer has to divide the Bronze Age from what
+   lies below), and whether the three-part tag "colonial / Xanathivin / surface (Zan)"
+   (section 8) changes.
 E. **Four phases against six eras.** Part 1's smuggler moon ("Knowledge is not lost yet.
    People still arrive, StarCom still works") has no named counterpart. Eras 2 and 3 and the
    withdrawal in era 4 may or may not be it.
@@ -639,7 +713,8 @@ H. **The name path.** Part 2's Xanathivin and Zanoth against session 3's "skimme
    research's](body-research.md#2-the-system-and-the-route) list of planets, "Maybe a cold
    outer giant."
 3. **Is the hive mind the UG's only neighbour?**
-4. **Does the war ever physically reach XN-118?** See conflict 3.
+4. **Does the war ever physically reach XN-118?** See resolved item 3: no war battles happen
+   on Zan; whether any reached elsewhere in XN-118 is not said.
 5. **The name of the pre-unification state,** whose border territory the Provisional State
    absorbed and to which Standard Freight was tied.
 6. **Why the player is on Zan.** Deliberately unknown; the same as question 5 in section 13.

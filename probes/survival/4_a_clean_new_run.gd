@@ -158,7 +158,7 @@ func _check_kit(kit: Array, run: String) -> void:
 	var hour := world.weather.day.time_of_day(world.time)
 	var due := field.next_change(world.spawn.x, world.spawn.y, world.time, 600.0, 10.0)
 	check(field.raw_storm_at(world.spawn.x, world.spawn.y, world.time) <= 0.0 and due > 120.0 and due <= 480.0
-		and hour >= 0.25 and hour <= 0.46,
+		and hour >= 0.33 and hour <= 0.46,
 		"%s begins on a clear morning (%.2f of the day), the first storm due in %.0f s" % [run, hour, due])
 	var standard := Kit.standard()
 	var pieces := _pieces(kit)
