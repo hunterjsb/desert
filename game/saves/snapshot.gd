@@ -72,6 +72,8 @@ static func problem(data: Dictionary) -> String:
 func begin(data: Dictionary) -> Array[Vector2]:
 	_clear()
 	var world := _world
+	# A resumed run has its own things: no new run's kit is set down in it.
+	world.set_meta(&"resumed", true)
 	world.time = data.time
 	world.set_gravity(data.gravity)
 	world.shift_origin(data.origin - world.origin_chunk)
@@ -130,8 +132,6 @@ func finish(data: Dictionary) -> void:
 		body.sleeping = rec.sleeping
 		if rec.world_froze:
 			body.set_meta(&"frozen_by_world", true)
-		if rec.has("found"):
-			body.set_meta(&"layer", rec.found)
 	var suit := world.player.suit
 	for i in suit.slots.size():
 		if suit.slots[i] != null:
@@ -303,6 +303,9 @@ func _body(body: RigidBody3D, loose: bool) -> Dictionary:
 		out.world_froze = body.get_meta(&"frozen_by_world", false)
 	if body.has_meta(&"layer"):
 		out.found = body.get_meta(&"layer")
+	# Packed in a found case, it unrolls into a line or a cable once taken out.
+	if body.has_meta(&"rolled"):
+		out.rolled = body.get_meta(&"rolled")
 	if body is Device:
 		var filled := []
 		var frame := (body as Device).sockets().filter(func(s: Socket) -> bool: return not s.has_meta(&"socket"))
@@ -328,9 +331,11 @@ func _socket_out(socket: Socket) -> Dictionary:
 		if not inner.is_empty():
 			out.added = inner
 		return out
-	var seated: Variant = socket.get(&"mounted")
-	if seated != null and _known(seated):
-		return {"mounted": _body(seated, false)}
+	if socket.mounted != null and _known(socket.mounted):
+		var seated := socket.mounted
+		# Where it rides on its host now, which needn't be just its seat.
+		return {"mounted": _body(seated, false), "pose": socket.get_parent().global_transform.affine_inverse()
+			* seated.global_transform}
 	return {}
 
 
@@ -398,6 +403,10 @@ func _make(rec: Dictionary) -> RigidBody3D:
 		body = Catalog.stake() if id == &"stake" else (Catalog.part(id) if Catalog.PARTS.has(id) else Catalog.device(id))
 		_made[rec.ref] = body
 	_states.append([body, rec])
+	if rec.has("found"):
+		body.set_meta(&"layer", rec.found)
+	if rec.has("rolled"):
+		body.set_meta(&"rolled", rec.rolled)
 	var device := body as Device
 	if device != null:
 		device.center_of_mass_mode = RigidBody3D.CENTER_OF_MASS_MODE_CUSTOM
@@ -409,7 +418,9 @@ func _make(rec: Dictionary) -> RigidBody3D:
 
 func _socket_in(device: Device, socket: Socket, rec: Dictionary) -> void:
 	if rec.has("mounted"):
-		device.call(&"mount", _make(rec.mounted), socket)
+		var seated := _make(rec.mounted) as Device
+		device.mount(seated, socket)
+		seated.transform = rec.pose
 		return
 	device.fit(_make(rec) as Part, socket)
 	var added := socket.fitted.filter(func(n: Node) -> bool: return n is Socket)
@@ -550,6 +561,7 @@ func _clear() -> void:
 	for body in player.waist.tied.duplicate():
 		player.waist.untie(body)
 	world.ropes.clear()
+	world.remove_meta(&"kit")
 	for child in world.content.get_children():
 		if child != player:
 			world.content.remove_child(child)

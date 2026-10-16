@@ -8,7 +8,8 @@ const STORM := 0.8
 const WIND := 11.0
 ## The camp round where you stand, m east: a shield with its bubble up, a
 ## planter growing inside it, a floating crate outside on two lines to
-## stakes upwind, and a stake beside you with a line to your waist.
+## stakes upwind with a light shield seated on it, and a stake beside you
+## with a line to your waist.
 const SHIELD_AT := 1.5
 const PLANTER_AT := -2.0
 const FLOATER_AT := 10.0
@@ -51,6 +52,13 @@ func load_camp(settle_seconds := 10.0) -> void:
 	floater.global_position = Vector3(at.x, world.height_under(at) + tuning.hover_height, at.z)
 	for id: StringName in [&"hover_tray", &"battery", &"hook", &"hook"]:
 		fit_part(floater, id)
+	# A light shield seated on it, running on the crate's power.
+	var seated := Catalog.device(&"light_shield") as ShieldGenerator
+	for socket in floater.sockets():
+		if socket.kind == seated.kind and socket.is_open():
+			floater.mount(seated, socket)
+			break
+	seated.stand(true)
 	for side: float in [-1.5, 1.5]:
 		var spot: Vector3 = at - downwind * STAKES_UPWIND + downwind.cross(Vector3.UP) * side
 		var stake := Catalog.stake()
@@ -63,7 +71,7 @@ func load_camp(settle_seconds := 10.0) -> void:
 	cell.global_position = player.global_position + Vector3.UP
 	player.hands.hold(cell)
 	await fast_forward(settle_seconds)
-	check(shield.running() and world.weather.felt_storm(floater.global_position) > 0.5
+	check(shield.running() and world.weather.field_storm(floater.global_position) > 0.5
 		and world.weather.felt_storm(planter.global_position) == 0.0, "the camp runs mid-storm")
 
 
@@ -129,9 +137,11 @@ func reading() -> Dictionary:
 	var player := world.player
 	out.places["you"] = _place(player)
 	var n := 0
-	for child in world.content.get_children():
-		var body := child as RigidBody3D
-		if body == null or not body.has_meta(&"catalog"):
+	var bodies: Array = []
+	bodies.append_array(world.devices())
+	bodies.append_array(world.content.get_children().filter(func(b: Node) -> bool: return b is Part))
+	for body: RigidBody3D in bodies:
+		if not body.has_meta(&"catalog"):
 			continue
 		var name := "%s#%d" % [body.get_meta(&"catalog"), n]
 		n += 1
@@ -168,7 +178,8 @@ func _place(node: Node3D) -> Vector3:
 
 
 ## How far apart two traces get: the furthest any thing stands from itself,
-## m, and the most any number differs, by name.
+## m, and the most any number differs, as a share of it past 1 (a bar, a
+## watt-hour, a line's load in newtons alike), by name.
 static func apart(a: Array[Dictionary], b: Array[Dictionary]) -> Dictionary:
 	var out := {"metres": 0.0, "where": "", "number": 0.0, "which": "", "missing": ""}
 	if a.size() != b.size():
@@ -189,7 +200,7 @@ static func apart(a: Array[Dictionary], b: Array[Dictionary]) -> Dictionary:
 			if not b[i].numbers.has(key):
 				out.missing = key
 				continue
-			var d := absf(a[i].numbers[key] - b[i].numbers[key])
+			var d := absf(a[i].numbers[key] - b[i].numbers[key]) / maxf(absf(a[i].numbers[key]), 1.0)
 			if d > out.number:
 				out.number = d
 				out.which = "%s at %d s" % [key, i + 1]

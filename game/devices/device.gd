@@ -397,6 +397,11 @@ func _middle(nodes: Array[Node3D]) -> Vector3:
 ## A tray holds it a set height over the sand and upright, like the rope
 ## look-test's floater; sideways, the wind and its lines decide.
 func _physics_process(_delta: float) -> void:
+	# What's seated rides exactly on its seat: a frozen body under a moving one
+	# is left a tick behind each tick, and on a floating crate that adds up.
+	for socket in sockets():
+		if socket.mounted != null:
+			socket.mounted.transform = socket.transform * socket.mounted.seat()
 	if freeze or world == null or not _hovering:
 		return
 	var tuning := world.tuning

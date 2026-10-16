@@ -81,7 +81,8 @@ func _equip(at: World) -> void:
 	while is_instance_valid(at) and not at.is_queued_for_deletion() \
 			and not at.terrain.is_settled_around(at.spawn.x, at.spawn.y):
 		await get_tree().physics_frame
-	if is_instance_valid(at) and not at.is_queued_for_deletion():
+	# A resumed run has its own things already.
+	if is_instance_valid(at) and not at.is_queued_for_deletion() and not at.has_meta(&"resumed"):
 		# Kept on the world, so a dev scenario can clear it for its own.
 		at.set_meta(&"kit", kit(at))
 
