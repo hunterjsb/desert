@@ -10,11 +10,8 @@ extends Node3D
 
 const STREAK := preload("res://game/weather/streak.gdshader")
 const PUFF := preload("res://game/weather/puff.gdshader")
-## The weather's sounds play through this bus, whose low-pass muffles them
-## inside a bubble.
-const BUS := &"Weather"
 ## Muffled: what of the sound gets through a shell, its loudness and its top.
-const MUFFLED_GAIN := 0.4
+const MUFFLED_GAIN := 0.3
 const MUFFLED_HZ := 600.0
 const OPEN_HZ := 20000.0
 
@@ -38,9 +35,10 @@ func _ready() -> void:
 	# Streaks stretch along their flight; puffs face the camera in the shader.
 	(_streamers.process_material as ParticleProcessMaterial).particle_flag_align_y = true
 	(_grit.process_material as ParticleProcessMaterial).particle_flag_align_y = true
-	_muffle = _weather_bus()
-	_wind_sound = _loop(preload("res://assets/audio/wind.ogg"))
-	_roar = _loop(preload("res://assets/audio/storm.ogg"))
+	# The Weather bus's low-pass, from the bus layout.
+	_muffle = AudioServer.get_bus_effect(AudioServer.get_bus_index(Sounds.WEATHER), 0) as AudioEffectLowPassFilter
+	_wind_sound = _loop(Sounds.WIND)
+	_roar = _loop(Sounds.STORM)
 
 
 func _exit_tree() -> void:
@@ -110,20 +108,6 @@ func carve(holes: PackedVector4Array) -> void:
 		look.set_shader_parameter("shelter_count", holes.size())
 
 
-## The weather's own bus, made once, with its muffling low-pass.
-static func _weather_bus() -> AudioEffectLowPassFilter:
-	var index := AudioServer.get_bus_index(BUS)
-	if index == -1:
-		AudioServer.add_bus()
-		index = AudioServer.bus_count - 1
-		AudioServer.set_bus_name(index, BUS)
-		AudioServer.set_bus_send(index, &"Master")
-		var low_pass := AudioEffectLowPassFilter.new()
-		low_pass.cutoff_hz = OPEN_HZ
-		AudioServer.add_bus_effect(index, low_pass)
-	return AudioServer.get_bus_effect(index, 0) as AudioEffectLowPassFilter
-
-
 func _ratio(system: GPUParticles3D, ratio: float) -> void:
 	if absf(system.amount_ratio - ratio) > 0.01 or (ratio == 0.0) != (system.amount_ratio == 0.0):
 		system.amount_ratio = ratio
@@ -179,7 +163,7 @@ func _loop(sound: AudioStreamOggVorbis) -> AudioStreamPlayer:
 	sound.loop = true
 	var player := AudioStreamPlayer.new()
 	player.stream = sound
-	player.bus = BUS
+	player.bus = Sounds.WEATHER
 	player.volume_db = -80.0
 	player.autoplay = true
 	add_child(player)

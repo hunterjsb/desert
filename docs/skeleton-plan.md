@@ -36,7 +36,10 @@ skims the dunes at 72 km/h on its own battery, carves and drifts, floats off cre
 tows nothing, and the camp-range warnings, a chime and a line of text timed by your
 speed, 20 s and then 8 s before you'd lose the camp. "Ride" in the scenario menu lays a
 charged board at your feet by a small camp. The Movement PRD's probes keep their
-numbers, 1 to 7; the on-foot probes built with Stage 5 are 8 to 14.
+numbers, 1 to 7; the on-foot probes built with Stage 5 are 8 to 14. Stage 11's sound
+pass was pulled forward the same day: softer fitting and a softer suit, new sounds for
+most actions, World and UI buses, and the whole mix levelled (Radio, sound &
+atmosphere, "As built"); the radio waits.
 
 ## The loop we're building toward
 
