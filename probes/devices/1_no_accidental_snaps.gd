@@ -3,7 +3,7 @@ extends HandsProbe
 ## sockets, rested in them, dropped on, thrown at and dragged against devices
 ## thousands of times, and let go through the hands while the tug is pulling
 ## them in. Nothing fits. Then, so this can't pass by nothing ever fitting, a
-## held and aimed part fits through the hands: a battery and a seedling by aim
+## held and aimed part fits through the hands: a battery and a carrot by aim
 ## alone, and a hover tray slid under a resting planter with E.
 
 const ROUNDS := 30

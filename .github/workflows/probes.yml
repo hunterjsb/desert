@@ -16,14 +16,14 @@ jobs:
           - probes/foundation probes/world probes/dev
           - probes/weather probes/salvage
           - probes/devices
-          - probes/power
+          - probes/power probes/farming
           - probes/rope
           - the rest
     name: ${{ matrix.group }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
-      REST_EXCEPT: probes/foundation probes/world probes/dev probes/weather probes/salvage probes/devices probes/power probes/rope
+      REST_EXCEPT: probes/foundation probes/world probes/dev probes/weather probes/salvage probes/devices probes/power probes/farming probes/rope
     steps:
       - uses: actions/checkout@v4
 

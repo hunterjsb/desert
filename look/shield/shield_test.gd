@@ -28,7 +28,7 @@ const AHEAD := 2.0
 const CAMP := [
 	[&"crate_frame", -2.2, 1.0, 15.0, [&"battery", &"hook", &"hook"]],
 	[&"crate_frame", -2.9, 2.6, -20.0, [&"battery", &"hover_tray", &"hook"]],
-	[&"planter", 2.4, 0.6, -10.0, [&"battery", &"seedling", &"seedling", &"seedling", &"sapling"]],
+	[&"planter", 2.4, 0.6, -10.0, [&"battery", &"carrot", &"carrot", &"carrot", &"fungus"]],
 	[&"charger", 1.4, -1.6, 30.0, [&"battery", &"solar_panel"]],
 ]
 ## Capture mode's shots: scenario kind, front distance, metres the camera

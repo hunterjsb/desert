@@ -17,7 +17,13 @@ real world, Hunter picked Ridges, and they're the game's ground now, with the sa
 shader he chose to keep. Stage 8, salvage and ruins, was built the same day and passed
 on 2026-10-16 (strip and fit, the ruin's walk-through and finds outside all "works"): finds half-buried in the dunes from the seed and how hard the
 weather has been, a deep layer harder weather uncovers more often, one walk-in ruin
-pressed into the ground's one function, and "go looking" in the scenario menu.
+pressed into the ground's one function, and "go looking" in the scenario menu. Stage 9,
+farming, was built on 2026-10-16 and is waiting at the gate too: the hover planter
+with its water tank, carrots that want the clear day and fungus that wants the
+storm's dark, growing by felt light and temperature and wilting past their limits,
+picking by hand, the harvester mod with its replant split, food dropped onto you, and
+"farm" in the scenario menu. Probe 3 was cheap with a test-only thermal shield, so it's
+built too.
 
 ## The loop we're building toward
 

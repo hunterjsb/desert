@@ -11,7 +11,7 @@ extends HandsProbe
 
 ## Jolt lets contacts sink 2 cm; a settled corner past this is in the sand.
 const TOO_DEEP := 0.06
-const PARTS: Array[StringName] = [&"battery", &"big_battery", &"solar_panel", &"plug", &"hook", &"seedling",
+const PARTS: Array[StringName] = [&"battery", &"big_battery", &"solar_panel", &"plug", &"hook", &"carrot",
 	&"lamp", &"hover_tray"]
 
 var _deepest := 0.0
