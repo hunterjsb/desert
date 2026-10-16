@@ -77,8 +77,9 @@ safe at any moment, mid-storm included (Profile & saves).
 - **The UI root** (`game/ui/ui_root.gd`) owns focus and the back action. Back closes a
   menu over a menu, then a panel of the game's (the inventory), and in a run with
   nothing open brings up the system menu. While a menu is up nothing pressed reaches
-  the game behind it and the mouse is free; closing the last one in a run captures it
-  again. A gamepad's face buttons confirm and go back, and its D-pad moves the selection.
+  the game behind it, nothing held acts either (move, sprint, crouch and jump wait, on
+  foot and on a board, as they do while the screen fades), and the mouse is free;
+  closing the last one in a run captures it again. A gamepad's face buttons confirm and go back, and its D-pad moves the selection.
 - **The main menu** is the game's own scene (`game/main.tscn`): the real world on a seed
   of its own, from a fixed camera on the highest sand near its spawn, facing upwind
   where the weather comes from. No one stands there and nothing of yours is in it; only
@@ -102,7 +103,7 @@ safe at any moment, mid-storm included (Profile & saves).
   keeps you in the run and asks.
 - The dev scenarios (`-- --scenario=<key>`) still start straight into a run.
 - `look/menus` shoots the main menu and the system menu, to judge by eye.
-- Probes 1–5 pass, each proven against a broken build. Probes 3 and 4 use the real
+- Probes 1–6 pass, each proven against a broken build. Probes 3 and 4 use the real
   saves, kept in each probe's own folder; probe 3 is the whole trip: New game, Save &
   quit out on the sand, Resume, and you're back where you were.
 
@@ -125,6 +126,8 @@ safe at any moment, mid-storm included (Profile & saves).
 4. **New game asks over a save,** and declining leaves the save untouched.
 5. **One theme.** Every UI control in the game, menus and gameplay, draws from the one
    theme.
+6. **Held keys wait.** With the system menu open and the move action held you stay put,
+   on foot and on a board; closed, the same hold walks you and rides you.
 
 ## Out of scope
 

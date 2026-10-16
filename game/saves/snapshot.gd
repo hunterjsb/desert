@@ -26,6 +26,9 @@ static var _kept := [
 const PLAYER := ["stamina", "flying", "mode", "crouched", "own", "slope", "wind", "low", "sink", "_sliding",
 	"_jumped", "_since_ground", "_touchdown", "_jump_buffer", "_jump_was", "_jump_queued", "_crouch_was",
 	"_on_sand", "_left"]
+## A ride's own state, besides its running means of the sand.
+const RIDE := ["velocity", "ahead", "y", "vy", "gap", "last_step", "bank", "pitch", "roll", "bottomed", "hardest",
+	"ticks", "waited", "_ground", "_came", "_hopping"]
 const VITALS := ["health", "hunger", "thirst", "dead", "harms", "taken", "drunk", "eaten", "_next"]
 const ROPE := ["length", "kg_per_m", "breaking", "frequency", "damping", "max_stretch", "tension", "sustained",
 	"spring_impulse", "stop_impulse"]
@@ -140,6 +143,10 @@ func finish(data: Dictionary) -> void:
 		suit.slots[i] = _make(rec) as Part if rec != null else null
 	for pair in _states:
 		_set_state(pair[0], pair[1])
+	# Back on the board you rode, going as you were.
+	var rode: Dictionary = data.get("ride", {})
+	if not rode.is_empty() and _made.has(rode.board) and world.player.get_on(_made[rode.board]):
+		_ride_in(world.player.ride, rode)
 	# The lines last: their ends are all where they belong now.
 	var strands: Array[RopeStrand] = []
 	for rec: Dictionary in data.strands:
@@ -245,6 +252,19 @@ func _take() -> Dictionary:
 				rec.freeze = hands._source_was.freeze
 				rec.v = hands._source_was.velocity
 				rec.w = hands._source_was.spin
+	# Ridden, the board is out of the physics world under your feet. It's kept
+	# as stepping off would leave it, a body going your way, so one that can't
+	# carry you on resume comes down on the sand.
+	var ride := player.ride
+	if ride != null and _refs.has(player.board):
+		for rec: Dictionary in things:
+			if rec.ref == _refs[player.board]:
+				rec.at = _transform_out(ride.board_pose(false))
+				rec.v = Vector3(ride.velocity.x, ride.vy, ride.velocity.y)
+				rec.w = Vector3.ZERO
+				rec.freeze = false
+				rec.sleeping = false
+		data.ride = _ride_out(ride)
 	data.things = things
 	data.order = order
 	data.slots = player.suit.slots.map(func(p: Part) -> Variant: return _body(p, false) if _known(p) else null)
@@ -278,6 +298,28 @@ func _take() -> Dictionary:
 			"heading": grasp._heading, "slipping": grasp._slipping}
 	data.finds = world.salvage.memories()
 	return data
+
+
+## The ride as it stands, its running means too, so its hover goes on
+## exactly as it would have.
+func _ride_out(ride: Ride) -> Dictionary:
+	var out := {"board": _refs[ride.board]}
+	for key: String in RIDE:
+		out[key] = ride.get(key)
+	for key: String in ["_under", "_around"]:
+		var mean: Ride.PathMean = ride.get(key)
+		out[key] = [PackedFloat64Array(mean._at), PackedFloat64Array(mean._sand), mean._area]
+	return out
+
+
+func _ride_in(ride: Ride, rec: Dictionary) -> void:
+	for key: String in RIDE:
+		ride.set(key, rec[key])
+	for key: String in ["_under", "_around"]:
+		var mean: Ride.PathMean = ride.get(key)
+		mean._at.assign(Array(rec[key][0]))
+		mean._sand.assign(Array(rec[key][1]))
+		mean._area = rec[key][2]
 
 
 func _known(body: Variant) -> bool:
