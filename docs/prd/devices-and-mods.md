@@ -32,8 +32,10 @@ Batteries are the exception and carry no stamp. See [the lore research](../lore-
 
 ## How you handle things
 
-Three actions cover everything, with none for particular features (decided 2026-10-15).
-A new device or tool answers these; it never adds an action of its own. The docs name
+Four actions cover handling, with none for particular features: take, use and throw
+(decided 2026-10-15), and rotate (Hunter, 2026-10-16). A new device or tool answers these;
+it never adds an action of its own. (Getting on and off the hoverboard is movement, with
+its own ride action.) The docs name
 actions, never keys: keys are only defaults, set in `game/core/controls.gd` and listed
 in the game. On screen, a key is always read from the live bindings and coloured to stand
 out, never written into the text (Hunter, 2026-10-16), even before players can remap.
@@ -152,6 +154,25 @@ it, take hold of it, and let go.
   and draw it in one colour. Rebinding an action changes all of them, and a mouse button
   is named as one, like "click". The look-tests' own keys aren't actions, so they're
   coloured but written as they are.
+- **Rotate** (2026-10-16) is held down. While it's held with something in your hands, or
+  something you have hold of, the mouse turns that instead of your view, and your view
+  comes back the moment you let go. The near side follows the mouse: across turns it
+  about the vertical, and up or down tips it about your view's right, so pushing up
+  rolls the face toward you up over the top. A held part or shield turns in your hands,
+  and you put it down the way it now faces. Something you have hold of is turned as
+  hard as your strength allows: a crate or planter on its side rolls back upright and
+  stands within a degree of level once let go, a 40 kg crate still rolls, and a 100 kg
+  one doesn't. A thing lying with its top to one side takes a turn across, then one
+  up. Nothing rights itself, beyond a running tray keeping its device level.
+- **Take-hold keeps its tilt and follows your look up and down** (2026-10-16). What you
+  have hold of keeps the tilt it had when you took it, not only its heading, and its
+  turning is held firm each tick, since on the sand it turns against friction and tips
+  about an edge, lifting its own weight. It rises and sinks as you look, at the reach
+  you took it at, but never higher than a little above your eyes. Your hands only lift
+  and never press down, so its own weight lets it down, and dragging is no harder for
+  looking at your feet. Looking up 30° lifts a bare 15 kg crate 0.76 m, about 20 cm
+  short of where you look, since nothing holds its whole weight up. A 60 kg one, more
+  than your strength lifts, stays on the sand.
 
 ## Where parts come from, and how they wear
 
@@ -234,6 +255,11 @@ hook. That's how found mods expand a device.
     something in the way.
 11. **Keys come from the bindings.** Rebind an action and every key shown for it
     follows, a mouse button too, and the new key works.
+12. **Turned by hand.** Holding rotate, the mouse turns what you hold and not your view;
+    let go, it looks again. A crate and a planter on their sides, taken hold of, roll
+    back upright and stand once let go. A shield lying on its side is turned in your
+    hands and set down standing. Having hold of a crate, looking up lifts it, unless
+    it's too heavy for your strength.
 
 ## Out of scope
 

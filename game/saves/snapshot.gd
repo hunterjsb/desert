@@ -203,12 +203,7 @@ func finish(data: Dictionary) -> void:
 		hands._ticked = body.global_transform
 	var grasped: Variant = data.grasp.get("body")
 	if grasped != null and _made.has(grasped):
-		var grasp := hands.grasp
-		grasp.body = _made[grasped]
-		grasp._beside = data.grasp.beside
-		grasp._turned = data.grasp.turned
-		grasp._heading = data.grasp.heading
-		grasp._slipping = data.grasp.slipping
+		hands.grasp.recall(_made[grasped], data.grasp)
 
 
 func _take() -> Dictionary:
@@ -294,8 +289,8 @@ func _take() -> Dictionary:
 	var grasp := hands.grasp
 	data.grasp = {}
 	if is_instance_valid(grasp.body) and _known(grasp.body):
-		data.grasp = {"body": _ref(grasp.body), "beside": grasp._beside, "turned": grasp._turned,
-			"heading": grasp._heading, "slipping": grasp._slipping}
+		data.grasp = grasp.memory()
+		data.grasp.body = _ref(grasp.body)
 	data.finds = world.salvage.memories()
 	return data
 
@@ -345,9 +340,12 @@ func _body(body: RigidBody3D, loose: bool) -> Dictionary:
 		out.world_froze = body.get_meta(&"frozen_by_world", false)
 	if body.has_meta(&"layer"):
 		out.found = body.get_meta(&"layer")
-	# Packed in a found case, it unrolls into a line or a cable once taken out.
+	# Found or stowed, it unrolls into a line or a cable once taken out, a
+	# stowed line as long as it was.
 	if body.has_meta(&"rolled"):
 		out.rolled = body.get_meta(&"rolled")
+	if body.has_meta(&"rolled_m"):
+		out.rolled_m = body.get_meta(&"rolled_m")
 	if body is Device:
 		var filled := []
 		var frame := (body as Device).sockets().filter(func(s: Socket) -> bool: return not s.has_meta(&"socket"))
@@ -447,6 +445,8 @@ func _make(rec: Dictionary) -> RigidBody3D:
 		Finds.mark(body, rec.found)
 	if rec.has("rolled"):
 		body.set_meta(&"rolled", rec.rolled)
+	if rec.has("rolled_m"):
+		body.set_meta(&"rolled_m", rec.rolled_m)
 	var device := body as Device
 	if device != null:
 		device.center_of_mass_mode = RigidBody3D.CENTER_OF_MASS_MODE_CUSTOM

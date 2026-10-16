@@ -116,6 +116,8 @@ Menus & UI calls them from Save & quit, Resume, New game and Options.
 6. **Saved mid-ride.** Resumed, you're back on the board at the saved speed and ride on
    where the run never saved went; with the ride dropped from the save, the board comes
    down on the sand instead of hanging in the air.
+7. **A coil in a slot.** Saved with the kit's 6 m coil and a cable in your slots and
+   resumed, the coil comes out a working 6 m line and the cable whole.
 
 ## Out of scope
 

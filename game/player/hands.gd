@@ -215,6 +215,27 @@ func interact() -> bool:
 	return used or _player.waist.take_from_hands()
 
 
+## Rotate held down: the mouse turns what you hold, or have hold of, instead
+## of your view, `by` rad along and up the screen, its near side following the
+## mouse: across turns it about the vertical, up and down about your view's
+## right. Says whether it did.
+func turn(by: Vector2) -> bool:
+	if not rotating():
+		return false
+	var turned := Basis(Vector3.UP, by.x) * Basis(Vector3.RIGHT, by.y)
+	if grasp.body != null:
+		grasp.turn(turned)
+	else:
+		_carry = (turned * _carry).orthonormalized()
+	return true
+
+
+## Whether rotate has the mouse: held down, with something in your hands, and
+## the mouse looking rather than free to click.
+func rotating() -> bool:
+	return (held != null or grasp.body != null) and not Controls.mouse_free and Controls.held(&"hands_rotate")
+
+
 ## A clunk, for something put home by hand.
 func clunk() -> void:
 	_play(CLUNKS[_clunks % CLUNKS.size()], CLUNK_DB)
