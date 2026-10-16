@@ -69,7 +69,7 @@ func _drawn_end_gap(held: Dictionary) -> float:
 	var cable: StrongCable = held.cable
 	if cable.rope == null or world.player.hands.held != held.plug:
 		return 0.0
-	var points := cable.rope.strand.points
+	var points := cable.rope.strand.shown()
 	var tip: Vector3 = held.plug.global_transform * StrongCable.END_AT
 	return minf(points[0].distance_to(tip), points[points.size() - 1].distance_to(tip))
 

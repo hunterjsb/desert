@@ -55,6 +55,9 @@ var _bulge := PackedFloat32Array()
 var _near := PackedByteArray()
 var _rest: float
 var _phase: float
+## How long it has been stepped, s: its stir wanders with its own age, never
+## the world's, so it stirs alike however long the world took to load.
+var _age := 0.0
 var _look: ShaderMaterial
 ## Hanging exactly as its rope says at the last tick, and how.
 var _hanging := false
@@ -108,6 +111,7 @@ func cut(at: int) -> RopeStrand:
 	tail.points = points.slice(at)
 	tail._velocity = _velocity.slice(at)
 	tail._phase = _phase + 1.0
+	tail._age = _age
 	tail.length = _rest * (tail.points.size() - 1)
 	tail._fit()
 	points = points.slice(0, at + 1)
@@ -118,16 +122,6 @@ func cut(at: int) -> RopeStrand:
 	return tail
 
 
-## Draws an end exactly at a place this frame, ahead of the next tick: a held
-## plug moves with your view between ticks, and the strand must meet it.
-func pin(end: Node3D, at: Vector3) -> void:
-	var i := 0 if a == end else (points.size() - 1 if b == end else -1)
-	if i == -1:
-		return
-	points[i] = at
-	_show()
-
-
 ## A line paying out: longer or shorter, with the same points.
 func set_length(to: float) -> void:
 	length = to
@@ -136,17 +130,20 @@ func set_length(to: float) -> void:
 
 
 ## Draws both ends exactly at their rings this frame; a line hanging as its
-## rope says is hung again between them.
+## rope says is hung again between them. Drawn only: the next tick steps on
+## from its own points, since how many frames fall between ticks depends on
+## the machine, and a snap leaves its loose ends where those points are.
 func pin_ends(at_a: Vector3, at_b: Vector3) -> void:
-	var last := points.size() - 1
-	points[0] = at_a
-	points[last] = at_b
+	var shown := points.duplicate()
+	var last := shown.size() - 1
+	shown[0] = at_a
+	shown[last] = at_b
 	if _hanging:
 		for i in range(1, last):
 			var p := _hung(at_a, at_b, _bow, float(i) / last)
 			p.y = maxf(p.y, _floor(i, p))
-			points[i] = p
-	_show()
+			shown[i] = p
+	_upload(shown, _bulges(shown))
 
 
 func let_go(end: Node3D) -> void:
@@ -163,6 +160,12 @@ func shift(by: Vector3) -> void:
 		_sampled[i] += Vector2(by.x, by.z)
 
 
+## What's drawn now: the tick's points, with the ends wherever a frame since
+## has pinned them.
+func shown() -> PackedVector3Array:
+	return _look.get_shader_parameter("points")
+
+
 ## Arc length as drawn.
 func drawn_length() -> float:
 	var total := 0.0
@@ -171,9 +174,11 @@ func drawn_length() -> float:
 	return total
 
 
-## One physics tick: wind is the felt wind at the strand, t the run time, sag
-## how far its rope says its middle hangs (NAN: by its length alone).
-func step(h: float, wind: Vector3, t: float, sag := NAN) -> void:
+## One physics tick: wind is the felt wind at the strand, sag how far its rope
+## says its middle hangs (NAN: by its length alone).
+func step(h: float, wind: Vector3, sag := NAN) -> void:
+	_age += h
+	var t := _age
 	var n := points.size()
 	var last := n - 1
 	var held_a := a != null
@@ -271,34 +276,51 @@ func step(h: float, wind: Vector3, t: float, sag := NAN) -> void:
 ## Where the drawn tube's centre runs, t of the way along link i: the curve
 ## rope.gdshader draws through the points.
 func drawn(i: int, t: float) -> Vector3:
-	var n := points.size()
-	var p0 := points[maxi(i - 1, 0)]
-	var p1 := points[i]
-	var p2 := points[i + 1]
-	var p3 := points[mini(i + 2, n - 1)]
+	return _curve(points, i, t, _bulge[i])
+
+
+static func _curve(through: PackedVector3Array, i: int, t: float, bulge: float) -> Vector3:
+	var n := through.size()
+	var p0 := through[maxi(i - 1, 0)]
+	var p1 := through[i]
+	var p2 := through[i + 1]
+	var p3 := through[mini(i + 2, n - 1)]
 	var a := 2.0 * p0 - 5.0 * p1 + 4.0 * p2 - p3
 	var b := -p0 + 3.0 * p1 - 3.0 * p2 + p3
 	var p := 0.5 * (2.0 * p1 + (p2 - p0) * t + a * t * t + b * t * t * t)
-	p.y = maxf(p.y, lerpf(p1.y, p2.y, t) + _bulge[i] * 4.0 * t * (1.0 - t))
+	p.y = maxf(p.y, lerpf(p1.y, p2.y, t) + bulge * 4.0 * t * (1.0 - t))
 	return p
 
 
-## Hands the points to the shader, with how far each link lying near the sand
-## must bow up so every ring the shader draws clears it: the sand is read under
-## each ring, since a crest's shape between two points can't be told from them.
+## Draws the tick's points.
 func _show() -> void:
-	for i in points.size() - 1:
-		_bulge[i] = 0.0
+	_bulge = _bulges(points)
+	_upload(points, _bulge)
+
+
+## How far each link lying near the sand must bow up so every ring the shader
+## draws through these points clears it: the sand is read under each ring,
+## since a crest's shape between two points can't be told from them.
+func _bulges(through: PackedVector3Array) -> PackedFloat32Array:
+	var bulge := PackedFloat32Array()
+	bulge.resize(through.size() - 1)
+	bulge.fill(0.0)
+	for i in through.size() - 1:
 		if _near[i] == 0 or _near[i + 1] == 0:
 			continue
 		var bow := 0.0
 		for r in range(1, RINGS_PER_LINK):
 			var t := float(r) / RINGS_PER_LINK
-			var short := world.height_under(drawn(i, t)) + RADIUS - lerpf(points[i].y, points[i + 1].y, t)
+			var short := world.height_under(_curve(through, i, t, 0.0)) + RADIUS \
+				- lerpf(through[i].y, through[i + 1].y, t)
 			bow = maxf(bow, short / (4.0 * t * (1.0 - t)))
-		_bulge[i] = bow
-	_look.set_shader_parameter("points", points)
-	_look.set_shader_parameter("bulge", _bulge)
+		bulge[i] = bow
+	return bulge
+
+
+func _upload(through: PackedVector3Array, bulge: PackedFloat32Array) -> void:
+	_look.set_shader_parameter("points", through)
+	_look.set_shader_parameter("bulge", bulge)
 
 
 ## A point along a line hanging between two ends: the shallow catenary, a parabola.

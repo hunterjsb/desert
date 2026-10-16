@@ -41,7 +41,6 @@ var _tick := 0
 var _pulls := {}
 var _drag := Vector3.ZERO
 var _sags := {}
-var _clock := 0.0
 var _crack: AudioStreamWAV
 
 
@@ -355,7 +354,6 @@ func _bear(h: float) -> void:
 
 
 func _draw(h: float) -> void:
-	_clock += h
 	_sags.clear()
 	for rope in ropes:
 		_sags[rope.strand] = rope.sag
@@ -372,7 +370,7 @@ func _draw(h: float) -> void:
 			strands.erase(strand)
 			strand.queue_free()
 			continue
-		strand.step(h, world.weather.felt_wind(middle), _clock, _sags.get(strand, NAN))
+		strand.step(h, world.weather.felt_wind(middle), _sags.get(strand, NAN))
 	for rope in ropes:
 		if rope.creak == null:
 			continue
