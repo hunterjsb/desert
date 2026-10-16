@@ -6,8 +6,9 @@ extends Node3D
 ## length; wherever its second end goes, the line's length is set there. Any
 ## loose end can be taken up again. Take up an end of a line lying loose at
 ## both ends and it rolls back up, ready to lay again; drop its first end
-## before it's on anything and the coil goes down whole. Snapped, it parts into
-## two lines, each with a loose end where it broke.
+## before it's on anything and the coil goes down whole, or into a slot if
+## that's where you put it. Snapped, it parts into two lines, each with a
+## loose end where it broke.
 
 enum State { COILED, FIRST, PAYING, LAID }
 
@@ -73,6 +74,38 @@ func readout() -> Dictionary:
 	if state == State.FIRST or state == State.PAYING:
 		out["paying"] = full
 	return out
+
+
+## Whether it rolls up for a slot: held but not laid, its first end in your
+## hand and the rest on your belt, with nothing letting go of it there.
+func stowable() -> bool:
+	var waist := _world.player.waist
+	return state == State.FIRST and _world.player.hands.held == ends[_first] \
+		and waist.holds(ends[1 - _first]) and waist.untying < 0.0
+
+
+## Rolled back up for a slot: the line goes, and a coil off the tree stands
+## for it, as a found one does, keeping its length to lay again.
+func roll() -> Part:
+	_world.ropes.untie(rope)
+	rope = null
+	for end in ends:
+		_world.player.waist.untie(end)
+		_gone(end)
+	ends.clear()
+	state = State.COILED
+	_gone(self)
+	var rolled := Catalog.part(&"coil")
+	rolled.set_meta(&"rolled", &"coil")
+	rolled.set_meta(&"rolled_m", full)
+	return rolled
+
+
+## Out of the world at once, so nothing meets it before it's freed.
+static func _gone(node: Node) -> void:
+	if node.get_parent() != null:
+		node.get_parent().remove_child(node)
+	node.queue_free()
 
 
 func _physics_process(_delta: float) -> void:

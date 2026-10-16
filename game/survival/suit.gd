@@ -6,8 +6,9 @@ extends Node
 ## feeds you from the water and food in them. The inventory action opens a
 ## small view of the slots and your waist and frees the mouse to click them:
 ## a slot with something in it gives it to your empty hands, an empty one
-## takes what you hold, and a full one swaps with it. Closing it captures the
-## mouse again, to look.
+## takes what you hold, and a full one swaps with it. Rope and wire go in
+## rolled up, as they're found, and unroll in your hands. Closing it captures
+## the mouse again, to look.
 
 ## Built in and free, so nothing ever drains them.
 const BUILT_IN := "air, radiation"
@@ -68,11 +69,16 @@ func restock() -> void:
 		slots[i] = Catalog.part(kit[i]) if i < kit.size() else null
 
 
-## Whether a slot can take it: a part with nothing fastened to it, since a
-## line or a wire would lose its end.
+## Whether a slot can take it: a part with nothing fastened to it, or rope
+## or wire that rolls up whole: a line held but not laid, a cable plugged
+## into nothing. Laid or plugged in, it would lose its end.
 func fits(body: Object) -> bool:
 	var part := body as Part
-	return part != null and not part.has_meta(&"line") and part.kind != &"port"
+	if part == null:
+		return false
+	if part.has_meta(&"line"):
+		return (part.get_meta(&"line") as Line).stowable()
+	return part.kind != &"port" or part.has_meta(&"rolled") or _loose_cable(part) != null
 
 
 ## Of the water or the food in your slots, the least full that isn't empty,
@@ -133,9 +139,7 @@ func click(at: int) -> bool:
 	if hands.held != null:
 		if hands.phase != Hands.Phase.HELD or not fits(hands.held):
 			return false
-		var part := hands.stow() as Part
-		part.get_parent().remove_child(part)
-		slots[at] = part
+		slots[at] = _rolled(hands.stow() as Part)
 		hands.clunk()
 	elif out != null:
 		slots[at] = null
@@ -144,8 +148,46 @@ func click(at: int) -> bool:
 	if out != null:
 		_player.world.content.add_child(out)
 		out.global_transform = _player.camera.global_transform.translated_local(Vector3(0.0, -0.2, -0.5))
+		Finds.unroll(_player.world, out)
 		hands.hold(out)
 	return true
+
+
+## What goes in the slot, off the tree: rope and wire as one rolled-up body,
+## anything else as it is.
+func _rolled(part: Part) -> Part:
+	if part.has_meta(&"line"):
+		return (part.get_meta(&"line") as Line).roll()
+	var cable := _loose_cable(part) if part.kind == &"port" else null
+	if cable == null:
+		part.get_parent().remove_child(part)
+		return part
+	var id: StringName = part.get_meta(&"catalog")
+	var rolled := Catalog.part(id)
+	rolled.set_meta(&"rolled", id)
+	if part.has_meta(&"layer"):
+		Finds.mark(rolled, part.get_meta(&"layer"))
+	var strong := cable as StrongCable
+	if strong != null:
+		_player.world.ropes.untie(strong.rope)
+		strong.rope = null
+	for plug in cable.plugs:
+		_player.waist.untie(plug)
+		Line._gone(plug)
+	Line._gone(cable)
+	return rolled
+
+
+## The cable a plug is on, if it's whole and plugged into nothing. A strong
+## one that snapped is two loose plugs, not one piece.
+func _loose_cable(plug: Part) -> Cable:
+	for node in _player.world.content.get_children():
+		var cable := node as Cable
+		if cable == null or not cable.plugs.has(plug):
+			continue
+		var whole := cable.plugs.all(func(p: Variant) -> bool: return is_instance_valid(p) and (p as Part).socket == null)
+		return cable if whole and (cable is not StrongCable or (cable as StrongCable).rope != null) else null
+	return null
 
 
 ## Where a slot is drawn, and clicked, in the view.
@@ -195,7 +237,7 @@ func _draw_view() -> void:
 			2.0 if i == hover else 1.0)
 		var part := slots[i]
 		if part != null:
-			_text(&"Label", box.position + Vector2(5.0, 15.0), part.label, SLOT.x - 10.0)
+			_text(&"Label", box.position + Vector2(5.0, 15.0), _name(part), SLOT.x - 10.0)
 			_text(&"Readout", box.position + Vector2(5.0, 31.0), _brief(part), SLOT.x - 10.0)
 	var tied := PackedStringArray()
 	for body in _player.waist.tied:
@@ -214,8 +256,20 @@ func _text(type: StringName, at: Vector2, line: String, width: float) -> void:
 	_view.draw_string(font, at, line, HORIZONTAL_ALIGNMENT_LEFT, width, size, _view.get_theme_color(&"text", &"Palette"))
 
 
+## A cable stowed goes by its plug, but it's the cable you have.
+static func _name(part: Part) -> String:
+	match part.get_meta(&"rolled", &""):
+		&"plug":
+			return "Cable"
+		&"strong_plug":
+			return "Strong cable"
+	return part.label
+
+
 ## What's in a part that you'd want to know at a glance.
 static func _brief(part: Part) -> String:
+	if part.has_meta(&"rolled_m"):
+		return "%.0f m" % part.get_meta(&"rolled_m")
 	if part is Supply:
 		return ("%.2f L" if part.kind == &"water" else "%d kcal") % part.amount
 	if part is Battery:
