@@ -46,6 +46,12 @@ out, never written into the text (Hunter, 2026-10-16), even before players can r
 - **Use** works what you're looking at, or uses what you hold: switch a shield, drive a
   stake.
 - **Throw** throws what you hold.
+- **Rotate** (Hunter, 2026-10-16): held down, the mouse turns what you hold, or what you
+  have hold of, instead of your view. It's how you right a crate, a planter or a shield
+  that has tipped over: take hold of it and roll it back. While you have hold of
+  something heavy it also follows where you look up and down, not only round you, so
+  you can lift an edge, tip it, or drag it up a slope, still only as far as your
+  strength drags it.
 
 Walking into a loose thing pushes it, with the same strength. A floating thing you
 push keeps gliding, as the wind would carry it anyway; to set one down where you want
