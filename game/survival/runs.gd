@@ -7,8 +7,6 @@ extends Node
 ## sand beside you.
 
 signal started(world: World)
-## The run's kit is down beside you.
-signal equipped(world: World)
 
 const WORLD := preload("res://game/world/world.tscn")
 ## The word that the last run is over shows this long, s.
@@ -82,7 +80,6 @@ func _equip(at: World) -> void:
 	if is_instance_valid(at) and not at.is_queued_for_deletion():
 		# Kept on the world, so a dev scenario can clear it for its own.
 		at.set_meta(&"kit", kit(at))
-		equipped.emit(at)
 
 
 ## The kit's things on the sand beside where you begin, every battery in them
@@ -97,11 +94,18 @@ static func kit(world: World, from: Kit = Kit.standard()) -> Array[Node]:
 	for k in ids.size():
 		var where := [(k - (ids.size() - 1) * 0.5) * KIT_APART, KIT_AHEAD]
 		var id := ids[k]
+		var lying := Transform3D(Basis(Vector3.UP, world.player.global_rotation.y) * Basis(Vector3.RIGHT, -PI / 2.0),
+			_beside(world, where) + Vector3.UP * 0.02)
 		if id == &"coil":
 			var line := Line.make(world, from.rope_m)
-			line.coil.global_transform = Transform3D(Basis(Vector3.UP, world.player.global_rotation.y)
-				* Basis(Vector3.RIGHT, -PI / 2.0), _beside(world, where) + Vector3.UP * 0.02)
+			line.coil.global_transform = lying
 			made.append_array([line, line.coil])
+			continue
+		if Catalog.PARTS.has(id):
+			var part := Catalog.part(id)
+			world.content.add_child(part)
+			part.global_transform = lying
+			made.append(part)
 			continue
 		var device := Catalog.device(id)
 		_set_down(world, device, where)
