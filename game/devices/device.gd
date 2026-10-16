@@ -32,6 +32,8 @@ var durability := 1.0
 
 var world: World
 var _hovering := false
+## The sockets with a device seated in them.
+var _seats: Array[Socket] = []
 ## How it froze before it was seated on another device.
 var _unseated_mode := RigidBody3D.FREEZE_MODE_STATIC
 ## The frame's look, which darkens as it wears, and its colour new.
@@ -270,6 +272,7 @@ func mount(other: Device, socket: Socket) -> void:
 	other.angular_velocity = Vector3.ZERO
 	other.add_collision_exception_with(self)
 	socket.mounted = other
+	_seats.append(socket)
 	if socket.marker != null:
 		socket.marker.visible = false
 	_recompute()
@@ -289,6 +292,7 @@ func dismount(socket: Socket) -> Device:
 	other.freeze = false
 	other.linear_velocity = linear_velocity
 	socket.mounted = null
+	_seats.erase(socket)
 	if socket.marker != null:
 		socket.marker.visible = true
 	_recompute()
@@ -397,6 +401,10 @@ func _middle(nodes: Array[Node3D]) -> Vector3:
 ## A tray holds it a set height over the sand and upright, like the rope
 ## look-test's floater; sideways, the wind and its lines decide.
 func _physics_process(_delta: float) -> void:
+	# What's seated rides exactly on its seat: a frozen body under a moving one
+	# is left a tick behind each tick, and on a floating crate that adds up.
+	for socket in _seats:
+		socket.mounted.transform = socket.transform * socket.mounted.seat()
 	if freeze or world == null or not _hovering:
 		return
 	var tuning := world.tuning

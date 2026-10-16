@@ -174,6 +174,8 @@ static func part(id: StringName) -> Part:
 	made.kind = spec.kind
 	made.label = spec.label
 	made.mass = spec.mass
+	# What a save knows it by.
+	made.set_meta(&"catalog", id)
 	made.stats = spec.stats.duplicate()
 	var size: Vector3 = spec.size
 	# Standing out from its socket along +Z.
@@ -252,6 +254,7 @@ static func cable(world: World, at: Vector3, strong := false, first: Part = null
 ## line's end snaps on from wherever you stand.
 static func stake() -> Stake:
 	var made := Stake.new()
+	made.set_meta(&"catalog", &"stake")
 	made.label = "Stake"
 	made.frame_mass = 2.0
 	made.carryable = true
@@ -281,6 +284,7 @@ static func device(id: StringName) -> Device:
 	var made: Device = ShieldGenerator.new() if spec.get("shield", false) \
 		else (Condenser.new() if spec.get("condenser", false) \
 		else (Planter.new() if spec.get("planter", false) else Device.new()))
+	made.set_meta(&"catalog", id)
 	made.label = spec.label
 	made.frame_mass = spec.mass
 	made.frame_stats = spec.get("stats", {}).duplicate()

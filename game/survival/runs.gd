@@ -47,6 +47,10 @@ func _watch() -> void:
 
 
 func _over() -> void:
+	# Death ends the run, and its save with it.
+	var saves := get_node_or_null(^"/root/Saves")
+	if saves != null:
+		saves.delete()
 	var old := world()
 	var parent := old.get_parent()
 	var at := old.get_index()
@@ -77,7 +81,8 @@ func _equip(at: World) -> void:
 	while is_instance_valid(at) and not at.is_queued_for_deletion() \
 			and not at.terrain.is_settled_around(at.spawn.x, at.spawn.y):
 		await get_tree().physics_frame
-	if is_instance_valid(at) and not at.is_queued_for_deletion():
+	# A resumed run has its own things already.
+	if is_instance_valid(at) and not at.is_queued_for_deletion() and not at.has_meta(&"resumed"):
 		# Kept on the world, so a dev scenario can clear it for its own.
 		at.set_meta(&"kit", kit(at))
 
