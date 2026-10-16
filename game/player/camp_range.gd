@@ -21,6 +21,10 @@ const REARM := 1.25
 ## A loss is told this long, s.
 const LOST_SECONDS := 5.0
 const RATE := 22050
+## Off-white for the first, the one accent the UI keeps for danger for the
+## last and for a loss (Menus & UI).
+const PLAIN := Color(0.92, 0.92, 0.9)
+const DANGER := Color(0.3, 0.85, 0.85)
 
 ## What's been told since you were last clear: 0, FIRST or LAST.
 var told := 0
@@ -118,7 +122,7 @@ func _process(delta: float) -> void:
 		var when := "lost in %d s" % ceili(seconds) if seconds < INF and _player.velocity.length() > 0.5 \
 			else "%d m from the edge" % ceili(near)
 		_line.text = ("LAST WARNING · camp %s · turn back" if told == LAST else "Leaving camp range · %s") % when
-		_line.add_theme_color_override("font_color", Color(1.0, 0.35, 0.25) if told == LAST else Color(1.0, 0.8, 0.35))
+		_line.add_theme_color_override("font_color", DANGER if told == LAST else PLAIN)
 		_shown = 0.0
 	_line.modulate.a = move_toward(_line.modulate.a, 1.0 if told > 0 or _shown > 0.0 else 0.0, delta * 6.0)
 
@@ -134,7 +138,7 @@ func _tell_losses(watching: Dictionary, here: Vector2i, keep: int) -> void:
 	if gone.is_empty():
 		return
 	_line.text = "Camp lost · %s" % ", ".join(gone)
-	_line.add_theme_color_override("font_color", Color(1.0, 0.35, 0.25))
+	_line.add_theme_color_override("font_color", DANGER)
 	_shown = LOST_SECONDS
 	_voice.stream = _chimes[0]
 	_voice.play()

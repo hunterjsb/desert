@@ -113,6 +113,14 @@ core action:
 Early on, a **post or a ruin** to tie more of the camp to when a storm hits is worth a
 lot.
 
+**The camp stays fully simulated** (Hunter, 2026-10-16). Wind, weight and the camp's size
+are the core limit on moving it, so a camp is never folded into one non-simulated
+object. There's no action that gathers every nearby line for you: you arrange your own.
+The design aims at small camps of well-modded gear, not large meshes of lines. A dev
+scenario drops a large pre-tied cluster into a storm to see whether the physics holds;
+if it doesn't, the answer is a limit inside the world (a budget of tie points per thing,
+or drag that grows faster than the camp does), never a hard cap.
+
 **What does the towing**, owned by Movement and Camp, with the rope serving all of them.
 The hoverboard tows nothing.
 

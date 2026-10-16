@@ -29,10 +29,8 @@ func _physics_process(_delta: float) -> void:
 	if _world.time < _next - step or _world.time - _next > 60.0:
 		_next = _world.time
 	while _next + step <= _world.time + 1e-9:
-		for node in _world.content.get_children():
-			var device := node as Device
-			if device != null:
-				device.wear(rate_at(device.global_position, _next) * step)
+		for device in _world.devices():
+			device.wear(rate_at(device.global_position, _next) * step)
 		_next += step
 
 

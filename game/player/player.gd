@@ -325,7 +325,7 @@ func _ride(delta: float, input: Vector2) -> void:
 	Dev.put("player/stam", "%d/%d" % [stamina, _tuning.stamina_max])
 	if ride != null:
 		Dev.put("player/board", "%.2fm up, %d%%" % [ride.gap + _tuning.board_ride_height,
-			roundi(100.0 * board.battery().charge_wh / board.battery().capacity()) if board.battery() != null else 0])
+			roundi(100.0 * board.charge_share())])
 
 
 ## The board in your hands, the one you look at, or the nearest lying at your feet.

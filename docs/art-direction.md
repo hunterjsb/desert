@@ -147,6 +147,8 @@ doesn't hang together. D needs the world restyled along with it.
 
 He liked all four, weighed B against C with D as the runner-up, and went with **B for now**
 (2026-10-16). "For now" keeps it open to the community's view and to C's readable parts.
+A paint pass brings B's palette and wear shader onto the game's grey shapes ahead of any
+real asset (left to Claude, 2026-10-16); models wait for the loop.
 
 ## Open questions
 

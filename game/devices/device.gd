@@ -19,6 +19,8 @@ const WORN := Color(0.24, 0.15, 0.1)
 @export var frame_stats: Dictionary = {}
 ## Small enough to pick up and carry in your hands, like a stake.
 @export var carryable := false
+## The socket kind it seats in, like a shield on a top mount; none for most.
+@export var kind: StringName
 
 ## Set by Power each tick: false once its battery and sources can't meet its draw.
 var powered := true
@@ -30,6 +32,8 @@ var durability := 1.0
 
 var world: World
 var _hovering := false
+## How it froze before it was seated on another device.
+var _unseated_mode := RigidBody3D.FREEZE_MODE_STATIC
 ## The frame's look, which darkens as it wears, and its colour new.
 var _frame_look: StandardMaterial3D
 var _frame_color: Color
@@ -88,12 +92,45 @@ func free_tie(near: Vector3) -> Socket:
 	return best
 
 
-## The battery in its battery slot, or null.
+## The battery in its first filled battery slot, or null.
 func battery() -> Battery:
 	for socket in sockets():
 		if socket.kind == &"battery" and socket.part is Battery:
 			return socket.part
 	return null
+
+
+## Every battery in its battery slots.
+func batteries() -> Array[Battery]:
+	var found: Array[Battery] = []
+	for socket in sockets():
+		if socket.kind == &"battery" and socket.part is Battery:
+			found.append(socket.part)
+	return found
+
+
+## How full its batteries are together, 0 to 1; 0 with none.
+func charge_share() -> float:
+	var held := 0.0
+	var room := 0.0
+	for cell in batteries():
+		held += cell.charge_wh
+		room += cell.capacity()
+	return held / room if room > 0.0 else 0.0
+
+
+## The devices seated on its sockets.
+func mounted() -> Array[Device]:
+	var found: Array[Device] = []
+	for socket in sockets():
+		if socket.mounted != null:
+			found.append(socket.mounted)
+	return found
+
+
+## The device it's seated on, or null.
+func host() -> Device:
+	return get_parent() as Device
 
 
 ## What it generates, W, from the felt weather where it stands, now or at
@@ -166,7 +203,7 @@ func socket_of(node: Node) -> Socket:
 ## Moves a part into a free socket of its kind: its shapes and meshes join this
 ## body at exactly the socket's pose, and the part leaves the physics world.
 func fit(part: Part, socket: Socket) -> void:
-	assert(socket.part == null and socket.kind == part.kind and socket.get_parent() == self)
+	assert(socket.is_open() and socket.kind == part.kind and socket.get_parent() == self)
 	for child in part.get_children():
 		var node := child as Node3D
 		if node == null:
@@ -205,6 +242,68 @@ func _rise_clear_of_sand(nodes: Array[Node3D]) -> void:
 		global_position.y += deepest + 0.01
 
 
+## Where a device seated in a socket sits, in the socket's frame: upright
+## along the socket's outward axis, its base on the socket's face.
+func seat() -> Transform3D:
+	var base := 0.0
+	for child in get_children():
+		var shape := child as CollisionShape3D
+		if shape != null and shape.shape != null and not shape.has_meta(&"socket"):
+			base = maxf(base, -(shape.transform * Catalog.bounds(shape.shape)).position.y)
+	return Transform3D(Basis(Vector3.RIGHT, PI / 2.0), Vector3(0.0, 0.0, base))
+
+
+## Seats a small device in a free socket of the kind it fits, as a lamp sits on
+## a top mount. It stays a body of its own, held fast on this one (frozen, and
+## touching nothing of it) so it carries on working as itself: it rides with
+## this frame, its weight joins it, and Power pools the two.
+func mount(other: Device, socket: Socket) -> void:
+	assert(socket.is_open() and socket.kind == other.kind and socket.get_parent() == self)
+	if other.get_parent() != null:
+		other.get_parent().remove_child(other)
+	add_child(other)
+	other.transform = socket.transform * other.seat()
+	other._unseated_mode = other.freeze_mode
+	other.freeze_mode = RigidBody3D.FREEZE_MODE_KINEMATIC
+	other.freeze = true
+	other.linear_velocity = Vector3.ZERO
+	other.angular_velocity = Vector3.ZERO
+	other.add_collision_exception_with(self)
+	socket.mounted = other
+	if socket.marker != null:
+		socket.marker.visible = false
+	_recompute()
+
+
+## Takes a seated device off again, loose where it sat; the caller lifts it
+## clear along the socket's +Z.
+func dismount(socket: Socket) -> Device:
+	var other := socket.mounted
+	assert(other != null)
+	var pose := other.global_transform
+	remove_child(other)
+	_holder().add_child(other)
+	other.global_transform = pose
+	other.remove_collision_exception_with(self)
+	other.freeze_mode = other._unseated_mode
+	other.freeze = false
+	other.linear_velocity = linear_velocity
+	socket.mounted = null
+	if socket.marker != null:
+		socket.marker.visible = true
+	_recompute()
+	return other
+
+
+## Where loose things go when they come off it: whatever holds it, past any
+## device it's seated on.
+func _holder() -> Node:
+	var at := get_parent()
+	while at is Device:
+		at = at.get_parent()
+	return at
+
+
 ## Takes a fitted part back out as a body again, sitting exactly in its socket;
 ## the caller slides it out along the socket's +Z. Whatever sits in a socket
 ## the part added (a line's end on a hook's ring) comes off first, loose.
@@ -229,7 +328,7 @@ func take(socket: Socket) -> Part:
 	part.socket = null
 	if socket.marker != null:
 		socket.marker.visible = true
-	get_parent().add_child(part)
+	_holder().add_child(part)
 	part.global_transform = global_transform * socket.transform
 	part.linear_velocity = linear_velocity
 	_recompute()
@@ -238,8 +337,10 @@ func take(socket: Socket) -> Part:
 
 ## Everything the device can do, from the frame and what's fitted.
 func stats() -> Dictionary:
-	# The wind grabs the frame and everything fitted, by their size.
-	var catch := Weather.biggest_face(self) * world.tuning.wind_catch_per_m2 if world != null else 0.0
+	# The wind grabs the frame and everything fitted, by their size; a frame
+	# that lies flat says what it shows the wind.
+	var face: float = frame_stats.get("face_m2", Weather.biggest_face(self))
+	var catch := face * world.tuning.wind_catch_per_m2 if world != null else 0.0
 	var total := {"mass": mass, "catch": catch, "capacity_wh": 0.0, "hooks": 0,
 		"lift_kg": 0.0, "solar_w": 0.0, "light_w": 0.0, "plants": 0, "turbine_w": 0.0}
 	for source: Dictionary in [frame_stats] + parts().map(func(p: Part) -> Dictionary: return p.stats):
@@ -248,9 +349,9 @@ func stats() -> Dictionary:
 	total["can_float"] = total["lift_kg"] >= mass
 	total["hovering"] = total["can_float"] and powered
 	total["hover_w"] = mass * world.tuning.hover_watts_per_kg if total["can_float"] and world != null else 0.0
-	var cell := battery()
-	if cell != null:
-		total["charge_wh"] = cell.charge_wh
+	var cells := batteries()
+	if not cells.is_empty():
+		total["charge_wh"] = cells.reduce(func(sum: float, c: Battery) -> float: return sum + c.charge_wh, 0.0)
 	total["durability"] = durability
 	return total
 
@@ -262,6 +363,9 @@ func _recompute() -> void:
 		if socket.part != null:
 			weight += socket.part.mass
 			moment += socket.part.mass * _middle(socket.fitted)
+		elif socket.mounted != null:
+			weight += socket.mounted.mass
+			moment += socket.mounted.mass * socket.mounted.position
 	mass = weight
 	center_of_mass = moment / weight
 	var now := stats()

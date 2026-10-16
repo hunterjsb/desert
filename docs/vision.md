@@ -84,13 +84,16 @@ upgrade the camp → the camp sustains more of itself → go further, or into th
 - **Death means a new run.** Whatever you had stays out there in theory but is
   practically unreachable. With RNG driving both the terrain and the finds, this is
   roguelite territory.
-- **You start with the essentials:** a base shield, and a light solar panel you can set
-  down and pick back up ("start with the shield and solar panel", Hunter, 2026-10-16),
-  with sealed water and a ration in the suit. The hoverboard is a find, not a starting
-  item.
-- **Permadeath is the intended mode, and it's what we balance around.** An optional
-  mode allows saving and reloading, but turning it on disables achievements, the way
-  Project Zomboid-style games treat their custom difficulty settings.
+- **You start with the essentials:** a weak shield, a light solar panel you can set down
+  and pick back up, and a short rope coil ("start with the shield and solar panel",
+  Hunter, 2026-10-16), with sealed water and a ration in the suit. The shield and panel
+  are clearly worse than anything found deep, so the first deep find reads as an upgrade,
+  and the panel can always keep the shield going, if only barely. The hoverboard is a
+  find, not a starting item.
+- **Permadeath is the intended mode, and it's what we balance around.** Save & quit only
+  suspends a run: one save per run, and death ends it ([Profile & saves](prd/profile-and-saves.md)).
+  An optional mode allows saving and reloading, but turning it on disables achievements,
+  the way Project Zomboid-style games treat their custom difficulty settings.
 
 ## The world
 
@@ -179,6 +182,8 @@ the start.
 9. [Movement](prd/movement.md)
 10. [Salvage & ruins](prd/salvage-and-ruins.md)
 11. [Radio, sound & atmosphere](prd/radio-sound-and-atmosphere.md)
+12. [Menus & UI](prd/menus-and-ui.md)
+13. [Profile & saves](prd/profile-and-saves.md)
 
 The order we build them in is the [skeleton plan](skeleton-plan.md).
 

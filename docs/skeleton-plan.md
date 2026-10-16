@@ -23,13 +23,16 @@ with its water tank, carrots that want the clear day and fungus that wants the
 storm's dark, growing by felt light and temperature and wilting past their limits,
 picking by hand, the harvester mod with its replant split, food dropped onto you, and
 "farm" in the scenario menu. Probe 3 was cheap with a test-only thermal shield, so it's
-built too. Stage 10, the hoverboard and camp range, was built the same day and waits at
-the gate behind it: a board found in the deep layer, buried nose down, that skims the
-dunes at 72 km/h on its own battery, carves and drifts, floats off crests and tows
-nothing, and the camp-range warnings, a chime and a line of text timed by your speed,
-20 s and then 8 s before you'd lose the camp. "Ride" in the scenario menu lays a charged
-board at your feet by a small camp. The Movement PRD's probes keep their numbers, 1 to
-7; the on-foot probes built with Stage 5 are 8 to 14.
+built too. On 2026-10-16 a normal run became playable end to end: rope, cables, seeds,
+survival kits and the harvester are found, every run starts with its kit (data: water, a
+ration, a light shield, a light solar panel and a short coil), and a shield seats on a
+crate, which has more sockets. Stage 10, the hoverboard and camp range, was built the
+same day and waits at the gate behind Stage 9: a board found in the deep layer, buried
+nose down, that skims the dunes at 72 km/h on its own battery, carves and drifts, floats
+off crests and tows nothing, and the camp-range warnings, a chime and a line of text
+timed by your speed, 20 s and then 8 s before you'd lose the camp. "Ride" in the
+scenario menu lays a charged board at your feet by a small camp. The Movement PRD's
+probes keep their numbers, 1 to 7; the on-foot probes built with Stage 5 are 8 to 14.
 
 ## The loop we're building toward
 
@@ -53,7 +56,10 @@ PRD passes.
   Looks come after the loop works. The art direction is settled alongside the build
   (Hunter's call, 2026-10-16): a look-test of candidate styles, so real assets start
   from decisions already made, while everything in the game stays grey. He picked B,
-  chunky worn industrial, for now ([art direction](art-direction.md)).
+  chunky worn industrial, for now ([art direction](art-direction.md)). One step further,
+  left to Claude by Hunter the same day: a paint pass puts B's palette and its UV-less wear
+  shader on today's shapes, so playtests look like the game. It makes no models, so
+  nothing is lost when shapes change.
 - **Tuning lives in one file.** Chunk size, storm speed, shield life and every other
   number sits in one tuning file, so tuning never means editing code.
 - **Scenarios for every playtest.** A dev menu drops you into a starting condition, like a storm
@@ -244,12 +250,16 @@ storm, and a sound pass over everything built so far, using Sand Game's recordin
 
 ## Stage 12: The loop
 
-**Builds:** nothing new. This stage wires up the reference camp (shield, floater,
-planters, panels, turbine and batteries) and plays the whole loop.
+**Builds:** the menus, the run save and the profile ([Menus & UI](prd/menus-and-ui.md),
+[Profile & saves](prd/profile-and-saves.md); pulled forward 2026-10-16 and built alongside
+stages 10 and 11), then nothing new: this stage wires up the reference camp (shield,
+floater, planters, panels, turbine and batteries) and plays the whole loop.
 
-**You play:** a full run, start to death or to AFK.
+**You play:** a full run from the main menu, start to death or to AFK, with a save &
+quit and a resume along the way.
 
 **Probes:**
+- Menus & UI 1–5 and Profile & saves 1–5.
 - The AFK promise, three ways: Power 4, Survival 1 and Farming 6.
 - Every probe from every earlier stage, passing together.
 

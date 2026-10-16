@@ -1,8 +1,9 @@
 class_name ShieldGenerator
 extends Device
-## The bubble shield: a small generator you carry, set down and switch on with
-## F. Running, it holds a Shelter centred on itself, so the bubble goes
-## wherever it does, carried or not, and keeps out what the shelter blocks. It
+## The bubble shield: a small generator you carry, set down or seat on a top
+## mount, and switch with use. Running, it holds a Shelter centred on itself, so
+## the bubble goes wherever it does, carried or not, and keeps out what the
+## shelter blocks. Seated on a crate, it runs on the crate's power too. It
 ## draws by what it's doing: a sip in the clear, the most while it holds back
 ## a storm. Low on power its hum sags and its shell flickers; flat, the bubble
 ## collapses for everything at once, and blooms again once there's power.
@@ -24,12 +25,15 @@ const FLICKER := 0.25
 
 ## The switch, which use flips. The bubble stands while it's on and has power.
 var on := false
-## Metres to the shell, fully open.
+## Metres to the shell, fully open: its kind's, unless widened.
 var size := Tuning.current().shield_radius
 var shelter := Shelter.new()
 var hum: AudioStreamPlayer3D
 
 var _tuning := Tuning.current()
+var _radius := _tuning.shield_radius
+var _clear_w := _tuning.shield_clear_w
+var _storm_w := _tuning.shield_storm_w
 ## Whether the bubble is opening or open, rather than going or gone, and the
 ## seconds since that last changed.
 var _up := false
@@ -48,6 +52,12 @@ func _init() -> void:
 
 func _ready() -> void:
 	super()
+	# A lighter kind says its own bubble, draw and hold; the base shield's are tuning.
+	_radius = frame_stats.get("radius_m", _tuning.shield_radius)
+	size = _radius
+	_clear_w = frame_stats.get("clear_w", _tuning.shield_clear_w)
+	_storm_w = frame_stats.get("storm_w", _tuning.shield_storm_w)
+	shelter.blocks[&"wind"] = frame_stats.get("wind_block", 1.0)
 	add_child(shelter)
 	var housing := Vector3.ONE * 0.4
 	for child in get_children():
@@ -84,7 +94,20 @@ func _exit_tree() -> void:
 	hum.stop()
 
 
-## F in your hands switches it just the same.
+## Seated on a device or taken off one, it leaves the tree and comes back
+## running as it was.
+func _enter_tree() -> void:
+	if hum != null and _up:
+		# Its sounds come into the tree after it does.
+		_resume.call_deferred()
+
+
+func _resume() -> void:
+	if is_inside_tree() and _up and not hum.playing:
+		hum.play()
+
+
+## Use in your hands switches it just the same.
 func use(by: Player, _at: Vector3) -> bool:
 	return interact(by)
 
@@ -134,18 +157,16 @@ func demand_w(t := NAN) -> float:
 	if not on or wrecked() or world == null:
 		return parts_w
 	var storm := world.weather.field_storm(global_position, t)
-	return parts_w + lerpf(_tuning.shield_clear_w, _tuning.shield_storm_w, storm) \
-		* pow(size / _tuning.shield_radius, 2.0)
+	return parts_w + lerpf(_clear_w, _storm_w, storm) * pow(size / _radius, 2.0)
 
 
-## Seconds of world time its battery lasts at what it draws now, less what it
-## makes; INF while it isn't running down.
+## Seconds of world time its pool's batteries last at what it draws now, less
+## what it makes; INF while it isn't running down.
 func seconds_left() -> float:
-	var cell := battery()
 	var net := demand_w() - production_w()
-	if cell == null or net <= 0.0:
+	if net <= 0.0:
 		return INF
-	return cell.charge_wh / net * 3600.0
+	return world.power.pool_wh(self) / net * 3600.0
 
 
 func _physics_process(delta: float) -> void:

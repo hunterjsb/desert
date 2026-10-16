@@ -30,7 +30,6 @@ var _hum: AudioStreamPlayer
 
 
 func _init() -> void:
-	carryable = true
 	# Thin and quick: stepped off at speed, it mustn't skip through the sand.
 	continuous_cd = true
 
@@ -129,15 +128,6 @@ func seconds_left() -> float:
 	var draw := draw_w()
 	var cell := battery()
 	return INF if draw <= 0.0 or cell == null else cell.charge_wh / draw * 3600.0
-
-
-## Lying flat, the wind meets its edge, not its deck.
-func stats() -> Dictionary:
-	var now := super()
-	if world != null:
-		var size: Vector3 = Catalog.DEVICES[&"board"].size
-		now["catch"] = world.tuning.wind_catch_per_m2 * size.y * size.z
-	return now
 
 
 ## Drawn each frame where the ride draws it, between ticks.
