@@ -1,8 +1,9 @@
 extends Node
-## Every number the game wants seen: systems put() values here, F3 draws them,
-## and probes read() the same values the player would see. Keys are
+## Every number the game wants seen: systems put() values here, the overlay
+## draws them, and probes read() the same values the player would see. Keys are
 ## "group/name"; each group gets its own column, so nothing runs off screen.
-## F1 lists the keys, one per line; on screen there's only a hint that it does.
+## The keys list has every key, one per line, as bound now; on screen there's
+## only a hint of how to open it.
 
 ## Columns left to right, with their headings; unlisted groups follow, alphabetically.
 const GROUPS := {"weather": "WX", "player": "YOU", "world": "WLD", "terrain": "TER", "engine": "ENG"}
@@ -12,8 +13,8 @@ var _layer: CanvasLayer
 var _columns: HBoxContainer
 var _bodies: Dictionary = {}
 var _keys_layer: CanvasLayer
-var _keys: Label
-var _hint: Label
+var _keys: RichTextLabel
+var _hint: RichTextLabel
 var _scene_keys: Array = []
 
 
@@ -31,8 +32,7 @@ func _ready() -> void:
 	var hint_layer := CanvasLayer.new()
 	hint_layer.layer = 100
 	add_child(hint_layer)
-	_hint = _text(Color(1, 1, 1, 0.7))
-	_hint.text = "F1 keys"
+	_hint = Controls.keys_label(Color(1, 1, 1, 0.7))
 	_hint.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT, Control.PRESET_MODE_MINSIZE, 10)
 	_hint.grow_vertical = Control.GROW_DIRECTION_BEGIN
 	hint_layer.add_child(_hint)
@@ -40,7 +40,7 @@ func _ready() -> void:
 	_keys_layer.layer = 100
 	_keys_layer.visible = false
 	add_child(_keys_layer)
-	_keys = _text(Color.WHITE)
+	_keys = Controls.keys_label()
 	_keys.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT, Control.PRESET_MODE_MINSIZE, 10)
 	_keys.grow_vertical = Control.GROW_DIRECTION_BEGIN
 	_keys_layer.add_child(_keys)
@@ -75,11 +75,22 @@ func hide_overlays() -> void:
 	_hint.visible = false
 
 
+## Written again whenever it shows, so a key rebound is listed as it is now.
 func _write_keys() -> void:
+	var hint := Controls.bbcode("{toggle_keys} keys")
+	if _hint.text != hint:
+		_hint.text = hint
+	if not _keys_layer.visible:
+		return
 	var lines := PackedStringArray()
-	for pair: Array in Controls.HELP + _scene_keys:
-		lines.append("%s  %s" % pair)
-	_keys.text = "\n".join(lines)
+	for pair: Array in Controls.HELP:
+		lines.append("%s  %s" % [Controls.bbcode(pair[0]), Controls.bbcode(pair[1])])
+	# A look-test's own keys are raw keys, not actions.
+	for pair: Array in _scene_keys:
+		lines.append("%s  %s" % [Controls.tint(pair[0]), pair[1]])
+	var text := "\n".join(lines)
+	if _keys.text != text:
+		_keys.text = text
 
 
 func _process(_delta: float) -> void:
@@ -88,6 +99,7 @@ func _process(_delta: float) -> void:
 	put("engine/phy", "%.1fms" % (Performance.get_monitor(Performance.TIME_PHYSICS_PROCESS) * 1000.0))
 	put("engine/obj", "%d" % Performance.get_monitor(Performance.OBJECT_COUNT))
 	put("engine/mem", "%.0fMB" % (Performance.get_monitor(Performance.MEMORY_STATIC) / 1048576.0))
+	_write_keys()
 	if _layer.visible:
 		_draw_columns()
 

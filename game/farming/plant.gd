@@ -4,7 +4,8 @@ extends Part
 ## by the light and the temperature its planter feels, each crop between its
 ## own limits: carrots in the sun, fungus in the dark. Past its hardy limits
 ## it wilts back. Growing, it drinks from the planter's tank. Ripe, it stops
-## and holds until it's picked.
+## and holds until it's picked. Fungus fruits again from what's left of it, as
+## mushrooms do; other crops are sown again from their seed.
 
 const GROWING := &"growing"
 const RIPE := &"ripe"
@@ -21,6 +22,8 @@ const SOWN_WIDTH := 0.6
 ## Its crop, whose tuning numbers it grows by, and the food a harvest gives.
 var crop: StringName
 var food: StringName
+## Picked, it stays in its slot and grows again.
+var regrows := false
 ## 0 sown to 1 ripe.
 var growth := 0.0
 ## Growing, ripe, or why it isn't growing: what it did on its last tick.
@@ -47,6 +50,7 @@ func sow(id: StringName, gives: StringName, young: Color, ripe_color: Color) -> 
 	var tuning := Tuning.current()
 	crop = id
 	food = gives
+	regrows = Catalog.PARTS[id].get("regrows", false)
 	light = tuning.get(StringName("%s_light" % id))
 	grows = tuning.get(StringName("%s_grows" % id))
 	hardy = tuning.get(StringName("%s_hardy" % id))
