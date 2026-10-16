@@ -58,8 +58,10 @@ no panels, no big centred buttons.
 ## The system menu
 
 The back action, with nothing else open, brings up the system menu over the running
-game. It holds **Options** (controls, audio, graphics) and **Save & quit**, which is
-safe at any moment, mid-storm included (Profile & saves).
+game. It holds **Options** (controls, audio, graphics), **Save** in a Normal run, and
+**Save & quit**, all safe at any moment, mid-storm included (Profile & saves). **New game**
+asks which mode, Normal highlighted or Ironman; **dying** in a Normal run shows Load last
+save, highlighted, and New run (Hunter, 2026-10-16).
 
 ## Skeleton version
 

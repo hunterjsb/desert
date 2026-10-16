@@ -182,11 +182,14 @@ func wear(share: float) -> void:
 
 
 ## Its paint: its make's era, then what the weather took, so a deep find is
-## crisp, a surface one rusty, and a wrecked frame down to the metal.
+## crisp, a surface one rusty, and a wrecked frame down to the metal. Its
+## maker's mark is its era's too.
 func show_wear() -> void:
-	var amount := Paint.age_of(get_meta(&"layer", &""), durability)
+	var layer: StringName = get_meta(&"layer", &"")
+	var amount := Paint.age_of(layer, durability)
 	if frame_view != null:
 		frame_view.set_instance_shader_parameter(&"age", amount)
+		frame_view.set_instance_shader_parameter(&"era", Paint.era_of(layer))
 	for socket in sockets():
 		if socket.marker != null:
 			socket.marker.set_instance_shader_parameter(&"age", amount)

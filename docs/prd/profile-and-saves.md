@@ -11,9 +11,11 @@ down and picked up again, and it ends when you die. **The profile** is you acros
 what you've found and what that has unlocked. They live in separate files, so a run can
 end without touching the profile.
 
-Permadeath stays the intended mode (the vision). Save & quit only suspends the run; there
-is one save per run, and death ends it. Reloading earlier saves would be the optional
-mode the vision mentions, and isn't built here.
+**Two modes** (Hunter, 2026-10-16; the vision). **Normal**, the default: you save when
+you like from the system menu, the game saves for you every few minutes of play and when
+you quit, and death offers to load the last save or start a new run. **Ironman**, chosen
+at New game: Save & quit only suspends the run, and death ends it, deleting its save.
+Either way there's one run, and one save for it; a run's mode is fixed when it starts.
 
 ## The run save
 
@@ -25,8 +27,8 @@ mode the vision mentions, and isn't built here.
   weather from the seed and the time (Wind & storms), and finds from the seed and the
   weather (Salvage & ruins). A save holds only what you changed: the things that are
   yours, and which finds near you were taken.
-- **One save at a time.** New game over a save asks first (Menus & UI), and death
-  deletes it.
+- **One save at a time.** New game over a save asks first (Menus & UI). In Ironman, death
+  deletes it; in Normal, death offers it back.
 - **Versioned.** The file carries a format version, so an old save can be migrated or
   refused cleanly, never half-read.
 
