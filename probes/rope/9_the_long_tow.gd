@@ -4,6 +4,7 @@ extends LineProbe
 ## gusting crosswind, crossing origin shifts and fresh ground all the way. It
 ## arrives with you, floating and on its line, and the line's pull never
 ## spikes past twice the hardest the wind and your pace could load it.
+## Time limit: 600 s (about 240 s alone; a busy machine stretches it past 300)
 
 const DISTANCE := 5000.0
 const CROSSWIND := 15.0
