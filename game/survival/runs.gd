@@ -11,10 +11,10 @@ signal started(world: World)
 const WORLD := preload("res://game/world/world.tscn")
 ## The word that the last run is over shows this long, s.
 const CAPTION_SECONDS := 4.0
-## A run begins on a clear morning with the first storm due in three to eight
-## minutes, facing where it will come from: time to set the kit up and batten
-## down, not a storm on arrival.
-const START := {"key": "start", "kind": "clear", "day": [0.25, 0.45], "due": [180.0, 480.0]}
+## A run begins on a clear morning, the sun well up so a panel makes something
+## from the start, with the first storm due in three to eight minutes, facing
+## where it will come from: time to set the kit up and batten down.
+const START := {"key": "start", "kind": "clear", "day": [0.33, 0.45], "due": [180.0, 480.0]}
 
 ## Runs since the game began, this one included.
 var count := 1

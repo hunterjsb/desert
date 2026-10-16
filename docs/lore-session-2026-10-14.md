@@ -5,6 +5,13 @@ during the session. It is not final canon until Hunter says so. It supersedes th
 parts of [lore-research.md](lore-research.md) (the small/dense moon, the sky shield as the
 air's only container, the Heavy Moon as the spine). Names of entities are working names.*
 
+*Revised 2026-10-16 to carry Hunter's answers after session 3 ([the lore research, section
+14](lore-research.md#14-open-after-session-3)): the time figures are placeholders
+([Placeholders](lore-research.md#placeholders)), TILG's label is a pretext rather than a
+proper analysis (§3), the war affects the moon but no war battles happen on it, and some
+expertise was still at the port at the paroxysm (§5), "Bronze Age empires" are two feudal eras
+(§5), and the ash band's place is open (§6).*
+
 ## 1. The body
 
 - **A large natural moon with its own atmosphere.** The world's size in-game is an
@@ -58,10 +65,11 @@ a **sudden political clock** (§4).
 
 ### The analysis vs. the people
 
-- **The top knew.** TILG and the IOU ran a proper analysis during approval, saw the heavy
-  volcanism, identified the transitional eccentric phase, and approved the moon as an
-  **intermediate transit hub, explicitly not for settlement**. They always knew it would
-  dry up without interstellar support.
+- **The top knew.** TILG and the IOU saw the heavy volcanism, identified the transitional
+  eccentric phase, and approved the moon as an **intermediate transit hub, explicitly not for
+  settlement**. They always knew it would dry up without interstellar support. (Revised
+  2026-10-16: TILG's "temporary hub" label was a pretext to dodge the Provisional's military
+  upkeep, not the result of a proper analysis, and the excuse turned out to be true.)
 - **The ground didn't care.** A corporate town grows anyway, **never registered** with the
   local government, operating fully as a settlement. The Skimmers Association arrives,
   people stake property, a lively local ecosystem forms.
@@ -117,7 +125,7 @@ decaying when Electronics supply stops.)
 - Then the math catches up: no imports, no chips, machines that can't be repaired going dark
   one by one.
 
-### Phase 2: the smuggler moon (first fallen empire)
+### Phase 2: the smuggler moon
 
 - Within a generation or two, **illegal trade becomes one of the only ways anyone deals with
   the place.** Tatooine in feel.
@@ -136,29 +144,32 @@ decaying when Electronics supply stops.)
 - **Outside comms are cut instantly.** The link to the galaxy doesn't fade; it detonates.
   The moon is now isolated.
 - The survivors are the *scattered*: people out in the field, deep in shelters, far from the
-  hub. The concentrations of expertise were at the port and installations, where the blast
-  hit hardest. **Civilisation restarts from the people who understood the machines least.**
+  hub. Some of the expertise was still at the port and installations, where the blast hit
+  hardest, even after the port station was evacuated (session 3); that loss came on top of the
+  evacuation. **Civilisation restarts from the people who understood the machines least.**
 - Survivors come together and **rebuild cities in the literal ashes.** This is the start of
   the Bronze Age line.
-- Considered and kept as secondary hints: the war reaching the moon, and the software layer
-  failing during the crisis (contributing cause, not villain). No Kenshi-style AI uprising.
+- Considered and kept as secondary hints: the war's effects on the moon (the lane dying, the
+  evacuation, the tithe, deserters and the withdrawal, with no war battles on it), and the
+  software layer failing during the crisis (contributing cause, not villain). No Kenshi-style
+  AI uprising.
 
-### Phase 4: Bronze Age empires and holdouts
+### Phase 4: two Bronze Age feudal eras and holdouts
 
-- The second and later civilisations rise and fall on a drying, harsher world, scavenging
+- Two Bronze Age-like feudal eras rise and fall on a drying, harsher world, scavenging
   ruins they can't repair or understand.
 - **The eruption becomes myth:** a mountain of fire that ate the sky and silenced the voices.
   The blast zone may be feared or treated as cursed ground, which is where the best salvage
   is. Their superstition is the player's inverted treasure map.
-- 3,000 years later (approx.), the player arrives.
+- `{YEARS_SINCE_FALL}` after the last survivors, the player arrives.
 
 ## 6. History runs backwards in the ground
 
 Top to bottom:
 
 1. **Surface:** Bronze Age mud, scrap and cult works.
-2. **The ash band:** the paroxysm. The page-break of the whole history, and a readable depth
-   cue in storm-cut dunes.
+2. **The ash band:** the paroxysm, and a readable depth cue in storm-cut dunes. (Revised
+   2026-10-16: it no longer has to divide the layers, and its place among them is open.)
 3. **Below:** the buried colonial world, advanced and sealed by the disaster that ended it.
 
 ### Oldest and best tech
@@ -197,7 +208,7 @@ and each layer leaves a mark. Example:
 4. **Owner:** that company acquired by the contractors, the port authority, or a local-district
    firm.
 
-Three thousand years later, this agricultural AI has **taken over a local StarCom station**
+`{YEARS_SINCE_FALL}` later, this agricultural AI has **taken over a local StarCom station**
 and broadcasts strange, fragmentary material. **Interpreted correctly, it's still useful
 agricultural information** for the player: planting timing, storm precursors, which feral
 strains tolerate ash soil.
@@ -231,7 +242,7 @@ strains tolerate ash soil.
 6. Who sent the player, or why they're out here: ship crew, the company returning, a vat, or
    never said.
 7. Timeline in years: colonial founding, the war, the smuggler era, the paroxysm, the Bronze
-   Age empires, the player's arrival.
+   Age eras, the player's arrival.
 8. What the war was and between whom.
 
 ## 9. Knock-on edits for other docs

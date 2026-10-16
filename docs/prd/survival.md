@@ -120,6 +120,9 @@ Death means a new run (see Runs in the vision).
   and a click anywhere else in the view does nothing. You don't turn while it's open, and
   take works on the world as ever, not on the slots. Closing it captures the mouse again,
   as does a run ending while it's open.
+- **Stakes go in too** (Hunter, 2026-10-16: "we should be able to put stakes in our inv"):
+  a stake that isn't driven and has nothing tied to it goes in a slot, and comes out
+  ready to drive.
 - **Rope goes in as a coil** (Hunter, 2026-10-16: "i cant put rope in my inv"): a rope you
   hold but haven't laid, its first end in your hand and the rest at your belt, rolls back
   up into its coil, the belt end comes off, and the coil goes in the slot. Taken out, it
@@ -181,9 +184,11 @@ Death means a new run (see Runs in the vision).
   what comes assembled, socket by socket, which lines are laid, how full its batteries
   start and how long its line is). Only this standard kit is balanced; choosing a kit
   waits. Every run, the first and every one after a death, begins on a clear morning
-  with the first storm due in three to eight minutes, facing where it will come from
-  (Hunter, 2026-10-16: "it spawns me in a storm!"), and starts with it: the canister
-  and the ration in your slots, and beside you, once the ground there is solid:
+  with the sun well up, a third of the way through the day, so the panel makes about
+  half its 30 W from the first minute, and the first storm due in three to eight
+  minutes, facing where it will come from (Hunter, 2026-10-16: "it spawns me in a
+  storm!"), and starts with it: the canister and the ration in your slots, and beside
+  you, once the ground there is solid:
   - **a floating crate** at your front right: a crate frame with a hover tray, a
     battery half charged and a hook on its back, floating at the tray's height. The
     **light shield generator**, switched off, sits on its front top mount and the
@@ -200,21 +205,22 @@ Death means a new run (see Runs in the vision).
   None of it overlaps you or each other at the start, and neither the crate, the
   board, the panel nor any shield goes in your slots; you carry a shield in your hands.
   The light shield is clearly weaker than a found one: a 4 m bubble against 7 m (a third
-  of the room for a camp), and it lets half the wind through, so lines inside still take
-  load. It sips 2 W in the clear and draws 20 W holding back a full storm. The crate's
-  tray draws about 70 W floating everything on it, more than the 30 W panel can keep
-  up, so the crate floats on what its battery holds, and the shield ranks above the
-  tray: the tray never takes the battery's last quarter (Power). On the probes' seed,
-  over the run's own first day (a storm from 0.4 of it, through the night) the crate
-  floated all day, and
-  at 1.02 days, in the storm, with the battery at 25 Wh, it settled onto the sand; the
-  shield ran on, 23.8 Wh left at 1.25 days, the panel having made 3.4 Wh to the
-  shield's 5.9. That storm sits on the spawn for more than three days, and the shield
-  was still up at 3.9 days with 7.9 Wh left. Under clear skies the panel brings the
-  battery from a quarter back to 30% in 1.38 days and the crate floats again until it's
-  back at a quarter: a clear day is worth about three minutes of floating. The quarter
-  kept back runs the light shield for 75 minutes of full storm with no sun, almost four
-  days of it. A dev scenario that drops its own camp clears the run's kit first.
+  of the room for a camp), and it lets 15% of the wind through where a found one stills
+  it (Hunter, 2026-10-16: blocks most of the wind, so you barely drift inside). It sips
+  2 W in the clear and draws 20 W holding back a full storm. The crate's tray draws
+  about 70 W floating everything on it, more than the 30 W panel can keep up, so the
+  crate floats on what its battery holds, and the shield ranks above the tray: the tray
+  never takes the battery's last quarter (Power). On the probes' seed, over the run's
+  own first day (a storm from 0.33 days in, through the night) the crate floated all
+  day, and at 1.00 days, in the storm, with the battery at 25 Wh,
+  it settled onto the sand; the shield ran on, 23.8 Wh left at 1.25 days, the panel
+  having made 3.3 Wh to the shield's 6.3. That storm sits on the spawn for more than
+  three and a half days, and the shield was still up at 4 days with 7.1 Wh left. Under
+  clear skies the panel brings the battery from a quarter back to 30% in 1.38 days and
+  the crate floats again until it's back at a quarter: a clear day is worth about three
+  minutes of floating. The quarter kept back runs the light shield for 75 minutes of
+  full storm with no sun, almost four days of it. A dev scenario that drops its own
+  camp clears the run's kit first.
   Survival probe 4 checks both runs start with it and runs the light shield into the
   second morning.
 - **Food and water from salvage:** no new food was needed. Survival kits, common on

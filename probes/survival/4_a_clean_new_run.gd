@@ -175,7 +175,7 @@ func _check_kit(kit: Array, run: String) -> void:
 	var hour := world.weather.day.time_of_day(world.time)
 	var due := field.next_change(world.spawn.x, world.spawn.y, world.time, 600.0, 10.0)
 	check(field.raw_storm_at(world.spawn.x, world.spawn.y, world.time) <= 0.0 and due > 120.0 and due <= 480.0
-		and hour >= 0.25 and hour <= 0.46,
+		and hour >= 0.33 and hour <= 0.46,
 		"%s begins on a clear morning (%.2f of the day), the first storm due in %.0f s" % [run, hour, due])
 	var standard := Kit.standard()
 	var pieces := _pieces(kit)
@@ -228,7 +228,7 @@ func _check_kit(kit: Array, run: String) -> void:
 		"%s: the kit's shield and panel are clearly weaker than found ones (%.0f m against %.0f m, %d W against %d W)"
 			% [run, shield.size, base.size, panel.stats().solar_w, deep_panel.stats.solar_w])
 	var suit := world.player.suit
-	check([crate, board, shield, panel, base, stake].all(func(b: Object) -> bool: return not suit.fits(b)),
+	check([crate, board, shield, panel, base].all(func(b: Object) -> bool: return not suit.fits(b)),
 		"%s: neither the crate, the board, a shield of any kind nor the panel goes in the suit's slots" % run)
 	base.free()
 	deep_panel.free()
@@ -268,6 +268,7 @@ func _run_the_day(kit: Array) -> void:
 	var stormy := 0
 	var floated := 0
 	var settled := -1.0
+	var storm_at := -1.0
 	var shield_wh := 0.0
 	var ticks := Engine.physics_ticks_per_second
 	var frames := roundi(KIT_DAYS * world.tuning.day_minutes * 60.0 / WARP * ticks)
@@ -277,7 +278,10 @@ func _run_the_day(kit: Array) -> void:
 		await get_tree().physics_frame
 		lowest = minf(lowest, cell.charge_wh)
 		dark += int(not shield.running())
-		stormy += int(world.weather.field_storm(shield.global_position) > 0.0)
+		var storm := world.weather.field_storm(shield.global_position) > 0.0
+		stormy += int(storm)
+		if storm and storm_at < 0.0:
+			storm_at = float(i) / frames
 		shield_wh += shield.demand_w() * step * int(shield.running())
 		if crate.powered:
 			floated += 1
@@ -288,9 +292,9 @@ func _run_the_day(kit: Array) -> void:
 	world.player.vitals.set_physics_process(true)
 	var end := cell.charge_wh
 	var reserve := Power.RESERVE * cell.capacity()
-	print(("the kit's first %.2f days, %d%% of it under a storm: the crate floated %d%% of it%s; its battery %.1f to %.1f Wh"
+	print(("the kit's first %.2f days, %d%% of it under a storm from %.2f days: the crate floated %d%% of it%s; its battery %.1f to %.1f Wh"
 		+ " (lowest %.1f, floating %.1f); the panel made %.1f Wh, the shield drew %.1f")
-		% [KIT_DAYS, roundi(100.0 * stormy / frames), roundi(100.0 * floated / frames),
+		% [KIT_DAYS, roundi(100.0 * stormy / frames), storm_at * KIT_DAYS, roundi(100.0 * floated / frames),
 			", settling at %.2f days" % (settled * KIT_DAYS) if settled >= 0.0 else "", from, end, lowest, floating_low,
 			world.power.generated_wh - made, shield_wh])
 	check(dark == 0, "the kit keeps its shield up all day (%d frames dark)" % dark)
