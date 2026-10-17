@@ -139,7 +139,8 @@ save and quick load.
   scenario's key or a catalog id. Each command is a thin call into the game: `help`;
   `scenarios`, and `scenario <key>`, which replaces the scenario menu; `fly`; `warp [n]`,
   alone stepping x1, x10, x60; `gravity [m/s²]`, alone low gravity or back; `time <0–1>`,
-  on to the next such moment of the day; `give <id> [n]`, a part into your hands, or a
+  on to the next such moment of your local day; `tu [near|far]`, Tu's size under trial,
+  alone the other one (2026-10-17); `give <id> [n]`, a part into your hands, or a
   device, a stake, a coil or a cable at your feet, by catalog id; and `fresh`, fed,
   watered and whole on a fresh suit's kit. The keys list and Options' controls list
   show the console action and the dev overlay's under a heading of their own, and the

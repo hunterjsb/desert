@@ -228,8 +228,20 @@ All run without a window, with a fixed seed.
 - Simulating real air physics. The field is designed, not simulated.
 - Saving weather.
 
+## Tu and the storms
+
+([The Tu spec](../tu-and-day-2026-10-17.md), 2026-10-17.) On the near side Tu is the
+landmark, and storms blot it out, so you lose it exactly when it matters. The walls are drawn
+over the sky, so a wall between you and Tu hides it, and inside a storm's dust it's gone. At
+night a wall is lit by Tu's light as the open ground is, and during the eclipse it goes dark
+with everything else.
+
 ## Open questions
 
+- **Does the eclipse kick the weather?** The spec leaves open "whether the eclipse also
+  affects the weather model, such as a pressure or wind kick." Nothing is built: the field
+  doesn't know about the eclipse, and the eclipse only darkens the light and dips the
+  temperature.
 - **What target bands for clear skies** should each reference traveller get? Set them
   once the skeleton can measure them. The skeleton starts here: someone sitting still
   is in a storm 70% of the time, the median storm lasts 17 minutes, 71% pass within a

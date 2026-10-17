@@ -500,6 +500,10 @@ Every level has an official name and a worn local one:
   is part 2's worked example of that middle; session 3 doesn't mention it (see
   [section 14](#14-open-after-session-3)).
 - **Tu follows the same pattern:** a fossilised designation number.
+- **Tu the god (Agreed, Hunter, 2026-10-17, [the Tu spec](tu-and-day-2026-10-17.md)):** Bronze
+  Age people revered Tu, and the far side is where the god can't see you. Zan is tidally
+  locked, so the near side always has Tu in its sky and the far side never does ([the
+  moon](the-moon.md#day-length)).
 - **The moon's ancient alien name** was given by the hive mind before humans arrived. It is
   deep lore only, possibly hinted by radio. Don't expand it now.
 
@@ -569,8 +573,8 @@ live there.*
 - **The dials.** The equator is stormy and mild under its dust blanket, choppy and
   salvage-rich, while the poles are calm, clear and sparse, with the widest swings. "Hotter
   days at the poles" needs a reason, since with near-zero tilt the poles get less sun
-  (question 15). The near side has the giant fixed in the sky and a noon eclipse, and the far side has
-  truly dark nights. The old near-industrial, far-biological split came from a biotech tenant
+  (question 15). The near side has the giant fixed in the sky and a daily eclipse, and the far side
+  has truly dark nights and the stars. The old near-industrial, far-biological split came from a biotech tenant
   the stack lacks, and ruins now follow the terrain.
 - **Weather, water and the suit.** Colliding sand charges up, so radio static is a storm
   precursor. Frost forms in the cold hours, open water boils off by afternoon, and sealed

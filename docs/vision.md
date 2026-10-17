@@ -135,6 +135,11 @@ where you are. The pillars above describe the hybrid. How the two extremes sit w
 - **It's a moon, not a plane.** Your position is tracked as latitude and longitude, so
   walking far enough brings you back round and the poles are real places. The ground
   near you is still flat.
+- **Two halves of Zan** ([the Tu spec](tu-and-day-2026-10-17.md), 2026-10-17). Zan is
+  tidally locked to Tu. On the near side, the god's side, the giant hangs fixed in the sky
+  as a landmark, lights the nights and eclipses the sun once a day. The far side has black
+  nights, the stars and no landmark. Local time follows longitude ([the
+  moon](the-moon.md#day-length)).
 - **Latitude is the second difficulty dial.** Toward the poles, storms weaken but the
   temperature swings get wider: hotter days, colder nights. Difficulty changes kind
   rather than amount. The equator is stormy and mild, while the poles are clear and

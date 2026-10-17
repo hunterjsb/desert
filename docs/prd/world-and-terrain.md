@@ -82,6 +82,13 @@ on foot, and about 37 km from the equator to a pole. Circling it is an epic a lo
 can achieve. A real sphere this small would put the horizon about 300 m away. We render
 the ground flat precisely so the big views stay possible.
 
+**The sky follows your point on the moon** (2026-10-17, [the Tu
+spec](../tu-and-day-2026-10-17.md)). Local time follows longitude, so walking east brings
+sunset sooner. Tu hangs fixed over the near side at a height and bearing set by where you
+are, about a degree for every 420 m toward or away from the point under it, so it's a
+landmark: on the far side it's never seen, and the stars, whose pole stands at your latitude,
+take over. How it all looks is in [the moon](../the-moon.md#day-length).
+
 The dunes don't need to wrap, because they're stateless and shifting anyway. What
 wraps is everything fixed: the coordinates, the underlying topography and climate by
 latitude. Those are sampled from your true point on the moon, so they're seamless all
@@ -132,7 +139,8 @@ trail touching 30 to 60) if a resumed run should keep its trail.
   of it, leaves the oldest steps 61% of their depth (probe 10). Tuning's Tracks group
   holds the window and both rates.
 - **How they read**, as lightness (CIE L*) over each mark against the sand beside it,
-  fresh and after eight minutes of storm, from `look/tracks`: in clear day the sand is
+  fresh and after eight minutes of storm, from `look/tracks` (measured before Tu's light
+  replaced the old night light everywhere, so the night figures are due again): in clear day the sand is
   76 and steps 9 darker fresh, 3 aged; in a storm by day the sand is 20 and steps 6
   darker, 5 aged; at night the sand is 9 and steps 4 darker, nearly half its light, 2
   aged. **In a storm at night there's no light at all** (the sand is 0.7): no ground

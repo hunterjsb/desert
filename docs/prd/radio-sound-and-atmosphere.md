@@ -139,7 +139,10 @@ Everything that matters can be heard, so you can read the world by ear:
 - **Inside a storm:** the world outside the bubble is dark and roaring, the camp is lit
   warm inside it, and the radio crackles.
 - **The day:** a 20-minute cycle of scorching noon, long shadows, a freezing night under
-  the stars, and frost glittering at dawn (see the water rhythm in Survival).
+  the stars, and frost glittering at dawn (see the water rhythm in Survival). On the near
+  side Tu hangs over it all, and once a day it eclipses the sun ([the moon](../the-moon.md#day-length)).
+  The day and night music follow the sun where you are, so they change at your local
+  sunrise and sunset, and the eclipse's dark is still the day.
 
 ## Rules
 

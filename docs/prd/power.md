@@ -194,6 +194,13 @@ the felt-weather rule.
   and runs down over a few seconds, stands still while the turbine makes nothing
   (wrecked, moving, in a bubble or a calm), and swings round on its mast to face into
   the wind. It's only drawn: it reads what the power tick worked out and touches nothing.
+- **The eclipse is a power check** (2026-10-17, [the Tu spec](../tu-and-day-2026-10-17.md)).
+  Once a day on the near side the sun goes behind Tu, and solar reads the light it feels, so
+  it falls to nothing for the eclipse: about 41 seconds of totality at the near size and 20
+  at the far ([the moon](../the-moon.md#day-length)), with a few seconds of partial phase
+  either side. A camp rides it out on storage or wind. Tu's own light at night is far too
+  weak for panels, so they make nothing by it. Solar also follows local time now, which
+  follows longitude, so a panel carried east sees an earlier sunset.
 
 ## Full version
 

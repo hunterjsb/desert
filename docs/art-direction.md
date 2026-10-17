@@ -279,8 +279,51 @@ finds are worn, reused space-age items with Bronze Age carvings
 shield looks like. The built light shield is round and bone white, and the notes' new one is
 flat ([Bubble shield & camp](prd/bubble-shield-and-camp.md#the-carried-light-shield-and-the-starts-not-built)).
 
+## Tu and the sky
+
+*2026-10-17, from [the Tu spec](tu-and-day-2026-10-17.md): the behaviour is in [the
+moon](the-moon.md#day-length). Provisional.*
+
+**How it's drawn.** Tu is part of the sky, not a thing in the world: a disc found by its
+direction, a sphere hit by each pixel's ray, so it never shifts as you move, never clips,
+and sits behind the haze and the storm walls like the rest of the sky. Dunes and ruins
+overlap its lower edge because they stand in front of the sky.
+
+- **Bands** run round Tu's spin axis, stretched along it by flow noise, with a few storm
+  ovals, all drifting too slowly to see within a session. Tu's axis is Zan's, so from the
+  equator, with Tu on the east-west line, the bands stand upright; further north or south
+  they lean.
+- **Light:** lit from the real sun, with a soft terminator, gentle limb darkening, a thin
+  bright rim of atmosphere on the lit side, and a night face only just there.
+- **Through Zan's air:** dimmed, warmed and hazed the lower it stands, reddened and
+  softened near the horizon, and faded out by a storm's dust.
+- **The eclipse:** the sky goes near dark, the stars come out, and Tu's black disc is
+  ringed in sunset red, with the corona showing where the sun is nearest the edge.
+- **Stars:** a fixed field turning about the pole, faint and many, with the two pole
+  marks brighter than any. They're lost in daylight and in the dust, and Tu hides them.
+
+**The palette.** Tu is the one big cool mass in a warm frame. B is gunmetal, teal, safety
+yellow and bone white on warm sand and dust, so a cool, pale Tu reads at a glance and
+doesn't fight the safety yellow or the kind-coloured parts. Its greys and bone tie it to
+B's metal and the shield's white, its ochre to the sand and its rust to the wear. Nothing
+is saturated: the haze and the rim do the work.
+
+| Part | Colour |
+|---|---|
+| Zones, the light bands | bone, #DCD6C8 |
+| Belts | slate, #8A939E, and gunmetal, #5C6670, deepest |
+| A wash through some belts | sand ochre, #BC9E76 |
+| Storm ovals | cream, #E6DCC4, and one rust, #9E5C42 |
+| The lit rim | pale sky blue, #9FC0F0 |
+| The eclipse ring | sunset red, #FF5A1E |
+| Tu-shine, the light it casts | cool white, #C8DCFF |
+
 ## Open questions
 
+- **Tu's palette** (open in the spec: "Tu's palette, to be settled against
+  `art-direction.md`"). The cool palette above is provisional, and the screenshots are the
+  test. The alternative is a warm, Jupiter-like Tu, cream and tan and brown, which would
+  sit closer to the sand and cast a warmer light than the spec's "cool and dim."
 - Is B final, or does it take C's bright, kind-coloured parts so they read through the dirt
   and the storm?
 - Should wear be one value per find, from its layer and how long it's been out, so the
