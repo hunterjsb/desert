@@ -196,7 +196,8 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
   them at the surface and three in five deep. Over 3,000 chunks on two seeds, rope coils
   and plugs are each about one find in fourteen, strong plugs one in thirty-five, survival
   kits one in thirty-three (a seventh of them on ruins' floors), and the harvester, at one in
-  sixty, is the rarest part on open sand (2026-10-16, before radios).
+  sixty, is the rarest part on open sand (2026-10-16, before radios). With radios and
+  compasses (2026-10-17), of 4,675 finds radios are one in 24 and compasses one in 44.
 - **Rope and wire** lie as one body until they're yours. A coil, taken, gives you a
   line's first end to lay, the rest on your belt. A plug standing in the sand is a
   cable's first end: take it and its 6 m cable and second plug come up with it, a strong

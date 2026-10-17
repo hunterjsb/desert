@@ -161,7 +161,8 @@ that ignored the weather.
   farm (Power) is two planters with harvesters, three carrots and a fungus in each, their
   tanks full. Over three days at the equator it fed you alone: the carrots ripened in the
   first clear spell and the fungus through the storms after, 24 and 56 units, and it
-  dropped 2,700 kcal onto you, of which you ate 2,400, keeping 6,300 more. Your hunger
+  dropped 4,800 kcal onto you, of which you ate 2,400, keeping 4,200 more (with what you
+  carry weight-bound, 2026-10-17; it was 2,700 while two free slots held its drops). Your hunger
   never fell below the mark where the suit feeds you, and every slot stayed sown. A
   planter drops what it stored first, so you ate carrots while the fungus piled up. Its
   water is what ends it: the driest tank had 0.65 L left after three days, and left on,

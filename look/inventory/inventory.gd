@@ -70,10 +70,10 @@ func _capture(out_dir: String) -> void:
 ## playing and a compass.
 func _fill(suit: Suit) -> void:
 	var radio := Catalog.device(&"radio") as Radio
+	world.content.add_child(radio)
 	var cell := Catalog.part(&"battery") as Battery
 	radio.fit(cell, radio.sockets().filter(func(s: Socket) -> bool: return s.kind == &"battery")[0])
 	cell.charge_wh = 64.0
-	world.content.add_child(radio)
 	radio.interact(world.player)
 	var coil := Catalog.part(&"coil")
 	coil.set_meta(&"rolled", &"coil")

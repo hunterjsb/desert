@@ -11,9 +11,10 @@ extends SubViewport
 ## compass nearly straight on, to read.
 const VIEW := Vector2(-35.0, 22.0)
 const READ := Vector2(0.0, 10.0)
-## The camera's field of view, degrees, and the room left round the thing.
+## The camera's field of view, degrees, and how much of the sphere round the
+## thing's box it frames: the box's corners never all face the camera.
 const FOV := 30.0
-const ROOM := 1.08
+const ROOM := 0.8
 ## The needle turns this far, rad, before it's drawn again.
 const NEEDLE_STEP := 0.004
 const PARAMS: Array[StringName] = [&"age", &"era", &"lit"]

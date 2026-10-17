@@ -188,7 +188,10 @@ Death means a new run (see Runs in the vision).
     pace"), and the line and the bar's part past the mark are in the accent.
   - **Cheap:** a tile's picture is drawn only while the view is open, once when what it
     shows changes, and not again until it does; a compass's is drawn again only as its
-    needle turns. «COST»
+    needle turns. Measured at 1920 by 1080 (`look/inventory`, other probe runs sharing the
+    machine), carrying six stacks: the view open and still adds about 0.3 ms a frame, 5.5
+    to 5.7 ms, and draws no picture again; turning with a compass carried, it draws one
+    picture a frame, 0.05 ms of the GPU.
   - **A device you carry works on its own battery, as anywhere else** (Hunter, 2026-10-17,
     rejecting a pocket flag and a built-in cell as exceptions to core systems): it rides on
     you out of sight, touching nothing, and the weather doesn't wear it in the suit. So a
@@ -221,7 +224,8 @@ Death means a new run (see Runs in the vision).
     bearings follow the same north, so the two never disagree. The sun doesn't yet: the
     day is one clock for the whole moon, so past a pole the sun keeps the course it had,
     rising in the compass's west. Turning it round there would make it jump at the pole.
-  - **Found** on the surface, one in nineteen of the surface layer's loose parts «FINDS»,
+  - **Found** on the surface, one in nineteen of the surface layer's loose parts (107 of the
+    4,675 finds salvage probe 5 tallies over two seeds, about one in 44),
     and the console's `give compass` puts one in your hands.
 - **The suit** is what it carries plus its built-ins: air and radiation protection, free
   and drained by nothing. Its sockets for mods (heater, cooler, reclaimer, battery,
