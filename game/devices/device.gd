@@ -32,8 +32,13 @@ var durability := 1.0:
 	set(to):
 		durability = to
 		show_wear()
-## Its painted frame.
+## Its painted frame, and what turns on its mast.
 var frame_view: MeshInstance3D
+var rotor: Rotor
+## The share of its turbine's rating it made when last asked, and the wind it
+## felt then: its rotor turns by the power tick's own sums.
+var turbine_share := 0.0
+var turbine_wind := Vector3.ZERO
 
 ## Set by use: its hover tray draws nothing and lets it down onto the sand,
 ## so a camp staying put keeps its charge.
@@ -166,14 +171,18 @@ func seat_of(other: Device) -> Socket:
 ## What it generates, W, from the felt weather where it stands, now or at
 ## world time t.
 func production_w(t := NAN) -> float:
+	turbine_share = 0.0
 	if world == null or wrecked():
 		return 0.0
 	var now := stats()
 	var watts: float = now["solar_w"] * world.weather.felt_light(global_position + Vector3.UP * 0.5, t)
 	# A turbine works planted: resting on the sand, not floating or being carried.
 	if now["turbine_w"] > 0.0 and not now["can_float"] and linear_velocity.length() < 0.3:
-		var wind := world.weather.felt_wind(global_position, t).length()
-		watts += minf(now["turbine_w"], world.tuning.turbine_watts_per_cubic * wind * wind * wind)
+		turbine_wind = world.weather.felt_wind(global_position, t)
+		var wind := turbine_wind.length()
+		var made := minf(now["turbine_w"], world.tuning.turbine_watts_per_cubic * wind * wind * wind)
+		turbine_share = made / now["turbine_w"]
+		watts += made
 	return watts
 
 
@@ -222,9 +231,10 @@ func wear(share: float) -> void:
 func show_wear() -> void:
 	var layer: StringName = get_meta(&"layer", &"")
 	var amount := Paint.age_of(layer, durability)
-	if frame_view != null:
-		frame_view.set_instance_shader_parameter(&"age", amount)
-		frame_view.set_instance_shader_parameter(&"era", Paint.era_of(layer))
+	for view: MeshInstance3D in [frame_view, rotor]:
+		if view != null:
+			view.set_instance_shader_parameter(&"age", amount)
+			view.set_instance_shader_parameter(&"era", Paint.era_of(layer))
 	for socket in sockets():
 		if socket.marker != null:
 			socket.marker.set_instance_shader_parameter(&"age", amount)

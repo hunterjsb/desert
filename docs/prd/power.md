@@ -187,6 +187,13 @@ the felt-weather rule.
 - **Panels hardly count against a storm.** Over probe 4's two days the camp's panels
   made about 5 Wh, and it passes with them broken. A day of storm costs the base shield
   about 67 Wh, which 90 W of panels earn back in about eleven clear days at the equator.
+- **The turbine's blades turn with what it makes** (2026-10-17). A real rotor turns with
+  the wind and makes power with the wind cubed, so its speed goes with the cube root of
+  its share of the 200 W: slow in a breeze, under a turn a second in the prevailing
+  10 m/s, and two a second at its rating, still two blades and not a blur. It eases up
+  and runs down over a few seconds, stands still while the turbine makes nothing
+  (wrecked, moving, in a bubble or a calm), and swings round on its mast to face into
+  the wind. It's only drawn: it reads what the power tick worked out and touches nothing.
 
 ## Full version
 
@@ -227,6 +234,8 @@ the felt-weather rule.
    its battery just above a quarter: its tray gives way at a quarter and it settles on
    the sand while the shield keeps running, and the light panel brings the battery back
    until it floats again.
+10. **The rotor turns.** A planted turbine's blades turn faster in a gale than in a
+    light wind, and stand still while it's dragged or once it's wrecked.
 
 ## Out of scope
 

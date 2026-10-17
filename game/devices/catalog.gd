@@ -311,6 +311,11 @@ static func device(id: StringName) -> Device:
 		made.carryable = true
 	var size: Vector3 = spec.size
 	made.frame_view = _add_box(made, size, Vector3.ZERO, Color(0.55, 0.55, 0.55), Dress.frame(id, size, spec.get("mast", 0.0)))
+	if spec.has("mast"):
+		made.rotor = Rotor.new()
+		made.rotor.mesh = Dress.rotor(id)
+		made.rotor.position = Vector3(0.0, size.y * 0.5 + spec.mast, 0.0)
+		made.add_child(made.rotor)
 	if spec.sockets.any(func(e: Array) -> bool: return e[0] == &"battery"):
 		made.charge_light = ChargeLight.make(Vector3(0.05, 0.05, 0.05))
 		# High on its right side, where nothing on its top mounts covers it.

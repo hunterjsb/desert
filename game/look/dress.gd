@@ -19,6 +19,20 @@ static func part(id: StringName, size: Vector3) -> ArrayMesh:
 	return _cached(&"part", id, func() -> ArrayMesh: return _part(id, size))
 
 
+## What turns on a frame's mast head, about its own +Z, or null for none: a
+## turbine's hub and blades, something to see turn into the wind, not to touch.
+static func rotor(id: StringName) -> ArrayMesh:
+	return _cached(&"rotor", id, func() -> ArrayMesh:
+		if id != &"turbine":
+			return null
+		var b := Paint.Pieces.new()
+		b.drum(0.06, 0.08, Vector3(0.0, 0.0, 0.04), Paint.coat(Paint.BLACK, 0.3, 0.3, 0.6), Basis(Vector3.RIGHT, PI / 2.0), 12)
+		for s in [-1, 1]:
+			b.box(Vector3(0.55, 0.08, 0.02), Vector3(s * 0.32, 0.0, 0.06), Paint.coat(Paint.BONE, 0.8), 0.006)
+			b.box(Vector3(0.08, 0.082, 0.022), Vector3(s * 0.56, 0.0, 0.06), Paint.coat(Paint.YELLOW, 0.6), 0.004)
+		return b.commit())
+
+
 ## A free socket's tell: a dark bezel with a tab in its kind's colour.
 static func tell(kind: StringName) -> ArrayMesh:
 	return _cached(&"tell", kind, func() -> ArrayMesh:
@@ -104,12 +118,8 @@ static func _frame(id: StringName, size: Vector3, extra: float) -> ArrayMesh:
 				if side == 2:
 					b.stamp(Paint.Mark.WIND_MAKER, turn * Vector3(0.0, -0.02, h.z), 0.24, turn, Paint.Ink.PALE)
 				b.box(Vector3(size.x - 0.12, size.y - 0.14, 0.012), turn * Vector3(0.0, -0.02, h.z - 0.004), teal, 0.004, turn)
-			# The mast and its blades: something to see turn into the wind, not to touch.
+			# The mast; its hub and blades are its rotor, on the mast's head.
 			b.drum(0.04, extra, Vector3(0.0, h.y + extra * 0.5, 0.0), gun, Basis.IDENTITY, 12, 0.03)
-			b.drum(0.06, 0.08, Vector3(0.0, h.y + extra, 0.04), black, Basis(Vector3.RIGHT, PI / 2.0), 12)
-			for s in [-1, 1]:
-				b.box(Vector3(0.55, 0.08, 0.02), Vector3(s * 0.32, h.y + extra, 0.06), Paint.coat(Paint.BONE, 0.8), 0.006)
-				b.box(Vector3(0.08, 0.082, 0.022), Vector3(s * 0.56, h.y + extra, 0.06), Paint.coat(Paint.YELLOW, 0.6), 0.004)
 		&"condenser":
 			for x in [-1, 1]:
 				for z in [-1, 1]:
