@@ -26,6 +26,8 @@ var b: RopeEnd
 var length: float
 ## All there is of it, m: paid out, it lengthens no further.
 var full: float
+## Still feeding off its coil, so it reaches as far as all of it.
+var paying := false
 ## Its own weight, kg per metre; 0 is the look-test's weightless line.
 var kg_per_m := 0.0
 ## Springs back this many times a second when stretched, whatever hangs on it.

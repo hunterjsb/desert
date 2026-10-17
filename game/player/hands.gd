@@ -42,6 +42,8 @@ const STICKY := 0.7
 ## something, so resting against it doesn't count, m.
 const SKIN := 0.005
 const GHOST := Color(0.75, 0.95, 1.0)
+## Why use did nothing stays in the readout this long, s.
+const NOTICE := 1.5
 ## Reel in and pay out bring what you carry this near your eyes, or push it
 ## this far out, m; nothing comes nearer than clears you.
 const HOLD_NEAREST := 0.5
@@ -58,7 +60,8 @@ var grasp: Grasp
 ## The line you work hand over hand.
 var reel: Reel
 ## What the look ray hits: a loose part, or a device and, when it's a fitted
-## part, that part's socket, or the sand; and where it hit.
+## part, that part's socket, or the sand itself (not a ruin standing in it);
+## and where it hit.
 var look_part: Part
 var look_device: Device
 var look_socket: Socket
@@ -73,6 +76,8 @@ var sight_to := Vector3.ZERO
 var socket: Socket
 var gap := INF
 var pull := 0.0
+## What the readout says about why use did nothing, while it shows.
+var notice := ""
 
 var _player: Player
 var _tuning := Tuning.current()
@@ -128,6 +133,7 @@ var _hud: CanvasLayer
 var _sound: AudioStreamPlayer
 var _hum: AudioStreamPlayer
 var _seated_count := 0
+var _notice_left := 0.0
 var _cast := PhysicsShapeQueryParameters3D.new()
 var _inside := PhysicsShapeQueryParameters3D.new()
 
@@ -457,7 +463,7 @@ func _look() -> void:
 	look_point = hit.position
 	look_normal = hit.normal
 	var body: Object = hit.collider
-	look_sand = body is StaticBody3D
+	look_sand = _is_sand(hit)
 	if look_part != null or look_device != null:
 		# Assisted: the small thing you aimed near, not the sand under it.
 		return
@@ -495,6 +501,30 @@ func _under() -> void:
 	if best != null:
 		look_device = best.get_parent() as Device
 		look_socket = best
+
+
+## The ground's own heightmap; a ruin's boxes share its body.
+static func _is_sand(hit: Dictionary) -> bool:
+	var body := hit.collider as StaticBody3D
+	if body == null:
+		return false
+	var shape := body.shape_owner_get_owner(body.shape_find_owner(hit.shape)) as CollisionShape3D
+	return shape != null and shape.shape is HeightMapShape3D
+
+
+## How far along your look it meets something, out to `far`, m, or INF.
+func meets(far: float) -> float:
+	var eye := _player.camera.global_transform
+	var ray := PhysicsRayQueryParameters3D.create(eye.origin, eye.origin - eye.basis.z * far)
+	ray.exclude = _exclusions()
+	var hit := get_world_3d().direct_space_state.intersect_ray(ray)
+	return INF if hit.is_empty() else eye.origin.distance_to(hit.position)
+
+
+## Says in the readout, for a moment, why use did nothing.
+func say(why: String) -> void:
+	notice = why
+	_notice_left = NOTICE
 
 
 ## Last on, first off: aimed at a hook with a line tied to it, it's the line's
@@ -1147,7 +1177,12 @@ func _part_stats(part: Part) -> Dictionary:
 
 func _show(delta: float) -> void:
 	var line := ""
-	if look_part != null:
+	_notice_left = maxf(_notice_left - delta, 0.0)
+	if _notice_left <= 0.0:
+		notice = ""
+	if notice != "":
+		line = notice
+	elif look_part != null:
 		line = describe(look_part.label, look_part.mass, _part_stats(look_part))
 	elif look_socket != null and look_socket.part != null:
 		line = describe(look_socket.part.label, look_socket.part.mass, _part_stats(look_socket.part))

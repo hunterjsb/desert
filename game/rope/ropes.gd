@@ -151,12 +151,14 @@ func at_waist(rope: Rope) -> bool:
 ## Where a line's end in your hand can be, wanting to be at `want`: no further
 ## from the other end of each of its lines than the line reaches, or than
 ## your body is less an arm's length. Holding a loaded line your arm follows
-## it, so turning round swings your view, never a yank down the line.
+## it, so turning round swings your view, never a yank down the line. A line
+## still paying out reaches as far as its coil holds.
 func reach(end: RopeEnd, want: Vector3) -> Vector3:
 	var body := world.player.global_position + Vector3.UP * HAND_AT.y
 	for rope in lines_on(end):
 		var other := (rope.b if rope.a == end else rope.a).global_position
-		var most := maxf(rope.length * (1.0 + SWING_SLACK), other.distance_to(body) - _tuning.hold_distance)
+		var most := maxf((rope.full if rope.paying else rope.length) * (1.0 + SWING_SLACK),
+			other.distance_to(body) - _tuning.hold_distance)
 		var off := want - other
 		if off.length() > most:
 			want = other + off.normalized() * most

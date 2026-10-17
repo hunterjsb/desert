@@ -13,6 +13,12 @@ const DRIVEN_AT := -0.05
 ## in. On the head, not past it, so a dragged stake can't dip its eye in the sand.
 const RING := Vector3(0.0, 0.4, 0.0)
 
+## Looking at anything this near, m, use means to drive it in there; past it
+## you're looking out over the sand.
+const AIMED := 5.0
+const NOT_SAND := "Not sand: a stake only goes into the sand"
+const OUT_OF_REACH := "Out of reach: look at sand nearer you"
+
 ## Newtons of sustained pull it holds.
 var holding := 2500.0
 ## The net pull of its lines this tick, and sustained, N.
@@ -55,13 +61,21 @@ func drive(at: Vector3, ground: float) -> void:
 	sustained = 0.0
 
 
-## Used over the sand: it goes in where you look.
+## Used, it goes into the sand where you look, if it's in reach. Looking at
+## anything else near, it stays in your hand and says why, rather than going
+## to your waist and standing in the air before you: only a look out over the
+## sand sends one with lines on it there.
 func use(by: Player, at: Vector3) -> bool:
-	if not by.hands.look_sand:
+	var hands := by.hands
+	if hands.look_sand:
+		hands.stow()
+		drive(at, by.world.height_under(at))
+		Sounds.play_at(self, Sounds.STAKE)
+		return true
+	var off := hands.meets(AIMED)
+	if off == INF and by.waist.carries_line(self):
 		return false
-	by.hands.stow()
-	drive(at, by.world.height_under(at))
-	Sounds.play_at(self, Sounds.STAKE)
+	hands.say(NOT_SAND if off <= Tuning.current().reach else OUT_OF_REACH)
 	return true
 
 
