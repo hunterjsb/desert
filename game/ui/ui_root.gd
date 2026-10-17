@@ -49,6 +49,10 @@ func holds_input() -> bool:
 	return is_open() or _fading
 
 
+func is_fading() -> bool:
+	return _fading
+
+
 func top() -> Words:
 	return null if _menus.is_empty() else _menus.back()
 
@@ -140,12 +144,39 @@ func show_main_menu(note := "") -> void:
 	open(menu)
 
 
-## Options and Save & quit, over the running game.
+## Options, Save in a Normal run, and Save & quit, over the running game.
+## Save says how it went in its own word.
 func system_menu() -> Words:
 	var menu := Words.new("")
 	menu.add("Options", func() -> void: open(options()))
+	if main.saves() != null and not main.ironman():
+		var said := ["Save"]
+		menu.add(func() -> String: return said[0], func() -> void:
+			said[0] = "Saved" if main.save_run() else "Couldn't save")
 	menu.add("Save & quit" if main.saves() != null else "Quit to menu", main.save_and_quit)
 	return menu
+
+
+## Which rules the new run plays by, for good: Normal highlighted.
+func modes() -> Words:
+	var menu := Words.new("Normal saves as you go. In Ironman, death ends the run.")
+	menu.add("Normal", main.new_game.bind(false))
+	menu.add("Ironman", main.new_game.bind(true))
+	return menu
+
+
+## After a death in a Normal run: the last save back, highlighted, or a new
+## run on a new seed. Back doesn't wave it away.
+func show_death() -> void:
+	close_all()
+	for panel in get_tree().get_nodes_in_group(PANELS):
+		panel.close()
+	var menu := Words.new("You died")
+	menu.root = true
+	if main.has_save():
+		menu.add("Load last save", main.resume)
+	menu.add("New run", main.new_game.bind(false, true))
+	open(menu)
 
 
 func options() -> Words:
@@ -193,9 +224,9 @@ func confirm(question: String, no: String, yes: String, act: Callable) -> Words:
 
 func _new_game() -> void:
 	if main.has_save():
-		open(confirm("This ends your saved run", "Keep it", "New game", main.new_game))
+		open(confirm("This ends your saved run", "Keep it", "New game", func() -> void: open(modes())))
 	else:
-		main.new_game()
+		open(modes())
 
 
 ## Confirm steps a setting on, round from the last value to the first; left
