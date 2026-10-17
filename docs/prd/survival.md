@@ -34,10 +34,13 @@ the default is a Tilg & Standard contractor. See [the vision](../vision.md#playe
   falls below 15% of the sun overhead and the whole sky's, which is sunset, any night,
   or deep in a storm by day, and off again only past 25%, so it never flickers at the
   edge (probe 11). It needs no action, power or bar, and nothing in the world reads it.
-  In a storm at midnight, where the sand is otherwise 0.7 (L*, from `look/headlamp`),
-  the sand 5 m ahead is 35 with steps 5 darker, 10 m ahead 13 with steps 2 darker, and
-  15 m ahead 6. By a camp the bubble's ring and a lamp's own pool still stand out in
-  its light. It costs the GPU nothing measurable at 1920x1080 (within 0.1 ms, the
+  In a storm at midnight, where the sand is otherwise under 0.5 (L*, from
+  `look/headlamp` at the fixed exposure, measured again under Tu's light 2026-10-17),
+  the sand 5 m ahead is 36 with steps 5 darker, 10 m ahead 13 with steps 2 darker, and
+  15 m ahead 5. With the eye ([art direction](../art-direction.md#eye-adaptation),
+  `look/headlamp --eye`) the beam holds it to under twice: 46, 19 and 8, steps 5, 3 and 2
+  darker, and the dark round it stays black. By a camp the bubble's ring and a lamp's
+  own pool still stand out in its light. It costs the GPU nothing measurable at 1920x1080 (within 0.1 ms, the
   noise of four runs); its shadows would add 0.06 to 0.3 ms. Tuning's Light group
   holds its thresholds and beam.
 - **Losing the suit kills you.** For now that's the whole rule.

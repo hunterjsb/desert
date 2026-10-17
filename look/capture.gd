@@ -19,6 +19,8 @@ func _ready() -> void:
 	AudioServer.set_bus_mute(0, true)
 	Dev.hide_overlays()
 	Tuning.current().run_seed = 1234
+	# The fixed exposure, not the eye's, so shots and readings compare across builds.
+	Tuning.current().eye_adapts = false
 	var world: World = WORLD_SCENE.instantiate()
 	add_child(world)
 	for i in 1800:

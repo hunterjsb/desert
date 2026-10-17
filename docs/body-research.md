@@ -406,14 +406,14 @@ open items are listed last.*
    overhead only at the sub-Tu point.
 7. **How bright a near-side night is.** Earlier: "Near-side nights are lit by a full giant
    at ~150–270 lux... That makes the board's 'night as safe exploration' honest." Now 140,
-   310 and 640 lux at 6°, 9° and 13°, at Jupiter's albedo. The game has no eye adaptation, so the
-   same share of the sun reads much darker on screen than those lux would to a person
-   standing there: at the physical value a full-Tu night has a seventh of the light the
-   game's nights had before at 13°, a fifteenth at 9° and a thirty-fourth at 6°. Tu-shine
-   has its own tuning scale for that, 1 (physical) by default. A scale of 3 keeps a 13° night
-   plainly night with the dunes readable. **Answered (Hunter, 2026-10-17):** eye adaptation,
-   to build after Tu, with Tu's light kept physical ([art
-   direction](art-direction.md#eye-adaptation)), so the scale stays at 1.
+   310 and 640 lux at 6°, 9° and 13°, at Jupiter's albedo. On a fixed exposure the same share
+   of the sun reads much darker on screen than those lux would to a person standing there:
+   at the physical value a full-Tu night has a seventh of the light the game's nights had
+   before at 13°, a fifteenth at 9° and a thirty-fourth at 6°. Tu-shine has its own tuning
+   scale for that, 1 (physical) by default, and a scale of 3 was suggested. **Answered
+   (Hunter, 2026-10-17):** eye adaptation, with Tu's light kept physical, so the scale stays
+   at 1. Built: on a full-Tu night at 13° the eye opens about three times, where the dunes
+   read as they did at 3 ([art direction](art-direction.md#eye-adaptation)).
 
 **Open in the spec**
 

@@ -30,6 +30,8 @@ const GPU_ROUNDS := 3
 func _enter_tree() -> void:
 	var tuning := Tuning.current()
 	tuning.run_seed = SEED
+	# The fixed exposure, not the eye's, so shots and readings compare across builds.
+	tuning.eye_adapts = false
 	# No storm anywhere, and still air, so nothing but the sky changes.
 	tuning.storm_threshold = 10.0
 	tuning.prevailing_speed = 0.0

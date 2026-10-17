@@ -19,6 +19,8 @@ const TURNING := 3.0
 
 func _enter_tree() -> void:
 	Tuning.current().run_seed = SEED
+	# The fixed exposure, not the eye's, so shots and readings compare across builds.
+	Tuning.current().eye_adapts = false
 
 
 func _ready() -> void:

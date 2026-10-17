@@ -71,6 +71,8 @@ func _enter_tree() -> void:
 	storm = args.has("--storm")
 	var tuning := Tuning.current()
 	tuning.run_seed = SEED
+	# The fixed exposure, not the eye's, so shots and readings compare across builds.
+	tuning.eye_adapts = false
 	# Clear skies unless it's the storm's turn; the equator is stormy.
 	if not storm:
 		tuning.storm_threshold = 0.9

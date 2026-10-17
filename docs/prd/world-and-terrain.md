@@ -163,12 +163,14 @@ trail touching 30 to 60) if a resumed run should keep its trail.
   of it, leaves the oldest steps 61% of their depth (probe 10). Tuning's Tracks group
   holds the window and both rates.
 - **How they read**, as lightness (CIE L*) over each mark against the sand beside it,
-  fresh and after eight minutes of storm, from `look/tracks` (measured before Tu's light
-  replaced the old night light everywhere, so the night figures are due again): in clear day the sand is
-  76 and steps 9 darker fresh, 3 aged; in a storm by day the sand is 20 and steps 6
-  darker, 5 aged; at night the sand is 9 and steps 4 darker, nearly half its light, 2
-  aged. **In a storm at night there's no light at all** (the sand is 0.7): no ground
-  reads, so neither do tracks, except in a lamp's or a shield's light. A lamp like a
+  fresh and after eight minutes of storm, from `look/tracks` at the fixed exposure: in
+  clear day the sand is 76 and steps 9 darker fresh, 3 aged; in a storm by day the sand
+  is 20 and steps 6 darker, 5 aged. At night under Tu's light, Tu half lit near
+  midnight (measured again 2026-10-17), the sand is 2 and steps about 1 darker, too
+  faint to tell fresh from aged. The eye ([art direction](../art-direction.md#eye-adaptation))
+  opens on it, and then the sand is 5 and steps 2 darker (`look/tracks --eye`). **In a
+  storm at night there's no light at all** (the sand is 0, and 0.4 with the eye): no
+  ground reads, so neither do tracks, except in a lamp's or a shield's light. A lamp like a
   device's at your side lights about 5 m, where steps are half the sand's light. The
   suit's headlamp (Survival) is the light you carry that makes storm nights navigable.
 - **Cost**, measured with the game running beside it: pressing takes at most 0.2 ms of

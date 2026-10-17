@@ -363,6 +363,13 @@ All run without a window, with a fixed seed.
 12. **Local time follows longitude.** A quarter of the way round to the east it's six hours
     later, and the drawn sun, the light, the warmth and a radio's day music follow; to the
     west it's six hours earlier.
+13. **The eye** ([art direction](../art-direction.md#eye-adaptation)). Handed readings as
+    its meter would give them, it's as before in daylight. On a frame as black as a night
+    with no Tu it opens over time, never at once: about a doubling in the first few
+    seconds, then on to its floor within half a minute, never past it. Back in daylight
+    it closes within two seconds, never past where it began. With Tu's disc in view it
+    opens only so far as keeps it short of white. The camera takes its exposure, and the
+    fixed one with the eye off.
 
 ## Out of scope
 

@@ -70,6 +70,8 @@ var _jump := ""
 func _enter_tree() -> void:
 	# Before the World's _ready builds the weather from it.
 	Tuning.current().run_seed = SEED
+	# The fixed exposure, not the eye's, so shots and readings compare across builds.
+	Tuning.current().eye_adapts = false
 	# Its own props only: nothing found lies among them.
 	Tuning.current().salvage = false
 

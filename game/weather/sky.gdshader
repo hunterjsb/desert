@@ -4,7 +4,9 @@
 // and seen through Zan's air, like the stars behind it. The sun's disc is the
 // storm pass's, which draws over all of this.
 shader_type sky;
-render_mode use_debanding, disable_fog;
+// No debanding of its own: it would dither before the tonemap, where the eye
+// opening on a dark night magnifies it. The project's dithers after.
+render_mode disable_fog;
 
 // The day's gradient, as the stock sky drew it.
 uniform vec4 sky_top_color : source_color = vec4(0.385, 0.454, 0.55, 1.0);
