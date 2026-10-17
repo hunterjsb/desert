@@ -15,7 +15,8 @@
 # a probe whose header says "## Time limit: N s" gets N instead.
 # PROBE_EXCEPT lists folders to leave out of a full run, so CI can split the
 # suite into parallel jobs and still catch every folder nobody listed.
-# PROBE_JOBS probes run at once (default one per physical core, at least 4),
+# PROBE_JOBS probes run at once (default one per physical core, at least 4, or
+# 2 while someone is playing),
 # the slowest first by the last run's times; a probe whose header says "## Runs alone" times real frames, so
 # it runs after the rest, by itself.
 set -uo pipefail
@@ -155,6 +156,14 @@ fi
 # its subshell and never reaches the next one.
 n=0
 cores=$(($(nproc) / 2))
+# Someone is playing, the game in a window or a Steam game: leave them the machine.
+playing() {
+	pgrep -a -x godot | grep -qv -- '--headless' || pgrep -f 'steamapps/common/' >/dev/null
+}
+if [[ -z ${PROBE_JOBS:-} ]] && playing; then
+	echo "someone is playing: 2 probes at once" >&2
+	PROBE_JOBS=2
+fi
 jobs_at_once=${PROBE_JOBS:-$((cores > 4 ? cores : 4))}
 for probe in "${together[@]}"; do
 	while (($(jobs -rp | wc -l) >= jobs_at_once)); do
