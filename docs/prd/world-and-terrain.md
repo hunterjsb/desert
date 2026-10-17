@@ -137,8 +137,8 @@ trail touching 30 to 60) if a resumed run should keep its trail.
   darker, 5 aged; at night the sand is 9 and steps 4 darker, nearly half its light, 2
   aged. **In a storm at night there's no light at all** (the sand is 0.7): no ground
   reads, so neither do tracks, except in a lamp's or a shield's light. A lamp like a
-  device's at your side lights about 5 m, where steps are half the sand's light. A light
-  you carry would make storm nights navigable; that's a design question, not this one.
+  device's at your side lights about 5 m, where steps are half the sand's light. The
+  suit's headlamp (Survival) is the light you carry that makes storm nights navigable.
 - **Cost**, measured with the game running beside it: pressing takes at most 0.2 ms of
   a tick walking, 0.3 riding and 0.4 to 1.0 dragging a crate, and uploading at most
   0.6 ms of a frame. Drawing them costs an RTX 3070 about 0.2 ms a frame at

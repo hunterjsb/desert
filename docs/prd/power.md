@@ -72,7 +72,8 @@ the felt-weather rule.
 - **Shields,** by type. A full base shield lasts about 30 minutes in a storm. The main
   way to save power is to switch it off and stay out of storms.
 - **Hover trays** keep camp pieces floating, and their draw rises with the weight they
-  carry, mounts included. Without enough power, you haul.
+  carry, mounts included. Without enough power, you haul. Use sets a tray resting,
+  drawing nothing, for a camp that's staying put (Devices & mods).
 - **The hoverboard** has its own battery. That's your escape when the shield dies.
 - **Instruments, farming gear and tools** draw small amounts.
 

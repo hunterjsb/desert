@@ -295,6 +295,10 @@ static func describe(label: String, mass: float, stats: Dictionary) -> String:
 		bits.append("%d hook%s" % [hooks, "" if hooks == 1 else "s"])
 	if stats.get("lift_kg", 0.0) > 0.0:
 		bits.append("floats %d kg" % roundi(stats.lift_kg))
+	if stats.get("resting", false):
+		bits.append("resting")
+	elif stats.get("can_float", false):
+		bits.append("floating")
 	if stats.get("in_w", 0.0) > 0.0 or stats.get("out_w", 0.0) > 0.0:
 		bits.append("in %d W · out %d W" % [roundi(stats.get("in_w", 0.0)), roundi(stats.get("out_w", 0.0))])
 	if stats.has("water_l"):

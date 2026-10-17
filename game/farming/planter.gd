@@ -73,7 +73,8 @@ func harvests() -> bool:
 
 
 ## Use: pour the canister you hold into the tank, or with a harvester fitted,
-## step the share it replants.
+## step the share it replants; at its tray, or with nothing else to work, set
+## the tray resting or floating.
 func interact(by: Player) -> bool:
 	var can := by.hands.held as Supply
 	if can != null and can.kind == &"water":
@@ -82,10 +83,11 @@ func interact(by: Player) -> bool:
 		if poured > 0.0:
 			Sounds.play_at(self, Sounds.POUR)
 		return true
-	if harvests():
+	var at := by.hands.look_socket
+	if harvests() and (at == null or at.kind != &"bottom"):
 		split = SPLITS[(SPLITS.find(split) + 1) % SPLITS.size()]
 		return true
-	return false
+	return super(by)
 
 
 ## Taken by hand, a ripe crop comes out as its harvest, food in your hands,

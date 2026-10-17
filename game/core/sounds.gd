@@ -37,7 +37,7 @@ const STEPS: Array[AudioStream] = [preload("res://assets/audio/step_a.ogg"),
 	preload("res://assets/audio/step_f.ogg")]
 const SLIDE := preload("res://assets/audio/slide.ogg")
 const LANDING := preload("res://assets/audio/impact.ogg")
-# The board.
+# The board, its hums also a hover tray lifting off and settling.
 const HOVER := preload("res://assets/audio/hover.ogg")
 const BOARD_ON := preload("res://assets/audio/board_on.ogg")
 const BOARD_OFF := preload("res://assets/audio/board_off.ogg")

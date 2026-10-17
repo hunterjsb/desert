@@ -36,7 +36,7 @@ integrated loudness, peaks never past -6 dBTP. A hard limiter on Master holds -1
 | chime_first/last/lost.ogg | the camp-range warnings | made here: soft bell notes | CC0 | -32, -30, -30 | -21 to -24 |
 | low_tick.ogg | the board's low-battery tick | made here | CC0 | -38 | -17 |
 | hover.ogg | the board's ride | Sand Game `object_bubbleplanter_hover.wav`, cut to a seamless loop | Sand Game | -34 | -21 |
-| board_on.ogg, board_off.ogg | getting on and off the board | made here: a soft rising and falling hum | CC0 | -32 | -19, -21 |
+| board_on.ogg, board_off.ogg | getting on and off the board; a hover tray lifting off and settling | made here: a soft rising and falling hum | CC0 | -32 | -19, -21 |
 | shield_boot/hum/down.ogg | the shield | Sand Game `object_shield-boot`, `-sustain`, `-powerdown` | Sand Game | -26, -34, -28 at 4 m | -12, -22, -12 |
 | menu_move/confirm/back.ogg | the menus | Kenney Interface `click_002`, `select_002`, `back_002` | CC0 | -49, -40, -43 | -21, -16, -19 |
 
