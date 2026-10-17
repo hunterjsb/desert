@@ -112,8 +112,9 @@ func let_go(rope: Rope, end: RopeEnd) -> void:
 ## A line gone altogether, rope and strand: rolled up into its coil.
 func untie(rope: Rope) -> void:
 	_drop(rope)
-	strands.erase(rope.strand)
+	# A strand left hanging may be gone with its ground already, and out of strands.
 	if is_instance_valid(rope.strand):
+		strands.erase(rope.strand)
 		rope.strand.queue_free()
 
 
