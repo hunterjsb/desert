@@ -93,7 +93,8 @@ even storms that last for days.
 - **Racked** (2026-10-16). A crate frame's rack runs along the top of its left side. The
   board is longer than the crate, 1.3 m against 0.8 m, so it overhangs 25 cm front and
   back. It stands on its edge, nose forward and deck out, 1 cm off the side and 17 cm
-  proud of the top, clear of the ring mount below it and its line. It seats the way the
+  proud of the top (clear of the ring mount below it, until the crate lost its side
+  rings on 2026-10-17). It seats the way the
   shield seats on a top mount: holding it at the rack, the tug leans it in and take seats
   it, and take lifts it off again, whole. Racked, it rides exactly on its seat wherever
   the crate goes (towed 40 m, it moved 0.008 mm off its seat at most), its 11 kg join the

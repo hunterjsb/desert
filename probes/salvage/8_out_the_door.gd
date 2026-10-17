@@ -68,8 +68,8 @@ func _held_out() -> void:
 ## on through your hands, then at your waist, you drag it into line with the
 ## door, as you would anything through a doorway, and walk out.
 func _towed_out() -> void:
-	var crate := await _found(991, Vector2(6.8, -1.4), [[0, &"battery", 0.3], [1, &"hook", 0.0], [2, &"hook", 0.0],
-		[4, &"solar_panel", 0.0]])
+	var crate := await _found(991, Vector2(6.8, -1.4), [[0, &"battery", 0.3], [5, &"hook", 0.0], [6, &"hook", 0.0],
+		[2, &"solar_panel", 0.0]])
 	await _stand(crate, Vector2(5.0, -1.4))
 	var line := Line.make(world, world.tuning.rope_coil_length)
 	line.coil.global_transform = Transform3D(Basis(Vector3.RIGHT, -PI / 2.0), _floor(_plan_of(world.player) + Vector2(0.0, -0.5), 0.05))

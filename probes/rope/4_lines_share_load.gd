@@ -1,7 +1,8 @@
 extends LineProbe
-## Rope & tethering probe 4: lines share load. A floating crate on two
-## identical parallel lines, from the hooks on its two sides to stakes straight
-## upwind of them: each line carries about half its wind load. Then the wind
+## Rope & tethering probe 4: lines share load. A floating crate turned
+## across the wind, a battery at its front and back so it balances, on two
+## identical parallel lines from the hooks there to stakes straight upwind of
+## them: each line carries about half its wind load. Then the wind
 ## rises until the load is half again what one line can bear, and holds there:
 ## the same crate on one line snaps it, the crate on two holds.
 
@@ -21,9 +22,11 @@ func run() -> void:
 	var one := floating(&"crate_frame", spot(4.0, 0.0))
 	var pair: Array[Rope] = []
 	for crate: Device in [two, one]:
+		crate.global_basis = Basis(Vector3.UP, PI / 2.0)
+		fit_part(crate, &"battery")
 		for socket in crate.sockets():
-			# The hooks on its two sides, not those on its front and back.
-			var side := crate.to_local(socket.global_position).x
+			# The hooks' rings, either side of it across the wind.
+			var side := socket.global_position.x - crate.global_position.x
 			if socket.kind != &"tie" or absf(side) < 0.3 or (crate == one and side < 0.0):
 				continue
 			var stake := driven_stake(socket.global_position + Vector3(0.0, 0.0, -5.0))

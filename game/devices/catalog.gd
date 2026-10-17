@@ -79,17 +79,16 @@ const PARTS := {
 ## Frames: their box, weight, wind catch and sockets as [kind, position, outward].
 ## Those marked "deck" stand on a chassis piece's deck mount too.
 const DEVICES := {
-	# Two batteries, a ring on every side, a tray under it and two top mounts,
-	# so a panel rides beside a lamp or a shield. The first battery sits in the
-	# middle of its back, so a crate with one hangs level on its lines. A board
-	# is longer than the crate, so its rack runs along the top of the left side,
-	# away from the charge light, the board standing proud of it to clear the
-	# ring below. Last in the list, so older saves keep their sockets.
+	# Two batteries, a ring front and back, a tray under it and two top mounts,
+	# so a panel rides beside a lamp or a shield; a camp with more lines rides
+	# a chassis. The first battery sits in the middle of its back, so a crate
+	# with one hangs level on its lines. A board is longer than the crate, so
+	# its rack runs along the top of the left side, away from the charge light.
+	# The side rings went on 2026-10-17: older saves number its sockets with
+	# them (Snapshot.RENUMBERED).
 	&"crate_frame": {"label": "Crate frame", "size": Vector3(0.8, 0.5, 0.8), "mass": 15.0, "deck": true,
 		"sockets": [
 			[&"battery", Vector3(0.0, 0.0, 0.4), Vector3.BACK],
-			[&"ring", Vector3(0.4, 0.0, 0.0), Vector3.RIGHT],
-			[&"ring", Vector3(-0.4, 0.0, 0.0), Vector3.LEFT],
 			[&"bottom", Vector3(0.0, -0.25, 0.0), Vector3.DOWN],
 			[&"top", Vector3(0.0, 0.25, -0.2), Vector3.UP],
 			[&"port", Vector3(0.25, 0.1, -0.4), Vector3.FORWARD],

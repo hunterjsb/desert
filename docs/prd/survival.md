@@ -275,7 +275,7 @@ Death means a new run (see Runs in the vision).
   - **a hoverboard** racked on the crate's left side (Hunter, 2026-10-16: "i think it
     should start you w a *racked* hoverboard"), its battery half charged, ready to
     ride: the ride action at it takes it off and steps you on. It's one line of the
-    kit, `10: &"board",` among the crate's sockets, naming the board beside you in the
+    kit, `8: &"board",` among the crate's sockets, naming the board beside you in the
     rack; without that line it lies on the sand at your left.
   None of it overlaps you or each other at the start, the racked board included, and
   neither the crate, the board, the panel nor any shield goes in your slots; you carry a

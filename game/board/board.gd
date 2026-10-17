@@ -17,8 +17,8 @@ const HUM_SAG := 0.7
 const WARNING := 60.0
 const TICK_SLOW := 2.0
 const TICK_FAST := 0.5
-## Racked, it stands this far proud of the rack, m, so its lower edge clears
-## the ring mount below, and its underside rides this far off the crate.
+## Racked, it stands this far proud of the rack, m, and its underside rides
+## this far off the crate.
 const RISE := 0.07
 const GAP := 0.01
 
