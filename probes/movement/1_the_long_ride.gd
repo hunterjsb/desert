@@ -2,9 +2,10 @@ extends MovementProbe
 ## Movement probe 1: the long ride. 20 km flat out on a board over the run's
 ## dunes: half across the ridges, with the wind and against it, up and down
 ## their slip faces, and half wandering, over every chunk seam on the way. The
-## board never dips below the sand. It never launches but where a crest falls
-## away under it, and then not far. It never judders: the facets of the
-## ground's lattice never reach you, and it never slams. It rides far faster
+## board never dips below the sand. It leaves the sand only where a crest
+## falls away under it, never off a bump, a seam or its own landing, and it
+## flies off a big one. It never judders: the facets of the ground's lattice
+## never reach you, and it never slams. It rides far faster
 ## than a game runs, so where the ground ahead isn't solid yet it waits for it,
 ## which changes when it gets there, never where it goes; probe 7 rides at a
 ## game's pace and holds streaming to keeping up.
@@ -18,7 +19,10 @@ const LAUNCH := 0.5
 ## Off a crest: in the half second before, the sand along your way stopped
 ## rising and fell away by this much, m/s.
 const FELL_AWAY := 2.0
-const HIGHEST := 3.0
+## Off the run's biggest crests it flies a few metres; past this it's thrown.
+const HIGHEST := 8.0
+## Launched again this soon after landing, s, it bounced.
+const BOUNCE := 0.5
 ## The hardest the ride may move you up or down, m/s²: about 6 g, the worst
 ## of it climbing flat out straight into a slip face's foot, as hard as the
 ## ground gets; a slam onto the sand would be several times it. And a judder:
@@ -43,8 +47,10 @@ func run() -> void:
 	var down := Vector2.from_angle(WeatherField.mean_heading(world.run_seed))
 	var start_wh := board.battery().charge_wh
 	var seen := {"ridden": 0.0, "lowest": INF, "highest": 0.0, "launches": 0, "astray": 0, "hardest": 0.0,
-		"judders": 0, "seams": 0, "ys": [], "rises": [], "ticks": 0, "fastest": 0.0}
-	var last := {"at": where(), "chunk": _chunk(), "sand": _sand(where()), "airborne": false}
+		"judders": 0, "seams": 0, "ys": [], "rises": [], "ticks": 0, "fastest": 0.0, "longest": 0.0,
+		"bounces": 0}
+	var last := {"at": where(), "chunk": _chunk(), "sand": _sand(where()), "airborne": false, "flying": 0,
+		"landed": -INF}
 	var heading := down
 	var leg_left := LEG
 	var rng := RandomNumberGenerator.new()
@@ -67,14 +73,15 @@ func run() -> void:
 	var used := start_wh - board.battery().charge_wh
 	print("%.1f km in %.0f s, %.1f m/s on average and %.1f at most, over %d chunk seams; %.0f Wh"
 		% [seen.ridden / 1000.0, seen.ticks / 60.0, seen.ridden / (seen.ticks / 60.0), seen.fastest, seen.seams, used])
-	print("underside at least %.3f m over the sand; %d launches off crests, the highest %.2f m over its ride height, %d elsewhere"
-		% [seen.lowest, seen.launches, seen.highest, seen.astray])
+	print("underside at least %.3f m over the sand; %d launches off crests, the highest %.2f m over its ride height and the longest %.2f s, %d elsewhere, %d bounces"
+		% [seen.lowest, seen.launches, seen.highest, seen.longest, seen.astray, seen.bounces])
 	print("hardest %.1f m/s² (%.1f g), %d judders, bottomed %d times"
 		% [seen.hardest, seen.hardest / 9.8, seen.judders, ride.bottomed])
 	check(seen.ridden >= DISTANCE and seen.seams > 250, "20 km over the chunk seams (%d crossed)" % seen.seams)
 	check(seen.lowest >= 0.0, "the board never dipped below the sand (%.3f m at least)" % seen.lowest)
 	check(seen.astray == 0, "it never launched but off a crest (%d elsewhere)" % seen.astray)
 	check(seen.highest < HIGHEST, "and never far off one (%.2f m over its ride height)" % seen.highest)
+	check(seen.bounces == 0, "it never bounced back up off a landing (%d)" % seen.bounces)
 	check(seen.hardest < HARDEST, "it never slammed: nothing harder than %d m/s² (%.1f)" % [HARDEST, seen.hardest])
 	check(seen.judders == 0, "it never juddered (%d)" % seen.judders)
 	set_rate(60)
@@ -107,13 +114,19 @@ func _watch(seen: Dictionary, last: Dictionary) -> void:
 		seen.rises.pop_front()
 	var airborne: bool = ride.gap > LAUNCH
 	if airborne and not last.airborne:
+		if seen.ticks - last.landed < BOUNCE * 60.0:
+			seen.bounces += 1
 		var peak: float = seen.rises.max()
 		if peak - seen.rises[-1] >= FELL_AWAY:
 			seen.launches += 1
 		else:
 			seen.astray += 1
 			printerr("launched with no crest under it at %.0f,%.0f" % [at.x, at.z])
+	if last.airborne and not airborne:
+		last.landed = seen.ticks
 	last.airborne = airborne
+	last.flying = last.flying + 1 if airborne else 0
+	seen.longest = maxf(seen.longest, last.flying / 60.0)
 	seen.highest = maxf(seen.highest, ride.gap)
 	seen.ys.append(at.y)
 	if seen.ys.size() > 5:

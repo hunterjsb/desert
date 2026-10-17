@@ -94,7 +94,7 @@ even storms that last for days.
   riding the prevailing wind at 6 to 14 m/s. Drag grows with speed², and a third of it
   is the air's, felt against the felt wind: a tailwind carries you faster and a headwind
   holds you back, and a tuck (crouch) shows the wind less, about 22 m/s flat out. Slopes
-  pull it as they pull a slide, so it runs past top speed down a slip face (22.8 m/s on
+  pull it as they pull a slide, so it runs past top speed down a slip face (22.9 m/s on
   the long ride) and slows climbing one, to about 11 m/s in still air.
 - **Carving.** Move forward and the sideways moves push and carve where they point from
   your view, as walking does. The board swings round under you at up to 2.5 rad/s and
@@ -128,7 +128,7 @@ even storms that last for days.
     each surge back within a couple of seconds, so over 30 s of ridges pushing flat out a
     rider in rhythm goes 0.8% further than one standing still (the tuck aside). The tuck
     is still the most speed there is flat out: tucked all the way goes 10% further than
-    standing, pumping with the tuck 5%.
+    standing, pumping with the tuck 2.4% (5% before the board caught air).
   - **A drift.** Crouch into a hard carve, 8 m/s or faster with the board swung 20° off
     your way, and the board slides out on purpose: it swings round at 3.5 rad/s, grips at
     14 m/s², and a slide fully sideways bleeds a quarter of its speed a second instead of
@@ -136,17 +136,32 @@ even storms that last for days.
     back within 8° of your way. From 19.4 m/s, a hard turn standing skids round 80° in
     1.05 s and comes out at 12.9 m/s, sliding 46° at most; drifting it comes round in
     1.4 s at 16.6 m/s, sliding 60°.
-- **Floaty.** Its underside rides 0.35 m over the sand and keeps 8 cm clear of it,
-  about 6 cm at a corner. The
-  spring is stiff pressed down and softer lifting off, and pulls you back down at most
-  15 m/s² past gravity, so off a big crest at top speed you float a metre or two; a hop
-  falls at 0.6 g. *(Hunter, 2026-10-16: "it doesnt really seem like we can catch air on
-  the board". It should leave the sand off crests at speed and give real air on a hop,
-  so the spring's pull-down eases once you're clear of the sand.)* It feels the sand along its own length, and the sand round it from
-  0.45 s of travel behind to 0.45 s ahead, both as running means along the way it went,
-  so the ground's lattice never judders it and a dip's bottom is rounded instead of
-  slammed into. Climbing flat out straight into a slip face's foot is the hardest it
-  gets, about 5 g for a moment.
+- **Floaty, and it catches air.** Its underside rides 0.35 m over the sand and keeps
+  8 cm clear of it, about 6 cm at a corner. The spring is stiff pressed down and softer
+  lifting off, and pulls you back down at most 15 m/s² past gravity, but only while the
+  sand is near: that hold eases off over the first 0.5 m above ride height, and past it
+  you fly under gravity alone. It feels the sand along its own length, and the sand
+  round it from 0.45 s of travel behind to 0.45 s ahead, both as running means along the
+  way it went, so the ground's lattice never judders it and a dip's bottom is rounded
+  instead of slammed into. Climbing flat out straight into a slip face's foot is the
+  hardest it gets, about 5 g for a moment.
+- **Air** (Hunter, 2026-10-16: "it doesnt really seem like we can catch air on the
+  board"; built the same day). Flying, only the air's drag slows you, not the hover's,
+  and you turn the board slowly to the sand below so it lands along it. Coming down,
+  the hover brakes your fall evenly to meet the sand at its pace by ride height, about
+  12 m/s² and never more than 36, so a landing from high up is a firm press, never a
+  slam or a bounce. A jump hops 4 m/s up and the hop falls at 0.6 g; from a crouch it
+  pops 1.5 m/s higher, so getting low into a crest, as pumping does, and jumping off its
+  top flies furthest. At 1 g, before and after:
+  - **A hop** on the flat: 0.76 m over ride height for 1.0 s, now 1.35 m for 1.4 s;
+    from a crouch, 2.55 m for 2.0 s (it was no higher).
+  - **Off the biggest crest** within 12 km of spawn, 43 m from crest to trough, pushing
+    flat out with the wind (16.7 m/s at the top): 1.9 m for 0.8 s, now 5.0 m for 2.1 s
+    and 34 m long. Over the small dunes by spawn, 1.3 m for 0.6 s, now 3.0 m for 1.2 s.
+  - **Popping off that crest:** 16.5 m up for 4.6 s and 56 m long, landing at 3.7 g at
+    most. Before, the same pop flew 10 m and landed at 39 g.
+  - At 0.45 g (the dev gravity) a hop is 3.0 m for 3.1 s, a pop 5.7 m for 4.0 s, and the
+    biggest crest 11.4 m for 4.2 s.
 - **Its own battery.** It draws 40 W floating and up to 260 W more at full push (Power):
   a base battery lasts about twenty minutes flat out, about 23 km over the dunes. Out of
   charge, you step off. Outside a bubble the weather wears it like any device.
@@ -188,14 +203,24 @@ feet, the run's starting kit included. Each is forgotten once your chunk is more
 nine from its own (the view's eight, and one more before a chunk is let go), so each has
 an edge 576 to 640 m out along the chunk grid, further on the diagonal. The warnings watch the edge you're heading for: the
 first comes 20 s before you reach it at your pace, or 40 m from it at any pace; the last
-at 8 s or 12 m. Cross it and you're told what was lost. Clear of it again, it can warn
-again. Flat out on the board that's the first warning about 400 m before the edge, so a
-couple of hundred metres from camp, and the last 160 m before it; braking and turning
-back takes about 20 m. The look is a skeleton's, until the open question below is
-answered: a chime (three quick beeps for the last, a falling tone for a loss) and one
-line of text at the top of the view, "Leaving camp range · lost in 18 s", "LAST WARNING ·
-camp lost in 6 s · turn back", "Camp lost · Crate frame". The numbers are in Tuning's
+at 8 s or 12 m. Each comes once and stays up however your way swings, until you're
+clearly back in range: a quarter further from the edge than where the first came. Cross
+the edge and the camp is forgotten right there, not whenever streaming gets round to
+its chunk, and you're told what was lost, once; then it's quiet. Flat out on the board
+that's the first warning about 400 m before the edge, so a couple of hundred metres from
+camp, and the last 160 m before it; braking and turning back takes about 20 m. The look
+is a skeleton's, until the open question below is answered: a chime (three quick beeps
+for the last, a falling tone for a loss) and one line of text at the top of the view,
+"Leaving camp range · lost in 18 s", "LAST WARNING · camp lost in 6 s · turn back",
+"Camp lost · Crate frame". The line counts down once the edge is 20 s off at your pace,
+and gives the distance, "LAST WARNING · camp 140 m from the edge · turn back", once
+it's 40 s off: you've turned back or stopped, not carved. The numbers are in Tuning's
 Camp range group.
+*After Hunter's ride (2026-10-16: "the timer popped so many times"), built the same
+day.* A warning used to re-arm whenever your way swung off the edge or you slowed, so
+carving out from camp fired it again, chime and all, and the line dropped and came
+back; past the edge it said "lost in 0 s" until streaming let the camp's chunk go,
+seconds later on a busy machine.
 
 ## Rules
 
@@ -230,11 +255,14 @@ All built: on foot alongside Stage 5, the board and the camp-range warnings at S
 
 1. **The long ride.** Ride 20 km of dunes, slip faces and chunk seams at top speed. The
    board never dips below the sand, never launches unexpectedly, and never jitters.
-   *(Built: half across the ridges with the wind and against it, half wandering, over
-   411 chunk seams, 18.8 m/s on average. The underside never came nearer the sand than
-   5.8 cm; 55 launches, every one off a crest, at most 1.9 m over its ride height; no
-   judder; the hardest moment 5.3 g, climbing into a slip face; the ground solid under
-   you all the way.)*
+   Unexpectedly means off a bump, a seam or its own landing: off a big crest at speed
+   it should fly. *(Built: half across the ridges with the wind and against it, half
+   wandering, over 408 chunk seams, 18.6 m/s on average. The underside never came
+   nearer the sand than 7.0 cm; 59 launches, every one off a crest, at most 4.9 m over
+   its ride height and 2.0 s long, none within half a second of a landing; no judder;
+   the hardest moment 5.0 g; the ground solid under you all the way. Before the air, 55
+   launches, at most 1.9 m and 0.7 s, and the probe allowed 3 m; it now allows 8 m and
+   counts bounces.)*
 2. **The escape is real.** A charged board escapes a storm front from a set distance.
    *(Built: in the run's own weather, a front 50 m upwind. Flat out downwind on a base
    battery, the front falls behind at about 11 m/s, 2.1 km behind after three minutes,
@@ -250,8 +278,11 @@ All built: on foot alongside Stage 5, the board and the camp-range warnings at S
    warnings fire with enough time to react before the camp is lost. *(Built: from 1 m/s
    to a board's 26 m/s with a tailwind, along the chunk grid and across it, the first
    warning comes 20 s or more before the edge and the last 8 s or more, and past it the
-   camp is lost and you're told. Turning back flat out at the last warning, you come no
-   nearer the edge than 139 m.)*
+   camp is lost and you're told, within 0.1 s of when the last warning's countdown said.
+   Turning back flat out at the last warning, you come no nearer the edge than 139 m.
+   Carving flat out from side to side on past the edge, each warning comes once, the
+   line never drops or changes its form, the loss is told once, and for 30 s after it
+   nothing is up and nothing chimes.)*
 6. **Frame-rate proof.** The same ride at 30, 60 and 120 frames per second follows the
    same path. *(Built: kicks from rest, a push, a carve, a hop, a drift, a coast and a
    brake over 85 m: the same path to a tenth of a millimetre, with the same charge and
@@ -290,13 +321,21 @@ The board after Hunter's first ride has its own:
     24 stamina; up a 31.7° slip face from its foot in 3 s, 13.9 m against 8.8 m.)*
 17. **Pumping.** Over the ridges flat out, a rider in rhythm beats one standing still, but
     only a little, and the wrong way round loses. *(Built: with the tuck switched off,
-    30 s, 546.8 m against 542.4 m, +0.8%; the wrong way round 538.1 m.)*
+    30 s, 544.3 m against 540.1 m, +0.8%; the wrong way round 536.0 m.)*
 18. **The drift.** A hard turn crouched slides further out and keeps more speed than the
     same turn skidding, and standing up grips again. *(Built: from 19.4 m/s, out at
     16.6 m/s against 12.9, sliding 60° against 46°.)*
 19. **The tilt settles.** Flat out across the ridges, carving hard each way, the board's
     pitch and lean never jump. *(Built: at sixty ticks, the lean at most 2.9° a tick, the
-    pitch 1.4°; before, the lean snapped up to 60° and the pitch moved up to 1.8°.)*
+    pitch 1.4°; before, the lean snapped up to 60° and the pitch moved up to 1.8°. Since
+    the board catches air it flies the slip faces it rode down, so the probe heads into
+    the wind first and climbs them: the pitch moves 1.75° a tick at most, climbing into a
+    slip face's foot, as it did before the air; the lean 2.4°.)*
+20. **Catching air.** A hop flies over a metre for more than a second, and from a crouch
+    it pops higher; off a big crest flat out the board flies 1.5 s or more, 3 m or more
+    up; and landing, pushing or popping off the crests, it never slams, bottoms out or
+    bounces. *(Built: the numbers are under Air, above; the hardest moment flying or
+    landing is 3.7 g.)*
 
 ## Out of scope
 
