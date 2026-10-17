@@ -60,8 +60,8 @@ in. See [the lore research](../lore-research.md).
 The deeper the layer, the older the find, and the better its technology:
 
 1. **Surface:** recent traces, and rare hints of holdouts.
-2. **Bronze Age:** forged goods and cult works from the two Bronze Age feudal eras, which
-   share this layer.
+2. **First Kingdoms to Second Age:** forged goods and cult works from the three ages after the
+   collapse (the First Kingdoms, the Dark Age and the Second Age), which share this layer.
 3. **Skimmer era:** skimmer-era salvage, in the middle.
 4. **Colonial:** the original colonists' technology, which session 3 calls corporate tech.
    It's the oldest, the rarest and the best. You'll almost never find it in shallow erosion;
@@ -70,25 +70,32 @@ The deeper the layer, the older the find, and the better its technology:
    modules), never a whole one.
 
 **Renamed (Agreed, Hunter, 2026-10-16, after session 3).** The list used to read Surface, the
-second empire, the first empire and Colonial. "The second empire," the Bronze Age above the
-ash band, is now **Bronze Age** and holds both feudal eras. "The first empire," which the PRD
-called the smuggler era below the ash band, is now **Skimmer era**; whether the two names
-cover the same years is open (ambiguity D in [the lore
+second empire, the first empire and Colonial. "The second empire," the layer above the ash band,
+became **Bronze Age** and held both feudal eras. "The first empire," which the PRD called the
+smuggler era below the ash band, is now **Skimmer era**; whether the two names cover the same
+years is open (ambiguity D in [the lore
 research](../lore-research.md#14-open-after-session-3)). **Surface** and **Colonial** keep
 their names, and Colonial is the corporate tech. Nothing else about the layers changed, and
 the skeleton's two layers are untouched.
 
+**Renamed again (Agreed, session 4, part 2, 2026-10-17).** The layer called Bronze Age is now
+**First Kingdoms to Second Age**, because the session retires the term and puts three ages in
+place of the two feudal eras. It is one layer spanning all three, as the two shared one before.
+Whether the three should stack as three layers instead is open (the lore research, [section
+16](../lore-research.md#16-open-after-session-4-part-2)).
+
 **The ash band** is the paroxysm, and a readable depth cue in storm-cut dunes. It no longer
-has to divide the Bronze Age layer from the Skimmer era one, and where it sits among the
-layers is an open item (Agreed, Hunter, 2026-10-16, after session 3), so the full version's
-ash band waits on the answer.
+has to divide the First Kingdoms to Second Age layer from the Skimmer era one, and where it sits
+among the layers is an open item (Agreed, Hunter, 2026-10-16, after session 3), so the full
+version's ash band waits on the answer.
 
 **In the world (Agreed, session 3).** Corporate tech lies deepest and rarest, skimmer-era
-salvage in the middle, and Bronze Age forged goods near the surface. Dry, low-oxygen sand
-preserves ruins, and migrating dunes and storms expose and rebury them, which is why harsher
-weather uncovers deeper loot. The four layers above are these three strata with a surface
-layer on top. How finds from the two Bronze Age eras differ inside their one layer is not
-said, so this PRD doesn't try.
+salvage in the middle, and the forged goods of the First Kingdoms to the Second Age near the
+surface. Dry, low-oxygen sand preserves ruins, and migrating dunes and storms expose and rebury
+them, which is why harsher weather uncovers deeper loot. Burial needs little time: dunes and
+eruptions bury ruins within centuries (session 4, part 2). The four layers above are these three
+strata with a surface layer on top. How finds from the three ages differ inside their one layer
+is not said, so this PRD doesn't try.
 
 **The weather decides how deep the sand is stripped.** Stronger storms and fiercer
 winds expose deeper layers. Venture into the storm, or travel into the wind, and you
@@ -112,10 +119,13 @@ current ruin is a placeholder, and large structures are out of scope for now.*
 **What the eras left (Agreed, session 4).** The colonisation era lasted `{COLONIAL_ERA_SPAN}`
 ([placeholders](../lore-research.md#placeholders)), and hover trays and true space-age tech
 were only shipped in then. So the best loot is **intact, sealed colonial facilities**, with
-space-age power generation and late-game base gear. Most scattered ruins were stripped by Bronze
-Age societies, so they hold **worn, reused space-age items with Bronze Age carvings**. Some
-carry useful mods, such as tuning for low-power setups. They're generally lower tier. The layer
-list above says "forged goods and cult works" for the Bronze Age; this adds what they stripped
+space-age power generation and late-game base gear. Most scattered ruins were stripped by the
+societies after the collapse (the notes' wording predates the rename), so they hold **worn,
+reused space-age items with carvings**: the First Kingdoms' heraldry and guild stamps, the
+Second Age's religious symbols. Some carry useful mods, such as tuning for low-power setups,
+which is the First Kingdoms' reworked, low-power gear (session 4, part 2: "every repair
+cannibalises something else"). They're generally lower tier. The layer list above says "forged
+goods and cult works" for the First Kingdoms to Second Age layer; this adds what they stripped
 and reused. Which is commoner is not said.
 
 **Era gear has trade-offs, not a ladder.** The notes' example is the crate:
@@ -124,14 +134,18 @@ and reused. Which is commoner is not said.
 |---|---|
 | **Colonial** | Best power efficiency per kilogram |
 | **Skimmer era** | Light, cheap and fragile, because Zan wasn't a desert yet and gear wasn't built for storms |
-| **Bronze Age** | Practical to drag without a hover tray, still mountable, somewhat worse power efficiency per kilogram |
+| **First Kingdoms** | Practical to drag without a hover tray, still mountable, somewhat worse power efficiency per kilogram |
 
-[Devices & mods](devices-and-mods.md#frames-by-era) has the frames' side of it. The shield's
-shape is the first to change by era ([art direction](../art-direction.md#shape-by-era)).
+The notes name this row for the societies after the collapse. Session 4, part 2 ties reworked,
+low-power gear to the First Kingdoms, so the row is theirs. What a Dark Age or Second Age crate
+is like is not said. [Devices & mods](devices-and-mods.md#frames-by-era) has the frames' side of
+it. The shield's shape is the first to change by era
+([art direction](../art-direction.md#shape-by-era)).
 
 **Ruins by era, kept simple.**
-- **Bronze Age:** pillars and wall stubs from an outpost or complex, holding Bronze Age gear.
-  The base case.
+- **First Kingdoms to Second Age:** pillars and wall stubs from an outpost or complex, holding
+  that era's gear. The base case. The notes don't say which of the three ages built it, so it
+  spans them. The Second Age adds the crusader bunkers (below).
 - **Skimmer era:** wreck props, such as a crashed hull or hangar frame. They sit with the
   skimmer ruins above (cradles, tethers, catch stations, crew wreckage), and the notes pick the
   simple version.
@@ -143,6 +157,38 @@ shape is the first to change by era ([art direction](../art-direction.md#shape-b
 **The collector (idea).** A net like those in the game Raft, catching wind-blown loot. What
 blows is open. It would suit the oyster, who never finds ruins (a reading; the notes don't link
 them).
+
+## Crusader bunkers on older sites
+
+*Agreed, session 4, part 2 ([lore session](../lore-session-2026-10-17-part-2.md)); loose, and
+none of it is built.* The Second Age empire can't reliably hold Port Morgan, so holding it is a
+Templar-style holy war, kept by a military order with water convoys and fortified outposts dug
+into colonial ruins ([the lore](../lore-research.md#the-dark-age-and-the-second-age-agreed-session-4-part-2)).
+**The gameplay, the session's own: crusader bunkers sit on top of much older sites.**
+
+Readings, not in the session:
+- A bunker is a ruin type of its own, a Second Age building (religious symbols) standing over a
+  colonial site, so one place stacks two eras: "history runs backwards" in a single walk-through.
+- It is above ground in the sense this PRD means, built on top. The session also says "dug
+  into," which would be a descent (open questions).
+
+## Landmarks
+
+*Agreed, session 4, part 2; loose, and none of it is built.* Landmarks are one general system,
+not one-offs: a small class of prefab sites at fixed coordinates on the planet grid, the same in
+every run, that persist the player's changes. They're the only fixed things on a shifting moon,
+the exception to unloading out-of-range content ([World & terrain](world-and-terrain.md#landmarks)
+has the rule). They can unlock endings and, for the prisoner, spawns. Candidates: the StarCom
+antenna, the black site, the Bastion and the Ledger ([the endings](../vision.md#landmarks-and-endings)).
+
+What it means for this PRD, as readings:
+- A landmark is a ruin that is not seeded: a fixed, hand-built place, so the rule that puts at
+  most one ruin in each square of chunks doesn't place it.
+- "Persist the player's changes" means what you took from it stays taken and what you repaired
+  stays repaired. The run save already keeps which finds near you were taken; a landmark's
+  record would be the same kind, kept whatever the distance (Profile & saves).
+- A landmark can be big, a fortress round a mainframe or a bunker cut into a rift wall, where the
+  notes put large structures out of scope for now. They are later work.
 
 ## People: only hinted
 
@@ -313,13 +359,14 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
 
 ## Full version
 
-- **All four layers,** from recent traces down to colonial: Surface, Bronze Age, Skimmer era
-  and Colonial, with the ash band's place still open.
+- **All four layers,** from recent traces down to colonial: Surface, First Kingdoms to Second
+  Age, Skimmer era and Colonial, with the ash band's place still open.
 - **Things surfacing during a storm.** Sand pours off something new right beside you.
   It's placed, not dug.
 - **Many ruin types,** part-buried, with interiors (all above ground), placed by terrain
   and carrying their makers' marks. Session 4 starts them as one per era (Gear and ruins by
-  era), and its colonial bunker clashes with "all above ground" (open questions).
+  era), and its colonial bunker clashes with "all above ground" (open questions). Session 4,
+  part 2 adds the crusader bunkers on older sites and the landmarks (both above).
 - **Lore through item descriptions** that hint and never state.
 - **Radio frequencies.**
 - **The hints of people.**
@@ -351,9 +398,12 @@ Lore starts in **item descriptions**. They hint and never state. The game never 
 outright what happened here. In the world, spelling carries age: X-spelled names
 (XN-118-7, Xanathivin) are old and official, and the Z-spelled Zan is late and colloquial
 ([the lore research](../lore-research.md#names-the-ug-catalog-and-the-moon)). Session 3 adds
-that the forms between them, skimmer-era slang and Bronze Age variants, date a ruin too, and
-that the giant's name, Tu, wears down the same way from a designation number
-([the names](../lore-research.md#hierarchy-and-the-name-decay-agreed-session-3)).
+that the forms between them, skimmer-era slang and the variants of the ages after the collapse,
+date a ruin too, and that the giant's name, Tu, wears down the same way from a designation
+number ([the names](../lore-research.md#hierarchy-and-the-name-decay-agreed-session-3)).
+Session 4, part 2 adds worn names and slang to use in carvings and radio chatter: Zan, Tu, Han,
+Mon, Aitch, Monward, Hanmen, Zanborn and the tu- prefix
+([the names](../lore-research.md#slang-and-name-erosion-agreed-session-4-part-2)).
 
 ## Open questions
 
@@ -374,9 +424,10 @@ Session 4's clashes with what's above are quoted and left standing. Nothing here
   better its technology"; the vision: "Everything built after them is cruder"; art direction:
   "this is where 'older is better' reads best"; and the deep shield "is an upgrade." The
   notes: "Era gear has trade-offs, not a ladder." Colonial wins on power efficiency, but the
-  skimmer-era crate is lighter and cheaper and the Bronze Age one drags without a tray. Both
+  skimmer-era crate is lighter and cheaper and the First Kingdoms one drags without a tray. Both
   can hold if tier orders how good a find is while a frame's traits trade (the notes call
-  Bronze Age ruins "generally lower tier"). Not said whether that is the reading.
+  the ruins of the ages after the collapse "generally lower tier"). Not said whether that is the
+  reading.
 - **The built ruin against the base case.** The built ruin is a roofed building with a hall,
   and the radio's beacon and the "go looking" scenario point at its hall ("The ruin's hall
   always holds a device with at least two parts to strip"). The notes: the current ruin "is a
@@ -392,3 +443,13 @@ Session 4's clashes with what's above are quoted and left standing. Nothing here
   not dropped"; the vision: "Only what's around the player exists," and stateless. The notes:
   "a net... that catches wind-blown loot. What blows is open." Not said: what blows, where it
   comes from, and whether the net works only while its chunk is loaded.
+- **One layer or three.** The layer list has one for the First Kingdoms, the Dark Age and the
+  Second Age. Session 4, part 2 names three ages and says dunes and eruptions bury ruins within
+  centuries, so the oldest could lie deepest. Not said whether they stack.
+- **Crusader bunkers: "dug into" or "on top of."** Here: "Everything is above ground: there's no
+  digging and nothing underground." The session: the order holds "fortified outposts dug into
+  colonial ruins," and "crusader bunkers sit on top of much older sites." The bunkers section
+  follows "on top of," which fits. Not said which the session means for the outposts.
+- **Landmarks against "Ruins never move" and "Chunks hold no state."** A landmark is fixed and
+  keeps your changes (World & terrain, Landmarks). Whether it is a ruin with a different
+  placement rule or a system of its own is not said.

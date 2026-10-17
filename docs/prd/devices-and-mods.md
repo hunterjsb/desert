@@ -322,7 +322,7 @@ The notes' example is the crate:
 |---|---|
 | **Colonial** | Best power efficiency per kilogram |
 | **Skimmer era** | Light, cheap and fragile, because Zan wasn't a desert yet and gear wasn't built for storms |
-| **Bronze Age** | Practical to drag without a hover tray, still mountable, somewhat worse power efficiency per kilogram |
+| **First Kingdoms** | Practical to drag without a hover tray, still mountable, somewhat worse power efficiency per kilogram |
 
 Where this meets what's built, as a reading and not in the notes. A tray floats everything on
 it at about 2 W per kilogram (91 W for the kit's 45.5 kg, 112 W for a fully fitted 56 kg), and a
@@ -332,8 +332,12 @@ shield & camp), so an era's crate is data, not new rules. "Still mountable" read
 bottom mount keeping its tray socket. "Practical to drag without a hover tray" reads as a
 frame that drags easier on the sand than the others, which nothing here sets per frame yet.
 
-Found mods ride along. Bronze Age finds can carry mods such as tuning for low-power setups, and
-a mod fits a mount and adds to the device, as the extra-hook mod does (below). Today only the
+The notes name the third row for the societies after the collapse. Session 4, part 2 ties
+reworked, low-power gear to the First Kingdoms ("every repair cannibalises something else"), so
+the row is theirs. What a Dark Age or Second Age crate is like is not said.
+
+Found mods ride along. First Kingdoms finds can carry mods such as tuning for low-power setups,
+and a mod fits a mount and adds to the device, as the extra-hook mod does (below). Today only the
 planter has a mod mount.
 
 ## Socket types to start
@@ -457,9 +461,12 @@ hook. That's how found mods expand a device.
 - **Can pieces from different eras join freely in the chassis, or do they need adapters?**
   Open in the notes (Hunter, 2026-10-17). Here: "Pieces join edge to edge by their rings," "A
   piece... is a find," and "Every piece needs its own hover tray." Not said: whether a piece's
-  era matters to the join at all, and what a Bronze Age piece, "practical to drag without a
+  era matters to the join at all, and what a First Kingdoms piece, "practical to drag without a
   hover tray," does in a deck where every piece needs one. If adapters exist, the rules here
   would make one a typed part that is found, not crafted (rule 6, and out of scope below).
+  Session 4, part 2 lists the question again among its own open ones, still unanswered. It also
+  shows why it matters: the moving nomad city is "a huge tethered raft of salvaged chassis,
+  shields and turbines," pieces of many eras lashed together.
 - **Efficiency of what.** "Best power efficiency per kilogram" could mean the hover draw per
   kilogram floated, or something else of the frame's. The notes give no numbers for any era.
 - **Where the tuning mods go.** A low-power tuning mod needs a mod mount, and only the planter
