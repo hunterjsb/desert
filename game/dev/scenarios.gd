@@ -16,7 +16,9 @@ extends RefCounted
 ## sets two planters growing in front of you, one with a harvester, and a
 ## shield for the storm on its way. "radio" sets a radio and a shield in front
 ## of you with a storm on its way, to sit it out and follow a beacon. "afk"
-## parks the reference camp round you, running, to be left alone.
+## parks the reference camp round you, running, to be left alone. "lee"
+## stands you at the foot of a tall slip face, facing up it into the wind
+## coming over its crest, with a storm on its way.
 const LIST: Array[Dictionary] = [
 	{"key": "spawn", "label": "spawn: where and when the run began", "kind": "spawn"},
 	{"key": "clear", "label": "clear day, no storm for 10 min", "kind": "clear", "day": [0.42, 0.55]},
@@ -49,6 +51,9 @@ const LIST: Array[Dictionary] = [
 	# A morning like a run's, the first storm minutes off, so it soon shows what the camp does in one.
 	{"key": "afk", "label": "AFK: the reference camp parked round you and running, a farm under the shield, a turbine out in the wind",
 		"kind": "clear", "day": [0.3, 0.4], "due": [180.0, 480.0], "afk": true},
+	# A storm due soon, so the lee is felt in the clear and then as it comes over the crest.
+	{"key": "lee", "label": "lee: at the foot of a tall slip face, the wind over its crest, a storm minutes off",
+		"kind": "lee", "day": [0.35, 0.55], "due": [120.0, 360.0]},
 ]
 
 ## The test kit, as [catalog id, metres to your right, metres ahead]: empty
@@ -122,6 +127,17 @@ const AFK_CANISTERS := 3
 const YOURS := [1.5, 2.5]
 ## How far from where the run began to look for a ruin, m.
 const RUIN_SEARCH := 4000.0
+
+## A tall slip face's foot: level sand at the bottom of a drop whose crest
+## stands at least this far above it, m, and a lee there of at least this
+## share of a full one. Looked for this far either way along the wind from
+## where the run began, m, in steps this long, along lines this far either
+## side, m.
+const LEE_TALL := 15.0
+const LEE_SHARE := 0.9
+const LEE_SEARCH := 3000.0
+const LEE_STEP := 4.0
+const LEE_LINES := [0.0, 200.0, -200.0, 400.0, -400.0]
 
 ## How far upwind a search looks for edges, and its step.
 const REACH := 6000.0
@@ -199,6 +215,8 @@ static func find(world: World, scenario: Dictionary) -> Dictionary:
 		return {"x": spawn.x, "z": spawn.y, "yaw": 0.0, "time": 0.0}
 	if scenario.kind == "ruin":
 		return _at_ruin(world, scenario)
+	if scenario.kind == "lee":
+		return _in_lee(world, scenario)
 	var field := world.weather.field
 	var day := world.weather.day
 	var t := 0.0
@@ -218,7 +236,7 @@ static func find(world: World, scenario: Dictionary) -> Dictionary:
 static func _place(field: WeatherField, scenario: Dictionary, from: Vector2, upwind: Vector2,
 		t: float) -> Dictionary:
 	match scenario.kind:
-		"clear", "sky", "kit", "ruin":
+		"clear", "sky", "kit", "ruin", "lee":
 			# No storm for ten minutes, or one due within the window asked.
 			var due: Array = scenario.get("due", [INF, INF])
 			if field.raw_storm_at(from.x, from.y, t) <= 0.0 \
@@ -273,6 +291,58 @@ static func _at_ruin(world: World, scenario: Dictionary) -> Dictionary:
 				return {"x": at.x, "z": at.y, "yaw": atan2(-facing.x, -facing.y), "time": t}
 			t += TIME_STEP
 	return {}
+
+
+## At the foot of a tall slip face, facing up it, at a moment in the day's
+## window that's clear with a storm due, the wind blowing over the crest.
+static func _in_lee(world: World, scenario: Dictionary) -> Dictionary:
+	var field := world.weather.field
+	var day := world.weather.day
+	var mean := WeatherField.mean_heading(world.run_seed)
+	for foot in feet(world, mean):
+		# Out of the long-term wind's lee, which the dunes face, is out of most winds'.
+		if world.weather.lee.share(foot.x, foot.y, mean) < LEE_SHARE:
+			continue
+		var t := 0.0
+		while t < HORIZON:
+			var hour := day.time_of_day(t)
+			if hour >= scenario.day[0] and hour <= scenario.day[1] \
+					and not _place(field, scenario, foot, Vector2.ZERO, t).is_empty() \
+					and world.weather.lee.share(foot.x, foot.y, field.prevailing_at(t).angle()) >= LEE_SHARE:
+				var upwind := -field.prevailing_at(t).normalized()
+				return {"x": foot.x, "z": foot.y, "yaw": atan2(-upwind.x, -upwind.y), "time": t}
+			t += TIME_STEP
+	return {}
+
+
+## Feet of tall slip faces round where the run began, facing a wind blowing
+## toward heading: level sand just past a slip face's slope, from a crest
+## LEE_TALL m or more above. Nearest first.
+static func feet(world: World, heading: float) -> Array[Vector2]:
+	var down := Vector2.from_angle(heading)
+	var found: Array[Vector2] = []
+	for across: float in LEE_LINES:
+		var from := world.spawn + down.orthogonal() * across - down * LEE_SEARCH
+		var behind := PackedFloat64Array()
+		var d := 0.0
+		while d < 2.0 * LEE_SEARCH:
+			var at := from + down * d
+			behind.append(world.shape.height_at(at.x, at.y))
+			d += LEE_STEP
+			var n := behind.size()
+			if n < 16:
+				continue
+			var h := behind[n - 1]
+			var crest := h
+			for k in range(n - 16, n):
+				crest = maxf(crest, behind[k])
+			# Level for a step, after two at a slip face's slope.
+			if absf(behind[n - 2] - h) < LEE_STEP * 0.1 and behind[n - 4] - behind[n - 2] > 2.0 * LEE_STEP * 0.45 \
+					and crest - h >= LEE_TALL:
+				found.append(at)
+	found.sort_custom(func(a: Vector2, b: Vector2) -> bool:
+		return a.distance_squared_to(world.spawn) < b.distance_squared_to(world.spawn))
+	return found
 
 
 static func _within(value: float, span: Array) -> bool:

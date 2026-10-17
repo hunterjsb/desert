@@ -4,8 +4,10 @@ extends WeatherProbe
 ## in front of you; going looking stands you before a ruin's door with finds
 ## round it; the farm stands in front of you growing; a charged board lies at
 ## your feet by a small camp; a radio and a shield stand in front of you with a
-## beacon in reach; the reference camp stands round you, running. Checked
-## against the field itself and against what the game then shows.
+## beacon in reach; the reference camp stands round you, running; the lee
+## stands you under a tall slip face, facing up it into the wind over its
+## crest, the wind on you cut and a storm due. Checked against the field
+## itself and against what the game then shows.
 
 const SLACK := 1.0
 
@@ -69,6 +71,19 @@ func run() -> void:
 					await _camp_lands()
 				if scenario.get("radio", false):
 					await _radio_lands()
+			"lee":
+				var due := field.next_change(at.x, at.y, t, 600.0, 5.0)
+				check(not stormy and due >= scenario.due[0] - 10.0 and due <= scenario.due[1] + 10.0,
+					"lee: clear, with a storm due in %d to %d s (%.0f s)" % [scenario.due[0], scenario.due[1], due])
+				check(ahead.dot(upwind) > 0.999, "lee: facing upwind, up the face")
+				var crest := -INF
+				for d in range(0, 81, 2):
+					crest = maxf(crest, world.height_at(at.x + upwind.x * d, at.y + upwind.y * d))
+				check(crest - world.height_at(at.x, at.y) >= Scenarios.LEE_TALL,
+					"lee: its crest stands %.0f m above you (%.1f)" % [Scenarios.LEE_TALL, crest - world.height_at(at.x, at.y)])
+				var cut := 1.0 - world.weather.wind.length() / world.weather.field_wind(world.player.global_position).length()
+				check(cut >= Scenarios.LEE_SHARE * Tuning.current().lee_wind and Dev.read("weather/lee") != "-",
+					"lee: the wind on you is cut by its lee, and the overlay says so (%.2f)" % cut)
 			"deep":
 				check(field.storm_at(at.x, at.y, t) == 1.0, "deep: full storm")
 				check(_edge(at, upwind, t, true) > 250.0 and _edge(at, -upwind, t, true) > 250.0,

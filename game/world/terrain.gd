@@ -138,6 +138,12 @@ func height_at(world_x: float, world_z: float) -> float:
 	return TerrainShape.across(fx, fz, h[k + 1], h[k + w], h[k] if fx + fz <= 1.0 else h[k + w + 1])
 
 
+## The loaded chunk a world place lies on, or null: its heights are the
+## ground's own samples every `step` m, its far edges included.
+func chunk_under(world_x: float, world_z: float) -> TerrainChunk:
+	return _chunks.get(chunk_at(world_x, world_z))
+
+
 func chunk_at(world_x: float, world_z: float) -> Vector2i:
 	return Vector2i(floori(world_x / _size), floori(world_z / _size))
 

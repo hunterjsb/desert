@@ -69,3 +69,27 @@ func drop_box(x: float, z: float, above := 1.0) -> RigidBody3D:
 ## How far a body's centre sits above the sand directly beneath it.
 func clearance(body: Node3D) -> float:
 	return body.global_position.y - world.height_under(body.global_position)
+
+
+## Level open sand downwind of where the run began, out of any dune's lee:
+## along the run's long-term wind and every heading up to `fan` degrees
+## either side of it, nothing within `back` m upwind stands more than `rise`
+## m above it. Read from the shape, so it needn't be loaded; NAN if none
+## within 4 km.
+func open_sand(fan := 0.0, back := 250.0, rise := 1.0) -> Vector2:
+	var mean := WeatherField.mean_heading(world.run_seed)
+	var down := Vector2.from_angle(mean)
+	var headings := [mean] if fan == 0.0 else range(-3, 4).map(func(k: int) -> float: return mean + deg_to_rad(fan) * k / 3.0)
+	for along in range(0, 4000, 20):
+		var at := world.spawn + down * along
+		var h := world.shape.height_at(at.x, at.y)
+		var open := absf(world.shape.height_at(at.x + down.x * 4.0, at.y + down.y * 4.0) - h) < 0.2
+		for heading: float in headings:
+			var up := -Vector2.from_angle(heading)
+			for d in range(4, int(back) + 1, 4):
+				if not open:
+					break
+				open = world.shape.height_at(at.x + up.x * d, at.y + up.y * d) <= h + rise
+		if open:
+			return at
+	return Vector2(NAN, NAN)
