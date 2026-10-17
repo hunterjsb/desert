@@ -150,7 +150,7 @@ the felt-weather rule.
   adds up. On the starting kit the light panel is the only source, so it's a trickle,
   and the board's weight adds 22 W to the tray's draw: on the probes' seed, from 10 Wh
   over the reserve, the board took 4.2 Wh in five minutes before the pool was down to a
-  quarter, and the panel took 2.3 days to bring the pool back to 30% for the next.
+  quarter, and charged again 2.3 days in, once the panel had brought the pool to 30%.
 - **Two kinds of cable** (decided 2026-10-14, from the Stage 4 playtest). **Common
   wiring** pops a plug when pulled too hard, and Hunter likes that: a floating planter
   blown off a turbine unplugs itself. A **strong cable** is also a rope, so it holds
