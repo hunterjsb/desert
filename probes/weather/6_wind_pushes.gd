@@ -1,8 +1,9 @@
 extends WeatherProbe
 ## Wind & storms probe 6: the wind moves things at the rate drag says. With
 ## gusts off and the clock stopped the wind is steady, so a floating box must
-## follow the closed-form drag curve. On the sand, a storm slides a box
-## downwind and a breeze leaves it be, and the same goes for the player.
+## follow the closed-form drag curve. On open sand, out of any dune's lee, a
+## storm slides a box downwind and a breeze leaves it be, and the same goes
+## for the player.
 
 
 func run() -> void:
@@ -10,6 +11,10 @@ func run() -> void:
 	tuning.gust_strength = 0.0
 	tuning.gust_storm_strength = 0.0
 	await load_weather()
+	# Whichever way the wind swings, and the floater's ground upwind too.
+	var open := open_sand(42.0, 350.0)
+	teleport(open.x, open.y)
+	await settle(true)
 	var px := world.player_world_x()
 	var pz := world.player_world_z()
 	var deep := find_time(func(t: float) -> bool:
