@@ -16,7 +16,8 @@ extends RefCounted
 ## sets two planters growing in front of you, one with a harvester, and a
 ## shield for the storm on its way. "radio" sets a radio and a shield in front
 ## of you with a storm on its way, to sit it out and follow a beacon. "afk"
-## parks the reference camp round you, running, to be left alone.
+## parks the reference camp round you, running, to be left alone, its farm
+## watered by a condenser on hoses.
 const LIST: Array[Dictionary] = [
 	{"key": "spawn", "label": "spawn: where and when the run began", "kind": "spawn"},
 	{"key": "clear", "label": "clear day, no storm for 10 min", "kind": "clear", "day": [0.42, 0.55]},
@@ -47,7 +48,7 @@ const LIST: Array[Dictionary] = [
 	{"key": "radio", "label": "radio: a radio and a charged shield in front of you, a storm 300 m off", "kind": "front",
 		"distance": 300.0, "day": [0.35, 0.55], "radio": true},
 	# A morning like a run's, the first storm minutes off, so it soon shows what the camp does in one.
-	{"key": "afk", "label": "AFK: the reference camp parked round you and running, a farm under the shield, a turbine out in the wind",
+	{"key": "afk", "label": "AFK: the reference camp parked round you and running, a farm under the shield hosed to a condenser, a turbine out in the wind",
 		"kind": "clear", "day": [0.3, 0.4], "due": [180.0, 480.0], "afk": true},
 ]
 
@@ -55,15 +56,16 @@ const LIST: Array[Dictionary] = [
 ## frames, a shield generator among them, and parts for every kind of socket.
 const KIT_DEVICES := [[&"crate_frame", -1.0, 3.0], [&"planter", 1.2, 3.2], [&"charger", -2.4, 1.5],
 	[&"turbine", 2.6, 1.6], [&"shield", 0.05, 3.2]]
-## Where the kit's common cable and strong cable land, right and ahead.
+## Where the kit's common cable, strong cable and hose land, right and ahead.
 const KIT_CABLE := [0.0, 2.3]
 const KIT_STRONG_CABLE := [0.0, 1.6]
+const KIT_HOSE := [0.0, 1.3]
 const KIT_PARTS := [
 	[&"battery", -1.6, 1.6], [&"big_battery", -1.2, 1.7], [&"hook", -0.8, 1.6], [&"hook", -0.55, 1.7],
 	[&"lamp", -0.25, 1.6], [&"carrot", 0.1, 1.7], [&"carrot", 0.35, 1.6], [&"carrot", 0.6, 1.7],
 	[&"fungus", 0.95, 1.6], [&"battery", 1.3, 1.7], [&"hover_tray", -2.6, 2.4],
 	[&"hover_tray", 2.8, 2.6], [&"solar_panel", -2.6, 3.6], [&"solar_panel", -3.0, 2.2],
-	[&"hook", 1.65, 1.7], [&"hook", 1.95, 1.6],
+	[&"hook", 1.65, 1.7], [&"hook", 1.95, 1.6], [&"canister", -2.0, 1.2],
 ]
 ## Stakes lying across your way, and rope coils, right and ahead.
 const KIT_STAKES := [[-1.3, 1.15], [-1.3, 1.3], [-1.3, 1.45]]
@@ -85,9 +87,9 @@ const SURVIVE_RATIONS := [[0.35, 1.3], [0.6, 1.3]]
 
 ## The farm, right and ahead: a planter to pick by hand, one with a
 ## harvester, the shield generator between them so its bubble takes both and
-## their stakes, and a canister to water them. Its crops start part grown, so
-## the carrots ripen within a minute in the clear and the fungus within a few
-## once the storm's dark is on it.
+## their stakes, and a canister to fit to a water socket. Its crops start
+## part grown, so the carrots ripen within a minute in the clear and the
+## fungus within a few once the storm's dark is on it.
 const FARM_BY_HAND := [-1.6, 2.8]
 const FARM_HARVESTER := [1.6, 2.8]
 const FARM_SHIELD := [0.0, 2.0]
@@ -106,16 +108,19 @@ const RADIO_AT := [0.4, 2.4]
 const RADIO_SHIELD := [-1.0, 3.2]
 
 ## The reference camp, right and ahead, facing upwind: the shield and the
-## planters in front of you, the crate behind you near the bubble's edge, its
-## stake upwind of it, and the turbine downwind of the bubble near the end of
-## its cable, so the wind holds it out there.
+## planters in front of you, the condenser beyond the shield between them, the
+## crate behind you near the bubble's edge, its stake upwind of it, and the
+## turbine downwind of the bubble near the end of its cable, so the wind holds
+## it out there.
 const AFK_SHIELD := [0.0, 2.0]
 const AFK_PLANTERS := [[-2.2, 2.6], [2.2, 2.6]]
+const AFK_CONDENSER := [0.0, 4.2]
 const AFK_CRATE := [0.0, -2.0]
 const AFK_STAKE := [1.6, -0.6]
 const AFK_TURBINE := [0.0, -7.4]
-## Your slots, as you'd leave yourself: nothing brings you water yet, so this
-## many canisters, and the rest free for what the farm drops onto you.
+## Your slots, as you'd leave yourself: nothing brings you water yet, the
+## condenser waters only the farm, so this many canisters, and the rest free
+## for what the farm drops onto you.
 const AFK_CANISTERS := 3
 
 ## Your own frame, to fit what you find to: right and ahead.
@@ -328,6 +333,11 @@ static func kit(world: World) -> Array[Node3D]:
 	var strong := Catalog.cable(world, at, true)
 	dropped.append(strong)
 	dropped.append_array(strong.plugs)
+	at = player.global_position + player.global_basis.x * KIT_HOSE[0] - player.global_basis.z * KIT_HOSE[1]
+	at.y = world.height_under(at)
+	var hose := Catalog.hose(world, at)
+	dropped.append(hose)
+	dropped.append_array(hose.plugs)
 	return dropped
 
 
@@ -393,7 +403,8 @@ static func survive(world: World) -> Array[Node3D]:
 ## in the camp, sown with carrots and a fungus part grown, one tank full and
 ## one half: one to pick by hand, and one with a harvester that keeps its
 ## slots sown and drops food onto you. A charged shield generator, switched
-## off, stands between them, with a full canister by your feet. You start
+## off, stands between them, with a full canister by your feet to fit to the
+## half-full one's water socket, which keeps its tank full. You start
 ## fed, watered and whole, on a fresh suit's kit and a spare carrot to sow.
 ## Returns what it dropped.
 static func farm(world: World) -> Array[Node3D]:
@@ -438,12 +449,15 @@ static func radio(world: World) -> Array[Node3D]:
 ## The reference camp, parked round you and left running: the base shield
 ## in the middle with a big battery, and two planters with harvesters beside
 ## it, sown and watered, their trays resting, near enough to drop food onto
-## you. Behind you, downwind, the floater: a crate resting on its tray,
-## moored to a stake, two big batteries in it, the light panel on one top
-## mount, cabled to the shield, and a panel on the other. The crate holds a
-## turbine out in the wind beyond the bubble on a strong cable: a turbine
-## only works planted, and a loose one slides off in a storm. You start fed
-## and watered, stocked up to leave it running. Returns what it dropped.
+## you. Each is on a hose from a condenser beyond the shield, on a battery
+## and a panel of its own: the second hose goes on the first's end, so the
+## condenser waters both. Behind you, downwind, the floater: a crate resting
+## on its tray, moored to a stake, two big batteries in it, the light panel
+## on one top mount, cabled to the shield, and a panel on the other. The
+## crate holds a turbine out in the wind beyond the bubble on a strong cable:
+## a turbine only works planted, and a loose one slides off in a storm. You
+## start fed and watered, stocked up to leave it running. Returns what it
+## dropped.
 static func afk(world: World) -> Array[Node3D]:
 	world.player.vitals.fresh()
 	var slots := world.player.suit.slots
@@ -457,6 +471,7 @@ static func afk(world: World) -> Array[Node3D]:
 		var planter := standing(world, &"planter", [&"battery", &"hover_tray", &"harvester"] + FARM_CROPS, where) as Planter
 		planter.tank_l = world.tuning.planter_tank_litres
 		dropped.append(planter)
+	var condenser := standing(world, &"condenser", [&"battery", &"solar_panel"], AFK_CONDENSER)
 	var crate := standing(world, &"crate_frame", [&"big_battery", &"big_battery", &"hover_tray", &"hook", &"hook"],
 		AFK_CRATE)
 	# Its port toward the turbine.
@@ -474,11 +489,13 @@ static func afk(world: World) -> Array[Node3D]:
 	var stake := Catalog.stake()
 	world.content.add_child(stake)
 	stake.drive(at, world.height_under(at))
-	dropped.append_array([crate, turbine, stake])
+	dropped.append_array([crate, turbine, stake, condenser])
 	dropped.append(Line.between(world, crate.free_tie(stake.global_position), stake.free_tie(crate.global_position)))
-	# Their plugs go with the devices they're plugged into.
+	# Their plugs and ends go with the devices they're in.
 	dropped.append(wire(world, panel, shield))
 	dropped.append(wire(world, crate, turbine, true))
+	for planter in dropped.filter(func(b: Node3D) -> bool: return b is Planter):
+		dropped.append(plumb(world, condenser, planter))
 	shield.stand(true)
 	return dropped
 
@@ -493,6 +510,18 @@ static func wire(world: World, a: Device, b: Device, strong := false) -> Cable:
 		var device: Device = [a, b][i]
 		device.fit(cable.plugs[i], _free(device, &"port"))
 	return cable
+
+
+## A hose laid from one device to another, an end in the water socket of
+## each: the first's own, or the free one on the end already there.
+static func plumb(world: World, a: Device, b: Device) -> Hose:
+	var at := (a.global_position + b.global_position) * 0.5
+	at.y = world.height_under(at)
+	var hose := Catalog.hose(world, at)
+	for i in 2:
+		var device: Device = [a, b][i]
+		device.fit(hose.plugs[i], _free(device, &"water"))
+	return hose
 
 
 ## A device's first free socket of a kind.

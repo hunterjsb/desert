@@ -113,12 +113,13 @@ func _radio_lands() -> void:
 
 
 ## The reference camp stands round you, running: the shield's bubble takes
-## you, the planters and the crate, and the turbine stands out beyond it; the
-## shield, the crate with its two panels and the turbine are one pool, its
-## bank full; the trays rest on the sand; the planters are sown, watered and
-## harvesting, near enough to drop food onto you; the crate is moored to a
-## driven stake and holds the turbine on its strong cable; you're fed and
-## watered, with canisters in your slots and room for food.
+## you, the planters, the condenser and the crate, and the turbine stands out
+## beyond it; the shield, the crate with its two panels and the turbine are
+## one pool, its bank full; the trays rest on the sand; the planters are sown,
+## watered and harvesting, near enough to drop food onto you, and hosed to
+## the condenser; the crate is moored to a driven stake and holds the turbine
+## on its strong cable; you're fed and watered, with canisters in your slots
+## and room for food.
 func _afk_lands() -> void:
 	await settle(true)
 	var dropped := Scenarios.afk(world)
@@ -129,10 +130,11 @@ func _afk_lands() -> void:
 	var turbine: Device = dropped.filter(func(b: Node) -> bool: return b is Device and b.stats().turbine_w > 0.0)[0]
 	var crate: Device = dropped.filter(func(b: Node) -> bool: return b is Device and b.label == "Crate frame")[0]
 	var stake: Stake = dropped.filter(func(b: Node) -> bool: return b is Stake)[0]
+	var condenser: Condenser = dropped.filter(func(b: Node) -> bool: return b is Condenser)[0]
 	var inside := func(b: Node3D) -> bool: return b.global_position.distance_to(shield.global_position) < shield.size - 0.5
-	check(shield.running() and inside.call(player) and inside.call(crate) and planters.all(inside)
-		and turbine.global_position.distance_to(shield.global_position) > shield.size + 0.5,
-		"afk: the shield stands over you, the planters and the crate, the turbine out beyond it")
+	check(shield.running() and inside.call(player) and inside.call(crate) and inside.call(condenser)
+		and planters.all(inside) and turbine.global_position.distance_to(shield.global_position) > shield.size + 0.5,
+		"afk: the shield stands over you, the planters, the condenser and the crate, the turbine out beyond it")
 	var room := 0.0
 	for device: Device in [shield, crate, turbine]:
 		for cell in device.batteries():
@@ -148,6 +150,9 @@ func _afk_lands() -> void:
 			and p.global_position.distance_to(player.global_position) < world.tuning.drop_reach
 	check(planters.size() == 2 and planters.all(farming),
 		"afk: two planters sown, watered and harvesting, near enough to drop food onto you")
+	var watered := Water.network(world, condenser)
+	check(planters.all(func(p: Planter) -> bool: return watered.has(p)) and condenser.powered,
+		"afk: both on hoses from the condenser, running")
 	check(stake.driven and world.ropes.ropes.size() == 2,
 		"afk: the crate is moored to a driven stake, the turbine on its strong cable")
 	var slots := player.suit.slots.map(func(p: Part) -> String: return "-" if p == null else p.label)
@@ -283,9 +288,9 @@ func _kit_lands_near_you() -> void:
 		parts += 1 if body is Part else 0
 		if off.dot(ahead) < 1.0 or Vector2(off.x, off.z).length() > 5.0 or c < -0.05 or c > 0.6:
 			strays.append("%s %.1fm %.2fm up" % [body.get("label"), Vector2(off.x, off.z).length(), c])
-	# Every part and coil, plus both cables' plugs; stakes are devices.
+	# Every part and coil, plus both cables' plugs and the hose's ends; stakes are devices.
 	check(devices == Scenarios.KIT_DEVICES.size() + Scenarios.KIT_STAKES.size()
-		and parts == Scenarios.KIT_PARTS.size() + Scenarios.KIT_COILS.size() + 4,
+		and parts == Scenarios.KIT_PARTS.size() + Scenarios.KIT_COILS.size() + 6,
 		"kit: every device, part, stake and coil dropped")
 	check(strays.is_empty(), "kit: all of it on the sand within 5 m in front of you (%s)" % ", ".join(strays))
 	for body in kit:

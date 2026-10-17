@@ -32,6 +32,14 @@ static func tell(kind: StringName) -> ArrayMesh:
 		return b.commit())
 
 
+## A hose's length: a rubber tube a metre long along its y, stretched to its span.
+static func hose() -> ArrayMesh:
+	return _cached(&"hose", &"", func() -> ArrayMesh:
+		var b := Paint.Pieces.new()
+		b.drum(0.022, 1.0, Vector3.ZERO, Paint.coat(Paint.HOSE, 0.3, 0.0, 0.85), Basis.IDENTITY, 10)
+		return b.commit())
+
+
 ## Builds every look now, while the world loads: the first of a kind costs
 ## up to a dozen milliseconds, too long for a find laid out while streaming.
 static func prepare() -> void:
@@ -232,6 +240,13 @@ static func _part(id: StringName, size: Vector3) -> ArrayMesh:
 			var collar := Paint.coat(Color(1.0, 0.5, 0.1) if id == &"plug" else Color(0.7, 0.15, 0.1), 0.5)
 			b.drum(h.x * 0.95, 0.025, Vector3(0.0, 0.0, 0.0125), collar, along, 12)
 			b.drum(h.x * 0.8, size.z - 0.025, Vector3(0.0, 0.0, 0.025 + (size.z - 0.025) * 0.5), Paint.coat(Color(0.06, 0.06, 0.06), 0.2, 0.0, 0.85), along, 10, h.x * 0.55)
+		&"hose_end":
+			# A steel coupling on the hose's rubber, a spout on top where another goes on.
+			b.drum(h.x * 0.95, 0.03, Vector3(0.0, 0.0, 0.015), steel, along, 12)
+			b.drum(h.x * 0.7, size.z - 0.03, Vector3(0.0, 0.0, 0.03 + (size.z - 0.03) * 0.5),
+				Paint.coat(Paint.HOSE, 0.3, 0.0, 0.85), along, 10)
+			b.drum(0.016, 0.03, Vector3(0.0, h.y, 0.075), steel, Basis.IDENTITY, 10)
+			b.drum(0.02, 0.008, Vector3(0.0, h.y + 0.011, 0.075), Paint.coat(Catalog.KINDS[&"water"], 0.3), Basis.IDENTITY, 10)
 		&"coil":
 			b.ring(0.09, 0.17, Vector3(0.0, 0.0, size.z * 0.5), Paint.coat(Paint.ROPE, 0.0, 0.0, 1.0, 0.6), along)
 			b.box(Vector3(0.05, 0.1, 0.05), Vector3(0.13, 0.0, size.z * 0.5), Paint.coat(Paint.GUNMETAL, 0.6, 0.3), 0.008)

@@ -3,11 +3,13 @@ extends Device
 ## The hover planter: plant slots on top, its own water tank, and a mod mount
 ## on its back. On the farm's tick its crops grow by the light and the
 ## temperature where it stands, drinking from the tank, whether or not it has
-## power. Use a canister of water on it to pour it in. A ripe crop taken by
-## hand comes out as its food and starts again. With a harvester fitted, ripe
-## crops go into its own storage instead, the share you set going back in as
-## seed (use on it steps the share), and it drops food onto you when you're
-## near and your slots run low.
+## power. A canister in its water socket, or what a hose there joins it to,
+## keeps the tank full (Water). A ripe crop taken by hand comes out as its
+## food and starts again. With a harvester fitted, ripe crops go into its own
+## storage instead, the share you set going back in as seed, and it drops food
+## onto you when you're near and your slots run low. Use on it sets its tray
+## as on any device; the share it replants waits for its own control (Hunter,
+## 2026-10-17).
 
 ## The shares use steps through.
 const SPLITS: Array[float] = [0.0, 0.25, 0.5, 0.75, 1.0]
@@ -70,20 +72,6 @@ func harvests() -> bool:
 		if part.stats.get("harvester", 0) > 0:
 			return true
 	return false
-
-
-## Use: pour the canister you hold into the tank, or else set the tray
-## resting or floating, as on any device. The share it replants waits for
-## its own control (Hunter, 2026-10-17).
-func interact(by: Player) -> bool:
-	var can := by.hands.held as Supply
-	if can != null and can.kind == &"water":
-		var poured := can.drain(world.tuning.planter_tank_litres - tank_l)
-		tank_l += poured
-		if poured > 0.0:
-			Sounds.play_at(self, Sounds.POUR)
-		return true
-	return super(by)
 
 
 ## Taken by hand, a ripe crop comes out as its harvest, food in your hands,

@@ -273,7 +273,7 @@ floater out of pieces:
 | Frame | Battery | Ring | Bottom | Top | Port | Other |
 |---|---|---|---|---|---|---|
 | Crate frame | 2 | 4 | 1 | 2 | 1 | a rack |
-| Planter | 1 | 2 | 1 | | 1 | 3 small and 1 large plant slot, a mod mount |
+| Planter | 1 | 2 | 1 | | 1 | 3 small and 1 large plant slot, a mod mount, a water socket (2026-10-17) |
 | Charger | 1 | | | 1 | 1 | |
 | Wind turbine | 1 | | | | 1 | |
 | Condenser | 1 | 1 | 1 | 1 | 1 | a water socket |
@@ -285,7 +285,9 @@ floater out of pieces:
 | Survival kit | | | | | | a water and a food socket, 2 small and 1 large plant slot |
 
 Some parts **add sockets of their own**. An extra-hook mod fits a mount and provides a
-hook. That's how found mods expand a device.
+hook. That's how found mods expand a device. A hose's end fitted in a water socket offers
+a water socket of its own on top, so a canister or another hose goes on there too
+(Survival, 2026-10-17).
 
 ## Skeleton version
 

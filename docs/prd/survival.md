@@ -143,8 +143,8 @@ Death means a new run (see Runs in the vision).
 - **Rope goes in as a coil** (Hunter, 2026-10-16: "i cant put rope in my inv"): a rope you
   hold but haven't laid, its first end in your hand and the rest at your belt, rolls back
   up into its coil, the belt end comes off, and the coil goes in the slot. Taken out, it
-  comes to your hands and uncoils as ever, its first end in your hand again. A cable
-  plugged into nothing goes in the same way, as one piece; taken out, you hold a plug
+  comes to your hands and uncoils as ever, its first end in your hand again. A cable or a
+  hose plugged into nothing goes in the same way, as one piece; taken out, you hold a plug
   with the other plug and its cable following, as with a found one. A laid or tied line
   stays out until it's taken up, and so does one paying out or being let go at your
   waist, a cable plugged in at either end, a plug off any cable, and a strong cable that
@@ -188,13 +188,26 @@ Death means a new run (see Runs in the vision).
   frees up before the next is opened. Use a canister or ration you hold to drink or eat
   your fill.
 - **The hose** (Hunter, 2026-10-17: "like the cable, it carries water, it tethers but not
-  as strong as rope"). Two ends on a length of hose, each fitting a water socket with the
-  same snap as a canister: the condenser's, a planter's. Each water socket takes one thing,
-  a canister or a hose's end. Hosed devices share their water as cabled ones share power:
-  a condenser hosed to a planter fills its tank, and with a hose in place of its canister
-  its water goes straight down the hose. A hose holds what it joins together like a common
-  cable, and parts sooner than rope: pulled too hard, an end pops out of its socket. Rolled
-  up, it goes in a slot like a cable.
+  as strong as rope"). Two ends on 6 m of hose, a thick tube of sun-faded blue rubber,
+  each end a steel coupling that fits a water socket with the same snap as a canister:
+  the condenser's, a planter's, a survival kit's. Each water socket takes one thing, a
+  canister or a hose's end, so a fitted end offers a water socket of its own, on a spout
+  on top, as a hook offers a ring: a canister goes on there, or another hose's end, and
+  one condenser waters two planters. Devices joined by hoses share their water as cabled
+  ones share power, on the farm's tick of world time. What a condenser makes goes to the
+  emptiest tank first, then to the fullest canister with room, so one fills up for you to
+  take away; with a hose in place of its canister its water goes straight down the hose,
+  and with nowhere for it (everything full, or the hose's far end loose) it stops, as with
+  a full canister. Tanks are kept full from the canisters, the least full first, so one
+  empties and frees up, as your suit drinks from them; a canister at one end of a hose
+  feeds the planter at the other. Nothing flows from canister to canister, and a hose
+  carries no power (water probe 1). A hose holds what it joins as a common cable does:
+  pulled past its length, a loose end is dragged along, and with both ends held fast an
+  end pops out of its socket. It takes no pull of its own, so in a 20 m/s wind a floating
+  planter hosed to a staked condenser pops an end and blows away, and tied with a rope as
+  well, the rope holds it and the hose stays in (water probe 2). Rolled up it goes in a
+  slot like a cable, shown as a Hose, and stays out while an end is in a socket. It's
+  found on open sand, a little less often than wire, and `give hose` makes one.
 - **The three harms,** in health a second: the storm 0.25 at full intensity, wind 0.01 for
   each m/s past 20, and temperature 0.05 for each degree past the suit's limits of −40 and
   75 °C. Empty, starving takes 0.1 and thirst 0.3. Unharmed, fed and watered, you heal
@@ -206,9 +219,9 @@ Death means a new run (see Runs in the vision).
   at a pole) and a full storm halves it. A bubble holds its share of the way to 20 °C.
   At the equator the suit keeps you within its limits; the heat starts to harm about
   13° out (5 km), and the cold about 20° out. Temperature is what the poles cost.
-- **The crude condenser** is a catalog device with a canister socket, a battery slot, a top
+- **The crude condenser** is a catalog device with a water socket, a battery slot, a top
   mount for a panel, a port, a ring mount and a bottom mount. It runs whenever it has
-  power and a canister with room, drawing 40 W, and makes 10 L an hour of world time in
+  power and somewhere for its water, a canister with room or a hose (above), drawing 40 W, and makes 10 L an hour of world time in
   air at 0 °C or colder, falling to a fifth of that at 40 °C, by the felt temperature
   where it stands. At the equator in the clear that's about 2 L a day. You drink about
   1.8 L a day there, less under a storm's blanket, so one condenser just keeps you, if it keeps its power and stays

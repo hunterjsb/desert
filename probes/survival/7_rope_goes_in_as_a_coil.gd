@@ -2,7 +2,8 @@ extends LineProbe
 ## Survival probe 7: rope goes in as a coil. The run's kit is set down beside
 ## you. A cable between its crate and its board, plugged in at one end,
 ## stays out of your slots; plugged into nothing, it goes in whole and comes
-## out whole, its other plug following, and a strong cable the same. A coil
+## out whole, its other plug following, and a strong cable the same, and a
+## hose, which stays out too while its other end is in a water socket. A coil
 ## the kit's length and a found 12 m one, each taken up, go in a slot as a
 ## coil, leaving nothing of the line in the world. A kilometre on, the land they lay on gone, each comes
 ## out as its first end in your hand and the rest at your belt, pays out to
@@ -44,8 +45,19 @@ func run() -> void:
 	await _round(found, world.tuning.rope_coil_length)
 
 
-## A cable plugged in at one end, then at neither, and a strong cable.
+## A cable plugged in at one end, then at neither, a strong cable and a hose.
 func _cables(plugged: Cable) -> void:
+	var hose := Catalog.hose(world, world.player.global_position + Vector3(0.0, 0.1, -1.5))
+	var condenser := Catalog.device(&"condenser")
+	world.content.add_child(condenser)
+	condenser.global_position = world.player.global_position + Vector3(0.0, 0.4, -3.0)
+	condenser.freeze = true
+	condenser.fit(hose.plugs[1], condenser.sockets().filter(func(s: Socket) -> bool: return s.kind == &"water")[0])
+	hands.hold(hose.plugs[0])
+	await simulate(0.5)
+	check(not suit.click(3) and hands.held == hose.plugs[0], "a hose with its other end in a water socket stays out")
+	hands.drop()
+	condenser.take(hose.plugs[1].socket)
 	var plug := plugged.plugs[0]
 	(plug.socket.get_parent() as Device).take(plug.socket)
 	hands.hold(plug)
@@ -55,10 +67,12 @@ func _cables(plugged: Cable) -> void:
 	(other.socket.get_parent() as Device).take(other.socket)
 	await simulate(0.5)
 	var strong := Catalog.cable(world, world.player.global_position + Vector3(1.0, 0.1, -1.0), true)
-	for cable: Cable in [plugged, strong]:
-		if cable == strong:
-			hands.hold(strong.plugs[0])
+	for cable: Cable in [plugged, strong, hose]:
+		if cable != plugged:
+			hands.hold(cable.plugs[0])
 			await simulate(0.5)
+		# Its kind now: rolled up, it's freed, and freed things all compare equal.
+		var kind: Script = cable.get_script()
 		var ropes_were := ropes.ropes.size() - (1 if cable == strong else 0)
 		check(suit.click(3) and hands.held == null, "a %s plugged into nothing goes in" % cable.plugs[0].label)
 		await simulate(0.1)
@@ -67,7 +81,7 @@ func _cables(plugged: Cable) -> void:
 		check(suit.click(3), "taken out")
 		await simulate(0.5)
 		var back := _cable_of(hands.held)
-		check(back != null and (back is StrongCable) == (cable == strong) and is_instance_valid(back.plugs[1])
+		check(back != null and back.get_script() == kind and is_instance_valid(back.plugs[1])
 			and back.plugs[1].global_position.distance_to(hands.held.global_position) < back.length
 			and (back is not StrongCable or ropes.ropes.has((back as StrongCable).rope)),
 			"it comes out whole, its other plug following")
