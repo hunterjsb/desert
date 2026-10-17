@@ -175,6 +175,55 @@ floater out of pieces:
   before each, a crate frame with two charged batteries and a condenser with a battery
   and an empty canister, clear and calm, to build a deck from.
 
+## The Console (proposed, not built)
+
+*Hunter, 2026-10-17 ([session](../console-sensors-sleep-2026-10-17.md)), a voice session. Its own
+framing: "Treat them as direction, not a final spec: the Console's slot layout is explicitly due
+for a rework." So this is direction. Nothing here is built and no number is set. Where it clashes
+with what is built, the clash is in the open questions below.*
+
+A new device, **the Console**: "the camp's computer. It handles computation and moves data between
+devices." It carries the weather instruments and the screen that shows what they read ([Wind &
+storms](wind-and-storms.md#instruments-and-the-console-screen-proposed)), and it is what makes a
+shield smart (below).
+
+- **A crate variant, not a seated device.** "It still takes a hover tray, batteries and power like
+  a crate." So it is a frame of its own, as the planter and the condenser are, and not a small
+  device that seats on a mount like the shield or the radio.
+- **Lean on non-mod ports.** "Only one or two rope hooks. Don't remove battery slots."
+- **Plenty of mod ports for computer mods.** How many is not said.
+- **One side is the screen.** "A full-face screen port. Faces must be laid out so a full-face
+  screen can't clip into other parts."
+- **The top:** "one regular top slot and one computer-mod top slot (antenna, radar and the like)."
+- **Audio** "comes from a radio on a top mount; no separate audio port for now."
+- **Linking.** "A chassis connects every Console mounted on it into one system." A deck already
+  makes one power pool of what stands on it. This makes it one data system as well. A deck mount
+  takes one device, so two Consoles take two pieces.
+
+Against the crate, from what the session gives:
+
+| Socket | Crate frame, as built | Console, from the session |
+|---|---|---|
+| Battery slot | 2 | "Don't remove battery slots" |
+| Ring mount | 4 in `catalog.gd` (2 in the table below) | "Only one or two rope hooks" |
+| Bottom mount | 1 | A hover tray, like a crate |
+| Top mount | 2 | 1 regular |
+| Computer-mod top | none | 1 |
+| Computer-mod port | none | "Plenty" |
+| Screen port | none | One side, the full face |
+| Port, rack | 1 each | Not said |
+
+**The layout is due for a rework,** so this table is a starting point, not a spec. One rule from
+the session carries over whatever the layout becomes: "Sockets save by list index, so add new ones
+at the end of any existing frame." The crate's rack and the planter's water socket are already
+last in their lists for that reason.
+
+**Smart devices.** A device seated on a Console, a shield first, reports its data to the screen
+and can be controlled from it. What it can do depends on the Console's gear. [The smart
+shield](bubble-shield-and-camp.md#the-smart-shield-proposed-not-built) has the detail. As a reading, not in
+the session: any device that seats on a top mount could be smart the same way, since a seated
+device already stays a body of its own on the host's power pool.
+
 ## What Sand Game taught us
 
 - **Snapping happened on contact.** Anything that bumped a sticky area got stuck, even
@@ -355,6 +404,9 @@ planter has a mod mount.
 | Plant slot (small, large) | Seedlings | Farming |
 | Water socket | A canister or a hose's end, one at a time (2026-10-17) | Survival, Farming |
 | Deck mount | One device standing on a chassis piece: a crate, a condenser, a shield, a charger (2026-10-17) | Devices & mods |
+| Computer-mod port | Computer mods, on a Console. Proposed (2026-10-17); a kind of its own, unless it is the planter's mod mount (open questions) | Devices & mods |
+| Computer-mod top | Antennas, radar and the like, on a Console's top. Proposed (2026-10-17) | Devices & mods, Wind & storms |
+| Screen port | A full-face screen, one side of a Console. Proposed (2026-10-17) | Devices & mods |
 
 **As built, what each frame has** (2026-10-16; the chassis 2026-10-17):
 
@@ -397,6 +449,8 @@ a water socket of its own on top, so a canister or another hose goes on there to
 - **More part types,** as the other PRDs need them.
 - **Per-part wear from the elements.** In the skeleton, wear is a single durability on
   the whole device (Bubble shield & camp).
+- **The Console and its computer mods** (proposed, 2026-10-17; see above), with the smart
+  devices they make.
 
 ## Probes
 
@@ -476,3 +530,54 @@ a water socket of its own on top, so a canister or another hose goes on there to
   kilogram floated, or something else of the frame's. The notes give no numbers for any era.
 - **Where the tuning mods go.** A low-power tuning mod needs a mod mount, and only the planter
   has one. Whether the crate, the shield and the rest get one is not said.
+
+The Console session (2026-10-17) is direction, not a spec. Its own open questions come first, then
+what folding it in raised. Each is quoted on both sides and left standing.
+
+- **The Console's face and slot layout.** Open in the session ("rework pending"). Here: every
+  side of the built crate carries something. The front has a port, a battery slot and a ring, the
+  back a battery slot and a ring, the left a ring and the rack, and the right a ring and, high
+  up, the charge light. The session: "one side is dedicated to visual output: a full-face screen
+  port," with faces laid out so it "can't clip into other parts." With the side rings gone (the
+  frames table says rings front and back only), the right side is left with the charge light and
+  the left with the rack. Not said: which face is the screen, whether a Console keeps the rack
+  (a bedroll would share it, [Survival](survival.md#sleep-proposed)) and the light, and where
+  "plenty" of mod ports go once the screen has a whole side.
+- **Which computer mods, and which slot kinds.** Open in the session. Here: "Parts are typed"
+  (rule 6), and the planter's mod mount, one kind, takes the harvester. The session: computer
+  mods in "plenty of mod ports," and "antenna, radar and the like" in a computer-mod top. Not
+  said: whether a computer mod fits that same mod kind (then a harvester would fit a Console and
+  a radar a planter) or a kind of its own. The socket types above take the second reading, as
+  a proposal. Also not said: whether the Console's antenna is the radio's
+  "antenna mods" ([Radio, sound & atmosphere](radio-sound-and-atmosphere.md)) or a different part.
+- **One regular top slot, three wants.** Here: a top mount takes "solar panels, instruments such
+  as the radio, lamps, the shield generator," and the kit's crate fills both of its top mounts,
+  with a light shield and a light panel. The session: a Console has one regular top slot, a
+  shield on it "becomes 'smart'," and audio "comes from a radio on a top mount." The shield and
+  the radio can't both have the one slot. Not said: whether the radio goes on the computer-mod
+  top, the shield stands on a neighbouring deck piece (then it isn't "on" the Console), or a
+  Console keeps two regular tops.
+- **What a link reaches.** Here: everything on one deck shares one power pool, and cabled devices
+  share one. The session: "a chassis connects every Console mounted on it into one system." Not
+  said: whether a Console off a chassis links to anything (a cable?), whether the link takes in
+  the other devices on the deck or only other Consoles, and whether a Console stands on a deck
+  mount at all. The deck mount takes "a crate, a condenser, a shield, a charger," and a Console is
+  "a crate variant," which reads as yes, but is a reading.
+- **The name.** `Console` is taken. It is already a class (`game/dev/console.gd`), an action
+  (`console`) and the Menus & UI PRD's "dev console," and this PRD's chassis section says "the
+  console's give makes one by its id." Not said: whether the device keeps Hunter's name and the
+  dev tool's words change, or the other way round. Until it is settled the docs say "the dev
+  console" for the tool and "the Console" for the device.
+- **Running a screen with four actions.** Here: "Four actions cover handling... A new device or
+  tool answers these; it never adds an action of its own." The session: a shield "can be
+  controlled from the screen." Menus & UI says state shows on things first, and the vision that
+  most menus come as devices, so the screen is that. Not said: how a screen is operated. Use at a
+  spot on it, or a look, are the candidates, and the aim has to pick one control among many on a
+  full face.
+- **The ring shave against "add new ones at the end."** Here: the frames table says the crate has
+  two rings, "front and back only" (Hunter, 2026-10-17: "shave 2 hook slots off the crate now
+  that we have the chassis"), and `catalog.gd` still lists four, the side two at entries 1 and 2
+  of the list. The session: "Sockets save by list index." Taking out entries 1 and 2 moves every
+  socket after them, so older saves would load the wrong sockets. Not said: how the shave keeps
+  saves, by leaving the entries unused or by a migration. A Console cut from the crate's list,
+  with "only one or two rope hooks," meets the same thing.

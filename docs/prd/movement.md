@@ -50,7 +50,7 @@ Storms are faster than anyone walks, and the wall gives you about 5 minutes. Tha
 to batten down, not to run. Pull the planters in, stake what needs staking, shield up.
 Then choose:
 
-- **Sit it out** and let it pass.
+- **Sit it out** and let it pass. (Or sleep through it: proposed, [Survival](survival.md#sleep-proposed).)
 - **Walk through it** inside your moving bubble.
 - **Head into the wind** to come out the back sooner. It's the hard way.
 - **Sidestep an edge** on foot, if you read the storm early enough.
@@ -366,3 +366,13 @@ The board after Hunter's first ride has its own:
   tow on foot.
 - **Slip faces steep enough to slide you:** yes (Hunter, 2026-10-15). The Ridges dunes
   (World & terrain) have them, at 31.5°, and the probes find them near spawn.
+
+The sleep session (2026-10-17) adds one. It is quoted on both sides and left standing.
+
+- **The rack against a bedroll.** Here: a crate frame has one rack, along its left side, holding
+  one thing, and every run starts with the board racked on it. The session: bedrolls, "probably
+  sharing the hoverboard's mount slot on a crate." Not said: whether sharing means swapping (take
+  the board off to rack the bedroll), a second rack, or a bedroll small enough to ride beside the
+  board; how big a bedroll is; or whether a Console, a crate variant, keeps a rack. The board was
+  fitted to clear everything a full crate holds by bounds (survival probe 9), and a bedroll would
+  need the same.

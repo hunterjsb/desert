@@ -97,6 +97,87 @@ There's no hard-coded "camp feeds you" rule. Instead:
 
 With the setup right, you can go fully AFK. You just have to build it.
 
+## Sleep (proposed)
+
+*Hunter, 2026-10-17 ([session](../console-sensors-sleep-2026-10-17.md)). Direction, not agreed.
+The session calls the main choice "not settled" and the physics proposal "Not agreed," so all of
+this is proposed, and none of it is built. It sits against this PRD's out-of-scope line on sleep
+(open questions).*
+
+**The problem.** "Storm days are about 20 minutes and storms can last several days; waiting one
+out early game is boring. Storm-loot mechanics will help once they're in." In this game's numbers
+most storms are short: the median is 17 minutes and 71% pass within a base shield's 30 ([Wind &
+storms](wind-and-storms.md#open-questions)). The rest don't. A day is 20 minutes, so a storm of
+several days is an hour or more of waiting. The longest ran past three hours, and the kit's own
+first storm sits on the spawn for more than three and a half days on the probes' seed (the
+starting kit, in the skeleton's list below).
+
+**Sleep, not auto-walk.** "Sleep to fast-forward is the preferred fix over auto-walk, but not
+settled." Auto-walk is in no doc and no code, so nothing has to come out.
+
+**The worry, and the proposal.** "Main worry: physics stability while time skips." The proposal
+under discussion: "check camp stability with real physics before sleep, then only do resource
+arithmetic overnight against a queryable storm-intensity curve (shield draw scales with storm
+strength, so duration matters). Not agreed."
+
+What the game already has, as readings and not in the session:
+- **The curve is queryable.** `storm_at` is a pure function of place and time, so a camp that
+  stays put has an intensity curve for the whole span ([Wind &
+  storms](wind-and-storms.md#instruments-and-the-console-screen-proposed) answers it: yes, already).
+- **Shield draw already goes by storm strength.** It sips 10 W in the clear and draws 200 W holding
+  back a full storm, 2 W and 20 W for the light shield, and between the two in a lesser one
+  (Bubble shield & camp). So the night's cost is that draw summed over the span: "duration
+  matters" is built.
+- **The arithmetic already runs on ticks of world time.** Power ticks every quarter second of
+  world time, and your needs, the farm and the storm's wear ride the same tick. The dev time warp
+  (x10 and x60) moves the clock fast, and the AFK probes run a camp for days that way (the "afk"
+  scenario, Stage 12). The physics doesn't keep up. A physics tick is still a sixtieth of a
+  second, so at x60 a second of world time moves bodies a sixtieth of a second's worth. A warped
+  camp is tested against the wind's values and not their duration, which is the session's worry
+  as it stands in the code.
+- **A jump in time is not lived through.** The dev console's `time` command moves the clock on,
+  and Power, your needs, the farm and wear all drop any gap over 60 seconds of world time:
+  "nothing charged meanwhile," as `power.gd` puts it. So a sleep can't just move the clock. It has to run those ticks
+  across the span (Power, open questions).
+- **The night's worst wind is queryable too.** The wind is as pure a function as the storm, so
+  "check camp stability" can test the camp against the worst gust the span will bring and not
+  only the wind now. A gust is what tests a line, a hose (500 N) and a floating planter.
+- **A sleeper needs a bubble.** Outside a shield a full storm and its wind kill you in five or six
+  minutes (the three harms, in the skeleton's list below). A sleep through a storm is a sleep inside a running shield
+  whose pool outlasts the span. If the pool ran dry mid-sleep, "the bubble collapses and the storm
+  floods in."
+- **Sleeping costs water and food.** Thirst empties in a day and hunger in two. The "afk" camp's
+  three canisters were empty by four days. A sleep of days runs the same drain, and the same
+  condenser, farm and sun, in its arithmetic.
+- **Loaded ground doesn't change.** Finds are laid when a chunk loads, so a storm slept through
+  uncovers nothing today. The storm-loot the session leans on is two full-version lines: "Storms
+  wear dunes down" ([Wind & storms](wind-and-storms.md)) and "Things surfacing during a storm"
+  ([Salvage & ruins](salvage-and-ruins.md)).
+
+**Where and on what you sleep.**
+- **Bedrolls,** "probably sharing the hoverboard's mount slot on a crate." That is the rack
+  ([Movement](movement.md#the-hoverboard)), which holds one thing.
+- **Ruin beds.** "Some ruins have beds" ([Salvage & ruins](salvage-and-ruins.md)).
+- **Bare sand:** "Maybe sleep on bare sand if stable." Stable is the pre-sleep check above.
+
+**A bed opens sleep options.** "Sleep X hours, sleep until a time, sleep through the storm. Gear
+unlocks options; a radio adds some."
+
+**Radio clocks.** "Second-era religious broadcasts still air at reliable times." Readings: the
+era is the Second Age, whose faith of Tu "dominates the Second Age" and whose daily rite is the
+noon eclipse, "predicted to the second" ([the lore](../lore-research.md#the-faith-of-tu-and-the-ai-gods-agreed-session-4-part-2)).
+A broadcast that airs at a fixed time of day is a clock that reads the real day, so it fits the
+radio's rule that broadcasts read the real systems. It would be automatic, as the ghost relay is. The game has
+no eclipse yet and no clock you can read: the sun shows the day, and in a storm only the radio's
+music tells day from night, six to six. So a broadcast would give "sleep until a time" something
+to name.
+
+**Its links.** [Power](power.md): the shield's draw by storm strength is what a sleep sums, and
+the sum has to be lived through. [Movement](movement.md): the rack. [Salvage &
+ruins](salvage-and-ruins.md): the beds. [Radio, sound & atmosphere](radio-sound-and-atmosphere.md)
+and [the lore](../lore-research.md#the-faith-of-tu-and-the-ai-gods-agreed-session-4-part-2): the
+broadcasts. [Wind & storms](wind-and-storms.md): the curve.
+
 ## On screen
 
 Health, hunger, thirst and stamina get **bars**. That's an exception to "almost no menus"
@@ -372,10 +453,46 @@ Death means a new run (see Runs in the vision).
 
 ## Out of scope
 
-- Disease, injuries to specific body parts, and sleep.
+- Disease, injuries to specific body parts, and sleep. *(A sleep that skips time is proposed
+  above. Whether this line covers it is an open question.)*
 
 ## Open questions
 
 - **Why is the scavenger out here?** The game reveals it over time. We don't need the
   answer yet. *Narrowed by session 4, part 2:* each origin has its own reason, and the default
   is a Tilg & Standard contractor ([the vision](../vision.md#player-origins-and-kits)).
+
+The sleep proposal (2026-10-17) is not agreed. Its own open questions come first, then what
+folding it in raised. Each is quoted on both sides and left standing.
+
+- **The sleep simulation approach.** Open in the session. Here: the arithmetic runs on ticks of
+  world time, and under the dev time warp the physics still steps a sixtieth of a second a tick
+  while the clock runs on. The session: "check camp
+  stability with real physics before sleep, then only do resource arithmetic overnight." Not
+  said: what "stable" means in the check (lines holding, nothing loose, the shield's pool
+  outlasting the span), how long the real physics runs before the skip, or whether the physics
+  runs again for the last stretch before you wake. How the arithmetic is run is Power's question.
+- **Sleep against "Out of scope... sleep."** Here: "Disease, injuries to specific body parts,
+  and sleep," and the needs are health, hunger, thirst and stamina, with no sleep bar. The
+  session: sleep as a way to fast-forward, "preferred... over auto-walk." Not said: whether the
+  line means sleep as a need, which the proposal doesn't add, or sleep at all. Also not said:
+  whether sleeping restores anything past what rest and time in the shield already do.
+- **Sleep against "The game never pauses."** Here (Menus & UI, rule 2 and probe 1): "world time,
+  weather and physics advance exactly as they do" with a menu open. A sleep isn't a pause, but
+  it skips a stretch the physics never lives through, which that rule was written to keep out of
+  menus. Not said whether the rule is about menus only.
+- **What wakes you.** The session: "sleep through the storm." Here: a shield whose pool runs dry
+  collapses, and the storm floods in; thirst empties in a day. Not said whether a bed refuses a
+  sleep the camp can't last, warns, or wakes you early when the pool nears the shield's reserve
+  or a need runs low.
+- **Where each start sleeps.** Here: the Surveyor starts with the board racked, the Salvager has
+  "Hoverboard and the light shield; little else" (read here as no crate, so no rack), and oysters
+  "never find ruins" (the vision's playstyles). The session: bedrolls share the rack, and some
+  ruins have beds. Not said where a hover punk keeps a bedroll, or whether a Surveyor unracks
+  the board to sleep. An oyster never sees a ruin bed.
+- **How you name a time.** The session: "sleep until a time." Here the game has no clock you can
+  read: the sun by day, and in a storm the radio's music, day or night. Not said what a time is
+  made of: hours, dawn and dusk, or a broadcast.
+- **The broadcasts and the era.** The session: "second-era religious broadcasts." Read here as
+  the Second Age. In session 3's six eras the second is the war. Not said which is meant. The
+  voice question is in [Radio, sound & atmosphere](radio-sound-and-atmosphere.md#open-questions).

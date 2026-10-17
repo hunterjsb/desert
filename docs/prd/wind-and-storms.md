@@ -136,6 +136,67 @@ was tuned to. Resting on sand, a thing has a friction of 0.5 to beat, so a breez
 leaves a crate be and a storm slides it. Floating, nothing holds it, so it drifts off
 downwind unless it's tied down. That's what rope is for.
 
+### Instruments and the Console screen (proposed)
+
+*Hunter, 2026-10-17 ([session](../console-sensors-sleep-2026-10-17.md)). Direction, not a final
+spec, and none of it is built.* Weather sensing is "multifaceted: each instrument adds its own
+stats, and the screen shows every stat available." The screen is [the
+Console's](devices-and-mods.md#the-console-proposed-not-built). It turns the instruments named
+above (a barometer, a wind vane, a weather radio, "maybe there's a storm map") into a set that
+reads together.
+
+| Instrument | Adds |
+| --- | --- |
+| Anemometer / vane | Wind speed and direction now |
+| Barometer | Pressure trend: rough warning of an incoming storm |
+| Hygrometer | Humidity (ties into the condenser) |
+| Radar (top mod) | The storm front: distance and heading |
+| Radio | Old weather-station broadcasts: forecast beyond the horizon |
+| Particle sensor | Sand density: how hard the storm will hit |
+
+- **Resolution scales with data.** "Sparse gear shows numbers; with all the gear (roughly two
+  linked Consoles) the screen is effectively a storm mini-map."
+- **Ground and ruin detection is separate equipment,** "looking down, not up," and "likely a
+  different camp setup." It is not in this table. A loot beacon already points at a find from the
+  radio, and the Archaeologist start lists a ground-penetrating radar ([the
+  vision](../vision.md#player-origins-and-kits)).
+- **The radio** is the table's radio row, and it already does the forecast half. Its weather
+  station ([Radio, sound & atmosphere](radio-sound-and-atmosphere.md), as built) speaks a
+  forecast read from this field. The Console's screen would show it beside the other stats.
+
+**Can a storm's intensity be queried ahead of time? Yes, already, with no change to the field.**
+The session lists it as open, "willing to modify." Nothing needs modifying. `storm_at(place,
+time)` is a pure function of the run's seed, the place and the time, so it can be sampled "at any
+time, including the future," and "forecasting comes free" (the model above). `WeatherField` is built that way: `storm_at`,
+`wind_at`, `steady_wind_at`, `outflow_at`, and `next_change`, which finds when a place's storm
+state flips. The radio's weather station does it now. It reads the field where the radio stands,
+20 minutes ahead, every 5 seconds, and speaks when a storm comes, from which way, its strongest
+steady wind and how long it lasts (radio probe 1 and weather probe 3 check it is honest). A
+storm's intensity curve at a camp is `storm_at` at the camp's place, sampled over time.
+
+What is not built is a longer reach, or a reading of the curve itself: the radio speaks front
+times and the peak wind, not the intensity along the way. Both are another reader of the same
+function, not a change to it. Two limits come with it. A forecast is for one place, so it is a
+forecast for staying put, and walking into the wind brings the storm sooner. And the cost grows
+with how far ahead and how finely it looks. The radio's 5 s step over 20 minutes is cheap. A camp
+asleep for days is a longer run of the same call ([Survival](survival.md#sleep-proposed)).
+
+Readings, not in the session:
+- **The instruments read the field, not the felt weather.** Inside a base shield the felt wind
+  and storm read zero (Bubble shield & camp, rule 2), and a Console's camp sits inside its
+  bubble. An anemometer or a particle sensor that read the felt weather would read still air in
+  the one place it is meant to work. The radio's forecast already reads the field itself.
+- **Three of the six have no field of their own.** The field is the storm, the wind and a
+  front's outflow, and "nothing computes storminess any other way." There is no pressure,
+  humidity or sand density in it. A barometer's trend could read the outflow, which rises "from a
+  lead ahead of the front." A particle sensor could read the storm's intensity, which the dust
+  and the damage already read. A hygrometer has nothing in the field to read, and the condenser
+  reads only the felt temperature, so "ties into the condenser" would add a term to both.
+- **Radar and a mini-map are the wall's own query.** The front is where the field crosses its
+  threshold, and storms ride the prevailing wind, so a front's heading is the wind's. The storm
+  map that draws the wall already samples the field out to 20 km each way on a 128 by 128 grid,
+  once a second. A mini-map is that grid on a screen, finer with more gear.
+
 ## What storms do to everything else
 
 These are owned by their own PRDs and listed here so the field serves them all.
@@ -257,7 +318,7 @@ Readings, not in the session:
   with latitude, so the poles are clear and calm, and their price is temperature (owned
   by Survival). Prevailing wind bands by latitude.
 - Storm sizes, from dust haze to an ordinary storm to a great wall.
-- Instruments and forecasts.
+- Instruments and forecasts (the Console's set is proposed above).
 - Real dune shapes facing the prevailing wind (decided; see World & terrain).
 - Wind particles and sound, with Sand Game's particles and recordings as the reference.
 - **Storms wear dunes down** (Hunter, 2026-10-17, loose: "later on in the game, when we
@@ -310,3 +371,29 @@ All run without a window, with a fixed seed.
 - **Do the eclipse squall and the storm season go in?** Proposed, not settled (above). If they
   do, the squall is a near-side term in the wind and the season a slow swing in the storm
   field, and both wait for a near and far side and an orbital phase to read.
+
+The Console session (2026-10-17) answers one of its own questions and adds the rest. Each is
+quoted on both sides and left standing.
+
+- **Answered: can a storm's intensity be queried ahead of time?** Yes, already, as above. What
+  stays open is how far ahead an instrument reads and how finely.
+- **What the tiers are.** The session: "Resolution scales with data," with "roughly two linked
+  Consoles" for a mini-map. Not said: which instrument adds what resolution, how far the
+  mini-map reaches, or what "all the gear" is.
+- **"Hours ahead" against a storm minutes away.** Here: "A barometer shows a storm coming hours
+  ahead" (the draft of 2026-10-13). The session: the barometer is a "rough warning of an incoming
+  storm." A wall is about 5 minutes from first sight to impact, up to 20, a day is 20 minutes so
+  a game hour is about 50 seconds, and the radio already looks 20 minutes ahead. Not said whether
+  the hours are game hours, or whether the barometer is meant to beat the radio.
+- **Instruments inside the bubble.** Here: every system reads the felt weather, which is still
+  inside a shield. The session puts the instruments on a camp's Console. Not said whether they
+  read the field through the bubble, as the radio's forecast does, or sit outside it (an
+  antenna on a mast, a radar on a top mod).
+- **Pressure, humidity and sand density.** Here: "Nothing computes storminess any other way."
+  The session adds three readings the field has no number for. Not said whether they are derived
+  from the storm and its outflow, or whether the field gains terms.
+- **The radio "beyond the horizon."** Here: the built forecast is the field "where the radio
+  stands," 20 minutes ahead, and new channels are finds. The session: "old weather-station
+  broadcasts: forecast beyond the horizon." Not said whether that is further in distance (a
+  forecast for another place), further in time, or a found channel (the lore hook above: "a
+  colonial weather station still broadcasting").

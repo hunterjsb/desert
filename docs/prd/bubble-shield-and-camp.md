@@ -202,6 +202,32 @@ different start (from the moving city, a mythic kit), so that reading is gone. T
 one kit, the built one, and Survival says: "Only this standard kit is balanced; choosing a kit
 waits." The session balances the first three kits.
 
+## The smart shield (proposed, not built)
+
+*Hunter, 2026-10-17 ([session](../console-sensors-sleep-2026-10-17.md)). Direction, not a final
+spec, and none of it is built. It rides on [the Console](devices-and-mods.md#the-console-proposed-not-built),
+which is itself due for a rework.*
+
+"A shield on a Console becomes 'smart' for now: it reports data and can be controlled from the
+screen." What it can do "depends on the Console's gear, e.g. auto-on when a regular radar is
+attached." And later: "multiple OEMs and parties making and modding shields and Consoles (not
+designed yet)."
+
+Readings, not in the session:
+- **It already has most of what it would report.** Its charge (the light), its draw by state, its
+  radius, its warning, which reads the whole pool's charge, and whether it is on. The screen
+  shows what the shield knows. It would need no new state of its own.
+- **Controlled from the screen** means a second place to switch it from. Today use at it, or in
+  your hands, switches it, and a seated shield stays a body of its own on its host's pool. On/off
+  is all a shield has to control: its radius and its protection are its frame's numbers.
+- **Auto-on with a radar** is the one example given. The radar reads the front's distance and
+  heading ([Wind & storms](wind-and-storms.md#instruments-and-the-console-screen-proposed)).
+  Switching on early costs only the clear-sky sip, 10 W for the base shield and 2 W for the light
+  one, until the front arrives. It would cover a storm that finds the shield off.
+- **Makers are already in the world.** "In the world" above has a main maker, a rival and small
+  makers, and a numbers-are-data rule, so "multiple OEMs" fits what is here. "Parties... modding"
+  is the open part (open questions).
+
 ## Full version
 
 - **Shield types:** thermal shields that hold back heat and cold and open the poles,
@@ -263,3 +289,22 @@ quoted on both sides and left standing.
 - **The flat shape and era.** Art direction has devices differing by era "in shape," the shield
   first ([shape by era](../art-direction.md#shape-by-era)). Whether flat is the light shield's
   own shape or one era's is not said.
+
+The Console session (2026-10-17) adds three, quoted on both sides and left standing:
+
+- **Which shield is "on a Console."** Here: a shield fits a top mount or a deck mount itself, and
+  seated it "shares the device's power pool." The session: "a shield on a Console becomes
+  'smart'." A Console has one regular top slot, which the radio also wants (Devices & mods, open
+  questions). Not said: whether smart means seated on that top slot, or also standing on the deck
+  beside the Console, or anywhere in its link.
+- **Auto-on against the switch.** Here: "Use on it, or in your hands, switches it," and "the main
+  way to save power is simple: switch the shield off, and stay out of storms." The session:
+  "auto-on when a regular radar is attached." Not said: what triggers it (a front within what
+  distance?), whether your own off wins, and what a radar that isn't "regular" does. The shield
+  already blooms again by itself after a collapse, if it's still switched on, so this would be a
+  second automatic start.
+- **Makers and modders.** Here: shield makers are in the world, a frame's numbers are data,
+  parts are "found, never crafted," and crafting is out of scope. The session: "multiple OEMs and
+  parties making and modding shields and Consoles." Not said: whether the parties are in-world
+  makers (the lore has them) or people outside the game making and modding its devices, and what
+  "making" means with crafting out of scope.

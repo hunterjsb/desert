@@ -26,7 +26,9 @@ range still to tune. Better radios and antenna mods hear more clearly. Tune it, 
   "Waiting on the Sun" by night. More channels come later.
 - **Weather broadcasts.** These are automated. They tell you where storms are heading,
   how strong they are and when they'll arrive, all read from the real storm field (Wind
-  & storms). Better equipment hears further ahead and more accurately.
+  & storms). Better equipment hears further ahead and more accurately. The Console's
+  instrument table lists this as its radio row ([Wind &
+  storms](wind-and-storms.md#instruments-and-the-console-screen-proposed)).
 - **Loot beacons.** Automated signals that give a bearing to something worth finding,
   like "a signal, north-north-east."
 - **Lore.** Garbled fragments that hint and never state.
@@ -213,3 +215,27 @@ Everything that matters can be heard, so you can read the world by ear:
   a stand-in.*
 - **Exactly how far does a radio reach,** and how much does an antenna add? *First
   number: a beacon is heard from 3 km.*
+
+The Console and sleep sessions (2026-10-17) add three. Each is quoted on both sides and left
+standing.
+
+- **Do religious broadcasts have a voice?** Open in the session: whether they "still have a
+  voice or are just tones and numbers." Here: "Maybe a voice" is never confirmed, voice acting is out of scope, and the
+  skeleton sounds a station's tones with one line of words. The ghost relay is automatic too. The
+  lore: the AI gods "speak only through terminals," and it asks whether they ever broadcast
+  ([section 16](../lore-research.md#16-open-after-session-4-part-2), item 8). Not said which a
+  Second Age broadcast is. The skeleton's tones and a line already read as "tones and numbers."
+  A voice would be the maybe-voice, which the game never confirms.
+- **When the broadcasts air.** The session: "second-era religious broadcasts still air at
+  reliable times," so they can serve as clocks ([Survival](survival.md#sleep-proposed)). Here:
+  rule 1, broadcasts read the real systems, and the music changes at six and six. The lore's
+  daily rite is the noon eclipse, "predicted to the second," and the game has no eclipse and
+  only latitude, where the eclipse belongs under Tu. Not said: whether the schedule is fixed
+  times of day or follows the rite, what airs, and whether every radio hears it or it is a found
+  channel ("New channels are finds").
+- **How the radio's reading reaches the Console's screen.** Here: the weather line shows low in
+  the view within 5 m of a radio, a "stand-in" the skeleton puts there. The session: the radio is a row in the
+  instrument table, the screen shows every stat, and audio "comes from a radio on a top mount."
+  Not said whether a radio seated on the Console's top slot feeds the screen by being seated or
+  needs a computer-mod port, or whether the screen replaces the line as how a broadcast is
+  delivered (the question above).
