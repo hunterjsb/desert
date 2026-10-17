@@ -71,7 +71,7 @@ func readout() -> Dictionary:
 	if rope == null or not _world.ropes.ropes.has(rope):
 		return {"rope_m": full}
 	var out := {"rope_m": rope.length, "load": rope.share()}
-	if state == State.FIRST or state == State.PAYING:
+	if state == State.FIRST or state == State.PAYING or rope.length < full - 0.05:
 		out["paying"] = full
 	return out
 
@@ -224,6 +224,7 @@ func _end(at: Transform3D) -> Part:
 
 func _tie(length: float, strand: RopeStrand = null) -> void:
 	rope = _world.ropes.tie(_tip(ends[0]), _tip(ends[1]), length, NAN, strand)
+	rope.full = maxf(full, rope.length)
 	rope.parted = _parted
 
 

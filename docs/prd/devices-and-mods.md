@@ -59,7 +59,11 @@ out, never written into the text (Hunter, 2026-10-16), even before players can r
 - **Throw** throws what you hold.
 - **Reel in and pay out** (Hunter, 2026-10-16): on a line, they shorten and lengthen it
   (Rope & tethering); on anything else you hold or have hold of, they bring it nearer or
-  push it farther, within reason.
+  push it farther, within reason. *As built:* a notch is 0.25 m. What you carry goes from
+  0.5 m to 2 m in front of your eyes, never nearer than clears you, and still stops short
+  of the sand or anything in the way; what you have hold of goes from just clear of you
+  out to your 2.5 m reach, following only as far as your strength and the slip allow. A
+  line's end in your hand, or a line at your waist, wins: it reels.
 - **Rotate** (Hunter, 2026-10-16): held down, the mouse turns what you hold, or what you
   have hold of, instead of your view. It's how you right a crate, a planter or a shield
   that has tipped over: take hold of it and roll it back. While you have hold of
