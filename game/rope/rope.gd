@@ -24,6 +24,8 @@ const SLACK_SHARE := 0.1
 var a: RopeEnd
 var b: RopeEnd
 var length: float
+## All there is of it, m: paid out, it lengthens no further.
+var full: float
 ## Its own weight, kg per metre; 0 is the look-test's weightless line.
 var kg_per_m := 0.0
 ## Springs back this many times a second when stretched, whatever hangs on it.

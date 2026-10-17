@@ -100,6 +100,21 @@ your strength allows; against something staked or too heavy, it draws you to it 
 Pay out gives it back, up to the line's length. Each notch shows the rope gathering in
 your hands and sounds the rope working.
 
+*As built (2026-10-16):* a notch is 0.25 m, and no line reels shorter than 1 m. Your
+hands take it in at up to 1 m/s, and only the line draws, on both its ends, so what's on
+it comes only as hard as your hand strength (400 N): the draw eases off from half your
+strength and stops at all of it. Whatever doesn't come, a stake or something too heavy,
+you step in to along the line instead, at about 0.5 m/s. Nothing on a line ever closes
+faster than its 3 m/s. The line in your hand reels first, else the last one tied at your
+waist. A floating thing drawn in keeps gliding when you stop, as anything pushed does. A
+strong cable reels too, since it's a rope: its plugs keep their rules, and it pays out
+to its full 6 m. Each notch dips the end in your hand and lifts it again, across the line
+so the drawn line keeps its length; the rope you've taken in gathers in a coil where the
+line is on you, growing as you reel; and each notch rubs, a soft creak from Sand Game's
+rope recording, lower as you pay out. In a menu, with the inventory open, or riding, it
+does nothing. A reeled line keeps its length when you let go of it, and the look-at line
+reads how much of it is out.
+
 ## Wind on tethered things
 
 Every object that can be tethered has a **wind catch**: how much the wind grabs it,
