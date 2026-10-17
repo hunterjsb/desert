@@ -161,6 +161,32 @@ the felt-weather rule.
   4,000 N. While you hold one of its plugs, the rope pulls on you, not on the plug in
   your grip. A loose plug on either kind is dragged along by what drifts off with
   the other end, never slung, however long it was caught.
+- **The reference camp** (Stage 12, 2026-10-17) is what probe 4 leaves alone. The "afk"
+  dev scenario parks it round you, running: the base shield in the middle on a big
+  battery, two planters with harvesters beside it, and behind you, downwind, the
+  floater: a crate resting on its tray, moored to a stake, with two big batteries, the
+  light panel on one top mount, cabled to the shield, and a found panel on the other. A
+  strong cable from the crate holds the turbine out in the wind beyond the bubble. In
+  all, a 1,000 Wh bank and 90 W of panels. At 45° north, through two days and nights of
+  the probes' seed, 24 minutes of them full storm, nothing in it went dark and its bank
+  never fell below 98%: the turbine carries most of the shield's 200 W in a storm and
+  all of its sip at night. The kit's power under a found shield (the light panel and a
+  battery half charged) went dark in the same weather at 1.34 days.
+- **A turbine has to be held out there.** Nothing plants one yet (the probes freeze
+  theirs), and standing loose, a storm slides it over the sand, making nothing while it
+  moves: in a first try at the camp it slid 33 m in the first storm, until its cable
+  popped. On a strong cable from the moored crate, through three minutes of full storm
+  in real time, it made power 99% of the time and drifted 1.4 m.
+- **The storm wears the turbine out.** About half an hour of full storm wrecks it, and
+  nothing mends it: on the probes' seed it goes on the third day (2.45 days in at the
+  equator, 2.67 at 45°), having made about 90 Wh for the camp, less than a battery
+  holds. That's why probe 4 runs two days. A wrecked device leaves its pool, and its
+  battery's charge with it. After that the bank carries the base shield alone, about
+  67 Wh a day of storm: at the equator the camp's bank was down to 63% after eight
+  days, nearly six of them storm.
+- **Panels hardly count against a storm.** Over probe 4's two days the camp's panels
+  made about 5 Wh, and it passes with them broken. A day of storm costs the base shield
+  about 67 Wh, which 90 W of panels earn back in about eleven clear days at the equator.
 
 ## Full version
 

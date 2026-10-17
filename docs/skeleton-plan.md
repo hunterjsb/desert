@@ -43,9 +43,17 @@ atmosphere, "As built"). The radio finished Stage 11 on 2026-10-17 and waits at 
 gate. It's a device you carry or seat on a top mount, and use turns its dial through Sand
 Game's music by day and by night, a weather station reading the storm field ahead, and a
 beacon pointing at the find in a ruin's hall. Its static comes in ahead of a storm and
-stays in the bubble. It's a find, and the "radio" scenario sets one at your feet with a
-shield and a storm 300 m off. Radio probe 3 is Bubble shield probe 1, so it isn't
-written twice.
+stays in the bubble. It's a find, and the "radio" scenario sets one in front of you
+with a shield and a storm 300 m off. Radio probe 3 is Bubble shield probe 1, so it isn't
+written twice. Stage 12's reference camp was built on
+2026-10-17: the "afk" dev scenario parks it round you, running, a base shield over two
+harvester planters, a crate's bank and panels, and a turbine held out in the wind on a
+strong cable. The AFK promise is proved three ways (Power 4, Survival 1 and Farming 6):
+its power holds through two days and nights at 45° north, and it keeps you alive and
+fed through three days at the equator, mostly storm. What ends it is water, which
+nothing brings you yet, and the turbine, which the storm wears out on the third day
+(Power, Survival and Farming, "As built"). Stage 12 waits at the gate for a full run
+from the main menu.
 
 ## The loop we're building toward
 

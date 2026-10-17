@@ -4,8 +4,8 @@ extends WeatherProbe
 ## in front of you; going looking stands you before a ruin's door with finds
 ## round it; the farm stands in front of you growing; a charged board lies at
 ## your feet by a small camp; a radio and a shield stand in front of you with a
-## beacon in reach. Checked against the field itself and against what the
-## game then shows.
+## beacon in reach; the reference camp stands round you, running. Checked
+## against the field itself and against what the game then shows.
 
 const SLACK := 1.0
 
@@ -57,6 +57,8 @@ func run() -> void:
 				if scenario.get("board", false):
 					check(field.wind_at(at.x, at.y, t).length() < scenario.calm, "board: a calm spell")
 					await _board_lands()
+				if scenario.get("afk", false):
+					await _afk_lands()
 			"front", "back":
 				check(stormy == (scenario.kind == "back"), "%s: on the right side of the edge" % what)
 				check(ahead.dot(upwind) > 0.999, "%s: facing upwind, where it comes from" % what)
@@ -108,6 +110,53 @@ func _radio_lands() -> void:
 	check(not radio.target.is_empty(), "radio: a beacon in reach from there")
 	for body in dropped:
 		body.free()
+
+
+## The reference camp stands round you, running: the shield's bubble takes
+## you, the planters and the crate, and the turbine stands out beyond it; the
+## shield, the crate with its two panels and the turbine are one pool, its
+## bank full; the trays rest on the sand; the planters are sown, watered and
+## harvesting, near enough to drop food onto you; the crate is moored to a
+## driven stake and holds the turbine on its strong cable; you're fed and
+## watered, with canisters in your slots and room for food.
+func _afk_lands() -> void:
+	await settle(true)
+	var dropped := Scenarios.afk(world)
+	await physics_frames(60)
+	var player := world.player
+	var shield: ShieldGenerator = dropped.filter(func(b: Node) -> bool: return b is ShieldGenerator)[0]
+	var planters := dropped.filter(func(b: Node) -> bool: return b is Planter)
+	var turbine: Device = dropped.filter(func(b: Node) -> bool: return b is Device and b.stats().turbine_w > 0.0)[0]
+	var crate: Device = dropped.filter(func(b: Node) -> bool: return b is Device and b.label == "Crate frame")[0]
+	var stake: Stake = dropped.filter(func(b: Node) -> bool: return b is Stake)[0]
+	var inside := func(b: Node3D) -> bool: return b.global_position.distance_to(shield.global_position) < shield.size - 0.5
+	check(shield.running() and inside.call(player) and inside.call(crate) and planters.all(inside)
+		and turbine.global_position.distance_to(shield.global_position) > shield.size + 0.5,
+		"afk: the shield stands over you, the planters and the crate, the turbine out beyond it")
+	var room := 0.0
+	for device: Device in [shield, crate, turbine]:
+		for cell in device.batteries():
+			room += cell.capacity()
+	var bank := world.power.pool_wh(shield)
+	check(bank == world.power.pool_wh(crate) and bank == world.power.pool_wh(turbine) and absf(bank - room) < 1e-6
+		and crate.stats().solar_w > 0.0 and crate.mounted().any(func(d: Device) -> bool: return d.stats().solar_w > 0.0),
+		"afk: the shield, the crate with its two panels and the turbine share one full bank (%.0f Wh)" % bank)
+	check(([crate] + planters).all(func(d: Device) -> bool: return d.resting and clearance(d) < 0.5)
+		and clearance(turbine) < 0.3, "afk: the trays rest, everything on the sand")
+	var farming := func(p: Planter) -> bool:
+		return p.harvests() and p.plants().size() == 4 and p.tank_l >= world.tuning.planter_tank_litres \
+			and p.global_position.distance_to(player.global_position) < world.tuning.drop_reach
+	check(planters.size() == 2 and planters.all(farming),
+		"afk: two planters sown, watered and harvesting, near enough to drop food onto you")
+	check(stake.driven and world.ropes.ropes.size() == 2,
+		"afk: the crate is moored to a driven stake, the turbine on its strong cable")
+	var slots := player.suit.slots.map(func(p: Part) -> String: return "-" if p == null else p.label)
+	check(player.vitals.health > 99.0 and player.vitals.hunger > 99.0 and player.vitals.thirst > 99.0
+		and slots.count("Water canister") == Scenarios.AFK_CANISTERS and slots.count("-") == slots.size() - Scenarios.AFK_CANISTERS,
+		"afk: you start fed and watered, stocked with water, slots free for food (%s)" % ", ".join(slots))
+	for body in dropped:
+		if is_instance_valid(body):
+			body.free()
 
 
 ## A hoverboard lies at your feet in front of you, nose ahead, a full battery
