@@ -64,11 +64,6 @@ var _haze_color: Color
 var _forecast_due := 0.0
 var _shelters: Array[Node] = []
 var _shelters_seen := -1
-## The wind's heading at the last moment asked, by the field asked: every
-## body asks the same one.
-var _heading_t := NAN
-var _heading_of: WeatherField
-var _heading := NAN
 
 
 func setup(world: World) -> void:
@@ -106,7 +101,8 @@ func felt_wind(at: Vector3, t := NAN) -> Vector3:
 ## The wind in the open air at a place, as if no bubble stood: the field's,
 ## less what the ground's lee takes. What the dust outside a bubble rides.
 func open_wind(at: Vector3, t := NAN) -> Vector3:
-	return field_wind(at, t) * (1.0 - lee_at(at, &"wind", t))
+	var blowing := field_wind(at, t)
+	return blowing * (1.0 - _lee(at, blowing, _tuning.lee_wind))
 
 
 ## Sunlight reaching a place, 0 to 1: the sky's share after the storm takes
@@ -155,22 +151,19 @@ func shelter_at(at: Vector3, harm: StringName) -> float:
 
 
 ## How much of a harm (&"wind", &"storm") the ground's lee keeps from a
-## place, 0 to its most: read upwind along the wind as it blows at time t,
-## so it turns with the wind. A place's, the same for all that stand there;
-## none in still air, which has no upwind.
+## place, 0 to its most: read upwind along the wind blowing there at time t,
+## so it turns with the wind. A place's, the same for all that stand there.
 func lee_at(at: Vector3, harm: StringName, t := NAN) -> float:
 	var most: float = _tuning.lee_wind if harm == &"wind" else (_tuning.lee_storm if harm == &"storm" else 0.0)
-	if most == 0.0:
+	return 0.0 if most == 0.0 else _lee(at, field_wind(at, t), most)
+
+
+## The lee a place gets from the wind blowing there, up to `most`; none in
+## still air, which has no upwind.
+func _lee(at: Vector3, blowing: Vector3, most: float) -> float:
+	if most == 0.0 or blowing.length_squared() < 1e-6:
 		return 0.0
-	var when := _when(t)
-	if when != _heading_t or field != _heading_of:
-		var blowing := field.prevailing_at(when)
-		_heading_t = when
-		_heading_of = field
-		_heading = blowing.angle() if blowing.length_squared() > 1e-6 else NAN
-	if is_nan(_heading):
-		return 0.0
-	return most * lee.share(_world.world_x(at.x), _world.world_z(at.z), _heading)
+	return most * lee.share(_world.world_x(at.x), _world.world_z(at.z), atan2(blowing.z, blowing.x))
 
 
 ## Every shelter in the world, standing or down, gathered again only when one

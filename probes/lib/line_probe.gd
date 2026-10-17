@@ -16,6 +16,9 @@ func load_lines(run_seed := 1234, salvage := false) -> void:
 	# Still air parks the run's storms where they stand, and a long one would
 	# wear out what's on the lines.
 	tuning.storm_threshold = 2.0
+	# The wind a probe picks is the wind felt: no dune's lee takes any of it.
+	tuning.lee_wind = 0.0
+	tuning.lee_storm = 0.0
 	var kept := [tuning.prevailing_speed, tuning.prevailing_sway, tuning.storm_outflow_speed]
 	await load_hands(run_seed, salvage)
 	tuning.prevailing_speed = kept[0]
