@@ -48,6 +48,9 @@ out, never written into the text (Hunter, 2026-10-16), even before players can r
 - **Use** works what you're looking at, or uses what you hold: switch a shield, drive a
   stake.
 - **Throw** throws what you hold.
+- **Reel in and pay out** (Hunter, 2026-10-16): on a line, they shorten and lengthen it
+  (Rope & tethering); on anything else you hold or have hold of, they bring it nearer or
+  push it farther, within reason.
 - **Rotate** (Hunter, 2026-10-16): held down, the mouse turns what you hold, or what you
   have hold of, instead of your view. It's how you right a crate, a planter or a shield
   that has tipped over: take hold of it and roll it back. While you have hold of
