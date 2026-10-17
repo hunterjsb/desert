@@ -567,6 +567,18 @@ static var _current: Tuning
 @export var ruin_max_rise: float = 1.5
 @export var ruin_max_degrees: float = 20.0
 
+@export_group("Radio")
+## What a radio draws while it's on, W.
+@export var radio_w: float = 2.0
+## How far ahead the weather station reads the storm field, minutes, and how
+## often it reads it again, s of world time.
+@export var radio_forecast_minutes: float = 20.0
+@export var radio_forecast_every: float = 5.0
+## How far a radio hears a beacon, m, and the share of ruins the seed left
+## one running in.
+@export var radio_reach_m: float = 3000.0
+@export var beacon_share: float = 0.3
+
 @export_group("Loose objects")
 ## Wind drag per (m/s)² per m² of a thing's biggest face: half the air density
 ## times its drag coefficient. Matched to the rope look-test's floater, the feel

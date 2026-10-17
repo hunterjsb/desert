@@ -165,6 +165,13 @@ func exposure_in(coord: Vector2i) -> float:
 	return lot.exposure if lot != null else NAN
 
 
+## Whether a find of a loaded chunk's plan is yours now; one of a chunk
+## forgotten will lie there again.
+func taken(coord: Vector2i, index: int) -> bool:
+	var lot: Lot = _lots.get(coord)
+	return lot != null and lot.taken.has(index)
+
+
 ## Whether a body still lies as it was found, or is buried: taken hold of,
 ## it comes up out of the sand first.
 func lying(body: Node) -> bool:

@@ -184,7 +184,8 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
   ruin's floor or the sand.
 - **What's found** is the catalog's own parts and devices. The surface layer holds
   batteries, hooks, lamps, empty canisters, rope coils and cable plugs, and crate frames,
-  chargers, planters, stakes and survival kits. The deep layer holds big batteries,
+  chargers, planters, stakes, survival kits and radios (Stage 11, one in six of the
+  surface layer's devices). The deep layer holds big batteries,
   batteries, hover trays, solar panels, hooks, strong cable plugs and harvesters, and
   crate frames, wind turbines, condensers, shield generators and, rarer, hoverboards
   (Stage 10, one in nine of the deep layer's devices; a ruin's hall never holds one,
@@ -194,7 +195,7 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
   them at the surface and three in five deep. Over 3,000 chunks on two seeds, rope coils
   and plugs are each about one find in fourteen, strong plugs one in thirty-five, survival
   kits one in thirty-three (a seventh of them on ruins' floors), and the harvester, at one in
-  sixty, is the rarest part on open sand (2026-10-16).
+  sixty, is the rarest part on open sand (2026-10-16, before radios).
 - **Rope and wire** lie as one body until they're yours. A coil, taken, gives you a
   line's first end to lay, the rest on your belt. A plug standing in the sand is a
   cable's first end: take it and its 6 m cable and second plug come up with it, a strong

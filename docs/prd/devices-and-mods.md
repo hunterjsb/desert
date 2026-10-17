@@ -234,7 +234,7 @@ it, take hold of it, and let go.
 | Battery slot | Batteries | Power |
 | Ring mount | Rope hooks | Rope & tethering |
 | Bottom mount | Hover trays | Bubble shield & camp |
-| Top mount | Solar panels, instruments, lamps, the shield generator | Power and others |
+| Top mount | Solar panels, instruments such as the radio, lamps, the shield generator | Power and others |
 | Rack | The hoverboard, seated along a crate's side, riding and charging with it (Hunter, 2026-10-16) | Movement |
 | Plant slot (small, large) | Seedlings | Farming |
 
@@ -251,6 +251,7 @@ it, take hold of it, and let go.
 | Light shield generator | 1 | 1 | 1 | | 1 | fits a top mount itself |
 | Light solar panel | | | | | 1 | |
 | Hoverboard | 1 | | | | 1 | fits a rack itself |
+| Radio | 1 | | | | 1 | fits a top mount itself |
 | Survival kit | | | | | | a water and a food socket, 2 small and 1 large plant slot |
 
 Some parts **add sockets of their own**. An extra-hook mod fits a mount and provides a

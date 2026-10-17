@@ -173,6 +173,19 @@ static func _frame(id: StringName, size: Vector3, extra: float) -> ArrayMesh:
 			_hazard(b, Vector3(size.x + 0.004, 0.05, 0.034), Vector3(0.0, h.y - 0.015, -h.z + 0.06), Basis(Vector3.RIGHT, -PI / 2.0))
 			for z in [-0.35, 0.35]:
 				b.drum(0.07, 0.012, Vector3(0.0, -h.y + 0.005, z), Paint.coat(Color(0.45, 0.8, 1.0), 0.0, 0.0, 0.3, 0.3, 2.0), Basis.IDENTITY, 16)
+		&"radio":
+			# A set made to carry: a speaker's slats and a dial that lights
+			# while it plays on its face, a handle, an aerial up from the back.
+			b.box(Vector3(size.x - 0.02, size.y - 0.02, size.z - 0.02), Vector3.ZERO, teal, 0.02)
+			for x in [-1, 1]:
+				b.box(Vector3(0.03, size.y, size.z), Vector3(x * (h.x - 0.015), 0.0, 0.0), gun, 0.008)
+				b.box(Vector3(0.02, 0.04, 0.02), Vector3(x * 0.09, h.y + 0.02, 0.0), gun, 0.004)
+			for i in 6:
+				b.box(Vector3(0.13, 0.012, 0.01), Vector3(-0.06, -0.065 + i * 0.026, h.z - 0.004), black, 0.002)
+			b.box(Vector3(0.1, 0.045, 0.012), Vector3(0.08, 0.04, h.z - 0.004), Paint.coat(Color(1.0, 0.7, 0.35), 0.0, 0.0, 0.3, 0.2, 2.5), 0.003)
+			b.drum(0.022, 0.02, Vector3(0.08, -0.04, h.z + 0.006), black, Basis(Vector3.RIGHT, PI / 2.0), 14)
+			b.box(Vector3(0.2, 0.02, 0.025), Vector3(0.0, h.y + 0.045, 0.0), gun, 0.006)
+			b.drum(0.006, 0.3, Vector3(-h.x + 0.045, h.y + 0.15, -h.z + 0.03), Paint.coat(Paint.STEEL, 0.8, 0.6), Basis.IDENTITY, 8)
 		&"stake":
 			var iron := Paint.coat(Paint.RUST.lightened(0.1), 1.4, 0.3, 0.8)
 			b.box(Vector3(0.05, Stake.LENGTH - 0.12, 0.05), Vector3(0.0, 0.03, 0.0), iron, 0.01)

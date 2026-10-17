@@ -14,7 +14,8 @@ extends RefCounted
 ## "ruin" stands you in front of the ruin nearest where the run began, clear
 ## and calm, with finds round it and a bare crate frame of your own. "farm"
 ## sets two planters growing in front of you, one with a harvester, and a
-## shield for the storm on its way.
+## shield for the storm on its way. "radio" sets a radio and a shield at your
+## feet with a storm on its way, to sit it out and follow a beacon.
 const LIST: Array[Dictionary] = [
 	{"key": "spawn", "label": "spawn: where and when the run began", "kind": "spawn"},
 	{"key": "clear", "label": "clear day, no storm for 10 min", "kind": "clear", "day": [0.42, 0.55]},
@@ -42,6 +43,8 @@ const LIST: Array[Dictionary] = [
 		"kind": "clear", "day": [0.33, 0.37], "due": [90.0, 200.0], "farm": true},
 	{"key": "board", "label": "ride: a charged hoverboard at your feet by a small camp, a shield and a crate, clear and calm",
 		"kind": "clear", "day": [0.35, 0.5], "calm": 6.0, "board": true},
+	{"key": "radio", "label": "radio: a radio and a charged shield at your feet, a storm 300 m off", "kind": "front",
+		"distance": 300.0, "day": [0.35, 0.55], "radio": true},
 ]
 
 ## The test kit, as [catalog id, metres to your right, metres ahead]: empty
@@ -93,6 +96,10 @@ const BOARD_AT := [0.0, 1.3]
 const BOARD_SHIELD := [-2.0, 3.0]
 const BOARD_CRATE := [2.2, 3.4]
 
+## The radio, its face to you, and the shield to sit the storm out by it.
+const RADIO_AT := [0.4, 1.4]
+const RADIO_SHIELD := [-0.7, 2.0]
+
 ## Your own frame, to fit what you find to: right and ahead.
 const YOURS := [1.5, 2.5]
 ## How far from where the run began to look for a ruin, m.
@@ -127,7 +134,7 @@ static func apply(world: World, scenario: Dictionary) -> void:
 			body.queue_free()
 	world.remove_meta(&"scenario_kit")
 	if not (scenario.kind in ["kit", "ruin"] or scenario.get("camp", false) or scenario.get("survive", false)
-			or scenario.get("farm", false) or scenario.get("board", false)):
+			or scenario.get("farm", false) or scenario.get("board", false) or scenario.get("radio", false)):
 		return
 	# Bodies dropped before the sand under them has collision would be frozen or forgotten.
 	while is_instance_valid(world) and not world.terrain.is_settled_around(place.x, place.z):
@@ -148,6 +155,8 @@ static func apply(world: World, scenario: Dictionary) -> void:
 		dropped = farm(world)
 	elif scenario.get("board", false):
 		dropped = board(world)
+	elif scenario.get("radio", false):
+		dropped = radio(world)
 	else:
 		dropped = camp(world) if scenario.get("camp", false) else survive(world)
 	world.set_meta(&"scenario_kit", dropped)
@@ -396,6 +405,12 @@ static func farm(world: World) -> Array[Node3D]:
 static func board(world: World) -> Array[Node3D]:
 	return [standing(world, &"board", [&"battery"], BOARD_AT), standing(world, &"shield", [&"battery"], BOARD_SHIELD),
 		standing(world, &"crate_frame", [], BOARD_CRATE)]
+
+
+## A radio with a full battery on the sand in front of you, switched off, and
+## a charged shield generator beside it, switched off. Returns what it dropped.
+static func radio(world: World) -> Array[Node3D]:
+	return [standing(world, &"radio", [&"battery"], RADIO_AT), standing(world, &"shield", [&"battery"], RADIO_SHIELD)]
 
 
 ## Your own bare crate frame on the sand beside you, to fit what you find to.

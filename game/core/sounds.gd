@@ -54,6 +54,14 @@ const FOOD_DROP := preload("res://assets/audio/food_drop.ogg")
 const DRIPS: Array[AudioStream] = [preload("res://assets/audio/drip_a.ogg"),
 	preload("res://assets/audio/drip_b.ogg")]
 const CREAK := preload("res://assets/audio/creak.ogg")
+# The radio: Sand Game's two tracks, by day and by night, the static the
+# storm brings, the dial turning, a beacon's ping and the weather station's tones.
+const RADIO_DAY := preload("res://assets/audio/radio_day.ogg")
+const RADIO_NIGHT := preload("res://assets/audio/radio_night.ogg")
+const RADIO_STATIC := preload("res://assets/audio/radio_static.ogg")
+const RADIO_TUNE := preload("res://assets/audio/radio_tune.ogg")
+const RADIO_PING := preload("res://assets/audio/radio_ping.ogg")
+const RADIO_TONES := preload("res://assets/audio/radio_tones.ogg")
 # Weather.
 const STORM := preload("res://assets/audio/storm.ogg")
 const WIND := preload("res://assets/audio/wind.ogg")

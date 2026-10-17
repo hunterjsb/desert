@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://game/player/player.gd" id="1_player"]
 [ext_resource type="Script" path="res://game/player/hands.gd" id="2_hands"]
@@ -7,6 +7,7 @@
 [ext_resource type="Script" path="res://game/survival/vitals.gd" id="5_vitals"]
 [ext_resource type="Script" path="res://game/player/camp_range.gd" id="6_range"]
 [ext_resource type="Script" path="res://game/survival/headlamp.gd" id="7_lamp"]
+[ext_resource type="Script" path="res://game/radio/broadcast.gd" id="8_broadcast"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.35
@@ -42,3 +43,6 @@ script = ExtResource("5_vitals")
 
 [node name="CampRange" type="Node" parent="."]
 script = ExtResource("6_range")
+
+[node name="Broadcast" type="Node" parent="."]
+script = ExtResource("8_broadcast")

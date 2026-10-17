@@ -3,8 +3,9 @@ extends WeatherProbe
 ## 100 m upwind and you face it; deep is deep; dusk is dusk; the test kit lands
 ## in front of you; going looking stands you before a ruin's door with finds
 ## round it; the farm stands in front of you growing; a charged board lies at
-## your feet by a small camp. Checked against the field itself and against
-## what the game then shows.
+## your feet by a small camp; a radio and a shield stand at your feet with a
+## beacon in reach. Checked against the field itself and against what the
+## game then shows.
 
 const SLACK := 1.0
 
@@ -64,6 +65,8 @@ func run() -> void:
 					"%s: the edge is %.0f m upwind (%.2f m)" % [what, scenario.distance, edge])
 				if scenario.get("camp", false):
 					await _camp_lands()
+				if scenario.get("radio", false):
+					await _radio_lands()
 			"deep":
 				check(field.storm_at(at.x, at.y, t) == 1.0, "deep: full storm")
 				check(_edge(at, upwind, t, true) > 250.0 and _edge(at, -upwind, t, true) > 250.0,
@@ -84,6 +87,27 @@ func _edge(from: Vector2, along: Vector2, t: float, inside: bool) -> float:
 		if (field.raw_storm_at(p.x, p.y, t) > 0.0) != inside:
 			return d
 	return INF
+
+
+## A radio stands at your feet in front of you, a full battery in it, switched
+## off, by a charged shield generator, switched off; tuned to the beacon
+## there, it hears one.
+func _radio_lands() -> void:
+	await settle(true)
+	var dropped := Scenarios.radio(world)
+	await physics_frames(30)
+	var player := world.player
+	var radio: Radio = dropped[0]
+	var shield: ShieldGenerator = dropped[1]
+	var off := radio.global_position - player.global_position
+	check(off.dot(-player.global_basis.z) > 0.5 and Vector2(off.x, off.z).length() < 2.0 and radio.channel == Radio.OFF
+		and radio.battery() != null and radio.charge_share() >= 1.0, "radio: at your feet in front of you, charged and off")
+	check(not shield.on and shield.battery().charge_wh >= shield.battery().capacity(), "radio: a charged shield beside it")
+	while radio.channel != Radio.BEACON:
+		radio.interact(player)
+	check(not radio.target.is_empty(), "radio: a beacon in reach from there")
+	for body in dropped:
+		body.free()
 
 
 ## A hoverboard lies at your feet in front of you, nose ahead, a full battery

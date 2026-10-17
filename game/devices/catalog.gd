@@ -159,6 +159,14 @@ const DEVICES := {
 		"sockets": [
 			[&"port", Vector3(0.4, 0.0, 0.0), Vector3.RIGHT],
 		]},
+	# Music, the weather station and beacons, a channel a use. Carried, set
+	# down or seated on a top mount, it runs on its battery or what it sits on.
+	&"radio": {"label": "Radio", "size": Vector3(0.32, 0.22, 0.16), "mass": 2.5, "radio": true, "fits": &"top",
+		"carryable": true,
+		"sockets": [
+			[&"battery", Vector3(0.0, -0.02, -0.08), Vector3.FORWARD],
+			[&"port", Vector3(0.16, -0.035, -0.01), Vector3.RIGHT],
+		]},
 	# A sealed case of what keeps you going: a canister, a ration and seeds.
 	&"survival_kit": {"label": "Survival kit", "size": Vector3(0.5, 0.25, 0.35), "mass": 3.0, "carryable": true,
 		"sockets": [
@@ -292,7 +300,8 @@ static func device(id: StringName) -> Device:
 	var made: Device = ShieldGenerator.new() if spec.get("shield", false) \
 		else (Condenser.new() if spec.get("condenser", false) \
 		else (Planter.new() if spec.get("planter", false) \
-		else (Hoverboard.new() if spec.get("board", false) else Device.new())))
+		else (Hoverboard.new() if spec.get("board", false) \
+		else (Radio.new() if spec.get("radio", false) else Device.new()))))
 	made.set_meta(&"catalog", id)
 	made.label = spec.label
 	made.frame_mass = spec.mass

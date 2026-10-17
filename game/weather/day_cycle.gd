@@ -17,6 +17,12 @@ func time_of_day(t: float) -> float:
 	return fposmod(_start + t / _day_seconds, 1.0)
 
 
+## Whether the sun is up. With no tilt it rises at six and sets at six
+## everywhere, whatever the weather does to the light.
+func is_day(t: float) -> bool:
+	return absf(time_of_day(t) - 0.5) < 0.25
+
+
 ## Whole days since the run began, counting the first as day 1.
 func day(t: float) -> int:
 	return floori(_start + t / _day_seconds) + 1
