@@ -94,7 +94,7 @@ even storms that last for days.
   riding the prevailing wind at 6 to 14 m/s. Drag grows with speed², and a third of it
   is the air's, felt against the felt wind: a tailwind carries you faster and a headwind
   holds you back, and a tuck (crouch) shows the wind less, about 22 m/s flat out. Slopes
-  pull it as they pull a slide, so it runs past top speed down a slip face (22.8 m/s on
+  pull it as they pull a slide, so it runs past top speed down a slip face (22.9 m/s on
   the long ride) and slows climbing one, to about 11 m/s in still air.
 - **Carving.** Move forward and the sideways moves push and carve where they point from
   your view, as walking does. The board swings round under you at up to 2.5 rad/s and
@@ -128,7 +128,7 @@ even storms that last for days.
     each surge back within a couple of seconds, so over 30 s of ridges pushing flat out a
     rider in rhythm goes 0.8% further than one standing still (the tuck aside). The tuck
     is still the most speed there is flat out: tucked all the way goes 10% further than
-    standing, pumping with the tuck 5%.
+    standing, pumping with the tuck 2.4% (5% before the board caught air).
   - **A drift.** Crouch into a hard carve, 8 m/s or faster with the board swung 20° off
     your way, and the board slides out on purpose: it swings round at 3.5 rad/s, grips at
     14 m/s², and a slide fully sideways bleeds a quarter of its speed a second instead of
@@ -255,11 +255,14 @@ All built: on foot alongside Stage 5, the board and the camp-range warnings at S
 
 1. **The long ride.** Ride 20 km of dunes, slip faces and chunk seams at top speed. The
    board never dips below the sand, never launches unexpectedly, and never jitters.
-   *(Built: half across the ridges with the wind and against it, half wandering, over
-   411 chunk seams, 18.8 m/s on average. The underside never came nearer the sand than
-   5.8 cm; 55 launches, every one off a crest, at most 1.9 m over its ride height; no
-   judder; the hardest moment 5.3 g, climbing into a slip face; the ground solid under
-   you all the way.)*
+   Unexpectedly means off a bump, a seam or its own landing: off a big crest at speed
+   it should fly. *(Built: half across the ridges with the wind and against it, half
+   wandering, over 408 chunk seams, 18.6 m/s on average. The underside never came
+   nearer the sand than 7.0 cm; 59 launches, every one off a crest, at most 4.9 m over
+   its ride height and 2.0 s long, none within half a second of a landing; no judder;
+   the hardest moment 5.0 g; the ground solid under you all the way. Before the air, 55
+   launches, at most 1.9 m and 0.7 s, and the probe allowed 3 m; it now allows 8 m and
+   counts bounces.)*
 2. **The escape is real.** A charged board escapes a storm front from a set distance.
    *(Built: in the run's own weather, a front 50 m upwind. Flat out downwind on a base
    battery, the front falls behind at about 11 m/s, 2.1 km behind after three minutes,
@@ -318,7 +321,7 @@ The board after Hunter's first ride has its own:
     24 stamina; up a 31.7° slip face from its foot in 3 s, 13.9 m against 8.8 m.)*
 17. **Pumping.** Over the ridges flat out, a rider in rhythm beats one standing still, but
     only a little, and the wrong way round loses. *(Built: with the tuck switched off,
-    30 s, 546.8 m against 542.4 m, +0.8%; the wrong way round 538.1 m.)*
+    30 s, 544.3 m against 540.1 m, +0.8%; the wrong way round 536.0 m.)*
 18. **The drift.** A hard turn crouched slides further out and keeps more speed than the
     same turn skidding, and standing up grips again. *(Built: from 19.4 m/s, out at
     16.6 m/s against 12.9, sliding 60° against 46°.)*
