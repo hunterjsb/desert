@@ -136,20 +136,21 @@ const DEVICES := {
 			[&"bottom", Vector3(0.0, -0.21, 0.0), Vector3.DOWN],
 			[&"port", Vector3(0.2, -0.05, 0.0), Vector3.RIGHT],
 		]},
-	# The light shield you start with: a smaller bubble that lets half the wind
-	# through, built light enough that the light panel keeps it going.
+	# The light shield you start with: a smaller bubble that lets a little of
+	# the wind through, built light enough that the light panel keeps it going.
 	&"light_shield": {"label": "Light shield generator", "size": Vector3(0.3, 0.32, 0.3), "mass": 4.0, "shield": true,
-		"fits": &"top", "stats": {"radius_m": 4.0, "clear_w": 2.0, "storm_w": 20.0, "wind_block": 0.5},
+		"fits": &"top", "stats": {"radius_m": 4.0, "clear_w": 2.0, "storm_w": 20.0, "wind_block": 0.85},
 		"sockets": [
 			[&"battery", Vector3(0.0, -0.04, 0.15), Vector3.BACK],
 			[&"ring", Vector3(-0.15, -0.04, 0.0), Vector3.LEFT],
 			[&"bottom", Vector3(0.0, -0.16, 0.0), Vector3.DOWN],
 			[&"port", Vector3(0.15, -0.04, 0.0), Vector3.RIGHT],
 		]},
-	# The light solar panel you start with, half a found panel: set it down,
-	# cable it in, pick it up again. Lying flat, the wind meets its edge.
-	&"light_panel": {"label": "Light solar panel", "size": Vector3(0.8, 0.05, 0.6), "mass": 5.0, "carryable": true,
-		"stats": {"solar_w": 30.0, "face_m2": 0.04},
+	# The light solar panel you start with, half a found panel's watts on half
+	# a crate's top, so it rides beside a shield: seat it, set it down, cable
+	# it in, pick it up again. Lying flat, the wind meets its edge.
+	&"light_panel": {"label": "Light solar panel", "size": Vector3(0.8, 0.05, 0.4), "mass": 5.0, "carryable": true,
+		"fits": &"top", "stats": {"solar_w": 30.0, "face_m2": 0.04},
 		"sockets": [
 			[&"port", Vector3(0.4, 0.0, 0.0), Vector3.RIGHT],
 		]},

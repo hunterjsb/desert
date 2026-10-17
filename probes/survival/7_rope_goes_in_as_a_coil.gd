@@ -1,10 +1,10 @@
 extends LineProbe
 ## Survival probe 7: rope goes in as a coil. The run's kit is set down beside
-## you. Its cable, plugged in at one end, stays out of your slots; plugged
-## into nothing, it goes in whole and comes out whole, its other plug
-## following, and a strong cable the same. The kit's 6 m coil and a found
-## 12 m one, each taken up, go in a slot as a coil, leaving nothing of the
-## line in the world. A kilometre on, the land they lay on gone, each comes
+## you. A cable between its crate and its board, plugged in at one end,
+## stays out of your slots; plugged into nothing, it goes in whole and comes
+## out whole, its other plug following, and a strong cable the same. A coil
+## the kit's length and a found 12 m one, each taken up, go in a slot as a
+## coil, leaving nothing of the line in the world. A kilometre on, the land they lay on gone, each comes
 ## out as its first end in your hand and the rest at your belt, pays out to
 ## the same length and ties onto a stake's ring. Paying out, or laid, a line
 ## stays out.
@@ -22,15 +22,17 @@ var suit: Suit
 func run() -> void:
 	await load_lines(1234, true)
 	suit = world.player.suit
-	var kit := Runs.kit(world)
+	# A cable from the kit's crate to its board.
+	var ports: Array[Socket] = []
+	for node in Runs.kit(world):
+		if node is Device and ((node as Device).stats().lift_kg > 0.0 or node is Hoverboard):
+			ports.append_array((node as Device).sockets().filter(func(s: Socket) -> bool: return s.kind == &"port"))
+	var cable := Catalog.cable(world, world.player.global_position + Vector3(-1.0, 0.1, -1.0))
+	for k in 2:
+		(ports[k].get_parent() as Device).fit(cable.plugs[k], ports[k])
+	var line := Line.make(world, Kit.standard().rope_m)
+	line.coil.global_position = world.player.global_position + Vector3(-1.0, 0.1, 1.0)
 	await simulate(1.0)
-	var line: Line = null
-	var cable: Cable = null
-	for node in kit:
-		if node is Line:
-			line = node
-		elif node is Cable:
-			cable = node
 	await _cables(cable)
 	await _round(line.coil, Kit.standard().rope_m)
 
@@ -42,18 +44,18 @@ func run() -> void:
 	await _round(found, world.tuning.rope_coil_length)
 
 
-## The kit's cable plugged in at one end, then at neither, and a strong cable.
-func _cables(kit_cable: Cable) -> void:
-	var plug := kit_cable.plugs[0]
+## A cable plugged in at one end, then at neither, and a strong cable.
+func _cables(plugged: Cable) -> void:
+	var plug := plugged.plugs[0]
 	(plug.socket.get_parent() as Device).take(plug.socket)
 	hands.hold(plug)
 	await simulate(0.5)
 	check(not suit.click(3) and hands.held == plug, "a cable plugged in at its other end stays out")
-	var other := kit_cable.plugs[1]
+	var other := plugged.plugs[1]
 	(other.socket.get_parent() as Device).take(other.socket)
 	await simulate(0.5)
 	var strong := Catalog.cable(world, world.player.global_position + Vector3(1.0, 0.1, -1.0), true)
-	for cable: Cable in [kit_cable, strong]:
+	for cable: Cable in [plugged, strong]:
 		if cable == strong:
 			hands.hold(strong.plugs[0])
 			await simulate(0.5)

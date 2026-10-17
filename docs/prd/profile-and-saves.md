@@ -85,7 +85,6 @@ Resume, New game, the death screen and Options.
   disk write, 0.4–0.6 ms there and unbounded on a slow disk, is off the frame.
 - **A death in Normal** keeps the save and shows the death screen (Menus & UI): Load
   last save is Resume, and New run is New game in Normal.
-
 - **What a save holds:** you (where you stand, which way you face and look, how you're
   moving, stamina, your bars, your slots, what's in your hands, at your waist or being
   hauled, and the board you ride with its ride as it stood), the clock, the moon position, the engine's origin, and where power, wear,
@@ -139,8 +138,8 @@ Resume, New game, the death screen and Options.
 6. **Saved mid-ride.** Resumed, you're back on the board at the saved speed and ride on
    where the run never saved went; with the ride dropped from the save, the board comes
    down on the sand instead of hanging in the air.
-7. **A coil in a slot.** Saved with the kit's 6 m coil and a cable in your slots and
-   resumed, the coil comes out a working 6 m line and the cable whole.
+7. **A coil in a slot.** Saved with a 6 m coil, the kit's length, and a cable in your
+   slots and resumed, the coil comes out a working 6 m line and the cable whole.
 8. **Normal saves as you go.** Saved by hand, no save lands before the autosave period
    is up and one does just after; none while you're dead, in Ironman, or in a dev
    scenario's run.

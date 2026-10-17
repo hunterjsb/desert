@@ -18,6 +18,9 @@ signal parts_changed
 @export var carryable := false
 ## The socket kind it seats in, like a shield on a top mount; none for most.
 @export var kind: StringName
+## How much its draw matters when its pool runs short: lower ranks give way
+## first, so what keeps you alive keeps its power (Power).
+@export var rank := 0
 
 ## Set by Power each tick: false once its battery and sources can't meet its draw.
 var powered := true

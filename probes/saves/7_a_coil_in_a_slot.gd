@@ -1,6 +1,7 @@
 extends LineProbe
-## Profile & saves probe 7: a coil in a slot. The kit's 6 m coil, taken up,
-## and a cable plugged into nothing go in your slots, and the run is saved.
+## Profile & saves probe 7: a coil in a slot. A 6 m coil, the kit's length,
+## taken up, and a cable plugged into nothing go in your slots, and the run is
+## saved.
 ## Resumed into a fresh world on the same seed, the coil comes out a working
 ## line of the same length, paying out to all of it and tying onto a stake,
 ## and the cable comes out whole, its other plug following.

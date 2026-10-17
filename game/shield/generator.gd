@@ -45,6 +45,8 @@ var _band: StandardMaterial3D
 func _init() -> void:
 	# Small and light: it goes in your hands, and its bubble with it.
 	carryable = true
+	# Its bubble is what keeps you alive: the last thing on a pool to go dark.
+	rank = 1
 
 
 func _ready() -> void:
