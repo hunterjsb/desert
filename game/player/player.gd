@@ -138,6 +138,10 @@ func _physics_process(delta: float) -> void:
 
 	var wish := global_basis * Vector3(input.x, 0.0, input.y)
 	var dir := Vector2(wish.x, wish.z).normalized()
+	# Reeling in what won't come, you step in along the line.
+	var hauling := hands.reel.walk_in if input == Vector2.ZERO else Vector2.ZERO
+	if hauling != Vector2.ZERO:
+		dir = hauling.normalized()
 	var on_floor := is_on_floor()
 	_since_ground = 0.0 if on_floor else _since_ground + delta
 	if on_floor:
@@ -175,6 +179,8 @@ func _physics_process(delta: float) -> void:
 		else:
 			sprinting = dir != Vector2.ZERO and Controls.held("sprint") and stamina > 0.0 and not crouch
 			var pace := _tuning.crouch_speed if crouch else (_tuning.sprint_speed if sprinting else _tuning.walk_speed)
+			if hauling != Vector2.ZERO:
+				pace = minf(pace, hauling.length())
 			if dir != Vector2.ZERO:
 				var ahead := Vector3(dir.x, 0.0, dir.y)
 				climb = maxf(0.0, world.height_under(global_position + ahead) - world.height_under(global_position))

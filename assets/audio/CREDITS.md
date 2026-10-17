@@ -21,6 +21,7 @@ integrated loudness, peaks never past -6 dBTP. A hard limiter on Master holds -1
 | seat_a.ogg, seat_b.ogg | fitting a part or mod | Sand Game `object_metal_clank-005`/`-002`, ring cut off, under Kenney Interface `click_001`/`click_003` | Sand Game + CC0 | -30 | -11, -16 |
 | unseat.ogg | taking a part out | Sand Game `object_metal_clank-005`, higher, after Kenney Interface `click_005` | Sand Game + CC0 | -32 | -14 |
 | tie.ogg | a line's end tied on | a creak from Sand Game `rope_creak_ambient-001.mp3` | Sand Game | -35 | -12 |
+| reel.ogg | a notch of line drawn hand over hand, lower paid out | a creak from Sand Game `rope_creak_ambient-001.mp3` (at 11.65 s), its low end cut | Sand Game | -38 | -14 |
 | creak.ogg | taut rope | Sand Game `rope_creak_ambient-001.mp3` | Sand Game | -27 at full strain | -3 |
 | hum.ogg | the tug toward a socket | Sand Game `object_bubbleplanter_hover.wav` | Sand Game | -36 at a full tug | -23 |
 | pouch_in.ogg, pouch_out.ogg | into and out of the suit's slots | Kenney RPG Audio `cloth3`, `cloth1`, softened | CC0 | -38 | -18, -16 |
