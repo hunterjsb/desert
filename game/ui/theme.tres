@@ -20,6 +20,10 @@
 base_font = ExtResource("1_drud1")
 spacing_glyph = 3
 
+[sub_resource type="FontVariation" id="FontVariation_title"]
+base_font = ExtResource("1_drud1")
+spacing_glyph = 22
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ta3wi"]
 bg_color = Color(0, 0, 0, 1)
 
@@ -55,6 +59,18 @@ fill_to = Vector2(0, 1)
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_shade"]
 texture = SubResource("GradientTexture2D_shade")
+
+[sub_resource type="Gradient" id="Gradient_shade_high"]
+colors = PackedColorArray(0, 0, 0, 0.3, 0, 0, 0, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_shade_high"]
+gradient = SubResource("Gradient_shade_high")
+width = 4
+height = 64
+fill_to = Vector2(0, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_shade_high"]
+texture = SubResource("GradientTexture2D_shade_high")
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_console"]
 content_margin_left = 10.0
@@ -128,6 +144,14 @@ MenuNote/base_type = &"Label"
 MenuNote/colors/font_color = Color(0.92, 0.92, 0.9, 0.45)
 MenuNote/font_sizes/font_size = 15
 MenuNote/fonts/font = SubResource("FontVariation_mippt")
+MenuTitle/base_type = &"Label"
+MenuTitle/colors/font_shadow_color = Color(0, 0, 0, 0.16)
+MenuTitle/constants/outline_size = 0
+MenuTitle/constants/shadow_offset_x = 0
+MenuTitle/constants/shadow_offset_y = 1
+MenuTitle/constants/shadow_outline_size = 5
+MenuTitle/font_sizes/font_size = 52
+MenuTitle/fonts/font = SubResource("FontVariation_title")
 MenuWord/base_type = &"Button"
 MenuWord/font_sizes/font_size = 20
 MenuWord/fonts/font = SubResource("FontVariation_mippt")
@@ -153,6 +177,8 @@ RichTextLabel/colors/font_outline_color = Color(0, 0, 0, 0.6)
 RichTextLabel/constants/line_separation = 0
 RichTextLabel/constants/outline_size = 3
 RichTextLabel/fonts/mono_font = ExtResource("2_7y804")
+ShadeHigh/base_type = &"Panel"
+ShadeHigh/styles/panel = SubResource("StyleBoxTexture_shade_high")
 Shade/base_type = &"Panel"
 Shade/styles/panel = SubResource("StyleBoxTexture_shade")
 Scrim/base_type = &"Panel"

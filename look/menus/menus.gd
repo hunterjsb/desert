@@ -1,6 +1,7 @@
 extends Node
-## Look-test helper: shoots the main menu over its desert as it opens and once
-## its storm has passed, then the system menu over a run. Needs a window, not --headless:
+## Look-test helper: shoots the main menu, its title and crate, over its desert
+## as it opens and once its storm has passed, then the system menu over a run.
+## Needs a window, not --headless:
 ##   godot --path . res://look/menus/menus.tscn -- <out dir>
 
 const MAIN := preload("res://game/main.tscn")
@@ -21,6 +22,8 @@ func _ready() -> void:
 	Tuning.current().run_seed = 1234
 	var main: Main = MAIN.instantiate()
 	add_child(main)
+	# The real mouse may pass over this window: the crate rests facing you.
+	main.showpiece.set_process_input(false)
 	await _idle(main.view)
 	await _ticks(120)
 	_shoot(out.path_join("menu_main_storm.png"))
