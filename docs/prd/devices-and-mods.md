@@ -121,6 +121,9 @@ floater out of pieces:
   usually a crate, and a condenser, a shield or a charger fit too. A planter doesn't (too
   long for a piece, and it floats on its own tray), and nor does a turbine, which works
   only standing on the sand.
+  A device stands on a deck only with its own tray off (Hunter, 2026-10-17: "removing a
+  crates tray before attaching could fix that"): the deck's trays carry it, and a tray
+  under it would wedge it as it comes off.
 - **A piece has nothing else:** no battery and no port of its own. The ports come from
   what you mount, which is why a deck usually carries crates. Everything on one deck
   shares one power pool, and its wind catch is its pieces' and what stands on them.
