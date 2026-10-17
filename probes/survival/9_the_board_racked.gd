@@ -1,12 +1,12 @@
 extends LineProbe
-## Survival probe 9: the board racked. The kit's board, taken up and aimed at
-## its crate's rack, leans in and seats on take, clear of everything a fully
-## fitted crate holds. Ride at it steps you onto it, off the rack. Racked
-## again, it rides with the crate towed 40 m, charges from the crate's panel
-## until the pool is down to the shield's reserve and not a watt-hour past
-## it, then again once the panel brings the pool back. Take lifts it off.
-## Saved racked, it resumes racked, its charge kept. The kit's one-line
-## change starts it racked.
+## Survival probe 9: the board racked. The kit starts with its board racked on
+## the crate, clear of everything a fully fitted crate holds. Ride at it takes
+## it off and steps you on; stepped off and taken up, aimed at the rack it
+## leans in and seats on take, its weight on the crate's hover load. Racked,
+## it rides with the crate towed 40 m, charges from the crate's panel until
+## the pool is down to the shield's reserve and not a watt-hour past it, then
+## again once the panel brings the pool back. Take lifts it off. Saved racked,
+## it resumes racked, its charge kept.
 
 const AWAY := 40.0
 const CROSSWIND := 8.0
@@ -35,31 +35,27 @@ func run() -> void:
 	var rack: Socket = racks[0]
 	await simulate(2.0)
 	check(shield.interact(world.player), "use switches the crate's shield on")
-	var bare := crate.mass
-
-	look(board.global_position + Vector3(0.0, 1.5, 1.0), board.global_position)
-	await simulate(0.05)
-	check(hands.grab(), "you take up the board")
-	await simulate(0.5)
-	check(await _rack(board, rack), "held at the rack, the board leans in and take seats it")
-	var off := relative(crate, board).origin.distance_to((rack.transform * board.seat()).origin)
-	check(board.host() == crate and rack.mounted == board and off < 1e-4 and absf(crate.mass - bare - board.mass) < 1e-4,
-		"racked, it sits on its seat and adds its %.0f kg to the crate's hover load" % board.mass)
+	var home := rack.transform * board.seat()
+	check(board.host() == crate and rack.mounted == board and relative(crate, board).origin.distance_to(home.origin) < 1e-4,
+		"the kit starts with its board racked on the crate, on its seat")
 	var clash := _clashes()
 	print("on a fully fitted crate the racked board clears everything else by %.1f cm at least, nearest the %s"
 		% [clash.gap * 100.0, clash.nearest])
 	check(clash.gap > SKIN, "it clashes with nothing else the crate holds, its shield, panel, hooks or their lines")
 
+	var racked_kg := crate.mass
 	look(board.global_position + rack.global_basis.z * 1.2 + Vector3.UP * 0.4, board.global_position)
 	await simulate(0.05)
-	check(world.player.toggle_board() and world.player.board == board and not board.racked(),
-		"ride at the racked board takes it off and steps you on")
+	check(world.player.toggle_board() and world.player.board == board and not board.racked()
+		and absf(racked_kg - crate.mass - board.mass) < 1e-4,
+		"ride at the racked board takes it off, its %.0f kg with it, and steps you on" % board.mass)
 	world.player.step_off()
 	await simulate(0.5)
 	var away := flat(board.global_position - crate.global_position).normalized()
 	look(board.global_position + away + Vector3.UP * 1.5, board.global_position)
 	await simulate(0.05)
-	check(hands.grab() and await _rack(board, rack), "stepped off, it's taken up and racked again")
+	check(hands.grab() and await _rack(board, rack) and absf(crate.mass - racked_kg) < 1e-4,
+		"stepped off and taken up, held at the rack it leans in, take seats it, and its weight is back on the crate")
 
 	var heading := flat(stake.global_position - crate.global_position).normalized()
 	var head := stake.global_position + Vector3.UP * 0.3
@@ -69,7 +65,6 @@ func run() -> void:
 	await simulate(0.5)
 	check(taken and hands.held == stake and world.player.waist.take_from_hands(),
 		"you take up its stake and tie it at your waist")
-	var home := rack.transform * board.seat()
 	var seen := {"low": INF, "drift": 0.0, "off": 0}
 	await walk_to(world.player.global_position + heading * AWAY, func() -> void:
 		seen.low = minf(seen.low, clearance(crate))
@@ -98,18 +93,6 @@ func run() -> void:
 		and relative(back.host(), back).origin.distance_to(home.origin) < 1e-4
 		and absf(back.battery().charge_wh - kept) < 0.01,
 		"resumed, the board is still racked on its crate with its %.1f Wh" % kept)
-
-	# The one line: the crate's rack named in the kit's assembly.
-	var one := Kit.standard().duplicate() as Kit
-	var spec: Dictionary = one.assembled[&"floating_crate"].duplicate(true)
-	spec.sockets[10] = &"board"
-	var assembled := one.assembled.duplicate(true)
-	assembled[&"floating_crate"] = spec
-	one.assembled = assembled
-	var made := Runs.kit(world, one)
-	var racked: Array = made.filter(func(n: Node) -> bool: return n is Hoverboard)
-	check(racked.size() == 1 and (racked[0] as Hoverboard).racked() and (racked[0] as Hoverboard).charge_share() > 0.0,
-		"the kit with its board named in the crate's rack starts it racked, charged")
 
 
 ## Holding the board, looks away, then at the rack's seat from its open side

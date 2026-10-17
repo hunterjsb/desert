@@ -100,8 +100,8 @@ even storms that last for days.
   crate's hover load, and it charges from the camp after the shield (Power). You can't
   ride it racked: the ride action at a racked board takes it off and steps you onto it,
   as the ride action at any board you look at puts it under your feet. It saves and
-  resumes racked. The starting kit lays it beside the crate; one line of the kit starts
-  it racked instead (Survival).
+  resumes racked. Every run starts with the board racked on the kit's crate (Hunter,
+  2026-10-16: "i think it should start you w a *racked* hoverboard"; Survival).
 - **Fast.** 20 m/s, 72 km/h, flat out on the flat in still air, against storm fronts
   riding the prevailing wind at 6 to 14 m/s. Drag grows with speed², and a third of it
   is the air's, felt against the felt wind: a tailwind carries you faster and a headwind

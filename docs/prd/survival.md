@@ -203,26 +203,31 @@ Death means a new run (see Runs in the vision).
     the start's 10 to 13 m/s breeze it was gone in seconds. To travel, take up the
     stake and tie it at your waist, and the crate follows on its line with its bubble
     (survival probe 8); to camp, drive the stake again.
-  - **a hoverboard** lying at your left, its battery half charged, ready to ride.
-    One line of the kit starts it racked on the crate instead, its battery the same:
-    `10: &"board",` among the crate's sockets, naming the board beside you in the rack.
-  None of it overlaps you or each other at the start, and neither the crate, the
-  board, the panel nor any shield goes in your slots; you carry a shield in your hands.
+  - **a hoverboard** racked on the crate's left side (Hunter, 2026-10-16: "i think it
+    should start you w a *racked* hoverboard"), its battery half charged, ready to
+    ride: the ride action at it takes it off and steps you on. It's one line of the
+    kit, `10: &"board",` among the crate's sockets, naming the board beside you in the
+    rack; without that line it lies on the sand at your left.
+  None of it overlaps you or each other at the start, the racked board included, and
+  neither the crate, the board, the panel nor any shield goes in your slots; you carry a
+  shield in your hands.
   The light shield is clearly weaker than a found one: a 4 m bubble against 7 m (a third
   of the room for a camp), and it lets 15% of the wind through where a found one stills
   it (Hunter, 2026-10-16: blocks most of the wind, so you barely drift inside). It sips
   2 W in the clear and draws 20 W holding back a full storm. The crate's tray draws
-  about 70 W floating everything on it, more than the 30 W panel can keep up, so the
-  crate floats on what its battery holds, and the shield ranks above the tray: the tray
-  never takes the battery's last quarter (Power). On the probes' seed, over the run's
-  own first day (a storm from 0.33 days in, through the night) the crate floated all
-  day, and at 1.00 days, in the storm, with the battery at 25 Wh,
-  it settled onto the sand; the shield ran on, 23.8 Wh left at 1.25 days, the panel
+  about 90 W floating everything on it, the racked board's 11 kg included, and the
+  board charges from the crate at up to 50 W, far more than the 30 W panel can keep up
+  with, so the crate floats on what its battery holds, and the shield ranks above both:
+  neither the tray nor the board ever takes the battery's last quarter (Power). On the
+  probes' seed, over the run's own first day (a storm from 0.33 days in, through the
+  night) the crate floated until 0.56 days, when, with the battery at 25 Wh, it settled
+  onto the sand; with the board lying beside it instead, it floated until 1.00 days. The
+  shield ran on, 20.9 Wh left at 1.25 days (23.8 with the board beside), the panel
   having made 3.3 Wh to the shield's 6.3. That storm sits on the spawn for more than
-  three and a half days, and the shield was still up at 4 days with 7.1 Wh left. Under
-  clear skies the panel brings the battery from a quarter back to 30% in 1.38 days and
-  the crate floats again until it's back at a quarter: a clear day is worth about three
-  minutes of floating. The quarter kept back runs the light shield for 75 minutes of
+  three and a half days; with the board beside, the shield was still up at 4 days with
+  7.1 Wh left. Under clear skies the panel brings the battery from a quarter back to 30%
+  in 1.35 days and the crate floats again until it's back at a quarter: a clear day is
+  worth a few minutes of floating, fewer while the board charges. The quarter kept back runs the light shield for 75 minutes of
   full storm with no sun, almost four days of it. A dev scenario that drops its own
   camp clears the run's kit first.
   Survival probe 4 checks both runs start with it and runs the light shield into the
@@ -274,7 +279,7 @@ Death means a new run (see Runs in the vision).
    and steps you on. Racked, it rides with the crate towed 40 m, charges from the camp
    until the pool is down to the shield's reserve, takes nothing past it, and charges
    again once the panel brings the pool back, every watt-hour of it accounted for. Take
-   lifts it off; saved racked, it resumes racked; the kit's one line starts it racked.
+   lifts it off; saved racked, it resumes racked. The kit starts it racked.
 10. **Stakes go in.** A found stake and a loose one, each taken up, go in a slot and
     come out ready to drive; driven, each holds a crate floating on a line in a breeze,
     the found one after a save and a resume too. A driven stake, or one with a line on
