@@ -292,7 +292,7 @@ realistic"). Likely one crate carrying the shield, the board, batteries and one 
 its hooks maxed, each towing something: a condenser, a farm, another crate. The chassis
 should replace that train of towed things with one deck, and with it most of the physics
 risk and clunkiness of many bodies on many lines. Once it's in, the reference camp is
-rebuilt on a deck.
+rebuilt on a deck: "add a 2x2 pimped out chassis to afk scenario" (Hunter, 2026-10-17).
 
 ## Waiting for the full version
 

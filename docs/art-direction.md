@@ -404,6 +404,10 @@ overlap its lower edge because they stand in front of the sky.
   softened near the horizon, and faded out by a storm's dust.
 - **The eclipse:** the sky goes near dark, the stars come out, and Tu's black disc is
   ringed in sunset red, with the corona showing where the sun is nearest the edge.
+  **More epic, and through the storm** (Hunter, 2026-10-17: "eclipse is very awesome and
+  dark. lets make it a little more epic, and allow it to shine into the storm, the ring of
+  fire"): the ring of fire glows through a storm's dust when everything else is lost in it,
+  and totality gets more of an occasion.
 - **Stars:** a fixed field turning about the pole, faint and many, with the two pole
   marks brighter than any. They're lost in daylight and in the dust, and Tu hides them.
 

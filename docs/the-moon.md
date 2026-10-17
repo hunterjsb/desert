@@ -89,7 +89,10 @@ real day is one lap round it.
 angular size a tuning value; test 6°, 9° and 13° in game before fixing the orbit. Physics
 follows the look."). The tuning value is how wide Tu is across the sky. The orbit, the
 eclipse and the night light follow from it, and a dev command switches among them during a
-run. 13° is the default. None is chosen. The working is in [the body
+run. **9° is the default now** (2026-10-17): Hunter leaned "6 or 9 probably" after playing
+all three and asked which makes the most sense, and 9° was picked for its 26 s eclipse and
+landmark, its orbit inside Tu's belts, which gives the air its slow leak (the world's clock)
+while the air column keeps the ground's dose mild. Not final until he says so. The working is in [the body
 research](body-research.md#tus-size-under-trial).
 
 | | 6° | 9° | 13° (the default) |
