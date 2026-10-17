@@ -35,6 +35,9 @@ uniform vec3 sun_disc = vec3(14.0, 12.5, 10.5);
 uniform vec3 tu_dir = vec3(0.0, -1.0, 0.0);
 uniform vec2 tu_edge = vec2(2.0, 3.0);
 uniform float sun_shown = 1.0;
+// The eclipse's ring of fire, a light from the sun's bearing like the sun's
+// own; none outside an eclipse.
+uniform vec3 ring_light = vec3(0.0);
 
 // The shells round shelters, from Weather: each one's glow (1 steady, more
 // as it blooms, less as it flickers), the light round the camera that their
@@ -62,6 +65,18 @@ float haze_at(float t, float h) {
 float sun_through(float path) {
 	// Two scattering orders: the straight path, then light that bounced through.
 	return min(1.0, exp(-0.004 * path) + 0.3 * exp(-0.0008 * path));
+}
+
+// The ring's red light, thrown forward grain to grain, carries far deeper
+// into the dust. Twin in StormFace.
+float ring_through(float path) {
+	return exp(-0.00015 * path);
+}
+
+// Dust throws light forward: the ring's makes a halo about its bearing and a
+// broader glow round that. Twin in puff.gdshader and streak.gdshader.
+float ring_phase(float c) {
+	return 0.65 * phase_hg(c, 0.85) + 0.35 * phase_hg(c, 0.45);
 }
 
 // First t from t0 where the ray may be in a storm, or -1. The field's distance
@@ -303,6 +318,8 @@ void fragment() {
 	if (t >= 0.0) {
 		float cos_sun = dot(rd, sun_dir);
 		float phase = mix(1.0, phase_hg(cos_sun, 0.6), 0.45);
+		vec3 ring_seen = ring_light * ring_phase(cos_sun);
+		bool ring_on = ring_light.r > 0.0;
 		float prev_t = t;
 		vec4 head = vec4(0.5);
 		// Step at which the march reached the storm it's in now.
@@ -436,13 +453,17 @@ void fragment() {
 					float relief = 1.0 - 0.6 * smoothstep(1000.0, 5000.0, t);
 					// Depth for the sun counts from the billowed surface, so a lump set
 					// back behind the front is lit like any other part of the face.
-					float sun_t = sun_through(storm_sun_path(p, vec3(edge, f.yz), sun_dir))
-						* mix(1.0 - 0.65 * relief, 1.0, exp(-max(e_sun, 0.0) * 0.04));
+					float path = storm_sun_path(p, vec3(edge, f.yz), sun_dir);
+					float sunward = mix(1.0 - 0.65 * relief, 1.0, exp(-max(e_sun, 0.0) * 0.04));
 					float open = mix(1.0, exp(-max(e_open, 0.0) * 0.02), relief);
 					float sky = mix(storm_glow, 1.0, open) * mix(0.6, 1.0, smoothstep(0.0, 600.0, p.y));
 					// Thick parcels shade themselves; thin ones glow.
 					sky *= mix(1.25, 0.8, smoothstep(0.05, 0.25, sigma));
-					s = dust_albedo * (sun_light * sun_t * phase + sky_light * sky);
+					// The ring's light comes through scattered, so the billows don't shade it.
+					s = dust_albedo * (sun_light * sun_through(path) * phase * sunward + sky_light * sky);
+					if (ring_on) {
+						s += dust_albedo * ring_seen * ring_through(path);
+					}
 					s = mix(s, haze_color, haze_at(t, p.y));
 				}
 				// Shells crossed on the way here sit in front of this step's dust.
@@ -484,8 +505,10 @@ void fragment() {
 		tau *= 1.0 - shelter_length(ro, rd, face_t) / max(face_t, 1.0e-3);
 		vec3 ps = ro + rd * face_t;
 		ps.y = 3.0;
-		float sun_t = sun_through(storm_sun_path(ps, storm_front_exact(ps.xz), sun_dir));
-		vec3 s = dust_albedo * (sun_light * sun_t * mix(1.0, phase_hg(dot(rd, sun_dir), 0.6), 0.45) + sky_light);
+		float path = storm_sun_path(ps, storm_front_exact(ps.xz), sun_dir);
+		float c = dot(rd, sun_dir);
+		vec3 s = dust_albedo * (sun_light * sun_through(path) * mix(1.0, phase_hg(c, 0.6), 0.45)
+			+ ring_light * ring_through(path) * ring_phase(c) + sky_light);
 		s = mix(s, haze_color, haze_at(face_t * 0.7, 0.0));
 		color = mix(color, s, 1.0 - exp(-tau));
 	}

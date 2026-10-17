@@ -50,9 +50,10 @@ func setup(world: World, day: DayCycle, environment: Environment, face: StormFac
 
 ## Every frame, after Weather has worked out the light: where the sun stands
 ## and how much of it shows past Tu, the air's glow and haze, Tu's light as a
-## share of the sun's, and how far into a storm's dust the camera is.
+## share of the sun's, how far into a storm's dust the camera is, and the
+## eclipse ring's light low in the air.
 func show(t: float, eye: Vector3, sun: Vector3, sun_shown: float, glow: Vector3, haze: Vector3,
-		tu_light: float, seen_shade: float, dim: float) -> void:
+		tu_light: float, seen_shade: float, dim: float, ring_air: Vector3) -> void:
 	var moon := _world.moon
 	var tu := _day.tu_direction(t, moon.latitude, moon.longitude)
 	var radius := _day.tu_radius()
@@ -68,6 +69,8 @@ func show(t: float, eye: Vector3, sun: Vector3, sun_shown: float, glow: Vector3,
 	material.set_shader_parameter("tu_pole", Vector3(0.0, sin(moon.latitude), -cos(moon.latitude)))
 	material.set_shader_parameter("tu_time", t)
 	material.set_shader_parameter("to_stars", _day.stars_from(t, moon.latitude, moon.longitude))
+	material.set_shader_parameter("eclipse", _day.eclipse(t))
+	material.set_shader_parameter("eclipse_air", ring_air)
 	_face.set_light("tu_dir", tu)
 	_face.set_light("tu_edge", Vector2(cos(radius + TU_EDGE), cos(radius - TU_EDGE)))
 	_face.set_light("sun_shown", sun_shown)

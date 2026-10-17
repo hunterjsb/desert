@@ -39,8 +39,8 @@ for pair in "noon:noon" "full:a full-Tu night" "full_tu:the same, facing Tu" "cr
 done
 shot full_x3 "a full-Tu night, Tu-shine x3 as once suggested" plain
 shot totality_start "totality begins"
-shot totality_30s "totality, 30 s in"
+shot totality_late "totality, its last second"
 shot sun_back_1s "the sun 1 s back"
 montage "${args[@]}" -tile 4x -geometry 640x360+5+5 -pointsize 18 -depth 8 \
-	-background '#f4efe6' -title "The eye: 13° Tu where a run begins, before (fixed) and after (the eye)" "$sheet"
+	-background '#f4efe6' -title "The eye: 9° Tu where a run begins, before (fixed) and after (the eye)" "$sheet"
 echo "sheet: $sheet"

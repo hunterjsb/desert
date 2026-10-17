@@ -95,7 +95,7 @@ landmark, its orbit inside Tu's belts, which gives the air its slow leak (the wo
 while the air column keeps the ground's dose mild. Not final until he says so. The working is in [the body
 research](body-research.md#tus-size-under-trial).
 
-| | 6° | 9° | 13° (the default) |
+| | 6° | 9° (the default) | 13° |
 |---|---|---|---|
 | Orbit, in Tu radii | 19.1 | 12.7 | 8.8, Io-like |
 | Real day, at 4 Jupiter masses | 6.0 Earth days | 3.2 | 1.9 |
@@ -119,9 +119,14 @@ coming up behind you and a bright, waning Tu ahead.
 
 **The eclipse.** Once a day the sun passes behind Tu, and the whole near side sees it
 total. Tu is far wider than the sun, so the partial phase either side lasts only a few
-seconds. The sky and the sunlight drop near dark and the stars come out, the sun's corona
-and a red ring of sunset light on Tu's rim show briefly, the air cools a few degrees, and
-solar makes nothing, so a camp needs storage or wind to ride it out. It falls at noon at the
+seconds. The last light goes copper, and a diamond ring blazes where the sun goes in. The
+sky and the sunlight drop near dark and the stars come out. Tu's rim is a ring of fire,
+Tu's air bending sunset light round its limb, flaring as the sun goes in and comes out,
+with the sun's corona past it. Its red light is all the light there is: the land faintly
+coppery, the air glowing low all round the horizon, and in a storm the dust glowing from
+within about the ring's bearing. The wind's sound hushes, the air cools a few degrees, and
+solar makes nothing, so a camp needs storage or wind to ride it out ([as
+built](art-direction.md#the-eclipse-as-built)). It falls at noon at the
 sub-Tu point and later the further east you are: where a run starts, at 16:00.
 
 **The Rim** (Hunter, 2026-10-17, lore session part 2). Between the near side and the far
@@ -143,8 +148,8 @@ which is physical. At that, a full-Tu night at 13° has a seventh of the light t
 nights had before; at 9° a fifteenth, and at 6° a thirty-fourth. Shown as it is, the dunes
 are barely there. A scale of 3 was suggested (`~/Desktop/tu_more.png`), and Hunter chose eye
 adaptation instead ([art direction](art-direction.md#eye-adaptation)). On a full-Tu night at
-13°, the eye opens about three times: the dunes read as they did at 3, and it's still
-plainly night.
+9°, the eye opens about six times: the dunes read as the 13° night did, which Hunter found
+bright enough, and it's still plainly night.
 The far side never sees Tu, and its nights are truly dark, lit by the stars alone.
 
 **The stars** turn once a day round the spin axis. A bright star marks the north celestial

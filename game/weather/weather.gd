@@ -29,6 +29,18 @@ const STORM_TINT := Color(0.95, 0.8, 0.62)
 const GRAIN_GLOW := 1.5
 ## The sun's disc, which the storm pass draws so a wall can cover it.
 const SUN_DISC := Vector3(14.0, 12.5, 10.5)
+## The eclipse's ring of fire, Tu's air bending sunset light round its limb:
+## its light at its flare as a share of the sun's, which a storm's dust throws
+## forward into a halo; the share of that open ground and the air get, so
+## totality stays night-dark; and its colour (docs/art-direction.md). The last
+## sliver of sun before it, low on Tu's limb, goes this copper.
+const RING_LIGHT := 0.02
+const RING_ON_GROUND := 0.2
+const RING_COLOR := Color("#ff5a1e")
+const COPPER := Color(1.0, 0.55, 0.3)
+## The ring's light low in the air all round the horizon, against its light on
+## the ground.
+const RING_HORIZON := 14.0
 
 var field: WeatherField
 var day: DayCycle
@@ -294,8 +306,12 @@ func _show(delta: float) -> void:
 	var shown := day.sun_shown(t)
 	var up := smoothstep(-0.02, 0.1, sun.y)
 	var risen := up * shown
+	# Round Tu's limb the ring of fire lights what the sun no longer does.
+	var ring_shown := day.ring_light(t) * up * RING_LIGHT
+	var ring := ring_shown * RING_ON_GROUND
 	var tu_light := day.tu_light(t, moon.latitude, moon.longitude) * _tuning.tu_shine_scale
-	var daylight := smoothstep(-0.1, 0.2, sun.y) * shown + tu_light + NIGHT_LIGHT
+	var sunlit := smoothstep(-0.1, 0.2, sun.y) * shown
+	var daylight := sunlit + tu_light + ring + NIGHT_LIGHT
 	seen_storm = face.seen_at(here)
 	seen_shade = face.open_at(here)
 	seen_sun = maxf(face.sun_at(here, sun), 0.02)
@@ -310,14 +326,21 @@ func _show(delta: float) -> void:
 	var dim := lerpf(1.0, 1.0 - _tuning.storm_darkness, seen_shade)
 	var sky_left := 1.0 - 0.55 * coverage
 	var overhead := Vector3(sun.x * 0.15, 1.0, sun.z * 0.15).normalized()
-	var light_from := sun.slerp(overhead, seen_shade * risen)
+	var light_from := sun.slerp(overhead, seen_shade * up)
 	_sun.global_basis = Basis.looking_at(-light_from, Vector3.UP if absf(light_from.y) < 0.9 else Vector3.FORWARD)
-	_sun.light_energy = _sun_energy * risen * maxf(seen_sun, seen_shade * 0.6) * dim
+	# The sun's light and the ring's come from about the same place.
+	var direct := risen + ring
+	_sun.light_energy = _sun_energy * direct * maxf(seen_sun, seen_shade * 0.6) * dim
 	var tint := Color.WHITE.lerp(STORM_TINT, seen_shade)
-	# Where the light is Tu's, the sky and the haze that fill in are its cool.
-	var night := Color.WHITE.lerp(SkyView.TU_SHINE_COLOR, tu_light / daylight)
-	_sun.light_color = SUN_COLOR * tint
-	_environment.ambient_light_color = AMBIENT_COLOR * tint * night
+	# The last sliver of the sun goes copper, and the sky it lights with it.
+	var copper := pow(1.0 - shown, 1.5) * 0.9
+	var sun_color := SUN_COLOR.lerp(COPPER, copper)
+	# Where the light is Tu's, the sky and the haze that fill in are its cool;
+	# where it's the ring's, its red.
+	var fill := (Color.WHITE * NIGHT_LIGHT + Color.WHITE.lerp(COPPER, copper) * sunlit
+		+ SkyView.TU_SHINE_COLOR * tu_light + RING_COLOR * ring) / daylight
+	_sun.light_color = (sun_color * risen + RING_COLOR * ring) / maxf(direct, 1e-9) * tint
+	_environment.ambient_light_color = AMBIENT_COLOR * tint * fill
 	_environment.ambient_light_energy = _tuning.sky_fill * daylight * sky_left * dim
 	seen_light = (_sun.light_energy / _sun_energy * maxf(light_from.y, 0.0) + _environment.ambient_light_energy) \
 		/ (1.0 + _tuning.sky_fill)
@@ -326,20 +349,23 @@ func _show(delta: float) -> void:
 	# dust itself is the storm pass's; the haze only closes in behind it, never
 	# within the few metres the dust leaves.
 	var haze_light := daylight * sky_left * dim
-	var haze_color := _haze_color.lerp(_tuning.storm_fog_color, seen_storm) * night
+	var haze_color := _haze_color.lerp(_tuning.storm_fog_color, seen_storm) * fill
 	_environment.fog_light_color = haze_color
 	_environment.fog_light_energy = haze_light
 	_environment.fog_depth_begin = lerpf(_tuning.haze_begin, 50.0, seen_storm)
 	_environment.fog_depth_end = lerpf(_tuning.haze_end, 400.0, seen_storm)
 	_world.terrain.show_far(not in_storm)
-	sky.show(t, here, sun, shown, Vector3(night.r, night.g, night.b) * daylight * lerpf(1.0, 0.45, coverage) * dim,
-		_linear(haze_color) * haze_light, tu_light, seen_shade, dim)
+	var air := lerpf(1.0, 0.45, coverage) * dim
+	sky.show(t, here, sun, shown, Vector3(fill.r, fill.g, fill.b) * daylight * air,
+		_linear(haze_color) * haze_light, tu_light, seen_shade, dim, _linear(RING_COLOR) * ring * RING_HORIZON * air)
 	seen_light += sky.tu_seen / (1.0 + _tuning.sky_fill)
 
-	var sun_light := _linear(SUN_COLOR) * _sun_energy * risen
-	var sky_light := _linear(AMBIENT_COLOR) * _tuning.sky_fill * daylight
+	var sun_light := _linear(sun_color) * _sun_energy * risen
+	var ring_light := _linear(RING_COLOR) * _sun_energy * ring_shown
+	var sky_light := _linear(AMBIENT_COLOR * fill) * _tuning.sky_fill * daylight
 	face.set_light("sun_dir", sun)
 	face.set_light("sun_light", sun_light)
+	face.set_light("ring_light", ring_light)
 	# A wall faces half the sky, so it gets less than open ground.
 	face.set_light("sky_light", sky_light * 0.6)
 	face.set_light("camera_sun", seen_sun)
@@ -356,6 +382,8 @@ func _show(delta: float) -> void:
 	var grains := _linear(_tuning.sand_color) * GRAIN_GLOW \
 		* (sun_light * maxf(seen_sun, seen_shade * 0.6) * 0.6 + sky_light * sky_left) * dim
 	var near := exp(minf(seen_front, 0.0) / 350.0) if map.ready else 0.0
+	var ring_grains := ring_light * face.ring_at(here, sun) if ring > 0.0 else Vector3.ZERO
+	atmosphere.show_eclipse(sun, _linear(_tuning.sand_color) * GRAIN_GLOW * ring_grains, (1.0 - shown) * up, delta)
 	atmosphere.show_weather(camera, _world.height_under(here), open_wind(_world.player.global_position),
 		shelter_at(here, &"storm"), seen_shade, near, grains, face.sigma() * seen_shade, _world.time_warp > 0.0, delta)
 
