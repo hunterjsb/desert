@@ -107,6 +107,8 @@ var _body_radius := 0.35
 var _ghost: Node3D
 var _ghost_look: StandardMaterial3D
 var _readout: Label
+## The aim dot and its line, out of the way while a menu is up.
+var _hud: CanvasLayer
 var _sound: AudioStreamPlayer
 var _hum: AudioStreamPlayer
 var _seated_count := 0
@@ -371,6 +373,8 @@ func _physics_process(delta: float) -> void:
 ## Drawn frame by frame too, so a held part never trails your view as you
 ## turn; the next tick puts it back where the last one left it.
 func _process(_delta: float) -> void:
+	if _hud != null:
+		_hud.visible = Controls.playing()
 	if phase == Phase.HELD and is_instance_valid(held):
 		held.global_transform = _within_reach(_pose(true))
 
@@ -1008,6 +1012,7 @@ func _build_hud() -> void:
 	var hud := CanvasLayer.new()
 	hud.layer = 99
 	add_child(hud)
+	_hud = hud
 	var dot := Control.new()
 	dot.set_anchors_preset(Control.PRESET_CENTER)
 	dot.mouse_filter = Control.MOUSE_FILTER_IGNORE
