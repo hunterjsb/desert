@@ -1,10 +1,11 @@
 extends SavesProbe
 ## Profile & saves probe 2: only what changed. A world with its finds laid
-## out, one of them taken, and the clock hours on, so the weather a chunk
-## coming near now would lay out other finds. The save holds no ground and
-## no untouched find: only what's yours, and which finds near you were taken
-## from where, and it stays small. Resumed, the same finds lie where they
-## lay, less the one taken, which is yours.
+## out, a buried one taken from, and the clock hours on, so the weather a
+## chunk coming near now would lay out other finds. The save holds no ground
+## and no untouched find: only what's yours, and which finds near you were
+## taken from where, and it stays small. Resumed, the same finds lie where
+## they lay, less the one taken, which is yours and still held by the sand,
+## so taking hold of it pulls it up.
 
 ## Bytes a save of a lone find and its chunks' memory stays under.
 const SMALL := 16 * 1024
@@ -19,10 +20,10 @@ func run() -> void:
 	check(lying.size() >= 3, "finds lie round you (%d)" % lying.size())
 	var taken: RigidBody3D = null
 	for body in world.salvage.near(world.player.global_position):
-		if body is Device:
+		if body is Device and body.has_meta(&"buried"):
 			taken = body
 			break
-	check(taken != null, "a found device lies near")
+	check(taken != null, "a buried found device lies near")
 	var key := _key(taken)
 	var id: StringName = taken.get_meta(&"catalog")
 	world.salvage.claim(taken)
@@ -55,6 +56,8 @@ func run() -> void:
 	check(moved < 0.05, "where it lay (%.3f m)" % moved)
 	var yours := world.content.get_children().filter(func(n: Node) -> bool: return n.has_meta(&"catalog"))
 	check(yours.size() == 1 and yours[0].get_meta(&"catalog") == id, "the taken find is yours")
+	check(yours.size() == 1 and yours[0].freeze and world.salvage.lying(yours[0]),
+		"still held by the sand, so taking hold of it pulls it up")
 
 
 ## Every find laid out in the chunks round you, by chunk and number, where it lies.

@@ -137,6 +137,9 @@ func finish(data: Dictionary) -> void:
 		body.sleeping = rec.sleeping
 		if rec.world_froze:
 			body.set_meta(&"frozen_by_world", true)
+		# Still held by the sand: only taking hold of it pulls it up.
+		if rec.get("buried", false):
+			body.set_meta(&"buried", true)
 	var suit := world.player.suit
 	for i in suit.slots.size():
 		if suit.slots[i] != null:
@@ -342,6 +345,7 @@ func _body(body: RigidBody3D, loose: bool) -> Dictionary:
 		out.freeze = body.freeze
 		out.sleeping = body.sleeping
 		out.world_froze = body.get_meta(&"frozen_by_world", false)
+		out.buried = body.has_meta(&"buried")
 	if body.has_meta(&"layer"):
 		out.found = body.get_meta(&"layer")
 	# Found or stowed, it unrolls into a line or a cable once taken out, a
