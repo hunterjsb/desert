@@ -64,7 +64,7 @@ const PARTS := {
 	&"coil": {"kind": &"coil", "label": "Rope coil", "mass": 1.5, "size": Vector3(0.34, 0.34, 0.07),
 		"color": Color(0.42, 0.31, 0.2), "stats": {}},
 	# Sealed water, and sealed food, which only a survival kit's slot takes:
-	# they live in your slots.
+	# they live in what you carry.
 	&"canister": {"kind": &"water", "label": "Water canister", "mass": 2.4, "size": Vector3(0.12, 0.12, 0.26),
 		"color": Color(0.55, 0.62, 0.68), "stats": {}},
 	&"ration": {"kind": &"food", "label": "Ration", "mass": 0.5, "size": Vector3(0.16, 0.1, 0.06),
@@ -74,6 +74,9 @@ const PARTS := {
 		"color": Color(0.95, 0.5, 0.1), "stats": {}},
 	&"fungus_caps": {"kind": &"food", "label": "Fungus caps", "mass": 0.4, "size": Vector3(0.14, 0.1, 0.08),
 		"color": Color(0.85, 0.8, 0.65), "stats": {}},
+	# Nothing takes a compass: it's read, in your hand or in the inventory.
+	&"compass": {"kind": &"compass", "label": "Compass", "mass": 0.2, "size": Vector3(0.12, 0.12, 0.03),
+		"color": Color(0.26, 0.28, 0.29), "stats": {}},
 }
 
 ## Frames: their box, weight, wind catch and sockets as [kind, position, outward].
@@ -217,7 +220,8 @@ static func part(id: StringName) -> Part:
 	# A hose's end fits where water goes but holds none itself.
 	var made: Part = Battery.new() if spec.kind == &"battery" \
 		else (Supply.new() if Supply.HOLDS.has(spec.kind) and id != Hose.END \
-		else (Plant.new() if spec.has("crop") else Part.new()))
+		else (Plant.new() if spec.has("crop") \
+		else (Compass.new() if spec.kind == &"compass" else Part.new())))
 	made.kind = spec.kind
 	made.label = spec.label
 	made.mass = spec.mass
@@ -242,6 +246,14 @@ static func part(id: StringName) -> Part:
 		made.seal()
 	if made is Plant:
 		(made as Plant).sow(spec.crop, spec.food, spec.color, spec.ripe)
+	if made is Compass:
+		var needle := MeshInstance3D.new()
+		needle.mesh = Dress.needle()
+		needle.transform = Compass.pose(0.0)
+		# Luminous, so it reads in the dark.
+		needle.set_instance_shader_parameter(&"lit", 1.0)
+		made.add_child(needle)
+		made.needle = needle
 	if spec.kind == &"tie":
 		# A line's end is small and gets dragged over the dunes at the wind's
 		# speed: swept, so it can't step through the sand in a tick.

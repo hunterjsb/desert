@@ -18,15 +18,18 @@ research](../lore-research.md).
 
 ## The radio
 
-A device you carry or mount (Devices & mods). It also works from a suit slot: it plays
-from you, on its own battery, and use on its slot turns the dial (Survival, 2026-10-17). **Its reach is huge,** with the exact
+A device you carry or mount (Devices & mods). It also works carried in the suit, as any
+device does: it plays from you, on its own battery, and use on it in the inventory turns
+the dial (Survival, 2026-10-17). **Its reach is huge,** with the exact
 range still to tune. Better radios and antenna mods hear more clearly. Tune it, and you find:
 
 - **Music, for the vibes.** Sand Game's tracks carry over: "Sandy Andy" by day and
   "Waiting on the Sun" by night. More channels come later.
 - **Weather broadcasts.** These are automated. They tell you where storms are heading,
   how strong they are and when they'll arrive, all read from the real storm field (Wind
-  & storms). Better equipment hears further ahead and more accurately.
+  & storms). Better equipment hears further ahead and more accurately. The Console's
+  instrument table lists this as its radio row ([Wind &
+  storms](wind-and-storms.md#instruments-and-the-console-screen-proposed)).
 - **Loot beacons.** Automated signals that give a bearing to something worth finding,
   like "a signal, north-north-east."
 - **Lore.** Garbled fragments that hint and never state.
@@ -84,6 +87,10 @@ it and it crackles.
 - **The probes:** 1, 2, 4 and 5 are in `probes/radio`. Probe 3 is Bubble shield probe 1,
   which already walks you out through a bubble's shell and back a quarter metre at a time
   and checks the roar is muffled exactly inside it, so it isn't written twice.
+- **Carried** (2026-10-17): it goes in with what you carry whole, rides on you out of sight
+  and plays from you on its own battery, its line of words showing, and use on it in the
+  inventory turns the dial (Survival). Its spoken bearings, a beacon's or where storms come
+  from, are by the moon's north, so past a pole they agree with the compass.
 - **Not yet:** bumps crackling, distorted tracks in storms, more channels, lore, oracles,
   frequencies as finds and antennas.
 
@@ -131,7 +138,7 @@ Everything that matters can be heard, so you can read the world by ear:
   Game clank with its ring cut off. Taking one out is its lighter match, and a line's
   end tied on creaks instead. Taking something off the sand is a sift, and what you put
   down or throw lands with a soft crunch where it lands; a throw whooshes.
-- **Softer suit.** The slots are a pouch, in and out, and the inventory opens and
+- **Softer suit.** What you carry goes in and out as a pouch does, and the inventory opens and
   closes with a cloth rustle. These are the quietest things in the world.
 - **New:** a stake driven in, water poured into a planter, a crop picked, the
   harvester's food landing on you, the condenser's drip (quicker the more it makes),
@@ -159,7 +166,10 @@ Everything that matters can be heard, so you can read the world by ear:
 - **Inside a storm:** the world outside the bubble is dark and roaring, the camp is lit
   warm inside it, and the radio crackles.
 - **The day:** a 20-minute cycle of scorching noon, long shadows, a freezing night under
-  the stars, and frost glittering at dawn (see the water rhythm in Survival).
+  the stars, and frost glittering at dawn (see the water rhythm in Survival). On the near
+  side Tu hangs over it all, and once a day it eclipses the sun ([the moon](../the-moon.md#day-length)).
+  The day and night music follow the sun where you are, so they change at your local
+  sunrise and sunset, and the eclipse's dark is still the day.
 
 ## Rules
 
@@ -213,3 +223,27 @@ Everything that matters can be heard, so you can read the world by ear:
   a stand-in.*
 - **Exactly how far does a radio reach,** and how much does an antenna add? *First
   number: a beacon is heard from 3 km.*
+
+The Console and sleep sessions (2026-10-17) add three. Each is quoted on both sides and left
+standing.
+
+- **Do religious broadcasts have a voice?** Open in the session: whether they "still have a
+  voice or are just tones and numbers." Here: "Maybe a voice" is never confirmed, voice acting is out of scope, and the
+  skeleton sounds a station's tones with one line of words. The ghost relay is automatic too. The
+  lore: the AI gods "speak only through terminals," and it asks whether they ever broadcast
+  ([section 16](../lore-research.md#16-open-after-session-4-part-2), item 8). Not said which a
+  Second Age broadcast is. The skeleton's tones and a line already read as "tones and numbers."
+  A voice would be the maybe-voice, which the game never confirms.
+- **When the broadcasts air.** The session: "second-era religious broadcasts still air at
+  reliable times," so they can serve as clocks ([Survival](survival.md#sleep-proposed)). Here:
+  rule 1, broadcasts read the real systems, and the music changes at six and six. The lore's
+  daily rite is the noon eclipse, "predicted to the second," and the game has no eclipse and
+  only latitude, where the eclipse belongs under Tu. Not said: whether the schedule is fixed
+  times of day or follows the rite, what airs, and whether every radio hears it or it is a found
+  channel ("New channels are finds").
+- **How the radio's reading reaches the Console's screen.** Here: the weather line shows low in
+  the view within 5 m of a radio, a "stand-in" the skeleton puts there. The session: the radio is a row in the
+  instrument table, the screen shows every stat, and audio "comes from a radio on a top mount."
+  Not said whether a radio seated on the Console's top slot feeds the screen by being seated or
+  needs a computer-mod port, or whether the screen replaces the line as how a broadcast is
+  delivered (the question above).

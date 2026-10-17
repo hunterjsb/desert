@@ -737,6 +737,14 @@ Every level has an official name and a worn local one:
   Xanathivin path above is part 2's worked example of that middle; session 3 doesn't mention it
   (see [section 14](#14-open-after-session-3)).
 - **Tu follows the same pattern:** a fossilised designation number.
+- **Tu the god (Agreed, Hunter, 2026-10-17, [the Tu spec](tu-and-day-2026-10-17.md)):** "Bronze
+  Age people revered Tu, and the far side is where the god can't see you." The ages after the
+  collapse replace the Bronze Age, so this is [the faith of
+  Tu](#the-faith-of-tu-and-the-ai-gods-agreed-session-4-part-2). Its "noon eclipse" is noon only
+  under Tu: the eclipse comes at one moment for the whole near side, so further out it falls
+  later or earlier in the local day, at 16:00 where a run begins, and at the Rim it comes as the
+  sun rises or sets ([the moon](the-moon.md#day-length)). "Tu-noon" still fits as the Eye's own
+  noon.
 - **The moon's ancient alien name** was given by the hive mind before humans arrived. It is
   deep lore only, possibly hinted by radio. Don't expand it now.
 
@@ -874,12 +882,13 @@ live there.*
 - **The dials.** The equator is stormy and mild under its dust blanket, choppy and
   salvage-rich, while the poles are calm, clear and sparse, with the widest swings. "Hotter
   days at the poles" needs a reason, since with near-zero tilt the poles get less sun
-  (question 15). The near side has the giant fixed in the sky and a noon eclipse, and the far side has
-  truly dark nights. The old near-industrial, far-biological split came from a biotech tenant
-  the stack lacks, and ruins now follow the terrain. **Agreed (session 4, part 2):** the sky
-  draws the map in three regions, under Tu, the Rim and the far side
+  (question 15). The near side has the giant fixed in the sky and a daily eclipse, and the far side
+  has truly dark nights and the stars. The old near-industrial, far-biological split came from a
+  biotech tenant the stack lacks, and ruins now follow the terrain. **Agreed (session 4, part 2):**
+  the sky draws the map in three regions, under Tu, the Rim and the far side
   ([section 3](#tu-the-tidal-lock-and-the-water-agreed-session-4-part-2)), a third dial beside
-  wind and latitude that the game doesn't have yet.
+  wind and latitude. The sky itself is built ([the moon](the-moon.md#day-length)); the regions'
+  climate and water are not yet.
 - **Weather, water and the suit.** Colliding sand charges up, so radio static is a storm
   precursor. Frost forms in the cold hours, open water boils off by afternoon, and sealed
   colonial stores keep you going early on. No ozone means unfiltered UV, but the fast killer is

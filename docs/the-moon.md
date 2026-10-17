@@ -80,20 +80,79 @@ gives water a daily rhythm:
 
 ## Day length
 
-A day lasts about 20 minutes, start to finish. That's compressed game time, the way
-most survival games handle days. The real day is the moon's orbit, about 5–7 Earth days,
-and it's tidally locked to the giant.
+A day lasts about 20 minutes, start to finish, and it's fixed. That's compressed game
+time, the way most survival games handle days. **Zan is tidally locked to Tu** ([the Tu
+spec](tu-and-day-2026-10-17.md), 2026-10-17): one face always points at the giant, and the
+real day is one lap round it.
 
-**The giant lights the near side only.** There it hangs fixed overhead, and nights are
-bright, hundreds of times moonlight. Every noon it eclipses the sun for about 20–25 game
-seconds. The far side never sees it, and its nights are truly dark. Between the two lies the
-Rim, where the giant hangs half-risen on the horizon: no eclipse, and mild ([the
-lore](lore-research.md#tu-the-tidal-lock-and-the-water-agreed-session-4-part-2)).
+**Three sizes of Tu are under trial** (Hunter, 2026-10-17, lore session part 2: "Keep
+angular size a tuning value; test 6°, 9° and 13° in game before fixing the orbit. Physics
+follows the look."). The tuning value is how wide Tu is across the sky. The orbit, the
+eclipse and the night light follow from it, and a dev command switches among them during a
+run. 13° is the default. None is chosen. The working is in [the body
+research](body-research.md#tus-size-under-trial).
 
-**Under trial (Hunter, 2026-10-17):** how big the giant looks, 6°, 9° or 13°, is a tuning value,
-and three presets are being built. None is chosen. The bright nights and the 20–25 second
-eclipse above were worked for the earlier 6–8° and move with whichever is picked ([the body
-research](body-research.md#tus-size-under-trial)).
+| | 6° | 9° | 13° (the default) |
+|---|---|---|---|
+| Orbit, in Tu radii | 19.1 | 12.7 | 8.8, Io-like |
+| Real day, at 4 Jupiter masses | 6.0 Earth days | 3.2 | 1.9 |
+| Totality | 16 game seconds, 24 from first contact to last | 26 s, and 34 | 40 s, and 47 |
+| A full Tu's light at night | about 140 lux, 0.14% of the sun's | 310 lux, 0.31% | 640 lux, 0.64% |
+| Walk for Tu to rise or sink by its own width | 2.5 km | 3.8 km | 5.4 km |
+
+**Tu hangs fixed in the sky,** at a place set by where you stand: overhead at the sub-Tu
+point, lower the further you are from it, on the horizon 90° away, and never seen on the
+far side. Its height tells you how far you are from that point, and its bearing which way.
+It nods by about a degree over each day, since the orbit is slightly eccentric. On the
+compressed lap a degree is about 420 m, so a few kilometres' travel moves it plainly.
+
+**Local time follows longitude.** The sun and the stars turn round the sky once a day and
+only Tu stays put, so the further east you are, the later in the day it is. There's still
+no axial tilt: the sun rises due east and sets due west everywhere.
+
+**Runs start on the near side, 60° of longitude east of the sub-Tu point,** so Tu stands
+30° up, due west. The start keeps the clock it had: a run begins at 07:12 local, the sun
+coming up behind you and a bright, waning Tu ahead.
+
+**The eclipse.** Once a day the sun passes behind Tu, and the whole near side sees it
+total. Tu is far wider than the sun, so the partial phase either side lasts only a few
+seconds. The sky and the sunlight drop near dark and the stars come out, the sun's corona
+and a red ring of sunset light on Tu's rim show briefly, the air cools a few degrees, and
+solar makes nothing, so a camp needs storage or wind to ride it out. It falls at noon at the
+sub-Tu point and later the further east you are: where a run starts, at 16:00.
+
+**The Rim** (Hunter, 2026-10-17, lore session part 2). Between the near side and the far
+side lies the Rim, where Tu sits half-risen on the horizon, 90° from the sub-Tu point: no
+eclipse to speak of, and mild ([the
+lore](lore-research.md#tu-the-tidal-lock-and-the-water-agreed-session-4-part-2)). Nothing
+special is built for the eclipse there: the sun goes behind Tu where Tu is in your sky, and
+there that's on the horizon, as the sun rises or sets, when it has next to no light to lose.
+
+**Tu's phases run opposite the sun:** its dark face at the eclipse and full half a day
+later. At the sub-Tu point that's noon and midnight; where a run starts, full Tu comes at
+04:00.
+
+**Nights.** On the near side Tu lights the night: a weak, cool light from Tu's direction,
+scaled by its phase, a thin crescent's after the eclipse and a full Tu's in the small hours.
+It's far too weak for panels. Its brightness has a tuning scale of its own on top of the
+physical value, 1 by default, so how bright a night is can be tuned apart from Tu's size. The
+game has no eye adaptation, so at 1 a full-Tu night reads on screen as deep night, the dunes
+barely there: a seventh of the light the game's nights had before at 13°, a fifteenth at 9°
+and a thirty-fourth at 6°. At 13° and a scale of 3 the dunes read and it's still plainly
+night; at 10 it's an overcast dusk (`~/Desktop/tu_more.png`). Hunter's answer is eye
+adaptation, to build after Tu, with Tu's light kept physical ([art
+direction](art-direction.md#eye-adaptation)), so the scale stays at 1.
+The far side never sees Tu, and its nights are truly dark, lit by the stars alone.
+
+**The stars** turn once a day round the spin axis. A bright star marks the north celestial
+pole and a close pair the south, so the height of either above the horizon is your
+latitude, and the same stars at the same local hour, night after night, show how far east
+or west you've come. Tu's disc, the sun and the dust hide them.
+
+**Open** (quoted in [the body research](body-research.md#open-after-the-tu-spec-2026-10-17)):
+which size; where runs start relative to the sub-Tu point, and whether they
+reach the far side; whether the eclipse kicks the weather; Tu's body number; and Tu's
+palette ([art direction](art-direction.md#open-questions)).
 
 **Open: seasons** (deferred by Hunter, 2026-10-14). The skeleton gives the moon no axial
 tilt, so the sun rises due east, sets due west, and climbs only as high as the latitude

@@ -30,6 +30,11 @@ uniform float sun_share = 0.7;
 uniform float camera_sun = 1.0;
 // The sun's disc is drawn here, not by the sky, so a wall can cover it.
 uniform vec3 sun_disc = vec3(14.0, 12.5, 10.5);
+// Tu, which hides it: Tu's direction, the cosines of its edge outside and in,
+// and how much of the sun shows past it, which the sun's glow follows.
+uniform vec3 tu_dir = vec3(0.0, -1.0, 0.0);
+uniform vec2 tu_edge = vec2(2.0, 3.0);
+uniform float sun_shown = 1.0;
 
 // The shells round shelters, from Weather: each one's glow (1 steady, more
 // as it blooms, less as it flickers), the light round the camera that their
@@ -262,8 +267,9 @@ void fragment() {
 	vec3 scene = texture(screen_tex, SCREEN_UV).rgb;
 	if (z <= 0.0) {
 		float c = dot(rd, sun_dir);
-		scene += sun_disc * (smoothstep(0.99994, 0.99997, c) + 0.015 * pow(max(c, 0.0), 700.0)
-			+ 0.003 * pow(max(c, 0.0), 40.0));
+		float behind = smoothstep(tu_edge.x, tu_edge.y, dot(rd, tu_dir));
+		scene += sun_disc * (smoothstep(0.99994, 0.99997, c) * (1.0 - behind)
+			+ sun_shown * (0.015 * pow(max(c, 0.0), 700.0) + 0.003 * pow(max(c, 0.0), 40.0)));
 	} else {
 		if (storm_map_ready > 0.0) {
 			// A storm's shadow on the ground, relative to the light already there.

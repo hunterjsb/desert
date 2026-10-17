@@ -6,8 +6,8 @@ extends Node3D
 ## length; wherever its second end goes, the line's length is set there. Any
 ## loose end can be taken up again. Take up an end of a line lying loose at
 ## both ends and it rolls back up, ready to lay again; drop its first end
-## before it's on anything and the coil goes down whole, or into a slot if
-## that's where you put it. Snapped, it parts into two lines, each with a
+## before it's on anything and the coil goes down whole, or in with what you
+## carry if that's where you put it. Snapped, it parts into two lines, each with a
 ## loose end where it broke.
 
 enum State { COILED, FIRST, PAYING, LAID }
@@ -76,7 +76,7 @@ func readout() -> Dictionary:
 	return out
 
 
-## Whether it rolls up for a slot: held but not laid, its first end in your
+## Whether it rolls up to carry: held but not laid, its first end in your
 ## hand and the rest on your belt, with nothing letting go of it there.
 func stowable() -> bool:
 	var waist := _world.player.waist
@@ -84,7 +84,7 @@ func stowable() -> bool:
 		and waist.holds(ends[1 - _first]) and waist.untying < 0.0
 
 
-## Rolled back up for a slot: the line goes, and a coil off the tree stands
+## Rolled back up to carry: the line goes, and a coil off the tree stands
 ## for it, as a found one does, keeping its length to lay again.
 func roll() -> Part:
 	_world.ropes.untie(rope)

@@ -62,6 +62,9 @@ upgrade the camp → the camp sustains more of itself → go further, or into th
   on caterpillar tracks, is strong for the camp but slows you down.
 - **Parts are found, never crafted** (for now), and they wear out only from the
   elements. Salvage is the whole economy.
+- **The camp may get a computer, and a bed** (Hunter, 2026-10-17, proposed and loose). A Console
+  reads the weather instruments onto a screen ([Devices & mods](prd/devices-and-mods.md#the-console-proposed-not-built)),
+  and sleep may skip the wait on a long storm ([Survival](prd/survival.md#sleep-proposed)).
 - **The camp moves at walking pace, and storms are weathered, not outrun.** Each storm
   is a judgment call: stay and let it pass, or push through inside the bubble. Early on,
   a post or ruin to tie to is precious.
@@ -70,12 +73,13 @@ upgrade the camp → the camp sustains more of itself → go further, or into th
   outrun a storm with the camp aboard, and big carriers.
 - **The hoverboard is just for you:** fast, floaty and fun, for scouting and escaping. It
   tows nothing.
-- **Your hands plus about five inventory slots, and almost no menus.** Things live in
-  the world and in your hands, not in an inventory screen. (Hunter, 2026-10-15, loose:
-  one action brings up a very minimal overlay of your few slots and what's at your waist,
+- **Your hands plus what the suit carries, by weight, and almost no menus.** Things live
+  in the world and in your hands, not in an inventory screen. (Hunter, 2026-10-15, loose:
+  one action brings up a very minimal overlay of what you carry and what's at your waist,
   tied into the world rather than managed. Maybe putting something down while it's open
   stows it. Most menus come as devices. A main menu exists for new run, resume and
-  options.)
+  options. 2026-10-17: "Move to weight-bound with no defined size, replacing slots. This
+  allows stacks and avoids inventory management.")
 
 ## Playstyles
 
@@ -206,6 +210,11 @@ clearance. There is no dedicated hive mind ending; it stays ambiguous.
 - **It's a moon, not a plane.** Your position is tracked as latitude and longitude, so
   walking far enough brings you back round and the poles are real places. The ground
   near you is still flat.
+- **Two halves of Zan** ([the Tu spec](tu-and-day-2026-10-17.md), 2026-10-17). Zan is
+  tidally locked to Tu. On the near side, the god's side, the giant hangs fixed in the sky
+  as a landmark, lights the nights and eclipses the sun once a day. The far side has black
+  nights, the stars and no landmark. Local time follows longitude ([the
+  moon](the-moon.md#day-length)).
 - **Latitude is the second difficulty dial.** Toward the poles, storms weaken but the
   temperature swings get wider: hotter days, colder nights. Difficulty changes kind
   rather than amount. The equator is stormy and mild, while the poles are clear and

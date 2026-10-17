@@ -2,37 +2,50 @@ class_name Suit
 extends Node
 ## The suit: the one gift this world gives you. Its air and its shielding from
 ## the sun's radiation are built in and free, with no power and no bar. It
-## carries a few slots, all you carry besides your hands and your waist, and
-## feeds you from the water and food in them. The inventory action opens a
-## small view of the slots and your waist and frees the mouse to click them:
-## a slot with something in it gives it to your empty hands, an empty one
-## takes what you hold, and a full one swaps with it. Rope and wire go in
-## rolled up, as they're found, and unroll in your hands; a stake goes in as
-## it is. Closing it captures the mouse again, to look.
+## carries whatever you can carry in your hands, with no slots and no count:
+## weight is the only limit, and a soft one. Past what you carry easily you
+## sink into the sand and slow down (Player). It feeds you from the water and
+## food you carry. The inventory action opens a view of it all, like things
+## stacked, each drawn as itself, and frees the mouse: a click on a thing
+## brings it to your empty hands, a click on the view with something in your
+## hands puts it in, and use on a thing uses it where it is. Rope and wire go
+## in rolled up, as they're found, and unroll in your hands; a stake goes in
+## as it is. A device you carry rides on you, out of sight, and works on its
+## own battery as it would anywhere: a radio plays from you. Closing the view
+## captures the mouse again, to look.
 
 ## Built in and free, so nothing ever drains them. The headlamp is the
 ## camera's (Headlamp), so it looks where you look.
 const BUILT_IN := "air, radiation, headlamp"
-const HINT := "click a slot to take out, put in or swap · {inventory} closes"
-const SLOT := Vector2(100.0, 40.0)
+const HINT := "click a thing to take it out, or the view to put in what you hold · {interact} on a thing uses it · {inventory} closes"
+const TILE := Vector2(120.0, 128.0)
+## The thing's picture across the top of its tile, px.
+const PICTURE := Vector2i(120, 88)
 const GAP := 6.0
+## At most this many tiles a row, and the rows end this far above the foot
+## of the screen, clear of a radio's line of words, px.
+const ROW := 8
+const FOOT := 120.0
+## A device you carry rides here on you, out of sight, from your feet.
+const POUCH := Vector3(0.0, 1.0, 0.0)
 
-## What each slot holds, or null: a part, or a stake. Stowed things wait off
-## the tree, as fitted parts do.
-var slots: Array[RigidBody3D] = []
+## Everything you carry, in the order it went in. Parts wait off the tree,
+## as fitted ones do; a device rides on you, working.
+var carried: Array[RigidBody3D] = []
 var open := false
-## The slot under the mouse, or -1.
+## The stack under the mouse, or -1.
 var hover := -1
 
 var _player: Player
 var _layer: CanvasLayer
 var _view: Control
+## Each stack's picture, made as the view first needs them.
+var _looks: Array[InventoryLook] = []
 
 
 func _ready() -> void:
 	_player = get_parent() as Player
 	add_to_group(UIRoot.PANELS)
-	slots.resize(Tuning.current().suit_slots)
 	_layer = CanvasLayer.new()
 	_layer.layer = 98
 	_layer.visible = false
@@ -56,28 +69,36 @@ func _exit_tree() -> void:
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_PREDELETE:
-		for part in slots:
-			if part != null:
-				part.free()
+		# A device on you may have gone already, with you.
+		for thing in carried:
+			if is_instance_valid(thing):
+				thing.free()
 
 
-## A fresh suit's slots: what the run's kit carries, and nothing else.
+## A fresh suit's load: what the run's kit carries, and nothing else.
 func restock() -> void:
-	var kit := Kit.standard().slots()
-	for i in slots.size():
-		if slots[i] != null:
-			slots[i].free()
-		slots[i] = Catalog.part(kit[i]) if i < kit.size() else null
+	for thing in carried:
+		thing.free()
+	carried.clear()
+	for id in Kit.standard().carried_ids():
+		carried.append(Catalog.part(id))
 
 
-## Whether a slot can take it: a part with nothing fastened to it, or rope,
-## wire or hose that rolls up whole: a line held but not laid, a cable or a
-## hose plugged into nothing. Laid or plugged in, it would lose its end. A stake fits
-## pulled up with nothing on its eye, so it comes out ready to drive.
+## Whether it goes in: anything you can carry in your hands with nothing
+## fastened to it. Rope, wire and hose go in rolled up whole: a line held but
+## not laid, a cable or a hose plugged into nothing; laid or plugged in,
+## they'd lose their end. A stake goes in pulled up with nothing on its eye,
+## so it comes out ready to drive, and a device whole, seated on nothing,
+## nothing seated on it, no plug or hose in it and no line on its rings.
 func fits(body: Object) -> bool:
 	var stake := body as Stake
 	if stake != null:
 		return not stake.driven and stake.parts().is_empty() and not _player.waist.carries_line(stake)
+	var device := body as Device
+	if device != null:
+		return device.carryable and device.host() == null and device.mounted().is_empty() \
+			and not _player.waist.carries_line(device) \
+			and not device.parts().any(_fastens)
 	var part := body as Part
 	if part == null:
 		return false
@@ -86,38 +107,110 @@ func fits(body: Object) -> bool:
 	return not (part.kind == &"port" or Hose.is_end(part)) or part.has_meta(&"rolled") or _loose_cable(part) != null
 
 
-## Of the water or the food in your slots, the least full that isn't empty,
-## so one runs out and frees its canister before the next is opened.
+## A part that fastens something to its device: a plug, a hose's end, a
+## line's end.
+static func _fastens(part: Part) -> bool:
+	return part.kind == &"port" or part.kind == &"tie" or Hose.is_end(part)
+
+
+## Of the water or the food you carry, the least full that isn't empty, so
+## one runs out before the next is opened.
 func supply(kind: StringName) -> Supply:
 	var best: Supply = null
-	for part in slots:
-		var it := part as Supply
+	for thing in carried:
+		var it := thing as Supply
 		if it != null and it.kind == kind and it.amount > 0.0 and (best == null or it.amount < best.amount):
 			best = it
 	return best
 
 
-## All the water, L, or food, kcal, in your slots.
+## All the water, L, or food, kcal, you carry.
 func stock(kind: StringName) -> float:
 	var total := 0.0
-	for part in slots:
-		if part is Supply and part.kind == kind:
-			total += part.amount
+	for thing in carried:
+		if thing is Supply and thing.kind == kind:
+			total += thing.amount
 	return total
 
 
-## A ration eaten to the end is gone, from a slot or your hands.
+## What you carry weighs, kg.
+func kg() -> float:
+	var total := 0.0
+	for thing in carried:
+		total += thing.mass
+	return total
+
+
+## How far past what you carry easily you are: 0 up to carry_easy_kg, 1 at
+## carry_sunk_kg, and on.
+func burden() -> float:
+	var tuning := Tuning.current()
+	return maxf(kg() - tuning.carry_easy_kg, 0.0) / (tuning.carry_sunk_kg - tuning.carry_easy_kg)
+
+
+## The share of your pace the load leaves you, before any line you haul:
+## sunk in as far as hauling digs you in by carry_sunk_kg, and slower still
+## for every kilogram past it.
+func pace() -> float:
+	var over := burden()
+	return (1.0 - Tuning.current().haul_slow * minf(over, 1.0)) / maxf(over, 1.0)
+
+
+## What the view says of the weight: what you carry against what you carry
+## easily, or past it, that you're encumbered, how far over and what it
+## leaves of your pace.
+func weight_words() -> String:
+	var weight := kg()
+	var easy := Tuning.current().carry_easy_kg
+	if burden() <= 0.0:
+		return "carried %.1f of the %d kg you carry easily" % [weight, roundi(easy)]
+	return "encumbered: %.1f kg, %.1f over · %d%% pace" % [weight, weight - easy, roundi(pace() * 100.0)]
+
+
+## The devices you carry, working on you, which Power runs.
+func devices() -> Array[Device]:
+	var found: Array[Device] = []
+	for thing in carried:
+		var device := thing as Device
+		if device != null and device.is_inside_tree():
+			found.append(device)
+	return found
+
+
+## Every device you carry back on you and working, as a resume puts them in.
+func carry_devices() -> void:
+	for thing in carried:
+		var device := thing as Device
+		if device != null and device.get_parent() != _player:
+			_on_you(device)
+
+
+## A ration eaten to the end is gone, from what you carry or your hands.
 func discard(part: Part) -> void:
-	var at := slots.find(part)
-	if at == -1:
+	if not carried.has(part):
 		part.queue_free()
 		return
-	slots[at] = null
+	carried.erase(part)
 	part.free()
 
 
-## The view open, the mouse free to click its slots; or closed, and the
-## mouse captured to look.
+## Like things in a stack each, in the order they first went in: canisters,
+## rations, stakes, hooks, coils of a length. A device with anything in it is
+## a thing of its own.
+func stacks() -> Array[Array]:
+	var out: Array[Array] = []
+	var at := {}
+	for thing in carried:
+		var key: Variant = _alike(thing)
+		if not at.has(key):
+			at[key] = out.size()
+			out.append([])
+		out[at[key]].append(thing)
+	return out
+
+
+## The view open, the mouse free to click it; or closed, and the mouse
+## captured to look.
 func show_view(to: bool) -> void:
 	open = to
 	hover = -1
@@ -134,35 +227,68 @@ func close() -> bool:
 	return true
 
 
-## A slot clicked: empty-handed, what's in it comes to your hands; holding
-## something that fits, it goes in, swapping with what's there. Says whether
-## it did anything.
-func click(at: int) -> bool:
+## What you hold goes in, if it fits. Says whether it did.
+func put_in() -> bool:
 	var hands := _player.hands
-	if at < 0 or at >= slots.size() or hands.grasp.body != null:
+	if hands.held == null or hands.phase != Hands.Phase.HELD or hands.grasp.body != null or not fits(hands.held):
 		return false
-	var out := slots[at]
-	if hands.held != null:
-		if hands.phase != Hands.Phase.HELD or not fits(hands.held):
-			return false
-		slots[at] = _rolled(hands.stow())
-		Sounds.play(self, Sounds.POUCH_IN)
-	elif out != null:
-		slots[at] = null
-	else:
-		return false
-	if out != null:
-		_player.world.content.add_child(out)
-		out.global_transform = _player.camera.global_transform.translated_local(Vector3(0.0, -0.2, -0.5))
-		Finds.unroll(_player.world, out)
-		hands.hold(out)
-		Sounds.play(self, Sounds.POUCH_OUT)
+	carried.append(_rolled(hands.stow()))
+	Sounds.play(self, Sounds.POUCH_IN)
 	return true
 
 
-## What goes in the slot, off the tree: rope and wire as one rolled-up body,
-## anything else as it is.
+## One of a stack to your empty hands: the fullest of water, food or charge,
+## else the last that went in. Says whether it did.
+func take_out(stack: int) -> bool:
+	var hands := _player.hands
+	var all := stacks()
+	if stack < 0 or stack >= all.size() or hands.held != null or hands.grasp.body != null:
+		return false
+	var out := _pick(all[stack])
+	carried.erase(out)
+	if out.get_parent() == _player:
+		_off_you(out as Device)
+	_player.world.content.add_child(out)
+	out.global_transform = _player.camera.global_transform.translated_local(Vector3(0.0, -0.2, -0.5))
+	Finds.unroll(_player.world, out)
+	hands.hold(out)
+	Sounds.play(self, Sounds.POUCH_OUT)
+	return true
+
+
+## A click on the view: holding something, it goes in; empty-handed, one of
+## the stack under the mouse comes out. Says whether it did anything.
+func click(stack: int) -> bool:
+	return put_in() if _player.hands.held != null else take_out(stack)
+
+
+## Use on a stack: one of it is used where it is. A device is worked, as a
+## radio's dial turns; water or food you drink or eat your fill of, the
+## least full first, as the suit would. Anything else does nothing. Says
+## whether it did anything.
+func use(stack: int) -> bool:
+	var all := stacks()
+	if stack < 0 or stack >= all.size():
+		return false
+	var things: Array = all[stack]
+	var device := things[-1] as Device
+	if device != null:
+		return device.interact(_player)
+	var least: Supply = null
+	for each in things:
+		var it := each as Supply
+		if it != null and it.amount > 0.0 and (least == null or it.amount < least.amount):
+			least = it
+	return least != null and _player.vitals.take_in(least) > 0.0
+
+
+## What goes in, off the tree: rope and wire as one rolled-up body, a device
+## on you, anything else as it is.
 func _rolled(body: RigidBody3D) -> RigidBody3D:
+	var device := body as Device
+	if device != null:
+		_on_you(device)
+		return device
 	var part := body as Part
 	if part != null and part.has_meta(&"line"):
 		return (part.get_meta(&"line") as Line).roll()
@@ -186,6 +312,36 @@ func _rolled(body: RigidBody3D) -> RigidBody3D:
 	return rolled
 
 
+## On you, out of sight, touching nothing and held still, so it works on
+## where you are: a radio plays from you, on its own battery.
+func _on_you(device: Device) -> void:
+	# How it sat, to come out as it went in.
+	device.set_meta(&"carried", [device.collision_layer, device.collision_mask, device.freeze_mode])
+	if device.get_parent() != null:
+		device.get_parent().remove_child(device)
+	device.visible = false
+	device.collision_layer = 0
+	device.collision_mask = 0
+	device.freeze_mode = RigidBody3D.FREEZE_MODE_KINEMATIC
+	device.freeze = true
+	device.linear_velocity = Vector3.ZERO
+	device.angular_velocity = Vector3.ZERO
+	_player.add_child(device)
+	device.transform = Transform3D(Basis.IDENTITY, POUCH)
+
+
+## Off you again, a body as it was, for your hands.
+func _off_you(device: Device) -> void:
+	var was: Array = device.get_meta(&"carried")
+	device.remove_meta(&"carried")
+	_player.remove_child(device)
+	device.visible = true
+	device.collision_layer = was[0]
+	device.collision_mask = was[1]
+	device.freeze_mode = was[2]
+	device.freeze = false
+
+
 ## The cable a plug is on, if it's whole and plugged into nothing. A strong
 ## one that snapped is two loose plugs, not one piece.
 func _loose_cable(plug: Part) -> Cable:
@@ -198,16 +354,58 @@ func _loose_cable(plug: Part) -> Cable:
 	return null
 
 
-## Where a slot is drawn, and clicked, in the view.
-func slot_rect(at: int) -> Rect2:
+## What makes things alike enough to stack: what they are, and for rope or
+## wire, which and how long. A device with anything in it stacks with
+## nothing.
+static func _alike(thing: RigidBody3D) -> Variant:
+	var device := thing as Device
+	if device != null and not device.parts().is_empty():
+		return thing
+	return [thing.get_meta(&"catalog", &""), thing.get_meta(&"rolled", &""), thing.get_meta(&"rolled_m", 0.0)]
+
+
+## Of a stack, the one to hand you: the fullest of water, food or charge,
+## else the last in.
+static func _pick(things: Array) -> RigidBody3D:
+	var best: RigidBody3D = things[-1]
+	for thing: RigidBody3D in things:
+		if _held_in(thing) > _held_in(best):
+			best = thing
+	return best
+
+
+static func _held_in(thing: RigidBody3D) -> float:
+	if thing is Supply:
+		return (thing as Supply).amount
+	if thing is Battery:
+		return (thing as Battery).charge_wh
+	return 0.0
+
+
+## Where a stack's tile is drawn, and clicked, in the view, of `count`
+## stacks (all you carry, untold): rows of them low in the middle, the last
+## row's foot clear of a radio's line of words.
+func tile_rect(at: int, count := -1) -> Rect2:
 	var size := _view.get_rect().size
-	var row := slots.size() * SLOT.x + (slots.size() - 1) * GAP
-	return Rect2(Vector2((size.x - row) * 0.5 + at * (SLOT.x + GAP), size.y * 0.68), SLOT)
+	count = maxi(count if count >= 0 else stacks().size(), 1)
+	var across := _across()
+	var cols := mini(count, across)
+	var rows := ceili(float(count) / across)
+	var width := cols * TILE.x + (cols - 1) * GAP
+	var top := size.y - FOOT - rows * TILE.y - (rows - 1) * GAP
+	return Rect2(Vector2((size.x - width) * 0.5 + (at % across) * (TILE.x + GAP), top + (at / across) * (TILE.y + GAP)),
+		TILE)
 
 
-func _slot_at(point: Vector2) -> int:
-	for i in slots.size():
-		if slot_rect(i).has_point(point):
+## How many tiles fit a row.
+func _across() -> int:
+	return clampi(floori((_view.get_rect().size.x - 64.0) / (TILE.x + GAP)), 1, ROW)
+
+
+func _stack_at(point: Vector2) -> int:
+	var count := stacks().size()
+	for i in count:
+		if tile_rect(i, count).has_point(point):
 			return i
 	return -1
 
@@ -217,74 +415,144 @@ func _unhandled_input(event: InputEvent) -> void:
 		show_view(not open)
 		Sounds.play(self, Sounds.BAG_OPEN if open else Sounds.BAG_CLOSE)
 		get_viewport().set_input_as_handled()
+	elif open and hover != -1 and event.is_action_pressed("interact"):
+		# Over a thing, use is the thing's; elsewhere it's the world's.
+		use(hover)
+		get_viewport().set_input_as_handled()
 
 
 func _on_view_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
-		hover = _slot_at(event.position)
+		hover = _stack_at(event.position)
 	elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		hover = _slot_at(event.position)
+		hover = _stack_at(event.position)
 		click(hover)
 	_view.accept_event()
 
 
 func _process(_delta: float) -> void:
 	if open:
+		_show_looks(stacks())
 		_view.queue_redraw()
 
 
-## A row of slots low in the middle of the view, the one under the mouse
-## lit, and what's at your waist under it.
+## Each stack's picture drawn again only if what it shows has changed since;
+## a compass's as its needle turns, read as you'd hold it up.
+func _show_looks(shown: Array[Array]) -> void:
+	while _looks.size() < shown.size():
+		_looks.append(InventoryLook.new(PICTURE))
+		add_child(_looks[-1])
+	var face := Basis(Vector3.UP, _player.global_rotation.y)
+	for i in shown.size():
+		var look := _looks[i]
+		var thing: RigidBody3D = shown[i][0]
+		var now := [thing, _brief(shown[i]), thing is Device and (thing as Device).powered]
+		if now != look.key:
+			look.key = now
+			look.show_thing(thing)
+		if thing is Compass:
+			look.turn_needle(Compass.turn(face, _player.world.moon.north()))
+
+
+## The picture of a stack, for anything that reads the view.
+func look_of(stack: int) -> InventoryLook:
+	return _looks[stack] if stack < _looks.size() else null
+
+
+## What you carry against what you carry easily, and past it how far over and
+## what it leaves of your pace, in the accent; a bar up to where you're sunk
+## in, marked where it starts to tell; the stacks, each drawn with its name,
+## its number and how many; your waist; the keys.
 func _draw_view() -> void:
-	var corner := slot_rect(0).position
-	var row := slot_rect(slots.size() - 1).end.x - corner.x
-	var panel := _view.get_theme_color(&"panel", &"Palette")
-	for i in slots.size():
-		var box := slot_rect(i)
-		_view.draw_rect(box, panel)
-		_view.draw_rect(box, _view.get_theme_color(&"text" if i == hover else &"faint", &"Palette"), false,
-			2.0 if i == hover else 1.0)
-		var part := slots[i]
-		if part != null:
-			_text(&"Label", box.position + Vector2(5.0, 15.0), _name(part), SLOT.x - 10.0)
-			_text(&"Readout", box.position + Vector2(5.0, 31.0), _brief(part), SLOT.x - 10.0)
+	var tuning := Tuning.current()
+	var shown := stacks()
+	var first := tile_rect(0, shown.size())
+	var cols := mini(maxi(shown.size(), 1), _across())
+	var width := maxf(cols * TILE.x + (cols - 1) * GAP, 420.0)
+	var left := (_view.get_rect().size.x - width) * 0.5
+	var weight := kg()
+	_text(&"Readout", Vector2(left, first.position.y - 22.0), weight_words(), width,
+		&"accent" if burden() > 0.0 else &"text")
+	var bar := Rect2(left, first.position.y - 14.0, width, 4.0)
+	var full := clampf(weight / tuning.carry_sunk_kg, 0.0, 1.0)
+	var easy := tuning.carry_easy_kg / tuning.carry_sunk_kg
+	_view.draw_rect(bar, _palette(&"panel"))
+	_view.draw_rect(Rect2(bar.position, Vector2(bar.size.x * minf(full, easy), bar.size.y)), _palette(&"dim"))
+	if full > easy:
+		_view.draw_rect(Rect2(bar.position + Vector2(bar.size.x * easy, 0.0), Vector2(bar.size.x * (full - easy),
+			bar.size.y)), _palette(&"accent"))
+	_view.draw_rect(Rect2(bar.position + Vector2(bar.size.x * easy - 1.0, -2.0), Vector2(2.0, bar.size.y + 4.0)),
+		_palette(&"text"))
+	if shown.is_empty():
+		_view.draw_rect(first, _palette(&"panel"))
+		_view.draw_rect(first, _palette(&"faint"), false, 1.0)
+		_text(&"Label", first.position + Vector2(6.0, PICTURE.y + 16.0), "nothing carried", TILE.x - 12.0)
+	for i in shown.size():
+		var box := tile_rect(i, shown.size())
+		_view.draw_rect(box, _palette(&"panel"))
+		_view.draw_rect(box, _palette(&"text" if i == hover else &"faint"), false, 2.0 if i == hover else 1.0)
+		if i < _looks.size():
+			_view.draw_texture_rect(_looks[i].get_texture(), Rect2(box.position, Vector2(PICTURE)), false)
+		var things: Array = shown[i]
+		if things.size() > 1:
+			_text(&"Readout", box.position + Vector2(6.0, 16.0), "×%d" % things.size(), TILE.x - 12.0)
+		_text(&"Label", box.position + Vector2(6.0, PICTURE.y + 16.0), _name(things[0]), TILE.x - 12.0)
+		_text(&"Readout", box.position + Vector2(6.0, PICTURE.y + 32.0), _brief(things), TILE.x - 12.0)
+	var under := tile_rect(maxi(shown.size(), 1) - 1, shown.size()).end.y
 	var tied := PackedStringArray()
 	for body in _player.waist.tied:
 		if is_instance_valid(body):
 			tied.append(str(body.get(&"label")))
-	_text(&"Label", corner + Vector2(0.0, SLOT.y + 16.0), "waist: " + (", ".join(tied) if not tied.is_empty() else "-"), row)
-	Controls.draw_keys(_view, corner + Vector2(0.0, SLOT.y + 30.0), HINT)
+	_text(&"Label", Vector2(left, under + 16.0), "waist: " + (", ".join(tied) if not tied.is_empty() else "-"), width)
+	Controls.draw_keys(_view, Vector2(left, under + 30.0), HINT)
 
 
-## In the theme: names as text, amounts as a readout.
-func _text(type: StringName, at: Vector2, line: String, width: float) -> void:
+func _palette(color: StringName) -> Color:
+	return _view.get_theme_color(color, &"Palette")
+
+
+## In the theme: names as text, amounts as a readout, in one of its colours.
+func _text(type: StringName, at: Vector2, line: String, width: float, color := &"text") -> void:
 	var font := _view.get_theme_font(&"font", type)
 	var size := _view.get_theme_font_size(&"font_size", type)
 	_view.draw_string_outline(font, at, line, HORIZONTAL_ALIGNMENT_LEFT, width, size,
-		_view.get_theme_constant(&"outline_size", &"Label"), _view.get_theme_color(&"shadow", &"Palette"))
-	_view.draw_string(font, at, line, HORIZONTAL_ALIGNMENT_LEFT, width, size, _view.get_theme_color(&"text", &"Palette"))
+		_view.get_theme_constant(&"outline_size", &"Label"), _palette(&"shadow"))
+	_view.draw_string(font, at, line, HORIZONTAL_ALIGNMENT_LEFT, width, size, _palette(color))
 
 
-## A cable or a hose stowed goes by its end, but it's the whole you have.
-static func _name(part: RigidBody3D) -> String:
-	match part.get_meta(&"rolled", &""):
+## A cable or a hose carried goes by its end, but it's the whole you have.
+static func _name(thing: RigidBody3D) -> String:
+	match thing.get_meta(&"rolled", &""):
 		&"plug":
 			return "Cable"
 		&"strong_plug":
 			return "Strong cable"
 		&"hose_end":
 			return "Hose"
-	return part.get(&"label")
+	return thing.get(&"label")
 
 
-## What's in a part that you'd want to know at a glance.
-static func _brief(part: RigidBody3D) -> String:
-	if part.has_meta(&"rolled_m"):
-		return "%.0f m" % part.get_meta(&"rolled_m")
-	if part is Supply:
-		return ("%.2f L" if part.kind == &"water" else "%d kcal") % part.amount
-	if part is Battery:
-		return "%d Wh" % floori(part.charge_wh)
-	if part is Plant:
-		return "%d%% grown" % floori(part.growth * 100.0)
-	return ""
+## What a stack holds that you'd want to know at a glance, all of it
+## together: water, food, charge, a coil's length, a radio's channel.
+static func _brief(things: Array) -> String:
+	var first: RigidBody3D = things[0]
+	if first.has_meta(&"rolled_m"):
+		return "%.0f m" % first.get_meta(&"rolled_m")
+	if first is Supply:
+		var total: float = things.reduce(func(sum: float, s: Supply) -> float: return sum + s.amount, 0.0)
+		return ("%.2f L" if first.kind == &"water" else "%d kcal") % total
+	if first is Battery:
+		return "%d Wh" % floori(things.reduce(func(sum: float, b: Battery) -> float: return sum + b.charge_wh, 0.0))
+	if first is Plant:
+		return "%d%% grown" % floori(first.growth * 100.0)
+	var device := first as Device
+	if device == null:
+		return ""
+	var cells := device.batteries()
+	var held := "%d Wh" % floori(cells.reduce(func(sum: float, c: Battery) -> float: return sum + c.charge_wh, 0.0)) \
+		if not cells.is_empty() else ""
+	var radio := device as Radio
+	if radio == null:
+		return held
+	var tuned := Radio.CHANNELS[radio.channel]
+	return tuned if held == "" else tuned + " · " + held

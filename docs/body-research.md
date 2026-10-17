@@ -25,7 +25,9 @@ what real system, body and failing shield would produce the feel in
 **Leaning: a moon between Mars-sized and a bit bigger, at 0.4–0.5 g.** It orbits a giant
 of about 3–6 Jupiter masses that sits in the habitable zone of a K-dwarf star, at roughly
 Ganymede-to-Callisto distance. It's tidally locked, and its real day lasts about 5–7
-Earth days. Today's air is about 0.15–0.2 bar, mostly nitrogen, with no oxygen.
+Earth days. (The Tu spec adds a much closer orbit, and both are now under trial: [section
+3](#the-giant-the-day-and-longitude).) Today's air is about 0.15–0.2 bar, mostly nitrogen,
+with no oxygen.
 
 **Lower gravity is the lever.** Thin air can only shove you hard if you weigh less. At
 1 g the pressure window closes, because the shove needs more air than the daily water
@@ -221,44 +223,70 @@ opens the window.
 
 ### The giant, the day and longitude
 
-- **Tidally locked:** the day equals the orbit, about 5–7 Earth days at 15–20 giant
-  radii. The game compresses it to 20 minutes.
-- **The near side:** the giant hangs fixed overhead, 6–8° across, 11–15 times the width
-  of the full Moon. Near-side nights are lit by a full giant at **~150–270 lux**,
-  hundreds of times brighter than moonlight. That makes the board's "night as safe
-  exploration" honest. Every noon brings an eclipse of 2–3 real hours, about 20–25 game
-  seconds.
-- **The far side:** truly dark nights and no giant.
+*Updated 2026-10-17 from [the Tu spec](tu-and-day-2026-10-17.md). Tu's size is under trial,
+below; what the sizes rub against is quoted in [section 6](#open-after-the-tu-spec-2026-10-17).*
+
+- **Tidally locked:** a day is one orbit round Tu. The game compresses it to 20 minutes,
+  fixed.
+- **Tu:** a super-Jupiter of 4 Jupiter masses (the spec's 3–6), about 1.1 Jupiter radii,
+  78,600 km across its radius. How wide it looks sets the orbit and all that follows (below).
+- **The near side:** Tu hangs fixed at a height set by how far you are from the sub-Tu
+  point, nodding by about a degree a day (an eccentricity of about 0.01). Its phase runs
+  opposite the sun's. Every day brings a total eclipse, short partial phases either side.
+- **The far side:** truly dark nights, the stars, and no giant.
+- **The Rim** (Hunter, 2026-10-17, lore session part 2): where Tu sits half-risen on the
+  horizon there's effectively no eclipse, since the sun goes behind it there as it rises or
+  sets.
 - **Leading and trailing:** the trailing hemisphere takes the giant's plasma, the way
   Europa's trailing side is darkened by it.
-- **Longitude is a real third dial:** light, radiation and which company's ruins.
+- **Longitude is a real third dial:** light, the eclipse, radiation, and Tu as a landmark.
 - **Tilt:** a moon inherits its giant's tilt. Near zero, like Jupiter's 3°, keeps the
   poles cold enough to trap the air, which the story needs.
 
 #### Tu's size, under trial
 
-*Hunter, 2026-10-17 ([lore session](lore-session-2026-10-17-part-2.md)).* The 6-8° above is the
-earlier leaning. The session keeps the giant's angular size a tuning value, to be tried at 6°, 9°
-and 13° in game before the orbit is fixed, with "physics follows the look." Three presets are
-being built and none is chosen. This page picks none.
+*Hunter, 2026-10-17 ([lore session](lore-session-2026-10-17-part-2.md)): "Keep angular size a
+tuning value; test 6°, 9° and 13° in game before fixing the orbit. Physics follows the look."*
+The earlier leaning here was 6–8°, at 15–20 giant radii. The giant's width across the sky is the
+game's tuning value, and the three presets are built, 13° by default and switched by the dev
+console. None is chosen, and this page picks none. [The Tu spec](tu-and-day-2026-10-17.md) asked
+for one value in its recommended 12–14° to be written here: 13° is that one. 6° sits inside the
+earlier leaning, and 9° is between.
 
-What each would imply, as arithmetic from this memo's own geometry (an angular diameter of
-2 atan(R/d), the full Moon being 0.52°). It is not a decision:
+What each implies, from the width alone. It is not a decision:
 
-| Preset | Against the full Moon | Distance, in giant radii |
-|---|---|---|
-| 6° | about 12 times as wide | about 19 |
-| 9° | about 17 times | about 13 |
-| 13° | about 25 times | about 9 |
+| | 6° | 9° | 13° (the default) |
+|---|---|---|---|
+| Tu across, in full Moons | 12 | 17 | 25 |
+| Orbit | 19.1 Tu radii, 1.50 million km | 12.7, 1.00 million km | 8.8, 695,000 km |
+| Real day, the orbit at 4 Jupiter masses | 6.0 Earth days | 3.2 | 1.9, Io-like |
+| Where it sits, in Jupiter's terms | between Ganymede (15 radii) and Callisto (26) | between Europa (9.4) and Ganymede | between Io (5.9) and Europa |
+| Totality in the game | 16 s, 1.4% of the day; 24 s from first contact to last | 26 s, 2.2%; 34 s | 40 s, 3.3%; 47 s |
+| Totality, real | 117 minutes | 103 minutes | 89 minutes |
+| A full Tu's light | 140 lux: 0.14% of sunlight, 550 full Moons | 310 lux: 0.31%, 1,200 | 640 lux: 0.64%, 2,600 |
+| Walk for Tu to rise or sink by its own width | 2.5 km | 3.8 km | 5.4 km |
+| Tidal heating, against 6° | 1 | about 20 times | about 330 times |
 
-The memo puts the moon at 15-20 giant radii, which is about 6-8°, so 6° sits inside it. The 9°
-and 13° presets put the moon closer in, toward the Europa end of the memo's list (a bare-surface
-dose of about 5.4 Sv a day, against 0.08 and less at 15-20 radii). A closer preset means redoing
-the radiation, the tidal heating and the real day, which shortens with the orbit: that is what
-"physics follows the look" asks for. The near-side night figure (about 150-270 lux) and the noon
-eclipse (2-3 real hours, 20-25 game seconds) were worked for 6-8° and move with the preset, so
-they are not repeated for the others until one is chosen. [The moon](the-moon.md#day-length) says
-the same in brief.
+- **How they're worked.** Physics follows the look.
+  - **Orbit:** in Tu radii, 1 over the sine of half Tu's width.
+  - **The eclipse:** totality runs from when the sun's disc is wholly behind Tu's edge to
+    when it starts out again, (Tu across − the sun across) / 360° of the day. First to last
+    contact adds the sun's width instead. The game's sun is drawn 1.1° across, half again
+    the real one (a K dwarf of 0.68 solar radii at 0.5 AU shows 0.73°). The eclipse is
+    worked with the drawn disc, so the light goes exactly as it's seen to.
+  - **Light:** a full Tu sends sunlight × Tu's geometric albedo × (Tu's radius / its
+    distance)². The albedo is taken as Jupiter's, 0.5, and sunlight as 100,000 lux. A
+    cloudier, whiter Tu would be brighter.
+  - **Walking:** on the 150 km lap a degree is about 420 m, and Tu's height changes a
+    degree for each degree you travel toward or away from the sub-Tu point.
+  - **Heating:** at the same eccentricity, tidal heating goes about as the orbit to the
+    power of −7.5.
+
+The 9° and 13° presets put the moon closer in than the earlier 15–20 radii, toward the Europa
+and Io end of the list (Europa's bare surface gets about 5.4 Sv a day, against 0.08 and less at
+15–20 radii). A closer preset redoes the radiation, the tidal heating and the real day, which
+shortens with the orbit: that is what "physics follows the look" asks for. [The
+moon](the-moon.md#day-length) gives the same in brief.
 
 ## 4. Three candidate bodies
 
@@ -331,6 +359,72 @@ It's the middle of the window. Walking stays a walk, dust walls come in at about
 2. **The air goes back into the poles:** low tilt, and polar caps holding the missing
    air as dry ice and frost. That makes the poles the place where the colonial sky lies
    frozen.
+3. **Tu's size** (2026-10-17): 6°, 9° or 13° across, all under trial ([section
+   3](#the-giant-the-day-and-longitude)), with the orbit to follow the look.
+
+### Open after the Tu spec (2026-10-17)
+
+*[The Tu spec](tu-and-day-2026-10-17.md) is the newest direction and is built as written.
+Where it rubs against this memo or [the moon](the-moon.md), both sides are quoted here and
+stand, as [the lore research](lore-research.md#15-open-after-session-4) does. The spec's own
+open items are listed last.*
+
+**Clashes**
+
+1. **Tu's size, orbit and eclipse.** Earlier: "Ours sits where Ganymede and Callisto do, at
+   **15–20 giant radii**" (section 2), and "the giant hangs fixed overhead, 6–8° across...
+   Every noon brings an eclipse of 2–3 real hours, about 20–25 game seconds" (section 3, as
+   it was). The spec: "Recommended: around 12–14°, the dominant thing in the sky," with
+   "totality... about 4% of the day, roughly 45–60 seconds of a 20-minute day." Hunter has
+   6°, 9° and 13° under trial. By the working in section 3, the spec's 45–60 s at 13° is first
+   contact to last (47 s); totality alone is 40 s, 3.3% of the day.
+2. **Radiation and the approach (9° and 13°).** Earlier: "a bare surface would get only 0.08
+   down to 0.0001 Sv a day," and "A 5–7 day orbit and an approach outside the belts." The
+   13° orbit sits where Io and Europa do, whose bare surfaces get about 36 and 5.4 Sv a
+   day, and the 9° orbit between Europa and Ganymede. The air, 0.3 bar or more and so some 600–700 g/cm² at 0.4–0.5 g, still stops the
+   trapped particles above the ground, which stays a UV world, but ships come in through
+   the belts and the upper air is sputtered harder. Not said whether that matters.
+3. **Long days and the swing (9° and 13°).** Earlier: "Long days make it honest. A 5–7
+   Earth-day day gives sun-baked ground of roughly 60–90 °C in the clear tropics, and
+   nights of −60 to −100 °C," and [the moon](the-moon.md): "The real day is the moon's
+   orbit, about 5–7 Earth days." The 13° orbit's day is 1.9 Earth days, about 23 hours of
+   sun and 23 of night, and the 9° orbit's 3.2, so the honest swing is narrower. The 6°
+   orbit's 6.0 days fits. The game's swing is tuned, not
+   derived, and is unchanged. Not said whether to narrow it.
+4. **Tidal heating (9° and 13°, a fit).** Section 2: "Mild tidal heating from a weak orbital
+   resonance... not Io's hell." The lore buries H-Town's floor in eruptions and pipes the
+   refinery down to vents ([lore research](lore-research.md#halloran-isotope-and-h-town-agreed-session-4)).
+   At the same eccentricity the 9° orbit heats about 20 times as much as the 6°, and the
+   13° about 330 times, which suits vents and eruptions and leans toward Io. Not said how hot the interior runs today.
+5. **"Midday" and "midnight."** The spec: "The midday eclipse," and "At local noon on the
+   near side the sun sits behind Tu... At local midnight Tu is fully lit." That holds on
+   the sub-Tu meridian. Elsewhere on the near side the eclipse comes when the sun reaches
+   Tu's place in your sky, later in the day the further east you are. Where a run starts,
+   60° east, it's 16:00, and full Tu is at 04:00. Built as the geometry gives it.
+6. **"Fixed overhead."** Earlier: "the giant hangs fixed overhead" (section 3 and [the
+   moon](the-moon.md), as they were). The spec: "a spot set by where you stand." It's
+   overhead only at the sub-Tu point.
+7. **How bright a near-side night is.** Earlier: "Near-side nights are lit by a full giant
+   at ~150–270 lux... That makes the board's 'night as safe exploration' honest." Now 140,
+   310 and 640 lux at 6°, 9° and 13°, at Jupiter's albedo. The game has no eye adaptation, so the
+   same share of the sun reads much darker on screen than those lux would to a person
+   standing there: at the physical value a full-Tu night has a seventh of the light the
+   game's nights had before at 13°, a fifteenth at 9° and a thirty-fourth at 6°. Tu-shine
+   has its own tuning scale for that, 1 (physical) by default. A scale of 3 keeps a 13° night
+   plainly night with the dunes readable. **Answered (Hunter, 2026-10-17):** eye adaptation,
+   to build after Tu, with Tu's light kept physical ([art
+   direction](art-direction.md#eye-adaptation)), so the scale stays at 1.
+
+**Open in the spec**
+
+- Tu's final size and orbital period, and Tu's body number ([the lore
+  research](lore-research.md#14-open-after-session-3), its open question 1).
+- Where a run starts relative to the sub-Tu point, and whether runs reach the far side.
+  The build starts 60° east of it, with Tu 30° up, and builds the far side without
+  deciding where runs go.
+- Whether the eclipse also affects the weather, such as a pressure or wind kick. Not
+  built.
+- Tu's palette, to be settled against [art direction](art-direction.md#open-questions).
 
 ## 7. What's now wrong in the-moon.md
 

@@ -303,8 +303,71 @@ names what the ages after the collapse would carry, to be drawn when there is a 
 - **Carvings and daubs** use the worn slang (Monward, Hanmen, Zanborn, the tu- prefix) and the
   worn names (Zan, Tu, Han, Mon, Aitch): [the names](lore-research.md#slang-and-name-erosion-agreed-session-4-part-2).
 
+## Tu and the sky
+
+*2026-10-17, from [the Tu spec](tu-and-day-2026-10-17.md): the behaviour is in [the
+moon](the-moon.md#day-length). Provisional.*
+
+**How it's drawn.** Tu is part of the sky, not a thing in the world: a disc found by its
+direction, a sphere hit by each pixel's ray, so it never shifts as you move, never clips,
+and sits behind the haze and the storm walls like the rest of the sky. Dunes and ruins
+overlap its lower edge because they stand in front of the sky.
+
+- **Bands** run round Tu's spin axis, stretched along it by flow noise, with a few storm
+  ovals, all drifting too slowly to see within a session. Tu's axis is Zan's, so from the
+  equator, with Tu on the east-west line, the bands stand upright; further north or south
+  they lean.
+- **Light:** lit from the real sun, with a soft terminator, gentle limb darkening, a thin
+  bright rim of atmosphere on the lit side, and a night face only just there.
+- **Through Zan's air:** dimmed, warmed and hazed the lower it stands, reddened and
+  softened near the horizon, and faded out by a storm's dust.
+- **The eclipse:** the sky goes near dark, the stars come out, and Tu's black disc is
+  ringed in sunset red, with the corona showing where the sun is nearest the edge.
+- **Stars:** a fixed field turning about the pole, faint and many, with the two pole
+  marks brighter than any. They're lost in daylight and in the dust, and Tu hides them.
+
+**The palette.** Tu is the one big cool mass in a warm frame. B is gunmetal, teal, safety
+yellow and bone white on warm sand and dust, so a cool, pale Tu reads at a glance and
+doesn't fight the safety yellow or the kind-coloured parts. Its greys and bone tie it to
+B's metal and the shield's white, its ochre to the sand and its rust to the wear. Nothing
+is saturated: the haze and the rim do the work.
+
+| Part | Colour |
+|---|---|
+| Zones, the light bands | pale bone grey, #D8D8D2 |
+| Belts | slate, #7E8A96, and gunmetal, #4E5A66, deepest |
+| A wash through some belts | sand ochre, #BC9E76 |
+| Storm ovals | cream, #E4DED0, and one rust, #9E5C42 |
+| The lit rim | pale sky blue, #9FC0F0 |
+| The eclipse ring | sunset red, #FF5A1E |
+| Tu-shine, the light it casts | cool white, #C8DCFF |
+
+**As built** (2026-10-17). The sky is one shader, `game/weather/sky.gdshader`, fed each frame
+by `game/weather/sky_view.gd` from the day's one frame (`game/weather/day_cycle.gd`). It
+replaces the stock sky and draws the same gradient and haze under Tu and the stars, so a clear
+day looks as it did. The sun's disc stays in the storm pass, where Tu now cuts it. What shows
+by day is what's lit: as with the Moon in daylight, Tu's dark face is lost against the bright,
+hazy sky, so at noon where a run begins Tu is a big, pale crescent. The whole disc shows once
+the sky goes dark in the eclipse, and at night. Tu-shine is a second sun-like light from Tu.
+Whichever of it and the sun is brighter casts the shadows, so the shadow map is never split.
+
+To see it: the dev scenarios `eclipse` and `far`, and the console's `tu` to switch sizes. The
+look-test `look/sky/shoot.sh <dir>` shoots the three sizes at the same moments; its sheets are
+`~/Desktop/tu_sizes.png` and `~/Desktop/tu_more.png`.
+
+**Cost**, on an RTX 3070 at 1920x1080 with other Godots running probes alongside, so rough:
+the sky shader takes about 0.05 ms a frame more than the stock sky, by day facing Tu (2.23
+against 2.18 ms) and under the far side's stars (2.40 against 2.35), the same over three runs.
+Tu-shine and its shadows take about 0.12 ms by night (2.16 against 2.03). By day Tu-shine is
+under a hundredth of the sun's light and isn't drawn at all. Nothing reads the sky's light,
+so its reflection map is kept at the smallest size and costs next to nothing to refresh.
+
 ## Open questions
 
+- **Tu's palette** (open in the spec: "Tu's palette, to be settled against
+  `art-direction.md`"). The cool palette above is provisional, and the screenshots are the
+  test. The alternative is a warm, Jupiter-like Tu, cream and tan and brown, which would
+  sit closer to the sand and cast a warmer light than the spec's "cool and dim."
 - Is B final, or does it take C's bright, kind-coloured parts so they read through the dirt
   and the storm?
 - Should wear be one value per find, from its layer and how long it's been out, so the

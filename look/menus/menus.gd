@@ -30,7 +30,7 @@ func _ready() -> void:
 	# Left running, the menu's storm passes: its clock on fast till a clear day.
 	var view := main.view
 	view.time_warp = 60.0
-	while view.weather.in_storm or view.weather.day.sun_direction(view.time, view.moon.latitude).y < 0.3:
+	while view.weather.in_storm or view.weather.day.sun_direction(view.time, view.moon.latitude, view.moon.longitude).y < 0.3:
 		await get_tree().physics_frame
 	view.time_warp = 1.0
 	await _ticks(120)

@@ -1,11 +1,10 @@
 extends LineProbe
-## Rope & tethering probe 14: tied standing. A coil taken out of a slot comes
-## to your hands, its first end in hand. Standing a step and a half from a
+## Rope & tethering probe 14: tied standing. A coil taken out of what you
+## carry comes to your hands, its first end in hand. Standing a step and a half from a
 ## driven stake, a look at its foot ties that end to its ring. Walked off
 ## paying out, a look at the ring of another stake ahead ties the second end,
 ## and the line laid between them reaches from ring to ring.
 
-const SLOT := 2
 ## How far ahead of you each stake is driven, m.
 const AHEAD := 1.8
 
@@ -22,7 +21,7 @@ func run() -> void:
 	await simulate(1.0 / 60.0)
 	check(hands.grab(), "you take up a coil")
 	await simulate(0.5)
-	check(suit.click(SLOT) and suit.click(SLOT), "it goes in a slot and comes out")
+	check(suit.put_in() and suit.take_out(stack_of(suit.carried[-1])), "it goes in and comes out")
 	await simulate(0.5)
 	var line := hands.held.get_meta(&"line") as Line if hands.held != null and hands.held.has_meta(&"line") else null
 	check(line != null and line.state == Line.State.FIRST, "its first end in your hand")

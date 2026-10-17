@@ -18,7 +18,7 @@ const SPEED := 1.0
 
 func run() -> void:
 	await load_lines()
-	var deck := piece(spot(0.0, 4.0))
+	var deck := piece(flat_spot(0.0, 4.0, 4.0))
 	# The long L: east three times from the first piece, then south.
 	var layout := [[Vector2i(0, 0), Vector2i(1, 0)], [Vector2i(1, 0), Vector2i(1, 0)], [Vector2i(2, 0), Vector2i(1, 0)],
 		[Vector2i(3, 0), Vector2i(0, 1)]]
@@ -61,7 +61,7 @@ func run() -> void:
 	deck.mount(crate, socket_on(deck, Vector2i(1, 0), &"deck"))
 	deck.fit(Catalog.part(&"hook"), west)
 	await simulate(5.0)
-	check(deck.stats().hovering and absf(clearance(deck) - world.tuning.hover_height) < 0.15,
+	check(deck.stats().hovering and absf(clearance(deck) - deck.rest_height()) < 0.15,
 		"trays under all five and a crate on top, it floats")
 	var tie := deck.free_tie(west.global_position)
 	var at := tie.global_position + Vector3(-3.0, 0.0, 0.0)

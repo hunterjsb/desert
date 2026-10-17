@@ -1,10 +1,10 @@
 extends LineProbe
-## Survival probe 10: stakes go in. A found stake, taken up, goes in a slot as
-## it is, and the view shows it as a stake. A driven stake, or one with a line
-## on its eye, stays out. A loose stake goes in and comes out in your hands
-## ready to drive: used over the sand it goes in, and holds a crate floating
-## downwind on a line. The found one, saved in its slot and resumed into a
-## fresh world, comes out and does the same.
+## Survival probe 10: stakes go in. A found stake, taken up, goes in with what
+## you carry as it is, riding on you, and the view shows it as a stake. A
+## driven stake, or one with a line on its eye, stays out. A loose stake goes
+## in and comes out in your hands ready to drive: used over the sand it goes
+## in, and holds a crate floating downwind on a line. The found one, saved
+## carried and resumed into a fresh world, comes out and does the same.
 
 ## The breeze the crates float in, m/s, downwind along +x.
 const BREEZE := 8.0
@@ -21,9 +21,9 @@ func run() -> void:
 		"lean_by": 0.0, "bury": 0.0, "loose": true, "sound": 1.0, "charge": 0.0, "fill": []}
 	var found := world.salvage.lay(world.terrain.chunk_at(spec.x, spec.z), spec) as Stake
 	await simulate(1.0)
-	check(await _stows(found, 2), "a found stake, taken up, goes in a slot")
-	var shown := Suit._name(suit.slots[2]) if suit.slots[2] != null else "-"
-	print("in the slot: %s" % shown)
+	check(await _stows(found), "a found stake, taken up, goes in")
+	var shown := Suit._name(suit.stacks()[stack_of(found)][0]) if stack_of(found) != -1 else "-"
+	print("carried: %s" % shown)
 	check(shown == "Stake", "the view shows it as a stake")
 
 	var driven := driven_stake(here + Vector3(-1.0, 0.0, -2.0))
@@ -33,24 +33,24 @@ func run() -> void:
 	await simulate(0.5)
 	hands.hold(tied)
 	await simulate(0.5)
-	check(not suit.click(3) and hands.held == tied, "a stake with a line on its eye stays out")
+	check(not suit.put_in() and hands.held == tied, "a stake with a line on its eye stays out")
 	hands.drop()
 	await simulate(0.5)
 
 	var loose := _lying(here + Vector3(0.0, 0.0, 1.2))
 	await simulate(0.5)
-	check(await _stows(loose, 3), "a loose stake, taken up, goes in a slot")
-	check(await _drives(3, here + Vector3(0.0, 0.0, 1.5)), "it comes out ready to drive, and drives")
+	check(await _stows(loose), "a loose stake, taken up, goes in")
+	check(await _drives(loose, here + Vector3(0.0, 0.0, 1.5)), "it comes out ready to drive, and drives")
 	check(await _holds(loose), "driven, it holds a line")
 
-	check(get_node(^"/root/Saves").save(world), "saved, the found stake in its slot")
+	check(get_node(^"/root/Saves").save(world), "saved, carrying the found stake")
 	check(await resume(), "resumed")
 	suit = world.player.suit
-	var back := suit.slots[2] as Stake
-	check(back != null and back.has_meta(&"layer"), "the found stake is back in its slot")
+	var back := suit.carried[-1] as Stake if not suit.carried.is_empty() else null
+	check(back != null and back.has_meta(&"layer"), "the found stake is carried again")
 	if back == null:
 		return
-	check(await _drives(2, here + Vector3(0.0, 0.0, -1.5)), "it comes out ready to drive, and drives")
+	check(await _drives(back, here + Vector3(0.0, 0.0, -1.5)), "it comes out ready to drive, and drives")
 	check(await _holds(back), "driven, it holds a line")
 
 
@@ -63,19 +63,18 @@ func _lying(at: Vector3) -> Stake:
 	return stake
 
 
-## Taken up and clicked into a slot: in it as it is, out of the world.
-func _stows(stake: Stake, slot: int) -> bool:
+## Taken up and put in: carried as it is, on you, out of sight.
+func _stows(stake: Stake) -> bool:
 	if not await take(stake):
 		return false
 	await simulate(0.5)
-	return hands.held == stake and suit.click(slot) and hands.held == null and suit.slots[slot] == stake \
-		and not stake.is_inside_tree()
+	return hands.held == stake and suit.put_in() and hands.held == null and suit.carried.has(stake) \
+		and stake.get_parent() == world.player and not stake.visible
 
 
-## Out of its slot into your hands, and used over the sand at a place.
-func _drives(slot: int, at: Vector3) -> bool:
-	var stake := suit.slots[slot] as Stake
-	if not suit.click(slot):
+## Taken out into your hands, and used over the sand at a place.
+func _drives(stake: Stake, at: Vector3) -> bool:
+	if not suit.take_out(stack_of(stake)):
 		return false
 	await simulate(0.5)
 	if hands.held != stake or stake.driven:

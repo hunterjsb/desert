@@ -115,7 +115,7 @@ static var _current: Tuning
 @export_group("Weather")
 ## One full day and night, start to finish.
 @export var day_minutes: float = 20.0
-## Where in the day a run begins: 0 is midnight, 0.5 is noon.
+## Where in the day a run begins, local time at its spawn: 0 is midnight, 0.5 is noon.
 @export var start_time_of_day: float = 0.3
 ## Mean prevailing wind, m/s. Storms ride it, so this sets how fast walls arrive.
 @export var prevailing_speed: float = 10.0
@@ -189,6 +189,23 @@ static var _current: Tuning
 @export var temperature_storm_blanket: float = 0.5
 ## A bubble that holds back temperature holds this inside, °C.
 @export var sheltered_temperature: float = 20.0
+## How far the air would cool if the sun stayed hidden behind Tu overhead, °C.
+## The air's lag, which puts the day's peak mid-afternoon, sets how much of it
+## an eclipse gets.
+@export var eclipse_chill: float = 40.0
+
+@export_group("Tu")
+## How wide Tu is across the sky, degrees. Physics follows the look: it sets
+## how far out Tu's orbit is, and so how long the eclipse lasts and how bright
+## Tu-shine is. Three are under trial (docs/the-moon.md), 6, 9 and 13; the dev
+## console's tu switches among them.
+@export var tu_degrees: float = 13.0
+## The longitude under Tu, degrees: 60° west of spawn stands Tu 30° up, due
+## west, where a run begins.
+@export var tu_longitude_degrees: float = -60.0
+## Tu-shine on top of its physical value, so how bright a near-side night is
+## can be tuned apart from Tu's size. 1 is physical.
+@export var tu_shine_scale: float = 1.0
 
 @export_group("Storm wall")
 ## Top of a storm's dust wall, metres. It dissolves over roof_soft either side.
@@ -407,11 +424,14 @@ static var _current: Tuning
 @export var slide_db: float = 0.0
 
 @export_group("Devices")
-## A hover tray holds a device's middle this high over the sand, m.
-@export var hover_height: float = 1.2
-@export var hover_hertz: float = 1.0
+## A hover tray pushes all it can lift with its face this high over the sand
+## or nearer, m, and a share of it higher up, falling off by e each
+## hover_falloff m: a cushion, so every load bobs at one rate and a light one
+## rides higher. The kit's crate rides with its middle about 1.2 m up.
+@export var hover_height: float = 0.84
+@export var hover_falloff: float = 0.06
+## How much the cushion's bounce dies in one swing (1 settles without bouncing).
 @export var hover_damping: float = 0.8
-@export var hover_upright_hertz: float = 1.6
 ## What hovering costs, W per kg floated. Power (Stage 4) drains it.
 @export var hover_watts_per_kg: float = 2.0
 ## Set resting or floating again, a tray lets its device down or lifts it
@@ -516,8 +536,14 @@ static var _current: Tuning
 ## The suit keeps you safe between these, °C; past them the temperature harms you.
 @export var suit_cold: float = -40.0
 @export var suit_hot: float = 75.0
-## The suit's slots: all you carry besides your hands and your waist.
-@export var suit_slots: int = 5
+## What you carry besides your hands and your waist has no slots, only a
+## weight: up to this much, kg, you don't feel it; past it you sink into the
+## sand and slow, by this much sunk in as far as hauling digs you in, and
+## slower still for every kilogram more. The kit you start with carries
+## 2.9 kg, and every carryable thing of it, its stake, its board with the
+## board's battery and the light panel too, 20.9 kg.
+@export var carry_easy_kg: float = 30.0
+@export var carry_sunk_kg: float = 60.0
 ## A sealed canister holds this much water, L, and a ration this much food, kcal.
 @export var canister_litres: float = 2.0
 @export var ration_kcal: float = 1000.0
@@ -558,8 +584,8 @@ static var _current: Tuning
 ## The share of each harvest a harvester replants, to start with. A quarter
 ## of a harvest of four keeps every slot sown.
 @export var replant_share: float = 0.25
-## A planter drops food onto you from this close, m, while your slots hold
-## less food than this, kcal.
+## A planter drops food onto you from this close, m, while you carry less
+## food than this, kcal.
 @export var drop_reach: float = 6.0
 @export var drop_until_kcal: float = 2000.0
 

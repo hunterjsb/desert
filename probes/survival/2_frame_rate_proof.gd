@@ -2,7 +2,7 @@ extends ShieldProbe
 ## Survival probe 2: frame-rate proof. The same stretch of a hot afternoon,
 ## far enough from the equator for the heat to harm, in a light storm and a
 ## gale, run at 30, 60 and 120 physics ticks a second, leaves you with the
-## same health, hunger and thirst, the same water and food in your slots and
+## same health, hunger and thirst, the same water and food carried and
 ## the same harm taken from each of the three harms, to the bit: needs tick
 ## on the world clock, not the frame. Then the same sprint and rest spends
 ## and wins back the same stamina.
@@ -48,7 +48,7 @@ func run() -> void:
 		world.time_warp = 0.0
 		world.time = END
 		await physics_frames(2)
-		var slots: Array = player.suit.slots.map(func(p: Part) -> float: return p.amount if p is Supply else -1.0)
+		var slots: Array = player.suit.carried.map(func(p: RigidBody3D) -> float: return p.amount if p is Supply else -1.0)
 		needs[rate] = [vitals.health, vitals.hunger, vitals.thirst, vitals.drunk, vitals.eaten,
 			vitals.taken[&"wind"], vitals.taken[&"storm"], vitals.taken[&"temperature"]] + slots
 		print("%d ticks/s: %s" % [rate, needs[rate]])

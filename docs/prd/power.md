@@ -136,6 +136,12 @@ the felt-weather rule.
   30%. So a crate's tray lets the crate settle onto the sand and leaves the last quarter
   to the shield seated on it, and a condenser cabled to a shield stops at a quarter the
   same way. A pool with nothing ranked above the rest runs down as before.
+- **Trays draw for what they hold up** (2026-10-17): 2 W for each kilogram a tray pushes
+  up, so at rest a device's trays together draw 2 W a kilogram of it, as a single tray
+  always did (91 W for the kit's crate). A deck tipped onto the sand draws less, the sand
+  carrying a share, and a line pulling down draws more. A tray that's stopped asks for
+  the whole weight, what lifting it again would take, so the quarter's stop and the 30%
+  restart work as before.
 - **The tick reads each source at its own world time**, four times a second of world
   time, so the dev time warp charges faster and 30, 60 or 120 frames a second give the same charge to
   the bit.
@@ -197,6 +203,13 @@ the felt-weather rule.
   and runs down over a few seconds, stands still while the turbine makes nothing
   (wrecked, moving, in a bubble or a calm), and swings round on its mast to face into
   the wind. It's only drawn: it reads what the power tick worked out and touches nothing.
+- **The eclipse is a power check** (2026-10-17, [the Tu spec](../tu-and-day-2026-10-17.md)).
+  Once a day on the near side the sun goes behind Tu, and solar reads the light it feels, so
+  it falls to nothing for the eclipse: 16, 26 or 40 seconds of totality at the three sizes
+  under trial, 6°, 9° and 13° ([the moon](../the-moon.md#day-length)), with a few seconds of
+  partial phase either side. A camp rides it out on storage or wind. Tu's own light at night is far too
+  weak for panels, so they make nothing by it. Solar also follows local time now, which
+  follows longitude, so a panel carried east sees an earlier sunset.
 
 ## Full version
 
@@ -215,8 +228,8 @@ the felt-weather rule.
    what was used. No energy appears from nowhere.
 2. **Frame-rate proof.** The same run at 30, 60 and 120 frames per second gives the same
    charge levels.
-3. **Sources read the felt weather.** Solar follows clear, storm, day, night and
-   latitude. A turbine inside a base wind shield makes nothing; one outside in a storm
+3. **Sources read the felt weather.** Solar follows clear, storm, day, night,
+   latitude and the eclipse, making nothing with the sun behind Tu. A turbine inside a base wind shield makes nothing; one outside in a storm
    makes the most.
 4. **The AFK promise.** A reference camp (shield, floater, panels, turbine, capacitor)
    parked at mid-latitude runs through 24 simulated hours of weather without any
@@ -251,3 +264,21 @@ the felt-weather rule.
   both.** Common wiring is its own item; the strong cable is a rope that carries power.
 - **What other sources are there?** Salvaged colonial power cells, for example, since
   the best tech is the oldest.
+
+The Console and sleep sessions (2026-10-17) add two. Each is quoted on both sides and left
+standing.
+
+- **A sleep has to be lived through.** Here: power ticks every quarter second of world time, and
+  `power.gd` says "a jump in time (a scenario) isn't lived through: nothing charged meanwhile."
+  Any gap over 60 seconds is dropped, by needs, the farm and wear as well, and the dev console's
+  `time` command jumps that way. The session: "resource arithmetic overnight against a queryable
+  storm-intensity curve (shield draw scales with storm strength, so duration matters)" (Survival,
+  [Sleep](survival.md#sleep-proposed)). Not said: whether a sleep runs the ticks in a batch or
+  sums them in closed form. Either way rule 1, "Energy is conserved," has to hold across it, and
+  a probe that a slept span and the same span lived leave the same charge is the obvious check.
+  Length is cheap: a three-day storm is an hour of world time, 14,400 ticks.
+- **What a Console and its mods draw.** Here: "Instruments, farming gear and tools draw small
+  amounts," and the radio draws 2 W. The session: a Console "still takes a hover tray,
+  batteries and power like a crate." Not said: what a screen, a radar or another computer mod
+  draws, whether a Console on a dark pool goes blind, and what its weight adds to the tray's draw
+  at 2 W a kilogram.

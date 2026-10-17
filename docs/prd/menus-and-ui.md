@@ -85,7 +85,7 @@ save and quick load.
 - **One theme** (`game/ui/theme.tres`, set as the project's) used by every UI: the
   survival bars, the inventory view, the look-at readout, the keys list, the death
   caption, the dev overlay and the dev console. Geist for text, Geist Mono for
-  readouts (the bars' water and food, what's in a slot, the look-at line, the dev
+  readouts (the bars' water and food, what you carry and its weight, the look-at line, the dev
   overlay's numbers, the console), from the official release, with their licence, in `assets/fonts/`.
   Off-white text, dark semi-transparent panels, and the teal accent for danger: a bar
   under a quarter (health, hunger or thirst) turns teal. Keys on screen are a soft
@@ -139,7 +139,8 @@ save and quick load.
   scenario's key or a catalog id. Each command is a thin call into the game: `help`;
   `scenarios`, and `scenario <key>`, which replaces the scenario menu; `fly`; `warp [n]`,
   alone stepping x1, x10, x60; `gravity [m/s²]`, alone low gravity or back; `time <0–1>`,
-  on to the next such moment of the day; `give <id> [n]`, a part into your hands, or a
+  on to the next such moment of your local day; `tu [6|9|13]`, Tu's width across the sky in degrees,
+  the three under trial, alone the next of them (2026-10-17); `give <id> [n]`, a part into your hands, or a
   device, a stake, a coil or a cable at your feet, by catalog id; and `fresh`, fed,
   watered and whole on a fresh suit's kit. The keys list and Options' controls list
   show the console action and the dev overlay's under a heading of their own, and the

@@ -4,7 +4,7 @@ extends Node
 ## goes, with everything you had in it, and a fresh one on a new seed takes
 ## its place, so nothing carries over. In Normal a death offers the last save
 ## back first. It sits beside the world, never in it. Every run starts with
-## its kit (Kit, data): some in the suit's slots, the rest on the sand beside
+## its kit (Kit, data): some carried by the suit, the rest on the sand beside
 ## you.
 
 signal started(world: World)
@@ -192,14 +192,13 @@ static func _beside(world: World, where: Vector2) -> Vector3:
 	return at
 
 
-## Facing as you do: resting on the sand, or held at the tray's height if it floats.
+## Facing as you do: resting on the sand, or where its trays hold it if it floats.
 static func _set_down(world: World, device: Device, where: Vector2) -> void:
 	var at := _beside(world, where)
 	if device.get_parent() == null:
 		world.content.add_child(device)
-	var up := world.tuning.hover_height if device.stats().can_float \
-		else -Finds.bounds(device).position.y + 0.02
-	device.global_transform = Transform3D(Basis(Vector3.UP, world.player.global_rotation.y), at + Vector3.UP * up)
+	device.global_transform = Transform3D(Basis(Vector3.UP, world.player.global_rotation.y),
+		at + Vector3.UP * device.rest_height())
 
 
 static func _fit(world: World, device: Device, part: Part, socket: Socket, charge: float) -> void:

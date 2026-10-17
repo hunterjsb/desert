@@ -59,6 +59,7 @@ func load_camp(settle_seconds := 10.0) -> void:
 			floater.mount(seated, socket)
 			break
 	seated.stand(true)
+	floater.global_position.y += floater.rest_height() - tuning.hover_height
 	for side: float in [-1.5, 1.5]:
 		var spot: Vector3 = at - downwind * STAKES_UPWIND + downwind.cross(Vector3.UP) * side
 		var stake := Catalog.stake()

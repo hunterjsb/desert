@@ -9,6 +9,10 @@ extends RigidBody3D
 
 signal parts_changed
 
+## Settling, a tray's all-lifting height sinks this many falloffs below the
+## sand, so what it holds is down on the sand before it stops.
+const SETTLE_BELOW := 3.0
+
 @export var label := "device"
 ## The bare frame's weight, kg.
 @export var frame_mass := 15.0
@@ -57,8 +61,15 @@ var lift_share := 1.0:
 		if crossed:
 			_recompute()
 
+## What its trays hold up this tick, kg: its weight floating free, less what
+## the sand or a hand takes, more what a line pulls down. They draw for it.
+var carried_kg := 0.0
+
 var world: World
 var _hovering := false
+## Its trays, each as [kg it lifts, the corners of its face, the way it faces
+## out], in its own frame: each lifts under its own spot.
+var _trays: Array = []
 ## The sockets with a device seated in them.
 var _seats: Array[Socket] = []
 ## How it froze before it was seated on another device.
@@ -163,6 +174,11 @@ func mounted() -> Array[Device]:
 ## The device it's seated on, or null.
 func host() -> Device:
 	return get_parent() as Device
+
+
+## Whether it has a hover tray fitted.
+func has_tray() -> bool:
+	return not _trays.is_empty()
 
 
 ## Seated on a chassis piece's deck mount, where it keeps its own sockets.
@@ -436,8 +452,9 @@ func stats() -> Dictionary:
 	total["can_float"] = total["lift_kg"] >= mass
 	total["resting"] = resting
 	total["hovering"] = total["can_float"] and powered and lift_share > 0.0
-	# Seated, its own tray holds nothing up.
-	total["hover_w"] = mass * world.tuning.hover_watts_per_kg \
+	# Its trays draw for what they hold up, or dark, for its weight, what
+	# lifting it again would take. Seated, its own tray holds nothing up.
+	total["hover_w"] = (carried_kg if powered else mass) * world.tuning.hover_watts_per_kg \
 		if total["can_float"] and not resting and world != null and host() == null else 0.0
 	var cells := batteries()
 	if not cells.is_empty():
@@ -461,6 +478,10 @@ func _recompute() -> void:
 			moment += socket.mounted.mass * socket.mounted.position
 	mass = weight
 	center_of_mass = moment / weight
+	_trays.clear()
+	for socket in sockets():
+		if socket.part != null and socket.part.stats.get("lift_kg", 0.0) > 0.0:
+			_trays.append(_tray(socket))
 	var now := stats()
 	_hovering = now["hovering"]
 	# Lamps shine, and lenses and emitters glow, only while it has the power.
@@ -497,8 +518,7 @@ func _middle(nodes: Array[Node3D]) -> Vector3:
 	return Vector3.ZERO if count == 0 else (sum / count)
 
 
-## A tray holds it a set height over the sand and upright, like the rope
-## look-test's floater; sideways, the wind and its lines decide.
+## Its trays lift it where they are; sideways, the wind and its lines decide.
 func _physics_process(delta: float) -> void:
 	# What's seated rides exactly on its seat: a frozen body under a moving one
 	# is left a tick behind each tick, and on a floating crate that adds up.
@@ -510,25 +530,98 @@ func _physics_process(delta: float) -> void:
 	var goal := 0.0 if resting else 1.0
 	if lift_share != goal:
 		lift_share = move_toward(lift_share, goal, delta / tuning.hover_settle_seconds)
+	carried_kg = 0.0
 	if freeze or not _hovering:
 		return
-	var omega := TAU * tuning.hover_hertz
-	var low := _hover_gap(tuning.hover_height * lift_share)
-	var lift := mass * (world.gravity + omega * omega * low - 2.0 * tuning.hover_damping * omega * linear_velocity.y)
-	apply_central_force(Vector3.UP * maxf(lift, 0.0))
-	_keep_upright(tuning)
+	_lift(tuning, delta)
 
 
-## How far below where its tray would hold it it is, m, held `height` over the sand.
-func _hover_gap(height: float) -> float:
-	return world.height_under(global_position) + height - global_position.y
+## Each tray reads the sand under its face, on average, and pushes straight
+## up at the face's corners, each harder the nearer it is to that: by e more
+## each hover_falloff nearer, all it can lift at hover_height, and never more
+## than that in all, its push then gathering at the lowest corners. So a light
+## load rides higher than a heavy one, a corner with no tray under it sinks,
+## and only where the trays are keeps it upright, toward level even over a
+## dune's face, while a deck's trays far apart follow the dunes under them. A
+## tray pushes only while it faces the sand. Settling, its all-lifting height sinks a little
+## below the sand, so the device is down before the tray stops. Each corner's
+## damper scales with its push, so every load settles alike, and is solved
+## against the motion it leaves, so it never overshoots at any tick rate.
+func _lift(tuning: Tuning, delta: float) -> void:
+	var g := world.gravity
+	var reach := tuning.hover_falloff
+	var full := (tuning.hover_height + SETTLE_BELOW * reach) * lift_share - SETTLE_BELOW * reach
+	var rate := 2.0 * tuning.hover_damping / sqrt(g * reach)
+	var middle := global_transform * center_of_mass
+	var turn := PhysicsServer3D.body_get_direct_state(get_rid()).inverse_inertia_tensor
+	var rise_at := linear_velocity.y
+	var spin := angular_velocity
+	var lifted := 0.0
+	var damped := 0.0
+	var twist := Vector3.ZERO
+	for tray: Array in _trays:
+		var corners: PackedVector3Array = tray[1]
+		var facing := clampf(-(global_basis * (tray[2] as Vector3)).normalized().y, 0.0, 1.0)
+		var most: float = tray[0] * g * facing
+		var points: Array[Vector3] = []
+		var sand := 0.0
+		for corner in corners:
+			var at := global_transform * corner
+			points.append(at)
+			sand += world.height_under(at) / corners.size()
+		var pushes: Array[float] = []
+		var all := 0.0
+		for at in points:
+			var push := most / corners.size() * exp(minf((full - at.y + sand) / reach, 30.0))
+			pushes.append(push)
+			all += push
+		var over := maxf(all / most, 1.0) if most > 0.0 else 1.0
+		var spare := most - all / over
+		for i in points.size():
+			var push := pushes[i] / over
+			apply_force(Vector3.UP * push, points[i] - global_position)
+			var lever := (points[i] - middle).cross(Vector3.UP)
+			var give := 1.0 / mass + lever.dot(turn * lever)
+			var rise := rise_at + spin.dot(lever)
+			var hold := rate * push * delta
+			var stop := clampf(-hold * rise / (1.0 + hold * give), -push * delta, spare * delta)
+			spare -= maxf(stop, 0.0) / delta
+			rise_at += stop / mass
+			spin += turn * (lever * stop)
+			damped += stop
+			twist += lever * stop
+			lifted += push
+	apply_central_impulse(Vector3.UP * damped)
+	apply_torque_impulse(twist)
+	carried_kg = (lifted + damped / delta) / g
 
 
-func _keep_upright(tuning: Tuning) -> void:
-	var state := PhysicsServer3D.body_get_direct_state(get_rid())
-	var inverse := state.inverse_inertia
-	var moment := 2.0 / maxf(inverse.x + inverse.z, 1e-6)
-	var turn := TAU * tuning.hover_upright_hertz
-	var tilt := global_basis.y.normalized().cross(Vector3.UP)
-	var rocking := angular_velocity - Vector3.UP * angular_velocity.y
-	apply_torque(moment * (turn * turn * tilt - 2.0 * tuning.hover_damping * turn * rocking))
+## A fitted tray: what it lifts, the corners of its outer face and its way out.
+func _tray(socket: Socket) -> Array:
+	var corners := PackedVector3Array()
+	for node in socket.fitted:
+		var shape := node as CollisionShape3D
+		if shape != null:
+			var box := Catalog.bounds(shape.shape)
+			for i in 4:
+				var x := box.position.x if i % 2 == 0 else box.end.x
+				var y := box.position.y if i < 2 else box.end.y
+				corners.append(shape.transform * Vector3(x, y, box.end.z))
+	return [socket.part.stats.lift_kg, corners, socket.transform.basis.z]
+
+
+## How high its middle rides over level sand, its load shared out as its
+## trays lift: where to set it down floating. Too heavy, on the sand.
+func rest_height() -> float:
+	var lift := 0.0
+	var depth := 0.0
+	var count := 0
+	for tray: Array in _trays:
+		lift += tray[0]
+		for corner: Vector3 in tray[1]:
+			depth -= corner.y
+			count += 1
+	if count == 0 or lift < mass:
+		return -Finds.bounds(self).position.y + 0.02
+	var tuning := Tuning.current()
+	return tuning.hover_height + tuning.hover_falloff * log(lift / mass) + depth / count

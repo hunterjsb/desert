@@ -194,7 +194,7 @@ func _find_times(at: Vector2) -> Dictionary:
 	var found := {}
 	var t := 120.0
 	while t < 6.0 * 24.0 * 3600.0 and found.size() < 4:
-		var hour := day.time_of_day(t)
+		var hour := day.time_of_day(t, world.moon.longitude)
 		var storm := field.storm_at(at.x, at.y, t)
 		var held := storm >= 1.0 and field.storm_at(at.x, at.y, t - 60.0) >= 1.0 \
 			and field.storm_at(at.x, at.y, t - 120.0) >= 1.0

@@ -80,6 +80,7 @@ func _floating(id: StringName, ahead: float) -> Device:
 			var part := Catalog.part(fill)
 			world.content.add_child(part)
 			made.fit(part, socket)
+	made.global_position.y += made.rest_height() - world.tuning.hover_height
 	return made
 
 

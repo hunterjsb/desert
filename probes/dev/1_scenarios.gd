@@ -7,8 +7,9 @@ extends WeatherProbe
 ## beacon in reach; the reference camp stands round you, running; the lee
 ## stands you under a tall slip face, facing up it into the wind over its
 ## crest, the wind on you cut and a storm due; chassis pieces, their trays,
-## a charged crate and a condenser lie in front of you. Checked against the
-## field itself and against what the game then shows.
+## a charged crate and a condenser lie in front of you; the eclipse faces Tu
+## just before the sun goes behind it; the far side has no Tu. Checked against
+## the field itself and against what the game then shows.
 
 const SLACK := 1.0
 
@@ -21,7 +22,7 @@ func run() -> void:
 		check(not place.is_empty(), "%s: found in this run's weather" % scenario.key)
 		if place.is_empty():
 			continue
-		world.respawn(place.x, place.z, place.yaw, place.time)
+		Scenarios.stand(world, scenario, place)
 		world.time_warp = 0.0
 		await physics_frames(3)
 		var at := Vector2(world.player_world_x(), world.player_world_z())
@@ -29,7 +30,7 @@ func run() -> void:
 		var facing := -world.player.global_basis.z
 		var ahead := Vector2(facing.x, facing.z).normalized()
 		var upwind := -field.prevailing_at(t).normalized()
-		var hour := world.weather.day.time_of_day(t)
+		var hour := world.weather.day.time_of_day(t, world.moon.longitude)
 		var stormy := field.raw_storm_at(at.x, at.y, t) > 0.0
 		var what: String = scenario.key
 		check(world.weather.in_storm == stormy, "%s: the game agrees about the storm" % what)
@@ -93,10 +94,20 @@ func run() -> void:
 				check(_edge(at, upwind, t, true) > 250.0 and _edge(at, -upwind, t, true) > 250.0,
 					"deep: far from either edge")
 			"sky":
-				var sun := world.weather.day.sun_direction(t, world.moon.latitude).y
+				var sun := world.weather.day.sun_direction(t, world.moon.latitude, world.moon.longitude).y
 				check(not stormy, "%s: a clear sky" % what)
 				check((sun > 0.0 and sun < 0.12) if what == "dusk" else sun < 0.0,
 					"%s: the sun is where it should be (%.2f)" % [what, sun])
+		var day := world.weather.day
+		var tu := day.tu_direction(t, world.moon.latitude, world.moon.longitude)
+		if scenario.has("eclipse"):
+			var mid: float = t + scenario.eclipse + day.totality() * 0.5
+			check(day.sun_shown(t) == 1.0 and day.sun_shown(mid) == 0.0 and day.next_eclipse(t) - mid < 0.5,
+				"eclipse: the sun goes behind Tu %d s on" % scenario.eclipse)
+			check(ahead.dot(Vector2(tu.x, tu.z).normalized()) > 0.999 and tu.y > 0.0, "eclipse: facing Tu")
+		if scenario.has("moon"):
+			check(is_equal_approx(rad_to_deg(world.moon.latitude), scenario.moon[0]) and tu.y < -sin(day.tu_radius()),
+				"%s: %d° north, where Tu never rises" % [what, scenario.moon[0]])
 
 
 ## Metres along `along` until the storm state differs from `inside`.
@@ -137,8 +148,8 @@ func _radio_lands() -> void:
 ## one pool, its bank full; the trays rest on the sand; the planters are sown,
 ## watered and harvesting, near enough to drop food onto you, and hosed to
 ## the condenser; the crate is moored to a driven stake and holds the turbine
-## on its strong cable; you're fed and watered, with canisters in your slots
-## and room for food.
+## on its strong cable; you're fed and watered, carrying canisters and no
+## food.
 func _afk_lands() -> void:
 	await settle(true)
 	var dropped := Scenarios.afk(world)
@@ -174,10 +185,10 @@ func _afk_lands() -> void:
 		"afk: both on hoses from the condenser, running")
 	check(stake.driven and world.ropes.ropes.size() == 2 + planters.size(),
 		"afk: the crate is moored to a driven stake, the turbine on its strong cable, the planters on their hoses")
-	var slots := player.suit.slots.map(func(p: Part) -> String: return "-" if p == null else p.label)
+	var carried := player.suit.carried.map(func(p: RigidBody3D) -> String: return p.label)
 	check(player.vitals.health > 99.0 and player.vitals.hunger > 99.0 and player.vitals.thirst > 99.0
-		and slots.count("Water canister") == Scenarios.AFK_CANISTERS and slots.count("-") == slots.size() - Scenarios.AFK_CANISTERS,
-		"afk: you start fed and watered, stocked with water, slots free for food (%s)" % ", ".join(slots))
+		and carried.count("Water canister") == Scenarios.AFK_CANISTERS and carried.size() == Scenarios.AFK_CANISTERS,
+		"afk: you start fed and watered, carrying water and nothing else (%s)" % ", ".join(carried))
 	for body in dropped:
 		if is_instance_valid(body):
 			body.free()
@@ -243,7 +254,7 @@ func _board_lands() -> void:
 ## sown and part grown, one with a harvester and a full tank, the other's
 ## half full, their carrots growing in the clear; a charged shield generator
 ## stands between them, switched off, near enough for its bubble to take
-## them, with a full canister by your feet and a spare carrot in your slots.
+## them, with a full canister by your feet and a spare carrot carried.
 ## In the wind, nothing slides off or drifts past its line.
 func _farm_lands() -> void:
 	await settle(true)
@@ -275,8 +286,8 @@ func _farm_lands() -> void:
 	check(not shield.on and shield.battery().charge_wh >= shield.battery().capacity(),
 		"farm: a charged shield generator, switched off")
 	var loose := dropped.filter(func(b: Node3D) -> bool: return b is Supply and b.kind == &"water" and b.amount >= 2.0)
-	check(loose.size() == 1 and world.player.suit.slots.any(func(p: Part) -> bool: return p is Plant),
-		"farm: a full canister, and a spare carrot in your slots")
+	check(loose.size() == 1 and world.player.suit.carried.any(func(p: RigidBody3D) -> bool: return p is Plant),
+		"farm: a full canister, and a spare carrot carried")
 	for body in dropped:
 		if is_instance_valid(body):
 			body.free()
@@ -350,7 +361,7 @@ func _survival_starts() -> void:
 	var vitals := world.player.vitals
 	vitals.health = 10.0
 	vitals.thirst = 90.0
-	world.player.suit.slots[2] = Catalog.part(&"battery")
+	world.player.suit.carried.append(Catalog.part(&"battery"))
 	var dropped := Scenarios.survive(world)
 	world.time_warp = 1.0
 	await physics_frames(60)
@@ -359,10 +370,10 @@ func _survival_starts() -> void:
 	var shields := dropped.filter(func(b: Node3D) -> bool: return b is ShieldGenerator and b.battery() != null \
 		and b.battery().charge_wh >= b.battery().capacity())
 	var rations := dropped.filter(func(b: Node3D) -> bool: return b is Supply and b.kind == &"food")
-	var slots := world.player.suit.slots.map(func(p: Part) -> String: return "-" if p == null else p.label)
+	var carried := world.player.suit.carried.map(func(p: RigidBody3D) -> String: return p.label)
 	check(vitals.health > 99.0 and vitals.hunger > 99.0 and vitals.thirst > 99.0
-		and slots == ["Water canister", "Ration", "-", "-", "-"] and world.player.suit.supply(&"water").amount > 1.99,
-		"survive: you start fed, watered and whole, on sealed water and a ration (%s)" % ", ".join(slots))
+		and carried == ["Water canister", "Ration"] and world.player.suit.supply(&"water").amount > 1.99,
+		"survive: you start fed, watered and whole, on sealed water and a ration (%s)" % ", ".join(carried))
 	check(condenser.powered and condenser.canister().amount > 0.0 and condenser.canister().amount < 0.01
 		and condenser.stats().solar_w > 0.0, "survive: the condenser is filling its empty canister (%.4f L)"
 		% condenser.canister().amount)

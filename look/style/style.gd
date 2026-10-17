@@ -126,7 +126,7 @@ func _storm_time() -> float:
 	var day := world.weather.day
 	var t := STORM_HELD
 	while t < 3.0 * 24.0 * 3600.0:
-		var hour := day.time_of_day(t)
+		var hour := day.time_of_day(t, world.moon.longitude)
 		if hour >= STORM_DAY[0] and hour <= STORM_DAY[1] and field.storm_at(_middle.x, _middle.y, t) >= 1.0:
 			var held := true
 			for back in range(30, int(STORM_HELD), 30):
@@ -173,7 +173,7 @@ func _build_camp() -> void:
 					break
 		var size: Vector3 = Catalog.DEVICES[entry[0]].size
 		var floats: bool = entry[4].has(&"hover_tray")
-		var at := _engine(Vector3(entry[1], world.tuning.hover_height if floats else size.y * 0.5 + 0.02, entry[2]))
+		var at := _engine(Vector3(entry[1], device.rest_height() if floats else size.y * 0.5 + 0.02, entry[2]))
 		device.global_transform = Transform3D(turn * Basis(Vector3.UP, deg_to_rad(entry[3])), at)
 		device.freeze = true
 		camp.append(device)

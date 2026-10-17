@@ -1,7 +1,7 @@
 class_name Bars
 extends CanvasLayer
 ## Health, hunger, thirst and stamina as four small bars in the corner, with
-## the water and food left in your slots beside thirst and hunger. The one
+## the water and food you carry beside thirst and hunger. The one
 ## exception to almost no menus, until the suit and your senses can say it.
 
 const WIDTH := 110.0

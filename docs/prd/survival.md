@@ -97,6 +97,87 @@ There's no hard-coded "camp feeds you" rule. Instead:
 
 With the setup right, you can go fully AFK. You just have to build it.
 
+## Sleep (proposed)
+
+*Hunter, 2026-10-17 ([session](../console-sensors-sleep-2026-10-17.md)). Direction, not agreed.
+The session calls the main choice "not settled" and the physics proposal "Not agreed," so all of
+this is proposed, and none of it is built. It sits against this PRD's out-of-scope line on sleep
+(open questions).*
+
+**The problem.** "Storm days are about 20 minutes and storms can last several days; waiting one
+out early game is boring. Storm-loot mechanics will help once they're in." In this game's numbers
+most storms are short: the median is 17 minutes and 71% pass within a base shield's 30 ([Wind &
+storms](wind-and-storms.md#open-questions)). The rest don't. A day is 20 minutes, so a storm of
+several days is an hour or more of waiting. The longest ran past three hours, and the kit's own
+first storm sits on the spawn for more than three and a half days on the probes' seed (the
+starting kit, in the skeleton's list below).
+
+**Sleep, not auto-walk.** "Sleep to fast-forward is the preferred fix over auto-walk, but not
+settled." Auto-walk is in no doc and no code, so nothing has to come out.
+
+**The worry, and the proposal.** "Main worry: physics stability while time skips." The proposal
+under discussion: "check camp stability with real physics before sleep, then only do resource
+arithmetic overnight against a queryable storm-intensity curve (shield draw scales with storm
+strength, so duration matters). Not agreed."
+
+What the game already has, as readings and not in the session:
+- **The curve is queryable.** `storm_at` is a pure function of place and time, so a camp that
+  stays put has an intensity curve for the whole span ([Wind &
+  storms](wind-and-storms.md#instruments-and-the-console-screen-proposed) answers it: yes, already).
+- **Shield draw already goes by storm strength.** It sips 10 W in the clear and draws 200 W holding
+  back a full storm, 2 W and 20 W for the light shield, and between the two in a lesser one
+  (Bubble shield & camp). So the night's cost is that draw summed over the span: "duration
+  matters" is built.
+- **The arithmetic already runs on ticks of world time.** Power ticks every quarter second of
+  world time, and your needs, the farm and the storm's wear ride the same tick. The dev time warp
+  (x10 and x60) moves the clock fast, and the AFK probes run a camp for days that way (the "afk"
+  scenario, Stage 12). The physics doesn't keep up. A physics tick is still a sixtieth of a
+  second, so at x60 a second of world time moves bodies a sixtieth of a second's worth. A warped
+  camp is tested against the wind's values and not their duration, which is the session's worry
+  as it stands in the code.
+- **A jump in time is not lived through.** The dev console's `time` command moves the clock on,
+  and Power, your needs, the farm and wear all drop any gap over 60 seconds of world time:
+  "nothing charged meanwhile," as `power.gd` puts it. So a sleep can't just move the clock. It has to run those ticks
+  across the span (Power, open questions).
+- **The night's worst wind is queryable too.** The wind is as pure a function as the storm, so
+  "check camp stability" can test the camp against the worst gust the span will bring and not
+  only the wind now. A gust is what tests a line, a hose (500 N) and a floating planter.
+- **A sleeper needs a bubble.** Outside a shield a full storm and its wind kill you in five or six
+  minutes (the three harms, in the skeleton's list below). A sleep through a storm is a sleep inside a running shield
+  whose pool outlasts the span. If the pool ran dry mid-sleep, "the bubble collapses and the storm
+  floods in."
+- **Sleeping costs water and food.** Thirst empties in a day and hunger in two. The "afk" camp's
+  three canisters were empty by four days. A sleep of days runs the same drain, and the same
+  condenser, farm and sun, in its arithmetic.
+- **Loaded ground doesn't change.** Finds are laid when a chunk loads, so a storm slept through
+  uncovers nothing today. The storm-loot the session leans on is two full-version lines: "Storms
+  wear dunes down" ([Wind & storms](wind-and-storms.md)) and "Things surfacing during a storm"
+  ([Salvage & ruins](salvage-and-ruins.md)).
+
+**Where and on what you sleep.**
+- **Bedrolls,** "probably sharing the hoverboard's mount slot on a crate." That is the rack
+  ([Movement](movement.md#the-hoverboard)), which holds one thing.
+- **Ruin beds.** "Some ruins have beds" ([Salvage & ruins](salvage-and-ruins.md)).
+- **Bare sand:** "Maybe sleep on bare sand if stable." Stable is the pre-sleep check above.
+
+**A bed opens sleep options.** "Sleep X hours, sleep until a time, sleep through the storm. Gear
+unlocks options; a radio adds some."
+
+**Radio clocks.** "Second-era religious broadcasts still air at reliable times." Readings: the
+era is the Second Age, whose faith of Tu "dominates the Second Age" and whose daily rite is the
+noon eclipse, "predicted to the second" ([the lore](../lore-research.md#the-faith-of-tu-and-the-ai-gods-agreed-session-4-part-2)).
+A broadcast that airs at a fixed time of day is a clock that reads the real day, so it fits the
+radio's rule that broadcasts read the real systems. It would be automatic, as the ghost relay is. The game has
+no eclipse yet and no clock you can read: the sun shows the day, and in a storm only the radio's
+music tells day from night, six to six. So a broadcast would give "sleep until a time" something
+to name.
+
+**Its links.** [Power](power.md): the shield's draw by storm strength is what a sleep sums, and
+the sum has to be lived through. [Movement](movement.md): the rack. [Salvage &
+ruins](salvage-and-ruins.md): the beds. [Radio, sound & atmosphere](radio-sound-and-atmosphere.md)
+and [the lore](../lore-research.md#the-faith-of-tu-and-the-ai-gods-agreed-session-4-part-2): the
+broadcasts. [Wind & storms](wind-and-storms.md): the curve.
+
 ## On screen
 
 Health, hunger, thirst and stamina get **bars**. That's an exception to "almost no menus"
@@ -130,60 +211,118 @@ Death means a new run (see Runs in the vision).
 - The probes below, all passing.
 
 **As built in the skeleton (2026-10-15):**
-- **Your inventory is five slots on the suit, plus your waist** (Hunter's direction,
-  2026-10-15, loose). There's no inventory screen to manage. The inventory action opens a
-  very minimal view of the slots and what's tied at your waist. Any part with nothing
-  fastened to it fits, and rope and wire go in rolled up (below). Menus mostly come as
-  devices. There's no main menu yet.
+- **Your inventory is what the suit carries, by weight, plus your waist** (Hunter,
+  2026-10-17, replacing the five slots of 2026-10-15: "Move to weight-bound with no
+  defined size, replacing slots. This allows stacks and avoids inventory management. Soft
+  limit: extra weight slows you and you start sinking into the sand. The inventory clearly
+  shows when you're encumbered and by how much."). There's no inventory screen to manage
+  and no count: whatever you can carry in your hands goes in, with nothing fastened to it
+  (below), and weight is the only limit. Menus mostly come as devices.
+  - **The soft limit.** Up to 30 kg you don't feel it. Past it you sink into the sand the
+    way hauling on a line digs you in (Movement): lower by a few centimetres, slower and
+    tiring faster on the move, standing too but tiring only as you walk. By 60 kg you're
+    sunk in as far as hauling takes you, at 65% of your pace, and every kilogram past
+    that slows you further (at 90 kg, a third of it). The run's kit carries 2.9 kg, a
+    canister and a ration; every carryable thing of the kit, its stake, its board with
+    the board's battery and the light panel too, comes to 20.9 kg, comfortably under.
+    Probe 14 measured 1.80 m/s with the kit and 1.17 m/s at 59.9 kg, sunk 6.5 cm. Only
+    what you carry counts, not what's in your hands. On a board you ride as ever.
+  - **Stacks.** Like things stack as one: canisters, rations, batteries, stakes, hooks,
+    coils of a length, cables of a kind. A device with anything fitted in it, a radio with
+    its battery, is a thing of its own.
+  - **Nothing fastened.** A device goes in whole, seated on nothing, with nothing seated on
+    it, no plug in its ports and no line on its rings. So the board, the light panel and
+    a shield generator go in once they're off the crate; the crate doesn't, being too
+    heavy to carry. A shield carried running keeps its bubble round you as one in your
+    hands does. A size cap for things big but light, like the board, is an open question.
 - **The inventory by mouse** (Hunter, 2026-10-16, replacing the look-across picking): the
-  inventory action frees the mouse. Clicking a slot with something in it brings it to
-  your empty hands; clicking an empty slot puts what you hold into it. Clicking a full
-  slot while you hold something that fits swaps them. The slot under the mouse is lit,
-  and a click anywhere else in the view does nothing. You don't turn while it's open, and
-  take works on the world as ever, not on the slots. Closing it captures the mouse again,
-  as does a run ending while it's open.
+  inventory action frees the mouse. A click on a thing, or a stack, brings one to your
+  empty hands, the fullest of water, food or charge; a click anywhere on the view with
+  something in your hands puts it in. The thing under the mouse is lit. You don't turn
+  while it's open, and take works on the world as ever, not on what you carry; so does
+  use, but over a thing it's the thing's (below). Closing it captures the mouse again, as
+  does a run ending while it's open.
 - **Stakes go in too** (Hunter, 2026-10-16: "we should be able to put stakes in our inv"):
-  a stake that isn't driven and has nothing tied to it goes in a slot as it is, and comes
-  out to your hands ready to drive. A found one goes in once it's taken up. A driven
-  stake stays out, and so does one with a line on its eye until the line's end is taken
-  off it. The view shows it as Stake, and a save keeps it in its slot.
+  a stake that isn't driven and has nothing tied to it goes in as it is, and comes out to
+  your hands ready to drive. A found one goes in once it's taken up. A driven stake stays
+  out, and so does one with a line on its eye until the line's end is taken off it. The
+  view shows it as Stake, stakes stack, and a save keeps them carried.
 - **Rope goes in as a coil** (Hunter, 2026-10-16: "i cant put rope in my inv"): a rope you
   hold but haven't laid, its first end in your hand and the rest at your belt, rolls back
-  up into its coil, the belt end comes off, and the coil goes in the slot. Taken out, it
-  comes to your hands and uncoils as ever, its first end in your hand again. A cable or a
-  hose plugged into nothing goes in the same way, as one piece; taken out, you hold a plug
-  with the other plug and its cable following, as with a found one. A laid or tied line
-  stays out until it's taken up, and so does one paying out or being let go at your
-  waist, a cable plugged in at either end, a plug off any cable, and a strong cable that
-  has snapped. Stowed rope and wire lie rolled up as found ones do, as one body: the
-  line or cable itself is gone until it's taken out, so nothing of it is left behind to
-  go with the land as you travel. The coil keeps the line's length, so the kit's comes
-  out 6 m, a found one 12 m and the half of a snapped line its own length, and a save
-  keeps it too. The view shows a coil with its length (Rope coil, 6 m) and a stowed
-  cable as a cable.
+  up into its coil, the belt end comes off, and the coil goes in. Taken out, it comes to
+  your hands and uncoils as ever, its first end in your hand again. A cable or a hose
+  plugged into nothing goes in the same way, as one piece; taken out, you hold a plug with
+  the other plug and its cable following, as with a found one. A laid or tied line stays
+  out until it's taken up, and so does one paying out or being let go at your waist, a
+  cable plugged in at either end, a plug off any cable, and a strong cable that has
+  snapped. Carried rope and wire lie rolled up as found ones do, as one body: the line or
+  cable itself is gone until it's taken out, so nothing of it is left behind to go with
+  the land as you travel. The coil keeps the line's length, so the kit's comes out 6 m, a
+  found one 12 m and the half of a snapped line its own length, and a save keeps it too.
+  The view shows a coil with its length (Rope coil, 6 m) and a carried cable as a cable.
 - **The inventory shows things as they are, and gadgets work from it** (Hunter,
   2026-10-17: "display the rendered items, so if a player has a compass or gadget in their
   inventory, they can use it by just openening it and dont necesarily need to mount or
-  hold it for it to be fully useful"). Each slot shows its thing rendered, lit as in the
-  world, with its name and the number that matters under it (water left, a coil's length,
-  a battery's charge). Small gadgets go in a slot whole and keep working there: the radio
-  plays from you on its own battery, and the compass's needle turns live in its slot, so
-  opening the inventory is a glance at it. Use on a slot uses the thing in place (turns the
-  radio's dial); a click still brings it to your hands. Bigger devices still need your
-  hands or a mount.
+  hold it for it to be fully useful"). As built:
+  - **Each thing or stack is a tile** with a picture of its own painted model, seen from a
+    little above and to one side (a compass nearly straight on, to read), its name, the
+    number that matters for all of the stack together (water, food, charge, a coil's
+    length, a radio's channel with its battery's charge) and, for a stack, how many. Tiles
+    run in rows of up to eight, low in the middle of the screen. The light is a clear
+    day's, the world's own sun and sky colours, whatever the hour or the weather outside,
+    so a tile reads in a storm at night.
+  - **The weight** is a line over the tiles, what you carry against the 30 kg you carry
+    easily, and a bar up to 60 kg marked at 30. Past it the line says you're encumbered,
+    how far over and what it leaves of your pace ("encumbered: 59.9 kg, 29.9 over · 65%
+    pace"), and the line and the bar's part past the mark are in the accent.
+  - **Cheap:** a tile's picture is drawn only while the view is open, once when what it
+    shows changes, and not again until it does; a compass's is drawn again only as its
+    needle turns. Measured at 1920 by 1080 (`look/inventory`, other probe runs sharing the
+    machine), carrying six stacks: the view open and still adds about 0.3 ms a frame, 5.5
+    to 5.7 ms, and draws no picture again; turning with a compass carried, it draws one
+    picture a frame, 0.05 ms of the GPU.
+  - **A device you carry works on its own battery, as anywhere else** (Hunter, 2026-10-17,
+    rejecting a pocket flag and a built-in cell as exceptions to core systems): it rides on
+    you out of sight, touching nothing, and the weather doesn't wear it in the suit. So a
+    radio plays from you, its line of words showing as ever.
+  - **Use on a thing uses it where it is:** a device is worked (the radio's dial turns),
+    and water or food you drink or eat your fill of, the least full first, as the suit
+    would. Anything else does nothing. Over a thing, use never reaches the world, so it
+    can't switch what you happen to be looking at; off the tiles it works the world as
+    ever. A click brings a radio to your hands still playing.
+  - **Saves** keep everything you carry, each thing with its state, so stacks come back as
+    they were, and a radio its channel, beacon and charge. A save from before, with five
+    slots, resumes with what was in them carried.
 - **The compass** (2026-10-17): a small find, a part, whose needle points to the moon's
-  north. Held, you read it in your hand; in a slot, in the inventory. The sun gives you the
+  north. Held, you read it in your hand; carried, in the inventory. The sun gives you the
   same without one: the moon has no tilt, so the sun rises due east and sets due west
   everywhere, stands to the south at noon north of the equator (north of you south of it,
   overhead on it), and morning shadows point west. A storm hides it; the compass doesn't
-  care.
-- **The suit** is those slots plus its built-ins: air and radiation protection, free and
-  drained by nothing. Its sockets for mods (heater, cooler, reclaimer, battery, harness
-  hooks) wait for the full version, so in the skeleton the suit isn't a device yet.
+  care. As built:
+  - **A 12 cm field compass,** 0.2 kg, company issue: a gunmetal case, a bone card under a
+    black bezel, north marked on the card in safety yellow, and a needle whose red north
+    half glows a little, so it reads at night and in a storm. Nothing takes it: it's read,
+    not fitted.
+  - **Held flat** (taken up from the sand), it points north along the ground. **Held up**
+    (out of the inventory, it comes to your hands facing you) it reads as if laid level
+    with its top away from you: north ahead is straight up the card, north on your right
+    is to the right. Carried, the inventory shows it the same way, turning as you turn.
+  - **Past a pole.** Walking over a pole turns the moon's north round (the moon position
+    keeps which way it lies), and the compass follows that, not the world's fixed axes: it
+    always points the way that takes you toward the north pole. The radio's spoken
+    bearings follow the same north, so the two never disagree. The sun doesn't yet: the
+    day is one clock for the whole moon, so past a pole the sun keeps the course it had,
+    rising in the compass's west. Turning it round there would make it jump at the pole.
+  - **Found** on the surface, one in twenty-one of the surface layer's loose parts (99 of the
+    4,675 finds salvage probe 5 tallies over two seeds, about one in 47),
+    and the console's `give compass` puts one in your hands.
+- **The suit** is what it carries plus its built-ins: air and radiation protection, free
+  and drained by nothing. Its sockets for mods (heater, cooler, reclaimer, battery,
+  harness hooks) wait for the full version, so in the skeleton the suit isn't a device yet.
 - **Sealed water and food.** A canister holds 2 L and a ration 1,000 kcal, found sealed and
   full. Like a battery, a canister carries what's in it and its light shows how full it
   is. A ration eaten to the end is gone; an empty canister stays, to be filled again.
-  Every run starts with one canister and one ration in your slots. Sealed water is found
+  Every run starts carrying one canister and one ration. Sealed water is found
   in survival kits, and sealed rations in kits and on ruins' floors (Salvage).
 - **Needs** are health, hunger and thirst out of 100, on the same fixed tick of world
   time as power, so the dev time warp runs them with everything else. Hunger empties in
@@ -191,9 +330,10 @@ Death means a new run (see Runs in the vision).
   hot limit). A full thirst bar is 1.5 L and a full stomach 2,000 kcal. Stamina stays
   Movement's.
 - **Auto-eating and drinking:** below 80% thirst or 60% hunger, the suit tops you up to
-  full from your slots, from the least full canister or ration first, so one empties and
-  frees up before the next is opened. Use a canister or ration you hold to drink or eat
-  your fill.
+  full from what you carry, from the least full canister or ration first, so one empties
+  before the next is opened. Use a canister or ration you hold, or one you carry in the
+  inventory, to drink or eat your fill. A canister or ration inside a carried survival
+  kit isn't drawn on: take it out first.
 - **The hose** (Hunter, 2026-10-17: "like the cable, it carries water, it tethers but not
   as strong as rope"). Two ends on 6 m of hose, a thick tube of sun-faded blue rubber,
   each end a steel coupling that fits a water socket with the same snap as a canister:
@@ -217,10 +357,11 @@ Death means a new run (see Runs in the vision).
   at 500 N and the planter blows away, while a
   rope under the same pull, 920 N, holds (water probe 2). A storm's steady wind loads a
   floating planter about 325 N and its hardest gusts about twice that, so a hose alone
-  holds through most of a storm and lets go in its worst. Rolled up it goes in a slot
-  like a cable, shown as a Hose, and stays out while an end is in a socket. A save
-  keeps hoses, what's on their ends and the water in tanks (saves probe 11). It's found
-  on open sand, a little less often than wire, and `give hose` makes one.
+  holds through most of a storm and lets go in its worst. Rolled up it goes in with what
+  you carry like a cable, shown as a Hose, hoses stacking, and stays out while an end is
+  in a socket, and so does a carried device with a hose's end in it. A save keeps hoses,
+  what's on their ends and the water in tanks (saves probe 11). It's found on open sand,
+  a little less often than wire, and `give hose` makes one.
 - **The three harms,** in health a second: the storm 0.25 at full intensity, wind 0.01 for
   each m/s past 20, and temperature 0.05 for each degree past the suit's limits of −40 and
   75 °C. Empty, starving takes 0.1 and thirst 0.3. Unharmed, fed and watered, you heal
@@ -232,6 +373,13 @@ Death means a new run (see Runs in the vision).
   at a pole) and a full storm halves it. A bubble holds its share of the way to 20 °C.
   At the equator the suit keeps you within its limits; the heat starts to harm about
   13° out (5 km), and the cold about 20° out. Temperature is what the poles cost.
+- **The eclipse cools the air** (2026-10-17, [the Tu spec](../tu-and-day-2026-10-17.md)).
+  The temperature follows local time, which follows longitude, and on the near side it
+  dips while the sun is behind Tu: deeper the longer the sun has been hidden and the
+  higher it stood, so a wider Tu's longer eclipse dips further, and a storm's blanket
+  softens it as it does the day's swing. It's a few degrees, never near the
+  suit's limits; it also nudges the condenser and the crops, which read the same felt
+  temperature.
 - **The crude condenser** is a catalog device with a water socket, a battery slot, a top
   mount for a panel, a port, a ring mount and a bottom mount. It runs whenever it has
   power and somewhere for its water, a canister with room or a hose (above), drawing 40 W, and makes 10 L an hour of world time in
@@ -242,12 +390,12 @@ Death means a new run (see Runs in the vision).
 - **How long sealed water lasts:** a full canister and a full thirst bar see you through
   about two days at the equator. Each more canister is about another day.
 - **Death starts a new run.** The world goes with everything in it, and a fresh one on a
-  new seed takes its place. You start at its spawn, fed and watered, with the canister
-  and the ration in your slots.
+  new seed takes its place. You start at its spawn, fed and watered, carrying the
+  canister and the ration.
 - **The starting kit** (Hunter, 2026-10-16, after playing the first one: "start the
   player with floating crate, shield and hoverboard already mounted ... we should at
   least add a hook so we can tow it"). The kit is data, `game/survival/standard_kit.tres`
-  (a `Kit`: what's carried into the suit's slots, what's set down beside you and where,
+  (a `Kit`: what the suit carries, what's set down beside you and where,
   what comes assembled, socket by socket, which lines are laid, how full its batteries
   start and how long its line is). Only this standard kit is balanced; choosing a kit
   waits. (Session 4, part 2 balances three kits, the Surveyor, the Salvager and the
@@ -258,8 +406,8 @@ Death means a new run (see Runs in the vision).
   with the sun well up, a third of the way through the day, so the panel makes about
   half its 30 W from the first minute, and the first storm due in three to eight
   minutes, facing where it will come from (Hunter, 2026-10-16: "it spawns me in a
-  storm!"), and starts with it: the canister and the ration in your slots, and beside
-  you, once the ground there is solid:
+  storm!"), and starts with it: carrying the canister and the ration, and beside you,
+  once the ground there is solid:
   - **a floating crate** at your front right: a crate frame with a hover tray, a
     battery half charged and a hook on its back, floating at the tray's height. The
     **light shield generator**, switched off, sits on its front top mount and the
@@ -277,9 +425,9 @@ Death means a new run (see Runs in the vision).
     ride: the ride action at it takes it off and steps you on. It's one line of the
     kit, `8: &"board",` among the crate's sockets, naming the board beside you in the
     rack; without that line it lies on the sand at your left.
-  None of it overlaps you or each other at the start, the racked board included, and
-  neither the crate, the board, the panel nor any shield goes in your slots; you carry a
-  shield in your hands.
+  None of it overlaps you or each other at the start, the racked board included. None of
+  it goes in with what you carry while it's seated on the crate, nor the crate, too heavy
+  to carry; the board, the light panel and the light shield do once they're off it.
   The light shield is clearly weaker than a found one: a 4 m bubble against 7 m (a third
   of the room for a camp), and it lets 15% of the wind through where a found one stills
   it (Hunter, 2026-10-16: blocks most of the wind, so you barely drift inside). It sips
@@ -312,17 +460,17 @@ Death means a new run (see Runs in the vision).
   and the condenser cabled into one pool, and canisters swapped as they run dry, you're
   alive after three days with a quarter of the power left.
 - **The AFK promise, with a body** (Stage 12, 2026-10-17). The "afk" scenario stocks you
-  as you'd leave yourself: three canisters of water, nothing to eat, and two slots free
-  for what the farm drops. Idle in the reference camp (Power) at the equator for three
+  as you'd leave yourself: three canisters of water and nothing to eat; the farm drops
+  your food onto you. Idle in the reference camp (Power) at the equator for three
   days of the probes' seed, about two of them storm, you come through untouched: the
   bubble keeps every harm off you, the farm's drops are all you eat, 2,400 kcal, and you
   drink about 1.7 L a day. Take the farm away and you starve at 2.83 days (probe 1).
-- **Water is where AFK ends.** Nothing brings you water yet: you drink only from your
-  slots. The camp's condenser waters only the farm, down its hoses, and a canister it
-  fills still has to come to your slots by hand. So the camp keeps you as long as the
-  water you carry: left on, the three canisters were empty by four days and you died of
-  thirst at 4.78, fed, with food stored and the shield up, while the farm's tanks stayed
-  above 3 L (Farming).
+- **Water is where AFK ends.** Nothing brings you water yet: you drink only from what you
+  carry. The camp's condenser waters only the farm, down its hoses, and a canister it
+  fills still has to come to you by hand. So the camp keeps you as long as the water you
+  carry: left on, the three canisters were empty by four days and you died of thirst at
+  4.78, fed, with food stored and the shield up, while the farm's tanks stayed above 3 L
+  (Farming).
 
 ## Full version
 
@@ -346,10 +494,11 @@ Death means a new run (see Runs in the vision).
 5. **Water's daily rhythm** (once adopted). At the equator, open water freezes at night
    and boils off by afternoon.
 6. **The inventory by mouse.** The inventory action frees the mouse and closing it
-   captures it again. Clicks move things between your hands and your slots as they
-   should, and a plug off any cable never fits.
+   captures it again. A click on a thing brings it to your hands and a click on the view
+   puts what you hold in; like things stack, and a click on a stack hands you its
+   fullest. A plug off any cable never goes in.
 7. **Rope goes in as a coil.** A 6 m coil, the kit's length, and a found 12 m one each go
-   in a slot, and a kilometre on come out, pay out to the same length and tie onto
+   in, and a kilometre on come out, pay out to the same length and tie onto
    stakes; paying out or laid, a line stays out. A cable plugged into nothing goes in
    and comes out whole, a strong one too; plugged in at one end, it stays out.
 8. **The kit in tow.** In a crosswind you take up the kit's stake, tie it at your waist
@@ -361,21 +510,74 @@ Death means a new run (see Runs in the vision).
    until the pool is down to the shield's reserve, takes nothing past it, and charges
    again once the panel brings the pool back, every watt-hour of it accounted for. Take
    lifts it off; saved racked, it resumes racked. The kit starts it racked.
-10. **Stakes go in.** A found stake and a loose one, each taken up, go in a slot and
-    come out ready to drive; driven, each holds a crate floating on a line in a breeze,
+10. **Stakes go in.** A found stake and a loose one, each taken up, go in and come out
+    ready to drive; driven, each holds a crate floating on a line in a breeze,
     the found one after a save and a resume too. A driven stake, or one with a line on
     its eye, stays out.
 11. **The headlamp.** Under a clear sky at noon it's off. At dusk, the light wavering
     round its threshold as a passing veil of dust would, it comes on once and stays on.
     Deep in a storm at night it's on, and lights the ground 10 m ahead at least as well
     as a device's lamp lights the sand 5 m off.
+12. **A device works carried.** A radio playing in your hands goes in whole and plays on
+    from you on its own battery. Use on it in the inventory turns its dial, and its words
+    show; use on your canister there drinks from it, and switches nothing you're looking
+    at, while use off the things you carry works the world as ever. A click brings the
+    radio back to your hands still on.
+13. **The compass reads true.** Held flat it points north whichever way you face; held
+    up, north ahead is up its card and north on your right is right; carried, the
+    inventory reads the same, live as you turn. Over a pole the needle turns round with
+    the moon's north, in your hand and in the inventory.
+14. **Weight is the only limit.** Whatever you can carry goes in, a board, a light panel,
+    a survival kit and a stake among them, and ten batteries stack as one. With the kit's
+    load you walk at your full pace, standing tall; with twice what you carry easily you
+    sink in and walk slower by the share the inventory shows, and it says you're
+    encumbered and by how much.
 
 ## Out of scope
 
-- Disease, injuries to specific body parts, and sleep.
+- Disease, injuries to specific body parts, and sleep. *(A sleep that skips time is proposed
+  above. Whether this line covers it is an open question.)*
 
 ## Open questions
 
 - **Why is the scavenger out here?** The game reveals it over time. We don't need the
   answer yet. *Narrowed by session 4, part 2:* each origin has its own reason, and the default
   is a Tilg & Standard contractor ([the vision](../vision.md#player-origins-and-kits)).
+- **A size cap for big but light things?** Weight is the only limit, so a 1.3 m board or
+  a light panel goes in as easily as a battery of the same weight (Hunter, 2026-10-17:
+  still open). Not built.
+
+The sleep proposal (2026-10-17) is not agreed. Its own open questions come first, then what
+folding it in raised. Each is quoted on both sides and left standing.
+
+- **The sleep simulation approach.** Open in the session. Here: the arithmetic runs on ticks of
+  world time, and under the dev time warp the physics still steps a sixtieth of a second a tick
+  while the clock runs on. The session: "check camp
+  stability with real physics before sleep, then only do resource arithmetic overnight." Not
+  said: what "stable" means in the check (lines holding, nothing loose, the shield's pool
+  outlasting the span), how long the real physics runs before the skip, or whether the physics
+  runs again for the last stretch before you wake. How the arithmetic is run is Power's question.
+- **Sleep against "Out of scope... sleep."** Here: "Disease, injuries to specific body parts,
+  and sleep," and the needs are health, hunger, thirst and stamina, with no sleep bar. The
+  session: sleep as a way to fast-forward, "preferred... over auto-walk." Not said: whether the
+  line means sleep as a need, which the proposal doesn't add, or sleep at all. Also not said:
+  whether sleeping restores anything past what rest and time in the shield already do.
+- **Sleep against "The game never pauses."** Here (Menus & UI, rule 2 and probe 1): "world time,
+  weather and physics advance exactly as they do" with a menu open. A sleep isn't a pause, but
+  it skips a stretch the physics never lives through, which that rule was written to keep out of
+  menus. Not said whether the rule is about menus only.
+- **What wakes you.** The session: "sleep through the storm." Here: a shield whose pool runs dry
+  collapses, and the storm floods in; thirst empties in a day. Not said whether a bed refuses a
+  sleep the camp can't last, warns, or wakes you early when the pool nears the shield's reserve
+  or a need runs low.
+- **Where each start sleeps.** Here: the Surveyor starts with the board racked, the Salvager has
+  "Hoverboard and the light shield; little else" (read here as no crate, so no rack), and oysters
+  "never find ruins" (the vision's playstyles). The session: bedrolls share the rack, and some
+  ruins have beds. Not said where a hover punk keeps a bedroll, or whether a Surveyor unracks
+  the board to sleep. An oyster never sees a ruin bed.
+- **How you name a time.** The session: "sleep until a time." Here the game has no clock you can
+  read: the sun by day, and in a storm the radio's music, day or night. Not said what a time is
+  made of: hours, dawn and dusk, or a broadcast.
+- **The broadcasts and the era.** The session: "second-era religious broadcasts." Read here as
+  the Second Age. In session 3's six eras the second is the war. Not said which is meant. The
+  voice question is in [Radio, sound & atmosphere](radio-sound-and-atmosphere.md#open-questions).
