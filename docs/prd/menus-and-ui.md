@@ -65,6 +65,15 @@ game. It holds **Options** (controls, audio, graphics), **Save** in a Normal run
 asks which mode, Normal highlighted or Ironman; **dying** in a Normal run shows Load last
 save, highlighted, and New run (Hunter, 2026-10-16).
 
+## The dev console
+
+Developer tools come through a console, not a row of function keys (Hunter, 2026-10-16:
+"have ` open a console and we can use commands there, and free up f keys for keybinds").
+The console action opens a line to type commands into: the scenarios, flying, time warp,
+low gravity and the rest of what the dev keys did, with help and history. The dev
+overlay keeps its own key. The function keys this frees go to the player, such as quick
+save and quick load.
+
 ## Skeleton version
 
 *As built, 2026-10-16.*
