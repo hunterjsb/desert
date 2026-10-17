@@ -90,6 +90,18 @@ the way round and over the poles.
 Loot regenerating behind you isn't an exploit. In an endless desert, the land ahead is
 always as rich as the land behind.
 
+## Tracks
+
+You leave tracks (Hunter, 2026-10-16: "otherwise impossible to navigate in the storm,
+especially at night"): footprints, the hoverboard's wake, the groove of something dragged
+on a line, the dent where a crate sat. They're a surface layer the sand is drawn with,
+dents and darker, trodden sand, never a change to the ground's shape or collision, so
+rules 1 and 2 hold and the physics never knows. They read in a storm and at night, which
+is what they're for, and the wind fills them: slowly in the calm, faster in a storm, but
+never so fast you can't follow your own trail back. Only the ground near you keeps them;
+like everything else, tracks far off are forgotten. Things resting on the sand sit in
+their own imprint, the half-buried look without burying anything.
+
 ## Skeleton version
 
 This is the minimum that makes the whole game loop possible. Every item gets built.
@@ -221,8 +233,9 @@ fail.
 ## Out of scope
 
 - Saving terrain, and terrain persistence of any kind.
-- Digging or deforming the ground. When storms "uncover" finds, that's done by placing
-  things, not by reshaping loaded sand (rule 2).
+- Digging, or changing the ground's shape or collision. When storms "uncover" finds,
+  that's done by placing things, not by reshaping loaded sand (rule 2). Tracks are drawn
+  on the surface and never touch the shape (Tracks).
 - Caves, water and anything underground.
 - Multiplayer.
 
