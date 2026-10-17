@@ -128,11 +128,21 @@ it, take hold of it, and let go.
   socket tugs when your line of sight passes within reach of where the part would sit,
   and you're on its open side.
 - **No crouching to fit** (Hunter, 2026-10-16: "im also having to crouch for a lot of
-  mods, like the hover tray and hooks"). Looking at a device with a part in hand offers
-  the free socket that part fits, standing: the only one of its kind, or of several the
-  one nearest your aim and facing you. The ghost shows where it goes, and take seats it.
-- **Sliding a tray under a resting device** works from the side, and lifts the device
-  onto it.
+  mods, like the hover tray and hooks"). Looking at a device with a part in hand, or
+  within 40 cm of its frame, offers the free socket that part fits, standing: the only
+  one of its kind wherever on the device you look, or of several the one nearest where
+  you aim among those facing you. Aiming right at a free socket's spot, on any device,
+  still wins. An offered socket leans the part partway in with the hum, the
+  ghost shows where it goes, and take seats it; nothing fits until you take. A device
+  seated on another counts as part of it, so looking at the shield on a crate offers the
+  crate's sockets, and a held shield is offered a top mount the same way. Just after a
+  part comes out, its device offers nothing until you look off it, so take puts the part
+  down rather than straight back in. Taking out is unchanged: with empty hands, the part
+  you look straight at comes out. With a part in hand, take near a device with a free
+  socket of its kind fits it there, so to set a part down, look at the sand clear of the
+  device.
+- **Sliding a tray under a resting device** works from a standing look at it, from any
+  side, and lifts the device onto it.
 - **The device doesn't turn toward you on removal yet;** it holds still while the part
   slides out.
 - **A hook adds a socket** (2026-10-15): a tie socket on its ring while it's fitted,
@@ -237,7 +247,10 @@ hook. That's how found mods expand a device.
 ## Probes
 
 1. **No accidental snaps.** Drop, throw and drag parts against devices thousands of
-   times. Nothing snaps unless it's held and aimed.
+   times. Nothing snaps unless it's held and aimed. Standing by a crate on the sand,
+   looking at it offers a held tray its bottom mount, a hook the ring on your side or,
+   of two facing you, the one nearer your aim, and a shield the nearer top mount; each
+   waits for take. A fitted part still comes out to an empty hand.
 2. **Fitted is rigid.** A fully fitted device gets thrown around, towed through gusts
    and floated. Its parts never move relative to it.
 3. **Weight adds up.** A device's weight is its frame plus its parts, and its hover draw
