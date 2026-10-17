@@ -47,8 +47,9 @@ const float SUN_RADIUS = 0.00942;
 const float CELLS = 90.0;
 const float STARRED = 0.3;
 // Zan's air between here and space, per airmass: thin and dusty, so what's
-// low is dimmed and warmed.
+// low is dimmed and warmed, and the dust that hangs low reddens it more.
 const vec3 EXTINCTION = vec3(0.07, 0.09, 0.13);
+const vec3 LOW_DUST = vec3(0.0, 0.06, 0.16);
 
 float hash12(vec2 p) {
 	vec3 q = fract(vec3(p.xyx) * 0.1031);
@@ -92,7 +93,7 @@ vec3 gradient(vec3 d) {
 vec3 through_air(float up) {
 	float h = max(up, 0.0);
 	float airmass = 1.0 / (h + 0.045 * exp(-12.0 * h));
-	return exp(-EXTINCTION * airmass) * smoothstep(-0.02, 0.0, up);
+	return exp(-EXTINCTION * airmass - LOW_DUST * max(airmass - 2.0, 0.0)) * smoothstep(-0.02, 0.0, up);
 }
 
 // A storm oval: where it sits on Tu (latitude, longitude, half-sizes) drifting

@@ -30,6 +30,11 @@ func setup(world: World, day: DayCycle, environment: Environment, face: StormFac
 	_sun = sun
 	_sun_energy = sun.light_energy
 	material.shader = preload("res://game/weather/sky.gdshader")
+	# The day's gradient stays the scene's, drawn now under Tu and the stars.
+	var stock := environment.sky.sky_material as ProceduralSkyMaterial
+	if stock != null:
+		for colour: String in ["sky_top_color", "sky_horizon_color", "ground_bottom_color", "ground_horizon_color"]:
+			material.set_shader_parameter(colour, stock.get(colour))
 	# The sky does its own haze, by how much air each way looks through.
 	material.set_shader_parameter("haze_share", environment.fog_sky_affect)
 	environment.sky.sky_material = material
@@ -85,10 +90,9 @@ func show(t: float, eye: Vector3, sun: Vector3, sun_shown: float, glow: Vector3,
 
 
 func _report(t: float, tu: Vector3) -> void:
-	var size := _day.tu_size()
 	# Compass bearing to Tu; north is -z.
 	var bearing := fposmod(rad_to_deg(atan2(tu.x, -tu.z)), 360.0)
-	Dev.put("sky/tu", "%s %d° up %03d %d%% lit" % [size if size != &"" else "%.1f" % _world.tuning.tu_orbit_radii,
+	Dev.put("sky/tu", "%d° %d° up %03d %d%% lit" % [roundi(_world.tuning.tu_degrees),
 		roundi(rad_to_deg(asin(clampf(tu.y, -1.0, 1.0)))), roundi(bearing) % 360, roundi(_day.tu_lit(t) * 100.0)])
 	var eta := _day.next_eclipse(t) - _day.totality() * 0.5 - t
 	Dev.put("sky/ecl", "now" if _day.sun_shown(t) < 1.0 else "%d:%02d" % [floori(eta / 60.0), floori(fmod(eta, 60.0))])

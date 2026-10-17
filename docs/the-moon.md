@@ -78,19 +78,20 @@ time, the way most survival games handle days. **Zan is tidally locked to Tu** (
 spec](tu-and-day-2026-10-17.md), 2026-10-17): one face always points at the giant, and the
 real day is one lap round it.
 
-**Two sizes of Tu are under trial** (Hunter, 2026-10-17: "lets see both and see how both
-feel"). One tuning value, how far out Tu's orbit is, sets its size in the sky, the eclipse
-and the night light together, and a dev command switches between them during a run. Near
-is the default. The working is in [the body
+**Three sizes of Tu are under trial** (Hunter, 2026-10-17, lore session part 2: "Keep
+angular size a tuning value; test 6°, 9° and 13° in game before fixing the orbit. Physics
+follows the look."). The tuning value is how wide Tu is across the sky. The orbit, the
+eclipse and the night light follow from it, and a dev command switches among them during a
+run. 13° is the default. The working is in [the body
 research](body-research.md#the-giant-the-day-and-longitude).
 
-| | Near (the default) | Far |
-|---|---|---|
-| Orbit | 8.6 Tu radii: Io-like, 1.8 Earth days | 16.4 Tu radii: 4.7 Earth days |
-| Tu across | 13.3° | 7.0° |
-| Totality | 41 game seconds, 48 from first contact to last | 20 s, and 27 |
-| A full Tu's light at night | about 670 lux, 0.67% of the sun's | about 190 lux, 0.19% |
-| Walk for Tu to rise or sink by its own width | 5.6 km | 2.9 km |
+| | 6° | 9° | 13° (the default) |
+|---|---|---|---|
+| Orbit, in Tu radii | 19.1 | 12.7 | 8.8, Io-like |
+| Real day, at 4 Jupiter masses | 6.0 Earth days | 3.2 | 1.9 |
+| Totality | 16 game seconds, 24 from first contact to last | 26 s, and 34 | 40 s, and 47 |
+| A full Tu's light at night | about 140 lux, 0.14% of the sun's | 310 lux, 0.31% | 640 lux, 0.64% |
+| Walk for Tu to rise or sink by its own width | 2.5 km | 3.8 km | 5.4 km |
 
 **Tu hangs fixed in the sky,** at a place set by where you stand: overhead at the sub-Tu
 point, lower the further you are from it, on the horizon 90° away, and never seen on the
@@ -113,6 +114,11 @@ and a red ring of sunset light on Tu's rim show briefly, the air cools a few deg
 solar makes nothing, so a camp needs storage or wind to ride it out. It falls at noon at the
 sub-Tu point and later the further east you are: where a run starts, at 16:00.
 
+**The Rim** (Hunter, 2026-10-17, lore session part 2). Where Tu sits half-risen on the
+horizon, 90° from the sub-Tu point, there's effectively no eclipse. Nothing special is built
+for it: the sun goes behind Tu where Tu is in your sky, and there that's on the horizon, as
+the sun rises or sets, when it has next to no light to lose.
+
 **Tu's phases run opposite the sun:** its dark face at the eclipse and full half a day
 later. At the sub-Tu point that's noon and midnight; where a run starts, full Tu comes at
 04:00.
@@ -120,7 +126,11 @@ later. At the sub-Tu point that's noon and midnight; where a run starts, full Tu
 **Nights.** On the near side Tu lights the night: a weak, cool light from Tu's direction,
 scaled by its phase, a thin crescent's after the eclipse and a full Tu's in the small hours.
 It's far too weak for panels. Its brightness has a tuning scale of its own on top of the
-physical value, 1 by default, so how bright a night is can be tuned apart from Tu's size.
+physical value, 1 by default, so how bright a night is can be tuned apart from Tu's size. The
+game has no eye adaptation, so at 1 a full-Tu night reads on screen as deep night, the dunes
+barely there: a seventh of the light the game's nights had before at 13°, a fifteenth at 9°
+and a thirty-fourth at 6°. At 13° and a scale of 3 the dunes read and it's still plainly
+night; at 10 it's an overcast dusk (`~/Desktop/tu_more.png`).
 The far side never sees Tu, and its nights are truly dark, lit by the stars alone.
 
 **The stars** turn once a day round the spin axis. A bright star marks the north celestial
@@ -129,7 +139,7 @@ latitude, and the same stars at the same local hour, night after night, show how
 or west you've come. Tu's disc, the sun and the dust hide them.
 
 **Open** (quoted in [the body research](body-research.md#open-after-the-tu-spec-2026-10-17)):
-which size, if either; where runs start relative to the sub-Tu point, and whether they
+which size; where runs start relative to the sub-Tu point, and whether they
 reach the far side; whether the eclipse kicks the weather; Tu's body number; and Tu's
 palette ([art direction](art-direction.md#open-questions)).
 

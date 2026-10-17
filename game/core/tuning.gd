@@ -175,11 +175,11 @@ static var _current: Tuning
 @export var eclipse_chill: float = 40.0
 
 @export_group("Tu")
-## How far out Tu's orbit is, in Tu's own radii. It sets Tu's size in the sky,
-## how long the eclipse lasts and how bright Tu-shine is, together. Two sizes
-## are under trial (docs/the-moon.md): near 8.6, 13.3° across, and far 16.4,
-## 7.0°. The dev console's tu switches between them.
-@export var tu_orbit_radii: float = 8.6
+## How wide Tu is across the sky, degrees. Physics follows the look: it sets
+## how far out Tu's orbit is, and so how long the eclipse lasts and how bright
+## Tu-shine is. Three are under trial (docs/the-moon.md), 6, 9 and 13; the dev
+## console's tu switches among them.
+@export var tu_degrees: float = 13.0
 ## The longitude under Tu, degrees: 60° west of spawn stands Tu 30° up, due
 ## west, where a run begins.
 @export var tu_longitude_degrees: float = -60.0

@@ -328,8 +328,15 @@ the sky goes dark in the eclipse, and at night. Tu-shine is a second sun-like li
 Whichever of it and the sun is brighter casts the shadows, so the shadow map is never split.
 
 To see it: the dev scenarios `eclipse` and `far`, and the console's `tu` to switch sizes. The
-look-test `look/sky/shoot.sh <dir>` shoots both sizes at the same moments; its sheets are
+look-test `look/sky/shoot.sh <dir>` shoots the three sizes at the same moments; its sheets are
 `~/Desktop/tu_sizes.png` and `~/Desktop/tu_more.png`.
+
+**Cost**, on an RTX 3070 at 1920x1080 with other Godots running probes alongside, so rough:
+the sky shader takes about 0.05 ms a frame more than the stock sky, by day facing Tu (2.23
+against 2.18 ms) and under the far side's stars (2.40 against 2.35), the same over three runs.
+Tu-shine and its shadows take about 0.12 ms by night (2.16 against 2.03). By day Tu-shine is
+under a hundredth of the sun's light and isn't drawn at all. Nothing reads the sky's light,
+so its reflection map is kept at the smallest size and costs next to nothing to refresh.
 
 ## Open questions
 

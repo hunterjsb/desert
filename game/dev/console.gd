@@ -15,7 +15,7 @@ const COMMANDS := {
 	"warp": ["[n]", "the clock n times as fast; alone, the next of x1, x10, x60"],
 	"gravity": ["[m/s²]", "gravity; alone, low gravity or back"],
 	"time": ["<0-1>", "on to the next such moment of your local day: 0 is midnight, 0.5 noon"],
-	"tu": ["[near|far]", "Tu's size under trial; alone, the other"],
+	"tu": ["[6|9|13]", "Tu's width across the sky under trial, degrees; alone, the next"],
 	"give": ["<id> [n]", "a part in your hands or a device at your feet, by its catalog id"],
 	"fresh": ["", "fed, watered and whole, on a fresh suit's kit"],
 }
@@ -168,13 +168,18 @@ func _time(args: PackedStringArray, world: World) -> void:
 
 
 func _tu(args: PackedStringArray, world: World) -> void:
-	var day := world.weather.day
-	var size := StringName(args[0].to_lower()) if args.size() == 1 else (&"far" if day.tu_size() == &"near" else &"near")
-	if not DayCycle.TU_ORBITS.has(size) or args.size() > 1:
+	var sizes := DayCycle.TU_SIZES
+	var size := -1.0
+	if args.is_empty():
+		size = sizes[(sizes.find(world.tuning.tu_degrees) + 1) % sizes.size()]
+	elif args.size() == 1 and args[0].is_valid_float() and sizes.has(args[0].to_float()):
+		size = args[0].to_float()
+	if size < 0.0:
 		_say(_usage("tu"))
 		return
-	world.tuning.tu_orbit_radii = DayCycle.TU_ORBITS[size]
-	_say("Tu %s: %.1f° across, %d s of totality" % [size, rad_to_deg(day.tu_radius()) * 2.0, roundi(day.totality())])
+	world.tuning.tu_degrees = size
+	var day := world.weather.day
+	_say("Tu %d° across: an orbit of %.1f of its radii, %d s of totality" % [roundi(size), day.tu_orbit(), roundi(day.totality())])
 
 
 func _give(args: PackedStringArray, world: World) -> void:

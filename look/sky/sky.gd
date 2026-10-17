@@ -1,10 +1,10 @@
 extends Node
 ## Look-test: Tu and Zan's day on seed 1234, in clear, still air. Each size
 ## under trial is shot at the same moments where a run begins: local noon with
-## the eclipse coming, the sun just short of Tu, totality, and a full-Tu night.
-## Then Tu low behind the dust at
-## dawn, the far side's stars, and a full-Tu night's ground at a few Tu-shine
-## scales. It prints what it shot and times the sky shader against the stock
+## the eclipse coming, the sun just short of Tu, totality, and a full-Tu night,
+## looking at Tu and away from it at its ground; and Tu low behind the dune at
+## dawn. Then the far side's stars, and the default size's full-Tu ground at a
+## few Tu-shine scales. It prints what it shot and times the sky shader against the stock
 ## sky at 1920x1080:
 ##   godot --path . --disable-vsync res://look/sky/sky.tscn -- --capture <dir>
 ## look/sky/shoot.sh builds the sheets. A small window that never takes focus,
@@ -74,8 +74,9 @@ func _capture(out_dir: String) -> void:
 	var day := world.weather.day
 	var spawn_lon := tuning.spawn_longitude_degrees
 	var tu_lon := tuning.tu_longitude_degrees
-	for size: StringName in DayCycle.TU_ORBITS:
-		tuning.tu_orbit_radii = DayCycle.TU_ORBITS[size]
+	for degrees: float in DayCycle.TU_SIZES:
+		tuning.tu_degrees = degrees
+		var size := "tu%d" % degrees
 		var mid := day.next_eclipse(0.0)
 		var first := mid
 		while day.sun_shown(first) < 1.0:
@@ -86,14 +87,15 @@ func _capture(out_dir: String) -> void:
 		await _shot(out_dir, "%s_totality" % size, mid, 0.0, spawn_lon, _to_tu(mid, spawn_lon), PITCH_TO_TU)
 		var full := mid + tuning.day_minutes * 30.0
 		await _shot(out_dir, "%s_night" % size, full, 0.0, spawn_lon, _to_tu(full, spawn_lon), PITCH_TO_TU)
+		await _shot(out_dir, "%s_ground" % size, full, 0.0, spawn_lon, _to_tu(full, spawn_lon) + PI, -6.0)
 		var dawn := _at_hour(0.27, tu_lon + LOW_AT)
 		await _shot(out_dir, "%s_low" % size, dawn, 0.0, tu_lon + LOW_AT, _to_tu(dawn, tu_lon + LOW_AT), 3.0)
 
-	tuning.tu_orbit_radii = DayCycle.TU_ORBITS[&"near"]
+	tuning.tu_degrees = DayCycle.TU_SIZES[-1]
 	var midnight := _at_hour(0.0, tu_lon + 180.0)
 	await _shot(out_dir, "far_side", midnight, FAR_LATITUDE, tu_lon + 180.0, 0.0, 18.0)
 	var full_night := day.next_eclipse(0.0) + tuning.day_minutes * 30.0
-	for scale: float in NIGHT_SCALES:
+	for scale: float in NIGHT_SCALES.slice(1):
 		tuning.tu_shine_scale = scale
 		await _shot(out_dir, "ground_x%d" % scale, full_night, 0.0, spawn_lon, _to_tu(full_night, spawn_lon) + PI, -6.0)
 	tuning.tu_shine_scale = 1.0
@@ -122,8 +124,8 @@ func _shot(out_dir: String, name: String, t: float, latitude: float, longitude: 
 	var moon := world.moon
 	var day := world.weather.day
 	var tu := day.tu_direction(t, moon.latitude, moon.longitude)
-	print("sky: %-14s %s, %.3f local, Tu %.1f° up, %.0f%% lit, sun %.0f%% shown, Tu-shine %.4f, light %.3f, %.0f °C"
-		% [name, day.tu_size(), day.time_of_day(t, moon.longitude), rad_to_deg(asin(tu.y)), day.tu_lit(t) * 100.0,
+	print("sky: %-14s %d°, %.3f local, Tu %.1f° up, %.0f%% lit, sun %.0f%% shown, Tu-shine %.4f, light %.3f, %.0f °C"
+		% [name, roundi(world.tuning.tu_degrees), day.time_of_day(t, moon.longitude), rad_to_deg(asin(tu.y)), day.tu_lit(t) * 100.0,
 			day.sun_shown(t) * 100.0, world.weather.sky.tu_seen, world.weather.seen_light,
 			world.weather.field_temperature(player.global_position, t)])
 

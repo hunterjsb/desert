@@ -209,8 +209,8 @@ Death means a new run (see Runs in the vision).
 - **The eclipse cools the air** (2026-10-17, [the Tu spec](../tu-and-day-2026-10-17.md)).
   The temperature follows local time, which follows longitude, and on the near side it
   dips while the sun is behind Tu: deeper the longer the sun has been hidden and the
-  higher it stood, so the near size's longer eclipse dips further than the far's, and a
-  storm's blanket softens it as it does the day's swing. It's a few degrees, never near the
+  higher it stood, so a wider Tu's longer eclipse dips further, and a storm's blanket
+  softens it as it does the day's swing. It's a few degrees, never near the
   suit's limits; it also nudges the condenser and the crops, which read the same felt
   temperature.
 - **The crude condenser** is a catalog device with a canister socket, a battery slot, a top

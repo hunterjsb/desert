@@ -7,8 +7,8 @@ extends RefCounted
 ## The sun, Tu and the stars are all worked in the moon's own frame (x toward
 ## 0° longitude, y toward 90° east, z north), so they share one sky.
 
-## Tu's orbit in its own radii, for the two sizes under trial (docs/the-moon.md).
-const TU_ORBITS := {&"near": 8.6, &"far": 16.4}
+## Tu's widths across the sky under trial, degrees (docs/the-moon.md).
+const TU_SIZES: Array[float] = [6.0, 9.0, 13.0]
 ## Tu's geometric albedo, taken as Jupiter's.
 const TU_ALBEDO := 0.5
 ## The sun's angular radius as the storm pass draws it, so the light goes as
@@ -76,17 +76,14 @@ func sun_shown(t: float) -> float:
 	return 1.0 - (acos(d) - d * sqrt(1.0 - d * d)) / PI
 
 
-## Tu's angular radius, set by how far out its orbit is.
+## Tu's angular radius: half its width across the sky.
 func tu_radius() -> float:
-	return asin(1.0 / _tuning.tu_orbit_radii)
+	return deg_to_rad(_tuning.tu_degrees) * 0.5
 
 
-## Which size under trial Tu is, or empty if neither.
-func tu_size() -> StringName:
-	for size: StringName in TU_ORBITS:
-		if is_equal_approx(TU_ORBITS[size], _tuning.tu_orbit_radii):
-			return size
-	return &""
+## How far out Tu's orbit is, in its own radii, for that width.
+func tu_orbit() -> float:
+	return 1.0 / sin(tu_radius())
 
 
 ## Unit vector toward Tu's centre in engine axes.
