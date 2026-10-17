@@ -14,6 +14,11 @@ const ITERATIONS := 2
 ## rad/s², so one hard landing can't mislead the rope about the next.
 const MAX_EXPECTED := 80.0
 const MAX_EXPECTED_SPIN := 80.0
+## A creak eases between quiet and its strain over this long, s, and its last
+## share of that fades to silence: a line flicking taut and slack as you walk
+## a tow would click each time the sound was cut.
+const CREAK_EASE := 0.4
+const CREAK_FADE := 0.15
 const NO_TURN := Basis(Vector3.ZERO, Vector3.ZERO, Vector3.ZERO)
 ## Where a bare line in your hand ties on, in your own frame (the look-test's);
 ## a line's own end in your hand ties on where your hand holds it.
@@ -377,13 +382,15 @@ func _draw(h: float) -> void:
 		if rope.creak == null:
 			continue
 		var strain := smoothstep(0.08, 0.9, rope.share()) if rope.is_taut() else 0.0
-		# Paused, not stopped, so a line flicking taut and slack never seeks the stream.
-		rope.creak.stream_paused = strain <= 0.0
-		if strain <= 0.0:
+		rope.creak_level = move_toward(rope.creak_level, strain, h / CREAK_EASE)
+		# Paused, not stopped, once silent, so it never seeks the stream.
+		rope.creak.stream_paused = rope.creak_level <= 0.0
+		if rope.creak_level <= 0.0:
 			continue
 		rope.creak.global_position = rope.strand.points[rope.strand.points.size() / 2]
-		rope.creak.volume_db = lerpf(-30.0, -2.0, strain)
-		rope.creak.pitch_scale = lerpf(0.85, 1.25, strain)
+		var fade := minf(rope.creak_level / CREAK_FADE, 1.0)
+		rope.creak.volume_db = lerpf(-30.0, -2.0, rope.creak_level) + linear_to_db(maxf(fade, 0.001))
+		rope.creak.pitch_scale = lerpf(0.85, 1.25, rope.creak_level)
 		if not rope.creak.playing:
 			rope.creak.play(randf() * 20.0)
 

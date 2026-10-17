@@ -47,6 +47,8 @@ var tension := 0.0
 var sustained := 0.0
 var strand: RopeStrand
 var creak: AudioStreamPlayer3D
+## How strained the creak sounds, 0 to 1, eased toward the strain.
+var creak_level := 0.0
 
 ## Solver state for this tick, owned by Ropes.
 var body_a: RopeBody
