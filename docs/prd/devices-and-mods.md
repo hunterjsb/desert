@@ -255,6 +255,31 @@ floater out of pieces:
   felt weather. Use never wears them. A part sheltered from a harm doesn't wear from
   it, so the shield protects your parts as well as you.
 
+## Frames by era
+
+*Hunter, 2026-10-17 ([notes](../session-notes-2026-10-17.md)); loose, and none of it built.
+Today there is one crate frame.* Era gear has trade-offs, not a ladder
+([Salvage & ruins](salvage-and-ruins.md#gear-and-ruins-by-era) has the eras and the ruins).
+The notes' example is the crate:
+
+| Era | Crate |
+|---|---|
+| **Colonial** | Best power efficiency per kilogram |
+| **Skimmer era** | Light, cheap and fragile, because Zan wasn't a desert yet and gear wasn't built for storms |
+| **Bronze Age** | Practical to drag without a hover tray, still mountable, somewhat worse power efficiency per kilogram |
+
+Where this meets what's built, as a reading and not in the notes. A tray floats everything on
+it at about 2 W per kilogram (91 W for the kit's 45.5 kg, 112 W for a fully fitted 56 kg), and a
+device has one durability. So "power efficiency per kilogram" reads as that draw, and "fragile"
+as the durability. A frame's numbers are its own stats, as the light shield's are (Bubble
+shield & camp), so an era's crate is data, not new rules. "Still mountable" reads as the
+bottom mount keeping its tray socket. "Practical to drag without a hover tray" reads as a
+frame that drags easier on the sand than the others, which nothing here sets per frame yet.
+
+Found mods ride along. Bronze Age finds can carry mods such as tuning for low-power setups, and
+a mod fits a mount and adds to the device, as the extra-hook mod does (below). Today only the
+planter has a mod mount.
+
 ## Socket types to start
 
 | Socket | Takes | Owned by |
@@ -302,7 +327,7 @@ hook. That's how found mods expand a device.
 
 - **The feel, polished:** the ghost, the hum, the clunk and the easing of the turn.
 - **Parts that add sockets,** like the extra-hook mod.
-- **Part tiers and upgrades.**
+- **Part tiers and upgrades.** Session 4 adds a second axis, the frame's era (Frames by era).
 - **More part types,** as the other PRDs need them.
 - **Per-part wear from the elements.** In the skeleton, wear is a single durability on
   the whole device (Bubble shield & camp).
@@ -357,4 +382,13 @@ hook. That's how found mods expand a device.
 
 ## Open questions
 
-None right now.
+- **Can pieces from different eras join freely in the chassis, or do they need adapters?**
+  Open in the notes (Hunter, 2026-10-17). Here: "Pieces join edge to edge by their rings," "A
+  piece... is a find," and "Every piece needs its own hover tray." Not said: whether a piece's
+  era matters to the join at all, and what a Bronze Age piece, "practical to drag without a
+  hover tray," does in a deck where every piece needs one. If adapters exist, the rules here
+  would make one a typed part that is found, not crafted (rule 6, and out of scope below).
+- **Efficiency of what.** "Best power efficiency per kilogram" could mean the hover draw per
+  kilogram floated, or something else of the frame's. The notes give no numbers for any era.
+- **Where the tuning mods go.** A low-power tuning mod needs a mod mount, and only the planter
+  has one. Whether the crate, the shield and the rest get one is not said.

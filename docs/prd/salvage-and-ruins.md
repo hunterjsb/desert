@@ -104,6 +104,46 @@ coordinates and how hard the weather there has been. Like everything else, they'
 stateless (World & terrain). Loot regenerating behind you isn't an exploit, because the
 land ahead is always as rich.
 
+## Gear and ruins by era
+
+*Hunter, 2026-10-17 ([notes](../session-notes-2026-10-17.md)); loose, and none of it built. The
+current ruin is a placeholder, and large structures are out of scope for now.*
+
+**What the eras left (Agreed, session 4).** The colonisation era lasted `{COLONIAL_ERA_SPAN}`
+([placeholders](../lore-research.md#placeholders)), and hover trays and true space-age tech
+were only shipped in then. So the best loot is **intact, sealed colonial facilities**, with
+space-age power generation and late-game base gear. Most scattered ruins were stripped by Bronze
+Age societies, so they hold **worn, reused space-age items with Bronze Age carvings**. Some
+carry useful mods, such as tuning for low-power setups. They're generally lower tier. The layer
+list above says "forged goods and cult works" for the Bronze Age; this adds what they stripped
+and reused. Which is commoner is not said.
+
+**Era gear has trade-offs, not a ladder.** The notes' example is the crate:
+
+| Era | Crate |
+|---|---|
+| **Colonial** | Best power efficiency per kilogram |
+| **Skimmer era** | Light, cheap and fragile, because Zan wasn't a desert yet and gear wasn't built for storms |
+| **Bronze Age** | Practical to drag without a hover tray, still mountable, somewhat worse power efficiency per kilogram |
+
+[Devices & mods](devices-and-mods.md#frames-by-era) has the frames' side of it. The shield's
+shape is the first to change by era ([art direction](../art-direction.md#shape-by-era)).
+
+**Ruins by era, kept simple.**
+- **Bronze Age:** pillars and wall stubs from an outpost or complex, holding Bronze Age gear.
+  The base case.
+- **Skimmer era:** wreck props, such as a crashed hull or hangar frame. They sit with the
+  skimmer ruins above (cradles, tethers, catch stations, crew wreckage), and the notes pick the
+  simple version.
+- **Colonial:** buried bunkers. You camp outside and go down for loot. To get big items out,
+  keep both a sand-choked cargo ramp you can drag crates up and a dead freight lift you power
+  from your own camp (the favourite). The lift is the kind of power check the notes say the
+  hybrid play drags its camp to (a reading of two separate lines).
+
+**The collector (idea).** A net like those in the game Raft, catching wind-blown loot. What
+blows is open. It would suit the oyster, who never finds ruins (a reading; the notes don't link
+them).
+
 ## People: only hinted
 
 There are no NPCs. The moon is empty, or *almost* empty, and we only ever hint at it:
@@ -276,7 +316,8 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
 - **Things surfacing during a storm.** Sand pours off something new right beside you.
   It's placed, not dug.
 - **Many ruin types,** part-buried, with interiors (all above ground), placed by terrain
-  and carrying their makers' marks.
+  and carrying their makers' marks. Session 4 starts them as one per era (Gear and ruins by
+  era), and its colonial bunker clashes with "all above ground" (open questions).
 - **Lore through item descriptions** that hint and never state.
 - **Radio frequencies.**
 - **The hints of people.**
@@ -314,6 +355,38 @@ that the giant's name, Tu, wears down the same way from a designation number
 
 ## Open questions
 
+Session 4's clashes with what's above are quoted and left standing. Nothing here is decided.
+
 - Where the ash band sits among the four layers. It used to divide the second and first
   empire layers, and no longer has to ([the lore
   research](../lore-research.md#14-open-after-session-3), ambiguity D).
+- **Buried bunkers against "nothing underground".** Here: "Everything is above ground:
+  there's no digging and nothing underground," and out of scope, "Digging, and anything
+  underground" (World & terrain agrees: "Caves, water and anything underground"). The notes:
+  "Colonial: buried bunkers. You camp outside and go down for loot." Not said: whether the
+  bunker is a real descent below the ground, or a building the sand has buried to its roof.
+  One way it could fit, not decided: the ruin's footprint cut into `height_at` as a sunk court
+  the sand drifts into, with roofed rooms of boxes over it, as the built ruin's rooms are, so
+  the ground stays one function and nothing is a cave.
+- **Trade-offs against "better".** Here: "The deeper the layer, the older the find, and the
+  better its technology"; the vision: "Everything built after them is cruder"; art direction:
+  "this is where 'older is better' reads best"; and the deep shield "is an upgrade." The
+  notes: "Era gear has trade-offs, not a ladder." Colonial wins on power efficiency, but the
+  skimmer-era crate is lighter and cheaper and the Bronze Age one drags without a tray. Both
+  can hold if tier orders how good a find is while a frame's traits trade (the notes call
+  Bronze Age ruins "generally lower tier"). Not said whether that is the reading.
+- **The built ruin against the base case.** The built ruin is a roofed building with a hall,
+  and the radio's beacon and the "go looking" scenario point at its hall ("The ruin's hall
+  always holds a device with at least two parts to strip"). The notes: the current ruin "is a
+  placeholder," and the base case is "pillars and wall stubs," which have no hall. Not said:
+  where a find sits at a stub, and whether the walk-in building becomes the colonial bunker's
+  entrance or goes.
+- **What counts as a big item.** Here: "Nothing found is too heavy to drag by hand: the
+  heaviest, a crate with every socket filled, is 51 kg." The notes: "To get big items out, keep
+  both a sand-choked cargo ramp... and a dead freight lift." Nothing found today needs either.
+  The big finds they serve, late-game base gear, don't exist yet.
+- **The collector against frozen finds.** Here: a find "is part of its chunk until it's yours:
+  frozen where it lies, dark, and left out of power, wear and the wind," and "finds are placed,
+  not dropped"; the vision: "Only what's around the player exists," and stateless. The notes:
+  "a net... that catches wind-blown loot. What blows is open." Not said: what blows, where it
+  comes from, and whether the net works only while its chunk is loaded.

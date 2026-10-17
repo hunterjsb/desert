@@ -77,6 +77,25 @@ upgrade the camp → the camp sustains more of itself → go further, or into th
   stows it. Most menus come as devices. A main menu exists for new run, resume and
   options.)
 
+## Playstyles
+
+*Hunter, 2026-10-17 ([notes](session-notes-2026-10-17.md)); loose.* Three are supported, and
+the game is balanced around the first.
+
+1. **Hybrid (intended).** Drag the camp for heavier challenges (power checks, for example),
+   stake it, scout and loot on the hoverboard, then move toward heavier loot.
+2. **Hover punk.** Ditch the kit, board only, read the wind and outrun storms, loot up to high
+   tier.
+3. **Oyster.** Fully stationary: pop the shield immediately, rely on knowing cooldowns, spawn
+   rates and the weather, and build an automated AFK setup.
+
+**The extremes are loot-limited by design:** oysters never find ruins, and hover punks miss
+loot freshly exposed by storms.
+
+These are about how you carry the camp. The "two play styles" under latitude (below) are about
+where you are. The pillars above describe the hybrid. How the two extremes sit with pillar 2,
+"your home goes with you," is in the open questions.
+
 ## Runs
 
 - **Endless.** There's no ending. Long-term goals might come later, but the game is
@@ -91,7 +110,10 @@ upgrade the camp → the camp sustains more of itself → go further, or into th
   player with floating crate, shield and hoverboard"; earlier the same day the shield
   and panel lay on the sand and the board was only a find). The shield and panel are
   clearly worse than anything found deep, so the first deep find reads as an upgrade,
-  and the kit can never leave the shield without power.
+  and the kit can never leave the shield without power. (Tentative, Hunter, 2026-10-17: the
+  start may differ by playstyle, with the light shield for the hover punk and a normal one for
+  the nomad and the oyster. That clashes with the line above; see the open questions and [the
+  bubble shield PRD](prd/bubble-shield-and-camp.md#the-carried-light-shield-and-the-starts-not-built).)
 - **Saving and loading is the default; Ironman is its own mode** (Hunter, 2026-10-16,
   after a fun run that dying wiped: "dying actually hurt"). By default you save when you
   like, the game saves for you every few minutes and when you quit, and death offers to
@@ -137,8 +159,8 @@ has reverted to near-uninhabitable: ruins, dunes, maybe a few holdouts.
 The air is thin and fading, the days scorch, the nights freeze, and water goes through
 all three phases every day. The physics is in [the moon](the-moon.md), and the history
 is in the lore sessions ([part 1](lore-session-2026-10-14.md), [part
-2](lore-session-2026-10-14-part-2.md), [session 3](lore-session-2026-10-16.md)) and [the lore
-research](lore-research.md).
+2](lore-session-2026-10-14-part-2.md), [session 3](lore-session-2026-10-16.md), [session
+4](session-notes-2026-10-17.md)) and [the lore research](lore-research.md).
 
 You're a **scavenger and a survivor, in a suit**, because nobody survives here without
 one. The suit is the one gift this world gives you. Why you're out here gets revealed
@@ -201,3 +223,21 @@ The order we build them in is the [skeleton plan](skeleton-plan.md).
 - If a good camp reaches steady state, what ends a run? Being endless, cozy and
   permadeath pull against each other. A long-horizon backdrop for any answer: the moon
   itself has an end state, a calm, stable desert once its orbit recircularises.
+- **Do starts differ by playstyle?** Tentative in the notes (Hunter, 2026-10-17): "the hover
+  punk start gets the light shield; the nomad and oyster starts get a normal shield, heavy
+  enough not to be blown around." Here: a start with a weak shield, "clearly worse than
+  anything found deep, so the first deep find reads as an upgrade." A normal shield is read as
+  the base shield found deep, so the nomad and the oyster would start with what other runs find
+  later. "Nomad" is not defined in the notes and is read as the hybrid start, the intended one.
+  Detail in [the bubble shield PRD](prd/bubble-shield-and-camp.md#open-questions).
+- **How do the extremes sit with "your home goes with you"?** Pillar 2: "There's no base to
+  return to. The shield, the planters and the power all travel with you," and "The camp moves
+  at walking pace, and storms are weathered, not outrun." The notes: the oyster is "fully
+  stationary," and the hover punk is "board only" and will "outrun storms." The notes call the
+  extremes supported, "balanced around the first," so these can read as edges of the hybrid.
+  The vision's lines are about the camp, and the hover punk has none. Not said: whether the
+  pillars should name the hybrid, or the extremes get a line of their own.
+- **Era gear against "history runs backwards".** Setting: "The oldest, rarest ruins hold the
+  most advanced technology... Everything built after them is cruder." The notes: "Era gear has
+  trade-offs, not a ladder." Quoted in full in [Salvage &
+  ruins](prd/salvage-and-ruins.md#open-questions).
