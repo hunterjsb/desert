@@ -180,9 +180,13 @@ that ignored the weather.
   first clear spell and the fungus through the storms after, 24 and 56 units, and it
   dropped 2,700 kcal onto you, of which you ate 2,400, keeping 6,300 more. Your hunger
   never fell below the mark where the suit feeds you, and every slot stayed sown. A
-  planter drops what it stored first, so you ate carrots while the fungus piled up. Its
-  water is what ends it: the driest tank had 0.65 L left after three days, and left on,
-  the two ran dry at 3.65 and 4.96 days. Nothing but you fills them.
+  planter drops what it stored first, so you ate carrots while the fungus piled up.
+  Water no longer ends it (2026-10-17): a condenser beyond the shield, on a battery and a
+  panel of its own, waters both planters on hoses. The driest tank had 3.62 L left after
+  three days, where with nothing to fill them it had 0.65 L and the two ran dry at 3.65
+  and 4.96 days; left on for six and a half days, long after you'd died of thirst, the
+  tanks never fell below 3.09 L. The condenser made about 1.9 L a day, about what the two
+  drink, and since water goes to the emptier tank first, the two stay level.
 
 ## Full version
 

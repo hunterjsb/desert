@@ -197,17 +197,18 @@ Death means a new run (see Runs in the vision).
   ones share power, on the farm's tick of world time. What a condenser makes goes to the
   emptiest tank first, then to the fullest canister with room, so one fills up for you to
   take away; with a hose in place of its canister its water goes straight down the hose,
-  and with nowhere for it (everything full, or the hose's far end loose) it stops, as with
-  a full canister. Tanks are kept full from the canisters, the least full first, so one
-  empties and frees up, as your suit drinks from them; a canister at one end of a hose
-  feeds the planter at the other. Nothing flows from canister to canister, and a hose
-  carries no power (water probe 1). A hose holds what it joins as a common cable does:
-  pulled past its length, a loose end is dragged along, and with both ends held fast an
-  end pops out of its socket. It takes no pull of its own, so in a 20 m/s wind a floating
+  and with nowhere for it (everything it reaches full, or nothing at the hose's far end)
+  it stops, as with a full canister. Tanks are kept full from the canisters, the least
+  full first, so one empties and frees up, as your suit drinks from them; a canister at
+  one end of a hose feeds the planter at the other (water probe 1). Nothing flows from
+  canister to canister, and a hose carries no power. A hose holds what it joins as a
+  common cable does: pulled past its length, a loose end is dragged along, and with both
+  ends held fast an end pops out of its socket. It takes no pull of its own, so in a 20 m/s wind a floating
   planter hosed to a staked condenser pops an end and blows away, and tied with a rope as
   well, the rope holds it and the hose stays in (water probe 2). Rolled up it goes in a
-  slot like a cable, shown as a Hose, and stays out while an end is in a socket. It's
-  found on open sand, a little less often than wire, and `give hose` makes one.
+  slot like a cable, shown as a Hose, and stays out while an end is in a socket. A save
+  keeps hoses, what's on their ends and the water in tanks (saves probe 11). It's found
+  on open sand, a little less often than wire, and `give hose` makes one.
 - **The three harms,** in health a second: the storm 0.25 at full intensity, wind 0.01 for
   each m/s past 20, and temperature 0.05 for each degree past the suit's limits of −40 and
   75 °C. Empty, starving takes 0.1 and thirst 0.3. Unharmed, fed and watered, you heal
@@ -301,9 +302,11 @@ Death means a new run (see Runs in the vision).
   bubble keeps every harm off you, the farm's drops are all you eat, 2,400 kcal, and you
   drink about 1.7 L a day. Take the farm away and you starve at 2.83 days (probe 1).
 - **Water is where AFK ends.** Nothing brings you water yet: you drink only from your
-  slots, and a condenser fills its own canister, to be swapped by hand. So the camp keeps
-  you as long as the water you carry: left on, the three canisters ran out at 4.5 days
-  and you died of thirst at 4.8, fed, with food stored and the shield up.
+  slots. The camp's condenser waters only the farm, down its hoses, and a canister it
+  fills still has to come to your slots by hand. So the camp keeps you as long as the
+  water you carry: left on, the three canisters were empty by four days and you died of
+  thirst at 4.78, fed, with food stored and the shield up, while the farm's tanks stayed
+  above 3 L (Farming).
 
 ## Full version
 
