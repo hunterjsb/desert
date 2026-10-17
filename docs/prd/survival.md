@@ -16,7 +16,8 @@ the air is too thin to breathe, the days are scorching, the nights freeze, and
 radiation reaches the ground.
 
 **Why you're out here** gets revealed over the course of the game, never up front.
-First and foremost, you're out here to survive.
+First and foremost, you're out here to survive. (Session 4, part 2 gives each start an origin;
+the default is a Tilg & Standard contractor. See [the vision](../vision.md#player-origins-and-kits).)
 
 ## The suit
 
@@ -71,7 +72,12 @@ Sources, from early to late:
 1. **Sealed fresh water in ruins and survival kits.** This is what you live on at
    first.
 2. **Frost and dew,** harvested in the cold hours. There's more toward the poles.
-3. **Condensers,** found, powered and towable. They work best at night.
+3. **Condensers,** found, powered and towable. They work best at night, and **better toward
+   the far side** (Agreed, session 4, part 2; a hook, not built). Water evaporates on the warm
+   near side and cold-traps as frost and ground ice on the far side, so the far side's colder air
+   is where a condenser makes most. The condenser already reads the felt temperature where it
+   stands (below), so the hook is the far side being colder; the game has no near and far side
+   yet, only latitude, so it waits for them ([the lore](../lore-research.md#tu-the-tidal-lock-and-the-water-agreed-session-4-part-2)).
 4. **Water-storing plants,** like the yucca.
 
 Open water doesn't last, so water lives in sealed containers.
@@ -224,7 +230,11 @@ Death means a new run (see Runs in the vision).
   (a `Kit`: what's carried into the suit's slots, what's set down beside you and where,
   what comes assembled, socket by socket, which lines are laid, how full its batteries
   start and how long its line is). Only this standard kit is balanced; choosing a kit
-  waits. Every run, the first and every one after a death, begins on a clear morning
+  waits. (Session 4, part 2 balances three kits, the Surveyor, the Salvager and the
+  Homesteader, and lists the Surveyor's standard shield, multi-compass, stake tether and radio
+  against the kit below, a light shield, a light panel and a racked board: the clash is
+  recorded in [the vision](../vision.md#player-origins-and-kits), and this kit is what's
+  built.) Every run, the first and every one after a death, begins on a clear morning
   with the sun well up, a third of the way through the day, so the panel makes about
   half its 30 W from the first minute, and the first storm due in three to eight
   minutes, facing where it will come from (Hunter, 2026-10-16: "it spawns me in a
@@ -345,4 +355,5 @@ Death means a new run (see Runs in the vision).
 ## Open questions
 
 - **Why is the scavenger out here?** The game reveals it over time. We don't need the
-  answer yet.
+  answer yet. *Narrowed by session 4, part 2:* each origin has its own reason, and the default
+  is a Tilg & Standard contractor ([the vision](../vision.md#player-origins-and-kits)).

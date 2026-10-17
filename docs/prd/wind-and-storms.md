@@ -215,6 +215,26 @@ turbine.
   15 m above you and a lee at least nine-tenths full, facing up it into the wind coming
   over the crest, in the clear with a storm due in two to six minutes.
 
+## Hooks from the sky (proposed, not settled)
+
+*Proposal, session 4, part 2 ([lore session](../lore-session-2026-10-17-part-2.md)). Not settled
+and not built; whether either goes in is an open question.* Tu hangs fixed in the near side's
+sky ([the lore](../lore-research.md#tu-the-tidal-lock-and-the-water-agreed-session-4-part-2)),
+and the session proposes two weather hooks from it:
+- **An eclipse squall:** air rushing toward Tu's noon shadow.
+- **A slow storm season:** when Zan swings closest and Tu looks visibly larger.
+
+Readings, not in the session:
+- Neither would be a new kind of weather. The squall would be a time-of-day term in `wind_at` on
+  the near side, pointing at the shadow's centre at the noon eclipse, a clock the game already
+  keeps ([the moon](../the-moon.md#day-length)). The season would be a slow swing in `storm_at`'s
+  strength or coverage by orbital phase. Either stays deterministic and forecastable like the
+  rest of the field, and designed, not simulated air (out of scope below).
+- Both need what the game doesn't have yet. The squall needs a near side, and the game has only
+  latitude. The season needs an orbital phase and a visible swing in Tu's size, against an orbit
+  that is "rounding out," and Tu's size is itself under trial
+  ([the body research](../body-research.md#tus-size-under-trial)).
+
 ## Skeleton version
 
 - `wind_at` and `storm_at` from the run's seed. One slowly drifting prevailing wind,
@@ -287,3 +307,6 @@ All run without a window, with a fixed seed.
   base shield's 30, and the longest run past 3 hours. Storms ride a prevailing wind of
   10 m/s that swings by up to 6 either way, so a wall first seen 3.5 km out arrives in
   4 to 16 minutes.
+- **Do the eclipse squall and the storm season go in?** Proposed, not settled (above). If they
+  do, the squall is a near-side term in the wind and the season a slow swing in the storm
+  field, and both wait for a near and far side and an orbital phase to read.

@@ -33,7 +33,9 @@ dev gravity toggle tries the lower value. **Everything else stays honest.**
   very slow escape, which is a geological backdrop, not something you'd see. **Agreed
   (session 3):** the lore reads the leak as a clock. Storms last only while air remains, and
   the player arrives with the window closing ([the lore
-  research](lore-research.md#the-surface-today-agreed-session-3)).
+  research](lore-research.md#the-surface-today-agreed-session-3)). **Agreed (session 4, part
+  2):** the orbit was more eccentric when the colonists came and has been rounding out since, so
+  the heating fades and the vents go quiet ([the lore](lore-research.md#tu-the-tidal-lock-and-the-water-agreed-session-4-part-2)).
 - **Thin air still makes real wind.** Mars, at under 1% of Earth's pressure, has global
   dust storms and moving dunes, but its winds would barely push you. At 0.3 bar, 130 km/h
   gusts push like an Earth gale even at near-Earth gravity (at the leaning 0.4–0.5 g,
@@ -67,9 +69,14 @@ gives water a daily rhythm:
   poles. Harvest it at dawn.
 - **Open water doesn't last.** It has to be stored sealed.
 - **Condensers pull water from the air.** They're found, they draw power, they can be
-  towed, and they work best at night.
+  towed, and they work best at night, and better toward the far side (below).
 - **Plants that store water,** like the yucca.
 - **Sealed fresh water in ruins** keeps you going early on.
+- **Water drifts to the far side** (Agreed, session 4, part 2). The near side is heated by the
+  sun and by Tu's infrared, and the far side runs colder. Water evaporates on the warm side and
+  cold-traps as frost and ground ice on the far side. While the vents outgassed they topped the
+  near side up, and once they quieted it drained outward. This stands beside the poles' frost
+  above, and how the two cold traps combine is open.
 
 ## Day length
 
@@ -79,7 +86,14 @@ and it's tidally locked to the giant.
 
 **The giant lights the near side only.** There it hangs fixed overhead, and nights are
 bright, hundreds of times moonlight. Every noon it eclipses the sun for about 20–25 game
-seconds. The far side never sees it, and its nights are truly dark.
+seconds. The far side never sees it, and its nights are truly dark. Between the two lies the
+Rim, where the giant hangs half-risen on the horizon: no eclipse, and mild ([the
+lore](lore-research.md#tu-the-tidal-lock-and-the-water-agreed-session-4-part-2)).
+
+**Under trial (Hunter, 2026-10-17):** how big the giant looks, 6°, 9° or 13°, is a tuning value,
+and three presets are being built. None is chosen. The bright nights and the 20–25 second
+eclipse above were worked for the earlier 6–8° and move with whichever is picked ([the body
+research](body-research.md#tus-size-under-trial)).
 
 **Open: seasons** (deferred by Hunter, 2026-10-14). The skeleton gives the moon no axial
 tilt, so the sun rises due east, sets due west, and climbs only as high as the latitude

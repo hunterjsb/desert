@@ -48,8 +48,31 @@ Either way there's one run, and one save for it; a run's mode is fixed when it s
 ## Kits are data
 
 The starting kit (Salvage & ruins, Survival) is a data resource, a list of things and
-how many, never code. Only the default kit is balanced. Alternative kits and choosing
+how many, never code. Only the default kit is built. Alternative kits and choosing
 between them are deferred until discoveries can unlock them.
+
+**Origins (Agreed, session 4, part 2; not built).** [The vision's origins and
+kits](../vision.md#player-origins-and-kits) change what is balanced: **only the first three kits
+(the Surveyor, the Salvager and the Homesteader) are balanced. The rest are novelty starts,
+excluded from Ironman** (the session writes "Iron Man"; it is the same mode). Each kit is data
+like the default, and each unlocks through `profile.unlock`:
+
+| Kit | Unlock |
+|---|---|
+| Surveyor | Default |
+| Salvager | A playstyle, e.g. long board distance or surviving a storm on carried gear |
+| Homesteader | A playstyle, e.g. riding out big storms without moving camp |
+| Archaeologist | Proposed: finding a number of landmarks |
+| Replacement | Needs a prior save |
+| Prisoner | Finding the black site |
+| Nomad | The nomad city ending |
+| Hive mind experiment | The last unlock in the game |
+
+Readings, not in the session. Discoveries here are the first time you find a kind of thing; these
+unlocks are also what you did (a playstyle), where you went (a landmark) and how you finished
+(an ending), which would be new reports to the profile, each still through `profile.unlock`
+(rule 3). Ironman deletes its save when you die, and the Replacement "needs a prior save," so it
+can only follow a Normal run.
 
 ## Rules
 
@@ -131,7 +154,9 @@ Resume, New game, the death screen and Options.
 
 ## Full version
 
-- Kits unlocked by discoveries, and choosing one at New game.
+- Kits unlocked by discoveries, playstyles, landmarks and endings, and choosing one at New
+  game. The first three are balanced, the novelty starts are not, and Ironman excludes the
+  novelty starts (Kits are data).
 - Steam achievements and cloud sync, attached at `profile.unlock`.
 
 ## Probes
@@ -171,4 +196,13 @@ Resume, New game, the death screen and Options.
 
 ## Open questions
 
-- None yet.
+- **The Replacement's prior save.** It "starts at the previous run's last camp, among its
+  wreckage" and "needs a prior save." Here: one save at a time, a save holds only what you
+  changed, and a new run begins from the seed. Not said: which save it reads when death has just
+  offered the last one back, and where a camp that has to outlive its run is kept.
+- **What each playstyle unlock counts.** "Long board distance," "surviving a storm on carried
+  gear" and "riding out big storms without moving camp" are examples, not rules, and the
+  Archaeologist's condition is open in the session.
+- **Mode and achievements.** The vision leaves open whether achievements care which mode a run is
+  in. The session's rule that novelty starts are excluded from Ironman is the first rule about
+  mode, and it covers starts, not achievements.

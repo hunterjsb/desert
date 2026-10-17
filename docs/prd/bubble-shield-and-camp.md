@@ -190,13 +190,17 @@ cell is a shield that runs with no fitted battery, against "a device's abilities
 parts" (Devices & mods, rule 4), and a pocketable flag is a shield exempt from the carrying
 rules every other device obeys. What's left is carrying it in your hands, running.
 
-**The starts (tentative).** One per playstyle ([the vision](../vision.md#playstyles)):
-- **Hover punk:** the light shield.
-- **Nomad and oyster:** "a normal shield, heavy enough not to be blown around."
+**The starts (tentative in the 17 Oct notes; superseded in part, Agreed, session 4, part 2).**
+One per playstyle ([the vision](../vision.md#player-origins-and-kits)):
+- **Salvager (the hover punk):** "Hoverboard and the light shield; little else."
+- **Surveyor (the hybrid, the default):** a standard shield.
+- **Homesteader (the oyster):** a "solid shield," with no hover.
 
-The notes say "nomad," not "hybrid," and don't define it. It is read here as the intended
-start. Today there is one kit, and Survival says: "Only this standard kit is balanced;
-choosing a kit waits."
+The notes had put "a normal shield, heavy enough not to be blown around" on "the nomad and
+oyster starts," and the docs read "nomad" as the hybrid. Session 4, part 2 makes the Nomad a
+different start (from the moving city, a mythic kit), so that reading is gone. Today there is
+one kit, the built one, and Survival says: "Only this standard kit is balanced; choosing a kit
+waits." The session balances the first three kits.
 
 ## Full version
 
@@ -247,9 +251,10 @@ quoted on both sides and left standing.
   vision: "The shield and panel are clearly worse than anything found deep, so the first deep
   find reads as an upgrade." Salvage: "A found shield generator is the base shield: a 7 m
   bubble of still air against the 4 m... light shield every run starts with." The notes: "the
-  nomad and oyster starts get a normal shield." If a normal shield is the base shield, those
-  starts begin with what other runs find deep. Not said: whether the normal shield is the base
-  shield or a step between, and what the first deep find is then.
+  nomad and oyster starts get a normal shield." Session 4, part 2 gives the "standard shield"
+  to the default Surveyor and a "solid shield" to the Homesteader. If a normal shield is the
+  base shield, those starts begin with what other runs find deep. Not said: whether the
+  standard shield is the base shield or a step between, and what the first deep find is then.
 - **"Heavy enough not to be blown around."** The base generator is 6 kg, 10 kg with its
   battery, against the light one's 4 kg. This PRD says only that "the wind doesn't push the
   base bubble." How heavy is heavy enough, and whether the built 6 kg one is, is not said.
