@@ -79,10 +79,11 @@ Resume, New game, the death screen and Options.
   The autosave is taken between two ticks, ahead of the run's own nodes, and written to
   disk on a worker thread; never while you're dead, while a run is being put back, or
   while the screen fades.
-- **What a save costs the frame,** measured on a busy machine: taking the run is about
-  0.2 ms for a bare one and 1 ms for the probes' camp mid-storm (12 things, 3 lines),
-  and grows by about 20–40 µs for each thing of yours; encoding it is 0.15–0.35 ms. The
-  disk write, 0.4–0.6 ms there and unbounded on a slow disk, is off the frame.
+- **What an autosave costs the frame** (taking the run and encoding it), measured on a
+  busy machine: about 0.7 ms on a fresh run with its kit, and 1.1 ms (1.5 at worst) for
+  the probes' camp mid-storm, 8 things and 3 lines; it grows by about 20–40 µs for each
+  thing of yours. The disk write, about 0.25 ms there and unbounded on a slow disk, is
+  off the frame.
 - **A death in Normal** keeps the save and shows the death screen (Menus & UI): Load
   last save is Resume, and New run is New game in Normal.
 - **What a save holds:** you (where you stand, which way you face and look, how you're

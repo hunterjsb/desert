@@ -89,8 +89,9 @@ save, highlighted, and New run (Hunter, 2026-10-16).
   over bright sand. The selection shows by brightness alone. New game over a save asks
   "this ends your saved run" with the safe answer highlighted, and back declines too.
   Then New game asks which mode, Normal highlighted and Ironman below it, under a line
-  saying what each means; back goes back to the menu, the save untouched. Into the game: a fade to black, the run built (`game/run.tscn`, which is what
-  `main.tscn` used to be), and back from black once the sand round you is solid.
+  saying what each means; back goes back to the menu, the save untouched. Into the
+  game: a fade to black, the run built (`game/run.tscn`, which is what `main.tscn` used
+  to be), and back from black once the sand round you is solid.
 - **The system menu**, over the running game under a dark wash: Options, Save in a
   Normal run, and Save & quit. Save keeps the menu up and its word says how it went:
   Saved, or Couldn't save. Nothing pauses.
