@@ -267,10 +267,10 @@ Death means a new run (see Runs in the vision).
 8. **The kit in tow.** In a crosswind you take up the kit's stake, tie it at your waist
    and walk off: the crate follows on its line, floating all the way, its shield's
    bubble with it.
-9. **Stakes go in.** A found stake and a loose one, each taken up, go in a slot and come
-   out ready to drive; driven, each holds a crate floating on a line in a breeze, the
-   found one after a save and a resume too. A driven stake, or one with a line on its
-   eye, stays out.
+10. **Stakes go in.** A found stake and a loose one, each taken up, go in a slot and
+    come out ready to drive; driven, each holds a crate floating on a line in a breeze,
+    the found one after a save and a resume too. A driven stake, or one with a line on
+    its eye, stays out.
 
 ## Out of scope
 

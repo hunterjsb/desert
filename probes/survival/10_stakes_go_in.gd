@@ -1,5 +1,5 @@
 extends LineProbe
-## Survival probe 9: stakes go in. A found stake, taken up, goes in a slot as
+## Survival probe 10: stakes go in. A found stake, taken up, goes in a slot as
 ## it is, and the view shows it as a stake. A driven stake, or one with a line
 ## on its eye, stays out. A loose stake goes in and comes out in your hands
 ## ready to drive: used over the sand it goes in, and holds a crate floating
