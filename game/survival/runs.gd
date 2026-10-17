@@ -1,10 +1,11 @@
 class_name Runs
 extends Node
-## One run at a time. When you die the run is over: the world goes, with
-## everything you had in it, and a fresh one on a new seed takes its place,
-## so nothing carries over. It sits beside the world, never in it. Every run
-## starts with its kit (Kit, data): some in the suit's slots, the rest on the
-## sand beside you.
+## One run at a time. In Ironman, when you die the run is over: the world
+## goes, with everything you had in it, and a fresh one on a new seed takes
+## its place, so nothing carries over. In Normal a death offers the last save
+## back first. It sits beside the world, never in it. Every run starts with
+## its kit (Kit, data): some in the suit's slots, the rest on the sand beside
+## you.
 
 signal started(world: World)
 
@@ -19,6 +20,12 @@ const START := {"key": "start", "kind": "clear", "day": [0.33, 0.45], "due": [18
 const KIT_AHEAD := 2.0
 const KIT_APART := 1.2
 
+## The run's mode, fixed when it starts and kept in its save (Profile & saves).
+var ironman := false
+## In Normal, what a death offers instead of ending the run (the game's Load
+## last save or New run). A run with nothing to offer, such as a dev
+## scenario's, goes straight on to a new one, its save left alone.
+var offer := Callable()
 ## Runs since the game began, this one included.
 var count := 1
 var _caption: Label
@@ -50,9 +57,12 @@ func _watch() -> void:
 
 
 func _over() -> void:
-	# Death ends the run, and its save with it.
+	if not ironman and offer.is_valid():
+		offer.call()
+		return
+	# In Ironman death ends the run, and its save with it.
 	var saves := get_node_or_null(^"/root/Saves")
-	if saves != null:
+	if ironman and saves != null:
 		saves.delete()
 	var old := world()
 	var parent := old.get_parent()
@@ -60,7 +70,7 @@ func _over() -> void:
 	parent.remove_child(old)
 	old.queue_free()
 	var next: World = WORLD.instantiate()
-	next.run_seed = randi_range(1, 0x7fffffff)
+	next.run_seed = new_seed()
 	next.name = "World"
 	parent.add_child(next)
 	parent.move_child(next, at)
@@ -71,6 +81,11 @@ func _over() -> void:
 	_watch()
 	started.emit(next)
 	_equip(next)
+
+
+## A run after a death is on a seed of its own, whatever the tuning says.
+func new_seed() -> int:
+	return randi_range(1, 0x7fffffff)
 
 
 func _process(delta: float) -> void:

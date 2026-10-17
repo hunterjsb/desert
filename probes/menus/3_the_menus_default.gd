@@ -1,9 +1,11 @@
 extends MenuProbe
 ## Menus & UI probe 3: the menu's default, end to end. With no save, Resume is
-## absent, New game is highlighted, and confirm starts a run. Save & quit from
-## that run, somewhere out on the sand, and back on the menu Resume is there
-## and highlighted; confirm resumes it, putting you back where you were, on
-## the saved run's seed and clock.
+## absent, New game is highlighted, and confirm asks which mode, Normal
+## highlighted and Ironman below it; confirm again starts a Normal run, whose
+## system menu holds Save. Save & quit from that run, somewhere out on the
+## sand, and back on the menu Resume is there and highlighted; confirm
+## resumes it, putting you back where you were, on the saved run's seed and
+## clock.
 
 
 func run() -> void:
@@ -14,9 +16,14 @@ func run() -> void:
 	check(AudioServer.is_bus_mute(AudioServer.get_bus_index(Sounds.WORLD)) and not AudioServer.is_bus_mute(0),
 		"the menu's storm makes no sound, and its words can")
 	press(&"ui_accept")
+	var modes := main.ui.top()
+	check(modes != menu and modes.words() == PackedStringArray(["NORMAL", "IRONMAN"]) and modes.highlighted() == 0
+		and not main.in_run(), "New game asks which mode, Normal highlighted (%s)" % ", ".join(modes.words()))
+	press(&"ui_accept")
 	await faded_in()
 	check(main.in_run() and main.view == null and not main.ui.is_open() and not Controls.mouse_free,
 		"confirm starts a run, the menu's world gone and the mouse captured")
+	check(not main.ironman(), "a Normal run")
 	check(not AudioServer.is_bus_mute(AudioServer.get_bus_index(Sounds.WORLD)), "and the run is heard")
 
 	# The ground takes as long to build as the machine takes: out from the
@@ -25,7 +32,9 @@ func run() -> void:
 	teleport(world.spawn.x + 6.0, world.spawn.y - 9.0)
 	await physics_frames(30)
 	press(&"ui_cancel")
-	check(main.ui.top().words() == PackedStringArray(["OPTIONS", "SAVE & QUIT"]), "the system menu holds Options and Save & quit")
+	check(main.ui.top().words() == PackedStringArray(["OPTIONS", "SAVE", "SAVE & QUIT"]),
+		"the system menu holds Options, Save and Save & quit (%s)" % ", ".join(main.ui.top().words()))
+	press(&"ui_down")
 	press(&"ui_down")
 	var stood := Vector2(world.player_world_x(), world.player_world_z())
 	var clock := world.time

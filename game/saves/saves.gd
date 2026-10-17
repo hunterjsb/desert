@@ -1,9 +1,10 @@
 extends Node
-## The run save, at /root/Saves. One at a time: Save & quit suspends the run
-## into it, Resume puts it back on a world built on its seed, and death
-## deletes it, since permadeath is the intended mode. It holds only what you
-## changed (Snapshot). A save from another version is refused with a reason,
-## never half-read.
+## The run save, at /root/Saves. One at a time, for the one run, and it keeps
+## the run's mode: in Normal you save as you go and death offers it back; in
+## Ironman, Save & quit only suspends the run and death deletes it. Resume
+## puts it back on a world built on its seed. It holds only what you changed
+## (Snapshot). A save from another version is refused with a reason, never
+## half-read; one from before modes has none, and is Normal's.
 
 ## Everything resumed and running again.
 signal restored(world: World)
@@ -17,6 +18,8 @@ var dir := "user://"
 var refused := ""
 ## A resume is waiting for the ground under the camp.
 var restoring := false
+## A save being written on a worker thread, or -1.
+var _writing := -1
 
 
 func path() -> String:
@@ -32,12 +35,27 @@ func run_seed() -> int:
 	return _read().get("seed", 0)
 
 
-## Suspends the run: safe at any moment, mid-storm included, and it changes
-## nothing in the world. A dead run isn't saved.
-func save(world: World) -> bool:
-	if world == null or world.player.vitals.dead:
+## The saved run is Ironman's.
+func ironman() -> bool:
+	return _read().get("ironman", false)
+
+
+## Saves the run, in its mode: safe at any moment, mid-storm included, and it
+## changes nothing in the world. A dead run isn't saved, nor one half put back.
+func save(world: World, ironman := false) -> bool:
+	var bytes := _taken(world, ironman)
+	return not bytes.is_empty() and SaveFile.write_bytes(path(), KIND, VERSION, bytes)
+
+
+## The same without the frame waiting on the disk: the run is taken now,
+## between ticks, and written on a worker thread.
+func save_in_background(world: World, ironman := false) -> bool:
+	var bytes := _taken(world, ironman)
+	if bytes.is_empty():
 		return false
-	return SaveFile.write(path(), KIND, VERSION, Snapshot.take(world))
+	var to := path()
+	_writing = WorkerThreadPool.add_task(func() -> void: SaveFile.write_bytes(to, KIND, VERSION, bytes))
+	return true
 
 
 ## Puts the saved run back on a world built on run_seed() that has settled.
@@ -66,11 +84,33 @@ func restore(world: World) -> bool:
 
 
 func delete() -> void:
+	_wait()
 	SaveFile.remove(path())
 	refused = ""
 
 
+func _exit_tree() -> void:
+	_wait()
+
+
+func _taken(world: World, ironman: bool) -> PackedByteArray:
+	_wait()
+	if world == null or world.player.vitals.dead or restoring:
+		return PackedByteArray()
+	var data := Snapshot.take(world)
+	data.ironman = ironman
+	return var_to_bytes(data)
+
+
+## Until the save being written has landed.
+func _wait() -> void:
+	if _writing != -1:
+		WorkerThreadPool.wait_for_task_completion(_writing)
+		_writing = -1
+
+
 func _read() -> Dictionary:
+	_wait()
 	var got := SaveFile.read(path(), KIND, VERSION)
 	refused = got.refused
 	return got.data

@@ -88,10 +88,17 @@ save, highlighted, and New run (Hunter, 2026-10-16).
   the weather moves, at its own pace. A low shade under the words keeps them readable
   over bright sand. The selection shows by brightness alone. New game over a save asks
   "this ends your saved run" with the safe answer highlighted, and back declines too.
-  Into the game: a fade to black, the run built (`game/run.tscn`, which is what
+  Then New game asks which mode, Normal highlighted and Ironman below it, under a line
+  saying what each means; back goes back to the menu, the save untouched. Into the game: a fade to black, the run built (`game/run.tscn`, which is what
   `main.tscn` used to be), and back from black once the sand round you is solid.
-- **The system menu**, over the running game under a dark wash: Options, and Save &
-  quit. Nothing pauses.
+- **The system menu**, over the running game under a dark wash: Options, Save in a
+  Normal run, and Save & quit. Save keeps the menu up and its word says how it went:
+  Saved, or Couldn't save. Nothing pauses.
+- **The death screen,** in a Normal run, over the running game: "You died", with Load
+  last save, highlighted, and New run. Back doesn't close it. Load is Resume, through
+  the fade; New run is New game in Normal, on a new seed, the save deleted. Dying before
+  the run has ever been saved offers only New run. In Ironman there's no screen: the
+  caption says you died and a new run begins at once.
 - **Options:** volume, fullscreen, vsync and render scale (confirm steps a value on,
   menu left and right change it either way), kept on this machine in
   `user://settings.cfg`, apart from the profile; the controls list, read-only, every key
@@ -103,9 +110,11 @@ save, highlighted, and New run (Hunter, 2026-10-16).
   once the sand has settled, and comes back from black only when everything of yours is
   back. A save that can't be resumed says why on the main menu, and a save that fails
   keeps you in the run and asks.
-- The dev scenarios (`-- --scenario=<key>`) still start straight into a run.
+- The dev scenarios (`-- --scenario=<key>`) still start straight into a run, which is
+  never saved: no Save, Quit to menu in place of Save & quit, and no autosave, so the
+  player's own save is left as it was.
 - `look/menus` shoots the main menu and the system menu, to judge by eye.
-- Probes 1–6 pass, each proven against a broken build. Probes 3 and 4 use the real
+- Probes 1–7 pass, each proven against a broken build. Probes 3, 4 and 7 use the real
   saves, kept in each probe's own folder; probe 3 is the whole trip: New game, Save &
   quit out on the sand, Resume, and you're back where you were.
 
@@ -124,12 +133,16 @@ save, highlighted, and New run (Hunter, 2026-10-16).
 2. **Back closes the topmost first.** With the inventory open, back closes it; pressed
    again, it opens the system menu; again, it closes that.
 3. **The menu's default.** With a save, Resume is highlighted and confirm resumes; with
-   none, Resume is absent and New game is highlighted.
+   none, Resume is absent and New game is highlighted, and it asks which mode with
+   Normal highlighted.
 4. **New game asks over a save,** and declining leaves the save untouched.
 5. **One theme.** Every UI control in the game, menus and gameplay, draws from the one
    theme.
 6. **Held keys wait.** With the system menu open and the move action held you stay put,
    on foot and on a board; closed, the same hold walks you and rides you.
+7. **Death in Normal.** Saved from the system menu, you die elsewhere: the screen offers
+   Load last save, highlighted, and New run, and back leaves it up. Load puts you back
+   where and when you saved; New run starts a fresh run on a new seed.
 
 ## Out of scope
 

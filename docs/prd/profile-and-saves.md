@@ -59,14 +59,32 @@ between them are deferred until discoveries can unlock them.
 ## Skeleton version
 
 - The run save and resume, Save & quit from the system menu, Resume from the main menu,
-  and death deleting the save.
+  and the two modes: Normal saving as you go and offering the save back after a death,
+  Ironman's death deleting it.
 - The profile file with discoveries and `profile.unlock`, and reset in Options.
 - The default kit as a data resource.
 - The probes below, all passing.
 
 **Built** (2026-10-16), waiting at the gate. Two autoloads: `Saves` (`has_run`, `save`,
-`run_seed`, `restore`, `delete`) and `Profile` (`unlock`, `discover`, `has`, `reset`).
-Menus & UI calls them from Save & quit, Resume, New game and Options.
+`save_in_background`, `run_seed`, `ironman`, `restore`, `delete`) and `Profile`
+(`unlock`, `discover`, `has`, `reset`). Menus & UI calls them from Save, Save & quit,
+Resume, New game, the death screen and Options.
+
+- **The mode** is chosen at New game, held by the run (`Runs.ironman`) and kept in its
+  save, and Resume reads it back. A save from before modes has none and resumes as
+  Normal, so the format's version didn't change.
+- **Normal saves:** Save in the system menu, a save by itself after `autosave_minutes`
+  (Tuning, 3) of play since the last one, and one when the game's window closes. The
+  first storm comes three to eight minutes in, so dying in it has a save to go back to.
+  The autosave is taken between two ticks, ahead of the run's own nodes, and written to
+  disk on a worker thread; never while you're dead, while a run is being put back, or
+  while the screen fades.
+- **What a save costs the frame,** measured on a busy machine: taking the run is about
+  0.2 ms for a bare one and 1 ms for the probes' camp mid-storm (12 things, 3 lines),
+  and grows by about 20–40 µs for each thing of yours; encoding it is 0.15–0.35 ms. The
+  disk write, 0.4–0.6 ms there and unbounded on a slow disk, is off the frame.
+- **A death in Normal** keeps the save and shows the death screen (Menus & UI): Load
+  last save is Resume, and New run is New game in Normal.
 
 - **What a save holds:** you (where you stand, which way you face and look, how you're
   moving, stamina, your bars, your slots, what's in your hands, at your waist or being
@@ -90,7 +108,10 @@ Menus & UI calls them from Save & quit, Resume, New game and Options.
 - **Versioned:** each file opens with what it is and its version, and one of another
   version, or not a save at all, is refused with the reason (`refused`) before any of it
   is read. A refused profile is never written over, except by a reset.
-- **Death deletes the save,** so the main menu offers only New game.
+- **A death in Ironman deletes the save,** so the main menu offers only New game, and
+  a new Ironman run begins at once.
+- **A dev scenario's run is never saved,** and a death in it begins a new run without
+  touching the save on disk.
 - **The profile** is `profile.save` beside the run save. Taking a find reports every kind
   it held, the first of each being a discovery. `has(id)` answers for unlocks and
   discoveries alike.
@@ -103,7 +124,6 @@ Menus & UI calls them from Save & quit, Resume, New game and Options.
 
 - Kits unlocked by discoveries, and choosing one at New game.
 - Steam achievements and cloud sync, attached at `profile.unlock`.
-- The optional saving-and-reloading mode.
 
 ## Probes
 
@@ -111,7 +131,8 @@ Menus & UI calls them from Save & quit, Resume, New game and Options.
    lines, a planter growing, a charge draining), resume, and the next minute matches a
    run that never saved, to within physics' own repeatability.
 2. **Only what changed.** A save holds no terrain and no untouched finds, and stays small.
-3. **Death ends the run.** After dying the save is gone, and the menu offers New game.
+3. **Death ends an Ironman run.** After dying the save is gone, and the menu offers
+   New game.
 4. **Versions.** A save or profile from an unknown version is refused with a message,
    never half-loaded.
 5. **Discoveries are recorded once,** survive a new run, and reset empties them.
@@ -120,6 +141,11 @@ Menus & UI calls them from Save & quit, Resume, New game and Options.
    down on the sand instead of hanging in the air.
 7. **A coil in a slot.** Saved with the kit's 6 m coil and a cable in your slots and
    resumed, the coil comes out a working 6 m line and the cable whole.
+8. **Normal saves as you go.** Saved by hand, no save lands before the autosave period
+   is up and one does just after; none while you're dead, in Ironman, or in a dev
+   scenario's run.
+9. **The mode survives.** An Ironman run saved and resumed is still Ironman's: no Save,
+   and death deletes its save. A save with no mode resumes as Normal.
 
 ## Out of scope
 

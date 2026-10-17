@@ -1,7 +1,8 @@
 extends SavesProbe
-## Profile & saves probe 3: death ends the run. A run saved and played on
-## dies by its own body's tick; the save is gone with it, so the menu has
-## nothing to resume and offers New game, and the next run starts fresh.
+## Profile & saves probe 3: in Ironman, death ends the run. An Ironman run
+## saved and played on dies by its own body's tick; the save is gone with it,
+## so the menu has nothing to resume and offers New game, and the next run
+## starts fresh.
 
 
 func run() -> void:
@@ -14,10 +15,11 @@ func run() -> void:
 	world.name = "World"
 	main.add_child(world)
 	var runs := Runs.new()
+	runs.ironman = true
 	main.add_child(runs)
 	add_child(main)
 	await settle(true)
-	check(saves.save(world), "saved")
+	check(saves.save(world, true), "saved")
 	check(saves.has_run(), "there's a run to resume")
 	var started := []
 	runs.started.connect(func(next: World) -> void: started.append(next))

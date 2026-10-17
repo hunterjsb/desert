@@ -2,7 +2,8 @@ extends MenuProbe
 ## Menus & UI probe 4: New game asks over a save, and declining leaves the
 ## save untouched. The question comes with the safe answer highlighted;
 ## confirming that, or back, declines, and the save file is just as it was.
-## Accepting deletes it and starts a fresh run, not the saved one.
+## Accepting asks the mode, and then deletes the save and starts a fresh run,
+## not the saved one.
 
 
 func run() -> void:
@@ -10,6 +11,7 @@ func run() -> void:
 	# A run lived in for a while, saved and quit.
 	world.time += 600.0
 	press(&"ui_cancel")
+	press(&"ui_down")
 	press(&"ui_down")
 	press(&"ui_accept")
 	await faded_in()
@@ -32,9 +34,12 @@ func run() -> void:
 	press(&"ui_accept")
 	press(&"ui_down")
 	press(&"ui_accept")
+	check(main.ui.top().words() == PackedStringArray(["NORMAL", "IRONMAN"]) and _untouched(kept),
+		"accepting asks the mode, the save still untouched")
+	press(&"ui_accept")
 	await faded_in()
 	check(main.in_run() and not saves().has_run() and not world.has_meta(&"resumed"),
-		"accepting deletes the save and starts a fresh run")
+		"then the save is deleted and a fresh run starts")
 
 
 func _untouched(kept: PackedByteArray) -> bool:
