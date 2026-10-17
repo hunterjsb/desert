@@ -193,6 +193,12 @@ The hoverboard tows nothing.
 - **A stake** is a small device you can carry. Use drives it into the sand where you
   look. Take on a driven stake pulls it into your hand with its lines still on its ring,
   pulling on you now, so one gesture unstakes them and the next stakes them again.
+  It goes in only where your look meets the sand itself within reach, at the ground's
+  height there (2026-10-17). Used at sand farther off, or at anything else near, like a
+  crate or a ruin's wall, it stays in your hand and the readout says why; before, one
+  with lines on it went to your waist instead and stood in the air in front of you.
+  Used looking out over the sand, not down at it, one with lines on it ties at your
+  waist, to tow what's on them.
 - **A snapped line** parts into two lines, each with a loose end where it broke.
 - **The hard stop** stops a line stretching any further at once. Nothing in a line,
   its spring or its stop, pulls its ends together faster than 3 m/s, however far it
@@ -251,6 +257,10 @@ Reliability is the whole point here, so this list is long. All run without a win
 14. **Tied standing.** A coil out of a slot, its first end in hand, ties to a stake a step
     and a half ahead from a standing look at its foot; walked off paying out, its second
     end ties to the next stake's ring the same way, laid long enough to reach between them.
+15. **Only into the sand.** The kit's stake, taken up with the crate's line on it, used
+    at sand out of reach and then at the crate, stays in your hand each time, neither
+    driven nor at your waist, and the readout says why. At sand in reach it goes in at
+    the ground's height; looking out over the sand, use ties it at your waist.
 
 Every probe is first run against a deliberately broken rope, to prove it can fail.
 
