@@ -66,6 +66,8 @@ func _ready() -> void:
 func _enter_tree() -> void:
 	# Before the World's _ready builds the weather from it.
 	Tuning.current().run_seed = SEED
+	# The fixed exposure, not the eye's, so shots and readings compare across builds.
+	Tuning.current().eye_adapts = false
 
 
 func _process(_delta: float) -> void:

@@ -29,3 +29,7 @@ theme/custom="res://game/ui/theme.tres"
 
 3d/physics_engine="Jolt Physics"
 3d/default_linear_damp=0.0
+
+[rendering]
+
+anti_aliasing/quality/use_debanding=true
