@@ -18,7 +18,8 @@ research](../lore-research.md).
 
 ## The radio
 
-A device you carry or mount (Devices & mods). **Its reach is huge,** with the exact
+A device you carry or mount (Devices & mods). It also works from a suit slot: it plays
+from you, on its own battery, and use on its slot turns the dial (Survival, 2026-10-17). **Its reach is huge,** with the exact
 range still to tune. Better radios and antenna mods hear more clearly. Tune it, and you find:
 
 - **Music, for the vibes.** Sand Game's tracks carry over: "Sandy Andy" by day and

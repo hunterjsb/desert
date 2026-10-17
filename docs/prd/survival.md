@@ -154,6 +154,22 @@ Death means a new run (see Runs in the vision).
   out 6 m, a found one 12 m and the half of a snapped line its own length, and a save
   keeps it too. The view shows a coil with its length (Rope coil, 6 m) and a stowed
   cable as a cable.
+- **The inventory shows things as they are, and gadgets work from it** (Hunter,
+  2026-10-17: "display the rendered items, so if a player has a compass or gadget in their
+  inventory, they can use it by just openening it and dont necesarily need to mount or
+  hold it for it to be fully useful"). Each slot shows its thing rendered, lit as in the
+  world, with its name and the number that matters under it (water left, a coil's length,
+  a battery's charge). Small gadgets go in a slot whole and keep working there: the radio
+  plays from you on its own battery, and the compass's needle turns live in its slot, so
+  opening the inventory is a glance at it. Use on a slot uses the thing in place (turns the
+  radio's dial); a click still brings it to your hands. Bigger devices still need your
+  hands or a mount.
+- **The compass** (2026-10-17): a small find, a part, whose needle points to the moon's
+  north. Held, you read it in your hand; in a slot, in the inventory. The sun gives you the
+  same without one: the moon has no tilt, so the sun rises due east and sets due west
+  everywhere, stands to the south at noon north of the equator (north of you south of it,
+  overhead on it), and morning shadows point west. A storm hides it; the compass doesn't
+  care.
 - **The suit** is those slots plus its built-ins: air and radiation protection, free and
   drained by nothing. Its sockets for mods (heater, cooler, reclaimer, battery, harness
   hooks) wait for the full version, so in the skeleton the suit isn't a device yet.

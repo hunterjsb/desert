@@ -88,6 +88,33 @@ it, take hold of it, and let go.
    allowed but **not balanced around**. If you want something to stay, fit a tray or
    tie it down. We'll watch how it plays.
 
+## The chassis
+
+(Hunter, 2026-10-17: "a larger, flatter "chassis", a modular frame that can attach to
+*itself* horizontially to form a large flat chassis of varying dimensions... each chassis
+part needs its own hover tray so that becomes a limiter... the same port that can be used
+for rope hooks can stick chassis together... mount a crate on the chassis frame to get
+more ports".) As a camp grows, one crate isn't room enough. The chassis builds a bigger
+floater out of pieces:
+
+- **A piece** is a flat, square frame, a little wider than a crate (about 1 m across)
+  and thin. It's a find.
+- **Pieces join edge to edge by their rings.** Each edge has a ring, and a piece brought
+  edge-on to another's free ring snaps flush beside it, the same snap as fitting. Joined
+  pieces are one rigid deck, flat, in whatever shape you lay out. A ring with a hook on it
+  ties rope instead, so a deck is towed and moored like a crate. Take on a piece takes it
+  off the deck, the last joined first.
+- **Every piece needs its own hover tray,** and that's what limits how big a deck gets.
+  The deck floats only while every piece has its tray; one short, and it rests on the
+  sand. Use on the deck sets all of it floating or resting.
+- **Each piece has one deck mount on top,** which takes one device standing on it:
+  usually a crate, and a condenser, a shield or a charger fit too. A planter doesn't (too
+  long for a piece, and it floats on its own tray), and nor does a turbine, which works
+  only standing on the sand.
+- **A piece has nothing else:** no battery and no port of its own. The ports come from
+  what you mount, which is why a deck usually carries crates. Everything on one deck
+  shares one power pool, and its wind catch is its pieces' and what stands on them.
+
 ## What Sand Game taught us
 
 - **Snapping happened on contact.** Anything that bumped a sticky area got stuck, even
@@ -232,11 +259,12 @@ it, take hold of it, and let go.
 | Socket | Takes | Owned by |
 |---|---|---|
 | Battery slot | Batteries | Power |
-| Ring mount | Rope hooks | Rope & tethering |
+| Ring mount | Rope hooks; on a chassis piece, another piece's edge | Rope & tethering |
 | Bottom mount | Hover trays | Bubble shield & camp |
 | Top mount | Solar panels, instruments such as the radio, lamps, the shield generator | Power and others |
 | Rack | The hoverboard, seated along a crate's side, riding and charging with it (Hunter, 2026-10-16) | Movement |
 | Plant slot (small, large) | Seedlings | Farming |
+| Deck mount | One device standing on a chassis piece: a crate, a condenser, a shield, a charger (2026-10-17) | Devices & mods |
 
 **As built, what each frame has** (2026-10-16):
 
