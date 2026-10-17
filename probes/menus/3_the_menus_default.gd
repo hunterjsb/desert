@@ -11,7 +11,15 @@ extends MenuProbe
 
 
 func run() -> void:
+	# A storm everywhere at the menu, as the shield probes make one, whatever
+	# the seed's weather; the run after it has its own.
+	var tuning := Tuning.current()
+	var kept := [tuning.storm_threshold, tuning.storm_ramp]
+	tuning.storm_threshold = -2.0
+	tuning.storm_ramp = 0.04
 	await open_main()
+	tuning.storm_threshold = kept[0]
+	tuning.storm_ramp = kept[1]
 	var menu := main.ui.top()
 	check(menu.title != null and menu.title.text == UIRoot.TITLE and menu.title.is_visible_in_tree(),
 		"the main menu's title is the game's name")
