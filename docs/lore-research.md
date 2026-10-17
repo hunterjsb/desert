@@ -6,15 +6,19 @@
 Session 3 ([2026-10-16](lore-session-2026-10-16.md): names and hierarchy, the FTL ruling, the
 factions, the six eras of Zan, the surface today) is folded in below, and so are Hunter's
 answers to six of its seven conflicts with earlier text, given the same day after the session
-([section 14](#14-open-after-session-3)). Loose: none of it is canon until he says so, and
-every name is a working name. It joins [the body
+([section 14](#14-open-after-session-3)). Session 4 ([2026-10-17](session-notes-2026-10-17.md):
+Zan's settlements, Halloran and H-Town, the Harbourmaster) is folded in too, with its clashes
+and open items in [section 15](#15-open-after-session-4). Loose: none of it is canon until he
+says so, and every name is a working name. It joins [the body
 research](body-research.md), [the science brief](science-brief.md) and the vision's lore into
 one history.*
 
 **Tags.** **Agreed** is from the first two sessions, which have the full detail. **Agreed
 (session 3)** is from the third, which works the same way. **Agreed (Hunter, 2026-10-16, after
 session 3)** is his answer to a conflict that session left open, given the same day.
-**Proposal** is a Claude suggestion in the sessions that Hunter hasn't picked. **Leaning** is
+**Agreed (session 4)** is from the 17 Oct notes, a supplement to session 3 that adds lore and
+replaces none. **Proposal** is a Claude suggestion in the sessions that Hunter hasn't picked.
+**Leaning** is
 a research option this memo favours, not decided. **Open** is unresolved. Where older research disagrees with the
 sessions, the sessions win, and where part 2 refines part 1, part 2 wins;
 [section 12](#12-what-the-sessions-replaced) lists what changed. Session 3 refines both, with
@@ -22,13 +26,14 @@ one exception to that rule: where it gives its own resolution (the FTL ruling, t
 that is applied. Every other clash with earlier text was left standing on both sides, and
 Hunter has since answered six of the seven; those answers are applied everywhere they appear
 and listed in [section 14](#14-open-after-session-3), which keeps the seventh, the end state,
-open.
+open. Session 4 follows the same rule: where it rubs against earlier text, both sides stand
+and the clash is quoted in [section 15](#15-open-after-session-4).
 
 ## Placeholders
 
 **Agreed (Hunter, 2026-10-16, after session 3):** the time spans are redacted until he sets
 them. Every lore and game doc uses these names and carries no figure, and they are defined
-only here. Both are **unset**: don't guess a value.
+only here. All three are **unset**: don't guess a value.
 
 - **`{YEARS_SINCE_FALL}`** (unset). The time from the last survivors to the player's arrival.
   It stands in for every earlier figure for how long ago the fall was. Where a sentence only
@@ -37,6 +42,11 @@ only here. Both are **unset**: don't guess a value.
 - **`{BRONZE_AGE_SPAN}`** (unset). How long the two Bronze Age feudal eras last, until the last
   survivors die out. It stands in for session 3's figure for their span, and it ends where
   `{YEARS_SINCE_FALL}` begins.
+- **`{COLONIAL_ERA_SPAN}`** (unset). How long the colonisation era lasts: the years in which
+  hover trays and true space-age tech were shipped in. It stands in for session 4's figure
+  for it, redacted by the same rule (applied 2026-10-17). The figure stays in the verbatim
+  notes, as session 3's do. Which of session 3's six eras it covers is open
+  ([section 15](#15-open-after-session-4)).
 
 ## 1. The shape of it
 
@@ -136,13 +146,49 @@ transit a freighter-town needs somewhere to resupply, repair and let its people 
 why the hub grew. The rhythm is tidal: when a freighter-town docks, crews pour out and the
 place swells with money and chaos, and when the lane is quiet a skeleton crew tends the garden
 and the vents. So far: one big port city, **Port Morgan** (named in session 3), and refinery
-settlements near the vents (agreed), possibly a minor secondary port (**Open**). **Open: the
+settlements near the vents (agreed), possibly a minor secondary port (**Open**; session 4 says
+Port Morgan is the only port: [section 15](#15-open-after-session-4)). **Open: the
 port at its peak** is the next session and the most surfaced lore left, since the player walks
 through its corpse (question 8).
 
 **Leaning: two He-3 streams.** Part 1 has outfits skimming the giant, part 2 has the far end
 exporting He-3. Both hold if the bulk arrives by freighter and skimming is the risky local
 trade.
+
+### Zan's settlements (Agreed, session 4)
+
+Session 4 ([the notes](session-notes-2026-10-17.md)) adds the settlements. They sit beside the
+harbor above, and clash with its "secondary port" ([section 15](#15-open-after-session-4)).
+- **One port.** Port Morgan is the only port and the only lifeline off-world, which is why Zan
+  centralises on it.
+- **A full-size city, unregistered.** Port Morgan sprawls in all directions across a big flat
+  plateau: markets, districts and lots of residents.
+- **IOU districts.** Early residents were largely freight workers, so some residential
+  districts are effectively run by IOU bosses.
+- **Agriculture.** Residents start growing food on-planet. Details open. Section 2 still holds:
+  natural regolith isn't soil.
+- **Frontier towns.** Small cowboy-frontier settlements out on the plains. Details open.
+- **Tension** between Port Morgan and H-Town (below). What causes it isn't said.
+
+### Halloran Isotope and H-Town (Agreed, session 4)
+
+- **Halloran Isotope** is a separate, decent-sized interstellar He-3 refiner. Its public reason
+  for being on Zan is on-site refining for refuelling. A big real motive is its partnership with
+  the Skimmers Association.
+- **Geography.** The second major settlement lies in a rift valley some distance from the
+  plateau. The refinery sits on step terraces along the rift wall, piping down to the vents.
+  The workers' and unregistered town sprawls on the rift floor, physically separated from the
+  plant by the escarpment. The floor town is buried first in eruptions.
+- **Names.** "Halloran" loosely means the whole place. The more official the speaker, the more
+  it means just the refinery. Locals tell the refinery from the floor town, **H-Town**. H-Town
+  is the most secluded major settlement and a natural hub for criminal activity.
+- **Security.** Halloran is used to building in remote, hostile sites and fields its own
+  security force. TILG doesn't employ troops.
+
+It fits part 1: refineries cluster near the vents, and the Skimmers Association was best placed
+to inherit the smuggler moon. Who rules each part is under
+[Who rules the settlements](#who-rules-the-settlements-agreed-session-4). Whether Halloran is
+part 1's "tritium refineries" row is in section 15.
 
 ## 5. Who's there: operators, makers and rarity
 
@@ -234,6 +280,28 @@ is open ([section 14](#14-open-after-session-3)).
   [the names](#hierarchy-and-the-name-decay-agreed-session-3)). The session doesn't say
   whether this is the far end of the lane in [section 10](#10-the-far-end-of-the-lane); the
   name and the trade say so, and the reading is flagged in section 14.
+
+### Who rules the settlements (Agreed, session 4)
+
+- **Port Morgan: the TILG Harbourmaster.** A TILG loyalist up the corporate ladder: cunning,
+  working with local leaders, and keen to grow Port Morgan because it's profitable.
+  Essentially a politician whose port post became de facto government. Port security is the
+  town's own, not TILG's.
+- **Succession.** TILG, tipped off about the war and sensing the incumbent would abandon them,
+  nominates a replacement loyalist. The incumbent is never formally fired, and a bureaucratic
+  standoff lasts until the war. When it starts, the TILG-nominated Harbourmaster evacuates
+  almost immediately, and the original stays. The original keeps the title out of habit, no
+  longer works for TILG, and is effectively mayor.
+- **Names.** Both Harbourmasters are known mostly by title. Their names (none chosen) appear
+  only in paperwork.
+- **Halloran: the Site Director.** The refinery is run by a rotating Halloran Site Director:
+  powerful, but less attached to Zan.
+- **H-Town: the skimmer boss.** H-Town is run by the Skimmers Association, with a
+  down-to-earth skimmer boss as de facto mayor.
+- **The war era.** Halloran keeps running the plant, but the skimmers gain heavy leverage over
+  it, and Halloran questions whether staying is worth it. Rather than seek autonomy or their
+  own weapons, the skimmers demand *more* Halloran forces on Zan and use them as a private army
+  for their interests. Which of the six eras this is, is not said.
 
 ## 6. Makers' goods: shields and power
 
@@ -545,7 +613,8 @@ live there.*
 ## 13. Open questions for Hunter
 
 *From both sessions, merged with the earlier list and de-duplicated. Session 3's own open
-questions, and what it left unsettled, are in [section 14](#14-open-after-session-3).*
+questions, and what it left unsettled, are in [section 14](#14-open-after-session-3), and
+session 4's are in [section 15](#15-open-after-session-4).*
 
 **History**
 1. **The sister moon:** impact, collision or ejection (the physics favours ejection)? Is it
@@ -555,9 +624,9 @@ questions, and what it left unsettled, are in [section 14](#14-open-after-sessio
 3. **The maybe-voice:** which model, and does it stay distinct from the far end's signal?
 4. **The timeline and the war:** dates from founding to arrival (the span from the last
    survivors to arrival is `{YEARS_SINCE_FALL}` and the Bronze Age eras' is
-   `{BRONZE_AGE_SPAN}`, both unset), and what the war was, between whom. (Session 3 says the
-   hive mind started it and Hunter says probably, as an outside power, but there are no
-   dates.)
+   `{BRONZE_AGE_SPAN}`, and the colonisation era's is `{COLONIAL_ERA_SPAN}`, all unset), and
+   what the war was, between whom. (Session 3 says the hive mind started it and Hunter says
+   probably, as an outside power, but there are no dates.)
 5. **Who sent the player:** ship crew, the company, a colonial vat that grows workers
    (permadeath as lore), or never said. Still deferred; session 3 calls it deliberately
    unknown (section 14).
@@ -570,9 +639,13 @@ questions, and what it left unsettled, are in [section 14](#14-open-after-sessio
    shipwright, Keel & Core, Drayard, Orbital Foundries.
 7. **Names** for the shield OEMs, the secondary port, the refinery settlements and the moon's
    alien name. (The port city is **Port Morgan**, Agreed, session 3; the alien name is deep
-   lore, not to be expanded now.)
+   lore, not to be expanded now. Session 4 names Halloran and H-Town, and has no secondary
+   port. It leaves the Harbourmasters known by title, the Site Director and the skimmer boss
+   unnamed, and the frontier towns unnamed.)
 8. **The port at its peak:** do docked crews mix into town or stay aboard, what was the peak
-   population, and what was daily life in the good window?
+   population, and what was daily life in the good window? (Session 4 gives Port Morgan
+   markets, districts and lots of residents, early ones largely freight workers. The rest is
+   still open.)
 9. **Do the shipwright and StarCom count as OEMs,** and where does the smuggler era sit in the
    colonial / Xanathivin / Zan tag?
 10. **How much of the UG to flesh out** beyond its catalog.
@@ -718,6 +791,127 @@ H. **The name path.** Part 2's Xanathivin and Zanoth against session 3's "skimme
 5. **The name of the pre-unification state,** whose border territory the Provisional State
    absorbed and to which Standard Freight was tied.
 6. **Why the player is on Zan.** Deliberately unknown; the same as question 5 in section 13.
+
+## 15. Open after session 4
+
+*The 17 Oct notes ([session notes](session-notes-2026-10-17.md)) say to fold lore in "where it
+fits" and, "where they rub against something you already have, flag it rather than overwrite."
+So nothing below is resolved. Each clash is quoted on both sides and both stand, as in section
+14. Session 4 replaces no earlier text, so section 12 is unchanged. Items marked **open** in
+the notes are undecided and are listed last.*
+
+**Clashes with earlier text**
+
+1. **One port.** Earlier: "So far: one big port city, **Port Morgan** (named in session 3), and
+   refinery settlements near the vents (agreed), possibly a minor secondary port" (section 4,
+   from part 2 §6: "and possibly a secondary minor port"), with question 7 still
+   asking for the secondary port's name, and part 1's ruin geography listing "port cradles and
+   beacons on the heights" and "skimmer cradles, tethers and catch stations on high ground."
+   Session 4: "Port Morgan is the only port and the only lifeline off-world, which is why Zan
+   centralises on it." Not said: where skimmers land and cradle (H-Town reads as the place, but
+   isn't stated), and how the refined fuel Halloran makes "for refuelling" reaches ships if
+   every ship leaves from Port Morgan.
+2. **Halloran's forces against rare military tech.** Earlier (session 3): "military tech on Zan
+   is extremely rare and arrives only through deserters, and possibly lost tithe collectors";
+   TILG registered Zan as temporary "to avoid the Provisional's military upkeep: troop
+   stations, customs, a de facto second tax"; and Hunter's answer, "no war battles happen on
+   Zan." Session 4: Halloran "fields its own security force," and in the war era the skimmers
+   "demand *more* Halloran forces on Zan and use them as a private army for their interests."
+   Not said: whether Halloran security carries military tech or civilian-grade gear that
+   doesn't count, and whether a private army fights anyone beyond session 3's "internal
+   skirmishes."
+3. **Who governs Port Morgan.** Earlier: part 1's "Moon regional government: Forms once there
+   are enough permanent residents to want representation"; section 4's town "never registered
+   with the local government"; and the governor-general, for whom "Port Morgan was known about
+   and let be." Session 4: the TILG Harbourmaster is "essentially a politician whose port post
+   became de facto government," and "port security is the town's own, not TILG's." Not said:
+   whether the Harbourmaster's office is part 1's moon regional government, or whether that
+   body never formed because the city was never registered. Adds to ambiguity B.
+4. **The IOU on the ground.** Earlier: part 1's table has the IOU as a "Regulator: Approves
+   operations; oversees labour, safety and humane treatment of the people run through," and
+   section 4 has it approving the hub from above. Session 4: "some residential districts are
+   effectively run by IOU bosses." The two can both hold, a labour body with local bosses, but
+   no earlier text puts the IOU on the ground. Read here as the same Interstellar Operations
+   Union; the notes don't say.
+5. **Halloran against the refinery row.** Earlier: part 1's "Heavy industry: Tritium
+   refineries. Appear once skimming and transshipment scale up. Near geothermal vents," and
+   "refinery settlements near the vents (agreed)," plural. Session 4: Halloran is "a separate,
+   decent-sized interstellar He-3 refiner," and H-Town is "the second major settlement." Not
+   said: separate from what; whether Halloran is that row, one refinery among several (then
+   are there other refinery settlements?), or a new entity.
+6. **A warning before the war.** Earlier: part 1, "with the route severed, its reason to exist
+   disappears in an afternoon." Session 4: "TILG, tipped off about the war... nominates a
+   replacement loyalist," and "a bureaucratic standoff lasts until the war." A warning and then
+   a sudden cut can both hold. Not said: who tipped TILG off, how long before, and whether
+   anyone else was warned. The notes' "war era" for Halloran is not placed among the six eras
+   either.
+7. **The colonisation era's length.** Earlier: no figure for it. The loose span-words in the
+   lore are Standard Freight "losing to TILG for about a century," the Provisional's label that
+   "stuck for centuries," "generations of colonists" (part 2 §3) and "a generation or two"
+   (part 1, phase 2). Session 4 gives a figure for it. By the standing rule it is redacted to
+   `{COLONIAL_ERA_SPAN}` ([Placeholders](#placeholders)), and nothing in the live docs
+   contradicts it. Not said: which of session 3's eras it covers (era 1 alone, or through the
+   withdrawal in era 4), where it ends, and whether "about a century" and "centuries" should
+   become placeholders too. It is the first leg of question 4 in section 13, still unset.
+8. **When hover shipped, and who made the skimmer-era gear.** Session 4: "Hover trays and true
+   space-age tech were only shipped in then" (the colonisation era), and skimmer-era gear is
+   "light, cheap and fragile, because Zan wasn't a desert yet." Earlier: the hoverboard as
+   "skimmer-culture gear" (question 11), the skimmer era placed in the middle stratum, and
+   section 5's "After the cut it can integrate and repair, never fabricate." These hold if the
+   skimmer era begins inside the colonisation era, or if its gear was imported before the cut.
+   Not said which. It narrows ambiguity D (below).
+
+**Narrowing earlier ambiguities, without settling them**
+
+- **C, the port station.** Session 3 evacuates "the port station" in era 2. Session 4 has the
+  TILG-nominated Harbourmaster evacuate "almost immediately" while "the original stays," as
+  mayor, over an unregistered city. So Port Morgan is not wholly evacuated. That is one more
+  account of who stayed (resolved item 4 leaves "how many stayed" unsaid). Still open: whether
+  the port station is the approved hub, a separate TILG facility, or Port Morgan's docks.
+- **D, the skimmer era.** Its gear is made for a moon that "wasn't a desert yet." That reads as
+  before the desert, which the lore has coming with the collapse. It doesn't say whether the
+  skimmer era is part 1's smuggler moon.
+- **E, the smuggler moon.** H-Town is "the most secluded major settlement and a natural hub for
+  criminal activity," run by the Skimmers Association, which part 1 had "best placed to
+  inherit" the smuggler moon. It reads as that phase's home. Session 4 doesn't use the phrase.
+
+**Open questions from session 4**
+
+1. **Agriculture.** "Residents start growing food on-planet. Details open." What is grown,
+   where, and in what (section 2: natural regolith isn't soil).
+2. **Frontier towns.** "Small cowboy-frontier settlements out on the plains. Details open."
+   How many, what they do, who they trade with, and how they sit with the dune terrain.
+3. **The Port Morgan and H-Town tension.** Stated, not explained.
+4. **Where they are.** Port Morgan is on a big flat plateau and H-Town in a rift valley "some
+   distance" off. Which side of the tidally locked moon (the body research leans to "the port on
+   the near side"), and how far, given the game's lap. A plateau, a rift wall and an escarpment
+   are the "fixed underlying topography" the vision says "may come later" (the game has only
+   dunes now).
+5. **Names.** The Harbourmasters, the Site Director, the skimmer boss and the frontier towns
+   (question 7 in section 13).
+6. **How H-Town ends.** "The floor town is buried first in eruptions." Whether that is the
+   paroxysm or the ordinary eruptions of era 5 is not said.
+7. **The game-side items the notes call open.** The crate label, whether pieces from different
+   eras join in the chassis, and what a collector catches are in the game docs below.
+
+**Clashes in the game docs** (quoted in the doc named)
+
+- Colonial bunkers you "go down" into, against "nothing underground": [Salvage &
+  ruins](prd/salvage-and-ruins.md#open-questions).
+- Gear trade-offs, "not a ladder," against "the deeper the layer... the better its technology":
+  the same place, and [the vision](vision.md#open-questions).
+- The built ruin against the base case of pillars and wall stubs, and "big items" against a
+  heaviest find of 51 kg: the same place.
+- A collector that catches wind-blown loot, against finds "frozen where it lies" and "left out
+  of power, wear and the wind": the same place.
+- The crate's surface label, "ZN" against "should read XN":
+  [art direction](art-direction.md#open-questions).
+- Remodelling devices by era in shape, against "models wait for the loop": the same place.
+- The light shield, flat and carried against the round one built, and the starts:
+  [bubble shield & camp](prd/bubble-shield-and-camp.md#open-questions) and the vision.
+- The extremes of play against "your home goes with you": the vision.
+- Whether chassis pieces from different eras join freely, or need adapters (open in the
+  notes): [devices & mods](prd/devices-and-mods.md#open-questions).
 
 **Sources:** [dust charging](https://public.websites.umich.edu/~atreya/Articles/2003_Electrical_Discharges.pdf),
 [Europa's dose](https://europa.nasa.gov/news/17/radiation-maps-of-europa-key-to-future-missions),

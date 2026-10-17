@@ -221,7 +221,8 @@ most from row to row:
   ([names](lore-research.md#hierarchy-and-the-name-decay-agreed-session-3)).
 - **Surface:** "ZN" daubed back on by hand in rust red: a copy from memory, on the way from XN
   to Zan, with the X said and written as a Z. It's late, a Bronze Age form, and session 3 dates
-  ruins by which form appears.
+  ruins by which form appears. (Open, 2026-10-17: Hunter's first reaction was that it should
+  read XN. See the open questions.)
 - **Yours:** a plain batch number, "LOT 3127", for a recent, cheap make.
 
 The crew's patch has only two states: a found board carries it, and a board of your own is
@@ -264,6 +265,20 @@ read. The atlas is under 3 MB of video memory with its mipmaps, loaded with the 
 `~/Desktop/marks_<thing>.png`. Each marked thing is shot close up and from 5 m, and a deep and
 a surface crate side by side.
 
+## Shape by era
+
+*Hunter, 2026-10-17 ([notes](session-notes-2026-10-17.md)); asked for, not drawn.* "Device models
+should differ by era in shape, not just maker's marks. The shield comes first."
+
+Today an era shows in paint and marks only. Wear "does half the work" (B, above), the atlas has
+a row per era, and every shape is still a grey box wearing B. The notes want the silhouette to
+tell the era too. What each era's gear is like is in the other docs: colonial is crisp and
+overbuilt (B's era cue), the skimmer era's crate is "light, cheap and fragile," and Bronze Age
+finds are worn, reused space-age items with Bronze Age carvings
+([Salvage & ruins](prd/salvage-and-ruins.md#gear-and-ruins-by-era)). Not said: what any era's
+shield looks like. The built light shield is round and bone white, and the notes' new one is
+flat ([Bubble shield & camp](prd/bubble-shield-and-camp.md#the-carried-light-shield-and-the-starts-not-built)).
+
 ## Open questions
 
 - Is B final, or does it take C's bright, kind-coloured parts so they read through the dirt
@@ -273,3 +288,18 @@ a surface crate side by side.
 - Should parts be coloured by their socket kind everywhere, as the tells already are?
 - Which makers get names, and in what register, before a mark's letters stop being
   placeholders?
+- **The crate's surface label.** The notes: "Open: the XN-to-Z crate label. Hunter's first
+  reaction was that it should read XN; it may stay as story." Here: the surface label is "'ZN'
+  daubed back on by hand in rust red: a copy from memory, on the way from XN to Zan, with the X
+  said and written as a Z. It's late, a Bronze Age form," and "'ZN' is an invented form on the
+  lore's path from XN to Zan." The lore: "Spelling lags pronunciation: speech softened the X to
+  a Z early, but writing kept the X for centuries"
+  ([the names](lore-research.md#names-the-ug-catalog-and-the-moon)). Two readings. The lore
+  says writing kept the X, which backs his first reaction. Or the daub stays as story: a
+  copyist who said Z and wrote what they said. Not decided. The atlas still reads "ZN", and
+  nothing was changed.
+- **Remodelling against "models wait for the loop".** Here: "Every game object keeps its
+  grey-box shape until the loop works," and "models wait for the loop." The notes: "Device
+  models should differ by era in shape... The shield comes first." Not said: whether the
+  shield's remodel is the first exception or waits with the rest, and whether a new shape keeps
+  the grey box's collision and sockets, as the paint pass did.
