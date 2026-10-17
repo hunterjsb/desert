@@ -291,15 +291,22 @@ static var _current: Tuning
 @export var board_settle_hertz: float = 2.0
 @export var board_hover_damping: float = 0.8
 ## The most the hover pulls you back down beyond gravity, m/s²: more and it
-## hugs a crest, less and it sails off. A hop gives that up, and falls at
-## this share of gravity: floaty.
+## hugs a crest, less and it sails off. It eases off over this far past its
+## ride height, m: further and the sand's dropped away, and you fly under
+## gravity alone. A hop gives that up, and falls at this share of gravity:
+## floaty.
 @export var board_hold: float = 15.0
+@export var board_hold_reach: float = 0.5
 @export var board_hop_fall: float = 0.6
+## Coming down on the sand, the hover brakes your fall about this hard, m/s²,
+## and never more than three times it: a landing is a firm press, never a slam.
+@export var board_cushion: float = 12.0
 ## It reads the sand this many seconds of travel ahead and behind, so it
 ## rounds a dip's bottom instead of slamming into it.
 @export var board_look_seconds: float = 0.45
-## A hop, m/s up.
-@export var board_hop: float = 3.0
+## A hop, m/s up, and this much more from a full crouch.
+@export var board_hop: float = 4.0
+@export var board_pop: float = 1.5
 ## What it draws, W: floating, and on top of that at full push. A base
 ## battery's 100 Wh lasts twenty minutes flat out, about 24 km.
 @export var board_hover_w: float = 40.0
