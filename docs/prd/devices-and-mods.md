@@ -149,14 +149,18 @@ it, take hold of it, and let go.
   one of its kind wherever on the device you look, or of several the one nearest where
   you aim among those facing you. Aiming right at a free socket's spot, on any device,
   still wins. An offered socket leans the part partway in with the hum, the
-  ghost shows where it goes, and take seats it; nothing fits until you take. A device
-  seated on another counts as part of it, so looking at the shield on a crate offers the
-  crate's sockets, and a held shield is offered a top mount the same way. Just after a
-  part comes out, its device offers nothing until you look off it, so take puts the part
-  down rather than straight back in. Taking out is unchanged: with empty hands, the part
-  you look straight at comes out. With a part in hand, take near a device with a free
-  socket of its kind fits it there, so to set a part down, look at the sand clear of the
-  device.
+  ghost shows where it goes, and take seats it; nothing fits until you take. On the
+  device's far side, the ghost doesn't show through it (2026-10-17); a tray's under it
+  still does. A device seated on another counts as part of it, so looking at the shield
+  on a crate offers the crate's sockets, and a held shield is offered a top mount the
+  same way. Just after a part comes out, its device offers nothing until you look off
+  it, so take puts the part down rather than straight back in. Taking out: with empty
+  hands, the part you look straight at comes out. A tray, out of sight under its device
+  when you stand, comes out as easily (2026-10-17): a look at the frame's lower edge, or
+  just under it, within 15 cm of the tray, is a look at the tray, and use there still
+  sets it floating or resting; the rest of the frame still takes hold of the device. With
+  a part in hand, take near a device with a free socket of its kind fits it there, so to
+  set a part down, look at the sand clear of the device.
 - **Sliding a tray under a resting device** works from a standing look at it, from any
   side, and lifts the device onto it.
 - **The device doesn't turn toward you on removal yet;** it holds still while the part
@@ -310,6 +314,11 @@ hook. That's how found mods expand a device.
     gently on the sand and its tray draws nothing, while use at the shield seated on it
     switches the shield and leaves the tray be. Use again and it floats, drawing as
     before. Saved resting, it resumes resting.
+14. **Trays come out standing.** Standing by a floating crate, a look at its frame's lower
+    edge or just under it is a look at its tray: use there still sets the crate resting,
+    and take takes the tray out. A look at the frame's middle still takes hold of it.
+15. **The ghost in sight.** A socket offered on a crate's far side shows no ghost through
+    the crate; walk round and it does, and a tray's shows under it.
 
 ## Out of scope
 
