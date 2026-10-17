@@ -139,7 +139,9 @@ physical value, 1 by default, so how bright a night is can be tuned apart from T
 game has no eye adaptation, so at 1 a full-Tu night reads on screen as deep night, the dunes
 barely there: a seventh of the light the game's nights had before at 13°, a fifteenth at 9°
 and a thirty-fourth at 6°. At 13° and a scale of 3 the dunes read and it's still plainly
-night; at 10 it's an overcast dusk (`~/Desktop/tu_more.png`).
+night; at 10 it's an overcast dusk (`~/Desktop/tu_more.png`). Hunter's answer is eye
+adaptation, to build after Tu, with Tu's light kept physical ([art
+direction](art-direction.md#eye-adaptation)), so the scale stays at 1.
 The far side never sees Tu, and its nights are truly dark, lit by the stars alone.
 
 **The stars** turn once a day round the spin axis. A bright star marks the north celestial

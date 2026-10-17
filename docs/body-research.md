@@ -410,9 +410,10 @@ open items are listed last.*
    same share of the sun reads much darker on screen than those lux would to a person
    standing there: at the physical value a full-Tu night has a seventh of the light the
    game's nights had before at 13°, a fifteenth at 9° and a thirty-fourth at 6°. Tu-shine
-   has its own tuning scale for that, 1 (physical) by default. **Suggested: 3,** which keeps
-   a 13° night plainly night with the dunes readable; at 6° that's still darker than 13° at
-   1. Not applied.
+   has its own tuning scale for that, 1 (physical) by default. A scale of 3 keeps a 13° night
+   plainly night with the dunes readable. **Answered (Hunter, 2026-10-17):** eye adaptation,
+   to build after Tu, with Tu's light kept physical ([art
+   direction](art-direction.md#eye-adaptation)), so the scale stays at 1.
 
 **Open in the spec**
 

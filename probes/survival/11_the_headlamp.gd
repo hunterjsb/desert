@@ -1,57 +1,32 @@
 extends ShieldProbe
-## Survival probe 11: the headlamp. Under a clear sky at noon it's off. At
-## dusk, the light wavering round its threshold as a passing veil of dust
-## would, it comes on once and stays on. Deep in a storm at night it's on, and
-## lights the ground 10 m ahead at least as well as a device's lamp lights the
-## sand 5 m off, which is where the tracks look-test found steps still read.
-
-## How far either way, s of the day, dusk wavers as it's crossed, and how fast.
-const WAVER := 2.0
-const WAVER_HZ := 0.5
-## The crossing runs from this long before sunset to this long after, s,
-## over this long, s.
-const SPAN := 40.0
-const CROSSING := 30.0
+## Survival probe 11: the headlamp. A run begins with it off; the headlamp
+## action switches it on, fading in to its full beam, and off again. On, deep
+## in a storm at night, it lights the ground 10 m ahead at least as well as a
+## device's lamp lights the sand 5 m off, which is where the tracks look-test
+## found steps still read.
 
 
 func run() -> void:
-	Tuning.current().headlamp = true
-	await load_storm(0.0)
+	await load_storm(1.0)
 	var lamp := _lamp()
 	if lamp == null:
 		return
+	await physics_frames(30)
+	check(not lamp.on and not lamp.visible, "a run begins with it off")
+	_switch()
+	await physics_frames(roundi(world.tuning.headlamp_fade_seconds * 60.0) + 10)
+	check(lamp.on and is_equal_approx(lamp.light_energy, world.tuning.headlamp_energy), "the headlamp action switches it on, to its full beam")
+	_switch()
+	await physics_frames(roundi(world.tuning.headlamp_fade_seconds * 60.0) + 10)
+	check(not lamp.on and not lamp.visible, "and off again")
+	_switch()
+
 	var day := world.weather.day
 	var latitude := world.moon.latitude
-	var sunset := 0.0
-	while not (day.sun_direction(sunset, latitude, world.moon.longitude).y > 0.0 and day.sun_direction(sunset + 1.0, latitude, world.moon.longitude).y <= 0.0):
-		sunset += 1.0
-	var noon := sunset - world.tuning.day_minutes * 15.0
-	world.time = noon
-	await physics_frames(120)
-	print("clear noon: light %.2f, the lamp %s" % [world.weather.seen_light, "on" if lamp.on else "off"])
-	check(not lamp.on and not lamp.visible, "under a clear sky at noon it's off")
-
-	var switches := 0
-	var was := lamp.on
-	var ticks := roundi(CROSSING * 60.0)
-	for i in ticks:
-		var s := float(i) / 60.0
-		world.time = sunset - SPAN + 2.0 * SPAN * float(i) / ticks + WAVER * sin(TAU * WAVER_HZ * s)
-		await get_tree().physics_frame
-		switches += int(lamp.on != was)
-		was = lamp.on
-	await physics_frames(120)
-	print("crossing dusk over %d s, wavering %.0f s either way: %d switch%s, the light %.2f after"
-		% [CROSSING, WAVER, switches, "" if switches == 1 else "es", world.weather.seen_light])
-	check(switches == 1 and lamp.on and is_equal_approx(lamp.light_energy, world.tuning.headlamp_energy),
-		"at dusk it comes on once and stays on")
-
-	remove_child(world)
-	world.queue_free()
-	await get_tree().process_frame
-	await load_storm(1.0)
-	lamp = _lamp()
-	world.time = sunset + world.tuning.day_minutes * 15.0
+	var midnight := 0.0
+	while day.sun_direction(midnight, latitude, world.moon.longitude).y > -0.9 * cos(latitude):
+		midnight += 1.0
+	world.time = midnight
 	world.player.camera.rotation.x = 0.0
 	await physics_frames(180)
 	var eye := world.player.camera.global_position
@@ -68,8 +43,19 @@ func run() -> void:
 	device_lamp.get_parent().free()
 	print("a storm at night: light %.3f, the lamp %s; the ground 10 m ahead gets %.4f of it, a device's lamp's sand 5 m off %.4f"
 		% [world.weather.seen_light, "on" if lamp.on else "off", lit, beside])
-	check(lamp.on and lamp.visible, "deep in a storm at night it's on")
+	check(lamp.on and lamp.visible, "switched on, deep in a storm at night")
 	check(lit >= beside, "it lights the ground 10 m ahead at least as a device's lamp lights the sand 5 m off")
+
+
+## The headlamp action, pressed once.
+func _switch() -> void:
+	var press := InputEventAction.new()
+	press.action = &"headlamp"
+	press.pressed = true
+	Input.parse_input_event(press)
+	var release := press.duplicate() as InputEventAction
+	release.pressed = false
+	Input.parse_input_event(release)
 
 
 func _lamp() -> Headlamp:
