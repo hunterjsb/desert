@@ -30,7 +30,7 @@ func run() -> void:
 	await simulate(0.1)
 	check(saves.save(world), "saved")
 
-	check(await _resume(), "resumed")
+	check(await resume(), "resumed")
 	suit = world.player.suit
 	check(suit.click(2), "the coil comes out")
 	await simulate(0.5)
@@ -57,28 +57,3 @@ func run() -> void:
 		if node is Cable and (node as Cable).plugs.has(hands.held):
 			back = node
 	check(back != null and is_instance_valid(back.plugs[1]), "whole, its other plug following")
-
-
-## The save on disk resumed into a fresh world on the same seed, which you
-## move through as the probe puts you, in the probe's still air.
-func _resume() -> bool:
-	var seed_was := world.run_seed
-	remove_child(world)
-	world.queue_free()
-	await get_tree().process_frame
-	world = WORLD_SCENE.instantiate()
-	world.run_seed = seed_was
-	add_child(world)
-	await settle()
-	await get_tree().physics_frame
-	world.player.set_physics_process(false)
-	if not saves.restore(world):
-		return false
-	if saves.restoring:
-		await saves.restored
-	world.player.collision_layer = 0
-	world.player.collision_mask = 0
-	world.weather.field = wind
-	hands = world.player.hands
-	ropes = world.ropes
-	return true
