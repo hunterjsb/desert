@@ -108,6 +108,51 @@ const TIME_STEP := 10.0
 const DEEP := 300.0
 
 
+## Puts you into a scenario on this world: there and then, with its own
+## things in front of you in place of the run's kit, and the last scenario's
+## gone. Where it put you, or that it found nowhere, shows on the overlay at
+## once; its things follow once the sand under them is solid.
+static func apply(world: World, scenario: Dictionary) -> void:
+	if scenario.is_empty():
+		push_warning("no such scenario")
+		return
+	var place := find(world, scenario)
+	if place.is_empty():
+		Dev.put("world/scn", "%s: none in 3 days" % scenario.key)
+		return
+	world.respawn(place.x, place.z, place.yaw, place.time)
+	Dev.put("world/scn", scenario.key)
+	for body: Node in world.get_meta(&"scenario_kit", []):
+		if is_instance_valid(body):
+			body.queue_free()
+	world.remove_meta(&"scenario_kit")
+	if not (scenario.kind in ["kit", "ruin"] or scenario.get("camp", false) or scenario.get("survive", false)
+			or scenario.get("farm", false) or scenario.get("board", false)):
+		return
+	# Bodies dropped before the sand under them has collision would be frozen or forgotten.
+	while is_instance_valid(world) and not world.terrain.is_settled_around(place.x, place.z):
+		await world.get_tree().physics_frame
+	if not is_instance_valid(world):
+		return
+	# Its own kit takes the place of the run's, gone before anything lands on it.
+	for body: Node in world.get_meta(&"kit", []):
+		if is_instance_valid(body):
+			body.free()
+	world.remove_meta(&"kit")
+	var dropped: Array[Node3D]
+	if scenario.kind == "ruin":
+		dropped = yours(world)
+	elif scenario.kind == "kit":
+		dropped = kit(world)
+	elif scenario.get("farm", false):
+		dropped = farm(world)
+	elif scenario.get("board", false):
+		dropped = board(world)
+	else:
+		dropped = camp(world) if scenario.get("camp", false) else survive(world)
+	world.set_meta(&"scenario_kit", dropped)
+
+
 static func by_key(key: String) -> Dictionary:
 	for scenario in LIST:
 		if scenario.key == key:
@@ -235,13 +280,13 @@ static func kit(world: World) -> Array[Node3D]:
 	for entry: Array in KIT_DEVICES:
 		var device := Catalog.device(entry[0])
 		var size: Vector3 = Catalog.DEVICES[entry[0]].size
-		_drop(world, device, Transform3D(yaw, Vector3(0.0, size.y * 0.5, 0.0)), entry[1], entry[2])
+		drop(world, device, Transform3D(yaw, Vector3(0.0, size.y * 0.5, 0.0)), entry[1], entry[2])
 		dropped.append(device)
 	for entry: Array in KIT_PARTS:
 		var part := Catalog.part(entry[0])
-		_drop(world, part, Transform3D(yaw * Basis(Vector3.RIGHT, -PI / 2.0), Vector3.ZERO), entry[1], entry[2])
+		drop(world, part, Transform3D(yaw * Basis(Vector3.RIGHT, -PI / 2.0), Vector3.ZERO), entry[1], entry[2])
 		dropped.append(part)
-	dropped.append_array(_stakes_and_coils(world, KIT_STAKES, KIT_COILS))
+	dropped.append_array(stakes_and_coils(world, KIT_STAKES, KIT_COILS))
 	var at := player.global_position + player.global_basis.x * KIT_CABLE[0] - player.global_basis.z * KIT_CABLE[1]
 	at.y = world.height_under(at)
 	var cable := Catalog.cable(world, at)
@@ -263,8 +308,8 @@ static func camp(world: World) -> Array[Node3D]:
 	var dropped: Array[Node3D] = []
 	for entry: Array in CAMP_DEVICES:
 		dropped.append_array(_tethered(world, entry[0], entry[1], entry[2]))
-	dropped.append(_standing(world, &"shield", [&"battery"], CAMP_SHIELD))
-	dropped.append_array(_stakes_and_coils(world, CAMP_STAKES, CAMP_COILS))
+	dropped.append(standing(world, &"shield", [&"battery"], CAMP_SHIELD))
+	dropped.append_array(stakes_and_coils(world, CAMP_STAKES, CAMP_COILS))
 	return dropped
 
 
@@ -274,7 +319,7 @@ static func camp(world: World) -> Array[Node3D]:
 static func _tethered(world: World, id: StringName, right: float, ahead: float) -> Array[Node3D]:
 	var player := world.player
 	var device := Catalog.device(id)
-	_drop(world, device, Transform3D(Basis(Vector3.UP, player.global_rotation.y),
+	drop(world, device, Transform3D(Basis(Vector3.UP, player.global_rotation.y),
 		Vector3(0.0, world.tuning.hover_height, 0.0)), right, ahead)
 	for socket in device.sockets():
 		var fill: Variant = {&"battery": &"battery", &"bottom": &"hover_tray", &"ring": &"hook"}.get(socket.kind)
@@ -296,9 +341,9 @@ static func _tethered(world: World, id: StringName, right: float, ahead: float) 
 ## cable to join them, and spare rations. Returns what it dropped.
 static func survive(world: World) -> Array[Node3D]:
 	world.player.vitals.fresh()
-	var condenser := _standing(world, &"condenser", [&"battery", &"solar_panel", &"canister"], SURVIVE_CONDENSER)
+	var condenser := standing(world, &"condenser", [&"battery", &"solar_panel", &"canister"], SURVIVE_CONDENSER)
 	(condenser as Condenser).canister().drain(INF)
-	var dropped: Array[Node3D] = [condenser, _standing(world, &"shield", [&"battery"], SURVIVE_SHIELD)]
+	var dropped: Array[Node3D] = [condenser, standing(world, &"shield", [&"battery"], SURVIVE_SHIELD)]
 	var player := world.player
 	var at := player.global_position + player.global_basis.x * SURVIVE_CABLE[0] - player.global_basis.z * SURVIVE_CABLE[1]
 	at.y = world.height_under(at)
@@ -308,7 +353,7 @@ static func survive(world: World) -> Array[Node3D]:
 	var yaw := Basis(Vector3.UP, player.global_rotation.y)
 	for entry: Array in SURVIVE_RATIONS:
 		var ration := Catalog.part(&"ration")
-		_drop(world, ration, Transform3D(yaw * Basis(Vector3.RIGHT, -PI / 2.0), Vector3.ZERO), entry[0], entry[1])
+		drop(world, ration, Transform3D(yaw * Basis(Vector3.RIGHT, -PI / 2.0), Vector3.ZERO), entry[0], entry[1])
 		dropped.append(ration)
 	return dropped
 
@@ -337,10 +382,10 @@ static func farm(world: World) -> Array[Node3D]:
 			plant.set_growth(FARM_GROWN[plant.crop])
 		planter.tank_l = world.tuning.planter_tank_litres * (1.0 if planter.harvests() else 0.5)
 		dropped.append_array(tied)
-	dropped.append(_standing(world, &"shield", [&"battery"], FARM_SHIELD))
+	dropped.append(standing(world, &"shield", [&"battery"], FARM_SHIELD))
 	var yaw := Basis(Vector3.UP, world.player.global_rotation.y)
 	var canister := Catalog.part(&"canister")
-	_drop(world, canister, Transform3D(yaw * Basis(Vector3.RIGHT, -PI / 2.0), Vector3.ZERO), FARM_CANISTER[0], FARM_CANISTER[1])
+	drop(world, canister, Transform3D(yaw * Basis(Vector3.RIGHT, -PI / 2.0), Vector3.ZERO), FARM_CANISTER[0], FARM_CANISTER[1])
 	dropped.append(canister)
 	return dropped
 
@@ -349,20 +394,20 @@ static func farm(world: World) -> Array[Node3D]:
 ## small camp beside you for the range warnings to watch: a charged shield
 ## generator, switched off, and a bare crate frame. Returns what it dropped.
 static func board(world: World) -> Array[Node3D]:
-	return [_standing(world, &"board", [&"battery"], BOARD_AT), _standing(world, &"shield", [&"battery"], BOARD_SHIELD),
-		_standing(world, &"crate_frame", [], BOARD_CRATE)]
+	return [standing(world, &"board", [&"battery"], BOARD_AT), standing(world, &"shield", [&"battery"], BOARD_SHIELD),
+		standing(world, &"crate_frame", [], BOARD_CRATE)]
 
 
 ## Your own bare crate frame on the sand beside you, to fit what you find to.
 static func yours(world: World) -> Array[Node3D]:
-	return [_standing(world, &"crate_frame", [], YOURS)]
+	return [standing(world, &"crate_frame", [], YOURS)]
 
 
 ## A device standing on the sand, squared to you, with these parts fitted.
-static func _standing(world: World, id: StringName, parts: Array, where: Array) -> Device:
+static func standing(world: World, id: StringName, parts: Array, where: Array) -> Device:
 	var device := Catalog.device(id)
 	var size: Vector3 = Catalog.DEVICES[id].size
-	_drop(world, device, Transform3D(Basis(Vector3.UP, world.player.global_rotation.y),
+	drop(world, device, Transform3D(Basis(Vector3.UP, world.player.global_rotation.y),
 		Vector3(0.0, size.y * 0.5, 0.0)), where[0], where[1])
 	for part_id: StringName in parts:
 		var part := Catalog.part(part_id)
@@ -375,13 +420,13 @@ static func _standing(world: World, id: StringName, parts: Array, where: Array) 
 
 
 ## Stakes lying flat across your way and coils lying on their backs.
-static func _stakes_and_coils(world: World, stakes: Array, coils: Array) -> Array[Node3D]:
+static func stakes_and_coils(world: World, stakes: Array, coils: Array) -> Array[Node3D]:
 	var player := world.player
 	var yaw := Basis(Vector3.UP, player.global_rotation.y)
 	var dropped: Array[Node3D] = []
 	for entry: Array in stakes:
 		var stake := Catalog.stake()
-		_drop(world, stake, Transform3D(yaw * Basis(Vector3.BACK, PI / 2.0), Vector3(0.0, 0.035, 0.0)),
+		drop(world, stake, Transform3D(yaw * Basis(Vector3.BACK, PI / 2.0), Vector3(0.0, 0.035, 0.0)),
 			entry[0], entry[1])
 		dropped.append(stake)
 	for entry: Array in coils:
@@ -393,7 +438,8 @@ static func _stakes_and_coils(world: World, stakes: Array, coils: Array) -> Arra
 	return dropped
 
 
-static func _drop(world: World, body: Node3D, pose: Transform3D, right: float, ahead: float) -> void:
+## Sets a body on the sand, right and ahead of you, in the pose given.
+static func drop(world: World, body: Node3D, pose: Transform3D, right: float, ahead: float) -> void:
 	var player := world.player
 	var at := player.global_position + player.global_basis.x * right - player.global_basis.z * ahead
 	at.y = world.height_under(at) + 0.02

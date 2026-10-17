@@ -250,7 +250,7 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
   through its debug mesh made the main thread wait for the render thread, about 6 ms,
   the first time for each shape; a box's bounds come from its size now. Charge lights and
   socket tells share their looks.
-- **The scenario menu's "go looking"** stands you 12 m out from the front door of the
+- **The "go looking" scenario** stands you 12 m out from the front door of the
   ruin nearest the run's start, facing it, at a clear and calm moment (no storm for ten
   minutes, wind under 6 m/s), with a bare crate frame of your own beside you. The
   ruin's hall always holds a device with at least two parts to strip. The dev overlay's

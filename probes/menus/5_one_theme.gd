@@ -1,7 +1,7 @@
 extends MenuProbe
 ## Menus & UI probe 5: one theme. Every UI there is, open at once: in a run,
 ## the bars, the inventory, the look-at readout, the death caption, the keys
-## list, the dev overlay and the scenario menu, then the system menu with
+## list, the dev overlay and the dev console, then the system menu with
 ## Options, the controls list and a question over it; at the menu, its words.
 ## Every control draws from the one theme: no theme of its own, no override of
 ## a colour, font, size or style, a type the theme defines, and a font of the
@@ -22,9 +22,11 @@ func run() -> void:
 	press(&"inventory")
 	press(&"toggle_keys")
 	press(&"toggle_dev_overlay")
-	press(&"dev_scenarios")
+	press(&"console")
 	await physics_frames(5)
 	var ui := main.ui
+	check(ui.console.visible, "the console is open")
+	_look()
 	ui.open(ui.system_menu())
 	ui.open(ui.options())
 	ui.open(ui.controls())
@@ -32,7 +34,6 @@ func run() -> void:
 	await get_tree().process_frame
 	_look()
 	ui.close_all()
-	press(&"dev_scenarios")
 	main.save_and_quit()
 	await faded_in()
 	ui.open(ui.options())

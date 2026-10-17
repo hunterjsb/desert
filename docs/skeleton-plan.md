@@ -17,12 +17,12 @@ real world, Hunter picked Ridges, and they're the game's ground now, with the sa
 shader he chose to keep. Stage 8, salvage and ruins, was built the same day and passed
 on 2026-10-16 (strip and fit, the ruin's walk-through and finds outside all "works"): finds half-buried in the dunes from the seed and how hard the
 weather has been, a deep layer harder weather uncovers more often, one walk-in ruin
-pressed into the ground's one function, and "go looking" in the scenario menu. Stage 9,
+pressed into the ground's one function, and "go looking" among the dev scenarios. Stage 9,
 farming, was built on 2026-10-16 and is waiting at the gate: the hover planter
 with its water tank, carrots that want the clear day and fungus that wants the
 storm's dark, growing by felt light and temperature and wilting past their limits,
 picking by hand, the harvester mod with its replant split, food dropped onto you, and
-"farm" in the scenario menu. Probe 3 was cheap with a test-only thermal shield, so it's
+"farm" among the dev scenarios. Probe 3 was cheap with a test-only thermal shield, so it's
 built too. On 2026-10-16 a normal run became playable end to end: rope, cables, seeds,
 survival kits and the harvester are found, every run starts with its kit (data: water, a
 ration, a light shield, a light solar panel and a short coil), and a shield seats on a
@@ -34,7 +34,7 @@ UI 1–5). Stage 10, the hoverboard and camp range, was built the same day too a
 at the gate behind Stage 9: a board found in the deep layer, buried nose down, that
 skims the dunes at 72 km/h on its own battery, carves and drifts, floats off crests and
 tows nothing, and the camp-range warnings, a chime and a line of text timed by your
-speed, 20 s and then 8 s before you'd lose the camp. "Ride" in the scenario menu lays a
+speed, 20 s and then 8 s before you'd lose the camp. The "ride" scenario lays a
 charged board at your feet by a small camp. The Movement PRD's probes keep their
 numbers, 1 to 7; the on-foot probes built with Stage 5 are 8 to 14. Stage 11's sound
 pass was pulled forward the same day: softer fitting and a softer suit, new sounds for
@@ -69,10 +69,10 @@ PRD passes.
   nothing is lost when shapes change.
 - **Tuning lives in one file.** Chunk size, storm speed, shield life and every other
   number sits in one tuning file, so tuning never means editing code.
-- **Scenarios for every playtest.** A dev menu drops you into a starting condition, like a storm
-  100 m away and coming at you, found in the run's own weather rather than faked. Each
-  stage adds the scenarios its playtest needs, and a probe checks that each one
-  delivers what it says.
+- **Scenarios for every playtest.** The dev console's scenario command drops you into a
+  starting condition, like a storm 100 m away and coming at you, found in the run's own
+  weather rather than faked. Each stage adds the scenarios its playtest needs, and a
+  probe checks that each one delivers what it says.
 
 ## Stage 0: Foundation
 

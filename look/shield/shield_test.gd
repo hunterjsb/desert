@@ -96,7 +96,7 @@ func _process(_delta: float) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	var key := event as InputEventKey
-	if key == null or not key.pressed or key.echo or $Scenarios.visible or not is_instance_valid(generator):
+	if key == null or not key.pressed or key.echo or not is_instance_valid(generator):
 		return
 	var code := key.physical_keycode
 	if code == KEY_C:
@@ -215,7 +215,6 @@ func _quiet() -> void:
 	window.content_scale_size = Vector2i(1920, 1080)
 	AudioServer.set_bus_mute(0, true)
 	set_process_unhandled_input(false)
-	$Scenarios.set_process_unhandled_input(false)
 	world.player.set_process_unhandled_input(false)
 	world.player.set_physics_process(false)
 	$Hud.visible = false
