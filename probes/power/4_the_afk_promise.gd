@@ -1,17 +1,21 @@
 extends CampProbe
-## Power probe 4: the AFK promise. The reference camp parked at mid-latitude
-## is left alone for two days and nights of the run's own weather, storms and
-## all, and no device in it goes dark: the shield stands every tick, the
-## turbine stays out in the wind making power, and the bank never falls to the
-## shield's reserve. A camp underbuilt beside it, the kit's power under a found
-## shield, goes dark in the same weather.
+## Power probe 4: the AFK promise. The reference camp parked at mid-latitude,
+## on its floating deck, is left alone for two days and nights of the run's
+## own weather, storms and all, and no device in it goes dark: the deck keeps
+## floating, the shield stands every tick, the turbine stays out in the wind
+## making power, and the bank never falls to the shield's reserve. A camp
+## underbuilt beside it, the kit's power under a found shield, goes dark in
+## the same weather.
 ## Time limit: 600 s
 
 const LATITUDE := 45.0
 ## On the third day the storm's wear wrecks the turbine (Power, "As built").
 const DAYS := 2.0
-## The underbuilt camp stands this far across the wind, m.
+## The underbuilt camp stands this far across the wind, m, its shield and
+## its crate this far right and ahead of you there.
 const APART := 40.0
+const WEAK_SHIELD := [0.0, 2.0]
+const WEAK_CRATE := [0.0, -2.0]
 
 
 func run() -> void:
@@ -69,9 +73,9 @@ func _underbuilt() -> ShieldGenerator:
 	var player := world.player
 	var home := player.global_transform
 	world.teleport(player, home.translated(player.global_basis.x * APART))
-	var made := Scenarios.standing(world, &"shield", [&"battery"], Scenarios.AFK_SHIELD) as ShieldGenerator
+	var made := Scenarios.standing(world, &"shield", [&"battery"], WEAK_SHIELD) as ShieldGenerator
 	made.battery().charge_wh = made.battery().capacity() * Kit.standard().charge
-	var holder := Scenarios.standing(world, &"crate_frame", [&"hover_tray"], Scenarios.AFK_CRATE)
+	var holder := Scenarios.standing(world, &"crate_frame", [&"hover_tray"], WEAK_CRATE)
 	holder.resting = true
 	holder.lift_share = 0.0
 	var panel := Catalog.device(&"light_panel")

@@ -9,8 +9,8 @@ const WARP := 60.0
 
 ## What the camp dropped, and its pieces.
 var camp: Array[Node3D] = []
+var deck: Chassis
 var shield: ShieldGenerator
-var crate: Device
 var turbine: Device
 var planters: Array[Planter] = []
 
@@ -38,14 +38,14 @@ func park() -> void:
 	camp = Scenarios.afk(world)
 	planters.clear()
 	for body in camp:
-		if body is ShieldGenerator:
+		if body is Chassis:
+			deck = body
+		elif body is ShieldGenerator:
 			shield = body
 		elif body is Planter:
 			planters.append(body)
 		elif body is Device and (body as Device).stats().turbine_w > 0.0:
 			turbine = body
-		elif body is Device and (body as Device).stats().lift_kg > 0.0:
-			crate = body
 
 
 ## Leaves the camp alone for `days`; each() after every tick.

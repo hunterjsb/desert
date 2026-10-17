@@ -496,6 +496,7 @@ Death means a new run (see Runs in the vision).
   days of the probes' seed, about two of them storm, you come through untouched: the
   bubble keeps every harm off you, the farm's drops are all you eat, 2,400 kcal, and you
   drink about 1.7 L a day. Take the farm away and you starve at 2.83 days (probe 1).
+  Rebuilt on its floating deck (Power), the camp gives the same three days to the gram.
 - **Water is where AFK ends.** Nothing brings you water yet: you drink only from what you
   carry. The camp's condenser waters only the farm, down its hoses, and a canister it
   fills still has to come to you by hand. So the camp keeps you as long as the water you

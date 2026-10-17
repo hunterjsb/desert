@@ -16,8 +16,8 @@ extends RefCounted
 ## sets two planters growing in front of you, one with a harvester, and a
 ## shield for the storm on its way. "radio" sets a radio and a shield in front
 ## of you with a storm on its way, to sit it out and follow a beacon. "afk"
-## parks the reference camp round you, running, to be left alone, its farm
-## watered by a condenser on hoses. "lee" stands you at the foot of a tall
+## parks the reference camp round you on a floating deck, running, to be left
+## alone, its farm watered by a condenser on hoses. "lee" stands you at the foot of a tall
 ## slip face, facing up it into the wind coming over its crest, with a storm
 ## on its way. "chassis" lays out pieces, their trays, a crate and a
 ## condenser to build a deck from. "eclipse" faces Tu in the clear, the sun
@@ -58,7 +58,7 @@ const LIST: Array[Dictionary] = [
 	{"key": "radio", "label": "radio: a radio and a charged shield in front of you, a storm 300 m off", "kind": "front",
 		"distance": 300.0, "day": [0.35, 0.55], "radio": true},
 	# A morning like a run's, the first storm minutes off, so it soon shows what the camp does in one.
-	{"key": "afk", "label": "AFK: the reference camp parked round you and running, a farm under the shield hosed to a condenser, a turbine out in the wind",
+	{"key": "afk", "label": "AFK: the reference camp on a floating 2x2 deck, moored, its farm floating beside it on hoses, a turbine out in the wind",
 		"kind": "clear", "day": [0.3, 0.4], "due": [180.0, 480.0], "afk": true},
 	# A storm due soon, so the lee is felt in the clear and then as it comes over the crest.
 	{"key": "lee", "label": "lee: at the foot of a tall slip face, the wind over its crest, a storm minutes off",
@@ -122,21 +122,30 @@ const BOARD_CRATE := [2.2, 3.4]
 const RADIO_AT := [0.4, 2.4]
 const RADIO_SHIELD := [-1.0, 3.2]
 
-## The reference camp, right and ahead, facing upwind: the shield and the
-## planters in front of you, the condenser beyond the shield between them, the
-## crate behind you near the bubble's edge, its stake upwind of it, and the
-## turbine downwind of the bubble near the end of its cable, so the wind holds
-## it out there.
-const AFK_SHIELD := [0.0, 2.0]
-const AFK_PLANTERS := [[-2.2, 2.6], [2.2, 2.6]]
-const AFK_CONDENSER := [0.0, 4.2]
-const AFK_CRATE := [0.0, -2.0]
-const AFK_STAKE := [1.6, -0.6]
-const AFK_TURBINE := [0.0, -7.4]
+## The reference camp on a deck two pieces by two, right and ahead, facing
+## upwind: its first piece upwind on the left, the others to its right and
+## back toward you. The planters float upwind of it, the stake that moors it
+## between them and theirs upwind of them, and the turbine stands downwind of
+## the bubble near the end of its cable, so the wind holds it out there.
+const AFK_DECK := [-1.0, 2.5]
+const AFK_STAKE := [-1.0, 3.9]
+const AFK_PLANTERS := [[-2.2, 4.3], [1.2, 4.3]]
+const AFK_PLANTER_STAKES := [[-2.2, 5.8], [1.2, 5.8]]
+const AFK_TURBINE := [-1.25, -4.95]
+## What stands on each piece, by its place on the first one's grid (right,
+## then downwind): the condenser upwind, its hoses toward the planters; the
+## shield on the piece across from the crate, so the crate's port, toward the
+## turbine, is as far from it as a deck this size allows.
+const AFK_CONDENSER_ON := Vector2i(0, 0)
+const AFK_SHIELD_ON := Vector2i(1, 0)
+const AFK_CRATE_ON := Vector2i(0, 1)
+const AFK_SPARE_ON := Vector2i(1, 1)
 ## What you carry, as you'd leave yourself: nothing brings you water yet, the
 ## condenser waters only the farm, so this many canisters, and no food: the
-## farm drops it onto you.
+## farm drops it onto you. Spare stakes, a coil and a hose, to move the
+## planters about and moor them again.
 const AFK_CANISTERS := 3
+const AFK_STAKES := 3
 
 ## The chassis pieces lying in a row ahead of you, a tray in front of each,
 ## and the crate and condenser to stand on the deck either side: right and ahead.
@@ -565,59 +574,125 @@ static func radio(world: World) -> Array[Node3D]:
 	return [standing(world, &"radio", [&"battery"], RADIO_AT), standing(world, &"shield", [&"battery"], RADIO_SHIELD)]
 
 
-## The reference camp, parked round you and left running: the base shield
-## in the middle with a big battery, and two planters with harvesters beside
-## it, sown and watered, their trays resting, near enough to drop food onto
-## you. Each is on a hose from a condenser beyond the shield, on a battery
-## and a panel of its own: the second hose goes on the first's end, so the
-## condenser waters both. Behind you, downwind, the floater: a crate resting
-## on its tray, moored to a stake, two big batteries in it, the light panel
-## on one top mount, cabled to the shield, and a panel on the other. The
-## crate holds a turbine out in the wind beyond the bubble on a strong cable:
-## a turbine only works planted, and a loose one slides off in a storm. You
-## start fed and watered, stocked up to leave it running. Returns what it
-## dropped.
+## The reference camp, parked round you and left running, on a deck two
+## pieces by two floating on a tray under every piece, a hook on every free
+## ring, everything on it one pool: upwind, a condenser with a battery and a
+## panel, and the base shield with a big battery; downwind, the crate, its
+## tray off, two big batteries in it, the light panel and a found panel on
+## its top mounts, and a second crate with two more, a panel and a lamp.
+## The deck is moored to a stake upwind of it. Beyond the stake two planters
+## with harvesters float on their own trays, sown and watered, near enough
+## to drop food onto you, each on a hose from the condenser, the second on
+## the first's end, so it waters both. Each is moored to a stake of its own
+## upwind of it: a hose's weight draws a floating planter in toward the deck.
+## The crate holds a turbine out in the wind beyond the bubble on a strong
+## cable: a turbine only works planted, and a loose one slides off in a
+## storm. You start fed and watered, stocked up to leave it running, with
+## spare stakes, a coil and a hose. Returns what it dropped, the deck before
+## what stands on it.
 static func afk(world: World) -> Array[Node3D]:
-	world.player.vitals.fresh()
-	var carried := world.player.suit.carried
+	var player := world.player
+	player.vitals.fresh()
+	var carried := player.suit.carried
 	for thing in carried:
 		thing.free()
 	carried.clear()
 	for i in AFK_CANISTERS:
 		carried.append(Catalog.part(&"canister"))
-	var shield := standing(world, &"shield", [&"big_battery"], AFK_SHIELD) as ShieldGenerator
-	var dropped: Array[Node3D] = [shield]
-	for where: Array in AFK_PLANTERS:
-		var planter := standing(world, &"planter", [&"battery", &"hover_tray", &"harvester"] + FARM_CROPS, where) as Planter
+	for i in AFK_STAKES:
+		carried.append(Catalog.stake())
+	for id: StringName in [&"coil", Hose.END]:
+		var rolled := Catalog.part(id)
+		rolled.set_meta(&"rolled", id)
+		carried.append(rolled)
+	player.suit.carry_devices()
+	var deck := standing(world, &"chassis", [], AFK_DECK) as Chassis
+	for at: Array in [[Vector2i.ZERO, Vector2i(1, 0)], [Vector2i.ZERO, Vector2i(0, 1)], [Vector2i(1, 0), Vector2i(0, 1)]]:
+		deck.join(Catalog.device(&"chassis") as Chassis, _on_piece(deck, at[0], &"ring", at[1]), 0)
+	for i in deck.pieces().size():
+		fill(world, deck, [&"hover_tray", &"hook", &"hook"])
+	var condenser := _stand_on(world, deck, &"condenser", [&"battery", &"solar_panel"], AFK_CONDENSER_ON)
+	var shield := _stand_on(world, deck, &"shield", [&"big_battery"], AFK_SHIELD_ON) as ShieldGenerator
+	var crate := _stand_on(world, deck, &"crate_frame", [&"big_battery", &"big_battery", &"solar_panel"], AFK_CRATE_ON)
+	crate.mount(Catalog.device(&"light_panel"), _free(crate, &"top"))
+	var spare := _stand_on(world, deck, &"crate_frame", [&"big_battery", &"big_battery", &"solar_panel", &"lamp"],
+		AFK_SPARE_ON)
+	_afloat(world, deck)
+	var dropped: Array[Node3D] = [deck, condenser, shield, crate, spare]
+	var stake := _driven(world, AFK_STAKE)
+	dropped.append(stake)
+	# Nearly taut, so the strong cable's weight doesn't draw the deck in toward the turbine.
+	dropped.append(Line.between(world, _deck_tie(deck, AFK_CONDENSER_ON, Vector2i(0, -1)),
+		stake.free_tie(deck.global_position), 0.05))
+	for i in AFK_PLANTERS.size():
+		var planter := standing(world, &"planter", [&"battery", &"hover_tray", &"harvester", &"hook", &"hook"] + FARM_CROPS,
+			AFK_PLANTERS[i]) as Planter
 		planter.tank_l = world.tuning.planter_tank_litres
-		dropped.append(planter)
-	var condenser := standing(world, &"condenser", [&"battery", &"solar_panel"], AFK_CONDENSER)
-	var crate := standing(world, &"crate_frame", [&"big_battery", &"big_battery", &"hover_tray", &"hook", &"hook"],
-		AFK_CRATE)
-	# Its port toward the turbine.
-	crate.global_basis = crate.global_basis.rotated(Vector3.UP, PI)
-	var panel := Catalog.device(&"light_panel")
-	crate.mount(panel, _free(crate, &"top"))
-	fill(world, crate, [&"solar_panel"])
-	var turbine := standing(world, &"turbine", [&"battery"], AFK_TURBINE)
-	for device: Device in dropped + [crate]:
-		if device.stats().lift_kg > 0.0:
-			device.resting = true
-			device.lift_share = 0.0
-	var player := world.player
-	var at := player.global_position + player.global_basis.x * AFK_STAKE[0] - player.global_basis.z * AFK_STAKE[1]
-	var stake := Catalog.stake()
-	world.content.add_child(stake)
-	stake.drive(at, world.height_under(at))
-	dropped.append_array([crate, turbine, stake, condenser])
-	dropped.append(Line.between(world, crate.free_tie(stake.global_position), stake.free_tie(crate.global_position)))
-	# Their plugs and ends go with the devices they're in.
-	dropped.append(wire(world, panel, shield))
-	dropped.append(wire(world, crate, turbine, true))
-	for planter in dropped.filter(func(b: Node3D) -> bool: return b is Planter):
+		_afloat(world, planter)
+		var own := _driven(world, AFK_PLANTER_STAKES[i])
+		dropped.append_array([planter, own])
+		dropped.append(Line.between(world, planter.free_tie(own.global_position), own.free_tie(planter.global_position)))
+		# Its plugs and ends go with the devices they're in.
 		dropped.append(plumb(world, condenser, planter))
+	var turbine := standing(world, &"turbine", [&"battery"], AFK_TURBINE)
+	# Its port toward the crate's.
+	turbine.global_basis = turbine.global_basis.rotated(Vector3.UP, PI / 2.0)
+	dropped.append(turbine)
+	dropped.append(wire(world, crate, turbine, true))
 	shield.stand(true)
 	return dropped
+
+
+## A device standing on a deck's piece at a place on its grid, with these
+## parts fitted.
+static func _stand_on(world: World, deck: Chassis, id: StringName, parts: Array, cell: Vector2i) -> Device:
+	var device := Catalog.device(id)
+	world.content.add_child(device)
+	fill(world, device, parts)
+	deck.mount(device, _on_piece(deck, cell, &"deck"))
+	return device
+
+
+## A deck's socket of a kind on the piece at a place on its grid; a ring,
+## the one facing `toward` along the grid.
+static func _on_piece(deck: Chassis, cell: Vector2i, kind: StringName, toward := Vector2i.ZERO) -> Socket:
+	for socket in deck.sockets():
+		if socket.kind == kind and not socket.has_meta(&"socket") and deck._cell_of(socket) == cell \
+				and (kind != &"ring" or Chassis._step(socket) == toward):
+			return socket
+	return null
+
+
+## A stake driven into the sand, right and ahead of you.
+static func _driven(world: World, where: Array) -> Stake:
+	var player := world.player
+	var stake := Catalog.stake()
+	world.content.add_child(stake)
+	var at: Vector3 = player.global_position + player.global_basis.x * where[0] - player.global_basis.z * where[1]
+	stake.drive(at, world.height_under(at))
+	return stake
+
+
+## Where a line ties to a deck: the hook on a piece's edge ring.
+static func _deck_tie(deck: Chassis, cell: Vector2i, toward: Vector2i) -> Socket:
+	for node in _on_piece(deck, cell, &"ring", toward).fitted:
+		if node is Socket:
+			return node
+	return null
+
+
+## Floating where it stands, as high as its trays hold it over the sand
+## under it, on average.
+static func _afloat(world: World, device: Device) -> void:
+	var spots: Array = [Vector3.ZERO]
+	if device is Chassis:
+		spots = (device as Chassis).pieces().map(func(p: Chassis) -> Vector3: return p.pose().origin)
+	var sand := 0.0
+	var middle := Vector3.ZERO
+	for spot: Vector3 in spots:
+		sand += world.height_under(device.global_transform * spot) / spots.size()
+		middle += spot / spots.size()
+	device.global_position.y += sand + device.rest_height() - (device.global_transform * middle).y
 
 
 ## A cable laid between two devices, plugged into the port of each; a
