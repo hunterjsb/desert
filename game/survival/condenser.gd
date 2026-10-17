@@ -7,8 +7,10 @@ extends Device
 ## all by the felt temperature where it stands.
 
 ## Seconds between drips into its canister making its most, and at a trickle.
-const DRIP_FAST := 1.5
-const DRIP_SLOW := 6.0
+const DRIP_FAST := 4.0
+const DRIP_SLOW := 14.0
+## The drip is a stand-in for a recorded one: kept faint (Hunter heard it as a beep).
+const DRIP_DB := -12.0
 
 ## Water it has made since it was found, L.
 var made_l := 0.0
@@ -70,5 +72,5 @@ func _process(delta: float) -> void:
 	var share := making() / world.tuning.condenser_litres_per_hour
 	_drip_in = lerpf(DRIP_SLOW, DRIP_FAST, clampf(share, 0.0, 1.0))
 	if share > 0.0:
-		Sounds.play_at(self, Sounds.DRIPS[_drips % Sounds.DRIPS.size()])
+		Sounds.play_at(self, Sounds.DRIPS[_drips % Sounds.DRIPS.size()], DRIP_DB)
 		_drips += 1

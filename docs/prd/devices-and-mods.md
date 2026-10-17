@@ -46,7 +46,8 @@ out, never written into the text (Hunter, 2026-10-16), even before players can r
   too heavy to lift. Walk off from something you can't shift and it slips from your
   hands.
 - **Use** works what you're looking at, or uses what you hold: switch a shield, drive a
-  stake.
+  stake, set a crate's hover tray floating or resting (Hunter, 2026-10-16), so a camp
+  that's staying put stops spending its charge on floating.
 - **Throw** throws what you hold.
 - **Reel in and pay out** (Hunter, 2026-10-16): on a line, they shorten and lengthen it
   (Rope & tethering); on anything else you hold or have hold of, they bring it nearer or

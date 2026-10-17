@@ -22,7 +22,9 @@ First and foremost, you're out here to survive.
 
 - **The suit is the one gift this brutal world gives you.** Its air and radiation
   protection are free, with no power and no bar. You have a sick suit, and you're not
-  dead.
+  dead. So is its **headlamp** (Hunter, 2026-10-16), which comes on by itself in the
+  dark, at night or in a storm, so your tracks can be followed when nothing else lights
+  the sand.
 - **Losing the suit kills you.** For now that's the whole rule.
 - **It's a device like any other,** with sockets (Devices & mods) plus some built-in
   features. Fit a heater, a cooler, a water reclaimer, a better battery or harness
