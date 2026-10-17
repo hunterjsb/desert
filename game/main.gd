@@ -3,7 +3,9 @@ extends Node
 ## The game as it runs: the main menu over a live desert, then a run, and back
 ## to the menu on Save & quit. Saves and the profile are reached only through
 ## their nodes, and a missing one means there are none: no Resume, and Save &
-## quit only quits. A dev scenario (`-- --scenario=<key>`) skips the menu.
+## quit only quits. A Normal run also saves itself as you play and when you
+## quit, and a death in it offers the last save back. A dev scenario
+## (`-- --scenario=<key>`) skips the menu, and its run is never saved.
 
 ## Loaded when wanted, not preloaded: the world's own scripts reach back here
 ## through the UI root, and a preload would go round in a circle.
@@ -22,13 +24,19 @@ const VIEW_PITCH := -2.0
 var run: Node
 ## The menu's world, or null in a run.
 var view: World
+## The run in play is a dev scenario's: the save on disk, the player's own,
+## is never written over or deleted by it.
+var _scenario := false
+## Seconds of play since the run in play was last saved.
+var _played := 0.0
 
 @onready var ui: UIRoot = $UI
 
 
 func _ready() -> void:
 	ui.main = self
-	if opens_on_menu and not _scenario_asked():
+	_scenario = _scenario_asked()
+	if opens_on_menu and not _scenario:
 		_show_view()
 		ui.show_main_menu()
 	else:
@@ -52,7 +60,12 @@ func in_run() -> bool:
 
 
 func saves() -> Node:
-	return get_node_or_null("/root/Saves")
+	return null if _scenario else get_node_or_null("/root/Saves")
+
+
+## The run in play is Ironman's: it never saves as you go, and death ends it.
+func ironman() -> bool:
+	return run != null and run.get_node("Runs").ironman
 
 
 func profile() -> Node:
@@ -70,25 +83,42 @@ func save_refused() -> String:
 	return "" if store == null or store.has_run() else str(store.get(&"refused"))
 
 
-## A fresh run on a fresh seed; the saved one, if any, is gone.
-func new_game() -> void:
+## A fresh run on a fresh seed, in the mode chosen for it; the saved one, if
+## any, is gone. After a death the seed is new whatever the tuning says, as
+## for the new run an Ironman death begins.
+func new_game(ironman := false, after_death := false) -> void:
 	var store := saves()
 	if store != null and store.has_run():
 		store.delete()
-	await _into(_make(RUN), false)
+	var next := _make(RUN)
+	var runs := next.get_node("Runs")
+	runs.ironman = ironman
+	if after_death:
+		(next.get_node("World") as World).run_seed = runs.new_seed()
+	await _into(next, false)
 
 
-## The saved run's world built on its seed, then put back as it was.
+## The saved run's world built on its seed, in its mode, then put back as it
+## was: from the main menu, and after a death in Normal.
 func resume() -> void:
 	var next := _make(RUN)
 	(next.get_node("World") as World).run_seed = saves().run_seed()
+	next.get_node("Runs").ironman = saves().ironman()
 	await _into(next, true)
+
+
+## Saves the run in play as it stands; says whether it landed.
+func save_run() -> bool:
+	var store := saves()
+	if store == null or not store.save(world(), ironman()):
+		return false
+	_played = 0.0
+	return true
 
 
 ## Safe at any moment, mid-storm included. A save that fails keeps you in the run.
 func save_and_quit() -> void:
-	var store := saves()
-	if store != null and not store.save(world()):
+	if saves() != null and not save_run():
 		ui.open(ui.confirm("Couldn't save the run", "Back", "Quit anyway", _quit_to_menu))
 		return
 	await _quit_to_menu()
@@ -104,6 +134,31 @@ func quit() -> void:
 	get_tree().quit()
 
 
+## A Normal run saves itself every few minutes of play. Here, ahead of the
+## run's own nodes, the save falls between two ticks.
+func _physics_process(delta: float) -> void:
+	if not _saves_itself():
+		return
+	_played += delta
+	if _played >= world().tuning.autosave_minutes * 60.0:
+		_played = 0.0
+		saves().save_in_background(world(), ironman())
+
+
+## Closing the game saves a Normal run as Save & quit would.
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_WM_CLOSE_REQUEST and _saves_itself():
+		save_run()
+
+
+## Never while you're dead, nor while the run is changing over or being put back.
+func _saves_itself() -> bool:
+	var at := world()
+	var store := saves()
+	return at != null and store != null and not ironman() and not at.player.vitals.dead \
+		and not store.restoring and not ui.is_fading()
+
+
 func _quit_to_menu() -> void:
 	await ui.fade(true)
 	ui.close_all()
@@ -113,14 +168,17 @@ func _quit_to_menu() -> void:
 	await ui.fade(false)
 
 
-## Fades to black, swaps the menu's world for the run, and fades back in once
-## the sand round you is solid. A resumed run is put back first, on settled
-## ground, everything of yours back before the screen is; a refused one goes
-## back to the menu saying why.
+## Fades to black, swaps the menu's world (or a dead run) for the next run,
+## and fades back in once the sand round you is solid. A resumed run is put
+## back first, on settled ground, everything of yours back before the screen
+## is; a refused one goes back to the menu saying why.
 func _into(next: Node, resuming: bool) -> void:
 	await ui.fade(true)
 	ui.close_all()
-	_drop_view()
+	if view != null:
+		_drop_view()
+	if run != null:
+		_end_run()
 	_begin(next)
 	await _settled()
 	if resuming:
@@ -149,15 +207,19 @@ func _settled() -> void:
 ## Ahead of the UI in the tree, so the menus hear input before the game does.
 func _begin(next: Node) -> void:
 	Dev.clear()
+	if not _scenario:
+		next.get_node("Runs").offer = ui.show_death
 	add_child(next)
 	move_child(next, 0)
 	run = next
+	_played = 0.0
 
 
 func _end_run() -> void:
 	remove_child(run)
 	run.queue_free()
 	run = null
+	_scenario = false
 
 
 ## The real world from a fixed camera: no one stands there, nothing of yours

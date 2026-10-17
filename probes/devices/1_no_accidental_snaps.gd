@@ -4,7 +4,11 @@ extends HandsProbe
 ## thousands of times, and let go through the hands while the tug is pulling
 ## them in. Nothing fits. Then, so this can't pass by nothing ever fitting, a
 ## held and aimed part fits through the hands: a battery and a carrot by aim
-## alone, and a hover tray slid under a resting planter with E.
+## alone, and a hover tray slid under a resting planter with take. And standing
+## at your full height by a crate on the sand, looking at it is enough: a tray
+## is offered its bottom mount, a hook the ring on your side, of two rings
+## facing you the one nearer your aim, and a shield the nearer top mount; each
+## waits for take. A fitted part still comes out to an empty hand.
 
 const ROUNDS := 30
 const THROWN := 30
@@ -53,6 +57,7 @@ func run() -> void:
 	check(_events >= 2000, "thousands of tries (%d)" % _events)
 	check(after == before and _hand_fits == 0, "nothing fitted that wasn't held and aimed")
 	await _held_and_aimed_fits()
+	await _fits_standing()
 	speed_up(1)
 
 
@@ -211,6 +216,108 @@ func _held_and_aimed_fits() -> void:
 	await simulate(2.0)
 	check(_planter.stats().hovering and _planter.global_position.y > world.height_under(_planter.global_position) + 0.8,
 		"the planter floats on the tray slid under it")
+
+
+## Standing 1.5 m from crates resting on the sand, you look at them, never at
+## the socket, and what you hold is offered the one it fits.
+func _fits_standing() -> void:
+	var crate := device(&"crate_frame", spot(6.0, 1.0), 0.27)
+	var other := device(&"crate_frame", spot(6.0, 5.0), 0.27)
+	await simulate(2.0)
+	var bottom := _socket_on(crate, &"bottom", Vector3.ZERO)
+	var tray := await _take_in_hand(&"hover_tray")
+	look(_stand_by(crate, Vector3.RIGHT), crate.global_transform * Vector3(0.4, 0.2, 0.0))
+	await _offered(tray, bottom, "looking at a resting crate's side, a held tray")
+	hands.grab()
+	await simulate(2.0 / 60.0)
+	check(bottom.part == tray and _lowest(crate) > -0.005,
+		"take seats the tray under the crate, lifted clear of the sand (lowest %.2f m)" % _lowest(crate))
+	await simulate(1.0)
+
+	var ring := _socket_on(crate, &"ring", Vector3(0.4, 0.0, 0.0))
+	var hook := await _take_in_hand(&"hook")
+	look(_stand_by(crate, Vector3.RIGHT), crate.global_transform * Vector3(0.15, 0.25, -0.05))
+	await _offered(hook, ring, "looking at the crate's top, a held hook")
+	hands.grab()
+	check(ring.part == hook, "take seats the hook on the ring on your side")
+	await simulate(0.2)
+	look(_stand_by(crate, Vector3.RIGHT), seat(ring) * middle(hook))
+	await simulate(1.0 / 60.0)
+	check(hands.grab() and hands.held == hook and hands.phase == Hands.Phase.TAKING and ring.part == null,
+		"looking straight at the fitted hook, an empty hand takes it out")
+	await simulate(0.5)
+	hands.drop()
+	await simulate(0.5)
+
+	var near := _socket_on(other, &"ring", Vector3(0.4, 0.0, 0.0))
+	var far := _socket_on(other, &"ring", Vector3(0.0, 0.0, 0.4))
+	var corner := _stand_by(other, Vector3(1.0, 0.0, 1.0))
+	var second := await _take_in_hand(&"hook")
+	look(corner, other.global_transform * Vector3(0.15, 0.25, -0.05))
+	await _offered(second, near, "from a corner, aimed nearer the side ring, a held hook")
+	look(corner, other.global_transform * Vector3(-0.05, 0.25, 0.15))
+	await _offered(second, far, "aimed nearer the back ring, it")
+	hands.grab()
+	check(far.part == second, "take seats the hook on the ring nearer your aim")
+
+	var top := _socket_on(other, &"top", Vector3(0.0, 0.25, 0.2))
+	var shield := Catalog.device(&"light_shield")
+	world.content.add_child(shield)
+	shield.global_position = eye() + Vector3.UP
+	hands.hold(shield)
+	await simulate(0.5)
+	look(_stand_by(other, Vector3.RIGHT), other.global_transform * Vector3(0.4, 0.15, 0.1))
+	await simulate(0.6)
+	check(hands.socket == top and shield.host() == null,
+		"looking at the crate's side, a held shield is offered the nearer top mount, and waits for take")
+	hands.grab()
+	check(shield.host() == other, "take seats the shield there")
+
+
+## Waits a moment looking: what you hold leans toward `socket` and stays out of it.
+func _offered(held: Part, socket: Socket, what: String) -> void:
+	await simulate(0.6)
+	check(hands.held == held and hands.socket == socket and hands.pull > 0.0 and socket.part == null,
+		"%s is offered its socket and waits for take (offered %s)" % [what, _named(hands.socket)])
+
+
+## A device's socket of a kind nearest a place in its own frame.
+func _socket_on(on: Device, kind: StringName, near: Vector3) -> Socket:
+	var best: Socket = null
+	for each in on.sockets():
+		if each.kind == kind and (best == null or each.position.distance_to(near) < best.position.distance_to(near)):
+			best = each
+	return best
+
+
+## Where your eyes are standing 1.5 m off a resting crate's face or corner, the
+## way `out` points in its frame.
+func _stand_by(crate: Device, out: Vector3) -> Vector3:
+	var away := crate.global_basis * out
+	away.y = 0.0
+	var at := crate.global_transform * (out * 0.4) + away.normalized() * 1.5
+	at.y = world.height_under(at) + world.player.camera.position.y
+	return at
+
+
+## How far the lowest corner of a device's shapes is above the sand, m.
+func _lowest(of: Device) -> float:
+	var low := INF
+	for child in of.get_children():
+		var shape := child as CollisionShape3D
+		if shape == null:
+			continue
+		var box := shape.shape.get_debug_mesh().get_aabb()
+		for i in 8:
+			var corner := shape.global_transform * box.get_endpoint(i)
+			low = minf(low, corner.y - world.height_under(corner))
+	return low
+
+
+func _named(socket: Socket) -> String:
+	if socket == null:
+		return "nothing"
+	return "%s %s at %s" % [(socket.get_parent() as Device).label, socket.kind, socket.position]
 
 
 ## Stands you clear of the devices, drops a part on the sand at your feet and

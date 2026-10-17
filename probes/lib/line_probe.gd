@@ -120,6 +120,32 @@ func walk_to(at: Vector3, each := Callable()) -> void:
 	player.velocity = Vector3.ZERO
 
 
+## The save on disk resumed into a fresh world on the same seed, which you
+## move through as the probe puts you, in the probe's still air.
+func resume() -> bool:
+	var seed_was := world.run_seed
+	remove_child(world)
+	world.queue_free()
+	await get_tree().process_frame
+	world = WORLD_SCENE.instantiate()
+	world.run_seed = seed_was
+	add_child(world)
+	await settle()
+	await get_tree().physics_frame
+	world.player.set_physics_process(false)
+	var saves := get_node(^"/root/Saves")
+	if not saves.restore(world):
+		return false
+	if saves.restoring:
+		await saves.restored
+	world.player.collision_layer = 0
+	world.player.collision_mask = 0
+	world.weather.field = wind
+	hands = world.player.hands
+	ropes = world.ropes
+	return true
+
+
 ## Where a body's wind load stands now, N: drag on the air going past it.
 func wind_load(body: RigidBody3D) -> Vector3:
 	var past := world.weather.felt_wind(body.global_position) - body.linear_velocity

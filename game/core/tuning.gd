@@ -21,6 +21,12 @@ static var _current: Tuning
 ## world shifts back, keeping 32-bit positions precise.
 @export var origin_shift_chunks: int = 4
 
+@export_group("Saves")
+## A Normal run saves itself after this many minutes of play since its last
+## save. The first storm comes in three to eight, so dying in it leaves a save
+## to go back to.
+@export var autosave_minutes: float = 3.0
+
 @export_group("Terrain")
 @export var chunk_size: int = 64
 ## Chunks within this many of the player's get collision.

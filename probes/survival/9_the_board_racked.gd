@@ -91,7 +91,7 @@ func run() -> void:
 
 	var kept := board.battery().charge_wh
 	check(saves.save(world), "saved")
-	check(await _resume(), "resumed")
+	check(await resume(), "resumed")
 	var again: Array = world.devices().filter(func(d: Device) -> bool: return d is Hoverboard)
 	var back: Hoverboard = again[0] if again.size() == 1 else null
 	check(back != null and back.racked() and back.host().seat_of(back).kind == &"rack"
@@ -239,24 +239,3 @@ func _box(device: Node3D, pose: Transform3D) -> AABB:
 			first = false
 	return box
 
-
-## The save on disk resumed into a fresh world on the same seed.
-func _resume() -> bool:
-	var seed_was := world.run_seed
-	remove_child(world)
-	world.queue_free()
-	await get_tree().process_frame
-	world = WORLD_SCENE.instantiate()
-	world.run_seed = seed_was
-	add_child(world)
-	await settle()
-	await get_tree().physics_frame
-	world.player.set_physics_process(false)
-	if not saves.restore(world):
-		return false
-	if saves.restoring:
-		await saves.restored
-	world.weather.field = wind
-	hands = world.player.hands
-	ropes = world.ropes
-	return true

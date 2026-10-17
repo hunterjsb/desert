@@ -121,8 +121,10 @@ Death means a new run (see Runs in the vision).
   take works on the world as ever, not on the slots. Closing it captures the mouse again,
   as does a run ending while it's open.
 - **Stakes go in too** (Hunter, 2026-10-16: "we should be able to put stakes in our inv"):
-  a stake that isn't driven and has nothing tied to it goes in a slot, and comes out
-  ready to drive.
+  a stake that isn't driven and has nothing tied to it goes in a slot as it is, and comes
+  out to your hands ready to drive. A found one goes in once it's taken up. A driven
+  stake stays out, and so does one with a line on its eye until the line's end is taken
+  off it. The view shows it as Stake, and a save keeps it in its slot.
 - **Rope goes in as a coil** (Hunter, 2026-10-16: "i cant put rope in my inv"): a rope you
   hold but haven't laid, its first end in your hand and the rest at your belt, rolls back
   up into its coil, the belt end comes off, and the coil goes in the slot. Taken out, it
@@ -273,6 +275,10 @@ Death means a new run (see Runs in the vision).
    until the pool is down to the shield's reserve, takes nothing past it, and charges
    again once the panel brings the pool back, every watt-hour of it accounted for. Take
    lifts it off; saved racked, it resumes racked; the kit's one line starts it racked.
+10. **Stakes go in.** A found stake and a loose one, each taken up, go in a slot and
+    come out ready to drive; driven, each holds a crate floating on a line in a breeze,
+    the found one after a save and a resume too. A driven stake, or one with a line on
+    its eye, stays out.
 
 ## Out of scope
 
