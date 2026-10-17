@@ -39,10 +39,11 @@ func demand_w(t := NAN) -> float:
 	return super(t) + (Tuning.current().condenser_w if _room() and not wrecked() else 0.0)
 
 
-func work(seconds: float, t: float) -> void:
+func work(seconds: float, t: float) -> float:
 	if _room():
 		var made := making_lph(t) * seconds / 3600.0
 		made_l += made - canister().fill(made)
+	return 0.0
 
 
 ## What it's making now, L an hour: nothing dark, wrecked or full.

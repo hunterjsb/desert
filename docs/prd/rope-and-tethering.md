@@ -93,6 +93,13 @@ The player is a rope end like any other, with a weight and a wind catch, so a st
 enough pull drags you. Held in your hand, a line can be dropped instantly. Tied round
 your waist, it frees your hands but slows you down and raises your wind catch.
 
+**Reeling in** (Hunter, 2026-10-16: "scroll to pull in rope, with a nice animation and
+sound"). With a line's end in your hand or at your waist, the reel-in action shortens it
+a notch at a time, hand over hand, drawing what's on the other end toward you as hard as
+your strength allows; against something staked or too heavy, it draws you to it instead.
+Pay out gives it back, up to the line's length. Each notch shows the rope gathering in
+your hands and sounds the rope working.
+
 ## Wind on tethered things
 
 Every object that can be tethered has a **wind catch**: how much the wind grabs it,

@@ -17,6 +17,7 @@ const KINDS := {
 	&"water": Color(0.3, 0.6, 1.0),
 	&"mod": Color(0.75, 0.35, 0.7),
 	&"food": Color(0.8, 0.7, 0.35),
+	&"rack": Color(0.95, 0.35, 0.3),
 }
 
 ## Parts: the socket kind they fit, weight, size (z is how far they stand out
@@ -73,7 +74,10 @@ const PARTS := {
 const DEVICES := {
 	# Two batteries, a ring on every side, a tray under it and two top mounts,
 	# so a panel rides beside a lamp or a shield. The first battery sits in the
-	# middle of its back, so a crate with one hangs level on its lines.
+	# middle of its back, so a crate with one hangs level on its lines. A board
+	# is longer than the crate, so its rack runs along the top of the left side,
+	# away from the charge light, the board standing proud of it to clear the
+	# ring below. Last in the list, so older saves keep their sockets.
 	&"crate_frame": {"label": "Crate frame", "size": Vector3(0.8, 0.5, 0.8), "mass": 15.0,
 		"sockets": [
 			[&"battery", Vector3(0.0, 0.0, 0.4), Vector3.BACK],
@@ -86,6 +90,7 @@ const DEVICES := {
 			[&"ring", Vector3(0.0, 0.15, 0.4), Vector3.BACK],
 			[&"ring", Vector3(0.25, -0.1, -0.4), Vector3.FORWARD],
 			[&"top", Vector3(0.0, 0.25, 0.2), Vector3.UP],
+			[&"rack", Vector3(-0.4, 0.17, 0.0), Vector3.LEFT],
 		]},
 	# Its own water tank, and a mod mount on its back for a harvester.
 	&"planter": {"label": "Planter", "size": Vector3(1.0, 0.35, 0.6), "mass": 10.0, "planter": true,
@@ -164,10 +169,11 @@ const DEVICES := {
 			[&"plant_large", Vector3(0.15, 0.125, 0.0), Vector3.UP],
 		]},
 	# Just for you: it runs on its own battery, at its nose, and nothing ties
-	# to it, so it tows nothing. Its port charges it from a cable. Found buried
-	# on end, nose down. Lying flat, the wind meets its edge.
+	# to it, so it tows nothing. Its port charges it from a cable, and a crate's
+	# rack from the camp. Found buried on end, nose down. Lying flat, the wind
+	# meets its edge.
 	&"board": {"label": "Hoverboard", "size": Vector3(0.36, 0.08, 1.3), "mass": 7.0, "board": true, "on_end": true,
-		"carryable": true, "stats": {"face_m2": 0.1},
+		"carryable": true, "fits": &"rack", "stats": {"face_m2": 0.1},
 		"sockets": [
 			[&"battery", Vector3(0.0, 0.04, -0.5), Vector3.UP],
 			[&"port", Vector3(0.0, 0.0, 0.65), Vector3.BACK],

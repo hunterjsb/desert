@@ -21,6 +21,7 @@ assembled = Dictionary[StringName, Dictionary]({
 3: &"hover_tray",
 4: &"light_shield",
 7: &"hook",
+10: &"board",
 9: &"light_panel"
 }
 }

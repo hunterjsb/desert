@@ -6,7 +6,8 @@ extends Node
 ## fills their batteries; a pool that can't meet its draw goes dark. A device
 ## seated on another, like a shield on a crate, shares its pool. Running short,
 ## a pool's lower-ranked devices give way first, like a crate's tray to the
-## shield on it. A ledger proves no energy appears from nowhere.
+## shield on it, or a board racked on it charging. A ledger proves no energy
+## appears from nowhere.
 
 ## A dark pool waits until its batteries hold this share before it tries again.
 const RESTART := 0.05
@@ -70,7 +71,7 @@ func _tick(seconds: float, t: float) -> void:
 		for device: Device in pool:
 			made += device.production_w(t) * seconds / 3600.0
 			wants[device] = device.demand_w(t) * seconds / 3600.0
-			cells.append_array(device.batteries())
+			cells.append_array(device.pooled())
 		generated_wh += made
 		var running := _running(pool, wants, made, _fraction(cells))
 		var wanted := 0.0
@@ -99,7 +100,7 @@ func _tick(seconds: float, t: float) -> void:
 			var runs := on and running.has(device)
 			device.set_powered(runs)
 			if runs:
-				device.work(seconds, t)
+				used_wh -= device.work(seconds, t)
 			if device.charge_light != null:
 				ChargeLight.paint(device.charge_light, device.charge_share())
 		for cell in cells:
@@ -164,7 +165,7 @@ func wake(device: Device) -> void:
 			made += each.production_w()
 			wants[each] = each.demand_w()
 			wanted += wants[each]
-			cells.append_array(each.batteries())
+			cells.append_array(each.pooled())
 		if made >= wanted or _fraction(cells) >= RESTART:
 			for each: Device in _running(pool, wants, made, _fraction(cells)):
 				each.set_powered(true)
@@ -177,7 +178,7 @@ func pool_wh(device: Device) -> float:
 		if pool.has(device):
 			var held := 0.0
 			for each: Device in pool:
-				for cell in each.batteries():
+				for cell in each.pooled():
 					held += cell.charge_wh
 			return held
 	return 0.0

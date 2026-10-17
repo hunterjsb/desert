@@ -3,8 +3,9 @@ extends WorldProbe
 ## with its kit (Kit, data) beside you: a crate floating on its hover tray,
 ## its battery half charged, the light shield and the light solar panel
 ## seated on its two top mounts clear of each other, moored by its hook to a
-## driven stake on the kit's short line, and a hoverboard ready to ride; none
-## of it overlaps you or each other, and none of it goes in the suit's slots.
+## driven stake on the kit's short line, and a hoverboard racked on it ready
+## to ride; none of it overlaps you or each other, and none of it goes in the
+## suit's slots.
 ## The light shield is clearly weaker than a found one. Switched on, it runs
 ## the run's first day and into the next morning in its own weather on the
 ## crate's power without going dark: the crate floats until the battery is
@@ -199,24 +200,30 @@ func _check_kit(kit: Array, run: String) -> void:
 		and line.ends.any(func(e: Part) -> bool: return e.socket.get_parent() == crate)
 		and line.ends.any(func(e: Part) -> bool: return e.socket.get_parent() == stake),
 		"%s: the crate is moored by its hook to a driven stake on a %d m line" % [run, roundi(standard.rope_m)])
-	check(board.battery() != null and board.can_run(), "%s: the hoverboard lies ready to ride" % run)
+	check(board.host() == crate and board.racked() and board.battery() != null and board.can_run()
+		and board.charge_share() >= standard.charge - 0.01,
+		"%s: the hoverboard is racked on the crate, its battery %d%% charged, ready to ride"
+			% [run, roundi(standard.charge * 100.0)])
 	var start := Vector3(world.engine_x(world.spawn.x), 0.0, world.engine_z(world.spawn.y))
 	check([crate, board].all(func(b: Node3D) -> bool:
 		return Vector2(b.global_position.x - start.x, b.global_position.z - start.z).length() < 3.5),
 		"%s: the crate and the board are beside you" % run)
 	# Seated side by side, nothing of one inside the other or the crate.
 	var tops := [_box_in(crate, shield), _box_in(crate, panel)]
+	var racked := _box_in(crate, board)
 	var frame := Finds.bounds(crate).grow(-1e-4)
 	check(not tops[0].intersects(tops[1]) and tops.all(func(b: AABB) -> bool: return not b.intersects(frame)),
 		"%s: the shield and the panel sit clear on the two top mounts (%.3f m apart)"
 			% [run, maxf(tops[1].position.z - tops[0].end.z, tops[0].position.z - tops[1].end.z)])
+	check(not racked.intersects(frame) and tops.all(func(b: AABB) -> bool: return not b.intersects(racked)),
+		"%s: the board sits clear of the crate, its shield and its panel in the rack" % run)
 	var bodies: Array[AABB] = [_box_in(null, world.player), _box_in(null, crate), _box_in(null, shield),
 		_box_in(null, panel), _box_in(null, board), _box_in(null, stake)]
 	var clashes := 0
 	for i in bodies.size():
 		for j in range(i + 1, bodies.size()):
 			# What's seated touches its crate by design.
-			if i >= 1 and i <= 3 and j <= 3:
+			if i >= 1 and i <= 4 and j <= 4:
 				continue
 			clashes += int(bodies[i].intersects(bodies[j]))
 	check(clashes == 0, "%s: none of the kit overlaps you or anything else of it (%d)" % [run, clashes])

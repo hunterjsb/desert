@@ -35,7 +35,7 @@ func device(id: StringName, at: Vector3, above: float, filled := false) -> Devic
 	world.content.add_child(made)
 	made.global_position = Vector3(at.x, world.height_under(at) + above, at.z)
 	if filled:
-		for socket in made.sockets():
+		for socket in made.sockets().filter(func(s: Socket) -> bool: return FILL.has(s.kind)):
 			var part := Catalog.part(FILL[socket.kind])
 			world.content.add_child(part)
 			made.fit(part, socket)

@@ -9,7 +9,7 @@ func run() -> void:
 	for id: StringName in [&"crate_frame", &"planter"]:
 		var device := spawn_device(id, 4.0, 2.0, false)
 		await physics_frames(3)
-		for socket in device.sockets():
+		for socket in device.sockets().filter(func(s: Socket) -> bool: return FILL.has(s.kind)):
 			var part := Catalog.part(FILL[socket.kind])
 			# Its own layout, before it joins: each shape and mesh as the part holds it.
 			var own := {}

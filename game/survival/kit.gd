@@ -13,7 +13,9 @@ const STANDARD := "res://game/survival/standard_kit.tres"
 @export var beside: Dictionary[StringName, Vector2] = {}
 ## Devices that come put together, by name: "frame", a catalog device, and
 ## "sockets", what fills them by their place in its list, a part fitted or a
-## device seated. A plain device beside you comes with its batteries.
+## device seated; a thing beside you named there comes seated in it instead,
+## as the board racked on the crate. A plain device beside you comes with its
+## batteries.
 @export var assembled: Dictionary[StringName, Dictionary] = {}
 ## Lines laid between two things beside you, by name, each a coil's length:
 ## a floater moored to its stake, the stake to be taken up to tow it.
