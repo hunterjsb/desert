@@ -10,11 +10,12 @@ const HELP := [
 	["{move_forward} {move_left} {move_back} {move_right}", "move"], ["{sprint}", "sprint"],
 	["{hands_grab}", "pick up, take out, put in, put down"], ["{interact}", "use what you look at or hold: switch a shield, drive a stake, waist a line, water a planter, set its replant share"],
 	["{inventory}", "your slots and waist, by mouse: click a slot to take out, put in or swap"], ["{ui_cancel}", "back: close what's open, or the menu"],
-	["{toggle_keys}", "these keys"], ["{dev_scenarios}", "scenarios"], ["{toggle_dev_overlay}", "numbers"],
-	["{dev_fly}", "fly: {fly_up} up, {fly_down} down"], ["{dev_time_warp}", "speed up time"], ["{dev_gravity}", "low gravity"],
+	["{toggle_keys}", "these keys"], ["{quick_save}", "quick save"], ["{quick_load}", "quick load: back to your last save"],
 	["{jump}", "jump"], ["{crouch}", "crouch; at a run or downhill, slide"],
 	["{ride}", "get on or off a hoverboard; riding, the move keys push and carve where they point but {move_back} only brakes, {sprint} kicks off the sand, {jump} hops, {crouch} tucks, and crouched into a hard carve you drift"],
 ]
+## The developer's keys, listed apart under their own heading.
+const DEV_HELP := [["{console}", "the console: help lists its commands"], ["{toggle_dev_overlay}", "numbers"]]
 ## Keys on screen stand out in the theme's key colour.
 static var KEY_COLOR: Color:
 	get:
@@ -31,15 +32,14 @@ const KEYS := {
 	"move_right": KEY_D,
 	"sprint": KEY_SHIFT,
 	"toggle_keys": KEY_F1,
-	"dev_scenarios": KEY_F2,
 	"toggle_dev_overlay": KEY_F3,
-	"dev_fly": KEY_F4,
+	"quick_save": KEY_F5,
+	"quick_load": KEY_F9,
+	"console": KEY_QUOTELEFT,
 	"fly_up": KEY_SPACE,
 	"fly_down": KEY_C,
 	"jump": KEY_SPACE,
 	"crouch": KEY_C,
-	"dev_time_warp": KEY_F5,
-	"dev_gravity": KEY_F6,
 	"hands_grab": KEY_E,
 	"interact": KEY_F,
 	"inventory": KEY_TAB,
@@ -111,19 +111,35 @@ static func key_for(action: StringName) -> String:
 		var key := event as InputEventKey
 		if key != null and key.physical_keycode != KEY_NONE:
 			# Named as the player's own layout labels it.
-			return OS.get_keycode_string(key.physical_keycode if DisplayServer.get_name() == "headless"
+			return _key_name(key.physical_keycode if DisplayServer.get_name() == "headless"
 				else DisplayServer.keyboard_get_label_from_physical(key.physical_keycode))
 		if key != null:
-			return OS.get_keycode_string(key.keycode)
+			return _key_name(key.keycode)
 		var button := event as InputEventMouseButton
 		if button != null:
 			return BUTTON_NAMES.get(button.button_index, "mouse %d" % button.button_index)
 	return "unbound"
 
 
+## A printable key by its own mark, so the console's key shows as ` and not QuoteLeft.
+static func _key_name(code: Key) -> String:
+	return char(code) if code > KEY_SPACE and code <= KEY_ASCIITILDE else OS.get_keycode_string(code)
+
+
 ## A key's name, coloured, as BBCode.
 static func tint(key: String) -> String:
 	return "[color=#%s]%s[/color]" % [KEY_COLOR.to_html(false), key]
+
+
+## Every key as bound now, one per line, the developer's under their heading, as BBCode.
+static func help() -> String:
+	var lines := PackedStringArray()
+	for pair: Array in HELP:
+		lines.append("%s  %s" % [bbcode(pair[0]), bbcode(pair[1])])
+	lines.append("DEV")
+	for pair: Array in DEV_HELP:
+		lines.append("%s  %s" % [bbcode(pair[0]), bbcode(pair[1])])
+	return "\n".join(lines)
 
 
 ## Text with each {action} in it as that action's key, coloured, as BBCode.

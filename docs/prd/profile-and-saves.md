@@ -114,7 +114,13 @@ Resume, New game, the death screen and Options.
 - **A death in Ironman deletes the save,** so the main menu offers only New game, and
   a new Ironman run begins at once.
 - **A dev scenario's run is never saved,** and a death in it begins a new run without
-  touching the save on disk.
+  touching the save on disk. That's a run started with `--scenario=<key>`, or one the
+  console's `scenario` has been used in.
+- **Quick save and quick load** (Menus & UI's console freed their keys). In a Normal run
+  quick save is the system menu's Save, at once, with a small note saying Saved, or
+  Couldn't save; quick load is the death screen's Load last save, through the fade, and
+  with no save it says so. Ironman ignores both with a short note, and a dev scenario's
+  run never saves. With a menu or the console open, neither acts.
 - **The profile** is `profile.save` beside the run save. Taking a find reports every kind
   it held, the first of each being a discovery. `has(id)` answers for unlocks and
   discoveries alike.
@@ -149,6 +155,9 @@ Resume, New game, the death screen and Options.
    scenario's run.
 9. **The mode survives.** An Ironman run saved and resumed is still Ironman's: no Save,
    and death deletes its save. A save with no mode resumes as Normal.
+10. **Quick save and quick load.** Quick saved in Normal and moved elsewhere, quick load
+    puts you back where and when you saved, through the fade. In Ironman neither saves
+    nor loads, and a dev scenario's run never saves.
 
 ## Out of scope
 

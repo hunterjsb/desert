@@ -74,7 +74,7 @@ func _process(_delta: float) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	var key := event as InputEventKey
-	if key == null or not key.pressed or key.echo or $Scenarios.visible:
+	if key == null or not key.pressed or key.echo:
 		return
 	var code := key.physical_keycode
 	if WARPS.has(code):
@@ -88,7 +88,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		else:
 			world.time_warp = _paused_warp
 	elif code == KEY_R:
-		$Scenarios.apply(Scenarios.by_key("spawn"))
+		Scenarios.apply(world, Scenarios.by_key("spawn"))
 		_jump = "spawn"
 	elif code == KEY_H:
 		$Hud.visible = not $Hud.visible
@@ -151,7 +151,6 @@ func _capture(out_dir: String, only: PackedStringArray) -> void:
 	window.content_scale_size = Vector2i(1920, 1080)
 	AudioServer.set_bus_mute(0, true)
 	set_process_unhandled_input(false)
-	$Scenarios.set_process_unhandled_input(false)
 	world.player.set_process_unhandled_input(false)
 	world.player.set_physics_process(false)
 	$Hud.visible = false

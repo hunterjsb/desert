@@ -4,8 +4,9 @@ extends Node
 ## to the menu on Save & quit. Saves and the profile are reached only through
 ## their nodes, and a missing one means there are none: no Resume, and Save &
 ## quit only quits. A Normal run also saves itself as you play and when you
-## quit, and a death in it offers the last save back. A dev scenario
-## (`-- --scenario=<key>`) skips the menu, and its run is never saved.
+## quit, and a death in it offers the last save back; quick save and quick
+## load are its own. A dev scenario (`-- --scenario=<key>`, or the console's
+## scenario) skips the menu, and its run is never saved.
 
 ## Loaded when wanted, not preloaded: the world's own scripts reach back here
 ## through the UI root, and a preload would go round in a circle.
@@ -35,19 +36,66 @@ var _played := 0.0
 
 func _ready() -> void:
 	ui.main = self
-	_scenario = _scenario_asked()
+	var asked := _scenario_asked()
+	_scenario = asked != ""
 	if opens_on_menu and not _scenario:
 		_show_view()
 		ui.show_main_menu()
-	else:
-		_begin(_make(RUN))
+		return
+	_begin(_make(RUN))
+	if _scenario:
+		# The world finishes setting up first.
+		await get_tree().process_frame
+		start_scenario(Scenarios.by_key(asked))
 
 
-static func _scenario_asked() -> bool:
+## The scenario the command line asks for, or "".
+static func _scenario_asked() -> String:
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--scenario="):
-			return true
-	return false
+			return arg.trim_prefix("--scenario=")
+	return ""
+
+
+## Drops the run in play into a dev scenario. From then on it's a dev
+## scenario's run: never saved, and a death in it begins a new run without
+## touching the save on disk, which is the player's own.
+func start_scenario(scenario: Dictionary) -> void:
+	_scenario = true
+	run.get_node("Runs").offer = Callable()
+	Scenarios.apply(world(), scenario)
+
+
+## A Normal run saves at once, saying so; Ironman and a dev scenario's run never.
+func quick_save() -> void:
+	if _scenario:
+		ui.note("A dev run is never saved")
+	elif ironman():
+		ui.note("Ironman has no quick save")
+	elif saves() != null:
+		ui.note("Saved" if save_run() else "Couldn't save")
+
+
+## The last save back, through the fade, as the death screen's Load last save.
+func quick_load() -> void:
+	if _scenario:
+		ui.note("A dev run is never saved")
+	elif ironman():
+		ui.note("Ironman has no quick load")
+	elif not has_save():
+		ui.note("No save to load")
+	else:
+		resume()
+
+
+## Heard only with nothing open: the UI root keeps a menu's keys to itself.
+func _unhandled_input(event: InputEvent) -> void:
+	if not in_run():
+		return
+	if event.is_action_pressed(&"quick_save"):
+		quick_save()
+	elif event.is_action_pressed(&"quick_load"):
+		quick_load()
 
 
 ## The run's world now: a death brings a new one.

@@ -235,7 +235,7 @@ Death means a new run (see Runs in the vision).
 - **Food and water from salvage:** no new food was needed. Survival kits, common on
   ruins' floors and sometimes on open sand, hold a sealed canister and a ration three
   times in four, and seeds for a planter; loose rations and seeds lie on ruins' floors.
-- **The playtest scenario** ("survive a few days", in the dev menu) starts you over at a
+- **The playtest scenario** ("survive a few days", among the dev scenarios) starts you over at a
   clear dawn, with a condenser in front of you (a battery, a panel and an empty
   canister fitted), a charged shield generator, a cable and two spare rations. A
   simulated run of it on the probes' seed: standing in the open, a storm kills you on

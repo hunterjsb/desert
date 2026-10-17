@@ -29,7 +29,7 @@ const BOARD_REACH := 1.5
 
 var world: World
 var stamina: float
-## Dev only: the fly action flies through the world, for checking the far view.
+## Dev only: the console's fly flies through the world, for checking the far view.
 var flying := false
 ## How you're moving: stand, walk, sprint, slide, air, ride or fly. A
 ## crouched walk is still a walk; `crouched` says you're low.
@@ -90,9 +90,6 @@ func _unhandled_input(event: InputEvent) -> void:
 		Controls.free_mouse(false)
 	elif event.is_action_pressed("ui_cancel"):
 		Controls.free_mouse(true)
-	elif event.is_action_pressed("dev_fly"):
-		step_off()
-		flying = not flying
 	elif event.is_action_pressed("ride"):
 		if toggle_board():
 			get_viewport().set_input_as_handled()
