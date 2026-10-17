@@ -43,7 +43,7 @@ const LIST: Array[Dictionary] = [
 		"kind": "clear", "day": [0.33, 0.37], "due": [90.0, 200.0], "farm": true},
 	{"key": "board", "label": "ride: a charged hoverboard at your feet by a small camp, a shield and a crate, clear and calm",
 		"kind": "clear", "day": [0.35, 0.5], "calm": 6.0, "board": true},
-	{"key": "radio", "label": "radio: a radio and a charged shield at your feet, a storm 300 m off", "kind": "front",
+	{"key": "radio", "label": "radio: a radio and a charged shield in front of you, a storm 300 m off", "kind": "front",
 		"distance": 300.0, "day": [0.35, 0.55], "radio": true},
 ]
 
@@ -96,9 +96,10 @@ const BOARD_AT := [0.0, 1.3]
 const BOARD_SHIELD := [-2.0, 3.0]
 const BOARD_CRATE := [2.2, 3.4]
 
-## The radio, its face to you, and the shield to sit the storm out by it.
-const RADIO_AT := [0.4, 1.4]
-const RADIO_SHIELD := [-0.7, 2.0]
+## The radio, its face to you and far enough out to be in view as you
+## arrive, and the shield to sit the storm out by it.
+const RADIO_AT := [0.4, 2.4]
+const RADIO_SHIELD := [-1.0, 3.2]
 
 ## Your own frame, to fit what you find to: right and ahead.
 const YOURS := [1.5, 2.5]
@@ -129,7 +130,8 @@ static func apply(world: World, scenario: Dictionary) -> void:
 		return
 	world.respawn(place.x, place.z, place.yaw, place.time)
 	Dev.put("world/scn", scenario.key)
-	for body: Node in world.get_meta(&"scenario_kit", []):
+	# Untyped: what the ground unloaded once you moved away is freed already.
+	for body in world.get_meta(&"scenario_kit", []):
 		if is_instance_valid(body):
 			body.queue_free()
 	world.remove_meta(&"scenario_kit")
@@ -142,7 +144,7 @@ static func apply(world: World, scenario: Dictionary) -> void:
 	if not is_instance_valid(world):
 		return
 	# Its own kit takes the place of the run's, gone before anything lands on it.
-	for body: Node in world.get_meta(&"kit", []):
+	for body in world.get_meta(&"kit", []):
 		if is_instance_valid(body):
 			body.free()
 	world.remove_meta(&"kit")

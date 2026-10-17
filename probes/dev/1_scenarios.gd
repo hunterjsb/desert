@@ -3,7 +3,7 @@ extends WeatherProbe
 ## 100 m upwind and you face it; deep is deep; dusk is dusk; the test kit lands
 ## in front of you; going looking stands you before a ruin's door with finds
 ## round it; the farm stands in front of you growing; a charged board lies at
-## your feet by a small camp; a radio and a shield stand at your feet with a
+## your feet by a small camp; a radio and a shield stand in front of you with a
 ## beacon in reach. Checked against the field itself and against what the
 ## game then shows.
 
@@ -89,7 +89,7 @@ func _edge(from: Vector2, along: Vector2, t: float, inside: bool) -> float:
 	return INF
 
 
-## A radio stands at your feet in front of you, a full battery in it, switched
+## A radio stands in front of you, a full battery in it, switched
 ## off, by a charged shield generator, switched off; tuned to the beacon
 ## there, it hears one.
 func _radio_lands() -> void:
@@ -100,8 +100,8 @@ func _radio_lands() -> void:
 	var radio: Radio = dropped[0]
 	var shield: ShieldGenerator = dropped[1]
 	var off := radio.global_position - player.global_position
-	check(off.dot(-player.global_basis.z) > 0.5 and Vector2(off.x, off.z).length() < 2.0 and radio.channel == Radio.OFF
-		and radio.battery() != null and radio.charge_share() >= 1.0, "radio: at your feet in front of you, charged and off")
+	check(off.dot(-player.global_basis.z) > 0.5 and Vector2(off.x, off.z).length() < 3.0 and radio.channel == Radio.OFF
+		and radio.battery() != null and radio.charge_share() >= 1.0, "radio: in front of you, charged and off")
 	check(not shield.on and shield.battery().charge_wh >= shield.battery().capacity(), "radio: a charged shield beside it")
 	while radio.channel != Radio.BEACON:
 		radio.interact(player)
