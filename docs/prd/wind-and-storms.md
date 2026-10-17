@@ -154,6 +154,21 @@ These are owned by their own PRDs and listed here so the field serves them all.
   generated after a storm passes is new.
 - **Sound** (Radio, sound & atmosphere): a roar outside, muffled inside the shield.
 
+## The lee of a dune
+
+(Hunter, 2026-10-17: "camping against a steep dune when the wind is coming from over top
+of it should provide some shelter".) The ground breaks the wind. Downwind of a crest that
+stands well above you, the wind is weaker: most of all close under a steep slip face,
+fading out a few crest-heights further on, and not at all on the windward side or on
+open flats. It's read from the one ground (`height_at`) upwind along the wind as it blows
+now, so it turns with the wind: the dunes face the prevailing wind, so their slip faces
+are the usual shelter, and a storm blowing from another quarter may leave you exposed.
+It's a share of shelter, through the same felt-weather wrapper as a bubble's, so
+everything that feels the wind feels it: you, the camp, the ropes, the turbine. It takes
+the edge off a storm's wear but never stands in for a shield, and the dust and darkness
+still come over the crest. Camping in the lee is a choice with a cost: less wind for the
+turbine.
+
 ## Skeleton version
 
 - `wind_at` and `storm_at` from the run's seed. One slowly drifting prevailing wind,
@@ -179,6 +194,11 @@ These are owned by their own PRDs and listed here so the field serves them all.
 - Instruments and forecasts.
 - Real dune shapes facing the prevailing wind (decided; see World & terrain).
 - Wind particles and sound, with Sand Game's particles and recordings as the reference.
+- **Storms wear dunes down** (Hunter, 2026-10-17, loose: "later on in the game, when we
+  have better systems, this could even erode part of the dune and spawn loot"). A storm
+  scouring a dune could cut into it and lay bare a find. Loaded ground never changes
+  (World & terrain), so this would happen where you aren't, or be staged, and it ties in
+  with storms uncovering finds (Salvage & ruins).
 
 ## Probes
 
