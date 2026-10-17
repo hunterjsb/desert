@@ -37,7 +37,10 @@ world. The pressure comes from the moon, and a menu is no shelter from it.
 
 ## The main menu
 
-A few small words at the bottom of the screen, over the live desert. No background art,
+A title at the top, "Desert" for now in a light logo like the prototype's, and the
+starting crate in the foreground tilting toward the mouse, as the prototype's shield and
+radio did (Hunter, 2026-10-16). A few small words at the bottom of the screen, over the
+live desert. No background art,
 no panels, no big centred buttons. (Hunter, 2026-10-16: the main menu's words "a tad
 more spacing and bigger", then "a lot bigger", the pause menu too: menu words are 20,
 the main menu's 24; the menus over a running game stand in the middle of the screen, the
