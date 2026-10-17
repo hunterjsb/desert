@@ -37,6 +37,7 @@ var _points := {}
 ## (cell, heading index) -> the shares at its four corners at that heading
 ## and the next: what a body resting in the cell reads every tick.
 var _cells := {}
+var _held := PackedFloat32Array([0.0])
 
 
 func _init(world: World) -> void:
@@ -161,11 +162,18 @@ func _ground(x: float, z: float) -> float:
 	var fz := (z - j) * 0.5
 	var chunk := _terrain.chunk_under(i, j)
 	if chunk == null or chunk.step == 0 or 2 % chunk.step != 0:
-		return TerrainShape.across(fx, fz, _shape.height_at(i + 2, j), _shape.height_at(i, j + 2),
-			_shape.height_at(i, j) if fx + fz <= 1.0 else _shape.height_at(i + 2, j + 2))
+		return TerrainShape.across(fx, fz, _sample(i + 2, j), _sample(i, j + 2),
+			_sample(i, j) if fx + fz <= 1.0 else _sample(i + 2, j + 2))
 	# The cell's far corners are on the chunk's own far edges at most.
 	var w := chunk.side / chunk.step + 1
 	var by := 2 / chunk.step
 	var k := (j - chunk.coord.y * chunk.side) / chunk.step * w + (i - chunk.coord.x * chunk.side) / chunk.step
 	var h := chunk.heights
 	return TerrainShape.across(fx, fz, h[k + by], h[k + by * w], h[k] if fx + fz <= 1.0 else h[k + by * w + by])
+
+
+## The shape's sample at a whole-metre point, held to 32 bits as a chunk
+## holds it, so a point works out the same whether its ground was loaded.
+func _sample(i: int, j: int) -> float:
+	_held[0] = _shape.height_at(i, j)
+	return _held[0]

@@ -204,10 +204,10 @@ turbine.
   them. Each point is a pure function of the ground and the heading, so the cache only
   saves work and the weather stays deterministic. It reads the ground's own samples
   every 2 m, which every loaded chunk holds, near or mid. On the dev machine, under
-  load, a read costs about 5 µs, so the felt wind went from about 5 to 10 µs, and the
-  reference camp's few dozen reads a tick about 0.1 ms. A fresh point costs about
-  80 µs, so when the wind turns past a 2° step the camp's 14 points cost about 1 ms in
-  that one tick, once every half minute or more.
+  load, a read costs about 2 µs (the field's own wind about 4), and the reference camp
+  makes 14 a tick, about 0.03 ms. A fresh point costs about 80 µs, so when the wind
+  turns past a 2° step the camp's 14 points cost about 1 ms in that one tick, once
+  every half minute or more.
 - **On the dev overlay,** `lee` beside `shel` shows the share of the wind the ground
   keeps from you.
 - **The lee scenario** stands you at the foot of a tall slip face, its crest at least
@@ -268,9 +268,9 @@ All run without a window, with a fixed seed.
    shield's charge, and longer ones exist.
 9. **The lee of a dune.** In a steady gale along the dunes' own heading, the wind at the
    foot of a tall slip face is cut by about the lee's full share, and up the same dune's
-   windward slope and out on open sand it isn't cut at all. The same foot with the wind
-   from the other side is exposed. A box resting at the foot stays put where the same
-   box on open sand slides off downwind.
+   windward slope and out on open sand it isn't cut at all. With the wind from the
+   other side the same foot is exposed, and so is the foot of the windward slope. A box
+   resting at the foot stays put where the same box on open sand slides off downwind.
 
 ## Out of scope
 

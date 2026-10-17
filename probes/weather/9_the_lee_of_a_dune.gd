@@ -1,9 +1,10 @@
 extends WeatherProbe
 ## Wind & storms probe 9: a dune breaks the wind. A steady gale blows along
 ## the dunes' own heading. At the foot of a tall slip face the wind is cut by
-## the lee's full share, and the same foot with the wind from the other side
-## is exposed. Up the same dune's windward slope, and out on open sand,
-## nothing is cut. A box resting at the foot stays put where the same box on
+## the lee's full share. Up the same dune's windward slope, and out on open
+## sand, nothing is cut. With the wind from the other side the foot is
+## exposed, and so is the foot of the steepest windward slope round about:
+## too gentle to throw the wind clear. A box resting at the foot stays put where the same box on
 ## open sand slides off downwind.
 
 const GALE := 25.0
@@ -28,8 +29,13 @@ func run() -> void:
 	if feet.is_empty() or is_nan(open.x):
 		return
 	var foot: Vector2 = feet[0]
-	var windward := _windward(foot, down)
-	print("foot %s, windward %s, open %s" % [foot, windward, open])
+	var windward: Vector2 = _windward(foot, down)[0]
+	# Only its steepness would let a windward slope throw a lee back the other way.
+	var steep: Array = feet.map(_windward.bind(down)).reduce(func(a: Array, b: Array) -> Array: return a if a[2] >= b[2] else b)
+	var toe: Vector2 = steep[1]
+	print("foot %s, windward %s, open %s, steepest windward slope %.1f° with its foot at %s" % [foot, windward, open, steep[2], toe])
+	check(steep[2] > rad_to_deg(atan(1.0 / tuning.lee_heights.y)),
+		"a windward slope steep enough that its foot is within a lee's reach of its crest (%.1f°)" % steep[2])
 	check(_cut(foot) > tuning.lee_wind * 0.9 and _cut(foot) <= tuning.lee_wind,
 		"at the foot of a tall slip face the wind is cut by about its lee's %d%% (%.3f)" % [roundi(tuning.lee_wind * 100.0), _cut(foot)])
 	check(_cut(windward) == 0.0, "up its windward slope nothing is cut (%.3f)" % _cut(windward))
@@ -37,7 +43,8 @@ func run() -> void:
 
 	tuning.prevailing_speed = -GALE
 	world.weather.field = WeatherField.new(world.run_seed, tuning)
-	check(_cut(foot) == 0.0, "with the wind from the other side the foot is exposed (%.3f)" % _cut(foot))
+	check(_cut(foot) == 0.0 and _cut(toe) == 0.0, "with the wind from the other side the foot is exposed (%.3f), and so is the windward slope's (%.3f)"
+		% [_cut(foot), _cut(toe)])
 	tuning.prevailing_speed = GALE
 	world.weather.field = WeatherField.new(world.run_seed, tuning)
 
@@ -53,19 +60,30 @@ func _cut(at: Vector2) -> float:
 	return 1.0 - world.weather.felt_wind(p).length() / world.weather.field_wind(p).length()
 
 
-## Halfway up the windward slope of the dune whose slip face this is the foot of.
-func _windward(foot: Vector2, down: Vector2) -> Vector2:
+## Up the windward slope of the dune whose slip face this is the foot of:
+## [halfway up, its own foot where it levels out, how steeply it climbs
+## between, degrees].
+func _windward(foot: Vector2, down: Vector2) -> Array:
 	var base := world.shape.height_at(foot.x, foot.y)
 	var crest := base
+	var crest_at := foot
+	var halfway := Vector2(NAN, NAN)
+	var last := base
 	var d := 0.0
 	while d < 400.0:
-		d += 1.0
+		d += 2.0
 		var at := foot - down * d
 		var h := world.shape.height_at(at.x, at.y)
-		crest = maxf(crest, h)
+		if h > crest:
+			crest = h
+			crest_at = at
 		if crest - base > Scenarios.LEE_TALL and h < (crest + base) * 0.5:
-			return at
-	return foot
+			if is_nan(halfway.x):
+				halfway = at
+			if absf(last - h) < 0.1:
+				return [halfway, at, rad_to_deg(atan((crest - h) / at.distance_to(crest_at)))]
+		last = h
+	return [foot, foot, 0.0]
 
 
 ## How far a box resting on the sand at a place slides in three seconds of gale.
