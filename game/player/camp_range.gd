@@ -82,7 +82,9 @@ func camp() -> Array[Device]:
 	var world := _player.world
 	for node in world.content.get_children():
 		var device := node as Device
-		if device != null and device != _player.board and device != _player.hands.held \
+		# One the world has let go of is gone now, not at the frame's end.
+		if device != null and not device.is_queued_for_deletion() and device != _player.board \
+				and device != _player.hands.held \
 				and not _player.waist.holds(device):
 			mine.append(device)
 	return mine
@@ -149,7 +151,9 @@ func _tell_losses(watching: Dictionary, here: Vector2i, keep: int) -> void:
 	for id: int in _watched:
 		var was: Array = _watched[id]
 		var off: Vector2i = was[1] - here
-		if not watching.has(id) and not is_instance_valid(instance_from_id(id)) and maxi(absi(off.x), absi(off.y)) > keep:
+		var still := instance_from_id(id)
+		if not watching.has(id) and (still == null or still.is_queued_for_deletion()) \
+				and maxi(absi(off.x), absi(off.y)) > keep:
 			gone.append(was[0])
 	if gone.is_empty():
 		return
