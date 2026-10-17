@@ -12,7 +12,6 @@ const DAYS := 3.0
 
 func run() -> void:
 	await load_camp()
-	stock_up()
 	var vitals := world.player.vitals
 	var seen := {"low": vitals.hunger}
 	await idle(DAYS, func() -> void: seen.low = minf(seen.low, vitals.hunger))

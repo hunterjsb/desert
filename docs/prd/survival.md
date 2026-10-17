@@ -255,6 +255,16 @@ Death means a new run (see Runs in the vision).
   day two. With the shield alone, a long storm drains it on day three. With the shield
   and the condenser cabled into one pool, and canisters swapped as they run dry, you're
   alive after three days with a quarter of the power left.
+- **The AFK promise, with a body** (Stage 12, 2026-10-17). The "afk" scenario stocks you
+  as you'd leave yourself: three canisters of water, nothing to eat, and two slots free
+  for what the farm drops. Idle in the reference camp (Power) at the equator for three
+  days of the probes' seed, about two of them storm, you come through untouched: the
+  bubble keeps every harm off you, the farm's drops are all you eat, 2,400 kcal, and you
+  drink about 1.7 L a day. Take the farm away and you starve at 2.83 days (probe 1).
+- **Water is where AFK ends.** Nothing brings you water yet: you drink only from your
+  slots, and a condenser fills its own canister, to be swapped by hand. So the camp keeps
+  you as long as the water you carry: left on, the three canisters ran out at 4.5 days
+  and you died of thirst at 4.8, fed, with food stored and the shield up.
 
 ## Full version
 

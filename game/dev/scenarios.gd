@@ -106,6 +106,9 @@ const AFK_PLANTERS := [[-2.2, 2.6], [2.2, 2.6]]
 const AFK_CRATE := [0.0, -2.0]
 const AFK_STAKE := [1.6, -0.6]
 const AFK_TURBINE := [0.0, -7.4]
+## Your slots, as you'd leave yourself: nothing brings you water yet, so this
+## many canisters, and the rest free for what the farm drops onto you.
+const AFK_CANISTERS := 3
 
 ## Your own frame, to fit what you find to: right and ahead.
 const YOURS := [1.5, 2.5]
@@ -422,9 +425,14 @@ static func board(world: World) -> Array[Node3D]:
 ## mount, cabled to the shield, and a panel on the other. The crate holds a
 ## turbine out in the wind beyond the bubble on a strong cable: a turbine
 ## only works planted, and a loose one slides off in a storm. You start fed
-## and watered, on a fresh suit's kit. Returns what it dropped.
+## and watered, stocked up to leave it running. Returns what it dropped.
 static func afk(world: World) -> Array[Node3D]:
 	world.player.vitals.fresh()
+	var slots := world.player.suit.slots
+	for i in slots.size():
+		if slots[i] != null:
+			slots[i].free()
+		slots[i] = Catalog.part(&"canister") if i < AFK_CANISTERS else null
 	var shield := standing(world, &"shield", [&"big_battery"], AFK_SHIELD) as ShieldGenerator
 	var dropped: Array[Node3D] = [shield]
 	for where: Array in AFK_PLANTERS:

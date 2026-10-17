@@ -17,7 +17,7 @@ var planters: Array[Planter] = []
 
 ## The world in its own weather, you `latitude` degrees north of where the run
 ## began, facing upwind as the scenario stands you, at time zero, with the
-## reference camp parked round you.
+## reference camp parked round you and your slots stocked as it stocks them.
 func load_camp(latitude := 0.0) -> void:
 	await load_world(1234, false)
 	if latitude != 0.0:
@@ -46,16 +46,6 @@ func park() -> void:
 			turbine = body
 		elif body is Device and (body as Device).stats().lift_kg > 0.0:
 			crate = body
-
-
-## You as you'd leave yourself: three canisters of water in your slots and
-## nothing to eat, two slots free for what the farm drops.
-func stock_up() -> void:
-	var slots := world.player.suit.slots
-	for i in slots.size():
-		if slots[i] != null:
-			slots[i].free()
-		slots[i] = Catalog.part(&"canister") if i < 3 else null
 
 
 ## Leaves the camp alone for `days`; each() after every tick.

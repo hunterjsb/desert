@@ -39,7 +39,15 @@ charged board at your feet by a small camp. The Movement PRD's probes keep their
 numbers, 1 to 7; the on-foot probes built with Stage 5 are 8 to 14. Stage 11's sound
 pass was pulled forward the same day: softer fitting and a softer suit, new sounds for
 most actions, World and UI buses, and the whole mix levelled (Radio, sound &
-atmosphere, "As built"); the radio waits.
+atmosphere, "As built"); the radio waits. Stage 12's reference camp was built on
+2026-10-17: the "afk" dev scenario parks it round you, running, a base shield over two
+harvester planters, a crate's bank and panels, and a turbine held out in the wind on a
+strong cable. The AFK promise is proved three ways (Power 4, Survival 1 and Farming 6):
+its power holds through two days and nights at 45° north, and it keeps you alive and
+fed through three days at the equator, mostly storm. What ends it is water, which
+nothing brings you yet, and the turbine, which the storm wears out on the third day
+(Power, Survival and Farming, "As built"). Stage 12 waits at the gate for a full run
+from the main menu.
 
 ## The loop we're building toward
 

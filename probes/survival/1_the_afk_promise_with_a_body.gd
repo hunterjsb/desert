@@ -28,7 +28,6 @@ func _left(farm: bool) -> Dictionary:
 	if world != null:
 		await reload()
 	await load_camp()
-	stock_up()
 	if not farm:
 		for planter in planters:
 			planter.free()

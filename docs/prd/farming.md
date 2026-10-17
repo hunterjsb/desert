@@ -158,7 +158,16 @@ that ignored the weather.
   it up; the other has a harvester and a full tank. A charged shield generator stands
   between them, switched off, and its bubble takes both. A spare carrot is in your
   slots.
-- **Probe 3 is built** with a test-only thermal shield. Probe 6 waits for stage 12.
+- **Probe 3 is built** with a test-only thermal shield.
+- **The AFK promise feeds you** (Stage 12, 2026-10-17, probe 6). The reference camp's
+  farm (Power) is two planters with harvesters, three carrots and a fungus in each, their
+  tanks full. Over three days at the equator it fed you alone: the carrots ripened in the
+  first clear spell and the fungus through the storms after, 24 and 56 units, and it
+  dropped 2,700 kcal onto you, of which you ate 2,400, keeping 6,300 more. Your hunger
+  never fell below the mark where the suit feeds you, and every slot stayed sown. A
+  planter drops what it stored first, so you ate carrots while the fungus piled up. Its
+  water is what ends it: the driest tank had 0.65 L left after three days, and left on,
+  the two ran dry at 3.65 and 4.96 days. Nothing but you fills them.
 
 ## Full version
 
