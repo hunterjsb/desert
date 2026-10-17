@@ -163,8 +163,8 @@ func _fit_into(mine: Device, part: Part) -> bool:
 
 ## Where your eyes might stand, and what they look at, to see a socket's
 ## part: its middle from round its axis, and from beside it a little higher,
-## its middle or its edge toward you, as you'd look under a thing. Never from
-## in the sand.
+## its middle, its edge toward you or just under a chassis piece's edge, as
+## you'd look under a thing. Never from in the sand.
 func _eyes(at: Transform3D, middle: Vector3) -> Array[Array]:
 	var out: Array[Array] = []
 	for off: float in OFF_AXIS:
@@ -175,7 +175,7 @@ func _eyes(at: Transform3D, middle: Vector3) -> Array[Array]:
 			if off == PI / 2.0:
 				eye_at += Vector3.UP * BESIDE_UP
 			if eye_at.y > world.height_under(eye_at) + 0.2:
-				for edge: float in ([0.0, 0.15, 0.3] if off == PI / 2.0 else [0.0]):
+				for edge: float in ([0.0, 0.15, 0.3, 0.5] if off == PI / 2.0 else [0.0]):
 					out.append([eye_at, middle + side * edge])
 			if off == PI / 2.0:
 				var low := middle + side * CROUCHED_OFF

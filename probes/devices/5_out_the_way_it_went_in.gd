@@ -74,8 +74,9 @@ func _take_and_refit(owner: Device, socket: Socket, k: int, tally: Dictionary) -
 			tally.inside += 1
 		if hands.phase == Hands.Phase.TAKING:
 			var rel := seat(socket).affine_inverse() * part.global_transform
+			# Turned at all, beyond the engine's float rounding on a device that floats off level.
 			if Vector2(rel.origin.x, rel.origin.y).length() > 0.001 or rel.origin.z < seen.z - 0.0001 \
-					or not rel.basis.is_equal_approx(Basis.IDENTITY):
+					or rel.basis.x.distance_to(Vector3.RIGHT) + rel.basis.y.distance_to(Vector3.UP) > 0.0001:
 				tally.astray += 1
 			seen.z = rel.origin.z
 	watch.call()

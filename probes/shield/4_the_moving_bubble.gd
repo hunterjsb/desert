@@ -70,10 +70,11 @@ func _seated(generator: ShieldGenerator, crate: Device, line: Line) -> void:
 		if socket.kind == &"top" and socket.is_open():
 			top = socket
 	var crate_kg := crate.mass
+	await _beside(crate, top.global_position)
 	for i in 30:
 		# It floats on your line, so you look again as it moves.
 		var seat_at := seat(top).origin
-		look(seat_at + Vector3(0.0, 1.0, -0.7), seat_at + Vector3(0.0, 0.2, 0.0))
+		look(_standing(), seat_at + Vector3(0.0, 0.2, 0.0))
 		await simulate(1.0 / 60.0)
 	check(hands.socket == top and hands.grab(), "the held shield leans toward the crate's top mount, and take seats it")
 	await simulate(0.5)
@@ -103,10 +104,23 @@ func _seated(generator: ShieldGenerator, crate: Device, line: Line) -> void:
 	check(seen.off < 0.3, "the bubble went with the crate, centred over its mount (%.2f m off at worst)" % seen.off)
 	check(from - cell.charge_wh > 1.0, "the shield ran on the crate's battery too (%.1f Wh drawn)" % (from - cell.charge_wh))
 	await simulate(0.5)
+	await _beside(crate, generator.global_position)
 	var on := generator.global_transform * Vector3(0.0, 0.1, 0.0)
-	look(on + Vector3(0.0, 0.9, -1.0), on)
+	look(_standing(), on)
 	await simulate(1.0 / 60.0)
 	check(hands.grab(), "take lifts the seated shield off")
 	await simulate(0.6)
 	check(hands.held == generator and crate.mounted().is_empty() and is_equal_approx(crate.mass, crate_kg)
 		and generator.running(), "it's in your hands again, still running, and the crate is as it was")
+
+
+## Walks you up beside a floating device, a step out past a point on it, so
+## the line at your waist goes slack rather than jerking it.
+func _beside(device: Device, point: Vector3) -> void:
+	await walk_to(point + flat(point - device.global_position).normalized() * 0.9)
+
+
+## Your eyes where you stand, standing.
+func _standing() -> Vector3:
+	var feet := world.player.global_position
+	return Vector3(feet.x, world.height_under(feet), feet.z) + world.player.camera.position

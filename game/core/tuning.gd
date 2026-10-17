@@ -424,11 +424,14 @@ static var _current: Tuning
 @export var slide_db: float = 0.0
 
 @export_group("Devices")
-## A hover tray holds a device's middle this high over the sand, m.
-@export var hover_height: float = 1.2
-@export var hover_hertz: float = 1.0
+## A hover tray pushes all it can lift with its face this high over the sand
+## or nearer, m, and a share of it higher up, falling off by e each
+## hover_falloff m: a cushion, so every load bobs at one rate and a light one
+## rides higher. The kit's crate rides with its middle about 1.2 m up.
+@export var hover_height: float = 0.84
+@export var hover_falloff: float = 0.06
+## How much the cushion's bounce dies in one swing (1 settles without bouncing).
 @export var hover_damping: float = 0.8
-@export var hover_upright_hertz: float = 1.6
 ## What hovering costs, W per kg floated. Power (Stage 4) drains it.
 @export var hover_watts_per_kg: float = 2.0
 ## Set resting or floating again, a tray lets its device down or lifts it

@@ -191,7 +191,7 @@ func _check_kit(kit: Array, run: String) -> void:
 	var stake: Stake = pieces.stake
 	var line: Line = pieces.line
 	var now := crate.stats()
-	check(now.hovering and absf(clearance(crate) - world.tuning.hover_height) < 0.1 and now.hooks == 1
+	check(now.hovering and absf(clearance(crate) - crate.rest_height()) < 0.1 and now.hooks == 1
 		and crate.charge_share() >= standard.charge - 0.01 and crate.charge_share() <= standard.charge,
 		"%s: the crate floats %.2f m up on its tray, a hook fitted, its battery %d%% charged"
 			% [run, clearance(crate), roundi(standard.charge * 100.0)])

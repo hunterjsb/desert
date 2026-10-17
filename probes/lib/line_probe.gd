@@ -45,7 +45,28 @@ func floating(id: StringName, at: Vector3) -> Device:
 	for socket in made.sockets():
 		if socket.kind == &"ring" and socket.part == null:
 			fit_part(made, &"hook")
+	made.global_position.y += made.rest_height() - world.tuning.hover_height
 	return made
+
+
+## The flattest sand within `reach` m of a spot, where the sand under a
+## square `span` m across rises least: what floats there floats level.
+func flat_spot(x: float, z: float, span: float, reach := 40) -> Vector3:
+	var best := spot(x, z)
+	var least := INF
+	for i in range(-reach, reach + 1, 4):
+		for j in range(-reach, reach + 1, 4):
+			var at := spot(x + i, z + j)
+			var low := INF
+			var high := -INF
+			for k in 9:
+				var h := world.height_under(at + Vector3((k % 3 - 1) * span * 0.5, 0.0, (floori(k / 3.0) - 1) * span * 0.5))
+				low = minf(low, h)
+				high = maxf(high, h)
+			if high - low < least:
+				least = high - low
+				best = at
+	return best
 
 
 func driven_stake(at: Vector3) -> Stake:

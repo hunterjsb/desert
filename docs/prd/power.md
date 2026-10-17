@@ -136,6 +136,12 @@ the felt-weather rule.
   30%. So a crate's tray lets the crate settle onto the sand and leaves the last quarter
   to the shield seated on it, and a condenser cabled to a shield stops at a quarter the
   same way. A pool with nothing ranked above the rest runs down as before.
+- **Trays draw for what they hold up** (2026-10-17): 2 W for each kilogram a tray pushes
+  up, so at rest a device's trays together draw 2 W a kilogram of it, as a single tray
+  always did (91 W for the kit's crate). A deck tipped onto the sand draws less, the sand
+  carrying a share, and a line pulling down draws more. A tray that's stopped asks for
+  the whole weight, what lifting it again would take, so the quarter's stop and the 30%
+  restart work as before.
 - **The tick reads each source at its own world time**, four times a second of world
   time, so the dev time warp charges faster and 30, 60 or 120 frames a second give the same charge to
   the bit.
