@@ -10,6 +10,9 @@ const STORM := 40.0
 
 
 func run() -> void:
+	# The wind a probe picks is the wind felt: no dune's lee takes any of it.
+	Tuning.current().lee_wind = 0.0
+	Tuning.current().lee_storm = 0.0
 	await load_world(1234, false)
 	_blow(MODERATE)
 	var wind := world.weather.field.prevailing_at(world.time)
