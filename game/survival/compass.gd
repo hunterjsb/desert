@@ -2,7 +2,7 @@ class_name Compass
 extends Part
 ## A compass: its needle points to the moon's north as you've walked it, so
 ## past a pole it turns round with the moon (MoonPosition). Read it in your
-## hand, held up or flat, or in its slot in the inventory. Its needle glows,
+## hand, held up or flat, or in the inventory. Its needle glows,
 ## so it reads at night and in a storm, when the sun can't tell you.
 
 ## Where the needle turns, above its card.

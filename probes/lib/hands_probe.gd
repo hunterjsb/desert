@@ -48,6 +48,15 @@ func point_at(to: Vector2) -> void:
 	get_viewport().push_input(motion)
 
 
+## Which of the inventory's stacks holds a thing you carry, or -1.
+func stack_of(thing: Object) -> int:
+	var stacks := world.player.suit.stacks()
+	for i in stacks.size():
+		if stacks[i].has(thing):
+			return i
+	return -1
+
+
 ## A left click at a point on screen.
 func click_at(point: Vector2) -> void:
 	for down in [true, false]:

@@ -1,10 +1,10 @@
-class_name SlotLook
+class_name InventoryLook
 extends SubViewport
-## What's in a slot, drawn as itself for the inventory view: its own meshes in
-## its own paint, under a clear day's sun and sky as the world has them. It
-## draws only when told, once each time, so a row of full slots costs nothing
-## while what's in them stays as it was; a compass draws again only as its
-## needle turns.
+## Something you carry, drawn as itself for the inventory view: its own meshes
+## in its own paint, under a clear day's sun and sky as the world has them. It
+## draws only when told, once each time, so a full view costs nothing while
+## what you carry stays as it was; a compass draws again only as its needle
+## turns.
 
 ## How it's turned to the camera, degrees about its up and then across: from
 ## a little above and to one side, as you'd look at it in your hand; a
@@ -60,7 +60,7 @@ func _init(pixels: Vector2i) -> void:
 	add_child(_model)
 
 
-## Draws `thing` as it is now, once; nothing for an empty slot.
+## Draws `thing` as it is now, once; nothing for nothing.
 func show_thing(thing: RigidBody3D) -> void:
 	for copy in _model.get_children():
 		copy.free()

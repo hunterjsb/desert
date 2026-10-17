@@ -1,12 +1,12 @@
 class_name Kit
 extends Resource
 ## What a run starts with, as data: catalog ids and how many of each. What's
-## carried goes into the suit's slots; what's beside you is set down on the
-## sand where the run begins, some of it put together.
+## carried goes into what the suit carries; what's beside you is set down on
+## the sand where the run begins, some of it put together.
 
 const STANDARD := "res://game/survival/standard_kit.tres"
 
-## Into the suit's slots, in order.
+## Carried by the suit, in order.
 @export var carried: Dictionary[StringName, int] = {}
 ## Set down beside you: a catalog id, or the name of something assembled, each
 ## at its place, m to your right and ahead of where you start.
@@ -31,8 +31,8 @@ static func standard() -> Kit:
 	return load(STANDARD)
 
 
-## What's carried, one id per slot.
-func slots() -> Array[StringName]:
+## What's carried, one id a thing.
+func carried_ids() -> Array[StringName]:
 	var out: Array[StringName] = []
 	for id in carried:
 		for i in carried[id]:

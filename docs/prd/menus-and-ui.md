@@ -85,7 +85,7 @@ save and quick load.
 - **One theme** (`game/ui/theme.tres`, set as the project's) used by every UI: the
   survival bars, the inventory view, the look-at readout, the keys list, the death
   caption, the dev overlay and the dev console. Geist for text, Geist Mono for
-  readouts (the bars' water and food, what's in a slot, the look-at line, the dev
+  readouts (the bars' water and food, what you carry and its weight, the look-at line, the dev
   overlay's numbers, the console), from the official release, with their licence, in `assets/fonts/`.
   Off-white text, dark semi-transparent panels, and the teal accent for danger: a bar
   under a quarter (health, hunger or thirst) turns teal. Keys on screen are a soft

@@ -5,7 +5,7 @@ extends Node
 ## dev time warp runs them with everything else. Hunger and thirst run down
 ## with time, thirst faster in the heat. The three harms take health through
 ## the felt weather, so a bubble that blocks one keeps it off you. Running
-## low, the suit feeds you from your slots. Unharmed, fed and watered, you
+## low, the suit feeds you from what you carry. Unharmed, fed and watered, you
 ## heal. At no health you die, and the run is over.
 
 signal died
@@ -132,7 +132,7 @@ func _tick(seconds: float, t: float) -> void:
 		died.emit()
 
 
-## Below its mark, the suit tops you up from your slots, one supply after another.
+## Below its mark, the suit tops you up from what you carry, one supply after another.
 func _auto(kind: StringName, level: float, below: float) -> void:
 	if level >= below * FULL:
 		return
@@ -155,7 +155,7 @@ func _report() -> void:
 	Dev.put("survival/thirst", "%.1f x%.2f" % [thirst, thirsting(at)])
 	Dev.put("survival/harm", "w%.2f s%.2f t%.2f/s" % [harms.wind, harms.storm, harms.temperature])
 	Dev.put("survival/taken", "w%.1f s%.1f t%.1f" % [taken.wind, taken.storm, taken.temperature])
-	Dev.put("survival/slots", "%.2fL %dkcal" % [_player.suit.stock(&"water"), _player.suit.stock(&"food")])
+	Dev.put("survival/carried", "%.2fL %dkcal" % [_player.suit.stock(&"water"), _player.suit.stock(&"food")])
 	Dev.put("survival/had", "%.2fL %dkcal" % [drunk, eaten])
 	Dev.put("survival/cond", "%.1fL/h %.2fL" % [making, made])
 	Dev.put("survival/suit", Suit.BUILT_IN if not dead else "dead")

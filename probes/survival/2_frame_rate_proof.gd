@@ -48,7 +48,7 @@ func run() -> void:
 		world.time_warp = 0.0
 		world.time = END
 		await physics_frames(2)
-		var slots: Array = player.suit.slots.map(func(p: Part) -> float: return p.amount if p is Supply else -1.0)
+		var slots: Array = player.suit.carried.map(func(p: RigidBody3D) -> float: return p.amount if p is Supply else -1.0)
 		needs[rate] = [vitals.health, vitals.hunger, vitals.thirst, vitals.drunk, vitals.eaten,
 			vitals.taken[&"wind"], vitals.taken[&"storm"], vitals.taken[&"temperature"]] + slots
 		print("%d ticks/s: %s" % [rate, needs[rate]])

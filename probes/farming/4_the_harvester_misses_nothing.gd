@@ -18,7 +18,7 @@ const CROPS := [&"carrot", &"carrot", &"carrot", &"fungus"]
 func run() -> void:
 	await load_storm(0.0)
 	world.moon.latitude = 0.0
-	# The food it drops stays in your slots: nothing eats it.
+	# The food it drops stays with what you carry: nothing eats it.
 	world.player.vitals.set_physics_process(false)
 	var planters: Array[Planter] = []
 	for farm: Array in FARMS:

@@ -17,7 +17,7 @@ var planters: Array[Planter] = []
 
 ## The world in its own weather, you `latitude` degrees north of where the run
 ## began, facing upwind as the scenario stands you, at time zero, with the
-## reference camp parked round you and your slots stocked as it stocks them.
+## reference camp parked round you and carrying what it stocks you with.
 func load_camp(latitude := 0.0) -> void:
 	await load_world(1234, false)
 	if latitude != 0.0:

@@ -200,8 +200,7 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
 - **Rope and wire** lie as one body until they're yours. A coil, taken, gives you a
   line's first end to lay, the rest on your belt. A plug standing in the sand is a
   cable's first end: take it and its 6 m cable and second plug come up with it, a strong
-  cable's from the deep layer. Stowed in a slot, yours roll back up the same way
-  (Survival).
+  cable's from the deep layer. Carried, yours roll back up the same way (Survival).
 - **The first deep shield is an upgrade.** A found shield generator is the base shield:
   a 7 m bubble of still air against the 4 m, half-windy light shield every run starts
   with (Survival), and a found solar panel makes 60 W against the light panel's 30.

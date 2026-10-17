@@ -58,7 +58,7 @@ const PARTS := {
 	&"coil": {"kind": &"coil", "label": "Rope coil", "mass": 1.5, "size": Vector3(0.34, 0.34, 0.07),
 		"color": Color(0.42, 0.31, 0.2), "stats": {}},
 	# Sealed water, and sealed food, which only a survival kit's slot takes:
-	# they live in your slots.
+	# they live in what you carry.
 	&"canister": {"kind": &"water", "label": "Water canister", "mass": 2.4, "size": Vector3(0.12, 0.12, 0.26),
 		"color": Color(0.55, 0.62, 0.68), "stats": {}},
 	&"ration": {"kind": &"food", "label": "Ration", "mass": 0.5, "size": Vector3(0.16, 0.1, 0.06),
@@ -68,7 +68,7 @@ const PARTS := {
 		"color": Color(0.95, 0.5, 0.1), "stats": {}},
 	&"fungus_caps": {"kind": &"food", "label": "Fungus caps", "mass": 0.4, "size": Vector3(0.14, 0.1, 0.08),
 		"color": Color(0.85, 0.8, 0.65), "stats": {}},
-	# Nothing takes a compass: it's read, in your hand or your slot.
+	# Nothing takes a compass: it's read, in your hand or in the inventory.
 	&"compass": {"kind": &"compass", "label": "Compass", "mass": 0.2, "size": Vector3(0.12, 0.12, 0.03),
 		"color": Color(0.26, 0.28, 0.29), "stats": {}},
 }
@@ -163,10 +163,9 @@ const DEVICES := {
 			[&"port", Vector3(0.4, 0.0, 0.0), Vector3.RIGHT],
 		]},
 	# Music, the weather station and beacons, a channel a use. Carried, set
-	# down or seated on a top mount, it runs on its battery or what it sits on;
-	# in a suit slot, on its battery, playing from you.
+	# down or seated on a top mount, it runs on its battery or what it sits on.
 	&"radio": {"label": "Radio", "size": Vector3(0.32, 0.22, 0.16), "mass": 2.5, "radio": true, "fits": &"top",
-		"carryable": true, "pocket": true,
+		"carryable": true,
 		"sockets": [
 			[&"battery", Vector3(0.0, -0.02, -0.08), Vector3.FORWARD],
 			[&"port", Vector3(0.16, -0.035, -0.01), Vector3.RIGHT],
@@ -322,7 +321,6 @@ static func device(id: StringName) -> Device:
 	made.kind = spec.get("fits", &"")
 	if spec.get("carryable", false):
 		made.carryable = true
-	made.pocket = spec.get("pocket", false)
 	var size: Vector3 = spec.size
 	made.frame_view = _add_box(made, size, Vector3.ZERO, Color(0.55, 0.55, 0.55), Dress.frame(id, size, spec.get("mast", 0.0)))
 	if spec.sockets.any(func(e: Array) -> bool: return e[0] == &"battery"):

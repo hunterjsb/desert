@@ -493,8 +493,14 @@ static var _current: Tuning
 ## The suit keeps you safe between these, °C; past them the temperature harms you.
 @export var suit_cold: float = -40.0
 @export var suit_hot: float = 75.0
-## The suit's slots: all you carry besides your hands and your waist.
-@export var suit_slots: int = 5
+## What you carry besides your hands and your waist has no slots, only a
+## weight: up to this much, kg, you don't feel it; past it you sink into the
+## sand and slow, by this much sunk in as far as hauling digs you in, and
+## slower still for every kilogram more. The kit you start with carries
+## 2.9 kg, and every carryable thing of it, its stake, its board with the
+## board's battery and the light panel too, 20.9 kg.
+@export var carry_easy_kg: float = 30.0
+@export var carry_sunk_kg: float = 60.0
 ## A sealed canister holds this much water, L, and a ration this much food, kcal.
 @export var canister_litres: float = 2.0
 @export var ration_kcal: float = 1000.0
@@ -535,8 +541,8 @@ static var _current: Tuning
 ## The share of each harvest a harvester replants, to start with. A quarter
 ## of a harvest of four keeps every slot sown.
 @export var replant_share: float = 0.25
-## A planter drops food onto you from this close, m, while your slots hold
-## less food than this, kcal.
+## A planter drops food onto you from this close, m, while you carry less
+## food than this, kcal.
 @export var drop_reach: float = 6.0
 @export var drop_until_kcal: float = 2000.0
 

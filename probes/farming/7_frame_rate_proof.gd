@@ -24,7 +24,7 @@ func run() -> void:
 		await load_world(1234, false)
 		var player := world.player
 		player.set_physics_process(false)
-		# The food dropped onto you stays in your slots.
+		# The food dropped onto you stays with what you carry.
 		player.vitals.set_physics_process(false)
 		teleport(40.0, 40.0)
 		world.time_warp = 0.0

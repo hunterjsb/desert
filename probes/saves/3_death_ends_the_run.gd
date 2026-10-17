@@ -26,7 +26,7 @@ func run() -> void:
 	var player := world.player
 	var died := []
 	player.vitals.died.connect(func() -> void: died.append(true))
-	for part in player.suit.slots:
+	for part in player.suit.carried:
 		if part is Supply and part.kind == &"water":
 			part.drain(INF)
 	player.vitals.thirst = 0.0

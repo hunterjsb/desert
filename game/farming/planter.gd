@@ -7,7 +7,7 @@ extends Device
 ## hand comes out as its food and starts again. With a harvester fitted, ripe
 ## crops go into its own storage instead, the share you set going back in as
 ## seed (use on it steps the share), and it drops food onto you when you're
-## near and your slots run low.
+## near and you're carrying little food.
 
 ## The shares use steps through.
 const SPLITS: Array[float] = [0.0, 0.25, 0.5, 0.75, 1.0]
@@ -92,7 +92,7 @@ func interact(by: Player) -> bool:
 
 ## Taken by hand, a ripe crop comes out as its harvest, food in your hands,
 ## and starts again: fungus fruits again where it stands, and another crop's
-## seed goes into a free slot of yours, or with none free back into its own.
+## seed goes in with what you carry.
 func take(socket: Socket) -> Part:
 	var plant := socket.part as Plant
 	if plant == null or not plant.ripe():
@@ -101,11 +101,10 @@ func take(socket: Socket) -> Part:
 	_count(picked, plant.crop, plant.harvest)
 	plant.set_growth(0.0)
 	var player := world.player
-	var free := player.suit.slots.find(null)
-	if not plant.regrows and free != -1:
+	if not plant.regrows:
 		var seed := super(socket)
 		seed.get_parent().remove_child(seed)
-		player.suit.slots[free] = seed
+		player.suit.carried.append(seed)
 		_fall(seed, player)
 	get_parent().add_child(food)
 	food.global_transform = global_transform * socket.transform
@@ -165,16 +164,15 @@ func _sow() -> void:
 				seeds[crop] -= 1
 
 
-## Onto you, if you're near and have a free slot, while your slots hold less
-## food than the tuning asks: a harvest's worth at a time, one a tick.
+## Onto you, if you're near, while you carry less food than the tuning asks:
+## a harvest's worth at a time, one a tick.
 func _drop() -> void:
 	var player := world.player
 	var tuning := world.tuning
 	if player.vitals.dead or player.global_position.distance_to(global_position) > tuning.drop_reach:
 		return
 	var suit := player.suit
-	var free := suit.slots.find(null)
-	if free == -1 or suit.stock(&"food") >= tuning.drop_until_kcal:
+	if suit.stock(&"food") >= tuning.drop_until_kcal:
 		return
 	for crop: StringName in stored:
 		if stored[crop] <= 0:
@@ -185,7 +183,7 @@ func _drop() -> void:
 		_count(dropped, crop, units)
 		fed_kcal += units * gives[2]
 		var food := Catalog.food(gives[0], units * gives[2])
-		suit.slots[free] = food
+		suit.carried.append(food)
 		_fall(food, player)
 		return
 

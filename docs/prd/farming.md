@@ -117,17 +117,16 @@ that ignored the weather.
 - **Water:** a crop drinks as it grows, 0.25 L for a carrot to ripen and 0.3 L for a
   fungus. With the tank dry it stops exactly where the water ran out.
 - **By hand:** take on a ripe crop and its harvest comes to your hands as food
-  (carrots or fungus caps, four units of 150 kcal). Food is like a ration: put it in your
-  slots and the suit eats it, or use it to eat your fill. Take on a crop that isn't ripe
+  (carrots or fungus caps, four units of 150 kcal). Food is like a ration: carry it and
+  the suit eats it, or use it to eat your fill. Take on a crop that isn't ripe
   and it comes out whole, to sow somewhere else.
 - **Picking by hand keeps the farm going** (Hunter, 2026-10-16): picked fungus regrows
   from what's left in the slot, fruiting again the way mushrooms do; a picked carrot gives
   its seed with the food, to sow where you like. The harvester still saves you the work
   and drops the food on you. As built, the fungus stays in its slot and grows again from
-  nothing, as fast as a new one. The carrot's seed falls into a free slot of yours, as
-  the harvester's food does, since your hands are full of the food. With no slot free it
-  goes back into its own slot, sown again, and you can still take it out to sow
-  elsewhere.
+  nothing, as fast as a new one. The carrot's seed falls in with what you carry, as the
+  harvester's food does, since your hands are full of the food (2026-10-17: what you
+  carry has no slots to fill, so it always does).
 - **The harvester** fits the mod mount. With it fitted, a crop is harvested the tick it
   ripens: its share of seed goes straight back into its slot, any more into free slots
   that fit, and seed with no free slot is kept for one. The rest is stored as food in
@@ -135,9 +134,9 @@ that ignored the weather.
   100%. It starts at 25%, one of a harvest of four, which keeps every slot sown. A
   share that doesn't make a whole seed is carried over, so the split holds over many
   harvests. It draws no power yet.
-- **Dropping food onto you:** within 6 m, while your slots hold less than 2,000 kcal of
-  food (a full stomach) and one is free, the planter drops a harvest's worth into it,
-  one drop a tick, and you see it fall onto you. Auto-eating does the rest.
+- **Dropping food onto you:** within 6 m, while you carry less than 2,000 kcal of food (a
+  full stomach), the planter drops a harvest's worth onto you, one drop a tick, and you
+  see it fall. Auto-eating does the rest.
 - **What one planter gives:** a harvester planter of three carrots and a fungus at 25%,
   at the equator, stores about 1,900 kcal a day in the clear (all carrots) and 1,400 in
   a storm (all fungus). You eat 1,000. It drinks 1 to 1.3 L a day, so a full tank lasts
@@ -156,8 +155,7 @@ that ignored the weather.
   the clear, and the fungus at half, so it ripens a few minutes into the storm. One is
   yours to pick by hand, its tank half full, with a full canister by your feet to top
   it up; the other has a harvester and a full tank. A charged shield generator stands
-  between them, switched off, and its bubble takes both. A spare carrot is in your
-  slots.
+  between them, switched off, and its bubble takes both. You carry a spare carrot.
 - **Probe 3 is built** with a test-only thermal shield.
 - **The AFK promise feeds you** (Stage 12, 2026-10-17, probe 6). The reference camp's
   farm (Power) is two planters with harvesters, three carrots and a fungus in each, their

@@ -1,9 +1,9 @@
 extends Node
-## Look-test: the inventory open on seed 1234 at mid-morning, its slots
-## holding a canister, a ration, a coil, a radio playing and a compass, shot
-## facing north and facing east, then at dusk. It prints what the view costs
-## a frame: the GPU and the main thread with it shut, open and still, and
-## open while you turn, which draws the compass again every frame.
+## Look-test: the inventory open on seed 1234 at mid-morning, carrying three
+## canisters, a ration, a coil, a radio playing and a compass, shot facing
+## north and facing east; then with ten batteries more, encumbered, and at
+## dusk. It prints what the view costs a frame with it shut, open and still,
+## and open while you turn, which draws the compass again every frame.
 ##   godot --path . --disable-vsync res://look/inventory/inventory.tscn -- --capture <dir>
 ## A small window that never takes focus, nothing but this script moving
 ## anything, and silence.
@@ -55,6 +55,10 @@ func _capture(out_dir: String) -> void:
 		await _ticks(10)
 		get_viewport().get_texture().get_image().save_png(out_dir.path_join("inventory_%s.png" % shot[0]))
 	await _cost(suit)
+	for i in 10:
+		suit.carried.append(Catalog.part(&"battery"))
+	await _ticks(10)
+	get_viewport().get_texture().get_image().save_png(out_dir.path_join("inventory_encumbered.png"))
 	var dusk := world.tuning.day_minutes * 60.0 * (0.76 - world.tuning.start_time_of_day)
 	world.time = dusk
 	await _ticks(60)
@@ -62,7 +66,7 @@ func _capture(out_dir: String) -> void:
 	get_tree().quit()
 
 
-## The slots as a camp's day leaves them: water and food, a coil, a radio
+## What a camp's day leaves you carrying: water and food, a coil, a radio
 ## playing and a compass.
 func _fill(suit: Suit) -> void:
 	var radio := Catalog.device(&"radio") as Radio
@@ -74,26 +78,24 @@ func _fill(suit: Suit) -> void:
 	var coil := Catalog.part(&"coil")
 	coil.set_meta(&"rolled", &"coil")
 	coil.set_meta(&"rolled_m", 6.0)
-	suit.slots[2] = coil
-	for pair: Array in [[3, radio], [4, Catalog.part(&"compass")]]:
-		var hands := world.player.hands
-		var thing: RigidBody3D = pair[1]
+	suit.carried.append_array([Catalog.part(&"canister"), Catalog.part(&"canister"), coil])
+	for thing: RigidBody3D in [radio, Catalog.part(&"compass")]:
 		if thing.get_parent() == null:
 			world.content.add_child(thing)
 		thing.global_position = world.player.global_position + Vector3.UP
-		hands.hold(thing)
+		world.player.hands.hold(thing)
 		await _ticks(20)
-		suit.click(pair[0])
+		suit.put_in()
 
 
 ## The view's cost a frame, alternated so a busy machine weighs on each alike:
 ## shut, open and still, and open while you turn. Frame times are the wall
-## clock's with vsync off, the GPU's the main view's; a slot's picture is
+## clock's with vsync off, the GPU's the main view's; a thing's picture is
 ## timed on the frames the compass draws, turning.
 func _cost(suit: Suit) -> void:
 	var main := get_viewport().get_viewport_rid()
 	RenderingServer.viewport_set_measure_render_time(main, true)
-	var compass := suit.look_of(4)
+	var compass := suit.look_of(suit.stacks().size() - 1)
 	RenderingServer.viewport_set_measure_render_time(compass.get_viewport_rid(), true)
 	var frame := [0.0, 0.0, 0.0]
 	var gpu := [0.0, 0.0, 0.0]
@@ -119,16 +121,16 @@ func _cost(suit: Suit) -> void:
 			drawn[way] += _draws(suit) - draws
 	var n := float(ROUNDS * FRAMES)
 	for way in 3:
-		print("inventory: %-14s frame %.3f ms, main view's gpu %.3f ms, %.2f slot pictures drawn a frame"
+		print("inventory: %-14s frame %.3f ms, main view's gpu %.3f ms, %.2f pictures drawn a frame"
 			% [["shut", "open, still", "open, turning"][way], frame[way] / n, gpu[way] / n, drawn[way] / n])
-	print("inventory: a slot's picture %.3f ms of gpu the frame it's drawn, at %s%s"
+	print("inventory: a thing's picture %.3f ms of gpu the frame it's drawn, at %s%s"
 		% [picture / n, get_viewport().get_visible_rect().size, _shared_gpu()])
 	suit.show_view(true)
 
 
 func _draws(suit: Suit) -> int:
 	var total := 0
-	for i in suit.slots.size():
+	for i in suit.stacks().size():
 		total += suit.look_of(i).draws if suit.look_of(i) != null else 0
 	return total
 

@@ -10,7 +10,7 @@ const HELP := [
 	["{reel_in} {pay_out}", "a notch at a time, reel in or pay out the line in your hand or at your waist; holding anything else, bring it nearer or push it out"],
 	["{move_forward} {move_left} {move_back} {move_right}", "move"], ["{sprint}", "sprint"],
 	["{hands_grab}", "pick up, take out, put in, put down"], ["{interact}", "use what you look at or hold: switch a shield, tune a radio, drive a stake, waist a line, water a planter, set its replant share"],
-	["{inventory}", "your slots and waist, by mouse: click a slot to take out, put in or swap; {interact} on a slot uses what's in it, as a radio's dial"], ["{ui_cancel}", "back: close what's open, or the menu"],
+	["{inventory}", "what you carry and your waist, by mouse: click a thing to take it out, or the view to put in what you hold; {interact} on a thing uses it, as a radio's dial"], ["{ui_cancel}", "back: close what's open, or the menu"],
 	["{toggle_keys}", "these keys"], ["{quick_save}", "quick save"], ["{quick_load}", "quick load: back to your last save"],
 	["{jump}", "jump"], ["{crouch}", "crouch; at a run or downhill, slide"],
 	["{ride}", "get on or off a hoverboard; riding, the move keys push and carve where they point but {move_back} only brakes, {sprint} kicks off the sand, {jump} hops, {crouch} tucks, and crouched into a hard carve you drift"],

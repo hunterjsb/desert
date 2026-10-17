@@ -118,7 +118,7 @@ func _radio_lands() -> void:
 ## bank full; the trays rest on the sand; the planters are sown, watered and
 ## harvesting, near enough to drop food onto you; the crate is moored to a
 ## driven stake and holds the turbine on its strong cable; you're fed and
-## watered, with canisters in your slots and room for food.
+## watered, carrying canisters and no food.
 func _afk_lands() -> void:
 	await settle(true)
 	var dropped := Scenarios.afk(world)
@@ -150,10 +150,10 @@ func _afk_lands() -> void:
 		"afk: two planters sown, watered and harvesting, near enough to drop food onto you")
 	check(stake.driven and world.ropes.ropes.size() == 2,
 		"afk: the crate is moored to a driven stake, the turbine on its strong cable")
-	var slots := player.suit.slots.map(func(p: Part) -> String: return "-" if p == null else p.label)
+	var carried := player.suit.carried.map(func(p: RigidBody3D) -> String: return p.label)
 	check(player.vitals.health > 99.0 and player.vitals.hunger > 99.0 and player.vitals.thirst > 99.0
-		and slots.count("Water canister") == Scenarios.AFK_CANISTERS and slots.count("-") == slots.size() - Scenarios.AFK_CANISTERS,
-		"afk: you start fed and watered, stocked with water, slots free for food (%s)" % ", ".join(slots))
+		and carried.count("Water canister") == Scenarios.AFK_CANISTERS and carried.size() == Scenarios.AFK_CANISTERS,
+		"afk: you start fed and watered, carrying water and nothing else (%s)" % ", ".join(carried))
 	for body in dropped:
 		if is_instance_valid(body):
 			body.free()
@@ -193,7 +193,7 @@ func _board_lands() -> void:
 ## sown and part grown, one with a harvester and a full tank, the other's
 ## half full, their carrots growing in the clear; a charged shield generator
 ## stands between them, switched off, near enough for its bubble to take
-## them, with a full canister by your feet and a spare carrot in your slots.
+## them, with a full canister by your feet and a spare carrot carried.
 ## In the wind, nothing slides off or drifts past its line.
 func _farm_lands() -> void:
 	await settle(true)
@@ -225,8 +225,8 @@ func _farm_lands() -> void:
 	check(not shield.on and shield.battery().charge_wh >= shield.battery().capacity(),
 		"farm: a charged shield generator, switched off")
 	var loose := dropped.filter(func(b: Node3D) -> bool: return b is Supply and b.kind == &"water" and b.amount >= 2.0)
-	check(loose.size() == 1 and world.player.suit.slots.any(func(p: Part) -> bool: return p is Plant),
-		"farm: a full canister, and a spare carrot in your slots")
+	check(loose.size() == 1 and world.player.suit.carried.any(func(p: RigidBody3D) -> bool: return p is Plant),
+		"farm: a full canister, and a spare carrot carried")
 	for body in dropped:
 		if is_instance_valid(body):
 			body.free()
@@ -300,7 +300,7 @@ func _survival_starts() -> void:
 	var vitals := world.player.vitals
 	vitals.health = 10.0
 	vitals.thirst = 90.0
-	world.player.suit.slots[2] = Catalog.part(&"battery")
+	world.player.suit.carried.append(Catalog.part(&"battery"))
 	var dropped := Scenarios.survive(world)
 	world.time_warp = 1.0
 	await physics_frames(60)
@@ -309,10 +309,10 @@ func _survival_starts() -> void:
 	var shields := dropped.filter(func(b: Node3D) -> bool: return b is ShieldGenerator and b.battery() != null \
 		and b.battery().charge_wh >= b.battery().capacity())
 	var rations := dropped.filter(func(b: Node3D) -> bool: return b is Supply and b.kind == &"food")
-	var slots := world.player.suit.slots.map(func(p: Part) -> String: return "-" if p == null else p.label)
+	var carried := world.player.suit.carried.map(func(p: RigidBody3D) -> String: return p.label)
 	check(vitals.health > 99.0 and vitals.hunger > 99.0 and vitals.thirst > 99.0
-		and slots == ["Water canister", "Ration", "-", "-", "-"] and world.player.suit.supply(&"water").amount > 1.99,
-		"survive: you start fed, watered and whole, on sealed water and a ration (%s)" % ", ".join(slots))
+		and carried == ["Water canister", "Ration"] and world.player.suit.supply(&"water").amount > 1.99,
+		"survive: you start fed, watered and whole, on sealed water and a ration (%s)" % ", ".join(carried))
 	check(condenser.powered and condenser.canister().amount > 0.0 and condenser.canister().amount < 0.01
 		and condenser.stats().solar_w > 0.0, "survive: the condenser is filling its empty canister (%.4f L)"
 		% condenser.canister().amount)

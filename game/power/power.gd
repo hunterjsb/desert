@@ -62,10 +62,10 @@ func stored_wh() -> float:
 
 
 ## Everything that makes or draws power: your devices in the world, and the
-## gadgets working from your slots, each its own pool.
+## ones you carry, working on you.
 func _devices() -> Array[Device]:
 	var all := _world.devices()
-	all.append_array(_world.player.suit.gadgets())
+	all.append_array(_world.player.suit.devices())
 	return all
 
 
