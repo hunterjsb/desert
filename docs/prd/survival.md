@@ -24,7 +24,9 @@ First and foremost, you're out here to survive.
   protection are free, with no power and no bar. You have a sick suit, and you're not
   dead. So is its **headlamp** (Hunter, 2026-10-16), which comes on by itself in the
   dark, at night or in a storm, so your tracks can be followed when nothing else lights
-  the sand. **Built** (2026-10-16): a warm spot from your head along your view, tilted a
+  the sand. **Switched off for now** (Hunter, 2026-10-17: "lets actually disable the
+  headlamp for now"): one setting in the tuning turns it back on, and its probe and
+  look-test turn it on for themselves. **Built** (2026-10-16): a warm spot from your head along your view, tilted a
   little down, with a soft edge and no shadows (what you hold would throw one down the
   beam). It fades on over a second and a half once the light on open ground round you
   falls below 15% of the sun overhead and the whole sky's, which is sunset, any night,

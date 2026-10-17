@@ -15,6 +15,7 @@ const CROSSING := 30.0
 
 
 func run() -> void:
+	Tuning.current().headlamp = true
 	await load_storm(0.0)
 	var lamp := _lamp()
 	if lamp == null:

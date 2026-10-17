@@ -141,6 +141,7 @@ func _capture(out_dir: String) -> void:
 
 ## The headlamp held off, or left to come on by itself and given its fade.
 func _lamp(lamp: Headlamp, lit: bool) -> void:
+	Tuning.current().headlamp = true
 	lamp.set_physics_process(lit)
 	if not lit:
 		lamp.visible = false

@@ -35,7 +35,7 @@ func _physics_process(delta: float) -> void:
 	if world == null:
 		return
 	var light := world.weather.seen_light
-	on = light < (_tuning.headlamp_off_above if on else _tuning.headlamp_on_below)
+	on = _tuning.headlamp and light < (_tuning.headlamp_off_above if on else _tuning.headlamp_on_below)
 	level = move_toward(level, 1.0 if on else 0.0, delta / _tuning.headlamp_fade_seconds)
 	light_energy = _tuning.headlamp_energy * level
 	visible = level > 0.0
