@@ -126,6 +126,7 @@ save and quick load.
   watered and whole on a fresh suit's kit. The keys list and Options' controls list
   show the console action and the dev overlay's under a heading of their own, and the
   function keys the dev tools held now go to quick save and quick load (Profile & saves).
+  The look-tests keep their own keys and have no console.
 - **Options:** volume, fullscreen, vsync and render scale (confirm steps a value on,
   menu left and right change it either way), kept on this machine in
   `user://settings.cfg`, apart from the profile; the controls list, read-only, every key
