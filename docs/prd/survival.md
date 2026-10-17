@@ -133,11 +133,12 @@ Death means a new run (see Runs in the vision).
   - **The soft limit.** Up to 30 kg you don't feel it. Past it you sink into the sand the
     way hauling on a line digs you in (Movement): lower by a few centimetres, slower and
     tiring faster on the move, standing too but tiring only as you walk. By 60 kg you're
-    sunk in as far as hauling takes you, at 65% of your pace, and every kilogram past that
-    slows you further (at 90 kg, a third of it). The run's kit carries 2.9 kg, a canister and a
-    ration; every carryable thing of the kit, its stake, its board with the board's
-    battery and the light panel too, comes to 20.9 kg, comfortably under. Only what you
-    carry counts, not what's in your hands. On a board you ride as ever.
+    sunk in as far as hauling takes you, at 65% of your pace, and every kilogram past
+    that slows you further (at 90 kg, a third of it). The run's kit carries 2.9 kg, a
+    canister and a ration; every carryable thing of the kit, its stake, its board with
+    the board's battery and the light panel too, comes to 20.9 kg, comfortably under.
+    Probe 14 measured 1.80 m/s with the kit and 1.17 m/s at 59.9 kg, sunk 6.5 cm. Only
+    what you carry counts, not what's in your hands. On a board you ride as ever.
   - **Stacks.** Like things stack as one: canisters, rations, batteries, stakes, hooks,
     coils of a length, cables of a kind. A device with anything fitted in it, a radio with
     its battery, is a thing of its own.
