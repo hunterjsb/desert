@@ -119,7 +119,12 @@ func _begin(at: World) -> void:
 static func kit(world: World, from: Kit = Kit.standard()) -> Array[Node]:
 	var made: Array[Node] = []
 	var named := {}
-	for id in from.beside:
+	# What an assembly seats from beside you is made first, so it's there to seat.
+	var seating: Array = from.assembled.values().reduce(func(all: Array, spec: Dictionary) -> Array:
+		return all + spec.sockets.values(), [])
+	var order := from.beside.keys().filter(func(id: StringName) -> bool: return id in seating)
+	order.append_array(from.beside.keys().filter(func(id: StringName) -> bool: return not id in seating))
+	for id: StringName in order:
 		var where: Vector2 = from.beside[id]
 		var lying := Transform3D(Basis(Vector3.UP, world.player.global_rotation.y) * Basis(Vector3.RIGHT, -PI / 2.0),
 			_beside(world, where) + Vector3.UP * 0.02)
@@ -147,7 +152,9 @@ static func kit(world: World, from: Kit = Kit.standard()) -> Array[Node]:
 			var sockets := device.sockets()
 			var filling: Dictionary = spec.sockets
 			for k: int in filling:
-				if Catalog.PARTS.has(filling[k]):
+				if named.has(filling[k]):
+					device.mount(named[filling[k]], sockets[k])
+				elif Catalog.PARTS.has(filling[k]):
 					_fit(world, device, Catalog.part(filling[k]), sockets[k], from.charge)
 				else:
 					var seated := Catalog.device(filling[k])

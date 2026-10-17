@@ -3,8 +3,9 @@ extends Device
 ## The hoverboard: a find, fast, floaty and fun to carve, for scouting and for
 ## running when the shield dies. It runs on its own battery and nothing ties
 ## to it, so it tows nothing. Lying on the sand it's a device like any other:
-## take it, carry it, swap its battery, cable it to charge. Ridden, it leaves
-## the physics world for the place under your feet, where the ride moves you
+## take it, carry it, swap its battery, cable it to charge. Racked on a crate
+## it travels with the camp and charges from it. Ridden, it leaves the
+## physics world for the place under your feet, where the ride moves you
 ## both. What it draws is metered tick by tick in world time, so its charge
 ## comes out the same at any frame rate.
 
@@ -16,6 +17,10 @@ const HUM_SAG := 0.7
 const WARNING := 60.0
 const TICK_SLOW := 2.0
 const TICK_FAST := 0.5
+## Racked, it stands this far proud of the rack, m, so its lower edge clears
+## the ring mount below, and its underside rides this far off the crate.
+const RISE := 0.07
+const GAP := 0.01
 
 ## Whoever rides it, or null.
 var rider: Player
@@ -46,10 +51,48 @@ func _exit_tree() -> void:
 		_hum.stop()
 
 
-## Whether it would carry you now: whole, with charge to run on.
+## Whether it would carry you now: whole, with charge to run on, its own
+## while it's racked.
 func can_run() -> bool:
-	return not wrecked() and world != null \
-		and (world.power.pool_wh(self) > 0.0 or production_w() > 0.0)
+	if wrecked() or world == null:
+		return false
+	var charged := charge_share() > 0.0 if racked() else world.power.pool_wh(self) > 0.0
+	return charged or production_w() > 0.0
+
+
+## Seated in a crate's rack.
+func racked() -> bool:
+	return host() != null
+
+
+## Racked, it stands on its edge along the rack, nose to the crate's front
+## and deck out, proud of the crate's top.
+func seat() -> Transform3D:
+	return Transform3D(Basis(Vector3.UP, Vector3.BACK, Vector3.RIGHT), Vector3(0.0, RISE, super().origin.z + GAP))
+
+
+## Racked, its battery stays its own: it charges from the crate's pool as a
+## draw ranked below the shield, so it never takes the shield's last quarter.
+func pooled() -> Array[Battery]:
+	var none: Array[Battery] = []
+	return none if racked() else batteries()
+
+
+## Racked, what it draws to charge, W: its charge rate, or what fills it.
+func charge_w() -> float:
+	var cell := battery()
+	if not racked() or cell == null or wrecked():
+		return 0.0
+	return minf(_tuning.board_charge_w, (cell.capacity() - cell.charge_wh) * 3600.0 / _tuning.power_tick)
+
+
+## What it drew to charge goes into its battery: stored, not used.
+func work(seconds: float, _t: float) -> float:
+	var cell := battery()
+	if cell == null:
+		return 0.0
+	var wh := charge_w() * seconds / 3600.0
+	return wh - cell.fill(wh)
 
 
 ## Under your feet: out of the physics world, touching nothing. A cable in
@@ -109,9 +152,9 @@ func meter(from: float, to: float, seconds: float) -> void:
 
 
 ## Now, what it draws; read by a power tick ending at world time t, the mean
-## over that tick of what the ticks ridden in it drew.
+## over that tick of what the ticks ridden in it drew. Racked, its charging.
 func demand_w(t := NAN) -> float:
-	var parts_w := super(t)
+	var parts_w := super(t) + charge_w()
 	if is_nan(t):
 		return parts_w + draw_w()
 	var step := _tuning.power_tick

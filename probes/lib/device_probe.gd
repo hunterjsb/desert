@@ -2,7 +2,8 @@ class_name DeviceProbe
 extends WorldProbe
 ## For device probes: builds frames with parts fitted, and fast-forwards physics.
 
-## The part that goes in each kind of socket when a device is fitted out.
+## The part that goes in each kind of socket when a device is fitted out; a
+## rack takes a whole board, so filling leaves it be.
 const FILL := {&"battery": &"battery", &"ring": &"hook", &"bottom": &"hover_tray", &"top": &"solar_panel",
 	&"plant_small": &"carrot", &"plant_large": &"fungus", &"port": &"plug", &"mod": &"harvester"}
 
@@ -15,7 +16,7 @@ func spawn_device(id: StringName, ahead := 4.0, above := 1.0, filled := true) ->
 	var p := world.player.global_position
 	device.global_position = Vector3(p.x + ahead, world.height_under(p + Vector3(ahead, 0, 0)) + above, p.z)
 	if filled:
-		for socket in device.sockets():
+		for socket in device.sockets().filter(func(s: Socket) -> bool: return FILL.has(s.kind)):
 			var part := Catalog.part(FILL[socket.kind])
 			world.content.add_child(part)
 			device.fit(part, socket)
