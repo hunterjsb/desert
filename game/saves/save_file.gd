@@ -8,6 +8,12 @@ extends RefCounted
 
 ## Writes the data; says whether it landed.
 static func write(path: String, kind: String, version: int, data: Dictionary) -> bool:
+	return write_bytes(path, kind, version, var_to_bytes(data))
+
+
+## The same from data already encoded by var_to_bytes, which a worker thread
+## can write while the game goes on.
+static func write_bytes(path: String, kind: String, version: int, bytes: PackedByteArray) -> bool:
 	var full := ProjectSettings.globalize_path(path)
 	DirAccess.make_dir_recursive_absolute(full.get_base_dir())
 	var fresh := full + ".new"
@@ -17,7 +23,9 @@ static func write(path: String, kind: String, version: int, data: Dictionary) ->
 		return false
 	file.store_pascal_string(kind)
 	file.store_32(version)
-	file.store_var(data)
+	# Laid out as store_var would, so get_var reads it back.
+	file.store_32(bytes.size())
+	file.store_buffer(bytes)
 	file.close()
 	return DirAccess.rename_absolute(fresh, full) == OK
 

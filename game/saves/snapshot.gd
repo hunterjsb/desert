@@ -141,7 +141,7 @@ func finish(data: Dictionary) -> void:
 		if suit.slots[i] != null:
 			suit.slots[i].free()
 		var rec: Variant = data.slots[i] if i < data.slots.size() else null
-		suit.slots[i] = _make(rec) as Part if rec != null else null
+		suit.slots[i] = _make(rec) if rec != null else null
 	for pair in _states:
 		_set_state(pair[0], pair[1])
 	# Back on the board you rode, going as you were.
@@ -263,7 +263,7 @@ func _take() -> Dictionary:
 		data.ride = _ride_out(ride)
 	data.things = things
 	data.order = order
-	data.slots = player.suit.slots.map(func(p: Part) -> Variant: return _body(p, false) if _known(p) else null)
+	data.slots = player.suit.slots.map(func(p: RigidBody3D) -> Variant: return _body(p, false) if _known(p) else null)
 	var strands := ropes.strands.filter(func(s: RopeStrand) -> bool: return is_instance_valid(s))
 	data.lines = lines.map(func(line: Line) -> Dictionary: return {"state": line.state, "full": line.full,
 		"first": line._first, "coil": _ref(line.coil) if is_instance_valid(line.coil) else null,
