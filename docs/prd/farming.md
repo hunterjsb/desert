@@ -64,6 +64,39 @@ why the temperature shield sets how big the farm can be (Bubble shield & camp).
 - **Water,** from yucca.
 - **Fuel,** at different grades (Power).
 
+## Feral plants and a crop's history (Agreed, session 4, part 3; not built)
+
+*Session 4, part 3 ([lore session](../lore-session-2026-10-17-part-3.md)); loose, and none of it is
+built.* Zan has no native life, only feral colonial imports ("rogue plants"). They are not the
+planter's crops: they grow wild, in the world, and the farm's two crops are unchanged. They do four
+jobs at once ([the lore](../lore-research.md#life-on-zan-feral-plants-agreed-session-4-part-3)):
+- **Weather sign.** Feral scrub closes up or turns its leaves before a storm, a free, slotless,
+  low-tech barometer ([Wind & storms](wind-and-storms.md#feral-plants-the-free-barometer-agreed-session-4-part-3-not-built)).
+- **Trail.** The priestesses of Mother Cistern seeded hardy strains along pilgrim roads and
+  irrigation lines as devotion. Those plantings went wild, so a line of scrub is an old sacred
+  route.
+- **Lore.** Following a feral line tends to lead toward a Cistern shrine and water.
+- **Loot.** The order's seed vaults hold preserved colonial seed stock that powers farming
+  setups ([Salvage & ruins](salvage-and-ruins.md#seed-vaults-agreed-session-4-part-3-not-built)).
+
+**Every crop system should carry its history** (the session: "The same depth should apply to
+agriculture generally"). The farm's crops are typed parts, never matched by name (rule 3 below), so
+a crop's history is data on the part and not a new rule. Gear already carries its history in
+maker's marks and item text that hint and never state ([Salvage & ruins](salvage-and-ruins.md#lore)),
+and a crop would do the same: where its stock came from, shown in the seed's description and
+marks, never told. That is a reading. Which history each crop carries is not said.
+
+Readings, not in the session:
+- **Wild scrub is not a part in a plant slot.** Rule 3 is about the planter. A feral plant is a
+  prop in the world, placed from the seed like a ruin, and nothing in this PRD ties it to a slot.
+  Whether one can be picked, moved or sown is not said (open questions).
+- **The oracle already names them.** A squatting oracle broadcasts "which feral strains tolerate
+  ash soil" ([Radio, sound & atmosphere](radio-sound-and-atmosphere.md)), so feral strains were in
+  the lore before this session, and the two are read as the same plants.
+- **Where they grow.** "Outside a thermal shield, nothing grows" at the poles, and natural regolith
+  isn't soil. Scrub that lives unplanted fits the Rim's ash-rich soil and the old irrigation lines
+  (the lore), not bare sand everywhere.
+
 ## Rules
 
 1. **Growth ticks at a fixed rate,** independent of frame rate.
@@ -194,7 +227,10 @@ that ignored the weather.
 - **Fuel crops.**
 - **Planter grids** on a single tether.
 - **Big carriers,** like the walker farmer, that can carry the shield too.
-- **More crops.**
+- **More crops,** each carrying its history (above).
+- **Feral plants** as a weather sign and a trail, and the order's seed vaults as a source of stock
+  (proposed, above). The plants are the first two pieces of the proposed build order in the
+  [skeleton plan](../skeleton-plan.md#waiting-for-the-full-version); the vaults are not in it.
 
 ## Probes
 
@@ -220,4 +256,15 @@ that ignored the weather.
 
 ## Open questions
 
-None right now.
+Session 4, part 3 (2026-10-17) adds three. Each is quoted on both sides and left standing.
+
+- **Feral scrub against "nothing grows" and the regolith.** Here: "Outside a thermal shield, nothing
+  grows there," and every crop is sown in a planter with its own soil. The session: "Zan has no
+  native life, only feral colonial imports." Not said where scrub grows, or whether it grows at
+  all on the poles' bare sand.
+- **What a feral plant gives.** The session names its four jobs: a weather sign, a trail, lore and
+  the vaults' loot. It does not say whether a plant can be harvested, moved or sown, or whether it
+  has a seed.
+- **Which history a crop carries.** "Every crop system should carry its history." The farm has
+  carrots and fungus, with yucca and fuel crops to come. Not said what each one's history is, or
+  how it shows without exposition.

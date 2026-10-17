@@ -66,13 +66,53 @@ like the default, and each unlocks through `profile.unlock`:
 | Replacement | Needs a prior save |
 | Prisoner | Finding the black site |
 | Nomad | The nomad city ending |
+| Varran settler | Build and use a dune sailboat (session 4, part 3) |
+| Daventry patrol board | Build a patrol-style board yourself (proposed; the exact unlock is open) (session 4, part 3) |
 | Hive mind experiment | The last unlock in the game |
+
+The Varran settler and the Daventry patrol board are session 4, part 3's two new novelty starts
+([the vision](../vision.md#player-origins-and-kits)). Like the other novelty kits they are not
+balanced and get no Ironman, and the session says so in as many words: "These two, like the other
+novelty kits, aren't balanced and get no Iron Man mode."
 
 Readings, not in the session. Discoveries here are the first time you find a kind of thing; these
 unlocks are also what you did (a playstyle), where you went (a landmark) and how you finished
 (an ending), which would be new reports to the profile, each still through `profile.unlock`
 (rule 3). Ironman deletes its save when you die, and the Replacement "needs a prior save," so it
-can only follow a Normal run.
+can only follow a Normal run. The two new unlocks are also what you did, building and using a
+craft. The sailboat's is "build and use," read as fitting found parts into one and then using it,
+a report when it first carries you. The patrol board's is "build," proposed, and the session lists
+its exact unlock as open.
+
+## Ending flags (proposed)
+
+*Session 4, part 3 ([lore session](../lore-session-2026-10-17-part-3.md)); proposed, and none of it
+is built.* The build note: "Track the Daventry axis as a running 'loudness' value from dead-lane
+transmissions and launches, and the Cistern axis as dormant / restored / linked. Don't build
+epilogues yet." The axes are the endings' cross-cutting modifiers ([the
+vision](../vision.md#the-three-axes-varran-daventry-and-cistern)).
+- **Daventry loudness** is a number that grows as the player transmits on, or flies down, the dead
+  lane. "Player control is how careful you are with the transmitter." The stolen freighter and the
+  pathfinder read it: loud, and Daventry waits at the lane; quiet, and the passage is unnoticed.
+- **The Cistern state** is one of three: dormant, restored, or linked into the network.
+
+Readings, not in the session:
+- **They are a run's changes, so they belong to the run save,** whose rule is that a save holds
+  what you changed. Each is small: a number and one of three states. The Cistern state is the
+  landmark's record in the sense [World & terrain](world-and-terrain.md#landmarks) reads it. They
+  are not profile entries, since the profile grows by unlocks and discoveries only (rule 3) and
+  these are neither.
+- **Saving never changes the run** (rule 2), so a resumed run has exactly the loudness it saved
+  with. The session gives the value no clock of its own.
+- **Ironman:** the flags go with the run, like the rest of its save.
+- **Not said:** whether the loudness ever falls; whether a flag carries into a later run, since
+  "persist the player's changes" doesn't say within a run or across runs; and which launches
+  count. The session's table has both escape endings "Unaffected," so a launch here is read as a
+  launch into the dead lane.
+- **The player isn't told.** There is no exposition, so a flag is heard on the radio and seen in
+  the epilogue, not shown in a menu. How the player learns a choice matters is open. A seed:
+  hearing a Daventry broadcast hints they can hear you
+  ([Radio, sound & atmosphere](radio-sound-and-atmosphere.md#offstage-states-on-the-air-agreed-session-4-part-3-not-built)).
 
 ## Rules
 
@@ -211,6 +251,13 @@ Resume, New game, the death screen and Options.
 - **What each playstyle unlock counts.** "Long board distance," "surviving a storm on carried
   gear" and "riding out big storms without moving camp" are examples, not rules, and the
   Archaeologist's condition is open in the session.
+- **"Build" in the two new unlocks.** The session: "Build and use a dune sailboat," "Build a
+  patrol-style board yourself (proposed)." Here: parts are found, never crafted, and an unlock is
+  a discovery or something done. Not said what building a craft reports, or when it counts as
+  used; the Daventry unlock is open in the session itself.
+- **Flags across runs.** The ending flags are read as part of the run save. Whether Daventry's
+  loudness or Mother Cistern's state outlives the run is not said, and the profile has no place
+  for a value that grows.
 - **Mode and achievements.** The vision leaves open whether achievements care which mode a run is
   in. The session's rule that novelty starts are excluded from Ironman is the first rule about
   mode, and it covers starts, not achievements.

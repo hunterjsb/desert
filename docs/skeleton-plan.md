@@ -299,3 +299,38 @@ rebuilt on a deck.
 These probes need content the skeleton doesn't have:
 - Wind & storms 7 (the sand yacht).
 - Survival 5 (the water rhythm).
+
+**A proposed build order for the lore and kits pieces.** Session 4, part 3 (2026-10-17, [the
+lore session](lore-session-2026-10-17-part-3.md)) lists seven buildable pieces, roughly in order of
+how soon they could land. This is a proposed order, not a schedule. None has a stage or a date,
+none is built, and each waits for the skeleton's gate as the full version does. They follow the
+existing conventions, with no one-off exceptions in core systems.
+1. **Feral plants as a weather sign.** A plant prop whose pose, open to closed or leaves turning,
+   is driven by the storm intensity curve with some lead time. The curve can already be queried
+   ahead ([Wind & storms](prd/wind-and-storms.md#feral-plants-the-free-barometer-agreed-session-4-part-3-not-built)).
+2. **Feral plant lines.** Scatter feral scrub along procedural old-road lines that trend toward
+   Cistern shrines or water. Visual only at first, with no gameplay beyond the weather pose
+   ([Farming](prd/farming.md#feral-plants-and-a-crops-history-agreed-session-4-part-3-not-built)).
+3. **The hoverboard as a superchassis.** The patrol board needs mount points for a shield,
+   battery, radio, condenser, bedroll and tow, as a chassis rather than special-cased slots, with
+   a narrow shield that stays on while riding. This also generalises the existing board
+   ([Movement](prd/movement.md#the-patrol-board-a-superchassis-agreed-session-4-part-3-not-built),
+   [Devices & mods](prd/devices-and-mods.md#the-patrol-board-as-a-superchassis-proposed-not-built)).
+4. **The dune sailboat.** A wind-driven slow hauler that reads the wind vector already in the
+   world, with tow capacity well above the board
+   ([Movement](prd/movement.md#the-dune-sailboat-agreed-session-4-part-3-not-built)).
+5. **Kit unlocks.** Add the two kits to the local profile: the Varran settler unlocks on building
+   and using a sailboat, the Daventry patrol board on building a patrol board. The Daventry
+   unlock is still open ([Profile & saves](prd/profile-and-saves.md#kits-are-data)).
+6. **Sister and Mother Cistern.** A fixed-coordinate prefab landmark: a half-buried temple, a
+   dormant terminal and a basin that refills slowly. Restoring and linking can wait for the
+   endings work ([Salvage & ruins](prd/salvage-and-ruins.md#landmarks), [World &
+   terrain](prd/world-and-terrain.md#landmarks)).
+7. **Ending flags.** Track the Daventry axis as a running loudness value from dead-lane
+   transmissions and launches, and the Cistern axis as dormant, restored or linked. Don't build
+   epilogues yet ([Profile & saves](prd/profile-and-saves.md#ending-flags-proposed)).
+
+No Varran, Daventry or war content goes into normal play beyond radio noise
+([Radio, sound & atmosphere](prd/radio-sound-and-atmosphere.md#offstage-states-on-the-air-agreed-session-4-part-3-not-built)).
+The seed vaults and the second-age broadcasts are proposed too, but the session's list doesn't
+include them, so they are not in this order.

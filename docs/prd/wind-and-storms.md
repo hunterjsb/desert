@@ -121,6 +121,8 @@ whether the hardest thing is possible before we depend on it.
 ## Reading the weather
 
 - **Your own senses first:** the wind on you, the colour of the sky, the sound.
+- **The plants** (Agreed, session 4, part 3; not built): feral scrub closes up before a storm,
+  a free barometer for anyone ([below](#feral-plants-the-free-barometer-agreed-session-4-part-3-not-built)).
 - **Instruments are finds and upgrades.** A barometer shows a storm coming hours ahead.
   A wind vane shows direction and strength. A weather radio picks up forecasts, and
   maybe there's a storm map.
@@ -196,6 +198,43 @@ Readings, not in the session:
   threshold, and storms ride the prevailing wind, so a front's heading is the wind's. The storm
   map that draws the wall already samples the field out to 20 km each way on a 128 by 128 grid,
   once a second. A mini-map is that grid on a screen, finer with more gear.
+
+### Feral plants: the free barometer (Agreed, session 4, part 3; not built)
+
+*Session 4, part 3 ([lore session](../lore-session-2026-10-17-part-3.md)); the first piece of its
+build order, and none of it is built.* Feral scrub "closes up or turns its leaves before a storm."
+It is "a free, slotless, low-tech barometer for players without weather consoles, and the
+knowledge nomads would have had by heart" ([the
+lore](../lore-research.md#life-on-zan-feral-plants-agreed-session-4-part-3)). It sits beside the
+instruments above as their cheapest form: the barometer row's "rough warning of an incoming
+storm," with no device, no slot and no power. The session's build note: "A plant prop whose pose
+(open → closed / leaves turning) is driven by the storm intensity curve with some lead time.
+Requires the curve to be queryable ahead of time, which was already flagged for sleep."
+
+**The curve is queryable ahead already, so nothing in the field changes.** The Console session
+asked the same question and it is answered above: `storm_at(place, time)` is a pure function of the
+run's seed, the place and the time, and `WeatherField` samples it forward for the radio. A plant's
+pose is that function at the plant's own place, a lead time ahead. It keeps no state and is
+deterministic like the rest of the field.
+
+Readings, not in the session:
+- **It is a forecast for the plant's own place,** as the radio's is for where the radio stands. A
+  plant by the road you are walking shows the storm at that spot, not at you, and walking into
+  the wind brings the storm sooner than the plant says.
+- **The plant reads the field, not the felt weather.** Inside a base shield the felt storm reads
+  zero, but scrub stands out in the world, and it has to show the storm that is coming, so it reads
+  `storm_at` and nothing else.
+- **The lead time is the open part.** "Some lead time" is the session's. For scale, a wall gives
+  about 5 minutes from first sight to impact, the radio looks 20 minutes ahead, and a game day is
+  20 minutes. A lead shorter than the radio's keeps the plant the lowest rung of the ladder, which
+  is its role; the session sets none.
+- **Which pose goes with which intensity is tuning.** Open when the field is quiet, closed or
+  turned as it rises toward the storm threshold; the session says only "open → closed / leaves
+  turning."
+- **Cost is a handful of samples a plant,** only for plants in loaded chunks, at a low rate like
+  the radio's 5 seconds. The count in view is a tuning matter.
+
+The plants are also a trail and a source of lore and loot ([Farming](farming.md#feral-plants-and-a-crops-history-agreed-session-4-part-3-not-built)).
 
 ## What storms do to everything else
 
@@ -319,6 +358,8 @@ Readings, not in the session:
   by Survival). Prevailing wind bands by latitude.
 - Storm sizes, from dust haze to an ordinary storm to a great wall.
 - Instruments and forecasts (the Console's set is proposed above).
+- Feral plants as a free weather sign (proposed above; first in the proposed build order in the
+  [skeleton plan](../skeleton-plan.md#waiting-for-the-full-version)).
 - Real dune shapes facing the prevailing wind (decided; see World & terrain).
 - Wind particles and sound, with Sand Game's particles and recordings as the reference.
 - **Storms wear dunes down** (Hunter, 2026-10-17, loose: "later on in the game, when we
@@ -403,6 +444,16 @@ with everything else.
   orbital phase (`DayCycle`, [the moon](../the-moon.md#day-length)). Tu's shadow is far wider
   than Zan, so the whole near side is in it at once; its "centre" is the point under Tu, where
   the sun stood highest and the eclipse's chill is deepest, so a squall would point there.
+
+Session 4, part 3 (2026-10-17) adds two. Each is quoted on both sides and left standing.
+
+- **How far ahead a plant reads.** The session: the pose is driven by the intensity curve "with
+  some lead time." Not said how much, against the barometer's "rough warning" and the radio's 20
+  minutes (the open question below about "hours ahead").
+- **A free sign against the instruments.** Here: "Instruments are finds and upgrades," and
+  "Better instruments see further into the field." The session: scrub is "a free, slotless,
+  low-tech barometer." Not said whether it sees as far as a found barometer or only the near
+  front, or whether a player with the instruments still has a reason to watch the plants.
 
 The Console session (2026-10-17) answers one of its own questions and adds the rest. Each is
 quoted on both sides and left standing.
