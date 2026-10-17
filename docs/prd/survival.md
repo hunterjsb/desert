@@ -232,8 +232,8 @@ Death means a new run (see Runs in the vision).
     bearings follow the same north, so the two never disagree. The sun doesn't yet: the
     day is one clock for the whole moon, so past a pole the sun keeps the course it had,
     rising in the compass's west. Turning it round there would make it jump at the pole.
-  - **Found** on the surface, one in nineteen of the surface layer's loose parts (107 of the
-    4,675 finds salvage probe 5 tallies over two seeds, about one in 44),
+  - **Found** on the surface, one in twenty-one of the surface layer's loose parts (99 of the
+    4,675 finds salvage probe 5 tallies over two seeds, about one in 47),
     and the console's `give compass` puts one in your hands.
 - **The suit** is what it carries plus its built-ins: air and radiation protection, free
   and drained by nothing. Its sockets for mods (heater, cooler, reclaimer, battery,
