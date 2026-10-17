@@ -18,6 +18,7 @@ const KINDS := {
 	&"mod": Color(0.75, 0.35, 0.7),
 	&"food": Color(0.8, 0.7, 0.35),
 	&"rack": Color(0.95, 0.35, 0.3),
+	&"deck": Color(0.55, 0.45, 0.95),
 }
 
 ## Parts: the socket kind they fit, weight, size (z is how far they stand out
@@ -71,6 +72,7 @@ const PARTS := {
 }
 
 ## Frames: their box, weight, wind catch and sockets as [kind, position, outward].
+## Those marked "deck" stand on a chassis piece's deck mount too.
 const DEVICES := {
 	# Two batteries, a ring on every side, a tray under it and two top mounts,
 	# so a panel rides beside a lamp or a shield. The first battery sits in the
@@ -78,7 +80,7 @@ const DEVICES := {
 	# is longer than the crate, so its rack runs along the top of the left side,
 	# away from the charge light, the board standing proud of it to clear the
 	# ring below. Last in the list, so older saves keep their sockets.
-	&"crate_frame": {"label": "Crate frame", "size": Vector3(0.8, 0.5, 0.8), "mass": 15.0,
+	&"crate_frame": {"label": "Crate frame", "size": Vector3(0.8, 0.5, 0.8), "mass": 15.0, "deck": true,
 		"sockets": [
 			[&"battery", Vector3(0.0, 0.0, 0.4), Vector3.BACK],
 			[&"ring", Vector3(0.4, 0.0, 0.0), Vector3.RIGHT],
@@ -107,7 +109,7 @@ const DEVICES := {
 			[&"mod", Vector3(0.3, 0.0, 0.3), Vector3.BACK],
 		]},
 	# Put a panel on top and a battery in front, and it charges the battery in the sun.
-	&"charger": {"label": "Charger", "size": Vector3(0.45, 0.25, 0.35), "mass": 5.0,
+	&"charger": {"label": "Charger", "size": Vector3(0.45, 0.25, 0.35), "mass": 5.0, "deck": true,
 		"sockets": [
 			[&"battery", Vector3(0.0, 0.0, 0.175), Vector3.BACK],
 			[&"top", Vector3(0.0, 0.125, 0.0), Vector3.UP],
@@ -122,7 +124,7 @@ const DEVICES := {
 			[&"port", Vector3(0.25, 0.0, 0.0), Vector3.RIGHT],
 		]},
 	# Pulls water out of the air into the canister fitted in it, best in the cold of the night.
-	&"condenser": {"label": "Condenser", "size": Vector3(0.6, 0.7, 0.6), "mass": 14.0, "condenser": true,
+	&"condenser": {"label": "Condenser", "size": Vector3(0.6, 0.7, 0.6), "mass": 14.0, "condenser": true, "deck": true,
 		"sockets": [
 			[&"water", Vector3(0.0, -0.1, 0.3), Vector3.BACK],
 			[&"battery", Vector3(0.3, -0.1, 0.0), Vector3.RIGHT],
@@ -134,7 +136,7 @@ const DEVICES := {
 	# The base shield: small and light, use switches it, and its bubble keeps
 	# out wind and storm wherever it goes, a crate's top mount included.
 	&"shield": {"label": "Shield generator", "size": Vector3(0.4, 0.42, 0.4), "mass": 6.0, "shield": true,
-		"fits": &"top",
+		"fits": &"top", "deck": true,
 		"sockets": [
 			[&"battery", Vector3(0.0, -0.05, 0.2), Vector3.BACK],
 			[&"ring", Vector3(-0.2, -0.05, 0.0), Vector3.LEFT],
@@ -144,7 +146,7 @@ const DEVICES := {
 	# The light shield you start with: a smaller bubble that lets a little of
 	# the wind through, built light enough that the light panel keeps it going.
 	&"light_shield": {"label": "Light shield generator", "size": Vector3(0.3, 0.32, 0.3), "mass": 4.0, "shield": true,
-		"fits": &"top", "stats": {"radius_m": 4.0, "clear_w": 2.0, "storm_w": 20.0, "wind_block": 0.85},
+		"fits": &"top", "deck": true, "stats": {"radius_m": 4.0, "clear_w": 2.0, "storm_w": 20.0, "wind_block": 0.85},
 		"sockets": [
 			[&"battery", Vector3(0.0, -0.04, 0.15), Vector3.BACK],
 			[&"ring", Vector3(-0.15, -0.04, 0.0), Vector3.LEFT],
@@ -185,6 +187,21 @@ const DEVICES := {
 		"sockets": [
 			[&"battery", Vector3(0.0, 0.04, -0.5), Vector3.UP],
 			[&"port", Vector3(0.0, 0.0, 0.65), Vector3.BACK],
+		]},
+	# A piece of a bigger floater: a flat frame a little wider than a crate,
+	# a ring on each edge where the next piece joins or a hook goes, its own
+	# tray under it and one device standing on top. No battery, no port: the
+	# power comes from what stands on it. Lying flat, the wind meets its edge.
+	# Found buried on edge, as the dunes would leave a sheet that wide.
+	&"chassis": {"label": "Chassis piece", "size": Vector3(1.0, 0.12, 1.0), "mass": 9.0, "chassis": true,
+		"carryable": true, "on_end": true, "stats": {"face_m2": 0.12},
+		"sockets": [
+			[&"ring", Vector3(0.5, 0.0, 0.0), Vector3.RIGHT],
+			[&"ring", Vector3(-0.5, 0.0, 0.0), Vector3.LEFT],
+			[&"ring", Vector3(0.0, 0.0, 0.5), Vector3.BACK],
+			[&"ring", Vector3(0.0, 0.0, -0.5), Vector3.FORWARD],
+			[&"bottom", Vector3(0.0, -0.06, 0.0), Vector3.DOWN],
+			[&"deck", Vector3(0.0, 0.06, 0.0), Vector3.UP],
 		]},
 }
 
@@ -301,12 +318,14 @@ static func device(id: StringName) -> Device:
 		else (Condenser.new() if spec.get("condenser", false) \
 		else (Planter.new() if spec.get("planter", false) \
 		else (Hoverboard.new() if spec.get("board", false) \
-		else (Radio.new() if spec.get("radio", false) else Device.new()))))
+		else (Radio.new() if spec.get("radio", false) \
+		else (Chassis.new() if spec.get("chassis", false) else Device.new())))))
 	made.set_meta(&"catalog", id)
 	made.label = spec.label
 	made.frame_mass = spec.mass
 	made.frame_stats = spec.get("stats", {}).duplicate()
 	made.kind = spec.get("fits", &"")
+	made.stands_on_deck = spec.get("deck", false)
 	if spec.get("carryable", false):
 		made.carryable = true
 	var size: Vector3 = spec.size

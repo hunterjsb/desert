@@ -41,6 +41,7 @@ const DEVICES := {
 		[&"stake", 2],
 		[&"survival_kit", 1],
 		[&"radio", 2],
+		[&"chassis", 1],
 	],
 	DEEP: [
 		[&"crate_frame", 2],
@@ -48,6 +49,7 @@ const DEVICES := {
 		[&"condenser", 2],
 		[&"shield", 2],
 		[&"board", 1],
+		[&"chassis", 1],
 	],
 }
 ## What a ruin's floor holds besides, by layer: seeds and rations, kept from
@@ -372,10 +374,11 @@ static func unroll(world: World, body: Node) -> void:
 		Catalog.cable(world, (body as Part).global_position, id == &"strong_plug", body as Part)
 
 
-## Where a find lies, world metres. Buried, a part or a board stands on end
-## and anything leans with the sand and a little more, its lowest point under the sand at
-## its middle by its share of its height. Loose, it rests a few centimetres
-## above what's under it, a part on its socket side, to settle.
+## Where a find lies, world metres. Buried, a part, a board or a chassis
+## piece stands on end and anything leans with the sand and a little more,
+## its lowest point under the sand at its middle by its share of its height.
+## Loose, it rests a few centimetres above what's under it, a part on its
+## socket side, to settle.
 static func pose(body: RigidBody3D, spec: Dictionary, height: Callable) -> Transform3D:
 	var box := bounds(body)
 	var turn: Basis
