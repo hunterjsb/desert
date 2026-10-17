@@ -29,6 +29,45 @@ func eye() -> Vector3:
 	return world.player.camera.global_position
 
 
+## The first key or button bound to an action, pressed and let go.
+func press(action: StringName) -> void:
+	var key: InputEvent = InputMap.action_get_events(action)[0].duplicate()
+	key.pressed = true
+	get_viewport().push_input(key)
+	key = key.duplicate()
+	key.pressed = false
+	get_viewport().push_input(key)
+
+
+## The mouse moved to a point on screen.
+func point_at(to: Vector2) -> void:
+	var motion := InputEventMouseMotion.new()
+	motion.position = to
+	motion.global_position = to
+	motion.relative = Vector2(120.0, 0.0)
+	get_viewport().push_input(motion)
+
+
+## Which of the inventory's stacks holds a thing you carry, or -1.
+func stack_of(thing: Object) -> int:
+	var stacks := world.player.suit.stacks()
+	for i in stacks.size():
+		if stacks[i].has(thing):
+			return i
+	return -1
+
+
+## A left click at a point on screen.
+func click_at(point: Vector2) -> void:
+	for down in [true, false]:
+		var click := InputEventMouseButton.new()
+		click.button_index = MOUSE_BUTTON_LEFT
+		click.pressed = down
+		click.position = point
+		click.global_position = point
+		get_viewport().push_input(click)
+
+
 ## A catalog device at `at` on the sand, `above` m up, every socket filled or none.
 func device(id: StringName, at: Vector3, above: float, filled := false) -> Device:
 	var made := Catalog.device(id)

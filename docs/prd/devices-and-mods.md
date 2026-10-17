@@ -373,6 +373,10 @@ planter has a mod mount.
 | Radio | 1 | | | | 1 | fits a top mount itself |
 | Survival kit | | | | | | a water and a food socket, 2 small and 1 large plant slot |
 
+**Carried, a device works as anywhere else** (Hunter, 2026-10-17): a carryable device goes
+in with what the suit carries whole and works on its own battery, riding on you (Survival).
+There's no flag for it: no device is an exception.
+
 Some parts **add sockets of their own**. An extra-hook mod fits a mount and provides a
 hook. That's how found mods expand a device. A hose's end fitted in a water socket offers
 a water socket of its own on top, so a canister or another hose goes on there too

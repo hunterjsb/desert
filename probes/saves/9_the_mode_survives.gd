@@ -29,7 +29,7 @@ func run() -> void:
 	var old := world
 	var old_seed := world.run_seed
 	var player := world.player
-	for part in player.suit.slots:
+	for part in player.suit.carried:
 		if part is Supply and part.kind == &"water":
 			part.drain(INF)
 	player.vitals.thirst = 0.0

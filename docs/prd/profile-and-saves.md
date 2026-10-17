@@ -24,7 +24,7 @@ Either way there's one run, and one save for it; a run's mode is fixed when it s
 
 - **Save & quit is safe at any moment,** mid-storm included, from the system menu
   (Menus & UI). Resume puts everything back as it was: where you stood, the time, your
-  bars and slots, and every thing in the world near you, with its parts, charge, wear,
+  bars and what you carry, and every thing in the world near you, with its parts, charge, wear,
   water and growth, and every line between them.
 - **The world itself isn't saved.** It comes from the run's seed (World & terrain), the
   weather from the seed and the time (Wind & storms), and finds from the seed and the
@@ -113,7 +113,9 @@ Resume, New game, the death screen and Options.
 - **A death in Normal** keeps the save and shows the death screen (Menus & UI): Load
   last save is Resume, and New run is New game in Normal.
 - **What a save holds:** you (where you stand, which way you face and look, how you're
-  moving, stamina, your bars, your slots, what's in your hands, at your waist or being
+  moving, stamina, your bars, everything you carry (each thing with its state, as a
+  radio's channel, beacon and charge; a save from before, with five slots, resumes with
+  their contents carried), what's in your hands, at your waist or being
   hauled, and the board you ride with its ride as it stood), the clock, the moon position, the engine's origin, and where power, wear,
   farming and your body are in their ticks. Then everything of yours: each thing by its
   catalog id, where it is and how it's moving, its wear, charge, water, growth and
@@ -173,8 +175,8 @@ Resume, New game, the death screen and Options.
 6. **Saved mid-ride.** Resumed, you're back on the board at the saved speed and ride on
    where the run never saved went; with the ride dropped from the save, the board comes
    down on the sand instead of hanging in the air.
-7. **A coil in a slot.** Saved with a 6 m coil, the kit's length, and a cable in your
-   slots and resumed, the coil comes out a working 6 m line and the cable whole.
+7. **A coil carried.** Saved carrying a 6 m coil, the kit's length, and a cable, and
+   resumed, the coil comes out a working 6 m line and the cable whole.
 8. **Normal saves as you go.** Saved by hand, no save lands before the autosave period
    is up and one does just after; none while you're dead, in Ironman, or in a dev
    scenario's run.
@@ -188,6 +190,11 @@ Resume, New game, the death screen and Options.
     saved and resumed: the same pieces stand on the same places, turned as they were,
     with every tray, what stood where with its charge, the shield running and the line
     tied, and it floats on.
+13. **What you carry.** Saved carrying a radio on the weather station, a compass and
+    three canisters and resumed, the radio is carried on the same channel with the same
+    charge, playing from you with its words showing, the compass is carried, and the
+    canisters stack as one, each with its water. A save from before, with five slots,
+    resumes with their contents carried.
 
 ## Out of scope
 

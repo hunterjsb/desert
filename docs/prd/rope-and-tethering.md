@@ -184,7 +184,7 @@ The hoverboard tows nothing.
   out so far, so a stake a step or two ahead takes it from a standing look at it or its
   foot (2026-10-17). Taking up an end of a line lying loose at both ends rolls it back
   up; dropping the first end before it's on anything puts the coil down whole, and
-  putting it in a suit slot stows the coil there (Survival).
+  putting it in with what you carry stows the coil there (Survival).
 - **Rings** are tie sockets: a hook adds one while it's fitted, and a stake has one on
   its eye. You're a ring in your hand, and at your waist: use with a line in your hand
   and nothing to work ties it on, and use empty-handed takes it back after a second's
@@ -254,9 +254,10 @@ Reliability is the whole point here, so this list is long. All run without a win
 13. **Reeled by hand.** Reeling in draws a floating crate in about the notches reeled,
     paying out lets it back no further than the line's length, and against a stake it
     steps you in instead.
-14. **Tied standing.** A coil out of a slot, its first end in hand, ties to a stake a step
-    and a half ahead from a standing look at its foot; walked off paying out, its second
-    end ties to the next stake's ring the same way, laid long enough to reach between them.
+14. **Tied standing.** A coil out of what you carry, its first end in hand, ties to a
+    stake a step and a half ahead from a standing look at its foot; walked off paying
+    out, its second end ties to the next stake's ring the same way, laid long enough to
+    reach between them.
 15. **Only into the sand.** The kit's stake, taken up with the crate's line on it, used
     at sand out of reach and then at the crate, stays in your hand each time, neither
     driven nor at your waist, and the readout says why. At sand in reach it goes in at

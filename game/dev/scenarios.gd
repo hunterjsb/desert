@@ -126,9 +126,9 @@ const AFK_CONDENSER := [0.0, 4.2]
 const AFK_CRATE := [0.0, -2.0]
 const AFK_STAKE := [1.6, -0.6]
 const AFK_TURBINE := [0.0, -7.4]
-## Your slots, as you'd leave yourself: nothing brings you water yet, the
-## condenser waters only the farm, so this many canisters, and the rest free
-## for what the farm drops onto you.
+## What you carry, as you'd leave yourself: nothing brings you water yet, the
+## condenser waters only the farm, so this many canisters, and no food: the
+## farm drops it onto you.
 const AFK_CANISTERS := 3
 
 ## The chassis pieces lying in a row ahead of you, a tray in front of each,
@@ -458,8 +458,8 @@ static func _tethered(world: World, id: StringName, right: float, ahead: float) 
 	return [device, stake]
 
 
-## A run's sealed-water start: you fed, watered and whole, a fresh suit's kit
-## in your slots, and on the sand in front of you a crude condenser with a
+## A run's sealed-water start: you fed, watered and whole, carrying a fresh
+## suit's kit, and on the sand in front of you a crude condenser with a
 ## battery, a panel and an empty canister, a charged shield generator, a
 ## cable to join them, and spare rations. Returns what it dropped.
 static func survive(world: World) -> Array[Node3D]:
@@ -491,7 +491,7 @@ static func survive(world: World) -> Array[Node3D]:
 ## Returns what it dropped.
 static func farm(world: World) -> Array[Node3D]:
 	world.player.vitals.fresh()
-	world.player.suit.slots[world.player.suit.slots.find(null)] = Catalog.part(&"carrot")
+	world.player.suit.carried.append(Catalog.part(&"carrot"))
 	var dropped: Array[Node3D] = []
 	for where: Array in [FARM_BY_HAND, FARM_HARVESTER]:
 		var tied := _tethered(world, &"planter", where[0], where[1])
@@ -542,11 +542,12 @@ static func radio(world: World) -> Array[Node3D]:
 ## dropped.
 static func afk(world: World) -> Array[Node3D]:
 	world.player.vitals.fresh()
-	var slots := world.player.suit.slots
-	for i in slots.size():
-		if slots[i] != null:
-			slots[i].free()
-		slots[i] = Catalog.part(&"canister") if i < AFK_CANISTERS else null
+	var carried := world.player.suit.carried
+	for thing in carried:
+		thing.free()
+	carried.clear()
+	for i in AFK_CANISTERS:
+		carried.append(Catalog.part(&"canister"))
 	var shield := standing(world, &"shield", [&"big_battery"], AFK_SHIELD) as ShieldGenerator
 	var dropped: Array[Node3D] = [shield]
 	for where: Array in AFK_PLANTERS:

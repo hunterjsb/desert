@@ -34,6 +34,12 @@ func advance(east: float, north: float) -> void:
 	longitude = wrapf(longitude, -PI, PI)
 
 
+## Which way the moon's north lies on the ground, engine axes: -z, turned
+## round each time you walk over a pole.
+func north() -> Vector3:
+	return Vector3(0.0, 0.0, -_facing)
+
+
 ## Metres from spawn, measured round the moon.
 func distance_from_spawn() -> float:
 	var d_lat := latitude - _spawn_latitude

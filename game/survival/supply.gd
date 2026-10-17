@@ -3,8 +3,9 @@ extends Part
 ## A sealed container of what you live on: water in a canister, food in a
 ## ration. Open water boils off by afternoon, so water only lasts sealed. It
 ## carries what's left in it wherever it goes, as a battery carries its
-## charge, and its light shows how full it is. In one of your suit's slots the
-## suit feeds you from it; use one you hold and you drink or eat your fill.
+## charge, and its light shows how full it is. Carried, the suit feeds you
+## from it; use one you hold, or one you carry in the inventory, and you drink
+## or eat your fill.
 
 ## What each kind holds: its stats key for how much it holds, and for what's
 ## left, and the tuning that says how much a fresh one holds.

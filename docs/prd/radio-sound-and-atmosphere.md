@@ -18,8 +18,9 @@ research](../lore-research.md).
 
 ## The radio
 
-A device you carry or mount (Devices & mods). It also works from a suit slot: it plays
-from you, on its own battery, and use on its slot turns the dial (Survival, 2026-10-17). **Its reach is huge,** with the exact
+A device you carry or mount (Devices & mods). It also works carried in the suit, as any
+device does: it plays from you, on its own battery, and use on it in the inventory turns
+the dial (Survival, 2026-10-17). **Its reach is huge,** with the exact
 range still to tune. Better radios and antenna mods hear more clearly. Tune it, and you find:
 
 - **Music, for the vibes.** Sand Game's tracks carry over: "Sandy Andy" by day and
@@ -84,6 +85,10 @@ it and it crackles.
 - **The probes:** 1, 2, 4 and 5 are in `probes/radio`. Probe 3 is Bubble shield probe 1,
   which already walks you out through a bubble's shell and back a quarter metre at a time
   and checks the roar is muffled exactly inside it, so it isn't written twice.
+- **Carried** (2026-10-17): it goes in with what you carry whole, rides on you out of sight
+  and plays from you on its own battery, its line of words showing, and use on it in the
+  inventory turns the dial (Survival). Its spoken bearings, a beacon's or where storms come
+  from, are by the moon's north, so past a pole they agree with the compass.
 - **Not yet:** bumps crackling, distorted tracks in storms, more channels, lore, oracles,
   frequencies as finds and antennas.
 
@@ -131,7 +136,7 @@ Everything that matters can be heard, so you can read the world by ear:
   Game clank with its ring cut off. Taking one out is its lighter match, and a line's
   end tied on creaks instead. Taking something off the sand is a sift, and what you put
   down or throw lands with a soft crunch where it lands; a throw whooshes.
-- **Softer suit.** The slots are a pouch, in and out, and the inventory opens and
+- **Softer suit.** What you carry goes in and out as a pouch does, and the inventory opens and
   closes with a cloth rustle. These are the quietest things in the world.
 - **New:** a stake driven in, water poured into a planter, a crop picked, the
   harvester's food landing on you, the condenser's drip (quicker the more it makes),

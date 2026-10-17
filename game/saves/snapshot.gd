@@ -68,7 +68,7 @@ static func problem(data: Dictionary) -> String:
 			again.call(rec.mounted, again)
 		for entry: Array in rec.get("joined", []):
 			again.call(entry[3], again)
-	for rec: Dictionary in data.get("things", []) + data.get("slots", []).filter(func(r: Variant) -> bool: return r != null):
+	for rec: Dictionary in data.get("things", []) + _carried(data):
 		look.call(rec, look)
 	return "" if unknown.is_empty() else "it holds things this build doesn't know: " + ", ".join(unknown)
 
@@ -115,7 +115,7 @@ func begin(data: Dictionary) -> Array[Vector2]:
 
 
 ## Second half, once the ground under all of it is solid: everything of
-## yours, its lines, your slots, hands and waist.
+## yours, its lines, what you carry, your hands and waist.
 func finish(data: Dictionary) -> void:
 	var world := _world
 	var ropes := world.ropes
@@ -146,13 +146,14 @@ func finish(data: Dictionary) -> void:
 		if rec.get("buried", false):
 			body.set_meta(&"buried", true)
 	var suit := world.player.suit
-	for i in suit.slots.size():
-		if suit.slots[i] != null:
-			suit.slots[i].free()
-		var rec: Variant = data.slots[i] if i < data.slots.size() else null
-		suit.slots[i] = _make(rec) if rec != null else null
+	for thing in suit.carried:
+		thing.free()
+	suit.carried.clear()
+	for rec: Dictionary in _carried(data):
+		suit.carried.append(_make(rec))
 	for pair in _states:
 		_set_state(pair[0], pair[1])
+	suit.carry_devices()
 	# Back on the board you rode, going as you were.
 	var rode: Dictionary = data.get("ride", {})
 	if not rode.is_empty() and _made.has(rode.board) and world.player.get_on(_made[rode.board]):
@@ -272,7 +273,7 @@ func _take() -> Dictionary:
 		data.ride = _ride_out(ride)
 	data.things = things
 	data.order = order
-	data.slots = player.suit.slots.map(func(p: RigidBody3D) -> Variant: return _body(p, false) if _known(p) else null)
+	data.carried = player.suit.carried.filter(_known).map(func(p: RigidBody3D) -> Dictionary: return _body(p, false))
 	var strands := ropes.strands.filter(func(s: RopeStrand) -> bool: return is_instance_valid(s))
 	data.lines = lines.map(func(line: Line) -> Dictionary: return {"state": line.state, "full": line.full,
 		"first": line._first, "coil": _ref(line.coil) if is_instance_valid(line.coil) else null,
@@ -605,6 +606,14 @@ func _solver_in(rec: Dictionary) -> void:
 		body.left = entry[2]
 		body.left_spin = entry[3]
 		ropes._bodies[node.get_instance_id()] = body
+
+
+## What you carry, as saved: a list, or from before there were none, five
+## slots, their empty ones left out.
+static func _carried(data: Dictionary) -> Array:
+	if data.has("carried"):
+		return data.carried
+	return data.get("slots", []).filter(func(r: Variant) -> bool: return r != null)
 
 
 ## The world's things in the order they stood, which every system walks.

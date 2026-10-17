@@ -77,9 +77,9 @@ func run() -> void:
 	print("picked by hand: %s" % (Hands.describe(food.label, food.mass, food.stats) if food != null else "nothing"))
 	check(food != null and food.kind == &"food" and food.amount == harvest and hands.phase == Hands.Phase.HELD,
 		"its harvest comes to your hands as food, %d kcal" % harvest)
-	var seeds := world.player.suit.slots.filter(func(p: Part) -> bool: return p is Plant)
+	var seeds := world.player.suit.carried.filter(func(p: RigidBody3D) -> bool: return p is Plant)
 	check(socket.part == null and planter.picked.get(&"carrot", 0) == units and seeds.size() == 1
-		and seeds[0].crop == &"carrot" and seeds[0].growth == 0.0, "its slot is free and its seed is in a slot of yours")
+		and seeds[0].crop == &"carrot" and seeds[0].growth == 0.0, "its slot is free and its seed is carried")
 
 	hands.stow().free()
 	var fungus := plants[1]

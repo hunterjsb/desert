@@ -4,7 +4,7 @@ extends Node
 ## goes, with everything you had in it, and a fresh one on a new seed takes
 ## its place, so nothing carries over. In Normal a death offers the last save
 ## back first. It sits beside the world, never in it. Every run starts with
-## its kit (Kit, data): some in the suit's slots, the rest on the sand beside
+## its kit (Kit, data): some carried by the suit, the rest on the sand beside
 ## you.
 
 signal started(world: World)

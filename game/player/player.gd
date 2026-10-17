@@ -219,8 +219,10 @@ func _physics_process(delta: float) -> void:
 		stamina -= _tuning.stamina_sprint_drain * delta
 	if climb > 0.0:
 		stamina -= climb * _tuning.stamina_uphill_drain * delta
-	stamina -= sink * _tuning.haul_stamina_drain * delta
-	if not sprinting and climb == 0.0 and sink < 0.05:
+	# A load sinks you in standing too, but tires you only on the move.
+	var tiring := sink if dir != Vector2.ZERO else maxf(sink - minf(suit.burden(), 1.0), 0.0)
+	stamina -= tiring * _tuning.haul_stamina_drain * delta
+	if not sprinting and climb == 0.0 and tiring < 0.05:
 		stamina += _tuning.stamina_regen * delta
 	stamina = clampf(stamina, 0.0, _tuning.stamina_max)
 
@@ -463,15 +465,18 @@ func _air(delta: float, dir: Vector2) -> Vector2:
 
 
 ## Walking or sprinting against a line that takes much of your pace, you dig
-## in: slower, lower, tiring faster. Returns the pace you can manage.
+## in: slower, lower, tiring faster. Carrying more than you carry easily sinks
+## you in the same way, and past sunk in each kilogram slows you more (Suit).
+## Returns the pace you can manage.
 func _haul(dir: Vector2, pace: float, delta: float) -> float:
 	var held := 0.0
 	if dir != Vector2.ZERO:
 		var drag: Vector3 = get_meta(&"rope_drag", Vector3.ZERO)
 		var against := -Vector2(drag.x, drag.z).dot(dir)
 		held = smoothstep(_tuning.haul_from, 1.0, against / maxf(pace * (1.0 - _tuning.haul_slow * sink), 0.1))
-	sink = _ease(sink, held, _tuning.haul_seconds, delta)
-	return pace * (1.0 - _tuning.haul_slow * sink)
+	var load := suit.burden()
+	sink = _ease(sink, maxf(held, minf(load, 1.0)), _tuning.haul_seconds, delta)
+	return pace * (1.0 - _tuning.haul_slow * sink) / maxf(load, 1.0)
 
 
 ## What stopped you stops your momentum, and a landing tells how hard it was.

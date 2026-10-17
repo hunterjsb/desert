@@ -27,7 +27,7 @@ func run() -> void:
 
 	# Dead, with the death screen up.
 	var player := world.player
-	for part in player.suit.slots:
+	for part in player.suit.carried:
 		if part is Supply and part.kind == &"water":
 			part.drain(INF)
 	player.vitals.thirst = 0.0

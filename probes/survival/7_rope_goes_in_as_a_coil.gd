@@ -1,19 +1,19 @@
 extends LineProbe
 ## Survival probe 7: rope goes in as a coil. The run's kit is set down beside
 ## you. A cable between its crate and its board, plugged in at one end,
-## stays out of your slots; plugged into nothing, it goes in whole and comes
-## out whole, its other plug following, and a strong cable the same, and a
-## hose, which stays out too while its other end is in a water socket. A coil
-## the kit's length and a found 12 m one, each taken up, go in a slot as a
-## coil, leaving nothing of the line in the world. A kilometre on, the land they lay on gone, each comes
-## out as its first end in your hand and the rest at your belt, pays out to
-## the same length and ties onto a stake's ring. Paying out, or laid, a line
+## stays out of what you carry; plugged into nothing, it goes in whole and
+## comes out whole, its other plug following, and a strong cable the same,
+## and a hose, which stays out too while its other end is in a water socket.
+## A coil the kit's length and a found 12 m one, each taken up, go in as a
+## coil, leaving nothing of the line in the world. A kilometre on, the land
+## they lay on gone, each comes out as its first end in your hand and the
+## rest at your belt, pays out to the same length and ties onto a stake's
+## ring. Paying out, or laid, a line
 ## stays out.
 
-## How far you go with a coil in a slot, m, in hops the ground keeps up with.
+## How far you go carrying a coil, m, in hops the ground keeps up with.
 const AWAY := 1000.0
 const HOP := 100.0
-const SLOT := 2
 ## How far short of a line's length you walk off with it, m.
 const SHORT := 0.3
 
@@ -55,14 +55,14 @@ func _cables(plugged: Cable) -> void:
 	condenser.fit(hose.plugs[1], condenser.sockets().filter(func(s: Socket) -> bool: return s.kind == &"water")[0])
 	hands.hold(hose.plugs[0])
 	await simulate(0.5)
-	check(not suit.click(3) and hands.held == hose.plugs[0], "a hose with its other end in a water socket stays out")
+	check(not suit.put_in() and hands.held == hose.plugs[0], "a hose with its other end in a water socket stays out")
 	hands.drop()
 	condenser.take(hose.plugs[1].socket)
 	var plug := plugged.plugs[0]
 	(plug.socket.get_parent() as Device).take(plug.socket)
 	hands.hold(plug)
 	await simulate(0.5)
-	check(not suit.click(3) and hands.held == plug, "a cable plugged in at its other end stays out")
+	check(not suit.put_in() and hands.held == plug, "a cable plugged in at its other end stays out")
 	var other := plugged.plugs[1]
 	(other.socket.get_parent() as Device).take(other.socket)
 	await simulate(0.5)
@@ -74,11 +74,12 @@ func _cables(plugged: Cable) -> void:
 		# Its kind now: rolled up, it's freed, and freed things all compare equal.
 		var kind: Script = cable.get_script()
 		var ropes_were := ropes.ropes.size() - (1 if cable is StrongCable else 0)
-		check(suit.click(3) and hands.held == null, "a %s plugged into nothing goes in" % cable.plugs[0].label)
+		check(suit.put_in() and hands.held == null, "a %s plugged into nothing goes in" % cable.plugs[0].label)
 		await simulate(0.1)
 		check(not is_instance_valid(cable) and ropes.ropes.size() == ropes_were, "whole, nothing of it left out")
-		print("in the slot: %s, %s" % [Suit._name(suit.slots[3]), Suit._brief(suit.slots[3])])
-		check(suit.click(3), "taken out")
+		var rolled := suit.carried[-1]
+		print("carried: %s, %s" % [Suit._name(rolled), Suit._brief([rolled])])
+		check(suit.take_out(stack_of(rolled)), "taken out")
 		await simulate(0.5)
 		var back := _cable_of(hands.held)
 		check(back != null and back.get_script() == kind and is_instance_valid(back.plugs[1])
@@ -101,23 +102,21 @@ func _round(coil: Part, metres: float) -> void:
 		check(false, "and hold its first end")
 		return
 	var ropes_were := ropes.ropes.size() - 1
-	check(suit.click(SLOT) and hands.held == null and world.player.waist.tied.is_empty(),
-		"held but not laid, it goes in a slot")
+	check(suit.put_in() and hands.held == null and world.player.waist.tied.is_empty(),
+		"held but not laid, it goes in")
 	await simulate(0.1)
-	var stowed := suit.slots[SLOT]
+	var stowed := suit.carried[-1]
 	check(not is_instance_valid(line) and ropes.ropes.size() == ropes_were, "as a coil, nothing of its line left out")
-	if stowed == null:
-		return
-	print("in the slot: %s, %s" % [Suit._name(stowed), Suit._brief(stowed)])
+	print("carried: %s, %s" % [Suit._name(stowed), Suit._brief([stowed])])
 
 	var left := Vector2(world.player_world_x(), world.player_world_z())
 	for i in roundi(AWAY / HOP):
 		teleport(left.x + HOP * (i + 1), left.y)
 		await settle(true)
 	await simulate(1.0)
-	check(not world.terrain.is_loaded_at(left.x, left.y) and suit.slots[SLOT] == stowed,
-		"a kilometre on, the land it was stowed on gone, it's still in its slot")
-	check(suit.click(SLOT), "taken out")
+	check(not world.terrain.is_loaded_at(left.x, left.y) and suit.carried.has(stowed),
+		"a kilometre on, the land it was stowed on gone, you still carry it")
+	check(suit.take_out(stack_of(stowed)), "taken out")
 	await simulate(0.5)
 	line = _line_in_hand()
 	check(line != null and line.state == Line.State.FIRST and hands.held == line.ends[0]
@@ -130,7 +129,7 @@ func _round(coil: Part, metres: float) -> void:
 	var a := driven_stake(here + Vector3(0.0, 0.0, -1.5))
 	check(await snap_onto(a.free_tie(here)), "its first end ties onto a stake")
 	await simulate(0.3)
-	check(line.state == Line.State.PAYING and not suit.click(SLOT) and hands.held == line.ends[1],
+	check(line.state == Line.State.PAYING and not suit.put_in() and hands.held == line.ends[1],
 		"paying out, it stays out")
 	# Just short of its length: past it, a probe's walk can't be held back, and it would snap.
 	await walk_to(a.global_position + Vector3(metres - SHORT, 0.0, 0.0))
@@ -147,7 +146,7 @@ func _round(coil: Part, metres: float) -> void:
 	await simulate(0.05)
 	check(hands.grab(), "you take its end off the stake")
 	await simulate(0.5)
-	check(line.state == Line.State.LAID and hands.held == line.ends[1] and not suit.click(SLOT)
+	check(line.state == Line.State.LAID and hands.held == line.ends[1] and not suit.put_in()
 		and hands.held == line.ends[1], "laid, it stays out")
 	hands.drop()
 	await simulate(0.3)

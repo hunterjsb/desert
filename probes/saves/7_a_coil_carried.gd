@@ -1,7 +1,7 @@
 extends LineProbe
-## Profile & saves probe 7: a coil in a slot. A 6 m coil, the kit's length,
-## taken up, and a cable plugged into nothing go in your slots, and the run is
-## saved.
+## Profile & saves probe 7: a coil carried. A 6 m coil, the kit's length,
+## taken up, and a cable plugged into nothing go in with what you carry, and
+## the run is saved.
 ## Resumed into a fresh world on the same seed, the coil comes out a working
 ## line of the same length, paying out to all of it and tying onto a stake,
 ## and the cable comes out whole, its other plug following.
@@ -22,17 +22,18 @@ func run() -> void:
 	line.coil.global_position = world.player.global_position + Vector3.UP
 	hands.hold(line.coil)
 	await simulate(0.5)
-	check(suit.click(2), "a coil you hold goes in a slot")
+	check(suit.put_in(), "a coil you hold goes in")
 	var cable := Catalog.cable(world, world.player.global_position + Vector3(1.0, 0.1, -1.0))
 	hands.hold(cable.plugs[0])
 	await simulate(0.5)
-	check(suit.click(3), "and a cable plugged into nothing")
+	check(suit.put_in(), "and a cable plugged into nothing")
 	await simulate(0.1)
 	check(saves.save(world), "saved")
 
 	check(await resume(), "resumed")
 	suit = world.player.suit
-	check(suit.click(2), "the coil comes out")
+	var coil := suit.carried.filter(func(p: RigidBody3D) -> bool: return p.has_meta(&"rolled_m"))
+	check(coil.size() == 1 and suit.take_out(stack_of(coil[0])), "the coil comes out")
 	await simulate(0.5)
 	var held := hands.held
 	line = held.get_meta(&"line") as Line if held != null and held.has_meta(&"line") else null
@@ -50,7 +51,8 @@ func run() -> void:
 	await simulate(0.3)
 	check(line.state == Line.State.LAID and world.ropes.at_waist(line.rope), "laid from the stake to you")
 
-	check(suit.click(3), "the cable comes out")
+	var plug := suit.carried.filter(func(p: RigidBody3D) -> bool: return p.get_meta(&"rolled", &"") == &"plug")
+	check(plug.size() == 1 and suit.take_out(stack_of(plug[0])), "the cable comes out")
 	await simulate(0.5)
 	var back: Cable = null
 	for node in world.content.get_children():

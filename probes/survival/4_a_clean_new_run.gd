@@ -4,8 +4,9 @@ extends WorldProbe
 ## its battery half charged, the light shield and the light solar panel
 ## seated on its two top mounts clear of each other, moored by its hook to a
 ## driven stake on the kit's short line, and a hoverboard racked on it ready
-## to ride; none of it overlaps you or each other, and none of it goes in the
-## suit's slots.
+## to ride; none of it overlaps you or each other, and none of it goes in
+## with what you carry while it's seated on the crate, nor the crate, too
+## heavy to carry; a loose shield generator does.
 ## The light shield is clearly weaker than a found one. Switched on, it runs
 ## the run's first day and into the next morning in its own weather on the
 ## crate's power without going dark: the crate floats until the battery is
@@ -16,7 +17,7 @@ extends WorldProbe
 ## Then you die, by your own body's tick. A new run starts on a new seed, and
 ## nothing of the old one is left anywhere, not a device, a part, a line, a
 ## bubble or a watt-hour. You start at the beginning, fed and watered, with
-## only what the kit carries in your slots and the rest of it beside you.
+## only what the kit carries on you and the rest of it beside you.
 
 const MAIN := preload("res://game/run.tscn")
 const DAYS := 3.0
@@ -62,7 +63,7 @@ func run() -> void:
 	var ration: Part = lived.filter(func(b: Node) -> bool: return b is Supply)[0]
 	player.hands.hold(ration)
 	(player.suit.supply(&"water") as Supply).drain(1.0)
-	lived.append_array(player.suit.slots.filter(func(p: Part) -> bool: return p != null))
+	lived.append_array(player.suit.carried)
 	lived.append_array([player, player.suit, world])
 	world.time += DAYS * world.tuning.day_minutes * 60.0
 	await physics_frames(10)
@@ -77,7 +78,7 @@ func run() -> void:
 		if child is Runs:
 			child.started.connect(func(next: World) -> void: fresh.merge(_start_of(next)))
 	# Dying of thirst, on the next tick.
-	for part in player.suit.slots:
+	for part in player.suit.carried:
 		if part is Supply and part.kind == &"water":
 			part.drain(INF)
 	player.vitals.thirst = 0.0
@@ -112,23 +113,23 @@ func run() -> void:
 	check(fresh.get("you") == [Vitals.FULL, Vitals.FULL, Vitals.FULL, false, 0.0, 0.0, 0.0, 0.0, 0.0, null, 0]
 		and fresh.get("spawn", INF) < 1.0 and fresh.get("time", INF) == 0.0,
 		"you start fresh, empty-handed, at the run's beginning")
-	check(fresh.get("slots") == ["Water canister 1.00", "Ration 1.00", "-", "-", "-"],
-		"your slots hold only what the kit carries")
+	check(fresh.get("carried") == ["Water canister 1.00", "Ration 1.00"],
+		"you carry only what the kit carries")
 	_check_kit(fresh_kit, "the run after death")
 
 
-## You, your slots, where you stand and the clock, as a run begins.
+## You, what you carry, where you stand and the clock, as a run begins.
 func _start_of(next: World) -> Dictionary:
 	var you := next.player
 	var vitals := you.vitals
-	var slots := []
-	for part in you.suit.slots:
-		slots.append("-" if part == null else "%s %.2f" % [part.label,
+	var carried := []
+	for part in you.suit.carried:
+		carried.append("%s %.2f" % [part.label,
 			(part as Supply).amount / (part as Supply).capacity() if part is Supply else -1.0])
 	return {
 		"you": [vitals.health, vitals.hunger, vitals.thirst, vitals.dead, vitals.drunk, vitals.eaten]
 			+ vitals.taken.values() + [you.hands.held, you.waist.tied.size()],
-		"slots": slots,
+		"carried": carried,
 		"spawn": Vector2(next.player_world_x(), next.player_world_z()).distance_to(next.spawn),
 		"time": next.time,
 	}
@@ -235,8 +236,9 @@ func _check_kit(kit: Array, run: String) -> void:
 		"%s: the kit's shield and panel are clearly weaker than found ones (%.0f m against %.0f m, %d W against %d W)"
 			% [run, shield.size, base.size, panel.stats().solar_w, deep_panel.stats.solar_w])
 	var suit := world.player.suit
-	check([crate, board, shield, panel, base].all(func(b: Object) -> bool: return not suit.fits(b)),
-		"%s: neither the crate, the board, a shield of any kind nor the panel goes in the suit's slots" % run)
+	check([crate, board, shield, panel].all(func(b: Object) -> bool: return not suit.fits(b)) and suit.fits(base),
+		"%s: nothing of the kit goes in with what you carry while it's on the crate, nor the crate; a loose shield does"
+			% run)
 	base.free()
 	deep_panel.free()
 

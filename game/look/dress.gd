@@ -19,6 +19,17 @@ static func part(id: StringName, size: Vector3) -> ArrayMesh:
 	return _cached(&"part", id, func() -> ArrayMesh: return _part(id, size))
 
 
+## A compass's needle, its north tip along +Y: red, and lit so it glows a
+## little, over a steel south half on a black pivot.
+static func needle() -> ArrayMesh:
+	return _cached(&"needle", &"compass", func() -> ArrayMesh:
+		var b := Paint.Pieces.new()
+		b.box(Vector3(0.008, 0.042, 0.003), Vector3(0.0, 0.021, 0.0), Paint.coat(Color(0.85, 0.16, 0.08), 0.0, 0.0, 0.4, 0.0, 1.2), 0.001)
+		b.box(Vector3(0.008, 0.036, 0.003), Vector3(0.0, -0.018, 0.0), Paint.coat(Paint.STEEL, 0.0, 0.6, 0.4, 0.0), 0.001)
+		b.drum(0.005, 0.005, Vector3.ZERO, Paint.coat(Paint.BLACK, 0.0, 0.3), Basis(Vector3.RIGHT, PI / 2.0), 10)
+		return b.commit())
+
+
 ## What turns on a frame's mast head, about its own +Z, or null for none: a
 ## turbine's hub and blades, something to see turn into the wind, not to touch.
 static func rotor(id: StringName) -> ArrayMesh:
@@ -284,6 +295,18 @@ static func _part(id: StringName, size: Vector3) -> ArrayMesh:
 		&"ration":
 			b.box(size - Vector3(0.006, 0.006, 0.006), Vector3(0.0, 0.0, h.z), Paint.coat(Color(0.45, 0.42, 0.25), 0.3, 0.3, 0.5), 0.01)
 			b.box(Vector3(size.x * 0.3, size.y + 0.002, size.z + 0.002), Vector3(-size.x * 0.2, 0.0, h.z), Paint.coat(Paint.YELLOW, 0.3), 0.004)
+		&"compass":
+			# Company issue: a gunmetal case and lug, a bone card under a black
+			# bezel, north marked on the card's top in safety yellow and the
+			# other three points in black. The needle is a piece of its own.
+			b.drum(h.x, size.z - 0.003, Vector3(0.0, 0.0, (size.z - 0.003) * 0.5), gun, along, 24)
+			b.drum(h.x * 0.8, 0.002, Vector3(0.0, 0.0, size.z - 0.002), Paint.coat(Paint.BONE, 0.2, 0.0, 0.5, 0.3), along, 24)
+			b.ring(h.x * 0.8, h.x * 0.98, Vector3(0.0, 0.0, size.z - 0.001), Paint.coat(Paint.BLACK, 0.5, 0.3, 0.5), along, 10)
+			b.box(Vector3(0.012, 0.014, 0.003), Vector3(0.0, h.y * 0.62, size.z), Paint.coat(Paint.YELLOW, 0.2), 0.001)
+			for turn in [PI * 0.5, PI, PI * 1.5]:
+				b.box(Vector3(0.004, 0.01, 0.003), Basis(Vector3.BACK, turn) * Vector3(0.0, h.y * 0.64, size.z), black,
+					0.0005, Basis(Vector3.BACK, turn))
+			b.box(Vector3(0.022, 0.016, 0.012), Vector3(0.0, h.y + 0.004, size.z * 0.4), gun, 0.003)
 		&"harvester":
 			b.box(Vector3(size.x, size.y, size.z * 0.6), Vector3(0.0, 0.0, size.z * 0.3), Paint.coat(Paint.TEAL), 0.012)
 			b.box(Vector3(size.x - 0.02, size.y - 0.04, size.z * 0.4), Vector3(0.0, 0.0, size.z * 0.8), Paint.coat(Paint.YELLOW, 0.7), 0.008)

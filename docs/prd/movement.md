@@ -42,7 +42,9 @@ their own actions. Crouching at a run or heading downhill turns into a slide. Sl
 above about 6°, and sand steeper than 28° slides you whatever you do. The jump is 0.45 m
 at 1 g and 1.0 m at 0.45 g, because the push-off is the same on any moon. Crouching cuts
 your wind catch to 45%. Hauling hard against a line digs you in: up to 35% slower, and
-your stamina drains faster. The feel settings live in their own "Body feel" tuning group.
+your stamina drains faster. A load past what you carry easily sinks you in the same way,
+standing too, but tires you only on the move, and past sunk in it slows you further
+(Survival, 2026-10-17). The feel settings live in their own "Body feel" tuning group.
 
 ## Meeting a storm
 

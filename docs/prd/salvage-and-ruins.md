@@ -270,9 +270,10 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
   the heaviest, a crate with every socket filled, is 51 kg, 250 N of your 400 N on a
   ruin's floor or the sand.
 - **What's found** is the catalog's own parts and devices. The surface layer holds
-  batteries, hooks, lamps, empty canisters, rope coils and cable plugs, and crate frames,
-  chargers, planters, stakes, survival kits, radios (Stage 11, two in thirteen of the
-  surface layer's devices) and chassis pieces (2026-10-17, one in thirteen). The deep
+  batteries, hooks, lamps, empty canisters, rope coils, cable plugs, hoses and compasses
+  (2026-10-17, compasses one in twenty-one of the surface layer's parts), and crate
+  frames, chargers, planters, stakes, survival kits, radios (Stage 11, two in thirteen of
+  the surface layer's devices) and chassis pieces (2026-10-17, one in thirteen). The deep
   layer holds big batteries,
   batteries, hover trays, solar panels, hooks, strong cable plugs and harvesters, and
   crate frames, wind turbines, condensers, shield generators and, rarer, hoverboards
@@ -283,12 +284,13 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
   them at the surface and three in five deep. Over 3,000 chunks on two seeds, rope coils
   and plugs are each about one find in fourteen, strong plugs one in thirty-five, survival
   kits one in thirty-three (a seventh of them on ruins' floors), and the harvester, at one in
-  sixty, is the rarest part on open sand (2026-10-16, before radios).
+  sixty, is the rarest part on open sand (2026-10-16, before radios). With radios,
+  hoses, chassis pieces and compasses (2026-10-17), of 4,675 finds radios are one in 27
+  and compasses one in 47.
 - **Rope and wire** lie as one body until they're yours. A coil, taken, gives you a
   line's first end to lay, the rest on your belt. A plug standing in the sand is a
   cable's first end: take it and its 6 m cable and second plug come up with it, a strong
-  cable's from the deep layer. Stowed in a slot, yours roll back up the same way
-  (Survival).
+  cable's from the deep layer. Carried, yours roll back up the same way (Survival).
 - **The first deep shield is an upgrade.** A found shield generator is the base shield:
   a 7 m bubble of still air against the 4 m, half-windy light shield every run starts
   with (Survival), and a found solar panel makes 60 W against the light panel's 30.
