@@ -86,8 +86,8 @@ upgrade the camp → the camp sustains more of itself → go further, or into th
   roguelite territory.
 - **You start with the essentials:** a floating crate with a weak shield and a light
   solar panel mounted on top and a hook to tow it by, moored by its short line to a
-  stake (a loose floating crate blows away in the first breeze), a hoverboard beside it,
-  and sealed water and a ration in the suit (Hunter, 2026-10-16: "start the
+  stake (a loose floating crate blows away in the first breeze), a hoverboard racked on
+  its side (Hunter, 2026-10-16), and sealed water and a ration in the suit (Hunter, 2026-10-16: "start the
   player with floating crate, shield and hoverboard"; earlier the same day the shield
   and panel lay on the sand and the board was only a find). The shield and panel are
   clearly worse than anything found deep, so the first deep find reads as an upgrade,

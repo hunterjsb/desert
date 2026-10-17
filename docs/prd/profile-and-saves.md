@@ -11,6 +11,9 @@ down and picked up again, and it ends when you die. **The profile** is you acros
 what you've found and what that has unlocked. They live in separate files, so a run can
 end without touching the profile.
 
+**Quick save and quick load** (Hunter, 2026-10-16) are their own actions in a Normal
+run: quick save saves at once, quick load loads the last save. Ironman has neither.
+
 **Two modes** (Hunter, 2026-10-16; the vision). **Normal**, the default: you save when
 you like from the system menu, the game saves for you every few minutes of play and when
 you quit, and death offers to load the last save or start a new run. **Ironman**, chosen

@@ -1,12 +1,16 @@
 class_name Words
 extends Control
-## A menu as a few small words low on the screen, over whatever is behind
-## them. The highlighted word is bright and the rest dim, never boxed. Menu up
-## and down move the highlight, confirm triggers it, and left and right change
-## a setting's value, each with a very quiet click. The mouse can pick too.
+## A menu as a few small words, low on the screen over the menu's desert and in
+## the middle over a running game. The highlighted word is bright and the rest
+## dim, never boxed. Menu up and down move the highlight, confirm triggers it,
+## and left and right change a setting's value, each with a very quiet click.
+## The mouse can pick too.
 
 ## Back never closes it: the main menu is the bottom of the stack.
 var root := false
+## Over the menu's desert: the words a little bigger and roomier, low on the screen.
+## Over a running game they stand in the middle.
+var _main := false
 
 var _list: VBoxContainer
 var _items: Array[Dictionary] = []
@@ -27,15 +31,22 @@ func _init(note := "", under := &"Scrim") -> void:
 		wash.anchor_top = 0.6
 	wash.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(wash)
+	_main = under == &"Shade"
 	_list = VBoxContainer.new()
-	_list.theme_type_variation = &"MenuList"
+	_list.theme_type_variation = &"MenuListMain" if _main else &"MenuList"
 	_list.anchor_left = 0.0
 	_list.anchor_right = 1.0
-	_list.anchor_top = 1.0
-	_list.anchor_bottom = 1.0
-	_list.offset_bottom = -56.0
-	_list.grow_vertical = Control.GROW_DIRECTION_BEGIN
-	_list.alignment = BoxContainer.ALIGNMENT_END
+	if _main:
+		_list.anchor_top = 1.0
+		_list.anchor_bottom = 1.0
+		_list.offset_bottom = -64.0
+		_list.grow_vertical = Control.GROW_DIRECTION_BEGIN
+		_list.alignment = BoxContainer.ALIGNMENT_END
+	else:
+		_list.anchor_top = 0.5
+		_list.anchor_bottom = 0.5
+		_list.grow_vertical = Control.GROW_DIRECTION_BOTH
+		_list.alignment = BoxContainer.ALIGNMENT_CENTER
 	_list.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_list)
 	if note != "":
@@ -59,7 +70,7 @@ func add_body(body: Control) -> void:
 ## Confirm runs `act`; left and right run `step` with -1 or 1, if it has one.
 func add(text: Variant, act: Callable, step := Callable()) -> Button:
 	var word := Button.new()
-	word.theme_type_variation = &"MenuWord"
+	word.theme_type_variation = &"MenuWordMain" if _main else &"MenuWord"
 	word.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	word.focus_mode = Control.FOCUS_ALL
 	var item := {"button": word, "text": text, "act": act, "step": step}
