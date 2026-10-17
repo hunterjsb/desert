@@ -23,7 +23,7 @@ func run() -> void:
 	var day := world.weather.day
 	var latitude := world.moon.latitude
 	var sunset := 0.0
-	while not (day.sun_direction(sunset, latitude).y > 0.0 and day.sun_direction(sunset + 1.0, latitude).y <= 0.0):
+	while not (day.sun_direction(sunset, latitude, world.moon.longitude).y > 0.0 and day.sun_direction(sunset + 1.0, latitude, world.moon.longitude).y <= 0.0):
 		sunset += 1.0
 	var noon := sunset - world.tuning.day_minutes * 15.0
 	world.time = noon

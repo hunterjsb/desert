@@ -28,7 +28,7 @@ func run() -> void:
 
 	type("scenario dusk")
 	press(&"ui_text_submit")
-	var hour := world.weather.day.time_of_day(world.time)
+	var hour := world.weather.day.time_of_day(world.time, world.moon.longitude)
 	var dusk: Dictionary = Scenarios.by_key("dusk")
 	check(Dev.read("world/scn") == "dusk" and hour >= dusk.day[0] and hour <= dusk.day[1] and main.saves() == null,
 		"scenario dusk puts you at dusk (%.3f of the day), a run that's never saved" % hour)

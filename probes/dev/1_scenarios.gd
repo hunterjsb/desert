@@ -4,7 +4,8 @@ extends WeatherProbe
 ## in front of you; going looking stands you before a ruin's door with finds
 ## round it; the farm stands in front of you growing; a charged board lies at
 ## your feet by a small camp; a radio and a shield stand in front of you with a
-## beacon in reach; the reference camp stands round you, running. Checked
+## beacon in reach; the reference camp stands round you, running; the eclipse
+## faces Tu just before the sun goes behind it; the far side has no Tu. Checked
 ## against the field itself and against what the game then shows.
 
 const SLACK := 1.0
@@ -18,7 +19,7 @@ func run() -> void:
 		check(not place.is_empty(), "%s: found in this run's weather" % scenario.key)
 		if place.is_empty():
 			continue
-		world.respawn(place.x, place.z, place.yaw, place.time)
+		Scenarios.stand(world, scenario, place)
 		world.time_warp = 0.0
 		await physics_frames(3)
 		var at := Vector2(world.player_world_x(), world.player_world_z())
@@ -26,7 +27,7 @@ func run() -> void:
 		var facing := -world.player.global_basis.z
 		var ahead := Vector2(facing.x, facing.z).normalized()
 		var upwind := -field.prevailing_at(t).normalized()
-		var hour := world.weather.day.time_of_day(t)
+		var hour := world.weather.day.time_of_day(t, world.moon.longitude)
 		var stormy := field.raw_storm_at(at.x, at.y, t) > 0.0
 		var what: String = scenario.key
 		check(world.weather.in_storm == stormy, "%s: the game agrees about the storm" % what)
@@ -74,10 +75,20 @@ func run() -> void:
 				check(_edge(at, upwind, t, true) > 250.0 and _edge(at, -upwind, t, true) > 250.0,
 					"deep: far from either edge")
 			"sky":
-				var sun := world.weather.day.sun_direction(t, world.moon.latitude).y
+				var sun := world.weather.day.sun_direction(t, world.moon.latitude, world.moon.longitude).y
 				check(not stormy, "%s: a clear sky" % what)
 				check((sun > 0.0 and sun < 0.12) if what == "dusk" else sun < 0.0,
 					"%s: the sun is where it should be (%.2f)" % [what, sun])
+		var day := world.weather.day
+		var tu := day.tu_direction(t, world.moon.latitude, world.moon.longitude)
+		if scenario.has("eclipse"):
+			var mid: float = t + scenario.eclipse + day.totality() * 0.5
+			check(day.sun_shown(t) == 1.0 and day.sun_shown(mid) == 0.0 and day.next_eclipse(t) - mid < 0.5,
+				"eclipse: the sun goes behind Tu %d s on" % scenario.eclipse)
+			check(ahead.dot(Vector2(tu.x, tu.z).normalized()) > 0.999 and tu.y > 0.0, "eclipse: facing Tu")
+		if scenario.has("moon"):
+			check(is_equal_approx(rad_to_deg(world.moon.latitude), scenario.moon[0]) and tu.y < -sin(day.tu_radius()),
+				"%s: %d° north, where Tu never rises" % [what, scenario.moon[0]])
 
 
 ## Metres along `along` until the storm state differs from `inside`.

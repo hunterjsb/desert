@@ -14,7 +14,8 @@ const COMMANDS := {
 	"fly": ["", "fly through the world, or walk again"],
 	"warp": ["[n]", "the clock n times as fast; alone, the next of x1, x10, x60"],
 	"gravity": ["[m/s²]", "gravity; alone, low gravity or back"],
-	"time": ["<0-1>", "on to the next such moment of the day: 0 is midnight, 0.5 noon"],
+	"time": ["<0-1>", "on to the next such moment of your local day: 0 is midnight, 0.5 noon"],
+	"tu": ["[near|far]", "Tu's size under trial; alone, the other"],
 	"give": ["<id> [n]", "a part in your hands or a device at your feet, by its catalog id"],
 	"fresh": ["", "fed, watered and whole, on a fresh suit's kit"],
 }
@@ -160,9 +161,20 @@ func _time(args: PackedStringArray, world: World) -> void:
 		return
 	# On, never back: every tick's clock only runs forward.
 	var day := world.weather.day
-	world.time += fposmod(of_day - day.time_of_day(world.time), 1.0) * world.tuning.day_minutes * 60.0
+	var longitude := world.moon.longitude
+	world.time += fposmod(of_day - day.time_of_day(world.time, longitude), 1.0) * world.tuning.day_minutes * 60.0
 	world.weather.forecast_now()
-	_say("day %d, %.3f of it" % [day.day(world.time), day.time_of_day(world.time)])
+	_say("day %d, %.3f of it" % [day.day(world.time, longitude), day.time_of_day(world.time, longitude)])
+
+
+func _tu(args: PackedStringArray, world: World) -> void:
+	var day := world.weather.day
+	var size := StringName(args[0].to_lower()) if args.size() == 1 else (&"far" if day.tu_size() == &"near" else &"near")
+	if not DayCycle.TU_ORBITS.has(size) or args.size() > 1:
+		_say(_usage("tu"))
+		return
+	world.tuning.tu_orbit_radii = DayCycle.TU_ORBITS[size]
+	_say("Tu %s: %.1f° across, %d s of totality" % [size, rad_to_deg(day.tu_radius()) * 2.0, roundi(day.totality())])
 
 
 func _give(args: PackedStringArray, world: World) -> void:

@@ -310,13 +310,26 @@ is saturated: the haze and the rim do the work.
 
 | Part | Colour |
 |---|---|
-| Zones, the light bands | bone, #DCD6C8 |
-| Belts | slate, #8A939E, and gunmetal, #5C6670, deepest |
+| Zones, the light bands | pale bone grey, #D8D8D2 |
+| Belts | slate, #7E8A96, and gunmetal, #4E5A66, deepest |
 | A wash through some belts | sand ochre, #BC9E76 |
-| Storm ovals | cream, #E6DCC4, and one rust, #9E5C42 |
+| Storm ovals | cream, #E4DED0, and one rust, #9E5C42 |
 | The lit rim | pale sky blue, #9FC0F0 |
 | The eclipse ring | sunset red, #FF5A1E |
 | Tu-shine, the light it casts | cool white, #C8DCFF |
+
+**As built** (2026-10-17). The sky is one shader, `game/weather/sky.gdshader`, fed each frame
+by `game/weather/sky_view.gd` from the day's one frame (`game/weather/day_cycle.gd`). It
+replaces the stock sky and draws the same gradient and haze under Tu and the stars, so a clear
+day looks as it did. The sun's disc stays in the storm pass, where Tu now cuts it. What shows
+by day is what's lit: as with the Moon in daylight, Tu's dark face is lost against the bright,
+hazy sky, so at noon where a run begins Tu is a big, pale crescent. The whole disc shows once
+the sky goes dark in the eclipse, and at night. Tu-shine is a second sun-like light from Tu.
+Whichever of it and the sun is brighter casts the shadows, so the shadow map is never split.
+
+To see it: the dev scenarios `eclipse` and `far`, and the console's `tu` to switch sizes. The
+look-test `look/sky/shoot.sh <dir>` shoots both sizes at the same moments; its sheets are
+`~/Desktop/tu_sizes.png` and `~/Desktop/tu_more.png`.
 
 ## Open questions
 

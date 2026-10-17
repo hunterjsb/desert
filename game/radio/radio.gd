@@ -195,7 +195,7 @@ func _listen(delta: float) -> void:
 ## station is in it: it plays on whether anyone listens. It changes over
 ## through a burst of static.
 func _play_music(t: float) -> void:
-	var now: AudioStream = Sounds.RADIO_DAY if world.weather.day.is_day(t) else Sounds.RADIO_NIGHT
+	var now: AudioStream = Sounds.RADIO_DAY if world.weather.day.is_day(t, world.moon.longitude) else Sounds.RADIO_NIGHT
 	if _on_air == now:
 		return
 	if _on_air != null:

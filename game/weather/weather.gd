@@ -10,10 +10,10 @@ extends Node
 ## draws it, so the light drops exactly when the dust visibly swallows you.
 ## Light passes through a bubble, so inside one the air is clear but the light
 ## is the storm's. This is the one owner of the sun, sky, haze and the storm
-## walls' light.
+## walls' light; the sky view draws Tu and the stars in it.
 
-## Planetshine: the night side still catches light off the planet.
-const NIGHT_LIGHT := 0.08
+## Starlight and the air's own glow: all the light a far-side night has.
+const NIGHT_LIGHT := 0.0005
 ## How far ahead the readout forecasts, and the shortest change it can see.
 const FORECAST_HORIZON := 3600.0
 const FORECAST_STEP := 5.0
@@ -31,6 +31,7 @@ const SUN_DISC := Vector3(14.0, 12.5, 10.5)
 var field: WeatherField
 var day: DayCycle
 var map: StormMap
+var sky: SkyView
 ## The weather at the player this tick, which the game plays by.
 var storm := 0.0
 var in_storm := false
@@ -81,6 +82,9 @@ func setup(world: World) -> void:
 	_environment.fog_density = _tuning.haze_strength
 	_environment.tonemap_exposure = _tuning.exposure
 	face.setup(world, field, map)
+	sky = SkyView.new()
+	add_child(sky)
+	sky.setup(world, day, _environment, face, _sun)
 
 
 ## Each felt_*() reads now, or a given world time t: power ticks read theirs.
@@ -94,10 +98,10 @@ func felt_wind(at: Vector3, t := NAN) -> Vector3:
 	return field_wind(at, t) * (1.0 - shelter_at(at, &"wind"))
 
 
-## Sunlight reaching a place, 0 to 1: the sky's share after the storm takes
-## its own. Light passes through a shield, so shelter changes nothing here.
+## Sunlight reaching a place, 0 to 1: the sky's share after Tu and the storm
+## take theirs. Light passes through a shield, so shelter changes nothing here.
 func felt_light(at: Vector3, t := NAN) -> float:
-	return day.sunlight(_when(t), _world.moon.latitude) \
+	return day.sunlight(_when(t), _world.moon.latitude, _world.moon.longitude) \
 		* (1.0 - _tuning.storm_darkness * field_storm(at, t))
 
 
@@ -113,13 +117,16 @@ func field_wind(at: Vector3, t := NAN) -> Vector3:
 	return Vector3(w.x, 0.0, w.y)
 
 
-## The air's temperature at a place, °C, as if no shelter stood: the day's
-## swing round its mean, wider toward the poles and blanketed by the storm's dust.
+## The air's temperature at a place, °C, as if no shelter stood: the local
+## day's swing round its mean, wider toward the poles, less while the eclipse
+## lasts, and blanketed by the storm's dust.
 func field_temperature(at: Vector3, t := NAN) -> float:
+	var moon := _world.moon
+	var blanket := 1.0 - _tuning.temperature_storm_blanket * field_storm(at, t)
 	var swing := _tuning.temperature_swing \
-		* (1.0 + _tuning.temperature_pole_widen * absf(sin(_world.moon.latitude))) \
-		* (1.0 - _tuning.temperature_storm_blanket * field_storm(at, t))
-	return _tuning.temperature_mean + swing * cos(TAU * (day.time_of_day(_when(t)) - _tuning.temperature_peak))
+		* (1.0 + _tuning.temperature_pole_widen * absf(sin(moon.latitude))) * blanket
+	return _tuning.temperature_mean + swing * cos(TAU * (day.time_of_day(_when(t), moon.longitude) - _tuning.temperature_peak)) \
+		- _tuning.eclipse_chill * day.eclipse_chill(_when(t), moon.latitude, moon.longitude) * blanket
 
 
 ## The temperature as a place feels it, °C: a bubble holds its share of the
@@ -238,9 +245,15 @@ func _show(delta: float) -> void:
 	var t := _world.time
 	var camera := _world.player.camera
 	var eye := camera.global_position
-	var sun := day.sun_direction(t, _world.moon.latitude)
-	var risen := smoothstep(-0.02, 0.1, sun.y)
-	var daylight := lerpf(NIGHT_LIGHT, 1.0, smoothstep(-0.1, 0.2, sun.y))
+	var moon := _world.moon
+	var sun := day.sun_direction(t, moon.latitude, moon.longitude)
+	# Behind Tu the sun's light is gone, and the air's glow with it; at night
+	# Tu-shine lights the near side.
+	var shown := day.sun_shown(t)
+	var up := smoothstep(-0.02, 0.1, sun.y)
+	var risen := up * shown
+	var tu_light := day.tu_light(t, moon.latitude, moon.longitude) * _tuning.tu_shine_scale
+	var daylight := smoothstep(-0.1, 0.2, sun.y) * shown + tu_light + NIGHT_LIGHT
 	seen_storm = face.seen_at(eye)
 	seen_shade = face.open_at(eye)
 	seen_sun = maxf(face.sun_at(eye, sun), 0.02)
@@ -259,10 +272,11 @@ func _show(delta: float) -> void:
 	_sun.global_basis = Basis.looking_at(-light_from, Vector3.UP if absf(light_from.y) < 0.9 else Vector3.FORWARD)
 	_sun.light_energy = _sun_energy * risen * maxf(seen_sun, seen_shade * 0.6) * dim
 	var tint := Color.WHITE.lerp(STORM_TINT, seen_shade)
+	# Where the light is Tu's, the sky and the haze that fill in are its cool.
+	var night := Color.WHITE.lerp(SkyView.TU_SHINE_COLOR, tu_light / daylight)
 	_sun.light_color = SUN_COLOR * tint
-	_environment.ambient_light_color = AMBIENT_COLOR * tint
+	_environment.ambient_light_color = AMBIENT_COLOR * tint * night
 	_environment.ambient_light_energy = _tuning.sky_fill * daylight * sky_left * dim
-	_environment.background_energy_multiplier = daylight * lerpf(1.0, 0.45, coverage) * dim
 	seen_light = (_sun.light_energy / _sun_energy * maxf(light_from.y, 0.0) + _environment.ambient_light_energy) \
 		/ (1.0 + _tuning.sky_fill)
 
@@ -270,12 +284,15 @@ func _show(delta: float) -> void:
 	# dust itself is the storm pass's; the haze only closes in behind it, never
 	# within the few metres the dust leaves.
 	var haze_light := daylight * sky_left * dim
-	var haze_color := _haze_color.lerp(_tuning.storm_fog_color, seen_storm)
+	var haze_color := _haze_color.lerp(_tuning.storm_fog_color, seen_storm) * night
 	_environment.fog_light_color = haze_color
 	_environment.fog_light_energy = haze_light
 	_environment.fog_depth_begin = lerpf(_tuning.haze_begin, 50.0, seen_storm)
 	_environment.fog_depth_end = lerpf(_tuning.haze_end, 400.0, seen_storm)
 	_world.terrain.show_far(not in_storm)
+	sky.show(t, eye, sun, shown, Vector3(night.r, night.g, night.b) * daylight * lerpf(1.0, 0.45, coverage) * dim,
+		_linear(haze_color) * haze_light, tu_light, seen_shade, dim)
+	seen_light += sky.tu_seen / (1.0 + _tuning.sky_fill)
 
 	var sun_light := _linear(SUN_COLOR) * _sun_energy * risen
 	var sky_light := _linear(AMBIENT_COLOR) * _tuning.sky_fill * daylight
@@ -284,7 +301,7 @@ func _show(delta: float) -> void:
 	# A wall faces half the sky, so it gets less than open ground.
 	face.set_light("sky_light", sky_light * 0.6)
 	face.set_light("camera_sun", seen_sun)
-	face.set_light("sun_disc", SUN_DISC * risen)
+	face.set_light("sun_disc", SUN_DISC * up)
 	face.set_light("haze_color", _linear(haze_color) * haze_light)
 	face.set_light("haze", Vector3(_environment.fog_depth_begin, _environment.fog_depth_end,
 		_environment.fog_density))
@@ -302,9 +319,10 @@ func _show(delta: float) -> void:
 
 func _report() -> void:
 	var t := _world.time
-	var hours := day.time_of_day(t) * 24.0
+	var hours := day.time_of_day(t, _world.moon.longitude) * 24.0
 	var warp := "" if _world.time_warp == 1.0 else " x%d" % _world.time_warp
-	Dev.put("weather/t", "d%d %02d:%02d%s" % [day.day(t), floori(hours), floori(fmod(hours, 1.0) * 60.0), warp])
+	Dev.put("weather/t", "d%d %02d:%02d%s" % [day.day(t, _world.moon.longitude), floori(hours),
+		floori(fmod(hours, 1.0) * 60.0), warp])
 	# Compass bearing the wind comes from; north is -z.
 	var from := fposmod(rad_to_deg(atan2(-wind.x, wind.z)), 360.0)
 	Dev.put("weather/wind", "%.1fm/s %03d" % [wind.length(), roundi(from) % 360])

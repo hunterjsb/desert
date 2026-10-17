@@ -34,6 +34,15 @@ func advance(east: float, north: float) -> void:
 	longitude = wrapf(longitude, -PI, PI)
 
 
+## Dev: puts you at a point on the moon, degrees, as a fresh spawn there.
+func place(latitude_degrees: float, longitude_degrees: float) -> void:
+	latitude = deg_to_rad(latitude_degrees)
+	longitude = wrapf(deg_to_rad(longitude_degrees), -PI, PI)
+	_spawn_latitude = latitude
+	_spawn_longitude = longitude
+	_facing = 1.0
+
+
 ## Metres from spawn, measured round the moon.
 func distance_from_spawn() -> float:
 	var d_lat := latitude - _spawn_latitude

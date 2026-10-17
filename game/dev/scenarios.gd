@@ -16,7 +16,10 @@ extends RefCounted
 ## sets two planters growing in front of you, one with a harvester, and a
 ## shield for the storm on its way. "radio" sets a radio and a shield in front
 ## of you with a storm on its way, to sit it out and follow a beacon. "afk"
-## parks the reference camp round you, running, to be left alone.
+## parks the reference camp round you, running, to be left alone. "eclipse"
+## faces Tu in the clear, the sun `eclipse` s from going behind it. "moon"
+## stands you elsewhere on the moon: [latitude, degrees east of the point under
+## Tu], so [30, 180] is the far side, 30° north. Times of day are local.
 const LIST: Array[Dictionary] = [
 	{"key": "spawn", "label": "spawn: where and when the run began", "kind": "spawn"},
 	{"key": "clear", "label": "clear day, no storm for 10 min", "kind": "clear", "day": [0.42, 0.55]},
@@ -28,6 +31,10 @@ const LIST: Array[Dictionary] = [
 	{"key": "clearing", "label": "storm about to clear, 100 m", "kind": "back", "distance": 100.0, "day": [0.35, 0.55]},
 	{"key": "dusk", "label": "dusk, sun on the horizon", "kind": "sky", "day": [0.733, 0.745]},
 	{"key": "night", "label": "night", "kind": "sky", "day": [0.85, 0.95]},
+	{"key": "eclipse", "label": "eclipse: clear, facing Tu, the sun half a minute from going behind it",
+		"kind": "clear", "eclipse": 30.0},
+	{"key": "far", "label": "far side: a clear night with no Tu, 30° north, facing the pole star", "kind": "sky",
+		"day": [0.9, 0.97], "moon": [30.0, 180.0]},
 	# Calm, so a floating device doesn't drift off before there's rope to hold it.
 	{"key": "kit", "label": "test kit: devices and parts, clear and calm", "kind": "kit", "day": [0.42, 0.55],
 		"calm": 6.0},
@@ -145,7 +152,7 @@ static func apply(world: World, scenario: Dictionary) -> void:
 	if place.is_empty():
 		Dev.put("world/scn", "%s: none in 3 days" % scenario.key)
 		return
-	world.respawn(place.x, place.z, place.yaw, place.time)
+	stand(world, scenario, place)
 	Dev.put("world/scn", scenario.key)
 	# Untyped: what the ground unloaded once you moved away is freed already.
 	for body in world.get_meta(&"scenario_kit", []):
@@ -184,6 +191,22 @@ static func apply(world: World, scenario: Dictionary) -> void:
 	world.set_meta(&"scenario_kit", dropped)
 
 
+## Puts you where find() found, there on the moon too.
+static func stand(world: World, scenario: Dictionary, place: Dictionary) -> void:
+	world.respawn(place.x, place.z, place.yaw, place.time)
+	if scenario.has("moon"):
+		var at := moon_at(world, scenario)
+		world.moon.place(rad_to_deg(at.x), rad_to_deg(at.y))
+
+
+## Where on the moon a scenario stands you, radians: its "moon", or the spawn's.
+static func moon_at(world: World, scenario: Dictionary) -> Vector2:
+	var tuning := world.tuning
+	if not scenario.has("moon"):
+		return Vector2(deg_to_rad(tuning.spawn_latitude_degrees), deg_to_rad(tuning.spawn_longitude_degrees))
+	return Vector2(deg_to_rad(scenario.moon[0]), wrapf(deg_to_rad(tuning.tu_longitude_degrees + scenario.moon[1]), -PI, PI))
+
+
 static func by_key(key: String) -> Dictionary:
 	for scenario in LIST:
 		if scenario.key == key:
@@ -201,17 +224,20 @@ static func find(world: World, scenario: Dictionary) -> Dictionary:
 		return _at_ruin(world, scenario)
 	var field := world.weather.field
 	var day := world.weather.day
+	var moon := moon_at(world, scenario)
 	var t := 0.0
+	if scenario.has("eclipse"):
+		t = day.next_eclipse(0.0) - day.totality() * 0.5 - scenario.eclipse
 	while t < HORIZON:
-		var hour := day.time_of_day(t)
-		if hour >= scenario.day[0] and hour <= scenario.day[1]:
+		var hour := day.time_of_day(t, moon.y)
+		if scenario.has("eclipse") or (hour >= scenario.day[0] and hour <= scenario.day[1]):
 			var upwind := -field.prevailing_at(t).normalized()
 			var place := _place(field, scenario, spawn, upwind, t)
 			if not place.is_empty():
 				place.time = t
-				place.yaw = atan2(-upwind.x, -upwind.y) if scenario.kind != "sky" else _yaw_to_sun(scenario)
+				place.yaw = _facing(day, scenario, moon, upwind, t)
 				return place
-		t += TIME_STEP
+		t += world.tuning.day_minutes * 60.0 if scenario.has("eclipse") else TIME_STEP
 	return {}
 
 
@@ -267,7 +293,7 @@ static func _at_ruin(world: World, scenario: Dictionary) -> Dictionary:
 		var door := ruin.to_world(Ruin.DOORS[0][0])
 		var t := 0.0
 		while t < HORIZON:
-			var hour := day.time_of_day(t)
+			var hour := day.time_of_day(t, deg_to_rad(world.tuning.spawn_longitude_degrees))
 			if hour >= scenario.day[0] and hour <= scenario.day[1] and not _place(field, scenario, at, Vector2.ZERO, t).is_empty():
 				var facing := (door - at).normalized()
 				return {"x": at.x, "z": at.y, "yaw": atan2(-facing.x, -facing.y), "time": t}
@@ -297,8 +323,17 @@ static func _refine(field: WeatherField, from: Vector2, along: Vector2, lo: floa
 	return hi
 
 
-## Dusk faces the sunset in the west; night faces east, toward the dawn.
-static func _yaw_to_sun(scenario: Dictionary) -> float:
+## Storms come from upwind, so you face it. Dusk faces the sunset in the west,
+## night faces east toward the dawn, the far side north to the pole star, and
+## an eclipse faces Tu.
+static func _facing(day: DayCycle, scenario: Dictionary, moon: Vector2, upwind: Vector2, t: float) -> float:
+	if scenario.has("eclipse"):
+		var tu := day.tu_direction(t, moon.x, moon.y)
+		return atan2(-tu.x, -tu.z)
+	if scenario.kind != "sky":
+		return atan2(-upwind.x, -upwind.y)
+	if scenario.has("moon"):
+		return 0.0
 	return PI / 2.0 if scenario.key == "dusk" else -PI / 2.0
 
 

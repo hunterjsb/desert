@@ -26,7 +26,7 @@ func run() -> void:
 	var weak := await _underbuilt()
 	var day := world.tuning.day_minutes * 60.0
 	var seen := {"dark": 0, "low": INF, "turbine_wh": 0.0, "weak_dark": -1.0, "t": world.time,
-		"hour": world.weather.day.time_of_day(world.time)}
+		"hour": world.weather.day.time_of_day(world.time, world.moon.longitude)}
 	var days: Array[Dictionary] = []
 	await idle(DAYS, func() -> void:
 		var t := world.time
@@ -44,7 +44,7 @@ func run() -> void:
 		if world.weather.field_storm(shield.global_position) >= 1.0:
 			days[n].storm_s += step
 			days[n].low = minf(days[n].low, share)
-		var hour := world.weather.day.time_of_day(t)
+		var hour := world.weather.day.time_of_day(t, world.moon.longitude)
 		if seen.hour < 0.25 and hour >= 0.25:
 			days[n].dawn = share
 		seen.hour = hour
