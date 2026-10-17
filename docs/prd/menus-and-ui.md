@@ -39,8 +39,9 @@ world. The pressure comes from the moon, and a menu is no shelter from it.
 
 A few small words at the bottom of the screen, over the live desert. No background art,
 no panels, no big centred buttons. (Hunter, 2026-10-16: the main menu's words "a tad
-more spacing and bigger"; the menus over a running game stand in the middle of the
-screen, the aim dot hidden behind them.)
+more spacing and bigger", then "a lot bigger", the pause menu too: menu words are 20,
+the main menu's 24; the menus over a running game stand in the middle of the screen, the
+aim dot hidden behind them.)
 
 - **The scene** is the real world seen from a fixed camera, with no player spawned and
   the weather running at normal speed. It keeps its simulation cheap, and it's silent:
