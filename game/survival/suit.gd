@@ -7,8 +7,8 @@ extends Node
 ## small view of the slots and your waist and frees the mouse to click them:
 ## a slot with something in it gives it to your empty hands, an empty one
 ## takes what you hold, and a full one swaps with it. Rope and wire go in
-## rolled up, as they're found, and unroll in your hands. Closing it captures
-## the mouse again, to look.
+## rolled up, as they're found, and unroll in your hands; a stake goes in as
+## it is. Closing it captures the mouse again, to look.
 
 ## Built in and free, so nothing ever drains them.
 const BUILT_IN := "air, radiation"
@@ -16,9 +16,9 @@ const HINT := "click a slot to take out, put in or swap · {inventory} closes"
 const SLOT := Vector2(100.0, 40.0)
 const GAP := 6.0
 
-## What each slot holds, or null. Stowed things wait off the tree, as fitted
-## parts do.
-var slots: Array[Part] = []
+## What each slot holds, or null: a part, or a stake. Stowed things wait off
+## the tree, as fitted parts do.
+var slots: Array[RigidBody3D] = []
 var open := false
 ## The slot under the mouse, or -1.
 var hover := -1
@@ -71,8 +71,12 @@ func restock() -> void:
 
 ## Whether a slot can take it: a part with nothing fastened to it, or rope
 ## or wire that rolls up whole: a line held but not laid, a cable plugged
-## into nothing. Laid or plugged in, it would lose its end.
+## into nothing. Laid or plugged in, it would lose its end. A stake fits
+## pulled up with nothing on its eye, so it comes out ready to drive.
 func fits(body: Object) -> bool:
+	var stake := body as Stake
+	if stake != null:
+		return not stake.driven and stake.parts().is_empty() and not _player.waist.carries_line(stake)
 	var part := body as Part
 	if part == null:
 		return false
@@ -140,7 +144,7 @@ func click(at: int) -> bool:
 	if hands.held != null:
 		if hands.phase != Hands.Phase.HELD or not fits(hands.held):
 			return false
-		slots[at] = _rolled(hands.stow() as Part)
+		slots[at] = _rolled(hands.stow())
 		Sounds.play(self, Sounds.POUCH_IN)
 	elif out != null:
 		slots[at] = null
@@ -157,13 +161,14 @@ func click(at: int) -> bool:
 
 ## What goes in the slot, off the tree: rope and wire as one rolled-up body,
 ## anything else as it is.
-func _rolled(part: Part) -> Part:
-	if part.has_meta(&"line"):
+func _rolled(body: RigidBody3D) -> RigidBody3D:
+	var part := body as Part
+	if part != null and part.has_meta(&"line"):
 		return (part.get_meta(&"line") as Line).roll()
-	var cable := _loose_cable(part) if part.kind == &"port" else null
+	var cable := _loose_cable(part) if part != null and part.kind == &"port" else null
 	if cable == null:
-		part.get_parent().remove_child(part)
-		return part
+		body.get_parent().remove_child(body)
+		return body
 	var id: StringName = part.get_meta(&"catalog")
 	var rolled := Catalog.part(id)
 	rolled.set_meta(&"rolled", id)
@@ -260,17 +265,17 @@ func _text(type: StringName, at: Vector2, line: String, width: float) -> void:
 
 
 ## A cable stowed goes by its plug, but it's the cable you have.
-static func _name(part: Part) -> String:
+static func _name(part: RigidBody3D) -> String:
 	match part.get_meta(&"rolled", &""):
 		&"plug":
 			return "Cable"
 		&"strong_plug":
 			return "Strong cable"
-	return part.label
+	return part.get(&"label")
 
 
 ## What's in a part that you'd want to know at a glance.
-static func _brief(part: Part) -> String:
+static func _brief(part: RigidBody3D) -> String:
 	if part.has_meta(&"rolled_m"):
 		return "%.0f m" % part.get_meta(&"rolled_m")
 	if part is Supply:

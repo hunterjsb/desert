@@ -22,6 +22,14 @@ func open_main(on_menu := true) -> Main:
 	return main
 
 
+## Waits for the run's starting moment, its kit down; what follows runs at
+## the start of a tick, whenever the ground finished building.
+func started() -> void:
+	await get_tree().physics_frame
+	while not world.has_meta(&"kit"):
+		await get_tree().physics_frame
+
+
 ## The game's saves, in the probe's own folder.
 func saves() -> Node:
 	return get_node(^"/root/Saves")
