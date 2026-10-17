@@ -153,8 +153,8 @@ func _afk_lands() -> void:
 	var watered := Water.network(world, condenser)
 	check(planters.all(func(p: Planter) -> bool: return watered.has(p)) and condenser.powered,
 		"afk: both on hoses from the condenser, running")
-	check(stake.driven and world.ropes.ropes.size() == 2,
-		"afk: the crate is moored to a driven stake, the turbine on its strong cable")
+	check(stake.driven and world.ropes.ropes.size() == 2 + planters.size(),
+		"afk: the crate is moored to a driven stake, the turbine on its strong cable, the planters on their hoses")
 	var slots := player.suit.slots.map(func(p: Part) -> String: return "-" if p == null else p.label)
 	check(player.vitals.health > 99.0 and player.vitals.hunger > 99.0 and player.vitals.thirst > 99.0
 		and slots.count("Water canister") == Scenarios.AFK_CANISTERS and slots.count("-") == slots.size() - Scenarios.AFK_CANISTERS,

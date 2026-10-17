@@ -270,10 +270,12 @@ static func cable(world: World, at: Vector3, strong := false, first: Part = null
 	return made
 
 
-## A hose and its two ends, dropped together as a cable is.
+## A hose and its two ends, dropped together as a cable is, a rope like a
+## strong cable.
 static func hose(world: World, at: Vector3, first: Part = null) -> Hose:
 	var made := Hose.new()
 	_lay(world, made, at, Hose.END, first)
+	made.bind(world)
 	return made
 
 

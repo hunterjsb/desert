@@ -73,7 +73,7 @@ func _cables(plugged: Cable) -> void:
 			await simulate(0.5)
 		# Its kind now: rolled up, it's freed, and freed things all compare equal.
 		var kind: Script = cable.get_script()
-		var ropes_were := ropes.ropes.size() - (1 if cable == strong else 0)
+		var ropes_were := ropes.ropes.size() - (1 if cable is StrongCable else 0)
 		check(suit.click(3) and hands.held == null, "a %s plugged into nothing goes in" % cable.plugs[0].label)
 		await simulate(0.1)
 		check(not is_instance_valid(cable) and ropes.ropes.size() == ropes_were, "whole, nothing of it left out")

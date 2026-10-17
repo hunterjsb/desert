@@ -39,6 +39,9 @@ var breaking := 1500.0
 ## Called with the two halves' strands when it snaps, if whatever owns it
 ## makes something of them.
 var parted := Callable()
+## Called instead of snapping when its load passes breaking, if whatever owns
+## it gives way some other way, as a hose pops an end out of its socket.
+var gives := Callable()
 
 ## Pull this tick, and the load sustained long enough to break things, N.
 var tension := 0.0

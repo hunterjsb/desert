@@ -201,12 +201,17 @@ Death means a new run (see Runs in the vision).
   it stops, as with a full canister. Tanks are kept full from the canisters, the least
   full first, so one empties and frees up, as your suit drinks from them; a canister at
   one end of a hose feeds the planter at the other (water probe 1). Nothing flows from
-  canister to canister, and a hose carries no power. A hose holds what it joins as a
-  common cable does: pulled past its length, a loose end is dragged along, and with both
-  ends held fast an end pops out of its socket. It takes no pull of its own, so in a 20 m/s wind a floating
-  planter hosed to a staked condenser pops an end and blows away, and tied with a rope as
-  well, the rope holds it and the hose stays in (water probe 2). Rolled up it goes in a
-  slot like a cable, shown as a Hose, and stays out while an end is in a socket. A save
+  canister to canister, and a hose carries no power. A hose is a rope, as a strong cable
+  is, so it holds what it joins and hangs and sags like one, drawn thicker than rope in
+  blue rubber. It holds a third of a rope's load, 500 N sustained, and past that it never
+  snaps: an end pops out of its socket, and the hose stays on by the other, dragging the
+  loose end along. A floating planter hosed to a staked condenser stays on the end of its
+  hose in a 15 m/s wind, the hose bearing 400 N at most; in a 40 m/s storm wind it pops
+  at 500 N and the planter blows away, while a
+  rope under the same pull, 920 N, holds (water probe 2). A storm's steady wind loads a
+  floating planter about 325 N and its hardest gusts about twice that, so a hose alone
+  holds through most of a storm and lets go in its worst. Rolled up it goes in a slot
+  like a cable, shown as a Hose, and stays out while an end is in a socket. A save
   keeps hoses, what's on their ends and the water in tanks (saves probe 11). It's found
   on open sand, a little less often than wire, and `give hose` makes one.
 - **The three harms,** in health a second: the storm 0.25 at full intensity, wind 0.01 for

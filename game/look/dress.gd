@@ -32,14 +32,6 @@ static func tell(kind: StringName) -> ArrayMesh:
 		return b.commit())
 
 
-## A hose's length: a rubber tube a metre long along its y, stretched to its span.
-static func hose() -> ArrayMesh:
-	return _cached(&"hose", &"", func() -> ArrayMesh:
-		var b := Paint.Pieces.new()
-		b.drum(0.022, 1.0, Vector3.ZERO, Paint.coat(Paint.HOSE, 0.3, 0.0, 0.85), Basis.IDENTITY, 10)
-		return b.commit())
-
-
 ## Builds every look now, while the world loads: the first of a kind costs
 ## up to a dozen milliseconds, too long for a find laid out while streaming.
 static func prepare() -> void:
