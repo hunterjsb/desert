@@ -102,6 +102,50 @@ never so fast you can't follow your own trail back. Only the ground near you kee
 like everything else, tracks far off are forgotten. Things resting on the sand sit in
 their own imprint, the half-buried look without burying anything.
 
+**Built** (2026-10-16). A window of ground 1 km square, 512 m each way from you, holds
+them at a quarter-metre a texel, so the last 500 m of a straight walk back are always
+in it. It follows you 16 m at a time and is wrapped round on itself, so moving never
+redraws it, and it's kept in world metres, so origin shifts never touch it. Marks are
+pressed in on the CPU, which headless runs do too, into 16 m tiles that exist only
+while they hold one; the GPU gets only the tiles that change. Each texel holds the
+reading of a **fill clock** at which its mark will be filled, so the wind's filling
+costs nothing per texel: the clock runs, and the sand's shader takes it away. Nothing
+is saved; a coarse copy of the held tiles would be cheap (about 16 KB a tile, a 500 m
+trail touching 30 to 60) if a resumed run should keep its trail.
+
+- **What presses them.** Your steps, on alternate feet a stride apart as the footsteps
+  sound, a landing both feet, and a slide a groove. The board's hover a faint groove a
+  quarter the depth of a step, deeper pressed into a dip and none in the air. Anything
+  loose on the sand: resting, a full imprint, pressed again every 3 s so the wind never
+  fills it under it; dragged, a groove the width of what touches, swept so a fast drag
+  leaves no gaps. A dropped board leaves its shape.
+- **How they look.** Trodden sand loses up to a third of its light and its ripples, a
+  mark's walls tilt the light as a 6 cm dent would, the loose lip round it is lighter,
+  and a mark sees less of the sky, which is all the light there is at night. The near
+  ground's lattice is a metre apart, too coarse for a print, so the drawn sand instead
+  stands 3 cm higher round marks: whatever rests in one sits in it, its foot hidden.
+  Nothing glows.
+- **Filling.** A full-depth mark fills in 90 minutes of calm and 20 of a full storm,
+  shallow edges first, at the rate of the storm where you stand. A step still reads
+  with a tenth of its depth left; the board's groove is gone in about 5 minutes of
+  storm or 22 of calm. A walk of 500 m back through a storm, then three minutes more
+  of it, leaves the oldest steps 61% of their depth (probe 10). Tuning's Tracks group
+  holds the window and both rates.
+- **How they read**, as lightness (CIE L*) over each mark against the sand beside it,
+  fresh and after eight minutes of storm, from `look/tracks`: in clear day the sand is
+  76 and steps 9 darker fresh, 3 aged; in a storm by day the sand is 20 and steps 6
+  darker, 5 aged; at night the sand is 9 and steps 4 darker, nearly half its light, 2
+  aged. **In a storm at night there's no light at all** (the sand is 0.7): no ground
+  reads, so neither do tracks, except in a lamp's or a shield's light. A lamp like a
+  device's at your side lights about 5 m, where steps are half the sand's light. A light
+  you carry would make storm nights navigable; that's a design question, not this one.
+- **Cost**, measured with the game running beside it: pressing takes at most 0.2 ms of
+  a tick walking, 0.3 riding and 0.4 to 1.0 dragging a crate, and uploading at most
+  0.6 ms of a frame. Drawing them costs an RTX 3070 about 0.2 ms a frame at
+  1920x1080 (0.07 to 0.35 over three runs, alternating them on and off), and the map
+  64 MB of its memory. Streaming stayed within its line in `look/stream` (1.54 ms
+  against 2.0; under the same load master's own run went over it, at 3.6).
+
 ## Skeleton version
 
 This is the minimum that makes the whole game loop possible. Every item gets built.
@@ -226,6 +270,11 @@ All of these run without a window, use a fixed seed, and assert:
    other side.
 9. **Moving you shoves nothing.** A box standing against you stays put when a respawn
    puts you ten metres away.
+10. **Tracks are only drawn.** Walking leaves a print within 0.6 m of every metre walked
+    and none 3 m aside, a resting crate sits in a full imprint, a storm fills marks
+    faster than calm, a 500 m walk back through a storm still reads after three
+    minutes more of it, and `height_at` and the collision under the path are exactly
+    as they were.
 
 Every probe gets checked against a deliberately broken build first, to prove it can
 fail.
