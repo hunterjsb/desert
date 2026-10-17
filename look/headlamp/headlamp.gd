@@ -139,9 +139,9 @@ func _capture(out_dir: String) -> void:
 	get_tree().quit()
 
 
-## The headlamp held off, or left to come on by itself and given its fade.
+## The headlamp held off, or switched on and given its fade.
 func _lamp(lamp: Headlamp, lit: bool) -> void:
-	Tuning.current().headlamp = true
+	lamp.on = lit
 	lamp.set_physics_process(lit)
 	if not lit:
 		lamp.visible = false

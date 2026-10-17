@@ -172,6 +172,13 @@ pixel's footprint, and the seams fade out by about 30 m, as the sand's ripples d
 runs that show it, use `look/marks` with `--motion`. What still crawls is the edges of thin
 pieces, such as rope and louvres: the project draws without antialiasing.
 
+## Eye adaptation
+
+(Hunter, 2026-10-17: "add eye adaptation".) The camera adapts to the light as an eye
+does, so a Tu-lit night reads as night with the dunes still there, and stepping from a
+bright day into a storm, or out of an eclipse, takes a moment to see. Tu's light stays
+physical; the eye does the rest. To build, after Tu.
+
 ## Maker's marks
 
 *2026-10-16, mapped onto [session 3](lore-session-2026-10-16.md) the same day. Loose, not

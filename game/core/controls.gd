@@ -13,7 +13,7 @@ const HELP := [
 	["{hands_grab}", "pick up, take out, put in, put down"], ["{interact}", "use what you look at or hold: switch a shield, tune a radio, drive a stake, waist a line, water a planter, set a tray floating or resting"],
 	["{inventory}", "your slots and waist, by mouse: click a slot to take out, put in or swap"], ["{ui_cancel}", "back: close what's open, or the menu"],
 	["{toggle_keys}", "these keys"], ["{quick_save}", "quick save"], ["{quick_load}", "quick load: back to your last save"],
-	["{jump}", "jump"], ["{crouch}", "crouch; at a run or downhill, slide"],
+	["{jump}", "jump"], ["{crouch}", "crouch; at a run or downhill, slide"], ["{headlamp}", "the headlamp, on or off"],
 	["{ride}", "get on or off a hoverboard; riding, the move keys push and carve where they point but {move_back} only brakes, {sprint} kicks off the sand, {jump} hops, {crouch} tucks, and crouched into a hard carve you drift"],
 ]
 ## The developer's keys, listed apart under their own heading.
@@ -46,6 +46,7 @@ const KEYS := {
 	"interact": KEY_F,
 	"inventory": KEY_TAB,
 	"ride": KEY_R,
+	"headlamp": KEY_B,
 }
 
 ## Mouse buttons, the same way.

@@ -89,14 +89,6 @@ static var _current: Tuning
 @export var sky_fill: float = 0.75
 ## The camera's exposure: everything on screen, sky and storms with the ground.
 @export var exposure: float = 1.0
-## Whether the suit has its headlamp: off for now (Hunter, 2026-10-17); its
-## probe and look-test switch it on.
-@export var headlamp: bool = false
-## The suit's headlamp comes on as the light round you falls below this
-## share of the sun overhead and the whole sky's, at dusk or deep in a storm,
-## and goes off past the second, so it never flickers between them.
-@export var headlamp_on_below: float = 0.15
-@export var headlamp_off_above: float = 0.25
 ## Its beam: brightness, how fast it fades with distance (the renderer's
 ## default 1; less carries further), reach, m, half-angle, degrees, how soft
 ## its edge is (1 the renderer's; less softer), and how far it's tilted down
