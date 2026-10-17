@@ -182,52 +182,59 @@ physical; the eye does the rest.
 **As built** (2026-10-17). Tu-shine stays at 1. The eye opens the camera's exposure
 in the dark, but only so far: a night still reads as night.
 
-How it looks, where a run begins with Tu 13° across (`~/Desktop/eye_adaptation.png`,
-each moment before and with the eye):
+**Retuned for 9°** (2026-10-17), once 9° became the default. Hunter found the full-Tu
+nights at 13° bright enough, and at 9° such a night has half their light, so the eye now
+opens further in the deep dark: a full-Tu night at 9° reads as the 13° one did, and a
+storm by day is as it was. Only the eye's own numbers moved (its line, share and
+floor); Tu-shine stays physical.
+
+How it looks, where a run begins with Tu 9° across, each moment before and with the eye
+(`look/eye/shoot.sh`; `~/Desktop/eye_adaptation.png` is the sheet from before the retune,
+at 13°):
 
 | Moment | The eye | The sand (L*), before and with it |
 |---|---|---|
 | Noon, any clear day, dusk, a veil of dust | as before | 81, 81 at noon |
-| Deep in a storm by day | 1.4 times | 22 to 26: it stays oppressive |
-| A full-Tu night, facing away from Tu | 3.1 times | 1.4 to 4.5, a little over where Tu-shine ×3 put it (4.2) |
-| The same night, facing Tu | 1.9 times | 1.5 to 3.0 |
-| A crescent night, the far side | 6 times, the floor | under 1: dark, the stars out over the dunes |
+| Deep in a storm by day | 1.4 times | 22 to 27: it stays oppressive |
+| A full-Tu night, facing away from Tu | 6.2 times | 0.7 to 4.5, as the 13° night read before (at 13° now, 6.6) |
+| The same night, facing Tu | 3 times | 0.8 to 2.4 |
+| A crescent night, the far side | 7 times, the floor | under 1: dark, the stars out over the dunes |
 | Totality begins | 1.1 times | black |
-| Totality, 30 s in | 6 times | the sky off black, many more stars, the ring brighter |
-| The sun back, 1 s on | 1.6 times, still open | too bright for a moment, as before within two seconds |
+| Totality's last second, 25 s in | 6.7 times | 2.3: the sky off black, many more stars, the land faintly red |
+| The sun back, 1 s on | 1.7 times, still open | too bright for a moment, as before within two seconds |
 
 **What it reads.** A meter takes each frame's light on the GPU before the tonemap,
 so the exposure it leads to never feeds back into it: all the light in the frame,
 which is what a pupil follows, and its brightest patch. So whatever is in view moves
-it, as with an eye. Tu's disc in view at night holds it to about twice, so Tu's bands
-never burn out; look away and the dunes come back within a few seconds. The
-headlamp's pool in a black storm holds it to under twice, so the beam reads much as it
+it, as with an eye. Tu's disc in view at night holds it to about three times, so Tu's
+bands never burn out; look away and the dunes come back within a few seconds. The
+headlamp's pool in a black storm holds it partly closed, so the beam reads much as it
 did, and the dark beyond stays dark. It takes the light in over half a second, so dust
 flickering past doesn't pump it. At the menu, in its storm, the frame's own light swings
 by half again with the billows over ten seconds, and the eye by under a tenth against
 them. In the clear it doesn't move.
 
-**Its bounds.** It opens only once the frame is dimmer than about a ninth of noon's.
+**Its bounds.** It opens only once the frame is dimmer than about a thirteenth of noon's.
 That's the ceiling: noon, and anything brighter than a dusk, look exactly as before, and
-nothing is ever darker than before. Below that it makes up only about a third of each
-halving of the light. And it never opens past 6 times, the floor, so a black far-side
-night stays black, not grey noise. The sky used to dither itself before the tonemap,
+nothing is ever darker than before. Below that it makes up about half of each halving
+of the light. And it never opens past 7 times, the floor, so a black far-side night
+stays black, not grey noise. The sky used to dither itself before the tonemap,
 and opening the eye made that a coloured hatch on dark skies. The dither now comes
 after the tonemap, project-wide.
 
 **How fast.** It opens in two parts, as an eye does. The first doubling comes in about
 three seconds, as a pupil widens. Past that it goes slowly, a doubling in about
 fourteen seconds. It closes fast, a doubling in under half a second. So stepping into a
-storm it has settled in about two seconds. Totality lightens through its 39 seconds:
-3 times by 8 s in, 6 by 22 s. A glance at Tu costs only the pupil's few seconds to get
+storm it has settled in about two seconds. Totality lightens through its 26 seconds:
+3 times by 8 s in, 6 by 22 s, nearly 7 by its end. A glance at Tu costs only the pupil's few seconds to get
 back. A cut doesn't carry over: a new run, a jump of the clock and a scenario each start
 the eye settled.
 
 **Why not Godot's own.** Godot has its own auto exposure (`CameraAttributesPractical`).
 Between its two bounds it makes up every change in the light, so every scene in that
 range shows as bright as every other. It has one speed both ways, and nothing reads it
-back. For noon to stay as it is while a full-Tu night got about 3 times, its bounds
-would have had to lie a factor of three apart, just under noon. Then a storm would have
+back. For noon to stay as it is while a full-Tu night got about 6 times, its bounds
+would have had to lie a factor of six apart, just under noon. Then a storm would have
 been lifted as far as the night, a dusk made as bright as noon, and totality would
 have gone no deeper. So the eye is our own: `game/weather/eye.gd`, fed by
 `game/weather/eye_meter.gd`. Tuning's Eye group holds its line, share, floor, white
@@ -248,9 +255,12 @@ nothing (0.00 and 0.03).
 
 **What's fragile.**
 
-- It was tuned where a run begins at 13°. At 6° and 9° a full-Tu night has a fifth and
-  half the light. The eye opens further, 4.9 and 3.9 times, and those nights still read
-  darker: the sand is 1.7 and 2.8, against 4.5.
+- It was tuned where a run begins at 9°. At 13° a full-Tu night has twice the light, and
+  the eye still opens 4.5 times, so it reads brighter than it used to (6.6 against 4.5).
+  At 6° it has under half, the eye stops at its floor, and the sand reads 2.4.
+- The retune opens anything darker than a storm by day further than before, and
+  anything between that and the line a touch less. A storm by day itself didn't move;
+  deep dusks and storms at night weren't shot again.
 - Anything bright in view closes it a little, as it would an eye. A lamp's bulb close
   up or a shield's glow does too, which could read as the eye "flinching" by a camp at
   night.
@@ -407,7 +417,7 @@ overlap its lower edge because they stand in front of the sky.
   **More epic, and through the storm** (Hunter, 2026-10-17: "eclipse is very awesome and
   dark. lets make it a little more epic, and allow it to shine into the storm, the ring of
   fire"): the ring of fire glows through a storm's dust when everything else is lost in it,
-  and totality gets more of an occasion.
+  and totality gets more of an occasion. As built: [the eclipse](#the-eclipse-as-built).
 - **Stars:** a fixed field turning about the pole, faint and many, with the two pole
   marks brighter than any. They're lost in daylight and in the dust, and Tu hides them.
 
@@ -425,6 +435,9 @@ is saturated: the haze and the rim do the work.
 | Storm ovals | cream, #E4DED0, and one rust, #9E5C42 |
 | The lit rim | pale sky blue, #9FC0F0 |
 | The eclipse ring | sunset red, #FF5A1E |
+| Where the ring flares | orange, #FFA14A |
+| The last light before totality | copper, #FF8C4D |
+| The corona | pearl, #F2F8FF |
 | Tu-shine, the light it casts | cool white, #C8DCFF |
 
 **As built** (2026-10-17). The sky is one shader, `game/weather/sky.gdshader`, fed each frame
@@ -439,6 +452,74 @@ Whichever of it and the sun is brighter casts the shadows, so the shadow map is 
 To see it: the dev scenarios `eclipse` and `far`, and the console's `tu` to switch sizes. The
 look-test `look/sky/shoot.sh <dir>` shoots the three sizes at the same moments; its sheets are
 `~/Desktop/tu_sizes.png` and `~/Desktop/tu_more.png`.
+
+### The eclipse, as built
+
+*2026-10-17, after Hunter's "a little more epic, and allow it to shine into the storm".*
+Where a run begins, at 9°, it runs like this:
+
+- **The last light goes copper.** In the few seconds the sun takes to go in, its last
+  sliver is low on Tu's limb and seen through Tu's air, so the light and the sky it lights
+  turn copper as it thins.
+- **The diamond ring.** As the last of the sun goes, a bead blazes where it went in, with
+  a soft glare round it, and lingers a second or two after; the same where it comes out.
+  Tu is a gas giant with no valleys on its limb, so there are no Baily's beads, only the
+  one.
+- **The ring of fire flares.** Backlit, Tu's rim burns orange in an arc about where the
+  sun went in. The arc spreads round the limb as it fades over the first few seconds,
+  and settles into a thin, patchy line of red all round, slowly boiling, with Tu's high
+  haze lit just inside it and a soft glow past it. At third contact it all runs backward.
+- **The corona** shows past Tu's edge while the sun is behind it: pearly streamers,
+  longest along the sun's equator, slowly changing, brightest where the sun is nearest
+  the edge.
+- **The ring lights the world red,** as a lunar eclipse does the Moon: the land faintly
+  coppery, and the air glowing low all round the horizon, brightest under Tu. It's a
+  fifth of the ring's own light, so totality stays night-dark: the sand reads 0.6 at
+  mid-totality, and 2.3 by its end as the eye opens. The stars come out and the eye
+  lightens the sky as before.
+- **A hush.** The wind's sound dips by about half through totality, easing in and out
+  over a couple of seconds. The storm's roar doesn't: a storm is a storm.
+- **Through a storm.** The ring is one more light in the storm's dust, from the sun's
+  bearing, as the sun's own is. Its red light carries far deeper into the dust, and dust
+  throws light forward, so where everything else is lost the dust glows from within: a
+  soft, fiery halo about the ring's bearing, and a dimmer red all round it. The grains
+  and gusts round you catch it the same way. It reads deep in a full storm, out in the
+  dust and from inside a bubble at a lit camp, where the lamp holds the eye down.
+
+Weighed and left out: shadow bands. At a contrast that shows they look like the sand's
+own ripples breathing, at one that doesn't they're invisible, and they'd last two
+seconds a day as stripes racing over the sand: too near the flicker that was fixed.
+
+How it's built: `DayCycle.eclipse()` and `DayCycle.ring_light()` are the one account of
+where the eclipse stands and how bright the ring is. The sky shader draws the ring, the
+bead, the corona and the horizon's glow from them; Weather lights the ground, the sky's
+fill and the haze with the ring's share and the copper; the storm pass adds the ring to
+its dust's light (`ring_light`, with its own reach and its forward throw) and the grains
+take it through `ring_glow`. Outside an eclipse the ring's light is nought, and the sky's
+and the dust's work for it is skipped.
+
+To see it: the dev scenario `eclipse`, or `look/eclipse/shoot.sh <dir> [sheet]`, which
+watches it live with the eye on, in the clear and in a full storm, and times it. The sheet
+is `~/Desktop/eclipse_epic.png`.
+
+**Cost**, on the RTX 3070 at 1920x1080 with another Godot running, so rough: at
+mid-totality, against the same frame with the eclipse's light taken out, about 0.05 ms in
+the clear (2.31 against 2.26) and 0.06 to 0.17 ms deep in a storm (5.79 against 5.62 in
+the last of four runs); inside a bubble it was lost in the noise. It costs that only
+during the minute or so round each eclipse.
+
+**What's fragile.**
+
+- The halo in a storm leans on the ring's light carrying further into the dust than the
+  sun's does, and on the dust throwing it forward. Both are judged by eye, not worked
+  from the dust.
+- The ring lights the ground at a fifth of what lights the dust, so totality stays dark.
+  A storm wall seen from the clear at totality wasn't shot; its face toward Tu should
+  glow red, and might glow too much.
+- The ring's flare, the bead and the corona's reach scale with Tu's size, and were
+  judged at 9° only.
+- The hush dips the wind's sound, not the wind: anything that reads the wind still
+  feels it.
 
 **Cost**, on an RTX 3070 at 1920x1080 with other Godots running probes alongside, so rough:
 the sky shader takes about 0.05 ms a frame more than the stock sky, by day facing Tu (2.23

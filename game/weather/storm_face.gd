@@ -108,19 +108,28 @@ func open_at(p: Vector3) -> float:
 ## at a point after the storms between it and the sun, 0 to 1, counting depth
 ## from the billowed surface.
 func sun_at(p: Vector3, sun: Vector3) -> float:
+	var path := _sun_path(p, sun)
+	return minf(1.0, exp(-0.004 * path) + 0.3 * exp(-0.0008 * path))
+
+
+## Twin of ring_through(): the eclipse ring's red light left at a point, which
+## carries far deeper into the dust than the sun's.
+func ring_at(p: Vector3, sun: Vector3) -> float:
+	return exp(-0.00015 * _sun_path(p, sun))
+
+
+## Twin of storm_sun_path: metres of roof-thin dust between a point and the sun.
+func _sun_path(p: Vector3, sun: Vector3) -> float:
 	if not _map.ready:
-		return 1.0
+		return 0.0
 	var f := _map.front_at(_world.world_x(p.x), _world.world_z(p.z), _world.time)
 	var depth := f.x + _bulge(p, _world.time)
 	var clear_side := -(sun.x * f.y + sun.z * f.z)
 	var up := maxf(sun.y, 0.02)
-	var path: float
 	if depth <= 0.0:
-		path = 0.0 if clear_side >= -0.001 else _roof_path(p.y + depth / clear_side * up) / up
-	else:
-		var out_top := _roof_path(p.y) / up
-		path = minf(out_top, depth / clear_side * BODY_WEIGHT) if clear_side > 0.001 else out_top
-	return minf(1.0, exp(-0.004 * path) + 0.3 * exp(-0.0008 * path))
+		return 0.0 if clear_side >= -0.001 else _roof_path(p.y + depth / clear_side * up) / up
+	var out_top := _roof_path(p.y) / up
+	return minf(out_top, depth / clear_side * BODY_WEIGHT) if clear_side > 0.001 else out_top
 
 
 ## Signed metres from an engine-space point to the nearest front, without

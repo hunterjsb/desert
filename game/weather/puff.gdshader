@@ -6,8 +6,22 @@ render_mode unshaded, blend_mix, depth_draw_never, cull_disabled, fog_disabled, 
 
 #include "res://game/weather/shelter.gdshaderinc"
 
+float phase_hg(float c, float g) {
+	float g2 = g * g;
+	return (1.0 - g2) / pow(1.0 + g2 - 2.0 * g * c, 1.5);
+}
+
+// Twin of storm_face.gdshader's.
+float ring_phase(float c) {
+	return 0.65 * phase_hg(c, 0.85) + 0.35 * phase_hg(c, 0.45);
+}
+
 uniform vec3 dust_light = vec3(0.5, 0.35, 0.22);
 uniform float camera_sigma = 0.0;
+// The eclipse ring's light on the grains, thrown forward about its bearing
+// as the storm pass throws it: toward it, and how bright.
+uniform vec3 ring_dir = vec3(0.0, 1.0, 0.0);
+uniform vec3 ring_glow = vec3(0.0);
 uniform float opacity = 0.15;
 uniform sampler2D depth_tex : hint_depth_texture, filter_nearest;
 
@@ -15,6 +29,7 @@ varying float v_dist;
 // Metres of dust between the camera and the puff, less what runs through shelters.
 varying float v_dust;
 varying float v_fade;
+varying float v_ring;
 varying float v_shade;
 varying vec3 v_world;
 
@@ -27,6 +42,7 @@ void vertex() {
 	v_dist = length(CAMERA_POSITION_WORLD - center);
 	v_dust = v_dist - shelter_length(CAMERA_POSITION_WORLD, (center - CAMERA_POSITION_WORLD) / max(v_dist, 1.0e-4), v_dist);
 	v_fade = sin(INSTANCE_CUSTOM.y * PI) * COLOR.a;
+	v_ring = ring_phase(dot(normalize(center - CAMERA_POSITION_WORLD), ring_dir));
 	v_shade = fract(sin(float(INSTANCE_ID) * 12.9898) * 43758.5453);
 	v_world = p;
 }
@@ -40,7 +56,7 @@ void fragment() {
 	float z = texture(depth_tex, SCREEN_UV).r;
 	vec4 scene = INV_PROJECTION_MATRIX * vec4(SCREEN_UV * 2.0 - 1.0, z, 1.0);
 	a *= clamp((VERTEX.z - scene.z / scene.w) / 2.5, 0.0, 1.0);
-	ALBEDO = dust_light * mix(0.55, 1.6, v_shade);
+	ALBEDO = (dust_light + ring_glow * v_ring) * mix(0.55, 1.6, v_shade);
 	// Soft against a shell, as dust would be, not cut flat by it.
 	ALPHA = a * smoothstep(0.0, 4.0, shelter_clearance(v_world));
 }

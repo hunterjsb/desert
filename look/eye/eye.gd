@@ -1,12 +1,12 @@
 extends Node
-## Look-test: the eye adapting, on seed 1234 where a run begins, Tu 13° across,
-## in still air. Each moment is shot twice, at the fixed exposure the game had
-## before (as the other look-tests keep it) and with the eye settled: noon, a
-## full-Tu night away from Tu and facing it (and away from it at the smaller
-## sizes under trial, and at the Tu-shine x3 once suggested instead), a
+## Look-test: the eye adapting, on seed 1234 where a run begins, Tu at its
+## default size, in still air. Each moment is shot twice, at the fixed exposure
+## the game had before (as the other look-tests keep it) and with the eye
+## settled: noon, a full-Tu night away from Tu and facing it (and away from it
+## at the other sizes under trial, and at the Tu-shine x3 once suggested instead), a
 ## crescent night, the far side's stars; and, with --storm, deep in a storm by
 ## day. The eclipse is watched through, the eye adapting as it goes: totality
-## as it begins and 30 s in, and the sun 1 s back. It prints each frame's light
+## as it begins and its last second, and the sun 1 s back. It prints each frame's light
 ## as the eye's meter reads it, the exposure, the sand's lightness (CIE L*) low
 ## in the frame either way, how fast the eye moves through the eclipse and
 ## stepping into the storm, and what the meter costs the GPU at 1920x1080:
@@ -30,7 +30,6 @@ const FAR_PITCH := 8.0
 ## sun comes back.
 const BEFORE := 10.0
 const AFTER := 10.0
-const INTO_TOTALITY := 30.0
 const SUN_BACK := 1.0
 ## Watching the step into a storm, s, and when it says how open the eye is.
 const STEP_IN := [0.5, 1.0, 2.0, 3.0, 4.0, 6.0, 8.0, 12.0, 16.0]
@@ -97,7 +96,7 @@ func _capture() -> void:
 			body.free()
 
 	var tuning := world.tuning
-	tuning.tu_degrees = 13.0
+	var size := tuning.tu_degrees
 	var day := world.weather.day
 	var spawn_lon := tuning.spawn_longitude_degrees
 	var tu_lon := tuning.tu_longitude_degrees
@@ -118,11 +117,12 @@ func _capture() -> void:
 	tuning.tu_shine_scale = 3.0
 	await _shot("full_x3", full, 0.0, spawn_lon, _to_tu(full, spawn_lon) + PI, PITCH_GROUND)
 	tuning.tu_shine_scale = 1.0
-	# The smaller sizes under trial, for their numbers.
-	for degrees: float in [6.0, 9.0]:
-		tuning.tu_degrees = degrees
-		await _pair("full_%d" % degrees, full, 0.0, spawn_lon, _to_tu(full, spawn_lon) + PI, PITCH_GROUND)
-	tuning.tu_degrees = 13.0
+	# The other sizes under trial, for their numbers.
+	for degrees: float in DayCycle.TU_SIZES:
+		if degrees != size:
+			tuning.tu_degrees = degrees
+			await _pair("full_%d" % degrees, full, 0.0, spawn_lon, _to_tu(full, spawn_lon) + PI, PITCH_GROUND)
+	tuning.tu_degrees = size
 	var crescent := _at_hour(CRESCENT, spawn_lon)
 	await _pair("crescent", crescent, 0.0, spawn_lon, _to_tu(full, spawn_lon) + PI, PITCH_GROUND)
 	await _pair("far", _at_hour(0.0, tu_lon + 180.0), FAR_LATITUDE, tu_lon + 180.0, 0.0, FAR_PITCH)
@@ -209,9 +209,9 @@ func _eclipse() -> void:
 		if t >= second and not shot.has("start"):
 			shot["start"] = true
 			_save("totality_start")
-		elif t >= second + INTO_TOTALITY and not shot.has("30"):
-			shot["30"] = true
-			_save("totality_30s")
+		elif t >= third - 1.0 and not shot.has("late"):
+			shot["late"] = true
+			_save("totality_late")
 		elif t >= third + SUN_BACK and not shot.has("back"):
 			shot["back"] = true
 			_save("sun_back_1s")

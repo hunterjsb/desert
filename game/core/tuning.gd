@@ -110,13 +110,13 @@ static var _current: Tuning
 ## the light in the frame, its mean luminance), so a clear day, a dusk and a
 ## veil of dust look as they always have; and then by this share of each stop
 ## dimmer.
-@export var eye_dim: float = 0.045
-@export var eye_share: float = 0.35
+@export var eye_dim: float = 0.033
+@export var eye_share: float = 0.51
 ## It opens no further than keeps the brightest patch in view (Tu's disc at
 ## night) under this, so Tu's bands never burn out.
 @export var eye_white: float = 0.6
 ## The most it opens, times the exposure: the floor, where a black night stays black.
-@export var eye_most: float = 6.0
+@export var eye_most: float = 7.0
 ## Opening toward the dark, stops a second at most: the pupil opens up to
 ## eye_quick_stops over the retina at eye_open_rate, and the retina carries the
 ## rest at eye_slow_rate. Both close back toward the bright at eye_close_rate.
@@ -220,9 +220,9 @@ static var _current: Tuning
 @export_group("Tu")
 ## How wide Tu is across the sky, degrees. Physics follows the look: it sets
 ## how far out Tu's orbit is, and so how long the eclipse lasts and how bright
-## Tu-shine is. Three are under trial (docs/the-moon.md), 6, 9 and 13; the dev
-## console's tu switches among them.
-@export var tu_degrees: float = 13.0
+## Tu-shine is. Three are under trial (docs/the-moon.md), 6, 9 and 13, and 9
+## is the default; the dev console's tu switches among them.
+@export var tu_degrees: float = 9.0
 ## The longitude under Tu, degrees: 60° west of spawn stands Tu 30° up, due
 ## west, where a run begins.
 @export var tu_longitude_degrees: float = -60.0

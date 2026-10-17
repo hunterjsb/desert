@@ -30,6 +30,11 @@ uniform vec3 tu_pole = vec3(0.0, 0.0, -1.0);
 uniform float tu_time = 0.0;
 // From where you stand to the stars, which turn with the sun about Zan's pole.
 uniform mat3 to_stars = mat3(1.0);
+// The eclipse as it stands (DayCycle.eclipse): how far Tu's rim is backlit,
+// the ring's flare, and the sun's centre from Tu's edge in its own radii, 1 at
+// first contact and -1 at second; and the ring's light in Zan's air.
+uniform vec3 eclipse = vec3(0.0, 0.0, 99.0);
+uniform vec3 eclipse_air = vec3(0.0);
 
 // Tu's palette (docs/art-direction.md), linear.
 const vec3 ZONE = vec3(0.686, 0.686, 0.644);
@@ -40,6 +45,13 @@ const vec3 CREAM = vec3(0.776, 0.730, 0.632);
 const vec3 RUST = vec3(0.342, 0.107, 0.054);
 const vec3 RIM = vec3(0.347, 0.527, 0.871);
 const vec3 RING = vec3(1.0, 0.102, 0.013);
+// Where the ring flares it burns hotter, orange toward gold; the diamond
+// ring's bead is the sun's own light, bent; the corona is pearl.
+const vec3 FLARE = vec3(1.0, 0.36, 0.07);
+const vec3 BEAD = vec3(1.0, 0.8, 0.5);
+const vec3 PEARL = vec3(0.88, 0.94, 1.0);
+// The outer corona just past the sun's edge, as a share of its light.
+const float CORONA = 0.4;
 // How fast Tu's clouds drift, radians a second: unseen within a minute, plain
 // over a session.
 const float DRIFT = 0.00004;
@@ -169,6 +181,12 @@ vec3 stars(vec3 s, float px) {
 void sky() {
 	vec3 d = EYEDIR;
 	vec3 base = mix(gradient(d) * sky_glow, haze_light, haze_share);
+	if (eclipse_air.r > 0.0) {
+		// The ring's light scattered in Zan's thin air: a band low round the
+		// whole horizon, where the most air lies, brightest under the ring.
+		float under = 0.5 + 0.5 * dot(normalize(d.xz + 1.0e-5), normalize(sun_dir.xz + 1.0e-5));
+		base += eclipse_air * exp(-max(d.y, 0.0) * 9.0) * smoothstep(-0.1, 0.0, d.y) * (0.6 + 0.4 * under * under);
+	}
 	float glow = max(sky_glow.r, max(sky_glow.g, sky_glow.b));
 	if (AT_CUBEMAP_PASS) {
 		COLOR = base;
@@ -208,26 +226,53 @@ void sky() {
 			vec3 limb = normalize(d - tu_dir * c);
 			beyond += RIM * sun_light * 0.12 * exp(-max(past, 0.0)) * smoothstep(-0.1, 0.5, dot(limb, sun_dir))
 				* (1.0 - cover);
-			// Backlit, Tu's rim is a ring of sunset light, brightest on the
-			// sun's side as it goes in and comes out.
-			float apart = acos(clamp(dot(sun_dir, tu_dir), -1.0, 1.0));
-			float behind = smoothstep(r + 0.05, r - 0.01, apart);
-			if (behind > 0.0) {
-				vec3 off_sun = sun_dir - tu_dir * dot(sun_dir, tu_dir);
-				float side = length(off_sun) > 1.0e-4 ? 0.5 + 0.5 * dot(limb, normalize(off_sun)) : 0.5;
-				side = mix(0.5, side, smoothstep(0.0, 0.3 * r, length(off_sun)));
-				float contact = exp(-max(r - apart, 0.0) / (0.25 * r));
-				// Patchy, as the clouds along the limb are, with a faint glow past it.
-				vec3 e1 = normalize(tu_pole - tu_dir * dot(tu_pole, tu_dir));
-				vec2 round = vec2(dot(limb, e1), dot(limb, cross(tu_dir, e1)));
-				float patch = 0.55 + 0.9 * fbm(round * 5.0 + 11.0);
-				float ring = exp(-abs(past) * 0.7) + 0.2 * exp(-past * 0.15) * step(0.0, past);
-				beyond += RING * sun_light * behind * patch * ring * (0.05 + 0.6 * contact * side * side);
-			}
+		}
+		float behind = eclipse.x;
+		vec3 off_sun = sun_dir - tu_dir * dot(sun_dir, tu_dir);
+		float off = length(off_sun);
+		if (behind > 0.0 && c > cos(r * 3.0) && d.y > -0.02) {
+			// Backlit, Tu's rim is a ring of sunset light: a thin line of fire,
+			// Tu's high haze lit just inside it, and a soft glow past it.
+			float past = (acos(clamp(c, -1.0, 1.0)) - r) / max(r * 0.02, px);
+			vec3 limb = normalize(d - tu_dir * c);
+			float side = off > 1.0e-4 ? 0.5 + 0.5 * dot(limb, off_sun / off) : 0.5;
+			side = mix(0.5, side, smoothstep(0.0, 0.3 * r, off));
+			// It flares in an arc where the sun goes in and comes out, the arc
+			// spreading round the limb as it fades.
+			float flare = 0.7 * eclipse.y * pow(side, mix(1.5, 6.0, eclipse.y));
+			// Patchy, as the clouds along the limb are, and slowly boiling.
+			vec3 e1 = normalize(tu_pole - tu_dir * dot(tu_pole, tu_dir));
+			vec2 round = vec2(dot(limb, e1), dot(limb, cross(tu_dir, e1)));
+			float patch = 0.55 + 0.9 * fbm(round * 5.0 + vec2(11.0 + tu_time * 0.05, 11.0 - tu_time * 0.03));
+			float line = exp(-abs(past) * 0.7);
+			float lit = line + (past < 0.0 ? 0.3 * exp(past * 0.25) : 0.2 * exp(-past * 0.15) + 0.05 * exp(-past * 0.035));
+			vec3 fire = mix(RING, FLARE, clamp(flare * 1.5, 0.0, 1.0) * line);
+			beyond += fire * sun_light * behind * patch * lit * (0.07 + flare);
+		}
+		// The diamond ring: the last of the sun bent round the limb, a bead
+		// blazing where it goes in and lingering a second or two; and again
+		// where it comes out.
+		float bead = smoothstep(1.0, -1.0, eclipse.z) * exp(-max(-1.0 - eclipse.z, 0.0) / 0.8);
+		if (bead > 0.001 && off > 1.0e-4 && d.y > -0.02) {
+			vec3 at = tu_dir * cos(r) + off_sun / off * sin(r);
+			float from_bead = acos(clamp(dot(d, at), -1.0, 1.0)) / SUN_RADIUS;
+			beyond += BEAD * sun_light * bead * (3.0 * exp(-from_bead * from_bead * 6.0)
+				+ 0.3 * exp(-from_bead * 0.9) + 0.03 * exp(-from_bead * 0.2));
 		}
 		// The sun's corona, past its disc and wherever Tu doesn't hide it.
 		float from_sun = acos(clamp(dot(d, sun_dir), -1.0, 1.0));
 		vec3 corona = sun_light * 0.03 * pow(SUN_RADIUS / max(from_sun, SUN_RADIUS), 3.0);
+		if (behind > 0.0) {
+			// Behind Tu the outer corona shows: pearly streamers, longest along
+			// the sun's equator, slowly changing.
+			vec3 v = d - sun_dir * dot(d, sun_dir);
+			vec3 a1 = normalize(tu_pole - sun_dir * dot(tu_pole, sun_dir));
+			vec2 around = vec2(dot(v, a1), dot(v, cross(sun_dir, a1))) / max(length(v), 1.0e-6);
+			float out_r = max(from_sun, SUN_RADIUS) / SUN_RADIUS;
+			float streams = smoothstep(0.32, 0.68, fbm(around * (3.0 + 0.12 * out_r) + vec2(5.0, tu_time * 0.02)));
+			corona += PEARL * sun_light * CORONA * behind * pow(out_r, -2.2) * (0.55 + 0.45 * around.y * around.y)
+				* (0.3 + 1.5 * streams);
+		}
 		// Stars show once the air's glow is down, and never through Tu.
 		float dark = 1.0 - smoothstep(0.003, 0.06, glow);
 		vec3 field = dark > 0.0 && d.y > -0.02 ? stars(to_stars * d, px) * dark : vec3(0.0);

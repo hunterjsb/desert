@@ -47,8 +47,8 @@ for size in 6 9 13; do
 	shot "tu${size}_ground" "$size°: a full-Tu night's ground, Tu-shine x1 (physical)"
 done
 shot far_side "the far side at midnight, 30° north: the pole star"
-shot ground_x3 "13°: a full-Tu night's ground, Tu-shine x3"
-shot ground_x10 "13°: the same, x10"
+shot ground_x3 "9°: a full-Tu night's ground, Tu-shine x3"
+shot ground_x10 "9°: the same, x10"
 montage "${args[@]}" -tile 3x -geometry 960x540+6+6 -pointsize 24 -depth 8 \
 	-background '#f4efe6' -title "Tu low, the far side, and how bright a near-side night is" "$sheets/tu_more.png"
 echo "sheets: $sheets/tu_sizes.png $sheets/tu_more.png"

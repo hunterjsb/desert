@@ -2,10 +2,11 @@ extends WeatherProbe
 ## Wind & storms probe 11: the eclipse. Over two days where a run begins, the
 ## sun goes behind Tu once a day, and totality lasts as long as Tu's size makes
 ## it, for each size under trial. Through it the felt light, which solar reads,
-## is nothing, and the sky draws the sun behind Tu's disc; the air is cooler
-## for it, and over again half a day on. Tu shows its dark face then, and is
-## full half a day later, lighting the night. At the Rim, where Tu sits
-## half-risen, the eclipse takes next to nothing.
+## is nothing, and the sky draws the sun behind Tu's disc; the ring of fire's
+## light reaches a storm's dust then, and never outside an eclipse. The air is
+## cooler for it, and over again half a day on. Tu shows its dark face then,
+## and is full half a day later, lighting the night. At the Rim, where Tu sits
+## half-risen, the eclipse takes next to nothing, at the default size.
 
 const STEP := 0.25
 ## Totality is worked from the sizes alone; the nod moves it by about this.
@@ -20,6 +21,7 @@ func run() -> void:
 	var sky := world.weather.sky
 	var player := world.player.global_position
 	var seconds := tuning.day_minutes * 60.0
+	var default_size := tuning.tu_degrees
 	for size: float in DayCycle.TU_SIZES:
 		tuning.tu_degrees = size
 		var spans: Array[Vector2] = []
@@ -51,12 +53,17 @@ func run() -> void:
 		var tu: Vector3 = sky.material.get_shader_parameter("tu_dir")
 		check(sun.angle_to(tu) < day.tu_radius() - DayCycle.SUN_RADIUS and sky.tu_seen < 1e-6,
 			"%d°: the sky draws the sun behind Tu, and Tu casts no light" % size)
+		var ring_mid: Vector3 = world.weather.face.material.get_shader_parameter("ring_light")
 		var full := mid + seconds * 0.5
 		world.time = full
 		await physics_frames(2)
 		check(day.tu_lit(mid) < 0.001 and day.tu_lit(full) > 0.999 and sky.tu_seen > 0.0,
 			"%d°: Tu's dark face at the eclipse, full half a day on, lighting the night (%.3f, %.3f)"
 			% [size, day.tu_lit(mid), day.tu_lit(full)])
+		var ring_full: Vector3 = world.weather.face.material.get_shader_parameter("ring_light")
+		check(ring_mid.x > ring_mid.y and ring_mid.y > 0.0 and ring_full == Vector3.ZERO,
+			"%d°: the ring's red light reaches a storm's dust through totality, and none half a day on (%s, %s)"
+			% [size, ring_mid, ring_full])
 
 		var cooled := world.weather.field_temperature(player, spans[0].y)
 		var later := world.weather.field_temperature(player, spans[0].y + seconds * 0.5)
@@ -69,7 +76,7 @@ func run() -> void:
 			% [size, dip, left])
 
 	# The Rim: the light the eclipse takes there, against where a run begins.
-	tuning.tu_degrees = DayCycle.TU_SIZES[-1]
+	tuning.tu_degrees = default_size
 	var eclipse := day.next_eclipse(0.0)
 	var lost := func(longitude: float) -> float:
 		var sum := 0.0
