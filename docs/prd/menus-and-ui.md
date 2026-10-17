@@ -101,7 +101,22 @@ save and quick load.
   of its own, from a fixed camera on the highest sand near its spawn, facing upwind
   where the weather comes from. No one stands there and nothing of yours is in it; only
   the weather moves, at its own pace. A low shade under the words keeps them readable
-  over bright sand. The selection shows by brightness alone. New game over a save asks
+  over bright sand. The selection shows by brightness alone.
+- **The title** at the top of the main menu is the game's name, "Desert" for now, kept in
+  one place (`UIRoot.TITLE`), so a rename is one line. It's uppercase and widely spaced
+  in Geist Light, off-white, centred over the words, with a small moon hung to its left
+  as the prototype's logo had: a lit crescent over the faint rest of the disc, drawn in
+  the theme's colours. A faint high shade, the twin of the low one, keeps it readable
+  over a bright sky; in a storm it reads on its own.
+- **The showpiece** (`game/ui/showpiece.gd`) is the starting crate floating between the
+  title and the words, put together from the kit as a new run's is: the light shield and
+  the light panel on top, the board racked on its side, the batteries half full and
+  their lights showing it. It tilts toward the mouse, up to 25°, easing there, and rests
+  facing you until the mouse moves and once it leaves the window. Dragged, it spins, and
+  let go it keeps a little of the spin; a press on a word is always the word's, and
+  under Options it can't be grabbed. Only its looks are kept, never a body, so it can't
+  fall, blow away or be saved, and it stands in the desert's own light and weather,
+  dark in a storm but for its tells, its charge lights and the shield's blue band. New game over a save asks
   "this ends your saved run" with the safe answer highlighted, and back declines too.
   Then New game asks which mode, Normal highlighted and Ironman below it, under a line
   saying what each means; back goes back to the menu, the save untouched. Into the
@@ -145,7 +160,8 @@ save and quick load.
   never saved: no Save, Quit to menu in place of Save & quit, and no autosave, so the
   player's own save is left as it was. A run the console's `scenario` has been used in
   is the same from then on.
-- `look/menus` shoots the main menu and the system menu, to judge by eye.
+- `look/menus` shoots the main menu, with its title and crate, in a storm and on a clear
+  day, and the system menu, to judge by eye.
 - Probes 1–8 pass, each proven against a broken build. Probes 3, 4 and 7 use the real
   saves, kept in each probe's own folder; probe 3 is the whole trip: New game, Save &
   quit out on the sand, Resume, and you're back where you were.
@@ -164,9 +180,10 @@ save and quick load.
    exactly as they do with it closed.
 2. **Back closes the topmost first.** With the inventory open, back closes it; pressed
    again, it opens the system menu; again, it closes that.
-3. **The menu's default.** With a save, Resume is highlighted and confirm resumes; with
-   none, Resume is absent and New game is highlighted, and it asks which mode with
-   Normal highlighted.
+3. **The menu's default.** The title is the game's name, over the starting crate, which
+   is only to look at: no body in it, and a storm doesn't move it. With a save, Resume
+   is highlighted and confirm resumes; with none, Resume is absent and New game is
+   highlighted, and it asks which mode with Normal highlighted.
 4. **New game asks over a save,** and declining leaves the save untouched.
 5. **One theme.** Every UI control in the game, menus and gameplay, draws from the one
    theme.

@@ -25,6 +25,8 @@ const VIEW_PITCH := -2.0
 var run: Node
 ## The menu's world, or null in a run.
 var view: World
+## The starting crate in the menu's foreground, or null in a run.
+var showpiece: Showpiece
 ## The run in play is a dev scenario's: the save on disk, the player's own,
 ## is never written over or deleted by it.
 var _scenario := false
@@ -271,8 +273,9 @@ func _end_run() -> void:
 
 
 ## The real world from a fixed camera: no one stands there, nothing of yours
-## is in it, and only the weather moves, at its own pace, without a sound: a
-## storm at the menu is only to look at, while the menu's own words are heard.
+## is in it but the starting crate on show, and only the weather moves, at its
+## own pace, without a sound: a storm at the menu is only to look at, while
+## the menu's own words are heard.
 func _show_view() -> void:
 	Dev.clear()
 	AudioServer.set_bus_mute(AudioServer.get_bus_index(Sounds.WORLD), true)
@@ -300,6 +303,11 @@ func _show_view() -> void:
 		view.engine_z(best.y))
 	eye.rotation = Vector3(0.0, atan2(-upwind.x, -upwind.y), 0.0)
 	eye.camera.rotation = Vector3(deg_to_rad(VIEW_PITCH), 0.0, 0.0)
+	# Beside the world's content, never in it: saves, power and wear never see it.
+	showpiece = Showpiece.new()
+	showpiece.ui = ui
+	showpiece.camera = eye.camera
+	view.add_child(showpiece)
 
 
 static func _make(path: String) -> Node:
@@ -311,3 +319,4 @@ func _drop_view() -> void:
 	remove_child(view)
 	view.queue_free()
 	view = null
+	showpiece = null

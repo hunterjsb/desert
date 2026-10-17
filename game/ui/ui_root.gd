@@ -13,6 +13,8 @@ const PANELS := &"ui_panels"
 const FADE_SECONDS := 0.5
 ## A note such as Saved stays this long before it fades, s.
 const NOTE_SECONDS := 1.5
+## The game's name, as the main menu's title shows it: a rename is this line.
+const TITLE := "Desert"
 
 var main: Main
 var console: Console
@@ -186,7 +188,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 
 
-## Resume (with a save), New game, Options, Quit, over the live desert.
+## The title, and Resume (with a save), New game, Options, Quit, over the live desert.
 func show_main_menu(note := "") -> void:
 	close_all()
 	Dev.show_hint(false)
@@ -194,6 +196,7 @@ func show_main_menu(note := "") -> void:
 		note = "Your saved run can't be resumed: " + main.save_refused()
 	var menu := Words.new(note, &"Shade")
 	menu.root = true
+	menu.add_title(TITLE)
 	if main.has_save():
 		menu.add("Resume", main.resume)
 	menu.add("New game", _new_game)

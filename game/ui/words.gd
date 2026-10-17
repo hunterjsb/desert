@@ -6,8 +6,15 @@ extends Control
 ## and left and right change a setting's value, each with a very quiet click.
 ## The mouse can pick too.
 
+## The title's moon, across, and how far it stands off the name, as far as
+## the name's letters stand apart, px.
+const MOON := 32.0
+const MOON_GAP := 22.0
+
 ## Back never closes it: the main menu is the bottom of the stack.
 var root := false
+## The game's name over the words, on the main menu only.
+var title: Label
 ## Over the menu's desert: the words a little bigger and roomier, low on the screen.
 ## Over a running game they stand in the middle.
 var _main := false
@@ -57,6 +64,57 @@ func _init(note := "", under := &"Scrim") -> void:
 		line.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		_list.add_child(line)
 		_list.add_child(Control.new())
+
+
+## The game's name at the top of the screen in a light logo, a moon hung
+## beside it as the prototype's had, under a high shade that keeps it
+## readable over a bright sky: the main menu's.
+func add_title(name: String) -> void:
+	var shade := Panel.new()
+	shade.theme_type_variation = &"ShadeHigh"
+	shade.set_anchors_preset(Control.PRESET_FULL_RECT)
+	shade.anchor_bottom = 0.35
+	shade.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(shade)
+	title = Label.new()
+	title.theme_type_variation = &"MenuTitle"
+	title.text = name
+	title.uppercase = true
+	title.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	title.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	title.offset_top = 44.0
+	var mark := Control.new()
+	mark.anchor_top = 0.5
+	mark.anchor_bottom = 0.5
+	mark.offset_left = -MOON - MOON_GAP
+	mark.offset_right = -MOON_GAP
+	# Level with the capitals, which stand above the line's middle.
+	mark.offset_top = -MOON * 0.5 - 2.0
+	mark.offset_bottom = MOON * 0.5 - 2.0
+	mark.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	mark.draw.connect(_draw_moon.bind(mark))
+	title.add_child(mark)
+	add_child(title)
+
+
+## A crescent lit over the dark of the rest, as the prototype's moon was.
+static func _draw_moon(mark: Control) -> void:
+	var middle := mark.size * 0.5
+	var r := minf(mark.size.x, mark.size.y) * 0.5 - 1.0
+	var lit := mark.get_theme_color(&"text", &"Palette")
+	var dark := mark.get_theme_color(&"faint", &"Palette")
+	var shadow := mark.get_theme_color(&"shadow", &"Palette")
+	mark.draw_circle(middle + Vector2(0.0, 1.5), r + 1.0, Color(shadow, shadow.a * 0.5), true, -1.0, true)
+	mark.draw_circle(middle, r, dark, true, -1.0, true)
+	var disc := PackedVector2Array()
+	var bite := PackedVector2Array()
+	for i in 64:
+		var way := Vector2.from_angle(TAU * i / 64.0)
+		disc.append(middle + way * r)
+		bite.append(middle + Vector2(r * 0.42, -r * 0.3) + way * r * 0.92)
+	for crescent in Geometry2D.clip_polygons(disc, bite):
+		mark.draw_colored_polygon(crescent, lit)
+		mark.draw_polyline(crescent + PackedVector2Array([crescent[0]]), lit, 1.0, true)
 
 
 ## Something to read above the words, such as the controls list.

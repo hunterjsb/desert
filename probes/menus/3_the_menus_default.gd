@@ -1,5 +1,7 @@
 extends MenuProbe
-## Menus & UI probe 3: the menu's default, end to end. With no save, Resume is
+## Menus & UI probe 3: the menu's default, end to end. The main menu's title
+## is the game's name, over the starting crate, which is only to look at: no
+## body in it, and the storm doesn't move it. With no save, Resume is
 ## absent, New game is highlighted, and confirm asks which mode, Normal
 ## highlighted and Ironman below it; confirm again starts a Normal run, whose
 ## system menu holds Save. Save & quit from that run, somewhere out on the
@@ -11,6 +13,17 @@ extends MenuProbe
 func run() -> void:
 	await open_main()
 	var menu := main.ui.top()
+	check(menu.title != null and menu.title.text == UIRoot.TITLE and menu.title.is_visible_in_tree(),
+		"the main menu's title is the game's name")
+	var piece := main.showpiece
+	var eye := main.view.player.camera
+	var was := eye.global_transform.affine_inverse() * piece.global_transform
+	await physics_frames(60)
+	check(main.view.weather.in_storm and piece.find_children("*", "CollisionObject3D", true, false).is_empty()
+		and piece.find_children("*", "GeometryInstance3D", true, false).size() > 20
+		and main.view.devices().is_empty() and eye.is_position_in_frustum(piece.global_position)
+		and (eye.global_transform.affine_inverse() * piece.global_transform).is_equal_approx(was),
+		"the starting crate floats in view, only to look at, and the storm doesn't move it")
 	check(menu.words() == PackedStringArray(["NEW GAME", "OPTIONS", "QUIT"]) and menu.highlighted() == 0,
 		"with no save, Resume is absent and New game is highlighted (%s)" % ", ".join(menu.words()))
 	check(AudioServer.is_bus_mute(AudioServer.get_bus_index(Sounds.WORLD)) and not AudioServer.is_bus_mute(0),
