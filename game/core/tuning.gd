@@ -311,6 +311,9 @@ static var _current: Tuning
 ## battery's 100 Wh lasts twenty minutes flat out, about 24 km.
 @export var board_hover_w: float = 40.0
 @export var board_push_w: float = 260.0
+## Racked on a crate, it charges from the camp at up to this, W: a base
+## battery in two hours, as far as the camp can spare it.
+@export var board_charge_w: float = 50.0
 
 @export_group("Camp range")
 ## Leaving your camp behind: one warning this many seconds from losing it at

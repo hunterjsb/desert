@@ -66,7 +66,7 @@ func run() -> void:
 ## empty-handed.
 func _pressed_in() -> void:
 	for each in _devices:
-		for socket in each.sockets():
+		for socket in each.sockets().filter(func(s: Socket) -> bool: return FILL.has(s.kind)):
 			var at := seat(socket)
 			var tip := at * Vector3(0.0, 0.0, 0.1)
 			if socket.part != null or tip.y < world.height_under(tip):
@@ -346,7 +346,7 @@ func _any_id() -> StringName:
 func _random_free_socket() -> Socket:
 	var free: Array[Socket] = []
 	for each in _devices:
-		for socket in each.sockets():
+		for socket in each.sockets().filter(func(s: Socket) -> bool: return FILL.has(s.kind)):
 			var tip := seat(socket) * Vector3(0.0, 0.0, 0.1)
 			if socket.part == null and tip.y > world.height_under(tip):
 				free.append(socket)

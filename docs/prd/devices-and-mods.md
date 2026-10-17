@@ -163,6 +163,17 @@ it, take hold of it, and let go.
   now, half the crate's top, so a panel rides beside a lamp, a shield or a second panel.
   Fitted out with two big batteries, four hooks, a tray, a panel and a shield, a crate
   weighs 56 kg, under a tray's 80 kg of lift, and floating draws 112 W.
+- **The crate frame has a rack** (2026-10-16, Hunter: "i like a rack"), along the top of
+  its left side, where the hoverboard seats as the shield does on a top mount: the tug
+  leans it in and take seats it, it stays a body of its own held fast on its seat, and
+  take lifts it off whole. The board is longer than the crate, so it overhangs 25 cm at
+  each end, and it stands 17 cm proud of the top so its lower edge clears the ring mount
+  on that side, 2 cm over the hook. On a crate with every socket filled, a big battery in
+  each slot, a hook and a line's end on every ring, the tray, the light shield and light
+  panel on top and a plug in the port, it clears everything by 1 cm at least, nearest
+  the crate's own side (survival probe 9 checks it by their bounds). The charge light
+  stays on the right side, where the board doesn't cover it. Racked, the kit's crate
+  weighs 45.5 kg and floating draws 91 W.
 - **Keys on screen come from the bindings** (2026-10-16). The keys list and its hint,
   the inventory view and the scenario menu read each action's key from the live bindings
   and draw it in one colour. Rebinding an action changes all of them, and a mouse button
@@ -211,7 +222,7 @@ it, take hold of it, and let go.
 
 | Frame | Battery | Ring | Bottom | Top | Port | Other |
 |---|---|---|---|---|---|---|
-| Crate frame | 2 | 4 | 1 | 2 | 1 | |
+| Crate frame | 2 | 4 | 1 | 2 | 1 | a rack |
 | Planter | 1 | 2 | 1 | | 1 | 3 small and 1 large plant slot, a mod mount |
 | Charger | 1 | | | 1 | 1 | |
 | Wind turbine | 1 | | | | 1 | |
@@ -219,6 +230,7 @@ it, take hold of it, and let go.
 | Shield generator | 1 | 1 | 1 | | 1 | fits a top mount itself |
 | Light shield generator | 1 | 1 | 1 | | 1 | fits a top mount itself |
 | Light solar panel | | | | | 1 | |
+| Hoverboard | 1 | | | | 1 | fits a rack itself |
 | Survival kit | | | | | | a water and a food socket, 2 small and 1 large plant slot |
 
 Some parts **add sockets of their own**. An extra-hook mod fits a mount and provides a
