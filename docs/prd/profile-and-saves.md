@@ -90,7 +90,8 @@ Resume, New game, the death screen and Options.
 - **A death in Normal** keeps the save and shows the death screen (Menus & UI): Load
   last save is Resume, and New run is New game in Normal.
 - **What a save holds:** you (where you stand, which way you face and look, how you're
-  moving, stamina, your bars, your slots, what's in your hands, at your waist or being
+  moving, stamina, your bars, your slots (a gadget in one with its state, as a radio's
+  channel, beacon and charge), what's in your hands, at your waist or being
   hauled, and the board you ride with its ride as it stood), the clock, the moon position, the engine's origin, and where power, wear,
   farming and your body are in their ticks. Then everything of yours: each thing by its
   catalog id, where it is and how it's moving, its wear, charge, water, growth and
@@ -158,6 +159,9 @@ Resume, New game, the death screen and Options.
 10. **Quick save and quick load.** Quick saved in Normal and moved elsewhere, quick load
     puts you back where and when you saved, through the fade. In Ironman neither saves
     nor loads, and a dev scenario's run never saves.
+11. **A gadget in a slot.** Saved with a radio on the weather station and a compass in
+    your slots and resumed, the radio is back in its slot on the same channel with the
+    same charge, playing from you with its words showing, and the compass is in its slot.
 
 ## Out of scope
 

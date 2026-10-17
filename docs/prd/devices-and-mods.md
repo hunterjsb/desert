@@ -279,8 +279,12 @@ floater out of pieces:
 | Light shield generator | 1 | 1 | 1 | | 1 | fits a top mount itself |
 | Light solar panel | | | | | 1 | |
 | Hoverboard | 1 | | | | 1 | fits a rack itself |
-| Radio | 1 | | | | 1 | fits a top mount itself |
+| Radio | 1 | | | | 1 | fits a top mount itself, and a suit slot whole (`pocket`) |
 | Survival kit | | | | | | a water and a food socket, 2 small and 1 large plant slot |
+
+**Pocket gadgets** (2026-10-17): a device the catalog marks `pocket` goes in a suit slot
+whole and works on from it, on you (Survival). Only the radio is one; parts, the compass
+among them, go in a slot already.
 
 Some parts **add sockets of their own**. An extra-hook mod fits a mount and provides a
 hook. That's how found mods expand a device.

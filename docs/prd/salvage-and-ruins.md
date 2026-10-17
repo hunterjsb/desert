@@ -183,9 +183,10 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
   the heaviest, a crate with every socket filled, is 51 kg, 250 N of your 400 N on a
   ruin's floor or the sand.
 - **What's found** is the catalog's own parts and devices. The surface layer holds
-  batteries, hooks, lamps, empty canisters, rope coils and cable plugs, and crate frames,
-  chargers, planters, stakes, survival kits and radios (Stage 11, one in six of the
-  surface layer's devices). The deep layer holds big batteries,
+  batteries, hooks, lamps, empty canisters, rope coils, cable plugs and compasses
+  (2026-10-17, one in nineteen of the surface layer's parts), and crate frames, chargers,
+  planters, stakes, survival kits and radios (Stage 11, one in six of the surface layer's
+  devices). The deep layer holds big batteries,
   batteries, hover trays, solar panels, hooks, strong cable plugs and harvesters, and
   crate frames, wind turbines, condensers, shield generators and, rarer, hoverboards
   (Stage 10, one in nine of the deep layer's devices; a ruin's hall never holds one,

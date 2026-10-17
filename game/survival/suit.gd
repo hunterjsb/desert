@@ -8,17 +8,24 @@ extends Node
 ## a slot with something in it gives it to your empty hands, an empty one
 ## takes what you hold, and a full one swaps with it. Rope and wire go in
 ## rolled up, as they're found, and unroll in your hands; a stake goes in as
-## it is. Closing it captures the mouse again, to look.
+## it is. Each slot shows its thing drawn as itself. A gadget goes in whole
+## and works on from its slot, out of sight on you: a radio plays from you on
+## its own battery, a compass's needle turns in the view, and use on its slot
+## works it in place. Closing the view captures the mouse again, to look.
 
 ## Built in and free, so nothing ever drains them. The headlamp is the
 ## camera's (Headlamp), so it looks where you look.
 const BUILT_IN := "air, radiation, headlamp"
-const HINT := "click a slot to take out, put in or swap · {inventory} closes"
-const SLOT := Vector2(100.0, 40.0)
+const HINT := "click a slot to take out, put in or swap · {interact} on one uses it · {inventory} closes"
+const SLOT := Vector2(120.0, 128.0)
+## The thing's picture across the top of its slot, px.
+const PICTURE := Vector2i(120, 88)
 const GAP := 6.0
+## A gadget rides here on you, out of sight, from your feet.
+const POUCH := Vector3(0.0, 1.0, 0.0)
 
-## What each slot holds, or null: a part, or a stake. Stowed things wait off
-## the tree, as fitted parts do.
+## What each slot holds, or null: a part, a stake or a gadget. Stowed things
+## wait off the tree, as fitted parts do; a gadget rides on you, working.
 var slots: Array[RigidBody3D] = []
 var open := false
 ## The slot under the mouse, or -1.
@@ -27,6 +34,8 @@ var hover := -1
 var _player: Player
 var _layer: CanvasLayer
 var _view: Control
+## Each slot's picture, made the first time the view opens.
+var _looks: Array[SlotLook] = []
 
 
 func _ready() -> void:
@@ -56,8 +65,9 @@ func _exit_tree() -> void:
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_PREDELETE:
+		# A gadget on you may have gone already, with you.
 		for part in slots:
-			if part != null:
+			if is_instance_valid(part):
 				part.free()
 
 
@@ -73,11 +83,17 @@ func restock() -> void:
 ## Whether a slot can take it: a part with nothing fastened to it, or rope
 ## or wire that rolls up whole: a line held but not laid, a cable plugged
 ## into nothing. Laid or plugged in, it would lose its end. A stake fits
-## pulled up with nothing on its eye, so it comes out ready to drive.
+## pulled up with nothing on its eye, so it comes out ready to drive. Of
+## devices, only a gadget made to (the catalog's pocket) goes in, whole, with
+## nothing on it but its batteries.
 func fits(body: Object) -> bool:
 	var stake := body as Stake
 	if stake != null:
 		return not stake.driven and stake.parts().is_empty() and not _player.waist.carries_line(stake)
+	var device := body as Device
+	if device != null:
+		return device.pocket and device.mounted().is_empty() and not _player.waist.carries_line(device) \
+			and device.parts().all(func(p: Part) -> bool: return p is Battery)
 	var part := body as Part
 	if part == null:
 		return false
@@ -104,6 +120,24 @@ func stock(kind: StringName) -> float:
 		if part is Supply and part.kind == kind:
 			total += part.amount
 	return total
+
+
+## The gadgets working from your slots, which Power runs.
+func gadgets() -> Array[Device]:
+	var found: Array[Device] = []
+	for thing in slots:
+		var device := thing as Device
+		if device != null and device.pocket and device.is_inside_tree():
+			found.append(device)
+	return found
+
+
+## Every gadget in a slot back on you and working, as a resume puts them in.
+func carry_gadgets() -> void:
+	for thing in slots:
+		var device := thing as Device
+		if device != null and device.pocket and device.get_parent() != _player:
+			_pocket(device)
 
 
 ## A ration eaten to the end is gone, from a slot or your hands.
@@ -152,6 +186,8 @@ func click(at: int) -> bool:
 	else:
 		return false
 	if out != null:
+		if out.get_parent() == _player:
+			_unpocket(out as Device)
 		_player.world.content.add_child(out)
 		out.global_transform = _player.camera.global_transform.translated_local(Vector3(0.0, -0.2, -0.5))
 		Finds.unroll(_player.world, out)
@@ -160,9 +196,22 @@ func click(at: int) -> bool:
 	return true
 
 
+## Use on a slot: a gadget in it is worked where it is, as a radio's dial
+## turns; anything else does nothing. Says whether it did anything.
+func use(at: int) -> bool:
+	if at < 0 or at >= slots.size():
+		return false
+	var device := slots[at] as Device
+	return device != null and device.pocket and device.interact(_player)
+
+
 ## What goes in the slot, off the tree: rope and wire as one rolled-up body,
-## anything else as it is.
+## a gadget on you, anything else as it is.
 func _rolled(body: RigidBody3D) -> RigidBody3D:
+	var device := body as Device
+	if device != null and device.pocket:
+		_pocket(device)
+		return device
 	var part := body as Part
 	if part != null and part.has_meta(&"line"):
 		return (part.get_meta(&"line") as Line).roll()
@@ -186,6 +235,36 @@ func _rolled(body: RigidBody3D) -> RigidBody3D:
 	return rolled
 
 
+## On you, out of sight, touching nothing and held still, so it works on
+## where you are: a radio plays from you, on its own battery.
+func _pocket(device: Device) -> void:
+	# How it sat, to come out as it went in.
+	device.set_meta(&"pocketed", [device.collision_layer, device.collision_mask, device.freeze_mode])
+	if device.get_parent() != null:
+		device.get_parent().remove_child(device)
+	device.visible = false
+	device.collision_layer = 0
+	device.collision_mask = 0
+	device.freeze_mode = RigidBody3D.FREEZE_MODE_KINEMATIC
+	device.freeze = true
+	device.linear_velocity = Vector3.ZERO
+	device.angular_velocity = Vector3.ZERO
+	_player.add_child(device)
+	device.transform = Transform3D(Basis.IDENTITY, POUCH)
+
+
+## Off you again, a body as it was, for your hands.
+func _unpocket(device: Device) -> void:
+	var was: Array = device.get_meta(&"pocketed")
+	device.remove_meta(&"pocketed")
+	_player.remove_child(device)
+	device.visible = true
+	device.collision_layer = was[0]
+	device.collision_mask = was[1]
+	device.freeze_mode = was[2]
+	device.freeze = false
+
+
 ## The cable a plug is on, if it's whole and plugged into nothing. A strong
 ## one that snapped is two loose plugs, not one piece.
 func _loose_cable(plug: Part) -> Cable:
@@ -198,11 +277,12 @@ func _loose_cable(plug: Part) -> Cable:
 	return null
 
 
-## Where a slot is drawn, and clicked, in the view.
+## Where a slot is drawn, and clicked, in the view: high enough that what's
+## under the row clears a radio's line of words at the foot of the screen.
 func slot_rect(at: int) -> Rect2:
 	var size := _view.get_rect().size
 	var row := slots.size() * SLOT.x + (slots.size() - 1) * GAP
-	return Rect2(Vector2((size.x - row) * 0.5 + at * (SLOT.x + GAP), size.y * 0.68), SLOT)
+	return Rect2(Vector2((size.x - row) * 0.5 + at * (SLOT.x + GAP), size.y * 0.62), SLOT)
 
 
 func _slot_at(point: Vector2) -> int:
@@ -217,6 +297,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		show_view(not open)
 		Sounds.play(self, Sounds.BAG_OPEN if open else Sounds.BAG_CLOSE)
 		get_viewport().set_input_as_handled()
+	elif open and hover != -1 and event.is_action_pressed("interact"):
+		# Over a slot, use is the slot's, whatever is in it; elsewhere it's the world's.
+		use(hover)
+		get_viewport().set_input_as_handled()
 
 
 func _on_view_input(event: InputEvent) -> void:
@@ -230,11 +314,37 @@ func _on_view_input(event: InputEvent) -> void:
 
 func _process(_delta: float) -> void:
 	if open:
+		_show_looks()
 		_view.queue_redraw()
 
 
-## A row of slots low in the middle of the view, the one under the mouse
-## lit, and what's at your waist under it.
+## Each slot's picture drawn again only if its thing or what it shows has
+## changed since; a compass's as its needle turns, read as you'd hold it up.
+func _show_looks() -> void:
+	if _looks.is_empty():
+		for i in slots.size():
+			_looks.append(SlotLook.new(PICTURE))
+			add_child(_looks[-1])
+	var face := Basis(Vector3.UP, _player.global_rotation.y)
+	for i in slots.size():
+		var look := _looks[i]
+		var thing := slots[i]
+		var now := [thing, _brief(thing) if thing != null else "", thing is Device and (thing as Device).powered]
+		if now != look.key:
+			look.key = now
+			look.show_thing(thing)
+		if thing is Compass:
+			look.turn_needle(Compass.turn(face, _player.world.moon.north()))
+
+
+## The picture of what's in a slot, for anything that reads the view.
+func look_of(at: int) -> SlotLook:
+	return _looks[at] if at < _looks.size() else null
+
+
+## A row of slots low in the middle of the view, each thing drawn with its
+## name and its number under it, the one under the mouse lit, and what's at
+## your waist under them.
 func _draw_view() -> void:
 	var corner := slot_rect(0).position
 	var row := slot_rect(slots.size() - 1).end.x - corner.x
@@ -246,8 +356,10 @@ func _draw_view() -> void:
 			2.0 if i == hover else 1.0)
 		var part := slots[i]
 		if part != null:
-			_text(&"Label", box.position + Vector2(5.0, 15.0), _name(part), SLOT.x - 10.0)
-			_text(&"Readout", box.position + Vector2(5.0, 31.0), _brief(part), SLOT.x - 10.0)
+			if i < _looks.size():
+				_view.draw_texture_rect(_looks[i].get_texture(), Rect2(box.position, Vector2(PICTURE)), false)
+			_text(&"Label", box.position + Vector2(6.0, PICTURE.y + 16.0), _name(part), SLOT.x - 12.0)
+			_text(&"Readout", box.position + Vector2(6.0, PICTURE.y + 32.0), _brief(part), SLOT.x - 12.0)
 	var tied := PackedStringArray()
 	for body in _player.waist.tied:
 		if is_instance_valid(body):
@@ -275,8 +387,19 @@ static func _name(part: RigidBody3D) -> String:
 	return part.get(&"label")
 
 
-## What's in a part that you'd want to know at a glance.
+## What's in a part that you'd want to know at a glance: a gadget's battery,
+## a radio's channel with it.
 static func _brief(part: RigidBody3D) -> String:
+	var device := part as Device
+	if device != null:
+		var cells := device.batteries()
+		var held := "%d Wh" % floori(cells.reduce(func(sum: float, c: Battery) -> float: return sum + c.charge_wh, 0.0)) \
+			if not cells.is_empty() else ""
+		var radio := part as Radio
+		if radio == null:
+			return held
+		var tuned := Radio.CHANNELS[radio.channel]
+		return tuned if held == "" else tuned + " · " + held
 	if part.has_meta(&"rolled_m"):
 		return "%.0f m" % part.get_meta(&"rolled_m")
 	if part is Supply:

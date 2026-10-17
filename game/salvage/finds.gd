@@ -13,7 +13,8 @@ extends RefCounted
 const SURFACE := &"surface"
 const DEEP := &"deep"
 ## What each layer holds, as [catalog id, weight]: loose parts, and whole
-## devices. Rope and wire are common; a harvester is a rare, better part.
+## devices. Rope and wire are common and a compass uncommon; a harvester is
+## a rare, better part.
 const PARTS := {
 	SURFACE: [
 		[&"battery", 4],
@@ -22,6 +23,7 @@ const PARTS := {
 		[&"canister", 2],
 		[&"coil", 3],
 		[&"plug", 3],
+		[&"compass", 1],
 	],
 	DEEP: [
 		[&"big_battery", 3],

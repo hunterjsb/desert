@@ -149,6 +149,7 @@ func finish(data: Dictionary) -> void:
 		suit.slots[i] = _make(rec) if rec != null else null
 	for pair in _states:
 		_set_state(pair[0], pair[1])
+	suit.carry_gadgets()
 	# Back on the board you rode, going as you were.
 	var rode: Dictionary = data.get("ride", {})
 	if not rode.is_empty() and _made.has(rode.board) and world.player.get_on(_made[rode.board]):

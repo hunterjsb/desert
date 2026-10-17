@@ -65,9 +65,10 @@ func run() -> void:
 	check(deep_stormed > deep_calm + RISE, "hours under a storm show more of the deep layer than hours mostly clear")
 	var where := func(id: StringName) -> String:
 		return "%d (%d on ruins' floors)" % [_kinds.get(id, [0, 0])[0], _kinds.get(id, [0, 0])[1]]
-	print("of %d finds: %s coils, %s plugs, %s strong plugs, %s survival kits, %s harvesters; seeds %d on open sand, %d in ruins"
-		% [samples.size(), where.call(&"coil"), where.call(&"plug"), where.call(&"strong_plug"),
-			where.call(&"survival_kit"), where.call(&"harvester"), _seeds[0], _seeds[1]])
+	print(("of %d finds: %s coils, %s plugs, %s strong plugs, %s survival kits, %s harvesters, %s radios, "
+		+ "%s compasses; seeds %d on open sand, %d in ruins") % [samples.size(), where.call(&"coil"),
+			where.call(&"plug"), where.call(&"strong_plug"), where.call(&"survival_kit"), where.call(&"harvester"),
+			where.call(&"radio"), where.call(&"compass"), _seeds[0], _seeds[1]])
 	var missing: Array[StringName] = []
 	for layer: StringName in Finds.PARTS:
 		for table: Array in [Finds.PARTS[layer], Finds.DEVICES[layer], Finds.IN_RUINS[layer].parts, Finds.IN_RUINS[layer].devices]:

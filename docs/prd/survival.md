@@ -133,8 +133,9 @@ Death means a new run (see Runs in the vision).
   your empty hands; clicking an empty slot puts what you hold into it. Clicking a full
   slot while you hold something that fits swaps them. The slot under the mouse is lit,
   and a click anywhere else in the view does nothing. You don't turn while it's open, and
-  take works on the world as ever, not on the slots. Closing it captures the mouse again,
-  as does a run ending while it's open.
+  take works on the world as ever, not on the slots; so does use, but over a slot it's the
+  slot's (below). Closing it captures the mouse again, as does a run ending while it's
+  open.
 - **Stakes go in too** (Hunter, 2026-10-16: "we should be able to put stakes in our inv"):
   a stake that isn't driven and has nothing tied to it goes in a slot as it is, and comes
   out to your hands ready to drive. A found one goes in once it's taken up. A driven
@@ -163,13 +164,50 @@ Death means a new run (see Runs in the vision).
   plays from you on its own battery, and the compass's needle turns live in its slot, so
   opening the inventory is a glance at it. Use on a slot uses the thing in place (turns the
   radio's dial); a click still brings it to your hands. Bigger devices still need your
-  hands or a mount.
+  hands or a mount. As built:
+  - **Each slot is a picture** of its own painted model, seen from a little above and to
+    one side (a compass nearly straight on, to read), with its name and its number under
+    it: water left, a ration's kcal, a coil's length, a battery's charge, and a radio's
+    channel with its battery's charge. The slots are bigger for it, 120 by 128 px. The
+    light is a clear day's, the world's own sun and sky colours, whatever the hour or the
+    weather outside, so a slot reads in a storm at night.
+  - **Cheap:** a slot's picture is drawn only while the view is open, once when what's in
+    it changes, and not again until it does; a compass's is drawn again only as its needle
+    turns. «COST»
+  - **Which devices go in:** those the catalog marks `pocket`, which only the radio is
+    (Devices & mods). The compass is a part, and every part goes in already. A flag says
+    what's meant, small enough to carry in the suit and made to work from it, where a size
+    or weight line would let in the survival kit or the light panel. A radio goes in with
+    nothing on it but its battery, so not with a cable in its port.
+  - **The radio in a slot** rides on you out of sight, touching nothing, and plays from you
+    on its own battery, its line of words showing as ever; the suit keeps the weather off
+    it. With the view open, use with the mouse over its slot turns its dial. Over any other
+    slot use does nothing, there or in the world, so it can't switch what you happen to be
+    looking at. A click brings it to your hands still playing. A save keeps it in its slot
+    with its channel, its beacon and its battery's charge; the save's shape didn't change,
+    so older saves load as they did.
 - **The compass** (2026-10-17): a small find, a part, whose needle points to the moon's
   north. Held, you read it in your hand; in a slot, in the inventory. The sun gives you the
   same without one: the moon has no tilt, so the sun rises due east and sets due west
   everywhere, stands to the south at noon north of the equator (north of you south of it,
   overhead on it), and morning shadows point west. A storm hides it; the compass doesn't
-  care.
+  care. As built:
+  - **A 12 cm field compass,** 0.2 kg, company issue: a gunmetal case, a bone card under a
+    black bezel, north marked on the card in safety yellow, and a needle whose red north
+    half glows a little, so it reads at night and in a storm. Nothing takes it: it's read,
+    not fitted.
+  - **Held flat** (taken up from the sand), it points north along the ground. **Held up**
+    (out of a slot, it comes to your hands facing you) it reads as if laid level with its
+    top away from you: north ahead is straight up the card, north on your right is to the
+    right. In its slot the inventory shows it the same way, turning as you turn.
+  - **Past a pole.** Walking over a pole turns the moon's north round (the moon position
+    keeps which way it lies), and the compass follows that, not the world's fixed axes: it
+    always points the way that takes you toward the north pole. The radio's spoken
+    bearings follow the same north, so the two never disagree. The sun doesn't yet: the
+    day is one clock for the whole moon, so past a pole the sun keeps the course it had,
+    rising in the compass's west. Turning it round there would make it jump at the pole.
+  - **Found** on the surface, one in nineteen of the surface layer's loose parts «FINDS»,
+    and the console's `give compass` puts one in your hands.
 - **The suit** is those slots plus its built-ins: air and radiation protection, free and
   drained by nothing. Its sockets for mods (heater, cooler, reclaimer, battery, harness
   hooks) wait for the full version, so in the skeleton the suit isn't a device yet.
@@ -329,6 +367,14 @@ Death means a new run (see Runs in the vision).
     round its threshold as a passing veil of dust would, it comes on once and stays on.
     Deep in a storm at night it's on, and lights the ground 10 m ahead at least as well
     as a device's lamp lights the sand 5 m off.
+12. **Gadgets work from a slot.** A radio playing in your hands goes in a slot whole and
+    plays on from you on its own battery. Use on its slot turns its dial, and its words
+    show; use on another slot does nothing, not even to the shield you're looking at. A
+    click brings it back to your hands still on, and a bigger device stays out.
+13. **The compass reads true.** Held flat it points north whichever way you face; held
+    up, north ahead is up its card and north on your right is right; in its slot the
+    inventory reads the same, live as you turn. Over a pole the needle turns round with
+    the moon's north, in your hand and in the slot.
 
 ## Out of scope
 

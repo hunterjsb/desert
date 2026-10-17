@@ -181,7 +181,7 @@ func _listen(delta: float) -> void:
 		else:
 			var far := Vector2(target.x - x, target.z - z).length()
 			said = "Beacon · a signal, right here" if far <= HERE \
-				else "Beacon · a signal, %s · %s" % [compass(beacon_bearing()), "faint" if far > FAINT
+				else "Beacon · a signal, %s · %s" % [_point(beacon_bearing()), "faint" if far > FAINT
 					else ("clear" if far > CLEAR else "strong")]
 			under = CARRIER
 			_every(delta, lerpf(PING_NEAR, PING_FAR, clampf(far / FAINT, 0.0, 1.0)), Sounds.RADIO_PING)
@@ -222,7 +222,7 @@ func _every(delta: float, seconds: float, stream: AudioStream) -> void:
 
 
 func _weather_words(t: float) -> String:
-	var from := compass(reading.from)
+	var from := _point(reading.from)
 	var wind := roundi(reading.wind)
 	var horizon := roundi(_tuning.radio_forecast_minutes)
 	if reading.stormy:
@@ -268,6 +268,12 @@ static func bearing(along: Vector2) -> float:
 ## A bearing as a station says it: the nearest of sixteen points.
 static func compass(degrees: float) -> String:
 	return POINTS[roundi(degrees / 22.5) % POINTS.size()]
+
+
+## A bearing from the world's -z, said by the moon's north where you are, as
+## a compass reads it: past a pole the two still agree.
+func _point(degrees: float) -> String:
+	return compass(degrees if world.moon.north().z < 0.0 else degrees + 180.0)
 
 
 ## Seconds as a station says them.

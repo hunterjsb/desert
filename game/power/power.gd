@@ -55,10 +55,18 @@ func stored_wh() -> float:
 	for node in _world.content.get_children():
 		if node is Battery:
 			total += node.charge_wh
-	for device in _world.devices():
+	for device in _devices():
 		for cell in device.batteries():
 			total += cell.charge_wh
 	return total
+
+
+## Everything that makes or draws power: your devices in the world, and the
+## gadgets working from your slots, each its own pool.
+func _devices() -> Array[Device]:
+	var all := _world.devices()
+	all.append_array(_world.player.suit.gadgets())
+	return all
 
 
 ## One tick, with every source reading the weather at the tick's own time,
@@ -190,7 +198,7 @@ func pool_wh(device: Device) -> float:
 func _pools() -> Array:
 	var devices: Array[Device] = []
 	var cables: Array[Cable] = []
-	for device in _world.devices():
+	for device in _devices():
 		if not device.wrecked():
 			devices.append(device)
 	for node in _world.content.get_children():

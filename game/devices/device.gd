@@ -16,6 +16,8 @@ signal parts_changed
 @export var frame_stats: Dictionary = {}
 ## Small enough to pick up and carry in your hands, like a stake.
 @export var carryable := false
+## A gadget that goes in a suit slot whole and works on from it, like the radio.
+@export var pocket := false
 ## The socket kind it seats in, like a shield on a top mount; none for most.
 @export var kind: StringName
 ## How much its draw matters when its pool runs short: lower ranks give way

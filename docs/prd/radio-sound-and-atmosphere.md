@@ -84,6 +84,10 @@ it and it crackles.
 - **The probes:** 1, 2, 4 and 5 are in `probes/radio`. Probe 3 is Bubble shield probe 1,
   which already walks you out through a bubble's shell and back a quarter metre at a time
   and checks the roar is muffled exactly inside it, so it isn't written twice.
+- **From a suit slot** (2026-10-17): it goes in whole, rides on you out of sight and plays
+  from you on its own battery, its line of words showing, and use on its slot in the
+  inventory turns the dial (Survival). Its spoken bearings, a beacon's or where storms come
+  from, are by the moon's north, so past a pole they agree with the compass.
 - **Not yet:** bumps crackling, distorted tracks in storms, more channels, lore, oracles,
   frequencies as finds and antennas.
 

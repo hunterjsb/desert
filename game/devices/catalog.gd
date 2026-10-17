@@ -68,6 +68,9 @@ const PARTS := {
 		"color": Color(0.95, 0.5, 0.1), "stats": {}},
 	&"fungus_caps": {"kind": &"food", "label": "Fungus caps", "mass": 0.4, "size": Vector3(0.14, 0.1, 0.08),
 		"color": Color(0.85, 0.8, 0.65), "stats": {}},
+	# Nothing takes a compass: it's read, in your hand or your slot.
+	&"compass": {"kind": &"compass", "label": "Compass", "mass": 0.2, "size": Vector3(0.12, 0.12, 0.03),
+		"color": Color(0.26, 0.28, 0.29), "stats": {}},
 }
 
 ## Frames: their box, weight, wind catch and sockets as [kind, position, outward].
@@ -160,9 +163,10 @@ const DEVICES := {
 			[&"port", Vector3(0.4, 0.0, 0.0), Vector3.RIGHT],
 		]},
 	# Music, the weather station and beacons, a channel a use. Carried, set
-	# down or seated on a top mount, it runs on its battery or what it sits on.
+	# down or seated on a top mount, it runs on its battery or what it sits on;
+	# in a suit slot, on its battery, playing from you.
 	&"radio": {"label": "Radio", "size": Vector3(0.32, 0.22, 0.16), "mass": 2.5, "radio": true, "fits": &"top",
-		"carryable": true,
+		"carryable": true, "pocket": true,
 		"sockets": [
 			[&"battery", Vector3(0.0, -0.02, -0.08), Vector3.FORWARD],
 			[&"port", Vector3(0.16, -0.035, -0.01), Vector3.RIGHT],
@@ -192,7 +196,8 @@ const DEVICES := {
 static func part(id: StringName) -> Part:
 	var spec: Dictionary = PARTS[id]
 	var made: Part = Battery.new() if spec.kind == &"battery" \
-		else (Supply.new() if Supply.HOLDS.has(spec.kind) else (Plant.new() if spec.has("crop") else Part.new()))
+		else (Supply.new() if Supply.HOLDS.has(spec.kind) else (Plant.new() if spec.has("crop") \
+		else (Compass.new() if spec.kind == &"compass" else Part.new())))
 	made.kind = spec.kind
 	made.label = spec.label
 	made.mass = spec.mass
@@ -217,6 +222,14 @@ static func part(id: StringName) -> Part:
 		made.seal()
 	if made is Plant:
 		(made as Plant).sow(spec.crop, spec.food, spec.color, spec.ripe)
+	if made is Compass:
+		var needle := MeshInstance3D.new()
+		needle.mesh = Dress.needle()
+		needle.transform = Compass.pose(0.0)
+		# Luminous, so it reads in the dark.
+		needle.set_instance_shader_parameter(&"lit", 1.0)
+		made.add_child(needle)
+		made.needle = needle
 	if spec.kind == &"tie":
 		# A line's end is small and gets dragged over the dunes at the wind's
 		# speed: swept, so it can't step through the sand in a tick.
@@ -309,6 +322,7 @@ static func device(id: StringName) -> Device:
 	made.kind = spec.get("fits", &"")
 	if spec.get("carryable", false):
 		made.carryable = true
+	made.pocket = spec.get("pocket", false)
 	var size: Vector3 = spec.size
 	made.frame_view = _add_box(made, size, Vector3.ZERO, Color(0.55, 0.55, 0.55), Dress.frame(id, size, spec.get("mast", 0.0)))
 	if spec.sockets.any(func(e: Array) -> bool: return e[0] == &"battery"):
