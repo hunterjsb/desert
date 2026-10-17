@@ -27,6 +27,9 @@ const OPEN_MARGIN := 0.05
 ## Your line of sight passing this near a device's frame still offers it what
 ## you hold, m.
 const NEAR_FRAME := 0.4
+## Empty-handed, your line of sight passing this near a part fitted under a
+## device looks at it, m: standing, it's out of sight under the frame.
+const UNDER := 0.15
 ## An offered socket leans what you hold at least this far in, 0 to 1, so the
 ## tug shows where it goes even with your aim off the spot.
 const OFFER := 0.35
@@ -445,6 +448,8 @@ func _look() -> void:
 	if hit.is_empty() or hit.collider is StaticBody3D:
 		_assist(eye)
 	if hit.is_empty():
+		if look_part == null and look_device == null:
+			_under()
 		return
 	sight_to = hit.position
 	look_point = hit.position
@@ -460,6 +465,34 @@ func _look() -> void:
 		look_device = body
 		look_socket = _outermost(look_device.socket_of(
 			look_device.shape_owner_get_owner(look_device.shape_find_owner(hit.shape)) as Node))
+	if look_part == null and look_socket == null:
+		_under()
+
+
+## Empty-handed, what a look at a device's frame, or just past one, finds under
+## it: the part fitted facing down that your line of sight passes nearest.
+func _under() -> void:
+	if held != null:
+		return
+	var best: Socket = null
+	var nearest := UNDER
+	var near: Array = [look_device] if look_device != null \
+		else _player.world.content.get_children() + _player.world.salvage.near(sight_from)
+	for child in near:
+		var device := child as Device
+		if device == null or device.host() != null or device.has_meta(&"buried") \
+				or device.global_position.distance_to(sight_from) > _tuning.reach + 2.0:
+			continue
+		for each in device.sockets():
+			if each.part == null or _frame_of(each).basis.z.y > -0.7:
+				continue
+			var d := _gap_to(device.global_transform, _shapes_box(each.fitted))
+			if d < nearest:
+				nearest = d
+				best = each
+	if best != null:
+		look_device = best.get_parent() as Device
+		look_socket = best
 
 
 ## Last on, first off: aimed at a hook with a line tied to it, it's the line's
@@ -533,9 +566,14 @@ static func _box_of(body: RigidBody3D) -> AABB:
 
 ## A body's bounds in its own frame, as its shapes stand now.
 static func _body_box(body: Node3D) -> AABB:
+	return _shapes_box(body.get_children())
+
+
+## The bounds of the shapes among some nodes, in their parent's frame.
+static func _shapes_box(nodes: Array) -> AABB:
 	var box := AABB()
 	var first := true
-	for child in body.get_children():
+	for child: Node in nodes:
 		var shape := child as CollisionShape3D
 		if shape != null and shape.shape != null:
 			var each := shape.transform * Catalog.bounds(shape.shape)
