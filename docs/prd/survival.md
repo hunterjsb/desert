@@ -86,6 +86,13 @@ Sources, from early to late:
 
 Open water doesn't last, so water lives in sealed containers.
 
+One more source sits in a fixed place (Agreed, session 4, part 3; not built). Mother Cistern's
+temple at Sister is dormant but "still drips a trickle into a basin: a reliable small water source
+until restored" ([World & terrain](world-and-terrain.md#landmarks), [Salvage &
+ruins](salvage-and-ruins.md#landmarks)). Every source above is carried, towed or found where you
+are. A basin you can return to is the opposite, so what it does to "your home goes with you" is
+open ([the lore](../lore-research.md#17-open-after-the-endings-session-and-session-4-part-3)).
+
 ## Food
 
 From farming, and from sealed rations in ruins.
@@ -162,11 +169,19 @@ What the game already has, as readings and not in the session:
   ([Movement](movement.md#the-hoverboard)), which holds one thing.
 - **Ruin beds.** "Some ruins have beds" ([Salvage & ruins](salvage-and-ruins.md)).
 - **Bare sand:** "Maybe sleep on bare sand if stable." Stable is the pre-sleep check above.
+- **The patrol board's bedroll** (session 4, part 3; not built). The Daventry kit has a bedroll to
+  "sleep out storms under the shield," on the board's own superchassis
+  ([Movement](movement.md#the-patrol-board-a-superchassis-agreed-session-4-part-3-not-built)).
+  That is the sleep proposal's sleeper in a bubble, with a strong shield "that can practically stay
+  on permanently" and a compact high-capacity battery to outlast the span. It needs no rack, since
+  the board carries it.
 
 **A bed opens sleep options.** "Sleep X hours, sleep until a time, sleep through the storm. Gear
 unlocks options; a radio adds some."
 
-**Radio clocks.** "Second-era religious broadcasts still air at reliable times." Readings: the
+**Radio clocks.** "Second-era religious broadcasts still air at reliable times." (The endings
+session, later the same day, repeats it from the Console doc: they "can serve as a sleep clock,"
+and says why they keep time, below.) Readings: the
 era is the Second Age, whose faith of Tu "dominates the Second Age" and whose daily rite is the
 noon eclipse, "predicted to the second" ([the lore](../lore-research.md#the-faith-of-tu-and-the-ai-gods-agreed-session-4-part-2)).
 A broadcast that airs at a fixed time of day is a clock that reads the real day, so it fits the
@@ -174,6 +189,19 @@ radio's rule that broadcasts read the real systems. It would be automatic, as th
 no eclipse yet and no clock you can read: the sun shows the day, and in a storm only the radio's
 music tells day from night, six to six. So a broadcast would give "sleep until a time" something
 to name.
+
+**Why they keep time (endings session, 2026-10-17).** Getting transmissions working is hard, and
+second-age people kept an arcane understanding of the transmitters in which debugging is ritual,
+"kept word for word." Radio priest is a role inside each god's cult, so a broadcast is a ritual
+procedure run the same way each time ([the
+lore](../lore-research.md#second-age-radio-and-its-priests-agreed-and-idea-endings-session)). The
+reading is that a procedure kept word for word does not drift, which is why it airs at reliable
+times. The session says only that they "still air at reliable times." Which god's broadcast serves
+as the clock is open. The Ledger has the strongest signal, so its broadcast is the easiest to
+find on any radio ([Radio, sound & atmosphere](radio-sound-and-atmosphere.md#second-age-broadcasts-agreed-and-idea-endings-session-not-built)),
+but whether the Ledger is still broadcasting when the player arrives is open too, and so is
+whether a broadcast carries a voice or only tones and numbers. The daily rite, the noon eclipse, is
+still the Second Age's own clock, and the radio's rule is that broadcasts read the real systems.
 
 **Its links.** [Power](power.md): the shield's draw by storm strength is what a sleep sums, and
 the sum has to be lived through. [Movement](movement.md): the rack. [Salvage &
@@ -584,3 +612,10 @@ folding it in raised. Each is quoted on both sides and left standing.
 - **The broadcasts and the era.** The session: "second-era religious broadcasts." Read here as
   the Second Age. In session 3's six eras the second is the war. Not said which is meant. The
   voice question is in [Radio, sound & atmosphere](radio-sound-and-atmosphere.md#open-questions).
+- **Which broadcast is the clock.** The endings session (2026-10-17): second-age broadcasts "still
+  air at reliable times and can serve as a sleep clock." Not said which god's broadcast, whether the Ledger is still on the air, or whether a clock has to be a
+  voice and not tones and numbers ([Radio, sound & atmosphere](radio-sound-and-atmosphere.md#open-questions)).
+- **A bubble on a board for sleeping.** Session 4, part 3: the patrol board's bedroll is there to
+  "sleep out storms under the shield." Here: a sleep through a storm is a sleep inside a
+  running shield whose pool outlasts the span, and the sleep session wants the camp checked for
+  stability first. Not said what "stable" means for a board, which has no camp.

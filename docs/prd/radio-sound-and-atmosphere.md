@@ -114,6 +114,57 @@ Readings, not in the session:
 The session also lists a loose radio ending, finding "the right frequencies to reach Tilg or the
 last town" ([the vision](../vision.md#landmarks-and-endings)). It isn't designed.
 
+### Second-age broadcasts (Agreed and Idea, endings session; not built)
+
+*The endings session ([endings and radio](../endings-and-radio-2026-10-17.md)); loose, and none of
+it is built. Each item keeps the session's own label ([the
+lore](../lore-research.md#second-age-radio-and-its-priests-agreed-and-idea-endings-session)).*
+- **Agreed.** Getting transmissions working is genuinely hard. With no manuals, second-age people
+  cobbled together an arcane, mythological understanding of the transmitters: how to run,
+  interpret and debug them. **Debugging is ritual, kept word for word.**
+- **Agreed.** Radio priest is a role inside each god's cult, not its own order, so broadcasts
+  sound like ritualised procedure. **Proposed voices:**
+  - **The Ledger:** tallies and cargo codes as psalms.
+  - **Mother Cistern:** gentle calls tied to rations and rain.
+  - **The Quartermaster:** muster calls, and an authentication challenge nobody can answer.
+  - **The Walker:** coordinates and bearings.
+  A "prayer" might be an old Tilg maintenance checklist.
+- **Agreed.** The Ledger has the strongest signal, being the smartest. Whoever holds Mon controls
+  the loudest voice on Zan, another stake in the crusades.
+- **Open.** Whether the Ledger is still broadcasting when the player arrives ("in a sense": it
+  still counts either way). Whether broadcasts still carry voices or only tones and numbers.
+- From the Console doc: second-age broadcasts still air at reliable times and can serve as a sleep
+  clock ([Survival](survival.md#sleep-proposed)).
+
+Readings, not in the session:
+- **They are more stations like the weather one.** Automated, on a schedule, read off the radio's
+  dial as the ghost relay is. A found channel, by "new channels are finds," or one every radio
+  hears, is not said.
+- **The Ledger loudest** reads as reach and level: the farthest a station is heard and the least
+  static under it. The radio's reach is "huge, with the exact range still to tune," so the Ledger
+  is the standard the others are tuned below. How loud is not said.
+- **A ritual that keeps word for word keeps its time.** That is why the broadcasts "air at
+  reliable times," and why the sleep proposal can use them as clocks. It is a reading.
+- **Rule 1 still holds if the text is real.** Broadcasts read the real systems. A checklist, a
+  cargo tally and the unfunded forecast Mother Cistern's order rehearses are real documents, not
+  invented lines. The Quartermaster's challenge and the Walker's bearings are the awkward two
+  (open questions).
+
+### Offstage states on the air (Agreed, session 4, part 3; not built)
+
+*Session 4, part 3 ([lore session](../lore-session-2026-10-17-part-3.md)); loose, and none of it is
+built.* The session's hard rule is no NPCs, no dialogue and no exposition, and "galaxy lore stays
+offstage until the endings." The war, Varran and Daventry appear in normal play only as faint
+radio ([the lore](../lore-research.md#the-wars-end-the-wall-and-the-states-of-the-players-time-agreed-session-4-part-3)).
+- **Varran** is heard only from the orbital station: above the storms the antenna hears Varran
+  broadcasts, the pathfinder's second step. The Varran settler's own radio is "tuned to home
+  frequencies it can't hear from the surface."
+- **Daventry** is the one with a seed on the surface: "hearing a Daventry broadcast hints they can
+  hear you." Its loudness value rises with dead-lane transmissions
+  ([Profile & saves](profile-and-saves.md#ending-flags-proposed)).
+- **Faint** is read as low in the mix and rare, in the radio's own terms (static, level, a channel
+  to find). Nothing else of the war reaches a radio.
+
 ## Sound
 
 Everything that matters can be heard, so you can read the world by ear:
@@ -195,7 +246,8 @@ Everything that matters can be heard, so you can read the world by ear:
 
 - **More music channels,** with more tracks from Hunter.
 - **Lore channels, the squatting oracles and signal decoding, and the maybe-voice.** The ghost
-  relay (above) is one more.
+  relay (above) is one more, and so are the second-age broadcasts and the faint offstage states
+  (both above).
 - **Frequencies as finds,** and antenna mods.
 - **Distorted tracks in storms.**
 - **The storm's approach staged in sound,** to match the wall.
@@ -247,3 +299,24 @@ standing.
   Not said whether a radio seated on the Console's top slot feeds the screen by being seated or
   needs a computer-mod port, or whether the screen replaces the line as how a broadcast is
   delivered (the question above).
+
+The endings session and session 4, part 3 (2026-10-17) add four. Each is quoted on both sides and
+left standing.
+
+- **The gods on the air against "no link."** Here: the lore's AI gods "speak only through
+  terminals" and "have no link to each other any more," and part 2's Launch ending needed
+  "bridging Mon and Han across open desert." The endings session: "Radio priest is a role inside each god's
+  cult," and "The Ledger has the strongest signal." Not said why a god heard across the desert
+  can't reach the others, or what the bridge adds if it is already on the air.
+- **Ritual text against rule 1.** Here: "Broadcasts read the real systems" and "never makes things
+  up." The session's proposed voices include Mother Cistern's calls "tied to rations and rain"
+  when it has never rained, the Quartermaster's "authentication challenge nobody can answer," and
+  the Ledger's tallies as psalms. A prayer "might be an old Tilg maintenance checklist," which is a
+  real text. Not said whether the rest are read from real documents or are invented ritual.
+- **The Walker's bearings against "never early."** The session: the Walker's voice is
+  "coordinates and bearings," and "finding it must never happen early." Here: a beacon already
+  gives a bearing to a find, and a find is guaranteed (rule 2). Not said how a bearing to the
+  Walker is kept from leading to it early.
+- **Voices and the Ledger.** Open in both sessions: "Whether the Ledger is still broadcasting when
+  the player arrives" and whether broadcasts carry "voices or only tones and numbers." Here, voice
+  acting is out of scope and the skeleton sounds tones with one line of words.

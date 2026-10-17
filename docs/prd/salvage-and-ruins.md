@@ -24,7 +24,8 @@ in. See [the lore research](../lore-research.md).
 - **Whole devices,** often with parts missing. You can haul one around (tray or rope)
   until you find what it needs, or strip it and fit its parts to your own devices.
 - **Fuel:** rare consumables, and fissile material if you're very lucky (Power).
-- **Seeds,** mostly in ruins (Farming).
+- **Seeds,** mostly in ruins (Farming), and in the Cistern order's seed vaults (proposed; see
+  Seed vaults, below).
 - **Survival kits:** a common find, usually holding seeds and water.
 - **Lore:** fragments of what happened here.
 - **Maker's marks:** almost everything found carries the mark of whoever made it, such as a
@@ -172,6 +173,30 @@ Readings, not in the session:
 - It is above ground in the sense this PRD means, built on top. The session also says "dug
   into," which would be a descent (open questions).
 
+## Seed vaults (Agreed, session 4, part 3; not built)
+
+*Session 4, part 3 ([lore session](../lore-session-2026-10-17-part-3.md)); loose, and none of it is
+built.* Mother Cistern's priestesses seeded hardy strains along pilgrim roads and irrigation lines
+as devotion, and those plantings went wild ([the
+lore](../lore-research.md#life-on-zan-feral-plants-agreed-session-4-part-3)). **The loot half, the
+session's own: the order's seed vaults hold preserved colonial seed stock that powers farming
+setups.** A line of feral scrub "tends to lead toward a Cistern shrine and water," so the plants
+point the way too.
+
+Readings, not in the session:
+- A vault is a find site of its own: a Second Age building (the order's religious symbols) holding
+  colonial stock, so like a crusader bunker it stacks two eras. The colonial layer already holds
+  "sealed seed stores, where the oldest seed is the best seed" ([the
+  lore](../lore-research.md#8-the-ground-strata-the-oldest-tech-and-names)), and the vaults are
+  where the order kept that stock.
+- "Seeds keep only out of the weather" ([Farming](farming.md)): a sealed vault is where they do.
+  Its seeds are the same kind of find as a ruin floor's, only more of them and better kept, a
+  seedling at nothing grown, ready to sow.
+- What "powers farming setups" means is not said. The game has two crops, carrots and fungus, and
+  no stock is better than another yet, so "better" has no number anywhere.
+- Where vaults stand is not said beyond the shrines the feral lines lead to. "Vault" also sounds
+  like a descent, against "nothing underground" (open questions).
+
 ## Landmarks
 
 *Agreed, session 4, part 2; loose, and none of it is built.* Landmarks are one general system,
@@ -190,6 +215,26 @@ What it means for this PRD, as readings:
 - A landmark can be big, a fortress round a mainframe or a bunker cut into a rift wall, where the
   notes put large structures out of scope for now. They are later work.
 
+**Sister (Agreed, session 4, part 3).** The first landmark with a description: "a fixed-coordinate
+prefab landmark: half-buried temple, dormant terminal, basin that refills slowly. Restoration and
+linking can wait for the endings work." It is Mother Cistern's temple city near Halfrise ([the
+lore](../lore-research.md#mother-cistern-and-her-order-agreed-session-4-part-3)). At the player's
+arrival the temple is abandoned, half buried and intact, and Mother Cistern is dormant but still
+drips a trickle into a basin, "a reliable small water source until restored." Readings, not in
+the session:
+- It is an unseeded ruin like the rest, and "half buried and intact" is the base case at a larger
+  scale: sand to its windows, with the roof standing. Large structures are later work.
+- The basin is a small piece of state, how full it is, kept as the landmark's record. "Refills
+  slowly" gives it a rate. The landmark rule keeps changes you made, not time that passed, so
+  whether it refills while you are away is not said.
+- Restoring and linking Mother Cistern are the Cistern axis ([Profile &
+  saves](profile-and-saves.md#ending-flags-proposed)) and wait for the endings work.
+- The Bastion is built round the freighter left behind, with the Ledger as its mind (Agreed,
+  endings session), so the Bastion and the Ledger, two candidates above, may be one place.
+- The endings need more fixed places: the sealed hangar deep in Aitch, the observatory on the far
+  side, the far-side ice and an orbital station. Whether each is a landmark is not said, and the
+  station is off the planet grid.
+
 ## People: only hinted
 
 There are no NPCs. The moon is empty, or *almost* empty, and we only ever hint at it:
@@ -199,6 +244,11 @@ There are no NPCs. The moon is empty, or *almost* empty, and we only ever hint a
 - Maybe a voice on the radio.
 
 The game never answers the question.
+
+**An idea from the endings session, not agreed:** the Okafor line, an underground bunker with a
+holdout. Session 4, part 3 says Zan has the last nomad city "and possibly a bunker holdout." A
+holdout would be a person, against the rule above, in a bunker underground, against this PRD's
+"nothing underground." The session says to develop it or drop it.
 
 ## What Sand Game taught us
 
@@ -372,6 +422,7 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
 - **Lore through item descriptions** that hint and never state.
 - **Radio frequencies.**
 - **Beds in some ruins** (proposed, 2026-10-17; [Survival](survival.md#sleep-proposed)).
+- **Seed vaults and Sister** (session 4, part 3; both above, neither built).
 - **The hints of people.**
 
 ## Probes
@@ -456,6 +507,22 @@ Session 4's clashes with what's above are quoted and left standing. Nothing here
 - **Landmarks against "Ruins never move" and "Chunks hold no state."** A landmark is fixed and
   keeps your changes (World & terrain, Landmarks). Whether it is a ruin with a different
   placement rule or a system of its own is not said.
+
+Session 4, part 3 (2026-10-17) adds three. Each is quoted on both sides and left standing.
+
+- **Seed vaults against "nothing underground."** Here: "Everything is above ground: there's no
+  digging and nothing underground." The session: "the order's seed vaults hold preserved colonial
+  seed stock." Not said whether a vault is a descent or a sealed building above the sand, as with
+  the buried bunker above. Not said where they stand, or what makes their stock better than a
+  seed found on a ruin's floor.
+- **A fixed basin against "finds are placed" and stateless ground.** Here: finds are laid when a
+  chunk loads, from the seed and the weather, and a chunk holds no state. The session: Sister's
+  "basin that refills slowly." Not said whether it refills while you are away, or what a player
+  who camps beside it for days gets (every other source in Survival is carried, towed or used
+  up).
+- **A holdout against "no NPCs."** Here: "There are no NPCs." The endings session's Okafor line,
+  "an underground bunker with a holdout," and part 3's "possibly a bunker holdout." Not said what
+  the player would see of a holdout, and the session puts it among the ideas to develop or drop.
 
 The sleep session (2026-10-17) adds two. Each is quoted on both sides and left standing.
 

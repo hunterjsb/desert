@@ -196,6 +196,12 @@ One per playstyle ([the vision](../vision.md#player-origins-and-kits)):
 - **Surveyor (the hybrid, the default):** a standard shield.
 - **Homesteader (the oyster):** a "solid shield," with no hover.
 
+Session 4, part 3's two novelty starts add two more shields ([the
+vision](../vision.md#player-origins-and-kits)). The Varran settler's is cheap. The Daventry patrol
+board's is "strong but narrow" and "can practically stay on permanently," seated on the board's
+superchassis ([Movement](movement.md#the-patrol-board-a-superchassis-agreed-session-4-part-3-not-built)).
+Neither is balanced, and neither has an Ironman mode.
+
 The notes had put "a normal shield, heavy enough not to be blown around" on "the nomad and
 oyster starts," and the docs read "nomad" as the hybrid. Session 4, part 2 makes the Nomad a
 different start (from the moving city, a mythic kit), so that reading is gone. Today there is

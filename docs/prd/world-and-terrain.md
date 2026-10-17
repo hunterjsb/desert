@@ -121,6 +121,22 @@ It bends two things here and leaves the rest alone:
 Rules 1 to 3, 5 and 6 are untouched: the ground is still one function, and a landmark is placed
 into it, never dug or moved.
 
+**Sister (Agreed, session 4, part 3).** Session 4, part 3 ([lore
+session](../lore-session-2026-10-17-part-3.md)) gives the first landmark a description: "a
+fixed-coordinate prefab landmark: half-buried temple, dormant terminal, basin that refills slowly.
+Restoration and linking can wait for the endings work." It is Mother Cistern's temple city, near
+Halfrise on the Rim ([Salvage & ruins](salvage-and-ruins.md#landmarks) has the site, [the
+lore](../lore-research.md#mother-cistern-and-her-order-agreed-session-4-part-3) the story).
+Readings, not in the session:
+- **Where it stands is a longitude question.** The Rim is a region of the sky's map, Tu half-risen
+  on the horizon, and the game has only latitude. Sister's coordinates wait for the regions
+  ([the vision](../vision.md#the-world)), and so do Halfrise and the other great sites.
+- **Its basin is state a chunk can't hold.** How full it is, and whether Mother Cistern is dormant,
+  restored or linked, belong with the landmark's record in the save, the reading above
+  ([Profile & saves](profile-and-saves.md#ending-flags-proposed)).
+- **It is one more fixed place on a map that has none,** so it leans on the same open question as
+  the other landmarks: how a fixed landmark sits on a seeded world (open questions).
+
 ## Tracks
 
 You leave tracks (Hunter, 2026-10-16: "otherwise impossible to navigate in the storm,
@@ -341,7 +357,8 @@ fail.
 - **How a fixed landmark sits on a seeded world.** Landmarks are "the same in every run,"
   while the vision has "RNG driving both the terrain and the finds." The terrain under a
   landmark would have to ignore the seed (Landmarks above). Whether "persist the player's
-  changes" means within a run or across runs is not said.
+  changes" means within a run or across runs is not said. Session 4, part 3's Sister adds a
+  place on the Rim, and the Rim needs longitude regions the game doesn't have yet.
 
 Chunk size and the exact view distance are tuning decisions. The skeleton measures
 them; they aren't design questions.

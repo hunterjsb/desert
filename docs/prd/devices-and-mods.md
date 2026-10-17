@@ -255,6 +255,50 @@ shield](bubble-shield-and-camp.md#the-smart-shield-proposed-not-built) has the d
 the session: any device that seats on a top mount could be smart the same way, since a seated
 device already stays a body of its own on the host's power pool.
 
+**Ending-linked Console pieces (endings session; proposed, not built).** The endings give the
+Console two late uses ([the vision](../vision.md#landmarks-and-endings)):
+- **A Walker taken whole (Agreed).** "Take the whole Walker onto a chassis: works as a Console
+  with full weather sensing built in (like two fully modded weather Consoles), leaving its slots
+  free for other mods. Important late game." A deck is one data system (above), so the Walker
+  reads as a Console on the deck chassis, and it lines up with "roughly two linked Consoles" for
+  a storm mini-map ([Wind & storms](wind-and-storms.md#instruments-and-the-console-screen-proposed)).
+  Not said: what frame a legged robot is, or whether it stands on a deck mount, which takes one
+  device the size of a crate.
+- **Captured hive mind tech (Idea).** Sealed deep in the black site, it "looks like an incredibly
+  powerful Console mod," the endings session's route for a human to consume the other gods.
+  Session 4, part 3 makes that ending hive mind start only, so this is an Idea with a clash
+  ([lore research](../lore-research.md#17-open-after-the-endings-session-and-session-4-part-3)).
+  As a part it is a computer mod (a kind of its own, in the socket types below), found in a
+  landmark and never crafted.
+
+## The patrol board as a superchassis (proposed, not built)
+
+*Session 4, part 3 ([lore session](../lore-session-2026-10-17-part-3.md)). Direction, not a spec:
+no number is set and none of it is built.* The Daventry patrol board's build note asks for "mount
+points for a shield, battery, radio, condenser, bedroll and tow, as a chassis rather than
+special-cased slots," and says this "also generalises the existing board."
+[Movement](movement.md#the-patrol-board-a-superchassis-agreed-session-4-part-3-not-built) has the
+board's side: the kit, its weakness of few slots, and the clash with "It tows nothing."
+
+Against what is built, as readings and not in the session:
+- **It is a rule this PRD already has.** A device's abilities come from its parts (rule 4), and a
+  frame is a list of sockets. The built board is a frame with one battery slot and one port, and it
+  fits a crate's rack (the frames table). A superchassis is a frame with more sockets of the same
+  kinds, and "a chassis rather than special-cased slots" is the existing no-one-off-exceptions line.
+- **Most of its gear has a socket kind already.** A battery goes in a battery slot, a radio on a
+  top mount, a shield on a top mount or a deck mount, and a condenser on a deck mount (a crate-sized
+  one stands on one now; a "tiny condenser" is a smaller one, which the session doesn't describe).
+  A tow is a ring mount with a hook, which already ties rope, so it needs no new kind. A bedroll
+  shares the crate's rack in the sleep proposal ([Survival](survival.md#sleep-proposed)), so it
+  wants a rack-like mount here, the one thing the socket table doesn't have.
+- **Few slots is a count, not a kind.** The rack, the deck mounts and the rest are sized for a
+  crate or a 1 m piece. A 1.3 m board carrying a shield, a battery, a radio, a condenser and a
+  bedroll is a question of size the session doesn't answer.
+- **Sockets save by list index,** so any new socket goes at the end of the frame's list, the
+  Console session's rule.
+- **A new frame beside the board, or the board's frame with more sockets,** is the session's
+  "generalises" and is not said. Either way the kit's board, racked on a crate, is unchanged.
+
 ## What Sand Game taught us
 
 - **Snapping happened on contact.** Anything that bumped a sticky area got stuck, even
@@ -582,6 +626,19 @@ a water socket of its own on top, so a canister or another hose goes on there to
   kilogram floated, or something else of the frame's. The notes give no numbers for any era.
 - **Where the tuning mods go.** A low-power tuning mod needs a mod mount, and only the planter
   has one. Whether the crate, the shield and the rest get one is not said.
+
+Session 4, part 3 (2026-10-17) adds three. Each is quoted on both sides and left standing.
+
+- **A bedroll needs a mount.** Here: the crate has one rack, which holds the board (Movement). The
+  sleep session: bedrolls share the board's mount on a crate. The session: the patrol board carries
+  a bedroll of its own. Not said whether a board's bedroll mount is the rack's kind.
+- **A tow on a board.** Here: the board "tows nothing" and has one battery slot and one port. The
+  session: a "Tow" among the board's gear. Not said whether it is a ring mount with a hook or
+  something of its own, or how strong it is against a board that "digs in" under a haul.
+- **The Walker on a deck mount.** Here: a deck mount takes "a crate frame, a condenser, either
+  shield or a charger," one device the size of a crate. The endings session: the whole Walker goes
+  "onto a chassis" and works as a Console. Not said whether it fits a deck mount or has a frame of
+  its own.
 
 The Console session (2026-10-17) is direction, not a spec. Its own open questions come first, then
 what folding it in raised. Each is quoted on both sides and left standing.
