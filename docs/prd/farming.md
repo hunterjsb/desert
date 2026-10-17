@@ -23,7 +23,13 @@ ordinary crops starve for light while fungus gets the darkness and the steady
 temperature it wants. Away from the equator the swings get too wide for it.
 
 **Every crop needs water.** A planter holds its own water, which you top up from
-sealed containers or a condenser. That ties the farm to the daily water rhythm: water
+sealed containers or a condenser. **Canisters attach, and hoses carry water** (Hunter,
+2026-10-17: "instead of pressing use with a water cannister on the planter, we should
+attach the cannister. the same port should allow attaching a *hose* which is like the
+cable, it carries water, it tethers but not as strong as rope"). A planter has a water
+socket, as the condenser does. Fit a canister into it and the planter draws from it into
+its tank as it drinks; use with a canister no longer pours. The same socket takes a hose's
+end instead (Survival). That ties the farm to the daily water rhythm: water
 you harvest at dawn keeps the crops alive through the heat.
 
 **Seeds are found,** mostly in ruins. Survival kits are a common find, usually with

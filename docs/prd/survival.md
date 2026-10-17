@@ -187,6 +187,14 @@ Death means a new run (see Runs in the vision).
   full from your slots, from the least full canister or ration first, so one empties and
   frees up before the next is opened. Use a canister or ration you hold to drink or eat
   your fill.
+- **The hose** (Hunter, 2026-10-17: "like the cable, it carries water, it tethers but not
+  as strong as rope"). Two ends on a length of hose, each fitting a water socket with the
+  same snap as a canister: the condenser's, a planter's. Each water socket takes one thing,
+  a canister or a hose's end. Hosed devices share their water as cabled ones share power:
+  a condenser hosed to a planter fills its tank, and with a hose in place of its canister
+  its water goes straight down the hose. A hose holds what it joins together like a common
+  cable, and parts sooner than rope: pulled too hard, an end pops out of its socket. Rolled
+  up, it goes in a slot like a cable.
 - **The three harms,** in health a second: the storm 0.25 at full intensity, wind 0.01 for
   each m/s past 20, and temperature 0.05 for each degree past the suit's limits of −40 and
   75 °C. Empty, starving takes 0.1 and thirst 0.3. Unharmed, fed and watered, you heal

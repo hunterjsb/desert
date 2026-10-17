@@ -265,6 +265,7 @@ floater out of pieces:
 | Top mount | Solar panels, instruments such as the radio, lamps, the shield generator | Power and others |
 | Rack | The hoverboard, seated along a crate's side, riding and charging with it (Hunter, 2026-10-16) | Movement |
 | Plant slot (small, large) | Seedlings | Farming |
+| Water socket | A canister or a hose's end, one at a time (2026-10-17) | Survival, Farming |
 | Deck mount | One device standing on a chassis piece: a crate, a condenser, a shield, a charger (2026-10-17) | Devices & mods |
 
 **As built, what each frame has** (2026-10-16):
