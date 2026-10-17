@@ -149,7 +149,7 @@ that ignored the weather.
   lost its seeds and one on a ruin's floor holds them. Over thousands of chunks, 58 of
   99 seeds were in ruins. A found seed is a seedling at nothing grown, ready to sow. The
   harvester is a rare deep part, the rarest part on open sand.
-- **The playtest scenario** ("farm" in the scenario menu) starts you fed and watered on
+- **The playtest scenario** ("farm" among the dev scenarios) starts you fed and watered on
   a clear morning with a storm due in one and a half to three minutes. Two hover
   planters float in front of you, each on a line to a stake, sown with three carrots
   and a fungus started part grown: the carrots at 85%, so they ripen within a minute in

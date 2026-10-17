@@ -81,9 +81,9 @@ save and quick load.
 
 - **One theme** (`game/ui/theme.tres`, set as the project's) used by every UI: the
   survival bars, the inventory view, the look-at readout, the keys list, the death
-  caption, the dev overlay and the scenario menu. Geist for text, Geist Mono for
+  caption, the dev overlay and the dev console. Geist for text, Geist Mono for
   readouts (the bars' water and food, what's in a slot, the look-at line, the dev
-  overlay's numbers), from the official release, with their licence, in `assets/fonts/`.
+  overlay's numbers, the console), from the official release, with their licence, in `assets/fonts/`.
   Off-white text, dark semi-transparent panels, and the teal accent for danger: a bar
   under a quarter (health, hunger or thirst) turns teal. Keys on screen are a soft
   lavender for now, one colour in the theme (`Palette/key`), until the open question
@@ -112,6 +112,21 @@ save and quick load.
   the fade; New run is New game in Normal, on a new seed, the save deleted. Dying before
   the run has ever been saved offers only New run. In Ironman there's no screen: the
   caption says you died and a new run begins at once.
+- **The dev console** (`game/dev/console.gd`), opened by the console action in a run with
+  nothing else open: a small dark panel near the top of the screen, a line to type into
+  under the last few lines it said. While it's up every key goes to it and nothing
+  reaches the game: held keys wait as under a menu, the mouse is free, and the world
+  runs on. Back closes it before anything else, and so does the console action. Up and
+  down step through what was typed, and the focus-next key finishes a command's name, a
+  scenario's key or a catalog id. Each command is a thin call into the game: `help`;
+  `scenarios`, and `scenario <key>`, which replaces the scenario menu; `fly`; `warp [n]`,
+  alone stepping x1, x10, x60; `gravity [m/s²]`, alone low gravity or back; `time <0–1>`,
+  on to the next such moment of the day; `give <id> [n]`, a part into your hands, or a
+  device, a stake, a coil or a cable at your feet, by catalog id; and `fresh`, fed,
+  watered and whole on a fresh suit's kit. The keys list and Options' controls list
+  show the console action and the dev overlay's under a heading of their own, and the
+  function keys the dev tools held now go to quick save and quick load (Profile & saves).
+  The look-tests keep their own keys and have no console.
 - **Options:** volume, fullscreen, vsync and render scale (confirm steps a value on,
   menu left and right change it either way), kept on this machine in
   `user://settings.cfg`, apart from the profile; the controls list, read-only, every key
@@ -125,9 +140,10 @@ save and quick load.
   keeps you in the run and asks.
 - The dev scenarios (`-- --scenario=<key>`) still start straight into a run, which is
   never saved: no Save, Quit to menu in place of Save & quit, and no autosave, so the
-  player's own save is left as it was.
+  player's own save is left as it was. A run the console's `scenario` has been used in
+  is the same from then on.
 - `look/menus` shoots the main menu and the system menu, to judge by eye.
-- Probes 1–7 pass, each proven against a broken build. Probes 3, 4 and 7 use the real
+- Probes 1–8 pass, each proven against a broken build. Probes 3, 4 and 7 use the real
   saves, kept in each probe's own folder; probe 3 is the whole trip: New game, Save &
   quit out on the sand, Resume, and you're back where you were.
 
@@ -156,6 +172,9 @@ save and quick load.
 7. **Death in Normal.** Saved from the system menu, you die elsewhere: the screen offers
    Load last save, highlighted, and New run, and back leaves it up. Load puts you back
    where and when you saved; New run starts a fresh run on a new seed.
+8. **The dev console.** Its action opens it over a run; typed and held keys reach only
+   it, `warp 4` runs the clock four times as fast and `scenario dusk` puts you at dusk in
+   a run that's never saved; back closes it and nothing else, and so does its action.
 
 ## Out of scope
 

@@ -3,19 +3,25 @@ extends CanvasLayer
 ## The one root of the menus, owning focus and the back action. Back closes
 ## the topmost thing open, a menu or else a panel of the game's (the
 ## inventory), and in a run with nothing open brings up the system menu.
-## Nothing here pauses: the menus only draw over a world that keeps running.
+## The dev console is topmost of all while it's open. Nothing here pauses:
+## the menus only draw over a world that keeps running.
 
 ## Gameplay panels that back closes join this group and answer close(),
 ## saying whether they had anything open to close.
 const PANELS := &"ui_panels"
 ## The screen takes this long to go black, or to come back, s.
 const FADE_SECONDS := 0.5
+## A note such as Saved stays this long before it fades, s.
+const NOTE_SECONDS := 1.5
 
 var main: Main
+var console: Console
 ## Open menus, the topmost last.
 var _menus: Array[Words] = []
 var _fade: Panel
 var _fading := false
+var _note: Label
+var _note_fading: Tween
 
 
 func _enter_tree() -> void:
@@ -36,6 +42,20 @@ func _ready() -> void:
 	_fade.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_fade.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_fade.modulate.a = 0.0
+	_note = Label.new()
+	_note.theme_type_variation = &"MenuNote"
+	_note.uppercase = true
+	_note.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_note.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	_note.offset_left = -300.0
+	_note.offset_right = 300.0
+	_note.offset_top = 72.0
+	_note.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_note.modulate.a = 0.0
+	add_child(_note)
+	console = Console.new()
+	console.ui = self
+	add_child(console)
 	add_child(_fade)
 
 
@@ -46,7 +66,32 @@ func is_open() -> bool:
 ## Nothing you hold down acts in the game meanwhile: the move keys polled
 ## each tick never come as events this could stop.
 func holds_input() -> bool:
-	return is_open() or _fading
+	return is_open() or _fading or console.visible
+
+
+## A word on how something went, such as a quick save, that fades by itself.
+func note(text: String) -> void:
+	_note.text = text
+	_note.modulate.a = 1.0
+	if _note_fading != null:
+		_note_fading.kill()
+	_note_fading = _note.create_tween()
+	_note_fading.tween_interval(NOTE_SECONDS)
+	_note_fading.tween_property(_note, "modulate:a", 0.0, FADE_SECONDS)
+
+
+## The console over a run with nothing else open: typing goes to it.
+func open_console() -> void:
+	if is_open() or main == null or not main.in_run():
+		return
+	console.open()
+	Controls.free_mouse(true)
+
+
+func close_console() -> void:
+	console.close()
+	if main != null and main.in_run() and not is_open():
+		Controls.free_mouse(false)
 
 
 func is_fading() -> bool:
@@ -59,6 +104,7 @@ func top() -> Words:
 
 ## Opens a menu over whatever is open, with its first word highlighted.
 func open(menu: Words) -> void:
+	console.close()
 	if not _menus.is_empty():
 		_menus.back().cover()
 	_menus.append(menu)
@@ -81,7 +127,9 @@ func close_top() -> void:
 		Controls.free_mouse(false)
 
 
+## Everything open, the console too: the run is changing over, or is over.
 func close_all() -> void:
+	console.close()
 	while not _menus.is_empty():
 		var menu: Words = _menus.pop_back()
 		remove_child(menu)
@@ -89,6 +137,9 @@ func close_all() -> void:
 
 
 func back() -> void:
+	if console.visible:
+		close_console()
+		return
 	if not _menus.is_empty():
 		if not top().root:
 			Sounds.play(get_tree().root, Sounds.MENU_BACK, Sounds.UI)
@@ -114,8 +165,12 @@ func fade(to_black: bool) -> void:
 
 
 ## Nothing gets through while the screen fades, not even to a menu's words.
-func _input(_event: InputEvent) -> void:
+## The console closes before its line would take the key that closes it.
+func _input(event: InputEvent) -> void:
 	if _fading:
+		get_viewport().set_input_as_handled()
+	elif console.visible and (event.is_action_pressed(&"console") or event.is_action_pressed(&"ui_cancel")):
+		back()
 		get_viewport().set_input_as_handled()
 
 
@@ -123,8 +178,11 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed(&"ui_cancel"):
 		back()
 		get_viewport().set_input_as_handled()
-	elif is_open() and not event is InputEventMouseMotion:
-		# A menu is up: nothing reaches the game behind it.
+	elif event.is_action_pressed(&"console") and not console.visible:
+		open_console()
+		get_viewport().set_input_as_handled()
+	elif (is_open() or console.visible) and not event is InputEventMouseMotion:
+		# A menu or the console is up: nothing reaches the game behind it.
 		get_viewport().set_input_as_handled()
 
 
@@ -201,10 +259,7 @@ func options() -> Words:
 func controls() -> Words:
 	var menu := Words.new("Controls")
 	var list := Controls.keys_label()
-	var lines := PackedStringArray()
-	for pair: Array in Controls.HELP:
-		lines.append("%s  %s" % [Controls.bbcode(pair[0]), Controls.bbcode(pair[1])])
-	list.text = "\n".join(lines)
+	list.text = Controls.help()
 	var panel := PanelContainer.new()
 	panel.add_child(list)
 	menu.add_body(panel)

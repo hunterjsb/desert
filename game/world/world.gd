@@ -7,9 +7,11 @@ extends Node3D
 
 signal origin_shifted(by: Vector2i)
 
-## Dev only: F5 runs the clock faster so storms and days pass while you watch.
+## Dev only: the console's warp steps the clock through these, so storms and
+## days pass while you watch.
 const TIME_WARPS: Array[float] = [1.0, 10.0, 60.0]
-## Dev only: F6 swaps to the body research's leaning, about 0.45 g, to feel it.
+## Dev only: the console's gravity swaps to the body research's leaning, about
+## 0.45 g, to feel it.
 const LOW_GRAVITY := 4.4
 
 var tuning := Tuning.current()
@@ -182,7 +184,7 @@ const BELOW_SAND := 0.3
 const SAND_SLOP := 0.04
 
 ## Bodies found below the sand and put back on top. Never zero means a bug:
-## every world probe fails on it, and it's on F3.
+## every world probe fails on it, and it's on the dev overlay.
 var rescued := 0
 
 
@@ -219,13 +221,6 @@ func teleport(body: PhysicsBody3D, to: Transform3D) -> void:
 func set_gravity(g: float) -> void:
 	gravity = g
 	PhysicsServer3D.area_set_param(get_world_3d().space, PhysicsServer3D.AREA_PARAM_GRAVITY, g)
-
-
-func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed("dev_time_warp"):
-		time_warp = TIME_WARPS[(TIME_WARPS.find(time_warp) + 1) % TIME_WARPS.size()]
-	elif event.is_action_pressed("dev_gravity"):
-		set_gravity(LOW_GRAVITY if gravity == tuning.gravity else tuning.gravity)
 
 
 func _physics_process(delta: float) -> void:
