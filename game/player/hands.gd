@@ -353,6 +353,8 @@ static func describe(label: String, mass: float, stats: Dictionary) -> String:
 		bits.append("%d kcal stored" % roundi(stats.stored_kcal))
 	if stats.get("seeds", 0) > 0:
 		bits.append("%d seed%s" % [stats.seeds, "" if stats.seeds == 1 else "s"])
+	if stats.has("tuned"):
+		bits.append(stats.tuned)
 	if stats.has("found"):
 		bits.append("%s find" % stats.found)
 	if stats.get("dark", false):

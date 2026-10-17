@@ -39,7 +39,13 @@ charged board at your feet by a small camp. The Movement PRD's probes keep their
 numbers, 1 to 7; the on-foot probes built with Stage 5 are 8 to 14. Stage 11's sound
 pass was pulled forward the same day: softer fitting and a softer suit, new sounds for
 most actions, World and UI buses, and the whole mix levelled (Radio, sound &
-atmosphere, "As built"); the radio waits.
+atmosphere, "As built"). The radio finished Stage 11 on 2026-10-17 and waits at the
+gate. It's a device you carry or seat on a top mount, and use turns its dial through Sand
+Game's music by day and by night, a weather station reading the storm field ahead, and a
+beacon pointing at the find in a ruin's hall. Its static comes in ahead of a storm and
+stays in the bubble. It's a find, and the "radio" scenario sets one at your feet with a
+shield and a storm 300 m off. Radio probe 3 is Bubble shield probe 1, so it isn't
+written twice.
 
 ## The loop we're building toward
 
@@ -253,7 +259,8 @@ storm, and a sound pass over everything built so far, using Sand Game's recordin
 
 **You play:** sit out a storm with the radio on. Follow a beacon.
 
-**Probes:** Radio, sound & atmosphere 1–5.
+**Probes:** Radio, sound & atmosphere 1, 2, 4 and 5. Probe 3 is Bubble shield 1, passing
+since Stage 6.
 
 ## Stage 12: The loop
 

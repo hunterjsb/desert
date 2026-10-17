@@ -40,6 +40,7 @@ const DEVICES := {
 		[&"planter", 2],
 		[&"stake", 2],
 		[&"survival_kit", 1],
+		[&"radio", 2],
 	],
 	DEEP: [
 		[&"crate_frame", 2],
@@ -119,6 +120,8 @@ const HALL_PARTS := 2
 const RUIN_FINDS := Vector2i(2, 4)
 ## Loose finds are set down this far above what they'll rest on, m.
 const DROP := 0.03
+## Whether a ruin has a beacon left running draws from its chunk's stream here.
+const BEACON := 200
 
 
 ## How hard the weather has been at a place, 0 to 1: over the last
@@ -193,6 +196,23 @@ static func plan(run_seed: int, coord: Vector2i, exposed: float, tuning: Tuning,
 			_fill(spec, each, HALL_PARTS if k == 0 else 0, true)
 			found.append(spec)
 	return found
+
+
+## What the nearest beacon within reach of a world place points at: the
+## device in a ruin's hall, which every ruin holds whatever the weather, in
+## one of the ruins the seed left a beacon running in, passing over any
+## `taken(coord, index)` says is yours already. {x, z, coord, index} in world
+## metres, or {} if none is in reach.
+static func beacon(run_seed: int, sites: RuinSites, x: float, z: float, tuning: Tuning, taken: Callable) -> Dictionary:
+	var size := float(tuning.chunk_size)
+	var ruin := sites.nearest(x, z, tuning.radio_reach_m, func(middle: Vector2i) -> bool:
+		var coord := Vector2i(floori(middle.x / size), floori(middle.y / size))
+		return _stream(run_seed, coord, BEACON).randf() < tuning.beacon_share and not taken.call(coord, IN_RUIN))
+	if ruin == null:
+		return {}
+	var at := ruin.to_world(Ruin.SPOTS[0])
+	return {"x": at.x, "z": at.y, "coord": Vector2i(floori(ruin.center.x / size), floori(ruin.center.y / size)),
+		"index": IN_RUIN}
 
 
 ## Where a find lies and which way, then its layer and whether it's a

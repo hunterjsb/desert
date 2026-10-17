@@ -96,6 +96,31 @@ func around(x: float, z: float, radius: float) -> Array[Ruin]:
 	return found
 
 
+## The nearest ruin within `radius` m of a world place whose middle `wanted`
+## keeps, or null. The test is asked before the ground is surveyed, so one
+## of the seed alone spares the surveys a wide search would cost.
+func nearest(x: float, z: float, radius: float, wanted: Callable) -> Ruin:
+	if not _on:
+		return null
+	var from := Vector2(x, z)
+	var lo := Vector2i(floori((x - radius) / _cell), floori((z - radius) / _cell))
+	var hi := Vector2i(floori((x + radius) / _cell), floori((z + radius) / _cell))
+	var near: Array[Vector3i] = []
+	for j in range(lo.y, hi.y + 1):
+		for i in range(lo.x, hi.x + 1):
+			var spot := _spot(Vector2i(i, j))
+			if Vector2(spot.x, spot.y).distance_to(from) <= radius:
+				near.append(spot)
+	near.sort_custom(func(a: Vector3i, b: Vector3i) -> bool:
+		return Vector2(a.x, a.y).distance_squared_to(from) < Vector2(b.x, b.y).distance_squared_to(from))
+	for spot in near:
+		if wanted.call(Vector2i(spot.x, spot.y)):
+			var ruin := _site(Vector2i(floori(float(spot.x) / _cell), floori(float(spot.y) / _cell)), spot)
+			if ruin != null:
+				return ruin
+	return null
+
+
 ## A cell's candidate: its middle (x, z) in world metres, and quarter turns.
 func _spot(cell: Vector2i) -> Vector3i:
 	var code := _spots[(cell.x & (TABLE - 1)) * TABLE + (cell.y & (TABLE - 1))]

@@ -89,16 +89,32 @@ func storm_at(x: float, z: float, t: float) -> float:
 	return clampf(raw_storm_at(x, z, t) / _ramp, 0.0, 1.0)
 
 
+## How far a front's outflow has risen at a place, 0 to 1: from a lead ahead
+## of the front to full just past it. The wind blows harder by it, and the
+## sand it drives charges up, so a radio's static rises with it too.
+func outflow_at(x: float, z: float, t: float) -> float:
+	return clampf((raw_storm_at(x, z, t) + _lead) / (_lead + _ramp), 0.0, 1.0)
+
+
+## The wind without its gusts, m/s, in world x and z: the prevailing wind and
+## a front's outflow along it, what a forecast can speak of.
+func steady_wind_at(x: float, z: float, t: float) -> Vector2:
+	return _steady(t, outflow_at(x, z, t))
+
+
 ## The wind, m/s, in world x and z: the prevailing wind, gusts that ride it,
 ## and outflow blowing hardest just ahead of a front and inside it.
 func wind_at(x: float, z: float, t: float) -> Vector2:
-	var prevailing := prevailing_at(t)
-	var raw := raw_storm_at(x, z, t)
-	var outflow := clampf((raw + _lead) / (_lead + _ramp), 0.0, 1.0)
+	var outflow := outflow_at(x, z, t)
 	var d := drift_at(t)
 	var gust := _gust.get_noise_3d(x - d.x, z - d.y, t * _gust_evolve) \
 		* lerpf(_gust_strength, _gust_storm_strength, outflow)
-	return (prevailing + prevailing.normalized() * _outflow * outflow) * (1.0 + gust)
+	return _steady(t, outflow) * (1.0 + gust)
+
+
+func _steady(t: float, outflow: float) -> Vector2:
+	var prevailing := prevailing_at(t)
+	return prevailing + prevailing.normalized() * _outflow * outflow
 
 
 ## Seconds from t until the storm state at a place flips, looking at most
