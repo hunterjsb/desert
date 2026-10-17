@@ -276,8 +276,11 @@ floater out of pieces:
   hands, the part you look straight at comes out. A tray, out of sight under its device
   when you stand, comes out as easily (2026-10-17): a look at the frame's lower edge, or
   just under it, within 15 cm of the tray, is a look at the tray, and use there still
-  sets it floating or resting; the rest of the frame still takes hold of the device. With
-  a part in hand, take near a device with a free socket of its kind fits it there, so to
+  sets it floating or resting; the rest of the frame still takes hold of the device. On
+  the frame itself that's only its lowest 15 cm, and never more than its lowest 30%
+  (Hunter, 2026-10-17: "its hard to select a chassis, it almost always selects its hover
+  tray"), so a chassis piece, 12 cm thick, is the piece by its top and edges. With a
+  part in hand, take near a device with a free socket of its kind fits it there, so to
   set a part down, look at the sand clear of the device.
 - **Sliding a tray under a resting device** works from a standing look at it, from any
   side, and lifts the device onto it.
@@ -464,7 +467,8 @@ hook. That's how found mods expand a device.
     before. Saved resting, it resumes resting.
 14. **Trays come out standing.** Standing by a floating crate, a look at its frame's lower
     edge or just under it is a look at its tray: use there still sets the crate resting,
-    and take takes the tray out. A look at the frame's middle still takes hold of it.
+    and take takes the tray out. A look at the frame's middle still takes hold of it. A
+    standing look at a chassis piece's top or edge is the piece, not its tray.
 15. **The ghost in sight.** A socket offered on a crate's far side shows no ghost through
     the crate; walk round and it does, and a tray's shows under it.
 16. **One rigid deck.** Five pieces joined by hand into a long L sit flush on the grid,
@@ -478,10 +482,12 @@ hook. That's how found mods expand a device.
     nothing, and a tray under every piece floats it again, drawing for all it holds up.
     Use sets the whole deck resting and floating. Light again, its trays bunched along one
     edge, it tips its far edge onto the sand and draws for less than its weight.
-18. **A crate on a deck.** Having hold of a crate beside a deck, its nearer deck mount is
-    offered and take stands it there. It takes a battery into its own slot by hand, a
-    light shield goes onto the other piece, and the deck floats on the crate's batteries
-    while the shield runs on them, one pool. Take has the crate off into your hold.
+18. **A crate on a deck.** Having hold of a crate beside a deck with its own tray in, no
+    deck mount is offered and the readout says to take the tray off first; tray out, its
+    nearer deck mount is offered and take stands it there. It takes a battery into its own
+    slot by hand, a light shield goes onto the other piece, and the deck floats on the
+    crate's batteries while the shield runs on them, one pool. Take has the crate off into
+    your hold, clear of the deck, even with a tray an older save left in it.
 19. **Any outer piece comes off** (replacing "last joined, first off"). Three pieces in a
     row: aimed at the middle one, the readout says take drags the whole deck, and it does,
     nothing coming off. Aimed at the first piece joined, the readout says it comes off,

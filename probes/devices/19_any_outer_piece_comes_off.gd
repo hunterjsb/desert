@@ -40,6 +40,8 @@ func run() -> void:
 	var off := hands.held as Chassis
 	check(took and off != null and off.deck == null and off.parts().has(hook) and deck.pieces().size() == 2
 		and not deck.parts().has(hook), "take has it off into your hands, its hook with it")
+	if off == null:
+		return
 	var seen := {"through": false}
 	await simulate(0.6, func() -> void: seen.through = seen.through or off != null and overlaps(off, deck))
 	check(not seen.through and hands.phase == Hands.Phase.HELD, "out across its ring, never through the deck")
