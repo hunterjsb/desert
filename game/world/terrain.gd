@@ -25,6 +25,8 @@ const SAND_SHADER := preload("res://game/world/sand.gdshader")
 
 ## The sand's look, chosen at setup; a look-test may set its own first.
 var sand_material: Material
+## The marks left on the sand, which it's drawn with.
+var tracks: Tracks
 
 var _world: World
 var _tuning: Tuning
@@ -67,6 +69,9 @@ func setup(world: World) -> void:
 		_indices[step] = ChunkBuild.indices_for(_size / step)
 	_far = GeometryInstance3D.new()
 	add_child(_far)
+	tracks = Tracks.new()
+	add_child(tracks)
+	tracks.setup(world, sand_material)
 
 
 func _process(_delta: float) -> void:

@@ -90,6 +90,16 @@ static var _current: Tuning
 ## The camera's exposure: everything on screen, sky and storms with the ground.
 @export var exposure: float = 1.0
 
+@export_group("Tracks")
+## The ground round you that keeps your marks: texels a side, and metres a
+## texel. Marks further off are forgotten.
+@export var track_cells: int = 4096
+@export var track_texel: float = 0.25
+## How long the wind takes to fill a fresh, full-depth mark, minutes: in calm
+## air, and in a full storm. A footprint reads until about two thirds filled.
+@export var track_calm_minutes: float = 90.0
+@export var track_storm_minutes: float = 20.0
+
 @export_group("Weather")
 ## One full day and night, start to finish.
 @export var day_minutes: float = 20.0
