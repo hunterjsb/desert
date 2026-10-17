@@ -35,6 +35,9 @@ const DRIFT_TO := deg_to_rad(8.0)
 ## Where the sand under it and the sand round it meet, the ground it rides
 ## is eased over about this much height, m.
 const EASE := 0.4
+## Flying, its tilt follows the sand below at this share of the pull it has
+## lying on it.
+const AIR_LIE := 0.1
 
 var player: Player
 var board: Hoverboard
@@ -123,8 +126,10 @@ func step(delta: float, dir: Vector2, hop: bool, brake := 0.0, kick := false, cr
 	pressing = 0.0
 	_tilt_was = Vector3(pitch, roll, bank)
 	_ahead_was = ahead
-	if hop and gap < 0.2 and not _hopping:
-		vy += t.board_hop
+	# A hop springs off the hover while it still holds the sand, higher from a
+	# crouch: get low into a crest and pop off its top.
+	if hop and gap < t.board_hold_reach and not _hopping:
+		vy += t.board_hop + t.board_pop * player.low
 		_hopping = true
 	for i in n:
 		var when := world.time + i * h * world.time_warp
@@ -155,13 +160,25 @@ func step(delta: float, dir: Vector2, hop: bool, brake := 0.0, kick := false, cr
 		gap = y - ground - t.board_ride_height
 		# Its spring is stiff pressed down and soft lifting off, its force
 		# the same either way at ride height, so nothing jolts as it crosses it.
+		# Its pull back down only holds while the sand is near: past that it's
+		# let you go, and you fly under gravity alone.
 		var w := TAU * (t.board_hover_hertz if gap < 0.0 else t.board_settle_hertz)
 		var lift := -w * w * gap - 2.0 * t.board_hover_damping * TAU * t.board_hover_hertz * (vy - rise)
+		var contact := clampf(1.0 - gap / REACH, 0.0, 1.0)
 		if _hopping and gap > 0.0:
 			lift = -g * t.board_hop_fall
 		else:
-			lift = maxf(lift, -g - t.board_hold)
+			lift = maxf(lift, -g - t.board_hold * clampf(1.0 - gap / t.board_hold_reach, 0.0, 1.0))
 			_hopping = _hopping and (gap > 0.0 or vy > rise)
+		# Coming down, it brakes your fall evenly enough to meet the sand at
+		# its pace by ride height, once that takes about its cushion, and
+		# harder if the sand rises to meet you: a landing from high up is a
+		# firm press, never a slam.
+		var closing := rise - vy
+		if closing > 0.0 and gap > 0.0:
+			var need := closing * closing / (2.0 * gap)
+			var cushion := t.board_cushion
+			lift = maxf(lift, minf(lerpf(-g, need, clampf(2.0 * need / cushion - 1.0, 0.0, 1.0)), 3.0 * cushion))
 		vy += lift * h
 		y += vy * h
 		var lowest := _lowest(middle, nose, tail)
@@ -169,7 +186,6 @@ func step(delta: float, dir: Vector2, hop: bool, brake := 0.0, kick := false, cr
 			hit = maxf(hit, rise - vy)
 			y = lowest
 			vy = maxf(vy, rise)
-		var contact := clampf(1.0 - gap / REACH, 0.0, 1.0)
 		pressing += lift * contact / n
 
 		# Your legs work against what the hover holds you with beyond your
@@ -233,12 +249,13 @@ func step(delta: float, dir: Vector2, hop: bool, brake := 0.0, kick := false, cr
 			velocity = velocity.rotated(turn)
 			var bleed := t.board_drift_slide if drifting else t.board_drift_drag
 			velocity *= maxf(0.0, 1.0 - bleed * absf(sin(slip - turn)) * contact * h)
-		# The hover's drag is against the ground, the air's against the wind.
+		# The hover's drag is against the ground, so in the air only the air's
+		# is left, and that's against the wind.
 		var wind := world.weather.felt_wind(Vector3(at.x, y + 1.0, at.y), when)
 		var air := velocity - Vector2(wind.x, wind.z)
 		var catch := lerpf(1.0, t.crouch_catch, player.low)
 		speed = velocity.length()
-		velocity -= (drag * (1.0 - t.board_air_share) * speed * velocity
+		velocity -= (drag * (1.0 - t.board_air_share) * contact * speed * velocity
 			+ drag * t.board_air_share * catch * air.length() * air) * h
 		if pushing == 0.0 and _stroke == 0:
 			velocity = velocity.move_toward(Vector2.ZERO, t.board_coast * contact * h)
@@ -247,10 +264,12 @@ func step(delta: float, dir: Vector2, hop: bool, brake := 0.0, kick := false, cr
 			if speed > 0.05:
 				velocity *= sqrt(maxf(0.0, speed * speed + 2.0 * pumped)) / speed
 		# It lies along the sand and leans into the carve as its hover pulls
-		# you round, each settling as a spring would: never a snap.
+		# you round, each settling as a spring would: never a snap. Flying,
+		# you turn it slowly to the sand below, so it lands along it.
 		var lean := clampf(atan2(turn / h * velocity.length(), g), -BANK, BANK)
-		_settle(Vector3(lerpf(pitch, atan((nose - tail) / (2.0 * _half)), contact),
-			lerpf(roll, atan(across), contact), lean), h)
+		var lie := maxf(contact, AIR_LIE)
+		_settle(Vector3(lerpf(pitch, atan((nose - tail) / (2.0 * _half)), lie),
+			lerpf(roll, atan(across), lie), lean), h)
 		at += velocity * h
 		_came += velocity.length() * h
 

@@ -7,8 +7,10 @@ extends Node
 ## crossing it loses that device. This watches the edge nearest along your way
 ## and warns you twice before you cross it, timed by your speed: once as you
 ## near it, and a last time with enough left to turn back even flat out on a
-## board. The look is a skeleton's (Movement PRD, open question): a soft chime
-## and one line of the suit's text at the top of the view.
+## board. Each comes once and stays up until you're clearly back in range,
+## however your way swings. The look is a skeleton's (Movement PRD, open
+## question): a soft chime and one line of the suit's text at the top of the
+## view.
 
 signal warned(level: int)
 signal lost(labels: PackedStringArray)
@@ -16,8 +18,13 @@ signal lost(labels: PackedStringArray)
 ## Warned once, then warned last.
 const FIRST := 1
 const LAST := 2
-## Clear again by this share past the first warning's lines, it can warn again.
+## Back from the edge by this share more than where the first warning came,
+## you're clearly in range again and it can warn again.
 const REARM := 1.25
+## The line counts down once the edge is as near in time as the first
+## warning's, and gives the distance again once it's this many times further
+## off: you've turned back, not carved.
+const COUNT_UNTIL := 2.0
 ## A loss is told this long, s.
 const LOST_SECONDS := 5.0
 ## The first in the theme's plain text, the last and a loss as its warning,
@@ -26,6 +33,8 @@ const DANGER := &"Warning"
 
 ## What's been told since you were last clear: 0, FIRST or LAST.
 var told := 0
+## What the line says now, "" when it's down.
+var said := ""
 ## Seconds until the nearest edge along your way at your pace, INF if you're
 ## not heading for one; and metres to the nearest edge any way.
 var seconds := INF
@@ -35,6 +44,10 @@ var _player: Player
 var _tuning := Tuning.current()
 ## The devices watched last tick, by instance id: [label, chunk].
 var _watched := {}
+## Metres from the edge you're clearly back in range, from the first warning.
+var _clear := INF
+## Whether the line counts down, or gives the distance.
+var _counting := false
 var _line: Label
 var _shown := 0.0
 var _voice: AudioStreamPlayer
@@ -75,7 +88,7 @@ func camp() -> Array[Device]:
 	return mine
 
 
-func _physics_process(_delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	var world := _player.world
 	if world == null:
 		return
@@ -101,25 +114,33 @@ func _physics_process(_delta: float) -> void:
 	var level := LAST if seconds <= _tuning.range_last_seconds or near <= _tuning.range_last_m \
 		else (FIRST if seconds <= _tuning.range_first_seconds or near <= _tuning.range_first_m else 0)
 	if level > told:
+		if told == 0:
+			_clear = maxf(near, _tuning.range_first_m) * REARM
 		told = level
 		_voice.stream = _chimes[level]
 		_voice.play()
 		warned.emit(level)
-	elif level == 0 and seconds > _tuning.range_first_seconds * REARM and near > _tuning.range_first_m * REARM:
+	elif told > 0 and near > _clear:
 		told = 0
+	if seconds <= _tuning.range_first_seconds:
+		_counting = true
+	elif seconds > _tuning.range_first_seconds * COUNT_UNTIL:
+		_counting = false
+	_shown -= delta
+	if _shown <= 0.0:
+		said = ""
+		if told > 0:
+			var when := "lost in %d s" % ceili(seconds) if _counting else "%d m from the edge" % maxi(0, ceili(near))
+			said = ("LAST WARNING · camp %s · turn back" if told == LAST else "Leaving camp range · %s") % when
 	Dev.put("range/edge", "%s · %.0fm" % ["-" if seconds == INF else "%.0fs" % seconds, near] if near < INF else "-")
 	Dev.put("range/told", ["-", "first", "LAST"][told])
 
 
 func _process(delta: float) -> void:
-	_shown -= delta
-	if told > 0:
-		var when := "lost in %d s" % ceili(seconds) if seconds < INF and _player.velocity.length() > 0.5 \
-			else "%d m from the edge" % ceili(near)
-		_line.text = ("LAST WARNING · camp %s · turn back" if told == LAST else "Leaving camp range · %s") % when
-		_line.theme_type_variation = DANGER if told == LAST else &""
-		_shown = 0.0
-	_line.modulate.a = move_toward(_line.modulate.a, 1.0 if told > 0 or _shown > 0.0 else 0.0, delta * 6.0)
+	if said != "":
+		_line.text = said
+		_line.theme_type_variation = DANGER if told == LAST or _shown > 0.0 else &""
+	_line.modulate.a = move_toward(_line.modulate.a, 1.0 if said != "" else 0.0, delta * 6.0)
 
 
 ## Devices gone since last tick because you went too far from them.
@@ -132,8 +153,7 @@ func _tell_losses(watching: Dictionary, here: Vector2i, keep: int) -> void:
 			gone.append(was[0])
 	if gone.is_empty():
 		return
-	_line.text = "Camp lost · %s" % ", ".join(gone)
-	_line.theme_type_variation = DANGER
+	said = "Camp lost · %s" % ", ".join(gone)
 	_shown = LOST_SECONDS
 	_voice.stream = _chimes[0]
 	_voice.play()

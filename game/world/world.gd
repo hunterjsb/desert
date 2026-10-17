@@ -254,8 +254,12 @@ func _physics_process(delta: float) -> void:
 
 
 ## Nothing physical is ever outside collision: a body whose ground is gone is
-## frozen until it returns, and forgotten once its chunk is.
+## frozen until it returns, and forgotten once its chunk is. That's as soon as
+## you're too far for its chunk to be kept, not whenever streaming gets round
+## to letting it go, so the camp is lost exactly where it's said to be.
 func _keep_bodies_on_ground() -> void:
+	var here := terrain.chunk_at(player_world_x(), player_world_z())
+	var keep := tuning.view_radius + 1
 	for child in content.get_children():
 		var body := child as RigidBody3D
 		# What's on you, or under you on a board, goes where you go.
@@ -263,7 +267,8 @@ func _keep_bodies_on_ground() -> void:
 			continue
 		var x := world_x(body.global_position.x)
 		var z := world_z(body.global_position.z)
-		if not terrain.is_loaded_at(x, z):
+		var off := terrain.chunk_at(x, z) - here
+		if not terrain.is_loaded_at(x, z) or maxi(absi(off.x), absi(off.y)) > keep:
 			body.queue_free()
 		elif not terrain.has_collision_at(x, z):
 			if not body.freeze:
