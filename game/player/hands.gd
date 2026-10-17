@@ -315,8 +315,6 @@ func hold(body: RigidBody3D) -> void:
 func scroll(notches: int) -> bool:
 	if not reel.working():
 		return false
-	if reel.notch(notches):
-		return true
 	var by := notches * Reel.NOTCH
 	if grasp.body != null:
 		var box := _box_of(grasp.body)
@@ -427,7 +425,11 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("reel_in") or event.is_action_pressed("pay_out"):
 		# Each wheel step is a press: a notch.
-		if scroll(1 if event.is_action_pressed("reel_in") else -1):
+		if reel.working() and reel.notch(1 if event.is_action_pressed("reel_in") else -1):
+			get_viewport().set_input_as_handled()
+	# Exactly, so the line's ctrl and the wheel never move what you hold too.
+	elif event.is_action_pressed("bring_near", false, true) or event.is_action_pressed("push_out", false, true):
+		if scroll(1 if event.is_action_pressed("bring_near", false, true) else -1):
 			get_viewport().set_input_as_handled()
 
 
