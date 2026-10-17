@@ -46,5 +46,5 @@ func run() -> void:
 		"running short, the tray gives way at the reserve and the crate settles on the sand")
 	check(seen.dark == 0, "the shield on it keeps its power (%d frames dark)" % seen.dark)
 	check(seen.rose > seen.rested and seen.rose_wh >= (Power.RESERVE + Power.RESTART) * cell.capacity() - 0.1
-		and absf(clearance(crate) - world.tuning.hover_height) < 0.2,
+		and absf(clearance(crate) - crate.rest_height()) < 0.2,
 		"the panel brings the battery back and the crate floats again")

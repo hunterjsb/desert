@@ -440,6 +440,7 @@ static func _tethered(world: World, id: StringName, right: float, ahead: float) 
 			var part := Catalog.part(fill)
 			world.content.add_child(part)
 			device.fit(part, socket)
+	device.global_position.y += device.rest_height() - world.tuning.hover_height
 	var stake := Catalog.stake()
 	var at := device.global_position - player.global_basis.z * CAMP_STAKE_AHEAD
 	world.content.add_child(stake)

@@ -20,7 +20,7 @@ func run() -> void:
 	var shield: ShieldGenerator = kit.filter(func(n: Node) -> bool: return n is ShieldGenerator)[0]
 	await simulate(3.0)
 	var draw := crate.demand_w()
-	check(absf(clearance(crate) - world.tuning.hover_height) < 0.1 and draw > 0.0,
+	check(absf(clearance(crate) - crate.rest_height()) < 0.1 and draw > 0.0,
 		"the kit crate starts floating, its tray drawing %.0f W" % draw)
 
 	check(await _use_at(crate), "use at the crate's frame does something")
@@ -37,7 +37,7 @@ func run() -> void:
 
 	check(await _use_at(crate), "use at the frame again")
 	await simulate(5.0)
-	check(absf(clearance(crate) - world.tuning.hover_height) < 0.1 and absf(crate.demand_w() - draw) < 1e-3,
+	check(absf(clearance(crate) - crate.rest_height()) < 0.1 and absf(crate.demand_w() - draw) < 1e-3,
 		"and it floats again, drawing as before")
 
 	await _use_at(crate)

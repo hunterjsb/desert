@@ -127,6 +127,7 @@ func _floating(f: float, s: float) -> Device:
 			if socket.kind == part.kind and socket.part == null:
 				planter.fit(part, socket)
 				break
+	planter.global_position.y += planter.rest_height() - world.tuning.hover_height
 	_props.append(planter)
 	return planter
 

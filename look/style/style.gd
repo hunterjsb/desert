@@ -173,7 +173,7 @@ func _build_camp() -> void:
 					break
 		var size: Vector3 = Catalog.DEVICES[entry[0]].size
 		var floats: bool = entry[4].has(&"hover_tray")
-		var at := _engine(Vector3(entry[1], world.tuning.hover_height if floats else size.y * 0.5 + 0.02, entry[2]))
+		var at := _engine(Vector3(entry[1], device.rest_height() if floats else size.y * 0.5 + 0.02, entry[2]))
 		device.global_transform = Transform3D(turn * Basis(Vector3.UP, deg_to_rad(entry[3])), at)
 		device.freeze = true
 		camp.append(device)

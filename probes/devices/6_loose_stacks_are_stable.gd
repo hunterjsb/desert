@@ -41,7 +41,7 @@ func run() -> void:
 	check(not invalid, "nothing went to invalid numbers")
 	check(crept < 0.02, "the stack didn't creep (%.4f m)" % crept)
 	check(fastest < 0.01, "and didn't jitter (fastest %.4f m/s)" % fastest)
-	check(absf(clearance(crate) - Tuning.current().hover_height) < 0.05, "the crate kept floating")
+	check(absf(clearance(crate) - crate.rest_height()) < 0.05, "the crate kept floating")
 
 	# The gust: a gale from the west, felt through the weather like any wind.
 	var tuning := Tuning.current()

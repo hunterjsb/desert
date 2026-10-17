@@ -1,8 +1,9 @@
 extends DeckProbe
 ## Profile & saves probe 12: a deck resumes. A deck of three pieces in an L,
-## two of them turned, trays under all, floats moored to a stake by a hook on
-## one of its rings, a crate standing on it with its batteries and a hook of
-## its own, a light shield running on another piece. Saved and resumed into
+## two of them turned, left when the first piece joined came off its end,
+## trays under all, floats moored to a stake by a hook on one of its rings, a
+## crate standing on it with its batteries and a hook of its own, a light
+## shield running on another piece. Saved and resumed into
 ## a fresh world on the same seed, the same deck stands where it was: its
 ## pieces on the same places of its grid and turned as they were, every tray,
 ## the crate on the same piece with its charge, the shield running, the line
@@ -14,9 +15,12 @@ var saves: Node
 func run() -> void:
 	saves = get_node(^"/root/Saves")
 	await load_lines()
-	var deck := piece(spot(0.0, 4.0))
-	deck.join(piece(spot(-3.0, 1.0)), ring(deck, Vector2i.ZERO, Vector2i(1, 0)), 1)
-	deck.join(piece(spot(-3.0, 2.5)), ring(deck, Vector2i(1, 0), Vector2i(0, 1)), 2)
+	var deck := piece(spot(-1.0, 4.0))
+	deck.join(piece(spot(-3.0, -0.5)), ring(deck, Vector2i.ZERO, Vector2i(1, 0)))
+	deck.join(piece(spot(-3.0, 1.0)), ring(deck, Vector2i(1, 0), Vector2i(1, 0)), 1)
+	deck.join(piece(spot(-3.0, 2.5)), ring(deck, Vector2i(2, 0), Vector2i(0, 1)), 2)
+	# The first piece off, another takes over the deck's own frame.
+	deck.detach(deck).free()
 	for i in 3:
 		fit_part(deck, &"hover_tray")
 	var crate := Catalog.device(&"crate_frame")
@@ -49,7 +53,7 @@ func run() -> void:
 	check(moved < 1e-3 and str(after) == str(before), "the same deck, where it was (%.5f m off)" % moved)
 	await simulate(4.0)
 	var again := _reading(decks[0])
-	check(again.hovering and again.running and again.lines == 1 and absf(clearance(decks[0]) - world.tuning.hover_height) < 0.15,
+	check(again.hovering and again.running and again.lines == 1 and absf(clearance(decks[0]) - decks[0].rest_height()) < 0.1,
 		"and it floats on, moored, its shield running")
 
 
@@ -62,7 +66,7 @@ func _reading(deck: Chassis) -> Dictionary:
 		standing.append([str(seated.get_meta(&"catalog")), on.cell, snappedf(seated.charge_share(), 1e-4)])
 	return {"at": Vector3(world.world_x(deck.global_position.x), deck.global_position.y, world.world_z(deck.global_position.z)),
 		"pieces": deck.pieces().map(func(p: Chassis) -> Array: return [p.cell, p.turns]),
-		"short": deck.stats().trays_short, "standing": standing, "mass": snappedf(deck.mass, 1e-3),
+		"lift": deck.stats().lift_kg, "standing": standing, "mass": snappedf(deck.mass, 1e-3),
 		"hovering": deck.stats().hovering, "running": (deck.mounted().filter(func(d: Device) -> bool:
 			return d is ShieldGenerator)[0] as ShieldGenerator).running(),
 		"lines": world.ropes.ropes.filter(func(r: Rope) -> bool: return r.a.holder == deck or r.b.holder == deck).size()}

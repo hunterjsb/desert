@@ -31,8 +31,12 @@ const OPEN_MARGIN := 0.05
 ## you hold, m.
 const NEAR_FRAME := 0.4
 ## Empty-handed, your line of sight passing this near a part fitted under a
-## device looks at it, m: standing, it's out of sight under the frame.
+## device looks at it, m: standing, it's out of sight under the frame. A look
+## at the frame itself counts only this low on it, and only in this share of
+## its height, so a thin frame like a chassis piece is still itself by its top
+## and edges.
 const UNDER := 0.15
+const UNDER_SHARE := 0.3
 ## An offered socket leans what you hold at least this far in, 0 to 1, so the
 ## tug shows where it goes even with your aim off the spot.
 const OFFER := 0.35
@@ -233,13 +237,13 @@ func grab() -> bool:
 		salvage.claim(look_device)
 		_take_out(look_device, look_socket)
 		return true
-	# Last joined, first off: the piece joined last comes off when you aim at
-	# it; at any other, you take hold of the whole deck.
+	# A piece the rest of the deck holds together without comes off when you
+	# aim at it; at any other, you take hold of the whole deck.
 	var deck := look_device as Chassis
-	if deck != null and deck.last() != null and deck.piece_at(look_point) == deck.last():
+	if deck != null and deck.outer(deck.piece_at(look_point)):
 		if riding:
 			return false
-		_unjoin(deck)
+		_unjoin(deck, deck.piece_at(look_point))
 		return true
 	if look_device != null and look_device.carryable:
 		if riding and _player.waist.carries_line(look_device):
@@ -370,9 +374,8 @@ static func describe(label: String, mass: float, stats: Dictionary) -> String:
 		bits.append("%d hook%s" % [hooks, "" if hooks == 1 else "s"])
 	if stats.get("pieces", 1) > 1:
 		bits.append("%d pieces" % stats.pieces)
-	var short: int = stats.get("trays_short", 0)
-	if stats.get("lift_kg", 0.0) > 0.0 and short > 0:
-		bits.append("%d tray%s short" % [short, "" if short == 1 else "s"])
+	if stats.has("take"):
+		bits.append(stats.take)
 	if stats.get("lift_kg", 0.0) > 0.0:
 		bits.append("floats %d kg" % roundi(stats.lift_kg))
 	if stats.get("resting", false):
@@ -511,10 +514,21 @@ func _look() -> void:
 		look_part = body
 	elif body is Device:
 		look_device = body
-		look_socket = _outermost(look_device.socket_of(
-			look_device.shape_owner_get_owner(look_device.shape_find_owner(hit.shape)) as Node))
+		var met := look_device.shape_owner_get_owner(look_device.shape_find_owner(hit.shape)) as Node
+		look_socket = _outermost(look_device.socket_of(met))
+		if look_socket == null and not _low_on(look_device, met as CollisionShape3D, hit.position):
+			return
 	if look_part == null and look_socket == null:
 		_under()
+
+
+## Whether a look meets a frame low enough to mean what's fitted under it.
+func _low_on(device: Device, frame: CollisionShape3D, point: Vector3) -> bool:
+	if frame == null or frame.shape == null:
+		return true
+	var box := frame.transform * Catalog.bounds(frame.shape)
+	var up := (device.global_transform.affine_inverse() * point).y - box.position.y
+	return up <= minf(UNDER, box.size.y * UNDER_SHARE)
 
 
 ## Empty-handed, what a look at a device's frame, or just past one, finds under
@@ -671,7 +685,11 @@ func _take_off(device: Device) -> void:
 	var from := host.seat_of(device)
 	if not device.carryable:
 		host.dismount(from)
-		_player.world.teleport(device, device.global_transform.translated(_frame_of(from).basis.z * LIFT_OFF))
+		# Clear of all that's fitted under its foot too, so it never starts off
+		# inside what it stood on.
+		var below := device.seat().origin.z + _shapes_box(device.get_children()).position.y
+		_player.world.teleport(device, device.global_transform.translated(
+			_frame_of(from).basis.z * (maxf(-below, 0.0) + LIFT_OFF)))
 		grasp.take(device)
 		_stood = from
 		_play(Sounds.UNSEAT)
@@ -690,13 +708,14 @@ func _take_off(device: Device) -> void:
 	_play(Sounds.UNSEAT)
 
 
-## The last piece joined comes off the deck the way it went on, out along the
-## ring it joined at while the deck holds still, then to your hand; with a
-## device standing on it, too heavy to carry, you have hold of it instead.
-func _unjoin(deck: Chassis) -> void:
-	var from := deck.last().joined_at
+## A piece comes off the deck the way one goes on, out across a ring it
+## leaves while the deck holds still, then to your hand; with a device
+## standing on it, too heavy to carry, you have hold of it instead.
+func _unjoin(deck: Chassis, off: Chassis) -> void:
+	var at := deck.global_transform * off.pose().origin
 	var was := {"freeze": deck.freeze, "velocity": deck.linear_velocity, "spin": deck.angular_velocity}
-	var piece := deck.unjoin()
+	var piece := deck.detach(off)
+	var from := deck.ring_to(at)
 	_play(Sounds.UNSEAT)
 	if not piece.carryable:
 		_player.world.teleport(piece, piece.global_transform.translated(_frame_of(from).basis.z * LIFT_OFF))
@@ -738,6 +757,10 @@ func _find_stand() -> void:
 						nearest = d
 						best = socket
 		if best != null and not _stands_clear(device, best):
+			best = null
+		# The deck's trays carry what stands on it; its own would sit in the deck.
+		if best != null and device.has_tray():
+			say("take its tray off first")
 			best = null
 	if best != stand:
 		stand = best
@@ -1002,6 +1025,9 @@ func _takes(each: Socket) -> bool:
 		return false
 	if held is Chassis and each.kind == &"ring":
 		return (held as Chassis).fits_in(each) and _room_for(_seat(each), each.get_parent())
+	# Standing on a deck, a device takes no tray: the deck's carry it.
+	if held is Part and (held as Part).stats.get("lift_kg", 0.0) > 0.0 and (each.get_parent() as Device).on_deck():
+		return false
 	return (held as Device).fits_in(each) if held is Device else each.kind == held.get(&"kind")
 
 
@@ -1420,6 +1446,10 @@ func _show(delta: float) -> void:
 		stats["dark"] = not look_device.powered
 		if look_device.has_meta(&"layer"):
 			stats["found"] = look_device.get_meta(&"layer")
+		# Which take does to a deck: has the piece off, or drags it all.
+		var deck := look_device as Chassis
+		if deck != null and not deck.joined.is_empty():
+			stats["take"] = "this piece comes off" if deck.outer(deck.piece_at(look_point)) else "drags the whole deck"
 		line = describe(look_device.label, stats.mass, stats)
 	if line != "" and line != _readout.text:
 		_readout.text = line

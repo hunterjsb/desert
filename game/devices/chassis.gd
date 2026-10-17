@@ -6,19 +6,23 @@ extends Device
 ## ring snaps flush beside it, and its frame, sockets and whatever is in them
 ## move into the first piece's body, as a fitted part's shapes do: a deck is
 ## one rigid body in whatever shape it's laid out, with nothing between its
-## pieces to wobble. Off again, the last joined first, a piece takes back all
-## that's its own. A deck floats only while every piece has its tray, and
-## what stands on its deck mounts shares its power.
+## pieces to wobble. Off again, any piece the rest still holds together
+## without takes back all that's its own. Its trays lift it where they are,
+## and what stands on its deck mounts shares its power.
 
 ## A piece's width, m: the pitch its neighbours sit at across its rings.
 const WIDTH := 1.0
 const QUARTER := PI / 2.0
+## The ways across a piece's four edges, in the order a deck is walked.
+const STEPS: Array[Vector2i] = [Vector2i(1, 0), Vector2i(0, 1), Vector2i(-1, 0), Vector2i(0, -1)]
 
-## The pieces joined to this one, in the order they joined. Each waits off
-## the tree meanwhile, its own nodes living in this body.
+## The pieces joined to this one, each after one it sits beside, as they
+## joined or as a save rebuilds them. Each waits off the tree meanwhile, its
+## own nodes living in this body.
 var joined: Array[Chassis] = []
-## Joined: the deck it's part of, the ring it joined at, its place on the
-## first piece's grid and how many quarter turns it sits at there.
+## Joined: the deck it's part of, the ring it sits across from one before it,
+## its place on the first piece's grid and how many quarter turns it sits at
+## there.
 var deck: Chassis
 var joined_at: Socket
 var cell := Vector2i.ZERO
@@ -35,9 +39,25 @@ func pieces() -> Array[Chassis]:
 	return all
 
 
-## The piece joined last, the one take has off first; null on its own.
-func last() -> Chassis:
-	return null if joined.is_empty() else joined.back()
+## Whether a piece can come off: the rest of the deck still holds together
+## without it. A lone piece is no deck to come off.
+func outer(piece: Chassis) -> bool:
+	if joined.is_empty() or not pieces().has(piece):
+		return false
+	var left := {}
+	for each in pieces():
+		if each != piece:
+			left[each.cell] = true
+	var start: Vector2i = left.keys()[0]
+	var reached := {start: true}
+	var next: Array[Vector2i] = [start]
+	while not next.is_empty():
+		var at: Vector2i = next.pop_back()
+		for step: Vector2i in STEPS:
+			if left.has(at + step) and not reached.has(at + step):
+				reached[at + step] = true
+				next.append(at + step)
+	return reached.size() == left.size()
 
 
 ## Where a joined piece sits in the deck's frame.
@@ -124,10 +144,15 @@ func join(piece: Chassis, ring: Socket, k := -1) -> void:
 	_rise_clear_of_sand(shapes)
 
 
-## Takes the last joined piece off again, with all that's its own, loose
-## where it sat; the caller moves it clear along the ring it joined at.
-func unjoin() -> Chassis:
-	var piece: Chassis = joined.pop_back()
+## Takes an outer piece off again, with all that's its own and whatever
+## stands on it, loose where it sat; the caller moves it clear across the
+## ring it leaves (ring_to). The first piece is this body, so for it another
+## piece takes its place first and what comes off is that one's.
+func detach(piece: Chassis) -> Chassis:
+	assert(outer(piece))
+	if piece == self:
+		piece = _reroot(joined[0])
+	joined.erase(piece)
 	var back := piece.pose().affine_inverse()
 	var nodes: Array[Node3D] = []
 	for child in get_children():
@@ -153,11 +178,97 @@ func unjoin() -> Chassis:
 	piece.lift_share = lift_share
 	_holder().add_child(piece)
 	World.of(self).teleport(piece, pose_was)
-	piece.linear_velocity = linear_velocity
+	piece.linear_velocity = linear_velocity + angular_velocity.cross(pose_was.origin - global_transform * center_of_mass)
 	piece.angular_velocity = angular_velocity
+	_reorder()
 	piece._after_change()
 	_after_change()
 	return piece
+
+
+## The ring of the deck facing a place in the world from beside it, or null:
+## where a piece just off it came across.
+func ring_to(point: Vector3) -> Socket:
+	var local := global_transform.affine_inverse() * point
+	var at := Vector2i(roundi(local.x / WIDTH), roundi(local.z / WIDTH))
+	for socket in sockets():
+		if socket.kind == &"ring" and not socket.has_meta(&"socket") and _cell_of(socket) + _step(socket) == at:
+			return socket
+	return null
+
+
+## Makes a joined piece's place this body's own, everything kept where it is
+## in the world: this body moves to that place, and the piece that stood
+## there takes over the first piece's frame and sockets, to come off as it.
+func _reroot(to: Chassis) -> Chassis:
+	var pose_was := global_transform
+	var shift := to.pose()
+	var back := shift.affine_inverse()
+	var first: Array[Node3D] = []
+	for child in get_children():
+		var node := child as Node3D
+		if node == null:
+			continue
+		node.transform = back * node.transform
+		if node is Device or node.has_meta(&"socket"):
+			continue
+		if node.get_meta(&"piece", null) == to:
+			node.remove_meta(&"piece")
+		elif not node.has_meta(&"piece"):
+			node.set_meta(&"piece", to)
+			first.append(node)
+	to._own = first
+	for each in joined:
+		if each != to:
+			_place(each, back * each.pose())
+	_place(to, back)
+	var view := frame_view
+	frame_view = to.frame_view
+	to.frame_view = view
+	var layer: Variant = get_meta(&"layer", null)
+	var theirs: Variant = to.get_meta(&"layer", null)
+	for pair: Array in [[self, theirs], [to, layer]]:
+		if pair[1] == null:
+			pair[0].remove_meta(&"layer")
+		else:
+			pair[0].set_meta(&"layer", pair[1])
+	World.of(self).teleport(self, pose_was * shift)
+	_recompute()
+	for seated in mounted():
+		World.of(self).teleport(seated, seated.global_transform)
+	return to
+
+
+## A joined piece's place and turn on the grid, from its pose in the deck's frame.
+static func _place(piece: Chassis, at: Transform3D) -> void:
+	piece.cell = Vector2i(roundi(at.origin.x / WIDTH), roundi(at.origin.z / WIDTH))
+	var yaw := atan2(at.basis.x.z, at.basis.x.x)
+	piece.turns = posmod(-roundi(yaw / QUARTER), 4)
+
+
+## Puts the joined pieces in an order each joins one before it, outward from
+## this one, each at the ring of the one it joins: how a save rebuilds it.
+func _reorder() -> void:
+	var at := {}
+	for piece in joined:
+		at[piece.cell] = piece
+	var order: Array[Chassis] = []
+	var next: Array[Chassis] = [self]
+	var i := 0
+	while i < next.size():
+		var from: Chassis = next[i]
+		i += 1
+		for step: Vector2i in STEPS:
+			var piece: Chassis = at.get(from.cell + step)
+			if piece == null or order.has(piece):
+				continue
+			order.append(piece)
+			next.append(piece)
+			for socket in sockets():
+				if socket.kind == &"ring" and not socket.has_meta(&"socket") and _cell_of(socket) == from.cell \
+						and _step(socket) == step:
+					piece.joined_at = socket
+	joined = order
 
 
 ## The quarter turns a piece would join at a ring at, nearest `held`, or -1
@@ -293,13 +404,10 @@ func _frame_masses() -> Array:
 	return frames
 
 
-## Its trays lift it only while every piece has one: a tray short, and the
-## whole deck rests on the sand. A deck stays level, so the wind meets its
-## pieces and what's fitted to them side on, and takes what stands on it too.
+## Flat, the wind meets its pieces and what's fitted to them side on, and
+## takes what stands on it too.
 func stats() -> Dictionary:
 	var now := super()
-	var count := pieces().size()
-	var trays := 0
 	var face := 0.0
 	for piece in pieces():
 		face += piece.frame_stats.get("face_m2", 0.0)
@@ -308,19 +416,11 @@ func stats() -> Dictionary:
 		if shape != null and shape.has_meta(&"socket"):
 			var size := (shape.transform * Catalog.bounds(shape.shape)).size
 			face += maxf(size.x, size.z) * size.y
-		var socket := child as Socket
-		if socket != null and socket.kind == &"bottom" and not socket.has_meta(&"socket") and socket.part != null:
-			trays += 1
 	var catch := face * world.tuning.wind_catch_per_m2 if world != null else 0.0
 	for seated in mounted():
 		catch += seated.stats()["catch"]
 	now["catch"] = catch
-	now["pieces"] = count
-	now["trays_short"] = count - trays
-	now["can_float"] = trays == count and now["lift_kg"] >= mass
-	now["hovering"] = now["can_float"] and powered and lift_share > 0.0
-	now["hover_w"] = mass * world.tuning.hover_watts_per_kg \
-		if now["can_float"] and not resting and world != null else 0.0
+	now["pieces"] = pieces().size()
 	return now
 
 
@@ -331,27 +431,6 @@ func show_wear() -> void:
 		if piece.frame_view != null:
 			piece.frame_view.set_instance_shader_parameter(&"age", Paint.age_of(layer, durability))
 			piece.frame_view.set_instance_shader_parameter(&"era", Paint.era_of(layer))
-
-
-## Held off the sand under its highest piece, so a long deck over a dune
-## never drags an end through it.
-func _hover_gap(height: float) -> float:
-	var low := -INF
-	for piece in pieces():
-		var at := global_transform * piece.pose().origin
-		low = maxf(low, world.height_under(at) + height - at.y)
-	return low
-
-
-## Held level by its own inertia about each axis: a long deck turns harder
-## along its length than across it.
-func _keep_upright(tuning: Tuning) -> void:
-	var state := PhysicsServer3D.body_get_direct_state(get_rid())
-	var turn := TAU * tuning.hover_upright_hertz
-	var tilt := global_basis.y.normalized().cross(Vector3.UP)
-	var rocking := angular_velocity - Vector3.UP * angular_velocity.y
-	var torque := state.inverse_inertia_tensor.inverse() * (turn * turn * tilt - 2.0 * tuning.hover_damping * turn * rocking)
-	apply_torque(torque - Vector3.UP * torque.dot(Vector3.UP))
 
 
 ## Pieces joined to it wait off the tree, so nothing else would free them.

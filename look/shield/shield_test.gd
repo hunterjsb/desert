@@ -152,7 +152,7 @@ func place_camp(at: Vector3, yaw: float) -> void:
 ## A device on the sand at a place, or at its float height if it floats.
 func _set_down(device: Device, at: Vector3, turn: Basis) -> void:
 	var half: float = Catalog.DEVICES[_ids[device]].size.y * 0.5
-	var above := world.tuning.hover_height if device.stats()["can_float"] else half + 0.02
+	var above := device.rest_height() if device.stats()["can_float"] else half + 0.02
 	device.global_transform = Transform3D(turn, Vector3(at.x, world.height_under(at) + above, at.z))
 	device.linear_velocity = Vector3.ZERO
 	device.angular_velocity = Vector3.ZERO
