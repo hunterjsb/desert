@@ -127,9 +127,11 @@ func _physics_process(_delta: float) -> void:
 			if hands.held == first:
 				_pay()
 			elif _placed(first):
-				# The first end is on: the coil comes to your hand.
+				# The first end is on: the coil comes to your hand, paid out to
+				# wherever that end went.
 				_world.player.waist.untie(other)
 				hands.hold(other)
+				_pay()
 				state = State.PAYING
 			else:
 				_roll_up(first)
@@ -137,6 +139,9 @@ func _physics_process(_delta: float) -> void:
 			if hands.held == other:
 				_pay()
 			else:
+				# Laid, long enough at least to reach where its second end went.
+				_pay(rope.length)
+				rope.paying = false
 				rope.kg_per_m = _world.tuning.rope_kg_per_m
 				state = State.LAID
 		State.LAID:
@@ -167,11 +172,12 @@ func _uncoil() -> void:
 	rope.strand.hang(_world, rope.length, rope.a, rope.b, RopeStrand.MAX_POINTS - 1)
 
 
-## Its length follows the way between its ends while the coil pays out, and
-## a coil feeding out pulls nothing until it's all out.
-func _pay() -> void:
+## Its length follows the way between its ends while the coil pays out, never
+## under `least`, and a coil feeding out pulls nothing until it's all out.
+func _pay(least := SHORTEST) -> void:
 	var span := rope.a.global_position.distance_to(rope.b.global_position)
-	var length := clampf(span + _world.tuning.rope_pay_slack, SHORTEST, full)
+	var length := clampf(span + _world.tuning.rope_pay_slack, least, full)
+	rope.paying = true
 	rope.length = length
 	rope.kg_per_m = 0.0 if length < full else _world.tuning.rope_kg_per_m
 	rope.strand.set_length(length)

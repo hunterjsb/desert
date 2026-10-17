@@ -180,9 +180,11 @@ The hoverboard tows nothing.
 - **A coil** gives you its first end when you pick it up, with the rest on your belt.
   Once that end is on a ring (or tied at your waist), the coil comes to your hand and
   pays out as you walk, up to 12 m. The line's length is set wherever its second end
-  goes. Taking up an end of a line lying loose at both ends rolls it back up; dropping
-  the first end before it's on anything puts the coil down whole, and putting it in a
-  suit slot stows the coil there (Survival).
+  goes. Paying out, either end reaches as far as the coil does, not only as far as it's
+  out so far, so a stake a step or two ahead takes it from a standing look at it or its
+  foot (2026-10-17). Taking up an end of a line lying loose at both ends rolls it back
+  up; dropping the first end before it's on anything puts the coil down whole, and
+  putting it in a suit slot stows the coil there (Survival).
 - **Rings** are tie sockets: a hook adds one while it's fitted, and a stake has one on
   its eye. You're a ring in your hand, and at your waist: use with a line in your hand
   and nothing to work ties it on, and use empty-handed takes it back after a second's
@@ -241,6 +243,14 @@ Reliability is the whole point here, so this list is long. All run without a win
 11. **Dragged, not launched.** A player on a line in the worst gust gets dragged at a
     bounded speed, with no launching and no jitter. That's held or waist-tied, on flat
     sand and on a slip face.
+12. **Last on, first off.** Aimed at a hook with a line tied to it, take unties the line
+    and leaves the hook; once the hook is bare, take has the hook.
+13. **Reeled by hand.** Reeling in draws a floating crate in about the notches reeled,
+    paying out lets it back no further than the line's length, and against a stake it
+    steps you in instead.
+14. **Tied standing.** A coil out of a slot, its first end in hand, ties to a stake a step
+    and a half ahead from a standing look at its foot; walked off paying out, its second
+    end ties to the next stake's ring the same way, laid long enough to reach between them.
 
 Every probe is first run against a deliberately broken rope, to prove it can fail.
 
