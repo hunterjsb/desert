@@ -1069,6 +1069,14 @@ func _build_ghost(part: RigidBody3D) -> void:
 		_ghost.add_child(copy)
 
 
+## Drawn through everything, a ghost on a device's far side would read as on
+## its near side, so it shows only from a socket's open side; one facing down
+## is slid into from beside, so it always shows.
+func _in_sight(into: Socket) -> bool:
+	var frame := _frame_of(into)
+	return frame.basis.z.y < -0.7 or (sight_from - frame.origin).dot(frame.basis.z) > 0.0
+
+
 func _clear_ghost() -> void:
 	for child in _ghost.get_children():
 		child.free()
@@ -1153,7 +1161,7 @@ func _show(delta: float) -> void:
 		_readout.text = line
 	_readout.modulate.a = move_toward(_readout.modulate.a, 1.0 if line != "" else 0.0, delta * 8.0)
 
-	_ghost.visible = socket != null
+	_ghost.visible = socket != null and _in_sight(socket)
 	if socket != null:
 		_ghost.global_transform = _seat(socket)
 		_ghost_look.albedo_color.a = 0.2 + 0.3 * pull
