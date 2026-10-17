@@ -2,8 +2,9 @@ class_name Weather
 extends Node
 ## The weather as everything in the world feels it, and as it looks from where
 ## the player stands. Every system asks felt_*() at its own position and never
-## reads the field directly. Shelters (running shields' bubbles) edit the
-## answers here, so everything agrees about where a bubble is.
+## reads the field directly. Shelters (running shields' bubbles) and the
+## ground's lee edit the answers here, so everything agrees about where a
+## bubble is and where a dune breaks the wind.
 ##
 ## The game plays by the field at the player: in_storm, harm, the far ring,
 ## wind. The senses follow seen_storm, the dust at the camera as the screen
@@ -32,6 +33,7 @@ var field: WeatherField
 var day: DayCycle
 var map: StormMap
 var sky: SkyView
+var lee: Lee
 ## The weather at the player this tick, which the game plays by.
 var storm := 0.0
 var in_storm := false
@@ -71,6 +73,7 @@ func setup(world: World) -> void:
 	field = WeatherField.new(world.run_seed, _tuning)
 	day = DayCycle.new(_tuning)
 	map = StormMap.new(world, field)
+	lee = Lee.new(world)
 	_environment = (world.get_node("WorldEnvironment") as WorldEnvironment).environment
 	_sun = world.get_node("Sun")
 	_sun_energy = _sun.light_energy
@@ -88,14 +91,22 @@ func setup(world: World) -> void:
 
 
 ## Each felt_*() reads now, or a given world time t: power ticks read theirs.
-## Shelter is always as it stands now.
+## Shelter is always as it stands now; the lee is the wind's at that time.
+## A bubble keeps out its share of what the lee lets through.
 func felt_storm(at: Vector3, t := NAN) -> float:
-	return field_storm(at, t) * (1.0 - shelter_at(at, &"storm"))
+	return field_storm(at, t) * (1.0 - lee_at(at, &"storm", t)) * (1.0 - shelter_at(at, &"storm"))
 
 
 ## Horizontal wind, m/s, in engine axes.
 func felt_wind(at: Vector3, t := NAN) -> Vector3:
-	return field_wind(at, t) * (1.0 - shelter_at(at, &"wind"))
+	return open_wind(at, t) * (1.0 - shelter_at(at, &"wind"))
+
+
+## The wind in the open air at a place, as if no bubble stood: the field's,
+## less what the ground's lee takes. What the dust outside a bubble rides.
+func open_wind(at: Vector3, t := NAN) -> Vector3:
+	var blowing := field_wind(at, t)
+	return blowing * (1.0 - _lee(at, blowing, _tuning.lee_wind))
 
 
 ## Sunlight reaching a place, 0 to 1: the sky's share after Tu and the storm
@@ -110,8 +121,7 @@ func field_storm(at: Vector3, t := NAN) -> float:
 	return field.storm_at(_world.world_x(at.x), _world.world_z(at.z), _when(t))
 
 
-## The wind the field blows at a place, as if no shelter stood: what the dust
-## outside a bubble rides.
+## The wind the field blows at a place, as if no shelter stood.
 func field_wind(at: Vector3, t := NAN) -> Vector3:
 	var w := field.wind_at(_world.world_x(at.x), _world.world_z(at.z), _when(t))
 	return Vector3(w.x, 0.0, w.y)
@@ -145,6 +155,22 @@ func shelter_at(at: Vector3, harm: StringName) -> float:
 		if at.distance_squared_to(shelter.global_position) < shelter.radius * shelter.radius:
 			best = maxf(best, shelter.blocks.get(harm, 0.0))
 	return best
+
+
+## How much of a harm (&"wind", &"storm") the ground's lee keeps from a
+## place, 0 to its most: read upwind along the wind blowing there at time t,
+## so it turns with the wind. A place's, the same for all that stand there.
+func lee_at(at: Vector3, harm: StringName, t := NAN) -> float:
+	var most: float = _tuning.lee_wind if harm == &"wind" else (_tuning.lee_storm if harm == &"storm" else 0.0)
+	return 0.0 if most == 0.0 else _lee(at, field_wind(at, t), most)
+
+
+## The lee a place gets from the wind blowing there, up to `most`; none in
+## still air, which has no upwind.
+func _lee(at: Vector3, blowing: Vector3, most: float) -> float:
+	if most == 0.0 or blowing.length_squared() < 1e-6:
+		return 0.0
+	return most * lee.share(_world.world_x(at.x), _world.world_z(at.z), atan2(blowing.z, blowing.x))
 
 
 ## Every shelter in the world, standing or down, gathered again only when one
@@ -308,12 +334,13 @@ func _show(delta: float) -> void:
 	# The light round the camera, which a shell's glass catches.
 	face.set_light("shell_light", _linear(_environment.ambient_light_color) * _environment.ambient_light_energy)
 
-	# Outside a bubble the dust is the storm's own: it rides the field's wind
-	# and thickens with the storm, and the bubble only carves it out.
+	# Outside a bubble the dust is the storm's own: it rides the open air's
+	# wind, slowed in a lee, and thickens with the storm, and the bubble only
+	# carves it out.
 	var grains := _linear(_tuning.sand_color) * GRAIN_GLOW \
 		* (sun_light * maxf(seen_sun, seen_shade * 0.6) * 0.6 + sky_light * sky_left) * dim
 	var near := exp(minf(seen_front, 0.0) / 350.0) if map.ready else 0.0
-	atmosphere.show_weather(camera, _world.height_under(eye), field_wind(_world.player.global_position),
+	atmosphere.show_weather(camera, _world.height_under(eye), open_wind(_world.player.global_position),
 		shelter_at(eye, &"storm"), seen_shade, near, grains, face.sigma() * seen_shade, _world.time_warp > 0.0, delta)
 
 
@@ -331,6 +358,8 @@ func _report() -> void:
 		if seen_front >= 0.0 else "%dm" % roundi(-seen_front)))
 	Dev.put("weather/seen", "%d%%" % roundi(seen_storm * 100.0))
 	Dev.put("weather/shel", "in" if shelter_at(_world.player.global_position, &"storm") > 0.0 else "-")
+	var lee_cut := lee_at(_world.player.global_position, &"wind")
+	Dev.put("weather/lee", "%d%%" % roundi(lee_cut * 100.0) if lee_cut > 0.0 else "-")
 	var eta := next_change_time - t
 	Dev.put("weather/next", "%s %s" % ["clr" if in_storm else "stm",
 		">1h" if eta == INF else "%d:%02d" % [floori(eta / 60.0), floori(fmod(eta, 60.0))]])

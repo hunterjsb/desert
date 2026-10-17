@@ -1,5 +1,5 @@
 extends WeatherProbe
-## Wind & storms probe 11: local time follows longitude. Where a run begins the
+## Wind & storms probe 12: local time follows longitude. Where a run begins the
 ## clock is the one it began on. A quarter of the way round to the east it's
 ## six hours later, and the drawn sun, the light solar reads, the air's warmth
 ## and a radio's day music all follow; a quarter round to the west it's six

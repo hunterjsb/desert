@@ -11,7 +11,10 @@ extends Node3D
 ## you look at or uses what you hold. Finds lying in the sand are taken the same
 ## way, and whatever you take, take from, fit to or use becomes yours. A small
 ## device that seats in a socket, like a shield on a top mount, fits the same
-## way, and take lifts it off again whole.
+## way, and take lifts it off again whole. A chassis piece joins a deck at a
+## free edge ring the same way, and take has the last one joined off first.
+## Having hold of a device that stands on a deck, a free deck mount near it
+## is offered, and take seats it there instead of letting go.
 
 signal fitted(part: Part, device: Device, socket: Socket)
 signal taken(part: Part, device: Device, socket: Socket)
@@ -52,11 +55,24 @@ const HOLD_FARTHEST := 2.0
 const HOLD_EASE := 12.0
 ## What you have hold of comes no nearer than this clear of you, m.
 const GRASP_CLEAR := 0.1
+## Having hold of a device, a free deck mount whose seat is this near it is
+## offered, m: it can't get nearer, held off by the deck's edge.
+const STAND_REACH := 1.2
+## Something too heavy to carry comes off its seat this far, m, so it starts
+## clear of what it sat on; a chassis piece slides this far off its deck
+## before it comes to your hand.
+const LIFT_OFF := 0.02
+const SLIDE_OFF := 0.15
+## Hits asked for when asking whether something has room: the sand answers
+## once for each of its faces a shape crosses, which mustn't crowd out the rest.
+const TOUCHES := 64
 
 var held: RigidBody3D
 var phase := Phase.EMPTY
 ## What you hold that's too heavy to carry.
 var grasp: Grasp
+## The free deck mount what you have hold of would stand on, if you took it home.
+var stand: Socket
 ## The line you work hand over hand.
 var reel: Reel
 ## What the look ray hits: a loose part, or a device and, when it's a fitted
@@ -117,6 +133,9 @@ var _source_was := {}
 ## The socket a part just came out of: it won't tug again, nor its device offer
 ## anything, until you look away.
 var _rearm: Socket
+## The deck mount what you have hold of just came off: its deck offers
+## nothing until it's been carried clear of it.
+var _stood: Socket
 var _aim := Vector3.ZERO
 ## Where on the device you look at you aim, for its offer.
 var _offer_at := Vector3.ZERO
@@ -176,7 +195,10 @@ func _ready() -> void:
 ## take hold of instead, and taking again lets go. Says whether it did anything.
 func grab() -> bool:
 	if grasp.body != null:
-		grasp.let_go()
+		if stand != null:
+			_stand_on(stand)
+		else:
+			grasp.let_go()
 		return true
 	if held != null:
 		if phase != Phase.HELD:
@@ -191,7 +213,9 @@ func grab() -> bool:
 	# The board tows nothing: riding, you take only what comes off no line,
 	# loose, into your hands.
 	var riding := _player.board != null
-	if look_device != null and look_device.host() != null:
+	# Standing on a deck, a device keeps its sockets: a part you aim at comes out of it.
+	var own_part := look_socket != null and look_socket.part != null
+	if look_device != null and look_device.host() != null and not (look_device.on_deck() and own_part):
 		if riding:
 			return false
 		# Last on, first off: a seated device comes off whole, whatever of it you aim at.
@@ -208,6 +232,14 @@ func grab() -> bool:
 			return false
 		salvage.claim(look_device)
 		_take_out(look_device, look_socket)
+		return true
+	# Last joined, first off: the piece joined last comes off when you aim at
+	# it; at any other, you take hold of the whole deck.
+	var deck := look_device as Chassis
+	if deck != null and deck.last() != null and deck.piece_at(look_point) == deck.last():
+		if riding:
+			return false
+		_unjoin(deck)
 		return true
 	if look_device != null and look_device.carryable:
 		if riding and _player.waist.carries_line(look_device):
@@ -283,8 +315,6 @@ func hold(body: RigidBody3D) -> void:
 func scroll(notches: int) -> bool:
 	if not reel.working():
 		return false
-	if reel.notch(notches):
-		return true
 	var by := notches * Reel.NOTCH
 	if grasp.body != null:
 		var box := _box_of(grasp.body)
@@ -338,6 +368,11 @@ static func describe(label: String, mass: float, stats: Dictionary) -> String:
 	var hooks: int = stats.get("hooks", 0)
 	if hooks > 0:
 		bits.append("%d hook%s" % [hooks, "" if hooks == 1 else "s"])
+	if stats.get("pieces", 1) > 1:
+		bits.append("%d pieces" % stats.pieces)
+	var short: int = stats.get("trays_short", 0)
+	if stats.get("lift_kg", 0.0) > 0.0 and short > 0:
+		bits.append("%d tray%s short" % [short, "" if short == 1 else "s"])
 	if stats.get("lift_kg", 0.0) > 0.0:
 		bits.append("floats %d kg" % roundi(stats.lift_kg))
 	if stats.get("resting", false):
@@ -390,7 +425,11 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("reel_in") or event.is_action_pressed("pay_out"):
 		# Each wheel step is a press: a notch.
-		if scroll(1 if event.is_action_pressed("reel_in") else -1):
+		if reel.working() and reel.notch(1 if event.is_action_pressed("reel_in") else -1):
+			get_viewport().set_input_as_handled()
+	# Exactly, so the line's ctrl and the wheel never move what you hold too.
+	elif event.is_action_pressed("bring_near", false, true) or event.is_action_pressed("push_out", false, true):
+		if scroll(1 if event.is_action_pressed("bring_near", false, true) else -1):
 			get_viewport().set_input_as_handled()
 
 
@@ -422,6 +461,7 @@ func _physics_process(delta: float) -> void:
 	if phase == Phase.HELD:
 		_ticked = held.global_transform
 	grasp.step(delta)
+	_find_stand()
 	_unblock_released()
 	_show(delta)
 
@@ -488,8 +528,7 @@ func _under() -> void:
 		else _player.world.content.get_children() + _player.world.salvage.near(sight_from)
 	for child in near:
 		var device := child as Device
-		if device == null or device.host() != null or device.has_meta(&"buried") \
-				or device.global_position.distance_to(sight_from) > _tuning.reach + 2.0:
+		if device == null or device.host() != null or device.has_meta(&"buried") or _far(device):
 			continue
 		for each in device.sockets():
 			if each.part == null or _frame_of(each).basis.z.y > -0.7:
@@ -625,10 +664,18 @@ func _pick_up(body: RigidBody3D) -> void:
 
 
 ## Its host holds still while a seated device lifts straight off along the
-## socket's +Z, then it comes to your hand.
+## socket's +Z, then it comes to your hand; too heavy to carry, it comes off
+## standing where it stood, and you have hold of it.
 func _take_off(device: Device) -> void:
 	var host := device.host()
 	var from := host.seat_of(device)
+	if not device.carryable:
+		host.dismount(from)
+		_player.world.teleport(device, device.global_transform.translated(_frame_of(from).basis.z * LIFT_OFF))
+		grasp.take(device)
+		_stood = from
+		_play(Sounds.UNSEAT)
+		return
 	_source = host
 	_source_socket = from
 	_source_was = {"freeze": host.freeze, "velocity": host.linear_velocity, "spin": host.angular_velocity}
@@ -641,6 +688,105 @@ func _take_off(device: Device) -> void:
 	phase = Phase.TAKING
 	_rearm = from
 	_play(Sounds.UNSEAT)
+
+
+## The last piece joined comes off the deck the way it went on, out along the
+## ring it joined at while the deck holds still, then to your hand; with a
+## device standing on it, too heavy to carry, you have hold of it instead.
+func _unjoin(deck: Chassis) -> void:
+	var from := deck.last().joined_at
+	var was := {"freeze": deck.freeze, "velocity": deck.linear_velocity, "spin": deck.angular_velocity}
+	var piece := deck.unjoin()
+	_play(Sounds.UNSEAT)
+	if not piece.carryable:
+		_player.world.teleport(piece, piece.global_transform.translated(_frame_of(from).basis.z * LIFT_OFF))
+		grasp.take(piece)
+		return
+	_source = deck
+	_source_socket = from
+	_source_was = was
+	deck.freeze = true
+	_grip(piece)
+	_slide = SLIDE_OFF
+	_slide_from = 0.0
+	_t = 0.0
+	phase = Phase.TAKING
+	_rearm = from
+
+
+## Having hold of a device that stands on a deck: the free deck mount whose
+## seat is nearest it, within reach and with nothing else in the way there.
+## The deck it just came off waits until it's been taken clear, so take lets
+## go rather than standing it straight back on.
+func _find_stand() -> void:
+	var device := grasp.body as Device
+	if device == null or not device.stands_on_deck:
+		device = null
+		_stood = null
+	var best: Socket = null
+	if device != null:
+		if _stood != null and (not is_instance_valid(_stood) or _stand_gap(device, _stood) > STAND_REACH):
+			_stood = null
+		var nearest := STAND_REACH
+		for each in _near():
+			if not (each is Chassis) or each == device or _stood != null and each == _stood.get_parent():
+				continue
+			for socket in each.sockets():
+				if socket.kind == &"deck" and socket.is_open():
+					var d := _stand_gap(device, socket)
+					if d < nearest:
+						nearest = d
+						best = socket
+		if best != null and not _stands_clear(device, best):
+			best = null
+	if best != stand:
+		stand = best
+		if held == null:
+			_clear_ghost()
+			if stand != null:
+				_build_ghost(device)
+
+
+## How far a device is from where it would stand on a deck mount, m.
+func _stand_gap(device: Device, socket: Socket) -> float:
+	return (_frame_of(socket) * device.seat()).origin.distance_to(device.global_position)
+
+
+## Whether a device would stand on a deck mount touching nothing but the
+## deck: not another device, a loose thing, nor you.
+func _stands_clear(device: Device, socket: Socket) -> bool:
+	var pose := _frame_of(socket) * device.seat()
+	var space := get_world_3d().direct_space_state
+	var query := PhysicsShapeQueryParameters3D.new()
+	var skip: Array[RID] = [(socket.get_parent() as Device).get_rid()]
+	var riding: Array[Device] = [device]
+	while not riding.is_empty():
+		var each: Device = riding.pop_back()
+		skip.append(each.get_rid())
+		riding.append_array(each.mounted())
+	query.exclude = skip
+	for child in device.get_children():
+		var shape := child as CollisionShape3D
+		if shape == null or shape.shape == null:
+			continue
+		query.shape = _skin(shape.shape)
+		query.transform = pose * shape.transform
+		for hit in space.intersect_shape(query, TOUCHES):
+			if not _sand(hit):
+				return false
+	return true
+
+
+## Seats what you have hold of on a deck mount, standing.
+func _stand_on(socket: Socket) -> void:
+	var device := grasp.body as Device
+	var deck := socket.get_parent() as Device
+	grasp.let_go()
+	stand = null
+	_clear_ghost()
+	_player.world.salvage.claim(deck)
+	deck.mount(device, socket)
+	_seat_sound()
 
 
 ## The device holds still while the part slides straight out along its
@@ -741,13 +887,11 @@ func _find_socket() -> void:
 	var target := _looked_at()
 	var best: Socket = null
 	var nearest := INF
-	var kind: StringName = held.get(&"kind")
-	for child in _player.world.content.get_children() + _player.world.salvage.near(sight_from):
-		var device := child as Device
-		if device == null or device == held or device.global_position.distance_to(sight_from) > _tuning.reach + 2.0:
+	for device in _near():
+		if device == held or _far(device):
 			continue
 		for each in device.sockets():
-			if not each.is_open() or each.kind != kind or each == _rearm:
+			if not _takes(each) or each == _rearm:
 				continue
 			var seat := _seat(each)
 			var d := _sight_gap(seat)
@@ -757,7 +901,7 @@ func _find_socket() -> void:
 	if nearest >= _tuning.snap_reach:
 		best = null
 		if target != null and not (_rearm != null and _on(_rearm)):
-			best = _offer(target, kind)
+			best = _offer(target)
 		nearest = _sight_gap(_seat(best)) if best != null else INF
 	gap = nearest
 	socket = best
@@ -773,11 +917,9 @@ func _looked_at() -> Device:
 		return null if root == held else root
 	var best: Device = null
 	var nearest := NEAR_FRAME
-	for child in _player.world.content.get_children() + _player.world.salvage.near(sight_from):
-		var device := child as Device
+	for device in _near():
 		# A find under the sand you look at is out of sight.
-		if device == null or device == held or device.has_meta(&"buried") \
-				or device.global_position.distance_to(sight_from) > _tuning.reach + 2.0:
+		if device == held or device.has_meta(&"buried") or _far(device):
 			continue
 		var d := _gap_to(device.global_transform, _body_box(device))
 		if d < nearest:
@@ -790,12 +932,12 @@ func _looked_at() -> Device:
 ## What a device offers the held part: of its free sockets of the kind, the
 ## only one, or of several the one nearest your aim, among those facing you
 ## if any do.
-func _offer(device: Device, kind: StringName) -> Socket:
+func _offer(device: Device) -> Socket:
 	var best: Socket = null
 	var best_facing := false
 	var nearest := INF
 	for each in device.sockets():
-		if not each.is_open() or each.kind != kind or each == _rearm:
+		if not _takes(each) or each == _rearm:
 			continue
 		var seat := _seat(each)
 		if _within_reach(seat) != seat:
@@ -815,10 +957,78 @@ func _on(each: Socket) -> bool:
 	return look_device != null and _root(look_device) == _root(each.get_parent() as Device)
 
 
+## The device whose sockets a look at this one offers: its host, unless it
+## stands on a deck, where it keeps its own.
 static func _root(device: Device) -> Device:
-	while device != null and device.host() != null:
+	while device != null and device.host() != null and not device.on_deck():
 		device = device.host()
 	return device
+
+
+## The devices your hands look over: yours in the world, the finds round
+## you, and whatever stands on a deck, which keeps its own sockets.
+func _near() -> Array[Device]:
+	var found: Array[Device] = []
+	for child in _player.world.content.get_children() + _player.world.salvage.near(sight_from):
+		var device := child as Device
+		if device != null:
+			found.append(device)
+			_on_decks(device, found)
+	return found
+
+
+static func _on_decks(device: Device, found: Array[Device]) -> void:
+	for each in device.mounted():
+		if each.on_deck():
+			found.append(each)
+			_on_decks(each, found)
+
+
+## Whether a device is past what your hands work on from your eyes: a deck
+## by its nearest piece, since its far end can lie well past its first.
+func _far(device: Device) -> bool:
+	var nearest := device.global_position.distance_to(sight_from)
+	var deck := device as Chassis
+	if deck != null:
+		for piece in deck.joined:
+			nearest = minf(nearest, (deck.global_transform * piece.pose().origin).distance_to(sight_from))
+	return nearest > _tuning.reach + 2.0
+
+
+## Whether a free socket takes what you hold: a part of its kind, a device
+## that seats there, a chassis piece at a deck's free edge with room beyond.
+func _takes(each: Socket) -> bool:
+	if not each.is_open():
+		return false
+	if held is Chassis and each.kind == &"ring":
+		return (held as Chassis).fits_in(each) and _room_for(_seat(each), each.get_parent())
+	return (held as Device).fits_in(each) if held is Device else each.kind == held.get(&"kind")
+
+
+## Whether what you hold would sit at a pose touching nothing but a deck and
+## the sand: a piece joined over a crate would throw it.
+func _room_for(pose: Transform3D, deck: CollisionObject3D) -> bool:
+	var space := get_world_3d().direct_space_state
+	var skip := _exclusions()
+	skip.append(deck.get_rid())
+	_inside.exclude = skip
+	for i in _shapes.size():
+		_inside.shape = _skins[i]
+		_inside.transform = pose * _shapes[i].transform
+		for hit in space.intersect_shape(_inside, TOUCHES):
+			if not _sand(hit):
+				return false
+	return true
+
+
+## Whether a hit is the sand's own surface, which a deck lifts itself clear
+## of: a ruin's wall still counts as in the way.
+static func _sand(hit: Dictionary) -> bool:
+	var body := hit.collider as StaticBody3D
+	if body == null:
+		return false
+	var holder := body.shape_owner_get_owner(body.shape_find_owner(hit.shape)) as CollisionShape3D
+	return holder != null and holder.shape is HeightMapShape3D
 
 
 ## How near your line of sight passes to the part as it would sit in this
@@ -884,6 +1094,14 @@ func _settle_in(seat: Transform3D) -> Transform3D:
 func _fit(into: Socket) -> void:
 	var device := into.get_parent() as Device
 	_player.world.salvage.claim(device)
+	if held is Chassis and into.kind == &"ring":
+		var piece := held as Chassis
+		var turn := _held_basis()
+		_let_go()
+		var deck := device as Chassis
+		deck.join(piece, into, deck._turns_for(piece, into, turn))
+		_seat_sound()
+		return
 	if held is Device:
 		var seated := held as Device
 		_let_go()
@@ -1023,12 +1241,13 @@ func _clear(pose: Transform3D) -> bool:
 
 func _sliding() -> Transform3D:
 	var out := 1.0 - (1.0 - _t) * (1.0 - _t)
-	return _frame_of(_source_socket).translated_local(Vector3(0.0, 0.0, _slide_from + _slide * out)) * _seated()
+	return _frame_of(_source_socket).translated_local(Vector3(0.0, 0.0, _slide_from + _slide * out)) \
+		* _seated(_source_socket)
 
 
 ## Where what you hold sits in a socket, in the world.
 func _seat(into: Socket) -> Transform3D:
-	return _frame_of(into) * _seated()
+	return _frame_of(into) * _seated(into)
 
 
 ## A socket's frame in the world: where a part's own frame sits in it.
@@ -1036,9 +1255,17 @@ func _frame_of(into: Socket) -> Transform3D:
 	return ((into.get_parent() as Node3D).global_transform * into.transform).orthonormalized()
 
 
-## Where what you hold sits in a socket's frame: a part on it, a device upright on it.
-func _seated() -> Transform3D:
+## Where what you hold sits in a socket's frame: a part on it, a device
+## upright on it, a chassis piece flush beyond a deck's edge ring.
+func _seated(into: Socket) -> Transform3D:
+	if held is Chassis and into.kind == &"ring":
+		return (held as Chassis).seat_in(into, _held_basis())
 	return (held as Device).seat() if held is Device else Transform3D.IDENTITY
+
+
+## How what you hold is turned in the world as the tick has it.
+func _held_basis() -> Basis:
+	return Basis(Vector3.UP, _player.global_rotation.y) * _carry
 
 
 ## Between two poses of the held part, turning about its own middle.
@@ -1202,6 +1429,11 @@ func _show(delta: float) -> void:
 	if socket != null:
 		_ghost.global_transform = _seat(socket)
 		_ghost_look.albedo_color.a = 0.2 + 0.3 * pull
+	elif stand != null and grasp.body is Device:
+		# Where what you have hold of would stand.
+		_ghost.visible = true
+		_ghost.global_transform = _frame_of(stand) * (grasp.body as Device).seat()
+		_ghost_look.albedo_color.a = 0.35
 	elif held is Stake and phase == Phase.HELD and look_sand:
 		# Where it will go in.
 		_ghost.visible = true

@@ -19,8 +19,8 @@ const COMMANDS := {
 	"give": ["<id> [n]", "a part in your hands or a device at your feet, by its catalog id"],
 	"fresh": ["", "fed, watered and whole, on a fresh suit's kit"],
 }
-## Parts that only come on something else: a cable's plugs, a line's ends.
-const ON_SOMETHING := [&"plug", &"strong_plug", &"rope_end"]
+## Parts that only come on something else: a cable's plugs, a hose's ends, a line's ends.
+const ON_SOMETHING := [&"plug", &"strong_plug", &"hose_end", &"rope_end"]
 ## Lines of output shown, commands remembered, and the most give makes at once.
 const SHOWN := 10
 const REMEMBERED := 50
@@ -201,10 +201,13 @@ func _give(args: PackedStringArray, world: World) -> void:
 		elif id == &"coil":
 			Scenarios.stakes_and_coils(world, [], [[0.0, ahead]])
 			ahead += 0.4
-		elif id == &"cable" or id == &"strong_cable":
+		elif id in [&"cable", &"strong_cable", &"hose"]:
 			var at := player.global_position - player.global_basis.z * ahead
 			at.y = world.height_under(at)
-			Catalog.cable(world, at, id == &"strong_cable")
+			if id == &"hose":
+				Catalog.hose(world, at)
+			else:
+				Catalog.cable(world, at, id == &"strong_cable")
 			ahead += 0.3
 		elif player.hands.held == null:
 			var part := Catalog.part(id)
@@ -232,7 +235,7 @@ static func _give_ids() -> PackedStringArray:
 			ids.append(id)
 	for id: StringName in Catalog.DEVICES:
 		ids.append(id)
-	ids.append_array(["stake", "cable", "strong_cable"])
+	ids.append_array(["stake", "cable", "strong_cable", "hose"])
 	return ids
 
 

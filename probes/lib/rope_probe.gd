@@ -13,6 +13,9 @@ var wind: RopeWind
 ## The world with a wind of the probe's choosing. The clock runs, so gusts
 ## evolve; the run's storms don't matter, since they no longer set the wind.
 func load_ropes(run_seed := 1234) -> void:
+	# The wind a probe picks is the wind felt: no dune's lee takes any of it.
+	Tuning.current().lee_wind = 0.0
+	Tuning.current().lee_storm = 0.0
 	await load_world(run_seed, false)
 	wind = RopeWind.new(world.run_seed, world.tuning)
 	world.weather.field = wind

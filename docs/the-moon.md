@@ -33,7 +33,9 @@ dev gravity toggle tries the lower value. **Everything else stays honest.**
   very slow escape, which is a geological backdrop, not something you'd see. **Agreed
   (session 3):** the lore reads the leak as a clock. Storms last only while air remains, and
   the player arrives with the window closing ([the lore
-  research](lore-research.md#the-surface-today-agreed-session-3)).
+  research](lore-research.md#the-surface-today-agreed-session-3)). **Agreed (session 4, part
+  2):** the orbit was more eccentric when the colonists came and has been rounding out since, so
+  the heating fades and the vents go quiet ([the lore](lore-research.md#tu-the-tidal-lock-and-the-water-agreed-session-4-part-2)).
 - **Thin air still makes real wind.** Mars, at under 1% of Earth's pressure, has global
   dust storms and moving dunes, but its winds would barely push you. At 0.3 bar, 130 km/h
   gusts push like an Earth gale even at near-Earth gravity (at the leaning 0.4–0.5 g,
@@ -67,9 +69,14 @@ gives water a daily rhythm:
   poles. Harvest it at dawn.
 - **Open water doesn't last.** It has to be stored sealed.
 - **Condensers pull water from the air.** They're found, they draw power, they can be
-  towed, and they work best at night.
+  towed, and they work best at night, and better toward the far side (below).
 - **Plants that store water,** like the yucca.
 - **Sealed fresh water in ruins** keeps you going early on.
+- **Water drifts to the far side** (Agreed, session 4, part 2). The near side is heated by the
+  sun and by Tu's infrared, and the far side runs colder. Water evaporates on the warm side and
+  cold-traps as frost and ground ice on the far side. While the vents outgassed they topped the
+  near side up, and once they quieted it drained outward. This stands beside the poles' frost
+  above, and how the two cold traps combine is open.
 
 ## Day length
 
@@ -82,8 +89,8 @@ real day is one lap round it.
 angular size a tuning value; test 6°, 9° and 13° in game before fixing the orbit. Physics
 follows the look."). The tuning value is how wide Tu is across the sky. The orbit, the
 eclipse and the night light follow from it, and a dev command switches among them during a
-run. 13° is the default. The working is in [the body
-research](body-research.md#the-giant-the-day-and-longitude).
+run. 13° is the default. None is chosen. The working is in [the body
+research](body-research.md#tus-size-under-trial).
 
 | | 6° | 9° | 13° (the default) |
 |---|---|---|---|
@@ -114,10 +121,12 @@ and a red ring of sunset light on Tu's rim show briefly, the air cools a few deg
 solar makes nothing, so a camp needs storage or wind to ride it out. It falls at noon at the
 sub-Tu point and later the further east you are: where a run starts, at 16:00.
 
-**The Rim** (Hunter, 2026-10-17, lore session part 2). Where Tu sits half-risen on the
-horizon, 90° from the sub-Tu point, there's effectively no eclipse. Nothing special is built
-for it: the sun goes behind Tu where Tu is in your sky, and there that's on the horizon, as
-the sun rises or sets, when it has next to no light to lose.
+**The Rim** (Hunter, 2026-10-17, lore session part 2). Between the near side and the far
+side lies the Rim, where Tu sits half-risen on the horizon, 90° from the sub-Tu point: no
+eclipse to speak of, and mild ([the
+lore](lore-research.md#tu-the-tidal-lock-and-the-water-agreed-session-4-part-2)). Nothing
+special is built for the eclipse there: the sun goes behind Tu where Tu is in your sky, and
+there that's on the horizon, as the sun rises or sets, when it has next to no light to lose.
 
 **Tu's phases run opposite the sun:** its dark face at the eclipse and full half a day
 later. At the sub-Tu point that's noon and midnight; where a run starts, full Tu comes at

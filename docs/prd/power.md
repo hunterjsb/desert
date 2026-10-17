@@ -71,7 +71,8 @@ the felt-weather rule.
 
 - **Shields,** by type. A full base shield lasts about 30 minutes in a storm. The main
   way to save power is to switch it off and stay out of storms.
-- **Hover trays** keep camp pieces floating, and their draw rises with the weight they
+- **Hover trays** keep camp pieces floating, each lifting under its own spot
+  (Devices & mods, 2026-10-17), and their draw rises with the weight they
   carry, mounts included. Without enough power, you haul. Use sets a tray resting,
   drawing nothing, for a camp that's staying put (Devices & mods).
 - **The hoverboard** has its own battery. That's your escape when the shield dies.
@@ -167,7 +168,9 @@ the felt-weather rule.
   floater: a crate resting on its tray, moored to a stake, with two big batteries, the
   light panel on one top mount, cabled to the shield, and a found panel on the other. A
   strong cable from the crate holds the turbine out in the wind beyond the bubble. In
-  all, a 1,000 Wh bank and 90 W of panels. At 45° north, through two days and nights of
+  all, a 1,000 Wh bank and 90 W of panels. Since 2026-10-17 a condenser beyond the
+  shield waters the planters on hoses (Survival), on a battery and a panel of its own,
+  out of the bank. At 45° north, through two days and nights of
   the probes' seed, 24 minutes of them full storm, nothing in it went dark and its bank
   never fell below 98%: the turbine carries most of the shield's 200 W in a storm and
   all of its sip at night. The kit's power under a found shield (the light panel and a
@@ -219,8 +222,8 @@ the felt-weather rule.
    what was used. No energy appears from nowhere.
 2. **Frame-rate proof.** The same run at 30, 60 and 120 frames per second gives the same
    charge levels.
-3. **Sources read the felt weather.** Solar follows clear, storm, day, night and
-   latitude. A turbine inside a base wind shield makes nothing; one outside in a storm
+3. **Sources read the felt weather.** Solar follows clear, storm, day, night,
+   latitude and the eclipse, making nothing with the sun behind Tu. A turbine inside a base wind shield makes nothing; one outside in a storm
    makes the most.
 4. **The AFK promise.** A reference camp (shield, floater, panels, turbine, capacitor)
    parked at mid-latitude runs through 24 simulated hours of weather without any

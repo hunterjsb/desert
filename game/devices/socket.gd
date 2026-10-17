@@ -13,8 +13,11 @@ var fitted: Array[Node3D] = []
 var mounted: Device
 ## A flat tell on the frame showing where this kind of part goes, hidden when full.
 var marker: MeshInstance3D
+## A chassis piece's edge ring with another piece joined across it: nothing
+## fits there, since the next piece's edge is flush against it.
+var closed := false
 
 
 ## Nothing in it, part or device.
 func is_open() -> bool:
-	return part == null and mounted == null
+	return part == null and mounted == null and not closed

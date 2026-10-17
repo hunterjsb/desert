@@ -1,5 +1,5 @@
 extends WeatherProbe
-## Wind & storms probe 9: Tu stays put. Through a whole day where a run begins,
+## Wind & storms probe 10: Tu stays put. Through a whole day where a run begins,
 ## the Tu the sky draws never strays from where it started by more than the
 ## day's nod, though it does nod, while the sun goes round the sky. On the far
 ## side Tu never rises, and casts no light.

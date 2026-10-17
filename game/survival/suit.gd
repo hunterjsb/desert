@@ -70,9 +70,9 @@ func restock() -> void:
 		slots[i] = Catalog.part(kit[i]) if i < kit.size() else null
 
 
-## Whether a slot can take it: a part with nothing fastened to it, or rope
-## or wire that rolls up whole: a line held but not laid, a cable plugged
-## into nothing. Laid or plugged in, it would lose its end. A stake fits
+## Whether a slot can take it: a part with nothing fastened to it, or rope,
+## wire or hose that rolls up whole: a line held but not laid, a cable or a
+## hose plugged into nothing. Laid or plugged in, it would lose its end. A stake fits
 ## pulled up with nothing on its eye, so it comes out ready to drive.
 func fits(body: Object) -> bool:
 	var stake := body as Stake
@@ -83,7 +83,7 @@ func fits(body: Object) -> bool:
 		return false
 	if part.has_meta(&"line"):
 		return (part.get_meta(&"line") as Line).stowable()
-	return part.kind != &"port" or part.has_meta(&"rolled") or _loose_cable(part) != null
+	return not (part.kind == &"port" or Hose.is_end(part)) or part.has_meta(&"rolled") or _loose_cable(part) != null
 
 
 ## Of the water or the food in your slots, the least full that isn't empty,
@@ -166,7 +166,7 @@ func _rolled(body: RigidBody3D) -> RigidBody3D:
 	var part := body as Part
 	if part != null and part.has_meta(&"line"):
 		return (part.get_meta(&"line") as Line).roll()
-	var cable := _loose_cable(part) if part != null and part.kind == &"port" else null
+	var cable := _loose_cable(part) if part != null and (part.kind == &"port" or Hose.is_end(part)) else null
 	if cable == null:
 		body.get_parent().remove_child(body)
 		return body
@@ -265,13 +265,15 @@ func _text(type: StringName, at: Vector2, line: String, width: float) -> void:
 	_view.draw_string(font, at, line, HORIZONTAL_ALIGNMENT_LEFT, width, size, _view.get_theme_color(&"text", &"Palette"))
 
 
-## A cable stowed goes by its plug, but it's the cable you have.
+## A cable or a hose stowed goes by its end, but it's the whole you have.
 static func _name(part: RigidBody3D) -> String:
 	match part.get_meta(&"rolled", &""):
 		&"plug":
 			return "Cable"
 		&"strong_plug":
 			return "Strong cable"
+		&"hose_end":
+			return "Hose"
 	return part.get(&"label")
 
 

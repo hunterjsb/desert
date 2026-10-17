@@ -7,7 +7,8 @@ extends Node
 const HELP := [
 	["{hands_throw}", "throw what you hold"],
 	["{hands_rotate}", "held, the mouse turns what you hold or have hold of, not your view: right what's tipped over"],
-	["{reel_in} {pay_out}", "a notch at a time, reel in or pay out the line in your hand or at your waist; holding anything else, bring it nearer or push it out"],
+	["{reel_in} {pay_out}", "a notch at a time, reel in or pay out the line in your hand or at your waist"],
+	["{bring_near} {push_out}", "bring what you hold or have hold of nearer, or push it out"],
 	["{move_forward} {move_left} {move_back} {move_right}", "move"], ["{sprint}", "sprint"],
 	["{hands_grab}", "pick up, take out, put in, put down"], ["{interact}", "use what you look at or hold: switch a shield, tune a radio, drive a stake, waist a line, water a planter, set a tray floating or resting"],
 	["{inventory}", "your slots and waist, by mouse: click a slot to take out, put in or swap"], ["{ui_cancel}", "back: close what's open, or the menu"],
@@ -51,6 +52,11 @@ const KEYS := {
 const BUTTONS := {
 	"hands_throw": MOUSE_BUTTON_LEFT,
 	"hands_rotate": MOUSE_BUTTON_RIGHT,
+	"bring_near": MOUSE_BUTTON_WHEEL_UP,
+	"push_out": MOUSE_BUTTON_WHEEL_DOWN,
+}
+## Mouse buttons with ctrl held: the line has the wheel apart from what you hold.
+const CTRL_BUTTONS := {
 	"reel_in": MOUSE_BUTTON_WHEEL_UP,
 	"pay_out": MOUSE_BUTTON_WHEEL_DOWN,
 }
@@ -78,11 +84,12 @@ func _enter_tree() -> void:
 		event.physical_keycode = KEYS[action]
 		InputMap.add_action(action)
 		InputMap.action_add_event(action, event)
-	for action: String in BUTTONS:
+	for action: String in BUTTONS.merged(CTRL_BUTTONS):
 		if InputMap.has_action(action):
 			continue
 		var click := InputEventMouseButton.new()
-		click.button_index = BUTTONS[action]
+		click.button_index = BUTTONS.get(action, CTRL_BUTTONS.get(action))
+		click.ctrl_pressed = CTRL_BUTTONS.has(action)
 		InputMap.add_action(action)
 		InputMap.action_add_event(action, click)
 	for action: String in PADS:
@@ -120,7 +127,7 @@ static func key_for(action: StringName) -> String:
 			return _key_name(key.keycode)
 		var button := event as InputEventMouseButton
 		if button != null:
-			return BUTTON_NAMES.get(button.button_index, "mouse %d" % button.button_index)
+			return ("ctrl + " if button.ctrl_pressed else "") + BUTTON_NAMES.get(button.button_index, "mouse %d" % button.button_index)
 	return "unbound"
 
 

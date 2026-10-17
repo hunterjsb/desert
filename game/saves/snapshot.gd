@@ -66,6 +66,8 @@ static func problem(data: Dictionary) -> String:
 			again.call(entry[1], again)
 		if rec.has("mounted"):
 			again.call(rec.mounted, again)
+		for entry: Array in rec.get("joined", []):
+			again.call(entry[3], again)
 	for rec: Dictionary in data.get("things", []) + data.get("slots", []).filter(func(r: Variant) -> bool: return r != null):
 		look.call(rec, look)
 	return "" if unknown.is_empty() else "it holds things this build doesn't know: " + ", ".join(unknown)
@@ -122,7 +124,9 @@ func finish(data: Dictionary) -> void:
 		lines.append(_line(rec))
 	var cables: Array[Cable] = []
 	for rec: Dictionary in data.cables:
-		var cable := Catalog.cable(world, Vector3.ZERO, rec.strong)
+		# An older save has no hoses.
+		var cable := Catalog.hose(world, Vector3.ZERO) if rec.get("hose", false) \
+			else Catalog.cable(world, Vector3.ZERO, rec.strong)
 		cable.length = rec.length
 		for i in 2:
 			_made[rec.plugs[i]] = cable.plugs[i]
@@ -275,7 +279,7 @@ func _take() -> Dictionary:
 		"ends": line.ends.map(_ref),
 		"rope": _rope_out(line.rope, strands) if line.rope != null and ropes.ropes.has(line.rope) else null})
 	data.cables = cables.map(func(cable: Cable) -> Dictionary: return {"strong": cable is StrongCable,
-		"length": cable.length, "plugs": cable.plugs.map(_ref),
+		"hose": cable is Hose, "length": cable.length, "plugs": cable.plugs.map(_ref),
 		"rope": _rope_out(cable.rope, strands) if cable is StrongCable and cable.rope != null else null})
 	data.strands = strands.map(_strand_out)
 	data.solver = {"tick": ropes._tick, "drag": ropes._drag, "bodies": []}
@@ -357,12 +361,22 @@ func _body(body: RigidBody3D, loose: bool) -> Dictionary:
 		out.rolled_m = body.get_meta(&"rolled_m")
 	if body is Device:
 		var filled := []
-		var frame := (body as Device).sockets().filter(func(s: Socket) -> bool: return not s.has_meta(&"socket"))
+		var frame := (body as Device).frame_sockets()
 		for i in frame.size():
 			var inside := _socket_out(frame[i])
 			if not inside.is_empty():
 				filled.append([i, inside])
 		out.sockets = filled
+	# A deck's pieces in the order they joined, each as [the piece it joined,
+	# that piece's ring, its quarter turns, itself].
+	var deck := body as Chassis
+	if deck != null and not deck.joined.is_empty():
+		var pieces := deck.pieces()
+		out.joined = []
+		for piece in deck.joined:
+			var on: Chassis = piece.joined_at.get_meta(&"piece", deck)
+			out.joined.append([pieces.find(on), on.frame_sockets().find(piece.joined_at), piece.turns,
+				_body(piece, false)])
 	return out
 
 
@@ -459,9 +473,13 @@ func _make(rec: Dictionary) -> RigidBody3D:
 	var device := body as Device
 	if device != null:
 		device.center_of_mass_mode = RigidBody3D.CENTER_OF_MASS_MODE_CUSTOM
-		var frame := device.sockets().filter(func(s: Socket) -> bool: return not s.has_meta(&"socket"))
+		var frame := device.frame_sockets()
 		for entry: Array in rec.get("sockets", []):
 			_socket_in(device, frame[entry[0]], entry[1])
+		for entry: Array in rec.get("joined", []):
+			var deck := device as Chassis
+			var on: Chassis = deck.pieces()[entry[0]]
+			deck.join(_make(entry[3]) as Chassis, on.frame_sockets()[entry[1]], entry[2])
 	return body
 
 

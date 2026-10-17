@@ -189,7 +189,7 @@ ragged and flaked in patches. They read close up; at 5 m they're a smudge.
 | **Member state's seal:** rings round a chevron, in another hand's paint | One of the governments the UG federated, before it stood as one: early ruins show member-state and corporate markings that don't match ([session 3](lore-research.md#factions-agreed-session-3)) | The ruin, beside the contractor's tag |
 | **Shield maker's sign:** a bubble on its ground, the emitter beneath | The main shield OEM, the common make; it's unnamed, and "Acme Shield Corporation" is the lore's own placeholder ([part 2 §3](lore-session-2026-10-14-part-2.md#3-shields)) | The light shield you start with, on its body; a found shield, small, on its emitter cap |
 | **Wind maker's sign:** three vanes in a ring | Wind's maker, a different one from solar's ([part 2 §4](lore-session-2026-10-14-part-2.md#4-power)) | The turbine |
-| **Consignment label,** by era | The box says who ordered it; the parts inside say who made them ([part 2 §1](lore-session-2026-10-14-part-2.md#1-the-oem-tier-who-actually-makes-things)). The deep one is TILG's, the shipping line that registered Zan as a temporary transshipment hub ([session 3](lore-research.md#factions-agreed-session-3)) | The crate frame's two ring sides |
+| **Consignment label,** by era | The box says who ordered it; the parts inside say who made them ([part 2 §1](lore-session-2026-10-14-part-2.md#1-the-oem-tier-who-actually-makes-things)). The deep one is Tilg's, stencilled in the capitals of the acronym it still was, the shipping line that registered Zan as a temporary transshipment hub ([session 3](lore-research.md#factions-agreed-session-3)) | The crate frame's two ring sides |
 | **Skimmer crew's patch,** painted by hand: the giant, a dive across it, a tally | The hoverboard as skimmer-culture personal gear, not official issue ([lore research, question 11](lore-research.md#13-open-questions-for-hunter)) | A found hoverboard's tail, which is what shows when it's found nose-down; a board of your own is new and plain |
 
 **Why these.** The marks go where the lore names a maker or issuer. The ruin's wall shows
@@ -216,14 +216,18 @@ this to a few:
 deep. A found device takes its layer's row. So far the crate's label is the mark that changes
 most from row to row:
 
-- **Deep:** "TILG" over "XN 0217", TILG's consignment stencil, crisp, routed by the system's
-  official code. The X form is old and official
+- **Deep:** "TILG" over "XN 0217", Tilg's consignment stencil in the acronym's capitals (it
+  hasn't worn into "Tilg" yet: [the names](lore-research.md#slang-and-name-erosion-agreed-session-4-part-2)),
+  crisp, routed by the system's official code. The X form is old and official
   ([names](lore-research.md#hierarchy-and-the-name-decay-agreed-session-3)).
 - **Surface:** "ZN" daubed back on by hand in rust red: a copy from memory, on the way from XN
-  to Zan, with the X said and written as a Z. It's late, a Bronze Age form, and session 3 dates
-  ruins by which form appears. (Open, 2026-10-17: Hunter's first reaction was that it should
-  read XN. See the open questions.)
-- **Yours:** a plain batch number, "LOT 3127", for a recent, cheap make.
+  to Zan, with the X said and written as a Z. It's late, a Dark Age or Second Age form (a
+  reading: hands that no longer read the code, where the First Kingdoms kept their archives),
+  and session 3 dates ruins by which form appears. **Decided (session 4, part 2, 2026-10-17):
+  the Z stays.** "The hand-daubed 'ZN' consignment mark is intentional drift from XN."
+- **Yours:** a plain batch number, "LOT 3127", for a recent, cheap make. Session 4, part 2 says
+  the Surveyor's starting gear "is company issue, which fits the existing 'new' mark row and its
+  cheap batch stencil."
 
 The crew's patch has only two states: a found board carries it, and a board of your own is
 plain, since nobody has painted it yet.
@@ -232,12 +236,13 @@ Wear does the rest, from the same amount that wears the paint: ragged edges, pat
 away, scour on the windward side and sand on what faces up.
 
 **The strata.** Session 3 has three strata: corporate tech deepest, skimmer-era salvage in the
-middle and Bronze Age forged goods near the surface. The game has two layers so far. The deep
-one carries the corporate and colonial marks (the contractor, the seal, TILG) and also the
+middle and the forged goods of the First Kingdoms to the Second Age near the surface. The game
+has two layers so far. The deep
+one carries the corporate and colonial marks (the contractor, the seal, Tilg) and also the
 crew's patch, since boards are found deep. Once a middle layer exists, the patch belongs
 there. Military gear carries no mark yet, since there's none in the game. Session 3 makes it
-extremely rare and brought only by deserters, and its marks would be the war era's
-standardised, severe ones.
+extremely rare and brought only by deserters (session 4, part 2 adds what the Provisional built
+on Zan itself), and its marks would be the war era's standardised, severe ones.
 
 **Placeholders.** Every design and ink colour is a placeholder. So are these:
 
@@ -246,7 +251,7 @@ standardised, severe ones.
 - The shield maker and the wind maker are unnamed.
 - In "XN 0217", only XN comes from the lore; the number is invented. The moon's own
   designation, XN-118-7, stays off crates.
-- "ZN" is an invented form on the lore's path from XN to Zan.
+- "ZN" is an invented form on the lore's path from XN to Zan. It stays (session 4, part 2).
 - "LOT 3127" and the patch's design are invented too.
 
 **How it's built.** It's one atlas, `game/look/marks.png` (six columns by three rows, 1536 ×
@@ -273,11 +278,23 @@ should differ by era in shape, not just maker's marks. The shield comes first."
 Today an era shows in paint and marks only. Wear "does half the work" (B, above), the atlas has
 a row per era, and every shape is still a grey box wearing B. The notes want the silhouette to
 tell the era too. What each era's gear is like is in the other docs: colonial is crisp and
-overbuilt (B's era cue), the skimmer era's crate is "light, cheap and fragile," and Bronze Age
-finds are worn, reused space-age items with Bronze Age carvings
-([Salvage & ruins](prd/salvage-and-ruins.md#gear-and-ruins-by-era)). Not said: what any era's
+overbuilt (B's era cue), the skimmer era's crate is "light, cheap and fragile," and the finds
+of the ages after the collapse are worn, reused space-age items with
+carvings ([Salvage & ruins](prd/salvage-and-ruins.md#gear-and-ruins-by-era)). Not said: what any era's
 shield looks like. The built light shield is round and bone white, and the notes' new one is
 flat ([Bubble shield & camp](prd/bubble-shield-and-camp.md#the-carried-light-shield-and-the-starts-not-built)).
+
+## Marks by era after the collapse
+
+*Session 4, part 2 ([lore session](lore-session-2026-10-17-part-2.md)); named, not drawn, and
+none of it is in the atlas.* The atlas stops at the colonial, surface and new rows. The session
+names what the ages after the collapse would carry, to be drawn when there is a find to carry it:
+- **First Kingdoms** gear carries heraldry and guild stamps (houses such as Okafor, Kessel,
+  Arkwright and Vante; the guilds of the keepers).
+- **Second Age** gear carries religious symbols (the faith of Tu).
+- **Homesteader** gear carries civilian brand marks, not Tilg's.
+- **Carvings and daubs** use the worn slang (Monward, Hanmen, Zanborn, the tu- prefix) and the
+  worn names (Zan, Tu, Han, Mon, Aitch): [the names](lore-research.md#slang-and-name-erosion-agreed-session-4-part-2).
 
 ## Tu and the sky
 
@@ -351,16 +368,12 @@ so its reflection map is kept at the smallest size and costs next to nothing to 
 - Should parts be coloured by their socket kind everywhere, as the tells already are?
 - Which makers get names, and in what register, before a mark's letters stop being
   placeholders?
-- **The crate's surface label.** The notes: "Open: the XN-to-Z crate label. Hunter's first
-  reaction was that it should read XN; it may stay as story." Here: the surface label is "'ZN'
-  daubed back on by hand in rust red: a copy from memory, on the way from XN to Zan, with the X
-  said and written as a Z. It's late, a Bronze Age form," and "'ZN' is an invented form on the
-  lore's path from XN to Zan." The lore: "Spelling lags pronunciation: speech softened the X to
-  a Z early, but writing kept the X for centuries"
-  ([the names](lore-research.md#names-the-ug-catalog-and-the-moon)). Two readings. The lore
-  says writing kept the X, which backs his first reaction. Or the daub stays as story: a
-  copyist who said Z and wrote what they said. Not decided. The atlas still reads "ZN", and
-  nothing was changed.
+- **The crate's surface label. Resolved (session 4, part 2, 2026-10-17): "ZN" stays.** The
+  session: "The Z on surface crates stays. The hand-daubed 'ZN' consignment mark is intentional
+  drift from XN." That settles the notes' "Open: the XN-to-Z crate label. Hunter's first
+  reaction was that it should read XN; it may stay as story," and the lore's "writing kept the X
+  for centuries" ([the names](lore-research.md#names-the-ug-catalog-and-the-moon)) reads as the
+  copyist's drift, not a rule. The atlas reads "ZN" as it did, and nothing was changed.
 - **Remodelling against "models wait for the loop".** Here: "Every game object keeps its
   grey-box shape until the loop works," and "models wait for the loop." The notes: "Device
   models should differ by era in shape... The shield comes first." Not said: whether the

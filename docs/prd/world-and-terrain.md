@@ -43,7 +43,8 @@ These rules come straight from Sand Game's failure, and they don't bend.
    streaming far behind once let the world forget a board you were riding).
 4. **Chunks hold no state.** A chunk is pure output of the seed and its coordinates. The
    camp and the player belong to the world, not to any chunk. Unloading a chunk
-   forgets everything in it.
+   forgets everything in it. The one planned exception is a landmark
+   ([Landmarks](#landmarks), not built).
 5. **Loading follows coordinates, not collisions.** Which chunks exist is decided by
    the player's grid position, never by what a raycast happens to hit.
 6. **The sand is a hard floor** (added 2026-10-14, after a battery fell through the
@@ -96,6 +97,29 @@ the way round and over the poles.
 
 Loot regenerating behind you isn't an exploit. In an endless desert, the land ahead is
 always as rich as the land behind.
+
+### Landmarks
+
+*Agreed, session 4, part 2 ([lore session](../lore-session-2026-10-17-part-2.md)); loose, and
+not built.* Landmarks are one general system: a small class of prefab sites at fixed coordinates
+on the planet grid, the same in every run, that persist the player's changes. They're the only
+fixed things on a shifting moon, and **the one exception to unloading out-of-range content.** The
+StarCom antenna, the black site, the Bastion and the Ledger are the candidates, and they can
+unlock endings and, for the prisoner, spawns ([the vision](../vision.md#landmarks-and-endings),
+[Salvage & ruins](salvage-and-ruins.md#landmarks)).
+
+It bends two things here and leaves the rest alone:
+- **Rule 4, "Chunks hold no state,"** and the vision's "stateless." A landmark's changes are kept
+  whatever the distance, so they can't live in a chunk. As a reading, they would live with the
+  camp and the player, in the world and the save (Profile & saves), as a record keyed by the
+  landmark.
+- **The seed.** The terrain comes from the run's seed, and a landmark is "the same in every
+  run." Its ground has to be pinned to the landmark whatever the seed says: a footprint in
+  `height_at` like a ruin's, but at fixed coordinates. How, and whether the moon's lap holds all
+  of them, is open.
+
+Rules 1 to 3, 5 and 6 are untouched: the ground is still one function, and a landmark is placed
+into it, never dug or moved.
 
 ## Tracks
 
@@ -312,6 +336,10 @@ fail.
   1.28 ms headless, against 1.16 ms walking (probe 7 here) and the 2.0 ms line, and
   1.21 ms in a real window at 144 Hz (`look/stream`). The board reads loaded ground,
   about a dozen reads a step at 240 steps a second, 0.15 ms a tick.*
+- **How a fixed landmark sits on a seeded world.** Landmarks are "the same in every run,"
+  while the vision has "RNG driving both the terrain and the finds." The terrain under a
+  landmark would have to ignore the seed (Landmarks above). Whether "persist the player's
+  changes" means within a run or across runs is not said.
 
 Chunk size and the exact view distance are tuning decisions. The skeleton measures
 them; they aren't design questions.

@@ -16,7 +16,8 @@ the air is too thin to breathe, the days are scorching, the nights freeze, and
 radiation reaches the ground.
 
 **Why you're out here** gets revealed over the course of the game, never up front.
-First and foremost, you're out here to survive.
+First and foremost, you're out here to survive. (Session 4, part 2 gives each start an origin;
+the default is a Tilg & Standard contractor. See [the vision](../vision.md#player-origins-and-kits).)
 
 ## The suit
 
@@ -71,7 +72,12 @@ Sources, from early to late:
 1. **Sealed fresh water in ruins and survival kits.** This is what you live on at
    first.
 2. **Frost and dew,** harvested in the cold hours. There's more toward the poles.
-3. **Condensers,** found, powered and towable. They work best at night.
+3. **Condensers,** found, powered and towable. They work best at night, and **better toward
+   the far side** (Agreed, session 4, part 2; a hook, not built). Water evaporates on the warm
+   near side and cold-traps as frost and ground ice on the far side, so the far side's colder air
+   is where a condenser makes most. The condenser already reads the felt temperature where it
+   stands (below), so the hook is the far side being colder; the game has no near and far side
+   yet, only latitude, so it waits for them ([the lore](../lore-research.md#tu-the-tidal-lock-and-the-water-agreed-session-4-part-2)).
 4. **Water-storing plants,** like the yucca.
 
 Open water doesn't last, so water lives in sealed containers.
@@ -143,8 +149,8 @@ Death means a new run (see Runs in the vision).
 - **Rope goes in as a coil** (Hunter, 2026-10-16: "i cant put rope in my inv"): a rope you
   hold but haven't laid, its first end in your hand and the rest at your belt, rolls back
   up into its coil, the belt end comes off, and the coil goes in the slot. Taken out, it
-  comes to your hands and uncoils as ever, its first end in your hand again. A cable
-  plugged into nothing goes in the same way, as one piece; taken out, you hold a plug
+  comes to your hands and uncoils as ever, its first end in your hand again. A cable or a
+  hose plugged into nothing goes in the same way, as one piece; taken out, you hold a plug
   with the other plug and its cable following, as with a found one. A laid or tied line
   stays out until it's taken up, and so does one paying out or being let go at your
   waist, a cable plugged in at either end, a plug off any cable, and a strong cable that
@@ -188,13 +194,32 @@ Death means a new run (see Runs in the vision).
   frees up before the next is opened. Use a canister or ration you hold to drink or eat
   your fill.
 - **The hose** (Hunter, 2026-10-17: "like the cable, it carries water, it tethers but not
-  as strong as rope"). Two ends on a length of hose, each fitting a water socket with the
-  same snap as a canister: the condenser's, a planter's. Each water socket takes one thing,
-  a canister or a hose's end. Hosed devices share their water as cabled ones share power:
-  a condenser hosed to a planter fills its tank, and with a hose in place of its canister
-  its water goes straight down the hose. A hose holds what it joins together like a common
-  cable, and parts sooner than rope: pulled too hard, an end pops out of its socket. Rolled
-  up, it goes in a slot like a cable.
+  as strong as rope"). Two ends on 6 m of hose, a thick tube of sun-faded blue rubber,
+  each end a steel coupling that fits a water socket with the same snap as a canister:
+  the condenser's, a planter's, a survival kit's. Each water socket takes one thing, a
+  canister or a hose's end, so a fitted end offers a water socket of its own, on a spout
+  on top, as a hook offers a ring: a canister goes on there, or another hose's end, and
+  one condenser waters two planters. Devices joined by hoses share their water as cabled
+  ones share power, on the farm's tick of world time. What a condenser makes goes to the
+  emptiest tank first, then to the fullest canister with room, so one fills up for you to
+  take away; with a hose in place of its canister its water goes straight down the hose,
+  and with nowhere for it (everything it reaches full, or nothing at the hose's far end)
+  it stops, as with a full canister. Tanks are kept full from the canisters, the least
+  full first, so one empties and frees up, as your suit drinks from them; a canister at
+  one end of a hose feeds the planter at the other (water probe 1). Nothing flows from
+  canister to canister, and a hose carries no power. A hose is a rope, as a strong cable
+  is, so it holds what it joins and hangs and sags like one, drawn thicker than rope in
+  blue rubber. It holds a third of a rope's load, 500 N sustained, and past that it never
+  snaps: an end pops out of its socket, and the hose stays on by the other, dragging the
+  loose end along. A floating planter hosed to a staked condenser stays on the end of its
+  hose in a 15 m/s wind, the hose bearing 400 N at most; in a 40 m/s storm wind it pops
+  at 500 N and the planter blows away, while a
+  rope under the same pull, 920 N, holds (water probe 2). A storm's steady wind loads a
+  floating planter about 325 N and its hardest gusts about twice that, so a hose alone
+  holds through most of a storm and lets go in its worst. Rolled up it goes in a slot
+  like a cable, shown as a Hose, and stays out while an end is in a socket. A save
+  keeps hoses, what's on their ends and the water in tanks (saves probe 11). It's found
+  on open sand, a little less often than wire, and `give hose` makes one.
 - **The three harms,** in health a second: the storm 0.25 at full intensity, wind 0.01 for
   each m/s past 20, and temperature 0.05 for each degree past the suit's limits of −40 and
   75 °C. Empty, starving takes 0.1 and thirst 0.3. Unharmed, fed and watered, you heal
@@ -213,9 +238,9 @@ Death means a new run (see Runs in the vision).
   softens it as it does the day's swing. It's a few degrees, never near the
   suit's limits; it also nudges the condenser and the crops, which read the same felt
   temperature.
-- **The crude condenser** is a catalog device with a canister socket, a battery slot, a top
+- **The crude condenser** is a catalog device with a water socket, a battery slot, a top
   mount for a panel, a port, a ring mount and a bottom mount. It runs whenever it has
-  power and a canister with room, drawing 40 W, and makes 10 L an hour of world time in
+  power and somewhere for its water, a canister with room or a hose (above), drawing 40 W, and makes 10 L an hour of world time in
   air at 0 °C or colder, falling to a fifth of that at 40 °C, by the felt temperature
   where it stands. At the equator in the clear that's about 2 L a day. You drink about
   1.8 L a day there, less under a storm's blanket, so one condenser just keeps you, if it keeps its power and stays
@@ -231,7 +256,11 @@ Death means a new run (see Runs in the vision).
   (a `Kit`: what's carried into the suit's slots, what's set down beside you and where,
   what comes assembled, socket by socket, which lines are laid, how full its batteries
   start and how long its line is). Only this standard kit is balanced; choosing a kit
-  waits. Every run, the first and every one after a death, begins on a clear morning
+  waits. (Session 4, part 2 balances three kits, the Surveyor, the Salvager and the
+  Homesteader, and lists the Surveyor's standard shield, multi-compass, stake tether and radio
+  against the kit below, a light shield, a light panel and a racked board: the clash is
+  recorded in [the vision](../vision.md#player-origins-and-kits), and this kit is what's
+  built.) Every run, the first and every one after a death, begins on a clear morning
   with the sun well up, a third of the way through the day, so the panel makes about
   half its 30 W from the first minute, and the first storm due in three to eight
   minutes, facing where it will come from (Hunter, 2026-10-16: "it spawns me in a
@@ -295,9 +324,11 @@ Death means a new run (see Runs in the vision).
   bubble keeps every harm off you, the farm's drops are all you eat, 2,400 kcal, and you
   drink about 1.7 L a day. Take the farm away and you starve at 2.83 days (probe 1).
 - **Water is where AFK ends.** Nothing brings you water yet: you drink only from your
-  slots, and a condenser fills its own canister, to be swapped by hand. So the camp keeps
-  you as long as the water you carry: left on, the three canisters ran out at 4.5 days
-  and you died of thirst at 4.8, fed, with food stored and the shield up.
+  slots. The camp's condenser waters only the farm, down its hoses, and a canister it
+  fills still has to come to your slots by hand. So the camp keeps you as long as the
+  water you carry: left on, the three canisters were empty by four days and you died of
+  thirst at 4.78, fed, with food stored and the shield up, while the farm's tanks stayed
+  above 3 L (Farming).
 
 ## Full version
 
@@ -352,4 +383,5 @@ Death means a new run (see Runs in the vision).
 ## Open questions
 
 - **Why is the scavenger out here?** The game reveals it over time. We don't need the
-  answer yet.
+  answer yet. *Narrowed by session 4, part 2:* each origin has its own reason, and the default
+  is a Tilg & Standard contractor ([the vision](../vision.md#player-origins-and-kits)).

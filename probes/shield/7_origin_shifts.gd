@@ -2,7 +2,8 @@ extends ShieldProbe
 ## Bubble shield probe 7: origin shifts are invisible, and the bubble is
 ## wherever its generator is. Every reading at world places in and round a
 ## running shield is the same before and after the engine origin shifts under
-## it. Move the generator and the bubble is there at once, before another tick
+## it, to the micrometres the shift itself rounds positions by: a dune's lee
+## there changes with the place. Move the generator and the bubble is there at once, before another tick
 ## runs: shelter is asked of the distance, never told by an event. Free it
 ## mid-frame and the bubble is gone at once.
 
@@ -31,7 +32,7 @@ func run() -> void:
 	var after := places.map(_readings)
 	var moved := PackedStringArray()
 	for i in places.size():
-		if before[i] != after[i]:
+		if not _same(before[i], after[i]):
 			moved.append("%s: %s, then %s" % [places[i], before[i], after[i]])
 	var sheltered := before.filter(func(v: Array) -> bool: return v[0] == 1.0).size()
 	check(sheltered == 24, "half the places were sheltered (%d of 48)" % sheltered)
@@ -57,6 +58,14 @@ func run() -> void:
 	check(weather.shelter_at(to, &"storm") == 0.0 and world.wear.rate_at(to) > 0.0, "freed, its bubble is gone at once")
 	await get_tree().process_frame
 	await physics_frames(2)
+
+
+func _same(a: Array, b: Array) -> bool:
+	for i in a.size():
+		var same: bool = is_equal_approx(a[i], b[i]) if a[i] is float else a[i].is_equal_approx(b[i])
+		if not same:
+			return false
+	return true
 
 
 ## Everything that asks about shelter, at a world place.

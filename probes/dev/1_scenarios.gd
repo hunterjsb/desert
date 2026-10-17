@@ -4,9 +4,12 @@ extends WeatherProbe
 ## in front of you; going looking stands you before a ruin's door with finds
 ## round it; the farm stands in front of you growing; a charged board lies at
 ## your feet by a small camp; a radio and a shield stand in front of you with a
-## beacon in reach; the reference camp stands round you, running; the eclipse
-## faces Tu just before the sun goes behind it; the far side has no Tu. Checked
-## against the field itself and against what the game then shows.
+## beacon in reach; the reference camp stands round you, running; the lee
+## stands you under a tall slip face, facing up it into the wind over its
+## crest, the wind on you cut and a storm due; chassis pieces, their trays,
+## a charged crate and a condenser lie in front of you; the eclipse faces Tu
+## just before the sun goes behind it; the far side has no Tu. Checked against
+## the field itself and against what the game then shows.
 
 const SLACK := 1.0
 
@@ -60,6 +63,9 @@ func run() -> void:
 					await _board_lands()
 				if scenario.get("afk", false):
 					await _afk_lands()
+				if scenario.get("chassis", false):
+					check(field.wind_at(at.x, at.y, t).length() < scenario.calm, "chassis: a calm spell")
+					await _chassis_lands()
 			"front", "back":
 				check(stormy == (scenario.kind == "back"), "%s: on the right side of the edge" % what)
 				check(ahead.dot(upwind) > 0.999, "%s: facing upwind, where it comes from" % what)
@@ -70,6 +76,19 @@ func run() -> void:
 					await _camp_lands()
 				if scenario.get("radio", false):
 					await _radio_lands()
+			"lee":
+				var due := field.next_change(at.x, at.y, t, 600.0, 5.0)
+				check(not stormy and due >= scenario.due[0] - 10.0 and due <= scenario.due[1] + 10.0,
+					"lee: clear, with a storm due in %d to %d s (%.0f s)" % [scenario.due[0], scenario.due[1], due])
+				check(ahead.dot(upwind) > 0.999, "lee: facing upwind, up the face")
+				var crest := -INF
+				for d in range(0, 81, 2):
+					crest = maxf(crest, world.height_at(at.x + upwind.x * d, at.y + upwind.y * d))
+				check(crest - world.height_at(at.x, at.y) >= Scenarios.LEE_TALL,
+					"lee: its crest stands %.0f m above you (%.1f)" % [Scenarios.LEE_TALL, crest - world.height_at(at.x, at.y)])
+				var cut := 1.0 - world.weather.wind.length() / world.weather.field_wind(world.player.global_position).length()
+				check(cut >= Scenarios.LEE_SHARE * Tuning.current().lee_wind and Dev.read("weather/lee") != "-",
+					"lee: the wind on you is cut by its lee, and the overlay says so (%.2f)" % cut)
 			"deep":
 				check(field.storm_at(at.x, at.y, t) == 1.0, "deep: full storm")
 				check(_edge(at, upwind, t, true) > 250.0 and _edge(at, -upwind, t, true) > 250.0,
@@ -124,12 +143,13 @@ func _radio_lands() -> void:
 
 
 ## The reference camp stands round you, running: the shield's bubble takes
-## you, the planters and the crate, and the turbine stands out beyond it; the
-## shield, the crate with its two panels and the turbine are one pool, its
-## bank full; the trays rest on the sand; the planters are sown, watered and
-## harvesting, near enough to drop food onto you; the crate is moored to a
-## driven stake and holds the turbine on its strong cable; you're fed and
-## watered, with canisters in your slots and room for food.
+## you, the planters, the condenser and the crate, and the turbine stands out
+## beyond it; the shield, the crate with its two panels and the turbine are
+## one pool, its bank full; the trays rest on the sand; the planters are sown,
+## watered and harvesting, near enough to drop food onto you, and hosed to
+## the condenser; the crate is moored to a driven stake and holds the turbine
+## on its strong cable; you're fed and watered, with canisters in your slots
+## and room for food.
 func _afk_lands() -> void:
 	await settle(true)
 	var dropped := Scenarios.afk(world)
@@ -140,10 +160,11 @@ func _afk_lands() -> void:
 	var turbine: Device = dropped.filter(func(b: Node) -> bool: return b is Device and b.stats().turbine_w > 0.0)[0]
 	var crate: Device = dropped.filter(func(b: Node) -> bool: return b is Device and b.label == "Crate frame")[0]
 	var stake: Stake = dropped.filter(func(b: Node) -> bool: return b is Stake)[0]
+	var condenser: Condenser = dropped.filter(func(b: Node) -> bool: return b is Condenser)[0]
 	var inside := func(b: Node3D) -> bool: return b.global_position.distance_to(shield.global_position) < shield.size - 0.5
-	check(shield.running() and inside.call(player) and inside.call(crate) and planters.all(inside)
-		and turbine.global_position.distance_to(shield.global_position) > shield.size + 0.5,
-		"afk: the shield stands over you, the planters and the crate, the turbine out beyond it")
+	check(shield.running() and inside.call(player) and inside.call(crate) and inside.call(condenser)
+		and planters.all(inside) and turbine.global_position.distance_to(shield.global_position) > shield.size + 0.5,
+		"afk: the shield stands over you, the planters, the condenser and the crate, the turbine out beyond it")
 	var room := 0.0
 	for device: Device in [shield, crate, turbine]:
 		for cell in device.batteries():
@@ -159,12 +180,41 @@ func _afk_lands() -> void:
 			and p.global_position.distance_to(player.global_position) < world.tuning.drop_reach
 	check(planters.size() == 2 and planters.all(farming),
 		"afk: two planters sown, watered and harvesting, near enough to drop food onto you")
-	check(stake.driven and world.ropes.ropes.size() == 2,
-		"afk: the crate is moored to a driven stake, the turbine on its strong cable")
+	var watered := Water.network(world, condenser)
+	check(planters.all(func(p: Planter) -> bool: return watered.has(p)) and condenser.powered,
+		"afk: both on hoses from the condenser, running")
+	check(stake.driven and world.ropes.ropes.size() == 2 + planters.size(),
+		"afk: the crate is moored to a driven stake, the turbine on its strong cable, the planters on their hoses")
 	var slots := player.suit.slots.map(func(p: Part) -> String: return "-" if p == null else p.label)
 	check(player.vitals.health > 99.0 and player.vitals.hunger > 99.0 and player.vitals.thirst > 99.0
 		and slots.count("Water canister") == Scenarios.AFK_CANISTERS and slots.count("-") == slots.size() - Scenarios.AFK_CANISTERS,
 		"afk: you start fed and watered, stocked with water, slots free for food (%s)" % ", ".join(slots))
+	for body in dropped:
+		if is_instance_valid(body):
+			body.free()
+
+
+## Bare chassis pieces lie flat on the sand in front of you, a tray before
+## each, with a crate frame holding two charged batteries and a condenser
+## with a battery and an empty canister, all within a few steps.
+func _chassis_lands() -> void:
+	await settle(true)
+	var dropped := Scenarios.chassis(world)
+	await physics_frames(60)
+	var player := world.player
+	var near := func(b: Node3D) -> bool:
+		var off := b.global_position - player.global_position
+		return off.dot(-player.global_basis.z) > 1.0 and Vector2(off.x, off.z).length() < 5.0 and clearance(b) < 0.6
+	var pieces := dropped.filter(func(b: Node3D) -> bool: return b is Chassis)
+	var trays := dropped.filter(func(b: Node3D) -> bool: return b is Part and b.kind == &"bottom")
+	check(pieces.size() == Scenarios.CHASSIS_PIECES.size() and trays.size() == pieces.size()
+		and pieces.all(func(p: Chassis) -> bool: return p.parts().is_empty() and p.global_basis.y.dot(Vector3.UP) > 0.99),
+		"chassis: bare pieces lying flat, a tray for each")
+	var crate: Device = dropped.filter(func(b: Node3D) -> bool: return b is Device and b.label == "Crate frame")[0]
+	var condenser: Condenser = dropped.filter(func(b: Node3D) -> bool: return b is Condenser)[0]
+	check(crate.batteries().size() == 2 and crate.charge_share() >= 1.0 and condenser.battery() != null
+		and condenser.canister() != null, "chassis: a crate with two charged batteries, and a condenser")
+	check(dropped.all(near), "chassis: all of it on the sand within 5 m in front of you")
 	for body in dropped:
 		if is_instance_valid(body):
 			body.free()
@@ -294,9 +344,9 @@ func _kit_lands_near_you() -> void:
 		parts += 1 if body is Part else 0
 		if off.dot(ahead) < 1.0 or Vector2(off.x, off.z).length() > 5.0 or c < -0.05 or c > 0.6:
 			strays.append("%s %.1fm %.2fm up" % [body.get("label"), Vector2(off.x, off.z).length(), c])
-	# Every part and coil, plus both cables' plugs; stakes are devices.
+	# Every part and coil, plus both cables' plugs and the hose's ends; stakes are devices.
 	check(devices == Scenarios.KIT_DEVICES.size() + Scenarios.KIT_STAKES.size()
-		and parts == Scenarios.KIT_PARTS.size() + Scenarios.KIT_COILS.size() + 4,
+		and parts == Scenarios.KIT_PARTS.size() + Scenarios.KIT_COILS.size() + 6,
 		"kit: every device, part, stake and coil dropped")
 	check(strays.is_empty(), "kit: all of it on the sand within 5 m in front of you (%s)" % ", ".join(strays))
 	for body in kit:

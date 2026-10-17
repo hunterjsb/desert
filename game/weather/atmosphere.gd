@@ -47,7 +47,8 @@ func _exit_tree() -> void:
 	_roar.stop()
 
 
-## Called each tick. wind is the field's at the player, sheltered or not;
+## Called each tick. wind is the open air's at the player, slowed in a
+## dune's lee but not by a bubble;
 ## sheltered is 1 when the camera is inside a bubble; seen is how far into the
 ## storm's dust the camera is (0 to 1), as if no bubble stood; near is how
 ## close the nearest face is (0 far, 1 here); light is what the dust grains

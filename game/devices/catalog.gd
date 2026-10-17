@@ -18,6 +18,7 @@ const KINDS := {
 	&"mod": Color(0.75, 0.35, 0.7),
 	&"food": Color(0.8, 0.7, 0.35),
 	&"rack": Color(0.95, 0.35, 0.3),
+	&"deck": Color(0.55, 0.45, 0.95),
 }
 
 ## Parts: the socket kind they fit, weight, size (z is how far they stand out
@@ -52,6 +53,11 @@ const PARTS := {
 		"color": Color(1.0, 0.5, 0.1), "stats": {}},
 	&"strong_plug": {"kind": &"port", "label": "Strong cable plug", "mass": 0.3, "size": Vector3(0.07, 0.07, 0.1),
 		"color": Color(0.7, 0.15, 0.1), "stats": {}},
+	# A hose's end fits a water socket as a canister does, and fitted it "adds"
+	# one of its own on top, [kind, position, outward], so a canister or
+	# another hose goes on there too.
+	&"hose_end": {"kind": &"water", "label": "Hose end", "mass": 0.3, "size": Vector3(0.08, 0.08, 0.12),
+		"color": Paint.HOSE, "stats": {}, "adds": [&"water", Vector3(0.0, 0.055, 0.075), Vector3.UP]},
 	&"rope_end": {"kind": &"tie", "label": "Rope end", "mass": 0.3, "size": Vector3(0.05, 0.05, 0.08),
 		"color": Color(0.3, 0.22, 0.14), "stats": {}},
 	# Nothing takes a coil: picked up, it gives you its first end.
@@ -71,6 +77,7 @@ const PARTS := {
 }
 
 ## Frames: their box, weight, wind catch and sockets as [kind, position, outward].
+## Those marked "deck" stand on a chassis piece's deck mount too.
 const DEVICES := {
 	# Two batteries, a ring on every side, a tray under it and two top mounts,
 	# so a panel rides beside a lamp or a shield. The first battery sits in the
@@ -78,7 +85,7 @@ const DEVICES := {
 	# is longer than the crate, so its rack runs along the top of the left side,
 	# away from the charge light, the board standing proud of it to clear the
 	# ring below. Last in the list, so older saves keep their sockets.
-	&"crate_frame": {"label": "Crate frame", "size": Vector3(0.8, 0.5, 0.8), "mass": 15.0,
+	&"crate_frame": {"label": "Crate frame", "size": Vector3(0.8, 0.5, 0.8), "mass": 15.0, "deck": true,
 		"sockets": [
 			[&"battery", Vector3(0.0, 0.0, 0.4), Vector3.BACK],
 			[&"ring", Vector3(0.4, 0.0, 0.0), Vector3.RIGHT],
@@ -92,7 +99,8 @@ const DEVICES := {
 			[&"top", Vector3(0.0, 0.25, 0.2), Vector3.UP],
 			[&"rack", Vector3(-0.4, 0.17, 0.0), Vector3.LEFT],
 		]},
-	# Its own water tank, and a mod mount on its back for a harvester.
+	# Its own water tank, fed from its water socket, and a mod mount on its
+	# back for a harvester. The water socket is last, so older saves keep their sockets.
 	&"planter": {"label": "Planter", "size": Vector3(1.0, 0.35, 0.6), "mass": 10.0, "planter": true,
 		"sockets": [
 			[&"plant_small", Vector3(-0.3, 0.175, -0.12), Vector3.UP],
@@ -105,9 +113,10 @@ const DEVICES := {
 			[&"bottom", Vector3(0.0, -0.175, 0.0), Vector3.DOWN],
 			[&"port", Vector3(0.5, 0.0, 0.0), Vector3.RIGHT],
 			[&"mod", Vector3(0.3, 0.0, 0.3), Vector3.BACK],
+			[&"water", Vector3(-0.3, 0.0, 0.3), Vector3.BACK],
 		]},
 	# Put a panel on top and a battery in front, and it charges the battery in the sun.
-	&"charger": {"label": "Charger", "size": Vector3(0.45, 0.25, 0.35), "mass": 5.0,
+	&"charger": {"label": "Charger", "size": Vector3(0.45, 0.25, 0.35), "mass": 5.0, "deck": true,
 		"sockets": [
 			[&"battery", Vector3(0.0, 0.0, 0.175), Vector3.BACK],
 			[&"top", Vector3(0.0, 0.125, 0.0), Vector3.UP],
@@ -122,7 +131,7 @@ const DEVICES := {
 			[&"port", Vector3(0.25, 0.0, 0.0), Vector3.RIGHT],
 		]},
 	# Pulls water out of the air into the canister fitted in it, best in the cold of the night.
-	&"condenser": {"label": "Condenser", "size": Vector3(0.6, 0.7, 0.6), "mass": 14.0, "condenser": true,
+	&"condenser": {"label": "Condenser", "size": Vector3(0.6, 0.7, 0.6), "mass": 14.0, "condenser": true, "deck": true,
 		"sockets": [
 			[&"water", Vector3(0.0, -0.1, 0.3), Vector3.BACK],
 			[&"battery", Vector3(0.3, -0.1, 0.0), Vector3.RIGHT],
@@ -134,7 +143,7 @@ const DEVICES := {
 	# The base shield: small and light, use switches it, and its bubble keeps
 	# out wind and storm wherever it goes, a crate's top mount included.
 	&"shield": {"label": "Shield generator", "size": Vector3(0.4, 0.42, 0.4), "mass": 6.0, "shield": true,
-		"fits": &"top",
+		"fits": &"top", "deck": true,
 		"sockets": [
 			[&"battery", Vector3(0.0, -0.05, 0.2), Vector3.BACK],
 			[&"ring", Vector3(-0.2, -0.05, 0.0), Vector3.LEFT],
@@ -144,7 +153,7 @@ const DEVICES := {
 	# The light shield you start with: a smaller bubble that lets a little of
 	# the wind through, built light enough that the light panel keeps it going.
 	&"light_shield": {"label": "Light shield generator", "size": Vector3(0.3, 0.32, 0.3), "mass": 4.0, "shield": true,
-		"fits": &"top", "stats": {"radius_m": 4.0, "clear_w": 2.0, "storm_w": 20.0, "wind_block": 0.85},
+		"fits": &"top", "deck": true, "stats": {"radius_m": 4.0, "clear_w": 2.0, "storm_w": 20.0, "wind_block": 0.85},
 		"sockets": [
 			[&"battery", Vector3(0.0, -0.04, 0.15), Vector3.BACK],
 			[&"ring", Vector3(-0.15, -0.04, 0.0), Vector3.LEFT],
@@ -186,13 +195,30 @@ const DEVICES := {
 			[&"battery", Vector3(0.0, 0.04, -0.5), Vector3.UP],
 			[&"port", Vector3(0.0, 0.0, 0.65), Vector3.BACK],
 		]},
+	# A piece of a bigger floater: a flat frame a little wider than a crate,
+	# a ring on each edge where the next piece joins or a hook goes, its own
+	# tray under it and one device standing on top. No battery, no port: the
+	# power comes from what stands on it. Lying flat, the wind meets its edge.
+	# Found buried on edge, as the dunes would leave a sheet that wide.
+	&"chassis": {"label": "Chassis piece", "size": Vector3(1.0, 0.12, 1.0), "mass": 9.0, "chassis": true,
+		"carryable": true, "on_end": true, "stats": {"face_m2": 0.12},
+		"sockets": [
+			[&"ring", Vector3(0.5, 0.0, 0.0), Vector3.RIGHT],
+			[&"ring", Vector3(-0.5, 0.0, 0.0), Vector3.LEFT],
+			[&"ring", Vector3(0.0, 0.0, 0.5), Vector3.BACK],
+			[&"ring", Vector3(0.0, 0.0, -0.5), Vector3.FORWARD],
+			[&"bottom", Vector3(0.0, -0.06, 0.0), Vector3.DOWN],
+			[&"deck", Vector3(0.0, 0.06, 0.0), Vector3.UP],
+		]},
 }
 
 
 static func part(id: StringName) -> Part:
 	var spec: Dictionary = PARTS[id]
+	# A hose's end fits where water goes but holds none itself.
 	var made: Part = Battery.new() if spec.kind == &"battery" \
-		else (Supply.new() if Supply.HOLDS.has(spec.kind) else (Plant.new() if spec.has("crop") else Part.new()))
+		else (Supply.new() if Supply.HOLDS.has(spec.kind) and id != Hose.END \
+		else (Plant.new() if spec.has("crop") else Part.new()))
 	made.kind = spec.kind
 	made.label = spec.label
 	made.mass = spec.mass
@@ -223,6 +249,11 @@ static func part(id: StringName) -> Part:
 		made.continuous_cd = true
 	if spec.has("tie"):
 		_add_tie(made, spec.tie, Vector3.BACK)
+	if spec.has("adds"):
+		var adds := Socket.new()
+		adds.kind = spec.adds[0]
+		adds.transform = Transform3D(_facing(spec.adds[2]), spec.adds[1])
+		made.add_child(adds)
 	if spec.kind == &"coil":
 		# It lies flat, so the wind meets its edge, not its face.
 		made.set_meta(&"wind_catch", Tuning.current().wind_catch_per_m2 * size.x * size.z)
@@ -250,18 +281,31 @@ static func food(id: StringName, kcal: float) -> Supply:
 ## a found one, it makes only the second, beside it.
 static func cable(world: World, at: Vector3, strong := false, first: Part = null) -> Cable:
 	var made: Cable = StrongCable.new() if strong else Cable.new()
+	_lay(world, made, at, &"strong_plug" if strong else &"plug", first)
+	if strong:
+		(made as StrongCable).bind(world)
+	return made
+
+
+## A hose and its two ends, dropped together as a cable is, a rope like a
+## strong cable.
+static func hose(world: World, at: Vector3, first: Part = null) -> Hose:
+	var made := Hose.new()
+	_lay(world, made, at, Hose.END, first)
+	made.bind(world)
+	return made
+
+
+static func _lay(world: World, made: Cable, at: Vector3, end: StringName, first: Part) -> void:
 	world.content.add_child(made)
 	for side in [-0.2, 0.2]:
-		var plug := first if first != null and made.plugs.is_empty() else part(&"strong_plug" if strong else &"plug")
+		var plug := first if first != null and made.plugs.is_empty() else part(end)
 		if plug.get_parent() == null:
 			world.content.add_child(plug)
 			plug.global_position = at + Vector3(side, 0.05, 0.0)
 			if first != null:
 				plug.global_position.y = world.height_under(plug.global_position) + 0.05
 		made.plugs.append(plug)
-	if strong:
-		(made as StrongCable).bind(world)
-	return made
 
 
 ## A stake, loose: a spike with an eye on top whose tie socket faces up, so a
@@ -301,12 +345,14 @@ static func device(id: StringName) -> Device:
 		else (Condenser.new() if spec.get("condenser", false) \
 		else (Planter.new() if spec.get("planter", false) \
 		else (Hoverboard.new() if spec.get("board", false) \
-		else (Radio.new() if spec.get("radio", false) else Device.new()))))
+		else (Radio.new() if spec.get("radio", false) \
+		else (Chassis.new() if spec.get("chassis", false) else Device.new())))))
 	made.set_meta(&"catalog", id)
 	made.label = spec.label
 	made.frame_mass = spec.mass
 	made.frame_stats = spec.get("stats", {}).duplicate()
 	made.kind = spec.get("fits", &"")
+	made.stands_on_deck = spec.get("deck", false)
 	if spec.get("carryable", false):
 		made.carryable = true
 	var size: Vector3 = spec.size

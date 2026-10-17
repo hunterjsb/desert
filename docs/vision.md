@@ -92,17 +92,57 @@ the game is balanced around the first.
 **The extremes are loot-limited by design:** oysters never find ruins, and hover punks miss
 loot freshly exposed by storms.
 
+Each has a start of its own in [Player origins and kits](#player-origins-and-kits): the
+Surveyor is the hybrid, the Salvager the hover punk and the Homesteader the oyster.
+
 These are about how you carry the camp. The "two play styles" under latitude (below) are about
 where you are. The pillars above describe the hybrid. How the two extremes sit with pillar 2,
 "your home goes with you," is in the open questions.
 
+## Player origins and kits
+
+*Agreed, session 4, part 2 ([lore session](lore-session-2026-10-17-part-2.md)); loose, and none
+of it is built. Only the standard kit exists today.*
+
+The region is healing and people are exploring again, so Zan is being rediscovered by several
+kinds of arrival at once. **Balance only the first three.** The rest are novelty starts, excluded
+from Ironman (the session writes "Iron Man"). The first three are the three playstyles above:
+the Surveyor is the hybrid, the Salvager the hover punk and the Homesteader the oyster.
+
+| Kit | Who | Starting gear | Unlock |
+|---|---|---|---|
+| **Surveyor** (default, balanced) | Tilg & Standard contractor: spend a decade or as long as you can, build a real base, set for life. No interstellar comms ("not in the budget"). | Tilg-issued crate, standard shield, hover tray, Tilg multi-compass, stake tether, radio. Roughly today's kit. | Default |
+| **Salvager** (the hover punk) | Independent scavenger with a board and nerve. | Hoverboard and the light shield; little else. | Playstyle, e.g. long board distance or surviving a storm on carried gear |
+| **Homesteader** (the oyster) | Settler come for cheap land, naive about why everyone left. | Full agriculture setup, solid shield, collector (wind net); likely turbine, battery bank, condenser, extra stakes. **No hover.** Civilian brand marks, not Tilg's. | Playstyle, e.g. riding out big storms without moving camp |
+| Archaeologist | University expedition. | Ground-penetrating radar, better radio, weak shield, little power. | Proposed: finding a number of landmarks |
+| Replacement | The next Tilg surveyor, sent on schedule since Tilg can't know the first is dead. | Starts at the previous run's last camp, among its wreckage. | Needs a prior save |
+| Prisoner | Wakes in a cryo cell at the Provisional's black site, two thousand years late. | Almost nothing; the cell is the first shelter. Spawns deep under Tu. | Finding the black site |
+| Nomad | From the moving nomad city; best at reading wind and stars. | Mythic. | The nomad city ending |
+| Hive mind experiment | A made human, sent to the moon the hive mind named first. | Secret. | The last unlock in the game |
+
+All starting gear for the surveyor is company issue, which fits the existing "new" mark row and
+its cheap batch stencil ([art direction](art-direction.md#makers-marks)). Unlocks all go through
+`profile.unlock` ([Profile & saves](prd/profile-and-saves.md#kits-are-data)).
+
+**Clash with the built kit (recorded, not to build).** The Surveyor lists a standard shield, a
+multi-compass, a stake tether and a radio. Today's kit ([Survival](prd/survival.md), as built) is
+a light shield, a light solar panel and a hoverboard racked on the crate; the radio and the
+compass are finds, and there is no multi-compass. The session calls the Surveyor "roughly today's
+kit," so this is a difference to settle, not a change to make. A standard shield at the start
+also reopens "the first deep find reads as an upgrade" (open questions). The same session turns
+"nomad" into a different start: the tentative note of 2026-10-17 put a normal shield on "the
+nomad and oyster starts," and the Homesteader (the oyster) gets a solid one while the Nomad is
+the moving city's mythic start.
+
 ## Runs
 
-- **Endless.** There's no ending. Long-term goals might come later, but the game is
-  meant to be played indefinitely.
+- **Endless by default.** No run has to end, and the game is meant to be played
+  indefinitely. Endings exist, but only for players who choose them for story reasons
+  ([Landmarks and endings](#landmarks-and-endings), session 4, part 2).
 - **Death means a new run.** Whatever you had stays out there in theory but is
   practically unreachable. With RNG driving both the terrain and the finds, this is
-  roguelite territory.
+  roguelite territory. One novelty start, the Replacement, begins at the last run's camp
+  ([Player origins and kits](#player-origins-and-kits)).
 - **You start with the essentials:** a floating crate with a weak shield and a light
   solar panel mounted on top and a hook to tow it by, moored by its short line to a
   stake (a loose floating crate blows away in the first breeze), a hoverboard racked on
@@ -110,16 +150,47 @@ where you are. The pillars above describe the hybrid. How the two extremes sit w
   player with floating crate, shield and hoverboard"; earlier the same day the shield
   and panel lay on the sand and the board was only a find). The shield and panel are
   clearly worse than anything found deep, so the first deep find reads as an upgrade,
-  and the kit can never leave the shield without power. (Tentative, Hunter, 2026-10-17: the
-  start may differ by playstyle, with the light shield for the hover punk and a normal one for
-  the nomad and the oyster. That clashes with the line above; see the open questions and [the
-  bubble shield PRD](prd/bubble-shield-and-camp.md#the-carried-light-shield-and-the-starts-not-built).)
+  and the kit can never leave the shield without power. (Agreed, session 4, part 2: the start
+  does differ by origin. The default Surveyor lists a standard shield, which clashes with the
+  built kit's light one, and the Salvager gets the light shield. See [Player origins and
+  kits](#player-origins-and-kits). It replaces the tentative note of 2026-10-17, which put a
+  normal shield on "the nomad and the oyster"; the open questions and [the bubble shield
+  PRD](prd/bubble-shield-and-camp.md#the-carried-light-shield-and-the-starts-not-built) follow.)
 - **Saving and loading is the default; Ironman is its own mode** (Hunter, 2026-10-16,
   after a fun run that dying wiped: "dying actually hurt"). By default you save when you
   like, the game saves for you every few minutes and when you quit, and death offers to
   load your last save. Ironman, chosen at New game, is the old rule: Save & quit only
   suspends the run, and death ends it ([Profile & saves](prd/profile-and-saves.md)).
   Whether achievements care which mode a run is in is still open.
+
+## Landmarks and endings
+
+*Agreed, session 4, part 2; loose, and none of it is built.* The game reads as an infinite
+survival game. Endings exist only for players who choose them for story reasons, and many
+players will never see one.
+
+**Landmarks** are one general system, not one-offs: a small class of prefab sites at fixed
+coordinates on the planet grid, the same in every run, that persist the player's changes. They're
+the only fixed things on a shifting moon, the exception to unloading out-of-range content. They
+can unlock endings and, for the prisoner, spawns. Candidates: the StarCom antenna, the black
+site, the Bastion and the Ledger. [World & terrain](prd/world-and-terrain.md#landmarks) and
+[Salvage & ruins](prd/salvage-and-ruins.md#landmarks) hold the rule and the sites.
+
+| Ending | How | Notes |
+|---|---|---|
+| StarCom | Repair the StarCom interstellar antenna with the right parts. | Comms are instant but ships take years: Tilg answers, extraction is years out, so the finale is surviving until they arrive. |
+| Launch | In Port Morgan, locate an old ship, fuel and power it, and connect the Ledger and the Quartermaster so both authorise. | The Ledger knows the ships; the Quartermaster holds the clearances. Connecting them means bridging Mon and Han across open desert. Two gods talking directly for the first time in centuries. |
+| Shot down | Launch with only the Ledger's approval. | A two-thousand-year-old air-defence net shoots down an unauthorised launch. Shot down by paperwork. |
+| Nomad city | Survive long enough with a camp worth finding: powered shield, turbines, radio on the right frequency. | The city finds you; a tether line lands at camp and pulls you in. Silhouettes only. Giga-rare; best fit for oysters. |
+| Radio | Find the right frequencies to reach Tilg or the last town. | Loose idea, not designed. |
+
+**Running gags to keep.** The Ledger is Tilg property, so the surveyor is the only person on Zan
+with a login to the god of the crusades. The Quartermaster is the Provisional's, so a Tilg login
+means nothing to it ([the AI gods](lore-research.md#the-faith-of-tu-and-the-ai-gods-agreed-session-4-part-2)).
+
+**The hive mind start changes the endings without a cutscene.** Fix StarCom and someone answers,
+but not Tilg. Try to launch and the Quartermaster recognises you as the enemy, whatever your
+clearance. There is no dedicated hive mind ending; it stays ambiguous.
 
 ## The world
 
@@ -147,6 +218,12 @@ where you are. The pillars above describe the hybrid. How the two extremes sit w
   cold. It also gives two play styles: the equator is choppy and rich in salvage, while
   the poles have less loot but more stability, which suits building big and outpacing
   the storms.
+- **The sky draws the map** (Agreed, session 4, part 2; loose, not designed). Zan is tidally
+  locked to Tu, so where you stand under the giant is a third dial beside wind and latitude:
+  under Tu (hottest, the longest eclipses, the richest ruins), the Rim (mild, farmland, Tu
+  half-risen on the horizon) or the far side (cold, black nights, where the water ends up). The
+  game has only latitude today. [The lore research](lore-research.md#tu-the-tidal-lock-and-the-water-agreed-session-4-part-2)
+  has the regions.
 - **World coordinates are always tracked**, so distance from spawn is known even
   though the land isn't kept. A fixed underlying topography (the large shapes the dunes
   sit on) may come later.
@@ -157,15 +234,19 @@ where you are. The pillars above describe the hybrid. How the two extremes sit w
 A colonized desert moon in the Xandaris universe, Kenshi in spirit. A high-tech
 spacefaring society built a transit hub there, and then a war cut the lane and orphaned
 it. It became a smuggler moon, until a volcanic paroxysm cut every outside link and took
-most of the people who understood the machines. Two Bronze Age feudal eras rebuilt in the
-ashes and rose and fell in turn, leaving an apocalypse world. `{YEARS_SINCE_FALL}` after the
-last survivors, a time not yet set ([placeholders](lore-research.md#placeholders)), the moon
-has reverted to near-uninhabitable: ruins, dunes, maybe a few holdouts.
+most of the people who understood the machines. The First Kingdoms, the Dark Age and the
+Second Age rebuilt in the ashes, medieval in shape, and rose and fell in turn, until nomads were
+all that was left, leaving an apocalypse world. `{YEARS_SINCE_FALL}` after the collapse, a time
+not yet set ([placeholders](lore-research.md#placeholders)), the moon has reverted to
+near-uninhabitable: ruins, dunes, one nomad city that still moves. The region is starting to
+heal, though, and Zan is being rediscovered by surveyors, salvagers and homesteaders (the
+origins below).
 The air is thin and fading, the days scorch, the nights freeze, and water goes through
 all three phases every day. The physics is in [the moon](the-moon.md), and the history
 is in the lore sessions ([part 1](lore-session-2026-10-14.md), [part
 2](lore-session-2026-10-14-part-2.md), [session 3](lore-session-2026-10-16.md), [session
-4](session-notes-2026-10-17.md)) and [the lore research](lore-research.md).
+4](session-notes-2026-10-17.md), [session 4, part 2](lore-session-2026-10-17-part-2.md)) and
+[the lore research](lore-research.md).
 
 You're a **scavenger and a survivor, in a suit**, because nobody survives here without
 one. The suit is the one gift this world gives you. Why you're out here gets revealed
@@ -175,11 +256,15 @@ survive.
 The strangeness at its heart is that **history runs backwards in the ground.** The
 oldest, rarest ruins hold the most advanced technology, because they come from the
 original colonists. Everything built after them is cruder: corporate tech lies deepest,
-skimmer-era salvage in the middle and Bronze Age forged goods near the surface.
+skimmer-era salvage in the middle and the forged goods of the First Kingdoms to the Second Age
+near the surface.
 
 **People are only ever hinted at.** A hatch open in the distance, just out of reach. A
 ruin with something recently used left behind. Maybe a voice on the radio. There are no
-NPCs, and the game never answers the question.
+NPCs, and the game never answers the question. (One exception, from session 4, part 2: the
+nomad city, shown only in silhouette, never faces or words. See the endings below.) The game
+also has no exposition: everything reaches you through marks, carvings, ruin layering,
+terminals, radio and the sky.
 
 Lore gets worked out loosely alongside the systems so that it stays consistent from
 the start.
@@ -224,17 +309,23 @@ The order we build them in is the [skeleton plan](skeleton-plan.md).
 ## Open questions
 
 - Why is the scavenger out here? The game reveals it over time, and we don't need the
-  answer yet.
+  answer yet. *Narrowed by session 4, part 2:* each origin has its own reason (see [Player
+  origins and kits](#player-origins-and-kits)), and the default is a Tilg & Standard
+  contractor. What the game reveals beyond that is still its own.
 - If a good camp reaches steady state, what ends a run? Being endless, cozy and
   permadeath pull against each other. A long-horizon backdrop for any answer: the moon
-  itself has an end state, a calm, stable desert once its orbit recircularises.
-- **Do starts differ by playstyle?** Tentative in the notes (Hunter, 2026-10-17): "the hover
-  punk start gets the light shield; the nomad and oyster starts get a normal shield, heavy
-  enough not to be blown around." Here: a start with a weak shield, "clearly worse than
-  anything found deep, so the first deep find reads as an upgrade." A normal shield is read as
-  the base shield found deep, so the nomad and the oyster would start with what other runs find
-  later. "Nomad" is not defined in the notes and is read as the hybrid start, the intended one.
-  Detail in [the bubble shield PRD](prd/bubble-shield-and-camp.md#open-questions).
+  itself has an end state, a calm, stable desert once its orbit recircularises. *Narrowed by
+  session 4, part 2:* optional endings exist for players who want one ([Landmarks and
+  endings](#landmarks-and-endings)); a run still never has to end.
+- **A standard shield at the start, against "the first deep find reads as an upgrade."** Here:
+  a start with a weak shield, "clearly worse than anything found deep, so the first deep find
+  reads as an upgrade." The notes (2026-10-17) put "a normal shield" on "the nomad and oyster
+  starts," and session 4, part 2 puts a "standard shield" on the default Surveyor and a "solid
+  shield" on the Homesteader. A normal shield is read as the base shield found deep, so those
+  starts would begin with what other runs find later. Not said: whether the standard shield is
+  the base shield or a step between, and what the first deep find is then. (The question "do
+  starts differ by playstyle" is answered yes, by origin.) Detail in [the bubble shield
+  PRD](prd/bubble-shield-and-camp.md#open-questions).
 - **How do the extremes sit with "your home goes with you"?** Pillar 2: "There's no base to
   return to. The shield, the planters and the power all travel with you," and "The camp moves
   at walking pace, and storms are weathered, not outrun." The notes: the oyster is "fully
@@ -246,3 +337,11 @@ The order we build them in is the [skeleton plan](skeleton-plan.md).
   most advanced technology... Everything built after them is cruder." The notes: "Era gear has
   trade-offs, not a ladder." Quoted in full in [Salvage &
   ruins](prd/salvage-and-ruins.md#open-questions).
+- **Session 4, part 2's clashes with this page.** Landmarks against "Only what's around the
+  player exists" and "Stateless"; optional endings against "Endless"; the nomad city against
+  "People are only ever hinted at"; the Replacement start against "practically unreachable"; the
+  Surveyor's kit against the built one. The newer session wins, so they are applied above and
+  quoted old and new in [the lore research, section
+  16](lore-research.md#16-open-after-session-4-part-2), with what they leave open: where each
+  origin spawns, how the sky's regions meet latitude, and how a fixed landmark sits on a seeded
+  world.

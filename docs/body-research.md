@@ -223,17 +223,37 @@ opens the window.
 
 ### The giant, the day and longitude
 
-*Updated 2026-10-17 from [the Tu spec](tu-and-day-2026-10-17.md), which asks for one value in
-its recommended 12–14° to be written here. Three are under trial instead (Hunter, 2026-10-17,
-lore session part 2: "Keep angular size a tuning value; test 6°, 9° and 13° in game before
-fixing the orbit. Physics follows the look."), so none is chosen. 13° is the spec's pick and
-the default, 6° sits in this memo's own earlier 6–8°, and 9° is between. What they rub against
-is quoted in [section 6](#open-after-the-tu-spec-2026-10-17).*
+*Updated 2026-10-17 from [the Tu spec](tu-and-day-2026-10-17.md). Tu's size is under trial,
+below; what the sizes rub against is quoted in [section 6](#open-after-the-tu-spec-2026-10-17).*
 
 - **Tidally locked:** a day is one orbit round Tu. The game compresses it to 20 minutes,
   fixed.
 - **Tu:** a super-Jupiter of 4 Jupiter masses (the spec's 3–6), about 1.1 Jupiter radii,
-  78,600 km across its radius. One number, how wide it is across the sky, sets the rest:
+  78,600 km across its radius. How wide it looks sets the orbit and all that follows (below).
+- **The near side:** Tu hangs fixed at a height set by how far you are from the sub-Tu
+  point, nodding by about a degree a day (an eccentricity of about 0.01). Its phase runs
+  opposite the sun's. Every day brings a total eclipse, short partial phases either side.
+- **The far side:** truly dark nights, the stars, and no giant.
+- **The Rim** (Hunter, 2026-10-17, lore session part 2): where Tu sits half-risen on the
+  horizon there's effectively no eclipse, since the sun goes behind it there as it rises or
+  sets.
+- **Leading and trailing:** the trailing hemisphere takes the giant's plasma, the way
+  Europa's trailing side is darkened by it.
+- **Longitude is a real third dial:** light, the eclipse, radiation, and Tu as a landmark.
+- **Tilt:** a moon inherits its giant's tilt. Near zero, like Jupiter's 3°, keeps the
+  poles cold enough to trap the air, which the story needs.
+
+#### Tu's size, under trial
+
+*Hunter, 2026-10-17 ([lore session](lore-session-2026-10-17-part-2.md)): "Keep angular size a
+tuning value; test 6°, 9° and 13° in game before fixing the orbit. Physics follows the look."*
+The earlier leaning here was 6–8°, at 15–20 giant radii. The giant's width across the sky is the
+game's tuning value, and the three presets are built, 13° by default and switched by the dev
+console. None is chosen, and this page picks none. [The Tu spec](tu-and-day-2026-10-17.md) asked
+for one value in its recommended 12–14° to be written here: 13° is that one. 6° sits inside the
+earlier leaning, and 9° is between.
+
+What each implies, from the width alone. It is not a decision:
 
 | | 6° | 9° | 13° (the default) |
 |---|---|---|---|
@@ -261,18 +281,12 @@ is quoted in [section 6](#open-after-the-tu-spec-2026-10-17).*
     degree for each degree you travel toward or away from the sub-Tu point.
   - **Heating:** at the same eccentricity, tidal heating goes about as the orbit to the
     power of −7.5.
-- **The near side:** Tu hangs fixed at a height set by how far you are from the sub-Tu
-  point, nodding by about a degree a day (an eccentricity of about 0.01). Its phase runs
-  opposite the sun's. Every day brings a total eclipse, short partial phases either side.
-- **The far side:** truly dark nights, the stars, and no giant.
-- **Leading and trailing:** the trailing hemisphere takes the giant's plasma, the way
-  Europa's trailing side is darkened by it.
-- **The Rim** (Hunter, 2026-10-17, lore session part 2): where Tu sits half-risen on the
-  horizon there's effectively no eclipse, since the sun goes behind it there as it rises or
-  sets.
-- **Longitude is a real third dial:** light, the eclipse, radiation, and Tu as a landmark.
-- **Tilt:** a moon inherits its giant's tilt. Near zero, like Jupiter's 3°, keeps the
-  poles cold enough to trap the air, which the story needs.
+
+The 9° and 13° presets put the moon closer in than the earlier 15–20 radii, toward the Europa
+and Io end of the list (Europa's bare surface gets about 5.4 Sv a day, against 0.08 and less at
+15–20 radii). A closer preset redoes the radiation, the tidal heating and the real day, which
+shortens with the orbit: that is what "physics follows the look" asks for. [The
+moon](the-moon.md#day-length) gives the same in brief.
 
 ## 4. Three candidate bodies
 
@@ -301,7 +315,9 @@ the Jeans parameter for nitrogen is 40 (Mars-sized), 63 and 161, so 0.2 bar last
 (Io's rate), and even that would take ~25 million years to remove 0.2 bar from a
 Mars-sized moon. **No size makes the air leak away in `{YEARS_SINCE_FALL}`.** Fading it that
 fast would take ~10,000 tonnes a second (worked for the span this memo first assumed; redo
-when the placeholder is set).
+when the placeholder is set). Redone at the placeholder's rough current value (session 4,
+part 2; [Placeholders](lore-research.md#placeholders)): about 12,000 tonnes a second for 0.2 bar
+from a Mars-sized moon, the same order, so the conclusion stands.
 
 ## 5. The shield: what it did and how it fails
 
@@ -401,7 +417,7 @@ open items are listed last.*
 **Open in the spec**
 
 - Tu's final size and orbital period, and Tu's body number ([the lore
-  research](lore-research.md#open-questions-from-session-3), question 1).
+  research](lore-research.md#14-open-after-session-3), its open question 1).
 - Where a run starts relative to the sub-Tu point, and whether runs reach the far side.
   The build starts 60° east of it, with Tu 30° up, and builds the far side without
   deciding where runs go.

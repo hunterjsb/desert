@@ -169,6 +169,72 @@ the edge off a storm's wear but never stands in for a shield, and the dust and d
 still come over the crest. Camping in the lee is a choice with a cost: less wind for the
 turbine.
 
+**As built (2026-10-17):**
+- **Where it is.** The ground is read upwind of a place, along the wind blowing there
+  that moment, at 32 places out to 250 m, close together near and spreading out further off.
+  Each crest found shelters the place by three things: how many of its own heights away
+  it stands (fully out to two, not at all past seven), how far above the place it rises
+  (from 1.5 m, fully from 6 m, well over your head), and how steeply the ground falls
+  from it toward the place (from 16°, fully from 26°). The best crest counts. A place on
+  a slope climbing into the wind gets none (from 2°, all of it by 8°): the wind has come
+  back down to the sand and speeds up it.
+- **How strong.** A full lee takes two-thirds of the wind (65%) and a third of a storm's
+  wear and harm (33%). Under an 18 m dune on the probes' seed it's full from high on the
+  slip face to about 15 m past its foot, half about 45 m past it, and gone where the
+  next dune's windward ramp starts, about six heights from the crest. A storm's 25 m/s
+  blows about 9 at the foot, so you stand without being shoved and nothing past 20 m/s
+  harms you or wears your devices there; the storm's own harm and wear fall by a third.
+- **It turns with the wind.** Slip faces lie at 31.5° and windward ramps at 14° at most,
+  so only a slip face throws the wind clear. The dunes face the long-term wind, so a
+  slip face's foot is the usual shelter. As the wind swings across a face its lee
+  thins, and from the other side a dune shelters nothing: the same foot is exposed.
+- **What feels it.** Everything that reads the felt wind and storm: you, loose things,
+  ropes, the board, harm, wear and power. A bubble keeps out its share of what the lee
+  lets through, so the light shield under a slip face leaves 5% of a gale. The storm
+  state, the darkness, the dust's thickness, the storm face and a shield's draw stay
+  the field's: the dust and the dark still come over the crest. The wind's sound, the
+  dust streaks and grit and the view's buffeting follow the open air round you, lee
+  and all.
+- **The turbine.** Its output goes with the cube of the wind, so in a full lee it makes
+  about 4% of what it would in the open. Camping in the lee costs you the turbine
+  unless it stands out of it, up on the crest or out past the lee.
+- **It's a place's.** It's read at the ground under a place, so everything standing
+  there shares it, and still air has none.
+- **Cost.** Worked out at points 4 m apart for headings 2° apart and blended between
+  them. Each point is a pure function of the ground and the heading, so the cache only
+  saves work and the weather stays deterministic. It reads the ground's own samples
+  every 2 m, which every loaded chunk holds, near or mid. On the dev machine, under
+  load, a read costs about 2 µs on top of the field's wind at the place (about 4,
+  which the felt wind reads anyway and the felt storm now reads too), and the
+  reference camp makes 14 a tick, well under 0.1 ms. A fresh point costs about 80 µs,
+  so when the wind turns past a 2° step the camp's 14 points cost about 1 ms in that
+  one tick, once every half minute or more.
+- **On the dev overlay,** `lee` beside `shel` shows the share of the wind the ground
+  keeps from you.
+- **The lee scenario** stands you at the foot of a tall slip face, its crest at least
+  15 m above you and a lee at least nine-tenths full, facing up it into the wind coming
+  over the crest, in the clear with a storm due in two to six minutes.
+
+## Hooks from the sky (proposed, not settled)
+
+*Proposal, session 4, part 2 ([lore session](../lore-session-2026-10-17-part-2.md)). Not settled
+and not built; whether either goes in is an open question.* Tu hangs fixed in the near side's
+sky ([the lore](../lore-research.md#tu-the-tidal-lock-and-the-water-agreed-session-4-part-2)),
+and the session proposes two weather hooks from it:
+- **An eclipse squall:** air rushing toward Tu's noon shadow.
+- **A slow storm season:** when Zan swings closest and Tu looks visibly larger.
+
+Readings, not in the session:
+- Neither would be a new kind of weather. The squall would be a time-of-day term in `wind_at` on
+  the near side, pointing at the shadow's centre at the noon eclipse, a clock the game already
+  keeps ([the moon](../the-moon.md#day-length)). The season would be a slow swing in `storm_at`'s
+  strength or coverage by orbital phase. Either stays deterministic and forecastable like the
+  rest of the field, and designed, not simulated air (out of scope below).
+- Both need what the game doesn't have yet. The squall needs a near side, and the game has only
+  latitude. The season needs an orbital phase and a visible swing in Tu's size, against an orbit
+  that is "rounding out," and Tu's size is itself under trial
+  ([the body research](../body-research.md#tus-size-under-trial)).
+
 ## Skeleton version
 
 - `wind_at` and `storm_at` from the run's seed. One slowly drifting prevailing wind,
@@ -221,6 +287,21 @@ All run without a window, with a fixed seed.
    The share has to rise with skill and speed.
 8. **Storms pass.** For a traveller sitting still, most storms pass within a full base
    shield's charge, and longer ones exist.
+9. **The lee of a dune.** In a steady gale along the dunes' own heading, the wind at the
+   foot of a tall slip face is cut by about the lee's full share, and up the same dune's
+   windward slope and out on open sand it isn't cut at all. With the wind from the
+   other side the same foot is exposed, and so is the foot of the windward slope. A box
+   resting at the foot stays put where the same box on open sand slides off downwind.
+10. **Tu stays put** ([the moon](../the-moon.md#day-length)). Through a day where a run
+    begins, the Tu the sky draws strays no further than its daily nod while the sun goes
+    round the sky. On the far side it never rises and casts no light.
+11. **The eclipse.** At each size under trial the sun goes behind Tu once a day and
+    totality lasts what Tu's width makes it. Solar's felt light is nothing through it, the
+    sky draws the sun behind Tu, and the air is cooler for it and over it half a day on. Tu
+    is dark then and full half a day later. At the Rim the eclipse takes next to nothing.
+12. **Local time follows longitude.** A quarter of the way round to the east it's six hours
+    later, and the drawn sun, the light, the warmth and a radio's day music follow; to the
+    west it's six hours earlier.
 
 ## Out of scope
 
@@ -239,12 +320,18 @@ with everything else.
 ## Open questions
 
 - **Does the eclipse kick the weather?** The spec leaves open "whether the eclipse also
-  affects the weather model, such as a pressure or wind kick." Nothing is built: the field
-  doesn't know about the eclipse, and the eclipse only darkens the light and dips the
-  temperature.
+  affects the weather model, such as a pressure or wind kick," and the eclipse squall below
+  is the session's proposal for it. Nothing is built: the field doesn't know about the
+  eclipse, and the eclipse only darkens the light and dips the temperature.
 - **What target bands for clear skies** should each reference traveller get? Set them
   once the skeleton can measure them. The skeleton starts here: someone sitting still
   is in a storm 70% of the time, the median storm lasts 17 minutes, 71% pass within a
   base shield's 30, and the longest run past 3 hours. Storms ride a prevailing wind of
   10 m/s that swings by up to 6 either way, so a wall first seen 3.5 km out arrives in
   4 to 16 minutes.
+- **Do the eclipse squall and the storm season go in?** Proposed, not settled (above). If they
+  do, the squall is a near-side term in the wind and the season a slow swing in the storm
+  field. The sky now gives both what they'd read: the near and far side by Tu's height, and the
+  orbital phase (`DayCycle`, [the moon](../the-moon.md#day-length)). Tu's shadow is far wider
+  than Zan, so the whole near side is in it at once; its "centre" is the point under Tu, where
+  the sun stood highest and the eclipse's chill is deepest, so a squall would point there.

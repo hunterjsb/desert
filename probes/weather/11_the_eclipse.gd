@@ -1,5 +1,5 @@
 extends WeatherProbe
-## Wind & storms probe 10: the eclipse. Over two days where a run begins, the
+## Wind & storms probe 11: the eclipse. Over two days where a run begins, the
 ## sun goes behind Tu once a day, and totality lasts as long as Tu's size makes
 ## it, for each size under trial. Through it the felt light, which solar reads,
 ## is nothing, and the sky draws the sun behind Tu's disc; the air is cooler

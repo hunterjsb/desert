@@ -161,8 +161,12 @@ playing() {
 	pgrep -a -x godot | grep -qv -- '--headless' || pgrep -f 'steamapps/common/' >/dev/null
 }
 if [[ -z ${PROBE_JOBS:-} ]] && playing; then
-	echo "someone is playing: 2 probes at once" >&2
+	echo "someone is playing: 2 probes at once, on half the cores" >&2
 	PROBE_JOBS=2
+	# Off the game's cores and their hyperthreads, not only lower in the queue:
+	# a niced probe on a sibling thread still slows the game's main thread.
+	half=$(lscpu -p=CPU,CORE | awk -F, -v n=$((cores / 2)) '!/^#/ && $2 < n {printf "%s%s", c, $1; c=","}')
+	[[ -n $half ]] && taskset -p -c "$half" $$ >/dev/null
 fi
 jobs_at_once=${PROBE_JOBS:-$((cores > 4 ? cores : 4))}
 for probe in "${together[@]}"; do

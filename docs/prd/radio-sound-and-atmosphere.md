@@ -87,6 +87,26 @@ it and it crackles.
 - **Not yet:** bumps crackling, distorted tracks in storms, more channels, lore, oracles,
   frequencies as finds and antennas.
 
+### The ghost relay
+
+*Agreed, session 4, part 2 ([lore session](../lore-session-2026-10-17-part-2.md)); loose, and not
+built.* A nomad radio relay still broadcasts storm and water reports in Zan-Han-Mon slang on
+automatic, a ghost station long after its builders died. The waymarks, caches and camp scars the
+player finds belong to the same dead tribes ([the
+lore](../lore-research.md#the-decline-nomads-and-the-moving-city-agreed-session-4-part-2)).
+
+Readings, not in the session:
+- It fits the radio as built: another automated station beside the weather broadcast. Rule 1
+  still holds, so its storm reports would read the real storm field, in the nomads' slang
+  (Monward, Hanmen, Zanborn, the tu- prefix) instead of the forecast's plain words.
+- Its water reports have nothing to read yet. The world has no water field (Survival: water
+  comes from condensers, frost and ruins), so they wait for one, or become a bearing to a find.
+- It is a channel to find. "New channels are finds," so its frequency would be scratched on a
+  waymark or stored in a device.
+
+The session also lists a loose radio ending, finding "the right frequencies to reach Tilg or the
+last town" ([the vision](../vision.md#landmarks-and-endings)). It isn't designed.
+
 ## Sound
 
 Everything that matters can be heard, so you can read the world by ear:
@@ -167,7 +187,8 @@ Everything that matters can be heard, so you can read the world by ear:
 ## Full version
 
 - **More music channels,** with more tracks from Hunter.
-- **Lore channels, the squatting oracles and signal decoding, and the maybe-voice.**
+- **Lore channels, the squatting oracles and signal decoding, and the maybe-voice.** The ghost
+  relay (above) is one more.
 - **Frequencies as finds,** and antenna mods.
 - **Distorted tracks in storms.**
 - **The storm's approach staged in sound,** to match the wall.
