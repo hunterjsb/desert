@@ -277,9 +277,10 @@ floater out of pieces:
   when you stand, comes out as easily (2026-10-17): a look at the frame's lower edge, or
   just under it, within 15 cm of the tray, is a look at the tray, and use there still
   sets it floating or resting; the rest of the frame still takes hold of the device. On
-  the frame itself that's only its lowest 15 cm, and never more than its lowest 30%
+  the frame itself that's only its lowest 15 cm, and never more than its lower half
   (Hunter, 2026-10-17: "its hard to select a chassis, it almost always selects its hover
-  tray"), so a chassis piece, 12 cm thick, is the piece by its top and edges. With a
+  tray"), so a chassis piece, 12 cm thick, is the piece by its top and the upper half of
+  its edges, and its tray by a look at its lowest 6 cm or just under it. With a
   part in hand, take near a device with a free socket of its kind fits it there, so to
   set a part down, look at the sand clear of the device.
 - **Sliding a tray under a resting device** works from a standing look at it, from any

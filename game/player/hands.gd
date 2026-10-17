@@ -32,11 +32,11 @@ const OPEN_MARGIN := 0.05
 const NEAR_FRAME := 0.4
 ## Empty-handed, your line of sight passing this near a part fitted under a
 ## device looks at it, m: standing, it's out of sight under the frame. A look
-## at the frame itself counts only this low on it, and only in this share of
-## its height, so a thin frame like a chassis piece is still itself by its top
-## and edges.
+## at the frame itself counts only this low on it, and only in this lower share
+## of its height, so a thin frame like a chassis piece is still itself by its
+## top and the upper half of its edges.
 const UNDER := 0.15
-const UNDER_SHARE := 0.3
+const UNDER_SHARE := 0.5
 ## An offered socket leans what you hold at least this far in, 0 to 1, so the
 ## tug shows where it goes even with your aim off the spot.
 const OFFER := 0.35
