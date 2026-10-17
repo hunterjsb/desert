@@ -4,8 +4,8 @@ extends ShieldProbe
 ## wrecks a device in storm_wreck_minutes, its tough turbine in that times its
 ## toughness. Wrecked, it's dark for good: the floating crate drops and
 ## nothing makes power. Wind wears on its own, but only past what a device can
-## stand: just under wind_harm_speed nothing wears, and 10 m/s past it a
-## staked crate is wrecked in wind_wreck_minutes.
+## stand: out on open sand, just under wind_harm_speed nothing wears, and
+## 10 m/s past it a staked crate is wrecked in wind_wreck_minutes.
 
 ## How close a wreck must come to its promised time, s of world time.
 const SLACK := 2.0
@@ -46,6 +46,10 @@ func run() -> void:
 	check(not generator.running(), "a wrecked shield won't switch on")
 
 	# Wind alone, on a staked crate: under what it can stand, then past it.
+	# Out on open sand, where no dune's lee takes any of it.
+	var open := open_sand()
+	teleport(open.x + 12.0, open.y)
+	await settle(true)
 	var staked := Catalog.device(&"crate_frame")
 	world.content.add_child(staked)
 	staked.global_position = ahead(-12.0) + Vector3.UP * 0.26

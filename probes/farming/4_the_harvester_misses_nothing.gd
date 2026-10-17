@@ -62,5 +62,5 @@ func run() -> void:
 	var near := planters[0]
 	var food := world.player.suit.stock(&"food") - ration
 	check(near.fed_kcal > 0.0 and absf(food - near.fed_kcal) < 1e-6,
-		"the near planter dropped %d kcal onto you, all in your slots (%d)" % [near.fed_kcal, food])
+		"the near planter dropped %d kcal onto you, all of it carried (%d)" % [near.fed_kcal, food])
 	check(planters[1].fed_kcal == 0.0 and planters[2].fed_kcal == 0.0, "farther off, nothing dropped")

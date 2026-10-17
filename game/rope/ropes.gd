@@ -14,6 +14,11 @@ const ITERATIONS := 2
 ## rad/s², so one hard landing can't mislead the rope about the next.
 const MAX_EXPECTED := 80.0
 const MAX_EXPECTED_SPIN := 80.0
+## A creak eases between quiet and its strain over this long, s, and its last
+## share of that fades to silence: a line flicking taut and slack as you walk
+## a tow would click each time the sound was cut.
+const CREAK_EASE := 0.4
+const CREAK_FADE := 0.15
 const NO_TURN := Basis(Vector3.ZERO, Vector3.ZERO, Vector3.ZERO)
 ## Where a bare line in your hand ties on, in your own frame (the look-test's);
 ## a line's own end in your hand ties on where your hand holds it.
@@ -112,8 +117,9 @@ func let_go(rope: Rope, end: RopeEnd) -> void:
 ## A line gone altogether, rope and strand: rolled up into its coil.
 func untie(rope: Rope) -> void:
 	_drop(rope)
-	strands.erase(rope.strand)
+	# A strand left hanging may be gone with its ground already, and out of strands.
 	if is_instance_valid(rope.strand):
+		strands.erase(rope.strand)
 		rope.strand.queue_free()
 
 
@@ -151,12 +157,14 @@ func at_waist(rope: Rope) -> bool:
 ## Where a line's end in your hand can be, wanting to be at `want`: no further
 ## from the other end of each of its lines than the line reaches, or than
 ## your body is less an arm's length. Holding a loaded line your arm follows
-## it, so turning round swings your view, never a yank down the line.
+## it, so turning round swings your view, never a yank down the line. A line
+## still paying out reaches as far as its coil holds.
 func reach(end: RopeEnd, want: Vector3) -> Vector3:
 	var body := world.player.global_position + Vector3.UP * HAND_AT.y
 	for rope in lines_on(end):
 		var other := (rope.b if rope.a == end else rope.a).global_position
-		var most := maxf(rope.length * (1.0 + SWING_SLACK), other.distance_to(body) - _tuning.hold_distance)
+		var most := maxf((rope.full if rope.paying else rope.length) * (1.0 + SWING_SLACK),
+			other.distance_to(body) - _tuning.hold_distance)
 		var off := want - other
 		if off.length() > most:
 			want = other + off.normalized() * most
@@ -346,7 +354,10 @@ func _bear(h: float) -> void:
 	for rope: Rope in ropes.duplicate():
 		rope.sustained += (rope.tension - rope.sustained) * alpha
 		if rope.sustained > rope.breaking:
-			snap(rope)
+			if rope.gives.is_valid():
+				rope.gives.call()
+			else:
+				snap(rope)
 	for stake: Node3D in _pulls:
 		if stake.feel(_pulls[stake], alpha):
 			stake.pull_out(world.height_under(stake.global_position))
@@ -374,13 +385,15 @@ func _draw(h: float) -> void:
 		if rope.creak == null:
 			continue
 		var strain := smoothstep(0.08, 0.9, rope.share()) if rope.is_taut() else 0.0
-		# Paused, not stopped, so a line flicking taut and slack never seeks the stream.
-		rope.creak.stream_paused = strain <= 0.0
-		if strain <= 0.0:
+		rope.creak_level = move_toward(rope.creak_level, strain, h / CREAK_EASE)
+		# Paused, not stopped, once silent, so it never seeks the stream.
+		rope.creak.stream_paused = rope.creak_level <= 0.0
+		if rope.creak_level <= 0.0:
 			continue
 		rope.creak.global_position = rope.strand.points[rope.strand.points.size() / 2]
-		rope.creak.volume_db = lerpf(-30.0, -2.0, strain)
-		rope.creak.pitch_scale = lerpf(0.85, 1.25, strain)
+		var fade := minf(rope.creak_level / CREAK_FADE, 1.0)
+		rope.creak.volume_db = lerpf(-30.0, -2.0, rope.creak_level) + linear_to_db(maxf(fade, 0.001))
+		rope.creak.pitch_scale = lerpf(0.85, 1.25, rope.creak_level)
 		if not rope.creak.playing:
 			rope.creak.play(randf() * 20.0)
 

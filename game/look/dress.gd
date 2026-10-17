@@ -30,6 +30,20 @@ static func needle() -> ArrayMesh:
 		return b.commit())
 
 
+## What turns on a frame's mast head, about its own +Z, or null for none: a
+## turbine's hub and blades, something to see turn into the wind, not to touch.
+static func rotor(id: StringName) -> ArrayMesh:
+	return _cached(&"rotor", id, func() -> ArrayMesh:
+		if id != &"turbine":
+			return null
+		var b := Paint.Pieces.new()
+		b.drum(0.06, 0.08, Vector3(0.0, 0.0, 0.04), Paint.coat(Paint.BLACK, 0.3, 0.3, 0.6), Basis(Vector3.RIGHT, PI / 2.0), 12)
+		for s in [-1, 1]:
+			b.box(Vector3(0.55, 0.08, 0.02), Vector3(s * 0.32, 0.0, 0.06), Paint.coat(Paint.BONE, 0.8), 0.006)
+			b.box(Vector3(0.08, 0.082, 0.022), Vector3(s * 0.56, 0.0, 0.06), Paint.coat(Paint.YELLOW, 0.6), 0.004)
+		return b.commit())
+
+
 ## A free socket's tell: a dark bezel with a tab in its kind's colour.
 static func tell(kind: StringName) -> ArrayMesh:
 	return _cached(&"tell", kind, func() -> ArrayMesh:
@@ -115,12 +129,8 @@ static func _frame(id: StringName, size: Vector3, extra: float) -> ArrayMesh:
 				if side == 2:
 					b.stamp(Paint.Mark.WIND_MAKER, turn * Vector3(0.0, -0.02, h.z), 0.24, turn, Paint.Ink.PALE)
 				b.box(Vector3(size.x - 0.12, size.y - 0.14, 0.012), turn * Vector3(0.0, -0.02, h.z - 0.004), teal, 0.004, turn)
-			# The mast and its blades: something to see turn into the wind, not to touch.
+			# The mast; its hub and blades are its rotor, on the mast's head.
 			b.drum(0.04, extra, Vector3(0.0, h.y + extra * 0.5, 0.0), gun, Basis.IDENTITY, 12, 0.03)
-			b.drum(0.06, 0.08, Vector3(0.0, h.y + extra, 0.04), black, Basis(Vector3.RIGHT, PI / 2.0), 12)
-			for s in [-1, 1]:
-				b.box(Vector3(0.55, 0.08, 0.02), Vector3(s * 0.32, h.y + extra, 0.06), Paint.coat(Paint.BONE, 0.8), 0.006)
-				b.box(Vector3(0.08, 0.082, 0.022), Vector3(s * 0.56, h.y + extra, 0.06), Paint.coat(Paint.YELLOW, 0.6), 0.004)
 		&"condenser":
 			for x in [-1, 1]:
 				for z in [-1, 1]:
@@ -197,6 +207,29 @@ static func _frame(id: StringName, size: Vector3, extra: float) -> ArrayMesh:
 			b.drum(0.022, 0.02, Vector3(0.08, -0.04, h.z + 0.006), black, Basis(Vector3.RIGHT, PI / 2.0), 14)
 			b.box(Vector3(0.2, 0.02, 0.025), Vector3(0.0, h.y + 0.045, 0.0), gun, 0.006)
 			b.drum(0.006, 0.3, Vector3(-h.x + 0.045, h.y + 0.15, -h.z + 0.03), Paint.coat(Paint.STEEL, 0.8, 0.6), Basis.IDENTITY, 8)
+		&"chassis":
+			# A flatbed's section: rails round a ribbed plate, caps at the corners
+			# where it meets the next, a pad where a device stands, and hazard
+			# bands either side of each ring, so a deck's outer edge reads. The
+			# consignee's stencil is on its top. Rails sit inside the caps' faces.
+			for s in [-1, 1]:
+				b.box(Vector3(size.x - 0.16, size.y - 0.02, 0.08), Vector3(0.0, 0.0, s * (h.z - 0.045)), gun, 0.01)
+				b.box(Vector3(0.08, size.y - 0.02, size.z - 0.16), Vector3(s * (h.x - 0.045), 0.0, 0.0), gun, 0.01)
+			for x in [-1, 1]:
+				for z in [-1, 1]:
+					b.box(Vector3(0.16, size.y, 0.16), Vector3(x * (h.x - 0.08), 0.0, z * (h.z - 0.08)),
+						Paint.coat(Paint.BLACK, 0.7, 0.3), 0.02)
+			b.stamp(Paint.Mark.CONSIGNMENT, Vector3(0.16, h.y - 0.02, 0.31), 0.22, Basis(Vector3.RIGHT, -PI / 2.0), Paint.Ink.PALE)
+			b.box(Vector3(size.x - 0.16, 0.03, size.z - 0.16), Vector3(0.0, h.y - 0.035, 0.0), teal, 0.006)
+			for z in [-0.2, 0.2]:
+				b.box(Vector3(size.x - 0.18, 0.006, 0.014), Vector3(0.0, h.y - 0.017, z), black, 0.002)
+			b.box(Vector3(0.26, 0.022, 0.26), Vector3(0.0, h.y - 0.011, 0.0), gun, 0.006)
+			b.box(Vector3(size.x - 0.16, 0.05, 0.06), Vector3(0.0, -h.y + 0.045, 0.0), gun, 0.008)
+			b.box(Vector3(0.06, 0.05, size.z - 0.16), Vector3(0.0, -h.y + 0.048, 0.0), gun, 0.008)
+			for side in 4:
+				var turn := Basis(Vector3.UP, side * PI * 0.5)
+				for x in [-0.22, 0.22]:
+					_hazard(b, Vector3(0.2, 0.03, 0.012), turn * Vector3(x, 0.0, h.z - 0.004), turn)
 		&"stake":
 			var iron := Paint.coat(Paint.RUST.lightened(0.1), 1.4, 0.3, 0.8)
 			b.box(Vector3(0.05, Stake.LENGTH - 0.12, 0.05), Vector3(0.0, 0.03, 0.0), iron, 0.01)
@@ -243,6 +276,13 @@ static func _part(id: StringName, size: Vector3) -> ArrayMesh:
 			var collar := Paint.coat(Color(1.0, 0.5, 0.1) if id == &"plug" else Color(0.7, 0.15, 0.1), 0.5)
 			b.drum(h.x * 0.95, 0.025, Vector3(0.0, 0.0, 0.0125), collar, along, 12)
 			b.drum(h.x * 0.8, size.z - 0.025, Vector3(0.0, 0.0, 0.025 + (size.z - 0.025) * 0.5), Paint.coat(Color(0.06, 0.06, 0.06), 0.2, 0.0, 0.85), along, 10, h.x * 0.55)
+		&"hose_end":
+			# A steel coupling on the hose's rubber, a spout on top where another goes on.
+			b.drum(h.x * 0.95, 0.03, Vector3(0.0, 0.0, 0.015), steel, along, 12)
+			b.drum(h.x * 0.7, size.z - 0.03, Vector3(0.0, 0.0, 0.03 + (size.z - 0.03) * 0.5),
+				Paint.coat(Paint.HOSE, 0.3, 0.0, 0.85), along, 10)
+			b.drum(0.016, 0.03, Vector3(0.0, h.y, 0.075), steel, Basis.IDENTITY, 10)
+			b.drum(0.02, 0.008, Vector3(0.0, h.y + 0.011, 0.075), Paint.coat(Catalog.KINDS[&"water"], 0.3), Basis.IDENTITY, 10)
 		&"coil":
 			b.ring(0.09, 0.17, Vector3(0.0, 0.0, size.z * 0.5), Paint.coat(Paint.ROPE, 0.0, 0.0, 1.0, 0.6), along)
 			b.box(Vector3(0.05, 0.1, 0.05), Vector3(0.13, 0.0, size.z * 0.5), Paint.coat(Paint.GUNMETAL, 0.6, 0.3), 0.008)

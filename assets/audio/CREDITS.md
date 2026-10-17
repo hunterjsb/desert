@@ -38,7 +38,7 @@ integrated loudness, peaks never past -6 dBTP. A hard limiter on Master holds -1
 | low_tick.ogg | the board's low-battery tick | made here | CC0 | -38 | -17 |
 | hover.ogg | the board's ride | Sand Game `object_bubbleplanter_hover.wav`, cut to a seamless loop | Sand Game | -34 | -21 |
 | board_on.ogg, board_off.ogg | getting on and off the board; a hover tray lifting off and settling | made here: a soft rising and falling hum | CC0 | -32 | -19, -21 |
-| shield_boot/hum/down.ogg | the shield | Sand Game `object_shield-boot`, `-sustain`, `-powerdown` | Sand Game | -26, -34, -28 at 4 m | -12, -22, -12 |
+| shield_boot/hum/down.ogg | the shield | Sand Game `object_shield-boot`, `-sustain`, `-powerdown` | Sand Game | -26, -49 (the hum played 15 dB down), -28 at 4 m | -12, -22, -12 |
 | radio_day.ogg | the radio's music by day, "Sandy Andy" | Sand Game `object_radio_sandy_andy.wav`, mono | Sand Game | -28 LUFS at 3 m | -13 |
 | radio_night.ogg | the radio's music by night, "Waiting on the Sun" | Sand Game `object_radio_waiting_on_the_sun.wav`, mono, its silent lead-in cut | Sand Game | -28 at 3 m | -14 |
 | radio_static.ogg | the radio's static, as loud as it gets in a storm | Sand Game `static.mp3` with `object_radio_interference.wav` through it, cut to a seamless loop | Sand Game | -33 at 3 m | -14 |

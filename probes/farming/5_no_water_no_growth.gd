@@ -2,9 +2,9 @@ extends FarmProbe
 ## Farming probe 5: no water, no growth. A carrot growing at its full rate on
 ## a clear noon, held at 20 °C, from a planter with two centilitres left:
 ## it grows until the tank runs dry, drinking what it should, and then stops
-## where the water ran out. A canister poured in by hand, by use with it
-## aimed at the planter, fills the tank by what the canister lost, and the
-## carrot grows again.
+## where the water ran out. A canister with two centilitres in it, fitted by
+## hand to the planter's water socket, waters it again until both run dry; a
+## full one keeps the tank full, losing just what the carrot drinks.
 
 const LEFT := 0.02
 const SPAN := 20.0
@@ -30,16 +30,27 @@ func run() -> void:
 
 	var hands := world.player.hands
 	var can := Catalog.part(&"canister") as Supply
+	can.drain(can.amount - LEFT)
 	world.content.add_child(can)
 	hands.hold(can)
 	await physics_frames(30)
-	var at := planter.global_position + Vector3(0.0, 0.05, 0.0)
-	aim(at + Vector3(0.0, 0.8, 1.2), at)
-	await physics_frames(2)
-	var full := can.amount
-	check(hands.interact(), "use, aimed at the planter with a canister in hand, pours it in")
-	print("poured %.3f L, the tank holds %.3f L" % [full - can.amount, planter.tank_l])
-	check(planter.tank_l == minf(full, world.tuning.planter_tank_litres) and can.amount == full - planter.tank_l,
-		"the tank gained what the canister lost (%.3f L)" % planter.tank_l)
+	var socket: Socket = planter.sockets().filter(func(s: Socket) -> bool: return s.kind == &"water")[0]
+	aim(socket.global_position + Vector3(0.0, 0.5, 0.9), socket.global_position)
+	await physics_frames(5)
+	check(hands.socket == socket and hands.grab() and socket.part == can, "take fits the canister to the water socket")
 	await pass_time(SPAN)
-	check(carrot.growth > dry and carrot.state == Plant.GROWING, "watered, it grows again")
+	var again := carrot.growth - dry
+	print("watered again: %.6f grown, %.6f expected, tank %.6f L, canister %.6f L, %s"
+		% [again, water_lasts, planter.tank_l, can.amount, carrot.state])
+	check(absf(again - water_lasts) < 1e-9 and can.amount == 0.0 and planter.tank_l == 0.0 and carrot.state == Plant.DRY,
+		"it grew as far as the canister's water took it, and both ran dry")
+
+	can.fill(INF)
+	planter.tank_l = world.tuning.planter_tank_litres
+	var before := carrot.growth
+	await pass_time(SPAN)
+	var drunk := (carrot.growth - before) * carrot.litres
+	print("kept full: drank %.6f L, the canister lost %.6f L, the tank holds %.6f L"
+		% [drunk, can.capacity() - can.amount, planter.tank_l])
+	check(drunk > 0.0 and planter.tank_l == world.tuning.planter_tank_litres
+		and absf(can.capacity() - can.amount - drunk) < 1e-9, "a full canister keeps the tank full, losing what the carrot drinks")

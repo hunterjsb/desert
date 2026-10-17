@@ -28,7 +28,7 @@ func fit_part(device: Device, part_id: StringName) -> Part:
 	var part := Catalog.part(part_id)
 	world.content.add_child(part)
 	for socket in device.sockets():
-		if socket.kind == part.kind and socket.part == null:
+		if socket.kind == part.kind and socket.is_open():
 			device.fit(part, socket)
 			return part
 	check(false, "%s has a free socket for a %s" % [device.label, part.label])

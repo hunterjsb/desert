@@ -26,6 +26,8 @@ var b: RopeEnd
 var length: float
 ## All there is of it, m: paid out, it lengthens no further.
 var full: float
+## Still feeding off its coil, so it reaches as far as all of it.
+var paying := false
 ## Its own weight, kg per metre; 0 is the look-test's weightless line.
 var kg_per_m := 0.0
 ## Springs back this many times a second when stretched, whatever hangs on it.
@@ -39,12 +41,17 @@ var breaking := 1500.0
 ## Called with the two halves' strands when it snaps, if whatever owns it
 ## makes something of them.
 var parted := Callable()
+## Called instead of snapping when its load passes breaking, if whatever owns
+## it gives way some other way, as a hose pops an end out of its socket.
+var gives := Callable()
 
 ## Pull this tick, and the load sustained long enough to break things, N.
 var tension := 0.0
 var sustained := 0.0
 var strand: RopeStrand
 var creak: AudioStreamPlayer3D
+## How strained the creak sounds, 0 to 1, eased toward the strain.
+var creak_level := 0.0
 
 ## Solver state for this tick, owned by Ropes.
 var body_a: RopeBody

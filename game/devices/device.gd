@@ -18,6 +18,8 @@ signal parts_changed
 @export var carryable := false
 ## The socket kind it seats in, like a shield on a top mount; none for most.
 @export var kind: StringName
+## It stands on a chassis piece's deck mount too, as a crate does.
+@export var stands_on_deck := false
 ## How much its draw matters when its pool runs short: lower ranks give way
 ## first, so what keeps you alive keeps its power (Power).
 @export var rank := 0
@@ -32,8 +34,13 @@ var durability := 1.0:
 	set(to):
 		durability = to
 		show_wear()
-## Its painted frame.
+## Its painted frame, and what turns on its mast.
 var frame_view: MeshInstance3D
+var rotor: Rotor
+## The share of its turbine's rating it made when last asked, and the wind it
+## felt then: its rotor turns by the power tick's own sums.
+var turbine_share := 0.0
+var turbine_wind := Vector3.ZERO
 
 ## Set by use: its hover tray draws nothing and lets it down onto the sand,
 ## so a camp staying put keeps its charge.
@@ -85,6 +92,9 @@ func sockets() -> Array[Socket]:
 ## floating. Only empty-handed: a line or stake in your hands keeps its own
 ## use. Says whether it did anything.
 func interact(by: Player) -> bool:
+	# Standing on a deck, it floats with the deck, so use works the deck.
+	if on_deck():
+		return host().interact(by)
 	if by.hands.held != null or stats()["lift_kg"] <= 0.0 or wrecked():
 		return false
 	resting = not resting
@@ -155,6 +165,26 @@ func host() -> Device:
 	return get_parent() as Device
 
 
+## Seated on a chassis piece's deck mount, where it keeps its own sockets.
+func on_deck() -> bool:
+	var seat_in := host().seat_of(self) if host() != null else null
+	return seat_in != null and seat_in.kind == &"deck"
+
+
+## Whether it seats in a socket: one of the kind it fits, or a deck mount.
+func fits_in(socket: Socket) -> bool:
+	return socket.kind == kind or socket.kind == &"deck" and stands_on_deck
+
+
+## Its frame's own sockets, in the catalog's order: what a save numbers.
+func frame_sockets() -> Array[Socket]:
+	var own: Array[Socket] = []
+	for socket in sockets():
+		if not socket.has_meta(&"socket"):
+			own.append(socket)
+	return own
+
+
 ## The socket a device is seated in on it, or null.
 func seat_of(other: Device) -> Socket:
 	for socket in _seats:
@@ -166,14 +196,18 @@ func seat_of(other: Device) -> Socket:
 ## What it generates, W, from the felt weather where it stands, now or at
 ## world time t.
 func production_w(t := NAN) -> float:
+	turbine_share = 0.0
 	if world == null or wrecked():
 		return 0.0
 	var now := stats()
 	var watts: float = now["solar_w"] * world.weather.felt_light(global_position + Vector3.UP * 0.5, t)
 	# A turbine works planted: resting on the sand, not floating or being carried.
 	if now["turbine_w"] > 0.0 and not now["can_float"] and linear_velocity.length() < 0.3:
-		var wind := world.weather.felt_wind(global_position, t).length()
-		watts += minf(now["turbine_w"], world.tuning.turbine_watts_per_cubic * wind * wind * wind)
+		turbine_wind = world.weather.felt_wind(global_position, t)
+		var wind := turbine_wind.length()
+		var made := minf(now["turbine_w"], world.tuning.turbine_watts_per_cubic * wind * wind * wind)
+		turbine_share = made / now["turbine_w"]
+		watts += made
 	return watts
 
 
@@ -222,9 +256,10 @@ func wear(share: float) -> void:
 func show_wear() -> void:
 	var layer: StringName = get_meta(&"layer", &"")
 	var amount := Paint.age_of(layer, durability)
-	if frame_view != null:
-		frame_view.set_instance_shader_parameter(&"age", amount)
-		frame_view.set_instance_shader_parameter(&"era", Paint.era_of(layer))
+	for view: MeshInstance3D in [frame_view, rotor]:
+		if view != null:
+			view.set_instance_shader_parameter(&"age", amount)
+			view.set_instance_shader_parameter(&"era", Paint.era_of(layer))
 	for socket in sockets():
 		if socket.marker != null:
 			socket.marker.set_instance_shader_parameter(&"age", amount)
@@ -301,7 +336,7 @@ func seat() -> Transform3D:
 ## touching nothing of it) so it carries on working as itself: it rides with
 ## this frame, its weight joins it, and Power pools the two.
 func mount(other: Device, socket: Socket) -> void:
-	assert(socket.is_open() and socket.kind == other.kind and socket.get_parent() == self)
+	assert(socket.is_open() and other.fits_in(socket) and socket.get_parent() == self)
 	if other.get_parent() != null:
 		other.get_parent().remove_child(other)
 	add_child(other)
@@ -316,6 +351,9 @@ func mount(other: Device, socket: Socket) -> void:
 	_seats.append(socket)
 	if socket.marker != null:
 		socket.marker.visible = false
+	# What stands on a deck keeps its sockets, so its weight can change there.
+	if socket.kind == &"deck":
+		other.parts_changed.connect(_recompute)
 	_recompute()
 
 
@@ -332,6 +370,8 @@ func dismount(socket: Socket) -> Device:
 	other.freeze_mode = other._unseated_mode
 	other.freeze = false
 	other.linear_velocity = linear_velocity
+	if other.parts_changed.is_connected(_recompute):
+		other.parts_changed.disconnect(_recompute)
 	socket.mounted = null
 	_seats.erase(socket)
 	if socket.marker != null:
@@ -396,8 +436,9 @@ func stats() -> Dictionary:
 	total["can_float"] = total["lift_kg"] >= mass
 	total["resting"] = resting
 	total["hovering"] = total["can_float"] and powered and lift_share > 0.0
+	# Seated, its own tray holds nothing up.
 	total["hover_w"] = mass * world.tuning.hover_watts_per_kg \
-		if total["can_float"] and not resting and world != null else 0.0
+		if total["can_float"] and not resting and world != null and host() == null else 0.0
 	var cells := batteries()
 	if not cells.is_empty():
 		total["charge_wh"] = cells.reduce(func(sum: float, c: Battery) -> float: return sum + c.charge_wh, 0.0)
@@ -406,8 +447,11 @@ func stats() -> Dictionary:
 
 
 func _recompute() -> void:
-	var weight := frame_mass
+	var weight := 0.0
 	var moment := Vector3.ZERO
+	for frame: Array in _frame_masses():
+		weight += frame[0]
+		moment += frame[0] * frame[1]
 	for socket in sockets():
 		if socket.part != null:
 			weight += socket.part.mass
@@ -437,6 +481,11 @@ func _recompute() -> void:
 	parts_changed.emit()
 
 
+## Its frame's weight and where it sits, in its own frame, as [kg, position]s.
+func _frame_masses() -> Array:
+	return [[frame_mass, Vector3.ZERO]]
+
+
 ## Where a fitted part's shapes sit on average, in the device's frame.
 func _middle(nodes: Array[Node3D]) -> Vector3:
 	var sum := Vector3.ZERO
@@ -464,9 +513,18 @@ func _physics_process(delta: float) -> void:
 	if freeze or not _hovering:
 		return
 	var omega := TAU * tuning.hover_hertz
-	var low := world.height_under(global_position) + tuning.hover_height * lift_share - global_position.y
+	var low := _hover_gap(tuning.hover_height * lift_share)
 	var lift := mass * (world.gravity + omega * omega * low - 2.0 * tuning.hover_damping * omega * linear_velocity.y)
 	apply_central_force(Vector3.UP * maxf(lift, 0.0))
+	_keep_upright(tuning)
+
+
+## How far below where its tray would hold it it is, m, held `height` over the sand.
+func _hover_gap(height: float) -> float:
+	return world.height_under(global_position) + height - global_position.y
+
+
+func _keep_upright(tuning: Tuning) -> void:
 	var state := PhysicsServer3D.body_get_direct_state(get_rid())
 	var inverse := state.inverse_inertia
 	var moment := 2.0 / maxf(inverse.x + inverse.z, 1e-6)

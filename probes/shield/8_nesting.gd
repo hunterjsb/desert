@@ -32,8 +32,10 @@ func run() -> void:
 			got[harm] = weather.shelter_at(places[where], harm)
 		check(got == expect[where], "%s: %s, expected %s" % [where, got, expect[where]])
 	var p: Vector3 = places["inner only"]
-	check(weather.felt_wind(p).is_equal_approx(weather.field_wind(p) * 0.6) and weather.felt_storm(p) == weather.field_storm(p),
-		"inside only the inner one, 60% of the wind and all the storm are felt")
+	# A bubble works on what reaches it, which a dune's lee may already have cut.
+	check(weather.felt_wind(p).is_equal_approx(weather.open_wind(p) * 0.6)
+		and is_equal_approx(weather.felt_storm(p), weather.field_storm(p) * (1.0 - weather.lee_at(p, &"storm"))),
+		"inside only the inner one, 60% of the wind and all the storm that reach it are felt")
 
 	for where: String in ["both", "inner only"]:
 		world.player.global_position = places[where] - world.player.camera.position

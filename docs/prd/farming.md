@@ -23,7 +23,13 @@ ordinary crops starve for light while fungus gets the darkness and the steady
 temperature it wants. Away from the equator the swings get too wide for it.
 
 **Every crop needs water.** A planter holds its own water, which you top up from
-sealed containers or a condenser. That ties the farm to the daily water rhythm: water
+sealed containers or a condenser. **Canisters attach, and hoses carry water** (Hunter,
+2026-10-17: "instead of pressing use with a water cannister on the planter, we should
+attach the cannister. the same port should allow attaching a *hose* which is like the
+cable, it carries water, it tethers but not as strong as rope"). A planter has a water
+socket, as the condenser does. Fit a canister into it and the planter draws from it into
+its tank as it drinks; use with a canister no longer pours. The same socket takes a hose's
+end instead (Survival). That ties the farm to the daily water rhythm: water
 you harvest at dawn keeps the crops alive through the heat.
 
 **Seeds are found,** mostly in ruins. Survival kits are a common find, usually with
@@ -87,8 +93,12 @@ that ignored the weather.
 **As built in the skeleton (2026-10-16):**
 - **The planter** is the catalog's planter: three small slots and a large one on top, a
   battery slot, two ring mounts, a bottom mount for a hover tray and a port, as before,
-  plus its own 4 L water tank and a new **mod mount** on its back. It's found with an
-  empty tank. Use a canister you hold on it to pour in as much as fits.
+  plus its own 4 L water tank, a new **mod mount** on its back, and beside it a **water
+  socket** (2026-10-17). It's found with an empty tank. A canister fitted to the water
+  socket keeps the tank full from what it holds as the crops drink, so the canister
+  empties while the tank stays full, and once it's dry the tank's own 4 L carry on; take
+  it out as any part. A hose's end there instead fills the tank from whatever the hose
+  joins (Survival). Use with a canister in hand no longer pours: it drinks, as anywhere.
 - **Two crops:** carrots in the small slots, fungus in the large one. Each is a part of
   its crop, so nothing is matched by name. Sown it stands short; it grows taller and
   fuller as it grows, and ripe it turns its ripe colour (carrots orange, fungus pale).
@@ -115,7 +125,9 @@ that ignored the weather.
     ripen within one.
   - **A ripe crop stops,** and holds through any weather until it's picked.
 - **Water:** a crop drinks as it grows, 0.25 L for a carrot to ripen and 0.3 L for a
-  fungus. With the tank dry it stops exactly where the water ran out.
+  fungus. With the tank dry it stops exactly where the water ran out. A fitted canister
+  waters it again until both run dry, and a full one keeps the tank full, losing just
+  what the crops drink (probe 5).
 - **By hand:** take on a ripe crop and its harvest comes to your hands as food
   (carrots or fungus caps, four units of 150 kcal). Food is like a ration: carry it and
   the suit eats it, or use it to eat your fill. Take on a crop that isn't ripe
@@ -130,8 +142,11 @@ that ignored the weather.
 - **The harvester** fits the mod mount. With it fitted, a crop is harvested the tick it
   ripens: its share of seed goes straight back into its slot, any more into free slots
   that fit, and seed with no free slot is kept for one. The rest is stored as food in
-  the planter. Use on the planter steps the share it replants through 0, 25, 50, 75 and
-  100%. It starts at 25%, one of a harvest of four, which keeps every slot sown. A
+  the planter. The share it replants is one of 0, 25, 50, 75 and 100%. Use on the
+  planter used to step it; now use sets the planter's tray, as on any device (Hunter,
+  2026-10-17: "lets not have f toggle replant % on the planter... we will find another
+  way to toggle or adjust replant%"), and the share has no control until that's found.
+  It starts at 25%, one of a harvest of four, which keeps every slot sown. A
   share that doesn't make a whole seed is carried over, so the split holds over many
   harvests. It draws no power yet.
 - **Dropping food onto you:** within 6 m, while you carry less than 2,000 kcal of food (a
@@ -153,9 +168,10 @@ that ignored the weather.
   planters float in front of you, each on a line to a stake, sown with three carrots
   and a fungus started part grown: the carrots at 85%, so they ripen within a minute in
   the clear, and the fungus at half, so it ripens a few minutes into the storm. One is
-  yours to pick by hand, its tank half full, with a full canister by your feet to top
-  it up; the other has a harvester and a full tank. A charged shield generator stands
-  between them, switched off, and its bubble takes both. You carry a spare carrot.
+  yours to pick by hand, its tank half full, with a full canister by your feet to fit
+  to its water socket; the other has a harvester and a full tank. A charged shield
+  generator stands between them, switched off, and its bubble takes both. You carry a
+  spare carrot.
 - **Probe 3 is built** with a test-only thermal shield.
 - **The AFK promise feeds you** (Stage 12, 2026-10-17, probe 6). The reference camp's
   farm (Power) is two planters with harvesters, three carrots and a fungus in each, their
@@ -164,9 +180,13 @@ that ignored the weather.
   dropped 4,800 kcal onto you, of which you ate 2,400, keeping 4,200 more (with what you
   carry weight-bound, 2026-10-17; it was 2,700 while two free slots held its drops). Your hunger
   never fell below the mark where the suit feeds you, and every slot stayed sown. A
-  planter drops what it stored first, so you ate carrots while the fungus piled up. Its
-  water is what ends it: the driest tank had 0.65 L left after three days, and left on,
-  the two ran dry at 3.65 and 4.96 days. Nothing but you fills them.
+  planter drops what it stored first, so you ate carrots while the fungus piled up.
+  Water no longer ends it (2026-10-17): a condenser beyond the shield, on a battery and a
+  panel of its own, waters both planters on hoses. The driest tank had 3.62 L left after
+  three days, where with nothing to fill them it had 0.65 L and the two ran dry at 3.65
+  and 4.96 days; left on for six and a half days, long after you'd died of thirst, the
+  tanks never fell below 3.09 L. The condenser made about 1.9 L a day, about what the two
+  drink, and since water goes to the emptier tank first, the two stay level.
 
 ## Full version
 

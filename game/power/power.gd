@@ -202,7 +202,8 @@ func _pools() -> Array:
 		if not device.wrecked():
 			devices.append(device)
 	for node in _world.content.get_children():
-		if node is Cable:
+		# A hose carries water, not power.
+		if node is Cable and not node is Hose:
 			cables.append(node)
 	var root := {}
 	for device in devices:

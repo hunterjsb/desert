@@ -287,6 +287,13 @@ quit and a resume along the way.
 
 **When this passes the gate, the skeleton is done** and muscle can start.
 
+**How players will really camp** (Hunter, 2026-10-17: "the afk setup is ok but its not
+realistic"). Likely one crate carrying the shield, the board, batteries and one panel,
+its hooks maxed, each towing something: a condenser, a farm, another crate. The chassis
+should replace that train of towed things with one deck, and with it most of the physics
+risk and clunkiness of many bodies on many lines. Once it's in, the reference camp is
+rebuilt on a deck.
+
 ## Waiting for the full version
 
 These probes need content the skeleton doesn't have:

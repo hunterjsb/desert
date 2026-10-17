@@ -1,5 +1,5 @@
 extends LineProbe
-## Profile & saves probe 11: what you carry. A radio tuned to the weather
+## Profile & saves probe 13: what you carry. A radio tuned to the weather
 ## station, a compass and two more canisters go in with what you carry, and
 ## the run is saved. Resumed into a fresh world on the same seed, the radio is
 ## carried on the same channel with the same charge, playing from you, its

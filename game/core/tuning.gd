@@ -149,6 +149,34 @@ static var _current: Tuning
 @export var gust_wavelength: float = 80.0
 @export var gust_evolve_speed: float = 4.0
 
+@export_group("Lee")
+## The most of the wind, and of a storm's wear, a dune's lee takes, close
+## under a tall slip face. The dust and the dark still come over the crest,
+## so it's never a shield.
+@export var lee_wind: float = 0.65
+@export var lee_storm: float = 0.33
+## A crest shelters fully out to this many of its own heights downwind, and
+## not at all past this: real lees are strongest within a few heights and
+## gone by five to ten.
+@export var lee_heights: Vector2 = Vector2(2.0, 7.0)
+## A crest this far above a place, m, starts to shelter it, and this far
+## shelters it fully: well over your head.
+@export var lee_tall: Vector2 = Vector2(1.5, 6.0)
+## Ground falling from a crest this steeply, degrees, starts to throw the
+## wind clear of the sand, and this steeply throws it clear. Slip faces lie
+## at 31.5° and windward ramps at 14° at most, so a wind from the wrong side
+## finds no lee.
+@export var lee_face_degrees: Vector2 = Vector2(16.0, 26.0)
+## A slope climbing into the wind this steeply, degrees, starts to catch it
+## again, and this steeply catches all of it: the wind comes back down to
+## the sand and speeds up a windward slope.
+@export var lee_windward_degrees: Vector2 = Vector2(2.0, 8.0)
+## How far upwind the ground is read, m, and at how many places, each a
+## share further than the last. Seven heights of the tallest dunes is about
+## 300 m; past this a crest's last faint shelter fades out.
+@export var lee_reach: float = 250.0
+@export var lee_samples: int = 32
+
 @export_group("Storm")
 ## How far you can see inside a storm, in metres.
 @export var storm_visibility: float = 20.0
@@ -439,6 +467,9 @@ static var _current: Tuning
 ## before it breaks anything, so a shorter spike can't, s.
 @export var rope_breaking: float = 1500.0
 @export var strong_cable_breaking: float = 4000.0
+## A hose holds this much sustained load, N, a third of a rope, and then an
+## end pops out of its socket instead.
+@export var hose_holding: float = 500.0
 @export var rope_load_seconds: float = 0.3
 ## A found coil's length, m: the longest line it lays.
 @export var rope_coil_length: float = 12.0

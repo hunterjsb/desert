@@ -85,11 +85,11 @@ func restock() -> void:
 
 
 ## Whether it goes in: anything you can carry in your hands with nothing
-## fastened to it. Rope and wire go in rolled up whole: a line held but not
-## laid, a cable plugged into nothing; laid or plugged in, they'd lose their
-## end. A stake goes in pulled up with nothing on its eye, so it comes out
-## ready to drive, and a device whole, seated on nothing, nothing seated on
-## it, no plug in its ports and no line on its rings.
+## fastened to it. Rope, wire and hose go in rolled up whole: a line held but
+## not laid, a cable or a hose plugged into nothing; laid or plugged in,
+## they'd lose their end. A stake goes in pulled up with nothing on its eye,
+## so it comes out ready to drive, and a device whole, seated on nothing,
+## nothing seated on it, no plug or hose in it and no line on its rings.
 func fits(body: Object) -> bool:
 	var stake := body as Stake
 	if stake != null:
@@ -98,13 +98,19 @@ func fits(body: Object) -> bool:
 	if device != null:
 		return device.carryable and device.host() == null and device.mounted().is_empty() \
 			and not _player.waist.carries_line(device) \
-			and device.parts().all(func(p: Part) -> bool: return p.kind != &"port" and p.kind != &"tie")
+			and not device.parts().any(_fastens)
 	var part := body as Part
 	if part == null:
 		return false
 	if part.has_meta(&"line"):
 		return (part.get_meta(&"line") as Line).stowable()
-	return part.kind != &"port" or part.has_meta(&"rolled") or _loose_cable(part) != null
+	return not (part.kind == &"port" or Hose.is_end(part)) or part.has_meta(&"rolled") or _loose_cable(part) != null
+
+
+## A part that fastens something to its device: a plug, a hose's end, a
+## line's end.
+static func _fastens(part: Part) -> bool:
+	return part.kind == &"port" or part.kind == &"tie" or Hose.is_end(part)
 
 
 ## Of the water or the food you carry, the least full that isn't empty, so
@@ -286,7 +292,7 @@ func _rolled(body: RigidBody3D) -> RigidBody3D:
 	var part := body as Part
 	if part != null and part.has_meta(&"line"):
 		return (part.get_meta(&"line") as Line).roll()
-	var cable := _loose_cable(part) if part != null and part.kind == &"port" else null
+	var cable := _loose_cable(part) if part != null and (part.kind == &"port" or Hose.is_end(part)) else null
 	if cable == null:
 		body.get_parent().remove_child(body)
 		return body
@@ -514,13 +520,15 @@ func _text(type: StringName, at: Vector2, line: String, width: float, color := &
 	_view.draw_string(font, at, line, HORIZONTAL_ALIGNMENT_LEFT, width, size, _palette(color))
 
 
-## A cable stowed goes by its plug, but it's the cable you have.
+## A cable or a hose carried goes by its end, but it's the whole you have.
 static func _name(thing: RigidBody3D) -> String:
 	match thing.get_meta(&"rolled", &""):
 		&"plug":
 			return "Cable"
 		&"strong_plug":
 			return "Strong cable"
+		&"hose_end":
+			return "Hose"
 	return thing.get(&"label")
 
 

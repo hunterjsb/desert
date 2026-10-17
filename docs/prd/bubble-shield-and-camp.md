@@ -166,6 +166,42 @@ The shield decides how much of it is safe. All three grow with upgrades.
   a device is dark for good and rusts over. Your own harm stays the storm's alone until
   Survival brings the three harms.
 
+## The carried light shield and the starts (not built)
+
+*Hunter, 2026-10-17 ([notes](../session-notes-2026-10-17.md)). This is a change to make, not a
+description of what's built. The starts are tentative, as the notes say.*
+
+**What's built.** The light shield every run starts with is round and bone white, 4 kg, with a
+4 m bubble. The kit's floating crate carries it on a top mount (As built, above). It already
+runs while carried: take lifts it off whole, running, and you can walk with it in your hands.
+
+**What the notes describe.** "New **light shield**: flat, weaker, mounts on a crate like other
+shields and takes a battery like other shields, but is light enough to carry, switched on,
+while you walk or board." Against what's built, to make:
+- **Flat,** where the built one is round.
+- **Weaker.** Weaker than what is not said (open questions).
+- **Made to be carried switched on, walking or boarding,** as the hover punk's shield. It
+  still mounts and takes a battery like the others, so it is the same kind of device, only
+  light.
+
+**Rejected, for powering it in your pocket:** a built-in cell and a "pocketable" flag. The
+notes: "Both add one-off exceptions to core systems." A reading, not in the notes: a built-in
+cell is a shield that runs with no fitted battery, against "a device's abilities come from its
+parts" (Devices & mods, rule 4), and a pocketable flag is a shield exempt from the carrying
+rules every other device obeys. What's left is carrying it in your hands, running.
+
+**The starts (tentative in the 17 Oct notes; superseded in part, Agreed, session 4, part 2).**
+One per playstyle ([the vision](../vision.md#player-origins-and-kits)):
+- **Salvager (the hover punk):** "Hoverboard and the light shield; little else."
+- **Surveyor (the hybrid, the default):** a standard shield.
+- **Homesteader (the oyster):** a "solid shield," with no hover.
+
+The notes had put "a normal shield, heavy enough not to be blown around" on "the nomad and
+oyster starts," and the docs read "nomad" as the hybrid. Session 4, part 2 makes the Nomad a
+different start (from the moving city, a mythic kit), so that reading is gone. Today there is
+one kit, the built one, and Survival says: "Only this standard kit is balanced; choosing a kit
+waits." The session balances the first three kits.
+
 ## Full version
 
 - **Shield types:** thermal shields that hold back heat and cold and open the poles,
@@ -204,4 +240,26 @@ The shield decides how much of it is safe. All three grow with upgrades.
 
 ## Open questions
 
-None right now. The shield's power numbers get settled alongside the Power PRD.
+The shield's power numbers get settled alongside the Power PRD. Session 4's items below are
+quoted on both sides and left standing.
+
+- **The same shield, or a new one?** Built: "The light shield (2026-10-16) is the one every run
+  starts with... a smaller generator, 4 kg, with a 4 m bubble." The notes: "New **light
+  shield**: flat, weaker." If it is today's, flat and weaker are changes to it. If it is a new
+  item beneath today's, the name is taken twice. Weaker than what is not said.
+- **A normal shield at the start, against "the first deep find reads as an upgrade".** The
+  vision: "The shield and panel are clearly worse than anything found deep, so the first deep
+  find reads as an upgrade." Salvage: "A found shield generator is the base shield: a 7 m
+  bubble of still air against the 4 m... light shield every run starts with." The notes: "the
+  nomad and oyster starts get a normal shield." Session 4, part 2 gives the "standard shield"
+  to the default Surveyor and a "solid shield" to the Homesteader. If a normal shield is the
+  base shield, those starts begin with what other runs find deep. Not said: whether the
+  standard shield is the base shield or a step between, and what the first deep find is then.
+- **"Heavy enough not to be blown around."** The base generator is 6 kg, 10 kg with its
+  battery, against the light one's 4 kg. This PRD says only that "the wind doesn't push the
+  base bubble." How heavy is heavy enough, and whether the built 6 kg one is, is not said.
+- **Riding with it.** Movement: riding, "you take only loose things on no line." Whether a
+  running shield in your hands counts as one is not written down.
+- **The flat shape and era.** Art direction has devices differing by era "in shape," the shield
+  first ([shape by era](../art-direction.md#shape-by-era)). Whether flat is the light shield's
+  own shape or one era's is not said.

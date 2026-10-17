@@ -71,7 +71,8 @@ the felt-weather rule.
 
 - **Shields,** by type. A full base shield lasts about 30 minutes in a storm. The main
   way to save power is to switch it off and stay out of storms.
-- **Hover trays** keep camp pieces floating, and their draw rises with the weight they
+- **Hover trays** keep camp pieces floating, each lifting under its own spot
+  (Devices & mods, 2026-10-17), and their draw rises with the weight they
   carry, mounts included. Without enough power, you haul. Use sets a tray resting,
   drawing nothing, for a camp that's staying put (Devices & mods).
 - **The hoverboard** has its own battery. That's your escape when the shield dies.
@@ -167,7 +168,9 @@ the felt-weather rule.
   floater: a crate resting on its tray, moored to a stake, with two big batteries, the
   light panel on one top mount, cabled to the shield, and a found panel on the other. A
   strong cable from the crate holds the turbine out in the wind beyond the bubble. In
-  all, a 1,000 Wh bank and 90 W of panels. At 45° north, through two days and nights of
+  all, a 1,000 Wh bank and 90 W of panels. Since 2026-10-17 a condenser beyond the
+  shield waters the planters on hoses (Survival), on a battery and a panel of its own,
+  out of the bank. At 45° north, through two days and nights of
   the probes' seed, 24 minutes of them full storm, nothing in it went dark and its bank
   never fell below 98%: the turbine carries most of the shield's 200 W in a storm and
   all of its sip at night. The kit's power under a found shield (the light panel and a
@@ -187,6 +190,13 @@ the felt-weather rule.
 - **Panels hardly count against a storm.** Over probe 4's two days the camp's panels
   made about 5 Wh, and it passes with them broken. A day of storm costs the base shield
   about 67 Wh, which 90 W of panels earn back in about eleven clear days at the equator.
+- **The turbine's blades turn with what it makes** (2026-10-17). A real rotor turns with
+  the wind and makes power with the wind cubed, so its speed goes with the cube root of
+  its share of the 200 W: slow in a breeze, under a turn a second in the prevailing
+  10 m/s, and two a second at its rating, still two blades and not a blur. It eases up
+  and runs down over a few seconds, stands still while the turbine makes nothing
+  (wrecked, moving, in a bubble or a calm), and swings round on its mast to face into
+  the wind. It's only drawn: it reads what the power tick worked out and touches nothing.
 
 ## Full version
 
@@ -227,6 +237,8 @@ the felt-weather rule.
    its battery just above a quarter: its tray gives way at a quarter and it settles on
    the sand while the shield keeps running, and the light panel brings the battery back
    until it floats again.
+10. **The rotor turns.** A planted turbine's blades turn faster in a gale than in a
+    light wind, and stand still while it's dragged or once it's wrecked.
 
 ## Out of scope
 

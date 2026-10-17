@@ -235,6 +235,31 @@ opens the window.
 - **Tilt:** a moon inherits its giant's tilt. Near zero, like Jupiter's 3°, keeps the
   poles cold enough to trap the air, which the story needs.
 
+#### Tu's size, under trial
+
+*Hunter, 2026-10-17 ([lore session](lore-session-2026-10-17-part-2.md)).* The 6-8° above is the
+earlier leaning. The session keeps the giant's angular size a tuning value, to be tried at 6°, 9°
+and 13° in game before the orbit is fixed, with "physics follows the look." Three presets are
+being built and none is chosen. This page picks none.
+
+What each would imply, as arithmetic from this memo's own geometry (an angular diameter of
+2 atan(R/d), the full Moon being 0.52°). It is not a decision:
+
+| Preset | Against the full Moon | Distance, in giant radii |
+|---|---|---|
+| 6° | about 12 times as wide | about 19 |
+| 9° | about 17 times | about 13 |
+| 13° | about 25 times | about 9 |
+
+The memo puts the moon at 15-20 giant radii, which is about 6-8°, so 6° sits inside it. The 9°
+and 13° presets put the moon closer in, toward the Europa end of the memo's list (a bare-surface
+dose of about 5.4 Sv a day, against 0.08 and less at 15-20 radii). A closer preset means redoing
+the radiation, the tidal heating and the real day, which shortens with the orbit: that is what
+"physics follows the look" asks for. The near-side night figure (about 150-270 lux) and the noon
+eclipse (2-3 real hours, 20-25 game seconds) were worked for 6-8° and move with the preset, so
+they are not repeated for the others until one is chosen. [The moon](the-moon.md#day-length) says
+the same in brief.
+
 ## 4. Three candidate bodies
 
 - **Mars-sized (0.38 g).**
@@ -262,7 +287,9 @@ the Jeans parameter for nitrogen is 40 (Mars-sized), 63 and 161, so 0.2 bar last
 (Io's rate), and even that would take ~25 million years to remove 0.2 bar from a
 Mars-sized moon. **No size makes the air leak away in `{YEARS_SINCE_FALL}`.** Fading it that
 fast would take ~10,000 tonnes a second (worked for the span this memo first assumed; redo
-when the placeholder is set).
+when the placeholder is set). Redone at the placeholder's rough current value (session 4,
+part 2; [Placeholders](lore-research.md#placeholders)): about 12,000 tonnes a second for 0.2 bar
+from a Mars-sized moon, the same order, so the conclusion stands.
 
 ## 5. The shield: what it did and how it fails
 
