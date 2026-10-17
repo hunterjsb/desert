@@ -202,6 +202,8 @@ Death means a new run (see Runs in the vision).
     stake and tie it at your waist, and the crate follows on its line with its bubble
     (survival probe 8); to camp, drive the stake again.
   - **a hoverboard** lying at your left, its battery half charged, ready to ride.
+    One line of the kit starts it racked on the crate instead, its battery the same:
+    `10: &"board",` among the crate's sockets, naming the board beside you in the rack.
   None of it overlaps you or each other at the start, and neither the crate, the
   board, the panel nor any shield goes in your slots; you carry a shield in your hands.
   The light shield is clearly weaker than a found one: a 4 m bubble against 7 m (a third
@@ -265,6 +267,12 @@ Death means a new run (see Runs in the vision).
 8. **The kit in tow.** In a crosswind you take up the kit's stake, tie it at your waist
    and walk off: the crate follows on its line, floating all the way, its shield's
    bubble with it.
+9. **The board racked.** The kit's board seats in its crate's rack through the tug and
+   take, clear of everything a fully fitted crate holds, and the ride action takes it off
+   and steps you on. Racked, it rides with the crate towed 40 m, charges from the camp
+   until the pool is down to the shield's reserve, takes nothing past it, and charges
+   again once the panel brings the pool back, every watt-hour of it accounted for. Take
+   lifts it off; saved racked, it resumes racked; the kit's one line starts it racked.
 
 ## Out of scope
 

@@ -90,6 +90,18 @@ even storms that last for days.
   It tows nothing: a line or a grip in your hands is let go, a line at your waist is
   untied first (it takes its moment) and you step on once it's free, and riding you
   take only loose things on no line.
+- **Racked** (2026-10-16). A crate frame's rack runs along the top of its left side. The
+  board is longer than the crate, 1.3 m against 0.8 m, so it overhangs 25 cm front and
+  back. It stands on its edge, nose forward and deck out, 1 cm off the side and 17 cm
+  proud of the top, clear of the ring mount below it and its line. It seats the way the
+  shield seats on a top mount: holding it at the rack, the tug leans it in and take seats
+  it, and take lifts it off again, whole. Racked, it rides exactly on its seat wherever
+  the crate goes (towed 40 m, it moved 0.008 mm off its seat at most), its 11 kg join the
+  crate's hover load, and it charges from the camp after the shield (Power). You can't
+  ride it racked: the ride action at a racked board takes it off and steps you onto it,
+  as the ride action at any board you look at puts it under your feet. It saves and
+  resumes racked. The starting kit lays it beside the crate; one line of the kit starts
+  it racked instead (Survival).
 - **Fast.** 20 m/s, 72 km/h, flat out on the flat in still air, against storm fronts
   riding the prevailing wind at 6 to 14 m/s. Drag grows with speed², and a third of it
   is the air's, felt against the felt wind: a tailwind carries you faster and a headwind

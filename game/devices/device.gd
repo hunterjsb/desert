@@ -105,6 +105,11 @@ func batteries() -> Array[Battery]:
 	return found
 
 
+## The batteries it lends its pool (Power).
+func pooled() -> Array[Battery]:
+	return batteries()
+
+
 ## How full its batteries are together, 0 to 1; 0 with none.
 func charge_share() -> float:
 	var held := 0.0
@@ -127,6 +132,14 @@ func mounted() -> Array[Device]:
 ## The device it's seated on, or null.
 func host() -> Device:
 	return get_parent() as Device
+
+
+## The socket a device is seated in on it, or null.
+func seat_of(other: Device) -> Socket:
+	for socket in _seats:
+		if socket.mounted == other:
+			return socket
+	return null
 
 
 ## What it generates, W, from the felt weather where it stands, now or at
@@ -153,9 +166,10 @@ func demand_w(_t := NAN) -> float:
 
 
 ## What it does with a power tick it had the power for, `seconds` long at
-## world time t, like a condenser filling its canister.
-func work(_seconds: float, _t: float) -> void:
-	pass
+## world time t, like a condenser filling its canister. Returns the Wh of
+## what it drew that went into a battery of its own, stored, not used.
+func work(_seconds: float, _t: float) -> float:
+	return 0.0
 
 
 func set_powered(on: bool) -> void:

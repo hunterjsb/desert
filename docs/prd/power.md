@@ -142,6 +142,15 @@ the felt-weather rule.
   so a base battery lasts about twenty minutes flat out. What it draws is metered tick
   by tick in world time and read by each power tick for its own quarter second, so its
   charge comes out the same at 30, 60 or 120 ticks a second.
+- **A racked board charges from the camp** (2026-10-16). Its battery stays its own,
+  out of the crate's pool, and it draws up to 50 W to charge it, a base battery in two
+  hours. That draw ranks below the shield, so it stops with the crate's tray once the
+  pool is down to a quarter and starts again at 30%, and it never takes the shield's
+  last quarter. What it draws is stored in its battery, not used, so the ledger still
+  adds up. On the starting kit the light panel is the only source, so it's a trickle,
+  and the board's weight adds 22 W to the tray's draw: on the probes' seed, from 10 Wh
+  over the reserve, the board took 4.2 Wh in five minutes before the pool was down to a
+  quarter, and the panel took 2.3 days to bring the pool back to 30% for the next.
 - **Two kinds of cable** (decided 2026-10-14, from the Stage 4 playtest). **Common
   wiring** pops a plug when pulled too hard, and Hunter likes that: a floating planter
   blown off a turbine unplugs itself. A **strong cable** is also a rope, so it holds

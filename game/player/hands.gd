@@ -492,10 +492,7 @@ func _pick_up(body: RigidBody3D) -> void:
 ## socket's +Z, then it comes to your hand.
 func _take_off(device: Device) -> void:
 	var host := device.host()
-	var from: Socket = null
-	for each in host.sockets():
-		if each.mounted == device:
-			from = each
+	var from := host.seat_of(device)
 	_source = host
 	_source_socket = from
 	_source_was = {"freeze": host.freeze, "velocity": host.linear_velocity, "spin": host.angular_velocity}
