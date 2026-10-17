@@ -570,9 +570,10 @@ a water socket of its own on top, so a canister or another hose goes on there to
 
 - **Can pieces from different eras join freely in the chassis, or do they need adapters?**
   Open in the notes (Hunter, 2026-10-17). Here: "Pieces join edge to edge by their rings," "A
-  piece... is a find," and "Every piece needs its own hover tray." Not said: whether a piece's
-  era matters to the join at all, and what a First Kingdoms piece, "practical to drag without a
-  hover tray," does in a deck where every piece needs one. If adapters exist, the rules here
+  piece... is a find," and "Trays lift where they are" (which replaced "every piece needs its
+  own hover tray" the same day). Not said: whether a piece's era matters to the join at all,
+  and what a First Kingdoms piece, "practical to drag without a hover tray," does in a deck
+  that floats on its trays' combined lift. If adapters exist, the rules here
   would make one a typed part that is found, not crafted (rule 6, and out of scope below).
   Session 4, part 2 lists the question again among its own open ones, still unanswered. It also
   shows why it matters: the moving nomad city is "a huge tethered raft of salvaged chassis,
