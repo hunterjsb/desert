@@ -115,7 +115,7 @@ static var _current: Tuning
 @export_group("Weather")
 ## One full day and night, start to finish.
 @export var day_minutes: float = 20.0
-## Where in the day a run begins: 0 is midnight, 0.5 is noon.
+## Where in the day a run begins, local time at its spawn: 0 is midnight, 0.5 is noon.
 @export var start_time_of_day: float = 0.3
 ## Mean prevailing wind, m/s. Storms ride it, so this sets how fast walls arrive.
 @export var prevailing_speed: float = 10.0
@@ -189,6 +189,23 @@ static var _current: Tuning
 @export var temperature_storm_blanket: float = 0.5
 ## A bubble that holds back temperature holds this inside, °C.
 @export var sheltered_temperature: float = 20.0
+## How far the air would cool if the sun stayed hidden behind Tu overhead, °C.
+## The air's lag, which puts the day's peak mid-afternoon, sets how much of it
+## an eclipse gets.
+@export var eclipse_chill: float = 40.0
+
+@export_group("Tu")
+## How wide Tu is across the sky, degrees. Physics follows the look: it sets
+## how far out Tu's orbit is, and so how long the eclipse lasts and how bright
+## Tu-shine is. Three are under trial (docs/the-moon.md), 6, 9 and 13; the dev
+## console's tu switches among them.
+@export var tu_degrees: float = 13.0
+## The longitude under Tu, degrees: 60° west of spawn stands Tu 30° up, due
+## west, where a run begins.
+@export var tu_longitude_degrees: float = -60.0
+## Tu-shine on top of its physical value, so how bright a near-side night is
+## can be tuned apart from Tu's size. 1 is physical.
+@export var tu_shine_scale: float = 1.0
 
 @export_group("Storm wall")
 ## Top of a storm's dust wall, metres. It dissolves over roof_soft either side.

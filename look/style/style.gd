@@ -126,7 +126,7 @@ func _storm_time() -> float:
 	var day := world.weather.day
 	var t := STORM_HELD
 	while t < 3.0 * 24.0 * 3600.0:
-		var hour := day.time_of_day(t)
+		var hour := day.time_of_day(t, world.moon.longitude)
 		if hour >= STORM_DAY[0] and hour <= STORM_DAY[1] and field.storm_at(_middle.x, _middle.y, t) >= 1.0:
 			var held := true
 			for back in range(30, int(STORM_HELD), 30):

@@ -1,6 +1,6 @@
 extends DeviceProbe
 ## Power probe 3: sources read the felt weather. Solar follows the day, the
-## night, storms and latitude; a planted turbine makes little in a calm and the
+## night, storms, latitude and the eclipse; a planted turbine makes little in a calm and the
 ## most in a storm, and nothing while it's being moved. (Inside a wind shield
 ## it makes nothing: that waits for the shield, Stage 6.)
 
@@ -21,7 +21,7 @@ func run() -> void:
 	var at := func(hour: float, stormy: bool) -> float:
 		var t := 0.0
 		while t < 3.0 * 24.0 * 3600.0:
-			if absf(day.time_of_day(t) - hour) < 0.004 and (field.raw_storm_at(x, z, t) > 0.0) == stormy \
+			if absf(day.time_of_day(t, world.moon.longitude) - hour) < 0.004 and (field.raw_storm_at(x, z, t) > 0.0) == stormy \
 					and (not stormy or field.storm_at(x, z, t) == 1.0):
 				return t
 			t += 5.0
@@ -36,11 +36,20 @@ func run() -> void:
 	await get_tree().physics_frame
 	solar["60 north"] = panel.production_w()
 	world.moon.latitude = 0.0
+	# A clear eclipse: the afternoon sun a minute before, then the sun behind Tu.
+	var mid := day.next_eclipse(0.0)
+	while field.raw_storm_at(x, z, mid) > 0.0 or field.raw_storm_at(x, z, mid - 60.0) > 0.0:
+		mid += world.tuning.day_minutes * 60.0
+	for when: Array in [["before the eclipse", mid - 60.0], ["eclipse", mid]]:
+		world.time = when[1]
+		await get_tree().physics_frame
+		solar[when[0]] = panel.production_w()
 	print("solar: %s" % solar)
 	check(solar["noon"] > solar["morning"] and solar["morning"] > 0.0, "solar climbs with the sun")
 	check(solar["night"] == 0.0, "and makes nothing at night")
 	check(solar["storm noon"] < solar["noon"] * 0.35, "a storm takes most of it")
 	check(absf(solar["60 north"] / solar["noon"] - 0.5) < 0.05, "at 60 degrees the noon sun gives half")
+	check(solar["before the eclipse"] > 0.0 and solar["eclipse"] == 0.0, "and nothing with the sun behind Tu")
 
 	var calm := 1e9
 	var gale := 0.0

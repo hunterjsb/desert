@@ -174,7 +174,7 @@ func _pieces(kit: Array) -> Dictionary:
 func _check_kit(kit: Array, run: String) -> void:
 	# A clear morning, the first storm minutes off: time to set up, not a storm on arrival.
 	var field := world.weather.field
-	var hour := world.weather.day.time_of_day(world.time)
+	var hour := world.weather.day.time_of_day(world.time, world.moon.longitude)
 	var due := field.next_change(world.spawn.x, world.spawn.y, world.time, 600.0, 10.0)
 	check(field.raw_storm_at(world.spawn.x, world.spawn.y, world.time) <= 0.0 and due > 120.0 and due <= 480.0
 		and hour >= 0.33 and hour <= 0.46,

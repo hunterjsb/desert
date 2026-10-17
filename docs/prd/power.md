@@ -197,6 +197,13 @@ the felt-weather rule.
   and runs down over a few seconds, stands still while the turbine makes nothing
   (wrecked, moving, in a bubble or a calm), and swings round on its mast to face into
   the wind. It's only drawn: it reads what the power tick worked out and touches nothing.
+- **The eclipse is a power check** (2026-10-17, [the Tu spec](../tu-and-day-2026-10-17.md)).
+  Once a day on the near side the sun goes behind Tu, and solar reads the light it feels, so
+  it falls to nothing for the eclipse: 16, 26 or 40 seconds of totality at the three sizes
+  under trial, 6°, 9° and 13° ([the moon](../the-moon.md#day-length)), with a few seconds of
+  partial phase either side. A camp rides it out on storage or wind. Tu's own light at night is far too
+  weak for panels, so they make nothing by it. Solar also follows local time now, which
+  follows longitude, so a panel carried east sees an earlier sunset.
 
 ## Full version
 
@@ -215,8 +222,8 @@ the felt-weather rule.
    what was used. No energy appears from nowhere.
 2. **Frame-rate proof.** The same run at 30, 60 and 120 frames per second gives the same
    charge levels.
-3. **Sources read the felt weather.** Solar follows clear, storm, day, night and
-   latitude. A turbine inside a base wind shield makes nothing; one outside in a storm
+3. **Sources read the felt weather.** Solar follows clear, storm, day, night,
+   latitude and the eclipse, making nothing with the sun behind Tu. A turbine inside a base wind shield makes nothing; one outside in a storm
    makes the most.
 4. **The AFK promise.** A reference camp (shield, floater, panels, turbine, capacitor)
    parked at mid-latitude runs through 24 simulated hours of weather without any

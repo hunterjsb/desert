@@ -373,6 +373,13 @@ Death means a new run (see Runs in the vision).
   at a pole) and a full storm halves it. A bubble holds its share of the way to 20 °C.
   At the equator the suit keeps you within its limits; the heat starts to harm about
   13° out (5 km), and the cold about 20° out. Temperature is what the poles cost.
+- **The eclipse cools the air** (2026-10-17, [the Tu spec](../tu-and-day-2026-10-17.md)).
+  The temperature follows local time, which follows longitude, and on the near side it
+  dips while the sun is behind Tu: deeper the longer the sun has been hidden and the
+  higher it stood, so a wider Tu's longer eclipse dips further, and a storm's blanket
+  softens it as it does the day's swing. It's a few degrees, never near the
+  suit's limits; it also nudges the condenser and the crops, which read the same felt
+  temperature.
 - **The crude condenser** is a catalog device with a water socket, a battery slot, a top
   mount for a panel, a port, a ring mount and a bottom mount. It runs whenever it has
   power and somewhere for its water, a canister with room or a hose (above), drawing 40 W, and makes 10 L an hour of world time in

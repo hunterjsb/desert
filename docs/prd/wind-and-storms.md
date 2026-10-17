@@ -353,6 +353,16 @@ All run without a window, with a fixed seed.
    windward slope and out on open sand it isn't cut at all. With the wind from the
    other side the same foot is exposed, and so is the foot of the windward slope. A box
    resting at the foot stays put where the same box on open sand slides off downwind.
+10. **Tu stays put** ([the moon](../the-moon.md#day-length)). Through a day where a run
+    begins, the Tu the sky draws strays no further than its daily nod while the sun goes
+    round the sky. On the far side it never rises and casts no light.
+11. **The eclipse.** At each size under trial the sun goes behind Tu once a day and
+    totality lasts what Tu's width makes it. Solar's felt light is nothing through it, the
+    sky draws the sun behind Tu, and the air is cooler for it and over it half a day on. Tu
+    is dark then and full half a day later. At the Rim the eclipse takes next to nothing.
+12. **Local time follows longitude.** A quarter of the way round to the east it's six hours
+    later, and the drawn sun, the light, the warmth and a radio's day music follow; to the
+    west it's six hours earlier.
 
 ## Out of scope
 
@@ -360,8 +370,20 @@ All run without a window, with a fixed seed.
 - Simulating real air physics. The field is designed, not simulated.
 - Saving weather.
 
+## Tu and the storms
+
+([The Tu spec](../tu-and-day-2026-10-17.md), 2026-10-17.) On the near side Tu is the
+landmark, and storms blot it out, so you lose it exactly when it matters. The walls are drawn
+over the sky, so a wall between you and Tu hides it, and inside a storm's dust it's gone. At
+night a wall is lit by Tu's light as the open ground is, and during the eclipse it goes dark
+with everything else.
+
 ## Open questions
 
+- **Does the eclipse kick the weather?** The spec leaves open "whether the eclipse also
+  affects the weather model, such as a pressure or wind kick," and the eclipse squall below
+  is the session's proposal for it. Nothing is built: the field doesn't know about the
+  eclipse, and the eclipse only darkens the light and dips the temperature.
 - **What target bands for clear skies** should each reference traveller get? Set them
   once the skeleton can measure them. The skeleton starts here: someone sitting still
   is in a storm 70% of the time, the median storm lasts 17 minutes, 71% pass within a
@@ -370,7 +392,10 @@ All run without a window, with a fixed seed.
   4 to 16 minutes.
 - **Do the eclipse squall and the storm season go in?** Proposed, not settled (above). If they
   do, the squall is a near-side term in the wind and the season a slow swing in the storm
-  field, and both wait for a near and far side and an orbital phase to read.
+  field. The sky now gives both what they'd read: the near and far side by Tu's height, and the
+  orbital phase (`DayCycle`, [the moon](../the-moon.md#day-length)). Tu's shadow is far wider
+  than Zan, so the whole near side is in it at once; its "centre" is the point under Tu, where
+  the sun stood highest and the eclipse's chill is deepest, so a squall would point there.
 
 The Console session (2026-10-17) answers one of its own questions and adds the rest. Each is
 quoted on both sides and left standing.

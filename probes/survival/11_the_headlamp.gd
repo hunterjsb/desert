@@ -24,7 +24,7 @@ func run() -> void:
 	var day := world.weather.day
 	var latitude := world.moon.latitude
 	var midnight := 0.0
-	while day.sun_direction(midnight, latitude).y > -0.9 * cos(latitude):
+	while day.sun_direction(midnight, latitude, world.moon.longitude).y > -0.9 * cos(latitude):
 		midnight += 1.0
 	world.time = midnight
 	world.player.camera.rotation.x = 0.0

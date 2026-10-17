@@ -41,7 +41,7 @@ func run() -> void:
 
 ## After each tick: what played over it, against the sun at the moment it read.
 func _each() -> void:
-	var up := world.weather.day.sun_direction(_was, world.moon.latitude).y > 0.0
+	var up := world.weather.day.sun_direction(_was, world.moon.latitude, world.moon.longitude).y > 0.0
 	var now := _radio.track()
 	if now != (Sounds.RADIO_DAY if up else Sounds.RADIO_NIGHT):
 		_wrong.append(_was)
@@ -57,7 +57,7 @@ func _each() -> void:
 func _crossings(from: float, to: float) -> PackedFloat64Array:
 	var found := PackedFloat64Array()
 	var latitude := world.moon.latitude
-	var up := func(t: float) -> bool: return world.weather.day.sun_direction(t, latitude).y > 0.0
+	var up := func(t: float) -> bool: return world.weather.day.sun_direction(t, latitude, world.moon.longitude).y > 0.0
 	var t := from
 	while t < to:
 		if up.call(t) != up.call(t + 1.0):
