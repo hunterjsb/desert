@@ -6,7 +6,7 @@ extends Device
 ## ring snaps flush beside it, and its frame, sockets and whatever is in them
 ## move into the first piece's body, as a fitted part's shapes do: a deck is
 ## one rigid body in whatever shape it's laid out, with nothing between its
-## pieces to wobble. Off again, any piece the rest still holds together
+## pieces to wobble. Off again, a bare piece the rest still holds together
 ## without takes back all that's its own. Its trays lift it where they are,
 ## and what stands on its deck mounts shares its power.
 
@@ -58,6 +58,19 @@ func outer(piece: Chassis) -> bool:
 				reached[at + step] = true
 				next.append(at + step)
 	return reached.size() == left.size()
+
+
+## Whether a piece comes off by hand: bare, nothing fitted to it and nothing
+## standing on it, and outer. Take anywhere else holds the whole deck, so
+## dragging a deck never takes it apart (Hunter, 2026-10-17).
+func comes_off(piece: Chassis) -> bool:
+	if not outer(piece):
+		return false
+	for socket in sockets():
+		if not socket.has_meta(&"socket") and _cell_of(socket) == piece.cell \
+				and (socket.part != null or socket.mounted != null):
+			return false
+	return true
 
 
 ## Where a joined piece sits in the deck's frame.

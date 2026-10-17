@@ -12,9 +12,12 @@ extends Node3D
 ## way, and whatever you take, take from, fit to or use becomes yours. A small
 ## device that seats in a socket, like a shield on a top mount, fits the same
 ## way, and take lifts it off again whole. A chassis piece joins a deck at a
-## free edge ring the same way, and take has the last one joined off first.
-## Having hold of a device that stands on a deck, a free deck mount near it
-## is offered, and take seats it there instead of letting go.
+## free edge ring the same way. Take on a deck takes hold of the whole of it,
+## and only a bare piece comes off. Having hold of a device that stands on a
+## deck, a free deck mount near it is offered, and take seats it there
+## instead of letting go; having hold of a piece with something standing on
+## it, a deck's free ring is offered, and take joins it there. Whenever take
+## or use can't do what you aim at, it says why, with a soft knock.
 
 signal fitted(part: Part, device: Device, socket: Socket)
 signal taken(part: Part, device: Device, socket: Socket)
@@ -70,13 +73,23 @@ const SLIDE_OFF := 0.15
 ## Hits asked for when asking whether something has room: the sand answers
 ## once for each of its faces a shape crosses, which mustn't crowd out the rest.
 const TOUCHES := 64
+## What a refusal calls each kind of socket that's full.
+const SOCKET_NAMES := {&"battery": "battery slot", &"ring": "ring", &"bottom": "tray mount", &"top": "top mount",
+	&"plant_small": "small plant slot", &"plant_large": "large plant slot", &"port": "port", &"tie": "hook",
+	&"water": "water socket", &"mod": "mod mount", &"food": "food slot", &"rack": "rack", &"deck": "deck mount"}
+const RIDING := "not from the board"
 
 var held: RigidBody3D
 var phase := Phase.EMPTY
 ## What you hold that's too heavy to carry.
 var grasp: Grasp
-## The free deck mount what you have hold of would stand on, if you took it home.
+## The free deck mount what you have hold of would stand on, if you took it
+## home, or the deck's free ring a piece would join at; where it would sit
+## there and, for a piece, at how many quarter turns; or why there's none.
 var stand: Socket
+var _stand_pose := Transform3D.IDENTITY
+var _stand_turns := 0
+var _stand_why := ""
 ## The line you work hand over hand.
 var reel: Reel
 ## What the look ray hits: a loose part, or a device and, when it's a fitted
@@ -201,16 +214,22 @@ func grab() -> bool:
 	if grasp.body != null:
 		if stand != null:
 			_stand_on(stand)
-		else:
-			grasp.let_go()
+			return true
+		var why := _stand_why
+		grasp.let_go()
+		if why != "":
+			refuse(why)
 		return true
 	if held != null:
 		if phase != Phase.HELD:
 			return false
 		if socket != null:
 			_fit(socket)
-		else:
-			drop()
+			return true
+		var why := _no_fit()
+		if why != "":
+			return refuse(why)
+		drop()
 		return true
 	_look()
 	var salvage := _player.world.salvage
@@ -221,38 +240,38 @@ func grab() -> bool:
 	var own_part := look_socket != null and look_socket.part != null
 	if look_device != null and look_device.host() != null and not (look_device.on_deck() and own_part):
 		if riding:
-			return false
+			return refuse(RIDING)
 		# Last on, first off: a seated device comes off whole, whatever of it you aim at.
 		_take_off(look_device)
 		return true
 	if look_part != null:
 		if riding and _player.waist.carries_line(look_part):
-			return false
+			return refuse(RIDING)
 		salvage.unbury(look_part)
 		_pick_up(look_part)
 		return true
 	if look_socket != null and look_socket.part != null:
 		if riding:
-			return false
+			return refuse(RIDING)
 		salvage.claim(look_device)
 		_take_out(look_device, look_socket)
 		return true
-	# A piece the rest of the deck holds together without comes off when you
-	# aim at it; at any other, you take hold of the whole deck.
+	# A bare piece the rest of the deck holds together without comes off when
+	# you aim at it; at any other, you take hold of the whole deck.
 	var deck := look_device as Chassis
-	if deck != null and deck.outer(deck.piece_at(look_point)):
+	if deck != null and deck.comes_off(deck.piece_at(look_point)):
 		if riding:
-			return false
+			return refuse(RIDING)
 		_unjoin(deck, deck.piece_at(look_point))
 		return true
 	if look_device != null and look_device.carryable:
 		if riding and _player.waist.carries_line(look_device):
-			return false
+			return refuse(RIDING)
 		salvage.unbury(look_device)
 		_pick_up(look_device)
 		return true
 	if riding:
-		return false
+		return refuse(RIDING) if look_device != null else false
 	if look_device != null and (not look_device.freeze or salvage.lying(look_device)):
 		# Something found comes up out of the sand as you take hold of it.
 		salvage.unbury(look_device)
@@ -270,7 +289,9 @@ func interact() -> bool:
 		_player.world.salvage.claim(look_device)
 		return true
 	if held == null:
-		return grasp.body == null and _player.waist.give_back()
+		if grasp.body == null and _player.waist.give_back():
+			return true
+		return refuse("wrecked" if look_device.wrecked() else "nothing to use") if look_device != null else false
 	if phase != Phase.HELD:
 		return false
 	var used := false
@@ -278,7 +299,9 @@ func interact() -> bool:
 		used = (held as Part).use(_player, look_point)
 	elif held is Device:
 		used = (held as Device).use(_player, look_point)
-	return used or _player.waist.take_from_hands()
+	if used or _player.waist.take_from_hands():
+		return true
+	return refuse("no use for it there") if look_device != null else false
 
 
 ## Rotate held down: the mouse turns what you hold, or have hold of, instead
@@ -464,6 +487,9 @@ func _physics_process(delta: float) -> void:
 	if phase == Phase.HELD:
 		_ticked = held.global_transform
 	grasp.step(delta)
+	if grasp.slipped:
+		grasp.slipped = false
+		refuse("it won't shift")
 	_find_stand()
 	_unblock_released()
 	_show(delta)
@@ -578,6 +604,49 @@ func meets(far: float) -> float:
 func say(why: String) -> void:
 	notice = why
 	_notice_left = NOTICE
+
+
+## Take or use can't do what you aim at: the readout says why for a moment
+## and a soft knock sounds, never silence (Hunter, 2026-10-17: "we should
+## have a way to communicate when a slot is full"). Every refusal comes
+## through here. Says it answered.
+func refuse(why: String) -> bool:
+	say(why)
+	_play(Sounds.REFUSE)
+	return true
+
+
+## Holding something aimed at a device with sockets of its kind but nowhere
+## it goes: why. "" where it has none of the kind, or one just emptied that
+## waits for you to look away, and what you hold is simply put down.
+func _no_fit() -> String:
+	var target := _root(look_device) if look_device != null else null
+	if target == null or target == held or _rearm != null and _on(_rearm):
+		return ""
+	var piece := held as Chassis
+	var kind: StringName = &"ring" if piece != null else held.get(&"kind")
+	var named := kind
+	var any := false
+	var free := false
+	for each in target.sockets():
+		if piece != null:
+			if each.kind != &"ring" or not target is Chassis or each.has_meta(&"socket"):
+				continue
+		elif each.kind != kind and not (held is Device and (held as Device).fits_in(each)):
+			continue
+		any = true
+		named = each.kind
+		free = free or each.is_open()
+	if not any:
+		return ""
+	if not free:
+		return "no free %s" % SOCKET_NAMES.get(named, "socket")
+	if piece != null:
+		return "wrecked" if piece.wrecked() or target.wrecked() else "no room at that ring"
+	# Standing on a deck, a device takes no tray: the deck's carry it.
+	if held is Part and (held as Part).stats.get("lift_kg", 0.0) > 0.0 and target.on_deck():
+		return "on a deck it takes no tray"
+	return ""
 
 
 ## Last on, first off: aimed at a hook with a line tied to it, it's the line's
@@ -708,19 +777,14 @@ func _take_off(device: Device) -> void:
 	_play(Sounds.UNSEAT)
 
 
-## A piece comes off the deck the way one goes on, out across a ring it
-## leaves while the deck holds still, then to your hand; with a device
-## standing on it, too heavy to carry, you have hold of it instead.
+## A bare piece comes off the deck the way one goes on, out across a ring it
+## leaves while the deck holds still, then to your hand.
 func _unjoin(deck: Chassis, off: Chassis) -> void:
 	var at := deck.global_transform * off.pose().origin
 	var was := {"freeze": deck.freeze, "velocity": deck.linear_velocity, "spin": deck.angular_velocity}
 	var piece := deck.detach(off)
 	var from := deck.ring_to(at)
 	_play(Sounds.UNSEAT)
-	if not piece.carryable:
-		_player.world.teleport(piece, piece.global_transform.translated(_frame_of(from).basis.z * LIFT_OFF))
-		grasp.take(piece)
-		return
 	_source = deck
 	_source_socket = from
 	_source_was = was
@@ -736,14 +800,21 @@ func _unjoin(deck: Chassis, off: Chassis) -> void:
 ## Having hold of a device that stands on a deck: the free deck mount whose
 ## seat is nearest it, within reach and with nothing else in the way there.
 ## The deck it just came off waits until it's been taken clear, so take lets
-## go rather than standing it straight back on.
+## go rather than standing it straight back on. Having hold of a lone piece,
+## the deck's free ring it would join at.
 func _find_stand() -> void:
 	var device := grasp.body as Device
+	var piece := device as Chassis
+	if piece != null and not (piece.joined.is_empty() and piece.deck == null):
+		piece = null
 	if device == null or not device.stands_on_deck:
 		device = null
 		_stood = null
 	var best: Socket = null
-	if device != null:
+	_stand_why = ""
+	if piece != null:
+		best = _find_ring(piece)
+	elif device != null:
 		if _stood != null and (not is_instance_valid(_stood) or _stand_gap(device, _stood) > STAND_REACH):
 			_stood = null
 		var nearest := STAND_REACH
@@ -757,17 +828,80 @@ func _find_stand() -> void:
 						nearest = d
 						best = socket
 		if best != null and not _stands_clear(device, best):
+			_stand_why = "something's in the way"
 			best = null
 		# The deck's trays carry what stands on it; its own would sit in the deck.
 		if best != null and device.has_tray():
-			say("take its tray off first")
+			_stand_why = "take its tray off first"
+			say(_stand_why)
 			best = null
+		if best != null:
+			_stand_pose = _frame_of(best) * device.seat()
 	if best != stand:
 		stand = best
 		if held == null:
 			_clear_ghost()
 			if stand != null:
-				_build_ghost(device)
+				_build_ghost(grasp.body)
+
+
+## The free edge ring of a deck a lone piece you have hold of would join at:
+## the one whose place beside it is nearest the piece, within reach, with
+## room there. Two whole decks don't merge yet.
+func _find_ring(piece: Chassis) -> Socket:
+	var best: Socket = null
+	var nearest := STAND_REACH
+	for each in _near():
+		var deck := each as Chassis
+		if deck == null or deck == piece or deck.deck != null:
+			continue
+		for ring in deck.sockets():
+			if ring.kind != &"ring" or ring.has_meta(&"socket") or not ring.is_open():
+				continue
+			var d := (deck.global_transform * deck._pose_at(ring, 0)).origin.distance_to(piece.global_position)
+			if d < nearest:
+				nearest = d
+				best = ring
+	if best == null:
+		return null
+	var deck := best.get_parent() as Chassis
+	var turns := deck._turns_for(piece, best, piece.global_basis)
+	if turns < 0:
+		_stand_why = "wrecked" if piece.wrecked() or deck.wrecked() else "no room at that ring"
+		return null
+	var pose := deck.global_transform * deck._pose_at(best, turns)
+	if not _joins_clear(piece, pose, deck):
+		_stand_why = "something's in the way"
+		return null
+	_stand_pose = pose
+	_stand_turns = turns
+	return best
+
+
+## Whether a piece, and all that stands on it, would sit at a pose touching
+## nothing but the deck it joins and the sand.
+func _joins_clear(piece: Chassis, pose: Transform3D, deck: Chassis) -> bool:
+	var space := get_world_3d().direct_space_state
+	var query := PhysicsShapeQueryParameters3D.new()
+	var skip: Array[RID] = [deck.get_rid(), _player.get_rid()]
+	var shapes: Array[CollisionShape3D] = []
+	var riding: Array[Device] = [piece]
+	while not riding.is_empty():
+		var each: Device = riding.pop_back()
+		skip.append(each.get_rid())
+		riding.append_array(each.mounted())
+		for child in each.get_children():
+			if child is CollisionShape3D and (child as CollisionShape3D).shape != null:
+				shapes.append(child)
+	query.exclude = skip
+	var back := piece.global_transform.affine_inverse()
+	for shape in shapes:
+		query.shape = _skin(shape.shape)
+		query.transform = pose * back * shape.global_transform
+		for hit in space.intersect_shape(query, TOUCHES):
+			if not _sand(hit):
+				return false
+	return true
 
 
 ## How far a device is from where it would stand on a deck mount, m.
@@ -800,7 +934,8 @@ func _stands_clear(device: Device, socket: Socket) -> bool:
 	return true
 
 
-## Seats what you have hold of on a deck mount, standing.
+## Seats what you have hold of on a deck mount, standing, or joins the piece
+## you have hold of to a deck at its ring.
 func _stand_on(socket: Socket) -> void:
 	var device := grasp.body as Device
 	var deck := socket.get_parent() as Device
@@ -808,7 +943,10 @@ func _stand_on(socket: Socket) -> void:
 	stand = null
 	_clear_ghost()
 	_player.world.salvage.claim(deck)
-	deck.mount(device, socket)
+	if socket.kind == &"ring":
+		(deck as Chassis).join(device as Chassis, socket, _stand_turns)
+	else:
+		deck.mount(device, socket)
 	_seat_sound()
 
 
@@ -1446,10 +1584,12 @@ func _show(delta: float) -> void:
 		stats["dark"] = not look_device.powered
 		if look_device.has_meta(&"layer"):
 			stats["found"] = look_device.get_meta(&"layer")
-		# Which take does to a deck: has the piece off, or drags it all.
+		# Which take does to a deck: has a bare piece off, or drags it all.
 		var deck := look_device as Chassis
 		if deck != null and not deck.joined.is_empty():
-			stats["take"] = "this piece comes off" if deck.outer(deck.piece_at(look_point)) else "drags the whole deck"
+			var piece := deck.piece_at(look_point)
+			stats["take"] = "this piece comes off" if deck.comes_off(piece) \
+				else ("drags the whole deck; bare, this piece comes off" if deck.outer(piece) else "drags the whole deck")
 		line = describe(look_device.label, stats.mass, stats)
 	if line != "" and line != _readout.text:
 		_readout.text = line
@@ -1460,9 +1600,9 @@ func _show(delta: float) -> void:
 		_ghost.global_transform = _seat(socket)
 		_ghost_look.albedo_color.a = 0.2 + 0.3 * pull
 	elif stand != null and grasp.body is Device:
-		# Where what you have hold of would stand.
+		# Where what you have hold of would stand, or join.
 		_ghost.visible = true
-		_ghost.global_transform = _frame_of(stand) * (grasp.body as Device).seat()
+		_ghost.global_transform = _stand_pose
 		_ghost_look.albedo_color.a = 0.35
 	elif held is Stake and phase == Phase.HELD and look_sand:
 		# Where it will go in.
