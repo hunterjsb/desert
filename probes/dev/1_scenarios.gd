@@ -6,8 +6,9 @@ extends WeatherProbe
 ## your feet by a small camp; a radio and a shield stand in front of you with a
 ## beacon in reach; the reference camp stands round you, running; the lee
 ## stands you under a tall slip face, facing up it into the wind over its
-## crest, the wind on you cut and a storm due. Checked against the field
-## itself and against what the game then shows.
+## crest, the wind on you cut and a storm due; chassis pieces, their trays,
+## a charged crate and a condenser lie in front of you. Checked against the
+## field itself and against what the game then shows.
 
 const SLACK := 1.0
 
@@ -61,6 +62,9 @@ func run() -> void:
 					await _board_lands()
 				if scenario.get("afk", false):
 					await _afk_lands()
+				if scenario.get("chassis", false):
+					check(field.wind_at(at.x, at.y, t).length() < scenario.calm, "chassis: a calm spell")
+					await _chassis_lands()
 			"front", "back":
 				check(stormy == (scenario.kind == "back"), "%s: on the right side of the edge" % what)
 				check(ahead.dot(upwind) > 0.999, "%s: facing upwind, where it comes from" % what)
@@ -169,6 +173,32 @@ func _afk_lands() -> void:
 	check(player.vitals.health > 99.0 and player.vitals.hunger > 99.0 and player.vitals.thirst > 99.0
 		and slots.count("Water canister") == Scenarios.AFK_CANISTERS and slots.count("-") == slots.size() - Scenarios.AFK_CANISTERS,
 		"afk: you start fed and watered, stocked with water, slots free for food (%s)" % ", ".join(slots))
+	for body in dropped:
+		if is_instance_valid(body):
+			body.free()
+
+
+## Bare chassis pieces lie flat on the sand in front of you, a tray before
+## each, with a crate frame holding two charged batteries and a condenser
+## with a battery and an empty canister, all within a few steps.
+func _chassis_lands() -> void:
+	await settle(true)
+	var dropped := Scenarios.chassis(world)
+	await physics_frames(60)
+	var player := world.player
+	var near := func(b: Node3D) -> bool:
+		var off := b.global_position - player.global_position
+		return off.dot(-player.global_basis.z) > 1.0 and Vector2(off.x, off.z).length() < 5.0 and clearance(b) < 0.6
+	var pieces := dropped.filter(func(b: Node3D) -> bool: return b is Chassis)
+	var trays := dropped.filter(func(b: Node3D) -> bool: return b is Part and b.kind == &"bottom")
+	check(pieces.size() == Scenarios.CHASSIS_PIECES.size() and trays.size() == pieces.size()
+		and pieces.all(func(p: Chassis) -> bool: return p.parts().is_empty() and p.global_basis.y.dot(Vector3.UP) > 0.99),
+		"chassis: bare pieces lying flat, a tray for each")
+	var crate: Device = dropped.filter(func(b: Node3D) -> bool: return b is Device and b.label == "Crate frame")[0]
+	var condenser: Condenser = dropped.filter(func(b: Node3D) -> bool: return b is Condenser)[0]
+	check(crate.batteries().size() == 2 and crate.charge_share() >= 1.0 and condenser.battery() != null
+		and condenser.canister() != null, "chassis: a crate with two charged batteries, and a condenser")
+	check(dropped.all(near), "chassis: all of it on the sand within 5 m in front of you")
 	for body in dropped:
 		if is_instance_valid(body):
 			body.free()

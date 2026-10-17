@@ -158,6 +158,11 @@ Resume, New game, the death screen and Options.
 10. **Quick save and quick load.** Quick saved in Normal and moved elsewhere, quick load
     puts you back where and when you saved, through the fade. In Ironman neither saves
     nor loads, and a dev scenario's run never saves.
+12. **A deck resumes.** A floating deck of three pieces, two of them turned, moored by a
+    hook on its ring, with a charged crate and a running light shield standing on it, is
+    saved and resumed: the same pieces stand on the same places, turned as they were,
+    with every tray, what stood where with its charge, the shield running and the line
+    tied, and it floats on.
 
 ## Out of scope
 

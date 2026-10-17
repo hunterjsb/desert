@@ -202,7 +202,8 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
   the seed, where it lies first, so the weather changes what a find is but never where it
   lies.
 - **Partly buried.** A buried part stands on end and a device stands upright (a
-  hoverboard stands on end, nose down, as a board stuck in snow does), all
+  hoverboard stands on end, nose down, as a board stuck in snow does, and a chassis
+  piece on its edge, a sheet the dunes half took), all
   leaning with the sand and up to 15° more their own way: a quarter to a half of its
   height under the sand in the surface layer, 40 to 65% in the deep, and always at least
   35% of it and 10 cm showing. A quarter of the parts on open sand lie loose on top
@@ -224,12 +225,13 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
   ruin's floor or the sand.
 - **What's found** is the catalog's own parts and devices. The surface layer holds
   batteries, hooks, lamps, empty canisters, rope coils and cable plugs, and crate frames,
-  chargers, planters, stakes, survival kits and radios (Stage 11, one in six of the
-  surface layer's devices). The deep layer holds big batteries,
+  chargers, planters, stakes, survival kits, radios (Stage 11, two in thirteen of the
+  surface layer's devices) and chassis pieces (2026-10-17, one in thirteen). The deep
+  layer holds big batteries,
   batteries, hover trays, solar panels, hooks, strong cable plugs and harvesters, and
   crate frames, wind turbines, condensers, shield generators and, rarer, hoverboards
-  (Stage 10, one in nine of the deep layer's devices; a ruin's hall never holds one,
-  since it promises parts to strip). A ruin's floor holds all
+  (Stage 10, one in ten of the deep layer's devices; a ruin's hall never holds one,
+  since it promises parts to strip) and chassis pieces (one in ten). A ruin's floor holds all
   its layer's finds and more: seeds (carrots and fungus), sealed rations and survival
   kits. A device comes with some of its sockets filled from its own layer, a third of
   them at the surface and three in five deep. Over 3,000 chunks on two seeds, rope coils

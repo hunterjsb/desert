@@ -24,7 +24,9 @@ static func make(on: Node3D, at: Vector3, ring := true) -> RopeEnd:
 
 func _enter_tree() -> void:
 	holder = get_parent() as Node3D
-	while holder != null and not (holder is RigidBody3D or holder is CharacterBody3D):
+	# A device seated on another rides held fast on it, so its host takes the pull.
+	while holder != null and (not (holder is RigidBody3D or holder is CharacterBody3D)
+			or holder is Device and (holder as Device).host() != null):
 		holder = holder.get_parent() as Node3D
 
 

@@ -18,7 +18,8 @@ extends RefCounted
 ## of you with a storm on its way, to sit it out and follow a beacon. "afk"
 ## parks the reference camp round you, running, to be left alone. "lee"
 ## stands you at the foot of a tall slip face, facing up it into the wind
-## coming over its crest, with a storm on its way.
+## coming over its crest, with a storm on its way. "chassis" lays out
+## pieces, their trays, a crate and a condenser to build a deck from.
 const LIST: Array[Dictionary] = [
 	{"key": "spawn", "label": "spawn: where and when the run began", "kind": "spawn"},
 	{"key": "clear", "label": "clear day, no storm for 10 min", "kind": "clear", "day": [0.42, 0.55]},
@@ -54,6 +55,8 @@ const LIST: Array[Dictionary] = [
 	# A storm due soon, so the lee is felt in the clear and then as it comes over the crest.
 	{"key": "lee", "label": "lee: at the foot of a tall slip face, the wind over its crest, a storm minutes off",
 		"kind": "lee", "day": [0.35, 0.55], "due": [120.0, 360.0]},
+	{"key": "chassis", "label": "chassis: pieces, their trays, a crate and a condenser to build a deck from, clear and calm",
+		"kind": "clear", "day": [0.35, 0.5], "calm": 6.0, "chassis": true},
 ]
 
 ## The test kit, as [catalog id, metres to your right, metres ahead]: empty
@@ -123,6 +126,13 @@ const AFK_TURBINE := [0.0, -7.4]
 ## many canisters, and the rest free for what the farm drops onto you.
 const AFK_CANISTERS := 3
 
+## The chassis pieces lying in a row ahead of you, a tray in front of each,
+## and the crate and condenser to stand on the deck either side: right and ahead.
+const CHASSIS_PIECES := [[-1.8, 3.6], [-0.6, 3.6], [0.6, 3.6], [1.8, 3.6]]
+const CHASSIS_TRAYS := [[-1.8, 2.2], [-0.6, 2.2], [0.6, 2.2], [1.8, 2.2]]
+const CHASSIS_CRATE := [3.4, 2.4]
+const CHASSIS_CONDENSER := [-3.4, 2.4]
+
 ## Your own frame, to fit what you find to: right and ahead.
 const YOURS := [1.5, 2.5]
 ## How far from where the run began to look for a ruin, m.
@@ -170,7 +180,7 @@ static func apply(world: World, scenario: Dictionary) -> void:
 	world.remove_meta(&"scenario_kit")
 	if not (scenario.kind in ["kit", "ruin"] or scenario.get("camp", false) or scenario.get("survive", false)
 			or scenario.get("farm", false) or scenario.get("board", false) or scenario.get("radio", false)
-			or scenario.get("afk", false)):
+			or scenario.get("afk", false) or scenario.get("chassis", false)):
 		return
 	# Bodies dropped before the sand under them has collision would be frozen or forgotten.
 	while is_instance_valid(world) and not world.terrain.is_settled_around(place.x, place.z):
@@ -195,6 +205,8 @@ static func apply(world: World, scenario: Dictionary) -> void:
 		dropped = radio(world)
 	elif scenario.get("afk", false):
 		dropped = afk(world)
+	elif scenario.get("chassis", false):
+		dropped = chassis(world)
 	else:
 		dropped = camp(world) if scenario.get("camp", false) else survive(world)
 	world.set_meta(&"scenario_kit", dropped)
@@ -565,10 +577,30 @@ static func wire(world: World, a: Device, b: Device, strong := false) -> Cable:
 	return cable
 
 
+## Four chassis pieces lying bare on the sand ahead of you, a hover tray on
+## its back in front of each, and either side a crate frame with two charged
+## batteries, whose power floats the deck once it stands on it, and a
+## condenser with a battery and an empty canister. Returns what it dropped.
+static func chassis(world: World) -> Array[Node3D]:
+	var dropped: Array[Node3D] = []
+	for where: Array in CHASSIS_PIECES:
+		dropped.append(standing(world, &"chassis", [], where))
+	var yaw := Basis(Vector3.UP, world.player.global_rotation.y)
+	for where: Array in CHASSIS_TRAYS:
+		var tray := Catalog.part(&"hover_tray")
+		drop(world, tray, Transform3D(yaw * Basis(Vector3.RIGHT, -PI / 2.0), Vector3.ZERO), where[0], where[1])
+		dropped.append(tray)
+	dropped.append(standing(world, &"crate_frame", [&"battery", &"battery"], CHASSIS_CRATE))
+	var condenser := standing(world, &"condenser", [&"battery", &"canister"], CHASSIS_CONDENSER) as Condenser
+	condenser.canister().drain(INF)
+	dropped.append(condenser)
+	return dropped
+
+
 ## A device's first free socket of a kind.
 static func _free(device: Device, kind: StringName) -> Socket:
 	for socket in device.sockets():
-		if socket.kind == kind and socket.part == null and socket.mounted == null:
+		if socket.kind == kind and socket.is_open():
 			return socket
 	return null
 

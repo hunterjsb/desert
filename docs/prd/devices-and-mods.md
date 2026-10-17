@@ -116,6 +116,53 @@ floater out of pieces:
   what you mount, which is why a deck usually carries crates. Everything on one deck
   shares one power pool, and its wind catch is its pieces' and what stands on them.
 
+**As built (2026-10-17):**
+- **A piece** is 1 m square and 12 cm thick, 9 kg against a crate frame's 15, with a ring
+  in the middle of each edge, a bottom mount and a deck mount. A deck stays level, so the
+  wind meets its pieces and their trays side on, and what stands on it as it would on
+  the sand. It's painted like the crate: gunmetal rails round a teal plate, black corner
+  caps, hazard bands either side of each ring so a deck's outer edge reads, and the
+  consignee's stencil on top. It's a find, one device in thirteen on the surface and one
+  in ten deep, buried on its edge like a sheet the dunes half took, and the console's
+  give makes one by its id, `chassis`.
+- **Joining.** With a piece in your hands, a deck's free edge ring is offered the same
+  way a socket is: the tug leans the piece flush beyond the ring, turned the quarter turn
+  nearest how you hold it, the ghost shows it, and take joins it. Its frame, its sockets
+  and whatever is in them move into the first piece's body, as a fitted part's shapes
+  do, so a deck is one rigid body, never pieces on joints. A ring between two pieces
+  closes and takes nothing. A ring isn't offered where something stands beyond it (a
+  piece joined over a crate would throw it), where a hook on a neighbouring edge would
+  stand in the new place, or for a wrecked piece. Joined on a slope, a deck lifts clear
+  of the sand as a crate does onto a tray. Your hands reach a deck by its nearest piece,
+  so a long deck's far end is as easy to work as its first. A deck wears as one device,
+  as worn as its most worn piece when they joined.
+- **Taking a deck apart.** Take aimed at the last piece joined takes it off, out along
+  the ring it joined at and into your hands; aimed at any other piece, you take hold of
+  the whole deck to drag it, as with a crate's frame. A piece with something standing on
+  it comes off with it, into your hold, since it's too heavy to carry.
+- **Floating.** A deck has no battery, so it floats on what stands on it. Its trays lift
+  it only while every piece has one; the readout says how many trays it's short. It's
+  held 1.2 m over the sand under its highest piece, so a long deck crossing a dune never
+  drags an end, and kept level by its own inertia about each axis. Floating draws for all
+  it floats, 2 W a kilogram as a crate's tray does, pieces, trays and what stands on it
+  together. Use on any piece, or on a crate or condenser standing on it, sets the whole
+  deck floating or resting; use at a shield on it still switches the shield.
+- **The deck mount** takes a crate frame, a condenser, either shield or a charger. A
+  shield goes on from your hands as onto a top mount. The others are too heavy to carry:
+  take hold of one beside a deck and the nearest free deck mount within 1.2 m of where it
+  would stand is offered, with its ghost, and take stands it there instead of letting go.
+  Take at it again lifts it off into your hold, and that deck offers nothing until it's
+  clear. Standing on a deck, a device keeps its own sockets: batteries, top mounts, rings
+  and a port all fit and come out by hand, a line on its hook pulls the deck, and a
+  shield seated on a crate's top mount there still comes off whole. Its own tray, if it
+  has one, holds nothing up there and draws nothing. Everything on a deck is one power
+  pool, and the deck's wind catch counts what stands on it.
+- **Saves** keep a deck's pieces in the order they joined, each with its place on the
+  first piece's grid, its turn and all that's in it; older saves load as before.
+- **The "chassis" scenario** lays four bare pieces in a row in front of you with a tray
+  before each, a crate frame with two charged batteries and a condenser with a battery
+  and an empty canister, clear and calm, to build a deck from.
+
 ## What Sand Game taught us
 
 - **Snapping happened on contact.** Anything that bumped a sticky area got stuck, even
@@ -293,17 +340,18 @@ planter has a mod mount.
 | Water socket | A canister or a hose's end, one at a time (2026-10-17) | Survival, Farming |
 | Deck mount | One device standing on a chassis piece: a crate, a condenser, a shield, a charger (2026-10-17) | Devices & mods |
 
-**As built, what each frame has** (2026-10-16):
+**As built, what each frame has** (2026-10-16; the chassis 2026-10-17):
 
 | Frame | Battery | Ring | Bottom | Top | Port | Other |
 |---|---|---|---|---|---|---|
-| Crate frame | 2 | 4 | 1 | 2 | 1 | a rack |
+| Crate frame | 2 | 4 | 1 | 2 | 1 | a rack; stands on a deck mount |
 | Planter | 1 | 2 | 1 | | 1 | 3 small and 1 large plant slot, a mod mount |
-| Charger | 1 | | | 1 | 1 | |
+| Charger | 1 | | | 1 | 1 | stands on a deck mount |
 | Wind turbine | 1 | | | | 1 | |
-| Condenser | 1 | 1 | 1 | 1 | 1 | a water socket |
-| Shield generator | 1 | 1 | 1 | | 1 | fits a top mount itself |
-| Light shield generator | 1 | 1 | 1 | | 1 | fits a top mount itself |
+| Condenser | 1 | 1 | 1 | 1 | 1 | a water socket; stands on a deck mount |
+| Shield generator | 1 | 1 | 1 | | 1 | fits a top mount or a deck mount itself |
+| Light shield generator | 1 | 1 | 1 | | 1 | fits a top mount or a deck mount itself |
+| Chassis piece | | 4 | 1 | | | a deck mount; its rings join other pieces |
 | Light solar panel | | | | | 1 | |
 | Hoverboard | 1 | | | | 1 | fits a rack itself |
 | Radio | 1 | | | | 1 | fits a top mount itself |
@@ -375,6 +423,21 @@ hook. That's how found mods expand a device.
     and take takes the tray out. A look at the frame's middle still takes hold of it.
 15. **The ghost in sight.** A socket offered on a crate's far side shows no ghost through
     the crate; walk round and it does, and a tray's shows under it.
+16. **One rigid deck.** Five pieces joined by hand into a long L sit flush on the grid,
+    square to each other; a ring with a crate standing beyond it isn't offered. Floating
+    with trays and a crate in a gusting storm for two minutes, moored by one line at its
+    far end as a tow would hold it, its pieces never move against each other, and it
+    stays level, with no jitter and nothing flung.
+17. **Every piece needs its tray.** Trays under two of three pieces would lift the deck,
+    and still it rests, drawing nothing; the third in, it floats, drawing for all it
+    floats. Use sets the whole deck resting and floating, and a tray out lets it down.
+18. **A crate on a deck.** Having hold of a crate beside a deck, its nearer deck mount is
+    offered and take stands it there. It takes a battery into its own slot by hand, a
+    light shield goes onto the other piece, and the deck floats on the crate's batteries
+    while the shield runs on them, one pool. Take has the crate off into your hold.
+19. **Last joined, first off.** Aimed at a middle piece, take has hold of the deck and
+    nothing comes off; aimed at the last joined, it comes off into your hands, never
+    through the deck, and then the next.
 
 ## Out of scope
 
