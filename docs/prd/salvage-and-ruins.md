@@ -371,6 +371,7 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
   part 2 adds the crusader bunkers on older sites and the landmarks (both above).
 - **Lore through item descriptions** that hint and never state.
 - **Radio frequencies.**
+- **Beds in some ruins** (proposed, 2026-10-17; [Survival](survival.md#sleep-proposed)).
 - **The hints of people.**
 
 ## Probes
@@ -455,3 +456,18 @@ Session 4's clashes with what's above are quoted and left standing. Nothing here
 - **Landmarks against "Ruins never move" and "Chunks hold no state."** A landmark is fixed and
   keeps your changes (World & terrain, Landmarks). Whether it is a ruin with a different
   placement rule or a system of its own is not said.
+
+The sleep session (2026-10-17) adds two. Each is quoted on both sides and left standing.
+
+- **Beds in ruins.** The session: "Some ruins have beds." Here: the built ruin is a thick-walled
+  building, a hall open to the sky and two roofed rooms; ruins are static, "never physics
+  objects"; and finds are typed parts and devices. A bed is none of those: it is furnishing, a
+  fixed thing you use. Not said: which ruin type or era has beds, whether a bed can be taken (as
+  a bedroll), and where it sits. A roofed room keeps no weather out as built, since only a bubble
+  or a dune's lee shelters you, so a ruin bed helps in a storm only under a shield. And oysters
+  "never find ruins" (the vision's playstyles), so they never see one.
+- **Loot while you sleep.** Here: "Things surfacing during a storm" is a full-version line, and
+  finds are laid out when a chunk's ground becomes solid; a loaded chunk only "remembers what you
+  took." The session: "Storm-loot mechanics will help once they're in." Not said whether a storm
+  slept through lays things bare as it passes, or only one you're awake for, and how an unseen
+  span would place them. The sleep's arithmetic would have to say what surfaced.

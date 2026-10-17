@@ -62,6 +62,9 @@ upgrade the camp → the camp sustains more of itself → go further, or into th
   on caterpillar tracks, is strong for the camp but slows you down.
 - **Parts are found, never crafted** (for now), and they wear out only from the
   elements. Salvage is the whole economy.
+- **The camp may get a computer, and a bed** (Hunter, 2026-10-17, proposed and loose). A Console
+  reads the weather instruments onto a screen ([Devices & mods](prd/devices-and-mods.md#the-console-proposed-not-built)),
+  and sleep may skip the wait on a long storm ([Survival](prd/survival.md#sleep-proposed)).
 - **The camp moves at walking pace, and storms are weathered, not outrun.** Each storm
   is a judgment call: stay and let it pass, or push through inside the bubble. Early on,
   a post or ruin to tie to is precious.

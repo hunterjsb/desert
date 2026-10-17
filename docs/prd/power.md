@@ -251,3 +251,21 @@ the felt-weather rule.
   both.** Common wiring is its own item; the strong cable is a rope that carries power.
 - **What other sources are there?** Salvaged colonial power cells, for example, since
   the best tech is the oldest.
+
+The Console and sleep sessions (2026-10-17) add two. Each is quoted on both sides and left
+standing.
+
+- **A sleep has to be lived through.** Here: power ticks every quarter second of world time, and
+  `power.gd` says "a jump in time (a scenario) isn't lived through: nothing charged meanwhile."
+  Any gap over 60 seconds is dropped, by needs, the farm and wear as well, and the dev console's
+  `time` command jumps that way. The session: "resource arithmetic overnight against a queryable
+  storm-intensity curve (shield draw scales with storm strength, so duration matters)" (Survival,
+  [Sleep](survival.md#sleep-proposed)). Not said: whether a sleep runs the ticks in a batch or
+  sums them in closed form. Either way rule 1, "Energy is conserved," has to hold across it, and
+  a probe that a slept span and the same span lived leave the same charge is the obvious check.
+  Length is cheap: a three-day storm is an hour of world time, 14,400 ticks.
+- **What a Console and its mods draw.** Here: "Instruments, farming gear and tools draw small
+  amounts," and the radio draws 2 W. The session: a Console "still takes a hover tray,
+  batteries and power like a crate." Not said: what a screen, a radar or another computer mod
+  draws, whether a Console on a dark pool goes blind, and what its weight adds to the tray's draw
+  at 2 W a kilogram.
