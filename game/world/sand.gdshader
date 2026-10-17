@@ -18,6 +18,28 @@ uniform float ripple_depth = 0.12;
 uniform float crest_glow = 0.12;
 uniform float patchiness = 0.04;
 
+// Tracks (game/world/tracks.gd): each texel holds the fill clock's reading at
+// which its mark will be filled, so a mark's depth is that less the clock.
+// Wrapped round on itself; uv = engine xz / extent + shift.
+uniform sampler2D track_map : filter_linear, repeat_enable, hint_default_black;
+uniform float track_clock = 1.0;
+uniform vec2 track_shift = vec2(0.0);
+uniform float track_extent = 512.0;
+uniform float track_texel = 0.25;
+// The window's middle in engine x and z, and its reach; none while negative.
+uniform vec3 track_window = vec3(0.0, 0.0, -1.0);
+// How deep a full mark is drawn, m: its walls tilt the light by it.
+uniform float track_depth = 0.06;
+// The share of light trodden sand loses, and how much less of the sky a mark
+// sees: the night's only light is the sky's.
+uniform float track_shade = 0.32;
+uniform float track_occlusion = 0.35;
+// Loose sand pushed up round a mark catches the light this much more.
+uniform float track_rim = 0.25;
+// The drawn sand stands this much higher round marks, m, so whatever rests
+// in one sits in it: a 1 m lattice can't draw the dent itself.
+uniform float track_lift = 0.03;
+
 varying vec3 world_pos;
 varying vec3 world_normal;
 
@@ -33,9 +55,26 @@ float value_noise(vec2 p) {
 		mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x), f.y);
 }
 
+float track_at(vec2 xz) {
+	return clamp(textureLod(track_map, xz / track_extent + track_shift, 0.0).r - track_clock, 0.0, 1.0);
+}
+
+bool in_tracks(vec2 xz) {
+	vec2 off = abs(xz - track_window.xy);
+	return max(off.x, off.y) < track_window.z;
+}
+
 void vertex() {
 	world_pos = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	world_normal = normalize((MODEL_MATRIX * vec4(NORMAL, 0.0)).xyz);
+	if (in_tracks(world_pos.xz)) {
+		// The deepest mark within half a lattice square, so one between
+		// vertices still lifts the sand round it.
+		vec2 xz = world_pos.xz;
+		float near = max(track_at(xz), max(max(track_at(xz + vec2(0.5, 0.0)), track_at(xz - vec2(0.5, 0.0))),
+			max(track_at(xz + vec2(0.0, 0.5)), track_at(xz - vec2(0.0, 0.5)))));
+		VERTEX.y += track_lift * near;
+	}
 }
 
 void fragment() {
@@ -60,11 +99,34 @@ void fragment() {
 	// slip faces and wherever a pixel spans more than about a tenth of one.
 	vec2 across = vec2(-downwind.y, downwind.x);
 	float phase = (dot(at, downwind) + 0.6 * sin(dot(at, across) * 0.9) + 1.5 * value_noise(at / 3.0)) / ripple_spacing;
-	float fade = (1.0 - smoothstep(0.06, 0.18, fwidth(phase))) * (1.0 - lee) * ripple_depth;
+	// Tracks: trodden sand is darker and sees less sky, a mark's walls tilt
+	// the light, and the loose lip round it is lighter. Nothing glows: at
+	// night and in a storm the contrast is the sand's own.
+	float trodden = 0.0;
+	vec3 dent = vec3(0.0);
+	if (in_tracks(world_pos.xz)) {
+		vec2 xz = world_pos.xz;
+		float h = track_texel;
+		float c = track_at(xz);
+		float e = track_at(xz + vec2(h, 0.0));
+		float w = track_at(xz - vec2(h, 0.0));
+		float s = track_at(xz + vec2(0.0, h));
+		float nn = track_at(xz - vec2(0.0, h));
+		// The sand drawn depth * c lower: its slope is the depth's, inverted.
+		dent = vec3(e - w, 0.0, s - nn) / (2.0 * h) * track_depth;
+		// Any mark at all reads as trodden; a shallow one, half as dark.
+		trodden = smoothstep(0.0, 0.2, c);
+		float lip = clamp((e + w + s + nn) * 0.25 - c, 0.0, 1.0);
+		colour *= mix(1.0, 1.0 - track_shade * (0.5 + 0.5 * smoothstep(0.0, 0.5, c)), trodden)
+			* (1.0 + track_rim * smoothstep(0.0, 0.2, lip));
+		AO = 1.0 - track_occlusion * smoothstep(0.0, 0.6, c);
+	}
+
+	float fade = (1.0 - smoothstep(0.06, 0.18, fwidth(phase))) * (1.0 - lee) * (1.0 - trodden) * ripple_depth;
 	float wave = phase * TAU;
 	float slope = sin(wave) + 0.35 * sin(2.0 * wave);
 	vec3 tilt = vec3(downwind.x, 0.0, downwind.y) * slope * fade;
-	vec3 rippled = normalize(n - tilt);
+	vec3 rippled = normalize(n - tilt + dent);
 
 	ALBEDO = colour;
 	ROUGHNESS = 1.0;

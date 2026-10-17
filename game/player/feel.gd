@@ -101,9 +101,8 @@ func _process(delta: float) -> void:
 
 	# The stride follows ground covered, so footfalls come where feet land.
 	if striding and speed > 0.1:
-		var stride := t.step_length * sqrt(speed / t.walk_speed)
 		var before := floori(_phase / PI)
-		_phase += speed * delta / stride * PI
+		_phase += speed * delta / stride(speed) * PI
 		if floori(_phase / PI) != before:
 			_footfall(speed)
 	var size := clampf(speed / t.walk_speed, 0.0, 2.0) * (0.6 if _player.crouched else 1.0) if striding else 0.0
@@ -152,6 +151,12 @@ func _process(delta: float) -> void:
 	camera.fov = _fov + _widen
 	_sound_slide(sliding, speed, delta)
 	_throw_sand(sliding, own, speed)
+
+
+## Ground covered between footfalls at a pace, m: tracks print feet where these land.
+static func stride(speed: float) -> float:
+	var t := Tuning.current()
+	return t.step_length * sqrt(speed / t.walk_speed)
 
 
 func _footfall(speed: float) -> void:
