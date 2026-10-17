@@ -47,7 +47,15 @@ out, never written into the text (Hunter, 2026-10-16), even before players can r
   hands.
 - **Use** works what you're looking at, or uses what you hold: switch a shield, drive a
   stake, set a crate's hover tray floating or resting (Hunter, 2026-10-16), so a camp
-  that's staying put stops spending its charge on floating.
+  that's staying put stops spending its charge on floating. **Built** (2026-10-16): use
+  at the frame of any device with a tray, empty-handed, switches it. Resting, the tray
+  draws nothing and lets the device down onto the sand over two seconds, about 0.6 m/s
+  at most; floating again, it lifts it back the same way. The readout says "floating"
+  or "resting", the board's soft hum falls or rises, and the switch is kept in the save.
+  Use at a shield seated on a crate still switches the shield, and a line or stake in
+  your hands keeps its own use. A planter with a harvester steps its share unless you
+  look at its tray. The kit's crate starts floating. A tray out of power still lets go,
+  as before (Power).
 - **Throw** throws what you hold.
 - **Reel in and pay out** (Hunter, 2026-10-16): on a line, they shorten and lengthen it
   (Rope & tethering); on anything else you hold or have hold of, they bring it nearer or
@@ -298,6 +306,10 @@ hook. That's how found mods expand a device.
     back upright and stand once let go. A shield lying on its side is turned in your
     hands and set down standing. Having hold of a crate, looking up lifts it, unless
     it's too heavy for your strength.
+13. **Use rests a tray.** Use at the kit crate's frame sets it resting: it settles
+    gently on the sand and its tray draws nothing, while use at the shield seated on it
+    switches the shield and leaves the tray be. Use again and it floats, drawing as
+    before. Saved resting, it resumes resting.
 
 ## Out of scope
 

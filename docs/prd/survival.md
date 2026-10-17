@@ -24,7 +24,18 @@ First and foremost, you're out here to survive.
   protection are free, with no power and no bar. You have a sick suit, and you're not
   dead. So is its **headlamp** (Hunter, 2026-10-16), which comes on by itself in the
   dark, at night or in a storm, so your tracks can be followed when nothing else lights
-  the sand.
+  the sand. **Built** (2026-10-16): a warm spot from your head along your view, tilted a
+  little down, with a soft edge and no shadows (what you hold would throw one down the
+  beam). It fades on over a second and a half once the light on open ground round you
+  falls below 15% of the sun overhead and the whole sky's, which is sunset, any night,
+  or deep in a storm by day, and off again only past 25%, so it never flickers at the
+  edge (probe 11). It needs no action, power or bar, and nothing in the world reads it.
+  In a storm at midnight, where the sand is otherwise 0.7 (L*, from `look/headlamp`),
+  the sand 5 m ahead is 35 with steps 5 darker, 10 m ahead 13 with steps 2 darker, and
+  15 m ahead 6. By a camp the bubble's ring and a lamp's own pool still stand out in
+  its light. It costs the GPU nothing measurable at 1920x1080 (within 0.1 ms, the
+  noise of four runs); its shadows would add 0.06 to 0.3 ms. Tuning's Light group
+  holds its thresholds and beam.
 - **Losing the suit kills you.** For now that's the whole rule.
 - **It's a device like any other,** with sockets (Devices & mods) plus some built-in
   features. Fit a heater, a cooler, a water reclaimer, a better battery or harness
@@ -286,6 +297,10 @@ Death means a new run (see Runs in the vision).
     come out ready to drive; driven, each holds a crate floating on a line in a breeze,
     the found one after a save and a resume too. A driven stake, or one with a line on
     its eye, stays out.
+11. **The headlamp.** Under a clear sky at noon it's off. At dusk, the light wavering
+    round its threshold as a passing veil of dust would, it comes on once and stays on.
+    Deep in a storm at night it's on, and lights the ground 10 m ahead at least as well
+    as a device's lamp lights the sand 5 m off.
 
 ## Out of scope
 

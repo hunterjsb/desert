@@ -44,6 +44,9 @@ var seen_shade := 0.0
 var seen_sun := 1.0
 ## Signed metres from the camera to the nearest front, positive inside.
 var seen_front := -INF
+## The light on open ground round the camera, 0 to 1 of the sun overhead and
+## the whole sky's, as the screen lights it: what the suit's headlamp reads.
+var seen_light := 1.0
 ## World time the storm state at the player next flips; INF beyond the horizon.
 var next_change_time := INF
 
@@ -260,6 +263,8 @@ func _show(delta: float) -> void:
 	_environment.ambient_light_color = AMBIENT_COLOR * tint
 	_environment.ambient_light_energy = _tuning.sky_fill * daylight * sky_left * dim
 	_environment.background_energy_multiplier = daylight * lerpf(1.0, 0.45, coverage) * dim
+	seen_light = (_sun.light_energy / _sun_energy * maxf(light_from.y, 0.0) + _environment.ambient_light_energy) \
+		/ (1.0 + _tuning.sky_fill)
 
 	# The clear day's haze, dimmed with the light and browned by the dust. The
 	# dust itself is the storm pass's; the haze only closes in behind it, never
@@ -312,6 +317,7 @@ func _report() -> void:
 	Dev.put("weather/next", "%s %s" % ["clr" if in_storm else "stm",
 		">1h" if eta == INF else "%d:%02d" % [floori(eta / 60.0), floori(fmod(eta, 60.0))]])
 	Dev.put("weather/sun", "%d%%" % roundi(felt_light(_world.player.global_position) * 100.0))
+	Dev.put("weather/lit", "%d%%" % roundi(seen_light * 100.0))
 	Dev.put("weather/temp", "%d°C" % roundi(felt_temperature(_world.player.global_position)))
 	Dev.put("weather/map", "%.1fms %d jumps" % [map.max_upload_ms, map.rebuilds])
 

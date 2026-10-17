@@ -89,6 +89,23 @@ static var _current: Tuning
 @export var sky_fill: float = 0.75
 ## The camera's exposure: everything on screen, sky and storms with the ground.
 @export var exposure: float = 1.0
+## The suit's headlamp comes on as the light round you falls below this
+## share of the sun overhead and the whole sky's, at dusk or deep in a storm,
+## and goes off past the second, so it never flickers between them.
+@export var headlamp_on_below: float = 0.15
+@export var headlamp_off_above: float = 0.25
+## Its beam: brightness, how fast it fades with distance (the renderer's
+## default 1; less carries further), reach, m, half-angle, degrees, how soft
+## its edge is (1 the renderer's; less softer), and how far it's tilted down
+## from your view, degrees, to light the ground ahead.
+@export var headlamp_energy: float = 2.0
+@export var headlamp_falloff: float = 0.2
+@export var headlamp_range: float = 35.0
+@export var headlamp_angle: float = 35.0
+@export var headlamp_edge: float = 0.5
+@export var headlamp_tilt: float = 5.0
+## It fades on and off over this long, s.
+@export var headlamp_fade_seconds: float = 1.5
 
 @export_group("Tracks")
 ## The ground round you that keeps your marks: texels a side, and metres a
@@ -374,6 +391,9 @@ static var _current: Tuning
 @export var hover_upright_hertz: float = 1.6
 ## What hovering costs, W per kg floated. Power (Stage 4) drains it.
 @export var hover_watts_per_kg: float = 2.0
+## Set resting or floating again, a tray lets its device down or lifts it
+## back up over this long, s.
+@export var hover_settle_seconds: float = 2.0
 ## The magnetic tug reaches this far from a free socket, m.
 @export var snap_reach: float = 0.4
 ## Inside this, the tug leans the part all the way into its seat, ready for
