@@ -2,15 +2,11 @@
 
 [ext_resource type="Script" path="res://look/shield/shield_test.gd" id="1_shield"]
 [ext_resource type="PackedScene" path="res://game/world/world.tscn" id="2_world"]
-[ext_resource type="Script" path="res://game/dev/scenario_menu.gd" id="3_scenarios"]
 
 [node name="ShieldTest" type="Node"]
 script = ExtResource("1_shield")
 
 [node name="World" parent="." instance=ExtResource("2_world")]
-
-[node name="Scenarios" type="CanvasLayer" parent="."]
-script = ExtResource("3_scenarios")
 
 [node name="Hud" type="CanvasLayer" parent="."]
 

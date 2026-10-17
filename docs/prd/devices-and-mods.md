@@ -164,7 +164,7 @@ it, take hold of it, and let go.
   Fitted out with two big batteries, four hooks, a tray, a panel and a shield, a crate
   weighs 56 kg, under a tray's 80 kg of lift, and floating draws 112 W.
 - **Keys on screen come from the bindings** (2026-10-16). The keys list and its hint,
-  the inventory view and the scenario menu read each action's key from the live bindings
+  the inventory view and the dev console read each action's key from the live bindings
   and draw it in one colour. Rebinding an action changes all of them, and a mouse button
   is named as one, like "click". The look-tests' own keys aren't actions, so they're
   coloured but written as they are.

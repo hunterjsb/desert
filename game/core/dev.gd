@@ -88,9 +88,7 @@ func _write_keys() -> void:
 		_hint.text = hint
 	if not _keys_layer.visible:
 		return
-	var lines := PackedStringArray()
-	for pair: Array in Controls.HELP:
-		lines.append("%s  %s" % [Controls.bbcode(pair[0]), Controls.bbcode(pair[1])])
+	var lines := PackedStringArray([Controls.help()])
 	# A look-test's own keys are raw keys, not actions.
 	for pair: Array in _scene_keys:
 		lines.append("%s  %s" % [Controls.tint(pair[0]), pair[1]])

@@ -82,7 +82,7 @@ even storms that last for days.
 **Built (2026-10-16, Stage 10, `game/board/`).**
 - **A find.** The board is a catalog device in salvage's deep layer, one in nine of its
   devices, found buried on end, nose down. Its battery sits at its nose and comes filled
-  like any deep find's; its port charges it from a cable. The scenario menu's "ride"
+  like any deep find's; its port charges it from a cable. The "ride" scenario
   lays a charged one at your feet.
 - **On and off.** The ride action steps you onto the board in your hands, the one you
   look at, or the nearest at your feet, if it has charge, and steps you off again,
