@@ -135,13 +135,13 @@ later. At the sub-Tu point that's noon and midnight; where a run starts, full Tu
 **Nights.** On the near side Tu lights the night: a weak, cool light from Tu's direction,
 scaled by its phase, a thin crescent's after the eclipse and a full Tu's in the small hours.
 It's far too weak for panels. Its brightness has a tuning scale of its own on top of the
-physical value, 1 by default, so how bright a night is can be tuned apart from Tu's size. The
-game has no eye adaptation, so at 1 a full-Tu night reads on screen as deep night, the dunes
-barely there: a seventh of the light the game's nights had before at 13°, a fifteenth at 9°
-and a thirty-fourth at 6°. At 13° and a scale of 3 the dunes read and it's still plainly
-night; at 10 it's an overcast dusk (`~/Desktop/tu_more.png`). Hunter's answer is eye
-adaptation, to build after Tu, with Tu's light kept physical ([art
-direction](art-direction.md#eye-adaptation)), so the scale stays at 1.
+physical value, so how bright a night is can be tuned apart from Tu's size. It stays at 1,
+which is physical. At that, a full-Tu night at 13° has a seventh of the light the game's
+nights had before; at 9° a fifteenth, and at 6° a thirty-fourth. Shown as it is, the dunes
+are barely there. A scale of 3 was suggested (`~/Desktop/tu_more.png`), and Hunter chose eye
+adaptation instead ([art direction](art-direction.md#eye-adaptation)). On a full-Tu night at
+13°, the eye opens about three times: the dunes read as they did at 3, and it's still
+plainly night.
 The far side never sees Tu, and its nights are truly dark, lit by the stars alone.
 
 **The stars** turn once a day round the spin axis. A bright star marks the north celestial

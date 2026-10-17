@@ -177,7 +177,88 @@ pieces, such as rope and louvres: the project draws without antialiasing.
 (Hunter, 2026-10-17: "add eye adaptation".) The camera adapts to the light as an eye
 does, so a Tu-lit night reads as night with the dunes still there, and stepping from a
 bright day into a storm, or out of an eclipse, takes a moment to see. Tu's light stays
-physical; the eye does the rest. To build, after Tu.
+physical; the eye does the rest.
+
+**As built** (2026-10-17). Tu-shine stays at 1. The eye opens the camera's exposure
+in the dark, but only so far: a night still reads as night.
+
+How it looks, where a run begins with Tu 13° across (`~/Desktop/eye_adaptation.png`,
+each moment before and with the eye):
+
+| Moment | The eye | The sand (L*), before and with it |
+|---|---|---|
+| Noon, any clear day, dusk, a veil of dust | as before | 81, 81 at noon |
+| Deep in a storm by day | 1.4 times | 22 to 26: it stays oppressive |
+| A full-Tu night, facing away from Tu | 3.1 times | 1.4 to 4.5, a little over where Tu-shine ×3 put it (4.2) |
+| The same night, facing Tu | 1.9 times | 1.5 to 3.0 |
+| A crescent night, the far side | 6 times, the floor | under 1: dark, the stars out over the dunes |
+| Totality begins | 1.1 times | black |
+| Totality, 30 s in | 6 times | the sky off black, many more stars, the ring brighter |
+| The sun back, 1 s on | 1.6 times, still open | too bright for a moment, as before within two seconds |
+
+**What it reads.** A meter takes each frame's light on the GPU before the tonemap,
+so the exposure it leads to never feeds back into it: all the light in the frame,
+which is what a pupil follows, and its brightest patch. So whatever is in view moves
+it, as with an eye. Tu's disc in view at night holds it to about twice, so Tu's bands
+never burn out; look away and the dunes come back within a few seconds. The
+headlamp's pool in a black storm holds it to under twice, so the beam reads much as it
+did, and the dark beyond stays dark. It takes the light in over half a second, so dust
+flickering past doesn't pump it. At the menu, in its storm, the frame's own light swings
+by half again with the billows over ten seconds, and the eye by under a tenth against
+them. In the clear it doesn't move.
+
+**Its bounds.** It opens only once the frame is dimmer than about a ninth of noon's.
+That's the ceiling: noon, and anything brighter than a dusk, look exactly as before, and
+nothing is ever darker than before. Below that it makes up only about a third of each
+halving of the light. And it never opens past 6 times, the floor, so a black far-side
+night stays black, not grey noise. The sky used to dither itself before the tonemap,
+and opening the eye made that a coloured hatch on dark skies. The dither now comes
+after the tonemap, project-wide.
+
+**How fast.** It opens in two parts, as an eye does. The first doubling comes in about
+three seconds, as a pupil widens. Past that it goes slowly, a doubling in about
+fourteen seconds. It closes fast, a doubling in under half a second. So stepping into a
+storm it has settled in about two seconds. Totality lightens through its 39 seconds:
+3 times by 8 s in, 6 by 22 s. A glance at Tu costs only the pupil's few seconds to get
+back. A cut doesn't carry over: a new run, a jump of the clock and a scenario each start
+the eye settled.
+
+**Why not Godot's own.** Godot has its own auto exposure (`CameraAttributesPractical`).
+Between its two bounds it makes up every change in the light, so every scene in that
+range shows as bright as every other. It has one speed both ways, and nothing reads it
+back. For noon to stay as it is while a full-Tu night got about 3 times, its bounds
+would have had to lie a factor of three apart, just under noon. Then a storm would have
+been lifted as far as the night, a dusk made as bright as noon, and totality would
+have gone no deeper. So the eye is our own: `game/weather/eye.gd`, fed by
+`game/weather/eye_meter.gd`. Tuning's Eye group holds its line, share, floor, white
+and speeds.
+
+**Fair tests.** Tuning's `eye_adapts` switches it off, back to the fixed exposure.
+Every look-test that builds the world switches it off, so its shots and readings compare
+across builds. `look/tracks` and `look/headlamp` take `--eye` to read as the eye sees.
+`look/eye/shoot.sh <dir> [sheet]` shoots each moment both ways, and times the eclipse
+and the step into a storm. `look/menus` keeps the eye on, as the game plays, and says
+how far it swung. Headless draws nothing, so in probes the eye never reads and the
+exposure is as before. Probe 13 (Wind & storms) hands the eye readings itself.
+
+**Cost**, on the RTX 3070 at 1920x1080 with other Godots running alongside, so rough:
+the meter takes 0.04 to 0.08 ms a frame over five runs (in the last, 2.31 against 2.25
+by day and 5.00 against 4.92 in a storm), and the dither after the tonemap next to
+nothing (0.00 and 0.03).
+
+**What's fragile.**
+
+- It was tuned where a run begins at 13°. At 6° and 9° a full-Tu night has a fifth and
+  half the light. The eye opens further, 4.9 and 3.9 times, and those nights still read
+  darker: the sand is 1.7 and 2.8, against 4.5.
+- Anything bright in view closes it a little, as it would an eye. A lamp's bulb close
+  up or a shield's glow does too, which could read as the eye "flinching" by a camp at
+  night.
+- The bright patch is 64 pixels across. On a 4K screen that's half the size in the
+  view, so smaller bright things count.
+- The reading comes back a frame or two late. That's harmless at these speeds.
+- Only the player's camera has the meter. Another camera, if one is ever added, would
+  keep the last exposure.
 
 ## Maker's marks
 

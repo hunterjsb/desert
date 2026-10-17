@@ -37,8 +37,7 @@ for pair in "noon:noon" "full:a full-Tu night" "full_tu:the same, facing Tu" "cr
 	shot "${pair%%:*}_fixed" "${pair#*:}"
 	shot "${pair%%:*}_eye" "${pair#*:}"
 done
-shot full_x3 "a full-Tu night, the earlier Tu-shine x3, fixed" plain
-shot totality_fixed "totality"
+shot full_x3 "a full-Tu night, Tu-shine x3 as once suggested" plain
 shot totality_start "totality begins"
 shot totality_30s "totality, 30 s in"
 shot sun_back_1s "the sun 1 s back"

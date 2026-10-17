@@ -2,13 +2,14 @@ extends Node
 ## Look-test: the eye adapting, on seed 1234 where a run begins, Tu 13° across,
 ## in still air. Each moment is shot twice, at the fixed exposure the game had
 ## before (as the other look-tests keep it) and with the eye settled: noon, a
-## full-Tu night away from Tu and facing it, a crescent night, the far side's
-## stars; and, with --storm, deep in a storm by day. The eclipse is watched
-## through, the eye adapting as it goes: totality as it begins and 30 s in, and
-## the sun 1 s back. It prints each frame's brightness as the eye's meter reads
-## it, the exposure, the sand's lightness (CIE L*) low in the frame either way,
-## how fast the eye moves through the eclipse and stepping into the storm, and
-## what the meter costs the GPU at 1920x1080:
+## full-Tu night away from Tu and facing it (and away from it at the smaller
+## sizes under trial, and at the Tu-shine x3 once suggested instead), a
+## crescent night, the far side's stars; and, with --storm, deep in a storm by
+## day. The eclipse is watched through, the eye adapting as it goes: totality
+## as it begins and 30 s in, and the sun 1 s back. It prints each frame's light
+## as the eye's meter reads it, the exposure, the sand's lightness (CIE L*) low
+## in the frame either way, how fast the eye moves through the eclipse and
+## stepping into the storm, and what the meter costs the GPU at 1920x1080:
 ##   godot --path . --disable-vsync res://look/eye/eye.tscn -- --capture <dir> [--storm]
 ## look/eye/shoot.sh shoots both and builds the sheet. A small window that never
 ## takes focus, nothing but this script moving anything, and silence.
@@ -117,6 +118,11 @@ func _capture() -> void:
 	tuning.tu_shine_scale = 3.0
 	await _shot("full_x3", full, 0.0, spawn_lon, _to_tu(full, spawn_lon) + PI, PITCH_GROUND)
 	tuning.tu_shine_scale = 1.0
+	# The smaller sizes under trial, for their numbers.
+	for degrees: float in [6.0, 9.0]:
+		tuning.tu_degrees = degrees
+		await _pair("full_%d" % degrees, full, 0.0, spawn_lon, _to_tu(full, spawn_lon) + PI, PITCH_GROUND)
+	tuning.tu_degrees = 13.0
 	var crescent := _at_hour(CRESCENT, spawn_lon)
 	await _pair("crescent", crescent, 0.0, spawn_lon, _to_tu(full, spawn_lon) + PI, PITCH_GROUND)
 	await _pair("far", _at_hour(0.0, tu_lon + 180.0), FAR_LATITUDE, tu_lon + 180.0, 0.0, FAR_PITCH)
