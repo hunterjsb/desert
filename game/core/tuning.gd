@@ -467,6 +467,9 @@ static var _current: Tuning
 ## before it breaks anything, so a shorter spike can't, s.
 @export var rope_breaking: float = 1500.0
 @export var strong_cable_breaking: float = 4000.0
+## A hose holds this much sustained load, N, a third of a rope, and then an
+## end pops out of its socket instead.
+@export var hose_holding: float = 500.0
 @export var rope_load_seconds: float = 0.3
 ## A found coil's length, m: the longest line it lays.
 @export var rope_coil_length: float = 12.0

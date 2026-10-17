@@ -1,7 +1,8 @@
 class_name Condenser
 extends Device
 ## A crude condenser: it pulls water out of the thin air into the canister
-## fitted in it. It runs whenever it has the power and a canister with room,
+## fitted in it, or with a hose there in its place, straight down the hose
+## (Water). It runs whenever it has the power and somewhere for the water,
 ## drawing the same either way, and cold air gives up its water far more
 ## easily, so it makes the most at night and little in the afternoon heat:
 ## all by the felt temperature where it stands.
@@ -44,7 +45,7 @@ func demand_w(t := NAN) -> float:
 func work(seconds: float, t: float) -> float:
 	if _room():
 		var made := making_lph(t) * seconds / 3600.0
-		made_l += made - canister().fill(made)
+		made_l += made - Water.give(world, self, made)
 	return 0.0
 
 
@@ -60,8 +61,7 @@ func stats() -> Dictionary:
 
 
 func _room() -> bool:
-	var cell := canister()
-	return cell != null and cell.amount < cell.capacity()
+	return world != null and Water.room(world, self) > 0.0
 
 
 ## Heard only: it drips while it makes water, faster the more it makes.

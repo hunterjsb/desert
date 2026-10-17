@@ -53,6 +53,11 @@ const PARTS := {
 		"color": Color(1.0, 0.5, 0.1), "stats": {}},
 	&"strong_plug": {"kind": &"port", "label": "Strong cable plug", "mass": 0.3, "size": Vector3(0.07, 0.07, 0.1),
 		"color": Color(0.7, 0.15, 0.1), "stats": {}},
+	# A hose's end fits a water socket as a canister does, and fitted it "adds"
+	# one of its own on top, [kind, position, outward], so a canister or
+	# another hose goes on there too.
+	&"hose_end": {"kind": &"water", "label": "Hose end", "mass": 0.3, "size": Vector3(0.08, 0.08, 0.12),
+		"color": Paint.HOSE, "stats": {}, "adds": [&"water", Vector3(0.0, 0.055, 0.075), Vector3.UP]},
 	&"rope_end": {"kind": &"tie", "label": "Rope end", "mass": 0.3, "size": Vector3(0.05, 0.05, 0.08),
 		"color": Color(0.3, 0.22, 0.14), "stats": {}},
 	# Nothing takes a coil: picked up, it gives you its first end.
@@ -94,7 +99,8 @@ const DEVICES := {
 			[&"top", Vector3(0.0, 0.25, 0.2), Vector3.UP],
 			[&"rack", Vector3(-0.4, 0.17, 0.0), Vector3.LEFT],
 		]},
-	# Its own water tank, and a mod mount on its back for a harvester.
+	# Its own water tank, fed from its water socket, and a mod mount on its
+	# back for a harvester. The water socket is last, so older saves keep their sockets.
 	&"planter": {"label": "Planter", "size": Vector3(1.0, 0.35, 0.6), "mass": 10.0, "planter": true,
 		"sockets": [
 			[&"plant_small", Vector3(-0.3, 0.175, -0.12), Vector3.UP],
@@ -107,6 +113,7 @@ const DEVICES := {
 			[&"bottom", Vector3(0.0, -0.175, 0.0), Vector3.DOWN],
 			[&"port", Vector3(0.5, 0.0, 0.0), Vector3.RIGHT],
 			[&"mod", Vector3(0.3, 0.0, 0.3), Vector3.BACK],
+			[&"water", Vector3(-0.3, 0.0, 0.3), Vector3.BACK],
 		]},
 	# Put a panel on top and a battery in front, and it charges the battery in the sun.
 	&"charger": {"label": "Charger", "size": Vector3(0.45, 0.25, 0.35), "mass": 5.0, "deck": true,
@@ -208,8 +215,10 @@ const DEVICES := {
 
 static func part(id: StringName) -> Part:
 	var spec: Dictionary = PARTS[id]
+	# A hose's end fits where water goes but holds none itself.
 	var made: Part = Battery.new() if spec.kind == &"battery" \
-		else (Supply.new() if Supply.HOLDS.has(spec.kind) else (Plant.new() if spec.has("crop") else Part.new()))
+		else (Supply.new() if Supply.HOLDS.has(spec.kind) and id != Hose.END \
+		else (Plant.new() if spec.has("crop") else Part.new()))
 	made.kind = spec.kind
 	made.label = spec.label
 	made.mass = spec.mass
@@ -240,6 +249,11 @@ static func part(id: StringName) -> Part:
 		made.continuous_cd = true
 	if spec.has("tie"):
 		_add_tie(made, spec.tie, Vector3.BACK)
+	if spec.has("adds"):
+		var adds := Socket.new()
+		adds.kind = spec.adds[0]
+		adds.transform = Transform3D(_facing(spec.adds[2]), spec.adds[1])
+		made.add_child(adds)
 	if spec.kind == &"coil":
 		# It lies flat, so the wind meets its edge, not its face.
 		made.set_meta(&"wind_catch", Tuning.current().wind_catch_per_m2 * size.x * size.z)
@@ -267,18 +281,31 @@ static func food(id: StringName, kcal: float) -> Supply:
 ## a found one, it makes only the second, beside it.
 static func cable(world: World, at: Vector3, strong := false, first: Part = null) -> Cable:
 	var made: Cable = StrongCable.new() if strong else Cable.new()
+	_lay(world, made, at, &"strong_plug" if strong else &"plug", first)
+	if strong:
+		(made as StrongCable).bind(world)
+	return made
+
+
+## A hose and its two ends, dropped together as a cable is, a rope like a
+## strong cable.
+static func hose(world: World, at: Vector3, first: Part = null) -> Hose:
+	var made := Hose.new()
+	_lay(world, made, at, Hose.END, first)
+	made.bind(world)
+	return made
+
+
+static func _lay(world: World, made: Cable, at: Vector3, end: StringName, first: Part) -> void:
 	world.content.add_child(made)
 	for side in [-0.2, 0.2]:
-		var plug := first if first != null and made.plugs.is_empty() else part(&"strong_plug" if strong else &"plug")
+		var plug := first if first != null and made.plugs.is_empty() else part(end)
 		if plug.get_parent() == null:
 			world.content.add_child(plug)
 			plug.global_position = at + Vector3(side, 0.05, 0.0)
 			if first != null:
 				plug.global_position.y = world.height_under(plug.global_position) + 0.05
 		made.plugs.append(plug)
-	if strong:
-		(made as StrongCable).bind(world)
-	return made
 
 
 ## A stake, loose: a spike with an eye on top whose tie socket faces up, so a

@@ -168,7 +168,9 @@ the felt-weather rule.
   floater: a crate resting on its tray, moored to a stake, with two big batteries, the
   light panel on one top mount, cabled to the shield, and a found panel on the other. A
   strong cable from the crate holds the turbine out in the wind beyond the bubble. In
-  all, a 1,000 Wh bank and 90 W of panels. At 45° north, through two days and nights of
+  all, a 1,000 Wh bank and 90 W of panels. Since 2026-10-17 a condenser beyond the
+  shield waters the planters on hoses (Survival), on a battery and a panel of its own,
+  out of the bank. At 45° north, through two days and nights of
   the probes' seed, 24 minutes of them full storm, nothing in it went dark and its bank
   never fell below 98%: the turbine carries most of the shield's 200 W in a storm and
   all of its sip at night. The kit's power under a found shield (the light panel and a

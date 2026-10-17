@@ -13,7 +13,8 @@ extends RefCounted
 const SURFACE := &"surface"
 const DEEP := &"deep"
 ## What each layer holds, as [catalog id, weight]: loose parts, and whole
-## devices. Rope and wire are common; a harvester is a rare, better part.
+## devices. Rope and wire are common, hose a little less; a harvester is a
+## rare, better part.
 const PARTS := {
 	SURFACE: [
 		[&"battery", 4],
@@ -22,6 +23,7 @@ const PARTS := {
 		[&"canister", 2],
 		[&"coil", 3],
 		[&"plug", 3],
+		[&"hose_end", 2],
 	],
 	DEEP: [
 		[&"big_battery", 3],
@@ -352,15 +354,15 @@ static func _part(id: StringName, charge: float, layer: StringName, sealed := fa
 		# Open water boils off: only a kit's canister is found sealed and full.
 		(part as Supply).drain(INF)
 	mark(part, layer)
-	if id in [&"coil", &"plug", &"strong_plug"]:
+	if id in [&"coil", &"plug", &"strong_plug", Hose.END]:
 		part.set_meta(&"rolled", id)
 	return part
 
 
-## Found rope and wire lie as one body until they're yours, and stowed they
-## go back to one: a coil, and a cable's first plug with the rest of it
-## behind. Then a coil becomes a line to lay, as long as the one stowed,
-## and a plug pulls its cable and second plug up out of the sand.
+## Found rope, wire and hose lie as one body until they're yours, and stowed
+## they go back to one: a coil, and a cable's or a hose's first end with the
+## rest of it behind. Then a coil becomes a line to lay, as long as the one
+## stowed, and an end pulls the rest up out of the sand.
 static func unroll(world: World, body: Node) -> void:
 	if not body.has_meta(&"rolled"):
 		return
@@ -370,6 +372,8 @@ static func unroll(world: World, body: Node) -> void:
 	body.remove_meta(&"rolled_m")
 	if id == &"coil":
 		Line.make(world, metres, body as Part)
+	elif id == Hose.END:
+		Catalog.hose(world, (body as Part).global_position, body as Part)
 	else:
 		Catalog.cable(world, (body as Part).global_position, id == &"strong_plug", body as Part)
 

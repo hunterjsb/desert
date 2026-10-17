@@ -354,7 +354,10 @@ func _bear(h: float) -> void:
 	for rope: Rope in ropes.duplicate():
 		rope.sustained += (rope.tension - rope.sustained) * alpha
 		if rope.sustained > rope.breaking:
-			snap(rope)
+			if rope.gives.is_valid():
+				rope.gives.call()
+			else:
+				snap(rope)
 	for stake: Node3D in _pulls:
 		if stake.feel(_pulls[stake], alpha):
 			stake.pull_out(world.height_under(stake.global_position))

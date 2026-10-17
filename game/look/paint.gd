@@ -16,6 +16,8 @@ const CELL := Color(0.06, 0.09, 0.17)
 const SOIL := Color(0.2, 0.13, 0.08)
 const RUST := Color(0.4, 0.16, 0.07)
 const ROPE := Color(0.42, 0.31, 0.2)
+## Sun-faded rubber, in the water socket's blue.
+const HOSE := Color(0.2, 0.36, 0.46)
 
 ## How worn each era's paint starts, before the weather: deep things were
 ## sealed away, surface ones were made crude and left out. Older is better.

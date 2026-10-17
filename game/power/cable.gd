@@ -83,12 +83,18 @@ func _overstretched(a: Vector3, b: Vector3) -> void:
 			var want := minf(over * PULL, drags + Rope.CLOSING_SPEED)
 			plug.linear_velocity += toward * maxf(want - closing, 0.0)
 			return
+	_pop()
+
+
+## The first plug in a socket pops out; says whether one did.
+func _pop() -> bool:
 	for plug in plugs:
 		if plug.socket != null:
 			var device: Device = plug.socket.get_parent()
 			var loose := device.take(plug.socket)
 			loose.global_position += loose.global_basis.z * 0.1
-			return
+			return true
+	return false
 
 
 func _draw(a: Vector3, b: Vector3) -> void:

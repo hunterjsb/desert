@@ -124,7 +124,9 @@ func finish(data: Dictionary) -> void:
 		lines.append(_line(rec))
 	var cables: Array[Cable] = []
 	for rec: Dictionary in data.cables:
-		var cable := Catalog.cable(world, Vector3.ZERO, rec.strong)
+		# An older save has no hoses.
+		var cable := Catalog.hose(world, Vector3.ZERO) if rec.get("hose", false) \
+			else Catalog.cable(world, Vector3.ZERO, rec.strong)
 		cable.length = rec.length
 		for i in 2:
 			_made[rec.plugs[i]] = cable.plugs[i]
@@ -277,7 +279,7 @@ func _take() -> Dictionary:
 		"ends": line.ends.map(_ref),
 		"rope": _rope_out(line.rope, strands) if line.rope != null and ropes.ropes.has(line.rope) else null})
 	data.cables = cables.map(func(cable: Cable) -> Dictionary: return {"strong": cable is StrongCable,
-		"length": cable.length, "plugs": cable.plugs.map(_ref),
+		"hose": cable is Hose, "length": cable.length, "plugs": cable.plugs.map(_ref),
 		"rope": _rope_out(cable.rope, strands) if cable is StrongCable and cable.rope != null else null})
 	data.strands = strands.map(_strand_out)
 	data.solver = {"tick": ropes._tick, "drag": ropes._drag, "bodies": []}
