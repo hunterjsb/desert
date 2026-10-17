@@ -2,9 +2,10 @@ class_name Hands
 extends Node3D
 ## Your hands, with room for one thing: a part, or a device small enough to
 ## carry, like a stake. Look at a loose part and take it, or at a fitted one and
-## it slides out the way it went in. Carry it in front of your eyes and aim at
-## a free socket of its kind: aimed within reach of where it would sit, it
-## leans in, a ghost shows the spot, and take seats it home with a soft click. Only
+## it slides out the way it went in. Carry it in front of your eyes and look at
+## a device: it's offered the free socket of its kind there, the only one or
+## the one nearest your aim, facing you, or one you aim right at on any device.
+## It leans in, a ghost shows the spot, and take seats it home with a soft click. Only
 ## a part held here ever snaps, and only when you take it home; nothing fits by
 ## being bumped. Take picks up, takes out, puts in and puts down; use works what
 ## you look at or uses what you hold. Finds lying in the sand are taken the same
@@ -23,6 +24,12 @@ const ARRIVE := 0.12
 const STUCK := 0.3
 ## Aiming from this far behind a socket's face still counts as its open side, m.
 const OPEN_MARGIN := 0.05
+## Your line of sight passing this near a device's frame still offers it what
+## you hold, m.
+const NEAR_FRAME := 0.4
+## An offered socket leans what you hold at least this far in, 0 to 1, so the
+## tug shows where it goes even with your aim off the spot.
+const OFFER := 0.35
 ## How fast the tug swings over when a nearer socket wins, 1/s.
 const SWING := 16.0
 ## The small thing your aim settled on stays the one until another is this much
@@ -48,8 +55,8 @@ var look_normal := Vector3.UP
 ## Your line of sight, from your eyes to whatever it stops at, or as far as you reach.
 var sight_from := Vector3.ZERO
 var sight_to := Vector3.ZERO
-## The free socket the held part leans toward, how far your aim is from where
-## the part would sit there, m, and how hard it leans, 0 to 1.
+## The free socket the held part leans toward, how far your line of sight
+## passes from where the part would sit there, m, and how hard it leans, 0 to 1.
 var socket: Socket
 var gap := INF
 var pull := 0.0
@@ -86,9 +93,12 @@ var _slide_from := 0.0
 var _source: Device
 var _source_socket: Socket
 var _source_was := {}
-## The socket a part just came out of: it won't tug again until you aim away.
+## The socket a part just came out of: it won't tug again, nor its device offer
+## anything, until you look away.
 var _rearm: Socket
 var _aim := Vector3.ZERO
+## Where on the device you look at you aim, for its offer.
+var _offer_at := Vector3.ZERO
 ## The small loose thing your aim settled on.
 var _picked: RigidBody3D
 ## Parts just let go, which can't push you until they're clear of you.
@@ -97,6 +107,8 @@ var _body_radius := 0.35
 var _ghost: Node3D
 var _ghost_look: StandardMaterial3D
 var _readout: Label
+## The aim dot and its line, out of the way while a menu is up.
+var _hud: CanvasLayer
 var _sound: AudioStreamPlayer
 var _hum: AudioStreamPlayer
 var _seated_count := 0
@@ -361,6 +373,8 @@ func _physics_process(delta: float) -> void:
 ## Drawn frame by frame too, so a held part never trails your view as you
 ## turn; the next tick puts it back where the last one left it.
 func _process(_delta: float) -> void:
+	if _hud != null:
+		_hud.visible = Controls.playing()
 	if phase == Phase.HELD and is_instance_valid(held):
 		held.global_transform = _within_reach(_pose(true))
 
@@ -466,6 +480,13 @@ func _assist(eye: Transform3D) -> void:
 static func _box_of(body: RigidBody3D) -> AABB:
 	if body.has_meta(&"hands_box"):
 		return body.get_meta(&"hands_box")
+	var box := _body_box(body)
+	body.set_meta(&"hands_box", box)
+	return box
+
+
+## A body's bounds in its own frame, as its shapes stand now.
+static func _body_box(body: Node3D) -> AABB:
 	var box := AABB()
 	var first := true
 	for child in body.get_children():
@@ -474,7 +495,6 @@ static func _box_of(body: RigidBody3D) -> AABB:
 			var each := shape.transform * Catalog.bounds(shape.shape)
 			box = each if first else box.merge(each)
 			first = false
-	body.set_meta(&"hands_box", box)
 	return box
 
 func _pick_up(body: RigidBody3D) -> void:
@@ -589,7 +609,7 @@ func _tug(delta: float) -> void:
 	var want := 0.0
 	if socket != null:
 		var seat := _settle_in(_seat(socket))
-		want = smoothstep(_tuning.snap_reach, _tuning.snap_home, gap)
+		want = maxf(smoothstep(_tuning.snap_reach, _tuning.snap_home, gap), OFFER)
 		_lean = seat if pull == 0.0 else _blend(_lean, seat, 1.0 - exp(-SWING * delta))
 	pull = move_toward(pull, want, delta / _tuning.tug_seconds)
 
@@ -597,10 +617,13 @@ func _tug(delta: float) -> void:
 ## The free socket of the held part's kind nearest your line of sight, among
 ## the devices in reach, reached from its open side: measured from where the
 ## part would sit there, so aiming at the spot or at the ghost is the same.
+## Aimed near none, the device you look at offers its own, so a low socket
+## needs no crouch. One just emptied waits until you look away from its device.
 func _find_socket() -> void:
 	if _rearm != null and (not is_instance_valid(_rearm) or not _rearm.is_open()
-			or _sight_gap(_seat(_rearm)) > _tuning.snap_reach):
+			or not _on(_rearm) and _sight_gap(_seat(_rearm)) > _tuning.snap_reach):
 		_rearm = null
+	var target := _looked_at()
 	var best: Socket = null
 	var nearest := INF
 	var kind: StringName = held.get(&"kind")
@@ -616,14 +639,83 @@ func _find_socket() -> void:
 			if d < nearest and _open(_frame_of(each), device) and _within_reach(seat) == seat:
 				nearest = d
 				best = each
+	if nearest >= _tuning.snap_reach:
+		best = null
+		if target != null and not (_rearm != null and _on(_rearm)):
+			best = _offer(target, kind)
+		nearest = _sight_gap(_seat(best)) if best != null else INF
 	gap = nearest
-	socket = best if nearest < _tuning.snap_reach else null
+	socket = best
+
+
+## The device you look at, or that your line of sight passes nearest within
+## NEAR_FRAME of; one seated on another counts as its host, whose sockets are
+## the ones open. _offer_at is where on it you aim.
+func _looked_at() -> Device:
+	if look_device != null:
+		_offer_at = look_point
+		var root := _root(look_device)
+		return null if root == held else root
+	var best: Device = null
+	var nearest := NEAR_FRAME
+	for child in _player.world.content.get_children() + _player.world.salvage.near(sight_from):
+		var device := child as Device
+		# A find under the sand you look at is out of sight.
+		if device == null or device == held or device.has_meta(&"buried") \
+				or device.global_position.distance_to(sight_from) > _tuning.reach + 2.0:
+			continue
+		var d := _gap_to(device.global_transform, _body_box(device))
+		if d < nearest:
+			nearest = d
+			best = device
+			_offer_at = _aim
+	return best
+
+
+## What a device offers the held part: of its free sockets of the kind, the
+## only one, or of several the one nearest your aim, among those facing you
+## if any do.
+func _offer(device: Device, kind: StringName) -> Socket:
+	var best: Socket = null
+	var best_facing := false
+	var nearest := INF
+	for each in device.sockets():
+		if not each.is_open() or each.kind != kind or each == _rearm:
+			continue
+		var seat := _seat(each)
+		if _within_reach(seat) != seat:
+			continue
+		var frame := _frame_of(each)
+		var facing := (sight_from - frame.origin).dot(frame.basis.z) > 0.0
+		var d := _outside(seat.affine_inverse() * _offer_at, _bounds)
+		if best == null or facing and not best_facing or facing == best_facing and d < nearest:
+			best = each
+			best_facing = facing
+			nearest = d
+	return best
+
+
+## Whether your look ray is on the device a socket belongs to, or one seated on it.
+func _on(each: Socket) -> bool:
+	return look_device != null and _root(look_device) == _root(each.get_parent() as Device)
+
+
+static func _root(device: Device) -> Device:
+	while device != null and device.host() != null:
+		device = device.host()
+	return device
 
 
 ## How near your line of sight passes to the part as it would sit in this
 ## seat, m; _aim is the point on it that passes nearest.
 func _sight_gap(seat: Transform3D) -> float:
-	var inverse := seat.affine_inverse()
+	return _gap_to(seat, _bounds)
+
+
+## How near your line of sight passes to a box in a frame, m; _aim is the
+## point on it that passes nearest.
+func _gap_to(frame: Transform3D, box: AABB) -> float:
+	var inverse := frame.affine_inverse()
 	var a := inverse * sight_from
 	var b := inverse * sight_to
 	# The distance to a box along a line has one valley: close in on it.
@@ -632,18 +724,18 @@ func _sight_gap(seat: Transform3D) -> float:
 	for i in 24:
 		var one := lerpf(lo, hi, 1.0 / 3.0)
 		var two := lerpf(lo, hi, 2.0 / 3.0)
-		if _outside(a.lerp(b, one)) <= _outside(a.lerp(b, two)):
+		if _outside(a.lerp(b, one), box) <= _outside(a.lerp(b, two), box):
 			hi = two
 		else:
 			lo = one
 	var nearest := a.lerp(b, (lo + hi) * 0.5)
-	_aim = seat * nearest
-	return _outside(nearest)
+	_aim = frame * nearest
+	return _outside(nearest, box)
 
 
-## How far a point in a seat's frame is outside the part sitting there.
-func _outside(local: Vector3) -> float:
-	return local.distance_to(local.clamp(_bounds.position, _bounds.end))
+## How far a point is outside a box in the same frame.
+static func _outside(local: Vector3, box: AABB) -> float:
+	return local.distance_to(local.clamp(box.position, box.end))
 
 
 func _open(seat: Transform3D, device: Device) -> bool:
@@ -920,6 +1012,7 @@ func _build_hud() -> void:
 	var hud := CanvasLayer.new()
 	hud.layer = 99
 	add_child(hud)
+	_hud = hud
 	var dot := Control.new()
 	dot.set_anchors_preset(Control.PRESET_CENTER)
 	dot.mouse_filter = Control.MOUSE_FILTER_IGNORE

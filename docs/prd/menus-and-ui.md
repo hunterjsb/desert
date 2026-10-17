@@ -38,7 +38,10 @@ world. The pressure comes from the moon, and a menu is no shelter from it.
 ## The main menu
 
 A few small words at the bottom of the screen, over the live desert. No background art,
-no panels, no big centred buttons.
+no panels, no big centred buttons. (Hunter, 2026-10-16: the main menu's words "a tad
+more spacing and bigger", then "a lot bigger", the pause menu too: menu words are 20,
+the main menu's 24; the menus over a running game stand in the middle of the screen, the
+aim dot hidden behind them.)
 
 - **The scene** is the real world seen from a fixed camera, with no player spawned and
   the weather running at normal speed. It keeps its simulation cheap, and it's silent:
@@ -62,6 +65,15 @@ game. It holds **Options** (controls, audio, graphics), **Save** in a Normal run
 **Save & quit**, all safe at any moment, mid-storm included (Profile & saves). **New game**
 asks which mode, Normal highlighted or Ironman; **dying** in a Normal run shows Load last
 save, highlighted, and New run (Hunter, 2026-10-16).
+
+## The dev console
+
+Developer tools come through a console, not a row of function keys (Hunter, 2026-10-16:
+"have ` open a console and we can use commands there, and free up f keys for keybinds").
+The console action opens a line to type commands into: the scenarios, flying, time warp,
+low gravity and the rest of what the dev keys did, with help and history. The dev
+overlay keeps its own key. The function keys this frees go to the player, such as quick
+save and quick load.
 
 ## Skeleton version
 
