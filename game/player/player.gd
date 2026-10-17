@@ -77,6 +77,7 @@ var _stepped_off: Hoverboard
 @onready var suit: Suit = $Suit
 @onready var vitals: Vitals = $Vitals
 @onready var camp_range: CampRange = $CampRange
+@onready var headlamp: Headlamp = $Camera3D/Headlamp
 
 
 func _ready() -> void:

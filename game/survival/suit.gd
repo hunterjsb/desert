@@ -10,8 +10,9 @@ extends Node
 ## rolled up, as they're found, and unroll in your hands; a stake goes in as
 ## it is. Closing it captures the mouse again, to look.
 
-## Built in and free, so nothing ever drains them.
-const BUILT_IN := "air, radiation"
+## Built in and free, so nothing ever drains them. The headlamp is the
+## camera's (Headlamp), so it looks where you look.
+const BUILT_IN := "air, radiation, headlamp"
 const HINT := "click a slot to take out, put in or swap · {inventory} closes"
 const SLOT := Vector2(100.0, 40.0)
 const GAP := 6.0

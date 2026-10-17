@@ -35,6 +35,21 @@ var durability := 1.0:
 ## Its painted frame.
 var frame_view: MeshInstance3D
 
+## Set by use: its hover tray draws nothing and lets it down onto the sand,
+## so a camp staying put keeps its charge.
+var resting := false:
+	set(to):
+		resting = to
+		_recompute()
+## How far up its tray holds it, 0 on the sand to 1 at its height: eased, so
+## it settles and lifts off gently.
+var lift_share := 1.0:
+	set(to):
+		var crossed := (to > 0.0) != (lift_share > 0.0)
+		lift_share = to
+		if crossed:
+			_recompute()
+
 var world: World
 var _hovering := false
 ## The sockets with a device seated in them.
@@ -66,9 +81,15 @@ func sockets() -> Array[Socket]:
 
 
 ## Use on it while you look at it: what it does when worked, like a shield
-## switching. Says whether it did anything.
-func interact(_by: Player) -> bool:
-	return false
+## switching; with a hover tray and nothing else to work, it's set resting or
+## floating. Only empty-handed: a line or stake in your hands keeps its own
+## use. Says whether it did anything.
+func interact(by: Player) -> bool:
+	if by.hands.held != null or stats()["lift_kg"] <= 0.0 or wrecked():
+		return false
+	resting = not resting
+	Sounds.play_at(self, Sounds.BOARD_OFF if resting else Sounds.BOARD_ON)
+	return true
 
 
 ## Use while you hold it, aiming at `at`. Says whether it did anything.
@@ -373,8 +394,10 @@ func stats() -> Dictionary:
 		for key: String in source:
 			total[key] = total.get(key, 0) + source[key]
 	total["can_float"] = total["lift_kg"] >= mass
-	total["hovering"] = total["can_float"] and powered
-	total["hover_w"] = mass * world.tuning.hover_watts_per_kg if total["can_float"] and world != null else 0.0
+	total["resting"] = resting
+	total["hovering"] = total["can_float"] and powered and lift_share > 0.0
+	total["hover_w"] = mass * world.tuning.hover_watts_per_kg \
+		if total["can_float"] and not resting and world != null else 0.0
 	var cells := batteries()
 	if not cells.is_empty():
 		total["charge_wh"] = cells.reduce(func(sum: float, c: Battery) -> float: return sum + c.charge_wh, 0.0)
@@ -427,16 +450,21 @@ func _middle(nodes: Array[Node3D]) -> Vector3:
 
 ## A tray holds it a set height over the sand and upright, like the rope
 ## look-test's floater; sideways, the wind and its lines decide.
-func _physics_process(_delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	# What's seated rides exactly on its seat: a frozen body under a moving one
 	# is left a tick behind each tick, and on a floating crate that adds up.
 	for socket in _seats:
 		socket.mounted.transform = socket.transform * socket.mounted.seat()
-	if freeze or world == null or not _hovering:
+	if world == null:
 		return
 	var tuning := world.tuning
+	var goal := 0.0 if resting else 1.0
+	if lift_share != goal:
+		lift_share = move_toward(lift_share, goal, delta / tuning.hover_settle_seconds)
+	if freeze or not _hovering:
+		return
 	var omega := TAU * tuning.hover_hertz
-	var low := world.height_under(global_position) + tuning.hover_height - global_position.y
+	var low := world.height_under(global_position) + tuning.hover_height * lift_share - global_position.y
 	var lift := mass * (world.gravity + omega * omega * low - 2.0 * tuning.hover_damping * omega * linear_velocity.y)
 	apply_central_force(Vector3.UP * maxf(lift, 0.0))
 	var state := PhysicsServer3D.body_get_direct_state(get_rid())
