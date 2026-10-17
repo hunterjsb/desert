@@ -72,9 +72,9 @@ func harvests() -> bool:
 	return false
 
 
-## Use: pour the canister you hold into the tank, or with a harvester fitted,
-## step the share it replants; at its tray, or with nothing else to work, set
-## the tray resting or floating.
+## Use: pour the canister you hold into the tank, or else set the tray
+## resting or floating, as on any device. The share it replants waits for
+## its own control (Hunter, 2026-10-17).
 func interact(by: Player) -> bool:
 	var can := by.hands.held as Supply
 	if can != null and can.kind == &"water":
@@ -82,10 +82,6 @@ func interact(by: Player) -> bool:
 		tank_l += poured
 		if poured > 0.0:
 			Sounds.play_at(self, Sounds.POUR)
-		return true
-	var at := by.hands.look_socket
-	if harvests() and (at == null or at.kind != &"bottom"):
-		split = SPLITS[(SPLITS.find(split) + 1) % SPLITS.size()]
 		return true
 	return super(by)
 

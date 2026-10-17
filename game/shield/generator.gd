@@ -17,6 +17,9 @@ const FLARE := 1.2
 const HUM_PITCH := 0.9
 const SAG_PITCH := 0.65
 const GONE_PITCH := 0.5
+## The hum sits far under everything else, there if you listen for it
+## (Hunter, 2026-10-17: "way, way softer"), dB.
+const HUM_DB := -15.0
 ## How dim the shell drops in a flicker.
 const FLICKER := 0.25
 
@@ -89,6 +92,7 @@ func _ready() -> void:
 	var looping := Sounds.SHIELD_HUM.duplicate() as AudioStreamOggVorbis
 	looping.loop = true
 	hum = _sound(looping)
+	hum.volume_db = HUM_DB
 	_down = _sound(Sounds.SHIELD_DOWN)
 	_show()
 

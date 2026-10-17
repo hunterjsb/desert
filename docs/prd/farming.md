@@ -131,8 +131,11 @@ that ignored the weather.
 - **The harvester** fits the mod mount. With it fitted, a crop is harvested the tick it
   ripens: its share of seed goes straight back into its slot, any more into free slots
   that fit, and seed with no free slot is kept for one. The rest is stored as food in
-  the planter. Use on the planter steps the share it replants through 0, 25, 50, 75 and
-  100%. It starts at 25%, one of a harvest of four, which keeps every slot sown. A
+  the planter. The share it replants is one of 0, 25, 50, 75 and 100%. Use on the
+  planter used to step it; now use sets the planter's tray, as on any device (Hunter,
+  2026-10-17: "lets not have f toggle replant % on the planter... we will find another
+  way to toggle or adjust replant%"), and the share has no control until that's found.
+  It starts at 25%, one of a harvest of four, which keeps every slot sown. A
   share that doesn't make a whole seed is carried over, so the split holds over many
   harvests. It draws no power yet.
 - **Dropping food onto you:** within 6 m, while your slots hold less than 2,000 kcal of

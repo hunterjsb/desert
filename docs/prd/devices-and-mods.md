@@ -53,8 +53,9 @@ out, never written into the text (Hunter, 2026-10-16), even before players can r
   at most; floating again, it lifts it back the same way. The readout says "floating"
   or "resting", the board's soft hum falls or rises, and the switch is kept in the save.
   Use at a shield seated on a crate still switches the shield, and a line or stake in
-  your hands keeps its own use. A planter with a harvester steps its share unless you
-  look at its tray. The kit's crate starts floating. A tray out of power still lets go,
+  your hands keeps its own use. A planter's use is its tray's too (Hunter, 2026-10-17:
+  "it should toggle hover tray like the crate and chassis"), unless you hold a canister
+  to pour. The kit's crate starts floating. A tray out of power still lets go,
   as before (Power).
 - **Throw** throws what you hold.
 - **Reel in and pay out** (Hunter, 2026-10-16): on a line, they shorten and lengthen it
