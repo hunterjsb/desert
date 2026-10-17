@@ -104,11 +104,19 @@ floater out of pieces:
 - **Pieces join edge to edge by their rings.** Each edge has a ring, and a piece brought
   edge-on to another's free ring snaps flush beside it, the same snap as fitting. Joined
   pieces are one rigid deck, flat, in whatever shape you lay out. A ring with a hook on it
-  ties rope instead, so a deck is towed and moored like a crate. Take on a piece takes it
-  off the deck, the last joined first.
-- **Every piece needs its own hover tray,** and that's what limits how big a deck gets.
-  The deck floats only while every piece has its tray; one short, and it rests on the
-  sand. Use on the deck sets all of it floating or resting.
+  ties rope instead, so a deck is towed and moored like a crate. Take on an outer piece,
+  one the rest of the deck still holds together without, takes it off with whatever
+  stands on it (2026-10-17, replacing "the last joined first").
+- **Trays lift where they are** (Hunter, 2026-10-17, replacing "every piece needs its own
+  hover tray": "we should actually use physics, so in theory a large connected chassis
+  with a light load doesnt need a tray for every chassis piece, but they will need to be
+  well distributed to keep it upright"). Each tray is its own lift, pushing up under its
+  own spot, harder the nearer the sand and never more than it can lift. A deck floats when
+  its trays together lift its weight, and how it hangs is physics: a light load rides
+  high, a heavy one sinks lower, a load over a corner with no tray under it drags that
+  corner down, and trays bunched on one side let it tip. Spread them to keep it level.
+  The same goes for anything on trays: a crate's one tray holds it level only while its
+  load sits over it. Use on the deck sets all of it floating or resting.
 - **Each piece has one deck mount on top,** which takes one device standing on it:
   usually a crate, and a condenser, a shield or a charger fit too. A planter doesn't (too
   long for a piece, and it floats on its own tray), and nor does a turbine, which works
