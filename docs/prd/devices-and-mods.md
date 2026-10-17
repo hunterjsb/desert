@@ -39,6 +39,11 @@ its own ride action.) The docs name
 actions, never keys: keys are only defaults, set in `game/core/controls.gd` and listed
 in the game. On screen, a key is always read from the live bindings and coloured to stand
 out, never written into the text (Hunter, 2026-10-16), even before players can remap.
+**A refusal says why, and sounds** (Hunter, 2026-10-17: "we should have a way to communicate
+when a slot is full... like 'tray first'... maybe we could just make a noise"): when take or
+use can't do what you're aiming at (a slot that's full, a tray in the way, a piece that
+isn't bare, something too heavy), the readout says why in a few words and a soft "no"
+sounds, never silence.
 - **Take** picks up, takes out, puts in and puts down. One action takes and lets go
   (Hunter, 2026-10-15, at the Stage 5 gate). Taking something too heavy to carry takes
   hold of it: it follows where you face and turns as you turn, as far as your strength
@@ -104,9 +109,14 @@ floater out of pieces:
 - **Pieces join edge to edge by their rings.** Each edge has a ring, and a piece brought
   edge-on to another's free ring snaps flush beside it, the same snap as fitting. Joined
   pieces are one rigid deck, flat, in whatever shape you lay out. A ring with a hook on it
-  ties rope instead, so a deck is towed and moored like a crate. Take on an outer piece,
-  one the rest of the deck still holds together without, takes it off with whatever
-  stands on it (2026-10-17, replacing "the last joined first").
+  ties rope instead, so a deck is towed and moored like a crate. **Take on a deck always
+  takes hold of the whole deck,** to drag it (Hunter, 2026-10-17, after playing: "trying to
+  drag a chassis around disconnects whatever youre grabbing, causing you to dismantle your
+  base"). A piece comes off only when it's bare, no tray and nothing standing on it, and
+  the rest of the deck holds together without it: strip it first, as a crate's tray comes
+  off before it stands on a deck. **A loaded piece joins from your hold:** take hold of a
+  piece with a crate on it, bring its edge to a deck's free ring, and take joins it, as a
+  heavy device stands on a deck mount from your hold. Two whole decks don't merge yet.
 - **Trays lift where they are** (Hunter, 2026-10-17, replacing "every piece needs its own
   hover tray": "we should actually use physics, so in theory a large connected chassis
   with a light load doesnt need a tray for every chassis piece, but they will need to be
