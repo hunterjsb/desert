@@ -360,7 +360,7 @@ planter has a mod mount.
 
 | Frame | Battery | Ring | Bottom | Top | Port | Other |
 |---|---|---|---|---|---|---|
-| Crate frame | 2 | 4 | 1 | 2 | 1 | a rack; stands on a deck mount |
+| Crate frame | 2 | 2 | 1 | 2 | 1 | a rack; stands on a deck mount; rings front and back only (Hunter, 2026-10-17: "shave 2 hook slots off the crate now that we have the chassis") |
 | Planter | 1 | 2 | 1 | | 1 | 3 small and 1 large plant slot, a mod mount, a water socket (2026-10-17) |
 | Charger | 1 | | | 1 | 1 | stands on a deck mount |
 | Wind turbine | 1 | | | | 1 | |
