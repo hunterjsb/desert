@@ -69,6 +69,7 @@ func tie(a: RopeEnd, b: RopeEnd, length: float, breaking := NAN, strand: RopeStr
 	rope.b = b
 	# Never none at all: a line of no length has no catenary to hang.
 	rope.length = maxf(length, 0.05)
+	rope.full = rope.length
 	rope.breaking = _tuning.rope_breaking if is_nan(breaking) else breaking
 	rope.kg_per_m = _tuning.rope_kg_per_m
 	rope.frequency = _tuning.rope_hertz

@@ -39,11 +39,21 @@ const STICKY := 0.7
 ## something, so resting against it doesn't count, m.
 const SKIN := 0.005
 const GHOST := Color(0.75, 0.95, 1.0)
+## Reel in and pay out bring what you carry this near your eyes, or push it
+## this far out, m; nothing comes nearer than clears you.
+const HOLD_NEAREST := 0.5
+const HOLD_FARTHEST := 2.0
+## How fast what you carry eases to a new distance, 1/s.
+const HOLD_EASE := 12.0
+## What you have hold of comes no nearer than this clear of you, m.
+const GRASP_CLEAR := 0.1
 
 var held: RigidBody3D
 var phase := Phase.EMPTY
 ## What you hold that's too heavy to carry.
 var grasp: Grasp
+## The line you work hand over hand.
+var reel: Reel
 ## What the look ray hits: a loose part, or a device and, when it's a fitted
 ## part, that part's socket, or the sand; and where it hit.
 var look_part: Part
@@ -74,6 +84,9 @@ var _layers := Vector2i.ZERO
 var _freeze_mode := RigidBody3D.FREEZE_MODE_STATIC
 ## How the held part is turned relative to your heading.
 var _carry := Basis.IDENTITY
+## How far in front of your eyes you'd carry it, and how far it is now, m.
+var _away := 0.0
+var _held_at := 0.0
 ## Where the held part is as the simulation knows it: placed by the tick
 ## alone, so its lines pull the same at any frame rate.
 var _ticked := Transform3D.IDENTITY
@@ -119,6 +132,8 @@ var _inside := PhysicsShapeQueryParameters3D.new()
 func _ready() -> void:
 	_player = get_parent() as Player
 	grasp = Grasp.new(_player)
+	reel = Reel.new()
+	add_child(reel)
 	for child in _player.get_children():
 		var body := child as CollisionShape3D
 		if body != null and body.shape is CapsuleShape3D:
@@ -252,6 +267,27 @@ func hold(body: RigidBody3D) -> void:
 	_arrive_from(body.global_transform)
 
 
+## Reel in by `notches`, or pay out for a negative count: a line's end in
+## your hand or at your waist reels; else what you carry, or have hold of,
+## comes nearer or goes farther. Not in a menu, the inventory or riding. Says
+## whether it did anything.
+func scroll(notches: int) -> bool:
+	if not reel.working():
+		return false
+	if reel.notch(notches):
+		return true
+	var by := notches * Reel.NOTCH
+	if grasp.body != null:
+		var box := _box_of(grasp.body)
+		grasp.bring(by, _body_radius + Vector2(box.size.x, box.size.z).length() * 0.5 + GRASP_CLEAR, _tuning.reach)
+		return true
+	if held != null and phase == Phase.HELD:
+		var nearest := maxf(HOLD_NEAREST, _body_radius + _bounds.size.length() * 0.5)
+		_away = clampf(_away - by, nearest, maxf(HOLD_FARTHEST, nearest))
+		return true
+	return false
+
+
 ## Lets go of what you hold without dropping it, for something else to take.
 func stow() -> RigidBody3D:
 	var body := held
@@ -337,6 +373,10 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed("hands_throw") and held != null and not Controls.mouse_free:
 		throw()
 		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("reel_in") or event.is_action_pressed("pay_out"):
+		# Each wheel step is a press: a notch.
+		if scroll(1 if event.is_action_pressed("reel_in") else -1):
+			get_viewport().set_input_as_handled()
 
 
 func _physics_process(delta: float) -> void:
@@ -349,6 +389,7 @@ func _physics_process(delta: float) -> void:
 	if phase != Phase.EMPTY and not is_instance_valid(held):
 		_forget()
 	_look()
+	_held_at = _away + (_held_at - _away) * exp(-HOLD_EASE * delta)
 	match phase:
 		Phase.TAKING:
 			if not is_instance_valid(_source):
@@ -377,6 +418,7 @@ func _process(_delta: float) -> void:
 		_hud.visible = Controls.playing()
 	if phase == Phase.HELD and is_instance_valid(held):
 		held.global_transform = _within_reach(_pose(true))
+		held.global_position += reel.stroke(held)
 
 
 ## Before anything reads it this tick.
@@ -569,6 +611,8 @@ func _grip(part: RigidBody3D) -> void:
 		first = false
 	_middle = _bounds.get_center()
 	_carry = _tidy(Basis(Vector3.UP, -_player.global_rotation.y) * part.global_basis.orthonormalized())
+	_away = _tuning.hold_distance
+	_held_at = _away
 	pull = 0.0
 	socket = null
 	gap = INF
@@ -852,14 +896,15 @@ func _pose(drawn: bool) -> Transform3D:
 	return hand if pull <= 0.0 else _blend(hand, _lean, smoothstep(0.0, 1.0, pull))
 
 
-## hold_distance in front of your eyes, turned with you, and stopped short of
-## anything in the way, so it never ends up inside the sand or a device.
+## As far in front of your eyes as you'd carry it, turned with you, and
+## stopped short of anything in the way, so it never ends up inside the sand
+## or a device.
 func _hand(drawn: bool) -> Transform3D:
 	var eye := _player.camera.global_transform
 	if not drawn:
 		eye.origin = _player.global_transform * _player.feel.steady_eye()
 	var basis := Basis(Vector3.UP, _player.global_rotation.y) * _carry
-	var ahead := -eye.basis.z.normalized() * _tuning.hold_distance
+	var ahead := -eye.basis.z.normalized() * _held_at
 	var start := Transform3D(basis, eye.origin - basis * _middle)
 	return start.translated(ahead * _sweep(start, ahead))
 

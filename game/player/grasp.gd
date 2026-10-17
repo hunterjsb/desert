@@ -68,6 +68,18 @@ func turn(by: Basis) -> void:
 	_hold = (by * _hold).orthonormalized()
 
 
+## Reel in or pay out: where you'd have it comes `by` m nearer, or goes
+## farther for a negative `by`, between `nearest` and `farthest` from you;
+## your strength and the slip still say whether it follows.
+func bring(by: float, nearest: float, farthest: float) -> void:
+	var now := _beside.length()
+	if now < 1e-3:
+		return
+	var to := clampf(now - by, minf(nearest, now), maxf(farthest, now))
+	_beside *= to / now
+	_reach *= to / now
+
+
 ## What a save keeps of it, and puts back: everything else comes from where
 ## it and you are.
 func memory() -> Dictionary:
