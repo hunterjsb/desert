@@ -14,7 +14,8 @@ extends RefCounted
 ## "ruin" stands you in front of the ruin nearest where the run began, clear
 ## and calm, with finds round it and a bare crate frame of your own. "farm"
 ## sets two planters growing in front of you, one with a harvester, and a
-## shield for the storm on its way.
+## shield for the storm on its way. "afk" parks the reference camp round you,
+## running, to be left alone.
 const LIST: Array[Dictionary] = [
 	{"key": "spawn", "label": "spawn: where and when the run began", "kind": "spawn"},
 	{"key": "clear", "label": "clear day, no storm for 10 min", "kind": "clear", "day": [0.42, 0.55]},
@@ -42,6 +43,9 @@ const LIST: Array[Dictionary] = [
 		"kind": "clear", "day": [0.33, 0.37], "due": [90.0, 200.0], "farm": true},
 	{"key": "board", "label": "ride: a charged hoverboard at your feet by a small camp, a shield and a crate, clear and calm",
 		"kind": "clear", "day": [0.35, 0.5], "calm": 6.0, "board": true},
+	# A morning like a run's, the first storm minutes off, so it soon shows what the camp does in one.
+	{"key": "afk", "label": "AFK: the reference camp parked round you and running, a farm under the shield, a turbine out in the wind",
+		"kind": "clear", "day": [0.3, 0.4], "due": [180.0, 480.0], "afk": true},
 ]
 
 ## The test kit, as [catalog id, metres to your right, metres ahead]: empty
@@ -93,6 +97,16 @@ const BOARD_AT := [0.0, 1.3]
 const BOARD_SHIELD := [-2.0, 3.0]
 const BOARD_CRATE := [2.2, 3.4]
 
+## The reference camp, right and ahead, facing upwind: the shield and the
+## planters in front of you, the crate behind you near the bubble's edge, its
+## stake upwind of it, and the turbine downwind of the bubble near the end of
+## its cable, so the wind holds it out there.
+const AFK_SHIELD := [0.0, 2.0]
+const AFK_PLANTERS := [[-2.2, 2.6], [2.2, 2.6]]
+const AFK_CRATE := [0.0, -2.0]
+const AFK_STAKE := [1.6, -0.6]
+const AFK_TURBINE := [0.0, -7.4]
+
 ## Your own frame, to fit what you find to: right and ahead.
 const YOURS := [1.5, 2.5]
 ## How far from where the run began to look for a ruin, m.
@@ -127,7 +141,7 @@ static func apply(world: World, scenario: Dictionary) -> void:
 			body.queue_free()
 	world.remove_meta(&"scenario_kit")
 	if not (scenario.kind in ["kit", "ruin"] or scenario.get("camp", false) or scenario.get("survive", false)
-			or scenario.get("farm", false) or scenario.get("board", false)):
+			or scenario.get("farm", false) or scenario.get("board", false) or scenario.get("afk", false)):
 		return
 	# Bodies dropped before the sand under them has collision would be frozen or forgotten.
 	while is_instance_valid(world) and not world.terrain.is_settled_around(place.x, place.z):
@@ -148,6 +162,8 @@ static func apply(world: World, scenario: Dictionary) -> void:
 		dropped = farm(world)
 	elif scenario.get("board", false):
 		dropped = board(world)
+	elif scenario.get("afk", false):
+		dropped = afk(world)
 	else:
 		dropped = camp(world) if scenario.get("camp", false) else survive(world)
 	world.set_meta(&"scenario_kit", dropped)
@@ -398,6 +414,69 @@ static func board(world: World) -> Array[Node3D]:
 		standing(world, &"crate_frame", [], BOARD_CRATE)]
 
 
+## The reference camp, parked round you and left running: the base shield
+## in the middle with a big battery, and two planters with harvesters beside
+## it, sown and watered, their trays resting, near enough to drop food onto
+## you. Behind you, downwind, the floater: a crate resting on its tray,
+## moored to a stake, two big batteries in it, the light panel on one top
+## mount, cabled to the shield, and a panel on the other. The crate holds a
+## turbine out in the wind beyond the bubble on a strong cable: a turbine
+## only works planted, and a loose one slides off in a storm. You start fed
+## and watered, on a fresh suit's kit. Returns what it dropped.
+static func afk(world: World) -> Array[Node3D]:
+	world.player.vitals.fresh()
+	var shield := standing(world, &"shield", [&"big_battery"], AFK_SHIELD) as ShieldGenerator
+	var dropped: Array[Node3D] = [shield]
+	for where: Array in AFK_PLANTERS:
+		var planter := standing(world, &"planter", [&"battery", &"hover_tray", &"harvester"] + FARM_CROPS, where) as Planter
+		planter.tank_l = world.tuning.planter_tank_litres
+		dropped.append(planter)
+	var crate := standing(world, &"crate_frame", [&"big_battery", &"big_battery", &"hover_tray", &"hook", &"hook"],
+		AFK_CRATE)
+	# Its port toward the turbine.
+	crate.global_basis = crate.global_basis.rotated(Vector3.UP, PI)
+	var panel := Catalog.device(&"light_panel")
+	crate.mount(panel, _free(crate, &"top"))
+	fill(world, crate, [&"solar_panel"])
+	var turbine := standing(world, &"turbine", [&"battery"], AFK_TURBINE)
+	for device: Device in dropped + [crate]:
+		if device.stats().lift_kg > 0.0:
+			device.resting = true
+			device.lift_share = 0.0
+	var player := world.player
+	var at := player.global_position + player.global_basis.x * AFK_STAKE[0] - player.global_basis.z * AFK_STAKE[1]
+	var stake := Catalog.stake()
+	world.content.add_child(stake)
+	stake.drive(at, world.height_under(at))
+	dropped.append_array([crate, turbine, stake])
+	dropped.append(Line.between(world, crate.free_tie(stake.global_position), stake.free_tie(crate.global_position)))
+	# Their plugs go with the devices they're plugged into.
+	dropped.append(wire(world, panel, shield))
+	dropped.append(wire(world, crate, turbine, true))
+	shield.stand(true)
+	return dropped
+
+
+## A cable laid between two devices, plugged into the port of each; a
+## strong one holds them together too.
+static func wire(world: World, a: Device, b: Device, strong := false) -> Cable:
+	var at := (a.global_position + b.global_position) * 0.5
+	at.y = world.height_under(at)
+	var cable := Catalog.cable(world, at, strong)
+	for i in 2:
+		var device: Device = [a, b][i]
+		device.fit(cable.plugs[i], _free(device, &"port"))
+	return cable
+
+
+## A device's first free socket of a kind.
+static func _free(device: Device, kind: StringName) -> Socket:
+	for socket in device.sockets():
+		if socket.kind == kind and socket.part == null and socket.mounted == null:
+			return socket
+	return null
+
+
 ## Your own bare crate frame on the sand beside you, to fit what you find to.
 static func yours(world: World) -> Array[Node3D]:
 	return [standing(world, &"crate_frame", [], YOURS)]
@@ -409,14 +488,18 @@ static func standing(world: World, id: StringName, parts: Array, where: Array) -
 	var size: Vector3 = Catalog.DEVICES[id].size
 	drop(world, device, Transform3D(Basis(Vector3.UP, world.player.global_rotation.y),
 		Vector3(0.0, size.y * 0.5, 0.0)), where[0], where[1])
+	fill(world, device, parts)
+	return device
+
+
+## These parts fitted into a device's first free sockets of their kinds.
+static func fill(world: World, device: Device, parts: Array) -> void:
 	for part_id: StringName in parts:
 		var part := Catalog.part(part_id)
 		world.content.add_child(part)
-		for socket in device.sockets():
-			if socket.kind == part.kind and socket.part == null:
-				device.fit(part, socket)
-				break
-	return device
+		var socket := _free(device, part.kind)
+		if socket != null:
+			device.fit(part, socket)
 
 
 ## Stakes lying flat across your way and coils lying on their backs.
