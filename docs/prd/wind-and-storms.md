@@ -170,8 +170,8 @@ still come over the crest. Camping in the lee is a choice with a cost: less wind
 turbine.
 
 **As built (2026-10-17):**
-- **Where it is.** The ground is read upwind of a place, along the wind as it blows that
-  moment, at 32 places out to 250 m, close together near and spreading out further off.
+- **Where it is.** The ground is read upwind of a place, along the wind blowing there
+  that moment, at 32 places out to 250 m, close together near and spreading out further off.
   Each crest found shelters the place by three things: how many of its own heights away
   it stands (fully out to two, not at all past seven), how far above the place it rises
   (from 1.5 m, fully from 6 m, well over your head), and how steeply the ground falls
@@ -204,10 +204,11 @@ turbine.
   them. Each point is a pure function of the ground and the heading, so the cache only
   saves work and the weather stays deterministic. It reads the ground's own samples
   every 2 m, which every loaded chunk holds, near or mid. On the dev machine, under
-  load, a read costs about 2 µs (the field's own wind about 4), and the reference camp
-  makes 14 a tick, about 0.03 ms. A fresh point costs about 80 µs, so when the wind
-  turns past a 2° step the camp's 14 points cost about 1 ms in that one tick, once
-  every half minute or more.
+  load, a read costs about 2 µs on top of the field's wind at the place (about 4,
+  which the felt wind reads anyway and the felt storm now reads too), and the
+  reference camp makes 14 a tick, well under 0.1 ms. A fresh point costs about 80 µs,
+  so when the wind turns past a 2° step the camp's 14 points cost about 1 ms in that
+  one tick, once every half minute or more.
 - **On the dev overlay,** `lee` beside `shel` shows the share of the wind the ground
   keeps from you.
 - **The lee scenario** stands you at the foot of a tall slip face, its crest at least
