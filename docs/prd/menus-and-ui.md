@@ -66,7 +66,8 @@ aim dot hidden behind them.)
 The back action, with nothing else open, brings up the system menu over the running
 game. It holds **Options** (controls, audio, graphics), **Save** in a Normal run, and
 **Save & quit**, all safe at any moment, mid-storm included (Profile & saves). **New game**
-asks which mode, Normal highlighted or Ironman; **dying** in a Normal run shows Load last
+asks who you come as, the Surveyor highlighted, then which mode, Normal highlighted or
+Ironman; **dying** in a Normal run shows Load last
 save, highlighted, and New run (Hunter, 2026-10-16).
 
 ## The dev console
@@ -118,8 +119,10 @@ save and quick load.
   fall, blow away or be saved, and it stands in the desert's own light and weather,
   dark in a storm but for its tells, its charge lights and the shield's blue band. New game over a save asks
   "this ends your saved run" with the safe answer highlighted, and back declines too.
-  Then New game asks which mode, Normal highlighted and Ironman below it, under a line
-  saying what each means; back goes back to the menu, the save untouched. Into the
+  Then New game asks who you come as, the Surveyor highlighted over the Salvager and the
+  Homesteader, under a line saying how each plays (2026-10-18), and then which mode, Normal
+  highlighted and Ironman below it, under a line saying what each means; back goes back a
+  step, the save untouched. Into the
   game: a fade to black, the run built (`game/run.tscn`, which is what `main.tscn` used
   to be), and back from black once the sand round you is solid.
 - **The system menu**, over the running game under a dark wash: Options, Save in a
@@ -172,7 +175,6 @@ save and quick load.
 - Remapping in Options.
 - A seamless drop-in from the menu into the run: the camera gliding down, the weather
   blending into the starting conditions (deferred, 2026-10-16).
-- Kit selection, once there are kits to choose (deferred; Profile & saves).
 - Readouts that move off the overlay onto the suit, where they can.
 
 ## Probes
@@ -184,7 +186,7 @@ save and quick load.
 3. **The menu's default.** The title is the game's name, over the starting crate, which
    is only to look at: no body in it, and a storm doesn't move it. With a save, Resume
    is highlighted and confirm resumes; with none, Resume is absent and New game is
-   highlighted, and it asks which mode with Normal highlighted.
+   highlighted, and it asks who you come as, then which mode with Normal highlighted.
 4. **New game asks over a save,** and declining leaves the save untouched.
 5. **One theme.** Every UI control in the game, menus and gameplay, draws from the one
    theme.

@@ -470,12 +470,29 @@ site; finding plants is finding history." The feral package asks the index and t
 
 Plants are signs or props placed per chunk from these, by the feral package; never in the pass.
 
-**Spawns by kit.** "Early game for everyone: find an artery and follow it." The spawn package asks the
-history for a start: the **Surveyor** in deep desert, 2 to 4 km from the nearest artery or spoke
-**(default)**, on the near side; the **Salvager** within 300 m of a skimmer wreck field; the **Homesteader**
-on a road within 100 m of a wayshrine. The prisoner's is the black site. A start is a point on the
-sphere; the world sets the moon position there and the sheet lays history round it. Never on a site's
-ground.
+**Spawns by kit.** "Early game for everyone: find an artery and follow it." Each origin's kit names its
+start (`Kit.start`) and `Starts` finds it in the history, pure in the seed and the start: the
+**Surveyor** in deep desert, no path or settlement within 600 m, the nearest artery or spoke 1 to 3 km
+off, and walking in toward Tu crosses one within 3 km **(default)**, so the bearing is the one thing
+always in the sky; the **Salvager** within 300 m of a skimmer wreck field's hulls; the **Homesteader** on
+a second-age road within 100 m of a wayshrine. Every start is on the near side, within 12° of the
+equator, where the clear's widest swing stays inside the suit's limits **(default)**, 500 m clear of
+the landmarks' footprints, and never on a site's ground. The prisoner's is the black site (not built).
+A start is a point on the sphere; the world sets the moon position there before it lays any history
+(`World.start`), and the sheet lays history round it. A world with no origin, the menu's, a probe's or
+a save's from before origins, starts where the tuning says.
+
+*Built 2026-10-18.* On twenty seeds every start held its rule on the first search, in at most 45 ms once
+a run, after the pass. What history puts round each (spawns probe 1 measures the rules; the numbers
+are from twenty seeds): the Surveyor's in Mon, 4.6 to 11 km from Port Morgan or Starcom, has nothing
+within 700 m but now and then the survey grid's beacon or relay mast, and the spoke it walks in to is
+1.5 to 2.9 km off toward Tu, a colonial line of pylon stubs and relay masts with the second age's
+wayshrines on it. The Salvager's is 40 to 240 m from a wreck's hull and its fuel bladders, half the
+time in Han within 10 km of Halloran or the black site, otherwise in Mon, between 80 m and 24 km from
+the nearest artery. The Homesteader's is on the artery or a spoke near Port Morgan, or on the Rim's
+ring and roads near Halfrise, Sister and the depot, a wayshrine 20 to 85 m off and most often a
+watchtower, a house ruin or a pylon stub within a few hundred metres. Until the structure kits build
+history's sites, none of this stands on the ground: the map shows it.
 
 ## Budgets
 
@@ -597,8 +614,10 @@ group.
 - Burial: colonial 2 to 6 m, skimmer 0.2 to 1 m tilted 10° to 35°, First Kingdoms 0.8 to 2 m, second age 0
   to 0.6 m.
 - Exposure's window: 12 hours of world time in 30-minute ticks.
-- Spawns: the Surveyor 2 to 4 km from an artery or spoke; the Salvager within 300 m of a wreck field; the
-  Homesteader within 100 m of a wayshrine.
+- Spawns: the Surveyor 1 to 3 km from an artery or spoke (first set at 2 to 4, brought in to a fair walk
+  on 2026-10-18), crossed walking in toward Tu within 3 km, no path or settlement within 600 m; the
+  Salvager within 300 m of a wreck field; the Homesteader on a road within 100 m of a wayshrine; every
+  start within 12° of the equator and 500 m clear of a landmark's footprint.
 - The Okafor bunker under the Bastion.
 
 ## Open

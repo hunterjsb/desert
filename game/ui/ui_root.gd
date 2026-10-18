@@ -218,11 +218,25 @@ func system_menu() -> Words:
 	return menu
 
 
-## Which rules the new run plays by, for good: Normal highlighted.
-func modes() -> Words:
-	var menu := Words.new("Normal saves as you go. In Ironman, death ends the run.")
-	menu.add("Normal", main.new_game.bind(false))
-	menu.add("Ironman", main.new_game.bind(true))
+## Who the new run comes as, from the origins open to you: the default
+## highlighted, each said in a few words.
+func origins() -> Words:
+	var open_to := Kit.open_to(main.profile())
+	var menu := Words.new(" ".join(PackedStringArray(open_to.map(func(kit: Kit) -> String:
+		return "The %s %s." % [kit.label, kit.about]))))
+	for kit in open_to:
+		menu.add(kit.label, func() -> void: open(modes(kit)))
+	return menu
+
+
+## Which rules the new run plays by, for good: Normal highlighted. An origin
+## the game isn't balanced round has no Ironman.
+func modes(kit: Kit) -> Words:
+	var menu := Words.new("Normal saves as you go. In Ironman, death ends the run." if kit.balanced
+		else "Normal saves as you go.")
+	menu.add("Normal", main.new_game.bind(false, false, kit))
+	if kit.balanced:
+		menu.add("Ironman", main.new_game.bind(true, false, kit))
 	return menu
 
 
@@ -282,9 +296,9 @@ func confirm(question: String, no: String, yes: String, act: Callable) -> Words:
 
 func _new_game() -> void:
 	if main.has_save():
-		open(confirm("This ends your saved run", "Keep it", "New game", func() -> void: open(modes())))
+		open(confirm("This ends your saved run", "Keep it", "New game", func() -> void: open(origins())))
 	else:
-		open(modes())
+		open(origins())
 
 
 ## Confirm steps a setting on, round from the last value to the first; left
