@@ -107,17 +107,19 @@ func _towed_out() -> void:
 ## either layer could have filled each socket with.
 func _heaviest() -> float:
 	var most := 0.0
+	var ids: Array = SiteLoot.ids()
 	for layer: StringName in Finds.LAYER:
-		for entry: Array in Finds.DEVICES[layer] + Finds.IN_RUINS[layer].devices:
-			var spec: Dictionary = Catalog.DEVICES.get(entry[0], {"mass": 0.0, "sockets": []})
-			var kg: float = spec.mass
-			for socket: Array in spec.sockets:
-				var best := 0.0
-				for fills: Dictionary in [Finds.FILLS[Finds.SURFACE], Finds.FILLS[Finds.DEEP], Finds.SURVIVAL_KIT]:
-					for id: StringName in fills.get(socket[0], []):
-						best = maxf(best, Catalog.PARTS[id].mass)
-				kg += best
-			most = maxf(most, kg)
+		ids += Finds.DEVICES[layer].map(func(entry: Array) -> StringName: return entry[0])
+	for device: StringName in ids:
+		var spec: Dictionary = Catalog.DEVICES.get(device, {"mass": 0.0, "sockets": []})
+		var kg: float = spec.mass
+		for socket: Array in spec.sockets:
+			var best := 0.0
+			for fills: Dictionary in [Finds.FILLS[Finds.SURFACE], Finds.FILLS[Finds.DEEP], Finds.SURVIVAL_KIT]:
+				for id: StringName in fills.get(socket[0], []):
+					best = maxf(best, Catalog.PARTS[id].mass)
+			kg += best
+		most = maxf(most, kg)
 	return most
 
 

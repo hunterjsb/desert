@@ -42,15 +42,33 @@ func corners(body: Node3D) -> Array[Vector3]:
 	return out
 
 
-## The plan a laid-out find came from.
+## The plan a laid-out find came from: its site's, or its chunk's open sand's.
 func spec_of(body: Node) -> Dictionary:
 	var at: Array = body.get_meta(&"find")
-	var chunk := world.terrain.chunk_under((at[0].x + 0.5) * world.tuning.chunk_size, (at[0].y + 0.5) * world.tuning.chunk_size)
-	for spec in Finds.plan(world.run_seed, at[0], salvage.exposure_in(at[0]), world.tuning, world.height_at,
-			chunk.ruin() if chunk != null else null, salvage.on_site):
+	var specs: Array[Dictionary] = []
+	if at.size() > 2:
+		var site := site_of(body)
+		if site != null:
+			specs = SiteLoot.plan(site, world.height_at)
+	else:
+		specs = Finds.plan(world.run_seed, at[0], salvage.exposure_in(at[0]), world.tuning, world.height_at,
+			salvage.on_way, salvage.on_site)
+	for spec in specs:
 		if spec.index == at[1]:
 			return spec
 	return {}
+
+
+## The structure a site's find was laid out in, or null for a loose one.
+func site_of(body: Node) -> Structure:
+	var at: Array = body.get_meta(&"find")
+	if at.size() < 3:
+		return null
+	for unit in world.shape.sites.units():
+		for site in unit.sites:
+			if site.id == at[2] and site is Structure:
+				return site
+	return null
 
 
 ## The house ruins standing within `radius` m of where the run began,

@@ -102,7 +102,7 @@ func _clear_way() -> Vector2:
 			if not seen.has(coord):
 				seen[coord] = true
 				for find in Finds.plan(world.run_seed, coord, 0.0, world.tuning, world.height_at,
-						world.shape.sites.ruin_in(coord), world.salvage.on_site):
+						world.salvage.on_way, world.salvage.on_site):
 					var off := Vector2(find.x, find.z) - from
 					clear = clear and off.distance_to(way * clampf(off.dot(way), 0.0, 1400.0)) > 2.0
 			m += size * 0.5

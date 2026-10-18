@@ -1,11 +1,12 @@
 extends SalvageProbe
 ## Salvage & ruins probe 1: the same seed, chunk and weather always give the
 ## same finds. Planned twice from scratch, history's house ruins stand in the
-## same places round a town and every chunk's finds there come out the same; any moment within one tick of the
-## weather's record reads the same exposure; the weather changes what a find
-## is, never where it lies. In the world, a chunk's finds come back as they
-## were when its ground does, less what you took, and whole once the chunk
-## has been forgotten.
+## same places round a town and every chunk's loose finds there come out the
+## same; any moment within one tick of the weather's record reads the same
+## exposure; the weather changes what a find is, never where it lies. In the
+## world, a chunk's finds come back as they were when its ground does, less
+## what you took; once the chunk has been forgotten its loose finds come back
+## whole, and what you took from a site stays taken while the site is laid.
 
 const SEED := 77
 const CHUNKS := 12
@@ -30,34 +31,44 @@ func run() -> void:
 	var moved := 0
 	var plans := 0
 	var exposures := 0
-	for j in CHUNKS:
-		for i in CHUNKS:
-			var coord := Vector2i(i * 3 - 18, j * 3 - 18)
-			var middle := (Vector2(coord) + Vector2.ONE * 0.5) * tuning.chunk_size
-			var t := 3600.0 * (i + j)
-			var exposed := Finds.exposure(field, middle.x, middle.y, t, tuning)
-			if exposed != Finds.exposure(field, middle.x, middle.y, t + 1.0, tuning):
-				# t is on a tick, so a second later is the same tick.
-				exposures += 1
-			var a := Finds.plan(SEED, coord, exposed, tuning, one.height_at, one.sites.ruin_in(coord), _on(one))
-			var b := Finds.plan(SEED, coord, exposed, tuning, two.height_at, two.sites.ruin_in(coord), _on(two))
-			plans += a.size()
-			if var_to_str(a) != var_to_str(b):
-				differs += 1
-			# The calmest and the stormiest weather: what changes, and what can't.
-			var calm := Finds.plan(SEED, coord, 0.0, tuning, one.height_at, one.sites.ruin_in(coord), _on(one))
-			var storm := Finds.plan(SEED, coord, 1.0, tuning, one.height_at, one.sites.ruin_in(coord), _on(one))
-			if calm.map(_lies) != storm.map(_lies):
-				moved += 1
-	print("%d finds planned over %d chunks" % [plans, CHUNKS * CHUNKS])
-	check(plans > CHUNKS * CHUNKS, "chunks have finds")
+	# The chunks the roads round the town run through, where loose finds lie.
+	var on_roads := {}
+	for unit in one.sites.units():
+		for piece in unit.pieces:
+			for k in piece.points.size() - 1:
+				var length := piece.points[k].distance_to(piece.points[k + 1])
+				for d in range(0, ceili(length), 32):
+					var p := piece.points[k].lerp(piece.points[k + 1], d / maxf(length, 1.0))
+					on_roads[Vector2i(floori(p.x / tuning.chunk_size), floori(p.y / tuning.chunk_size))] = true
+	var coords: Array = on_roads.keys().slice(0, CHUNKS * CHUNKS)
+	for n in coords.size():
+		var coord: Vector2i = coords[n]
+		var middle := (Vector2(coord) + Vector2.ONE * 0.5) * tuning.chunk_size
+		var t := 3600.0 * n
+		var exposed := Finds.exposure(field, middle.x, middle.y, t, tuning)
+		if exposed != Finds.exposure(field, middle.x, middle.y, t + 1.0, tuning):
+			# t is on a tick, so a second later is the same tick.
+			exposures += 1
+		var a := Finds.plan(SEED, coord, exposed, tuning, one.height_at, _way(one), _on(one))
+		var b := Finds.plan(SEED, coord, exposed, tuning, two.height_at, _way(two), _on(two))
+		plans += a.size()
+		if var_to_str(a) != var_to_str(b):
+			differs += 1
+		# The calmest and the stormiest weather: what changes, and what can't.
+		var calm := Finds.plan(SEED, coord, 0.0, tuning, one.height_at, _way(one), _on(one))
+		var storm := Finds.plan(SEED, coord, 1.0, tuning, one.height_at, _way(one), _on(one))
+		if calm.map(_lies) != storm.map(_lies):
+			moved += 1
+	print("%d finds planned over %d chunks on the roads" % [plans, coords.size()])
+	check(plans > 5, "chunks on the way have finds")
 	check(differs == 0, "the same seed, chunk and weather plan the same finds (%d chunks differ)" % differs)
 	check(exposures == 0, "a moment within one tick reads the same exposure (%d differ)" % exposures)
 	check(moved == 0, "the weather never changes where a find lies (%d chunks moved)" % moved)
 	await _in_the_world()
 
 
-## A chunk's finds, taken out of range and back, then forgotten and back.
+## A chunk's finds, taken out of range and back, then forgotten and back:
+## one of a site's, and a loose one.
 func _in_the_world() -> void:
 	await load_salvage()
 	# Time holds still, so every visit reads the same weather.
@@ -65,23 +76,30 @@ func _in_the_world() -> void:
 	var home := Vector2(world.player_world_x(), world.player_world_z())
 	var before := _laid_out()
 	check(before.size() >= 5, "finds lie round the start (%d)" % before.size())
-	var taken := salvage.finds()[0]
-	var gone: Array = taken.get_meta(&"find")
-	salvage.claim(taken)
-	taken.free()
+	var gone := []
+	for site_find in [true, false]:
+		for body in salvage.finds():
+			if (body.get_meta(&"find").size() > 2) == site_find and before.has(str(body.get_meta(&"find"))):
+				gone.append(str(body.get_meta(&"find")))
+				salvage.claim(body)
+				body.free()
+				break
+	check(gone.size() == 2, "a site's find and a loose one taken")
 	# Far enough that their ground stops being solid, near enough that it stays loaded.
 	await go(home.x + 5.0 * world.tuning.chunk_size, home.y)
 	await go(home.x, home.y)
 	var back := _laid_out()
 	var expected := before.duplicate()
-	expected.erase(str(gone))
+	for key: String in gone:
+		expected.erase(key)
 	check(_same(back, expected),
-		"its finds come back as they were, less the one taken (%d of %d)" % [back.size(), expected.size()])
-	check(not back.has(str(gone)), "what was taken isn't laid out again")
-	# Far enough that the chunks are forgotten.
+		"its finds come back as they were, less those taken (%d of %d)" % [back.size(), expected.size()])
+	# Far enough that the chunks are forgotten, near enough that the sites stay laid.
 	await go(home.x + 20.0 * world.tuning.chunk_size, home.y)
 	await go(home.x, home.y)
-	check(_same(_laid_out(), before), "a forgotten chunk comes back whole")
+	var whole := before.duplicate()
+	whole.erase(gone[0])
+	check(_same(_laid_out(), whole), "a forgotten chunk's loose finds come back whole, a site's taken stays taken")
 
 
 ## Every find lying in the solid ground round you: where it lies and what it
@@ -135,6 +153,11 @@ func _ruins(shape: TerrainShape) -> Array[Ruin]:
 				found.append(site)
 	found.sort_custom(func(a: Ruin, b: Ruin) -> bool: return a.id < b.id)
 	return found
+
+
+## Where a shape's loose finds may lie.
+func _way(shape: TerrainShape) -> Callable:
+	return func(x: float, z: float) -> bool: return Finds.on_way(shape.sites, x, z, Tuning.current().finds_scatter_m)
 
 
 ## What keeps a shape's open sand clear of its structures.
