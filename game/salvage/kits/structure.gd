@@ -182,15 +182,20 @@ func place_step() -> bool:
 	if piece.lattice:
 		x = roundf(x)
 		z = roundf(z)
-	_pad = got.x
+	_columns = {}
+	_stand(got.x)
+	return true
+
+
+## Stands where it is, its floor's top at `pad`.
+func _stand(pad: float) -> void:
+	_pad = pad
 	_stands = true
 	planned = false
-	_columns = {}
 	_grid_x = floorf(x - _reach.x)
 	_grid_z = floorf(z - _reach.y)
 	_grid_w = int(ceilf(x + _reach.x) - _grid_x) + 1
 	_grid_d = ceilf(z + _reach.y) - _grid_z + 1.0
-	return true
 
 
 ## One placement's ground along its slide, from columns of the dunes sampled

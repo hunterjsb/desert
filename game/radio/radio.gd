@@ -202,7 +202,7 @@ func _listen(delta: float) -> void:
 ## station is in it: it plays on whether anyone listens. It changes over
 ## through a burst of static.
 func _play_music(t: float) -> void:
-	var now: AudioStream = Sounds.RADIO_DAY if world.weather.day.is_day(t, world.moon.longitude) else Sounds.RADIO_NIGHT
+	var now := track_at(world, t)
 	if _on_air == now:
 		return
 	if _on_air != null:
@@ -210,6 +210,12 @@ func _play_music(t: float) -> void:
 	music.stream = now
 	music.play(fposmod(t, now.get_length()))
 	_on_air = now
+
+
+## The music on air at world time t where the world's player is: the day's
+## track while the sun is up, the night's after.
+static func track_at(at: World, t: float) -> AudioStream:
+	return Sounds.RADIO_DAY if at.weather.day.is_day(t, at.moon.longitude) else Sounds.RADIO_NIGHT
 
 
 func _off_air() -> void:
