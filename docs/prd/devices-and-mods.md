@@ -430,11 +430,13 @@ device already stays a body of its own on the host's power pool.
   pass a second of world time, by one Console in the system; one sample per cell gives its
   storm, sand and humidity alike.
 - **Taking the screen out never stutters** (Hunter: "game stutters when the screen is
-  removed"). It was the first part taken out in a run, whatever it was: its frame stalled about
-  10 ms (22 ms against 16.7) while the GPU compiled the shader of the ghost that shows where a
-  held part fits, and in the "console" scenario the screen is what you take first. Taken out
-  again, it cost 0.8 ms. The ghost's shader compiles while the world loads now, as the sand's
-  does.
+  removed"). The stall was the first part taken out in a run, whatever it was: taking it cost
+  10 to 12 ms in its frame (21 to 22 ms against 16.7) while the GPU compiled the shader of the
+  ghost that shows where a held part fits, and in the "console" scenario the screen is what you
+  take first. Later takes cost about 1 ms. The ghost's shader compiles while the world loads
+  now, as the sand's does, so the first take costs what any does, 1.5 ms. Putting a screen back
+  cost 12 ms each time, making its canvas again; with the canvas kept, 0.6 ms. Measured in the
+  game on the desktop's GPU, unseen; the Console look-test prints the first take's frame.
 - **Linking.** Every Console on one chassis deck is one system: the deck and everything standing
   or seated on it. Their instruments pool, so each screen shows every reading in the system,
   each taken from the first Console that has it. A Console off a deck is a system of its own,
