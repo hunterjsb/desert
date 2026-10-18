@@ -1,6 +1,6 @@
 extends SavesProbe
-## Profile & saves probe 14: a farm from before. A save the build before the
-## crop roster wrote (14_a_farm_from_before.txt, as it came out), of a planter
+## Profile & saves probe 15: a farm from before. A save the build before the
+## crop roster wrote (15_a_farm_from_before.txt, as it came out), of a planter
 ## with a harvester, three carrots and a ripe fungus in it, a harvest of
 ## carrots stored, a survival kit with a carrot and a fungus in its slots, and
 ## a carrot, carrots and fungus caps carried. It resumes as root-tubers in the
@@ -10,7 +10,7 @@ extends SavesProbe
 ## the food holding what it held. The farm goes on: the ripe fungus is
 ## harvested on the next tick.
 
-const FIXTURE := "res://probes/saves/14_a_farm_from_before.txt"
+const FIXTURE := "res://probes/saves/15_a_farm_from_before.txt"
 
 
 func run() -> void:

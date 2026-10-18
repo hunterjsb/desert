@@ -236,6 +236,10 @@ Resume, New game, the death screen and Options.
     charge, playing from you with its words showing, the compass is carried, and the
     canisters stack as one, each with its water. A save from before, with five slots,
     resumes with their contents carried.
+15. **A farm from before.** A save the build before the crop roster wrote, of a
+    harvester planter with three carrots and a ripe fungus, carrots stored, a survival kit
+    with seeds and carrots carried, resumes as root-tubers in the standard planters, a
+    still-ripe vat fungus in the pot, tubers stored and carried, and the farm goes on.
 
 ## Out of scope
 

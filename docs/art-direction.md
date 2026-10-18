@@ -172,6 +172,19 @@ pixel's footprint, and the seams fade out by about 30 m, as the sand's ripples d
 runs that show it, use `look/marks` with `--motion`. What still crawls is the edges of thin
 pieces, such as rope and louvres: the project draws without antialiasing.
 
+**Crops** (2026-10-17). Each crop has a look at each of its stages, built in B's kit of
+bevelled pieces, balls and drums, and it grows into each stage before the next replaces
+it. Plants wear no paint, so nothing of them chips; they hold a little sand. The
+root-tuber is a potato's leafy top over a mound of soil, its tubers swelling at the
+mound, and mature its top flowers white and yellows at its lowest leaves. The vat fungus
+is a white mat of mycelium that pins as it matures and, fruited, three tiers of grey-brown
+oyster fans over cream gills on a pale stem. The saltbush is woody stems branching low
+into small oval leaves silvered by their salt, held level to the sun; folded, the leaves
+close up against their stems, a pose in steps of a sixth. Every look of every stage is
+built while the world loads. `look/crops/shoot.sh <dir> [sheet]` shoots each crop at each
+stage in a planter on a clear morning, unseen; the sheet from 2026-10-17 is
+`~/Desktop/crops.png`.
+
 ## Eye adaptation
 
 (Hunter, 2026-10-17: "add eye adaptation".) The camera adapts to the light as an eye

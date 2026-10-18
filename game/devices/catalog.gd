@@ -51,7 +51,8 @@ const PARTS := {
 	#   before it wilts back, so they say how much shelter it needs: wind, m/s;
 	#   particles, the felt storm; heat and cold, °C. Radiation is the same,
 	#   but nothing in the weather gives a dose yet.
-	#   propagule: what it's sown again from. wild: not clean stock (Plant).
+	#   propagule: what it's sown again from; whether it's clean stock or wild
+	#   is each plant's own (Plant).
 	#   stages, its twists on the shared seedling, growing, mature, to seed:
 	#   regrows, the share it keeps when picked, so it grows again in its
 	#   slot; bursts, minutes it takes to fruit once mature, only in a storm;
@@ -63,19 +64,19 @@ const PARTS := {
 		"crop": {"family": &"day", "light": &"sun", "lit": Vector2(0.25, 0.6), "minutes": 3.0, "litres": 0.25,
 			"yields": [[&"tubers", 4]], "wind": Vector2(25.0, 45.0), "particles": Vector2(0.9, 1.0),
 			"heat": Vector2(60.0, 70.0), "cold": Vector2(-10.0, -30.0), "radiation": Vector2(1.0, 1.0),
-			"propagule": &"tuber", "wild": false, "stages": {}}},
+			"propagule": &"tuber", "stages": {}}},
 	&"vat_fungus": {"kind": &"plant_pot", "label": "Vat fungus", "mass": 0.4, "size": Vector3(0.14, 0.14, 0.14),
 		"color": Color(0.82, 0.78, 0.68), "stats": {"plants": 1},
 		"crop": {"family": &"storm", "light": &"dark", "lit": Vector2(0.5, 0.25), "minutes": 5.0, "litres": 0.3,
-			"yields": [[&"fungus_caps", 4]], "wind": Vector2(8.0, 30.0), "particles": Vector2(1.0, 1.0),
+			"yields": [[&"fungus_caps", 4]], "wind": Vector2(12.0, 35.0), "particles": Vector2(1.0, 1.0),
 			"heat": Vector2(45.0, 55.0), "cold": Vector2(-5.0, -15.0), "radiation": Vector2(0.3, 0.6),
-			"propagule": &"spores", "wild": false, "stages": {"regrows": 0.0, "bursts": 1.0, "eats_scraps": true}}},
+			"propagule": &"spores", "stages": {"regrows": 0.0, "bursts": 1.0, "eats_scraps": true}}},
 	&"saltbush": {"kind": &"plant_standard", "label": "Saltbush", "mass": 0.6, "size": Vector3(0.2, 0.2, 0.26),
 		"color": Color(0.66, 0.7, 0.64), "stats": {"plants": 1},
 		"crop": {"family": &"day", "light": &"sun", "lit": Vector2(0.2, 0.55), "minutes": 12.0, "litres": 0.15,
 			"yields": [[&"salt", 4], [&"saltbush_leaves", 1]], "wind": Vector2(40.0, 40.0), "particles": Vector2(1.0, 1.0),
 			"heat": Vector2(65.0, 65.0), "cold": Vector2(-20.0, -20.0), "radiation": Vector2(1.0, 1.0),
-			"propagule": &"cutting", "wild": false, "stages": {"regrows": 0.5, "folds": 2.0, "never_dies": true}}},
+			"propagule": &"cutting", "stages": {"regrows": 0.5, "folds": 2.0, "never_dies": true}}},
 	# Fits a planter's mod mount: ripe crops go into the planter's own storage.
 	&"harvester": {"kind": &"mod", "label": "Harvester", "mass": 1.5, "size": Vector3(0.22, 0.14, 0.1),
 		"color": Color(0.5, 0.3, 0.45), "stats": {"harvester": 1}},
