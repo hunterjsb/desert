@@ -14,7 +14,8 @@ godot=${GODOT:-scripts/unseen.sh}
 
 mkdir -p "$out"
 timeout 2400 "$godot" --path . --disable-vsync res://look/tu/tu.tscn -- --capture "$out" "${@:3}" 2>&1 | grep -E '^tu'
-timeout 600 "$godot" --path . res://look/tu/unrolled.tscn -- --capture "$out/unrolled.png" 2>&1 | grep -E 'ERROR'
+timeout 600 "$godot" --path . --resolution 1920x1080 res://look/tu/unrolled.tscn -- --capture "$out/unrolled.png" 2>&1 |
+	grep -E 'ERROR'
 
 shot() {
 	local file="$out/$1.png"
@@ -22,7 +23,8 @@ shot() {
 	args+=(-label "$2" "$file")
 }
 row() {
-	montage "${args[@]}" -tile "$1"x1 -geometry "$2"+6+6 -pointsize 22 -background '#f4efe6' "$out/row_$3.png"
+	montage "${args[@]}" -tile "$1"x1 -geometry "$2"+6+6 -pointsize 22 -background '#f4efe6' ${4:+-title "$4"} \
+		"$out/row_$3.png"
 	rows+=("$out/row_$3.png")
 	args=()
 }
@@ -41,14 +43,14 @@ shot tu9_close "9°: close, through a narrow view, as bright"
 row 2 960x540 frame
 for rate in true 3 1; do
 	case $rate in
-	true) what="true to scale, 6.8 turns a day: one turn" ;;
+	true) what="9°, true to scale, 6.8 turns a day: one turn, 22 s apart" ;;
 	3) what="three turns a day: the same three minutes" ;;
 	1) what="one turn a day: the same three minutes" ;;
 	esac
 	for k in 0 1 2 3 4 5 6 7; do
-		shot "spin_${rate}_${k}_cut" "$([[ $k == 0 ]] && echo "$what" || echo "+$((k * 22)) s")"
+		shot "spin_${rate}_${k}_cut" "+$((k * 22)) s"
 	done
-	row 8 300x300 "spin$rate"
+	row 8 300x300 "spin$rate" "$what"
 done
 magick "${rows[@]}" -background '#f4efe6' -gravity center -append +repage -depth 8 "$sheet"
 echo "sheet: $sheet"
