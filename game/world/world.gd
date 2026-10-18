@@ -66,7 +66,7 @@ func _ready() -> void:
 		run_seed = tuning.run_seed if tuning.run_seed != 0 else randi()
 	shape = TerrainShape.new(run_seed, tuning)
 	Paint.face_wind(WeatherField.mean_heading(run_seed))
-	start = Starts.find(shape.history, kit.start if kit != null else &"", tuning)
+	start = Starts.find(shape, kit.start if kit != null else &"", tuning)
 	moon = MoonPosition.new(tuning, start)
 	player.world = self
 	set_gravity(tuning.gravity)
@@ -78,8 +78,7 @@ func _ready() -> void:
 	salvage.setup(self)
 	farm.setup(self)
 	_set_scene()
-	var half := tuning.chunk_size * 0.5
-	spawn = _flat_near(half, half)
+	spawn = Starts.ground(shape, tuning, kit.start if kit != null else &"", start)
 	player.global_position = Vector3(engine_x(spawn.x), height_at(spawn.x, spawn.y) + 0.1, engine_z(spawn.y))
 	_last_x = player_world_x()
 	_last_z = player_world_z()
@@ -112,7 +111,7 @@ func respawn(x: float, z: float, yaw: float, at_time: float) -> void:
 func travel(latitude_degrees: float, longitude_degrees: float, yaw: float) -> void:
 	# Past where the history kept under the old ground could reach.
 	var off := (tuning.history_lay_m + tuning.history_cell_m) * 2.0 + history_due()
-	var at := _flat_near(player_world_x() + off, player_world_z())
+	var at := flat_near(shape, player_world_x() + off, player_world_z())
 	respawn(at.x, at.y, yaw, time)
 	moon.place(latitude_degrees, longitude_degrees)
 
@@ -149,26 +148,30 @@ const FLAT_SEARCH := 300.0
 
 
 ## The nearest flat ground to a world place, looking outward in square rings;
-## the place itself if there's none.
-func _flat_near(x: float, z: float) -> Vector2:
+## the place itself if there's none. `bare`, on the dunes alone, as it is
+## before any history is laid: where a run's ground begins, which its start
+## knows before there's a world.
+static func flat_near(shape: TerrainShape, x: float, z: float, bare := false) -> Vector2:
 	var from := Vector2(roundf(x), roundf(z))
 	var step := FLAT_SPAN * 0.5
 	for ring in int(FLAT_SEARCH / step) + 1:
 		for dz in range(-ring, ring + 1):
 			for dx in range(-ring, ring + 1):
-				if maxi(absi(dx), absi(dz)) == ring and _flat(from + Vector2(dx, dz) * step):
+				if maxi(absi(dx), absi(dz)) == ring and _flat(shape, from + Vector2(dx, dz) * step, bare):
 					return from + Vector2(dx, dz) * step
 	return Vector2(x, z)
 
 
-func _flat(at: Vector2) -> bool:
-	if shape.sites.covering(at.x, at.y) != null:
+static func _flat(shape: TerrainShape, at: Vector2, bare: bool) -> bool:
+	if not bare and shape.sites.covering(at.x, at.y) != null:
 		return false
 	var low := INF
 	var high := -INF
 	for j in 3:
 		for i in 3:
-			var h := shape.height_at(at.x + (i - 1) * FLAT_SPAN * 0.5, at.y + (j - 1) * FLAT_SPAN * 0.5)
+			var x := at.x + (i - 1) * FLAT_SPAN * 0.5
+			var z := at.y + (j - 1) * FLAT_SPAN * 0.5
+			var h := shape.dunes(x, z) if bare else shape.height_at(x, z)
 			low = minf(low, h)
 			high = maxf(high, h)
 	return high - low < FLAT_RISE
