@@ -386,7 +386,8 @@ func _show(delta: float) -> void:
 	# The light round the camera, which a shell's glass catches.
 	face.set_light("shell_light", _linear(_environment.ambient_light_color) * _environment.ambient_light_energy)
 	plume.light(sun, sun_light, sky_light, ring_light, _linear(haze_color) * haze_light,
-		Vector3(_environment.fog_depth_begin, _environment.fog_depth_end, _environment.fog_density))
+		Vector3(_environment.fog_depth_begin, _environment.fog_depth_end, _environment.fog_density),
+		day.tu_direction(t, moon.latitude, moon.longitude), _linear(SkyView.TU_SHINE_COLOR) * _sun_energy * tu_light)
 
 	# Outside a bubble the dust is the storm's own: it rides the open air's
 	# wind, slowed in a lee, and thickens with the storm, and the bubble only

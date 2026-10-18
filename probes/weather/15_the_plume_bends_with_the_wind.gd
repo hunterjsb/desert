@@ -41,9 +41,9 @@ func run() -> void:
 	teleport(eye.x, eye.y)
 	await settle(true)
 	var mid := (eye + Vector2(root.x, root.z)) * 0.5
-	var between := find_time(func(t: float) -> bool: return field.raw_storm_at(mid.x, mid.y, t) > 0.05
+	var between := find_time(func(t: float) -> bool: return field.raw_storm_at(mid.x, mid.y, t) > 0.05 \
 		and field.raw_storm_at(eye.x, eye.y, t) < -0.05)
-	var open := find_time(func(t: float) -> bool: return clear.call(t) and field.raw_storm_at(mid.x, mid.y, t) < -0.06
+	var open := find_time(func(t: float) -> bool: return clear.call(t) and field.raw_storm_at(mid.x, mid.y, t) < -0.06 \
 		and field.raw_storm_at(eye.x, eye.y, t) < -0.06)
 	await _at(between)
 	var hidden := plume.seen[0].x

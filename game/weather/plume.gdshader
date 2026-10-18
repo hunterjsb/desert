@@ -41,6 +41,8 @@ uniform vec3 sun_dir = vec3(0.0, 0.5, -0.86);
 uniform vec3 sun_light = vec3(2.0);
 uniform vec3 sky_light = vec3(0.8);
 uniform vec3 ring_light = vec3(0.0);
+uniform vec3 tu_dir = vec3(0.0, 1.0, 0.0);
+uniform vec3 tu_light = vec3(0.0);
 uniform vec3 haze_color = vec3(0.7, 0.55, 0.4);
 uniform vec3 haze = vec3(400.0, 9000.0, 0.7);
 uniform float haze_height = 700.0;
@@ -136,12 +138,12 @@ void vertex() {
 		float fall = 3.0 + h.y * 6.0;
 		vec3 aside = normalize(vec3(h.z - 0.5, 0.0, h.w - 0.5) + 1.0e-4) * p.w * 0.4 * h2.x;
 		center = root + p.xyz + aside + wind * age * 0.75 - vec3(0.0, fall * age, 0.0);
-		size = p.w * (0.22 + 0.2 * h2.y) * (1.0 + age / 50.0);
-		thick = m.x * 0.6 * exp(-age / 50.0);
+		size = p.w * (0.12 + 0.12 * h2.y) * (1.0 + age / 60.0);
+		thick = m.x * 0.35 * exp(-age / 50.0);
 		mixes = vec3(1.0, 0.0, 0.0);
 		fade = smoothstep(0.0, 8.0, age) * smoothstep(0.0, 10.0, center.y - root.y)
 			* (1.0 - smoothstep(fam.w - 40.0, fam.w, age));
-		stretch = 1.8;
+		stretch = 2.6;
 	} else if (f == MOUTH) {
 		// Gas and steam working out along the slot, up from the pit.
 		vec3 across = normalize(cross(slot_dir, vec3(0.0, 1.0, 0.0)));
@@ -223,8 +225,9 @@ void fragment() {
 	float forward = mix(1.0, phase_hg(c, 0.55), 0.5 * wet);
 	float lit = mix(0.3, 1.0, clamp(dot(nw, sun_dir) * 0.6 + 0.5, 0.0, 1.0));
 	vec3 albedo = ASH * v_mix.x + STEAM * v_mix.y + HAZE * v_mix.z;
+	float tu_lit = mix(0.3, 1.0, clamp(dot(nw, tu_dir) * 0.6 + 0.5, 0.0, 1.0)) * step(0.0, tu_dir.y);
 	vec3 light = sun_light * v_sun * lit * forward + sky_light * (0.55 + 0.45 * max(nw.y, 0.0))
-		+ ring_light * ring_phase(c) * wet;
+		+ ring_light * ring_phase(c) * wet + tu_light * tu_lit;
 	vec3 color = mix(albedo * light, haze_color, haze_at(v_dist, v_height));
 	float a = (1.0 - exp(-v_thick * (0.5 + n))) * shape * v_show;
 	if (v_soft > 0.0) {

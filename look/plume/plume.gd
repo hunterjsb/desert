@@ -11,7 +11,7 @@ const SEED := 1234
 ## How far off each range stands, m, and how high the eye is over the sand.
 const RANGES := {"near": [260.0, 6.0], "mid": [1500.0, 3.0], "far": [7000.0, 2.0]}
 ## Frames timed with the plume drawn, and without.
-const TIMED := 30
+const TIMED := 12
 
 @onready var world: World = $World
 
@@ -71,11 +71,15 @@ func _moments() -> Array:
 	var day := world.tuning.day_minutes * 60.0
 	var x := _root.x
 	var z := _root.z
-	var clear_at := func(at: Vector2, t: float) -> bool: return field.raw_storm_at(at.x, at.y, t) < -0.06
+	# Clear well away from a front, where no outflow throws grit at the eye.
+	var clear_at := func(at: Vector2, t: float) -> bool: return field.raw_storm_at(at.x, at.y, t) < -0.1
 	var seen_from := func(t: float, range_name: String) -> bool:
 		var eye := _eye(t, range_name)
-		for k in 5:
-			if not clear_at.call(eye.lerp(Vector2(x, z), k / 4.0), t):
+		if not clear_at.call(eye, t):
+			return false
+		for k in range(1, 5):
+			var at := eye.lerp(Vector2(x, z), k / 4.0)
+			if field.raw_storm_at(at.x, at.y, t) > -0.06:
 				return false
 		return true
 	var shots := {"calm": ["near", "mid", "far"], "wind": ["near", "mid", "far"], "burst": ["near", "mid", "far"],
@@ -83,20 +87,25 @@ func _moments() -> Array:
 	var found := {}
 	var best := {}
 	var t := 600.0
-	while t < day * 60.0:
+	while t < day * 200.0:
 		var local := _local(t)
 		var storm := field.raw_storm_at(x, z, t)
 		var wind := field.steady_wind_at(x, z, t).length()
 		var clear := storm < -0.08 and field.raw_storm_at(x, z, t - 600.0) < -0.08
-		var daylight := local > 0.33 and local < 0.62
+		var daylight := local > 0.33 and local < 0.62 and world.weather.day.sun_shown(t) >= 1.0
 		var quiet := geology.venting(_vent, t).x < 1.3
+		var dusk := local > 0.725 and local < 0.75
+		var night := local > 0.9 and local < 0.97
+		if not (clear and (daylight or dusk or night)) and not (daylight and storm > -0.03):
+			t += 10.0
+			continue
 		for range_name: String in ["near", "mid", "far"]:
 			var seen: bool = seen_from.call(t, range_name)
 			var wants := {
 				"calm": clear and daylight and quiet and seen and wind < best.get("calm" + range_name, INF),
 				"wind": clear and daylight and quiet and seen and wind > best.get("wind" + range_name, 0.0),
-				"dusk": clear and quiet and seen and local > 0.73 and local < 0.75,
-				"night": clear and quiet and seen and local > 0.9 and local < 0.97,
+				"dusk": clear and quiet and seen and dusk,
+				"night": clear and quiet and seen and night,
 				"storm": daylight and storm > -0.03 and storm < -0.005 and clear_at.call(_eye(t, range_name), t),
 				"swallowed": daylight and storm > 0.08 and clear_at.call(_eye(t, range_name), t),
 			}
@@ -112,6 +121,7 @@ func _moments() -> Array:
 		while burst < day * 400.0:
 			var risen := burst + 150.0
 			if field.raw_storm_at(x, z, risen) < -0.08 and _local(risen) > 0.33 and _local(risen) < 0.62 \
+					and world.weather.day.sun_shown(risen) >= 1.0 \
 					and seen_from.call(risen, range_name):
 				var v := geology.venting(_vent, risen)
 				found["burst_" + range_name] = [risen, "venting x%.1f, ash %.2f" % [v.x, v.y]]
@@ -129,11 +139,21 @@ func _moments() -> Array:
 
 
 ## Where a range's eye stands at a moment, world metres: off to the side
-## across the wind, a little downwind.
+## across the wind, a little downwind; far off, on the highest sand near, as
+## you'd climb a crest to look.
 func _eye(t: float, range_name: String) -> Vector2:
 	var away: float = RANGES[range_name][0]
 	var wind := world.weather.field.steady_wind_at(_root.x, _root.z, t).normalized()
-	return Vector2(_root.x, _root.z) + Vector2(-wind.y, wind.x) * away + wind * away * 0.25
+	var at := Vector2(_root.x, _root.z) + Vector2(-wind.y, wind.x) * away + wind * away * 0.25
+	if range_name != "far":
+		return at
+	var best := at
+	for j in range(-8, 9):
+		for i in range(-8, 9):
+			var p := at + Vector2(i, j) * 30.0
+			if world.shape.dunes(p.x, p.y) > world.shape.dunes(best.x, best.y):
+				best = p
+	return best
 
 
 ## A moment from a range, from the side across the wind, looking at the bend.
@@ -152,7 +172,7 @@ func _shoot(moment: String, t: float, range_name: String, out: String) -> void:
 	var name := "%s_%s" % [moment, range_name]
 	get_viewport().get_texture().get_image().save_png(out.path_join(name + ".png"))
 	var cost := await _time()
-	_costs.append("%s: GPU %.2f ms with it, %.2f without; its main thread %.3f ms a frame" % [name, cost.x, cost.y, cost.z])
+	_costs.append("%s: GPU %.2f ms a frame with it, which adds %.2f; its main thread %.3f ms a frame" % [name, cost.x, cost.y, cost.z])
 	world.tuning.eye_adapts = false
 	print("plume: %s %.0f m from the vent (its mouth %.1f m from where it was first laid), venting x%.2f, seen %.2f..%.2f" % [name,
 		Vector2(root.x, root.z).distance_to(eye2), Vector2(root.x, root.z).distance_to(Vector2(_root.x, _root.z)),
@@ -187,29 +207,39 @@ func _stand(eye2: Vector2, t: float) -> void:
 		await get_tree().process_frame
 
 
-## GPU ms a frame with the plume drawn and without, the median over three
-## turns of each, and its own main-thread ms a frame while drawn.
+## GPU ms a frame with the plume drawn, and what it adds over the same view
+## without it: the median of ten turns' differences, each turn a window drawn
+## and one not, side by side, since the GPU's clock wanders; and its own
+## main-thread ms a frame while drawn.
 func _time() -> Vector3:
 	var vp := get_viewport().get_viewport_rid()
 	var with := PackedFloat32Array()
-	var without := PackedFloat32Array()
+	var adds := PackedFloat32Array()
 	var cpu := 0.0
-	for turn in 6:
-		var drawn := turn % 2 == 0
-		_plume.process_mode = Node.PROCESS_MODE_INHERIT if drawn else Node.PROCESS_MODE_DISABLED
-		if not drawn:
-			_plume.visible = false
-		for i in 4:
-			await RenderingServer.frame_post_draw
-		for i in TIMED:
-			await RenderingServer.frame_post_draw
-			(with if drawn else without).append(RenderingServer.viewport_get_measured_render_time_gpu(vp))
-			if drawn:
-				cpu += _plume.frame_ms
+	var frames := 0
+	for turn in 10:
+		var sums := Vector2.ZERO
+		for drawn in [true, false]:
+			_plume.process_mode = Node.PROCESS_MODE_INHERIT if drawn else Node.PROCESS_MODE_DISABLED
+			if not drawn:
+				_plume.visible = false
+			for i in 3:
+				await RenderingServer.frame_post_draw
+			for i in TIMED:
+				await RenderingServer.frame_post_draw
+				var gpu := RenderingServer.viewport_get_measured_render_time_gpu(vp)
+				if drawn:
+					sums.x += gpu
+					cpu += _plume.frame_ms
+					frames += 1
+				else:
+					sums.y += gpu
+		with.append(sums.x / TIMED)
+		adds.append((sums.x - sums.y) / TIMED)
 	_plume.process_mode = Node.PROCESS_MODE_INHERIT
 	with.sort()
-	without.sort()
-	return Vector3(with[with.size() / 2], without[without.size() / 2], cpu / with.size())
+	adds.sort()
+	return Vector3(with[with.size() / 2], adds[adds.size() / 2], cpu / frames)
 
 
 func _look(eye: Vector3, target: Vector3) -> void:

@@ -23,7 +23,7 @@ const CROWD := 1.6
 ## s, oldest s]: ash falling out under it, the steam and gas at the mouth, the
 ## column, the bent-over body, the thinning tail. Ages count from the vent,
 ## the falling ash's from when it left the column.
-const FAMILIES := [[24, 0.0, 150.0], [28, 0.0, 14.0], [64, 0.0, 80.0], [72, 60.0, 300.0], [48, 260.0, 600.0]]
+const FAMILIES := [[36, 0.0, 150.0], [28, 0.0, 14.0], [64, 0.0, 80.0], [72, 60.0, 300.0], [48, 260.0, 600.0]]
 ## Parcels are numbered round this many, so a family's ids never run out.
 const PARCELS := 1048576.0
 ## What leaves the vent rises from this wide, m.
@@ -35,8 +35,10 @@ const STABILITY := Vector2(0.009, 0.016)
 const WIDEN := 0.4
 const SPREAD := 0.04
 ## How thick it is across its middle: at this width, m, and wind, m/s,
-## seeping, this optical depth; thinner as it widens or the wind stretches it.
-const THICK := Vector3(30.0, 10.0, 6.0)
+## seeping, this optical depth; thinner as it widens or the wind stretches
+## it, by this power of the two.
+const THICK := Vector3(30.0, 10.0, 8.0)
+const THINS := 0.7
 ## Ash falls out of it over this many s; the gas makes its haze over this
 ## many; steam lasts from the first in the heat to the second in the cold, s,
 ## and shows below the first air temperature, fully below the second, °C. How
@@ -134,10 +136,12 @@ func setup(world: World, weather: Weather) -> void:
 
 
 ## Each tick, from Weather, as it lights the storm walls: the sun's way and
-## light, the sky's, the eclipse ring's, and the haze's colour and its depth
-## fog (begin, end, strength).
+## light, the sky's, the eclipse ring's, the haze's colour and its depth fog
+## (begin, end, strength), and Tu's way and its shine.
 func light(sun: Vector3, sun_light: Vector3, sky_light: Vector3, ring_light: Vector3, haze_color: Vector3,
-		haze: Vector3) -> void:
+		haze: Vector3, tu: Vector3, tu_light: Vector3) -> void:
+	material.set_shader_parameter("tu_dir", tu)
+	material.set_shader_parameter("tu_light", tu_light)
 	material.set_shader_parameter("sun_dir", sun)
 	material.set_shader_parameter("sun_light", sun_light)
 	material.set_shader_parameter("sky_light", sky_light)
@@ -241,7 +245,9 @@ func _streak(t: float, count := POINTS) -> void:
 		var speed := maxf(gone.length() / age if age > 0.0 else blowing.length(), 0.5)
 		var rise := rise_in(_tuning.plume_buoyancy * v.x * g, speed, age, n)
 		var width := MOUTH + WIDEN * rise + SPREAD * gone.length()
-		var thick := THICK.z * v.x * THICK.x * THICK.y / (width * speed)
+		# Thinner as it widens and the wind draws it out; less than mass alone
+		# says, since what's left is the finest and shows the most.
+		var thick := THICK.z * v.x * pow(THICK.x * THICK.y / (width * speed), THINS)
 		var ash := v.y * exp(-age / ASH_FALLS) * SHOWS.x
 		var steam := cold * exp(-age / lasts) * SHOWS.y
 		var haze := (1.0 - exp(-age / HAZE_FORMS)) * (1.0 - 0.5 * v.y) * SHOWS.z

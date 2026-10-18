@@ -51,9 +51,9 @@ func run() -> void:
 		"back beside it, it rises from the same place")
 
 	var at := Vector2(world.player_world_x(), world.player_world_z())
-	var over := find_time(func(t: float) -> bool: return field.raw_storm_at(root.x, root.z, t) > 0.08
+	var over := find_time(func(t: float) -> bool: return field.raw_storm_at(root.x, root.z, t) > 0.08 \
 		and field.raw_storm_at(at.x, at.y, t) > 0.08)
-	var after := find_time(func(t: float) -> bool: return field.raw_storm_at(root.x, root.z, t) < -0.06
+	var after := find_time(func(t: float) -> bool: return field.raw_storm_at(root.x, root.z, t) < -0.06 \
 		and field.raw_storm_at(at.x, at.y, t) < -0.06, over)
 	for t: float in [over, after]:
 		world.time = t
