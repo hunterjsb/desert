@@ -1,12 +1,12 @@
 extends MenuProbe
 ## Spawns probe 2: the origin chosen at New game is the run's. New game asks
-## who you come as, the Surveyor highlighted; each origin chosen, then
-## Normal, starts its run there: the moon at that origin's start, a clear
-## morning there with the first storm three to eight minutes off, its kit
-## beside you and on you, and round you the history its start was chosen by,
-## as the sheet lays it: nothing a path or settlement left near the
-## Surveyor, the Salvager's wreck field, the Homesteader's road and
-## wayshrine.
+## who you come as, the origin last played highlighted, the Surveyor before
+## any; each origin chosen, then Normal, starts its run there: the moon at
+## that origin's start, a clear morning there with the first storm three to
+## eight minutes off, its kit beside you and on you, and round you the
+## history its start was chosen by, as the sheet lays it: nothing a path or
+## settlement left near the Surveyor, the Salvager's wreck field, the
+## Homesteader's road and wayshrine.
 
 
 func run() -> void:
@@ -17,9 +17,9 @@ func run() -> void:
 		var kit := origins[k]
 		press(&"ui_accept")
 		var menu := main.ui.top()
-		if k == 0:
-			check(menu.highlighted() == 0 and Kit.origins()[0] == kit, "New game asks who you come as, the Surveyor highlighted")
-		for i in k:
+		var last := maxi(k - 1, 0)
+		check(menu.highlighted() == last, "New game asks who you come as, the %s highlighted" % origins[last].label)
+		for i in k - menu.highlighted():
 			press(&"ui_down")
 		press(&"ui_accept")
 		press(&"ui_accept")

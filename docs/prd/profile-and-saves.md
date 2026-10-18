@@ -85,10 +85,11 @@ a report when it first carries you. The patrol board's is "build," proposed, and
 its exact unlock as open.
 
 **Built (2026-10-18): the three balanced origins.** New game asks who you come as before it asks the
-mode: the Surveyor, highlighted, the Salvager and the Homesteader, each with a few words under it
-(Menus & UI). Each is a `Kit` resource (`game/survival/`): its id, name and words, its start on the
-moon ([the world system](../world-system.md#the-feral-layer-and-spawns)), whether it's balanced,
-what unlocks it and what of it the main menu shows. The menu lists every origin, one not open to
+mode: the Surveyor, the Salvager and the Homesteader, each with a few words under it, the origin
+last played highlighted and the Surveyor before any (Menus & UI). Each is a `Kit` resource
+(`game/survival/`): its id, name and words, its start on the moon ([the world
+system](../world-system.md#the-feral-layer-and-spawns)), whether it's balanced, what unlocks it
+and what of it the main menu shows. The menu lists every origin, one not open to
 the profile (`Kit.is_open_to`, through `Profile.has`) as ????; the Salvager's and Homesteader's
 playstyle unlocks wait on something that counts a playstyle, so all three are open from the first
 run. The profile keeps the origin a run was last begun or resumed as (`Profile.last_origin`), whose

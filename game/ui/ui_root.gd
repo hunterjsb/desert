@@ -218,12 +218,14 @@ func system_menu() -> Words:
 	return menu
 
 
-## Who the new run comes as, down the left, the default highlighted, each
-## with a few words under it and one still locked shown as ????. The kit on
-## show stands aside and shows the highlighted one's.
+## Who the new run comes as, down the left, the origin last played
+## highlighted, so the kit on show stays as it stands aside; each with a few
+## words under it, and one still locked shown as ????. The kit on show then
+## follows the highlight.
 func origins() -> Words:
 	var menu := Words.new("", &"ShadeSide")
 	var all := Kit.origins()
+	menu.open_on(all.find(main.last_kit()))
 	for kit in all:
 		if kit.is_open_to(main.profile()):
 			menu.add(kit.label, func() -> void: open(modes(kit)), Callable(), kit.about)

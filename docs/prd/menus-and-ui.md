@@ -73,9 +73,9 @@ aim dot hidden behind them.)
 The back action, with nothing else open, brings up the system menu over the running
 game. It holds **Options** (controls, audio, graphics), **Save** in a Normal run, and
 **Save & quit**, all safe at any moment, mid-storm included (Profile & saves). **New game**
-asks who you come as, the Surveyor highlighted, then which mode, Normal highlighted or
-Ironman; **dying** in a Normal run shows Load last
-save, highlighted, and New run (Hunter, 2026-10-16).
+asks who you come as, the origin last played highlighted, then which mode, Normal
+highlighted or Ironman; **dying** in a Normal run shows Load last save, highlighted, and
+New run (Hunter, 2026-10-16).
 
 ## Saying less
 
@@ -122,8 +122,9 @@ save and quick load.
 - **The main menu** is the game's own scene (`game/main.tscn`): the real world on a seed
   of its own, from a fixed camera on the highest sand near its spawn, facing upwind
   where the weather comes from. No one stands there and nothing of yours is in it; only
-  the weather moves, at its own pace. A low shade under the words keeps them readable
-  over bright sand. The selection shows by brightness alone.
+  the weather moves, at its own pace. A low shade under the words, and a soft dark edge
+  on every menu word and line, keep them readable over bright sand and in a storm,
+  highlighted or not. The selection shows by brightness alone.
 - **The title** at the top of the main menu is the game's name, "Desert" for now, kept in
   one place (`UIRoot.TITLE`), so a rename is one line. It's uppercase and widely spaced
   in Geist Light, off-white, centred over the words, with a small moon hung to its left
@@ -146,7 +147,8 @@ save and quick load.
   Then New game asks who you come as, with nothing written above: the origins down the
   left in bigger words, well spaced, each with a few smaller words under it (tows a camp,
   rides light, stays put) that brighten with it, and ???? for one still locked, which the
-  selection passes over; the Surveyor is highlighted. As the choice opens the showpiece
+  selection passes over; the origin last played is highlighted, the Surveyor before any,
+  so the kit on show stays as it is. As the choice opens the showpiece
   slides aside to the right, easing there, and shows the highlighted origin's kit, the
   last one shrinking away and the next growing in as the selection moves; back slides it
   home to the kit of the origin last played. Then which mode, laid out the same: Normal,

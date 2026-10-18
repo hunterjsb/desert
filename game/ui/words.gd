@@ -3,7 +3,8 @@ extends Control
 ## A menu as a few small words, low on the screen over the menu's desert and in
 ## the middle over a running game; or, for choosing a new run, bigger words
 ## down the left with a short line under each, the kit on show beside them.
-## The highlighted word is bright and the rest dim, never boxed. Menu up and
+## The highlighted word is bright and the rest dimmer, never boxed, each with
+## a soft dark edge so it reads over bright sand and storm alike. Menu up and
 ## down move the highlight, confirm triggers it, and left and right change a
 ## setting's value, each with a very quiet click. The mouse can pick too.
 
@@ -15,7 +16,7 @@ signal moved(at: int)
 const MOON := 32.0
 const MOON_GAP := 22.0
 ## A word's line while another is highlighted, as a share of its brightness.
-const UNLIT := 0.6
+const UNLIT := 0.72
 
 ## Back never closes it: the main menu is the bottom of the stack.
 var root := false
@@ -157,7 +158,7 @@ func add(text: Variant, act: Callable, step := Callable(), line := "") -> Button
 		# A space keeps a word without a line as tall as one with.
 		under.text = line if line != "" else " "
 		under.uppercase = true
-		under.modulate.a = UNLIT
+		under.modulate = Color(UNLIT, UNLIT, UNLIT)
 		pair.add_child(word)
 		pair.add_child(under)
 		_list.add_child(pair)
@@ -182,11 +183,11 @@ func add(text: Variant, act: Callable, step := Callable(), line := "") -> Button
 			_click(Sounds.MENU_MOVE)
 		_was = at
 		if under != null:
-			under.modulate.a = 1.0
+			under.modulate = Color.WHITE
 		moved.emit(at))
 	word.focus_exited.connect(func() -> void:
 		if under != null:
-			under.modulate.a = UNLIT)
+			under.modulate = Color(UNLIT, UNLIT, UNLIT))
 	word.focus_exited.connect(_keep_focus, CONNECT_DEFERRED)
 	word.gui_input.connect(func(event: InputEvent) -> void: _on_word_input(item, event))
 	_wrap()
@@ -215,6 +216,11 @@ func highlighted() -> int:
 		if (_items[i].button as Button).has_focus():
 			return i
 	return -1
+
+
+## Opens with the word at this place highlighted, if it can be.
+func open_on(at: int) -> void:
+	_was = at
 
 
 ## The one last highlighted, or the first that can be.
