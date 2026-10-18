@@ -85,12 +85,14 @@ a report when it first carries you. The patrol board's is "build," proposed, and
 its exact unlock as open.
 
 **Built (2026-10-18): the three balanced origins.** New game asks who you come as before it asks the
-mode: the Surveyor, highlighted, the Salvager and the Homesteader, under a line of what each is
-like to play. Each is a `Kit` resource (`game/survival/`): its id, name and line, its start on the
-moon ([the world system](../world-system.md#the-feral-layer-and-spawns)), whether it's balanced and
-what unlocks it. The menu offers the origins open to the profile (`Kit.open_to`, through
-`Profile.has`); the Salvager's and Homesteader's playstyle unlocks wait on something that counts a
-playstyle, so all three are open from the first run. The novelty kits aren't built; an origin that
+mode: the Surveyor, highlighted, the Salvager and the Homesteader, each with a few words under it
+(Menus & UI). Each is a `Kit` resource (`game/survival/`): its id, name and words, its start on the
+moon ([the world system](../world-system.md#the-feral-layer-and-spawns)), whether it's balanced,
+what unlocks it and what of it the main menu shows. The menu lists every origin, one not open to
+the profile (`Kit.is_open_to`, through `Profile.has`) as ????; the Salvager's and Homesteader's
+playstyle unlocks wait on something that counts a playstyle, so all three are open from the first
+run. The profile keeps the origin a run was last begun or resumed as (`Profile.last_origin`), whose
+kit the main menu shows; reset forgets it. The novelty kits aren't built; an origin that
 isn't balanced is offered Normal only. The run keeps its origin (`World.kit`) and so does its save
 (`kit`); a new run after a death comes as the same origin. A save from before origins has none and
 resumes as it was, from the tuning's start. Spawns probes 2 and 3.
@@ -130,8 +132,8 @@ Readings, not in the session:
 1. **A save holds what you changed, never what the seed already says.**
 2. **Saving never changes the run.** Saving and resuming at once gives the same world,
    tick for tick, as not saving at all.
-3. **The profile only ever grows by `profile.unlock` and discovery,** and only reset
-   empties it.
+3. **The profile's unlocks and discoveries only ever grow, by `profile.unlock` and
+   discovery,** and only reset empties them. Beside them it keeps the origin you last came as.
 
 ## Skeleton version
 
@@ -144,8 +146,8 @@ Readings, not in the session:
 
 **Built** (2026-10-16), waiting at the gate. Two autoloads: `Saves` (`has_run`, `save`,
 `save_in_background`, `run_seed`, `ironman`, `restore`, `delete`) and `Profile`
-(`unlock`, `discover`, `has`, `reset`). Menus & UI calls them from Save, Save & quit,
-Resume, New game, the death screen and Options.
+(`unlock`, `discover`, `has`, `reset`, `remember_origin`, `last_origin`). Menus & UI calls
+them from Save, Save & quit, Resume, New game, the death screen and Options.
 
 - **The mode** is chosen at New game, held by the run (`Runs.ironman`) and kept in its
   save, and Resume reads it back. A save from before modes has none and resumes as
