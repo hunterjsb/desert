@@ -92,8 +92,8 @@ func offer(by: Player, bed: Node = null) -> bool:
 
 ## Why you can't sleep now, in a few words, or "": on your feet and still,
 ## hands (but for the bed in them) and waist free, nothing of the camp moving
-## as the physics runs, and no harm reaching you where you lie: under a
-## running shield in a storm, or on sand calm enough.
+## as the physics runs or under sail, and no harm reaching you where you lie:
+## under a running shield in a storm, or on sand calm enough.
 func refusal(bed: Node = null) -> String:
 	var player := _world.player
 	if player.vitals.dead:
@@ -110,6 +110,11 @@ func refusal(bed: Node = null) -> String:
 		if body.linear_velocity.length() > _tuning.sleep_still_speed \
 				or body.angular_velocity.length() > _tuning.sleep_still_spin:
 			return "%s moving" % _name(body).to_lower()
+	# The night reckons the wind on what's held, not a sail's pull: furl it first.
+	for device in _world.devices():
+		if device is Mast and (device as Mast).raised \
+				and device.global_position.distance_to(player.global_position) <= _tuning.sleep_camp_m:
+			return "sail up"
 	var harm := player.vitals.harms_at(player.global_position)
 	if harm.storm > 0.0:
 		return "no shield"
@@ -238,6 +243,7 @@ func overnight(until: float, station: Radio = null) -> Dictionary:
 		world.wear.live(h, t)
 		world.farm.live(h, t)
 		player.vitals.live(h, t)
+		world.terrain.tracks.live(h, t)
 		_drift(groups, t, h)
 		t += h
 	world.time = t
@@ -246,7 +252,8 @@ func overnight(until: float, station: Radio = null) -> Dictionary:
 		night.shields.append({"name": _name(shield), "held": shield.running(), "wh": world.power.pool_wh(shield)})
 	_wake(groups, were, gave, night)
 	for device: Device in sound:
-		if is_instance_valid(device) and sound[device] > 0.0 and device.wrecked():
+		if is_instance_valid(device) and not device.is_queued_for_deletion() and sound[device] > 0.0 \
+				and device.wrecked():
 			night.wrecked.append(_name(device))
 	world.weather.forecast_now()
 	# The storm pass's map is drawn again for the hour you woke to while it's dark.

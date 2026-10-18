@@ -163,11 +163,12 @@ session's sleep clock, isn't built. Through the storm needs a running shield ove
 
 **Only a still camp sleeps**, read off the physics as it runs: you on your feet and still, your hands
 free but for the bed in them, nothing at your waist; your devices and stakes within 30 m slower than
-0.5 m/s and 1 rad/s; and no harm reaching you where you lie, which in a storm means under a running
+0.5 m/s and 1 rad/s, and no sail raised there (the night reckons the wind on what's held, not a
+sail's pull); and no harm reaching you where you lie, which in a storm means under a running
 shield and out of one, wind under 20 m/s and the air within the suit's limits. Then the screen goes
 black over half a second while the physics runs on and the camp is watched. Anything over those marks,
 then or at the start, and you don't sleep: use's line says why ("no shield", "crate moving", "camp
-moving", "too windy", "hands full", "a line at your waist").
+moving", "sail up", "too windy", "hands full", "a line at your waist").
 
 **The night.** Physics never steps. The camp is held where it stands and the clock steps to when you
 wake 10 s of world time at a time (`sleep_tick`), each system living each step by its own sums in the
