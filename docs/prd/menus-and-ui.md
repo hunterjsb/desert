@@ -181,35 +181,60 @@ save and quick load.
   as the prototype's logo had: a lit crescent over the faint rest of the disc, drawn in
   the theme's colours. A faint high shade, the twin of the low one, keeps it readable
   over a bright sky; in a storm it reads on its own.
-- **The showpiece** (`game/ui/showpiece.gd`) is the kit of the origin last played,
-  floating between the title and the words, put together as a new run's is. Before any
-  run it's the Surveyor's crate: the light shield and the light panel on top, the board
-  racked on its side, the batteries half full and their lights showing it. Each kit says
-  what of it is shown, side by side (`Kit.shown`): the Salvager's board and light shield,
-  the Homesteader's planter, shield and condenser; one much wider than the crate is shown
-  smaller, to fit where the crate does. It tilts toward the mouse, up to 25°, easing
-  there, and rests facing you until the mouse moves and once it leaves the window. Dragged, it spins, and
-  let go it keeps a little of the spin; a press on a word is always the word's, and
-  under Options it can't be grabbed. Only its looks are kept, never a body, so it can't
-  fall, blow away or be saved, and it stands in the desert's own light and weather,
-  dark in a storm but for its tells, its charge lights and the shield's blue band. New game over a save asks
-  "this ends your saved run" with the safe answer highlighted, and back declines too.
-  Then New game asks who you come as, with nothing written above: the origins down the
-  left in bigger words, well spaced, each with a few smaller words under it (tows a camp,
-  rides light, stays put) that brighten with it, and ???? for one still locked, which the
-  selection passes over; the origin last played is highlighted, the Surveyor before any,
-  so the kit on show stays as it is. As the choice opens the showpiece
-  slides aside to the right, easing there, and shows the highlighted origin's kit, the
-  last one shrinking away and the next growing in as the selection moves; back slides it
-  home to the kit of the origin last played. Then which mode, laid out the same: Normal,
-  highlighted, "saves as you go", and Ironman, "death ends the run"; back goes back a
-  step, the save untouched. The origin a run is begun or resumed as is kept in the
-  profile (Profile & saves). Into the
-  game: a fade to black, the run built (`game/run.tscn`, which is what `main.tscn` used
-  to be), and back from black once the sand round you is solid.
-- **The system menu**, over the running game under a dark wash: Options, Save in a
-  Normal run, and Save & quit. Save keeps the menu up and its word says how it went:
-  Saved, or Couldn't save. Nothing pauses.
+- **The prop** (`game/ui/showpiece.gd`) is one compact piece of the origin last played's
+  kit (`Kit.shown`), floating between the title and the words, put together as a new
+  run's is: the Surveyor's crate as assembled, the light shield and the light panel on top,
+  the board racked on its side, the batteries half full and their lights showing it; the
+  Salvager's board; the Homesteader's planter with its crops, battery, harvester and
+  canister. One much wider than the crate is shown smaller, to fit where the crate does.
+  It tilts toward the mouse, up to 25°, easing there, and rests facing you until the mouse
+  moves and once it leaves the window. Dragged, it spins, and let go it keeps a little of
+  the spin; a press on a word is always the word's, and under another menu it can't be
+  grabbed. Only its looks are kept, never a body, so it can't fall, blow away or be saved,
+  and it stands in the desert's own light and weather, its tells, charge lights and the
+  shield's blue band showing. As the desert's light falls, in a storm or at night, a soft
+  key light from over your left shoulder comes up on the prop alone (a render layer only
+  it stands on), as bright to the eye whatever the eye has opened to, so its shape and
+  colours read with the night left dark round it.
+- **Every menu over the main menu** stands down the left in bigger words, a few smaller
+  words under each that has them, and slides the prop aside to the right, easing there:
+  Options, its controls list, the questions, who you come as, the mode and Resume. The
+  title and the main menu's own words stand alone over the sand and sky. It's one state
+  (`Showpiece.aside`): a menu opened at the main menu is laid out for it (`UIRoot._menu`)
+  and says what the prop shows (`Words.shows`), the kit at home if nothing; back slides it
+  home. New game over a save asks "this ends your saved run", the prop already aside, with
+  the safe answer highlighted, and back declines too.
+- **Who you come as**, with nothing written above: the origins down the left, well spaced,
+  each with a few smaller words under it (tows a camp, rides light, stays put) that
+  brighten with it, and ???? for one still locked, which the selection passes over; the
+  origin last played is highlighted, the Surveyor before any, so the piece on show stays as
+  it is. The highlighted origin's piece shows aside, the last one shrinking away and the
+  next growing in as the selection moves, and under it on the right its gear, small: each
+  thing and how many, read from the kit as a run sets it down (`Kit.gear`), two to a line
+  once there are many. Then which mode, laid out the same over the chosen origin's piece
+  and gear: Normal, highlighted, "saves as you go", and Ironman, "death ends the run"; back
+  goes back a step, the save untouched. The origin a run is begun or resumed as is kept in
+  the profile (Profile & saves).
+- **Resume** opens the same view: Continue, highlighted, on the left, and aside your last
+  camp as the save holds it, built from the save's own data with no world
+  (`Snapshot.camp`): the thing of yours nearest where you stood and what stood within 12 m
+  of it, 8 at most, each with everything seated in it and its state (charge, crops, a
+  shield's switch), seen from where you stood toward it and fitted to the crate's span.
+  Under it, the save's numbers: time played, when it was saved by the clock on the wall
+  (today 13:40, yesterday 21:05, 3 days ago), the run's day, and who you came as. A save
+  from before time played was kept lists the rest. Confirm carries on; back goes back.
+- **Music** at the main menu: the radio's day or night track by the menu's own light
+  (`Radio.track_at`), from where the station has got to, on the menus' bus while the
+  menu's storm stays silent (`game/ui/menu_music.gd`). It changes track through a moment's
+  quiet and fades out with the screen into a run. A speaker in the bottom left switches it,
+  by a click or by the menu's up and down, round past the first and last words: waves
+  while it plays, a cross while it's off, and it stays as you leave it (`Settings.music`).
+- **Into the game:** a fade to black, the run built (`game/run.tscn`, which is what
+  `main.tscn` used to be), and back from black once the sand round you is solid.
+- **The system menu**, over the running game on a soft dark scrim, darkest behind its words
+  and lighter toward the screen's edges (the theme's `Scrim`, which every menu over a run
+  stands on): Options, Save in a Normal run, and Save & quit. Save keeps the menu up and its
+  word says how it went: Saved, or Couldn't save. Nothing pauses.
 - **The death screen,** in a Normal run, over the running game: "You died", with Load
   last save, highlighted, and New run. Back doesn't close it. Load is Resume, through
   the fade; New run is New game in Normal, on a new seed, the save deleted. Dying before
@@ -246,10 +271,12 @@ save and quick load.
   never saved: no Save, Quit to menu in place of Save & quit, and no autosave, so the
   player's own save is left as it was. A run the console's `scenario` has been used in
   is the same from then on.
-- `look/menus` shoots the main menu, with its title and crate, in a storm and on a clear
-  day; who you come as with each origin highlighted and with one locked, and the modes;
-  the main menu after a Homesteader's run; and the system menu, to judge by eye
-  (`look/menus/shoot.sh` builds the sheet).
+- `look/menus` shoots the main menu, with its title and crate, in a storm, on a clear day
+  and with its music off; Options and the question over a save with the prop aside; who
+  you come as with each origin's piece and gear, one locked, and the modes; the main menu
+  after a Homesteader's run; the system menu; Resume with that run's camp (and the save
+  `LOOK_SAVE` names, if set); and the main menu and Resume at the menu's darkest, to judge
+  by eye (`look/menus/shoot.sh` builds the sheet).
 - Probes 1–9 pass, each proven against a broken build. Probes 3, 4 and 7 use the real
   saves, kept in each probe's own folder; probe 3 is the whole trip: New game, Save &
   quit out on the sand, Resume, and you're back where you were.
@@ -269,8 +296,10 @@ save and quick load.
    again, it opens the system menu; again, it closes that.
 3. **The menu's default.** The title is the game's name, over the starting crate, which
    is only to look at: no body in it, and a storm doesn't move it. With a save, Resume
-   is highlighted and confirm resumes; with none, Resume is absent and New game is
-   highlighted, and it asks who you come as, then which mode with Normal highlighted.
+   is highlighted and confirm shows the save's camp and numbers, and confirm again
+   resumes; a save from before time played was kept still opens. With none, Resume is
+   absent and New game is highlighted, and it asks who you come as, then which mode with
+   Normal highlighted.
 4. **New game asks over a save,** and declining leaves the save untouched.
 5. **One theme.** Every UI control in the game, menus and gameplay, draws from the one
    theme.
@@ -282,10 +311,11 @@ save and quick load.
 8. **The dev console.** Its action opens it over a run; typed and held keys reach only
    it, `warp 4` runs the clock four times as fast and `scenario dusk` puts you at dusk in
    a run that's never saved; back closes it and nothing else, and so does its action.
-9. **The kit on show.** Before any run the main menu shows the Surveyor's kit. New game
-   slides it aside, and with the Salvager highlighted it shows the Salvager's; back slides
-   it home. After a Salvager run the menu shows the Salvager's kit, and so does the next
-   session's.
+9. **The prop aside.** Every menu opened off the main menu stands on the left and slides
+   the prop aside; back slides it home. With the Salvager highlighted it shows the
+   Salvager's board, and each origin's gear as listed is what its run sets down. After a
+   Salvager run the menu shows the Salvager's board, and so does the next session's; the
+   music's switch, reached by the menu's actions, stays muted into the next session.
 10. **A how-to once a profile.** The first sheet at your waist shows its how-to, its keys as
     bound; tied on again it doesn't, nor in a new run on the same profile.
 

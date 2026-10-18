@@ -221,6 +221,8 @@ func add_corner(on: Callable, act: Callable) -> Button:
 	word.draw.connect(_draw_speaker.bind(word, on))
 	word.pressed.connect(word.queue_redraw)
 	add_child(word)
+	# Its neighbours by path, from where it stands now.
+	_wrap()
 	return word
 
 

@@ -175,7 +175,8 @@ calls them from Save, Save & quit, Resume, New game, the death screen and Option
   moving, stamina, your bars, everything you carry (each thing with its state, as a
   radio's channel, beacon and charge; a save from before, with five slots, resumes with
   their contents carried), what's in your hands, at your waist or being
-  hauled, and the board you ride with its ride as it stood), the clock, the moon position, the engine's origin, and where power, wear,
+  hauled, and the board you ride with its ride as it stood), the clock, how long the run has
+  been played (a save from before kept none, and its run never counts it), the moon position, the engine's origin, and where power, wear,
   farming and your body are in their ticks. Then everything of yours: each thing by its
   catalog id, where it is and how it's moving, its wear, charge, water, growth and
   harvests, a shield's switch and how far its bubble has bloomed, a stake driven or not,
