@@ -149,8 +149,10 @@ func _look(eye: Vector3, target: Vector3) -> void:
 	await RenderingServer.frame_post_draw
 
 
+## The run's clock when it's `of_day` where you stand: the day is local.
 func _run_time(of_day: float) -> float:
-	return fposmod(of_day - world.tuning.start_time_of_day, 1.0) * world.tuning.day_minutes * 60.0
+	var off := of_day - world.weather.day.time_of_day(0.0, world.moon.longitude)
+	return fposmod(off, 1.0) * world.tuning.day_minutes * 60.0
 
 
 func _ground() -> void:
