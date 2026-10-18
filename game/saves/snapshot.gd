@@ -109,6 +109,8 @@ func begin(data: Dictionary) -> Array[Vector2]:
 		player.vitals.set(key, _copy(you.vitals[key]))
 	world.weather.forecast_now()
 	world.salvage.recall(data.finds, world.terrain.chunk_at(world.player_world_x(), world.player_world_z()))
+	# History laid where it was; a save from before has none, and lays afresh.
+	world.shape.sites.recall(data.get("sheet", []))
 	var places: Array[Vector2] = [Vector2(world.player_world_x(), world.player_world_z())]
 	for rec: Dictionary in data.things:
 		places.append(Vector2(rec.at[1], rec.at[3]))
@@ -308,6 +310,7 @@ func _take() -> Dictionary:
 		data.grasp = grasp.memory()
 		data.grasp.body = _ref(grasp.body)
 	data.finds = world.salvage.memories()
+	data.sheet = world.shape.sites.memories()
 	return data
 
 

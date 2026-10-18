@@ -91,6 +91,7 @@ func _process(_delta: float) -> void:
 	_update_far()
 	_collect()
 	_world.salvage.stream(_deadline)
+	_world.shape.sites.step(_deadline)
 	frame_ms = (Time.get_ticks_usec() - started) / 1000.0
 	slowest_frame_ms = maxf(slowest_frame_ms, frame_ms)
 	Dev.put("terrain/chk", "%d" % _chunks.size())
@@ -155,6 +156,37 @@ func has_collision_at(world_x: float, world_z: float) -> bool:
 
 func is_loaded_at(world_x: float, world_z: float) -> bool:
 	return _chunks.has(chunk_at(world_x, world_z))
+
+
+## Whether any chunk touching a rectangle of world metres is loaded.
+func is_loaded_in(rect: Rect2) -> bool:
+	var lo := chunk_at(rect.position.x, rect.position.y)
+	var hi := chunk_at(rect.end.x, rect.end.y)
+	if (hi.x - lo.x + 1) * (hi.y - lo.y + 1) > _chunks.size():
+		for coord: Vector2i in _chunks:
+			if coord.x >= lo.x and coord.x <= hi.x and coord.y >= lo.y and coord.y <= hi.y:
+				return true
+		return false
+	for j in range(lo.y, hi.y + 1):
+		for i in range(lo.x, hi.x + 1):
+			if _chunks.has(Vector2i(i, j)):
+				return true
+	return false
+
+
+## Forgets every loaded chunk touching a rectangle of world metres, so it's
+## built again from the ground's one function as it is now: what a resume
+## does where the history under it was laid differently.
+func forget(rect: Rect2) -> void:
+	var lo := chunk_at(rect.position.x, rect.position.y)
+	var hi := chunk_at(rect.end.x, rect.end.y)
+	for coord: Vector2i in _chunks.keys():
+		if coord.x >= lo.x and coord.x <= hi.x and coord.y >= lo.y and coord.y <= hi.y:
+			var chunk: TerrainChunk = _chunks[coord]
+			unloaded.emit(coord)
+			chunk.free()
+			_chunks.erase(coord)
+	_planned = false
 
 
 ## Every chunk within collision range of this point has its collision.
@@ -240,7 +272,11 @@ func _out_of_time() -> bool:
 
 func _launch() -> void:
 	while _tasks.size() < _tuning.builds_in_flight and not _wanted.is_empty():
-		var key: Vector3i = _wanted.pop_front()
+		var key: Vector3i = _wanted[0]
+		# Ground is built only once the history that could touch it is laid.
+		if not _world.shape.sites.ready(Rect2(Vector2(key.x, key.y) * _size, Vector2.ONE * _size)):
+			return
+		_wanted.pop_front()
 		if _tasks.has(key):
 			continue
 		_tasks[key] = WorkerThreadPool.add_task(_build.bind(key, RenderingServer.mesh_create()))

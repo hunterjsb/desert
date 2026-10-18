@@ -42,6 +42,10 @@ var gravity: float
 
 var _last_x: float
 var _last_z: float
+## The chunk the sheet last followed you to, and the moon's jumps then; none
+## forces it to follow again.
+var _followed := Vector2i.MAX
+var _followed_jumps := 0
 
 
 func _ready() -> void:
@@ -68,6 +72,9 @@ func _ready() -> void:
 	player.global_position = Vector3(engine_x(spawn.x), height_at(spawn.x, spawn.y) + 0.1, engine_z(spawn.y))
 	_last_x = player_world_x()
 	_last_z = player_world_z()
+	shape.sites.loaded = terrain.is_loaded_in
+	shape.sites.rebuild = terrain.forget
+	_follow_history()
 
 
 ## Dev: puts the player down at a world place and run time, facing yaw, as a
@@ -83,7 +90,42 @@ func respawn(x: float, z: float, yaw: float, at_time: float) -> void:
 	moon = MoonPosition.new(tuning)
 	_last_x = x
 	_last_z = z
+	_followed = Vector2i.MAX
 	weather.forecast_now()
+
+
+## Dev: puts you at a point on the moon, degrees, facing yaw, as a fresh spawn
+## there. You land on fresh ground well off any that's loaded, so the history
+## laid round you there is laid on ground not yet built.
+func travel(latitude_degrees: float, longitude_degrees: float, yaw: float) -> void:
+	# Past where the history kept under the old ground could reach.
+	var off := (tuning.history_lay_m + tuning.history_cell_m) * 2.0 + history_due()
+	var at := _flat_near(player_world_x() + off, player_world_z())
+	respawn(at.x, at.y, yaw, time)
+	moon.place(latitude_degrees, longitude_degrees)
+
+
+## How far round you history is laid before any ground is built there: past
+## the farthest loaded chunk's far corner.
+func history_due() -> float:
+	return (tuning.view_radius + 2) * tuning.chunk_size * sqrt(2.0)
+
+
+## The sheet follows you: it lays history from the point the moon position
+## was last reckoned at, so laying is a pure function of the ticks.
+func _follow_history() -> void:
+	_followed = terrain.chunk_at(_last_x, _last_z)
+	_followed_jumps = moon.jumps
+	shape.sites.follow(_last_x, _last_z, moon.latitude, moon.longitude, -moon.north().z, history_due())
+	var p := Sphere.point(moon.latitude, moon.longitude)
+	var history := shape.history
+	var near := history.nearest_landmark(p)
+	Dev.put("world/zone", "%s, %s" % [history.region_of(p), history.tu_words(p)])
+	Dev.put("world/hist", "%d units" % shape.sites.units().size())
+	if not near.is_empty():
+		# A bearing on the sphere is from the moon's north, as a compass reads.
+		Dev.put("world/lmk", "%s %.1fkm %s" % [near.landmark.name, near.metres / 1000.0,
+			Radio.compass(rad_to_deg(near.bearing))])
 
 
 ## A run starts on ground this flat: a camp-sized patch whose sand rises no
@@ -229,6 +271,8 @@ func _physics_process(delta: float) -> void:
 	moon.advance(x - _last_x, _last_z - z)
 	_last_x = x
 	_last_z = z
+	if terrain.chunk_at(x, z) != _followed or moon.jumps != _followed_jumps or not shape.sites.anchored():
+		_follow_history()
 
 	var stray := Vector2i(floori(player.global_position.x / tuning.chunk_size),
 		floori(player.global_position.z / tuning.chunk_size))

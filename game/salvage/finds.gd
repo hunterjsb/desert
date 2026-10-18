@@ -204,15 +204,17 @@ static func plan(run_seed: int, coord: Vector2i, exposed: float, tuning: Tuning,
 
 
 ## What the nearest beacon within reach of a world place points at: the
-## device in a ruin's hall, which every ruin holds whatever the weather, in
-## one of the ruins the seed left a beacon running in, passing over any
-## `taken(coord, index)` says is yours already. {x, z, coord, index} in world
-## metres, or {} if none is in reach.
-static func beacon(run_seed: int, sites: RuinSites, x: float, z: float, tuning: Tuning, taken: Callable) -> Dictionary:
+## device in a house ruin's hall, which every one holds whatever the weather,
+## in one of the ruins the seed left a beacon running in, passing over any
+## `taken(coord, index)` says is yours already; picked through the site index.
+## {x, z, coord, index} in world metres, or {} if none is in reach.
+static func beacon(run_seed: int, sites: Sites, x: float, z: float, tuning: Tuning, taken: Callable) -> Dictionary:
 	var size := float(tuning.chunk_size)
-	var ruin := sites.nearest(x, z, tuning.radio_reach_m, func(middle: Vector2i) -> bool:
-		var coord := Vector2i(floori(middle.x / size), floori(middle.y / size))
-		return _stream(run_seed, coord, BEACON).randf() < tuning.beacon_share and not taken.call(coord, IN_RUIN))
+	var ruin := sites.nearest(x, z, tuning.radio_reach_m, func(kind: StringName, at_x: float, at_z: float) -> bool:
+		if kind != &"house_ruin":
+			return false
+		var coord := Vector2i(floori(at_x / size), floori(at_z / size))
+		return _stream(run_seed, coord, BEACON).randf() < tuning.beacon_share and not taken.call(coord, IN_RUIN)) as Ruin
 	if ruin == null:
 		return {}
 	var at := ruin.to_world(Ruin.SPOTS[0])

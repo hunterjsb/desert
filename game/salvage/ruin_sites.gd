@@ -96,6 +96,24 @@ func around(x: float, z: float, radius: float) -> Array[Ruin]:
 	return found
 
 
+## Every ruin whose ground touches a rectangle of world metres.
+func touching(rect: Rect2) -> Array[Ruin]:
+	var found: Array[Ruin] = []
+	if not _on:
+		return found
+	var grown := rect.grow(Ruin.REACH)
+	for j in range(floori(grown.position.y / _cell), floori(grown.end.y / _cell) + 1):
+		for i in range(floori(grown.position.x / _cell), floori(grown.end.x / _cell) + 1):
+			var cell := Vector2i(i, j)
+			var spot := _spot(cell)
+			if not grown.has_point(Vector2(spot.x, spot.y)):
+				continue
+			var ruin := _site(cell, spot)
+			if ruin != null and ruin.touches(rect):
+				found.append(ruin)
+	return found
+
+
 ## The nearest ruin within `radius` m of a world place whose middle `wanted`
 ## keeps, or null. The test is asked before the ground is surveyed, so one
 ## of the seed alone spares the surveys a wide search would cost.
