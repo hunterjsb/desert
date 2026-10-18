@@ -61,6 +61,13 @@ aim dot hidden behind them.)
   spawn with the run's ordinary starting weather. The menu's view never chooses where a
   run begins.
 
+- **Choosing who you come as** (Hunter, 2026-10-18, after playing it): the origins stand in a
+  list on the left, bigger and spaced so each reads at a glance, with a very short line under
+  each and "????" for one still locked, and nothing written above the list. The starting kit in
+  the foreground slides over to the right as New game opens the choice, and shows the
+  highlighted origin's own kit as the selection moves. The main menu shows the kit of the
+  origin last played.
+
 ## The system menu
 
 The back action, with nothing else open, brings up the system menu over the running
@@ -69,6 +76,20 @@ game. It holds **Options** (controls, audio, graphics), **Save** in a Normal run
 asks who you come as, the Surveyor highlighted, then which mode, Normal highlighted or
 Ironman; **dying** in a Normal run shows Load last
 save, highlighted, and New run (Hunter, 2026-10-16).
+
+## Saying less
+
+(Hunter, 2026-10-18: "we have like a 30 word tooltip on a chassis, almost everything is
+overload. its good to have info, but if we cant find more intuitive ways to communicate a lot
+of this, then we will need to just stop dropping things out the tooltip.")
+
+- **The look-at line says what it is and the one thing you need now,** a few words. Anything
+  else is shown another way, the ghost, a highlight of what would move, a sound, the thing's
+  own look, or it isn't said.
+- **What makes power says "output",** what uses it "draws".
+- **Teaching happens once, where it's needed:** a skill like trimming a sail by the sheet at
+  your waist gets a short how-to the first time, then is left to you. Sailing should take
+  skill; the how-to says what the controls do, not how to win.
 
 ## The dev console
 
