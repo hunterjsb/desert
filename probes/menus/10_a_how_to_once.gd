@@ -1,5 +1,5 @@
 extends MenuProbe
-## Menus & UI probe 9: a how-to once a profile. The first time a sail's sheet
+## Menus & UI probe 10: a how-to once a profile. The first time a sail's sheet
 ## is at your waist, a short how-to shows, its keys as bound; tied on again it
 ## doesn't, nor in a new run on the same profile.
 

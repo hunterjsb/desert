@@ -245,25 +245,32 @@ func system_menu() -> Words:
 	return menu
 
 
-## Who the new run comes as, from the origins open to you: the default
-## highlighted, each said in a few words.
+## Who the new run comes as, down the left, the origin last played
+## highlighted, so the kit on show stays as it stands aside; each with a few
+## words under it, and one still locked shown as ????. The kit on show then
+## follows the highlight.
 func origins() -> Words:
-	var open_to := Kit.open_to(main.profile())
-	var menu := Words.new(" ".join(PackedStringArray(open_to.map(func(kit: Kit) -> String:
-		return "The %s %s." % [kit.label, kit.about]))))
-	for kit in open_to:
-		menu.add(kit.label, func() -> void: open(modes(kit)))
+	var menu := Words.new("", &"ShadeSide")
+	var all := Kit.origins()
+	menu.open_on(all.find(main.last_kit()))
+	for kit in all:
+		if kit.is_open_to(main.profile()):
+			menu.add(kit.label, func() -> void: open(modes(kit)), Callable(), kit.about)
+		else:
+			menu.add("????", Callable())
+	menu.moved.connect(func(at: int) -> void:
+		if main.showpiece != null:
+			main.showpiece.picked = all[at])
 	return menu
 
 
-## Which rules the new run plays by, for good: Normal highlighted. An origin
-## the game isn't balanced round has no Ironman.
+## Which rules the new run plays by, for good, laid out as the origins are:
+## Normal highlighted. An origin the game isn't balanced round has no Ironman.
 func modes(kit: Kit) -> Words:
-	var menu := Words.new("Normal saves as you go. In Ironman, death ends the run." if kit.balanced
-		else "Normal saves as you go.")
-	menu.add("Normal", main.new_game.bind(false, false, kit))
+	var menu := Words.new("", &"ShadeSide")
+	menu.add("Normal", main.new_game.bind(false, false, kit), Callable(), "saves as you go")
 	if kit.balanced:
-		menu.add("Ironman", main.new_game.bind(true, false, kit))
+		menu.add("Ironman", main.new_game.bind(true, false, kit), Callable(), "death ends the run")
 	return menu
 
 

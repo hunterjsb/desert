@@ -11,11 +11,14 @@ const STANDARD := "res://game/survival/standard_kit.tres"
 const ORIGINS: Array[String] = [STANDARD, "res://game/survival/salvager_kit.tres",
 	"res://game/survival/homesteader_kit.tres"]
 
-## Who you came as, by id and by name, and what it means to play as them, as
-## New game says it.
+## Who you came as, by id and by name, and the few words New game says
+## under the name.
 @export var id: StringName = &""
 @export var label := ""
 @export var about := ""
+## What the main menu shows of it: things beside you, by name, side by side
+## in this order, each turned this far about the up axis, degrees.
+@export var shown: Dictionary[StringName, float] = {}
 ## Where on the moon it begins (Starts): "artery", "wreck_field" or
 ## "wayshrine"; none, where the tuning says.
 @export var start: StringName = &""
@@ -74,9 +77,13 @@ static func named(origin: StringName) -> Kit:
 static func open_to(profile: Node) -> Array[Kit]:
 	var out: Array[Kit] = []
 	for each in origins():
-		if each.unlock == "" or (profile != null and profile.has(each.unlock)):
+		if each.is_open_to(profile):
 			out.append(each)
 	return out
+
+
+func is_open_to(profile: Node) -> bool:
+	return unlock == "" or (profile != null and profile.has(unlock))
 
 
 ## What's carried, one id a thing.

@@ -18,3 +18,7 @@ beside = Dictionary[StringName, Vector2]({
 &"light_shield": Vector2(1.2, 1.8)
 })
 charge = 1.0
+shown = Dictionary[StringName, float]({
+&"board": 90.0,
+&"light_shield": 0.0
+})

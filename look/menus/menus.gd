@@ -1,6 +1,8 @@
 extends Node
 ## Look-test helper: shoots the main menu, its title and crate, over its desert
-## as it opens and once its storm has passed, then the system menu over a run.
+## as it opens and once its storm has passed; who you come as with each origin
+## highlighted, one of them locked, and the modes; the main menu after a
+## Homesteader's run; then the system menu over a run.
 ## The eye adapts here as in the game; it prints how far it swung over ten
 ## seconds at the menu, in its storm and in the clear, beside how far the
 ## frame's own light did, so a pumping desert shows. Needs a window, not --headless:
@@ -39,6 +41,28 @@ func _ready() -> void:
 	await _ticks(120)
 	await _held(view, "in the clear,")
 	_shoot(out.path_join("menu_main.png"))
+	var origins := Kit.origins()
+	_press(&"ui_accept")
+	for k in origins.size():
+		if k > 0:
+			_press(&"ui_down")
+		await _settle(main)
+		_shoot(out.path_join("menu_origin_%s.png" % origins[k].id))
+	_press(&"ui_accept")
+	await _settle(main)
+	_shoot(out.path_join("menu_modes.png"))
+	_press(&"ui_cancel")
+	_press(&"ui_cancel")
+	# Locked, as an origin will be until its unlock is found.
+	origins[1].unlock = "look_locked"
+	_press(&"ui_accept")
+	await _settle(main)
+	_shoot(out.path_join("menu_origin_locked.png"))
+	origins[1].unlock = ""
+	_press(&"ui_cancel")
+	main.showpiece.home = origins[2]
+	await _settle(main)
+	_shoot(out.path_join("menu_main_homesteader.png"))
 	main.new_game()
 	while main.world() == null or main.ui._fading:
 		await get_tree().process_frame
@@ -63,6 +87,22 @@ func _held(world: World, what: String) -> void:
 		opened = Vector2(minf(opened.x, eye.stops), maxf(opened.y, eye.stops))
 	print("menus: %s over 10 s the frame's light swung %.2f stops, the eye %.2f (+%.2f to +%.2f)"
 		% [what, light.y - light.x, opened.y - opened.x, opened.x, opened.y])
+
+
+## The first key bound to an action, pressed and let go.
+func _press(action: StringName) -> void:
+	var event: InputEvent = InputMap.action_get_events(action)[0].duplicate()
+	event.pressed = true
+	get_viewport().push_input(event)
+	event = event.duplicate()
+	event.pressed = false
+	get_viewport().push_input(event)
+
+
+## Long enough for the kit on show to slide and swap.
+func _settle(main: Main) -> void:
+	await get_tree().create_timer(Showpiece.SLIDE_SECONDS + Showpiece.SWAP_SECONDS + 0.2).timeout
+	print("menus: the %s's kit on show, at %d%% of its size" % [main.showpiece.kit.label, roundi(main.showpiece._fit * 100.0)])
 
 
 func _idle(world: World) -> void:
