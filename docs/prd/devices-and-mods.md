@@ -163,8 +163,11 @@ floater out of pieces:
   and whatever is in them move into the first piece's body, as a fitted part's shapes
   do, so a deck is one rigid body, never pieces on joints. A ring between two pieces
   closes and takes nothing. A ring isn't offered where something stands beyond it (a
-  piece joined over a crate would throw it), where a hook on a neighbouring edge would
-  stand in the new place, or for a wrecked piece. A piece with something standing on it
+  piece joined over a crate would throw it) or for a wrecked piece. A hook in the way pops
+  off instead (Hunter, 2026-10-17: "hooks should pop off when its obstructing a chassis
+  snap"): a hook on a neighbouring edge, or on either ring that closes, where the new piece
+  goes comes loose onto the sand as the piece snaps in, with any line on it still tied,
+  where before the ring wasn't offered. A piece with something standing on it
   is too heavy to carry, so it joins from your hold: having hold of it, the free ring of a
   deck whose place beside it is within 1.2 m of the piece is offered, with its ghost, if
   the piece and all on it would sit clear there, and take joins it, turned the quarter
