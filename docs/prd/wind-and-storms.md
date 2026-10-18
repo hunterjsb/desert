@@ -504,7 +504,7 @@ On the RTX 3070 at 1280 by 720, shared with other work (look/plume: the GPU's fr
 and without, the median of ten paired turns, over three runs): 0.4 to 1.3 ms a frame from 270 m under
 its column, the most in a burst; 0.02 to 0.27 ms from 1.5 km; 0.0 to 0.21 ms from 7 km; nothing
 measurable when a storm hides it. Its main-thread time is 0.15 to 0.22 ms a frame wherever it's in
-sight (the streakline a few points a frame, a storm read every other frame, its uniforms), 1 to 3 ms
+sight (the streakline a few points a frame, a storm read every other frame, its uniforms), 2.8 ms on CI
 in the one frame after a jump in time or place, and past 17 km a distance a frame.
 
 ### Probes
