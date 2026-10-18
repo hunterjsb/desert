@@ -632,7 +632,7 @@ func _no_fit() -> String:
 			continue
 		any = true
 		named = each.kind
-		free = free or each.is_open()
+		free = free or (Chassis.free_ring(each) if piece != null else each.is_open())
 	if not any:
 		return ""
 	if not free:
@@ -890,7 +890,7 @@ func _find_ring(piece: Chassis) -> Socket:
 		if deck == null or deck == piece or deck.deck != null:
 			continue
 		for ring in deck.sockets():
-			if ring.kind != &"ring" or ring.has_meta(&"socket") or not ring.is_open():
+			if not Chassis.free_ring(ring):
 				continue
 			var d := (deck.global_transform * deck._pose_at(ring, 0)).origin.distance_to(piece.global_position)
 			if d < nearest:
@@ -907,38 +907,12 @@ func _find_ring(piece: Chassis) -> Socket:
 		_stand_why = "wrecked" if piece.wrecked() or deck.wrecked() else "no room at that ring"
 		return null
 	var pose := deck.global_transform * deck._pose_at(best, turns)
-	if not _joins_clear(piece, pose, deck):
+	if not deck.room_for(piece, pose):
 		_stand_why = "something's in the way"
 		return null
 	_stand_pose = pose
 	_stand_turns = turns
 	return best
-
-
-## Whether a piece, and all that stands on it, would sit at a pose touching
-## nothing but the deck it joins and the sand.
-func _joins_clear(piece: Chassis, pose: Transform3D, deck: Chassis) -> bool:
-	var space := get_world_3d().direct_space_state
-	var query := PhysicsShapeQueryParameters3D.new()
-	var skip: Array[RID] = [deck.get_rid(), _player.get_rid()]
-	var shapes: Array[CollisionShape3D] = []
-	var riding: Array[Device] = [piece]
-	while not riding.is_empty():
-		var each: Device = riding.pop_back()
-		skip.append(each.get_rid())
-		riding.append_array(each.mounted())
-		for child in each.get_children():
-			if child is CollisionShape3D and (child as CollisionShape3D).shape != null:
-				shapes.append(child)
-	query.exclude = skip
-	var back := piece.global_transform.affine_inverse()
-	for shape in shapes:
-		query.shape = _skin(shape.shape)
-		query.transform = pose * back * shape.global_transform
-		for hit in space.intersect_shape(query, TOUCHES):
-			if not _sand(hit):
-				return false
-	return true
 
 
 ## Whether a piece joining a deck would put trays and runners on one deck.
@@ -1203,32 +1177,17 @@ func _far(device: Device) -> bool:
 ## Whether a free socket takes what you hold: a part of its kind, a device
 ## that seats there, a chassis piece at a deck's free edge with room beyond.
 func _takes(each: Socket) -> bool:
-	if not each.is_open():
-		return false
+	# A hook on a deck's ring, or a loose part beyond it, gets out of a joining piece's way.
 	if held is Chassis and each.kind == &"ring":
 		return (held as Chassis).fits_in(each) and not _mixes(held, each.get_parent()) \
-			and _room_for(_seat(each), each.get_parent())
+			and (each.get_parent() as Chassis).room_for(held, _seat(each))
+	if not each.is_open():
+		return false
 	# Standing on a deck a device takes no tray or runners, and a device
 	# takes trays or runners, never both.
 	if held is Part and (each.get_parent() as Device).refuses(held) != "":
 		return false
 	return (held as Device).fits_in(each) if held is Device else each.kind == held.get(&"kind")
-
-
-## Whether what you hold would sit at a pose touching nothing but a deck and
-## the sand: a piece joined over a crate would throw it.
-func _room_for(pose: Transform3D, deck: CollisionObject3D) -> bool:
-	var space := get_world_3d().direct_space_state
-	var skip := _exclusions()
-	skip.append(deck.get_rid())
-	_inside.exclude = skip
-	for i in _shapes.size():
-		_inside.shape = _skins[i]
-		_inside.transform = pose * _shapes[i].transform
-		for hit in space.intersect_shape(_inside, TOUCHES):
-			if not _sand(hit):
-				return false
-	return true
 
 
 ## Whether a hit is the sand's own surface, which a deck lifts itself clear

@@ -8,7 +8,8 @@ extends WeatherProbe
 ## running; the lee
 ## stands you under a tall slip face, facing up it into the wind over its
 ## crest, the wind on you cut and a storm due; chassis pieces, their trays,
-## a charged crate and a condenser lie in front of you; a Console on a
+## a charged crate, a condenser, hooks and a coil lie in front of you, one
+## piece's hook moored to a stake; a Console on a
 ## floating deck shows its finest map and every reading, the storm coming, its
 ## shield smart and off; the eclipse faces Tu
 ## just before the sun goes behind it; the far side has no Tu. Checked against
@@ -210,9 +211,11 @@ func _afk_lands() -> void:
 			body.free()
 
 
-## Bare chassis pieces lie flat on the sand in front of you, a tray before
-## each, with a crate frame holding two charged batteries and a condenser
-## with a battery and an empty canister, all within a few steps.
+## Chassis pieces lie flat on the sand in front of you, a tray before each,
+## with a crate frame holding two charged batteries, a condenser with a
+## battery and an empty canister, and two hooks and a coil, all within a few
+## steps. All the pieces are bare but the first, whose hook is moored to a
+## stake, and another piece is offered that ring with room to join there.
 func _chassis_lands() -> void:
 	await settle(true)
 	var dropped := Scenarios.chassis(world)
@@ -224,8 +227,18 @@ func _chassis_lands() -> void:
 	var pieces := dropped.filter(func(b: Node3D) -> bool: return b is Chassis)
 	var trays := dropped.filter(func(b: Node3D) -> bool: return b is Part and b.kind == &"bottom")
 	check(pieces.size() == Scenarios.CHASSIS_PIECES.size() and trays.size() == pieces.size()
-		and pieces.all(func(p: Chassis) -> bool: return p.parts().is_empty() and p.global_basis.y.dot(Vector3.UP) > 0.99),
-		"chassis: bare pieces lying flat, a tray for each")
+		and pieces.all(func(p: Chassis) -> bool: return p.global_basis.y.dot(Vector3.UP) > 0.99)
+		and pieces.slice(1).all(func(p: Chassis) -> bool: return p.parts().is_empty()),
+		"chassis: pieces lying flat, a tray for each, all bare but the first")
+	var stake: Stake = dropped.filter(func(b: Node3D) -> bool: return b is Stake)[0]
+	var first: Chassis = pieces[0]
+	var outer := Scenarios._on_piece(first, Vector2i.ZERO, &"ring", Vector2i(-1, 0))
+	check(world.ropes.ropes.any(func(r: Rope) -> bool: return [r.a.holder, r.b.holder] in [[first, stake], [stake, first]])
+		and pieces[1].fits_in(outer)
+		and first.room_for(pieces[1], first.global_transform * first._pose_at(outer, 0)),
+		"chassis: the first piece's hook moored to a stake, a piece offered its ring and room there")
+	check(dropped.filter(func(b: Node3D) -> bool: return b is Part and b.kind == &"ring").size() == 2
+		and dropped.any(func(b: Node3D) -> bool: return b is Part and b.kind == &"coil"), "chassis: two hooks and a coil")
 	var crate: Device = dropped.filter(func(b: Node3D) -> bool: return b is Device and b.label == "Crate frame")[0]
 	var condenser: Condenser = dropped.filter(func(b: Node3D) -> bool: return b is Condenser)[0]
 	check(crate.batteries().size() == 2 and crate.charge_share() >= 1.0 and condenser.battery() != null

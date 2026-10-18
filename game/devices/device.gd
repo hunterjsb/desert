@@ -345,24 +345,33 @@ func socket_of(node: Node) -> Socket:
 ## body at exactly the socket's pose, and the part leaves the physics world.
 func fit(part: Part, socket: Socket) -> void:
 	assert(socket.is_open() and socket.kind == part.kind and socket.get_parent() == self)
+	Device.seat_part(part, socket)
+	if socket.marker != null:
+		socket.marker.visible = false
+	_rise_clear_of_sand(socket.fitted)
+	_recompute()
+
+
+## Moves a part's shapes and meshes into the body a socket is on, at exactly
+## the socket's pose, and the part leaves the tree. What sits in a socket the
+## part added (a line's end on a loose hook) stays in that one.
+static func seat_part(part: Part, socket: Socket) -> void:
+	var body := socket.get_parent()
 	for child in part.get_children():
 		var node := child as Node3D
 		if node == null:
 			continue
 		var local := node.transform
 		part.remove_child(node)
-		add_child(node)
+		body.add_child(node)
 		node.transform = socket.transform * local
-		node.set_meta(&"socket", socket)
-		socket.fitted.append(node)
+		if not node.has_meta(&"socket"):
+			node.set_meta(&"socket", socket)
+			socket.fitted.append(node)
 	if part.get_parent() != null:
 		part.get_parent().remove_child(part)
 	socket.part = part
 	part.socket = socket
-	if socket.marker != null:
-		socket.marker.visible = false
-	_rise_clear_of_sand(socket.fitted)
-	_recompute()
 
 
 ## A tray slid under a crate resting on the sand lifts the crate onto it: a
@@ -474,16 +483,32 @@ func _holder() -> Node:
 ## the caller slides it out along the socket's +Z. Whatever sits in a socket
 ## the part added (a line's end on a hook's ring) comes off first, loose.
 func take(socket: Socket) -> Part:
+	return _unfit(socket, false)
+
+
+## Takes a fitted part out as take does, but whatever sits in the sockets it
+## added stays on it: a hook popped off a deck keeps its line.
+func pop(socket: Socket) -> Part:
+	return _unfit(socket, true)
+
+
+func _unfit(socket: Socket, whole: bool) -> Part:
 	var part := socket.part
 	assert(part != null)
+	var nodes: Array[Node3D] = []
+	nodes.append_array(socket.fitted)
 	for node in socket.fitted:
 		var added := node as Socket
 		if added != null and added.part != null:
-			take(added)
-	for node in socket.fitted:
+			if whole:
+				nodes.append_array(_held_in(added))
+			else:
+				take(added)
+	for node in nodes:
 		var local := socket.transform.affine_inverse() * node.transform
 		remove_child(node)
-		node.remove_meta(&"socket")
+		if node.get_meta(&"socket") == socket:
+			node.remove_meta(&"socket")
 		part.add_child(node)
 		node.transform = local
 		# Out of a device, nothing powers its lamp.
@@ -501,6 +526,16 @@ func take(socket: Socket) -> Part:
 	part.linear_velocity = linear_velocity
 	_recompute()
 	return part
+
+
+## Everything fitted in a socket a part added, and in any that one added.
+static func _held_in(added: Socket) -> Array[Node3D]:
+	var found: Array[Node3D] = []
+	found.append_array(added.fitted)
+	for node in added.fitted:
+		if node is Socket and (node as Socket).part != null:
+			found.append_array(_held_in(node))
+	return found
 
 
 ## Everything the device can do, from the frame and what's fitted.

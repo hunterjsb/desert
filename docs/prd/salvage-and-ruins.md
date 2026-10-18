@@ -386,6 +386,18 @@ rewarding.
 Saltbush lines, glow in cracks, coalcane groves and ancient sandroot all say something is buried
 beneath ([Farming](farming.md#propagation-growth-stages-and-wild-habitats-agreed)).
 
+### Finding them from afar (Hunter, 2026-10-18: "we will need to give the player a way to actually find them early now that the desert is barren")
+
+With loot gathered into sites and open sand nearly empty, a site has to be findable by eye,
+with no map or marker:
+- **Seen from far off.** What stands tall (relay masts, watchtowers, pylon stubs, a wreck's hull)
+  shows on the horizon from kilometres away, and exposed metal or glass glints when the sun
+  catches it, so a glint on a far dune is worth walking to.
+- **Roads lead to sites.** A saltbush line, a row of pylon stubs or a run of old pipe reads from
+  a distance as a line across the dunes, and following it brings you to what stands along it.
+- **A site in sight at every start.** Each origin begins with something to walk to in view: the
+  Salvager's wrecks, the Homesteader's wayshrine, and for the Surveyor a site on the horizon.
+
 ### Readings, not in the session
 
 - **The strata and the table don't agree about two eras.** Session 3's strata, which "History runs

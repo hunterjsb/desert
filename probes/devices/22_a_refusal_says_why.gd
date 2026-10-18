@@ -3,8 +3,9 @@ extends DeckProbe
 ## what you aim at, the readout says why in a few words and a soft knock
 ## sounds, never silence: a battery held to a crate whose slots are full
 ## stays in your hands; a crate with its tray in, taken hold of beside a deck,
-## is let go; a piece held to a deck whose one free ring is blocked stays in
-## your hands; use at a bare crate frame has nothing to work.
+## is let go; a piece held to one with a crate standing beyond every ring,
+## even its hooked one, stays in your hands; use at a bare crate frame has
+## nothing to work.
 
 ## A few words, at most.
 const FEW := 5
@@ -19,12 +20,13 @@ func run() -> void:
 	var trayed := device(&"crate_frame", spot(4.0, 3.0), 0.27)
 	fit_part(trayed, &"hover_tray")
 	trayed.resting = true
+	# A hook on a ring pops off for a piece, but a crate beyond one stands in its way.
 	var blocked := piece(spot(-5.0, 3.0))
-	for toward: Vector2i in [Vector2i(1, 0), Vector2i(0, 1), Vector2i(0, -1)]:
-		blocked.fit(Catalog.part(&"hook"), ring(blocked, Vector2i.ZERO, toward))
-	var beyond := device(&"crate_frame", blocked.global_position, 0.0)
-	beyond.global_position = blocked.global_transform * Vector3(-1.0, 0.0, 0.0)
-	beyond.freeze = true
+	blocked.fit(Catalog.part(&"hook"), ring(blocked, Vector2i.ZERO, Vector2i(0, 1)))
+	for toward: Vector2i in [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]:
+		var beyond := device(&"crate_frame", blocked.global_position, 0.0)
+		beyond.global_position = blocked.global_transform * (Vector3(toward.x, 0.0, toward.y) * 1.1)
+		beyond.freeze = true
 	await simulate(1.0)
 
 	var cell := part(&"battery", Transform3D.IDENTITY.translated(eye()))
@@ -48,7 +50,7 @@ func run() -> void:
 	look(blocked.global_position + Vector3(0.0, 1.4, 1.4), blocked.global_position)
 	await simulate(0.2)
 	check(_refused(hands.grab()) and hands.held == loose and loose.deck == null,
-		"a piece held to a deck whose one free ring is blocked stays in your hands")
+		"a piece held to one with a crate beyond every ring stays in your hands")
 	hands.stow().free()
 
 	look(full.global_position + Vector3(-1.4, 0.4, 0.0), full.global_position)
