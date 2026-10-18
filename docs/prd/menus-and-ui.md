@@ -115,6 +115,12 @@ of this, then we will need to just stop dropping things out the tooltip.")
 - **Probes:** Menus & UI probe 10, a how-to once a profile; Devices & mods probes 18, 19 and 22
   check what the readout and highlight do, never their words.
 
+- **The keys list** (Hunter, 2026-10-18: "f1 is really really hard to read. information
+  overload, and tiny text") is a table at the menus' size, 20, edged like them: each key, as
+  bound, beside what it does in a word or two, under the headings Moving, Hands, You, Game and
+  Dev. What a key does in detail is learned where it's needed: riding's how-to shows the first
+  time you ride, as the sail's does (`Controls.HELP`, `Controls.RIDE_HOW_TO_SAYS`).
+
 ## The dev console
 
 Developer tools come through a console, not a row of function keys (Hunter, 2026-10-16:

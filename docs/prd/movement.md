@@ -369,7 +369,9 @@ your own camp's parts rather than found whole:
   reeling hauls the sail; 4, it heels in a gust and recovers, and a blast puts it over
   smoothly; 5, a raised sail tears in a storm and a furled one doesn't, and a blast snaps the
   mast; 6, your camp tows you on the board; 7, nothing flings, and it sails the same at any
-  tick rate. Profile & saves probe 16: a rigged camp resumes.
+  tick rate; 8, furling in a breeze never tears the sail, and it raises again (Hunter: it
+  couldn't be raised once brought down: the furled bundle's drag over the last of the cloth
+  showing read as a tearing load). Profile & saves probe 16: a rigged camp resumes.
 
 ### The dune sailboat (Agreed, session 4, part 3; not built)
 
