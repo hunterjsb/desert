@@ -11,8 +11,8 @@ extends Node
 ## draws it, so the light drops exactly when the dust visibly swallows you.
 ## Light passes through a bubble, so inside one the air is clear but the light
 ## is the storm's. This is the one owner of the sun, sky, haze and the storm
-## walls' light; the sky view draws Tu and the stars in it, and the eye sets the
-## exposure the camera sees it all by.
+## walls' light, which a live vent's plume takes too; the sky view draws Tu and
+## the stars in it, and the eye sets the exposure the camera sees it all by.
 
 ## Starlight and the air's own glow: all the light a far-side night has.
 const NIGHT_LIGHT := 0.0005
