@@ -23,8 +23,8 @@ const MID := 32
 const SMALL := 28
 const TAB := 26
 const KEY := 24
-## A trend's arrow, set small.
-const ARROW := 18
+## A trend's arrow, set small, px.
+const ARROW := 14.0
 const MARGIN := 14.0
 const ROW := 34.0
 ## The share of its height the tabs take at its foot.
@@ -358,10 +358,20 @@ func _table_row(row: String, x: float, y: float, columns: Vector3i, named := fal
 	var note: String = cells[3] if cells.size() > 3 else ""
 	var note_x := x + columns.z * advance
 	if note in ["▲", "▼", "–"]:
-		draw_string(FONT, Vector2(note_x, base - (SMALL - ARROW) * 0.3), note, HORIZONTAL_ALIGNMENT_LEFT, -1, ARROW,
-			URGENT if urgent else text)
+		_trend(Vector2(note_x + ARROW, y + ROW * 0.5), note, URGENT if urgent else text)
 	else:
 		_words(Vector2(note_x, base), note, size.x - MARGIN - note_x, SMALL, URGENT if urgent else text)
+
+
+## A trend as a small arrow centred on a spot: up, down, or a dash for steady.
+func _trend(at: Vector2, note: String, color: Color) -> void:
+	var half := ARROW * 0.5
+	if note == "–":
+		draw_line(at - Vector2(half, 0.0), at + Vector2(half, 0.0), color, 3.0)
+		return
+	var up := -1.0 if note == "▲" else 1.0
+	draw_colored_polygon(PackedVector2Array([at + Vector2(0.0, half * up), at + Vector2(-half, -half * up),
+		at + Vector2(half, -half * up)]), color)
 
 
 ## Words on a baseline, cut to what fits a width.

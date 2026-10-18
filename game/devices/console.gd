@@ -984,7 +984,11 @@ func _panel(shown: Dictionary, all: Dictionary) -> void:
 		var drawn := device.demand_w() if device.powered else 0.0
 		if drawn > 0.0 or not groups.is_empty():
 			draws += drawn
-			loads.append({"row": _row(" " + called, "%d" % roundi(drawn), "W", "" if device.powered else "DARK"),
+			# A smart shield says whether it's up now: its switch says only that it's smart.
+			var shield := device as ShieldGenerator
+			var note := "DARK" if not device.powered else ("ON" if shield != null and shield.on
+				and _mode(shield, all.has("front")) == "SMART" else "")
+			loads.append({"row": _row(" " + called, "%d" % roundi(drawn), "W", note),
 				"dark": not device.powered, "groups": groups})
 	var net := makes - draws
 	var left := INF
