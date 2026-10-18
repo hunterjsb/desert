@@ -20,7 +20,9 @@
 # PROBE_JOBS probes run at once (default one per physical core, at least 4, or
 # 2 while someone is playing), the slowest first by the last run's times; a
 # probe whose header says "## Runs alone" times real frames, so it runs after
-# the rest, by itself.
+# the rest, by itself. PROBE_UNTIMED leaves those out, where real frame times
+# mean nothing: CI's macOS and Windows runners, whose hitches a real Mac
+# doesn't have.
 #
 # Bash 3.2 and up, so it runs as it is on macOS and in Git Bash on Windows:
 # no mapfile, wait -n or flock, and no timeout where there's none.
@@ -164,10 +166,12 @@ together=()
 alone=()
 while IFS= read -r probe; do
 	[[ -n $probe ]] || continue
-	probes+=("$probe")
 	if grep -q '^## Runs alone' "$probe"; then
+		[[ -z ${PROBE_UNTIMED:-} ]] || continue
+		probes+=("$probe")
 		alone+=("$probe")
 	else
+		probes+=("$probe")
 		together+=("$probe")
 	fi
 done <"$reports/list"

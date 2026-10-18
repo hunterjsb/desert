@@ -49,14 +49,15 @@ jobs:
   elsewhere:
     # The whole suite on macOS and Windows, in fewer groups of about equal
     # wall clock; macOS runs it on the bash 3.2 it ships. Keep REST_EXCEPT in
-    # step with the groups.
+    # step with the groups. The probes that time real frames only report
+    # here: these runners hitch where real machines don't.
     strategy:
       fail-fast: false
       matrix:
         os: [macos-latest, windows-latest]
         group:
-          - probes/rope probes/devices probes/power probes/farming probes/weather probes/salvage
-          - probes/saves probes/kits probes/survival probes/sail
+          - probes/rope probes/devices probes/weather probes/salvage probes/shield
+          - probes/saves probes/kits probes/survival probes/sail probes/power probes/farming
           - the rest
     name: ${{ startsWith(matrix.os, 'macos') && 'macOS' || 'Windows' }} ${{ matrix.group }}
     runs-on: ${{ matrix.os }}
@@ -66,9 +67,10 @@ jobs:
         shell: bash
     env:
       REST_EXCEPT: >-
-        probes/rope probes/devices probes/power probes/farming probes/weather probes/salvage
-        probes/saves probes/kits probes/survival probes/sail
+        probes/rope probes/devices probes/weather probes/salvage probes/shield
+        probes/saves probes/kits probes/survival probes/sail probes/power probes/farming
       BASH_FOR_PROBES: ${{ startsWith(matrix.os, 'macos') && '/bin/bash' || 'bash' }}
+      PROBE_UNTIMED: 1
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/godot
@@ -84,6 +86,11 @@ jobs:
           else
             $BASH_FOR_PROBES scripts/probe.sh ${{ matrix.group }}
           fi
+
+      - name: The probes that time real frames, reported only
+        if: matrix.group == 'the rest'
+        continue-on-error: true
+        run: PROBE_UNTIMED= $BASH_FOR_PROBES scripts/probe.sh $(grep -rl --include='*.gd' '^## Runs alone' probes)
 
   builds:
     uses: ./.github/workflows/builds.yml
