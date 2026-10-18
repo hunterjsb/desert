@@ -95,10 +95,10 @@ last played highlighted and the Surveyor before any (Menus & UI). Each is a `Kit
 system](../world-system.md#the-feral-layer-and-spawns)), whether it's balanced, what unlocks it
 and what of it the main menu shows. The menu lists every origin, one not open to
 the profile (`Kit.is_open_to`, through `Profile.has`) as ????. A kit's `unlock` can name a deed
-(below), which then opens it. Frequent Flyer (a long ride on the board) is proposed for the Salvager
-and Hermit (a whole day under a shield) for the Homesteader, but Hunter hasn't decided whether they
-should be locked, so all three are open from the first run; locking one is its kit's `unlock`, one
-line. The profile keeps the origin a run was last begun or resumed as (`Profile.last_origin`), whose
+(below), which then opens it. The Surveyor is open from the first run; Frequent Flyer (a long ride on
+the board) opens the Salvager, and Hermit (a whole day under a shield) the Homesteader (Hunter,
+2026-10-18: "let's lock the two other starts behind some deeds"). The dev console's `unlockall`
+opens both for testing. The profile keeps the origin a run was last begun or resumed as (`Profile.last_origin`), whose
 kit the main menu shows; reset forgets it. The novelty kits aren't built; an origin that
 isn't balanced is offered Normal only. The run keeps its origin (`World.kit`) and so does its save
 (`kit`); a new run after a death comes as the same origin. A save from before origins has none and
@@ -138,10 +138,10 @@ stays. Green Thumb is new, so Crop Rotation has one before it.
 
 | Id | Name | Asks | After | Recorded |
 |---|---|---|---|---|
-| `board_distance` | Frequent Flyer | Ride a board 5,000 m without stepping off; proposed to open the Salvager | | the ride, by how far it has come (kept in the save mid-ride) |
+| `board_distance` | Frequent Flyer | Ride a board 5,000 m without stepping off; opens the Salvager | | the ride, by how far it has come (kept in the save mid-ride) |
 | `board_height` | Big Air | Fly 8 m over the sand on a board | Frequent Flyer | the ride, each tick, by the board's height over the sand under it |
 | `board_storm` | Flying Bling | Ride into a storm by night or in an eclipse | Big Air | the ride, the tick you go from clear air into a storm, the sun down or partly behind Tu |
-| `shield_day` | Hermit | Spend a whole day under a shield, never stepping out; proposed to open the Homesteader | | Wear's tick: time under a bubble without a break, a day's length, kept in the save |
+| `shield_day` | Hermit | Spend a whole day under a shield, never stepping out; opens the Homesteader | | Wear's tick: time under a bubble without a break, a day's length, kept in the save |
 | `shield_storm` | Sandblasted | Hold off 60 minutes of storm with one shield | Hermit | Wear's tick: a running shield counts the storm where it stands, kept on the shield and in the save |
 | `crop` | Green Thumb | Grow a crop | | a planter's harvest, by hand or by its harvester |
 | `crops` | Crop Rotation | Grow 3 kinds of crop | Green Thumb | the same, each kind counted once a profile |
