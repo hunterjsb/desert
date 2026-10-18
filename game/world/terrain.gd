@@ -17,7 +17,7 @@ signal unloaded(coord: Vector2i)
 const NEAR_STEP := 1
 ## Structures a storm works on follow it every frame within this many chunks
 ## of you; further off, this many chunks' worth a frame in turn.
-const FOLLOW_NEAR := 3
+const FOLLOW_NEAR := 2
 const FOLLOW_FAR := 6
 ## Loaded ground pressed afresh at once, at most; and how many steps behind
 ## what stands in it a mid chunk's ground may fall first: past the near
@@ -29,10 +29,15 @@ const MID_BEHIND := 8
 ## the hitch probe and F3 read them.
 var frame_ms := 0.0
 var slowest_frame_ms := 0.0
-## Main-thread time following what storms work on took this frame, ms, and
-## how many loaded chunks' ground has been pressed afresh, all run.
+## Main-thread time following what storms work on took this frame, and the
+## most a frame has; how many loaded chunks' ground has been pressed afresh,
+## all run, the most a press took to swap in on the main thread and the last
+## one's time on its worker, ms.
 var follow_ms := 0.0
+var slowest_follow_ms := 0.0
 var presses := 0
+var slowest_press_ms := 0.0
+var press_job_ms := 0.0
 
 const SAND_SHADER := preload("res://game/world/sand.gdshader")
 
@@ -132,7 +137,7 @@ func _process(_delta: float) -> void:
 	Dev.put("terrain/col", "%d" % collision_count())
 	Dev.put("terrain/bld", "%d" % (_tasks.size() + _wanted.size()))
 	Dev.put("terrain/upl", "%.1fms" % slowest_frame_ms)
-	Dev.put("terrain/site", "%.2fms %d pressed" % [follow_ms, presses])
+	Dev.put("terrain/site", "%.2fms %d pressed %.2fms" % [follow_ms, presses, slowest_press_ms])
 
 
 func _exit_tree() -> void:
@@ -431,14 +436,18 @@ func _follow_sites() -> void:
 		if _distance(coord) > FOLLOW_NEAR:
 			_follow_chunk(_standing[coord], t)
 	follow_ms = (Time.get_ticks_usec() - started) / 1000.0
+	slowest_follow_ms = maxf(slowest_follow_ms, follow_ms)
 
 
 func _follow_chunk(chunk: TerrainChunk, t: float) -> void:
+	var moved := 0
 	for each in chunk.structures():
-		if each.follow(t, _occupied):
+		var did := each.follow(t, _occupied)
+		moved |= did
+		if did & Structure.STEPPED:
 			for coord: Vector2i in each.holders:
 				_behind[coord] = true
-	if chunk.follow_structures():
+	if moved and chunk.follow_structures():
 		skyline.moved()
 		if chunk.has_collision():
 			_world.salvage.follow(chunk)
@@ -485,11 +494,13 @@ func _press() -> void:
 
 func _press_one(coord: Vector2i, dunes: PackedFloat32Array, step: int, carved: Array[Structure],
 		steps: PackedInt32Array, mesh: RID) -> void:
+	var started := Time.get_ticks_usec()
 	var build := ChunkBuild.pressed(dunes, coord, _size, step, _tuning.skirt_depth, _indices[step], carved, steps)
 	ChunkBuild.fill(mesh, build.arrays, _material_rid)
 	build.mesh = mesh
 	_mutex.lock()
 	_pressed[coord] = build
+	press_job_ms = (Time.get_ticks_usec() - started) / 1000.0
 	_mutex.unlock()
 
 
@@ -509,8 +520,10 @@ func _collect_presses() -> void:
 		if chunk == null or chunk.step != build.step:
 			RenderingServer.free_rid(build.mesh)
 			continue
+		var started := Time.get_ticks_usec()
 		chunk.show_pressed(build)
 		presses += 1
+		slowest_press_ms = maxf(slowest_press_ms, (Time.get_ticks_usec() - started) / 1000.0)
 		# It may have moved on again meanwhile.
 		_behind[coord] = true
 

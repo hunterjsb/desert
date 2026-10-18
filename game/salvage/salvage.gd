@@ -59,11 +59,13 @@ class Lot:
 	var taken := {}
 	var finds: Array[RigidBody3D] = []
 	var chunk: TerrainChunk
-	## Each structure's finds lying here, by socket; the sand off it when it
-	## was last read; and those waiting to be read again.
+	## Each structure's finds lying here, by socket; the sand off it and its
+	## floor when it was last read; how many of its sockets wait to be read
+	## again; and what each socket holds, drawn once, by [site, socket].
 	var sites := {}
 	var seen := {}
 	var waiting := {}
+	var drawn := {}
 
 
 ## Work for the streaming budget: planning a chunk (no spec), or what one
@@ -77,8 +79,8 @@ class Piece:
 	var socket := -1
 	var body: RigidBody3D
 	var fitted := 0
-	## Read again as a storm works on its site: all its sockets at once, and
-	## what's newly within reach comes up out of the sand.
+	## Read again as a storm works on its site: what's newly within reach
+	## comes up out of the sand.
 	var again := false
 
 	func _init(at: Vector2i, find := {}, of: Structure = null, i := -1, anew := false) -> void:
@@ -184,41 +186,46 @@ func follow(chunk: TerrainChunk) -> void:
 		if absf(now.x - (was as Vector2).x) < RE_READ_M and absf(now.y - (was as Vector2).y) < RE_READ_MOVE:
 			continue
 		lot.seen[site] = now
-		lot.waiting[site] = true
-		_queue.append(Piece.new(chunk.coord, {}, site, -1, true))
+		lot.waiting[site] = site.piece.sockets.size()
+		for i in site.piece.sockets.size():
+			_queue.append(Piece.new(chunk.coord, {}, site, i, true))
 
 
-## What a site holds within reach now against what lies there: each find
-## still within reach eases to where it lies now, what's gone out of reach
-## sinks into the sand, and what's come within reach is laid, coming up out
-## of it. What was taken stays taken.
+## What a site's socket holds within reach now against what lies there: a
+## find still within reach eases to where it lies now, one gone out of reach
+## sinks into the sand, and one come within reach is laid, coming up out of
+## it. What was taken stays taken.
 func _read_again(piece: Piece, lot: Lot) -> void:
 	var site := piece.site
-	lot.waiting.erase(site)
+	var i := piece.socket
+	lot.waiting[site] = int(lot.waiting.get(site, 1)) - 1
+	if lot.waiting[site] <= 0:
+		lot.waiting.erase(site)
 	var lying: Dictionary = lot.sites.get(site, {})
-	var taken := _taken_from(site)
-	for i in site.piece.sockets.size():
-		var had: RigidBody3D = lying.get(i)
-		if had != null and (not is_instance_valid(had) or not had.has_meta(&"find")):
+	var had: RigidBody3D = lying.get(i)
+	if had != null and (not is_instance_valid(had) or not had.has_meta(&"find")):
+		lying.erase(i)
+		had = null
+	if had == null and _laying(site, i):
+		return
+	var key := [site, i]
+	if not lot.drawn.has(key):
+		lot.drawn[key] = SiteLoot.draw(site, i)
+	var spec := SiteLoot.lying(site, i, lot.drawn[key], _world.height_at, _taken_from(site))
+	if spec.is_empty():
+		if had != null:
 			lying.erase(i)
-			had = null
-		if had == null and _laying(site, i):
-			continue
-		var spec := SiteLoot.within_reach(site, i, _world.height_at, taken)
-		if spec.is_empty():
-			if had != null:
-				lying.erase(i)
-				lot.finds.erase(had)
-				_sink(had)
-		elif had != null:
-			_ease(had, _placed(lot, had, spec))
-			if spec.bury > 0.0:
-				had.set_meta(&"buried", true)
-			elif had.has_meta(&"buried"):
-				had.remove_meta(&"buried")
-		else:
-			spec.emerging = true
-			_queue.append(Piece.new(piece.coord, spec, site, i))
+			lot.finds.erase(had)
+			_sink(had)
+	elif had != null:
+		_ease(had, _placed(lot, had, spec))
+		if spec.bury > 0.0:
+			had.set_meta(&"buried", true)
+		elif had.has_meta(&"buried"):
+			had.remove_meta(&"buried")
+	else:
+		spec.emerging = true
+		_queue.append(Piece.new(piece.coord, spec, site, i))
 
 
 ## Whether a find for a site's socket waits to be laid.
@@ -445,6 +452,7 @@ func _forget(coord: Vector2i, lot: Lot) -> void:
 	lot.sites.clear()
 	lot.seen.clear()
 	lot.waiting.clear()
+	lot.drawn.clear()
 	for i in range(_queue.size() - 1, -1, -1):
 		if _queue[i].coord == coord:
 			_drop(i)

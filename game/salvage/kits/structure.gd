@@ -11,6 +11,9 @@ extends Site
 
 ## Its ground is surveyed at most this many plan metres apart.
 const SURVEY_STEP := 4.0
+## What following the weather did: the sand on it changed, and the step its ground is built at.
+const MOVED := 1
+const STEPPED := 2
 
 var piece: StructureKit.Piece
 ## The chunks whose ground holds it, as a set.
@@ -52,6 +55,9 @@ var _memo := Exposure.Memo.new()
 var _shown := NAN
 var _held := false
 var _followed := NAN
+## The ticks either side of the moment it last followed, and their sand.
+var _ticks := Vector2i(-1000000000, -1000000000)
+var _ends := Vector4.ZERO
 ## Read for one moment while nothing holds it: what height_at asks over and over.
 var _now_t := NAN
 var _now_taken := 0.0
@@ -309,7 +315,7 @@ func _grid_for(step: int) -> PackedFloat32Array:
 			made[k + 1] = w
 	_lock.lock()
 	if not _grids.has(step):
-		if _grids.size() >= 4:
+		if _grids.size() >= 2:
 			_grids.erase(_grids.keys()[0])
 		_grids[step] = made
 	else:
@@ -378,6 +384,21 @@ func pure_taken(t: float) -> float:
 	return Exposure.taken(_ctx.field, x, z, t, _ctx.tuning, _memo)
 
 
+## The same, read each frame on the main thread: the ticks either side of
+## the moment kept, so between ticks it costs two lerps.
+func _taken_now(t: float) -> float:
+	var slow := t / (_ctx.tuning.site_exposure_step_minutes * 60.0)
+	var fast := t / Exposure.SURGE_STEP_S
+	var ticks := Vector2i(floori(slow), floori(fast))
+	if ticks != _ticks:
+		_ticks = ticks
+		_ends = Vector4(Exposure.stripped_at(_ctx.field, x, z, ticks.x - 1, _ctx.tuning, _memo),
+			Exposure.stripped_at(_ctx.field, x, z, ticks.x, _ctx.tuning, _memo),
+			Exposure.surge_at(_ctx.field, x, z, ticks.y - 1, _ctx.tuning, _memo),
+			Exposure.surge_at(_ctx.field, x, z, ticks.y, _ctx.tuning, _memo))
+	return lerpf(_ends.x, _ends.y, slow - ticks.x) + lerpf(_ends.z, _ends.w, fast - ticks.y)
+
+
 ## The settled sand alone, m: what it would be without the storm working on it now.
 func settled() -> float:
 	var t: float = pinned_at if not is_nan(pinned_at) else _ctx.clock.call()
@@ -437,13 +458,15 @@ func release_ground() -> void:
 ## Follows the weather while its ground is loaded, at world time `t`. Where
 ## you or your camp stand on its ground (`occupied(self)`) the sand never
 ## comes back over it; once you're off, it comes back no faster than
-## site_rebury_m_s. True if the step its ground should be built at changed.
-func follow(t: float, occupied: Callable) -> bool:
+## site_rebury_m_s. MOVED if the sand on it changed, and STEPPED too if the
+## step its ground should be built at did.
+func follow(t: float, occupied: Callable) -> int:
 	if is_nan(_shown):
-		return false
+		return 0
 	var dt := maxf(t - _followed, 0.0) if not is_nan(_followed) else 0.0
 	_followed = t
-	var pure := pure_taken(t)
+	var was := _shown
+	var pure := _taken_now(t)
 	if pure >= _shown:
 		_shown = pure
 		_held = false
@@ -454,11 +477,13 @@ func follow(t: float, occupied: Callable) -> bool:
 		_held = _shown > pure
 	else:
 		_shown = pure
+	if _shown == was:
+		return 0
 	var step := piece.step_of(level())
 	if step == ground:
-		return false
+		return MOVED
 	ground = step
-	return true
+	return MOVED | STEPPED
 
 
 func _stripped(t: float) -> float:

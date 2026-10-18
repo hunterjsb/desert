@@ -43,8 +43,12 @@ static func reading(field: WeatherField, x: float, z: float, t: float, tuning: T
 ## back, and the older the tick the more has drifted back since, so one big
 ## storm strips a lot, calm lets the sand return, and nothing is a hard timer.
 static func stripped(field: WeatherField, x: float, z: float, t: float, tuning: Tuning, memo: Memo = null) -> float:
+	return stripped_at(field, x, z, floori(t / (tuning.site_exposure_step_minutes * 60.0)), tuning, memo)
+
+
+## The same by its tick.
+static func stripped_at(field: WeatherField, x: float, z: float, tick: int, tuning: Tuning, memo: Memo = null) -> float:
 	var step := tuning.site_exposure_step_minutes * 60.0
-	var tick := floori(t / step)
 	var known: Variant = _recall(memo, &"settled", tick)
 	if known != null:
 		return known
@@ -64,9 +68,9 @@ static func stripped(field: WeatherField, x: float, z: float, t: float, tuning: 
 ## The settled sand at a moment, between its ticks: a tick behind, so it's
 ## only ever the weather that has been.
 static func settled(field: WeatherField, x: float, z: float, t: float, tuning: Tuning, memo: Memo = null) -> float:
-	var step := tuning.site_exposure_step_minutes * 60.0
-	var f := t / step - floorf(t / step)
-	return lerpf(stripped(field, x, z, t - step, tuning, memo), stripped(field, x, z, t, tuning, memo), f)
+	var at := t / (tuning.site_exposure_step_minutes * 60.0)
+	var tick := floori(at)
+	return lerpf(stripped_at(field, x, z, tick - 1, tuning, memo), stripped_at(field, x, z, tick, tuning, memo), at - tick)
 
 
 ## The sand a storm working on a place has moved off it by a minute's tick, m:
@@ -95,9 +99,9 @@ static func surge_at(field: WeatherField, x: float, z: float, tick: int, tuning:
 
 ## The storm's work at a moment, between its ticks, a tick behind.
 static func surge(field: WeatherField, x: float, z: float, t: float, tuning: Tuning, memo: Memo = null) -> float:
-	var tick := floori(t / SURGE_STEP_S)
-	var f := t / SURGE_STEP_S - tick
-	return lerpf(surge_at(field, x, z, tick - 1, tuning, memo), surge_at(field, x, z, tick, tuning, memo), f)
+	var at := t / SURGE_STEP_S
+	var tick := floori(at)
+	return lerpf(surge_at(field, x, z, tick - 1, tuning, memo), surge_at(field, x, z, tick, tuning, memo), at - tick)
 
 
 ## All the sand taken off a place at a moment, m: the settled sand and the storm's.
