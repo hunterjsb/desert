@@ -143,16 +143,17 @@ food running out, each from the night's own numbers rather than dice.
 
 **Where you sleep.**
 - **The bedroll** is a device by the catalog's rules: the rack seats devices (the board), and a part
-  becomes its device's shapes, worked by nothing. Rolled company canvas 0.9 m long, 3 kg, low and round, so a breeze leaves it be on the sand and a storm slides it. Use on it
-  wherever it is, laid on the sand, in your hands, among what you carry, or in a crate's rack in the
-  board's place, asks how long to sleep. The Surveyor and the Homesteader start carrying one; the
+  becomes its device's shapes, worked by nothing. Rolled company canvas 0.9 m long, 3 kg, low and
+  round, so a breeze leaves it be on the sand and a storm slides it. Use on it wherever it is, laid on
+  the sand, in your hands, among what you carry, or in a crate's rack in the board's place, asks how
+  long to sleep. The Surveyor and the Homesteader start carrying one; the
   Salvager, riding light, finds one or a ruin's bed. It's found on deserters' dugout floors (3 in 12 of
   their draws, beside their survival kits) and now and then lying on open sand (1 in 14 of the
   surface's devices). There's no sleeping on bare sand without one: the bedroll is how you sleep in the
   open.
 - **Ruin beds.** A kit piece marks boxes as beds (`StructureKit.bed`): the hab pod's bunk, and a
-  sleeping bench of saltbush wood, a dyed mat on it, in the house ruin's back room. Looking at one, the line
-  says "Bed", and use sleeps there. Buried, it's under the sand with the rest.
+  sleeping bench of saltbush wood, a dyed mat on it, in the house ruin's back room. Looking at one, the
+  line says "Bed", and use sleeps there. Buried, it's under the sand with the rest.
 
 **The words.** Use on a bed brings up words over the running game, as the system menu does, nothing
 paused: "Through the storm", only while one's on you or due within the weather's own forecast; "Sleep
@@ -179,8 +180,9 @@ order a frame runs them, through its `live` tick: Power (panels and turbines by 
 every draw, the shield's by the storm where it stands, the reserve and the restart), each shield's
 bubble straight to what its power says, Wear on what's outside a bubble, the Farm (crops, wild plants,
 the hoses' water) and the condenser through Power, then your needs, drinking and eating from what you
-carry as the suit does. What the physics fed them stays as it stood: a floating deck's load on its
-trays, a planted turbine.
+carry as the suit does, and the tracks the wind fills. A shield's held storm and a day under the bubble
+count toward their deeds asleep as awake. What the physics fed them stays as it stood: a floating
+deck's load on its trays, a planted turbine.
 - **Lines** meet the wind each step as Ropes reckons it (`load_at`): what a line bore as you lay
   down, plus its share of how much harder the wind then pushes what it holds, held still (Weather's
   `wind_load`: its catch by the felt wind's square, at the hardest gust of the step, read each second).
@@ -213,17 +215,20 @@ that would come through live comes through asleep and one that wouldn't, doesn't
    canister wakes you about 45 hours into a long storm.
 
 **Waking.** A few lines at the top of the screen as it comes back from black, for 7 s, in the
-caption's capitals: how long you slept, what woke you if it was early, each shield that was up, what broke
-loose or blew away, what's wrecked. The world goes on as it now is: every ticking system's next tick
+caption's capitals: how long you slept, what woke you if it was early, each shield that was up, what
+broke loose or blew away, what's wrecked. The world goes on as it now is: every ticking system's next tick
 is on the new hour, none to catch up; the forecast reads from it and the eye settles, as for any cut;
 the storm pass's map is drawn for it while the screen is still black, so none is drawn in a hitch; the
-sky and the day are the clock's; tracks have filled as the wind fills them; and a catch line's drift
-since you lay down comes in at once, as after any jump. Nothing is saved mid-night, which is one frame
+sky and the day are the clock's, and the plume works its streak out whole for the new hour on the
+first frame, as for any jump; and a catch line's drift since you lay down comes in at once, as after
+any jump. Nothing is saved mid-night, which is one frame
 under the fade, and a save made on waking resumes as you woke.
 
 **Probes** 16 to 19 (below). **Not yet:** a smart shield doesn't switch itself on asleep, since the
 Console's radar doesn't sweep, so sleep with the shield on; what drifts never snags on a dune or a
-ruin; the plume (not on master as this was built) would need its clock to jump the same way.
+ruin; a line's share of the wind is what it holds itself, so a crate on a line to a crate on a line to
+a stake puts only the second crate's push on the last line. The dev overlay's `sleep/last` says how
+long the last night was and what it cost.
 
 ## Sleep (proposed)
 
