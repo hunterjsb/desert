@@ -8,6 +8,10 @@ extends SavesProbe
 ## Time limit: 300 s
 
 const HOURS := 8
+## How close the resumed run keeps to the one that woke: where things stand,
+## m, and any number they carry, as a share of it.
+const METRES := 0.05
+const NUMBER := 0.01
 
 
 func run() -> void:
@@ -59,6 +63,3 @@ func run() -> void:
 	check(back.missing == "" and back.metres <= METRES and back.number <= NUMBER,
 		"it resumes as it woke (%s; %.3f m %s; %.3f %s)" % [back.missing, back.metres, back.where, back.number, back.which])
 
-
-const METRES := 0.05
-const NUMBER := 0.01
