@@ -18,7 +18,7 @@ const COMMANDS := {
 	"tu": ["[6|9|13]", "Tu's width across the sky under trial, degrees; alone, the next"],
 	"give": ["<id> [n]", "a part in your hands or a device at your feet, by its catalog id"],
 	"fresh": ["", "fed, watered and whole, on a fresh suit's kit"],
-	"goto": ["[landmark]", "stand by a landmark or one of its parts, on fresh ground; alone, how far each is"],
+	"goto": ["[landmark]", "stand by a landmark, one of its parts or a vent, on fresh ground; alone, how far each is"],
 	"map": ["[metres]", "the history under the sand round you, this wide; alone, on or off"],
 }
 ## How far from a landmark's middle goto stands you, facing it, m.
@@ -234,7 +234,7 @@ func _goto(args: PackedStringArray, world: World) -> void:
 	var history := world.shape.history
 	if args.is_empty():
 		var here := Sphere.point(world.moon.latitude, world.moon.longitude)
-		for each in history.landmarks:
+		for each in history.landmarks + history.geology.live():
 			_say("%s  %s, %.1f km %s" % [each.id, each.name, Sphere.angle(here, each.p) * history.radius / 1000.0,
 				Radio.compass(rad_to_deg(Sphere.bearing(here, each.p)))])
 		return
@@ -264,7 +264,7 @@ func _map(args: PackedStringArray, _world: World) -> void:
 	_say("history map %d m across" % roundi(map.width_m) if map.visible else "history map off")
 
 
-## A landmark, or a landmark's part, by id.
+## A landmark, a landmark's part or a vent, by id.
 static func _place_named(history: History, id: String) -> Dictionary:
 	var found := history.landmark(StringName(id))
 	if not found.is_empty():
@@ -273,6 +273,9 @@ static func _place_named(history: History, id: String) -> Dictionary:
 		for part: Dictionary in each.parts:
 			if part.id == StringName(id):
 				return part
+	for each in history.geology.vents:
+		if each.id == StringName(id):
+			return each
 	return {}
 
 
@@ -282,6 +285,9 @@ static func _goto_ids(history: History) -> PackedStringArray:
 		ids.append(each.id)
 		for part: Dictionary in each.parts:
 			ids.append(part.id)
+	for each in history.geology.vents:
+		if not ids.has(each.id):
+			ids.append(each.id)
 	return ids
 
 
