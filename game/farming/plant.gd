@@ -1,11 +1,15 @@
 class_name Plant
 extends Part
-## A crop in a planter's slot, known by its crop, never by its name. It grows
-## by the light and the temperature its planter feels, each crop between its
-## own limits: carrots in the sun, fungus in the dark. Past its hardy limits
-## it wilts back. Growing, it drinks from the planter's tank. Ripe, it stops
-## and holds until it's picked. Fungus fruits again from what's left of it, as
-## mushrooms do; other crops are sown again from their seed.
+## A crop in a planter's slot, known by its crop, never by its name. Every
+## crop grows by this one path, reading its own data in the catalog: the
+## light it grows by, and the temperature, wind and dust its planter feels
+## against its tolerances. Within all of them it grows, past one it holds,
+## and past what it holds through it wilts back, but never dies. Growing, it
+## drinks from the tank. It goes seedling, growing, mature; mature it's ripe
+## and holds until it's picked, but one that fruits in bursts waits for a
+## storm's humid air to fruit. Picked, it's sown again from its propagule, or
+## one that regrows keeps its share and grows again where it stands. One that
+## folds closes its leaves ahead of a storm, a pose and nothing more.
 
 const GROWING := &"growing"
 const RIPE := &"ripe"
@@ -13,85 +17,120 @@ const DARK := &"too dark"
 const BRIGHT := &"too bright"
 const HOT := &"too hot"
 const COLD := &"too cold"
+const WINDY := &"too windy"
+const DUSTY := &"too dusty"
 const WILTING := &"wilting"
 const DRY := &"dry"
-## Sown it stands this share of its full height, and this share of its width.
-const SOWN_HEIGHT := 0.35
-const SOWN_WIDTH := 0.6
+const WAITING := &"waiting for a storm"
+const FRUITING := &"fruiting"
+const BURNT := &"too much sun"
+## The shared stages. Going to seed is how a plant drifts toward wild stock;
+## nothing does yet.
+const SEEDLING := &"seedling"
+const YOUNG := &"growing"
+const MATURE := &"mature"
+const TO_SEED := &"to seed"
+## Below this share grown it's a seedling.
+const SEEDLING_UNTIL := 0.25
+## Each tolerance, [the crop's, what its planter feels, which way is worse,
+## what it says past it]. Radiation is a crop's too, but nothing feels a dose.
+const AXES := [
+	[&"cold", &"temperature", -1.0, COLD],
+	[&"heat", &"temperature", 1.0, HOT],
+	[&"wind", &"wind", 1.0, WINDY],
+	[&"particles", &"particles", 1.0, DUSTY],
+	[&"radiation", &"radiation", 1.0, BURNT],
+]
+## Leaves fold or open this share a second, and their look in this many steps.
+const FOLD_RATE := 1.0 / 30.0
+const FOLD_STEPS := 6
 
-## Its crop, whose tuning numbers it grows by, and the food a harvest gives.
+## Its crop, the catalog id it's known by, and that crop's data.
 var crop: StringName
-var food: StringName
-## Picked, it stays in its slot and grows again.
-var regrows := false
-## 0 sown to 1 ripe.
+var data: Dictionary
+## 0 sown to 1 mature.
 var growth := 0.0
+## A crop that fruits in bursts: 0 to 1 fruited, once mature.
+var fruit := 0.0
 ## Growing, ripe, or why it isn't growing: what it did on its last tick.
 var state := GROWING
-## Its crop's numbers, from the tuning when it was sown: the felt light it
-## starts and is full at, the temperatures it grows and survives between,
-## seconds of full growth to ripen, water to ripen, L, and its harvest.
-var light: Vector2
-var grows: Vector2
-var hardy: Vector2
-var ripen_seconds: float
-var litres: float
-var harvest: int
-var kcal: float
+## Wild stock rather than clean (not read yet: propagules come next).
+var wild := false
+## Its leaves, 0 open to 1 folded shut.
+var fold := 0.0
+var ripen_seconds: float:
+	get:
+		return data.minutes * 60.0
+var burst_seconds: float:
+	get:
+		return data.stages.get("bursts", 0.0) * 60.0
+var litres: float:
+	get:
+		return data.litres
+## A harvest of what comes to your hands, units, and its kcal each.
+var harvest: int:
+	get:
+		return data.yields[0][1]
+var kcal: float:
+	get:
+		return Catalog.PARTS[data.yields[0][0]].get("each", 0.0)
 
 var _look: MeshInstance3D
-var _paint: StandardMaterial3D
-var _size: Vector3
-var _young: Color
-var _ripe: Color
+var _folded_once := false
 
 
-func sow(id: StringName, gives: StringName, young: Color, ripe_color: Color) -> void:
-	var tuning := Tuning.current()
+func sow(id: StringName) -> void:
 	crop = id
-	food = gives
-	regrows = Catalog.PARTS[id].get("regrows", false)
-	light = tuning.get(StringName("%s_light" % id))
-	grows = tuning.get(StringName("%s_grows" % id))
-	hardy = tuning.get(StringName("%s_hardy" % id))
-	ripen_seconds = tuning.get(StringName("%s_minutes" % id)) * 60.0
-	litres = tuning.get(StringName("%s_litres" % id))
-	harvest = tuning.get(StringName("%s_harvest" % id))
-	kcal = tuning.get(StringName("%s_kcal" % id))
-	_young = young
-	_ripe = ripe_color
+	data = Catalog.PARTS[id].crop
 	for child in get_children():
 		if child is MeshInstance3D:
 			_look = child
-			_paint = (_look.mesh as BoxMesh).material
-			_size = (_look.mesh as BoxMesh).size
 			break
 	set_growth(0.0)
 
 
 func ripe() -> bool:
-	return growth >= 1.0
+	return growth >= 1.0 and (not data.stages.has("bursts") or fruit >= 1.0)
 
 
-## One tick of `seconds` in this felt light and temperature, °C, with this
-## much water left in the tank, L; returns the water it drank.
-func grow(seconds: float, lit: float, warmth: float, water: float) -> float:
+func stage() -> StringName:
+	return MATURE if growth >= 1.0 else (SEEDLING if growth < SEEDLING_UNTIL else YOUNG)
+
+
+## One tick of `seconds` in what its planter feels (Planter.felt()), with
+## this much water left in the tank, L; returns the water it drank.
+func grow(seconds: float, felt: Dictionary, water: float) -> float:
 	if ripe():
 		state = RIPE
 		return 0.0
 	var full := seconds / ripen_seconds
-	if warmth < hardy.x or warmth > hardy.y:
-		state = WILTING
-		set_growth(growth - Tuning.current().wilt_rate * full)
-		return 0.0
-	var share := clampf(inverse_lerp(light.x, light.y, lit), 0.0, 1.0)
-	if warmth < grows.x or warmth > grows.y:
+	var why := GROWING
+	for axis: Array in AXES:
+		if not felt.has(axis[1]):
+			continue
+		var limits: Vector2 = data[axis[0]]
+		var past: float = felt[axis[1]] * axis[2]
+		if past > limits.y * axis[2] and not data.stages.get("never_dies", false):
+			state = WILTING
+			set_growth(growth - Tuning.current().wilt_rate * full)
+			return 0.0
+		if past > limits.x * axis[2] and why == GROWING:
+			why = axis[3]
+	var share := clampf(inverse_lerp(data.lit.x, data.lit.y, felt.lamp if data.light == &"lamp" else felt.light), 0.0, 1.0)
+	if why != GROWING:
 		share = 0.0
-		state = COLD if warmth < grows.x else HOT
 	elif share <= 0.0:
-		state = DARK if light.y > light.x else BRIGHT
-	else:
-		state = GROWING
+		why = DARK if data.lit.y > data.lit.x else BRIGHT
+	state = why
+	if growth >= 1.0:
+		# Mature, it fruits only in a storm's humid air, which no bubble keeps out.
+		if felt.storm <= 0.0:
+			state = WAITING if state == GROWING else state
+			return 0.0
+		state = FRUITING if state == GROWING else state
+		fruit = minf(fruit + share * seconds / burst_seconds, 1.0)
+		set_growth(growth)
+		return 0.0
 	var gain := full * share
 	if gain * litres > water:
 		gain = water / litres
@@ -101,14 +140,46 @@ func grow(seconds: float, lit: float, warmth: float, water: float) -> float:
 	return (growth - before) * litres
 
 
-## It grows taller and fuller as it grows, and turns its ripe colour when
-## ripe: as it reaches ripe, not a rounding short of it.
+## Picked: sown again from nothing, or what's left of one that regrows.
+func pick() -> void:
+	fruit = 0.0
+	set_growth(data.stages.get("regrows", 0.0))
+
+
+## Whether a storm is due within its fold's lead, or here: its leaves close
+## toward shut, or open, over `seconds`. The first it hears, they're there.
+func forecast(stormy: bool, seconds: float) -> void:
+	var to := 1.0 if stormy else 0.0
+	fold = to if not _folded_once else move_toward(fold, to, FOLD_RATE * seconds)
+	_folded_once = true
+	_show()
+
+
+## A save from before the crops fruited in bursts: one that was ripe still is.
+func restored() -> void:
+	if state == RIPE and data.stages.has("bursts"):
+		fruit = 1.0
+	set_growth(growth)
+
+
+## Its look is its crop's at its stage, growing into it: as it reaches
+## mature, not a rounding short of it.
 func set_growth(to: float) -> void:
 	growth = 1.0 if to > 1.0 - 1e-9 else clampf(to, 0.0, 1.0)
+	if growth < 1.0:
+		fruit = 0.0
+	_show()
+
+
+func _show() -> void:
 	if _look == null:
 		return
-	var tall := lerpf(SOWN_HEIGHT, 1.0, growth)
-	var wide := lerpf(SOWN_WIDTH, 1.0, growth)
-	var own := Transform3D(Basis.from_scale(Vector3(wide, wide, tall)), Vector3(0.0, 0.0, _size.z * tall * 0.5))
+	var at := stage()
+	var look := Dress.crop(crop, RIPE if ripe() else at, roundi(fold * FOLD_STEPS) / float(FOLD_STEPS))
+	if look != null:
+		_look.mesh = look
+	# Within a stage it fills out toward the next.
+	var into := growth / SEEDLING_UNTIL if at == SEEDLING \
+		else ((growth - SEEDLING_UNTIL) / (1.0 - SEEDLING_UNTIL) if at == YOUNG else 1.0)
+	var own := Transform3D(Basis.from_scale(Vector3.ONE * lerpf(0.7, 1.0, into)), Vector3.ZERO)
 	_look.transform = (socket.transform if socket != null else Transform3D.IDENTITY) * own
-	_paint.albedo_color = _ripe if ripe() else _young.lerp(_ripe, 0.25 * growth)

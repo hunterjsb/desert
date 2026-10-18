@@ -3,7 +3,7 @@ extends HandsProbe
 ## sockets, rested in them, dropped on, thrown at and dragged against devices
 ## thousands of times, and let go through the hands while the tug is pulling
 ## them in. Nothing fits. Then, so this can't pass by nothing ever fitting, a
-## held and aimed part fits through the hands: a battery and a carrot by aim
+## held and aimed part fits through the hands: a battery and a root-tuber by aim
 ## alone, and a hover tray slid under a resting planter with take. And standing
 ## at your full height by a crate on the sand, looking at it is enough: a tray
 ## is offered its bottom mount, a hook the ring on your side, of two rings
@@ -186,7 +186,7 @@ func _settle(seconds: float) -> void:
 func _held_and_aimed_fits() -> void:
 	var fits_before := _hand_fits
 	# The planter gets a battery too: a tray only floats a device with power.
-	for job: Array in [[_crate, &"battery", false], [_planter, &"plant_small", false],
+	for job: Array in [[_crate, &"battery", false], [_planter, &"plant_standard", false],
 			[_planter, &"battery", false], [_planter, &"bottom", true]]:
 		var owner: Device = job[0]
 		var socket: Socket

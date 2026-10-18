@@ -60,8 +60,8 @@ const DEVICES := {
 const IN_RUINS := {
 	SURFACE: {
 		"parts": [
-			[&"carrot", 6],
-			[&"fungus", 4],
+			[&"root_tuber", 6],
+			[&"vat_fungus", 4],
 			[&"ration", 2],
 		],
 		"devices": [
@@ -70,8 +70,8 @@ const IN_RUINS := {
 	},
 	DEEP: {
 		"parts": [
-			[&"carrot", 4],
-			[&"fungus", 4],
+			[&"root_tuber", 4],
+			[&"vat_fungus", 4],
 			[&"ration", 1],
 		],
 		"devices": [
@@ -82,8 +82,8 @@ const IN_RUINS := {
 ## What a survival kit holds, by socket kind, and the share of its slots
 ## found filled: it was packed to be found. Seeds keep only out of the
 ## weather, so a kit lying on open sand has mostly lost them.
-const SURVIVAL_KIT := {&"water": [&"canister"], &"food": [&"ration"], &"plant_small": [&"carrot"],
-	&"plant_large": [&"fungus"]}
+const SURVIVAL_KIT := {&"water": [&"canister"], &"food": [&"ration"], &"plant_standard": [&"root_tuber"],
+	&"plant_pot": [&"vat_fungus"]}
 const KIT_FILL := 0.75
 const KIT_SEEDS_IN_THE_OPEN := 0.1
 ## What a found device's sockets hold, by socket kind; a kind not listed is
@@ -257,7 +257,7 @@ static func _fill(spec: Dictionary, rng: RandomNumberGenerator, least := 0, in_r
 			continue
 		var share: float = kind.fill
 		if packed:
-			share = KIT_SEEDS_IN_THE_OPEN if sockets[i][0] in [&"plant_small", &"plant_large"] and not in_ruin else KIT_FILL
+			share = KIT_SEEDS_IN_THE_OPEN if sockets[i][0] in [&"plant_pot", &"plant_standard", &"plant_deep"] and not in_ruin else KIT_FILL
 		if rng.randf() < share:
 			spec.fill.append([i, _any(rng, fills[sockets[i][0]]), rng.randf_range(kind.charge.x, kind.charge.y)])
 		else:

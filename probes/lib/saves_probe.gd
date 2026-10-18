@@ -41,7 +41,7 @@ func load_camp(settle_seconds := 10.0) -> void:
 	world.content.add_child(planter)
 	var at := here + east * PLANTER_AT + Vector3.BACK * 1.5
 	planter.global_position = Vector3(at.x, world.height_under(at) + 0.2, at.z)
-	for id: StringName in [&"battery", &"carrot", &"carrot", &"fungus"]:
+	for id: StringName in [&"battery", &"root_tuber", &"root_tuber", &"vat_fungus"]:
 		fit_part(planter, id)
 	planter.tank_l = tuning.planter_tank_litres * 0.75
 	for plant in planter.plants():

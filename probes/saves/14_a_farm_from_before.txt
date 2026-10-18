@@ -1,0 +1,245 @@
+{
+&"cables": [],
+&"carried": [{
+"id": &"canister",
+"ref": 10,
+"state": {
+&"amount": 2.0,
+&"stats": {
+"water_l": 2.0,
+"water_left_l": 2.0
+}
+}
+}, {
+"id": &"ration",
+"ref": 11,
+"state": {
+&"amount": 1000.0,
+&"stats": {
+"food_kcal": 1000.0,
+"food_left_kcal": 1000.0
+}
+}
+}, {
+"id": &"carrot",
+"ref": 12,
+"state": {
+"growth": 0.0,
+"state": &"growing"
+}
+}, {
+"id": &"carrots",
+"ref": 13,
+"state": {
+&"amount": 600.0,
+&"stats": {
+"food_kcal": 600.0,
+"food_left_kcal": 600.0
+}
+}
+}, {
+"id": &"fungus_caps",
+"ref": 14,
+"state": {
+&"amount": 450.0,
+&"stats": {
+"food_kcal": 450.0,
+"food_left_kcal": 450.0
+}
+}
+}],
+&"finds": [],
+&"grasp": {},
+"gravity": 9.8,
+&"hands": {},
+&"ironman": false,
+"last": [22.0, 22.0],
+"ledger": [0.0, 0.0, 0.0],
+&"lines": [],
+"moon": {
+"_facing": 1.0,
+"_spawn_latitude": 0.0,
+"_spawn_longitude": 0.0,
+"latitude": 0.0,
+"longitude": 0.0
+},
+&"order": [["b", 0], ["b", 7]],
+"origin": Vector2i(0, 0),
+&"player": {
+"at": [Basis(1, 0, 0, 0, 1, 0, 0, 0, 1), 22.0, 0.11546813, 22.0],
+"drag": Vector3(0, 0, 0),
+"pitch": 0.0,
+"state": {
+"_crouch_was": false,
+"_jump_buffer": 0.0,
+"_jump_queued": false,
+"_jump_was": false,
+"_jumped": false,
+"_left": Vector3(0, 0, 0),
+"_on_sand": true,
+"_since_ground": 0.0,
+"_sliding": false,
+"_touchdown": 0.0,
+"crouched": false,
+"flying": false,
+"low": 0.0,
+"mode": "stand",
+"own": Vector2(0, 0),
+"sink": 0.0,
+"slope": Vector2(0.03481879, -0.007915556),
+"stamina": 100.0,
+"wind": Vector3(0, 0, 0)
+},
+"v": Vector3(0, 0, 0),
+"vitals": {
+"_next": 0.0,
+"dead": false,
+"drunk": 0.0,
+"eaten": 0.0,
+"harms": {
+&"storm": 0.25,
+&"temperature": 0.0,
+&"wind": 0.0
+},
+"health": 99.6875,
+"hunger": 99.94791666666664,
+"taken": {
+&"storm": 0.3125,
+&"temperature": 0.0,
+&"wind": 0.0
+},
+"thirst": 99.89583333333336
+}
+},
+"seed": 1234,
+&"solver": {
+"bodies": [],
+"drag": Vector3(0, 0, 0),
+"tick": 86
+},
+&"strands": [],
+&"things": [{
+&"at": [Basis(0.9994096, -0.034354266, -0.00041283946, 0.034349646, 0.9993753, -0.008316398, 0.0006982853, 0.008297307, 0.9999653), 31.99812, 0.89514786, 22.000364],
+&"buried": false,
+&"freeze": false,
+"id": &"planter",
+"ref": 0,
+&"sleeping": false,
+&"sockets": [[0, {
+"id": &"carrot",
+"ref": 1,
+"state": {
+"growth": 0.0,
+"state": &"growing"
+}
+}], [1, {
+"id": &"carrot",
+"ref": 2,
+"state": {
+"growth": 0.4,
+"state": &"growing"
+}
+}], [2, {
+"id": &"carrot",
+"ref": 3,
+"state": {
+"growth": 0.0,
+"state": &"growing"
+}
+}], [3, {
+"id": &"fungus",
+"ref": 4,
+"state": {
+"growth": 1.0,
+"state": &"ripe"
+}
+}], [4, {
+"id": &"battery",
+"ref": 5,
+"state": {
+"charge_wh": 100.0
+}
+}], [9, {
+"id": &"harvester",
+"ref": 6,
+"state": {}
+}]],
+"state": {
+"_gives": {
+&"carrot": [&"carrots", 4, 150.0]
+},
+"_owed": {
+&"carrot": 0.0
+},
+"banked": {
+&"carrot": 3
+},
+"dropped": {},
+&"durability": 1.0,
+"fed_kcal": 0.0,
+"lift_share": 1.0,
+"picked": {},
+&"powered": true,
+"replanted": {
+&"carrot": 1
+},
+"resting": false,
+"ripened": {
+&"carrot": 4
+},
+"seeds": {
+&"carrot": 0
+},
+"split": 0.25,
+"stored": {
+&"carrot": 3
+},
+"tank_l": 3.0
+},
+&"v": Vector3(-0.070403606, -0.44331512, 0.011998764),
+&"w": Vector3(0.03597464, -0.030334843, 0.7707914),
+&"world_froze": false
+}, {
+&"at": [Basis(1, 0, 0, 0, 1, 0, 0, 0, 1), 20.0, 0.22211927, 23.0],
+&"buried": false,
+&"freeze": false,
+"id": &"survival_kit",
+"ref": 7,
+&"sleeping": false,
+&"sockets": [[2, {
+"id": &"carrot",
+"ref": 8,
+"state": {
+"growth": 0.0,
+"state": &"growing"
+}
+}], [4, {
+"id": &"fungus",
+"ref": 9,
+"state": {
+"growth": 0.0,
+"state": &"growing"
+}
+}]],
+"state": {
+&"durability": 1.0,
+"lift_share": 1.0,
+&"powered": true,
+"resting": false
+},
+&"v": Vector3(0, -0.65333337, 0),
+&"w": Vector3(0, 0, 0),
+&"world_froze": false
+}],
+"ticks": {
+"farm": 0.0,
+"power": 0.0,
+"wear": 0.0
+},
+"time": 0.06666666666666667,
+&"waist": {
+"tied": [],
+"to_hand": false,
+"untying": -1.0
+}
+}

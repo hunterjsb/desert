@@ -10,8 +10,9 @@ const KINDS := {
 	&"ring": Color(0.85, 0.85, 0.85),
 	&"bottom": Color(0.3, 0.7, 0.95),
 	&"top": Color(0.4, 0.9, 0.5),
-	&"plant_small": Color(0.55, 0.85, 0.3),
-	&"plant_large": Color(0.35, 0.65, 0.2),
+	&"plant_pot": Color(0.55, 0.85, 0.3),
+	&"plant_standard": Color(0.35, 0.65, 0.2),
+	&"plant_deep": Color(0.25, 0.45, 0.15),
 	&"port": Color(1.0, 0.5, 0.1),
 	&"tie": Color(0.42, 0.31, 0.2),
 	&"water": Color(0.3, 0.6, 1.0),
@@ -38,14 +39,43 @@ const PARTS := {
 		"color": Color(0.1, 0.15, 0.35), "stats": {"solar_w": 60.0}},
 	&"lamp": {"kind": &"top", "label": "Lamp", "mass": 1.0, "size": Vector3(0.12, 0.12, 0.25),
 		"color": Color(0.95, 0.9, 0.6), "stats": {"light_w": 5.0}},
-	# Crops, sown in a planter's slots: "crop" names their tuning numbers, and
-	# a harvest comes out as their "food". One that "regrows" fruits again when picked.
-	&"carrot": {"kind": &"plant_small", "label": "Carrot", "mass": 0.3, "size": Vector3(0.1, 0.1, 0.18),
-		"color": Color(0.3, 0.7, 0.2), "ripe": Color(0.95, 0.5, 0.1), "stats": {"plants": 1},
-		"crop": &"carrot", "food": &"carrots"},
-	&"fungus": {"kind": &"plant_large", "label": "Fungus", "mass": 1.2, "size": Vector3(0.18, 0.18, 0.4),
-		"color": Color(0.4, 0.36, 0.3), "ripe": Color(0.9, 0.85, 0.7), "stats": {"plants": 1},
-		"crop": &"fungus", "food": &"fungus_caps", "regrows": true},
+	# Crops, sown in a planter's slots. Each is all data, read by one growth
+	# path (Plant): its kind is the planter it fits (a pot, a standard planter
+	# or a deep bed), and its "crop" says how it grows:
+	#   family: day, storm or special; light: what it grows by, the sun, the
+	#   dark or a lamp; lit: the felt light it starts to grow at and grows full
+	#   at (a dark crop's runs down); minutes of full growth from sown to
+	#   mature; litres it drinks on the way; yields, a harvest as [part, units],
+	#   the first what comes to your hands.
+	#   Its tolerances, each the most it grows in and the most it holds through
+	#   before it wilts back, so they say how much shelter it needs: wind, m/s;
+	#   particles, the felt storm; heat and cold, °C. Radiation is the same,
+	#   but nothing in the weather gives a dose yet.
+	#   propagule: what it's sown again from. wild: not clean stock (Plant).
+	#   stages, its twists on the shared seedling, growing, mature, to seed:
+	#   regrows, the share it keeps when picked, so it grows again in its
+	#   slot; bursts, minutes it takes to fruit once mature, only in a storm;
+	#   folds, minutes ahead of a storm its leaves close; never_dies, past its
+	#   limits it holds instead of wilting. eats_scraps, keeps_growing, cycles,
+	#   stump and awaits_rain are said of a crop but do nothing yet.
+	&"root_tuber": {"kind": &"plant_standard", "label": "Root-tuber", "mass": 0.5, "size": Vector3(0.16, 0.16, 0.22),
+		"color": Color(0.3, 0.55, 0.22), "stats": {"plants": 1},
+		"crop": {"family": &"day", "light": &"sun", "lit": Vector2(0.25, 0.6), "minutes": 3.0, "litres": 0.25,
+			"yields": [[&"tubers", 4]], "wind": Vector2(25.0, 45.0), "particles": Vector2(0.9, 1.0),
+			"heat": Vector2(60.0, 70.0), "cold": Vector2(-10.0, -30.0), "radiation": Vector2(1.0, 1.0),
+			"propagule": &"tuber", "wild": false, "stages": {}}},
+	&"vat_fungus": {"kind": &"plant_pot", "label": "Vat fungus", "mass": 0.4, "size": Vector3(0.14, 0.14, 0.14),
+		"color": Color(0.82, 0.78, 0.68), "stats": {"plants": 1},
+		"crop": {"family": &"storm", "light": &"dark", "lit": Vector2(0.5, 0.25), "minutes": 5.0, "litres": 0.3,
+			"yields": [[&"fungus_caps", 4]], "wind": Vector2(8.0, 30.0), "particles": Vector2(1.0, 1.0),
+			"heat": Vector2(45.0, 55.0), "cold": Vector2(-5.0, -15.0), "radiation": Vector2(0.3, 0.6),
+			"propagule": &"spores", "wild": false, "stages": {"regrows": 0.0, "bursts": 1.0, "eats_scraps": true}}},
+	&"saltbush": {"kind": &"plant_standard", "label": "Saltbush", "mass": 0.6, "size": Vector3(0.2, 0.2, 0.26),
+		"color": Color(0.66, 0.7, 0.64), "stats": {"plants": 1},
+		"crop": {"family": &"day", "light": &"sun", "lit": Vector2(0.2, 0.55), "minutes": 12.0, "litres": 0.15,
+			"yields": [[&"salt", 4], [&"saltbush_leaves", 1]], "wind": Vector2(40.0, 40.0), "particles": Vector2(1.0, 1.0),
+			"heat": Vector2(65.0, 65.0), "cold": Vector2(-20.0, -20.0), "radiation": Vector2(1.0, 1.0),
+			"propagule": &"cutting", "wild": false, "stages": {"regrows": 0.5, "folds": 2.0, "never_dies": true}}},
 	# Fits a planter's mod mount: ripe crops go into the planter's own storage.
 	&"harvester": {"kind": &"mod", "label": "Harvester", "mass": 1.5, "size": Vector3(0.22, 0.14, 0.1),
 		"color": Color(0.5, 0.3, 0.45), "stats": {"harvester": 1}},
@@ -69,15 +99,23 @@ const PARTS := {
 		"color": Color(0.55, 0.62, 0.68), "stats": {}},
 	&"ration": {"kind": &"food", "label": "Ration", "mass": 0.5, "size": Vector3(0.16, 0.1, 0.06),
 		"color": Color(0.45, 0.42, 0.25), "stats": {}},
-	# What a harvest gives: food like a ration, holding the harvest's kcal.
-	&"carrots": {"kind": &"food", "label": "Carrots", "mass": 0.6, "size": Vector3(0.16, 0.1, 0.08),
-		"color": Color(0.95, 0.5, 0.1), "stats": {}},
+	# What a harvest gives, "each" unit of it: food like a ration, holding its
+	# kcal, and salt, which does nothing yet but stack with what you carry.
+	&"tubers": {"kind": &"food", "label": "Tubers", "mass": 0.6, "size": Vector3(0.16, 0.1, 0.08),
+		"color": Color(0.72, 0.58, 0.36), "stats": {}, "each": 150.0},
 	&"fungus_caps": {"kind": &"food", "label": "Fungus caps", "mass": 0.4, "size": Vector3(0.14, 0.1, 0.08),
-		"color": Color(0.85, 0.8, 0.65), "stats": {}},
+		"color": Color(0.85, 0.8, 0.65), "stats": {}, "each": 150.0},
+	&"saltbush_leaves": {"kind": &"food", "label": "Saltbush leaves", "mass": 0.2, "size": Vector3(0.12, 0.08, 0.06),
+		"color": Color(0.62, 0.68, 0.6), "stats": {}, "each": 120.0},
+	&"salt": {"kind": &"salt", "label": "Salt", "mass": 0.1, "size": Vector3(0.07, 0.07, 0.05),
+		"color": Color(0.9, 0.9, 0.86), "stats": {}},
 	# Nothing takes a compass: it's read, in your hand or in the inventory.
 	&"compass": {"kind": &"compass", "label": "Compass", "mass": 0.2, "size": Vector3(0.12, 0.12, 0.03),
 		"color": Color(0.26, 0.28, 0.29), "stats": {}},
 }
+
+## Parts by the names older saves knew them by.
+const RENAMED := {&"carrot": &"root_tuber", &"fungus": &"vat_fungus", &"carrots": &"tubers"}
 
 ## Frames: their box, weight, wind catch and sockets as [kind, position, outward].
 ## Those marked "deck" stand on a chassis piece's deck mount too.
@@ -103,13 +141,16 @@ const DEVICES := {
 			[&"rack", Vector3(-0.4, 0.17, 0.0), Vector3.LEFT],
 		]},
 	# Its own water tank, fed from its water socket, and a mod mount on its
-	# back for a harvester. The water socket is last, so older saves keep their sockets.
+	# back for a harvester. The water socket is last, so older saves keep their
+	# sockets. Its three standard planters were the small slots its carrots
+	# grew in and its pot the large one its fungus had, so a save from then
+	# finds root-tubers and vat fungus where they fit.
 	&"planter": {"label": "Planter", "size": Vector3(1.0, 0.35, 0.6), "mass": 10.0, "planter": true,
 		"sockets": [
-			[&"plant_small", Vector3(-0.3, 0.175, -0.12), Vector3.UP],
-			[&"plant_small", Vector3(-0.3, 0.175, 0.12), Vector3.UP],
-			[&"plant_small", Vector3(0.0, 0.175, 0.0), Vector3.UP],
-			[&"plant_large", Vector3(0.3, 0.175, 0.0), Vector3.UP],
+			[&"plant_standard", Vector3(-0.3, 0.175, -0.12), Vector3.UP],
+			[&"plant_standard", Vector3(-0.3, 0.175, 0.12), Vector3.UP],
+			[&"plant_standard", Vector3(0.0, 0.175, 0.0), Vector3.UP],
+			[&"plant_pot", Vector3(0.3, 0.175, 0.0), Vector3.UP],
 			[&"battery", Vector3(-0.5, 0.0, 0.0), Vector3.LEFT],
 			[&"ring", Vector3(0.0, 0.0, 0.3), Vector3.BACK],
 			[&"ring", Vector3(0.0, 0.0, -0.3), Vector3.FORWARD],
@@ -184,9 +225,9 @@ const DEVICES := {
 		"sockets": [
 			[&"water", Vector3(-0.13, 0.0, 0.175), Vector3.BACK],
 			[&"food", Vector3(0.13, 0.0, 0.175), Vector3.BACK],
-			[&"plant_small", Vector3(-0.15, 0.125, 0.0), Vector3.UP],
-			[&"plant_small", Vector3(0.0, 0.125, 0.0), Vector3.UP],
-			[&"plant_large", Vector3(0.15, 0.125, 0.0), Vector3.UP],
+			[&"plant_standard", Vector3(-0.15, 0.125, 0.0), Vector3.UP],
+			[&"plant_standard", Vector3(0.0, 0.125, 0.0), Vector3.UP],
+			[&"plant_pot", Vector3(0.15, 0.125, 0.0), Vector3.UP],
 		]},
 	# Just for you: it runs on its own battery, at its nose, and nothing ties
 	# to it, so it tows nothing. Its port charges it from a cable, and a crate's
@@ -244,9 +285,10 @@ static func part(id: StringName) -> Part:
 		made.light = ChargeLight.make(Vector3(size.x * 0.7, 0.02, 0.01))
 		made.light.position = Vector3(0.0, size.y * 0.5 + 0.005, size.z * 0.6)
 		made.add_child(made.light)
-		made.seal()
+		# A harvest's output holds one unit of it, alone.
+		made.seal(spec.get("each", NAN))
 	if made is Plant:
-		(made as Plant).sow(spec.crop, spec.food, spec.color, spec.ripe)
+		(made as Plant).sow(id)
 	if made is Compass:
 		var needle := MeshInstance3D.new()
 		needle.mesh = Dress.needle()
@@ -285,6 +327,23 @@ static func food(id: StringName, kcal: float) -> Supply:
 	var made := part(id) as Supply
 	made.seal(kcal)
 	return made
+
+
+## Units of a harvest's output: food as one, holding them all, and anything
+## else one a unit.
+static func output(id: StringName, units: int) -> Array[Part]:
+	var spec: Dictionary = PARTS[id]
+	if Supply.HOLDS.has(spec.kind):
+		return [food(id, units * spec.each)]
+	var made: Array[Part] = []
+	for i in units:
+		made.append(part(id))
+	return made
+
+
+## What a save made before a part was renamed calls it by now.
+static func current(id: StringName) -> StringName:
+	return RENAMED.get(id, id)
 
 
 ## A cable and its two plugs, dropped together at a place; both plugs go loose

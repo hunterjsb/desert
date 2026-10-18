@@ -1,15 +1,16 @@
 class_name Planter
 extends Device
-## The hover planter: plant slots on top, its own water tank, and a mod mount
-## on its back. On the farm's tick its crops grow by the light and the
-## temperature where it stands, drinking from the tank, whether or not it has
-## power. A canister in its water socket, or what a hose there joins it to,
-## keeps the tank full (Water). A ripe crop taken by hand comes out as its
-## food and starts again. With a harvester fitted, ripe crops go into its own
-## storage instead, the share you set going back in as seed, and it drops food
-## onto you when you're near and you're carrying little food. Use on it sets
-## its tray as on any device; the share it replants waits for its own control
-## (Hunter, 2026-10-17).
+## The hover planter: three standard planters and a pot on top, its own water
+## tank, and a mod mount on its back. On the farm's tick its crops grow by
+## what it feels where it stands, drinking from the tank, whether or not it
+## has power. A canister in its water socket, or what a hose there joins it
+## to, keeps the tank full (Water). A ripe crop taken by hand comes out as
+## its harvest and starts again. With a harvester fitted, ripe crops go into
+## its own storage instead, the share you set going back in as seed, and it
+## drops food onto you when you're near and you're carrying little food, and
+## anything else it grew whenever you're near. Use on it sets its tray as on
+## any device; the share it replants waits for its own control (Hunter,
+## 2026-10-17).
 
 ## The shares use steps through.
 const SPLITS: Array[float] = [0.0, 0.25, 0.5, 0.75, 1.0]
@@ -19,12 +20,13 @@ const CROWN := Vector3(0.0, 0.3, 0.0)
 var tank_l := 0.0
 ## The share of each harvest the harvester sows again.
 var split: float = Tuning.current().replant_share
-## What it holds, units of each crop: food, and seed waiting for a free slot.
+## What it holds: units of each output its harvests gave, and seed of each
+## crop waiting for a free slot.
 var stored := {}
 var seeds := {}
-## Its harvests since it was found, units of each crop: what ripened under
-## the harvester, and of that what went back in as seed and what was stored;
-## what it dropped onto you; what was picked by hand.
+## Its harvests since it was found: what ripened under the harvester, units
+## of each crop, and of that what went back in as seed; what was stored and
+## what it dropped onto you, units of each output; what was picked by hand.
 var ripened := {}
 var replanted := {}
 var banked := {}
@@ -33,22 +35,21 @@ var picked := {}
 ## Food it has dropped onto you, kcal.
 var fed_kcal := 0.0
 
-## What a harvest of each crop it has stored gives: [food, units, kcal each].
-var _gives := {}
 ## Seed owed to each crop but not yet whole, so the split holds over many harvests.
 var _owed := {}
 
 
-## The farm's tick: the crops grow, and with a harvester the ripe ones are
-## harvested, seed is sown and food dropped.
+## The farm's tick: the crops grow, those that fold read the storm ahead,
+## and with a harvester the ripe ones are harvested, seed is sown and food dropped.
 func tick(seconds: float, t: float) -> void:
 	var crops := plants()
 	if not crops.is_empty():
-		var at := global_position + CROWN
-		var lit := world.weather.felt_light(at, t)
-		var warmth := world.weather.felt_temperature(at, t)
+		var felt := felt(t)
 		for plant in crops:
-			tank_l = maxf(tank_l - plant.grow(seconds, lit, warmth, tank_l), 0.0)
+			tank_l = maxf(tank_l - plant.grow(seconds, felt, tank_l), 0.0)
+			var lead: float = plant.data.stages.get("folds", 0.0) * 60.0
+			if lead > 0.0:
+				plant.forecast(_stormy(t) or _stormy(t + lead), seconds)
 	if not harvests():
 		return
 	for plant in crops:
@@ -56,6 +57,25 @@ func tick(seconds: float, t: float) -> void:
 			_harvest(plant)
 	_sow()
 	_drop()
+
+
+## What its crops feel at time t, just over its slots: the sun's light, the
+## storm's dark in it; a lamp's, which none of its sockets takes yet; the
+## temperature, wind and dust with shelter applied; and the storm in the air,
+## its humid dark, which no bubble keeps out.
+func felt(t: float) -> Dictionary:
+	var at := global_position + CROWN
+	var weather := world.weather
+	return {&"light": weather.felt_light(at, t), &"lamp": 0.0, &"temperature": weather.felt_temperature(at, t),
+		&"wind": weather.felt_wind(at, t).length(), &"particles": weather.felt_storm(at, t),
+		&"storm": weather.field_storm(at, t)}
+
+
+## Whether the storm field is over it at time t, as a forecast reads it:
+## the weather's own pressure, not what a bubble lets through.
+func _stormy(t: float) -> bool:
+	var at := global_position + CROWN
+	return world.weather.field.raw_storm_at(world.world_x(at.x), world.world_z(at.z), t) > 0.0
 
 
 func plants() -> Array[Plant]:
@@ -74,26 +94,32 @@ func harvests() -> bool:
 	return false
 
 
-## Taken by hand, a ripe crop comes out as its harvest, food in your hands,
-## and starts again: fungus fruits again where it stands, and another crop's
-## seed goes in with what you carry.
+## Taken by hand, a ripe crop comes out as its harvest, the first of it in
+## your hands, and starts again: one that regrows grows again where it
+## stands, and another's seed goes in with what you carry, as does the rest
+## of its harvest.
 func take(socket: Socket) -> Part:
 	var plant := socket.part as Plant
 	if plant == null or not plant.ripe():
 		return super(socket)
-	var food := Catalog.food(plant.food, plant.harvest * plant.kcal)
+	var harvest: Array[Part] = []
+	for gives: Array in plant.data.yields:
+		harvest.append_array(Catalog.output(gives[0], gives[1]))
 	_count(picked, plant.crop, plant.harvest)
-	plant.set_growth(0.0)
+	plant.pick()
 	var player := world.player
-	if not plant.regrows:
+	if not plant.data.stages.has("regrows"):
 		var seed := super(socket)
 		seed.get_parent().remove_child(seed)
-		player.suit.carried.append(seed)
-		_fall(seed, player)
-	get_parent().add_child(food)
-	food.global_transform = global_transform * socket.transform
-	food.linear_velocity = linear_velocity
-	return food
+		harvest.append(seed)
+	for i in range(1, harvest.size()):
+		player.suit.carried.append(harvest[i])
+		_fall(harvest[i], player)
+	var first := harvest[0]
+	get_parent().add_child(first)
+	first.global_transform = global_transform * socket.transform
+	first.linear_velocity = linear_velocity
+	return first
 
 
 func stats() -> Dictionary:
@@ -110,24 +136,46 @@ func stats() -> Dictionary:
 ## The food in its storage, kcal.
 func stored_kcal() -> float:
 	var kcal := 0.0
-	for crop: StringName in stored:
-		kcal += stored[crop] * _gives[crop][2]
+	for out: StringName in stored:
+		if Catalog.PARTS[out].kind == &"food":
+			kcal += stored[out] * Catalog.PARTS[out].each
 	return kcal
 
 
+## A save from before the crops had their names: carrots are root-tubers and
+## fungus vat fungus, and what a harvest stored was kept by the crop it came from.
+func restored() -> void:
+	for tally: Dictionary in [seeds, ripened, replanted, picked, _owed]:
+		_rename(tally, func(id: StringName) -> StringName: return Catalog.current(id))
+	for tally: Dictionary in [stored, banked, dropped]:
+		_rename(tally, func(id: StringName) -> StringName:
+			var now := Catalog.current(id)
+			return Catalog.PARTS[now].crop.yields[0][0] if Catalog.PARTS[now].has("crop") else now)
+
+
+static func _rename(tally: Dictionary, to: Callable) -> void:
+	for id: StringName in tally.keys():
+		var now: StringName = to.call(id)
+		if now != id:
+			tally[now] = tally.get(now, 0) + tally[id]
+			tally.erase(id)
+
+
 ## A ripe crop's harvest: its share of seed goes back in, first into its own
-## slot, and the rest is stored.
+## slot, and the rest of it is stored with all else it gives.
 func _harvest(plant: Plant) -> void:
 	var crop := plant.crop
-	_gives[crop] = [plant.food, plant.harvest, plant.kcal]
 	var owed: float = _owed.get(crop, 0.0) + split * plant.harvest
 	var seed := mini(floori(owed + 1e-9), plant.harvest)
 	_owed[crop] = owed - seed
 	_count(ripened, crop, plant.harvest)
 	_count(replanted, crop, seed)
-	_count(banked, crop, plant.harvest - seed)
-	_count(stored, crop, plant.harvest - seed)
-	plant.set_growth(0.0)
+	for i in plant.data.yields.size():
+		var gives: Array = plant.data.yields[i]
+		var units: int = gives[1] - (seed if i == 0 else 0)
+		_count(banked, gives[0], units)
+		_count(stored, gives[0], units)
+	plant.pick()
 	if seed > 0:
 		# Sown again where it stood.
 		_count(seeds, crop, seed - 1)
@@ -148,32 +196,42 @@ func _sow() -> void:
 				seeds[crop] -= 1
 
 
-## Onto you, if you're near, while you carry less food than the tuning asks:
-## a harvest's worth at a time, one a tick.
+## Onto you, if you're near: food while you carry less than the tuning asks,
+## and anything else whenever; a harvest's worth at a time, one a tick.
 func _drop() -> void:
 	var player := world.player
 	var tuning := world.tuning
 	if player.vitals.dead or player.global_position.distance_to(global_position) > tuning.drop_reach:
 		return
 	var suit := player.suit
-	if suit.stock(&"food") >= tuning.drop_until_kcal:
-		return
-	for crop: StringName in stored:
-		if stored[crop] <= 0:
+	var hungry := suit.stock(&"food") < tuning.drop_until_kcal
+	for out: StringName in stored:
+		var food: bool = Catalog.PARTS[out].kind == &"food"
+		if stored[out] <= 0 or (food and not hungry):
 			continue
-		var gives: Array = _gives[crop]
-		var units: int = mini(stored[crop], gives[1])
-		stored[crop] -= units
-		_count(dropped, crop, units)
-		fed_kcal += units * gives[2]
-		var food := Catalog.food(gives[0], units * gives[2])
-		suit.carried.append(food)
-		_fall(food, player)
+		var units: int = mini(stored[out], _per_harvest(out))
+		stored[out] -= units
+		_count(dropped, out, units)
+		for made in Catalog.output(out, units):
+			if food:
+				fed_kcal += (made as Supply).amount
+			suit.carried.append(made)
+			_fall(made, player)
 		return
 
 
-func _count(tally: Dictionary, crop: StringName, units: int) -> void:
-	tally[crop] = tally.get(crop, 0) + units
+## The most of an output any crop's harvest gives.
+static func _per_harvest(out: StringName) -> int:
+	var most := 1
+	for id: StringName in Catalog.PARTS:
+		for gives: Array in Catalog.PARTS[id].get("crop", {}).get("yields", []):
+			if gives[0] == out:
+				most = maxi(most, gives[1])
+	return most
+
+
+func _count(tally: Dictionary, id: StringName, units: int) -> void:
+	tally[id] = tally.get(id, 0) + units
 
 
 ## Something to see: food or seed falling from the planter onto you.

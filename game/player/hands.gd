@@ -75,7 +75,7 @@ const SLIDE_OFF := 0.15
 const TOUCHES := 64
 ## What a refusal calls each kind of socket that's full.
 const SOCKET_NAMES := {&"battery": "battery slot", &"ring": "ring", &"bottom": "tray mount", &"top": "top mount",
-	&"plant_small": "small plant slot", &"plant_large": "large plant slot", &"port": "port", &"tie": "hook",
+	&"plant_pot": "pot", &"plant_standard": "planter", &"plant_deep": "deep bed", &"port": "port", &"tie": "hook",
 	&"water": "water socket", &"mod": "mod mount", &"food": "food slot", &"rack": "rack", &"deck": "deck mount"}
 const RIDING := "not from the board"
 
@@ -414,7 +414,8 @@ static func describe(label: String, mass: float, stats: Dictionary) -> String:
 	if stats.has("making_lph"):
 		bits.append("making %.1f L/h" % stats.making_lph)
 	if stats.has("growth"):
-		bits.append("ripe" if stats.growth >= 1.0 else "%d%% grown" % floori(stats.growth * 100.0))
+		bits.append("ripe" if stats.get("ripe", false) else ("mature" if stats.growth >= 1.0
+			else "%d%% grown" % floori(stats.growth * 100.0)))
 	if stats.has("growing") and stats.growing != Plant.RIPE:
 		bits.append(str(stats.growing))
 	if stats.has("replant"):
@@ -1557,6 +1558,7 @@ func _part_stats(part: Part) -> Dictionary:
 	if part is Plant:
 		now.erase("plants")
 		now["growth"] = part.growth
+		now["ripe"] = part.ripe()
 		if part.socket != null:
 			now["growing"] = part.state
 	if part.has_meta(&"line"):

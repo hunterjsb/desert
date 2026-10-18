@@ -15,7 +15,7 @@ extends RigidBody3D
 var socket: Socket
 
 
-## Loose, the wind grabs a part by its size, so a carrot doesn't blow away in
+## Loose, the wind grabs a part by its size, so a seedling doesn't blow away in
 ## a breeze that leaves a crate be.
 func _ready() -> void:
 	if not has_meta(&"wind_catch"):
