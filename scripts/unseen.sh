@@ -9,5 +9,7 @@ args=("$@")
 for ((i = 0; i < ${#args[@]} - 1; i++)); do
 	[[ ${args[i]} == --resolution ]] && size=${args[i + 1]}
 done
-exec nice -n 10 gamescope --backend headless -W "${size%x*}" -H "${size#*x}" -w "${size%x*}" -h "${size#*x}" \
+# One at a time: several headless gamescopes at once may have faulted the
+# GPU (an Xid 51 on 2026-10-18), and a fault needs a reboot to clear.
+exec flock "$HOME/Desktop/code/.desert-gpu.lock" nice -n 10 gamescope --backend headless -W "${size%x*}" -H "${size#*x}" -w "${size%x*}" -h "${size#*x}" \
 	-- godot --audio-driver Dummy "$@"
