@@ -2,6 +2,12 @@
 
 *Draft, 2026-10-13. Answers to [the vision](../vision.md).*
 
+*Updated 2026-10-17: [session 4, part 4](../plants-worldgen-ruins-2026-10-17.md) replaces the
+placeholder carrots and fungus with a roster of eleven crops in two families, with propagation,
+growth stages, wild habitats and planter sizes as socket kinds ([The plant
+system](#the-plant-system-agreed-session-4-part-4-not-built)). It is direction and none of it is
+built, so the skeleton below and its "as built" notes stand.*
+
 ## Why this system exists
 
 The farm is the engine of steady state. It turns light, warmth and time into food, and
@@ -16,6 +22,10 @@ the farm is what pulls a thermal shield into your life.
 | **Ordinary crops** (carrots and the like) | Yes | Fairly stable | Anywhere but the poles, in clear spells |
 | **Yucca** | Yes | Fairly stable | The same, and it stores water and regrows its fruit |
 | **Fungus** | No | Very stable | Near the equator only, and it thrives in storms |
+
+The table is the skeleton's. Carrots and fungus are the session 4, part 4 "placeholders" the roster
+replaces ([below](#the-plant-system-agreed-session-4-part-4-not-built)), and yucca, from Sand Game,
+is not in the roster: its water goes to the roster's water crops (open questions).
 
 **Why fungus loves storms, physically.** Storms are dark, and their dust blankets the
 day-night temperature swing (see [the moon](../the-moon.md)). Inside a long storm,
@@ -61,8 +71,289 @@ why the temperature shield sets how big the farm can be (Bubble shield & camp).
 ## What a farm gives
 
 - **Food.**
-- **Water,** from yucca.
+- **Water,** from yucca in this plan, and in the roster from dewleaf, stormcup and sandroot.
+- **Salt, cord, light and strange material,** from the roster (below). They are crop outputs, and
+  how they are processed is open.
 - **Fuel,** at different grades (Power).
+
+## The plant system (Agreed, session 4, part 4; not built)
+
+*Session 4, part 4 ([the plants session](../plants-worldgen-ruins-2026-10-17.md)). Its labels are kept
+as given: **Agreed** is settled direction, **Idea** is proposed and not confirmed, **Back burner** is
+liked and not to be built yet, and anything under its open questions is undecided, so it is not
+hard-coded. Its design principle is this PRD's rule 3 grown up: "one shared system per area, with a
+unique feel per item"; "differences come from data (stats, socket kinds, placement rules)," and no
+crop gets a subsystem of its own. Nothing here is built. The skeleton below stands as it is, and the
+session calls the built carrots and fungus "placeholders".*
+
+The session replaces them with a roster of Earth-lineage crops that colonial biotech engineered for
+Zan and that then went feral over the long span since (the session gives a rough length; by the
+standing rule it is held in [the lore's placeholders](../lore-research.md#placeholders) and not
+repeated here).
+Every crop has three layers: **Earth ancestor, engineered traits, feral drift.** The stories behind
+them (who made them, the Sisters' roads, the black site's specimen case, the Sister vault) are in
+[the crops' lore](../lore-research.md#the-crops-lore-agreed-session-4-part-4).
+
+### Two families (Agreed)
+
+**Day crops run on light. Storm crops run on dark and humidity.** Each family mirrors the other: a
+baseline food crop, a survivor, a water crop and a utility crop. A few crops sit outside both as
+specials.
+
+| Role | Day family (light) | Storm family (dark and humidity) |
+|---|---|---|
+| Baseline food | Root-tuber | Vat fungus |
+| Survivor | Saltbush | Sandroot |
+| Water | Dewleaf | Stormcup |
+| Utility | Coalcane | Glowcap |
+
+Specials, in neither family: the office fern (a lamp's crop), rainseed and quietbloom (both endgame).
+
+### The stat axes (Agreed)
+
+Each crop varies on the same axes, so a crop is a row of data and not a rule of its own:
+
+| Axis | What it controls |
+|---|---|
+| Water need | How much water input it consumes |
+| Light | Sun, darkness, or lamp |
+| Growth speed | Time to maturity or cycle length |
+| Yield | Output per harvest or cycle |
+| Output type | Food, water, fuel, light, salt, cord, special material |
+| Tolerance profile | Separate tolerances for wind shear, particle abrasion, heat, cold and radiation |
+
+"Weather is multi-axis, not one stat. There is no heat shield in the game yet."
+
+### Progression (Agreed)
+
+- **Early game:** temperature, light and water all matter. Players grow whatever suits local
+  conditions, so hardy crops (saltbush, sandroot, dewleaf) are survival crops.
+- **Late game:** shields (wind and particle now, heat later) remove most weather factors, and light
+  and water become the managed inputs, through lamps and humidifiers. Fussy, high-yield crops become
+  viable here.
+- Read tolerances as "how many shields and how much power you need to keep this alive," not as
+  pass or fail survival.
+
+### The roster (Agreed)
+
+Eleven crops: four day, four storm, three specials. All Agreed unless marked. Frontier Ag was one of
+the main remote colonial contractors and made some, not all, of the original crops.
+
+| Crop | Family | Role | Maker | Output | Planter |
+|---|---|---|---|---|---|
+| Root-tuber | Day | Baseline food | Frontier Ag | Food | Standard |
+| Saltbush | Day | Survivor | Tilg terraforming | Salt, emergency food | Standard |
+| Dewleaf | Day | Water | Frontier Ag | Water (night trickle) | Small |
+| Coalcane | Day | Utility | Frontier Ag | Fuel | Deep |
+| Vat fungus | Storm | Baseline food | Hab contractors | Food, compost | Small |
+| Sandroot | Storm | Survivor | Unassigned | Starch, water | Deep |
+| Stormcup | Storm | Water | Frontier Ag | Water (storm) | Small |
+| Glowcap | Storm | Utility | Hab contractors | Light | Standard |
+| Office fern | Special (lamp) | Indoor oddball | None (decoration) | Cord | Small |
+| Rainseed | Special (endgame) | Revival flagship | Tilg terraforming | Best crop once restored | Deep |
+| Quietbloom | Special (endgame) | Alien mystery | Hive mind | Strange mod material | Standard |
+
+### Each crop: ancestor, engineering, drift and hooks (Agreed)
+
+- **Root-tuber.** *Ancestry:* a potato descendant; tubers store energy underground, out of sun and
+  sand. *Engineering:* tardigrade-style damage-suppressor proteins against radiation; a waxy sealed
+  skin against water loss; engineered sterile, spread only by cuttings (a licensing measure). *Feral
+  drift:* the sterility broke down, so wild strains flower and self-spread, and raised alkaloids make
+  them bitter. *Hooks:* wild tubers are worse food, so clean stock is worth hunting; bitter tubers
+  need processing or carry a downside.
+- **Saltbush.** *Ancestry:* *Atriplex*, Earth's desert saltbush. *Engineering:* a pioneer plant to
+  stabilise dunes and pull salt from soil before other crops; it pumps salt into surface bladders
+  (the silvery look), with a deep taproot and CAM photosynthesis, so its pores open only at night.
+  *Feral drift:* the most successful survivor. The Sisters seeded it along pilgrim roads, so silver
+  lines mark old routes. Its leaves fold when pressure drops, protecting the bladders. *Hooks:* it
+  is the weather-sign plant from part 3, and this biology explains it
+  ([Wind & storms](wind-and-storms.md#feral-plants-the-free-barometer-agreed-session-4-part-3-not-built)).
+  It is harvested for **salt**, a preservation resource that makes food last longer, and it is
+  barely edible emergency food that never dies.
+- **Dewleaf.** *Ancestry:* Namib desert plants plus the fog-basking beetle's water-collecting
+  surface. *Engineering:* broad leaves with water-attracting bumps and shedding grooves; night
+  condensation runs to a cup at the stem, a powerless backup condenser. *Feral drift:* smaller,
+  thicker leaves, more heat-tough and less watery, clustering in low hollows where cold air pools.
+  *Hooks:* collect at dawn, which ties water to the day cycle. Above its heat tolerance the cup dries
+  and that night's water is lost. Wild clusters hint at cold-pooling terrain.
+- **Coalcane.** *Ancestry:* sugarcane crossed with jatropha, an oil plant. *Engineering:* a biofuel
+  crop for backup generators in case fuel imports stopped; the stalk stores oils and resins, not
+  sugar, and heavy lignin makes it near-wood. *Feral drift:* rare, since it is thirsty, and it
+  survives only near old water. Ancient stands build into thick, near-petrified groves. *Hooks:* the
+  only renewable fuel crop, a night and storm counterpart to solar, burned in a new burner device
+  ([Power](power.md#fuel-crops-and-the-burner-proposed-not-built)). Old groves are a big one-time
+  fuel haul and a sign of ancient water. It trades water for power.
+- **Vat fungus.** *Ancestry:* oyster mushroom crossed with mycoprotein strains. *Engineering:* the
+  colony's original food, grown in sealed vats in dark hab tunnels and fed on waste; it fruits when
+  the air is humid and still, and doubled as the waste-recycling system. *Feral drift:* it escaped
+  into abandoned ruins and lives in buried corridors, blooming when storms raise humidity and block
+  light. Storms are the closest thing to its old vat. *Hooks:* it grows on scraps, so planting it
+  with rotten food or plant waste is **composting**. Dark ruins hold wild patches. It is food when
+  solar can't help.
+- **Sandroot.** *Ancestry:* desert melons plus *Welwitschia*, the Namib plant and one of the
+  longest-lived on Earth. *Engineering:* a dune anchor with roots tens of metres deep; the visible
+  part is a low leathery rosette, so wind and particles slide over, and it stores starch and water
+  in a deep swollen root. *Feral drift:* absurdly long-lived, with root networks that spread
+  underground so one plant can cover a dune. The oldest wild specimens were planted in the first
+  age, as the first-age farmers' unkillable crop. *Hooks:* the only crop that survives a storm
+  unprotected. Harvest means digging: slow, with a big payload. It keeps growing past mature, so
+  patience pays. Ancient sandroot is a landmark, and digging it can expose the ruin its roots bind.
+- **Stormcup.** *Ancestry:* bromeliads crossed with pitcher plants. *Engineering:* it harvests storm
+  moisture, with stiff funnel leaves that channel humid air and droplets into a sealed central well
+  and a waxy lid that closes when particles fly. *Feral drift:* partly carnivorous; it traps insects
+  blown in by storms, so wild water is tainted. *Hooks:* more water per storm than a dewleaf gives
+  per night. The lid holds against moderate particle storms and above that is shredded unless
+  shielded. Wild water needs filtering or boiling.
+- **Glowcap.** *Ancestry:* bioluminescent fungi (ghost mushroom) plus firefly luciferase.
+  *Engineering:* emergency hab-tunnel lighting that needs no power, glowing brighter as humidity
+  rises, and sharing vat fungus's waste-eating trait. *Feral drift:* it spread through dark
+  corridors, and wild patches glow faint blue-green through cracks in buried structures, strongest
+  in storms. *Hooks:* light without power, brightest in the worst storms. A glow at night means a
+  buried ruin with an opening. Sand beetles are drawn to it
+  ([World & terrain](world-and-terrain.md#ambient-life-sand-beetles-agreed-session-4-part-4-not-built)).
+- **Office fern.** *Ancestry:* a pothos-style trailing houseplant, everywhere in Port Morgan's
+  offices and habs. It was never engineered; it came along as decoration. *Biology:* bred for indoor
+  artificial light, so it ignores weather and fits neither family. It grows under lamps. *Feral
+  drift:* mostly died with the habs, but hardy cuttings still trail over desks in sealed buried
+  offices, kept alive by a dying light or sun through a crack. *Hooks:* the crop you grow by
+  snapping a lamp onto the crate. Its fibrous vines yield **cord** for tethers and rope. Low value,
+  always reliable: the cozy sealed-camp crop.
+- **Rainseed.** *Ancestry:* a chimera, the terraforming plan's flagship, on a prairie grass base for
+  Rim-wide ground cover. *Engineering:* the final step of Tilg's projection, planted once rain
+  begins; it colonises wet soil explosively, locks in moisture and releases vapour that seeds more
+  rain. Without rain the seeds stay dormant. *Order history:* the Sisters kept a vault of pure
+  rainseed as the plant their scripture promised; each generation, novices tried to germinate a few
+  with stored water, and the sprouts died when watering stopped. *At arrival:* the vault is
+  sealed and intact in Sister. *Hooks:* plantable but weak, and it dies without heavy watering. Once
+  Mother Cistern is restored and linked it becomes the best crop in the game and self-spreads: the
+  revival ending physically shows Zan turning green.
+- **Quietbloom.** *Origin:* the only non-Earth organism on Zan. During the trade era the hive mind
+  sent one seed shipment as a gift; the Provisional confiscated it as a biohazard and locked it in
+  the black site, where it was forgotten. *Biology:* not DNA-based, a crystalline lattice that feeds
+  on electromagnetic energy, not light or water. It grows toward powered electronics and radio
+  sources and slowly drains them, and its growth shifts in response to radio signals, as if
+  listening. It is never explained. *At arrival:* a sealed specimen case at the black site holds a
+  few dormant seeds. *Hooks:* plant it beside a battery or radio and it grows by eating your power;
+  it yields a valuable strange material, possibly for high-end mods. With a Console nearby the radio
+  picks up faint patterns from it. Carrying one onto a freighter or into the AI endings could be a
+  quiet modifier (*Idea*; [the vision](../vision.md#landmarks-and-endings)).
+
+### Propagation, growth stages and wild habitats (Agreed)
+
+**Sources of plants.**
+1. **Wild stock:** dug up or cut from feral plants. Scarce, since it grows only in special places
+   tied to history (old water lines, ruins, caves), and of lower quality: bitter tubers, tainted
+   water, lower yield.
+2. **Clean stock:** sealed seed caches and vaults in era-appropriate sites. Full engineered traits.
+   Rare and finite until propagated.
+3. **Your own propagation:** cuttings or seeds from what you grow.
+
+**Drift.** Colonial clean stock was engineered sterile, so it spreads by cuttings, and every cutting
+stays clean but scales slowly. Letting a plant go to seed, or crossing it with wild stock, gains
+hardiness and loses yield and purity. The player chooses: a pure, fussy line by cuttings, or a tough
+feral line.
+
+**How each crop propagates.** One shared mechanic (pick up a propagule item, plant it in a socket),
+with the form varying per crop for feel:
+
+| Crop | Propagates by |
+|---|---|
+| Root-tuber | Replant tubers |
+| Saltbush | Cuttings only (the taproot is too deep to dig) |
+| Dewleaf | Whole-plant transplant (small, shallow) |
+| Coalcane | Stalk cuttings |
+| Vat fungus, glowcap | Scraped spores or mycelium onto a substrate |
+| Sandroot | Seed only |
+| Stormcup | Offsets (pups at the base) |
+| Office fern | Cuttings |
+| Rainseed | Seed only, from the Sister vault |
+| Quietbloom | Seed only, from the black site |
+
+**Growth stages.** The shared base is **seedling, growing, mature, then (optionally) going to seed.**
+Going to seed is when a plant drifts toward wild stock. Per-crop twists:
+- **Sandroot** keeps growing past mature; a bigger root pays more for patience.
+- **Storm crops** like fungus fruit in bursts during storms, not on a timer.
+- **Stormcup and dewleaf** are never harvested; once mature they produce water on a cycle.
+- **Coalcane** regrows from the cut stump.
+- **Rainseed** stalls at seedling until there is real rain.
+
+**Where wild plants are found.** No plant spawns randomly. Each comes from its habitat or a cache in
+an era-appropriate site; finding plants is finding history.
+
+| Crop | Wild habitat or source |
+|---|---|
+| Root-tuber | Clean: Frontier Ag seed caches in colonial ruins. Wild: near old colonial water lines |
+| Saltbush | Silver lines along old pilgrim roads; usually the first plant found |
+| Dewleaf | Cold hollows near first-age cisterns; spotted at dawn by beading water |
+| Coalcane | Petrified groves at dried-up first-age wells; live stalks at the edges |
+| Vat fungus | Buried colonial corridors and hab tunnels, exposed after storms |
+| Glowcap | Glow in cracks of buried ruins at night |
+| Sandroot | Seeds from flowering ancient specimens marking first-age sites |
+| Stormcup | Sheltered rifts and caves where humidity pools |
+| Office fern | Sealed colonial offices deep in ruins |
+| Rainseed | Sister vault |
+| Quietbloom | Black-site specimen case |
+
+The habitats are placement rules for the feral layer of world generation
+([World & terrain](world-and-terrain.md#world-generation-by-layers-agreed-session-4-part-4-not-built)),
+and the caches are loot tables of the structure kit
+([Salvage & ruins](salvage-and-ruins.md#structures-by-era-and-the-loot-model-agreed-session-4-part-4-not-built)).
+
+### Planter sizes as socket kinds (Agreed)
+
+Props are uniform squares today. When real models arrive, avoid multi-cell footprints and tetris
+overlap. Instead, **planter size is a socket kind** in the typed-socket system, and each plant
+declares which kind it fits. No new collision logic.
+
+| Planter | Fits | Notes |
+|---|---|---|
+| Small pot | Dewleaf, stormcup, vat fungus, office fern | Many per crate |
+| Standard planter | Root-tuber, saltbush, glowcap, quietbloom | The default |
+| Deep bed | Sandroot, coalcane, rainseed | Needs root depth or height; a large slot or a whole crate |
+
+Tall or trailing growth (coalcane height, fern vines) is **visual-only overgrowth** that doesn't
+block or collide. The repo's rule applies: sockets are saved by list index, so a new socket on an
+existing frame is appended at the end, never inserted. Which crate makers sell which slot mixes is
+in [Devices & mods](devices-and-mods.md#crate-makers-agreed-direction-session-4-part-4-not-built).
+
+### The crop data model (the first step of the proposed order)
+
+The session's first implementation step, which this PRD's rule 3 already points at: replace the
+carrot and the fungus with a data-driven crop definition. Its fields are the family, water need,
+light source, growth speed, yield, output type, per-axis tolerances, planter socket kind, propagule
+type and stage behaviour. The start is root-tuber and vat fungus as direct replacements, then the
+rest. The order of all ten steps is in the [skeleton
+plan](../skeleton-plan.md#the-newer-proposed-order-session-4-part-4).
+
+### Processing, and the new equipment
+
+- **Processing is the next session's topic (Open).** Salt, filtering stormcup water, debittering
+  tubers and fern to cord are named and not designed.
+- **New equipment implied:** a burner or generator for coalcane fuel, and a humidifier. Both are
+  crate parts like the existing devices ([Power](power.md#fuel-crops-and-the-burner-proposed-not-built),
+  [Devices & mods](devices-and-mods.md#the-burner-and-the-humidifier-proposed-not-built)). The
+  office fern needs a lamp as its light source, through the existing lamp-on-crate snap.
+
+Readings, not in the session:
+- **The harvester holds a line clean.** It harvests the tick a crop ripens, so nothing is left to go
+  to seed. The player who wants the tough feral line lets crops sit; the one who wants the pure line
+  uses the harvester. That is the session's choice between a pure, fussy line and a tough feral one,
+  made with a mod that exists.
+- **The humidity the storm crops want is a storm's.** The field has no humidity of its own (Wind &
+  storms: "Nothing computes storminess any other way"). Vat fungus "fruits when air is humid and
+  still," and "storms raise humidity and block light." A humidity input could be read from the storm
+  intensity at the planter, with a humidifier adding to what a shield holds in. The session names
+  the humidifier and no formula.
+- **The tolerance axes are the shield's.** Wind shear and particle abrasion are what the base
+  shield already holds back (the felt wind and storm). Heat and cold are the felt temperature,
+  which only a thermal shield changes. Radiation has no model yet (Survival lists it as an idea for
+  later). "How many shields and how much power" is the session's own gloss.
+- **"Landmark" for ancient sandroot is a visible feature.** The session says ancient sandroot "is a
+  landmark" and asks whether a player's own can reach "landmark size." Read as something you can
+  navigate by, not the prefab Landmarks system, which is a fixed place that keeps your changes.
+- **"Crate" means the planter.** The session says "many per crate" and "a whole crate" for a deep
+  bed, and the snap of a lamp "onto the crate." Here a planter is a frame of its own, not a crate
+  with plant slots, so a grow crate reads as a planter variant.
 
 ## Feral plants and a crop's history (Agreed, session 4, part 3; not built)
 
@@ -96,6 +387,15 @@ Readings, not in the session:
 - **Where they grow.** "Outside a thermal shield, nothing grows" at the poles, and natural regolith
   isn't soil. Scrub that lives unplanted fits the Rim's ash-rich soil and the old irrigation lines
   (the lore), not bare sand everywhere.
+
+**Answered by session 4, part 4.** The part 3 questions left open here are mostly settled by the
+roster above. A feral plant is the wild form of a roster crop, so it can be harvested, and **wild
+stock is dug up or cut** and sown as a propagule. Scrub is the saltbush that the Sisters seeded along
+pilgrim roads; it is the weather-sign plant, and its leaves folding when pressure drops is why. It
+grows where its habitat says (old water lines, cold hollows, buried ruins, sheltered rifts), "no plant
+spawns randomly," and not on bare sand everywhere. Each crop's history is its three layers, ancestor,
+engineering and drift, and a seed's text and marks would show where its stock came from (a reading;
+the session does not say how). Still open: how far ahead a plant's pose reads.
 
 ## Rules
 
@@ -228,14 +528,20 @@ that ignored the weather.
 
 ## Full version
 
-- **Yucca,** with its water and regrowing fruit.
-- **Fuel crops.**
+- **Yucca,** with its water and regrowing fruit. Superseded in the roster by dewleaf and stormcup
+  (open questions).
+- **Fuel crops:** coalcane and the burner (above, [Power](power.md#fuel-crops-and-the-burner-proposed-not-built)).
 - **Planter grids** on a single tether.
 - **Big carriers,** like the walker farmer, that can carry the shield too.
-- **More crops,** each carrying its history (above).
+- **More crops,** each carrying its history (above). Session 4, part 4 makes this the roster of
+  eleven, in the order of its proposed build: a data-driven crop definition first, with root-tuber
+  and vat fungus as the direct replacements, then the planter socket kinds, the shared growth stages,
+  propagules with a clean or wild flag, the burner and humidifier, and last the wild plants placed by
+  habitat ([skeleton plan](../skeleton-plan.md#the-newer-proposed-order-session-4-part-4)).
 - **Feral plants** as a weather sign and a trail, and the order's seed vaults as a source of stock
-  (proposed, above). The plants are the first two pieces of the proposed build order in the
-  [skeleton plan](../skeleton-plan.md#waiting-for-the-full-version); the vaults are not in it.
+  (proposed, above). The plants are the first two pieces of part 3's proposed build order; part 4's,
+  the newer, defers the weather sign and places wild plants last, at step 9 ([skeleton
+  plan](../skeleton-plan.md#waiting-for-the-full-version)). The vaults are in neither.
 
 ## Probes
 
@@ -257,19 +563,97 @@ that ignored the weather.
 ## Out of scope
 
 - Conveyors, hoppers and automation chains between devices, for now.
-- Pests and diseases.
+- Pests and diseases. (Session 4, part 4 leaves open whether the sand beetles are pests, pollinators
+  or both: [World & terrain](world-and-terrain.md#ambient-life-sand-beetles-agreed-session-4-part-4-not-built).)
 
 ## Open questions
 
 Session 4, part 3 (2026-10-17) adds three. Each is quoted on both sides and left standing.
 
-- **Feral scrub against "nothing grows" and the regolith.** Here: "Outside a thermal shield, nothing
+- **Feral scrub against "nothing grows" and the regolith.** *Narrowed by part 4: a wild plant grows
+  where its habitat says, not at random.* Here: "Outside a thermal shield, nothing
   grows there," and every crop is sown in a planter with its own soil. The session: "Zan has no
   native life, only feral colonial imports." Not said where scrub grows, or whether it grows at
   all on the poles' bare sand.
-- **What a feral plant gives.** The session names its four jobs: a weather sign, a trail, lore and
+- **What a feral plant gives.** *Answered by part 4: wild stock is dug up or cut and sown; the
+  plants can be harvested.* The session names its four jobs: a weather sign, a trail, lore and
   the vaults' loot. It does not say whether a plant can be harvested, moved or sown, or whether it
   has a seed.
-- **Which history a crop carries.** "Every crop system should carry its history." The farm has
-  carrots and fungus, with yucca and fuel crops to come. Not said what each one's history is, or
-  how it shows without exposition.
+- **Which history a crop carries.** *Answered by part 4 for what it is: ancestor, engineering and
+  drift for each of eleven crops.* "Every crop system should carry its history." The farm has
+  carrots and fungus, with yucca and fuel crops to come. Not said how it shows without exposition.
+
+Session 4, part 4 (2026-10-17, [the plants session](../plants-worldgen-ruins-2026-10-17.md)) adds
+the following. Each is quoted old and new. The newest session wins in the living docs, so this PRD
+follows the session wherever it can, and says so on each line. The built skeleton is not changed.
+
+- **The roster against the two crops built.** Here: "Two crops: carrots in the small slots, fungus
+  in the large one." The session: "The current carrots and fungus are placeholders," to be replaced
+  by root-tuber (a standard planter) and vat fungus (a small pot) "as direct replacements." The
+  sizes cross over: the built fungus stands in the large slot and the session's fungus is a small
+  pot's; the built carrots are small and the root-tuber is standard. *Follows the session; the
+  carrots and fungus stay until the crop data model replaces them.*
+- **Yucca against the roster.** Here: "Yucca, with its water and regrowing fruit" (the full version),
+  the table's "stores water and regrows its fruit," and Survival's "Water-storing plants, like the
+  yucca." The session's roster has no yucca; its water comes from dewleaf (night) and stormcup
+  (storm), and sandroot stores water in its root. *Follows the session; yucca is read as superseded,
+  which the session does not say.*
+- **Small and large plant slots against three socket kinds.** Here: the planter has "three small
+  slots and a large one," a survival kit "2 small and 1 large," and the socket table says "Plant slot
+  (small, large)." The session: small pot, standard planter and deep bed, as socket kinds. *Follows
+  the session.* Not said which built slot becomes which kind. Sockets save by list index, so the
+  built small and large slots keep their places and any new kind is appended.
+- **Felt light and temperature against the session's inputs.** Here: rule 2, "Growth reads the felt
+  conditions: light from the sky (time of day, storms), and temperature with shelter applied." The
+  session: tolerances for wind shear, particle abrasion, heat, cold and radiation, a storm family
+  that runs on "dark and humidity," and a humidifier to manage humidity late. *Follows the session.*
+  Not said where humidity comes from, since the weather field has none (Wind & storms), and radiation
+  has no model (Survival lists it as an idea for later).
+- **A ripe crop that holds, and fungus on a six-minute timer, against stages and bursts.** Here: "A
+  ripe crop stops, and holds through any weather until it's picked," and fungus "ripens after six
+  minutes" of full growth. The session: stages that end in an optional "going to seed," and "storm
+  crops like fungus fruit in bursts during storms, not on a timer." The session's own back burner
+  adds "storm blooms: storm crops fruit only now." *Follows the session for the stages and the
+  bursts (both Agreed).* The "only" is the back-burner part. Not said how long a mature crop waits
+  before it goes to seed.
+- **Seeds found loose against "no plant spawns randomly."** Here: "Seeds are found (2026-10-16):
+  carrots and fungus lie loose on ruins' floors, and in survival kits," and a kit on open sand holds
+  one in a slot one time in ten. The session: "No plant spawns randomly. Each comes from its habitat
+  or a cache in an era-appropriate site." *Follows the session* once loot moves out of open sand
+  (Salvage & ruins). Not said what stock a survival kit's seeds are, clean or wild.
+- **Water crops against the planter's tank and the condenser.** Here: a planter's tank is filled
+  from a canister or a hose, and water leaves by crops drinking it. The session: dewleaf and
+  stormcup "are never harvested; once mature they produce water on a cycle," and dewleaf is collected
+  at dawn from a cup at the stem. Not said where a plant's water goes (the planter's tank, a cup to
+  empty by hand, or a socket). It also asks "does any water crop beat the condenser in some niche?"
+- **Salt that keeps food, and compost from rotten food.** Here: food is like a ration, sealed and
+  eaten by the suit, and nothing in Survival spoils. The session: salt "makes food last longer," and
+  vat fungus is planted "with rotten food or plant waste." Not said whether food spoils at all.
+- **Cord, salt and strange material against "found, never crafted."** Here (Devices & mods, Salvage
+  & ruins): "Parts are found, never crafted," and crafting is out of scope. The session: fern vines
+  yield cord for tethers and rope, quietbloom yields strange material "possibly for high-end mods,"
+  and processing is named open. *Follows the session for the outputs;* turning an output into a part
+  is the open part.
+- **Sandroot's storm survival against the planter's wear.** Here: "a planter outside a bubble in a
+  storm wears like any device, and a wrecked one grows nothing." The session: sandroot is "the only
+  crop that survives a storm unprotected." Not said whether the planter it stands in still wears.
+- **Rainseed's rain against a game with no rain.** Here (Wind & storms, out of scope): "Rain,
+  lightning and other weather." The session: rainseed "stalls at seedling until there is real rain,"
+  becomes the best crop in the game and self-spreads once Mother Cistern is restored and linked, and
+  "the revival ending physically shows Zan turning green." Not said what real rain is where none
+  falls, or how green is shown on ground that never changes (the Bringing Zan back epilogue is "a few
+  still frames," so it may be only that).
+- **Sterile stock that goes to seed.** The session: colonial clean stock is "engineered sterile,"
+  and "letting a plant go to seed" gains hardiness and loses purity. Read as sterility breaking down
+  in a neglected plant, as the wild root-tuber's did; the session does not say. It also does not say
+  what clean stock the seed-only crops (sandroot, rainseed, quietbloom) have, beyond the vault and
+  the specimen case.
+
+The session's own open questions that belong here, not decided and not to be hard-coded:
+- Plant processing: salt, filtering stormcup water, debittering tubers, fern to cord. "Next session's
+  topic."
+- Crossbreeding: can players create new strains?
+- Sandroot's original maker (Frontier Ag or Tilg terraforming).
+- Can a player's own sandroot ever reach landmark size, or is that wild-only?
+- Does any water crop beat the condenser in some niche?
+- Quietbloom as an ending modifier: confirm or drop.

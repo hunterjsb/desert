@@ -314,3 +314,14 @@ The Console session (2026-10-17) adds three, quoted on both sides and left stand
   parties making and modding shields and Consoles." Not said: whether the parties are in-world
   makers (the lore has them) or people outside the game making and modding its devices, and what
   "making" means with crafting out of scope.
+
+Session 4, part 4 (2026-10-17) adds one, quoted on both sides. The newest session wins in the living
+docs, so this PRD follows it as direction.
+
+- **Crops' tolerances are the shield's work.** Here: the base shield holds back wind and dust and not
+  heat or cold, and a thermal shield is a full-version type, with one test-only copy in the probes. The
+  session: every crop has separate tolerances for wind shear, particle abrasion, heat, cold and
+  radiation, and "shields (wind/particle now, heat later) remove most weather factors," so late-game
+  farming manages light and water with lamps and humidifiers ([Farming](farming.md#progression-agreed)).
+  "There is no heat shield in the game yet." *Follows the session.* Not said what blocks radiation, or
+  whether a shield blocks humidity (a storm crop's input) as it blocks the storm's wind and dust.

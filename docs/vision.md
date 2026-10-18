@@ -62,6 +62,12 @@ upgrade the camp → the camp sustains more of itself → go further, or into th
   on caterpillar tracks, is strong for the camp but slows you down.
 - **Parts are found, never crafted** (for now), and they wear out only from the
   elements. Salvage is the whole economy.
+- **The farm is a roster of crops with a history** (Agreed, session 4, part 4; not built). The
+  carrots and fungus are placeholders for eleven Earth-lineage crops that colonial biotech engineered
+  and that went feral, in two families, one that runs on light and one on dark and humidity. Early on,
+  weather decides what you can grow; late, shields take the weather away and light and water become
+  the managed inputs. One shared system, with a unique feel per item: differences come from data
+  ([Farming](prd/farming.md#the-plant-system-agreed-session-4-part-4-not-built)).
 - **The camp may get a computer, and a bed** (Hunter, 2026-10-17, proposed and loose). A Console
   reads the weather instruments onto a screen ([Devices & mods](prd/devices-and-mods.md#the-console-proposed-not-built)),
   and sleep may skip the wait on a long storm ([Survival](prd/survival.md#sleep-proposed)).
@@ -150,6 +156,14 @@ built on is proposed in [Devices & mods](prd/devices-and-mods.md#the-patrol-boar
 (the board's superchassis) and [Movement](prd/movement.md#the-dune-sailboat-agreed-session-4-part-3-not-built)
 (the sailboat). Their unlocks are in [Profile & saves](prd/profile-and-saves.md#kits-are-data).
 
+**Where each start begins (Agreed, session 4, part 4).** Spawn depends on the kit, and the early
+goal for everyone is to find an artery and follow it: the **Surveyor** in deep desert with detection
+gear (finding an artery is their early game), the **Salvager** near a skimmer wreck field, the
+**Homesteader** right on a road near a wayshrine. This answers part of the old question of where the
+other starts spawn (only the Prisoner's, "deep under Tu," was stated). It sits against the built
+kit, which has no detection gear, against "a run never starts on a ruin's ground," and against the
+oyster who "never finds ruins" ([World & terrain](prd/world-and-terrain.md#open-questions)).
+
 **Clash with the built kit (recorded, not to build).** The Surveyor lists a standard shield, a
 multi-compass, a stake tether and a radio. Today's kit ([Survival](prd/survival.md), as built) is
 a light shield, a light solar panel and a hoverboard racked on the crate; the radio and the
@@ -216,12 +230,16 @@ story reasons, and many players will never see one.
 - **Agreed (session 4, part 3).** Galaxy lore stays offstage until the endings. Nothing about the
   war, Varran or Daventry appears in normal play except as faint radio.
 
-**Landmarks** are one general system, not one-offs: a small class of prefab sites at fixed
-coordinates on the planet grid, the same in every run, that persist the player's changes. They're
-the only fixed things on a shifting moon, the exception to unloading out-of-range content. They
-can unlock endings and, for the prisoner, spawns. Candidates: the StarCom antenna, the black
-site, the Bastion and the Ledger, and from session 4, part 3 **Sister**, the temple of Mother
-Cistern. The endings need more places (the sealed hangar in Aitch, the observatory, the far-side
+**Landmarks** are one general system, not one-offs: a small class of prefab sites that persist the
+player's changes. They're the only fixed things on a shifting moon, the exception to unloading
+out-of-range content. They can unlock endings and, for the prisoner, spawns. Candidates: the
+StarCom antenna, the black site, the Bastion and the Ledger, and from session 4, part 3 **Sister**,
+the temple of Mother Cistern. **Session 4, part 4 (the newest) fixes the list and moves them off
+fixed coordinates:** they are "placed procedurally per seed, but always present, because the endings
+depend on them," and the list is Port Morgan, the Halloran refinery and H-Town (Aitch), the black
+site, Starcom, the observatory, the orbital launch site, Sister and Halfrise. Part 2 had them "at
+fixed coordinates on the planet grid, the same in every run." The newer wins ([lore research,
+section 18](lore-research.md#18-open-after-session-4-part-4)). The endings need more places (the sealed hangar in Aitch, the observatory, the far-side
 ice, an orbital station), and whether each is a landmark is not said. [World &
 terrain](prd/world-and-terrain.md#landmarks) and [Salvage &
 ruins](prd/salvage-and-ruins.md#landmarks) hold the rule and the sites.
@@ -264,7 +282,9 @@ shorter table of StarCom, Launch, Shot down, Nomad city and Radio.
 **Ideas still loose.** *Wrong answer* (you call out and something that isn't Tilg answers) fits
 the hive mind start as the way you discover what you are. *Okafor line*: an underground bunker
 with a holdout. *Radio ending* (from earlier docs, "Find the right frequencies to reach Tilg or
-the last town") remains undesigned.
+the last town") remains undesigned. *Quietbloom* (session 4, part 4, **Idea**, open: "confirm or
+drop"): carrying the alien crystal lattice onto a freighter or into the AI endings could be a quiet
+modifier ([Farming](prd/farming.md#each-crop-ancestor-engineering-drift-and-hooks-agreed)).
 
 **The freighter** is lore: one freighter was left behind at Port Morgan, the Ledger is its
 mainframe, and the launch endings use it or a smaller ship from it ([lore
@@ -332,6 +352,9 @@ revealed; that stays with the stolen freighter.
   adds a linked Mother Cistern.
 - **Agreed.** It must beat the atmosphere clock: whoever comes has to fix the leak
   (terraforming), not just visit.
+- **Session 4, part 4.** The revival ending physically shows Zan turning green. Rainseed, the
+  terraforming plan's flagship crop, is plantable but weak until Mother Cistern is restored and
+  linked; then it becomes the best crop in the game and self-spreads ([Farming](prd/farming.md#each-crop-ancestor-engineering-drift-and-hooks-agreed)).
 - **Agreed.** It fans out into variants by construction, not menus: the player should know Zan
   plays out as they intended, even if it isn't simulated. Epilogue as a few still frames.
   Proposed levers: who you call (Tilg & Standard, the outpost drifters, the nomads); registered or
@@ -456,16 +479,25 @@ dedicated hive mind ending." That ending is told on the radio, not in a cutscene
 - **World coordinates are always tracked**, so distance from spawn is known even
   though the land isn't kept. A fixed underlying topography (the large shapes the dunes
   sit on) may come later.
-- **No AI enemies**, so no creature rigging.
+- **History is generated first** (Agreed, session 4, part 4; not built). The world is laid out in
+  layers (the colonial skeleton, skimmer scars, first-age settlements along dead lines, second-age
+  towns and roads, then feral plants and the sand), so what you find follows from what was there, and
+  loot comes from sites rather than loose in the open sand. The roads are invisible rules, not
+  surfaces: the pattern of plants, shrines and towers is what traces them ([World &
+  terrain](prd/world-and-terrain.md#world-generation-by-layers-agreed-session-4-part-4-not-built),
+  [Salvage & ruins](prd/salvage-and-ruins.md#structures-by-era-and-the-loot-model-agreed-session-4-part-4-not-built)).
+  It is lore deeper than anything built; the session says what to build first.
+- **No AI enemies**, so no creature rigging. (Session 4, part 4 adds sand beetles, small ambient
+  scuttlers with no AI, cheap to model: [World & terrain](prd/world-and-terrain.md#ambient-life-sand-beetles-agreed-session-4-part-4-not-built).)
 
 ## Setting (working sketch, not canon)
 
 A colonized desert moon in the Xandaris universe, Kenshi in spirit. A high-tech
 spacefaring society built a transit hub there, and then a war cut the lane and orphaned
 it. It became a smuggler moon, until a volcanic paroxysm cut every outside link and took
-most of the people who understood the machines. The First Kingdoms, the Dark Age and the
-Second Age rebuilt in the ashes, medieval in shape, and rose and fell in turn, until nomads were
-all that was left, leaving an apocalypse world. `{YEARS_SINCE_FALL}` after the collapse, a time
+most of the people who understood the machines. The first age and the second age (with a
+scattering between them) rebuilt in the ashes, medieval in shape, and rose and fell in turn, until
+nomads were all that was left, leaving an apocalypse world. `{YEARS_SINCE_FALL}` after the collapse, a time
 not yet set ([placeholders](lore-research.md#placeholders)), the moon has reverted to
 near-uninhabitable: ruins, dunes, one nomad city that still moves. The region is starting to
 heal, though, and Zan is being rediscovered by surveyors, salvagers and homesteaders (the
@@ -475,8 +507,9 @@ all three phases every day. The physics is in [the moon](the-moon.md), and the h
 is in the lore sessions ([part 1](lore-session-2026-10-14.md), [part
 2](lore-session-2026-10-14-part-2.md), [session 3](lore-session-2026-10-16.md), [session
 4](session-notes-2026-10-17.md), [session 4, part 2](lore-session-2026-10-17-part-2.md), [the
-endings session](endings-and-radio-2026-10-17.md) and [session 4, part
-3](lore-session-2026-10-17-part-3.md)) and [the lore research](lore-research.md).
+endings session](endings-and-radio-2026-10-17.md), [session 4, part
+3](lore-session-2026-10-17-part-3.md) and [session 4, part 4](plants-worldgen-ruins-2026-10-17.md))
+and [the lore research](lore-research.md).
 
 You're a **scavenger and a survivor, in a suit**, because nobody survives here without
 one. The suit is the one gift this world gives you. Why you're out here gets revealed
@@ -486,8 +519,9 @@ survive.
 The strangeness at its heart is that **history runs backwards in the ground.** The
 oldest, rarest ruins hold the most advanced technology, because they come from the
 original colonists. Everything built after them is cruder: corporate tech lies deepest,
-skimmer-era salvage in the middle and the forged goods of the First Kingdoms to the Second Age
-near the surface.
+skimmer-era salvage in the middle and the forged goods of the first age to the second age
+near the surface. (Session 4, part 4 gives structures a burial depth of their own by era, which
+orders the skimmer era and the first age the other way: [Salvage & ruins](prd/salvage-and-ruins.md#structures-by-era-and-the-loot-model-agreed-session-4-part-4-not-built).)
 
 **People are only ever hinted at.** A hatch open in the distance, just out of reach. A
 ruin with something recently used left behind. Maybe a voice on the radio. There are no
@@ -585,3 +619,13 @@ The order we build them in is the [skeleton plan](skeleton-plan.md).
   Daventry unlock, the world clock behind the atmosphere ending, whether the Ledger still
   broadcasts, and which loose ideas (wrong answer, the Okafor line, the radio ending) to develop
   or drop.
+- **Session 4, part 4's clashes with this page.** Landmarks "placed per seed" against "the same in
+  every run"; a plan of the moon's history against "Only what's around the player exists" and
+  "Stateless"; loot from sites against loot loose in the open sand; exposure and reburial against
+  the loaded ground; digging against "nothing underground"; weapons and armour as loot against "No
+  enemies to fight"; sand beetles against "no creature rigging"; and a burial depth by era against
+  "history runs backwards in the ground." The newest session wins, so they are applied above as
+  direction and quoted old and new in [the lore research, section
+  18](lore-research.md#18-open-after-session-4-part-4) and in the PRDs named there, with what they
+  leave open: what the first hour finds, what a weapon is for, how a dig fits the one-function
+  ground, and where the orbital launch site stands.

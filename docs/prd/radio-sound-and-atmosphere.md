@@ -284,7 +284,7 @@ standing.
   skeleton sounds a station's tones with one line of words. The ghost relay is automatic too. The
   lore: the AI gods "speak only through terminals," and it asks whether they ever broadcast
   ([section 16](../lore-research.md#16-open-after-session-4-part-2), item 8). Not said which a
-  Second Age broadcast is. The skeleton's tones and a line already read as "tones and numbers."
+  second-age broadcast is. The skeleton's tones and a line already read as "tones and numbers."
   A voice would be the maybe-voice, which the game never confirms.
 - **When the broadcasts air.** The session: "second-era religious broadcasts still air at
   reliable times," so they can serve as clocks ([Survival](survival.md#sleep-proposed)). Here:
@@ -320,3 +320,16 @@ left standing.
 - **Voices and the Ledger.** Open in both sessions: "Whether the Ledger is still broadcasting when
   the player arrives" and whether broadcasts carry "voices or only tones and numbers." Here, voice
   acting is out of scope and the skeleton sounds tones with one line of words.
+
+Session 4, part 4 (2026-10-17) adds one, quoted on both sides. The newest session wins in the living
+docs, so the radio follows it as direction.
+
+- **A plant the radio hears, and a radio that carries better in some storms.** Here: the radio reads
+  the real systems (rule 1), "static comes in with a storm front's outflow" and is "full inside" a
+  storm, and "reception crackles and distorts as storms build." The session: quietbloom grows
+  toward radio sources and "its growth shifts in response to radio signals, as if listening," so
+  "with a console nearby the radio picks up faint patterns from it" ([Farming](farming.md#each-crop-ancestor-engineering-drift-and-hooks-agreed)),
+  and "the radio carries better in some storms," with "radio windows" on its back burner
+  ([Wind & storms](wind-and-storms.md#storm-only-mechanics-back-burner)). Read as a plant's pattern
+  being one more real system to read, which the session never explains. Not said what a pattern
+  sounds like, whether it needs the Console, or which storms carry better.

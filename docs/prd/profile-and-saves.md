@@ -261,3 +261,21 @@ Resume, New game, the death screen and Options.
 - **Mode and achievements.** The vision leaves open whether achievements care which mode a run is
   in. The session's rule that novelty starts are excluded from Ironman is the first rule about
   mode, and it covers starts, not achievements.
+
+Session 4, part 4 (2026-10-17) adds three. Each is quoted old and new. The newest session wins in the
+living docs, so this PRD follows it as direction.
+
+- **What a plant adds to a save.** Here (rule 1): "A save holds what you changed, never what the seed
+  already says," and the run save keeps every part in every socket. The session: a crop is clean or
+  wild, in a stage (seedling, growing, mature, going to seed), and carries a propagule item. *Follows
+  the session:* a planted crop's stage and its clean or wild flag are the run's changes, and so are a
+  propagule you carry. Wild plants placed by habitat are the seed's, and are saved only once you have
+  dug one up ([Farming](farming.md#the-plant-system-agreed-session-4-part-4-not-built)).
+- **A structure's state.** The session gives each structure three states (buried, partly exposed,
+  exposed) that storms shift. If a state is a function of the seed and the weather, nothing is saved
+  (rule 1). If you dig one open, or a landmark is repaired, that is a change and is saved, keyed by the
+  structure ([Salvage & ruins](salvage-and-ruins.md#open-questions)).
+- **Landmarks per seed.** Here ([World & terrain](world-and-terrain.md#landmarks)): a landmark's
+  changes are read as "a record keyed by the landmark," kept whatever the distance. The session places
+  each landmark per seed, so a record is keyed by the landmark in this run's world, which is another
+  reason it lives in the run save and not the profile.

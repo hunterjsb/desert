@@ -82,7 +82,11 @@ Sources, from early to late:
    is where a condenser makes most. The condenser already reads the felt temperature where it
    stands (below), so the hook is the far side being colder; the game has no near and far side
    yet, only latitude, so it waits for them ([the lore](../lore-research.md#tu-the-tidal-lock-and-the-water-agreed-session-4-part-2)).
-4. **Water-storing plants,** like the yucca.
+4. **Water-storing plants,** like the yucca. Session 4, part 4 (proposed, not built) replaces the
+   yucca with the roster's water crops: dewleaf (a night trickle, collected at dawn), stormcup (water
+   from a storm, tainted when wild) and sandroot (starch and water, dug from a deep root)
+   ([Farming](farming.md#the-plant-system-agreed-session-4-part-4-not-built)). Whether a water crop
+   beats the condenser in some niche is open.
 
 Open water doesn't last, so water lives in sealed containers.
 
@@ -95,7 +99,11 @@ open ([the lore](../lore-research.md#17-open-after-the-endings-session-and-sessi
 
 ## Food
 
-From farming, and from sealed rations in ruins.
+From farming, and from sealed rations in ruins. Session 4, part 4 adds salt, a crop output that
+"makes food last longer," and has vat fungus grow on "rotten food or plant waste" as compost
+([Farming](farming.md#the-plant-system-agreed-session-4-part-4-not-built)). Nothing here spoils yet:
+food is a ration, sealed or carried, and eaten by the suit. Whether it should is open
+([Farming](farming.md#open-questions)).
 
 ## AFK is something you build
 
@@ -182,7 +190,7 @@ unlocks options; a radio adds some."
 **Radio clocks.** "Second-era religious broadcasts still air at reliable times." (The endings
 session, later the same day, repeats it from the Console doc: they "can serve as a sleep clock,"
 and says why they keep time, below.) Readings: the
-era is the Second Age, whose faith of Tu "dominates the Second Age" and whose daily rite is the
+era is the second age, in which the faith of Tu dominates and whose daily rite is the
 noon eclipse, "predicted to the second" ([the lore](../lore-research.md#the-faith-of-tu-and-the-ai-gods-agreed-session-4-part-2)).
 A broadcast that airs at a fixed time of day is a clock that reads the real day, so it fits the
 radio's rule that broadcasts read the real systems. It would be automatic, as the ghost relay is. The game has
@@ -201,7 +209,7 @@ as the clock is open. The Ledger has the strongest signal, so its broadcast is t
 find on any radio ([Radio, sound & atmosphere](radio-sound-and-atmosphere.md#second-age-broadcasts-agreed-and-idea-endings-session-not-built)),
 but whether the Ledger is still broadcasting when the player arrives is open too, and so is
 whether a broadcast carries a voice or only tones and numbers. The daily rite, the noon eclipse, is
-still the Second Age's own clock, and the radio's rule is that broadcasts read the real systems.
+still the second age's own clock, and the radio's rule is that broadcasts read the real systems.
 
 **Its links.** [Power](power.md): the shield's draw by storm strength is what a sleep sums, and
 the sum has to be lived through. [Movement](movement.md): the rack. [Salvage &
@@ -512,7 +520,9 @@ Death means a new run (see Runs in the vision).
 - **Farm automation that delivers to you** (Farming).
 - **Needs you can read without bars:** breathing, vision, sound, suit readouts.
 - **Radiation as a harm** (an idea for later), maybe combined with storm and heat
-  damage. For now the suit handles it.
+  damage. For now the suit handles it. Session 4, part 4 gives every crop a radiation tolerance
+  ([Farming](farming.md#the-stat-axes-agreed)), which needs a radiation to read: another reason to
+  decide this one.
 
 ## Probes
 
@@ -611,7 +621,9 @@ folding it in raised. Each is quoted on both sides and left standing.
   read: the sun by day, and in a storm the radio's music, day or night. Not said what a time is
   made of: hours, dawn and dusk, or a broadcast.
 - **The broadcasts and the era.** The session: "second-era religious broadcasts." Read here as
-  the Second Age. In session 3's six eras the second is the war. Not said which is meant. The
+  the second age. In session 3's six eras the second is the war, and in session 4, part 4's numbered
+  list it is the skimmer era. Not said which is meant (the endings session later writes
+  "second-age"). The
   voice question is in [Radio, sound & atmosphere](radio-sound-and-atmosphere.md#open-questions).
 - **Which broadcast is the clock.** The endings session (2026-10-17): second-age broadcasts "still
   air at reliable times and can serve as a sleep clock." Not said which god's broadcast, whether the Ledger is still on the air, or whether a clock has to be a
