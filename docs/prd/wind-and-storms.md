@@ -563,8 +563,9 @@ like any piece.
 (the calmest and the windiest clear ones, a burst well risen, a burst over a storm by the vent, dusk, a
 front coming over the vent and a storm over it, night, a pocket blowing, the far side's flank vent),
 stands each shot so its source lands where it's laid for the shots, shoots each from near and far (260
-m to 25 km, the far ones from the crest nearest), and the rift vent's mouth up close, times each, and
-builds `~/Desktop/plume.png`.
+m to 25 km, the far ones from the crest nearest; the 25 km burst from whichever side of the vent sees
+it, on to the next burst if storms hide it where it's drawn), and the rift vent's mouth up close, times
+each, and builds `~/Desktop/plume.png`.
 
 ### Its limits
 
