@@ -13,6 +13,9 @@ const EYE_OFF := 1.3
 const SIDES := 8
 
 
+## Where the finds laid by hand are set out from, once.
+var _laid_from := Vector2.INF
+
 func run() -> void:
 	await load_salvage()
 	var places: Array[Vector2] = [Vector2(world.player_world_x(), world.player_world_z())]
@@ -56,8 +59,11 @@ func run() -> void:
 ## One of a kind laid by hand on open sand near you, buried if it can be,
 ## and checked as one found there would be.
 func _check_laid(id: StringName, device: bool, k: int, tally: Dictionary, worst: Dictionary) -> void:
-	var here := Vector2(world.player_world_x(), world.player_world_z())
-	var at := here + Vector2(3.0 * k - 9.0, 5.0)
+	# In rows round where the first was laid: checking one walks you to it, so
+	# laid from where you stand each would lead you off the loaded ground.
+	if _laid_from == Vector2.INF:
+		_laid_from = Vector2(world.player_world_x(), world.player_world_z())
+	var at := _laid_from + Vector2(3.0 * (k % 7) - 9.0, 5.0 + 3.0 * float(k / 7))
 	var short := not device and Finds._longest(id) <= Finds.SHOWING
 	var spec := {"index": 900 + k, "id": id, "device": device, "layer": Finds.SURFACE, "x": at.x, "z": at.y,
 		"yaw": 0.5 * k, "lean": 1.0, "lean_by": 0.1, "bury": 0.0 if short else 0.4, "loose": short,
