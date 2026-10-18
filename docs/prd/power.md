@@ -136,7 +136,10 @@ Readings, not in the session:
   carry, mounts included. Without enough power, you haul. Use sets a tray resting,
   drawing nothing, for a camp that's staying put (Devices & mods).
 - **The hoverboard** has its own battery. That's your escape when the shield dies.
-- **Instruments, farming gear and tools** draw small amounts.
+- **Instruments, farming gear and tools** draw small amounts. *As built (2026-10-17):* a part
+  that computes says its draw, and any device it's fitted to draws it while it runs: a Console 4 W
+  itself, its screen 3 W and its instruments from 0.2 W (a barometer) to 6 W (a radar), about
+  16 W with the full set.
 
 ## Rules
 
@@ -357,7 +360,9 @@ standing.
   amounts," and the radio draws 2 W. The session: a Console "still takes a hover tray,
   batteries and power like a crate." Not said: what a screen, a radar or another computer mod
   draws, whether a Console on a dark pool goes blind, and what its weight adds to the tray's draw
-  at 2 W a kilogram.
+  at 2 W a kilogram. *Built (2026-10-17):* the numbers above; on a dark pool it goes blind and
+  its screen black; its weight floats at 2 W a kilogram like any device's, and on a deck the
+  deck's trays carry it.
 
 Session 4, part 4 (2026-10-17) adds the following. Each is quoted old and new, and the PRD follows the
 session as direction.

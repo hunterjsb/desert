@@ -72,7 +72,7 @@ fill_to = Vector2(0, 1)
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_shade_high"]
 texture = SubResource("GradientTexture2D_shade_high")
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_console"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dev_console"]
 content_margin_left = 10.0
 content_margin_top = 8.0
 content_margin_right = 10.0
@@ -113,14 +113,14 @@ Column/base_type = &"VBoxContainer"
 Column/constants/separation = 0
 Columns/base_type = &"HBoxContainer"
 Columns/constants/separation = 14
-ConsoleLine/base_type = &"LineEdit"
-ConsoleLine/font_sizes/font_size = 12
-ConsoleLine/fonts/font = ExtResource("2_7y804")
-ConsoleOut/base_type = &"RichTextLabel"
-ConsoleOut/font_sizes/normal_font_size = 12
-ConsoleOut/fonts/normal_font = ExtResource("2_7y804")
-ConsolePanel/base_type = &"PanelContainer"
-ConsolePanel/styles/panel = SubResource("StyleBoxFlat_console")
+DevConsoleLine/base_type = &"LineEdit"
+DevConsoleLine/font_sizes/font_size = 12
+DevConsoleLine/fonts/font = ExtResource("2_7y804")
+DevConsoleOut/base_type = &"RichTextLabel"
+DevConsoleOut/font_sizes/normal_font_size = 12
+DevConsoleOut/fonts/normal_font = ExtResource("2_7y804")
+DevConsolePanel/base_type = &"PanelContainer"
+DevConsolePanel/styles/panel = SubResource("StyleBoxFlat_dev_console")
 Fade/base_type = &"Panel"
 Fade/styles/panel = SubResource("StyleBoxFlat_ta3wi")
 Hint/base_type = &"RichTextLabel"

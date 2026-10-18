@@ -20,8 +20,10 @@ extends RefCounted
 ## alone, its farm watered by a condenser on hoses. "lee" stands you at the foot of a tall
 ## slip face, facing up it into the wind coming over its crest, with a storm
 ## on its way. "chassis" lays out pieces, their trays, a crate and a
-## condenser to build a deck from. "eclipse" faces Tu in the clear, the sun
-## `eclipse` s from going behind it. "moon" stands you elsewhere on the moon:
+## condenser to build a deck from. "console" stands a Console with every
+## instrument and a radio on a small deck beside a shield, with a storm due
+## in a few minutes, to watch its screen as it comes. "eclipse" faces Tu in
+## the clear, the sun `eclipse` s from going behind it. "moon" stands you elsewhere on the moon:
 ## [latitude, degrees east of the point under Tu], so [30, 180] is the far
 ## side, 30° north. Times of day are local.
 const LIST: Array[Dictionary] = [
@@ -66,6 +68,10 @@ const LIST: Array[Dictionary] = [
 		"kind": "lee", "day": [0.35, 0.55], "due": [120.0, 360.0]},
 	{"key": "chassis", "label": "chassis: pieces, their trays, a crate and a condenser to build a deck from, clear and calm",
 		"kind": "clear", "day": [0.35, 0.5], "calm": 6.0, "chassis": true},
+	# Far enough off that the radar sees the front coming before the smart
+	# shield switches itself on.
+	{"key": "console", "label": "console: a Console with every instrument and a radio on a small deck with a shield, a storm due in a few minutes",
+		"kind": "clear", "day": [0.35, 0.55], "due": [240.0, 360.0], "console": true},
 ]
 
 ## The test kit, as [catalog id, metres to your right, metres ahead]: empty
@@ -158,6 +164,14 @@ const CHASSIS_TRAYS := [[-1.8, 2.2], [-0.6, 2.2], [0.6, 2.2], [1.8, 2.2]]
 const CHASSIS_CRATE := [3.4, 2.4]
 const CHASSIS_CONDENSER := [-3.4, 2.4]
 
+## The Console's deck, two pieces, right and ahead of you; the Console on the
+## first, its screen to you, and the base shield on the second. What the
+## Console holds; the stake that moors the deck, upwind beyond it.
+const CONSOLE_DECK := [-0.5, 2.6]
+const CONSOLE_PARTS := [&"big_battery", &"big_battery", &"screen", &"anemometer", &"barometer", &"hygrometer",
+	&"particle_sensor", &"radar"]
+const CONSOLE_STAKE := [-0.5, 4.6]
+
 ## Your own frame, to fit what you find to: right and ahead.
 const YOURS := [1.5, 2.5]
 ## How far from where the run began to look for a ruin, m.
@@ -205,7 +219,7 @@ static func apply(world: World, scenario: Dictionary) -> void:
 	world.remove_meta(&"scenario_kit")
 	if not (scenario.kind in ["kit", "ruin"] or scenario.get("camp", false) or scenario.get("survive", false)
 			or scenario.get("farm", false) or scenario.get("board", false) or scenario.get("radio", false)
-			or scenario.get("afk", false) or scenario.get("chassis", false)):
+			or scenario.get("afk", false) or scenario.get("chassis", false) or scenario.get("console", false)):
 		return
 	# Bodies dropped before the sand under them has collision would be frozen or forgotten.
 	while is_instance_valid(world) and not world.terrain.is_settled_around(place.x, place.z):
@@ -232,6 +246,8 @@ static func apply(world: World, scenario: Dictionary) -> void:
 		dropped = afk(world)
 	elif scenario.get("chassis", false):
 		dropped = chassis(world)
+	elif scenario.get("console", false):
+		dropped = console(world)
 	else:
 		dropped = camp(world) if scenario.get("camp", false) else survive(world)
 	world.set_meta(&"scenario_kit", dropped)
@@ -729,6 +745,37 @@ static func chassis(world: World) -> Array[Node3D]:
 	condenser.canister().drain(INF)
 	dropped.append(condenser)
 	return dropped
+
+
+## A Console on a deck of two pieces resting on the sand, its screen to you,
+## two big batteries in it, its screen, every instrument and a radio on its
+## top; the base shield beside it on the other piece with a battery,
+## switched off, smart from the Console; the deck moored by a hook on its far
+## ring to a stake upwind. You start fed and watered. Returns what it dropped,
+## the deck first.
+static func console(world: World) -> Array[Node3D]:
+	world.player.vitals.fresh()
+	var deck := standing(world, &"chassis", [], CONSOLE_DECK) as Chassis
+	deck.join(Catalog.device(&"chassis") as Chassis, _on_piece(deck, Vector2i.ZERO, &"ring", Vector2i(1, 0)), 0)
+	var made := _stand_on(world, deck, &"console", CONSOLE_PARTS, Vector2i.ZERO) as Console
+	var radio := Catalog.device(&"radio")
+	world.content.add_child(radio)
+	fill(world, radio, [&"battery"])
+	made.mount(radio, _free(made, &"top"))
+	var shield := _stand_on(world, deck, &"shield", [&"battery"], Vector2i(1, 0))
+	# Its screen to you.
+	var screen := made.global_basis * Vector3.FORWARD
+	if screen.dot(world.player.global_position - made.global_position) < 0.0:
+		deck.global_basis = deck.global_basis.rotated(Vector3.UP, PI)
+	var stake := _driven(world, CONSOLE_STAKE)
+	var far := Vector2i(0, -1) if deck.global_basis.z.dot(world.player.global_basis.z) > 0.0 else Vector2i(0, 1)
+	var hook := _on_piece(deck, Vector2i.ZERO, &"ring", far)
+	deck.fit(Catalog.part(&"hook"), hook)
+	var tie: Socket = null
+	for node in hook.fitted:
+		if node is Socket:
+			tie = node
+	return [deck, made, radio, shield, stake, Line.between(world, tie, stake.free_tie(deck.global_position), 0.3)]
 
 
 ## A hose laid from one device to another, an end in the water socket of

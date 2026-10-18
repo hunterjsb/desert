@@ -228,12 +228,13 @@ func production_w(t := NAN) -> float:
 
 
 ## What it would draw, W, if it had the power, now or at world time t: some
-## devices draw by the weather they hold back.
+## devices draw by the weather they hold back, and parts that compute draw
+## while they run.
 func demand_w(_t := NAN) -> float:
 	if wrecked():
 		return 0.0
 	var now := stats()
-	return now["hover_w"] + now["light_w"]
+	return now["hover_w"] + now["light_w"] + now.get("draw_w", 0.0)
 
 
 ## What it does with a power tick it had the power for, `seconds` long at

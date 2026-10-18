@@ -141,7 +141,7 @@ strength, so duration matters). Not agreed."
 What the game already has, as readings and not in the session:
 - **The curve is queryable.** `storm_at` is a pure function of place and time, so a camp that
   stays put has an intensity curve for the whole span ([Wind &
-  storms](wind-and-storms.md#instruments-and-the-console-screen-proposed) answers it: yes, already).
+  storms](wind-and-storms.md#instruments-and-the-console-screen-proposed-first-version-built) answers it: yes, already).
 - **Shield draw already goes by storm strength.** It sips 10 W in the clear and draws 200 W holding
   back a full storm, 2 W and 20 W for the light shield, and between the two in a lesser one
   (Bubble shield & camp). So the night's cost is that draw summed over the span: "duration

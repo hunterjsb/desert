@@ -76,7 +76,8 @@ const TOUCHES := 64
 ## What a refusal calls each kind of socket that's full.
 const SOCKET_NAMES := {&"battery": "battery slot", &"ring": "ring", &"bottom": "tray mount", &"top": "top mount",
 	&"plant_pot": "pot", &"plant_standard": "planter", &"plant_deep": "deep bed", &"port": "port", &"tie": "hook",
-	&"water": "water socket", &"mod": "mod mount", &"food": "food slot", &"rack": "rack", &"deck": "deck mount"}
+	&"water": "water socket", &"mod": "mod mount", &"food": "food slot", &"rack": "rack", &"deck": "deck mount",
+	&"computer_mod": "computer-mod port", &"computer_top": "computer-mod top", &"screen": "screen port"}
 const RIDING := "not from the board"
 
 var held: RigidBody3D
@@ -429,6 +430,9 @@ static func describe(label: String, mass: float, stats: Dictionary) -> String:
 		bits.append("%d seed%s" % [stats.seeds, "" if stats.seeds == 1 else "s"])
 	if stats.has("tuned"):
 		bits.append(stats.tuned)
+	var instruments: int = stats.get("instruments", 0)
+	if instruments > 0:
+		bits.append("%d instrument%s" % [instruments, "" if instruments == 1 else "s"])
 	if stats.has("found"):
 		bits.append("%s find" % stats.found)
 	if stats.get("dark", false):

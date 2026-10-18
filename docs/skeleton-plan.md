@@ -426,7 +426,7 @@ as the full version does. It is the newest, so it supersedes the earlier lists w
    volcano with the elevator-stub observatory at the anti-Tu point ([World &
    terrain](prd/world-and-terrain.md#the-rim-depot-the-twin-fires-and-the-elevator-stub-agreed-session-4-part-5-not-built)).
 6. **Terminal output system.** Short god logs, forms and dispatches shown on consoles. One system serves
-   every god ([Devices & mods](prd/devices-and-mods.md#the-terminal-output-system-proposed-session-4-part-5-not-built)).
+   every god ([Devices & mods](prd/devices-and-mods.md#the-terminal-output-system-proposed-session-4-part-5-first-piece-built)).
 7. **God module framework.** Mountable gods as crate modules with innate powers; stationary gods as
    consoles; per-god state (willing, captive, fed, corrupted) ([Devices &
    mods](prd/devices-and-mods.md#god-modules-as-crate-modules-proposed-session-4-part-5-not-built)).

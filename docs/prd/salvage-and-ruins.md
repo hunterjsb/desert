@@ -523,7 +523,7 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
   frozen, so a stripped device on a ruin's floor could never be taken hold of, and a line
   tied to one held you as an anchor would. Nothing found is too heavy to drag by hand:
   the heaviest, a crate with every socket filled, is 51 kg, 250 N of your 400 N on a
-  ruin's floor or the sand.
+  ruin's floor or the sand. A Console with every socket filled is 50.7 kg.
 - **What's found** is the catalog's own parts and devices. The surface layer holds
   batteries, hooks, lamps, empty canisters, rope coils, cable plugs, hoses and compasses
   (2026-10-17, compasses one in twenty-one of the surface layer's parts), and crate
@@ -532,8 +532,9 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
   layer holds big batteries,
   batteries, hover trays, solar panels, hooks, strong cable plugs and harvesters, and
   crate frames, wind turbines, condensers, shield generators and, rarer, hoverboards
-  (Stage 10, one in ten of the deep layer's devices; a ruin's hall never holds one,
-  since it promises parts to strip) and chassis pieces (one in ten). A ruin's floor holds all
+  (Stage 10, one in eleven of the deep layer's devices; a ruin's hall never holds one,
+  since it promises parts to strip), chassis pieces (one in eleven) and Consoles
+  (2026-10-17, one in eleven), whose screens and instruments come only in them. A ruin's floor holds all
   its layer's finds and more: seeds (carrots and fungus), sealed rations and survival
   kits. A device comes with some of its sockets filled from its own layer, a third of
   them at the surface and three in five deep. Over 3,000 chunks on two seeds, rope coils

@@ -1,4 +1,4 @@
-class_name Console
+class_name DevConsole
 extends Control
 ## Dev: a line to type commands into over the running game, with what they
 ## said above it. The UI root opens and closes it and keeps every key from
@@ -44,7 +44,7 @@ func _ready() -> void:
 	# Every click lands here, so none reaches the world to throw or look.
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	var panel := PanelContainer.new()
-	panel.theme_type_variation = &"ConsolePanel"
+	panel.theme_type_variation = &"DevConsolePanel"
 	panel.set_anchors_preset(Control.PRESET_CENTER_TOP)
 	panel.offset_left = -WIDTH * 0.5
 	panel.offset_right = WIDTH * 0.5
@@ -54,11 +54,11 @@ func _ready() -> void:
 	var stack := VBoxContainer.new()
 	panel.add_child(stack)
 	_out = Controls.keys_label()
-	_out.theme_type_variation = &"ConsoleOut"
+	_out.theme_type_variation = &"DevConsoleOut"
 	_out.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	stack.add_child(_out)
 	_line = LineEdit.new()
-	_line.theme_type_variation = &"ConsoleLine"
+	_line.theme_type_variation = &"DevConsoleLine"
 	_line.keep_editing_on_text_submit = true
 	_line.context_menu_enabled = false
 	_line.emoji_menu_enabled = false

@@ -12,7 +12,7 @@ func run() -> void:
 	await open_main(false)
 	await started()
 	var player := world.player
-	var console := main.ui.console
+	var console := main.ui.dev_console
 	press(&"console")
 	check(console.visible and main.ui.holds_input() and Controls.mouse_free, "the console action opens it")
 

@@ -237,7 +237,7 @@ Arteries alone leave most of the moon empty. The fixes:
 Arteries must be legible from the dunes: "a straight line in nature means people." Saltbush lines,
 watchtower silhouettes, pylon stubs and pipeline humps run in straight lines. A basic survey mod on
 the Console picks up buried metal, so colonial pipelines show as lines on screen
-([Devices & mods](devices-and-mods.md#the-console-proposed-not-built)).
+([Devices & mods](devices-and-mods.md#the-console-proposed-first-version-built)).
 
 ### Spawns and the early goal (Agreed)
 
