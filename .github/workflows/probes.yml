@@ -90,7 +90,10 @@ jobs:
       - name: The probes that time real frames, reported only
         if: matrix.group == 'the rest'
         continue-on-error: true
-        run: PROBE_UNTIMED= $BASH_FOR_PROBES scripts/probe.sh $(grep -rl --include='*.gd' '^## Runs alone' probes)
+        run: |
+          timed=$(grep -rl --include='*.gd' '^## Runs alone' probes)
+          # shellcheck disable=SC2086
+          PROBE_UNTIMED='' $BASH_FOR_PROBES scripts/probe.sh $timed
 
   builds:
     uses: ./.github/workflows/builds.yml
