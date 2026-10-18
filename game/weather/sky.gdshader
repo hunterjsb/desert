@@ -52,6 +52,8 @@ const vec3 BEAD = vec3(1.0, 0.8, 0.5);
 const vec3 PEARL = vec3(0.88, 0.94, 1.0);
 // The outer corona just past the sun's edge, as a share of its light.
 const float CORONA = 0.4;
+// How far out the ring's glow reaches, in Tu's radii.
+const float REACH = 3.0;
 // How fast Tu's clouds drift, radians a second: unseen within a minute, plain
 // over a session.
 const float DRIFT = 0.00004;
@@ -230,10 +232,12 @@ void sky() {
 		float behind = eclipse.x;
 		vec3 off_sun = sun_dir - tu_dir * dot(sun_dir, tu_dir);
 		float off = length(off_sun);
-		if (behind > 0.0 && c > cos(r * 3.0) && d.y > -0.02) {
+		if (behind > 0.0 && c > cos(r * REACH) && d.y > -0.02) {
 			// Backlit, Tu's rim is a ring of sunset light: a thin line of fire,
-			// Tu's high haze lit just inside it, and a soft glow past it.
-			float past = (acos(clamp(c, -1.0, 1.0)) - r) / max(r * 0.02, px);
+			// Tu's high haze lit just inside it, and a soft glow past it that
+			// fades to nothing well inside the reach, so it never ends in an edge.
+			float from_tu = acos(clamp(c, -1.0, 1.0));
+			float past = (from_tu - r) / max(r * 0.02, px);
 			vec3 limb = normalize(d - tu_dir * c);
 			float side = off > 1.0e-4 ? 0.5 + 0.5 * dot(limb, off_sun / off) : 0.5;
 			side = mix(0.5, side, smoothstep(0.0, 0.3 * r, off));
@@ -245,7 +249,8 @@ void sky() {
 			vec2 round = vec2(dot(limb, e1), dot(limb, cross(tu_dir, e1)));
 			float patch = 0.55 + 0.9 * fbm(round * 5.0 + vec2(11.0 + tu_time * 0.05, 11.0 - tu_time * 0.03));
 			float line = exp(-abs(past) * 0.7);
-			float lit = line + (past < 0.0 ? 0.3 * exp(past * 0.25) : 0.2 * exp(-past * 0.15) + 0.05 * exp(-past * 0.035));
+			float aura = (0.2 * exp(-past * 0.15) + 0.05 * exp(-past * 0.035)) * smoothstep(r * REACH, r * 1.5, from_tu);
+			float lit = line + (past < 0.0 ? 0.3 * exp(past * 0.25) : aura);
 			vec3 fire = mix(RING, FLARE, clamp(flare * 1.5, 0.0, 1.0) * line);
 			beyond += fire * sun_light * behind * patch * lit * (0.07 + flare);
 		}

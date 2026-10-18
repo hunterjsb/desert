@@ -470,7 +470,11 @@ Where a run begins, at 9°, it runs like this:
 - **The ring of fire flares.** Backlit, Tu's rim burns orange in an arc about where the
   sun went in. The arc spreads round the limb as it fades over the first few seconds,
   and settles into a thin, patchy line of red all round, slowly boiling, with Tu's high
-  haze lit just inside it and a soft glow past it. At third contact it all runs backward.
+  haze lit just inside it and a soft glow past it, which fades to nothing well inside the
+  stretch of sky it's drawn over. (It once ended there in a hard edge, a faint red circle
+  round Tu at three times its width, plain at third contact with the eye wide open:
+  Hunter, 2026-10-17, "theres a discinct kinda transparent red circle around tu with a
+  hard cutoff".) At third contact it all runs backward.
 - **The corona** shows past Tu's edge while the sun is behind it: pearly streamers,
   longest along the sun's equator, slowly changing, brightest where the sun is nearest
   the edge.
@@ -482,11 +486,20 @@ Where a run begins, at 9°, it runs like this:
 - **A hush.** The wind's sound dips by about half through totality, easing in and out
   over a couple of seconds. The storm's roar doesn't: a storm is a storm.
 - **Through a storm.** The ring is one more light in the storm's dust, from the sun's
-  bearing, as the sun's own is. Its red light carries far deeper into the dust, and dust
-  throws light forward, so where everything else is lost the dust glows from within: a
-  soft, fiery halo about the ring's bearing, and a dimmer red all round it. The grains
-  and gusts round you catch it the same way. It reads deep in a full storm, out in the
-  dust and from inside a bubble at a lit camp, where the lamp holds the eye down.
+  bearing, as the sun's own is. Its red light carries far deeper into the dust, in from
+  the billowed face and down through the roof, and dust throws light forward, so where
+  everything else is lost the dust glows from within: a fiery halo about the ring's
+  bearing, and a dimmer red all round it. The grains round you catch it the same way. It
+  reads deep in a storm, out in the dust and from inside a bubble at a lit camp, where
+  the lamp holds the eye down.
+- **Like fire** (Hunter, 2026-10-17: "the storms look a litte too... blocky? they should
+  look like fire"). At first the ring lit the dust evenly, so a wall at totality was one
+  flat, dark-red block, and inside the halo was a fixed round glow. Now a wall's billows
+  rising toward the ring burn orange and the rest smoulder red, so it's its own billows
+  churning. Inside, flames in the dust close by rise and race with the gusts, so the
+  halo licks and changes shape from second to second, while the whole view's light holds
+  within about a sixth of a stop and the eye doesn't pump. The light never reads the
+  storm map's front, whose cells would show as tiles in a light this far-reaching.
 
 Weighed and left out: shadow bands. At a contrast that shows they look like the sand's
 own ripples breathing, at one that doesn't they're invisible, and they'd last two
@@ -501,14 +514,18 @@ take it through `ring_glow`. Outside an eclipse the ring's light is nought, and 
 and the dust's work for it is skipped.
 
 To see it: the dev scenario `eclipse`, or `look/eclipse/shoot.sh <dir> [sheet]`, which
-watches it live with the eye on, in the clear and in a full storm, and times it. The sheet
-is `~/Desktop/eclipse_epic.png`.
+watches it live with the eye on, in the clear and in a full storm, and times it. The
+look-test's `--walls` finds the run's own storms instead: a wall coming at you and the
+deep inside of one, at totality and by day. The sheet is `~/Desktop/eclipse_epic.png`,
+now the two fixes before and after.
 
-**Cost**, on the RTX 3070 at 1920x1080 with another Godot running, so rough: at
-mid-totality, against the same frame with the eclipse's light taken out, about 0.05 ms in
-the clear (2.31 against 2.26) and 0.06 to 0.17 ms deep in a storm (5.79 against 5.62 in
-the last of four runs); inside a bubble it was lost in the noise. It costs that only
-during the minute or so round each eclipse.
+**Cost**, on the RTX 3070 at 1920x1080, so rough: at mid-totality, against the same frame
+with the eclipse's light taken out. In a window, as first built: about 0.05 ms in the clear
+and 0.06 to 0.17 ms deep in a storm. On gamescope's headless screen, with the fire:
+0.17 ms in the clear, 0.16 out in a storm's dust and 0.21 in a bubble, against 0.12, 0.06
+and 0.12 for the first version on the same screen; runs there differ by 0.1 to 0.3 ms. The
+flames cost one noise read a pixel. It costs that only during the minute or so round each
+eclipse.
 
 **What's fragile.**
 
@@ -516,8 +533,12 @@ during the minute or so round each eclipse.
   sun's does, and on the dust throwing it forward. Both are judged by eye, not worked
   from the dust.
 - The ring lights the ground at a fifth of what lights the dust, so totality stays dark.
-  A storm wall seen from the clear at totality wasn't shot; its face toward Tu should
-  glow red, and might glow too much.
+- The flames inside a storm are read once a pixel, about 8 m out, so they're a sheet of
+  flame at that depth rather than through the dust. Running fast they could show as a
+  pattern travelling with you.
+- A wall's billows burn by a tap 45 m toward the ring, which near the ground also sees
+  the storm head's nose lifted off the sand. So it only counts in the outer few hundred
+  metres of a storm; deeper, the flames alone shape the light.
 - The ring's flare, the bead and the corona's reach scale with Tu's size, and were
   judged at 9° only.
 - The hush dips the wind's sound, not the wind: anything that reads the wind still

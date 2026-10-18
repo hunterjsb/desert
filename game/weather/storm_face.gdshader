@@ -68,9 +68,28 @@ float sun_through(float path) {
 }
 
 // The ring's red light, thrown forward grain to grain, carries far deeper
-// into the dust. Twin in StormFace.
+// into the dust. It reaches in from the billowed face, a metre of depth
+// counting this many, and down through the roof: never by the map's front,
+// whose cells and steps would show as tiles in a light this far-reaching.
+// Twins in StormFace.
+const float RING_DEPTH = 8.0;
+// The billows' rise toward the ring that takes a face from dark to full
+// flame, m, and how deep behind the face that counts. Inside, flames in the
+// dust close by: the noise's span, m (the biggest flame about a quarter of
+// it), how far out they're read, about where the light comes from, m, and
+// how fast they rise, m/s.
+const float FLAME = 15.0;
+const vec2 FACE = vec2(100.0, 400.0);
+const float FLAME_SPAN = 40.0;
+const float FLAME_AT = 8.0;
+const float FLAME_RISE = 3.0;
+
 float ring_through(float path) {
 	return exp(-0.00015 * path);
+}
+
+float ring_path(float h, float depth) {
+	return min(storm_roof_path(h) / max(sun_dir.y, 0.02), max(depth, 0.0) * RING_DEPTH);
 }
 
 // Dust throws light forward: the ring's makes a halo about its bearing and a
@@ -320,12 +339,25 @@ void fragment() {
 		float phase = mix(1.0, phase_hg(cos_sun, 0.6), 0.45);
 		vec3 ring_seen = ring_light * ring_phase(cos_sun);
 		bool ring_on = ring_light.r > 0.0;
+		// One read a ray, rising and racing with the gusts; big and small
+		// (the noise's two billow channels), so the view's whole light holds
+		// steady while tongues lick through it.
+		float flame = 1.0;
+		if (ring_on) {
+			vec3 pf = ro + rd * FLAME_AT;
+			vec3 qf = vec3(pf.x + storm_air.x - storm_gust_shift.x, pf.y - storm_time * FLAME_RISE,
+				pf.z + storm_air.y - storm_gust_shift.y);
+			float n = dot(texture(storm_noise, STORM_TILT_B * qf * (1.0 / FLAME_SPAN)).gb, vec2(0.45, 0.55));
+			flame = mix(0.3, 1.9, smoothstep(0.38, 0.62, n));
+		}
 		float prev_t = t;
 		vec4 head = vec4(0.5);
 		// Step at which the march reached the storm it's in now.
 		int since = 0;
 		bool outside = true;
 		float edge = -1.0;
+		// Metres behind the billowed face, not counting the roof.
+		float face_depth = -1.0;
 		float sigma = 0.0;
 		vec3 s = vec3(0.0);
 		// The dust of the last step, which coats a shell the ray enters next.
@@ -357,7 +389,7 @@ void fragment() {
 				sigma = 0.0;
 			} else {
 				head = storm_head_field(p);
-				sigma = storm_density(p, f, lod, head, lod.y * smoothstep(0.0, SHELL_CALM, t - shell_t), edge);
+				sigma = storm_density(p, f, lod, head, lod.y * smoothstep(0.0, SHELL_CALM, t - shell_t), edge, face_depth);
 			}
 			if (edge < 0.0) {
 				outside = true;
@@ -404,7 +436,7 @@ void fragment() {
 				t = hi;
 				p = ro + rd * t;
 				f = storm_front(p.xz);
-				sigma = storm_density(p, f, lod, head, lod.y * smoothstep(0.0, SHELL_CALM, t - shell_t), edge);
+				sigma = storm_density(p, f, lod, head, lod.y * smoothstep(0.0, SHELL_CALM, t - shell_t), edge, face_depth);
 			}
 			if (outside) {
 				face_t = min(face_t, t);
@@ -459,10 +491,17 @@ void fragment() {
 					float sky = mix(storm_glow, 1.0, open) * mix(0.6, 1.0, smoothstep(0.0, 600.0, p.y));
 					// Thick parcels shade themselves; thin ones glow.
 					sky *= mix(1.25, 0.8, smoothstep(0.05, 0.25, sigma));
-					// The ring's light comes through scattered, so the billows don't shade it.
 					s = dust_albedo * (sun_light * sun_through(path) * phase * sunward + sky_light * sky);
 					if (ring_on) {
-						s += dust_albedo * ring_seen * ring_through(path);
+						// Like fire: on a face the billows rising toward the ring
+						// burn (their own rise, not the map's front); inside, the
+						// flames close by lick through it.
+						float rise = clamp((e_sun * reach - dot(f.yz, to_sun.xz) - face_depth) / (FLAME * reach), -1.0, 1.0);
+						float lick = (1.0 - 0.8 * rise * relief * smoothstep(FACE.y, FACE.x, face_depth))
+							* mix(1.0, flame, smoothstep(FLAME_AT * 8.0, FLAME_AT * 2.0, t));
+						// Where it burns brightest it burns hotter, toward orange.
+						vec3 heat = mix(vec3(1.0), vec3(1.0, 2.4, 3.0), smoothstep(0.9, 1.8, lick));
+						s += dust_albedo * ring_seen * heat * ring_through(ring_path(p.y, face_depth)) * lick;
 					}
 					s = mix(s, haze_color, haze_at(t, p.y));
 				}
@@ -505,10 +544,10 @@ void fragment() {
 		tau *= 1.0 - shelter_length(ro, rd, face_t) / max(face_t, 1.0e-3);
 		vec3 ps = ro + rd * face_t;
 		ps.y = 3.0;
-		float path = storm_sun_path(ps, storm_front_exact(ps.xz), sun_dir);
+		vec3 fs = storm_front_exact(ps.xz);
 		float c = dot(rd, sun_dir);
-		vec3 s = dust_albedo * (sun_light * sun_through(path) * mix(1.0, phase_hg(c, 0.6), 0.45)
-			+ ring_light * ring_through(path) * ring_phase(c) + sky_light);
+		vec3 s = dust_albedo * (sun_light * sun_through(storm_sun_path(ps, fs, sun_dir)) * mix(1.0, phase_hg(c, 0.6), 0.45)
+			+ ring_light * ring_through(ring_path(ps.y, fs.x)) * ring_phase(c) + sky_light);
 		s = mix(s, haze_color, haze_at(face_t * 0.7, 0.0));
 		color = mix(color, s, 1.0 - exp(-tau));
 	}

@@ -188,11 +188,13 @@ float storm_bulge(vec3 p, vec2 lod, vec4 head, out float top) {
 }
 
 // How far p sits inside its storm's dust, in metres, behind the billowed face
-// and under the roof (negative = out in clear air), and the dust there. f is
-// storm_front at p; gusts is how strongly the parcels show, 0 to 1.
-float storm_density(vec3 p, vec3 f, vec2 lod, vec4 head, float gusts, out float edge) {
+// and under the roof (negative = out in clear air), and behind the face alone;
+// and the dust there. f is storm_front at p; gusts is how strongly the parcels
+// show, 0 to 1.
+float storm_density(vec3 p, vec3 f, vec2 lod, vec4 head, float gusts, out float edge, out float behind) {
 	float top;
 	edge = f.x + storm_bulge(p, lod, head, top);
+	behind = edge;
 	// A soft skin: the outer metres are thin enough to see into.
 	float body = smoothstep(0.0, STORM_SKIN, edge);
 	float roof = smoothstep(top + storm_roof_soft, top - storm_roof_soft, p.y);
