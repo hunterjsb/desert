@@ -94,6 +94,7 @@ func tie(a: RopeEnd, b: RopeEnd, length: float, breaking := NAN, strand: RopeStr
 		rope.creak = Sounds.world_voice(creak, 0.0, 5.0)
 		add_child(rope.creak)
 	ropes.append(rope)
+	_towing()
 	return rope
 
 
@@ -106,6 +107,7 @@ func move_end(rope: Rope, from: RopeEnd, to: RopeEnd) -> void:
 	elif rope.b == from:
 		rope.b = to
 		rope.strand.b = to
+	_towing()
 
 
 ## An end lets go: the rope stops holding and its strand hangs from the other.
@@ -203,6 +205,37 @@ func let_out(end: RopeEnd) -> void:
 func on_you(body: Node) -> bool:
 	var player := world.player
 	return body == player or (body != null and (body == player.hands.held or player.waist.holds(body)))
+
+
+## Everything you tow: each body a line leads to from you, and on along the
+## lines from that, short of a stake driven in the sand.
+func towed() -> Array[Node3D]:
+	var player := world.player
+	var reached: Array[Node3D] = [player]
+	var i := 0
+	while i < reached.size():
+		var from := reached[i]
+		i += 1
+		for rope in ropes:
+			var a := player if on_you(rope.a.holder) else rope.a.holder
+			var b := player if on_you(rope.b.holder) else rope.b.holder
+			var other: Node3D = b if a == from else (a if b == from else null)
+			if other != null and not reached.has(other) and not (other is Stake and (other as Stake).driven):
+				reached.append(other)
+	reached.erase(player)
+	return reached
+
+
+## A line tied or moved: two planters in tow, standing on what you tow or towed themselves.
+func _towing() -> void:
+	if not world.counts_deeds:
+		return
+	var planters := 0
+	for body in towed():
+		if body is Device:
+			for device in [body] + (body as Device).mounted():
+				planters += 1 if device is Planter else 0
+	Deeds.measure(world, &"planters_towed", planters)
 
 
 ## Whether a line ties to your waist with its other end off you: what slows you.

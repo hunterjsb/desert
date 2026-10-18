@@ -554,7 +554,7 @@ static func _name(thing: RigidBody3D) -> String:
 
 
 ## What a stack holds that you'd want to know at a glance, all of it
-## together: water, food, charge, a coil's length, a radio's channel.
+## together: water, food, charge, a coil's length, a radio's frequency.
 static func _brief(things: Array) -> String:
 	var first: RigidBody3D = things[0]
 	if first.has_meta(&"rolled_m"):
@@ -575,5 +575,5 @@ static func _brief(things: Array) -> String:
 	var radio := device as Radio
 	if radio == null:
 		return held
-	var tuned := Radio.CHANNELS[radio.channel]
+	var tuned: String = radio.stats()["tuned"]
 	return tuned if held == "" else tuned + " · " + held

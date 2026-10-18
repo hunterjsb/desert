@@ -109,17 +109,23 @@ func _shown_for(words: Control, fading: Tween, seconds: float) -> Tween:
 	return tween
 
 
-## The console over a run with nothing else open: typing goes to it.
+## The console over a run with nothing else open, or over the main menu
+## alone for what needs no world: typing goes to it, over every menu.
 func open_dev_console() -> void:
-	if is_open() or main == null or not main.in_run():
+	if main == null or (is_open() if main.in_run() else not (_menus.size() == 1 and top().root)):
 		return
+	move_child(dev_console, -1)
+	move_child(_fade, -1)
 	dev_console.open()
 	Controls.free_mouse(true)
 
 
+## Back to the run, or to the menu it was opened over.
 func close_dev_console() -> void:
 	dev_console.close()
-	if main != null and main.in_run() and not is_open():
+	if is_open():
+		top().highlight()
+	elif main != null and main.in_run():
 		Controls.free_mouse(false)
 
 
@@ -219,8 +225,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 
 
-## The title, and Resume (with a save), New game, Options, Quit, over the
-## live desert, and the music's switch in the bottom left.
+## The title, and Resume (with a save), New game, Deeds, Options, Quit, over
+## the live desert, and the music's switch in the bottom left.
 func show_main_menu(note := "") -> void:
 	close_all()
 	Dev.show_hint(false)
@@ -232,6 +238,7 @@ func show_main_menu(note := "") -> void:
 	if main.has_save():
 		menu.add("Resume", func() -> void: open(resume_view()))
 	menu.add("New game", _new_game)
+	menu.add("Deeds", _deeds)
 	menu.add("Options", func() -> void: open(options()))
 	menu.add("Quit", main.quit)
 	menu.add_corner(func() -> bool: return Settings.music, func() -> void:
@@ -247,13 +254,14 @@ func _menu(note := "") -> Words:
 
 
 ## Resume shows your last camp aside as the save holds it, the save's
-## numbers under it; confirm carries on.
+## numbers under it and how many deeds show done; confirm carries on.
 func resume_view() -> Words:
 	var store := main.saves()
 	var data: Dictionary = store.held()
 	var menu := _menu()
 	menu.add("Continue", main.resume)
-	menu.set_aside(numbers(Snapshot.summary(data), store.saved_at()))
+	menu.set_aside(numbers(Snapshot.summary(data), store.saved_at())
+		+ [["Deeds", "%d of %d" % [Deeds.count(main.profile()), Deeds.TABLE.size()]]])
 	if main.showpiece != null:
 		main.showpiece.show_camp(data)
 		menu.shows = Showpiece.CAMP
@@ -295,11 +303,12 @@ static func gear(kit: Kit) -> Array:
 	return rows
 
 
-## Options, Save in a Normal run, and Save & quit, over the running game.
+## Options, Deeds, Save in a Normal run, and Save & quit, over the running game.
 ## Save says how it went in its own word.
 func system_menu() -> Words:
 	var menu := Words.new("")
 	menu.add("Options", func() -> void: open(options()))
+	menu.add("Deeds", _deeds)
 	if main.saves() != null and not main.ironman():
 		var said := ["Save"]
 		menu.add(func() -> String: return said[0], func() -> void:
@@ -391,6 +400,17 @@ func confirm(question: String, no: String, yes: String, act: Callable) -> Words:
 		close_top()
 		act.call())
 	return menu
+
+
+## Every deed in its tree, under how many show done, laid out for where it opens.
+func deeds() -> Words:
+	var menu := _menu("%d of %d deeds" % [Deeds.count(main.profile()), Deeds.TABLE.size()])
+	DeedsGrid.fill(menu, main.profile(), close_top)
+	return menu
+
+
+func _deeds() -> void:
+	open(deeds())
 
 
 func _new_game() -> void:

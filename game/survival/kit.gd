@@ -25,9 +25,9 @@ const ORIGINS: Array[String] = [STANDARD, "res://game/survival/salvager_kit.tres
 @export var start: StringName = &""
 ## One of the three the game is balanced round. Only those have Ironman.
 @export var balanced := false
-## What unlocks it on the profile (Profile.unlock). None, it's open from the
-## first run: the Salvager's and the Homesteader's playstyle unlocks wait on
-## counting a playstyle, so they're open for now.
+## What opens it on the profile: a deed (Deeds), or an unlock. None, it's
+## open from the first run, as every start is until Hunter says which deeds
+## open which.
 @export var unlock := ""
 ## Carried by the suit, in order.
 @export var carried: Dictionary[StringName, int] = {}

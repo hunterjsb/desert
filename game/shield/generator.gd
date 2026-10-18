@@ -30,6 +30,8 @@ var on := false
 var smart := true
 ## Metres to the shell, fully open: its kind's, unless widened.
 var size := Tuning.current().shield_radius
+## Full storm it has held off while running, minutes (Wear).
+var held_minutes := 0.0
 var shelter := Shelter.new()
 var hum: AudioStreamPlayer3D
 

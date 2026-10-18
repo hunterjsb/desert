@@ -121,7 +121,9 @@ Hunter's [storms, signals & sailing spec](../storms-signals-sailing-2026-10-18.m
 cozy stress test of your build, tanking them is the stationary, AFK way to play, and clear weather is
 the active phase. Three layers fix the early wait:
 - **Auto-walk first:** it holds your heading while you steer by the compass or the Console, so a storm
-  still lets you make distance. Low risk, so it ships before sleep.
+  still lets you make distance. Low risk, so it ships before sleep. *Built (2026-10-18): its own
+  action holds the way you faced while your own walk carries you, until you move yourself or
+  something stops you ([Movement](movement.md#on-foot)).*
 - **Sleep:** a bedroll, beds in some ruins, maybe the open sand if the camp is stable. Use offers so
   many hours, until a time, or through the storm; gear such as a radio adds more (wake for a
   broadcast). **Physics never fast-forwards:** the camp freezes, its batteries and shield are worked
@@ -237,7 +239,8 @@ first storm sits on the spawn for more than three and a half days on the probes'
 starting kit, in the skeleton's list below).
 
 **Sleep, not auto-walk.** "Sleep to fast-forward is the preferred fix over auto-walk, but not
-settled." Auto-walk is in no doc and no code, so nothing has to come out.
+settled." Auto-walk was then in no doc and no code; the 2026-10-18 spec put it first, and it's built
+(above).
 
 **The worry, and the proposal.** "Main worry: physics stability while time skips." The proposal
 under discussion: "check camp stability with real physics before sleep, then only do resource
@@ -412,7 +415,7 @@ Death means a new run (see Runs in the vision).
   - **Each thing or stack is a tile** with a picture of its own painted model, seen from a
     little above and to one side (a compass nearly straight on, to read), its name, the
     number that matters for all of the stack together (water, food, charge, a coil's
-    length, a radio's channel with its battery's charge) and, for a stack, how many. Tiles
+    length, a radio's frequency with its battery's charge) and, for a stack, how many. Tiles
     run in rows of up to eight, low in the middle of the screen. The light is a clear
     day's, the world's own sun and sky colours, whatever the hour or the weather outside,
     so a tile reads in a storm at night.
@@ -430,13 +433,13 @@ Death means a new run (see Runs in the vision).
     rejecting a pocket flag and a built-in cell as exceptions to core systems): it rides on
     you out of sight, touching nothing, and the weather doesn't wear it in the suit. So a
     radio plays from you, its line of words showing as ever.
-  - **Use on a thing uses it where it is:** a device is worked (the radio's dial turns),
+  - **Use on a thing uses it where it is:** a device is worked (the radio's dial sweeps on),
     and water or food you drink or eat your fill of, the least full first, as the suit
     would. Anything else does nothing. Over a thing, use never reaches the world, so it
     can't switch what you happen to be looking at; off the tiles it works the world as
     ever. A click brings a radio to your hands still playing.
   - **Saves** keep everything you carry, each thing with its state, so stacks come back as
-    they were, and a radio its channel, beacon and charge. A save from before, with five
+    they were, and a radio its dial, volume, beacon and charge. A save from before, with five
     slots, resumes with what was in them carried.
 - **The compass** (2026-10-17): a small find, a part, whose needle points to the moon's
   north. Held, you read it in your hand; carried, in the inventory. The sun gives you the

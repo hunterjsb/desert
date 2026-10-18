@@ -1,0 +1,73 @@
+name: Builds
+
+# The game exported for each OS on Linux, then each build launched on its own
+# OS for a smoke test (Smoke). Called by CI on every push and by Release.
+on:
+  workflow_call:
+
+jobs:
+  export:
+    name: export
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/godot
+        with:
+          templates: true
+      - name: Export and zip
+        run: scripts/export.sh build
+      - name: The Linux build
+        uses: actions/upload-artifact@v4
+        with:
+          name: desert-linux-x86_64
+          path: build/desert-*-linux-x86_64.zip
+          compression-level: 0
+          retention-days: 14
+      - name: The Windows build
+        uses: actions/upload-artifact@v4
+        with:
+          name: desert-windows-x86_64
+          path: build/desert-*-windows-x86_64.zip
+          compression-level: 0
+          retention-days: 14
+      - name: The macOS build
+        uses: actions/upload-artifact@v4
+        with:
+          name: desert-macos-universal
+          path: build/desert-*-macos-universal.zip
+          compression-level: 0
+          retention-days: 14
+
+  smoke:
+    needs: export
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            build: linux-x86_64
+            game: desert-*-linux-x86_64/Sandgame.x86_64
+          - os: windows-latest
+            build: windows-x86_64
+            game: desert-*-windows-x86_64/Sandgame.exe
+          - os: macos-latest
+            build: macos-universal
+            game: Sandgame.app/Contents/MacOS/Sandgame
+    name: smoke (${{ matrix.build }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: desert-${{ matrix.build }}
+          path: smoke
+      - name: Unzip it
+        working-directory: smoke
+        run: if command -v unzip >/dev/null; then unzip -q desert-*.zip; else 7z x -y desert-*.zip >/dev/null; fi
+      - name: Launch it headless, play half a minute, save and quit
+        run: scripts/probe.sh smoke smoke/${{ matrix.game }}

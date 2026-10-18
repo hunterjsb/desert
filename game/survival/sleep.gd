@@ -197,7 +197,7 @@ func fall_asleep(how: StringName, arg := 0) -> void:
 	if why == "":
 		var station := radio() if how == STATION else null
 		if station != null:
-			station.tune(Radio.WEATHER)
+			station.channel = Radio.WEATHER
 		show_summary(summary(overnight(wake_for(how, arg), station)))
 	await _fade(false)
 	sleeping = false
@@ -323,9 +323,20 @@ func _woken(t: float, call: float, station: Radio) -> StringName:
 		return &"thirst"
 	if player.vitals.hunger <= low and player.suit.supply(&"food") == null:
 		return &"hunger"
-	if t >= call and is_instance_valid(station) and station.playing():
+	if t >= call and is_instance_valid(station) and _hears(station, t):
 		return &"station"
 	return &""
+
+
+## Whether a radio hears the weather station at world time t, its dial kept
+## on the Walker's carrier as it moves from day to day.
+func _hears(station: Radio, t: float) -> bool:
+	if not station.playing():
+		return false
+	station.frequency = Radio.gods_of(_world).carrier(&"walker", t)
+	var heard := station.receive(&"walker", _world.world_x(station.global_position.x),
+		_world.world_z(station.global_position.z), t)
+	return not heard.cut and heard.clean > 0.0
 
 
 ## Every line meets the wind's load over a step, as Ropes reckons it with the
@@ -495,23 +506,23 @@ func _storm_over(t: float, most: float) -> float:
 	return starts + field.next_change(x, z, starts, maxf(most - starts, 0.0), Weather.FORECAST_STEP)
 
 
-## Whether the station has no storm in sight where the radio is.
+## Whether the weather station holds calm where the radio is, nothing to
+## report: no storm on it, and none due soon.
 func _station_clear(station: Radio) -> bool:
 	var x := _world.world_x(station.global_position.x)
 	var z := _world.world_z(station.global_position.z)
-	var read := Radio.forecast(_world.weather.field, x, z, _world.time, _tuning.radio_forecast_minutes * 60.0,
-		Weather.FORECAST_STEP)
-	return not read.stormy and read.change == INF
+	return Transmissions.calm(Radio.forecast(_world.weather.field, x, z, _world.time,
+		_tuning.radio_forecast_minutes * 60.0, Weather.FORECAST_STEP), _world.time)
 
 
-## When the station first has a storm in sight from where the radio is: the
-## storm's arrival there, less how far ahead the station looks.
+## When the station breaks its calm to report a storm, where the radio is:
+## the storm's arrival there, less how soon it counts as due.
 func _call_time(station: Radio, t: float, until: float) -> float:
 	var x := _world.world_x(station.global_position.x)
 	var z := _world.world_z(station.global_position.z)
-	var ahead := _tuning.radio_forecast_minutes * 60.0
-	var arrives := t + _world.weather.field.next_change(x, z, t, until - t + ahead, Weather.FORECAST_STEP)
-	return maxf(arrives - ahead, t)
+	var due := _tuning.radio_calm_minutes * 60.0
+	var arrives := t + _world.weather.field.next_change(x, z, t, until - t + due, Weather.FORECAST_STEP)
+	return maxf(arrives - due, t)
 
 
 ## To black or back, as the UI fades; with no UI, as long as it would take.

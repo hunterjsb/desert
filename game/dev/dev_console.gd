@@ -1,10 +1,11 @@
 class_name DevConsole
 extends Control
-## Dev: a line to type commands into over the running game, with what they
-## said above it. The UI root opens and closes it and keeps every key from
-## the game while it's up; up and down step through what was typed before,
-## and the focus-next key finishes a command's name, a scenario or an id.
-## Each command is a thin call into the game's own code.
+## Dev: a line to type commands into over the running game, or over the main
+## menu for what needs no world, with what they said above it. The UI root
+## opens and closes it and keeps every key from the game while it's up; up
+## and down step through what was typed before, and the focus-next key
+## finishes a command's name, a scenario or an id. Each command is a thin
+## call into the game's own code.
 
 ## Each command's arguments and what it does, in the order help lists them.
 const COMMANDS := {
@@ -21,7 +22,13 @@ const COMMANDS := {
 	"god": ["", "nothing harms you and you never hunger or thirst; again, mortal"],
 	"goto": ["[landmark]", "stand by a landmark, one of its parts or a vent, on fresh ground; alone, how far each is"],
 	"map": ["[metres]", "the history under the sand round you, this wide; alone, on or off"],
+	"unlockall": ["", "every start open, deeds or not"],
+	"deed": ["<id>", "a deed done, by its id"],
+	"deeds": ["[clear]", "which deeds are done; clear forgets them all"],
+	"meltdown": ["", "the Stoker plays its furnace song on its frequency, once, from now"],
 }
+## What works with no world, at the main menu too.
+const WORLDLESS := ["help", "scenarios", "unlockall", "deed", "deeds"]
 ## How far from a landmark's middle goto stands you, facing it, m.
 const STANDOFF := 60.0
 ## Parts that only come on something else: a cable's plugs, a hose's ends, a line's ends.
@@ -104,7 +111,7 @@ func run(line: String) -> void:
 		_say("no command %s: help lists them" % _plain(name))
 		return
 	var world := ui.main.world() if ui != null and ui.main != null else null
-	if world == null and name not in ["help", "scenarios"]:
+	if world == null and name not in WORLDLESS:
 		_say("only in a run")
 		return
 	call("_" + name, words.slice(1), world)
@@ -226,6 +233,13 @@ func _give(args: PackedStringArray, world: World) -> void:
 	_say("%d %s" % [count, id])
 
 
+func _meltdown(_args: PackedStringArray, world: World) -> void:
+	var gods := Radio.gods_of(world)
+	gods.meltdown(world.time)
+	_say("meltdown: the Stoker's song on %d kHz for %d s" % [roundi(gods.carrier(&"stoker", world.time)),
+		roundi(Sounds.RADIO_STOKER.get_length())])
+
+
 func _fresh(_args: PackedStringArray, world: World) -> void:
 	world.player.vitals.fresh()
 	_say("fed, watered and whole")
@@ -269,6 +283,60 @@ func _map(args: PackedStringArray, _world: World) -> void:
 		_say(_usage("map"))
 		return
 	_say("history map %d m across" % roundi(map.width_m) if map.visible else "history map off")
+
+
+## Opens every start whatever deeds are done, so a start can be tried after
+## the deeds are forgotten; they stay open until the profile is reset.
+func _unlockall(_args: PackedStringArray, _world: World) -> void:
+	var profile := _profile()
+	if profile == null:
+		_say("no profile")
+		return
+	var names := PackedStringArray()
+	for kit in Kit.origins():
+		if not kit.is_open_to(profile):
+			profile.unlock(kit.unlock)
+		names.append(kit.label)
+	_say("open: " + ", ".join(names))
+
+
+func _deed(args: PackedStringArray, _world: World) -> void:
+	var profile := _profile()
+	if args.size() != 1 or not Deeds.TABLE.has(StringName(args[0])) or profile == null:
+		_say("%s, an id of: %s" % [_usage("deed"), " ".join(_deed_ids())])
+		return
+	var id := StringName(args[0])
+	var name: String = Deeds.TABLE[id].name
+	_say(("%s done" if profile.deed(id, {"dev": true}) else "%s was done already") % name)
+
+
+func _deeds(args: PackedStringArray, _world: World) -> void:
+	var profile := _profile()
+	if profile == null or args.size() > 1 or args.size() == 1 and args[0] != "clear":
+		_say(_usage("deeds") if profile != null else "no profile")
+		return
+	if args.size() == 1:
+		profile.forget_deeds()
+		_say("every deed forgotten")
+		return
+	var done := PackedStringArray()
+	var left := PackedStringArray()
+	for id: StringName in Deeds.TABLE:
+		if profile.did(id):
+			done.append(id)
+		else:
+			left.append(id)
+	_say("done %d of %d: %s" % [done.size(), Deeds.TABLE.size(), " ".join(done) if not done.is_empty() else "none"])
+	if not left.is_empty():
+		_say("not yet: " + " ".join(left))
+
+
+func _profile() -> Node:
+	return get_node_or_null(^"/root/Profile")
+
+
+static func _deed_ids() -> PackedStringArray:
+	return PackedStringArray(Deeds.TABLE.keys())
 
 
 ## A landmark, a landmark's part or a vent, by id.
@@ -384,6 +452,10 @@ func _complete() -> void:
 		choices = _scenario_keys()
 	elif words.size() == 2 and words[0] == "give":
 		choices = _give_ids()
+	elif words.size() == 2 and words[0] == "deed":
+		choices = _deed_ids()
+	elif words.size() == 2 and words[0] == "deeds":
+		choices = PackedStringArray(["clear"])
 	elif words.size() == 2 and words[0] == "goto" and ui != null and ui.main != null and ui.main.world() != null:
 		choices = _goto_ids(ui.main.world().shape.history)
 	elif words.size() != 1:

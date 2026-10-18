@@ -25,7 +25,7 @@ func run() -> void:
 		% [free.pace, hauling.pace, free.eye - hauling.eye, hauling.spent, free.spent])
 	check(hauling.pace < free.pace * (1.0 - t.haul_slow * 0.8), "hauling, you walk slower (%.2f of %.2f m/s)"
 		% [hauling.pace, free.pace])
-	check(free.eye - hauling.eye > t.haul_sink * 0.7, "and sink in (%.3f m)" % (free.eye - hauling.eye))
+	check(free.eye - hauling.eye > t.haul_sink * 0.8, "and sink in (%.3f m)" % (free.eye - hauling.eye))
 	check(hauling.spent > free.spent + t.haul_stamina_drain * 0.6 * 2.0, "and tire faster (%.1f stamina against %.1f)"
 		% [hauling.spent, free.spent])
 	var sprinting := await _walk(flat, ahead, ["move_forward", "sprint"], -ahead * t.sprint_speed)
@@ -46,8 +46,9 @@ func run() -> void:
 
 
 ## Two seconds holding keys while a line drags you at `drag`, set fresh each
-## tick as the rope sets it: your own pace, your eyes at rest and over the last
-## second (the bob averages out), the sink and the stamina spent.
+## tick as the rope sets it: your own pace, your eyes at rest and, as the ticks
+## hold them, over the last second (the drawn bob sits lower the faster you go),
+## the sink and the stamina spent.
 func _walk(flat: Dictionary, ahead: Vector2, keys: Array, drag: Vector2) -> Dictionary:
 	player.set_meta(&"rope_drag", Vector3.ZERO)
 	await place(flat.x, flat.z, ahead)
@@ -57,7 +58,7 @@ func _walk(flat: Dictionary, ahead: Vector2, keys: Array, drag: Vector2) -> Dict
 	await simulate(1.0, func() -> void: player.set_meta(&"rope_drag", Vector3(drag.x, 0.0, drag.y)))
 	await simulate(1.0, func() -> void:
 		player.set_meta(&"rope_drag", Vector3(drag.x, 0.0, drag.y))
-		seen.eye += player.camera.position.y
+		seen.eye += player.feel.steady_eye().y
 		seen.ticks += 1)
 	seen.eye /= seen.ticks
 	seen.pace = player.own.length()

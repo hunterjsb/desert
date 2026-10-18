@@ -1,35 +1,30 @@
 class_name MenuMusic
 extends AudioStreamPlayer
-## The radio's music at the main menu, its day or night track by the menu's
-## own light, on the menus' bus while the menu's world stays silent. Its
-## switch mutes it (Settings.music), it changes track through a moment's
-## quiet, and it fades out as the screen does into a run.
+## The main menu's theme, Hunter's "Salt", from its start as the menu's
+## desert shows, on the menus' bus while the menu's world stays silent. Its
+## switch mutes it (Settings.music), and it fades out as the screen does into
+## a run.
 
-## Ridden down from the radio's level: a set playing in the next room.
-const DB := -6.0
-
-var view: World
 var ui: UIRoot
-## How loud it is, 0 to 1 of its level.
+## How loud it is, 0 to 1 of its level, and where a mute left it, s in.
 var _level := 0.0
+var _at := 0.0
 
 
 func _ready() -> void:
 	bus = Sounds.UI
-	for loop: AudioStreamOggVorbis in [Sounds.RADIO_DAY, Sounds.RADIO_NIGHT]:
-		loop.loop = true
+	var song: AudioStreamOggVorbis = Sounds.MENU_THEME
+	song.loop = true
+	stream = song
 
 
 func _process(delta: float) -> void:
-	var want := Radio.track_at(view, view.time)
-	if stream != want and _level == 0.0:
-		stop()
-		stream = want
-	var heard := Settings.music and not ui.is_fading() and stream == want
+	var heard := Settings.music and not ui.is_fading()
 	_level = move_toward(_level, 1.0 if heard else 0.0, delta / UIRoot.FADE_SECONDS)
 	if _level == 0.0:
-		stop()
+		if playing:
+			_at = get_playback_position()
+			stop()
 	elif not playing:
-		# Where the radio's station has got to, as a radio tuned in would hear it.
-		play(fposmod(view.time, stream.get_length()))
-	volume_db = DB + linear_to_db(maxf(_level, 0.001))
+		play(_at)
+	volume_db = linear_to_db(maxf(_level, 0.001))

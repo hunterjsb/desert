@@ -7,20 +7,15 @@ extends RopeProbe
 ## weak stake pulls the stake out instead, and the stake goes with the floater.
 ## And a line laid ring to ring, from a floating crate's hook to a stake,
 ## parts into two lines when it snaps, each with a loose end where it broke:
-## the stake keeps one, the crate drags the other off downwind. Laid where the
-## crate's loose end snags on a dune face as the crate drives on, the line
-## drags that end free, and never slings it.
+## the stake keeps one, the crate drags the other off downwind. And a line a
+## snag lets go of, stretched past its stop while the other end drove on,
+## drags its end free and never slings it.
 
 const WEAK := 400.0
 ## The wind rises this much a second, m/s.
 const RISE := 0.5
 ## Speed past the wind that would mean something flung it, m/s.
 const FLUNG := 0.5
-## Where the crate's loose end snags on a dune face, from the spawn: found by
-## trying spots round where it snagged with side rings. A loose end snags
-## going from faster than this to stopped, m/s.
-const SNAGS := Vector2(3.86, 3.67)
-const SNAGGED := 10.0
 
 ## Wind speed along +x, m/s, and the wind it was when the line snapped.
 var _blowing := 12.0
@@ -32,12 +27,11 @@ func run() -> void:
 	set_rate(60, 4)
 	wind.override = func(_x: float, _z: float, _t: float) -> Vector2: return Vector2(_blowing, 0.0)
 	ropes.snapped.connect(func(_rope: Rope) -> void: _snapped_in = _blowing)
-	# First, while nothing else has happened in the world, so it snags every run.
-	_blowing = 20.0
-	await _line_parts(SNAGS)
+	_blowing = 0.0
+	await _snag_lets_go()
 	ropes.clear()
 	for body: Node3D in world.content.get_children():
-		if body is RigidBody3D or body is Line:
+		if body is RigidBody3D:
 			body.free()
 	_blowing = 12.0
 	_snapped_in = -1.0
@@ -107,6 +101,24 @@ func _line_snaps() -> void:
 	_strands_sane()
 
 
+## Something solid holds a loose end while the other end drives on, then lets
+## go: stood in by the floater set that far past its line's stop in still air,
+## half the line again. Smooth sand never holds one: up a slip face or down it,
+## the end comes along at the pace of what drags it.
+func _snag_lets_go() -> void:
+	var floater := Props.floater(world, spot(6.0, 0.0))
+	var rope := stake_line(spot(0.0, 0.0), floater, 0.0, INF, INF)
+	await simulate(2.0)
+	var out := flat(floater.global_position - rope.a.global_position).normalized()
+	floater.global_position += out * rope.length * 0.5
+	var seen := {"closing": 0.0}
+	await simulate(2.0, func() -> void: seen.closing = maxf(seen.closing, -floater.linear_velocity.dot(out)))
+	print("let go %.1f m past its stop, the floater came back at %.2f m/s at most" % [rope.length * (0.5 - rope.max_stretch),
+		seen.closing])
+	check(seen.closing < Rope.CLOSING_SPEED + FLUNG, "a line a snag lets go of drags its end free, never flung")
+	_strands_sane()
+
+
 func _stake_pulls_out() -> void:
 	var floater := Props.floater(world, spot(6.0, 0.0))
 	var rope := stake_line(spot(0.0, 0.0), floater, 0.3, INF, WEAK)
@@ -150,10 +162,10 @@ func _strands_sane() -> void:
 	check(bad.is_empty(), "every drawn strand is finite and on or above the sand %s" % [bad])
 
 
-func _line_parts(at := Vector2.ZERO) -> void:
+func _line_parts() -> void:
 	var crate := Catalog.device(&"crate_frame")
 	world.content.add_child(crate)
-	crate.global_position = spot(at.x + 6.0, at.y) + Vector3.UP * world.tuning.hover_height
+	crate.global_position = spot(6.0, 0.0) + Vector3.UP * world.tuning.hover_height
 	# Its front ring toward the stake upwind.
 	crate.global_basis = Basis(Vector3.UP, PI / 2.0)
 	for id: StringName in [&"hover_tray", &"battery", &"hook", &"hook"]:
@@ -165,31 +177,24 @@ func _line_parts(at := Vector2.ZERO) -> void:
 				break
 	var stake := Catalog.stake()
 	world.content.add_child(stake)
-	stake.drive(spot(at.x, at.y), world.height_under(spot(at.x, at.y)))
+	stake.drive(spot(0.0, 0.0), world.height_under(spot(0.0, 0.0)))
 	var line := Line.between(world, crate.free_tie(stake.global_position), stake.free_tie(crate.global_position), 0.3)
 	line.rope.breaking = WEAK
 	await simulate(4.0)
-	var fastest := {"v": -INF, "snagged": false}
-	var going := {}
+	var fastest := {"v": -INF}
 	await _rise_until(func() -> bool: return _snapped_in > 0.0, func() -> void: pass)
 	await simulate(4.0, func() -> void:
 		for node in world.content.get_children():
 			if node is Part:
-				fastest.v = maxf(fastest.v, _past_wind(node.linear_velocity))
-				var level := Vector2(node.linear_velocity.x, node.linear_velocity.z).length()
-				going[node] = going.get(node, false) or level > SNAGGED
-				fastest.snagged = fastest.snagged or going[node] and level < 1.0)
+				fastest.v = maxf(fastest.v, _past_wind(node.linear_velocity)))
 	var lines := world.content.get_children().filter(func(n: Node) -> bool: return n is Line)
 	var loose := world.content.get_children().filter(func(n: Node) -> bool:
 		return n is Part and n.has_meta(&"line") and n.socket == null)
 	var on_stake: Line = lines.filter(func(l: Line) -> bool: return l.ends.any(func(e: Part) -> bool:
 		return e.socket != null and e.socket.get_parent() == stake))[0] if lines.size() == 2 else null
 	var with_crate: Line = lines.filter(func(l: Line) -> bool: return l != on_stake)[0] if on_stake != null else null
-	print("snapped in a %.1f m/s wind%s: %d lines, %d loose ends; the crate dragged its half %.1f m off; a loose end at most %.2f m/s past the wind"
-		% [_snapped_in, ", a loose end snagged" if fastest.snagged else "", lines.size(), loose.size(),
-			crate.global_position.distance_to(stake.global_position), fastest.v])
-	if at != Vector2.ZERO:
-		check(fastest.snagged, "laid where it snags, a loose end snagged (if not, find a spot that does)")
+	print("snapped in a %.1f m/s wind: %d lines, %d loose ends; the crate dragged its half %.1f m off; a loose end at most %.2f m/s past the wind"
+		% [_snapped_in, lines.size(), loose.size(), crate.global_position.distance_to(stake.global_position), fastest.v])
 	check(lines.size() == 2 and loose.size() == 2 and lines.all(func(l: Line) -> bool: return ropes.ropes.has(l.rope)),
 		"a laid line parts into two, each a line with a loose end where it broke")
 	check(on_stake != null and with_crate != null and with_crate.ends.any(func(e: Part) -> bool:
