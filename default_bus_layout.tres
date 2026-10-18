@@ -1,10 +1,18 @@
-[gd_resource type="AudioBusLayout" load_steps=3 format=3]
+[gd_resource type="AudioBusLayout" load_steps=5 format=3]
 
 [sub_resource type="AudioEffectHardLimiter" id="AudioEffectHardLimiter_master"]
 resource_name = "HardLimiter"
 ceiling_db = -1.0
 
 [sub_resource type="AudioEffectLowPassFilter" id="AudioEffectLowPassFilter_muffle"]
+resource_name = "LowPassFilter"
+cutoff_hz = 20000.0
+
+[sub_resource type="AudioEffectLowPassFilter" id="AudioEffectLowPassFilter_booms"]
+resource_name = "LowPassFilter"
+cutoff_hz = 20000.0
+
+[sub_resource type="AudioEffectLowPassFilter" id="AudioEffectLowPassFilter_vents"]
 resource_name = "LowPassFilter"
 cutoff_hz = 20000.0
 
@@ -31,3 +39,19 @@ bus/3/mute = false
 bus/3/bypass_fx = false
 bus/3/volume_db = 0.0
 bus/3/send = &"Master"
+bus/4/name = &"Booms"
+bus/4/solo = false
+bus/4/mute = false
+bus/4/bypass_fx = false
+bus/4/volume_db = 0.0
+bus/4/send = &"Weather"
+bus/4/effect/0/effect = SubResource("AudioEffectLowPassFilter_booms")
+bus/4/effect/0/enabled = true
+bus/5/name = &"Vents"
+bus/5/solo = false
+bus/5/mute = false
+bus/5/bypass_fx = false
+bus/5/volume_db = 0.0
+bus/5/send = &"Weather"
+bus/5/effect/0/effect = SubResource("AudioEffectLowPassFilter_vents")
+bus/5/effect/0/enabled = true

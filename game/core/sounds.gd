@@ -11,6 +11,10 @@ const WORLD := &"World"
 const WEATHER := &"Weather"
 ## The menus, heard over the menu's silent desert too.
 const UI := &"UI"
+## Far booms, and a vent's roar, each through its own low-pass, which takes
+## more of the high end the further off it is, then muffled with the weather.
+const BOOMS := &"Booms"
+const VENTS := &"Vents"
 
 # Hands: a soft seat for fitting, its match for taking out, a dull knock
 # when take or use can't, a line tied on, a line drawn hand over hand.
@@ -66,6 +70,9 @@ const RADIO_TONES := preload("res://assets/audio/radio_tones.ogg")
 # Weather.
 const STORM := preload("res://assets/audio/storm.ogg")
 const WIND := preload("res://assets/audio/wind.ogg")
+# The ground: a burst's or a pocket's boom, and a live vent's roar.
+const BOOM := preload("res://assets/audio/boom.ogg")
+const VENT_ROAR := preload("res://assets/audio/vent_roar.ogg")
 # Menus: very quiet.
 const MENU_MOVE := preload("res://assets/audio/menu_move.ogg")
 const MENU_CONFIRM := preload("res://assets/audio/menu_confirm.ogg")

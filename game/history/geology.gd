@@ -3,12 +3,14 @@ extends RefCounted
 ## Zan's ground as the tides left it, made once a run from the seed before the
 ## colonial layer reads it. The heat peaks at the two tidal bulges, so it holds
 ## what the landmarks there stand on: Halloran's rift across the axis near the
-## point under Tu, its vents, and the far-side volcano's summit vent, capped by
-## the elevator's anchor. The colony tapped the rift's vents that were live
-## then; at the fall the heat moved on along the rift, past where the pipes
-## reached, and one vent there is live still. Its own streams, so drawing
-## anything here never moves history; and what a vent is doing at a moment is
-## a pure function of the time, as the weather is.
+## point under Tu, its vents, and the far-side volcano, its summit vent capped
+## by the elevator's anchor and a flank vent live. The colony tapped the rift's
+## vents that were live then; at the fall the heat moved on along the rift,
+## past where the pipes reached, and one vent there is live still. Round the
+## rift, gas trapped under the old flows breaks out now and then, a gas pocket
+## blowing a column of dust. Its own streams, so drawing anything here never
+## moves history; and what a vent or a pocket is doing at a moment is a pure
+## function of the time, as the weather is.
 
 ## The rift runs this far either way along its floor from Aitch, m (default).
 const REACH := Vector2(8000.0, 11000.0)
@@ -21,17 +23,20 @@ const STEP := 250.0
 ## The vents the colony tapped, one each way, m along the floor from Aitch
 ## (default, the vent stations' old rule).
 const TAPPED := Vector2(1500.0, 3000.0)
-## The live vent, m along the floor one way: past the farthest pipe (default).
+## The live vents, m along the floor either way: past the farthest pipes, where
+## the rift's two ends are still opening (default).
 const LIVE := Vector2(5000.0, 7500.0)
 ## A live vent seeps, breathing over these two periods, s, by this share.
 const BREATH := Vector3(170.0, 410.0, 0.2)
-## It bursts: each slot of this many s holds one this often, at a time the
-## slot draws. A burst rises over the first s, holds the second and fades by e
-## every third, at this many times the seep, least and most (defaults).
-const BURST_SLOT := 1800.0
-const BURST_ODDS := 0.55
-const BURST_SHAPE := Vector3(25.0, 40.0, 180.0)
-const BURST_SIZE := Vector2(4.0, 7.0)
+## It bursts, an explosion clearing its throat and a column of ash after:
+## each slot of this many s holds one this often, at a time the slot draws. A
+## burst rises over the first s, holds the second and fades by e every third,
+## at this many times the seep, least and most: a vulcanian burst's, its
+## column standing 6 to 10 km in a breeze (defaults).
+const BURST_SLOT := 1200.0
+const BURST_ODDS := 0.6
+const BURST_SHAPE := Vector3(10.0, 40.0, 150.0)
+const BURST_SIZE := Vector2(300.0, 2000.0)
 ## The share of what it carries that's ash: seeping, and at a burst's peak.
 const ASH := Vector2(0.2, 0.85)
 ## Lava cooled in the old field stays magnetized: the rift's dykes, across its
@@ -39,8 +44,21 @@ const ASH := Vector2(0.2, 0.85)
 ## flows over its footprint, gone by this far from its summit, m (defaults).
 const MAGNETIC_ENDS := 2000.0
 const VOLCANO := Vector2(3000.0, 6000.0)
+## The volcano's live flank vent stands this far from its summit, m (default).
+const FLANK := Vector2(1200.0, 2400.0)
+## Gas pockets break out this far from the point under Tu, m, one in a slot of
+## this many s this often; each blows for this long, s, fading by e every
+## third s after, at this many times the rift's seep: a column of dust a
+## kilometre or two high (defaults).
+const POCKET_GROUND := Vector2(1500.0, 13000.0)
+const POCKET_SLOT := 500.0
+const POCKET_ODDS := 0.5
+const POCKET_BLOWS := Vector3(20.0, 50.0, 12.0)
+const POCKET_SIZE := Vector2(1.0, 4.0)
+## A pocket's plume lasts this long after it starts, s: the streakline's oldest.
+const POCKET_LIFE := 600.0
 
-enum { TAPPED_VENT, LIVE_VENT, CAPPED_VENT }
+enum { TAPPED_VENT, LIVE_VENT, CAPPED_VENT, POCKET }
 
 var radius: float
 ## The rift floor's middle line, from one end to the other, through Aitch.
@@ -60,6 +78,7 @@ var _pole: Vector3
 var _middle: Vector3
 var _ends: Vector2
 var _summit: Vector3
+var _pockets := {}
 
 
 ## From the seed and the landmarks it explains: Halloran's (its heading is
@@ -88,6 +107,15 @@ func _init(run_seed: int, moon_radius: float, halloran: Dictionary, observatory:
 		side * minf(live.randf_range(LIVE.x, LIVE.y), (ends.x if side > 0.0 else ends.y) - FLOOR))
 	vents.append({"id": &"vent_cap", "name": "the volcano's capped summit vent", "state": CAPPED_VENT,
 		"p": _part(observatory, &"vent_cap"), "bearing": 0.0, "along": 0.0, "seed": hash([_seed, "geology", "cap"])})
+	# Capped at its summit, the volcano's heat came out on its flank.
+	var flank := _stream(["flank"])
+	var out := flank.randf() * TAU
+	var at := Sphere.toward(_summit, out, flank.randf_range(FLANK.x, FLANK.y) / radius)
+	vents.append({"id": &"flank_vent", "name": "the volcano's flank vent", "state": LIVE_VENT, "p": at,
+		"bearing": Sphere.bearing(at, _summit) + PI, "along": 0.0, "seed": hash([_seed, "geology", "flank"])})
+	var other := _stream(["live", 2])
+	_vent(&"live_vent_2", "the rift's other live vent", LIVE_VENT, aitch,
+		-side * minf(other.randf_range(LIVE.x, LIVE.y), (ends.y if side > 0.0 else ends.x) - FLOOR))
 
 
 ## How strongly magnetized the crust is at a place, 0 to 1: the rift's dykes
@@ -107,6 +135,36 @@ func live() -> Array[Dictionary]:
 	return vents.filter(func(v: Dictionary) -> bool: return v.state == LIVE_VENT)
 
 
+## The gas pockets whose plumes show at some time from t0 to t1, each {id,
+## name, state, p, bearing, along, seed, start, size, blows}.
+func pockets(t0: float, t1: float) -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	for k in range(floori((t0 - POCKET_LIFE) / POCKET_SLOT), floori(t1 / POCKET_SLOT) + 1):
+		var each := _pocket(k)
+		if not each.is_empty() and each.start <= t1 and each.start + POCKET_LIFE >= t0:
+			out.append(each)
+	return out
+
+
+## Slot k's pocket, or {}: drawn once.
+func _pocket(k: int) -> Dictionary:
+	if _pockets.has(k):
+		return _pockets[k]
+	var rng := _stream(["pocket", k])
+	var made := {}
+	if rng.randf() < POCKET_ODDS:
+		var sub_tu := -_summit
+		var at := Sphere.toward(sub_tu, rng.randf() * TAU, rng.randf_range(POCKET_GROUND.x, POCKET_GROUND.y) / radius)
+		made = {"id": StringName("pocket_%d" % k), "name": "a gas pocket", "state": POCKET, "p": at, "bearing": 0.0,
+			"along": 0.0, "seed": hash([_seed, "geology", "pocket", k]), "start": (k + rng.randf()) * POCKET_SLOT,
+			"size": rng.randf_range(POCKET_SIZE.x, POCKET_SIZE.y),
+			"blows": rng.randf_range(POCKET_BLOWS.x, POCKET_BLOWS.y)}
+	if _pockets.size() > 256:
+		_pockets.clear()
+	_pockets[k] = made
+	return made
+
+
 func tapped() -> Array[Dictionary]:
 	return vents.filter(func(v: Dictionary) -> bool: return v.state == TAPPED_VENT)
 
@@ -115,12 +173,33 @@ func tapped() -> Array[Dictionary]:
 ## (a live one breathes round 1 and bursts; a quiet or capped one, none), and
 ## the share of ash in what it carries, more the harder it bursts.
 func venting(each: Dictionary, t: float) -> Vector2:
+	if each.state == POCKET:
+		var since: float = t - each.start
+		if since < 0.0:
+			return Vector2.ZERO
+		var blows := smoothstep(0.0, 3.0, since) * exp(-maxf(since - each.blows, 0.0) / POCKET_BLOWS.z)
+		return Vector2(each.size * blows, 1.0)
 	if each.state != LIVE_VENT:
 		return Vector2.ZERO
 	var phase := float(each.seed & 0xffff) / 65536.0 * TAU
 	var breath := 1.0 + BREATH.z * 0.5 * (sin(TAU * t / BREATH.x + phase) + sin(TAU * t / BREATH.y + phase * 1.7))
 	var over := _burst(each, t)
 	return Vector2(breath + over, lerpf(ASH.x, ASH.y, clampf(over / (BURST_SIZE.x - 1.0), 0.0, 1.0)))
+
+
+## The last burst to begin by t: when, and how many times the seep; or INF
+## and 0 if none in the slots that could still be heard.
+func last_burst(each: Dictionary, t: float) -> Vector2:
+	if each.state == POCKET:
+		return Vector2(each.start, each.size) if each.start <= t else Vector2(INF, 0.0)
+	if each.state != LIVE_VENT:
+		return Vector2(INF, 0.0)
+	var slot := floori(t / BURST_SLOT)
+	for k in [slot, slot - 1]:
+		var at := _burst_at(each, k)
+		if at.y > 0.0 and at.x <= t:
+			return at
+	return Vector2(INF, 0.0)
 
 
 ## When a vent's next burst begins after t, world s; INF if it never does.

@@ -54,9 +54,9 @@ uniform float haze_height = 700.0;
 uniform sampler2D noise : repeat_enable, filter_linear_mipmap;
 uniform sampler2D depth_tex : hint_depth_texture, filter_nearest;
 
-// What it carries, as each looks: basalt ash, steam, and the pale blue of
-// sulphate haze, which throws the light forward as droplets do.
-const vec3 ASH = vec3(0.075, 0.068, 0.062);
+// What it carries, as each looks: basalt ash, or a pocket's dust; steam; and
+// the pale blue of sulphate haze, which throws the light forward as droplets do.
+uniform vec3 ash_tone = vec3(0.075, 0.068, 0.062);
 const vec3 STEAM = vec3(0.82, 0.84, 0.86);
 const vec3 HAZE = vec3(0.42, 0.48, 0.56);
 
@@ -130,6 +130,8 @@ void vertex() {
 	vec4 s;
 	vec3 center;
 	float size;
+	// Across and up: a levelled plume spreads wider than it's deep.
+	float squash = 1.0;
 	float thick;
 	vec3 mixes;
 	float shade = 1.0;
@@ -175,8 +177,9 @@ void vertex() {
 		float spin = h.x * TAU + age * 0.02;
 		float out_by = sqrt(h.y) * 0.55;
 		vec3 dir = side * cos(spin) + lift * sin(spin);
-		center = root + p.xyz + dir * out_by * p.w;
+		center = root + p.xyz + (side * cos(spin) * p.w + lift * sin(spin) * m.w) * out_by;
 		size = p.w * mix(0.75, 1.05, h.z) * (f == COLUMN ? 0.8 : (f == BODY ? 0.85 : 0.95));
+		squash = clamp(m.w / max(p.w, 1.0e-3), 0.25, 1.0);
 		thick = (m.x + m.y + m.z) * 0.45;
 		mixes = m.xyz;
 		// The far side from the sun is in the plume's own shade.
@@ -197,7 +200,8 @@ void vertex() {
 	float scale = dist > reach.x ? reach.x / dist : 1.0;
 	vec3 drawn = eye + to * scale;
 	float drawn_size = size * scale;
-	vec3 corner = drawn + (INV_VIEW_MATRIX[0].xyz * VERTEX.x + INV_VIEW_MATRIX[1].xyz * VERTEX.y * stretch) * drawn_size * 2.0;
+	vec3 corner = drawn + (INV_VIEW_MATRIX[0].xyz * VERTEX.x + INV_VIEW_MATRIX[1].xyz * VERTEX.y * stretch * squash)
+		* drawn_size * 2.0;
 	VERTEX = (VIEW_MATRIX * vec4(corner, 1.0)).xyz;
 	NORMAL = vec3(0.0, 0.0, 1.0);
 	v_to = to / max(dist, 1.0e-3);
@@ -228,7 +232,7 @@ void fragment() {
 	float wet = v_mix.y + v_mix.z;
 	float forward = mix(1.0, phase_hg(c, 0.55), 0.5 * wet);
 	float lit = mix(0.3, 1.0, clamp(dot(nw, sun_dir) * 0.6 + 0.5, 0.0, 1.0));
-	vec3 albedo = ASH * v_mix.x + STEAM * v_mix.y + HAZE * v_mix.z;
+	vec3 albedo = ash_tone * v_mix.x + STEAM * v_mix.y + HAZE * v_mix.z;
 	float tu_lit = mix(0.3, 1.0, clamp(dot(nw, tu_dir) * 0.6 + 0.5, 0.0, 1.0)) * step(0.0, tu_dir.y);
 	vec3 light = sun_light * v_sun * lit * forward + sky_light * (0.55 + 0.45 * max(nw.y, 0.0))
 		+ ring_light * ring_phase(c) * wet + tu_light * tu_lit;

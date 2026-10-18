@@ -47,5 +47,7 @@ integrated loudness, peaks never past -6 dBTP. A hard limiter on Master holds -1
 | radio_ping.ogg | a beacon's ping | made here: a soft high note | CC0 | -34 | -21 |
 | radio_tones.ogg | the weather station's tones before a reading | made here: three falling notes | CC0 | -36 | -25 |
 | menu_move/confirm/back.ogg | the menus | Kenney Interface `click_002`, `select_002`, `back_002` | CC0 | -49, -40, -43 | -21, -16, -19 |
+| boom.ogg | a vent's burst or a gas pocket's blowout, from far off | made here: a short thump of air over a falling 42 Hz drop, then the blast rolling back duller nine times and a long low tail | CC0 | -18.5 (its loudest 400 ms); played by distance, -2 dB at a kilometre, 6 dB less each doubling, and low-passed | -6 |
+| vent_roar.ogg | a live vent's steady roar, near | made here: brown noise under 260 Hz breathing over its 7 s, a little hiss over it, looped | CC0 | -29 at 150 m seeping | -6 |
 
 The rope's snap is still made in code (`ropes.gd`), at about -28 LUFS from 8 m.
