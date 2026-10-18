@@ -74,6 +74,11 @@ var _trays: Array = []
 var _seats: Array[Socket] = []
 ## How it froze before it was seated on another device.
 var _unseated_mode := RigidBody3D.FREEZE_MODE_STATIC
+## Its sockets and its shapes' biggest faces summed, kept until its children
+## change: a deck has hundreds of children, and both are asked for every tick.
+var _sockets: Array[Socket] = []
+var _sockets_known := false
+var _face := NAN
 
 
 func _ready() -> void:
@@ -84,18 +89,23 @@ func _ready() -> void:
 
 ## Fitted parts wait off the tree, so nothing else would free them.
 func _notification(what: int) -> void:
-	if what == NOTIFICATION_PREDELETE:
+	if what == NOTIFICATION_CHILD_ORDER_CHANGED:
+		_sockets_known = false
+		_face = NAN
+	elif what == NOTIFICATION_PREDELETE:
 		for socket in sockets():
 			if socket.part != null:
 				socket.part.free()
 
 
 func sockets() -> Array[Socket]:
-	var found: Array[Socket] = []
-	for child in get_children():
-		if child is Socket:
-			found.append(child)
-	return found
+	if not _sockets_known:
+		_sockets.clear()
+		for child in get_children():
+			if child is Socket:
+				_sockets.append(child)
+		_sockets_known = true
+	return _sockets.duplicate()
 
 
 ## Use on it while you look at it: what it does when worked, like a shield
@@ -460,7 +470,11 @@ func take(socket: Socket) -> Part:
 func stats() -> Dictionary:
 	# The wind grabs the frame and everything fitted, by their size; a frame
 	# that lies flat says what it shows the wind.
-	var face: float = frame_stats.get("face_m2", Weather.biggest_face(self))
+	var face: float = frame_stats.get("face_m2", NAN)
+	if is_nan(face):
+		if is_nan(_face):
+			_face = Weather.biggest_face(self)
+		face = _face
 	var catch := face * world.tuning.wind_catch_per_m2 if world != null else 0.0
 	var total := {"mass": mass, "catch": catch, "capacity_wh": 0.0, "hooks": 0,
 		"lift_kg": 0.0, "solar_w": 0.0, "light_w": 0.0, "plants": 0, "turbine_w": 0.0}
