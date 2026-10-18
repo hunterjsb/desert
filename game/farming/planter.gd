@@ -14,6 +14,8 @@ extends Device
 
 ## The shares use steps through.
 const SPLITS: Array[float] = [0.0, 0.25, 0.5, 0.75, 1.0]
+## What wild seed waiting for a slot is kept under, after its crop's id.
+const WILD := "/wild"
 ## Where its crops feel the weather: just over the slots.
 const CROWN := Vector3(0.0, 0.3, 0.0)
 
@@ -64,8 +66,12 @@ func tick(seconds: float, t: float) -> void:
 ## temperature, wind and dust with shelter applied; and the storm in the air,
 ## its humid dark, which no bubble keeps out.
 func felt(t: float) -> Dictionary:
-	var at := global_position + CROWN
-	var weather := world.weather
+	return felt_at(world.weather, global_position + CROWN, t)
+
+
+## What a crop feels at a place, engine metres, at time t: in a planter or
+## wild in the sand alike.
+static func felt_at(weather: Weather, at: Vector3, t: float) -> Dictionary:
 	return {&"light": weather.felt_light(at, t), &"lamp": 0.0, &"temperature": weather.felt_temperature(at, t),
 		&"wind": weather.felt_wind(at, t).length(), &"particles": weather.felt_storm(at, t),
 		&"storm": weather.field_storm(at, t)}
@@ -103,7 +109,7 @@ func take(socket: Socket) -> Part:
 	if plant == null or not plant.ripe():
 		return super(socket)
 	var harvest: Array[Part] = []
-	for gives: Array in plant.data.yields:
+	for gives: Array in plant.yields():
 		harvest.append_array(Catalog.output(gives[0], gives[1]))
 	_count(picked, plant.crop, plant.harvest)
 	plant.pick()
@@ -170,15 +176,16 @@ func _harvest(plant: Plant) -> void:
 	_owed[crop] = owed - seed
 	_count(ripened, crop, plant.harvest)
 	_count(replanted, crop, seed)
-	for i in plant.data.yields.size():
-		var gives: Array = plant.data.yields[i]
+	var yields := plant.yields()
+	for i in yields.size():
+		var gives: Array = yields[i]
 		var units: int = gives[1] - (seed if i == 0 else 0)
 		_count(banked, gives[0], units)
 		_count(stored, gives[0], units)
 	plant.pick()
 	if seed > 0:
-		# Sown again where it stood.
-		_count(seeds, crop, seed - 1)
+		# Sown again where it stood; wild seed stays wild.
+		_count(seeds, StringName(str(crop) + WILD) if plant.wild else crop, seed - 1)
 	else:
 		# Not ripe now, so it comes out whole, and goes.
 		take(plant.socket).free()
@@ -186,14 +193,17 @@ func _harvest(plant: Plant) -> void:
 
 ## Seed into every free slot it fits.
 func _sow() -> void:
-	for crop: StringName in seeds:
-		if seeds[crop] <= 0:
+	for held: StringName in seeds:
+		if seeds[held] <= 0:
 			continue
+		var crop := StringName(str(held).trim_suffix(WILD))
 		var kind: StringName = Catalog.PARTS[crop].kind
 		for socket in sockets():
-			if seeds[crop] > 0 and socket.part == null and socket.kind == kind:
-				fit(Catalog.part(crop), socket)
-				seeds[crop] -= 1
+			if seeds[held] > 0 and socket.part == null and socket.kind == kind:
+				var seed := Catalog.part(crop) as Plant
+				seed.wild = held != crop
+				fit(seed, socket)
+				seeds[held] -= 1
 
 
 ## Onto you, if you're near: food while you carry less than the tuning asks,
@@ -236,15 +246,20 @@ func _count(tally: Dictionary, id: StringName, units: int) -> void:
 
 ## Something to see: food or seed falling from the planter onto you.
 func _fall(part: Part, onto: Player) -> void:
+	fall(world, part, global_position + CROWN, onto)
+
+
+## A thing falling from a place, engine metres, onto you.
+static func fall(in_world: World, part: Part, from: Vector3, onto: Player) -> void:
 	var falling := Falling.new()
 	for child in part.get_children():
 		if child is MeshInstance3D:
 			falling.mesh = (child as MeshInstance3D).mesh
 			break
 	falling.onto = onto
-	falling.offset = global_position + CROWN - onto.global_position - Falling.CHEST
-	world.content.add_child(falling)
-	falling.global_position = global_position + CROWN
+	falling.offset = from - onto.global_position - Falling.CHEST
+	in_world.content.add_child(falling)
+	falling.global_position = from
 
 
 ## Only drawn: it touches nothing and the simulation never reads it.

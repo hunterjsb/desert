@@ -9,7 +9,8 @@ extends Part
 ## and holds until it's picked, but one that fruits in bursts waits for a
 ## storm's humid air to fruit. Picked, it's sown again from its propagule, or
 ## one that regrows keeps its share and grows again where it stands. One that
-## folds closes its leaves ahead of a storm, a pose and nothing more.
+## folds closes its leaves ahead of a storm, a pose and nothing more. Wild
+## stock (Feral) grows the same, and gives less.
 
 const GROWING := &"growing"
 const RIPE := &"ripe"
@@ -54,8 +55,14 @@ var growth := 0.0
 var fruit := 0.0
 ## Growing, ripe, or why it isn't growing: what it did on its last tick.
 var state := GROWING
-## Wild stock rather than clean (not read yet: propagules come next).
-var wild := false
+## Wild stock rather than clean: cut or dug from a feral plant, or grown
+## from one, it gives the wild share of its harvest, and says so.
+var wild := false:
+	set(to):
+		wild = to
+		if crop != &"":
+			var named: String = Catalog.PARTS[crop].label
+			label = "Wild %s" % named.to_lower() if wild else named
 ## Its leaves, 0 open to 1 folded shut.
 var fold := 0.0
 var ripen_seconds: float:
@@ -70,7 +77,7 @@ var litres: float:
 ## A harvest of what comes to your hands, units, and its kcal each.
 var harvest: int:
 	get:
-		return data.yields[0][1]
+		return yields()[0][1]
 var kcal: float:
 	get:
 		return Catalog.PARTS[data.yields[0][0]].get("each", 0.0)
@@ -94,7 +101,27 @@ func ripe() -> bool:
 
 
 func stage() -> StringName:
-	return MATURE if growth >= 1.0 else (SEEDLING if growth < SEEDLING_UNTIL else YOUNG)
+	return stage_of(growth)
+
+
+static func stage_of(grown: float) -> StringName:
+	return MATURE if grown >= 1.0 else (SEEDLING if grown < SEEDLING_UNTIL else YOUNG)
+
+
+## How far into its stage's look it has filled out, as a share of full size.
+static func fill_of(grown: float) -> float:
+	var at := stage_of(grown)
+	var into := grown / SEEDLING_UNTIL if at == SEEDLING \
+		else ((grown - SEEDLING_UNTIL) / (1.0 - SEEDLING_UNTIL) if at == YOUNG else 1.0)
+	return lerpf(0.7, 1.0, into)
+
+
+## Its harvest as [part, units]: wild stock gives its share of each, never none.
+func yields() -> Array:
+	if not wild:
+		return data.yields
+	var share := Tuning.current().feral_wild_yield
+	return data.yields.map(func(gives: Array) -> Array: return [gives[0], maxi(1, roundi(gives[1] * share))])
 
 
 ## One tick of `seconds` in what its planter feels (Planter.felt()), with
@@ -149,10 +176,16 @@ func pick() -> void:
 ## Whether a storm is due within its fold's lead, or here: its leaves close
 ## toward shut, or open, over `seconds`. The first it hears, they're there.
 func forecast(stormy: bool, seconds: float) -> void:
-	var to := 1.0 if stormy else 0.0
-	fold = to if not _folded_once else move_toward(fold, to, FOLD_RATE * seconds)
+	fold = fold_toward(fold, stormy, seconds, not _folded_once)
 	_folded_once = true
 	_show()
+
+
+## Leaves at `fold` closing toward shut, or opening, over `seconds`; the first
+## time they're read, they're there.
+static func fold_toward(from: float, stormy: bool, seconds: float, first: bool) -> float:
+	var to := 1.0 if stormy else 0.0
+	return to if first else move_toward(from, to, FOLD_RATE * seconds)
 
 
 ## A save from before the crops fruited in bursts: one that was ripe still is.
@@ -179,7 +212,5 @@ func _show() -> void:
 	if look != null:
 		_look.mesh = look
 	# Within a stage it fills out toward the next.
-	var into := growth / SEEDLING_UNTIL if at == SEEDLING \
-		else ((growth - SEEDLING_UNTIL) / (1.0 - SEEDLING_UNTIL) if at == YOUNG else 1.0)
-	var own := Transform3D(Basis.from_scale(Vector3.ONE * lerpf(0.7, 1.0, into)), Vector3.ZERO)
+	var own := Transform3D(Basis.from_scale(Vector3.ONE * fill_of(growth)), Vector3.ZERO)
 	_look.transform = (socket.transform if socket != null else Transform3D.IDENTITY) * own
