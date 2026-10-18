@@ -138,7 +138,8 @@ terminals" by Hunter's call. The squatting oracles above are now the gods.
   The moment a reading sees a storm, it breaks off through a burst of static for the report. **The
   Stoker's song** (Hunter: "use that segment on the Stoker mind's frequency"): its frequency carries
   45 s of Hunter's `modsynthpatch.wav`, from 11:15 to 12:00 (`radio_stoker.ogg`), in place of tones,
-  its pitch sliding with the storm's warp. Both come through like any signal: as loud as it's clean,
+  its pitch sliding with the storm's warp, and as loud at its peaks as Clear Skies (Hunter: "stoker track
+  too quiet"). Both come through like any signal: down by the root of how clean it is,
   silent while it's cut, and never started over by a dropout.
   Outside its window each god talks noise in its own voice: roll calls, survey telemetry, the
   terraforming hymn, prices for goods nobody sells, empty manifests, boiler alarms, and from the Eye

@@ -340,7 +340,8 @@ func _listen(delta: float) -> void:
 			elif id == &"stoker":
 				song = Sounds.RADIO_STOKER
 				music.pitch_scale = 1.0 + 0.04 * reception.warp / maxf(_tuning.storm_warp_khz, 0.01)
-			_level = 0.0 if reception.cut else reception.clean
+			# A faint signal still carries its song: down by the root of how clean it is.
+			_level = 0.0 if reception.cut else sqrt(reception.clean)
 			if song == null and not reception.cut and reception.clean > 0.0:
 				_signal.pitch_scale = (0.6 + Gods.ids().find(id) * 0.12) \
 					* (1.0 + 0.08 * reception.storm * sin(t * 3.1))
