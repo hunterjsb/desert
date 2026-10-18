@@ -609,6 +609,19 @@ static var _current: Tuning
 @export var drop_reach: float = 6.0
 @export var drop_until_kcal: float = 2000.0
 
+@export_group("Feral")
+## Wild plants on their habitats (Feral); each habitat's own numbers are its
+## row in the table there.
+@export var feral: bool = true
+## Wild stock gives this share of a clean plant's harvest, never none of a part.
+@export var feral_wild_yield: float = 0.5
+## Wild plants fold before a storm within this far of you, m; farther lines
+## hold their pose until you come nearer. Growth ticks only on ground you
+## can stand on, where you can take from them.
+@export var feral_fold_m: float = 400.0
+## Main-thread time a frame may take laying wild plants out with the ground, ms.
+@export var feral_budget_ms: float = 0.3
+
 @export_group("Salvage")
 ## Ruins and finds. Probes of other systems switch them off, as ground probes
 ## still the air, so a buried crate never stands in what they measure.
