@@ -147,8 +147,7 @@ func give_way(rope: Rope) -> void:
 
 
 ## What a line bears now, and its share of the wind's push on each loose
-## thing it holds, past what the sand's friction holds of it: what load_at
-## reckons another time's load from.
+## thing it holds: what load_at reckons another time's load from.
 func bearing(rope: Rope) -> Dictionary:
 	var shares := {}
 	for end: RopeEnd in [rope.a, rope.b]:
@@ -174,14 +173,15 @@ func load_at(rope: Rope, t: float, span: float, was: Dictionary, shares := {}) -
 	return maxf(most, 0.0)
 
 
-## Each of a body's lines' share of the wind's push on it held still, past
-## what the sand holds of it, N.
+## Each of a body's lines' share of the wind's push on it held still, N. A
+## taut line takes the push whole, the sand's friction none of it: what's
+## held doesn't slide.
 func _share(body: RigidBody3D, t: float, span: float) -> float:
 	var lines := 0
 	for rope in ropes:
 		if rope.a.holder == body or rope.b.holder == body:
 			lines += 1
-	return maxf(world.weather.wind_load(body, t, span) - world.grip(body), 0.0) / maxi(lines, 1)
+	return world.weather.wind_load(body, t, span) / maxi(lines, 1)
 
 
 func lines_on(end: RopeEnd) -> Array[Rope]:
