@@ -530,13 +530,14 @@ burst a dark column kilometres high spreading out at its top.
 
 ### What it costs
 
-On the RTX 3070 at 1280 by 720, shared with other work (look/plume: the GPU's frame time with every plume
-drawn and without, the median of paired turns): 0.5 to 1.8 ms a frame from 260 m under a column or 1.5
-km from a burst, the most when a burst fills the view; 0.04 to 0.85 ms from 1.5 km; 0.05 to 0.4 ms from
-7 to 15 km; nothing measurable when storms hide them. On the main thread a plume takes 0.05 to 0.07 ms a
-frame where it's in sight, measured headless on a busy machine (wind & storms probe 16 holds it under 0.25
-ms on CI), and all of them together 0.09 to 0.22 ms in the look-test; the one frame after a jump in time
-or place works a whole line out at once.
+On the RTX 3070 at 1280 by 720, shared with other work, a game among it (look/plume: the GPU's frame
+time with every plume drawn and without, the median of paired turns): 0.5 to 1.8 ms a frame from 260 m
+under a column or 1.5 km from a burst, the most when a burst fills the view; 0.04 to 0.85 ms from 1.5
+km; 0.05 to 0.6 ms from 7 to 25 km; and 0.3 to 0.8 ms from 1.5 km when a storm over the vent hides it,
+since its puffs are still drawn and only their pixels thrown away. On the main thread a plume in sight
+takes 0.036 to 0.039 ms a frame on CI (wind & storms probe 16, four turns of 120 frames, against its
+0.25 ms bound), and all of them together 0.08 to 0.23 ms in the look-test on a busy desktop; the one
+frame after a jump in time or place works a whole line out at once (4.5 ms on CI).
 
 ### Probes
 

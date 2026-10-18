@@ -239,7 +239,7 @@ before the colonial layer, which reads it. It holds only what something reads.
 - **Gas pockets.** Round the rift, gas trapped under the old flows breaks out now and then:
   `geology.pockets(t0, t1)` gives those whose plumes show in a span, each a point 1.5 to 13 km from the
   point under Tu, a start, a size and how long it blows. One slot of 500 s in two holds one; it blows 20
-  to 50 s at 1 to 4 times the rift's seep and fades by e every 12 s, a dust column a kilometre or two
+  to 50 s at 20 to 80 times the rift's seep and fades by e every 12 s, a dust column a kilometre or two
   high **(defaults)**. Harmless, as everything is: a spectacle and a boom.
 - **What a vent is doing** is a pure function of the time, as the weather is:
   `geology.venting(vent, t)` gives how hard, as a share of its seep, and the share of ash in what it
