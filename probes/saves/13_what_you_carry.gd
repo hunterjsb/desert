@@ -46,7 +46,7 @@ func run() -> void:
 	var said := (world.player.get_node(^"Broadcast") as Broadcast).said
 	print("resumed: the radio %s, the line says \"%s\"; water %s" % ["plays" if back[0].playing() else "is silent",
 		said, _water(suit)])
-	check(back[0].playing() and back[0].get_parent() == world.player and said.begins_with("Weather"),
+	check(back[0].playing() and back[0].get_parent() == world.player and said.begins_with("%d kHz · " % roundi(back[0].frequency)),
 		"playing from you, its words showing")
 	var cans := suit.stacks().filter(func(s: Array) -> bool: return s[0] is Supply and s[0].kind == &"water")
 	check(suit.carried.any(func(p: RigidBody3D) -> bool: return p is Compass) and cans.size() == 1
