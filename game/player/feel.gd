@@ -3,10 +3,11 @@ extends Node3D
 ## How moving feels: the head's bob and sway, a spring on footfalls, landings
 ## and changes of pace, a lean into strong wind with gusts nudging it, a wider
 ## view at speed, footsteps, and a slide's hiss and spray; on a board, a lean
-## into the carve, and your view smoothed between ticks, which at its speed
-## would otherwise stutter. It reads the player and never writes to it, so
-## none of it can change where you go: it moves only the camera, and makes
-## only sound and dust.
+## into the carve, a dug edge's rooster tail of sand and its hiss, a shake as
+## the edge bites and a harder one as it catches, and your view smoothed
+## between ticks, which at its speed would otherwise stutter. It reads the
+## player and never writes to it, so none of it can change where you go: it
+## moves only the camera, and makes only sound and dust.
 
 ## Landings slower than this, m/s, are settling, like a respawn's drop.
 const SOFTEST := 1.5
@@ -23,6 +24,18 @@ const VIEW_SECONDS := 0.3
 const FAST := 10.0
 ## The share of a board's lean into its carve your view leans with it.
 const BANK_SHARE := 0.35
+## A dug edge this fast across or along the sand, m/s, throws all it can.
+const GRIT_FAST := 12.0
+## Grains a dug edge's rooster tail has in the air at once, and the share of
+## the board's way the sand it throws carries.
+const TAIL_GRAINS := 192
+const TAIL_CARRY := 0.85
+## How far a shake throws your view at its hardest, m and radians, and how
+## fast it dies away, s; an edge biting shakes it this share of that.
+const SHAKE_REACH := 0.035
+const SHAKE_ROLL := 0.03
+const SHAKE_SECONDS := 0.18
+const BITE_SHAKE := 0.35
 
 var _player: Player
 var _tuning := Tuning.current()
@@ -38,6 +51,7 @@ var _roll := 0.0
 var _widen := 0.0
 var _bank := 0.0
 var _hiss := 0.0
+var _shake := 0.0
 var _clock := 0.0
 var _last_own := Vector2.ZERO
 var _last_gust := -1.0
@@ -49,6 +63,7 @@ var _feet: Array[AudioStreamPlayer] = []
 var _slide: AudioStreamPlayer
 var _thud: AudioStreamPlayer
 var _spray: CPUParticles3D
+var _tail: CPUParticles3D
 var _puff: CPUParticles3D
 
 
@@ -64,9 +79,17 @@ func _ready() -> void:
 	_slide = _voice(hiss)
 	_thud = _voice(Sounds.LANDING)
 	_spray = _sand(64, 0.8, false)
+	_tail = _sand(TAIL_GRAINS, 0.8, false)
+	_tail.spread = 20.0
+	# It thickens just off the edge, so grains riding along with the board
+	# never show as a sheet beside it.
+	_tail.color_ramp.add_point(0.15, Color(_tuning.sand_color, 0.5))
+	_tail.color_ramp.set_color(0, Color(_tuning.sand_color, 0.0))
 	_puff = _sand(32, 0.7, true)
 	_player.landed.connect(_on_landed)
 	_player.jumped.connect(_on_jumped)
+	_player.edge_bit.connect(_on_edge_bit)
+	_player.wiped_out.connect(_on_wiped_out)
 	# Before the hands draw what you hold from where your eyes are this frame.
 	process_priority = -1
 
@@ -90,6 +113,7 @@ func _process(delta: float) -> void:
 		camera.fov = _fov
 		_slide.stream_paused = true
 		_spray.emitting = false
+		_tail.emitting = false
 		return
 	var t := _tuning
 	var own := _player.own
@@ -146,11 +170,15 @@ func _process(delta: float) -> void:
 	# The sand judders through you on a fast slide.
 	var judder := Vector3(sin(_clock * 41.0), sin(_clock * 53.0 + 1.3), 0.0) * 0.003 \
 		* clampf(speed / FAST, 0.0, 1.0) if sliding else Vector3.ZERO
-	camera.position = _rest + bob + _spring + _lean + judder + Vector3.DOWN * _drop + between
-	camera.rotation.z = roll + _roll + _bank
+	_shake *= exp(-delta / SHAKE_SECONDS)
+	var shake := Vector3(sin(_clock * 67.0), sin(_clock * 79.0 + 0.7), 0.0) * SHAKE_REACH * _shake
+	camera.position = _rest + bob + _spring + _lean + judder + shake + Vector3.DOWN * _drop + between
+	camera.rotation.z = roll + _roll + _bank + sin(_clock * 59.0 + 2.1) * SHAKE_ROLL * _shake
 	camera.fov = _fov + _widen
-	_sound_slide(sliding, speed, delta)
-	_throw_sand(sliding, own, speed)
+	var grit := _grit(ride) if ride != null else (clampf(speed / FAST * 1.5, 0.15, 1.0) if sliding and speed > 0.3 else 0.0)
+	_sound_slide(grit, speed / (t.board_top_speed if ride != null else FAST), delta)
+	_throw_sand(sliding and ride == null, own, speed)
+	_dig_sand(ride, grit)
 
 
 ## Ground covered between footfalls at a pace, m: tracks print feet where these land.
@@ -184,6 +212,23 @@ func _on_jumped() -> void:
 	_step(_tuning.step_db + 2.0)
 
 
+## The edge bit: a small shake, harder the faster you go.
+func _on_edge_bit(speed: float) -> void:
+	_shake = maxf(_shake, BITE_SHAKE * clampf(speed / _tuning.board_top_speed, 0.4, 1.0))
+
+
+## The edge caught and threw you: a hard shake, a lurch and a thud into the sand.
+func _on_wiped_out(speed: float) -> void:
+	_shake = 1.0
+	_kick(Vector3(0.0, -1.0, -0.5) * speed)
+	_thud.pitch_scale = _rng.randf_range(0.85, 0.95)
+	_thud.volume_db = 0.0
+	_thud.play()
+	_puff.global_position = _player.global_position + Vector3.UP * 0.1
+	_puff.gravity = Vector3.DOWN * _player.world.gravity
+	_puff.restart()
+
+
 func _on_landed(speed: float) -> void:
 	if speed < SOFTEST:
 		return
@@ -215,13 +260,14 @@ func _swing(delta: float) -> void:
 	_spring = _spring.limit_length(REACH)
 
 
-func _sound_slide(sliding: bool, speed: float, delta: float) -> void:
-	_hiss = _ease(_hiss, clampf(speed / FAST * 1.5, 0.15, 1.0) if sliding and speed > 0.3 else 0.0, 0.08, delta)
+## The sand's hiss under you, `loud` 0 to 1, higher the nearer `fast` comes to 1.
+func _sound_slide(loud: float, fast: float, delta: float) -> void:
+	_hiss = _ease(_hiss, loud, 0.08, delta)
 	if _hiss < 0.01:
 		_slide.stream_paused = true
 		return
 	_slide.volume_db = _tuning.slide_db + linear_to_db(_hiss)
-	_slide.pitch_scale = 0.85 + 0.35 * clampf(speed / FAST, 0.0, 1.0)
+	_slide.pitch_scale = 0.85 + 0.35 * clampf(fast, 0.0, 1.0)
 	_slide.stream_paused = false
 	if not _slide.playing:
 		_slide.play(_rng.randf() * 2.0)
@@ -240,6 +286,43 @@ func _throw_sand(sliding: bool, own: Vector2, speed: float) -> void:
 	_spray.initial_velocity_min = 0.5 + speed * 0.15
 	_spray.initial_velocity_max = 1.0 + speed * 0.3
 	_spray.gravity = Vector3.DOWN * _player.world.gravity
+
+
+## How hard a dug edge throws sand, 0 to 1: deeper and faster, and most
+## dragged across.
+func _grit(ride: Ride) -> float:
+	var v := ride.velocity
+	var speed := v.length()
+	var across := absf(sin(v.angle_to(ride.ahead))) if speed > 0.05 else 0.0
+	return ride.dig * clampf(speed / GRIT_FAST, 0.0, 1.0) * lerpf(0.6, 1.0, across)
+
+
+## A dug edge throws a rooster tail of sand up off its length and outward,
+## away from where it pulls the board, carrying most of the board's way: in
+## a carve it rises off the edge and falls behind, in a stop it flies on
+## ahead. It's the slide's spray, thicker the deeper the dig.
+func _dig_sand(ride: Ride, grit: float) -> void:
+	_tail.emitting = ride != null and grit > 0.03
+	if not _tail.emitting:
+		return
+	var pose := ride.board_pose(true)
+	var low := signf(ride.tilt(true).z)
+	if low == 0.0:
+		low = 1.0
+	var size: Vector3 = Catalog.DEVICES[&"board"].size
+	var back := Vector3(pose.basis.z.x, 0.0, pose.basis.z.z).normalized()
+	var flat := Basis(Vector3.UP.cross(back).normalized(), Vector3.UP, back)
+	_tail.global_transform = Transform3D(flat, pose * Vector3(low * size.x * 0.5, -size.y * 0.5, 0.0))
+	_tail.emission_box_extents = Vector3(0.03, 0.02, size.z * 0.25)
+	var speed := ride.velocity.length()
+	var way := flat.inverse() * Vector3(ride.velocity.x, 0.0, ride.velocity.y)
+	var thrown := Vector3(-low * 0.6, 1.0, 0.25).normalized() * (2.0 + 0.4 * speed) * grit + way * TAIL_CARRY
+	_tail.direction = thrown.normalized()
+	_tail.initial_velocity_min = thrown.length() * 0.7
+	_tail.initial_velocity_max = thrown.length() * 1.2
+	_tail.color = Color(1.0, 1.0, 1.0, grit)
+	_tail.scale_amount_max = 0.03 + 0.12 * grit
+	_tail.gravity = Vector3.DOWN * _player.world.gravity
 
 
 func _voice(stream: AudioStream) -> AudioStreamPlayer:
@@ -288,10 +371,21 @@ func _sand(amount: int, lifetime: float, burst: bool) -> CPUParticles3D:
 	look.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	look.vertex_color_use_as_albedo = true
 	look.albedo_texture = dot
+	# Thin dust lets the sun through: against it, grains glow rather than go grey.
+	look.backlight_enabled = true
+	look.backlight = Color(_tuning.sand_color * 0.7)
 	grain.material = look
 	sand.mesh = grain
 	sand.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(sand)
+	# A grain never yet thrown draws as an opaque black square at the emitter,
+	# so a steady spray throws one lifetime of them far out of sight first.
+	if not burst:
+		sand.position = Vector3.DOWN * 1000.0
+		sand.preprocess = lifetime * 1.2
+		sand.restart()
+		sand.emitting = false
+		sand.preprocess = 0.0
 	return sand
 
 
