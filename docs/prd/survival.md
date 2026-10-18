@@ -149,7 +149,7 @@ food running out, each from the night's own numbers rather than dice.
   surface's devices). There's no sleeping on bare sand without one: the bedroll is how you sleep in the
   open.
 - **Ruin beds.** A kit piece marks boxes as beds (`StructureKit.bed`): the hab pod's bunk, and a
-  sleeping bench of saltbush wood, a mat on it, in the house ruin's back room. Looking at one, the line
+  sleeping bench of saltbush wood, a dyed mat on it, in the house ruin's back room. Looking at one, the line
   says "Bed", and use sleeps there. Buried, it's under the sand with the rest.
 
 **The words.** Use on a bed brings up words over the running game, as the system menu does, nothing
@@ -209,8 +209,8 @@ that would come through live comes through asleep and one that wouldn't, doesn't
 4. **Your water or food runs out.** You wake with a quarter left ("Woke thirsty"). The Surveyor's one
    canister wakes you about 45 hours into a long storm.
 
-**Waking.** A few lines at the top of the screen as it comes back from black, for 7 s, in the menus'
-small capitals: how long you slept, what woke you if it was early, each shield that was up, what broke
+**Waking.** A few lines at the top of the screen as it comes back from black, for 7 s, in the
+caption's capitals: how long you slept, what woke you if it was early, each shield that was up, what broke
 loose or blew away, what's wrecked. The world goes on as it now is: every ticking system's next tick
 is on the new hour, none to catch up; the forecast reads from it and the eye settles, as for any cut;
 the storm pass's map is drawn for it while the screen is still black, so none is drawn in a hitch; the

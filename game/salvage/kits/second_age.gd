@@ -105,10 +105,10 @@ static func _house_look(b: Paint.Pieces, p: StructureKit.Piece, state: int) -> v
 		b.drum(0.36, 0.45, jar + Vector3(0.0, 0.22, 0.0), c.clay, Basis.IDENTITY, 12)
 		b.ball(0.42, jar + Vector3(0.0, 0.58, 0.0), c.bone, Vector3(1.0, 0.85, 1.0))
 		b.drum(0.16, 0.12, jar + Vector3(0.0, 0.95, 0.0), c.clay, Basis.IDENTITY, 10)
-	# A woven mat on the bench.
+	# A dyed mat woven of fern cord on the bench.
 	var mat := BENCH.get_center() + Vector3(0.0, BENCH.size.y * 0.5, 0.0)
 	if StructureKit.shows(p, state, mat.y, Vector2(mat.x, mat.z)):
-		b.box(Vector3(BENCH.size.x - 0.12, 0.04, BENCH.size.z - 0.12), mat + Vector3(0.0, 0.02, 0.0), c.cord, 0.01)
+		b.box(Vector3(BENCH.size.x - 0.12, 0.04, BENCH.size.z - 0.12), mat + Vector3(0.0, 0.02, 0.0), c.daub, 0.01)
 	# Tu, half risen over the horizon, daubed by the front door; charms on a
 	# cord over it.
 	if StructureKit.shows(p, state, 2.1):

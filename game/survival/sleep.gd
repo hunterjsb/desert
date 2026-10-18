@@ -53,7 +53,7 @@ func _ready() -> void:
 	layer.layer = 99
 	add_child(layer)
 	_line = Label.new()
-	_line.theme_type_variation = &"MenuNote"
+	_line.theme_type_variation = &"Caption"
 	_line.uppercase = true
 	_line.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_line.set_anchors_preset(Control.PRESET_CENTER_TOP)
