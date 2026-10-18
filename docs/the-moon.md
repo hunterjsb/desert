@@ -36,6 +36,8 @@ dev gravity toggle tries the lower value. **Everything else stays honest.**
   research](lore-research.md#the-surface-today-agreed-session-3)). **Agreed (session 4, part
   2):** the orbit was more eccentric when the colonists came and has been rounding out since, so
   the heating fades and the vents go quiet ([the lore](lore-research.md#tu-the-tidal-lock-and-the-water-agreed-session-4-part-2)).
+  **Agreed (session 4, part 5):** the heat peaks at both tidal bulges, so volcanism clusters at the point
+  under Tu and the point opposite ([below](#where-the-heat-concentrates-agreed-session-4-part-5)).
 - **Thin air still makes real wind.** Mars, at under 1% of Earth's pressure, has global
   dust storms and moving dunes, but its winds would barely push you. At 0.3 bar, 130 km/h
   gusts push like an Earth gale even at near-Earth gravity (at the leaning 0.4–0.5 g,
@@ -54,6 +56,25 @@ dev gravity toggle tries the lower value. **Everything else stays honest.**
   radiates heat at night, so storms shrink the day-night swing. That's been measured
   on Mars. It's why the stormy equator is milder and the clear poles swing wider: hotter
   days, colder nights. The latitude dial is real physics.
+
+## Where the heat concentrates (Agreed, session 4, part 5)
+
+*[Session 4, part 5](gods-gear-farside-2026-10-17.md), "The twin fires." A lore rule, not built.*
+Zan is tidally locked to Tu, so "tidal heating peaks at the two bulges: the point facing Tu and the
+point directly opposite. Volcanism clusters at both." The sub-Tu point is Halloran's rift vents, and the
+anti-Tu point, far-side centre on the equator, is a great volcano. The heat was never only under Tu.
+
+What it changes here, as readings and not in the session:
+- **The far side is cold and has a fire.** The far side stays the coldest place for the water to end
+  up, as above, and it holds one hot spot: the volcano under the observatory, a vent cap that matters
+  at the end. The cold is the air and the sun's absence; the fire is local.
+- **"The vents go quiet" has two places to go quiet.** Part 2 has the orbit rounding out so heating fades
+  and the vents go quiet, and the First Kingdoms end when the vents "shift beyond reach." Where they went is
+  not said. The far-side volcano is the natural place the heat is still found.
+- **The physics is looser than the rule.** The tide raises a bulge at both points, but where an
+  interior turns the flexing into heat depends on how it is built, and on Io, the model case, the hot
+  spots cluster toward the two sides without sitting exactly on the two points (a reading from memory, not
+  checked). The docs take the session's two points as the rule and leave the offset to the lore.
 
 ## Water goes through all three phases every day
 

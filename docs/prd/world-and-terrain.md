@@ -140,7 +140,7 @@ Readings, not in the session:
 
 **Placement per seed (Agreed, session 4, part 4).** Part 4 settles most of how a landmark sits on a
 seeded world. Its fixed landmarks (Port Morgan, the Halloran refinery and H-Town, the black site,
-Starcom, the observatory, the orbital launch site, Sister, Halfrise) are "placed procedurally per
+Starcom, the observatory, the orbital launch site (replaced by the Rim depot in part 5), Sister, Halfrise) are "placed procedurally per
 seed, but always present, because the endings depend on them." The newer session wins, so a landmark
 is no longer "the same in every run" at "fixed coordinates on the planet grid" (part 2): every world
 has them, along the line toward Tu, and the terrain is generated around them, history first
@@ -170,8 +170,10 @@ decides what was where. It adds one, in layers:
    highways, pipelines, power corridors, water-import aqueducts and hab tunnels.
 2. **Skimmer layer.** Wrecks, pads and camps, mostly overlapping colonial ruins and clustering around
    Han.
-3. **First-age layer.** Settlements along dead colonial lines and near water; first-age water lines
-   link them.
+3. **First Kingdoms layer (the first age).** Settlements along dead colonial lines and near water;
+   first-age water lines link them. Part 5 says part 2 is canon for the age: the keepers' holdings, a
+   citadel and toll towns, as well as part 4's pipe towns and cisterns ([Salvage &
+   ruins](salvage-and-ruins.md#structures-by-era-and-the-loot-model-agreed-session-4-part-4-not-built)).
 4. **Second-age layer.** Towns on top of or near first-age sites, with Halfrise and Sister as
    anchors and a dense road network.
 5. **Feral layer.** Plants placed along the roads, water lines and ruins the layers left
@@ -181,6 +183,13 @@ decides what was where. It adds one, in layers:
 
 "Each layer builds on the last, so history stays coherent per seed."
 
+**The order, restored by part 5.** The history pass runs in the session's order: "colonial → collapse →
+skimmer era → **First Kingdoms** (first age) → **Dark Age** → second age → feral." The layers above are
+the ones that place sites. The Dark Age "generates no sites of its own": it is a lineage rule on loot
+([Salvage & ruins](salvage-and-ruins.md#the-dark-age-as-a-lineage-rule-agreed-session-4-part-5-not-built)).
+The collapse has no layer either, in part 4 or part 5; a reading is that it adds no site and changes
+what the earlier layers hold, their burial and abandonment. So the order of sites is unchanged:
+colonial, skimmer era, First Kingdoms, second age, feral, sand.
 ### Roads and water lines are placement rules (Agreed)
 
 "The roads themselves are gone; the player never sees a road surface." Generate invisible paths
@@ -195,7 +204,8 @@ shrines and watchtowers is what traces the road.
 - The **main artery** runs inward from the Rim (Halfrise, Sister), through Mon (Port Morgan), down to
   Han (Halloran, the black site).
 - The **observatory** sits alone in the dark zone on its own long spoke: a maintenance road with power
-  lines, giving a reason to cross the dark.
+  lines, giving a reason to cross the dark. (Part 5: it is the elevator stub on the far-side volcano, at
+  the anti-Tu point.)
 - **Starcom** is high altitude, on a peak or ridge above the weather.
 - Density tapers: rich at the Rim, thinner in Mon, sparse and grim in Han.
 
@@ -203,7 +213,9 @@ shrines and watchtowers is what traces the road.
 
 "Placed procedurally per seed, but always present, because the endings depend on them": Port Morgan;
 the Halloran refinery and H-Town (Aitch); the black site; Starcom; the observatory; the orbital
-launch site; Sister; Halfrise. The session corrects two places on the way: the black site sits on the
+launch site; Sister; Halfrise. (**Part 5 replaces the orbital launch site** with the Rim depot:
+[below](#the-rim-depot-the-twin-fires-and-the-elevator-stub-agreed-session-4-part-5-not-built).) The
+session corrects two places on the way: the black site sits on the
 main artery, not an isolated spoke, and Starcom and the orbital launch site are separate places
 ([the lore](../lore-research.md#corrections-and-places-agreed-session-4-part-4)).
 
@@ -213,7 +225,7 @@ Arteries alone leave most of the moon empty. The fixes:
 - **Dense networks:** each era made many minor paths, farm tracks and local wells, not just main
   roads.
 - **Off-network sites:** skimmer wrecks crash anywhere; colonial survey beacons and relay towers sit on
-  a grid; first-age hermits and holdouts lived remote.
+  a grid; First Kingdoms hermits and holdouts lived remote.
 - **Drift** fills the gaps ([Salvage & ruins](salvage-and-ruins.md#two-channels-agreed)).
 - **Meaningful emptiness:** some deep desert stays empty on purpose as the dangerous zone between
   settled areas.
@@ -261,6 +273,48 @@ The early game for everyone: **find an artery and follow it.** Spawn position de
 - **Density is regional, and the built ruin density is not.** One ruin in each 5 by 5 chunks,
   about 650 m apart, holds everywhere today. Rich at the Rim and sparse in Han is a field over the
   moon.
+
+## The Rim depot, the twin fires and the elevator stub (Agreed, session 4, part 5; not built)
+
+*[Session 4, part 5](../gods-gear-farside-2026-10-17.md), section 6, labels as given (everything is
+**Agreed** unless marked). None of it is built. The lore is in [the lore
+research](../lore-research.md#the-rim-depot-and-the-twin-fires-agreed-session-4-part-5).* "Part 4's
+'orbital launch site' landmark is **replaced** by two things: the Rim depot and the far-side elevator
+stub, which is also the observatory."
+
+- **The Rim depot** is a suborbital port near Sister, built for the terraforming effort. It is a
+  landmark in the launch site's place. Interstellar freight landed at Port Morgan and hopped
+  suborbitally, or went by rail and truck, out to the Rim, so later roads follow the colonial rail and
+  truck line from Port Morgan to the Rim: the **main artery** has a reason. It gives the Rim real colonial
+  loot (hoppers, pads, rail yards, terraforming equipment), and it explains why Mother Cistern, Sister and
+  Halfrise sit where they do.
+- **The twin fires.** Tidal heating peaks at the point facing Tu and the point opposite it, and
+  volcanism clusters at both: Halloran's rift vents at the sub-Tu point (the Stoker's) and a great
+  far-side volcano at the anti-Tu point, "far-side centre, on the equator" (the Eye's).
+- **The elevator stub is the observatory.** The summit of the far-side volcano holds the finished ground
+  anchor and lower tether of a space elevator, and the cultists built the observatory out of the tower
+  stub: "the tallest structure on Zan, above the dust, out in the dark," with one of the moon's major
+  vent caps under it.
+- **Hoppers (late-game travel; deferred):** from the depot out to the observatory, up to Starcom, or
+  into Port Morgan carrying parts or fuel. "Flying over Han's coverage without having dealt with the
+  Quartermaster gets you shot down."
+
+The landmark list is now Port Morgan; the Halloran refinery and H-Town (Aitch); the black site; Starcom;
+the observatory; the Rim depot; Sister; and Halfrise.
+
+Readings, not in the session:
+- **The far side has a place to walk to.** The anti-Tu point is half a lap from the sub-Tu point, about
+  75 km on the game's lap, and a quarter lap past the Rim, so about 37 km, the walk from the Rim to the
+  point under Tu, across the dark. The observatory's "own long spoke" of part 4 (a maintenance road
+  with power lines) is the tower's service line. Nothing is placed there yet.
+- **A tower is a landmark you can steer by.** The tallest structure on Zan, standing out of the dust
+  in a black sky, is visible from far. It meets the same missing landform as Starcom's peak: the ground
+  has only basins, rises and ridges (open questions).
+- **The depot is the Rim's, and the main artery now runs from it.** The artery runs inward from the
+  Rim "through Mon, down to Han"; its Rim end is the depot, Sister and Halfrise together.
+- **The twin fires are two regions of one rule.** Volcanic ground is heat, vents and ash; the sub-Tu
+  and anti-Tu points each get it, and the ground between is the Rim's and the cold. The rift valley is
+  the first, and the second has no description beyond the volcano and its tower.
 
 ## Ambient life: sand beetles (Agreed, session 4, part 4; not built)
 
@@ -551,7 +605,34 @@ in the living docs, so this PRD follows it where it can, and says so on each lin
   ruin's ground" (it is beside, not on) or the vision's "oysters never find ruins."
 - **How much storm-driven dune movement the terrain can support.** The session's own open question.
   Here, rule 2: loaded ground never changes, and "Shifting dunes" only change newly generated chunks.
-- **The orbital launch site.** The session's own open question: location and structure. The ladder
+- **The orbital launch site.** *Answered by session 4, part 5: there is none, and the Rim depot and
+  the elevator-stub observatory replace it (above).* The session's own open question: location and
+  structure. The ladder
   launches "from Port Morgan," and Port Morgan's colonial pads are a landmark of their own
   ([Salvage & ruins](salvage-and-ruins.md#landmarks)). Not said whether the launch site is those pads
   or a separate place.
+
+Session 4, part 5 (2026-10-17, [the gods session](../gods-gear-farside-2026-10-17.md)) adds the
+following. Each is quoted old and new. The newest session wins in the living docs, so this PRD follows
+it as direction and says so on each line.
+
+- **The orbital launch site against the Rim depot.** Here (above, from part 4): the launch site is a
+  fixed landmark and "location and structure" is the session's own open question. The session: it is
+  "**replaced**" by the Rim depot and the elevator stub. *Follows the session; the question is
+  answered.* Not said whether the launch endings fly from the depot. The ladder says they launch "from
+  Port Morgan," and the depot is suborbital.
+- **A volcano and a tower on a ground of low rises.** Here: underlying topography is "broad basins and
+  rises about 12 m high and never steeper than about 1°," with ridges up to about 40 m. The session: a
+  "great far-side volcano" with the tallest structure on Zan on its summit. Not said whether the
+  topography grows a mountain or a rise carries a tower that only looks tall; the same open question as
+  the plateau, the rift and Starcom's peak.
+- **A far side nobody has built.** Here: the game has latitude and no longitude regions, and a run starts
+  on the near side. The session puts a landmark at the far-side centre. Not said how the regions arrive,
+  or whether a run ever goes there before the sky does (the Tu spec's open question).
+- **Hoppers against a game with no flight.** Here: movement is the board, the tray and the sailboat. The
+  session: suborbital hoppers as late-game travel. *Deferred in the session.* Not said what a hopper is
+  as a thing in the world.
+- **The tidal heating at both bulges.** Here (the moon): a fading, rounding orbit with the vents going
+  quiet. The session: the heat peaks at two points and the volcano at the far one is a vent cap that
+  still matters at the end. Not said where the First Kingdoms' vents went, or whether they went to the far
+  side ([the lore, section 19](../lore-research.md#19-open-after-session-4-part-5)).

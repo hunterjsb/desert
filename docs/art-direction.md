@@ -320,9 +320,10 @@ most from row to row:
   crisp, routed by the system's official code. The X form is old and official
   ([names](lore-research.md#hierarchy-and-the-name-decay-agreed-session-3)).
 - **Surface:** "ZN" daubed back on by hand in rust red: a copy from memory, on the way from XN
-  to Zan, with the X said and written as a Z. It's late, a second-age form, from the scattering at its head (a
-  reading: hands that no longer read the code, where the first age kept its archives; [the
-  lore](lore-research.md#era-names-again-agreed-session-4-part-4) says what became of the Dark Age),
+  to Zan, with the X said and written as a Z. It's late, a Dark Age or second-age form (a
+  reading: hands that no longer read the code, where the First Kingdoms kept their archives; [the
+  lore](lore-research.md#era-names-again-agreed-session-4-part-4-corrected-in-part-5) restores the
+  Dark Age),
   and session 3 dates ruins by which form appears. **Decided (session 4, part 2, 2026-10-17):
   the Z stays.** "The hand-daubed 'ZN' consignment mark is intentional drift from XN."
 - **Yours:** a plain batch number, "LOT 3127", for a recent, cheap make. Session 4, part 2 says
@@ -336,7 +337,7 @@ Wear does the rest, from the same amount that wears the paint: ragged edges, pat
 away, scour on the windward side and sand on what faces up.
 
 **The strata.** Session 3 has three strata: corporate tech deepest, skimmer-era salvage in the
-middle and the forged goods of the first age to the second age near the surface. The game
+middle and the forged goods of the First Kingdoms to the second age near the surface. The game
 has two layers so far. The deep
 one carries the corporate and colonial marks (the contractor, the seal, Tilg) and also the
 crew's patch, since boards are found deep. Once a middle layer exists, the patch belongs
@@ -378,23 +379,72 @@ should differ by era in shape, not just maker's marks. The shield comes first."
 Today an era shows in paint and marks only. Wear "does half the work" (B, above), the atlas has
 a row per era, and every shape is still a grey box wearing B. The notes want the silhouette to
 tell the era too. What each era's gear is like is in the other docs: colonial is crisp and
-overbuilt (B's era cue), the skimmer era's crate is "light, cheap and fragile," and the finds
-of the ages after the collapse are worn, reused space-age items with
-carvings ([Salvage & ruins](prd/salvage-and-ruins.md#gear-and-ruins-by-era)). Not said: what any era's
-shield looks like. The built light shield is round and bone white, and the notes' new one is
+overbuilt (B's era cue), and the finds of the ages after the collapse are worn, reused space-age
+items with carvings ([Salvage & ruins](prd/salvage-and-ruins.md#gear-and-ruins-by-era)). Not said: what
+any era's shield looks like. The built light shield is round and bone white, and the notes' new one is
 flat ([Bubble shield & camp](prd/bubble-shield-and-camp.md#the-carried-light-shield-and-the-starts-not-built)).
+
+**The table (Agreed, session 4, part 5; named, not drawn).** [Session 4, part
+5](gods-gear-farside-2026-10-17.md) answers it, section 4, for three eras. It supersedes the notes'
+"light, cheap and fragile" skimmer-era crate and "practical to drag" first-age crate as the story of
+the shapes; the stats are in [Devices & mods](prd/devices-and-mods.md#frames-by-era-agreed-session-4-part-5-not-built).
+
+| Era | Feel | Shape | Materials | Colour |
+|---|---|---|---|---|
+| Colonial | Industrial | Rounded rectangles, chamfered edges, modular panels | Composites, alloys | Off-white, grey, safety orange |
+| First Kingdoms | Maintained heirloom | Colonial geometry intact, plus crests, flared caps, filigree vent grilles | Original kept clean; brass and copper fittings; hardwood or bone handles | Faded colonial base, house-colour enamel bands (deep red, ochre, teal) |
+| Second age | Devotional relic | Asymmetric and organic; lost parts rebuilt in other forms (round ceramic cap on a square housing); bulges, wraps, tassels, charms, water vials | Salt-glazed ceramic, sand-glass, saltbush wood, fern cord, leather; metal only where original survived | Bone white, sand, rust, clay; deep water-blue glaze only on Cistern-touched items |
+
+"First-age gear is a machine with decoration; second-age gear is a craft object with a machine buried
+inside. Late-game camps should mix eras on purpose."
+
+Readings, not in the session:
+- **The colonial row is the grey box's cousin.** Rounded rectangles with chamfered edges are what the
+  grey boxes already are with their corners taken off, and "off-white, grey, safety orange" sits with B's
+  chunky worn industrial and the deep marks' crisp stencils. The built light shield's bone white is
+  the second age's colour more than the colonial one's.
+- **The First Kingdoms row is colonial plus dressing.** The geometry is the colonial one, so one frame
+  can wear both: add the crest, the flared cap and the grille, repaint the band in a house colour. Its
+  house colours (red, ochre, teal) are the houses' enamel, which the heraldry in "Marks by era" sits on.
+- **The second age's colour is the sand's.** Bone, sand, rust and clay are the dunes' own, so
+  second-age gear blends in and the blue glaze is the one thing that doesn't: the Cistern's mark.
+- **The skimmer era has no row.** The notes' skimmer crate was "light, cheap and fragile"; part 5's table
+  skips it. Its look (hasty, welded, improvised) is B's wreckage texture, and nothing here draws it.
+- **One shield first.** The notes asked for the shield to change first. Three silhouettes of one device
+  (a chamfered housing, the same with a crest and a vent grille, and an asymmetric one with a ceramic cap)
+  is the smallest test of the table.
 
 ## Marks by era after the collapse
 
 *Session 4, part 2 ([lore session](lore-session-2026-10-17-part-2.md)); named, not drawn, and
 none of it is in the atlas.* The atlas stops at the colonial, surface and new rows. The session
 names what the ages after the collapse would carry, to be drawn when there is a find to carry it:
-- **First-age** gear carries heraldry and guild stamps (houses such as Okafor, Kessel,
+- **First Kingdoms** gear carries heraldry and guild stamps (houses such as Okafor, Kessel,
   Arkwright and Vante; the guilds of the keepers).
 - **Second-age** gear carries religious symbols (the faith of Tu).
 - **Homesteader** gear carries civilian brand marks, not Tilg's.
 - **Carvings and daubs** use the worn slang (Monward, Hanmen, Zanborn, the tu- prefix) and the
   worn names (Zan, Tu, Han, Mon, Aitch): [the names](lore-research.md#slang-and-name-erosion-agreed-session-4-part-2).
+
+### Layered marks (Agreed, session 4, part 5; named, not drawn)
+
+*[Session 4, part 5](gods-gear-farside-2026-10-17.md), section 3; none of it is in the atlas.* The
+Dark Age made the second age's gear by remaking older gear, so a remade item can wear all its past:
+"a colonial maker's stamp, First Kingdoms heraldry scratched over it, Dark Age repair work holding it
+together. Visual only; no stat effect required." They are "readable without text," and they come from the
+item's lineage ([Devices & mods](prd/devices-and-mods.md#item-lineage-agreed-session-4-part-5-not-built)).
+
+Readings, not in the session:
+- **The marks are layers of one atlas, in order.** The stencil is the bottom paint, the heraldry a
+  scratch over it (a cut through the paint, not an overprint), and the repair a patch on top (a different
+  material's colour, a weld or a cord-lashing), so the wear that chips the top chips down to the one
+  under. The shaders already share the atlas ("How it's built," above).
+- **A find reads its history by depth of look.** A colonial find has one mark. A First Kingdoms find has
+  its stamp and a crest. A second-age find has all three, and the player who reads the three in order has
+  read its lineage with no text.
+- **The surface crate's "ZN" is a Dark Age daub or a second-age one.** Hands that no longer read the code
+  wrote it; the Dark Age is where the knowledge is lost.
+- **The Dark Age leaves no mark of its own on buildings,** only on things: it has no structures.
 
 ## Tu and the sky
 
@@ -570,6 +620,12 @@ so its reflection map is kept at the smallest size and costs next to nothing to 
   reaction was that it should read XN; it may stay as story," and the lore's "writing kept the X
   for centuries" ([the names](lore-research.md#names-the-ug-catalog-and-the-moon)) reads as the
   copyist's drift, not a rule. The atlas reads "ZN" as it did, and nothing was changed.
+- **Era shapes against the skimmer era.** Part 5's shape table has colonial, First Kingdoms and second
+  age, and no skimmer era; the notes' "light, cheap and fragile" is the only word on its gear. Not said
+  what it looks like, or whether it is the colonial shape worn hard.
+- **Layered marks against the atlas.** The atlas has six marks in three rows (the colonial, surface and
+  new rows). A find with three eras of marks needs them layered on one piece, which the paint pass was not built
+  for. Not said whether it is drawn as a stack of marks or as a few presets.
 - **Remodelling against "models wait for the loop".** Here: "Every game object keeps its
   grey-box shape until the loop works," and "models wait for the loop." The notes: "Device
   models should differ by era in shape... The shield comes first." Not said: whether the

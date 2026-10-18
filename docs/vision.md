@@ -219,7 +219,13 @@ story reasons, and many players will never see one.
 - **Agreed.** Endings are optional and mostly very hard to reach, at varying levels of rarity.
   Many players will never see one; the game should feel like infinite survival.
 - **Agreed.** No NPCs, no dialogue, no exposition. Choices are made through physical actions and
-  gear, and consequences are heard on the radio or seen through instruments.
+  gear, and consequences are heard on the radio or seen through instruments. **Amended (session 4,
+  part 5):** people never talk, but machines can talk through their terminals, and that is how every god
+  speaks: short logs, forms, incident reports, dispatches, error messages and rare clipped lines. Quests
+  arrive as terminal output and are answered physically (carrying, slotting, feeding, placing, stealing),
+  never by choosing a reply. A god's personality lives in its formatting and word choice. The old line
+  mostly stands; the clashes are in [the lore research, section
+  19](lore-research.md#19-open-after-session-4-part-5).
 - **Agreed.** Endings fall into two families: **official** (clearance, a login, a rescue, an
   invitation) and **outlaw** (slipping away the skimmer way, unnoticed). The session doesn't say
   which ending is which; a reading is the escapes, the long wait and the nomad city as official,
@@ -234,12 +240,15 @@ story reasons, and many players will never see one.
 player's changes. They're the only fixed things on a shifting moon, the exception to unloading
 out-of-range content. They can unlock endings and, for the prisoner, spawns. Candidates: the
 StarCom antenna, the black site, the Bastion and the Ledger, and from session 4, part 3 **Sister**,
-the temple of Mother Cistern. **Session 4, part 4 (the newest) fixes the list and moves them off
+the temple of Mother Cistern. **Session 4, part 4 fixed the list and moved them off
 fixed coordinates:** they are "placed procedurally per seed, but always present, because the endings
 depend on them," and the list is Port Morgan, the Halloran refinery and H-Town (Aitch), the black
 site, Starcom, the observatory, the orbital launch site, Sister and Halfrise. Part 2 had them "at
-fixed coordinates on the planet grid, the same in every run." The newer wins ([lore research,
-section 18](lore-research.md#18-open-after-session-4-part-4)). The endings need more places (the sealed hangar in Aitch, the observatory, the far-side
+fixed coordinates on the planet grid, the same in every run." The newer won ([lore research,
+section 18](lore-research.md#18-open-after-session-4-part-4)). **Session 4, part 5 (the newest)
+replaces the orbital launch site** with the Rim depot, a suborbital port near Sister, and makes the
+observatory the elevator stub on the far-side volcano at the anti-Tu point ([World &
+terrain](prd/world-and-terrain.md#the-rim-depot-the-twin-fires-and-the-elevator-stub-agreed-session-4-part-5-not-built)). The endings need more places (the sealed hangar in Aitch, the observatory, the far-side
 ice, an orbital station), and whether each is a landmark is not said. [World &
 terrain](prd/world-and-terrain.md#landmarks) and [Salvage &
 ruins](prd/salvage-and-ruins.md#landmarks) hold the rule and the sites.
@@ -263,6 +272,8 @@ shorter table of StarCom, Launch, Shot down, Nomad city and Radio.
 | AI ascendancy | Upload yourself, or, as the hive mind, eat the other gods. Split into regular and true: see below. | Agreed |
 | Bringing Zan back | Court Tilg & Standard into investing and terraforming. The rarest; funnels in every other ending. See below. | Agreed |
 | Atmosphere | Outlast everything until the air runs out. Not chosen: it arises from a world clock. | Agreed, needs the clock (not built) |
+| The Okafor bunker | Seal the door of the sealed vault under Port Morgan from inside and live out your days. Not placed on the ladder. See below. | Agreed (session 4, part 5) |
+| Blow up the moon | Corrupt the Eye, place charges on every major vent cap and let the Stoker fire. Not placed on the ladder. See below. | Agreed (session 4, part 5) |
 
 **Carried over from the last fold's table,** where the ladder doesn't contradict it:
 - **The long wait** (was StarCom): repair the StarCom interstellar antenna with the right parts.
@@ -281,7 +292,7 @@ shorter table of StarCom, Launch, Shot down, Nomad city and Radio.
 
 **Ideas still loose.** *Wrong answer* (you call out and something that isn't Tilg answers) fits
 the hive mind start as the way you discover what you are. *Okafor line*: an underground bunker
-with a holdout. *Radio ending* (from earlier docs, "Find the right frequencies to reach Tilg or
+with a holdout (developed by session 4, part 5 into [the Okafor bunker](#the-okafor-bunker-agreed-session-4-part-5), where the holdout is the player). *Radio ending* (from earlier docs, "Find the right frequencies to reach Tilg or
 the last town") remains undesigned. *Quietbloom* (session 4, part 4, **Idea**, open: "confirm or
 drop"): carrying the alien crystal lattice onto a freighter or into the AI endings could be a quiet
 modifier ([Farming](prd/farming.md#each-crop-ancestor-engineering-drift-and-hooks-agreed)).
@@ -366,12 +377,77 @@ revealed; that stays with the stolen freighter.
   the Rump UG ([lore
   research](lore-research.md#the-wars-end-the-wall-and-the-states-of-the-players-time-agreed-session-4-part-3)).
 
+### Blow up the moon (Agreed, session 4, part 5)
+
+*[Session 4, part 5](gods-gear-farside-2026-10-17.md), section 11; the lore is in [the lore
+research](lore-research.md#the-stoker-and-the-end-of-zan-agreed-session-4-part-5).* The Stoker, Halloran's
+starving refinery mind, has a smidge of helium-3 left, not enough for fusion, and no way to ever meet its
+energy quotas. This ending is "the one act that meets and exceeds every quota at once, and the only
+moment it is ever at peace."
+1. Make a pilgrimage across the moon, placing **charges on every major vent cap.** One of them is under
+   the observatory.
+2. Return to the Stoker's console and let it fire.
+3. It burns its last He3 in one full-power run and blows every cap at once.
+4. The crust, already under Tu's tidal strain, fractures all the way down. Tu's tides tear Zan apart.
+
+**Epilogue:** Zan becomes a ring of debris around Tu, joining its lost sister moon. From Varran space it
+reads as a new ring around a distant gas giant. Halloran is never coming back.
+
+"No extra systems: charges, vent caps you'd visit anyway, and one console." The one further precondition
+is the Eye. The charge under the observatory sits in its inner chamber, which only the Eye can open, and
+it opens it only if it has been corrupted by carrying it the Stoker's dispatches, one packet at a time.
+It understands exactly what will happen and is naive only to the morality. **Starcom must be down,**
+never repaired or deliberately cut: a repaired Starcom links the Eye to the other gods, and Mother
+Cistern, the Almanac and the Quartermaster each talk it out of it.
+
+Not placed on the ladder by the session, and not named official or outlaw. A reading: a high tier, since it
+asks for a pilgrimage, a corrupted Eye and a silent Starcom, which also shuts out the long wait. The
+clashes are in [the lore research, section 19](lore-research.md#19-open-after-session-4-part-5).
+
+### The Okafor bunker (Agreed, session 4, part 5)
+
+*[Session 4, part 5](gods-gear-farside-2026-10-17.md), section 8; the lore is in [the lore
+research](lore-research.md#the-ledger-and-the-okafor-bunker-agreed-session-4-part-5).* A sealed First
+Kingdoms vault under Port Morgan, with life support still running on the colonial power tap and nobody
+left in it. The walls carry generations of Okafor family marks and heraldry, and at its heart is the
+Harbourmaster's sticky note under glass in a reliquary, guarded for generations by people who didn't
+know what it opened. It is the endings session's *Okafor line* made concrete, with the player as the
+holdout. Two outcomes, mutually exclusive:
+1. **Ending: seal the door from inside and live out your days.**
+2. **Relic route:** take the reliquary. "Lifting it breaks the seal or cuts the power, so the bunker can
+   never be sealed again." You gain the Ledger's keys, the second door for any kit but the surveyor.
+
+"Same pattern as the nomads: unlock an ending, then trade it away for progress toward a greater one."
+Not placed on the ladder. A reading: low, since it is a place to find and a door to close.
+
+### The captive launch rule (Agreed, session 4, part 5)
+
+*[Session 4, part 5](gods-gear-farside-2026-10-17.md), section 9.* The launch endings still need the
+Ledger and the Quartermaster to authorise, and the Quartermaster is a module you can carry. **A stolen
+Quartermaster grudgingly authorises launches, except any ending that goes into hive mind space.** Then it
+fires the net and kills you both rather than be carried to the enemy.
+- Today that affects only the stolen-freighter ending, whose other routes (a forged Provisional
+  clearance, knocking out the net) stand.
+- The pathfinder is unaffected, since you only send Brandt's fleet down the lane.
+- The hive mind start is shot down regardless.
+
+**How the two authorise** (Agreed): carry the Quartermaster module to Port Morgan, bounce through a
+repaired Starcom, or run a cable; carrying runs one way, since the Ledger can't move. This makes the
+ladder's "bridging Mon and Han" three concrete ways. Launch fuel is the fed Stoker's, the only source on
+Zan, so most launch endings route through Han. Flying over Han's coverage without having dealt with the
+Quartermaster gets you shot down, and "one flag covers freighter, pod and hopper."
+
 ### Modifier: the observatory (Beyond the Eye)
 
 - **Agreed.** Far-side heretics of the second age worked out that Tu is a planet, not a god, and
   built a telescope where Tu never blocks the sky. Restoring it is a physical goal and a modifier
   for every ending. Every ending gets a blind and a seeing version, and what it unlocks can
   depend on the state of the world.
+- **Session 4, part 5.** The observatory is the colonial elevator tower's stub on the far-side volcano,
+  built over by the heretics, and the god in it is the Eye, the young god: "if you can interpret it and
+  goad it, it reads you coordinates of things to look at in space: satellites, the outpost, an incoming
+  rescue light." The seeing version of every ending is read from it
+  ([the lore](lore-research.md#the-eye-the-young-god-agreed-session-4-part-5)).
 - **Proposed effects.** Shot down: spot the old defence satellites, so you know you need the
   Quartermaster. Freighter escape: plot a real course. Long wait: watch the rescue ship's light
   approach, a countdown. Up the well and outpost: coordinates and the outpost's glint. Stolen
@@ -399,6 +475,10 @@ revealed; that stays with the stolen freighter.
 - **Agreed.** Keeping a carried Walker broadcasting (a "religious zeal" module) costs you
   something (power or a slot), so players are tempted to switch it off. If it keeps broadcasting,
   the nomads follow you, a pilgrimage.
+- **Session 4, part 5.** The Walker is the nomad city's mind, walks a fixed route and is the gods' only
+  reliable courier; stealing its core cuts the post, and over time the other gods' logs complain that it
+  stopped. It stays "indifferent... equally content in its old chassis or upgraded"
+  ([the lore](lore-research.md#the-walker-mother-cistern-and-the-almanac-agreed-session-4-part-5)).
 - **Idea, open.** Meeting the city while holding their god: if their pilgrimage is underway and
   you never contacted them, they're hostile and kill you (an ending); if they haven't set out,
   they're shocked; if you had prior contact, they're not hostile. Hard parts: showing the
@@ -437,7 +517,9 @@ The table has no row for regular ascendancy.
 **Running gags to keep.** The Ledger is Tilg property, so the surveyor is the only person on Zan
 with a login to the god of the crusades. The Quartermaster is the Provisional's, so a Tilg login
 means nothing to it ([the AI
-gods](lore-research.md#the-faith-of-tu-and-the-ai-gods-agreed-session-4-part-2)).
+gods](lore-research.md#the-faith-of-tu-and-the-ai-gods-agreed-session-4-part-2)). *Session 4, part 5:*
+other kits need a **second door**, the original Harbourmaster's credentials on a sticky note, because
+the Harbourmaster "was never formally fired" ([the Okafor bunker](#the-okafor-bunker-agreed-session-4-part-5)).
 
 **The hive mind start changes the endings without a cutscene.** Fix StarCom and someone answers,
 but not Tilg. Try to launch and the Quartermaster recognises you as the enemy, whatever your
@@ -480,8 +562,8 @@ dedicated hive mind ending." That ending is told on the radio, not in a cutscene
   though the land isn't kept. A fixed underlying topography (the large shapes the dunes
   sit on) may come later.
 - **History is generated first** (Agreed, session 4, part 4; not built). The world is laid out in
-  layers (the colonial skeleton, skimmer scars, first-age settlements along dead lines, second-age
-  towns and roads, then feral plants and the sand), so what you find follows from what was there, and
+  layers (the colonial skeleton, skimmer scars, First Kingdoms settlements along dead lines, second-age
+  towns and roads, then feral plants and the sand; the Dark Age places no sites, only a lineage on loot), so what you find follows from what was there, and
   loot comes from sites rather than loose in the open sand. The roads are invisible rules, not
   surfaces: the pattern of plants, shrines and towers is what traces them ([World &
   terrain](prd/world-and-terrain.md#world-generation-by-layers-agreed-session-4-part-4-not-built),
@@ -495,8 +577,8 @@ dedicated hive mind ending." That ending is told on the radio, not in a cutscene
 A colonized desert moon in the Xandaris universe, Kenshi in spirit. A high-tech
 spacefaring society built a transit hub there, and then a war cut the lane and orphaned
 it. It became a smuggler moon, until a volcanic paroxysm cut every outside link and took
-most of the people who understood the machines. The first age and the second age (with a
-scattering between them) rebuilt in the ashes, medieval in shape, and rose and fell in turn, until
+most of the people who understood the machines. The First Kingdoms (the first age), the Dark Age
+and the second age rebuilt in the ashes, medieval in shape, and rose and fell in turn, until
 nomads were all that was left, leaving an apocalypse world. `{YEARS_SINCE_FALL}` after the collapse, a time
 not yet set ([placeholders](lore-research.md#placeholders)), the moon has reverted to
 near-uninhabitable: ruins, dunes, one nomad city that still moves. The region is starting to
@@ -508,8 +590,8 @@ is in the lore sessions ([part 1](lore-session-2026-10-14.md), [part
 2](lore-session-2026-10-14-part-2.md), [session 3](lore-session-2026-10-16.md), [session
 4](session-notes-2026-10-17.md), [session 4, part 2](lore-session-2026-10-17-part-2.md), [the
 endings session](endings-and-radio-2026-10-17.md), [session 4, part
-3](lore-session-2026-10-17-part-3.md) and [session 4, part 4](plants-worldgen-ruins-2026-10-17.md))
-and [the lore research](lore-research.md).
+3](lore-session-2026-10-17-part-3.md), [session 4, part 4](plants-worldgen-ruins-2026-10-17.md) and
+[session 4, part 5](gods-gear-farside-2026-10-17.md)) and [the lore research](lore-research.md).
 
 You're a **scavenger and a survivor, in a suit**, because nobody survives here without
 one. The suit is the one gift this world gives you. Why you're out here gets revealed
@@ -519,16 +601,17 @@ survive.
 The strangeness at its heart is that **history runs backwards in the ground.** The
 oldest, rarest ruins hold the most advanced technology, because they come from the
 original colonists. Everything built after them is cruder: corporate tech lies deepest,
-skimmer-era salvage in the middle and the forged goods of the first age to the second age
+skimmer-era salvage in the middle and the forged goods of the First Kingdoms to the second age
 near the surface. (Session 4, part 4 gives structures a burial depth of their own by era, which
-orders the skimmer era and the first age the other way: [Salvage & ruins](prd/salvage-and-ruins.md#structures-by-era-and-the-loot-model-agreed-session-4-part-4-not-built).)
+orders the skimmer era and the First Kingdoms the other way: [Salvage & ruins](prd/salvage-and-ruins.md#structures-by-era-and-the-loot-model-agreed-session-4-part-4-not-built).)
 
 **People are only ever hinted at.** A hatch open in the distance, just out of reach. A
 ruin with something recently used left behind. Maybe a voice on the radio. There are no
 NPCs, and the game never answers the question. (One exception, from session 4, part 2: the
 nomad city, shown only in silhouette, never faces or words. See the endings below.) The game
 also has no exposition: everything reaches you through marks, carvings, ruin layering,
-terminals, radio and the sky.
+terminals, radio and the sky. People never talk, but machines can through their terminals (session 4,
+part 5, amended above): a god prints a short line, and you answer with an act.
 
 Lore gets worked out loosely alongside the systems so that it stays consistent from
 the start.
@@ -600,7 +683,10 @@ The order we build them in is the [skeleton plan](skeleton-plan.md).
 - **Era gear against "history runs backwards".** Setting: "The oldest, rarest ruins hold the
   most advanced technology... Everything built after them is cruder." The notes: "Era gear has
   trade-offs, not a ladder." Quoted in full in [Salvage &
-  ruins](prd/salvage-and-ruins.md#open-questions).
+  ruins](prd/salvage-and-ruins.md#open-questions). *Eased by session 4, part 5:* colonial gear is the
+  most efficient, First Kingdoms gear near it and second-age gear crude and lossy, with repairability as
+  the trade the other way, so the most advanced tech is still the oldest ([Devices &
+  mods](prd/devices-and-mods.md#frames-by-era-agreed-session-4-part-5-not-built)).
 - **Session 4, part 2's clashes with this page.** Landmarks against "Only what's around the
   player exists" and "Stateless"; optional endings against "Endless"; the nomad city against
   "People are only ever hinted at"; the Replacement start against "practically unreachable"; the
@@ -629,3 +715,13 @@ The order we build them in is the [skeleton plan](skeleton-plan.md).
   18](lore-research.md#18-open-after-session-4-part-4) and in the PRDs named there, with what they
   leave open: what the first hour finds, what a weapon is for, how a dig fits the one-function
   ground, and where the orbital launch site stands.
+- **Session 4, part 5's clashes with this page.** The dialogue rule amended to let machines talk through
+  terminals; the Ledger's login against the second door; "bridging Mon and Han" against three ways to
+  link; the stolen freighter against a stolen Quartermaster; the Okafor line's holdout against a bunker
+  with nobody left; the orbital launch site against the Rim depot; "history runs backwards in the
+  ground" against gear by era (eased: efficiency falls with age, and repair is the trade); and the Cistern
+  axis against a Mother Cistern you can carry away. The newest session wins, so they are applied above as
+  direction and quoted old and new in [the lore research, section
+  19](lore-research.md#19-open-after-session-4-part-5), with what they leave open: whether the two new
+  endings sit anywhere on the ladder, where an Up the well skimmer gets its launch fuel, how a carried
+  Mother Cistern counts for the axis, and how Starcom's repair sits with the Stoker ending.
