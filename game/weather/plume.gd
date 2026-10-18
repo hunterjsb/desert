@@ -52,14 +52,16 @@ const SHOWS := Vector3(1.0, 1.5, 0.6)
 ## a frame, and half as many once you're this far off, m.
 const EACH_FRAME := 4
 const FAR_OFF := 3000.0
+## Its mouth moving further than this is a jump, m, not the sheet's seams.
+const JUMP := 5.0
 ## Storms between you and it, and their shadow on it, are read at these ages,
 ## s, one read every other frame; a front this near the line counts as part
 ## way in, m.
 const READS := [0.0, 40.0, 150.0, 400.0]
 const VEIL_EDGE := 150.0
 ## Past this the puffs are drawn nearer and smaller, m: the camera's far plane.
-## Past the skyline's reach it's a landmark, as the skyline's are: it thins
-## out more slowly than the air between would have it (Skyline.LANDMARK_FALL).
+## Past the skyline's reach it's a landmark, as the skyline's are: the haze
+## takes it more slowly than the air between would (Skyline.LANDMARK_FALL).
 const NEAR_REACH := 4200.0
 ## Its ash fan on the sand runs down the long-term wind, by e this often, m.
 const FAN := 260.0
@@ -160,12 +162,12 @@ func _process(_delta: float) -> void:
 		return
 	var started := Time.get_ticks_usec()
 	var was := visible
-	var moved := _found_at
+	var from := root
 	visible = _follow()
 	if visible:
 		# A jump in time or place, a first sight, or a storm map made afresh
-		# for one, works it all out at once.
-		var whole := not was or moved != _found_at or absf(_world.time - _last_t) > 1.0 \
+		# for one, works it all out at once; the sheet's seams don't.
+		var whole := not was or root.distance_to(from) > JUMP or absf(_world.time - _last_t) > 1.0 \
 			or absf(_weather.map.t0 - _map_t0) > 5.0
 		if whole:
 			_map_t0 = _weather.map.t0

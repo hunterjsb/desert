@@ -35,8 +35,9 @@ uniform vec3 slot_dir = vec3(0.0, 0.0, 1.0);
 uniform vec4 now_mix = vec4(1.0, 0.2, 0.0, 0.0);
 // Drawn nearer past the first, m; dissolving into the haze between the others.
 uniform vec3 reach = vec3(4200.0, 11000.0, 15000.0);
-// Past the skyline's reach, m, it holds its body as a landmark does, by
-// distance to this power.
+// Past the skyline's reach, m, it's a landmark as the skyline's are: the
+// haze takes it as if it were only as far as distance to this power says,
+// so it stands out of the haze where a dune would be lost in it.
 uniform vec2 landmark = vec2(3000.0, 0.3);
 
 // Light, from Weather.
@@ -200,10 +201,9 @@ void vertex() {
 	VERTEX = (VIEW_MATRIX * vec4(corner, 1.0)).xyz;
 	NORMAL = vec3(0.0, 0.0, 1.0);
 	v_to = to / max(dist, 1.0e-3);
-	v_dist = dist;
+	v_dist = dist > landmark.x ? landmark.x * pow(dist / landmark.x, landmark.y) : dist;
 	v_height = center.y;
 	v_soft = scale < 1.0 ? 0.0 : drawn_size * 0.5;
-	v_thick *= pow(max(dist / landmark.x, 1.0), landmark.y);
 	v_show = fade * (1.0 - smoothstep(reach.y, reach.z, dist)) * smoothstep(size * 0.6, size * 1.8, dist) * s.x;
 	v_sun = s.y * shade;
 	v_seed = h2;
@@ -239,6 +239,9 @@ void fragment() {
 		float z = texture(depth_tex, SCREEN_UV).r;
 		vec4 scene = INV_PROJECTION_MATRIX * vec4(SCREEN_UV * 2.0 - 1.0, z, 1.0);
 		a *= clamp((VERTEX.z - scene.z / scene.w) / v_soft, 0.0, 1.0);
+	}
+	if (a < 0.004) {
+		discard;
 	}
 	ALBEDO = color;
 	ALPHA = a;

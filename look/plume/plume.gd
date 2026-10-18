@@ -54,9 +54,13 @@ func _ready() -> void:
 	var moments := _moments()
 	for each: Array in moments:
 		print("plume: %s_%s at t=%.0f (local %.3f) %s" % [each[0], each[1], each[2], _local(each[2]), each[3]])
+	# --only <moment>_<range>,... shoots just those.
+	var only := PackedStringArray(args[args.find("--only") + 1].split(",")) if args.has("--only") else PackedStringArray()
 	for each: Array in moments:
-		await _shoot(each[0], each[2], each[1], out)
-	await _mouth(moments[0][2], out)
+		if only.is_empty() or only.has("%s_%s" % [each[0], each[1]]):
+			await _shoot(each[0], each[2], each[1], out)
+	if only.is_empty() or only.has("mouth_close"):
+		await _mouth(moments[0][2], out)
 	for line in _costs:
 		print("plume: cost %s" % line)
 	get_tree().quit()

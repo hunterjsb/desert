@@ -6,6 +6,7 @@
 # without; the times print at the end.
 #   look/plume/shoot.sh <out dir>            shoot, then build the sheet
 #   look/plume/shoot.sh <out dir> --sheet    build the sheet from what's there
+#   look/plume/shoot.sh <out dir> --only calm_far,burst_near   just those shots, no sheet
 # No window: it runs unseen (scripts/unseen.sh), so it shoots while someone plays.
 set -uo pipefail
 cd "$(dirname "$0")/../.." || exit 2
@@ -13,8 +14,9 @@ cd "$(dirname "$0")/../.." || exit 2
 out=${1:?an output directory}
 godot=${GODOT:-scripts/unseen.sh}
 if [[ ${2:-} != --sheet ]]; then
-	timeout 1500 "$godot" --path . --disable-vsync --resolution 1280x720 res://look/plume/plume.tscn -- --capture "$out" 2>&1 |
-		grep -E '^plume'
+	timeout 1500 "$godot" --path . --disable-vsync --resolution 1280x720 res://look/plume/plume.tscn -- --capture "$out" \
+		"${@:2}" 2>&1 | grep -E '^plume'
+	[[ ${2:-} == --only ]] && exit 0
 fi
 
 declare -A says=([calm]="the calm" [wind]="a strong wind" [dusk]="dusk" [storm]="a storm coming over it"

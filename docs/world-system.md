@@ -249,8 +249,8 @@ before the colonial layer, which reads it. It holds only what something reads.
   under the dunes' mean, a spatter rampart round it 2.4 m high, sulphur crusting its throat, and an
   apron of its own ash out to 56 m that the dunes rise or fall from no steeper than 18°, banking at the
   sand's own slope over its last 14 m **(defaults)**. It stands where geology put it, sliding up to
-  48 m along the rift to where its apron holds the dunes best, so it stands on every seed; nothing
-  steeper than its 24° throat. It's the same in every exposure state (a live vent keeps itself clear),
+  24 m along the rift to where its apron holds the dunes best, so it stands on every seed (24 of 24
+  tried, a third of them slid); nothing round it is steeper than its 24° throat. It's the same in every exposure state (a live vent keeps itself clear),
   laid by the sheet like any site (a cell part of its own), and never gives way to a structure: the
   ground's own comes first. Its ash fan on the sand is the sand's look
   ([Wind & storms](prd/wind-and-storms.md#a-vents-plume)).
@@ -282,7 +282,7 @@ before the colonial layer, which reads it. It holds only what something reads.
    The provinces are the bulges, which the landmarks already mark; the rift is the line Halloran's
    heading already drew, through Aitch, with the black site in its wall; only its length and the vents
    along it are geology's own draws.
-6. **The smallest rendering?** One draw of 236 soft puffs whose places the shader works out from a line
+6. **The smallest rendering?** One draw of 248 soft puffs whose places the shader works out from a line
    of 24 points computed on the main thread, and the sand's look for the ash; no new full-screen pass,
    no particle simulation, nothing per vent but the one live one in sight
    ([Wind & storms](prd/wind-and-storms.md#a-vents-plume)).
@@ -1169,8 +1169,21 @@ group.
   to all; loose finds 0.15 a chunk within 60 m of a path or a settlement's site; drift 1 a metre an hour in
   a storm's heart, 0.25 snagging in the open and 1.0 more in a full lee, drawn every 20 s, 8 to a line.
 
+- Geology ([Geology](#geology)): the rift 8 to 11 km either way from Aitch, its floor 600 m across and
+  its walls to 1.6 km; the tapped vents 1.5 to 3 km along it, the live one 5 to 7.5 km; a live vent's
+  breath a fifth over 170 and 410 s, a burst in a 1,800 s slot 55% of the time, rising 25 s, holding
+  40 s, fading by e every 180 s, 4 to 7 times the seep, ash a fifth seeping and 85% at a peak; the
+  magnetized crust across the rift's walls, 2 km past its ends and over the volcano's footprint to 6 km;
+  the mouth's pit, rampart and 56 m apron, sliding up to 24 m along the rift.
+
 ## Open
 
+- **The rift's and the volcano's landforms.** Geology holds the rift's line, floor and walls for the
+  landform package to carve; until then the vent's mouth stands on the dunes as they are. The far
+  side's heat waits on the volcano's ground: its summit vent is capped, and a live flank vent there
+  is the natural second plume.
+- **The tapped vents' ground.** The vent stations stand on cold vents; their kit, when it's built,
+  carries the old vent's scar.
 - **Seams at high latitude.** Near the poles cells are small and dead reckoning is unsteady. History is
   thin there by richness, but the Rim's ring route runs over both poles, and its seams would show
   there.
