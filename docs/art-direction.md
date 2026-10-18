@@ -699,6 +699,23 @@ Tu-shine and its shadows take about 0.12 ms by night (2.16 against 2.03). By day
 under a hundredth of the sun's light and isn't drawn at all. Nothing reads the sky's light,
 so its reflection map is kept at the smallest size and costs next to nothing to refresh.
 
+## Sand and wind: one wind texture (agreed direction, 2026-10-18)
+
+From the [sand and wind techniques research](sand-and-wind-techniques-2026-10-18.md) Hunter
+brought: wind is a field, not an event, so one player-centred texture baked on the GPU (wind on
+the ground, lee shelter, and how hard the wind moves sand there) feeds the streamers, the sand's
+shading and the tracks' healing alike, and they stay consistent. Its roadmap, in order:
+- **P0, the wind texture and GPU shelter,** with `wind_at` kept on the CPU for sound and play.
+  **P1, the sand's own `light()`**: backscatter diffuse (Fujii's Oren-Nayar), the sheen as the
+  max of rim and "ocean", and glitter stepped by distance and faded by footprint so it never
+  crawls. These two first, side by side.
+- **Then:** streamers gated on wind past sand's threshold (an ordinary breezy afternoon moves
+  sand, not only a storm); tracks healing by local wind cubed and shelter, not one clock; a GPU
+  track texture and a dense displaced patch near you for real trail depth (Godot has no
+  tessellation); crest plumes off dune brinks; ripples that migrate with the wind; drifts.
+- Each untested Godot piece is prototyped before it's relied on: a `Texture2DRD` sampled in
+  `vertex()` and in particle shaders, varyings into `light()`, and the cost of a displaced patch.
+
 ## Open questions
 
 - **Tu's palette** (open in the spec: "Tu's palette, to be settled against
