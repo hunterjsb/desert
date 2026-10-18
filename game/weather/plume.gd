@@ -54,11 +54,9 @@ const EACH_FRAME := 4
 const FAR_OFF := 3000.0
 ## Its mouth moving further than this is a jump, m, not the sheet's seams.
 const JUMP := 5.0
-## Storms between you and it, and their shadow on it, are read at these ages,
-## s, one read every other frame; a front this near the line counts as part
-## way in, m.
+## Storms between you and it (Weather.veil), and their shadow on it, are
+## read at these ages, s, one read every other frame.
 const READS := [0.0, 40.0, 150.0, 400.0]
-const VEIL_EDGE := 150.0
 ## Past this the puffs are drawn nearer and smaller, m: the camera's far plane.
 ## Past the skyline's reach the haze takes it as if it were only as far as
 ## distance to this power says, more slowly than the air between would.
@@ -295,7 +293,7 @@ func _read_storms(t: float) -> void:
 	var at := _point(READS[i])
 	if _read % 2 == 0:
 		var camera := _world.player.camera.global_position
-		_veil[i] = veil(Vector2(_world.world_x(camera.x), _world.world_z(camera.z)), Vector2(at.x, at.z), t)
+		_veil[i] = _weather.veil(Vector2(_world.world_x(camera.x), _world.world_z(camera.z)), Vector2(at.x, at.z), t)
 	else:
 		var moon := _world.moon
 		var sun := _weather.day.sun_direction(t, moon.latitude, moon.longitude)
@@ -308,21 +306,6 @@ func _read_storms(t: float) -> void:
 			j += 1
 		var w := clampf((age - READS[j]) / (READS[j + 1] - READS[j]), 0.0, 1.0)
 		seen[k] = Vector4(lerpf(_veil[j], _veil[j + 1], w), lerpf(_sun[j], _sun[j + 1], w), 0.0, 0.0)
-
-
-## How much of what's at a world place shows from another past the storms on
-## the line between, 0 to 1, by the field's fronts: nothing through a storm,
-## and nothing from inside one's dust.
-func veil(from: Vector2, to: Vector2, t: float) -> float:
-	var map := _weather.map
-	if not map.ready:
-		return 1.0
-	var through := 1.0 - _weather.seen_storm
-	var count := clampi(ceili(from.distance_to(to) / 800.0), 2, 8)
-	for k in range(1, count + 1):
-		var at := from.lerp(to, float(k) / count)
-		through *= smoothstep(VEIL_EDGE, -VEIL_EDGE, map.front_at(at.x, at.y, t).x)
-	return through
 
 
 ## The streakline's place at an age, world metres.

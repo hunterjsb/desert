@@ -42,6 +42,10 @@ const COPPER := Color(1.0, 0.55, 0.3)
 ## the ground.
 const RING_HORIZON := 14.0
 
+## A front this near the line between you and something far off counts as
+## part way in, m (veil).
+const VEIL_EDGE := 150.0
+
 var field: WeatherField
 var day: DayCycle
 var map: StormMap
@@ -113,6 +117,20 @@ func setup(world: World) -> void:
 	plume = Plume.new()
 	add_child(plume)
 	plume.setup(world, self)
+
+
+## How much of what's at a world place shows from another past the storms on
+## the line between, 0 to 1, by the field's fronts: nothing through a storm,
+## and nothing from inside one's dust.
+func veil(from: Vector2, to: Vector2, t: float) -> float:
+	if not map.ready:
+		return 1.0
+	var through := 1.0 - seen_storm
+	var count := clampi(ceili(from.distance_to(to) / 800.0), 2, 8)
+	for k in range(1, count + 1):
+		var at := from.lerp(to, float(k) / count)
+		through *= smoothstep(VEIL_EDGE, -VEIL_EDGE, map.front_at(at.x, at.y, t).x)
+	return through
 
 
 ## Each felt_*() reads now, or a given world time t: power ticks read theirs.

@@ -118,23 +118,21 @@ static var _current: Tuning
 
 @export_group("Skyline")
 ## What stands on the dunes past the built ground, out to the far ring's
-## reach: tall structures' stand-ins, glints, and the saltbush lines on the
-## roads. Off, nothing shows past the built ground but the dunes.
+## reach: tall structures' stand-ins, glints, and the saltbush on the roads.
+## Off, nothing shows past the built ground but the dunes.
 @export var skyline: bool = true
 ## How far it draws, m.
 @export var skyline_m: float = 3000.0
-## The thinnest a stand-in is drawn, pixels, so what's far off never breaks
-## into flickering bits (drawn as much fainter); a saltbush line's least
-## thickness.
+## The thinnest a stand-in or a far bush is drawn, pixels, so what's far off
+## never breaks into flickering bits (drawn as much fainter).
 @export var skyline_thinnest_px: float = 1.5
-@export var skyline_line_px: float = 3.0
 ## Where a structure's real look hands over to its stand-in, m from you:
 ## crossfaded between, so you never see one switch for the other.
 @export var skyline_handover_m := Vector2(420.0, 500.0)
 ## A glint's sparkle, pixels across as it lights and at its brightest, and
 ## how bright, times the sun on white.
-@export var glint_px := Vector2(8.0, 16.0)
-@export var glint_brightness: float = 9.0
+@export var glint_px := Vector2(7.0, 12.0)
+@export var glint_brightness: float = 7.0
 
 @export_group("Light")
 ## The sand in full light, before the sun and sky light it. Real desert sand

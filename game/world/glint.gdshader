@@ -4,12 +4,11 @@ shader_type spatial;
 // its sparkle sweeps. A smooth function of the sun, the surface and the eye:
 // it swells as they line up, twinkles slowly as the angle between them keeps
 // turning, and fades, never strobing; big enough at any distance to catch
-// out of the corner of the eye. None in a storm, at it or on the way to it,
-// and the haze dims it.
+// out of the corner of the eye. None in a storm round you, or at it or
+// between, by its veil, read by Skyline, by the index it carries; and the
+// haze dims it.
 render_mode unshaded, blend_add, depth_draw_never, cull_disabled, shadows_disabled, fog_disabled,
 	skip_vertex_transform;
-
-#include "res://game/weather/storm_field.gdshaderinc"
 
 // Toward the sun, engine axes; how much of it reaches here (risen, not
 // behind Tu, no storm round you); its colour.
@@ -23,6 +22,7 @@ uniform float brightness = 6.0;
 uniform float twinkle_degrees = 1.2;
 // The haze's begin and end, m, and the most of the view it hides.
 uniform vec3 haze = vec3(400.0, 9000.0, 0.7);
+uniform sampler2D veils : filter_nearest, repeat_disable;
 
 varying float shine;
 varying float turn;
@@ -41,14 +41,8 @@ void vertex() {
 	float edge = INSTANCE_CUSTOM.w;
 	float a = dot(n, normalize(v + sun_dir));
 	float g = smoothstep(edge, mix(edge, 1.0, 0.75), a) * step(0.0, dot(n, v)) * step(0.0, dot(n, sun_dir));
-	float dust = 0.0;
-	if (storm_map_ready > 0.5) {
-		for (int k = 0; k <= 4; k++) {
-			vec3 p = mix(at, CAMERA_POSITION_WORLD, float(k) / 4.0);
-			dust = max(dust, smoothstep(-150.0, 0.0, storm_front(p.xz).x));
-		}
-	}
-	g *= glare * (1.0 - dust) * (1.0 - clamp((d - haze.x) / (haze.y - haze.x), 0.0, 1.0) * haze.z);
+	float veil = texelFetch(veils, ivec2(int(COLOR.r + 0.5), 0), 0).r;
+	g *= glare * veil * (1.0 - clamp((d - haze.x) / (haze.y - haze.x), 0.0, 1.0) * haze.z);
 	turn = degrees(acos(clamp(a, -1.0, 1.0))) / twinkle_degrees;
 	shine = g * (0.7 + 0.3 * cos(turn * TAU));
 	float px = pixel_at(at, PROJECTION_MATRIX, VIEWPORT_SIZE, CAMERA_POSITION_WORLD);
