@@ -14,9 +14,11 @@ static func frame(id: StringName, size: Vector3, extra := 0.0) -> ArrayMesh:
 	return _cached(&"frame", id, func() -> ArrayMesh: return _frame(id, size, extra))
 
 
-## A part's look, or null to keep a grey box.
-static func part(id: StringName, size: Vector3) -> ArrayMesh:
-	return _cached(&"part", id, func() -> ArrayMesh: return _part(id, size))
+## A part's look, or null to keep a grey box; food in pieces drawn with
+## `count` of them left.
+static func part(id: StringName, size: Vector3, count := -1) -> ArrayMesh:
+	var key := id if count < 0 else StringName("%s:%d" % [id, count])
+	return _cached(&"part", key, func() -> ArrayMesh: return _part(id, size, count))
 
 
 ## A compass's needle, its north tip along +Y: red, and lit so it glows a
@@ -248,7 +250,7 @@ static func _frame(id: StringName, size: Vector3, extra: float) -> ArrayMesh:
 	return b.commit()
 
 
-static func _part(id: StringName, size: Vector3) -> ArrayMesh:
+static func _part(id: StringName, size: Vector3, count := -1) -> ArrayMesh:
 	var b := Paint.Pieces.new()
 	var h := size * 0.5
 	var gun := Paint.coat(Paint.GUNMETAL)
@@ -323,14 +325,14 @@ static func _part(id: StringName, size: Vector3) -> ArrayMesh:
 		&"root_tuber", &"vat_fungus", &"saltbush":
 			return crop(id, Plant.RIPE)
 		&"tubers":
-			for i in 5:
+			for i in (count if count >= 0 else 5):
 				var at := Vector3(-0.05 + i * 0.025, (i % 2) * 0.025 - 0.012, 0.03 + (i % 3) * 0.006)
 				b.ball(0.026, at, TUBER, Vector3(1.0, 0.85, 0.8))
 		&"fungus_caps":
-			for i in 3:
+			for i in (count if count >= 0 else 3):
 				b.ball(0.05, Vector3(-0.03 + i * 0.03, (i - 1) * 0.012, 0.02 + i * 0.012), CAP, Vector3(1.0, 0.75, 0.22))
 		&"saltbush_leaves":
-			for i in 5:
+			for i in (count if count >= 0 else 5):
 				b.ball(0.5, Vector3((i - 2) * 0.012, 0.0, 0.03), SALTBUSH, Vector3(0.04, 0.11, 0.012),
 					Basis(Vector3.BACK, (i - 2) * 0.3))
 			b.drum(0.012, 0.014, Vector3(0.0, -0.03, 0.03), Paint.coat(Paint.ROPE, 0.0, 0.0, 1.0, 0.4), Basis.IDENTITY, 8)

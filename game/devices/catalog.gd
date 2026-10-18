@@ -102,12 +102,13 @@ const PARTS := {
 		"color": Color(0.45, 0.42, 0.25), "stats": {}},
 	# What a harvest gives, "each" unit of it: food like a ration, holding its
 	# kcal, and salt, which does nothing yet but stack with what you carry.
+	# Food in "pieces" shows what's left by how many are left, not a light.
 	&"tubers": {"kind": &"food", "label": "Tubers", "mass": 0.6, "size": Vector3(0.16, 0.1, 0.08),
-		"color": Color(0.72, 0.58, 0.36), "stats": {}, "each": 150.0},
+		"color": Color(0.72, 0.58, 0.36), "stats": {}, "each": 150.0, "pieces": 5},
 	&"fungus_caps": {"kind": &"food", "label": "Fungus caps", "mass": 0.4, "size": Vector3(0.14, 0.1, 0.08),
-		"color": Color(0.85, 0.8, 0.65), "stats": {}, "each": 150.0},
+		"color": Color(0.85, 0.8, 0.65), "stats": {}, "each": 150.0, "pieces": 3},
 	&"saltbush_leaves": {"kind": &"food", "label": "Saltbush leaves", "mass": 0.2, "size": Vector3(0.12, 0.08, 0.06),
-		"color": Color(0.62, 0.68, 0.6), "stats": {}, "each": 120.0},
+		"color": Color(0.62, 0.68, 0.6), "stats": {}, "each": 120.0, "pieces": 5},
 	&"salt": {"kind": &"salt", "label": "Salt", "mass": 0.1, "size": Vector3(0.07, 0.07, 0.05),
 		"color": Color(0.9, 0.9, 0.86), "stats": {}},
 	# Nothing takes a compass: it's read, in your hand or in the inventory.
@@ -273,7 +274,7 @@ static func part(id: StringName) -> Part:
 	made.stats = spec.stats.duplicate()
 	var size: Vector3 = spec.size
 	# Standing out from its socket along +Z.
-	_add_box(made, size, Vector3(0.0, 0.0, size.z * 0.5), spec.color, Dress.part(id, size))
+	var look := _add_box(made, size, Vector3(0.0, 0.0, size.z * 0.5), spec.color, Dress.part(id, size))
 	Paint.show_age(made, Paint.age_of(&"", 1.0))
 	if made is Battery:
 		# Found full, for now; salvage will find them at any charge.
@@ -283,9 +284,13 @@ static func part(id: StringName) -> Part:
 		made.add_child(made.light)
 		made.show_charge()
 	if made is Supply:
-		made.light = ChargeLight.make(Vector3(size.x * 0.7, 0.02, 0.01))
-		made.light.position = Vector3(0.0, size.y * 0.5 + 0.005, size.z * 0.6)
-		made.add_child(made.light)
+		if spec.has("pieces"):
+			made.pieces = spec.pieces
+			made.look = look
+		else:
+			made.light = ChargeLight.make(Vector3(size.x * 0.7, 0.02, 0.01))
+			made.light.position = Vector3(0.0, size.y * 0.5 + 0.005, size.z * 0.6)
+			made.add_child(made.light)
 		# A harvest's output holds one unit of it, alone.
 		made.seal(spec.get("each", NAN))
 	if made is Plant:

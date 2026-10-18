@@ -16,6 +16,10 @@ const HOLDS := {
 
 var amount := 0.0
 var light: MeshInstance3D
+## Food in pieces shows what's left by how many: this many when whole, drawn
+## by `look`.
+var pieces := 0
+var look: MeshInstance3D
 
 
 ## Sealed and full, as it's found, or holding `holding` as a harvest does.
@@ -53,3 +57,7 @@ func _keep(now: float) -> void:
 	stats[HOLDS[kind][1]] = now
 	if light != null:
 		ChargeLight.paint(light, amount / maxf(capacity(), 1e-9))
+	if look != null and pieces > 0:
+		var id: StringName = get_meta(&"catalog")
+		var left := clampi(ceili(amount / maxf(capacity(), 1e-9) * pieces), 0, pieces)
+		look.mesh = Dress.part(id, Catalog.PARTS[id].size, left)
