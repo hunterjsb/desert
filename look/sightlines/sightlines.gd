@@ -36,7 +36,7 @@ func _ready() -> void:
 	var costs := []
 	for kit in Kit.origins():
 		await _begin(kit)
-		var seen := Starts.in_sight(world.shape, kit.start, world.start, tuning)
+		var seen := Starts.in_sight(world.shape, kit.start, world.start, tuning, {&"ground": world.spawn})
 		var name := "start_%s" % kit.label.to_lower()
 		if seen == null:
 			print("sightlines: %s, nothing in sight" % name)
@@ -69,6 +69,8 @@ func _begin(kit: Kit) -> void:
 	var player := world.player
 	player.set_process_unhandled_input(false)
 	player.hands.set_process_unhandled_input(false)
+	# Its aim dot would sit on what's aimed at.
+	player.hands.set_process(false)
 	player.set_physics_process(false)
 	player.flying = true
 	world.set_process_unhandled_input(false)
@@ -125,10 +127,10 @@ func _glint() -> void:
 			continue
 		for each in skyline.glints_of(site):
 			var at: Vector3 = each[0]
-			if Skyline.clearance(world.shape, world.tuning, eye, at, world.terrain.chunk_at(spawn.x, spawn.y), site.reach) < 0.0:
+			if Skyline.clearance(world.shape, world.tuning, eye, at, world.terrain.chunk_at(spawn.x, spawn.y), 1.0) < 0.0:
 				continue
 			var t := t0
-			while t < t0 + world.tuning.day_minutes * 30.0:
+			while t < t0 + world.tuning.day_minutes * 60.0:
 				var sun := day.sun_direction(t, moon.latitude, moon.longitude)
 				if sun.y > 0.1:
 					var v := (eye - at).normalized()
@@ -177,7 +179,7 @@ func _road(kind: StringName, name: String) -> void:
 			if h > best:
 				best = h
 				stand = at
-	var target := here + run * 500.0
+	var target := Geometry2D.get_closest_point_to_segment(stand, here - run * 2000.0, here + run * 2000.0)
 	await _aim(_eye_at(stand) + Vector3.UP * 2.0, Vector3(target.x, world.shape.dunes(target.x, target.y), target.y))
 	await _shoot(name, "%s %.0f m off" % [kind, stand.distance_to(here)])
 
@@ -196,21 +198,30 @@ func _cost(what: String) -> String:
 		what, on.x, off.x, on.y, off.y, skyline.seen().size(), on.z, skyline.slowest_ms, skyline.job_ms]
 
 
-## GPU ms, CPU ms and the skyline's own ms a frame, averaged looking four ways.
+## GPU ms, CPU ms and the skyline's own ms a frame looking four ways, the
+## middle of each, after a second for anything new to compile.
 func _frames(eye: Vector3) -> Vector3:
 	var viewport := get_viewport().get_viewport_rid()
 	RenderingServer.viewport_set_measure_render_time(viewport, true)
-	var sum := Vector3.ZERO
-	var frames := 0
+	var gpu := PackedFloat64Array()
+	var cpu := PackedFloat64Array()
+	var own := PackedFloat64Array()
 	for k in 4:
 		var yaw := TAU * k / 4.0
 		await _aim(eye, eye + Vector3(sin(yaw), 0.0, cos(yaw)) * 1000.0, false)
-		for i in 90:
+		for i in 60:
 			await get_tree().process_frame
-			sum += Vector3(RenderingServer.viewport_get_measured_render_time_gpu(viewport),
-				Performance.get_monitor(Performance.TIME_PROCESS) * 1000.0, world.terrain.skyline.frame_ms)
-			frames += 1
-	return sum / frames
+		for i in 120:
+			await get_tree().process_frame
+			gpu.append(RenderingServer.viewport_get_measured_render_time_gpu(viewport))
+			cpu.append(Performance.get_monitor(Performance.TIME_PROCESS) * 1000.0)
+			own.append(world.terrain.skyline.frame_ms)
+	for each: PackedFloat64Array in [gpu, cpu]:
+		each.sort()
+	var mean := 0.0
+	for each in own:
+		mean += each
+	return Vector3(gpu[gpu.size() / 2], cpu[cpu.size() / 2], mean / own.size())
 
 
 ## Parks the AFK camp round you, as the dev scenario does.
@@ -269,20 +280,33 @@ func _ticks(count: int) -> void:
 		await get_tree().physics_frame
 
 
-## The first clear morning at a place: MORNING local, the sun well up and
-## no storm within ten minutes.
+## The first clear morning at a place: MORNING local, the sun well up, and
+## no storm within a few kilometres now or ten minutes on, so nothing towers
+## over the view; nearer, if no morning is that clear.
 func _clear_morning(at: Vector2) -> float:
 	var day := world.weather.day
-	var field := world.weather.field
 	var moon := world.moon
-	var t := 0.0
-	while t < 200.0 * world.tuning.day_minutes * 60.0:
-		var hour := day.time_of_day(t, moon.longitude)
-		if absf(hour - MORNING) < 0.004 and day.sunlight(t, moon.latitude, moon.longitude) > 0.3 \
-				and field.raw_storm_at(at.x, at.y, t) <= 0.0 and field.next_change(at.x, at.y, t, 600.0, 20.0) >= 600.0:
-			return t
-		t += 2.0
-	return 0.0
+	var length := world.tuning.day_minutes * 60.0
+	var first := fposmod(MORNING - day.time_of_day(0.0, moon.longitude), 1.0) * length
+	for far: float in [5000.0, 2500.0, 0.0]:
+		for d in 300:
+			var t := first + d * length
+			if day.sunlight(t, moon.latitude, moon.longitude) > 0.3 and _calm_round(at, t, far):
+				return t
+	return first
+
+
+func _calm_round(at: Vector2, t: float, far: float) -> bool:
+	var field := world.weather.field
+	for when: float in [t, t + 600.0]:
+		if field.raw_storm_at(at.x, at.y, when) > 0.0:
+			return false
+		for k in (12 if far > 0.0 else 0):
+			for by: float in [far * 0.5, far]:
+				var p := at + Vector2.from_angle(TAU * k / 12.0) * by
+				if field.raw_storm_at(p.x, p.y, when) > 0.0:
+					return false
+	return true
 
 
 ## Which way a laid path of a kind runs past a place, on the ground.

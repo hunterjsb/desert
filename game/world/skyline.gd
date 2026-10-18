@@ -27,7 +27,6 @@ const GLINT_SHADER := preload("res://game/world/glint.gdshader")
 ## Main-thread time it took in a frame, the most any has, and how long its
 ## last worker job took, ms.
 var frame_ms := 0.0
-var DBG := Vector4.ZERO
 var slowest_ms := 0.0
 var job_ms := 0.0
 
@@ -166,19 +165,16 @@ func _process(_delta: float) -> void:
 	RenderingServer.instance_set_visible(_line_view, shown)
 	if not _tuning.skyline:
 		return
-	var t0 := Time.get_ticks_usec()
 	var swapped := false
 	if _task != -1 and WorkerThreadPool.is_task_completed(_task):
 		WorkerThreadPool.wait_for_task_completion(_task)
 		_task = -1
 		_swap(_job)
 		swapped = true
-	var t1 := Time.get_ticks_usec()
 	# The next job begins a frame after a swap: that frame is busy enough.
 	if _task == -1 and not swapped and _sites.follows != _follows and _sites.anchor() != null:
 		_follows = _sites.follows
 		_launch()
-	var t2 := Time.get_ticks_usec()
 	# What the sand leaves of a far site can change at an exposure tick: read
 	# afresh on a worker.
 	var tick := floorf(_world.time / (_tuning.site_exposure_step_minutes * 60.0))
@@ -188,10 +184,7 @@ func _process(_delta: float) -> void:
 	if _dirty and _shown != null:
 		_dirty = false
 		_draw()
-	var t3 := Time.get_ticks_usec()
 	_shade()
-	var t4 := Time.get_ticks_usec()
-	DBG = Vector4(maxf(DBG.x, (t1 - t0) / 1000.0), maxf(DBG.y, (t2 - t1) / 1000.0), maxf(DBG.z, (t3 - t2) / 1000.0), maxf(DBG.w, (t4 - t3) / 1000.0))
 	frame_ms = (Time.get_ticks_usec() - started) / 1000.0
 	slowest_ms = maxf(slowest_ms, frame_ms)
 	Dev.put("terrain/sky", "%d %.2fms" % [_shown.entries.size() if _shown != null else 0, frame_ms])

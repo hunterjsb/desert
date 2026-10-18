@@ -13,7 +13,7 @@ out=${1:?an output directory}
 godot=${GODOT:-scripts/unseen.sh}
 if [[ ${2:-} != --sheet ]]; then
 	timeout 1800 "$godot" --path . --disable-vsync --resolution 1920x1080 res://look/sightlines/sightlines.tscn \
-		-- --capture "$out" 2>&1 | grep -E '^sightlines' | tee "$out/log.txt"
+		-- --capture "$out" 2>&1 | tee "$out/godot.txt" | grep -E '^sightlines' | tee "$out/log.txt"
 fi
 
 declare -A labels=([start_surveyor]="the Surveyor's start" [start_salvager]="the Salvager's start"

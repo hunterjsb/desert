@@ -35,6 +35,9 @@ const LOOKOUT_STEP := 50.0
 const BARE_SAND := 0.15
 const BARE_STEP := 250.0
 const BARE_RINGS := 24
+## How many bare flats it tries, at least this far apart, m.
+const BARE_GROUNDS := 5
+const BARE_APART := 1500.0
 
 
 ## The start a kit names on this world's history, or none: the tuning's spawn point.
@@ -46,10 +49,14 @@ static func find(shape: TerrainShape, start: StringName, tuning: Tuning) -> Vect
 	var rng := RandomNumberGenerator.new()
 	rng.seed = hash([history.run_seed, "start", start])
 	var looked := {}
-	for i in TRIES:
-		var p := _candidate(shape, start, tuning, rng, looked)
-		if p != Vector3.ZERO and holds(shape, start, p, tuning, looked):
-			return p
+	var each := grounds(shape, tuning, start)
+	for g in each:
+		looked[&"ground"] = g
+		looked.erase(&"lookouts")
+		for i in TRIES / each.size():
+			var p := _candidate(shape, start, tuning, rng, looked)
+			if p != Vector3.ZERO and holds(shape, start, p, tuning, looked):
+				return p
 	push_warning("no %s start on seed %d; the tuning's spawn instead" % [start, history.run_seed])
 	return spawn
 
@@ -76,12 +83,13 @@ static func holds(shape: TerrainShape, start: StringName, p: Vector3, tuning: Tu
 	return false
 
 
-## Where a start's run begins on the flat world, world metres: the flat patch
-## World puts you on, on the dunes alone, so it's known before there's a world.
-## A Surveyor's is on the nearest bare flats, where the dunes run low and the
-## horizon is far.
-static func ground(shape: TerrainShape, tuning: Tuning, start := &"") -> Vector2:
+## Where a start's run may begin on the flat world, world metres, in the
+## order its search tries them: the flat patch World puts a run on, on the
+## dunes alone, so they're known before there's a world. A Surveyor's are on
+## the nearest bare flats, where the dunes run low and the horizon is far.
+static func grounds(shape: TerrainShape, tuning: Tuning, start: StringName) -> Array[Vector2]:
 	var half := tuning.chunk_size * 0.5
+	var found: Array[Vector2] = []
 	if start == &"artery":
 		for ring in BARE_RINGS:
 			for k in maxi(1, ring * 8):
@@ -89,9 +97,25 @@ static func ground(shape: TerrainShape, tuning: Tuning, start := &"") -> Vector2
 				var along := k % maxi(1, ring * 2) - ring
 				var at := Vector2([along, ring, -along, -ring][side], [-ring, along, ring, -along][side]) * BARE_STEP \
 					+ Vector2.ONE * half
-				if shape.sand_at(at.x, at.y) <= BARE_SAND:
-					return World.flat_near(shape, at.x, at.y, true)
-	return World.flat_near(shape, half, half, true)
+				if shape.sand_at(at.x, at.y) <= BARE_SAND and found.all(func(o: Vector2) -> bool:
+						return o.distance_to(at) >= BARE_APART):
+					found.append(World.flat_near(shape, at.x, at.y, true))
+					if found.size() == BARE_GROUNDS:
+						return found
+	if found.is_empty():
+		found.append(World.flat_near(shape, half, half, true))
+	return found
+
+
+## Where a start's run begins: the first of its grounds from which what its
+## rule wants in sight shows, p being the start.
+static func ground(shape: TerrainShape, tuning: Tuning, start: StringName, p: Vector3) -> Vector2:
+	var each := grounds(shape, tuning, start)
+	if each.size() > 1:
+		for g in each:
+			if in_sight(shape, start, p, tuning, {&"ground": g}) != null:
+				return g
+	return each[0]
 
 
 ## The structure of history's in sight where a start's run begins, by its
@@ -117,7 +141,7 @@ static func in_sight(shape: TerrainShape, start: StringName, p: Vector3, tuning:
 		_:
 			return null
 	if not looked.has(&"ground"):
-		looked[&"ground"] = ground(shape, tuning, start)
+		looked[&"ground"] = ground(shape, tuning, start, p)
 	var reach := minf(band.y, sight_reach(tuning))
 	var near: Array[Array] = []
 	for cell in history.cells.within(p, reach):
@@ -167,13 +191,9 @@ static func _candidate(shape: TerrainShape, start: StringName, tuning: Tuning, r
 	var history := shape.history
 	match start:
 		&"artery":
-			# Out from a line behind one of its relay masts, away from Tu: walking
-			# back in toward Tu crosses it, and the mast stands on the horizon.
-			# Behind one of a line's relay masts, so it stands on a spot of the
-			# ground where it would show from where the run begins, and so it's
-			# on the way in toward Tu.
-			if not looked.has(&"ground"):
-				looked[&"ground"] = ground(shape, tuning, start)
+			# Out from a line behind one of its relay masts, set so the mast stands
+			# on a spot of the ground where it would show from where the run
+			# begins, on the way in toward Tu.
 			var masts := _masts(history, tuning, looked)
 			var spots := _lookouts(shape, tuning, looked)
 			if masts.is_empty() or spots.is_empty():
@@ -257,7 +277,8 @@ static func _lookouts(shape: TerrainShape, tuning: Tuning, looked: Dictionary) -
 	var eye := shape.dunes(at.x, at.y) + Skyline.EYE
 	var center := Vector2i(floori(at.x / tuning.chunk_size), floori(at.y / tuning.chunk_size))
 	var mast := StructureKit.piece(&"relay_mast")
-	var shows := mast.far.map(func(each: Array) -> float: return (each[0] as AABB).end.y).max() - mast.sink[Exposure.BURIED]
+	var shows: float = mast.far.map(func(each: Array) -> float: return (each[0] as AABB).end.y).max() \
+		- mast.sink[Exposure.BURIED]
 	var least := tuning.start_sight_px * Skyline.PIXEL
 	var reach := sight_reach(tuning)
 	for k in LOOKOUTS:

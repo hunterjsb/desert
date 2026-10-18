@@ -75,7 +75,7 @@ func _ready() -> void:
 	salvage.setup(self)
 	farm.setup(self)
 	_set_scene()
-	spawn = Starts.ground(shape, tuning, kit.start if kit != null else &"")
+	spawn = Starts.ground(shape, tuning, kit.start if kit != null else &"", start)
 	player.global_position = Vector3(engine_x(spawn.x), height_at(spawn.x, spawn.y) + 0.1, engine_z(spawn.y))
 	_last_x = player_world_x()
 	_last_z = player_world_z()
