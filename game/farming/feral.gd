@@ -221,7 +221,7 @@ static func _stands_at(at: Dictionary, site: Site) -> bool:
 ## Slots along a path's line through the rect: each its own draw, by its
 ## running length along the path, so every chunk asking gets the same.
 static func _along(history: History, sites: Sites, piece: Sites.Piece, r: int, rect: Rect2,
-		out: Array[Dictionary]) -> void:
+		out: Array[Dictionary], rng := _rng, fate_rng := _fate) -> void:
 	var row: Dictionary = HABITATS[r]
 	var path: PathNetwork.Path = history.network.paths[piece.path]
 	var alive: float = row.alive.get(history.region_of(path.points[piece.first]), 0.0)
@@ -246,22 +246,22 @@ static func _along(history: History, sites: Sites, piece: Sites.Piece, r: int, r
 		var across := Vector2(-run.y, run.x)
 		for n in range(floori((la + span.x * length) / every) - 1, ceili((la + span.y * length) / every) + 1):
 			var slot := _seed(history.run_seed, path.id, r, n)
-			_rng.seed = slot
-			var s := (n + 0.5 + _rng.randf_range(-0.35, 0.35)) * every
+			rng.seed = slot
+			var s := (n + 0.5 + rng.randf_range(-0.35, 0.35)) * every
 			if s < la or s >= lb:
 				continue
 			var stretch := floori(s / row.stretch)
 			if not fates.has(stretch):
-				_fate.seed = _seed(history.run_seed, path.id, r + STRETCHES, stretch)
-				fates[stretch] = Vector2(1.0 if _fate.randf() < alive else 0.0, 1.0 if _fate.randf() < 0.5 else -1.0)
+				fate_rng.seed = _seed(history.run_seed, path.id, r + STRETCHES, stretch)
+				fates[stretch] = Vector2(1.0 if fate_rng.randf() < alive else 0.0, 1.0 if fate_rng.randf() < 0.5 else -1.0)
 			var fate: Vector2 = fates[stretch]
-			if fate.x == 0.0 or _rng.randf() >= row.keep:
+			if fate.x == 0.0 or rng.randf() >= row.keep:
 				continue
 			var on := a + run * (s - la)
 			for j in (2 if both else 1):
-				var off := across * (fate.y if j == 0 else -fate.y) * _rng.randf_range(side.x, side.y) \
-					+ run * _rng.randf_range(-0.4, 0.4)
-				_clump(r, on + off, slot * 32 + j * 16, rect, out, sites)
+				var off := across * (fate.y if j == 0 else -fate.y) * rng.randf_range(side.x, side.y) \
+					+ run * rng.randf_range(-0.4, 0.4)
+				_clump(r, on + off, slot * 32 + j * 16, rect, out, sites, rng)
 
 
 ## A site's own clump, within its spread of its middle.
@@ -274,17 +274,18 @@ static func _at(run_seed: int, site: Site, r: int, rect: Rect2, out: Array[Dicti
 ## A slot's plants round a place, drawn on from its stream; those standing
 ## in the rect are its. Every draw is made whatever's kept, so a slot is the
 ## same from any chunk.
-static func _clump(r: int, at: Vector2, first_id: int, rect: Rect2, out: Array[Dictionary], clear_of: Sites) -> void:
+static func _clump(r: int, at: Vector2, first_id: int, rect: Rect2, out: Array[Dictionary], clear_of: Sites,
+		rng := _rng) -> void:
 	var row: Dictionary = HABITATS[r]
 	var clump: Vector2i = row.get("clump", Vector2i.ONE)
-	var count := _rng.randi_range(clump.x, clump.y)
+	var count := rng.randi_range(clump.x, clump.y)
 	var spread: float = row.get("spread", 0.0) if count > 1 or row.has("at") else 0.0
 	for c in count:
 		var spot := at
 		if spread > 0.0:
-			spot += Vector2.from_angle(_rng.randf() * TAU) * sqrt(_rng.randf()) * spread
-		var yaw := _rng.randf() * TAU
-		var size := _rng.randf_range(row.size.x, row.size.y)
+			spot += Vector2.from_angle(rng.randf() * TAU) * sqrt(rng.randf()) * spread
+		var yaw := rng.randf() * TAU
+		var size := rng.randf_range(row.size.x, row.size.y)
 		# Nothing on the road grows in a ruin's walls.
 		if not rect.has_point(spot) or clear_of != null and clear_of.covering(spot.x, spot.y) != null:
 			continue
@@ -309,42 +310,18 @@ static func lines_along(path: PathNetwork.Path) -> bool:
 	return false
 
 
-## Where a laid stretch of path's wild lines live, for drawing them far off:
-## each living stretch of a close line, a side at a time, as [from, to] world
-## metres, how tall and how wide its plants stand there. The fates are the
-## draws its plants are made by, so a line far off runs where they stand.
-## Its own streams: a worker asks.
-static func far_lines(history: History, piece: Sites.Piece) -> Array[Array]:
-	var out: Array[Array] = []
-	var path: PathNetwork.Path = history.network.paths[piece.path]
+## A laid stretch of path's close lines of wild plants within a rect, for
+## drawing them far off (Skyline): each as its chunk would place it, from
+## the same draws, bar the clearing of a ruin's walls. Its own streams: a
+## worker asks.
+static func far_plants(history: History, piece: Sites.Piece, rect: Rect2) -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	var rng := RandomNumberGenerator.new()
 	var fate := RandomNumberGenerator.new()
 	for r in HABITATS.size():
 		var row: Dictionary = HABITATS[r]
-		if not row.has("along") or row.every > LINE_EVERY or not Catalog.PARTS.has(row.crop) \
-				or not _runs_along(row.along, piece):
-			continue
-		var alive: float = row.alive.get(history.region_of(path.points[piece.first]), 0.0)
-		var side: float = (row.side.x + row.side.y) * 0.5
-		var size: float = (row.size.x + row.size.y) * 0.5
-		for k in piece.points.size() - 1:
-			var a := piece.points[k]
-			var b := piece.points[k + 1]
-			var la := path.lengths[piece.first + k]
-			var lb := path.lengths[piece.first + k + 1]
-			if lb - la <= 0.0:
-				continue
-			var run := (b - a) / (lb - la)
-			var across := Vector2(-run.y, run.x)
-			for stretch in range(floori(la / row.stretch), ceili(lb / row.stretch)):
-				fate.seed = _seed(history.run_seed, path.id, r + STRETCHES, stretch)
-				if fate.randf() >= alive:
-					continue
-				var sign := 1.0 if fate.randf() < 0.5 else -1.0
-				var from := maxf(stretch * row.stretch, la) - la
-				var to := minf((stretch + 1) * row.stretch, lb) - la
-				for j in (2 if row.get("both", false) else 1):
-					var off := across * side * (sign if j == 0 else -sign)
-					out.append([a + run * from + off, a + run * to + off, BUSH_TALL * size, BUSH_WIDE * size])
+		if row.has("along") and row.every <= LINE_EVERY and Catalog.PARTS.has(row.crop) and _runs_along(row.along, piece):
+			_along(history, null, piece, r, rect, out, rng, fate)
 	return out
 
 

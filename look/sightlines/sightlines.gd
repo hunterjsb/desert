@@ -2,9 +2,12 @@ extends Node
 ## Look-test: sites found by eye from far off, at 1920x1080 on a clear
 ## morning, as you'd see them. Each origin's start, looking at what's in
 ## sight from where its run begins; a far mast or watchtower on the horizon;
-## a glint; a saltbush line and a row of pylon stubs read from a distance;
-## then what the skyline costs a frame, on and off, on a camp-free world and
-## with the AFK camp parked round you.
+## a glint; a saltbush line from 1 km and 2 km and where it leaves the built
+## ground, and a row of pylon stubs, read from a distance; a storm between
+## you and a far mast and far saltbush, with
+## the same views the air between clear; then what the skyline costs a
+## frame, on and off, on a camp-free world and with the AFK camp parked round
+## you.
 ##   scripts/unseen.sh --path . --disable-vsync --resolution 1920x1080 res://look/sightlines/sightlines.tscn -- --capture <dir>
 ## Each shot is <name>.png with <name>_zoom.png, four times larger round
 ## what it's of; look/sightlines/shoot.sh builds the sheet.
@@ -41,6 +44,7 @@ func _ready() -> void:
 	tuning.run_seed = SEED
 	tuning.eye_adapts = false
 	tuning.salvage = true
+	var storms := tuning.storm_threshold
 	# Clear skies, so what's far off is seen as it is on a clear day.
 	tuning.storm_threshold = 0.9
 	var costs := []
@@ -67,11 +71,16 @@ func _ready() -> void:
 		if kit.start == &"wayshrine":
 			if not FileAccess.file_exists(_out.path_join("glint.png")):
 				await _glint(0.0)
-			await _road(&"pilgrim_road", "road_saltbush")
-			await _road(&"spoke", "road_pylons")
+			await _road(&"pilgrim_road", "road_saltbush_1km", Vector2(950.0, 1050.0))
+			await _road(&"pilgrim_road", "road_saltbush_2km", Vector2(1950.0, 2050.0))
+			await _bush_handover()
+			await _road(&"spoke", "road_pylons", Vector2(500.0, 1100.0))
 			# Masts stand along the spokes: one to steer by, from the rises round.
 			if not FileAccess.file_exists(_out.path_join("far_tower.png")):
 				await _far_tower(Vector2(world.player_world_x(), world.player_world_z()))
+	tuning.storm_threshold = storms
+	await _begin(Kit.origins().filter(func(each: Kit) -> bool: return each.start == &"artery")[0])
+	await _storm()
 	for line in costs:
 		print("sightlines: cost %s" % line)
 	get_tree().quit()
@@ -103,6 +112,21 @@ func _begin(kit: Kit) -> void:
 ## off whose top clears the dunes, from where you are, a walk back from the
 ## nearest or the rises round, the farthest found.
 func _far_tower(spawn: Vector2) -> void:
+	var found := _far_landmark(spawn)
+	if found.is_empty():
+		print("sightlines: far_tower, none")
+		return
+	var best: Structure = found[0]
+	var from: Vector3 = found[1]
+	var top := FarRing.ground(world.shape, world.tuning, best.x, best.z) + best.top_in(best.state())
+	await _aim(from, Vector3(best.x, top - 3.0, best.z))
+	await _shoot("far_tower", "%s %.0f m off%s" % [best.kind, best.distance_to(from.x, from.z), _drawn(best, from)])
+
+
+## The farthest landmark a kilometre and more off, and no more than `most`,
+## whose top clears the dunes from where you are, a walk back from the
+## nearest or the rises round, and the eye it's seen from: [site, eye], or [].
+func _far_landmark(spawn: Vector2, most := INF) -> Array:
 	var best: Structure = null
 	var from := Vector3.ZERO
 	var far := 0.0
@@ -112,14 +136,33 @@ func _far_tower(spawn: Vector2) -> void:
 			landmarks.append(site)
 	landmarks.sort_custom(func(a: Structure, b: Structure) -> bool:
 		return a.distance_to(spawn.x, spawn.y) < b.distance_to(spawn.x, spawn.y))
+	var eyes := _lookouts(spawn, Vector2(landmarks[0].x, landmarks[0].z) if not landmarks.is_empty() else spawn)
+	for at in eyes:
+		var eye := _eye_at(at)
+		var center := world.terrain.chunk_at(at.x, at.y)
+		for site in landmarks:
+			var by := site.distance_to(at.x, at.y)
+			if by < 1100.0 or by <= far or by > most:
+				continue
+			# Its top as drawn from there: on the far ring, past that eye's built ground.
+			var top := FarRing.ground(world.shape, world.tuning, site.x, site.z) + site.top_in(site.state())
+			if Skyline.clearance(world.shape, world.tuning, eye, Vector3(site.x, top, site.z), center, site.reach) > 0.0:
+				far = by
+				best = site
+				from = eye
+	return [] if best == null else [best, from]
+
+
+## Where you are, rings round it, a walk back away from `from`, and the
+## highest ground a short walk off.
+func _lookouts(spawn: Vector2, from: Vector2) -> Array[Vector2]:
 	var eyes: Array[Vector2] = []
 	for k in 25:
 		eyes.append(spawn + Vector2.from_angle(TAU * k / 12.0) * 75.0 * ceili(k / 12.0))
-	if not landmarks.is_empty():
-		var away := (spawn - Vector2(landmarks[0].x, landmarks[0].z)).normalized()
+	if from != spawn:
+		var away := (spawn - from).normalized()
 		for k in range(2, 13):
 			eyes.append(spawn + away * k * 100.0)
-	# And the highest ground a short walk off.
 	var rises := []
 	for j in range(-8, 9):
 		for i in range(-8, 9):
@@ -128,25 +171,7 @@ func _far_tower(spawn: Vector2) -> void:
 	rises.sort_custom(func(a: Array, b: Array) -> bool: return a[0] > b[0])
 	for each in rises.slice(0, 12):
 		eyes.append(each[1])
-	for at in eyes:
-		var eye := _eye_at(at)
-		var center := world.terrain.chunk_at(at.x, at.y)
-		for site in landmarks:
-			var by := site.distance_to(at.x, at.y)
-			if by < 1100.0 or by <= far:
-				continue
-			# Its top as drawn from there: on the far ring, past that eye's built ground.
-			var top := FarRing.ground(world.shape, world.tuning, site.x, site.z) + site.top_in(site.state())
-			if Skyline.clearance(world.shape, world.tuning, eye, Vector3(site.x, top, site.z), center, site.reach) > 0.0:
-				far = by
-				best = site
-				from = eye
-	if best == null:
-		print("sightlines: far_tower, none")
-		return
-	var top := FarRing.ground(world.shape, world.tuning, best.x, best.z) + best.top_in(best.state())
-	await _aim(from, Vector3(best.x, top - 3.0, best.z))
-	await _shoot("far_tower", "%s %.0f m off%s" % [best.kind, best.distance_to(from.x, from.z), _drawn(best, from)])
+	return eyes
 
 
 ## How tall a mast's or tower's stand-in stands from an eye, and how wide its
@@ -257,34 +282,58 @@ func _glint(least: float, around := true) -> void:
 		"" if around else ", %.1f min into the run, from where it begins" % (when / 60.0)])
 
 
-## A road read from a distance: travelled to, stood off on a rise, looking along it.
-func _road(kind: StringName, name: String) -> void:
-	var history := world.shape.history
+## Travelled to a road of a kind, on a clear morning: where you stand on it
+## and which way it runs, or [] if there's none.
+func _to_road(kind: StringName) -> Array:
 	var road: PathNetwork.Path = null
-	for path in history.network.paths:
+	for path in world.shape.history.network.paths:
 		if path.kind == kind and (kind != &"spoke" or path.carries & PathNetwork.POWER):
 			road = path
 			break
 	if road == null:
-		print("sightlines: %s, none" % name)
-		return
+		return []
 	var p := road.at(road.length() * 0.45)
 	world.travel(rad_to_deg(Sphere.latitude(p)), rad_to_deg(Sphere.longitude(p)), 0.0)
 	world.time = _clear_morning(Vector2(world.player_world_x(), world.player_world_z()))
 	world.time_warp = 0.0
 	await _settled()
 	var here := Vector2(world.player_world_x(), world.player_world_z())
-	var run := _road_at(here, kind)
-	var across := run.orthogonal()
+	return [here, _road_at(here, kind)]
+
+
+## The highest ground `off` m to either side of a road, `back` m along it.
+func _rise_by(here: Vector2, run: Vector2, off: Vector2, back: float) -> Vector2:
 	var best := -INF
 	var stand := here
-	for side in range(500, 1101, 50):
+	for side in range(int(off.x), int(off.y) + 1, 50):
 		for sign: float in [1.0, -1.0]:
-			var at := here + across * side * sign - run * 300.0
+			var at := here + run.orthogonal() * side * sign - run * back
 			var h := world.shape.height_at(at.x, at.y)
 			if h > best:
 				best = h
 				stand = at
+	return stand
+
+
+## A road read from a distance (_road_view), shot.
+func _road(kind: StringName, name: String, off: Vector2) -> void:
+	var view := await _road_view(kind, off)
+	if view.is_empty():
+		print("sightlines: %s, none" % name)
+	else:
+		await _shoot(name, view[1])
+
+
+## Stood off a road of a kind on a rise `off` m from it, looking along it,
+## and for a pilgrim road at its far bushes: [where you stand, what's aimed
+## at as said, the chunk of bushes aimed at or Vector2i.MAX], or [].
+func _road_view(kind: StringName, off: Vector2) -> Array:
+	var road := await _to_road(kind)
+	if road.is_empty():
+		return []
+	var here: Vector2 = road[0]
+	var run: Vector2 = road[1]
+	var stand := _rise_by(here, run, off, 300.0)
 	# Looking at the stretch of it past the built ground that shows best.
 	var eye := _eye_at(stand) + Vector3.UP * 2.0
 	var target := here
@@ -300,7 +349,129 @@ func _road(kind: StringName, name: String) -> void:
 			clear = by
 			target = at
 	await _aim(eye, Vector3(target.x, FarRing.ground(world.shape, world.tuning, target.x, target.y), target.y))
-	await _shoot(name, "%s %.0f m off" % [kind, stand.distance_to(here)])
+	var what := "%s %.0f m off" % [kind, stand.distance_to(here)]
+	# From there, at the chunk with the most far bushes about that far off that clear the dunes.
+	var bushes := world.terrain.skyline.far_bushes() if kind == &"pilgrim_road" else {}
+	var most := 0
+	var aimed := Vector2.INF
+	var chunk := Vector2i.MAX
+	for coord: Vector2i in bushes:
+		var at: Vector2 = bushes[coord][2]
+		var by := at.distance_to(stand)
+		if bushes[coord][0] <= most or by < off.x or by > off.y + 400.0:
+			continue
+		var top := Vector3(at.x, FarRing.ground(world.shape, world.tuning, at.x, at.y) + 0.6, at.y)
+		if Skyline.clearance(world.shape, world.tuning, eye, top, world.terrain.chunk_at(stand.x, stand.y), 5.0) > 0.0:
+			most = bushes[coord][0]
+			aimed = at
+			chunk = coord
+			what = "%d of its far bushes %.2f km off" % [most, by / 1000.0]
+	if aimed != Vector2.INF:
+		await _aim(eye, Vector3(aimed.x, FarRing.ground(world.shape, world.tuning, aimed.x, aimed.y), aimed.y), false)
+	return [stand, what, chunk]
+
+
+## The saltbush line across the hand-over: from a rise beside a pilgrim road,
+## looking where it leaves the built ground, its real bushes running on into
+## their stand-ins.
+func _bush_handover() -> void:
+	var road := await _to_road(&"pilgrim_road")
+	if road.is_empty():
+		print("sightlines: bush_handover, none")
+		return
+	var here: Vector2 = road[0]
+	var run: Vector2 = road[1]
+	var stand := _rise_by(here, run, Vector2(200.0, 350.0), 0.0)
+	var eye := _eye_at(stand) + Vector3.UP * 2.0
+	await _aim(eye, Vector3(here.x, world.shape.height_at(here.x, here.y), here.y))
+	var center := world.terrain.chunk_at(stand.x, stand.y)
+	var edge := here
+	var clear := -INF
+	for sign: float in [1.0, -1.0]:
+		var at := here
+		while Skyline.on_loaded(world.tuning, center, at):
+			at += run * sign * 4.0
+		var shows := Skyline.clearance(world.shape, world.tuning, eye, Vector3(at.x, world.shape.dunes(at.x, at.y) + 0.6,
+			at.y), center, 5.0) / at.distance_to(stand)
+		if shows > clear:
+			clear = shows
+			edge = at
+	await _aim(eye, Vector3(edge.x, world.shape.dunes(edge.x, edge.y), edge.y), false)
+	await _shoot("bush_handover", "where it leaves the built ground %.0f m off" % edge.distance_to(stand), HANDOVER_ZOOM)
+
+
+## A storm between you and what's far off, from where the Surveyor's run
+## begins: a far mast, then far bushes, each where its top clears the dunes,
+## at a moment by day a storm stands between and you're clear of it; and
+## from the same spot with the air between clear.
+func _storm() -> void:
+	var skyline := world.terrain.skyline
+	var spawn := world.spawn
+	await _aim(_eye_at(spawn), _eye_at(spawn) + Vector3.FORWARD)
+	var aims := []
+	var far := _far_landmark(spawn, world.tuning.skyline_m - 200.0)
+	if not far.is_empty():
+		var site: Structure = far[0]
+		var top := FarRing.ground(world.shape, world.tuning, site.x, site.z) + site.top_in(site.state())
+		aims.append(["storm_mast", [[Vector2(far[1].x, far[1].z), Vector3(site.x, top - 3.0, site.z), "a %s" % site.kind,
+			skyline.veil_of.bind(site)]]])
+	for each: Array in aims:
+		var found := false
+		for aim: Array in each[1]:
+			var from: Vector2 = aim[0]
+			var to := Vector2(aim[1].x, aim[1].z)
+			var between := _when_between(from, to, true)
+			if is_nan(between):
+				continue
+			for pass_: Array in [[between, ""], [_when_between(from, to, false), "_clear"]]:
+				world.time = pass_[0]
+				world.weather.forecast_now()
+				await _ticks(10)
+				await _aim(_eye_at(from), aim[1])
+				await _ticks(60)
+				await _shoot(each[0] + pass_[1], "%s %.2f km off, %.1f min in, drawn %.0f%% shown" % [aim[2],
+					to.distance_to(from) / 1000.0, pass_[0] / 60.0, 100.0 * (aim[3] as Callable).call()])
+			found = true
+			break
+		if not found:
+			print("sightlines: %s, none" % each[0])
+	# Far bushes, from a kilometre off a pilgrim road.
+	var view := await _road_view(&"pilgrim_road", Vector2(950.0, 1050.0))
+	if view.is_empty() or view[2] == Vector2i.MAX:
+		print("sightlines: storm_bushes, none")
+		return
+	var from: Vector2 = view[0]
+	var to: Vector2 = skyline.far_bushes()[view[2]][2]
+	var between := _when_between(from, to, true)
+	if is_nan(between):
+		print("sightlines: storm_bushes, none")
+		return
+	for pass_: Array in [[between, ""], [_when_between(from, to, false), "_clear"]]:
+		world.time = pass_[0]
+		world.weather.forecast_now()
+		await _ticks(70)
+		await _shoot("storm_bushes" + pass_[1], "%s, %.1f min in, drawn %.0f%% shown" % [view[1], pass_[0] / 60.0,
+			100.0 * skyline.far_bushes().get(view[2], [0, -1.0])[1]])
+
+
+## The first moment by day, within four days, a storm stands between `from`
+## and `to` and `from` is clear of it, or (not `stormy`) the air between is
+## clear; NAN if none.
+func _when_between(from: Vector2, to: Vector2, stormy: bool) -> float:
+	var field := world.weather.field
+	var day := world.weather.day
+	var moon := world.moon
+	var t := 0.0
+	while t < 4.0 * 86400.0:
+		if day.sunlight(t, moon.latitude, moon.longitude) > 0.3:
+			var most := -INF
+			for k in range(1, 8):
+				var p := from.lerp(to, k / 8.0)
+				most = maxf(most, field.raw_storm_at(p.x, p.y, t))
+			if field.raw_storm_at(from.x, from.y, t) < -0.03 and (most > 0.08 if stormy else most < -0.06):
+				return t
+		t += 30.0
+	return NAN
 
 
 ## What a frame costs looking round the horizon, with the skyline and without.
