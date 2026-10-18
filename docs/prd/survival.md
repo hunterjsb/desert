@@ -230,6 +230,17 @@ ruin; a line's share of the wind is what it holds itself, so a crate on a line t
 a stake puts only the second crate's push on the last line. The dev overlay's `sleep/last` says how
 long the last night was and what it cost.
 
+**After sleeping it** (Hunter, 2026-10-18): "we should be able to place the bedroll... allow them to
+place it but you cant sleep until your camp is stable. and so right now cant you hack the game by
+sleeping before a storm hits you?... it took me 3 sleeps and about 100 hours to sleep through that
+storm":
+- **The bedroll goes down anywhere;** only sleeping waits for a still camp, and it says what's
+  moving.
+- **Sleep is no dodge:** the night already works the storm out on your camp; and asleep out in the
+  open, with no bubble over you, a storm's arrival wakes you.
+- **A storm that runs for days** is the field's long tail, not an anomaly (none is built yet); the
+  first storm of a run shouldn't be one.
+
 ## Sleep (proposed)
 
 *Hunter, 2026-10-17 ([session](../console-sensors-sleep-2026-10-17.md)). The 2026-10-18 spec agreed

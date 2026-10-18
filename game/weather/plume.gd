@@ -81,9 +81,10 @@ const JUMP := 5.0
 const READS := [0.0, 40.0, 150.0, 400.0]
 const VEIL_EDGE := 0.006
 ## Past this the puffs are drawn nearer and smaller, m: the camera's far plane.
-## Past the skyline's reach it's a landmark, as the skyline's are: the haze
-## takes it more slowly than the air between would (Skyline.LANDMARK_FALL).
+## Past the skyline's reach the haze takes it as if it were only as far as
+## distance to this power says, more slowly than the air between would.
 const NEAR_REACH := 4200.0
+const FAR_FALL := 0.3
 ## A vent's ash fan on the sand runs down the long-term wind, by e this often,
 ## m; laid within this far of you, the far ring's reach.
 const FAN := 260.0
@@ -156,7 +157,7 @@ func setup(world: World, weather: Weather) -> void:
 	material.set_shader_parameter("oldest", OLDEST)
 	material.set_shader_parameter("crowd", CROWD)
 	material.set_shader_parameter("reach", Vector3(NEAR_REACH, _tuning.plume_fade_m.x, _tuning.plume_fade_m.y))
-	material.set_shader_parameter("landmark", Vector2(_tuning.skyline_m, Skyline.LANDMARK_FALL))
+	material.set_shader_parameter("landmark", Vector2(_tuning.skyline_m, FAR_FALL))
 	var quad := QuadMesh.new()
 	quad.size = Vector2.ONE
 	var puffs := MultiMesh.new()

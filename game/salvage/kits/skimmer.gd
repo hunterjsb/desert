@@ -68,10 +68,11 @@ static func _wreck_hull() -> StructureKit.Piece:
 	p.approach = Vector2(0.0, 16.0)
 	p.look = _hull_look
 	# Its hull and fin over the dunes, and the glass and bare plate the sun catches.
-	StructureKit.far_box(p, Vector3(-2.2, -0.25, -6.0), Vector3(2.2, 3.25, 6.0), GUNMETAL)
-	StructureKit.far_box(p, Vector3(-0.12, 3.25, 2.4), Vector3(0.12, 4.6, 5.9), OLIVE)
+	var c := coats()
+	StructureKit.far_box(p, Vector3(-2.2, -0.25, -6.0), Vector3(2.2, 3.25, 6.0), c.hull)
+	StructureKit.far_box(p, Vector3(-0.12, 3.25, 2.4), Vector3(0.12, 4.6, 5.9), c.olive)
 	for side in [-1.0, 1.0]:
-		StructureKit.far_box(p, Vector3(side * 2.7 - 0.6, 0.6, 1.0), Vector3(side * 2.7 + 0.6, 1.8, 5.5), GUNMETAL)
+		StructureKit.far_box(p, Vector3(side * 2.7 - 0.6, 0.6, 1.0), Vector3(side * 2.7 + 0.6, 1.8, 5.5), c.hull)
 	StructureKit.glint(p, Vector3(0.0, 1.9, -6.22), Vector3(0.0, 0.3, -1.0), 3.0)
 	StructureKit.glint(p, Vector3(2.21, 1.6, -1.5), Vector3(1.0, 0.25, 0.1), 3.0)
 	StructureKit.glint(p, Vector3(0.6, 3.27, -2.0), Vector3(0.1, 1.0, -0.2), 4.0)

@@ -21,10 +21,6 @@ uniform vec2 sparkle_px = vec2(8.0, 16.0);
 uniform float brightness = 6.0;
 // A twinkle for each this many degrees the angle turns: seconds, as the sun goes.
 uniform float twinkle_degrees = 1.2;
-// As a landmark's stand-in is drawn larger (skyline.gdshader), its glints ride with it.
-uniform vec2 landmark_px = vec2(4.0, 14.0);
-uniform float landmark_fall = 0.3;
-uniform vec2 landmark_near = vec2(380.0, 560.0);
 // The haze's begin and end, m, and the most of the view it hides.
 uniform vec3 haze = vec3(400.0, 9000.0, 0.7);
 
@@ -37,15 +33,6 @@ float pixel_at(vec3 at, mat4 projection, vec2 viewport, vec3 eye) {
 
 void vertex() {
 	vec3 at = MODEL_MATRIX[3].xyz;
-	vec4 mark = COLOR;
-	if (mark.w != 0.0) {
-		vec3 foot = at + mark.xyz;
-		float fd = length(CAMERA_POSITION_WORLD - foot);
-		float r = smoothstep(landmark_near.x, landmark_near.y, fd);
-		float fpx = pixel_at(foot, PROJECTION_MATRIX, VIEWPORT_SIZE, CAMERA_POSITION_WORLD);
-		float s = mix(1.0, max(1.0, landmark_px.y * pow(1000.0 / max(fd, 1.0), landmark_fall) * fpx / abs(mark.w)), r);
-		at = foot + (at - foot) * s;
-	}
 	vec3 to_eye = CAMERA_POSITION_WORLD - at;
 	float d = length(to_eye);
 	vec3 v = to_eye / max(d, 1.0e-3);
@@ -67,7 +54,7 @@ void vertex() {
 	float px = pixel_at(at, PROJECTION_MATRIX, VIEWPORT_SIZE, CAMERA_POSITION_WORLD);
 	float size = g > 0.02 ? px * mix(sparkle_px.x, sparkle_px.y, sqrt(g)) * 0.5 : 0.0;
 	// Off its own surface toward you by its own size, so what it lies on,
-	// drawn however wide, never hides it.
+	// widened to a pixel or two, never hides it.
 	vec3 c = (VIEW_MATRIX * vec4(at + v * min(0.6 + size, d * 0.05), 1.0)).xyz;
 	VERTEX = c + vec3(VERTEX.xy * size, 0.0);
 }
