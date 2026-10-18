@@ -487,7 +487,10 @@ func _haul(dir: Vector2, pace: float, delta: float) -> float:
 	if dir != Vector2.ZERO:
 		var drag: Vector3 = get_meta(&"rope_drag", Vector3.ZERO)
 		var against := -Vector2(drag.x, drag.z).dot(dir)
-		held = smoothstep(_tuning.haul_from, 1.0, against / maxf(pace * (1.0 - _tuning.haul_slow * sink), 0.1))
+		# All the way in once the line takes all you'd manage dug in. Read
+		# against your pace, not the pace sunk in so far: chasing that, a pull
+		# near the edge took seconds to dig you in.
+		held = smoothstep(_tuning.haul_from, 1.0 - _tuning.haul_slow, against / maxf(pace, 0.1))
 	var load := suit.burden()
 	sink = _ease(sink, maxf(held, minf(load, 1.0)), _tuning.haul_seconds, delta)
 	return pace * (1.0 - _tuning.haul_slow * sink) / maxf(load, 1.0)

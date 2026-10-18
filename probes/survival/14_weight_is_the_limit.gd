@@ -53,15 +53,16 @@ func run() -> void:
 	set_rate(60)
 
 
-## Two seconds walking on the flat: your own pace, your eyes over the last
-## second (the bob averages out) and how far you're sunk in.
+## Two seconds walking on the flat: your own pace, your eyes as the ticks hold
+## them over the last second (the drawn bob sits lower the faster you go) and
+## how far you're sunk in.
 func _walk(flat: Dictionary, ahead: Vector2) -> Dictionary:
 	await place(flat.x, flat.z, ahead)
 	var seen := {"eye": 0.0, "ticks": 0}
 	hold(["move_forward"])
 	await simulate(1.0)
 	await simulate(1.0, func() -> void:
-		seen.eye += player.camera.position.y
+		seen.eye += player.feel.steady_eye().y
 		seen.ticks += 1)
 	seen.eye /= seen.ticks
 	seen.pace = player.own.length()
