@@ -20,6 +20,8 @@ const PIXEL := 0.00142
 const KEEP_M := 1.0
 ## Lines are draped on the far ground at this spacing, m.
 const DRAPE_M := 8.0
+## Main-thread time a frame may take looking over newly laid units, µs.
+const UNITS_US := 250
 
 const BOX_SHADER := preload("res://game/world/skyline.gdshader")
 const GLINT_SHADER := preload("res://game/world/glint.gdshader")
@@ -173,7 +175,6 @@ func _process(_delta: float) -> void:
 		swapped = true
 	# The next job begins a frame after a swap: that frame is busy enough.
 	if _task == -1 and not swapped and _sites.follows != _follows and _sites.anchor() != null:
-		_follows = _sites.follows
 		_launch()
 	# What the sand leaves of a far site can change at an exposure tick: read
 	# afresh on a worker.
@@ -327,22 +328,30 @@ static func stands_far(kind: StringName) -> bool:
 # --- Made on a worker. ---
 
 func _launch() -> void:
+	var units := _sites.units()
+	# Each unit newly laid is looked over once, a few a frame: after a jump
+	# they're all new.
+	var until := Time.get_ticks_usec() + UNITS_US
+	for unit in units:
+		if not _of_unit.has(unit):
+			_of_unit[unit] = [_seen_of(unit), unit.pieces.filter(_lined)]
+			if Time.get_ticks_usec() > until:
+				return
 	var job := Job.new()
 	job.anchor = _sites.anchor()
 	job.center = Vector2i(floori(job.anchor.x / _size), floori(job.anchor.z / _size))
 	if _shown != null:
 		job.before = _shown.sightings
 	var kept := {}
-	for unit in _sites.units():
+	for unit in units:
 		if unit.key >= 0 and _sites.has_unit(unit.key):
 			job.laid_cells[unit.key] = true
-		var own: Array = _of_unit.get(unit, [])
-		if own.is_empty():
-			own = [_seen_of(unit), unit.pieces.filter(_lined)]
+		var own: Array = _of_unit[unit]
 		kept[unit] = own
 		job.laid.append_array(own[0])
 		job.laid_pieces.append_array(own[1])
 	_of_unit = kept
+	_follows = _sites.follows
 	# Made here: the main thread makes the RIDs, a worker fills them.
 	job.lines = RenderingServer.mesh_create()
 	_job = job

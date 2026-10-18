@@ -452,11 +452,12 @@ to 3 km as a broken silver-green line across the dunes facing you; a glint to 3 
 
 **What it costs** (an RTX 3070 at 1080p, someone playing meanwhile; the look-test's `cost` lines). On
 the GPU, looking round the horizon from the Surveyor's start, 5.93 ms a frame with it and 6.27
-without; with the AFK camp parked round you, 6.17 and 6.17: within what the GPU's own noise moves. Its
-main thread 0.04 ms a frame on average, 0.63 ms at most (a swap and the buffers rebuilt), and nothing
-proportional to the moon: what's laid near you and a cell at a time of what isn't. Its worker, 10 to
-35 ms a job, one each time the sheet follows you. Headless, walking a kilometre among towns, 0.17 ms a
-frame on average and 0.92 at most. Power probe 11's own measure, a tick's work on the main thread: the
+without; with the AFK camp parked round you, 6.17 and 6.17; with the GPU to itself, 2.54 against 2.52
+and 2.54 against 2.52: within what the GPU's own noise moves. Its main thread 0.04 ms a frame on
+average; at most, headless, 0.85 ms walking a kilometre among towns and 0.7 ms after a jump (newly laid
+units are looked over a quarter of a millisecond a frame), and once 3.3 ms in a windowed run as the
+world loaded. Nothing in it is proportional to the moon: what's laid near you, and a cell at a time of
+what isn't. Its worker, 2 to 60 ms a job, one each time the sheet follows you. Power probe 11's own measure, a tick's work on the main thread: the
 world alone 1.84 ms without it and 1.92 with it, with the AFK camp parked 4.23 and 4.45, the camp 2.30
 and 2.31 times the world alone either way.
 
