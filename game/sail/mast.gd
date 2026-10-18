@@ -79,6 +79,9 @@ var trim := 0.0
 ## torn one no less than a whole one; and its push alone, felt as long,
 ## which bends the mast.
 var load_n := 0.0
+## What the wind presses on each square metre of cloth, N: the furled bundle's
+## drag isn't the cloth's, and over the last of the cloth showing it would tear it.
+var _per_m2 := 0.0
 var bend_n := 0.0
 ## How far it stands up from stowed, 0 to 1.
 var extend := 0.0
@@ -257,7 +260,7 @@ func _sail(on: Device, area: float, h: float) -> void:
 	on.apply_torque_impulse(axis * (turning * h + slam))
 	# Luffing or lying over, a raised sail flogs as hard as the wind it stands in.
 	var whole: float = Catalog.PARTS[&"sail"].stats.sail_m2
-	var pressing := maxf(force.length() / showing, beating) * whole if showing > 0.0 else 0.0
+	var pressing := maxf(_per_m2, beating) * whole if showing > 0.0 else 0.0
 	load_n += (pressing - load_n) * (1.0 - exp(-h / LOAD_SECONDS))
 	bend_n += (force.length() - bend_n) * (1.0 - exp(-h / BEND_SECONDS))
 	_strain(h)
@@ -269,6 +272,7 @@ func _sail(on: Device, area: float, h: float) -> void:
 ## it and drag along it, by its angle of attack. Furled, only drag.
 func _push(air: Vector3, swing: float, showing: float, q: float, turned: Basis) -> Vector3:
 	var speed := air.length()
+	_per_m2 = 0.0
 	if speed < 0.01 or q <= 0.0:
 		return Vector3.ZERO
 	var flow := air / speed
@@ -284,6 +288,7 @@ func _push(air: Vector3, swing: float, showing: float, q: float, turned: Basis) 
 	var across := normal - flow * normal.dot(flow)
 	across = across.normalized() if across.length() > 1e-4 else Vector3.ZERO
 	var furled := FURLED_M2 * (1.0 - raise) * SQUARE * absf(sin(attack))
+	_per_m2 = q * (lift * across + drag * flow).length()
 	return q * (showing * (lift * across + drag * flow) + furled * flow)
 
 
