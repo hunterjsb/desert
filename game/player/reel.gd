@@ -2,7 +2,7 @@ class_name Reel
 extends Node3D
 ## Working a line hand over hand: reel in draws it in a notch, pay out gives a
 ## notch back, up to all there is of it. It works the line's end in your
-## hand, else the last line tied at your waist. Only the line draws, pulling
+## hand, else the line at your waist you look nearest along. Only the line draws, pulling
 ## both its ends, so what's on it comes only as hard as your strength allows;
 ## against a stake, or anything too heavy to come, you step in along it
 ## instead. Each notch is a stroke of your hand, the rope gathers into a coil
@@ -19,6 +19,9 @@ const PACE := 1.0
 const STRAIN := 0.5
 ## A stroke dips your hand this far, m, across the line so it never stretches it.
 const STROKE := 0.04
+## The waist line being worked stays the one until another lies this much
+## nearer your aim, as a share of its angle off it.
+const STICKY := 0.7
 
 var rope: Rope
 ## The length it's being reeled to, m.
@@ -57,8 +60,10 @@ func _ready() -> void:
 	add_child(_sound)
 
 
-## The line reel in and pay out work now: its end in your hand, else the last
-## line tied at your waist; none while a coil still pays it out.
+## The line reel in and pay out work now: its end in your hand, else, of
+## the lines at your waist, the one whose far end you look nearest, so with
+## a sheet and a mooring line both there you trim looking at the sail; the
+## last tied on a tie. None while a coil still pays it out.
 func line() -> Rope:
 	var hands := _player.hands
 	if hands.phase == Hands.Phase.HELD and is_instance_valid(hands.held):
@@ -66,11 +71,20 @@ func line() -> Rope:
 		if held != null:
 			return held
 	var tied := _player.waist.tied
+	var eye := _player.camera.global_transform
+	var best: Rope = null
+	var nearest := INF
 	for i in range(tied.size() - 1, -1, -1):
 		var waisted := _line_of(tied[i])
-		if waisted != null:
-			return waisted
-	return null
+		if waisted == null or not is_instance_valid(waisted.a) or not is_instance_valid(waisted.b):
+			continue
+		var off := (-eye.basis.z).angle_to(_far(waisted).global_position - eye.origin)
+		if waisted == rope:
+			off *= STICKY
+		if off < nearest:
+			nearest = off
+			best = waisted
+	return best
 
 
 ## A notch in, or out for a negative `by`. Says whether there was a line to work.
