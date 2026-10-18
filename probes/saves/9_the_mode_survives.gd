@@ -20,6 +20,8 @@ func run() -> void:
 	press(&"ui_accept")
 	await faded_in()
 	check(saves().has_run() and saves().ironman(), "Save & quit keeps the run's mode in its save")
+	# Resume, then carry on.
+	press(&"ui_accept")
 	press(&"ui_accept")
 	await faded_in()
 	check(main.in_run() and world.has_meta(&"resumed") and main.ironman(), "resumed, it's Ironman's still")

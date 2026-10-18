@@ -6,9 +6,12 @@ extends MenuProbe
 ## which mode, Normal highlighted and Ironman below it; confirm again starts
 ## a Normal run, whose
 ## system menu holds Save. Save & quit from that run, somewhere out on the
-## sand, and back on the menu Resume is there and highlighted; confirm
-## resumes it, putting you back where you were, on the saved run's seed and
-## clock.
+## sand, and back on the menu Resume is there and highlighted. Confirm shows
+## your camp aside as the save holds it, the crate by itself, and the save's
+## numbers: time played, when it was saved, its day and who you came as.
+## Back goes back. A save from before time played was kept shows the rest;
+## confirm carries on, putting you back where you were, on the saved run's
+## seed and clock.
 
 
 func run() -> void:
@@ -69,6 +72,28 @@ func run() -> void:
 		"Save & quit saves the run and goes back to the main menu")
 	check(menu.words() == PackedStringArray(["RESUME", "NEW GAME", "DEEDS", "OPTIONS", "QUIT"]) and menu.highlighted() == 0,
 		"with a save, Resume is there and highlighted (%s)" % ", ".join(menu.words()))
+
+	press(&"ui_accept")
+	var view := main.ui.top()
+	var numbers := Snapshot.summary(saves().held())
+	var camp: Array = main.showpiece._built.get(Showpiece.CAMP, [Node3D.new()])
+	print("Resume lists ", view.aside())
+	check(view != menu and view.side and view.shows == Showpiece.CAMP and camp[0].get_child_count() == 1
+		and camp[0].find_children("*", "GeometryInstance3D", true, false).size() > 20
+		and camp[0].find_children("*", "CollisionObject3D", true, false).is_empty(),
+		"Resume shows your camp aside, the crate by itself and only to look at")
+	check(view.aside().size() == 4 and numbers.played > 0.0 and view.aside()[2][1] == str(numbers.day)
+		and view.aside()[3][1] == Kit.standard().label and view.aside()[1][1] == UIRoot.when(saves().saved_at(),
+			saves().saved_at()), "with the save's numbers: played, saved today, its day and who you came as")
+	press(&"ui_cancel")
+	check(main.ui.top() == menu and menu.highlighted() == 0, "back goes back")
+	# As a save from before time played was kept.
+	var older: Dictionary = saves().held()
+	older.erase("played")
+	SaveFile.write(saves().path(), saves().KIND, saves().VERSION, older)
+	press(&"ui_accept")
+	check(main.ui.top().aside().size() == 3 and main.ui.top().shows == Showpiece.CAMP,
+		"a save without time played shows the rest (%s)" % main.ui.top().aside())
 
 	var back := {}
 	saves().restored.connect(func(at: World) -> void:

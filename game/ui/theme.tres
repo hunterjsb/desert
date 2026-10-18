@@ -45,8 +45,34 @@ corner_radius_top_right = 2
 corner_radius_bottom_right = 2
 corner_radius_bottom_left = 2
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dtkh1"]
-bg_color = Color(0, 0, 0, 0.35)
+[sub_resource type="Gradient" id="Gradient_scrim"]
+offsets = PackedFloat32Array(0, 0.6, 1)
+colors = PackedColorArray(0, 0, 0, 0.5, 0, 0, 0, 0.4, 0, 0, 0, 0.25)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_scrim"]
+gradient = SubResource("Gradient_scrim")
+width = 256
+height = 256
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_scrim"]
+texture = SubResource("GradientTexture2D_scrim")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_field"]
+content_margin_left = 64.0
+content_margin_top = 36.0
+content_margin_right = 64.0
+content_margin_bottom = 36.0
+bg_color = Color(0, 0, 0, 0)
+corner_radius_top_left = 48
+corner_radius_top_right = 48
+corner_radius_bottom_right = 48
+corner_radius_bottom_left = 48
+corner_detail = 12
+shadow_color = Color(0, 0, 0, 0.6)
+shadow_size = 72
 
 [sub_resource type="Gradient" id="Gradient_shade"]
 colors = PackedColorArray(0, 0, 0, 0, 0, 0, 0, 0.55)
@@ -155,6 +181,29 @@ Button/styles/hover = SubResource("StyleBoxEmpty_c0k8g")
 Button/styles/hover_pressed = SubResource("StyleBoxEmpty_fd5p1")
 Button/styles/normal = SubResource("StyleBoxEmpty_iqa2u")
 Button/styles/pressed = SubResource("StyleBoxEmpty_h0vmm")
+AsideList/base_type = &"GridContainer"
+AsideList/constants/h_separation = 18
+AsideList/constants/v_separation = 4
+AsideName/base_type = &"Label"
+AsideName/colors/font_color = Color(0.92, 0.92, 0.9, 1)
+AsideName/colors/font_outline_color = Color(0, 0, 0, 0.6)
+AsideName/colors/font_shadow_color = Color(0, 0, 0, 0.4)
+AsideName/constants/outline_size = 5
+AsideName/constants/shadow_offset_x = 0
+AsideName/constants/shadow_offset_y = 1
+AsideName/constants/shadow_outline_size = 9
+AsideName/font_sizes/font_size = 20
+AsideName/fonts/font = SubResource("FontVariation_mippt")
+AsideValue/base_type = &"Label"
+AsideValue/colors/font_color = Color(0.92, 0.92, 0.9, 1)
+AsideValue/colors/font_outline_color = Color(0, 0, 0, 0.6)
+AsideValue/colors/font_shadow_color = Color(0, 0, 0, 0.4)
+AsideValue/constants/outline_size = 5
+AsideValue/constants/shadow_offset_x = 0
+AsideValue/constants/shadow_offset_y = 1
+AsideValue/constants/shadow_outline_size = 9
+AsideValue/font_sizes/font_size = 20
+AsideValue/fonts/font = ExtResource("2_7y804")
 Caption/base_type = &"Label"
 Caption/font_sizes/font_size = 18
 Caption/fonts/font = SubResource("FontVariation_mippt")
@@ -199,6 +248,8 @@ DevConsoleOut/font_sizes/normal_font_size = 12
 DevConsoleOut/fonts/normal_font = ExtResource("2_7y804")
 DevConsolePanel/base_type = &"PanelContainer"
 DevConsolePanel/styles/panel = SubResource("StyleBoxFlat_dev_console")
+Field/base_type = &"PanelContainer"
+Field/styles/panel = SubResource("StyleBoxFlat_field")
 Fade/base_type = &"Panel"
 Fade/styles/panel = SubResource("StyleBoxFlat_ta3wi")
 Hint/base_type = &"RichTextLabel"
@@ -223,7 +274,7 @@ LineEdit/styles/focus = SubResource("StyleBoxEmpty_5mt7h")
 LineEdit/styles/normal = SubResource("StyleBoxFlat_line")
 LineEdit/styles/read_only = SubResource("StyleBoxFlat_line")
 MenuList/base_type = &"VBoxContainer"
-MenuList/constants/separation = 14
+MenuList/constants/separation = 26
 MenuLine/base_type = &"Label"
 MenuLine/colors/font_color = Color(0.86, 0.86, 0.84, 1)
 MenuLine/colors/font_outline_color = Color(0, 0, 0, 0.55)
@@ -253,7 +304,7 @@ MenuWord/colors/font_color = Color(0.62, 0.62, 0.6, 1)
 MenuWord/colors/font_disabled_color = Color(0.4, 0.4, 0.39, 1)
 MenuWord/colors/font_outline_color = Color(0, 0, 0, 0.55)
 MenuWord/constants/outline_size = 4
-MenuWord/font_sizes/font_size = 20
+MenuWord/font_sizes/font_size = 28
 MenuWord/fonts/font = SubResource("FontVariation_mippt")
 MenuWordMain/base_type = &"MenuWord"
 MenuWordMain/font_sizes/font_size = 24
@@ -286,7 +337,7 @@ Shade/styles/panel = SubResource("StyleBoxTexture_shade")
 ShadeSide/base_type = &"Panel"
 ShadeSide/styles/panel = SubResource("StyleBoxTexture_shade_side")
 Scrim/base_type = &"Panel"
-Scrim/styles/panel = SubResource("StyleBoxFlat_dtkh1")
+Scrim/styles/panel = SubResource("StyleBoxTexture_scrim")
 Warning/base_type = &"Label"
 Warning/colors/font_color = Color(0.25, 0.86, 0.8, 1)
 Warning/font_sizes/font_size = 16
