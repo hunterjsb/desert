@@ -52,6 +52,10 @@ const STICKY := 0.7
 ## something, so resting against it doesn't count, m.
 const SKIN := 0.005
 const GHOST := Color(0.75, 0.95, 1.0)
+## What take would move shows in the ghost's colour this faintly, a shell
+## this far out over it, m.
+const MARK := 0.18
+const MARK_GROW := 0.01
 ## Why use did nothing stays in the readout this long, s.
 const NOTICE := 1.5
 ## Reel in and pay out bring what you carry this near your eyes, or push it
@@ -112,6 +116,9 @@ var gap := INF
 var pull := 0.0
 ## What the readout says about why use did nothing, while it shows.
 var notice := ""
+## Empty-handed at a deck, the pieces take would move, as they're
+## highlighted: every piece of it, or the bare one that comes off.
+var moves: Array[Chassis] = []
 
 var _player: Player
 var _tuning := Tuning.current()
@@ -164,6 +171,8 @@ var _released: Array[Dictionary] = []
 var _body_radius := 0.35
 var _ghost: Node3D
 var _ghost_look: StandardMaterial3D
+var _marks: Node3D
+var _mark_look: StandardMaterial3D
 var _readout: Label
 ## The aim dot and its line, out of the way while a menu is up.
 var _hud: CanvasLayer
@@ -194,6 +203,16 @@ func _ready() -> void:
 	# Seen through whatever is in the way, even the sand under a resting device.
 	_ghost_look.no_depth_test = true
 	_ghost_look.albedo_color = GHOST
+	_marks = Node3D.new()
+	_marks.top_level = true
+	_marks.visible = false
+	add_child(_marks)
+	_mark_look = StandardMaterial3D.new()
+	_mark_look.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	_mark_look.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	_mark_look.albedo_color = Color(GHOST, MARK)
+	_mark_look.grow = true
+	_mark_look.grow_amount = MARK_GROW
 	_sound = AudioStreamPlayer.new()
 	_sound.max_polyphony = 2
 	_sound.bus = Sounds.WORLD
@@ -377,82 +396,43 @@ func throw() -> void:
 	_release(_player.velocity - _player.camera.global_basis.z * _tuning.throw_speed)
 
 
-## One line saying what something is and what it does.
-static func describe(label: String, mass: float, stats: Dictionary) -> String:
-	var bits := PackedStringArray([label, ("%d kg" % roundi(mass)) if is_equal_approx(mass, roundf(mass))
-		else ("%.1f kg" % mass)])
-	if stats.has("rope_m"):
-		bits.append("%d m line" % roundi(stats.rope_m) if stats.get("paying", 0.0) <= 0.0
-			else "%d of %d m out" % [roundi(stats.rope_m), roundi(stats.paying)])
-	if stats.has("holding"):
-		bits.append("holds %.1f kN" % (stats.holding / 1000.0))
-	if stats.has("load"):
-		bits.append("load %d%%" % roundi(stats.load * 100.0))
-	if stats.get("capacity_wh", 0.0) > 0.0:
-		if stats.has("charge_wh"):
-			bits.append("%d/%d Wh" % [floori(stats.charge_wh), roundi(stats.capacity_wh)])
-		else:
-			bits.append("%d Wh" % roundi(stats.capacity_wh))
-	var hooks: int = stats.get("hooks", 0)
-	if hooks > 0:
-		bits.append("%d hook%s" % [hooks, "" if hooks == 1 else "s"])
-	if stats.get("pieces", 1) > 1:
-		bits.append("%d pieces" % stats.pieces)
-	if stats.has("take"):
-		bits.append(stats.take)
-	if stats.get("lift_kg", 0.0) > 0.0:
-		bits.append("floats %d kg" % roundi(stats.lift_kg))
-	if stats.get("runners", 0) > 0:
-		bits.append("on runners")
-	elif stats.has("glide"):
-		bits.append("glides on the sand")
-	if stats.has("sail"):
-		bits.append("sail %s" % stats.sail if stats.sail == "torn" else "%.1f m² sail %s" % [stats.sail_m2, stats.sail])
-	if stats.has("sail_n") and stats.get("sail", "") == "raised":
-		bits.append("pulls %d N" % roundi(stats.sail_n))
-	if stats.get("resting", false):
-		bits.append("resting")
-	elif stats.get("can_float", false):
-		bits.append("floating")
-	# Said as the device does it: what it makes, what it draws.
-	if stats.get("in_w", 0.0) > 0.0:
-		bits.append("makes %d W" % roundi(stats.in_w))
-	if stats.get("out_w", 0.0) > 0.0:
-		bits.append("draws %d W" % roundi(stats.out_w))
-	if stats.has("water_l"):
-		bits.append("%.2f/%.1f L" % [stats.get("water_left_l", 0.0), stats.water_l])
-	if stats.has("food_kcal"):
-		bits.append("%d/%d kcal" % [stats.get("food_left_kcal", 0.0), stats.food_kcal])
-	if stats.has("making_lph"):
-		bits.append("making %.1f L/h" % stats.making_lph)
-	if stats.has("growth"):
-		bits.append("ripe" if stats.get("ripe", false) else ("mature" if stats.growth >= 1.0
-			else "%d%% grown" % floori(stats.growth * 100.0)))
-	if stats.has("growing") and stats.growing != Plant.RIPE:
-		bits.append(str(stats.growing))
-	if stats.has("replant"):
-		bits.append("replants %d%%" % roundi(stats.replant * 100.0))
-	if stats.get("stored_kcal", 0.0) > 0.0:
-		bits.append("%d kcal stored" % roundi(stats.stored_kcal))
-	if stats.get("seeds", 0) > 0:
-		bits.append("%d seed%s" % [stats.seeds, "" if stats.seeds == 1 else "s"])
-	if stats.has("tuned"):
-		bits.append(stats.tuned)
-	var instruments: int = stats.get("instruments", 0)
-	if instruments > 0:
-		bits.append("%d instrument%s" % [instruments, "" if instruments == 1 else "s"])
-	if stats.has("found"):
-		bits.append("%s find" % stats.found)
+## One line: what it is and, at most, the one thing you need about it now
+## (Hunter, 2026-10-18: "almost everything is overload"). The rest shows
+## another way or isn't said: weight in what you carry, a device's charge on
+## its light, a line's strain in its creak, floating by where it hangs, what
+## take would move by its highlight.
+static func describe(label: String, stats: Dictionary) -> String:
+	var now := _state(stats)
+	return label if now == "" else "%s · %s" % [label, now]
+
+
+## The first of these a thing has: a crop ripe or why it isn't growing, a
+## device that would run but has no power, what a thing holds, a radio's
+## station, then power, said as the device does it: output, or draws.
+static func _state(stats: Dictionary) -> String:
+	if stats.get("ripe", false):
+		return "ripe"
+	if stats.has("growing") and stats.growing != Plant.GROWING:
+		return str(stats.growing)
 	if stats.get("dark", false):
-		bits.append("DARK")
-	if stats.get("solar_w", 0.0) > 0.0:
-		bits.append("%d W solar" % roundi(stats.solar_w))
-	if stats.get("light_w", 0.0) > 0.0:
-		bits.append("%d W light" % roundi(stats.light_w))
-	var plants: int = stats.get("plants", 0)
-	if plants > 0:
-		bits.append("%d plant%s" % [plants, "" if plants == 1 else "s"])
-	return " · ".join(bits)
+		return "no power"
+	if stats.get("making_lph", 0.0) > 0.0:
+		return "water %.1f L/h" % stats.making_lph
+	if stats.has("water_l"):
+		return "%.1f/%.1f L" % [stats.get("water_left_l", 0.0), stats.water_l]
+	if stats.has("food_kcal"):
+		return "%d kcal" % roundi(stats.get("food_left_kcal", 0.0))
+	if stats.has("charge_wh") and stats.get("capacity_wh", 0.0) > 0.0:
+		return "%d/%d Wh" % [floori(stats.charge_wh), roundi(stats.capacity_wh)]
+	if stats.has("tuned"):
+		return str(stats.tuned)
+	if stats.get("in_w", 0.0) > 0.0:
+		return "output %d W" % roundi(stats.in_w)
+	if stats.get("out_w", 0.0) > 0.0:
+		return "draws %d W" % roundi(stats.out_w)
+	if stats.has("rope_m"):
+		return "%d m" % roundi(stats.rope_m)
+	return ""
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -1546,16 +1526,48 @@ func _on_origin_shifted(by: Vector2i) -> void:
 
 func _build_ghost(part: RigidBody3D) -> void:
 	_clear_ghost()
-	for child in part.get_children():
+	_copy_looks(part.get_children(), _ghost, _ghost_look)
+
+
+## Copies of the meshes among `nodes`, where they sit in their body, drawn in `look`.
+static func _copy_looks(nodes: Array, into: Node3D, look: Material) -> void:
+	for child in nodes:
 		var mesh := child as MeshInstance3D
 		if mesh == null:
 			continue
 		var copy := MeshInstance3D.new()
 		copy.mesh = mesh.mesh
 		copy.transform = mesh.transform
-		copy.material_override = _ghost_look
+		copy.material_override = look
 		copy.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		_ghost.add_child(copy)
+		into.add_child(copy)
+
+
+## Empty-handed at a deck, take's two ways show before you take: a bare
+## piece that would come off is highlighted alone, else the whole deck it
+## would drag.
+func _highlight() -> void:
+	var deck := look_device as Chassis
+	if held != null or grasp.body != null or look_socket != null or _player.board != null \
+			or deck == null or deck.joined.is_empty():
+		deck = null
+	var piece := deck.piece_at(look_point) if deck != null else null
+	var now: Array[Chassis] = []
+	if deck != null and deck.comes_off(piece):
+		now.append(piece)
+	elif deck != null:
+		now = deck.pieces()
+	if now != moves:
+		moves = now
+		for child in _marks.get_children():
+			child.free()
+		if now.size() == 1:
+			_copy_looks([piece.frame_view], _marks, _mark_look)
+		elif deck != null:
+			_copy_looks(deck.get_children(), _marks, _mark_look)
+	_marks.visible = not moves.is_empty()
+	if deck != null:
+		_marks.global_transform = deck.global_transform
 
 
 ## Drawn through everything, a ghost on a device's far side would read as on
@@ -1614,53 +1626,47 @@ func _build_hud() -> void:
 	hud.add_child(_readout)
 
 
-## A part's stats as they stand: a battery's charge, a line's length and
-## load, the layer it was found in.
+## A part's stats as they stand: a battery's charge, a crop's state, a coil's length.
 func _part_stats(part: Part) -> Dictionary:
 	var now := part.stats.duplicate()
 	if part is Battery:
 		now["charge_wh"] = part.charge_wh
 	if part is Plant:
-		now.erase("plants")
-		now["growth"] = part.growth
 		now["ripe"] = part.ripe()
 		if part.socket != null:
 			now["growing"] = part.state
 	if part.has_meta(&"line"):
 		now.merge((part.get_meta(&"line") as Line).readout())
-	if part.has_meta(&"layer"):
-		now["found"] = part.get_meta(&"layer")
 	return now
 
 
+## What the look-at line says now: why take or use did nothing, else what you look at.
+func line() -> String:
+	if notice != "":
+		return notice
+	if look_part != null:
+		return describe(look_part.label, _part_stats(look_part))
+	if look_socket != null and look_socket.part != null:
+		return describe(look_socket.part.label, _part_stats(look_socket.part))
+	if look_device == null:
+		return ""
+	var stats := look_device.stats()
+	# A device's charge is on its light.
+	stats.erase("charge_wh")
+	stats["in_w"] = look_device.production_w()
+	stats["out_w"] = look_device.demand_w() if look_device.powered else 0.0
+	stats["dark"] = not look_device.powered and look_device.demand_w() > 0.0
+	return describe(look_device.label, stats)
+
+
 func _show(delta: float) -> void:
-	var line := ""
 	_notice_left = maxf(_notice_left - delta, 0.0)
 	if _notice_left <= 0.0:
 		notice = ""
-	if notice != "":
-		line = notice
-	elif look_part != null:
-		line = describe(look_part.label, look_part.mass, _part_stats(look_part))
-	elif look_socket != null and look_socket.part != null:
-		line = describe(look_socket.part.label, look_socket.part.mass, _part_stats(look_socket.part))
-	elif look_device != null:
-		var stats := look_device.stats()
-		stats["in_w"] = look_device.production_w()
-		stats["out_w"] = look_device.demand_w() if look_device.powered else 0.0
-		stats["dark"] = not look_device.powered
-		if look_device.has_meta(&"layer"):
-			stats["found"] = look_device.get_meta(&"layer")
-		# Which take does to a deck: has a bare piece off, or drags it all.
-		var deck := look_device as Chassis
-		if deck != null and not deck.joined.is_empty():
-			var piece := deck.piece_at(look_point)
-			stats["take"] = "this piece comes off" if deck.comes_off(piece) \
-				else ("drags the whole deck; bare, this piece comes off" if deck.outer(piece) else "drags the whole deck")
-		line = describe(look_device.label, stats.mass, stats)
-	if line != "" and line != _readout.text:
-		_readout.text = line
-	_readout.modulate.a = move_toward(_readout.modulate.a, 1.0 if line != "" else 0.0, delta * 8.0)
+	var said := line()
+	if said != "" and said != _readout.text:
+		_readout.text = said
+	_readout.modulate.a = move_toward(_readout.modulate.a, 1.0 if said != "" else 0.0, delta * 8.0)
 
 	_ghost.visible = socket != null and _in_sight(socket)
 	if socket != null:
@@ -1677,6 +1683,7 @@ func _show(delta: float) -> void:
 		_ghost.global_transform = Transform3D(Basis(Vector3.UP, held.global_rotation.y),
 			Vector3(look_point.x, _player.world.height_under(look_point) + Stake.DRIVEN_AT, look_point.z))
 		_ghost_look.albedo_color.a = 0.3
+	_highlight()
 	if pull > 0.01:
 		_hum.volume_db = linear_to_db(pull)
 		if not _hum.playing:

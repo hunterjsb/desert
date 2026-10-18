@@ -220,7 +220,7 @@ func refuses(part: Part) -> String:
 	if kind == &"":
 		return ""
 	if on_deck():
-		return "on a deck it takes no %s" % ("tray" if kind == &"tray" else "runners")
+		return "no %s on a deck" % ("trays" if kind == &"tray" else "runners")
 	var now := carriage()
 	return "runners and trays don't mix" if now != &"" and now != kind else ""
 

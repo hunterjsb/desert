@@ -215,12 +215,6 @@ func screen_text(on := -1) -> String:
 	return "\n".join(lines)
 
 
-func stats() -> Dictionary:
-	var now := super()
-	now["instruments"] = _fitted().size()
-	return now
-
-
 func _recompute() -> void:
 	super()
 	if not _awake:

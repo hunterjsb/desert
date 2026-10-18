@@ -66,14 +66,12 @@ func _ready() -> void:
 	process_physics_priority = -20
 
 
-## What the look-at line says about it.
+## What the look-at line says about it: rolled up, how long it is. Laid,
+## nothing: its length shows, and its strain creaks.
 func readout() -> Dictionary:
 	if rope == null or not _world.ropes.ropes.has(rope):
 		return {"rope_m": full}
-	var out := {"rope_m": rope.length, "load": rope.share()}
-	if state == State.FIRST or state == State.PAYING or rope.length < full - 0.05:
-		out["paying"] = full
-	return out
+	return {}
 
 
 ## Whether it rolls up to carry: held but not laid, its first end in your
