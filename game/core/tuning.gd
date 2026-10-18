@@ -118,23 +118,21 @@ static var _current: Tuning
 
 @export_group("Skyline")
 ## What stands on the dunes past the built ground, out to the far ring's
-## reach: tall structures' stand-ins, glints, and the saltbush lines on the
-## roads. Off, nothing shows past the built ground but the dunes.
+## reach: tall structures' stand-ins, glints, and the saltbush on the roads.
+## Off, nothing shows past the built ground but the dunes.
 @export var skyline: bool = true
 ## How far it draws, m.
 @export var skyline_m: float = 3000.0
-## The thinnest a stand-in is drawn, pixels, so what's far off never breaks
-## into flickering bits (drawn as much fainter); a saltbush line's least
-## thickness.
+## The thinnest a stand-in or a far bush is drawn, pixels, so what's far off
+## never breaks into flickering bits (drawn as much fainter).
 @export var skyline_thinnest_px: float = 1.5
-@export var skyline_line_px: float = 3.0
 ## Where a structure's real look hands over to its stand-in, m from you:
 ## crossfaded between, so you never see one switch for the other.
 @export var skyline_handover_m := Vector2(420.0, 500.0)
 ## A glint's sparkle, pixels across as it lights and at its brightest, and
 ## how bright, times the sun on white.
-@export var glint_px := Vector2(8.0, 16.0)
-@export var glint_brightness: float = 9.0
+@export var glint_px := Vector2(7.0, 12.0)
+@export var glint_brightness: float = 7.0
 ## A glint through a storm's dust off what the storm just laid bare: seen
 ## this far, m, and how much of the open sky's glare the dust's glow leaves it.
 @export var storm_glint_m: float = 90.0
@@ -226,6 +224,30 @@ static var _current: Tuning
 @export var gust_storm_strength: float = 0.5
 @export var gust_wavelength: float = 80.0
 @export var gust_evolve_speed: float = 4.0
+
+@export_group("Anomaly")
+## The storm the Walker misjudged: at its heart the real damage is this many
+## times what its clean curve, which every forecast and instrument reads,
+## deals in particles, and this many times in wind, so a camp built for the
+## wind is wrecked by the sand.
+@export var anomaly_particles: float = 5.0
+@export var anomaly_wind: float = 1.5
+## Its reach from its heart, m, full within a quarter of it, riding the air
+## as storms do; and how long it lives either side of its peak, hours of run
+## time, full for the middle third.
+@export var anomaly_radius_m: float = 8000.0
+@export var anomaly_hours: float = 2.0
+## One may stand in each patch of air this wide, m, in each span of its whole
+## life, with this chance: one storm in ten that passes a still camp holds
+## one, about one every six hours of play.
+@export var anomaly_cell_m: float = 20000.0
+@export var anomaly_chance: float = 0.37
+## None comes in a run's first days: ordinary storms are learnt first.
+@export var anomaly_grace_days: float = 5.0
+## How far ahead of its storm's front its hidden term reaches, in the field's
+## own units (about a kilometre or two): a heart riding in on the wall shows
+## its tells before it.
+@export var anomaly_reach: float = 0.25
 
 @export_group("Lee")
 ## The most of the wind, and of a storm's wear, a dune's lee takes, close
@@ -674,11 +696,13 @@ static var _current: Tuning
 ## The compass needle follows Tu's weak field: it swings about it once in this
 ## many seconds and settles by this damping (1 would never overshoot). Tu's
 ## field is tipped from its spin, so the needle sways this far either way once
-## each turn of Tu; a full storm's charged dust swims it up to this far.
+## each turn of Tu; a full storm's charged dust swims it up to this far. At
+## an anomaly's heart it leans toward the heart, steadily, up to this far.
 @export var compass_swing_seconds: float = 3.0
 @export var compass_damping: float = 0.4
 @export var compass_sway_degrees: float = 10.0
 @export var compass_storm_degrees: float = 35.0
+@export var compass_anomaly_degrees: float = 60.0
 ## Over the most magnetized old volcanic ground, the needle swims this far either way.
 @export var compass_ground_degrees: float = 40.0
 

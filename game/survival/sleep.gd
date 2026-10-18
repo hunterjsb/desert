@@ -35,13 +35,12 @@ var said := PackedStringArray()
 var _world: World
 var _tuning: Tuning
 ## The fastest anything of the camp moved, m/s, and turned, rad/s, as the
-## physics ran on while you fell asleep.
+## physics ran on while you fell asleep, and the last of it seen moving.
 var _watched := Vector2.ZERO
 var _watching := false
+var _mover := ""
 var _line: Label
 var _fading: Tween
-## The bed the words were brought up on: a bedroll may be in your hands.
-var _bed: Node
 
 
 func setup(world: World) -> void:
@@ -73,46 +72,47 @@ func _physics_process(_delta: float) -> void:
 	var player := _world.player
 	_watched.x = maxf(_watched.x, Vector2(player.velocity.x, player.velocity.z).length())
 	for body in _camp():
-		_watched = _watched.max(Vector2(body.linear_velocity.length(), body.angular_velocity.length()))
+		var moving := Vector2(body.linear_velocity.length(), body.angular_velocity.length())
+		if _moving(moving):
+			_mover = _still_moving(body)
+		_watched = _watched.max(moving)
 
 
 ## Use on a bed: the words to choose how long, if you can sleep now, else why
 ## not. Says it answered.
-func offer(by: Player, bed: Node = null) -> bool:
+func offer(by: Player) -> bool:
 	if sleeping:
 		return true
-	var why := refusal(bed)
+	var why := refusal()
 	if why != "":
 		return by.hands.refuse(why)
 	var ui := Controls.ui
 	if ui == null:
 		return false
-	_bed = bed
 	by.suit.close()
 	ui.open(menu())
 	return true
 
 
 ## Why you can't sleep now, in a few words, or "": on your feet and still,
-## hands (but for the bed in them) and waist free, nothing of the camp moving
-## as the physics runs or under sail, and no harm reaching you where you lie:
-## under a running shield in a storm, or on sand calm enough.
-func refusal(bed: Node = null) -> String:
+## hands and waist free, nothing of the camp moving as the physics runs or
+## under sail, and no harm reaching you where you lie: under a running shield
+## in a storm, or on sand calm enough.
+func refusal() -> String:
 	var player := _world.player
 	if player.vitals.dead:
 		return "dead"
 	if player.flying or player.ride != null:
 		return "not on your feet"
-	if player.hands.held != null and player.hands.held != bed or player.hands.grasp.body != null:
+	if player.hands.held != null or player.hands.grasp.body != null:
 		return "hands full"
 	if not player.waist.tied.is_empty():
 		return "a line at your waist"
 	if Vector2(player.velocity.x, player.velocity.z).length() > _tuning.sleep_still_speed:
 		return "you're moving"
 	for body in _camp():
-		if body.linear_velocity.length() > _tuning.sleep_still_speed \
-				or body.angular_velocity.length() > _tuning.sleep_still_spin:
-			return "%s moving" % _name(body).to_lower()
+		if _moving(Vector2(body.linear_velocity.length(), body.angular_velocity.length())):
+			return _still_moving(body)
 	# The night reckons the wind on what's held, not a sail's pull: furl it first.
 	for device in _world.devices():
 		if device is Mast and (device as Mast).raised \
@@ -188,12 +188,13 @@ func fall_asleep(how: StringName, arg := 0) -> void:
 		return
 	sleeping = true
 	_watched = Vector2.ZERO
+	_mover = ""
 	_watching = true
 	await _fade(true)
 	_watching = false
-	var why := refusal(_bed if is_instance_valid(_bed) else null)
-	if why == "" and (_watched.x > _tuning.sleep_still_speed or _watched.y > _tuning.sleep_still_spin):
-		why = "camp moving"
+	var why := refusal()
+	if why == "" and _moving(_watched):
+		why = _mover if _mover != "" else "you're moving"
 	if why == "":
 		var station := radio() if how == STATION else null
 		if station != null:
@@ -306,8 +307,9 @@ func _choose(how: StringName, arg := 0) -> void:
 	fall_asleep(how, arg)
 
 
-## What wakes you at world time t, or none: harm reaching you, a need run
-## low with nothing left to take, or the station calling a storm.
+## What wakes you at world time t, or none: harm reaching you, so with no
+## bubble over you a storm's arrival (sleep is no dodge), a need run low with
+## nothing left to take, or the station calling a storm.
 func _woken(t: float, call: float, station: Radio) -> StringName:
 	var player := _world.player
 	if player.vitals.dead:
@@ -481,6 +483,15 @@ func _gave(body: Node, gave: Dictionary) -> bool:
 		if rope.a.holder == body and gave.has(rope.b.holder) or rope.b.holder == body and gave.has(rope.a.holder):
 			return true
 	return false
+
+
+## Faster than the still marks: m/s along, rad/s about.
+func _moving(motion: Vector2) -> bool:
+	return motion.x > _tuning.sleep_still_speed or motion.y > _tuning.sleep_still_spin
+
+
+static func _still_moving(body: Node) -> String:
+	return "the %s's still moving" % _name(body).to_lower()
 
 
 ## The camp: your devices and stakes loose near you.

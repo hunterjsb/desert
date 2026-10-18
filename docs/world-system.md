@@ -1217,9 +1217,10 @@ paint's age.
   Through the storm a house ruin is dug out by (loot probe 7), an 8 m line 30 m downwind catches about
   one thing of the house's in the open (1.1 expected, 0.08 at 200 m, none upwind, aside or past 450 m),
   five times as many in a full lee: a stationary camp downwind gets some.
-- **A glint through the dust** (Skyline). Inside a storm the clear sky's glints are hidden as before, and
-  what the storm has newly laid bare near you, the metal or glass its settled sand would still cover,
-  glints through the dust: out to 90 m, fading from 45 m, at 0.7 of the open sky's glare, and
+- **A glint through the dust** (Skyline). Inside a storm everything far off takes the storm's veil
+  (`Plume.seen_through`, the far saltbush round's) and is hidden, glints and all, but what the storm has
+  newly laid bare near you, the metal or glass its settled sand would still cover, glints through the
+  dust, veiled by nothing else: out to 90 m, fading from 45 m, at 0.7 of the open sky's glare, and
   since the dust glows all round it shines whichever way it faces you, strongest face on, coming and
   going as the dust thickens and thins **(defaults)**. Looked over five times a second, by area
   (`sites.newly_exposed`).
@@ -1240,7 +1241,7 @@ paint's age.
   line with 18 sites near is 0.27 ms, 16 µs with none, so the drift a clock jump draws (540 ticks at most)
   can cost a few tens of milliseconds once where sites stand thick.
 - **Probes:** kits 3 (a loaded site follows the storm, smoothly, and never buries you), kits 4 (exposure is
-  pure, and a storm works a site), loot 7 (what a storm bares blows downwind), sightlines 3 (a glint
+  pure, and a storm works a site), loot 7 (what a storm bares blows downwind), sightlines 4 (a glint
   through the dust only near), saves 23 (a save never buries you). Each fails on a deliberately broken build: no hold over you, no ground
   pressed afresh, a look that doesn't follow; the storm's sand never coming back, or read only on its
   ticks; drift shed upwind as well; glints through the dust at any range, or every bare glint; a

@@ -3,13 +3,16 @@ extends Part
 ## A compass: its needle lines up with Tu's field, which along the axis Tu and
 ## Zan share points to the moon's north as you've walked it, so past a pole it
 ## turns round with the moon (MoonPosition). The field is weak: the needle is
-## slow to settle, swings when its case turns, sways once each turn of Tu, and
-## swims in a storm's charged dust and over old volcanic ground. It can't know
+## slow to settle, swings when its case turns, sways once each turn of Tu,
+## swims in a storm's charged dust and over old volcanic ground, and leans
+## steadily toward an anomaly's heart, which no forecast shows. It can't know
 ## Tu-ward. Read it in your hand, held up or flat, or in the inventory. Its
 ## needle glows, so it reads at night and in a storm, when the sun can't tell you.
 
 ## How far apart, m, the ground's own fields turn the needle one way then back.
 const GROUND_SWIM_M := 40.0
+## Within this of an anomaly's heart, m, its pull on the needle fades.
+const HEART_M := 300.0
 ## Where the needle turns, above its card.
 const PIVOT := Vector3(0.0, 0.0, 0.034)
 ## Its swing is worked in steps no longer than this, s, nor than this share
@@ -67,7 +70,8 @@ func needle_on(face: Basis, world: World) -> float:
 
 ## The way Tu's field lies at a place, a bearing on the ground: the moon's
 ## north, swayed by the field's tilt as Tu turns, swum by a storm's charged
-## dust, and turned by the ground's own magnetism.
+## dust, leaning toward an anomaly's heart, and turned by the ground's own
+## magnetism.
 static func field_bearing(world: World, at: Vector3, t: float) -> float:
 	var tuning := world.tuning
 	var north := world.moon.north()
@@ -77,7 +81,29 @@ static func field_bearing(world: World, at: Vector3, t: float) -> float:
 		var phase := float(world.run_seed % 997)
 		bearing += deg_to_rad(tuning.compass_storm_degrees) * storm * (0.6 * sin(t * 0.83 + phase)
 			+ 0.4 * sin(t * 2.17 + phase * 1.7))
-	return bearing + ground_deviation(world, at)
+	return bearing + anomaly_lean(world, at, t, bearing) + ground_deviation(world, at)
+
+
+## How far an anomaly's charged heart pulls the needle off `bearing`, rad
+## clockwise: steadily toward the heart, never past it, as deep as its hidden
+## term, where a storm's dust only swims it both ways. None where it stands
+## on the heart itself, where every way is toward it.
+static func anomaly_lean(world: World, at: Vector3, t: float, bearing: float) -> float:
+	var field := world.weather.field
+	var x := world.world_x(at.x)
+	var z := world.world_z(at.z)
+	var deep := field.anomaly_at(x, z, t)
+	if deep <= 0.0:
+		return 0.0
+	var best := {}
+	for heart in field.anomalies_near(x, z, t, world.tuning.anomaly_radius_m):
+		if best.is_empty() or heart.share > best.share:
+			best = heart
+	if best.is_empty():
+		return 0.0
+	var toward := Vector2(best.x - x, best.z - z)
+	var most := deg_to_rad(world.tuning.compass_anomaly_degrees) * deep * smoothstep(0.0, HEART_M, toward.length())
+	return clampf(angle_difference(bearing, atan2(toward.x, -toward.y)), -most, most)
 
 
 ## How far old volcanic ground's own magnetism turns the field at a place,

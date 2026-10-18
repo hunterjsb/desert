@@ -36,3 +36,36 @@ func beside_vent(aside: float) -> Dictionary:
 	for i in 4:
 		await get_tree().process_frame
 	return vent
+
+
+## Stands you where the anomaly scenario does, the clock stopped, with its
+## camp built for wind dropped: {camp, start, before, half, heart}, the
+## scenario's moment, the last at or before it with no hidden term where you
+## stand, the first after it when the term reaches a half, and a minute into
+## its full; {} if there's none.
+func meet_anomaly() -> Dictionary:
+	var scenario := Scenarios.by_key("anomaly")
+	var place := Scenarios.find(world, scenario)
+	check(not place.is_empty(), "an anomaly to meet")
+	if place.is_empty():
+		return {}
+	Scenarios.stand(world, scenario, place)
+	world.player.set_physics_process(false)
+	world.time_warp = 0.0
+	await settle(true)
+	var camp := Scenarios.anomaly_camp(world)
+	await physics_frames(30)
+	var met := {"camp": camp, "start": place.time, "before": place.time}
+	while field.anomaly_at(place.x, place.z, met.before) > 0.0:
+		met.before -= 10.0
+	var t: float = place.time
+	while t < place.time + 900.0 and not met.has("heart"):
+		var deep := field.anomaly_at(place.x, place.z, t)
+		if deep >= 0.5 and not met.has("half"):
+			met["half"] = t
+		if deep >= 1.0:
+			met["heart"] = t + 60.0
+		t += 1.0
+	check(met.has("heart"), "its heart comes over")
+	return met
+

@@ -1,5 +1,5 @@
 extends WorldProbe
-## Sightlines probe 3: a glint shows through the dust only near. A hab pod
+## Sightlines probe 4: a glint shows through the dust only near. A hab pod
 ## stood by hand where a storm will lay it bare, read inside that storm as it
 ## works hardest: the clear sky's glints are hidden, and from beside it its
 ## windows, bared by the storm, glint through the dust, and only those the
