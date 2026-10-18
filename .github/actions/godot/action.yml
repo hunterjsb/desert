@@ -1,0 +1,89 @@
+name: The pinned Godot
+description: >-
+  The Godot that .godot-version pins, for this runner's OS, checked against the
+  release's SHA512-SUMS and on PATH as godot; the project imported from a
+  cache; and with templates, the desktop export templates installed.
+inputs:
+  templates:
+    description: Install the Linux, Windows and macOS export templates too.
+    default: "false"
+runs:
+  using: composite
+  steps:
+    - name: Pin
+      id: pin
+      shell: bash
+      run: |
+        v=$(cat .godot-version)
+        case $RUNNER_OS in
+          Linux) zip=Godot_v$v-stable_linux.x86_64.zip ;;
+          macOS) zip=Godot_v$v-stable_macos.universal.zip ;;
+          Windows) zip=Godot_v$v-stable_win64.exe.zip ;;
+        esac
+        { echo "version=$v"; echo "zip=$zip"; echo "base=https://github.com/godotengine/godot/releases/download/$v-stable"; } >>"$GITHUB_OUTPUT"
+
+    - name: Cache it
+      id: cache
+      uses: actions/cache@v4
+      with:
+        path: godot-bin
+        key: godot-${{ runner.os }}-${{ steps.pin.outputs.version }}
+
+    - name: Download it
+      if: steps.cache.outputs.cache-hit != 'true'
+      shell: bash
+      env:
+        ZIP: ${{ steps.pin.outputs.zip }}
+        BASE: ${{ steps.pin.outputs.base }}
+      run: |
+        curl -fsSLO "$BASE/$ZIP"
+        curl -fsSLO "$BASE/SHA512-SUMS.txt"
+        if command -v sha512sum >/dev/null; then sum="sha512sum"; else sum="shasum -a 512"; fi
+        grep " $ZIP\$" SHA512-SUMS.txt | $sum -c -
+        mkdir -p godot-bin
+        if command -v unzip >/dev/null; then unzip -q "$ZIP" -d godot-bin; else 7z x -y -ogodot-bin "$ZIP" >/dev/null; fi
+        rm -f "$ZIP" SHA512-SUMS.txt
+        cd godot-bin
+        # One name on every OS; macOS keeps its app whole, so the binary finds itself.
+        case $RUNNER_OS in
+          Linux) mv Godot_v*_linux.x86_64 godot ;;
+          macOS) printf '#!/bin/sh\nexec "$(dirname "$0")/Godot.app/Contents/MacOS/Godot" "$@"\n' >godot && chmod +x godot ;;
+          Windows) mv Godot_v*_win64.exe godot.exe && rm -f Godot_v*_console.exe ;;
+        esac
+
+    - name: Put it on PATH
+      shell: bash
+      run: |
+        if [[ $RUNNER_OS == Windows ]]; then cygpath -w "$PWD/godot-bin"; else echo "$PWD/godot-bin"; fi >>"$GITHUB_PATH"
+        "$PWD/godot-bin/godot" --version
+
+    - name: Cache the export templates
+      if: inputs.templates == 'true'
+      id: templates
+      uses: actions/cache@v4
+      with:
+        path: ~/.local/share/godot/export_templates/${{ steps.pin.outputs.version }}.stable
+        key: templates-${{ runner.os }}-${{ steps.pin.outputs.version }}
+
+    - name: Download the export templates
+      if: inputs.templates == 'true' && steps.templates.outputs.cache-hit != 'true'
+      shell: bash
+      env:
+        V: ${{ steps.pin.outputs.version }}
+        BASE: ${{ steps.pin.outputs.base }}
+      run: |
+        tpz=Godot_v$V-stable_export_templates.tpz
+        curl -fsSLO "$BASE/$tpz"
+        curl -fsSL "$BASE/SHA512-SUMS.txt" | grep " $tpz\$" | sha512sum -c -
+        dir=~/.local/share/godot/export_templates/$V.stable
+        mkdir -p "$dir"
+        # Only the desktop ones: the rest are most of the archive's gigabyte.
+        unzip -q -j "$tpz" templates/version.txt 'templates/linux_*.x86_64' 'templates/windows_*_x86_64*' templates/macos.zip -d "$dir"
+        rm -f "$tpz"
+
+    - name: Cache imported assets
+      uses: actions/cache@v4
+      with:
+        path: .godot
+        key: import-${{ runner.os }}-${{ hashFiles('.godot-version', 'project.godot', '**/*.import', '**/*.gdshader', '**/*.gdshaderinc') }}
+        restore-keys: import-${{ runner.os }}-

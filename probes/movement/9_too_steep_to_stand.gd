@@ -17,6 +17,10 @@ func run() -> void:
 		return
 	var down: Vector2 = face.downhill
 	await place(face.x, face.z, -down)
+	# You slide while a new place's ground builds, for as long as the machine
+	# takes, so you're stood back on the face once it's there.
+	teleport(face.x, face.z)
+	await get_tree().physics_frame
 	var from := where()
 	var seen := {"slid": false}
 	await simulate(1.5, func() -> void: seen.slid = seen.slid or player.mode == "slide")

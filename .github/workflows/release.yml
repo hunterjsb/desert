@@ -1,0 +1,55 @@
+name: Release
+
+# A v* tag publishes a GitHub pre-release of the builds, each smoke-tested on
+# its own OS, with RELEASE_NOTES.md as its notes. Run by hand it's a dry run:
+# the zips are only the run's artifacts, and it says what a tag would publish.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+jobs:
+  builds:
+    uses: ./.github/workflows/builds.yml
+
+  publish:
+    needs: builds
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: desert-*
+          path: build
+          merge-multiple: true
+
+      - name: What it publishes
+        id: what
+        env:
+          TAG: ${{ github.event_name == 'push' && github.ref_type == 'tag' && github.ref_name || '' }}
+        run: |
+          version=$(sed -n 's/^config\/version="\(.*\)"$/\1/p' project.godot)
+          # The tag names the version the builds say they are, or nothing ships.
+          if [[ -n $TAG && $TAG != "v$version" ]]; then
+            echo "the tag is $TAG but project.godot says $version" >&2
+            exit 1
+          fi
+          zips=(build/desert-"$version"-*.zip)
+          if [[ ${#zips[@]} != 3 || ! -s RELEASE_NOTES.md ]]; then
+            echo "want 3 zips for $version and RELEASE_NOTES.md; have: ${zips[*]}" >&2
+            exit 1
+          fi
+          echo "version=$version" >>"$GITHUB_OUTPUT"
+          echo "Desert $version, a pre-release of:"
+          ls -l "${zips[@]}"
+
+      - name: Publish the pre-release
+        if: github.event_name == 'push' && github.ref_type == 'tag'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.what.outputs.version }}
+        run: |
+          gh release create "v$VERSION" build/desert-"$VERSION"-*.zip --verify-tag --prerelease \
+            --title "Desert $VERSION" --notes-file RELEASE_NOTES.md
