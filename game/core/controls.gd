@@ -8,7 +8,7 @@ const HELP := [
 	["{hands_throw}", "throw what you hold"],
 	["{hands_rotate}", "held, the mouse turns what you hold or have hold of, not your view: right what's tipped over"],
 	["{reel_in} {pay_out}", "a notch at a time, reel in or pay out the line in your hand or at your waist"],
-	["{bring_near} {push_out}", "bring what you hold or have hold of nearer, or push it out"],
+	["{bring_near} {push_out}", "bring what you hold or have hold of nearer, or push it out; on a radio you look at, tune it (shift for fine steps, alt for its volume)"],
 	["{move_forward} {move_left} {move_back} {move_right}", "move"], ["{sprint}", "sprint"],
 	["{hands_grab}", "pick up, take out, put in, put down"], ["{interact}", "use what you look at or hold: switch a shield, tune a radio, drive a stake, waist a line, water a planter, set a tray floating or resting"],
 	["{inventory}", "what you carry and your waist, by mouse: click a thing to take it out, or the view to put in what you hold; {interact} on a thing uses it, as a radio's dial"], ["{ui_cancel}", "back: close what's open, or the menu"],

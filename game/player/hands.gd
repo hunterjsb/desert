@@ -471,7 +471,8 @@ func _unhandled_input(event: InputEvent) -> void:
 
 ## The wheel on a radio turns its dial: looking at one, or at a console with
 ## one in its system, with your hands free; holding one, with ctrl, since the
-## plain wheel moves what you hold. Shift makes each notch a fine step.
+## plain wheel moves what you hold. Shift makes each notch a fine step; alt
+## turns its volume knob instead.
 func _tunes(event: InputEvent) -> bool:
 	var wheel := event as InputEventMouseButton
 	if wheel == null or not wheel.pressed \
@@ -485,7 +486,10 @@ func _tunes(event: InputEvent) -> bool:
 		radio = tuned_by_look()
 	if radio == null:
 		return false
-	return radio.tune(1 if wheel.button_index == MOUSE_BUTTON_WHEEL_UP else -1, wheel.shift_pressed)
+	var notches := 1 if wheel.button_index == MOUSE_BUTTON_WHEEL_UP else -1
+	if wheel.alt_pressed:
+		return radio.turn_volume(notches)
+	return radio.tune(notches, wheel.shift_pressed)
 
 
 ## The radio your look tunes: the one you look at, or the first in the system

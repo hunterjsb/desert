@@ -9,8 +9,10 @@ extends Device
 ## up. A god's signal comes in by how far off it is, its frequency and the
 ## hour, and the storm between you and it garbles, slides and cuts it. Static
 ## comes in with a front's outflow, before the wall, and inside a bubble too:
-## it's the sand charging up, not the storm's sound. It draws a little while
-## it's on, from its battery or the pool it sits in, and plays from where it is.
+## it's the sand charging up, not the storm's sound. Its volume knob, the
+## wheel with alt, turns all of it down, to silence if you like, and it plays
+## on. It draws a little while it's on, from its battery or the pool it sits
+## in, and plays from where it is.
 
 const GROUP := &"radios"
 ## What it's tuned to, as the dial reads: off, a carrier, or nothing but static.
@@ -41,6 +43,8 @@ const CLEAR := 250.0
 const HERE := 15.0
 ## Tuned within this many widths of a carrier, the dial counts it as on it.
 const ON_IT := 2.0
+## The volume knob turns this far a notch, of full.
+const VOLUME_STEP := 0.1
 ## A signal this clean or better comes through whole.
 const WHOLE := 0.5
 
@@ -52,6 +56,8 @@ var on := false:
 		on = to
 		_recompute()
 var frequency := 0.0
+## Where its volume knob stands, 0 silent to 1 full: everything it plays.
+var volume := 1.0
 ## What the dial reads now (OFF to STATIC). Set, as old saves do, it moves
 ## the dial to that channel's carrier.
 var channel: int:
@@ -155,6 +161,16 @@ func tune(notches: int, fine := false) -> bool:
 	return true
 
 
+## The volume knob: turned `notches` a notch each, between silent and full.
+func turn_volume(notches: int) -> bool:
+	if wrecked() or world == null:
+		return false
+	world.salvage.claim(self)
+	volume = clampf(snappedf(volume + notches * VOLUME_STEP, VOLUME_STEP), 0.0, 1.0)
+	_loudness()
+	return true
+
+
 ## Whether it plays: on, powered, whole and in the world.
 func playing() -> bool:
 	return on and powered and not wrecked() and world != null and is_inside_tree()
@@ -206,7 +222,7 @@ func demand_w(t := NAN) -> float:
 
 func stats() -> Dictionary:
 	var now := super()
-	now["tuned"] = "%d kHz" % roundi(frequency) if on else "off"
+	now["tuned"] = ("%d kHz · volume %d%%" % [roundi(frequency), roundi(volume * 100.0)]) if on else "off"
 	return now
 
 
@@ -329,7 +345,8 @@ func _listen(delta: float) -> void:
 				_every(delta, lerpf(PING_NEAR, PING_FAR, clampf(far / FAINT, 0.0, 1.0)), Sounds.RADIO_PING)
 		STATIC:
 			said = dial + "static"
-	hiss.volume_db = linear_to_db(maxf(noise, under) + 0.0001)
+	hiss.volume_db = linear_to_db(maxf(noise, under) * volume + 0.0001)
+	_loudness()
 	if not _hissing:
 		hiss.play(fposmod(t, hiss.stream.get_length()))
 		_hissing = true
@@ -476,6 +493,15 @@ func ground_of(q: Vector3) -> Vector2:
 ## Seconds as a station says them.
 static func span(seconds: float) -> String:
 	return "%d s" % maxi(0, roundi(seconds)) if seconds < 90.0 else "%d min" % roundi(seconds / 60.0)
+
+
+## The knob on what it plays besides the hiss: the music and a station's tones.
+func _loudness() -> void:
+	var db := linear_to_db(volume + 0.0001)
+	if music != null:
+		music.volume_db = db
+	if _signal != null:
+		_signal.volume_db = db
 
 
 func _voice() -> AudioStreamPlayer3D:
