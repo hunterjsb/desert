@@ -237,9 +237,12 @@ floater out of pieces:
   its device is down before the tray stops, still about 0.6 m/s at most. Its trays draw
   for what they hold up (Power). The same goes for every device on trays; the board has
   its own hover.
-- **The "chassis" scenario** lays four bare pieces in a row in front of you with a tray
+- **The "chassis" scenario** lays four pieces in a row in front of you with a tray
   before each, a crate frame with two charged batteries and a condenser with a battery
-  and an empty canister, clear and calm, to build a deck from. The "afk" scenario's
+  and an empty canister, clear and calm, to build a deck from. Two hooks and a coil lie
+  at your feet, and the first piece's outer ring has a hook with a line to a stake short
+  of where a piece joined there goes, so that join pops it (Hunter, 2026-10-18: "there
+  are no hooks in this scenario"). The "afk" scenario's
   reference camp stands on a deck two by two (Power); it floats about 1.5° down toward its
   two crates, and in a 20 m/s storm with gusts and its bubble down it stays within 2.2°
   of level, moored.
