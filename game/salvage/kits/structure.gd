@@ -1,27 +1,35 @@
 class_name Structure
 extends Site
 ## A site its kind's kit builds on the ground (StructureKit): pressed into the ground's
-## one function, built of boxes that join the collision of the chunk its
-## middle stands on, sunk as far into the sand as its exposure says. Its
-## ground is surveyed once, wherever it's first needed. Its exposure is read
-## when its ground is first built and held while any of that ground is
-## loaded, so nothing changes in front of you; it can while you're away.
+## one function, built of boxes that stand with the chunk its middle stands
+## on, sunk as far into the sand as its exposure says. Its ground is surveyed
+## once, wherever it's first needed. Its exposure is the weather's, a pure
+## function of where and when, so it reads the same loaded or not; while its
+## ground is loaded it follows the weather a frame at a time, rising out of
+## the sand and sinking back as a storm works on it, its ground following in
+## steps too fine to see, and never burying you or your camp.
 
 ## Its ground is surveyed at most this many plan metres apart.
 const SURVEY_STEP := 4.0
+## What following the weather did: the sand on it changed, and the step its ground is built at.
+const MOVED := 1
+const STEPPED := 2
 
 var piece: StructureKit.Piece
-## The chunks whose ground holds its exposure as it was read, as a set, and
-## when it was read, world time; NAN while nothing holds it.
+## The chunks whose ground holds it, as a set.
 var holders := {}
-var decided_at := NAN
+## Read as at this world time, for probes and look-tests; NAN, the world's clock.
+var pinned_at := NAN
+## The step of its level its loaded ground is built at (StructureKit.Piece.steps);
+## -1 while nothing holds it.
+var ground := -1
 ## Whether a bigger site's ground takes this one's: -1 until its ground is
 ## first built.
 var yields := -1
 ## The floor's top as it stands now, world height.
 var floor_y: float:
 	get:
-		return floor_in(state())
+		return _pad - piece.sink_at(level())
 
 var _ctx: StructureKit.Context
 ## Its frame's turn about the vertical: plan +v faces the way it faces.
@@ -39,21 +47,32 @@ var _pad := NAN
 var _stands := false
 var _tries := 0
 var _columns := {}
-## Read once while held: the sand taken off it, and its state.
-var _state := -1
-var _taken := 0.0
-## Its ground at the lattice points it covers, as [near, toward the dunes]
-## pairs from its ground's first corner, for the state it was made in.
-var _grid := PackedFloat32Array()
-var _grid_state := -1
+## Its weather's readings, kept by tick.
+var _memo := Exposure.Memo.new()
+## While its ground is loaded: the sand off it as that ground shows it, m
+## (NAN while nothing holds it), whether that's held up over you, and when
+## it last followed the weather.
+var _shown := NAN
+var _held := false
+var _followed := NAN
+## Held as a resumed save had it, whoever stands on it, until the resume is done.
+var _kept := false
+## The ticks either side of the moment it last followed, and their sand.
+var _ticks := Vector2i(-1000000000, -1000000000)
+var _ends := Vector4.ZERO
+## Read for one moment while nothing holds it: what height_at asks over and over.
+var _now_t := NAN
+var _now_taken := 0.0
+## Its ground's lattice points, from its ground's first corner, made once:
+## in a room, its sand there once dug out, else how far up the drift its
+## wall's sand there reaches; and how far toward the dunes' own (-1 in a
+## room). Then the ground they make at a step, the last few kept.
+var _base := PackedFloat32Array()
+var _grids := {}
 var _grid_x := 0.0
 var _grid_z := 0.0
 var _grid_w := 0
 var _grid_d := 0.0
-## Read for the moment while nothing holds it, once a tick.
-var _now_tick := NAN
-var _now_state := -1
-var _now_taken := 0.0
 
 static var _lock := Mutex.new()
 
@@ -238,117 +257,283 @@ func _window(shape: TerrainShape, columns: Dictionary, offset: float, along_u: b
 ## The sand at a lattice point, given what the dunes alone would be there:
 ## in its rooms just under their floors once dug out, else filled to the sand
 ## line; drifted up its walls, level at its openings; back to the dunes by
-## the end of its apron. At a lattice point it's read from what the state
-## made of its ground once, since it's the same whatever the dunes.
+## the end of its apron. Loaded, at the step its ground is built at; else at
+## its level now.
 func sand(at_x: float, at_z: float, dunes: float) -> float:
 	var dx := at_x - x
 	var dz := at_z - z
 	if absf(dx) > _reach.x or absf(dz) > _reach.y:
 		return dunes
-	var s := state()
+	var step := ground if ground >= 0 else piece.step_of(level())
 	var i := at_x - _grid_x
 	var j := at_z - _grid_z
 	if i == floorf(i) and j == floorf(j):
-		var grid := _grid_for(s)
+		var grid := _grid_for(step)
 		var k := (int(j) * _grid_w + int(i)) * 2
 		return lerpf(grid[k], dunes, grid[k + 1])
-	var made := _made(dx, dz, s)
+	var made := _made(dx, dz, piece.level_of(step))
 	return lerpf(made.x, dunes, made.y)
 
 
-## Its ground as a chunk's build presses it in: [what each lattice point is
-## made, the first lattice point's x and z, how many across and down], in
-## the state it's held in; what's outside it is the dunes'.
-func carve() -> Array:
-	return [_grid_for(state()), _grid_x, _grid_z, float(_grid_w), _grid_d]
+## Its ground as a chunk's build presses it in at a step: [what each lattice
+## point is made, the first lattice point's x and z, how many across and
+## down]; what's outside it is the dunes'.
+func carve(step: int) -> Array:
+	return [_grid_for(step), _grid_x, _grid_z, float(_grid_w), _grid_d]
 
 
 ## The sand at a world offset from its middle, as [what it is near it, how
-## far toward the dunes'] in a state.
-func _made(dx: float, dz: float, s: int) -> Vector2:
+## far toward the dunes'] at a level.
+func _made(dx: float, dz: float, level: float) -> Vector2:
 	var p := plan(dx, dz)
 	for room in piece.rooms:
 		if room.holds(p):
-			return Vector2(_pad - piece.sink[s] + maxf(room.sand(p), piece.fill[s]) - StructureKit.SAND_UNDER, 0.0)
+			return Vector2(_pad - piece.sink_at(level) + maxf(room.sand(p), piece.fill_at(level))
+				- StructureKit.SAND_UNDER, 0.0)
 	var d := piece.out_of(p)
-	var drift := piece.drift[s] * (1.0 - smoothstep(0.0, piece.drift_reach, d)) * piece.clear_of_doors(p)
+	var drift := piece.drift_at(level) * (1.0 - smoothstep(0.0, piece.drift_reach, d)) * piece.clear_of_doors(p)
 	return Vector2(_pad - StructureKit.SAND_UNDER + drift, smoothstep(piece.drift_reach, piece.apron, d))
 
 
-## Its ground at every lattice point in a state, made once and kept while
-## that's the state it's in. Workers read it unlocked as they build its
-## chunks, so it's made aside and put in place under the lock only if no
-## other got there first: while its state is held it's never written again.
-func _grid_for(s: int) -> PackedFloat32Array:
-	if _grid_state == s:
-		return _grid
-	var made := PackedFloat32Array()
-	var rows := int(_grid_d)
-	made.resize(_grid_w * rows * 2)
-	for j in rows:
-		for i in _grid_w:
-			var each := _made(_grid_x + i - x, _grid_z + j - z, s)
-			made[(j * _grid_w + i) * 2] = each.x
-			made[(j * _grid_w + i) * 2 + 1] = each.y
+## Its ground at every lattice point at a step, from what each point is,
+## made once. Workers read it unlocked as they build its chunks, so each is
+## made aside and kept under the lock; a step's is never written again.
+func _grid_for(step: int) -> PackedFloat32Array:
 	_lock.lock()
-	if _grid_state != s:
-		_grid = made
-		_grid_state = s
+	var had: Variant = _grids.get(step)
+	_lock.unlock()
+	if had != null:
+		return had
+	var made := _make_grid(step)
+	_lock.lock()
+	if not _grids.has(step):
+		if _grids.size() >= 2:
+			_grids.erase(_grids.keys()[0])
+		_grids[step] = made
+	else:
+		made = _grids[step]
 	_lock.unlock()
 	return made
 
 
+## Its ground at every lattice point at a step, made afresh from what each
+## point is: in a room, or how far up its walls' drift.
+func _make_grid(step: int) -> PackedFloat32Array:
+	var base := _base_points()
+	var level := piece.level_of(step)
+	var sink := piece.sink_at(level)
+	var fill := piece.fill_at(level)
+	var drift := piece.drift_at(level)
+	var under := _pad - StructureKit.SAND_UNDER
+	var made := PackedFloat32Array()
+	made.resize(base.size())
+	for k in range(0, base.size(), 2):
+		var w := base[k + 1]
+		if w < 0.0:
+			made[k] = under - sink + maxf(base[k], fill)
+			made[k + 1] = 0.0
+		else:
+			made[k] = under + drift * base[k]
+			made[k + 1] = w
+	return made
+
+
+## The same a point at a time, for a kind whose ground isn't made of rooms and drift.
+func _grid_of_points(level: float) -> PackedFloat32Array:
+	var rows := int(_grid_d)
+	var made := PackedFloat32Array()
+	made.resize(_grid_w * rows * 2)
+	for j in rows:
+		for i in _grid_w:
+			var each := _made(_grid_x + i - x, _grid_z + j - z, level)
+			made[(j * _grid_w + i) * 2] = each.x
+			made[(j * _grid_w + i) * 2 + 1] = each.y
+	return made
+
+
+func _base_points() -> PackedFloat32Array:
+	_lock.lock()
+	var base := _base
+	_lock.unlock()
+	if not base.is_empty():
+		return base
+	var rows := int(_grid_d)
+	base.resize(_grid_w * rows * 2)
+	for j in rows:
+		for i in _grid_w:
+			var k := (j * _grid_w + i) * 2
+			var p := plan(_grid_x + i - x, _grid_z + j - z)
+			var room_sand := NAN
+			for room in piece.rooms:
+				if room.holds(p):
+					room_sand = room.sand(p)
+					break
+			if not is_nan(room_sand):
+				base[k] = room_sand
+				base[k + 1] = -1.0
+			else:
+				var d := piece.out_of(p)
+				base[k] = (1.0 - smoothstep(0.0, piece.drift_reach, d)) * piece.clear_of_doors(p)
+				base[k + 1] = smoothstep(piece.drift_reach, piece.apron, d)
+	_lock.lock()
+	if _base.is_empty():
+		_base = base
+	_lock.unlock()
+	return _base
+
+
 # --- Its exposure. ---
 
-## Buried, partly exposed or exposed (Exposure): as read when its ground was
-## first built while that's held, else as it would read now.
-func state() -> int:
-	if not is_nan(decided_at):
-		if _state < 0:
-			var taken := _stripped(decided_at)
-			_lock.lock()
-			_taken = taken
-			_state = Exposure.state(depth, taken)
-			_lock.unlock()
-		return _state
-	var t: float = _ctx.clock.call()
-	var tick := floorf(t / (_ctx.tuning.site_exposure_step_minutes * 60.0))
-	if tick != _now_tick:
-		var taken := _stripped(t)
-		_lock.lock()
-		_now_taken = taken
-		_now_state = Exposure.state(depth, taken)
-		_now_tick = tick
-		_lock.unlock()
-	return _now_state
-
-
-## The sand the weather had taken off it, m, when its state was read.
+## The sand taken off it now, m: as its loaded ground shows it, else the
+## weather's at the world's clock (or the moment it's pinned to).
 func taken() -> float:
-	state()
-	return _taken if not is_nan(decided_at) else _now_taken
+	if not is_nan(pinned_at):
+		return pure_taken(pinned_at)
+	if not is_nan(_shown):
+		return _shown
+	var t: float = _ctx.clock.call()
+	_lock.lock()
+	var cached := _now_t == t
+	var got := _now_taken
+	_lock.unlock()
+	if cached:
+		return got
+	got = pure_taken(t)
+	_lock.lock()
+	_now_t = t
+	_now_taken = got
+	_lock.unlock()
+	return got
 
 
-## Held from now on as it reads at world time `t`.
+## The weather's sand taken off it at a world time, m (Exposure.taken).
+func pure_taken(t: float) -> float:
+	return Exposure.taken(_ctx.field, x, z, t, _ctx.tuning, _memo)
+
+
+## The same, read each frame on the main thread: the ticks either side of
+## the moment kept, so between ticks it costs two lerps.
+func _taken_now(t: float) -> float:
+	var slow := t / (_ctx.tuning.site_exposure_step_minutes * 60.0)
+	var fast := t / Exposure.SURGE_STEP_S
+	var ticks := Vector2i(floori(slow), floori(fast))
+	if ticks != _ticks:
+		_ticks = ticks
+		_ends = Vector4(Exposure.stripped_at(_ctx.field, x, z, ticks.x - 1, _ctx.tuning, _memo),
+			Exposure.stripped_at(_ctx.field, x, z, ticks.x, _ctx.tuning, _memo),
+			Exposure.surge_at(_ctx.field, x, z, ticks.y - 1, _ctx.tuning, _memo),
+			Exposure.surge_at(_ctx.field, x, z, ticks.y, _ctx.tuning, _memo))
+	return lerpf(_ends.x, _ends.y, slow - ticks.x) + lerpf(_ends.z, _ends.w, fast - ticks.y)
+
+
+## The settled sand alone, m: what it would be without the storm working on it now.
+func settled() -> float:
+	var t: float = pinned_at if not is_nan(pinned_at) else _ctx.clock.call()
+	return Exposure.settled(_ctx.field, x, z, t, _ctx.tuning, _memo)
+
+
+## Buried, partly exposed or exposed (Exposure), now.
+func state() -> int:
+	return Exposure.state(depth, taken())
+
+
+## How far out of the sand it is now, 0 to Exposure.DUG_OUT.
+func level() -> float:
+	return Exposure.level(depth, taken())
+
+
+## How much further out of the sand the storm working on it has it than its
+## settled sand would, in levels: what's newly bare.
+func bared() -> float:
+	return maxf(level() - Exposure.level(depth, settled()), 0.0)
+
+
+## The same as the weather has it at world time `t`, loaded or not: what it sheds as drift.
+func bared_at(t: float) -> float:
+	var settled_then := Exposure.settled(_ctx.field, x, z, t, _ctx.tuning, _memo)
+	return maxf(Exposure.level(depth, pure_taken(t)) - Exposure.level(depth, settled_then), 0.0)
+
+
+## Read as at world time `t` from now on: for probes and look-tests.
 func decide(t: float) -> void:
-	_lock.lock()
-	decided_at = t
-	_state = -1
-	_lock.unlock()
+	pinned_at = t
 
 
-## Nothing holds it any more: the next ground built over it reads it afresh.
+## Follows the world's clock again.
 func forget() -> void:
+	pinned_at = NAN
+
+
+## Its ground is first built: shown from now as the weather has it, or as
+## a save had it held over you or your camp (`kept`, m) where that's more.
+func hold_ground(kept := NAN) -> void:
+	_shown = pure_taken(_ctx.clock.call())
+	_held = false
+	_kept = false
+	keep(kept)
+	_followed = _ctx.clock.call()
+	ground = piece.step_of(level())
+
+
+## Held as a save had it over you or your camp, `sand` m off it, where that's
+## more than the weather has; its ground follows as it next follows the weather.
+func keep(sand: float) -> void:
+	if sand > _shown:
+		_shown = sand
+		_held = true
+		_kept = true
+
+
+## The sand off it as it's held over you or your camp, m; NAN where it's the
+## weather's: what a save keeps.
+func held_sand() -> float:
+	return _shown if _held else NAN
+
+
+## A resume is done: from now it's held only while something of yours stands on it.
+func resumed() -> void:
+	_kept = false
+
+
+## Nothing holds its ground any more: it's the weather's alone again.
+func release_ground() -> void:
+	_shown = NAN
+	_held = false
+	_kept = false
+	ground = -1
 	_lock.lock()
-	decided_at = NAN
-	_state = -1
-	_grid = PackedFloat32Array()
-	_grid_state = -1
+	_grids.clear()
 	_lock.unlock()
 
 
-func _stripped(t: float) -> float:
-	return Exposure.stripped(_ctx.field, x, z, t, _ctx.tuning)
+## Follows the weather while its ground is loaded, at world time `t`. Where
+## you or your camp stand on its ground (`occupied(self)`) the sand never
+## comes back over it; once you're off, it comes back no faster than
+## site_rebury_m_s. MOVED if the sand on it changed, and STEPPED too if the
+## step its ground should be built at did.
+func follow(t: float, occupied: Callable) -> int:
+	if is_nan(_shown):
+		return 0
+	var dt := maxf(t - _followed, 0.0) if not is_nan(_followed) else 0.0
+	_followed = t
+	var was := _shown
+	var pure := _taken_now(t)
+	if pure >= _shown:
+		_shown = pure
+		_held = false
+		_kept = false
+	elif _kept or occupied.call(self):
+		_held = true
+	elif _held:
+		_shown = maxf(pure, _shown - _ctx.tuning.site_rebury_m_s * dt)
+		_held = _shown > pure
+	else:
+		_shown = pure
+	var step := piece.step_of(level())
+	if step != ground:
+		ground = step
+		return MOVED | STEPPED
+	return MOVED if _shown != was else 0
 
 
 # --- What it holds, and what's built of it. ---
@@ -384,14 +569,14 @@ func rest(p: Vector2) -> float:
 
 ## The sand at a plan spot on its footprint, over the floor's top, m.
 func _sand_on(p: Vector2) -> float:
-	return piece.sand_line(p, state())
+	return piece.sand_line_at(p, level())
 
 
 ## Its look in a state, its frame's origin at `at` in its chunk's frame.
 func view(at: Vector3, s: int) -> MeshInstance3D:
 	var made := MeshInstance3D.new()
 	made.mesh = piece.mesh(s, _variant)
-	made.transform = Transform3D(basis(), at) * _lean()
+	made.transform = placed(at)
 	made.set_instance_shader_parameter(&"age", _age)
 	made.set_instance_shader_parameter(&"era", float(piece.marks))
 	# Far off its stand-in takes over (Skyline): it dithers away as that comes in.
@@ -403,15 +588,23 @@ func view(at: Vector3, s: int) -> MeshInstance3D:
 	return made
 
 
-## Its collision joins a chunk's: a box for each box the sand leaves showing
-## in a state, its frame's origin at `at` in the body's frame. The sand and it
-## are one ground.
-func add_shapes(body: StaticBody3D, at: Vector3, s: int) -> void:
-	var placed := Transform3D(basis(), at) * _lean()
+## Its look in a state, in its own colours.
+func look(s: int) -> ArrayMesh:
+	return piece.mesh(s, _variant)
+
+
+## Its frame with its origin at `at`, turned and leaning.
+func placed(at: Vector3) -> Transform3D:
+	return Transform3D(basis(), at) * _lean()
+
+
+## Its collision: a box for each box the sand leaves showing in a state, in
+## its own frame. The sand and it are one ground.
+func add_shapes(body: CollisionObject3D, s: int) -> void:
 	for i in piece.shown(s):
 		var holder := CollisionShape3D.new()
 		holder.shape = piece.shape(i)
-		holder.transform = placed.translated_local(piece.boxes[i].get_center())
+		holder.position = piece.boxes[i].get_center()
 		if i in piece.beds:
 			holder.set_meta(&"bed", true)
 		body.add_child(holder)
@@ -424,17 +617,32 @@ func origin() -> Vector3:
 
 # --- How it's seen from far off (Skyline). ---
 
-## Its frame in a state with the dunes' mean under it at `ground`: its own
+## Its frame in a state with the dunes' mean under it at `under`: its own
 ## pad where it's built, the far ground's height for a stand-in.
-func frame_on(s: int, ground: float) -> Transform3D:
-	return Transform3D(basis(), Vector3(x, ground - piece.sink[s], z)) * _lean()
+func frame_on(s: int, under: float) -> Transform3D:
+	return Transform3D(basis(), Vector3(x, under - piece.sink[s], z)) * _lean()
+
+
+## Its own frame at a level, on its pad.
+func frame_at(at_level: float) -> Transform3D:
+	return Transform3D(basis(), Vector3(x, _pad - piece.sink_at(at_level), z)) * _lean()
+
+
+## Its frame at a level with the dunes' mean under it at `under`.
+func frame_on_at(at_level: float, under: float) -> Transform3D:
+	return Transform3D(basis(), Vector3(x, under - piece.sink_at(at_level), z)) * _lean()
 
 
 ## Its far look in a state: each box as [a unit cube's transform in its
 ## frame, tone, finish], cut off at the sand.
 func far_look(s: int) -> Array[Array]:
+	return far_look_at(s)
+
+
+## The same at a level between states.
+func far_look_at(at_level: float) -> Array[Array]:
 	var out: Array[Array] = []
-	var line := piece.sink[s] if piece.lean == 0.0 else -INF
+	var line := piece.sink_at(at_level) if piece.lean == 0.0 else -INF
 	for each in piece.far:
 		var box: AABB = each[0]
 		var lo := maxf(box.position.y, line)
@@ -449,9 +657,14 @@ func far_look(s: int) -> Array[Array]:
 ## How high it rises over the dunes' mean under it in a state, m: its far
 ## look's top, or its boxes' for what has none.
 func top_in(s: int) -> float:
-	var frame := frame_on(s, 0.0)
+	return top_at(s)
+
+
+## The same at a level between states.
+func top_at(at_level: float) -> float:
+	var frame := frame_on_at(at_level, 0.0)
 	var top := -INF
-	var boxes: Array = far_look(s).map(func(each: Array) -> Transform3D: return each[0]) if not piece.far.is_empty() \
+	var boxes: Array = far_look_at(at_level).map(func(each: Array) -> Transform3D: return each[0]) if not piece.far.is_empty() \
 		else piece.boxes.map(func(b: AABB) -> Transform3D: return Transform3D(Basis.from_scale(b.size), b.get_center()))
 	for each: Transform3D in boxes:
 		var box := frame * each
@@ -471,6 +684,21 @@ func bare_glints(s: int) -> Array[Array]:
 			else StructureKit.shows(piece, s, at.y - StructureKit.GLINT_CLEAR, Vector2(at.x, at.z))
 		if bare:
 			out.append([at, lean.basis * (each[1] as Vector3), each[2]])
+	return out
+
+
+## The same at a level between states, each with its index among its kind's
+## glints, so it's the same glint as it comes and goes.
+func bare_glints_at(at_level: float) -> Array[Array]:
+	var lean := _lean()
+	var out: Array[Array] = []
+	for j in piece.glints.size():
+		var each: Array = piece.glints[j]
+		var at: Vector3 = lean * (each[0] as Vector3)
+		var bare := at.y - piece.sink_at(at_level) >= StructureKit.GLINT_CLEAR if piece.lean > 0.0 \
+			else at.y - StructureKit.GLINT_CLEAR > piece.sand_line_at(Vector2(at.x, at.z), at_level) + StructureKit.SHOWS
+		if bare:
+			out.append([at, lean.basis * (each[1] as Vector3), each[2], j])
 	return out
 
 

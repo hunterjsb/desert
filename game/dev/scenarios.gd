@@ -528,18 +528,14 @@ static func _at_ruin(world: World, scenario: Dictionary) -> Dictionary:
 				continue
 			var door := ruin.to_world(Ruin.DOORS[0][0])
 			var longitude := Sphere.longitude(point)
-			var tick := NAN
-			var dug := false
+			var memo := Exposure.Memo.new()
 			var t := 0.0
 			while t < HORIZON:
 				var hour := day.time_of_day(t, longitude)
 				if hour >= scenario.day[0] and hour <= scenario.day[1] \
 						and not _place(field, scenario, at, Vector2.ZERO, t).is_empty():
-					var now := floorf(t / (world.tuning.site_exposure_step_minutes * 60.0))
-					if now != tick:
-						tick = now
-						dug = Exposure.state(ruin.depth, Exposure.stripped(field, ruin.x, ruin.z, t, world.tuning)) \
-							== Exposure.EXPOSED
+					var dug := Exposure.state(ruin.depth, Exposure.taken(field, ruin.x, ruin.z, t, world.tuning, memo)) \
+						== Exposure.EXPOSED
 					if dug:
 						var facing := (door - at).normalized()
 						return {"x": at.x, "z": at.y, "yaw": atan2(-facing.x, -facing.y), "time": t,
