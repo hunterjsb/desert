@@ -405,8 +405,11 @@ static func describe(label: String, mass: float, stats: Dictionary) -> String:
 		bits.append("resting")
 	elif stats.get("can_float", false):
 		bits.append("floating")
-	if stats.get("in_w", 0.0) > 0.0 or stats.get("out_w", 0.0) > 0.0:
-		bits.append("in %d W · out %d W" % [roundi(stats.get("in_w", 0.0)), roundi(stats.get("out_w", 0.0))])
+	# Said as the device does it: what it makes, what it draws.
+	if stats.get("in_w", 0.0) > 0.0:
+		bits.append("makes %d W" % roundi(stats.in_w))
+	if stats.get("out_w", 0.0) > 0.0:
+		bits.append("draws %d W" % roundi(stats.out_w))
 	if stats.has("water_l"):
 		bits.append("%.2f/%.1f L" % [stats.get("water_left_l", 0.0), stats.water_l])
 	if stats.has("food_kcal"):
