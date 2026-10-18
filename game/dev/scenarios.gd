@@ -416,13 +416,11 @@ static func _place(field: WeatherField, scenario: Dictionary, from: Vector2, upw
 		t: float) -> Dictionary:
 	match scenario.kind:
 		"clear", "sky", "kit", "ruin", "lee", "sail":
-			# No storm for ten minutes, or one due within the window asked.
-			var due: Array = scenario.get("due", [INF, INF])
 			var breeze: Array = scenario.get("breeze", [0.0, INF])
 			var blowing := field.wind_at(from.x, from.y, t).length()
 			if field.raw_storm_at(from.x, from.y, t) <= 0.0 \
 					and blowing < scenario.get("calm", INF) and _within(blowing, breeze) \
-					and (scenario.kind == "sky" or _within(field.next_change(from.x, from.y, t, minf(due[1], 600.0), 10.0), due)):
+					and (scenario.kind == "sky" or _comes(field, scenario, from, t)):
 				return {"x": from.x, "z": from.y}
 		"front", "back":
 			# March upwind for an edge with enough of the other side behind it.
@@ -635,6 +633,16 @@ static func feet(world: World, heading: float) -> Array[Vector2]:
 	found.sort_custom(func(a: Vector2, b: Vector2) -> bool:
 		return a.distance_squared_to(world.spawn) < b.distance_squared_to(world.spawn))
 	return found
+
+
+## No storm for ten minutes, or one due within the window asked, s from t,
+## and with "lasts", passing within that window of coming.
+static func _comes(field: WeatherField, scenario: Dictionary, from: Vector2, t: float) -> bool:
+	var due: Array = scenario.get("due", [INF, INF])
+	var comes := field.next_change(from.x, from.y, t, minf(due[1], 600.0), 10.0)
+	var lasts: Array = scenario.get("lasts", [])
+	return _within(comes, due) and (lasts.is_empty()
+		or _within(field.next_change(from.x, from.y, t + comes, lasts[1], 10.0), lasts))
 
 
 static func _within(value: float, span: Array) -> bool:
