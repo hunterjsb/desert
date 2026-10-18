@@ -44,9 +44,15 @@ func tie(body: RigidBody3D) -> void:
 	body.collision_mask = 0
 	tied.append(body)
 	_place()
-	if Mast.sheet_end(body):
-		Deeds.done(_player.world, &"sail_waist")
 	_player.world.ropes._towing()
+	_sheet_on.call_deferred(body)
+
+
+## A sail's sheet at your waist is Set Sail: asked once the line laid with
+## what was tied on has been tied too.
+func _sheet_on(body: RigidBody3D) -> void:
+	if is_instance_valid(body) and tied.has(body) and Mast.sheet_end(body):
+		Deeds.done(_player.world, &"sail_waist")
 
 
 ## Takes a body off, a body again where it sat; returns it.
