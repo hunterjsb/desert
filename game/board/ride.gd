@@ -251,14 +251,13 @@ func step(delta: float, dir: Vector2, hop: bool, digging := 0.0, kick := false, 
 			drifting = crouch and contact > 0.5 and speed > t.board_drift_speed and absf(slip) > DRIFT_FROM \
 				and dir != Vector2.ZERO
 		var pushing := 0.0
-		# Move back alone, or steering back against your way, stops you: the
-		# board swings across your way and its edge digs in as it comes
-		# across, as in a hockey stop. Steering, it digs into the carve.
+		# Move back alone stops you: the board swings across your way and its
+		# edge digs in as it comes across, as in a hockey stop. Steering back
+		# against your way swings it across too, skidding you to a stop
+		# undug. Steering, move back digs into the carve.
 		var wants := digging
-		var stopping := digging > 0.0 and dir == Vector2.ZERO
-		if dir != Vector2.ZERO and speed > 1.0 and dir.dot(velocity / speed) < -0.5:
-			stopping = true
-			wants = 1.0
+		var stopping := (digging > 0.0 and dir == Vector2.ZERO) \
+			or (dir != Vector2.ZERO and speed > 1.0 and dir.dot(velocity / speed) < -0.5)
 		if stopping:
 			var off := 0.0
 			if speed > 0.05:

@@ -2,7 +2,7 @@ extends MovementProbe
 ## Movement probe 6: frame-rate proof on the board. The same ride at 30, 60
 ## and 120 physics ticks a second follows the same path and leaves the same
 ## charge and stamina: kick off, push, carve left, hop, drift right, coast,
-## a dug carve left, a hockey stop, and the stop is as long at every rate.
+## a dug carve right, a hockey stop, and the stop is as long at every rate.
 ## Then the same ride at 60 with the drawing switched off, the view's
 ## smoothing between ticks and the board's with it: they're only looks, so
 ## the path is identical.
@@ -13,7 +13,7 @@ const SAME_PLACE := 0.005
 const SAME_CHARGE := 1e-6
 const ROUTE := [[0.0, ["sprint"]], [1.0, ["move_forward", "sprint"]], [2.0, ["move_forward", "move_left"]],
 	[3.5, ["move_forward", "jump"]], [3.6, ["move_forward"]], [4.5, ["move_right", "crouch"]], [6.0, []],
-	[6.5, ["move_left", "move_back"]], [7.3, ["move_back"]], [9.0, []]]
+	[6.5, ["move_right", "move_back"]], [7.3, ["move_back"]], [9.0, []]]
 ## The hockey stop starts here, s, and is over by the next key.
 const STOPPING := 7.3
 const STOPPED := 9.0
@@ -73,7 +73,7 @@ func _trace(rate: int, x: float, z: float, drawn := true) -> Array:
 	var path: Array[Vector3] = [where()]
 	var at := {"tick": 0, "step": 0}
 	var every := rate / 30
-	var seen := {"drifted": false, "stamina": 0.0, "dug": 0.0, "from": Vector3.ZERO, "stop": INF}
+	var seen := {"drifted": false, "stamina": 0.0, "dug": 0.0, "from": Vector3.ZERO, "stop": INF, "at": 0.0, "end": 0.0}
 	# Keys change between ticks, at the same simulated moment at every rate.
 	var press := func() -> void:
 		while at.step < ROUTE.size() and at.tick >= roundi(ROUTE[at.step][0] * rate):
@@ -90,12 +90,17 @@ func _trace(rate: int, x: float, z: float, drawn := true) -> Array:
 			seen.stamina = player.stamina
 		if at.tick == roundi(STOPPING * rate):
 			seen.from = where()
-		if at.tick == roundi(STOPPED * rate) and flat_speed() < 0.1:
-			seen.stop = Vector2(where().x - seen.from.x, where().z - seen.from.z).length()
+			seen.at = flat_speed()
+		if at.tick == roundi(STOPPED * rate):
+			seen.end = flat_speed()
+			# All but stopped: the hover drifts a little down gentle sand, as it does at rest.
+			if seen.end < 0.3:
+				seen.stop = Vector2(where().x - seen.from.x, where().z - seen.from.z).length()
 		if at.tick % every == 0:
 			path.append(where()))
 	check(player.ride.kicks > 0 and seen.drifted and seen.dug > 0.9 and seen.stop < INF,
-		"it kicked (%d times), drifted, dug in and stopped" % player.ride.kicks)
+		"it kicked (%d times), drifted, dug in %d%% and stopped from %.1f m/s (%.2f m/s left)"
+		% [player.ride.kicks, roundi(seen.dug * 100.0), seen.at, seen.end])
 	hold([])
 	# Off the board, the power ticks catch up with what the ride drew.
 	player.step_off()
