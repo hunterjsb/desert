@@ -7,6 +7,10 @@ extends RefCounted
 ## meant.
 
 static var _made := {}
+## A lineage's looks, let go once nothing wears them; and each thing's shell.
+static var _lines := {}
+static var _shells := {}
+static var _marks := {}
 
 
 ## A frame's look, or null to keep a grey box. `extra` is its mast's height.
@@ -59,14 +63,93 @@ static func tell(kind: StringName) -> ArrayMesh:
 		return b.commit())
 
 
+## A thing's look with its lineage's marks over it (Paint.Shell), merged into
+## one mesh: each entry's marks are made once a thing, each lineage's look
+## once while anything wears it. Null where it has no look to mark.
+static func lineage(id: StringName, line: Array) -> ArrayMesh:
+	var key := [id, Eras.key(line)]
+	var kept: WeakRef = _lines.get(key)
+	var made: ArrayMesh = kept.get_ref() if kept != null else null
+	if made == null:
+		made = _lineage(id, line)
+		if made != null:
+			_lines[key] = weakref(made)
+	return made
+
+
+static func _lineage(id: StringName, line: Array) -> ArrayMesh:
+	var own := _own(id)
+	var shell := shell(id)
+	if own == null or own.get_surface_count() == 0 or shell == null:
+		return own
+	var overs := []
+	for entry: Array in line:
+		var key := [id, Eras.entry_key(entry)]
+		if not _marks.has(key):
+			var marks := Paint.Over.new()
+			shell.layer(marks, entry)
+			_marks[key] = marks.arrays()
+		if not _marks[key].is_empty():
+			overs.append(_marks[key])
+	return own if overs.is_empty() else Paint.merged(own, overs)
+
+
+## Where a lineage's marks go on a thing, or null where they don't: worked
+## out once from its look, clear of its sockets, its charge light, its mast
+## and its stamps.
+static func shell(id: StringName) -> Paint.Shell:
+	if _shells.has(id):
+		return _shells[id]
+	var made: Paint.Shell = null
+	var own := _own(id)
+	if Catalog.lineal(id) and not id in Catalog.BARE and own != null and own.get_surface_count() > 0:
+		var avoid := PackedVector3Array()
+		var box: AABB
+		if Catalog.PARTS.has(id):
+			var size: Vector3 = Catalog.PARTS[id].size
+			box = AABB(Vector3(-size.x * 0.5, -size.y * 0.5, 0.0), size)
+		else:
+			var spec: Dictionary = Catalog.DEVICES.get(id, {"size": Vector3(0.06, Stake.LENGTH, 0.06), "sockets": []})
+			var h: Vector3 = spec.size * 0.5
+			box = AABB(-h, spec.size)
+			for entry: Array in spec.sockets:
+				avoid.append(entry[1])
+			if spec.sockets.any(func(e: Array) -> bool: return e[0] == &"battery"):
+				avoid.append(Vector3(h.x, h.y - 0.05, h.z - 0.05))
+			if spec.has("mast"):
+				avoid.append(Vector3(0.0, h.y, 0.0))
+		made = Paint.Shell.new(own, box, Catalog.PARTS.has(id), Catalog.ROUND.get(id, []), avoid, hash(id))
+		# Too small to read, marks or not.
+		if made.unit < 0.012:
+			made = null
+	_shells[id] = made
+	return made
+
+
+## A thing's own look by its catalog id, as the catalog makes it.
+static func _own(id: StringName) -> ArrayMesh:
+	if id == &"stake":
+		return frame(&"stake", Vector3(0.06, Stake.LENGTH, 0.06))
+	if Catalog.DEVICES.has(id):
+		var spec: Dictionary = Catalog.DEVICES[id]
+		return frame(id, spec.size, spec.get("mast", 0.0))
+	if Catalog.PARTS.has(id):
+		return part(id, Catalog.PARTS[id].size)
+	return null
+
+
 ## Builds every look now, while the world loads: the first of a kind costs
 ## up to a dozen milliseconds, too long for a find laid out while streaming.
+## Each thing's shell too, where its lineage's marks would go: a few ms a thing.
 static func prepare() -> void:
 	for id: StringName in Catalog.DEVICES:
 		Catalog.device(id).free()
+		shell(id)
 	Catalog.stake().free()
+	shell(&"stake")
 	for id: StringName in Catalog.PARTS:
 		Catalog.part(id).free()
+		shell(id)
 		var grows: Dictionary = Catalog.PARTS[id].get("crop", {})
 		if grows.is_empty():
 			continue

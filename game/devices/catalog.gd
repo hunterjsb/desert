@@ -137,6 +137,23 @@ const PARTS := {
 ## Parts by the names older saves knew them by.
 const RENAMED := {&"carrot": &"root_tuber", &"fungus": &"vat_fungus", &"carrots": &"tubers"}
 
+## Who made each thing colonial hands made, as its stamp says (art
+## direction's maker's marks): commodity parts carry none.
+const MAKERS := {&"crate_frame": &"tilg", &"chassis": &"tilg", &"condenser": &"rmc", &"console": &"rmc",
+	&"shield": &"rmc", &"light_shield": &"shield_maker", &"turbine": &"wind_maker"}
+## Where a lineage's marks sit on what isn't a box: round about its top's
+## axis, as [its radius over its half width, and the shares of its height its
+## round body spans].
+const ROUND := {&"shield": [0.88, 0.22, 0.8], &"light_shield": [0.88, 0.22, 0.8], &"canister": [0.92, 0.0, 0.82],
+	&"lamp": [0.92, 0.68, 0.96], &"barometer": [0.95, 0.0, 0.66]}
+## Made things too small or too busy to carry a lineage's marks, though they
+## keep its numbers: the ends of lines, a coil, the dish, the screen's glass,
+## a compass's card.
+const BARE: Array[StringName] = [&"hook", &"plug", &"strong_plug", &"hose_end", &"rope_end", &"coil", &"radar",
+	&"screen", &"compass"]
+## The stake's frame, which has no entry of its own.
+const STAKE := {"mass": 2.0, "stats": {"toughness": INF}}
+
 ## Frames: their box, weight, wind catch and sockets as [kind, position, outward].
 ## Those marked "deck" stand on a chassis piece's deck mount too.
 const DEVICES := {
@@ -439,10 +456,10 @@ static func stake() -> Stake:
 	var made := Stake.new()
 	made.set_meta(&"catalog", &"stake")
 	made.label = "Stake"
-	made.frame_mass = 2.0
+	made.frame_mass = STAKE.mass
 	made.carryable = true
 	# A spike of iron: nothing in it the weather wears out.
-	made.frame_stats = {"toughness": INF}
+	made.frame_stats = STAKE.stats.duplicate()
 	made.holding = Tuning.current().stake_holding
 	var spike := Vector3(0.06, Stake.LENGTH, 0.06)
 	made.frame_view = _add_box(made, spike, Vector3.ZERO, Color(0.3, 0.27, 0.24), Dress.frame(&"stake", spike))
@@ -508,6 +525,105 @@ static func device(id: StringName) -> Device:
 		made.add_child(socket)
 	made.show_wear()
 	return made
+
+
+## Whether a thing has a lineage: anything made, not grown or eaten.
+static func lineal(id: StringName) -> bool:
+	if DEVICES.has(id) or id == &"stake":
+		return true
+	var spec: Dictionary = PARTS.get(id, {})
+	return not spec.is_empty() and not spec.has("crop") and not spec.kind in [&"food", &"salt"]
+
+
+## The loot's one call (docs/world-system.md, "What lineage does now"): a
+## find's lineage from the site it lay in, drawn from the loot draw's seed
+## (Eras.lineage) and given it, with who made it. What it was given.
+static func found_in(body: Node, era: StringName, kind: StringName, seed_value: int) -> Array:
+	var line := Eras.lineage(era, kind, seed_value)
+	var id: StringName = body.get_meta(&"catalog", &"")
+	if not line.is_empty() and line[0][0] == Eras.COLONIAL and MAKERS.has(id):
+		line[0][2] = [MAKERS[id]]
+	inherit(body, line)
+	return body.get_meta(&"lineage", [])
+
+
+## Gives a thing its lineage, made fresh and before it's in the world: its
+## numbers by its era's make (Eras.GEAR), its look by every hand it passed
+## through. A thing without one is what it always was: the company's issue,
+## or its layer's look for a find from before lineage.
+static func inherit(body: Node, line: Array) -> void:
+	var id: StringName = body.get_meta(&"catalog", &"")
+	if line.is_empty() or not lineal(id):
+		return
+	body.set_meta(&"lineage", line)
+	var gear: Dictionary = Eras.GEAR.get(Eras.era_of(line), Eras.GEAR[Eras.COLONIAL])
+	var part := body as Part
+	if part != null:
+		var spec: Dictionary = PARTS[id]
+		var cell := part as Battery
+		var held := cell.charge_wh / cell.capacity() if cell != null and cell.capacity() > 0.0 else 0.0
+		part.stats = _made_by(spec.stats, gear, false)
+		part.mass = spec.mass * gear.mass
+		if cell != null:
+			cell.charge_wh = cell.capacity() * held
+			cell.show_charge()
+	var device := body as Device
+	if device != null:
+		var spec: Dictionary = DEVICES.get(id, STAKE)
+		var own: Dictionary = spec.get("stats", {}).duplicate()
+		# The base shield's draw is the tuning's: its make scales it as its own.
+		if spec.get("shield", false):
+			var tuning := Tuning.current()
+			own["clear_w"] = own.get("clear_w", tuning.shield_clear_w)
+			own["storm_w"] = own.get("storm_w", tuning.shield_storm_w)
+		device.frame_stats = _made_by(own, gear, true)
+		device.frame_mass = spec.mass * gear.mass
+	var view := _look_of(body)
+	var look := Dress.lineage(id, line)
+	if view != null and look != null:
+		view.mesh = look
+	if device != null:
+		device.show_wear()
+		# Its frame's weight changed, which its middle is worked out from.
+		device.center_of_mass_mode = RigidBody3D.CENTER_OF_MASS_MODE_CUSTOM
+		device._recompute()
+	elif part != null:
+		var age := Paint.age_for(part, Paint.PART_SOUND)
+		Paint.show_age(part, age)
+		if view != null:
+			view.set_instance_shader_parameter(&"age", age)
+			view.set_instance_shader_parameter(&"era", Paint.row_for(part))
+		if part.socket != null:
+			(part.socket.get_parent() as Device)._recompute()
+
+
+## A thing's numbers as its era made it: what it gives by what it keeps, what
+## it draws by how much more, a frame's toughness, and a tray's draw a kilogram.
+static func _made_by(stats: Dictionary, gear: Dictionary, frame: bool) -> Dictionary:
+	var out := stats.duplicate()
+	for key in Eras.KEEPS:
+		if out.has(key):
+			out[key] *= gear.keeps
+	for key in Eras.DRAWS:
+		if out.has(key):
+			out[key] *= gear.draws
+	if frame:
+		out["toughness"] = out.get("toughness", 1.0) * gear.tough
+	if out.has("lift_kg") and gear.draws != 1.0:
+		out["hover_draw"] = gear.draws
+	return out
+
+
+## Its painted look: a frame's, or the first worn mesh of a part's, fitted or not.
+static func _look_of(body: Node) -> MeshInstance3D:
+	var device := body as Device
+	if device != null:
+		return device.frame_view
+	var part := body as Part
+	for node in (part.socket.fitted if part.socket != null else part.get_children()):
+		if node is MeshInstance3D and Paint.is_worn(node):
+			return node
+	return null
 
 
 ## A basis whose +Z points along outward.
