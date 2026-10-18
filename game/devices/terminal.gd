@@ -4,8 +4,9 @@ extends RefCounted
 ## forms are kept, newest last, a few dozen at most; a readout is a sender's
 ## live rows, printed over its last. People never talk through it; machines
 ## do, and a sender's personality is in its formatting, never in paragraphs:
-## a "!" before a line marks it urgent, and a row indented runs on from the
-## one before. It prints and never asks: a screen that shows it is worked by
+## a "!" before a line marks it urgent, a row indented runs on from the one
+## before, and a row's cells apart by tabs are a table: a label, a number, its
+## unit and a note, which a screen lines up in columns. It prints and never asks: a screen that shows it is worked by
 ## use, like any device. One system for every sender: a Console's own messages
 ## now, later gods and their dispatches.
 

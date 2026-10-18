@@ -17,16 +17,16 @@ extends RefCounted
 ## What each kind of thing keeps besides where it is, by property.
 static var _kept := [
 	[Stake, ["driven", "pulled", "sustained", "holding", "pull"]],
-	[ShieldGenerator, ["on", "size", "_up", "_since"]],
+	[ShieldGenerator, ["on", "smart", "size", "_up", "_since"]],
 	[Radio, ["channel", "target"]],
 	[Planter, ["tank_l", "split", "stored", "seeds", "ripened", "replanted", "banked", "dropped", "picked",
 		"fed_kcal", "_owed"]],
 	[Condenser, ["made_l"]],
-	[Console, ["page", "auto_shield", "log_lines", "_alerts", "_front_near"]],
+	[Console, ["page", "log_lines", "_alerts", "_front_near"]],
 	[Battery, ["charge_wh"]],
 	[Plant, ["growth", "fruit", "state", "wild"]],
 	[Mast, ["raised", "raise", "boom", "boom_spin", "trim", "load_n", "bend_n", "extend"]],
-	[Device, ["resting", "lift_share"]],
+	[Device, ["resting", "lift_share", "lamps"]],
 ]
 const PLAYER := ["stamina", "flying", "mode", "crouched", "own", "slope", "wind", "low", "sink", "_sliding",
 	"_jumped", "_since_ground", "_touchdown", "_jump_buffer", "_jump_was", "_jump_queued", "_crouch_was",

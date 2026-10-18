@@ -203,6 +203,9 @@ func _ready() -> void:
 	# Seen through whatever is in the way, even the sand under a resting device.
 	_ghost_look.no_depth_test = true
 	_ghost_look.albedo_color = GHOST
+	# Compiles its shader now, while the world loads: otherwise the first thing
+	# taken out stalls its frame on it (10 ms on the desktop's GPU).
+	_ghost_look.get_rid()
 	_marks = Node3D.new()
 	_marks.top_level = true
 	_marks.visible = false
@@ -213,6 +216,7 @@ func _ready() -> void:
 	_mark_look.albedo_color = Color(GHOST, MARK)
 	_mark_look.grow = true
 	_mark_look.grow_amount = MARK_GROW
+	_mark_look.get_rid()
 	_sound = AudioStreamPlayer.new()
 	_sound.max_polyphony = 2
 	_sound.bus = Sounds.WORLD

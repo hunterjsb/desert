@@ -272,9 +272,9 @@ calls them from Save, Save & quit, Resume, New game, the death screen and Option
     with seeds and carrots carried, resumes as root-tubers in the standard planters, a
     still-ripe vat fungus in the pot, tubers stored and carried, and the farm goes on.
 16. **A Console resumes** (2026-10-17). A Console with its screen, three instruments and a
-    radio on its top, its screen turned to its log and its shield's auto-on switched off,
-    resumes with the same parts in the same sockets, the same page, the same switch and the
-    same log, and reads on.
+    radio on its top, its screen turned to its power page, the number its shield page had,
+    resumes with the same parts in the same sockets, the same page and the same log, and
+    reads on.
 
 ## Out of scope
 

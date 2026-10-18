@@ -208,19 +208,21 @@ rows to the Console's screen. Every one reads the field itself, at the Console's
 the felt weather, so a bubble doesn't blind it. The field has no pressure, humidity or sand in
 it, so those three are worked out from it, with their numbers in tuning. They read once a
 second of world time.
-- **Anemometer:** the wind now, gusts and all, as its speed and the point it comes from. "WIND
-  12.4 m/s from WNW".
+- **Anemometer:** the wind now, gusts and all, as its speed and the point it comes from, as the
+  deck feels it: the field's wind less the deck's own way over the sand (2026-10-18). "WIND 12.4
+  m/s WNW", its angle off the bow and its steady part under it, and the true wind too while the
+  deck moves.
 - **Barometer:** pressure from the field. It's 310 hPa, the moon's thin air ([the
   moon](../the-moon.md)), where the field sits at its threshold, and it falls 8 hPa for each unit
   the field rises, so it falls as a storm comes. It shows the pressure and its trend per minute
   over the last two minutes. While the field here is rising toward its threshold, that trend
-  carried on gives a rough time until the storm, and under 15 minutes it warns: "STORM LIKELY ~5
-  min". It's rough on purpose, a curve carried on as a straight line.
+  carried on gives a rough time until the storm, and under 15 minutes it warns, a row in amber:
+  "storm ~5 min". It's rough on purpose, a curve carried on as a straight line.
 - **Hygrometer:** humidity from the cold and the storm, tied to the condenser by sharing its
   function (`Condenser.yield_lph`). It reads 60% in air as cold as a condenser makes its most in,
   less as the air warms, as the condenser's yield falls, and up to 25% more as a storm nears: the
   air grows humid over a kilometre or two ahead of its front, most in the storm itself. It shows
-  what a condenser would make there too: "HUMID 37% · condenser 6.2 L/h". The same function gives
+  what a condenser would make there too: "HUMID 37 %", and under it "condenser 6.2 L/h". The same function gives
   every cell of the map its humidity, so the blue laid over the map deepens toward each front and
   the reading is its value where you stand (2026-10-18). The condenser doesn't make more as a
   storm nears yet; that half of the tie is still proposed.
@@ -228,19 +230,20 @@ second of world time.
   within about 100 m of its front, so the sensor also reads how deep into the field it is, as
   salvage counts a storm's heart (the field 0.4 past its threshold): from 0.9 g/m³ at a wall to
   3 g/m³ at the heart, and a little ahead of the wall from the front's outflow. It shows its trend
-  over 30 s. With a radar it also says how hard the coming storm hits: the most sand in its
-  first kilometre ("hits 1.8 g/m³").
+  over 30 s, as a small arrow. With a radar it also says how hard the coming storm hits: the most
+  sand in its first kilometre ("hits 1.8 g/m³").
 - **Radar,** on the computer-mod top: it sweeps 36 bearings, one a tick, stepping 100 m out to
   its reach, 6 km (a stat of the part), until the storm state changes, then closes in on the edge
   to 2 m. It reports the nearest edge, its distance and its point. Its heading is the way storms
   ride the wind. Its ETA is the storm upwind reached at that speed: the nearest wall is often
   sliding past to one side, and the upwind one agrees with the forecast. Inside a storm it gives
-  the nearest clear air and when the storm clears, or that it runs on upwind past its reach. "FRONT 1.2 km N · ETA 5 min", then "heading ESE 8 m/s ·
-  hits 1.8 g/m³". It samples the field round the Console itself rather than reading the wall's
+  the nearest clear air and when the storm clears, or that it runs on upwind past its reach.
+  "FRONT 1.2 km N", then under it its eta, "5 min", which way it's moving, "8 m/s ESE", and
+  "hits 1.8 g/m³". It samples the field round the Console itself rather than reading the wall's
   map, which is centred on you, not on your camp.
 - **A radio on the Console's top mount** adds the forecast it already makes (`Radio.forecast`, 20
-  minutes ahead, read again every 5 s, where the radio is): "FCST storm in 5 min from WNW", then
-  "winds to 27 m/s · lasts 9 min". It feeds the Console while it's powered and whole, whatever its
+  minutes ahead, read again every 5 s, where the radio is): "FCST 5 min storm", then under it
+  where it's from, "WNW", its winds, "27 m/s", and how long it lasts, "9 min". It feeds the Console while it's powered and whole, whatever its
   dial plays aloud.
 - **Resolution scales with data** (2026-10-18, replacing the first version's map that showed only
   with the full set): the map is always there while anything reads, and finer the more the system
