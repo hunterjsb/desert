@@ -51,7 +51,7 @@ func _ready() -> void:
 
 ## The deeds open, a card highlighted, and their pictures drawn.
 func _opened(main: Main, highlighted: StringName) -> void:
-	main.ui.open(DeedsGrid.menu(get_node(^"/root/Profile"), main.ui.close_top))
+	main.ui.open(main.ui.deeds())
 	await _ticks(10)
 	for card: Button in main.ui.top().find_children("*", "Button", true, false):
 		if card.get_meta(&"deed", &"") == highlighted:

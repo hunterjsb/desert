@@ -163,9 +163,11 @@ is a menu of its own, reached from the main menu and the system menu.
 
 **Built** (2026-10-18, `game/ui/deeds_grid.gd`), after Hunter's "show relations and a hierarchy":
 Deeds stands under New game on the main menu and under Options in the system menu. It opens a tree
-of every deed under how many show done ("6 of 15 deeds"), with Back: a column or two for each family
-(Board, Shield, Farming, Camp, Story, named over them), each deed a row below the deepest it waits on,
-and a line down from each to what it opens, brighter once that's open.
+of every deed under how many show done ("6 of 15 deeds"), with Back: a branch or two for each family
+(Board, Shield, Farming, Camp, Story, named down the left), each deed a step right of the furthest it
+waits on, and a line across from each to what it opens, brighter once that's open. It's laid out as
+every menu is where it opens: over the main menu it stands on the left, narrow enough for the prop
+set aside to its right; over a run, in the middle on the soft dark field.
 - **A card** is the deed's name and a picture of its thing: the board, the shield, a crop, a planter,
   the Console, a chassis piece, the turbine; drawn in the theme's ink, a sail on its mast, and for
   the story a landmark's mast and pennant. Done, it's lit; open but not done, dimmer; still waiting on another, only its
@@ -253,7 +255,8 @@ and a line down from each to what it opens, brighter once that's open.
   of it, 8 at most, each with everything seated in it and its state (charge, crops, a
   shield's switch), seen from where you stood toward it and fitted to the crate's span.
   Under it, the save's numbers: time played, when it was saved by the clock on the wall
-  (today 13:40, yesterday 21:05, 3 days ago), the run's day, and who you came as. A save
+  (today 13:40, yesterday 21:05, 3 days ago), the run's day, and who you came as; then how many
+  deeds show done ("Deeds 6 of 15"). A save
   from before time played was kept lists the rest. Confirm carries on; back goes back.
 - **Music** at the main menu: the radio's day or night track by the menu's own light
   (`Radio.track_at`), from where the station has got to, on the menus' bus while the

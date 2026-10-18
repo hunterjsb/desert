@@ -31,7 +31,7 @@ func run() -> void:
 	ui.open(ui.system_menu())
 	ui.open(ui.options())
 	ui.open(ui.controls())
-	ui.open(DeedsGrid.menu(main.profile(), ui.close_top))
+	ui.open(ui.deeds())
 	ui.open(ui.confirm("A question", "No", "Yes", func() -> void: pass))
 	await get_tree().process_frame
 	_look()

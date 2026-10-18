@@ -1,8 +1,8 @@
 extends MenuProbe
 ## Menus & UI probe 9: the prop aside, and the music's switch. Before any run
 ## the main menu shows the Surveyor's crate. Every menu opened off it stands
-## down the left with the prop slid aside: Options, the controls list, the
-## question before a reset, who you come as and the mode; back slides it
+## down the left with the prop slid aside: the deeds, Options, the controls
+## list, the question before a reset, who you come as and the mode; back slides it
 ## home. Who you come as shows the highlighted Salvager's board, and each
 ## origin's gear as listed is what its run sets down. With a save, New game's
 ## question slides it aside too. The menu a Salvager run quits to shows the
@@ -19,6 +19,10 @@ func run() -> void:
 	var home := _across()
 	press(&"ui_down")
 	press(&"ui_accept")
+	await _aside("the deeds", home)
+	press(&"ui_cancel")
+	press(&"ui_down")
+	press(&"ui_accept")
 	await _aside("Options", home)
 	for i in 4:
 		press(&"ui_down")
@@ -32,6 +36,7 @@ func run() -> void:
 	press(&"ui_cancel")
 	await _until(func() -> bool: return is_equal_approx(_across(), home))
 	check(not main.showpiece.aside() and is_equal_approx(_across(), home), "back slides it home")
+	press(&"ui_up")
 	press(&"ui_up")
 	press(&"ui_accept")
 	press(&"ui_down")

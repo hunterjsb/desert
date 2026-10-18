@@ -128,7 +128,7 @@ border_color = Color(0.92, 0.92, 0.9, 0.22)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card"]
 content_margin_left = 8.0
-content_margin_top = 10.0
+content_margin_top = 8.0
 content_margin_right = 8.0
 content_margin_bottom = 8.0
 bg_color = Color(0.03, 0.04, 0.05, 0.95)
@@ -139,7 +139,7 @@ corner_radius_bottom_left = 2
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card_focus"]
 content_margin_left = 8.0
-content_margin_top = 10.0
+content_margin_top = 8.0
 content_margin_right = 8.0
 content_margin_bottom = 8.0
 bg_color = Color(0.06, 0.07, 0.08, 0.96)
@@ -218,12 +218,12 @@ DeedCard/styles/hover = SubResource("StyleBoxFlat_card")
 DeedCard/styles/hover_pressed = SubResource("StyleBoxFlat_card")
 DeedCard/styles/normal = SubResource("StyleBoxFlat_card")
 DeedCard/styles/pressed = SubResource("StyleBoxFlat_card")
-DeedCardColumn/base_type = &"VBoxContainer"
-DeedCardColumn/constants/separation = 6
+DeedCardRow/base_type = &"HBoxContainer"
+DeedCardRow/constants/separation = 10
 DeedCardName/base_type = &"Label"
 DeedCardName/colors/font_outline_color = Color(0, 0, 0, 0.55)
 DeedCardName/constants/outline_size = 4
-DeedCardName/font_sizes/font_size = 14
+DeedCardName/font_sizes/font_size = 13
 DeedCardName/fonts/font = SubResource("FontVariation_mippt")
 DeedLine/base_type = &"Label"
 DeedLine/colors/font_color = Color(0.86, 0.86, 0.84, 1)

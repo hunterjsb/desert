@@ -9,7 +9,7 @@ func run() -> void:
 	await open_main()
 	var profile := get_node(^"/root/Profile")
 	profile.deed("board_storm")
-	var menu := DeedsGrid.menu(profile, main.ui.close_top)
+	var menu := main.ui.deeds()
 	main.ui.open(menu)
 	var tree: DeedsGrid = menu.find_children("*", "DeedsGrid", true, false)[0]
 	check(profile.did("board_storm") and tree._cards[&"board_storm"].get_meta(&"state") == &"locked"
@@ -19,7 +19,7 @@ func run() -> void:
 	main.ui.close_top()
 	for id in ["board_distance", "board_height"]:
 		profile.deed(id)
-	menu = DeedsGrid.menu(profile, main.ui.close_top)
+	menu = main.ui.deeds()
 	tree = menu.find_children("*", "DeedsGrid", true, false)[0]
 	check(tree._cards[&"board_storm"].get_meta(&"state") == &"done" and Deeds.count(profile) == 3,
 		"its branch open, it shows done and counts")
