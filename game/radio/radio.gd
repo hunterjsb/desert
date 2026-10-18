@@ -9,7 +9,8 @@ extends Device
 ## up. A god's signal comes in by how far off it is, its frequency and the
 ## hour, and the storm between you and it garbles, slides and cuts it. Static
 ## comes in with a front's outflow, before the wall, and inside a bubble too:
-## it's the sand charging up, not the storm's sound. With nothing to report,
+## it's the sand charging up, not the storm's sound; an anomaly near brings a
+## crackle of its own, which no forecast speaks of. With nothing to report,
 ## the weather station holds: its clear-skies song plays, and it breaks off
 ## for a report the moment there's a storm on you or in sight. The Stoker's
 ## frequency carries its furnace song. Both come through the weather between
@@ -53,6 +54,10 @@ const ON_IT := 2.0
 const SONGS := {&"stoker": Sounds.RADIO_STOKER, &"eye": Sounds.RADIO_EYE}
 ## A carrier slid its storm warp's full width slides a song's pitch this share.
 const PITCH_SLIDE := 0.04
+## An anomaly's crackle: the static pitched between these, a burst at a time,
+## at its deepest this share of full static, under it and still heard.
+const CRACKLE_PITCH := Vector2(1.4, 2.2)
+const CRACKLE_LEVEL := 0.5
 ## The volume knob turns this far a notch, of full.
 const VOLUME_STEP := 0.1
 ## A signal this clean or better comes through whole.
@@ -94,10 +99,13 @@ var said := ""
 var spoken := ""
 var spoken_count := 0
 var spoken_at := -INF
-## How much of the storm's static gets in now, 0 to 1.
+## How much of the storm's static gets in now, 0 to 1, and of an anomaly's
+## own, which crackles where a storm's hisses.
 var noise := 0.0
+var odd := 0.0
 var music: AudioStreamPlayer3D
 var hiss: AudioStreamPlayer3D
+var crackle: AudioStreamPlayer3D
 
 var _tuning := Tuning.current()
 var _signal: AudioStreamPlayer3D
@@ -131,6 +139,8 @@ func _ready() -> void:
 	music = _voice()
 	hiss = _voice()
 	hiss.stream = Sounds.RADIO_STATIC
+	crackle = _voice()
+	crackle.stream = Sounds.RADIO_STATIC
 	_signal = _voice()
 	if _wanted != UNHEARD:
 		_tune_to_channel(_wanted)
@@ -345,6 +355,7 @@ func _retuned(before: int) -> void:
 func _listen(delta: float) -> void:
 	if not playing():
 		noise = 0.0
+		odd = 0.0
 		said = ""
 		spoken = ""
 		reception = {}
@@ -356,6 +367,7 @@ func _listen(delta: float) -> void:
 	var t := world.time
 	var field := world.weather.field
 	noise = field.outflow_at(x, z, t)
+	odd = field.anomaly_at(x, z, t)
 	var now := channel
 	if now != _was:
 		if _was != UNHEARD or target.is_empty():
@@ -447,9 +459,15 @@ func _listen(delta: float) -> void:
 		through = Dial.pull(frequency - Dial.BEACON_KHZ, _tuning.dial_width_khz)
 	var ducked := lerpf(1.0, db_to_linear(-_tuning.radio_static_duck_db), clampf(through, 0.0, 1.0))
 	hiss.volume_db = linear_to_db(maxf(noise, under) * ducked + 0.0001) + knob_db()
+	# An anomaly's static sputters: the hiss thinned and pitched up, cut in and
+	# out in short bursts, the deeper the more of it.
+	var burst := Interference.crackle(t)
+	crackle.pitch_scale = lerpf(CRACKLE_PITCH.x, CRACKLE_PITCH.y, burst.y)
+	crackle.volume_db = linear_to_db(odd * burst.x * CRACKLE_LEVEL * ducked + 0.0001) + knob_db()
 	_loudness()
 	if not _hissing:
 		hiss.play(fposmod(t, hiss.stream.get_length()))
+		crackle.play(fposmod(t * 0.7, crackle.stream.get_length()))
 		_hissing = true
 
 
@@ -520,7 +538,7 @@ func on_air() -> AudioStream:
 
 
 func _off_air() -> void:
-	for voice: AudioStreamPlayer3D in [music, hiss, _signal]:
+	for voice: AudioStreamPlayer3D in [music, hiss, crackle, _signal]:
 		voice.stop()
 	_on_air = null
 	_hissing = false

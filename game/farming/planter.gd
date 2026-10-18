@@ -63,8 +63,8 @@ func tick(seconds: float, t: float) -> void:
 
 ## What its crops feel at time t, just over its slots: the sun's light, the
 ## storm's dark in it; a lamp's, which none of its sockets takes yet; the
-## temperature, wind and dust with shelter applied; and the storm in the air,
-## its humid dark, which no bubble keeps out.
+## temperature, wind and dust with shelter applied, an anomaly's as it really
+## is; and the storm in the air, its humid dark, which no bubble keeps out.
 func felt(t: float) -> Dictionary:
 	return felt_at(world.weather, global_position + CROWN, t)
 
@@ -72,8 +72,9 @@ func felt(t: float) -> Dictionary:
 ## What a crop feels at a place, engine metres, at time t: in a planter or
 ## wild in the sand alike.
 static func felt_at(weather: Weather, at: Vector3, t: float) -> Dictionary:
+	var hidden := weather.hidden(at, t)
 	return {&"light": weather.felt_light(at, t), &"lamp": 0.0, &"temperature": weather.felt_temperature(at, t),
-		&"wind": weather.felt_wind(at, t).length(), &"particles": weather.felt_storm(at, t),
+		&"wind": weather.felt_wind(at, t).length() * hidden.y, &"particles": weather.felt_storm(at, t) * hidden.x,
 		&"storm": weather.field_storm(at, t)}
 
 

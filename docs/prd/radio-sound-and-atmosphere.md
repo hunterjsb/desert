@@ -83,7 +83,9 @@ it and it crackles.
 - **Static** comes in with a storm front's outflow, the wind that rises ahead of the wall,
   so it starts before the storm arrives and is full inside it, in a bubble too: it's the
   sand charging up (the lore research), not the storm's sound. At its loudest it's 5 dB
-  under the music.
+  under the music. An anomaly near brings a crackle of its own under it, short pitched-up
+  bursts as deep as its hidden term, which no forecast speaks of ([Wind &
+  storms](wind-and-storms.md#the-anomaly-as-built-2026-10-18)).
 - **The probes:** 1, 2, 4 and 5 are in `probes/radio`. Probe 3 is Bubble shield probe 1,
   which already walks you out through a bubble's shell and back a quarter metre at a time
   and checks the roar is muffled exactly inside it, so it isn't written twice.

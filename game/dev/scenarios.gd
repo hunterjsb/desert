@@ -26,7 +26,9 @@ extends RefCounted
 ## on its way and a catch line strung across the wind for its drift. "chassis" lays out pieces, their trays, a crate, a
 ## condenser, hooks and a coil to build a deck from, one piece's hook moored to a stake where the next piece pops it. "console" stands a Console with every
 ## instrument and a radio on a small deck beside a shield, with a storm due
-## in a few minutes, to watch its screen as it comes. "eclipse" faces Tu in
+## in a few minutes, to watch its screen as it comes. "anomaly" stands you
+## where an anomaly's heart comes over minutes after its storm's wall, beside
+## a camp built for wind. "eclipse" faces Tu in
 ## the clear, the sun `eclipse` s from going behind it. "moon" stands you elsewhere on the moon:
 ## [latitude, degrees east of the point under Tu], so [30, 180] is the far
 ## side, 30° north. Times of day are local.
@@ -90,6 +92,10 @@ const LIST: Array[Dictionary] = [
 	# shield switches itself on.
 	{"key": "console", "label": "console: a Console with every instrument and a radio on a small deck with a shield, a storm due in a few minutes",
 		"kind": "clear", "day": [0.35, 0.55], "due": [240.0, 360.0], "console": true},
+	# Its heart comes over minutes after the wall, on a camp ready for an
+	# ordinary storm: the one the Walker misjudged.
+	{"key": "anomaly", "label": "anomaly: a storm due in a few minutes with an anomaly at its heart, a camp built for wind: a deck moored on the sand, its shield on one battery, a turbine out in the gale, a Console reading wind and sand, a radio on the weather station, a compass in your suit",
+		"kind": "anomaly", "day": [0.3, 0.6], "due": [150.0, 300.0], "anomaly": true},
 ]
 
 ## The test kit, as [catalog id, metres to your right, metres ahead]: empty
@@ -225,6 +231,18 @@ const CONSOLE_PARTS := [&"big_battery", &"big_battery", &"screen", &"anemometer"
 	&"particle_sensor", &"radar"]
 const CONSOLE_STAKE := [-0.5, 4.6]
 
+## The camp built for wind, on the reference camp's deck plan resting on the
+## sand, moored upwind: a Console reading the wind and the sand with a radio
+## on its top, the base shield on one battery, a bare crate whose port holds
+## the turbine out downwind beyond the bubble.
+const ANOMALY_CONSOLE := [&"screen", &"anemometer", &"particle_sensor"]
+## An anomaly's heart is looked for this far round where the run began, m,
+## over this many days from the grace's end, coming over at most this long
+## after its wall, s.
+const ANOMALY_SEARCH := 30000.0
+const ANOMALY_DAYS := 30.0
+const ANOMALY_WALL := 300.0
+
 ## Your own frame, to fit what you find to: right and ahead.
 const YOURS := [1.5, 2.5]
 ## A catch line's stakes, right and ahead: across the wind you face.
@@ -280,7 +298,7 @@ static func apply(world: World, scenario: Dictionary) -> void:
 			or scenario.get("farm", false) or scenario.get("board", false) or scenario.get("radio", false)
 			or scenario.get("afk", false) or scenario.get("chassis", false) or scenario.get("console", false)
 			or scenario.get("sail", false) or scenario.get("drift", false) or scenario.get("walker", false)
-			or scenario.get("music", false)):
+			or scenario.get("music", false) or scenario.get("anomaly", false)):
 		return
 	# Bodies dropped before the sand under them has collision would be frozen or forgotten.
 	while is_instance_valid(world) and not world.terrain.is_settled_around(place.x, place.z):
@@ -314,6 +332,8 @@ static func apply(world: World, scenario: Dictionary) -> void:
 		dropped = console(world)
 	elif scenario.get("drift", false):
 		dropped = catch_line(world)
+	elif scenario.get("anomaly", false):
+		dropped = anomaly_camp(world)
 	else:
 		dropped = camp(world) if scenario.get("camp", false) else survive(world)
 	world.set_meta(&"scenario_kit", dropped)
@@ -382,6 +402,8 @@ static func find(world: World, scenario: Dictionary) -> Dictionary:
 		return _in_lee(world, scenario)
 	if scenario.kind == "sail":
 		return _open_breeze(world, scenario)
+	if scenario.kind == "anomaly":
+		return _before_anomaly(world, scenario)
 	# Without salvage there's no structure to stand among: where the run began.
 	if scenario.get("among", false) and world.tuning.salvage:
 		return _among(world, scenario)
@@ -548,6 +570,38 @@ static func _in_lee(world: World, scenario: Dictionary) -> Dictionary:
 				var upwind := -field.prevailing_at(t).normalized()
 				return {"x": foot.x, "z": foot.y, "yaw": atan2(-upwind.x, -upwind.y), "time": t}
 			t += TIME_STEP
+	return {}
+
+
+## Where an anomaly's heart, at its full, comes over within ANOMALY_WALL s
+## of its storm's wall, at a moment in the day's window that's clear there
+## with that storm due in the window asked, facing upwind: it rides the
+## air, so it's met wherever it passes, round where the run began.
+static func _before_anomaly(world: World, scenario: Dictionary) -> Dictionary:
+	var field := world.weather.field
+	var day := world.weather.day
+	var longitude := moon_at(world, scenario).y
+	var due: Array = scenario.due
+	var day_s := world.tuning.day_minutes * 60.0
+	var t := world.tuning.anomaly_grace_days * day_s
+	var last := t + ANOMALY_DAYS * day_s
+	while t < last:
+		for heart in field.anomalies_near(world.spawn.x, world.spawn.y, t, ANOMALY_SEARCH):
+			var at := Vector2(heart.x, heart.z)
+			if heart.strength < 1.0 or field.raw_storm_at(at.x, at.y, t) <= 0.0:
+				continue
+			var wall := t
+			while wall > t - ANOMALY_WALL and field.raw_storm_at(at.x, at.y, wall - 5.0) > 0.0:
+				wall -= 5.0
+			var start: float = wall - (due[0] + due[1]) * 0.5
+			var hour := day.time_of_day(start, longitude)
+			if wall <= t - ANOMALY_WALL or hour < scenario.day[0] or hour > scenario.day[1] \
+					or field.raw_storm_at(at.x, at.y, start) > 0.0 \
+					or not _within(field.next_change(at.x, at.y, start, due[1] + 10.0, 5.0), due):
+				continue
+			var upwind := -field.prevailing_at(start).normalized()
+			return {"x": at.x, "z": at.y, "yaw": atan2(-upwind.x, -upwind.y), "time": start}
+		t += TIME_STEP * 6.0
 	return {}
 
 
@@ -926,6 +980,41 @@ static func afk(world: World) -> Array[Node3D]:
 	dropped.append(wire(world, crate, turbine, true))
 	shield.stand(true)
 	return dropped
+
+
+## A camp built for wind, as the forecast would have it: the reference
+## camp's deck of four pieces resting on the sand with a hook on every ring,
+## moored to a stake upwind; on it a Console with its screen, an anemometer
+## and a particle sensor, a radio on its top on the weather station, the base
+## shield on one battery, running, and a bare crate whose strong cable holds
+## a turbine out in the wind beyond the bubble: enough for any ordinary
+## storm's 200 W. You start fed and watered, a compass in your suit. Returns
+## what it dropped, the deck first.
+static func anomaly_camp(world: World) -> Array[Node3D]:
+	var player := world.player
+	player.vitals.fresh()
+	player.suit.carried.append(Catalog.part(&"compass"))
+	var deck := standing(world, &"chassis", [], AFK_DECK) as Chassis
+	for at: Array in [[Vector2i.ZERO, Vector2i(1, 0)], [Vector2i.ZERO, Vector2i(0, 1)], [Vector2i(1, 0), Vector2i(0, 1)]]:
+		deck.join(Catalog.device(&"chassis") as Chassis, _on_piece(deck, at[0], &"ring", at[1]), 0)
+	for i in deck.pieces().size():
+		fill(world, deck, [&"hook", &"hook"])
+	var made := _stand_on(world, deck, &"console", ANOMALY_CONSOLE, AFK_CONDENSER_ON) as Console
+	var radio := Catalog.device(&"radio")
+	world.content.add_child(radio)
+	made.mount(radio, _free(made, &"top"))
+	radio.on = true
+	radio.frequency = Radio.gods_of(world).carrier(&"walker", world.time)
+	var shield := _stand_on(world, deck, &"shield", [&"battery"], AFK_SHIELD_ON) as ShieldGenerator
+	var crate := _stand_on(world, deck, &"crate_frame", [], AFK_CRATE_ON)
+	var stake := _driven(world, AFK_STAKE)
+	var line := Line.between(world, _deck_tie(deck, AFK_CONDENSER_ON, Vector2i(0, -1)),
+		stake.free_tie(deck.global_position), 0.05)
+	var turbine := standing(world, &"turbine", [], AFK_TURBINE)
+	turbine.global_basis = turbine.global_basis.rotated(Vector3.UP, PI / 2.0)
+	var cable := wire(world, crate, turbine, true)
+	shield.stand(true)
+	return [deck, made, radio, shield, crate, stake, line, turbine, cable]
 
 
 ## A device standing on a deck's piece at a place on its grid, with these

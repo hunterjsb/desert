@@ -238,8 +238,10 @@ storm":
   moving.
 - **Sleep is no dodge:** the night already works the storm out on your camp; and asleep out in the
   open, with no bubble over you, a storm's arrival wakes you.
-- **A storm that runs for days** is the field's long tail, not an anomaly (none is built yet); the
-  first storm of a run shouldn't be one.
+- **A storm that runs for days** is the field's long tail, not an anomaly (built 2026-10-18, [Wind &
+  storms](wind-and-storms.md#the-anomaly-as-built-2026-10-18)); the first storm of a run isn't one:
+  none comes in a run's first five days. A night slept through one lives its real damage on a plan
+  made from the clean curve.
 
 ## Sleep (proposed)
 
