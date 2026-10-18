@@ -69,6 +69,7 @@ var _dust_glints: RID
 var _dust_view: RID
 var _dust_look: ShaderMaterial
 var _dust_room := 0
+var _dust_rows := PackedFloat32Array()
 var _dust_center := Vector2i.ZERO
 ## Each site's last chance to clang, by its tick.
 var _clanged := {}
@@ -94,20 +95,21 @@ var _of_unit := {}
 var _cells := {}
 
 
-## One thing seen from afar: a structure, laid or sighted, and how it's drawn
-## in each state: its stand-in's boxes and glints. Where its chunk draws it,
-## its own glints are read as it stands. Slices of the views' buffers, from the job's
+## One thing seen from afar: a structure, laid or sighted, and how it's
+## drawn: its stand-in's boxes and glints as the job read it. Where its chunk
+## draws it, its own glints are read as it stands. Slices of the views' buffers, from the job's
 ## centre.
 class Entry:
 	var site: Structure
-	## Its state as the job read it, on the worker: reading the weather that
-	## far back costs too much for the main thread.
-	var state: int
+	## How far out of the sand it stood as the job read it, on the worker:
+	## reading the weather that far back costs too much for the main thread.
+	var level: float
 	var ground: float
-	var boxes: Array[PackedFloat32Array] = []
-	## A landmark's boxes over its own built ground, till the real thing takes over.
+	## Its stand-in's boxes and glints at that level.
+	var boxes: PackedFloat32Array
+	var far_glints: PackedFloat32Array
+	## A landmark's boxes over its own built ground in each state, till the real thing takes over.
 	var near_boxes: Array[PackedFloat32Array] = []
-	var far_glints: Array[PackedFloat32Array] = []
 
 
 ## A sighting past the sheet: history's site as the sheet would lay it from
@@ -232,6 +234,9 @@ func _process(_delta: float) -> void:
 	if in_dust and now - _dust_at >= REDRAW_S * 1e6:
 		_dust_at = now
 		_draw_dust()
+	elif not in_dust and not _dust_rows.is_empty():
+		_dust_rows = PackedFloat32Array()
+		_dust_room = _fill(_dust_glints, _dust_rows, _dust_room, GLINT_FLOATS, true)
 	_shade()
 	frame_ms = (Time.get_ticks_usec() - started) / 1000.0
 	slowest_ms = maxf(slowest_ms, frame_ms)
@@ -263,17 +268,16 @@ func stand_in(site: Structure) -> Dictionary:
 		return {}
 	for entry in _shown.entries:
 		if entry.site == site and not _world.terrain.is_loaded_at(site.x, site.z):
-			var s := _state(entry)
-			if entry.boxes[s].is_empty():
+			if entry.boxes.is_empty():
 				return {}
 			var top := -INF
-			var rows := entry.boxes[s]
+			var rows := entry.boxes
 			for k in range(0, rows.size(), BOX_FLOATS):
 				var box := Transform3D(Basis(Vector3(rows[k], rows[k + 4], rows[k + 8]), Vector3(rows[k + 1], rows[k + 5],
 					rows[k + 9]), Vector3(rows[k + 2], rows[k + 6], rows[k + 10])), Vector3(rows[k + 3], rows[k + 7], rows[k + 11]))
 				for i in 8:
 					top = maxf(top, (box * (Vector3(i & 1, (i >> 1) & 1, (i >> 2) & 1) - Vector3.ONE * 0.5)).y)
-			var at := site.frame_on(s, entry.ground).origin
+			var at := site.frame_on_at(entry.level, entry.ground).origin
 			return {"x": at.x, "z": at.z, "ground": entry.ground, "top": top}
 	return {}
 
@@ -289,7 +293,7 @@ func glints_of(site: Structure) -> Array[Array]:
 	for entry in _shown.entries:
 		if entry.site != site:
 			continue
-		var rows := entry.far_glints[_state(entry)]
+		var rows := entry.far_glints
 		if _world.terrain.is_loaded_at(site.x, site.z):
 			rows = PackedFloat32Array()
 			_own_glints(site, rows, _shown.center)
@@ -301,12 +305,7 @@ func glints_of(site: Structure) -> Array[Array]:
 ## it faces, the cosine of how wide it sweeps].
 func dust_glints() -> Array[Array]:
 	var out: Array[Array] = []
-	var rows := PackedFloat32Array()
-	rows.resize(_dust_room * GLINT_FLOATS)
-	if _dust_room > 0:
-		rows = RenderingServer.multimesh_get_buffer(_dust_glints)
-	rows.resize(RenderingServer.multimesh_get_visible_instances(_dust_glints) * GLINT_FLOATS)
-	_unpack(rows, Vector3(_dust_center.x * _size, 0.0, _dust_center.y * _size), out)
+	_unpack(_dust_rows, Vector3(_dust_center.x * _size, 0.0, _dust_center.y * _size), out)
 	return out
 
 
@@ -497,28 +496,29 @@ func _records(history: History, cell: int) -> Array:
 	return had
 
 
-## How a structure is drawn in each state, from the job's centre.
+## How a structure is drawn as the job reads it, from the job's centre.
 func _entry(site: Structure, center: Vector2i) -> Entry:
 	var entry := Entry.new()
 	entry.site = site
-	entry.state = site.state()
+	entry.level = site.level()
 	entry.ground = FarRing.ground(_world.shape, _tuning, site.x, site.z)
 	var shift := Vector3(center.x * _size, 0.0, center.y * _size)
 	var landmark := site.piece.far_landmark
+	var frame := site.frame_on_at(entry.level, entry.ground).translated(-shift)
+	var tall := site.top_at(entry.level)
+	entry.boxes = _boxes_of(site, entry.level, frame, entry.ground, tall if landmark else 0.0, shift)
 	for s in 3:
-		var frame := site.frame_on(s, entry.ground).translated(-shift)
 		var own := site.frame_on(s, site.pad()).translated(-shift)
-		var tall := site.top_in(s)
-		entry.boxes.append(_boxes_of(site, s, frame, entry.ground, tall if landmark else 0.0, shift))
-		entry.near_boxes.append(_boxes_of(site, s, own, site.pad(), -tall, shift) if landmark else PackedFloat32Array())
-		var far := PackedFloat32Array()
-		for each in site.bare_glints_at(s):
-			# On a landmark it rides with its stand-in as that's drawn larger.
-			var spot := frame * (each[0] as Vector3)
-			var foot := Vector3(site.x, entry.ground, site.z) - shift
-			_put_glint(far, spot, (frame.basis * _facing(site, each)).normalized(), each[2], foot - spot,
-				tall if landmark else 0.0)
-		entry.far_glints.append(far)
+		entry.near_boxes.append(_boxes_of(site, s, own, site.pad(), -site.top_in(s), shift) if landmark
+			else PackedFloat32Array())
+	var glints := PackedFloat32Array()
+	for each in site.bare_glints_at(entry.level):
+		# On a landmark it rides with its stand-in as that's drawn larger.
+		var spot := frame * (each[0] as Vector3)
+		var foot := Vector3(site.x, entry.ground, site.z) - shift
+		_put_glint(glints, spot, (frame.basis * _facing(site, each)).normalized(), each[2], foot - spot,
+			tall if landmark else 0.0)
+	entry.far_glints = glints
 	return entry
 
 
@@ -539,7 +539,7 @@ func _own_glints(site: Structure, into: PackedFloat32Array, center: Vector2i, ne
 	var shift := Vector3(center.x * _size, 0.0, center.y * _size)
 	var frame := site.frame_at(level).translated(-shift)
 	var foot := Vector3(site.x, site.pad(), site.z) - shift
-	var tall := -site.top_in(StructureKit.Piece.shown_state(level)) if site.piece.far_landmark else 0.0
+	var tall := -site.top_at(level) if site.piece.far_landmark else 0.0
 	var before := {}
 	if newly:
 		for each in site.bare_glints_at(Exposure.level(site.depth, site.settled())):
@@ -551,12 +551,13 @@ func _own_glints(site: Structure, into: PackedFloat32Array, center: Vector2i, ne
 		_put_glint(into, spot, (frame.basis * _facing(site, each)).normalized(), each[2], foot - spot, tall)
 
 
-## A stand-in's boxes in a state on a frame, each with the way to its foot
+## A stand-in's boxes at a level on a frame, each with the way to its foot
 ## and, for a landmark, how tall it stands (negative over its own ground).
-func _boxes_of(site: Structure, s: int, frame: Transform3D, ground: float, tall: float, shift: Vector3) -> PackedFloat32Array:
+func _boxes_of(site: Structure, at_level: float, frame: Transform3D, ground: float, tall: float,
+		shift: Vector3) -> PackedFloat32Array:
 	var rows := PackedFloat32Array()
 	var foot := Vector3(site.x, ground, site.z) - shift
-	for each in site.far_look(s):
+	for each in site.far_look_at(at_level):
 		var box := frame * (each[0] as Transform3D)
 		var b := box.basis
 		var tone := (each[1] as Color).srgb_to_linear()
@@ -649,21 +650,14 @@ func _draw() -> void:
 		# Its ground, built since, gave way to a bigger one's.
 		if entry.site.yields == 1:
 			continue
-		var s := _state(entry)
 		if terrain.is_loaded_at(entry.site.x, entry.site.z):
-			boxes.append_array(entry.near_boxes[s])
+			boxes.append_array(entry.near_boxes[StructureKit.Piece.shown_state(entry.site.level())])
 			_own_glints(entry.site, glints, _shown.center)
 		else:
-			boxes.append_array(entry.boxes[s])
-			glints.append_array(entry.far_glints[s])
+			boxes.append_array(entry.boxes)
+			glints.append_array(entry.far_glints)
 	_box_room = _fill(_boxes, boxes, _box_room, BOX_FLOATS, true)
 	_glint_room = _fill(_glints, glints, _glint_room, GLINT_FLOATS, true)
-
-
-## An entry's state now: as its chunk's build read it where that's drawn,
-## else as the job read it.
-func _state(entry: Entry) -> int:
-	return entry.site.state() if _world.terrain.is_loaded_at(entry.site.x, entry.site.z) else entry.state
 
 
 ## Puts a buffer of instances in a multimesh, a transform, a colour if
@@ -700,6 +694,7 @@ func _draw_dust() -> void:
 			_own_glints(site, rows, center, true)
 		if by <= _tuning.storm_clang_m:
 			_clang(site, each[1], by)
+	_dust_rows = rows
 	_dust_room = _fill(_dust_glints, rows, _dust_room, GLINT_FLOATS, true)
 
 
@@ -716,7 +711,7 @@ func _clang(site: Structure, bared: float, by: float) -> void:
 	rng.seed = hash([site.loot, "clang", tick])
 	if rng.randf() >= CLANG_CHANCE * clampf(bared, 0.0, 1.0):
 		return
-	var top := site.frame() * Vector3(0.0, site.top_in(StructureKit.Piece.shown_state(site.level())) * 0.5, 0.0)
+	var top := site.frame() * Vector3(0.0, site.top_at(site.level()) * 0.5, 0.0)
 	get_tree().create_timer(by / SOUND_SPEED).timeout.connect(_ring.bind(top))
 
 

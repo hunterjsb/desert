@@ -549,11 +549,21 @@ func frame_at(at_level: float) -> Transform3D:
 	return Transform3D(basis(), Vector3(x, _pad - piece.sink_at(at_level), z)) * _lean()
 
 
+## Its frame at a level with the dunes' mean under it at `under`.
+func frame_on_at(at_level: float, under: float) -> Transform3D:
+	return Transform3D(basis(), Vector3(x, under - piece.sink_at(at_level), z)) * _lean()
+
+
 ## Its far look in a state: each box as [a unit cube's transform in its
 ## frame, tone], cut off at the sand.
 func far_look(s: int) -> Array[Array]:
+	return far_look_at(s)
+
+
+## The same at a level between states.
+func far_look_at(at_level: float) -> Array[Array]:
 	var out: Array[Array] = []
-	var line := piece.sink[s] if piece.lean == 0.0 else -INF
+	var line := piece.sink_at(at_level) if piece.lean == 0.0 else -INF
 	for each in piece.far:
 		var box: AABB = each[0]
 		var lo := maxf(box.position.y, line)
@@ -568,9 +578,14 @@ func far_look(s: int) -> Array[Array]:
 ## How high it rises over the dunes' mean under it in a state, m: its far
 ## look's top, or its boxes' for what has none.
 func top_in(s: int) -> float:
-	var frame := frame_on(s, 0.0)
+	return top_at(s)
+
+
+## The same at a level between states.
+func top_at(at_level: float) -> float:
+	var frame := frame_on_at(at_level, 0.0)
 	var top := -INF
-	var boxes: Array = far_look(s).map(func(each: Array) -> Transform3D: return each[0]) if not piece.far.is_empty() \
+	var boxes: Array = far_look_at(at_level).map(func(each: Array) -> Transform3D: return each[0]) if not piece.far.is_empty() \
 		else piece.boxes.map(func(b: AABB) -> Transform3D: return Transform3D(Basis.from_scale(b.size), b.get_center()))
 	for each: Transform3D in boxes:
 		var box := frame * each

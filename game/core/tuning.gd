@@ -692,7 +692,7 @@ static var _current: Tuning
 ## sheds in a storm's heart once the storm has dug it right out; how far
 ## downwind the stream carries before most of it has fallen out, m; and how
 ## wide it leaves the site, m, spreading this much a metre downwind.
-@export var site_drift_per_hour: float = 60.0
+@export var site_drift_per_hour: float = 120.0
 @export var site_drift_carry_m: float = 150.0
 @export var site_drift_width_m: float = 4.0
 @export var site_drift_spread: float = 0.15
