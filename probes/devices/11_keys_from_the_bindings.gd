@@ -20,7 +20,7 @@ func run() -> void:
 	press(&"console")
 
 	_rebind(&"hands_grab", _key(KEY_G))
-	_rebind(&"toggle_keys", _key(KEY_F11))
+	_rebind(&"toggle_keys", _key(KEY_F12))
 	_rebind(&"console", _key(KEY_F10))
 	var right := InputEventMouseButton.new()
 	right.button_index = MOUSE_BUTTON_RIGHT
@@ -31,7 +31,7 @@ func run() -> void:
 		Controls.key_for(&"hands_throw"), Controls.key_for(&"toggle_keys"), Controls.key_for(&"console")])
 	check(_row(keys, "G", "take") and _row(keys, "right click", "throw") and not _row(keys, "E", "take"),
 		"rebound, the keys list follows, a mouse button too")
-	check(Controls.tint("F11") in Dev._hint.text, "and so does its hint")
+	check(Controls.tint("F12") in Dev._hint.text, "and so does its hint")
 	press(&"console")
 	check(console.visible and Controls.tint("F10") in console._out.text, "and the console, opened by its new key")
 	press(&"console")

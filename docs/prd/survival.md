@@ -337,7 +337,15 @@ Death means a new run (see Runs in the vision).
   same without one: the moon has no tilt, so the sun rises due east and sets due west
   everywhere, stands to the south at noon north of the equator (north of you south of it,
   overhead on it), and morning shadows point west. A storm hides it; the compass doesn't
-  care. As built:
+  care.
+  - **Tu's field moves it** (agreed 2026-10-18, building). Zan has no field of its own, only
+    patches of old magnetism in its volcanic ground. The needle lines up with Tu's, which in
+    Tu's equatorial plane runs along the axis Tu and Zan share, so it points north, but weakly:
+    a few tenths of a microtesla at 12.7 Tu radii, a hundredth of Earth's or less. So it's slow
+    to settle, sways about ten degrees either way once each time Tu turns (Tu's field is
+    tipped from its spin like Jupiter's), and swims over old volcanic ground and in a storm's
+    charged dust. It never shows Tu-ward: a needle can't know it, and the Console can.
+  As built:
   - **A 12 cm field compass,** 0.2 kg, company issue: a gunmetal case, a bone card under a
     black bezel, north marked on the card in safety yellow, and a needle whose red north
     half glows a little, so it reads at night and in a storm. Nothing takes it: it's read,
