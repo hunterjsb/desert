@@ -242,32 +242,47 @@ static func _tithe_hauler() -> StructureKit.Piece:
 	p.approach = Vector2(-11.0, 2.0)
 	p.look = _hauler_look
 	StructureKit.far_box(p, Vector3(-2.5, 0.0, -8.2), Vector3(2.5, 3.85, 8.4), ARMOUR)
-	StructureKit.glint(p, Vector3(0.0, 2.45, 8.41), Vector3(0.0, 0.55, 1.0), 3.0)
-	StructureKit.glint(p, Vector3(-2.51, 2.85, 6.8), Vector3(-1.0, 0.55, 0.0), 3.0)
-	StructureKit.glint(p, Vector3(1.0, 3.86, -4.0), Vector3(0.1, 1.25, 0.1), 4.0)
+	StructureKit.glint(p, Vector3(0.0, 2.45, 8.41), Vector3(0.0, 0.3, 1.0), 3.0)
+	StructureKit.glint(p, Vector3(-2.51, 2.85, 6.8), Vector3(-1.0, 0.3, 0.0), 3.0)
+	StructureKit.glint(p, Vector3(1.0, 3.86, -4.0), Vector3(0.1, 1.0, 0.1), 4.0)
 	return p
 
 
 static func _hauler_look(b: Paint.Pieces, p: StructureKit.Piece, state: int) -> void:
 	var c := coats()
 	StructureKit.draw_boxes(b, p, state, c, 0.03)
-	# The cab's slit windows and its ram plate, the member state's seal on
-	# each flank, hazard chevrons on the skirts, the hauler's tithe number.
-	b.box(Vector3(4.0, 0.6, 0.04), Vector3(0.0, 2.65, 8.41), c.glass, 0.01)
-	b.box(Vector3(4.6, 1.05, 0.12), Vector3(0.0, 0.85, 8.45), c.steel, 0.02)
+	# The cab's slit windows behind their grilles, its ram plate and
+	# headlamps, the member state's seal on each flank, hazard chevrons on the
+	# skirts.
+	b.box(Vector3(4.0, 0.35, 0.04), Vector3(0.0, 2.65, 8.41), c.glass, 0.01)
+	for u: float in [-1.5, -0.5, 0.5, 1.5]:
+		b.box(Vector3(0.05, 0.42, 0.05), Vector3(u, 2.65, 8.44), c.steel, 0.006)
+	b.box(Vector3(4.6, 0.8, 0.12), Vector3(0.0, 0.85, 8.45), c.steel, 0.02)
+	for u: float in [-1.9, 1.9]:
+		b.drum(0.12, 0.08, Vector3(u, 1.5, 8.44), c.glass, Basis(Vector3.RIGHT, PI * 0.5), 10)
 	for k in 6:
-		b.box(Vector3(0.5, 0.5, 0.03), Vector3(-2.0 + k * 0.8, -0.5, 8.22), c.yellow if k % 2 == 0 else c.black, 0.004)
+		b.box(Vector3(0.5, 0.25, 0.03), Vector3(-2.0 + k * 0.8, -0.5, 8.22), c.yellow if k % 2 == 0 else c.black, 0.004)
 	for side in [-1.0, 1.0]:
 		var turn := Basis(Vector3.UP, side * PI * 0.5)
 		b.stamp(Paint.Mark.MEMBER_STATE, Vector3(side * 2.52, 2.2, 0.8), 1.4, turn)
-		b.box(Vector3(0.02, 1.25, 1.8), Vector3(side * 2.51, 2.2, 0.8), c.panel, 0.005)
-	# Rivet rows down its armour, a slit window in the cab door.
+		b.box(Vector3(0.02, 1.0, 1.8), Vector3(side * 2.51, 2.2, 0.8), c.panel, 0.005)
+		# Its tracks' housings along the skirt, a run of road wheels showing under them.
+		b.box(Vector3(0.12, 0.35, 15.6), Vector3(side * 2.58, 0.05, 0.0), c.olive, 0.01)
+		for v: float in [-6.6, -4.4, -2.2, 0.0, 2.2, 4.4, 6.6]:
+			b.drum(0.38, 0.14, Vector3(side * 2.6, -0.4, v), c.black, Basis(Vector3.BACK, PI * 0.5), 12)
+	# Rivet rows down its armour, a slit window in the cab door, and chevrons
+	# round the cargo door where the tithe went in and out.
 	for v: float in [-7.0, -4.0, -1.0, 2.0, 5.0, 7.5]:
-		b.box(Vector3(0.03, 3.25, 0.06), Vector3(2.52, 1.7, v), c.steel, 0.005)
-	b.box(Vector3(0.03, 0.55, 0.8), Vector3(-2.52, 2.9, 5.3), c.glass, 0.004)
-	# Inside: a stencilled TITHE over the locker door, and the cab's seats.
-	b.box(Vector3(1.4, 0.45, 0.02), Vector3(0.0, 2.65, -1.12), c.yellow, 0.003)
-	b.box(Vector3(1.4, 1.05, 0.8), Vector3(-1.0, 0.65, 7.3), c.seat, 0.03)
+		b.box(Vector3(0.03, 3.0, 0.06), Vector3(2.52, 1.95, v), c.steel, 0.005)
+	b.box(Vector3(0.03, 0.3, 0.8), Vector3(-2.52, 2.9, 5.3), c.glass, 0.004)
+	for k in 5:
+		b.box(Vector3(0.03, 0.22, 0.8), Vector3(-2.52, 3.38, -5.6 + k * 0.8), c.yellow if k % 2 == 0 else c.black, 0.003)
+	# A roof ring where its gun was, its mount empty, and a snapped whip aerial.
+	b.ring(0.45, 0.6, Vector3(0.0, 3.88, -3.0), c.dark, Basis.IDENTITY, 12)
+	b.drum(0.03, 1.4, Vector3(1.8, 4.55, 6.8), c.steel, Basis(Vector3.BACK, 0.35), 6)
+	# Inside: a stencilled tithe band over the locker door, and the cab's seats.
+	b.box(Vector3(1.4, 0.2, 0.02), Vector3(0.0, 2.65, -1.12), c.yellow, 0.003)
+	b.box(Vector3(1.4, 0.8, 0.8), Vector3(-1.0, 0.65, 7.3), c.seat, 0.03)
 
 
 # --- The freight pod: a contractor's cargo pod, its hatch open to the storms. ---
@@ -511,3 +526,16 @@ static func _hopper_look(b: Paint.Pieces, p: StructureKit.Piece, state: int) -> 
 	for u: float in [2.6, 3.2]:
 		b.box(Vector3(0.05, 0.3, 0.1), Vector3(u, 0.9, -2.0), c.cord, 0.004)
 	b.ring(0.25, 0.32, Vector3(-2.8, 0.82, -1.5), c.dark, Basis.IDENTITY, 12)
+	# Its main engines over the ramp, scorched; the burn it left down its
+	# belly as it came in; the wing's torn root, its ribs bare.
+	for u: float in [-0.8, 0.8]:
+		b.drum(0.38, 0.6, Vector3(u, 2.3, -5.9), c.dark, Basis(Vector3.RIGHT, PI * 0.5), 12, 0.3)
+		b.drum(0.28, 0.05, Vector3(u, 2.3, -6.2), c.black, Basis(Vector3.RIGHT, PI * 0.5), 12)
+	b.box(Vector3(3.24, 0.5, 7.0), Vector3(0.0, 0.2, -1.0), Paint.coat(Paint.BLACK, 0.4, 0.0, 0.95, 1.4), 0.0)
+	for v: float in [-3.4, -2.3, -1.2, -0.1]:
+		b.box(Vector3(0.6, 0.08, 0.08), Vector3(3.5, 0.9, v), c.steel, 0.01)
+	# Inside the troop bay, its benches down both walls.
+	for side in [-1.0, 1.0]:
+		b.box(Vector3(0.45, 0.45, 4.0), Vector3(side * 1.15, 0.22, -3.0), c.seat, 0.02)
+	# The colonial hopper's own orange stripe, half under the lime wash.
+	b.box(Vector3(0.02, 0.18, 6.0), Vector3(-1.61, 0.6, 2.0), c.orange, 0.003)
