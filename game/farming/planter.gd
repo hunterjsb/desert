@@ -112,6 +112,8 @@ func take(socket: Socket) -> Part:
 	for gives: Array in plant.yields():
 		harvest.append_array(Catalog.output(gives[0], gives[1]))
 	_count(picked, plant.crop, plant.harvest)
+	Deeds.done(world, &"crop")
+	Deeds.done(world, &"crops", plant.crop)
 	plant.pick()
 	var player := world.player
 	if not plant.data.stages.has("regrows"):
@@ -172,6 +174,8 @@ func _harvest(plant: Plant) -> void:
 	_owed[crop] = owed - seed
 	_count(ripened, crop, plant.harvest)
 	_count(replanted, crop, seed)
+	Deeds.done(world, &"crop")
+	Deeds.done(world, &"crops", crop)
 	var yields := plant.yields()
 	for i in yields.size():
 		var gives: Array = yields[i]

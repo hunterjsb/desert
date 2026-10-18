@@ -39,6 +39,10 @@ uniform mat3 to_stars = mat3(1.0);
 // first contact and -1 at second; and the ring's light in Zan's air.
 uniform vec3 eclipse = vec3(0.0, 0.0, 99.0);
 uniform vec3 eclipse_air = vec3(0.0);
+// The relay satellite, where it is from you and how brightly it shows: a
+// point crossing the night, gone below the horizon or into Zan's shadow.
+uniform vec3 relay_dir = vec3(0.0, -1.0, 0.0);
+uniform float relay_light = 0.0;
 
 // The rest of Tu's palette (docs/art-direction.md), linear.
 const vec3 RIM = vec3(0.347, 0.527, 0.871);
@@ -247,6 +251,10 @@ void sky() {
 		// Stars show once the air's glow is down, and never through Tu.
 		float dark = 1.0 - smoothstep(0.003, 0.06, glow);
 		vec3 field = dark > 0.0 && d.y > -0.02 ? stars(to_stars * d, px) * dark : vec3(0.0);
+		if (relay_light > 0.0 && dark > 0.0) {
+			float from_relay = length(d - relay_dir) / px;
+			field += vec3(1.0, 0.97, 0.9) * relay_light * dark * exp(-from_relay * from_relay * 0.8);
+		}
 		beyond += (field + corona) * (1.0 - cover);
 		COLOR = base + air * veil * beyond;
 	}

@@ -30,6 +30,14 @@ func started() -> void:
 		await get_tree().physics_frame
 
 
+## Every start open, as the dev console's unlockall leaves them.
+func open_every_start() -> void:
+	var profile := get_node(^"/root/Profile")
+	for kit in Kit.origins():
+		if not kit.is_open_to(profile):
+			profile.unlock(kit.unlock)
+
+
 ## The game's saves, in the probe's own folder.
 func saves() -> Node:
 	return get_node(^"/root/Saves")

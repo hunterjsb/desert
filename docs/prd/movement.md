@@ -34,6 +34,9 @@ outrun,** at least until the late-game haulers arrive.
   gravity. Crouching makes you smaller to the wind, so you brace against a storm.
 - **Your feet sink when you haul** (decided 2026-10-15). Walking or sprinting against a
   heavy pull on a line, you dig in: you sink a little, slow down and tire faster.
+- **Auto-walk** (Hunter, [2026-10-18 spec](../storms-signals-sailing-2026-10-18.md)). It holds
+  your heading while you steer by the compass or other instruments, so a storm still lets you
+  make long-range progress.
 - **The body feels it:** sway as you walk, a spring in the step, a dip when you land,
   and a lean into strong wind. Sand Game's footstep, slide and impact recordings.
 
@@ -42,9 +45,23 @@ their own actions. Crouching at a run or heading downhill turns into a slide. Sl
 above about 6°, and sand steeper than 28° slides you whatever you do. The jump is 0.45 m
 at 1 g and 1.0 m at 0.45 g, because the push-off is the same on any moon. Crouching cuts
 your wind catch to 45%. Hauling hard against a line digs you in: up to 35% slower, and
-your stamina drains faster. A load past what you carry easily sinks you in the same way,
+your stamina drains faster. You start to dig in once a line takes 35% of your pace, and
+are all the way in, within about a second, once it takes the 65% you'd manage dug in
+(2026-10-18: the depth had been read against the pace you were already sunk to, so a
+pull near that edge took over two seconds to dig you in). A load past what you carry easily sinks you in the same way,
 standing too, but tires you only on the move, and past sunk in it slows you further
 (Survival, 2026-10-17). The feel settings live in their own "Body feel" tuning group.
+
+**Auto-walk, built (2026-10-18, `game/player/auto_walk.gd`, probe 21).** Its own action turns
+it on and off. It holds the way you faced when it began, not the camera, so you can look round,
+read the compass in your hand or watch the storm and keep going the same way. It only gives
+your walk its way: the same pace, stamina, slopes, slides and wind, a sprint while you hold
+sprint, and against a line at your waist you dig in as usual. It ends when you move yourself (a
+move held as it began counts once you've let it go), turn it off, walk into something solid
+near head-on, start up a face too steep to stand on, get on the board, a line at your waist goes
+taut against a stake or anything else held fast behind you, you die, or a menu or the console
+comes up. The inventory doesn't end it. A small chevron low in the view says it's on and points
+the way it holds as you look round. Saves don't keep it: a resumed run starts with it off.
 
 ## Meeting a storm
 
@@ -584,9 +601,10 @@ All built: on foot alongside Stage 5, the board and the camp-range warnings at S
    and no jump. *(Built: flat out in real time at sixty frames a second, ruins and finds
    laid out as you go, across four shifts in 1.1 km: your way changes no more at a shift
    than anywhere, the ground stays solid 120 m ahead, and no frame spends longer than
-   1.2 to 1.3 ms streaming headless, against the 2.0 ms line. In a real window at 144 Hz
-   (`look/stream`, which now rides a board flat out downwind too) the worst was 1.21 ms
-   over 410 m; the ring of collision round you came up short for a moment after a
+   0.9 ms streaming headless, against the 2.0 ms line: 1.1 to 1.4 ms before a chunk's
+   collision came in quarters (World & terrain, 2026-10-18). In a real window at
+   144 Hz (`look/stream`, which now rides a board flat out downwind too) the worst was
+   1.21 ms over 410 m; the ring of collision round you came up short for a moment after a
    crossing in 92 of its 2,857 frames.)*
 
 Movement on foot, built alongside Stage 5, has its own:
@@ -632,15 +650,24 @@ The board after Hunter's first ride has its own:
     bounces. *(Built: the numbers are under Air, above; the hardest moment flying or
     landing is 3.7 g.)*
 
+Auto-walk has its own:
+
+21. **Auto-walk.** It walks you exactly as holding move forward does, and holds its way
+    while the view turns right round. A move of your own ends it (one held as it began
+    counts once you let go), and so does walking into a wall or up a face too steep to
+    stand on. *(Built: 5.2198 m in 3 s from rest either way, at 1.8 m/s; the view turned
+    450° in 3 s and the way held to 0.001°; into a wall it stops dead; walking up to a
+    31.9° face it climbs 4.7 m of the foot and stops where the sand passes 28°, then stands.)*
+
 The dig has its own ([Dig and carve](#dig-and-carve-agreed-2026-10-18-spec-built)):
 
-21. **The dug carve.** A hard turn from speed skids standing and grips dug, coming round
+22. **The dug carve.** A hard turn from speed skids standing and grips dug, coming round
     sooner and slower, its low edge down to the sand and never into it. *(Built: 21°
     sliding against 46°, 1.7 cm off the sand.)*
-22. **Catching an edge.** A hockey stop flat out holds with the catch set just past its
+23. **Catching an edge.** A hockey stop flat out holds with the catch set just past its
     load and throws you off set just short; as tuned, a cruise holds and flat out catches;
     thrown, you're knocked and winded, never killed, and the board tumbles behind you.
-23. **The dug edge tacks.** Towed by a steady pull, a board steered across it runs
+24. **The dug edge tacks.** Towed by a steady pull, a board steered across it runs
     downwind undug and holds its line dug. *(Built: 0° against 60°.)*
 
 ## Out of scope

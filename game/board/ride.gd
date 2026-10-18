@@ -118,6 +118,8 @@ var _stroke := 0
 var _towed := Vector2.ZERO
 ## Whether the edge has bitten since it last came out.
 var _bitten := false
+## In a storm as the last tick ended, so riding into one is noticed.
+var _stormy := false
 
 
 func _init(by: Player, on: Hoverboard) -> void:
@@ -129,6 +131,7 @@ func _init(by: Player, on: Hoverboard) -> void:
 	_ahead_was = ahead
 	var at := Vector2(by.global_position.x, by.global_position.z)
 	y = maxf(by.global_position.y - _thick, _floor(at))
+	_stormy = by.world.weather.in_storm
 
 
 ## A line's pull on you this tick, as the change in your way it makes: your
@@ -362,6 +365,22 @@ func step(delta: float, dir: Vector2, hop: bool, digging := 0.0, kick := false, 
 		hardest = maxf(hardest, hit)
 		player.landed.emit(hit)
 	_move(from, at - Vector2(from.x, from.z), delta)
+	_deeds(world)
+
+
+## The board's deeds as they happen: high over the sand under it, far in one
+## ride, and into a storm by night or in an eclipse.
+func _deeds(world: World) -> void:
+	var stormy := world.weather.in_storm
+	var into := stormy and not _stormy
+	_stormy = stormy
+	if not world.counts_deeds:
+		return
+	Deeds.measure(world, &"board_height", y - _height(Vector2(player.global_position.x, player.global_position.z)))
+	Deeds.measure(world, &"board_distance", _came)
+	var day := world.weather.day
+	if into and (not day.is_day(world.time, world.moon.longitude) or day.sun_shown(world.time) < 1.0):
+		Deeds.done(world, &"board_storm")
 
 
 ## Pitch, roll and lean one step on toward where they'd lie, critically

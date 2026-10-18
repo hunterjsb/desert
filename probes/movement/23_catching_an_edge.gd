@@ -1,5 +1,5 @@
 extends MovementProbe
-## Movement probe 22: catching an edge. A hockey stop loads the dug edge
+## Movement probe 23: catching an edge. A hockey stop loads the dug edge
 ## with dig times your way across it. Flat out, the same stop holds with the
 ## catch set just past its load and throws you off with it set just short;
 ## as tuned, from a cruise it holds and flat out it catches. Thrown off,

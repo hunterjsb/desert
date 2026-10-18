@@ -29,6 +29,8 @@ const SPEAKER := 30.0
 var root := false
 ## The game's name over the words, on the main menu only.
 var title: Label
+## The build's version, on the main menu only.
+var version: Label
 ## Over the menu's desert: the words a little bigger and roomier, low on the screen.
 ## Over a running game they stand in the middle.
 var _main := false
@@ -103,7 +105,8 @@ func _init(note := "", under := &"Scrim") -> void:
 
 ## The game's name at the top of the screen in a light logo, a moon hung
 ## beside it as the prototype's had, under a high shade that keeps it
-## readable over a bright sky: the main menu's.
+## readable over a bright sky, and the build's version small in a corner:
+## the main menu's.
 func add_title(name: String) -> void:
 	var shade := Panel.new()
 	shade.theme_type_variation = &"ShadeHigh"
@@ -130,6 +133,14 @@ func add_title(name: String) -> void:
 	mark.draw.connect(_draw_moon.bind(mark))
 	title.add_child(mark)
 	add_child(title)
+	version = Label.new()
+	version.theme_type_variation = &"Version"
+	version.text = ProjectSettings.get_setting("application/config/version", "")
+	version.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT, Control.PRESET_MODE_MINSIZE, 10)
+	version.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	version.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	version.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(version)
 
 
 ## A crescent lit over the dark of the rest, as the prototype's moon was.

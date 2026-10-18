@@ -94,15 +94,17 @@ last played highlighted and the Surveyor before any (Menus & UI). Each is a `Kit
 (`game/survival/`): its id, name and words, its start on the moon ([the world
 system](../world-system.md#the-feral-layer-and-spawns)), whether it's balanced, what unlocks it
 and what of it the main menu shows. The menu lists every origin, one not open to
-the profile (`Kit.is_open_to`, through `Profile.has`) as ????; the Salvager's and Homesteader's
-playstyle unlocks wait on something that counts a playstyle, so all three are open from the first
-run. The profile keeps the origin a run was last begun or resumed as (`Profile.last_origin`), whose
+the profile (`Kit.is_open_to`, through `Profile.has`) as ????. A kit's `unlock` can name a deed
+(below), which then opens it. The Surveyor is open from the first run; Frequent Flyer (a long ride on
+the board) opens the Salvager, and Hermit (a whole day under a shield) the Homesteader (Hunter,
+2026-10-18: "let's lock the two other starts behind some deeds"). The dev console's `unlockall`
+opens both for testing. The profile keeps the origin a run was last begun or resumed as (`Profile.last_origin`), whose
 kit the main menu shows; reset forgets it. The novelty kits aren't built; an origin that
 isn't balanced is offered Normal only. The run keeps its origin (`World.kit`) and so does its save
 (`kit`); a new run after a death comes as the same origin. A save from before origins has none and
 resumes as it was, from the tuning's start. Spawns probes 2 and 3.
 
-## Deeds (achievements; agreed 2026-10-18, building)
+## Deeds (achievements; agreed 2026-10-18, built)
 
 What you've done across every run, kept in the profile, which only grows. A deed both tells
 your story and opens things: a start still shown "????" opens by a deed (each kit's `unlock`
@@ -124,7 +126,81 @@ names it), and so can a kit variant or a mark on your gear (Hunter: "they should
   - Story: **The Old City**, reach Port Morgan; **Hot Tourist Destinations**, reach every named
     landmark; a structure of each of the four ages stood in.
 - **Shown in a grid,** reached from the main menu and the system menu: each deed a tile, named,
-  with a short line saying what it asks, lit once done (Menus & UI).
+  with a short line saying what it asks, lit once done (Menus & UI). Then (Hunter, 2026-10-18): a
+  tree of what waits on what, each card only a name and a picture of its thing, and what it asks
+  and how far along you are beside the card highlighted.
+
+**Built (2026-10-18).** One table, `Deeds.TABLE` (`game/saves/deeds.gd`): each deed's id, name, the
+line saying what it asks, its family and the deeds it waits on, its card's thing, whether it's hidden
+(none is), and its goal, which is Tuning's (the Deeds group). What a deed opens is each kit's own
+`unlock`, so it has one owner. The names Hunter didn't give are proposals, his to rename; the id
+stays. Green Thumb is new, so Crop Rotation has one before it.
+
+| Id | Name | Asks | After | Recorded |
+|---|---|---|---|---|
+| `board_distance` | Frequent Flyer | Ride a board 5,000 m without stepping off; opens the Salvager | | the ride, by how far it has come (kept in the save mid-ride) |
+| `board_height` | Big Air | Fly 8 m over the sand on a board | Frequent Flyer | the ride, each tick, by the board's height over the sand under it |
+| `board_storm` | Flying Bling | Ride into a storm by night or in an eclipse | Big Air | the ride, the tick you go from clear air into a storm, the sun down or partly behind Tu |
+| `shield_day` | Hermit | Spend a whole day under a shield, never stepping out; opens the Homesteader | | Wear's tick: time under a bubble without a break, a day's length, kept in the save |
+| `shield_storm` | Sandblasted | Hold off 60 minutes of storm with one shield | Hermit | Wear's tick: a running shield counts the storm where it stands, kept on the shield and in the save |
+| `crop` | Green Thumb | Grow a crop | | a planter's harvest, by hand or by its harvester |
+| `crops` | Crop Rotation | Grow 3 kinds of crop | Green Thumb | the same, each kind counted once a profile |
+| `planters_towed` | Meals on Wheels | Have 2 planters in tow at once | Green Thumb | a line tied or moved, something tied at your waist or taken in your hand: planters along the lines from you, or standing on what they reach, short of a driven stake |
+| `deck_home` | All Mod Cons | A Console, a condenser and a crate on one deck | | a device standing on a deck, or a piece joining with one on it |
+| `sail_waist` | Set Sail | Tie a sail's sheet at your waist | | your waist, once the sheet tied on there is laid |
+| `deck_pieces` | Six Pack | Join 6 chassis pieces into one deck | All Mod Cons | a piece joining a deck |
+| `power` | Power Trip | Make 300 W in one system | Set Sail | Power's tick, by what each pool makes |
+| `port_morgan` | The Old City | Reach Port Morgan | | the world, as the history follows you, inside the landmark's footprint |
+| `ages` | Carbon Dated | Stand in a structure of each of the four ages | | the world, stepping onto a structure's ground, its era counted once a profile; the Dark Age built nothing |
+| `landmarks` | Hot Tourist Destinations | Reach every named landmark | The Old City | the same as The Old City, each of the eight counted once a profile |
+
+- **What waits on what** (Hunter, 2026-10-18: "even though we dont have any deps yet, so make up
+  some deps"): made up, each family a branch from an easy deed to harder ones, and the two proposed to
+  open starts, Frequent Flyer and Hermit, wait on nothing. A deed's branch is open once everything it
+  waits on is done and open in turn.
+- **Done out of order:** recording never waits. A deed done before what it waits on is kept in the
+  profile with its run all the same, and opens its start if it names one; it shows, lit and
+  counted, once its branch opens, and its note waits until then, said beside the deed that opened it
+  ("Deed: Big Air, Flying Bling").
+- **How far along:** a deed that's a number to reach goes through `Deeds.measure(world, id,
+  value)`, which keeps the best so far in the profile (`Profile.best`, `improve`), a step at a time
+  (250 m, half a metre, a minute, 10 W, one), and records the deed once the goal is reached. A deed
+  of different things counts them (`Profile.toward`).
+
+How each X was chosen, from the probes' numbers:
+- **8 m over the sand.** A hop on the flat flies 1.7 m over the sand, a pop from a crouch 2.9,
+  riding the dunes by spawn 2.5, and pushing flat out off the biggest crest within 12 km 5.3; popping
+  off that crest flies 16.8 (Movement probe 20's rides, read as this deed reads them). So it takes
+  the pop, on a big crest.
+- **5 km in one ride.** A base battery lasts about 23 km flat out over the dunes, and the
+  Surveyor's board starts half charged, so about 11 km: 5 km is four minutes flat out, far past
+  camp range, a ride you set out on.
+- **60 minutes of storm.** The reference camp's shield, always up at the equator, held off 43
+  minutes of full storm in three days (none the first, 5 the second, 20 the third): about four
+  days of a camp's storms.
+- **300 W.** The reference camp makes 240 W at its best, at noon, and its turbine 200 W in a gale,
+  while the panels give little in a storm: 300 takes a second turbine or five panels in one system.
+- **A whole day** is the day's length, 20 minutes; the reference camp's bubble covers you all day.
+  **3 kinds of crop**, **2 planters** and **6 pieces** are Hunter's numbers, tuning too.
+
+- **The hook.** `Deeds.done(world, id, part)` records a deed the moment it's done; with a part (a
+  crop, a landmark, an era) the part counts toward it and it's done once enough different ones
+  have, across every run. Each check is a comparison where the system already works, and nothing
+  looks for deeds on its own. A deed done says so in the note under the top of the screen ("Deed:
+  Hermit").
+- **Only a player's own run counts** (`World.counts_deeds`): the game sets it on a run that isn't
+  a dev scenario's and clears it the moment `scenario` is used, and a death in that run keeps it.
+  Nothing counts while the dev console's `god` holds you. The menu's world, a probe's and a
+  look-test's count nothing.
+- **Kept in the profile** (`Profile.deed`, `did`, `deeds`, `toward`, `best`): each deed with when,
+  the run's seed and origin, and whether it was Ironman; what has counted toward each, and the best
+  toward each that's a number. Achievements
+  attach at `Profile.deed`, as unlocks do at `unlock`. Only reset empties them, and the dev
+  console's `deeds clear`.
+- **The dev console**, at the main menu too: `unlockall` opens every start whatever deeds are done
+  (through `Profile.unlock`, so forgetting the deeds leaves them open; reset closes them), `deed
+  <id>` grants one, `deeds` lists what's done and what isn't, and `deeds clear` forgets them all.
+- **Probes** 17 to 22, and Menus & UI probe 11.
 
 ## Ending flags (proposed)
 
@@ -161,9 +237,10 @@ Readings, not in the session:
 1. **A save holds what you changed, never what the seed already says.**
 2. **Saving never changes the run.** Saving and resuming at once gives the same world,
    tick for tick, as not saving at all.
-3. **The profile's unlocks, discoveries and how-tos shown only ever grow, by
-   `profile.unlock`, discovery and `profile.learn`,** and only reset empties them. Beside
-   them it keeps the origin you last came as.
+3. **The profile's unlocks, deeds, discoveries and how-tos shown only ever grow, by
+   `profile.unlock`, `profile.deed`, discovery and `profile.learn`,** and only reset empties
+   them, or the dev console's `deeds clear` the deeds. Beside them it keeps the origin you last
+   came as.
 
 ## Skeleton version
 
@@ -197,7 +274,8 @@ calls them from Save, Save & quit, Resume, New game, the death screen and Option
   last save is Resume, and New run is New game in Normal.
 - **What a save holds:** you (where you stand, which way you face and look, how you're
   moving, stamina, your bars, everything you carry (each thing with its state, as a
-  radio's channel, beacon and charge; a save from before, with five slots, resumes with
+  radio's dial, volume, beacon and charge, one saved before the dial on its channel's
+  carrier; a save from before, with five slots, resumes with
   their contents carried), what's in your hands, at your waist or being
   hauled, and the board you ride with its ride as it stood), the clock, how long the run
   has been played (a save from before kept none, and its run never counts it) and when it
@@ -282,10 +360,11 @@ calls them from Save, Save & quit, Resume, New game, the death screen and Option
     with every tray, what stood where with its charge, the shield running and the line
     tied, and it floats on.
 13. **What you carry.** Saved carrying a radio on the weather station, a compass and
-    three canisters and resumed, the radio is carried on the same channel with the same
+    three canisters and resumed, the radio is carried on the same frequency with the same
     charge, playing from you with its words showing, the compass is carried, and the
-    canisters stack as one, each with its water. A save from before, with five slots,
-    resumes with their contents carried.
+    canisters stack as one, each with its water. A save from before, with five slots and a
+    radio kept as a channel, resumes with their contents carried, the radio on that channel's
+    carrier.
 14. **An older crate.** Two crates saved as a build from before 2026-10-17 numbered
     them, side rings and all: one floating, moored by hooks on both side rings, and one
     resting with a hook on all four rings, its side hooks tied to stakes. Resumed, every
@@ -302,6 +381,21 @@ calls them from Save, Save & quit, Resume, New game, the death screen and Option
     resumes with the same parts in the same sockets, the same page and the same log, and
     reads on.
 
+17. **A deed is kept** (2026-10-18). Reaching Port Morgan in a run records The Old City there and
+    then, with the run's seed and origin and not Ironman, and the next session's profile still has
+    it.
+18. **A dev run counts nothing.** While the console's god holds you, and once a dev scenario is
+    used in a run, reaching Port Morgan records no deed, and no landmark toward them all.
+19. **Unlockall opens the starts.** With the Salvager and the Homesteader behind their proposed
+    deeds, a fresh profile has the Surveyor alone; the console opens over the main menu, unlockall
+    there opens every start, New game shows none locked, and forgetting the deeds leaves them open.
+20. **A hermit's whole day.** Under the reference camp's shield most of a day, its bubble down a
+    moment, then most of a day again, is no Hermit; a little longer and it is.
+21. **All four ages.** Stepping onto two colonial structures, a skimmer wreck and a First Kingdoms
+    hut is three ages; onto a second-age house ruin too, Carbon Dated is done.
+22. **Six pieces, one deck.** A deck of five beside one of three is no six-piece deck; the first
+    deck's sixth piece makes Six Pack.
+
 ## Out of scope
 
 - Accounts, sign-in and cloud sync, until they attach at `profile.unlock`.
@@ -315,7 +409,9 @@ calls them from Save, Save & quit, Resume, New game, the death screen and Option
   offered the last one back, and where a camp that has to outlive its run is kept.
 - **What each playstyle unlock counts.** "Long board distance," "surviving a storm on carried
   gear" and "riding out big storms without moving camp" are examples, not rules, and the
-  Archaeologist's condition is open in the session.
+  Archaeologist's condition is open in the session. Built: a deed can open a start, and Frequent
+  Flyer and Hermit are proposed for the Salvager and the Homesteader; whether either is locked at
+  all is Hunter's, so both are open for now.
 - **"Build" in the two new unlocks.** The session: "Build and use a dune sailboat," "Build a
   patrol-style board yourself (proposed)." Here: parts are found, never crafted, and an unlock is
   a discovery or something done. Not said what building a craft reports, or when it counts as
@@ -325,7 +421,8 @@ calls them from Save, Save & quit, Resume, New game, the death screen and Option
   for a value that grows.
 - **Mode and achievements.** The vision leaves open whether achievements care which mode a run is
   in. The session's rule that novelty starts are excluded from Ironman is the first rule about
-  mode, and it covers starts, not achievements.
+  mode, and it covers starts, not achievements. Built: a deed counts in either mode, and the
+  profile marks one done in Ironman.
 
 Session 4, part 4 (2026-10-17) adds three. Each is quoted old and new. The newest session wins in the
 living docs, so this PRD follows it as direction.

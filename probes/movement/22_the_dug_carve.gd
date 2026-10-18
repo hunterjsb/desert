@@ -1,5 +1,5 @@
 extends MovementProbe
-## Movement probe 21: the dug carve. From speed, a hard turn standing skids:
+## Movement probe 22: the dug carve. From speed, a hard turn standing skids:
 ## the board swings out ahead of your way. The same turn with move back held
 ## digs the edge in and grips, your way following the board round, and comes
 ## out slower: it trades speed for grip. Dug, the board's low edge comes down

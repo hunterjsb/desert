@@ -49,8 +49,8 @@ behind them, and since 2026-10-18 are bigger and roomier still, below.)
 - **The scene** is the real world seen from a fixed camera, with no player spawned and
   the weather running at normal speed. It keeps its simulation cheap, and it's silent:
   a storm at the menu is only to look at (Hunter, 2026-10-16: "super super loud").
-  Sound comes back with the run.
-- **The words:** Resume (only when a save exists), New game, Options, Quit.
+  Sound comes back with the run; the menu's own music is below.
+- **The words:** Resume (only when a save exists), New game, Deeds, Options, Quit.
 - **Confirm** triggers the highlighted word. Resume is highlighted when a save exists,
   otherwise New game.
 - **Moving the selection** works by the menu's up and down actions (keys and a gamepad's
@@ -81,8 +81,9 @@ behind them, and since 2026-10-18 are bigger and roomier still, below.)
 - **Resume opens the same view:** the prop is your last camp as the save holds it, what stood
   round you when you saved, with the save's numbers beside it (time played, when it was saved,
   the day, who you came as), and confirm carries on.
-- **Music at the main menu,** the radio's day or night track by the menu's own light, with a
-  mute switch in the bottom left that stays as you leave it. The menu's storm stays silent.
+- **Music at the main menu,** its own theme, Hunter's "Salt" (Hunter, 2026-10-18: "use this for a
+  main menu theme"), with a mute switch in the bottom left that stays as you leave it. The menu's
+  storm stays silent.
 - **At night the prop still reads:** a soft light on it, the night kept round it (Hunter: "the
   camp can become night in the menu which is extremely cool, but its so dark you cant see the
   gear").
@@ -90,7 +91,7 @@ behind them, and since 2026-10-18 are bigger and roomier still, below.)
 ## The system menu
 
 The back action, with nothing else open, brings up the system menu over the running
-game. It holds **Options** (controls, audio, graphics), **Save** in a Normal run, and
+game. It holds **Options** (controls, audio, graphics), **Deeds**, **Save** in a Normal run, and
 **Save & quit**, all safe at any moment, mid-storm included (Profile & saves). **New game**
 asks who you come as, the origin last played highlighted, then which mode, Normal
 highlighted or Ironman; **dying** in a Normal run shows Load last save, highlighted, and
@@ -158,8 +159,30 @@ The console opens at the main menu too, for what needs no world (Hunter, 2026-10
 useful for like an `unlockall` command for classes in case i want to test a new class and achv
 resets"): `unlockall` opens every start, and deeds can be granted or cleared to test them.
 
-**The deeds grid** ([Profile & saves](profile-and-saves.md#deeds-achievements-agreed-2026-10-18-building))
+**The deeds grid** ([Profile & saves](profile-and-saves.md#deeds-achievements-agreed-2026-10-18-built))
 is a menu of its own, reached from the main menu and the system menu.
+
+**Built** (2026-10-18, `game/ui/deeds_grid.gd`), after Hunter's "show relations and a hierarchy":
+Deeds stands under New game on the main menu and under Options in the system menu. It opens a tree
+of every deed under how many show done ("6 of 15 deeds"), with Back: a branch or two for each family
+(Board, Shield, Farming, Camp, Story, named down the left), each deed a step right of the furthest it
+waits on, and a line across from each to what it opens, brighter once that's open. It's laid out as
+every menu is where it opens: over the main menu it stands on the left, narrow enough for the prop
+set aside to its right; over a run, in the middle on the soft dark field.
+- **A card** is the deed's name and a picture of its thing: the board, the shield, a crop, a planter,
+  the Console, a chassis piece, the turbine; drawn in the theme's ink, a sail on its mast, and for
+  the story a landmark's mast and pennant. Done, it's lit; open but not done, dimmer; still waiting on another, only its
+  thing's outline in faint ink and ????.
+- **The pictures** are Dress's looks of each thing's frame and what's fitted (`ItemIcons`), drawn
+  once in a little world of their own the first time they're asked for and kept, so a card costs a
+  texture. With no screen to draw on, as in a probe, they stay blank.
+- **The card highlighted,** by the mouse over it or the menu's selection, which moves between the
+  cards as between words and starts on the first, has a small panel beside it, on whichever side
+  has room: the deed's name, what it asks, how far along you are where it's a number or a count
+  ("3,250 / 5,000 m", "2 / 3 kinds") or done (in Ironman, if it was), and what it opens. A card
+  still locked says only what it waits on.
+- `look/deeds` shoots it over the main menu and over a run, seven done, one of them early, a card
+  highlighted (`look/deeds/shoot.sh` builds the sheet).
 
 ## Skeleton version
 
@@ -233,12 +256,14 @@ is a menu of its own, reached from the main menu and the system menu.
   of it, 8 at most, each with everything seated in it and its state (charge, crops, a
   shield's switch), seen from where you stood toward it and fitted to the crate's span.
   Under it, the save's numbers: time played, when it was saved by the clock on the wall
-  (today 13:40, yesterday 21:05, 3 days ago), the run's day, and who you came as. A save
+  (today 13:40, yesterday 21:05, 3 days ago), the run's day, and who you came as; then how many
+  deeds show done ("Deeds 6 of 15"). A save
   from before time played was kept lists the rest. Confirm carries on; back goes back.
-- **Music** at the main menu: the radio's day or night track by the menu's own light
-  (`Radio.track_at`), from where the station has got to, on the menus' bus while the
-  menu's storm stays silent (`game/ui/menu_music.gd`). It changes track through a moment's
-  quiet and fades out with the screen into a run. A speaker in the bottom left switches it,
+- **Music** at the main menu: Hunter's "Salt" (`assets/audio/menu_theme.ogg`, 80 s, looping,
+  stereo), from its start as the menu's desert shows, on the menus' bus while the menu's storm
+  stays silent (`game/ui/menu_music.gd`). It fades in once the screen is up and out with the
+  screen into a run, and comes back from its start on Save & quit. (It was the radio's day or
+  night track by the menu's own light.) A speaker in the bottom left switches it,
   by a click or by the menu's up and down, round past the first and last words: waves
   while it plays, a cross while it's off, and it stays as you leave it (`Settings.music`).
 - **Into the game:** a fade to black, the run built (`game/run.tscn`, which is what
@@ -246,7 +271,7 @@ is a menu of its own, reached from the main menu and the system menu.
 - **The system menu**, over the running game: its words at 28, 26 apart, on a soft dark
   field round them that fades out with no edge (`Field`, a rounded shadow), over a lighter
   wash darkest in the middle (`Scrim`); every menu over a run stands so. It holds Options,
-  Save in a Normal run, and Save & quit. Save keeps the menu up and its
+  Deeds, Save in a Normal run, and Save & quit. Save keeps the menu up and its
   word says how it went: Saved, or Couldn't save. Nothing pauses.
 - **The death screen,** in a Normal run, over the running game: "You died", with Load
   last save, highlighted, and New run. Back doesn't close it. Load is Resume, through
@@ -264,8 +289,12 @@ is a menu of its own, reached from the main menu and the system menu.
   alone stepping x1, x10, x60; `gravity [m/s²]`, alone low gravity or back; `time <0–1>`,
   on to the next such moment of your local day; `tu [6|9|13]`, Tu's width across the sky in degrees,
   the three under trial, alone the next of them (2026-10-17); `give <id> [n]`, a part into your hands, or a
-  device, a stake, a coil or a cable at your feet, by catalog id; and `fresh`, fed,
-  watered and whole on a fresh suit's kit. The keys list and Options' controls list
+  device, a stake, a coil or a cable at your feet, by catalog id; `fresh`, fed,
+  watered and whole on a fresh suit's kit; and the deeds' (2026-10-18): `unlockall`, every start
+  open whatever deeds are done, `deed <id>`, one granted, `deeds`, which are done, and `deeds
+  clear`, all forgotten (Profile & saves). Those and `help` and `scenarios` need no world, so the
+  console opens over the main menu too, with nothing else open there, standing over its words;
+  the rest say "only in a run". Closed there, the menu's word is highlighted again. The keys list and Options' controls list
   show the console action and the dev overlay's under a heading of their own, and the
   function keys the dev tools held now go to quick save and quick load (Profile & saves).
   The look-tests keep their own keys and have no console.
@@ -332,6 +361,11 @@ is a menu of its own, reached from the main menu and the system menu.
    music's switch, reached by the menu's actions, stays muted into the next session.
 10. **A how-to once a profile.** The first sheet at your waist shows its how-to, its keys as
     bound; tied on again it doesn't, nor in a new run on the same profile.
+11. **Deeds open in order** (2026-10-18). A deed done before the deeds it waits on is kept but shows
+    dark and uncounted; once they're done it shows done and counts. The card highlighted has its
+    panel.
+12. **The menu theme.** On the main menu "Salt" fades in on the menus' bus while the world is
+    muted; a new run fades it out and stops it; Save & quit brings it back from its start.
 
 ## Out of scope
 

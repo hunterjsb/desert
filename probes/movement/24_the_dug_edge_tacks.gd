@@ -1,5 +1,5 @@
 extends MovementProbe
-## Movement probe 23: the dug edge tacks. Towed by a steady pull downwind, a
+## Movement probe 24: the dug edge tacks. Towed by a steady pull downwind, a
 ## board steered 60° across it runs downwind all the same: its hover can't
 ## hold against a line. Steered so with its edge dug in, it holds that line
 ## across the pull and makes ground across it.

@@ -7,7 +7,7 @@ extends Node
 ## seated on another, like a shield on a crate, shares its pool. Running short,
 ## a pool's lower-ranked devices give way first, like a crate's tray to the
 ## shield on it, or a board racked on it charging. A ledger proves no energy
-## appears from nowhere.
+## appears from nowhere. A pool making more than the tuning's deed asks is a deed.
 
 ## A dark pool waits until its batteries hold this share before it tries again.
 const RESTART := 0.05
@@ -81,6 +81,8 @@ func _tick(seconds: float, t: float) -> void:
 			wants[device] = device.demand_w(t) * seconds / 3600.0
 			cells.append_array(device.pooled())
 		generated_wh += made
+		if _world.counts_deeds:
+			Deeds.measure(_world, &"power", made * 3600.0 / seconds)
 		var running := _running(pool, wants, made, _fraction(cells))
 		var wanted := 0.0
 		for device: Device in running:

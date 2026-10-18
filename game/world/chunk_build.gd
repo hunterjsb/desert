@@ -9,8 +9,11 @@ var step: int
 ## their ground is in the heights already.
 var structures: Array[Structure] = []
 var states := PackedInt32Array()
-## (n+1)^2 samples in rows along z: the collision data and the seam check.
+## (n+1)^2 samples in rows along z: the mesh's, the seam check's and the reads'.
 var heights: PackedFloat32Array
+## Collision's, in TerrainChunk.SPLIT² pieces in rows: each piece's samples
+## and a ring a sample past them, Terrain.LIP lower.
+var pieces: Array[PackedFloat32Array] = []
 var arrays: Array
 ## The arrays as a RenderingServer mesh, once a worker has filled it.
 var mesh: RID
@@ -59,6 +62,19 @@ static func make(shape: TerrainShape, coord: Vector2i, size: int, step: int, ski
 			for i in range(lo.x, hi.x):
 				var k := (cj * across + int(x0 + (i - 1) * step - gx)) * 2
 				bordered[j * w + i] = lerpf(made[k], bordered[j * w + i], made[k + 1])
+
+	if step == 1:
+		var part := n / TerrainChunk.SPLIT
+		var pw := part + 3
+		for piece in TerrainChunk.SPLIT * TerrainChunk.SPLIT:
+			var corner := Vector2i(piece % TerrainChunk.SPLIT, piece / TerrainChunk.SPLIT) * part
+			var data := PackedFloat32Array()
+			data.resize(pw * pw)
+			for j in pw:
+				for i in pw:
+					var lip := i == 0 or j == 0 or i == pw - 1 or j == pw - 1
+					data[j * pw + i] = bordered[(corner.y + j) * w + corner.x + i] - (Terrain.LIP if lip else 0.0)
+			build.pieces.append(data)
 
 	var grid := (n + 1) * (n + 1)
 	build.heights.resize(grid)
