@@ -14,7 +14,7 @@ const BUDGET := 0.25
 func run() -> void:
 	await load_weather(1234, true)
 	var vent := await beside_vent(250.0)
-	var plume := world.weather.plume
+	var plume := world.weather.plume_for(&"live_vent")
 	var geology := world.shape.history.geology
 	world.time_warp = 0.0
 	# Everything laid that will be, its mouth among it.
@@ -23,7 +23,7 @@ func run() -> void:
 		if world.shape.sites.is_idle() and _mouth() != null:
 			break
 	# A few points a frame are worked out again: all of them, at the stopped clock.
-	for i in 2 * Plume.POINTS / Plume.EACH_FRAME:
+	for i in 3 * Plume.OLD_EVERY * (Plume.POINTS - Plume.YOUNG):
 		await get_tree().process_frame
 	var root := plume.root
 	var line := plume.line.duplicate()
