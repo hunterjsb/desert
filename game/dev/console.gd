@@ -18,7 +18,11 @@ const COMMANDS := {
 	"tu": ["[6|9|13]", "Tu's width across the sky under trial, degrees; alone, the next"],
 	"give": ["<id> [n]", "a part in your hands or a device at your feet, by its catalog id"],
 	"fresh": ["", "fed, watered and whole, on a fresh suit's kit"],
+	"goto": ["[landmark]", "stand by a landmark or one of its parts, on fresh ground; alone, how far each is"],
+	"map": ["[metres]", "the history under the sand round you, this wide; alone, on or off"],
 }
+## How far from a landmark's middle goto stands you, facing it, m.
+const STANDOFF := 60.0
 ## Parts that only come on something else: a cable's plugs, a hose's ends, a line's ends.
 const ON_SOMETHING := [&"plug", &"strong_plug", &"hose_end", &"rope_end"]
 ## Lines of output shown, commands remembered, and the most give makes at once.
@@ -226,6 +230,61 @@ func _fresh(_args: PackedStringArray, world: World) -> void:
 	_say("fed, watered and whole")
 
 
+func _goto(args: PackedStringArray, world: World) -> void:
+	var history := world.shape.history
+	if args.is_empty():
+		var here := Sphere.point(world.moon.latitude, world.moon.longitude)
+		for each in history.landmarks:
+			_say("%s  %s, %.1f km %s" % [each.id, each.name, Sphere.angle(here, each.p) * history.radius / 1000.0,
+				Radio.compass(rad_to_deg(Sphere.bearing(here, each.p)))])
+		return
+	var target := _place_named(history, args[0])
+	if target.is_empty():
+		_say("%s, an id of: %s" % [_usage("goto"), " ".join(_goto_ids(history))])
+		return
+	# A little in front of it, facing it.
+	var heading: float = target.get("bearing", 0.0)
+	var stand := Sphere.toward(target.p, heading + PI, STANDOFF / history.radius)
+	world.travel(rad_to_deg(Sphere.latitude(stand)), rad_to_deg(Sphere.longitude(stand)),
+		-Sphere.bearing(stand, target.p))
+	var p: Vector3 = target.p
+	_say("%s: %s, %s" % [target.name, history.region_of(p), history.tu_words(p)])
+
+
+func _map(args: PackedStringArray, _world: World) -> void:
+	var map := HistoryMap.of(ui)
+	if args.size() == 1 and args[0].is_valid_float() and args[0].to_float() > 0.0:
+		map.width_m = clampf(args[0].to_float(), 100.0, 200000.0)
+		map.visible = true
+	elif args.is_empty():
+		map.visible = not map.visible
+	else:
+		_say(_usage("map"))
+		return
+	_say("history map %d m across" % roundi(map.width_m) if map.visible else "history map off")
+
+
+## A landmark, or a landmark's part, by id.
+static func _place_named(history: History, id: String) -> Dictionary:
+	var found := history.landmark(StringName(id))
+	if not found.is_empty():
+		return found
+	for each in history.landmarks:
+		for part: Dictionary in each.parts:
+			if part.id == StringName(id):
+				return part
+	return {}
+
+
+static func _goto_ids(history: History) -> PackedStringArray:
+	var ids := PackedStringArray()
+	for each in history.landmarks:
+		ids.append(each.id)
+		for part: Dictionary in each.parts:
+			ids.append(part.id)
+	return ids
+
+
 ## What give can make: every part that comes by itself, every device, and
 ## the things built whole.
 static func _give_ids() -> PackedStringArray:
@@ -312,6 +371,8 @@ func _complete() -> void:
 		choices = _scenario_keys()
 	elif words.size() == 2 and words[0] == "give":
 		choices = _give_ids()
+	elif words.size() == 2 and words[0] == "goto" and ui != null and ui.main != null and ui.main.world() != null:
+		choices = _goto_ids(ui.main.world().shape.history)
 	elif words.size() != 1:
 		return
 	var fits := Array(choices).filter(func(c: String) -> bool: return c.begins_with(words[-1]))
