@@ -829,7 +829,7 @@ How the names line up now:
 | Feral | The feral layer: crops gone wild along the roads, water lines and ruins the layers left; the world the player walks | Part 4's last world-generation layer; now the chain's last word |
 
 What is left, item by item. The docs follow the reading given on each line.
-1. **The chain's order (still open).** "Colonial → collapse → skimmer era" puts the collapse before the
+1. **The chain's order (answered, [section 19](#19-open-after-session-4-part-5) item 1).** "Colonial → collapse → skimmer era" puts the collapse before the
    skimmer era. The lore has them the other way round: the war, the tithe, the black site and the
    smuggler moon come before the withdrawal, the paroxysm and the abandonment (session 3's eras 2 and 3
    come before 4 and 5, and part 1's phases run Orphaned, smuggler moon, paroxysm, ages). The session's
@@ -3153,14 +3153,22 @@ Carried over from part 4:
 
 **Raised by this fold**
 
-1. **The chain's order, again.** Part 5 repeats "colonial → collapse → skimmer era" and names two errors
-   that do not include it. Which reading of "collapse," and whether the lore's event order stands, is
-   Hunter's call; nothing in world generation depends on it.
-2. **Where the vents went.** The First Kingdoms end when "the volcanic vents shift beyond reach," and
-   the twin fires put volcanism at the anti-Tu point too. Whether the heat moved to the far-side
-   volcano is the natural reading and is not said.
-3. **The skimmer era's place on the efficiency and repairability axis.** Part 5's table has three
-   eras and the skimmer era's crate is "light, cheap and fragile."
+1. **The chain's order, again. Answered** (Hunter, 2026-10-17): each collapse opens the next era, so
+   "collapse" names the colonial era's end, not an era of its own:
+   1. "colonial collapse when the lane was cancelled when the war broke out, devolved into skimmer
+      offworld with black site" (the colonial era ends with the lane; the skimmer era follows);
+   2. "skimmer collapsed into first age kingdoms when the provisional state fell";
+   3. "first kingdoms collapsed when power infrastructure collapsed and mass war broke out on the
+      moon" (into the Dark Age);
+   4. "final kingdoms collapsed slowly into nomads" (the second age's end);
+   5. "almost all nomads die out as the atmosphere and planet changes."
+
+   The lore's event order stands with it: the war and the black site before the Provisional's fall.
+2. **Where the vents went. Answered** (Hunter, 2026-10-17: "we can shift them whever"): wherever the
+   story needs. The natural reading, the heat moving toward the far-side volcano at the anti-Tu point,
+   is free to use.
+3. **The skimmer era's place on the efficiency and repairability axis. Answered** (Hunter, 2026-10-17):
+   "its the light cheap gear from before": the old row stands, light, cheap and fragile.
 4. **How many of the new places are landmarks:** the Okafor bunker, the Almanac's ag complex, the
    Stoker's terraces, the Quartermaster's bunker and the Walker's route. The list holds eight.
 5. **What taking a god does to its people:** the Quartermaster's core and Muster and the Knights
