@@ -582,27 +582,9 @@ static var _current: Tuning
 @export_group("Farming")
 ## A planter's water tank, L. Found empty.
 @export var planter_tank_litres: float = 4.0
-## Each crop, by its name in the catalog: the felt light it starts to grow
-## at and grows full at (fungus wants the dark, so its run the other way);
-## the felt temperatures it grows between, and survives between, °C; minutes
-## of full growth to ripen; a harvest, in units of food, and the kcal in
-## each; and the water it drinks on its way to ripe, L.
-@export var carrot_light: Vector2 = Vector2(0.25, 0.6)
-@export var carrot_grows: Vector2 = Vector2(-10.0, 60.0)
-@export var carrot_hardy: Vector2 = Vector2(-30.0, 70.0)
-@export var carrot_minutes: float = 3.0
-@export var carrot_harvest: int = 4
-@export var carrot_kcal: float = 150.0
-@export var carrot_litres: float = 0.25
-@export var fungus_light: Vector2 = Vector2(0.5, 0.25)
-@export var fungus_grows: Vector2 = Vector2(-5.0, 45.0)
-@export var fungus_hardy: Vector2 = Vector2(-15.0, 55.0)
-@export var fungus_minutes: float = 6.0
-@export var fungus_harvest: int = 4
-@export var fungus_kcal: float = 150.0
-@export var fungus_litres: float = 0.3
-## Past its hardy limits a crop loses growth this many times faster than it
-## gains it at its best.
+## Each crop's own numbers are its data in the catalog. Past what it holds
+## through, a crop loses growth this many times faster than it gains it at
+## its best.
 @export var wilt_rate: float = 2.0
 ## The share of each harvest a harvester replants, to start with. A quarter
 ## of a harvest of four keeps every slot sown.

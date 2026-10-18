@@ -263,10 +263,11 @@ func _board_lands() -> void:
 
 ## Two planters float in front of you, each on its line to a driven stake,
 ## sown and part grown, one with a harvester and a full tank, the other's
-## half full, their carrots growing in the clear; a charged shield generator
-## stands between them, switched off, near enough for its bubble to take
-## them, with a full canister by your feet and a spare carrot carried.
-## In the wind, nothing slides off or drifts past its line.
+## half full and a saltbush in it, their root-tubers growing in the clear and
+## the saltbush's leaves open with the storm still minutes off; a charged
+## shield generator stands between them, switched off, near enough for its
+## bubble to take them, with a full canister by your feet and a spare
+## root-tuber carried. In the wind, nothing slides off or drifts past its line.
 func _farm_lands() -> void:
 	await settle(true)
 	var dropped := Scenarios.farm(world)
@@ -282,9 +283,11 @@ func _farm_lands() -> void:
 	for i in dropped.size():
 		moved = maxf(moved, dropped[i].global_position.distance_to(set_down[i]))
 	var growing := 0
+	var open := 0
 	for planter: Planter in planters:
 		for plant in planter.plants():
-			growing += 1 if plant.crop == &"carrot" and plant.state == Plant.GROWING and plant.growth > 0.85 else 0
+			growing += 1 if plant.crop == &"root_tuber" and plant.state == Plant.GROWING and plant.growth > 0.85 else 0
+			open += 1 if plant.crop == &"saltbush" and plant.fold == 0.0 else 0
 			check(plant.growth >= 0.5 and not plant.ripe(), "farm: %s sown part grown (%.2f)" % [plant.label, plant.growth])
 		check(planter.plants().size() == 4 and planter.stats().hovering and clearance(planter) > 0.8
 			and planter.global_position.distance_to(shield.global_position) < radius - 1.0,
@@ -293,12 +296,13 @@ func _farm_lands() -> void:
 		"farm: each on its line to a stake, none drifted off (%.2f m at most)" % moved)
 	check(planters.size() == 2 and planters.filter(func(p: Planter) -> bool: return p.harvests()).size() == 1
 		and tanks.has(1.0) and tanks.has(0.5), "farm: two planters, one with a harvester, tanks full and half (%s)" % [tanks])
-	check(growing == 6, "farm: the carrots are growing in the clear (%d)" % growing)
+	check(growing == 5, "farm: the root-tubers are growing in the clear (%d)" % growing)
+	check(open == 1, "farm: a saltbush, its leaves open with the storm minutes off")
 	check(not shield.on and shield.battery().charge_wh >= shield.battery().capacity(),
 		"farm: a charged shield generator, switched off")
 	var loose := dropped.filter(func(b: Node3D) -> bool: return b is Supply and b.kind == &"water" and b.amount >= 2.0)
 	check(loose.size() == 1 and world.player.suit.carried.any(func(p: RigidBody3D) -> bool: return p is Plant),
-		"farm: a full canister, and a spare carrot carried")
+		"farm: a full canister, and a spare root-tuber carried")
 	for body in dropped:
 		if is_instance_valid(body):
 			body.free()

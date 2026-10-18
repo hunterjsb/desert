@@ -108,8 +108,8 @@ func mount(kind: StringName) -> Node3D:
 		&"port":
 			_drum(root, 0.03, 0.02, _paint(Catalog.KINDS[kind], 0.4), Vector3(0.0, 0.0, 0.008), Basis(Vector3.RIGHT, PI / 2.0))
 			_drum(root, 0.018, 0.022, _paint(BLACK, 0.1), Vector3(0.0, 0.0, 0.01), Basis(Vector3.RIGHT, PI / 2.0))
-		&"plant_small", &"plant_large":
-			var r := 0.05 if kind == &"plant_small" else 0.08
+		&"plant_pot", &"plant_standard":
+			var r := 0.05 if kind == &"plant_pot" else 0.08
 			Shapes.put(root, Shapes.torus(r, r + 0.014, 16, 4), _paint(BLACK, 0.4, 0.3), Vector3(0.0, 0.0, 0.004), Basis(Vector3.RIGHT, PI / 2.0))
 		_:
 			return null
@@ -145,9 +145,9 @@ func part(id: StringName, size: Vector3) -> Node3D:
 				for j in 3:
 					_piece(root, Vector3(0.18, 0.18, 0.006), _cells(), Vector3(-0.285 + i * 0.19, -0.19 + j * 0.19, 0.032), 0.001)
 			_drum(root, 0.025, 0.06, _paint(GUNMETAL), Vector3(0.0, 0.0, -0.01), Basis(Vector3.RIGHT, PI / 2.0))
-		&"seedling", &"carrot":
+		&"seedling", &"root_tuber":
 			_plant(root, 0.14, 4, 0.07)
-		&"sapling", &"fungus":
+		&"sapling", &"vat_fungus":
 			_plant(root, 0.38, 7, 0.12)
 		_:
 			return null

@@ -7,7 +7,7 @@ extends DeviceProbe
 ## a floating crate, a planter, a charger with its panel, a planted turbine.
 const CAMP := [
 	[&"crate_frame", 2.6, 0.0, [&"battery", &"hover_tray", &"hook"]],
-	[&"planter", -2.6, 0.6, [&"battery", &"carrot", &"carrot", &"fungus"]],
+	[&"planter", -2.6, 0.6, [&"battery", &"root_tuber", &"root_tuber", &"vat_fungus"]],
 	[&"charger", 0.4, 2.8, [&"battery", &"solar_panel"]],
 	[&"turbine", 0.2, -2.8, [&"battery"]],
 ]

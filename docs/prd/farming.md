@@ -465,7 +465,7 @@ that ignored the weather.
 - The probes below, all passing.
 
 **As built in the skeleton (2026-10-16):**
-- **The planter** is the catalog's planter: three small slots and a large one on top, a
+- **The planter** is the catalog's planter: three standard planters and a pot on top, a
   battery slot, two ring mounts, a bottom mount for a hover tray and a port, as before,
   plus its own 4 L water tank, a new **mod mount** on its back, and beside it a **water
   socket** (2026-10-17). It's found with an empty tank. A canister fitted to the water
@@ -473,88 +473,153 @@ that ignored the weather.
   empties while the tank stays full, and once it's dry the tank's own 4 L carry on; take
   it out as any part. A hose's end there instead fills the tank from whatever the hose
   joins (Survival). Use with a canister in hand no longer pours: it drinks, as anywhere.
-- **Two crops:** carrots in the small slots, fungus in the large one. Each is a part of
-  its crop, so nothing is matched by name. Sown it stands short; it grows taller and
-  fuller as it grows, and ripe it turns its ripe colour (carrots orange, fungus pale).
+- **Planter sizes are socket kinds** (2026-10-17, part 4's step 2): a pot, a standard
+  planter and a deep bed, each a kind in the typed-socket system, and each crop's part
+  is of the kind it fits, so nothing new collides or overlaps. The planter's three
+  standard planters are its old small slots and its pot the old large one, and the
+  survival kit's the same: the carrots sat in the small ones and became root-tubers,
+  which are standard, and the fungus sat in the large one and became vat fungus, which
+  is a pot's. Sockets save by their place in the list, so renaming the kinds in place
+  keeps every old save's crops in sockets that fit them, where appending new sockets
+  would have stranded them in the wrong kind. The deep bed is a kind no frame has yet.
+- **Three crops, all data** (2026-10-17, part 4's steps 1 and 3). Root-tuber, vat fungus
+  and saltbush replace the carrots and fungus. Each crop is its part in the catalog, and
+  one growth path reads it: its family (day, storm or special), the light it grows by
+  (sun, dark or lamp) and the felt light it starts at and is full at, its minutes of
+  full growth to mature, the water it drinks on the way, its harvest (what parts, how
+  many), its tolerances, its planter (the part's socket kind), its propagule (tuber,
+  spores, cutting) and its stage twists. Each tolerance is two numbers, the most it
+  grows in and the most it holds through, so it reads as how much shelter the crop
+  needs: inside the first it grows, past it it holds still, and past the second it
+  wilts back, never dying. Wind is the felt wind, m/s, and particles the felt storm,
+  both less inside a bubble and in a dune's lee; heat and cold are the felt
+  temperature, as before. Radiation is a number on each crop, but nothing in the
+  weather gives a dose yet, so nothing reads it.
+- **Shared stages:** seedling (under a quarter grown), growing, mature, and going to
+  seed, which nothing does yet. Ripe is mature, except for a crop that fruits in bursts.
+  The stage twists that do something: **regrows** (the share it keeps when picked, so it
+  grows again where it stands), **bursts** (minutes to fruit once mature, only while a
+  storm is over it), **folds** (minutes ahead of a storm its leaves close) and
+  **never dies** (past its limits it holds instead of wilting). Said of a crop but not
+  built: vat fungus **eats scraps**, and the words for the others' twists (keeps growing,
+  cycles, regrows from its stump, waits for rain) are named for when those crops come.
+  **Clean or wild** is a mark on each plant, always clean for now: nothing reads it until
+  propagules and wild stock come (part 4's step 4).
 - **Growth** ticks on power's tick of world time, so the dev time warp grows crops with
   everything else and the frame rate never changes a harvest. It reads the felt light
   where the planter stands (the sun, dimmed by the storm, and still the storm's inside
-  a bubble) and the felt temperature (a bubble that holds back temperature holds its
-  own). It doesn't need power.
-  - **Carrots** start growing at a felt light of 0.25 and grow full from 0.6. A full
-    storm leaves 0.22, so they starve in one. They grow between −10 and 60 °C and
-    ripen after three minutes of full growth. At the equator that's about one and a
-    half harvests a clear day: they grow through the morning, stall in the noon heat
-    and pick up again late in the afternoon.
-  - **Fungus** grows full in a felt light of 0.25 or less (night, or a storm's dark) and
-    not at all from 0.5. It grows between −5 and 45 °C and ripens after six minutes. A
-    storm at the equator blankets the swing to between −2.5 and 42.5 °C, so it grows the
-    whole time and ripens in six minutes.
-  - **Past its hardy limits a crop wilts,** losing growth at twice its best rate, down
-    to nothing but never dying: carrots below −30 or above 70 °C, fungus below −15 or
-    above 55. That's what "fails" means. In the clear at the equator, fungus grows in
-    the evening, then the night's cold wilts it back, and its best is 0.62 of ripe. In
-    a storm 60° out, the wider swing does the same and its best is 0.68. At 60° in the
-    clear both crops wilt to nothing by the end of a day; inside a thermal shield both
-    ripen within one.
+  a bubble), the felt temperature (a bubble that holds back temperature holds its own),
+  the felt wind and dust. It doesn't need power.
+  - **Root-tuber,** the day baseline, a potato's descendant, grows as the carrots did:
+    from a felt light of 0.25, full from 0.6, so a full storm's 0.22 starves it. It
+    grows between −10 and 60 °C and is mature after three minutes of full growth, about
+    one and a half harvests a clear day at the equator. It grows in wind up to 25 m/s,
+    so a clear day's wind never stops it and a storm's mostly does, and holds to 45; a
+    full storm's dust past 0.9 holds it too. A harvest is four tubers of 150 kcal, and it's
+    sown again from a tuber.
+  - **Vat fungus,** the storm baseline, an oyster mushroom's descendant, grows its mat in
+    a felt light of 0.25 or less (night, or a storm's dark) and not at all from 0.5,
+    between −5 and 45 °C, mature after five minutes of it. Mature, it waits for a storm:
+    only while the storm is over it does it fruit, in a burst of one minute, and then
+    it's ripe, four caps of 150 kcal. The storm it reads is the air's, its humid dark,
+    which no bubble keeps out, so fungus inside a bubble fruits. It wants still air: it
+    grows in wind up to 12 m/s, a breeze, and holds to 35, so outside a bubble a storm's
+    wind stops it and its hardest gusts wilt it back, and inside one it grows and fruits. Picked, it grows again from nothing in its
+    pot. In a storm at the equator, six minutes from sown to ripe, as the fungus took.
+  - **Saltbush,** the day survivor and the weather sign, grows slowly: from a felt
+    light of 0.2, full from 0.55, mature after twelve minutes, drinking 0.15 L. It
+    grows between −20 and 65 °C and in wind up to 40 m/s, and past any of them it holds
+    and never wilts. A harvest is four salt and a little food, saltbush leaves of
+    120 kcal, barely edible; picked, it keeps half its growth and grows on in its slot.
+    **Salt** is a part that stacks with what you carry and does nothing else yet.
+  - **The fold:** saltbush's leaves close two minutes ahead of a storm, read from the
+    storm field there and two minutes on, as the radio's forecast reads it, and the air's
+    pressure, not what a bubble lets through. They close over half a minute, stay shut
+    while the storm is over it, and open again once it's clear with no storm due within
+    the two minutes. Two minutes is about 1.2 km of a front's approach on the prevailing
+    10 m/s: time to get home from anywhere you can see the camp and close up, and still
+    well inside the radio's twenty-minute forecast, so the radio stays the better
+    instrument. The fold is only its look; it grows on behind it.
   - **A ripe crop stops,** and holds through any weather until it's picked.
-- **Water:** a crop drinks as it grows, 0.25 L for a carrot to ripen and 0.3 L for a
-  fungus. With the tank dry it stops exactly where the water ran out. A fitted canister
-  waters it again until both run dry, and a full one keeps the tank full, losing just
-  what the crops drink (probe 5).
-- **By hand:** take on a ripe crop and its harvest comes to your hands as food
-  (carrots or fungus caps, four units of 150 kcal). Food is like a ration: carry it and
-  the suit eats it, or use it to eat your fill. Take on a crop that isn't ripe
-  and it comes out whole, to sow somewhere else.
-- **Picking by hand keeps the farm going** (Hunter, 2026-10-16): picked fungus regrows
-  from what's left in the slot, fruiting again the way mushrooms do; a picked carrot gives
-  its seed with the food, to sow where you like. The harvester still saves you the work
-  and drops the food on you. As built, the fungus stays in its slot and grows again from
-  nothing, as fast as a new one. The carrot's seed falls in with what you carry, as the
-  harvester's food does, since your hands are full of the food (2026-10-17: what you
-  carry has no slots to fill, so it always does).
+- **Water:** a crop drinks as it grows to mature: 0.25 L for a root-tuber, 0.3 L for a
+  vat fungus and 0.15 L for a saltbush; fruiting drinks nothing, it's the storm's damp.
+  With the tank dry it stops exactly where the water ran out. A fitted canister waters
+  it again until both run dry, and a full one keeps the tank full, losing just what the
+  crops drink (probe 5).
+- **By hand:** take on a ripe crop and its harvest comes out: the first of it to your
+  hands (tubers, fungus caps or a salt), the rest in with what you carry. Food is like a
+  ration: carry it and the suit eats it, or use it to eat your fill. Take on a crop that
+  isn't ripe, a mature fungus waiting for its storm included, and it comes out whole,
+  to sow somewhere else.
+- **Picking by hand keeps the farm going** (Hunter, 2026-10-16): a picked vat fungus
+  grows again from nothing in its pot, and a picked saltbush keeps half of itself and
+  grows on; a picked root-tuber gives a tuber to sow again, which falls in with what you
+  carry, as the harvester's food does, since your hands are full of the harvest
+  (2026-10-17: what you carry has no slots to fill, so it always does).
 - **The harvester** fits the mod mount. With it fitted, a crop is harvested the tick it
   ripens: its share of seed goes straight back into its slot, any more into free slots
-  that fit, and seed with no free slot is kept for one. The rest is stored as food in
-  the planter. The share it replants is one of 0, 25, 50, 75 and 100%. Use on the
-  planter used to step it; now use sets the planter's tray, as on any device (Hunter,
-  2026-10-17: "lets not have f toggle replant % on the planter... we will find another
-  way to toggle or adjust replant%"), and the share has no control until that's found.
-  It starts at 25%, one of a harvest of four, which keeps every slot sown. A
-  share that doesn't make a whole seed is carried over, so the split holds over many
-  harvests. It draws no power yet.
+  that fit, and seed with no free slot is kept for one. The rest of its harvest is
+  stored in the planter, everything it gives. The share it replants is one of 0, 25, 50,
+  75 and 100%. Use on the planter used to step it; now use sets the planter's tray, as
+  on any device (Hunter, 2026-10-17: "lets not have f toggle replant % on the planter...
+  we will find another way to toggle or adjust replant%"), and the share has no control
+  until that's found. It starts at 25%, one of a harvest of four, which keeps every slot
+  sown. A share that doesn't make a whole seed is carried over, so the split holds over
+  many harvests. It draws no power yet.
 - **Dropping food onto you:** within 6 m, while you carry less than 2,000 kcal of food (a
   full stomach), the planter drops a harvest's worth onto you, one drop a tick, and you
-  see it fall. Auto-eating does the rest.
-- **What one planter gives:** a harvester planter of three carrots and a fungus at 25%,
-  at the equator, stores about 1,900 kcal a day in the clear (all carrots) and 1,400 in
-  a storm (all fungus). You eat 1,000. It drinks 1 to 1.3 L a day, so a full tank lasts
-  three or four days, and one condenser can't keep you and it both.
+  see it fall. Auto-eating does the rest. What isn't food, salt, it drops onto you
+  whenever you're near.
+- **What one planter gives:** a harvester planter of three root-tubers and a vat fungus
+  at 25%, at the equator, stores about 1,900 kcal a day in the clear (all root-tubers)
+  and 1,400 in a storm under a bubble (all fungus). You eat 1,000. It drinks 1 to 1.3 L a
+  day, so a full tank lasts three or four days, and one condenser can't keep you and it
+  both.
 - **Wear:** a planter outside a bubble in a storm wears like any device, and a wrecked
   one grows nothing.
-- **Seeds are found** (2026-10-16): carrots and fungus lie loose on ruins' floors, and in
-  survival kits. Seeds keep only out of the weather, so a kit on open sand has mostly
-  lost its seeds and one on a ruin's floor holds them. Over thousands of chunks, 58 of
-  99 seeds were in ruins. A found seed is a seedling at nothing grown, ready to sow. The
-  harvester is a rare deep part, the rarest part on open sand.
+- **Seeds are found** (2026-10-16): root-tubers and vat fungus lie loose on ruins'
+  floors, and in survival kits. Seeds keep only out of the weather, so a kit on open
+  sand has mostly lost its seeds and one on a ruin's floor holds them. Over thousands of
+  chunks, 58 of 99 seeds were in ruins. A found seed is a seedling at nothing grown,
+  ready to sow. The harvester is a rare deep part, the rarest part on open sand.
+  Saltbush isn't found yet: its stock is the silver lines along the old roads (part 4's
+  step 9), so for now it's the farm scenario's and `give saltbush`.
+- **Old saves** (2026-10-17): a save from before the crops loads as them. Carrots are
+  root-tubers, fungus is vat fungus and carrots' food is tubers, each as grown as it
+  was and in the socket it was in; a fungus that was ripe stays ripe; what a harvester
+  stored is tubers and caps, as many kcal of them.
+- **The look:** each crop has a model in B's paint (art direction), a look at each
+  stage that fills out as it grows. The root-tuber is a potato's leafy top over a mound,
+  its tubers showing and its top flowering and yellowing when it's mature. The vat
+  fungus is a white mat of mycelium that pins as it matures and fruits into a cluster of
+  oyster caps with cream gills. The saltbush is a low mound of small silver leaves on
+  woody stems, held level to the sun, closing up against their stems when it folds.
+  Sheet: `look/crops/shoot.sh`.
 - **The playtest scenario** ("farm" among the dev scenarios) starts you fed and watered on
-  a clear morning with a storm due in one and a half to three minutes. Two hover
-  planters float in front of you, each on a line to a stake, sown with three carrots
-  and a fungus started part grown: the carrots at 85%, so they ripen within a minute in
-  the clear, and the fungus at half, so it ripens a few minutes into the storm. One is
-  yours to pick by hand, its tank half full, with a full canister by your feet to fit
-  to its water socket; the other has a harvester and a full tank. A charged shield
-  generator stands between them, switched off, and its bubble takes both. You carry a
-  spare carrot.
+  a clear morning with a storm due in two and a half to three and a half minutes. Two
+  hover planters float in front of you, each on a line to a stake, sown and started part
+  grown: the root-tubers at 85%, so they ripen within a minute in the clear, and the vat
+  fungus at half, so it ripens a few minutes into the storm once the bubble's still air
+  is round it. One is yours to pick by hand, with two root-tubers, a saltbush at 60% and
+  the fungus, its tank half full, with a full canister by your feet to fit to its water
+  socket; its saltbush is open as you arrive and folds as you watch, half a minute to a
+  minute and a half in. The other has three root-tubers, the fungus, a harvester and a
+  full tank. A charged shield generator stands between them, switched off, and its
+  bubble takes both. You carry a spare root-tuber. `give` makes any crop or its harvest
+  by its catalog id: `root_tuber`, `vat_fungus`, `saltbush`, `tubers`, `fungus_caps`,
+  `saltbush_leaves`, `salt`.
 - **Probe 3 is built** with a test-only thermal shield.
 - **The AFK promise feeds you** (Stage 12, 2026-10-17, probe 6). The reference camp's
-  farm (Power) is two planters with harvesters, three carrots and a fungus in each, their
-  tanks full. Over three days at the equator it fed you alone: the carrots ripened in the
-  first clear spell and the fungus through the storms after, 24 and 56 units, and it
-  dropped 4,800 kcal onto you, of which you ate 2,400, keeping 4,200 more (with what you
-  carry weight-bound, 2026-10-17; it was 2,700 while two free slots held its drops). Your hunger
-  never fell below the mark where the suit feeds you, and every slot stayed sown. A
-  planter drops what it stored first, so you ate carrots while the fungus piled up.
+  farm (Power) is two planters with harvesters, three root-tubers and a vat fungus in
+  each, their tanks full. Over three days at the equator it fed you alone: the
+  root-tubers ripened in the first clear spell and the fungus fruited through the storms
+  after, under the bubble, 24 and 56 units, and it dropped 4,800 kcal onto you, of which
+  you ate 2,400, keeping 4,200 more (with what you carry weight-bound, 2026-10-17; it was
+  2,700 while two free slots held its drops). Your hunger never fell below the mark where
+  the suit feeds you, and every slot stayed sown. A planter drops what it stored first,
+  so you ate tubers while the caps piled up. The new crops gave exactly what the carrots
+  and fungus did (2026-10-17): the same units, the same kcal, the same hunger, and the
+  driest tank 3.58 L where it was 3.64.
   Water no longer ends it (2026-10-17): a condenser beyond the shield, on a battery and a
   panel of its own, waters both planters on hoses. The driest tank had 3.66 L left after
   three days, where with nothing to fill them it had 0.65 L and the two ran dry at 3.65
@@ -600,6 +665,16 @@ that ignored the weather.
 6. **The AFK promise feeds you.** This is shared with Survival: an automated farm keeps
    an idle player fed.
 7. **Frame-rate proof.** Growth is the same at 30, 60 and 120 frames per second.
+8. **Crops grow by their own data.** In one planter in the same weather, a root-tuber
+   grows at its full rate, another whose data takes less wind holds, too windy, and a
+   saltbush grows at its own rate, a quarter of the root-tuber's; in a harder wind the
+   root-tuber holds too and the saltbush grows on.
+9. **Vat fungus fruits in a storm.** Mature inside a bubble in the clear, it waits,
+   unripe; a storm over the bubble and it fruits in its one-minute burst, and harvested
+   it starts again.
+10. **Saltbush folds before a storm.** In the run's own weather, its leaves are open
+    three minutes ahead of a storm, shut a minute ahead, shut through it, and open a
+    minute after it clears.
 
 ## Out of scope
 

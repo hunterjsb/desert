@@ -28,7 +28,7 @@ const CAMP_TURN := 12.0
 ## id, x, z, yaw degrees, parts. The crate floats; the rest stand on the sand.
 const CAMP := [
 	[&"crate_frame", -1.9, 0.6, 25.0, [&"battery", &"hover_tray"]],
-	[&"planter", 2.0, 0.7, -18.0, [&"battery", &"carrot", &"carrot", &"carrot", &"fungus"]],
+	[&"planter", 2.0, 0.7, -18.0, [&"battery", &"root_tuber", &"root_tuber", &"root_tuber", &"vat_fungus"]],
 	[&"charger", 1.1, -1.6, 35.0, [&"battery", &"solar_panel"]],
 	[&"shield", 0.0, 0.0, 10.0, [&"battery"]],
 ]

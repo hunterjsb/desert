@@ -48,11 +48,12 @@ const LIST: Array[Dictionary] = [
 		"day": [0.25, 0.3], "survive": true},
 	{"key": "ruin", "label": "go looking: a ruin and finds near you, your own bare crate frame, clear and calm",
 		"kind": "ruin", "day": [0.35, 0.5], "calm": 6.0},
-	# A clear morning, with a storm due in time to pick the carrots first and
-	# before the noon heat that wilts fungus: "due" is when, s, in place of ten
-	# clear minutes.
-	{"key": "farm", "label": "farm: carrots ripening in the clear, fungus for the storm due in minutes, a harvester, a shield",
-		"kind": "clear", "day": [0.33, 0.37], "due": [90.0, 200.0], "farm": true},
+	# A clear morning, with a storm due in time to pick the root-tubers first
+	# and before the noon heat that wilts fungus, and far enough off that the
+	# saltbush is open when you arrive and folds as you watch: "due" is when,
+	# s, in place of ten clear minutes.
+	{"key": "farm", "label": "farm: root-tubers ripening in the clear, vat fungus for the storm due in minutes, a saltbush that folds before it, a harvester, a shield",
+		"kind": "clear", "day": [0.33, 0.37], "due": [150.0, 200.0], "farm": true},
 	{"key": "board", "label": "ride: a charged hoverboard at your feet by a small camp, a shield and a crate, clear and calm",
 		"kind": "clear", "day": [0.35, 0.5], "calm": 6.0, "board": true},
 	{"key": "radio", "label": "radio: a radio and a charged shield in front of you, a storm 300 m off", "kind": "front",
@@ -77,8 +78,8 @@ const KIT_STRONG_CABLE := [0.0, 1.6]
 const KIT_HOSE := [0.0, 1.3]
 const KIT_PARTS := [
 	[&"battery", -1.6, 1.6], [&"big_battery", -1.2, 1.7], [&"hook", -0.8, 1.6], [&"hook", -0.55, 1.7],
-	[&"lamp", -0.25, 1.6], [&"carrot", 0.1, 1.7], [&"carrot", 0.35, 1.6], [&"carrot", 0.6, 1.7],
-	[&"fungus", 0.95, 1.6], [&"battery", 1.3, 1.7], [&"hover_tray", -2.6, 2.4],
+	[&"lamp", -0.25, 1.6], [&"root_tuber", 0.1, 1.7], [&"root_tuber", 0.35, 1.6], [&"saltbush", 0.6, 1.7],
+	[&"vat_fungus", 0.95, 1.6], [&"battery", 1.3, 1.7], [&"hover_tray", -2.6, 2.4],
 	[&"hover_tray", 2.8, 2.6], [&"solar_panel", -2.6, 3.6], [&"solar_panel", -3.0, 2.2],
 	[&"hook", 1.65, 1.7], [&"hook", 1.95, 1.6], [&"canister", -2.0, 1.2],
 ]
@@ -103,14 +104,17 @@ const SURVIVE_RATIONS := [[0.35, 1.3], [0.6, 1.3]]
 ## The farm, right and ahead: a planter to pick by hand, one with a
 ## harvester, the shield generator between them so its bubble takes both and
 ## their stakes, and a canister to fit to a water socket. Its crops start
-## part grown, so the carrots ripen within a minute in the clear and the
-## fungus within a few once the storm's dark is on it.
+## part grown, so the root-tubers ripen within a minute in the clear and the
+## vat fungus within a few once the storm's dark is on it and the bubble's
+## still air round it. The one you pick by hand has a saltbush in place of a
+## root-tuber, which folds two minutes before the storm and grows on slowly.
 const FARM_BY_HAND := [-1.6, 2.8]
 const FARM_HARVESTER := [1.6, 2.8]
 const FARM_SHIELD := [0.0, 2.0]
 const FARM_CANISTER := [-0.5, 1.3]
-const FARM_CROPS := [&"carrot", &"carrot", &"carrot", &"fungus"]
-const FARM_GROWN := {&"carrot": 0.85, &"fungus": 0.5}
+const FARM_CROPS := [&"root_tuber", &"root_tuber", &"root_tuber", &"vat_fungus"]
+const FARM_BY_HAND_CROPS := [&"root_tuber", &"saltbush", &"root_tuber", &"vat_fungus"]
+const FARM_GROWN := {&"root_tuber": 0.85, &"vat_fungus": 0.5, &"saltbush": 0.6}
 
 ## The board, nose ahead, and the small camp beside you: right and ahead.
 const BOARD_AT := [0.0, 1.3]
@@ -528,21 +532,21 @@ static func survive(world: World) -> Array[Node3D]:
 
 
 ## Two hover planters floating in front of you, each on a line to a stake as
-## in the camp, sown with carrots and a fungus part grown, one tank full and
-## one half: one to pick by hand, and one with a harvester that keeps its
-## slots sown and drops food onto you. A charged shield generator, switched
-## off, stands between them, with a full canister by your feet to fit to the
-## half-full one's water socket, which keeps its tank full. You start
-## fed, watered and whole, on a fresh suit's kit and a spare carrot to sow.
-## Returns what it dropped.
+## in the camp, sown with root-tubers and a vat fungus part grown, one tank
+## full and one half: one to pick by hand, a saltbush among its root-tubers,
+## and one with a harvester that keeps its slots sown and drops food onto
+## you. A charged shield generator, switched off, stands between them, with a
+## full canister by your feet to fit to the half-full one's water socket,
+## which keeps its tank full. You start fed, watered and whole, on a fresh
+## suit's kit and a spare root-tuber to sow. Returns what it dropped.
 static func farm(world: World) -> Array[Node3D]:
 	world.player.vitals.fresh()
-	world.player.suit.carried.append(Catalog.part(&"carrot"))
+	world.player.suit.carried.append(Catalog.part(&"root_tuber"))
 	var dropped: Array[Node3D] = []
 	for where: Array in [FARM_BY_HAND, FARM_HARVESTER]:
 		var tied := _tethered(world, &"planter", where[0], where[1])
 		var planter := tied[0] as Planter
-		for id: StringName in FARM_CROPS + ([&"harvester"] if where == FARM_HARVESTER else []):
+		for id: StringName in (FARM_CROPS + [&"harvester"] if where == FARM_HARVESTER else FARM_BY_HAND_CROPS):
 			var part := Catalog.part(id)
 			for socket in planter.sockets():
 				if socket.kind == part.kind and socket.part == null:

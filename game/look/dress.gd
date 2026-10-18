@@ -65,6 +65,14 @@ static func prepare() -> void:
 	Catalog.stake().free()
 	for id: StringName in Catalog.PARTS:
 		Catalog.part(id).free()
+		var grows: Dictionary = Catalog.PARTS[id].get("crop", {})
+		if grows.is_empty():
+			continue
+		var stages := [Plant.SEEDLING, Plant.YOUNG, Plant.RIPE] + ([Plant.MATURE] if grows.stages.has("bursts") else [])
+		var steps := Plant.FOLD_STEPS if grows.stages.has("folds") else 0
+		for stage: StringName in stages:
+			for step in steps + 1:
+				crop(id, stage, step / float(maxi(steps, 1)))
 
 
 static func _cached(group: StringName, id: StringName, build: Callable) -> ArrayMesh:
@@ -312,9 +320,54 @@ static func _part(id: StringName, size: Vector3) -> ArrayMesh:
 			b.box(Vector3(size.x - 0.02, size.y - 0.04, size.z * 0.4), Vector3(0.0, 0.0, size.z * 0.8), Paint.coat(Paint.YELLOW, 0.7), 0.008)
 			for i in 5:
 				b.box(Vector3(0.012, size.y * 0.5, 0.01), Vector3(-0.07 + i * 0.035, 0.0, size.z), black, 0.002)
+		&"root_tuber", &"vat_fungus", &"saltbush":
+			return crop(id, Plant.RIPE)
+		&"tubers":
+			for i in 5:
+				var at := Vector3(-0.05 + i * 0.025, (i % 2) * 0.025 - 0.012, 0.03 + (i % 3) * 0.006)
+				b.ball(0.026, at, TUBER, Vector3(1.0, 0.85, 0.8))
+		&"fungus_caps":
+			for i in 3:
+				b.ball(0.05, Vector3(-0.03 + i * 0.03, (i - 1) * 0.012, 0.02 + i * 0.012), CAP, Vector3(1.0, 0.75, 0.22))
+		&"saltbush_leaves":
+			for i in 5:
+				b.ball(0.5, Vector3((i - 2) * 0.012, 0.0, 0.03), SALTBUSH, Vector3(0.04, 0.11, 0.012),
+					Basis(Vector3.BACK, (i - 2) * 0.3))
+			b.drum(0.012, 0.014, Vector3(0.0, -0.03, 0.03), Paint.coat(Paint.ROPE, 0.0, 0.0, 1.0, 0.4), Basis.IDENTITY, 8)
+		&"salt":
+			# A cloth twist of it, tied at the neck.
+			b.ball(0.034, Vector3(0.0, 0.0, 0.022), SALT, Vector3(1.0, 1.0, 0.65))
+			b.drum(0.012, 0.02, Vector3(0.0, 0.0, 0.046), SALT, along, 8, 0.004)
+			b.drum(0.008, 0.006, Vector3(0.0, 0.0, 0.04), Paint.coat(Paint.ROPE, 0.0, 0.0, 1.0, 0.4), along, 8)
 		_:
 			return null
 	return b.commit()
+
+
+## A crop's look at a stage of Plant's, ripe for the look of one whose ripe
+## isn't its mature, and its leaves folded this share shut. It grows up its
+## +Z out of its slot, as every part stands; it's drawn upright in its own
+## frame and turned onto that.
+static func crop(id: StringName, stage: StringName, fold := 0.0) -> ArrayMesh:
+	return _cached(&"crop", StringName("%s/%s/%.2f" % [id, stage, fold]), func() -> ArrayMesh: return _crop(id, stage, fold))
+
+
+## Plants wear no paint, so nothing of them chips; they hold a little sand.
+## Saltbush is silvered by the salt in its leaves.
+static var TUBER := Paint.coat(Color(0.74, 0.6, 0.4), 0.0, 0.0, 0.8, 0.4)
+static var CAP := Paint.coat(Color(0.52, 0.48, 0.43), 0.0, 0.0, 0.7, 0.3)
+static var GILLS := Paint.coat(Color(0.88, 0.84, 0.74), 0.0, 0.0, 0.8, 0.1)
+static var MYCELIUM := Paint.coat(Color(0.9, 0.88, 0.82), 0.0, 0.0, 0.95, 0.3)
+static var POTATO_LEAF := Paint.coat(Color(0.26, 0.46, 0.18), 0.0, 0.0, 0.7, 0.3)
+static var POTATO_STEM := Paint.coat(Color(0.36, 0.48, 0.24), 0.0, 0.0, 0.8, 0.3)
+static var FADING := Paint.coat(Color(0.5, 0.52, 0.22), 0.0, 0.0, 0.75, 0.4)
+static var FLOWER := Paint.coat(Color(0.86, 0.82, 0.9), 0.0, 0.0, 0.6, 0.1)
+static var SALTBUSH := Paint.coat(Color(0.6, 0.69, 0.68), 0.0, 0.25, 0.4, 0.2)
+static var WOOD := Paint.coat(Color(0.42, 0.37, 0.3), 0.0, 0.0, 0.9, 0.5)
+static var SALT := Paint.coat(Color(0.9, 0.89, 0.84), 0.0, 0.0, 0.9, 0.2)
+static var MOUND := Paint.coat(Paint.SOIL.lightened(0.04), 0.0, 0.0, 1.0, 0.8)
+## Upright, y up, onto a part's +Z.
+const UP := Basis(Vector3.RIGHT, PI / 2.0)
 
 
 ## Solar cells in a grid over `area`, facing +Z of `turn`.
@@ -334,3 +387,105 @@ static func _hazard(b: Paint.Pieces, size: Vector3, at: Vector3, turn: Basis) ->
 		var x := -size.x * 0.5 + (i + 0.5) * size.x / n
 		b.box(Vector3(size.y * 0.55, size.y * 1.05, size.z + 0.002), at + turn * Vector3(x, 0.0, 0.0), Paint.coat(Paint.BLACK, 0.6), 0.001,
 			turn * Basis(Vector3.BACK, 0.7))
+
+
+static func _crop(id: StringName, stage: StringName, fold: float) -> ArrayMesh:
+	var b := Paint.Pieces.new()
+	# The same plant each time it's drawn, its own shape.
+	var rng := RandomNumberGenerator.new()
+	rng.seed = hash(id)
+	var young := stage == Plant.SEEDLING
+	match id:
+		&"root_tuber":
+			# A potato's leafy top over tubers swelling in the soil; ripe, the
+			# top yellows and flowers, and the tubers show at the mound.
+			var ripe := stage == Plant.RIPE or stage == Plant.MATURE
+			var stems := 3 if young else (5 if stage == Plant.YOUNG else 6)
+			var tall := 0.05 if young else (0.13 if stage == Plant.YOUNG else 0.19)
+			var leaf := 0.035 if young else 0.05
+			_up_drum(b, 0.05 if young else 0.07, 0.01, Vector3(0.0, 0.004, 0.0), MOUND, 0.035 if young else 0.05)
+			for i in stems:
+				var a := TAU * i / stems + rng.randf_range(-0.3, 0.3)
+				var lean := rng.randf_range(0.25, 0.5)
+				var top := Vector3(sin(a) * tall * lean, tall * rng.randf_range(0.8, 1.0), cos(a) * tall * lean)
+				_stem(b, Vector3(0.0, 0.01, 0.0), top, 0.005, POTATO_STEM)
+				for k in (2 if young else 4):
+					var on := top * (0.45 + 0.18 * k)
+					var side := a + (1.2 if k % 2 == 0 else -1.2)
+					_leaf(b, on, side, rng.randf_range(0.1, 0.5), leaf, leaf * 0.6, FADING if ripe and k == 0 else POTATO_LEAF)
+				_leaf(b, top, a, 0.6, leaf * 0.9, leaf * 0.55, POTATO_LEAF)
+				if ripe and i % 2 == 0:
+					_ball(b, 0.009, top + Vector3(0.0, 0.012, 0.0), FLOWER)
+					_ball(b, 0.004, top + Vector3(0.0, 0.02, 0.0), Paint.coat(Paint.YELLOW, 0.0))
+			if not young:
+				for i in (4 if ripe else 2):
+					var a := TAU * (i + 0.5) / 4.0
+					var r := 0.05 if ripe else 0.035
+					_ball(b, 0.024 if ripe else 0.016, Vector3(sin(a) * r, 0.01, cos(a) * r), TUBER, Vector3(1.2, 0.8, 1.0))
+		&"vat_fungus":
+			# A white mat of mycelium, pinning as it matures; fruited, a cluster
+			# of oyster caps fanned out from one stem, cream gills under them.
+			var mat := 0.035 if young else (0.052 if stage == Plant.YOUNG else 0.064)
+			_ball(b, mat, Vector3(0.0, 0.004, 0.0), MYCELIUM, Vector3(1.0, 0.18, 1.0))
+			if stage == Plant.RIPE:
+				_up_drum(b, 0.016, 0.06, Vector3(0.0, 0.03, 0.0), GILLS, 0.01)
+				for i in 9:
+					# Three tiers of fans, each shelf flaring out and up from the stem.
+					var a := TAU * i / 3.0 + (i / 3) * 0.9 + rng.randf_range(-0.2, 0.2)
+					var tier := 0.022 + (i / 3) * 0.022
+					var out := Vector3(sin(a), 0.0, cos(a))
+					var tilt := Basis(out.cross(Vector3.UP).normalized(), 0.3) * Basis(Vector3.UP, a)
+					var r := rng.randf_range(0.045, 0.058) * (1.0 - (i / 3) * 0.12)
+					var at := out * r * 0.95 + Vector3(0.0, tier, 0.0)
+					_ball(b, r, at, CAP, Vector3(1.0, 0.16, 0.85), tilt)
+					_ball(b, r * 0.94, at - Vector3(0.0, r * 0.05, 0.0), GILLS, Vector3(1.0, 0.1, 0.8), tilt)
+			elif not young:
+				for i in (5 if stage == Plant.YOUNG else 11):
+					var a := rng.randf() * TAU
+					var r := rng.randf_range(0.0, mat * 0.7)
+					var pin := 0.006 if stage == Plant.YOUNG else 0.01
+					_ball(b, pin, Vector3(sin(a) * r, 0.01 + pin * 0.6, cos(a) * r), GILLS, Vector3(1.0, 1.3, 1.0))
+		&"saltbush":
+			# Woody stems branching low into a mound of small silvery leaves, held
+			# level to the sun; folded, they close up against their stems.
+			var stems := 2 if young else (4 if stage == Plant.YOUNG else 7)
+			var tall := 0.06 if young else (0.12 if stage == Plant.YOUNG else 0.17)
+			var per := 5 if young else (8 if stage == Plant.YOUNG else 10)
+			var leaf := 0.03 if young else 0.042
+			for i in stems:
+				var a := TAU * i / stems + rng.randf_range(-0.3, 0.3)
+				var lean := rng.randf_range(0.2, 0.45) if young else rng.randf_range(0.5, 0.95)
+				var top := Vector3(sin(a) * tall * lean, tall * rng.randf_range(0.75, 1.0), cos(a) * tall * lean)
+				_stem(b, Vector3.ZERO, top, 0.005, WOOD)
+				for k in per:
+					var on := top * (0.2 + 0.8 * (k + 1) / per)
+					var side := a + k * 2.4 + rng.randf_range(-0.3, 0.3)
+					var open := rng.randf_range(-0.1, 0.3)
+					_leaf(b, on, side, lerpf(open, 1.3, fold), leaf * rng.randf_range(0.8, 1.1), leaf * lerpf(0.5, 0.32, fold),
+						SALTBUSH)
+		_:
+			return null
+	return b.commit()
+
+
+## A leaf from `at` out along a bearing `a` round the stem, `e` above level:
+## long, and wide flat across.
+static func _leaf(b: Paint.Pieces, at: Vector3, a: float, e: float, long: float, wide: float, look: Paint.Coat) -> void:
+	var d := Vector3(cos(e) * sin(a), sin(e), cos(e) * cos(a))
+	var x := Vector3(cos(a), 0.0, -sin(a))
+	b.ball(0.5, UP * (at + d * long * 0.5), look, Vector3(wide, wide * 0.16, long), UP * Basis(x, d.cross(x), d))
+
+
+static func _stem(b: Paint.Pieces, from: Vector3, to: Vector3, radius: float, look: Paint.Coat) -> void:
+	var y := (to - from).normalized()
+	var x := y.cross(Vector3.FORWARD if absf(y.z) < 0.9 else Vector3.RIGHT).normalized()
+	b.drum(radius, from.distance_to(to), UP * (from + to) * 0.5, look, UP * Basis(x, y, x.cross(y)), 6)
+
+
+static func _ball(b: Paint.Pieces, radius: float, at: Vector3, look: Paint.Coat, scale := Vector3.ONE,
+		turn := Basis.IDENTITY) -> void:
+	b.ball(radius, UP * at, look, scale, UP * turn)
+
+
+static func _up_drum(b: Paint.Pieces, radius: float, height: float, at: Vector3, look: Paint.Coat, top := -1.0) -> void:
+	b.drum(radius, height, UP * at, look, UP, 12, top)

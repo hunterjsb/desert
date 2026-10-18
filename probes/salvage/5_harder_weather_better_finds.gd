@@ -101,7 +101,7 @@ func _tally(spec: Dictionary) -> void:
 	_kinds[spec.id] = count
 	var held: Array = [spec.id] + spec.fill.map(func(f: Array) -> StringName: return f[1])
 	for id: StringName in held:
-		if id in [&"carrot", &"fungus"]:
+		if id in [&"root_tuber", &"vat_fungus"]:
 			_seeds[in_ruin] += 1
 
 

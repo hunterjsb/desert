@@ -30,7 +30,7 @@ const LAST_LIGHT := 0.25
 const AHEAD := 2.5
 const CAMP := [
 	[&"crate_frame", -1.6, 1.2, 20.0, [&"battery", &"lamp"]],
-	[&"planter", 1.8, 0.4, -10.0, [&"battery", &"carrot", &"carrot"]],
+	[&"planter", 1.8, 0.4, -10.0, [&"battery", &"root_tuber", &"root_tuber"]],
 ]
 ## How far off the wall stands, m, and how far up you look at it.
 const WALL_AT := 500.0
