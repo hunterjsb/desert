@@ -150,6 +150,13 @@ low gravity and the rest of what the dev keys did, with help and history. The de
 overlay keeps its own key. The function keys this frees go to the player, such as quick
 save and quick load.
 
+The console opens at the main menu too, for what needs no world (Hunter, 2026-10-18: "would be
+useful for like an `unlockall` command for classes in case i want to test a new class and achv
+resets"): `unlockall` opens every start, and deeds can be granted or cleared to test them.
+
+**The deeds grid** ([Profile & saves](profile-and-saves.md#deeds-achievements-agreed-2026-10-18-building))
+is a menu of its own, reached from the main menu and the system menu.
+
 ## Skeleton version
 
 *As built, 2026-10-16.*
