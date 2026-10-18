@@ -41,12 +41,9 @@ func _ready() -> void:
 	await _ticks(120)
 	await _held(main.view, "in its storm,")
 	_shoot("main_storm")
-	# Left running, the menu's storm passes: its clock on fast till a clear day.
+	# Left running, the menu's storm passes.
 	var view := main.view
-	view.time_warp = 60.0
-	while view.weather.in_storm or view.weather.day.sun_direction(view.time, view.moon.latitude, view.moon.longitude).y < 0.3:
-		await get_tree().physics_frame
-	view.time_warp = 1.0
+	await _clear(view)
 	await _ticks(120)
 	await _held(view, "in the clear,")
 	_shoot("main")
@@ -100,6 +97,7 @@ func _ready() -> void:
 	view = main.view
 	main.showpiece.set_process_input(false)
 	await _idle(view)
+	await _clear(view)
 	await _ticks(60)
 	_press(&"ui_down")
 	_press(&"ui_accept")
@@ -134,6 +132,14 @@ func _ready() -> void:
 	await _settle(main)
 	_shoot("resume_night")
 	get_tree().quit()
+
+
+## The menu's clock on fast till a clear day.
+func _clear(view: World) -> void:
+	view.time_warp = 60.0
+	while view.weather.in_storm or view.weather.day.sun_direction(view.time, view.moon.latitude, view.moon.longitude).y < 0.3:
+		await get_tree().physics_frame
+	view.time_warp = 1.0
 
 
 ## The world time over the next day when the least light reaches the menu's

@@ -34,9 +34,15 @@ const SPIN_SETTLE := 2.5
 ## What a menu shows aside for your last camp.
 const CAMP := &"camp"
 ## The camp: the thing of yours nearest where you stood and what stood within
-## this of it, m, this many at most.
+## this of it, m, this many at most. Aside it has room to be this wide corner
+## to corner, m, and it's drawn in toward its middle till the farthest thing
+## stands this far from it, m, each kept this far clear of the rest, so a camp
+## spread over the sand still shows what it is.
 const CAMP_REACH := 12.0
 const CAMP_MOST := 8
+const CAMP_SPAN := 3.2
+const CAMP_SPREAD := 1.4
+const CAMP_CLEAR := 0.15
 ## Its own light is on a render layer only it stands on, so none reaches the
 ## desert. Seen as bright as this, it comes up as the desert's light falls
 ## below DUSK (Weather.seen_light).
@@ -130,7 +136,7 @@ func _build(from: Kit) -> Array:
 
 
 ## The camp as the save holds it, each thing with its state and what's
-## seated in it, as they stood round you, seen from where you stood.
+## seated in it, standing as they stood round you, seen from where you stood.
 func _camp(data: Dictionary) -> Array:
 	var snapshot := Snapshot.new(null)
 	var made := snapshot.camp(data, CAMP_REACH, CAMP_MOST)
@@ -148,13 +154,40 @@ func _camp(data: Dictionary) -> Array:
 	# Toward the camp's middle from where you stood; standing in it, as you faced.
 	var toward := Vector2(middle.x, middle.z)
 	var facing := atan2(-toward.x, -toward.y) if toward.length() > 1.0 else 0.0
+	_draw_in(pieces, toward)
 	for piece in pieces:
 		piece.transform = Transform3D(Basis(Vector3.UP, -deg_to_rad(YAW) - facing), Vector3.ZERO) * piece.transform
-	return _framed(pieces)
+	return _framed(pieces, CAMP_SPAN)
 
 
-## Pieces as one model about its middle, and how much smaller it's shown to fit.
-func _framed(pieces: Array[Node3D]) -> Array:
+## Each piece drawn in toward the middle along the way it stood from it, the
+## nearest first, and out again just clear of any already placed.
+func _draw_in(pieces: Array[Node3D], middle: Vector2) -> void:
+	var off := func(piece: Node3D) -> Vector2: return Vector2(piece.position.x, piece.position.z) - middle
+	var order := pieces.duplicate()
+	order.sort_custom(func(a: Node3D, b: Node3D) -> bool: return off.call(a).length() < off.call(b).length())
+	var farthest: float = off.call(order.back()).length() if not order.is_empty() else 0.0
+	var share := minf(1.0, CAMP_SPREAD / maxf(farthest, 0.01))
+	var placed: Array[Vector3] = []
+	for i in order.size():
+		var piece: Node3D = order[i]
+		var box := _bounds(piece, piece.transform)
+		var reach := Vector2(box.size.x, box.size.z).length() * 0.5
+		var was: Vector2 = off.call(piece)
+		var way := was.normalized() if was.length() > 0.01 else Vector2.from_angle(TAU * i / order.size())
+		var at := was * share
+		for step in 64:
+			if not placed.any(func(other: Vector3) -> bool:
+					return at.distance_to(Vector2(other.x, other.y)) < reach + other.z + CAMP_CLEAR):
+				break
+			at += way * 0.05
+		placed.append(Vector3(at.x, at.y, reach))
+		piece.position += Vector3(at.x - was.x, 0.0, at.y - was.y)
+
+
+## Pieces as one model about its middle, and how much smaller it's shown to
+## fit `span` corner to corner.
+func _framed(pieces: Array[Node3D], span := SPAN) -> Array:
 	var model := Node3D.new()
 	add_child(model)
 	for piece in pieces:
@@ -163,7 +196,7 @@ func _framed(pieces: Array[Node3D]) -> Array:
 	for piece in pieces:
 		piece.position -= box.get_center()
 	box.position -= box.get_center()
-	return [model, box, minf(1.0, SPAN / maxf(box.size.length(), 0.01))]
+	return [model, box, minf(1.0, span / maxf(box.size.length(), 0.01))]
 
 
 ## A device and what's seated on it, their batteries' lights as they hold.
