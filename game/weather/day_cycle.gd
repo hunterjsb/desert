@@ -129,6 +129,11 @@ func tu_turn(t: float) -> float:
 	return TAU * fposmod(tu_turns() * t / _day_seconds, 1.0)
 
 
+## The point under Tu, a place in the moon's frame, nodding with Tu.
+func sub_tu(t: float) -> Vector3:
+	return _tu(t)
+
+
 ## Unit vector toward Tu's centre in engine axes.
 func tu_direction(t: float, latitude: float, longitude: float) -> Vector3:
 	return _local(_tu(t), latitude, longitude)

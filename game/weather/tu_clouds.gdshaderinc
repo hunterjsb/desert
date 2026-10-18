@@ -82,12 +82,15 @@ vec3 tu_oval(vec3 c, vec2 q, float turned, vec3 tint, vec3 core, float px) {
 	float collar = smoothstep(1.3, 1.08, e) * smoothstep(0.85, 1.02, e);
 	c = mix(c, mix(c, DEEP, 0.6), collar * tu_shown(0.25, px));
 	if (e < 1.04) {
+		// Two arms wound a turn and a bit from rim to core, pale lanes
+		// along them and dark ones between, broken up along their length.
 		float a = atan(q.y, q.x) - turned;
-		float arms = sin(TAU * (a / TAU * 2.0 + e * 1.3)) * 0.6
-			+ (tu_noise(vec2(a / TAU * 6.0 + e * 3.0, e * 7.0), 6.0) - 0.5) * 0.8;
-		vec3 inside = mix(tint * 0.72, tint, smoothstep(0.98, 0.72, e) * tu_shown(0.25, px));
-		inside = mix(inside, core, smoothstep(0.6, 0.12, e));
-		inside *= 1.0 + 0.35 * arms * tu_shown(0.3, px) * smoothstep(0.08, 0.4, e);
+		float wind = sin(TAU * (a / TAU * 2.0 + e * 1.2)) + (tu_noise(vec2(a / TAU * 6.0 + e * 3.0, e * 6.0), 6.0) - 0.5) * 1.5;
+		float shown = tu_shown(0.3, px) * smoothstep(0.08, 0.4, e);
+		vec3 inside = mix(tint * 0.68, tint, smoothstep(0.98, 0.74, e) * tu_shown(0.25, px));
+		inside = mix(inside, core, smoothstep(0.58, 0.1, e));
+		inside = mix(inside, mix(core, CREAM, 0.3), smoothstep(0.35, 1.0, wind) * 0.45 * shown);
+		inside *= 1.0 - 0.28 * smoothstep(-0.35, -1.0, wind) * shown;
 		c = mix(c, inside, smoothstep(1.04, 0.94, e));
 	}
 	return c;
@@ -108,12 +111,13 @@ vec3 tu_clouds(float lat, float lon, float time, float fp) {
 		float r2 = dot(q[i], q[i]);
 		y -= at.w * q[i].y / max(r2, 1.0) * exp(-r2 * 0.08);
 	}
-	// Eddies big and small, drawn out along longitude.
-	y += (tu_fbm(vec2(x * 10.0, lat * 9.0), 10.0, 0.11, fp, 3) - 0.5) * 0.09
-		+ (tu_fbm(vec2(x * 31.0, lat * 34.0), 31.0, 0.03, fp, 3) - 0.5) * 0.035;
+	// Eddies big and small, drawn out along longitude. The big ones alone
+	// never fold a band back on itself, so small things riding one stay single.
+	y += (tu_fbm(vec2(x * 10.0, lat * 9.0), 10.0, 0.11, fp, 3) - 0.5) * 0.09;
+	float y0 = y;
+	y += (tu_fbm(vec2(x * 31.0, lat * 34.0), 31.0, 0.03, fp, 3) - 0.5) * 0.035;
 	// Where a zone meets a belt the jets shear, and waves break along the
 	// edge here and there, curling over as they lean with it.
-	float y0 = y;
 	float edge = exp(-pow(tu_band(y), 2.0) * 5.0);
 	float rough = tu_noise(vec2(x * 12.0, y * 25.0), 12.0);
 	float jitter = tu_noise(vec2(x * 9.0, y * 12.0 + 4.0), 9.0) * 3.0;
@@ -160,11 +164,11 @@ vec3 tu_clouds(float lat, float lon, float time, float fp) {
 	// churning trail behind it, widening as it goes.
 	vec2 w = q[0];
 	float back = -w.x;
-	float wake = smoothstep(0.75, 1.4, back) * smoothstep(5.5, 2.0, back) * exp(-pow(w.y / (0.75 + 0.2 * back), 2.0));
+	float wake = smoothstep(0.7, 1.3, back) * smoothstep(6.0, 2.0, back) * exp(-pow((w.y - 0.5) / (0.7 + 0.2 * back), 2.0));
 	if (wake > 0.001) {
 		float churn = tu_fbm(vec2(x * 30.0, y * 30.0), 30.0, 0.033, fp, 3);
 		float torn = tu_fbm(vec2(x * 36.0 + churn * 2.5, (y + (churn - 0.5) * 0.12) * 36.0), 36.0, 0.028, fp, 4);
-		vec3 trail = mix(mix(BELT, DEEP, 0.5), ZONE, smoothstep(0.36, 0.64, torn));
+		vec3 trail = mix(mix(BELT, DEEP, 0.5), ZONE, smoothstep(0.44, 0.56, torn));
 		trail = mix(trail, OCHRE, smoothstep(0.56, 0.7, churn) * 0.5);
 		c = mix(c, trail, wake * 0.9);
 	}

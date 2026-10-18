@@ -58,6 +58,8 @@ const DRY := Color(0.06, 0.11, 0.11)
 const HUMID := Color(0.07, 0.2, 0.36)
 const WALL := Color(0.86, 0.6, 0.24)
 const HEART := Color(0.6, 0.26, 0.08)
+## Tu-ward's mark, Tu's lit rim.
+const TU := Color("#9fc0f0")
 ## The pressure bar's span either side of the storm's line, in the field's units.
 const BAR_SPAN := 0.6
 ## The gyro's vectors are full length at this wind, m/s.
@@ -250,10 +252,11 @@ func _draw_legend(map: Dictionary, box: Rect2) -> void:
 		_label(Vector2(x, box.end.y - 44.0), scale + (" · est." if map.get("estimate", false) else ""), SMALL - 4, dim)
 
 
-## A compass gyro, north up: the way the deck points, a line out to a mark on
-## the rim; the wind as the deck feels it, a vector flying in from where it
-## comes from, as long as it's strong; and the angle between the two marked.
-## A dimmer vector for the wind's steady part, if asked.
+## A compass gyro, north up: Tu-ward, a mark on the rim in Tu's colour; the
+## way the deck points, a line out to a mark on the rim; the wind as the deck
+## feels it, a vector flying in from where it comes from, as long as it's
+## strong; and the angle between the two marked. A dimmer vector for the
+## wind's steady part, if asked.
 func _gyro(centre: Vector2, radius: float, gyro: Dictionary, steady: bool) -> void:
 	var text := _color(&"text")
 	var dim := _color(&"dim")
@@ -264,6 +267,11 @@ func _gyro(centre: Vector2, radius: float, gyro: Dictionary, steady: bool) -> vo
 		var way := Vector2.from_angle(k * PI * 0.5 + turn - PI * 0.5)
 		draw_line(centre + way * radius * 0.86, centre + way * radius, accent if k == 0 else dim, 3.0)
 	_label_centred(centre + Vector2.from_angle(turn - PI * 0.5) * (radius + 22.0) - Vector2(0.0, SMALL * 0.6), "N", SMALL, accent)
+	if gyro.has("tu"):
+		var tu := _way(gyro.tu, turn)
+		draw_line(centre + tu * radius * 0.8, centre + tu * (radius + 6.0), TU, 5.0)
+		# Inside the rim: out past it, west runs off the legend's edge.
+		_label_centred(centre + tu * radius * 0.6 - Vector2(0.0, KEY * 0.6), "TU", KEY, TU)
 	var bow := _way(gyro.heading, turn)
 	var from := _way(gyro.from, turn)
 	draw_line(centre, centre + bow * radius, Color(accent, 0.8), 3.0)

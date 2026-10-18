@@ -6,7 +6,7 @@ extends Node3D
 ##   godot --path . --disable-vsync res://look/tu/alone.tscn -- --capture <dir> [time]
 
 const SIZES: Array[float] = [6.0, 9.0, 13.0]
-const EYE := 2.0
+const EYE := 3.0
 const UP := 30.0
 
 @onready var camera: Camera3D = $Camera3D
