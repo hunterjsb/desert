@@ -406,6 +406,28 @@ device already stays a body of its own on the host's power pool.
   stands on the other piece with a battery, switched off. A storm is due in four to six
   minutes, so the radar sees the front coming, the shield switches itself on, and the storm
   arrives while you watch.
+- **Tabs, a power panel and the radio on the screen** (Hunter, 2026-10-18, after playing the
+  rack: "the bottom bar should have all our tabs instead of next shield auto... devices can be
+  managed from the electrical grid screen"):
+  - **A tab bar along the screen's foot** names every page, and use on a tab goes there. It
+    replaces the page, shield and auto keys; a next button won't do once there are five pages.
+    The pages: Radar, Stats, Power, Log, and Survey once a mod that sees under the sand is in
+    the system.
+  - **Power replaces the Shield page:** the deck's electrics drawn as a panel, one line from
+    what makes power (panels, turbine) through the batteries and their charge to what draws it,
+    each with its watts. Each device on it switches from the screen: the shield on, off or
+    smart, a lamp, the radio. Devices are managed there.
+  - **The radio's controls on the screen,** on its row of the power panel: on or off, and its
+    station.
+  - **The gyro is a compass too:** it shows the wind as a vector, which way and how strong,
+    and your heading beside it, the way the deck points, with the angle between them written:
+    the wind angle a sailor trims to.
+  - **Stats reads as a table:** labels in one column, numbers right-aligned in the next, units
+    after; a trend is a small up or down arrow, not "rising" or "falling".
+  - **Nothing wraps:** the forecast and every row fit their line.
+  - **Taking the screen out never stutters the game.**
+  - **What's under the sand gets its own page** when mods detect it: old lines and buried
+    structures, as the dev map draws them, on a Survey page, not over the weather radar.
 - **Still proposed:** the final layout, any part on the computer-mod top besides the radar (an
   antenna), the survey mod, god modules, other makers' Consoles, a Console linked by cable,
   and devices other than shields made smart.
