@@ -81,10 +81,11 @@ func _round_you(kit: Kit, spawn: Vector2, tuning: Tuning) -> String:
 				if site.point != Vector3.ZERO and site.distance_to(spawn.x, spawn.y) < deep \
 						and not site.source in [&"grid", &"wreck_field", &"hermit"]:
 					return "a %s within %.0f m" % [site.kind, deep]
-			# Anything crossing the square inside that circle is nearer than it.
-			var inside := deep / sqrt(2.0)
-			if not sites.paths_in(Rect2(spawn - Vector2.ONE * inside, Vector2.ONE * inside * 2.0)).is_empty():
-				return "a path within %.0f m" % deep
+			for piece in sites.paths_in(Rect2(spawn - Vector2.ONE * deep, Vector2.ONE * deep * 2.0)):
+				for i in piece.points.size() - 1:
+					var by := Geometry2D.get_closest_point_to_segment(spawn, piece.points[i], piece.points[i + 1]).distance_to(spawn)
+					if by < deep:
+						return "a path %.0f m off, within %.0f m" % [by, deep]
 		&"wreck_field":
 			if not near.call(&"wreck_hull", tuning.start_wrecks_m + 1.0):
 				return "no wreck within %.0f m" % tuning.start_wrecks_m

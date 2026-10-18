@@ -29,7 +29,7 @@ static var _current: Tuning
 ## m, and walking in toward Tu crosses one within the second.
 @export var start_artery_m := Vector2(600.0, 3000.0)
 ## What a Surveyor has in sight stands this far off, m: on its horizon, not
-## at its feet, and near enough to know at a glance.
+## at its feet; a sharp eye's find, and its glint the eye's (Starts.GLINT_).
 @export var start_horizon_m := Vector2(600.0, 1000.0)
 ## No path and no settlement comes within this of a Surveyor's start, m:
 ## past the ground you can see.
@@ -109,13 +109,13 @@ static var _current: Tuning
 ## How far it draws, m.
 @export var skyline_m: float = 3000.0
 ## The thinnest a stand-in is drawn, pixels, so what's far off never breaks
-## into flickering bits; a saltbush line's least thickness.
-@export var skyline_thinnest_px: float = 2.0
+## into flickering bits (drawn as much fainter); a saltbush line's least
+## thickness.
+@export var skyline_thinnest_px: float = 1.5
 @export var skyline_line_px: float = 3.0
-## The least a landmark (a mast, a tower) stands on screen at a kilometre,
-## pixels wide and tall, shrinking more slowly than perspective past it: the
-## thing on the horizon the eye snags on.
-@export var skyline_landmark_px := Vector2(4.0, 14.0)
+## Where a structure's real look hands over to its stand-in, m from you:
+## crossfaded between, so you never see one switch for the other.
+@export var skyline_handover_m := Vector2(420.0, 500.0)
 ## A glint's sparkle, pixels across as it lights and at its brightest, and
 ## how bright, times the sun on white.
 @export var glint_px := Vector2(8.0, 16.0)

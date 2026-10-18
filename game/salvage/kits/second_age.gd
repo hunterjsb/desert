@@ -211,12 +211,15 @@ static func _watchtower() -> StructureKit.Piece:
 		Vector2(0.0, 9.0)])
 	p.approach = Vector2(0.0, 16.0)
 	p.look = _watchtower_look
-	# A landmark: its walls in their shade side, dark against the sky, the
-	# turret over them, and the turret's glazed dome.
-	p.far_landmark = true
-	StructureKit.far_box(p, Vector3(-3.0, -0.6, -3.0), Vector3(3.0, 7.2, 3.0), EARTH)
-	StructureKit.far_box(p, Vector3(-3.0, 7.2, -3.0), Vector3(3.0, 8.6, 3.0), WOOD)
-	StructureKit.far_box(p, Vector3(1.2, 7.5, -2.8), Vector3(2.8, 9.58, -1.2), CLAY)
+	# Its rendered walls limed high up, the platform's beams and the limed
+	# parapet, the clay turret and its glazed dome.
+	var c := coats()
+	StructureKit.far_box(p, Vector3(-3.0, -0.6, -3.0), Vector3(3.0, 4.5, 3.0), c.render)
+	StructureKit.far_box(p, Vector3(-3.0, 4.5, -3.0), Vector3(3.0, 7.0, 3.0), c.lime)
+	StructureKit.far_box(p, Vector3(-3.1, 7.0, -3.1), Vector3(3.1, 7.5, 3.1), c.wood)
+	StructureKit.far_box(p, Vector3(-3.0, 7.5, -3.0), Vector3(3.0, 8.5, 3.0), c.lime)
+	StructureKit.far_box(p, Vector3(1.22, 7.5, -2.78), Vector3(2.78, 8.8, -1.22), c.clay)
+	StructureKit.far_box(p, Vector3(1.25, 8.8, -2.75), Vector3(2.75, 9.45, -1.25), c.lime)
 	StructureKit.glint(p, Vector3(2.7, 9.0, -1.7), Vector3(0.85, 0.4, 0.35), 5.0)
 	StructureKit.glint(p, Vector3(1.6, 9.0, -1.3), Vector3(-0.5, 0.4, 0.75), 5.0)
 	return p

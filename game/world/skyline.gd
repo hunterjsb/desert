@@ -2,14 +2,14 @@ class_name Skyline
 extends Node3D
 ## What you see of history past the built ground, so a site is found by eye.
 ## Tall structures stand on the far ring as stand-ins, a few boxes of their
-## shape in their paint's tone; bare metal, glass and glaze glints when the
-## sun catches it, near and far; and the saltbush lines on the second age's
-## roads run on across the dunes. All of it is what the sheet laid, or what
+## shape at their own size in the coats their real look shows; bare metal,
+## glass and glaze glints when the sun catches it, near and far; and the
+## saltbush lines on the second age's roads run on across the dunes. All of it is what the sheet laid, or what
 ## it would lay from where you are, surveyed as it would be: a stand-in
 ## stands where its structure will, as high as the sand leaves it, so what's
 ## far off is what you find there. A worker makes it each time the sheet
-## follows you; the main thread swaps it in, and hides a stand-in once its
-## chunk draws the real thing.
+## follows you; the main thread swaps it in. Over the built ground a
+## stand-in comes in across the hand-over as the real thing dithers away.
 
 ## The eye over the sand, m, and what a pixel spans at the screen's middle,
 ## rad: 1080 rows under the camera's 75°.
@@ -24,7 +24,7 @@ const DRAPE_M := 8.0
 const UNITS_US := 250
 ## Floats an instance of a box and of a glint takes in its view's buffer.
 const BOX_FLOATS := 20
-const GLINT_FLOATS := 20
+const GLINT_FLOATS := 16
 
 const BOX_SHADER := preload("res://game/world/skyline.gdshader")
 const GLINT_SHADER := preload("res://game/world/glint.gdshader")
@@ -80,7 +80,7 @@ class Entry:
 	var state: int
 	var ground: float
 	var boxes: Array[PackedFloat32Array] = []
-	## A landmark's boxes over its own built ground, till the real thing takes over.
+	## Its boxes over its own built ground, coming in as the real thing goes.
 	var near_boxes: Array[PackedFloat32Array] = []
 	var far_glints: Array[PackedFloat32Array] = []
 	var near_glints: Array[PackedFloat32Array] = []
@@ -119,7 +119,7 @@ func setup(world: World) -> void:
 	_box_look = ShaderMaterial.new()
 	_box_look.shader = BOX_SHADER
 	_box_look.set_shader_parameter("thinnest_px", _tuning.skyline_thinnest_px)
-	_box_look.set_shader_parameter("landmark_px", _tuning.skyline_landmark_px)
+	_box_look.set_shader_parameter("handover", _tuning.skyline_handover_m)
 	_boxes = RenderingServer.multimesh_create()
 	_cube.size = Vector3.ONE
 	RenderingServer.multimesh_set_mesh(_boxes, _cube.get_rid())
@@ -127,7 +127,6 @@ func setup(world: World) -> void:
 	_glint_look = ShaderMaterial.new()
 	_glint_look.shader = GLINT_SHADER
 	_glint_look.set_shader_parameter("sparkle_px", _tuning.glint_px)
-	_glint_look.set_shader_parameter("landmark_px", _tuning.skyline_landmark_px)
 	_glint_look.set_shader_parameter("brightness", _tuning.glint_brightness)
 	_glints = RenderingServer.multimesh_create()
 	_quad.size = Vector2.ONE * 2.0
@@ -235,7 +234,7 @@ func stand_in(site: Structure) -> Dictionary:
 
 ## A structure's glints as drawn now: on its stand-in past the built
 ## ground, on it where its chunk draws it; each [world place, the way it
-## faces, the cosine of how wide it sweeps].
+## faces, how wide it sweeps, rad].
 func glints_of(site: Structure) -> Array[Array]:
 	var out: Array[Array] = []
 	if _shown == null:
@@ -247,9 +246,21 @@ func glints_of(site: Structure) -> Array[Array]:
 		var s := _state(entry)
 		var rows := entry.near_glints[s] if _world.terrain.is_loaded_at(site.x, site.z) else entry.far_glints[s]
 		for k in range(0, rows.size(), GLINT_FLOATS):
-			out.append([Vector3(rows[k + 3], rows[k + 7], rows[k + 11]) + shift, Vector3(rows[k + 16], rows[k + 17],
-				rows[k + 18]), rows[k + 19]])
+			out.append([Vector3(rows[k + 3], rows[k + 7], rows[k + 11]) + shift, Vector3(rows[k + 12], rows[k + 13],
+				rows[k + 14]), acos(rows[k + 15])])
 	return out
+
+
+## How brightly a glint, [where, the way it faces, how wide it sweeps],
+## shines toward an eye with the sun that way, 0 to 1, before the air and
+## the sky take their share (glint.gdshader).
+static func shine(glint: Array, eye: Vector3, sun: Vector3) -> float:
+	var n: Vector3 = glint[1]
+	var v := (eye - (glint[0] as Vector3)).normalized()
+	if n.dot(v) <= 0.0 or n.dot(sun) <= 0.0:
+		return 0.0
+	var edge := cos(glint[2] as float)
+	return smoothstep(edge, lerpf(edge, 1.0, 0.75), n.dot((v + sun).normalized()))
 
 
 ## Every structure seen from afar now, laid or sighted.
@@ -440,54 +451,53 @@ func _entry(site: Structure, center: Vector2i) -> Entry:
 	entry.state = site.state()
 	entry.ground = FarRing.ground(_world.shape, _tuning, site.x, site.z)
 	var shift := Vector3(center.x * _size, 0.0, center.y * _size)
-	var rng := RandomNumberGenerator.new()
-	var landmark := site.piece.far_landmark
 	for s in 3:
 		var frame := site.frame_on(s, entry.ground).translated(-shift)
 		var own := site.frame_on(s, site.pad()).translated(-shift)
-		var tall := site.top_in(s)
-		entry.boxes.append(_boxes_of(site, s, frame, entry.ground, tall if landmark else 0.0, shift))
-		entry.near_boxes.append(_boxes_of(site, s, own, site.pad(), -tall, shift) if landmark else PackedFloat32Array())
-		var far := PackedFloat32Array()
-		var near := PackedFloat32Array()
-		rng.seed = site.loot
-		for each in site.bare_glints(s):
-			# No two sites' plates lie quite the same way.
-			var facing := (Basis(Vector3.UP, rng.randf_range(-0.3, 0.3)) * Basis(Vector3.RIGHT, rng.randf_range(-0.12, 0.12))
-				* (each[1] as Vector3)).normalized()
-			# On a landmark it rides with its stand-in as that's drawn larger.
-			for into: Array in [[far, frame, entry.ground, tall], [near, own, site.pad(), -tall]]:
-				var at: Transform3D = into[1]
-				var spot := at * (each[0] as Vector3)
-				var foot := Vector3(site.x, into[2], site.z) - shift
-				_put_glint(into[0], spot, (at.basis * facing).normalized(), each[2], foot - spot,
-					into[3] if landmark else 0.0)
-		entry.far_glints.append(far)
-		entry.near_glints.append(near)
+		entry.boxes.append(_boxes_of(site, s, frame, false))
+		entry.near_boxes.append(_boxes_of(site, s, own, true))
+		for into: Array in [[entry.far_glints, frame], [entry.near_glints, own]]:
+			var rows := PackedFloat32Array()
+			for each in glints_on(site, s, into[1]):
+				_put_glint(rows, each[0], each[1], each[2])
+			into[0].append(rows)
 	return entry
 
 
-## A stand-in's boxes in a state on a frame, each with the way to its foot
-## and, for a landmark, how tall it stands (negative over its own ground).
-func _boxes_of(site: Structure, s: int, frame: Transform3D, ground: float, tall: float, shift: Vector3) -> PackedFloat32Array:
+## A structure's glints in a state on a frame, as [where, the way it faces,
+## how wide it sweeps]: what's bare of sand, no two sites' plates lying quite
+## the same way.
+static func glints_on(site: Structure, s: int, frame: Transform3D) -> Array[Array]:
+	var out: Array[Array] = []
+	var rng := RandomNumberGenerator.new()
+	rng.seed = site.loot
+	for each in site.bare_glints(s):
+		var facing := (Basis(Vector3.UP, rng.randf_range(-0.3, 0.3)) * Basis(Vector3.RIGHT, rng.randf_range(-0.12, 0.12))
+			* (each[1] as Vector3)).normalized()
+		out.append([frame * (each[0] as Vector3), (frame.basis * facing).normalized(), each[2]])
+	return out
+
+
+## A stand-in's boxes in a state on a frame, each in its coat's colour as
+## the worn look takes it, how solid it is, whether it's drawn over its own
+## built ground, and its coat's metalness and roughness.
+static func _boxes_of(site: Structure, s: int, frame: Transform3D, over_own: bool) -> PackedFloat32Array:
 	var rows := PackedFloat32Array()
-	var foot := Vector3(site.x, ground, site.z) - shift
 	for each in site.far_look(s):
 		var box := frame * (each[0] as Transform3D)
 		var b := box.basis
-		var tone := (each[1] as Color).srgb_to_linear()
-		var to := foot - box.origin
+		var tone: Color = each[1]
+		var finish: Vector2 = each[2]
 		rows.append_array(PackedFloat32Array([b.x.x, b.y.x, b.z.x, box.origin.x, b.x.y, b.y.y, b.z.y, box.origin.y,
-			b.x.z, b.y.z, b.z.z, box.origin.z, tone.r, tone.g, tone.b, 1.0, to.x, to.y, to.z, tall]))
+			b.x.z, b.y.z, b.z.z, box.origin.z, tone.r, tone.g, tone.b, tone.a, 1.0 if over_own else 0.0,
+			finish.x, finish.y, 0.0]))
 	return rows
 
 
-## A glint: where it is, with the way to its foot and its landmark's height
-## as the box's are, then the way it faces and how wide it sweeps.
-static func _put_glint(into: PackedFloat32Array, at: Vector3, facing: Vector3, sweep: float, to: Vector3,
-		tall: float) -> void:
+## A glint: where it is, the way it faces and how wide it sweeps.
+static func _put_glint(into: PackedFloat32Array, at: Vector3, facing: Vector3, sweep: float) -> void:
 	into.append_array(PackedFloat32Array([1.0, 0.0, 0.0, at.x, 0.0, 1.0, 0.0, at.y, 0.0, 0.0, 1.0, at.z,
-		to.x, to.y, to.z, tall, facing.x, facing.y, facing.z, cos(sweep)]))
+		facing.x, facing.y, facing.z, cos(sweep)]))
 
 
 ## The lines' arrays: each living stretch draped on the far ground as a low
@@ -573,7 +583,7 @@ func _draw() -> void:
 			boxes.append_array(entry.boxes[s])
 			glints.append_array(entry.far_glints[s])
 	_box_room = _fill(_boxes, boxes, _box_room, BOX_FLOATS, true)
-	_glint_room = _fill(_glints, glints, _glint_room, GLINT_FLOATS, true)
+	_glint_room = _fill(_glints, glints, _glint_room, GLINT_FLOATS, false)
 
 
 ## An entry's state now: as its chunk's build read it where that's drawn,

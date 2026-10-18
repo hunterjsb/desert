@@ -132,13 +132,12 @@ class Piece:
 	var marks := 1
 	## What it's built as on the ground: a Structure, or a kind of one.
 	var builds: Script
-	## How it reads past the built ground (Skyline): plan boxes as [AABB, tone],
-	## its outline in the colour its paint shows at a distance. None for what's
-	## too low to read there.
+	## How it reads past the built ground (Skyline): its own shape at low
+	## detail, plan boxes as [AABB, tone, Vector2(metalness, roughness)] in
+	## the finish its real look shows there; the tone's alpha is how much of
+	## the box weighs on the eye (a lattice's open faces let the sky through).
+	## None for what's too low to read there.
 	var far: Array[Array] = []
-	## Whether its far look is a landmark's, drawn never smaller than one
-	## (Tuning skyline_landmark_px): what stands tall enough to steer by.
-	var far_landmark := false
 	## Bare metal, glass or glaze the sun can catch: [plan point, the way it
 	## faces, how wide its sparkle sweeps, rad].
 	var glints: Array[Array] = []
@@ -398,9 +397,10 @@ static func box(p: Piece, lo: Vector3, hi: Vector3, coat: String) -> void:
 	p.coats.append(coat)
 
 
-## A box of its far look, plan m, in the tone it reads as from far off.
-static func far_box(p: Piece, lo: Vector3, hi: Vector3, tone: Color) -> void:
-	p.far.append([AABB(lo, hi - lo), tone])
+## A box of its far look, plan m, in the coat its real look shows there,
+## `solid` how much of it isn't open.
+static func far_box(p: Piece, lo: Vector3, hi: Vector3, coat: Paint.Coat, solid := 1.0) -> void:
+	p.far.append([AABB(lo, hi - lo), Color(coat.color, solid), Vector2(coat.metal, coat.rough)])
 
 
 ## A spot the sun can catch, facing `facing` in plan axes, sweeping a few
