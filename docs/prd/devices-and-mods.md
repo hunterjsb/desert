@@ -402,7 +402,10 @@ device already stays a body of its own on the host's power pool.
     easy to read, like a table, and use small up or down arrows instead of rising and falling"):
     labels in one column, numbers right-aligned in the next, units after them, then a note: a
     point of the compass, a trend as a small ▲ or ▼ (– steady), a shield's mode. The rows under a
-    reading are indented and dim, and what's urgent is amber. Under the table are the larger gyro,
+    reading are indented and dim, and what's urgent is amber. A running shield's line has its
+    load under it, the sand it holds back as a share of a full storm's, amber past 100%, which
+    only an anomaly makes ([Wind & storms](wind-and-storms.md#the-anomaly-as-built-2026-10-18)).
+    Under the table are the larger gyro,
     with the wind's steady part beside the wind and the angle written under it, and the
     pressure's last ten minutes as a line with the storm's line across it.
   - **Power,** in place of the Shield page (Hunter, 2026-10-18: "shield page should be replaced

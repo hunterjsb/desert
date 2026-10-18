@@ -365,7 +365,79 @@ From Hunter's [storms, signals & sailing spec](../storms-signals-sailing-2026-10
   instruments read only the clean curve; a hidden multiplier applies at damage time only, skewed
   to particle damage, so a camp built only for wind is wrecked. Its tells, from the hidden term:
   compass drift, odd radio static, and a shield's particle load climbing while the wind reads
-  normal. It's the storm the Walker misjudged. Open: how often, and how strong the skew.
+  normal. It's the storm the Walker misjudged. Built, and the spec's open question, how often and
+  how strong the skew, answered ([below](#the-anomaly-as-built-2026-10-18)).
+
+### The anomaly, as built (2026-10-18)
+
+- **Where it lives.** A property of the air in `WeatherField`, pure in the seed: hearts on a lattice
+  of the moving air's frame, patches 20 km wide, and of time, spans of 4 hours, each pair holding one
+  with a chance of 0.37. A heart rides the drift as the storms do. It reaches 8 km, full within the
+  first 2, and lives two hours either side of its peak, full for the middle 80 minutes. Its hidden
+  term (`anomaly_at`, 0 to 1) is the heart's share there times how near its storm is: from nothing a
+  kilometre or two ahead of the front (0.25 in the field's own units) to whole at the wall, so a
+  heart over a clear gap is nothing. The storm field itself is untouched.
+- **How often** (the spec's open question). One storm in ten that passes a still camp holds one: 123
+  of 1,250 storms over 12 seeds and 90 days each, about one every six hours of play (the median gap
+  3.1 hours), and more for a camp travelling into the wind, which meets more storms. A third of
+  those bring the heart's full over the camp. None comes in a run's first five days, 100 minutes:
+  ordinary storms are learnt first. One in ten is rare enough to be a story and frequent enough that
+  a long run meets two or three, enough to learn the tells and to record one for the Walker.
+- **How strong the skew** (the other half). At the heart the real damage is 5 times the clean
+  curve's in particles and 1.5 times in wind past what's stood: of what it adds, eight parts go to
+  the sand for one to the wind. So a full storm's 200 W shield draw is 960 W; a turbine sized for an
+  ordinary storm's 200 W falls 760 short, so a base battery behind it lasts eight minutes; and out
+  past the bubble things wear five times as fast (a device wrecks in two minutes, times its
+  toughness), and in the open you lose health at 1.25 a second, not 0.25. Over the storms that
+  hold one, the median adds about 100 Wh to a shield's draw, a base battery's whole charge, so a
+  camp built for wind on one battery runs dry in about half of them; in the scenario its turbine
+  wrecks and its battery is all but flat. The wind's share stays small because what a camp builds
+  for the wind (lines, a turbine, a dune's lee) reads the wind as it is: the lee takes two-thirds of
+  the wind and only a third of the sand.
+- **Damage-time only, through one door.** `Weather.hidden(at, t)` makes the term the two
+  multipliers, and only what deals damage asks it: devices' wear (Wear), your harm (Vitals), a
+  crop's wind and dust, in a planter or wild (`Planter.felt_at`), and a shield's load
+  (`ShieldGenerator.particle_load`), which sets its draw and counts toward Sandblasted as what it
+  really held off. Everything else reads the clean field: the storm state, the light and dust, the
+  wind that pushes and loads lines, every instrument, the radio's forecast, the readout's next
+  change, the Console, salvage's exposure and the sleep's plan.
+- **Sleep.** The night lives through the anomaly: power, wear, the farm and your vitals live each of
+  its steps through the same functions, so a shield sized by the forecast runs dry at the heart, the
+  storm comes in and wakes you. Its plan, through the storm or until the station calls, was made on
+  the clean curve.
+- **The tells,** each read off the hidden term where it stands, and none spoken by any forecast:
+  - **They rise for about five minutes before the heart's full** (the median from a fifth of the
+    term to nine-tenths, for a still camp; a quarter of them under four, a quarter over eight),
+    starting ahead of the wall when the heart rides in on it, inside the storm when it follows.
+  - **The compass leans toward the heart,** steadily, up to 60° at its full and never past the
+    heart's way, fading within 300 m of it, where a storm's dust only swims it quickly both ways.
+    Ahead of the wall, in clear air, the needle settles off north and stays there, and it follows
+    the heart round as it passes over.
+  - **The radio crackles,** on every channel and inside a bubble too, while the weather station
+    reports an ordinary storm: its static thinned and pitched up (1.4 to 2.2 times), cut into
+    bursts of 70 ms with under half of them sounding, as loud as the term is deep and at most half
+    of full static, where a storm's static hisses steady.
+  - **A shield's load climbs past a full storm's,** which only an anomaly makes: its draw with it,
+    as you read it looking at the shield ("draws 960 W"); its hum straining up in pitch, from 0.9 to
+    1.25 at the heart; and on the Console's stats each shield's "load" under its line, in per cent of
+    a full storm, marked past 100, while the anemometer's wind and the particle sensor's sand read an
+    ordinary storm (at the probes' heart: load 500%, sand 1.35 g/m³, wind 27 m/s).
+- **The hook** for the map and the Walker's feed: `WeatherField.anomalies_near(x, z, t, reach)`
+  lists every heart within reach at a moment, where it is, its reach, when it peaks, how strong it
+  stands and its share at the place. Only the compass reads it now; teaching the Walker is its own
+  quest line.
+- **The scenario,** "anomaly": clear, its storm due in two and a half to five minutes, the heart's
+  full over you within five minutes of the wall, facing upwind beside a camp built for wind: the
+  reference camp's deck resting on the sand, moored upwind; a Console reading the wind and the sand;
+  a radio on the weather station; the base shield on one battery, running; and a turbine out in the
+  gale on a strong cable, enough for an ordinary storm. A compass is in your suit. It's searched
+  round where the run began, wherever a heart passes, over 30 days from the grace's end. The dev
+  overlay shows the hidden term where you stand (`weather/anom`).
+- **A deed, proposed and not added.** "Survive an anomaly" fits, as the first step of teaching the
+  Walker, but the deeds grid names every deed, so its tile would say anomalies exist before you've
+  learnt them by their tells. The proposal: a hidden deed (the table has the flag; none uses it yet),
+  recorded by Vitals when the term where you stand has reached its full and fallen back to nothing
+  with you alive; or none, leaving the moment to the Walker's quest line.
 
 ## Dune archaeology (agreed, 2026-10-18 spec; not built)
 
@@ -707,6 +779,15 @@ All run without a window, with a fixed seed.
     the clock stopped, a front a few kilometres off. Swept round once, its front is as near
     as the field's nearest stormy ground in any direction, to within 1% and 5 m, and that way,
     to within its 10° between bearings. Inside a storm it says so.
+19. **The anomaly hides** (2026-10-18). Through its storm, from the clear to its heart, the field,
+    its wind and the radio's forecast are what a run with no anomalies reads, and so are the
+    Console's wind and sand at the heart; outside the bubble there, harm and a crop's dust read the
+    particles five times over and the wind's harm one and a half, wear reads the same, and the
+    shield holds back five full storms' sand.
+20. **The anomaly's tells** (2026-10-18). Well ahead of its wall there's none; where its hidden term
+    is a half and at its heart, the compass leans further toward the heart and the radio crackles
+    louder; at the heart the shield's load on the Console's stats is past three full storms' while
+    its wind and sand read an ordinary storm.
 
 ## Out of scope
 

@@ -886,7 +886,7 @@ func _estimate(map: Dictionary, all: Dictionary) -> void:
 
 ## Its stats: every reading in detail, as a table: a label, then a number,
 ## its unit and a note, a row or two each, rows under a reading indented, a
-## "!" before what's urgent; and each smart shield's line.
+## "!" before what's urgent; and each smart shield's line and its load.
 func _readout(all: Dictionary) -> PackedStringArray:
 	var rows := PackedStringArray()
 	if all.is_empty():
@@ -950,6 +950,11 @@ func _readout(all: Dictionary) -> PackedStringArray:
 		var dark := shield.on and not shield.running()
 		rows.append(("!" if dark else "") + _row(_name(shield), "%d" % roundi(shield.demand_w() if shield.running() else 0.0),
 			"W", "NO PWR" if dark else _mode(shield, all.has("front"))))
+		if shield.running():
+			# What it holds back, read off the shield, not the field: past a full
+			# storm's, while the wind and sand read ordinary, is an anomaly.
+			var bears := shield.particle_load()
+			rows.append(("!" if bears > 1.0 else "") + _row(" load", "%d" % roundi(bears * 100.0), "%"))
 	return rows
 
 

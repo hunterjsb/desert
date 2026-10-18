@@ -150,6 +150,16 @@ func felt_light(at: Vector3, t := NAN) -> float:
 		* (1.0 - _tuning.storm_darkness * field_storm(at, t))
 
 
+## What an anomaly makes of a storm's damage at a place, now or at world
+## time t: times what the clean curve deals, in particles (x) and in wind past
+## what's stood (y); 1 and 1 outside one. The one door to its hidden term for
+## everything that deals damage: wear, harm, crops and a shield's load. Every
+## forecast and instrument reads the clean field instead.
+func hidden(at: Vector3, t := NAN) -> Vector2:
+	var h := field.anomaly_at(_world.world_x(at.x), _world.world_z(at.z), _when(t))
+	return Vector2(lerpf(1.0, _tuning.anomaly_particles, h), lerpf(1.0, _tuning.anomaly_wind, h))
+
+
 ## The storm the field makes at a place, as if no shelter stood.
 func field_storm(at: Vector3, t := NAN) -> float:
 	return field.storm_at(_world.world_x(at.x), _world.world_z(at.z), _when(t))
@@ -452,6 +462,8 @@ func _report() -> void:
 	var from := fposmod(rad_to_deg(atan2(-wind.x, wind.z)), 360.0)
 	Dev.put("weather/wind", "%.1fm/s %03d" % [wind.length(), roundi(from) % 360])
 	Dev.put("weather/stm", "%d%%" % roundi(storm * 100.0) if in_storm else "clear")
+	var anomaly := field.anomaly_at(_world.player_world_x(), _world.player_world_z(), t)
+	Dev.put("weather/anom", "%d%%" % roundi(anomaly * 100.0) if anomaly > 0.0 else "-")
 	Dev.put("weather/wall", "-" if seen_front == -INF else ("in %dm" % roundi(seen_front)
 		if seen_front >= 0.0 else "%dm" % roundi(-seen_front)))
 	Dev.put("weather/seen", "%d%%" % roundi(seen_storm * 100.0))
