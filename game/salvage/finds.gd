@@ -53,6 +53,7 @@ const DEVICES := {
 		[&"shield", 2],
 		[&"board", 1],
 		[&"chassis", 1],
+		[&"console", 1],
 	],
 }
 ## What a ruin's floor holds besides, by layer: seeds and rations, kept from
@@ -87,11 +88,13 @@ const SURVIVAL_KIT := {&"water": [&"canister"], &"food": [&"ration"], &"plant_st
 const KIT_FILL := 0.75
 const KIT_SEEDS_IN_THE_OPEN := 0.1
 ## What a found device's sockets hold, by socket kind; a kind not listed is
-## found empty.
+## found empty. A Console is a deep find, and its screen and instruments come
+## only in one.
 const FILLS := {
 	SURFACE: {&"battery": [&"battery"], &"ring": [&"hook"], &"top": [&"lamp"], &"water": [&"canister"]},
 	DEEP: {&"battery": [&"big_battery", &"battery"], &"ring": [&"hook"], &"bottom": [&"hover_tray"],
-		&"top": [&"solar_panel", &"lamp"], &"water": [&"canister"]},
+		&"top": [&"solar_panel", &"lamp"], &"water": [&"canister"], &"screen": [&"screen"],
+		&"computer_mod": [&"anemometer", &"barometer", &"hygrometer", &"particle_sensor"], &"computer_top": [&"radar"]},
 }
 ## Per layer: the share of a device's sockets found filled, the range of a
 ## battery's charge and of a device's soundness, and how much of a buried

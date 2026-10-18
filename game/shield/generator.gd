@@ -138,6 +138,15 @@ func interact(_by: Player) -> bool:
 	return true
 
 
+## Switched from elsewhere, a Console's screen, as use at it would: on only
+## with something to run on. Says whether it changed as asked.
+func switch(up: bool) -> bool:
+	if up == on or wrecked():
+		return false
+	interact(null)
+	return on == up
+
+
 ## Whether its bubble stands: switched on, powered and whole.
 func running() -> bool:
 	return on and powered and not wrecked()

@@ -69,7 +69,7 @@ upgrade the camp → the camp sustains more of itself → go further, or into th
   the managed inputs. One shared system, with a unique feel per item: differences come from data
   ([Farming](prd/farming.md#the-plant-system-agreed-session-4-part-4-partly-built)).
 - **The camp may get a computer, and a bed** (Hunter, 2026-10-17, proposed and loose). A Console
-  reads the weather instruments onto a screen ([Devices & mods](prd/devices-and-mods.md#the-console-proposed-not-built)),
+  reads the weather instruments onto a screen ([Devices & mods](prd/devices-and-mods.md#the-console-proposed-first-version-built)),
   and sleep may skip the wait on a long storm ([Survival](prd/survival.md#sleep-proposed)).
 - **The camp moves at walking pace, and storms are weathered, not outrun.** Each storm
   is a judgment call: stay and let it pass, or push through inside the bubble. Early on,
@@ -467,7 +467,7 @@ Quartermaster gets you shot down, and "one flag covers freighter, pod and hopper
     you choose.
   - **Take the whole Walker** onto a chassis: works as a Console with full weather sensing built
     in (like two fully modded weather Consoles), leaving its slots free for other mods.
-    Important late game ([Devices & mods](prd/devices-and-mods.md#the-console-proposed-not-built)).
+    Important late game ([Devices & mods](prd/devices-and-mods.md#the-console-proposed-first-version-built)).
   - **Copy its data** (plug the Console in briefly): registers the nomads in your report; no
     gameplay benefit.
   - **Leave it alone:** they stay free and uncounted.

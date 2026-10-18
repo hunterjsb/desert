@@ -208,10 +208,10 @@ different start (from the moving city, a mythic kit), so that reading is gone. T
 one kit, the built one, and Survival says: "Only this standard kit is balanced; choosing a kit
 waits." The session balances the first three kits.
 
-## The smart shield (proposed, not built)
+## The smart shield (proposed; first version built)
 
 *Hunter, 2026-10-17 ([session](../console-sensors-sleep-2026-10-17.md)). Direction, not a final
-spec, and none of it is built. It rides on [the Console](devices-and-mods.md#the-console-proposed-not-built),
+spec; a first version is built (As built, below). It rides on [the Console](devices-and-mods.md#the-console-proposed-first-version-built),
 which is itself due for a rework.*
 
 "A shield on a Console becomes 'smart' for now: it reports data and can be controlled from the
@@ -227,12 +227,32 @@ Readings, not in the session:
   your hands, switches it, and a seated shield stays a body of its own on its host's pool. On/off
   is all a shield has to control: its radius and its protection are its frame's numbers.
 - **Auto-on with a radar** is the one example given. The radar reads the front's distance and
-  heading ([Wind & storms](wind-and-storms.md#instruments-and-the-console-screen-proposed)).
+  heading ([Wind & storms](wind-and-storms.md#instruments-and-the-console-screen-proposed-first-version-built)).
   Switching on early costs only the clear-sky sip, 10 W for the base shield and 2 W for the light
   one, until the front arrives. It would cover a storm that finds the shield off.
 - **Makers are already in the world.** "In the world" above has a main maker, a rival and small
   makers, and a numbers-are-data rule, so "multiple OEMs" fits what is here. "Parties... modding"
   is the open part (open questions).
+
+**As built (2026-10-17, a first version):**
+- **Which shields are smart:** every shield in a Console's system, standing on its deck, seated
+  on its top mount, or seated on anything on the deck. A shield off the deck isn't.
+- **What it reports:** a line on the screen's weather page, and on its own page a form: on or
+  off, running or out of power, what it draws, its pool, its time left at that draw, its bubble,
+  and auto. Nothing new is kept on the shield; the screen reads what it already knows.
+- **Switched from the screen:** the screen's shield key switches every smart shield, all off if
+  any is on, else all on, just as use at it would. With nothing to run on it won't start, and the
+  log says so.
+- **Auto-on:** with a radar in the system, when the radar's nearest front comes within 1.5 km
+  (tuning), every smart shield that's off switches on, and the log says "SHIELD AUTO-ON". It goes
+  on the front coming within reach, once: switch it off yourself and it stays off until the front
+  has gone out of reach and comes again. The screen's auto key switches auto-on off and on; it
+  starts on, and it's saved. With storms riding at ten metres a second or so, that's about two
+  minutes running early, at the clear-sky sip.
+- **Its fall:** when a smart shield that's on loses its power, the log says "SHIELD DOWN · NO
+  POWER".
+- **Still proposed:** other makers' smart shields and Consoles, and what a Console's gear unlocks
+  beyond the radar's auto-on.
 
 ## Full version
 
@@ -265,6 +285,12 @@ Readings, not in the session:
 8. **Nesting takes the best of each.** Inside both a wind shield and a temperature
    shield, each harm gets the stronger protection. Inside only the outer one,
    temperature reaches you.
+9. **The smart shield** (2026-10-17). A Console with a radar on a deck beside a shield,
+   switched off, with a storm on its way: the shield stays off while the radar's front is
+   farther than the smart shield's distance and switches itself on once it's within it,
+   and the screen logs it. A shield on the sand nearby, off the deck, stays off. The
+   screen's shield key switches it off, and it stays off while the front holds near;
+   pressed again, it's on.
 
 ## Out of scope
 

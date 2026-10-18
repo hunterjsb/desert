@@ -636,6 +636,38 @@ static var _current: Tuning
 @export var radio_reach_m: float = 3000.0
 @export var beacon_share: float = 0.3
 
+@export_group("Console")
+## How often a Console's instruments read the field, s of world time, and how
+## often its screen looks for a change to draw, s. It draws only while someone
+## stands this near, m: farther off it can't be read.
+@export var console_read_every: float = 1.0
+@export var console_screen_every: float = 0.25
+@export var console_screen_seen_m: float = 15.0
+## The air's pressure where the storm field sits at its threshold, hPa (the
+## moon's thin air, the-moon.md), and how far it falls for each unit the field
+## rises, hPa: so it falls as a storm comes. The barometer reads its trend over
+## this long, s, and warns of a front it would reach within this long, minutes.
+@export var air_pressure_hpa: float = 310.0
+@export var air_pressure_fall: float = 8.0
+@export var barometer_trend_seconds: float = 120.0
+@export var barometer_warn_minutes: float = 15.0
+## Humidity in the cold air a condenser makes its most in, 0 to 1, falling
+## with its yield as the air warms, and what a full storm's air adds.
+@export var humidity_cold: float = 0.6
+@export var humidity_storm: float = 0.25
+## Sand in the air at a storm's heart, g/m³; the share of it at its wall,
+## and the share a front's outflow carries ahead of the wall.
+@export var sand_full_g_m3: float = 3.0
+@export var sand_wall_share: float = 0.3
+@export var sand_outflow_share: float = 0.1
+## A radar sweeps this many bearings, one a tick, stepping out this far, m.
+@export var radar_bearings: int = 36
+@export var radar_step_m: float = 100.0
+## Cells across the storm map a full set of instruments draws.
+@export var storm_map_screen_cells: int = 18
+## A smart shield switches itself on once the radar sees a front this near, m.
+@export var smart_shield_auto_m: float = 1500.0
+
 @export_group("Loose objects")
 ## Wind drag per (m/s)² per m² of a thing's biggest face: half the air density
 ## times its drag coefficient. Matched to the rope look-test's floater, the feel

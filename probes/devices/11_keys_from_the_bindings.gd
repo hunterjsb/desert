@@ -7,7 +7,7 @@ extends MenuProbe
 
 func run() -> void:
 	await open_main(false)
-	var console := main.ui.console
+	var console := main.ui.dev_console
 	press(&"toggle_keys")
 	await get_tree().process_frame
 	var keys: String = Dev._keys.text
