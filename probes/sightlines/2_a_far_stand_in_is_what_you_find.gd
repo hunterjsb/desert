@@ -8,7 +8,6 @@ extends WorldProbe
 ## the far ring's.
 ## Time limit: 900 s
 
-const WORLD_SCENE := preload("res://game/world/world.tscn")
 ## How far off the one walked to stands, m.
 const FROM := Vector2(1500.0, 2600.0)
 const STEP := 16.0

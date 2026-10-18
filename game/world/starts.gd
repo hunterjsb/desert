@@ -23,6 +23,10 @@ static var _top := NAN
 const LANDMARK_CLEAR := 500.0
 ## A Homesteader stands this far along the road from the wayshrine's foot, m.
 const ALONG_ROAD := Vector2(10.0, 60.0)
+## What's in sight at a start shows by this many pixels more than the
+## tuning promises: the eye's height over the sand, and the sand at your feet,
+## are a little different once the world is built.
+const SIGHT_SPARE := 0.5
 ## A Surveyor's mast stands no further than this either side of the way in
 ## toward Tu, rad.
 const TOWARD_MAST := 1.2
@@ -155,7 +159,7 @@ static func in_sight(shape: TerrainShape, start: StringName, p: Vector3, tuning:
 				near.append([by, each])
 	near.sort_custom(func(a: Array, b: Array) -> bool: return a[0] < b[0])
 	for each: Array in near:
-		var site := _shows(shape, p, each[1], tuning, looked)
+		var site := _shows(shape, p, each[1], tuning, looked, true)
 		if site != null:
 			return site
 	return null
@@ -164,8 +168,10 @@ static func in_sight(shape: TerrainShape, start: StringName, p: Vector3, tuning:
 ## History's site as the sheet would lay it from where the run's ground
 ## begins (looked's) with the moon's point at p, if it stands there and its
 ## top shows over the dunes from your eye by start_sight_px however deep the
-## sand lies on it; else null.
-static func _shows(shape: TerrainShape, p: Vector3, each: Dictionary, tuning: Tuning, looked: Dictionary) -> Structure:
+## sand lies on it, and half a pixel to spare; else null. `exact` looks over
+## all the ground between (Skyline.clearance); else a quicker look.
+static func _shows(shape: TerrainShape, p: Vector3, each: Dictionary, tuning: Tuning, looked: Dictionary,
+		exact := false) -> Structure:
 	var at: Vector2 = looked[&"ground"]
 	var site := shape.sites.would_lay(each, at.x, at.y, p, true) as Structure
 	if site == null or not site.stands():
@@ -174,8 +180,8 @@ static func _shows(shape: TerrainShape, p: Vector3, each: Dictionary, tuning: Tu
 	var top := Vector3(site.x, site.pad() + site.top_in(Exposure.BURIED), site.z)
 	var dist := Vector2(top.x - eye.x, top.z - eye.z).length()
 	var center := Vector2i(floori(at.x / tuning.chunk_size), floori(at.y / tuning.chunk_size))
-	var least := tuning.start_sight_px * Skyline.PIXEL
-	return site if Skyline.clearance(shape, tuning, eye, top, center, site.reach) >= least * dist else null
+	var least := (tuning.start_sight_px + SIGHT_SPARE) * Skyline.PIXEL
+	return site if Skyline.clearance(shape, tuning, eye, top, center, site.reach, exact) >= least * dist else null
 
 
 ## How far off anything can show by start_sight_px, m: what the tallest

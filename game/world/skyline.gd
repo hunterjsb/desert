@@ -258,29 +258,52 @@ func seen() -> Array[Structure]:
 ## ground as drawn from an eye at `eye`, m at its own distance; negative
 ## where dunes hide it. The ground is the dunes within the chunks loaded round
 ## `center`, the far ring's past them, and is looked over until `short` m
-## before it: its own ground's.
+## before it: its own ground's. `exact` looks a metre at a time on the
+## loaded ground and at every edge of the far ring's triangles, between
+## which the slope to it can't peak; else more coarsely, further out.
 static func clearance(shape: TerrainShape, tuning: Tuning, eye: Vector3, to: Vector3, center: Vector2i,
-		short := 0.0) -> float:
+		short := 0.0, exact := false) -> float:
 	var flat := Vector2(to.x - eye.x, to.z - eye.z)
 	var dist := flat.length()
 	if dist < 1.0:
 		return to.y - eye.y
+	var from := Vector2(eye.x, eye.z)
 	var way := flat / dist
 	var worst := -INF
-	var d := 2.0
-	while d < dist - short:
-		var at := Vector2(eye.x, eye.z) + way * d
+	var d := 1.0
+	var upto := dist - short
+	while d < upto:
+		var at := from + way * d
+		if exact and not _on_loaded(tuning, center, at):
+			break
 		worst = maxf(worst, (drawn(shape, tuning, center, at.x, at.y) - eye.y) / d)
-		d = next_look(d)
+		d = d + 1.0 if exact else next_look(d)
+	if exact and d < upto:
+		# Where the line crosses the far ring's lattice and its diagonals.
+		var step := float(tuning.far_step)
+		var end := from + way * upto
+		for axis in 3:
+			var a := from.x if axis == 0 else (from.y if axis == 1 else from.x + from.y)
+			var b := end.x if axis == 0 else (end.y if axis == 1 else end.x + end.y)
+			if absf(b - a) < 1.0e-6:
+				continue
+			for k in range(ceili(minf(a, b) / step), floori(maxf(a, b) / step) + 1):
+				var at := from.lerp(end, (k * step - a) / (b - a))
+				var by := from.distance_to(at)
+				if by >= d and by > 0.0:
+					worst = maxf(worst, (drawn(shape, tuning, center, at.x, at.y) - eye.y) / by)
 	return to.y - eye.y - (worst * dist if worst > -INF else -INF)
+
+
+static func _on_loaded(tuning: Tuning, center: Vector2i, at: Vector2) -> bool:
+	var off := Vector2i(floori(at.x / tuning.chunk_size), floori(at.y / tuning.chunk_size)) - center
+	return maxi(absi(off.x), absi(off.y)) <= tuning.view_radius
 
 
 ## The ground as it's drawn at a world place with the chunks loaded round
 ## `center`: the dunes on them, the far ring's past them.
 static func drawn(shape: TerrainShape, tuning: Tuning, center: Vector2i, x: float, z: float) -> float:
-	var off := Vector2i(floori(x / tuning.chunk_size), floori(z / tuning.chunk_size)) - center
-	return shape.dunes(x, z) if maxi(absi(off.x), absi(off.y)) <= tuning.view_radius \
-		else FarRing.ground(shape, tuning, x, z)
+	return shape.dunes(x, z) if _on_loaded(tuning, center, Vector2(x, z)) else FarRing.ground(shape, tuning, x, z)
 
 
 ## The next place along a sightline it's looked at, m: closer together near
