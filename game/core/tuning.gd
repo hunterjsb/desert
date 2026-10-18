@@ -21,6 +21,21 @@ static var _current: Tuning
 ## world shifts back, keeping 32-bit positions precise.
 @export var origin_shift_chunks: int = 4
 
+@export_group("Spawns")
+## Every run starts this near the equator, degrees: inside it the clear's
+## widest swing stays within the suit's limits.
+@export var start_latitude_degrees: float = 12.0
+## A Surveyor starts at least the first this far from any artery or spoke,
+## m, and walking in toward Tu crosses one within the second.
+@export var start_artery_m := Vector2(1000.0, 3000.0)
+## No path and no settlement comes within this of a Surveyor's start, m:
+## past the ground you can see.
+@export var start_deep_m: float = 600.0
+## A Salvager starts within this of a skimmer wreck field's hulls, m.
+@export var start_wrecks_m: float = 300.0
+## A Homesteader starts on a road within this of a wayshrine, m.
+@export var start_wayshrine_m: float = 100.0
+
 @export_group("Saves")
 ## A Normal run saves itself after this many minutes of play since its last
 ## save. The first storm comes in three to eight, so dying in it leaves a save

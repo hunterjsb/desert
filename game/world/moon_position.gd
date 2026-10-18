@@ -17,10 +17,14 @@ var _facing := 1.0
 var jumps := 0
 
 
-func _init(tuning: Tuning) -> void:
+## Begun at `start`, a point on the sphere, or else where the tuning says.
+func _init(tuning: Tuning, start := Vector3.ZERO) -> void:
 	radius = tuning.moon_circumference / TAU
 	latitude = deg_to_rad(tuning.spawn_latitude_degrees)
 	longitude = deg_to_rad(tuning.spawn_longitude_degrees)
+	if start != Vector3.ZERO:
+		latitude = Sphere.latitude(start)
+		longitude = Sphere.longitude(start)
 	_spawn_latitude = latitude
 	_spawn_longitude = longitude
 

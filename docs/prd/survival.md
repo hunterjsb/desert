@@ -436,9 +436,10 @@ Death means a new run (see Runs in the vision).
   least add a hook so we can tow it"). The kit is data, `game/survival/standard_kit.tres`
   (a `Kit`: what the suit carries, what's set down beside you and where,
   what comes assembled, socket by socket, which lines are laid, how full its batteries
-  start and how long its line is). Only this standard kit is balanced; choosing a kit
-  waits. (Session 4, part 2 balances three kits, the Surveyor, the Salvager and the
-  Homesteader, and lists the Surveyor's standard shield, multi-compass, stake tether and radio
+  start and how long its line is). It's the Surveyor's, the default origin's; the Salvager
+  and the Homesteader have kits of their own, chosen at New game ([Profile &
+  saves](profile-and-saves.md#kits-are-data)), each beginning at its own start on the moon.
+  (Session 4, part 2 lists the Surveyor's standard shield, multi-compass, stake tether and radio
   against the kit below, a light shield, a light panel and a racked board: the clash is
   recorded in [the vision](../vision.md#player-origins-and-kits), and this kit is what's
   built.) Every run, the first and every one after a death, begins on a clear morning

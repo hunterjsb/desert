@@ -261,11 +261,11 @@ static func stand(world: World, scenario: Dictionary, place: Dictionary) -> void
 		world.moon.place(rad_to_deg(at.x), rad_to_deg(at.y))
 
 
-## Where on the moon a scenario stands you, radians: its "moon", or the spawn's.
+## Where on the moon a scenario stands you, radians: its "moon", or the run's start.
 static func moon_at(world: World, scenario: Dictionary) -> Vector2:
 	var tuning := world.tuning
 	if not scenario.has("moon"):
-		return Vector2(deg_to_rad(tuning.spawn_latitude_degrees), deg_to_rad(tuning.spawn_longitude_degrees))
+		return Vector2(Sphere.latitude(world.start), Sphere.longitude(world.start))
 	return Vector2(deg_to_rad(scenario.moon[0]), wrapf(deg_to_rad(tuning.tu_longitude_degrees + scenario.moon[1]), -PI, PI))
 
 
@@ -357,7 +357,7 @@ static func _at_ruin(world: World, scenario: Dictionary) -> Dictionary:
 		var door := ruin.to_world(Ruin.DOORS[0][0])
 		var t := 0.0
 		while t < HORIZON:
-			var hour := day.time_of_day(t, deg_to_rad(world.tuning.spawn_longitude_degrees))
+			var hour := day.time_of_day(t, Sphere.longitude(world.start))
 			if hour >= scenario.day[0] and hour <= scenario.day[1] and not _place(field, scenario, at, Vector2.ZERO, t).is_empty():
 				var facing := (door - at).normalized()
 				return {"x": at.x, "z": at.y, "yaw": atan2(-facing.x, -facing.y), "time": t}

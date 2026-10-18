@@ -17,9 +17,16 @@ const LOW_GRAVITY := 4.4
 var tuning := Tuning.current()
 ## The tuning's, or a fresh one each run when it's 0; a new run sets its own.
 var run_seed := 0
+## The origin chosen at New game, set before the world is made. None for a
+## world that isn't a player's run, the menu's or a probe's, which starts
+## where the tuning says with the standard kit.
+var kit: Kit
 var shape: TerrainShape
 ## Where the run began, in world metres: flat ground, never a slip face.
 var spawn: Vector2
+## Where on the moon it began, its kit's start (Starts): pure in the seed
+## and the kit, so a resumed run finds it again.
+var start: Vector3
 var moon: MoonPosition
 ## The chunk the engine origin sits on. Engine position + this = world position.
 var origin_chunk := Vector2i.ZERO
@@ -56,7 +63,8 @@ func _ready() -> void:
 		run_seed = tuning.run_seed if tuning.run_seed != 0 else randi()
 	shape = TerrainShape.new(run_seed, tuning)
 	Paint.face_wind(WeatherField.mean_heading(run_seed))
-	moon = MoonPosition.new(tuning)
+	start = Starts.find(shape.history, kit.start if kit != null else &"", tuning)
+	moon = MoonPosition.new(tuning, start)
 	player.world = self
 	set_gravity(tuning.gravity)
 	terrain.setup(self)
@@ -77,8 +85,9 @@ func _ready() -> void:
 	_follow_history()
 
 
-## Dev: puts the player down at a world place and run time, facing yaw, as a
-## fresh spawn: distance from spawn and the moon position start over there.
+## Puts the player down at a world place and run time, facing yaw, as a
+## fresh spawn: distance from spawn and the moon position start over there,
+## at the run's start on the moon.
 func respawn(x: float, z: float, yaw: float, at_time: float) -> void:
 	player.step_off()
 	time = at_time
@@ -87,7 +96,7 @@ func respawn(x: float, z: float, yaw: float, at_time: float) -> void:
 	teleport(player, Transform3D(Basis(Vector3.UP, yaw), at))
 	player.velocity = Vector3.ZERO
 	player.camera.rotation.x = 0.0
-	moon = MoonPosition.new(tuning)
+	moon = MoonPosition.new(tuning, start)
 	_last_x = x
 	_last_z = z
 	_followed = Vector2i.MAX
