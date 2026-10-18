@@ -32,6 +32,12 @@ func run() -> void:
 		"back" if alone.global_basis.y.dot(back) > 0.0 else "forward"])
 	check(alone.stats().hovering and lean < LEAN, "on its one tray it floats, leaning a little (%.1f°)" % lean)
 	await _storm(alone, "alone on its tray")
+	# The deck has the sand to itself: the flattest near the spawn can be where
+	# the Console's storm left it, and the two would knock together.
+	world.ropes.clear()
+	for body: Node in world.content.get_children():
+		if body is RigidBody3D or body is Line:
+			body.free()
 
 	var deck := piece(flat_spot(0.0, -4.0, 3.0))
 	deck.join(piece(spot(-3.0, 1.0)), ring(deck, Vector2i.ZERO, Vector2i(1, 0)), 0)

@@ -3,8 +3,8 @@ extends WeatherProbe
 ## Console with a radio on its top, a shield and a crate with a lamp stand on
 ## a floating deck of three pieces. Use on the screen's power tab opens the
 ## page, and its switches, pressed where they're drawn, work each device as
-## its own use would: the shield on and off, the radio's dial, the lamp off,
-## the deck's trays resting. The panel's watts are the pool's: what it says
+## its own use would: the shield on and off, the radio on, swept to the next
+## carrier and turned down, the lamp off, the deck's trays resting. The panel's watts are the pool's: what it says
 ## is drawn is what the pool's devices draw, and its bank what they hold.
 
 
@@ -33,8 +33,12 @@ func run() -> void:
 	_press(made, shield, &"off")
 	await physics_frames(10)
 	check(not shield.on, "and off")
-	_press(made, radio, Radio.WEATHER)
-	check(radio.channel == Radio.WEATHER, "the radio tunes to the weather")
+	_press(made, radio, &"on")
+	var khz := radio.frequency
+	_press(made, radio, &"sweep")
+	_press(made, radio, &"quieter")
+	check(radio.on and radio.frequency > khz and radio.tuned_to() != &""
+		and is_equal_approx(radio.volume, 1.0 - Radio.VOLUME_STEP), "the radio comes on, sweeps to a carrier and turns down")
 	var lit := crate.demand_w()
 	_press(made, crate, false)
 	await physics_frames(10)

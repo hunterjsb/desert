@@ -1,4 +1,4 @@
-# Sandgame
+# Desert
 
 A cozy survival game on a dead desert moon. Working title.
 
@@ -15,10 +15,26 @@ Sand Game, the prototype this replaces, lives on the
 - **Tuning** lives in `game/tuning.tres`. Change numbers there, never in code.
 - **Probes** are headless checks, one folder per PRD under `probes/`. Run them with
   `scripts/probe.sh`; it needs a `godot` binary on your PATH, or set `GODOT`.
-  `scripts/probe.sh selftest` proves the runner itself can fail. CI runs both on every
-  push.
+  `scripts/probe.sh selftest` proves the runner itself can fail. It runs in bash 3.2 and
+  up, so in macOS's own and in Git Bash on Windows too. CI runs both on every push, on
+  Linux, macOS and Windows.
 - **Writing a probe:** extend `Probe`, put the body in `run()`, and call `check()`. Probes
   run on a fixed seed and never find nodes by name.
+
+## Releasing
+
+The version lives in one place, `application/config/version` in `project.godot`, and
+shows in the main menu's corner. `scripts/export.sh` exports the Linux, Windows and
+macOS builds (`export_presets.cfg`) and zips each as `desert-<version>-<os>.zip`; it
+needs the pinned export templates installed. CI runs it on every push, then launches
+each build on its own OS for a smoke test (`scripts/probe.sh smoke <game>`).
+
+- **Dry run:** `gh workflow run release.yml --ref <branch>`. The zips are the run's
+  artifacts; nothing is published.
+- **Cut a release:** set the version in `project.godot`, update `RELEASE_NOTES.md`,
+  merge to master, then tag that commit `v<version>` and push the tag. The Release
+  workflow builds and smoke-tests it again and publishes a GitHub pre-release with the
+  zips and the notes. A tag that doesn't match the version publishes nothing.
 
 ## Layout
 

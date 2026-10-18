@@ -15,6 +15,12 @@ signal unloaded(coord: Vector2i)
 ## Collision samples are 1 m apart, so near chunks are too: what you see is
 ## exactly what you stand on.
 const NEAR_STEP := 1
+## Each piece of collision runs a metre past its edges and this far below the
+## neighbour's ground there, m. A heightmap's edge is a real edge to Jolt: a
+## small body riding sunk in the sand hit the next one's like a step, and a
+## loose end dragged across a seam at 13 m/s came out at 3. Deeper than a body
+## sinks, the lip's own edge is never met.
+const LIP := 0.05
 ## Structures a storm works on follow it every frame within this many chunks
 ## of you; further off, this many chunks' worth a frame in turn.
 const FOLLOW_NEAR := 2
@@ -64,6 +70,8 @@ var _planned := false
 var _wanted: Array[Vector3i] = []
 ## Chunks to look over since the centre last moved: distances change only then.
 var _to_retire: Array = []
+## Near chunks waiting for their collision, the costliest of streaming's work.
+var _to_ground: Array = []
 ## When this frame's budget runs out, in Time ticks (usec).
 var _deadline := 0
 var _far: GeometryInstance3D
@@ -120,6 +128,7 @@ func _process(_delta: float) -> void:
 		_center = here
 		_planned = true
 		_plan()
+	_ground()
 	_launch()
 	# Retiring first: uploads arrive nearly every frame in fast flight and
 	# would starve it, leaving old ground loaded.
@@ -231,6 +240,7 @@ func forget(rect: Rect2) -> void:
 		if coord.x >= lo.x and coord.x <= hi.x and coord.y >= lo.y and coord.y <= hi.y:
 			var chunk: TerrainChunk = _chunks[coord]
 			unloaded.emit(coord)
+			_to_ground.erase(chunk)
 			chunk.free()
 			_chunks.erase(coord)
 			_standing.erase(coord)
@@ -382,9 +392,22 @@ func _upload(build: ChunkBuild) -> void:
 	if not chunk.carved.is_empty():
 		# A storm may have moved what stands in it while it was built.
 		_behind[chunk.coord] = true
-	if build.step == NEAR_STEP and d <= _tuning.near_radius and not chunk.has_collision():
-		chunk.add_collision(_size, _sand)
-		grounded.emit(chunk)
+	if build.step == NEAR_STEP and d <= _tuning.near_radius and not chunk.has_collision() \
+			and not _to_ground.has(chunk):
+		_to_ground.append(chunk)
+
+
+## Collision a piece at a time, before anything else while the budget is
+## fresh: a whole chunk's at once took up to 1.25 ms, and under load it was what
+## most often took a frame past the hitch line.
+func _ground() -> void:
+	while not _to_ground.is_empty() and not _out_of_time():
+		var chunk: TerrainChunk = _to_ground[0]
+		if chunk.step != NEAR_STEP or chunk.has_collision() or _distance(chunk.coord) > _tuning.near_radius:
+			_to_ground.pop_front()
+		elif chunk.add_collision_piece(_size, _sand):
+			_to_ground.pop_front()
+			grounded.emit(chunk)
 
 
 func _retire() -> void:
@@ -396,6 +419,7 @@ func _retire() -> void:
 		var d := _distance(coord)
 		if d > _tuning.view_radius + 1:
 			unloaded.emit(coord)
+			_to_ground.erase(chunk)
 			# Freed now, not queued, so the cost lands inside the budget.
 			chunk.free()
 			_chunks.erase(coord)
@@ -403,11 +427,12 @@ func _retire() -> void:
 		elif d > _tuning.near_radius + 1:
 			if chunk.has_collision():
 				ungrounded.emit(chunk)
-				chunk.remove_collision()
-		elif d <= _tuning.near_radius and chunk.step == NEAR_STEP and not chunk.has_collision():
+			_to_ground.erase(chunk)
+			chunk.remove_collision()
+		elif d <= _tuning.near_radius and chunk.step == NEAR_STEP and not chunk.has_collision() \
+				and not _to_ground.has(chunk):
 			# Back in range after leaving it: the same samples, so the same ground.
-			chunk.add_collision(_size, _sand)
-			grounded.emit(chunk)
+			_to_ground.append(chunk)
 
 
 # --- What a storm works on. ---

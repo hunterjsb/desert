@@ -70,7 +70,7 @@ func _stand_all() -> void:
 					if not site.stands():
 						continue
 					var taken := Exposure.taken(world.weather.field, site.x, site.z, world.time, world.tuning)
-					site.depth = [taken * 4.0, taken * 2.0, 0.0][s]
+					site.depth = [taken * 4.0, taken * 1.5, 0.0][s]
 					sites.add(site)
 					_placed.append([site, s])
 					break

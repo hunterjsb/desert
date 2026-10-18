@@ -10,6 +10,7 @@ extends MenuProbe
 
 
 func run() -> void:
+	open_every_start()
 	await open_main()
 	var tuning := Tuning.current()
 	var origins := Kit.open_to(main.profile())

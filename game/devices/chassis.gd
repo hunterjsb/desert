@@ -162,6 +162,7 @@ func join(piece: Chassis, ring: Socket, k := -1) -> void:
 		if node is CollisionShape3D:
 			shapes.append(node)
 	_rise_clear_of_sand(shapes)
+	_deeds()
 
 
 ## Takes an outer piece off again, with all that's its own and whatever
@@ -232,7 +233,7 @@ func _reroot(to: Chassis) -> Chassis:
 		node.transform = back * node.transform
 		if node is Device or node.has_meta(&"socket"):
 			continue
-		if node.get_meta(&"piece", null) == to:
+		if node.has_meta(&"piece") and node.get_meta(&"piece") == to:
 			node.remove_meta(&"piece")
 		elif not node.has_meta(&"piece"):
 			node.set_meta(&"piece", to)
@@ -245,8 +246,9 @@ func _reroot(to: Chassis) -> Chassis:
 	var view := frame_view
 	frame_view = to.frame_view
 	to.frame_view = view
-	var layer: Variant = get_meta(&"layer", null)
-	var theirs: Variant = to.get_meta(&"layer", null)
+	# A null default still errors when the meta is missing.
+	var layer: Variant = get_meta(&"layer") if has_meta(&"layer") else null
+	var theirs: Variant = to.get_meta(&"layer") if to.has_meta(&"layer") else null
 	for pair: Array in [[self, theirs], [to, layer]]:
 		if pair[1] == null:
 			pair[0].remove_meta(&"layer")
@@ -505,6 +507,17 @@ func _after_change() -> void:
 func mount(other: Device, socket: Socket) -> void:
 	super(other, socket)
 	carryable = false
+	_deeds()
+
+
+## The deck's deeds as it grows: enough pieces in one, and a home's three
+## standing on it.
+func _deeds() -> void:
+	if world == null or not world.counts_deeds:
+		return
+	Deeds.measure(world, &"deck_pieces", pieces().size())
+	var on := mounted().map(func(d: Device) -> StringName: return d.get_meta(&"catalog", &""))
+	Deeds.measure(world, &"deck_home", Deeds.HOME.filter(func(id: StringName) -> bool: return on.has(id)).size())
 
 
 func dismount(socket: Socket) -> Device:

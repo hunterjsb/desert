@@ -9,6 +9,7 @@ integrated loudness, peaks never past -6 dBTP. A hard limiter on Master holds -1
   branch under `audio/`.
 - **Kenney:** [kenney.nl](https://kenney.nl) packs "RPG Audio", "Interface Sounds"
   and "Impact Sounds", all CC0 1.0 (public domain); credit is optional and given here.
+- **Hunter's own music:** tracks Hunter made for this game (2026-10-18).
 - **Made here:** made for this game with Python and ffmpeg; no third-party audio. CC0.
 
 | File | What it is | Made from | Licence | Heard at | Peak |
@@ -47,6 +48,10 @@ integrated loudness, peaks never past -6 dBTP. A hard limiter on Master holds -1
 | radio_tune.ogg | the dial turning between stations | half a second of the same two | Sand Game | -32 | -16 |
 | radio_ping.ogg | a beacon's ping | made here: a soft high note | CC0 | -34 | -21 |
 | radio_tones.ogg | the weather station's tones before a reading | made here: three falling notes | CC0 | -36 | -25 |
+| radio_clear_skies.ogg | the weather station's hold music, "Clear Skies", while there's nothing to report | Hunter's `A-Mx-ClearSkies.wav`, mono, levelled to the music, 50 ms fades for a seamless loop | Hunter's own | about the music's, peak-limited | -6 |
+| radio_stoker.ogg | the Stoker's furnace song on its frequency | Hunter's `modsynthpatch.wav` from 11:15 to 12:00, mono, peaks at the clear-skies song's (louder than the music, by Hunter's ear), 50 ms fades | Hunter's own | about -18 at 3 m | -6 |
+| radio_eye.ogg | the Eye's drone, now and then on its frequency | Hunter's `A-Mx-Drone.wav`, mono, levelled to the music, 0.5 s fades | Hunter's own | -28 at 3 m | -9 |
 | menu_move/confirm/back.ogg | the menus | Kenney Interface `click_002`, `select_002`, `back_002` | CC0 | -49, -40, -43 | -21, -16, -19 |
+| menu_theme.ogg | the main menu's theme, "Salt" | Hunter's `A-Mx-salt.wav`, stereo, levelled to about -20 dBFS, 20 ms fades for a seamless loop | Hunter's own | about -20 LUFS, on the UI bus | -5 |
 
 The rope's snap is still made in code (`ropes.gd`), at about -28 LUFS from 8 m.

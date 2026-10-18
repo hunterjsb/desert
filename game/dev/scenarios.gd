@@ -17,7 +17,9 @@ extends RefCounted
 ## sets two planters growing in front of you, one with a harvester, and a
 ## shield for the storm on its way. "radio" sets a radio and a shield in front
 ## of you with a storm on its way, to sit it out and follow a beacon: beside a
-## town where history left house ruins ("among"), so a beacon is in reach. "afk"
+## town where history left house ruins ("among"), so a beacon is in reach.
+## "clear_skies" sets it on, tuned to the weather station, with the next storm
+## far enough off for its clear-skies song. "afk"
 ## parks the reference camp round you on a floating deck, running, to be left
 ## alone, its farm watered by a condenser on hoses. "lee" stands you at the foot of a tall
 ## slip face, facing up it into the wind coming over its crest, with a storm
@@ -38,11 +40,16 @@ const LIST: Array[Dictionary] = [
 	{"key": "deep", "label": "deep in a storm", "kind": "deep", "day": [0.35, 0.55]},
 	{"key": "clearing", "label": "storm about to clear, 100 m", "kind": "back", "distance": 100.0, "day": [0.35, 0.55]},
 	{"key": "dusk", "label": "dusk, sun on the horizon", "kind": "sky", "day": [0.733, 0.745]},
-	{"key": "night", "label": "night", "kind": "sky", "day": [0.85, 0.95]},
+	# With the relay satellite up and sunlit, low enough to see facing it.
+	{"key": "night", "label": "night, facing the relay satellite crossing the sky", "kind": "sky", "day": [0.8, 0.97],
+		"relay": true},
 	{"key": "eclipse", "label": "eclipse: clear, facing Tu, the sun half a minute from going behind it",
 		"kind": "clear", "eclipse": 30.0},
 	{"key": "far", "label": "far side: a clear night with no Tu, 30° north, facing the pole star", "kind": "sky",
 		"day": [0.9, 0.97], "moon": [30.0, 180.0]},
+	# To hear the relay's music go as a storm comes over: it's well up, the radio on it.
+	{"key": "far_storm", "label": "far side storm: a radio on the music, the relay high, a storm 1.2 km off coming at you",
+		"kind": "front", "distance": 1200.0, "day": [0.0, 1.0], "moon": [30.0, 180.0], "relay_up": true, "music": true},
 	# Calm, so a floating device doesn't drift off before there's rope to hold it.
 	{"key": "kit", "label": "test kit: devices and parts, clear and calm", "kind": "kit", "day": [0.42, 0.55],
 		"calm": 6.0},
@@ -62,6 +69,11 @@ const LIST: Array[Dictionary] = [
 		"kind": "clear", "day": [0.35, 0.5], "calm": 6.0, "board": true},
 	{"key": "radio", "label": "radio: a radio and a charged shield in front of you, a storm 300 m off", "kind": "front",
 		"distance": 300.0, "day": [0.35, 0.55], "radio": true, "among": true},
+	# The next storm far enough off that the weather station has nothing to
+	# report for a few minutes, then breaks off its song when it comes within
+	# radio_calm_minutes.
+	{"key": "clear_skies", "label": "clear skies: a radio on the weather station playing its song, the next storm 9 to 14 min off, a charged shield",
+		"kind": "clear", "day": [0.35, 0.55], "due": [540.0, 840.0], "walker": true},
 	# A morning like a run's, the first storm minutes off, so it soon shows what the camp does in one.
 	{"key": "afk", "label": "AFK: the reference camp on a floating 2x2 deck, moored, its farm floating beside it on hoses, a turbine out in the wind",
 		"kind": "clear", "day": [0.3, 0.4], "due": [180.0, 480.0], "afk": true},
@@ -239,6 +251,12 @@ const STEP := 25.0
 ## Search the first three days, finely enough not to step over dusk.
 const HORIZON := 3.0 * 24.0 * 3600.0
 const TIME_STEP := 10.0
+## "relay" looks for the relay this many degrees up, at least and at most.
+const RELAY_SEEN := Vector2(10.0, 28.0)
+## "relay_up" looks for the relay at least this many degrees up.
+## High enough that its signal crosses the dust within 900 m of you, so a
+## storm farther off doesn't yet stand in its way.
+const RELAY_UP := 60.0
 ## "deep" means full storm for at least this far either way along the wind.
 const DEEP := 300.0
 
@@ -261,7 +279,8 @@ static func apply(world: World, scenario: Dictionary) -> void:
 	if not (scenario.kind in ["kit", "ruin"] or scenario.get("camp", false) or scenario.get("survive", false)
 			or scenario.get("farm", false) or scenario.get("board", false) or scenario.get("radio", false)
 			or scenario.get("afk", false) or scenario.get("chassis", false) or scenario.get("console", false)
-			or scenario.get("sail", false) or scenario.get("drift", false)):
+			or scenario.get("sail", false) or scenario.get("drift", false) or scenario.get("walker", false)
+			or scenario.get("music", false)):
 		return
 	# Bodies dropped before the sand under them has collision would be frozen or forgotten.
 	while is_instance_valid(world) and not world.terrain.is_settled_around(place.x, place.z):
@@ -281,6 +300,10 @@ static func apply(world: World, scenario: Dictionary) -> void:
 		dropped = board(world)
 	elif scenario.get("radio", false):
 		dropped = radio(world)
+	elif scenario.get("walker", false):
+		dropped = weather_station(world)
+	elif scenario.get("music", false):
+		dropped = music_station(world)
 	elif scenario.get("afk", false):
 		dropped = afk(world)
 	elif scenario.get("chassis", false):
@@ -376,12 +399,14 @@ static func _search(world: World, scenario: Dictionary, spawn: Vector2, longitud
 		t = day.next_eclipse(0.0) - day.totality() * 0.5 - scenario.eclipse
 	while t < HORIZON:
 		var hour := day.time_of_day(t, moon.y)
-		if scenario.has("eclipse") or (hour >= scenario.day[0] and hour <= scenario.day[1]):
+		if (scenario.has("eclipse") or (hour >= scenario.day[0] and hour <= scenario.day[1])) \
+				and (not scenario.get("relay", false) or _relay_shows(world, moon, t)) \
+				and (not scenario.get("relay_up", false) or _relay_up(world, moon, t)):
 			var upwind := -field.prevailing_at(t).normalized()
 			var place := _place(field, scenario, spawn, upwind, t)
 			if not place.is_empty():
 				place.time = t
-				place.yaw = _facing(day, scenario, moon, upwind, t)
+				place.yaw = _facing(world, scenario, moon, upwind, t)
 				return place
 		t += world.tuning.day_minutes * 60.0 if scenario.has("eclipse") else TIME_STEP
 	return {}
@@ -633,7 +658,11 @@ static func _refine(field: WeatherField, from: Vector2, along: Vector2, lo: floa
 ## Storms come from upwind, so you face it. Dusk faces the sunset in the west,
 ## night faces east toward the dawn, the far side north to the pole star, and
 ## an eclipse faces Tu.
-static func _facing(day: DayCycle, scenario: Dictionary, moon: Vector2, upwind: Vector2, t: float) -> float:
+static func _facing(world: World, scenario: Dictionary, moon: Vector2, upwind: Vector2, t: float) -> float:
+	var day := world.weather.day
+	if scenario.get("relay", false):
+		var to := _relay_from(world, moon, t)
+		return atan2(-to.x, -to.z)
 	if scenario.has("eclipse"):
 		var tu := day.tu_direction(t, moon.x, moon.y)
 		return atan2(-tu.x, -tu.z)
@@ -642,6 +671,28 @@ static func _facing(day: DayCycle, scenario: Dictionary, moon: Vector2, upwind: 
 	if scenario.has("moon"):
 		return 0.0
 	return PI / 2.0 if scenario.key == "dusk" else -PI / 2.0
+
+
+## The relay satellite from a place on the moon at world time t, engine axes:
+## where to look for it.
+static func _relay_from(world: World, moon: Vector2, t: float) -> Vector3:
+	var relay := Radio.relay_of(world)
+	var p := Sphere.point(moon.x, moon.y)
+	return DayCycle.local((relay.under(t) * (1.0 + relay.altitude) - p).normalized(), moon.x, moon.y)
+
+
+## Whether the relay shows in the night sky from a place at world time t: sunlit,
+## and between RELAY_SEEN degrees up, so it's in view facing it.
+static func _relay_shows(world: World, moon: Vector2, t: float) -> bool:
+	var up := rad_to_deg(asin(clampf(_relay_from(world, moon, t).y, -1.0, 1.0)))
+	return up >= RELAY_SEEN.x and up <= RELAY_SEEN.y \
+		and Radio.relay_of(world).sunlit(t, world.weather.day.sun_toward(t))
+
+
+## Whether the relay is well up over a place at world time t, its music clear
+## for a while yet: RELAY_UP degrees and more.
+static func _relay_up(world: World, moon: Vector2, t: float) -> bool:
+	return rad_to_deg(asin(clampf(_relay_from(world, moon, t).y, -1.0, 1.0))) >= RELAY_UP
 
 
 ## Drops the test kit on the sand in front of the player, squared to them,
@@ -782,6 +833,26 @@ static func board(world: World) -> Array[Node3D]:
 ## a charged shield generator beside it, switched off. Returns what it dropped.
 static func radio(world: World) -> Array[Node3D]:
 	return [standing(world, &"radio", [&"battery"], RADIO_AT), standing(world, &"shield", [&"battery"], RADIO_SHIELD)]
+
+
+## The radio of "radio" switched on and tuned to the weather station, the
+## Walker's carrier today, beside its charged shield, switched off.
+static func weather_station(world: World) -> Array[Node3D]:
+	var dropped := radio(world)
+	var tuned := dropped[0] as Radio
+	tuned.on = true
+	tuned.frequency = Radio.gods_of(world).carrier(&"walker", world.time)
+	return dropped
+
+
+## The radio of "radio" switched on and tuned to the music, the relay's
+## carrier, beside its charged shield, switched off.
+static func music_station(world: World) -> Array[Node3D]:
+	var dropped := radio(world)
+	var tuned := dropped[0] as Radio
+	tuned.on = true
+	tuned.frequency = Dial.MUSIC_KHZ
+	return dropped
 
 
 ## The reference camp, parked round you and left running, on a deck two

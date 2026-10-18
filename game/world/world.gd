@@ -34,8 +34,15 @@ var origin_chunk := Vector2i.ZERO
 var time := 0.0
 ## How many seconds the clock moves per second; 0 stops it.
 var time_warp := 1.0
+## Seconds of the run played, whatever the clock's warp; NAN in a run
+## resumed from a save that never kept it, so it's never short.
+var played := 0.0
 ## m/s², for everything here: bodies through the physics space, the player directly.
 var gravity: float
+## A player's own run, whose deeds count (Deeds): set by the game for a run
+## that isn't a dev scenario's. The menu's world, a probe's and a look-test's
+## count none unless they say so.
+var counts_deeds := false
 
 @onready var terrain: Terrain = $Terrain
 @onready var content: Node3D = $Content
@@ -53,6 +60,10 @@ var _last_z: float
 ## forces it to follow again.
 var _followed := Vector2i.MAX
 var _followed_jumps := 0
+## The metre of sand you last stood on, and the structure you last stepped
+## onto, so stepping onto one is noticed once.
+var _stood_at := Vector2i.MAX
+var _stood: Structure
 
 
 func _ready() -> void:
@@ -134,6 +145,8 @@ func _follow_history() -> void:
 		# A bearing on the sphere is from the moon's north, as a compass reads.
 		Dev.put("world/lmk", "%s %.1fkm %s" % [near.landmark.name, near.metres / 1000.0,
 			Radio.compass(rad_to_deg(near.bearing))])
+		if counts_deeds and near.metres <= near.landmark.radius:
+			Deeds.reached(self, near.landmark.id)
 
 
 ## A run starts on ground this flat: a camp-sized patch whose sand rises no
@@ -285,6 +298,8 @@ func _physics_process(delta: float) -> void:
 	_last_z = z
 	if terrain.chunk_at(x, z) != _followed or moon.jumps != _followed_jumps or not shape.sites.anchored():
 		_follow_history()
+	if counts_deeds:
+		_step_onto(x, z)
 
 	var stray := Vector2i(floori(player.global_position.x / tuning.chunk_size),
 		floori(player.global_position.z / tuning.chunk_size))
@@ -293,6 +308,7 @@ func _physics_process(delta: float) -> void:
 
 	_keep_bodies_on_ground()
 	time += delta * time_warp
+	played += delta
 
 	Dev.put("world/seed", "%d" % run_seed)
 	if rescued > 0:
@@ -302,6 +318,20 @@ func _physics_process(delta: float) -> void:
 	Dev.put("world/ll", "%.3f,%.3f" % [rad_to_deg(moon.latitude), rad_to_deg(moon.longitude)])
 	Dev.put("world/dist", "%.2fkm" % (moon.distance_from_spawn() / 1000.0))
 	Dev.put("world/orig", "%d,%d" % [origin_chunk.x, origin_chunk.y])
+
+
+## Stepping onto a structure's ground counts its age toward standing in one
+## of each age that built.
+func _step_onto(x: float, z: float) -> void:
+	var at := Vector2i(floori(x), floori(z))
+	if at == _stood_at:
+		return
+	_stood_at = at
+	var site := shape.sites.covering(x, z)
+	if site != null and site != _stood and site.reaches(x, z):
+		_stood = site
+		if Eras.BUILT.has(site.era):
+			Deeds.done(self, &"ages", site.era)
 
 
 ## Nothing physical is ever outside collision: a body whose ground is gone is

@@ -743,12 +743,32 @@ func _go(to: Page) -> void:
 
 ## The gyro as a compass: the wind as the deck feels it, which way and how
 ## strong, the way the deck points, and the wind's angle off its bow, as a
-## sailor trims to it: plus to starboard, minus to port.
+## sailor trims to it: plus to starboard, minus to port. And Tu-ward, unless
+## Tu stands overhead or right underfoot, where every way is.
 func _gyro(wind: Dictionary) -> Dictionary:
 	var heading := _heading()
 	var off := wrapf(wind.from - heading, -180.0, 180.0)
-	return {"from": wind.from, "speed": wind.speed, "steady": wind.steady, "heading": heading, "off": off,
+	var shown := {"from": wind.from, "speed": wind.speed, "steady": wind.steady, "heading": heading, "off": off,
 		"angle": ("%d° %s" % [roundi(absf(off)), _side(off)]).strip_edges()}
+	var tu := tu_ward()
+	if not is_nan(tu):
+		shown["tu"] = tu
+	return shown
+
+
+## Tu-ward: the great-circle bearing from where it stands toward the point
+## under Tu, whole degrees as its other bearings are kept (north -z), which it
+## knows from where it is on the moon, so on the far side too. NAN within a
+## degree of the point under Tu or the one opposite.
+func tu_ward() -> float:
+	var moon := world.moon
+	var here := Sphere.point(moon.latitude, moon.longitude)
+	var under := world.weather.day.sub_tu(world.time)
+	if absf(here.dot(under)) > cos(deg_to_rad(1.0)):
+		return NAN
+	var bearing := rad_to_deg(Sphere.bearing(here, under))
+	# Past a pole the ground's north is +z.
+	return float(roundi(fposmod(bearing if moon.north().z < 0.0 else bearing + 180.0, 360.0)) % 360)
 
 
 ## Which side of the bow a wind this far off it comes from, or none dead ahead or astern.
@@ -1032,8 +1052,9 @@ func _switches(device: Device, called: String, radar: bool) -> Array:
 			return String(m).to_upper()), _set_shield))
 	var radio := device as Radio
 	if radio != null:
-		groups.append(keys.call(range(Radio.CHANNELS.size()), radio.channel,
-			Radio.CHANNELS.map(func(c: String) -> String: return c.to_upper()), _tune))
+		# The dial's own controls: its switch, use's sweep and its volume knob.
+		groups.append(keys.call([&"off", &"on"], &"on" if radio.on else &"off", ["OFF", "ON"], _switch_radio)
+			+ keys.call([&"sweep", &"quieter", &"louder"], &"", ["SWEEP", "VOL -", "VOL +"], _work_dial))
 	if device.has_tray() and device.host() == null:
 		groups.append(keys.call([&"float", &"rest"], &"rest" if device.resting else &"float", ["FLOAT", "REST"], _rest))
 	if device.lamp_w() > 0.0:
@@ -1057,9 +1078,18 @@ func _set_shield(shield: ShieldGenerator, to: StringName, called: String, text: 
 	_say("%s %s" % [called, text])
 
 
-func _tune(radio: Radio, to: int, called: String, text: String) -> void:
-	radio.tune(to)
-	_say("%s %s" % [called, text])
+func _switch_radio(radio: Radio, to: StringName, called: String, text: String) -> void:
+	if radio.switch(to == &"on"):
+		_say("%s %s" % [called, text])
+
+
+func _work_dial(radio: Radio, to: StringName, called: String, _text: String) -> void:
+	if to == &"sweep":
+		radio.interact(null)
+	elif not radio.turn_volume(1 if to == &"louder" else -1):
+		return
+	_say("%s %s" % [called, ("%d KHZ" % roundi(radio.frequency) if radio.on else "OFF") if to == &"sweep"
+		else "VOL %d%%" % roundi(radio.volume * 100.0)])
 
 
 func _rest(device: Device, to: StringName, called: String, text: String) -> void:

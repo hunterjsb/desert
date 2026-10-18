@@ -17,8 +17,9 @@ extends RefCounted
 ## What each kind of thing keeps besides where it is, by property.
 static var _kept := [
 	[Stake, ["driven", "pulled", "sustained", "holding", "pull"]],
-	[ShieldGenerator, ["on", "smart", "size", "_up", "_since"]],
-	[Radio, ["channel", "target"]],
+	[ShieldGenerator, ["on", "smart", "size", "_up", "_since", "held_minutes"]],
+	# A save from before the dial kept "channel": setting it places the dial.
+	[Radio, ["on", "frequency", "volume", "target"]],
 	[Planter, ["tank_l", "split", "stored", "seeds", "ripened", "replanted", "banked", "dropped", "picked",
 		"fed_kcal", "_owed"]],
 	[Condenser, ["made_l"]],
@@ -92,6 +93,46 @@ static func problem(data: Dictionary) -> String:
 	return "" if unknown.is_empty() else "it holds things this build doesn't know: " + ", ".join(unknown)
 
 
+## What the main menu says of a save: seconds played (NAN if it never kept
+## them), the run's day, and who you came as, by id (none from before origins).
+static func summary(data: Dictionary) -> Dictionary:
+	return {"played": data.get("played", NAN), "kit": data.get("kit", &""),
+		"day": DayCycle.new(Tuning.current()).day(data.time, data.moon.longitude)}
+
+
+## What stood round you in a save, made from its own data with no world
+## built: the device of yours nearest where you stood and those within
+## `reach` of it, nearest it first and `most` at most, each with everything
+## seated in it. Each as [body, its pose about you as you stood, facing -z].
+## Out of the tree; dress() them once they're in it.
+func camp(data: Dictionary, reach: float, most: int) -> Array[Array]:
+	_layout = data.get("layout", 0)
+	var you: Array = data.player.at
+	var off := func(rec: Dictionary, from: Array) -> float:
+		return Vector2(rec.at[1] - from[1], rec.at[3] - from[3]).length()
+	var devices: Array = data.things.filter(func(rec: Dictionary) -> bool:
+		return Catalog.DEVICES.has(Catalog.current(rec.id)))
+	if devices.is_empty():
+		return []
+	devices.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return off.call(a, you) < off.call(b, you))
+	var nearest: Array = devices[0].at
+	devices = devices.filter(func(rec: Dictionary) -> bool: return off.call(rec, nearest) <= reach)
+	devices.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
+		return off.call(a, nearest) < off.call(b, nearest))
+	var about := Transform3D(you[0], Vector3.ZERO).affine_inverse()
+	var out: Array[Array] = []
+	for rec: Dictionary in devices.slice(0, most):
+		var at := Vector3(rec.at[1] - you[1], rec.at[2] - you[2], rec.at[3] - you[3])
+		out.append([_make(rec), about * Transform3D(rec.at[0], at)])
+	return out
+
+
+## What camp() made has its state back, now it's in the tree.
+func dress() -> void:
+	for pair in _states:
+		_set_state(pair[0], pair[1])
+
+
 ## First half of a resume, on a fresh world built on the save's seed: the
 ## world's own things go, and the clock, the origin, you and the finds'
 ## memory are put back. Returns where the rest will stand, world metres, so
@@ -102,6 +143,7 @@ func begin(data: Dictionary) -> Array[Vector2]:
 	# A resumed run has its own things: no new run's kit is set down in it.
 	world.set_meta(&"resumed", true)
 	world.time = data.time
+	world.played = data.get("played", NAN)
 	world.set_gravity(data.gravity)
 	world.shift_origin(data.origin - world.origin_chunk)
 	var moon: Dictionary = data.moon
@@ -111,6 +153,7 @@ func begin(data: Dictionary) -> Array[Vector2]:
 	world._last_z = data.last[1]
 	world.power._next = data.ticks.power
 	world.wear._next = data.ticks.wear
+	world.wear.sheltered = data.ticks.get("sheltered", 0.0)
 	world.farm._next = data.ticks.farm
 	world.power.generated_wh = data.ledger[0]
 	world.power.used_wh = data.ledger[1]
@@ -266,8 +309,11 @@ func _take() -> Dictionary:
 			"_spawn_latitude": world.moon._spawn_latitude, "_spawn_longitude": world.moon._spawn_longitude,
 			"_facing": world.moon._facing},
 		"last": [world._last_x, world._last_z],
-		"ticks": {"power": world.power._next, "wear": world.wear._next, "farm": world.farm._next},
+		"ticks": {"power": world.power._next, "wear": world.wear._next, "farm": world.farm._next,
+			"sheltered": world.wear.sheltered},
 		"ledger": [world.power.generated_wh, world.power.used_wh, world.power.spilled_wh]}
+	if not is_nan(world.played):
+		data.played = world.played
 	var you := {"at": _transform_out(player.global_transform), "pitch": player.camera.rotation.x,
 		"v": player.velocity, "drag": player.get_meta(&"rope_drag", Vector3.ZERO), "state": {}, "vitals": {}}
 	for key in PLAYER:

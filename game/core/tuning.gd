@@ -49,6 +49,21 @@ static var _current: Tuning
 ## to go back to.
 @export var autosave_minutes: float = 3.0
 
+@export_group("Deeds")
+## Over the sand on a board, m: a pop off a big crest, past what pushing off
+## one flies.
+@export var deed_board_height_m: float = 8.0
+## One ride without stepping off, m: more than a scout round camp.
+@export var deed_board_m: float = 5000.0
+## Full storm one shield holds off, minutes, over however many storms.
+@export var deed_storm_minutes: float = 60.0
+## Made at once in one system, W: more than the reference camp makes at its best.
+@export var deed_power_w: float = 300.0
+## Kinds of crop grown, planters towed at once, and chassis pieces in one deck.
+@export var deed_crop_kinds: int = 3
+@export var deed_planters_towed: int = 2
+@export var deed_deck_pieces: int = 6
+
 @export_group("Terrain")
 @export var chunk_size: int = 64
 ## Chunks within this many of the player's get collision.
@@ -277,6 +292,11 @@ static var _current: Tuning
 ## Tu-shine on top of its physical value, so how bright a near-side night is
 ## can be tuned apart from Tu's size. 1 is physical.
 @export var tu_shine_scale: float = 1.0
+## How long Tu takes to turn once, real hours: a super-Jupiter's ten. The
+## game's day stands for Zan's real lap, which Tu's size sets, so Tu turns as
+## often in a game day as it would in a real one: at 9°, about 6.8 times as
+## seen from Zan.
+@export var tu_spin_hours: float = 10.0
 
 @export_group("Storm wall")
 ## Top of a storm's dust wall, metres. It dissolves over roof_soft either side.
@@ -371,6 +391,7 @@ static var _current: Tuning
 @export var slide_brake: float = 0.3
 ## Hauling: a line has to take this share of your pace before your feet dig
 ## in; fully dug in you lose this share of it and tire this much faster, per s.
+## You're fully dug in once it takes all the pace you'd manage dug in.
 @export var haul_from: float = 0.35
 @export var haul_slow: float = 0.35
 @export var haul_stamina_drain: float = 10.0
@@ -635,6 +656,16 @@ static var _current: Tuning
 @export var condenser_cold: float = 0.0
 @export var condenser_hot: float = 40.0
 @export var condenser_hot_share: float = 0.2
+## The compass needle follows Tu's weak field: it swings about it once in this
+## many seconds and settles by this damping (1 would never overshoot). Tu's
+## field is tipped from its spin, so the needle sways this far either way once
+## each turn of Tu; a full storm's charged dust swims it up to this far.
+@export var compass_swing_seconds: float = 3.0
+@export var compass_damping: float = 0.4
+@export var compass_sway_degrees: float = 10.0
+@export var compass_storm_degrees: float = 35.0
+## Over the most magnetized old volcanic ground, the needle swims this far either way.
+@export var compass_ground_degrees: float = 40.0
 
 @export_group("Farming")
 ## A planter's water tank, L. Found empty.
@@ -761,17 +792,90 @@ static var _current: Tuning
 ## ground; once you're off, it comes back this fast at most, m/s.
 @export var site_rebury_m_s: float = 0.05
 
+@export_group("Plume")
+## A live vent's seep as a buoyancy flux, m⁴/s³ at this tuning's gravity: how
+## hard what it lets out climbs. Bursts multiply it (Geology).
+@export var plume_buoyancy: float = 25000.0
+
 @export_group("Radio")
 ## What a radio draws while it's on, W.
 @export var radio_w: float = 2.0
+## At full volume a radio plays this much louder than the levels its tracks
+## are made at, dB: a radio is meant to be heard across a camp. It's heard at
+## that level out to this far, m, and fades 6 dB each time that doubles.
+@export var radio_loudness_db: float = 15.0
+## The volume knob spans this many dB from full to its first notch's tenth:
+## a fixed step a notch (6 dB at 60), so a tenth is barely audible.
+@export var radio_volume_range_db: float = 60.0
+## A radio is a small speaker: everything it plays loses what's under this, Hz.
+@export var radio_highpass_hz: float = 400.0
+## Under anything you can hear (a song, a god, the beacon), the static sinks
+## this far, dB, by how clearly it comes through; with nothing, it's all there is.
+@export var radio_static_duck_db: float = 18.0
+@export var radio_heard_m: float = 15.0
+## The relay satellite that carries the music: how high it orbits, in the
+## moon's radii, and how long a lap takes, minutes of world time. Its carrier
+## slides this far either way as it comes and goes, kHz, and it fades in this
+## far over the horizon, degrees. Its signal crosses the dust of a storm this
+## high, m: the lower it is, the longer the way through.
+@export var relay_altitude_radii: float = 3.0
+## Short, so it crosses the night sky at least twice as fast as the stars and
+## stands out from them, and not a whole share of a day, or it would cross
+## the same sky at the same hour every time.
+@export var relay_period_minutes: float = 6.5
+@export var relay_doppler_khz: float = 1.5
+@export var relay_rise_degrees: float = 8.0
+@export var dust_height_m: float = 1500.0
+## The Eye's drone comes now and then out of silences of between these many
+## minutes, its first one included.
+@export var eye_quiet_minutes: Vector2 = Vector2(2.0, 8.0)
 ## How far ahead the weather station reads the storm field, minutes, and how
 ## often it reads it again, s of world time.
 @export var radio_forecast_minutes: float = 20.0
 @export var radio_forecast_every: float = 5.0
+## With something to report, the weather station reads it aloud this often, s
+## of world time, and at once when a report breaks in; heard this far, m.
+@export var radio_speak_every: float = 30.0
+@export var radio_voice_m: float = 30.0
+## The weather station has nothing to report, and plays its clear-skies song,
+## while no storm is on you or due within this many minutes. Clear for 5
+## minutes ahead is about half of all clear time; for 20, almost never.
+@export var radio_calm_minutes: float = 5.0
 ## How far a radio hears a beacon, m, and the share of ruins the seed left
 ## one running in.
 @export var radio_reach_m: float = 3000.0
 @export var beacon_share: float = 0.3
+## The dial: a carrier comes in this wide either side, kHz (its fall to a
+## sixtieth), and a notch of tuning moves it this far, or a fine step this far.
+@export var dial_width_khz: float = 3.0
+@export var dial_notch_khz: float = 5.0
+@export var dial_fine_khz: float = 1.0
+## A god's bearing is given to sixteen points within the first distance, m,
+## to eight within the second, and past that only as a way across the moon.
+@export var god_exact_m: float = 12000.0
+@export var god_rough_m: float = 40000.0
+## How far a ground wave carries at or under 500 kHz, m; above it the reach
+## falls as the square of the frequency. At night a sky wave comes down past
+## the skip, m, at this strength, for any frequency over 500 kHz.
+@export var ground_wave_m: float = 80000.0
+@export var skip_m: float = 15000.0
+@export var sky_wave: float = 0.6
+## Under this share of a clean signal, a transmission is lost in the static.
+@export var signal_floor: float = 0.08
+## The storm on the path toward a god is read this far out at most, m, and
+## at this many points. Through a full storm the carrier drifts this far
+## either way, kHz, and the signal drops out this share of the time.
+@export var interference_reach_m: float = 3000.0
+@export var interference_samples: int = 12
+## The way toward a signal is read from this far out, m, so a storm beside
+## you blocks only what lies its way; and a storm that bad or worse on the way
+## blocks a signal entirely.
+@export var interference_near_m: float = 50.0
+@export var storm_blocks: float = 0.5
+@export var storm_warp_khz: float = 6.0
+@export var storm_cuts: float = 0.6
+## The Walker's pace round the Rim, m/s.
+@export var walker_speed: float = 1.5
 
 @export_group("Console")
 ## How often a Console's instruments read the field, s of world time, and how

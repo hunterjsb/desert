@@ -11,8 +11,8 @@ extends Node
 ## draws it, so the light drops exactly when the dust visibly swallows you.
 ## Light passes through a bubble, so inside one the air is clear but the light
 ## is the storm's. This is the one owner of the sun, sky, haze and the storm
-## walls' light; the sky view draws Tu and the stars in it, and the eye sets the
-## exposure the camera sees it all by.
+## walls' light, which a live vent's plume takes too; the sky view draws Tu and
+## the stars in it, and the eye sets the exposure the camera sees it all by.
 
 ## Starlight and the air's own glow: all the light a far-side night has.
 const NIGHT_LIGHT := 0.0005
@@ -46,6 +46,7 @@ var field: WeatherField
 var day: DayCycle
 var map: StormMap
 var sky: SkyView
+var plume: Plume
 var lee: Lee
 var eye: Eye
 ## The weather at the player this tick, which the game plays by.
@@ -109,6 +110,9 @@ func setup(world: World) -> void:
 	sky = SkyView.new()
 	add_child(sky)
 	sky.setup(world, day, _environment, face, _sun)
+	plume = Plume.new()
+	add_child(plume)
+	plume.setup(world, self)
 
 
 ## Each felt_*() reads now, or a given world time t: power ticks read theirs.
@@ -381,6 +385,9 @@ func _show(delta: float) -> void:
 		_environment.fog_density))
 	# The light round the camera, which a shell's glass catches.
 	face.set_light("shell_light", _linear(_environment.ambient_light_color) * _environment.ambient_light_energy)
+	plume.light(sun, sun_light, sky_light, ring_light, _linear(haze_color) * haze_light,
+		Vector3(_environment.fog_depth_begin, _environment.fog_depth_end, _environment.fog_density),
+		day.tu_direction(t, moon.latitude, moon.longitude), _linear(SkyView.TU_SHINE_COLOR) * _sun_energy * tu_light)
 
 	# Outside a bubble the dust is the storm's own: it rides the open air's
 	# wind, slowed in a lee, and thickens with the storm, and the bubble only

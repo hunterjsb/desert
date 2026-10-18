@@ -199,15 +199,20 @@ func place_step() -> bool:
 	if piece.lattice:
 		x = roundf(x)
 		z = roundf(z)
-	_pad = got.x
+	_columns = {}
+	_stand(got.x)
+	return true
+
+
+## Stands where it is, its floor's top at `pad`.
+func _stand(pad: float) -> void:
+	_pad = pad
 	_stands = true
 	planned = false
-	_columns = {}
 	_grid_x = floorf(x - _reach.x)
 	_grid_z = floorf(z - _reach.y)
 	_grid_w = int(ceilf(x + _reach.x) - _grid_x) + 1
 	_grid_d = ceilf(z + _reach.y) - _grid_z + 1.0
-	return true
 
 
 ## One placement's ground along its slide, from columns of the dunes sampled
@@ -297,6 +302,21 @@ func _grid_for(step: int) -> PackedFloat32Array:
 	_lock.unlock()
 	if had != null:
 		return had
+	var made := _make_grid(step)
+	_lock.lock()
+	if not _grids.has(step):
+		if _grids.size() >= 2:
+			_grids.erase(_grids.keys()[0])
+		_grids[step] = made
+	else:
+		made = _grids[step]
+	_lock.unlock()
+	return made
+
+
+## Its ground at every lattice point at a step, made afresh from what each
+## point is: in a room, or how far up its walls' drift.
+func _make_grid(step: int) -> PackedFloat32Array:
 	var base := _base_points()
 	var level := piece.level_of(step)
 	var sink := piece.sink_at(level)
@@ -313,14 +333,19 @@ func _grid_for(step: int) -> PackedFloat32Array:
 		else:
 			made[k] = under + drift * base[k]
 			made[k + 1] = w
-	_lock.lock()
-	if not _grids.has(step):
-		if _grids.size() >= 2:
-			_grids.erase(_grids.keys()[0])
-		_grids[step] = made
-	else:
-		made = _grids[step]
-	_lock.unlock()
+	return made
+
+
+## The same a point at a time, for a kind whose ground isn't made of rooms and drift.
+func _grid_of_points(level: float) -> PackedFloat32Array:
+	var rows := int(_grid_d)
+	var made := PackedFloat32Array()
+	made.resize(_grid_w * rows * 2)
+	for j in rows:
+		for i in _grid_w:
+			var each := _made(_grid_x + i - x, _grid_z + j - z, level)
+			made[(j * _grid_w + i) * 2] = each.x
+			made[(j * _grid_w + i) * 2 + 1] = each.y
 	return made
 
 

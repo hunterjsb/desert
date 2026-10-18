@@ -189,7 +189,7 @@ static func lying(site: Structure, i: int, drawn: Dictionary, height: Callable, 
 static func prepare() -> void:
 	for kind: StringName in StructureKit.kinds():
 		var piece := StructureKit.piece(kind)
-		if piece.lean > 0.0:
+		if piece.lean > 0.0 or piece.sockets.is_empty():
 			continue
 		var era: Dictionary = ERAS[piece.era]
 		var own: Dictionary = KINDS.get(kind, {})

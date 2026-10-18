@@ -153,7 +153,8 @@ static func near_line(world: World, a: Vector2, b: Vector2) -> Array:
 	var reach := tuning.site_drift_carry_m * 3.0
 	var mid := (a + b) * 0.5
 	return world.shape.sites.query(Rect2(mid - Vector2.ONE * reach, Vector2.ONE * reach * 2.0), false).filter(
-		func(site: Site) -> bool: return site is Structure and site.stands() and site.yields != 1)
+		func(site: Site) -> bool: return (site is Structure and site.stands() and site.yields != 1
+			and SiteLoot.ERAS.has(site.era)))
 
 
 ## What a site sheds on the wind: the small things of its lesser rows, light

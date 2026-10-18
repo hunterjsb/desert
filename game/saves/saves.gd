@@ -14,6 +14,8 @@ const VERSION := 1
 
 ## Where the save lives; probes point it somewhere of their own.
 var dir := "user://"
+## What a player's folder held when the game was called Sandgame.
+const CARRIED := ["profile.save", "run.save", "settings.cfg"]
 ## Why the save on disk can't be resumed, or "".
 var refused := ""
 ## A resume is waiting for the ground under the camp.
@@ -44,6 +46,16 @@ func ironman() -> bool:
 ## with the start it had.
 func kit() -> StringName:
 	return _read().get("kit", &"")
+
+
+## The saved run as its file holds it, {} with none (Snapshot reads it).
+func held() -> Dictionary:
+	return _read()
+
+
+## When the run was saved, unix time; from before saves kept it, when the file was written.
+func saved_at() -> int:
+	return _read().get("saved", FileAccess.get_modified_time(path()))
 
 
 ## Saves the run, in its mode: safe at any moment, mid-storm included, and it
@@ -106,6 +118,7 @@ func _taken(world: World, ironman: bool) -> PackedByteArray:
 	var data := Snapshot.take(world)
 	data.ironman = ironman
 	data.kit = world.kit.id if world.kit != null else &""
+	data.saved = floori(Time.get_unix_time_from_system())
 	return var_to_bytes(data)
 
 
@@ -147,3 +160,17 @@ func _finish_later(world: World, snapshot: Snapshot, data: Dictionary, places: A
 	world.time_warp = warp
 	world.player.set_physics_process(moving)
 	restored.emit(world)
+
+
+## The game was Sandgame until 0.1.0-alpha, and a player's folder is named for
+## the game: their profile, save and settings come over once, the first time
+## Desert starts with none of its own.
+func _init() -> void:
+	var here := OS.get_user_data_dir()
+	if CARRIED.any(func(name: String) -> bool: return FileAccess.file_exists(here.path_join(name))):
+		return
+	var old := here.get_base_dir().path_join("Sandgame")
+	for name: String in CARRIED:
+		if FileAccess.file_exists(old.path_join(name)):
+			DirAccess.make_dir_recursive_absolute(here)
+			DirAccess.copy_absolute(old.path_join(name), here.path_join(name))
