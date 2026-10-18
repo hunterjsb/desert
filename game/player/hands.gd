@@ -87,6 +87,17 @@ const SOCKET_NAMES := {&"battery": "battery slot", &"ring": "ring", &"bottom": "
 	&"water": "water socket", &"mod": "mod mount", &"food": "food slot", &"rack": "rack", &"deck": "deck mount",
 	&"computer_mod": "computer-mod port", &"computer_top": "computer-mod top", &"screen": "screen port", &"sail": "sail mount"}
 const RIDING := "not from the board"
+const STUNNED := "your hands won't close"
+## What a piece of a wreck needs before it gives, said when you try it without.
+const WRECK_NEEDS := {&"cut": "needs a heat cutter: hold use along its seams",
+	&"clear": "needs a sand scoop: hold use on it", &"ground": "live: ground it with a stake first",
+	&"seal": "breached: seal it first"}
+## The cutter's hot spot off a seam, on one the sand holds, and flat.
+const NO_SEAM := "trace the seam: the weld round its edge"
+const SEAM_BURIED := "that seam's under the sand"
+const CUTTER_FLAT := "the cutter's battery is flat"
+## A scoop stroke takes this long, s.
+const STROKE := 0.45
 
 var held: RigidBody3D
 var phase := Phase.EMPTY
@@ -110,6 +121,13 @@ var look_socket: Socket
 var look_sand := false
 var look_point := Vector3.ZERO
 var look_normal := Vector3.UP
+## A piece of a wreck that some work takes away: a plate, a layer of sand, a
+## hazard; or the wreck whose shell you look at.
+var look_work: StaticBody3D
+## The wreck your look meets, its shell or a piece of it, and a piece of it
+## that takes no work (a plate cut away, a hazard dealt with).
+var look_wreck: Wreckage
+var look_scrap: StaticBody3D
 ## Your line of sight, from your eyes to whatever it stops at, or as far as you reach.
 var sight_from := Vector3.ZERO
 var sight_to := Vector3.ZERO
@@ -181,6 +199,9 @@ var _readout: Label
 ## The aim dot and its line, out of the way while a menu is up.
 var _hud: CanvasLayer
 var _sound: AudioStreamPlayer
+## Until a cutter or a scoop at work sounds again, s.
+## Until a scoop's next stroke, s.
+var _stroke := 0.0
 var _hum: AudioStreamPlayer
 var _seated_count := 0
 var _notice_left := 0.0
@@ -261,6 +282,16 @@ func grab() -> bool:
 		return true
 	_look()
 	var salvage := _player.world.salvage
+	if _player.vitals.wounds.stunned():
+		return refuse(STUNNED)
+	# A module still held fast in its wreck won't come, and taking hold of one
+	# with a live hazard on it sets that off: a shock throws you off it.
+	var target: Node = look_part if look_part != null else look_device
+	var fast := salvage.held_fast(target)
+	if fast != "":
+		return refuse(fast)
+	if salvage.touched(target, _player) == Wreckage.ELECTRICAL:
+		return true
 	# The board tows nothing: riding, you take only what comes off no line,
 	# loose, into your hands.
 	var riding := _player.board != null
@@ -313,6 +344,14 @@ func grab() -> bool:
 ## your waist comes back to your hands. Says whether it did anything.
 func interact() -> bool:
 	_look()
+	if look_work != null:
+		return _work_once()
+	var op := Wreckage.tool_op(held) if phase == Phase.HELD else &""
+	if look_wreck != null and op in [Wreckage.CUT, Wreckage.CLEAR]:
+		var where := look_wreck.nearest_work(op, look_point)
+		return refuse(where if where != "" else "nothing left on it for that")
+	if look_device != null and _player.world.salvage.held_fast(look_device) != "":
+		return refuse(_player.world.salvage.held_fast(look_device))
 	if look_device != null and look_device.interact(_player):
 		_player.world.salvage.claim(look_device)
 		return true
@@ -511,6 +550,84 @@ func tuned_by_look() -> Radio:
 	return null
 
 
+## Use on a piece of a wreck: what you hold does that piece's work. A hazard's
+## is done at once: a stake laid across a capacitor bank's terminals shorts it
+## to the hull, and falls where it was; sealant is used up over a breached
+## store. A cutter or a scoop works while use is held down (scrap). Without
+## the tool for it, it says what it needs.
+func _work_once() -> bool:
+	var what := Wreckage.work_of(look_work)
+	var wreck: Wreckage = look_work.get_meta(&"wreckage")
+	var op := Wreckage.tool_op(held) if phase == Phase.HELD else &""
+	if op != what[0]:
+		return refuse(WRECK_NEEDS[what[0]])
+	if op == Wreckage.CUT or op == Wreckage.CLEAR:
+		if op == Wreckage.CUT and not (held as Cutter).cuts():
+			return refuse(CUTTER_FLAT)
+		return true
+	var at := look_point + look_normal * 0.12
+	if not wreck.make_safe(look_work, op):
+		return false
+	var used := stow()
+	if used is Stake:
+		used.global_position = at
+		used.freeze = false
+		ScrapFx.burst(_player.world.content, look_point, 50, 3.5)
+		Sounds.play_at(used, Sounds.ZAP, -4.0, 3.0)
+		say("grounded: the bank's dead")
+	else:
+		Sounds.play_at(_player, Sounds.SEAL, 0.0, 2.0)
+		used.queue_free()
+		say("sealed")
+	return true
+
+
+## Use held down with a heat cutter or a scoop, for `delta` s. The cutter
+## fires where you aim, and on a plate's seam its hot spot cuts the weld away
+## as you trace it; a scoop clears the open slice of a hold a stroke at a
+## time. Says whether it did any work.
+func scrap(delta: float) -> bool:
+	if phase != Phase.HELD or not is_instance_valid(held):
+		return false
+	var op := Wreckage.tool_op(held)
+	var what := Wreckage.work_of(look_work)
+	if op == Wreckage.CUT:
+		var cutter := held as Cutter
+		if not cutter.cuts():
+			say(CUTTER_FLAT)
+			return false
+		if what.is_empty() or what[0] != Wreckage.CUT:
+			cutter.fire(look_point if look_point != Vector3.ZERO else sight_to, false)
+			return false
+		var wreck: Wreckage = look_work.get_meta(&"wreckage")
+		var label: String = wreck.plan.plates[what[1]].label
+		var result := wreck.cut(look_work, look_point, delta)
+		if not result.seam:
+			cutter.fire(look_point, false)
+			say(NO_SEAM)
+			return false
+		cutter.fire(result.at, not result.get("buried", false))
+		if result.get("buried", false):
+			say(SEAM_BURIED)
+			return false
+		if result.get("through", false):
+			ScrapFx.burst(_player.world.content, result.at, 60, 3.0)
+			say("the %s comes away" % label)
+		return true
+	if op != Wreckage.CLEAR or what.is_empty() or what[0] != Wreckage.CLEAR:
+		return false
+	var wreck: Wreckage = look_work.get_meta(&"wreckage")
+	_stroke -= delta
+	if _stroke <= 0.0:
+		_stroke = STROKE
+		Sounds.play_at(_player, Sounds.SCOOP, 0.0, 2.0)
+		ScrapFx.spray(_player.world.content, look_point, sight_from - look_point, Wreckage.SAND)
+	if not wreck.clear(look_work, delta):
+		say(Wreckage.FIRST)
+		return false
+	return true
+
+
 func _physics_process(delta: float) -> void:
 	var world := _player.world
 	if world == null:
@@ -521,6 +638,10 @@ func _physics_process(delta: float) -> void:
 	if phase != Phase.EMPTY and not is_instance_valid(held):
 		_forget()
 	_look()
+	if Controls.playing() and Controls.held(&"interact"):
+		scrap(delta)
+	else:
+		_stroke = 0.0
 	_held_at = _away + (_held_at - _away) * exp(-HOLD_EASE * delta)
 	match phase:
 		Phase.TAKING:
@@ -568,6 +689,9 @@ func _look() -> void:
 	look_device = null
 	look_socket = null
 	look_sand = false
+	look_work = null
+	look_wreck = null
+	look_scrap = null
 	var eye := _player.camera.global_transform
 	sight_from = eye.origin
 	sight_to = eye.origin - eye.basis.z * _tuning.reach
@@ -585,6 +709,15 @@ func _look() -> void:
 	look_normal = hit.normal
 	var body: Object = hit.collider
 	look_sand = _is_sand(hit)
+	if body is CollisionObject3D and body.has_meta(&"wreckage"):
+		look_wreck = body.get_meta(&"wreckage")
+		if body.has_meta(&"work"):
+			look_work = body
+		elif body is StaticBody3D:
+			look_scrap = body
+	elif body is StaticBody3D and not look_sand and _player.world != null:
+		# A structure's boxes are its chunk's ground: on a wreck's, its shell.
+		look_wreck = _player.world.salvage.wreckage_near(hit.position)
 	if look_part != null or look_device != null:
 		# Assisted: the small thing you aimed near, not the sand under it.
 		return
@@ -1659,6 +1792,8 @@ func _part_stats(part: Part) -> Dictionary:
 func line() -> String:
 	if notice != "":
 		return notice
+	if look_wreck != null and (look_work != null or look_scrap != null):
+		return look_wreck.describe(look_work if look_work != null else look_scrap)
 	if look_part != null:
 		return describe(look_part.label, _part_stats(look_part))
 	if look_socket != null and look_socket.part != null:

@@ -168,6 +168,8 @@ func begin(data: Dictionary) -> Array[Vector2]:
 	player.set_meta(&"rope_drag", you.drag)
 	for key: String in you.vitals:
 		player.vitals.set(key, _copy(you.vitals[key]))
+	for key: String in you.get("wounds", {}):
+		player.vitals.wounds.set(key, you.wounds[key])
 	world.weather.forecast_now()
 	world.salvage.recall(data.finds, world.terrain.chunk_at(world.player_world_x(), world.player_world_z()))
 	# What was taken from each site; a save from before kept none.
@@ -320,6 +322,9 @@ func _take() -> Dictionary:
 		you.state[key] = player.get(key)
 	for key in VITALS:
 		you.vitals[key] = _copy(player.vitals.get(key))
+	# A sickness from a wreck runs on through a save; a stun is over by then.
+	you.wounds = {"sick": player.vitals.wounds.sick, "shocks": player.vitals.wounds.shocks,
+		"sicknesses": player.vitals.wounds.sicknesses}
 	data.player = you
 	var things := []
 	var lines: Array[Line] = []

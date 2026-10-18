@@ -72,6 +72,17 @@ const RADIO_CLEAR_SKIES := preload("res://assets/audio/radio_clear_skies.ogg")
 const RADIO_STOKER := preload("res://assets/audio/radio_stoker.ogg")
 # The Eye's drone, now and then out of the dark.
 const RADIO_EYE := preload("res://assets/audio/radio_eye.ogg")
+# Scrapping a wreck, made here (make_scrap_sounds.py): the heat cutter's
+# roar, a plate coming free and landing, a live capacitor bank's crackle and
+# its shock, a breached store's hiss, the scoop and the sealant.
+const CUTTER := preload("res://assets/audio/cutter.wav")
+const PLATE_FREE := preload("res://assets/audio/plate_free.wav")
+const PLATE_LAND := preload("res://assets/audio/plate_land.wav")
+const ARC_LOOP := preload("res://assets/audio/arc_loop.wav")
+const ZAP := preload("res://assets/audio/zap.wav")
+const HISS_LOOP := preload("res://assets/audio/hiss_loop.wav")
+const SCOOP := preload("res://assets/audio/scoop.wav")
+const SEAL := preload("res://assets/audio/seal.wav")
 # Weather.
 const STORM := preload("res://assets/audio/storm.ogg")
 const WIND := preload("res://assets/audio/wind.ogg")
@@ -84,6 +95,20 @@ const MENU_THEME := preload("res://assets/audio/menu_theme.ogg")
 
 ## Small things are heard at their level from this far, m, and fade past it.
 const NEAR := 2.0
+
+static var _loops := {}
+
+
+## A WAV made to loop: the same sound, repeating from its start for as long
+## as it plays. One copy for each, made the first time it's asked for.
+static func looping(stream: AudioStreamWAV) -> AudioStreamWAV:
+	if not _loops.has(stream):
+		var made := stream.duplicate() as AudioStreamWAV
+		made.loop_mode = AudioStreamWAV.LOOP_FORWARD
+		made.loop_begin = 0
+		made.loop_end = int(stream.get_length() * stream.mix_rate)
+		_loops[stream] = made
+	return _loops[stream]
 
 
 ## The radio's bus, made with its high-pass the first time it's asked for.

@@ -1,7 +1,7 @@
 class_name SkimmerKit
 extends RefCounted
-## The skimmer era's pieces (part 4): wreck hulls, fuel bladders, deserters'
-## dugouts. A short era with little architecture of its own, light, cheap
+## The skimmer era's pieces (part 4): fuel bladders and deserters' dugouts;
+## its wrecks, the skimmer hull and the tithe hauler, are WreckKit's. A short era with little architecture of its own, light, cheap
 ## and fragile, put together in a hurry: gunmetal and olive plate, panels
 ## that don't match, welds, hazard stripes, a crew's patch painted by hand.
 ## Shallow and lying at an angle: exposed and reburied fast. Loot it now.
@@ -19,7 +19,7 @@ static var _coats := {}
 
 
 static func pieces() -> Array[StructureKit.Piece]:
-	return [_wreck_hull(), _fuel_bladder(), _dugout()]
+	return [WreckKit.wreck_hull(), _fuel_bladder(), _dugout()]
 
 
 static func coats() -> Dictionary:
@@ -31,76 +31,6 @@ static func coats() -> Dictionary:
 			"yellow": Paint.coat(Paint.YELLOW, 1.0, 0.3, 0.55), "black": Paint.coat(Paint.BLACK, 1.0, 0.3, 0.6),
 			"steel": Paint.coat(Paint.STEEL, 0.6, 0.8, 0.45)}
 	return _coats
-
-
-# --- The wreck hull: a skimmer down nose first, its tail torn open. ---
-
-static func _wreck_hull() -> StructureKit.Piece:
-	var p := StructureKit.define(&"wreck_hull", Vector2(3.2, 6.2), Vector2(2.8, 2.8), Vector2(1.2, 1.2))
-	p.apron = 5.0
-	p.drift_reach = 2.0
-	# Thin plate between the sand inside and out: none drifts against it.
-	p.drift = PackedFloat32Array([0.0, 0.0, 0.0])
-	p.survey = Vector2(1.0, 22.0)
-	p.age = Vector2(0.75, 1.0)
-	p.marks = 2
-	p.slide = Vector2(0.0, 1.0)
-	p.slide_m = 12.0
-	# Down nose first: it pitches about its tail's floor, the nose into the sand.
-	p.lean = 1.0
-	p.lean_axis = Vector3.LEFT
-	p.lean_pivot = Vector3(0.0, 0.0, 6.0)
-	# Inside, sand blown flat through the torn tail.
-	p.rooms.append(StructureKit.room(Vector2(-2.0, -5.0), Vector2(2.0, 6.2)))
-	p.solids = [[Vector2(-2.2, -6.2), Vector2(2.2, 6.0)], [Vector2(-3.2, 1.0), Vector2(3.2, 5.5)]]
-	StructureKit.box(p, Vector3(-2.2, -0.25, -6.0), Vector3(2.2, 0.0, 6.0), "hull")
-	StructureKit.box(p, Vector3(-2.2, 0.0, -6.0), Vector3(-2.0, 3.0, 6.0), "olive")
-	StructureKit.box(p, Vector3(2.0, 0.0, -6.0), Vector3(2.2, 3.0, 6.0), "olive")
-	StructureKit.box(p, Vector3(-2.2, 3.0, -6.0), Vector3(2.2, 3.25, 4.4), "hull")
-	StructureKit.box(p, Vector3(-2.0, 0.0, -6.2), Vector3(2.0, 2.6, -5.0), "hull")
-	StructureKit.box(p, Vector3(-0.12, 3.25, 2.4), Vector3(0.12, 4.6, 5.9), "")
-	for side in [-1.0, 1.0]:
-		StructureKit.box(p, Vector3(minf(side * 2.2, side * 3.2), 0.6, 1.0), Vector3(maxf(side * 2.2, side * 3.2), 1.8, 5.5), "")
-	p.sockets.append(StructureKit.SiteSocket.new(Vector3(-1.2, 0.0, 5.0), &"floor"))
-	p.sockets.append(StructureKit.SiteSocket.new(Vector3(1.2, 0.0, 5.2), &"floor"))
-	p.sockets.append(StructureKit.SiteSocket.new(Vector3(0.0, 0.8, 2.2), &"cache", 0.4))
-	p.tour = PackedVector2Array([Vector2(0.0, 12.0), Vector2(0.0, 5.3), Vector2(0.0, 12.0)])
-	p.approach = Vector2(0.0, 16.0)
-	p.look = _hull_look
-	# Its hull and fin over the dunes, and the glass and bare plate the sun catches.
-	StructureKit.far_box(p, Vector3(-2.2, -0.25, -6.0), Vector3(2.2, 3.25, 6.0), GUNMETAL)
-	StructureKit.far_box(p, Vector3(-0.12, 3.25, 2.4), Vector3(0.12, 4.6, 5.9), OLIVE)
-	for side in [-1.0, 1.0]:
-		StructureKit.far_box(p, Vector3(side * 2.7 - 0.6, 0.6, 1.0), Vector3(side * 2.7 + 0.6, 1.8, 5.5), GUNMETAL)
-	StructureKit.glint(p, Vector3(0.0, 1.9, -6.22), Vector3(0.0, 0.3, -1.0), 3.0)
-	StructureKit.glint(p, Vector3(2.21, 1.6, -1.5), Vector3(1.0, 0.25, 0.1), 3.0)
-	StructureKit.glint(p, Vector3(0.6, 3.27, -2.0), Vector3(0.1, 1.0, -0.2), 4.0)
-	StructureKit.glint(p, Vector3(0.0, 3.1, 5.1), Vector3(0.0, 0.7, 0.7), 6.0)
-	return p
-
-
-static func _hull_look(b: Paint.Pieces, p: StructureKit.Piece, state: int) -> void:
-	var c := coats()
-	StructureKit.draw_boxes(b, p, state, c, 0.03)
-	# Panels that don't match, patched over the sides, and the welds round them.
-	for patch: Array in [[Vector3(-2.21, 1.6, -1.5), Vector3(0.02, 1.4, 2.2), c.red],
-			[Vector3(2.21, 1.2, 2.5), Vector3(0.02, 1.0, 1.6), c.scrap], [Vector3(0.6, 3.26, -2.0), Vector3(1.8, 0.02, 2.4), c.scrap]]:
-		b.box(patch[1], patch[0], patch[2], 0.005)
-		var weld: Vector3 = patch[1] + Vector3(0.012, 0.012, 0.012)
-		b.box(Vector3(weld.x, 0.04, weld.z) if weld.y > 0.1 else Vector3(weld.x, 0.03, 0.04), patch[0], c.black, 0.004)
-	# Ribs left bare where the roof tore away.
-	for v: float in [4.8, 5.4]:
-		b.box(Vector3(4.4, 0.12, 0.12), Vector3(0.0, 3.1, v), c.steel, 0.02)
-	# The cockpit's glass, the nose's hazard band.
-	b.box(Vector3(3.2, 0.7, 0.04), Vector3(0.0, 1.9, -6.21), c.glass, 0.01)
-	for k in 4:
-		b.box(Vector3(0.5, 0.16, 0.03), Vector3(-1.5 + k * 1.0, 0.5, -6.21), c.yellow if k % 2 == 0 else c.black, 0.004)
-	# Engine pods, and the fin with the crew's patch painted on it.
-	for side in [-1.0, 1.0]:
-		b.drum(0.6, 4.5, Vector3(side * 2.7, 1.2, 3.25), c.hull, Basis(Vector3.RIGHT, PI * 0.5), 12)
-		b.drum(0.5, 0.2, Vector3(side * 2.7, 1.2, 5.55), c.black, Basis(Vector3.RIGHT, PI * 0.5), 12)
-	b.stamp(Paint.Mark.SKIMMER_CREW, Vector3(0.12, 4.0, 4.3), 1.3, Basis(Vector3.UP, PI * 0.5))
-	b.box(Vector3(0.24, 1.35, 3.5), Vector3(0.0, 3.925, 4.15), c.olive, 0.02)
 
 
 # --- The fuel bladder: a soft tank slumped on a scrap pallet. ---

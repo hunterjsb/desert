@@ -379,6 +379,18 @@ static func _frame(id: StringName, size: Vector3, extra: float) -> ArrayMesh:
 			b.box(Vector3(0.05, Stake.LENGTH - 0.12, 0.05), Vector3(0.0, 0.03, 0.0), iron, 0.01)
 			b.drum(0.035, 0.12, Vector3(0.0, -h.y + 0.06, 0.0), iron, Basis(Vector3.RIGHT, PI), 4, 0.0)
 			b.box(Vector3(0.09, 0.05, 0.09), Vector3(0.0, Stake.RING.y - 0.06, 0.0), iron, 0.012)
+		&"cutter":
+			# A heat lance: its barrel and heat shield, a copper nozzle out the
+			# front (-z), a grip under the back, hazard yellow on its housing.
+			var along := Basis(Vector3.RIGHT, PI / 2.0)
+			b.drum(0.045, 0.36, Vector3(0.0, 0.01, 0.05), gun, along, 12)
+			b.drum(0.052, 0.06, Vector3(0.0, 0.01, -0.12), Paint.coat(Paint.YELLOW, 0.8, 0.3), along, 12)
+			b.drum(0.03, 0.08, Vector3(0.0, 0.01, -0.19), Paint.coat(Color(0.72, 0.42, 0.22), 0.6, 0.9, 0.35), along, 10, 0.016)
+			b.drum(0.012, 0.03, Vector3(0.0, 0.01, -0.245), black, along, 8)
+			b.box(Vector3(0.04, 0.09, 0.05), Vector3(0.0, -h.y + 0.04, 0.16), black, 0.01, Basis(Vector3.RIGHT, 0.25))
+			b.box(Vector3(0.012, 0.04, 0.03), Vector3(0.0, -0.05, 0.1), Paint.coat(Paint.YELLOW, 0.6), 0.003)
+			for z in [0.0, 0.12]:
+				b.drum(0.048, 0.012, Vector3(0.0, 0.01, z), black, along, 12)
 		_:
 			return null
 	return b.commit()
@@ -551,6 +563,30 @@ static func _part(id: StringName, size: Vector3, count := -1) -> ArrayMesh:
 			b.ball(0.034, Vector3(0.0, 0.0, 0.022), SALT, Vector3(1.0, 1.0, 0.65))
 			b.drum(0.012, 0.02, Vector3(0.0, 0.0, 0.046), SALT, along, 8, 0.004)
 			b.drum(0.008, 0.006, Vector3(0.0, 0.0, 0.04), Paint.coat(Paint.ROPE, 0.0, 0.0, 1.0, 0.4), along, 8)
+		&"sand_scoop":
+			# A broad dished blade on a short shaft, its edge worn bright.
+			b.box(Vector3(size.x, 0.012, size.z * 0.5), Vector3(0.0, -h.y + 0.02, size.z * 0.72), Paint.coat(Paint.GUNMETAL, 0.8, 0.5), 0.004)
+			for x in [-1, 1]:
+				b.box(Vector3(0.012, size.y * 0.8, size.z * 0.5), Vector3(x * (h.x - 0.006), -0.005, size.z * 0.72), gun, 0.003)
+			b.box(Vector3(size.x, 0.006, 0.02), Vector3(0.0, -h.y + 0.02, size.z - 0.01), steel, 0.002)
+			b.drum(0.016, size.z * 0.5, Vector3(0.0, 0.0, size.z * 0.25), Paint.coat(Paint.ROPE, 0.0, 0.0, 1.0, 0.4), along, 8)
+			b.box(Vector3(0.1, 0.03, 0.03), Vector3(0.0, 0.0, 0.02), black, 0.006)
+		&"sealant":
+			b.drum(h.x * 0.95, size.z * 0.75, Vector3(0.0, 0.0, size.z * 0.375), Paint.coat(Paint.YELLOW, 0.5, 0.2), along, 14)
+			b.drum(h.x * 0.6, size.z * 0.12, Vector3(0.0, 0.0, size.z * 0.81), black, along, 12)
+			b.drum(0.008, size.z * 0.14, Vector3(0.0, 0.0, size.z * 0.93), Paint.coat(Color(0.75, 0.2, 0.08), 0.5), along, 6)
+			b.box(Vector3(h.x * 1.2, 0.03, size.z * 0.4), Vector3(0.0, h.y * 0.92, size.z * 0.4), Paint.coat(Paint.BONE, 0.3), 0.003)
+		&"med_kit":
+			# A sealed pouch of the colony clinic's issue: pale, its cross in teal.
+			b.box(Vector3(size.x, size.y, size.z - 0.005), Vector3(0.0, 0.0, size.z * 0.5), Paint.coat(Paint.BONE, 0.4, 0.0, 0.8), 0.012)
+			b.box(Vector3(0.05, 0.016, 0.004), Vector3(0.0, 0.0, size.z + 0.001), Paint.coat(Paint.TEAL, 0.2), 0.0)
+			b.box(Vector3(0.016, 0.05, 0.004), Vector3(0.0, 0.0, size.z + 0.001), Paint.coat(Paint.TEAL, 0.2), 0.0)
+			b.box(Vector3(size.x + 0.004, 0.012, size.z * 0.3), Vector3(0.0, h.y - 0.01, size.z * 0.5), black, 0.002)
+		&"hull_plate":
+			b.box(size, Vector3(0.0, 0.0, h.z), Paint.coat(Wreckage.PLATE, 1.0, 0.55, 0.62), 0.008)
+			for x in [-1, 1]:
+				for y in [-1, 1]:
+					b.box(Vector3(0.04, 0.04, 0.012), Vector3(x * (h.x - 0.06), y * (h.y - 0.06), size.z + 0.004), steel, 0.004)
 		_:
 			return null
 	return b.commit()

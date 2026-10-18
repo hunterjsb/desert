@@ -35,6 +35,14 @@ func _draw_bars() -> void:
 		["thirst", vitals.thirst / Vitals.FULL, true, "%.1f L" % player.suit.stock(&"water")],
 		["stamina", player.stamina / player.world.tuning.stamina_max, false, ""],
 	] if player.world != null else []
+	# A wound shows while it lasts: what's left of it.
+	var wounds := vitals.wounds
+	if player.world != null and wounds != null:
+		var tuning := player.world.tuning
+		if wounds.sick > 0.0:
+			rows.append(["sick", wounds.sick / tuning.sickness_seconds, true, "%d s" % ceili(wounds.sick)])
+		if wounds.stunned():
+			rows.append(["stunned", wounds.stun / tuning.shock_stun, true, ""])
 	var size := _view.get_rect().size
 	var corner := Vector2(size.x - NAME - WIDTH - 70.0, size.y - rows.size() * ROW - 12.0)
 	for i in rows.size():
