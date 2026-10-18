@@ -381,9 +381,10 @@ device already stays a body of its own on the host's power pool.
     at it. What draws hangs off it below, each device with what it draws now, a dark one marked,
     and their total. Under each device that can be worked is a row of switches, the one lit saying
     how it stands, and use on one works the device through its own use: a shield off, on or smart;
-    a radio's dial, off, music, weather or beacon; a tray floating or resting, the deck's, or a
-    Console's alone on its own; and a device's lamps on or off. Each switch logs what it did
-    ("SHIELD SMART", "RADIO WEATHER", "DECK REST"). A device's lamps are switched only from here.
+    a radio's own controls, off or on, a sweep to the next carrier as its use does, and its
+    volume down or up (the dial in [Radio](radio-sound-and-atmosphere.md#the-dial-and-the-gods-on-the-air-hunter-2026-10-18-built));
+    a tray floating or resting, the deck's, or a Console's alone on its own; and a device's lamps
+    on or off. Each switch logs what it did ("SHIELD SMART", "RADIO 262 KHZ", "DECK REST"). A device's lamps are switched only from here.
   - **Log:** the last lines logged, each under its time; the sender shows only when it isn't a
     Console.
 - **The gyro is a compass too** (Hunter, 2026-10-18: "show both the wind direction and mag with a
@@ -926,7 +927,7 @@ Readings, not in the session:
 - **Only the Console prints through it so far,** under the sender CON. Its readout is its weather
   rows, a table. Its log lines are its own messages, short and in caps, the numbers in their
   units: "FRONT 1.2 km N · 5 min", "SHIELD AUTO-ON", "PRESSURE ▼ · STORM ~6 min", "STORM PASSED",
-  "SHIELD DOWN · NO POWER", "SHIELD OFF", "RADIO WEATHER", "RADAR ONLINE", "LINKED · 2 CONSOLES".
+  "SHIELD DOWN · NO POWER", "SHIELD OFF", "RADIO ON", "RADAR ONLINE", "LINKED · 2 CONSOLES".
   The storm's arrival is a form: "IN STORM", then its sand and when it clears.
 - **The voice is in the formatting.** A "!" before a line marks it urgent, and it shows in a
   storm's amber; a row indented runs on from the one before and shows dim; a row's cells apart
@@ -1004,7 +1005,7 @@ Proposed, in this PRD's terms:
 | Ring mount | Rope hooks; on a chassis piece, another piece's edge | Rope & tethering |
 | Bottom mount | Hover trays, or runners: skates and a board plate (2026-10-18), never both on one device or deck | Bubble shield & camp, Movement |
 | Top mount | Solar panels, instruments such as the radio, lamps, the shield generator, the mast (2026-10-18) | Power and others |
-| Rack | The hoverboard, seated along a crate's side, riding and charging with it (Hunter, 2026-10-16) | Movement |
+| Rack | The hoverboard, seated along a crate's side, riding and charging with it (Hunter, 2026-10-16); or a bedroll in its place (2026-10-18) | Movement, Survival |
 | Plant slot (small, large) | Seedlings | Farming |
 | Plant slot (small pot, standard planter, deep bed) | Crops by the size they declare. Proposed (session 4, part 4); new kinds are appended to a frame, never inserted | Farming |
 | Water socket | A canister or a hose's end, one at a time (2026-10-17) | Survival, Farming |
@@ -1031,6 +1032,7 @@ Proposed, in this PRD's terms:
 | Light solar panel | | | | | 1 | |
 | Hoverboard | 1 | | | | 1 | fits a rack itself |
 | Radio | 1 | | | | 1 | fits a top mount itself |
+| Bedroll | | | | | | fits a rack itself; use on it sleeps ([Survival](survival.md#sleep-as-built-2026-10-18)) |
 | Survival kit | | | | | | a water and a food socket, 2 small and 1 large plant slot |
 
 **Carried, a device works as anywhere else** (Hunter, 2026-10-17): a carryable device goes
@@ -1173,7 +1175,7 @@ a water socket of its own on top, so a canister or another hose goes on there to
 28. **Switched from the screen** (2026-10-18). A Console with a radio on its top, a shield and a
     crate with a lamp stand on a floating deck of three pieces. Use on the screen's power tab
     opens the power page, and its switches, pressed where they're drawn, work each device as its
-    own use would: the shield on and off, the radio's dial, the lamp off, the deck's trays
+    own use would: the shield on and off, the radio's switch, sweep and volume, the lamp off, the deck's trays
     resting. What the panel says is drawn is what the pool's devices draw, and its bank what
     they hold.
 29. **The gyro points Tu-ward** (2026-10-18). A Console with an anemometer, carried round the

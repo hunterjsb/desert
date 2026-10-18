@@ -3,6 +3,7 @@ name: Probes
 on:
   push:
   pull_request:
+  workflow_dispatch:
 
 jobs:
   probes:
@@ -32,37 +33,7 @@ jobs:
         probes/saves probes/kits
     steps:
       - uses: actions/checkout@v4
-
-      - name: Cache the pinned Godot
-        id: godot-cache
-        uses: actions/cache@v4
-        with:
-          path: godot-bin
-          key: godot-${{ hashFiles('.godot-version') }}
-
-      - name: Download the pinned Godot
-        if: steps.godot-cache.outputs.cache-hit != 'true'
-        run: |
-          v=$(cat .godot-version)
-          base=https://github.com/godotengine/godot/releases/download/$v-stable
-          zip=Godot_v$v-stable_linux.x86_64.zip
-          curl -fsSLO "$base/$zip"
-          curl -fsSL "$base/SHA512-SUMS.txt" | grep " $zip\$" | sha512sum -c -
-          unzip -q "$zip"
-          mkdir -p godot-bin
-          mv "Godot_v$v-stable_linux.x86_64" godot-bin/godot
-
-      - name: Install it
-        run: |
-          sudo install -m 755 godot-bin/godot /usr/local/bin/godot
-          godot --version
-
-      - name: Cache imported assets
-        uses: actions/cache@v4
-        with:
-          path: .godot
-          key: import-${{ hashFiles('.godot-version', 'project.godot', '**/*.import', '**/*.gdshader', '**/*.gdshaderinc') }}
-          restore-keys: import-
+      - uses: ./.github/actions/godot
 
       - name: The runner can fail
         if: matrix.group == 'probes/foundation probes/world probes/dev'
@@ -75,3 +46,52 @@ jobs:
           else
             scripts/probe.sh ${{ matrix.group }}
           fi
+
+  elsewhere:
+    # Only on master, a tag or by hand: a verify branch waits on Linux alone,
+    # since these take three times as long.
+    if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
+    # The whole suite on macOS and Windows, in fewer groups of about equal
+    # wall clock; macOS runs it on the bash 3.2 it ships. Keep REST_EXCEPT in
+    # step with the groups. These runners are slower and noisier than the
+    # machines the probes' timings were set on, so the probes that time real
+    # frames are left to Linux, and a probe that fails gets a second run.
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest]
+        group:
+          - probes/rope probes/devices probes/weather probes/salvage probes/shield
+          - probes/saves probes/kits probes/survival probes/sail probes/power probes/farming
+          - the rest
+    name: ${{ startsWith(matrix.os, 'macos') && 'macOS' || 'Windows' }} ${{ matrix.group }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    defaults:
+      run:
+        shell: bash
+    env:
+      REST_EXCEPT: >-
+        probes/rope probes/devices probes/weather probes/salvage probes/shield
+        probes/saves probes/kits probes/survival probes/sail probes/power probes/farming
+      BASH_FOR_PROBES: ${{ startsWith(matrix.os, 'macos') && '/bin/bash' || 'bash' }}
+      PROBE_NOISY: 1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/godot
+
+      - name: The runner can fail
+        if: matrix.group == 'the rest'
+        run: $BASH_FOR_PROBES scripts/probe.sh selftest
+
+      - name: Probes
+        run: |
+          if [[ "${{ matrix.group }}" == "the rest" ]]; then
+            PROBE_EXCEPT="$REST_EXCEPT" $BASH_FOR_PROBES scripts/probe.sh
+          else
+            $BASH_FOR_PROBES scripts/probe.sh ${{ matrix.group }}
+          fi
+
+  builds:
+    if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
+    uses: ./.github/workflows/builds.yml

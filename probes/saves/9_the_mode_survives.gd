@@ -14,9 +14,9 @@ func run() -> void:
 	await faded_in()
 	check(main.in_run() and main.ironman(), "Ironman chosen at New game")
 	press(&"ui_cancel")
-	check(main.ui.top().words() == PackedStringArray(["OPTIONS", "SAVE & QUIT"]),
+	check(main.ui.top().words() == PackedStringArray(["OPTIONS", "DEEDS", "SAVE & QUIT"]),
 		"an Ironman run's system menu has no Save (%s)" % ", ".join(main.ui.top().words()))
-	press(&"ui_down")
+	press(&"ui_up")
 	press(&"ui_accept")
 	await faded_in()
 	check(saves().has_run() and saves().ironman(), "Save & quit keeps the run's mode in its save")
@@ -26,7 +26,7 @@ func run() -> void:
 	await faded_in()
 	check(main.in_run() and world.has_meta(&"resumed") and main.ironman(), "resumed, it's Ironman's still")
 	press(&"ui_cancel")
-	check(main.ui.top().words() == PackedStringArray(["OPTIONS", "SAVE & QUIT"]), "and its system menu has no Save")
+	check(main.ui.top().words() == PackedStringArray(["OPTIONS", "DEEDS", "SAVE & QUIT"]), "and its system menu has no Save")
 	press(&"ui_cancel")
 
 	var old := world
@@ -55,4 +55,4 @@ func run() -> void:
 	await faded_in()
 	check(main.in_run() and world.has_meta(&"resumed") and not main.ironman(), "a save with no mode resumes as Normal")
 	press(&"ui_cancel")
-	check(main.ui.top().words() == PackedStringArray(["OPTIONS", "SAVE", "SAVE & QUIT"]), "with Save in its system menu")
+	check(main.ui.top().words() == PackedStringArray(["OPTIONS", "DEEDS", "SAVE", "SAVE & QUIT"]), "with Save in its system menu")

@@ -64,6 +64,10 @@ const HOLD_NEAREST := 0.5
 const HOLD_FARTHEST := 2.0
 ## How fast what you carry eases to a new distance, 1/s.
 const HOLD_EASE := 12.0
+## How each tuning action works a radio: [notches, fine, the volume knob].
+const TUNES := {&"reel_in": [1, false, false], &"pay_out": [-1, false, false],
+	&"tune_fine_up": [1, true, false], &"tune_fine_down": [-1, true, false],
+	&"volume_up": [1, false, true], &"volume_down": [-1, false, true]}
 ## What you have hold of comes no nearer than this clear of you, m.
 const GRASP_CLEAR := 0.1
 ## Having hold of a device, a free deck mount whose seat is this near it is
@@ -104,6 +108,8 @@ var look_part: Part
 var look_device: Device
 var look_socket: Socket
 var look_sand := false
+## Looking at a ruin's bed, which sleeps you there.
+var look_bed := false
 var look_point := Vector3.ZERO
 var look_normal := Vector3.UP
 ## Your line of sight, from your eyes to whatever it stops at, or as far as you reach.
@@ -309,6 +315,8 @@ func grab() -> bool:
 ## your waist comes back to your hands. Says whether it did anything.
 func interact() -> bool:
 	_look()
+	if look_bed and held == null and look_device == null and look_part == null:
+		return _player.world.sleep.offer(_player)
 	if look_device != null and look_device.interact(_player):
 		_player.world.salvage.claim(look_device)
 		return true
@@ -357,6 +365,8 @@ func hold(body: RigidBody3D) -> void:
 	grasp.let_go()
 	_grip(body)
 	_arrive_from(body.global_transform)
+	# A line's end in your hand tows what it leads to.
+	_player.world.ropes._towing()
 
 
 ## Reel in by `notches`, or pay out for a negative count: a line's end in
@@ -412,7 +422,7 @@ static func describe(label: String, stats: Dictionary) -> String:
 
 ## The first of these a thing has: a crop ripe or why it isn't growing, a
 ## device that would run but has no power, what a thing holds, a radio's
-## station, then power, said as the device does it: output, or draws.
+## frequency, then power, said as the device does it: output, or draws.
 static func _state(stats: Dictionary) -> String:
 	if stats.get("ripe", false):
 		return "ripe"
@@ -449,7 +459,9 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed("hands_throw") and held != null and not Controls.mouse_free:
 		throw()
 		get_viewport().set_input_as_handled()
-	# Exactly, so ctrl and the wheel moving what you hold never reel a line too.
+	elif _tunes(event):
+		get_viewport().set_input_as_handled()
+	# Exactly, so bringing near or pushing out never reels a line too.
 	elif event.is_action_pressed("reel_in", false, true) or event.is_action_pressed("pay_out", false, true):
 		# Each wheel step is a press: a notch.
 		if reel.working() and reel.notch(1 if event.is_action_pressed("reel_in", false, true) else -1):
@@ -457,6 +469,50 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed("bring_near") or event.is_action_pressed("push_out"):
 		if scroll(1 if event.is_action_pressed("bring_near") else -1):
 			get_viewport().set_input_as_handled()
+
+
+## Reel in and pay out tune a radio a notch, the fine-tune actions a fine
+## step and the volume actions turn its knob, on the radio dialled() picks;
+## with none, reel in and pay out reel.
+func _tunes(event: InputEvent) -> bool:
+	if not reel.working():
+		return false
+	for action: StringName in TUNES:
+		# Exactly, so each modifier means only its own.
+		if event.is_action_pressed(action, false, true):
+			var radio := dialled()
+			if radio == null:
+				return false
+			var how: Array = TUNES[action]
+			return radio.turn_volume(how[0]) if how[2] else radio.tune(how[0], how[1])
+	return false
+
+
+## The radio the tuning actions work: the one you look at, or the first in
+## the system of a console you look at, unless you're reeling the line in
+## your hand; else the one you hold, while there's no line at your waist to reel.
+func dialled() -> Radio:
+	if reel.in_hand() != null:
+		return null
+	_look()
+	var radio := tuned_by_look()
+	if radio == null and held is Radio and phase == Phase.HELD and reel.line() == null:
+		radio = held
+	return radio
+
+
+## The radio your look tunes: the one you look at, or the first in the system
+## of a console you look at.
+func tuned_by_look() -> Radio:
+	if look_device is Radio:
+		return look_device
+	var console := look_device as Console
+	if console != null:
+		for each in console.linked():
+			for seated in each.mounted():
+				if seated is Radio:
+					return seated
+	return null
 
 
 func _physics_process(delta: float) -> void:
@@ -516,6 +572,7 @@ func _look() -> void:
 	look_device = null
 	look_socket = null
 	look_sand = false
+	look_bed = false
 	var eye := _player.camera.global_transform
 	sight_from = eye.origin
 	sight_to = eye.origin - eye.basis.z * _tuning.reach
@@ -533,6 +590,7 @@ func _look() -> void:
 	look_normal = hit.normal
 	var body: Object = hit.collider
 	look_sand = _is_sand(hit)
+	look_bed = _is_bed(hit)
 	if look_part != null or look_device != null:
 		# Assisted: the small thing you aimed near, not the sand under it.
 		return
@@ -589,6 +647,15 @@ static func _is_sand(hit: Dictionary) -> bool:
 		return false
 	var shape := body.shape_owner_get_owner(body.shape_find_owner(hit.shape)) as CollisionShape3D
 	return shape != null and shape.shape is HeightMapShape3D
+
+
+## A box of a ruin's that's a bed.
+static func _is_bed(hit: Dictionary) -> bool:
+	var body := hit.collider as StaticBody3D
+	if body == null:
+		return false
+	var shape := body.shape_owner_get_owner(body.shape_find_owner(hit.shape)) as Node
+	return shape != null and shape.has_meta(&"bed")
 
 
 ## How far along your look it meets something, out to `far`, m, or INF.
@@ -1612,7 +1679,7 @@ func line() -> String:
 	if look_socket != null and look_socket.part != null:
 		return describe(look_socket.part.label, _part_stats(look_socket.part))
 	if look_device == null:
-		return ""
+		return "Bed" if look_bed else ""
 	var stats := look_device.stats()
 	# A device's charge is on its light.
 	stats.erase("charge_wh")

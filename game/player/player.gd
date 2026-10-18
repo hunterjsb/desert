@@ -7,7 +7,8 @@ extends CharacterBody3D
 ## moon's gravity, crouching makes you smaller to the wind, and hauling
 ## against a line you dig in. On a hoverboard the ride moves you instead.
 ## Never moves where the ground has no collision yet, and never ends up in
-## the sand. How it feels is Feel's: the camera's.
+## the sand. How it feels is Feel's: the camera's. Auto-walk gives your walk
+## only its way.
 
 ## Touched down from the air at this speed, m/s.
 signal landed(speed: float)
@@ -47,6 +48,7 @@ var low := 0.0
 ## How far your feet have dug in hauling against a line, 0 to 1.
 var sink := 0.0
 var feel: Feel
+var walker: AutoWalk
 ## The board you ride, or null, and the ride that moves you on it.
 var board: Hoverboard
 var ride: Ride
@@ -84,6 +86,8 @@ func _ready() -> void:
 	stamina = _tuning.stamina_max
 	feel = Feel.new()
 	add_child(feel)
+	walker = AutoWalk.new()
+	add_child(walker)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -97,6 +101,8 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed("jump"):
 		# A tap shorter than a tick still counts.
 		_jump_queued = true
+	elif event.is_action_pressed("auto_walk"):
+		walker.toggle()
 	elif event is InputEventMouseMotion and not Controls.mouse_free:
 		if hands.turn(event.relative * _tuning.mouse_sensitivity):
 			return
@@ -108,6 +114,7 @@ func _unhandled_input(event: InputEvent) -> void:
 func _physics_process(delta: float) -> void:
 	var input := Input.get_vector("move_left", "move_right", "move_forward", "move_back") \
 		if Controls.playing() else Vector2.ZERO
+	walker.check(input)
 	if flying:
 		mode = "fly"
 		Dev.put("player/mode", mode)
@@ -136,8 +143,10 @@ func _physics_process(delta: float) -> void:
 
 	var wish := global_basis * Vector3(input.x, 0.0, input.y)
 	var dir := Vector2(wish.x, wish.z).normalized()
+	if dir == Vector2.ZERO:
+		dir = walker.heading
 	# Reeling in what won't come, you step in along the line.
-	var hauling := hands.reel.walk_in if input == Vector2.ZERO else Vector2.ZERO
+	var hauling := hands.reel.walk_in if dir == Vector2.ZERO else Vector2.ZERO
 	if hauling != Vector2.ZERO:
 		dir = hauling.normalized()
 	var on_floor := is_on_floor()
@@ -171,6 +180,10 @@ func _physics_process(delta: float) -> void:
 	if on_floor:
 		vy = 0.0
 		_sliding = _keeps_sliding(dir, crouch, pressed)
+		# A face too steep to stand on, rising your way, is one auto-walk can't climb.
+		if _sliding and slope.dot(walker.heading) > 0.0 \
+				and slope.length() > tan(deg_to_rad(_tuning.slip_angle - SLIP_HOLD)):
+			walker.stop()
 		if _sliding:
 			step = _slide(delta, dir, crouch)
 			sink = _ease(sink, 0.0, _tuning.haul_seconds, delta)
@@ -263,6 +276,7 @@ func get_on(on: Hoverboard) -> bool:
 		world.salvage.unbury(on)
 	if not on.can_run():
 		return false
+	walker.stop()
 	if hands.held == on:
 		hands.stow()
 	hands.grasp.let_go()
@@ -487,7 +501,10 @@ func _haul(dir: Vector2, pace: float, delta: float) -> float:
 	if dir != Vector2.ZERO:
 		var drag: Vector3 = get_meta(&"rope_drag", Vector3.ZERO)
 		var against := -Vector2(drag.x, drag.z).dot(dir)
-		held = smoothstep(_tuning.haul_from, 1.0, against / maxf(pace * (1.0 - _tuning.haul_slow * sink), 0.1))
+		# All the way in once the line takes all you'd manage dug in. Read
+		# against your pace, not the pace sunk in so far: chasing that, a pull
+		# near the edge took seconds to dig you in.
+		held = smoothstep(_tuning.haul_from, 1.0 - _tuning.haul_slow, against / maxf(pace, 0.1))
 	var load := suit.burden()
 	sink = _ease(sink, maxf(held, minf(load, 1.0)), _tuning.haul_seconds, delta)
 	return pace * (1.0 - _tuning.haul_slow * sink) / maxf(load, 1.0)
@@ -516,6 +533,9 @@ func _after_move(from: Vector3, meant: Vector2, delta: float, was_on_floor: bool
 		if across.length() > 0.1:
 			across = across.normalized()
 			own -= across * minf(0.0, own.dot(across))
+			# Walked into something solid, auto-walk ends.
+			if across.dot(walker.heading) < -AutoWalk.HEAD_ON:
+				walker.stop()
 	if open and was_on_floor and is_on_floor():
 		var off := meant - Vector2(global_position.x - from.x, global_position.z - from.z)
 		global_position += Vector3(off.x, _slope_at(global_position).dot(off), off.y)

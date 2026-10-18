@@ -109,6 +109,13 @@ func _physics_process(_delta: float) -> void:
 	_report()
 
 
+## One tick lived by a sleep, which steps the clock itself (Sleep).
+func live(seconds: float, t: float) -> void:
+	if not dead:
+		_tick(seconds, t)
+	_next = t + seconds
+
+
 func _tick(seconds: float, t: float) -> void:
 	if god:
 		health = FULL

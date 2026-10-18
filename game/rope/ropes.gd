@@ -94,6 +94,7 @@ func tie(a: RopeEnd, b: RopeEnd, length: float, breaking := NAN, strand: RopeStr
 		rope.creak = Sounds.world_voice(creak, 0.0, 5.0)
 		add_child(rope.creak)
 	ropes.append(rope)
+	_towing()
 	return rope
 
 
@@ -106,6 +107,7 @@ func move_end(rope: Rope, from: RopeEnd, to: RopeEnd) -> void:
 	elif rope.b == from:
 		rope.b = to
 		rope.strand.b = to
+	_towing()
 
 
 ## An end lets go: the rope stops holding and its strand hangs from the other.
@@ -137,6 +139,53 @@ func snap(rope: Rope, halves := true) -> void:
 		rope.parted.call(rope.strand, tail)
 
 
+## Loaded past its strength, a line gives way as its kind does: a hose pops
+## an end out, anything else snaps.
+func give_way(rope: Rope) -> void:
+	if rope.gives.is_valid():
+		rope.gives.call()
+	else:
+		snap(rope)
+
+
+## What a line bears now, and its share of the wind's push on each loose
+## thing it holds: what load_at reckons another time's load from.
+func bearing(rope: Rope) -> Dictionary:
+	var shares := {}
+	for end: RopeEnd in [rope.a, rope.b]:
+		var body := end.holder as RigidBody3D
+		if body != null and not body.freeze:
+			shares[body] = _share(body, NAN, 0.0)
+	return {"now": rope.sustained, "shares": shares}
+
+
+## The load a line would bear over `span` s from world time t with
+## everything held where it is now, N: what it bore, as `bearing` took it,
+## changed by how much more of the wind's push on what it holds is its share
+## then. A thing on several lines shares its push among them, so one gone
+## leaves more to the rest. Lines asked of the same moment share `shares`.
+func load_at(rope: Rope, t: float, span: float, was: Dictionary, shares := {}) -> float:
+	var most: float = was.now
+	for body: RigidBody3D in was.shares:
+		if not is_instance_valid(body) or body.freeze:
+			continue
+		if not shares.has(body):
+			shares[body] = _share(body, t, span)
+		most = maxf(most, was.now + shares[body] - was.shares[body])
+	return maxf(most, 0.0)
+
+
+## Each of a body's lines' share of the wind's push on it held still, N. A
+## taut line takes the push whole, the sand's friction none of it: what's
+## held doesn't slide.
+func _share(body: RigidBody3D, t: float, span: float) -> float:
+	var lines := 0
+	for rope in ropes:
+		if rope.a.holder == body or rope.b.holder == body:
+			lines += 1
+	return world.weather.wind_load(body, t, span) / maxi(lines, 1)
+
+
 func lines_on(end: RopeEnd) -> Array[Rope]:
 	return ropes.filter(func(rope: Rope) -> bool: return rope.a == end or rope.b == end)
 
@@ -156,6 +205,37 @@ func let_out(end: RopeEnd) -> void:
 func on_you(body: Node) -> bool:
 	var player := world.player
 	return body == player or (body != null and (body == player.hands.held or player.waist.holds(body)))
+
+
+## Everything you tow: each body a line leads to from you, and on along the
+## lines from that, short of a stake driven in the sand.
+func towed() -> Array[Node3D]:
+	var player := world.player
+	var reached: Array[Node3D] = [player]
+	var i := 0
+	while i < reached.size():
+		var from := reached[i]
+		i += 1
+		for rope in ropes:
+			var a := player if on_you(rope.a.holder) else rope.a.holder
+			var b := player if on_you(rope.b.holder) else rope.b.holder
+			var other: Node3D = b if a == from else (a if b == from else null)
+			if other != null and not reached.has(other) and not (other is Stake and (other as Stake).driven):
+				reached.append(other)
+	reached.erase(player)
+	return reached
+
+
+## A line tied or moved: two planters in tow, standing on what you tow or towed themselves.
+func _towing() -> void:
+	if not world.counts_deeds:
+		return
+	var planters := 0
+	for body in towed():
+		if body is Device:
+			for device in [body] + (body as Device).mounted():
+				planters += 1 if device is Planter else 0
+	Deeds.measure(world, &"planters_towed", planters)
 
 
 ## Whether a line ties to your waist with its other end off you: what slows you.
@@ -371,10 +451,7 @@ func _bear(h: float) -> void:
 	for rope: Rope in ropes.duplicate():
 		rope.sustained += (rope.tension - rope.sustained) * alpha
 		if rope.sustained > rope.breaking:
-			if rope.gives.is_valid():
-				rope.gives.call()
-			else:
-				snap(rope)
+			give_way(rope)
 	for stake: Node3D in _pulls:
 		if stake.feel(_pulls[stake], alpha):
 			stake.pull_out(world.height_under(stake.global_position))

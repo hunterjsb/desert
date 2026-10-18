@@ -9,6 +9,7 @@ extends MovementProbe
 ## camp is never lost. And flat out carving from side to side, on past the
 ## edge: each warning comes once and stays up, the loss is told once, and
 ## then nothing for 30 s.
+## Time limit: 600 s (about 150 s on Linux or macOS CI; Windows CI takes twice that)
 
 const SPEEDS := [1.0, 1.8, 3.9, 10.0, 20.0, 26.0]
 const WAYS := [Vector2(1.0, 0.0), Vector2(0.6, -0.8)]

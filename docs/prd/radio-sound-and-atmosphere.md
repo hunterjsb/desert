@@ -94,6 +94,149 @@ it and it crackles.
 - **Not yet:** bumps crackling, distorted tracks in storms, more channels, lore, oracles,
   frequencies as finds and antennas.
 
+### The dial and the gods on the air (Hunter, 2026-10-18; built)
+
+*Hunter's direction, 2026-10-18: "Each god [has] its own dynamic direction tracked relative to the
+player's position. A radio may tune its frequency from 0 to 2000 kHz. Assign each god a frequency
+range, and world position. Some are so far away you may reduce it to an abstract direction. Weather
+interference between the radio and the god will cause distortion, warping, and cutting of the
+transmission. Transmissions will vary. The difference between noise and useful information is if
+the player knows when to listen." And: "use the weather god for the weather station." Use the
+music, weather and beacon "but don't explicitly name each channel for what it is."*
+
+This replaces "use turns the dial: off, music, weather, beacon" above, and it answers the open
+question of whether the gods broadcast: they do. That goes past the lore's "speak only through
+terminals" by Hunter's call. The squatting oracles above are now the gods.
+
+- **The dial runs 0–2000 kHz.** Reel in and pay out tune it while you look at a radio, or at a
+  console with one in its system: 5 kHz a notch, or 1 kHz with the fine-tune actions. **What reel in
+  and pay out work** (2026-10-18, one rule with the reel): the line in your hand first; else the
+  radio you look at, which they tune; else the line at your waist you look along, which they reel
+  ([Rope & tethering](rope-and-tethering.md)); else a radio you hold, which they tune. The fine-tune
+  and volume actions work the same radio. Bring near and push out always move what you hold, never
+  a dial. Use sweeps up to the next carrier, and past the last one it goes off. **A volume knob** (Hunter, 2026-10-18:
+  "give the radio also an adjustable volume knob"): the volume actions, a tenth a notch from full to
+  silent. Each notch is the same 6 dB step, as ears hear loudness (Hunter: "10% should be barely audible,
+  and 100% should be louder than most other sounds in the game"): full is +15 dB, a tenth -39 dB, 54 dB
+  between (`radio_volume_range_db`, 60 from full to none). It turns down everything the radio plays (music, tones and hiss), which plays on at any
+  setting, and a save keeps it. At full it's loud
+  (Hunter: "100% volume needs to be much much louder in game"): 15 dB over the levels its tracks are
+  made at (`radio_loudness_db`), past the +3 dB cap other things in the world have, and heard at that
+  level out to 15 m (`radio_heard_m`), fading 6 dB each time that distance doubles (Hunter: "Sound
+  falls off too quickly"); it was 6 m, and 3 m before that, so at 30 m it's 8 dB louder than at 6 m.
+  Everything it plays goes through its own bus with a high-pass filter at 400 Hz (`radio_highpass_hz`;
+  Hunter: "The radio also needs a hi pass filter on it"), the thin sound of a small speaker, on into the
+  world's sound, so the menu still mutes it. The static sinks under anything you can hear, a song, a god
+  or the beacon, by up to 18 dB as cleanly as it comes through (`radio_static_duck_db`; Hunter: "Quiet
+  down the ambient radio static a lot unless there is nothing currently playing"), and it's all there is
+  between stations, in a silence, or when a storm blocks the way (radio probe 18). Nothing names a carrier:
+  the line low in the view reads only `262 kHz · …`, and the look-at line has the frequency as its one
+  state, "Radio · 262 kHz", or "Radio · off". On a Console's power page its row is the dial's own
+  controls: off and on, a sweep to the next carrier as use does, and the volume down and up
+  ([Devices & mods](devices-and-mods.md)).
+- **Carriers:** the music at 1020 kHz and the beacon at 1930, both behaving as above, and the seven
+  gods. The weather station is **the Walker** (Stations, below): its band is where the forecast is.
+- **Each god's carrier** lies inside its band and moves to a fresh place each moon day, from the seed,
+  so it has to be found. A signal comes in within about 3 kHz either side (`dial_width_khz`).
+
+| God | Band, kHz | Where it stands | Worth hearing | What it says then |
+|---|---|---|---|---|
+| The Quartermaster | 140–175 | The black site | Through the eclipse ("blackout drill") | Bearing and range to the nearest cache, dugout, checkpoint or bunker history laid near you |
+| The Walker | 230–290 | Walks the Rim, 1.5 m/s, from a seeded start | Always: the forecast where the radio is. At dusk, and when a storm starts or ends at its feet, the long report too | The weather station's reading; then 40 minutes ahead, and whether there's a storm at the Walker |
+| Mother Cistern | 410–450 | Sister | Dawn, 05:00–07:00 local | Frost or dew tonight with the 03:00 temperature, and the nearest cistern or stepwell |
+| The Almanac | 600–660 | A Rim ag complex 6–14° along the Rim from Halfrise | Sunrise and sunset | The day's range, and which crops would hold through it out in the open, and which to hold back |
+| The Ledger | 880–940 | Port Morgan | About midnight ("berth inventory") | Bearings and ranges to Halloran, the Rim depot and Starcom. It sends strongest |
+| The Stoker | 1180–1240 | Halloran | The hot hours, 13:00–16:00 local | A countdown to the next eclipse, and the peak temperature in the next 5 minutes |
+| The Eye | 1720–1790 | The observatory, at the anti-Tu point | Night where the radio is | Your latitude and longitude, and the local time |
+
+  **Clear skies** (Hunter, 2026-10-18: a "'hold' transmission on the weather channel that plays during
+  clear weather with nothing to report," "a feel good you have nothing to worry about sound that only
+  plays under conditions when that is true"): while the station's reading has no storm on you and none
+  due within `radio_calm_minutes`, 5, the Walker holds, playing Hunter's "Clear Skies"
+  (`radio_clear_skies.ogg`) instead of report tones, its line still giving the forecast, a farther storm
+  included. When a reading has a storm within those 5 minutes, it breaks off through a burst of static
+  for the report. Hunter, on the first rule of none in the station's 20 minutes: "no storm for 20 minutes
+  is basically impossible." Measured over six hours on three seeds, the sky where you stand is clear
+  about a quarter of the time, clear for 5 minutes ahead 12–13% (about half of all clear time), and for
+  20 minutes 0–1%. The **"clear_skies"** dev scenario stands you on a clear day, the next storm 9 to 14
+  minutes off, with a radio on the weather station. **The
+  Stoker's song** (Hunter: "use that segment on the Stoker mind's frequency"): its frequency carries
+  45 s of Hunter's `modsynthpatch.wav`, from 11:15 to 12:00 (`radio_stoker.ogg`), in place of tones,
+  its pitch sliding with the storm's warp, and as loud at its peaks as Clear Skies (Hunter: "stoker track
+  too quiet"). Both come through like any signal: down by the root of how clean it is,
+  silent while it's cut, and never started over by a dropout.
+  **The relay** (Hunter, 2026-10-18: "Tie the existing music channel to an orbiting satellite, loosely
+  simulate this satellite's position in orbit and give it interference just like the other freqs based on
+  it's simulated position," and "Make the satellite visible in the night sky if it's overhead"): the
+  music comes down from an old colonial relay satellite still playing the port's station
+  (`game/radio/satellite.gd`). It orbits at 3 moon radii (`relay_altitude_radii`), a lap in 6.5 minutes
+  (`relay_period_minutes`; Hunter: "The music satellite should move faster than the other stars, to create
+  a noticeable parallax effect"), so it crosses the night sky two to four times as fast as the stars,
+  backwards round on half the seeds; and not a whole share of a day, or it would cross the same sky at
+  the same hour every time, its tilt 25–65° from the seed, while the moon turns under it once a day, so it
+  rises and sets and each pass crosses the sky somewhere new. A run begins with it passing over where it
+  began. It's over the horizon about 40% of the time (no one satellite can manage half), in short
+  passes of a few minutes with a few minutes between. The music fades in over its first 8° (`relay_rise_degrees`). Set, the channel
+  is static, the song running on silently until it rises. Its carrier slides up to 1.5 kHz
+  (`relay_doppler_khz`): up as it rises, down as it sets. A storm over you garbles, slides and cuts it as
+  it does a god; its signal crosses the dust 1.5 km thick (`dust_height_m`), so the lower it is, the
+  farther out the storm that reaches it. Its pitch slides with its carrier (Hunter: "ensure the audio on
+  the music station can actually be interfered when on the far side of the moon"): a little over a pass,
+  with its coming and going, and up to 4% as a storm warps it, as the Stoker's and the Eye's do. A storm
+  in its way cuts it off on the far side as anywhere; the **"far_storm"** dev scenario stands you there
+  with a radio on the music, the relay 60° up and more, and a storm 1.2 km off coming at you. At night it shows in the sky as a bright moving point (brighter
+  than any star) while it's over the horizon and the sun lights it, and goes out in Zan's shadow. The
+  **"night"** dev scenario waits for a night with the relay sunlit 10–28° up, and faces you toward it.
+  Outside its window each god talks noise in its own voice: roll calls, survey telemetry, the
+  terraforming hymn, prices for goods nobody sells, empty manifests, boiler alarms, and from the Eye
+  silence. Everything said in a window is read from the real systems.
+- **Direction.** Each god's bearing is worked from where the radio stands to where the god is on the
+  sphere, every reading, so the Walker's moves as it walks. Within 12 km it's a compass point, within
+  40 km a rough one ("somewhere west"), and past that only a way across the moon: toward Tu, away from
+  Tu, across the face of Tu left or right, or, near the opposite point, from everywhere.
+- **Reach.** At or under 500 kHz a ground wave carries 80 km. Above it, the reach falls as the square of
+  the frequency by day, and at night a sky wave comes down past a 15 km skip at 0.6 strength, real AM
+  behaviour. So the Eye, high and far, comes in only at night, and the Stoker carries far only after dark.
+- **Weather between you and the god.** The storm field is read at 12 points along the way toward the god,
+  from 50 m out to 3 km, closest together near you, and it's the **worst** of them that counts, not the mean
+  (Hunter, 2026-10-18: "Interference must be highly directionally weighted ... If a storm is very close to
+  you on your east, each signal that lies to the east should be completely unreachable"). A storm that bad
+  or worse than half (`storm_blocks`) anywhere on the way **cuts the signal off entirely**; less, it lets
+  through the less the nearer it is to that. A storm beside you blocks only what lies its way, so which
+  signals you lose says which way they lie; deep in a storm you lose them all. The more storm there is, the more of each line turns to noise glyphs (**distortion**), the
+  further the carrier slides off where you tuned, up to 6 kHz either way, so you chase it (**warping**,
+  with the tones wobbling too), and the more often it drops out, up to 60% of the time
+  (**cutting**). A weak signal frays the same way. Below the floor it's only static.
+- **Spoken reports** (Hunter: "implement text-to-speech weather broadcast readouts"): with something to
+  report, the weather station reads it aloud through the system's text-to-speech (Godot's, the OS voice),
+  at once as a report breaks in on Clear Skies and every 30 s after (`radio_speak_every`); never while it
+  holds. Units are read in words, and words a storm garbles are lost to "...". You hear the nearest radio
+  on the weather station within 30 m (`radio_voice_m`), as loud as its knob, its signal and the distance
+  allow; tuned away or left behind, the voice stops. A report already reaching you is read to its end
+  through a dropout. The OS voice can't be placed in the world or run through the static: it's heard
+  flat, as a voice in your ear, and headless there's none.
+- **The Eye's drone** (Hunter: "implement this as a random ambient track that can play from 'the eye'"):
+  the Eye's frequency begins a run silent, then now and then plays Hunter's drone (`radio_eye.ogg`, 66 s)
+  through once, each silence before it 2 to 8 minutes (`eye_quiet_minutes`), the seed's pick. Between
+  drones there's nothing on its frequency, not even tones. Like the Eye itself it comes down by sky wave,
+  so it's heard at night; by day it's on, too faint to hear. It runs on its own schedule
+  (`Gods.song`), and its pitch slides with a storm's warp.
+- **The meltdown** (Hunter: "make the stoker's audio not random. For now just bind it to a command called
+  'meltdown'"): the Stoker's furnace song never plays by itself. The dev console's `meltdown` calls it up:
+  it plays through once on the Stoker's frequency from that moment, and stops; called up again while it
+  plays, it starts over. The rest of the time the Stoker talks and sounds its tones as any god does. (It
+  had played through, then fallen silent for 1 to 5 minutes, over and over.)
+- **Code:** `game/radio/gods.gd`, `dial.gd`, `interference.gd` and `transmissions.gd`, with `radio.gd`.
+  A save keeps whether it's on, the dial and the knob. One from before the dial kept a channel, which
+  moves the dial to that carrier once the radio is back in its world, the weather station's to the
+  Walker's carrier that day, with the save's version unchanged.
+- **Probes:** radio 6 (each god has its bearing), 7 (storms garble the gods), 8 (the dial finds each
+  god), 9 (useful only in its window), 10 (the volume knob), 11 (clear skies, and the Stoker's song), 12 (the clear-skies scenario), 13 (the relay carries the music), 14 (spoken reports, and the meltdown), 15 (storms tell you which way), 16 (the Eye's drone), 17 (the relay at night), 18 (static sinks under a signal), 19 (the music goes in a far-side
+  storm) and 20 (tuning shares reel in with the reel). Probes 1, 2, 4 and 5 tune by the dial, and so do Survival 12, Profile & saves 13 and
+  Devices & mods 28, the power page's row.
+- **Not yet:** a god's own voice beyond tones, frequencies as finds, antennas, and the far end's
+  signal.
+
 ### Stations: the Walker and the living city (agreed, 2026-10-18 spec)
 
 From Hunter's [storms, signals & sailing spec](../storms-signals-sailing-2026-10-18.md). A station is a node with a place, a
@@ -101,7 +244,12 @@ frequency, a range and what it says; its signal falls off with distance.
 - **The Walker's survey feed:** moon-wide, the strongest after the Ledger's; a dry log of bearings,
   wind readings and terrain, the planet's weather hard to read but very useful. Found by scanning.
   Its contact log records every signal it hears, indifferent to its flock: a nomad praying to it is
-  a bearing, and several from different places triangulate the living city.
+  a bearing, and several from different places triangulate the living city. *Its first form is
+  built:* the weather station on the dial (above) is the Walker's feed, in its 230–290 kHz band,
+  low enough that its ground wave carries across the whole moon, sending second only to the Ledger,
+  and found by sweeping the dial. It gives the forecast where the radio stands, and at dusk or with
+  storm news at its feet the long report. Not yet: a survey log's bearings and terrain, and the
+  contact log.
 - **The living city's chatter:** a few km, for its own scouts; coded tones, no voices ("storm
   coming, tether in", "city moving"), sometimes its own coordinates written as star positions, the
   nomads navigating by the stars. Its frequency is found by exploring (scratched on a radio in the

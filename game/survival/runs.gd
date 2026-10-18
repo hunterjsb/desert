@@ -70,6 +70,7 @@ func _over() -> void:
 	var next: World = WORLD.instantiate()
 	next.run_seed = new_seed()
 	next.kit = old.kit
+	next.counts_deeds = old.counts_deeds
 	next.name = "World"
 	parent.add_child(next)
 	parent.move_child(next, at)

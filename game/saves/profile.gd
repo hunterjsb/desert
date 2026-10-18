@@ -1,14 +1,17 @@
 extends Node
 ## You across runs, at /root/Profile: one local file, apart from the run
-## save, with no accounts. Its unlocks, finds and how-tos shown only ever
-## grow, by unlock(), by discovering a kind of thing for the first time and by
-## learn(), and only reset() empties it. Every unlock goes through unlock(),
-## so achievements or cloud sync attach there and nowhere else. Beside them it
-## keeps the origin you last came as, whose kit the main menu shows. A profile
-## from another version is refused with a reason and left untouched on disk.
+## save, with no accounts. Its unlocks, deeds, finds and how-tos shown only
+## ever grow, by unlock(), by a deed done (Deeds), by discovering a kind of
+## thing for the first time and by learn(), and only reset() empties it, or the
+## dev console's forget_deeds(). Every unlock goes through unlock() and every
+## deed through deed(), so cloud sync and achievements attach there and
+## nowhere else. Beside them it keeps the origin you last came as, whose kit
+## the main menu shows. A profile from another version is refused with a
+## reason and left untouched on disk.
 
 signal unlocked(id: String)
 signal discovered(kind: String)
+signal deed_done(id: String)
 
 const KIND := "sandgame profile"
 const VERSION := 1
@@ -26,6 +29,12 @@ var refused := ""
 var _unlocks := {}
 var _found := {}
 var _taught := {}
+## Each deed done: when, and the run it was done in. And for a deed made of
+## several things, each counted toward it so far, across every run, by when.
+var _deeds := {}
+var _toward := {}
+## For a deed that's a number to reach, the best so far, across every run.
+var _best := {}
 var _origin := ""
 var _loaded := false
 
@@ -67,10 +76,76 @@ func learn(id: String) -> bool:
 	return true
 
 
-## Unlocked, or a kind found.
+## A deed done, with the run it was done in ({seed, origin, ironman}):
+## recorded the first time only. Says whether it's new.
+func deed(id: String, run := {}) -> bool:
+	_load()
+	if _deeds.has(id):
+		return false
+	var record := run.duplicate()
+	record["at"] = Time.get_unix_time_from_system()
+	_deeds[id] = record
+	_write()
+	deed_done.emit(id)
+	return true
+
+
+func did(id: String) -> bool:
+	_load()
+	return _deeds.has(id)
+
+
+## Every deed done, by id: when, and in which run.
+func deeds() -> Dictionary:
+	_load()
+	return _deeds.duplicate(true)
+
+
+## A thing counted toward a deed made of several, such as one kind of crop
+## of three: the first time only. Says how many it has now.
+func toward(id: String, part: String) -> int:
+	_load()
+	var got: Dictionary = _toward.get(id, {})
+	if not got.has(part):
+		got[part] = Time.get_unix_time_from_system()
+		_toward[id] = got
+		_write()
+	return got.size()
+
+
+## How many different things have counted toward a deed.
+func toward_count(id: String) -> int:
+	_load()
+	return _toward.get(id, {}).size()
+
+
+## The best toward a deed that's a number to reach, or 0.
+func best(id: String) -> float:
+	_load()
+	return _best.get(id, 0.0)
+
+
+## A better best toward a deed, kept; a worse one is ignored.
+func improve(id: String, value: float) -> void:
+	_load()
+	if value > _best.get(id, 0.0):
+		_best[id] = value
+		_write()
+
+
+## Dev only: every deed undone, and what had counted toward them.
+func forget_deeds() -> void:
+	_load()
+	_deeds.clear()
+	_toward.clear()
+	_best.clear()
+	_write()
+
+
+## Unlocked, a deed done, or a kind found.
 func has(id: String) -> bool:
 	_load()
-	return _unlocks.has(id) or _found.has(id)
+	return _unlocks.has(id) or _deeds.has(id) or _found.has(id)
 
 
 ## Every kind found, first found first.
@@ -100,6 +175,9 @@ func reset() -> void:
 	_unlocks.clear()
 	_found.clear()
 	_taught.clear()
+	_deeds.clear()
+	_toward.clear()
+	_best.clear()
 	_origin = ""
 	_loaded = true
 	refused = ""
@@ -116,10 +194,13 @@ func _load() -> void:
 	_unlocks = data.get("unlocks", {})
 	_found = data.get("found", {})
 	_taught = data.get("taught", {})
+	_deeds = data.get("deeds", {})
+	_toward = data.get("toward", {})
+	_best = data.get("best", {})
 	_origin = str(data.get("origin", ""))
 
 
 func _write() -> void:
 	if refused == "":
 		SaveFile.write(path(), KIND, VERSION, {"unlocks": _unlocks, "found": _found, "taught": _taught,
-			"origin": _origin})
+			"deeds": _deeds, "toward": _toward, "best": _best, "origin": _origin})

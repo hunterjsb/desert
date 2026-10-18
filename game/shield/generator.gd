@@ -30,6 +30,8 @@ var on := false
 var smart := true
 ## Metres to the shell, fully open: its kind's, unless widened.
 var size := Tuning.current().shield_radius
+## Full storm it has held off while running, minutes (Wear).
+var held_minutes := 0.0
 var shelter := Shelter.new()
 var hum: AudioStreamPlayer3D
 
@@ -159,6 +161,21 @@ func running() -> bool:
 ## scenarios and look-tests that start mid-storm.
 func stand(up: bool) -> void:
 	on = up
+	_up = running()
+	_since = INF
+	if _up and not hum.playing:
+		hum.pitch_scale = HUM_PITCH
+		hum.play()
+	elif not _up:
+		hum.stop()
+	_show()
+
+
+## Straight to what its power says, open or down, with no bloom: the clock
+## stepped past both while the camp was held still (Sleep).
+func settle() -> void:
+	if running() == _up:
+		return
 	_up = running()
 	_since = INF
 	if _up and not hum.playing:
