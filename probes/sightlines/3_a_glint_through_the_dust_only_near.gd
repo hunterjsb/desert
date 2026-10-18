@@ -24,9 +24,9 @@ func run() -> void:
 	var reach := world.tuning.storm_glint_m
 	var skyline := world.terrain.skyline
 	var seen := []
-	for at: Array in [[storm.peak, 40.0], [storm.peak, reach + 40.0], [storm.after, 40.0]]:
+	for at: Array in [[storm.peak, 40.0], [storm.peak, reach + 25.0], [storm.after, 40.0]]:
 		world.time = at[0]
-		teleport(site.x + site.reach + at[1], site.z)
+		teleport(site.x + at[1], site.z)
 		await settle()
 		await physics_frames(30)
 		var bare := site.bare_glints_at(site.level()).filter(func(g: Array) -> bool:

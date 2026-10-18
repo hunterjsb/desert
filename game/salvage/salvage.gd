@@ -202,10 +202,10 @@ func _read_again(piece: Piece, lot: Lot) -> void:
 	if lot.waiting[site] <= 0:
 		lot.waiting.erase(site)
 	var lying: Dictionary = lot.sites.get(site, {})
-	var had: RigidBody3D = lying.get(i)
-	if had != null and (not is_instance_valid(had) or not had.has_meta(&"find")):
+	var got: Variant = lying.get(i)
+	var had: RigidBody3D = got if is_instance_valid(got) and got.has_meta(&"find") else null
+	if had == null:
 		lying.erase(i)
-		had = null
 	if had == null and _laying(site, i):
 		return
 	var key := [site, i]
@@ -266,10 +266,10 @@ func _process(delta: float) -> void:
 	var k := 1.0 - exp(-delta / EASE_S)
 	for i in range(_easing.size() - 1, -1, -1):
 		var each: Array = _easing[i]
-		var body: RigidBody3D = each[0]
-		if not is_instance_valid(body):
+		if not is_instance_valid(each[0]):
 			_easing.remove_at(i)
 			continue
+		var body: RigidBody3D = each[0]
 		var to: Transform3D = each[1]
 		body.transform = body.transform.interpolate_with(to, k)
 		if body.transform.origin.distance_to(to.origin) > 0.002 or not body.transform.basis.is_equal_approx(to.basis):
