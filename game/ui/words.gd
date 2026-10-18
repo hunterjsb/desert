@@ -1,9 +1,9 @@
 class_name Words
 extends Control
-## A menu as a few small words: the main menu's low on the screen over its
-## desert, every menu over it in bigger words down the left, a short line
+## A menu as a few words: the main menu's small and low on the screen over
+## its desert, every menu over it in bigger words down the left, a short line
 ## under each if it has one, the prop aside beside them; and over a running
-## game in the middle, on a soft dark scrim. The highlighted word is bright
+## game big and well spaced in the middle, on a soft dark field. The highlighted word is bright
 ## and the rest dimmer, never boxed, each with a soft dark edge so it reads
 ## over bright sand and storm alike. Menu up and down move the highlight,
 ## confirm triggers it, and left and right change a setting's value, each
@@ -40,14 +40,13 @@ var shows := &""
 
 var _list: VBoxContainer
 var _aside: GridContainer
-var _aside_field: PanelContainer
 var _items: Array[Dictionary] = []
 ## The word last highlighted.
 var _was := 0
 
 
 ## A question or a note above the words. Under them, a dark wash over the
-## running game (Scrim), with a soft dark field close behind the words, or
+## running game (Scrim) with a soft dark field round the words (Field), or
 ## only a shade low down over the menu's desert (Shade), or down its left
 ## side (ShadeSide).
 func _init(note := "", under := &"Scrim") -> void:
@@ -82,7 +81,14 @@ func _init(note := "", under := &"Scrim") -> void:
 		_list.alignment = BoxContainer.ALIGNMENT_CENTER
 	_list.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	if under == &"Scrim":
-		add_child(_field(_list, Control.PRESET_CENTER))
+		var field := PanelContainer.new()
+		field.theme_type_variation = &"Field"
+		field.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		field.set_anchors_preset(Control.PRESET_CENTER)
+		field.grow_horizontal = Control.GROW_DIRECTION_BOTH
+		field.grow_vertical = Control.GROW_DIRECTION_BOTH
+		field.add_child(_list)
+		add_child(field)
 	else:
 		add_child(_list)
 	if note != "":
@@ -231,19 +237,19 @@ func add_corner(on: Callable, act: Callable) -> Button:
 	return word
 
 
-## Under the prop aside, small: each thing beside what it comes to, as an
-## origin's gear or a save's numbers, replacing what was there.
+## Under the prop aside, bare words on their soft edge: each thing beside what
+## it comes to, as an origin's gear or a save's numbers, replacing what was there.
 func set_aside(rows: Array) -> void:
 	if _aside == null:
 		_aside = GridContainer.new()
 		_aside.theme_type_variation = &"AsideList"
+		_aside.anchor_left = Showpiece.ASIDE
+		_aside.anchor_right = Showpiece.ASIDE
+		_aside.anchor_top = ASIDE_TOP
+		_aside.anchor_bottom = ASIDE_TOP
+		_aside.grow_horizontal = Control.GROW_DIRECTION_BOTH
 		_aside.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		_aside_field = _field(_aside, Control.PRESET_CENTER_TOP)
-		_aside_field.anchor_left = Showpiece.ASIDE
-		_aside_field.anchor_right = Showpiece.ASIDE
-		_aside_field.anchor_top = ASIDE_TOP
-		_aside_field.anchor_bottom = ASIDE_TOP
-		add_child(_aside_field)
+		add_child(_aside)
 	for cell in _aside.get_children():
 		cell.free()
 	var paired := rows.size() > ASIDE_ROWS
@@ -260,20 +266,6 @@ func set_aside(rows: Array) -> void:
 			cell.uppercase = true
 			cell.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT if k == 0 else HORIZONTAL_ALIGNMENT_RIGHT
 			_aside.add_child(cell)
-
-
-## Words on a soft dark field of their own, sized to them, so they read over
-## bright sand.
-static func _field(words: Control, preset: Control.LayoutPreset) -> PanelContainer:
-	var field := PanelContainer.new()
-	field.theme_type_variation = &"Field"
-	field.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	field.set_anchors_preset(preset)
-	field.grow_horizontal = Control.GROW_DIRECTION_BOTH
-	field.grow_vertical = Control.GROW_DIRECTION_BOTH if preset == Control.PRESET_CENTER \
-		else Control.GROW_DIRECTION_END
-	field.add_child(words)
-	return field
 
 
 ## The rows under the prop aside, as they read.

@@ -42,9 +42,9 @@ starting kit in the foreground tilting toward the mouse, as the prototype's shie
 radio did (Hunter, 2026-10-16). A few small words at the bottom of the screen, over the
 live desert. No background art,
 no panels, no big centred buttons. (Hunter, 2026-10-16: the main menu's words "a tad
-more spacing and bigger", then "a lot bigger", the pause menu too: menu words are 20,
-the main menu's 24; the menus over a running game stand in the middle of the screen, the
-aim dot hidden behind them.)
+more spacing and bigger", then "a lot bigger", the pause menu too: the main menu's words
+are 24; the menus over a running game stand in the middle of the screen, the aim dot hidden
+behind them, and since 2026-10-18 are bigger and roomier still, below.)
 
 - **The scene** is the real world seen from a fixed camera, with no player spawned and
   the weather running at normal speed. It keeps its simulation cheap, and it's silent:
@@ -75,7 +75,9 @@ aim dot hidden behind them.)
   left, as the origin choice does; the question slides it before the origins come up.
 - **Each origin shows one compact piece,** not its kit scattered: the Surveyor its crate as
   assembled, the Salvager its board, the Homesteader its planter. Under the piece, on the
-  right, its gear is listed small, each thing and how many.
+  right, its gear is listed, each thing and how many, in bare words with no background
+  behind them (Hunter, 2026-10-18: no translucent panel), big enough and edged enough to
+  read on their own over bright sand.
 - **Resume opens the same view:** the prop is your last camp as the save holds it, what stood
   round you when you saved, with the save's numbers beside it (time played, when it was saved,
   the day, who you came as), and confirm carries on.
@@ -95,7 +97,9 @@ highlighted or Ironman; **dying** in a Normal run shows Load last save, highligh
 New run (Hunter, 2026-10-16).
 
 Over a run there's no prop to move, so the system menu's words stand on a soft dark scrim
-(Hunter, 2026-10-18: "pause menu is different -- we can add some opaqueness").
+(Hunter, 2026-10-18: "pause menu is different -- we can add some opaqueness"), clearly
+there, with no hard box; and they have more room and bigger type than the rest: larger
+words, more space between them and round the group (Hunter, 2026-10-18).
 
 ## Saying less
 
@@ -216,9 +220,10 @@ is a menu of its own, reached from the main menu and the system menu.
   brighten with it, and ???? for one still locked, which the selection passes over; the
   origin last played is highlighted, the Surveyor before any, so the piece on show stays as
   it is. The highlighted origin's piece shows aside, the last one shrinking away and the
-  next growing in as the selection moves, and under it on the right its gear, at 17 on a
-  soft dark field of its own (the theme's `Field`): each thing and how many, read from the
-  kit as a run sets it down (`Kit.gear`), two to a line once there are many. Then which mode, laid out the same over the chosen origin's piece
+  next growing in as the selection moves, and under it on the right its gear in bare words
+  at 20, off-white with the theme's soft dark edge and a faint halo, no panel: each thing
+  and how many, read from the kit as a run sets it down (`Kit.gear`), two to a line once
+  there are many. Then which mode, laid out the same over the chosen origin's piece
   and gear: Normal, highlighted, "saves as you go", and Ironman, "death ends the run"; back
   goes back a step, the save untouched. The origin a run is begun or resumed as is kept in
   the profile (Profile & saves).
@@ -238,10 +243,10 @@ is a menu of its own, reached from the main menu and the system menu.
   while it plays, a cross while it's off, and it stays as you leave it (`Settings.music`).
 - **Into the game:** a fade to black, the run built (`game/run.tscn`, which is what
   `main.tscn` used to be), and back from black once the sand round you is solid.
-- **The system menu**, over the running game, its words at the menus' 20 on a soft dark
-  field close behind them, no box (`Field`), over a lighter wash darkest in the middle
-  (`Scrim`); every menu over a run stands so: Options, Save in a Normal run, and Save &
-  quit. Save keeps the menu up and its
+- **The system menu**, over the running game: its words at 28, 26 apart, on a soft dark
+  field round them that fades out with no edge (`Field`, a rounded shadow), over a lighter
+  wash darkest in the middle (`Scrim`); every menu over a run stands so. It holds Options,
+  Save in a Normal run, and Save & quit. Save keeps the menu up and its
   word says how it went: Saved, or Couldn't save. Nothing pauses.
 - **The death screen,** in a Normal run, over the running game: "You died", with Load
   last save, highlighted, and New run. Back doesn't close it. Load is Resume, through
