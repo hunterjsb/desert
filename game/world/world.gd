@@ -171,7 +171,7 @@ func height_at(x: float, z: float) -> float:
 
 
 func height_under(engine_position: Vector3) -> float:
-	return shape.height_at(world_x(engine_position.x), world_z(engine_position.z))
+	return shape.held_height_at(world_x(engine_position.x), world_z(engine_position.z))
 
 
 func has_ground_under(engine_position: Vector3) -> bool:
@@ -298,12 +298,26 @@ func _hold_above_sand(body: RigidBody3D) -> void:
 			shape.set_meta(&"sand_box", Catalog.bounds(shape.shape))
 		var box: AABB = shape.get_meta(&"sand_box")
 		var to_world := body.global_transform * shape.transform
+		# Clear of the highest sand anywhere under it, no corner of it can be in:
+		# a floating deck's dozens of shapes cost a few held points, not 8 reads each.
+		var around := to_world * box
+		if _clear_of_sand(around):
+			continue
 		for i in 8:
 			var corner := to_world * box.get_endpoint(i)
 			deepest = maxf(deepest, height_under(corner) - corner.y)
 	if deepest > SAND_SLOP:
 		body.global_position.y += deepest - SAND_SLOP * 0.5
 		body.linear_velocity.y = maxf(body.linear_velocity.y, 0.0)
+
+
+## Whether a box in the engine's frame is higher than SAND_SLOP below the
+## highest sand under it, a millimetre to spare for rounding: then none of
+## its corners can be deeper than that in it.
+func _clear_of_sand(box: AABB) -> bool:
+	var top := shape.highest_in(world_x(box.position.x) - 0.01, world_z(box.position.z) - 0.01,
+		world_x(box.end.x) + 0.01, world_z(box.end.z) + 0.01)
+	return top - box.position.y < SAND_SLOP - 0.001
 
 
 func _set_scene() -> void:
