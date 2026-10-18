@@ -3,8 +3,9 @@ extends RefCounted
 ## A run as its save holds it: only what's yours and what you changed. The
 ## ground, the weather and the finds come again from the seed, so the save
 ## keeps you, the clock, everything of yours in the world with its parts and
-## state, every line between them, and of the finds near you only which were
-## taken and how hard the weather had been there. Places are world metres;
+## state, every line between them, of the finds near you only which were
+## taken and how hard the weather had been there, and what was taken from
+## each site laid. Places are world metres;
 ## the engine origin is kept too, so a resumed run computes in the same
 ## floats as the one saved and plays on tick for tick.
 ##
@@ -110,6 +111,8 @@ func begin(data: Dictionary) -> Array[Vector2]:
 		player.vitals.set(key, _copy(you.vitals[key]))
 	world.weather.forecast_now()
 	world.salvage.recall(data.finds, world.terrain.chunk_at(world.player_world_x(), world.player_world_z()))
+	# What was taken from each site; a save from before kept none.
+	world.salvage.recall_sites(data.get("sites", []))
 	# History laid where it was; a save from before has none, and lays afresh.
 	world.shape.sites.recall(data.get("sheet", []))
 	world.farm.feral.recall(data.get("feral", []), world.terrain.chunk_at(world.player_world_x(), world.player_world_z()))
@@ -312,6 +315,7 @@ func _take() -> Dictionary:
 		data.grasp = grasp.memory()
 		data.grasp.body = _ref(grasp.body)
 	data.finds = world.salvage.memories()
+	data.sites = world.salvage.site_memories()
 	data.sheet = world.shape.sites.memories()
 	data.feral = world.farm.feral.memories()
 	return data

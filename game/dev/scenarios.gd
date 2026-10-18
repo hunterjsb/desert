@@ -21,7 +21,7 @@ extends RefCounted
 ## parks the reference camp round you on a floating deck, running, to be left
 ## alone, its farm watered by a condenser on hoses. "lee" stands you at the foot of a tall
 ## slip face, facing up it into the wind coming over its crest, with a storm
-## on its way. "chassis" lays out pieces, their trays, a crate and a
+## on its way and a catch line strung across the wind for its drift. "chassis" lays out pieces, their trays, a crate and a
 ## condenser to build a deck from. "console" stands a Console with every
 ## instrument and a radio on a small deck beside a shield, with a storm due
 ## in a few minutes, to watch its screen as it comes. "eclipse" faces Tu in
@@ -66,8 +66,8 @@ const LIST: Array[Dictionary] = [
 	{"key": "afk", "label": "AFK: the reference camp on a floating 2x2 deck, moored, its farm floating beside it on hoses, a turbine out in the wind",
 		"kind": "clear", "day": [0.3, 0.4], "due": [180.0, 480.0], "afk": true},
 	# A storm due soon, so the lee is felt in the clear and then as it comes over the crest.
-	{"key": "lee", "label": "lee: at the foot of a tall slip face, the wind over its crest, a storm minutes off",
-		"kind": "lee", "day": [0.35, 0.55], "due": [120.0, 360.0]},
+	{"key": "lee", "label": "lee: at the foot of a tall slip face, the wind over its crest, a storm minutes off, a catch line strung across it",
+		"kind": "lee", "day": [0.35, 0.55], "due": [120.0, 360.0], "drift": true},
 	{"key": "chassis", "label": "chassis: pieces, their trays, a crate and a condenser to build a deck from, clear and calm",
 		"kind": "clear", "day": [0.35, 0.5], "calm": 6.0, "chassis": true},
 	# Far enough off that the radar sees the front coming before the smart
@@ -176,6 +176,8 @@ const CONSOLE_STAKE := [-0.5, 4.6]
 
 ## Your own frame, to fit what you find to: right and ahead.
 const YOURS := [1.5, 2.5]
+## A catch line's stakes, right and ahead: across the wind you face.
+const CATCH_LINE := [[-3.0, 3.0], [3.0, 3.0]]
 ## How far round the moon from where the run began to look for a house ruin,
 ## m, and how many places on fresh ground to try standing it at.
 const RUIN_SEARCH := 40000.0
@@ -223,7 +225,8 @@ static func apply(world: World, scenario: Dictionary) -> void:
 	world.remove_meta(&"scenario_kit")
 	if not (scenario.kind in ["kit", "ruin"] or scenario.get("camp", false) or scenario.get("survive", false)
 			or scenario.get("farm", false) or scenario.get("board", false) or scenario.get("radio", false)
-			or scenario.get("afk", false) or scenario.get("chassis", false) or scenario.get("console", false)):
+			or scenario.get("afk", false) or scenario.get("chassis", false) or scenario.get("console", false)
+			or scenario.get("drift", false)):
 		return
 	# Bodies dropped before the sand under them has collision would be frozen or forgotten.
 	while is_instance_valid(world) and not world.terrain.is_settled_around(place.x, place.z):
@@ -252,6 +255,8 @@ static func apply(world: World, scenario: Dictionary) -> void:
 		dropped = chassis(world)
 	elif scenario.get("console", false):
 		dropped = console(world)
+	elif scenario.get("drift", false):
+		dropped = catch_line(world)
 	else:
 		dropped = camp(world) if scenario.get("camp", false) else survive(world)
 	world.set_meta(&"scenario_kit", dropped)
@@ -376,7 +381,7 @@ static func _among(world: World, scenario: Dictionary) -> Dictionary:
 	var from := Sphere.point(spawn_moon.x, spawn_moon.y)
 	var heard := func(laid: TerrainShape, ground: Vector2) -> bool:
 		return not Finds.beacon(world.run_seed, laid.sites, ground.x, ground.y, tuning,
-			func(_coord: Vector2i, _index: int) -> bool: return false).is_empty()
+			func(_site: int, _socket: int) -> bool: return false).is_empty()
 	var shape := TerrainShape.new(world.run_seed, tuning)
 	for town in StructureKit.towns_near(shape.history, from, 12):
 		var at := StructureKit.beside(shape.history, town, from, 400.0)
@@ -867,6 +872,18 @@ static func _free(device: Device, kind: StringName) -> Socket:
 		if socket.kind == kind and socket.is_open():
 			return socket
 	return null
+
+
+## Two stakes driven across the wind you face, a few steps ahead, a line
+## strung between them for the drift to snag on. Returns what it dropped.
+static func catch_line(world: World) -> Array[Node3D]:
+	var dropped: Array[Node3D] = []
+	for where: Array in CATCH_LINE:
+		dropped.append(_driven(world, where))
+	var stakes := dropped.duplicate()
+	dropped.append(Line.between(world, (stakes[0] as Stake).free_tie(stakes[1].global_position),
+		(stakes[1] as Stake).free_tie(stakes[0].global_position), 0.3))
+	return dropped
 
 
 ## Your own bare crate frame on the sand beside you, to fit what you find to.

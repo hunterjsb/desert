@@ -626,9 +626,24 @@ static var _current: Tuning
 ## Ruins and finds. Probes of other systems switch them off, as ground probes
 ## still the air, so a buried crate never stands in what they measure.
 @export var salvage: bool = true
-## Finds in a chunk of open sand, on average, and at most.
-@export var finds_per_chunk: float = 1.5
+## Loose finds in a chunk of open sand on the way, on average, and at most: a
+## tenth of the 1.5 open sand held before loot moved into history's sites.
+## On the way is within a path's corridor or this near a settlement's sites, m.
+@export var finds_per_chunk: float = 0.15
 @export var finds_most: int = 4
+@export var finds_scatter_m: float = 60.0
+## Drift (Drift): what a line across the wind catches in a storm's heart, an
+## hour per metre of it; of what blows past, the share that snags on a line in
+## the open, and how much more falls out of the slowed wind in a full lee.
+@export var drift_per_m_hour: float = 1.0
+@export var drift_open: float = 0.25
+@export var drift_lee: float = 1.0
+## Drift is drawn every this many s of world time; a line's pile holds at
+## most this many things before more blows past; a catch line is at least
+## this long, m.
+@export var drift_tick_s: float = 20.0
+@export var drift_most: int = 8
+@export var drift_shortest_m: float = 1.5
 ## Share of finds from the deep layer where the weather has been calm, and
 ## where it has been as hard as it gets the whole time; between, by how hard
 ## it's been.
