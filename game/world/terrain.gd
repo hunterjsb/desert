@@ -145,8 +145,8 @@ func _exit_tree() -> void:
 	for id: int in _tasks.values():
 		WorkerThreadPool.wait_for_task_completion(id)
 	_tasks.clear()
-	for id: int in _pressing.values():
-		WorkerThreadPool.wait_for_task_completion(id)
+	for task: Array in _pressing.values():
+		WorkerThreadPool.wait_for_task_completion(task[0])
 	_pressing.clear()
 	for build: ChunkBuild in _pressed.values():
 		RenderingServer.free_rid(build.mesh)
@@ -249,10 +249,10 @@ func is_settled_around(world_x: float, world_z: float) -> bool:
 	return true
 
 
-## Nothing left to build, near or far.
+## Nothing left to build, near or far, nor to press afresh.
 func is_idle() -> bool:
 	return _planned and _tasks.is_empty() and _wanted.is_empty() and _far_task == -1 \
-		and _far_mesh.is_valid() and _far_center == _center and skyline.is_idle()
+		and _far_mesh.is_valid() and _far_center == _center and skyline.is_idle() and is_pressed()
 
 
 func chunks() -> Array:
@@ -488,8 +488,8 @@ func _press() -> void:
 		for k in chunk.carved.size():
 			var each := chunk.carved[k]
 			steps.append(each.ground if each.ground >= 0 else chunk.carved_steps[k])
-		_pressing[coord] = WorkerThreadPool.add_task(_press_one.bind(coord, chunk.dunes, chunk.step,
-			chunk.carved.duplicate(), steps, RenderingServer.mesh_create()))
+		_pressing[coord] = [WorkerThreadPool.add_task(_press_one.bind(coord, chunk.dunes, chunk.step,
+			chunk.carved.duplicate(), steps, RenderingServer.mesh_create())), chunk]
 
 
 func _press_one(coord: Vector2i, dunes: PackedFloat32Array, step: int, carved: Array[Structure],
@@ -508,16 +508,18 @@ func _collect_presses() -> void:
 	for coord: Vector2i in _pressing.keys():
 		if _out_of_time():
 			return
-		if not WorkerThreadPool.is_task_completed(_pressing[coord]):
+		var task: Array = _pressing[coord]
+		if not WorkerThreadPool.is_task_completed(task[0]):
 			continue
-		WorkerThreadPool.wait_for_task_completion(_pressing[coord])
+		WorkerThreadPool.wait_for_task_completion(task[0])
 		_pressing.erase(coord)
 		_mutex.lock()
 		var build: ChunkBuild = _pressed.get(coord)
 		_pressed.erase(coord)
 		_mutex.unlock()
+		# Pressed from a chunk built afresh since, or at another step: nothing of it holds.
 		var chunk: TerrainChunk = _chunks.get(coord)
-		if chunk == null or chunk.step != build.step:
+		if chunk == null or chunk != task[1] or chunk.step != build.step:
 			RenderingServer.free_rid(build.mesh)
 			continue
 		var started := Time.get_ticks_usec()

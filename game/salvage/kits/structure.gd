@@ -486,10 +486,6 @@ func follow(t: float, occupied: Callable) -> int:
 	return MOVED | STEPPED
 
 
-func _stripped(t: float) -> float:
-	return Exposure.stripped(_ctx.field, x, z, t, _ctx.tuning, _memo)
-
-
 # --- What it holds, and what's built of it. ---
 
 ## A socket's place, world metres.
