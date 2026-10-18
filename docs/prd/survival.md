@@ -158,10 +158,11 @@ food running out, each from the night's own numbers rather than dice.
 paused: "Through the storm", only while one's on you or due within the weather's own forecast; "Sleep
 8 h", left and right changing the hours, 1 to 24; "Until morning", left and right stepping morning
 (06:00 local), noon, dusk (18:00) and night (midnight); and with a radio in earshot that has power,
-"Until a storm's called": the weather station calls a storm as one comes within its sight, a day ahead,
-which wakes you, its report on the radio's line, the radio tuned to it as you lie down. That's the
-radio's broadcast that reads the real systems now; a second-age broadcast at a fixed hour, the
-session's sleep clock, isn't built. Through the storm needs a running shield over you.
+"Until a storm's called", offered while the weather station holds its calm (no storm on you and none
+due within five minutes, six hours of the day): the radio comes on to the Walker's carrier as you lie
+down, its dial kept on it as it moves from day to day, and the Walker breaking its calm to report a
+storm wakes you if the radio hears it, the report on its line as you wake. A god's broadcast at a fixed
+hour, the session's sleep clock, isn't built. Through the storm needs a running shield over you.
 
 **Only a still camp sleeps**, read off the physics as it runs: you on your feet and still, your hands
 free but for the bed in them, nothing at your waist; your devices and stakes within 30 m slower than
