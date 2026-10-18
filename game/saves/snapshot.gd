@@ -404,6 +404,17 @@ func _body(body: RigidBody3D, loose: bool) -> Dictionary:
 		out.rolled = body.get_meta(&"rolled")
 	if body.has_meta(&"rolled_m"):
 		out.rolled_m = body.get_meta(&"rolled_m")
+	# What sits in the sockets a part added: a line's end on a hook, fitted
+	# or loose.
+	if body is Part:
+		var added := _added(body as Part)
+		var inner := []
+		for k in added.size():
+			var inside := _socket_out(added[k])
+			if not inside.is_empty():
+				inner.append([k, inside])
+		if not inner.is_empty():
+			out.added = inner
 	if body is Device:
 		var filled := []
 		var frame := (body as Device).frame_sockets()
@@ -429,16 +440,7 @@ func _body(body: RigidBody3D, loose: bool) -> Dictionary:
 ## (a line's end on a hook's ring); or a small device seated there.
 func _socket_out(socket: Socket) -> Dictionary:
 	if _known(socket.part):
-		var out := _body(socket.part, false)
-		var added := socket.fitted.filter(func(n: Node) -> bool: return n is Socket)
-		var inner := []
-		for k in added.size():
-			var inside := _socket_out(added[k])
-			if not inside.is_empty():
-				inner.append([k, inside])
-		if not inner.is_empty():
-			out.added = inner
-		return out
+		return _body(socket.part, false)
 	if socket.mounted != null and _known(socket.mounted):
 		var seated := socket.mounted
 		# Where it rides on its host now, which needn't be just its seat.
@@ -527,7 +529,20 @@ func _make(rec: Dictionary) -> RigidBody3D:
 			var deck := device as Chassis
 			var on: Chassis = deck.pieces()[entry[0]]
 			deck.join(_make(entry[3]) as Chassis, on.frame_sockets()[entry[1]], entry[2])
+	# Its line's end goes on a hook before the hook goes anywhere, and moves
+	# with it into a device.
+	var part := body as Part
+	if part != null:
+		var added := _added(part)
+		for entry: Array in rec.get("added", []):
+			Device.seat_part(_make(entry[1]) as Part, added[entry[0]])
 	return body
+
+
+## The sockets a part added: its own while loose, in its device's body once fitted.
+static func _added(part: Part) -> Array:
+	var nodes: Array = part.socket.fitted if part.socket != null else part.get_children()
+	return nodes.filter(func(n: Node) -> bool: return n is Socket and n.has_meta(&"socket") == (part.socket != null))
 
 
 ## What a record has in each of its frame's sockets, as [socket, what's in
@@ -560,14 +575,10 @@ func _filled(device: Device, rec: Dictionary) -> Array[Array]:
 ## A line on a hook that moved to another ring, let out if it must be to
 ## reach it there: past its length, it would yank what it holds.
 func _let_out(socket: Socket) -> void:
-	var tips := socket.fitted.filter(func(n: Node) -> bool: return n is Socket and n.part != null) \
-		.map(func(tie: Socket) -> Variant: return tie.part.get_meta(&"tip", null))
-	for rope in _world.ropes.ropes:
-		var span := rope.a.global_position.distance_to(rope.b.global_position)
-		if (rope.a in tips or rope.b in tips) and span > rope.length:
-			rope.length = span
-			rope.full = maxf(rope.full, span)
-			rope.strand.set_length(span)
+	for node in socket.fitted:
+		var tie := node as Socket
+		if tie != null and tie.part != null and tie.part.has_meta(&"tip"):
+			_world.ropes.let_out(tie.part.get_meta(&"tip"))
 
 
 func _spill(device: Device, was: Array) -> Socket:
@@ -586,9 +597,6 @@ func _socket_in(device: Device, socket: Socket, rec: Dictionary) -> void:
 		seated.transform = rec.pose
 		return
 	device.fit(_make(rec) as Part, socket)
-	var added := socket.fitted.filter(func(n: Node) -> bool: return n is Socket)
-	for entry: Array in rec.get("added", []):
-		_socket_in(device, added[entry[0]], entry[1])
 
 
 ## A line as it was, its ends or coil made where they'll be put; its rope is
