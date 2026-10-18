@@ -342,11 +342,13 @@ func _farm_lands() -> void:
 ## its floor a device with parts to strip, and your own bare frame lands
 ## beside you.
 func _ruin_ahead(at: Vector2, ahead: Vector2) -> void:
-	var ruin := world.shape.ruins.around(at.x, at.y, 30.0)
+	var ruin := world.shape.sites.query(Rect2(at.x - 30.0, at.y - 30.0, 60.0, 60.0), false).filter(
+		func(s: Site) -> bool: return s is Ruin and world.shape.sites.covering(s.x, s.z) == s)
 	check(not ruin.is_empty(), "ruin: a ruin stands near you")
 	if ruin.is_empty():
 		return
-	var door := ruin[0].to_world(Ruin.DOORS[0][0]) - at
+	var first: Ruin = ruin[0]
+	var door := first.to_world(Ruin.DOORS[0][0]) - at
 	check(ahead.dot(door.normalized()) > 0.999 and door.length() < 20.0,
 		"ruin: its front door is in front of you (%.1f m)" % door.length())
 	await settle(true)
@@ -355,7 +357,7 @@ func _ruin_ahead(at: Vector2, ahead: Vector2) -> void:
 			break
 		await get_tree().process_frame
 	var mine := Scenarios.yours(world)
-	var coord := world.terrain.chunk_at(ruin[0].center.x, ruin[0].center.y)
+	var coord := world.terrain.chunk_at(first.center.x, first.center.y)
 	var finds := world.salvage.finds()
 	var on_floor := finds.filter(func(b: Node) -> bool:
 		return b.get_meta(&"find")[0] == coord and b.get_meta(&"find")[1] >= Finds.IN_RUIN)

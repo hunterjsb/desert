@@ -16,11 +16,14 @@ func run() -> void:
 			shared += 1
 	check(shared < first.size() / 10, "another seed makes another (%d of %d the same)" % [shared, first.size()])
 
-	# Laid from the same place twice, everything lands in the same world metres.
+	# Laid from the same place twice, beside a Rim town, everything lands in
+	# the same world metres.
 	var laid: Array[PackedStringArray] = []
+	var history := History.new(1234, tuning)
+	var town: Vector3 = history.settlements.filter(func(t: Dictionary) -> bool: return t.kind == &"rim_town")[0].p
 	for k in 2:
 		var shape := TerrainShape.new(1234, tuning)
-		shape.sites.follow(300.0, -200.0, 0.0, 0.0, 1.0, 1300.0)
+		shape.sites.follow(300.0, -200.0, Sphere.latitude(town), Sphere.longitude(town), 1.0, 1300.0)
 		var lines := PackedStringArray()
 		for site in shape.sites.query(Rect2(-1000.0, -1500.0, 2600.0, 2600.0)):
 			lines.append("%d %.4f %.4f %.4f" % [site.id, site.x, site.z, site.bearing])

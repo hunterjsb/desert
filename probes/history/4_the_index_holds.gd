@@ -75,7 +75,9 @@ func _unlaid_under_loaded(sites: Sites, history: History) -> int:
 	for chunk: TerrainChunk in world.terrain.chunks():
 		var middle := anchor.point_at((chunk.coord.x + 0.5) * chunk.side, (chunk.coord.y + 0.5) * chunk.side)
 		for cell in history.cells.within(middle, reach):
-			if not sites._units.has(cell):
+			# within() is a box round the cap: only cells that really come near.
+			var near := Sphere.angle(middle, history.cells.center(cell)) * history.radius - history.cells.half_diagonal(cell)
+			if near <= reach and not sites._units.has(cell):
 				missing[cell] = true
 	return missing.size()
 
@@ -118,9 +120,6 @@ func _against_a_scan(sites: Sites) -> void:
 		for site in all_sites:
 			if site.touches(rect):
 				scanned[site] = true
-		for ruin in world.shape.ruins.around(rect.get_center().x, rect.get_center().y, rect.size.length() + 50.0):
-			if ruin.touches(rect):
-				scanned[ruin] = true
 		var pieces := {}
 		for piece in sites.paths_in(rect):
 			pieces[piece] = true
@@ -141,14 +140,11 @@ func _against_a_scan(sites: Sites) -> void:
 	for chunk: TerrainChunk in world.terrain.chunks():
 		var square := Rect2(Vector2(chunk.coord) * chunk.side, Vector2.ONE * chunk.side)
 		var scanned := all_sites.filter(func(s: Site) -> bool: return s.touches(square))
-		var asked_here := sites.query(square, true).filter(func(s: Site) -> bool: return not s is Ruin)
+		var asked_here := sites.query(square, true)
 		touching += scanned.size()
 		if asked_here.size() != scanned.size() or not scanned.all(func(s: Site) -> bool: return asked_here.has(s)):
 			off += 1
 		var own := all_sites.filter(func(s: Site) -> bool: return square.has_point(Vector2(s.x, s.z)))
-		var ruin := world.shape.ruins.in_chunk(chunk.coord)
-		if ruin != null:
-			own.append(ruin)
 		var asked := sites.in_chunk(chunk.coord)
 		if asked.size() != own.size() or not own.all(func(s: Site) -> bool: return asked.has(s)):
 			off += 1
