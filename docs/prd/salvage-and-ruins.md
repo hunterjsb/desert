@@ -527,7 +527,7 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
   frozen, so a stripped device on a ruin's floor could never be taken hold of, and a line
   tied to one held you as an anchor would. Nothing found is too heavy to drag by hand:
   the heaviest, a crate with every socket filled, is 51 kg, 250 N of your 400 N on a
-  ruin's floor or the sand. A Console with every socket filled is 50.7 kg.
+  ruin's floor or the sand. A Console with every socket filled is 49.7 kg.
 - **What's found** is the catalog's own parts and devices. The surface layer holds
   batteries, hooks, lamps, empty canisters, rope coils, cable plugs, hoses and compasses
   (2026-10-17, compasses one in twenty-one of the surface layer's parts), and crate

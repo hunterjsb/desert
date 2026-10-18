@@ -1,23 +1,26 @@
 class_name Console
 extends Device
-## The camp's computer: a crate's frame given to computing. Its computer mods
-## each read the weather field itself, never the felt weather, so a bubble
-## doesn't blind them: the field has no pressure, humidity or sand, so those
-## are derived from it (Tuning, Console). Every Console standing on one deck is
-## one system, its instruments pooled, and its full-face screen shows all they
-## read: numbers, and with the full set a small storm map. A shield in the
+## The camp's computer: a rack standing tall, its whole front a screen. Its
+## computer mods each read the weather field itself, never the felt weather,
+## so a bubble doesn't blind them: the field has no pressure, humidity or
+## sand, so those are derived from it (Tuning, Console). Every Console
+## standing on one deck is one system, its instruments pooled. Its screen
+## leads with the storm map, which takes in all the system reads: the more
+## gear, the finer it is, and with less it coarsens, never going. Then every
+## reading in detail, a smart shield's form, and its log. A shield in the
 ## system is smart: the screen reports it and switches it, and with a radar
 ## it switches itself on as a front nears. Its messages go out through its
 ## Terminal, and its screen draws only when what it shows has changed. Use on
 ## the screen presses the key you aim at, and anywhere else on it steps the
-## page; use at the frame works its tray, as a crate's.
+## page; use at the frame works its tray.
 
-enum Page { WEATHER, SHIELD, LOG }
-const PAGE_NAMES := ["WEATHER", "SHIELD", "LOG"]
+## Its pages, numbered as older saves knew them, and the order use steps
+## through them.
+enum Page { RADAR, SHIELD, LOG, STATS }
+const ORDER: Array[Page] = [Page.RADAR, Page.STATS, Page.SHIELD, Page.LOG]
+const PAGE_NAMES := ["RADAR", "SHIELD", "LOG", "STATS"]
 ## The sender its own lines go out under.
 const SENDER := "CON"
-## What a full set of instruments reads: then the screen draws a storm map.
-const FULL_SET := ["wind", "pressure", "humidity", "sand", "front", "forecast"]
 ## What each computer mod is called in its own lines, by the stat it adds.
 const INSTRUMENTS := {"anemometer": "ANEMOMETER", "barometer": "BAROMETER", "hygrometer": "HYGROMETER",
 	"particle_sensor": "PARTICLE SENSOR", "radar": "RADAR"}
@@ -28,15 +31,22 @@ const HIT_DEPTH := 1000.0
 const HIT_STEPS := 4
 ## Sand's trend looks back this far, s.
 const SAND_TREND := 30.0
+## The barometer's history the stats page draws: this many readings, this
+## far apart, s.
+const HISTORY := 20
+const HISTORY_EVERY := 30.0
 ## Storms riding a wind slower than this have no time to them, m/s.
 const CLOSING := 0.5
-## The screen's pixels, and the share of its height its keys take at the foot.
-const PIXELS := Vector2i(768, 448)
-const KEY_SHARE := 0.11
-## The picture on the screen's glass, m: just inside its bezel.
-const PICTURE := Vector2(0.68, 0.38)
+## With no radar, the map estimates this far round it, m: what a storm the
+## barometer feels, carried by the wind, covers in its warning's reach.
+const ESTIMATE_REACH := 6000.0
+## The screen's pixels, the share of its height its keys take at its foot,
+## and the picture on its glass, m.
+const PIXELS := Vector2i(580, 1080)
+const KEY_SHARE := 0.09
+const PICTURE := Vector2(0.58, 1.08)
 
-var page := Page.WEATHER
+var page := Page.RADAR
 ## Whether a smart shield switches itself on as the radar sees a front near.
 var auto_shield := true
 var terminal := Terminal.new()
@@ -62,9 +72,21 @@ var _screen_at := -INF
 ## differs from here, INF for nowhere in reach, and the next bearing.
 var _sweep := PackedFloat32Array()
 var _bearing := 0
-## The storm map round it, a row at a time, storm intensity per cell.
+## The storm map round it as last sampled whole, north row first: each cell's
+## storm (-1 past the radar's reach), its sand as a share of a storm's heart
+## and its humidity; the pass being sampled, a row at a time; its cells
+## across, its reach, when its pass began, and a count of passes.
 var _map := PackedFloat32Array()
+var _map_sand := PackedFloat32Array()
+var _map_humid := PackedFloat32Array()
+var _next := [PackedFloat32Array(), PackedFloat32Array(), PackedFloat32Array()]
+## The condenser's yield, as a share, clear and under a storm, read once a pass.
+var _yields := Vector2.ZERO
+var _map_n := 0
 var _map_row := 0
+var _map_reach := 0.0
+var _map_at := -INF
+var _map_passes := 0
 ## What it last knew of its own instruments and its link, to say when they change.
 var _instruments := {}
 var _linked := 1
@@ -88,7 +110,7 @@ func _ready() -> void:
 
 
 ## Use on the screen presses the key you aim at, or steps the page; at the
-## frame, it works its tray as a crate's.
+## frame, it works its tray.
 func interact(by: Player) -> bool:
 	var screen := _screen()
 	if by != null and screen != null and by.hands.look_device == self and by.hands.look_socket == screen:
@@ -151,11 +173,46 @@ func pooled_readings() -> Dictionary:
 	return all
 
 
+## How many of each instrument its running system holds, by the stat each
+## adds, radios as "radio".
+func gear() -> Dictionary:
+	var count := {}
+	for each in linked():
+		if not each.running():
+			continue
+		for key: String in each._fitted():
+			count[key] = count.get(key, 0) + 1
+		for seated in each.mounted():
+			if seated is Radio and seated.powered and not seated.wrecked():
+				count["radio"] = count.get("radio", 0) + 1
+	return count
+
+
+## Cells across its storm map, by the gear in its system: a radar alone
+## draws it coarse, each other kind of instrument finer, a second radar
+## finer again. With no radar its other instruments only estimate a map,
+## coarser still; with nothing to read, there's none.
+func map_cells() -> int:
+	var count := gear()
+	if count.is_empty():
+		return 0
+	if not count.has("radar"):
+		return _tuning.storm_map_estimate_cells + _tuning.storm_map_estimate_per_instrument * (count.size() - 1)
+	var n := _tuning.storm_map_radar_cells + _tuning.storm_map_cells_per_instrument * (count.size() - 1)
+	return roundi(n * (_tuning.storm_map_second_radar if count.radar > 1 else 1.0))
+
+
 ## What its screen shows on a page (its own, by default), as text: what you'd
 ## read there.
 func screen_text(on := -1) -> String:
-	var rows := _rows(page if on < 0 else on as Page, pooled_readings())
-	return "\n".join(Array(rows).map(func(r: String) -> String: return r.trim_prefix("!")))
+	var shown := _model(page if on < 0 else on as Page, pooled_readings())
+	var lines := PackedStringArray()
+	for key: String in ["front", "here", "forecast", "wind", "pressure", "humidity", "sand", "cells"]:
+		if shown.get(key, "") != "":
+			lines.append(shown[key])
+	for row: String in shown.get("rows", []):
+		lines.append(row.trim_prefix("!"))
+	return "\n".join(lines)
 
 
 func stats() -> Dictionary:
@@ -176,6 +233,7 @@ func _recompute() -> void:
 	if not now.has("radar"):
 		_sweep.resize(0)
 		_map.resize(0)
+		_map_n = 0
 		_swept = false
 	_show_display()
 
@@ -193,9 +251,8 @@ func _physics_process(delta: float) -> void:
 	if now.get("radar", 0) > 0:
 		for i in steps:
 			_sweep_one(now.radar_m)
-	if now.get("radar", 0) > 0 and _full_set():
-		for i in mini(steps, _tuning.storm_map_screen_cells):
-			_map_one(now.radar_m)
+		if _sampler() == self:
+			_map_step(now.radar_m, steps)
 	var t := world.time
 	if t >= _read_at + _tuning.console_read_every or t < _read_at:
 		_read_at = t
@@ -243,7 +300,9 @@ func _system() -> Array[Device]:
 static func _gather(device: Device, found: Array[Device]) -> void:
 	found.append(device)
 	for each in device.mounted():
-		_gather(each, found)
+		# Freed under its host, it's gone from its seat by the next tick.
+		if is_instance_valid(each):
+			_gather(each, found)
 
 
 ## The Console that speaks for its system: the first one running.
@@ -254,9 +313,13 @@ func _lead() -> Console:
 	return self
 
 
-func _full_set() -> bool:
-	var all := pooled_readings()
-	return FULL_SET.all(func(key: String) -> bool: return all.has(key))
+## The Console that samples its system's storm map: the first running one
+## with a radar.
+func _sampler() -> Console:
+	for each in linked():
+		if each.running() and each._fitted().has("radar"):
+			return each
+	return null
 
 
 ## What its own instruments read now, from the field where it stands.
@@ -267,7 +330,8 @@ func _read(now: Dictionary, t: float) -> void:
 	readings.clear()
 	if now.get("anemometer", 0) > 0:
 		var wind := field.wind_at(x, z, t)
-		readings["wind"] = {"speed": wind.length(), "from": Radio.bearing(-wind)}
+		readings["wind"] = {"speed": wind.length(), "from": Radio.bearing(-wind),
+			"steady": field.steady_wind_at(x, z, t).length()}
 	if now.get("barometer", 0) > 0:
 		var back := _tuning.barometer_trend_seconds
 		var raw := field.raw_storm_at(x, z, t)
@@ -275,15 +339,18 @@ func _read(now: Dictionary, t: float) -> void:
 		var rise := (raw - was) / back
 		# A rough warning: the trend carried on until the field crosses its threshold.
 		var eta := -raw / rise if raw <= 0.0 and rise > 0.0 else INF
+		var history := PackedFloat32Array()
+		for k in HISTORY:
+			history.append(pressure(field.raw_storm_at(x, z, t - (HISTORY - 1 - k) * HISTORY_EVERY)))
 		readings["pressure"] = {"hpa": pressure(raw), "per_min": (pressure(raw) - pressure(was)) / back * 60.0,
-			"eta": eta if eta <= _tuning.barometer_warn_minutes * 60.0 else INF}
+			"eta": eta if eta <= _tuning.barometer_warn_minutes * 60.0 else INF, "stormy": raw > 0.0, "history": history}
 	if now.get("hygrometer", 0) > 0:
 		var celsius := world.weather.field_temperature(global_position, t)
-		var yields := Condenser.yield_lph(_tuning, celsius)
-		readings["humidity"] = {"share": clampf(_tuning.humidity_cold * yields / _tuning.condenser_litres_per_hour
-			+ _tuning.humidity_storm * field.storm_at(x, z, t), 0.0, 1.0), "condenser_lph": yields}
+		readings["humidity"] = {"share": humidity(celsius, field.raw_storm_at(x, z, t)),
+			"condenser_lph": Condenser.yield_lph(_tuning, celsius)}
 	if now.get("particle_sensor", 0) > 0:
-		readings["sand"] = {"g_m3": sand(field, x, z, t), "was": sand(field, x, z, t - SAND_TREND)}
+		readings["sand"] = {"g_m3": sand_of(field, field.raw_storm_at(x, z, t)),
+			"was": sand_of(field, field.raw_storm_at(x, z, t - SAND_TREND)), "stormy": field.raw_storm_at(x, z, t) > 0.0}
 	if now.get("radar", 0) > 0 and _swept:
 		readings["front"] = _front(field, x, z, t, now.radar_m)
 	for each in mounted():
@@ -306,13 +373,23 @@ func pressure(raw: float) -> float:
 	return _tuning.air_pressure_hpa - _tuning.air_pressure_fall * raw
 
 
-## Sand in the air at a place, g/m³: a storm's, thickening from its wall to
-## its heart, as deep in the field as salvage counts a storm's heart, or what
-## a front's outflow carries ahead of the wall.
-func sand(field: WeatherField, x: float, z: float, t: float) -> float:
-	var deep := clampf(field.raw_storm_at(x, z, t) / _tuning.exposure_storm_full, 0.0, 1.0)
-	return _tuning.sand_full_g_m3 * maxf(field.storm_at(x, z, t) * lerpf(_tuning.sand_wall_share, 1.0, deep),
-		_tuning.sand_outflow_share * field.outflow_at(x, z, t))
+## Humidity, 0 to 1, in air this warm where the field before its threshold
+## stands at `raw`: as much as the condenser's yield gives it in the cold,
+## less as the air warms, as the yield falls, and more as a storm nears, most
+## in one. The hygrometer's reading and the map's every cell both.
+func humidity(celsius: float, raw: float) -> float:
+	var near := clampf((raw + _tuning.humidity_reach) / _tuning.humidity_reach, 0.0, 1.0)
+	return clampf(_tuning.humidity_cold * Condenser.yield_lph(_tuning, celsius) / _tuning.condenser_litres_per_hour
+		+ _tuning.humidity_storm * near, 0.0, 1.0)
+
+
+## Sand in the air where the field stands at `raw`, g/m³: a storm's,
+## thickening from its wall to its heart, as deep in the field as salvage
+## counts a storm's heart, or what a front's outflow carries ahead of the wall.
+func sand_of(field: WeatherField, raw: float) -> float:
+	var deep := clampf(raw / _tuning.exposure_storm_full, 0.0, 1.0)
+	return _tuning.sand_full_g_m3 * maxf(field.storm_of(raw) * lerpf(_tuning.sand_wall_share, 1.0, deep),
+		_tuning.sand_outflow_share * field.outflow_of(raw))
 
 
 ## The radar's next bearing: out from here until the storm state changes.
@@ -325,9 +402,8 @@ func _sweep_one(reach: float) -> void:
 	var field := world.weather.field
 	var x := world.world_x(global_position.x)
 	var z := world.world_z(global_position.z)
-	var t := world.time
 	var along := _along(TAU * _bearing / count)
-	_sweep[_bearing] = edge(field, x, z, t, along, reach, _tuning.radar_step_m)
+	_sweep[_bearing] = edge(field, x, z, world.time, along, reach, _tuning.radar_step_m)
 	_bearing = (_bearing + 1) % count
 	if _bearing == 0 and not _swept:
 		# Round once, it reads at once.
@@ -376,25 +452,65 @@ func _front(field: WeatherField, x: float, z: float, t: float, reach: float) -> 
 		if not inside and upwind < INF:
 			for k in HIT_STEPS:
 				var deeper := upwind + HIT_DEPTH * (k + 1) / HIT_STEPS
-				out.hits = maxf(out.hits, sand(field, x + up.x * deeper, z + up.y * deeper, t))
+				out.hits = maxf(out.hits, sand_of(field, field.raw_storm_at(x + up.x * deeper, z + up.y * deeper, t)))
 	return out
 
 
-## One row of the storm map round it, north up as the radar reads it.
-func _map_one(reach: float) -> void:
-	var n := _tuning.storm_map_screen_cells
-	if _map.size() != n * n:
-		_map.resize(n * n)
-		_map.fill(0.0)
+## Samples its system's storm map a few rows a tick, a whole pass again each
+## storm_map_every, at as many cells across as the system's gear allows, each
+## cell's storm, sand and humidity from the field's one sample there, as
+## sand_of() and humidity() would; the screen draws the last whole pass.
+func _map_step(reach: float, rows: int) -> void:
+	var n := map_cells()
+	var t := world.time
+	if n != _map_n or reach != _map_reach:
+		_map_n = n
+		_map_reach = reach
 		_map_row = 0
+		_map.resize(0)
+		_map_at = -INF
+	if _map_row == 0:
+		if not _map.is_empty() and t < _map_at + _tuning.storm_map_every and t >= _map_at:
+			return
+		_map_at = t
+		for each: PackedFloat32Array in _next:
+			each.resize(n * n)
+		# The temperature is straight in the storm's blanket, so the condenser's
+		# yield is read clear and under a storm and taken between.
+		var full := _tuning.condenser_litres_per_hour
+		_yields = Vector2(Condenser.yield_lph(_tuning, world.weather.temperature_under(0.0, t)) / full,
+			Condenser.yield_lph(_tuning, world.weather.temperature_under(1.0, t)) / full)
 	var field := world.weather.field
 	var x := world.world_x(global_position.x)
 	var z := world.world_z(global_position.z)
 	var cell := 2.0 * reach / n
-	for i in n:
-		var at := Vector2(-reach + (i + 0.5) * cell, -reach + (_map_row + 0.5) * cell)
-		_map[_map_row * n + i] = field.storm_at(x + at.x, z + at.y, world.time)
-	_map_row = (_map_row + 1) % n
+	var tune := _tuning
+	var storm: PackedFloat32Array = _next[0]
+	var sand: PackedFloat32Array = _next[1]
+	var humid: PackedFloat32Array = _next[2]
+	for k in rows:
+		var dz := (_map_row + 0.5) * 2.0 / n - 1.0
+		for i in n:
+			var c := _map_row * n + i
+			var dx := (i + 0.5) * 2.0 / n - 1.0
+			if dx * dx + dz * dz > 1.0:
+				storm[c] = -1.0
+				continue
+			var r := field.raw_storm_at(x - reach + (i + 0.5) * cell, z - reach + (_map_row + 0.5) * cell, t)
+			var s := field.storm_of(r)
+			storm[c] = s
+			sand[c] = maxf(s * lerpf(tune.sand_wall_share, 1.0, clampf(r / tune.exposure_storm_full, 0.0, 1.0)),
+				tune.sand_outflow_share * field.outflow_of(r))
+			humid[c] = clampf(tune.humidity_cold * lerpf(_yields.x, _yields.y, s)
+				+ tune.humidity_storm * clampf((r + tune.humidity_reach) / tune.humidity_reach, 0.0, 1.0), 0.0, 1.0)
+		_map_row += 1
+		if _map_row == n:
+			_map = storm.duplicate()
+			_map_sand = sand.duplicate()
+			_map_humid = humid.duplicate()
+			_map_row = 0
+			_map_passes += 1
+			return
 
 
 ## A compass bearing's way along the ground, world x and z: north is -z.
@@ -427,10 +543,9 @@ func _watch() -> void:
 		if front.inside:
 			_alerts.erase("front")
 			_alerts.erase("near")
-		else:
-			if _alerts.has("inside"):
-				_alerts.erase("inside")
-				_say("STORM PASSED")
+		elif _alerts.has("inside"):
+			_alerts.erase("inside")
+			_say("STORM PASSED")
 		var near: bool = front.inside or front.d <= _tuning.smart_shield_auto_m
 		var where := "FRONT %s %s · ETA %s" % [_distance(front.d), _point(front.bearing), _span(front.eta)]
 		if near and not front.inside:
@@ -492,19 +607,21 @@ func _say(text: String, fields := []) -> void:
 			break
 
 
-func _next_page() -> Page:
-	var at := page
-	for i in PAGE_NAMES.size():
-		at = ((at + 1) % PAGE_NAMES.size()) as Page
-		if at != Page.SHIELD or not smart_shields().is_empty():
-			return at
-	return Page.WEATHER
+## The page after this one in use's order, passing over the shield's with no
+## smart shield.
+func _next_page(from := page) -> Page:
+	var at := ORDER.find(from)
+	for i in ORDER.size():
+		at = (at + 1) % ORDER.size()
+		if ORDER[at] != Page.SHIELD or not smart_shields().is_empty():
+			return ORDER[at]
+	return Page.RADAR
 
 
-## The screen's keys, as [name, what it says]: each says how it stands, and
-## a press switches it.
+## The screen's keys, as [name, what it says]: the page key names the page
+## it goes to; the others say how they stand, and a press switches them.
 func _keys() -> Array:
-	var keys: Array = [["PAGE", "PAGE ›"]]
+	var keys: Array = [["PAGE", "%s ›" % PAGE_NAMES[_next_page()]]]
 	var shields := smart_shields()
 	if not shields.is_empty():
 		var any_on := shields.any(func(s: ShieldGenerator) -> bool: return s.on)
@@ -586,82 +703,180 @@ func _draw_screen() -> void:
 	var eye := world.player.camera.global_position
 	if eye.distance_to(global_position) > _tuning.console_screen_seen_m and _shown != "":
 		return
-	var all := pooled_readings()
-	var rows := _rows(page, all)
-	var head: String = "CONSOLE" + (" · LINK %d" % linked().size() if linked().size() > 1 else "") + " · " + PAGE_NAMES[page]
-	var map := {}
-	if page == Page.WEATHER and _full_set():
-		map = _map_view(all)
-	var keys := _keys()
-	var key_names: Array = keys.map(func(k: Array) -> String: return k[1])
-	var model := {"head": head, "clock": _clock(world.time, true), "rows": rows, "keys": key_names, "aim": _aim,
-		"map": map}
-	var said := str(model)
+	var shown := _model(page, pooled_readings())
+	var cells: Dictionary = shown.get("map", {}).get("cells", {})
+	if not cells.is_empty():
+		# A radar's map is told apart by its pass; the arrays stay out of the comparison.
+		shown.map.erase("cells")
+	var said := str(shown)
 	if said == _shown:
 		return
 	_shown = said
-	_view.show_model(model)
+	if not cells.is_empty():
+		shown.map["cells"] = cells
+	_view.show_model(shown)
 	_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
 
 
-## The storm map as its screen draws it: the cells of the first radar's map
-## in its system, turned so the moon's north is up, and the nearest edge.
-func _map_view(all: Dictionary) -> Dictionary:
-	for each in linked():
-		if each._map.size() == _tuning.storm_map_screen_cells * _tuning.storm_map_screen_cells:
-			var front: Dictionary = all.get("front", {})
-			return {"cells": each._map, "n": _tuning.storm_map_screen_cells, "flip": world.moon.north().z > 0.0,
-				"reach": front.get("reach", 0.0), "front": [front.d, front.bearing] if front.get("d", INF) < INF else [],
-				"moving": front.get("moving", 0.0)}
-	return {}
-
-
-## A page's rows as its terminal prints them: on the weather page its
-## readout, then the last lines logged under a rule (an empty row).
-func _rows(on: Page, all: Dictionary) -> PackedStringArray:
-	var rows := PackedStringArray()
-	var logs := linked().map(func(c: Console) -> Terminal: return c.terminal)
+## What a page shows. The radar's: its map and what's drawn on it, each
+## reading's text as it reads there. The others': rows as its terminal
+## prints them.
+func _model(on: Page, all: Dictionary) -> Dictionary:
+	var shown := {"page": PAGE_NAMES[on], "clock": _clock(world.time, true), "aim": _aim,
+		"keys": _keys().map(func(k: Array) -> String: return k[1]), "flip": world.moon.north().z > 0.0}
 	match on:
-		Page.WEATHER:
+		Page.RADAR:
+			_radar(shown, all)
+		Page.STATS:
 			terminal.readout(SENDER, _readout(all))
+			var rows := PackedStringArray()
 			for from: String in terminal.readouts:
 				rows.append_array(terminal.readouts[from])
-			var latest := Terminal.merged(logs, 3)
-			if not latest.is_empty():
-				rows.append("")
-				for line: Dictionary in latest:
-					rows.append(_logged(line))
+			shown["rows"] = rows
+			if all.has("wind"):
+				shown["gyro"] = [all.wind.from, all.wind.speed, all.wind.steady]
+			if all.has("pressure"):
+				shown["history"] = [all.pressure.history, _tuning.air_pressure_hpa]
 		Page.SHIELD:
+			var rows := PackedStringArray()
 			for shield in smart_shields():
 				rows.append_array(["SHIELD  %s" % shield.label.to_upper(), "STATE   %s" % _shield_state(shield),
 					"DRAW    %d W" % roundi(shield.demand_w()), "POOL    %d Wh" % floori(world.power.pool_wh(shield)),
-					"LEFT    %s" % _span(shield.seconds_left()), "BUBBLE  %d m" % roundi(shield.size)])
+					"LEFT    %s" % _span(shield.seconds_left()), "BUBBLE  %d m" % roundi(shield.size), ""])
 			var auto := "needs a radar"
 			if all.has("front"):
 				auto = "ON · at %s" % _distance(_tuning.smart_shield_auto_m) if _lead().auto_shield else "OFF"
 			rows.append("AUTO    %s" % auto)
+			shown["rows"] = rows
 		Page.LOG:
-			for line: Dictionary in Terminal.merged(logs, 14):
+			var rows := PackedStringArray()
+			for line: Dictionary in Terminal.merged(linked().map(func(c: Console) -> Terminal: return c.terminal), 18):
 				rows.append(_logged(line))
-			if rows.is_empty():
-				rows.append("  nothing logged")
-	return rows
+			shown["rows"] = rows if not rows.is_empty() else PackedStringArray(["  nothing logged"])
+	return shown
 
 
-## Its readout: a row or two for each reading, the label first, a "!" before
-## what's urgent, and a smart shield's line.
+## The radar page: its storm map at the system's resolution, humidity laid
+## over its clear air, the front's numbers where the front is, and round it
+## the wind's gyro, the pressure's bar, and the forecast along its foot.
+func _radar(shown: Dictionary, all: Dictionary) -> void:
+	var n := map_cells()
+	shown["cells"] = "" if n == 0 else "%d × %d" % [n, n]
+	if n == 0:
+		shown["here"] = "NO INSTRUMENTS"
+		return
+	var map := {"n": n, "estimate": not gear().has("radar")}
+	var front: Dictionary = all.get("front", {})
+	if map.estimate:
+		_estimate(map, all)
+		var eta: float = all.get("pressure", {}).get("eta", INF)
+		if map.has("front"):
+			shown["front"] = "~%s · ~%s" % [_distance((map.front as Vector2).length()), _span(eta)]
+		elif eta < INF:
+			shown["front"] = "STORM ~%s" % _span(eta)
+		if map.cells.storm[map.cells.storm.size() / 2] > 0.0:
+			shown["here"] = "IN STORM"
+	else:
+		var sampler := _sampler()
+		if sampler == null or sampler._map.size() != n * n:
+			shown["here"] = "SWEEPING"
+			return
+		map["reach"] = sampler._map_reach
+		map["pass"] = sampler._map_passes
+		map["cells"] = {"storm": sampler._map, "sand": sampler._map_sand,
+			"humid": sampler._map_humid if all.has("humidity") else PackedFloat32Array()}
+		if not front.is_empty():
+			if front.inside:
+				shown["here"] = "IN STORM · %s" % _clears(front)
+			elif front.d < INF:
+				map["front"] = _along(deg_to_rad(front.bearing)) * front.d
+				shown["front"] = "%s · %s" % [_distance(front.d), _span(front.eta)]
+	shown["map"] = map
+	if all.has("wind"):
+		shown["wind"] = "%d m/s %s" % [roundi(all.wind.speed), _point(all.wind.from)]
+		map["gyro"] = [all.wind.from, all.wind.speed]
+	if all.has("pressure"):
+		var p: Dictionary = all.pressure
+		shown["pressure"] = "%d hPa %s" % [roundi(p.hpa), "▼" if p.per_min < -0.05 else ("▲" if p.per_min > 0.05 else "–")]
+		map["pressure"] = [p.hpa, _tuning.air_pressure_hpa, _tuning.air_pressure_fall, p.eta < INF or p.stormy]
+	if all.has("humidity"):
+		shown["humidity"] = "HUMID %d%%" % roundi(all.humidity.share * 100.0)
+	if all.has("sand"):
+		shown["sand"] = "SAND %.1f g/m³" % all.sand.g_m3
+		map["sand"] = true
+	if all.has("forecast"):
+		var r: Dictionary = all.forecast
+		var now: float = world.time
+		if r.stormy:
+			shown["forecast"] = "IN STORM · CLEARS %s" % (_span(r.change - now) if r.change < INF else "PAST %d MIN" % roundi(_tuning.radio_forecast_minutes))
+		elif r.change == INF:
+			shown["forecast"] = "CLEAR %d MIN AND MORE" % roundi(_tuning.radio_forecast_minutes)
+		else:
+			shown["forecast"] = "STORM IN %s FROM %s" % [_span(r.change - now), _point(r.from)]
+
+
+## With no radar, the map as its other instruments estimate it: here as it
+## is, and a storm the barometer expects coming on the wind, as far upwind as
+## the wind carries it before it arrives, across the whole way it comes.
+func _estimate(map: Dictionary, all: Dictionary) -> void:
+	var n: int = map.n
+	map["reach"] = ESTIMATE_REACH
+	var storm := PackedFloat32Array()
+	var sand := PackedFloat32Array()
+	var humid := PackedFloat32Array()
+	storm.resize(n * n)
+	storm.fill(-1.0)
+	sand.resize(n * n)
+	humid.resize(n * n)
+	humid.fill(-1.0)
+	var here := -1.0
+	if all.has("pressure"):
+		here = 1.0 if all.pressure.stormy else 0.0
+	elif all.has("sand"):
+		here = 1.0 if all.sand.stormy else 0.0
+	var middle := (n / 2) * n + n / 2
+	storm[middle] = here
+	if all.has("sand"):
+		sand[middle] = all.sand.g_m3 / _tuning.sand_full_g_m3
+	var coming := INF
+	var from := Vector2.ZERO
+	if all.has("wind") and all.has("pressure"):
+		from = _along(deg_to_rad(all.wind.from))
+		coming = all.pressure.eta * all.wind.speed
+		for j in n:
+			for i in n:
+				var k := j * n + i
+				if k == middle:
+					continue
+				var at := Vector2(i + 0.5 - n * 0.5, j + 0.5 - n * 0.5) * (2.0 * ESTIMATE_REACH / n)
+				storm[k] = 1.0 if at.dot(from) >= coming else 0.0
+		if coming < INF:
+			map["front"] = from * coming
+	if all.has("humidity"):
+		var clear := world.weather.temperature_under(0.0)
+		var under := world.weather.temperature_under(1.0)
+		for k in n * n:
+			if storm[k] >= 0.0:
+				# Estimated, a cell is the field's threshold or far below it.
+				humid[k] = humidity(lerpf(clear, under, storm[k]), 0.0 if storm[k] > 0.0 else -INF)
+	map["cells"] = {"storm": storm, "sand": sand, "humid": humid}
+
+
+## Its stats: every reading in detail, a row or two each, the label first, a
+## "!" before what's urgent, and a smart shield's line.
 func _readout(all: Dictionary) -> PackedStringArray:
 	var rows := PackedStringArray()
 	if all.is_empty():
 		rows.append_array(["NO INSTRUMENTS", "  fit a computer mod to a side port"])
 	if all.has("wind"):
 		rows.append("WIND   %.1f m/s from %s" % [all.wind.speed, _point(all.wind.from)])
+		rows.append("       steady %.1f m/s" % all.wind.steady)
 	if all.has("pressure"):
 		var p: Dictionary = all.pressure
 		var way := "falling" if p.per_min < -0.05 else ("rising" if p.per_min > 0.05 else "steady")
-		rows.append("PRESS  %.1f hPa %s %.1f/min" % [p.hpa, way, absf(p.per_min)])
-		if p.eta < INF:
-			rows.append("!       STORM LIKELY ~%s" % _span(p.eta))
+		rows.append("PRESS  %.1f hPa %s" % [p.hpa, way])
+		rows.append(("!" if p.eta < INF else "") + "       %.1f hPa/min%s" % [absf(p.per_min),
+			" · storm ~%s" % _span(p.eta) if p.eta < INF else ""])
 	if all.has("humidity"):
 		rows.append("HUMID  %d%% · condenser %.1f L/h" % [roundi(all.humidity.share * 100.0), all.humidity.condenser_lph])
 	if all.has("sand"):
@@ -673,12 +888,15 @@ func _readout(all: Dictionary) -> PackedStringArray:
 		var heading := "heading %s %d m/s" % [_point(f.moving), roundi(f.speed)]
 		if f.inside:
 			rows.append("!STORM  here · %s" % _clears(f))
-			rows.append("       %s%s" % ["clear air %s %s · " % [_distance(f.d), _point(f.bearing)] if f.d < INF else "",
-				heading])
+			if f.d < INF:
+				rows.append("       clear air %s %s" % [_distance(f.d), _point(f.bearing)])
+			rows.append("       " + heading)
 		elif f.d < INF:
 			rows.append(("!" if f.d <= _tuning.smart_shield_auto_m else "")
-				+ "FRONT  %s %s · ETA %s" % [_distance(f.d), _point(f.bearing), _span(f.eta)])
-			rows.append("       %s%s" % [heading, " · hits %.1f g/m³" % f.hits if all.has("sand") and f.eta < INF else ""])
+				+ "FRONT  %s %s · %s" % [_distance(f.d), _point(f.bearing), _span(f.eta)])
+			rows.append("       " + heading)
+			if all.has("sand") and f.eta < INF:
+				rows.append("       hits %.1f g/m³" % f.hits)
 		else:
 			rows.append("FRONT  none in %s" % _distance(f.reach))
 	if all.has("forecast"):
@@ -693,7 +911,7 @@ func _readout(all: Dictionary) -> PackedStringArray:
 		else:
 			rows.append("FCST   storm in %s from %s" % [_span(r.change - now), _point(r.from)])
 			rows.append("       winds to %d m/s · %s" % [roundi(r.wind), "lasts %s" % _span(r.back - r.change)
-				if r.back < INF else "past %d min" % horizon])
+				if r.back < INF else "%d min+" % horizon])
 	var shields := smart_shields()
 	if not shields.is_empty():
 		rows.append(("!" if shields[0].on and not shields[0].running() else "") + "SHIELD %s" % _shield_state(shields[0]))

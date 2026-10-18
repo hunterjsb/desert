@@ -120,7 +120,7 @@ const PARTS := {
 	# A Console's screen and its computer mods: each instrument adds its own
 	# readings to the screen (Console), and draws a little while it runs. The
 	# radar sweeps the field this far out, m.
-	&"screen": {"kind": &"screen", "label": "Screen", "mass": 2.0, "size": Vector3(0.72, 0.42, 0.03),
+	&"screen": {"kind": &"screen", "label": "Screen", "mass": 3.0, "size": Vector3(0.62, 1.12, 0.03),
 		"color": Color(0.04, 0.05, 0.05), "stats": {"screen": 1, "draw_w": 3.0}},
 	&"anemometer": {"kind": &"computer_mod", "label": "Anemometer", "mass": 0.7, "size": Vector3(0.16, 0.14, 0.16),
 		"color": Color(0.26, 0.28, 0.29), "stats": {"anemometer": 1, "draw_w": 0.5}},
@@ -274,30 +274,35 @@ const DEVICES := {
 			[&"bottom", Vector3(0.0, -0.06, 0.0), Vector3.DOWN],
 			[&"deck", Vector3(0.0, 0.06, 0.0), Vector3.UP],
 		]},
-	# The camp's computer, a crate's frame given to computing: its front is
-	# wholly the screen, so nothing else is on that face to clip it; its back
-	# takes the batteries, two rings and the port; each side three computer-mod
-	# ports; its top a regular mount over the back half, where a radio gives it
-	# a voice, and a computer-mod top over the front half for a radar. It
-	# floats on a tray and stands on a deck mount like a crate.
-	&"console": {"label": "Console", "size": Vector3(0.8, 0.5, 0.8), "mass": 12.0, "console": true, "deck": true,
-		"stats": {"draw_w": 4.0},
+	# The camp's computer, a rack standing tall and narrow so its whole front
+	# is a big screen, as tall as the radar page wants and its middle at your
+	# eyes once it floats. Its batteries sit low at its back, its frame is
+	# heaviest at its foot, and its tray mount sits back under that weight, so
+	# one tray holds it upright; its rings are down beside the batteries, near
+	# that weight, so a line pulls it along rather than over. Its back
+	# takes the batteries, two rings and the port; each side three
+	# computer-mod ports down it; its top a regular mount, where a radio gives
+	# it a voice, and a computer-mod top for a radar. It floats on a tray and
+	# stands on a deck mount. The list keeps its order, so older saves keep
+	# their sockets.
+	&"console": {"label": "Console", "size": Vector3(0.7, 1.3, 0.6), "mass": 10.0, "middle": Vector3(0.0, -0.45, 0.0),
+		"console": true, "deck": true, "stats": {"draw_w": 4.0},
 		"sockets": [
-			[&"battery", Vector3(-0.2, -0.06, 0.4), Vector3.BACK],
-			[&"battery", Vector3(0.2, -0.06, 0.4), Vector3.BACK],
-			[&"ring", Vector3(-0.3, 0.16, 0.4), Vector3.BACK],
-			[&"ring", Vector3(0.3, 0.16, 0.4), Vector3.BACK],
-			[&"bottom", Vector3(0.0, -0.25, 0.0), Vector3.DOWN],
-			[&"top", Vector3(0.0, 0.25, 0.2), Vector3.UP],
-			[&"computer_top", Vector3(0.0, 0.25, -0.2), Vector3.UP],
-			[&"screen", Vector3(0.0, 0.0, -0.4), Vector3.FORWARD],
-			[&"port", Vector3(0.0, 0.16, 0.4), Vector3.BACK],
-			[&"computer_mod", Vector3(0.4, 0.0, -0.25), Vector3.RIGHT],
-			[&"computer_mod", Vector3(0.4, 0.0, 0.0), Vector3.RIGHT],
-			[&"computer_mod", Vector3(0.4, 0.0, 0.25), Vector3.RIGHT],
-			[&"computer_mod", Vector3(-0.4, 0.0, -0.25), Vector3.LEFT],
-			[&"computer_mod", Vector3(-0.4, 0.0, 0.0), Vector3.LEFT],
-			[&"computer_mod", Vector3(-0.4, 0.0, 0.25), Vector3.LEFT],
+			[&"battery", Vector3(-0.13, -0.47, 0.3), Vector3.BACK],
+			[&"battery", Vector3(0.13, -0.47, 0.3), Vector3.BACK],
+			[&"ring", Vector3(-0.3, -0.4, 0.3), Vector3.BACK],
+			[&"ring", Vector3(0.3, -0.4, 0.3), Vector3.BACK],
+			[&"bottom", Vector3(0.0, -0.65, 0.12), Vector3.DOWN],
+			[&"top", Vector3(0.0, 0.65, 0.14), Vector3.UP],
+			[&"computer_top", Vector3(0.0, 0.65, -0.14), Vector3.UP],
+			[&"screen", Vector3(0.0, 0.01, -0.3), Vector3.FORWARD],
+			[&"port", Vector3(0.0, -0.24, 0.3), Vector3.BACK],
+			[&"computer_mod", Vector3(0.35, 0.36, 0.0), Vector3.RIGHT],
+			[&"computer_mod", Vector3(0.35, 0.12, 0.0), Vector3.RIGHT],
+			[&"computer_mod", Vector3(0.35, -0.12, 0.0), Vector3.RIGHT],
+			[&"computer_mod", Vector3(-0.35, 0.36, 0.0), Vector3.LEFT],
+			[&"computer_mod", Vector3(-0.35, 0.12, 0.0), Vector3.LEFT],
+			[&"computer_mod", Vector3(-0.35, -0.12, 0.0), Vector3.LEFT],
 		]},
 }
 
@@ -471,6 +476,7 @@ static func device(id: StringName) -> Device:
 	made.set_meta(&"catalog", id)
 	made.label = spec.label
 	made.frame_mass = spec.mass
+	made.frame_middle = spec.get("middle", Vector3.ZERO)
 	made.frame_stats = spec.get("stats", {}).duplicate()
 	made.kind = spec.get("fits", &"")
 	made.stands_on_deck = spec.get("deck", false)

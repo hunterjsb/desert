@@ -86,14 +86,24 @@ func raw_storm_at(x: float, z: float, t: float) -> float:
 ## Storm intensity, 0 in the clear and rising to 1 just past the front. Any
 ## value above 0 is inside a storm.
 func storm_at(x: float, z: float, t: float) -> float:
-	return clampf(raw_storm_at(x, z, t) / _ramp, 0.0, 1.0)
+	return storm_of(raw_storm_at(x, z, t))
+
+
+## Storm intensity where the field before its threshold stands at `raw`.
+func storm_of(raw: float) -> float:
+	return clampf(raw / _ramp, 0.0, 1.0)
 
 
 ## How far a front's outflow has risen at a place, 0 to 1: from a lead ahead
 ## of the front to full just past it. The wind blows harder by it, and the
 ## sand it drives charges up, so a radio's static rises with it too.
 func outflow_at(x: float, z: float, t: float) -> float:
-	return clampf((raw_storm_at(x, z, t) + _lead) / (_lead + _ramp), 0.0, 1.0)
+	return outflow_of(raw_storm_at(x, z, t))
+
+
+## A front's outflow where the field before its threshold stands at `raw`.
+func outflow_of(raw: float) -> float:
+	return clampf((raw + _lead) / (_lead + _ramp), 0.0, 1.0)
 
 
 ## The wind without its gusts, m/s, in world x and z: the prevailing wind and

@@ -241,41 +241,41 @@ static func _frame(id: StringName, size: Vector3, extra: float) -> ArrayMesh:
 				for x in [-0.22, 0.22]:
 					_hazard(b, Vector3(0.2, 0.03, 0.012), turn * Vector3(x, 0.0, h.z - 0.004), turn)
 		&"console":
-			# A crate's posts, rails and caps round a computer: its front a black
-			# bezel the whole face for the screen, a hazard strip along its foot;
-			# vents high on its right over the computer-mod ports, the fitter's tag
-			# high on its left; a rail across its top between its two mounts.
+			# A rack: four rails on a plinth, a cap, teal side panels vented in two
+			# columns either side of their computer-mod ports, its back panel with
+			# the fitter's tag over a fan, and on its front bolted rack ears either
+			# side of the screen, a black bezel bar over and under it, a hazard
+			# strip along the plinth.
 			for x in [-1, 1]:
 				for z in [-1, 1]:
-					b.box(Vector3(0.07, size.y, 0.07), Vector3(x * (h.x - 0.035), 0.0, z * (h.z - 0.035)), gun, 0.012)
-					for y in [-1, 1]:
-						b.box(Vector3(0.116, 0.086, 0.116), Vector3(x * (h.x - 0.055), y * (h.y - 0.04), z * (h.z - 0.055)),
-							Paint.coat(Paint.BLACK, 0.7, 0.3), 0.02)
-			for y in [-1, 1]:
-				for s in [-1, 1]:
-					b.box(Vector3(size.x - 0.1, 0.06, 0.06), Vector3(0.0, y * (h.y - 0.03), s * (h.z - 0.03)), gun)
-					b.box(Vector3(0.06, 0.06, size.z - 0.1), Vector3(s * (h.x - 0.03), y * (h.y - 0.03), 0.0), gun)
-			# Back, right and left: the front (a half turn) is the screen's.
-			for side in [0, 1, 3]:
-				var turn := Basis(Vector3.UP, side * PI * 0.5)
-				var depth := h.z if side % 2 == 0 else h.x
-				if side == 3:
-					b.stamp(Paint.Mark.CONTRACTOR, turn * Vector3(0.0, 0.165, depth - 0.025), 0.16, turn, Paint.Ink.PALE)
-				b.box(Vector3(size.x - 0.14, size.y - 0.14, 0.03), turn * Vector3(0.0, 0.0, depth - 0.04), teal, 0.008, turn)
-				if side == 1:
-					for i in 3:
-						b.box(Vector3(size.x - 0.3, 0.012, 0.034), turn * Vector3(0.0, 0.11 + i * 0.03, depth - 0.04), black, 0.002, turn)
-			# The front: a deep black bezel round where the screen goes.
+					b.box(Vector3(0.05, size.y - 0.04, 0.05), Vector3(x * (h.x - 0.025), 0.0, z * (h.z - 0.025)), gun, 0.01)
+			b.box(Vector3(size.x, 0.09, size.z), Vector3(0.0, -h.y + 0.045, 0.0), Paint.coat(Paint.BLACK, 0.7, 0.3), 0.015)
+			for x in [-1, 1]:
+				for z in [-1, 1]:
+					b.box(Vector3(0.1, 0.03, 0.1), Vector3(x * (h.x - 0.06), -h.y + 0.015, z * (h.z - 0.06)), black, 0.008)
+			b.box(Vector3(size.x, 0.04, size.z), Vector3(0.0, h.y - 0.02, 0.0), gun, 0.01)
+			b.box(Vector3(size.x - 0.12, 0.012, size.z - 0.12), Vector3(0.0, h.y + 0.002, 0.0), teal, 0.003)
+			for x in [-1, 1]:
+				var turn := Basis(Vector3.UP, x * PI * 0.5)
+				b.box(Vector3(size.z - 0.08, size.y - 0.16, 0.02), turn * Vector3(0.0, 0.01, h.x - 0.02), teal, 0.006, turn)
+				for column in [-1, 1]:
+					for i in 14:
+						b.box(Vector3(0.11, 0.012, 0.024), turn * Vector3(column * 0.19, -0.5 + i * 0.08, h.x - 0.012), black,
+							0.002, turn)
+			var back := Basis.IDENTITY
+			b.stamp(Paint.Mark.CONTRACTOR, Vector3(0.0, 0.42, h.z - 0.01), 0.22, back, Paint.Ink.PALE)
+			b.box(Vector3(size.x - 0.08, size.y - 0.16, 0.02), Vector3(0.0, 0.01, h.z - 0.02), teal, 0.006)
+			b.ring(0.08, 0.12, Vector3(0.0, 0.15, h.z - 0.004), black, Basis(Vector3.RIGHT, PI / 2.0), 12)
+			# The front: rack ears bolted either side, the screen's bezel between.
 			var front := Basis(Vector3.UP, PI)
-			b.box(Vector3(size.x - 0.12, size.y - 0.12, 0.03), Vector3(0.0, 0.0, -h.z + 0.04), Paint.coat(Paint.BLACK, 0.4, 0.3, 0.5), 0.004)
-			for s in [-1, 1]:
-				b.box(Vector3(0.035, size.y - 0.06, 0.04), Vector3(s * (h.x - 0.0175), 0.0, -h.z - 0.02), black, 0.006, front)
-			b.box(Vector3(size.x - 0.07, 0.035, 0.04), Vector3(0.0, h.y - 0.0175, -h.z - 0.02), black, 0.006, front)
-			b.box(Vector3(size.x - 0.07, 0.035, 0.04), Vector3(0.0, -h.y + 0.0175, -h.z - 0.02), black, 0.006, front)
-			_hazard(b, Vector3(size.x * 0.6, 0.022, 0.012), Vector3(0.0, -h.y + 0.0175, -h.z - 0.04), front)
-			for y in [-1, 1]:
-				b.box(Vector3(size.x - 0.12, 0.03, size.z - 0.12), Vector3(0.0, y * (h.y - 0.03), 0.0), teal if y > 0 else gun, 0.008)
-			b.box(Vector3(size.x - 0.12, 0.02, 0.04), Vector3(0.0, h.y - 0.005, 0.0), gun, 0.006)
+			b.box(Vector3(size.x - 0.06, size.y - 0.14, 0.02), Vector3(0.0, 0.0, -h.z + 0.02), Paint.coat(Paint.BLACK, 0.4, 0.3, 0.5), 0.004)
+			for x in [-1, 1]:
+				b.box(Vector3(0.04, size.y - 0.1, 0.035), Vector3(x * (h.x - 0.02), 0.0, -h.z - 0.0175), gun, 0.006, front)
+				for i in 7:
+					b.drum(0.008, 0.008, Vector3(x * (h.x - 0.02), -0.54 + i * 0.18, -h.z - 0.038), Paint.coat(Paint.STEEL, 0.8, 0.6),
+						Basis(Vector3.RIGHT, PI / 2.0), 8)
+			b.box(Vector3(size.x - 0.08, 0.04, 0.03), Vector3(0.0, h.y - 0.06, -h.z - 0.015), black, 0.005, front)
+			_hazard(b, Vector3(size.x * 0.8, 0.03, 0.012), Vector3(0.0, -h.y + 0.045, -h.z - 0.004), front)
 		&"stake":
 			var iron := Paint.coat(Paint.RUST.lightened(0.1), 1.4, 0.3, 0.8)
 			b.box(Vector3(0.05, Stake.LENGTH - 0.12, 0.05), Vector3(0.0, 0.03, 0.0), iron, 0.01)
@@ -361,7 +361,7 @@ static func _part(id: StringName, size: Vector3, count := -1) -> ArrayMesh:
 		&"screen":
 			# Glass that shows black until its Console draws on it.
 			b.box(Vector3(size.x, size.y, 0.02), Vector3(0.0, 0.0, 0.01), gun, 0.006)
-			b.box(Vector3(size.x - 0.04, size.y - 0.04, 0.01), Vector3(0.0, 0.0, 0.025),
+			b.box(Vector3(size.x - 0.03, size.y - 0.03, 0.01), Vector3(0.0, 0.0, 0.025),
 				Paint.coat(Color(0.02, 0.03, 0.03), 0.0, 0.2, 0.08, 0.15), 0.002)
 		&"anemometer":
 			# Three cups on a spindle, turned to catch the wind from the port's side.

@@ -218,9 +218,12 @@ second of world time.
   min". It's rough on purpose, a curve carried on as a straight line.
 - **Hygrometer:** humidity from the cold and the storm, tied to the condenser by sharing its
   function (`Condenser.yield_lph`). It reads 60% in air as cold as a condenser makes its most in,
-  less as the air warms, as the condenser's yield falls, and up to 25% more in a full storm. It
-  shows what a condenser would make there too: "HUMID 37% · condenser 6.2 L/h". The condenser
-  doesn't make more in a storm yet; that half of the tie is still proposed.
+  less as the air warms, as the condenser's yield falls, and up to 25% more as a storm nears: the
+  air grows humid over a kilometre or two ahead of its front, most in the storm itself. It shows
+  what a condenser would make there too: "HUMID 37% · condenser 6.2 L/h". The same function gives
+  every cell of the map its humidity, so the blue laid over the map deepens toward each front and
+  the reading is its value where you stand (2026-10-18). The condenser doesn't make more as a
+  storm nears yet; that half of the tie is still proposed.
 - **Particle sensor:** sand in the air, from the storm's intensity. A storm is at full intensity
   within about 100 m of its front, so the sensor also reads how deep into the field it is, as
   salvage counts a storm's heart (the field 0.4 past its threshold): from 0.9 g/m³ at a wall to
@@ -239,13 +242,18 @@ second of world time.
   minutes ahead, read again every 5 s, where the radio is): "FCST storm in 5 min from WNW", then
   "winds to 27 m/s · lasts 9 min". It feeds the Console while it's powered and whole, whatever its
   dial plays aloud.
-- **Resolution scales with data, as far as a first step:** any set shows numbers. The full set, all
-  five computer mods and a radio, on one Console or across a linked deck, adds a storm map to the
-  weather page: 18 cells across the radar's 12 km, the moon's north up, a row sampled a tick, with
-  you at its middle, the nearest edge drawn in amber, and the way storms ride. A finer map from more
-  gear is still proposed.
-- **Cost:** a radar's sweep is a bearing a tick, about 60 samples; the map a row a tick, 18 more.
-  At a fast clock both go faster, to keep up.
+- **Resolution scales with data** (2026-10-18, replacing the first version's map that showed only
+  with the full set): the map is always there while anything reads, and finer the more the system
+  has. A radar alone draws 8 cells across its 12 km, each other kind of instrument 4 more, the
+  full set 28, and a second radar linked half as fine again, 42. With no radar it's an estimate,
+  hatched, from 3 to 9 cells across as instruments are added: the barometer's expected storm laid
+  upwind along the anemometer's wind, as far as that wind carries it before it arrives. On the map are the front's numbers at the front,
+  the pressure's bar, humidity over the clear air, sand in the storms, the forecast along its foot
+  and the wind's gyro under it ([Devices & mods](devices-and-mods.md#the-console-proposed-first-version-built)
+  has the screen).
+- **Cost:** a radar's sweep is a bearing a tick, about 60 samples; its map a few rows a tick, a
+  whole pass each second of world time, at most 42 by 42 samples, one a cell. At a fast clock both
+  go faster, to keep up.
 
 ### Feral plants: the free barometer (Agreed, session 4, part 3; not built)
 
