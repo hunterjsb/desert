@@ -125,7 +125,10 @@ static func from_sites(world: World, a: Vector2, b: Vector2, t: float, near: Var
 	for each: Structure in near:
 		var off := mid - Vector2(each.x, each.z)
 		var along := off.dot(down)
-		if along <= 0.0 or along > reach:
+		var wide := tuning.site_drift_width_m + tuning.site_drift_spread * along
+		var across := off.cross(down)
+		# Past four widths of the stream nothing of it is left.
+		if along <= 0.0 or along > reach or absf(across) > wide * 4.0:
 			continue
 		# It left the site as long ago as the wind takes to bring it here.
 		var then := t - along / maxf(wind.length(), 1.0)
@@ -133,8 +136,6 @@ static func from_sites(world: World, a: Vector2, b: Vector2, t: float, near: Var
 		if bared <= 0.0:
 			continue
 		var shed := tuning.site_drift_per_hour * bared * Exposure.reading(field, each.x, each.z, then, tuning)
-		var wide := tuning.site_drift_width_m + tuning.site_drift_spread * along
-		var across := off.cross(down)
 		var share := exp(-along / tuning.site_drift_carry_m) * exp(-0.5 * across * across / (wide * wide)) \
 			/ (wide * sqrt(TAU))
 		var got := shed * share * span * catch

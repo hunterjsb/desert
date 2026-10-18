@@ -1098,9 +1098,10 @@ paint's age.
   five times as many in a full lee: a stationary camp downwind gets some.
 - **A glint through the dust** (Skyline). Inside a storm the clear sky's glints are hidden as before, and
   what the storm has newly laid bare near you, the metal or glass its settled sand would still cover,
-  glints through the dust: out to 90 m, fading from 36 m, in the dust's light from overhead at about a
-  third of the open sky's glare, its sparkle swept 30° wider, coming and going as the dust thickens and
-  thins **(defaults)**. Looked over five times a second, by area (`sites.newly_exposed`).
+  glints through the dust: out to 90 m, fading from 36 m, at about a third of the open sky's glare, and
+  since the dust glows all round it shines whichever way it faces you, strongest face on, coming and
+  going as the dust thickens and thins **(defaults)**. Looked over five times a second, by area
+  (`sites.newly_exposed`).
 - **A clang on the wind.** What a storm has newly laid bare within 140 m bangs on the wind now and then: a
   chance every 4 s of world time by how far it's laid bare, heard from the site after the sound's trip
   there, duller the further (`clang.ogg`, from Sand Game's metal clank, its ring kept).
@@ -1157,7 +1158,7 @@ group.
   changing over 15 minutes, leaning a quarter toward moving off and swinging 1.3. Sand never back over you
   or your camp; once you're off, back at 5 cm a second at most. Site drift 120 things an hour in a heart,
   laid a level bare, carried 150 m, 4 m wide and 15 cm wider a metre. A glint through the dust to 90 m at
-  0.35 of the glare, 30° wider; a clang heard to 140 m.
+  0.35 of the glare; a clang heard to 140 m.
 - Where a structure may stand: the most the dunes over its ground may rise and how steep they may be,
   and how far it may look along its line for ground that takes it, per kit piece (the era files).
 - Spawns: the Surveyor 0.6 to 3 km from an artery or spoke (first set at 2 to 4, brought in to a fair

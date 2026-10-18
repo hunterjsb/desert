@@ -397,8 +397,9 @@ has the detail):
 - **Lower-tier loot blows downwind.** A site laid bare sheds its light lesser things into the drift
   stream, carried along the wind and caught by the same lines and lees: about one thing a storm on an 8 m
   line 30 m downwind in the open, five times as many in a lee.
-- **Finding them in the dust.** What a storm newly lays bare glints through the dust out to 90 m, in the
-  dust's light, Skyline's glints let through near; and clangs on the wind now and then, heard to 140 m
+- **Finding them in the dust.** What a storm newly lays bare glints through the dust out to 90 m in the
+  dust's glow, whichever way it faces you, Skyline's glints let through near; and clangs on the wind now
+  and then, heard to 140 m
   after the sound's trip, duller the further. The particle sensor and ground radar are a hook for now:
   `sites.newly_exposed` lists the sites a storm has newly laid bare near a place, for the Console to pin.
 - **Probes:** kits 3 and 4, loot 7, sightlines 3.

@@ -161,7 +161,6 @@ func setup(world: World) -> void:
 	_glint_view = _instance(_glints, _glint_look, scenario)
 	_dust_look = _glint_look.duplicate()
 	_dust_look.set_shader_parameter("dust_reach", _tuning.storm_glint_m)
-	_dust_look.set_shader_parameter("widen", deg_to_rad(_tuning.storm_glint_widen_degrees))
 	_dust_glints = RenderingServer.multimesh_create()
 	RenderingServer.multimesh_set_mesh(_dust_glints, _quad.get_rid())
 	_dust_view = _instance(_dust_glints, _dust_look, scenario)
@@ -754,8 +753,7 @@ func _shade() -> void:
 		var uniforms := weather.map.uniforms(t)
 		for key: String in uniforms:
 			_glint_look.set_shader_parameter(key, uniforms[key])
-	# In the dust the light comes from all round overhead, and less of it.
-	_dust_look.set_shader_parameter("sun_dir", weather.light_dir)
+	# In the dust the light comes from all round, and less of it.
 	_dust_look.set_shader_parameter("glare", risen * _tuning.storm_glint_light)
 	_dust_look.set_shader_parameter("dust_time", t)
 

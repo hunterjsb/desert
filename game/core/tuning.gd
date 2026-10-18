@@ -121,11 +121,9 @@ static var _current: Tuning
 @export var glint_px := Vector2(8.0, 16.0)
 @export var glint_brightness: float = 9.0
 ## A glint through a storm's dust off what the storm just laid bare: seen
-## this far, m; how much of the open sky's glare the dust leaves it; and how
-## much wider it sweeps in the dust's scattered light, degrees.
+## this far, m, and how much of the open sky's glare the dust's glow leaves it.
 @export var storm_glint_m: float = 90.0
 @export var storm_glint_light: float = 0.35
-@export var storm_glint_widen_degrees: float = 30.0
 ## The clang of what the storm just laid bare, on the wind: heard this far, m.
 @export var storm_clang_m: float = 140.0
 
