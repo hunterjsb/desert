@@ -2,7 +2,8 @@ class_name Radio
 extends Device
 ## A radio you carry, set down or seat on a top mount, and tune: a dial from 0
 ## to 2000 kHz, rolled a notch at a time as you look at it, and use to sweep up
-## to the next carrier, and off past the last. Nothing on the dial says what a
+## to the next carrier, and off past the last; its needle crosses the band on
+## its face and its knobs turn as you do. Nothing on the dial says what a
 ## carrier is. Music plays on one, a beacon pings on another, and the seven
 ## gods each broadcast in their own band from where they stand: the Walker's
 ## is the weather station. It reads the real systems and never makes anything
@@ -58,6 +59,24 @@ const VOLUME_STEP := 0.1
 ## A signal this clean or better comes through whole.
 const WHOLE := 0.5
 const UNHEARD := -1
+## Its dial on its face (+Z), m: the band window's middle and size, the band
+## running from 0 kHz to 2000 across these x, and where the tuning and
+## volume knobs turn.
+const BAND_Y := 0.058
+const BAND_WIDTH := 0.236
+const BAND_HEIGHT := 0.052
+const BAND := Vector2(-0.105, 0.105)
+const KNOB_AT := Vector3(0.06, -0.042, 0.084)
+const VOLUME_AT := Vector3(0.11, -0.06, 0.084)
+const VOLUME_KNOB := 0.55
+## The tuning knob goes once round every this many kHz, so a notch turns it
+## a twentieth; the volume knob sweeps three quarters round, silent to full.
+const KHZ_A_TURN := 100.0
+const VOLUME_SWEEP := PI * 1.5
+## The needle and knobs catch up with where the dial stands in about this long, s.
+const TURN_SECONDS := 0.05
+## Close up, the view looks at this point on its face.
+const FACE := Vector3(0.0, 0.01, 0.08)
 
 static var _gods: Gods
 static var _relay: Satellite
@@ -98,6 +117,13 @@ var spoken_at := -INF
 var noise := 0.0
 var music: AudioStreamPlayer3D
 var hiss: AudioStreamPlayer3D
+## What you turn on its face: the needle across the band, the tuning knob and
+## the volume knob; and where they've got to, kHz and of full.
+var needle: MeshInstance3D
+var knob: MeshInstance3D
+var volume_knob: MeshInstance3D
+var shown_khz := 0.0
+var shown_volume := 1.0
 
 var _tuning := Tuning.current()
 var _signal: AudioStreamPlayer3D
@@ -117,6 +143,10 @@ var _wanted := UNHEARD
 func _init() -> void:
 	carryable = true
 	add_to_group(GROUP)
+	needle = _on_face(Dress.dial_needle())
+	knob = _on_face(Dress.knob())
+	volume_knob = _on_face(Dress.knob())
+	_show_dial()
 
 
 func _ready() -> void:
@@ -134,6 +164,9 @@ func _ready() -> void:
 	_signal = _voice()
 	if _wanted != UNHEARD:
 		_tune_to_channel(_wanted)
+	shown_khz = frequency
+	shown_volume = volume
+	_show_dial()
 
 
 func _exit_tree() -> void:
@@ -282,8 +315,51 @@ func stats() -> Dictionary:
 func _recompute() -> void:
 	super()
 	# Its dial lights only while it's on.
-	if frame_view != null:
-		frame_view.set_instance_shader_parameter(&"lit", 1.0 if on and powered else 0.0)
+	for view in painted():
+		if view != null:
+			view.set_instance_shader_parameter(&"lit", 1.0 if on and powered else 0.0)
+
+
+## Its needle and knobs wear its paint too.
+func painted() -> Array[MeshInstance3D]:
+	var out := super()
+	out.append_array([needle, knob, volume_knob])
+	return out
+
+
+## The needle and knobs turn after the dial and the volume, so you see them go.
+func _process(delta: float) -> void:
+	if shown_khz == frequency and shown_volume == volume:
+		return
+	var k := 1.0 - exp(-delta / TURN_SECONDS)
+	shown_khz = frequency if absf(frequency - shown_khz) < 0.01 else lerpf(shown_khz, frequency, k)
+	shown_volume = volume if absf(volume - shown_volume) < 0.001 else lerpf(shown_volume, volume, k)
+	_show_dial()
+
+
+## How far the tuning knob stands turned at a frequency, rad clockwise.
+static func knob_turn(khz: float) -> float:
+	return TAU * khz / KHZ_A_TURN
+
+
+## Its needle on the band and its knobs turned to what they show.
+func _show_dial() -> void:
+	needle.position = Vector3(lerpf(BAND.x, BAND.y, shown_khz / Dial.HIGHEST), BAND_Y, FACE.z + 0.0035)
+	knob.transform = Transform3D(Basis(Vector3.BACK, -knob_turn(shown_khz)), KNOB_AT)
+	volume_knob.transform = Transform3D(Basis(Vector3.BACK, VOLUME_SWEEP * (0.5 - shown_volume))
+		.scaled(Vector3.ONE * VOLUME_KNOB), VOLUME_AT)
+
+
+## Where its face is, to read its dial: the face's middle, its +Z out of the face.
+func face() -> Transform3D:
+	return global_transform.translated_local(FACE)
+
+
+func _on_face(look: ArrayMesh) -> MeshInstance3D:
+	var view := MeshInstance3D.new()
+	view.mesh = look
+	add_child(view)
+	return view
 
 
 func _physics_process(delta: float) -> void:
