@@ -54,7 +54,7 @@ const SKIN := 0.005
 const GHOST := Color(0.75, 0.95, 1.0)
 ## What take would move shows in the ghost's colour this faintly, a shell
 ## this far out over it, m.
-const MARK := 0.18
+const MARK := 0.12
 const MARK_GROW := 0.01
 ## Why use did nothing stays in the readout this long, s.
 const NOTICE := 1.5
