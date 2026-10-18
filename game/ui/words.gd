@@ -15,7 +15,7 @@ signal moved(at: int)
 const MOON := 32.0
 const MOON_GAP := 22.0
 ## A word's line while another is highlighted, as a share of its brightness.
-const UNLIT := 0.5
+const UNLIT := 0.6
 
 ## Back never closes it: the main menu is the bottom of the stack.
 var root := false

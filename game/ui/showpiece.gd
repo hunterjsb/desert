@@ -17,8 +17,8 @@ const SLIDE_SECONDS := 0.6
 const SWAP_SECONDS := 0.3
 ## Things shown side by side stand this far apart, m.
 const GAP := 0.3
-## A kit wider corner to corner than the crate, m, is shown smaller, to fit where the crate does.
-const SPAN := 1.9
+## A kit wider corner to corner than this, m, is shown smaller, to fit where the crate does.
+const SPAN := 2.4
 ## Turned to show its front, the board racked beyond it, and tipped to show
 ## what rides on top, degrees.
 const YAW := 205.0

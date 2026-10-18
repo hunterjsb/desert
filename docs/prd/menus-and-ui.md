@@ -135,7 +135,7 @@ save and quick load.
   run it's the Surveyor's crate: the light shield and the light panel on top, the board
   racked on its side, the batteries half full and their lights showing it. Each kit says
   what of it is shown, side by side (`Kit.shown`): the Salvager's board and light shield,
-  the Homesteader's planter, shield and condenser; one wider than the crate is shown
+  the Homesteader's planter, shield and condenser; one much wider than the crate is shown
   smaller, to fit where the crate does. It tilts toward the mouse, up to 25°, easing
   there, and rests facing you until the mouse moves and once it leaves the window. Dragged, it spins, and
   let go it keeps a little of the spin; a press on a word is always the word's, and
