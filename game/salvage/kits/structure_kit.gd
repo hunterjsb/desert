@@ -177,8 +177,13 @@ class Piece:
 			var keep := PackedInt32Array()
 			for i in boxes.size():
 				var box := boxes[i]
-				var centre := Vector2(box.get_center().x, box.get_center().z)
-				if lean > 0.0 or box.end.y > sand_line(centre, state) + SHOWS:
+				# Where the sand's lowest over its top, a metre apart.
+				var lowest := INF
+				for a in ceili(box.size.x) + 1:
+					for b in ceili(box.size.z) + 1:
+						lowest = minf(lowest, sand_line(Vector2(minf(box.position.x + a, box.end.x),
+							minf(box.position.z + b, box.end.z)), state))
+				if lean > 0.0 or box.end.y > lowest + SHOWS:
 					keep.append(i)
 			_shown[state] = keep
 		return _shown[state]
@@ -276,28 +281,46 @@ static func nearest_on_moon(history: History, p: Vector3, kind: StringName, most
 ## Where on the moon to start runs among history's house ruins: `aside` m
 ## off the middle of each of the `count` towns nearest `from` round which at
 ## least `least` of them stand, laid from about where a run's ground starts
-## (`ground`, world metres). For probes and look-tests: a run's own start is
-## deep desert, where history left next to nothing. Nearest first.
+## (`ground`, world metres), and that `wanted(shape, ground)` keeps, laid so.
+## For probes, look-tests and dev scenarios: a run's own start is deep
+## desert, where history left next to nothing. Nearest first.
 static func starts_among(run_seed: int, tuning: Tuning, from: Vector3, ground: Vector2, count := 1,
-		aside := 400.0, least := 4) -> Array[Vector3]:
+		aside := 400.0, least := 4, wanted := Callable()) -> Array[Vector3]:
 	var found: Array[Vector3] = []
 	var shape := TerrainShape.new(run_seed, tuning)
-	var history := shape.history
-	var towns := history.settlements.filter(func(t: Dictionary) -> bool: return t.kind in [&"rim_town", &"village"])
-	towns.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return Sphere.angle(from, a.p) < Sphere.angle(from, b.p))
-	for town: Dictionary in towns.slice(0, 24):
-		var at := Sphere.toward(town.p, Sphere.bearing(town.p, from), aside / history.radius)
-		shape.sites.follow(ground.x, ground.y, Sphere.latitude(at), Sphere.longitude(at), 1.0, tuning.history_lay_m)
-		var standing := 0
-		for unit in shape.sites.units():
-			for site in unit.sites:
-				if site is Ruin and site.stands() and site.distance_to(ground.x, ground.y) < aside + town.radius:
-					standing += 1
-		if standing >= least:
+	for town in towns_near(shape.history, from):
+		var at := beside(shape.history, town, from, aside)
+		if stands_among(shape, at, ground, aside + town.radius, least, wanted):
 			found.append(at)
 			if found.size() >= count:
 				break
 	return found
+
+
+## History's villages and Rim towns nearest a place on the moon, nearest first.
+static func towns_near(history: History, from: Vector3, most := 24) -> Array:
+	var towns := history.settlements.filter(func(t: Dictionary) -> bool: return t.kind in [&"rim_town", &"village"])
+	towns.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return Sphere.angle(from, a.p) < Sphere.angle(from, b.p))
+	return towns.slice(0, most)
+
+
+## The place `aside` m off a town's middle toward `from`.
+static func beside(history: History, town: Dictionary, from: Vector3, aside: float) -> Vector3:
+	return Sphere.toward(town.p, Sphere.bearing(town.p, from), aside / history.radius)
+
+
+## Whether, laid from `ground` with the moon's point at `at`, at least `least`
+## house ruins stand within `within` m and `wanted(shape, ground)` keeps it.
+static func stands_among(shape: TerrainShape, at: Vector3, ground: Vector2, within: float, least: int,
+		wanted := Callable()) -> bool:
+	# All of it laid at once, as far as laying reaches.
+	shape.sites.follow(ground.x, ground.y, Sphere.latitude(at), Sphere.longitude(at), 1.0, INF)
+	var standing := 0
+	for unit in shape.sites.units():
+		for site in unit.sites:
+			if site is Ruin and site.stands() and site.distance_to(ground.x, ground.y) < within:
+				standing += 1
+	return standing >= least and (not wanted.is_valid() or wanted.call(shape, ground))
 
 
 ## The narrowest any structure's ground is, either way, m: a rectangle no

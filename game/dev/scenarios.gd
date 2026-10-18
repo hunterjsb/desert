@@ -16,7 +16,8 @@ extends RefCounted
 ## it and a bare crate frame of your own. "farm"
 ## sets two planters growing in front of you, one with a harvester, and a
 ## shield for the storm on its way. "radio" sets a radio and a shield in front
-## of you with a storm on its way, to sit it out and follow a beacon. "afk"
+## of you with a storm on its way, to sit it out and follow a beacon: beside a
+## town where history left house ruins ("among"), so a beacon is in reach. "afk"
 ## parks the reference camp round you on a floating deck, running, to be left
 ## alone, its farm watered by a condenser on hoses. "lee" stands you at the foot of a tall
 ## slip face, facing up it into the wind coming over its crest, with a storm
@@ -60,7 +61,7 @@ const LIST: Array[Dictionary] = [
 	{"key": "board", "label": "ride: a charged hoverboard at your feet by a small camp, a shield and a crate, clear and calm",
 		"kind": "clear", "day": [0.35, 0.5], "calm": 6.0, "board": true},
 	{"key": "radio", "label": "radio: a radio and a charged shield in front of you, a storm 300 m off", "kind": "front",
-		"distance": 300.0, "day": [0.35, 0.55], "radio": true},
+		"distance": 300.0, "day": [0.35, 0.55], "radio": true, "among": true},
 	# A morning like a run's, the first storm minutes off, so it soon shows what the camp does in one.
 	{"key": "afk", "label": "AFK: the reference camp on a floating 2x2 deck, moored, its farm floating beside it on hoses, a turbine out in the wind",
 		"kind": "clear", "day": [0.3, 0.4], "due": [180.0, 480.0], "afk": true},
@@ -291,9 +292,17 @@ static func find(world: World, scenario: Dictionary) -> Dictionary:
 		return _at_ruin(world, scenario)
 	if scenario.kind == "lee":
 		return _in_lee(world, scenario)
+	if scenario.get("among", false):
+		return _among(world, scenario)
+	return _search(world, scenario, spawn, moon_at(world, scenario).y)
+
+
+## The first moment and place in three days a scenario's weather and hour
+## hold, from a world place, local time at a longitude, rad.
+static func _search(world: World, scenario: Dictionary, spawn: Vector2, longitude: float) -> Dictionary:
 	var field := world.weather.field
 	var day := world.weather.day
-	var moon := moon_at(world, scenario)
+	var moon := Vector2(moon_at(world, scenario).x, longitude)
 	var t := 0.0
 	if scenario.has("eclipse"):
 		t = day.next_eclipse(0.0) - day.totality() * 0.5 - scenario.eclipse
@@ -349,6 +358,32 @@ static func _place(field: WeatherField, scenario: Dictionary, from: Vector2, upw
 					var at := from + upwind * (d - DEEP)
 					return {"x": at.x, "z": at.y}
 				d += STEP
+	return {}
+
+
+## Where a scenario stands you among history's house ruins, a beacon in
+## reach: on fresh ground, the moon's point beside the nearest town where one
+## is heard from there, laid from where you'll stand; the weather searched
+## there, the hour by the town's longitude.
+static func _among(world: World, scenario: Dictionary) -> Dictionary:
+	var tuning := world.tuning
+	# Past where the history kept under the loaded ground could reach, however
+	# far upwind the weather's search goes.
+	var off := (tuning.history_lay_m + tuning.history_cell_m) * 2.0 + world.history_due() + REACH
+	var fresh := Vector2(roundf(world.player_world_x() + off), roundf(world.player_world_z()))
+	var spawn_moon := moon_at(world, scenario)
+	var from := Sphere.point(spawn_moon.x, spawn_moon.y)
+	var heard := func(laid: TerrainShape, ground: Vector2) -> bool:
+		return not Finds.beacon(world.run_seed, laid.sites, ground.x, ground.y, tuning,
+			func(_coord: Vector2i, _index: int) -> bool: return false).is_empty()
+	var shape := TerrainShape.new(world.run_seed, tuning)
+	for town in StructureKit.towns_near(shape.history, from, 12):
+		var at := StructureKit.beside(shape.history, town, from, 400.0)
+		var place := _search(world, scenario, fresh, Sphere.longitude(at))
+		if not place.is_empty() and StructureKit.stands_among(shape, at, Vector2(place.x, place.z), 400.0 + town.radius,
+				4, heard):
+			place.moon = Vector2(rad_to_deg(Sphere.latitude(at)), rad_to_deg(Sphere.longitude(at)))
+			return place
 	return {}
 
 
