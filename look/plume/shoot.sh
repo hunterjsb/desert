@@ -23,14 +23,14 @@ fi
 declare -A says=([calm_near]="the calm, 260 m" [calm_mid]="the calm, 1.5 km" [calm_far]="the calm, 7 km"
 	[wind_near]="a strong wind, 260 m" [wind_mid]="a strong wind, 1.5 km" [wind_far]="a strong wind, 7 km"
 	[burst_near]="a burst, 1.5 km" [burst_mid]="a burst, 7 km" [burst_far]="a burst, 25 km"
-	[over_far]="a burst over a storm by the vent, 15 km" [dusk_mid]="dusk, 1.5 km" [dusk_far]="dusk, 7 km"
+	[over_far]="a burst over a storm by the vent, 15 km" [dusk_mid]="dusk, 1.5 km"
 	[storm_mid]="a front coming over it, 1.5 km" [swallowed_mid]="a storm over it, 1.5 km" [night_mid]="night, 1.5 km"
 	[pocket_far]="a gas pocket blowing, 6 km" [flank_far]="the far-side volcano's flank vent, 7 km"
 	[mouth_close]="the rift vent's mouth, 48 m")
 rows=()
 n=0
 for group in "calm_near calm_mid calm_far" "wind_near wind_mid wind_far" "burst_near burst_mid burst_far" \
-	"over_far dusk_mid dusk_far" "storm_mid swallowed_mid night_mid" "pocket_far flank_far mouth_close"; do
+	"over_far dusk_mid night_mid" "storm_mid swallowed_mid pocket_far" "flank_far mouth_close"; do
 	shots=()
 	for name in $group; do
 		[[ -f $out/$name.png ]] && shots+=(-label "${says[$name]}" "$out/$name.png")

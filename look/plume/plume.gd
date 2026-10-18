@@ -15,7 +15,7 @@ const SHOTS := [
 	["wind", "near", 260.0, 6.0], ["wind", "mid", 1500.0, 3.0], ["wind", "far", 7000.0, 2.0],
 	["burst", "near", 1500.0, 3.0], ["burst", "mid", 7000.0, 2.0], ["burst", "far", 25000.0, 2.0],
 	["over", "far", 15000.0, 2.0],
-	["dusk", "mid", 1500.0, 3.0], ["dusk", "far", 7000.0, 2.0],
+	["dusk", "mid", 1500.0, 3.0],
 	["storm", "mid", 1500.0, 3.0], ["swallowed", "mid", 1500.0, 3.0], ["night", "mid", 1500.0, 3.0],
 	["pocket", "far", 6000.0, 2.0], ["flank", "far", 7000.0, 2.0],
 ]
@@ -113,7 +113,9 @@ func _moment(shot: Array) -> Dictionary:
 			var tower := Plume.seen_through(field, world.tuning, eye, top, t)
 			var wanted := foot < 0.1 and tower > 0.8 if moment == "over" \
 				else tower > 0.8 and (foot > 0.9 or shot[2] > 10000.0)
-			if daylight.call(t) and _clear_eye(eye, t) and wanted:
+			var far: bool = shot[2] > 10000.0
+			var lit: bool = daylight.call(t) or far and _local(t, source) > 0.28 and _local(t, source) < 0.7
+			if lit and (_clear_eye(eye, t) or far and world.weather.field.raw_storm_at(eye.x, eye.z, t) < -0.05) and wanted:
 				return {"t": t, "source": source, "root": root, "says": "venting x%.0f, its top %.1f km up" % [
 					geology.venting(source, t).x, top.y / 1000.0]}
 			b = geology.next_burst(source, b + 1.0)
