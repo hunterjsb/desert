@@ -251,8 +251,7 @@ static func apply(world: World, scenario: Dictionary) -> void:
 		return
 	stand(world, scenario, place)
 	Dev.put("world/scn", scenario.key)
-	for body in _left(world, &"scenario_kit"):
-		body.queue_free()
+	_clear(world, &"scenario_kit", false)
 	if not (scenario.kind in ["kit", "ruin"] or scenario.get("camp", false) or scenario.get("survive", false)
 			or scenario.get("farm", false) or scenario.get("board", false) or scenario.get("radio", false)
 			or scenario.get("afk", false) or scenario.get("chassis", false) or scenario.get("console", false)
@@ -264,8 +263,7 @@ static func apply(world: World, scenario: Dictionary) -> void:
 	if not is_instance_valid(world):
 		return
 	# Its own kit takes the place of the run's, gone before anything lands on it.
-	for body in _left(world, &"kit"):
-		body.free()
+	_clear(world, &"kit", true)
 	var dropped: Array[Node3D]
 	if scenario.kind == "ruin":
 		dropped = yours(world)
@@ -292,15 +290,30 @@ static func apply(world: World, scenario: Dictionary) -> void:
 	world.set_meta(&"scenario_kit", dropped)
 
 
-## What a kit set down that's still lying about, its list gone: what you've
-## put in your suit or hold is yours now, and stays.
-static func _left(world: World, key: StringName) -> Array:
+## Frees what a kit set down that's still lying about, and forgets the list:
+## what you've put in your suit or hold is yours now, and stays.
+static func _clear(world: World, key: StringName, now: bool) -> void:
 	var player := world.player
-	# Untyped: what the ground unloaded once you moved away is freed already.
-	var left: Array = world.get_meta(key, []).filter(func(body: Variant) -> bool:
-		return is_instance_valid(body) and not body in player.suit.carried and body != player.hands.held)
+	# Untyped, and checked at each: what the ground unloaded, or went with the
+	# device it sat in, is freed already.
+	for body in world.get_meta(key, []):
+		if not is_instance_valid(body) or _yours(player, body):
+			continue
+		if now:
+			body.free()
+		else:
+			body.queue_free()
 	world.remove_meta(key)
-	return left
+
+
+## Whether it's in your suit or hands, or seated in something that is.
+static func _yours(player: Player, body: Node) -> bool:
+	var at := body
+	while at != null:
+		if at == player.hands.held or at is RigidBody3D and at in player.suit.carried:
+			return true
+		at = at.get_parent()
+	return false
 
 
 ## Puts you where find() found, there on the moon too.
