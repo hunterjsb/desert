@@ -1,5 +1,5 @@
 extends SavesProbe
-## Survival probe 18: waking jumps cleanly. Asleep for so many hours in the
+## Survival probe 19: waking jumps cleanly. Asleep for so many hours in the
 ## run's own weather, under a shield with a planter growing beside you, you
 ## wake that many hours on: every system that ticks stands on the new hour
 ## with none to catch up, the forecast reads from it, and the storm pass's

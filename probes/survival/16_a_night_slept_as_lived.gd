@@ -1,5 +1,5 @@
 extends CampProbe
-## Survival probe 15: a night slept comes out as lived. The reference camp on
+## Survival probe 16: a night slept comes out as lived. The reference camp on
 ## the probes' seed is left a day and a night of the run's own weather, a
 ## storm through it, once lived at the time warp's fastest and once slept,
 ## the camp held still and the clock stepped: its batteries, its shield's

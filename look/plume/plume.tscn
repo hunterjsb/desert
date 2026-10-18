@@ -1,0 +1,9 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://look/plume/plume.gd" id="1_plume"]
+[ext_resource type="PackedScene" path="res://game/world/world.tscn" id="2_world"]
+
+[node name="PlumeTest" type="Node"]
+script = ExtResource("1_plume")
+
+[node name="World" parent="." instance=ExtResource("2_world")]

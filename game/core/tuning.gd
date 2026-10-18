@@ -271,6 +271,11 @@ static var _current: Tuning
 ## Tu-shine on top of its physical value, so how bright a near-side night is
 ## can be tuned apart from Tu's size. 1 is physical.
 @export var tu_shine_scale: float = 1.0
+## How long Tu takes to turn once, real hours: a super-Jupiter's ten. The
+## game's day stands for Zan's real lap, which Tu's size sets, so Tu turns as
+## often in a game day as it would in a real one: at 9°, about 6.8 times as
+## seen from Zan.
+@export var tu_spin_hours: float = 10.0
 
 @export_group("Storm wall")
 ## Top of a storm's dust wall, metres. It dissolves over roof_soft either side.
@@ -629,6 +634,16 @@ static var _current: Tuning
 @export var condenser_cold: float = 0.0
 @export var condenser_hot: float = 40.0
 @export var condenser_hot_share: float = 0.2
+## The compass needle follows Tu's weak field: it swings about it once in this
+## many seconds and settles by this damping (1 would never overshoot). Tu's
+## field is tipped from its spin, so the needle sways this far either way once
+## each turn of Tu; a full storm's charged dust swims it up to this far.
+@export var compass_swing_seconds: float = 3.0
+@export var compass_damping: float = 0.4
+@export var compass_sway_degrees: float = 10.0
+@export var compass_storm_degrees: float = 35.0
+## Over the most magnetized old volcanic ground, the needle swims this far either way.
+@export var compass_ground_degrees: float = 40.0
 
 @export_group("Sleep")
 ## A night is lived in steps this long, s of world time: each system's own
@@ -746,6 +761,11 @@ static var _current: Tuning
 ## lays back on it every tick, m.
 @export var site_strip_m: float = 0.5
 @export var site_return_m: float = 0.2
+
+@export_group("Plume")
+## A live vent's seep as a buoyancy flux, m⁴/s³ at this tuning's gravity: how
+## hard what it lets out climbs. Bursts multiply it (Geology).
+@export var plume_buoyancy: float = 25000.0
 
 @export_group("Radio")
 ## What a radio draws while it's on, W.

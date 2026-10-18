@@ -1,5 +1,5 @@
 extends ShieldProbe
-## Survival probe 17: a line gives at the storm's peak. Asleep under a shield
+## Survival probe 18: a line gives at the storm's peak. Asleep under a shield
 ## in the run's own weather on the probes' seed, a storm coming on in the
 ## night, two crates rest on the sand past its bubble, each on a line to a
 ## stake upwind. One line is made to hold more than the storm's peak will

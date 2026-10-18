@@ -355,19 +355,21 @@ func _square(coord: Vector2i) -> Rect2:
 
 ## Two structures' grounds never overlap: where they would, the smaller gives
 ## way, or the one with the larger id, whether or not the other stands, so
-## which stands is the seed's alone. Kept once its ground is first built:
-## by then everything that could overlap it is laid. Asked sooner, of ground
-## not yet built, it's asked afresh.
+## which stands is the seed's alone; the ground's own never does. Kept once
+## its ground is first built: by then everything that could overlap it is
+## laid. Asked sooner, of ground not yet built, it's asked afresh.
 func _yields(site: Structure, keep := false) -> bool:
 	if site.yields >= 0:
 		return site.yields == 1
+	if site.era == Eras.GEOLOGY:
+		return false
 	var gives := false
 	var r := site.reach + SiteKinds.most_reach() + 2.0
 	for other in query(Rect2(site.x - r, site.z - r, r * 2.0, r * 2.0)):
 		var each := other as Structure
 		if each == null or each == site or site.distance_to(each.x, each.z) > site.reach + each.reach + 2.0:
 			continue
-		if each.reach > site.reach or (each.reach == site.reach and each.id < site.id):
+		if each.era == Eras.GEOLOGY or each.reach > site.reach or (each.reach == site.reach and each.id < site.id):
 			gives = true
 			break
 	if keep:

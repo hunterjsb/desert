@@ -464,7 +464,7 @@ func _show_looks(shown: Array[Array]) -> void:
 			look.key = now
 			look.show_thing(thing)
 		if thing is Compass:
-			look.turn_needle(Compass.turn(face, _player.world.moon.north()))
+			look.turn_needle((thing as Compass).needle_on(face, _player.world))
 
 
 ## The picture of a stack, for anything that reads the view.
@@ -545,11 +545,11 @@ func _text(type: StringName, at: Vector2, line: String, width: float, color := &
 static func _name(thing: RigidBody3D) -> String:
 	match thing.get_meta(&"rolled", &""):
 		&"plug":
-			return "Cable"
+			return Catalog.NAMES[&"cable"]
 		&"strong_plug":
-			return "Strong cable"
+			return Catalog.NAMES[&"strong_cable"]
 		&"hose_end":
-			return "Hose"
+			return Catalog.NAMES[&"hose"]
 	return thing.get(&"label")
 
 

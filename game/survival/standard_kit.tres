@@ -37,6 +37,4 @@ label = "Surveyor"
 about = "tows a camp"
 start = &"artery"
 balanced = true
-shown = Dictionary[StringName, float]({
-&"floating_crate": 0.0
-})
+shown = &"floating_crate"

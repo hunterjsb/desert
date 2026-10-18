@@ -1,5 +1,5 @@
 extends ShieldProbe
-## Survival probe 16: only a still camp sleeps. In a full storm, under a
+## Survival probe 17: only a still camp sleeps. In a full storm, under a
 ## running shield with a crate floating beside you, you can. With the crate
 ## swinging, or set swinging as the screen goes dark, or with you out in the
 ## storm, you can't: it says why, and no night passes.

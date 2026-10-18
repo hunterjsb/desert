@@ -372,7 +372,7 @@ standing.
   Length is cheap: a three-day storm is an hour of world time, 14,400 ticks. *Built
   (2026-10-18):* a batch, Power's own tick lived 10 s of world time a step (`Power.live`), and the
   slept span and the lived one leave the same charge within 0.04% ([Survival probe
-  15](survival.md#sleep-as-built-2026-10-18)).
+  16](survival.md#sleep-as-built-2026-10-18)).
 - **What a Console and its mods draw.** Here: "Instruments, farming gear and tools draw small
   amounts," and the radio draws 2 W. The session: a Console "still takes a hover tray,
   batteries and power like a crate." Not said: what a screen, a radar or another computer mod

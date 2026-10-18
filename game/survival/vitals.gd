@@ -17,6 +17,8 @@ var health := FULL
 var hunger := FULL
 var thirst := FULL
 var dead := false
+## The dev console's god: nothing harms you, and you never hunger or thirst.
+var god := false
 ## Health a second each harm takes where you stand now, and all each has taken.
 var harms := {&"wind": 0.0, &"storm": 0.0, &"temperature": 0.0}
 var taken := {&"wind": 0.0, &"storm": 0.0, &"temperature": 0.0}
@@ -115,6 +117,11 @@ func live(seconds: float, t: float) -> void:
 
 
 func _tick(seconds: float, t: float) -> void:
+	if god:
+		health = FULL
+		hunger = FULL
+		thirst = FULL
+		return
 	var tuning := _player.world.tuning
 	var day := tuning.day_minutes * 60.0
 	var at := _player.global_position

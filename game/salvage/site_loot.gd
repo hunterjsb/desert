@@ -186,7 +186,7 @@ static func within_reach(site: Structure, i: int, height: Callable, taken := {})
 static func prepare() -> void:
 	for kind: StringName in StructureKit.kinds():
 		var piece := StructureKit.piece(kind)
-		if piece.lean > 0.0:
+		if piece.lean > 0.0 or piece.sockets.is_empty():
 			continue
 		var era: Dictionary = ERAS[piece.era]
 		var own: Dictionary = KINDS.get(kind, {})
