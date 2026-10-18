@@ -1,6 +1,6 @@
 extends HandsProbe
-## Devices probe 15: the ghost in sight. A crate on the sand has every ring
-## hooked but the one on its far side. Standing by it with a hook in hand,
+## Devices probe 15: the ghost in sight. A crate on the sand has its back
+## ring hooked and its front one, the far side, free. Standing by it with a hook in hand,
 ## that ring is offered, but its ghost doesn't show through the crate; walk
 ## round, and it does. A tray offered the bottom mount still shows its ghost
 ## under the crate.
@@ -13,7 +13,7 @@ func run() -> void:
 	for socket in crate.sockets():
 		if socket.kind != &"ring":
 			continue
-		if socket.position.x < -0.3:
+		if socket.position.z < -0.3:
 			far = socket
 		else:
 			var hook := Catalog.part(&"hook")
@@ -43,9 +43,9 @@ func _hold(id: StringName) -> void:
 	await simulate(0.5)
 
 
-## Standing a step and a half off the crate's right side (or left, for -1),
+## Standing a step and a half off the crate's back (or front, for -1),
 ## looking at its top edge there.
 func _stand_by(crate: Device, side: float) -> void:
-	var foot := crate.global_position + crate.global_basis.x * 1.9 * side
+	var foot := crate.global_position + crate.global_basis.z * 1.9 * side
 	var eye_at := Vector3(foot.x, world.height_under(foot) + world.player.camera.position.y, foot.z)
-	look(eye_at, crate.global_transform * Vector3(0.3 * side, 0.2, 0.0))
+	look(eye_at, crate.global_transform * Vector3(0.0, 0.2, 0.3 * side))

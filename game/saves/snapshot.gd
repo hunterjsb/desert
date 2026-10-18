@@ -40,6 +40,15 @@ const ROPE := ["length", "kg_per_m", "breaking", "frequency", "damping", "max_st
 	"spring_impulse", "stop_impulse"]
 const STRAND := ["length", "_rest", "_velocity", "_ground", "_slope", "_near", "_bulge", "_age", "_phase",
 	"_hanging", "_bow"]
+## How the save numbers the frames' sockets. One without it is from before
+## the crate lost its side rings (2026-10-17), and numbers them as RENUMBERED
+## says.
+const LAYOUT := 1
+## Each frame whose sockets have changed, as an older save numbers them: by
+## old socket, its number now, or, for one the frame no longer has, that
+## socket as the catalog had it, [kind, position, outward].
+const RENUMBERED := {&"crate_frame": [0, [&"ring", Vector3(0.4, 0.0, 0.0), Vector3.RIGHT],
+	[&"ring", Vector3(-0.4, 0.0, 0.0), Vector3.LEFT], 1, 2, 3, 4, 5, 6, 7, 8]}
 
 var _world: World
 ## Capture: the number each body is known by. Restore: the body each number made.
@@ -47,6 +56,12 @@ var _refs := {}
 var _made := {}
 ## Restore: [body, record] for every body made, whose state goes on last.
 var _states: Array[Array] = []
+## Restore: the save's LAYOUT; [device, socket] for each socket put back on a
+## frame that no longer has it, to be emptied once the frame stands; and each
+## socket a part moved to from one a frame lost.
+var _layout := LAYOUT
+var _spilled: Array[Array] = []
+var _moved: Array[Socket] = []
 
 
 func _init(world: World) -> void:
@@ -128,6 +143,7 @@ func begin(data: Dictionary) -> Array[Vector2]:
 func finish(data: Dictionary) -> void:
 	var world := _world
 	var ropes := world.ropes
+	_layout = data.get("layout", 0)
 	var lines: Array[Line] = []
 	for rec: Dictionary in data.lines:
 		lines.append(_line(rec))
@@ -154,6 +170,12 @@ func finish(data: Dictionary) -> void:
 		# Still held by the sand: only taking hold of it pulls it up.
 		if rec.get("buried", false):
 			body.set_meta(&"buried", true)
+	# What sat in a socket its frame has lost comes out beside it, as your
+	# hands would take it out: a line's end on it first, loose, then itself.
+	for pair in _spilled:
+		pair[0].take(pair[1])
+		pair[1].free()
+	_spilled.clear()
 	var suit := world.player.suit
 	for thing in suit.carried:
 		thing.free()
@@ -198,6 +220,9 @@ func finish(data: Dictionary) -> void:
 			strand.world = world
 			ropes.strands.append(strand)
 		_strand_in(strand, data.strands[i])
+	for socket in _moved:
+		_let_out(socket)
+	_moved.clear()
 	# Solved in the order they were: lines sharing a load settle it in turn.
 	var was := []
 	for rec: Dictionary in data.lines + data.cables:
@@ -235,7 +260,8 @@ func _take() -> Dictionary:
 	var ropes := world.ropes
 	var player := world.player
 	var hands := player.hands
-	var data := {"seed": world.run_seed, "time": world.time, "gravity": world.gravity, "origin": world.origin_chunk,
+	var data := {"layout": LAYOUT, "seed": world.run_seed, "time": world.time, "gravity": world.gravity,
+		"origin": world.origin_chunk,
 		"moon": {"latitude": world.moon.latitude, "longitude": world.moon.longitude,
 			"_spawn_latitude": world.moon._spawn_latitude, "_spawn_longitude": world.moon._spawn_longitude,
 			"_facing": world.moon._facing},
@@ -495,14 +521,62 @@ func _make(rec: Dictionary) -> RigidBody3D:
 	var device := body as Device
 	if device != null:
 		device.center_of_mass_mode = RigidBody3D.CENTER_OF_MASS_MODE_CUSTOM
-		var frame := device.frame_sockets()
-		for entry: Array in rec.get("sockets", []):
-			_socket_in(device, frame[entry[0]], entry[1])
+		for entry: Array in _filled(device, rec):
+			_socket_in(device, entry[0], entry[1])
 		for entry: Array in rec.get("joined", []):
 			var deck := device as Chassis
 			var on: Chassis = deck.pieces()[entry[0]]
 			deck.join(_make(entry[3]) as Chassis, on.frame_sockets()[entry[1]], entry[2])
 	return body
+
+
+## What a record has in each of its frame's sockets, as [socket, what's in
+## it]. In an older save, what sat in a socket the frame has lost goes in the
+## free socket of that kind nearest where it was, or with none free, back in
+## that socket for now, to come out loose once the frame stands in the world.
+func _filled(device: Device, rec: Dictionary) -> Array[Array]:
+	var frame := device.frame_sockets()
+	var was: Array = RENUMBERED.get(rec.id, []) if _layout < LAYOUT else []
+	var out: Array[Array] = []
+	var lost: Array[Array] = []
+	for entry: Array in rec.get("sockets", []):
+		var now: Variant = entry[0] if was.is_empty() else was[entry[0]]
+		if now is int:
+			out.append([frame[now], entry[1]])
+		else:
+			lost.append([now, entry[1]])
+	for entry in lost:
+		var gone: Array = entry[0]
+		var free := frame.filter(func(s: Socket) -> bool:
+			return s.kind == gone[0] and not out.any(func(e: Array) -> bool: return e[0] == s))
+		free.sort_custom(func(a: Socket, b: Socket) -> bool:
+			return a.position.distance_to(gone[1]) < b.position.distance_to(gone[1]))
+		if not free.is_empty():
+			_moved.append(free[0])
+		out.append([free[0] if not free.is_empty() else _spill(device, gone), entry[1]])
+	return out
+
+
+## A line on a hook that moved to another ring, let out if it must be to
+## reach it there: past its length, it would yank what it holds.
+func _let_out(socket: Socket) -> void:
+	var tips := socket.fitted.filter(func(n: Node) -> bool: return n is Socket and n.part != null) \
+		.map(func(tie: Socket) -> Variant: return tie.part.get_meta(&"tip", null))
+	for rope in _world.ropes.ropes:
+		var span := rope.a.global_position.distance_to(rope.b.global_position)
+		if (rope.a in tips or rope.b in tips) and span > rope.length:
+			rope.length = span
+			rope.full = maxf(rope.full, span)
+			rope.strand.set_length(span)
+
+
+func _spill(device: Device, was: Array) -> Socket:
+	var socket := Socket.new()
+	socket.kind = was[0]
+	socket.transform = Transform3D(Catalog._facing(was[2]), was[1])
+	device.add_child(socket)
+	_spilled.append([device, socket])
+	return socket
 
 
 func _socket_in(device: Device, socket: Socket, rec: Dictionary) -> void:

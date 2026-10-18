@@ -212,6 +212,10 @@ The hoverboard tows nothing.
   with lines on it went to your waist instead and stood in the air in front of you.
   Used looking out over the sand, not down at it, one with lines on it ties at your
   waist, to tow what's on them.
+- **A crate has two rings,** front and back (2026-10-17), so it takes two lines; a
+  chassis piece has one on every edge for more. Probe 4's crate is turned across the
+  wind, a battery at its front and back so it hangs balanced, to hang on two parallel
+  lines from them.
 - **A snapped line** parts into two lines, each with a loose end where it broke.
 - **The hard stop** stops a line stretching any further at once. Nothing in a line,
   its spring or its stop, pulls its ends together faster than 3 m/s, however far it

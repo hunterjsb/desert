@@ -553,22 +553,34 @@ Against what is built, as readings and not in the session:
   Take lifts it straight off, whole, whatever of it you aim at. Its own sockets wait
   until it's off again.
 - **The crate frame has more sockets** (2026-10-16, Hunter: "i feel like the crate
-  should have more slots"): a battery slot front and back, a ring mount on every side,
-  a bottom mount, two top mounts side by side and a port. The solar panel is 0.8 × 0.4 m
-  now, half the crate's top, so a panel rides beside a lamp, a shield or a second panel.
-  Fitted out with two big batteries, four hooks, a tray, a panel and a shield, a crate
-  weighs 56 kg, under a tray's 80 kg of lift, and floating draws 112 W.
+  should have more slots"): a battery slot front and back, a ring mount on every side
+  (front and back only since 2026-10-17, below), a bottom mount, two top mounts side by
+  side and a port. The solar panel is 0.8 × 0.4 m now, half the crate's top, so a panel
+  rides beside a lamp, a shield or a second panel. Fitted out with two big batteries, a
+  hook on each ring, a tray, a panel and a shield, a crate weighs 55 kg, under a tray's
+  80 kg of lift, and floating draws 110 W.
 - **The crate frame has a rack** (2026-10-16, Hunter: "i like a rack"), along the top of
   its left side, where the hoverboard seats as the shield does on a top mount: the tug
   leans it in and take seats it, it stays a body of its own held fast on its seat, and
   take lifts it off whole. The board is longer than the crate, so it overhangs 25 cm at
-  each end, and it stands 17 cm proud of the top so its lower edge clears the ring mount
-  on that side, 2 cm over the hook. On a crate with every socket filled, a big battery in
+  each end, and it stands 17 cm proud of the top, which cleared the ring mount that side
+  had until 2026-10-17. On a crate with every socket filled, a big battery in
   each slot, a hook and a line's end on every ring, the tray, the light shield and light
   panel on top and a plug in the port, it clears everything by 1 cm at least, nearest
   the crate's own side (survival probe 9 checks it by their bounds). The charge light
   stays on the right side, where the board doesn't cover it. Racked, the kit's crate
   weighs 45.5 kg and floating draws 91 W.
+- **The crate keeps its front and back rings only** (2026-10-17, Hunter: "i say we shave
+  2 hook slots off the crate now that we have the chassis"). Its side rings are gone; a
+  camp that needs more lines rides a chassis, whose pieces have a ring on every edge.
+  Older saves still resume (Profile & saves): a save now says how it numbers a frame's
+  sockets, and one from before the change has every part and seated device put back in
+  its own socket. A hook from a side ring goes on the free front or back ring nearest
+  where it was, its line still on it and let out to reach it there if it must be: held
+  to its length, the line would yank the crate (it was slung 5 m in a test). With both
+  taken, it comes out beside the crate the
+  way your hands take a hook out: its line's end comes off loose first, still tied at
+  its other end, then the hook.
 - **Keys on screen come from the bindings** (2026-10-16). The keys list and its hint,
   the inventory view and the dev console read each action's key from the live bindings
   and draw it in one colour. Rebinding an action changes all of them, and a mouse button
@@ -980,8 +992,8 @@ a water socket of its own on top, so a canister or another hose goes on there to
 1. **No accidental snaps.** Drop, throw and drag parts against devices thousands of
    times. Nothing snaps unless it's held and aimed. Standing by a crate on the sand,
    looking at it offers a held tray its bottom mount, a hook the ring on your side or,
-   of two facing you, the one nearer your aim, and a shield the nearer top mount; each
-   waits for take. A fitted part still comes out to an empty hand.
+   from a side where neither ring faces you, the one nearer your aim, and a shield the
+   nearer top mount; each waits for take. A fitted part still comes out to an empty hand.
 2. **Fitted is rigid.** A fully fitted device gets thrown around, towed through gusts
    and floated. Its parts never move relative to it.
 3. **Weight adds up.** A device's weight is its frame plus its parts, and its hover draw

@@ -187,6 +187,11 @@ Resume, New game, the death screen and Options.
 - **Versioned:** each file opens with what it is and its version, and one of another
   version, or not a save at all, is refused with the reason (`refused`) before any of it
   is read. A refused profile is never written over, except by a reset.
+- **A frame that changes keeps older saves** (2026-10-17). A save says how it numbers
+  each frame's sockets. One without that is from before the crate lost its side rings,
+  and is renumbered as it resumes: every part goes back in its own socket, and a hook
+  from a side ring goes on a free ring or comes out beside the crate (Devices & mods).
+  The file's version is unchanged, so those saves aren't refused.
 - **A death in Ironman deletes the save,** so the main menu offers only New game, and
   a new Ironman run begins at once.
 - **A dev scenario's run is never saved,** and a death in it begins a new run without
@@ -247,6 +252,13 @@ Resume, New game, the death screen and Options.
     charge, playing from you with its words showing, the compass is carried, and the
     canisters stack as one, each with its water. A save from before, with five slots,
     resumes with their contents carried.
+14. **An older crate.** Two crates saved as a build from before 2026-10-17 numbered
+    them, side rings and all: one floating, moored by hooks on both side rings, and one
+    resting with a hook on all four rings, its side hooks tied to stakes. Resumed, every
+    part and seated device is in its own socket; the first's side hooks are on its front
+    and back rings with their lines, let out where they must be to reach, the second's
+    lie beside it with their lines' ends loose, and the first floats on, moored, nothing
+    flung.
 15. **A farm from before.** A save the build before the crop roster wrote, of a
     harvester planter with three carrots and a ripe fungus, carrots stored, a survival kit
     with seeds and carrots carried, resumes as root-tubers in the standard planters, a
