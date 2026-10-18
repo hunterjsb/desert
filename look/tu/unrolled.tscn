@@ -1,0 +1,13 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://look/tu/unrolled.gd" id="1_unrolled"]
+[ext_resource type="Shader" path="res://look/tu/unrolled.gdshader" id="2_unrolled"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_unrolled"]
+shader = ExtResource("2_unrolled")
+
+[node name="Unrolled" type="ColorRect"]
+material = SubResource("ShaderMaterial_unrolled")
+offset_right = 1920.0
+offset_bottom = 960.0
+script = ExtResource("1_unrolled")
