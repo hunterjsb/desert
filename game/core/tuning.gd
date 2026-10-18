@@ -244,6 +244,11 @@ static var _current: Tuning
 ## Tu-shine on top of its physical value, so how bright a near-side night is
 ## can be tuned apart from Tu's size. 1 is physical.
 @export var tu_shine_scale: float = 1.0
+## How long Tu takes to turn once, real hours: a super-Jupiter's ten. The
+## game's day stands for Zan's real lap, which Tu's size sets, so Tu turns as
+## often in a game day as it would in a real one: at 9°, about 6.8 times as
+## seen from Zan.
+@export var tu_spin_hours: float = 10.0
 
 @export_group("Storm wall")
 ## Top of a storm's dust wall, metres. It dissolves over roof_soft either side.

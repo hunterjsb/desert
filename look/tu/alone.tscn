@@ -1,0 +1,27 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://look/tu/alone.gd" id="1_alone"]
+[ext_resource type="Shader" path="res://look/tu/unrolled.gdshader" id="2_unrolled"]
+
+[sub_resource type="Sky" id="Sky_tu"]
+
+[sub_resource type="Environment" id="Environment_tu"]
+background_mode = 2
+sky = SubResource("Sky_tu")
+tonemap_mode = 2
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_unrolled"]
+shader = ExtResource("2_unrolled")
+
+[node name="TuAlone" type="Node3D"]
+script = ExtResource("1_alone")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_tu")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+
+[node name="Map" type="ColorRect" parent="."]
+material = SubResource("ShaderMaterial_unrolled")
+offset_right = 1920.0
+offset_bottom = 960.0

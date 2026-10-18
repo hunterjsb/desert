@@ -19,6 +19,9 @@ const LIBRATION_LONGITUDE := PI / 180.0 * 1.0
 const LIBRATION_LATITUDE := PI / 180.0 * 0.4
 ## The ring's light through totality, as a share of its flare at the contacts.
 const RING_FLOOR := 0.2
+## Tu's radius, m, and its mass as GM, m³/s²: 1.1 Jupiter radii, 4 Jupiter masses.
+const TU_RADIUS_M := 7.86e7
+const TU_GM := 4.0 * 1.26687e17
 
 var _tuning: Tuning
 var _day_seconds: float
@@ -106,6 +109,24 @@ func tu_radius() -> float:
 ## How far out Tu's orbit is, in its own radii, for that width.
 func tu_orbit() -> float:
 	return 1.0 / sin(tu_radius())
+
+
+## Zan's real day, hours: one lap of the orbit Tu's width sets.
+func real_day_hours() -> float:
+	var a := tu_orbit() * TU_RADIUS_M
+	return TAU * sqrt(a * a * a / TU_GM) / 3600.0
+
+
+## How many times Tu turns in a day as seen from Zan: its own turns in Zan's
+## real day, less the one Zan's lap takes back, since Zan always faces it.
+func tu_turns() -> float:
+	return real_day_hours() / _tuning.tu_spin_hours - 1.0
+
+
+## How far Tu has turned as seen from Zan, rad: its clouds slide under the
+## point facing Zan by this much. The sky's and the compass's one account.
+func tu_turn(t: float) -> float:
+	return TAU * fposmod(tu_turns() * t / _day_seconds, 1.0)
 
 
 ## Unit vector toward Tu's centre in engine axes.

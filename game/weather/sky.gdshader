@@ -8,6 +8,8 @@ shader_type sky;
 // opening on a dark night magnifies it. The project's dithers after.
 render_mode disable_fog;
 
+#include "res://game/weather/tu_clouds.gdshaderinc"
+
 // The day's gradient, as the stock sky drew it.
 uniform vec4 sky_top_color : source_color = vec4(0.385, 0.454, 0.55, 1.0);
 uniform vec4 sky_horizon_color : source_color = vec4(0.86, 0.78, 0.66, 1.0);
@@ -28,6 +30,8 @@ uniform float tu_radius = 0.1165;
 // Tu's spin axis, which is Zan's.
 uniform vec3 tu_pole = vec3(0.0, 0.0, -1.0);
 uniform float tu_time = 0.0;
+// How far Tu has turned as seen from Zan (DayCycle.tu_turn), rad.
+uniform float tu_spin = 0.0;
 // From where you stand to the stars, which turn with the sun about Zan's pole.
 uniform mat3 to_stars = mat3(1.0);
 // The eclipse as it stands (DayCycle.eclipse): how far Tu's rim is backlit,
@@ -36,13 +40,7 @@ uniform mat3 to_stars = mat3(1.0);
 uniform vec3 eclipse = vec3(0.0, 0.0, 99.0);
 uniform vec3 eclipse_air = vec3(0.0);
 
-// Tu's palette (docs/art-direction.md), linear.
-const vec3 ZONE = vec3(0.686, 0.686, 0.644);
-const vec3 BELT = vec3(0.209, 0.254, 0.305);
-const vec3 DEEP = vec3(0.076, 0.102, 0.133);
-const vec3 OCHRE = vec3(0.503, 0.342, 0.181);
-const vec3 CREAM = vec3(0.776, 0.730, 0.632);
-const vec3 RUST = vec3(0.342, 0.107, 0.054);
+// The rest of Tu's palette (docs/art-direction.md), linear.
 const vec3 RIM = vec3(0.347, 0.527, 0.871);
 const vec3 RING = vec3(1.0, 0.102, 0.013);
 // Where the ring flares it burns hotter, orange toward gold; the diamond
@@ -54,9 +52,6 @@ const vec3 PEARL = vec3(0.88, 0.94, 1.0);
 const float CORONA = 0.4;
 // How far out the ring's glow reaches, in Tu's radii.
 const float REACH = 3.0;
-// How fast Tu's clouds drift, radians a second: unseen within a minute, plain
-// over a session.
-const float DRIFT = 0.00004;
 // The sun's angular radius as the storm pass draws it.
 const float SUN_RADIUS = 0.00942;
 // Star cells along each face of a cube round the sky, and the share holding one.
@@ -66,12 +61,6 @@ const float STARRED = 0.3;
 // low is dimmed and warmed, and the dust that hangs low reddens it more.
 const vec3 EXTINCTION = vec3(0.07, 0.09, 0.13);
 const vec3 LOW_DUST = vec3(0.0, 0.06, 0.16);
-
-float hash12(vec2 p) {
-	vec3 q = fract(vec3(p.xyx) * 0.1031);
-	q += dot(q, q.yzx + 33.33);
-	return fract((q.x + q.y) * q.z);
-}
 
 vec3 hash33(vec3 p) {
 	p = fract(p * vec3(0.1031, 0.1030, 0.0973));
@@ -110,36 +99,6 @@ vec3 through_air(float up) {
 	float h = max(up, 0.0);
 	float airmass = 1.0 / (h + 0.045 * exp(-12.0 * h));
 	return exp(-EXTINCTION * airmass - LOW_DUST * max(airmass - 2.0, 0.0)) * smoothstep(-0.02, 0.0, up);
-}
-
-// A storm oval: where it sits on Tu (latitude, longitude, half-sizes) drifting
-// at its own rate, mixed over the clouds with a darker collar.
-vec3 oval(vec3 c, float lat, float lon, vec4 at, float rate, vec3 tint) {
-	float along = mod(lon - at.y - rate * tu_time + PI, TAU) - PI;
-	float e = length(vec2(along / at.z, (lat - at.x) / at.w));
-	c = mix(c, c * 0.72, smoothstep(1.35, 1.0, e) * smoothstep(0.75, 1.0, e));
-	return mix(c, tint, smoothstep(1.0, 0.55, e) * (0.85 + 0.15 * sin(e * 9.0)));
-}
-
-// Tu's clouds at a latitude and longitude on its own axis: zonal bands whose
-// edges wander in a flow stretched along longitude, neighbours sliding apart.
-vec3 clouds(float lat, float lon) {
-	float wind = sin(lat * 9.0 + 0.6) * 0.6 + sin(lat * 23.0) * 0.4;
-	float x = lon + tu_time * DRIFT * wind;
-	// Eddies big and small, drawn out along longitude.
-	float y = lat + (fbm(vec2(x * 1.6, lat * 9.0)) - 0.5) * 0.09 + (fbm(vec2(x * 5.0, lat * 34.0)) - 0.5) * 0.035;
-	float band = sin(y * 13.0 + 0.4) * 0.5 + sin(y * 29.0 + 1.9) * 0.25 + sin(y * 61.0 + 0.7) * 0.1
-		+ (noise(vec2(3.1, y * 40.0)) - 0.5) * 0.5;
-	vec3 c = mix(BELT, ZONE, smoothstep(-0.45, 0.45, band));
-	c = mix(c, DEEP, smoothstep(0.5, 0.9, -band) * 0.6);
-	c = mix(c, OCHRE, smoothstep(0.3, 0.9, sin(y * 7.0 + 2.3)) * smoothstep(0.3, -0.3, band) * 0.3);
-	c *= 0.86 + 0.28 * fbm(vec2(x * 7.0, y * 110.0));
-	c = mix(c, DEEP * (0.8 + 0.4 * fbm(vec2(x * 4.0, lat * 20.0))), smoothstep(0.95, 1.3, abs(lat)));
-	c = oval(c, lat, lon, vec4(-0.38, 0.35, 0.22, 0.09), 1.5e-5, RUST);
-	c = oval(c, lat, lon, vec4(0.52, -0.6, 0.1, 0.045), -2.5e-5, CREAM);
-	c = oval(c, lat, lon, vec4(0.2, 0.9, 0.07, 0.035), 3.0e-5, CREAM);
-	c = oval(c, lat, lon, vec4(-0.7, -0.15, 0.09, 0.04), -1.8e-5, CREAM);
-	return c;
 }
 
 // The fixed field: a cube round the sky in cells, a few holding one star kept
@@ -209,13 +168,17 @@ void sky() {
 			vec3 n = normalize(d * (b - sqrt(h)) - tu_dir * dist);
 			float soft = px * 1.5 + 0.004 * r * low * 8.0;
 			cover = smoothstep(cos(r + soft), cos(r - soft), c);
-			// Tu's own latitude and longitude, its zero facing Zan.
+			// Tu's own latitude and longitude, from the meridian facing Zan,
+			// turned back by Tu's spin to the clouds' own.
 			vec3 toward = normalize(-tu_dir - tu_pole * dot(-tu_dir, tu_pole));
 			float lat = asin(clamp(dot(n, tu_pole), -1.0, 1.0));
 			float lon = atan(dot(n, cross(tu_pole, toward)), dot(n, toward));
-			vec3 albedo = clouds(lat, lon);
-			albedo = mix(albedo, vec3(dot(albedo, vec3(0.333))), low * 0.5);
 			float mu = clamp(dot(n, -d), 0.0, 1.0);
+			// A pixel's width where the ray meets Tu, foreshortened toward the
+			// limb; fwidth's sum of both ways makes px about 1.4 pixels.
+			float fp = px * 0.7 * (b - sqrt(h)) / max(mu, 0.2);
+			vec3 albedo = tu_clouds(lat, lon - tu_spin, tu_time, fp);
+			albedo = mix(albedo, vec3(dot(albedo, vec3(0.333))), low * 0.5);
 			float lit = dot(n, sun_dir);
 			// A deep atmosphere: a soft terminator, gentle limb darkening, a
 			// thin bright rim on the lit side and a night face only just there.
