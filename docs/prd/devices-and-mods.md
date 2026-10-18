@@ -76,7 +76,8 @@ silent.
 - **Reel in and pay out** (Hunter, 2026-10-16): on a line, they shorten and lengthen it
   (Rope & tethering). **Bring near and push out** are their own actions (Hunter,
   2026-10-17: "switch rope scrolling to control + scroll so it doesnt conflict with object
-  moving"): on anything you hold or have hold of, they bring it nearer or push it farther,
+  moving"; then, 2026-10-18, the other way round, as lines matter more: the wheel bare reels,
+  held with control it moves what you hold): on anything you hold or have hold of, they bring it nearer or push it farther,
   within reason, and never touch a line. *As built:* a notch is 0.25 m. What you carry goes from
   0.5 m to 2 m in front of your eyes, never nearer than clears you, and still stops short
   of the sand or anything in the way; what you have hold of goes from just clear of you
