@@ -48,10 +48,10 @@ hands, and the "no" is a dull knock cut from a Sand Game clank. Holding a part a
 whose sockets of its kind are all full, take keeps it in your hands and says "no free
 battery slot" (or top mount, ring, port and so on), where before it was dropped; at a
 device with no socket of its kind, take still puts it down. A tray held to a device on a
-deck says it takes none there. A piece held to a deck whose free rings are all blocked
+deck says "no trays on a deck". A piece held to a deck whose free rings are all blocked
 says "no room at that ring". Having hold of a crate with its tray in beside a deck, take
 lets it go saying "take its tray off first". Use at a device with nothing to work says
-"nothing to use", a stake used off the sand says why as before, and something you can't
+"nothing to use", a stake used off the sand says "not sand" or "out of reach", and something you can't
 shift says "it won't shift" as it slips from your hands. Take or use at nothing stays
 silent.
 - **Take** picks up, takes out, puts in and puts down. One action takes and lets go
@@ -65,8 +65,8 @@ silent.
   that's staying put stops spending its charge on floating. **Built** (2026-10-16): use
   at the frame of any device with a tray, empty-handed, switches it. Resting, the tray
   draws nothing and lets the device down onto the sand over two seconds, about 0.6 m/s
-  at most; floating again, it lifts it back the same way. The readout says "floating"
-  or "resting", the board's soft hum falls or rises, and the switch is kept in the save.
+  at most; floating again, it lifts it back the same way. It shows by where it hangs and
+  the board's soft hum falling or rising, and the switch is kept in the save.
   Use at a shield seated on a crate still switches the shield, and a line or stake in
   your hands keeps its own use. A planter's use is its tray's too (Hunter, 2026-10-17:
   "it should toggle hover tray like the crate and chassis"), unless you hold a canister
@@ -188,8 +188,8 @@ floater out of pieces:
   holds together without it: then it comes off, out across a ring it leaves and into
   your hands. Strip a piece first, taking out its tray and hooks and lifting off what
   stands on it, as a crate's tray comes off before it stands on a deck. Looking at a
-  piece, the readout says which take will do: "this piece comes off" or "drags the whole
-  deck", with "bare, this piece comes off" after it at an outer piece that isn't. The
+  deck empty-handed, what take would move is highlighted, faintly in the ghost's colour:
+  the bare piece alone where it comes off, else every piece of the deck. The
   first piece joined comes off like any other: the piece beside it takes over the deck's
   body, so nothing else on the deck moves.
 - **Floating.** A deck has no battery, so it floats on what stands on it. It floats once
@@ -374,7 +374,8 @@ device already stays a body of its own on the host's power pool.
     managed from the electrical grid screen"): the deck's electrics as a panel. They're its power
     pool: the deck, everything standing or seated on it, and anything cabled to them, so a
     turbine held out on a cable shows. One line runs down the left. What makes power feeds it at
-    the top, each source with what it makes now, and their total. The batteries sit on it, with
+    the top, each source with what it makes now, and their total under OUTPUT ("what makes power
+    says output", Hunter, 2026-10-18). The batteries sit on it, with
     their charge as a share, a bar and Wh, the net flow, and how long until they're empty or full
     at it. What draws hangs off it below, each device with what it draws now, a dark one marked,
     and their total. Under each device that can be worked is a row of switches, the one lit saying
@@ -1036,7 +1037,8 @@ a water socket of its own on top, so a canister or another hose goes on there to
 - All five socket types above.
 - Fitted parts merging into the device's shape and weight, and device stats computed
   from parts.
-- A look-at readout of stats.
+- A look-at line: what a thing is and the one thing you need about it now
+  ([Menus & UI](menus-and-ui.md#saying-less)).
 - Loose stacking left to physics.
 - The probes below, all passing.
 
@@ -1107,17 +1109,16 @@ a water socket of its own on top, so a canister or another hose goes on there to
     Use sets the whole deck resting and floating. Light again, its trays bunched along one
     edge, it tips its far edge onto the sand and draws for less than its weight.
 18. **A crate on a deck.** Having hold of a crate beside a deck with its own tray in, no
-    deck mount is offered and the readout says to take the tray off first; tray out, its
+    deck mount is offered and the readout says why; tray out, its
     nearer deck mount is offered and take stands it there. It takes a battery into its own
     slot by hand, a light shield goes onto the other piece, and the deck floats on the
     crate's batteries while the shield runs on them, one pool. Take has the crate off into
     your hold, clear of the deck, even with a tray an older save left in it.
 19. **Only a bare piece comes off** (replacing "any outer piece comes off", 2026-10-17).
     Three pieces in a row, a hook on the first and a crate on the last: aimed at the
-    middle, at the first and at the last, the readout says take drags the whole deck, and
-    take has hold of all of it, nothing coming off. Its hook out, the first is bare: the
-    readout says it comes off, and take has it off into your hands, never through the
-    deck.
+    middle, at the first and at the last, every piece is highlighted, and take has hold
+    of all of it, nothing coming off. Its hook out, the first is bare: it's highlighted
+    alone, and take has it off into your hands, never through the deck.
 20. **A load off centre leans.** A crate on its one tray with a panel on each top mount
     floats level; one with a big battery in its back slot leans toward it and floats on,
     still, nowhere near tipping.
@@ -1125,10 +1126,10 @@ a water socket of its own on top, so a canister or another hose goes on there to
     beyond a deck's far ring. Taken hold of, that ring is offered with its ghost, and take
     joins it there, the crate standing on the deck now, in its pool.
 22. **A refusal says why.** A battery held to a crate whose slots are full stays in your
-    hands; a crate with its tray in, taken hold of beside a deck, is let go with word to
-    take its tray off first; a piece held to one with a crate standing beyond every ring,
-    its hooked one too, stays in your hands; use at a bare crate frame has nothing to
-    work. Each time the readout says why and the knock sounds.
+    hands; a crate with its tray in, taken hold of beside a deck, is let go; a piece held
+    to one with a crate standing beyond every ring, its hooked one too, stays in your
+    hands; use at a bare crate frame has nothing to work. Each time the readout says why
+    in five words at most and the knock sounds.
 24. **Consoles on a deck are one system** (2026-10-17). Two Consoles on a deck, one with an
     anemometer and one with a barometer, each show both readings; a third on the sand beside
     them shows only its own and lends them nothing. A radar on each of the two, both draw one

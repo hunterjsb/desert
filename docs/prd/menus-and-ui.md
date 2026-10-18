@@ -91,6 +91,30 @@ of this, then we will need to just stop dropping things out the tooltip.")
   your waist gets a short how-to the first time, then is left to you. Sailing should take
   skill; the how-to says what the controls do, not how to win.
 
+**Built** (2026-10-18, `Hands.describe`):
+- **The line** is the thing's name and at most one state after it, the first it has of: ripe,
+  or why a sown crop isn't growing ("too bright", "dry"); "no power" on a device that would
+  run but is dark; a condenser's water as it makes it ("water 8.7 L/h"); what a planter's tank,
+  a canister or the survival kit holds ("1.5/4.0 L"); food left ("150 kcal"); a battery's
+  charge ("63/100 Wh"); a radio's station; "output 120 W" on what makes power; "draws 371 W"
+  on what uses it; a rolled-up coil's length ("12 m"). Six words at most, its name included, where a
+  floating deck had 24.
+- **Shown another way instead:** weight in what you carry and how you walk; a device's charge
+  on its charge light; floating or resting by where it hangs and its hum; a line's strain in
+  its creak; how much line you've reeled in by the coil at your hand; a sail raised, furled
+  or torn by its cloth; a find's layer by its paint; what take would move on a deck by a faint
+  highlight in the ghost's colour, the bare piece alone where it comes off, else every piece.
+- **Not said at all:** hooks and pieces counted, a tray's lift, runners, a panel's or lamp's
+  rating, a stake's holding, a sail's area and pull, a planter's stored food, seeds and
+  replant share, a Console's instruments counted.
+- **Refusals** stay a few words with their soft knock; the stake's are "not sand" and "out of
+  reach".
+- **How-tos** go through one path, `UIRoot.teach`: shown once a profile (`Profile.learn`)
+  near the top of the screen, its keys drawn as bound in the keys' colour, for nine seconds.
+  The sheet's is the only one ([Movement](movement.md#sailing-the-camp-hunter-2026-10-17)).
+- **Probes:** Menus & UI probe 10, a how-to once a profile; Devices & mods probes 18, 19 and 22
+  check what the readout and highlight do, never their words.
+
 ## The dev console
 
 Developer tools come through a console, not a row of function keys (Hunter, 2026-10-16:
@@ -236,6 +260,8 @@ save and quick load.
    slides it aside, and with the Salvager highlighted it shows the Salvager's; back slides
    it home. After a Salvager run the menu shows the Salvager's kit, and so does the next
    session's.
+10. **A how-to once a profile.** The first sheet at your waist shows its how-to, its keys as
+    bound; tied on again it doesn't, nor in a new run on the same profile.
 
 ## Out of scope
 

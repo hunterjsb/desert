@@ -42,6 +42,10 @@ Either way there's one run, and one save for it; a run's mode is fixed when it s
   sync attach there later, and nowhere else.
 - **Discoveries.** Finding a kind of thing for the first time reports it to the profile.
   Future kits unlock from discoveries (find a turbine, unlock a turbine-heavy kit).
+- **How-tos shown** (2026-10-18). Each how-to is recorded the first time it shows,
+  `profile.learn(id)`, so it's taught once a profile, never once a run
+  ([Menus & UI](menus-and-ui.md#saying-less)). It's neither an unlock nor a discovery, so
+  nothing attaches to it.
 - **Reset** is an action in Options, behind a confirmation, and nowhere else.
 - **Versioned,** like the save.
 
@@ -133,8 +137,9 @@ Readings, not in the session:
 1. **A save holds what you changed, never what the seed already says.**
 2. **Saving never changes the run.** Saving and resuming at once gives the same world,
    tick for tick, as not saving at all.
-3. **The profile's unlocks and discoveries only ever grow, by `profile.unlock` and
-   discovery,** and only reset empties them. Beside them it keeps the origin you last came as.
+3. **The profile's unlocks, discoveries and how-tos shown only ever grow, by
+   `profile.unlock`, discovery and `profile.learn`,** and only reset empties them. Beside
+   them it keeps the origin you last came as.
 
 ## Skeleton version
 
@@ -147,8 +152,8 @@ Readings, not in the session:
 
 **Built** (2026-10-16), waiting at the gate. Two autoloads: `Saves` (`has_run`, `save`,
 `save_in_background`, `run_seed`, `ironman`, `restore`, `delete`) and `Profile`
-(`unlock`, `discover`, `has`, `reset`, `remember_origin`, `last_origin`). Menus & UI calls
-them from Save, Save & quit, Resume, New game, the death screen and Options.
+(`unlock`, `discover`, `learn`, `has`, `reset`, `remember_origin`, `last_origin`). Menus & UI
+calls them from Save, Save & quit, Resume, New game, the death screen and Options.
 
 - **The mode** is chosen at New game, held by the run (`Runs.ironman`) and kept in its
   save, and Resume reads it back. A save from before modes has none and resumes as

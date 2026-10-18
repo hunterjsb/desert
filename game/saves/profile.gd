@@ -1,11 +1,11 @@
 extends Node
 ## You across runs, at /root/Profile: one local file, apart from the run
-## save, with no accounts. Its unlocks and finds only ever grow, by unlock()
-## and by discovering a kind of thing for the first time, and only reset()
-## empties it. Every unlock goes through unlock(), so achievements or cloud
-## sync attach there and nowhere else. Beside them it keeps the origin you
-## last came as, whose kit the main menu shows. A profile from another
-## version is refused with a reason and left untouched on disk.
+## save, with no accounts. Its unlocks, finds and how-tos shown only ever
+## grow, by unlock(), by discovering a kind of thing for the first time and by
+## learn(), and only reset() empties it. Every unlock goes through unlock(),
+## so achievements or cloud sync attach there and nowhere else. Beside them it
+## keeps the origin you last came as, whose kit the main menu shows. A profile
+## from another version is refused with a reason and left untouched on disk.
 
 signal unlocked(id: String)
 signal discovered(kind: String)
@@ -22,9 +22,10 @@ var dir := "user://":
 ## is written over it, short of a reset.
 var refused := ""
 
-## Unix time each was first unlocked, and each kind first found.
+## Unix time each was first unlocked, each kind first found, and each how-to first shown.
 var _unlocks := {}
 var _found := {}
+var _taught := {}
 var _origin := ""
 var _loaded := false
 
@@ -52,6 +53,17 @@ func discover(kind: String) -> bool:
 	_found[kind] = Time.get_unix_time_from_system()
 	_write()
 	discovered.emit(kind)
+	return true
+
+
+## A how-to shown: recorded the first time only, so it's taught once a
+## profile, never once a run. Says whether it's new.
+func learn(id: String) -> bool:
+	_load()
+	if _taught.has(id):
+		return false
+	_taught[id] = Time.get_unix_time_from_system()
+	_write()
 	return true
 
 
@@ -87,6 +99,7 @@ func last_origin() -> StringName:
 func reset() -> void:
 	_unlocks.clear()
 	_found.clear()
+	_taught.clear()
 	_origin = ""
 	_loaded = true
 	refused = ""
@@ -102,9 +115,11 @@ func _load() -> void:
 	var data: Dictionary = got.data
 	_unlocks = data.get("unlocks", {})
 	_found = data.get("found", {})
+	_taught = data.get("taught", {})
 	_origin = str(data.get("origin", ""))
 
 
 func _write() -> void:
 	if refused == "":
-		SaveFile.write(path(), KIND, VERSION, {"unlocks": _unlocks, "found": _found, "origin": _origin})
+		SaveFile.write(path(), KIND, VERSION, {"unlocks": _unlocks, "found": _found, "taught": _taught,
+			"origin": _origin})

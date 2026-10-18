@@ -13,6 +13,8 @@ const PANELS := &"ui_panels"
 const FADE_SECONDS := 0.5
 ## A note such as Saved stays this long before it fades, s.
 const NOTE_SECONDS := 1.5
+## A how-to stays long enough to read, s.
+const HOW_TO_SECONDS := 9.0
 ## The game's name, as the main menu's title shows it: a rename is this line.
 const TITLE := "Desert"
 
@@ -24,6 +26,8 @@ var _fade: Panel
 var _fading := false
 var _note: Label
 var _note_fading: Tween
+var _how_to: RichTextLabel
+var _how_to_fading: Tween
 
 
 func _enter_tree() -> void:
@@ -55,6 +59,12 @@ func _ready() -> void:
 	_note.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_note.modulate.a = 0.0
 	add_child(_note)
+	_how_to = Controls.keys_label()
+	_how_to.theme_type_variation = &"Hint"
+	_how_to.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP, Control.PRESET_MODE_MINSIZE, 100)
+	_how_to.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	_how_to.modulate.a = 0.0
+	add_child(_how_to)
 	dev_console = DevConsole.new()
 	dev_console.ui = self
 	add_child(dev_console)
@@ -74,12 +84,29 @@ func holds_input() -> bool:
 ## A word on how something went, such as a quick save, that fades by itself.
 func note(text: String) -> void:
 	_note.text = text
-	_note.modulate.a = 1.0
-	if _note_fading != null:
-		_note_fading.kill()
-	_note_fading = _note.create_tween()
-	_note_fading.tween_interval(NOTE_SECONDS)
-	_note_fading.tween_property(_note, "modulate:a", 0.0, FADE_SECONDS)
+	_note_fading = _shown_for(_note, _note_fading, NOTE_SECONDS)
+
+
+## A how-to, the first time this profile meets what it's about and never
+## again: what the controls do, each {action} as its key. Says whether it showed.
+func teach(id: String, text: String) -> bool:
+	var profile := get_node_or_null(^"/root/Profile")
+	if profile == null or not profile.learn(id):
+		return false
+	_how_to.text = "[center]%s[/center]" % Controls.bbcode(text)
+	_how_to_fading = _shown_for(_how_to, _how_to_fading, HOW_TO_SECONDS)
+	return true
+
+
+## Shows a word at once and fades it after `seconds`, over any fade under way.
+func _shown_for(words: Control, fading: Tween, seconds: float) -> Tween:
+	words.modulate.a = 1.0
+	if fading != null:
+		fading.kill()
+	var tween := words.create_tween()
+	tween.tween_interval(seconds)
+	tween.tween_property(words, "modulate:a", 0.0, FADE_SECONDS)
+	return tween
 
 
 ## The console over a run with nothing else open: typing goes to it.

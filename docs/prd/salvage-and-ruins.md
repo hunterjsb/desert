@@ -446,7 +446,7 @@ Readings, not in the session:
   ("Loot identity by era" above), and part 5 says the reuse was done in the Dark Age; a First Kingdoms
   ruin's loot is the earlier gear, kept and mended.
 - **Lineage is data on the part, not a rule per item.** A part already carries its stamps and its layer
-  (the look-at line says which layer a find came from). A lineage is a short list of eras on the same
+  (its paint shows which layer a find came from: crisp from deep, rusty near the top). A lineage is a short list of eras on the same
   part, so a find can read as three eras at once without a new system, and "typed parts" (rule 6) holds.
 - **The features are placed by a rule along routes, not as a kit.** Cairns by water, caches on the
   migration routes, early saltbush: small props like the saltbush lines of the feral layer, placed from the
@@ -627,8 +627,8 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
   the same chunks, 58 of 99 seeds were in ruins. Rations are found sealed wherever they
   lie; a loose canister is found empty, since open water boils off.
   Deep things were kept from the weather longer: batteries 30 to 100% charged against
-  up to 40% at the surface, devices 70 to 100% sound against 35 to 75%. The look-at line
-  says which layer a find came from.
+  up to 40% at the surface, devices 70 to 100% sound against 35 to 75%. Its paint shows
+  which layer a find came from, crisp from deep and worn near the top.
 - **How hard the weather has been** at a place is read over the last two hours, every
   10 minutes of world time: the mean of how deep into a storm it was or how far the wind
   blew past the prevailing wind's strongest, 16 m/s (toward 30 m/s, as hard as a storm's

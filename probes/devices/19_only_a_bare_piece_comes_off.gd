@@ -2,11 +2,11 @@ extends DeckProbe
 ## Devices & mods probe 19: only a bare piece comes off (replacing "any outer
 ## piece comes off"). Three pieces joined in a row through your hands, a hook
 ## on the first one's far ring and a crate standing on the last. Aimed at the
-## middle, at the first with its hook and at the last with its crate, the
-## readout says take drags the whole deck, and take has hold of all of it,
-## nothing coming off. Its hook out, the first is bare: the readout says it
-## comes off, and take has it off into your hands, out across its ring and
-## never through the deck.
+## middle, at the first with its hook and at the last with its crate, every
+## piece is highlighted as what take would move, and take has hold of all of
+## it, nothing coming off. Its hook out, the first is bare: it's highlighted
+## alone, and take has it off into your hands, out across its ring and never
+## through the deck.
 
 
 func run() -> void:
@@ -29,7 +29,7 @@ func run() -> void:
 		var at: Vector3 = deck.global_transform * aim[1]
 		look(at + aim[2], at)
 		await simulate(2.0 / 60.0)
-		check(_reads("drags the whole deck"), "aimed at the %s, the readout says take drags the whole deck" % aim[0])
+		check(_marked(3), "aimed at the %s, every piece is highlighted" % aim[0])
 		check(hands.grab() and hands.grasp.body == deck and deck.pieces().size() == 3,
 			"and take has hold of all of it, nothing coming off (%s)" % aim[0])
 		hands.grab()
@@ -39,7 +39,7 @@ func run() -> void:
 	var on_first := deck.global_transform * Vector3(0.0, 0.06, 0.0)
 	look(on_first + Vector3(0.0, 1.2, 1.2), on_first)
 	await simulate(2.0 / 60.0)
-	check(_reads("this piece comes off"), "its hook out, the first is bare: the readout says it comes off")
+	check(_marked(1) and hands.moves[0] == deck, "its hook out, the first is bare: it's highlighted alone")
 	var took := hands.grab()
 	var off := hands.held as Chassis
 	check(took and off != null and off.deck == null and off.parts().is_empty() and deck.pieces().size() == 2,
@@ -51,5 +51,6 @@ func run() -> void:
 	check(not seen.through and hands.phase == Hands.Phase.HELD, "out across its ring, never through the deck")
 
 
-func _reads(words: String) -> bool:
-	return hands._readout.text.contains(words)
+## Whether take's highlight is up, on this many pieces.
+func _marked(pieces: int) -> bool:
+	return hands._marks.visible and hands._marks.get_child_count() > 0 and hands.moves.size() == pieces

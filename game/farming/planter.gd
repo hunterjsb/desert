@@ -132,10 +132,6 @@ func stats() -> Dictionary:
 	var now := super()
 	now["water_l"] = Tuning.current().planter_tank_litres
 	now["water_left_l"] = tank_l
-	if now.get("harvester", 0) > 0:
-		now["replant"] = split
-		now["stored_kcal"] = stored_kcal()
-		now["seeds"] = seeds.values().reduce(func(a: int, b: int) -> int: return a + b, 0)
 	return now
 
 

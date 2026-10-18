@@ -222,12 +222,6 @@ static func _plain(row: String) -> String:
 	return " ".join(Array(row.trim_prefix("!").split("\t")).filter(func(cell: String) -> bool: return cell != ""))
 
 
-func stats() -> Dictionary:
-	var now := super()
-	now["instruments"] = _fitted().size()
-	return now
-
-
 func _recompute() -> void:
 	super()
 	if not _awake:
@@ -1001,7 +995,7 @@ func _panel(shown: Dictionary, all: Dictionary) -> void:
 			else _row("BANK", "none"),
 		"net": _row(" net", "%+d" % roundi(net), "W"),
 		"left": _row(" full" if net > 0.0 else " left", _span_parts(left)[0], _span_parts(left)[1])}
-	shown["panel"] = {"makes": _row("MAKES", "%d" % roundi(makes), "W"), "sources": sources, "bank": bank,
+	shown["panel"] = {"makes": _row("OUTPUT", "%d" % roundi(makes), "W"), "sources": sources, "bank": bank,
 		"draws": _row("DRAWS", "%d" % roundi(draws), "W"), "loads": loads}
 	var rows := PackedStringArray([shown.panel.makes])
 	for source: Dictionary in sources:
