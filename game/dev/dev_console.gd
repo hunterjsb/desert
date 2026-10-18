@@ -18,6 +18,7 @@ const COMMANDS := {
 	"tu": ["[6|9|13]", "Tu's width across the sky under trial, degrees; alone, the next"],
 	"give": ["<id> [n]", "a part in your hands or a device at your feet, by its catalog id"],
 	"fresh": ["", "fed, watered and whole, on a fresh suit's kit"],
+	"god": ["", "nothing harms you and you never hunger or thirst; again, mortal"],
 	"goto": ["[landmark]", "stand by a landmark, one of its parts or a vent, on fresh ground; alone, how far each is"],
 	"map": ["[metres]", "the history under the sand round you, this wide; alone, on or off"],
 }
@@ -228,6 +229,12 @@ func _give(args: PackedStringArray, world: World) -> void:
 func _fresh(_args: PackedStringArray, world: World) -> void:
 	world.player.vitals.fresh()
 	_say("fed, watered and whole")
+
+
+func _god(_args: PackedStringArray, world: World) -> void:
+	var vitals := world.player.vitals
+	vitals.god = not vitals.god
+	_say("god: nothing harms you" if vitals.god else "mortal")
 
 
 func _goto(args: PackedStringArray, world: World) -> void:

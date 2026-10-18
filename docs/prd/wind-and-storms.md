@@ -352,6 +352,21 @@ Liked, and not to be built yet:
 
 Deferred in the same list: feral plants as a weather sign, landmark interiors and heat shields.
 
+## Storms with a payoff (agreed, 2026-10-18 spec)
+
+From Hunter's [storms, signals & sailing spec](../storms-signals-sailing-2026-10-18.md):
+- **Storms expose and rebury ruins.** Big shifting dunes lay bare ancient structures and the best
+  loot mid-storm, for the active player willing to go out; the storm can bury them again, so a ruin
+  seen mid-storm may be gone by morning (the desert ate it, which makes a chunk dropping out canon).
+  Lower-tier loot blows downwind, so a stationary camp still gets some.
+- **Finding them in the dust:** first a glint through the dust and a metallic clang on the wind;
+  later the particle sensor or ground radar pins the site on the Console.
+- **The anomaly:** a rare storm whose real intensity spikes far past every forecast. Forecasts and
+  instruments read only the clean curve; a hidden multiplier applies at damage time only, skewed
+  to particle damage, so a camp built only for wind is wrecked. Its tells, from the hidden term:
+  compass drift, odd radio static, and a shield's particle load climbing while the wind reads
+  normal. It's the storm the Walker misjudged. Open: how often, and how strong the skew.
+
 ## What storms do to everything else
 
 These are owned by their own PRDs and listed here so the field serves them all.
