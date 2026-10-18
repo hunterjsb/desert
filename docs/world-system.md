@@ -1226,6 +1226,10 @@ paint's age.
   through the dust only near). Each fails on a deliberately broken build: no hold over you, no ground
   pressed afresh, a look that doesn't follow; the storm's sand never coming back, or read only on its
   ticks; drift shed upwind as well; glints through the dust at any range, or every bare glint.
+- **To see it** (unseen, on a GPU): `look/exposure/shoot.sh <dir>` stands a hab pod where a storm lays it
+  bare by day and shoots it from off its ground in the clear before the storm, rising half out of the
+  sand in it, at its height and in the clear after, and from out in the dust its bared windows glinting
+  through, and builds `~/Desktop/exposure.png`.
 
 ## Defaults
 

@@ -101,7 +101,15 @@ func _find() -> Dictionary:
 				var depth := 3.45 * maxf(Exposure.taken(field, at.x, at.y, before, tuning, memo),
 					Exposure.taken(field, at.x, at.y, after, tuning, memo))
 				var score := Exposure.taken(field, at.x, at.y, t, tuning, memo) / maxf(depth, 0.1)
-				if score > most:
+				if score <= most:
+					continue
+				# Half out of the sand by day too.
+				var rising := t
+				while rising > before and Exposure.level(maxf(depth, 0.1),
+						Exposure.taken(field, at.x, at.y, rising, tuning, memo)) > 1.0:
+					rising -= 10.0
+				var lit := world.weather.day.time_of_day(rising, world.moon.longitude)
+				if lit >= LIGHT.x and lit <= LIGHT.y:
 					most = score
 					best = {"x": at.x, "z": at.y, "depth": maxf(depth, 0.1), "before": before, "peak": t, "after": after}
 	return best
