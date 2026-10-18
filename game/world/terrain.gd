@@ -50,8 +50,7 @@ var _planned := false
 var _wanted: Array[Vector3i] = []
 ## Chunks to look over since the centre last moved: distances change only then.
 var _to_retire: Array = []
-## Near chunks waiting for their collision, the costliest piece of streaming:
-## each piece starts a frame on its own.
+## Near chunks waiting for their collision, the costliest of streaming's work.
 var _to_ground: Array = []
 ## When this frame's budget runs out, in Time ticks (usec).
 var _deadline := 0
@@ -345,19 +344,17 @@ func _upload(build: ChunkBuild) -> void:
 		_to_ground.append(chunk)
 
 
-## One piece of a chunk's collision a frame, before anything else: a whole
-## chunk's took up to 1.25 ms, and under load it was what most often took a
-## frame past the hitch line.
+## Collision a piece at a time, before anything else while the budget is
+## fresh: a whole chunk's at once took up to 1.25 ms, and under load it was what
+## most often took a frame past the hitch line.
 func _ground() -> void:
-	while not _to_ground.is_empty():
+	while not _to_ground.is_empty() and not _out_of_time():
 		var chunk: TerrainChunk = _to_ground[0]
 		if chunk.step != NEAR_STEP or chunk.has_collision() or _distance(chunk.coord) > _tuning.near_radius:
 			_to_ground.pop_front()
-			continue
-		if chunk.add_collision_piece(_size, _sand):
+		elif chunk.add_collision_piece(_size, _sand):
 			_to_ground.pop_front()
 			grounded.emit(chunk)
-		return
 
 
 func _retire() -> void:

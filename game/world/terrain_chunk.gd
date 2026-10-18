@@ -6,7 +6,7 @@ extends Node3D
 
 ## Its collision is this many heightmaps a side, each a body of its own with a
 ## lip all round (Terrain.LIP): a quarter's build is a quarter of the main
-## thread's time, and the terrain adds one a frame.
+## thread's time, so the terrain's budget can hold one.
 const SPLIT := 2
 
 var coord: Vector2i
