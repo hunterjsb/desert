@@ -4,7 +4,8 @@ extends Node
 ## you'd see them standing a step or two back, at the game's own lens, and
 ## its screen close: the map at each resolution its gear gives (estimated
 ## with no radar, a radar alone, a radar and two more, the full set, two
-## Consoles linked), its stats, and the front near with the smart shield on.
+## Consoles linked), its stats, its power page, and the front near with the
+## smart shield on, on the map and on the power page.
 ## At the fixed exposure:
 ##   godot --path . --disable-vsync res://look/console/console.tscn -- --capture <dir>
 ## look/console/shoot.sh builds the sheet. A small window that never takes
@@ -74,6 +75,9 @@ func _capture(out_dir: String) -> void:
 	await _ticks(10)
 	await _standing(out_dir, "standing_stats", made)
 	await _close(out_dir, "stats", made)
+	made.page = Console.Page.POWER
+	await _ticks(10)
+	await _close(out_dir, "power", made)
 	made.page = Console.Page.RADAR
 	await _ticks(10)
 	await _close(out_dir, "full", made)
@@ -133,6 +137,10 @@ func _capture(out_dir: String) -> void:
 	world.time_warp = 1.0
 	await _ticks(120)
 	await _close(out_dir, "near", made)
+	made.page = Console.Page.POWER
+	await _ticks(10)
+	await _close(out_dir, "near_power", made)
+	made.page = Console.Page.RADAR
 
 	# One alone, floating on its own tray beside the deck.
 	var alone := Catalog.device(&"console") as Console

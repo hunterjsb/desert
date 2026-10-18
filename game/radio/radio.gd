@@ -84,23 +84,30 @@ func _exit_tree() -> void:
 	_off_air()
 
 
-## Use: turns the dial on a channel, with a burst of static between stations.
-## Coming to the beacon, it decides then which one it hears.
+## Use: turns the dial on a channel.
 func interact(_by: Player) -> bool:
 	if wrecked():
 		return false
 	# Found in the sand, it's yours as you use it, so this use can start it.
 	world.salvage.claim(self)
-	var next := (channel + 1) % CHANNELS.size()
-	if next == BEACON:
+	tune((channel + 1) % CHANNELS.size())
+	return true
+
+
+## Turns the dial to a channel, as use does and a Console's screen, with a
+## burst of static between stations. Coming to the beacon, it decides then
+## which one it hears.
+func tune(to: int) -> void:
+	if wrecked() or to == channel:
+		return
+	if to == BEACON:
 		target = Finds.beacon(world.run_seed, world.shape.sites, world.world_x(global_position.x),
 			world.world_z(global_position.z), _tuning, world.salvage.taken)
 	read_at = -INF
 	_since_signal = INF
-	channel = next
+	channel = to
 	if powered:
 		Sounds.play_at(self, Sounds.RADIO_TUNE, 0.0, HEARD)
-	return true
 
 
 ## Use in your hands tunes it just the same.

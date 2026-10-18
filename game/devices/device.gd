@@ -56,6 +56,11 @@ var resting := false:
 	set(to):
 		resting = to
 		_recompute()
+## Whether its lamps are switched on: a Console's screen switches them.
+var lamps := true:
+	set(to):
+		lamps = to
+		_recompute()
 ## How far up its tray holds it, 0 on the sand to 1 at its height: eased, so
 ## it settles and lifts off gently.
 var lift_share := 1.0:
@@ -126,10 +131,34 @@ func interact(by: Player) -> bool:
 	# Standing on a deck, it floats with the deck, so use works the deck.
 	if on_deck():
 		return host().interact(by)
-	if by.hands.held != null or stats()["lift_kg"] <= 0.0 or wrecked():
+	if by.hands.held != null:
 		return false
-	resting = not resting
+	return rest(not resting)
+
+
+## Sets its trays resting or floating, as use does; a Console's screen too.
+## Says whether it changed.
+func rest(down: bool) -> bool:
+	if down == resting or stats()["lift_kg"] <= 0.0 or wrecked():
+		return false
+	resting = down
 	Sounds.play_at(self, Sounds.BOARD_OFF if resting else Sounds.BOARD_ON)
+	return true
+
+
+## What its lamps draw switched on, W; none without a lamp.
+func lamp_w() -> float:
+	var watts := 0.0
+	for part in parts():
+		watts += part.stats.get("light_w", 0.0)
+	return watts
+
+
+## Switches its lamps, from a Console's screen. Says whether it changed.
+func switch_lamps(on: bool) -> bool:
+	if on == lamps or lamp_w() <= 0.0:
+		return false
+	lamps = on
 	return true
 
 
@@ -556,6 +585,8 @@ func stats() -> Dictionary:
 		if socket.kind == &"battery" and part is Battery:
 			charge += (part as Battery).charge_wh
 			cells += 1
+	if not lamps:
+		total["light_w"] = 0.0
 	total["runners"] = glider.runners.size() if glider != null else 0
 	total["hover_draw"] = draws_kg / total["lift_kg"] if total["lift_kg"] > 0.0 else 1.0
 	total["can_float"] = total["lift_kg"] >= mass
@@ -605,16 +636,17 @@ func _recompute() -> void:
 		glider.runners = runners
 	var now := stats()
 	_hovering = now["hovering"]
-	# Lamps shine, and lenses and emitters glow, only while it has the power.
-	var lit := 1.0 if powered else 0.0
+	# Lamps shine, and lenses and emitters glow, only while it has the power,
+	# and a lamp only while it's switched on.
 	if frame_view != null:
-		frame_view.set_instance_shader_parameter(&"lit", lit)
+		frame_view.set_instance_shader_parameter(&"lit", 1.0 if powered else 0.0)
 	for socket in sockets():
+		var shines: bool = powered and (lamps or socket.part == null or socket.part.stats.get("light_w", 0.0) <= 0.0)
 		for node in socket.fitted:
 			if node is Light3D:
-				node.visible = powered
+				node.visible = shines
 			elif Paint.is_worn(node):
-				(node as GeometryInstance3D).set_instance_shader_parameter(&"lit", lit)
+				(node as GeometryInstance3D).set_instance_shader_parameter(&"lit", 1.0 if shines else 0.0)
 	# A resting body sleeps, and a sleeping one ignores the tray's lift and
 	# the runners' hold.
 	can_sleep = not _hovering and glider == null

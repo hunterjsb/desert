@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Shoots the Console look-test, then builds its sheet: the Console on its deck
 # and alone, its map and stats read standing a step or two back, its map at
-# each resolution its gear gives, its stats close, and the front near.
+# each resolution its gear gives, its stats and power page close, and the
+# front near, on the map and the power page.
 #   look/console/shoot.sh <out dir> [sheet]
 # No window: it runs unseen (scripts/unseen.sh), so it shoots while someone plays.
 set -uo pipefail
@@ -15,7 +16,7 @@ timeout 900 "$godot" --path . --disable-vsync res://look/console/console.tscn --
 	grep -E '^console'
 
 args=()
-for shot in deck alone standing_map standing_stats estimate radar radar_two full linked stats near; do
+for shot in deck alone standing_map standing_stats estimate radar radar_two full linked stats power near near_power; do
 	file="$out/$shot.png"
 	[[ -f $file ]] || file="xc:gray"
 	case $shot in
@@ -29,7 +30,9 @@ for shot in deck alone standing_map standing_stats estimate radar radar_two full
 	full) label="the full set: 28 across" ;;
 	linked) label="two Consoles linked: 42 across" ;;
 	stats) label="the stats, close" ;;
+	power) label="the power page, close" ;;
 	near) label="the front near, the shield switched on" ;;
+	near_power) label="the power page, the smart shield on" ;;
 	esac
 	args+=(-label "$label" "$file")
 done

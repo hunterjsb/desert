@@ -6,20 +6,49 @@ extends Control
 ## their sand where a sensor reads it, humidity laid over the clear air in
 ## blue, unknown air dark; the front's numbers where the front is, the
 ## pressure's bar down its edge, the forecast along its foot, and under it the
-## wind's gyro and the legend. Its other pages draw rows as a Terminal prints
-## them: labels in the accent, what's urgent in amber, rows that run on dim,
-## an empty row a rule, and long rows wrapped. The keys use presses run along
-## its foot. Drawn only when the Console hands it something new.
+## gyro and the legend. Its power page is the deck's electrics as a panel: one
+## line from what makes power through the batteries to what draws it, each
+## device's switches on its row. Its other pages draw rows as a Terminal
+## prints them: a table's labels in the accent, numbers right-aligned, units
+## after; what's urgent in amber, rows that run on dim. Nothing wraps: a row
+## too long for its line is cut. Its tabs run along its foot. Drawn only when
+## the Console hands it something new; where its keys lie is laid out here,
+## for the Console to find what a press is on.
 
 const FONT := preload("res://assets/fonts/GeistMono-Regular.ttf")
 const THEME := preload("res://game/ui/theme.tres")
-## Type: the map's numbers, the legend's and the forecast's, the rows', the keys'.
+## Type: the map's numbers, the legend's, the rows', the tabs' and the switches'.
 const BIG := 40
 const MID := 32
 const SMALL := 28
-const KEYS := 22
+const TAB := 26
+const KEY := 24
+## A trend's arrow, set small.
+const ARROW := 18
 const MARGIN := 14.0
-const ROW := 38.0
+const ROW := 34.0
+## The share of its height the tabs take at its foot.
+const TAB_SHARE := 0.09
+## Where the text pages' rows start, and how much of the stats page's foot its
+## gyro and the pressure's minutes take.
+const TOP := 64.0
+const DETAIL := 290.0
+## A table's columns, in characters from its left: where its numbers end,
+## where its units start, and where its notes start.
+const STATS_COLUMNS := Vector3i(17, 18, 26)
+const POWER_COLUMNS := Vector3i(17, 18, 21)
+const LEGEND_COLUMNS := Vector3i(11, 12, 16)
+## The power panel: its line down the left, its rows' left edge, and a text
+## row's height, a row of switches', and the bank's charge bar's.
+const BUS := 30.0
+const PANEL := 56.0
+const LINE := 40.0
+const SWITCHES := 52.0
+const BAR := 28.0
+## The legend's gyro, its middle in from the legend's corner and its radius,
+## and the stats page's.
+const LEGEND_GYRO := Vector3(118.0, 128.0, 92.0)
+const STATS_GYRO := Vector3(130.0, 135.0, 95.0)
 ## The glass, what reads urgent (a storm's amber), unknown air, clear air dry
 ## and humid, and a storm at its wall and at its heart.
 const GLASS := Color(0.02, 0.045, 0.05)
@@ -31,8 +60,55 @@ const WALL := Color(0.86, 0.6, 0.24)
 const HEART := Color(0.6, 0.26, 0.08)
 ## The pressure bar's span either side of the storm's line, in the field's units.
 const BAR_SPAN := 0.6
+## The gyro's vectors are full length at this wind, m/s.
+const FULL_WIND := 30.0
 
 var _model := {}
+
+
+## Lays out a page's keys, its tabs and any switches, each given its box on
+## the canvas, and the power panel's rows their places: model.keys lists
+## them all, tabs first, for the drawing and for the Console to find a
+## press's key alike.
+static func lay_out(model: Dictionary) -> void:
+	var size := Vector2(Console.PIXELS)
+	var keys: Array = []
+	var tabs: Array = model.tabs
+	var top := size.y * (1.0 - TAB_SHARE)
+	var wide := size.x / tabs.size()
+	for k in tabs.size():
+		tabs[k]["box"] = Rect2(Vector2(k * wide + 5.0, top + 8.0), Vector2(wide - 10.0, size.y - top - 16.0))
+		keys.append(tabs[k])
+	var panel: Dictionary = model.get("panel", {})
+	if not panel.is_empty():
+		var y := TOP
+		panel["makes_y"] = y
+		y += LINE
+		for source: Dictionary in panel.sources:
+			source["y"] = y
+			y += LINE
+		panel.bank["y"] = y
+		y += 3.0 * LINE + BAR
+		panel["draws_y"] = y
+		y += LINE
+		var shown := 0
+		for load: Dictionary in panel.loads:
+			var tall: float = LINE + SWITCHES * load.groups.size()
+			# Room is kept for a row saying how many more there are.
+			if y + tall > top - LINE:
+				break
+			load["y"] = y
+			y += LINE
+			for group: Array in load.groups:
+				var each := (size.x - MARGIN - PANEL - 8.0 * (group.size() - 1)) / group.size()
+				for i in group.size():
+					group[i]["box"] = Rect2(Vector2(PANEL + i * (each + 8.0), y + 4.0), Vector2(each, SWITCHES - 8.0))
+					keys.append(group[i])
+				y += SWITCHES
+			shown += 1
+		panel["shown"] = shown
+		panel["end_y"] = y
+	model["keys"] = keys
 
 
 func show_model(model: Dictionary) -> void:
@@ -44,12 +120,17 @@ func _draw() -> void:
 	draw_rect(Rect2(Vector2.ZERO, size), GLASS)
 	if _model.is_empty():
 		return
-	var keys_top := size.y * (1.0 - Console.KEY_SHARE)
-	if _model.page == "RADAR":
-		_draw_radar(keys_top)
-	else:
-		_draw_rows(keys_top)
-	_draw_keys(keys_top)
+	var keys_top := size.y * (1.0 - TAB_SHARE)
+	match _model.page:
+		"RADAR":
+			_draw_radar(keys_top)
+		"POWER":
+			_draw_header()
+			_draw_power()
+		_:
+			_draw_header()
+			_draw_rows(keys_top)
+	_draw_keys()
 
 
 func _color(name: StringName) -> Color:
@@ -142,34 +223,38 @@ func _draw_bar(pressure: Array, box: Rect2) -> void:
 	_label(Vector2(box.position.x - 6.0, box.end.y + 10.0), "hPa", SMALL - 6, _color(&"dim"))
 
 
-## Under the map: the wind's gyro, its speed and where it's from; the
-## pressure, humidity and sand as they read; the map's scale and resolution.
+## Under the map: the gyro, the wind's speed and where it's from and its
+## angle off the bow; the pressure, humidity and sand as a small table, each
+## by its colour on the map; the map's scale and resolution.
 func _draw_legend(map: Dictionary, box: Rect2) -> void:
 	var text := _color(&"text")
 	var dim := _color(&"dim")
 	var accent := _color(&"accent")
-	var gyro: Array = map.get("gyro", [])
-	var centre := box.position + Vector2(130.0, 140.0)
+	var gyro: Dictionary = map.get("gyro", {})
+	var centre := box.position + Vector2(LEGEND_GYRO.x, LEGEND_GYRO.y)
 	if not gyro.is_empty():
-		_gyro(centre, 105.0, gyro[0], gyro[1], -1.0)
-		_label_centred(centre + Vector2(0.0, 132.0), _model.wind, MID, text)
-	var x := box.position.x + 270.0
-	var y := box.position.y + 34.0
+		_gyro(centre, LEGEND_GYRO.z, gyro, false)
+		_label_centred(centre + Vector2(0.0, LEGEND_GYRO.z + 16.0), _model.wind, MID, text)
+		_label_centred(centre + Vector2(0.0, LEGEND_GYRO.z + 56.0), _model.angle, MID, accent)
+	var x := LEGEND_GYRO.x * 2.0 - 4.0
+	var y := box.position.y + 24.0
 	for item: Array in [["pressure", URGENT if map.get("pressure", [0, 0, 0, false])[3] else accent],
 			["humidity", HUMID.lightened(0.4)], ["sand", WALL]]:
 		if _model.get(item[0], "") == "":
 			continue
-		draw_rect(Rect2(Vector2(x, y + 8.0), Vector2(24.0, 24.0)), item[1])
-		_label(Vector2(x + 36.0, y), _fit(_model[item[0]], MID, size.x - x - 50.0), MID, text)
-		y += 70.0
+		draw_rect(Rect2(Vector2(x, y + 6.0), Vector2(22.0, 22.0)), item[1])
+		_table_row(_model[item[0]], x + 30.0, y, LEGEND_COLUMNS)
+		y += 62.0
 	if _model.get("cells", "") != "":
 		var scale := "%s · %d km" % [_model.cells, roundi(map.get("reach", 0.0) / 1000.0)]
 		_label(Vector2(x, box.end.y - 44.0), scale + (" · est." if map.get("estimate", false) else ""), SMALL - 4, dim)
 
 
-## A gyro: a dial with north marked and the wind's vector across it, the way
-## it blows, as long as it's strong; a dimmer one for its steady part.
-func _gyro(centre: Vector2, radius: float, from: float, speed: float, steady: float) -> void:
+## A compass gyro, north up: the way the deck points, a line out to a mark on
+## the rim; the wind as the deck feels it, a vector flying in from where it
+## comes from, as long as it's strong; and the angle between the two marked.
+## A dimmer vector for the wind's steady part, if asked.
+func _gyro(centre: Vector2, radius: float, gyro: Dictionary, steady: bool) -> void:
 	var text := _color(&"text")
 	var dim := _color(&"dim")
 	var accent := _color(&"accent")
@@ -179,61 +264,166 @@ func _gyro(centre: Vector2, radius: float, from: float, speed: float, steady: fl
 		var way := Vector2.from_angle(k * PI * 0.5 + turn - PI * 0.5)
 		draw_line(centre + way * radius * 0.86, centre + way * radius, accent if k == 0 else dim, 3.0)
 	_label_centred(centre + Vector2.from_angle(turn - PI * 0.5) * (radius + 22.0) - Vector2(0.0, SMALL * 0.6), "N", SMALL, accent)
-	var toward := Vector2.from_angle(deg_to_rad(from + 180.0) + turn - PI * 0.5)
-	if steady >= 0.0:
-		_arrow(centre, toward * radius * clampf(steady / 30.0, 0.15, 1.0), dim, 4.0)
-	_arrow(centre, toward * radius * clampf(speed / 30.0, 0.15, 1.0), text, 5.0)
+	var bow := _way(gyro.heading, turn)
+	var from := _way(gyro.from, turn)
+	draw_line(centre, centre + bow * radius, Color(accent, 0.8), 3.0)
+	var rim := centre + bow * (radius + 3.0)
+	draw_colored_polygon(PackedVector2Array([rim + bow * 16.0, rim + bow.orthogonal() * 10.0, rim - bow.orthogonal() * 10.0]),
+		accent)
+	var a := bow.angle()
+	draw_arc(centre, radius * 0.32, a, a + angle_difference(a, from.angle()), 24, accent.lightened(0.35), 3.0)
+	var inner := radius * 0.1
+	if steady:
+		var reach: float = radius * clampf(gyro.steady / FULL_WIND, 0.15, 0.9)
+		_arrow(centre + from * (inner + reach), centre + from * inner, dim, 4.0)
+	_arrow(centre + from * (inner + radius * clampf(gyro.speed / FULL_WIND, 0.15, 0.9)), centre + from * inner, text, 5.0)
 
 
-func _arrow(from: Vector2, along: Vector2, color: Color, width: float) -> void:
-	var tip := from + along
-	draw_line(from - along * 0.35, tip, color, width)
-	var back := -along.normalized() * 18.0
+## A compass bearing's way on the screen, the moon's north up.
+static func _way(bearing: float, turn: float) -> Vector2:
+	return Vector2.from_angle(deg_to_rad(bearing) + turn - PI * 0.5)
+
+
+func _arrow(tail: Vector2, tip: Vector2, color: Color, width: float) -> void:
+	draw_line(tail, tip, color, width)
+	var back := (tail - tip).normalized() * 18.0
 	draw_line(tip, tip + back.rotated(0.45), color, width)
 	draw_line(tip, tip + back.rotated(-0.45), color, width)
 
 
-## A text page: its name and the clock, then its rows, wrapped, and on the
-## stats page the wind's gyro and the pressure's last minutes in detail.
-func _draw_rows(keys_top: float) -> void:
-	var text := _color(&"text")
-	var dim := _color(&"dim")
+## A text page's name and the clock over a rule.
+func _draw_header() -> void:
 	var accent := _color(&"accent")
 	_label(Vector2(MARGIN, 10.0), _model.page, MID, accent)
 	draw_string(FONT, Vector2(MARGIN, 10.0 + FONT.get_ascent(MID)), _model.clock, HORIZONTAL_ALIGNMENT_RIGHT,
 		size.x - 2.0 * MARGIN, MID, accent)
-	draw_line(Vector2(MARGIN, 56.0), Vector2(size.x - MARGIN, 56.0), Color(accent, 0.4), 2.0)
+	draw_line(Vector2(MARGIN, 54.0), Vector2(size.x - MARGIN, 54.0), Color(accent, 0.4), 2.0)
+
+
+## A text page's rows, and on the stats page the gyro and the pressure's last
+## minutes in detail under them.
+func _draw_rows(keys_top: float) -> void:
+	var dim := _color(&"dim")
 	var detail := _model.has("gyro") or _model.has("history")
-	var bottom := keys_top - (330.0 if detail else 0.0)
-	var advance := FONT.get_char_size(ord("M"), SMALL).x
-	var most := floori((size.x - 2.0 * MARGIN) / advance)
-	var y := 66.0
-	for row: String in _wrapped(_model.get("rows", []), most):
+	var bottom := keys_top - (DETAIL if detail else 0.0)
+	var y := TOP
+	for row: String in _model.get("rows", []):
 		if y + ROW > bottom:
 			break
-		var urgent := row.begins_with("!")
-		var line := row.trim_prefix("!")
-		if line == "":
-			draw_line(Vector2(MARGIN, y + ROW * 0.5), Vector2(size.x - MARGIN, y + ROW * 0.5), Color(dim, 0.3))
-		else:
-			var color: Color = URGENT if urgent else (dim if line.begins_with(" ") else text)
-			# The label column in the accent, what it reads after.
-			var label := line.left(7) if line.length() > 7 and line[6] == " " and line[0] != " " and not urgent \
-				and not line[0].is_valid_int() else ""
-			if label != "":
-				draw_string(FONT, Vector2(MARGIN, y + FONT.get_ascent(SMALL)), label, HORIZONTAL_ALIGNMENT_LEFT, -1, SMALL, accent)
-			draw_string(FONT, Vector2(MARGIN + label.length() * advance, y + FONT.get_ascent(SMALL)),
-				line.substr(label.length()), HORIZONTAL_ALIGNMENT_LEFT, -1, SMALL, color)
+		_table_row(row, MARGIN, y, STATS_COLUMNS)
 		y += ROW
 	if not detail:
 		return
-	var top := keys_top - 320.0
-	draw_line(Vector2(MARGIN, top - 8.0), Vector2(size.x - MARGIN, top - 8.0), Color(dim, 0.3))
+	var top := keys_top - DETAIL + 10.0
+	draw_line(Vector2(MARGIN, top - 4.0), Vector2(size.x - MARGIN, top - 4.0), Color(dim, 0.3))
 	if _model.has("gyro"):
-		var gyro: Array = _model.gyro
-		_gyro(Vector2(140.0, top + 160.0), 115.0, gyro[0], gyro[1], gyro[2])
+		var centre := Vector2(STATS_GYRO.x, top + STATS_GYRO.y)
+		_gyro(centre, STATS_GYRO.z, _model.gyro, true)
+		_label_centred(centre + Vector2(0.0, STATS_GYRO.z + 10.0), _model.gyro.angle, SMALL, _color(&"accent"))
 	if _model.has("history"):
-		_history(_model.history, Rect2(300.0, top + 40.0, size.x - 300.0 - MARGIN, 220.0))
+		var left := STATS_GYRO.x * 2.0 + 30.0
+		_history(_model.history, Rect2(left, top + 30.0, size.x - left - MARGIN, 200.0))
+
+
+## A row as a terminal prints it, at a place: a table's label in the accent
+## (dim, indented, under a reading), its number right-aligned where the
+## columns say, its unit dim after it and its note after that, a trend's
+## arrow small; a lead and its text, a log line's time dim; or plain words.
+## What's urgent is amber. Cut, never wrapped, if it runs past the edge. A
+## name, a device on the power panel, reads in the text's colour.
+func _table_row(row: String, x: float, y: float, columns: Vector3i, name := false) -> void:
+	var text := _color(&"text")
+	var dim := _color(&"dim")
+	var accent := _color(&"accent")
+	var urgent := row.begins_with("!")
+	var cells := row.trim_prefix("!").split("\t")
+	var advance := FONT.get_char_size(ord("M"), SMALL).x
+	var base := y + (ROW + FONT.get_ascent(SMALL) - FONT.get_descent(SMALL)) * 0.5
+	var room := size.x - MARGIN - x
+	if cells.size() == 1:
+		_words(Vector2(x, base), cells[0], room, SMALL, URGENT if urgent else (dim if cells[0].begins_with(" ") else text))
+		return
+	if cells.size() == 2:
+		var lead := maxf(6.0, cells[0].length() + 1.0) * advance
+		_words(Vector2(x, base), cells[0], lead, SMALL, dim)
+		_words(Vector2(x + lead, base), cells[1], room - lead, SMALL, URGENT if urgent else text)
+		return
+	var label := cells[0].trim_prefix(" ") if name else cells[0]
+	var sub := label.begins_with(" ")
+	_words(Vector2(x, base), label, (columns.x - cells[1].length() - 1) * advance, SMALL,
+		URGENT if urgent and not sub else (dim if sub else (text if name else accent)))
+	var number_x := x + columns.x * advance - cells[1].length() * advance
+	_words(Vector2(number_x, base), cells[1], room, SMALL, URGENT if urgent else text)
+	_words(Vector2(x + columns.y * advance, base), cells[2], (columns.z - columns.y) * advance, SMALL, dim)
+	var note: String = cells[3] if cells.size() > 3 else ""
+	var note_x := x + columns.z * advance
+	if note in ["▲", "▼", "–"]:
+		draw_string(FONT, Vector2(note_x, base - (SMALL - ARROW) * 0.3), note, HORIZONTAL_ALIGNMENT_LEFT, -1, ARROW,
+			URGENT if urgent else text)
+	else:
+		_words(Vector2(note_x, base), note, size.x - MARGIN - note_x, SMALL, URGENT if urgent else text)
+
+
+## Words on a baseline, cut to what fits a width.
+func _words(at: Vector2, words: String, width: float, font_size: int, color: Color) -> void:
+	if words != "":
+		draw_string(FONT, at, _fit(words, font_size, width), HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, color)
+
+
+## The deck's electrics as one line down the left: what makes power feeding
+## it at the top, the batteries on it with their charge, and what draws it
+## below, each a branch off the line with its watts, and under each device
+## its rows of switches.
+func _draw_power() -> void:
+	var panel: Dictionary = _model.get("panel", {})
+	if panel.is_empty():
+		return
+	var text := _color(&"text")
+	var dim := _color(&"dim")
+	var accent := _color(&"accent")
+	var mid := LINE * 0.5
+	var nodes: Array[float] = [panel.makes_y + mid]
+	_power_row(panel.makes, panel.makes_y)
+	for source: Dictionary in panel.sources:
+		_power_row(source.row, source.y, true)
+		# What makes power feeds the line.
+		var at: float = source.y + mid
+		_arrow(Vector2(PANEL - 6.0, at), Vector2(BUS + 6.0, at), accent, 3.0)
+		nodes.append(at)
+	var bank: Dictionary = panel.bank
+	_power_row(bank.row, bank.y)
+	nodes.append(bank.y + mid)
+	var bar := Rect2(PANEL, bank.y + LINE + 4.0, size.x - MARGIN - PANEL, BAR - 8.0)
+	draw_rect(bar, Color(_color(&"faint"), 0.3))
+	draw_rect(Rect2(bar.position, Vector2(bar.size.x * bank.share, bar.size.y)), URGENT if bank.share < Power.RESERVE else accent)
+	draw_rect(bar, Color(accent, 0.6), false, 2.0)
+	_power_row(bank.net, bank.y + LINE + BAR)
+	_power_row(bank.left, bank.y + 2.0 * LINE + BAR)
+	_power_row(panel.draws, panel.draws_y)
+	nodes.append(panel.draws_y + mid)
+	var loads: Array = panel.loads
+	for i in panel.shown:
+		var load: Dictionary = loads[i]
+		_power_row(("!" if load.dark else "") + load.row, load.y, true)
+		# What draws takes from the line.
+		var at: float = load.y + mid
+		_arrow(Vector2(BUS + 6.0, at), Vector2(PANEL - 8.0, at), dim if load.dark else text, 3.0)
+		nodes.append(at)
+	if panel.shown < loads.size():
+		_power_row(" +%d more" % (loads.size() - panel.shown), panel.end_y)
+	draw_line(Vector2(BUS, nodes[0]), Vector2(BUS, nodes[-1]), accent, 4.0)
+	for at in nodes:
+		draw_circle(Vector2(BUS, at), 5.0, accent)
+	# The batteries sit on the line: a cell's mark.
+	var cell := Rect2(Vector2(BUS - 12.0, bank.y + mid - 7.0), Vector2(24.0, 14.0))
+	draw_rect(cell, GLASS)
+	draw_rect(cell, accent, false, 2.0)
+	draw_rect(Rect2(Vector2(BUS - 4.0, cell.position.y - 4.0), Vector2(8.0, 4.0)), accent)
+
+
+## A row of the power panel, centred in its line.
+func _power_row(row: String, y: float, name := false) -> void:
+	_table_row(row, PANEL, y + (LINE - ROW) * 0.5, POWER_COLUMNS, name)
 
 
 ## The barometer's last minutes as a line, the storm's line across them.
@@ -256,36 +446,23 @@ func _history(history: Array, box: Rect2) -> void:
 		SMALL - 6, dim)
 
 
-## The keys along its foot, a third of it each; the one you aim at lit.
-func _draw_keys(top: float) -> void:
+## Every key in its box: the one you aim at lit up, a tab on its own page
+## and a switch for how its device stands marked, the rest faint.
+func _draw_keys() -> void:
 	var keys: Array = _model.keys
-	var wide := size.x / 3.0
 	var text := _color(&"text")
+	var dim := _color(&"dim")
 	var accent := _color(&"accent")
 	for k in keys.size():
-		var box := Rect2(Vector2(k * wide + 5.0, top + 8.0), Vector2(wide - 10.0, size.y - top - 16.0))
+		var key: Dictionary = keys[k]
+		var box: Rect2 = key.box
 		var aimed: bool = _model.aim == k
-		draw_rect(box, Color(accent, 0.9) if aimed else Color(accent, 0.12))
-		draw_rect(box, Color(accent, 0.7), false, 2.0)
-		draw_string(FONT, Vector2(box.position.x, box.position.y + (box.size.y + FONT.get_ascent(KEYS)) * 0.5 - 4.0),
-			_fit(keys[k], KEYS, box.size.x - 8.0), HORIZONTAL_ALIGNMENT_CENTER, box.size.x, KEYS, GLASS if aimed else text)
-
-
-## Rows longer than fit go on in rows under them, indented as runs on.
-static func _wrapped(rows: Array, most: int) -> PackedStringArray:
-	var out := PackedStringArray()
-	for row: String in rows:
-		var urgent := row.begins_with("!")
-		var line := row.trim_prefix("!")
-		var indent := " ".repeat(7 if line.length() > 7 and line[6] == " " else 2)
-		while line.length() > most:
-			var cut := line.left(most + 1).rfind(" ")
-			if cut <= indent.length():
-				cut = most
-			out.append(("!" if urgent else "") + line.left(cut))
-			line = indent + line.substr(cut).strip_edges(true, false)
-		out.append(("!" if urgent else "") + line)
-	return out
+		var font_size := TAB if key.device == null else KEY
+		draw_rect(box, Color(accent, 0.9) if aimed else (Color(accent, 0.35) if key.lit else Color(accent, 0.08)))
+		draw_rect(box, Color(accent, 0.9 if key.lit else 0.45), false, 3.0 if key.lit else 2.0)
+		draw_string(FONT, Vector2(box.position.x, box.position.y + (box.size.y + FONT.get_ascent(font_size)) * 0.5 - 3.0),
+			_fit(key.text, font_size, box.size.x - 8.0), HORIZONTAL_ALIGNMENT_CENTER, box.size.x, font_size,
+			GLASS if aimed else (text if key.lit else dim))
 
 
 ## A label on a dark backing, its top left at a place.
@@ -312,7 +489,7 @@ func _label_at(spot: Vector2, words: String, font_size: int, color: Color, side:
 ## Words cut to what fits a width.
 static func _fit(words: String, font_size: int, width: float) -> String:
 	var most := floori(width / FONT.get_char_size(ord("M"), font_size).x)
-	return words if words.length() <= most else words.left(most - 1) + "…"
+	return words if words.length() <= most else words.left(maxi(most - 1, 0)) + "…"
 
 
 ## A map offset in metres east and south as the screen draws it, the moon's
