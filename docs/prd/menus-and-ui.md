@@ -67,6 +67,23 @@ aim dot hidden behind them.)
   the foreground slides over to the right as New game opens the choice, and shows the
   highlighted origin's own kit as the selection moves. The main menu shows the kit of the
   origin last played, kept in the profile.
+- **The prop steps aside for every menu over it** (Hunter, 2026-10-18: "the minimal, no
+  background text works for the top title and main menu bc they have a consistent sand or sky
+  background... we should always move the prop"). The title and the main menu's words stand
+  alone over the sand and sky. Every menu opened from them, Options, the "this ends your saved
+  run" question, who you come as and the mode, slides the prop to the right and stands on the
+  left, as the origin choice does; the question slides it before the origins come up.
+- **Each origin shows one compact piece,** not its kit scattered: the Surveyor its crate as
+  assembled, the Salvager its board, the Homesteader its planter. Under the piece, on the
+  right, its gear is listed small, each thing and how many.
+- **Resume opens the same view:** the prop is your last camp as the save holds it, what stood
+  round you when you saved, with the save's numbers beside it (time played, when it was saved,
+  the day, who you came as), and confirm carries on.
+- **Music at the main menu,** the radio's day or night track by the menu's own light, with a
+  mute switch in the bottom left that stays as you leave it. The menu's storm stays silent.
+- **At night the prop still reads:** a soft light on it, the night kept round it (Hunter: "the
+  camp can become night in the menu which is extremely cool, but its so dark you cant see the
+  gear").
 
 ## The system menu
 
@@ -76,6 +93,9 @@ game. It holds **Options** (controls, audio, graphics), **Save** in a Normal run
 asks who you come as, the origin last played highlighted, then which mode, Normal
 highlighted or Ironman; **dying** in a Normal run shows Load last save, highlighted, and
 New run (Hunter, 2026-10-16).
+
+Over a run there's no prop to move, so the system menu's words stand on a soft dark scrim
+(Hunter, 2026-10-18: "pause menu is different -- we can add some opaqueness").
 
 ## Saying less
 
