@@ -1,11 +1,14 @@
 extends Node
 ## Look-test helper: shoots the deeds' tree with a few done, one of them
-## early, and a card highlighted, over the main menu's desert and over a run. Needs a GPU, not --headless; shoot.sh
+## early, and a card highlighted, over the main menu's desert and over a
+## run; then Resume, counting them. Needs a GPU, not --headless; shoot.sh
 ## runs it unseen:
 ##   scripts/unseen.sh --path . res://look/deeds/deeds.tscn -- <out dir>
 
 const MAIN := preload("res://game/main.tscn")
 ## Done, one of them early: Six Pack before All Mod Cons, so it's still dark.
+## Long enough for the prop to slide aside and swap, s.
+const SETTLE := Showpiece.SLIDE_SECONDS + Showpiece.SWAP_SECONDS + 0.4
 const DONE: Array[StringName] = [&"board_distance", &"board_height", &"shield_day", &"crop", &"sail_waist",
 	&"port_morgan", &"deck_pieces"]
 
@@ -46,13 +49,18 @@ func _ready() -> void:
 	main.ui.back()
 	await _opened(main, &"shield_storm")
 	_shoot(out.path_join("deeds_run.png"))
+	main.ui.close_all()
+	await main.save_and_quit()
+	main.ui.open(main.ui.resume_view())
+	await get_tree().create_timer(SETTLE).timeout
+	_shoot(out.path_join("deeds_resume.png"))
 	get_tree().quit()
 
 
-## The deeds open, a card highlighted, and their pictures drawn.
+## The deeds open, the prop aside, a card highlighted, and their pictures drawn.
 func _opened(main: Main, highlighted: StringName) -> void:
 	main.ui.open(main.ui.deeds())
-	await _ticks(10)
+	await get_tree().create_timer(SETTLE).timeout
 	for card: Button in main.ui.top().find_children("*", "Button", true, false):
 		if card.get_meta(&"deed", &"") == highlighted:
 			card.grab_focus()
