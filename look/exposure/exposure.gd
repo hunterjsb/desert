@@ -51,6 +51,8 @@ func _ready() -> void:
 			["after", found.after, NEAR], ["glint", found.peak, FAR]]:
 		world.time = shot[1]
 		var eye2: Vector2 = Vector2(site.x, site.z) + side * (4.0 + float(shot[2]))
+		if shot[0] == "glint":
+			eye2 = _in_sight(site, side)
 		var eye := Vector3(eye2.x, world.shape.height_at(eye2.x, eye2.y) + EYE, eye2.y)
 		await _look(eye, Vector3(site.x, site.pad() + 1.4, site.z))
 		var image := get_viewport().get_texture().get_image()
@@ -124,6 +126,27 @@ func _clear(field: WeatherField, at: Vector2, t: float, way: float) -> float:
 		if field.raw_storm_at(at.x, at.y, when) < -0.05 and day >= LIGHT.x and day <= LIGHT.y:
 			return when
 	return NAN
+
+
+## Out in the dust off its window side, where no dune stands between your
+## eye and the window: FAR m off or as near that as one is.
+func _in_sight(site: Structure, side: Vector2) -> Vector2:
+	var window := site.frame() * Vector3(4.01, 1.95, 0.0)
+	var best := Vector2(site.x, site.z) + side * FAR
+	var clearest := -INF
+	for k in 21:
+		var turn := deg_to_rad(-25.0 + k * 2.5)
+		for metres: float in [FAR, FAR - 8.0, FAR + 8.0, FAR - 14.0]:
+			var at := Vector2(site.x, site.z) + side.rotated(turn) * metres
+			var eye := Vector3(at.x, world.shape.height_at(at.x, at.y) + EYE, at.y)
+			var clear := Skyline.clearance(world.shape, world.tuning, eye, window,
+				world.terrain.chunk_at(at.x, at.y), 2.0, true)
+			if clear > 0.3:
+				return at
+			if clear > clearest:
+				clearest = clear
+				best = at
+	return best
 
 
 ## The last moment before the storm's height it's half out of the sand, the
