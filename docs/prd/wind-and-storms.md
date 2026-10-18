@@ -500,11 +500,12 @@ rising and rolling where it stands.
 
 ### What it costs
 
-On the RTX 3070 at 1280 by 720 (look/plume, the GPU's frame time with it drawn and without, the
-median of ten paired turns): 0.6 to 0.9 ms a frame from 270 m, standing under its column; 0.03 to 0.27
-ms from 1.5 km; 0.02 to 0.21 ms from 7 km; nothing measurable when a storm hides it. Its main-thread
-time is 0.15 to 0.22 ms a frame wherever it's in sight (the streakline, a storm read every other frame
-and its uniforms), and nothing past 17 km but a distance a frame.
+On the RTX 3070 at 1280 by 720, shared with other work (look/plume: the GPU's frame time with it drawn
+and without, the median of ten paired turns, over three runs): 0.4 to 1.3 ms a frame from 270 m under
+its column, the most in a burst; 0.02 to 0.27 ms from 1.5 km; 0.0 to 0.21 ms from 7 km; nothing
+measurable when a storm hides it. Its main-thread time is 0.15 to 0.22 ms a frame wherever it's in
+sight (the streakline a few points a frame, a storm read every other frame, its uniforms), 1 to 3 ms
+in the one frame after a jump in time or place, and past 17 km a distance a frame.
 
 ### Probes
 
