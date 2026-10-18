@@ -141,7 +141,7 @@ strength, so duration matters). Not agreed."
 What the game already has, as readings and not in the session:
 - **The curve is queryable.** `storm_at` is a pure function of place and time, so a camp that
   stays put has an intensity curve for the whole span ([Wind &
-  storms](wind-and-storms.md#instruments-and-the-console-screen-proposed) answers it: yes, already).
+  storms](wind-and-storms.md#instruments-and-the-console-screen-proposed-first-version-built) answers it: yes, already).
 - **Shield draw already goes by storm strength.** It sips 10 W in the clear and draws 200 W holding
   back a full storm, 2 W and 20 W for the light shield, and between the two in a lesser one
   (Bubble shield & camp). So the night's cost is that draw summed over the span: "duration
@@ -436,9 +436,10 @@ Death means a new run (see Runs in the vision).
   least add a hook so we can tow it"). The kit is data, `game/survival/standard_kit.tres`
   (a `Kit`: what the suit carries, what's set down beside you and where,
   what comes assembled, socket by socket, which lines are laid, how full its batteries
-  start and how long its line is). Only this standard kit is balanced; choosing a kit
-  waits. (Session 4, part 2 balances three kits, the Surveyor, the Salvager and the
-  Homesteader, and lists the Surveyor's standard shield, multi-compass, stake tether and radio
+  start and how long its line is). It's the Surveyor's, the default origin's; the Salvager
+  and the Homesteader have kits of their own, chosen at New game ([Profile &
+  saves](profile-and-saves.md#kits-are-data)), each beginning at its own start on the moon.
+  (Session 4, part 2 lists the Surveyor's standard shield, multi-compass, stake tether and radio
   against the kit below, a light shield, a light panel and a racked board: the clash is
   recorded in [the vision](../vision.md#player-origins-and-kits), and this kit is what's
   built.) Every run, the first and every one after a death, begins on a clear morning

@@ -7,6 +7,10 @@ var salvage: Salvage
 
 
 func load_salvage(run_seed := 1234) -> void:
+	start_among(run_seed)
+	# What lies in ruins is these probes' to test, so the wind has dug them out;
+	# exposure has its own (probes/kits).
+	Tuning.current().site_return_m = -1.0
 	await load_hands(run_seed, true)
 	salvage = world.salvage
 	await settle_finds()
@@ -38,19 +42,67 @@ func corners(body: Node3D) -> Array[Vector3]:
 	return out
 
 
-## The plan a laid-out find came from.
+## The plan a laid-out find came from: its site's, or its chunk's open sand's.
 func spec_of(body: Node) -> Dictionary:
 	var at: Array = body.get_meta(&"find")
-	for spec in Finds.plan(world.run_seed, at[0], salvage.exposure_in(at[0]), world.tuning, world.height_at,
-			world.shape.ruins.in_chunk(at[0])):
+	var specs: Array[Dictionary] = []
+	if at.size() > 2:
+		var site := site_of(body)
+		if site != null:
+			specs = SiteLoot.plan(site, world.height_at)
+	else:
+		specs = Finds.plan(world.run_seed, at[0], salvage.exposure_in(at[0]), world.tuning, world.height_at,
+			salvage.on_way, salvage.on_site)
+	for spec in specs:
 		if spec.index == at[1]:
 			return spec
 	return {}
 
 
-## The ruins within `radius` m of where the run began, nearest first.
+## The structure a site's find was laid out in, or null for a loose one.
+func site_of(body: Node) -> Structure:
+	var at: Array = body.get_meta(&"find")
+	if at.size() < 3:
+		return null
+	for unit in world.shape.sites.units():
+		for site in unit.sites:
+			if site.id == at[2] and site is Structure:
+				return site
+	return null
+
+
+## The house ruins standing within `radius` m of where the run began,
+## nearest first.
 func ruins_near(radius := 2000.0) -> Array[Ruin]:
-	return world.shape.ruins.around(world.spawn.x, world.spawn.y, radius)
+	var found: Array[Ruin] = []
+	for unit in world.shape.sites.units():
+		for site in unit.sites:
+			if site is Ruin and world.shape.sites.covering(site.x, site.z) == site \
+					and site.distance_to(world.spawn.x, world.spawn.y) <= radius:
+				found.append(site)
+	found.sort_custom(func(a: Ruin, b: Ruin) -> bool:
+		return a.distance_to(world.spawn.x, world.spawn.y) < b.distance_to(world.spawn.x, world.spawn.y))
+	return found
+
+
+## Stands you where "go looking" does, in front of a house ruin's door, and
+## waits for what lies there: the ruin.
+func go_looking() -> Ruin:
+	var scenario := Scenarios.by_key("ruin")
+	var place := Scenarios.find(world, scenario)
+	Scenarios.stand(world, scenario, place)
+	await settle_finds()
+	return ruin_in_front()
+
+
+## The house ruin whose front door is before you, within 30 m, or null.
+func ruin_in_front() -> Ruin:
+	var x := world.player_world_x()
+	var z := world.player_world_z()
+	for site in world.shape.sites.query(Rect2(x - 30.0, z - 30.0, 60.0, 60.0), false):
+		if site is Ruin and world.shape.sites.covering(site.x, site.z) == site:
+			return site
+	return null
 
 
 ## A plan point of a ruin in engine coordinates, on its floor.

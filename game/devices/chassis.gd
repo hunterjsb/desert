@@ -30,6 +30,8 @@ var turns := 0
 
 ## Its own frame and sockets while they live in the deck's body.
 var _own: Array[Node3D] = []
+## What its pieces and what's fitted to them show the wind, m², until they change.
+var _flat_face := NAN
 
 
 ## Every piece of the deck, the first one first.
@@ -417,33 +419,41 @@ func _frame_masses() -> Array:
 	return frames
 
 
-## Flat, the wind meets its pieces and what's fitted to them side on, and
-## takes what stands on it too.
 func stats() -> Dictionary:
 	var now := super()
-	var face := 0.0
-	for piece in pieces():
-		face += piece.frame_stats.get("face_m2", 0.0)
-	for child in get_children():
-		var shape := child as CollisionShape3D
-		if shape != null and shape.has_meta(&"socket"):
-			var size := (shape.transform * Catalog.bounds(shape.shape)).size
-			face += maxf(size.x, size.z) * size.y
-	var catch := face * world.tuning.wind_catch_per_m2 if world != null else 0.0
-	for seated in mounted():
-		catch += seated.stats()["catch"]
-	now["catch"] = catch
 	now["pieces"] = pieces().size()
 	return now
+
+
+## Flat, the wind meets its pieces and what's fitted to them side on, and
+## takes what stands on it too.
+func wind_catch() -> float:
+	if is_nan(_flat_face):
+		_flat_face = 0.0
+		for piece in pieces():
+			_flat_face += piece.frame_stats.get("face_m2", 0.0)
+		for child in get_children():
+			var shape := child as CollisionShape3D
+			if shape != null and shape.has_meta(&"socket"):
+				var size := (shape.transform * Catalog.bounds(shape.shape)).size
+				_flat_face += maxf(size.x, size.z) * size.y
+	var catch := _flat_face * world.tuning.wind_catch_per_m2 if world != null else 0.0
+	for seated in mounted():
+		catch += seated.wind_catch()
+	return catch
+
+
+func _shapes_changed() -> void:
+	super()
+	_flat_face = NAN
 
 
 func show_wear() -> void:
 	super()
 	for piece in joined:
-		var layer: StringName = piece.get_meta(&"layer", &"")
 		if piece.frame_view != null:
-			piece.frame_view.set_instance_shader_parameter(&"age", Paint.age_of(layer, durability))
-			piece.frame_view.set_instance_shader_parameter(&"era", Paint.era_of(layer))
+			piece.frame_view.set_instance_shader_parameter(&"age", Paint.age_for(piece, durability))
+			piece.frame_view.set_instance_shader_parameter(&"era", Paint.row_for(piece))
 
 
 ## Pieces joined to it wait off the tree, so nothing else would free them.

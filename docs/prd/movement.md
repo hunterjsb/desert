@@ -91,7 +91,9 @@ even storms that last for days.
   keeping your way: faster than you can run, you skid, and the board goes on as a body.
   It tows nothing: a line or a grip in your hands is let go, a line at your waist is
   untied first (it takes its moment) and you step on once it's free, and riding you
-  take only loose things on no line.
+  take only loose things on no line. A sail's sheet at your waist stays tied, so your camp
+  can tow you, and the board pushes against no line (2026-10-18,
+  [sailing](#sailing-the-camp-hunter-2026-10-17)).
 - **Racked** (2026-10-16). A crate frame's rack runs along the top of its left side. The
   board is longer than the crate, 1.3 m against 0.8 m, so it overhangs 25 cm front and
   back. It stands on its edge, nose forward and deck out, 1 cm off the side and 17 cm
@@ -228,11 +230,138 @@ The base gets faster through a progression of haulers:
 3. **The sand yacht.** The real fast base-mover. It runs on the wind, so it belongs in
    this world. It's fast with the wind, it can zigzag upwind (tacking), and a real land
    yacht can go faster than the wind itself. A good one might outrun a storm with the
-   camp aboard.
+   camp aboard. *Built as your own camp rigged to sail ([above](#sailing-the-camp-hunter-2026-10-17)):
+   the light deck it's tuned on goes at a running pace, not yet past the wind or a storm's front.*
 4. **Big carriers,** like the walker farmer, that carry the farm and the shield.
 
 Early on you weather storms. Later, the yacht lets you choose between weathering one
 and outrunning it.
+
+### Sailing the camp (Hunter, 2026-10-17)
+
+"Feeling the weight of your camp around your waist or in your hands is gonna be a really big
+part of the game. the camp should be able to be used as a sail, especially when paired with
+some sort of skates or board plate and actual sail mount... deep, fun, intuitive yet realistic
+windsailing mechanics... it can be quite large." This is the vision's sand yacht, built from
+your own camp's parts rather than found whole:
+
+- **A sail mount and a sail.** A mast seats on a crate's top mount or a deck mount, and a large
+  sail rides it. Raised, it catches the real wind; furled, it doesn't.
+- **Runners: skates or a board plate.** Fitted under a crate or a deck in place of trays, they
+  slide easily along their length and grip hard across it, as a land yacht's runners do, so a
+  camp on runners sails across the wind and can work upwind, where a floating camp only
+  drifts downwind.
+- **Realistic, and felt.** The sail makes lift and drag by its angle to the apparent wind; its
+  pull acts high up, so the camp heels in a gust and can tip; reaching is fastest, dead
+  downwind is slower, straight upwind is impossible, so you tack. The pull reaches you down
+  your lines: on foot or on the board, tied at your waist, your camp tows you.
+- **Trimmed by its sheet.** The sheet is a line from the sail you hold or tie at your waist:
+  reeling it in hauls the sail in, paying out eases it, so trimming is the reeling you
+  already do.
+- **Storms.** A raised sail in a storm is the danger it should be: reef or furl it, or it
+  tears and the mast can snap.
+
+**As built (2026-10-18, `game/devices/runners.gd`, `game/sail/mast.gd`, `probes/sail/`).**
+- **The parts.** Three finds, each a `give` id: skates (`skates`) and a board plate
+  (`board_plate`), which are runners, and a mast (`mast`) with a sail (`sail`) to fit it.
+  All lie deep, the mast rarely, and a mast is found with its sail on it.
+- **Runners** fit a bottom mount in place of a tray: under a crate, or under each piece of a
+  deck. A device carries trays or runners, never both, and a refusal says "runners and trays
+  don't mix"; a device standing on a deck takes none ("on a deck it takes no runners"), and one
+  with runners in is refused a deck mount with "take its runners off first". A deck's runners
+  turn to its length, however its pieces sit on the grid. Runners draw no power. They ride the
+  ground's one function, never the sand's collision: each corner of a runner's face reads
+  `height_at` and is a spring on the sand that, with the others, holds up the load and settles
+  it about 1 cm in; only the blades reach the sand, 5 cm below the frame they hang from (3 cm
+  for the plate), so no lattice crease or chunk seam catches the body. Along its length a
+  runner at rest holds a tenth of its load (skates; the plate 12%), and sliding it drags 3.5%
+  and 3% more for each m/s (the plate 5% and 4%). Across, it ploughs: each corner takes out its
+  sideways way as if its share of the load came to rest in 0.04 s, as far as its grip, 90% of
+  the load for skates and 45% for the plate, so the plate skids sideways where skates bite.
+  So a camp on runners is driven along them; a floating one only drifts.
+- **The mast** seats on a crate's top mount or stands on a deck mount, from your hands like
+  the shield. Stowed it's a 1.3 m pole, 8 kg; seated, it stands to 4.4 m over its mount. The
+  sail, 5 kg, fits low on it, furled along its 2.3 m boom, and is 5.5 m² raised: 3.4 m up the
+  mast, the boom's length along its foot, 1 m across its head. A camp sails the way it faces:
+  seated, the boom trails behind its host.
+- **Raising and furling** are use on the mast (its pole or the boom), 1.5 s each, with the sound
+  of cloth. Off its mount, the sail comes down. Furled, the wind sees only the bundle on the boom.
+- **The sheet** is any line whose end is on the boom's end, where the sail adds a tie. The wind
+  swings the boom out to leeward until the sheet holds it: the sheet's inboard length says how
+  far, as if it ran from the boom's end to a block on the camp below it. Reeling it, in your
+  hand or at your waist, hauls the sail in a notch at a time (0.25 m, about 7° of swing), the
+  line itself no shorter; paying out eases it, and once the sail is all the way out a notch
+  pays the line out instead. A sail pulling harder than your strength (400 N) won't come in.
+  With nothing holding the sheet's far end (dropped, untied, snapped) it runs, and the boom
+  swings free and spills the wind; tied on again, it holds the boom where it is.
+- **The sail's push.** Lift and drag by the sail's angle of attack to the apparent wind, the
+  felt wind less the camp's own way at the sail: lift rises to 1.3 at 18° and stalls past it,
+  falling away to a flat sheet's, and drag grows from 0.05 to 1.8 square on, where it catches
+  the wind as any face that size does. The push acts 1.5 m up the sail, a third of the way back
+  along it, 2.6 m over the sand on a deck, so the camp heels. Held out by its sheet, the sail's
+  twist goes into the camp through the sheet; swinging free, as in a gybe, only its drag
+  against swinging, and brought up short by its sheet its swing slams into the camp. Lying over
+  past 40° it fades, and past 70° it meets the sand, not the wind. Inside a running bubble the
+  sail feels what the bubble lets through, like everything: nothing in a base shield's, 15% of
+  the wind in a light shield's. Sail with the shield off; when a storm comes, furl it and put
+  the bubble up, or run before the storm in clear air.
+- **Points of sail.** The "sail" deck, 89 kg on skates, steered and its sheet tended, in a
+  steady 10 m/s wind: dead downwind 3.4 m/s, under the wind's speed; a broad reach (120°) 4.5;
+  a beam reach 4.3, sliding sideways 0.1 m/s; a close reach (70°) 2.9; close-hauled at 60° 1.9,
+  making 1.0 m/s upwind. At 50° it can't get going from rest: bear away to build speed, then
+  head up. Head to wind it makes no ground, blown back 0.7 m/s, so you tack. On a plate the beam
+  reach is 2.9 m/s. A 6 m/s breeze is too light to start it; at 14 m/s it heels 12° and must be
+  eased to hold a beam reach, at 4.6 m/s.
+- **Heel and capsize.** In 10 m/s on a beam reach its windward blades unload and it leans under
+  a degree or two. A 12.5 m/s gust with the sheet made fast lifts its windward runners, leaning
+  it 3 to 5°, and it comes back down as the gust passes. In an 18 m/s blast held to its course it
+  goes over, 3.9 rad/s at most, and comes to rest lying on its edge and its mast: the
+  masthead and the boom's end meet the sand, and whatever stands on a tipped device rests on
+  its frame's corners, so nothing it carries goes through. You right it as you right anything:
+  take hold of it and rotate.
+- **Steering is by where you pull.** A line pulls the end of the camp it's tied to toward you.
+  The sheet is on the boom's end, which trails behind and to leeward, so the camp's tail
+  follows your pull and its bow swings away, as with a tiller: towed straight behind, you hold
+  it on its course; swing out to its windward side and it bears away, to its lee and it heads
+  up. A line from a ring at its bow steers the other way round, like reins. Taking hold of it
+  and rotating turns it as you'd turn any camp. Left to itself with its sheet made fast, a camp
+  on the "sail" deck rounds up gently into the wind and stops: its crate to windward drags its
+  windward runners a little harder.
+- **Towed on the board.** Stepping onto the board, a sheet at your waist stays tied, while any
+  other line at your waist is untied first, as before. Towed, the board runs where the line
+  leads and your keys carve; it pushes and kicks against no line, so it still tows nothing.
+  Reeling works riding, so you trim the sheet as you go. On the "sail" deck in 10 m/s, with the
+  sheet tended, the camp tows you at 3.5 m/s on the end of the sheet.
+- **Storms and breaking.** A raised sail tears by the wind it stands in, drawing or luffing or
+  lying over: past 600 N of load (what a 20 m/s wind does to it raised, or a reach drawing hard
+  at 18 m/s) it loses a fifth of its cloth a second for each share past that, shrinking its
+  area, and below 15% it's rags. Its mast snaps past 1,000 N of pull felt for 0.05 s: a raised
+  sail drawing in a 24 m/s storm, or broadside in 22 m/s. A furled sail takes no harm. Both sit
+  under a line's 1,500 N and a stake's 2,500 N, so a camp moored with its sail up loses the
+  sail, then the mast, before its line or its stake. The weather wears the mast as any device.
+- **Saves** keep the mast's raise, its sheet's trim, the boom's swing and the loads, and the
+  sheet as a line; a resumed rig sails on within a centimetre of one never saved (6 mm after 4 s). No frame
+  changed, so older saves load as before.
+- **Stability.** Physics ticks only. The runners hold the load up together, solved for the
+  body's rise and tilt at once, and plough by the way it went before anything pushed it this
+  tick, so a reach sails the same at 30, 60 and 120 ticks a second (2.938, 2.938 and 2.936 m/s,
+  51.2 m in 20 s each). In four minutes back and forth in gusts, over eight chunk seams and
+  through three origin shifts, no tick changes its way by more than 0.12 m/s, it never spins
+  faster than 1.2 rad/s, leans 7° at most and never touches the sand but by its blades.
+- **Cost.** About 100 µs a tick for a deck's runners and 80 µs for its sail, measured in the
+  probes on a loaded machine; a camp on runners spends nothing floating.
+- **The "sail" scenario** stands you on level open sand in a steady 8.5 to 11.5 m/s breeze out
+  of any lee, facing across it with the wind on your left. Ahead stands a deck two pieces by
+  two on skates, the mast and its furled sail on its front piece to windward, a crate with two
+  batteries behind it and a shield, switched off, behind to leeward; the sheet runs from the
+  boom's end to your waist, eased to let the boom out 75°, and a charged board lies at your
+  feet. Use the mast to raise the sail, step on the board, and reel in as it picks up speed.
+- **Sailing probes** (`probes/sail/`): 1, runners sail across the wind where a floating camp
+  drifts; 2, no ground straight upwind, ground on either tack; 3, the sheet trims the drive and
+  reeling hauls the sail; 4, it heels in a gust and recovers, and a blast puts it over
+  smoothly; 5, a raised sail tears in a storm and a furled one doesn't, and a blast snaps the
+  mast; 6, your camp tows you on the board; 7, nothing flings, and it sails the same at any
+  tick rate. Profile & saves probe 16: a rigged camp resumes.
 
 ### The dune sailboat (Agreed, session 4, part 3; not built)
 

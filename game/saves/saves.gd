@@ -2,9 +2,9 @@ extends Node
 ## The run save, at /root/Saves. One at a time, for the one run, and it keeps
 ## the run's mode: in Normal you save as you go and death offers it back; in
 ## Ironman, Save & quit only suspends the run and death deletes it. Resume
-## puts it back on a world built on its seed. It holds only what you changed
-## (Snapshot). A save from another version is refused with a reason, never
-## half-read; one from before modes has none, and is Normal's.
+## puts it back on a world built on its seed and origin. It holds only what
+## you changed (Snapshot). A save from another version is refused with a
+## reason, never half-read; one from before modes has none, and is Normal's.
 
 ## Everything resumed and running again.
 signal restored(world: World)
@@ -38,6 +38,12 @@ func run_seed() -> int:
 ## The saved run is Ironman's.
 func ironman() -> bool:
 	return _read().get("ironman", false)
+
+
+## The saved run's origin, by id: none from before origins, which resumes
+## with the start it had.
+func kit() -> StringName:
+	return _read().get("kit", &"")
 
 
 ## Saves the run, in its mode: safe at any moment, mid-storm included, and it
@@ -99,6 +105,7 @@ func _taken(world: World, ironman: bool) -> PackedByteArray:
 		return PackedByteArray()
 	var data := Snapshot.take(world)
 	data.ironman = ironman
+	data.kit = world.kit.id if world.kit != null else &""
 	return var_to_bytes(data)
 
 

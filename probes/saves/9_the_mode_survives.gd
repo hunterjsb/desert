@@ -8,6 +8,7 @@ extends MenuProbe
 func run() -> void:
 	await open_main()
 	press(&"ui_accept")
+	press(&"ui_accept")
 	press(&"ui_down")
 	press(&"ui_accept")
 	await faded_in()

@@ -12,10 +12,14 @@ signal parts_changed
 ## Settling, a tray's all-lifting height sinks this many falloffs below the
 ## sand, so what it holds is down on the sand before it stops.
 const SETTLE_BELOW := 3.0
+## Leaning past this far, rad, what's seated on it can meet the sand.
+const TIPPED := deg_to_rad(25.0)
 
 @export var label := "device"
-## The bare frame's weight, kg.
+## The bare frame's weight, kg, and where it sits in its own frame: a tall
+## frame built heavy at its foot says so.
 @export var frame_mass := 15.0
+@export var frame_middle := Vector3.ZERO
 ## What the bare frame does by itself, like a turbine's turbine_w.
 @export var frame_stats: Dictionary = {}
 ## Small enough to pick up and carry in your hands, like a stake.
@@ -66,6 +70,8 @@ var lift_share := 1.0:
 var carried_kg := 0.0
 
 var world: World
+## Its runners, if it rides the sand on any, or null.
+var glider: Runners
 var _hovering := false
 ## Its trays, each as [kg it lifts, the corners of its face, the way it faces
 ## out], in its own frame: each lifts under its own spot.
@@ -74,6 +80,15 @@ var _trays: Array = []
 var _seats: Array[Socket] = []
 ## How it froze before it was seated on another device.
 var _unseated_mode := RigidBody3D.FREEZE_MODE_STATIC
+## Its sockets and its shapes' biggest faces summed, kept until its children
+## change: a deck has hundreds of children, and both are asked for every tick.
+var _sockets: Array[Socket] = []
+var _sockets_known := false
+var _face := NAN
+## All its shapes' bounds together, in its own frame, kept until its children
+## change or move (a recompute): what the world holds clear of the sand.
+var _bounds := AABB()
+var _bounds_known := false
 
 
 func _ready() -> void:
@@ -84,18 +99,23 @@ func _ready() -> void:
 
 ## Fitted parts wait off the tree, so nothing else would free them.
 func _notification(what: int) -> void:
-	if what == NOTIFICATION_PREDELETE:
+	if what == NOTIFICATION_CHILD_ORDER_CHANGED:
+		_sockets_known = false
+		_shapes_changed()
+	elif what == NOTIFICATION_PREDELETE:
 		for socket in sockets():
 			if socket.part != null:
 				socket.part.free()
 
 
 func sockets() -> Array[Socket]:
-	var found: Array[Socket] = []
-	for child in get_children():
-		if child is Socket:
-			found.append(child)
-	return found
+	if not _sockets_known:
+		_sockets.clear()
+		for child in get_children():
+			if child is Socket:
+				_sockets.append(child)
+		_sockets_known = true
+	return _sockets.duplicate()
 
 
 ## Use on it while you look at it: what it does when worked, like a shield
@@ -181,6 +201,30 @@ func has_tray() -> bool:
 	return not _trays.is_empty()
 
 
+## What carries it: &"tray" for hover trays, &"runner" for runners on the
+## sand, or none.
+func carriage() -> StringName:
+	return &"tray" if has_tray() else (&"runner" if glider != null else &"")
+
+
+## What a part in a bottom mount carries its device on, or none.
+static func carries(part: Part) -> StringName:
+	return &"tray" if part.stats.get("lift_kg", 0.0) > 0.0 else (&"runner" if part.stats.has("glide") else &"")
+
+
+## Why a part can't go in one of its sockets, or "": standing on a deck it
+## takes no tray or runners, since the deck's carry it, and trays and
+## runners don't mix on one device.
+func refuses(part: Part) -> String:
+	var kind := carries(part)
+	if kind == &"":
+		return ""
+	if on_deck():
+		return "on a deck it takes no %s" % ("tray" if kind == &"tray" else "runners")
+	var now := carriage()
+	return "runners and trays don't mix" if now != &"" and now != kind else ""
+
+
 ## Seated on a chassis piece's deck mount, where it keeps its own sockets.
 func on_deck() -> bool:
 	var seat_in := host().seat_of(self) if host() != null else null
@@ -216,7 +260,10 @@ func production_w(t := NAN) -> float:
 	if world == null or wrecked():
 		return 0.0
 	var now := stats()
-	var watts: float = now["solar_w"] * world.weather.felt_light(global_position + Vector3.UP * 0.5, t)
+	# The light is read only where there's a panel to take it.
+	var watts := 0.0
+	if now["solar_w"] != 0.0:
+		watts = now["solar_w"] * world.weather.felt_light(global_position + Vector3.UP * 0.5, t)
 	# A turbine works planted: resting on the sand, not floating or being carried.
 	if now["turbine_w"] > 0.0 and not now["can_float"] and linear_velocity.length() < 0.3:
 		turbine_wind = world.weather.felt_wind(global_position, t)
@@ -228,12 +275,13 @@ func production_w(t := NAN) -> float:
 
 
 ## What it would draw, W, if it had the power, now or at world time t: some
-## devices draw by the weather they hold back.
+## devices draw by the weather they hold back, and parts that compute draw
+## while they run.
 func demand_w(_t := NAN) -> float:
 	if wrecked():
 		return 0.0
 	var now := stats()
-	return now["hover_w"] + now["light_w"]
+	return now["hover_w"] + now["light_w"] + now.get("draw_w", 0.0)
 
 
 ## What it does with a power tick it had the power for, `seconds` long at
@@ -270,12 +318,11 @@ func wear(share: float) -> void:
 ## crisp, a surface one rusty, and a wrecked frame down to the metal. Its
 ## maker's mark is its era's too.
 func show_wear() -> void:
-	var layer: StringName = get_meta(&"layer", &"")
-	var amount := Paint.age_of(layer, durability)
+	var amount := Paint.age_for(self, durability)
 	for view: MeshInstance3D in [frame_view, rotor]:
 		if view != null:
 			view.set_instance_shader_parameter(&"age", amount)
-			view.set_instance_shader_parameter(&"era", Paint.era_of(layer))
+			view.set_instance_shader_parameter(&"era", Paint.row_for(self))
 	for socket in sockets():
 		if socket.marker != null:
 			socket.marker.set_instance_shader_parameter(&"age", amount)
@@ -373,6 +420,24 @@ func mount(other: Device, socket: Socket) -> void:
 	_recompute()
 
 
+## What sat on it freed under it, by a scenario clearing or the ground
+## forgetting it: that seat is open again. Read by index, untyped, since a
+## freed element can't be held in a typed loop.
+func _drop_freed_seats() -> void:
+	var kept: Array[Socket] = []
+	for i in _seats.size():
+		var socket = _seats[i]
+		if is_instance_valid(socket) and is_instance_valid(socket.mounted):
+			kept.append(socket)
+		elif is_instance_valid(socket):
+			socket.mounted = null
+			if socket.marker != null:
+				socket.marker.visible = true
+	if kept.size() != _seats.size():
+		_seats = kept
+		_recompute()
+
+
 ## Takes a seated device off again, loose where it sat; the caller lifts it
 ## clear along the socket's +Z.
 func dismount(socket: Socket) -> Device:
@@ -440,30 +505,44 @@ func take(socket: Socket) -> Part:
 
 ## Everything the device can do, from the frame and what's fitted.
 func stats() -> Dictionary:
-	# The wind grabs the frame and everything fitted, by their size; a frame
-	# that lies flat says what it shows the wind.
-	var face: float = frame_stats.get("face_m2", Weather.biggest_face(self))
-	var catch := face * world.tuning.wind_catch_per_m2 if world != null else 0.0
-	var total := {"mass": mass, "catch": catch, "capacity_wh": 0.0, "hooks": 0,
+	var total := {"mass": mass, "catch": wind_catch(), "capacity_wh": 0.0, "hooks": 0,
 		"lift_kg": 0.0, "solar_w": 0.0, "light_w": 0.0, "plants": 0, "turbine_w": 0.0}
-	for source: Dictionary in [frame_stats] + parts().map(func(p: Part) -> Dictionary: return p.stats):
-		for key: String in source:
-			total[key] = total.get(key, 0) + source[key]
+	# The frame's, then each part's in its socket's order, as parts() lists them.
+	_sum_into(total, frame_stats)
+	var charge := 0.0
+	var cells := 0
+	# A lossier make's tray draws more a kilogram, by its share of the lift.
+	var draws_kg := 0.0
+	for socket in sockets():
+		var part := socket.part
+		if part != null:
+			_sum_into(total, part.stats)
+			draws_kg += part.stats.get("lift_kg", 0.0) * part.stats.get("hover_draw", 1.0)
+		if socket.kind == &"battery" and part is Battery:
+			charge += (part as Battery).charge_wh
+			cells += 1
+	total["runners"] = glider.runners.size() if glider != null else 0
+	total["hover_draw"] = draws_kg / total["lift_kg"] if total["lift_kg"] > 0.0 else 1.0
 	total["can_float"] = total["lift_kg"] >= mass
 	total["resting"] = resting
 	total["hovering"] = total["can_float"] and powered and lift_share > 0.0
 	# Its trays draw for what they hold up, or dark, for its weight, what
 	# lifting it again would take. Seated, its own tray holds nothing up.
-	total["hover_w"] = (carried_kg if powered else mass) * world.tuning.hover_watts_per_kg \
+	total["hover_w"] = (carried_kg if powered else mass) * world.tuning.hover_watts_per_kg * total["hover_draw"] \
 		if total["can_float"] and not resting and world != null and host() == null else 0.0
-	var cells := batteries()
-	if not cells.is_empty():
-		total["charge_wh"] = cells.reduce(func(sum: float, c: Battery) -> float: return sum + c.charge_wh, 0.0)
+	if cells > 0:
+		total["charge_wh"] = charge
 	total["durability"] = durability
 	return total
 
 
+static func _sum_into(total: Dictionary, source: Dictionary) -> void:
+	for key: String in source:
+		total[key] = total.get(key, 0) + source[key]
+
+
 func _recompute() -> void:
+	_shapes_changed()
 	var weight := 0.0
 	var moment := Vector3.ZERO
 	for frame: Array in _frame_masses():
@@ -482,6 +561,13 @@ func _recompute() -> void:
 	for socket in sockets():
 		if socket.part != null and socket.part.stats.get("lift_kg", 0.0) > 0.0:
 			_trays.append(_tray(socket))
+	var runners := Runners.of(self)
+	if runners.is_empty():
+		glider = null
+	else:
+		if glider == null:
+			glider = Runners.new()
+		glider.runners = runners
 	var now := stats()
 	_hovering = now["hovering"]
 	# Lamps shine, and lenses and emitters glow, only while it has the power.
@@ -494,17 +580,52 @@ func _recompute() -> void:
 				node.visible = powered
 			elif Paint.is_worn(node):
 				(node as GeometryInstance3D).set_instance_shader_parameter(&"lit", lit)
-	# A resting body sleeps, and a sleeping one ignores the tray's lift.
-	can_sleep = not _hovering
-	if _hovering:
+	# A resting body sleeps, and a sleeping one ignores the tray's lift and
+	# the runners' hold.
+	can_sleep = not _hovering and glider == null
+	if not can_sleep:
 		sleeping = false
 	set_meta(&"wind_catch", now["catch"])
 	parts_changed.emit()
 
 
+## How hard the wind grabs it: the frame and everything fitted, by their
+## size; a frame that lies flat says what it shows the wind.
+func wind_catch() -> float:
+	var face: float = frame_stats.get("face_m2", NAN)
+	if is_nan(face):
+		if is_nan(_face):
+			_face = Weather.biggest_face(self)
+		face = _face
+	return face * world.tuning.wind_catch_per_m2 if world != null else 0.0
+
+
+## Its shapes came, went or moved: what was worked out from them goes.
+func _shapes_changed() -> void:
+	_face = NAN
+	_bounds_known = false
+
+
+## All its shapes' bounds together, in its own frame.
+func shape_bounds() -> AABB:
+	if not _bounds_known:
+		var first := true
+		for child in get_children():
+			var shape := child as CollisionShape3D
+			if shape == null or shape.shape == null:
+				continue
+			var box := shape.transform * Catalog.bounds(shape.shape)
+			_bounds = box if first else _bounds.merge(box)
+			first = false
+		if first:
+			_bounds = AABB()
+		_bounds_known = true
+	return _bounds
+
+
 ## Its frame's weight and where it sits, in its own frame, as [kg, position]s.
 func _frame_masses() -> Array:
-	return [[frame_mass, Vector3.ZERO]]
+	return [[frame_mass, frame_middle]]
 
 
 ## Where a fitted part's shapes sit on average, in the device's frame.
@@ -522,6 +643,7 @@ func _middle(nodes: Array[Node3D]) -> Vector3:
 func _physics_process(delta: float) -> void:
 	# What's seated rides exactly on its seat: a frozen body under a moving one
 	# is left a tick behind each tick, and on a floating crate that adds up.
+	_drop_freed_seats()
 	for socket in _seats:
 		socket.mounted.transform = socket.transform * socket.mounted.seat()
 	if world == null:
@@ -531,9 +653,32 @@ func _physics_process(delta: float) -> void:
 	if lift_share != goal:
 		lift_share = move_toward(lift_share, goal, delta / tuning.hover_settle_seconds)
 	carried_kg = 0.0
-	if freeze or not _hovering:
+	if freeze:
 		return
-	_lift(tuning, delta)
+	if glider != null:
+		glider.glide(self, world, delta)
+	if _hovering:
+		_lift(tuning, delta)
+	if not _seats.is_empty() and global_basis.y.normalized().dot(Vector3.UP) < cos(TIPPED):
+		_rest_seated(delta)
+
+
+## Tipped over, what's seated on it meets the sand too, by the corners of its
+## frame, as any end would: a crate standing on a capsized deck rests on its
+## edge, never through the sand.
+func _rest_seated(h: float) -> void:
+	var riding := mounted()
+	while not riding.is_empty():
+		var each: Device = riding.pop_back()
+		riding.append_array(each.mounted())
+		for child in each.get_children():
+			var shape := child as CollisionShape3D
+			if shape == null or shape.shape == null or shape.has_meta(&"socket"):
+				continue
+			var box := Catalog.bounds(shape.shape)
+			var to_world := each.global_transform * shape.transform
+			for i in 8:
+				Runners.touch(self, world, to_world * box.get_endpoint(i), 0.6, h)
 
 
 ## Each tray reads the sand under its face, on average, and pushes straight
@@ -613,6 +758,8 @@ func _tray(socket: Socket) -> Array:
 ## How high its middle rides over level sand, its load shared out as its
 ## trays lift: where to set it down floating. Too heavy, on the sand.
 func rest_height() -> float:
+	if glider != null:
+		return glider.rest_height()
 	var lift := 0.0
 	var depth := 0.0
 	var count := 0

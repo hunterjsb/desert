@@ -10,8 +10,9 @@ shader_type spatial;
 // CUSTOM1 the piece's half extents (w: metalness), CUSTOM2 roughness, dust,
 // glow and its share of the wear, CUSTOM3 its height over the whole thing's
 // foot, COLOR its paint, and UV and UV2 a maker's mark painted on it: where on
-// the mark, and which mark (0 for none) in what ink. A mesh without them, a
-// look-test's loose piece, takes the uniforms instead.
+// the mark, and which mark (0 for none) in what ink, plus four times one more
+// than the atlas row it's from (none: its thing's era). A mesh without them,
+// a look-test's loose piece, takes the uniforms instead.
 
 uniform vec3 paint : source_color = vec3(0.72, 0.68, 0.58);
 uniform vec3 bare : source_color = vec3(0.5, 0.49, 0.47);
@@ -26,12 +27,14 @@ uniform float dust_amount = 1.0;
 // Downwind, world; faces turned against it take the sand.
 uniform vec3 wind_dir = vec3(0.0, 0.0, 1.0);
 uniform sampler2D noise : repeat_enable, filter_linear_mipmap;
-// Maker's marks, a column each and a row per era (marks.py): red the mark's
-// own ink, green a hand-mixed daub.
+// Maker's marks, a column each and a row per era, and below them the ages
+// after's own (marks.py): red the mark's own ink, green a hand-mixed daub.
 uniform sampler2D marks : hint_default_black, repeat_disable, filter_linear_mipmap;
-const vec2 MARK_CELLS = vec2(6.0, 3.0);
+const vec2 MARK_CELLS = vec2(6.0, 4.0);
 const vec3 DARK_INK = vec3(0.007, 0.007, 0.006);
 const vec3 PALE_INK = vec3(0.52, 0.48, 0.37);
+// A scratch cuts through the paint to bright metal: heraldry cut into enamel.
+const vec3 SCRATCH = vec3(0.7, 0.68, 0.64);
 const vec3 DAUB = vec3(0.5, 0.13, 0.03);
 // The piece's half extents in its own frame, so edges are found without UVs;
 // round_xz measures x and z as a cylinder's radius.
@@ -93,13 +96,23 @@ void fragment() {
 	// The mark went on with the paint, so it chips, scours and dusts with it;
 	// its edges go ragged and it flakes away in patches as the years add up.
 	vec2 on_mark = clamp(stamp.xy, 0.0, 1.0);
-	vec2 cover = texture(marks, (vec2(max(stamp.z - 1.0, 0.0), era) + on_mark) / MARK_CELLS).rg;
+	float code = floor(stamp.w + 0.5);
+	float ink_kind = mod(code, 4.0);
+	float mark_row = code >= 4.0 ? floor(code / 4.0) - 1.0 : era;
+	float mark_col = max(floor(stamp.z + 0.5) - 1.0, 0.0);
+	// Past the sixth, the marks of the ages after, in their own row.
+	if (mark_col > 5.5) {
+		mark_col -= 6.0;
+		mark_row = MARK_CELLS.y - 1.0;
+	}
+	vec2 cover = texture(marks, (vec2(mark_col, mark_row) + on_mark) / MARK_CELLS).rg;
 	float marked = stamp.z > 0.5 && all(equal(on_mark, stamp.xy)) ? 1.0 : 0.0;
 	vec2 cut = max(fwidth(cover) * 0.75, vec2(0.03));
 	vec2 ink = max(smoothstep(0.5 - cut, 0.5 + cut, cover + (grain - 0.5) * (0.06 + 0.3 * amount)), cover * 0.25);
 	ink *= marked * (1.0 - smoothstep(0.6, 1.4, amount * (0.5 + 0.8 * fine) + 0.25 * (coarse - 0.5)));
 	base = mix(base, DAUB, ink.g);
-	base = mix(base, stamp.w > 0.5 ? PALE_INK : DARK_INK, ink.r);
+	base = mix(base, ink_kind > 1.5 ? SCRATCH : (ink_kind > 0.5 ? PALE_INK : DARK_INK), ink.r);
+	float cut_in = ink_kind > 1.5 ? ink.r : 0.0;
 	vec3 wn = normalize(world_n);
 	float windward = clamp(dot(wn, -normalize(wind_dir)), 0.0, 1.0);
 	float edge = 1.0 - smoothstep(0.0, chip_width * (0.4 + 1.2 * coarse), edge_d);
@@ -115,6 +128,8 @@ void fragment() {
 	vec3 col = mix(coat, metal, chip);
 	float rough = mix(mix(finish.y, 0.92, scour), mix(0.38, 0.9, old), chip);
 	float metallic = mix(finish.x, mix(0.85, 0.0, old), chip);
+	rough = mix(rough, 0.32, cut_in);
+	metallic = mix(metallic, 0.9, cut_in);
 	// Sand on what faces up, and in the low band at the foot; less on what
 	// hasn't been out long.
 	float up = smoothstep(0.55, 0.95, wn.y);

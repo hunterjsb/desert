@@ -80,8 +80,8 @@ func restock() -> void:
 	for thing in carried:
 		thing.free()
 	carried.clear()
-	for id in Kit.standard().carried_ids():
-		carried.append(Catalog.part(id))
+	for id in Kit.of(World.of(self)).carried_ids():
+		carried.append(Catalog.stake() if id == &"stake" else Catalog.part(id))
 
 
 ## Whether it goes in: anything you can carry in your hands with nothing

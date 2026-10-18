@@ -17,9 +17,16 @@ const LOW_GRAVITY := 4.4
 var tuning := Tuning.current()
 ## The tuning's, or a fresh one each run when it's 0; a new run sets its own.
 var run_seed := 0
+## The origin chosen at New game, set before the world is made. None for a
+## world that isn't a player's run, the menu's or a probe's, which starts
+## where the tuning says with the standard kit.
+var kit: Kit
 var shape: TerrainShape
 ## Where the run began, in world metres: flat ground, never a slip face.
 var spawn: Vector2
+## Where on the moon it began, its kit's start (Starts): pure in the seed
+## and the kit, so a resumed run finds it again.
+var start: Vector3
 var moon: MoonPosition
 ## The chunk the engine origin sits on. Engine position + this = world position.
 var origin_chunk := Vector2i.ZERO
@@ -42,6 +49,10 @@ var gravity: float
 
 var _last_x: float
 var _last_z: float
+## The chunk the sheet last followed you to, and the moon's jumps then; none
+## forces it to follow again.
+var _followed := Vector2i.MAX
+var _followed_jumps := 0
 
 
 func _ready() -> void:
@@ -52,7 +63,8 @@ func _ready() -> void:
 		run_seed = tuning.run_seed if tuning.run_seed != 0 else randi()
 	shape = TerrainShape.new(run_seed, tuning)
 	Paint.face_wind(WeatherField.mean_heading(run_seed))
-	moon = MoonPosition.new(tuning)
+	start = Starts.find(shape.history, kit.start if kit != null else &"", tuning)
+	moon = MoonPosition.new(tuning, start)
 	player.world = self
 	set_gravity(tuning.gravity)
 	terrain.setup(self)
@@ -68,10 +80,14 @@ func _ready() -> void:
 	player.global_position = Vector3(engine_x(spawn.x), height_at(spawn.x, spawn.y) + 0.1, engine_z(spawn.y))
 	_last_x = player_world_x()
 	_last_z = player_world_z()
+	shape.sites.loaded = terrain.is_loaded_in
+	shape.sites.rebuild = terrain.forget
+	_follow_history()
 
 
-## Dev: puts the player down at a world place and run time, facing yaw, as a
-## fresh spawn: distance from spawn and the moon position start over there.
+## Puts the player down at a world place and run time, facing yaw, as a
+## fresh spawn: distance from spawn and the moon position start over there,
+## at the run's start on the moon.
 func respawn(x: float, z: float, yaw: float, at_time: float) -> void:
 	player.step_off()
 	time = at_time
@@ -80,15 +96,50 @@ func respawn(x: float, z: float, yaw: float, at_time: float) -> void:
 	teleport(player, Transform3D(Basis(Vector3.UP, yaw), at))
 	player.velocity = Vector3.ZERO
 	player.camera.rotation.x = 0.0
-	moon = MoonPosition.new(tuning)
+	moon = MoonPosition.new(tuning, start)
 	_last_x = x
 	_last_z = z
+	_followed = Vector2i.MAX
 	weather.forecast_now()
+
+
+## Dev: puts you at a point on the moon, degrees, facing yaw, as a fresh spawn
+## there. You land on fresh ground well off any that's loaded, so the history
+## laid round you there is laid on ground not yet built.
+func travel(latitude_degrees: float, longitude_degrees: float, yaw: float) -> void:
+	# Past where the history kept under the old ground could reach.
+	var off := (tuning.history_lay_m + tuning.history_cell_m) * 2.0 + history_due()
+	var at := _flat_near(player_world_x() + off, player_world_z())
+	respawn(at.x, at.y, yaw, time)
+	moon.place(latitude_degrees, longitude_degrees)
+
+
+## How far round you history is laid before any ground is built there: past
+## the farthest loaded chunk's far corner.
+func history_due() -> float:
+	return (tuning.view_radius + 2) * tuning.chunk_size * sqrt(2.0)
+
+
+## The sheet follows you: it lays history from the point the moon position
+## was last reckoned at, so laying is a pure function of the ticks.
+func _follow_history() -> void:
+	_followed = terrain.chunk_at(_last_x, _last_z)
+	_followed_jumps = moon.jumps
+	shape.sites.follow(_last_x, _last_z, moon.latitude, moon.longitude, -moon.north().z, history_due())
+	var p := Sphere.point(moon.latitude, moon.longitude)
+	var history := shape.history
+	var near := history.nearest_landmark(p)
+	Dev.put("world/zone", "%s, %s" % [history.region_of(p), history.tu_words(p)])
+	Dev.put("world/hist", "%d units" % shape.sites.units().size())
+	if not near.is_empty():
+		# A bearing on the sphere is from the moon's north, as a compass reads.
+		Dev.put("world/lmk", "%s %.1fkm %s" % [near.landmark.name, near.metres / 1000.0,
+			Radio.compass(rad_to_deg(near.bearing))])
 
 
 ## A run starts on ground this flat: a camp-sized patch whose sand rises no
 ## more than FLAT_RISE m across FLAT_SPAN m, found within FLAT_SEARCH m, and
-## never on a ruin's ground.
+## never on a structure's ground.
 const FLAT_SPAN := 10.0
 const FLAT_RISE := 0.5
 const FLAT_SEARCH := 300.0
@@ -108,7 +159,7 @@ func _flat_near(x: float, z: float) -> Vector2:
 
 
 func _flat(at: Vector2) -> bool:
-	if shape.ruins.covering(at.x, at.y) != null:
+	if shape.sites.covering(at.x, at.y) != null:
 		return false
 	var low := INF
 	var high := -INF
@@ -171,7 +222,7 @@ func height_at(x: float, z: float) -> float:
 
 
 func height_under(engine_position: Vector3) -> float:
-	return shape.height_at(world_x(engine_position.x), world_z(engine_position.z))
+	return shape.held_height_at(world_x(engine_position.x), world_z(engine_position.z))
 
 
 func has_ground_under(engine_position: Vector3) -> bool:
@@ -229,6 +280,8 @@ func _physics_process(delta: float) -> void:
 	moon.advance(x - _last_x, _last_z - z)
 	_last_x = x
 	_last_z = z
+	if terrain.chunk_at(x, z) != _followed or moon.jumps != _followed_jumps or not shape.sites.anchored():
+		_follow_history()
 
 	var stray := Vector2i(floori(player.global_position.x / tuning.chunk_size),
 		floori(player.global_position.z / tuning.chunk_size))
@@ -288,6 +341,10 @@ func _keep_bodies_on_ground() -> void:
 ## skin with no inside, so a thin part pressed past halfway (a crate that lost
 ## power dropping onto a panel) would otherwise go out the bottom.
 func _hold_above_sand(body: RigidBody3D) -> void:
+	# A device clear of it as a whole, as one floating is, has no shape to look at.
+	var device := body as Device
+	if device != null and _clear_of_sand(body.global_transform * device.shape_bounds()):
+		return
 	var deepest := 0.0
 	for child in body.get_children():
 		var shape := child as CollisionShape3D
@@ -298,12 +355,26 @@ func _hold_above_sand(body: RigidBody3D) -> void:
 			shape.set_meta(&"sand_box", Catalog.bounds(shape.shape))
 		var box: AABB = shape.get_meta(&"sand_box")
 		var to_world := body.global_transform * shape.transform
+		# Clear of the highest sand anywhere under it, no corner of it can be in:
+		# a floating deck's dozens of shapes cost a few held points, not 8 reads each.
+		var around := to_world * box
+		if _clear_of_sand(around):
+			continue
 		for i in 8:
 			var corner := to_world * box.get_endpoint(i)
 			deepest = maxf(deepest, height_under(corner) - corner.y)
 	if deepest > SAND_SLOP:
 		body.global_position.y += deepest - SAND_SLOP * 0.5
 		body.linear_velocity.y = maxf(body.linear_velocity.y, 0.0)
+
+
+## Whether a box in the engine's frame is higher than SAND_SLOP below the
+## highest sand under it, a millimetre to spare for rounding: then none of
+## its corners can be deeper than that in it.
+func _clear_of_sand(box: AABB) -> bool:
+	var top := shape.highest_in(world_x(box.position.x) - 0.01, world_z(box.position.z) - 0.01,
+		world_x(box.end.x) + 0.01, world_z(box.end.z) + 0.01)
+	return top - box.position.y < SAND_SLOP - 0.001
 
 
 func _set_scene() -> void:

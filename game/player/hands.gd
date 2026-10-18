@@ -76,7 +76,8 @@ const TOUCHES := 64
 ## What a refusal calls each kind of socket that's full.
 const SOCKET_NAMES := {&"battery": "battery slot", &"ring": "ring", &"bottom": "tray mount", &"top": "top mount",
 	&"plant_pot": "pot", &"plant_standard": "planter", &"plant_deep": "deep bed", &"port": "port", &"tie": "hook",
-	&"water": "water socket", &"mod": "mod mount", &"food": "food slot", &"rack": "rack", &"deck": "deck mount"}
+	&"water": "water socket", &"mod": "mod mount", &"food": "food slot", &"rack": "rack", &"deck": "deck mount",
+	&"computer_mod": "computer-mod port", &"computer_top": "computer-mod top", &"screen": "screen port", &"sail": "sail mount"}
 const RIDING := "not from the board"
 
 var held: RigidBody3D
@@ -401,12 +402,23 @@ static func describe(label: String, mass: float, stats: Dictionary) -> String:
 		bits.append(stats.take)
 	if stats.get("lift_kg", 0.0) > 0.0:
 		bits.append("floats %d kg" % roundi(stats.lift_kg))
+	if stats.get("runners", 0) > 0:
+		bits.append("on runners")
+	elif stats.has("glide"):
+		bits.append("glides on the sand")
+	if stats.has("sail"):
+		bits.append("sail %s" % stats.sail if stats.sail == "torn" else "%.1f m² sail %s" % [stats.sail_m2, stats.sail])
+	if stats.has("sail_n") and stats.get("sail", "") == "raised":
+		bits.append("pulls %d N" % roundi(stats.sail_n))
 	if stats.get("resting", false):
 		bits.append("resting")
 	elif stats.get("can_float", false):
 		bits.append("floating")
-	if stats.get("in_w", 0.0) > 0.0 or stats.get("out_w", 0.0) > 0.0:
-		bits.append("in %d W · out %d W" % [roundi(stats.get("in_w", 0.0)), roundi(stats.get("out_w", 0.0))])
+	# Said as the device does it: what it makes, what it draws.
+	if stats.get("in_w", 0.0) > 0.0:
+		bits.append("makes %d W" % roundi(stats.in_w))
+	if stats.get("out_w", 0.0) > 0.0:
+		bits.append("draws %d W" % roundi(stats.out_w))
 	if stats.has("water_l"):
 		bits.append("%.2f/%.1f L" % [stats.get("water_left_l", 0.0), stats.water_l])
 	if stats.has("food_kcal"):
@@ -426,6 +438,9 @@ static func describe(label: String, mass: float, stats: Dictionary) -> String:
 		bits.append("%d seed%s" % [stats.seeds, "" if stats.seeds == 1 else "s"])
 	if stats.has("tuned"):
 		bits.append(stats.tuned)
+	var instruments: int = stats.get("instruments", 0)
+	if instruments > 0:
+		bits.append("%d instrument%s" % [instruments, "" if instruments == 1 else "s"])
 	if stats.has("found"):
 		bits.append("%s find" % stats.found)
 	if stats.get("dark", false):
@@ -643,11 +658,10 @@ func _no_fit() -> String:
 	if not free:
 		return "no free %s" % SOCKET_NAMES.get(named, "socket")
 	if piece != null:
+		if _mixes(piece, target):
+			return "runners and trays don't mix"
 		return "wrecked" if piece.wrecked() or target.wrecked() else "no room at that ring"
-	# Standing on a deck, a device takes no tray: the deck's carry it.
-	if held is Part and (held as Part).stats.get("lift_kg", 0.0) > 0.0 and target.on_deck():
-		return "on a deck it takes no tray"
-	return ""
+	return target.refuses(held) if held is Part else ""
 
 
 ## Last on, first off: aimed at a hook with a line tied to it, it's the line's
@@ -755,11 +769,15 @@ func _take_off(device: Device) -> void:
 	var from := host.seat_of(device)
 	if not device.carryable:
 		host.dismount(from)
-		# Clear of all that's fitted under its foot too, so it never starts off
-		# inside what it stood on.
-		var below := device.seat().origin.z + _shapes_box(device.get_children()).position.y
-		_player.world.teleport(device, device.global_transform.translated(
-			_frame_of(from).basis.z * (maxf(-below, 0.0) + LIFT_OFF)))
+		var beside := _beside_deck(device, host) if from.kind == &"deck" else Transform3D()
+		if beside != Transform3D():
+			_player.world.teleport(device, beside)
+		else:
+			# Clear of all that's fitted under its foot too, so it never starts off
+			# inside what it stood on.
+			var below := device.seat().origin.z + _shapes_box(device.get_children()).position.y
+			_player.world.teleport(device, device.global_transform.translated(
+				_frame_of(from).basis.z * (maxf(-below, 0.0) + LIFT_OFF)))
 		grasp.take(device)
 		_stood = from
 		_play(Sounds.UNSEAT)
@@ -776,6 +794,41 @@ func _take_off(device: Device) -> void:
 	phase = Phase.TAKING
 	_rearm = from
 	_play(Sounds.UNSEAT)
+
+
+## Off a deck, a device comes down on the sand beside it, on the clear side
+## nearest you: left standing on a floating deck, dragging it would rub the
+## deck along with it. Empty if no side is clear.
+func _beside_deck(device: Device, deck: Device) -> Transform3D:
+	var reach := _shapes_box(deck.get_children())
+	var own := _shapes_box(device.get_children())
+	var half := maxf(own.size.x, own.size.z) * 0.5
+	var middle := Vector3(reach.get_center().x, 0.0, reach.get_center().z)
+	var world := _player.world
+	var sides: Array[Transform3D] = []
+	for along: Vector3 in [Vector3.RIGHT, Vector3.LEFT, Vector3.BACK, Vector3.FORWARD]:
+		var out := deck.global_transform * (middle + along * (absf(along.dot(reach.size)) * 0.5 + half + 0.25))
+		# Its foot clear of the highest sand under it, so it never starts in a slope.
+		var ground := world.height_under(out)
+		for corner: Vector3 in [Vector3(1, 0, 1), Vector3(1, 0, -1), Vector3(-1, 0, 1), Vector3(-1, 0, -1)]:
+			ground = maxf(ground, world.height_under(out + corner * half))
+		out.y = ground - own.position.y + 0.05
+		sides.append(Transform3D(device.global_basis, out))
+	var me := _player.global_position
+	sides.sort_custom(func(a: Transform3D, b: Transform3D) -> bool:
+		return a.origin.distance_squared_to(me) < b.origin.distance_squared_to(me))
+	# Tested a little above the sand, so only something standing there, a wall,
+	# you or another device, rules a side out.
+	var query := PhysicsShapeQueryParameters3D.new()
+	var box := BoxShape3D.new()
+	box.size = own.size
+	query.shape = box
+	query.exclude = [device.get_rid(), deck.get_rid()]
+	for side in sides:
+		query.transform = side.translated_local(own.get_center() + Vector3.UP * 0.25)
+		if _player.get_world_3d().direct_space_state.intersect_shape(query, 1).is_empty():
+			return side
+	return Transform3D()
 
 
 ## A bare piece comes off the deck the way one goes on, out across a ring it
@@ -831,9 +884,9 @@ func _find_stand() -> void:
 		if best != null and not _stands_clear(device, best):
 			_stand_why = "something's in the way"
 			best = null
-		# The deck's trays carry what stands on it; its own would sit in the deck.
-		if best != null and device.has_tray():
-			_stand_why = "take its tray off first"
+		# The deck's trays or runners carry what stands on it; its own would sit in the deck.
+		if best != null and device.carriage() != &"":
+			_stand_why = "take its tray off first" if device.has_tray() else "take its runners off first"
 			say(_stand_why)
 			best = null
 		if best != null:
@@ -866,6 +919,9 @@ func _find_ring(piece: Chassis) -> Socket:
 	if best == null:
 		return null
 	var deck := best.get_parent() as Chassis
+	if _mixes(piece, deck):
+		_stand_why = "runners and trays don't mix"
+		return null
 	var turns := deck._turns_for(piece, best, piece.global_basis)
 	if turns < 0:
 		_stand_why = "wrecked" if piece.wrecked() or deck.wrecked() else "no room at that ring"
@@ -903,6 +959,13 @@ func _joins_clear(piece: Chassis, pose: Transform3D, deck: Chassis) -> bool:
 			if not _sand(hit):
 				return false
 	return true
+
+
+## Whether a piece joining a deck would put trays and runners on one deck.
+static func _mixes(piece: Device, deck: Device) -> bool:
+	var a := piece.carriage()
+	var b := deck.carriage()
+	return a != &"" and b != &"" and a != b
 
 
 ## How far a device is from where it would stand on a deck mount, m.
@@ -1163,9 +1226,11 @@ func _takes(each: Socket) -> bool:
 	if not each.is_open():
 		return false
 	if held is Chassis and each.kind == &"ring":
-		return (held as Chassis).fits_in(each) and _room_for(_seat(each), each.get_parent())
-	# Standing on a deck, a device takes no tray: the deck's carry it.
-	if held is Part and (held as Part).stats.get("lift_kg", 0.0) > 0.0 and (each.get_parent() as Device).on_deck():
+		return (held as Chassis).fits_in(each) and not _mixes(held, each.get_parent()) \
+			and _room_for(_seat(each), each.get_parent())
+	# Standing on a deck a device takes no tray or runners, and a device
+	# takes trays or runners, never both.
+	if held is Part and (each.get_parent() as Device).refuses(held) != "":
 		return false
 	return (held as Device).fits_in(each) if held is Device else each.kind == held.get(&"kind")
 

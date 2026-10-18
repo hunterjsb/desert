@@ -11,6 +11,10 @@ direction, and the "as built" notes below say what stands. [Session 4, part
 5](../gods-gear-farside-2026-10-17.md) adds the Almanac, the god of growth, and a kiln for processing
 ([The Almanac and crossbreeding](#the-almanac-and-crossbreeding-idea-session-4-part-5-not-built)).*
 
+*Updated 2026-10-18: part 4's step 9 is built. The feral layer grows wild saltbush, root-tuber and vat
+fungus on the habitats history left, and wild stock is real: cut or dug from them, it grows in your
+planter and gives the wild share ([Feral plants, as built](#as-built-the-feral-layer-2026-10-18)).*
+
 ## Why this system exists
 
 The farm is the engine of steady state. It turns light, warmth and time into food, and
@@ -392,7 +396,7 @@ Readings, not in the session:
 - **A royalty is a cut of the harvest,** since nothing is traded here. As the Quartermaster takes a
   share of the camp's power, the Almanac takes a share of what you pick. The session gives no share.
 - **Habitat reveals pair with the wild habitat table** (above): it would show where a wild crop is
-  found. How it shows is the screen's business ([Devices & mods](devices-and-mods.md#the-terminal-output-system-proposed-session-4-part-5-not-built)).
+  found. How it shows is the screen's business ([Devices & mods](devices-and-mods.md#the-terminal-output-system-proposed-session-4-part-5-first-piece-built)).
 - **It may be the squatting oracle.** The oracle runs "on an agriculture company's platform" and
   broadcasts planting timing and "which feral strains tolerate ash soil"; the Almanac is an agriculture
   company's farm mind. The session does not say they are one ([the lore](../lore-research.md#the-pantheon-agreed-session-4-part-5)).
@@ -438,6 +442,31 @@ grows where its habitat says (old water lines, cold hollows, buried ruins, shelt
 spawns randomly," and not on bare sand everywhere. Each crop's history is its three layers, ancestor,
 engineering and drift, and a seed's text and marks would show where its stock came from (a reading;
 the session does not say how). Still open: how far ahead a plant's pose reads.
+
+### As built: the feral layer (2026-10-18)
+
+*Part 4's step 9, the feral package of the world system ([the world
+system](../world-system.md#what-the-feral-layer-does-now) has the habitats and the numbers).*
+- **Wild plants are the roster's crops, growing where history left them,** never at random: saltbush
+  in silver lines along the pilgrim roads and the other roads of the second age, and in clumps at the
+  Dark Age's plantings on the First Kingdoms' water lines; root-tuber in patches by the colonial
+  aqueducts and their pumps; vat fungus in the colony's habs and stations once a kit stands them and
+  the sand is off them. Each is its catalog crop, read by the one growth path, standing in the sand.
+- **Take on one as on a planted crop.** Ripe, its harvest comes away at the wild share with its
+  propagule (a saltbush gives a salt to your hands and a salt, its leaves and a cutting in with what you
+  carry), and a crop that regrows stays where it stood, cut back to its share, growing again while
+  you're near. Not ripe, saltbush gives a cutting and is cut to the ground; cut to the ground, or a
+  crop sown from what it is (a tuber, spores), it comes up whole.
+- **Wild stock is a mark on the plant,** the clean or wild field the skeleton named. It grows as clean
+  stock does, gives half of each part of its harvest (Tuning `feral_wild_yield`), says so in its name
+  ("Wild saltbush"), and passes on: what it's sown from, by hand or by the harvester, stays wild.
+- **Wild saltbush is the free barometer.** It folds before a storm by the planter's own rule, two
+  minutes ahead, read from the storm field over its ground, and opens once it's clear; folded, a line
+  goes narrow and dull green. Lines fold within 400 m of you (Tuning `feral_fold_m`).
+- **The look:** old wild saltbush is its own bush, a metre and more across: woody stems low under a
+  mound of small silvered leaf, the leaves closing up against the stems when it folds. Root-tuber and
+  vat fungus wild are their crops' own looks, grown larger. Sheet: `look/feral/shoot.sh`.
+- **Probes 11 to 15** (below).
 
 ## Rules
 
@@ -504,8 +533,11 @@ that ignored the weather.
   **never dies** (past its limits it holds instead of wilting). Said of a crop but not
   built: vat fungus **eats scraps**, and the words for the others' twists (keeps growing,
   cycles, regrows from its stump, waits for rain) are named for when those crops come.
-  **Clean or wild** is a mark on each plant, always clean for now: nothing reads it until
-  propagules and wild stock come (part 4's step 4).
+  **Clean or wild** is a mark on each plant. Wild stock, cut or dug from a feral plant
+  ([below](#as-built-the-feral-layer-2026-10-18)), gives the wild share of every harvest, half
+  (Tuning `feral_wild_yield`) and never none of a part, and its name says it's wild; what it's
+  sown from stays wild, by hand or by the harvester. Nothing turns clean stock wild yet: going to
+  seed is still named and not built.
 - **Growth** ticks on power's tick of world time, so the dev time warp grows crops with
   everything else and the frame rate never changes a harvest. It reads the felt light
   where the planter stands (the sun, dimmed by the storm, and still the storm's inside
@@ -583,8 +615,8 @@ that ignored the weather.
   sand has mostly lost its seeds and one on a ruin's floor holds them. Over thousands of
   chunks, 58 of 99 seeds were in ruins. A found seed is a seedling at nothing grown,
   ready to sow. The harvester is a rare deep part, the rarest part on open sand.
-  Saltbush isn't found yet: its stock is the silver lines along the old roads (part 4's
-  step 9), so for now it's the farm scenario's and `give saltbush`.
+  Saltbush is found wild: its stock is the silver lines along the old roads (part 4's step 9,
+  [below](#as-built-the-feral-layer-2026-10-18)), and the farm scenario's and `give saltbush`.
 - **Old saves** (2026-10-17): a save from before the crops loads as them. Carrots are
   root-tubers, fungus is vat fungus and carrots' food is tubers, each as grown as it
   was and in the socket it was in; a fungus that was ripe stays ripe; what a harvester
@@ -676,6 +708,20 @@ that ignored the weather.
 10. **Saltbush folds before a storm.** In the run's own weather, its leaves are open
     three minutes ahead of a storm, shut a minute ahead, shut through it, and open a
     minute after it clears.
+11. **Saltbush lines follow the pilgrim roads.** Every bush of the pilgrim roads' habitat
+    stands within a few metres of a pilgrim road's line, and most of every ten metres of
+    the road is lined on both sides.
+12. **No wild plant away from its habitat.** From the open desert at the start and on over
+    the Rim, every wild plant stands within its row's reach of a laid line or site of its
+    kind, and the open desert holds none.
+13. **A wild saltbush folds before a storm,** as probe 10's does in a planter.
+14. **A wild cutting grows in a planter as wild stock.** Taken from a ripe wild saltbush,
+    its salt comes at the wild share with a wild cutting, the bush stays cut back, and a
+    save keeps only that; sown beside a clean cutting it grows as fast, stays wild and
+    gives half the salt.
+15. **Wild plants are the seed's alone.** Two builds of a seed grow the same plants; laid
+    from elsewhere, the same plants stand where they were but for the seam; another seed
+    grows others.
 
 ## Out of scope
 

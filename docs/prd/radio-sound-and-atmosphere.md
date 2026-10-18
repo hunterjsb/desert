@@ -29,7 +29,7 @@ range still to tune. Better radios and antenna mods hear more clearly. Tune it, 
   how strong they are and when they'll arrive, all read from the real storm field (Wind
   & storms). Better equipment hears further ahead and more accurately. The Console's
   instrument table lists this as its radio row ([Wind &
-  storms](wind-and-storms.md#instruments-and-the-console-screen-proposed)).
+  storms](wind-and-storms.md#instruments-and-the-console-screen-proposed-first-version-built)).
 - **Loot beacons.** Automated signals that give a bearing to something worth finding,
   like "a signal, north-north-east."
 - **Lore.** Garbled fragments that hint and never state.

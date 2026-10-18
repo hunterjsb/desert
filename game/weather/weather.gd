@@ -152,8 +152,14 @@ func field_wind(at: Vector3, t := NAN) -> Vector3:
 ## day's swing round its mean, wider toward the poles, less while the eclipse
 ## lasts, and blanketed by the storm's dust.
 func field_temperature(at: Vector3, t := NAN) -> float:
+	return temperature_under(field_storm(at, t), t)
+
+
+## The air's temperature, °C, under a storm of this intensity, as if no
+## shelter stood: what a place's is, its storm known.
+func temperature_under(storm: float, t := NAN) -> float:
 	var moon := _world.moon
-	var blanket := 1.0 - _tuning.temperature_storm_blanket * field_storm(at, t)
+	var blanket := 1.0 - _tuning.temperature_storm_blanket * storm
 	var swing := _tuning.temperature_swing \
 		* (1.0 + _tuning.temperature_pole_widen * absf(sin(moon.latitude))) * blanket
 	return _tuning.temperature_mean + swing * cos(TAU * (day.time_of_day(_when(t), moon.longitude) - _tuning.temperature_peak)) \

@@ -150,7 +150,8 @@ own storm field so the wall and the probes agree.
 **You play:** watch storms roll in and over you. Read the wind. Get pushed around.
 
 **Probes:** Wind & storms 1–6 and 8, and the scenarios probe. Probe 7 waits for the full
-version, because its fourth traveller needs the sand yacht.
+version, because its fourth traveller needs the sand yacht. (The yacht exists since
+2026-10-18; its traveller doesn't yet.)
 
 ## Stage 3: Devices & mods
 
@@ -301,7 +302,9 @@ in your pack for moving the planters about.
 ## Waiting for the full version
 
 These probes need content the skeleton doesn't have:
-- Wind & storms 7 (the sand yacht).
+- Wind & storms 7 (the sand yacht). The yacht is built now, as your own camp under sail
+  ([Movement](prd/movement.md#sailing-the-camp-hunter-2026-10-17)), but the probe still
+  waits: it needs a reference traveller that sails it, chasing gaps, over a long run.
 - Survival 5 (the water rhythm).
 
 **A proposed build order for the lore and kits pieces (part 3's, kept for reference).** Session 4,
@@ -340,6 +343,19 @@ No Varran, Daventry or war content goes into normal play beyond radio noise
 ([Radio, sound & atmosphere](prd/radio-sound-and-atmosphere.md#offstage-states-on-the-air-agreed-session-4-part-3-not-built)).
 The seed vaults and the second-age broadcasts are proposed too, but the session's list doesn't
 include them, so they are not in this order.
+
+### The world system, built whole (Hunter, 2026-10-17)
+
+"Flesh out the ruin gen... so we can stop just having totally random loot just all over the
+desert. actually lets go for the whole system, who am i kidding? half assing is what killed
+last sand game. a giant isnt built of small human skeletons." So part 4's world steps (6 to 10)
+and part 5's lineage and landmark steps are built as one system, not a piece at a time: the
+history pass and its landmarks and paths, structures by era with their exposure, loot that
+comes from sites and storms instead of open sand, item lineage and layered marks, the feral
+layer, and spawns by kit. It starts with its architecture and spine (one design, one set of
+interfaces), then parallel builders on top of it. The architecture is [the world
+system](world-system.md); its spine (the history pass, the landmarks, the path network and the site
+index) is built (2026-10-17), and its build plan names the five packages that follow.
 
 ### The newer proposed order: session 4, part 4
 
@@ -415,7 +431,7 @@ as the full version does. It is the newest, so it supersedes the earlier lists w
    volcano with the elevator-stub observatory at the anti-Tu point ([World &
    terrain](prd/world-and-terrain.md#the-rim-depot-the-twin-fires-and-the-elevator-stub-agreed-session-4-part-5-not-built)).
 6. **Terminal output system.** Short god logs, forms and dispatches shown on consoles. One system serves
-   every god ([Devices & mods](prd/devices-and-mods.md#the-terminal-output-system-proposed-session-4-part-5-not-built)).
+   every god ([Devices & mods](prd/devices-and-mods.md#the-terminal-output-system-proposed-session-4-part-5-first-piece-built)).
 7. **God module framework.** Mountable gods as crate modules with innate powers; stationary gods as
    consoles; per-god state (willing, captive, fed, corrupted) ([Devices &
    mods](prd/devices-and-mods.md#god-modules-as-crate-modules-proposed-session-4-part-5-not-built)).

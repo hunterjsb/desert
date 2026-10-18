@@ -29,6 +29,35 @@ func load_world(run_seed := 1234, still_air := true, salvage := false) -> void:
 	world.respawn(world.spawn.x, world.spawn.y, 0.0, 0.0)
 
 
+## Starts the run beside a town where history's house ruins stand, the one
+## nearest where it would have begun: that start is deep desert, where
+## history left next to nothing. Asked before load_world.
+func start_among(run_seed := 1234) -> void:
+	var tuning := Tuning.current()
+	tuning.salvage = true
+	var from := Sphere.point(deg_to_rad(tuning.spawn_latitude_degrees), deg_to_rad(tuning.spawn_longitude_degrees))
+	var starts := StructureKit.starts_among(run_seed, tuning, from, Vector2.ONE * tuning.chunk_size * 0.5)
+	check(not starts.is_empty(), "a start among history's house ruins")
+	if not starts.is_empty():
+		tuning.spawn_latitude_degrees = rad_to_deg(Sphere.latitude(starts[0]))
+		tuning.spawn_longitude_degrees = rad_to_deg(Sphere.longitude(starts[0]))
+
+
+## The structures of a kind laid round you that stand, nearest first, those
+## within `radius` m; built and held as their ground was, or as they'd read now.
+func structures_near(kind: StringName, radius := 1500.0) -> Array[Structure]:
+	var x := world.player_world_x()
+	var z := world.player_world_z()
+	var found: Array[Structure] = []
+	for unit in world.shape.sites.units():
+		for site in unit.sites:
+			if site.kind == kind and site is Structure and world.shape.sites.covering(site.x, site.z) == site \
+					and site.distance_to(x, z) <= radius:
+				found.append(site)
+	found.sort_custom(func(a: Structure, b: Structure) -> bool: return a.distance_to(x, z) < b.distance_to(x, z))
+	return found
+
+
 ## Waits until the ground round the player has collision and, unless only_near,
 ## until nothing is left to build either.
 func settle(only_near := false, max_frames := 1200) -> void:

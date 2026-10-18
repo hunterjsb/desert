@@ -7,7 +7,8 @@ extends DeckProbe
 ## a light shield onto the other piece's deck mount. The deck floats on the
 ## crate's batteries and the shield runs on them, one pool, drawn down by
 ## both. Take at the crate has it off again into your hold, too heavy to
-## carry, clear of the deck, even with a tray an older save left in it.
+## carry, clear of the deck, even with a tray an older save left in it: down
+## on the sand beside the deck, so dragged away it comes and the deck stays.
 
 
 func run() -> void:
@@ -80,3 +81,12 @@ func run() -> void:
 	var seen := {"inside": 0}
 	await simulate(1.0, func() -> void: seen.inside += int(overlaps(crate, deck)))
 	check(seen.inside == 0, "clear of the deck, its tray and all (%d ticks inside it)" % seen.inside)
+	check(clearance(crate) < 0.7, "down on the sand beside the deck, not left standing on it (%.2f m up)" % clearance(crate))
+	var deck_from := deck.global_position
+	var crate_from := crate.global_position
+	var away := flat(crate.global_position - deck.global_position).normalized()
+	await walk_to(world.player.global_position + away * 3.0)
+	await simulate(1.0)
+	var came := flat(crate.global_position - crate_from).length()
+	var moved := flat(deck.global_position - deck_from).length()
+	check(came > 1.5 and moved < 0.3, "dragged away it comes, and the deck stays (crate %.2f m, deck %.2f m)" % [came, moved])

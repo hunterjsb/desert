@@ -32,9 +32,13 @@ func canister() -> Supply:
 func making_lph(t := NAN) -> float:
 	if world == null:
 		return 0.0
-	var tuning := world.tuning
-	var warm := clampf(inverse_lerp(tuning.condenser_cold, tuning.condenser_hot,
-		world.weather.felt_temperature(global_position, t)), 0.0, 1.0)
+	return yield_lph(world.tuning, world.weather.felt_temperature(global_position, t))
+
+
+## What a condenser makes running in air this warm, °C, L an hour: what a
+## hygrometer's humidity follows too.
+static func yield_lph(tuning: Tuning, celsius: float) -> float:
+	var warm := clampf(inverse_lerp(tuning.condenser_cold, tuning.condenser_hot, celsius), 0.0, 1.0)
 	return tuning.condenser_litres_per_hour * lerpf(1.0, tuning.condenser_hot_share, warm)
 
 

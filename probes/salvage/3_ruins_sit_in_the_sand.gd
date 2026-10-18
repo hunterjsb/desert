@@ -1,15 +1,17 @@
 extends SalvageProbe
 ## Salvage & ruins probe 3: every ruin floor meets the sand. By the ground's
-## one function, for every ruin within 3 km of the start on two seeds: inside,
+## one function, for every house ruin history left standing round three towns
+## on two seeds, dug out: inside,
 ## the sand lies just under the floor; outside, it drifts up the walls so no
 ## wall shows its foot, and lies level with the floor at each door so you walk
-## in without a step; round it the ground is never too steep to walk up. In
+## in without a step; where it made the ground round it, never too steep to
+## walk up. In
 ## the world, at the nearest: the collision is the function, the floor is
 ## solid where it should be, and the ruin's boxes are part of its chunk's
 ## ground, there exactly while the sand is solid.
 
 const SEEDS := [1234, 7]
-const RADIUS := 3000.0
+const TOWNS := 3
 ## Points along each outer face, m apart, and how far out a door's level runs.
 const ALONG := 0.5
 const DOOR_RUN := 2.0
@@ -21,21 +23,31 @@ const DRIFTED := 0.3
 func run() -> void:
 	var tuning := Tuning.current()
 	tuning.salvage = true
+	# Dug out, as the wind leaves them after a hard storm.
+	tuning.site_return_m = -1.0
 	var steepest := 0.0
 	var ruins := 0
 	var faults := 0
+	var ground := Vector2.ONE * tuning.chunk_size * 0.5
 	for run_seed: int in SEEDS:
 		var shape := TerrainShape.new(run_seed, tuning)
-		for ruin in shape.ruins.around(0.0, 0.0, RADIUS):
-			ruins += 1
-			var found := _footprint(shape, ruin)
-			steepest = maxf(steepest, found.steepest)
-			if not found.faults.is_empty():
-				faults += 1
-				printerr("seed %d ruin at %s turn %d: %s" % [run_seed, ruin.center, ruin.turn, ", ".join(found.faults)])
+		for at in StructureKit.starts_among(run_seed, tuning, Sphere.point(0.0, 0.0), ground, TOWNS):
+			shape.sites.follow(ground.x, ground.y, Sphere.latitude(at), Sphere.longitude(at), 1.0, tuning.history_lay_m)
+			for unit in shape.sites.units():
+				for site in unit.sites:
+					# Built, not given way to a bigger neighbour.
+					if not site is Ruin or shape.sites.covering(site.x, site.z) != site:
+						continue
+					var ruin := site as Ruin
+					ruins += 1
+					var found := _footprint(shape, ruin)
+					steepest = maxf(steepest, found.steepest)
+					if not found.faults.is_empty():
+						faults += 1
+						printerr("seed %d ruin at %s turn %d: %s" % [run_seed, ruin.center, ruin.turn, ", ".join(found.faults)])
 	var slip := tuning.slip_angle
 	print("%d ruins; the steepest ground round any is %.1f°" % [ruins, steepest])
-	check(ruins >= 20, "ruins stand near the start (%d)" % ruins)
+	check(ruins >= 20, "ruins stand round the towns (%d)" % ruins)
 	check(faults == 0, "every ruin's floor meets the sand, its drifts hide its walls' feet and its doors are level (%d don't)"
 		% faults)
 	check(steepest < slip, "the ground round every ruin can be walked (steepest %.1f° against %.0f°)" % [steepest, slip])
@@ -93,7 +105,9 @@ func _footprint(shape: TerrainShape, ruin: Ruin) -> Dictionary:
 		for i in range(-reach.x, reach.x + 1):
 			var x := ruin.center.x + i
 			var z := ruin.center.y + j
-			if absf(ruin.plan(i, j).x) <= half.x and absf(ruin.plan(i, j).y) <= half.y:
+			# Where the ruin made the ground: past that the dunes are their own.
+			if (absf(ruin.plan(i, j).x) <= half.x and absf(ruin.plan(i, j).y) <= half.y) \
+					or absf(shape.sample(x, z, ruin) - shape.dunes(x, z)) < 0.01:
 				continue
 			var grade := Vector2(shape.height_at(x + 0.5, z) - shape.height_at(x - 0.5, z),
 				shape.height_at(x, z + 0.5) - shape.height_at(x, z - 0.5))
@@ -105,7 +119,10 @@ func _footprint(shape: TerrainShape, ruin: Ruin) -> Dictionary:
 ## its floor is solid, and its boxes come and go with the sand's collision.
 func _in_the_world() -> void:
 	await load_salvage()
-	var ruin := ruins_near()[0]
+	# One alone in its chunk, so the chunk's boxes are all its own.
+	var ruin: Ruin = ruins_near().filter(func(r: Ruin) -> bool:
+		return world.shape.sites.in_chunk(world.terrain.chunk_at(r.x, r.z)).filter(
+			func(s: Site) -> bool: return s is Structure and world.shape.sites.covering(s.x, s.z) == s).size() == 1)[0]
 	var at := ruin.to_world(Ruin.APPROACH)
 	await go(at.x, at.y)
 	var coord := world.terrain.chunk_at(ruin.center.x, ruin.center.y)
@@ -125,7 +142,7 @@ func _in_the_world() -> void:
 	var floor_off := 0.0
 	for room: Rect2 in Ruin.ROOMS:
 		for k in 5:
-			var p := room.position + room.size * Vector2(0.15 + 0.175 * k, 0.85 - 0.175 * k)
+			var p: Vector2 = room.position + room.size * Vector2(0.15 + 0.175 * k, 0.85 - 0.175 * k)
 			var top := on_floor(ruin, p)
 			var hit := space.intersect_ray(PhysicsRayQueryParameters3D.create(top + Vector3.UP * 0.5, top - Vector3.UP))
 			floor_off = maxf(floor_off, INF if hit.is_empty() else absf(hit.position.y - ruin.floor_y))

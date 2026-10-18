@@ -53,6 +53,11 @@ var _sampled := PackedVector2Array()
 ## points near the sand can lie on it.
 var _bulge := PackedFloat32Array()
 var _near := PackedByteArray()
+## The last bulges read off the sand, NAN where none was, and the points they
+## were read through: each frame's drawing moves only the ends, so the links
+## between keep theirs.
+var _bulged := PackedFloat32Array()
+var _bulged_through := PackedVector3Array()
 var _rest: float
 var _phase: float
 ## How long it has been stepped, s: its stir wanders with its own age, never
@@ -154,6 +159,8 @@ func let_go(end: Node3D) -> void:
 
 
 func shift(by: Vector3) -> void:
+	# The same points are over other sand now.
+	_bulged_through.clear()
 	for i in points.size():
 		points[i] += by
 		# The ground read under a point stays where it was in the world.
@@ -302,11 +309,21 @@ func _show() -> void:
 ## draws through these points clears it: the sand is read under each ring,
 ## since a crest's shape between two points can't be told from them.
 func _bulges(through: PackedVector3Array) -> PackedFloat32Array:
+	var n := through.size()
 	var bulge := PackedFloat32Array()
-	bulge.resize(through.size() - 1)
+	bulge.resize(n - 1)
 	bulge.fill(0.0)
-	for i in through.size() - 1:
+	var read := PackedFloat32Array()
+	read.resize(n - 1)
+	read.fill(NAN)
+	var known := _bulged_through.size() == n
+	for i in n - 1:
 		if _near[i] == 0 or _near[i + 1] == 0:
+			continue
+		# A link's curve runs through the points either side of it too.
+		if known and not is_nan(_bulged[i]) and _same(through, maxi(i - 1, 0), mini(i + 2, n - 1)):
+			bulge[i] = _bulged[i]
+			read[i] = bulge[i]
 			continue
 		var bow := 0.0
 		for r in range(1, RINGS_PER_LINK):
@@ -315,7 +332,18 @@ func _bulges(through: PackedVector3Array) -> PackedFloat32Array:
 				- lerpf(through[i].y, through[i + 1].y, t)
 			bow = maxf(bow, short / (4.0 * t * (1.0 - t)))
 		bulge[i] = bow
+		read[i] = bulge[i]
+	_bulged = read
+	_bulged_through = through.duplicate()
 	return bulge
+
+
+## Whether points from..to are exactly the ones the last bulges were read through.
+func _same(through: PackedVector3Array, from: int, to: int) -> bool:
+	for k in range(from, to + 1):
+		if through[k] != _bulged_through[k]:
+			return false
+	return true
 
 
 func _upload(through: PackedVector3Array, bulge: PackedFloat32Array) -> void:

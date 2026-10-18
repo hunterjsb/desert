@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 """Draws marks.png, the maker's marks atlas (docs/art-direction.md, "Maker's marks").
 
-A column per mark, a row per era: yours (new), surface, deep. Red is the mark's
-own ink, green a hand-mixed daub. Blurred a little, so the wear shader cuts each
-edge where its noise says and the mark wears ragged rather than pixelated.
+A column per mark, a row per era: yours (new), surface, deep. A fourth row holds
+the marks the ages after the collapse added over them (a lineage's, "Layered
+marks"): the four houses' crests, cut through the paint, and the sign of Tu.
+Red is the mark's own ink, green a hand-mixed daub. Blurred a little, so the
+wear shader cuts each edge where its noise says and the mark wears ragged
+rather than pixelated.
     python3 game/look/marks.py
 """
 import math
@@ -14,7 +17,9 @@ from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 CELL = (256, 128)
 COLS = 6
-ROWS = 3
+ROWS = 4
+# The rows that show a mark by era; the last is the ages after's own.
+ERA_ROWS = 3
 HERE = os.path.dirname(os.path.abspath(__file__))
 FONT = os.path.join(HERE, "..", "..", "assets", "fonts", "GeistMono-Regular.ttf")
 # A stencil can't hold a letter's middle in place: these get a bridge.
@@ -154,7 +159,66 @@ def member_state(ink, daub, rng):
         ink.ellipse([cx + dx - 4, cy + 22, cx + dx + 4, cy + 30], fill=255)
 
 
+def escutcheon(ink):
+    """A house's shield, as narrow as the enamel plaque it's cut into."""
+    pts = [(86, 12), (170, 12), (170, 66)] + arc(128, 66, 42, 0, 90, 12)[1:] + arc(128, 66, 42, 90, 180, 12)[1:] \
+        + [(86, 12)]
+    ink.line(pts, fill=255, width=5, joint="curve")
+
+
+def okafor(ink, daub, rng):
+    """Okafor: a key. They kept the last Harbourmaster's, not knowing what it opened."""
+    escutcheon(ink)
+    ink.ellipse([116, 24, 140, 48], outline=255, width=5)
+    ink.line([(128, 48), (128, 96)], fill=255, width=5)
+    for y in (82, 94):
+        ink.line([(128, y), (142, y)], fill=255, width=5)
+
+
+def kessel(ink, daub, rng):
+    """Kessel: a cauldron on three legs, steam over it."""
+    escutcheon(ink)
+    ink.arc([102, 44, 154, 92], 0, 180, fill=255, width=5)
+    ink.line([(98, 68), (158, 68)], fill=255, width=5)
+    for x in (110, 128, 146):
+        ink.line([(x, 90), (x + (x - 128) * 0.25, 102)], fill=255, width=4)
+    for x in (116, 140):
+        ink.line([(x, 56), (x - 4, 46), (x + 2, 36), (x - 2, 26)], fill=255, width=3, joint="curve")
+
+
+def arkwright(ink, daub, rng):
+    """Arkwright: an arch on its pillars, its keystone set."""
+    escutcheon(ink)
+    ink.arc([104, 30, 152, 78], 180, 360, fill=255, width=5)
+    for x in (106, 150):
+        ink.line([(x, 54), (x, 98)], fill=255, width=5)
+    ink.polygon([(122, 26), (134, 26), (131, 40), (125, 40)], fill=255)
+    ink.line([(98, 98), (158, 98)], fill=255, width=5)
+
+
+def vante(ink, daub, rng):
+    """Vante: a tower, crenellated, a door at its foot."""
+    escutcheon(ink)
+    ink.rectangle([110, 36, 146, 100], outline=255, width=5)
+    for x in (110, 124, 138):
+        ink.rectangle([x, 24, x + 8, 36], fill=255)
+    ink.arc([120, 74, 136, 90], 180, 360, fill=255, width=4)
+    ink.line([(120, 82), (120, 100)], fill=255, width=4)
+    ink.line([(136, 82), (136, 100)], fill=255, width=4)
+
+
+def tu_sign(ink, daub, rng):
+    """The faith's sign, daubed: Tu half-risen over the horizon, banded, as it
+    stands over Halfrise."""
+    brush(daub, [(36, 96), (128, 92), (220, 97)], 10, rng, wobble=1.5)
+    brush(daub, arc(128, 92, 54, 182, 358, 30), 10, rng, wobble=1.2)
+    brush(daub, [(88, 70), (128, 67), (168, 70)], 8, rng, wobble=1.0)
+    brush(daub, [(100, 54), (128, 52), (156, 54)], 7, rng, wobble=1.0)
+
+
 MARKS = [contractor, shield_maker, wind_maker, consignment, skimmer_crew, member_state]
+# The bottom row's, numbered on from the six (Paint.Mark).
+AFTER = [okafor, kessel, arkwright, vante, tu_sign]
 # The marks that change from era to era take the row and give the drawing.
 BY_ERA = (consignment, skimmer_crew)
 
@@ -167,8 +231,14 @@ def main():
         for col in range(COLS):
             ink_cell = Image.new("L", CELL)
             daub_cell = Image.new("L", CELL)
-            mark = MARKS[col](row) if MARKS[col] in BY_ERA else MARKS[col]
-            mark(ImageDraw.Draw(ink_cell), ImageDraw.Draw(daub_cell), rng)
+            if row < ERA_ROWS:
+                mark = MARKS[col](row) if MARKS[col] in BY_ERA else MARKS[col]
+            elif col < len(AFTER):
+                mark = AFTER[col]
+            else:
+                mark = None
+            if mark:
+                mark(ImageDraw.Draw(ink_cell), ImageDraw.Draw(daub_cell), rng)
             red.paste(ink_cell, (col * CELL[0], row * CELL[1]))
             green.paste(daub_cell, (col * CELL[0], row * CELL[1]))
     soft = ImageFilter.GaussianBlur(1.6)

@@ -3,7 +3,11 @@ extends Node
 ## Every planter's crops grow on power's tick of world time, so the frame
 ## rate never changes a harvest and the dev time warp grows them with
 ## everything else, and each tank is topped up again from its canisters and
-## hoses as its crops drink (Water). A wrecked planter grows nothing.
+## hoses as its crops drink (Water). A wrecked planter grows nothing. Wild
+## plants (Feral) grow and fold on the same tick.
+
+## The wild plants on their habitats.
+var feral := Feral.new()
 
 var _world: World
 var _next := 0.0
@@ -12,6 +16,8 @@ var _next := 0.0
 func setup(world: World) -> void:
 	_world = world
 	_next = world.time
+	add_child(feral)
+	feral.setup(world)
 
 
 func _ready() -> void:
@@ -29,6 +35,7 @@ func _physics_process(_delta: float) -> void:
 			var planter := node as Planter
 			if planter != null and not planter.wrecked():
 				planter.tick(step, _next)
+		feral.tick(step, _next)
 		Water.flow(_world)
 		_next += step
 	_report()

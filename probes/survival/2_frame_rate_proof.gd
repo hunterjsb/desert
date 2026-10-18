@@ -22,11 +22,16 @@ func run() -> void:
 	var needs := {}
 	var stamina := {}
 	for rate: int in RATES:
+		# Built at the usual rate: the ground's streaming isn't what's proven,
+		# and run fast it starves on a slow machine.
+		Engine.time_scale = 1.0
+		Engine.physics_ticks_per_second = 60
+		Engine.max_physics_steps_per_frame = 8
+		weather_everywhere(0.2, 26.0)
+		await load_world(1234, false)
 		Engine.time_scale = SPEEDUP
 		Engine.physics_ticks_per_second = rate * SPEEDUP
 		Engine.max_physics_steps_per_frame = 8 * SPEEDUP
-		weather_everywhere(0.2, 26.0)
-		await load_world(1234, false)
 		var player := world.player
 		var vitals := player.vitals
 		player.set_physics_process(false)

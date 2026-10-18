@@ -31,3 +31,8 @@ lines = Dictionary[StringName, StringName]({
 })
 charge = 0.5
 rope_m = 6.0
+id = &"surveyor"
+label = "Surveyor"
+about = "tows a camp"
+start = &"artery"
+balanced = true

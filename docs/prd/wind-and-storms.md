@@ -138,12 +138,12 @@ was tuned to. Resting on sand, a thing has a friction of 0.5 to beat, so a breez
 leaves a crate be and a storm slides it. Floating, nothing holds it, so it drifts off
 downwind unless it's tied down. That's what rope is for.
 
-### Instruments and the Console screen (proposed)
+### Instruments and the Console screen (proposed; first version built)
 
 *Hunter, 2026-10-17 ([session](../console-sensors-sleep-2026-10-17.md)). Direction, not a final
-spec, and none of it is built.* Weather sensing is "multifaceted: each instrument adds its own
+spec. A first version is built (As built, below).* Weather sensing is "multifaceted: each instrument adds its own
 stats, and the screen shows every stat available." The screen is [the
-Console's](devices-and-mods.md#the-console-proposed-not-built). It turns the instruments named
+Console's](devices-and-mods.md#the-console-proposed-first-version-built). It turns the instruments named
 above (a barometer, a wind vane, a weather radio, "maybe there's a storm map") into a set that
 reads together.
 
@@ -163,7 +163,7 @@ reads together.
   radio, and the Archaeologist start lists a ground-penetrating radar ([the
   vision](../vision.md#player-origins-and-kits)). *Session 4, part 4, the newer, softens this:* "a
   basic survey mod on the console picks up buried metal," so colonial pipelines show as lines on
-  screen ([Devices & mods](devices-and-mods.md#the-console-proposed-not-built), [World &
+  screen ([Devices & mods](devices-and-mods.md#the-console-proposed-first-version-built), [World &
   terrain](world-and-terrain.md#readability)). A basic survey mod is a Console mod; heavier ground
   detection is read as staying separate.
 - **The radio** is the table's radio row, and it already does the forecast half. Its weather
@@ -202,6 +202,58 @@ Readings, not in the session:
   threshold, and storms ride the prevailing wind, so a front's heading is the wind's. The storm
   map that draws the wall already samples the field out to 20 km each way on a 128 by 128 grid,
   once a second. A mini-map is that grid on a screen, finer with more gear.
+
+**As built (2026-10-17, a first version).** Each instrument is a computer mod that adds its own
+rows to the Console's screen. Every one reads the field itself, at the Console's place, never
+the felt weather, so a bubble doesn't blind it. The field has no pressure, humidity or sand in
+it, so those three are worked out from it, with their numbers in tuning. They read once a
+second of world time.
+- **Anemometer:** the wind now, gusts and all, as its speed and the point it comes from. "WIND
+  12.4 m/s from WNW".
+- **Barometer:** pressure from the field. It's 310 hPa, the moon's thin air ([the
+  moon](../the-moon.md)), where the field sits at its threshold, and it falls 8 hPa for each unit
+  the field rises, so it falls as a storm comes. It shows the pressure and its trend per minute
+  over the last two minutes. While the field here is rising toward its threshold, that trend
+  carried on gives a rough time until the storm, and under 15 minutes it warns: "STORM LIKELY ~5
+  min". It's rough on purpose, a curve carried on as a straight line.
+- **Hygrometer:** humidity from the cold and the storm, tied to the condenser by sharing its
+  function (`Condenser.yield_lph`). It reads 60% in air as cold as a condenser makes its most in,
+  less as the air warms, as the condenser's yield falls, and up to 25% more as a storm nears: the
+  air grows humid over a kilometre or two ahead of its front, most in the storm itself. It shows
+  what a condenser would make there too: "HUMID 37% · condenser 6.2 L/h". The same function gives
+  every cell of the map its humidity, so the blue laid over the map deepens toward each front and
+  the reading is its value where you stand (2026-10-18). The condenser doesn't make more as a
+  storm nears yet; that half of the tie is still proposed.
+- **Particle sensor:** sand in the air, from the storm's intensity. A storm is at full intensity
+  within about 100 m of its front, so the sensor also reads how deep into the field it is, as
+  salvage counts a storm's heart (the field 0.4 past its threshold): from 0.9 g/m³ at a wall to
+  3 g/m³ at the heart, and a little ahead of the wall from the front's outflow. It shows its trend
+  over 30 s. With a radar it also says how hard the coming storm hits: the most sand in its
+  first kilometre ("hits 1.8 g/m³").
+- **Radar,** on the computer-mod top: it sweeps 36 bearings, one a tick, stepping 100 m out to
+  its reach, 6 km (a stat of the part), until the storm state changes, then closes in on the edge
+  to 2 m. It reports the nearest edge, its distance and its point. Its heading is the way storms
+  ride the wind. Its ETA is the storm upwind reached at that speed: the nearest wall is often
+  sliding past to one side, and the upwind one agrees with the forecast. Inside a storm it gives
+  the nearest clear air and when the storm clears, or that it runs on upwind past its reach. "FRONT 1.2 km N · ETA 5 min", then "heading ESE 8 m/s ·
+  hits 1.8 g/m³". It samples the field round the Console itself rather than reading the wall's
+  map, which is centred on you, not on your camp.
+- **A radio on the Console's top mount** adds the forecast it already makes (`Radio.forecast`, 20
+  minutes ahead, read again every 5 s, where the radio is): "FCST storm in 5 min from WNW", then
+  "winds to 27 m/s · lasts 9 min". It feeds the Console while it's powered and whole, whatever its
+  dial plays aloud.
+- **Resolution scales with data** (2026-10-18, replacing the first version's map that showed only
+  with the full set): the map is always there while anything reads, and finer the more the system
+  has. A radar alone draws 8 cells across its 12 km, each other kind of instrument 4 more, the
+  full set 28, and a second radar linked half as fine again, 42. With no radar it's an estimate,
+  hatched, from 3 to 9 cells across as instruments are added: the barometer's expected storm laid
+  upwind along the anemometer's wind, as far as that wind carries it before it arrives. On the map are the front's numbers at the front,
+  the pressure's bar, humidity over the clear air, sand in the storms, the forecast along its foot
+  and the wind's gyro under it ([Devices & mods](devices-and-mods.md#the-console-proposed-first-version-built)
+  has the screen).
+- **Cost:** a radar's sweep is a bearing a tick, about 60 samples; its map a few rows a tick, a
+  whole pass each second of world time, at most 42 by 42 samples, one a cell. At a fast clock both
+  go faster, to keep up.
 
 ### Feral plants: the free barometer (Agreed, session 4, part 3; not built)
 
@@ -447,7 +499,9 @@ All run without a window, with a fixed seed.
 7. **Clear skies are earned.** Over a long simulated run, four reference travellers
    (sitting still, drifting with the wind, chasing gaps on foot, chasing gaps by sand
    yacht) each spend a share of time in the clear that lands inside their target band.
-   The share has to rise with skill and speed.
+   The share has to rise with skill and speed. *(Waiting: the sand yacht is built as of
+   2026-10-18, [Movement](movement.md#sailing-the-camp-hunter-2026-10-17), but no traveller
+   sails it yet. At 3 to 4.5 m/s in a 10 m/s wind it runs well under a front's 6 to 14 m/s.)*
 8. **Storms pass.** For a traveller sitting still, most storms pass within a full base
    shield's charge, and longer ones exist.
 9. **The lee of a dune.** In a steady gale along the dunes' own heading, the wind at the
@@ -472,6 +526,10 @@ All run without a window, with a fixed seed.
     it closes within two seconds, never past where it began. With Tu's disc in view it
     opens only so far as keeps it short of white. The camera takes its exposure, and the
     fixed one with the eye off.
+14. **The radar reads the field** (2026-10-17). A Console with a radar stands in the clear,
+    the clock stopped, a front a few kilometres off. Swept round once, its front is as near
+    as the field's nearest stormy ground in any direction, to within 1% and 5 m, and that way,
+    to within its 10° between bearings. Inside a storm it says so.
 
 ## Out of scope
 

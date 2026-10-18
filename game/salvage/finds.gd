@@ -1,9 +1,11 @@
 class_name Finds
 extends RefCounted
 ## What lies in the sand, as pure functions: how hard the weather has been at
-## a place, a chunk's finds from the run's seed, the chunk's coordinates and
-## that, and the bodies they're made of. Finds are the catalog's own parts and
-## devices, so anything dug up fits your sockets.
+## a place, a chunk's loose finds from the run's seed, the chunk's
+## coordinates and that, and the bodies every find is made of. Finds are the
+## catalog's own parts and devices, so anything dug up fits your sockets.
+## Most loot is history's, in its sites (SiteLoot); loose finds lie only on
+## the way, along paths and among a settlement's sites, a few a kilometre.
 ##
 ## Two layers: the surface, of common things, and the deep layer, of better
 ## ones, which harder weather uncovers more often. Each find draws from its
@@ -14,7 +16,8 @@ const SURFACE := &"surface"
 const DEEP := &"deep"
 ## What each layer holds, as [catalog id, weight]: loose parts, and whole
 ## devices. Rope and wire are common, hose a little less and a compass
-## uncommon; a harvester is a rare, better part.
+## uncommon; a harvester is a rare, better part. A sand yacht's pieces, the
+## runners, a sail and a mast, lie deep.
 const PARTS := {
 	SURFACE: [
 		[&"battery", 4],
@@ -34,6 +37,9 @@ const PARTS := {
 		[&"hook", 1],
 		[&"strong_plug", 2],
 		[&"harvester", 1],
+		[&"sail", 2],
+		[&"skates", 2],
+		[&"board_plate", 2],
 	],
 }
 const DEVICES := {
@@ -53,31 +59,9 @@ const DEVICES := {
 		[&"shield", 2],
 		[&"board", 1],
 		[&"chassis", 1],
+		[&"console", 1],
+		[&"mast", 1],
 	],
-}
-## What a ruin's floor holds besides, by layer: seeds and rations, kept from
-## the weather, and the survival kits they're mostly found in.
-const IN_RUINS := {
-	SURFACE: {
-		"parts": [
-			[&"root_tuber", 6],
-			[&"vat_fungus", 4],
-			[&"ration", 2],
-		],
-		"devices": [
-			[&"survival_kit", 4],
-		],
-	},
-	DEEP: {
-		"parts": [
-			[&"root_tuber", 4],
-			[&"vat_fungus", 4],
-			[&"ration", 1],
-		],
-		"devices": [
-			[&"survival_kit", 2],
-		],
-	},
 }
 ## What a survival kit holds, by socket kind, and the share of its slots
 ## found filled: it was packed to be found. Seeds keep only out of the
@@ -87,11 +71,14 @@ const SURVIVAL_KIT := {&"water": [&"canister"], &"food": [&"ration"], &"plant_st
 const KIT_FILL := 0.75
 const KIT_SEEDS_IN_THE_OPEN := 0.1
 ## What a found device's sockets hold, by socket kind; a kind not listed is
-## found empty.
+## found empty. A Console is a deep find, and its screen and instruments come
+## only in one.
 const FILLS := {
 	SURFACE: {&"battery": [&"battery"], &"ring": [&"hook"], &"top": [&"lamp"], &"water": [&"canister"]},
 	DEEP: {&"battery": [&"big_battery", &"battery"], &"ring": [&"hook"], &"bottom": [&"hover_tray"],
-		&"top": [&"solar_panel", &"lamp"], &"water": [&"canister"]},
+		&"top": [&"solar_panel", &"lamp"], &"water": [&"canister"], &"screen": [&"screen"],
+		&"computer_mod": [&"anemometer", &"barometer", &"hygrometer", &"particle_sensor"], &"computer_top": [&"radar"],
+		&"sail": [&"sail"]},
 }
 ## Per layer: the share of a device's sockets found filled, the range of a
 ## battery's charge and of a device's soundness, and how much of a buried
@@ -117,15 +104,11 @@ const TRIES := 8
 ## more its own way, degrees.
 const WITH_SLOPE := 0.6
 const LEAN := 15.0
-## Finds on a ruin's floor are numbered from here, and its hall's device has
-## at least this many parts to strip.
-const IN_RUIN := 100
+## A house ruin's hall holds a device with at least this many parts to strip.
 const HALL_PARTS := 2
-## A ruin's floor holds this many finds besides its hall's device, at least and at most.
-const RUIN_FINDS := Vector2i(2, 4)
 ## Loose finds are set down this far above what they'll rest on, m.
 const DROP := 0.03
-## Whether a ruin has a beacon left running draws from its chunk's stream here.
+## Whether a ruin has a beacon left running draws from its loot seed's stream here.
 const BEACON := 200
 
 
@@ -138,14 +121,9 @@ static func exposure(field: WeatherField, x: float, z: float, t: float, tuning: 
 	var step := tuning.exposure_step_minutes * 60.0
 	var count := maxi(1, roundi(tuning.exposure_hours * 60.0 / tuning.exposure_step_minutes))
 	var last := floorf(t / step) * step
-	var calm := tuning.exposure_calm_wind
-	var span := tuning.exposure_gale_wind - calm
 	var sum := 0.0
 	for k in count:
-		var at := last - k * step
-		var storm := clampf(field.raw_storm_at(x, z, at) / tuning.exposure_storm_full, 0.0, 1.0)
-		var gale := clampf((field.wind_at(x, z, at).length() - calm) / span, 0.0, 1.0)
-		sum += maxf(storm, gale)
+		sum += Exposure.reading(field, x, z, last - k * step, tuning)
 	return sum / count
 
 
@@ -154,15 +132,17 @@ static func deep_share(exposed: float, tuning: Tuning) -> float:
 	return lerpf(tuning.deep_calm, tuning.deep_storm, exposed)
 
 
-## 1 for the surface layer, 2 for the deep.
+## 1 for the surface layer, 2 for the deep; a site's find, 2 for its era's best.
 static func tier(spec: Dictionary) -> int:
-	return 2 if spec.layer == DEEP else 1
+	return spec.get("tier", 2 if spec.layer == DEEP else 1)
 
 
-## A chunk's finds, on its open sand and on the floor of its ruin if it has
-## one. `height` is the ground's one function, (x, z) -> m.
+## A chunk's loose finds, on its open sand. `height` is the ground's one
+## function, (x, z) -> m; `on_way(x, z)` says a place is on the way (on_way()),
+## where alone they lie; `on_site(x, z)` says a place is a structure's
+## ground, which they keep clear of.
 static func plan(run_seed: int, coord: Vector2i, exposed: float, tuning: Tuning, height: Callable,
-		ruin: Ruin) -> Array[Dictionary]:
+		on_way: Callable, on_site := Callable()) -> Array[Dictionary]:
 	var found: Array[Dictionary] = []
 	var deep := deep_share(exposed, tuning)
 	var count := 0
@@ -172,7 +152,7 @@ static func plan(run_seed: int, coord: Vector2i, exposed: float, tuning: Tuning,
 			count += 1
 	for i in count:
 		var rng := _stream(run_seed, coord, i)
-		var at := _open_spot(rng, coord, tuning.chunk_size, height, ruin, found)
+		var at := _open_spot(rng, coord, tuning.chunk_size, height, found, on_way, on_site)
 		if not at.is_finite():
 			continue
 		var spec := _lying(rng, at, deep)
@@ -186,96 +166,85 @@ static func plan(run_seed: int, coord: Vector2i, exposed: float, tuning: Tuning,
 		var depths: Vector2 = LAYER[spec.layer].bury
 		spec.bury = 0.0 if spec.loose else lerpf(depths.x, depths.y, bury)
 		found.append(spec)
-	if ruin != null:
-		var rng := _stream(run_seed, coord, IN_RUIN)
-		var spots := range(1, Ruin.SPOTS.size())
-		_shuffle(spots, rng)
-		var take := rng.randi_range(RUIN_FINDS.x, RUIN_FINDS.y)
-		for k in [0] + spots.slice(0, take):
-			var each := _stream(run_seed, coord, IN_RUIN + 1 + k)
-			var spec := _lying(each, ruin.to_world(Ruin.SPOTS[k]), deep, k == 0)
-			spec.index = IN_RUIN + k
-			spec.loose = true
-			spec.bury = 0.0
-			spec.floor = ruin.floor_y
-			_fill(spec, each, HALL_PARTS if k == 0 else 0, true)
-			found.append(spec)
 	return found
 
 
+## Whether a world place is on the way: within a laid path's corridor, or
+## `scatter` m of a settlement's site, built or only planned. What travellers
+## dropped lies there, and nowhere else on open sand.
+static func on_way(sites: Sites, x: float, z: float, scatter: float) -> bool:
+	var at := Vector2(x, z)
+	var corridor := PathNetwork.CORRIDOR
+	for piece in sites.paths_in(Rect2(x - corridor, z - corridor, corridor * 2.0, corridor * 2.0)):
+		for k in piece.points.size() - 1:
+			if Geometry2D.get_closest_point_to_segment(at, piece.points[k], piece.points[k + 1]).distance_to(at) <= corridor:
+				return true
+	for site in sites.query(Rect2(x - scatter, z - scatter, scatter * 2.0, scatter * 2.0)):
+		if History.MEMBERS.has(site.source) and site.distance_to(x, z) <= scatter:
+			return true
+	return false
+
+
 ## What the nearest beacon within reach of a world place points at: the
-## device in a ruin's hall, which every ruin holds whatever the weather, in
-## one of the ruins the seed left a beacon running in, passing over any
-## `taken(coord, index)` says is yours already. {x, z, coord, index} in world
-## metres, or {} if none is in reach.
-static func beacon(run_seed: int, sites: RuinSites, x: float, z: float, tuning: Tuning, taken: Callable) -> Dictionary:
+## device in a house ruin's hall, which every one holds whatever the weather,
+## in one of the ruins the seed left a beacon running in, passing over any
+## whose hall `taken(site id, socket)` says is yours already; picked through
+## the site index. {x, z, coord, index, site} in world metres, or {} if none
+## is in reach.
+static func beacon(_run_seed: int, sites: Sites, x: float, z: float, tuning: Tuning, taken: Callable) -> Dictionary:
 	var size := float(tuning.chunk_size)
-	var ruin := sites.nearest(x, z, tuning.radio_reach_m, func(middle: Vector2i) -> bool:
-		var coord := Vector2i(floori(middle.x / size), floori(middle.y / size))
-		return _stream(run_seed, coord, BEACON).randf() < tuning.beacon_share and not taken.call(coord, IN_RUIN))
+	var ruin := sites.nearest(x, z, tuning.radio_reach_m, func(site: Site) -> bool:
+		return site is Ruin and SiteLoot._stream(site.loot, BEACON).randf() < tuning.beacon_share \
+			and not taken.call(site.id, 0)) as Ruin
 	if ruin == null:
 		return {}
 	var at := ruin.to_world(Ruin.SPOTS[0])
 	return {"x": at.x, "z": at.y, "coord": Vector2i(floori(ruin.center.x / size), floori(ruin.center.y / size)),
-		"index": IN_RUIN}
+		"index": 0, "site": ruin.id}
 
 
 ## Where a find lies and which way, then its layer and whether it's a
 ## device: the draws the weather can't change come first.
-static func _lying(rng: RandomNumberGenerator, at: Vector2, deep: float, device := false) -> Dictionary:
+static func _lying(rng: RandomNumberGenerator, at: Vector2, deep: float) -> Dictionary:
 	var spec := {"x": at.x, "z": at.y, "yaw": rng.randf() * TAU, "lean": rng.randf() * TAU,
 		"lean_by": deg_to_rad(rng.randf() * LEAN)}
 	spec.layer = DEEP if rng.randf() < deep else SURFACE
-	spec.device = rng.randf() < DEVICE_SHARE or device
+	spec.device = rng.randf() < DEVICE_SHARE
 	return spec
 
 
 ## What it is, and for a device what it was found with.
-static func _fill(spec: Dictionary, rng: RandomNumberGenerator, least := 0, in_ruin := false) -> void:
+static func _fill(spec: Dictionary, rng: RandomNumberGenerator) -> void:
 	var layer: StringName = spec.layer
 	var kind: Dictionary = LAYER[layer]
-	var table: Array = DEVICES[layer] if spec.device else PARTS[layer]
-	if in_ruin:
-		table = table + IN_RUINS[layer]["devices" if spec.device else "parts"]
-	spec.id = _pick(rng, table)
+	spec.id = _pick(rng, DEVICES[layer] if spec.device else PARTS[layer])
 	spec.fill = []
 	spec.charge = rng.randf_range(kind.charge.x, kind.charge.y)
 	spec.sound = rng.randf_range(kind.sound.x, kind.sound.y)
-	if not spec.device:
-		return
-	# A ruin's hall promises parts to strip, more than a stake or a board holds.
-	if least > 0 and spec.id in [&"stake", &"board"]:
-		spec.id = &"crate_frame"
-	if spec.id == &"stake":
+	if not spec.device or spec.id == &"stake":
 		return
 	var packed: bool = spec.id == &"survival_kit"
 	var fills: Dictionary = SURVIVAL_KIT if packed else FILLS[layer]
 	var sockets: Array = Catalog.DEVICES[spec.id].sockets
-	var open: Array[int] = []
 	for i in sockets.size():
 		if not fills.has(sockets[i][0]):
 			continue
 		var share: float = kind.fill
 		if packed:
-			share = KIT_SEEDS_IN_THE_OPEN if sockets[i][0] in [&"plant_pot", &"plant_standard", &"plant_deep"] and not in_ruin else KIT_FILL
+			share = KIT_SEEDS_IN_THE_OPEN if sockets[i][0] in [&"plant_pot", &"plant_standard", &"plant_deep"] else KIT_FILL
 		if rng.randf() < share:
 			spec.fill.append([i, _any(rng, fills[sockets[i][0]]), rng.randf_range(kind.charge.x, kind.charge.y)])
-		else:
-			open.append(i)
-	while spec.fill.size() < least and not open.is_empty():
-		var i: int = open.pop_front()
-		spec.fill.append([i, _any(rng, fills[sockets[i][0]]), rng.randf_range(kind.charge.x, kind.charge.y)])
 
 
-## Somewhere on the chunk's open sand, clear of its ruin and of the finds
-## before it, not too steep; not finite if nowhere turned up.
-static func _open_spot(rng: RandomNumberGenerator, coord: Vector2i, size: int, height: Callable, ruin: Ruin,
-		found: Array[Dictionary]) -> Vector2:
+## Somewhere on the chunk's open sand on the way, clear of structures and of
+## the finds before it, not too steep; not finite if nowhere turned up.
+static func _open_spot(rng: RandomNumberGenerator, coord: Vector2i, size: int, height: Callable,
+		found: Array[Dictionary], on_way: Callable, on_site: Callable) -> Vector2:
 	var steepest := tan(deg_to_rad(STEEPEST))
 	for k in TRIES:
 		var at := Vector2(coord.x * size + rng.randf_range(EDGE, size - EDGE),
 			coord.y * size + rng.randf_range(EDGE, size - EDGE))
-		if ruin != null and ruin.reaches(at.x, at.y, 2.0):
+		if (on_site.is_valid() and on_site.call(at.x, at.y)) or not on_way.call(at.x, at.y):
 			continue
 		if found.any(func(f: Dictionary) -> bool: return at.distance_to(Vector2(f.x, f.z)) < APART):
 			continue
@@ -301,14 +270,20 @@ static func make(spec: Dictionary) -> RigidBody3D:
 
 ## A find's body before its parts: a part whole, or a device's bare frame.
 ## Making one is split this way so no piece of the streaming budget is long.
+## A site's find is given the hands it passed through from its own seed, by
+## its site's era and kind, before it's in the world.
 static func bare(spec: Dictionary) -> RigidBody3D:
+	var body: RigidBody3D
 	if not spec.device:
-		return _part(spec.id, spec.charge, spec.layer)
-	var device := Catalog.stake() if spec.id == &"stake" else Catalog.device(spec.id)
-	# Fitted before it's in the world, so before its _ready would set this.
-	device.center_of_mass_mode = RigidBody3D.CENTER_OF_MASS_MODE_CUSTOM
-	mark(device, spec.layer)
-	return device
+		body = _part(spec.id, spec.charge, spec.layer, spec.get("sealed", false))
+	else:
+		body = Catalog.stake() if spec.id == &"stake" else Catalog.device(spec.id)
+		# Fitted before it's in the world, so before its _ready would set this.
+		body.center_of_mass_mode = RigidBody3D.CENTER_OF_MASS_MODE_CUSTOM
+		mark(body, spec.layer)
+	if spec.has("era"):
+		Catalog.found_in(body, spec.era, spec.kind, spec.seed)
+	return body
 
 
 ## A find's layer, which its paint shows: older is better. A part has no
@@ -322,10 +297,14 @@ static func mark(body: Node, layer: StringName) -> void:
 	Paint.show_age(body, Paint.age_of(layer, (sound.x + sound.y) * 0.5))
 
 
-## Fits the k-th part a device was found with.
+## Fits the k-th part a device was found with; a site's part has hands of
+## its own, from its own seed.
 static func fit(device: Device, spec: Dictionary, k: int) -> void:
 	var entry: Array = spec.fill[k]
-	device.fit(_part(entry[1], entry[2], spec.layer, spec.id == &"survival_kit"), device.sockets()[entry[0]])
+	var part := _part(entry[1], entry[2], spec.layer, spec.id == &"survival_kit" or spec.get("sealed", false))
+	if spec.has("era"):
+		Catalog.found_in(part, spec.era, spec.kind, hash([spec.seed, k]))
+	device.fit(part, device.sockets()[entry[0]])
 
 
 ## Nothing found runs until it's yours; its light still shows what it holds.
@@ -413,7 +392,7 @@ static func pose(body: RigidBody3D, spec: Dictionary, height: Callable) -> Trans
 			for i in 8:
 				var corner := turn * box.get_endpoint(i) - middle
 				under = maxf(under, height.call(spec.x + corner.x, spec.z + corner.z))
-		y = under + DROP - low
+		y = under + spec.get("drop", DROP) - low
 	return Transform3D(turn, Vector3(spec.x - middle.x, y, spec.z - middle.z))
 
 

@@ -12,12 +12,19 @@ var _spawn_latitude: float
 var _spawn_longitude: float
 ## Flips each time you cross a pole: straight ahead on the ground is now the other way.
 var _facing := 1.0
+## How many times it has been put somewhere without a walk: history laid
+## from where it was must start again.
+var jumps := 0
 
 
-func _init(tuning: Tuning) -> void:
+## Begun at `start`, a point on the sphere, or else where the tuning says.
+func _init(tuning: Tuning, start := Vector3.ZERO) -> void:
 	radius = tuning.moon_circumference / TAU
 	latitude = deg_to_rad(tuning.spawn_latitude_degrees)
 	longitude = deg_to_rad(tuning.spawn_longitude_degrees)
+	if start != Vector3.ZERO:
+		latitude = Sphere.latitude(start)
+		longitude = Sphere.longitude(start)
 	_spawn_latitude = latitude
 	_spawn_longitude = longitude
 
@@ -47,6 +54,7 @@ func place(latitude_degrees: float, longitude_degrees: float) -> void:
 	_spawn_latitude = latitude
 	_spawn_longitude = longitude
 	_facing = 1.0
+	jumps += 1
 
 
 ## Metres from spawn, measured round the moon.

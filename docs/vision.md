@@ -69,14 +69,18 @@ upgrade the camp → the camp sustains more of itself → go further, or into th
   the managed inputs. One shared system, with a unique feel per item: differences come from data
   ([Farming](prd/farming.md#the-plant-system-agreed-session-4-part-4-partly-built)).
 - **The camp may get a computer, and a bed** (Hunter, 2026-10-17, proposed and loose). A Console
-  reads the weather instruments onto a screen ([Devices & mods](prd/devices-and-mods.md#the-console-proposed-not-built)),
+  reads the weather instruments onto a screen ([Devices & mods](prd/devices-and-mods.md#the-console-proposed-first-version-built)),
   and sleep may skip the wait on a long storm ([Survival](prd/survival.md#sleep-proposed)).
 - **The camp moves at walking pace, and storms are weathered, not outrun.** Each storm
   is a judgment call: stay and let it pass, or push through inside the bubble. Early on,
   a post or ruin to tie to is precious.
 - **Haulers make the base faster later:** a rusty mechanical beast that follows and
   carries (stiff parts, so no skin rigging), a sand yacht that rides the wind and might
-  outrun a storm with the camp aboard, and big carriers. (Agreed, session 4, part 3: the Varran
+  outrun a storm with the camp aboard, and big carriers. **The yacht is your own camp**
+  (Hunter, 2026-10-17): a mast, a large sail and runners on your crate or deck, trimmed by
+  its sheet, its pull felt at your waist ([Movement](prd/movement.md#sailing-the-camp-hunter-2026-10-17)).
+  "Feeling the weight of your camp around your waist or in your hands is gonna be a really
+  big part of the game." (Agreed, session 4, part 3: the Varran
   start has a dune sailboat, a slow wind-driven hauler, which the Movement PRD keeps apart from
   the yacht: [Movement](prd/movement.md#the-dune-sailboat-agreed-session-4-part-3-not-built).)
 - **The hoverboard is just for you:** fast, floaty and fun, for scouting and escaping. It
@@ -467,7 +471,7 @@ Quartermaster gets you shot down, and "one flag covers freighter, pod and hopper
     you choose.
   - **Take the whole Walker** onto a chassis: works as a Console with full weather sensing built
     in (like two fully modded weather Consoles), leaving its slots free for other mods.
-    Important late game ([Devices & mods](prd/devices-and-mods.md#the-console-proposed-not-built)).
+    Important late game ([Devices & mods](prd/devices-and-mods.md#the-console-proposed-first-version-built)).
   - **Copy its data** (plug the Console in briefly): registers the nomads in your report; no
     gameplay benefit.
   - **Leave it alone:** they stay free and uncounted.

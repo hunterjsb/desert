@@ -3,8 +3,9 @@ extends RefCounted
 ## A run as its save holds it: only what's yours and what you changed. The
 ## ground, the weather and the finds come again from the seed, so the save
 ## keeps you, the clock, everything of yours in the world with its parts and
-## state, every line between them, and of the finds near you only which were
-## taken and how hard the weather had been there. Places are world metres;
+## state, every line between them, of the finds near you only which were
+## taken and how hard the weather had been there, and what was taken from
+## each site laid. Places are world metres;
 ## the engine origin is kept too, so a resumed run computes in the same
 ## floats as the one saved and plays on tick for tick.
 ##
@@ -21,8 +22,10 @@ static var _kept := [
 	[Planter, ["tank_l", "split", "stored", "seeds", "ripened", "replanted", "banked", "dropped", "picked",
 		"fed_kcal", "_owed"]],
 	[Condenser, ["made_l"]],
+	[Console, ["page", "auto_shield", "log_lines", "_alerts", "_front_near"]],
 	[Battery, ["charge_wh"]],
 	[Plant, ["growth", "fruit", "state", "wild"]],
+	[Mast, ["raised", "raise", "boom", "boom_spin", "trim", "load_n", "bend_n", "extend"]],
 	[Device, ["resting", "lift_share"]],
 ]
 const PLAYER := ["stamina", "flying", "mode", "crouched", "own", "slope", "wind", "low", "sink", "_sliding",
@@ -124,6 +127,11 @@ func begin(data: Dictionary) -> Array[Vector2]:
 		player.vitals.set(key, _copy(you.vitals[key]))
 	world.weather.forecast_now()
 	world.salvage.recall(data.finds, world.terrain.chunk_at(world.player_world_x(), world.player_world_z()))
+	# What was taken from each site; a save from before kept none.
+	world.salvage.recall_sites(data.get("sites", []))
+	# History laid where it was; a save from before has none, and lays afresh.
+	world.shape.sites.recall(data.get("sheet", []))
+	world.farm.feral.recall(data.get("feral", []), world.terrain.chunk_at(world.player_world_x(), world.player_world_z()))
 	var places: Array[Vector2] = [Vector2(world.player_world_x(), world.player_world_z())]
 	for rec: Dictionary in data.things:
 		places.append(Vector2(rec.at[1], rec.at[3]))
@@ -334,6 +342,9 @@ func _take() -> Dictionary:
 		data.grasp = grasp.memory()
 		data.grasp.body = _ref(grasp.body)
 	data.finds = world.salvage.memories()
+	data.sites = world.salvage.site_memories()
+	data.sheet = world.shape.sites.memories()
+	data.feral = world.farm.feral.memories()
 	return data
 
 
@@ -385,6 +396,8 @@ func _body(body: RigidBody3D, loose: bool) -> Dictionary:
 		out.buried = body.has_meta(&"buried")
 	if body.has_meta(&"layer"):
 		out.found = body.get_meta(&"layer")
+	if body.has_meta(&"lineage"):
+		out.lineage = body.get_meta(&"lineage")
 	# Found or stowed, it unrolls into a line or a cable once taken out, a
 	# stowed line as long as it was.
 	if body.has_meta(&"rolled"):
@@ -498,6 +511,9 @@ func _make(rec: Dictionary) -> RigidBody3D:
 	_states.append([body, rec])
 	if rec.has("found"):
 		Finds.mark(body, rec.found)
+	# Before its parts are fitted and it's in the world, as a find is given it.
+	if rec.has("lineage"):
+		Catalog.inherit(body, rec.lineage)
 	if rec.has("rolled"):
 		body.set_meta(&"rolled", rec.rolled)
 	if rec.has("rolled_m"):

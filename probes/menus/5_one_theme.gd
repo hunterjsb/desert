@@ -25,7 +25,7 @@ func run() -> void:
 	press(&"console")
 	await physics_frames(5)
 	var ui := main.ui
-	check(ui.console.visible, "the console is open")
+	check(ui.dev_console.visible, "the console is open")
 	_look()
 	ui.open(ui.system_menu())
 	ui.open(ui.options())

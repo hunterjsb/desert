@@ -1,0 +1,63 @@
+extends WeatherProbe
+## Bubble shield & camp probe 9: the smart shield. A Console with a radar
+## stands on a deck beside a shield, switched off, with a storm on its way.
+## While the radar's front is farther than the smart shield's distance the
+## shield stays off; once it's within it, the shield switches itself on and
+## the screen logs it. A shield off on the sand nearby, not on the deck,
+## stays off. The screen's shield key switches it off, and it stays off while
+## the front holds near; pressed again, it's on.
+
+## How fast the clock runs meanwhile.
+const WARP := 10.0
+
+
+func run() -> void:
+	await load_weather()
+	world.player.set_physics_process(false)
+	var deck := Scenarios.standing(world, &"chassis", [], [0.0, 2.5]) as Chassis
+	deck.join(Catalog.device(&"chassis") as Chassis, Scenarios._on_piece(deck, Vector2i.ZERO, &"ring", Vector2i(1, 0)), 0)
+	var made := Scenarios._stand_on(world, deck, &"console", [&"big_battery", &"screen", &"radar"], Vector2i.ZERO) as Console
+	var shield := Scenarios._stand_on(world, deck, &"shield", [&"battery"], Vector2i(1, 0)) as ShieldGenerator
+	var apart := Scenarios.standing(world, &"shield", [&"battery"], [-3.0, 2.5]) as ShieldGenerator
+	var x := world.world_x(made.global_position.x)
+	var z := world.world_z(made.global_position.z)
+	var near := Tuning.current().smart_shield_auto_m
+	world.time = find_time(func(t: float) -> bool:
+		if field.raw_storm_at(x, z, t) > -0.02:
+			return false
+		var due := field.next_change(x, z, t, 600.0, 5.0)
+		return due > 240.0 and due < 480.0 and _nearest(x, z, t) > near + 500.0)
+	await physics_frames(60)
+	check(not shield.on and made.smart_shields().size() == 1 and made.smart_shields()[0] == shield, "the deck's shield is smart, and off")
+
+	world.time_warp = WARP
+	var on_at := INF
+	var waited := 0
+	while not shield.on and waited < 60 * 120:
+		var front: Dictionary = made.readings.get("front", {})
+		on_at = front.get("d", INF)
+		waited += 1
+		await get_tree().physics_frame
+	print("switched on with the front %.0f m off" % on_at)
+	check(shield.on and on_at <= near + 20.0 * WARP, "it switches itself on as the front comes within %d m (%.0f m)" % [near, on_at])
+	check(on_at > near * 0.5, "not long after (%.0f m)" % on_at)
+	check("SHIELD AUTO-ON" in made.screen_text(Console.Page.LOG), "the screen logs it")
+	check(not apart.on, "a shield off the deck stays off")
+
+	made.press(Vector2(0.5, 0.97))
+	world.time_warp = 1.0
+	await physics_frames(120)
+	check(not shield.on and "SHIELD OFF" in made.screen_text(Console.Page.LOG),
+		"the screen's key switches it off, and it stays off")
+	made.press(Vector2(0.5, 0.97))
+	await physics_frames(10)
+	check(shield.on, "and on again")
+
+
+## The nearest stormy ground to a place, on the radar's own bearings, m.
+func _nearest(x: float, z: float, t: float) -> float:
+	var best := INF
+	for i in 36:
+		var along := Vector2(sin(TAU * i / 36.0), -cos(TAU * i / 36.0))
+		best = minf(best, Console.edge(field, x, z, t, along, 6000.0, 100.0))
+	return best
