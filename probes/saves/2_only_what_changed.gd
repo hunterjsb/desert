@@ -18,11 +18,11 @@ func run() -> void:
 	Tuning.current().site_return_m = -1.0
 	await load_world(1234, false, true)
 	world.time_warp = 0.0
-	var ruin := _nearest_ruin()
-	check(ruin != null, "a house ruin stands near")
-	if ruin == null:
+	var ruins := structures_near(&"house_ruin", 2000.0)
+	check(not ruins.is_empty(), "a house ruin stands near")
+	if ruins.is_empty():
 		return
-	var at := ruin.to_world(Ruin.APPROACH)
+	var at := (ruins[0] as Ruin).to_world(Ruin.APPROACH)
 	teleport(at.x, at.y)
 	await _finds_down()
 	var lying := _lying()
@@ -72,19 +72,6 @@ func run() -> void:
 	check(await resume(), "an older save resumes")
 	await _finds_down()
 	check(_lying().has(key), "and the find lies there again")
-
-
-## The standing house ruin nearest you.
-func _nearest_ruin() -> Ruin:
-	var best: Ruin = null
-	var x := world.player_world_x()
-	var z := world.player_world_z()
-	for unit in world.shape.sites.units():
-		for site in unit.sites:
-			if site is Ruin and world.shape.sites.covering(site.x, site.z) == site \
-					and (best == null or site.distance_to(x, z) < best.distance_to(x, z)):
-				best = site
-	return best
 
 
 ## Every find laid out in the chunks round you, by where it came from, where it lies.

@@ -801,8 +801,8 @@ Shared files each package may touch, and nothing else outside its own: `Tuning` 
   site's most stripped moment of six through three days 621 finds lay within reach against 466 at its
   least, the mean tier rising from 1.08 to 1.14: the First Kingdoms' four times as many, the second
   age's a quarter more (they lie shallowest, mostly dug out already), the colonial nothing short of the
-  hardest storms. The good things are deep: every best lies in a socket a storm must strip past, or in
-  Han.
+  hardest storms. The good things are deep: an era's best lies in the sockets a storm must strip past,
+  and elsewhere only in Han's floors and caches (a third of them) and Mon's (one in twelve).
 - **Memory.** What's taken from a site is remembered by its id while it's laid, and dropped with it
   once the sheet lifts it, so a site walked 2 km away from comes back whole; the save keeps it
   (`Snapshot`: `sites`, a site's id and its sockets taken), and a save from before resumes with none.
@@ -831,9 +831,8 @@ Shared files each package may touch, and nothing else outside its own: `Tuning` 
   water) or a watchtower's; the Salvager finds the wreck field's hulls 70 to 240 m off, a hoverboard or a
   survival kit half buried in one, or what lies among the wrecks 90 to 350 m off (a charger, a planter, a
   chassis piece), and once in six, where the dunes took every hull, a wayshrine's 430 m off; the
-  Homesteader finds the wayshrine 26 to 52 m
-  off holding water, seeds or a saltbush cutting, and once in six where its offerings were gone, a
-  chassis piece lying on the road 360 m along. Something worth finding (water, food, a survival kit or a
+  Homesteader finds the wayshrine 26 to 52 m off holding water, seeds or a saltbush cutting, and once in
+  six, where its offerings were gone, a chassis piece lying on the road 360 m along. Something worth finding (water, food, a survival kit or a
   device) lies within a fair walk, 3 km, of every start.
 - **What moved.** The house ruin's floor finds are its socket loot; `Finds.plan` lays open sand's alone,
   asking `on_way`. The radio's beacon points at a house ruin's hall, now its socket 0, its choice drawn
@@ -854,12 +853,18 @@ Shared files each package may touch, and nothing else outside its own: `Tuning` 
   0.70 ms in a town and at a ruin dug out (1.0 to 1.1 ms headless before, by the PRD). Drift is drawn
   every 20 s of world time for each catch line, nothing between; the overlay's reading is a few reads
   of the field a tick.
-- **Probes** (`probes/loot/`): 1 site loot is pure per seed and site, laid from anywhere, and carries its
-  lineage; 2 the sand decides what's within reach, and your hands take what lies on a dug-out floor; 4
+- **Probes** (`probes/loot/`): 1 site loot is pure per seed and site, laid from anywhere, and made again
+  is given the same hands; 2 the sand decides what's within reach, and your hands take what lies on a dug-out floor; 4
   open sand holds no random finds; 5 drift is caught at a camp in a storm and grows in a lee; 6 each
   origin's first hour finds something within reach. Saves probe 2 is the taken loot staying taken across
   a save and a resume, and an older save resuming. Rewritten to the new placement: salvage probes 1, 2, 5
-  (now the expedition), 7 and 8, the scenarios probe, the kits' probe 5, movement probe 7.
+  (now the expedition), 7 and 8, saves probe 5, the scenarios probe, the kits' probe 5, movement probe 7. Each of the
+  six fails on a deliberately broken build: the draw seeded by where a site lies; buried sites showing
+  what's under their sand; a save that forgets the sites; loose finds laid off the way; drift blind to
+  the lee; no site laying its loot and no loose finds.
+- **To see it** (unseen, on a GPU): `look/kits/shoot.sh <dir>` stands every kit piece in each state, now
+  with what it holds within reach laid in it; the `lee` scenario stands you at a slip face's foot with a
+  catch line strung and a storm minutes off.
 
 ## Defaults
 
