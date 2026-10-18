@@ -48,7 +48,8 @@ func run() -> void:
 	await physics_frames(1)
 	var water: Array = suit.stacks()[stack_of(fresh)] if stack_of(fresh) != -1 else []
 	print("stacks: %s" % ", ".join(suit.stacks().map(_said)))
-	check(water.size() == 2 and water.has(canister) and suit.stacks().size() == 2, "a second canister stacks with the first")
+	check(water.size() == 2 and water.has(canister) and suit.stacks().size() == Kit.of(world).carried.size(),
+		"a second canister stacks with the first")
 	click_at(suit.tile_rect(stack_of(fresh)).get_center())
 	await physics_frames(30)
 	check(hands.held == fresh, "a click on the stack hands you the fuller")

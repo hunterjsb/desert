@@ -144,7 +144,7 @@ static func _hab_pod() -> StructureKit.Piece:
 	StructureKit.wall(p, false, 3.0, 4.0, -2.0, 2.0, -0.6, top, [], "panel")
 	StructureKit.box(p, Vector3(-4.0, top, -3.0), Vector3(4.0, top + 0.35, 3.0), "panel")
 	# A bunk along the back wall, and the roof's hatch.
-	StructureKit.box(p, Vector3(-3.0, 0.0, -2.0), Vector3(0.5, 0.6, -1.2), "grey")
+	StructureKit.bed(p, Vector3(-3.0, 0.0, -2.0), Vector3(0.5, 0.6, -1.2), "grey")
 	StructureKit.box(p, Vector3(1.4, top + 0.35, -1.0), Vector3(2.6, top + 0.55, 0.2), "grey")
 	p.sockets.append(StructureKit.SiteSocket.new(Vector3(-2.0, 0.0, 0.5), &"floor"))
 	p.sockets.append(StructureKit.SiteSocket.new(Vector3(1.8, 0.0, 0.8), &"floor"))

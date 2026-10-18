@@ -635,8 +635,8 @@ static var _current: Tuning
 ## weight: up to this much, kg, you don't feel it; past it you sink into the
 ## sand and slow, by this much sunk in as far as hauling digs you in, and
 ## slower still for every kilogram more. The kit you start with carries
-## 2.9 kg, and every carryable thing of it, its stake, its board with the
-## board's battery and the light panel too, 20.9 kg.
+## 5.9 kg, and every carryable thing of it, its stake, its board with the
+## board's battery and the light panel too, 23.9 kg.
 @export var carry_easy_kg: float = 30.0
 @export var carry_sunk_kg: float = 60.0
 ## A sealed canister holds this much water, L, and a ration this much food, kcal.
@@ -660,6 +660,23 @@ static var _current: Tuning
 @export var compass_storm_degrees: float = 35.0
 ## Over the most magnetized old volcanic ground, the needle swims this far either way.
 @export var compass_ground_degrees: float = 40.0
+
+@export_group("Sleep")
+## A night is lived in steps this long, s of world time: each system's own
+## sums over each, the camp held still (live, they tick every power_tick).
+## No sleep runs past sleep_most_days, whatever it waits for.
+@export var sleep_tick: float = 10.0
+@export var sleep_most_days: float = 4.0
+## So many hours, of the 24 in a day, is first offered as this many.
+@export var sleep_hours: int = 8
+## The camp is your devices and stakes within this of you, m; it's still
+## while none moves faster than this, m/s, or turns faster than this, rad/s.
+@export var sleep_camp_m: float = 30.0
+@export var sleep_still_speed: float = 0.5
+@export var sleep_still_spin: float = 1.0
+## Asleep with nothing left to drink or eat, you wake once thirst or hunger
+## falls to this share.
+@export var sleep_wake_need: float = 0.25
 
 @export_group("Farming")
 ## A planter's water tank, L. Found empty.

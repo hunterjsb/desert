@@ -51,6 +51,7 @@ const DEVICES := {
 		[&"survival_kit", 1],
 		[&"radio", 2],
 		[&"chassis", 1],
+		[&"bedroll", 1],
 	],
 	DEEP: [
 		[&"crate_frame", 2],

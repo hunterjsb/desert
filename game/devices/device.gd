@@ -225,6 +225,11 @@ func host() -> Device:
 	return get_parent() as Device
 
 
+## Whether its trays hold it up now: they lift its weight, and have the power.
+func hovering() -> bool:
+	return _hovering
+
+
 ## Whether it has a hover tray fitted.
 func has_tray() -> bool:
 	return not _trays.is_empty()

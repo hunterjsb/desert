@@ -31,14 +31,24 @@ func _physics_process(_delta: float) -> void:
 	if _world.time < _next - step or _world.time - _next > 60.0:
 		_next = _world.time
 	while _next + step <= _world.time + 1e-9:
-		for node in _world.content.get_children():
-			var planter := node as Planter
-			if planter != null and not planter.wrecked():
-				planter.tick(step, _next)
-		feral.tick(step, _next)
-		Water.flow(_world)
+		_tick(step, _next)
 		_next += step
 	_report()
+
+
+## One tick lived by a sleep, which steps the clock itself (Sleep).
+func live(seconds: float, t: float) -> void:
+	_tick(seconds, t)
+	_next = t + seconds
+
+
+func _tick(seconds: float, t: float) -> void:
+	for node in _world.content.get_children():
+		var planter := node as Planter
+		if planter != null and not planter.wrecked():
+			planter.tick(seconds, t)
+	feral.tick(seconds, t)
+	Water.flow(_world)
 
 
 func _report() -> void:
