@@ -11,6 +11,9 @@ const WORLD := &"World"
 const WEATHER := &"Weather"
 ## The menus, heard over the menu's silent desert too.
 const UI := &"UI"
+## The radio's, through World: a small speaker's, everything under
+## radio_highpass_hz cut. Made in code the first time a radio asks for it.
+const RADIO := &"Radio"
 
 # Hands: a soft seat for fitting, its match for taking out, a dull knock
 # when take or use can't, a line tied on, a line drawn hand over hand.
@@ -67,6 +70,8 @@ const RADIO_TONES := preload("res://assets/audio/radio_tones.ogg")
 # Stoker's furnace song on its frequency.
 const RADIO_CLEAR_SKIES := preload("res://assets/audio/radio_clear_skies.ogg")
 const RADIO_STOKER := preload("res://assets/audio/radio_stoker.ogg")
+# The Eye's drone, now and then out of the dark.
+const RADIO_EYE := preload("res://assets/audio/radio_eye.ogg")
 # Weather.
 const STORM := preload("res://assets/audio/storm.ogg")
 const WIND := preload("res://assets/audio/wind.ogg")
@@ -74,9 +79,24 @@ const WIND := preload("res://assets/audio/wind.ogg")
 const MENU_MOVE := preload("res://assets/audio/menu_move.ogg")
 const MENU_CONFIRM := preload("res://assets/audio/menu_confirm.ogg")
 const MENU_BACK := preload("res://assets/audio/menu_back.ogg")
+# The main menu's theme, "Salt", over its silent desert.
+const MENU_THEME := preload("res://assets/audio/menu_theme.ogg")
 
 ## Small things are heard at their level from this far, m, and fade past it.
 const NEAR := 2.0
+
+
+## The radio's bus, made with its high-pass the first time it's asked for.
+static func radio_bus() -> StringName:
+	if AudioServer.get_bus_index(RADIO) == -1:
+		AudioServer.add_bus()
+		var i := AudioServer.bus_count - 1
+		AudioServer.set_bus_name(i, RADIO)
+		AudioServer.set_bus_send(i, WORLD)
+		var cut := AudioEffectHighPassFilter.new()
+		cut.cutoff_hz = Tuning.current().radio_highpass_hz
+		AudioServer.add_bus_effect(i, cut)
+	return RADIO
 
 
 ## Heard where you are, from beside `owner`; it outlives a menu that closes

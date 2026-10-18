@@ -29,6 +29,15 @@ var _day_seconds: float
 var _radius: float
 var _walk: float
 var _homes := {}
+## The songs some gods play now and then, by god: when each play began, world
+## time, and when the silence after it begins, worked out as far as asked; and
+## how long a silence can be, s.
+var _plays := {}
+var _silences := {}
+var _quiet := {}
+## When the Stoker's furnace song was last called up, world time: the dev
+## console's meltdown, for now.
+var meltdown_at := -INF
 ## The Walker's Rim: the great circle 90° from the point under Tu, as two axes
 ## in its plane, and where on it the run began, rad.
 var _rim_u: Vector3
@@ -42,6 +51,7 @@ func _init(world_history: History, seed_value: int, tuning: Tuning) -> void:
 	_day_seconds = tuning.day_minutes * 60.0
 	_radius = world_history.radius
 	_walk = tuning.walker_speed
+	_quiet[&"eye"] = tuning.eye_quiet_minutes * 60.0
 	var rng := RandomNumberGenerator.new()
 	rng.seed = hash([seed_value, "gods"])
 	var halfrise: Vector3 = history.landmark(&"halfrise").p
@@ -97,6 +107,48 @@ func home(id: StringName, t: float) -> Vector3:
 		var at := _walker_from + _walk * t / _radius
 		return (_rim_u * cos(at) + _rim_v * sin(at)).normalized()
 	return _homes[id]
+
+
+## Where a god's song is at world time t, s into it, or -1 when it isn't
+## playing. The Stoker's plays through once each time it's called up (a
+## meltdown); the Eye's drone comes after a silence, plays through, falls
+## silent again for a few minutes, the seed's pick each time, and so on.
+## `length` is the song's, s. The station keeps world time, so it's the same
+## whenever you tune in.
+func song(id: StringName, t: float, length: float) -> float:
+	if id == &"stoker":
+		return t - meltdown_at if t >= meltdown_at and t - meltdown_at < length else -1.0
+	if t < 0.0:
+		return -1.0
+	if not _plays.has(id):
+		_plays[id] = [_silence(id, -1)]
+		_silences[id] = []
+	var plays: Array = _plays[id]
+	var silences: Array = _silences[id]
+	while plays[-1] <= t:
+		var k := plays.size() - 1
+		silences.append(plays[k] + length)
+		plays.append(plays[k] + length + _silence(id, k))
+	var i := plays.bsearch(t, false) - 1
+	return t - plays[i] if i >= 0 and t < silences[i] else -1.0
+
+
+## Where the Stoker's song is at world time t, s into it, or -1 when it isn't playing.
+func stoker_song(t: float, length: float) -> float:
+	return song(&"stoker", t, length)
+
+
+## The Stoker's furnace song called up at world time t, from its start.
+func meltdown(t: float) -> void:
+	meltdown_at = t
+
+
+## How long a god's k-th silence lasts, s: the seed's pick.
+func _silence(id: StringName, k: int) -> float:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = hash([run_seed, id, k])
+	var range_s: Vector2 = _quiet[id]
+	return rng.randf_range(range_s.x, range_s.y)
 
 
 ## The god's carrier at world time t, kHz: a fresh place in its band each

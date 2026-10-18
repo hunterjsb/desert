@@ -175,6 +175,16 @@ func _subsolar(t: float) -> float:
 	return _tu_longitude - TAU * orbit(t)
 
 
+## Toward the sun in the moon's frame, for what's lit in space: the relay.
+func sun_toward(t: float) -> Vector3:
+	return _sun(t)
+
+
+## A direction in the moon's frame as engine axes where you stand.
+static func local(v: Vector3, latitude: float, longitude: float) -> Vector3:
+	return _local(v, latitude, longitude)
+
+
 ## Toward the sun, in the moon's frame.
 func _sun(t: float) -> Vector3:
 	var at := _subsolar(t)

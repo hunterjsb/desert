@@ -20,6 +20,7 @@ const COMMANDS := {
 	"fresh": ["", "fed, watered and whole, on a fresh suit's kit"],
 	"goto": ["[landmark]", "stand by a landmark or one of its parts, on fresh ground; alone, how far each is"],
 	"map": ["[metres]", "the history under the sand round you, this wide; alone, on or off"],
+	"meltdown": ["", "the Stoker plays its furnace song on its frequency, once, from now"],
 }
 ## How far from a landmark's middle goto stands you, facing it, m.
 const STANDOFF := 60.0
@@ -223,6 +224,13 @@ func _give(args: PackedStringArray, world: World) -> void:
 			Scenarios.drop(world, Catalog.part(id), lying, 0.0, ahead)
 			ahead += 0.3
 	_say("%d %s" % [count, id])
+
+
+func _meltdown(_args: PackedStringArray, world: World) -> void:
+	var gods := Radio.gods_of(world)
+	gods.meltdown(world.time)
+	_say("meltdown: the Stoker's song on %d kHz for %d s" % [roundi(gods.carrier(&"stoker", world.time)),
+		roundi(Sounds.RADIO_STOKER.get_length())])
 
 
 func _fresh(_args: PackedStringArray, world: World) -> void:

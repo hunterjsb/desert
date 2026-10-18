@@ -107,14 +107,16 @@ static func _walker(radio: Radio, gods: Gods, x: float, z: float, t: float, loca
 				else "storm in %s" % Radio.span(long.change - t))
 		var feet_say := "storm at the walker" if now else "clear at the walker"
 		return {"text": "%s · long range: %s · %s" % [routine, ahead, feet_say], "useful": true,
-			"calm": _calm(radio.reading) and long.change == INF and not now}
-	return {"text": routine, "useful": true, "calm": _calm(radio.reading)}
+			"calm": calm(radio.reading, t)}
+	return {"text": routine, "useful": true, "calm": calm(radio.reading, t)}
 
 
-## Nothing to report: no storm on you, and none in sight for as far as the
-## station reads ahead.
-static func _calm(reading: Dictionary) -> bool:
-	return not reading.is_empty() and not reading.stormy and reading.change == INF
+## Nothing to report at world time t: no storm on you, and none due within
+## radio_calm_minutes. A storm farther off is still in the forecast's words;
+## it's nothing to worry about yet.
+static func calm(reading: Dictionary, t: float) -> bool:
+	return not reading.is_empty() and not reading.stormy \
+		and reading.change - t > Tuning.current().radio_calm_minutes * 60.0
 
 
 static func _cistern(radio: Radio, x: float, z: float, t: float, local: float) -> String:

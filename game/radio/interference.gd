@@ -13,19 +13,31 @@ const NOISE := "#%*~/\\:;=+"
 const SLICE := 0.6
 
 
-## How much storm lies along the way from a place toward a god, 0 to 1: the
-## storm field read at points along the ground bearing (degrees from -z), out
-## to the god or interference_reach_m, whichever is nearer.
+## How much storm stands in the way from a place toward a god, 0 to 1: the
+## worst of the storm field along the ground bearing (degrees from -z), read
+## from interference_near_m out to the god or interference_reach_m, whichever
+## is nearer, closest together near you. The worst, not the mean: a storm
+## wall anywhere on the way blocks it, so a storm close on your east cuts off
+## everything east of you and nothing west, and what's lost says what lies
+## which way.
 static func along(field: WeatherField, x: float, z: float, bearing: float, metres: float, t: float,
 		tuning: Tuning) -> float:
 	var reach := minf(metres, tuning.interference_reach_m)
-	var n := maxi(tuning.interference_samples, 1)
+	var near := minf(tuning.interference_near_m, reach)
+	var n := maxi(tuning.interference_samples, 2)
 	var dir := Vector2(sin(deg_to_rad(bearing)), -cos(deg_to_rad(bearing)))
-	var total := 0.0
+	var worst := 0.0
 	for i in n:
-		var at := Vector2(x, z) + dir * reach * (i + 0.5) / n
-		total += field.storm_at(at.x, at.y, t)
-	return clampf(total / n, 0.0, 1.0)
+		var d := near * pow(reach / maxf(near, 1.0), float(i) / (n - 1)) if near > 0.0 else reach * i / (n - 1)
+		var at := Vector2(x, z) + dir * d
+		worst = maxf(worst, field.storm_at(at.x, at.y, t))
+	return clampf(worst, 0.0, 1.0)
+
+
+## How much of a signal a storm on its way lets through, 0 to 1: none once
+## the worst of it is past storm_blocks, less the nearer it gets to that.
+static func let_through(storm: float, tuning: Tuning) -> float:
+	return 1.0 - smoothstep(0.0, tuning.storm_blocks, storm)
 
 
 ## How far the storm has slid a carrier off at world time t, kHz: a slow

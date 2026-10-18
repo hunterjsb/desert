@@ -3,8 +3,8 @@ extends ShieldProbe
 ## under skies with no storm anywhere, the weather station has nothing to
 ## report and holds: its clear-skies song plays, with no report tones, and its
 ## line still gives the forecast. Let a storm in and it breaks off the song for
-## the report at its next reading. Tuned to the Stoker, its furnace song plays
-## on its frequency, and a storm on the way to it turns it down without
+## the report at its next reading. Tuned to the Stoker in a meltdown, its
+## furnace song plays on its frequency, and a storm on the way to it turns it down without
 ## starting it over.
 
 
@@ -32,6 +32,7 @@ func run() -> void:
 
 	weather_everywhere(0.0)
 	radio.frequency = gods.carrier(&"stoker", world.time)
+	gods.meltdown(world.time)
 	await physics_frames(8)
 	var clear := radio.music.volume_db
 	var at := radio.music.get_playback_position()
