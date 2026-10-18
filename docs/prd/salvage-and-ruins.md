@@ -494,10 +494,17 @@ past that the far ring showed the dunes alone.
 710 m, 7.2 px tall and its lattice 0.7 px wide as it stands, drawn 1.5 px wide and as much fainter,
 which you see only looking for it; a mast at 1.91 km, 2.7 px tall, all but gone; a watchtower likewise
 at its own size. What you see first is the Surveyor's mast's glint, from where the run begins 14.3 min
-in on seed 1234, a white star 8 to 16 px across on the horizon. A wreck's hull to 2 to 3 km exposed
-(the Salvager's at 143 m, a dark shape on the skyline); a pylon stub only once a storm has stripped it
-(buried, its crossarm is a 2 px dash at a kilometre); a saltbush line to 3 km as a dark line across the
-dunes facing you; a glint, a 16 px white star at its brightest, to 3 km.
+in on seed 1234, a white star 7 to 12 px across on the horizon (12 at 90% of its brightest). A wreck's
+hull to 2 to 3 km exposed (the Salvager's at 143 m, a dark shape on the skyline); a pylon stub only once
+a storm has stripped it (buried, its crossarm is a 2 px dash at a kilometre); a glint, a 12 px white
+star at its brightest, to 3 km. A saltbush line, where it leaves the built ground at 560 m, a dotted
+line of 1 to 2 px bushes, real and stand-in alike (a bush 1.5 px wide and 0.7 tall, drawn 1.5 px at
+half solid); at 1.3 km a faint broken dotted line of silver-green along the dunes, there when you look
+for it (a bush 0.7 px by 0.3, drawn a tenth solid); by 2.3 km gone (drawn 3% solid). Behind a storm,
+none of it: a relay mast 1.9 km off and far bushes 1 km off drawn 0% shown, 100% with the air between
+clear. Measured against the real bushes from 150 m, the same pixels in the same places, as light
+(the bushes' pixels' mean luminance 190 for the stand-ins against 190 for the real), weighing 0.7 of
+them on the eye: the real mound's leaves stand out past it a little.
 
 **What it costs** (an RTX 3070 at 1080p; the look-test's `cost` lines). On the GPU, looking round the
 horizon from the Surveyor's start, 2.44 ms a frame with it and 2.46 without; with the AFK camp parked
@@ -508,7 +515,12 @@ of a millisecond a frame), and once 3.3 ms in a windowed run as the world loaded
 proportional to the moon: what's laid near you, and a cell at a time of what isn't. Its worker, 2 to
 60 ms a job, one each time the sheet follows you. Power probe 11's own measure, a tick's work on the
 main thread, twice each way: the world alone 1.95 and 2.06 ms with it, 1.82 and 1.95 without; with the
-AFK camp parked, 3.63 and 4.21 with it, 3.86 and 3.99 without: within the run-to-run noise.
+AFK camp parked, 3.63 and 4.21 with it, 3.86 and 3.99 without: within the run-to-run noise. Round four,
+with the far bushes and the veils, shot while a game was being played on the same GPU: on the GPU 5.77
+ms a frame with it and 6.06 without, 5.83 and 5.95 with the AFK camp parked, within the noise; its
+main thread 0.03 ms a frame on average (with the veils' reading, all 64 things in sight in turn once a
+second), 1.9 at most under that load; its worker 22 to 40 ms a job there, 13 to 20 ms headless on
+the starts with saltbush in reach and 2 ms without: placing the far bushes is most of it.
 
 **Probes** (`probes/sightlines/`): 1 every origin begins with something in sight, on three worlds, the
 world as built and drawn looked over a metre at a time, and the Surveyor's horizon shines for you on
@@ -561,7 +573,15 @@ the tall structures want an art pass of their own.
 Then (round three, 2026-10-18): the masts and towers read right at true size; the far saltbush lines
 didn't ("look like giant ridges or serpents from afar, or even maybe a shadow glitch, and you can
 see them through storms"), so far off they're a broken line of bushes, as faint as the haze makes
-them and hidden by a storm like anything else; and the glint is toned down a little.
+them and hidden by a storm like anything else; and the glint is toned down a little. Built (round
+four, the `farsalt` branch): the draped ridge is gone, and a far saltbush line is its plants, each
+where its chunk will stand it, at its own size, in the leaf's own sage, handed over chunk by chunk to
+the real bushes (Roads, above); it reads as a faint dotted line to a kilometre or so and is gone by
+two. Everything drawn far off, masts, towers, their glints and the bushes, takes the plume's veil
+(Storms hide it, above): a storm between you and it hides it. The glint is 12 px at its brightest,
+not 16, and 7 times the sun on white, not 9; the Surveyor's start still has its mast glint for it on
+the first day (its rule is the glint's share of its brightest, which didn't change: 6.4 to 13.9 min in
+on probe 1's three worlds, as before).
 
 ### Readings, not in the session
 

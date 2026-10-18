@@ -23,7 +23,7 @@ declare -A labels=([start_surveyor]="the Surveyor's start" [start_salvager]="the
 	[start_homesteader]="the Homesteader's start" [far_tower]="a far mast or watchtower"
 	[glint]="a glint, as on a 1080p screen" [road_saltbush_1km]="a saltbush line from 1 km, as on a 1080p screen"
 	[road_saltbush_2km]="a saltbush line from 2 km, as on a 1080p screen"
-	[bush_handover]="a saltbush line where it leaves the built ground, as on a 1080p screen"
+	[bush_handover]="a saltbush line, as on a 1080p screen"
 	[road_pylons]="a row of pylon stubs")
 # The middle quarter of a shot at its own size.
 declare -A own=([glint]=1 [road_saltbush_1km]=1 [road_saltbush_2km]=1 [bush_handover]=1)
@@ -50,7 +50,7 @@ for shot in storm_mast storm_bushes; do
 	[[ -f $out/$shot.png && -f $out/${shot}_clear_zoom.png ]] || continue
 	montage -label "a storm between you and $(said "$shot")" "$out/$shot.png" -label "zoomed three times round the middle" \
 		"$out/${shot}_zoom.png" -label "the same, the air between clear: $(said "${shot}_clear" | sed 's/^[^,]*, //')" "$out/${shot}_clear_zoom.png" \
-		-tile 3x1 -geometry 640x360+6+6 -pointsize 18 -background '#f4efe6' -depth 8 +repage "$out/row_$shot.png"
+		-tile 3x1 -geometry 640x360+6+6 -pointsize 15 -background '#f4efe6' -depth 8 +repage "$out/row_$shot.png"
 	rows+=("$out/row_$shot.png")
 done
 # Walking in across the hand-over, each distance's zoom side by side: as you
