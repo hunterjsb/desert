@@ -318,12 +318,11 @@ func wear(share: float) -> void:
 ## crisp, a surface one rusty, and a wrecked frame down to the metal. Its
 ## maker's mark is its era's too.
 func show_wear() -> void:
-	var layer: StringName = get_meta(&"layer", &"")
-	var amount := Paint.age_of(layer, durability)
+	var amount := Paint.age_for(self, durability)
 	for view: MeshInstance3D in [frame_view, rotor]:
 		if view != null:
 			view.set_instance_shader_parameter(&"age", amount)
-			view.set_instance_shader_parameter(&"era", Paint.era_of(layer))
+			view.set_instance_shader_parameter(&"era", Paint.row_for(self))
 	for socket in sockets():
 		if socket.marker != null:
 			socket.marker.set_instance_shader_parameter(&"age", amount)
@@ -512,20 +511,24 @@ func stats() -> Dictionary:
 	_sum_into(total, frame_stats)
 	var charge := 0.0
 	var cells := 0
+	# A lossier make's tray draws more a kilogram, by its share of the lift.
+	var draws_kg := 0.0
 	for socket in sockets():
 		var part := socket.part
 		if part != null:
 			_sum_into(total, part.stats)
+			draws_kg += part.stats.get("lift_kg", 0.0) * part.stats.get("hover_draw", 1.0)
 		if socket.kind == &"battery" and part is Battery:
 			charge += (part as Battery).charge_wh
 			cells += 1
 	total["runners"] = glider.runners.size() if glider != null else 0
+	total["hover_draw"] = draws_kg / total["lift_kg"] if total["lift_kg"] > 0.0 else 1.0
 	total["can_float"] = total["lift_kg"] >= mass
 	total["resting"] = resting
 	total["hovering"] = total["can_float"] and powered and lift_share > 0.0
 	# Its trays draw for what they hold up, or dark, for its weight, what
 	# lifting it again would take. Seated, its own tray holds nothing up.
-	total["hover_w"] = (carried_kg if powered else mass) * world.tuning.hover_watts_per_kg \
+	total["hover_w"] = (carried_kg if powered else mass) * world.tuning.hover_watts_per_kg * total["hover_draw"] \
 		if total["can_float"] and not resting and world != null and host() == null else 0.0
 	if cells > 0:
 		total["charge_wh"] = charge

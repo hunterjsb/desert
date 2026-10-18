@@ -651,6 +651,18 @@ Found mods ride along. First Kingdoms finds can carry mods such as tuning for lo
 mod fits a mount and adds to the device, as the extra-hook mod does (below). Today only the planter has a
 mod mount.
 
+**Built 2026-10-18** ([the world system](../world-system.md#era-stats)): every frame and part has its
+era's stats, from its lineage, as factors on the numbers it already has (`Eras.GEAR`). Against colonial
+make, the First Kingdoms keep 0.92 of a battery's capacity, a panel's or a turbine's watts and a tray's
+lift, draw 1.05 times as much (a tray a kilogram, a shield, an instrument, a lamp) and stand the weather
+1.5 times as long; the skimmer era keeps 0.85, draws 1.10, lasts half as long and weighs 0.7; the second
+age keeps 0.75, draws 1.25 and lasts 0.9 **(defaults, all but the order)**. So a colonial battery holds
+100 Wh and a second-age one 75. The run's kit is the company's issue, colonial numbers. Eras interoperate
+as agreed: nothing in the fit, the seat or the deck asks what era a piece is (probe 5 of the lineage
+probes). **Repair is still needed:** each era's material is data (finite colonial parts, metal, scrap for
+the skimmer era by default, cord, ceramic and saltbush wood), and there's no repair act, no material in
+the catalog and no rule for what a mend gives back.
+
 ## Item lineage (Agreed, session 4, part 5; not built)
 
 *[Session 4, part 5](../gods-gear-farside-2026-10-17.md), section 3, "The Dark Age: a lineage rule, not
@@ -670,6 +682,13 @@ Readings, not in the session:
 - **It is generated, not saved, for finds.** A find's lineage is drawn from the find's own stream of the
   seed, as its layer and its fitted parts are. Only a part you carry needs it kept, with the part.
 - **Typed parts hold.** Lineage is a field of the part, not a new part (rule 6).
+
+**Built 2026-10-18** ([the world system](../world-system.md#what-lineage-does-now)): a find's lineage is
+drawn from its loot seed and its site's era and kind (`Eras.lineage`) and given with `Catalog.found_in`,
+the loot package's one call; what you take keeps it through a save. It drives the look (layered marks,
+[art direction](../art-direction.md#layered-marks-agreed-session-4-part-5-named-not-drawn)), and its last
+hands' era drives the stats, as above: a Dark Age remade crate is a second-age frame whose marks read
+three deep. A thing without one is the company's issue, or, from an older save, looks as it did.
 
 ## Crate makers (Agreed direction, session 4, part 4; not built)
 

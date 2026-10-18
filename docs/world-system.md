@@ -455,6 +455,8 @@ lineage: original era plus remake history."
   era is "the light cheap gear from before" (Hunter, 2026-10-17). Lineage drives the look; the frame's
   era drives the stats.
 
+*Built 2026-10-18: [What lineage does now](#what-lineage-does-now), with the loot package's interface.*
+
 ## The feral layer and spawns
 
 **Feral hooks.** "No plant spawns randomly. Each comes from its habitat or a cache in an era-appropriate
@@ -752,6 +754,142 @@ Shared files each package may touch, and nothing else outside its own: `Tuning` 
   generator shrines, caravanserais, stepwells, ration gates, granaries, earthworks, bunkers and the signs:
   history's plan, for the map and the packages to come.
 
+## What lineage does now
+
+*Built 2026-10-18, on the `lineage` branch: package 3.*
+
+- **A lineage is a short list on the thing** (its `lineage`, saved with it), each entry [era, what was
+  done, how], from its making on:
+  - [colonial, made, who]: who made it, as its stamp says (`Catalog.MAKERS`): Tilg on crate frames and
+    chassis pieces, the contractor RMC on the condenser, the Console and the fitted shield, the shield's
+    maker on the light shield, the wind maker on the turbine; commodity parts name none.
+  - [First Kingdoms, marked, house]: a Port Morgan house kept it and marked it: Okafor, Kessel, Arkwright
+    or Vante.
+  - [Dark Age, remade, work]: what held it together, one of five sets of cord, ceramic, a saltbush-wood
+    splint and a plate off something else **(default)**.
+  - [second age, blessed, gifts]: one of four sets of the sign of Tu, a charm, a tassel and a water vial,
+    or the Cistern's blue glaze with a charm **(default)**.
+- **The rule** (`Eras.lineage(era, kind, seed)`, the seed's alone). A colonial or skimmer-era find is only
+  made: the skimmer era's imports are the one thing made after the colony. A First Kingdoms find is
+  colonial, marked by a house. A second-age find is colonial, remade in the Dark Age, keeping a house's
+  marks under the repair half the time (part 5's "a colonial or first-age item", so the contract's three
+  entries are two to four), and blessed after 40% of the time, 90% at a wayshrine and 60% at a stepwell,
+  where half are the Cistern's; elsewhere 5% of blessings are hers **(defaults)**. A Dark Age cache's find
+  is remade and never yet blessed. Over 6,000 draws at every second-age kind of site, every one was an
+  older thing remade in the Dark Age, 49% kept a house's marks and 35% were blessed (probe 2).
+- **Its era** is its last hands': a Dark Age remake is second-age gear. That era sets its numbers, and its
+  first hands' set the row its own stamp is from. A thing with no lineage is what it was before: the
+  company's issue when it was never found (the run's kit: colonial numbers, the "new" row, LOT 3127 on
+  the crate), and its layer's look when a save from before lineage found it.
+
+### The interface for loot
+
+`Catalog.found_in(body, era, kind, seed) -> Array` draws a find's lineage, gives it to the body and
+returns it.
+- `body`: the find as `Catalog.part`, `Catalog.device`, `Catalog.stake` or `Finds.bare` make it, before
+  it's in the world (a shield reads its draw as it starts), and after `Finds.mark` if it keeps a layer:
+  the lineage's look wins over the layer's.
+- `era`, `kind`: its site's (`site.era`, `site.kind`); a Dark Age sign passes `Eras.DARK`, and `kind` may be
+  `&""`.
+- `seed`: the thing's own draw from the site's loot seed (its socket, its index), so each thing in a site
+  has its own lineage. The same seed gives the same lineage, numbers and look, so a find made again as its
+  chunk loads needs nothing saved.
+- Each part fitted in a found device takes its own call and seed, fitted or not yet: a crate's battery can
+  be another era's than the crate. Nothing anywhere asks what era a thing is: any crate takes any module.
+- A crop, food or salt takes none, and it returns an empty list.
+- What's taken keeps its lineage through the save (`Snapshot`: a thing's `lineage`).
+- `Eras.lineage(era, kind, seed)` is the draw alone; `Catalog.inherit(body, lineage)` gives a known one.
+
+### Era stats
+
+Part 5's one axis, efficiency against repairability, as factors on what a thing already has numbers for
+(`Eras.GEAR`), against colonial make. "Keeps" scales a battery's capacity, a panel's or a light panel's
+watts, a turbine's and a tray's lift; "draws" a tray's watts a kilogram, a shield's draw in the clear and
+in a storm, an instrument's or a Console's draw and a lamp's; "tough" how slowly the weather wears a
+frame; the skimmer era's is lighter (Hunter: "light, cheap and fragile"). **(defaults, all but the
+order)**
+
+| Era | Keeps | Draws | Tough | Weight | Repaired with (not built) |
+|---|---|---|---|---|---|
+| Colonial, and the company's issue | 1.00 | 1.00 | 1.0 | 1.0 | finite colonial parts |
+| First Kingdoms | 0.92 | 1.05 | 1.5 | 1.0 | metal |
+| Skimmer era | 0.85 | 1.10 | 0.5 | 0.7 | scrap **(default: nothing says)** |
+| Second age | 0.75 | 1.25 | 0.9 | 1.0 | cord, ceramic, saltbush wood |
+
+So a battery holds 100, 92, 85 and 75 Wh by era, a big battery 300, 276, 255 and 225; a panel makes 60,
+55, 51 and 45 W, a turbine 200, 184, 170 and 150; a tray floats 80, 74, 68 and 60 kg at 2.0, 2.1, 2.2
+and 2.5 W a kilogram; the base shield holds a storm back on 200, 210, 220 and 250 W. A mixed crate's trays
+draw by each one's share of the lift. Probe 3 checks each.
+
+**Repair is needed and not built.** Nothing mends yet; each era's material is data
+(`Eras.GEAR`'s `mends`). It wants: a repair act on a worn thing; the materials as catalog parts (colonial
+spares, which only salvage gives and run out; metal; fern cord, the kiln's salt-glazed ceramic, saltbush
+wood); what a mend gives back of a thing's soundness, by era; and whether a mend is a lineage entry of
+your own, a new lashing or cap on its look.
+
+### The marks
+
+Readable without text, through the paint pass, stacked in lineage order (art direction, "Layered
+marks"):
+- **Its maker's stamp** is the look's own, from its first hands' row: the colonial row (TILG XN 0217,
+  RMC), the new row for the company's issue.
+- **A First Kingdoms house's** is an enamel band in the house's colour round the top edges of a frame,
+  round a round housing or round a part's end, and an enamel plaque with the house's crest cut through to
+  bright metal, riveted in brass: Okafor's key, Kessel's cauldron, Arkwright's arch, Vante's tower; deep
+  red, ochre, teal, and ochre with red for Vante **(default)**.
+- **The Dark Age's repair** is cord lashed round two corner posts or round a part's body or a round
+  housing, a round ceramic cap on a square corner, a saltbush-wood splint lashed along an edge, and a
+  plate off something else in its paint, riveted on crooked; on what was consigned, the code daubed back
+  on it from memory, "ZN".
+- **The second age's devotion** is the sign of Tu (half-risen, banded) daubed on a limewashed patch, a
+  charm on cord, a dyed tassel at a corner, a sand-glass water vial tied on; Cistern-touched, a blue-glazed
+  cap and a blue charm.
+
+Where they go is worked out once a thing, from its own look (`Paint.Shell`): its box, or the round body in
+it (`Catalog.ROUND`), its faces cast against with rays so a plaque sits on a crate's recessed panel, not
+in the air before it, and four spots clear of its sockets, its charge light, its mast and its stamps, a
+part's face out of its socket first. Each entry's marks are drawn alone on those, so they cache by entry
+and stack in any lineage; the lineage's look is its own merged with them (`Paint.merged`), one mesh and
+one draw, cached while anything wears it. Too small to read (a stake, a hook, the ends of lines, a coil,
+the dish, the screen, a compass: `Catalog.BARE`), a thing keeps its numbers and shows its era only in its
+paint's age.
+
+### Cost and probes
+
+- **Cost**, on the main thread of a quiet machine: every thing's shell while the world loads, 20 ms for
+  the 24 that take marks (the Console's slowest, 2.8 ms); the first time each of a thing's lineage entries
+  is drawn, once a run, 0.3 ms (0.6 ms for nine in ten, 2.3 ms at most, the first of a size of piece:
+  every piece is a prototype placed natively after); a lineage's look merged from entries already drawn,
+  0.2 ms for a crate frame and less for anything smaller. A marked look adds a few hundred triangles to a
+  thing and no draw.
+- **Probes** (`probes/lineage/`): 1 a lineage is its seed's alone, for every era and kind of site; 2 the
+  Dark Age's rule, every second-age find an older thing remade; 3 era stats scale the numbers as the table
+  says, a colonial battery holding the most and a second-age one the least; 4 a crate, its parts and a
+  shield keep their lineages, numbers and looks across a save and resume, and things without one stay so;
+  5 every era's battery, tray, hook, panel and light shield fit every era's crate and chassis pieces join
+  across eras. Each fails on a deliberately broken build: a lineage drawn from no seed; a second age made,
+  not remade; numbers left unscaled; a save that drops a thing's lineage; a fit refused across eras.
+- **To see them** (unseen, on a GPU): `look/lineage/shoot.sh <dir>` stands a crate and a battery in each era
+  and lineage before the camp and builds `~/Desktop/lineage.png`. Not shot yet: the GPU needs a reboot.
+
+### What's fragile
+
+- **Seen only flat.** The marks were checked on a CPU render of their meshes, not on the GPU: no wear
+  shader, light, dust or scale. The sheet above is the test.
+- **A house's teal on the colonial teal.** Arkwright's band reads weakly on a teal crate; its plaque does.
+- **Hanging is a part's guess.** What hangs from a part hangs as if its socket faced sideways; on a top
+  mount it stands out.
+- **Marks follow the look.** They settle on a thing's look by ray; change a look in Dress and its marks
+  move with it, and a look with nowhere flat enough takes fewer.
+- **Saved numbers win.** A save keeps a part's numbers as they were, but a frame's are made again from its
+  lineage, so changing `Eras.GEAR` changes a resumed frame and not a resumed battery.
+- **Given before it starts.** A shield takes its draw when it enters the world: a lineage given after
+  changes its stats but not its draw until it's made again.
+- **The atlas grew a row.** Every reader of `marks.png` now reads four rows (the worn and ruin shaders);
+  a new one must too.
+- **The skimmer era** has no look of its own: its stamps' colonial row and a worn paint, and "scrap" for
+  its repair is a default.
+
 ## Defaults
 
 Every value this doc picked where the lore was silent. Change any of them here and in Tuning's History
@@ -788,6 +926,13 @@ group.
   Salvager within 300 m of a wreck field; the Homesteader on a road within 100 m of a wayshrine; every
   start within 12° of the equator and 500 m clear of a landmark's footprint.
 - The Okafor bunker under the Bastion.
+- Lineage: a second-age find keeps a house's marks half the time and is blessed 40% of the time, 90% at a
+  wayshrine and 60% at a stepwell, half of those the Cistern's, 5% elsewhere; five sets of Dark Age repair
+  and four of blessings.
+- Era stats: keeps 1.00, 0.92, 0.85, 0.75 (colonial, First Kingdoms, skimmer, second age); draws 1.00,
+  1.05, 1.10, 1.25; tough 1.0, 1.5, 0.5, 0.9; the skimmer era's weight 0.7; the skimmer era mended with
+  scrap.
+- The houses' colours: Okafor deep red, Kessel ochre, Arkwright teal, Vante ochre with a red plaque.
 
 ## Open
 

@@ -366,6 +366,8 @@ func _body(body: RigidBody3D, loose: bool) -> Dictionary:
 		out.buried = body.has_meta(&"buried")
 	if body.has_meta(&"layer"):
 		out.found = body.get_meta(&"layer")
+	if body.has_meta(&"lineage"):
+		out.lineage = body.get_meta(&"lineage")
 	# Found or stowed, it unrolls into a line or a cable once taken out, a
 	# stowed line as long as it was.
 	if body.has_meta(&"rolled"):
@@ -479,6 +481,9 @@ func _make(rec: Dictionary) -> RigidBody3D:
 	_states.append([body, rec])
 	if rec.has("found"):
 		Finds.mark(body, rec.found)
+	# Before its parts are fitted and it's in the world, as a find is given it.
+	if rec.has("lineage"):
+		Catalog.inherit(body, rec.lineage)
 	if rec.has("rolled"):
 		body.set_meta(&"rolled", rec.rolled)
 	if rec.has("rolled_m"):

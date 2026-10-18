@@ -451,10 +451,9 @@ func _shapes_changed() -> void:
 func show_wear() -> void:
 	super()
 	for piece in joined:
-		var layer: StringName = piece.get_meta(&"layer", &"")
 		if piece.frame_view != null:
-			piece.frame_view.set_instance_shader_parameter(&"age", Paint.age_of(layer, durability))
-			piece.frame_view.set_instance_shader_parameter(&"era", Paint.era_of(layer))
+			piece.frame_view.set_instance_shader_parameter(&"age", Paint.age_for(piece, durability))
+			piece.frame_view.set_instance_shader_parameter(&"era", Paint.row_for(piece))
 
 
 ## Pieces joined to it wait off the tree, so nothing else would free them.
