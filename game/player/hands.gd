@@ -576,7 +576,7 @@ func _work_once() -> bool:
 		Sounds.play_at(used, Sounds.ZAP, -4.0, 3.0)
 		say("grounded: the bank's dead")
 	else:
-		Sounds.play_at(_player, Sounds.SEAL, 0.0, 2.0)
+		Sounds.play_at(_player, Sounds.SEAL, -4.0, 2.0)
 		used.queue_free()
 		say("sealed")
 	return true
@@ -620,7 +620,7 @@ func scrap(delta: float) -> bool:
 	_stroke -= delta
 	if _stroke <= 0.0:
 		_stroke = STROKE
-		Sounds.play_at(_player, Sounds.SCOOP, 0.0, 2.0)
+		Sounds.play_at(_player, Sounds.SCOOP, -4.0, 2.0)
 		ScrapFx.spray(_player.world.content, look_point, sight_from - look_point, Wreckage.SAND)
 	if not wreck.clear(look_work, delta):
 		say(Wreckage.FIRST)

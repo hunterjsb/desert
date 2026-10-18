@@ -53,4 +53,19 @@ integrated loudness, peaks never past -6 dBTP. A hard limiter on Master holds -1
 | menu_move/confirm/back.ogg | the menus | Kenney Interface `click_002`, `select_002`, `back_002` | CC0 | -49, -40, -43 | -21, -16, -19 |
 | menu_theme.ogg | the main menu's theme, "Salt" | Hunter's `A-Mx-salt.wav`, stereo, levelled to about -20 dBFS, 20 ms fades for a seamless loop | Hunter's own | about -20 LUFS, on the UI bus | -5 |
 
+Scrapping's sounds are made here, numpy only, by `make_scrap_sounds.py` (CC0), as WAV. Their
+level is their loudest 400 ms unweighted, an estimate short of LUFS, with the voice's offset in
+the game:
+
+| File | What it is | Made from | Licence | Heard at | Peak |
+|---|---|---|---|---|---|
+| cutter.wav | the heat cutter firing, looped | made here: a torch's roar and hiss over a hum, crackling | CC0 | about -31 at 2 m | -12 |
+| plate_free.wav | a plate coming free | made here: a groan of metal and the snap of the last weld | CC0 | about -29 at 3 m | -9 |
+| plate_land.wav | a plate landing | made here: a dull clang of uneven partials and a thud | CC0 | about -28 at 3 m | -8 |
+| arc_loop.wav | a live capacitor bank, looped | made here: a mains buzz and the crackle of a leak | CC0 | about -41 at 1.2 m | -14 |
+| zap.wav | a shock, a bank shorted | made here: a discharge's crack and a falling buzz | CC0 | about -29 | -6 |
+| hiss_loop.wav | a breached store, looped | made here: a thin hiss | CC0 | about -35 at 1.2 m | -18 |
+| scoop.wav | a stroke of the scoop | made here: a blade through packed sand | CC0 | about -31 | -14 |
+| seal.wav | sealant over a breach | made here: a spray and the plop of it setting | CC0 | about -30 | -14 |
+
 The rope's snap is still made in code (`ropes.gd`), at about -28 LUFS from 8 m.

@@ -238,8 +238,9 @@ data in one shared system, each piece with its three exposure states:
   its footing, its cabinet, dish and light). The deepest: buried nearly always, partly exposed a quarter
   of the time, dug out only in the hardest storms.
 - **Skimmer era,** gunmetal and olive plate, panels that don't match, welds, hazard stripes, the crew's
-  patch: *wreck hulls* (a 12 m hull down nose first at its site's 10° to 35°, its tail torn open to walk
-  into), *fuel bladders* (a slumped rubber bag on a scrap pallet, taped, strapped, its valve), *dugouts*
+  patch: *wreck hulls* (a 12 m hull down nose first at half its site's 10° to 35°, its tail torn open to
+  walk into; since 2026-10-18 one of the five wrecks below, [Wrecks and scrapping](#wrecks-and-scrapping-hunter-2026-10-18-built)),
+  *fuel bladders* (a slumped rubber bag on a scrap pallet, taped, strapped, its valve), *dugouts*
   (a sandbagged pit with a drift down into it, roofed with scrap, an ammunition crate). Shallow and
   quick: dug out two thirds of the time.
 - **First Kingdoms,** stone and the colonial pipe the keepers reused, brass and copper fittings, a
@@ -534,6 +535,100 @@ the tall structures want an art pass of their own.
   wayshrine, a watchtower and a house ruin are three smaller or taller pieces of the same kind, each
   with a loot table, and the step that builds them replaces the notes' base case of "pillars and wall
   stubs."
+
+## Wrecks and scrapping (Hunter, 2026-10-18; built)
+
+*Hunter's direction, 2026-10-18: "embed loot into larger structures out in the sand, and require a
+variety of operations to remove valuable parts from a wreck. Operations like removing outer plating
+with a heat cutting tool or excavating deeper into the sand to expose more of the wreck." Optional
+operations too: "things that don't have to be done to get something out of the wreck but the player
+pays a price for not being prepared enough to do," like "a biohazard or electrical hazard, forcing
+the player to take an injury." "All wrecks should have multiple salvageable pieces with multiple
+physics interactable modules attached to them. Wrecks themselves will need to be made as preset large
+structures, made to reflect the moon's past." On excavating: "No digging under the surface. No
+digging at all really. More like structures that are full of sand after sitting in sandstorms for so
+long." The prototype (the `scrapper` branch) built it beside the old sites; after playing it Hunter
+asked for it rebuilt on the world system and polished, with five wrecks, plates cut by tracing their
+seams, the shock and the sickness, and cut plates as scrap for now (2026-10-18).*
+
+Built on the `wrecks` branch. "No digging and nothing underground" holds: the sand you clear is packed
+inside a wreck, above the ground, and nothing is dug out of the dunes.
+
+- **Five wrecks, each a kit piece history lays** (`WreckKit`, `game/salvage/kits/wrecks.gd`), standing,
+  surveyed, sunk and seen from far off like any structure (stand-ins and glints), each with a scrapping
+  plan (`WreckPlan`):
+  - **The skimmer hull** (skimmer era; the wreck fields' hulls, as before): a He-3 scoop ship down nose
+    first, at half its site's lean so its aft bay stays over the sand. Its cargo bay is packed through
+    the torn tail; a hatch over its starboard engine pod, welded shut, closes off the charger bay.
+  - **The tithe hauler** (skimmer era; a Provisional armoured hauler from the war): listing on its armour
+    skirts, its plates twice as slow to cut. A plated cargo door, a requisition locker behind a plated
+    door inside, a cab the storms filled through a breach in its roof, sand sifted over its cargo deck.
+    One in some wreck fields, and at some of the black site's checkpoints.
+  - **The freight pod** (colonial; a Remote Moon Contractor pod): its front hold packed full through its
+    open hatch, its rear hold behind a welded side panel. By some frontier towns, under 1 to 3 m of
+    sand (shallower than the colonial era's own, since it came down at the end).
+  - **The lifeboat** (colonial; a Tilg freighter's boat, its consignment stencil on its flanks): down on
+    its skids, its boarding hatch fused shut, its cabin sanded through a cracked viewport, its battery
+    room behind an aft access panel. Off the roads into Port Morgan, within 16 km of it.
+  - **The hopper** (second age; a colonial suborbital hopper the Knights Requisitioner flew on the
+    crusade, lime-washed over its maker's tag, their daubed sign on it): down on its belly, a wing
+    snapped off, its troop bay packed up the lowered ramp, a cockpit door and its lift fan's cowling
+    welded. Along the artery to Port Morgan, and by some crusader bunkers.
+- **Cut.** A plate is welded over an opening at its seams, a bead along each edge. Hold use with a heat
+  cutter (`Cutter`) and its hot spot lands where you aim; on a seam it cuts the weld, the cells under it
+  and either side of it, at 1.5 s a metre of seam times the wreck's armour (Tuning `cut_seconds_per_m`;
+  traced cell by cell it takes about two thirds of that, since the kerf runs ahead). Off the seam it does
+  nothing and says to trace the weld. The cutter draws 120 W from its own battery while it fires, its
+  beam reaching from its nozzle to the hot spot, sparks flying where it bites. A cell just cut glows
+  white, cooling through orange to a dark kerf; the plate warms round it. Every seam cut, the plate comes
+  away and falls outward, clangs as it lands, and lies where it fell, for good. A seam under the dunes'
+  sand can't be cut: a buried or partly exposed wreck keeps some plates until a storm strips it.
+- **Clear.** A hold packed with storm sand clears in slices from its open end, with a scoop held on the
+  open slice, 0.35 s a cubic metre (Tuning `clear_seconds_per_m3`); the slice wears back as you scoop, a
+  stroke and a spray of sand at a time. A hold cleared down from the top lies in level layers whatever
+  the wreck's lean. Packed sand shows the thin lines of the storms that laid it.
+- **Modules** are whole devices, held fast where they were stowed (on racks or floors) until what's in
+  their way is gone: each lists the plates and the slices of sand it needs. Taking one, or using it,
+  says why it won't come ("behind the starboard hatch · cut it away", "packed in sand · clear the cargo
+  bay"). They come from the wreck kind's own rows (`SiteLoot`'s `module` and `bay` sockets): the skimmer
+  era's single items, the Provisional's military kit, colonial freight, a lifeboat's survival stores, the
+  Knights' convoy gear; every module is there, with at least two parts fitted where it has sockets for
+  them. Once free it's an ordinary find. Every wreck holds three or four, and its other sockets hold
+  loot as any site's do.
+- **Hazards, the optional operations.** A **live capacitor bank** rides on some modules: lay a **stake**
+  across its terminals (use, with the stake in your hands) and it shorts out in a burst of sparks, the
+  stake falling where it was, yours still. A **breached store** rides on others: use **sealant** on it,
+  and the canister is used up. Take the module without, and the hazard goes off on you once:
+  - **Shock:** 25 health at once, a white flash and a crack, thrown off the module (you don't take it
+    that grab, and what you held drops), stunned for 1.5 s, unable to walk, look round or close your
+    hands. The bank is spent; the module comes the next time.
+  - **Sickness:** 0.08 health a second for 240 s of world time, thirst 1.8 times faster, no healing, the
+    edges of your sight sallow while it lasts. A **med kit** cures it, used in your hands or from what
+    you carry. A save keeps it.
+  A live bank blinks red and crackles; a breached store hisses and seeps a sickly mist.
+- **The readout** says what each piece is, how far its work has got and what does it ("starboard hatch ·
+  seams 72% cut · hold F with a heat cutter along its seams", "packed sand · cargo bay, blown in through
+  the torn tail · slice 1 of 3"); a cutter or scoop used on the hull says where its work is.
+- **Memory.** What was cut, cleared and made safe, and where each plate fell, is kept with the site's
+  memory of what was taken (`Salvage`, the site's id): built again as it was left whenever its ground
+  is, and in a save once worked (an untouched wreck saves nothing). Once the sheet lifts it, it's
+  forgotten, like any site.
+- **Gear.** The Salvager starts with a heat cutter beside them and a scoop, sealant and a med kit carried.
+  Skimmer-era shelves and caches hold scoops, sealant and med kits now and then, colonial shelves med
+  kits, and the skimmer era's best a heat cutter. A cut plate is scrap for now.
+- **Dev:** the `wreck` scenario stands every wreck in a fan ahead of you, dug out, each turned to show you
+  its way in, with a charged cutter, a scoop, sealant, stakes and a med kit at your feet.
+- **Code:** `game/salvage/kits/wrecks.gd` and `wreck_plan.gd`, `game/salvage/wreckage.gd`, `scrap_fx.gd`,
+  `weld.gdshader` and `packed_sand.gdshader`, `game/devices/cutter.gd`, `game/survival/wounds.gd` and
+  `remedy.gd`, with `Salvage`, `SiteLoot`, `Hands`, `History` and the catalog. Sounds made here
+  (`assets/audio/make_scrap_sounds.py`). Look-test: `look/wrecks`.
+- **Probes** (`probes/wrecks/`): 1 every wreck stands where history puts it and holds its modules, at its
+  least lean and its most; 2 a wreck needs its operations (held until the last need, the wrong tool
+  does nothing, only the seams cut, a plate falls outward and lies on the sand, holds clear from their
+  open end, a top-down hold lies level); 3 the unprepared are wounded, and the prepared aren't; 4 a wreck
+  remembers, across its ground going and coming, and a save; 5 scrapping by hand, with the keys.
+- **Not yet:** a use for cut plates (Hunter: "just scrap for now"), a freighter wreck as the big dig
+  site the lore promises, and more hazards (a pressurised tank was offered and set aside).
 
 ## The Dark Age as a lineage rule (Agreed, session 4, part 5; not built)
 
@@ -843,6 +938,8 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
 7. **Nothing leaks.** On the 20 km walk, the number of finds in memory stays bounded.
 8. **Out the door.** A found device, once yours, can be taken hold of and walked out of
    a ruin's doors, and towed out of them on a line.
+
+Wrecks have their own five, in `probes/wrecks/` ([Wrecks and scrapping](#wrecks-and-scrapping-hunter-2026-10-18-built)).
 
 ## Out of scope
 

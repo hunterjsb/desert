@@ -453,7 +453,7 @@ func _fall(i: int) -> void:
 	body.angular_velocity = out.cross(Vector3.UP).normalized() * -1.2 if absf(out.y) < 0.9 else Vector3.ZERO
 	_gone(standing)
 	_falling.append([i, body, 0.0, 0.0, 0.0])
-	Sounds.play_at(body, Sounds.PLATE_FREE, 0.0, 3.0)
+	Sounds.play_at(body, Sounds.PLATE_FREE, -4.0, 3.0)
 
 
 ## A hold's slices still standing, the first worn down as far as it's cleared.
@@ -665,7 +665,7 @@ func _settle(delta: float) -> void:
 		var speed := body.linear_velocity.length()
 		# It rings as it lands.
 		if each[4] > 1.2 and speed < each[4] * 0.5:
-			Sounds.play_at(body, Sounds.PLATE_LAND, 0.0, 3.0)
+			Sounds.play_at(body, Sounds.PLATE_LAND, -6.0, 3.0)
 		each[4] = speed
 		each[3] = each[3] + delta if speed < 0.08 and body.angular_velocity.length() < 0.3 else 0.0
 		var look := body.get_child(1) as MeshInstance3D

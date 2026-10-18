@@ -352,13 +352,18 @@ static func wrecks(world: World) -> Array[Node3D]:
 		var piece := StructureKit.piece(kinds[i])
 		var lean := deg_to_rad(Eras.TILT.get(piece.era, Vector2.ZERO).y * 0.6)
 		var way := facing + deg_to_rad(WRECKS_APART * (i - (kinds.size() - 1) * 0.5))
-		for j in 12:
-			var at := me + Vector2(sin(way), -cos(way)) * (WRECKS_AHEAD + j * 5.0)
+		var fan := me + Vector2(sin(way), -cos(way)) * WRECKS_AHEAD
+		# Out from its place in the fan on a spiral, nearest first, clear of
+		# the others' ground.
+		for j in 300:
+			var at := fan + Vector2.from_angle(j * 2.39996) * 4.0 * sqrt(j)
+			if placed.any(func(o: Structure) -> bool: return o.distance_to(at.x, at.y) < o.reach + piece.reach):
+				continue
 			# Turned so its approach is the side nearest you.
 			var best: Structure = null
 			var near := INF
-			for k in 16:
-				var tried := sites.by_hand(kinds[i], at.x, at.y, TAU * k / 16.0, 0.0, lean)
+			for k in 8:
+				var tried := sites.by_hand(kinds[i], at.x, at.y, TAU * k / 8.0, 0.0, lean)
 				var d := tried.to_world(piece.approach).distance_to(me)
 				if d < near:
 					near = d
@@ -372,7 +377,7 @@ static func wrecks(world: World) -> Array[Node3D]:
 		await world.get_tree().physics_frame
 		if not is_instance_valid(world):
 			return []
-		if placed.all(func(s: Structure) -> bool: return world.salvage.wreckage_of(s) != null) and world.salvage.is_idle():
+		if placed.all(func(s: Structure) -> bool: return world.salvage.wreckage_of(s) != null or not world.tuning.salvage) 				and world.salvage.is_idle():
 			break
 	var tools: Array[Node3D] = [standing(world, &"cutter", [&"battery"], [0.7, 1.3])]
 	for each: Array in [[&"sand_scoop", -0.7], [&"sealant", -0.3], [&"sealant", -0.15], [&"med_kit", 0.15]]:

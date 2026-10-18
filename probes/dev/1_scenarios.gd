@@ -11,7 +11,9 @@ extends WeatherProbe
 ## a charged crate, a condenser, hooks and a coil lie in front of you, one
 ## piece's hook moored to a stake; a Console on a
 ## floating deck shows its finest map and every reading, the storm coming, its
-## shield smart and off; the eclipse faces Tu
+## shield smart and off; scrapping stands every wreck in a fan ahead of you,
+## dug out, with a charged heat cutter, a scoop, sealant, stakes and a med kit
+## at your feet; the eclipse faces Tu
 ## just before the sun goes behind it; the far side has no Tu. Checked against
 ## the field itself and against what the game then shows.
 
@@ -72,6 +74,9 @@ func run() -> void:
 					await _chassis_lands()
 				if scenario.get("console", false):
 					await _console_lands()
+				if scenario.get("wreck", false):
+					check(field.wind_at(at.x, at.y, t).length() < scenario.calm, "wreck: a calm spell")
+					await _wrecks_stand()
 			"front", "back":
 				check(stormy == (scenario.kind == "back"), "%s: on the right side of the edge" % what)
 				check(ahead.dot(upwind) > 0.999, "%s: facing upwind, where it comes from" % what)
@@ -275,6 +280,35 @@ func _console_lands() -> void:
 		"console: every reading on its stats, and its map at %d cells across:\n%s" % [made.map_cells(), stats])
 	check(made.pooled_readings().forecast.change < INF and (dropped[4] as Stake).driven and world.ropes.ropes.size() == 1,
 		"console: the storm on its way, the deck moored")
+	for body in dropped:
+		if is_instance_valid(body):
+			body.free()
+
+
+## Every wreck kind stands ahead of you within reach of a walk, dug out, its
+## way in turned to you, and at your feet a charged heat cutter, a scoop, two
+## sealant canisters, two stakes and a med kit.
+func _wrecks_stand() -> void:
+	await settle(true)
+	var me := Vector2(world.player_world_x(), world.player_world_z())
+	var dropped: Array[Node3D] = await Scenarios.wrecks(world)
+	var kinds := {}
+	for unit in world.shape.sites.units():
+		for site in unit.sites:
+			if site is Structure and site.source == &"hand" and site.piece.wreck != null and site.stands() \
+					and site.distance_to(me.x, me.y) < 160.0:
+				kinds[site.kind] = site
+	var all := StructureKit.kinds().filter(func(k: StringName) -> bool: return StructureKit.piece(k).wreck != null)
+	check(kinds.size() == all.size(), "wreck: every kind stands ahead of you (%d of %d: %s)" % [kinds.size(), all.size(),
+		", ".join(kinds.keys())])
+	var ids := dropped.map(func(b: Node3D) -> StringName: return b.get_meta(&"catalog", &"stake" if b is Stake else &""))
+	var cutter := dropped.filter(func(b: Node3D) -> bool: return b is Cutter)
+	check(not cutter.is_empty() and (cutter[0] as Cutter).battery() != null
+		and ids.count(&"sand_scoop") == 1 and ids.count(&"sealant") == 2 and ids.count(&"med_kit") == 1
+		and dropped.filter(func(b: Node3D) -> bool: return b is Stake).size() == 2,
+		"wreck: a charged cutter, a scoop, two sealants, two stakes and a med kit at your feet")
+	var near := dropped.all(func(b: Node3D) -> bool: return b.global_position.distance_to(world.player.global_position) < 3.0)
+	check(near, "wreck: all of it at your feet")
 	for body in dropped:
 		if is_instance_valid(body):
 			body.free()
