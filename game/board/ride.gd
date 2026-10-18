@@ -3,13 +3,15 @@ extends RefCounted
 ## You on the hoverboard. It pushes where your keys point and turns under you
 ## as fast as it can, its hover gripping sideways so a carve holds until it
 ## slides out into a skid; crouched into a hard turn it drifts instead, a
-## slide that keeps its speed. Move back brakes, sprint kicks off the sand on
-## your stamina, and standing up as the hover presses into a dip (crouching
-## as it unloads over a crest) pumps speed into it, as on a skateboard in a
-## bowl. Its tilt settles onto the sand and into a carve as a spring would,
-## so it never twitches. Slopes pull it along as they pull a slide, drag
-## holds it to its top speed, and the air's share of that drag is felt
-## against the felt wind, so shelter applies to it. Its hover rides the
+## slide that keeps its speed. Move back digs an edge into the sand, trading
+## speed for grip: into a carve it bites, alone it swings the board across
+## your way to a hockey stop, and too hard at speed it catches. Sprint kicks
+## off the sand on your stamina, and standing up as the hover presses into a
+## dip (crouching as it unloads over a crest) pumps speed into it, as on a
+## skateboard in a bowl. Its tilt settles onto the sand and into a carve as a
+## spring would, so it never twitches. Slopes pull it along as they pull a
+## slide, drag holds it to its top speed, and the air's share of that drag is
+## felt against the felt wind, so shelter applies to it. Its hover rides the
 ## ground's one function, never the sand's collision, so no seam between
 ## chunks can catch it: stiff toward the sand and soft off it, it skims a
 ## slope and floats off a crest. It hits things and ruins. Stepped at a fixed
@@ -39,8 +41,19 @@ const EASE := 0.4
 ## lying on it.
 const AIR_LIE := 0.1
 ## A line at your waist pulling you this hard, m/s², and the board's push
-## gives nothing: it tows nothing, and towed, your keys only carve.
+## gives nothing: it tows nothing, and towed, your keys only turn it.
 const HELD_BACK := 0.6
+## The edge goes in and comes out over about this long, s.
+const DIG_SECONDS := 0.2
+## Stopping, the board swings across your way this fast, rad/s, faster than
+## its hover follows: from about this speed, m/s.
+const STOP_TURN := 5.0
+const STOP_FROM := 1.0
+## Dug this deep at this speed, m/s, the edge has bitten: you feel it.
+const BITE := 0.5
+const BITE_SPEED := 5.0
+## The low edge, dug, comes this near the sand, m, and never nearer.
+const SKIM := 0.01
 
 var player: Player
 var board: Hoverboard
@@ -65,6 +78,12 @@ var pressing := 0.0
 ## Whether it's drifting, and the kicks you've made.
 var drifting := false
 var kicks := 0
+## How deep its edge is dug in, 0 to 1; the most this tick that dig times
+## the way across the board came to, m/s; and whether that caught the edge,
+## which ends the ride.
+var dig := 0.0
+var edge := 0.0
+var caught := false
 ## Times it bottomed out on its clearance, and the hardest, m/s.
 var bottomed := 0
 var hardest := 0.0
@@ -97,6 +116,8 @@ var _kick_wait := 0
 var _stroke := 0
 ## What the lines at your waist pulled you by this tick, m/s along engine x and z.
 var _towed := Vector2.ZERO
+## Whether the edge has bitten since it last came out.
+var _bitten := false
 ## In a storm as the last tick ended, so riding into one is noticed.
 var _stormy := false
 
@@ -120,9 +141,9 @@ func tow(by: Vector3) -> void:
 
 
 ## One tick: `dir` is where your keys steer, flat, forward and to the sides;
-## `brake` how hard move back is held, 0 to 1; `hop` a jump pressed; `kick`
+## `digging` how hard move back is held, 0 to 1; `hop` a jump pressed; `kick`
 ## sprint held; `crouch` crouch held.
-func step(delta: float, dir: Vector2, hop: bool, brake := 0.0, kick := false, crouch := false) -> void:
+func step(delta: float, dir: Vector2, hop: bool, digging := 0.0, kick := false, crouch := false) -> void:
 	var world := player.world
 	var t := _tuning
 	var g := world.gravity
@@ -135,9 +156,11 @@ func step(delta: float, dir: Vector2, hop: bool, brake := 0.0, kick := false, cr
 	var drag := t.board_push / (t.board_top_speed * t.board_top_speed)
 	var low_to := 1.0 if crouch else 0.0
 	var getting_low := exp(-h / Player.LOW_SECONDS)
+	var digging_in := exp(-h / DIG_SECONDS)
 	var pushed := 0.0
 	var hit := 0.0
 	pressing = 0.0
+	edge = 0.0
 	_tilt_was = Vector3(pitch, roll, bank)
 	_ahead_was = ahead
 	# A hop springs off the hover while it still holds the sand, higher from a
@@ -145,9 +168,8 @@ func step(delta: float, dir: Vector2, hop: bool, brake := 0.0, kick := false, cr
 	if hop and gap < t.board_hold_reach and not _hopping:
 		vy += t.board_hop + t.board_pop * player.low
 		_hopping = true
-	# Towed, the line carries you along and the hover's grip carves against
-	# it: the board can't push against the line or run past it, and left
-	# alone it swings round to run where the line leads, as a towed ski does.
+	# Towed, the line carries you along: the board can't push against the
+	# line or run past it, and left alone it runs where the line leads.
 	velocity += _towed
 	var pull := _towed / delta
 	var free := clampf(1.0 - pull.length() / HELD_BACK, 0.0, 1.0)
@@ -179,7 +201,8 @@ func step(delta: float, dir: Vector2, hop: bool, brake := 0.0, kick := false, cr
 		var rise := 0.0 if is_nan(_ground) else (ground - _ground) / h
 		_ground = ground
 
-		gap = y - ground - t.board_ride_height
+		# Dug, the field rides lower, bringing its low edge down to the sand.
+		gap = y - ground - t.board_ride_height + dig * t.board_dig_depth
 		# Its spring is stiff pressed down and soft lifting off, its force
 		# the same either way at ride height, so nothing jolts as it crosses it.
 		# Its pull back down only holds while the sand is near: past that it's
@@ -230,26 +253,42 @@ func step(delta: float, dir: Vector2, hop: bool, brake := 0.0, kick := false, cr
 			drifting = crouch and contact > 0.5 and speed > t.board_drift_speed and absf(slip) > DRIFT_FROM \
 				and dir != Vector2.ZERO
 		var pushing := 0.0
-		var stopping := brake
-		if dir != Vector2.ZERO:
-			if speed > 1.0 and dir.dot(velocity / speed) < -0.5:
-				stopping = 1.0
-			else:
-				var swing := (t.board_drift_turn if drifting else t.board_turn_rate) * h
-				ahead = ahead.rotated(clampf(ahead.angle_to(dir), -swing, swing))
-				pushing = clampf(ahead.dot(dir), 0.0, 1.0) * contact * (1.0 - stopping) * free
-				velocity += ahead * t.board_push * pushing * h
+		# Move back alone stops you: the board swings across your way and its
+		# edge digs in as it comes across, as in a hockey stop. Steering, it
+		# digs into the carve. Steering back against your way only brakes, so
+		# looking back at speed never throws you.
+		var wants := digging
+		var stopping := digging > 0.0 and dir == Vector2.ZERO
+		var braking := dir != Vector2.ZERO and speed > 1.0 and dir.dot(velocity / speed) < -0.5
+		if stopping:
+			var off := 0.0
+			if speed > 0.05:
+				var way := velocity / speed
+				var sense := 1.0 if way.dot(ahead) >= 0.0 else -1.0
+				off = way.angle_to(ahead * sense)
+				if speed > STOP_FROM:
+					off = (1.0 if off >= 0.0 else -1.0) * minf(PI * 0.5, absf(off) + STOP_TURN * contact * h)
+					ahead = way.rotated(off) * sense
+			wants *= sin(off) * sin(off)
+		elif braking:
+			velocity = velocity.move_toward(Vector2.ZERO, t.board_brake * contact * h)
+		elif dir != Vector2.ZERO:
+			var swing := (t.board_drift_turn if drifting else t.board_turn_rate) * h
+			ahead = ahead.rotated(clampf(ahead.angle_to(dir), -swing, swing))
+			pushing = clampf(ahead.dot(dir), 0.0, 1.0) * contact * (1.0 - dig) * free
+			velocity += ahead * t.board_push * pushing * h
 		elif lead != Vector2.ZERO:
+			# Nothing holding it sideways, it trails its own way, as a towed ski does.
+			var trail := velocity / speed if speed > 0.5 else lead
 			var swing := t.board_turn_rate * contact * h
-			ahead = ahead.rotated(clampf(ahead.angle_to(lead), -swing, swing))
-		if stopping > 0.0:
-			velocity = velocity.move_toward(Vector2.ZERO, t.board_brake * stopping * contact * h)
+			ahead = ahead.rotated(clampf(ahead.angle_to(trail), -swing, swing))
+		dig = wants + (dig - wants) * digging_in
 		pushed += pushing / n
 		# A kick off the sand, like a skateboard's: from rest it gets you
 		# going, and up a slope it keeps you going; at top speed your foot
 		# can't add anything.
 		_kick_wait = maxi(0, _kick_wait - 1)
-		if kick and _kick_wait == 0 and stopping == 0.0 and gap < KICK_REACH \
+		if kick and _kick_wait == 0 and digging == 0.0 and not stopping and not braking and gap < KICK_REACH \
 				and player.stamina >= t.board_kick_stamina:
 			player.stamina -= t.board_kick_stamina
 			_kick_wait = roundi(t.board_kick_every * STEP_HZ)
@@ -263,17 +302,32 @@ func step(delta: float, dir: Vector2, hop: bool, brake := 0.0, kick := false, cr
 			player.stamina = minf(player.stamina + t.stamina_regen * h, t.stamina_max)
 		# Its hover grips sideways, so your way follows the board round, as
 		# far as its grip; past that it skids, and a skid bleeds speed. A
-		# drift grips less and bleeds far less.
+		# drift grips less and bleeds far less. A line's pull drags that grip
+		# out from under it, and stopping you let it go, so only a dug edge
+		# holds then.
 		speed = velocity.length()
 		var turn := 0.0
+		var dug_pull := 0.0
 		if speed > 0.05 and contact > 0.0:
 			axis = ahead if velocity.dot(ahead) >= 0.0 else -ahead
 			slip = (velocity / speed).angle_to(axis)
-			var most := (t.board_drift_grip if drifting else t.board_grip) * contact * h / speed
+			var right := Vector2(-ahead.y, ahead.x)
+			var load := dig * absf(velocity.dot(right)) * contact
+			edge = maxf(edge, load)
+			caught = caught or load > t.board_dig_catch
+			var hold := (t.board_drift_grip if drifting else t.board_grip) * (1.0 - dig) * free
+			var most := (0.0 if stopping else hold) * contact * h / speed
 			turn = clampf(slip, -most, most)
 			velocity = velocity.rotated(turn)
+			# The dug edge takes out your way across it: slicing along its
+			# length it holds hard, dragged across it scrapes.
+			var held := t.board_grip * dig * contact * lerpf(t.board_dig_grip, 1.0, absf(sin(slip))) * h
+			var cut := clampf(velocity.dot(right), -held, held)
+			velocity -= right * cut
+			dug_pull = -cut / h
 			var bleed := t.board_drift_slide if drifting else t.board_drift_drag
-			velocity *= maxf(0.0, 1.0 - bleed * absf(sin(slip - turn)) * contact * h)
+			var still := velocity.angle_to(axis) if cut != 0.0 and velocity.length() > 0.05 else slip - turn
+			velocity *= maxf(0.0, 1.0 - (bleed * absf(sin(still)) + t.board_dig_drag * dig) * contact * h)
 		# The hover's drag is against the ground, so in the air only the air's
 		# is left, and that's against the wind.
 		var wind := world.weather.felt_wind(Vector3(at.x, y + 1.0, at.y), when)
@@ -291,13 +345,19 @@ func step(delta: float, dir: Vector2, hop: bool, brake := 0.0, kick := false, cr
 		# It lies along the sand and leans into the carve as its hover pulls
 		# you round, each settling as a spring would: never a snap. Flying,
 		# you turn it slowly to the sand below, so it lands along it.
-		var lean := clampf(atan2(turn / h * velocity.length(), g), -BANK, BANK)
+		var lean := clampf(atan2(turn / h * velocity.length() + dug_pull, g), -BANK, BANK)
 		var lie := maxf(contact, AIR_LIE)
 		_settle(Vector3(lerpf(pitch, atan((nose - tail) / (2.0 * _half)), lie),
 			lerpf(roll, atan(across), lie), lean), h)
 		at += velocity * h
 		_came += velocity.length() * h
+		if caught:
+			break
 
+	if not _bitten and dig > BITE and velocity.length() > BITE_SPEED:
+		_bitten = true
+		player.edge_bit.emit(velocity.length())
+	_bitten = _bitten and dig > BITE * 0.5
 	board.push = pushed
 	board.meter(world.time, world.time + delta * world.time_warp, delta)
 	if hit > BUMP:
@@ -403,9 +463,10 @@ func _floor(at: Vector2) -> float:
 
 ## Lying along the sand from its nose to its tail, the board clears both ends
 ## as far as its middle; a dip under it brings its ends nearer, a crest its
-## middle, and a lean into a carve its lower edge.
+## middle, and a lean into a carve its lower edge, which dug comes down to the
+## sand and no further.
 func _lowest(middle: float, nose: float, tail: float) -> float:
-	return maxf(middle, (nose + tail) * 0.5) + _tuning.board_clearance + _edge * absf(sin(bank))
+	return maxf(middle, (nose + tail) * 0.5) + lerpf(_tuning.board_clearance, SKIM, dig) + _edge * absf(sin(bank))
 
 
 ## The ground's one function under an engine place.
