@@ -1,11 +1,12 @@
 class_name History
 extends RefCounted
 ## The plan of the whole moon, made once a run from the seed, on the sphere:
-## the point under Tu, the eight landmarks, every path and settlement, and,
-## a cell at a time when asked, the sites they left. It runs the eras in part
-## 5's order, colonial, collapse, skimmer era, First Kingdoms, Dark Age,
-## second age, feral, sand, each reading what the ones before left, so
-## history holds together per seed. It never changes during a run.
+## the point under Tu, the eight landmarks, the ground they explain
+## (Geology), every path and settlement, and, a cell at a time when asked,
+## the sites they left. It runs the eras in part 5's order, colonial,
+## collapse, skimmer era, First Kingdoms, Dark Age, second age, feral, sand,
+## each reading what the ones before left, so history holds together per
+## seed. It never changes during a run.
 
 ## The fixed set (parts 4 and 5): id, name, footprint radius m, what shows
 ## first from the dunes, and parts as [id, name, right m, ahead m, radius m]
@@ -127,6 +128,7 @@ var run_seed: int
 var radius: float
 var cells: MoonCells
 var network: PathNetwork
+var geology: Geology
 var sub_tu: Vector3
 var anti_tu: Vector3
 ## The bearing the axis leaves the point under Tu at, rad.
@@ -140,6 +142,8 @@ var _by_id := {}
 ## Per cell: the paths reaching it, {path id: Vector2(from m, to m) along it}, and the settlements.
 var _cell_paths := {}
 var _cell_settlements := {}
+## Per cell: the live vents whose mouths reach it, by index in geology's vents.
+var _cell_vents := {}
 var _bounds := PackedFloat64Array()
 var _richness := PackedFloat64Array()
 ## Named places on the network, by landmark or part id.
@@ -160,6 +164,7 @@ func _init(seed_value: int, tuning: Tuning) -> void:
 	var spread := deg_to_rad(tuning.axis_spread_degrees)
 	axis = (PI * 0.5 if rng.randf() < 0.5 else -PI * 0.5) + rng.randf_range(-spread, spread)
 	_landmarks()
+	geology = Geology.new(run_seed, radius, landmark(&"halloran"), landmark(&"observatory"))
 	_colonial(tuning.spokes)
 	_skimmer()
 	_first_kingdoms()
@@ -237,7 +242,8 @@ func sites_in_cell(cell: int) -> Array[Dictionary]:
 
 
 ## A cell's sites come in parts, each a small piece of work: one for each
-## path that reaches it, one for each settlement, and one off the network.
+## path that reaches it, one for each settlement, one for each live vent's
+## mouth, and one off the network.
 func cell_parts(cell: int) -> Array[Array]:
 	var parts: Array[Array] = []
 	var reaching: Dictionary = _cell_paths.get(cell, {})
@@ -245,6 +251,8 @@ func cell_parts(cell: int) -> Array[Array]:
 		parts.append([&"path", path_id, reaching[path_id]])
 	for i: int in _cell_settlements.get(cell, PackedInt32Array()):
 		parts.append([&"settlement", i])
+	for i: int in _cell_vents.get(cell, PackedInt32Array()):
+		parts.append([&"vent", i])
 	parts.append([&"off"])
 	return parts
 
@@ -256,6 +264,8 @@ func sites_of(cell: int, part: Array, out: Array[Dictionary]) -> void:
 			_along(network.paths[part[1]], part[2], cell, out)
 		&"settlement":
 			_members(settlements[part[1]], cell, out)
+		&"vent":
+			_mouth(part[1], cell, out)
 		_:
 			_off_network(cell, out)
 
@@ -347,14 +357,12 @@ func _colonial(spokes: int) -> void:
 				PathNetwork.ROAD | PathNetwork.POWER, 0.5, 0.0)
 	_join(&"port_morgan", &"starcom", &"spur", [Eras.COLONIAL], PathNetwork.ROAD | PathNetwork.POWER, 0.6)
 	_ring(gates)
-	# Han: the refinery's pipelines along the rift to its vent stations, and
-	# the vent power the whole place ran on.
-	var halloran: Dictionary = landmark(&"halloran")
-	for way in [0.0, PI]:
-		var vent := network.place(Sphere.toward(halloran.p, halloran.bearing + way, rng.randf_range(1500.0, 3000.0) / radius),
-			&"vent", Eras.COLONIAL)
+	# Han: the refinery's pipelines along the rift to its vent stations, on
+	# the vents live then, and the vent power the whole place ran on.
+	for each in geology.tapped():
+		var vent := network.place(each.p, &"vent", Eras.COLONIAL)
 		_link(_at[&"halloran"], vent, &"pipeline", [Eras.COLONIAL], PathNetwork.PIPE | PathNetwork.POWER, 1.0, 0.0)
-		_settle(&"vent_station", network.places[vent].p, vent)
+		_settle(&"vent_station", each.p, vent)
 	# Colonial settlements on the skeleton: frontier towns on the plains,
 	# pump stations on the aqueducts, Frontier Ag's domes near the Rim.
 	for path: PathNetwork.Path in network.paths.duplicate():
@@ -626,14 +634,22 @@ func _register() -> void:
 				reaching[path.id] = Vector2(minf(had.x, span.x), maxf(had.y, span.y))
 			i = j
 	for each in settlements:
-		var reach: float = (each.radius + 10.0) / radius
-		var lat := Sphere.latitude(each.p)
-		var lon := Sphere.longitude(each.p)
-		var wide := minf(reach / cos(minf(absf(lat) + reach, PI * 0.5 - 1e-3)), PI)
-		for cell: int in cells.in_box(lat - reach, lat + reach, lon - wide, lon + wide):
-			var held: PackedInt32Array = _cell_settlements.get(cell, PackedInt32Array())
-			held.append(each.id)
-			_cell_settlements[cell] = held
+		_register_round(each.p, each.radius + 10.0, _cell_settlements, each.id)
+	for i in geology.vents.size():
+		if geology.vents[i].state == Geology.LIVE_VENT:
+			_register_round(geology.vents[i].p, SiteKinds.reach(&"vent_mouth") + 10.0, _cell_vents, i)
+
+
+## Puts `id` in the table of every cell within `metres` of a place.
+func _register_round(p: Vector3, metres: float, table: Dictionary, id: int) -> void:
+	var reach := metres / radius
+	var lat := Sphere.latitude(p)
+	var lon := Sphere.longitude(p)
+	var wide := minf(reach / cos(minf(absf(lat) + reach, PI * 0.5 - 1e-3)), PI)
+	for cell: int in cells.in_box(lat - reach, lat + reach, lon - wide, lon + wide):
+		var held: PackedInt32Array = table.get(cell, PackedInt32Array())
+		held.append(id)
+		table[cell] = held
 
 
 # --- Sites, a cell at a time. ---
@@ -684,6 +700,13 @@ func _members(each: Dictionary, cell: int, out: Array[Dictionary]) -> void:
 					var own := _stream(["m", each.id, k])
 					out.append(_site(entry[0], at, own.randf() * TAU, own, ["s", each.id, k], each.kind))
 			k += 1
+
+
+## A live vent's mouth, in the cell its middle is in, facing along the rift.
+func _mouth(i: int, cell: int, out: Array[Dictionary]) -> void:
+	var each: Dictionary = geology.vents[i]
+	if cells.cell_at(each.p) == cell:
+		out.append(_site(&"vent_mouth", each.p, each.bearing, _stream(["v", i]), ["v", i], &"geology"))
 
 
 func _off_network(cell: int, out: Array[Dictionary]) -> void:
