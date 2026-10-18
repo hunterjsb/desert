@@ -54,8 +54,8 @@ func _ready() -> void:
 	await _ticks(10)
 	_shoot("main_muted")
 	_press(&"ui_accept")
-	_press(&"ui_down")
-	_press(&"ui_down")
+	for i in 3:
+		_press(&"ui_down")
 	_press(&"ui_accept")
 	await _settle(main)
 	_shoot("options")
@@ -67,7 +67,11 @@ func _ready() -> void:
 	_press(&"ui_cancel")
 	_press(&"ui_cancel")
 	_press(&"ui_up")
+	_press(&"ui_up")
 	var origins := Kit.origins()
+	for kit in origins:
+		if kit.unlock != "":
+			get_node(^"/root/Profile").unlock(kit.unlock)
 	_press(&"ui_accept")
 	for k in origins.size():
 		if k > 0:
@@ -79,12 +83,13 @@ func _ready() -> void:
 	_shoot("modes")
 	_press(&"ui_cancel")
 	_press(&"ui_cancel")
-	# Locked, as an origin will be until its unlock is found.
+	# Locked, as an origin is until its deed is done.
+	var unlock := origins[1].unlock
 	origins[1].unlock = "look_locked"
 	_press(&"ui_accept")
 	await _settle(main)
 	_shoot("origin_locked")
-	origins[1].unlock = ""
+	origins[1].unlock = unlock
 	_press(&"ui_cancel")
 	main.showpiece.home = origins[2]
 	await _settle(main)

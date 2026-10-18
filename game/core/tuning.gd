@@ -49,6 +49,21 @@ static var _current: Tuning
 ## to go back to.
 @export var autosave_minutes: float = 3.0
 
+@export_group("Deeds")
+## Over the sand on a board, m: a pop off a big crest, past what pushing off
+## one flies.
+@export var deed_board_height_m: float = 8.0
+## One ride without stepping off, m: more than a scout round camp.
+@export var deed_board_m: float = 5000.0
+## Full storm one shield holds off, minutes, over however many storms.
+@export var deed_storm_minutes: float = 60.0
+## Made at once in one system, W: more than the reference camp makes at its best.
+@export var deed_power_w: float = 300.0
+## Kinds of crop grown, planters towed at once, and chassis pieces in one deck.
+@export var deed_crop_kinds: int = 3
+@export var deed_planters_towed: int = 2
+@export var deed_deck_pieces: int = 6
+
 @export_group("Terrain")
 @export var chunk_size: int = 64
 ## Chunks within this many of the player's get collision.

@@ -60,10 +60,11 @@ static func _scenario_asked() -> String:
 
 
 ## Drops the run in play into a dev scenario. From then on it's a dev
-## scenario's run: never saved, and a death in it begins a new run without
-## touching the save on disk, which is the player's own.
+## scenario's run: never saved, no deed counts in it, and a death in it begins
+## a new run without touching the save on disk, which is the player's own.
 func start_scenario(scenario: Dictionary) -> void:
 	_scenario = true
+	world().counts_deeds = false
 	run.get_node("Runs").offer = Callable()
 	Scenarios.apply(world(), scenario)
 
@@ -276,6 +277,7 @@ func _begin(next: Node) -> void:
 	Dev.clear()
 	if not _scenario:
 		next.get_node("Runs").offer = ui.show_death
+	(next.get_node("World") as World).counts_deeds = not _scenario
 	add_child(next)
 	move_child(next, 0)
 	run = next

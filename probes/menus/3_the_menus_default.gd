@@ -8,7 +8,8 @@ extends MenuProbe
 ## system menu holds Save. Save & quit from that run, somewhere out on the
 ## sand, and back on the menu Resume is there and highlighted. Confirm shows
 ## your camp aside as the save holds it, the crate by itself, and the save's
-## numbers: time played, when it was saved, its day and who you came as.
+## numbers: time played, when it was saved, its day and who you came as, and
+## how many deeds show done.
 ## Back goes back. A save from before time played was kept shows the rest;
 ## confirm carries on, putting you back where you were, on the saved run's
 ## seed and clock.
@@ -36,7 +37,7 @@ func run() -> void:
 		and main.view.devices().is_empty() and eye.is_position_in_frustum(piece.global_position)
 		and (eye.global_transform.affine_inverse() * piece.global_transform).is_equal_approx(was),
 		"the starting crate floats in view, only to look at, and the storm doesn't move it")
-	check(menu.words() == PackedStringArray(["NEW GAME", "OPTIONS", "QUIT"]) and menu.highlighted() == 0,
+	check(menu.words() == PackedStringArray(["NEW GAME", "DEEDS", "OPTIONS", "QUIT"]) and menu.highlighted() == 0,
 		"with no save, Resume is absent and New game is highlighted (%s)" % ", ".join(menu.words()))
 	check(AudioServer.is_bus_mute(AudioServer.get_bus_index(Sounds.WORLD)) and not AudioServer.is_bus_mute(0),
 		"the menu's storm makes no sound, and its words can")
@@ -59,10 +60,9 @@ func run() -> void:
 	teleport(world.spawn.x + 6.0, world.spawn.y - 9.0)
 	await physics_frames(30)
 	press(&"ui_cancel")
-	check(main.ui.top().words() == PackedStringArray(["OPTIONS", "SAVE", "SAVE & QUIT"]),
-		"the system menu holds Options, Save and Save & quit (%s)" % ", ".join(main.ui.top().words()))
-	press(&"ui_down")
-	press(&"ui_down")
+	check(main.ui.top().words() == PackedStringArray(["OPTIONS", "DEEDS", "SAVE", "SAVE & QUIT"]),
+		"the system menu holds Options, Deeds, Save and Save & quit (%s)" % ", ".join(main.ui.top().words()))
+	press(&"ui_up")
 	var stood := Vector2(world.player_world_x(), world.player_world_z())
 	var clock := world.time
 	var played_on := world.run_seed
@@ -71,7 +71,7 @@ func run() -> void:
 	menu = main.ui.top()
 	check(saves().has_run() and not main.in_run() and menu != null and menu.root,
 		"Save & quit saves the run and goes back to the main menu")
-	check(menu.words() == PackedStringArray(["RESUME", "NEW GAME", "OPTIONS", "QUIT"]) and menu.highlighted() == 0,
+	check(menu.words() == PackedStringArray(["RESUME", "NEW GAME", "DEEDS", "OPTIONS", "QUIT"]) and menu.highlighted() == 0,
 		"with a save, Resume is there and highlighted (%s)" % ", ".join(menu.words()))
 
 	press(&"ui_accept")
@@ -83,9 +83,10 @@ func run() -> void:
 		and camp[0].find_children("*", "GeometryInstance3D", true, false).size() > 20
 		and camp[0].find_children("*", "CollisionObject3D", true, false).is_empty(),
 		"Resume shows your camp aside, the crate by itself and only to look at")
-	check(view.aside().size() == 4 and numbers.played > 0.0 and view.aside()[2][1] == str(numbers.day)
+	check(view.aside().size() == 5 and numbers.played > 0.0 and view.aside()[2][1] == str(numbers.day)
 		and view.aside()[3][1] == Kit.standard().label and view.aside()[1][1] == UIRoot.when(saves().saved_at(),
-			saves().saved_at()), "with the save's numbers: played, saved today, its day and who you came as")
+			saves().saved_at()) and view.aside()[4][1] == "0 of %d" % Deeds.TABLE.size(),
+		"with the save's numbers: played, saved today, its day and who you came as, and the deeds done")
 	press(&"ui_cancel")
 	check(main.ui.top() == menu and menu.highlighted() == 0, "back goes back")
 	# As a save from before time played was kept.
@@ -93,7 +94,7 @@ func run() -> void:
 	older.erase("played")
 	SaveFile.write(saves().path(), saves().KIND, saves().VERSION, older)
 	press(&"ui_accept")
-	check(main.ui.top().aside().size() == 3 and main.ui.top().shows == Showpiece.CAMP,
+	check(main.ui.top().aside().size() == 4 and main.ui.top().shows == Showpiece.CAMP,
 		"a save without time played shows the rest (%s)" % main.ui.top().aside())
 
 	var back := {}
