@@ -43,7 +43,17 @@ out, never written into the text (Hunter, 2026-10-16), even before players can r
 when a slot is full... like 'tray first'... maybe we could just make a noise"): when take or
 use can't do what you're aiming at (a slot that's full, a tray in the way, a piece that
 isn't bare, something too heavy), the readout says why in a few words and a soft "no"
-sounds, never silence.
+sounds, never silence. **Built** (2026-10-17): every refusal goes through one place in the
+hands, and the "no" is a dull knock cut from a Sand Game clank. Holding a part at a device
+whose sockets of its kind are all full, take keeps it in your hands and says "no free
+battery slot" (or top mount, ring, port and so on), where before it was dropped; at a
+device with no socket of its kind, take still puts it down. A tray held to a device on a
+deck says it takes none there. A piece held to a deck whose free rings are all blocked
+says "no room at that ring". Having hold of a crate with its tray in beside a deck, take
+lets it go saying "take its tray off first". Use at a device with nothing to work says
+"nothing to use", a stake used off the sand says why as before, and something you can't
+shift says "it won't shift" as it slips from your hands. Take or use at nothing stays
+silent.
 - **Take** picks up, takes out, puts in and puts down. One action takes and lets go
   (Hunter, 2026-10-15, at the Stage 5 gate). Taking something too heavy to carry takes
   hold of it: it follows where you face and turns as you turn, as far as your strength
@@ -154,19 +164,25 @@ floater out of pieces:
   do, so a deck is one rigid body, never pieces on joints. A ring between two pieces
   closes and takes nothing. A ring isn't offered where something stands beyond it (a
   piece joined over a crate would throw it), where a hook on a neighbouring edge would
-  stand in the new place, or for a wrecked piece. Joined on a slope, a deck lifts clear
+  stand in the new place, or for a wrecked piece. A piece with something standing on it
+  is too heavy to carry, so it joins from your hold: having hold of it, the free ring of a
+  deck whose place beside it is within 1.2 m of the piece is offered, with its ghost, if
+  the piece and all on it would sit clear there, and take joins it, turned the quarter
+  turn nearest how it lies. Only a lone piece joins: two whole decks don't merge yet.
+  Joined on a slope, a deck lifts clear
   of the sand as a crate does onto a tray. Your hands reach a deck by its nearest piece,
   so a long deck's far end is as easy to work as its first. A deck wears as one device,
   as worn as its most worn piece when they joined.
-- **Taking a deck apart.** Take aimed at an outer piece, one the rest of the deck still
-  holds together without, takes it off with all that's fitted to it, its tray and hooks
-  and a line tied there, out across a ring it leaves and into your hands. A piece with
-  something standing on it comes off with that too, into your hold, since it's too heavy
-  to carry. Aimed at a piece the deck can't lose without splitting, you take hold of the
-  whole deck to drag it, as with a crate's frame. Looking at a piece, the readout says
-  which take will do: "this piece comes off" or "drags the whole deck". The first piece
-  joined comes off like any other: the piece beside it takes over the deck's body, so
-  nothing else on the deck moves.
+- **Taking a deck apart** (2026-10-17, after Hunter's playtest). Take aimed at a deck
+  takes hold of the whole of it, to drag it, as with a crate's frame, unless the piece
+  you aim at is bare (no tray, no hook, nothing standing on it) and the rest of the deck
+  holds together without it: then it comes off, out across a ring it leaves and into
+  your hands. Strip a piece first, taking out its tray and hooks and lifting off what
+  stands on it, as a crate's tray comes off before it stands on a deck. Looking at a
+  piece, the readout says which take will do: "this piece comes off" or "drags the whole
+  deck", with "bare, this piece comes off" after it at an outer piece that isn't. The
+  first piece joined comes off like any other: the piece beside it takes over the deck's
+  body, so nothing else on the deck moves.
 - **Floating.** A deck has no battery, so it floats on what stands on it. It floats once
   its trays together lift its weight, wherever they're fitted, and hangs by where they
   are (Trays lift, below): a deck three pieces by three on four trays at its corners,
@@ -214,7 +230,10 @@ floater out of pieces:
   its own hover.
 - **The "chassis" scenario** lays four bare pieces in a row in front of you with a tray
   before each, a crate frame with two charged batteries and a condenser with a battery
-  and an empty canister, clear and calm, to build a deck from.
+  and an empty canister, clear and calm, to build a deck from. The "afk" scenario's
+  reference camp stands on a deck two by two (Power); it floats about 1.5° down toward its
+  two crates, and in a 20 m/s storm with gusts and its bubble down it stays within 2.2°
+  of level, moored.
 
 ## The Console (proposed, not built)
 
@@ -607,14 +626,23 @@ a water socket of its own on top, so a canister or another hose goes on there to
     slot by hand, a light shield goes onto the other piece, and the deck floats on the
     crate's batteries while the shield runs on them, one pool. Take has the crate off into
     your hold, clear of the deck, even with a tray an older save left in it.
-19. **Any outer piece comes off** (replacing "last joined, first off"). Three pieces in a
-    row: aimed at the middle one, the readout says take drags the whole deck, and it does,
-    nothing coming off. Aimed at the first piece joined, the readout says it comes off,
-    and take has it off into your hands with its hook, never through the deck; aimed at
-    the last, it comes off with the crate standing on it, into your hold.
+19. **Only a bare piece comes off** (replacing "any outer piece comes off", 2026-10-17).
+    Three pieces in a row, a hook on the first and a crate on the last: aimed at the
+    middle, at the first and at the last, the readout says take drags the whole deck, and
+    take has hold of all of it, nothing coming off. Its hook out, the first is bare: the
+    readout says it comes off, and take has it off into your hands, never through the
+    deck.
 20. **A load off centre leans.** A crate on its one tray with a panel on each top mount
     floats level; one with a big battery in its back slot leans toward it and floats on,
     still, nowhere near tipping.
+21. **A loaded piece joins from your hold.** A piece with a crate standing on it lies just
+    beyond a deck's far ring. Taken hold of, that ring is offered with its ghost, and take
+    joins it there, the crate standing on the deck now, in its pool.
+22. **A refusal says why.** A battery held to a crate whose slots are full stays in your
+    hands; a crate with its tray in, taken hold of beside a deck, is let go with word to
+    take its tray off first; a piece held to a deck whose one free ring is blocked stays
+    in your hands; use at a bare crate frame has nothing to work. Each time the readout
+    says why and the knock sounds.
 
 ## Out of scope
 

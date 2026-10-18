@@ -215,11 +215,16 @@ that ignored the weather.
   never fell below the mark where the suit feeds you, and every slot stayed sown. A
   planter drops what it stored first, so you ate carrots while the fungus piled up.
   Water no longer ends it (2026-10-17): a condenser beyond the shield, on a battery and a
-  panel of its own, waters both planters on hoses. The driest tank had 3.62 L left after
+  panel of its own, waters both planters on hoses. The driest tank had 3.66 L left after
   three days, where with nothing to fill them it had 0.65 L and the two ran dry at 3.65
   and 4.96 days; left on for six and a half days, long after you'd died of thirst, the
   tanks never fell below 3.09 L. The condenser made about 1.9 L a day, about what the two
-  drink, and since water goes to the emptier tank first, the two stay level.
+  drink, and since water goes to the emptier tank first, the two stay level. Since the
+  camp moved onto its deck (Power, 2026-10-17) the condenser stands on it, in the deck's
+  pool, and the planters float upwind of it on their own trays and batteries, each moored
+  to a stake upwind: a hose's weight draws a floating planter in toward the deck, and
+  tied to the deck instead, the two drifted in 1.2 m in half a day and bumped it. The
+  three days come out the same.
 
 ## Full version
 

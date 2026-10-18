@@ -46,9 +46,11 @@ beacon pointing at the find in a ruin's hall. Its static comes in ahead of a sto
 stays in the bubble. It's a find, and the "radio" scenario sets one in front of you
 with a shield and a storm 300 m off. Radio probe 3 is Bubble shield probe 1, so it isn't
 written twice. Stage 12's reference camp was built on
-2026-10-17: the "afk" dev scenario parks it round you, running, a base shield over two
-harvester planters, a crate's bank and panels, and a turbine held out in the wind on a
-strong cable. The AFK promise is proved three ways (Power 4, Survival 1 and Farming 6):
+2026-10-17: the "afk" dev scenario parks it round you, running. The same day it moved onto
+a floating deck two pieces by two, a tray under every piece: the base shield, a condenser
+and two crates of batteries and panels stand on it as one pool, it's moored to a stake, two
+harvester planters float beside it on hoses from the condenser, each moored to its own
+stake, and a turbine is held out in the wind on a strong cable from a crate. The AFK promise is proved three ways (Power 4, Survival 1 and Farming 6):
 its power holds through two days and nights at 45° north, and it keeps you alive and
 fed through three days at the equator, mostly storm. What ends it is water, which
 nothing brings you yet, and the turbine, which the storm wears out on the third day
@@ -291,8 +293,10 @@ quit and a resume along the way.
 realistic"). Likely one crate carrying the shield, the board, batteries and one panel,
 its hooks maxed, each towing something: a condenser, a farm, another crate. The chassis
 should replace that train of towed things with one deck, and with it most of the physics
-risk and clunkiness of many bodies on many lines. Once it's in, the reference camp is
-rebuilt on a deck: "add a 2x2 pimped out chassis to afk scenario" (Hunter, 2026-10-17).
+risk and clunkiness of many bodies on many lines. The reference camp is now rebuilt on a
+deck: "add a 2x2 pimped out chassis to afk scenario" (Hunter, 2026-10-17). It's built (the
+numbers are in Power, Survival and Farming, "As built"), with spare stakes, a coil and a hose
+in your pack for moving the planters about.
 
 ## Waiting for the full version
 

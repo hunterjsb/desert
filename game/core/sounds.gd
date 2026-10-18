@@ -12,11 +12,12 @@ const WEATHER := &"Weather"
 ## The menus, heard over the menu's silent desert too.
 const UI := &"UI"
 
-# Hands: a soft seat for fitting, its match for taking out, a line tied on,
-# a line drawn hand over hand.
+# Hands: a soft seat for fitting, its match for taking out, a dull knock
+# when take or use can't, a line tied on, a line drawn hand over hand.
 const SEAT: Array[AudioStream] = [preload("res://assets/audio/seat_a.ogg"),
 	preload("res://assets/audio/seat_b.ogg")]
 const UNSEAT := preload("res://assets/audio/unseat.ogg")
+const REFUSE := preload("res://assets/audio/refuse.ogg")
 const TIE := preload("res://assets/audio/tie.ogg")
 const REEL := preload("res://assets/audio/reel.ogg")
 const TUG := preload("res://assets/audio/hum.ogg")

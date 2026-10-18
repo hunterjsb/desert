@@ -75,8 +75,7 @@ func use(by: Player, at: Vector3) -> bool:
 	var off := hands.meets(AIMED)
 	if off == INF and by.waist.carries_line(self):
 		return false
-	hands.say(NOT_SAND if off <= Tuning.current().reach else OUT_OF_REACH)
-	return true
+	return hands.refuse(NOT_SAND if off <= Tuning.current().reach else OUT_OF_REACH)
 
 
 func stats() -> Dictionary:

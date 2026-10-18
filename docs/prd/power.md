@@ -169,18 +169,33 @@ the felt-weather rule.
   your grip. A loose plug on either kind is dragged along by what drifts off with
   the other end, never slung, however long it was caught.
 - **The reference camp** (Stage 12, 2026-10-17) is what probe 4 leaves alone. The "afk"
-  dev scenario parks it round you, running: the base shield in the middle on a big
-  battery, two planters with harvesters beside it, and behind you, downwind, the
-  floater: a crate resting on its tray, moored to a stake, with two big batteries, the
-  light panel on one top mount, cabled to the shield, and a found panel on the other. A
-  strong cable from the crate holds the turbine out in the wind beyond the bubble. In
-  all, a 1,000 Wh bank and 90 W of panels. Since 2026-10-17 a condenser beyond the
-  shield waters the planters on hoses (Survival), on a battery and a panel of its own,
-  out of the bank. At 45° north, through two days and nights of
-  the probes' seed, 24 minutes of them full storm, nothing in it went dark and its bank
-  never fell below 98%: the turbine carries most of the shield's 200 W in a storm and
-  all of its sip at night. The kit's power under a found shield (the light panel and a
-  battery half charged) went dark in the same weather at 1.34 days.
+  dev scenario parks it round you, running, on a deck two pieces by two (Hunter,
+  2026-10-17: "add a 2x2 pimped out chassis to afk scenario"), a tray under every piece and
+  a hook on every free ring, floating about a metre up. Standing on it, their own trays
+  off: the base shield on a big battery and a condenser on a battery and a panel, on the
+  upwind pieces; the crate, with two big batteries, the light panel and a found panel;
+  and a second crate with two more big batteries, a found panel and a lamp. All of it is
+  one pool, and a strong cable from the crate's port holds the turbine out in the wind
+  beyond the bubble, its battery in the pool too: a 1,700 Wh bank and 210 W of panels.
+  The deck is moored to a stake upwind of it. Two harvester planters float upwind of it
+  on their own trays and batteries, on hoses from the condenser (Survival), each moored
+  to a stake of its own. Floating, the deck draws about 370 W, its 185 kg at 2 W a
+  kilogram, more than all the rest together. At 45° north, through two days and nights
+  of the probes' seed, 24 minutes of them full storm, nothing in it went dark and its bank
+  fell to 84% (it never fell below 98% when the camp sat on the sand, its trays resting,
+  before the deck). At the equator the deck floated for 7.4 days, nearly six of them
+  storm, until the bank was down to its reserve and the deck gave way to the shield,
+  settling on the sand; the planters' own batteries ran out about the sixth day, and
+  they settled too, still growing. The kit's power under a found shield (the light panel
+  and a battery half charged) went dark in the same weather at 1.34 days.
+- **Holding a turbine out from a deck is tight.** A strong cable is 6 m and the base
+  shield's bubble 7 m, so a turbine on a cable from a deck under it stands only just
+  outside. On the 2x2 deck the shield stands on the piece across from the crate, as far
+  from its port as the deck allows, and the turbine stands 7.6 to 7.9 m from the shield.
+  A wind that swings round toward the shield's side can bring it inside, where it makes
+  nothing. A floating deck on a strong cable to a turbine on the sand also creeps toward
+  it, drawn by the cable's weight, about 0.3 m a day until its mooring is taut, so the
+  scenario moors it nearly taut.
 - **A turbine has to be held out there.** Nothing plants one yet (the probes freeze
   theirs), and standing loose, a storm slides it over the sand, making nothing while it
   moves: in a first try at the camp it slid 33 m in the first storm, until its cable
@@ -190,11 +205,12 @@ the felt-weather rule.
   nothing mends it: on the probes' seed it goes on the third day (2.45 days in at the
   equator, 2.67 at 45°), having made about 90 Wh for the camp, less than a battery
   holds. That's why probe 4 runs two days. A wrecked device leaves its pool, and its
-  battery's charge with it. After that the bank carries the base shield alone, about
-  67 Wh a day of storm: at the equator the camp's bank was down to 63% after eight
-  days, nearly six of them storm.
+  battery's charge with it. After that the bank carries the camp alone: the camp on the
+  sand, before the deck, was down to 63% after eight days at the equator, nearly six of
+  them storm, where the floating deck reached its reserve at 7.4 days (above).
 - **Panels hardly count against a storm.** Over probe 4's two days the camp's panels
-  made about 5 Wh, and it passes with them broken. A day of storm costs the base shield
+  made about 5 Wh, and it passes with them broken (the camp on the sand, before the
+  deck). A day of storm costs the base shield
   about 67 Wh, which 90 W of panels earn back in about eleven clear days at the equator.
 - **The turbine's blades turn with what it makes** (2026-10-17). A real rotor turns with
   the wind and makes power with the wind cubed, so its speed goes with the cube root of
