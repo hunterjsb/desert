@@ -1403,7 +1403,7 @@ It amends the earlier text and mostly agrees with it: terminals were already a c
 carvings, ruin layering, terminals, radio and the sky"), and the gods already "speak only through
 terminals." What it changes, and the clashes it leaves, are quoted old and new in [section
 19](#19-open-after-session-4-part-5). The game side is a terminal output system ([Devices &
-mods](prd/devices-and-mods.md#the-terminal-output-system-proposed-session-4-part-5-not-built)).
+mods](prd/devices-and-mods.md#the-terminal-output-system-proposed-session-4-part-5-first-piece-built)).
 
 ### The pantheon (Agreed, session 4, part 5)
 

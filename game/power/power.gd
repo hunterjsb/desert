@@ -208,8 +208,6 @@ func _pools() -> Array:
 	var root := {}
 	for device in devices:
 		root[device] = device
-	var find := func(d: Device, f: Callable) -> Device:
-		return d if root[d] == d else f.call(root[d], f)
 	var joins: Array = []
 	for cable in cables:
 		joins.append(cable.joined())
@@ -218,11 +216,18 @@ func _pools() -> Array:
 			joins.append([device, device.host()])
 	for ends: Array in joins:
 		if ends.size() == 2 and root.has(ends[0]) and root.has(ends[1]):
-			root[find.call(ends[0], find)] = find.call(ends[1], find)
+			root[_root_of(root, ends[0])] = _root_of(root, ends[1])
 	var pools := {}
 	for device in devices:
-		var top: Device = find.call(device, find)
+		var top := _root_of(root, device)
 		if not pools.has(top):
 			pools[top] = []
 		pools[top].append(device)
 	return pools.values()
+
+
+## Where a device's chain of joins ends: its pool's first.
+static func _root_of(root: Dictionary, device: Device) -> Device:
+	while root[device] != device:
+		device = root[device]
+	return device

@@ -21,6 +21,9 @@ const KINDS := {
 	&"rack": Color(0.95, 0.35, 0.3),
 	&"deck": Color(0.55, 0.45, 0.95),
 	&"sail": Color(0.92, 0.86, 0.7),
+	&"computer_mod": Color(0.25, 0.9, 0.9),
+	&"computer_top": Color(0.65, 1.0, 0.95),
+	&"screen": Color(0.9, 0.95, 0.95),
 }
 
 ## Parts: the socket kind they fit, weight, size (z is how far they stand out
@@ -130,6 +133,21 @@ const PARTS := {
 	# Nothing takes a compass: it's read, in your hand or in the inventory.
 	&"compass": {"kind": &"compass", "label": "Compass", "mass": 0.2, "size": Vector3(0.12, 0.12, 0.03),
 		"color": Color(0.26, 0.28, 0.29), "stats": {}},
+	# A Console's screen and its computer mods: each instrument adds its own
+	# readings to the screen (Console), and draws a little while it runs. The
+	# radar sweeps the field this far out, m.
+	&"screen": {"kind": &"screen", "label": "Screen", "mass": 3.0, "size": Vector3(0.62, 1.12, 0.03),
+		"color": Color(0.04, 0.05, 0.05), "stats": {"screen": 1, "draw_w": 3.0}},
+	&"anemometer": {"kind": &"computer_mod", "label": "Anemometer", "mass": 0.7, "size": Vector3(0.16, 0.14, 0.16),
+		"color": Color(0.26, 0.28, 0.29), "stats": {"anemometer": 1, "draw_w": 0.5}},
+	&"barometer": {"kind": &"computer_mod", "label": "Barometer", "mass": 0.6, "size": Vector3(0.16, 0.16, 0.06),
+		"color": Color(0.8, 0.76, 0.66), "stats": {"barometer": 1, "draw_w": 0.2}},
+	&"hygrometer": {"kind": &"computer_mod", "label": "Hygrometer", "mass": 0.5, "size": Vector3(0.14, 0.16, 0.08),
+		"color": Color(0.18, 0.4, 0.43), "stats": {"hygrometer": 1, "draw_w": 0.3}},
+	&"particle_sensor": {"kind": &"computer_mod", "label": "Particle sensor", "mass": 0.7, "size": Vector3(0.16, 0.12, 0.14),
+		"color": Color(0.86, 0.62, 0.12), "stats": {"particle_sensor": 1, "draw_w": 1.5}},
+	&"radar": {"kind": &"computer_top", "label": "Weather radar", "mass": 2.5, "size": Vector3(0.32, 0.32, 0.26),
+		"color": Color(0.8, 0.76, 0.66), "stats": {"radar": 1, "radar_m": 6000.0, "draw_w": 6.0}},
 }
 
 ## Parts by the names older saves knew them by.
@@ -279,6 +297,36 @@ const DEVICES := {
 			[&"ring", Vector3(0.0, 0.0, -0.5), Vector3.FORWARD],
 			[&"bottom", Vector3(0.0, -0.06, 0.0), Vector3.DOWN],
 			[&"deck", Vector3(0.0, 0.06, 0.0), Vector3.UP],
+		]},
+	# The camp's computer, a rack standing tall and narrow so its whole front
+	# is a big screen, as tall as the radar page wants and its middle at your
+	# eyes once it floats. Its batteries sit low at its back, its frame is
+	# heaviest at its foot, and its tray mount sits back under that weight, so
+	# one tray holds it upright; its rings are down beside the batteries, near
+	# that weight, so a line pulls it along rather than over. Its back
+	# takes the batteries, two rings and the port; each side three
+	# computer-mod ports down it; its top a regular mount, where a radio gives
+	# it a voice, and a computer-mod top for a radar. It floats on a tray and
+	# stands on a deck mount. The list keeps its order, so older saves keep
+	# their sockets.
+	&"console": {"label": "Console", "size": Vector3(0.7, 1.3, 0.6), "mass": 10.0, "middle": Vector3(0.0, -0.45, 0.0),
+		"console": true, "deck": true, "stats": {"draw_w": 4.0},
+		"sockets": [
+			[&"battery", Vector3(-0.13, -0.47, 0.3), Vector3.BACK],
+			[&"battery", Vector3(0.13, -0.47, 0.3), Vector3.BACK],
+			[&"ring", Vector3(-0.3, -0.4, 0.3), Vector3.BACK],
+			[&"ring", Vector3(0.3, -0.4, 0.3), Vector3.BACK],
+			[&"bottom", Vector3(0.0, -0.65, 0.12), Vector3.DOWN],
+			[&"top", Vector3(0.0, 0.65, 0.14), Vector3.UP],
+			[&"computer_top", Vector3(0.0, 0.65, -0.14), Vector3.UP],
+			[&"screen", Vector3(0.0, 0.01, -0.3), Vector3.FORWARD],
+			[&"port", Vector3(0.0, -0.24, 0.3), Vector3.BACK],
+			[&"computer_mod", Vector3(0.35, 0.36, 0.0), Vector3.RIGHT],
+			[&"computer_mod", Vector3(0.35, 0.12, 0.0), Vector3.RIGHT],
+			[&"computer_mod", Vector3(0.35, -0.12, 0.0), Vector3.RIGHT],
+			[&"computer_mod", Vector3(-0.35, 0.36, 0.0), Vector3.LEFT],
+			[&"computer_mod", Vector3(-0.35, 0.12, 0.0), Vector3.LEFT],
+			[&"computer_mod", Vector3(-0.35, -0.12, 0.0), Vector3.LEFT],
 		]},
 }
 
@@ -448,10 +496,12 @@ static func device(id: StringName) -> Device:
 		else (Hoverboard.new() if spec.get("board", false) \
 		else (Radio.new() if spec.get("radio", false) \
 		else (Mast.new() if spec.get("rig", false) \
-		else (Chassis.new() if spec.get("chassis", false) else Device.new()))))))
+		else (Chassis.new() if spec.get("chassis", false) \
+		else (Console.new() if spec.get("console", false) else Device.new())))))))
 	made.set_meta(&"catalog", id)
 	made.label = spec.label
 	made.frame_mass = spec.mass
+	made.frame_middle = spec.get("middle", Vector3.ZERO)
 	made.frame_stats = spec.get("stats", {}).duplicate()
 	made.kind = spec.get("fits", &"")
 	made.stands_on_deck = spec.get("deck", false)

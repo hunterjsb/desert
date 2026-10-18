@@ -5,7 +5,8 @@ extends Node
 ## its place, so nothing carries over. In Normal a death offers the last save
 ## back first. It sits beside the world, never in it. Every run starts with
 ## its kit (Kit, data): some carried by the suit, the rest on the sand beside
-## you.
+## you, at its origin's start on the moon. A new run after a death keeps the
+## origin you died as.
 
 signal started(world: World)
 
@@ -68,6 +69,7 @@ func _over() -> void:
 	old.queue_free()
 	var next: World = WORLD.instantiate()
 	next.run_seed = new_seed()
+	next.kit = old.kit
 	next.name = "World"
 	parent.add_child(next)
 	parent.move_child(next, at)
@@ -115,8 +117,10 @@ func _begin(at: World) -> void:
 
 ## The kit's things beside where you begin, each at its place, put together
 ## as it says, every battery as full as it says, a floater floating, and its
-## lines laid: all it made.
-static func kit(world: World, from: Kit = Kit.standard()) -> Array[Node]:
+## lines laid: all it made. The world's own kit unless another is given.
+static func kit(world: World, from: Kit = null) -> Array[Node]:
+	if from == null:
+		from = Kit.of(world)
 	var made: Array[Node] = []
 	var named := {}
 	# What an assembly seats from beside you is made first, so it's there to seat.
@@ -132,6 +136,10 @@ static func kit(world: World, from: Kit = Kit.standard()) -> Array[Node]:
 			var line := Line.make(world, from.rope_m)
 			line.coil.global_transform = lying
 			made.append_array([line, line.coil])
+		elif id in [&"cable", &"strong_cable"]:
+			var cable := Catalog.cable(world, _beside(world, where), id == &"strong_cable")
+			made.append(cable)
+			made.append_array(cable.plugs)
 		elif id == &"stake":
 			var stake := Catalog.stake()
 			world.content.add_child(stake)

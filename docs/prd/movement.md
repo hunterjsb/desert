@@ -263,8 +263,7 @@ your own camp's parts rather than found whole:
 **As built (2026-10-18, `game/devices/runners.gd`, `game/sail/mast.gd`, `probes/sail/`).**
 - **The parts.** Three finds, each a `give` id: skates (`skates`) and a board plate
   (`board_plate`), which are runners, and a mast (`mast`) with a sail (`sail`) to fit it.
-  Skates lie on the surface and deep, rarely; the plate, the sail and the mast lie deep, and a
-  deep mast is found with its sail on it.
+  All lie deep, the mast rarely, and a mast is found with its sail on it.
 - **Runners** fit a bottom mount in place of a tray: under a crate, or under each piece of a
   deck. A device carries trays or runners, never both, and a refusal says "runners and trays
   don't mix"; a device standing on a deck takes none ("on a deck it takes no runners"), and one

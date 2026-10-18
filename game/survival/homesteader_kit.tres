@@ -1,0 +1,53 @@
+[gd_resource type="Resource" script_class="Kit" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://game/survival/kit.gd" id="1_kit"]
+
+[resource]
+script = ExtResource("1_kit")
+id = &"homesteader"
+label = "Homesteader"
+about = "stays put"
+start = &"wayshrine"
+balanced = true
+carried = Dictionary[StringName, int]({
+&"canister": 1,
+&"ration": 1,
+&"stake": 3
+})
+beside = Dictionary[StringName, Vector2]({
+&"solid_shield": Vector2(0.0, 2.0),
+&"farm": Vector2(-2.0, 2.2),
+&"still": Vector2(2.0, -1.0),
+&"turbine": Vector2(2.5, -6.5),
+&"cable": Vector2(0.8, 1.0),
+&"strong_cable": Vector2(-0.8, 1.0)
+})
+assembled = Dictionary[StringName, Dictionary]({
+&"farm": {
+"frame": &"planter",
+"sockets": {
+0: &"root_tuber",
+1: &"root_tuber",
+2: &"saltbush",
+3: &"vat_fungus",
+4: &"battery",
+9: &"harvester",
+10: &"canister"
+}
+},
+&"solid_shield": {
+"frame": &"shield",
+"sockets": {
+0: &"big_battery"
+}
+},
+&"still": {
+"frame": &"condenser",
+"sockets": {
+0: &"canister",
+1: &"battery",
+2: &"solar_panel"
+}
+}
+})
+charge = 0.5

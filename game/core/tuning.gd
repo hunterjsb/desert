@@ -21,6 +21,21 @@ static var _current: Tuning
 ## world shifts back, keeping 32-bit positions precise.
 @export var origin_shift_chunks: int = 4
 
+@export_group("Spawns")
+## Every run starts this near the equator, degrees: inside it the clear's
+## widest swing stays within the suit's limits.
+@export var start_latitude_degrees: float = 12.0
+## A Surveyor starts at least the first this far from any artery or spoke,
+## m, and walking in toward Tu crosses one within the second.
+@export var start_artery_m := Vector2(1000.0, 3000.0)
+## No path and no settlement comes within this of a Surveyor's start, m:
+## past the ground you can see.
+@export var start_deep_m: float = 600.0
+## A Salvager starts within this of a skimmer wreck field's hulls, m.
+@export var start_wrecks_m: float = 300.0
+## A Homesteader starts on a road within this of a wayshrine, m.
+@export var start_wayshrine_m: float = 100.0
+
 @export_group("Saves")
 ## A Normal run saves itself after this many minutes of play since its last
 ## save. The first storm comes in three to eight, so dying in it leaves a save
@@ -603,6 +618,19 @@ static var _current: Tuning
 @export var drop_reach: float = 6.0
 @export var drop_until_kcal: float = 2000.0
 
+@export_group("Feral")
+## Wild plants on their habitats (Feral); each habitat's own numbers are its
+## row in the table there.
+@export var feral: bool = true
+## Wild stock gives this share of a clean plant's harvest, never none of a part.
+@export var feral_wild_yield: float = 0.5
+## Wild plants fold before a storm within this far of you, m; farther lines
+## hold their pose until you come nearer. Growth ticks only on ground you
+## can stand on, where you can take from them.
+@export var feral_fold_m: float = 400.0
+## Main-thread time a frame may take laying wild plants out with the ground, ms.
+@export var feral_budget_ms: float = 0.3
+
 @export_group("Salvage")
 ## Ruins and finds. Probes of other systems switch them off, as ground probes
 ## still the air, so a buried crate never stands in what they measure.
@@ -626,12 +654,39 @@ static var _current: Tuning
 ## this hard as much as a storm's heart, m/s.
 @export var exposure_calm_wind: float = 16.0
 @export var exposure_gale_wind: float = 30.0
-## At most one ruin in each square this many chunks a side.
-@export var ruin_cell_chunks: int = 5
-## A ruin stands only where the dunes over its ground rise no more than
-## this, m, and are nowhere steeper than this, degrees.
-@export var ruin_max_rise: float = 1.5
-@export var ruin_max_degrees: float = 20.0
+
+@export_group("History")
+## The moon's cells history is made and laid in, m across.
+@export var history_cell_m: float = 500.0
+## A cell or landmark is laid on the ground once any of it comes this near
+## you, and lifted once all of it is this far off on the ground, m. Loaded
+## ground reaches about 900 m.
+@export var history_lay_m: float = 1300.0
+@export var history_lift_m: float = 1800.0
+## The regions, by the angle from the point under Tu, degrees: Han inside the
+## first, Mon to the second, the Rim to the third, then the far side.
+@export var region_han_degrees: float = 20.0
+@export var region_mon_degrees: float = 75.0
+@export var region_rim_degrees: float = 105.0
+## How built up each region was, 0 to 1: "rich at the Rim, thinner in Mon,
+## sparse and grim in Han."
+@export var richness_han: float = 0.25
+@export var richness_mon: float = 0.5
+@export var richness_rim: float = 1.0
+@export var richness_far: float = 0.12
+## The line the great sites lie on leaves the point under Tu east or west,
+## within this many degrees, so its Rim end stays at low latitude.
+@export var axis_spread_degrees: float = 25.0
+## Spokes from Port Morgan out to the ring, besides the artery.
+@export var spokes: int = 5
+## A structure's exposure: the weather at it over this many hours before its
+## ground is built, read every this many minutes of world time.
+@export var site_exposure_hours: float = 12.0
+@export var site_exposure_step_minutes: float = 30.0
+## Sand a storm's heart strips off a structure in a tick, and sand the wind
+## lays back on it every tick, m.
+@export var site_strip_m: float = 0.5
+@export var site_return_m: float = 0.2
 
 @export_group("Radio")
 ## What a radio draws while it's on, W.
@@ -644,6 +699,50 @@ static var _current: Tuning
 ## one running in.
 @export var radio_reach_m: float = 3000.0
 @export var beacon_share: float = 0.3
+
+@export_group("Console")
+## How often a Console's instruments read the field, s of world time, and how
+## often its screen looks for a change to draw, s. It draws only while someone
+## stands this near, m: farther off it can't be read.
+@export var console_read_every: float = 1.0
+@export var console_screen_every: float = 0.25
+@export var console_screen_seen_m: float = 15.0
+## The air's pressure where the storm field sits at its threshold, hPa (the
+## moon's thin air, the-moon.md), and how far it falls for each unit the field
+## rises, hPa: so it falls as a storm comes. The barometer reads its trend over
+## this long, s, and warns of a front it would reach within this long, minutes.
+@export var air_pressure_hpa: float = 310.0
+@export var air_pressure_fall: float = 8.0
+@export var barometer_trend_seconds: float = 120.0
+@export var barometer_warn_minutes: float = 15.0
+## Humidity in the cold air a condenser makes its most in, 0 to 1, falling
+## with its yield as the air warms; what a storm's air adds, and how far
+## ahead of its front the air grows humid, in the field's own units (about a
+## kilometre or two).
+@export var humidity_cold: float = 0.6
+@export var humidity_storm: float = 0.25
+@export var humidity_reach: float = 0.25
+## Sand in the air at a storm's heart, g/m³; the share of it at its wall,
+## and the share a front's outflow carries ahead of the wall.
+@export var sand_full_g_m3: float = 3.0
+@export var sand_wall_share: float = 0.3
+@export var sand_outflow_share: float = 0.1
+## A radar sweeps this many bearings, one a tick, stepping out this far, m.
+@export var radar_bearings: int = 36
+@export var radar_step_m: float = 100.0
+## The storm map's cells across: a radar alone draws this many, each other
+## kind of instrument this many more, and a second radar linked half as many
+## again. With no radar its other instruments only estimate a map, this
+## coarse with one and this many more with each other kind, odd so that
+## where it stands has a cell. It's sampled again this often, s of world time.
+@export var storm_map_radar_cells: int = 8
+@export var storm_map_cells_per_instrument: int = 4
+@export var storm_map_second_radar: float = 1.5
+@export var storm_map_estimate_cells: int = 3
+@export var storm_map_estimate_per_instrument: int = 2
+@export var storm_map_every: float = 1.0
+## A smart shield switches itself on once the radar sees a front this near, m.
+@export var smart_shield_auto_m: float = 1500.0
 
 @export_group("Loose objects")
 ## Wind drag per (m/s)² per m² of a thing's biggest face: half the air density

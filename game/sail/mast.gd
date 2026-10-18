@@ -412,15 +412,21 @@ func _swing_nodes() -> void:
 		if tie != null:
 			on.append_array(tie.fitted)
 	var turn := Transform3D(Basis(Vector3.UP, boom), Vector3.ZERO)
+	var moved := boom != _shown or on.size() != _base.size()
 	var seen := {}
 	for node in on:
 		if not _base.has(node):
 			_base[node] = Transform3D(Basis(Vector3.UP, -_shown), Vector3.ZERO) * node.transform
-		node.transform = turn * (_base[node] as Transform3D)
+			moved = true
 		seen[node] = true
-	for node in _base.keys():
-		if not seen.has(node):
-			_base.erase(node)
+	# Its shapes swing with the boom, so what was kept of them goes.
+	if moved:
+		for node in on:
+			node.transform = turn * (_base[node] as Transform3D)
+		for node in _base.keys():
+			if not seen.has(node):
+				_base.erase(node)
+		_shapes_changed()
 	_shown = boom
 	_show()
 

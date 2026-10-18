@@ -133,26 +133,32 @@ func save_refused() -> String:
 	return "" if store == null or store.has_run() else str(store.get(&"refused"))
 
 
-## A fresh run on a fresh seed, in the mode chosen for it; the saved one, if
-## any, is gone. After a death the seed is new whatever the tuning says, as
-## for the new run an Ironman death begins.
-func new_game(ironman := false, after_death := false) -> void:
+## A fresh run on a fresh seed, as the origin and in the mode chosen for it;
+## the saved one, if any, is gone. With no origin given it's the run in
+## play's, as after a death, when the seed is new whatever the tuning says,
+## as for the new run an Ironman death begins.
+func new_game(ironman := false, after_death := false, kit: Kit = null) -> void:
+	if kit == null and world() != null:
+		kit = world().kit
 	var store := saves()
 	if store != null and store.has_run():
 		store.delete()
 	var next := _make(RUN)
 	var runs := next.get_node("Runs")
 	runs.ironman = ironman
+	var made := next.get_node("World") as World
+	made.kit = kit
 	if after_death:
-		(next.get_node("World") as World).run_seed = runs.new_seed()
+		made.run_seed = runs.new_seed()
 	await _into(next, false)
 
 
-## The saved run's world built on its seed, in its mode, then put back as it
-## was: from the main menu, and after a death in Normal.
+## The saved run's world built on its seed and origin, in its mode, then put
+## back as it was: from the main menu, and after a death in Normal.
 func resume() -> void:
 	var next := _make(RUN)
 	(next.get_node("World") as World).run_seed = saves().run_seed()
+	(next.get_node("World") as World).kit = Kit.named(saves().kit())
 	next.get_node("Runs").ironman = saves().ironman()
 	await _into(next, true)
 

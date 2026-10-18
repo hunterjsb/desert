@@ -37,6 +37,10 @@ func _physics_process(_delta: float) -> void:
 ## The share of a new device's life the weather at a place takes a second,
 ## now or at world time t.
 func rate_at(at: Vector3, t := NAN) -> float:
+	# Inside a bubble that keeps out all of both, nothing's left to wear it.
+	var weather := _world.weather
+	if weather.shelter_at(at, &"wind") == 1.0 and weather.shelter_at(at, &"storm") == 1.0:
+		return 0.0
 	var tuning := _world.tuning
 	var past := maxf(_world.weather.felt_wind(at, t).length() - tuning.wind_harm_speed, 0.0)
 	return _world.weather.felt_storm(at, t) / (tuning.storm_wreck_minutes * 60.0) \

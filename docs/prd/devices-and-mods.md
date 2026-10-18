@@ -155,16 +155,19 @@ floater out of pieces:
   on the sand. It's painted like the crate: gunmetal rails round a teal plate, black corner
   caps, hazard bands either side of each ring so a deck's outer edge reads, and the
   consignee's stencil on top. It's a find, one device in thirteen on the surface and one
-  in ten deep, buried on its edge like a sheet the dunes half took, and the console's
-  give makes one by its id, `chassis`.
+  in eleven deep (one in ten before the Console), buried on its edge like a sheet the dunes
+  half took, and the dev console's give makes one by its id, `chassis`.
 - **Joining.** With a piece in your hands, a deck's free edge ring is offered the same
   way a socket is: the tug leans the piece flush beyond the ring, turned the quarter turn
   nearest how you hold it, the ghost shows it, and take joins it. Its frame, its sockets
   and whatever is in them move into the first piece's body, as a fitted part's shapes
   do, so a deck is one rigid body, never pieces on joints. A ring between two pieces
   closes and takes nothing. A ring isn't offered where something stands beyond it (a
-  piece joined over a crate would throw it), where a hook on a neighbouring edge would
-  stand in the new place, or for a wrecked piece. A piece with something standing on it
+  piece joined over a crate would throw it) or for a wrecked piece. A hook in the way pops
+  off instead (Hunter, 2026-10-17: "hooks should pop off when its obstructing a chassis
+  snap"): a hook on a neighbouring edge, or on either ring that closes, where the new piece
+  goes comes loose onto the sand as the piece snaps in, with any line on it still tied,
+  where before the ring wasn't offered. A piece with something standing on it
   is too heavy to carry, so it joins from your hold: having hold of it, the free ring of a
   deck whose place beside it is within 1.2 m of the piece is offered, with its ghost, if
   the piece and all on it would sit clear there, and take joins it, turned the quarter
@@ -235,16 +238,17 @@ floater out of pieces:
   two crates, and in a 20 m/s storm with gusts and its bubble down it stays within 2.2°
   of level, moored.
 
-## The Console (proposed, not built)
+## The Console (proposed; first version built)
 
 *Hunter, 2026-10-17 ([session](../console-sensors-sleep-2026-10-17.md)), a voice session. Its own
 framing: "Treat them as direction, not a final spec: the Console's slot layout is explicitly due
-for a rework." So this is direction. Nothing here is built and no number is set. Where it clashes
-with what is built, the clash is in the open questions below.*
+for a rework." So this is direction. A first version is built (As built, below), and its layout is
+a starting point for that rework. Where the session clashes with what is built, the clash is in
+the open questions below.*
 
 A new device, **the Console**: "the camp's computer. It handles computation and moves data between
 devices." It carries the weather instruments and the screen that shows what they read ([Wind &
-storms](wind-and-storms.md#instruments-and-the-console-screen-proposed)), and it is what makes a
+storms](wind-and-storms.md#instruments-and-the-console-screen-proposed-first-version-built)), and it is what makes a
 shield smart (below).
 
 - **A crate variant, not a seated device.** "It still takes a hover tray, batteries and power like
@@ -280,9 +284,122 @@ last in their lists for that reason.
 
 **Smart devices.** A device seated on a Console, a shield first, reports its data to the screen
 and can be controlled from it. What it can do depends on the Console's gear. [The smart
-shield](bubble-shield-and-camp.md#the-smart-shield-proposed-not-built) has the detail. As a reading, not in
+shield](bubble-shield-and-camp.md#the-smart-shield-proposed-first-version-built) has the detail. As a reading, not in
 the session: any device that seats on a top mount could be smart the same way, since a seated
 device already stays a body of its own on the host's power pool.
+
+**As built (2026-10-17, a first version):**
+- **The name.** The device is the Console. The dev tool's class is `DevConsole` now
+  (`game/dev/dev_console.gd`); its action is still the console action, its commands are
+  unchanged, and the docs still call it the dev console.
+- **A rack, not a crate** (Hunter, 2026-10-18: "instead of a crate, the console should be a
+  taller server rack like thing, so we can make the displays bigger"): the Console stands tall
+  and narrow, like a server rack, its whole front a big screen.
+- **The frame** (as built, 2026-10-18) is a rack 0.7 m wide, 1.3 m tall and 0.6 m deep, and
+  10 kg. 1.3 m, not taller, because that's as tall as the radar page wants (the map the full
+  width of the screen, its legend, the forecast and the keys under it), and at that height the
+  screen's middle sits at your eyes once the Console floats on its tray or on a floating deck.
+  Taller would put the screen over your head and tip more easily. It's painted in B as a rack:
+  four gunmetal rails on a black plinth, a cap, teal side panels vented in two columns either side
+  of their computer-mod ports, a back panel with the fitter's tag over a fan, and on its front
+  bolted rack ears either side of the screen, a bezel bar over it and a hazard strip along the
+  plinth. Nothing else is on the front, so the screen can't clip anything.
+- **Its sockets** are the same list, in the same order and count, so a save from the crate-shaped
+  Console loads into the rack. The screen port is the whole front, the six computer-mod ports
+  run down its sides, three a side, the batteries sit low on its back with the two rings beside
+  them and the port between, and both top mounts are on its top, the regular one over the back
+  half and the computer-mod top over the front.
+- **It stands upright.** A tall body on one tray tips easily, since each tray pushes at its own
+  corners, so its weight is kept low and over its tray: the frame is heaviest at its foot, the
+  batteries are low, and its tray mount sits 12 cm back, under the batteries' weight, rather than
+  under the middle of the box. Its rings are low too, beside the batteries and near its weight,
+  so a line pulls it along rather than over. On its one tray, as heavy as it's ever found, it
+  floats leaning 1.2° back. Moored by one line in a 24 m/s gusting storm, it tilts 2° at most
+  alone on its tray, and 6.4° at most standing on a deck of two pieces moored by the deck's own
+  ring. A small deck moored from the rack's own ring instead can rock over in a storm: moor a
+  deck by its own rings.
+- **What it draws.** 4 W itself, the screen 3 W more, and each instrument its own: the radar
+  6 W, the particle sensor 1.5 W, the anemometer 0.5 W, the hygrometer 0.3 W and the barometer
+  0.2 W. With the full set that's about 16 W, from its batteries or its deck's pool. Running
+  short, it gives way before a shield, as a crate's tray does. Dark, its screen goes black and
+  its instruments stop reading.
+- **Where it comes from.** It's a find in the deep layer only, at the same weight as the chassis
+  piece. A found one carries what the deep layer fills a screen port, computer-mod ports and a
+  computer-mod top with: a screen, instruments and a radar. The screen and the instruments come
+  only in found Consoles for now; none lies loose. The heaviest Console that can be found, 49.7
+  kg, is under the heaviest crate, so any find still drags by hand. The dev console's give makes
+  one by its id, `console`, and its parts by theirs: `screen`, `anemometer`, `barometer`,
+  `hygrometer`, `particle_sensor` and `radar`.
+- **The radar first** (Hunter, 2026-10-18, after playing it: "the console is kind of
+  information overload... we shouldnt directly drop any of it... i love the map"). Nothing is
+  dropped; it's rearranged so the map leads, and readable from where you stand:
+  - **Pages:** the weather radar map first, the whole screen; then stats, every reading in
+    detail; then the log.
+  - **The map loses resolution, not itself,** as instruments come off: the more gear, the finer
+    it is; with less, it coarsens.
+  - **On the map:** the wind as a gyro vector in its legend (in detail on the stats page);
+    pressure as a bar (in detail on stats); humidity laid over the map itself, varying, when a
+    hygrometer gives it; the front's numbers written on the map where the front is; the
+    forecast as a line along the map's foot.
+- **The screen** (as built, 2026-10-18) is a part, 0.62 by 1.12 m and 3 kg, the whole front of
+  the rack, drawn on a canvas of 580 by 1080. It's a terminal in the game's theme, monospaced,
+  and its pages go in this order:
+  - **Radar:** the storm map the full width of the screen, north up. Storms are amber, darker
+    where a particle sensor reads them denser. Clear air is laid over in blue as humid as the
+    hygrometer makes it, which deepens just ahead of each front, and air the map can't see is
+    dark. The front's distance and time are written at the front itself, with a line to it from
+    you at the middle; the pressure is a bar down the map's edge, its storm line across it, amber
+    when it warns; and the forecast runs along the map's foot. Under the map are the wind's gyro,
+    the way it blows and as long as it's strong, with its speed and where it's from, and the
+    pressure, humidity and sand as they read, and the map's resolution and scale.
+  - **Stats:** every reading in detail, then a larger gyro with the wind's steady part beside it,
+    and the pressure's last ten minutes as a line with the storm's line across it.
+  - **Shield:** the smart shield's form, where it fits best, shown only when there's one.
+  - **Log:** the last lines logged, long ones wrapped.
+- **The map's resolution comes from the gear in the system:** a radar alone draws 8 cells
+  across its 12 km, and each other kind of instrument 4 more, so a radar and two more draw 16
+  and the full set (all five computer mods and a radio) 28. A second radar linked on the deck
+  draws it half as fine again: two Consoles with the full set and a radar each, 42. With no
+  radar there's only an estimate, hatched, 3 cells across with one instrument and 2 more with
+  each other kind, up to 9: here as the barometer or the particle sensor knows it, and a storm
+  the barometer expects coming on the anemometer's wind, as far upwind as that wind carries it
+  before it arrives. With nothing to read there's no map. Taking
+  an instrument off steps it back down a tier, and the map stays as long as anything reads.
+- **Readable from where you stand.** The map's numbers are set 4 cm high and the rows 2.8 cm, so
+  standing a step or two back, about 1.5 m from the screen, every number on the map and on the
+  stats page reads at the game's own lens.
+- **Working the screen** takes only use. Along its foot are its keys: the page key, naming the
+  page it goes to ("STATS ›"), and with a smart shield, shield and auto. Each of those says how
+  it stands ("SHIELD: OFF", "AUTO: ON"), and the one you aim at lights up; use there presses it.
+  Use anywhere else on the screen steps to the next page. Use at the frame sets its tray
+  floating or resting. Dark, use on the screen says "no power". Take aimed at the screen takes it
+  out, like any part. Saved pages keep their numbers, so an older save opens on the same page.
+- **Its draw cost is small.** The screen is a small canvas of its own. It's drawn only when what
+  it shows has changed, checked at most four times a second of world time, and only while
+  someone stands within 15 m. The radar's map is sampled a few rows a tick, a whole pass a second
+  of world time, by one Console in the system; one sample per cell gives its storm, sand and
+  humidity alike.
+- **Linking.** Every Console on one chassis deck is one system: the deck and everything standing
+  or seated on it. Their instruments pool, so each screen shows every reading in the system,
+  each taken from the first Console that has it. A Console off a deck is a system of its own,
+  with whatever is seated on it. Nothing links by cable yet. The first running Console speaks
+  for the system: it logs the storm and runs the smart shield, and every screen in the system
+  shows the logs merged by time.
+- **Its messages** go out through [the terminal output
+  system](#the-terminal-output-system-proposed-session-4-part-5-first-piece-built), and a radio
+  seated anywhere in the system sounds its tones as a line prints: that's the Console's audio.
+- **Saves** keep its page, its auto switch and its log, and its parts and anything seated on it
+  as any device's. Older saves load as before.
+- **The "console" scenario** stands a Console on a deck of two pieces floating on a tray each,
+  moored by the deck's ring to a stake upwind. The Console holds two big batteries, its screen,
+  the four side instruments, the radar and a radio on its top, with its screen facing you at
+  your eyes. The base shield
+  stands on the other piece with a battery, switched off. A storm is due in four to six
+  minutes, so the radar sees the front coming, the shield switches itself on, and the storm
+  arrives while you watch.
+- **Still proposed:** the final layout, any part on the computer-mod top besides the radar (an
+  antenna), the survey mod, god modules, other makers' Consoles, a Console linked by cable,
+  and devices other than shields made smart.
 
 **Ending-linked Console pieces (endings session; proposed, not built).** The endings give the
 Console two late uses ([the vision](../vision.md#landmarks-and-endings)):
@@ -290,7 +407,7 @@ Console two late uses ([the vision](../vision.md#landmarks-and-endings)):
   with full weather sensing built in (like two fully modded weather Consoles), leaving its slots
   free for other mods. Important late game." A deck is one data system (above), so the Walker
   reads as a Console on the deck chassis, and it lines up with "roughly two linked Consoles" for
-  a storm mini-map ([Wind & storms](wind-and-storms.md#instruments-and-the-console-screen-proposed)).
+  a storm mini-map ([Wind & storms](wind-and-storms.md#instruments-and-the-console-screen-proposed-first-version-built)).
   Not said: what frame a legged robot is, or whether it stands on a deck mount, which takes one
   device the size of a crate.
 - **Captured hive mind tech (Idea).** Sealed deep in the black site, it "looks like an incredibly
@@ -304,13 +421,13 @@ Console two late uses ([the vision](../vision.md#landmarks-and-endings)):
 buried metal, so colonial pipelines show as lines on screen" ([World &
 terrain](world-and-terrain.md#readability)). It is a computer mod, found and never crafted. It sits
 oddly with the Console session's line that "ground and ruin detection is separate equipment (looking
-down, not up), likely a different camp setup" ([Wind & storms](wind-and-storms.md#instruments-and-the-console-screen-proposed)).
+down, not up), likely a different camp setup" ([Wind & storms](wind-and-storms.md#instruments-and-the-console-screen-proposed-first-version-built)).
 The newest session wins, so a basic survey mod is a Console mod, and the heavier detection (the
 Archaeologist's ground-penetrating radar) is read as staying separate; the session does not say.
 
 **Gods on the Console (session 4, part 5; proposed, not built).** A mounted god's terminal output is
 what a Console's full-face screen shows, and a god module is a part of the computer-mod class
-([the terminal output system](#the-terminal-output-system-proposed-session-4-part-5-not-built), [god
+([the terminal output system](#the-terminal-output-system-proposed-session-4-part-5-first-piece-built), [god
 modules](#god-modules-as-crate-modules-proposed-session-4-part-5-not-built)). A Walker taken whole is
 still the Console with weather sensing built in, above.
 
@@ -645,12 +762,12 @@ Readings, not in the session:
 - **Era variants make coalcane's price an era choice.** The colonial furnace needs no fuel and a lot of
   power, the others burn the same cane the burner and the Stoker want ([Power](power.md#the-kiln-and-its-fuel-agreed-session-4-part-5-not-built)).
 
-## The terminal output system (proposed, session 4, part 5; not built)
+## The terminal output system (proposed, session 4, part 5; first piece built)
 
 *[Session 4, part 5](../gods-gear-farside-2026-10-17.md), sections 2 and 14, step 6: "Terminal output
 system: short god logs, forms and dispatches rendered on consoles. One system serves every god." The
 session labels the design pieces Agreed and gives no detail of how they are built, so what follows is
-direction, a proposal, and none of it is built.*
+direction, a proposal. Its first piece is built, for the Console's own messages (As built, below).*
 
 The rule behind it is the amended one: people never talk, and "machines can talk through their
 terminals." Allowed output is "short logs, requisition forms, incident reports, dispatches, error
@@ -686,6 +803,27 @@ Readings, not in the session:
   ([Radio, sound & atmosphere](radio-sound-and-atmosphere.md)).
 - **Text, not voice.** The session says terminals. Whether any god is ever heard is the Radio PRD's open
   question about voices.
+
+**As built, its first piece (2026-10-17):**
+- **One small system,** `Terminal` (`game/devices/terminal.gd`). It holds what senders print, each
+  line with its sender: log lines and forms, kept with the local time they printed at, the newest
+  last and 32 at most; and each sender's live readout, a few rows printed over its last. A form is
+  its title, then each field as a key and its value. It prints and never asks. A screen shows it,
+  and redraws only when something new is printed.
+- **Only the Console prints through it so far,** under the sender CON. Its readout is its weather
+  rows. Its log lines are its own messages, short and in caps, the numbers in their units: "FRONT
+  1.2 km N · ETA 5 min", "SHIELD AUTO-ON", "PRESSURE FALLING · STORM ~6 min", "STORM PASSED",
+  "SHIELD DOWN · NO POWER", "SHIELD OFF", "RADAR ONLINE", "LINKED · 2 CONSOLES". The storm's
+  arrival is a form: "IN STORM", then its sand and when it clears.
+- **The voice is in the formatting.** A "!" before a line marks it urgent, and it shows in a
+  storm's amber; a row indented runs on from the one before and shows dim; the label column shows
+  in the accent. That marking and the wording are all the Console's personality: data, not code.
+- **On the screen** a log reads as time, sender and line ("14:03 CON SHIELD AUTO-ON"), a form's
+  fields indented under its title, the newest at the foot, where the proposal had it on top.
+  Linked Consoles' logs show merged, by time.
+- **Saved** with the Console that holds it.
+- **Still proposed:** gods and their templates by state and event, forms printed by a god, dispatches,
+  a god's own terminal prop, and quests printed as lines.
 
 ## God modules as crate modules (proposed, session 4, part 5; not built)
 
@@ -757,9 +895,9 @@ Proposed, in this PRD's terms:
 | Water socket | A canister or a hose's end, one at a time (2026-10-17) | Survival, Farming |
 | Deck mount | One device standing on a chassis piece: a crate, a condenser, a shield, a charger (2026-10-17), a mast (2026-10-18) | Devices & mods |
 | Sail mount | A sail, on its boom, low on a mast; seated, it adds a tie at the boom's end for the sheet (2026-10-18) | Movement |
-| Computer-mod port | Computer mods, on a Console. Proposed (2026-10-17); a kind of its own, unless it is the planter's mod mount (open questions) | Devices & mods |
-| Computer-mod top | Antennas, radar and the like, on a Console's top. Proposed (2026-10-17) | Devices & mods, Wind & storms |
-| Screen port | A full-face screen, one side of a Console. Proposed (2026-10-17) | Devices & mods |
+| Computer-mod port | Computer mods, on a Console: the anemometer, barometer, hygrometer and particle sensor. Built (2026-10-17), a kind of its own, not the planter's mod mount | Devices & mods |
+| Computer-mod top | Antennas, radar and the like, on a Console's top. Built (2026-10-17) with the radar; an antenna is still proposed | Devices & mods, Wind & storms |
+| Screen port | A full-face screen, the whole front of a Console. Built (2026-10-17) | Devices & mods |
 
 **As built, what each frame has** (2026-10-16; the chassis 2026-10-17):
 
@@ -773,6 +911,7 @@ Proposed, in this PRD's terms:
 | Shield generator | 1 | 1 | 1 | | 1 | fits a top mount or a deck mount itself |
 | Light shield generator | 1 | 1 | 1 | | 1 | fits a top mount or a deck mount itself |
 | Chassis piece | | 4 | 1 | | | a deck mount; its rings join other pieces |
+| Console | 2 | 2 | 1 | 1 | 1 | a rack (2026-10-18): a computer-mod top, a screen port the whole front and six computer-mod ports; stands on a deck mount |
 | Mast | | | | | | a sail mount; fits a top mount or a deck mount itself (2026-10-18) |
 | Light solar panel | | | | | 1 | |
 | Hoverboard | 1 | | | | 1 | fits a rack itself |
@@ -814,8 +953,8 @@ a water socket of its own on top, so a canister or another hose goes on there to
 - **More part types,** as the other PRDs need them.
 - **Per-part wear from the elements.** In the skeleton, wear is a single durability on
   the whole device (Bubble shield & camp).
-- **The Console and its computer mods** (proposed, 2026-10-17; see above), with the smart
-  devices they make.
+- **The Console and its computer mods** (proposed, 2026-10-17; a first version built, see
+  above), with the smart devices they make.
 
 ## Probes
 
@@ -895,6 +1034,20 @@ a water socket of its own on top, so a canister or another hose goes on there to
     take its tray off first; a piece held to a deck whose one free ring is blocked stays
     in your hands; use at a bare crate frame has nothing to work. Each time the readout
     says why and the knock sounds.
+24. **Consoles on a deck are one system** (2026-10-17). Two Consoles on a deck, one with an
+    anemometer and one with a barometer, each show both readings; a third on the sand beside
+    them shows only its own and lends them nothing. A radar on each of the two, both draw one
+    map, finer than one radar alone would. Lifted off the deck, each keeps only its own.
+25. **Instruments add detail** (2026-10-18, replacing "an instrument shows only when it's
+    fitted"). A Console with a battery and a screen reads nothing and has no map. Fitted one by
+    one, each instrument puts its own reading on the stats page and no other's, a radio on its
+    top the forecast, and the map comes with the first and grows finer with each: estimated
+    before the radar, swept by it after. Taken off in turn, each takes its reading, and the map
+    coarsens but stays until the last is gone.
+26. **The rack rides upright** (2026-10-18). A Console as heavy as one is ever found floats on
+    its one tray leaning only a little, then rides two minutes of a gusting storm moored by one
+    line from its back ring, upright, never rocking over. Standing on a deck of two pieces on
+    their trays beside a shield, the deck moored by its own ring, it rides as steady.
 
 ## Out of scope
 
@@ -943,7 +1096,11 @@ what folding it in raised. Each is quoted on both sides and left standing.
   frames table says rings front and back only), the right side is left with the charge light and
   the left with the rack. Not said: which face is the screen, whether a Console keeps the rack
   (a bedroll would share it, [Survival](survival.md#sleep-proposed)) and the light, and where
-  "plenty" of mod ports go once the screen has a whole side.
+  "plenty" of mod ports go once the screen has a whole side. *Built as a first version
+  (2026-10-17), the rework still pending:* the front is the screen and nothing else, the back
+  takes the batteries, both rings and the port, each side three computer-mod ports, and the
+  charge light stays high on the right. It has no rack. *Reworked (2026-10-18):* a rack 1.3 m
+  tall, the same sockets in the same order on its new body, the screen the whole front.
 - **Which computer mods, and which slot kinds.** Open in the session. Here: "Parts are typed"
   (rule 6), and the planter's mod mount, one kind, takes the harvester. The session: computer
   mods in "plenty of mod ports," and "antenna, radar and the like" in a computer-mod top. Not
@@ -951,37 +1108,50 @@ what folding it in raised. Each is quoted on both sides and left standing.
   a radar a planter) or a kind of its own. The socket types above take the second reading, as
   a proposal. Also not said: whether the Console's antenna is the radio's
   "antenna mods" ([Radio, sound & atmosphere](radio-sound-and-atmosphere.md)) or a different part.
+  *Built (2026-10-17):* computer mods are a kind of their own, so a harvester doesn't fit a
+  Console nor a radar a planter. Four go in the side ports (anemometer, barometer, hygrometer,
+  particle sensor) and the radar on the top. No antenna is built.
 - **One regular top slot, three wants.** Here: a top mount takes "solar panels, instruments such
   as the radio, lamps, the shield generator," and the kit's crate fills both of its top mounts,
   with a light shield and a light panel. The session: a Console has one regular top slot, a
   shield on it "becomes 'smart'," and audio "comes from a radio on a top mount." The shield and
   the radio can't both have the one slot. Not said: whether the radio goes on the computer-mod
   top, the shield stands on a neighbouring deck piece (then it isn't "on" the Console), or a
-  Console keeps two regular tops.
+  Console keeps two regular tops. *Built (2026-10-17):* one regular top. A shield is smart on it
+  or anywhere on the Console's deck, so the radio can keep the top while the shield stands on
+  the next piece.
 - **What a link reaches.** Here: everything on one deck shares one power pool, and cabled devices
   share one. The session: "a chassis connects every Console mounted on it into one system." Not
   said: whether a Console off a chassis links to anything (a cable?), whether the link takes in
   the other devices on the deck or only other Consoles, and whether a Console stands on a deck
   mount at all. The deck mount takes "a crate, a condenser, a shield, a charger," and a Console is
-  "a crate variant," which reads as yes, but is a reading.
+  "a crate variant," which reads as yes, but is a reading. *Built (2026-10-17):* a Console stands
+  on a deck mount. The link takes in the whole deck: Consoles pool their instruments, and every
+  shield on it is smart. A Console off a deck links to nothing; a cable doesn't link Consoles.
 - **The name.** `Console` is taken. It is already a class (`game/dev/console.gd`), an action
   (`console`) and the Menus & UI PRD's "dev console," and this PRD's chassis section says "the
   console's give makes one by its id." Not said: whether the device keeps Hunter's name and the
   dev tool's words change, or the other way round. Until it is settled the docs say "the dev
-  console" for the tool and "the Console" for the device.
+  console" for the tool and "the Console" for the device. *Answered (2026-10-17):* the device
+  keeps the name. The dev tool's class and file are `DevConsole` and `dev_console.gd`, and its
+  action and commands are as they were.
 - **Running a screen with four actions.** Here: "Four actions cover handling... A new device or
   tool answers these; it never adds an action of its own." The session: a shield "can be
   controlled from the screen." Menus & UI says state shows on things first, and the vision that
   most menus come as devices, so the screen is that. Not said: how a screen is operated. Use at a
   spot on it, or a look, are the candidates, and the aim has to pick one control among many on a
-  full face.
+  full face. *Built (2026-10-17):* use at a spot. Its keys sit along its foot, a third of the width
+  each, and the one you aim at lights up. Use on a key presses it, and use anywhere else steps the
+  page. No action was added.
 - **The ring shave against "add new ones at the end."** Here: the frames table says the crate has
   two rings, "front and back only" (Hunter, 2026-10-17: "shave 2 hook slots off the crate now
   that we have the chassis"), and `catalog.gd` still lists four, the side two at entries 1 and 2
   of the list. The session: "Sockets save by list index." Taking out entries 1 and 2 moves every
   socket after them, so older saves would load the wrong sockets. Not said: how the shave keeps
   saves, by leaving the entries unused or by a migration. A Console cut from the crate's list,
-  with "only one or two rope hooks," meets the same thing.
+  with "only one or two rope hooks," meets the same thing. *For the Console, settled (2026-10-17):*
+  it's a frame of its own with a list of its own, so nothing in the crate's moves. The crate's
+  shave is separate work.
 
 Session 4, part 4 (2026-10-17) adds the following. Each is quoted old and new. The newest session wins
 in the living docs, so this PRD follows it as direction and says so on each line.

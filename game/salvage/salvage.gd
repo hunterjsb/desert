@@ -285,10 +285,16 @@ func _plan(coord: Vector2i, lot: Lot) -> void:
 	if is_nan(lot.exposure):
 		lot.exposure = Finds.exposure(_world.weather.field, (coord.x + 0.5) * size, (coord.y + 0.5) * size,
 			_world.time, _tuning)
-	var specs := Finds.plan(_world.run_seed, coord, lot.exposure, _tuning, _world.height_at, lot.chunk.ruin())
+	var specs := Finds.plan(_world.run_seed, coord, lot.exposure, _tuning, _world.height_at, lot.chunk.ruin(),
+		on_site)
 	for spec in specs:
 		if not lot.taken.has(spec.index):
 			_queue.append(Piece.new(coord, spec))
+
+
+## Whether a world place is a structure's ground, which loose finds keep clear of.
+func on_site(x: float, z: float) -> bool:
+	return _world.shape.sites.covering(x, z) != null
 
 
 ## A piece of work no longer wanted, and whatever it had begun to make.

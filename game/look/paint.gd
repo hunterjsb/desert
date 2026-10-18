@@ -34,7 +34,6 @@ const MARK_ROW := {&"surface": 1, &"deep": 2}
 const MARKS := preload("res://game/look/marks.png")
 
 static var _worn: ShaderMaterial
-static var _ruin: ShaderMaterial
 static var _noise: NoiseTexture2D
 
 
@@ -48,16 +47,6 @@ static func worn() -> ShaderMaterial:
 		_worn.set_shader_parameter("noise", noise())
 		_worn.set_shader_parameter("marks", MARKS)
 	return _worn
-
-
-## The ruin's poured concrete.
-static func ruin() -> ShaderMaterial:
-	if _ruin == null:
-		_ruin = ShaderMaterial.new()
-		_ruin.shader = preload("res://game/look/ruin.gdshader")
-		_ruin.set_shader_parameter("noise", noise())
-		_ruin.set_shader_parameter("marks", MARKS)
-	return _ruin
 
 
 static func noise() -> NoiseTexture2D:
@@ -78,7 +67,6 @@ static func noise() -> NoiseTexture2D:
 static func face_wind(heading: float) -> void:
 	var downwind := Vector3(cos(heading), 0.0, sin(heading))
 	worn().set_shader_parameter("wind_dir", downwind)
-	ruin().set_shader_parameter("wind_dir", downwind)
 
 
 ## How worn something looks, 0 to 1: its era's paint, then what the weather took.

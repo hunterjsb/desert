@@ -219,7 +219,45 @@ Readings, not in the session:
   stores in colonial ruins, granaries and the Sister vault, which holds pure rainseed*
   ([Farming](farming.md#propagation-growth-stages-and-wild-habitats-agreed)).
 
-## Structures by era and the loot model (Agreed, session 4, part 4; not built)
+## Structures by era and the loot model (Agreed, session 4, part 4; the kits built)
+
+*Designed whole in [the world system](../world-system.md): the structure framework, exposure, the loot
+model and the migration of today's loose finds are its packages. The first, the structure kits, is
+built (2026-10-18, below and [in the world system](../world-system.md#what-the-structure-kits-do-now));
+loot, lineage, feral and spawns are not yet.*
+
+**Built: the structure kits (2026-10-18).** Every era's repeatable kit stands where history put it, as
+data in one shared system, each piece with its three exposure states:
+
+- **Colonial,** off-white composite, grey and safety orange, crisp, the contractor's tag and a member
+  state's seal on them: *pylon stubs* (a concrete footing, a cut-down lattice column, a crossarm with its
+  insulators and a snapped cable, every 150 m along the power lines), *pipeline segments* (12 m of pipe
+  on concrete saddles, bolted flanges, an orange band), *hab pods* (an overbuilt 8 × 6 m pod, panel
+  seams, a window band, a bunk inside, a roof hatch and antenna), *relay masts* (a 14 m lattice mast on
+  its footing, its cabinet, dish and light). The deepest: buried nearly always, partly exposed a quarter
+  of the time, dug out only in the hardest storms.
+- **Skimmer era,** gunmetal and olive plate, panels that don't match, welds, hazard stripes, the crew's
+  patch: *wreck hulls* (a 12 m hull down nose first at its site's 10° to 35°, its tail torn open to walk
+  into), *fuel bladders* (a slumped rubber bag on a scrap pallet, taped, strapped, its valve), *dugouts*
+  (a sandbagged pit with a drift down into it, roofed with scrap, an ammunition crate). Shallow and
+  quick: dug out two thirds of the time.
+- **First Kingdoms,** stone and the colonial pipe the keepers reused, brass and copper fittings, a
+  house's enamel (deep red, ochre or teal by the site) and its crest: *pipe-wall huts* (walls of stacked
+  pipe laid in stone, a hull-plate roof over the back, the machine the house kept running),
+  *cisterns* (a stone pit silted from its gap down to the floor, the colonial line coming in through the
+  back wall with its brass valve), *low stone walls* (a field plot's corner in dry stone, a gate between
+  pipe posts with flared brass caps). Deep and low: mostly partly exposed, barely showing.
+- **Second age,** mud render and lime wash, fired clay, saltbush wood and fern cord, bone, sand, rust,
+  clay, and the Cistern's water-blue only on what she touched: *wayshrines* (a brick plinth, a niche with
+  a round ceramic cap off true on its square housing, a blue-glazed basin with offerings, a corded
+  post), *watchtowers* (9 m of render, a platform with a broken parapet and a domed turret, charms down
+  the front, Tu daubed over the door), *house ruins* (today's three-room ruin, now in the second age's
+  render and lime wash, saltbush beams over the doors and under the roof, a water jar on a corner,
+  charms over the front door). The shallowest: dug out four times in five.
+
+The house ruin no longer stands on a grid in every few chunks: only where history put one, in villages,
+Rim towns, salvage towns and along roads, and where the dunes take it. A buried piece shows only its
+top; partly exposed, the tops of its walls; exposed, it's dug out, as below in the skeleton's ruin.
 
 *[Session 4, part 4](../plants-worldgen-ruins-2026-10-17.md), with its labels as given: **Agreed** is
 settled, **Idea** is proposed and not confirmed, **Back burner** is liked and not to be built yet, and
@@ -523,7 +561,7 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
   frozen, so a stripped device on a ruin's floor could never be taken hold of, and a line
   tied to one held you as an anchor would. Nothing found is too heavy to drag by hand:
   the heaviest, a crate with every socket filled, is 51 kg, 250 N of your 400 N on a
-  ruin's floor or the sand.
+  ruin's floor or the sand. A Console with every socket filled is 49.7 kg.
 - **What's found** is the catalog's own parts and devices. The surface layer holds
   batteries, hooks, lamps, empty canisters, rope coils, cable plugs, hoses and compasses
   (2026-10-17, compasses one in twenty-one of the surface layer's parts), and crate
@@ -532,8 +570,9 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
   layer holds big batteries,
   batteries, hover trays, solar panels, hooks, strong cable plugs and harvesters, and
   crate frames, wind turbines, condensers, shield generators and, rarer, hoverboards
-  (Stage 10, one in ten of the deep layer's devices; a ruin's hall never holds one,
-  since it promises parts to strip) and chassis pieces (one in ten). A ruin's floor holds all
+  (Stage 10, one in eleven of the deep layer's devices; a ruin's hall never holds one,
+  since it promises parts to strip), chassis pieces (one in eleven) and Consoles
+  (2026-10-17, one in eleven), whose screens and instruments come only in them. A ruin's floor holds all
   its layer's finds and more: seeds (carrots and fungus), sealed rations and survival
   kits. A device comes with some of its sockets filled from its own layer, a third of
   them at the surface and three in five deep. Over 3,000 chunks on two seeds, rope coils
@@ -575,7 +614,12 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
   wholly inside one chunk, where the dunes over its ground rise no more than 1.5 m and
   are nowhere steeper than 20°: about 2.3 a km², one every 650 m or so. It turns only
   in quarter turns, so its walls stand on the lattice. A run never starts on a ruin's
-  ground.
+  ground. *Since 2026-10-18 (the structure kits): it's the second age's house ruin and
+  stands only where history put one, where the dunes over its ground rise no more than
+  3 m, sliding up to 24 m along its line to find such ground; its ground may cross
+  into the next chunk, its boxes in the chunk its middle stands on, 19 of them with the
+  jar on its corner. Buried it sinks 2.6 m, its wall tops and roof showing; partly
+  exposed 1.6 m, its rooms filled to the sand; exposed it's as before.*
 - **Its footprint in `height_at`:** inside, the sand lies 3 cm under the floor; outside,
   it drifts 0.7 m up the walls, gone 4 m out, and lies level with the floor in front of
   each outer door; 12 m out the dunes have their own shape back. The outer walls are a
@@ -599,7 +643,10 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
 - **The "go looking" scenario** stands you 12 m out from the front door of the
   ruin nearest the run's start, facing it, at a clear and calm moment (no storm for ten
   minutes, wind under 6 m/s), with a bare crate frame of your own beside you. The
-  ruin's hall always holds a device with at least two parts to strip. The dev overlay's
+  ruin's hall always holds a device with at least two parts to strip. *Since 2026-10-18:
+  history's house ruin nearest the run's start on the moon, however far, at a moment it's
+  dug out, you on fresh ground before it. The hall's device was a later visitor's and lies
+  on whatever sand is in the hall; the floor's other finds lie only where it's dug out.* The dev overlay's
   salvage column shows the finds in memory, and how hard the weather has been where you
   stand with the deep layer's share there.
 - **Probe 5** also checks every kind turns up, rope and wire are common, seeds are mostly
@@ -641,7 +688,8 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
    floating and never buried out of reach. Loose finds settle without falling through.
 3. **Ruins sit in the sand.** Every ruin floor meets the sand within tolerance.
 4. **The walk-through.** A probe walks every doorway and floor of every ruin type. The
-   player never snags, never gets stuck, and never falls through.
+   player never snags, never gets stuck, and never falls through. *Since 2026-10-18 it's
+   the structure kits' probe 2 (`probes/kits/`), which walks every kind with a way in.*
 5. **Harder weather, better finds.** Across many chunks, the average find tier rises
    with storm and wind exposure.
 6. **Strip and fit.** Every part in a found device can be taken out and fitted to one of

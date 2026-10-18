@@ -1,6 +1,8 @@
 extends Probe
 ## Salvage & ruins probe 5: harder weather, better finds. Across thousands of
-## chunks loaded at moments through three days on two seeds, the run's own
+## chunks round towns where history's house ruins stand, a ruin in one of
+## every RUIN_SHARE as the old grid had them, loaded at moments through three
+## days on two seeds, the run's own
 ## weather read as each chunk would read it, the average find's tier rises
 ## with how hard the weather has been: from the calmest third to the middle
 ## to the hardest. A chunk a storm has sat on all of the last hours shows more
@@ -10,6 +12,8 @@ extends Probe
 
 const SEEDS := [1234, 7]
 const CHUNKS_PER_SEED := 1500
+const TOWNS := 6
+const RUIN_SHARE := 25
 ## The hardest third must beat the calmest by at least this much tier.
 const RISE := 0.15
 ## A storm touched a calm chunk for at most this share of the hours.
@@ -19,30 +23,54 @@ const CALM := 0.5
 func run() -> void:
 	var tuning := Tuning.current()
 	tuning.salvage = true
+	# The ruins dug out, as the grid's always were: what lies in them is the question.
+	tuning.site_return_m = -1.0
 	var samples: Array[Vector2] = []
 	var stormed := [0, 0]
 	var calm := [0, 0]
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 5
+	var ground := Vector2.ONE * tuning.chunk_size * 0.5
+	var reach := floori(tuning.history_lay_m / tuning.chunk_size) - 1
 	for run_seed: int in SEEDS:
 		var shape := TerrainShape.new(run_seed, tuning)
 		var field := WeatherField.new(run_seed, tuning)
-		for n in CHUNKS_PER_SEED:
-			var coord := Vector2i(rng.randi_range(-150, 150), rng.randi_range(-150, 150))
-			var middle := (Vector2(coord) + Vector2.ONE * 0.5) * tuning.chunk_size
-			var t := rng.randf() * 3.0 * 24.0 * 3600.0
-			var exposed := Finds.exposure(field, middle.x, middle.y, t, tuning)
-			var specs := Finds.plan(run_seed, coord, exposed, tuning, shape.height_at, shape.ruins.in_chunk(coord))
-			for spec in specs:
-				samples.append(Vector2(exposed, Finds.tier(spec)))
-				_tally(spec)
-			# The two ends of the weather, read straight from the field.
-			var hours := _hours(field, middle, t, tuning)
-			var into: Array = stormed if hours == 1.0 else (calm if hours <= CALM else [])
-			for spec in specs:
-				if not into.is_empty():
-					into[0] += Finds.tier(spec) - 1
-					into[1] += 1
+		var on_site := func(x: float, z: float) -> bool: return shape.sites.covering(x, z) != null
+		var towns := StructureKit.starts_among(run_seed, tuning, Sphere.point(0.0, 0.0), ground, TOWNS)
+		for town in towns:
+			shape.sites.follow(ground.x, ground.y, Sphere.latitude(town), Sphere.longitude(town), 1.0, tuning.history_lay_m)
+			var chunks: Array[Vector2i] = []
+			for unit in shape.sites.units():
+				for site in unit.sites:
+					var coord := Vector2i(floori(site.x / tuning.chunk_size), floori(site.z / tuning.chunk_size))
+					if site is Ruin and shape.sites.ruin_in(coord) == site:
+						chunks.append(coord)
+			for k in chunks.size() * (RUIN_SHARE - 1):
+				chunks.append(Vector2i(rng.randi_range(-reach, reach), rng.randi_range(-reach, reach)))
+			for coord in chunks:
+				_sample(run_seed, coord, shape, field, on_site, tuning, rng, samples, stormed, calm)
+	_verdict(samples, stormed, calm)
+
+
+func _sample(run_seed: int, coord: Vector2i, shape: TerrainShape, field: WeatherField, on_site: Callable,
+		tuning: Tuning, rng: RandomNumberGenerator, samples: Array[Vector2], stormed: Array, calm: Array) -> void:
+	var middle := (Vector2(coord) + Vector2.ONE * 0.5) * tuning.chunk_size
+	var t := rng.randf() * 3.0 * 24.0 * 3600.0
+	var exposed := Finds.exposure(field, middle.x, middle.y, t, tuning)
+	var specs := Finds.plan(run_seed, coord, exposed, tuning, shape.height_at, shape.sites.ruin_in(coord), on_site)
+	for spec in specs:
+		samples.append(Vector2(exposed, Finds.tier(spec)))
+		_tally(spec)
+	# The two ends of the weather, read straight from the field.
+	var hours := _hours(field, middle, t, tuning)
+	var into: Array = stormed if hours == 1.0 else (calm if hours <= CALM else [])
+	for spec in specs:
+		if not into.is_empty():
+			into[0] += Finds.tier(spec) - 1
+			into[1] += 1
+
+
+func _verdict(samples: Array[Vector2], stormed: Array, calm: Array) -> void:
 	samples.sort_custom(func(a: Vector2, b: Vector2) -> bool: return a.x < b.x)
 	var thirds: Array[float] = []
 	for k in 3:

@@ -8,7 +8,9 @@ extends WeatherProbe
 ## running; the lee
 ## stands you under a tall slip face, facing up it into the wind over its
 ## crest, the wind on you cut and a storm due; chassis pieces, their trays,
-## a charged crate and a condenser lie in front of you; the eclipse faces Tu
+## a charged crate and a condenser lie in front of you; a Console on a
+## floating deck shows its finest map and every reading, the storm coming, its
+## shield smart and off; the eclipse faces Tu
 ## just before the sun goes behind it; the far side has no Tu. Checked against
 ## the field itself and against what the game then shows.
 
@@ -67,6 +69,8 @@ func run() -> void:
 				if scenario.get("chassis", false):
 					check(field.wind_at(at.x, at.y, t).length() < scenario.calm, "chassis: a calm spell")
 					await _chassis_lands()
+				if scenario.get("console", false):
+					await _console_lands()
 			"front", "back":
 				check(stormy == (scenario.kind == "back"), "%s: on the right side of the edge" % what)
 				check(ahead.dot(upwind) > 0.999, "%s: facing upwind, where it comes from" % what)
@@ -231,6 +235,37 @@ func _chassis_lands() -> void:
 			body.free()
 
 
+## A Console stands on a two-piece deck floating in front of you, its screen
+## to you at about your eyes, every instrument and a radio in it, and a
+## shield on the other piece, switched off and smart from it; the deck moored
+## to a driven stake; its map at its finest for one Console, its stats every
+## reading, the storm on its way.
+func _console_lands() -> void:
+	await settle(true)
+	var dropped := Scenarios.console(world)
+	await physics_frames(120)
+	var player := world.player
+	var deck: Chassis = dropped[0]
+	var made: Console = dropped[1]
+	var shield: ShieldGenerator = dropped[3]
+	var screen := made.global_basis * Vector3.FORWARD
+	var eyes := player.camera.global_position.y - made.global_position.y
+	check(made.on_deck() and made.host() == deck and shield.host() == deck and not shield.on
+		and made.smart_shields().size() == 1 and made.smart_shields()[0] == shield
+		and screen.dot(player.global_position - made.global_position) > 0.0 and deck.stats().hovering and absf(eyes) < 0.5,
+		"console: on a floating deck, its screen to you at your eyes (%.2f m off), the shield beside it off and smart" % eyes)
+	var stats := made.screen_text(Console.Page.STATS)
+	var shown := ["WIND", "PRESS", "HUMID", "SAND", "FRONT", "FCST", "SHIELD OFF"].all(func(l: String) -> bool: return l in stats)
+	var full := Tuning.current().storm_map_radar_cells + 5 * Tuning.current().storm_map_cells_per_instrument
+	check(shown and made.map_cells() == full and made._map.size() == full * full,
+		"console: every reading on its stats, and its map at %d cells across:\n%s" % [made.map_cells(), stats])
+	check(made.pooled_readings().forecast.change < INF and (dropped[4] as Stake).driven and world.ropes.ropes.size() == 1,
+		"console: the storm on its way, the deck moored")
+	for body in dropped:
+		if is_instance_valid(body):
+			body.free()
+
+
 ## A hoverboard lies at your feet in front of you, nose ahead, a full battery
 ## in it, and the ride action takes you onto it; beside you stand a charged
 ## shield generator, switched off, and a crate frame: the camp the range
@@ -312,11 +347,13 @@ func _farm_lands() -> void:
 ## its floor a device with parts to strip, and your own bare frame lands
 ## beside you.
 func _ruin_ahead(at: Vector2, ahead: Vector2) -> void:
-	var ruin := world.shape.ruins.around(at.x, at.y, 30.0)
+	var ruin := world.shape.sites.query(Rect2(at.x - 30.0, at.y - 30.0, 60.0, 60.0), false).filter(
+		func(s: Site) -> bool: return s is Ruin and world.shape.sites.covering(s.x, s.z) == s)
 	check(not ruin.is_empty(), "ruin: a ruin stands near you")
 	if ruin.is_empty():
 		return
-	var door := ruin[0].to_world(Ruin.DOORS[0][0]) - at
+	var first: Ruin = ruin[0]
+	var door := first.to_world(Ruin.DOORS[0][0]) - at
 	check(ahead.dot(door.normalized()) > 0.999 and door.length() < 20.0,
 		"ruin: its front door is in front of you (%.1f m)" % door.length())
 	await settle(true)
@@ -325,7 +362,7 @@ func _ruin_ahead(at: Vector2, ahead: Vector2) -> void:
 			break
 		await get_tree().process_frame
 	var mine := Scenarios.yours(world)
-	var coord := world.terrain.chunk_at(ruin[0].center.x, ruin[0].center.y)
+	var coord := world.terrain.chunk_at(first.center.x, first.center.y)
 	var finds := world.salvage.finds()
 	var on_floor := finds.filter(func(b: Node) -> bool:
 		return b.get_meta(&"find")[0] == coord and b.get_meta(&"find")[1] >= Finds.IN_RUIN)

@@ -2,8 +2,9 @@ extends MenuProbe
 ## Menus & UI probe 3: the menu's default, end to end. The main menu's title
 ## is the game's name, over the starting crate, which is only to look at: no
 ## body in it, and the storm doesn't move it. With no save, Resume is
-## absent, New game is highlighted, and confirm asks which mode, Normal
-## highlighted and Ironman below it; confirm again starts a Normal run, whose
+## absent, New game is highlighted, and confirm asks who you come as, then
+## which mode, Normal highlighted and Ironman below it; confirm again starts
+## a Normal run, whose
 ## system menu holds Save. Save & quit from that run, somewhere out on the
 ## sand, and back on the menu Resume is there and highlighted; confirm
 ## resumes it, putting you back where you were, on the saved run's seed and
@@ -36,6 +37,8 @@ func run() -> void:
 		"with no save, Resume is absent and New game is highlighted (%s)" % ", ".join(menu.words()))
 	check(AudioServer.is_bus_mute(AudioServer.get_bus_index(Sounds.WORLD)) and not AudioServer.is_bus_mute(0),
 		"the menu's storm makes no sound, and its words can")
+	press(&"ui_accept")
+	# The default origin.
 	press(&"ui_accept")
 	var modes := main.ui.top()
 	check(modes != menu and modes.words() == PackedStringArray(["NORMAL", "IRONMAN"]) and modes.highlighted() == 0

@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="Kit" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://game/survival/kit.gd" id="1_kit"]
+
+[resource]
+script = ExtResource("1_kit")
+id = &"salvager"
+label = "Salvager"
+about = "rides light"
+start = &"wreck_field"
+balanced = true
+carried = Dictionary[StringName, int]({
+&"canister": 1,
+&"ration": 1
+})
+beside = Dictionary[StringName, Vector2]({
+&"board": Vector2(0.0, 1.4),
+&"light_shield": Vector2(1.2, 1.8)
+})
+charge = 1.0

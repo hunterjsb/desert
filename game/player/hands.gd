@@ -76,7 +76,8 @@ const TOUCHES := 64
 ## What a refusal calls each kind of socket that's full.
 const SOCKET_NAMES := {&"battery": "battery slot", &"ring": "ring", &"bottom": "tray mount", &"top": "top mount",
 	&"plant_pot": "pot", &"plant_standard": "planter", &"plant_deep": "deep bed", &"port": "port", &"tie": "hook",
-	&"water": "water socket", &"mod": "mod mount", &"food": "food slot", &"rack": "rack", &"deck": "deck mount"}
+	&"water": "water socket", &"mod": "mod mount", &"food": "food slot", &"rack": "rack", &"deck": "deck mount",
+	&"computer_mod": "computer-mod port", &"computer_top": "computer-mod top", &"screen": "screen port", &"sail": "sail mount"}
 const RIDING := "not from the board"
 
 var held: RigidBody3D
@@ -437,6 +438,9 @@ static func describe(label: String, mass: float, stats: Dictionary) -> String:
 		bits.append("%d seed%s" % [stats.seeds, "" if stats.seeds == 1 else "s"])
 	if stats.has("tuned"):
 		bits.append(stats.tuned)
+	var instruments: int = stats.get("instruments", 0)
+	if instruments > 0:
+		bits.append("%d instrument%s" % [instruments, "" if instruments == 1 else "s"])
 	if stats.has("found"):
 		bits.append("%s find" % stats.found)
 	if stats.get("dark", false):
@@ -765,11 +769,15 @@ func _take_off(device: Device) -> void:
 	var from := host.seat_of(device)
 	if not device.carryable:
 		host.dismount(from)
-		# Clear of all that's fitted under its foot too, so it never starts off
-		# inside what it stood on.
-		var below := device.seat().origin.z + _shapes_box(device.get_children()).position.y
-		_player.world.teleport(device, device.global_transform.translated(
-			_frame_of(from).basis.z * (maxf(-below, 0.0) + LIFT_OFF)))
+		var beside := _beside_deck(device, host) if from.kind == &"deck" else Transform3D()
+		if beside != Transform3D():
+			_player.world.teleport(device, beside)
+		else:
+			# Clear of all that's fitted under its foot too, so it never starts off
+			# inside what it stood on.
+			var below := device.seat().origin.z + _shapes_box(device.get_children()).position.y
+			_player.world.teleport(device, device.global_transform.translated(
+				_frame_of(from).basis.z * (maxf(-below, 0.0) + LIFT_OFF)))
 		grasp.take(device)
 		_stood = from
 		_play(Sounds.UNSEAT)
@@ -786,6 +794,41 @@ func _take_off(device: Device) -> void:
 	phase = Phase.TAKING
 	_rearm = from
 	_play(Sounds.UNSEAT)
+
+
+## Off a deck, a device comes down on the sand beside it, on the clear side
+## nearest you: left standing on a floating deck, dragging it would rub the
+## deck along with it. Empty if no side is clear.
+func _beside_deck(device: Device, deck: Device) -> Transform3D:
+	var reach := _shapes_box(deck.get_children())
+	var own := _shapes_box(device.get_children())
+	var half := maxf(own.size.x, own.size.z) * 0.5
+	var middle := Vector3(reach.get_center().x, 0.0, reach.get_center().z)
+	var world := _player.world
+	var sides: Array[Transform3D] = []
+	for along: Vector3 in [Vector3.RIGHT, Vector3.LEFT, Vector3.BACK, Vector3.FORWARD]:
+		var out := deck.global_transform * (middle + along * (absf(along.dot(reach.size)) * 0.5 + half + 0.25))
+		# Its foot clear of the highest sand under it, so it never starts in a slope.
+		var ground := world.height_under(out)
+		for corner: Vector3 in [Vector3(1, 0, 1), Vector3(1, 0, -1), Vector3(-1, 0, 1), Vector3(-1, 0, -1)]:
+			ground = maxf(ground, world.height_under(out + corner * half))
+		out.y = ground - own.position.y + 0.05
+		sides.append(Transform3D(device.global_basis, out))
+	var me := _player.global_position
+	sides.sort_custom(func(a: Transform3D, b: Transform3D) -> bool:
+		return a.origin.distance_squared_to(me) < b.origin.distance_squared_to(me))
+	# Tested a little above the sand, so only something standing there, a wall,
+	# you or another device, rules a side out.
+	var query := PhysicsShapeQueryParameters3D.new()
+	var box := BoxShape3D.new()
+	box.size = own.size
+	query.shape = box
+	query.exclude = [device.get_rid(), deck.get_rid()]
+	for side in sides:
+		query.transform = side.translated_local(own.get_center() + Vector3.UP * 0.25)
+		if _player.get_world_3d().direct_space_state.intersect_shape(query, 1).is_empty():
+			return side
+	return Transform3D()
 
 
 ## A bare piece comes off the deck the way one goes on, out across a ring it

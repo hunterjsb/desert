@@ -84,6 +84,17 @@ craft. The sailboat's is "build and use," read as fitting found parts into one a
 a report when it first carries you. The patrol board's is "build," proposed, and the session lists
 its exact unlock as open.
 
+**Built (2026-10-18): the three balanced origins.** New game asks who you come as before it asks the
+mode: the Surveyor, highlighted, the Salvager and the Homesteader, under a line of what each is
+like to play. Each is a `Kit` resource (`game/survival/`): its id, name and line, its start on the
+moon ([the world system](../world-system.md#the-feral-layer-and-spawns)), whether it's balanced and
+what unlocks it. The menu offers the origins open to the profile (`Kit.open_to`, through
+`Profile.has`); the Salvager's and Homesteader's playstyle unlocks wait on something that counts a
+playstyle, so all three are open from the first run. The novelty kits aren't built; an origin that
+isn't balanced is offered Normal only. The run keeps its origin (`World.kit`) and so does its save
+(`kit`); a new run after a death comes as the same origin. A save from before origins has none and
+resumes as it was, from the tuning's start. Spawns probes 2 and 3.
+
 ## Ending flags (proposed)
 
 *Session 4, part 3 ([lore session](../lore-session-2026-10-17-part-3.md)); proposed, and none of it
@@ -196,9 +207,9 @@ Resume, New game, the death screen and Options.
 
 ## Full version
 
-- Kits unlocked by discoveries, playstyles, landmarks and endings, and choosing one at New
-  game. The first three are balanced, the novelty starts are not, and Ironman excludes the
-  novelty starts (Kits are data).
+- Kits unlocked by discoveries, playstyles, landmarks and endings. The first three are
+  balanced and chosen at New game (built), the novelty starts are not, and Ironman excludes
+  them (Kits are data).
 - Steam achievements and cloud sync, attached at `profile.unlock`.
 
 ## Probes
@@ -240,6 +251,10 @@ Resume, New game, the death screen and Options.
     harvester planter with three carrots and a ripe fungus, carrots stored, a survival kit
     with seeds and carrots carried, resumes as root-tubers in the standard planters, a
     still-ripe vat fungus in the pot, tubers stored and carried, and the farm goes on.
+16. **A Console resumes** (2026-10-17). A Console with its screen, three instruments and a
+    radio on its top, its screen turned to its log and its shield's auto-on switched off,
+    resumes with the same parts in the same sockets, the same page, the same switch and the
+    same log, and reads on.
 
 ## Out of scope
 

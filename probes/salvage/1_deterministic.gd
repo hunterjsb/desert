@@ -1,7 +1,7 @@
 extends SalvageProbe
 ## Salvage & ruins probe 1: the same seed, chunk and weather always give the
-## same finds. Planned twice from scratch, ruins stand in the same places and
-## every chunk's finds come out the same; any moment within one tick of the
+## same finds. Planned twice from scratch, history's house ruins stand in the
+## same places round a town and every chunk's finds there come out the same; any moment within one tick of the
 ## weather's record reads the same exposure; the weather changes what a find
 ## is, never where it lies. In the world, a chunk's finds come back as they
 ## were when its ground does, less what you took, and whole once the chunk
@@ -17,8 +17,12 @@ func run() -> void:
 	var one := TerrainShape.new(SEED, tuning)
 	var two := TerrainShape.new(SEED, tuning)
 	var field := WeatherField.new(SEED, tuning)
-	var ruins_one := one.ruins.around(0.0, 0.0, 3000.0)
-	var ruins_two := two.ruins.around(0.0, 0.0, 3000.0)
+	var ground := Vector2.ONE * tuning.chunk_size * 0.5
+	var at := StructureKit.starts_among(SEED, tuning, Sphere.point(0.0, 0.0), ground)[0]
+	for shape in [one, two]:
+		shape.sites.follow(ground.x, ground.y, Sphere.latitude(at), Sphere.longitude(at), 1.0, tuning.history_lay_m)
+	var ruins_one := _ruins(one)
+	var ruins_two := _ruins(two)
 	check(not ruins_one.is_empty() and ruins_one.map(_ruin_key) == ruins_two.map(_ruin_key),
 		"ruins stand in the same places on the same seed (%d)" % ruins_one.size())
 
@@ -35,14 +39,14 @@ func run() -> void:
 			if exposed != Finds.exposure(field, middle.x, middle.y, t + 1.0, tuning):
 				# t is on a tick, so a second later is the same tick.
 				exposures += 1
-			var a := Finds.plan(SEED, coord, exposed, tuning, one.height_at, one.ruins.in_chunk(coord))
-			var b := Finds.plan(SEED, coord, exposed, tuning, two.height_at, two.ruins.in_chunk(coord))
+			var a := Finds.plan(SEED, coord, exposed, tuning, one.height_at, one.sites.ruin_in(coord), _on(one))
+			var b := Finds.plan(SEED, coord, exposed, tuning, two.height_at, two.sites.ruin_in(coord), _on(two))
 			plans += a.size()
 			if var_to_str(a) != var_to_str(b):
 				differs += 1
 			# The calmest and the stormiest weather: what changes, and what can't.
-			var calm := Finds.plan(SEED, coord, 0.0, tuning, one.height_at, one.ruins.in_chunk(coord))
-			var storm := Finds.plan(SEED, coord, 1.0, tuning, one.height_at, one.ruins.in_chunk(coord))
+			var calm := Finds.plan(SEED, coord, 0.0, tuning, one.height_at, one.sites.ruin_in(coord), _on(one))
+			var storm := Finds.plan(SEED, coord, 1.0, tuning, one.height_at, one.sites.ruin_in(coord), _on(one))
 			if calm.map(_lies) != storm.map(_lies):
 				moved += 1
 	print("%d finds planned over %d chunks" % [plans, CHUNKS * CHUNKS])
@@ -120,6 +124,22 @@ func _sorted(keys: Array) -> Array:
 	var out := keys.duplicate()
 	out.sort()
 	return out
+
+
+## The house ruins standing in a shape's laid sheet, by id.
+func _ruins(shape: TerrainShape) -> Array[Ruin]:
+	var found: Array[Ruin] = []
+	for unit in shape.sites.units():
+		for site in unit.sites:
+			if site is Ruin and site.stands():
+				found.append(site)
+	found.sort_custom(func(a: Ruin, b: Ruin) -> bool: return a.id < b.id)
+	return found
+
+
+## What keeps a shape's open sand clear of its structures.
+func _on(shape: TerrainShape) -> Callable:
+	return func(x: float, z: float) -> bool: return shape.sites.covering(x, z) != null
 
 
 func _ruin_key(ruin: Ruin) -> String:

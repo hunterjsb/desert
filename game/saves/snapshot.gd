@@ -21,6 +21,7 @@ static var _kept := [
 	[Planter, ["tank_l", "split", "stored", "seeds", "ripened", "replanted", "banked", "dropped", "picked",
 		"fed_kcal", "_owed"]],
 	[Condenser, ["made_l"]],
+	[Console, ["page", "auto_shield", "log_lines", "_alerts", "_front_near"]],
 	[Battery, ["charge_wh"]],
 	[Plant, ["growth", "fruit", "state", "wild"]],
 	[Mast, ["raised", "raise", "boom", "boom_spin", "trim", "load_n", "bend_n", "extend"]],
@@ -110,6 +111,9 @@ func begin(data: Dictionary) -> Array[Vector2]:
 		player.vitals.set(key, _copy(you.vitals[key]))
 	world.weather.forecast_now()
 	world.salvage.recall(data.finds, world.terrain.chunk_at(world.player_world_x(), world.player_world_z()))
+	# History laid where it was; a save from before has none, and lays afresh.
+	world.shape.sites.recall(data.get("sheet", []))
+	world.farm.feral.recall(data.get("feral", []), world.terrain.chunk_at(world.player_world_x(), world.player_world_z()))
 	var places: Array[Vector2] = [Vector2(world.player_world_x(), world.player_world_z())]
 	for rec: Dictionary in data.things:
 		places.append(Vector2(rec.at[1], rec.at[3]))
@@ -309,6 +313,8 @@ func _take() -> Dictionary:
 		data.grasp = grasp.memory()
 		data.grasp.body = _ref(grasp.body)
 	data.finds = world.salvage.memories()
+	data.sheet = world.shape.sites.memories()
+	data.feral = world.farm.feral.memories()
 	return data
 
 

@@ -1,7 +1,7 @@
 extends SalvageProbe
 ## Salvage & ruins probe 7: nothing leaks. On world probe 3's 20 km walk, half
 ## straight and half wandering, taking a find every kilometre and leaving it
-## behind: every find in memory lies in a chunk whose ground is solid, there
+## behind: every find in memory lies on solid ground, the sand's or its ruin's, there
 ## are never more than those chunks can hold, the chunks remembered are never
 ## more than are loaded, and the object count and memory stay flat as finds
 ## are laid out ahead and forgotten behind: back where the count began,
@@ -43,7 +43,14 @@ func run() -> void:
 		lots = maxi(lots, salvage.lots())
 		for body in finds:
 			var at := body.global_position
-			if not world.terrain.has_collision_at(world.world_x(at.x), world.world_z(at.z)):
+			var ax := world.world_x(at.x)
+			var az := world.world_z(at.z)
+			# Solid under it: the ground there, or the floor of the ruin its own
+			# chunk builds, which may reach into the next.
+			var home := world.terrain.chunk_under((body.get_meta(&"find")[0].x + 0.5) * world.tuning.chunk_size,
+				(body.get_meta(&"find")[0].y + 0.5) * world.tuning.chunk_size)
+			var on_floor := home != null and home.has_collision() and home.ruin() != null and home.ruin().reaches(ax, az)
+			if not world.terrain.has_collision_at(ax, az) and not on_floor:
 				adrift += 1
 		if walked >= next_take and not finds.is_empty():
 			next_take += 1000.0
