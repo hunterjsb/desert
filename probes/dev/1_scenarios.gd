@@ -264,12 +264,12 @@ func _console_lands() -> void:
 	var shield: ShieldGenerator = dropped[3]
 	var screen := made.global_basis * Vector3.FORWARD
 	var eyes := player.camera.global_position.y - made.global_position.y
-	check(made.on_deck() and made.host() == deck and shield.host() == deck and not shield.on
+	check(made.on_deck() and made.host() == deck and shield.host() == deck and not shield.on and shield.smart
 		and made.smart_shields().size() == 1 and made.smart_shields()[0] == shield
 		and screen.dot(player.global_position - made.global_position) > 0.0 and deck.stats().hovering and absf(eyes) < 0.5,
 		"console: on a floating deck, its screen to you at your eyes (%.2f m off), the shield beside it off and smart" % eyes)
 	var stats := made.screen_text(Console.Page.STATS)
-	var shown := ["WIND", "PRESS", "HUMID", "SAND", "FRONT", "FCST", "SHIELD OFF"].all(func(l: String) -> bool: return l in stats)
+	var shown := ["WIND", "PRESS", "HUMID", "SAND", "FRONT", "FCST", "SHIELD"].all(func(l: String) -> bool: return l in stats)
 	var full := Tuning.current().storm_map_radar_cells + 5 * Tuning.current().storm_map_cells_per_instrument
 	check(shown and made.map_cells() == full and made._map.size() == full * full,
 		"console: every reading on its stats, and its map at %d cells across:\n%s" % [made.map_cells(), stats])

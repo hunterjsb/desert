@@ -182,14 +182,19 @@ func wake(device: Device) -> void:
 
 ## What the batteries in a device's pool hold now, Wh: all it could draw on.
 func pool_wh(device: Device) -> float:
+	var held := 0.0
+	for each: Device in pool_of(device):
+		for cell in each.pooled():
+			held += cell.charge_wh
+	return held
+
+
+## The devices sharing a device's pool; none for a wrecked one.
+func pool_of(device: Device) -> Array:
 	for pool: Array in _pools():
 		if pool.has(device):
-			var held := 0.0
-			for each: Device in pool:
-				for cell in each.pooled():
-					held += cell.charge_wh
-			return held
-	return 0.0
+			return pool
+	return []
 
 
 ## Devices grouped by the cables joining them and the devices seated on them;

@@ -171,7 +171,8 @@ const BARE: Array[StringName] = [&"hook", &"plug", &"strong_plug", &"hose_end", 
 const STAKE := {"mass": 2.0, "stats": {"toughness": INF}}
 
 ## Frames: their box, weight, wind catch and sockets as [kind, position, outward].
-## Those marked "deck" stand on a chassis piece's deck mount too.
+## Those marked "deck" stand on a chassis piece's deck mount too. A "short"
+## name is what a Console's screen calls it, where its label is too long.
 const DEVICES := {
 	# Two batteries, a ring front and back, a tray under it and two top mounts,
 	# so a panel rides beside a lamp or a shield; a camp with more lines rides
@@ -180,7 +181,8 @@ const DEVICES := {
 	# its rack runs along the top of the left side, away from the charge light.
 	# The side rings went on 2026-10-17: older saves number its sockets with
 	# them (Snapshot.RENUMBERED).
-	&"crate_frame": {"label": "Crate frame", "size": Vector3(0.8, 0.5, 0.8), "mass": 15.0, "deck": true,
+	&"crate_frame": {"label": "Crate frame", "short": "Crate",
+		"size": Vector3(0.8, 0.5, 0.8), "mass": 15.0, "deck": true,
 		"sockets": [
 			[&"battery", Vector3(0.0, 0.0, 0.4), Vector3.BACK],
 			[&"bottom", Vector3(0.0, -0.25, 0.0), Vector3.DOWN],
@@ -238,7 +240,8 @@ const DEVICES := {
 		]},
 	# The base shield: small and light, use switches it, and its bubble keeps
 	# out wind and storm wherever it goes, a crate's top mount included.
-	&"shield": {"label": "Shield generator", "size": Vector3(0.4, 0.42, 0.4), "mass": 6.0, "shield": true,
+	&"shield": {"label": "Shield generator", "short": "Shield",
+		"size": Vector3(0.4, 0.42, 0.4), "mass": 6.0, "shield": true,
 		"fits": &"top", "deck": true,
 		"sockets": [
 			[&"battery", Vector3(0.0, -0.05, 0.2), Vector3.BACK],
@@ -248,7 +251,8 @@ const DEVICES := {
 		]},
 	# The light shield you start with: a smaller bubble that lets a little of
 	# the wind through, built light enough that the light panel keeps it going.
-	&"light_shield": {"label": "Light shield generator", "size": Vector3(0.3, 0.32, 0.3), "mass": 4.0, "shield": true,
+	&"light_shield": {"label": "Light shield generator", "short": "Light shield",
+		"size": Vector3(0.3, 0.32, 0.3), "mass": 4.0, "shield": true,
 		"fits": &"top", "deck": true, "stats": {"radius_m": 4.0, "clear_w": 2.0, "storm_w": 20.0, "wind_block": 0.85},
 		"sockets": [
 			[&"battery", Vector3(0.0, -0.04, 0.15), Vector3.BACK],
@@ -259,7 +263,8 @@ const DEVICES := {
 	# The light solar panel you start with, half a found panel's watts on half
 	# a crate's top, so it rides beside a shield: seat it, set it down, cable
 	# it in, pick it up again. Lying flat, the wind meets its edge.
-	&"light_panel": {"label": "Light solar panel", "size": Vector3(0.8, 0.05, 0.4), "mass": 5.0, "carryable": true,
+	&"light_panel": {"label": "Light solar panel", "short": "Light panel",
+		"size": Vector3(0.8, 0.05, 0.4), "mass": 5.0, "carryable": true,
 		"fits": &"top", "stats": {"solar_w": 30.0, "face_m2": 0.04},
 		"sockets": [
 			[&"port", Vector3(0.4, 0.0, 0.0), Vector3.RIGHT],
@@ -304,7 +309,8 @@ const DEVICES := {
 	# tray under it and one device standing on top. No battery, no port: the
 	# power comes from what stands on it. Lying flat, the wind meets its edge.
 	# Found buried on edge, as the dunes would leave a sheet that wide.
-	&"chassis": {"label": "Chassis piece", "size": Vector3(1.0, 0.12, 1.0), "mass": 9.0, "chassis": true,
+	&"chassis": {"label": "Chassis piece", "short": "Deck",
+		"size": Vector3(1.0, 0.12, 1.0), "mass": 9.0, "chassis": true,
 		"carryable": true, "on_end": true, "stats": {"face_m2": 0.12},
 		"sockets": [
 			[&"ring", Vector3(0.5, 0.0, 0.0), Vector3.RIGHT],
