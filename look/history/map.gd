@@ -14,15 +14,20 @@ func _ready() -> void:
 	var width := args[2] if args.size() > 2 else "2000"
 	get_window().unfocusable = true
 	AudioServer.set_bus_mute(0, true)
+	# Its own profile and saves: a landmark reached here is no deed of the player's.
+	var away := OS.get_temp_dir().path_join("sandgame-look-history")
+	DirAccess.make_dir_recursive_absolute(away)
+	for keeper in [^"/root/Saves", ^"/root/Profile"]:
+		get_node(keeper).dir = away
 	Tuning.current().run_seed = 1234
 	var main: Main = MAIN.instantiate()
 	main.opens_on_menu = false
 	add_child(main)
 	await _settled(main)
 	if where != "":
-		main.ui.console.run("goto " + where)
+		main.ui.dev_console.run("goto " + where)
 		await _settled(main)
-	main.ui.console.run("map " + width)
+	main.ui.dev_console.run("map " + width)
 	Dev.hide_overlays()
 	for i in 20:
 		await get_tree().process_frame
