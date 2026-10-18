@@ -141,14 +141,9 @@ static func exposure(field: WeatherField, x: float, z: float, t: float, tuning: 
 	var step := tuning.exposure_step_minutes * 60.0
 	var count := maxi(1, roundi(tuning.exposure_hours * 60.0 / tuning.exposure_step_minutes))
 	var last := floorf(t / step) * step
-	var calm := tuning.exposure_calm_wind
-	var span := tuning.exposure_gale_wind - calm
 	var sum := 0.0
 	for k in count:
-		var at := last - k * step
-		var storm := clampf(field.raw_storm_at(x, z, at) / tuning.exposure_storm_full, 0.0, 1.0)
-		var gale := clampf((field.wind_at(x, z, at).length() - calm) / span, 0.0, 1.0)
-		sum += maxf(storm, gale)
+		sum += Exposure.reading(field, x, z, last - k * step, tuning)
 	return sum / count
 
 
@@ -163,9 +158,10 @@ static func tier(spec: Dictionary) -> int:
 
 
 ## A chunk's finds, on its open sand and on the floor of its ruin if it has
-## one. `height` is the ground's one function, (x, z) -> m.
+## one. `height` is the ground's one function, (x, z) -> m; `on_site(x, z)`
+## says a place is a structure's ground, which open sand keeps clear of.
 static func plan(run_seed: int, coord: Vector2i, exposed: float, tuning: Tuning, height: Callable,
-		ruin: Ruin) -> Array[Dictionary]:
+		ruin: Ruin, on_site := Callable()) -> Array[Dictionary]:
 	var found: Array[Dictionary] = []
 	var deep := deep_share(exposed, tuning)
 	var count := 0
@@ -175,7 +171,7 @@ static func plan(run_seed: int, coord: Vector2i, exposed: float, tuning: Tuning,
 			count += 1
 	for i in count:
 		var rng := _stream(run_seed, coord, i)
-		var at := _open_spot(rng, coord, tuning.chunk_size, height, ruin, found)
+		var at := _open_spot(rng, coord, tuning.chunk_size, height, ruin, found, on_site)
 		if not at.is_finite():
 			continue
 		var spec := _lying(rng, at, deep)
@@ -195,12 +191,16 @@ static func plan(run_seed: int, coord: Vector2i, exposed: float, tuning: Tuning,
 		_shuffle(spots, rng)
 		var take := rng.randi_range(RUIN_FINDS.x, RUIN_FINDS.y)
 		for k in [0] + spots.slice(0, take):
+			# The floor's finds only where it's dug out. The hall's device was a
+			# later visitor's: it lies on whatever sand is there.
+			if k > 0 and not ruin.dug(Ruin.SPOTS[k]):
+				continue
 			var each := _stream(run_seed, coord, IN_RUIN + 1 + k)
 			var spec := _lying(each, ruin.to_world(Ruin.SPOTS[k]), deep, k == 0)
 			spec.index = IN_RUIN + k
 			spec.loose = true
 			spec.bury = 0.0
-			spec.floor = ruin.floor_y
+			spec.floor = ruin.rest(Ruin.SPOTS[k])
 			_fill(spec, each, HALL_PARTS if k == 0 else 0, true)
 			found.append(spec)
 	return found
@@ -213,11 +213,12 @@ static func plan(run_seed: int, coord: Vector2i, exposed: float, tuning: Tuning,
 ## {x, z, coord, index} in world metres, or {} if none is in reach.
 static func beacon(run_seed: int, sites: Sites, x: float, z: float, tuning: Tuning, taken: Callable) -> Dictionary:
 	var size := float(tuning.chunk_size)
-	var ruin := sites.nearest(x, z, tuning.radio_reach_m, func(kind: StringName, at_x: float, at_z: float) -> bool:
-		if kind != &"house_ruin":
+	var ruin := sites.nearest(x, z, tuning.radio_reach_m, func(site: Site) -> bool:
+		if not site is Ruin:
 			return false
-		var coord := Vector2i(floori(at_x / size), floori(at_z / size))
-		return _stream(run_seed, coord, BEACON).randf() < tuning.beacon_share and not taken.call(coord, IN_RUIN)) as Ruin
+		var coord := Vector2i(floori(site.x / size), floori(site.z / size))
+		return _stream(run_seed, coord, BEACON).randf() < tuning.beacon_share and not taken.call(coord, IN_RUIN) \
+			and sites.ruin_in(coord) == site) as Ruin
 	if ruin == null:
 		return {}
 	var at := ruin.to_world(Ruin.SPOTS[0])
@@ -275,12 +276,12 @@ static func _fill(spec: Dictionary, rng: RandomNumberGenerator, least := 0, in_r
 ## Somewhere on the chunk's open sand, clear of its ruin and of the finds
 ## before it, not too steep; not finite if nowhere turned up.
 static func _open_spot(rng: RandomNumberGenerator, coord: Vector2i, size: int, height: Callable, ruin: Ruin,
-		found: Array[Dictionary]) -> Vector2:
+		found: Array[Dictionary], on_site: Callable) -> Vector2:
 	var steepest := tan(deg_to_rad(STEEPEST))
 	for k in TRIES:
 		var at := Vector2(coord.x * size + rng.randf_range(EDGE, size - EDGE),
 			coord.y * size + rng.randf_range(EDGE, size - EDGE))
-		if ruin != null and ruin.reaches(at.x, at.y, 2.0):
+		if (ruin != null and ruin.reaches(at.x, at.y, 2.0)) or (on_site.is_valid() and on_site.call(at.x, at.y)):
 			continue
 		if found.any(func(f: Dictionary) -> bool: return at.distance_to(Vector2(f.x, f.z)) < APART):
 			continue
