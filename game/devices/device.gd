@@ -477,9 +477,17 @@ func take(socket: Socket) -> Part:
 func stats() -> Dictionary:
 	var total := {"mass": mass, "catch": wind_catch(), "capacity_wh": 0.0, "hooks": 0,
 		"lift_kg": 0.0, "solar_w": 0.0, "light_w": 0.0, "plants": 0, "turbine_w": 0.0}
-	for source: Dictionary in [frame_stats] + parts().map(func(p: Part) -> Dictionary: return p.stats):
-		for key: String in source:
-			total[key] = total.get(key, 0) + source[key]
+	# The frame's, then each part's in its socket's order, as parts() lists them.
+	_sum_into(total, frame_stats)
+	var charge := 0.0
+	var cells := 0
+	for socket in sockets():
+		var part := socket.part
+		if part != null:
+			_sum_into(total, part.stats)
+		if socket.kind == &"battery" and part is Battery:
+			charge += (part as Battery).charge_wh
+			cells += 1
 	total["can_float"] = total["lift_kg"] >= mass
 	total["resting"] = resting
 	total["hovering"] = total["can_float"] and powered and lift_share > 0.0
@@ -487,11 +495,15 @@ func stats() -> Dictionary:
 	# lifting it again would take. Seated, its own tray holds nothing up.
 	total["hover_w"] = (carried_kg if powered else mass) * world.tuning.hover_watts_per_kg \
 		if total["can_float"] and not resting and world != null and host() == null else 0.0
-	var cells := batteries()
-	if not cells.is_empty():
-		total["charge_wh"] = cells.reduce(func(sum: float, c: Battery) -> float: return sum + c.charge_wh, 0.0)
+	if cells > 0:
+		total["charge_wh"] = charge
 	total["durability"] = durability
 	return total
+
+
+static func _sum_into(total: Dictionary, source: Dictionary) -> void:
+	for key: String in source:
+		total[key] = total.get(key, 0) + source[key]
 
 
 func _recompute() -> void:
