@@ -3,14 +3,18 @@ extends SalvageProbe
 ## one's lowest point lies under the sand at its middle by just its planned
 ## share of its height, enough of it shows above the sand all round, and your
 ## hands can take it from beside it. A loose one settles from a few
-## centimetres onto the sand or a ruin's floor and rests there, never through
-## it. Over the ground round the start, a ruin's, and places a kilometre out;
-## and any kind the sand holds that none of those turned up, laid by hand.
+## centimetres onto the sand, or is set on a site's floor or what stands on
+## it, and rests there, never through it. Over the ground round the start, a
+## ruin's, and places a kilometre out; and any kind the sand or a site holds
+## that none of those turned up, laid by hand.
 
 ## Your eyes look at a find from this far off, from any of these many sides.
 const EYE_OFF := 1.3
 const SIDES := 8
 
+
+## Where the finds laid by hand are set out from, once.
+var _laid_from := Vector2.INF
 
 func run() -> void:
 	await load_salvage()
@@ -35,14 +39,17 @@ func run() -> void:
 			kinds[spec_of(body).id] = true
 			await _check(body, tally, worst)
 	var laid := 0
+	var ids: Array[StringName] = SiteLoot.ids()
 	for layer: StringName in Finds.PARTS:
-		for table: Array in [Finds.PARTS[layer], Finds.DEVICES[layer], Finds.IN_RUINS[layer].parts, Finds.IN_RUINS[layer].devices]:
+		for table: Array in [Finds.PARTS[layer], Finds.DEVICES[layer]]:
 			for entry: Array in table:
-				if not kinds.has(entry[0]):
-					kinds[entry[0]] = true
-					await _check_laid(entry[0], table in [Finds.DEVICES[layer], Finds.IN_RUINS[layer].devices], laid,
-						tally, worst)
-					laid += 1
+				if not ids.has(entry[0]):
+					ids.append(entry[0])
+	for id in ids:
+		if not kinds.has(id):
+			kinds[id] = true
+			await _check_laid(id, Catalog.DEVICES.has(id) or id == &"stake", laid, tally, worst)
+			laid += 1
 	print("%d buried (%d deep) and %d loose (%d on a ruin's floor), %d kinds laid by hand; worst depth error %.4f m, worst rest %.3f m"
 		% [tally.buried, tally.deep, tally.loose, tally.floor, laid, worst.depth, worst.rest])
 	check(tally.buried >= 20 and tally.loose >= 5 and tally.floor >= 3, "finds of every kind were checked")
@@ -52,8 +59,11 @@ func run() -> void:
 ## One of a kind laid by hand on open sand near you, buried if it can be,
 ## and checked as one found there would be.
 func _check_laid(id: StringName, device: bool, k: int, tally: Dictionary, worst: Dictionary) -> void:
-	var here := Vector2(world.player_world_x(), world.player_world_z())
-	var at := here + Vector2(3.0 * k - 9.0, 5.0)
+	# In rows round where the first was laid: checking one walks you to it, so
+	# laid from where you stand each would lead you off the loaded ground.
+	if _laid_from == Vector2.INF:
+		_laid_from = Vector2(world.player_world_x(), world.player_world_z())
+	var at := _laid_from + Vector2(3.0 * (k % 7) - 9.0, 5.0 + 3.0 * float(k / 7))
 	var short := not device and Finds._longest(id) <= Finds.SHOWING
 	var spec := {"index": 900 + k, "id": id, "device": device, "layer": Finds.SURFACE, "x": at.x, "z": at.y,
 		"yaw": 0.5 * k, "lean": 1.0, "lean_by": 0.1, "bury": 0.0 if short else 0.4, "loose": short,

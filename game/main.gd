@@ -17,8 +17,6 @@ const WORLD := "res://game/world/world.tscn"
 const VIEW_SEARCH := 60.0
 const VIEW_HEIGHT := 1.65
 const VIEW_PITCH := -2.0
-## The menu's theme fades in and out over this long, s.
-const THEME_FADE := 1.5
 
 ## Opens on the main menu, as the game does; a probe that wants a run turns it off.
 @export var opens_on_menu := true
@@ -27,28 +25,19 @@ const THEME_FADE := 1.5
 var run: Node
 ## The menu's world, or null in a run.
 var view: World
-## The starting crate in the menu's foreground, or null in a run.
+## The prop in the menu's foreground, or null in a run.
 var showpiece: Showpiece
 ## The run in play is a dev scenario's: the save on disk, the player's own,
 ## is never written over or deleted by it.
 var _scenario := false
 ## Seconds of play since the run in play was last saved.
 var _played := 0.0
-## The main menu's theme, heard while its desert shows, and its fade.
-var theme: AudioStreamPlayer
-var _theme_fade: Tween
 
 @onready var ui: UIRoot = $UI
 
 
 func _ready() -> void:
 	ui.main = self
-	theme = AudioStreamPlayer.new()
-	var song: AudioStreamOggVorbis = Sounds.MENU_THEME
-	song.loop = true
-	theme.stream = song
-	theme.bus = Sounds.UI
-	add_child(theme)
 	var asked := _scenario_asked()
 	_scenario = asked != ""
 	if opens_on_menu and not _scenario:
@@ -195,6 +184,15 @@ func reset_profile() -> void:
 	var store := profile()
 	if store != null:
 		store.reset()
+	if showpiece != null:
+		showpiece.home = last_kit()
+
+
+## The kit of the origin you last came as, the Surveyor's before any.
+func last_kit() -> Kit:
+	var store := profile()
+	var kit := Kit.named(store.last_origin()) if store != null else null
+	return kit if kit != null else Kit.standard()
 
 
 func quit() -> void:
@@ -259,6 +257,8 @@ func _into(next: Node, resuming: bool) -> void:
 		if store.get(&"restoring"):
 			await store.restored
 		await _settled()
+	if profile() != null:
+		profile().remember_origin(Kit.of(world()).id)
 	Dev.show_hint(true)
 	Controls.free_mouse(false)
 	await ui.fade(false)
@@ -290,9 +290,9 @@ func _end_run() -> void:
 
 
 ## The real world from a fixed camera: no one stands there, nothing of yours
-## is in it but the starting crate on show, and only the weather moves, at its
-## own pace, without a sound: a storm at the menu is only to look at, while
-## the menu's own words are heard, and its theme.
+## is in it but the prop, and only the weather moves, at its own pace,
+## without a sound: a storm at the menu is only to look at, while the menu's
+## own words and its music are heard.
 func _show_view() -> void:
 	Dev.clear()
 	AudioServer.set_bus_mute(AudioServer.get_bus_index(Sounds.WORLD), true)
@@ -324,23 +324,12 @@ func _show_view() -> void:
 	showpiece = Showpiece.new()
 	showpiece.ui = ui
 	showpiece.camera = eye.camera
+	showpiece.home = last_kit()
 	view.add_child(showpiece)
-	_fade_theme(true)
-
-
-## The menu's theme in from its start as the menu's desert shows, or out as
-## a run takes its place.
-func _fade_theme(on: bool) -> void:
-	if _theme_fade != null:
-		_theme_fade.kill()
-	if on:
-		theme.volume_db = -40.0
-		if not theme.playing:
-			theme.play()
-	_theme_fade = create_tween()
-	_theme_fade.tween_property(theme, ^"volume_db", 0.0 if on else -60.0, THEME_FADE)
-	if not on:
-		_theme_fade.tween_callback(theme.stop)
+	var music := MenuMusic.new()
+	music.view = view
+	music.ui = ui
+	view.add_child(music)
 
 
 static func _make(path: String) -> Node:
@@ -349,7 +338,6 @@ static func _make(path: String) -> Node:
 
 func _drop_view() -> void:
 	AudioServer.set_bus_mute(AudioServer.get_bus_index(Sounds.WORLD), false)
-	_fade_theme(false)
 	remove_child(view)
 	view.queue_free()
 	view = null

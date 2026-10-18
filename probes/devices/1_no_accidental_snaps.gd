@@ -6,9 +6,9 @@ extends HandsProbe
 ## held and aimed part fits through the hands: a battery and a root-tuber by aim
 ## alone, and a hover tray slid under a resting planter with take. And standing
 ## at your full height by a crate on the sand, looking at it is enough: a tray
-## is offered its bottom mount, a hook the ring on your side, of two rings
-## facing you the one nearer your aim, and a shield the nearer top mount; each
-## waits for take. A fitted part still comes out to an empty hand.
+## is offered its bottom mount, a hook the ring on your side, or from a side
+## where neither of its rings faces you the one nearer your aim, and a shield
+## the nearer top mount; each waits for take. A fitted part still comes out to an empty hand.
 
 const ROUNDS := 30
 const THROWN := 30
@@ -234,14 +234,14 @@ func _fits_standing() -> void:
 		"take seats the tray under the crate, lifted clear of the sand (lowest %.2f m)" % _lowest(crate))
 	await simulate(1.0)
 
-	var ring := _socket_on(crate, &"ring", Vector3(0.4, 0.0, 0.0))
+	var ring := _socket_on(crate, &"ring", Vector3(0.0, 0.0, 0.4))
 	var hook := await _take_in_hand(&"hook")
-	look(_stand_by(crate, Vector3.RIGHT), crate.global_transform * Vector3(0.15, 0.25, -0.05))
+	look(_stand_by(crate, Vector3.BACK), crate.global_transform * Vector3(0.05, 0.25, 0.15))
 	await _offered(hook, ring, "looking at the crate's top, a held hook")
 	hands.grab()
 	check(ring.part == hook, "take seats the hook on the ring on your side")
 	await simulate(0.2)
-	look(_stand_by(crate, Vector3.RIGHT), seat(ring) * middle(hook))
+	look(_stand_by(crate, Vector3.BACK), seat(ring) * middle(hook))
 	await simulate(1.0 / 60.0)
 	check(hands.grab() and hands.held == hook and hands.phase == Hands.Phase.TAKING and ring.part == null,
 		"looking straight at the fitted hook, an empty hand takes it out")
@@ -249,16 +249,16 @@ func _fits_standing() -> void:
 	hands.drop()
 	await simulate(0.5)
 
-	var near := _socket_on(other, &"ring", Vector3(0.4, 0.0, 0.0))
-	var far := _socket_on(other, &"ring", Vector3(0.0, 0.0, 0.4))
-	var corner := _stand_by(other, Vector3(1.0, 0.0, 1.0))
+	var front := _socket_on(other, &"ring", Vector3(0.0, 0.0, -0.4))
+	var back := _socket_on(other, &"ring", Vector3(0.0, 0.0, 0.4))
+	var side := _stand_by(other, Vector3.RIGHT)
 	var second := await _take_in_hand(&"hook")
-	look(corner, other.global_transform * Vector3(0.15, 0.25, -0.05))
-	await _offered(second, near, "from a corner, aimed nearer the side ring, a held hook")
-	look(corner, other.global_transform * Vector3(-0.05, 0.25, 0.15))
-	await _offered(second, far, "aimed nearer the back ring, it")
+	look(side, other.global_transform * Vector3(0.15, 0.25, -0.2))
+	await _offered(second, front, "from the side, aimed nearer the front ring, a held hook")
+	look(side, other.global_transform * Vector3(0.0, 0.25, 0.2))
+	await _offered(second, back, "aimed nearer the back ring, it")
 	hands.grab()
-	check(far.part == second, "take seats the hook on the ring nearer your aim")
+	check(back.part == second, "take seats the hook on the ring nearer your aim")
 
 	var top := _socket_on(other, &"top", Vector3(0.0, 0.25, 0.2))
 	var shield := Catalog.device(&"light_shield")

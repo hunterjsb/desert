@@ -27,7 +27,10 @@ static var _current: Tuning
 @export var start_latitude_degrees: float = 12.0
 ## A Surveyor starts at least the first this far from any artery or spoke,
 ## m, and walking in toward Tu crosses one within the second.
-@export var start_artery_m := Vector2(1000.0, 3000.0)
+@export var start_artery_m := Vector2(600.0, 3000.0)
+## What a Surveyor has in sight stands this far off, m: on its horizon, not
+## at its feet, and near enough to know at a glance.
+@export var start_horizon_m := Vector2(600.0, 1000.0)
 ## No path and no settlement comes within this of a Surveyor's start, m:
 ## past the ground you can see.
 @export var start_deep_m: float = 600.0
@@ -35,6 +38,10 @@ static var _current: Tuning
 @export var start_wrecks_m: float = 300.0
 ## A Homesteader starts on a road within this of a wayshrine, m.
 @export var start_wayshrine_m: float = 100.0
+## Every start has a structure in sight from where its ground begins: its
+## top clear over the dunes between by this many pixels at 1080 rows,
+## however deep the sand lies on it.
+@export var start_sight_px: float = 3.0
 
 @export_group("Saves")
 ## A Normal run saves itself after this many minutes of play since its last
@@ -93,6 +100,26 @@ static var _current: Tuning
 @export var haze_end: float = 9000.0
 ## Most of the view the haze ever hides, at haze_end and beyond.
 @export var haze_strength: float = 0.7
+
+@export_group("Skyline")
+## What stands on the dunes past the built ground, out to the far ring's
+## reach: tall structures' stand-ins, glints, and the saltbush lines on the
+## roads. Off, nothing shows past the built ground but the dunes.
+@export var skyline: bool = true
+## How far it draws, m.
+@export var skyline_m: float = 3000.0
+## The thinnest a stand-in is drawn, pixels, so what's far off never breaks
+## into flickering bits; a saltbush line's least thickness.
+@export var skyline_thinnest_px: float = 2.0
+@export var skyline_line_px: float = 3.0
+## The least a landmark (a mast, a tower) stands on screen at a kilometre,
+## pixels wide and tall, shrinking more slowly than perspective past it: the
+## thing on the horizon the eye snags on.
+@export var skyline_landmark_px := Vector2(4.0, 14.0)
+## A glint's sparkle, pixels across as it lights and at its brightest, and
+## how bright, times the sun on white.
+@export var glint_px := Vector2(8.0, 16.0)
+@export var glint_brightness: float = 9.0
 
 @export_group("Light")
 ## The sand in full light, before the sun and sky light it. Real desert sand
@@ -244,6 +271,11 @@ static var _current: Tuning
 ## Tu-shine on top of its physical value, so how bright a near-side night is
 ## can be tuned apart from Tu's size. 1 is physical.
 @export var tu_shine_scale: float = 1.0
+## How long Tu takes to turn once, real hours: a super-Jupiter's ten. The
+## game's day stands for Zan's real lap, which Tu's size sets, so Tu turns as
+## often in a game day as it would in a real one: at 9°, about 6.8 times as
+## seen from Zan.
+@export var tu_spin_hours: float = 10.0
 
 @export_group("Storm wall")
 ## Top of a storm's dust wall, metres. It dissolves over roof_soft either side.
@@ -503,6 +535,15 @@ static var _current: Tuning
 ## What you hold slips from your hands this far from where you'd have it, m.
 @export var hold_slip: float = 1.5
 
+@export_group("Sailing")
+## A raised sail's push felt this long (Mast.LOAD_SECONDS) tears it past
+## sail_tear_n, N, and snaps its mast past mast_snap_n: in a 10 m/s breeze a
+## sail makes a quarter of the first, in a storm far past both. Set against a
+## line's 1,500 N and a stake's 2,500 N, so a camp moored with its sail up
+## loses the sail and then the mast before its line or its stake.
+@export var sail_tear_n: float = 600.0
+@export var mast_snap_n: float = 1000.0
+
 @export_group("Rope")
 ## A line's own weight, kg per metre. It's what makes a lightly loaded line
 ## droop and straighten only as the pull builds, so the load reads by eye.
@@ -593,6 +634,14 @@ static var _current: Tuning
 @export var condenser_cold: float = 0.0
 @export var condenser_hot: float = 40.0
 @export var condenser_hot_share: float = 0.2
+## The compass needle follows Tu's weak field: it swings about it once in this
+## many seconds and settles by this damping (1 would never overshoot). Tu's
+## field is tipped from its spin, so the needle sways this far either way once
+## each turn of Tu; a full storm's charged dust swims it up to this far.
+@export var compass_swing_seconds: float = 3.0
+@export var compass_damping: float = 0.4
+@export var compass_sway_degrees: float = 10.0
+@export var compass_storm_degrees: float = 35.0
 
 @export_group("Farming")
 ## A planter's water tank, L. Found empty.
@@ -626,9 +675,24 @@ static var _current: Tuning
 ## Ruins and finds. Probes of other systems switch them off, as ground probes
 ## still the air, so a buried crate never stands in what they measure.
 @export var salvage: bool = true
-## Finds in a chunk of open sand, on average, and at most.
-@export var finds_per_chunk: float = 1.5
+## Loose finds in a chunk of open sand on the way, on average, and at most: a
+## tenth of the 1.5 open sand held before loot moved into history's sites.
+## On the way is within a path's corridor or this near a settlement's sites, m.
+@export var finds_per_chunk: float = 0.15
 @export var finds_most: int = 4
+@export var finds_scatter_m: float = 60.0
+## Drift (Drift): what a line across the wind catches in a storm's heart, an
+## hour per metre of it; of what blows past, the share that snags on a line in
+## the open, and how much more falls out of the slowed wind in a full lee.
+@export var drift_per_m_hour: float = 1.0
+@export var drift_open: float = 0.25
+@export var drift_lee: float = 1.0
+## Drift is drawn every this many s of world time; a line's pile holds at
+## most this many things before more blows past; a catch line is at least
+## this long, m.
+@export var drift_tick_s: float = 20.0
+@export var drift_most: int = 8
+@export var drift_shortest_m: float = 1.5
 ## Share of finds from the deep layer where the weather has been calm, and
 ## where it has been as hard as it gets the whole time; between, by how hard
 ## it's been.
@@ -645,12 +709,6 @@ static var _current: Tuning
 ## this hard as much as a storm's heart, m/s.
 @export var exposure_calm_wind: float = 16.0
 @export var exposure_gale_wind: float = 30.0
-## At most one ruin in each square this many chunks a side.
-@export var ruin_cell_chunks: int = 5
-## A ruin stands only where the dunes over its ground rise no more than
-## this, m, and are nowhere steeper than this, degrees.
-@export var ruin_max_rise: float = 1.5
-@export var ruin_max_degrees: float = 20.0
 
 @export_group("History")
 ## The moon's cells history is made and laid in, m across.
@@ -676,6 +734,19 @@ static var _current: Tuning
 @export var axis_spread_degrees: float = 25.0
 ## Spokes from Port Morgan out to the ring, besides the artery.
 @export var spokes: int = 5
+## A structure's exposure: the weather at it over this many hours before its
+## ground is built, read every this many minutes of world time.
+@export var site_exposure_hours: float = 12.0
+@export var site_exposure_step_minutes: float = 30.0
+## Sand a storm's heart strips off a structure in a tick, and sand the wind
+## lays back on it every tick, m.
+@export var site_strip_m: float = 0.5
+@export var site_return_m: float = 0.2
+
+@export_group("Plume")
+## A live vent's seep as a buoyancy flux, m⁴/s³ at this tuning's gravity: how
+## hard what it lets out climbs. Bursts multiply it (Geology).
+@export var plume_buoyancy: float = 25000.0
 
 @export_group("Radio")
 ## What a radio draws while it's on, W.

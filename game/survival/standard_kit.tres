@@ -18,11 +18,11 @@ assembled = Dictionary[StringName, Dictionary]({
 "frame": &"crate_frame",
 "sockets": {
 0: &"battery",
-3: &"hover_tray",
-4: &"light_shield",
-7: &"hook",
-10: &"board",
-9: &"light_panel"
+1: &"hover_tray",
+2: &"light_shield",
+5: &"hook",
+8: &"board",
+7: &"light_panel"
 }
 }
 })
@@ -36,3 +36,4 @@ label = "Surveyor"
 about = "tows a camp"
 start = &"artery"
 balanced = true
+shown = &"floating_crate"

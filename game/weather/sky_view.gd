@@ -70,6 +70,7 @@ func show(t: float, eye: Vector3, sun: Vector3, sun_shown: float, glow: Vector3,
 	# Tu spins about Zan's own axis.
 	material.set_shader_parameter("tu_pole", Vector3(0.0, sin(moon.latitude), -cos(moon.latitude)))
 	material.set_shader_parameter("tu_time", t)
+	material.set_shader_parameter("tu_spin", _day.tu_turn(t))
 	material.set_shader_parameter("to_stars", _day.stars_from(t, moon.latitude, moon.longitude))
 	material.set_shader_parameter("eclipse", _day.eclipse(t))
 	material.set_shader_parameter("eclipse_air", ring_air)

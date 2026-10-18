@@ -175,6 +175,20 @@ func interact(_by: Player) -> bool:
 	return true
 
 
+## Turns the dial to a channel's carrier, as a Console's screen does: off,
+## the music, the weather station (the Walker's carrier today) or the beacon,
+## with a burst of static between stations. Coming to the beacon, it decides
+## then which one it hears.
+func tune_channel(to: int) -> void:
+	if wrecked() or world == null or to == channel:
+		return
+	var before := channel
+	channel = to
+	_retuned(before)
+	if powered:
+		Sounds.play_at(self, Sounds.RADIO_TUNE, minf(_tuning.radio_loudness_db, 3.0), HEARD)
+
+
 ## Use in your hands tunes it just the same.
 func use(by: Player, _at: Vector3) -> bool:
 	return interact(by)
@@ -350,7 +364,7 @@ func _listen(delta: float) -> void:
 		reception = receive_relay(x, z, t)
 		said = "" if not reception.cut and reception.clean > 0.0 else dial + ("· · ·" if reception.cut else "static")
 		under = NOTHING if reception.cut else lerpf(NOTHING, 0.0, reception.clean)
-		song = Sounds.RADIO_DAY if world.weather.day.is_day(t, world.moon.longitude) else Sounds.RADIO_NIGHT
+		song = track_at(world, t)
 		_level = 0.0 if reception.cut else sqrt(reception.clean)
 		# Heard sliding: the relay's own coming and going, and a storm's warp.
 		music.pitch_scale = 1.0 + PITCH_SLIDE * reception.warp / maxf(_tuning.storm_warp_khz, 0.01)
@@ -494,6 +508,12 @@ func _put_on(song: AudioStream, t: float, into := NAN) -> void:
 ## Stoker's; null with none.
 func on_air() -> AudioStream:
 	return _on_air if playing() else null
+
+
+## The music on air at world time t where the world's player is: the day's
+## track while the sun is up, the night's after.
+static func track_at(at: World, t: float) -> AudioStream:
+	return Sounds.RADIO_DAY if at.weather.day.is_day(t, at.moon.longitude) else Sounds.RADIO_NIGHT
 
 
 func _off_air() -> void:

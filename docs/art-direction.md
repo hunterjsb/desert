@@ -459,6 +459,27 @@ Readings, not in the session:
   wrote it; the Dark Age is where the knowledge is lost.
 - **The Dark Age leaves no mark of its own on buildings,** only on things: it has no structures.
 
+**As drawn** (2026-10-18; [the world system](world-system.md#the-marks)). A thing's lineage stacks its
+marks over its own look, each layer added as pieces in the paint pass, not repainted:
+- **The maker's stamp** is the look's own, from its first hands' row: colonial gear the colonial row, the
+  company's issue the new one.
+- **The First Kingdoms** add an enamel band in the house's colour round a frame's top edges, a round
+  housing or a part's end, and a small enamel plaque with the house's crest cut through it to bright metal
+  (a new scratched ink), two brass rivets at its top: Okafor's key (they kept the last Harbourmaster's),
+  Kessel's cauldron, Arkwright's arch, Vante's tower, in deep red, ochre, teal, and ochre with red.
+- **The Dark Age** adds cord lashed round corner posts or round a body, a round ceramic cap on a square
+  corner, a saltbush-wood splint lashed along an edge, and a plate off another thing in its paint, riveted
+  on crooked, with "ZN" daubed back on it where the thing was consigned.
+- **The second age** adds the sign of Tu, half-risen and banded, daubed on a limewashed patch, a charm on
+  cord, a dyed tassel, a sand-glass water vial tied on; the Cistern's touch a blue-glazed cap and charm.
+
+The wear shader chips every layer by its own share: the enamel chips, the cord and ceramic hardly, so the
+newest work reads freshest on an old thing. The atlas grew a fourth row for the ages after
+(`marks.py`): the four crests and the sign of Tu, read by mark number past the sixth; a stamp can now
+also name its row, so the Dark Age's "ZN" sits on a colonial crate whose own stencil still reads TILG.
+They're one merged mesh a lineage, no new material or draw. Seen so far only on a flat CPU render of their
+meshes: `look/lineage/shoot.sh` shoots the sheet once the GPU is back.
+
 ## Tu and the sky
 
 *2026-10-17, from [the Tu spec](tu-and-day-2026-10-17.md): the behaviour is in [the
@@ -470,9 +491,10 @@ and sits behind the haze and the storm walls like the rest of the sky. Dunes and
 overlap its lower edge because they stand in front of the sky.
 
 - **Bands** run round Tu's spin axis, stretched along it by flow noise, with a few storm
-  ovals, all drifting too slowly to see within a session. Tu's axis is Zan's, so from the
-  equator, with Tu on the east-west line, the bands stand upright; further north or south
-  they lean.
+  ovals. Tu's axis is Zan's, so from the equator, with Tu on the east-west line, the bands
+  stand upright; further north or south they lean. **Tu turns** on that axis, so its
+  storms come round and go behind the limb, while the bands and ovals slide on it too
+  slowly to see within a session ([as built](#tu-turning-and-close-as-built)).
 - **Light:** lit from the real sun, with a soft terminator, gentle limb darkening, a thin
   bright rim of atmosphere on the lit side, and a night face only just there.
 - **Through Zan's air:** dimmed, warmed and hazed the lower it stands, reddened and
@@ -517,6 +539,69 @@ Whichever of it and the sun is brighter casts the shadows, so the shadow map is 
 To see it: the dev scenarios `eclipse` and `far`, and the console's `tu` to switch sizes. The
 look-test `look/sky/shoot.sh <dir>` shoots the three sizes at the same moments; its sheets are
 `~/Desktop/tu_sizes.png` and `~/Desktop/tu_more.png`.
+
+### Tu turning, and close, as built
+
+*2026-10-18, after Hunter's "yeah we should tackle it, and add a little more detail, staring
+at the low detail red spot every night pulls you out of it."*
+
+**It turns.** The whole cloud field turns about Tu's pole, true to scale: 6.8 turns a day
+seen from Zan at 9°, one each 2 minutes 57 ([the moon](the-moon.md#day-length)). `DayCycle.tu_turn`
+is the one account of how far it has turned; SkyView hands it to the sky as `tu_spin`, and the
+compass's sway reads the same. The clouds are laid round Tu's own longitude, so nothing in them
+has a seam as it comes into view. At 9° the clouds at the middle of the face move about 2 pixels
+a second at 1080p, about half as fast as the stars. One turn a day and three are under trial
+against it: `~/Desktop/tu.png` has the same three minutes at each rate.
+
+**Detail where the eye rests.** Tu is about 85, 125 and 185 pixels across at 1920x1080 at 6°,
+9° and 13°, and the red spot 24 by 14 at 9°. All of it is from the palette above, mixed:
+
+- **The red spot** has a pale hollow round it, a dark collar, a darker red ring just inside,
+  and two arms swirling in to a lighter, ochre core, the whole turning slowly, once in about
+  half an hour. The bands bend round it as a stream round a stone, squeezing past it, with
+  filaments plainest where they're bent. Behind it, where the bands shear past, a churned
+  wake of pale and dark tears and ochre, widening for a few of its lengths. At 9° the spot
+  reads as a swirl with its collar and core, the arms an S across it; at 13° and close they
+  wind plainly.
+- **The cream ovals** are built the same, smaller, without the wake, and a string of small
+  white ones rides the dark belt south of the red spot.
+- **Festoons:** dark plumes trailing from the north equatorial belt toward the equator, each
+  its own length and hooked back by the shear, dark at the root and wisping out, some missing.
+- **The band edges:** where a zone meets a belt the jets shear, and here and there waves
+  break along the edge, curling over. Pale rifts tear slantwise through the belts, and fine
+  filaments run along the flow.
+- **Nothing shimmers as it turns.** Each piece of detail fades to its mean once it's finer than
+  about two pixels, by how wide a pixel is where the ray meets Tu, so a small Tu shows only
+  what it can hold and a close one shows more. The night face keeps only its broad bands, so
+  in the eclipse only the ring holds the eye, and the dusk crescent carries the detail it lights.
+
+How it's built: Tu's clouds are their own include, `game/weather/tu_clouds.gdshaderinc`, which
+the sky shader draws and the look-test unrolls. To see it: `look/tu/shoot.sh <dir>`, which
+shoots each size on a full-Tu night, at dusk and in the eclipse, Tu blown up pixel for pixel,
+the default close, the spin at each rate and the whole of Tu unrolled, and times it.
+
+**Cost,** on the RTX 3070 at 1920x1080 with other Godots running, so rough: timed against the
+sky as it was, alternated in the same run (the look-test's `--against`), twice. With Tu filling
+the frame, about two million pixels all of them Tu's, the new clouds cost 0.18 and 0.14 ms more
+than the old (3.53 against 3.35 ms, and 5.75 against 5.61), where the old cost 0.4 to 0.8 ms
+more than the stock sky. That's under a tenth of a nanosecond a pixel, so with Tu in view as the
+game draws it, about 12,000 pixels at 9°, it's about a thousandth of a millisecond, lost in the
+runs' spread (3.06 against 3.03 ms in one, 4.43 against 4.90 in the other). Only Tu's pixels
+pay, and its night face skips the fine detail.
+
+**What's fragile.**
+
+- On a full-Tu night the eye opens only so far as keeps the brightest 64-pixel patch in view
+  short of white. At 6° and 9° Tu barely fills a patch, so the dark sky in it holds the
+  reading down, the eye opens further, and Tu's pale zones burn out: about half the middle of
+  its face at 9°, nearly all of it at 6°, a fifth at 13°. It was so before. The detail in the
+  belts, the ovals and the festoons shows; the zones' own is lost. A smaller patch in the
+  eye's meter would fix it, and would dim the night facing Tu a little.
+- The red spot's arms are two clean spirals broken up by noise; close, they read a little
+  drawn.
+- At a whole number of turns a day, Tu shows the same face at the same hour every night.
+- The look-test finds a moment with the red spot in view from its place and drift, copied
+  from the include: moving the spot means moving them there too.
 
 ### The eclipse, as built
 
@@ -636,9 +721,9 @@ so its reflection map is kept at the smallest size and costs next to nothing to 
 - **Era shapes against the skimmer era.** Part 5's shape table has colonial, First Kingdoms and second
   age, and no skimmer era; the notes' "light, cheap and fragile" is the only word on its gear. Not said
   what it looks like, or whether it is the colonial shape worn hard.
-- **Layered marks against the atlas.** The atlas has six marks in three rows (the colonial, surface and
-  new rows). A find with three eras of marks needs them layered on one piece, which the paint pass was not built
-  for. Not said whether it is drawn as a stack of marks or as a few presets.
+- **Layered marks against the atlas.** *Answered 2026-10-18:* a stack, each lineage entry its own pieces
+  over the look from a few presets a layer (a house, a set of repairs, a set of gifts), the atlas a row
+  longer.
 - **Remodelling against "models wait for the loop".** Here: "Every game object keeps its
   grey-box shape until the loop works," and "models wait for the loop." The notes: "Device
   models should differ by era in shape... The shield comes first." Not said: whether the

@@ -1,15 +1,26 @@
 class_name Showpiece
 extends Node3D
-## The main menu's starting crate, put together as a new run's kit has it,
-## floating in the foreground and tilting toward the mouse, as the
-## prototype's shield and radio did; dragged, it spins. Only what you see of
-## it is kept, never a body, so it can't fall, blow away or be saved, and it
-## stands in the desert's own light and weather.
+## The main menu's prop: the piece of the origin you last came as, put
+## together as a new run's is, floating in the foreground and tilting toward
+## the mouse, as the prototype's shield and radio did; dragged, it spins.
+## Under every menu over the main menu it slides aside, right of the words,
+## and shows what that menu says: an origin's piece, or your last camp as the
+## save holds it. Only what you see of it is kept, never a body, so it can't
+## fall, blow away or be saved. It stands in the desert's own light and
+## weather, and once that light is low a soft light of its own keeps its
+## shape and colours, the night left dark round it.
 
-## The kit's assembly it shows.
-const SHOWN := &"floating_crate"
 ## Where it floats in the camera's view, m: between the title and the words.
 const AT := Vector3(0.0, -0.06, -2.8)
+## Aside, its middle stands this far across the screen from the left, and
+## this far up from home, m, clear of the list under it.
+const ASIDE := 0.68
+const ASIDE_RISE := 0.12
+## How long it takes to slide aside or home, and to swap one piece for another, s.
+const SLIDE_SECONDS := 0.6
+const SWAP_SECONDS := 0.3
+## A piece wider corner to corner than this, m, is shown smaller, to fit where the crate does.
+const SPAN := 2.4
 ## Turned to show its front, the board racked beyond it, and tipped to show
 ## what rides on top, degrees.
 const YAW := 205.0
@@ -20,72 +31,247 @@ const EASE := 5.0
 ## A drag spins it this far per pixel, degrees; let go, the spin dies away at this rate, /s.
 const SPIN_PER_PX := 0.6
 const SPIN_SETTLE := 2.5
+## What a menu shows aside for your last camp.
+const CAMP := &"camp"
+## The camp: the thing of yours nearest where you stood and what stood within
+## this of it, m, this many at most. Aside it has room to be this wide corner
+## to corner, m, and it's drawn in toward its middle till the farthest thing
+## stands this far from it, m, each kept this far clear of the rest, so a camp
+## spread over the sand still shows what it is.
+const CAMP_REACH := 12.0
+const CAMP_MOST := 8
+const CAMP_SPAN := 3.2
+const CAMP_SPREAD := 1.4
+const CAMP_CLEAR := 0.15
+## Its own light is on a render layer only it stands on, so none reaches the
+## desert. Seen as bright as this, it comes up as the desert's light falls
+## below DUSK (Weather.seen_light).
+const LAYER := 1 << 19
+const GLOW := 0.5
+const DUSK := 0.2
 
 var ui: UIRoot
 var camera: Camera3D
-var _model := Node3D.new()
+## The kit it shows on the main menu.
+var home: Kit
+## What it shows now: an origin's piece by its id, or CAMP.
+var shown := &""
 ## Where the mouse is, -1 to 1 across the screen from its middle. Until it
 ## moves, and once it leaves the window, it rests facing you.
 var aim := Vector2.ZERO
+var _model: Node3D
 ## Its bounds about its middle, which it turns round.
 var _box: AABB
+## How much smaller it's shown than it is, to fit.
+var _fit := 1.0
+## Each piece's looks, its bounds and fit, built the first time it's shown.
+var _built := {}
+## 0 at home to 1 aside; and how far the piece shown has grown in, 0 to 1.
+var _slide := 0.0
+var _grown := 1.0
 var _tilt := Vector2.ZERO
 var _spin := 0.0
 var _spinning := 0.0
 var _dragging := false
+var _light: DirectionalLight3D
+var _world: World
 
 
 func _ready() -> void:
-	add_child(_model)
-	_build(Kit.standard())
+	_world = World.of(self)
+	if home == null:
+		home = Kit.standard()
+	_light = DirectionalLight3D.new()
+	_light.light_cull_mask = LAYER
+	_light.sky_mode = DirectionalLight3D.SKY_MODE_LIGHT_ONLY
+	_light.shadow_enabled = false
+	_light.top_level = true
+	add_child(_light)
+	_show(home.id)
 	get_window().mouse_exited.connect(func() -> void: aim = Vector2.ZERO)
 	# In place at once, never a frame at the world's origin.
 	_process(0.0)
 
 
-## The kit's crate built for real, its batteries' lights showing, then only
+## Builds your last camp from a save's data, to show aside for CAMP.
+func show_camp(data: Dictionary) -> void:
+	if _built.has(CAMP):
+		var old: Node3D = _built[CAMP][0]
+		if old == _model:
+			_model = null
+		old.free()
+	_built[CAMP] = _camp(data)
+	if shown == CAMP:
+		shown = &""
+
+
+## Under the menu on top, if it's one over the main menu: the one state
+## every such menu shares.
+func aside() -> bool:
+	var top := ui.top() if ui != null else null
+	return top != null and top.side
+
+
+func _show(next: StringName) -> void:
+	if _model != null:
+		_model.visible = false
+	if not _built.has(next):
+		_built[next] = _build(Kit.named(next))
+	var built: Array = _built[next]
+	_model = built[0]
+	_box = built[1]
+	_fit = built[2]
+	_model.visible = true
+	shown = next
+
+
+## The kit's piece built for real, its batteries' lights showing; then only
 ## its looks kept: the bodies go.
-func _build(kit: Kit) -> void:
-	var spec: Dictionary = kit.assembled[SHOWN]
-	var crate := Catalog.device(spec.frame)
-	# In the tree for a moment, as a run's kit is set down, so each device
-	# dresses itself as it would there.
-	add_child(crate)
-	var sockets := crate.sockets()
-	for k: int in spec.sockets:
-		var id: StringName = spec.sockets[k]
-		if Catalog.PARTS.has(id):
-			_fit(crate, Catalog.part(id), sockets[k], kit.charge)
-		else:
-			var seated := Catalog.device(id)
-			add_child(seated)
-			# Set down beside you, a device comes with its batteries.
-			if kit.beside.has(id):
-				for socket in seated.sockets():
-					if socket.kind == &"battery":
-						_fit(seated, Catalog.part(&"battery"), socket, kit.charge)
-			crate.mount(seated, sockets[k])
-	for device: Device in [crate] + crate.mounted():
-		if device.charge_light != null:
-			ChargeLight.paint(device.charge_light, device.charge_share())
-	var to_crate := crate.global_transform.affine_inverse()
-	for look: GeometryInstance3D in crate.find_children("*", "GeometryInstance3D", true, false):
-		if look.is_visible_in_tree():
-			var pose := to_crate * look.global_transform
+func _build(from: Kit) -> Array:
+	var device := _thing(from, from.shown)
+	_light_up(device)
+	var piece := _looks(device)
+	piece.basis = Basis(Vector3.UP, deg_to_rad(from.shown_turn))
+	return _framed([piece])
+
+
+## The camp as the save holds it, each thing with its state and what's
+## seated in it, standing as they stood round you: seen from your side of
+## it, turned so a camp laid out in a line runs across the screen.
+func _camp(data: Dictionary) -> Array:
+	var snapshot := Snapshot.new(null)
+	var made := snapshot.camp(data, CAMP_REACH, CAMP_MOST)
+	for each: Array in made:
+		add_child(each[0])
+	snapshot.dress()
+	var pieces: Array[Node3D] = []
+	var middle := Vector3.ZERO
+	for each: Array in made:
+		_light_up(each[0])
+		var piece := _looks(each[0])
+		piece.transform = each[1]
+		pieces.append(piece)
+		middle += piece.position / made.size()
+	# Toward the camp's middle from where you stood; standing in it, as you faced.
+	var toward := Vector2(middle.x, middle.z)
+	var view := toward if toward.length() > 1.0 else Vector2(0.0, -1.0)
+	# Laid out in a line, its long way runs across the screen.
+	var spread := Vector3.ZERO
+	for piece in pieces:
+		var d := Vector2(piece.position.x, piece.position.z) - toward
+		spread += Vector3(d.x * d.x, d.y * d.y, d.x * d.y)
+	var mean := (spread.x + spread.y) * 0.5
+	var lean := Vector2((spread.x - spread.y) * 0.5, spread.z).length()
+	if lean > mean / 3.0 and mean > 0.1:
+		var long := 0.5 * atan2(2.0 * spread.z, spread.x - spread.y)
+		var across := Vector2(-sin(long), cos(long))
+		view = across if across.dot(view) >= 0.0 else -across
+	var facing := atan2(-view.x, -view.y)
+	_draw_in(pieces, toward)
+	for piece in pieces:
+		piece.transform = Transform3D(Basis(Vector3.UP, -deg_to_rad(YAW) - facing), Vector3.ZERO) * piece.transform
+	return _framed(pieces, CAMP_SPAN)
+
+
+## Each piece drawn in toward the middle along the way it stood from it, the
+## nearest first, and out again just clear of any already placed.
+func _draw_in(pieces: Array[Node3D], middle: Vector2) -> void:
+	var off := func(piece: Node3D) -> Vector2: return Vector2(piece.position.x, piece.position.z) - middle
+	var order := pieces.duplicate()
+	order.sort_custom(func(a: Node3D, b: Node3D) -> bool: return off.call(a).length() < off.call(b).length())
+	var farthest: float = off.call(order.back()).length() if not order.is_empty() else 0.0
+	var share := minf(1.0, CAMP_SPREAD / maxf(farthest, 0.01))
+	var placed: Array[Vector3] = []
+	for i in order.size():
+		var piece: Node3D = order[i]
+		var box := _bounds(piece, piece.transform)
+		var reach := Vector2(box.size.x, box.size.z).length() * 0.5
+		var was: Vector2 = off.call(piece)
+		var way := was.normalized() if was.length() > 0.01 else Vector2.from_angle(TAU * i / order.size())
+		var at := was * share
+		for step in 64:
+			if not placed.any(func(other: Vector3) -> bool:
+					return at.distance_to(Vector2(other.x, other.y)) < reach + other.z + CAMP_CLEAR):
+				break
+			at += way * 0.05
+		placed.append(Vector3(at.x, at.y, reach))
+		piece.position += Vector3(at.x - was.x, 0.0, at.y - was.y)
+
+
+## Pieces as one model about its middle, and how much smaller it's shown to
+## fit `span` corner to corner.
+func _framed(pieces: Array[Node3D], span := SPAN) -> Array:
+	var model := Node3D.new()
+	add_child(model)
+	for piece in pieces:
+		piece.reparent(model, false)
+	var box := _bounds(model, Transform3D.IDENTITY)
+	for piece in pieces:
+		piece.position -= box.get_center()
+	box.position -= box.get_center()
+	return [model, box, minf(1.0, span / maxf(box.size.length(), 0.01))]
+
+
+## A device and what's seated on it, their batteries' lights as they hold.
+static func _light_up(device: Device) -> void:
+	for each: Device in [device] + device.mounted():
+		if each.charge_light != null:
+			ChargeLight.paint(each.charge_light, each.charge_share())
+
+
+## A device's looks, in its own frame, under a node of their own, on the
+## prop's render layer; the device is freed. What drives a look, such as a
+## rotor's spin, and a picture drawn live, a Console's screen, go with it.
+func _looks(device: Device) -> Node3D:
+	var piece := Node3D.new()
+	add_child(piece)
+	var to_device := device.global_transform.affine_inverse()
+	for look: GeometryInstance3D in device.find_children("*", "GeometryInstance3D", true, false):
+		var drawn := look.material_override as BaseMaterial3D
+		if look.is_visible_in_tree() and not (drawn != null and drawn.albedo_texture is ViewportTexture):
+			var pose := to_device * look.global_transform
+			look.set_script(null)
 			look.get_parent().remove_child(look)
-			_model.add_child(look)
+			piece.add_child(look)
 			look.transform = pose
-	crate.free()
-	var looks := _model.get_children()
-	_box = looks[0].transform * looks[0].get_aabb()
-	for look: GeometryInstance3D in looks:
-		_box = _box.merge(look.transform * look.get_aabb())
-	for look: Node3D in looks:
-		look.position -= _box.get_center()
-	_box.position -= _box.get_center()
+			look.layers |= LAYER
+	device.free()
+	return piece
 
 
-static func _fit(device: Device, part: Part, socket: Socket, charge: float) -> void:
+## One of the kit's things put together as it says, in the tree for a moment,
+## as a run's kit is set down, so each device dresses itself as it would
+## there. A plain one beside you comes with its batteries.
+func _thing(from: Kit, id: StringName) -> Device:
+	var spec: Dictionary = from.assembled.get(id, {"frame": id, "sockets": {}})
+	var device := Catalog.device(spec.frame)
+	add_child(device)
+	var sockets := device.sockets()
+	for k: int in spec.sockets:
+		var fill: StringName = spec.sockets[k]
+		if Catalog.PARTS.has(fill):
+			_fit_part(device, Catalog.part(fill), sockets[k], from.charge)
+		else:
+			device.mount(_thing(from, fill), sockets[k])
+	if not from.assembled.has(id) and from.beside.has(id):
+		for socket in sockets:
+			if socket.kind == &"battery":
+				_fit_part(device, Catalog.part(&"battery"), socket, from.charge)
+	return device
+
+
+## The looks under a node, in the frame given for it.
+static func _bounds(node: Node3D, frame: Transform3D) -> AABB:
+	var box := AABB()
+	var first := true
+	for look: GeometryInstance3D in node.find_children("*", "GeometryInstance3D", true, false):
+		var at := frame * (node.global_transform.affine_inverse() * look.global_transform) * look.get_aabb()
+		box = at if first else box.merge(at)
+		first = false
+	return box
+
+
+static func _fit_part(device: Device, part: Part, socket: Socket, charge: float) -> void:
 	var cell := part as Battery
 	if cell != null:
 		cell.charge_wh = cell.capacity() * charge
@@ -97,6 +283,20 @@ static func _fit(device: Device, part: Part, socket: Socket, charge: float) -> v
 func _process(delta: float) -> void:
 	if camera == null:
 		return
+	var top := ui.top() if ui != null else null
+	var away := aside()
+	_slide = move_toward(_slide, 1.0 if away else 0.0, delta / SLIDE_SECONDS)
+	# The old piece shrinks away and the new one grows in its place.
+	var want: StringName = top.shows if away and top.shows != &"" else home.id
+	if want == CAMP and not _built.has(CAMP):
+		want = home.id
+	if want != shown or _model == null:
+		_grown = move_toward(_grown, 0.0, delta * 2.0 / SWAP_SECONDS)
+		if _grown == 0.0 or _model == null:
+			_show(want)
+	else:
+		_grown = move_toward(_grown, 1.0, delta * 2.0 / SWAP_SECONDS)
+	_model.scale = Vector3.ONE * _fit * maxf(smoothstep(0.0, 1.0, _grown), 0.01)
 	_tilt = _tilt.lerp(aim, 1.0 - exp(-EASE * delta))
 	if not _dragging:
 		_spin += _spinning * delta
@@ -105,7 +305,28 @@ func _process(delta: float) -> void:
 	var tilt := Basis(Vector3.UP, deg_to_rad(_tilt.x * MAX_TILT)) \
 		* Basis(Vector3.RIGHT, deg_to_rad(_tilt.y * MAX_TILT))
 	var rest := Basis(Vector3.RIGHT, deg_to_rad(TIP)) * Basis(Vector3.UP, deg_to_rad(YAW + _spin))
-	global_transform = camera.global_transform * Transform3D(tilt * rest, AT)
+	global_transform = camera.global_transform \
+		* Transform3D(tilt * rest, AT.lerp(_aside_at(), smoothstep(0.0, 1.0, _slide)))
+	_glow()
+
+
+## A soft key light from over your left shoulder, as bright to the eye
+## whatever it's opened to, coming up as the desert's light goes.
+func _glow() -> void:
+	_light.global_basis = camera.global_basis * Basis.looking_at(Vector3(0.45, -0.5, -1.0))
+	if _world == null:
+		return
+	var weather := _world.weather
+	var dark := 1.0 - smoothstep(0.0, DUSK, weather.seen_light)
+	_light.light_energy = GLOW * dark / weather.eye.exposure()
+	_light.visible = dark > 0.0
+
+
+## Aside: as far across the screen as ASIDE says, a little higher, as far off as at home.
+func _aside_at() -> Vector3:
+	var view := get_viewport().get_visible_rect().size
+	var ray := camera.project_local_ray_normal(Vector2(view.x * ASIDE, view.y * 0.5))
+	return Vector3(ray.x * AT.z / ray.z, AT.y + ASIDE_RISE, AT.z)
 
 
 ## A press on it while the main menu is up, and not on one of its words,

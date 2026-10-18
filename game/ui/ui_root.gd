@@ -13,6 +13,8 @@ const PANELS := &"ui_panels"
 const FADE_SECONDS := 0.5
 ## A note such as Saved stays this long before it fades, s.
 const NOTE_SECONDS := 1.5
+## A how-to stays long enough to read, s.
+const HOW_TO_SECONDS := 9.0
 ## The game's name, as the main menu's title shows it: a rename is this line.
 const TITLE := "Desert"
 
@@ -24,6 +26,8 @@ var _fade: Panel
 var _fading := false
 var _note: Label
 var _note_fading: Tween
+var _how_to: RichTextLabel
+var _how_to_fading: Tween
 
 
 func _enter_tree() -> void:
@@ -55,6 +59,12 @@ func _ready() -> void:
 	_note.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_note.modulate.a = 0.0
 	add_child(_note)
+	_how_to = Controls.keys_label()
+	_how_to.theme_type_variation = &"Hint"
+	_how_to.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP, Control.PRESET_MODE_MINSIZE, 100)
+	_how_to.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	_how_to.modulate.a = 0.0
+	add_child(_how_to)
 	dev_console = DevConsole.new()
 	dev_console.ui = self
 	add_child(dev_console)
@@ -74,12 +84,29 @@ func holds_input() -> bool:
 ## A word on how something went, such as a quick save, that fades by itself.
 func note(text: String) -> void:
 	_note.text = text
-	_note.modulate.a = 1.0
-	if _note_fading != null:
-		_note_fading.kill()
-	_note_fading = _note.create_tween()
-	_note_fading.tween_interval(NOTE_SECONDS)
-	_note_fading.tween_property(_note, "modulate:a", 0.0, FADE_SECONDS)
+	_note_fading = _shown_for(_note, _note_fading, NOTE_SECONDS)
+
+
+## A how-to, the first time this profile meets what it's about and never
+## again: what the controls do, each {action} as its key. Says whether it showed.
+func teach(id: String, text: String) -> bool:
+	var profile := get_node_or_null(^"/root/Profile")
+	if profile == null or not profile.learn(id):
+		return false
+	_how_to.text = "[center]%s[/center]" % Controls.bbcode(text)
+	_how_to_fading = _shown_for(_how_to, _how_to_fading, HOW_TO_SECONDS)
+	return true
+
+
+## Shows a word at once and fades it after `seconds`, over any fade under way.
+func _shown_for(words: Control, fading: Tween, seconds: float) -> Tween:
+	words.modulate.a = 1.0
+	if fading != null:
+		fading.kill()
+	var tween := words.create_tween()
+	tween.tween_interval(seconds)
+	tween.tween_property(words, "modulate:a", 0.0, FADE_SECONDS)
+	return tween
 
 
 ## The console over a run with nothing else open: typing goes to it.
@@ -183,12 +210,17 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed(&"console") and not dev_console.visible:
 		open_dev_console()
 		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed(&"fullscreen"):
+		# The same switch as Options', so either shows how it stands.
+		_change(0, &"fullscreen", false)
+		get_viewport().set_input_as_handled()
 	elif (is_open() or dev_console.visible) and not event is InputEventMouseMotion:
 		# A menu or the console is up: nothing reaches the game behind it.
 		get_viewport().set_input_as_handled()
 
 
-## The title, and Resume (with a save), New game, Options, Quit, over the live desert.
+## The title, and Resume (with a save), New game, Options, Quit, over the
+## live desert, and the music's switch in the bottom left.
 func show_main_menu(note := "") -> void:
 	close_all()
 	Dev.show_hint(false)
@@ -198,11 +230,69 @@ func show_main_menu(note := "") -> void:
 	menu.root = true
 	menu.add_title(TITLE)
 	if main.has_save():
-		menu.add("Resume", main.resume)
+		menu.add("Resume", func() -> void: open(resume_view()))
 	menu.add("New game", _new_game)
 	menu.add("Options", func() -> void: open(options()))
 	menu.add("Quit", main.quit)
+	menu.add_corner(func() -> bool: return Settings.music, func() -> void:
+		Settings.music = not Settings.music
+		Settings.save())
 	open(menu)
+
+
+## A menu laid out for where it opens: over the menu's desert down the left,
+## the prop aside; over a run in the middle, on the scrim.
+func _menu(note := "") -> Words:
+	return Words.new(note, &"Scrim" if main == null or main.in_run() else &"ShadeSide")
+
+
+## Resume shows your last camp aside as the save holds it, the save's
+## numbers under it; confirm carries on.
+func resume_view() -> Words:
+	var store := main.saves()
+	var data: Dictionary = store.held()
+	var menu := _menu()
+	menu.add("Continue", main.resume)
+	menu.set_aside(numbers(Snapshot.summary(data), store.saved_at()))
+	if main.showpiece != null:
+		main.showpiece.show_camp(data)
+		menu.shows = Showpiece.CAMP
+	return menu
+
+
+## A save's numbers as Resume lists them; one from before time played was
+## kept lists the rest.
+static func numbers(save: Dictionary, saved: int) -> Array:
+	var rows := []
+	if not is_nan(save.played):
+		var minutes := floori(save.played / 60.0)
+		rows.append(["Played", "%d min" % minutes if minutes < 60
+			else "%d h %d min" % [floori(minutes / 60.0), minutes % 60]])
+	rows.append(["Saved", when(saved, floori(Time.get_unix_time_from_system()))])
+	rows.append(["Day", str(save.day)])
+	var kit := Kit.named(save.kit)
+	rows.append(["Came as", (kit if kit != null else Kit.standard()).label])
+	return rows
+
+
+## When, by the clock on the wall where you are: today or yesterday and the
+## time, else how many days ago.
+static func when(unix: int, now: int) -> String:
+	var bias := int(Time.get_time_zone_from_system().bias) * 60
+	var days := floori((now + bias) / 86400.0) - floori((unix + bias) / 86400.0)
+	var at := Time.get_datetime_dict_from_unix_time(unix + bias)
+	if days >= 2:
+		return "%d days ago" % days
+	return "%s %02d:%02d" % ["yesterday" if days == 1 else "today", at.hour, at.minute]
+
+
+## A kit's gear as the list under the prop shows it.
+static func gear(kit: Kit) -> Array:
+	var rows := []
+	var all := kit.gear()
+	for id in all:
+		rows.append(["%d m line" % roundi(kit.rope_m) if id == &"line" else Catalog.short_label(id), str(all[id])])
+	return rows
 
 
 ## Options, Save in a Normal run, and Save & quit, over the running game.
@@ -218,25 +308,34 @@ func system_menu() -> Words:
 	return menu
 
 
-## Who the new run comes as, from the origins open to you: the default
-## highlighted, each said in a few words.
+## Who the new run comes as, down the left, the origin last played
+## highlighted, so the piece on show stays as it stands aside; each with a
+## few words under it, and one still locked shown as ????. The piece aside
+## and the gear under it follow the highlight.
 func origins() -> Words:
-	var open_to := Kit.open_to(main.profile())
-	var menu := Words.new(" ".join(PackedStringArray(open_to.map(func(kit: Kit) -> String:
-		return "The %s %s." % [kit.label, kit.about]))))
-	for kit in open_to:
-		menu.add(kit.label, func() -> void: open(modes(kit)))
+	var menu := _menu()
+	var all := Kit.origins()
+	menu.open_on(all.find(main.last_kit()))
+	for kit in all:
+		if kit.is_open_to(main.profile()):
+			menu.add(kit.label, func() -> void: open(modes(kit)), Callable(), kit.about)
+		else:
+			menu.add("????", Callable())
+	menu.moved.connect(func(at: int) -> void:
+		menu.shows = all[at].id
+		menu.set_aside(gear(all[at])))
 	return menu
 
 
-## Which rules the new run plays by, for good: Normal highlighted. An origin
-## the game isn't balanced round has no Ironman.
+## Which rules the new run plays by, for good, laid out as the origins are:
+## Normal highlighted. An origin the game isn't balanced round has no Ironman.
 func modes(kit: Kit) -> Words:
-	var menu := Words.new("Normal saves as you go. In Ironman, death ends the run." if kit.balanced
-		else "Normal saves as you go.")
-	menu.add("Normal", main.new_game.bind(false, false, kit))
+	var menu := _menu()
+	menu.shows = kit.id
+	menu.set_aside(gear(kit))
+	menu.add("Normal", main.new_game.bind(false, false, kit), Callable(), "saves as you go")
 	if kit.balanced:
-		menu.add("Ironman", main.new_game.bind(true, false, kit))
+		menu.add("Ironman", main.new_game.bind(true, false, kit), Callable(), "death ends the run")
 	return menu
 
 
@@ -255,7 +354,7 @@ func show_death() -> void:
 
 
 func options() -> Words:
-	var menu := Words.new("Options")
+	var menu := _menu("Options")
 	menu.add(func() -> String: return "Volume   %d%%" % roundi(Settings.volume * 100.0),
 		_change.bind(1, &"volume", true), _change.bind(&"volume", false))
 	menu.add(func() -> String: return "Fullscreen   %s" % _on(Settings.fullscreen),
@@ -272,21 +371,21 @@ func options() -> Words:
 	return menu
 
 
-## Every key as it's bound now, to read; remapping comes later.
+## Every key as it's bound now, beside what it does, as the keys list shows
+## them; remapping comes later.
 func controls() -> Words:
-	var menu := Words.new("Controls")
+	var menu := _menu("Controls")
 	var list := Controls.keys_label()
+	list.theme_type_variation = &"KeysList"
 	list.text = Controls.help()
-	var panel := PanelContainer.new()
-	panel.add_child(list)
-	menu.add_body(panel)
+	menu.add_body(list)
 	menu.add("Back", close_top)
 	return menu
 
 
 ## A question with the safe answer highlighted; back also declines.
 func confirm(question: String, no: String, yes: String, act: Callable) -> Words:
-	var menu := Words.new(question)
+	var menu := _menu(question)
 	menu.add(no, close_top)
 	menu.add(yes, func() -> void:
 		close_top()

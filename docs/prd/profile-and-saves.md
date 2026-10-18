@@ -42,6 +42,10 @@ Either way there's one run, and one save for it; a run's mode is fixed when it s
   sync attach there later, and nowhere else.
 - **Discoveries.** Finding a kind of thing for the first time reports it to the profile.
   Future kits unlock from discoveries (find a turbine, unlock a turbine-heavy kit).
+- **How-tos shown** (2026-10-18). Each how-to is recorded the first time it shows,
+  `profile.learn(id)`, so it's taught once a profile, never once a run
+  ([Menus & UI](menus-and-ui.md#saying-less)). It's neither an unlock nor a discovery, so
+  nothing attaches to it.
 - **Reset** is an action in Options, behind a confirmation, and nowhere else.
 - **Versioned,** like the save.
 
@@ -85,15 +89,42 @@ a report when it first carries you. The patrol board's is "build," proposed, and
 its exact unlock as open.
 
 **Built (2026-10-18): the three balanced origins.** New game asks who you come as before it asks the
-mode: the Surveyor, highlighted, the Salvager and the Homesteader, under a line of what each is
-like to play. Each is a `Kit` resource (`game/survival/`): its id, name and line, its start on the
-moon ([the world system](../world-system.md#the-feral-layer-and-spawns)), whether it's balanced and
-what unlocks it. The menu offers the origins open to the profile (`Kit.open_to`, through
-`Profile.has`); the Salvager's and Homesteader's playstyle unlocks wait on something that counts a
-playstyle, so all three are open from the first run. The novelty kits aren't built; an origin that
+mode: the Surveyor, the Salvager and the Homesteader, each with a few words under it, the origin
+last played highlighted and the Surveyor before any (Menus & UI). Each is a `Kit` resource
+(`game/survival/`): its id, name and words, its start on the moon ([the world
+system](../world-system.md#the-feral-layer-and-spawns)), whether it's balanced, what unlocks it
+and what of it the main menu shows. The menu lists every origin, one not open to
+the profile (`Kit.is_open_to`, through `Profile.has`) as ????; the Salvager's and Homesteader's
+playstyle unlocks wait on something that counts a playstyle, so all three are open from the first
+run. The profile keeps the origin a run was last begun or resumed as (`Profile.last_origin`), whose
+kit the main menu shows; reset forgets it. The novelty kits aren't built; an origin that
 isn't balanced is offered Normal only. The run keeps its origin (`World.kit`) and so does its save
 (`kit`); a new run after a death comes as the same origin. A save from before origins has none and
 resumes as it was, from the tuning's start. Spawns probes 2 and 3.
+
+## Deeds (achievements; agreed 2026-10-18, building)
+
+What you've done across every run, kept in the profile, which only grows. A deed both tells
+your story and opens things: a start still shown "????" opens by a deed (each kit's `unlock`
+names it), and so can a kit variant or a mark on your gear (Hunter: "they should do both").
+
+- **Recorded where it happens:** the system that knows (the board, the shield, the planter, the
+  sail, the deck, power, the world's landmarks and sites) records the deed through one shared
+  hook the moment it's done. Nothing polls for them.
+- **Only real runs count:** a dev scenario's run never records one; Ironman deeds are marked
+  as such.
+- **The first list** (Hunter, 2026-10-18; the X's are tuning, set to be reachable but earned):
+  - Board: jump X m high on it; travel X m on it; **Flying Bling**, ride into a storm at night or
+    during an eclipse.
+  - Shield: take X of a storm's wear on a shield; **Hermit**, a full day under a shield.
+  - Farming: grow three kinds of crop; two planters in tow at once.
+  - Sailing: **Set Sail**, a sail's sheet tied at your waist.
+  - Camp: six chassis pieces joined in one deck; a Console, a condenser and a crate on one deck.
+  - Power: over X W made in one system.
+  - Story: **The Old City**, reach Port Morgan; **Hot Tourist Destinations**, reach every named
+    landmark; a structure of each of the four ages stood in.
+- **Shown in a grid,** reached from the main menu and the system menu: each deed a tile, named,
+  with a short line saying what it asks, lit once done (Menus & UI).
 
 ## Ending flags (proposed)
 
@@ -130,8 +161,9 @@ Readings, not in the session:
 1. **A save holds what you changed, never what the seed already says.**
 2. **Saving never changes the run.** Saving and resuming at once gives the same world,
    tick for tick, as not saving at all.
-3. **The profile only ever grows by `profile.unlock` and discovery,** and only reset
-   empties it.
+3. **The profile's unlocks, discoveries and how-tos shown only ever grow, by
+   `profile.unlock`, discovery and `profile.learn`,** and only reset empties them. Beside
+   them it keeps the origin you last came as.
 
 ## Skeleton version
 
@@ -144,8 +176,8 @@ Readings, not in the session:
 
 **Built** (2026-10-16), waiting at the gate. Two autoloads: `Saves` (`has_run`, `save`,
 `save_in_background`, `run_seed`, `ironman`, `restore`, `delete`) and `Profile`
-(`unlock`, `discover`, `has`, `reset`). Menus & UI calls them from Save, Save & quit,
-Resume, New game, the death screen and Options.
+(`unlock`, `discover`, `learn`, `has`, `reset`, `remember_origin`, `last_origin`). Menus & UI
+calls them from Save, Save & quit, Resume, New game, the death screen and Options.
 
 - **The mode** is chosen at New game, held by the run (`Runs.ironman`) and kept in its
   save, and Resume reads it back. A save from before modes has none and resumes as
@@ -167,8 +199,10 @@ Resume, New game, the death screen and Options.
   moving, stamina, your bars, everything you carry (each thing with its state, as a
   radio's channel, beacon and charge; a save from before, with five slots, resumes with
   their contents carried), what's in your hands, at your waist or being
-  hauled, and the board you ride with its ride as it stood), the clock, the moon position, the engine's origin, and where power, wear,
-  farming and your body are in their ticks. Then everything of yours: each thing by its
+  hauled, and the board you ride with its ride as it stood), the clock, how long the run
+  has been played (a save from before kept none, and its run never counts it) and when it
+  was saved, the moon position, the engine's origin, and where power, wear, farming and
+  your body are in their ticks. Then everything of yours: each thing by its
   catalog id, where it is and how it's moving, its wear, charge, water, growth and
   harvests, a shield's switch and how far its bubble has bloomed, a stake driven or not,
   and every part in every socket, down to a line's end on a hook's ring and a shield
@@ -187,6 +221,11 @@ Resume, New game, the death screen and Options.
 - **Versioned:** each file opens with what it is and its version, and one of another
   version, or not a save at all, is refused with the reason (`refused`) before any of it
   is read. A refused profile is never written over, except by a reset.
+- **A frame that changes keeps older saves** (2026-10-17). A save says how it numbers
+  each frame's sockets. One without that is from before the crate lost its side rings,
+  and is renumbered as it resumes: every part goes back in its own socket, and a hook
+  from a side ring goes on a free ring or comes out beside the crate (Devices & mods).
+  The file's version is unchanged, so those saves aren't refused.
 - **A death in Ironman deletes the save,** so the main menu offers only New game, and
   a new Ironman run begins at once.
 - **A dev scenario's run is never saved,** and a death in it begins a new run without
@@ -247,14 +286,21 @@ Resume, New game, the death screen and Options.
     charge, playing from you with its words showing, the compass is carried, and the
     canisters stack as one, each with its water. A save from before, with five slots,
     resumes with their contents carried.
+14. **An older crate.** Two crates saved as a build from before 2026-10-17 numbered
+    them, side rings and all: one floating, moored by hooks on both side rings, and one
+    resting with a hook on all four rings, its side hooks tied to stakes. Resumed, every
+    part and seated device is in its own socket; the first's side hooks are on its front
+    and back rings with their lines, let out where they must be to reach, the second's
+    lie beside it with their lines' ends loose, and the first floats on, moored, nothing
+    flung.
 15. **A farm from before.** A save the build before the crop roster wrote, of a
     harvester planter with three carrots and a ripe fungus, carrots stored, a survival kit
     with seeds and carrots carried, resumes as root-tubers in the standard planters, a
     still-ripe vat fungus in the pot, tubers stored and carried, and the farm goes on.
 16. **A Console resumes** (2026-10-17). A Console with its screen, three instruments and a
-    radio on its top, its screen turned to its log and its shield's auto-on switched off,
-    resumes with the same parts in the same sockets, the same page, the same switch and the
-    same log, and reads on.
+    radio on its top, its screen turned to its power page, the number its shield page had,
+    resumes with the same parts in the same sockets, the same page and the same log, and
+    reads on.
 
 ## Out of scope
 

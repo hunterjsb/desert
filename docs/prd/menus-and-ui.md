@@ -38,21 +38,20 @@ world. The pressure comes from the moon, and a menu is no shelter from it.
 ## The main menu
 
 A title at the top, "Desert" for now in a light logo like the prototype's, and the
-starting crate in the foreground tilting toward the mouse, as the prototype's shield and
+starting kit in the foreground tilting toward the mouse, as the prototype's shield and
 radio did (Hunter, 2026-10-16). A few small words at the bottom of the screen, over the
 live desert. No background art,
 no panels, no big centred buttons. (Hunter, 2026-10-16: the main menu's words "a tad
-more spacing and bigger", then "a lot bigger", the pause menu too: menu words are 20,
-the main menu's 24; the menus over a running game stand in the middle of the screen, the
-aim dot hidden behind them.)
+more spacing and bigger", then "a lot bigger", the pause menu too: the main menu's words
+are 24; the menus over a running game stand in the middle of the screen, the aim dot hidden
+behind them, and since 2026-10-18 are bigger and roomier still, below.)
 
 - **The scene** is the real world seen from a fixed camera, with no player spawned and
   the weather running at normal speed. It keeps its simulation cheap, and it's silent:
   a storm at the menu is only to look at (Hunter, 2026-10-16: "super super loud").
-  Sound comes back with the run. **Its theme** (Hunter, 2026-10-18: "use this for a main menu theme"): Hunter's "Salt"
-  (`assets/audio/menu_theme.ogg`, 80 s, looping, stereo) fades in over 1.5 s as the menu's desert shows,
-  on the menus' bus so it's heard while the world is muted, fades out as a run takes its place, and
-  comes back from its start on Save & quit (menus probe 9).
+  Sound comes back with the run. **Its theme** (Hunter, 2026-10-18: "use this for a main menu theme"): the menu's music,
+  its switch and its fades are as they were (MenuMusic), and it plays Hunter's "Salt"
+  (`assets/audio/menu_theme.ogg`, 80 s, looping, stereo) in place of the radio's tracks (menus probe 11).
 - **The words:** Resume (only when a save exists), New game, Options, Quit.
 - **Confirm** triggers the highlighted word. Resume is highlighted when a save exists,
   otherwise New game.
@@ -64,14 +63,89 @@ aim dot hidden behind them.)
   spawn with the run's ordinary starting weather. The menu's view never chooses where a
   run begins.
 
+- **Choosing who you come as** (Hunter, 2026-10-18, after playing it): the origins stand in a
+  list on the left, bigger and spaced so each reads at a glance, with a very short line under
+  each and "????" for one still locked, and nothing written above the list. The starting kit in
+  the foreground slides over to the right as New game opens the choice, and shows the
+  highlighted origin's own kit as the selection moves. The main menu shows the kit of the
+  origin last played, kept in the profile.
+- **The prop steps aside for every menu over it** (Hunter, 2026-10-18: "the minimal, no
+  background text works for the top title and main menu bc they have a consistent sand or sky
+  background... we should always move the prop"). The title and the main menu's words stand
+  alone over the sand and sky. Every menu opened from them, Options, the "this ends your saved
+  run" question, who you come as and the mode, slides the prop to the right and stands on the
+  left, as the origin choice does; the question slides it before the origins come up.
+- **Each origin shows one compact piece,** not its kit scattered: the Surveyor its crate as
+  assembled, the Salvager its board, the Homesteader its planter. Under the piece, on the
+  right, its gear is listed, each thing and how many, in bare words with no background
+  behind them (Hunter, 2026-10-18: no translucent panel), big enough and edged enough to
+  read on their own over bright sand.
+- **Resume opens the same view:** the prop is your last camp as the save holds it, what stood
+  round you when you saved, with the save's numbers beside it (time played, when it was saved,
+  the day, who you came as), and confirm carries on.
+- **Music at the main menu,** the radio's day or night track by the menu's own light, with a
+  mute switch in the bottom left that stays as you leave it. The menu's storm stays silent.
+- **At night the prop still reads:** a soft light on it, the night kept round it (Hunter: "the
+  camp can become night in the menu which is extremely cool, but its so dark you cant see the
+  gear").
+
 ## The system menu
 
 The back action, with nothing else open, brings up the system menu over the running
 game. It holds **Options** (controls, audio, graphics), **Save** in a Normal run, and
 **Save & quit**, all safe at any moment, mid-storm included (Profile & saves). **New game**
-asks who you come as, the Surveyor highlighted, then which mode, Normal highlighted or
-Ironman; **dying** in a Normal run shows Load last
-save, highlighted, and New run (Hunter, 2026-10-16).
+asks who you come as, the origin last played highlighted, then which mode, Normal
+highlighted or Ironman; **dying** in a Normal run shows Load last save, highlighted, and
+New run (Hunter, 2026-10-16).
+
+Over a run there's no prop to move, so the system menu's words stand on a soft dark scrim
+(Hunter, 2026-10-18: "pause menu is different -- we can add some opaqueness"), clearly
+there, with no hard box; and they have more room and bigger type than the rest: larger
+words, more space between them and round the group (Hunter, 2026-10-18).
+
+## Saying less
+
+(Hunter, 2026-10-18: "we have like a 30 word tooltip on a chassis, almost everything is
+overload. its good to have info, but if we cant find more intuitive ways to communicate a lot
+of this, then we will need to just stop dropping things out the tooltip.")
+
+- **The look-at line says what it is and the one thing you need now,** a few words. Anything
+  else is shown another way, the ghost, a highlight of what would move, a sound, the thing's
+  own look, or it isn't said.
+- **What makes power says "output",** what uses it "draws".
+- **Teaching happens once, where it's needed:** a skill like trimming a sail by the sheet at
+  your waist gets a short how-to the first time, then is left to you. Sailing should take
+  skill; the how-to says what the controls do, not how to win.
+
+**Built** (2026-10-18, `Hands.describe`):
+- **The line** is the thing's name and at most one state after it, the first it has of: ripe,
+  or why a sown crop isn't growing ("too bright", "dry"); "no power" on a device that would
+  run but is dark; a condenser's water as it makes it ("water 8.7 L/h"); what a planter's tank,
+  a canister or the survival kit holds ("1.5/4.0 L"); food left ("150 kcal"); a battery's
+  charge ("63/100 Wh"); a radio's station; "output 120 W" on what makes power; "draws 371 W"
+  on what uses it; a rolled-up coil's length ("12 m"). Six words at most, its name included, where a
+  floating deck had 24.
+- **Shown another way instead:** weight in what you carry and how you walk; a device's charge
+  on its charge light; floating or resting by where it hangs and its hum; a line's strain in
+  its creak; how much line you've reeled in by the coil at your hand; a sail raised, furled
+  or torn by its cloth; a find's layer by its paint; what take would move on a deck by a faint
+  highlight in the ghost's colour, the bare piece alone where it comes off, else every piece.
+- **Not said at all:** hooks and pieces counted, a tray's lift, runners, a panel's or lamp's
+  rating, a stake's holding, a sail's area and pull, a planter's stored food, seeds and
+  replant share, a Console's instruments counted.
+- **Refusals** stay a few words with their soft knock; the stake's are "not sand" and "out of
+  reach".
+- **How-tos** go through one path, `UIRoot.teach`: shown once a profile (`Profile.learn`)
+  near the top of the screen, its keys drawn as bound in the keys' colour, for nine seconds.
+  The sheet's is the only one ([Movement](movement.md#sailing-the-camp-hunter-2026-10-17)).
+- **Probes:** Menus & UI probe 10, a how-to once a profile; Devices & mods probes 18, 19 and 22
+  check what the readout and highlight do, never their words.
+
+- **The keys list** (Hunter, 2026-10-18: "f1 is really really hard to read. information
+  overload, and tiny text") is a table at the menus' size, 20, edged like them: each key, as
+  bound, beside what it does in a word or two, under the headings Moving, Hands, You, Game and
+  Dev. What a key does in detail is learned where it's needed: riding's how-to shows the first
+  time you ride, as the sail's does (`Controls.HELP`, `Controls.RIDE_HOW_TO_SAYS`).
 
 ## The dev console
 
@@ -81,6 +155,13 @@ The console action opens a line to type commands into: the scenarios, flying, ti
 low gravity and the rest of what the dev keys did, with help and history. The dev
 overlay keeps its own key. The function keys this frees go to the player, such as quick
 save and quick load.
+
+The console opens at the main menu too, for what needs no world (Hunter, 2026-10-18: "would be
+useful for like an `unlockall` command for classes in case i want to test a new class and achv
+resets"): `unlockall` opens every start, and deeds can be granted or cleared to test them.
+
+**The deeds grid** ([Profile & saves](profile-and-saves.md#deeds-achievements-agreed-2026-10-18-building))
+is a menu of its own, reached from the main menu and the system menu.
 
 ## Skeleton version
 
@@ -104,33 +185,71 @@ save and quick load.
 - **The main menu** is the game's own scene (`game/main.tscn`): the real world on a seed
   of its own, from a fixed camera on the highest sand near its spawn, facing upwind
   where the weather comes from. No one stands there and nothing of yours is in it; only
-  the weather moves, at its own pace. A low shade under the words keeps them readable
-  over bright sand. The selection shows by brightness alone.
+  the weather moves, at its own pace. A low shade under the words, and a soft dark edge
+  on every menu word and line, keep them readable over bright sand and in a storm,
+  highlighted or not. The selection shows by brightness alone.
 - **The title** at the top of the main menu is the game's name, "Desert" for now, kept in
   one place (`UIRoot.TITLE`), so a rename is one line. It's uppercase and widely spaced
   in Geist Light, off-white, centred over the words, with a small moon hung to its left
   as the prototype's logo had: a lit crescent over the faint rest of the disc, drawn in
   the theme's colours. A faint high shade, the twin of the low one, keeps it readable
   over a bright sky; in a storm it reads on its own.
-- **The showpiece** (`game/ui/showpiece.gd`) is the starting crate floating between the
-  title and the words, put together from the kit as a new run's is: the light shield and
-  the light panel on top, the board racked on its side, the batteries half full and
-  their lights showing it. It tilts toward the mouse, up to 25°, easing there, and rests
-  facing you until the mouse moves and once it leaves the window. Dragged, it spins, and
-  let go it keeps a little of the spin; a press on a word is always the word's, and
-  under Options it can't be grabbed. Only its looks are kept, never a body, so it can't
-  fall, blow away or be saved, and it stands in the desert's own light and weather,
-  dark in a storm but for its tells, its charge lights and the shield's blue band. New game over a save asks
-  "this ends your saved run" with the safe answer highlighted, and back declines too.
-  Then New game asks who you come as, the Surveyor highlighted over the Salvager and the
-  Homesteader, under a line saying how each plays (2026-10-18), and then which mode, Normal
-  highlighted and Ironman below it, under a line saying what each means; back goes back a
-  step, the save untouched. Into the
-  game: a fade to black, the run built (`game/run.tscn`, which is what `main.tscn` used
-  to be), and back from black once the sand round you is solid.
-- **The system menu**, over the running game under a dark wash: Options, Save in a
-  Normal run, and Save & quit. Save keeps the menu up and its word says how it went:
-  Saved, or Couldn't save. Nothing pauses.
+- **The prop** (`game/ui/showpiece.gd`) is one compact piece of the origin last played's
+  kit (`Kit.shown`), floating between the title and the words, put together as a new
+  run's is: the Surveyor's crate as assembled, the light shield and the light panel on top,
+  the board racked on its side, the batteries half full and their lights showing it; the
+  Salvager's board; the Homesteader's planter with its crops, battery, harvester and
+  canister. One much wider than the crate is shown smaller, to fit where the crate does.
+  It tilts toward the mouse, up to 25°, easing there, and rests facing you until the mouse
+  moves and once it leaves the window. Dragged, it spins, and let go it keeps a little of
+  the spin; a press on a word is always the word's, and under another menu it can't be
+  grabbed. Only its looks are kept, never a body, so it can't fall, blow away or be saved,
+  and it stands in the desert's own light and weather, its tells, charge lights and the
+  shield's blue band showing. As the desert's light falls, in a storm or at night, a soft
+  key light from over your left shoulder comes up on the prop alone (a render layer only
+  it stands on), as bright to the eye whatever the eye has opened to, so its shape and
+  colours read with the night left dark round it.
+- **Every menu over the main menu** stands down the left in bigger words, a few smaller
+  words under each that has them, and slides the prop aside to the right, easing there:
+  Options, its controls list, the questions, who you come as, the mode and Resume. The
+  title and the main menu's own words stand alone over the sand and sky. It's one state
+  (`Showpiece.aside`): a menu opened at the main menu is laid out for it (`UIRoot._menu`)
+  and says what the prop shows (`Words.shows`), the kit at home if nothing; back slides it
+  home. New game over a save asks "this ends your saved run", the prop already aside, with
+  the safe answer highlighted, and back declines too.
+- **Who you come as**, with nothing written above: the origins down the left, well spaced,
+  each with a few smaller words under it (tows a camp, rides light, stays put) that
+  brighten with it, and ???? for one still locked, which the selection passes over; the
+  origin last played is highlighted, the Surveyor before any, so the piece on show stays as
+  it is. The highlighted origin's piece shows aside, the last one shrinking away and the
+  next growing in as the selection moves, and under it on the right its gear in bare words
+  at 20, off-white with the theme's soft dark edge and a faint halo, no panel: each thing
+  and how many, read from the kit as a run sets it down (`Kit.gear`), two to a line once
+  there are many. Then which mode, laid out the same over the chosen origin's piece
+  and gear: Normal, highlighted, "saves as you go", and Ironman, "death ends the run"; back
+  goes back a step, the save untouched. The origin a run is begun or resumed as is kept in
+  the profile (Profile & saves).
+- **Resume** opens the same view: Continue, highlighted, on the left, and aside your last
+  camp as the save holds it, built from the save's own data with no world
+  (`Snapshot.camp`): the thing of yours nearest where you stood and what stood within 12 m
+  of it, 8 at most, each with everything seated in it and its state (charge, crops, a
+  shield's switch), seen from where you stood toward it and fitted to the crate's span.
+  Under it, the save's numbers: time played, when it was saved by the clock on the wall
+  (today 13:40, yesterday 21:05, 3 days ago), the run's day, and who you came as. A save
+  from before time played was kept lists the rest. Confirm carries on; back goes back.
+- **Music** at the main menu: the radio's day or night track by the menu's own light
+  (`Radio.track_at`), from where the station has got to, on the menus' bus while the
+  menu's storm stays silent (`game/ui/menu_music.gd`). It changes track through a moment's
+  quiet and fades out with the screen into a run. A speaker in the bottom left switches it,
+  by a click or by the menu's up and down, round past the first and last words: waves
+  while it plays, a cross while it's off, and it stays as you leave it (`Settings.music`).
+- **Into the game:** a fade to black, the run built (`game/run.tscn`, which is what
+  `main.tscn` used to be), and back from black once the sand round you is solid.
+- **The system menu**, over the running game: its words at 28, 26 apart, on a soft dark
+  field round them that fades out with no edge (`Field`, a rounded shadow), over a lighter
+  wash darkest in the middle (`Scrim`); every menu over a run stands so. It holds Options,
+  Save in a Normal run, and Save & quit. Save keeps the menu up and its
+  word says how it went: Saved, or Couldn't save. Nothing pauses.
 - **The death screen,** in a Normal run, over the running game: "You died", with Load
   last save, highlighted, and New run. Back doesn't close it. Load is Resume, through
   the fade; New run is New game in Normal, on a new seed, the save deleted. Dying before
@@ -154,9 +273,10 @@ save and quick load.
   The look-tests keep their own keys and have no console.
 - **Options:** volume, fullscreen, vsync and render scale (confirm steps a value on,
   menu left and right change it either way), kept on this machine in
-  `user://settings.cfg`, apart from the profile; the controls list, read-only, every key
-  read from the bindings; and Reset profile behind a question, shown only when there is
-  a profile.
+  `user://settings.cfg`, apart from the profile; the controls list, the keys list's own
+  table at the menus' 20 with no box (`KeysList`): each key as bound now beside what it does
+  in a word or two, under Moving, Hands, You, Game and Dev, read-only until remapping
+  comes; and Reset profile behind a question, shown only when there is a profile.
 - **Saves and the profile** are reached only through `/root/Saves` and `/root/Profile`
   (Profile & saves), and a missing one means there are none: no Resume, and Save & quit
   becomes Quit to menu. Resume builds the world on the save's seed, puts the run back
@@ -167,9 +287,13 @@ save and quick load.
   never saved: no Save, Quit to menu in place of Save & quit, and no autosave, so the
   player's own save is left as it was. A run the console's `scenario` has been used in
   is the same from then on.
-- `look/menus` shoots the main menu, with its title and crate, in a storm and on a clear
-  day, and the system menu, to judge by eye.
-- Probes 1–8 pass, each proven against a broken build. Probes 3, 4 and 7 use the real
+- `look/menus` shoots the main menu, with its title and crate, in a storm, on a clear day
+  and with its music off; Options, its controls list and the question over a save with
+  the prop aside; who you come as with each origin's piece and gear, one locked, and the
+  modes; the main menu after a Homesteader's run; the system menu; Resume with that run's
+  camp (and the save `LOOK_SAVE` names, if set); and the main menu and Resume at the
+  menu's darkest, to judge by eye (`look/menus/shoot.sh` builds the sheet).
+- Probes 1–9 pass, each proven against a broken build. Probes 3, 4 and 7 use the real
   saves, kept in each probe's own folder; probe 3 is the whole trip: New game, Save &
   quit out on the sand, Resume, and you're back where you were.
 
@@ -188,8 +312,10 @@ save and quick load.
    again, it opens the system menu; again, it closes that.
 3. **The menu's default.** The title is the game's name, over the starting crate, which
    is only to look at: no body in it, and a storm doesn't move it. With a save, Resume
-   is highlighted and confirm resumes; with none, Resume is absent and New game is
-   highlighted, and it asks who you come as, then which mode with Normal highlighted.
+   is highlighted and confirm shows the save's camp and numbers, and confirm again
+   resumes; a save from before time played was kept still opens. With none, Resume is
+   absent and New game is highlighted, and it asks who you come as, then which mode with
+   Normal highlighted.
 4. **New game asks over a save,** and declining leaves the save untouched.
 5. **One theme.** Every UI control in the game, menus and gameplay, draws from the one
    theme.
@@ -201,6 +327,13 @@ save and quick load.
 8. **The dev console.** Its action opens it over a run; typed and held keys reach only
    it, `warp 4` runs the clock four times as fast and `scenario dusk` puts you at dusk in
    a run that's never saved; back closes it and nothing else, and so does its action.
+9. **The prop aside.** Every menu opened off the main menu stands on the left and slides
+   the prop aside; back slides it home. With the Salvager highlighted it shows the
+   Salvager's board, and each origin's gear as listed is what its run sets down. After a
+   Salvager run the menu shows the Salvager's board, and so does the next session's; the
+   music's switch, reached by the menu's actions, stays muted into the next session.
+10. **A how-to once a profile.** The first sheet at your waist shows its how-to, its keys as
+    bound; tied on again it doesn't, nor in a new run on the same profile.
 
 ## Out of scope
 

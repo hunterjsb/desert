@@ -3,7 +3,9 @@ extends Device
 ## A chassis piece: a flat square frame with a ring on each edge, a bottom
 ## mount for its own tray and a deck mount on top, and nothing else. Pieces
 ## join edge to edge by their rings into a deck. A piece brought to a free
-## ring snaps flush beside it, and its frame, sockets and whatever is in them
+## ring snaps flush beside it, any hook in its way popping off and any loose
+## part there moved clear, a line on either still tied, and its frame, sockets
+## and whatever is in them
 ## move into the first piece's body, as a fitted part's shapes do: a deck is
 ## one rigid body in whatever shape it's laid out, with nothing between its
 ## pieces to wobble. Off again, a bare piece the rest still holds together
@@ -13,6 +15,8 @@ extends Device
 ## A piece's width, m: the pitch its neighbours sit at across its rings.
 const WIDTH := 1.0
 const QUARTER := PI / 2.0
+## What a join moves out of its way lands this far past the deck's edge, m.
+const CLEAR := 0.1
 ## The ways across a piece's four edges, in the order a deck is walked.
 const STEPS: Array[Vector2i] = [Vector2i(1, 0), Vector2i(0, 1), Vector2i(-1, 0), Vector2i(0, -1)]
 
@@ -124,6 +128,7 @@ func join(piece: Chassis, ring: Socket, k := -1) -> void:
 	if k < 0:
 		k = _turns_for(piece, ring, piece.global_basis)
 	assert(k >= 0 and ring.get_parent() == self)
+	_make_way(piece, ring, k)
 	piece.cell = _cell_of(ring) + _step(ring)
 	piece.turns = k
 	piece.deck = self
@@ -288,31 +293,21 @@ func _reorder() -> void:
 
 ## The quarter turns a piece would join at a ring at, nearest `held`, or -1
 ## if it can't: only a lone, sound piece joins, at a free ring with room
-## beyond it, and only where no hook stands in the edges it would meet.
+## beyond it. A hook in the way pops off as it joins.
 func _turns_for(piece: Chassis, ring: Socket, held: Basis) -> int:
 	if piece == self or deck != null or piece.deck != null or not piece.joined.is_empty() \
-			or ring.kind != &"ring" or not ring.is_open() or ring.get_parent() != self \
-			or wrecked() or piece.wrecked():
+			or not free_ring(ring) or ring.get_parent() != self or wrecked() or piece.wrecked():
 		return -1
 	var to := _cell_of(ring) + _step(ring)
-	var cells := {}
 	for each in pieces():
-		cells[each.cell] = true
-	if cells.has(to):
-		return -1
-	# A hook on a neighbour's edge facing the new place would stand in it.
-	for socket in sockets():
-		if socket.kind == &"ring" and not socket.has_meta(&"socket") and socket.part != null \
-				and _cell_of(socket) + _step(socket) == to:
+		if each.cell == to:
 			return -1
 	var facing := global_basis.orthonormalized().inverse() * held.orthonormalized()
 	var yaw := atan2(-facing.x.z, facing.x.x) if Vector2(facing.x.x, facing.x.z).length() > 0.3 \
 		else atan2(facing.z.x, facing.z.z)
-	var best := -1
+	var best := 0
 	var nearest := INF
 	for k in 4:
-		if not _bare_toward(piece, k, to, cells):
-			continue
 		var off := absf(angle_difference(yaw, k * QUARTER))
 		if off < nearest - 1e-4:
 			nearest = off
@@ -320,17 +315,123 @@ func _turns_for(piece: Chassis, ring: Socket, held: Basis) -> int:
 	return best
 
 
-## Whether a piece turned k quarter turns at a place has no hook on any of
-## its own edges that would meet a neighbour.
-func _bare_toward(piece: Chassis, k: int, at: Vector2i, cells: Dictionary) -> bool:
-	var turn := Basis(Vector3.UP, k * QUARTER)
+## Whether a piece could join across a ring: a deck edge's own, with no piece
+## beyond it and nothing seated there. A hook on it pops off (Hunter, 2026-10-17).
+static func free_ring(ring: Socket) -> bool:
+	return ring.kind == &"ring" and not ring.has_meta(&"socket") and not ring.closed and ring.mounted == null
+
+
+## Hooks where a piece joins pop off onto the sand just outside the deck, any
+## line on them still tied: on the deck's edges facing its place, and on its
+## own edges that will meet the deck. Loose parts lying where it goes move
+## out the same way, so a row of pieces is never held up by what the last
+## join dropped. A save rebuilds a deck off the tree, with nothing in its way,
+## and a deck outside a world has no sand to drop anything on.
+func _make_way(piece: Chassis, ring: Socket, k: int) -> void:
+	if world == null or not is_inside_tree() or not piece.is_inside_tree():
+		return
+	var to := _cell_of(ring) + _step(ring)
+	var cells := {to: true}
+	for each in pieces():
+		cells[each.cell] = true
+	for socket in sockets():
+		if socket.kind == &"ring" and not socket.has_meta(&"socket") and socket.part != null \
+				and _cell_of(socket) + _step(socket) == to:
+			_put_outside(pop(socket), socket.position, cells)
+	var at := _pose_at(ring, k)
 	for socket in piece.frame_sockets():
-		if socket.kind != &"ring" or socket.part == null:
-			continue
-		var out := turn * socket.transform.basis.z
-		if cells.has(at + Vector2i(roundi(out.x), roundi(out.z))):
-			return false
-	return true
+		var out := at.basis * socket.transform.basis.z
+		if socket.kind == &"ring" and socket.part != null and cells.has(to + Vector2i(roundi(out.x), roundi(out.z))):
+			_put_outside(piece.pop(socket), at * socket.position, cells)
+	var back := global_transform.affine_inverse()
+	for body in in_the_way(piece, global_transform * at):
+		if _moves_aside(body):
+			_put_outside(body, back * body.global_position, cells)
+
+
+## What a piece, and all that stands on it, would meet joined at a pose in
+## the world, the sand aside.
+func in_the_way(piece: Chassis, pose: Transform3D) -> Array[CollisionObject3D]:
+	var query := PhysicsShapeQueryParameters3D.new()
+	var skip: Array[RID] = [get_rid()]
+	if world != null and world.player != null:
+		skip.append(world.player.get_rid())
+	var shapes: Array[CollisionShape3D] = []
+	var riding: Array[Device] = [piece]
+	while not riding.is_empty():
+		var each: Device = riding.pop_back()
+		skip.append(each.get_rid())
+		riding.append_array(each.mounted())
+		for child in each.get_children():
+			if child is CollisionShape3D and (child as CollisionShape3D).shape != null:
+				shapes.append(child)
+	query.exclude = skip
+	var back := piece.global_transform.affine_inverse()
+	var found: Array[CollisionObject3D] = []
+	for shape in shapes:
+		query.shape = Hands._skin(shape.shape)
+		query.transform = pose * back * shape.global_transform
+		for hit in get_world_3d().direct_space_state.intersect_shape(query, Hands.TOUCHES):
+			if not Hands._sand(hit) and not found.has(hit.collider):
+				found.append(hit.collider)
+	return found
+
+
+## Whether a piece has room to join at a pose: nothing there but the sand and
+## loose parts, which it moves clear.
+func room_for(piece: Chassis, pose: Transform3D) -> bool:
+	return in_the_way(piece, pose).all(func(body: Object) -> bool: return _moves_aside(body))
+
+
+## A loose part moves aside for a joining piece; a device, a deck, a wall or
+## a find still in the sand stands in its way.
+static func _moves_aside(body: Object) -> bool:
+	return body is Part and not (body as Part).has_meta(&"buried")
+
+
+## What a join moves out of its way lands just past the deck's edge, facing
+## out: nearest where its line leads, or with none, where it was (`was`, in
+## the deck's frame).
+func _put_outside(part: Part, was: Vector3, cells: Dictionary) -> void:
+	var back := global_transform.affine_inverse()
+	var toward := was
+	var tips: Array[RopeEnd] = []
+	for child in part.get_children():
+		if child is RopeEnd:
+			tips.append(child)
+			for rope in world.ropes.lines_on(child):
+				toward = back * (rope.b if rope.a == child else rope.a).global_position
+	var reach := WIDTH * 0.5 + CLEAR
+	var best := Vector3.ZERO
+	var out := Vector3.ZERO
+	var nearest := INF
+	for at: Vector2i in cells:
+		var middle := Vector3(at.x, 0.0, at.y) * WIDTH
+		for step: Vector2i in STEPS:
+			if cells.has(at + step):
+				continue
+			var normal := Vector3(step.x, 0.0, step.y)
+			var side := Vector3(-step.y, 0.0, step.x)
+			var spot := middle + normal * reach + side * clampf((toward - middle).dot(side), -reach, reach)
+			var d := Vector2(spot.x - toward.x, spot.z - toward.z).length()
+			if d < nearest and not _inside(spot, cells, reach):
+				nearest = d
+				best = spot
+				out = normal
+	var land := global_transform * best
+	land.y = world.height_under(land) - Finds.bounds(part).position.y + 0.01
+	var facing := global_basis * out
+	world.teleport(part, Transform3D(Basis.looking_at(-Vector3(facing.x, 0.0, facing.z), Vector3.UP), land))
+	for tip in tips:
+		world.ropes.let_out(tip)
+
+
+## Whether a point in the deck's frame is within `reach` of a piece's middle, across and along.
+static func _inside(point: Vector3, cells: Dictionary, reach: float) -> bool:
+	for at: Vector2i in cells:
+		if absf(point.x - at.x * WIDTH) < reach - 1e-3 and absf(point.z - at.y * WIDTH) < reach - 1e-3:
+			return true
+	return false
 
 
 ## Where a piece joined at a ring sits in the deck's frame, turned k quarter turns.
@@ -451,10 +552,9 @@ func _shapes_changed() -> void:
 func show_wear() -> void:
 	super()
 	for piece in joined:
-		var layer: StringName = piece.get_meta(&"layer", &"")
 		if piece.frame_view != null:
-			piece.frame_view.set_instance_shader_parameter(&"age", Paint.age_of(layer, durability))
-			piece.frame_view.set_instance_shader_parameter(&"era", Paint.era_of(layer))
+			piece.frame_view.set_instance_shader_parameter(&"age", Paint.age_for(piece, durability))
+			piece.frame_view.set_instance_shader_parameter(&"era", Paint.row_for(piece))
 
 
 ## Pieces joined to it wait off the tree, so nothing else would free them.

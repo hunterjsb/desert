@@ -104,6 +104,9 @@ func fits(body: Object) -> bool:
 		return false
 	if part.has_meta(&"line"):
 		return (part.get_meta(&"line") as Line).stowable()
+	# A hook popped off a deck with its line's end still on it would lose that end.
+	if part.get_children().any(func(n: Node) -> bool: return n is Socket and (n as Socket).part != null):
+		return false
 	return not (part.kind == &"port" or Hose.is_end(part)) or part.has_meta(&"rolled") or _loose_cable(part) != null
 
 
@@ -452,7 +455,7 @@ func _show_looks(shown: Array[Array]) -> void:
 			look.key = now
 			look.show_thing(thing)
 		if thing is Compass:
-			look.turn_needle(Compass.turn(face, _player.world.moon.north()))
+			look.turn_needle((thing as Compass).needle_on(face, _player.world))
 
 
 ## The picture of a stack, for anything that reads the view.
@@ -533,11 +536,11 @@ func _text(type: StringName, at: Vector2, line: String, width: float, color := &
 static func _name(thing: RigidBody3D) -> String:
 	match thing.get_meta(&"rolled", &""):
 		&"plug":
-			return "Cable"
+			return Catalog.NAMES[&"cable"]
 		&"strong_plug":
-			return "Strong cable"
+			return Catalog.NAMES[&"strong_cable"]
 		&"hose_end":
-			return "Hose"
+			return Catalog.NAMES[&"hose"]
 	return thing.get(&"label")
 
 

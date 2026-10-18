@@ -16,10 +16,10 @@ const WEAK := 400.0
 const RISE := 0.5
 ## Speed past the wind that would mean something flung it, m/s.
 const FLUNG := 0.5
-## Where 6 s of drift once left the laid line's rig, from the spawn: the
-## crate's loose end snags there. A loose end snags going from faster than
-## this to stopped, m/s.
-const SNAGS := Vector2(3.86, 4.67)
+## Where the crate's loose end snags on a dune face, from the spawn: found by
+## trying spots round where it snagged with side rings. A loose end snags
+## going from faster than this to stopped, m/s.
+const SNAGS := Vector2(3.86, 3.67)
 const SNAGGED := 10.0
 
 ## Wind speed along +x, m/s, and the wind it was when the line snapped.
@@ -154,6 +154,8 @@ func _line_parts(at := Vector2.ZERO) -> void:
 	var crate := Catalog.device(&"crate_frame")
 	world.content.add_child(crate)
 	crate.global_position = spot(at.x + 6.0, at.y) + Vector3.UP * world.tuning.hover_height
+	# Its front ring toward the stake upwind.
+	crate.global_basis = Basis(Vector3.UP, PI / 2.0)
 	for id: StringName in [&"hover_tray", &"battery", &"hook", &"hook"]:
 		var part := Catalog.part(id)
 		world.content.add_child(part)

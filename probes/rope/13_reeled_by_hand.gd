@@ -5,9 +5,9 @@ extends LineProbe
 ## past the line's length. Tied at your waist, the line reels too. Reeling
 ## against a staked line steps you in to the stake, which stays put. Nothing
 ## goes faster than a line's closing speed, and the drawn strand stays as long
-## as the line as it reels. Reeling takes ctrl with the wheel; the wheel alone
-## leaves a line be, and brings what you hold nearer or pushes it out: a part you carry, a crate you have hold of, each stopping
-## at the ends of its range.
+## as the line as it reels. The wheel alone reels; with ctrl it leaves a line
+## be, and brings what you hold nearer or pushes it out: a part you carry, a
+## crate you have hold of, each stopping at the ends of its range.
 
 const NOTCHES := 8
 ## Drawn within this share of the notches reeled.
@@ -103,7 +103,7 @@ func _cable(crate: Device) -> void:
 	var kept := cable.rope.length
 	_wheel(NOTCHES / 2)
 	await simulate(1.0)
-	check(is_equal_approx(cable.rope.length, kept), "the wheel alone leaves the line in your hand be")
+	check(is_equal_approx(cable.rope.length, kept), "with ctrl the wheel leaves the line in your hand be")
 	check(absf(reeled - NOTCHES / 2 * Reel.NOTCH) < 1e-3 and absf(cable.rope.length - cable.length) < 1e-3
 		and cable.plugs[1].socket == port, "a strong cable reels too, its plug staying in")
 	hands.drop()
@@ -152,7 +152,7 @@ func _carried() -> void:
 	print("a carried ration from %.2f m: out %.2f, as far as it goes %.2f; in %.2f, as near as it comes %.2f"
 		% held)
 	check(held[1] > held[0] + 0.4 and absf(held[2] - Hands.HOLD_FARTHEST) < 0.02,
-		"the wheel pushes what you carry out, as far as it goes")
+		"with ctrl the wheel pushes what you carry out, as far as it goes")
 	check(held[3] < held[2] - 0.4 and absf(held[4] - Hands.HOLD_NEAREST) < 0.02,
 		"and brings it in, no nearer than clears you")
 	hands.drop()
@@ -175,7 +175,7 @@ func _grasped() -> void:
 		% apart)
 	check(hands.grasp.body == crate, "it never slips from your hands")
 	check(apart[1] > apart[0] + 0.3 and apart[2] > apart[1] and absf(apart[2] - world.tuning.reach) < 0.15,
-		"the wheel pushes it out, as far as you reach")
+		"with ctrl the wheel pushes it out, as far as you reach")
 	check(apart[3] < apart[2] - 0.6 and apart[4] < apart[3] and apart[4] > 0.9,
 		"and brings it in, no nearer than clears you")
 	hands.grasp.let_go()
@@ -187,7 +187,7 @@ func _wheel(notches: int, line := false) -> void:
 	for i in absi(notches):
 		var step := InputEventMouseButton.new()
 		step.button_index = MOUSE_BUTTON_WHEEL_UP if notches > 0 else MOUSE_BUTTON_WHEEL_DOWN
-		step.ctrl_pressed = line
+		step.ctrl_pressed = not line
 		step.pressed = true
 		get_viewport().push_input(step)
 		var done: InputEventMouseButton = step.duplicate()

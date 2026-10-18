@@ -22,6 +22,16 @@ func _ready() -> void:
 		set_meta(&"wind_catch", Tuning.current().wind_catch_per_m2 * Weather.biggest_face(self))
 
 
+## What sits in its own sockets (a line's end on a loose hook) waits off the
+## tree, so nothing else would free it.
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_PREDELETE:
+		for child in get_children():
+			var own := child as Socket
+			if own != null and own.part != null and not own.has_meta(&"socket"):
+				own.part.free()
+
+
 ## Use while you hold it, aiming at `at`. Says whether it did anything.
 func use(_by: Player, _at: Vector3) -> bool:
 	return false

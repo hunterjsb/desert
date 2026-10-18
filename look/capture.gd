@@ -2,7 +2,7 @@ extends Node
 ## Look-test helper: builds the world on a fixed seed, waits for the far ring,
 ## aims the camera and saves a screenshot. Needs a GPU, not --headless;
 ## scripts/unseen.sh gives it one with no window:
-##   scripts/unseen.sh --path . res://look/capture.tscn -- out.png [yaw] [pitch] [lift_m] [run_seconds] [--f3]
+##   scripts/unseen.sh --path . res://look/capture.tscn -- out.png [yaw] [pitch] [lift_m] [run_seconds] [--f3] [--keys]
 
 const WORLD_SCENE := preload("res://game/world/world.tscn")
 
@@ -35,11 +35,12 @@ func _ready() -> void:
 	world.player.global_position.y += lift
 	world.player.rotation_degrees.y = yaw
 	world.player.camera.rotation_degrees.x = pitch
-	if args.has("--f3"):
-		var press := InputEventAction.new()
-		press.action = "toggle_dev_overlay"
-		press.pressed = true
-		Input.parse_input_event(press)
+	for flag: String in ["--f3", "--keys"]:
+		if args.has(flag):
+			var press := InputEventAction.new()
+			press.action = "toggle_dev_overlay" if flag == "--f3" else "toggle_keys"
+			press.pressed = true
+			Input.parse_input_event(press)
 	# Physics ticks, not frames: the weather and its wall update on the tick.
 	for i in 60:
 		await get_tree().physics_frame

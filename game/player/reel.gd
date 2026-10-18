@@ -2,7 +2,7 @@ class_name Reel
 extends Node3D
 ## Working a line hand over hand: reel in draws it in a notch, pay out gives a
 ## notch back, up to all there is of it. It works the line's end in your
-## hand, else the last line tied at your waist. Only the line draws, pulling
+## hand, else the line at your waist you look nearest along. Only the line draws, pulling
 ## both its ends, so what's on it comes only as hard as your strength allows;
 ## against a stake, or anything too heavy to come, you step in along it
 ## instead. Each notch is a stroke of your hand, the rope gathers into a coil
@@ -19,6 +19,9 @@ const PACE := 1.0
 const STRAIN := 0.5
 ## A stroke dips your hand this far, m, across the line so it never stretches it.
 const STROKE := 0.04
+## The waist line being worked stays the one until another lies this much
+## nearer your aim, as a share of its angle off it.
+const STICKY := 0.7
 
 var rope: Rope
 ## The length it's being reeled to, m.
@@ -57,8 +60,10 @@ func _ready() -> void:
 	add_child(_sound)
 
 
-## The line reel in and pay out work now: its end in your hand, else the last
-## line tied at your waist; none while a coil still pays it out.
+## The line reel in and pay out work now: its end in your hand, else, of
+## the lines at your waist, the one whose far end you look nearest, so with
+## a sheet and a mooring line both there you trim looking at the sail; the
+## last tied on a tie. None while a coil still pays it out.
 func line() -> Rope:
 	var hands := _player.hands
 	if hands.phase == Hands.Phase.HELD and is_instance_valid(hands.held):
@@ -66,11 +71,20 @@ func line() -> Rope:
 		if held != null:
 			return held
 	var tied := _player.waist.tied
+	var eye := _player.camera.global_transform
+	var best: Rope = null
+	var nearest := INF
 	for i in range(tied.size() - 1, -1, -1):
 		var waisted := _line_of(tied[i])
-		if waisted != null:
-			return waisted
-	return null
+		if waisted == null or not is_instance_valid(waisted.a) or not is_instance_valid(waisted.b):
+			continue
+		var off := (-eye.basis.z).angle_to(_far(waisted).global_position - eye.origin)
+		if waisted == rope:
+			off *= STICKY
+		if off < nearest:
+			nearest = off
+			best = waisted
+	return best
 
 
 ## A notch in, or out for a negative `by`. Says whether there was a line to work.
@@ -81,7 +95,10 @@ func notch(by: int) -> bool:
 	if now != rope:
 		rope = now
 		wanted = now.length
-	wanted = clampf(wanted - by * NOTCH, minf(SHORTEST, now.length), now.full)
+	# A sheet pays out into its sail even with all of the line out; what the
+	# sail can't take, the line won't give past all there is of it.
+	var most := INF if now.hauls.is_valid() else now.full
+	wanted = clampf(wanted - by * NOTCH, minf(SHORTEST, now.length), most)
 	return true
 
 
@@ -120,7 +137,11 @@ func _physics_process(delta: float) -> void:
 		var far := _far(rope).global_position - _player.global_position
 		walk_in = Vector2(far.x, far.z).normalized() * PACE * strain
 	var step := clampf(off, -pace * delta, pace * delta)
-	rope.length += step
+	# What a sheet takes in hauls its sail instead, and the line needn't.
+	var left: float = rope.hauls.call(step) if rope.hauls.is_valid() else step
+	left = minf(left, rope.full - rope.length)
+	wanted -= step - left
+	rope.length += left
 	rope.strand.set_length(rope.length)
 	if _stroke == 0.0 and step != 0.0:
 		_rub()
@@ -130,9 +151,10 @@ func _physics_process(delta: float) -> void:
 		_rub()
 
 
-## Your hands are on it: no menu up, the inventory shut, not riding.
+## Your hands are on it: no menu up, the inventory shut. Riding, it works the
+## line at your waist: a sheet the board stays tied to.
 func working() -> bool:
-	return Controls.playing() and not _player.suit.open and _player.board == null
+	return Controls.playing() and not _player.suit.open
 
 
 ## The rope gathered where the line is on you, as a coil growing with it.
@@ -162,8 +184,9 @@ func _rub() -> void:
 func _line_of(body: Variant) -> Rope:
 	if not is_instance_valid(body) or not (body is Part):
 		return null
-	var laid: Line = body.get_meta(&"line") if body.has_meta(&"line") else null
-	if laid != null and laid.state != Line.State.LAID:
+	# A scenario cleared away may free a line whose end is still on you.
+	var laid: Variant = body.get_meta(&"line", null)
+	if laid != null and (not is_instance_valid(laid) or (laid as Line).state != Line.State.LAID):
 		return null
 	for child in body.get_children():
 		if child is RopeEnd:

@@ -7,6 +7,10 @@ extends RefCounted
 ## meant.
 
 static var _made := {}
+## A lineage's looks, let go once nothing wears them; and each thing's shell.
+static var _lines := {}
+static var _shells := {}
+static var _marks := {}
 
 
 ## A frame's look, or null to keep a grey box. `extra` is its mast's height.
@@ -59,14 +63,93 @@ static func tell(kind: StringName) -> ArrayMesh:
 		return b.commit())
 
 
+## A thing's look with its lineage's marks over it (Paint.Shell), merged into
+## one mesh: each entry's marks are made once a thing, each lineage's look
+## once while anything wears it. Null where it has no look to mark.
+static func lineage(id: StringName, line: Array) -> ArrayMesh:
+	var key := [id, Eras.key(line)]
+	var kept: WeakRef = _lines.get(key)
+	var made: ArrayMesh = kept.get_ref() if kept != null else null
+	if made == null:
+		made = _lineage(id, line)
+		if made != null:
+			_lines[key] = weakref(made)
+	return made
+
+
+static func _lineage(id: StringName, line: Array) -> ArrayMesh:
+	var own := _own(id)
+	var shell := shell(id)
+	if own == null or own.get_surface_count() == 0 or shell == null:
+		return own
+	var overs := []
+	for entry: Array in line:
+		var key := [id, Eras.entry_key(entry)]
+		if not _marks.has(key):
+			var marks := Paint.Over.new()
+			shell.layer(marks, entry)
+			_marks[key] = marks.arrays()
+		if not _marks[key].is_empty():
+			overs.append(_marks[key])
+	return own if overs.is_empty() else Paint.merged(own, overs)
+
+
+## Where a lineage's marks go on a thing, or null where they don't: worked
+## out once from its look, clear of its sockets, its charge light, its mast
+## and its stamps.
+static func shell(id: StringName) -> Paint.Shell:
+	if _shells.has(id):
+		return _shells[id]
+	var made: Paint.Shell = null
+	var own := _own(id)
+	if Catalog.lineal(id) and not id in Catalog.BARE and own != null and own.get_surface_count() > 0:
+		var avoid := PackedVector3Array()
+		var box: AABB
+		if Catalog.PARTS.has(id):
+			var size: Vector3 = Catalog.PARTS[id].size
+			box = AABB(Vector3(-size.x * 0.5, -size.y * 0.5, 0.0), size)
+		else:
+			var spec: Dictionary = Catalog.DEVICES.get(id, {"size": Vector3(0.06, Stake.LENGTH, 0.06), "sockets": []})
+			var h: Vector3 = spec.size * 0.5
+			box = AABB(-h, spec.size)
+			for entry: Array in spec.sockets:
+				avoid.append(entry[1])
+			if spec.sockets.any(func(e: Array) -> bool: return e[0] == &"battery"):
+				avoid.append(Vector3(h.x, h.y - 0.05, h.z - 0.05))
+			if spec.has("mast"):
+				avoid.append(Vector3(0.0, h.y, 0.0))
+		made = Paint.Shell.new(own, box, Catalog.PARTS.has(id), Catalog.ROUND.get(id, []), avoid, hash(id))
+		# Too small to read, marks or not.
+		if made.unit < 0.012:
+			made = null
+	_shells[id] = made
+	return made
+
+
+## A thing's own look by its catalog id, as the catalog makes it.
+static func _own(id: StringName) -> ArrayMesh:
+	if id == &"stake":
+		return frame(&"stake", Vector3(0.06, Stake.LENGTH, 0.06))
+	if Catalog.DEVICES.has(id):
+		var spec: Dictionary = Catalog.DEVICES[id]
+		return frame(id, spec.size, spec.get("mast", 0.0))
+	if Catalog.PARTS.has(id):
+		return part(id, Catalog.PARTS[id].size)
+	return null
+
+
 ## Builds every look now, while the world loads: the first of a kind costs
 ## up to a dozen milliseconds, too long for a find laid out while streaming.
+## Each thing's shell too, where its lineage's marks would go: a few ms a thing.
 static func prepare() -> void:
 	for id: StringName in Catalog.DEVICES:
 		Catalog.device(id).free()
+		shell(id)
 	Catalog.stake().free()
+	shell(&"stake")
 	for id: StringName in Catalog.PARTS:
 		Catalog.part(id).free()
+		shell(id)
 		var grows: Dictionary = Catalog.PARTS[id].get("crop", {})
 		if grows.is_empty():
 			continue
@@ -104,8 +187,8 @@ static func _frame(id: StringName, size: Vector3, extra: float) -> ArrayMesh:
 				for s in [-1, 1]:
 					b.box(Vector3(size.x - 0.1, 0.06, 0.06), Vector3(0.0, y * (h.y - 0.03), s * (h.z - 0.03)), gun)
 					b.box(Vector3(0.06, 0.06, size.z - 0.1), Vector3(s * (h.x - 0.03), y * (h.y - 0.03), 0.0), gun)
-			# Panels set in between the rails, a seam across each. The two ring
-			# sides carry its label, beside the ring: who it was sent to.
+			# Panels set in between the rails, a seam across each. Its two sides
+			# carry its label: who it was sent to.
 			for side in 4:
 				var turn := Basis(Vector3.UP, side * PI * 0.5)
 				var depth := h.z if side % 2 == 0 else h.x
@@ -240,6 +323,21 @@ static func _frame(id: StringName, size: Vector3, extra: float) -> ArrayMesh:
 				var turn := Basis(Vector3.UP, side * PI * 0.5)
 				for x in [-0.22, 0.22]:
 					_hazard(b, Vector3(0.2, 0.03, 0.012), turn * Vector3(x, 0.0, h.z - 0.004), turn)
+		&"mast":
+			# A stowed pole, its upper reach telescoped inside, a collar at its
+			# foot and the gooseneck the boom swings on.
+			b.drum(0.05, size.y, Vector3.ZERO, Paint.coat(Paint.STEEL, 0.8, 0.6, 0.45))
+			b.drum(0.07, 0.08, Vector3(0.0, -h.y + 0.04, 0.0), Paint.coat(Paint.BLACK, 0.7, 0.3))
+			b.drum(0.062, 0.05, Vector3(0.0, Mast.BOOM_AT.y, 0.0), gun)
+			b.box(Vector3(0.05, 0.05, 0.1), Vector3(0.0, Mast.BOOM_AT.y, -0.07), gun, 0.008)
+			b.drum(0.058, 0.03, Vector3(0.0, h.y - 0.015, 0.0), Paint.coat(Paint.BLACK, 0.7, 0.3))
+		&"mast_top":
+			# Its upper reach, up from the stowed pole, and a cap at the masthead.
+			b.drum(size.x * 0.5, size.y, Vector3(0.0, h.y, 0.0), Paint.coat(Paint.STEEL, 0.8, 0.6, 0.45), Basis.IDENTITY, 12)
+			b.drum(size.x * 0.6, 0.06, Vector3(0.0, size.y - 0.03, 0.0), Paint.coat(Paint.BLACK, 0.7, 0.3), Basis.IDENTITY, 12)
+		&"boom":
+			b.drum(size.x * 0.5, size.z, Vector3(0.0, 0.0, h.z), Paint.coat(Paint.STEEL, 0.8, 0.6, 0.45), Basis(Vector3.RIGHT, PI / 2.0), 10)
+			b.drum(size.x * 0.75, 0.05, Vector3(0.0, 0.0, size.z - 0.03), Paint.coat(Paint.BLACK, 0.7, 0.3), Basis(Vector3.RIGHT, PI / 2.0), 10)
 		&"console":
 			# A rack: four rails on a plinth, a cap, teal side panels vented in two
 			# columns either side of their computer-mod ports, its back panel with
@@ -311,6 +409,42 @@ static func _part(id: StringName, size: Vector3, count := -1) -> ArrayMesh:
 				for y in [-1, 1]:
 					b.drum(0.08, 0.02, Vector3(x * 0.18, y * 0.18, 0.065), Paint.coat(Paint.BLACK, 0.3, 0.3), along, 16)
 					b.drum(0.06, 0.012, Vector3(x * 0.18, y * 0.18, 0.074), Paint.coat(Color(0.45, 0.8, 1.0), 0.0, 0.0, 0.3, 0.3, 2.0), along, 16)
+		&"skates":
+			# Two long blades below a frame across them, reaching past it to the
+			# sand, their noses turned up so a crest's lip never digs one in.
+			var keel: float = Catalog.PARTS[id].stats.keel
+			var reach := size.z + keel
+			for x in [-1, 1]:
+				var blade := Vector3(x * (h.x - 0.05), 0.0, 0.0)
+				b.box(Vector3(0.025, size.y - 0.12, 0.05), blade + Vector3(0.0, 0.0, reach - 0.025), steel, 0.006)
+				for y in [-1, 1]:
+					b.box(Vector3(0.025, 0.09, 0.04), blade + Vector3(0.0, y * (h.y - 0.05), reach - 0.045),
+						steel, 0.006, Basis(Vector3.RIGHT, y * 0.5))
+				b.box(Vector3(0.05, size.y - 0.2, keel), blade + Vector3(0.0, 0.0, size.z + keel * 0.5 - 0.01), gun, 0.008)
+			for y in [-0.28, 0.28]:
+				b.box(Vector3(size.x - 0.04, 0.06, size.z), Vector3(0.0, y, size.z * 0.5), gun, 0.008)
+			_hazard(b, Vector3(size.x * 0.6, 0.035, 0.012), Vector3(0.0, 0.0, size.z + 0.002), Basis.IDENTITY)
+		&"board_plate":
+			# One wide plate on struts below its frame, its nose and tail
+			# turned up like a sled's.
+			var keel: float = Catalog.PARTS[id].stats.keel
+			b.box(Vector3(size.x, size.y - 0.12, size.z), Vector3(0.0, 0.0, h.z), gun, 0.01)
+			for x in [-1, 1]:
+				for y in [-1, 1]:
+					b.box(Vector3(0.05, 0.05, keel), Vector3(x * (h.x - 0.1), y * (h.y - 0.15), size.z + keel * 0.5), gun, 0.006)
+			b.box(Vector3(size.x, size.y - 0.12, 0.02), Vector3(0.0, 0.0, size.z + keel - 0.01), gun, 0.006)
+			for y in [-1, 1]:
+				b.box(Vector3(size.x, 0.1, 0.02), Vector3(0.0, y * (h.y - 0.04), size.z + keel - 0.025), gun, 0.006,
+					Basis(Vector3.RIGHT, y * 0.45))
+			b.box(Vector3(size.x - 0.08, size.y - 0.2, 0.006), Vector3(0.0, 0.0, size.z + keel + 0.002), Paint.coat(Paint.STEEL, 0.5, 0.7, 0.3), 0.002)
+			for x in [-1, 1]:
+				_hazard(b, Vector3(0.05, size.y * 0.6, 0.012), Vector3(x * (h.x - 0.06), 0.0, -0.004), Basis.IDENTITY)
+		&"sail":
+			# Furled on its boom, lashed every so often.
+			b.drum(0.035, size.z, Vector3(0.0, 0.0, h.z), steel, along, 10)
+			b.drum(0.08, size.z - 0.3, Vector3(0.0, 0.0, h.z + 0.05), Paint.coat(Color(0.86, 0.8, 0.68), 0.5, 0.0, 0.95), along, 12)
+			for i in 5:
+				b.drum(0.084, 0.03, Vector3(0.0, 0.0, 0.35 + i * 0.38), Paint.coat(Paint.ROPE, 0.4, 0.0, 0.9), along, 12)
 		&"solar_panel":
 			b.box(Vector3(size.x, size.y, 0.03), Vector3(0.0, 0.0, 0.015), Paint.coat(Paint.STEEL, 0.4, 0.5), 0.006)
 			_cells(b, Vector2(size.x - 0.04, size.y - 0.04), 4, 2, Basis.IDENTITY, Vector3(0.0, 0.0, 0.032))

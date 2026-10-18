@@ -1,12 +1,12 @@
 extends MenuProbe
 ## Spawns probe 2: the origin chosen at New game is the run's. New game asks
-## who you come as, the Surveyor highlighted; each origin chosen, then
-## Normal, starts its run there: the moon at that origin's start, a clear
-## morning there with the first storm three to eight minutes off, its kit
-## beside you and on you, and round you the history its start was chosen by,
-## as the sheet lays it: nothing a path or settlement left near the
-## Surveyor, the Salvager's wreck field, the Homesteader's road and
-## wayshrine.
+## who you come as, the origin last played highlighted, the Surveyor before
+## any; each origin chosen, then Normal, starts its run there: the moon at
+## that origin's start, a clear morning there with the first storm three to
+## eight minutes off, its kit beside you and on you, and round you the
+## history its start was chosen by, as the sheet lays it: nothing a path or
+## settlement left near the Surveyor, the Salvager's wreck field, the
+## Homesteader's road and wayshrine.
 
 
 func run() -> void:
@@ -17,10 +17,9 @@ func run() -> void:
 		var kit := origins[k]
 		press(&"ui_accept")
 		var menu := main.ui.top()
-		if k == 0:
-			check(menu.words() == PackedStringArray(origins.map(func(o: Kit) -> String: return o.label.to_upper()))
-				and menu.highlighted() == 0, "New game asks who you come as, the Surveyor first (%s)" % ", ".join(menu.words()))
-		for i in k:
+		var last := maxi(k - 1, 0)
+		check(menu.highlighted() == last, "New game asks who you come as, the %s highlighted" % origins[last].label)
+		for i in k - menu.highlighted():
 			press(&"ui_down")
 		press(&"ui_accept")
 		press(&"ui_accept")
@@ -28,7 +27,7 @@ func run() -> void:
 		await started()
 		var at := world.start
 		var spawn := world.spawn
-		check(world.kit == kit and at == Starts.find(world.shape.history, kit.start, tuning)
+		check(world.kit == kit and at == Starts.find(world.shape, kit.start, tuning)
 			and Sphere.point(world.moon._spawn_latitude, world.moon._spawn_longitude).distance_to(at) < 1e-6,
 			"the %s's run is the %s's, begun at its start on the moon" % [kit.label, kit.label])
 		var field := world.weather.field
@@ -73,8 +72,8 @@ func _wanted(kit: Kit) -> Dictionary:
 func _round_you(kit: Kit, spawn: Vector2, tuning: Tuning) -> String:
 	var sites := world.shape.sites
 	var near := func(kind: StringName, metres: float) -> bool:
-		return sites.nearest(spawn.x, spawn.y, metres, func(k: StringName, _x: float, _z: float) -> bool:
-			return k == kind, true) != null
+		return sites.nearest(spawn.x, spawn.y, metres, func(site: Site) -> bool:
+			return site.kind == kind, true) != null
 	match kit.start:
 		&"artery":
 			var deep := tuning.start_deep_m

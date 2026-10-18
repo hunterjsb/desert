@@ -76,6 +76,13 @@ func _enter_tree() -> void:
 	# Clear skies unless it's the storm's turn; the equator is stormy.
 	if not storm:
 		tuning.storm_threshold = 0.9
+	# Beside a town where history's house ruins stand, dug out.
+	tuning.salvage = true
+	tuning.site_return_m = -1.0
+	var from := Sphere.point(deg_to_rad(tuning.spawn_latitude_degrees), deg_to_rad(tuning.spawn_longitude_degrees))
+	var at := StructureKit.starts_among(SEED, tuning, from, Vector2.ONE * tuning.chunk_size * 0.5)[0]
+	tuning.spawn_latitude_degrees = rad_to_deg(Sphere.latitude(at))
+	tuning.spawn_longitude_degrees = rad_to_deg(Sphere.longitude(at))
 
 
 func _ready() -> void:
@@ -87,7 +94,7 @@ func _ready() -> void:
 		_quiet()
 	# Ruins were planned with salvage on; no finds from here, only the camp.
 	world.tuning.salvage = false
-	ruin = world.shape.ruins.around(world.spawn.x, world.spawn.y, 4000.0)[0]
+	ruin = _nearest_ruin()
 	var corner := Vector2(Ruin.HALF)
 	var away := (ruin.to_world(CAMP_AT) - ruin.to_world(corner)).normalized().rotated(deg_to_rad(-CAMP_TURN))
 	_middle = ruin.to_world(CAMP_AT)
@@ -259,9 +266,20 @@ static func _part_id(part: Part) -> StringName:
 
 func _ruin_view() -> MeshInstance3D:
 	for chunk: TerrainChunk in world.terrain.chunks():
-		if chunk.ruin() != null and chunk.ruin().center == ruin.center:
-			return chunk._ruin_view
+		if chunk.view_of(ruin) != null:
+			return chunk.view_of(ruin)
 	return null
+
+
+## The house ruin standing nearest where the run began.
+func _nearest_ruin() -> Ruin:
+	var best: Ruin = null
+	for unit in world.shape.sites.units():
+		for site in unit.sites:
+			if site is Ruin and world.shape.sites.covering(site.x, site.z) == site and (best == null
+					or site.distance_to(world.spawn.x, world.spawn.y) < best.distance_to(world.spawn.x, world.spawn.y)):
+				best = site
+	return best
 
 
 ## A small window that can't take focus, nothing but this script moving the

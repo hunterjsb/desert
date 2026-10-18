@@ -219,11 +219,46 @@ Readings, not in the session:
   stores in colonial ruins, granaries and the Sister vault, which holds pure rainseed*
   ([Farming](farming.md#propagation-growth-stages-and-wild-habitats-agreed)).
 
-## Structures by era and the loot model (Agreed, session 4, part 4; not built)
+## Structures by era and the loot model (Agreed, session 4, part 4; the kits and the loot built)
 
 *Designed whole in [the world system](../world-system.md): the structure framework, exposure, the loot
-model and the migration of today's loose finds are its packages. Today's ruin is registered there as
-the second age's house ruin, and stands where it always has.*
+model and the migration of today's loose finds are its packages. The first, the structure kits, is
+built (2026-10-18, below and [in the world system](../world-system.md#what-the-structure-kits-do-now)),
+and the second, the loot (2026-10-18, below and [in the world
+system](../world-system.md#what-loot-does-now)); lineage is not yet.*
+
+**Built: the structure kits (2026-10-18).** Every era's repeatable kit stands where history put it, as
+data in one shared system, each piece with its three exposure states:
+
+- **Colonial,** off-white composite, grey and safety orange, crisp, the contractor's tag and a member
+  state's seal on them: *pylon stubs* (a concrete footing, a cut-down lattice column, a crossarm with its
+  insulators and a snapped cable, every 150 m along the power lines), *pipeline segments* (12 m of pipe
+  on concrete saddles, bolted flanges, an orange band), *hab pods* (an overbuilt 8 × 6 m pod, panel
+  seams, a window band, a bunk inside, a roof hatch and antenna), *relay masts* (a 14 m lattice mast on
+  its footing, its cabinet, dish and light). The deepest: buried nearly always, partly exposed a quarter
+  of the time, dug out only in the hardest storms.
+- **Skimmer era,** gunmetal and olive plate, panels that don't match, welds, hazard stripes, the crew's
+  patch: *wreck hulls* (a 12 m hull down nose first at its site's 10° to 35°, its tail torn open to walk
+  into), *fuel bladders* (a slumped rubber bag on a scrap pallet, taped, strapped, its valve), *dugouts*
+  (a sandbagged pit with a drift down into it, roofed with scrap, an ammunition crate). Shallow and
+  quick: dug out two thirds of the time.
+- **First Kingdoms,** stone and the colonial pipe the keepers reused, brass and copper fittings, a
+  house's enamel (deep red, ochre or teal by the site) and its crest: *pipe-wall huts* (walls of stacked
+  pipe laid in stone, a hull-plate roof over the back, the machine the house kept running),
+  *cisterns* (a stone pit silted from its gap down to the floor, the colonial line coming in through the
+  back wall with its brass valve), *low stone walls* (a field plot's corner in dry stone, a gate between
+  pipe posts with flared brass caps). Deep and low: mostly partly exposed, barely showing.
+- **Second age,** mud render and lime wash, fired clay, saltbush wood and fern cord, bone, sand, rust,
+  clay, and the Cistern's water-blue only on what she touched: *wayshrines* (a brick plinth, a niche with
+  a round ceramic cap off true on its square housing, a blue-glazed basin with offerings, a corded
+  post), *watchtowers* (9 m of render, a platform with a broken parapet and a domed turret, charms down
+  the front, Tu daubed over the door), *house ruins* (today's three-room ruin, now in the second age's
+  render and lime wash, saltbush beams over the doors and under the roof, a water jar on a corner,
+  charms over the front door). The shallowest: dug out four times in five.
+
+The house ruin no longer stands on a grid in every few chunks: only where history put one, in villages,
+Rim towns, salvage towns and along roads, and where the dunes take it. A buried piece shows only its
+top; partly exposed, the tops of its walls; exposed, it's dug out, as below in the skeleton's ruin.
 
 *[Session 4, part 4](../plants-worldgen-ruins-2026-10-17.md), with its labels as given: **Agreed** is
 settled, **Idea** is proposed and not confirmed, **Back burner** is liked and not to be built yet, and
@@ -233,11 +268,29 @@ warning: "the game has no structures and no terrain generation yet. Lore here is
 than what should be built now." Hard rule: no NPCs, no dialogue, no exposition.*
 
 **The loot model in one line:** "Loot follows history: it comes from sites, and storms decide what's
-reachable. Stop spawning items loose in open sand." Today the PRD does the opposite: finds are laid out
+reachable. Stop spawning items loose in open sand." The skeleton did the opposite: finds were laid out
 loose and half-buried on open sand, 1.5 a chunk, with one walk-in ruin to every 5 by 5 chunks (the
 skeleton version below). The relocation is the session's eighth step
-([skeleton plan](../skeleton-plan.md#the-newer-proposed-order-session-4-part-4)), and until it is built the
-skeleton stands.
+([skeleton plan](../skeleton-plan.md#the-newer-proposed-order-session-4-part-4)).
+
+**Built: the loot (2026-10-18).** Loot is history's now. Every kit piece's sockets hold what its era's
+table says, a row for each kind of socket, its kind's own where the kind says what fits, its region how
+generous, each socket drawn from the site's loot seed alone: colonial infrastructure (crates, chassis,
+condensers and turbines, big batteries, trays and panels, at its best Consoles and shield generators),
+the skimmer era's single items (survival kits, radios, hoverboards, at its best military shield
+generators, radar and harvesters), the First Kingdoms' working machines (condensers, turbines, planters,
+nearly full and sound, water kept), the second age's worn gear, water, seeds and salt (a house ruin's
+floor as it always was, a wayshrine's offerings, a watchtower's cache). Han's sites hold less, and a third
+of what they hold is their era's best. The sand decides what's within reach: buried, only what lies on
+top of it; partly exposed, some, half in the sand, more the more the storms took off; dug out, all of it
+but what's higher than a hand reaches; and the best, which lies deeper than the rest of its site, only once
+a storm has stripped past it, so a storm come and gone means a revisit finds more. A site remembers what
+you took while it's laid, and the save keeps that. **Drift:** a line strung between two stakes driven in
+the sand catches what a storm carries (saltbush leaves, salt, a wild cutting, scraps, now and then a small
+part), a steady trickle that a lee below a crest multiplies several times over; what it catches lies on
+the sand just downwind of it until you take it up. Open sand keeps a tenth of its loose finds, only on the
+way, along paths and among a settlement's sites. Every origin's first hour finds something worth finding
+within a fair walk: the Homesteader's wayshrine, the Salvager's wrecks, the Surveyor's line.
 
 ### Two tiers, and the repeatable kit (Agreed direction)
 
@@ -333,6 +386,130 @@ rewarding.
 Saltbush lines, glow in cracks, coalcane groves and ancient sandroot all say something is buried
 beneath ([Farming](farming.md#propagation-growth-stages-and-wild-habitats-agreed)).
 
+### Finding them from afar (Hunter, 2026-10-18: "we will need to give the player a way to actually find them early now that the desert is barren")
+
+With loot gathered into sites and open sand nearly empty, a site has to be findable by eye,
+with no map or marker:
+- **Seen from far off.** What stands tall (relay masts, watchtowers, pylon stubs, a wreck's hull)
+  shows on the horizon from kilometres away, and exposed metal or glass glints when the sun
+  catches it, so a glint on a far dune is worth walking to.
+- **Roads lead to sites.** A saltbush line, a row of pylon stubs or a run of old pipe reads from
+  a distance as a line across the dunes, and following it brings you to what stands along it.
+- **A site in sight at every start.** Each origin begins with something to walk to in view: the
+  Salvager's wrecks, the Homesteader's wayshrine, and for the Surveyor a site on the horizon.
+
+#### What's built (2026-10-18, the `sightlines` branch)
+
+One system draws what you see of history past the built ground: the skyline (`Skyline`,
+`game/world/skyline.gd`, under the terrain). Each time the sheet follows you, a worker makes what's in
+sight out to 3 km (Tuning `skyline_m`, the far ring's reach) from the site index's laid sites, and past
+the sheet's 1.3 km from what the sheet would lay from where you are, made and surveyed as it would be
+(`Sites.sighted`, `Sites.pieces_of`). Only the kinds that show from far off are asked for, a cell at a
+time. The main thread swaps the result in and hides a stand-in once its own chunk draws the real
+structure. Before, a structure and a saltbush line drew only with their chunk, out to 512 to 720 m, and
+past that the far ring showed the dunes alone.
+
+- **Stand-ins.** A kit piece says how it reads far off (`far`, in its era's file): a few boxes of its
+  shape in the tone its paint shows at a distance. The relay mast, the watchtower, the pylon stub, the
+  wreck hull and the pipeline segment have one. A stand-in stands at its structure's place and turn,
+  as deep as its state sinks it and cut at the sand, on the far ring's own ground (`FarRing.ground`, its
+  32 m triangles), so it never floats or sinks where the ring skips a crest. It's never drawn thinner
+  than 2 px (`skyline_thinnest_px`), so what's kilometres off holds steady as you move instead of
+  breaking into bits. Its state is its chunk's once that's built, else read on the worker at the last
+  exposure tick, and read again at the next.
+- **Landmarks.** The relay mast and the watchtower are landmarks (`far_landmark`): past where the real
+  thing hands over (380 to 560 m, where the stand-in, drawn over its own built ground, grows from the
+  real size), each is drawn at least 4 px wide and 14 px tall at a kilometre (`skyline_landmark_px`),
+  grown about its foot, shrinking as distance to the 0.3 past it, more slowly than perspective, so at
+  3 km it's still 3 by 10. Dark against the bright sky (the mast's lattice in its own shade, the tower's
+  walls their shade side), the mast with its orange lamp on top: the one thing on a clean horizon the
+  eye snags on. Its glints ride up with it.
+- **Glints.** A piece says where the sun can catch it (`glints`): bare metal, glass, glaze or the water
+  in a basin, the way each faces and how wide its sparkle sweeps, 3° to 8°, each site's turned a little
+  by its loot seed. Seen from far off a glint reaches your eye only off a face turned up by about half
+  the sun's height, so curves and plates have spots facing out low; what faces the sky glints for those
+  above it. A glint lights where the way it faces halves the angle between the sun and your eye, a
+  smooth function of the three, so it swells as they line up, twinkles slowly as the angle keeps turning
+  (once each 1.2°, a few seconds as the sun goes) and fades, never strobing. It's a white star 8 px across
+  as it lights and 16 at its brightest (`glint_px`) at any distance, held in front of what it lies on,
+  dimmed by the haze. None at night, behind Tu, in a storm round you, or where a storm stands at it or
+  between (the storm map's fronts, read in its shader), and only where the site's state leaves it bare
+  of sand. Near, it's on the structure; past the built ground, on its stand-in. The sun turns once in a
+  20-minute day, so a far plate's sparkle lasts a minute or so: long enough to turn and look.
+- **Roads.** The saltbush lines on the second age's roads (Feral's rows that grow a line closer than
+  5 m) run on past the built ground to 3 km as a low ridge in the leaf's shade-side green, at least 3 px
+  thick (`skyline_line_px`), draped on the far ground: a dark line across the sand, a side at a time where Feral's stretch fates say a stretch lives (`Feral.far_lines`, the same
+  draws its bushes come from), so a line far off runs where the bushes stand. Pylon rows and pipe runs
+  are their stand-ins in a row.
+- **A site in sight at every start** (`Starts.in_sight`). Every origin's start must have something to
+  walk to in sight from where its run's ground begins: its top clear over the ground as it's drawn
+  between (the dunes on the loaded chunks, a metre at a time, and the far ring past them, at every edge
+  of its triangles) by 3 px at 1080 rows (Tuning `start_sight_px`, half a pixel more asked than
+  promised), however deep the sand lies on it: the Salvager a hull of its wreck field, the Homesteader
+  its wayshrine, the Surveyor a structure drawn past the built ground, 600 to 1000 m off
+  (`start_horizon_m`): on its horizon, not at its feet, near enough to know at a glance.
+  The Salvager's and Homesteader's starts find one at once (a hull 40 to 230 m off, a wayshrine 22 to
+  62 m off, in 2 to 113 ms on 16 seeds). From the usual spawn, low between dunes, the Surveyor's
+  horizon was blocked on most seeds, so its run begins on the nearest bare flats (the ground's sand
+  supply at most 0.15, five tried, 1.5 km or more apart), and its search sets it out behind one of its
+  line's relay masts so the mast stands on a spot of the ground where it would show, on the way in
+  toward Tu; the line it starts off may now be as near as the deep desert's 600 m. On 32 seeds every
+  Surveyor start keeps all its rules with a relay mast 606 to 912 m off on its horizon, judged at its
+  stand-in's height on the far ring, found in 0.23 to 0.79 s once a run.
+
+**How far each reads, at 1920x1080, unzoomed.** A relay mast, a dark post with an orange top, to 3 km:
+seed 1234's Surveyor's at 656 m, 7.8 px tall as it stands, drawn 16 by 4.5, and the same mast from
+1.86 km, 2.8 px as it stands, drawn 12 by 3.3; a watchtower likewise. A wreck's hull to 2 to 3 km exposed (the Salvager's at
+143 m, a dark shape on the skyline); a pylon stub only once a storm has stripped it (buried, its
+crossarm is a 2 px dash at a kilometre); a saltbush line to 3 km as a dark line across the dunes facing
+you; a glint, a 16 px white star at its brightest, to 3 km.
+
+**What it costs** (an RTX 3070 at 1080p, someone playing meanwhile; the look-test's `cost` lines). On
+the GPU, looking round the horizon from the Surveyor's start, 5.93 ms a frame with it and 6.27
+without; with the AFK camp parked round you, 6.17 and 6.17; with the GPU to itself, 2.54 against 2.52
+and 2.54 against 2.52, and with landmarks drawn larger, 2.63 against 2.63 and 2.64 against 2.60: within
+what the GPU's own noise moves. Its main thread 0.04 ms a frame on
+average; at most, headless, 0.85 ms walking a kilometre among towns and 0.7 ms after a jump (newly laid
+units are looked over a quarter of a millisecond a frame), and once 3.3 ms in a windowed run as the
+world loaded. Nothing in it is proportional to the moon: what's laid near you, and a cell at a time of
+what isn't. Its worker, 2 to 60 ms a job, one each time the sheet follows you. Power probe 11's own
+measure, a tick's work on the main thread: the world alone 1.84 ms without it and 1.92 with it, with the AFK camp parked 4.23 and 4.45, the camp 2.30
+and 2.31 times the world alone either way.
+
+**Probes** (`probes/sightlines/`): 1 every origin begins with something in sight, on three worlds, the
+world as built and drawn looked over a metre at a time; 2 a far stand-in is what you find when you
+arrive: walked to from 1.5 to 2.6 km, it's laid where its stand-in last stood and stands as high over
+its ground, in the state its stand-in showed. Spawns probes 1 to 3 and loot probe 6 keep their rules
+with the new starts.
+
+**To see it** (unseen, on a GPU): `look/sightlines/shoot.sh <dir>` shoots each origin's start looking at
+what's in sight, a far mast, a glint, a saltbush line and a row of pylon stubs, each with a zoom, and
+the cost lines, and builds `~/Desktop/sightlines.png`. It shoots in clear air (no storms), so what's
+far off is seen as on a clear day.
+
+**Fragile.**
+- A landmark is drawn larger than it is past the hand-over: the Surveyor's mast 960 m off is drawn 2.6
+  times its own height. It grows from its real size between 380 and 560 m, over its own built ground,
+  where the real one stands too, so closing on it you see it settle to what it is.
+- A stand-in past the sheet's reach is laid from where you are now, so the sheet's own seams move it a
+  metre or two as you walk; it keeps its survey until it's moved one (`KEEP_M`), and when the sheet lays
+  it, it's where the stand-in last stood. A survey on the line between standing and not can still flip
+  as it moves, and then a far mast comes or goes.
+- Whether a structure gives way to a bigger one's ground is only known once its ground is built; until
+  then a far stand-in shows it, and one that gives way vanishes as you reach it. Rare: only grounds of
+  different sources overlap.
+- A far site's state is read at each exposure tick, so after calm hours a far mast can sink a few metres
+  while you watch. Storms, which change most, hide the far view.
+- Buried pylon rows hardly read: the sand leaves a crossarm. A row of their glints at a low sun does.
+- The Surveyor's search is the dearest start, up to 1.4 s at New game, and leans on relay masts: a seed
+  whose band held none on its lines would fall back to the tuning's spawn (none of 32 did).
+
+After playing it (Hunter, 2026-10-18: "sightlines are awesome... wow! transformed the game... we
+should really flesh this feature out further once the skeleton is properly load-bearing -- this is
+a nice intuitive driver. just need to make those tall structures look reallyyyy good and fit our
+vibe and scenario"): finding by eye is a driver of the game, to grow once the skeleton holds, and
+the tall structures want an art pass of their own.
+
 ### Readings, not in the session
 
 - **The strata and the table don't agree about two eras.** Session 3's strata, which "History runs
@@ -381,7 +558,7 @@ Readings, not in the session:
   ("Loot identity by era" above), and part 5 says the reuse was done in the Dark Age; a First Kingdoms
   ruin's loot is the earlier gear, kept and mended.
 - **Lineage is data on the part, not a rule per item.** A part already carries its stamps and its layer
-  (the look-at line says which layer a find came from). A lineage is a short list of eras on the same
+  (its paint shows which layer a find came from: crisp from deep, rusty near the top). A lineage is a short list of eras on the same
   part, so a find can read as three eras at once without a new system, and "typed parts" (rule 6) holds.
 - **The features are placed by a rule along routes, not as a kit.** Cairns by water, caches on the
   migration routes, early saltbush: small props like the saltbush lines of the feral layer, placed from the
@@ -501,7 +678,8 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
 
 - **Finds** are laid out when a chunk's ground becomes solid, from the run's seed, the
   chunk's coordinates and how hard the weather has been there, and go when it stops
-  being solid. While the chunk stays loaded it remembers what you took, so its finds
+  being solid. *Since 2026-10-18 (the loot): open sand holds 0.15 a chunk, only on the way,
+  and the rest of what's found is the sites' (above); what follows is the loose finds'.* While the chunk stays loaded it remembers what you took, so its finds
   come back as they were less that; once the chunk is forgotten, so is that. Open sand
   holds 1.5 finds a chunk on average, at most 4. Each find draws from its own stream of
   the seed, where it lies first, so the weather changes what a find is but never where it
@@ -561,8 +739,8 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
   the same chunks, 58 of 99 seeds were in ruins. Rations are found sealed wherever they
   lie; a loose canister is found empty, since open water boils off.
   Deep things were kept from the weather longer: batteries 30 to 100% charged against
-  up to 40% at the surface, devices 70 to 100% sound against 35 to 75%. The look-at line
-  says which layer a find came from.
+  up to 40% at the surface, devices 70 to 100% sound against 35 to 75%. Its paint shows
+  which layer a find came from, crisp from deep and worn near the top.
 - **How hard the weather has been** at a place is read over the last two hours, every
   10 minutes of world time: the mean of how deep into a storm it was or how far the wind
   blew past the prevailing wind's strongest, 16 m/s (toward 30 m/s, as hard as a storm's
@@ -580,7 +758,12 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
   wholly inside one chunk, where the dunes over its ground rise no more than 1.5 m and
   are nowhere steeper than 20°: about 2.3 a km², one every 650 m or so. It turns only
   in quarter turns, so its walls stand on the lattice. A run never starts on a ruin's
-  ground.
+  ground. *Since 2026-10-18 (the structure kits): it's the second age's house ruin and
+  stands only where history put one, where the dunes over its ground rise no more than
+  3 m, sliding up to 24 m along its line to find such ground; its ground may cross
+  into the next chunk, its boxes in the chunk its middle stands on, 19 of them with the
+  jar on its corner. Buried it sinks 2.6 m, its wall tops and roof showing; partly
+  exposed 1.6 m, its rooms filled to the sand; exposed it's as before.*
 - **Its footprint in `height_at`:** inside, the sand lies 3 cm under the floor; outside,
   it drifts 0.7 m up the walls, gone 4 m out, and lies level with the floor in front of
   each outer door; 12 m out the dunes have their own shape back. The outer walls are a
@@ -604,10 +787,15 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
 - **The "go looking" scenario** stands you 12 m out from the front door of the
   ruin nearest the run's start, facing it, at a clear and calm moment (no storm for ten
   minutes, wind under 6 m/s), with a bare crate frame of your own beside you. The
-  ruin's hall always holds a device with at least two parts to strip. The dev overlay's
+  ruin's hall always holds a device with at least two parts to strip. *Since 2026-10-18:
+  history's house ruin nearest the run's start on the moon, however far, at a moment it's
+  dug out, you on fresh ground before it. The hall's device was a later visitor's and lies
+  on whatever sand is in the hall; the floor's other finds lie only where it's dug out.* The dev overlay's
   salvage column shows the finds in memory, and how hard the weather has been where you
   stand with the deep layer's share there.
-- **Probe 5** also checks every kind turns up, rope and wire are common, seeds are mostly
+- *Since 2026-10-18, probe 5 is the expedition: a site shows more and better the more the storms took
+  off it, and every kind a site holds turns up; loose finds still come deeper where the weather was hard.*
+- **Probe 5** also checked every kind turns up, rope and wire are common, seeds are mostly
   in ruins and the harvester is the rarest part; **probe 2** lays by hand any kind its
   walk didn't meet; **probe 6** strips a survival kit and unrolls a found coil, plug and
   strong plug through the hands.
@@ -646,7 +834,8 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
    floating and never buried out of reach. Loose finds settle without falling through.
 3. **Ruins sit in the sand.** Every ruin floor meets the sand within tolerance.
 4. **The walk-through.** A probe walks every doorway and floor of every ruin type. The
-   player never snags, never gets stuck, and never falls through.
+   player never snags, never gets stuck, and never falls through. *Since 2026-10-18 it's
+   the structure kits' probe 2 (`probes/kits/`), which walks every kind with a way in.*
 5. **Harder weather, better finds.** Across many chunks, the average find tier rises
    with storm and wind exposure.
 6. **Strip and fit.** Every part in a found device can be taken out and fitted to one of
@@ -788,7 +977,9 @@ it as direction and says so on each line. The built skeleton is not changed.
   carried by storm wind." *Follows the session as the target; the skeleton stands until step 8.* Not
   said what the first hour finds, since a start is on or near an artery and not near loose finds. The
   session's "99%" is its own estimate: this PRD counts seeds, 58 of 99 in ruins, and puts a ruin in
-  each 5 by 5 chunks.
+  each 5 by 5 chunks. *Built 2026-10-18 ([the loot](../world-system.md#what-loot-does-now)): open sand
+  keeps a tenth, on the way; the first hour finds the sites by each origin's start, measured on six
+  seeds.*
 - **Weapons and armour in a game with no combat.** Here and in the vision: "Cozy, not hostile. No
   enemies to fight." The session: skimmer-era loot is "military weapons, armour, mods," dugouts and
   watchtowers hold "weapons caches," and the black site's mods are the best single items. Not said
@@ -808,7 +999,10 @@ it as direction and says so on each line. The built skeleton is not changed.
   blows is open." The session: drift is "light debris, scraps and occasional small items," caught "as
   it blows past, perhaps with a net or tether mod." *Narrows the collector question.* Not said whether
   drift is a stream computed from the storm and the camp's place (stateless) or objects carried across
-  chunks, or what happens when its chunk unloads.
+  chunks, or what happens when its chunk unloads. *Built 2026-10-18: a stream read from
+  the weather and the ground at a catch line, a body only where the line catches it, held where it
+  fell until you take it up; nothing caught on a chunk not solid ([the
+  loot](../world-system.md#what-loot-does-now)).*
 - **Second-age structures: how much makes the first pass.** The session's own open question. Its
   order starts with the wayshrine, the watchtower and the house ruin.
 

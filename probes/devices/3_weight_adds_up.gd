@@ -51,7 +51,8 @@ func run() -> void:
 	check(wrong == 0, "weight is always frame plus parts (%d wrong)" % wrong)
 	check(pushed_wrong == 0, "the physics moves it as that weight says (%d wrong)" % pushed_wrong)
 
-	for socket in crate.sockets():
+	# Its frame's own: a hook's tie goes with the hook.
+	for socket in crate.frame_sockets():
 		if socket.part != null:
 			crate.take(socket).free()
 	fit_part(crate, &"hover_tray")

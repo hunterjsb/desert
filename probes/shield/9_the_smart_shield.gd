@@ -4,8 +4,8 @@ extends WeatherProbe
 ## While the radar's front is farther than the smart shield's distance the
 ## shield stays off; once it's within it, the shield switches itself on and
 ## the screen logs it. A shield off on the sand nearby, not on the deck,
-## stays off. The screen's shield key switches it off, and it stays off while
-## the front holds near; pressed again, it's on.
+## stays off. Switched off from the screen's power page, it stays off while
+## the front holds near; switched on there, it's on.
 
 ## How fast the clock runs meanwhile.
 const WARP := 10.0
@@ -44,14 +44,24 @@ func run() -> void:
 	check("SHIELD AUTO-ON" in made.screen_text(Console.Page.LOG), "the screen logs it")
 	check(not apart.on, "a shield off the deck stays off")
 
-	made.press(Vector2(0.5, 0.97))
+	made.page = Console.Page.POWER
+	_press(made, shield, &"off")
 	world.time_warp = 1.0
 	await physics_frames(120)
 	check(not shield.on and "SHIELD OFF" in made.screen_text(Console.Page.LOG),
-		"the screen's key switches it off, and it stays off")
-	made.press(Vector2(0.5, 0.97))
+		"switched off from the screen, it stays off")
+	_press(made, shield, &"on")
 	await physics_frames(10)
 	check(shield.on, "and on again")
+
+
+## Presses the power page's switch that works a device toward a state, where it's drawn.
+func _press(made: Console, device: Device, to: StringName) -> void:
+	for key: Dictionary in made.keys():
+		if key.device == device and key.to is StringName and key.to == to:
+			made.press((key.box as Rect2).get_center() / Vector2(Console.PIXELS))
+			return
+	check(false, "a switch for %s" % to)
 
 
 ## The nearest stormy ground to a place, on the radar's own bearings, m.

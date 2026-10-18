@@ -25,6 +25,9 @@ const FLICKER := 0.25
 
 ## The switch, which use flips. The bubble stands while it's on and has power.
 var on := false
+## Smart, a Console in its system switches it on as the radar sees a front
+## near: set on the Console's power page.
+var smart := true
 ## Metres to the shell, fully open: its kind's, unless widened.
 var size := Tuning.current().shield_radius
 var shelter := Shelter.new()

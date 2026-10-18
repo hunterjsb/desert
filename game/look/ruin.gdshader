@@ -77,11 +77,11 @@ void fragment() {
 	float across = abs(out_n.x) > 0.5 ? half_plan.y : half_plan.x;
 	vec2 on_tag = vec2(right - (across - 3.4), 1.675 - lp.y) / vec2(0.7, 0.35);
 	vec2 in_tag = clamp(on_tag, 0.0, 1.0);
-	float tag = texture(marks, in_tag / vec2(6.0, 3.0) + vec2(0.0, 2.0 / 3.0)).r;
+	float tag = texture(marks, in_tag / vec2(6.0, 4.0) + vec2(0.0, 2.0 / 4.0)).r;
 	float tag_e = max(fwidth(tag), 0.08);
 	vec2 on_seal = vec2(right - (across - 4.3), 1.7 - lp.y) / vec2(0.8, 0.4);
 	vec2 in_seal = clamp(on_seal, 0.0, 1.0);
-	float seal = texture(marks, (in_seal + vec2(5.0, 2.0)) / vec2(6.0, 3.0)).r;
+	float seal = texture(marks, (in_seal + vec2(5.0, 2.0)) / vec2(6.0, 4.0)).r;
 	float seal_e = max(fwidth(seal), 0.08);
 	vec2 px_mark = vec2(fwidth(right), px_y) * 0.75;
 	if (wall && abs(dot(lp.xz, out_n) - reach) < 0.05) {

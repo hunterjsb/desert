@@ -3,7 +3,7 @@ extends FeralProbe
 ## pilgrim road out of Sister, every saltbush of the pilgrim roads' habitat
 ## stands within a few metres of a pilgrim road's line, far inside its
 ## corridor; and the road reads as a line: most of every ten metres of it
-## through loaded ground has a bush on either side.
+## through loaded ground, where no structure stands, has a bush on either side.
 
 ## The habitat's own band, its side and its jitter along, with room.
 const NEAR := 4.0
@@ -32,6 +32,12 @@ func run() -> void:
 			for k in floori(a.distance_to(b) / STEP):
 				var at := a + run * (k + 0.5) * STEP
 				if not world.terrain.is_loaded_at(at.x, at.y):
+					continue
+				# Where a structure stands on the line, no bush is owed there.
+				var across := Vector2(-run.y, run.x) * 2.5
+				var sites := world.shape.sites
+				if sites.covering(at.x, at.y) != null or sites.covering(at.x + across.x, at.y + across.y) != null \
+						or sites.covering(at.x - across.x, at.y - across.y) != null:
 					continue
 				spots += 1
 				var sides := {}

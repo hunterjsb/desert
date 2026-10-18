@@ -27,6 +27,8 @@ const SAND_SHADER := preload("res://game/world/sand.gdshader")
 var sand_material: Material
 ## The marks left on the sand, which it's drawn with.
 var tracks: Tracks
+## What stands on the far ring past the built ground.
+var skyline: Skyline
 
 var _world: World
 var _tuning: Tuning
@@ -72,6 +74,13 @@ func setup(world: World) -> void:
 	tracks = Tracks.new()
 	add_child(tracks)
 	tracks.setup(world, sand_material)
+	skyline = Skyline.new()
+	add_child(skyline)
+	skyline.setup(world)
+	# Structures read their exposure as their ground is built, and hold it
+	# while that ground is loaded.
+	world.shape.sites.set_clock(func() -> float: return world.time)
+	unloaded.connect(world.shape.sites.release)
 
 
 func _process(_delta: float) -> void:
@@ -105,6 +114,7 @@ func _exit_tree() -> void:
 	for id: int in _tasks.values():
 		WorkerThreadPool.wait_for_task_completion(id)
 	_tasks.clear()
+	_world.shape.sites.finish()
 	if _far_task != -1:
 		WorkerThreadPool.wait_for_task_completion(_far_task)
 		_far_task = -1
@@ -204,7 +214,7 @@ func is_settled_around(world_x: float, world_z: float) -> bool:
 ## Nothing left to build, near or far.
 func is_idle() -> bool:
 	return _planned and _tasks.is_empty() and _wanted.is_empty() and _far_task == -1 \
-		and _far_mesh.is_valid() and _far_center == _center
+		and _far_mesh.is_valid() and _far_center == _center and skyline.is_idle()
 
 
 func chunks() -> Array:
@@ -233,6 +243,7 @@ func reposition() -> void:
 	for chunk: TerrainChunk in _chunks.values():
 		_place(chunk)
 	_place_far()
+	skyline.reposition()
 	# The sand's patterns are drawn in world metres, not the engine's.
 	if sand_material is ShaderMaterial:
 		sand_material.set_shader_parameter("origin", Vector2(_world.origin_chunk) * _size)
@@ -279,12 +290,13 @@ func _launch() -> void:
 		_wanted.pop_front()
 		if _tasks.has(key):
 			continue
-		_tasks[key] = WorkerThreadPool.add_task(_build.bind(key, RenderingServer.mesh_create()))
+		var held := _world.shape.sites.hold(Vector2i(key.x, key.y))
+		_tasks[key] = WorkerThreadPool.add_task(_build.bind(key, RenderingServer.mesh_create(), held))
 
 
-func _build(key: Vector3i, mesh: RID) -> void:
+func _build(key: Vector3i, mesh: RID, held: Array[Structure]) -> void:
 	var build := ChunkBuild.make(_world.shape, Vector2i(key.x, key.y), _size, key.z,
-		_tuning.skirt_depth, _indices[key.z])
+		_tuning.skirt_depth, _indices[key.z], held)
 	ChunkBuild.fill(mesh, build.arrays, _material_rid)
 	build.mesh = mesh
 	_mutex.lock()
@@ -313,6 +325,8 @@ func _upload(build: ChunkBuild) -> void:
 	var chunk: TerrainChunk = _chunks.get(build.coord)
 	if d > _tuning.view_radius + 1 or (chunk and chunk.step != 0 and chunk.step <= build.step):
 		RenderingServer.free_rid(build.mesh)
+		if chunk == null:
+			_world.shape.sites.release(build.coord)
 		return
 	if chunk == null:
 		chunk = TerrainChunk.new()

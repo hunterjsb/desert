@@ -1,10 +1,10 @@
 class_name Waist
 extends Node3D
 ## Your waist: a line tied on here leaves your hands free, at the price of
-## walking slower and catching more wind. F with a line in your hand and
+## walking slower and catching more wind. Use with a line in your hand and
 ## nothing to work ties it on, and with your hands empty takes the last one
-## back into them; G with your hands empty lets go of them all. Tying is
-## instant; untying takes a moment, so a gust can catch you still tied on.
+## back into them. Tying is instant; untying takes a moment, so a gust can
+## catch you still tied on. The first sail's sheet tied here teaches its how-to.
 
 ## Where things tied on sit, in your own frame.
 const AT := Vector3(0.0, 0.95, -0.15)
@@ -19,6 +19,10 @@ var _tuning := Tuning.current()
 var _was := {}
 ## Let fall, and not yet clear of you.
 var _falling: Array[RigidBody3D] = []
+## Letting go of only these, or of all when empty.
+var _only: Array[RigidBody3D] = []
+## The sheet's how-to has had its chance this session.
+var _taught := false
 
 
 func _ready() -> void:
@@ -74,13 +78,15 @@ func give_back() -> bool:
 	return true
 
 
-## Lets go of every line tied on, once they're untied. Says whether there was any.
-func let_go() -> bool:
+## Lets go of every line tied on, or only `these`, once they're untied. Says
+## whether there was any.
+func let_go(these: Array[RigidBody3D] = []) -> bool:
 	if tied.is_empty() or (untying >= 0.0 and not _to_hand):
 		return false
 	if untying < 0.0:
 		untying = _tuning.untie_seconds
 	_to_hand = false
+	_only = these
 	return true
 
 
@@ -106,6 +112,9 @@ func _physics_process(delta: float) -> void:
 			_undone()
 	_place()
 	_clear_of_you()
+	if not _taught and Controls.ui != null and Controls.playing() and tied.any(Mast.sheet_end):
+		_taught = true
+		Controls.ui.teach(Mast.HOW_TO, Mast.HOW_TO_SAYS)
 	Dev.put("player/waist", "untying %.1fs" % maxf(untying, 0.0) if untying >= 0.0
 		else ("%d tied" % tied.size() if not tied.is_empty() else "-"))
 
@@ -119,7 +128,11 @@ func _undone() -> void:
 	if _to_hand and hands.held == null:
 		hands.hold(untie(tied.back()))
 		return
-	for body: RigidBody3D in tied.duplicate():
+	var going: Array[RigidBody3D] = tied.duplicate()
+	if not _only.is_empty():
+		going.assign(_only.filter(func(b: RigidBody3D) -> bool: return tied.has(b)))
+	_only = []
+	for body: RigidBody3D in going:
 		untie(body)
 		# Down at your feet, moving as you were; it can't push you until it's clear.
 		body.linear_velocity = _player.velocity

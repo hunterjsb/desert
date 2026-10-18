@@ -20,6 +20,7 @@ const KINDS := {
 	&"food": Color(0.8, 0.7, 0.35),
 	&"rack": Color(0.95, 0.35, 0.3),
 	&"deck": Color(0.55, 0.45, 0.95),
+	&"sail": Color(0.92, 0.86, 0.7),
 	&"computer_mod": Color(0.25, 0.9, 0.9),
 	&"computer_top": Color(0.65, 1.0, 0.95),
 	&"screen": Color(0.9, 0.95, 0.95),
@@ -37,6 +38,21 @@ const PARTS := {
 		"color": Color(0.6, 0.6, 0.65), "stats": {"hooks": 1}, "tie": Vector3(0.0, 0.0, 0.16)},
 	&"hover_tray": {"kind": &"bottom", "label": "Hover tray", "mass": 6.0, "size": Vector3(0.7, 0.7, 0.08),
 		"color": Color(0.25, 0.45, 0.6), "stats": {"lift_kg": 80.0}},
+	# Runners fit a bottom mount in place of a tray and ride the sand, along
+	# their device's length: hold is the share of the load they hold at rest,
+	# glide the share they drag sliding and plough how much more for each m/s,
+	# grip the most of the load they hold across, and keel how far the blades
+	# reach below the frame they hang from, so only they meet the sand. Skates are two long blades that bite hard; a
+	# board plate drags a little more and lets go across sooner, so a camp on
+	# it skids where one on skates would trip.
+	&"skates": {"kind": &"bottom", "label": "Skates", "mass": 4.0, "size": Vector3(0.66, 0.9, 0.03),
+		"color": Color(0.5, 0.52, 0.55), "stats": {"glide": 0.035, "plough": 0.03, "grip": 0.9, "hold": 0.1, "keel": 0.05}},
+	&"board_plate": {"kind": &"bottom", "label": "Board plate", "mass": 6.0, "size": Vector3(0.72, 0.9, 0.02),
+		"color": Color(0.35, 0.37, 0.4), "stats": {"glide": 0.05, "plough": 0.04, "grip": 0.45, "hold": 0.12, "keel": 0.03}},
+	# A sail furled on its boom: it fits a mast, and its sheet ties on at the
+	# boom's end.
+	&"sail": {"kind": &"sail", "label": "Sail", "mass": 5.0, "size": Vector3(0.18, 0.18, 2.2),
+		"color": Color(0.85, 0.8, 0.68), "stats": {"sail_m2": 5.5}, "tie": Vector3(0.0, 0.0, 2.26)},
 	# Half a crate's top, so two ride side by side.
 	&"solar_panel": {"kind": &"top", "label": "Solar panel", "mass": 5.0, "size": Vector3(0.8, 0.4, 0.04),
 		"color": Color(0.1, 0.15, 0.35), "stats": {"solar_w": 60.0}},
@@ -137,20 +153,41 @@ const PARTS := {
 ## Parts by the names older saves knew them by.
 const RENAMED := {&"carrot": &"root_tuber", &"fungus": &"vat_fungus", &"carrots": &"tubers"}
 
+## Who made each thing colonial hands made, as its stamp says (art
+## direction's maker's marks): commodity parts carry none.
+const MAKERS := {&"crate_frame": &"tilg", &"chassis": &"tilg", &"condenser": &"rmc", &"console": &"rmc",
+	&"shield": &"rmc", &"light_shield": &"shield_maker", &"turbine": &"wind_maker"}
+## Where a lineage's marks sit on what isn't a box: round about its top's
+## axis, as [its radius over its half width, and the shares of its height its
+## round body spans].
+const ROUND := {&"shield": [0.88, 0.22, 0.8], &"light_shield": [0.88, 0.22, 0.8], &"canister": [0.92, 0.0, 0.82],
+	&"lamp": [0.92, 0.68, 0.96], &"barometer": [0.95, 0.0, 0.66]}
+## Made things too small or too busy to carry a lineage's marks, though they
+## keep its numbers: the ends of lines, a coil, the dish, the screen's glass,
+## a compass's card.
+const BARE: Array[StringName] = [&"hook", &"plug", &"strong_plug", &"hose_end", &"rope_end", &"coil", &"radar",
+	&"screen", &"compass"]
+## The stake's frame, which has no entry of its own.
+const STAKE := {"mass": 2.0, "stats": {"toughness": INF}}
+## What things with no entry of their own are called.
+const NAMES := {&"stake": "Stake", &"line": "Line", &"cable": "Cable", &"strong_cable": "Strong cable",
+	&"hose": "Hose"}
+
 ## Frames: their box, weight, wind catch and sockets as [kind, position, outward].
-## Those marked "deck" stand on a chassis piece's deck mount too.
+## Those marked "deck" stand on a chassis piece's deck mount too. A "short"
+## name is what a Console's screen calls it, where its label is too long.
 const DEVICES := {
-	# Two batteries, a ring on every side, a tray under it and two top mounts,
-	# so a panel rides beside a lamp or a shield. The first battery sits in the
-	# middle of its back, so a crate with one hangs level on its lines. A board
-	# is longer than the crate, so its rack runs along the top of the left side,
-	# away from the charge light, the board standing proud of it to clear the
-	# ring below. Last in the list, so older saves keep their sockets.
-	&"crate_frame": {"label": "Crate frame", "size": Vector3(0.8, 0.5, 0.8), "mass": 15.0, "deck": true,
+	# Two batteries, a ring front and back, a tray under it and two top mounts,
+	# so a panel rides beside a lamp or a shield; a camp with more lines rides
+	# a chassis. The first battery sits in the middle of its back, so a crate
+	# with one hangs level on its lines. A board is longer than the crate, so
+	# its rack runs along the top of the left side, away from the charge light.
+	# The side rings went on 2026-10-17: older saves number its sockets with
+	# them (Snapshot.RENUMBERED).
+	&"crate_frame": {"label": "Crate frame", "short": "Crate",
+		"size": Vector3(0.8, 0.5, 0.8), "mass": 15.0, "deck": true,
 		"sockets": [
 			[&"battery", Vector3(0.0, 0.0, 0.4), Vector3.BACK],
-			[&"ring", Vector3(0.4, 0.0, 0.0), Vector3.RIGHT],
-			[&"ring", Vector3(-0.4, 0.0, 0.0), Vector3.LEFT],
 			[&"bottom", Vector3(0.0, -0.25, 0.0), Vector3.DOWN],
 			[&"top", Vector3(0.0, 0.25, -0.2), Vector3.UP],
 			[&"port", Vector3(0.25, 0.1, -0.4), Vector3.FORWARD],
@@ -206,7 +243,8 @@ const DEVICES := {
 		]},
 	# The base shield: small and light, use switches it, and its bubble keeps
 	# out wind and storm wherever it goes, a crate's top mount included.
-	&"shield": {"label": "Shield generator", "size": Vector3(0.4, 0.42, 0.4), "mass": 6.0, "shield": true,
+	&"shield": {"label": "Shield generator", "short": "Shield",
+		"size": Vector3(0.4, 0.42, 0.4), "mass": 6.0, "shield": true,
 		"fits": &"top", "deck": true,
 		"sockets": [
 			[&"battery", Vector3(0.0, -0.05, 0.2), Vector3.BACK],
@@ -216,7 +254,8 @@ const DEVICES := {
 		]},
 	# The light shield you start with: a smaller bubble that lets a little of
 	# the wind through, built light enough that the light panel keeps it going.
-	&"light_shield": {"label": "Light shield generator", "size": Vector3(0.3, 0.32, 0.3), "mass": 4.0, "shield": true,
+	&"light_shield": {"label": "Light shield generator", "short": "Light shield",
+		"size": Vector3(0.3, 0.32, 0.3), "mass": 4.0, "shield": true,
 		"fits": &"top", "deck": true, "stats": {"radius_m": 4.0, "clear_w": 2.0, "storm_w": 20.0, "wind_block": 0.85},
 		"sockets": [
 			[&"battery", Vector3(0.0, -0.04, 0.15), Vector3.BACK],
@@ -227,7 +266,8 @@ const DEVICES := {
 	# The light solar panel you start with, half a found panel's watts on half
 	# a crate's top, so it rides beside a shield: seat it, set it down, cable
 	# it in, pick it up again. Lying flat, the wind meets its edge.
-	&"light_panel": {"label": "Light solar panel", "size": Vector3(0.8, 0.05, 0.4), "mass": 5.0, "carryable": true,
+	&"light_panel": {"label": "Light solar panel", "short": "Light panel",
+		"size": Vector3(0.8, 0.05, 0.4), "mass": 5.0, "carryable": true,
 		"fits": &"top", "stats": {"solar_w": 30.0, "face_m2": 0.04},
 		"sockets": [
 			[&"port", Vector3(0.4, 0.0, 0.0), Vector3.RIGHT],
@@ -259,12 +299,21 @@ const DEVICES := {
 			[&"battery", Vector3(0.0, 0.04, -0.5), Vector3.UP],
 			[&"port", Vector3(0.0, 0.0, 0.65), Vector3.BACK],
 		]},
+	# A sail's mount: a pole that seats on a top mount or stands on a deck
+	# mount, stowed short to carry and standing its full height once seated,
+	# its sail fitting low on it at the boom's root. Found buried on end.
+	&"mast": {"label": "Mast", "size": Vector3(0.14, 1.3, 0.14), "mass": 8.0, "rig": true, "fits": &"top",
+		"deck": true, "carryable": true, "on_end": true, "stats": {"face_m2": 0.18},
+		"sockets": [
+			[&"sail", Vector3(0.0, 0.3, -0.07), Vector3.FORWARD],
+		]},
 	# A piece of a bigger floater: a flat frame a little wider than a crate,
 	# a ring on each edge where the next piece joins or a hook goes, its own
 	# tray under it and one device standing on top. No battery, no port: the
 	# power comes from what stands on it. Lying flat, the wind meets its edge.
 	# Found buried on edge, as the dunes would leave a sheet that wide.
-	&"chassis": {"label": "Chassis piece", "size": Vector3(1.0, 0.12, 1.0), "mass": 9.0, "chassis": true,
+	&"chassis": {"label": "Chassis piece", "short": "Deck",
+		"size": Vector3(1.0, 0.12, 1.0), "mass": 9.0, "chassis": true,
 		"carryable": true, "on_end": true, "stats": {"face_m2": 0.12},
 		"sockets": [
 			[&"ring", Vector3(0.5, 0.0, 0.0), Vector3.RIGHT],
@@ -305,6 +354,16 @@ const DEVICES := {
 			[&"computer_mod", Vector3(-0.35, -0.12, 0.0), Vector3.LEFT],
 		]},
 }
+
+
+## What a thing is called where there's little room, by its id: a device's
+## short name, else its label.
+static func short_label(id: StringName) -> String:
+	if DEVICES.has(id):
+		return DEVICES[id].get("short", DEVICES[id].label)
+	if PARTS.has(id):
+		return PARTS[id].label
+	return NAMES.get(id, str(id))
 
 
 static func part(id: StringName) -> Part:
@@ -438,11 +497,11 @@ static func _lay(world: World, made: Cable, at: Vector3, end: StringName, first:
 static func stake() -> Stake:
 	var made := Stake.new()
 	made.set_meta(&"catalog", &"stake")
-	made.label = "Stake"
-	made.frame_mass = 2.0
+	made.label = NAMES[&"stake"]
+	made.frame_mass = STAKE.mass
 	made.carryable = true
 	# A spike of iron: nothing in it the weather wears out.
-	made.frame_stats = {"toughness": INF}
+	made.frame_stats = STAKE.stats.duplicate()
 	made.holding = Tuning.current().stake_holding
 	var spike := Vector3(0.06, Stake.LENGTH, 0.06)
 	made.frame_view = _add_box(made, spike, Vector3.ZERO, Color(0.3, 0.27, 0.24), Dress.frame(&"stake", spike))
@@ -471,8 +530,9 @@ static func device(id: StringName) -> Device:
 		else (Planter.new() if spec.get("planter", false) \
 		else (Hoverboard.new() if spec.get("board", false) \
 		else (Radio.new() if spec.get("radio", false) \
+		else (Mast.new() if spec.get("rig", false) \
 		else (Chassis.new() if spec.get("chassis", false) \
-		else (Console.new() if spec.get("console", false) else Device.new()))))))
+		else (Console.new() if spec.get("console", false) else Device.new())))))))
 	made.set_meta(&"catalog", id)
 	made.label = spec.label
 	made.frame_mass = spec.mass
@@ -508,6 +568,105 @@ static func device(id: StringName) -> Device:
 		made.add_child(socket)
 	made.show_wear()
 	return made
+
+
+## Whether a thing has a lineage: anything made, not grown or eaten.
+static func lineal(id: StringName) -> bool:
+	if DEVICES.has(id) or id == &"stake":
+		return true
+	var spec: Dictionary = PARTS.get(id, {})
+	return not spec.is_empty() and not spec.has("crop") and not spec.kind in [&"food", &"salt"]
+
+
+## The loot's one call (docs/world-system.md, "What lineage does now"): a
+## find's lineage from the site it lay in, drawn from the loot draw's seed
+## (Eras.lineage) and given it, with who made it. What it was given.
+static func found_in(body: Node, era: StringName, kind: StringName, seed_value: int) -> Array:
+	var line := Eras.lineage(era, kind, seed_value)
+	var id: StringName = body.get_meta(&"catalog", &"")
+	if not line.is_empty() and line[0][0] == Eras.COLONIAL and MAKERS.has(id):
+		line[0][2] = [MAKERS[id]]
+	inherit(body, line)
+	return body.get_meta(&"lineage", [])
+
+
+## Gives a thing its lineage, made fresh and before it's in the world: its
+## numbers by its era's make (Eras.GEAR), its look by every hand it passed
+## through. A thing without one is what it always was: the company's issue,
+## or its layer's look for a find from before lineage.
+static func inherit(body: Node, line: Array) -> void:
+	var id: StringName = body.get_meta(&"catalog", &"")
+	if line.is_empty() or not lineal(id):
+		return
+	body.set_meta(&"lineage", line)
+	var gear: Dictionary = Eras.GEAR.get(Eras.era_of(line), Eras.GEAR[Eras.COLONIAL])
+	var part := body as Part
+	if part != null:
+		var spec: Dictionary = PARTS[id]
+		var cell := part as Battery
+		var held := cell.charge_wh / cell.capacity() if cell != null and cell.capacity() > 0.0 else 0.0
+		part.stats = _made_by(spec.stats, gear, false)
+		part.mass = spec.mass * gear.mass
+		if cell != null:
+			cell.charge_wh = cell.capacity() * held
+			cell.show_charge()
+	var device := body as Device
+	if device != null:
+		var spec: Dictionary = DEVICES.get(id, STAKE)
+		var own: Dictionary = spec.get("stats", {}).duplicate()
+		# The base shield's draw is the tuning's: its make scales it as its own.
+		if spec.get("shield", false):
+			var tuning := Tuning.current()
+			own["clear_w"] = own.get("clear_w", tuning.shield_clear_w)
+			own["storm_w"] = own.get("storm_w", tuning.shield_storm_w)
+		device.frame_stats = _made_by(own, gear, true)
+		device.frame_mass = spec.mass * gear.mass
+	var view := _look_of(body)
+	var look := Dress.lineage(id, line)
+	if view != null and look != null:
+		view.mesh = look
+	if device != null:
+		device.show_wear()
+		# Its frame's weight changed, which its middle is worked out from.
+		device.center_of_mass_mode = RigidBody3D.CENTER_OF_MASS_MODE_CUSTOM
+		device._recompute()
+	elif part != null:
+		var age := Paint.age_for(part, Paint.PART_SOUND)
+		Paint.show_age(part, age)
+		if view != null:
+			view.set_instance_shader_parameter(&"age", age)
+			view.set_instance_shader_parameter(&"era", Paint.row_for(part))
+		if part.socket != null:
+			(part.socket.get_parent() as Device)._recompute()
+
+
+## A thing's numbers as its era made it: what it gives by what it keeps, what
+## it draws by how much more, a frame's toughness, and a tray's draw a kilogram.
+static func _made_by(stats: Dictionary, gear: Dictionary, frame: bool) -> Dictionary:
+	var out := stats.duplicate()
+	for key in Eras.KEEPS:
+		if out.has(key):
+			out[key] *= gear.keeps
+	for key in Eras.DRAWS:
+		if out.has(key):
+			out[key] *= gear.draws
+	if frame:
+		out["toughness"] = out.get("toughness", 1.0) * gear.tough
+	if out.has("lift_kg") and gear.draws != 1.0:
+		out["hover_draw"] = gear.draws
+	return out
+
+
+## Its painted look: a frame's, or the first worn mesh of a part's, fitted or not.
+static func _look_of(body: Node) -> MeshInstance3D:
+	var device := body as Device
+	if device != null:
+		return device.frame_view
+	var part := body as Part
+	for node in (part.socket.fitted if part.socket != null else part.get_children()):
+		if node is MeshInstance3D and Paint.is_worn(node):
+			return node
+	return null
 
 
 ## A basis whose +Z points along outward.

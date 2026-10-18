@@ -29,7 +29,7 @@ func run() -> void:
 	for cell: int in cells:
 		history.sites_in_cell(cell)
 	var cell_ms := (Time.get_ticks_usec() - started) / 1000.0 / cells.size()
-	var sites := Sites.new(history, ground.ruins, tuning)
+	var sites := Sites.new(history, ground, tuning)
 	var anchor := Sites.Anchor.new(0.0, 0.0, history.landmark(&"halfrise").p, 1.0, history.radius)
 	# Laying round Halfrise, where history is richest, a part at a time as
 	# the streaming budget does it.

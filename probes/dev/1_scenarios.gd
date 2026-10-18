@@ -8,7 +8,8 @@ extends WeatherProbe
 ## running; the lee
 ## stands you under a tall slip face, facing up it into the wind over its
 ## crest, the wind on you cut and a storm due; chassis pieces, their trays,
-## a charged crate and a condenser lie in front of you; a Console on a
+## a charged crate, a condenser, hooks and a coil lie in front of you, one
+## piece's hook moored to a stake; a Console on a
 ## floating deck shows its finest map and every reading, the storm coming, its
 ## shield smart and off; the eclipse faces Tu
 ## just before the sun goes behind it; the far side has no Tu. Checked against
@@ -94,6 +95,7 @@ func run() -> void:
 				var cut := 1.0 - world.weather.wind.length() / world.weather.field_wind(world.player.global_position).length()
 				check(cut >= Scenarios.LEE_SHARE * Tuning.current().lee_wind and Dev.read("weather/lee") != "-",
 					"lee: the wind on you is cut by its lee, and the overlay says so (%.2f)" % cut)
+				await _catch_line_lands(upwind)
 			"deep":
 				check(field.storm_at(at.x, at.y, t) == 1.0, "deep: full storm")
 				check(_edge(at, upwind, t, true) > 250.0 and _edge(at, -upwind, t, true) > 250.0,
@@ -209,9 +211,11 @@ func _afk_lands() -> void:
 			body.free()
 
 
-## Bare chassis pieces lie flat on the sand in front of you, a tray before
-## each, with a crate frame holding two charged batteries and a condenser
-## with a battery and an empty canister, all within a few steps.
+## Chassis pieces lie flat on the sand in front of you, a tray before each,
+## with a crate frame holding two charged batteries, a condenser with a
+## battery and an empty canister, and two hooks and a coil, all within a few
+## steps. All the pieces are bare but the first, whose hook is moored to a
+## stake, and another piece is offered that ring with room to join there.
 func _chassis_lands() -> void:
 	await settle(true)
 	var dropped := Scenarios.chassis(world)
@@ -223,8 +227,18 @@ func _chassis_lands() -> void:
 	var pieces := dropped.filter(func(b: Node3D) -> bool: return b is Chassis)
 	var trays := dropped.filter(func(b: Node3D) -> bool: return b is Part and b.kind == &"bottom")
 	check(pieces.size() == Scenarios.CHASSIS_PIECES.size() and trays.size() == pieces.size()
-		and pieces.all(func(p: Chassis) -> bool: return p.parts().is_empty() and p.global_basis.y.dot(Vector3.UP) > 0.99),
-		"chassis: bare pieces lying flat, a tray for each")
+		and pieces.all(func(p: Chassis) -> bool: return p.global_basis.y.dot(Vector3.UP) > 0.99)
+		and pieces.slice(1).all(func(p: Chassis) -> bool: return p.parts().is_empty()),
+		"chassis: pieces lying flat, a tray for each, all bare but the first")
+	var stake: Stake = dropped.filter(func(b: Node3D) -> bool: return b is Stake)[0]
+	var first: Chassis = pieces[0]
+	var outer := Scenarios._on_piece(first, Vector2i.ZERO, &"ring", Vector2i(-1, 0))
+	check(world.ropes.ropes.any(func(r: Rope) -> bool: return [r.a.holder, r.b.holder] in [[first, stake], [stake, first]])
+		and pieces[1].fits_in(outer)
+		and first.room_for(pieces[1], first.global_transform * first._pose_at(outer, 0)),
+		"chassis: the first piece's hook moored to a stake, a piece offered its ring and room there")
+	check(dropped.filter(func(b: Node3D) -> bool: return b is Part and b.kind == &"ring").size() == 2
+		and dropped.any(func(b: Node3D) -> bool: return b is Part and b.kind == &"coil"), "chassis: two hooks and a coil")
 	var crate: Device = dropped.filter(func(b: Node3D) -> bool: return b is Device and b.label == "Crate frame")[0]
 	var condenser: Condenser = dropped.filter(func(b: Node3D) -> bool: return b is Condenser)[0]
 	check(crate.batteries().size() == 2 and crate.charge_share() >= 1.0 and condenser.battery() != null
@@ -250,12 +264,12 @@ func _console_lands() -> void:
 	var shield: ShieldGenerator = dropped[3]
 	var screen := made.global_basis * Vector3.FORWARD
 	var eyes := player.camera.global_position.y - made.global_position.y
-	check(made.on_deck() and made.host() == deck and shield.host() == deck and not shield.on
+	check(made.on_deck() and made.host() == deck and shield.host() == deck and not shield.on and shield.smart
 		and made.smart_shields().size() == 1 and made.smart_shields()[0] == shield
 		and screen.dot(player.global_position - made.global_position) > 0.0 and deck.stats().hovering and absf(eyes) < 0.5,
 		"console: on a floating deck, its screen to you at your eyes (%.2f m off), the shield beside it off and smart" % eyes)
 	var stats := made.screen_text(Console.Page.STATS)
-	var shown := ["WIND", "PRESS", "HUMID", "SAND", "FRONT", "FCST", "SHIELD OFF"].all(func(l: String) -> bool: return l in stats)
+	var shown := ["WIND", "PRESS", "HUMID", "SAND", "FRONT", "FCST", "SHIELD"].all(func(l: String) -> bool: return l in stats)
 	var full := Tuning.current().storm_map_radar_cells + 5 * Tuning.current().storm_map_cells_per_instrument
 	check(shown and made.map_cells() == full and made._map.size() == full * full,
 		"console: every reading on its stats, and its map at %d cells across:\n%s" % [made.map_cells(), stats])
@@ -347,11 +361,13 @@ func _farm_lands() -> void:
 ## its floor a device with parts to strip, and your own bare frame lands
 ## beside you.
 func _ruin_ahead(at: Vector2, ahead: Vector2) -> void:
-	var ruin := world.shape.ruins.around(at.x, at.y, 30.0)
+	var ruin := world.shape.sites.query(Rect2(at.x - 30.0, at.y - 30.0, 60.0, 60.0), false).filter(
+		func(s: Site) -> bool: return s is Ruin and world.shape.sites.covering(s.x, s.z) == s)
 	check(not ruin.is_empty(), "ruin: a ruin stands near you")
 	if ruin.is_empty():
 		return
-	var door := ruin[0].to_world(Ruin.DOORS[0][0]) - at
+	var first: Ruin = ruin[0]
+	var door := first.to_world(Ruin.DOORS[0][0]) - at
 	check(ahead.dot(door.normalized()) > 0.999 and door.length() < 20.0,
 		"ruin: its front door is in front of you (%.1f m)" % door.length())
 	await settle(true)
@@ -360,10 +376,9 @@ func _ruin_ahead(at: Vector2, ahead: Vector2) -> void:
 			break
 		await get_tree().process_frame
 	var mine := Scenarios.yours(world)
-	var coord := world.terrain.chunk_at(ruin[0].center.x, ruin[0].center.y)
 	var finds := world.salvage.finds()
 	var on_floor := finds.filter(func(b: Node) -> bool:
-		return b.get_meta(&"find")[0] == coord and b.get_meta(&"find")[1] >= Finds.IN_RUIN)
+		return b.get_meta(&"find").size() > 2 and b.get_meta(&"find")[2] == first.id)
 	var strippable := on_floor.filter(func(b: Node) -> bool: return b is Device and not (b as Device).parts().is_empty())
 	check(finds.size() >= 5 and on_floor.size() >= 3 and not strippable.is_empty(),
 		"ruin: finds lie round you (%d), on its floor (%d), a device among them with parts to strip"
@@ -372,6 +387,21 @@ func _ruin_ahead(at: Vector2, ahead: Vector2) -> void:
 		"ruin: your own bare frame lands beside you")
 	for body in mine:
 		body.free()
+
+
+## Two stakes driven a few steps ahead with a line strung between them,
+## across the wind: a catch line for the drift.
+func _catch_line_lands(upwind: Vector2) -> void:
+	await settle(true)
+	var dropped := Scenarios.catch_line(world)
+	await physics_frames(2)
+	var lines := Drift.lines(world)
+	check(lines.size() == 1 and absf((lines[0][2] - lines[0][1]).normalized().dot(upwind)) < 0.05,
+		"lee: a catch line strung across the wind")
+	# Its line goes with its stakes.
+	for body in dropped:
+		if body is Stake:
+			body.free()
 
 
 ## Two devices and every kit part land on the sand in front of you, within a

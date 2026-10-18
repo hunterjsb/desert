@@ -189,5 +189,4 @@ static func _eye(p: Vector3, local: float) -> String:
 
 
 static func _nearest(radio: Radio, x: float, z: float, kinds: Array) -> Site:
-	return radio.world.shape.sites.nearest(x, z, LOOK_M, func(kind: StringName, _x: float, _z: float) -> bool:
-		return kinds.has(kind), true)
+	return radio.world.shape.sites.nearest(x, z, LOOK_M, func(site: Site) -> bool: return kinds.has(site.kind), true)

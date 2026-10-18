@@ -7,18 +7,20 @@ extends Device
 ## standing on one deck is one system, its instruments pooled. Its screen
 ## leads with the storm map, which takes in all the system reads: the more
 ## gear, the finer it is, and with less it coarsens, never going. Then every
-## reading in detail, a smart shield's form, and its log. A shield in the
-## system is smart: the screen reports it and switches it, and with a radar
-## it switches itself on as a front nears. Its messages go out through its
-## Terminal, and its screen draws only when what it shows has changed. Use on
-## the screen presses the key you aim at, and anywhere else on it steps the
-## page; use at the frame works its tray.
+## reading in detail as a table, the deck's electrics as a panel with each
+## device's switches, and its log. A shield in the system is smart: with a
+## radar it switches itself on as a front nears. Its messages go out through
+## its Terminal, and its screen draws only when what it shows has changed.
+## Use on the screen presses the key you aim at, a tab along its foot or a
+## switch; use at the frame works its tray.
 
-## Its pages, numbered as older saves knew them, and the order use steps
-## through them.
-enum Page { RADAR, SHIELD, LOG, STATS }
-const ORDER: Array[Page] = [Page.RADAR, Page.STATS, Page.SHIELD, Page.LOG]
-const PAGE_NAMES := ["RADAR", "SHIELD", "LOG", "STATS"]
+## Its pages, numbered as older saves knew them: the Shield page's number is
+## Power's now, so a save on it opens there.
+enum Page { RADAR, POWER, LOG, STATS }
+## The tabs along its foot, in order. A page that wants gear, a survey of
+## what's under the sand, joins them once it's built.
+const TABS: Array[Page] = [Page.RADAR, Page.STATS, Page.POWER, Page.LOG]
+const PAGE_NAMES := ["RADAR", "POWER", "LOG", "STATS"]
 ## The sender its own lines go out under.
 const SENDER := "CON"
 ## What each computer mod is called in its own lines, by the stat it adds.
@@ -40,15 +42,14 @@ const CLOSING := 0.5
 ## With no radar, the map estimates this far round it, m: what a storm the
 ## barometer feels, carried by the wind, covers in its warning's reach.
 const ESTIMATE_REACH := 6000.0
-## The screen's pixels, the share of its height its keys take at its foot,
-## and the picture on its glass, m.
+## The screen's pixels and the picture on its glass, m.
 const PIXELS := Vector2i(580, 1080)
-const KEY_SHARE := 0.09
 const PICTURE := Vector2(0.58, 1.08)
+## Slower over the sand than this, m/s, the deck's own way is left out of
+## what the stats page says of the wind.
+const STILL := 0.5
 
 var page := Page.RADAR
-## Whether a smart shield switches itself on as the radar sees a front near.
-var auto_shield := true
 var terminal := Terminal.new()
 ## What the save keeps of its terminal.
 var log_lines: Array:
@@ -98,8 +99,11 @@ var _shields_down := {}
 var _viewport: SubViewport
 var _view: ConsoleScreen
 var _display: MeshInstance3D
+var _screened := false
 var _shown := ""
 var _aim := -1
+## The keys on the screen as last drawn, for what you aim at.
+var _keys: Array = []
 
 
 func _ready() -> void:
@@ -109,8 +113,7 @@ func _ready() -> void:
 	_show_display()
 
 
-## Use on the screen presses the key you aim at, or steps the page; at the
-## frame, it works its tray.
+## Use on the screen presses the key you aim at; at the frame, it works its tray.
 func interact(by: Player) -> bool:
 	var screen := _screen()
 	if by != null and screen != null and by.hands.look_device == self and by.hands.look_socket == screen:
@@ -126,21 +129,20 @@ func running() -> bool:
 	return powered and not wrecked() and world != null
 
 
-## A press on the screen at a spot, 0 to 1 across and down: one of its keys,
-## or the next page.
+## A press on the screen at a spot, 0 to 1 across and down: the key there,
+## if any, a tab or a switch.
 func press(at: Vector2) -> void:
-	var key := _key_at(at)
-	var keys := _keys()
-	match keys[key][0] if key >= 0 and key < keys.size() else "PAGE":
-		"SHIELD":
-			_switch_shields()
-		"AUTO":
-			var lead := _lead()
-			lead.auto_shield = not lead.auto_shield
-			_say("AUTO %s" % ("ON · at %s" % _distance(_tuning.smart_shield_auto_m) if lead.auto_shield else "OFF"))
-		_:
-			page = _next_page()
+	var on := keys()
+	var key := _key_at(at, on)
+	if key >= 0:
+		(on[key].act as Callable).call()
 	_screen_at = -INF
+
+
+## The keys a page of its screen shows (its own, by default), as
+## {text, lit, box, device, to}: its tabs, then its switches.
+func keys(on := -1) -> Array:
+	return _model(page if on < 0 else on as Page, pooled_readings()).keys
 
 
 ## Every Console in its system, the first one first: those standing on the
@@ -207,18 +209,17 @@ func map_cells() -> int:
 func screen_text(on := -1) -> String:
 	var shown := _model(page if on < 0 else on as Page, pooled_readings())
 	var lines := PackedStringArray()
-	for key: String in ["front", "here", "forecast", "wind", "pressure", "humidity", "sand", "cells"]:
+	for key: String in ["front", "here", "forecast", "wind", "angle", "pressure", "humidity", "sand", "cells"]:
 		if shown.get(key, "") != "":
-			lines.append(shown[key])
+			lines.append(_plain(shown[key]))
 	for row: String in shown.get("rows", []):
-		lines.append(row.trim_prefix("!"))
+		lines.append(_plain(row))
 	return "\n".join(lines)
 
 
-func stats() -> Dictionary:
-	var now := super()
-	now["instruments"] = _fitted().size()
-	return now
+## A row as words, its cells a space apart.
+static func _plain(row: String) -> String:
+	return " ".join(Array(row.trim_prefix("!").split("\t")).filter(func(cell: String) -> bool: return cell != ""))
 
 
 func _recompute() -> void:
@@ -262,12 +263,12 @@ func _physics_process(delta: float) -> void:
 
 
 func _process(_delta: float) -> void:
-	if _display == null or world == null:
+	if not _screened or world == null:
 		return
 	var aim := -1
 	var hands := world.player.hands
 	if hands.look_device == self and hands.look_socket == _screen():
-		aim = _key_at(_on_screen(hands.look_point))
+		aim = _key_at(_on_screen(hands.look_point), _keys)
 	var t := world.time
 	if aim == _aim and t < _screen_at + _tuning.console_screen_every and t >= _screen_at:
 		return
@@ -289,12 +290,24 @@ func _fitted() -> Dictionary:
 ## Everything in its system, its first Console first: what stands on its
 ## deck and is seated there, or itself and what's seated on it.
 func _system() -> Array[Device]:
+	var found: Array[Device] = []
+	_gather(_root(), found)
+	return found
+
+
+## What its system stands on: its deck, or itself.
+func _root() -> Device:
 	var root: Device = self
 	while root.host() != null:
 		root = root.host()
-	var found: Array[Device] = []
-	_gather(root, found)
-	return found
+	return root
+
+
+## The way its deck points, or off a deck its own front, its screen's: a
+## compass bearing.
+func _heading() -> float:
+	var ahead := _root().global_basis * Vector3.FORWARD
+	return Radio.bearing(Vector2(ahead.x, ahead.z))
 
 
 static func _gather(device: Device, found: Array[Device]) -> void:
@@ -329,8 +342,12 @@ func _read(now: Dictionary, t: float) -> void:
 	var z := world.world_z(global_position.z)
 	readings.clear()
 	if now.get("anemometer", 0) > 0:
+		# It reads the wind as the deck feels it: the field's, less the deck's own way over the sand.
 		var wind := field.wind_at(x, z, t)
-		readings["wind"] = {"speed": wind.length(), "from": Radio.bearing(-wind),
+		var moving := _root().linear_velocity
+		var felt := wind - Vector2(moving.x, moving.z)
+		readings["wind"] = {"speed": felt.length(), "from": Radio.bearing(-felt), "true_speed": wind.length(),
+			"true_from": Radio.bearing(-wind), "moving": Vector2(moving.x, moving.z).length(),
 			"steady": field.steady_wind_at(x, z, t).length()}
 	if now.get("barometer", 0) > 0:
 		var back := _tuning.barometer_trend_seconds
@@ -529,14 +546,14 @@ func _watch() -> void:
 		_linked = link
 	var pressure_now: Dictionary = all.get("pressure", {})
 	if pressure_now.get("eta", INF) < INF:
-		_once("pressure", "!PRESSURE FALLING · STORM ~%s" % _span(pressure_now.eta))
+		_once("pressure", "!PRESSURE ▼ · STORM ~%s" % _span(pressure_now.eta))
 	elif pressure_now.has("eta"):
 		_alerts.erase("pressure")
 	var front: Dictionary = all.get("front", {})
 	if not front.is_empty():
 		if front.inside and not _alerts.has("inside"):
 			_alerts["inside"] = true
-			var fields := [["CLEARS", _clears(front).trim_prefix("clears ")]]
+			var fields := [["CLEARS", _span(front.eta) if front.eta < INF else "past %s" % _distance(front.reach)]]
 			if all.has("sand"):
 				fields.push_front(["SAND", "%.1f g/m³" % all.sand.g_m3])
 			_say("!IN STORM", fields)
@@ -547,7 +564,7 @@ func _watch() -> void:
 			_alerts.erase("inside")
 			_say("STORM PASSED")
 		var near: bool = front.inside or front.d <= _tuning.smart_shield_auto_m
-		var where := "FRONT %s %s · ETA %s" % [_distance(front.d), _point(front.bearing), _span(front.eta)]
+		var where := "FRONT %s %s · %s" % [_distance(front.d), _point(front.bearing), _span(front.eta)]
 		if near and not front.inside:
 			# Seen first this near, it's said once, as the near one.
 			_alerts["front"] = true
@@ -558,10 +575,11 @@ func _watch() -> void:
 				_once("front", where)
 			else:
 				_alerts.erase("front")
-		if near and not _front_near and auto_shield:
+		if near and not _front_near:
 			var switched := false
 			for shield in smart_shields():
-				switched = shield.switch(true) or switched
+				if shield.smart:
+					switched = shield.switch(true) or switched
 			if switched:
 				_say("!SHIELD AUTO-ON")
 		_front_near = near
@@ -581,16 +599,6 @@ func _once(key: String, text: String) -> void:
 		_say(text)
 
 
-## The screen's shield key: every smart shield off if any runs, else all on.
-func _switch_shields() -> void:
-	var shields := smart_shields()
-	var up := not shields.any(func(s: ShieldGenerator) -> bool: return s.on)
-	var switched := false
-	for shield in shields:
-		switched = shield.switch(up) or switched
-	_say("SHIELD %s" % ("ON" if up else "OFF") if switched else "!SHIELD WON'T START · NO POWER")
-
-
 ## A line of its own to its terminal, or a form with these fields, and a
 ## radio seated in its system gives it a voice.
 func _say(text: String, fields := []) -> void:
@@ -607,36 +615,13 @@ func _say(text: String, fields := []) -> void:
 			break
 
 
-## The page after this one in use's order, passing over the shield's with no
-## smart shield.
-func _next_page(from := page) -> Page:
-	var at := ORDER.find(from)
-	for i in ORDER.size():
-		at = (at + 1) % ORDER.size()
-		if ORDER[at] != Page.SHIELD or not smart_shields().is_empty():
-			return ORDER[at]
-	return Page.RADAR
-
-
-## The screen's keys, as [name, what it says]: the page key names the page
-## it goes to; the others say how they stand, and a press switches them.
-func _keys() -> Array:
-	var keys: Array = [["PAGE", "%s ›" % PAGE_NAMES[_next_page()]]]
-	var shields := smart_shields()
-	if not shields.is_empty():
-		var any_on := shields.any(func(s: ShieldGenerator) -> bool: return s.on)
-		keys.append(["SHIELD", "SHIELD: %s" % ("ON" if any_on else "OFF")])
-		if pooled_readings().has("front"):
-			keys.append(["AUTO", "AUTO: %s" % ("ON" if _lead().auto_shield else "OFF")])
-	return keys
-
-
-## Which key a spot on the screen is on, or -1: the keys share its foot in thirds.
-func _key_at(at: Vector2) -> int:
-	if at.y < 1.0 - KEY_SHARE or at.y > 1.0 or at.x < 0.0 or at.x > 1.0:
-		return -1
-	var key := mini(floori(at.x * 3.0), 2)
-	return key if key < _keys().size() else -1
+## Which key a spot on the screen is on, 0 to 1 across and down, or -1.
+static func _key_at(at: Vector2, on: Array) -> int:
+	var spot := at * Vector2(PIXELS)
+	for k in on.size():
+		if (on[k].box as Rect2).has_point(spot):
+			return k
+	return -1
 
 
 ## Where a point in the world lies on the screen's picture, 0 to 1 across and down.
@@ -656,16 +641,16 @@ func _screen() -> Socket:
 	return null
 
 
-## A screen fitted gets its picture; taken out, it goes.
+## A screen fitted gets its picture; taken out, the picture is hidden and
+## kept, never freed and made again.
 func _show_display() -> void:
 	var screen := _screen()
-	if screen == null:
+	var was := _screened
+	_screened = screen != null
+	if not _screened:
 		if _display != null:
-			_display.queue_free()
-			_viewport.queue_free()
-			_display = null
-			_viewport = null
-			_view = null
+			_display.visible = false
+			_viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
 		return
 	if _display == null:
 		_viewport = SubViewport.new()
@@ -687,9 +672,10 @@ func _show_display() -> void:
 		_display.material_override = glass
 		_display.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		add_child(_display)
-		_shown = ""
 	var face: float = Catalog.PARTS[screen.part.get_meta(&"catalog")].size.z
 	_display.transform = screen.transform * Transform3D(Basis.IDENTITY, Vector3(0.0, 0.0, face + 0.002))
+	if not was:
+		_shown = ""
 	_screen_at = -INF
 
 
@@ -714,16 +700,19 @@ func _draw_screen() -> void:
 	_shown = said
 	if not cells.is_empty():
 		shown.map["cells"] = cells
+	_keys = shown.keys
 	_view.show_model(shown)
 	_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
 
 
-## What a page shows. The radar's: its map and what's drawn on it, each
-## reading's text as it reads there. The others': rows as its terminal
-## prints them.
+## What a page shows, its tabs and its keys laid out on it. The radar's: its
+## map and what's drawn on it, each reading's text as it reads there. The
+## power page's: the deck's electrics. The others': rows as its terminal
+## prints them, a table's cells apart by tabs.
 func _model(on: Page, all: Dictionary) -> Dictionary:
 	var shown := {"page": PAGE_NAMES[on], "clock": _clock(world.time, true), "aim": _aim,
-		"keys": _keys().map(func(k: Array) -> String: return k[1]), "flip": world.moon.north().z > 0.0}
+		"flip": world.moon.north().z > 0.0, "tabs": TABS.map(func(p: Page) -> Dictionary:
+			return {"text": PAGE_NAMES[p], "lit": p == on, "act": _go.bind(p), "device": null, "to": p})}
 	match on:
 		Page.RADAR:
 			_radar(shown, all)
@@ -734,26 +723,57 @@ func _model(on: Page, all: Dictionary) -> Dictionary:
 				rows.append_array(terminal.readouts[from])
 			shown["rows"] = rows
 			if all.has("wind"):
-				shown["gyro"] = [all.wind.from, all.wind.speed, all.wind.steady]
+				shown["gyro"] = _gyro(all.wind)
 			if all.has("pressure"):
 				shown["history"] = [all.pressure.history, _tuning.air_pressure_hpa]
-		Page.SHIELD:
-			var rows := PackedStringArray()
-			for shield in smart_shields():
-				rows.append_array(["SHIELD  %s" % shield.label.to_upper(), "STATE   %s" % _shield_state(shield),
-					"DRAW    %d W" % roundi(shield.demand_w()), "POOL    %d Wh" % floori(world.power.pool_wh(shield)),
-					"LEFT    %s" % _span(shield.seconds_left()), "BUBBLE  %d m" % roundi(shield.size), ""])
-			var auto := "needs a radar"
-			if all.has("front"):
-				auto = "ON · at %s" % _distance(_tuning.smart_shield_auto_m) if _lead().auto_shield else "OFF"
-			rows.append("AUTO    %s" % auto)
-			shown["rows"] = rows
+		Page.POWER:
+			_panel(shown, all)
 		Page.LOG:
 			var rows := PackedStringArray()
 			for line: Dictionary in Terminal.merged(linked().map(func(c: Console) -> Terminal: return c.terminal), 18):
 				rows.append(_logged(line))
-			shown["rows"] = rows if not rows.is_empty() else PackedStringArray(["  nothing logged"])
+			shown["rows"] = rows if not rows.is_empty() else PackedStringArray([" nothing logged"])
+	ConsoleScreen.lay_out(shown)
 	return shown
+
+
+func _go(to: Page) -> void:
+	page = to
+
+
+## The gyro as a compass: the wind as the deck feels it, which way and how
+## strong, the way the deck points, and the wind's angle off its bow, as a
+## sailor trims to it: plus to starboard, minus to port. And Tu-ward, unless
+## Tu stands overhead or right underfoot, where every way is.
+func _gyro(wind: Dictionary) -> Dictionary:
+	var heading := _heading()
+	var off := wrapf(wind.from - heading, -180.0, 180.0)
+	var shown := {"from": wind.from, "speed": wind.speed, "steady": wind.steady, "heading": heading, "off": off,
+		"angle": ("%d° %s" % [roundi(absf(off)), _side(off)]).strip_edges()}
+	var tu := tu_ward()
+	if not is_nan(tu):
+		shown["tu"] = tu
+	return shown
+
+
+## Tu-ward: the great-circle bearing from where it stands toward the point
+## under Tu, whole degrees as its other bearings are kept (north -z), which it
+## knows from where it is on the moon, so on the far side too. NAN within a
+## degree of the point under Tu or the one opposite.
+func tu_ward() -> float:
+	var moon := world.moon
+	var here := Sphere.point(moon.latitude, moon.longitude)
+	var under := world.weather.day.sub_tu(world.time)
+	if absf(here.dot(under)) > cos(deg_to_rad(1.0)):
+		return NAN
+	var bearing := rad_to_deg(Sphere.bearing(here, under))
+	# Past a pole the ground's north is +z.
+	return float(roundi(fposmod(bearing if moon.north().z < 0.0 else bearing + 180.0, 360.0)) % 360)
+
+
+## Which side of the bow a wind this far off it comes from, or none dead ahead or astern.
+static func _side(off: float) -> String:
+	return "" if roundi(absf(off)) in [0, 180] else ("STBD" if off > 0.0 else "PORT")
 
 
 ## The radar page: its storm map at the system's resolution, humidity laid
@@ -787,22 +807,23 @@ func _radar(shown: Dictionary, all: Dictionary) -> void:
 			"humid": sampler._map_humid if all.has("humidity") else PackedFloat32Array()}
 		if not front.is_empty():
 			if front.inside:
-				shown["here"] = "IN STORM · %s" % _clears(front)
+				shown["here"] = "IN STORM · CLEARS %s" % _span(front.eta)
 			elif front.d < INF:
 				map["front"] = _along(deg_to_rad(front.bearing)) * front.d
 				shown["front"] = "%s · %s" % [_distance(front.d), _span(front.eta)]
 	shown["map"] = map
 	if all.has("wind"):
 		shown["wind"] = "%d m/s %s" % [roundi(all.wind.speed), _point(all.wind.from)]
-		map["gyro"] = [all.wind.from, all.wind.speed]
+		map["gyro"] = _gyro(all.wind)
+		shown["angle"] = map.gyro.angle
 	if all.has("pressure"):
 		var p: Dictionary = all.pressure
-		shown["pressure"] = "%d hPa %s" % [roundi(p.hpa), "▼" if p.per_min < -0.05 else ("▲" if p.per_min > 0.05 else "–")]
+		shown["pressure"] = _row("PRESS", "%d" % roundi(p.hpa), "hPa", _trend(p.per_min, 0.05))
 		map["pressure"] = [p.hpa, _tuning.air_pressure_hpa, _tuning.air_pressure_fall, p.eta < INF or p.stormy]
 	if all.has("humidity"):
-		shown["humidity"] = "HUMID %d%%" % roundi(all.humidity.share * 100.0)
+		shown["humidity"] = _row("HUMID", "%d" % roundi(all.humidity.share * 100.0), "%")
 	if all.has("sand"):
-		shown["sand"] = "SAND %.1f g/m³" % all.sand.g_m3
+		shown["sand"] = _row("SAND", "%.2f" % all.sand.g_m3, "g/m³")
 		map["sand"] = true
 	if all.has("forecast"):
 		var r: Dictionary = all.forecast
@@ -841,8 +862,9 @@ func _estimate(map: Dictionary, all: Dictionary) -> void:
 	var coming := INF
 	var from := Vector2.ZERO
 	if all.has("wind") and all.has("pressure"):
-		from = _along(deg_to_rad(all.wind.from))
-		coming = all.pressure.eta * all.wind.speed
+		# Storms ride the wind over the sand, not as the deck feels it.
+		from = _along(deg_to_rad(all.wind.true_from))
+		coming = all.pressure.eta * all.wind.true_speed
 		for j in n:
 			for i in n:
 				var k := j * n + i
@@ -862,86 +884,231 @@ func _estimate(map: Dictionary, all: Dictionary) -> void:
 	map["cells"] = {"storm": storm, "sand": sand, "humid": humid}
 
 
-## Its stats: every reading in detail, a row or two each, the label first, a
-## "!" before what's urgent, and a smart shield's line.
+## Its stats: every reading in detail, as a table: a label, then a number,
+## its unit and a note, a row or two each, rows under a reading indented, a
+## "!" before what's urgent; and each smart shield's line.
 func _readout(all: Dictionary) -> PackedStringArray:
 	var rows := PackedStringArray()
 	if all.is_empty():
-		rows.append_array(["NO INSTRUMENTS", "  fit a computer mod to a side port"])
+		rows.append_array(["NO INSTRUMENTS", " fit a computer mod", " to a side port"])
 	if all.has("wind"):
-		rows.append("WIND   %.1f m/s from %s" % [all.wind.speed, _point(all.wind.from)])
-		rows.append("       steady %.1f m/s" % all.wind.steady)
+		var w: Dictionary = all.wind
+		# Its angle off the bow is written by the gyro under the table.
+		rows.append(_row("WIND", "%.1f" % w.speed, "m/s", _point(w.from)))
+		if w.moving >= STILL:
+			rows.append(_row(" true", "%.1f" % w.true_speed, "m/s", _point(w.true_from)))
+		rows.append(_row(" steady", "%.1f" % w.steady, "m/s"))
 	if all.has("pressure"):
 		var p: Dictionary = all.pressure
-		var way := "falling" if p.per_min < -0.05 else ("rising" if p.per_min > 0.05 else "steady")
-		rows.append("PRESS  %.1f hPa %s" % [p.hpa, way])
-		rows.append(("!" if p.eta < INF else "") + "       %.1f hPa/min%s" % [absf(p.per_min),
-			" · storm ~%s" % _span(p.eta) if p.eta < INF else ""])
+		rows.append(_row("PRESS", "%.1f" % p.hpa, "hPa", _trend(p.per_min, 0.05)))
+		rows.append(_row(" trend", "%.1f" % absf(p.per_min), "hPa/min"))
+		if p.eta < INF:
+			rows.append("!" + _row(" storm", "~" + _span_parts(p.eta)[0], _span_parts(p.eta)[1]))
 	if all.has("humidity"):
-		rows.append("HUMID  %d%% · condenser %.1f L/h" % [roundi(all.humidity.share * 100.0), all.humidity.condenser_lph])
+		rows.append(_row("HUMID", "%d" % roundi(all.humidity.share * 100.0), "%"))
+		rows.append(_row(" condenser", "%.1f" % all.humidity.condenser_lph, "L/h"))
 	if all.has("sand"):
 		var g: float = all.sand.g_m3
-		var way := "rising" if g > all.sand.was + 0.01 else ("falling" if g < all.sand.was - 0.01 else "steady")
-		rows.append(("!" if g >= _tuning.sand_full_g_m3 * 0.5 else "") + "SAND   %.2f g/m³ %s" % [g, way])
+		rows.append(("!" if g >= _tuning.sand_full_g_m3 * 0.5 else "") + _row("SAND", "%.2f" % g, "g/m³",
+			_trend(g - all.sand.was, 0.01)))
 	if all.has("front"):
 		var f: Dictionary = all.front
-		var heading := "heading %s %d m/s" % [_point(f.moving), roundi(f.speed)]
+		var moving := _row(" moving", "%d" % roundi(f.speed), "m/s", _point(f.moving))
 		if f.inside:
-			rows.append("!STORM  here · %s" % _clears(f))
+			rows.append("!" + _row("STORM", "", "", "here"))
+			rows.append(_row(" clears", _span_parts(f.eta)[0], _span_parts(f.eta)[1]) if f.eta < INF
+				else _row(" upwind", ">" + _distance_parts(f.reach)[0], _distance_parts(f.reach)[1]))
 			if f.d < INF:
-				rows.append("       clear air %s %s" % [_distance(f.d), _point(f.bearing)])
-			rows.append("       " + heading)
+				rows.append(_row(" clear air", _distance_parts(f.d)[0], _distance_parts(f.d)[1], _point(f.bearing)))
+			rows.append(moving)
 		elif f.d < INF:
 			rows.append(("!" if f.d <= _tuning.smart_shield_auto_m else "")
-				+ "FRONT  %s %s · %s" % [_distance(f.d), _point(f.bearing), _span(f.eta)])
-			rows.append("       " + heading)
+				+ _row("FRONT", _distance_parts(f.d)[0], _distance_parts(f.d)[1], _point(f.bearing)))
+			rows.append(_row(" eta", _span_parts(f.eta)[0], _span_parts(f.eta)[1]))
+			rows.append(moving)
 			if all.has("sand") and f.eta < INF:
-				rows.append("       hits %.1f g/m³" % f.hits)
+				rows.append(_row(" hits", "%.1f" % f.hits, "g/m³"))
 		else:
-			rows.append("FRONT  none in %s" % _distance(f.reach))
+			rows.append(_row("FRONT", "none"))
+			rows.append(_row(" reach", _distance_parts(f.reach)[0], _distance_parts(f.reach)[1]))
 	if all.has("forecast"):
 		var r: Dictionary = all.forecast
-		var horizon := roundi(_tuning.radio_forecast_minutes)
+		var past := PackedStringArray([">%d" % roundi(_tuning.radio_forecast_minutes), "min"])
 		var now: float = world.time
 		if r.stormy:
-			rows.append("FCST   in storm · %s" % ("clears in %s" % _span(r.change - now) if r.change < INF
-				else "no clearing in %d min" % horizon))
+			var clears := _span_parts(r.change - now) if r.change < INF else past
+			rows.append(_row("FCST", clears[0], clears[1], "clears" if r.change < INF else "storm"))
 		elif r.change == INF:
-			rows.append("FCST   clear %d min and more" % horizon)
+			rows.append(_row("FCST", past[0], past[1], "clear"))
 		else:
-			rows.append("FCST   storm in %s from %s" % [_span(r.change - now), _point(r.from)])
-			rows.append("       winds to %d m/s · %s" % [roundi(r.wind), "lasts %s" % _span(r.back - r.change)
-				if r.back < INF else "%d min+" % horizon])
-	var shields := smart_shields()
-	if not shields.is_empty():
-		rows.append(("!" if shields[0].on and not shields[0].running() else "") + "SHIELD %s" % _shield_state(shields[0]))
+			var lasts := _span_parts(r.back - r.change) if r.back < INF else past
+			rows.append(_row("FCST", _span_parts(r.change - now)[0], _span_parts(r.change - now)[1], "storm"))
+			rows.append(_row(" from", "", "", _point(r.from)))
+			rows.append(_row(" winds", "%d" % roundi(r.wind), "m/s"))
+			rows.append(_row(" lasts", lasts[0], lasts[1]))
+	for shield in smart_shields():
+		var dark := shield.on and not shield.running()
+		rows.append(("!" if dark else "") + _row(_name(shield), "%d" % roundi(shield.demand_w() if shield.running() else 0.0),
+			"W", "NO PWR" if dark else _mode(shield, all.has("front"))))
 	return rows
 
 
-## When a storm here clears, as the radar sees the storm upwind.
-func _clears(front: Dictionary) -> String:
-	return "clears in %s" % _span(front.eta) if front.eta < INF else "upwind past %s" % _distance(front.reach)
+## A table's row as a terminal prints it: its label, number, unit and note,
+## apart by tabs.
+static func _row(label: String, number := "", unit := "", note := "") -> String:
+	return "\t".join([label, number, unit, note])
 
 
-func _shield_state(shield: ShieldGenerator) -> String:
-	if shield.wrecked():
-		return "WRECKED"
-	if not shield.on:
-		return "OFF" + (" · auto at %s" % _distance(_tuning.smart_shield_auto_m)
-			if _lead().auto_shield and pooled_readings().has("front") else "")
-	if not shield.running():
-		return "ON · NO POWER"
-	return "ON · %d W · %s left" % [roundi(shield.demand_w()), _span(shield.seconds_left())]
+## A trend as a small arrow: up, down, or steady within `still`.
+static func _trend(by: float, still: float) -> String:
+	return "▲" if by > still else ("▼" if by < -still else "–")
 
 
-## A logged line as a row: its time, its sender, what it said, urgent if it
-## was; a form's fields run on under its title.
+## The deck's electrics, its power pool: what makes power, the batteries and
+## their charge, and what draws it, each with its watts, and a row of
+## switches for each way a device can be worked: a shield's off, on or smart,
+## a radio's dial, a tray floating or resting, a lamp on or off. Each switch
+## works the device as its own use would.
+func _panel(shown: Dictionary, all: Dictionary) -> void:
+	var pool := world.power.pool_of(self)
+	var order: Array[Device] = []
+	for device in _system():
+		if device in pool:
+			order.append(device)
+	for device: Device in pool:
+		if not device in order:
+			order.append(device)
+	var sources := []
+	var loads := []
+	var makes := 0.0
+	var draws := 0.0
+	var held := 0.0
+	var room := 0.0
+	for device in order:
+		var called := _name(device)
+		var now := device.stats()
+		for cell in device.pooled():
+			held += cell.charge_wh
+			room += cell.capacity()
+		if now.solar_w > 0.0 or now.turbine_w > 0.0:
+			var made := device.production_w()
+			makes += made
+			sources.append({"row": _row(" " + called, "%d" % roundi(made), "W")})
+		var groups := _switches(device, called, all.has("front"))
+		var drawn := device.demand_w() if device.powered else 0.0
+		if drawn > 0.0 or not groups.is_empty():
+			draws += drawn
+			# A smart shield says whether it's up now: its switch says only that it's smart.
+			var shield := device as ShieldGenerator
+			var note := "DARK" if not device.powered else ("ON" if shield != null and shield.on
+				and _mode(shield, all.has("front")) == "SMART" else "")
+			loads.append({"row": _row(" " + called, "%d" % roundi(drawn), "W", note),
+				"dark": not device.powered, "groups": groups})
+	var net := makes - draws
+	var left := INF
+	if net < 0.0:
+		left = held / -net * 3600.0
+	elif net > 0.0:
+		left = (room - held) / net * 3600.0
+	var bank := {"share": held / room if room > 0.0 else 0.0,
+		"row": _row("BANK", "%d" % roundi(100.0 * held / room), "%", "%d Wh" % floori(held)) if room > 0.0
+			else _row("BANK", "none"),
+		"net": _row(" net", "%+d" % roundi(net), "W"),
+		"left": _row(" full" if net > 0.0 else " left", _span_parts(left)[0], _span_parts(left)[1])}
+	shown["panel"] = {"makes": _row("OUTPUT", "%d" % roundi(makes), "W"), "sources": sources, "bank": bank,
+		"draws": _row("DRAWS", "%d" % roundi(draws), "W"), "loads": loads}
+	var rows := PackedStringArray([shown.panel.makes])
+	for source: Dictionary in sources:
+		rows.append(source.row)
+	rows.append_array(PackedStringArray([bank.row, bank.net, bank.left, shown.panel.draws]))
+	for load: Dictionary in loads:
+		var lit := PackedStringArray()
+		for group: Array in load.groups:
+			for key: Dictionary in group:
+				if key.lit:
+					lit.append(key.text)
+		rows.append(load.row + (" " + " ".join(lit) if not lit.is_empty() else ""))
+	shown["rows"] = rows
+
+
+## A device's switches on the power page, a row of keys for each way it can
+## be worked, the one lit that says how it stands.
+func _switches(device: Device, called: String, radar: bool) -> Array:
+	var groups := []
+	if device.wrecked():
+		return groups
+	var keys := func(tos: Array, lit: Variant, texts: Array, act: Callable) -> Array:
+		var row := []
+		for i in tos.size():
+			row.append({"text": texts[i], "lit": tos[i] == lit, "act": act.bind(device, tos[i], called, texts[i]),
+				"device": device, "to": tos[i]})
+		return row
+	var shield := device as ShieldGenerator
+	if shield != null:
+		var modes := [&"off", &"on"]
+		if radar and shield in smart_shields():
+			modes.append(&"smart")
+		groups.append(keys.call(modes, StringName(_mode(shield, radar).to_lower()), modes.map(func(m: StringName) -> String:
+			return String(m).to_upper()), _set_shield))
+	var radio := device as Radio
+	if radio != null and radio.world != null:
+		# Its carriers by their frequency, as its dial reads them: nothing on the dial is named.
+		var tos := [Radio.OFF, Radio.MUSIC, Radio.WEATHER, Radio.BEACON]
+		var walker := Radio.gods_of(radio.world).carrier(&"walker", radio.world.time)
+		groups.append(keys.call(tos, radio.channel, ["OFF", "%d KHZ" % roundi(Dial.MUSIC_KHZ), "%d KHZ" % roundi(walker),
+			"%d KHZ" % roundi(Dial.BEACON_KHZ)], _tune))
+	if device.has_tray() and device.host() == null:
+		groups.append(keys.call([&"float", &"rest"], &"rest" if device.resting else &"float", ["FLOAT", "REST"], _rest))
+	if device.lamp_w() > 0.0:
+		groups.append(keys.call([true, false], device.lamps, ["LAMP ON", "LAMP OFF"], _lamps))
+	return groups
+
+
+## How a shield stands on the screen: smart, with a radar to be smart by, or on or off.
+func _mode(shield: ShieldGenerator, radar: bool) -> String:
+	return "SMART" if radar and shield.smart and shield in smart_shields() else ("ON" if shield.on else "OFF")
+
+
+## A shield's switch: off and on as use at it would, smart to switch itself
+## on as a front nears, and on at once if one is near now.
+func _set_shield(shield: ShieldGenerator, to: StringName, called: String, text: String) -> void:
+	shield.smart = to == &"smart"
+	var up := shield.on or _lead()._front_near if shield.smart else to == &"on"
+	if up != shield.on and not shield.switch(up):
+		_say("!%s · NO POWER" % called)
+		return
+	_say("%s %s" % [called, text])
+
+
+func _tune(radio: Radio, to: int, called: String, text: String) -> void:
+	radio.tune_channel(to)
+	_say("%s %s" % [called, text])
+
+
+func _rest(device: Device, to: StringName, called: String, text: String) -> void:
+	if device.rest(to == &"rest"):
+		_say("%s %s" % [called, text])
+
+
+func _lamps(device: Device, on: bool, called: String, text: String) -> void:
+	if device.switch_lamps(on):
+		_say("%s %s" % [called, text])
+
+
+## What the screen calls a device: its catalog's short name, or its label.
+static func _name(device: Device) -> String:
+	return Catalog.DEVICES.get(device.get_meta(&"catalog", &""), {}).get("short", device.label).to_upper()
+
+
+## A logged line as a row: its time, and its sender if that's not a
+## Console, as its lead, then what it said, urgent if it was; a form's fields
+## run on under its title. A Console's own lines fit the screen's row.
 static func _logged(line: Dictionary) -> String:
 	var text: String = line.text
-	var stamp := "%s %s " % [line.at, line.from]
 	if text.begins_with("  "):
-		return " ".repeat(stamp.length()) + text.substr(2)
-	return ("!" if text.begins_with("!") else "") + stamp + text.trim_prefix("!")
+		return "\t" + text.substr(2)
+	var stamp: String = line.at if line.from == SENDER else "%s %s" % [line.at, line.from]
+	return ("!" if text.begins_with("!") else "") + stamp + "\t" + text.trim_prefix("!")
 
 
 ## A bearing as a Console prints it, by the moon's north where it stands, as a
@@ -952,17 +1119,27 @@ func _point(degrees: float) -> String:
 
 
 static func _distance(m: float) -> String:
-	return "%d m" % (roundi(m / 10.0) * 10) if m < 1000.0 else "%.1f km" % (m / 1000.0)
+	return " ".join(_distance_parts(m))
+
+
+## A distance as a number and its unit, as a table sets them apart.
+static func _distance_parts(m: float) -> PackedStringArray:
+	return PackedStringArray(["%d" % (roundi(m / 10.0) * 10), "m"] if m < 1000.0 else ["%.1f" % (m / 1000.0), "km"])
 
 
 static func _span(seconds: float) -> String:
+	return "—" if seconds == INF else " ".join(_span_parts(seconds))
+
+
+## A span of time as a number and its unit: seconds, minutes, then hours.
+static func _span_parts(seconds: float) -> PackedStringArray:
 	if seconds == INF:
-		return "—"
+		return PackedStringArray(["—", ""])
 	if seconds < 90.0:
-		return "%d s" % maxi(0, roundi(seconds))
+		return PackedStringArray(["%d" % maxi(0, roundi(seconds)), "s"])
 	if seconds < 5400.0:
-		return "%d min" % roundi(seconds / 60.0)
-	return "%d h %d min" % [floori(seconds / 3600.0), roundi(fmod(seconds, 3600.0) / 60.0) % 60]
+		return PackedStringArray(["%d" % roundi(seconds / 60.0), "min"])
+	return PackedStringArray(["%.1f" % (seconds / 3600.0), "h"])
 
 
 ## The local time of day, as the screen shows it, its day too if asked.

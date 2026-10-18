@@ -2,22 +2,21 @@ class_name HistoryMap
 extends Control
 ## Dev: the history under the sand round you, seen from above with the moon's
 ## north up. What the sheet has laid is drawn bright: path pieces, sites by
-## era (hollow where only planned), the grid's ruins, landmarks with their
-## parts, and how far the loaded ground and the laying reach. Past what's laid
+## era (hollow where only planned, filled where a kit builds them), landmarks
+## with their parts, and how far the loaded ground and the laying reach. Past what's laid
 ## the whole plan is drawn faint through your own point on the moon, so a wide
 ## map shows the artery, the spokes and the great sites.
 
 ## Each era's colour on the map.
 const ERA := {Eras.COLONIAL: Color(0.62, 0.72, 0.82), Eras.SKIMMER: Color(0.9, 0.55, 0.25),
-	Eras.FIRST: Color(0.83, 0.68, 0.2), Eras.DARK: Color(0.6, 0.55, 0.46), Eras.SECOND: Color(0.93, 0.87, 0.74)}
+	Eras.FIRST: Color(0.83, 0.68, 0.2), Eras.DARK: Color(0.6, 0.55, 0.46), Eras.SECOND: Color(0.93, 0.87, 0.74),
+	Eras.GEOLOGY: Color(0.85, 0.76, 0.34)}
 const WATER := Color(0.36, 0.64, 0.86)
 ## The map's side as a share of the screen's height, and its edge, px.
 const SHARE := 0.8
 const EDGE := 24.0
 ## The far plan is drawn again once you've moved this far, m.
 const REDRAW_FAR := 50.0
-## The grid's ruins are drawn on maps up to this wide, m.
-const GRID_RUINS_M := 6000.0
 
 ## Metres across the map.
 var width_m := 2000.0
@@ -95,11 +94,6 @@ func _draw_map() -> void:
 				else:
 					_panel.draw_rect(Rect2(at - Vector2.ONE * r, Vector2.ONE * r * 2.0), colour, not site.planned, 1.0)
 	var half := width_m * 0.5
-	# The grid's ruins only up close: wider, there are thousands to survey.
-	for ruin in world.shape.ruins.around(px, pz, half * 1.5) if width_m <= GRID_RUINS_M else []:
-		var at: Vector2 = to_map.call(ruin.x, ruin.z)
-		if box.has_point(at):
-			_panel.draw_rect(Rect2(at - Vector2.ONE * 3.0, Vector2.ONE * 6.0), ERA[Eras.SECOND])
 	for mark in sites.landmarks_in(Rect2(px - half, pz - half, width_m, width_m)):
 		var at: Vector2 = to_map.call(mark.x, mark.z)
 		_panel.draw_arc(at, mark.radius * scale, 0.0, TAU, 48, Color(get_theme_color(&"accent", &"Palette"), 0.7), 1.5)

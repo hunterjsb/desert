@@ -1,21 +1,28 @@
 class_name Salvage
 extends Node
 ## Finds in the world. A chunk's finds are laid out when its ground becomes
-## solid, inside the streaming budget, and go when it stops being solid. They
-## lie in the chunk as part of it, frozen where they were placed, buried or
-## settled, until you take one, take from one, fit to one, use one or take
-## hold of one: then it's yours, an ordinary thing in the world. While a chunk
-## is loaded it remembers what you took from it, so its finds come back as
-## they were less that; once it's forgotten, so is that.
+## solid, inside the streaming budget, and go when it stops being solid: what
+## the structures standing on it hold within reach (SiteLoot), and the few
+## loose finds on its open sand on the way. They lie in the chunk as part of
+## it, frozen where they were placed, buried or settled, until you take one,
+## take from one, fit to one, use one or take hold of one: then it's yours,
+## an ordinary thing in the world. A site remembers what was taken from it
+## while it's laid, and the save keeps that; a chunk remembers its loose
+## finds taken while it's loaded. And the drift a storm carries is caught on
+## your lines (Drift).
 
 ## How long a loose find may take to settle before it's frozen anyway, s, and
 ## how still it must be to count as settled.
 const SETTLE_SECONDS := 4.0
 const STILL_SPEED := 0.05
 const STILL_SECONDS := 0.3
+## A clock that jumps (a resume, a scenario, sleep) draws this many ticks of drift at most.
+const DRIFT_MOST := 540
 
 ## Main-thread time laying out finds took, the most any frame has, ms.
 var slowest_ms := 0.0
+## Things your lines have caught this run.
+var caught := 0
 
 var _world: World
 var _tuning: Tuning
@@ -26,6 +33,13 @@ var _queue: Array[Piece] = []
 var _forgotten: Array = []
 ## Loose finds settling: [body, seconds since placed, seconds still].
 var _settling: Array[Array] = []
+## What was taken from each site while it's laid, by its id: [the site, or
+## null until a resumed run's is laid again, {socket: true}].
+var _sites := {}
+## Whether a chunk has gone since the sites' memory was last pruned.
+var _prune := false
+## The last tick of drift drawn.
+var _drift_tick := 0
 
 
 ## One chunk's finds while it's loaded: how hard the weather had been when it
@@ -37,22 +51,29 @@ class Lot:
 	var chunk: TerrainChunk
 
 
-## Work for the streaming budget: planning a chunk (no spec), or one step of
-## laying out a find: its body, each part it was found with, then into the world.
+## Work for the streaming budget: planning a chunk (no spec), or what one
+## socket of its structures holds within reach (a site and socket), or one
+## step of laying out a find: its body, each part it was found with, then
+## into the world.
 class Piece:
 	var coord: Vector2i
 	var spec: Dictionary
+	var site: Structure
+	var socket := -1
 	var body: RigidBody3D
 	var fitted := 0
 
-	func _init(at: Vector2i, find := {}) -> void:
+	func _init(at: Vector2i, find := {}, of: Structure = null, i := -1) -> void:
 		coord = at
 		spec = find
+		site = of
+		socket = i
 
 
 func setup(world: World) -> void:
 	_world = world
 	_tuning = world.tuning
+	_drift_tick = floori(world.time / _tuning.drift_tick_s)
 	world.terrain.grounded.connect(_on_grounded)
 	world.terrain.ungrounded.connect(_on_ungrounded)
 	world.terrain.unloaded.connect(_on_unloaded)
@@ -62,13 +83,15 @@ func setup(world: World) -> void:
 
 ## The first find laid out in a run pays for everything done the first time,
 ## a millisecond; a stand-in pays it now, while the world loads, as the
-## sand's shader does. So do the first ruin and the first of each painted look.
+## sand's shader does. So do the first ruin, every socket's resting spots
+## and the first of each painted look.
 func _first_time() -> void:
 	Ruin.prepare()
+	SiteLoot.prepare()
 	Dress.prepare()
 	var spec := {"id": &"crate_frame", "device": true, "layer": Finds.DEEP, "x": 0.0, "z": 0.0, "yaw": 0.0,
 		"lean": 0.0, "lean_by": 0.0, "bury": 0.3, "sound": 0.5, "charge": 0.5,
-		"fill": [[0, &"battery", 0.5], [1, &"hook", 0.0], [3, &"hover_tray", 0.0], [4, &"solar_panel", 0.0]]}
+		"fill": [[0, &"battery", 0.5], [5, &"hook", 0.0], [1, &"hover_tray", 0.0], [2, &"solar_panel", 0.0]]}
 	var stand_in := Finds.make(spec)
 	stand_in.transform = Finds.pose(stand_in, spec, func(_x: float, _z: float) -> float: return -1000.0)
 	stand_in.freeze = true
@@ -105,6 +128,11 @@ func stream(deadline: int) -> void:
 		var lot: Lot = _lots.get(piece.coord)
 		if lot == null or not is_instance_valid(lot.chunk) or not lot.chunk.has_collision():
 			_drop(0)
+		elif piece.site != null:
+			_queue.pop_front()
+			var spec := SiteLoot.within_reach(piece.site, piece.socket, _world.height_at, _taken_from(piece.site))
+			if not spec.is_empty():
+				_queue.push_front(Piece.new(piece.coord, spec))
 		elif piece.spec.is_empty():
 			_queue.pop_front()
 			_plan(piece.coord, lot)
@@ -165,11 +193,15 @@ func exposure_in(coord: Vector2i) -> float:
 	return lot.exposure if lot != null else NAN
 
 
-## Whether a find of a loaded chunk's plan is yours now; one of a chunk
-## forgotten will lie there again.
-func taken(coord: Vector2i, index: int) -> bool:
-	var lot: Lot = _lots.get(coord)
-	return lot != null and lot.taken.has(index)
+## Whether a find is yours now: of a loaded chunk's open sand by its coord
+## and number (one of a chunk forgotten will lie there again), or of a laid
+## site by its id and socket.
+func taken(at: Variant, index: int) -> bool:
+	if at is Vector2i:
+		var lot: Lot = _lots.get(at)
+		return lot != null and lot.taken.has(index)
+	var memory: Array = _sites.get(at, [])
+	return not memory.is_empty() and memory[1].has(index)
 
 
 ## Whether a body still lies as it was found, or is buried: taken hold of,
@@ -187,8 +219,15 @@ func claim(body: Node) -> void:
 	var from: Array = body.get_meta(&"find")
 	body.remove_meta(&"find")
 	var lot: Lot = _lots.get(from[0])
-	if lot != null:
+	if from.size() > 2:
+		var memory: Array = _sites.get(from[2], [])
+		if memory.is_empty():
+			memory = [_laid_site(from[2]), {}]
+			_sites[from[2]] = memory
+		memory[1][from[1]] = true
+	elif lot != null:
 		lot.taken[from[1]] = true
+	if lot != null:
 		lot.finds.erase(body)
 	for i in range(_settling.size() - 1, -1, -1):
 		if _settling[i][0] == body:
@@ -221,6 +260,9 @@ func _discovered(body: Node) -> void:
 ## device stands upright on the sand, a part rests on it.
 func unbury(body: RigidBody3D) -> void:
 	claim(body)
+	if body.has_meta(&"drift"):
+		body.remove_meta(&"drift")
+		_discovered(body)
 	if body.has_meta(&"buried"):
 		body.remove_meta(&"buried")
 		if body is Device:
@@ -255,6 +297,7 @@ func _on_ungrounded(chunk: TerrainChunk) -> void:
 
 
 func _on_unloaded(coord: Vector2i) -> void:
+	_prune = true
 	var lot: Lot = _lots.get(coord)
 	if lot != null:
 		_forget(coord, lot)
@@ -278,17 +321,71 @@ func _forget(coord: Vector2i, lot: Lot) -> void:
 			_settling.remove_at(i)
 
 
-## The chunk's plan, from how hard the weather had been there when it first
-## came near: each find not taken becomes a piece of work of its own.
+## The chunk's plan: what its structures hold within reach as they stand,
+## less what was taken from them, a socket a piece of work; and its
+## open sand's, from how hard the weather had been there when it first came
+## near. Each find not taken becomes a piece of work of its own.
 func _plan(coord: Vector2i, lot: Lot) -> void:
 	var size := _tuning.chunk_size
+	for site in lot.chunk.structures():
+		for i in site.piece.sockets.size():
+			_queue.append(Piece.new(coord, {}, site, i))
 	if is_nan(lot.exposure):
 		lot.exposure = Finds.exposure(_world.weather.field, (coord.x + 0.5) * size, (coord.y + 0.5) * size,
 			_world.time, _tuning)
-	var specs := Finds.plan(_world.run_seed, coord, lot.exposure, _tuning, _world.height_at, lot.chunk.ruin())
-	for spec in specs:
+	for spec in Finds.plan(_world.run_seed, coord, lot.exposure, _tuning, _world.height_at, on_way, on_site):
 		if not lot.taken.has(spec.index):
 			_queue.append(Piece.new(coord, spec))
+
+
+## Whether a world place is a structure's ground, which loose finds keep clear of.
+func on_site(x: float, z: float) -> bool:
+	return _world.shape.sites.covering(x, z) != null
+
+
+## Whether a world place is on the way, where loose finds still lie.
+func on_way(x: float, z: float) -> bool:
+	return Finds.on_way(_world.shape.sites, x, z, _tuning.finds_scatter_m)
+
+
+## What was taken from a site, while it's the one laid now: a memory kept
+## for a site since lifted is another's, and goes.
+func _taken_from(site: Structure) -> Dictionary:
+	var memory: Array = _sites.get(site.id, [])
+	if memory.is_empty():
+		return {}
+	if memory[0] == null:
+		memory[0] = weakref(site)
+	elif memory[0].get_ref() != site:
+		_sites.erase(site.id)
+		return {}
+	return memory[1]
+
+
+## The site laid now with an id, as a weak reference, or null.
+func _laid_site(id: int) -> WeakRef:
+	for unit in _world.shape.sites.units():
+		for site in unit.sites:
+			if site.id == id:
+				return weakref(site)
+	return null
+
+
+## A site's memory goes with it: kept only for the one laid now with its id.
+func _prune_sites() -> void:
+	_prune = false
+	if _sites.is_empty():
+		return
+	var laid := {}
+	for unit in _world.shape.sites.units():
+		for site in unit.sites:
+			laid[site.id] = site
+	for id: int in _sites.keys():
+		var memory: Array = _sites[id]
+		if not laid.has(id) or (memory[0] != null and memory[0].get_ref() != laid[id]):
+			_sites.erase(id)
+		elif memory[0] == null:
+			memory[0] = weakref(laid[id])
 
 
 ## A piece of work no longer wanted, and whatever it had begun to make.
@@ -308,10 +405,10 @@ func _lay_out(coord: Vector2i, lot: Lot, spec: Dictionary, body: RigidBody3D) ->
 	var pose := Finds.pose(body, spec, _world.height_at)
 	var at := Vector3(_world.engine_x(pose.origin.x), pose.origin.y, _world.engine_z(pose.origin.z))
 	body.transform = Transform3D(pose.basis, at - lot.chunk.position)
-	body.set_meta(&"find", [coord, spec.index])
+	body.set_meta(&"find", [coord, spec.index, spec.site] if spec.has("site") else [coord, spec.index])
 	if spec.bury > 0.0:
 		body.set_meta(&"buried", true)
-	body.freeze = spec.bury > 0.0
+	body.freeze = spec.bury > 0.0 or spec.get("frozen", false)
 	lot.chunk.add_child(body)
 	if body is Device:
 		Finds.age(body, spec.sound)
@@ -335,11 +432,40 @@ func _physics_process(delta: float) -> void:
 		if each[2] >= STILL_SECONDS or each[1] >= SETTLE_SECONDS:
 			body.freeze = true
 			_settling.remove_at(i)
+	if _prune:
+		_prune_sites()
+	_drift()
 	var here := _world.terrain.chunk_at(_world.player_world_x(), _world.player_world_z())
 	var exposed := exposure_in(here)
 	Dev.put("salvage/finds", "%d" % count())
 	Dev.put("salvage/exp", "-" if is_nan(exposed) else "%d%% deep %d%%"
 		% [roundi(exposed * 100.0), roundi(Finds.deep_share(exposed, _tuning) * 100.0)])
+	Dev.put("salvage/drift", "%.1f/h a 10 m line, %d caught" % [10.0 * Drift.per_metre(_world, _world.player_world_x(),
+		_world.player_world_z(), _world.time), caught])
+
+
+## Each tick of drift since the last, what your lines catch, laid where it
+## fell in their lee, up to what a line's pile holds.
+func _drift() -> void:
+	var tick := floori(_world.time / _tuning.drift_tick_s)
+	if tick <= _drift_tick:
+		_drift_tick = tick
+		return
+	var from := maxi(_drift_tick + 1, tick - DRIFT_MOST)
+	_drift_tick = tick
+	if not _tuning.salvage:
+		return
+	var lines := Drift.lines(_world)
+	for each in lines:
+		var piled := Drift.pile(_world, each[1], each[2])
+		for k in range(from, tick + 1):
+			if piled >= _tuning.drift_most:
+				break
+			var spec := Drift.caught(_world, each[1], each[2], k)
+			if not spec.is_empty():
+				Drift.lay(_world, spec)
+				piled += 1
+				caught += 1
 
 
 ## What a save keeps of the finds, for each chunk remembered: [coord, how
@@ -351,6 +477,27 @@ func memories() -> Array:
 		if not is_nan(lot.exposure):
 			out.append([coord, lot.exposure, lot.taken.keys()])
 	return out
+
+
+## What a save keeps of the sites: for each laid one something was taken
+## from, [its id, the sockets taken].
+func site_memories() -> Array:
+	_prune_sites()
+	var out := []
+	for id: int in _sites:
+		out.append([id, _sites[id][1].keys()])
+	return out
+
+
+## A resumed run's sites as they were: each remembers what was taken from it
+## once the sheet lays it again. A save from before has none.
+func recall_sites(memories: Array) -> void:
+	_sites.clear()
+	for each: Array in memories:
+		var taken := {}
+		for socket: int in each[1]:
+			taken[socket] = true
+		_sites[each[0]] = [null, taken]
 
 
 ## A resumed run's finds as they were: a remembered chunk within view of

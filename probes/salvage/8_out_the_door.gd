@@ -22,8 +22,8 @@ var ruin: Ruin
 func run() -> void:
 	await load_salvage()
 	world.time_warp = 0.0
-	var place := Scenarios.find(world, Scenarios.by_key("ruin"))
-	ruin = world.shape.ruins.around(place.x, place.z, 30.0)[0]
+	ruin = await go_looking()
+	world.time_warp = 0.0
 	var inside := ruin.to_world(Vector2(-3.0, 0.0))
 	await go(inside.x, inside.y)
 	await _held_out()
@@ -68,8 +68,9 @@ func _held_out() -> void:
 ## on through your hands, then at your waist, you drag it into line with the
 ## door, as you would anything through a doorway, and walk out.
 func _towed_out() -> void:
-	var crate := await _found(991, Vector2(6.8, -1.4), [[0, &"battery", 0.3], [1, &"hook", 0.0], [2, &"hook", 0.0],
-		[4, &"solar_panel", 0.0]])
+	# Its front ring toward where you stand to tie on.
+	var crate := await _found(991, Vector2(6.8, -1.4), [[0, &"battery", 0.3], [5, &"hook", 0.0], [6, &"hook", 0.0],
+		[2, &"solar_panel", 0.0]], PI / 2.0)
 	await _stand(crate, Vector2(5.0, -1.4))
 	var line := Line.make(world, world.tuning.rope_coil_length)
 	line.coil.global_transform = Transform3D(Basis(Vector3.RIGHT, -PI / 2.0), _floor(_plan_of(world.player) + Vector2(0.0, -0.5), 0.05))
@@ -107,25 +108,29 @@ func _towed_out() -> void:
 ## either layer could have filled each socket with.
 func _heaviest() -> float:
 	var most := 0.0
+	var ids: Array = SiteLoot.ids()
 	for layer: StringName in Finds.LAYER:
-		for entry: Array in Finds.DEVICES[layer] + Finds.IN_RUINS[layer].devices:
-			var spec: Dictionary = Catalog.DEVICES.get(entry[0], {"mass": 0.0, "sockets": []})
-			var kg: float = spec.mass
-			for socket: Array in spec.sockets:
-				var best := 0.0
-				for fills: Dictionary in [Finds.FILLS[Finds.SURFACE], Finds.FILLS[Finds.DEEP], Finds.SURVIVAL_KIT]:
-					for id: StringName in fills.get(socket[0], []):
-						best = maxf(best, Catalog.PARTS[id].mass)
-				kg += best
-			most = maxf(most, kg)
+		ids += Finds.DEVICES[layer].map(func(entry: Array) -> StringName: return entry[0])
+	for device: StringName in ids:
+		var spec: Dictionary = Catalog.DEVICES.get(device, {"mass": 0.0, "sockets": []})
+		var kg: float = spec.mass
+		for socket: Array in spec.sockets:
+			var best := 0.0
+			for fills: Dictionary in [Finds.FILLS[Finds.SURFACE], Finds.FILLS[Finds.DEEP], Finds.SURVIVAL_KIT]:
+				for id: StringName in fills.get(socket[0], []):
+					best = maxf(best, Catalog.PARTS[id].mass)
+			kg += best
+		most = maxf(most, kg)
 	return most
 
 
-## A crate found lying on the ruin's floor at a plan point, settled.
-func _found(index: int, p: Vector2, fill: Array) -> Device:
+## A crate found lying on the ruin's floor at a plan point, settled, turned
+## with the ruin as it lay in the one this was first walked in, a quarter turn
+## round, and then by `turn`: which ring a line ties to is which faces you.
+func _found(index: int, p: Vector2, fill: Array, turn := 0.0) -> Device:
 	var at := ruin.to_world(p)
 	var spec := {"index": index, "id": &"crate_frame", "device": true, "layer": Finds.DEEP, "x": at.x,
-		"z": at.y, "yaw": 0.3, "lean": 0.0, "lean_by": 0.0, "bury": 0.0, "loose": true, "sound": 0.9, "charge": 0.0,
+		"z": at.y, "yaw": 0.3 + (ruin.turn - 1) * PI * 0.5 + turn, "lean": 0.0, "lean_by": 0.0, "bury": 0.0, "loose": true, "sound": 0.9, "charge": 0.0,
 		"floor": ruin.floor_y, "fill": fill}
 	var crate := salvage.lay(world.terrain.chunk_at(at.x, at.y), spec) as Device
 	await simulate(Salvage.SETTLE_SECONDS)

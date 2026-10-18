@@ -109,7 +109,10 @@ question of whether the gods broadcast: they do. That goes past the lore's "spea
 terminals" by Hunter's call. The squatting oracles above are now the gods.
 
 - **The dial runs 0–2000 kHz.** The wheel tunes it while you look at a radio, or at a console with
-  one in its system: 5 kHz a notch, or 1 kHz with shift held. Holding a radio, it's ctrl+wheel.
+  one in its system, or hold one: 5 kHz a notch, or 1 kHz with shift held. Ctrl and the wheel still
+  move a radio you hold, as they do anything (the wheel's own job, reeling a line, gives way to a radio
+  you aim at or hold). A Console's power page tunes it to its carriers by their frequency: off, the
+  music, the weather station and the beacon.
   Use sweeps up to the next carrier, and past the last one it goes off. **A volume knob** (Hunter, 2026-10-18:
   "give the radio also an adjustable volume knob"): the wheel with alt, a tenth a notch from full to
   silent. Each notch is the same 6 dB step, as ears hear loudness (Hunter: "10% should be barely audible,
@@ -226,6 +229,19 @@ terminals" by Hunter's call. The squatting oracles above are now the gods.
   storm). Probes 1, 2, 4 and 5 tune by the dial.
 - **Not yet:** a god's own voice beyond tones, frequencies as finds, antennas, and the far end's
   signal.
+### Stations: the Walker and the living city (agreed, 2026-10-18 spec)
+
+From Hunter's [storms, signals & sailing spec](../storms-signals-sailing-2026-10-18.md). A station is a node with a place, a
+frequency, a range and what it says; its signal falls off with distance.
+- **The Walker's survey feed:** moon-wide, the strongest after the Ledger's; a dry log of bearings,
+  wind readings and terrain, the planet's weather hard to read but very useful. Found by scanning.
+  Its contact log records every signal it hears, indifferent to its flock: a nomad praying to it is
+  a bearing, and several from different places triangulate the living city.
+- **The living city's chatter:** a few km, for its own scouts; coded tones, no voices ("storm
+  coming, tether in", "city moving"), sometimes its own coordinates written as star positions, the
+  nomads navigating by the stars. Its frequency is found by exploring (scratched on a radio in the
+  dead city), its codes learned by noticing what follows them. Open: how the tones sound and how
+  many messages.
 
 ### The ghost relay
 
@@ -342,6 +358,13 @@ Everything that matters can be heard, so you can read the world by ear:
 - **One table.** Every sound's file is named once, in `game/core/sounds.gd`, and a
   probe checks that each one the game names loads and that the buses exist.
 - **Not yet:** a turbine's whir by its speed, and clanks when things knock together.
+
+### Distant phenomena (agreed, 2026-10-18 spec)
+
+Gas-pocket dust plumes and far volcano plumes stay distant spectacles, never close enough to hurt
+([spec](../storms-signals-sailing-2026-10-18.md)): a gentle rumble by distance and no camera shake, arriving after you see it as
+thunder does after lightning (the delay sells the scale), losing its high end with distance, and
+a big plume marking a vent's direction to steer by.
 
 ## Atmosphere
 
