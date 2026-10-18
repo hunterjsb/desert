@@ -1,6 +1,7 @@
 class_name Ruin
-extends RefCounted
-## The one ruin type: a thick-walled building of three rooms, a hall open to
+extends Site
+## The house ruin, the first kind with a kit (the second age's, SiteKinds): a
+## thick-walled building of three rooms, a hall open to
 ## the sky and two roofed rooms behind it, with a door front and back. Boxes
 ## and slabs built for walking, never scaled, never moved. Its footprint is
 ## part of the ground's one function: inside, the sand lies just under its
@@ -54,10 +55,9 @@ static var _boxes: Array[AABB] = []
 static var _shapes: Array[BoxShape3D] = []
 static var _mesh: ArrayMesh
 
-## Its middle, world metres on the lattice; quarter turns from the plan; the
-## floor's top, world height.
+## Its middle, world metres on the lattice; its quarter turns from the plan
+## are Site's turn; the floor's top, world height.
 var center: Vector2i
-var turn: int
 var floor_y: float
 var _pad: float
 ## Half its ground's extent along world x and z.
@@ -70,6 +70,21 @@ func _init(at: Vector2i, quarter_turns: int, floor_top: float) -> void:
 	floor_y = floor_top
 	_pad = floor_top - SAND_UNDER
 	_reach = Vector2(half_on(turn)) + Vector2.ONE * APRON
+	# As the index holds it: the ground's own grid places it, for now.
+	kind = &"house_ruin"
+	era = SiteKinds.era(kind)
+	x = at.x
+	z = at.y
+	bearing = fposmod(-turn * PI * 0.5, TAU)
+	reach = REACH
+	id = (at.x & 0xffffffff) << 32 | (at.y & 0xffffffff)
+	source = &"grid"
+	planned = false
+
+
+## Its ground is a rectangle, its apron round its walls.
+func touches(rect: Rect2) -> bool:
+	return rect.intersects(Rect2(Vector2(center) - _reach, _reach * 2.0), true)
 
 
 ## Half its outer extent along world x and z, turned.

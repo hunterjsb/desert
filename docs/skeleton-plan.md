@@ -350,7 +350,9 @@ and part 5's lineage and landmark steps are built as one system, not a piece at 
 history pass and its landmarks and paths, structures by era with their exposure, loot that
 comes from sites and storms instead of open sand, item lineage and layered marks, the feral
 layer, and spawns by kit. It starts with its architecture and spine (one design, one set of
-interfaces), then parallel builders on top of it.
+interfaces), then parallel builders on top of it. The architecture is [the world
+system](world-system.md); its spine (the history pass, the landmarks, the path network and the site
+index) is built (2026-10-17), and its build plan names the five packages that follow.
 
 ### The newer proposed order: session 4, part 4
 

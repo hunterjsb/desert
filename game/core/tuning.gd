@@ -624,6 +624,31 @@ static var _current: Tuning
 @export var ruin_max_rise: float = 1.5
 @export var ruin_max_degrees: float = 20.0
 
+@export_group("History")
+## The moon's cells history is made and laid in, m across.
+@export var history_cell_m: float = 500.0
+## A cell or landmark is laid on the ground once any of it comes this near
+## you, and lifted once all of it is this far off on the ground, m. Loaded
+## ground reaches about 900 m.
+@export var history_lay_m: float = 1300.0
+@export var history_lift_m: float = 1800.0
+## The regions, by the angle from the point under Tu, degrees: Han inside the
+## first, Mon to the second, the Rim to the third, then the far side.
+@export var region_han_degrees: float = 20.0
+@export var region_mon_degrees: float = 75.0
+@export var region_rim_degrees: float = 105.0
+## How built up each region was, 0 to 1: "rich at the Rim, thinner in Mon,
+## sparse and grim in Han."
+@export var richness_han: float = 0.25
+@export var richness_mon: float = 0.5
+@export var richness_rim: float = 1.0
+@export var richness_far: float = 0.12
+## The line the great sites lie on leaves the point under Tu east or west,
+## within this many degrees, so its Rim end stays at low latitude.
+@export var axis_spread_degrees: float = 25.0
+## Spokes from Port Morgan out to the ring, besides the artery.
+@export var spokes: int = 5
+
 @export_group("Radio")
 ## What a radio draws while it's on, W.
 @export var radio_w: float = 2.0

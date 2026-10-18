@@ -42,6 +42,10 @@ var _fork_patch := FastNoiseLite.new()
 var _saddle := FastNoiseLite.new()
 ## Where this run's ruins stand.
 var ruins: RuinSites
+## The plan of the whole moon, and the index that lays it near you and
+## answers for every site on the ground.
+var history: History
+var sites: Sites
 
 
 func _init(run_seed: int, tuning: Tuning) -> void:
@@ -60,6 +64,8 @@ func _init(run_seed: int, tuning: Tuning) -> void:
 	_field(_fork_patch, run_seed + 15, tuning.dune_fork_wavelength, 1)
 	_field(_saddle, run_seed + 16, tuning.dune_saddle_wavelength, 1)
 	ruins = RuinSites.new(run_seed, tuning, self)
+	history = History.new(run_seed, tuning)
+	sites = Sites.new(history, ruins, tuning)
 
 
 static func _field(noise: FastNoiseLite, noise_seed: int, wavelength: float, octaves: int) -> void:

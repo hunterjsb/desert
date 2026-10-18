@@ -149,6 +149,10 @@ exception to unloading stays: what you changed in one is kept whatever the dista
 
 ## World generation by layers (Agreed, session 4, part 4; not built)
 
+*Designed whole in [the world system](../world-system.md), which is the contract for building it. Its
+spine is built (2026-10-17): the history pass per seed on the sphere, the eight landmarks, the path
+network and the site index, laid onto the ground near you by moon cells.*
+
 *[Session 4, part 4](../plants-worldgen-ruins-2026-10-17.md), with its labels as given: **Agreed** is
 settled direction, **Idea** is proposed and not confirmed, **Back burner** is liked and not to be
 built yet, and anything under its open questions is undecided and not to be hard-coded. None of it is

@@ -93,7 +93,7 @@ func interact(_by: Player) -> bool:
 	world.salvage.claim(self)
 	var next := (channel + 1) % CHANNELS.size()
 	if next == BEACON:
-		target = Finds.beacon(world.run_seed, world.shape.ruins, world.world_x(global_position.x),
+		target = Finds.beacon(world.run_seed, world.shape.sites, world.world_x(global_position.x),
 			world.world_z(global_position.z), _tuning, world.salvage.taken)
 	read_at = -INF
 	_since_signal = INF
