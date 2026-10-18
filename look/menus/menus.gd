@@ -1,11 +1,12 @@
 extends Node
 ## Look-test helper: shoots the main menu, its title and crate, over its desert
 ## as it opens and once its storm has passed, and with its music switched
-## off; Options and the question over a save with the prop aside; who you
-## come as with each origin highlighted, its piece and gear, one of them
-## locked, and the modes; the main menu after a Homesteader's run; the system
-## menu over a run; Resume with that run's camp, and with the save LOOK_SAVE
-## names if it's set; then the main menu and Resume at the menu's darkest.
+## off; Options, its controls list and the question over a save with the prop
+## aside; who you come as with each origin highlighted, its piece and gear,
+## one of them locked, and the modes; the main menu after a Homesteader's run;
+## the system menu over a run; Resume with that run's camp, and with the save
+## LOOK_SAVE names if it's set; then the main menu and Resume at the menu's
+## darkest.
 ## The eye adapts here as in the game; it prints how far it swung over ten
 ## seconds at the menu, in its storm and in the clear, beside how far the
 ## frame's own light did, so a pumping desert shows. Needs a window, not --headless:
@@ -58,6 +59,12 @@ func _ready() -> void:
 	_press(&"ui_accept")
 	await _settle(main)
 	_shoot("options")
+	for i in 4:
+		_press(&"ui_down")
+	_press(&"ui_accept")
+	await _ticks(10)
+	_shoot("controls")
+	_press(&"ui_cancel")
 	_press(&"ui_cancel")
 	_press(&"ui_up")
 	var origins := Kit.origins()

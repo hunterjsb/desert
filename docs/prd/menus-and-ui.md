@@ -279,11 +279,11 @@ is a menu of its own, reached from the main menu and the system menu.
   player's own save is left as it was. A run the console's `scenario` has been used in
   is the same from then on.
 - `look/menus` shoots the main menu, with its title and crate, in a storm, on a clear day
-  and with its music off; Options and the question over a save with the prop aside; who
-  you come as with each origin's piece and gear, one locked, and the modes; the main menu
-  after a Homesteader's run; the system menu; Resume with that run's camp (and the save
-  `LOOK_SAVE` names, if set); and the main menu and Resume at the menu's darkest, to judge
-  by eye (`look/menus/shoot.sh` builds the sheet).
+  and with its music off; Options, its controls list and the question over a save with
+  the prop aside; who you come as with each origin's piece and gear, one locked, and the
+  modes; the main menu after a Homesteader's run; the system menu; Resume with that run's
+  camp (and the save `LOOK_SAVE` names, if set); and the main menu and Resume at the
+  menu's darkest, to judge by eye (`look/menus/shoot.sh` builds the sheet).
 - Probes 1–9 pass, each proven against a broken build. Probes 3, 4 and 7 use the real
   saves, kept in each probe's own folder; probe 3 is the whole trip: New game, Save &
   quit out on the sand, Resume, and you're back where you were.
