@@ -371,14 +371,14 @@ func options() -> Words:
 	return menu
 
 
-## Every key as it's bound now, to read; remapping comes later.
+## Every key as it's bound now, beside what it does, as the keys list shows
+## them; remapping comes later.
 func controls() -> Words:
 	var menu := _menu("Controls")
 	var list := Controls.keys_label()
+	list.theme_type_variation = &"KeysList"
 	list.text = Controls.help()
-	var panel := PanelContainer.new()
-	panel.add_child(list)
-	menu.add_body(panel)
+	menu.add_body(list)
 	menu.add("Back", close_top)
 	return menu
 

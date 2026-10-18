@@ -20,7 +20,7 @@ const MOON_GAP := 22.0
 const UNLIT := 0.72
 ## The list under the prop aside starts this far down the screen, and goes
 ## two to a line past this many.
-const ASIDE_TOP := 0.72
+const ASIDE_TOP := 0.69
 const ASIDE_ROWS := 6
 ## The corner's speaker, across, px.
 const SPEAKER := 30.0
@@ -40,14 +40,16 @@ var shows := &""
 
 var _list: VBoxContainer
 var _aside: GridContainer
+var _aside_field: PanelContainer
 var _items: Array[Dictionary] = []
 ## The word last highlighted.
 var _was := 0
 
 
 ## A question or a note above the words. Under them, a dark wash over the
-## running game (Scrim), or only a shade low down over the menu's desert
-## (Shade), or down its left side (ShadeSide).
+## running game (Scrim), with a soft dark field close behind the words, or
+## only a shade low down over the menu's desert (Shade), or down its left
+## side (ShadeSide).
 func _init(note := "", under := &"Scrim") -> void:
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 	# Every click lands here, so none reaches the world to throw or look.
@@ -79,7 +81,10 @@ func _init(note := "", under := &"Scrim") -> void:
 		_list.grow_vertical = Control.GROW_DIRECTION_BOTH
 		_list.alignment = BoxContainer.ALIGNMENT_CENTER
 	_list.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(_list)
+	if under == &"Scrim":
+		add_child(_field(_list, Control.PRESET_CENTER))
+	else:
+		add_child(_list)
 	if note != "":
 		var line := Label.new()
 		line.theme_type_variation = &"MenuNote"
@@ -232,13 +237,13 @@ func set_aside(rows: Array) -> void:
 	if _aside == null:
 		_aside = GridContainer.new()
 		_aside.theme_type_variation = &"AsideList"
-		_aside.anchor_left = Showpiece.ASIDE
-		_aside.anchor_right = Showpiece.ASIDE
-		_aside.anchor_top = ASIDE_TOP
-		_aside.anchor_bottom = ASIDE_TOP
-		_aside.grow_horizontal = Control.GROW_DIRECTION_BOTH
 		_aside.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		add_child(_aside)
+		_aside_field = _field(_aside, Control.PRESET_CENTER_TOP)
+		_aside_field.anchor_left = Showpiece.ASIDE
+		_aside_field.anchor_right = Showpiece.ASIDE
+		_aside_field.anchor_top = ASIDE_TOP
+		_aside_field.anchor_bottom = ASIDE_TOP
+		add_child(_aside_field)
 	for cell in _aside.get_children():
 		cell.free()
 	var paired := rows.size() > ASIDE_ROWS
@@ -255,6 +260,20 @@ func set_aside(rows: Array) -> void:
 			cell.uppercase = true
 			cell.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT if k == 0 else HORIZONTAL_ALIGNMENT_RIGHT
 			_aside.add_child(cell)
+
+
+## Words on a soft dark field of their own, sized to them, so they read over
+## bright sand.
+static func _field(words: Control, preset: Control.LayoutPreset) -> PanelContainer:
+	var field := PanelContainer.new()
+	field.theme_type_variation = &"Field"
+	field.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	field.set_anchors_preset(preset)
+	field.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	field.grow_vertical = Control.GROW_DIRECTION_BOTH if preset == Control.PRESET_CENTER \
+		else Control.GROW_DIRECTION_END
+	field.add_child(words)
+	return field
 
 
 ## The rows under the prop aside, as they read.

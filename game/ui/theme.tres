@@ -46,8 +46,8 @@ corner_radius_bottom_right = 2
 corner_radius_bottom_left = 2
 
 [sub_resource type="Gradient" id="Gradient_scrim"]
-offsets = PackedFloat32Array(0, 0.55, 1)
-colors = PackedColorArray(0, 0, 0, 0.72, 0, 0, 0, 0.55, 0, 0, 0, 0.3)
+offsets = PackedFloat32Array(0, 0.6, 1)
+colors = PackedColorArray(0, 0, 0, 0.5, 0, 0, 0, 0.4, 0, 0, 0, 0.25)
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_scrim"]
 gradient = SubResource("Gradient_scrim")
@@ -59,6 +59,25 @@ fill_to = Vector2(1, 0.5)
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_scrim"]
 texture = SubResource("GradientTexture2D_scrim")
+
+[sub_resource type="Gradient" id="Gradient_field"]
+offsets = PackedFloat32Array(0, 0.68, 1)
+colors = PackedColorArray(0, 0, 0, 0.6, 0, 0, 0, 0.55, 0, 0, 0, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_field"]
+gradient = SubResource("Gradient_field")
+width = 128
+height = 128
+fill = 2
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_field"]
+content_margin_left = 96.0
+content_margin_top = 44.0
+content_margin_right = 96.0
+content_margin_bottom = 44.0
+texture = SubResource("GradientTexture2D_field")
 
 [sub_resource type="Gradient" id="Gradient_shade"]
 colors = PackedColorArray(0, 0, 0, 0, 0, 0, 0, 0.55)
@@ -134,15 +153,15 @@ AsideList/constants/h_separation = 18
 AsideList/constants/v_separation = 2
 AsideName/base_type = &"Label"
 AsideName/colors/font_color = Color(0.86, 0.86, 0.84, 1)
-AsideName/colors/font_outline_color = Color(0, 0, 0, 0.55)
-AsideName/constants/outline_size = 4
-AsideName/font_sizes/font_size = 15
+AsideName/colors/font_outline_color = Color(0, 0, 0, 0.6)
+AsideName/constants/outline_size = 5
+AsideName/font_sizes/font_size = 17
 AsideName/fonts/font = SubResource("FontVariation_mippt")
 AsideValue/base_type = &"Label"
 AsideValue/colors/font_color = Color(0.92, 0.92, 0.9, 1)
-AsideValue/colors/font_outline_color = Color(0, 0, 0, 0.55)
-AsideValue/constants/outline_size = 4
-AsideValue/font_sizes/font_size = 15
+AsideValue/colors/font_outline_color = Color(0, 0, 0, 0.6)
+AsideValue/constants/outline_size = 5
+AsideValue/font_sizes/font_size = 17
 AsideValue/fonts/font = ExtResource("2_7y804")
 Caption/base_type = &"Label"
 Caption/font_sizes/font_size = 18
@@ -159,6 +178,8 @@ DevConsoleOut/font_sizes/normal_font_size = 12
 DevConsoleOut/fonts/normal_font = ExtResource("2_7y804")
 DevConsolePanel/base_type = &"PanelContainer"
 DevConsolePanel/styles/panel = SubResource("StyleBoxFlat_dev_console")
+Field/base_type = &"PanelContainer"
+Field/styles/panel = SubResource("StyleBoxTexture_field")
 Fade/base_type = &"Panel"
 Fade/styles/panel = SubResource("StyleBoxFlat_ta3wi")
 Hint/base_type = &"RichTextLabel"
