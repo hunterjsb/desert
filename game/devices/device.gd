@@ -230,7 +230,10 @@ func production_w(t := NAN) -> float:
 	if world == null or wrecked():
 		return 0.0
 	var now := stats()
-	var watts: float = now["solar_w"] * world.weather.felt_light(global_position + Vector3.UP * 0.5, t)
+	# The light is read only where there's a panel to take it.
+	var watts := 0.0
+	if now["solar_w"] != 0.0:
+		watts = now["solar_w"] * world.weather.felt_light(global_position + Vector3.UP * 0.5, t)
 	# A turbine works planted: resting on the sand, not floating or being carried.
 	if now["turbine_w"] > 0.0 and not now["can_float"] and linear_velocity.length() < 0.3:
 		turbine_wind = world.weather.felt_wind(global_position, t)
