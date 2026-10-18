@@ -70,7 +70,9 @@ gives water a daily rhythm:
 - **Open water doesn't last.** It has to be stored sealed.
 - **Condensers pull water from the air.** They're found, they draw power, they can be
   towed, and they work best at night, and better toward the far side (below).
-- **Plants that store water,** like the yucca.
+- **Plants that store water,** like the yucca. Session 4, part 4 (proposed, not built) names the
+  roster's water crops instead: dewleaf gathers dew at night, which fits the dawn harvest above, and
+  stormcup gathers a storm's moisture ([Farming](prd/farming.md#the-plant-system-agreed-session-4-part-4-not-built)).
 - **Sealed fresh water in ruins** keeps you going early on.
 - **Water drifts to the far side** (Agreed, session 4, part 2). The near side is heated by the
   sun and by Tu's infrared, and the far side runs colder. Water evaporates on the warm side and

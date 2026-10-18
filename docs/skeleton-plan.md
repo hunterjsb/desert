@@ -300,9 +300,11 @@ These probes need content the skeleton doesn't have:
 - Wind & storms 7 (the sand yacht).
 - Survival 5 (the water rhythm).
 
-**A proposed build order for the lore and kits pieces.** Session 4, part 3 (2026-10-17, [the
-lore session](lore-session-2026-10-17-part-3.md)) lists seven buildable pieces, roughly in order of
-how soon they could land. This is a proposed order, not a schedule. None has a stage or a date,
+**A proposed build order for the lore and kits pieces (part 3's, kept for reference).** Session 4,
+part 3 (2026-10-17, [the lore session](lore-session-2026-10-17-part-3.md)) lists seven buildable
+pieces, roughly in order of how soon they could land. The same day's part 4 lists ten of its own,
+which is the newer proposed order ([below](#the-newer-proposed-order-session-4-part-4)); where the two
+overlap part 4's wins. This is a proposed order, not a schedule. None has a stage or a date,
 none is built, and each waits for the skeleton's gate as the full version does. They follow the
 existing conventions, with no one-off exceptions in core systems.
 1. **Feral plants as a weather sign.** A plant prop whose pose, open to closed or leaves turning,
@@ -334,3 +336,57 @@ No Varran, Daventry or war content goes into normal play beyond radio noise
 ([Radio, sound & atmosphere](prd/radio-sound-and-atmosphere.md#offstage-states-on-the-air-agreed-session-4-part-3-not-built)).
 The seed vaults and the second-age broadcasts are proposed too, but the session's list doesn't
 include them, so they are not in this order.
+
+### The newer proposed order: session 4, part 4
+
+*Session 4, part 4 (2026-10-17, [the plants session](plants-worldgen-ruins-2026-10-17.md)) lists ten
+steps, "roughly in the order things can land. Follow existing conventions; no one-off exceptions in
+core systems." It is a proposed order, not a schedule: none has a stage or a date, none is built, and
+each waits for the skeleton's gate as the full version does. It is the newer, so it supersedes part
+3's list above where they overlap. The session's scope warning stands: "the game has no structures and
+no terrain generation yet. Lore here is deliberately deeper than what should be built now."*
+1. **The crop data model.** Replace carrot and fungus with a data-driven crop definition: family,
+   water need, light source, growth speed, yield, output type, per-axis tolerances, planter socket
+   kind, propagule type and stage behaviour. Root-tuber and vat fungus go in first, as direct
+   replacements, then the rest ([Farming](prd/farming.md#the-crop-data-model-the-first-step-of-the-proposed-order)).
+2. **Planter socket kinds.** Small, standard and deep sockets in the typed-socket system, appended to
+   existing frames and never inserted ([Devices & mods](prd/devices-and-mods.md#socket-types-to-start)).
+3. **Shared growth stages.** Seedling, growing, mature, to seed, with per-crop flags: keeps growing
+   (sandroot), storm-burst fruiting, cyclic water output (dewleaf, stormcup), regrow from the stump
+   (coalcane), stall until rain (rainseed).
+4. **Propagules and clean against wild.** One pick-up-and-plant mechanic with a propagule item per crop;
+   a clean or wild flag that affects yield and output quality; going to seed flips clean toward wild.
+5. **New devices.** The burner (consumes coalcane, produces power) and the humidifier, and the lamp as
+   the office fern's light through the existing lamp-on-crate snap ([Power](prd/power.md#fuel-crops-and-the-burner-proposed-not-built),
+   [Devices & mods](prd/devices-and-mods.md#the-burner-and-the-humidifier-proposed-not-built)).
+6. **The terrain and history generation phase.** Fixed landmarks placed per seed, then the colonial
+   skeleton, then the later layers, as invisible paths. It starts with the colonial skeleton and the
+   second-age roads only ([World & terrain](prd/world-and-terrain.md#world-generation-by-layers-agreed-session-4-part-4-not-built)).
+7. **The repeatable structure kit.** It begins with the second age, the most common: wayshrine,
+   watchtower and house ruin, each with buried, partly exposed and exposed states and an era loot
+   table. Then the other eras' kits ([Salvage & ruins](prd/salvage-and-ruins.md#structures-by-era-and-the-loot-model-agreed-session-4-part-4-not-built)).
+8. **Loot relocation.** Move loot out of open sand into the structures' loot tables, keeping a
+   low-value drift channel carried by storm wind.
+9. **Wild plant placement.** The feral layer places wild crops by habitat rules: roads, water lines,
+   ruins, hollows and rifts.
+10. **Spawn by kit.** Surveyor in deep desert, salvager near wrecks, homesteader on a road.
+
+*Deferred, in the session's own words:* feral plants as a weather sign ("needs the queryable storm
+curve from the sleep work"), storm-only mechanics ([Wind & storms](prd/wind-and-storms.md#storm-only-mechanics-back-burner)),
+landmark interiors and heat shields.
+
+**Where it overlaps part 3's list.**
+
+| Part 4 | Part 3 | How they meet |
+|---|---|---|
+| Deferred: the weather sign | 1. Feral plants as a weather sign | Part 4 defers what part 3 put first. **Saltbush is the weather-sign plant**, so the sign is the roster's saltbush with its pose driven by `storm_at`. The dependency part 4 names, a queryable storm curve, is already met ([Wind & storms](prd/wind-and-storms.md#feral-plants-the-free-barometer-agreed-session-4-part-3-not-built)), so the deferral is an order choice and not a missing piece. |
+| 6. The history phase (second-age roads) and 9. Wild plant placement | 2. Feral plant lines along old roads | The same work, split: the roads come with step 6, and the saltbush lines that trace them with step 9. Part 3's "visual only first" is what the lines are until then. |
+| 6. Fixed landmarks per seed | 6. Sister and Mother Cistern as a fixed-coordinate landmark | Sister is one of the eight fixed landmarks (Halfrise is the other second-age anchor), placed per seed and not at fixed coordinates. |
+| 7. The second-age kit (wayshrine, watchtower, house ruin) | 6. Sister (a half-buried temple) | Sister is a landmark, not the kit, but its temple is the second age's biggest piece, so the kit's tables and its exposure states come first. |
+| 10. Spawn by kit | 5. Kit unlocks | Neighbours: the unlock and the place a kit starts. Part 4 spawns the three balanced kits only; the Varran and Daventry starts have no spawn yet. |
+| 2. Planter socket kinds | 3. The hoverboard as a superchassis | Different frames, one rule: new sockets are appended and never inserted (sockets save by list index). |
+| none | 3. The superchassis, 4. The dune sailboat, 7. Ending flags | No counterpart in part 4; they stand as they are. |
+
+Neither list holds the Console, sleep, the seed vaults, the second-age broadcasts or the endings.
+Part 3's list also says no Varran, Daventry or war content goes into normal play beyond radio noise,
+and part 4 adds none.

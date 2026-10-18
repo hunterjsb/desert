@@ -47,6 +47,7 @@ PRD; this PRD owns what flows through the battery slot.
 | **Solar** | Clear skies, daytime, toward the poles | Storms (some types keep a little), night | None, beyond the weather |
 | **Wind** | Storms, toward the stormy equator | Calm | It has to be planted to work, so you stay or leave it behind |
 | **Heavy generator** | Always: strong and steady | Out of fuel | It rides on caterpillar tracks, slows the camp, and burns fuel |
+| **Burner** (proposed, session 4, part 4) | Night and storm, when solar can't help: it runs on stored fuel | Out of fuel | Its fuel is coalcane, which needs water and a day's light to grow ([below](#fuel-crops-and-the-burner-proposed-not-built)) |
 
 **Solar comes in forms that trade portability for output:**
 - **Light:** placeable and picked back up. This is the starting source.
@@ -66,6 +67,41 @@ shield PRD), a turbine inside a wind shield feels no wind and makes nothing. It 
 stand outside, in the storm, and take the damage. The alternative is a shield that
 lets wind through, like the late-game temperature shield. That trade-off comes free from
 the felt-weather rule.
+
+## Fuel crops and the burner (proposed, not built)
+
+*[Session 4, part 4](../plants-worldgen-ruins-2026-10-17.md); implied equipment, direction only, with no
+number set. It is the fuel half of "Fuel grown from plants" above.*
+
+**Coalcane is the only renewable fuel crop** ([Farming](farming.md#each-crop-ancestor-engineering-drift-and-hooks-agreed)):
+"a night/storm counterpart to solar, burned in a **new burner device**." The stalk stores oils and
+resins, not sugar, and "trades water for power." Old petrified groves are "a big one-time fuel haul"
+and a sign of ancient water. The session lists the new equipment as a "burner/generator (for coalcane
+fuel)" and a humidifier, "both crate parts like the existing devices" ([Devices &
+mods](devices-and-mods.md#the-burner-and-the-humidifier-proposed-not-built)).
+
+Readings, not in the session:
+- **It makes "fuel grown from plants" concrete.** The cane grows on a day's light and the planter's
+  water, is cut, and is burned when the sun is not there. Rule 1 holds if the burner's output
+  is the stalk's energy and no more: the sun's share is stored in the stalk, and the water it took came
+  from the condenser's power or a canister. The session gives no energy per stalk, and no water per
+  stalk, so whether the loop pays (the condenser's draw against the burner's output) is a number to set,
+  and probe 1 is the check.
+- **The burner is a source with a store.** It reads no weather, so a storm and a night do not matter
+  to it, and it draws on stock, the way a battery does. Its fuel is carried or fed, and not wired.
+- **The heavy generator may be the same machine.** The table's "heavy generator" burns fuel and rides
+  on tracks, and the session's burner is a "crate part." They are read as two devices, a big tracked
+  one and a small fitted one, which the session does not say (open questions).
+- **The humidifier and the lamp are loads.** The humidifier raises humidity for the storm family and
+  the lamp lights the office fern. Both draw from the pool like any device ("Instruments, farming gear
+  and tools draw small amounts"). Neither draw is set.
+- **Quietbloom is a load that gives nothing back.** It "grows by eating your power," draining a
+  battery or a radio slowly. Rule 1 needs the drained energy to go somewhere: into the plant's growth, as
+  stored value, and not vanish. How it is metered, and whether it takes from any device nearby or from
+  one it grows toward, is not said.
+- **A wind surge is a back-burner idea.** "Turbines spike; charge batteries hard" in a storm
+  ([Wind & storms](wind-and-storms.md#storm-only-mechanics-back-burner)). The turbine here makes up
+  to 200 W in a gale, so a surge would be a term above that.
 
 ## What draws power
 
@@ -282,3 +318,17 @@ standing.
   batteries and power like a crate." Not said: what a screen, a radar or another computer mod
   draws, whether a Console on a dark pool goes blind, and what its weight adds to the tray's draw
   at 2 W a kilogram.
+
+Session 4, part 4 (2026-10-17) adds the following. Each is quoted old and new, and the PRD follows the
+session as direction.
+
+- **The burner against the heavy generator.** Here (Sources): the "heavy generator" "rides on
+  caterpillar tracks, slows the camp, and burns fuel," with "fuel grown from plants" among its fuels.
+  The session: a "burner/generator (for coalcane fuel)" as a "crate part." *Follows the session for the
+  burner.* Not said whether the heavy generator also takes coalcane, or whether they are one device.
+- **A plant that drains power against "energy is conserved."** Here: "Every battery has a charge, every
+  device a draw... The numbers always add up." The session: quietbloom "grows by eating your power" and
+  "slowly drains" radios and batteries. Not said where the energy goes, or what the plant draws from.
+- **What coalcane is worth.** The session says "trades water for power" and gives no figures. Not said
+  how much water, light and time a stalk takes, or how much power it gives, so whether burning it pays
+  is unset.

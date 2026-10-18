@@ -305,7 +305,8 @@ inside. The crate is the lore's own example of the box and its label.
 them, and inventing an issuer would be making canon. The next candidates were left out to keep
 this to a few:
 
-- the planter, as ag-tech issue;
+- the planter, as ag-tech issue (session 4, part 4 names the maker: Frontier Ag, one of the main
+  remote colonial contractors, with its grow crates and its crops);
 - the solar panels, from a big commodity OEM;
 - Standard Freight's plain, severe stamp, for when hull wreckage or war-era materiel is in the
   game.
@@ -319,8 +320,9 @@ most from row to row:
   crisp, routed by the system's official code. The X form is old and official
   ([names](lore-research.md#hierarchy-and-the-name-decay-agreed-session-3)).
 - **Surface:** "ZN" daubed back on by hand in rust red: a copy from memory, on the way from XN
-  to Zan, with the X said and written as a Z. It's late, a Dark Age or Second Age form (a
-  reading: hands that no longer read the code, where the First Kingdoms kept their archives),
+  to Zan, with the X said and written as a Z. It's late, a second-age form, from the scattering at its head (a
+  reading: hands that no longer read the code, where the first age kept its archives; [the
+  lore](lore-research.md#era-names-again-agreed-session-4-part-4) says what became of the Dark Age),
   and session 3 dates ruins by which form appears. **Decided (session 4, part 2, 2026-10-17):
   the Z stays.** "The hand-daubed 'ZN' consignment mark is intentional drift from XN."
 - **Yours:** a plain batch number, "LOT 3127", for a recent, cheap make. Session 4, part 2 says
@@ -334,7 +336,7 @@ Wear does the rest, from the same amount that wears the paint: ragged edges, pat
 away, scour on the windward side and sand on what faces up.
 
 **The strata.** Session 3 has three strata: corporate tech deepest, skimmer-era salvage in the
-middle and the forged goods of the First Kingdoms to the Second Age near the surface. The game
+middle and the forged goods of the first age to the second age near the surface. The game
 has two layers so far. The deep
 one carries the corporate and colonial marks (the contractor, the seal, Tilg) and also the
 crew's patch, since boards are found deep. Once a middle layer exists, the patch belongs
@@ -387,9 +389,9 @@ flat ([Bubble shield & camp](prd/bubble-shield-and-camp.md#the-carried-light-shi
 *Session 4, part 2 ([lore session](lore-session-2026-10-17-part-2.md)); named, not drawn, and
 none of it is in the atlas.* The atlas stops at the colonial, surface and new rows. The session
 names what the ages after the collapse would carry, to be drawn when there is a find to carry it:
-- **First Kingdoms** gear carries heraldry and guild stamps (houses such as Okafor, Kessel,
+- **First-age** gear carries heraldry and guild stamps (houses such as Okafor, Kessel,
   Arkwright and Vante; the guilds of the keepers).
-- **Second Age** gear carries religious symbols (the faith of Tu).
+- **Second-age** gear carries religious symbols (the faith of Tu).
 - **Homesteader** gear carries civilian brand marks, not Tilg's.
 - **Carvings and daubs** use the worn slang (Monward, Hanmen, Zanborn, the tu- prefix) and the
   worn names (Zan, Tu, Han, Mon, Aitch): [the names](lore-research.md#slang-and-name-erosion-agreed-session-4-part-2).

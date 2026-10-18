@@ -281,6 +281,14 @@ Console two late uses ([the vision](../vision.md#landmarks-and-endings)):
   As a part it is a computer mod (a kind of its own, in the socket types below), found in a
   landmark and never crafted.
 
+**A survey mod (session 4, part 4; proposed, not built).** "A basic survey mod on the console picks up
+buried metal, so colonial pipelines show as lines on screen" ([World &
+terrain](world-and-terrain.md#readability)). It is a computer mod, found and never crafted. It sits
+oddly with the Console session's line that "ground and ruin detection is separate equipment (looking
+down, not up), likely a different camp setup" ([Wind & storms](wind-and-storms.md#instruments-and-the-console-screen-proposed)).
+The newest session wins, so a basic survey mod is a Console mod, and the heavier detection (the
+Archaeologist's ground-penetrating radar) is read as staying separate; the session does not say.
+
 ## The patrol board as a superchassis (proposed, not built)
 
 *Session 4, part 3 ([lore session](../lore-session-2026-10-17-part-3.md)). Direction, not a spec:
@@ -464,7 +472,7 @@ The notes' example is the crate:
 |---|---|
 | **Colonial** | Best power efficiency per kilogram |
 | **Skimmer era** | Light, cheap and fragile, because Zan wasn't a desert yet and gear wasn't built for storms |
-| **First Kingdoms** | Practical to drag without a hover tray, still mountable, somewhat worse power efficiency per kilogram |
+| **First age** | Practical to drag without a hover tray, still mountable, somewhat worse power efficiency per kilogram |
 
 Where this meets what's built, as a reading and not in the notes. A tray floats everything on
 it at about 2 W per kilogram (91 W for the kit's 45.5 kg, 112 W for a fully fitted 56 kg), and a
@@ -475,12 +483,68 @@ bottom mount keeping its tray socket. "Practical to drag without a hover tray" r
 frame that drags easier on the sand than the others, which nothing here sets per frame yet.
 
 The notes name the third row for the societies after the collapse. Session 4, part 2 ties
-reworked, low-power gear to the First Kingdoms ("every repair cannibalises something else"), so
-the row is theirs. What a Dark Age or Second Age crate is like is not said.
+reworked, low-power gear to the first age (then called the First Kingdoms: "every repair
+cannibalises something else"), so the row is theirs. What a second-age crate is like is not said,
+and the session's maker table below is the nearest it comes (the Sisters' hand-built crates).
 
-Found mods ride along. First Kingdoms finds can carry mods such as tuning for low-power setups,
+Found mods ride along. First-age finds can carry mods such as tuning for low-power setups,
 and a mod fits a mount and adds to the device, as the extra-hook mod does (below). Today only the
 planter has a mod mount.
+
+## Crate makers (Agreed direction, session 4, part 4; not built)
+
+*[Session 4, part 4](../plants-worldgen-ruins-2026-10-17.md), "Agreed direction." Nothing is built, and
+today there is one crate frame.* "Multiple manufacturers make crates with different slot mixes. A
+crate's maker tells you its era and its job; the slot mix is the variety axis." This sits beside
+frames by era above: the era sets a frame's trade-offs, and the maker sets what it is for.
+
+| Maker | Era | Character |
+|---|---|---|
+| Tilg & Standard | Colonial | Standard logistics all-rounder, most common |
+| Halloran Isotope | Colonial / skimmer | Industrial, rugged, heat-tolerant, few planter slots |
+| Frontier Ag | Colonial | Purpose-built grow crates with deep beds and integrated misters; rare and fragile |
+| First / second age (hand-built) | First, second | Crude, heavy, odd slot layouts; the Sisters' versions built for water storage |
+
+Readings, not in the session:
+- **A maker's crate is a frame, and a frame is data.** A frame is a list of sockets (rule 4), so a
+  slot mix is a list. Another maker is another entry in the catalog, as an era's crate is. Sockets
+  save by list index, which only matters for the frames that exist: a new maker's frame is new, and
+  the rule is that nothing is inserted into an old one.
+- **A maker spans eras, and an era spans makers.** Halloran's "rugged" crate is colonial and skimmer,
+  where the skimmer era's own crate is "light, cheap and fragile" (frames by era). Read as a
+  crew's improvised crates against Halloran's industrial ones, both in the skimmer era.
+- **Frontier Ag's misters are the humidifier built in.** The grow crate with "integrated misters"
+  holds what the humidifier below is a separate part for, which puts a humidifier in the rare crate
+  and makes the late-game one a part you fit.
+- **"Crate" is the planter's word here.** A grow crate with deep beds is a planter variant: the
+  built planter is a frame of its own, with plant slots, and a crate has none
+  ([Farming](farming.md#planter-sizes-as-socket-kinds-agreed)).
+- **"Tilg & Standard" and the colonial row.** The merger was no later than the war
+  ([lore research](../lore-research.md#17-open-after-the-endings-session-and-session-4-part-3)), after
+  the colonial era, and the colonial crate's stencil is the acronym TILG (art direction). The session
+  writes the maker as the company is known; read as the same company. One word to change if
+  colonial crates should read Tilg.
+
+## The burner and the humidifier (proposed, not built)
+
+*[Session 4, part 4](../plants-worldgen-ruins-2026-10-17.md): "New equipment implied: burner/generator
+(for coalcane fuel), humidifier. Both are crate parts like the existing devices." Implied, not
+specified; direction only.*
+
+- **The burner** consumes coalcane and produces power ([Power](power.md#fuel-crops-and-the-burner-proposed-not-built)).
+- **The humidifier** raises humidity for storm crops, a managed input in the late game, with the lamp
+  for light ([Farming](farming.md#progression-agreed)). Its water and power draw are not said.
+- **The lamp** that grows the office fern is the existing lamp-on-crate snap.
+
+Readings, not in the session:
+- **"Crate parts like the existing devices" has two readings.** A part fits a socket (a battery, a
+  panel, a hook), and a device is a frame with sockets of its own, and the existing devices include
+  both: the shield and the radio seat on a top mount while the condenser and the charger stand on a
+  deck mount. Which the burner and humidifier are is not said. They would need a fuel input (a stalk
+  of coalcane is neither a battery nor a canister) and a water input, so a frame with its own sockets
+  is the likelier. If so, each gets a row in "what each frame has" below.
+- **The socket kind is open.** A top mount, a deck mount and the planter's mod mount are the
+  candidates for the humidifier, and a new fuel socket for the burner. The session names none.
 
 ## Socket types to start
 
@@ -492,6 +556,7 @@ planter has a mod mount.
 | Top mount | Solar panels, instruments such as the radio, lamps, the shield generator | Power and others |
 | Rack | The hoverboard, seated along a crate's side, riding and charging with it (Hunter, 2026-10-16) | Movement |
 | Plant slot (small, large) | Seedlings | Farming |
+| Plant slot (small pot, standard planter, deep bed) | Crops by the size they declare. Proposed (session 4, part 4); new kinds are appended to a frame, never inserted | Farming |
 | Water socket | A canister or a hose's end, one at a time (2026-10-17) | Survival, Farming |
 | Deck mount | One device standing on a chassis piece: a crate, a condenser, a shield, a charger (2026-10-17) | Devices & mods |
 | Computer-mod port | Computer mods, on a Console. Proposed (2026-10-17); a kind of its own, unless it is the planter's mod mount (open questions) | Devices & mods |
@@ -626,7 +691,7 @@ a water socket of its own on top, so a canister or another hose goes on there to
   Open in the notes (Hunter, 2026-10-17). Here: "Pieces join edge to edge by their rings," "A
   piece... is a find," and "Trays lift where they are" (which replaced "every piece needs its
   own hover tray" the same day). Not said: whether a piece's era matters to the join at all,
-  and what a First Kingdoms piece, "practical to drag without a hover tray," does in a deck
+  and what a first-age piece, "practical to drag without a hover tray," does in a deck
   that floats on its trays' combined lift. If adapters exist, the rules here
   would make one a typed part that is found, not crafted (rule 6, and out of scope below).
   Session 4, part 2 lists the question again among its own open ones, still unanswered. It also
@@ -700,3 +765,23 @@ what folding it in raised. Each is quoted on both sides and left standing.
   socket after them, so older saves would load the wrong sockets. Not said: how the shave keeps
   saves, by leaving the entries unused or by a migration. A Console cut from the crate's list,
   with "only one or two rope hooks," meets the same thing.
+
+Session 4, part 4 (2026-10-17) adds the following. Each is quoted old and new. The newest session wins
+in the living docs, so this PRD follows it as direction and says so on each line.
+
+- **Three planter kinds against two plant slots.** Here: the planter has "3 small and 1 large plant
+  slot" and a survival kit "2 small and 1 large," and the socket table has "Plant slot (small,
+  large)." The session: small pot, standard planter and deep bed as socket kinds, "no new collision
+  logic." *Follows the session.* Not said which built slot is which kind. Sockets save by list index,
+  so the built slots keep their places and the new kinds are appended
+  ([Farming](farming.md#open-questions)).
+- **Maker, era and the one crate frame.** Here: one crate frame, and "frames by era" as the only
+  second axis. The session adds the maker as a third, with four makers. *Follows the session.* Not
+  said which maker's crate the kit's is, or whether "Tilg & Standard" in the colonial row is the
+  colonial crate (stencilled TILG).
+- **The burner against the heavy generator.** Here ([Power](power.md#sources)): a "heavy generator"
+  that "rides on caterpillar tracks, slows the camp, and burns fuel." The session: a burner or
+  generator that is a "crate part." Not said whether they are one device or two.
+- **A survey mod on the Console against separate detection.** Quoted above. *Follows the session.*
+- **Pieces of different eras and makers in one deck.** The older question, open in the notes, grows
+  with the makers: a Halloran piece and a hand-built first-age piece in one deck. Still unanswered.
