@@ -2,9 +2,10 @@ extends Probe
 ## Geology probe 2: what a vent is doing is the time's alone. The live vent
 ## reads the same at a moment however it's asked, whoever asked before;
 ## over thirty days it seeps and now and then bursts, darker with ash, each
-## burst dying away; the tapped vents and the capped summit are quiet.
+## burst dying away; a gas pocket blows out once and is spent; the tapped
+## vents and the capped summit are quiet.
 
-## Thirty days: a burst's slot is a day and a half.
+## Thirty days: a burst's slot is a day.
 const DAYS := 30.0
 
 
@@ -51,8 +52,17 @@ func run() -> void:
 	print("%d bursts in %.0f days, the longest %.0f s over; never below x%.2f; ash %.2f seeping, %.2f at a peak"
 		% [bursts, DAYS, longest, least, seeping_ash, peak_ash])
 	check(least > 0.75, "it always seeps (x%.2f at its least)" % least)
-	check(bursts >= 3 and longest > 0.0 and longest < 1800.0, "it bursts now and then, and each dies away (%d, %.0f s)" % [bursts, longest])
+	check(bursts >= 3 and longest > 0.0 and longest < 2.0 * Geology.BURST_SLOT,
+		"it bursts now and then, and each dies away (%d, %.0f s)" % [bursts, longest])
 	check(seeping_ash < 0.3 and peak_ash > 0.6, "a burst is darker with ash (%.2f, %.2f)" % [seeping_ash, peak_ash])
+	var pocket: Dictionary = geology.pockets(0.0, span)[0]
+	var again: Dictionary = History.new(1234, tuning).geology.pockets(0.0, span)[0]
+	var before := geology.venting(pocket, pocket.start - 1.0).x
+	var blowing := geology.venting(pocket, pocket.start + 10.0).x
+	var after := geology.venting(pocket, pocket.start + Geology.POCKET_LIFE).x
+	check(pocket.p == again.p and pocket.start == again.start, "a gas pocket is the seed's alone")
+	check(before == 0.0 and blowing >= Geology.POCKET_SIZE.x * 0.9 and after < 0.01,
+		"a gas pocket blows out and is spent (%.1f, %.3f)" % [blowing, after])
 	var quiet := 0.0
 	for each in geology.vents:
 		if each.state != Geology.LIVE_VENT:
