@@ -130,6 +130,16 @@ terminals" by Hunter's call. The squatting oracles above are now the gods.
 | The Stoker | 1180–1240 | Halloran | The hot hours, 13:00–16:00 local | A countdown to the next eclipse, and the peak temperature in the next 5 minutes |
 | The Eye | 1720–1790 | The observatory, at the anti-Tu point | Night where the radio is | Your latitude and longitude, and the local time |
 
+  **Clear skies** (Hunter, 2026-10-18: a "'hold' transmission on the weather channel that plays during
+  clear weather with nothing to report," "a feel good you have nothing to worry about sound that only
+  plays under conditions when that is true"): while the station's reading has no storm on you and none
+  in its 20 minutes ahead (and, in a long report, none in its 40), the Walker holds, playing Hunter's
+  "Clear Skies" (`radio_clear_skies.ogg`) instead of report tones, its line still giving the forecast.
+  The moment a reading sees a storm, it breaks off through a burst of static for the report. **The
+  Stoker's song** (Hunter: "use that segment on the Stoker mind's frequency"): its frequency carries
+  45 s of Hunter's `modsynthpatch.wav`, from 11:15 to 12:00 (`radio_stoker.ogg`), in place of tones,
+  its pitch sliding with the storm's warp. Both come through like any signal: as loud as it's clean,
+  silent while it's cut, and never started over by a dropout.
   Outside its window each god talks noise in its own voice: roll calls, survey telemetry, the
   terraforming hymn, prices for goods nobody sells, empty manifests, boiler alarms, and from the Eye
   silence. Everything said in a window is read from the real systems.
@@ -148,7 +158,7 @@ terminals" by Hunter's call. The squatting oracles above are now the gods.
 - **Code:** `game/radio/gods.gd`, `dial.gd`, `interference.gd` and `transmissions.gd`, with `radio.gd`.
   Old saves' channels move the dial to that carrier.
 - **Probes:** radio 6 (each god has its bearing), 7 (storms garble the gods), 8 (the dial finds each
-  god), 9 (useful only in its window) and 10 (the volume knob). Probes 1, 2, 4 and 5 tune by the dial.
+  god), 9 (useful only in its window), 10 (the volume knob) and 11 (clear skies, and the Stoker's song). Probes 1, 2, 4 and 5 tune by the dial.
 - **Not yet:** a god's own voice beyond tones, frequencies as finds, antennas, and the far end's
   signal.
 
