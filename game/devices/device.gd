@@ -74,6 +74,15 @@ var _trays: Array = []
 var _seats: Array[Socket] = []
 ## How it froze before it was seated on another device.
 var _unseated_mode := RigidBody3D.FREEZE_MODE_STATIC
+## Its sockets and its shapes' biggest faces summed, kept until its children
+## change: a deck has hundreds of children, and both are asked for every tick.
+var _sockets: Array[Socket] = []
+var _sockets_known := false
+var _face := NAN
+## All its shapes' bounds together, in its own frame, kept until its children
+## change or move (a recompute): what the world holds clear of the sand.
+var _bounds := AABB()
+var _bounds_known := false
 
 
 func _ready() -> void:
@@ -84,18 +93,23 @@ func _ready() -> void:
 
 ## Fitted parts wait off the tree, so nothing else would free them.
 func _notification(what: int) -> void:
-	if what == NOTIFICATION_PREDELETE:
+	if what == NOTIFICATION_CHILD_ORDER_CHANGED:
+		_sockets_known = false
+		_shapes_changed()
+	elif what == NOTIFICATION_PREDELETE:
 		for socket in sockets():
 			if socket.part != null:
 				socket.part.free()
 
 
 func sockets() -> Array[Socket]:
-	var found: Array[Socket] = []
-	for child in get_children():
-		if child is Socket:
-			found.append(child)
-	return found
+	if not _sockets_known:
+		_sockets.clear()
+		for child in get_children():
+			if child is Socket:
+				_sockets.append(child)
+		_sockets_known = true
+	return _sockets.duplicate()
 
 
 ## Use on it while you look at it: what it does when worked, like a shield
@@ -216,7 +230,10 @@ func production_w(t := NAN) -> float:
 	if world == null or wrecked():
 		return 0.0
 	var now := stats()
-	var watts: float = now["solar_w"] * world.weather.felt_light(global_position + Vector3.UP * 0.5, t)
+	# The light is read only where there's a panel to take it.
+	var watts := 0.0
+	if now["solar_w"] != 0.0:
+		watts = now["solar_w"] * world.weather.felt_light(global_position + Vector3.UP * 0.5, t)
 	# A turbine works planted: resting on the sand, not floating or being carried.
 	if now["turbine_w"] > 0.0 and not now["can_float"] and linear_velocity.length() < 0.3:
 		turbine_wind = world.weather.felt_wind(global_position, t)
@@ -459,15 +476,19 @@ func take(socket: Socket) -> Part:
 
 ## Everything the device can do, from the frame and what's fitted.
 func stats() -> Dictionary:
-	# The wind grabs the frame and everything fitted, by their size; a frame
-	# that lies flat says what it shows the wind.
-	var face: float = frame_stats.get("face_m2", Weather.biggest_face(self))
-	var catch := face * world.tuning.wind_catch_per_m2 if world != null else 0.0
-	var total := {"mass": mass, "catch": catch, "capacity_wh": 0.0, "hooks": 0,
+	var total := {"mass": mass, "catch": wind_catch(), "capacity_wh": 0.0, "hooks": 0,
 		"lift_kg": 0.0, "solar_w": 0.0, "light_w": 0.0, "plants": 0, "turbine_w": 0.0}
-	for source: Dictionary in [frame_stats] + parts().map(func(p: Part) -> Dictionary: return p.stats):
-		for key: String in source:
-			total[key] = total.get(key, 0) + source[key]
+	# The frame's, then each part's in its socket's order, as parts() lists them.
+	_sum_into(total, frame_stats)
+	var charge := 0.0
+	var cells := 0
+	for socket in sockets():
+		var part := socket.part
+		if part != null:
+			_sum_into(total, part.stats)
+		if socket.kind == &"battery" and part is Battery:
+			charge += (part as Battery).charge_wh
+			cells += 1
 	total["can_float"] = total["lift_kg"] >= mass
 	total["resting"] = resting
 	total["hovering"] = total["can_float"] and powered and lift_share > 0.0
@@ -475,14 +496,19 @@ func stats() -> Dictionary:
 	# lifting it again would take. Seated, its own tray holds nothing up.
 	total["hover_w"] = (carried_kg if powered else mass) * world.tuning.hover_watts_per_kg \
 		if total["can_float"] and not resting and world != null and host() == null else 0.0
-	var cells := batteries()
-	if not cells.is_empty():
-		total["charge_wh"] = cells.reduce(func(sum: float, c: Battery) -> float: return sum + c.charge_wh, 0.0)
+	if cells > 0:
+		total["charge_wh"] = charge
 	total["durability"] = durability
 	return total
 
 
+static func _sum_into(total: Dictionary, source: Dictionary) -> void:
+	for key: String in source:
+		total[key] = total.get(key, 0) + source[key]
+
+
 func _recompute() -> void:
+	_shapes_changed()
 	var weight := 0.0
 	var moment := Vector3.ZERO
 	for frame: Array in _frame_masses():
@@ -519,6 +545,40 @@ func _recompute() -> void:
 		sleeping = false
 	set_meta(&"wind_catch", now["catch"])
 	parts_changed.emit()
+
+
+## How hard the wind grabs it: the frame and everything fitted, by their
+## size; a frame that lies flat says what it shows the wind.
+func wind_catch() -> float:
+	var face: float = frame_stats.get("face_m2", NAN)
+	if is_nan(face):
+		if is_nan(_face):
+			_face = Weather.biggest_face(self)
+		face = _face
+	return face * world.tuning.wind_catch_per_m2 if world != null else 0.0
+
+
+## Its shapes came, went or moved: what was worked out from them goes.
+func _shapes_changed() -> void:
+	_face = NAN
+	_bounds_known = false
+
+
+## All its shapes' bounds together, in its own frame.
+func shape_bounds() -> AABB:
+	if not _bounds_known:
+		var first := true
+		for child in get_children():
+			var shape := child as CollisionShape3D
+			if shape == null or shape.shape == null:
+				continue
+			var box := shape.transform * Catalog.bounds(shape.shape)
+			_bounds = box if first else _bounds.merge(box)
+			first = false
+		if first:
+			_bounds = AABB()
+		_bounds_known = true
+	return _bounds
 
 
 ## Its frame's weight and where it sits, in its own frame, as [kg, position]s.

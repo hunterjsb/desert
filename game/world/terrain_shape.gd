@@ -46,6 +46,10 @@ var ruins: RuinSites
 ## answers for every site on the ground.
 var history: History
 var sites: Sites
+## Lattice points the main thread has read, by packed i and j; emptied
+## when it holds HELD_MAX, a few chunks' worth.
+const HELD_MAX := 16384
+var _held := {}
 
 
 func _init(run_seed: int, tuning: Tuning) -> void:
@@ -88,6 +92,52 @@ func height_at(x: float, z: float) -> float:
 		return sample(i, j, ruin)
 	return across(fx, fz, sample(i + 1.0, j, ruin), sample(i, j + 1.0, ruin),
 		sample(i, j, ruin) if fx + fz <= 1.0 else sample(i + 1.0, j + 1.0, ruin))
+
+
+## height_at for the main thread, the same numbers from held lattice points:
+## what floats or rests in the camp reads the same few points tick after tick.
+func held_height_at(x: float, z: float) -> float:
+	if ruins.covering(x, z) != null:
+		return height_at(x, z)
+	var i := floorf(x)
+	var j := floorf(z)
+	var fx := x - i
+	var fz := z - j
+	if fx == 0.0 and fz == 0.0:
+		return held(i, j)
+	return across(fx, fz, held(i + 1.0, j), held(i, j + 1.0),
+		held(i, j) if fx + fz <= 1.0 else held(i + 1.0, j + 1.0))
+
+
+## The highest the ground rises anywhere over a world rectangle: between
+## lattice points it's their triangles, never above the highest of them. INF
+## where a ruin might stand, since its ground isn't the dunes'.
+func highest_in(x0: float, z0: float, x1: float, z1: float) -> float:
+	# Narrower than a ruin's ground, it can only reach that by a corner.
+	if not (x1 - x0 <= RuinSites.MARGIN and z1 - z0 <= RuinSites.MARGIN):
+		return INF
+	# Asked at full precision, as height_at asks: a Vector2 would round them.
+	if ruins.covering(x0, z0) != null or ruins.covering(x1, z0) != null \
+			or ruins.covering(x0, z1) != null or ruins.covering(x1, z1) != null:
+		return INF
+	var top := -INF
+	for j in range(floori(z0), floori(z1) + 2):
+		for i in range(floori(x0), floori(x1) + 2):
+			top = maxf(top, held(i, j))
+	return top
+
+
+## The bare dunes at a lattice point, held once read. Main thread only:
+## the chunk workers read the shape too, and nothing here is locked.
+func held(i: float, j: float) -> float:
+	var key := (int(i) << 32) ^ (int(j) & 0xffffffff)
+	var h: Variant = _held.get(key)
+	if h == null:
+		if _held.size() >= HELD_MAX:
+			_held.clear()
+		h = sample(i, j)
+		_held[key] = h
+	return h
 
 
 ## Between lattice points: the triangle a point falls in, split from (i+1, j)
