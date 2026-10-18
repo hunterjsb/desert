@@ -9,7 +9,11 @@ extends Device
 ## up. A god's signal comes in by how far off it is, its frequency and the
 ## hour, and the storm between you and it garbles, slides and cuts it. Static
 ## comes in with a front's outflow, before the wall, and inside a bubble too:
-## it's the sand charging up, not the storm's sound. Its volume knob, the
+## it's the sand charging up, not the storm's sound. With nothing to report,
+## the weather station holds: its clear-skies song plays, and it breaks off
+## for a report the moment there's a storm on you or in sight. The Stoker's
+## frequency carries its furnace song. Both come through the weather between
+## like any signal, fading, sliding and dropping out. Its volume knob, the
 ## wheel with alt, turns all of it down, to silence if you like, and it plays
 ## on. It draws a little while it's on, from its battery or the pool it sits
 ## in, and plays from where it is.
@@ -88,6 +92,8 @@ var _since_signal := INF
 ## playing a moment after it's told, so it keeps its own word on what it plays.
 var _on_air: AudioStream
 var _hissing := false
+## How loud what's on air comes through, 0 to 1, before the volume knob.
+var _level := 1.0
 var _was := OFF
 
 
@@ -98,7 +104,8 @@ func _init() -> void:
 
 func _ready() -> void:
 	super()
-	for loop: AudioStreamOggVorbis in [Sounds.RADIO_DAY, Sounds.RADIO_NIGHT, Sounds.RADIO_STATIC]:
+	for loop: AudioStreamOggVorbis in [Sounds.RADIO_DAY, Sounds.RADIO_NIGHT, Sounds.RADIO_STATIC,
+			Sounds.RADIO_CLEAR_SKIES, Sounds.RADIO_STOKER]:
 		loop.loop = true
 	music = _voice()
 	hiss = _voice()
@@ -306,13 +313,12 @@ func _listen(delta: float) -> void:
 		_was = now
 	var dial := "%d kHz · " % roundi(frequency)
 	var under := NOTHING
+	var song: AudioStream = null
+	_level = 1.0
 	if now == MUSIC:
 		said = ""
 		under = lerpf(NOTHING, 0.0, Dial.pull(frequency - Dial.MUSIC_KHZ, _tuning.dial_width_khz))
-		_play_music(t)
-	elif _on_air != null:
-		music.stop()
-		_on_air = null
+		song = Sounds.RADIO_DAY if world.weather.day.is_day(t, world.moon.longitude) else Sounds.RADIO_NIGHT
 	reception = {}
 	match now:
 		WEATHER, GOD:
@@ -328,7 +334,14 @@ func _listen(delta: float) -> void:
 			else:
 				said = dial + reception.text
 			under = NOTHING if reception.cut else lerpf(NOTHING, CARRIER, reception.clean)
-			if not reception.cut and reception.clean > 0.0:
+			# A song on the air comes and goes with the signal, never restarting.
+			if now == WEATHER and reception.calm:
+				song = Sounds.RADIO_CLEAR_SKIES
+			elif id == &"stoker":
+				song = Sounds.RADIO_STOKER
+				music.pitch_scale = 1.0 + 0.04 * reception.warp / maxf(_tuning.storm_warp_khz, 0.01)
+			_level = 0.0 if reception.cut else reception.clean
+			if song == null and not reception.cut and reception.clean > 0.0:
 				_signal.pitch_scale = (0.6 + Gods.ids().find(id) * 0.12) \
 					* (1.0 + 0.08 * reception.storm * sin(t * 3.1))
 				_every(delta, TONES_EVERY, Sounds.RADIO_TONES)
@@ -345,6 +358,16 @@ func _listen(delta: float) -> void:
 				_every(delta, lerpf(PING_NEAR, PING_FAR, clampf(far / FAINT, 0.0, 1.0)), Sounds.RADIO_PING)
 		STATIC:
 			said = dial + "static"
+	if song != null:
+		_put_on(song, t)
+	elif _on_air != null:
+		# A report breaks into the hold music through a burst of static.
+		if _on_air == Sounds.RADIO_CLEAR_SKIES:
+			Sounds.play_at(self, Sounds.RADIO_TUNE, -6.0, HEARD)
+		music.stop()
+		_on_air = null
+	if song != Sounds.RADIO_STOKER:
+		music.pitch_scale = 1.0
 	hiss.volume_db = linear_to_db(maxf(noise, under) * volume + 0.0001)
 	_loudness()
 	if not _hissing:
@@ -372,20 +395,25 @@ func receive(id: StringName, x: float, z: float, t: float) -> Dictionary:
 	return {"id": id, "khz": khz, "metres": metres, "bearing": ground,
 		"way": Dial.way(world.shape.history, p, q, ground, say_point, _tuning), "storm": storm,
 		"warp": slid, "strength": strength, "clean": clean, "cut": Interference.cut(storm, t, id, _tuning),
-		"useful": words.useful, "words": words.text, "text": Interference.distort(words.text, clean, t, id)}
+		"useful": words.useful, "calm": words.get("calm", false), "words": words.text, "text": Interference.distort(words.text, clean, t, id)}
 
 
-## The music for the hour, from where the station is in it: it plays on
-## whether anyone listens. It changes over through a burst of static.
-func _play_music(t: float) -> void:
-	var now: AudioStream = Sounds.RADIO_DAY if world.weather.day.is_day(t, world.moon.longitude) else Sounds.RADIO_NIGHT
-	if _on_air == now:
+## A song on the air, from where its station is in it: it plays on whether
+## anyone listens. Another changes over through a burst of static.
+func _put_on(song: AudioStream, t: float) -> void:
+	if _on_air == song:
 		return
 	if _on_air != null:
 		Sounds.play_at(self, Sounds.RADIO_TUNE, -6.0, HEARD)
-	music.stream = now
-	music.play(fposmod(t, now.get_length()))
-	_on_air = now
+	music.stream = song
+	music.play(fposmod(t, song.get_length()))
+	_on_air = song
+
+
+## The song on the air now, if it plays: the music, the hold music or the
+## Stoker's; null with none.
+func on_air() -> AudioStream:
+	return _on_air if playing() else null
 
 
 func _off_air() -> void:
@@ -499,7 +527,7 @@ static func span(seconds: float) -> String:
 func _loudness() -> void:
 	var db := linear_to_db(volume + 0.0001)
 	if music != null:
-		music.volume_db = db
+		music.volume_db = linear_to_db(volume * _level + 0.0001)
 	if _signal != null:
 		_signal.volume_db = db
 

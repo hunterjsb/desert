@@ -14,6 +14,7 @@ const DUSK := Vector2(0.74, 0.80)
 const HOT := Vector2(0.54, 0.67)
 const MIDNIGHT := 0.03
 ## The Walker reports for this long after a storm starts or ends where it is, s.
+## With nothing to report it holds instead, its clear-skies song on the air.
 const STORM_NEWS := 40.0
 ## How far the gods look for a site they name, m: as far as history is laid.
 const LOOK_M := 5000.0
@@ -105,8 +106,15 @@ static func _walker(radio: Radio, gods: Gods, x: float, z: float, t: float, loca
 			else ("storm clears in %s" % Radio.span(long.change - t) if long.stormy
 				else "storm in %s" % Radio.span(long.change - t))
 		var feet_say := "storm at the walker" if now else "clear at the walker"
-		return {"text": "%s · long range: %s · %s" % [routine, ahead, feet_say], "useful": true}
-	return {"text": routine, "useful": true}
+		return {"text": "%s · long range: %s · %s" % [routine, ahead, feet_say], "useful": true,
+			"calm": _calm(radio.reading) and long.change == INF and not now}
+	return {"text": routine, "useful": true, "calm": _calm(radio.reading)}
+
+
+## Nothing to report: no storm on you, and none in sight for as far as the
+## station reads ahead.
+static func _calm(reading: Dictionary) -> bool:
+	return not reading.is_empty() and not reading.stormy and reading.change == INF
 
 
 static func _cistern(radio: Radio, x: float, z: float, t: float, local: float) -> String:

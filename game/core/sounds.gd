@@ -63,6 +63,10 @@ const RADIO_STATIC := preload("res://assets/audio/radio_static.ogg")
 const RADIO_TUNE := preload("res://assets/audio/radio_tune.ogg")
 const RADIO_PING := preload("res://assets/audio/radio_ping.ogg")
 const RADIO_TONES := preload("res://assets/audio/radio_tones.ogg")
+# The weather station's hold music while there's nothing to report, and the
+# Stoker's furnace song on its frequency.
+const RADIO_CLEAR_SKIES := preload("res://assets/audio/radio_clear_skies.ogg")
+const RADIO_STOKER := preload("res://assets/audio/radio_stoker.ogg")
 # Weather.
 const STORM := preload("res://assets/audio/storm.ogg")
 const WIND := preload("res://assets/audio/wind.ogg")
