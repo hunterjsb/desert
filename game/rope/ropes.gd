@@ -188,8 +188,7 @@ func _towing() -> void:
 		if body is Device:
 			for device in [body] + (body as Device).mounted():
 				planters += 1 if device is Planter else 0
-	if planters >= _tuning.deed_planters_towed:
-		Deeds.done(world, &"planters_towed")
+	Deeds.measure(world, &"planters_towed", planters)
 
 
 ## Whether a line ties to your waist with its other end off you: what slows you.

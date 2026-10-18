@@ -316,11 +316,8 @@ func _deeds(world: World) -> void:
 	_stormy = stormy
 	if not world.counts_deeds:
 		return
-	var t := _tuning
-	if y - _height(Vector2(player.global_position.x, player.global_position.z)) >= t.deed_board_height_m:
-		Deeds.done(world, &"board_height")
-	if _came >= t.deed_board_km * 1000.0:
-		Deeds.done(world, &"board_distance")
+	Deeds.measure(world, &"board_height", y - _height(Vector2(player.global_position.x, player.global_position.z)))
+	Deeds.measure(world, &"board_distance", _came)
 	var day := world.weather.day
 	if into and (not day.is_day(world.time, world.moon.longitude) or day.sun_shown(world.time) < 1.0):
 		Deeds.done(world, &"board_storm")

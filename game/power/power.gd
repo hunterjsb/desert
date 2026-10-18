@@ -81,8 +81,8 @@ func _tick(seconds: float, t: float) -> void:
 			wants[device] = device.demand_w(t) * seconds / 3600.0
 			cells.append_array(device.pooled())
 		generated_wh += made
-		if made * 3600.0 / seconds > _world.tuning.deed_power_w:
-			Deeds.done(_world, &"power")
+		if _world.counts_deeds:
+			Deeds.measure(_world, &"power", made * 3600.0 / seconds)
 		var running := _running(pool, wants, made, _fraction(cells))
 		var wanted := 0.0
 		for device: Device in running:

@@ -53,11 +53,11 @@ static var _current: Tuning
 ## Over the sand on a board, m: a pop off a big crest, past what pushing off
 ## one flies.
 @export var deed_board_height_m: float = 8.0
-## One ride without stepping off, km: more than a scout round camp.
-@export var deed_board_km: float = 5.0
+## One ride without stepping off, m: more than a scout round camp.
+@export var deed_board_m: float = 5000.0
 ## Full storm one shield holds off, minutes, over however many storms.
 @export var deed_storm_minutes: float = 60.0
-## Made at once in one system, W: more than the kit's sources give at their best.
+## Made at once in one system, W: more than the reference camp makes at its best.
 @export var deed_power_w: float = 300.0
 ## Kinds of crop grown, planters towed at once, and chassis pieces in one deck.
 @export var deed_crop_kinds: int = 3

@@ -1,11 +1,13 @@
 extends Node
-## Look-test helper: shoots the deeds grid with a few deeds done, over the
-## main menu's desert and over a run. Needs a GPU, not --headless; shoot.sh
+## Look-test helper: shoots the deeds' tree with a few done, one of them
+## early, and a card highlighted, over the main menu's desert and over a run. Needs a GPU, not --headless; shoot.sh
 ## runs it unseen:
 ##   scripts/unseen.sh --path . res://look/deeds/deeds.tscn -- <out dir>
 
 const MAIN := preload("res://game/main.tscn")
-const DONE: Array[StringName] = [&"board_height", &"shield_day", &"sail_waist", &"crops", &"port_morgan"]
+## Done, one of them early: Six Pack before All Mod Cons, so it's still dark.
+const DONE: Array[StringName] = [&"board_distance", &"board_height", &"shield_day", &"crop", &"sail_waist",
+	&"port_morgan", &"deck_pieces"]
 
 
 func _ready() -> void:
@@ -24,14 +26,16 @@ func _ready() -> void:
 	profile.reset()
 	for id in DONE:
 		profile.deed(id, {"dev": true})
+	profile.improve("shield_storm", 43.0)
+	for crop in ["root_tuber", "saltbush"]:
+		profile.toward("crops", crop)
 	Tuning.current().run_seed = 1234
 	var main: Main = MAIN.instantiate()
 	add_child(main)
 	main.showpiece.set_process_input(false)
 	await _idle(main.view)
 	await _ticks(120)
-	main.ui.open(DeedsGrid.menu(profile, main.ui.close_top))
-	await _ticks(10)
+	await _opened(main, &"crops")
 	_shoot(out.path_join("deeds_menu.png"))
 	main.ui.close_top()
 	main.new_game()
@@ -40,10 +44,19 @@ func _ready() -> void:
 	await _idle(main.world())
 	await _ticks(60)
 	main.ui.back()
-	main.ui.open(DeedsGrid.menu(profile, main.ui.close_top))
-	await _ticks(10)
+	await _opened(main, &"shield_storm")
 	_shoot(out.path_join("deeds_run.png"))
 	get_tree().quit()
+
+
+## The deeds open, a card highlighted, and their pictures drawn.
+func _opened(main: Main, highlighted: StringName) -> void:
+	main.ui.open(DeedsGrid.menu(get_node(^"/root/Profile"), main.ui.close_top))
+	await _ticks(10)
+	for card: Button in main.ui.top().find_children("*", "Button", true, false):
+		if card.get_meta(&"deed", &"") == highlighted:
+			card.grab_focus()
+	await _ticks(10)
 
 
 func _idle(world: World) -> void:

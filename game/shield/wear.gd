@@ -47,8 +47,7 @@ func _held(shield: ShieldGenerator, step: float, t: float) -> void:
 	if not shield.running():
 		return
 	shield.held_minutes += _world.weather.field_storm(shield.global_position, t) * step / 60.0
-	if shield.held_minutes >= _world.tuning.deed_storm_minutes:
-		Deeds.done(_world, &"shield_storm")
+	Deeds.measure(_world, &"shield_storm", shield.held_minutes)
 
 
 ## A whole day under a bubble, without once stepping out.
@@ -58,8 +57,7 @@ func _under(step: float) -> void:
 		sheltered = 0.0
 		return
 	sheltered += step
-	if sheltered >= _world.tuning.day_minutes * 60.0:
-		Deeds.done(_world, &"shield_day")
+	Deeds.measure(_world, &"shield_day", sheltered / 60.0)
 
 
 ## The share of a new device's life the weather at a place takes a second,

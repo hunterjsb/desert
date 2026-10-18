@@ -514,11 +514,9 @@ func mount(other: Device, socket: Socket) -> void:
 func _deeds() -> void:
 	if world == null or not world.counts_deeds:
 		return
-	if pieces().size() >= world.tuning.deed_deck_pieces:
-		Deeds.done(world, &"deck_pieces")
+	Deeds.measure(world, &"deck_pieces", pieces().size())
 	var on := mounted().map(func(d: Device) -> StringName: return d.get_meta(&"catalog", &""))
-	if Deeds.HOME.all(func(id: StringName) -> bool: return on.has(id)):
-		Deeds.done(world, &"deck_home")
+	Deeds.measure(world, &"deck_home", Deeds.HOME.filter(func(id: StringName) -> bool: return on.has(id)).size())
 
 
 func dismount(socket: Socket) -> Device:

@@ -18,8 +18,8 @@ for shot in menu run; do
 	file="$out/deeds_$shot.png"
 	[[ -f $file ]] || file="xc:gray"
 	case $shot in
-	menu) label="the deeds over the main menu, five done" ;;
-	run) label="the same over a run" ;;
+	menu) label="the deeds over the main menu: seven done, Six Pack early; Crop Rotation highlighted" ;;
+	run) label="over a run, Sandblasted highlighted" ;;
 	esac
 	args+=(-label "$label" "$file")
 done

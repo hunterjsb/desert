@@ -33,6 +33,8 @@ var _taught := {}
 ## several things, each counted toward it so far, across every run, by when.
 var _deeds := {}
 var _toward := {}
+## For a deed that's a number to reach, the best so far, across every run.
+var _best := {}
 var _origin := ""
 var _loaded := false
 
@@ -111,11 +113,32 @@ func toward(id: String, part: String) -> int:
 	return got.size()
 
 
+## How many different things have counted toward a deed.
+func toward_count(id: String) -> int:
+	_load()
+	return _toward.get(id, {}).size()
+
+
+## The best toward a deed that's a number to reach, or 0.
+func best(id: String) -> float:
+	_load()
+	return _best.get(id, 0.0)
+
+
+## A better best toward a deed, kept; a worse one is ignored.
+func improve(id: String, value: float) -> void:
+	_load()
+	if value > _best.get(id, 0.0):
+		_best[id] = value
+		_write()
+
+
 ## Dev only: every deed undone, and what had counted toward them.
 func forget_deeds() -> void:
 	_load()
 	_deeds.clear()
 	_toward.clear()
+	_best.clear()
 	_write()
 
 
@@ -154,6 +177,7 @@ func reset() -> void:
 	_taught.clear()
 	_deeds.clear()
 	_toward.clear()
+	_best.clear()
 	_origin = ""
 	_loaded = true
 	refused = ""
@@ -172,10 +196,11 @@ func _load() -> void:
 	_taught = data.get("taught", {})
 	_deeds = data.get("deeds", {})
 	_toward = data.get("toward", {})
+	_best = data.get("best", {})
 	_origin = str(data.get("origin", ""))
 
 
 func _write() -> void:
 	if refused == "":
 		SaveFile.write(path(), KIND, VERSION, {"unlocks": _unlocks, "found": _found, "taught": _taught,
-			"deeds": _deeds, "toward": _toward, "origin": _origin})
+			"deeds": _deeds, "toward": _toward, "best": _best, "origin": _origin})
