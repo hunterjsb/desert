@@ -118,8 +118,7 @@ even storms that last for days.
   your way follows it as hard as its hover grips sideways, 18 m/s², so a gentle turn
   holds and a sharp one skids: flat out, a hard turn comes round 90° in about 3 s, the
   board up to 48° ahead of your way, and you come out of it at 18 m/s from 20. Steering
-  back against your way, move forward while looking behind you, swings the board across
-  and skids you to a stop undug (2026-10-18; it was a flat brake); a jump hops.
+  back against your way, move forward while looking behind you, brakes too; a jump hops.
 - **After Hunter's first ride** (2026-10-16: "feels really nice. a little twitchy on the
   tilt"), five changes, built the same day:
   - **The tilt settles,** never twitches. Its pitch and roll over the sand settle as a
@@ -203,7 +202,7 @@ hum dropping under load with a gritty hiss growing, a whoosh on release, a small
 bites and a bigger one as it catches. Open: the catch threshold and what a wipeout costs.
 
 **Built (2026-10-18, `game/board/ride.gd`, `game/player/feel.gd`, `game/board/board.gd`,
-`probes/movement/`).** The rest of the ride is as it was; the flat brake is gone.
+`probes/movement/`).** The rest of the ride is as it was; move back's flat brake is gone.
 - **The dig** is how deep one edge is in the sand, 0 to 1, following move back over about
   0.2 s (a stick held partway digs partway). Dug, the field rides 0.3 m lower and the low
   edge comes down to 1 cm off the sand, never into it (1.7 cm at most in a dug carve,
@@ -218,7 +217,9 @@ bites and a bigger one as it catches. Open: the catch threshold and what a wipeo
   faster than its hover follows, its hover letting go, and the edge digs in as it comes
   across: from 13.4 m/s you stop in 0.78 s and 5.8 m on your line (14 cm off it), never
   reversed, whichever way you look; coasting goes 66 m. From rest it does nothing.
-  Steering back against your way swings it across too, undug: a skid to a stop.
+  Steering back against your way keeps the flat brake, 8 m/s²: looking back at the storm
+  flat out must never dig in or throw you, and a skid alone couldn't stop a board sliding
+  back down a slope to push it up again.
 - **Catching an edge.** The edge's load is dig times your way across the board; past
   6.5 m/s it catches. A full hockey stop loads it to about 0.38 of your speed, so it holds
   from 16 m/s and catches flat out (7.3 from 19.4 m/s); a cruise loads it to 4.0. Tapping

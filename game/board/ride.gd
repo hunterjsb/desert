@@ -251,12 +251,12 @@ func step(delta: float, dir: Vector2, hop: bool, digging := 0.0, kick := false, 
 				and dir != Vector2.ZERO
 		var pushing := 0.0
 		# Move back alone stops you: the board swings across your way and its
-		# edge digs in as it comes across, as in a hockey stop. Steering back
-		# against your way swings it across too, skidding you to a stop
-		# undug. Steering, move back digs into the carve.
+		# edge digs in as it comes across, as in a hockey stop. Steering, it
+		# digs into the carve. Steering back against your way only brakes, so
+		# looking back at speed never throws you.
 		var wants := digging
-		var stopping := (digging > 0.0 and dir == Vector2.ZERO) \
-			or (dir != Vector2.ZERO and speed > 1.0 and dir.dot(velocity / speed) < -0.5)
+		var stopping := digging > 0.0 and dir == Vector2.ZERO
+		var braking := dir != Vector2.ZERO and speed > 1.0 and dir.dot(velocity / speed) < -0.5
 		if stopping:
 			var off := 0.0
 			if speed > 0.05:
@@ -267,6 +267,8 @@ func step(delta: float, dir: Vector2, hop: bool, digging := 0.0, kick := false, 
 					off = (1.0 if off >= 0.0 else -1.0) * minf(PI * 0.5, absf(off) + STOP_TURN * contact * h)
 					ahead = way.rotated(off) * sense
 			wants *= sin(off) * sin(off)
+		elif braking:
+			velocity = velocity.move_toward(Vector2.ZERO, t.board_brake * contact * h)
 		elif dir != Vector2.ZERO:
 			var swing := (t.board_drift_turn if drifting else t.board_turn_rate) * h
 			ahead = ahead.rotated(clampf(ahead.angle_to(dir), -swing, swing))
@@ -283,7 +285,7 @@ func step(delta: float, dir: Vector2, hop: bool, digging := 0.0, kick := false, 
 		# going, and up a slope it keeps you going; at top speed your foot
 		# can't add anything.
 		_kick_wait = maxi(0, _kick_wait - 1)
-		if kick and _kick_wait == 0 and digging == 0.0 and not stopping and gap < KICK_REACH \
+		if kick and _kick_wait == 0 and digging == 0.0 and not stopping and not braking and gap < KICK_REACH \
 				and player.stamina >= t.board_kick_stamina:
 			player.stamina -= t.board_kick_stamina
 			_kick_wait = roundi(t.board_kick_every * STEP_HZ)

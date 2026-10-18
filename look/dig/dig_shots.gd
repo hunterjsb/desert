@@ -10,6 +10,8 @@ extends Node
 const WORLD_SCENE := preload("res://game/world/world.tscn")
 const SHOT := Vector2i(960, 540)
 const KEYS := ["move_forward", "move_back", "move_left", "move_right", "sprint", "jump", "crouch"]
+## The time of day it's shot at, a share of the day from midnight.
+const MORNING := 0.36
 
 var world: World
 var player: Player
@@ -29,8 +31,12 @@ func _ready() -> void:
 	tuning.eye_adapts = false
 	tuning.prevailing_speed = 0.0
 	tuning.prevailing_sway = 0.0
+	# Clear skies in a low morning sun, so the sand thrown shows against its shadow.
+	tuning.storm_threshold = 0.9
 	world = WORLD_SCENE.instantiate()
 	add_child(world)
+	world.time = fposmod(MORNING - world.weather.day.time_of_day(0.0, world.moon.longitude), 1.0) \
+		* tuning.day_minutes * 60.0
 	player = world.player
 	level = Scenarios.open_sand(world)
 	camera = Camera3D.new()
@@ -121,6 +127,9 @@ func ticks(n: int) -> void:
 ## Shot `n` of the sheet, from `from` looking at `to`, or through the camera
 ## that's current.
 func shoot(n: int, from: Vector3, to: Vector3) -> void:
+	# The storm pass is drawn about your own eyes; under clear skies it has
+	# nothing to show, and from a chase camera it would black out round you.
+	world.weather.face.visible = from == Vector3.INF
 	if from != Vector3.INF:
 		camera.make_current()
 		camera.global_transform = Transform3D(Basis.looking_at(to - from, Vector3.UP), from)

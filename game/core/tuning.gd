@@ -381,7 +381,9 @@ static var _current: Tuning
 ## The share of that drag that's the air's, felt against the wind: a tailwind
 ## carries you faster, a headwind holds you back, and a tuck shows it less.
 @export var board_air_share: float = 0.35
-## Coasting, the hover's own drag slows you this much, m/s².
+## Steering back against your way brakes this hard, m/s²; coasting, the
+## hover's own drag slows you this much, m/s².
+@export var board_brake: float = 8.0
 @export var board_coast: float = 0.3
 ## The dig, move back: one edge drops into the sand. Slicing along its length
 ## the dug edge grips this many times as hard as the hover, so a carve holds;
