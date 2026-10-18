@@ -71,13 +71,13 @@ var _model := {}
 ## them all, tabs first, for the drawing and for the Console to find a
 ## press's key alike.
 static func lay_out(model: Dictionary) -> void:
-	var size := Vector2(Console.PIXELS)
+	var canvas := Vector2(Console.PIXELS)
 	var keys: Array = []
 	var tabs: Array = model.tabs
-	var top := size.y * (1.0 - TAB_SHARE)
-	var wide := size.x / tabs.size()
+	var top := canvas.y * (1.0 - TAB_SHARE)
+	var wide := canvas.x / tabs.size()
 	for k in tabs.size():
-		tabs[k]["box"] = Rect2(Vector2(k * wide + 5.0, top + 8.0), Vector2(wide - 10.0, size.y - top - 16.0))
+		tabs[k]["box"] = Rect2(Vector2(k * wide + 5.0, top + 8.0), Vector2(wide - 10.0, canvas.y - top - 16.0))
 		keys.append(tabs[k])
 	var panel: Dictionary = model.get("panel", {})
 	if not panel.is_empty():
@@ -100,7 +100,7 @@ static func lay_out(model: Dictionary) -> void:
 			load["y"] = y
 			y += LINE
 			for group: Array in load.groups:
-				var each := (size.x - MARGIN - PANEL - 8.0 * (group.size() - 1)) / group.size()
+				var each := (canvas.x - MARGIN - PANEL - 8.0 * (group.size() - 1)) / group.size()
 				for i in group.size():
 					group[i]["box"] = Rect2(Vector2(PANEL + i * (each + 8.0), y + 4.0), Vector2(each, SWITCHES - 8.0))
 					keys.append(group[i])
@@ -331,7 +331,7 @@ func _draw_rows(keys_top: float) -> void:
 ## arrow small; a lead and its text, a log line's time dim; or plain words.
 ## What's urgent is amber. Cut, never wrapped, if it runs past the edge. A
 ## name, a device on the power panel, reads in the text's colour.
-func _table_row(row: String, x: float, y: float, columns: Vector3i, name := false) -> void:
+func _table_row(row: String, x: float, y: float, columns: Vector3i, named := false) -> void:
 	var text := _color(&"text")
 	var dim := _color(&"dim")
 	var accent := _color(&"accent")
@@ -348,10 +348,10 @@ func _table_row(row: String, x: float, y: float, columns: Vector3i, name := fals
 		_words(Vector2(x, base), cells[0], lead, SMALL, dim)
 		_words(Vector2(x + lead, base), cells[1], room - lead, SMALL, URGENT if urgent else text)
 		return
-	var label := cells[0].trim_prefix(" ") if name else cells[0]
+	var label := cells[0].trim_prefix(" ") if named else cells[0]
 	var sub := label.begins_with(" ")
 	_words(Vector2(x, base), label, (columns.x - cells[1].length() - 1) * advance, SMALL,
-		URGENT if urgent and not sub else (dim if sub else (text if name else accent)))
+		URGENT if urgent and not sub else (dim if sub else (text if named else accent)))
 	var number_x := x + columns.x * advance - cells[1].length() * advance
 	_words(Vector2(number_x, base), cells[1], room, SMALL, URGENT if urgent else text)
 	_words(Vector2(x + columns.y * advance, base), cells[2], (columns.z - columns.y) * advance, SMALL, dim)
@@ -422,8 +422,8 @@ func _draw_power() -> void:
 
 
 ## A row of the power panel, centred in its line.
-func _power_row(row: String, y: float, name := false) -> void:
-	_table_row(row, PANEL, y + (LINE - ROW) * 0.5, POWER_COLUMNS, name)
+func _power_row(row: String, y: float, named := false) -> void:
+	_table_row(row, PANEL, y + (LINE - ROW) * 0.5, POWER_COLUMNS, named)
 
 
 ## The barometer's last minutes as a line, the storm's line across them.

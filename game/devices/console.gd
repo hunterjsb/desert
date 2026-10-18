@@ -971,7 +971,7 @@ func _panel(shown: Dictionary, all: Dictionary) -> void:
 	var held := 0.0
 	var room := 0.0
 	for device in order:
-		var name := _name(device)
+		var called := _name(device)
 		var now := device.stats()
 		for cell in device.pooled():
 			held += cell.charge_wh
@@ -979,12 +979,12 @@ func _panel(shown: Dictionary, all: Dictionary) -> void:
 		if now.solar_w > 0.0 or now.turbine_w > 0.0:
 			var made := device.production_w()
 			makes += made
-			sources.append({"row": _row(" " + name, "%d" % roundi(made), "W")})
-		var groups := _switches(device, name, all.has("front"))
+			sources.append({"row": _row(" " + called, "%d" % roundi(made), "W")})
+		var groups := _switches(device, called, all.has("front"))
 		var drawn := device.demand_w() if device.powered else 0.0
 		if drawn > 0.0 or not groups.is_empty():
 			draws += drawn
-			loads.append({"row": _row(" " + name, "%d" % roundi(drawn), "W", "" if device.powered else "DARK"),
+			loads.append({"row": _row(" " + called, "%d" % roundi(drawn), "W", "" if device.powered else "DARK"),
 				"dark": not device.powered, "groups": groups})
 	var net := makes - draws
 	var left := INF
@@ -1015,14 +1015,14 @@ func _panel(shown: Dictionary, all: Dictionary) -> void:
 
 ## A device's switches on the power page, a row of keys for each way it can
 ## be worked, the one lit that says how it stands.
-func _switches(device: Device, name: String, radar: bool) -> Array:
+func _switches(device: Device, called: String, radar: bool) -> Array:
 	var groups := []
 	if device.wrecked():
 		return groups
 	var keys := func(tos: Array, lit: Variant, texts: Array, act: Callable) -> Array:
 		var row := []
 		for i in tos.size():
-			row.append({"text": texts[i], "lit": tos[i] == lit, "act": act.bind(device, tos[i], name, texts[i]),
+			row.append({"text": texts[i], "lit": tos[i] == lit, "act": act.bind(device, tos[i], called, texts[i]),
 				"device": device, "to": tos[i]})
 		return row
 	var shield := device as ShieldGenerator
@@ -1050,28 +1050,28 @@ func _mode(shield: ShieldGenerator, radar: bool) -> String:
 
 ## A shield's switch: off and on as use at it would, smart to switch itself
 ## on as a front nears, and on at once if one is near now.
-func _set_shield(shield: ShieldGenerator, to: StringName, name: String, text: String) -> void:
+func _set_shield(shield: ShieldGenerator, to: StringName, called: String, text: String) -> void:
 	shield.smart = to == &"smart"
 	var up := shield.on or _lead()._front_near if shield.smart else to == &"on"
 	if up != shield.on and not shield.switch(up):
-		_say("!%s · NO POWER" % name)
+		_say("!%s · NO POWER" % called)
 		return
-	_say("%s %s" % [name, text])
+	_say("%s %s" % [called, text])
 
 
-func _tune(radio: Radio, to: int, name: String, text: String) -> void:
+func _tune(radio: Radio, to: int, called: String, text: String) -> void:
 	radio.tune(to)
-	_say("%s %s" % [name, text])
+	_say("%s %s" % [called, text])
 
 
-func _rest(device: Device, to: StringName, name: String, text: String) -> void:
+func _rest(device: Device, to: StringName, called: String, text: String) -> void:
 	if device.rest(to == &"rest"):
-		_say("%s %s" % [name, text])
+		_say("%s %s" % [called, text])
 
 
-func _lamps(device: Device, on: bool, name: String, text: String) -> void:
+func _lamps(device: Device, on: bool, called: String, text: String) -> void:
 	if device.switch_lamps(on):
-		_say("%s %s" % [name, text])
+		_say("%s %s" % [called, text])
 
 
 ## What the screen calls a device: its catalog's short name, or its label.
