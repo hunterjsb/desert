@@ -50,7 +50,7 @@ aim dot hidden behind them.)
   the weather running at normal speed. It keeps its simulation cheap, and it's silent:
   a storm at the menu is only to look at (Hunter, 2026-10-16: "super super loud").
   Sound comes back with the run.
-- **The words:** Resume (only when a save exists), New game, Options, Quit.
+- **The words:** Resume (only when a save exists), New game, Deeds, Options, Quit.
 - **Confirm** triggers the highlighted word. Resume is highlighted when a save exists,
   otherwise New game.
 - **Moving the selection** works by the menu's up and down actions (keys and a gamepad's
@@ -88,7 +88,7 @@ aim dot hidden behind them.)
 ## The system menu
 
 The back action, with nothing else open, brings up the system menu over the running
-game. It holds **Options** (controls, audio, graphics), **Save** in a Normal run, and
+game. It holds **Options** (controls, audio, graphics), **Deeds**, **Save** in a Normal run, and
 **Save & quit**, all safe at any moment, mid-storm included (Profile & saves). **New game**
 asks who you come as, the origin last played highlighted, then which mode, Normal
 highlighted or Ironman; **dying** in a Normal run shows Load last save, highlighted, and
@@ -157,6 +157,14 @@ resets"): `unlockall` opens every start, and deeds can be granted or cleared to 
 **The deeds grid** ([Profile & saves](profile-and-saves.md#deeds-achievements-agreed-2026-10-18-built))
 is a menu of its own, reached from the main menu and the system menu.
 
+**Built** (2026-10-18, `game/ui/deeds_grid.gd`): Deeds stands under New game on the main menu and
+under Options in the system menu. It opens a grid of every deed, three across in the table's order,
+under how many you've done ("5 of 14 deeds"), with Back. Each tile is a dark panel with the deed's
+name, the line saying what it asks, its X as the tuning has it, and what it opens ("opens the
+Salvager"); a deed done is lit, the rest dimmer on the same dark tile, so they still read over bright
+sand. A hidden deed would show ???? until done; none is hidden. `look/deeds` shoots it over the main
+menu and over a run, with five deeds done (`look/deeds/shoot.sh` builds the sheet).
+
 ## Skeleton version
 
 *As built, 2026-10-16.*
@@ -214,7 +222,7 @@ is a menu of its own, reached from the main menu and the system menu.
   profile (Profile & saves). Into the
   game: a fade to black, the run built (`game/run.tscn`, which is what `main.tscn` used
   to be), and back from black once the sand round you is solid.
-- **The system menu**, over the running game under a dark wash: Options, Save in a
+- **The system menu**, over the running game under a dark wash: Options, Deeds, Save in a
   Normal run, and Save & quit. Save keeps the menu up and its word says how it went:
   Saved, or Couldn't save. Nothing pauses.
 - **The death screen,** in a Normal run, over the running game: "You died", with Load
