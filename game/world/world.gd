@@ -253,7 +253,7 @@ const BELOW_SAND := 0.3
 const SAND_SLOP := 0.04
 
 ## What the sand's friction holds a loose body against, N, before the wind
-## slides it or a line takes the rest: none while it floats.
+## slides it: none while it floats.
 func grip(body: RigidBody3D) -> float:
 	var floats := body is Device and (body as Device).hovering()
 	return 0.0 if floats else tuning.sand_friction * gravity * body.mass
