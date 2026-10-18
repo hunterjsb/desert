@@ -154,6 +154,8 @@ func _line_parts(at := Vector2.ZERO) -> void:
 	var crate := Catalog.device(&"crate_frame")
 	world.content.add_child(crate)
 	crate.global_position = spot(at.x + 6.0, at.y) + Vector3.UP * world.tuning.hover_height
+	# Its front ring toward the stake upwind.
+	crate.global_basis = Basis(Vector3.UP, PI / 2.0)
 	for id: StringName in [&"hover_tray", &"battery", &"hook", &"hook"]:
 		var part := Catalog.part(id)
 		world.content.add_child(part)
