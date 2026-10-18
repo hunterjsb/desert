@@ -136,7 +136,8 @@ func _build(from: Kit) -> Array:
 
 
 ## The camp as the save holds it, each thing with its state and what's
-## seated in it, standing as they stood round you, seen from where you stood.
+## seated in it, standing as they stood round you: seen from your side of
+## it, turned so a camp laid out in a line runs across the screen.
 func _camp(data: Dictionary) -> Array:
 	var snapshot := Snapshot.new(null)
 	var made := snapshot.camp(data, CAMP_REACH, CAMP_MOST)
@@ -153,7 +154,19 @@ func _camp(data: Dictionary) -> Array:
 		middle += piece.position / made.size()
 	# Toward the camp's middle from where you stood; standing in it, as you faced.
 	var toward := Vector2(middle.x, middle.z)
-	var facing := atan2(-toward.x, -toward.y) if toward.length() > 1.0 else 0.0
+	var view := toward if toward.length() > 1.0 else Vector2(0.0, -1.0)
+	# Laid out in a line, its long way runs across the screen.
+	var spread := Vector3.ZERO
+	for piece in pieces:
+		var d := Vector2(piece.position.x, piece.position.z) - toward
+		spread += Vector3(d.x * d.x, d.y * d.y, d.x * d.y)
+	var mean := (spread.x + spread.y) * 0.5
+	var lean := Vector2((spread.x - spread.y) * 0.5, spread.z).length()
+	if lean > mean / 3.0 and mean > 0.1:
+		var long := 0.5 * atan2(2.0 * spread.z, spread.x - spread.y)
+		var across := Vector2(-sin(long), cos(long))
+		view = across if across.dot(view) >= 0.0 else -across
+	var facing := atan2(-view.x, -view.y)
 	_draw_in(pieces, toward)
 	for piece in pieces:
 		piece.transform = Transform3D(Basis(Vector3.UP, -deg_to_rad(YAW) - facing), Vector3.ZERO) * piece.transform

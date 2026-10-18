@@ -23,7 +23,7 @@ const UNLIT := 0.72
 const ASIDE_TOP := 0.72
 const ASIDE_ROWS := 6
 ## The corner's speaker, across, px.
-const SPEAKER := 26.0
+const SPEAKER := 30.0
 
 ## Back never closes it: the main menu is the bottom of the stack.
 var root := false
