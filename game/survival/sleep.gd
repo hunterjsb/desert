@@ -40,6 +40,8 @@ var _watched := Vector2.ZERO
 var _watching := false
 var _line: Label
 var _fading: Tween
+## The bed the words were brought up on: a bedroll may be in your hands.
+var _bed: Node
 
 
 func setup(world: World) -> void:
@@ -85,6 +87,7 @@ func offer(by: Player, bed: Node = null) -> bool:
 	var ui := Controls.ui
 	if ui == null:
 		return false
+	_bed = bed
 	by.suit.close()
 	ui.open(menu())
 	return true
@@ -188,7 +191,7 @@ func fall_asleep(how: StringName, arg := 0) -> void:
 	_watching = true
 	await _fade(true)
 	_watching = false
-	var why := refusal()
+	var why := refusal(_bed if is_instance_valid(_bed) else null)
 	if why == "" and (_watched.x > _tuning.sleep_still_speed or _watched.y > _tuning.sleep_still_spin):
 		why = "camp moving"
 	if why == "":

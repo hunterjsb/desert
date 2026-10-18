@@ -182,7 +182,7 @@ trays, a planted turbine.
   down, plus its share of how much harder the wind then pushes what it holds, held still (Weather's
   `wind_load`: its catch by the felt wind's square, at the hardest gust of the step, read each second).
   A thing on several lines shares its push, so one gone leaves more to the rest. Against live tension in
-  steady 20 to 40 m/s winds it's within 11%, a little under.
+  steady 20 to 40 m/s winds it's within 11%, mostly a little under.
 - **What nothing holds drifts.** Each group of things joined by lines with nothing in it held fast (a
   driven stake, a find) goes with the wind at its speed less what the sand's friction holds back, none
   of it while it floats, as a body slides once the wind beats its friction live. Carried off the ground

@@ -15,7 +15,7 @@ func _init() -> void:
 func interact(by: Player) -> bool:
 	if wrecked():
 		return false
-	return world.sleep.offer(by)
+	return world.sleep.offer(by, self)
 
 
 ## Use in your hands asks the same.
