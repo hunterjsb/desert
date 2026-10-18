@@ -17,6 +17,9 @@ const DAUB := Color(0.5, 0.2, 0.1)
 const GLAZE := Color(0.12, 0.3, 0.5)
 const WATER := Color(0.05, 0.12, 0.16)
 
+## The house ruin's bench, plan m, clear of the way through the back room.
+const BENCH := AABB(Vector3(6.0, 0.0, -1.1), Vector3(2.0, 0.45, 0.9))
+
 static var _coats := {}
 
 
@@ -60,6 +63,8 @@ static func _house_ruin() -> StructureKit.Piece:
 	StructureKit.wall(p, false, 1.8, 2.2, -inner.y, inner.y, low, high, [-2.5, 2.5], "render")
 	StructureKit.wall(p, true, -0.2, 0.2, 2.2, inner.x, low, high, [5.0], "render")
 	StructureKit.box(p, Vector3(1.8, high, -f.y), Vector3(f.x, high + Ruin.ROOF, f.y), "render")
+	# A sleeping bench of saltbush wood in the back room, against its wall.
+	StructureKit.bed(p, BENCH.position, BENCH.end, "wood")
 	# The water jar on the front corner, solid where it stands out of the sand.
 	StructureKit.box(p, Vector3(-f.x, high, f.y - 1.0), Vector3(-f.x + 1.0, high + 0.95, f.y), "")
 	for k in Ruin.SPOTS.size():
@@ -100,6 +105,10 @@ static func _house_look(b: Paint.Pieces, p: StructureKit.Piece, state: int) -> v
 		b.drum(0.36, 0.45, jar + Vector3(0.0, 0.22, 0.0), c.clay, Basis.IDENTITY, 12)
 		b.ball(0.42, jar + Vector3(0.0, 0.58, 0.0), c.bone, Vector3(1.0, 0.85, 1.0))
 		b.drum(0.16, 0.12, jar + Vector3(0.0, 0.95, 0.0), c.clay, Basis.IDENTITY, 10)
+	# A dyed mat woven of fern cord on the bench.
+	var mat := BENCH.get_center() + Vector3(0.0, BENCH.size.y * 0.5, 0.0)
+	if StructureKit.shows(p, state, mat.y, Vector2(mat.x, mat.z)):
+		b.box(Vector3(BENCH.size.x - 0.12, 0.04, BENCH.size.z - 0.12), mat + Vector3(0.0, 0.02, 0.0), c.daub, 0.01)
 	# Tu, half risen over the horizon, daubed by the front door; charms on a
 	# cord over it.
 	if StructureKit.shows(p, state, 2.1):
@@ -211,12 +220,15 @@ static func _watchtower() -> StructureKit.Piece:
 		Vector2(0.0, 9.0)])
 	p.approach = Vector2(0.0, 16.0)
 	p.look = _watchtower_look
-	# A landmark: its walls in their shade side, dark against the sky, the
-	# turret over them, and the turret's glazed dome.
-	p.far_landmark = true
-	StructureKit.far_box(p, Vector3(-3.0, -0.6, -3.0), Vector3(3.0, 7.2, 3.0), EARTH)
-	StructureKit.far_box(p, Vector3(-3.0, 7.2, -3.0), Vector3(3.0, 8.6, 3.0), WOOD)
-	StructureKit.far_box(p, Vector3(1.2, 7.5, -2.8), Vector3(2.8, 9.58, -1.2), CLAY)
+	# Its rendered walls limed high up, the platform's beams and the limed
+	# parapet, the clay turret and its glazed dome.
+	var c := coats()
+	StructureKit.far_box(p, Vector3(-3.0, -0.6, -3.0), Vector3(3.0, 4.5, 3.0), c.render)
+	StructureKit.far_box(p, Vector3(-3.0, 4.5, -3.0), Vector3(3.0, 7.0, 3.0), c.lime)
+	StructureKit.far_box(p, Vector3(-3.1, 7.0, -3.1), Vector3(3.1, 7.5, 3.1), c.wood)
+	StructureKit.far_box(p, Vector3(-3.0, 7.5, -3.0), Vector3(3.0, 8.5, 3.0), c.lime)
+	StructureKit.far_box(p, Vector3(1.22, 7.5, -2.78), Vector3(2.78, 8.8, -1.22), c.clay)
+	StructureKit.far_box(p, Vector3(1.25, 8.8, -2.75), Vector3(2.75, 9.45, -1.25), c.lime)
 	StructureKit.glint(p, Vector3(2.7, 9.0, -1.7), Vector3(0.85, 0.4, 0.35), 5.0)
 	StructureKit.glint(p, Vector3(1.6, 9.0, -1.3), Vector3(-0.5, 0.4, 0.75), 5.0)
 	return p

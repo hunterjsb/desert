@@ -14,6 +14,10 @@ const ORANGE := Color(0.86, 0.42, 0.1)
 const CONCRETE := Color(0.62, 0.6, 0.56)
 const GLASS := Color(0.06, 0.09, 0.11)
 const INSULATOR := Color(0.85, 0.82, 0.74)
+## How much a lattice tower's face weighs on the eye far off, its members
+## against the sky between: drawn a pixel or none, they read heavier than
+## their width.
+const LATTICE := 0.6
 
 static var _coats := {}
 
@@ -54,10 +58,11 @@ static func _pylon_stub() -> StructureKit.Piece:
 	p.approach = Vector2(4.0, 5.0)
 	p.look = _pylon_look
 	# A row of them is a power line's trace across the dunes.
-	StructureKit.far_box(p, Vector3(-1.0, -0.8, -1.0), Vector3(1.0, 0.4, 1.0), CONCRETE)
-	# A lattice reads dark against the sky far off: its members are in their own shade.
-	StructureKit.far_box(p, Vector3(-0.3, 0.4, -0.3), Vector3(0.3, 4.8, 0.3), DARK)
-	StructureKit.far_box(p, Vector3(-0.15, 4.4, -1.4), Vector3(0.15, 4.7, 1.4), Paint.STEEL)
+	var c := coats()
+	StructureKit.far_box(p, Vector3(-1.0, -0.8, -1.0), Vector3(1.0, 0.4, 1.0), c.concrete)
+	# Its lattice: thin members dark in their own shade, the sky between them.
+	StructureKit.far_box(p, Vector3(-0.3, 0.4, -0.3), Vector3(0.3, 4.8, 0.3), c.dark, LATTICE)
+	StructureKit.far_box(p, Vector3(-0.15, 4.4, -1.4), Vector3(0.15, 4.7, 1.4), c.steel)
 	StructureKit.glint(p, Vector3(0.0, 4.7, 0.0), Vector3(0.0, 1.0, 0.25), 4.0)
 	StructureKit.glint(p, Vector3(0.1, 4.3, 1.25), Vector3(0.9, 0.35, 0.25), 5.0)
 	StructureKit.glint(p, Vector3(-0.1, 4.3, -1.25), Vector3(-0.9, 0.35, -0.25), 5.0)
@@ -101,7 +106,7 @@ static func _pipeline_segment() -> StructureKit.Piece:
 	p.approach = Vector2(5.0, 4.0)
 	p.look = _pipe_look
 	# Its lengths in a row are a run of old pipe across the dunes.
-	StructureKit.far_box(p, Vector3(-0.7, 0.4, -6.0), Vector3(0.7, 1.9, 6.0), PANEL)
+	StructureKit.far_box(p, Vector3(-0.7, 0.4, -6.0), Vector3(0.7, 1.9, 6.0), coats().panel)
 	StructureKit.glint(p, Vector3(0.66, 1.35, -3.0), Vector3(0.94, 0.34, 0.0), 4.0)
 	StructureKit.glint(p, Vector3(-0.66, 1.35, 3.5), Vector3(-0.94, 0.34, 0.0), 4.0)
 	return p
@@ -144,7 +149,7 @@ static func _hab_pod() -> StructureKit.Piece:
 	StructureKit.wall(p, false, 3.0, 4.0, -2.0, 2.0, -0.6, top, [], "panel")
 	StructureKit.box(p, Vector3(-4.0, top, -3.0), Vector3(4.0, top + 0.35, 3.0), "panel")
 	# A bunk along the back wall, and the roof's hatch.
-	StructureKit.box(p, Vector3(-3.0, 0.0, -2.0), Vector3(0.5, 0.6, -1.2), "grey")
+	StructureKit.bed(p, Vector3(-3.0, 0.0, -2.0), Vector3(0.5, 0.6, -1.2), "grey")
 	StructureKit.box(p, Vector3(1.4, top + 0.35, -1.0), Vector3(2.6, top + 0.55, 0.2), "grey")
 	p.sockets.append(StructureKit.SiteSocket.new(Vector3(-2.0, 0.0, 0.5), &"floor"))
 	p.sockets.append(StructureKit.SiteSocket.new(Vector3(1.8, 0.0, 0.8), &"floor"))
@@ -206,13 +211,14 @@ static func _relay_mast() -> StructureKit.Piece:
 	p.sockets.append(StructureKit.SiteSocket.new(Vector3(1.25, 1.0, 0.0), &"shelf"))
 	p.approach = Vector2(5.0, 8.0)
 	p.look = _mast_look
-	# The colony's line of sight: the tallest thing on the dunes, a landmark.
-	p.far_landmark = true
-	StructureKit.far_box(p, Vector3(-1.3, -0.9, -1.3), Vector3(1.3, 0.35, 1.3), CONCRETE)
-	StructureKit.far_box(p, Vector3(-0.35, 0.35, -0.35), Vector3(0.35, 14.0, 0.35), DARK)
-	StructureKit.far_box(p, Vector3(0.55, 0.35, -0.5), Vector3(1.25, 1.95, 0.5), PANEL)
-	StructureKit.far_box(p, Vector3(-0.7, 12.4, 0.45), Vector3(0.7, 13.4, 0.75), GREY)
-	StructureKit.far_box(p, Vector3(-0.14, 14.0, -0.14), Vector3(0.14, 14.3, 0.14), ORANGE)
+	# The colony's line of sight, the tallest thing on the dunes: its footing,
+	# its lattice, the cabinet at its foot, the dish and the lamp on top.
+	var c := coats()
+	StructureKit.far_box(p, Vector3(-1.3, -0.9, -1.3), Vector3(1.3, 0.35, 1.3), c.concrete)
+	StructureKit.far_box(p, Vector3(-0.35, 0.35, -0.35), Vector3(0.35, 14.0, 0.35), c.dark, LATTICE)
+	StructureKit.far_box(p, Vector3(0.55, 0.35, -0.5), Vector3(1.25, 1.95, 0.5), c.panel)
+	StructureKit.far_box(p, Vector3(-0.7, 12.25, 0.45), Vector3(0.7, 13.55, 0.65), c.panel)
+	StructureKit.far_box(p, Vector3(-0.14, 14.0, -0.14), Vector3(0.14, 14.3, 0.14), c.orange)
 	# Its dish, and the lamp's glass on its top.
 	StructureKit.glint(p, Vector3(0.0, 12.9, 0.62), Vector3(0.0, 0.25, 0.97), 5.0)
 	StructureKit.glint(p, Vector3(0.1, 14.15, 0.1), Vector3(0.7, 0.3, 0.6), 6.0)

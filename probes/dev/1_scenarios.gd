@@ -452,7 +452,7 @@ func _survival_starts() -> void:
 	var rations := dropped.filter(func(b: Node3D) -> bool: return b is Supply and b.kind == &"food")
 	var carried := world.player.suit.carried.map(func(p: RigidBody3D) -> String: return p.label)
 	check(vitals.health > 99.0 and vitals.hunger > 99.0 and vitals.thirst > 99.0
-		and carried == ["Water canister", "Ration"] and world.player.suit.supply(&"water").amount > 1.99,
+		and carried == ["Water canister", "Ration", "Bedroll"] and world.player.suit.supply(&"water").amount > 1.99,
 		"survive: you start fed, watered and whole, on sealed water and a ration (%s)" % ", ".join(carried))
 	check(condenser.powered and condenser.canister().amount > 0.0 and condenser.canister().amount < 0.01
 		and condenser.stats().solar_w > 0.0, "survive: the condenser is filling its empty canister (%.4f L)"

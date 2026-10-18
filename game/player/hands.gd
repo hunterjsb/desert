@@ -108,6 +108,8 @@ var look_part: Part
 var look_device: Device
 var look_socket: Socket
 var look_sand := false
+## Looking at a ruin's bed, which sleeps you there.
+var look_bed := false
 var look_point := Vector3.ZERO
 var look_normal := Vector3.UP
 ## Your line of sight, from your eyes to whatever it stops at, or as far as you reach.
@@ -313,6 +315,8 @@ func grab() -> bool:
 ## your waist comes back to your hands. Says whether it did anything.
 func interact() -> bool:
 	_look()
+	if look_bed and held == null and look_device == null and look_part == null:
+		return _player.world.sleep.offer(_player)
 	if look_device != null and look_device.interact(_player):
 		_player.world.salvage.claim(look_device)
 		return true
@@ -568,6 +572,7 @@ func _look() -> void:
 	look_device = null
 	look_socket = null
 	look_sand = false
+	look_bed = false
 	var eye := _player.camera.global_transform
 	sight_from = eye.origin
 	sight_to = eye.origin - eye.basis.z * _tuning.reach
@@ -585,6 +590,7 @@ func _look() -> void:
 	look_normal = hit.normal
 	var body: Object = hit.collider
 	look_sand = _is_sand(hit)
+	look_bed = _is_bed(hit)
 	if look_part != null or look_device != null:
 		# Assisted: the small thing you aimed near, not the sand under it.
 		return
@@ -641,6 +647,15 @@ static func _is_sand(hit: Dictionary) -> bool:
 		return false
 	var shape := body.shape_owner_get_owner(body.shape_find_owner(hit.shape)) as CollisionShape3D
 	return shape != null and shape.shape is HeightMapShape3D
+
+
+## A box of a ruin's that's a bed.
+static func _is_bed(hit: Dictionary) -> bool:
+	var body := hit.collider as StaticBody3D
+	if body == null:
+		return false
+	var shape := body.shape_owner_get_owner(body.shape_find_owner(hit.shape)) as Node
+	return shape != null and shape.has_meta(&"bed")
 
 
 ## How far along your look it meets something, out to `far`, m, or INF.
@@ -1664,7 +1679,7 @@ func line() -> String:
 	if look_socket != null and look_socket.part != null:
 		return describe(look_socket.part.label, _part_stats(look_socket.part))
 	if look_device == null:
-		return ""
+		return "Bed" if look_bed else ""
 	var stats := look_device.stats()
 	# A device's charge is on its light.
 	stats.erase("charge_wh")

@@ -35,9 +35,9 @@ uniform vec3 slot_dir = vec3(0.0, 0.0, 1.0);
 uniform vec4 now_mix = vec4(1.0, 0.2, 0.0, 0.0);
 // Drawn nearer past the first, m; dissolving into the haze between the others.
 uniform vec3 reach = vec3(4200.0, 11000.0, 15000.0);
-// Past the skyline's reach, m, it's a landmark as the skyline's are: the
-// haze takes it as if it were only as far as distance to this power says,
-// so it stands out of the haze where a dune would be lost in it.
+// Past the skyline's reach, m, a landmark: the haze takes it as if it were
+// only as far as distance to this power says, so it stands out of the haze
+// where a dune would be lost in it.
 uniform vec2 landmark = vec2(3000.0, 0.3);
 
 // Light, from Weather.

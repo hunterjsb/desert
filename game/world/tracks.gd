@@ -158,6 +158,13 @@ func deepest_near(x: float, z: float, reach: float) -> float:
 	return deepest
 
 
+## A stretch lived by a sleep, which steps the clock itself (Sleep): the wind
+## fills the marks by the storm where you lie.
+func live(seconds: float, t: float) -> void:
+	fill(seconds, _world.weather.field_storm(_world.player.global_position, t))
+	_last_time = t + seconds
+
+
 ## The wind fills every mark by this many seconds' worth of a storm this strong.
 func fill(seconds: float, storm: float) -> void:
 	var calm := 1.0 / (_tuning.track_calm_minutes * 60.0)

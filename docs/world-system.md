@@ -627,8 +627,10 @@ it; the Salvager's a hull of its field, the Homesteader's its wayshrine, the Sur
 built ground, 600 to 1000 m off. A start knows where its ground begins before there's a world (`Starts.ground`,
 on the dunes alone, as `World.flat_near` finds it): the usual flat patch, and for the Surveyor the
 nearest bare flats, where the horizon is far; its search sets it out behind a relay mast of its line so
-the mast stands on a spot of that ground it shows from. What's in sight is drawn by the skyline
-([Salvage & ruins](prd/salvage-and-ruins.md#whats-built-2026-10-18-the-sightlines-branch)).
+the mast stands on a spot of that ground it shows from, along a way the mast's glints shine back at you
+some time on the run's first day (looked for first in its first nine minutes): drawn true to its size,
+a mast that far off is a sharp eye's find, and its glint is what catches the eye. What's in sight is
+drawn by the skyline ([Salvage & ruins](prd/salvage-and-ruins.md#whats-built-2026-10-18-the-sightlines-branch)).
 
 ### What the feral layer does now
 

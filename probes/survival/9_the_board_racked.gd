@@ -36,7 +36,7 @@ func run() -> void:
 	await simulate(2.0)
 	check(shield.interact(world.player), "use switches the crate's shield on")
 	var home := rack.transform * board.seat()
-	check(board.host() == crate and rack.mounted == board and relative(crate, board).origin.distance_to(home.origin) < 1e-4,
+	check(board.host() == crate and rack.mounted == board and _off_seat(crate, board, home) < 1e-4,
 		"the kit starts with its board racked on the crate, on its seat")
 	var clash := _clashes()
 	print("on a fully fitted crate the racked board clears everything else by %.1f cm at least, nearest the %s"
@@ -68,7 +68,7 @@ func run() -> void:
 	var seen := {"low": INF, "drift": 0.0, "off": 0}
 	await walk_to(world.player.global_position + heading * AWAY, func() -> void:
 		seen.low = minf(seen.low, clearance(crate))
-		seen.drift = maxf(seen.drift, relative(crate, board).origin.distance_to(home.origin))
+		seen.drift = maxf(seen.drift, _off_seat(crate, board, home))
 		seen.off += int(board.host() != crate))
 	await simulate(3.0)
 	print("towed %.0f m: the crate %.2f m over the sand at lowest, the board %.6f m off its seat at most"
@@ -222,3 +222,11 @@ func _box(device: Node3D, pose: Transform3D) -> AABB:
 			first = false
 	return box
 
+
+## How far a seated board is off its seat, m, past the tick a frozen body
+## may ride behind its moving host, whichever the engine brings up to date
+## last (Device's own note).
+func _off_seat(crate: Device, board: Device, home: Transform3D) -> float:
+	var tick := (crate.linear_velocity.length() + crate.angular_velocity.length() * home.origin.length()) \
+		/ Engine.physics_ticks_per_second
+	return maxf(relative(crate, board).origin.distance_to(home.origin) - tick, 0.0)

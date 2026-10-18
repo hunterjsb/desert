@@ -29,7 +29,7 @@ static var _current: Tuning
 ## m, and walking in toward Tu crosses one within the second.
 @export var start_artery_m := Vector2(600.0, 3000.0)
 ## What a Surveyor has in sight stands this far off, m: on its horizon, not
-## at its feet, and near enough to know at a glance.
+## at its feet; a sharp eye's find, and its glint the eye's (Starts.GLINT_).
 @export var start_horizon_m := Vector2(600.0, 1000.0)
 ## No path and no settlement comes within this of a Surveyor's start, m:
 ## past the ground you can see.
@@ -124,13 +124,13 @@ static var _current: Tuning
 ## How far it draws, m.
 @export var skyline_m: float = 3000.0
 ## The thinnest a stand-in is drawn, pixels, so what's far off never breaks
-## into flickering bits; a saltbush line's least thickness.
-@export var skyline_thinnest_px: float = 2.0
+## into flickering bits (drawn as much fainter); a saltbush line's least
+## thickness.
+@export var skyline_thinnest_px: float = 1.5
 @export var skyline_line_px: float = 3.0
-## The least a landmark (a mast, a tower) stands on screen at a kilometre,
-## pixels wide and tall, shrinking more slowly than perspective past it: the
-## thing on the horizon the eye snags on.
-@export var skyline_landmark_px := Vector2(4.0, 14.0)
+## Where a structure's real look hands over to its stand-in, m from you:
+## crossfaded between, so you never see one switch for the other.
+@export var skyline_handover_m := Vector2(420.0, 500.0)
 ## A glint's sparkle, pixels across as it lights and at its brightest, and
 ## how bright, times the sun on white.
 @export var glint_px := Vector2(8.0, 16.0)
@@ -641,8 +641,8 @@ static var _current: Tuning
 ## weight: up to this much, kg, you don't feel it; past it you sink into the
 ## sand and slow, by this much sunk in as far as hauling digs you in, and
 ## slower still for every kilogram more. The kit you start with carries
-## 2.9 kg, and every carryable thing of it, its stake, its board with the
-## board's battery and the light panel too, 20.9 kg.
+## 5.9 kg, and every carryable thing of it, its stake, its board with the
+## board's battery and the light panel too, 23.9 kg.
 @export var carry_easy_kg: float = 30.0
 @export var carry_sunk_kg: float = 60.0
 ## A sealed canister holds this much water, L, and a ration this much food, kcal.
@@ -666,6 +666,23 @@ static var _current: Tuning
 @export var compass_storm_degrees: float = 35.0
 ## Over the most magnetized old volcanic ground, the needle swims this far either way.
 @export var compass_ground_degrees: float = 40.0
+
+@export_group("Sleep")
+## A night is lived in steps this long, s of world time: each system's own
+## sums over each, the camp held still (live, they tick every power_tick).
+## No sleep runs past sleep_most_days, whatever it waits for.
+@export var sleep_tick: float = 10.0
+@export var sleep_most_days: float = 4.0
+## So many hours, of the 24 in a day, is first offered as this many.
+@export var sleep_hours: int = 8
+## The camp is your devices and stakes within this of you, m; it's still
+## while none moves faster than this, m/s, or turns faster than this, rad/s.
+@export var sleep_camp_m: float = 30.0
+@export var sleep_still_speed: float = 0.5
+@export var sleep_still_spin: float = 1.0
+## Asleep with nothing left to drink or eat, you wake once thirst or hunger
+## falls to this share.
+@export var sleep_wake_need: float = 0.25
 
 @export_group("Farming")
 ## A planter's water tank, L. Found empty.

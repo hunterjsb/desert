@@ -6,12 +6,14 @@
 script = ExtResource("1_kit")
 id = &"homesteader"
 label = "Homesteader"
+unlock = "shield_day"
 about = "stays put"
 start = &"wayshrine"
 balanced = true
 carried = Dictionary[StringName, int]({
 &"canister": 1,
 &"ration": 1,
+&"bedroll": 1,
 &"stake": 3
 })
 beside = Dictionary[StringName, Vector2]({

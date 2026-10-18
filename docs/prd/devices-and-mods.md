@@ -1005,7 +1005,7 @@ Proposed, in this PRD's terms:
 | Ring mount | Rope hooks; on a chassis piece, another piece's edge | Rope & tethering |
 | Bottom mount | Hover trays, or runners: skates and a board plate (2026-10-18), never both on one device or deck | Bubble shield & camp, Movement |
 | Top mount | Solar panels, instruments such as the radio, lamps, the shield generator, the mast (2026-10-18) | Power and others |
-| Rack | The hoverboard, seated along a crate's side, riding and charging with it (Hunter, 2026-10-16) | Movement |
+| Rack | The hoverboard, seated along a crate's side, riding and charging with it (Hunter, 2026-10-16); or a bedroll in its place (2026-10-18) | Movement, Survival |
 | Plant slot (small, large) | Seedlings | Farming |
 | Plant slot (small pot, standard planter, deep bed) | Crops by the size they declare. Proposed (session 4, part 4); new kinds are appended to a frame, never inserted | Farming |
 | Water socket | A canister or a hose's end, one at a time (2026-10-17) | Survival, Farming |
@@ -1032,6 +1032,7 @@ Proposed, in this PRD's terms:
 | Light solar panel | | | | | 1 | |
 | Hoverboard | 1 | | | | 1 | fits a rack itself |
 | Radio | 1 | | | | 1 | fits a top mount itself |
+| Bedroll | | | | | | fits a rack itself; use on it sleeps ([Survival](survival.md#sleep-as-built-2026-10-18)) |
 | Survival kit | | | | | | a water and a food socket, 2 small and 1 large plant slot |
 
 **Carried, a device works as anywhere else** (Hunter, 2026-10-17): a carryable device goes
