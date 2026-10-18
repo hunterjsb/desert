@@ -16,9 +16,10 @@ const ORIGINS: Array[String] = [STANDARD, "res://game/survival/salvager_kit.tres
 @export var id: StringName = &""
 @export var label := ""
 @export var about := ""
-## What the main menu shows of it: things beside you, by name, side by side
-## in this order, each turned this far about the up axis, degrees.
-@export var shown: Dictionary[StringName, float] = {}
+## What the main menu shows of it: one compact thing beside you, by name,
+## turned this far about the up axis, degrees.
+@export var shown: StringName = &""
+@export var shown_turn := 0.0
 ## Where on the moon it begins (Starts): "artery", "wreck_field" or
 ## "wayshrine"; none, where the tuning says.
 @export var start: StringName = &""
@@ -93,3 +94,33 @@ func carried_ids() -> Array[StringName]:
 		for i in carried[thing]:
 			out.append(thing)
 	return out
+
+
+## Everything it gives you and how many of each, beside you and carried, in
+## the order it comes: catalog ids, a line laid or coiled as &"line". It
+## reads beside, assembled and lines as a run sets them down (Runs.kit).
+func gear() -> Dictionary[StringName, int]:
+	var out: Dictionary[StringName, int] = {}
+	for id: StringName in beside:
+		if not Catalog.DEVICES.has(id) and not assembled.has(id):
+			_count(out, &"line" if id == &"coil" else id)
+			continue
+		var spec: Dictionary = assembled.get(id, {"frame": id, "sockets": {}})
+		_count(out, spec.frame)
+		for k: int in spec.sockets:
+			# A thing beside you seated in it counts as itself.
+			if not beside.has(spec.sockets[k]):
+				_count(out, spec.sockets[k])
+		if not assembled.has(id):
+			for socket: Array in Catalog.DEVICES[id].sockets:
+				if socket[0] == &"battery":
+					_count(out, &"battery")
+	for id in lines:
+		_count(out, &"line")
+	for id in carried:
+		_count(out, id, carried[id])
+	return out
+
+
+static func _count(into: Dictionary[StringName, int], id: StringName, n := 1) -> void:
+	into[id] = into.get(id, 0) + n

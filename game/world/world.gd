@@ -34,6 +34,9 @@ var origin_chunk := Vector2i.ZERO
 var time := 0.0
 ## How many seconds the clock moves per second; 0 stops it.
 var time_warp := 1.0
+## Seconds of the run played, whatever the clock's warp; NAN in a run
+## resumed from a save that never kept it, so it's never short.
+var played := 0.0
 ## m/s², for everything here: bodies through the physics space, the player directly.
 var gravity: float
 
@@ -290,6 +293,7 @@ func _physics_process(delta: float) -> void:
 
 	_keep_bodies_on_ground()
 	time += delta * time_warp
+	played += delta
 
 	Dev.put("world/seed", "%d" % run_seed)
 	if rescued > 0:

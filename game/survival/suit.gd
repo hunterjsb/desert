@@ -536,11 +536,11 @@ func _text(type: StringName, at: Vector2, line: String, width: float, color := &
 static func _name(thing: RigidBody3D) -> String:
 	match thing.get_meta(&"rolled", &""):
 		&"plug":
-			return "Cable"
+			return Catalog.NAMES[&"cable"]
 		&"strong_plug":
-			return "Strong cable"
+			return Catalog.NAMES[&"strong_cable"]
 		&"hose_end":
-			return "Hose"
+			return Catalog.NAMES[&"hose"]
 	return thing.get(&"label")
 
 

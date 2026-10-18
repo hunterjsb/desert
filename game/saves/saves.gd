@@ -46,6 +46,16 @@ func kit() -> StringName:
 	return _read().get("kit", &"")
 
 
+## The saved run as its file holds it, {} with none (Snapshot reads it).
+func held() -> Dictionary:
+	return _read()
+
+
+## When the save was last written, unix time.
+func saved_at() -> int:
+	return FileAccess.get_modified_time(path())
+
+
 ## Saves the run, in its mode: safe at any moment, mid-storm included, and it
 ## changes nothing in the world. A dead run isn't saved, nor one half put back.
 func save(world: World, ironman := false) -> bool:

@@ -45,8 +45,20 @@ corner_radius_top_right = 2
 corner_radius_bottom_right = 2
 corner_radius_bottom_left = 2
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dtkh1"]
-bg_color = Color(0, 0, 0, 0.35)
+[sub_resource type="Gradient" id="Gradient_scrim"]
+offsets = PackedFloat32Array(0, 0.55, 1)
+colors = PackedColorArray(0, 0, 0, 0.72, 0, 0, 0, 0.55, 0, 0, 0, 0.3)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_scrim"]
+gradient = SubResource("Gradient_scrim")
+width = 256
+height = 256
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_scrim"]
+texture = SubResource("GradientTexture2D_scrim")
 
 [sub_resource type="Gradient" id="Gradient_shade"]
 colors = PackedColorArray(0, 0, 0, 0, 0, 0, 0, 0.55)
@@ -117,6 +129,21 @@ Button/styles/hover = SubResource("StyleBoxEmpty_c0k8g")
 Button/styles/hover_pressed = SubResource("StyleBoxEmpty_fd5p1")
 Button/styles/normal = SubResource("StyleBoxEmpty_iqa2u")
 Button/styles/pressed = SubResource("StyleBoxEmpty_h0vmm")
+AsideList/base_type = &"GridContainer"
+AsideList/constants/h_separation = 18
+AsideList/constants/v_separation = 2
+AsideName/base_type = &"Label"
+AsideName/colors/font_color = Color(0.86, 0.86, 0.84, 1)
+AsideName/colors/font_outline_color = Color(0, 0, 0, 0.55)
+AsideName/constants/outline_size = 4
+AsideName/font_sizes/font_size = 15
+AsideName/fonts/font = SubResource("FontVariation_mippt")
+AsideValue/base_type = &"Label"
+AsideValue/colors/font_color = Color(0.92, 0.92, 0.9, 1)
+AsideValue/colors/font_outline_color = Color(0, 0, 0, 0.55)
+AsideValue/constants/outline_size = 4
+AsideValue/font_sizes/font_size = 15
+AsideValue/fonts/font = ExtResource("2_7y804")
 Caption/base_type = &"Label"
 Caption/font_sizes/font_size = 18
 Caption/fonts/font = SubResource("FontVariation_mippt")
@@ -219,7 +246,7 @@ Shade/styles/panel = SubResource("StyleBoxTexture_shade")
 ShadeSide/base_type = &"Panel"
 ShadeSide/styles/panel = SubResource("StyleBoxTexture_shade_side")
 Scrim/base_type = &"Panel"
-Scrim/styles/panel = SubResource("StyleBoxFlat_dtkh1")
+Scrim/styles/panel = SubResource("StyleBoxTexture_scrim")
 Warning/base_type = &"Label"
 Warning/colors/font_color = Color(0.25, 0.86, 0.8, 1)
 Warning/font_sizes/font_size = 16

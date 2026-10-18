@@ -215,7 +215,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 
 
-## The title, and Resume (with a save), New game, Options, Quit, over the live desert.
+## The title, and Resume (with a save), New game, Options, Quit, over the
+## live desert, and the music's switch in the bottom left.
 func show_main_menu(note := "") -> void:
 	close_all()
 	Dev.show_hint(false)
@@ -225,11 +226,69 @@ func show_main_menu(note := "") -> void:
 	menu.root = true
 	menu.add_title(TITLE)
 	if main.has_save():
-		menu.add("Resume", main.resume)
+		menu.add("Resume", func() -> void: open(resume_view()))
 	menu.add("New game", _new_game)
 	menu.add("Options", func() -> void: open(options()))
 	menu.add("Quit", main.quit)
+	menu.add_corner(func() -> bool: return Settings.music, func() -> void:
+		Settings.music = not Settings.music
+		Settings.save())
 	open(menu)
+
+
+## A menu laid out for where it opens: over the menu's desert down the left,
+## the prop aside; over a run in the middle, on the scrim.
+func _menu(note := "") -> Words:
+	return Words.new(note, &"Scrim" if main == null or main.in_run() else &"ShadeSide")
+
+
+## Resume shows your last camp aside as the save holds it, the save's
+## numbers under it; confirm carries on.
+func resume_view() -> Words:
+	var store := main.saves()
+	var data: Dictionary = store.held()
+	var menu := _menu()
+	menu.add("Continue", main.resume)
+	menu.set_aside(numbers(Snapshot.summary(data), store.saved_at()))
+	if main.showpiece != null:
+		main.showpiece.show_camp(data)
+		menu.shows = Showpiece.CAMP
+	return menu
+
+
+## A save's numbers as Resume lists them; one from before time played was
+## kept lists the rest.
+static func numbers(save: Dictionary, saved: int) -> Array:
+	var rows := []
+	if not is_nan(save.played):
+		var minutes := floori(save.played / 60.0)
+		rows.append(["Played", "%d min" % minutes if minutes < 60
+			else "%d h %d min" % [floori(minutes / 60.0), minutes % 60]])
+	rows.append(["Saved", when(saved, floori(Time.get_unix_time_from_system()))])
+	rows.append(["Day", str(save.day)])
+	var kit := Kit.named(save.kit)
+	rows.append(["Came as", (kit if kit != null else Kit.standard()).label])
+	return rows
+
+
+## When, by the clock on the wall where you are: today or yesterday and the
+## time, else how many days ago.
+static func when(unix: int, now: int) -> String:
+	var bias := int(Time.get_time_zone_from_system().bias) * 60
+	var days := floori((now + bias) / 86400.0) - floori((unix + bias) / 86400.0)
+	var at := Time.get_datetime_dict_from_unix_time(unix + bias)
+	if days >= 2:
+		return "%d days ago" % days
+	return "%s %02d:%02d" % ["yesterday" if days == 1 else "today", at.hour, at.minute]
+
+
+## A kit's gear as the list under the prop shows it.
+static func gear(kit: Kit) -> Array:
+	var rows := []
+	var all := kit.gear()
+	for id in all:
+		rows.append(["%d m line" % roundi(kit.rope_m) if id == &"line" else Catalog.short_label(id), str(all[id])])
+	return rows
 
 
 ## Options, Save in a Normal run, and Save & quit, over the running game.
@@ -246,11 +305,11 @@ func system_menu() -> Words:
 
 
 ## Who the new run comes as, down the left, the origin last played
-## highlighted, so the kit on show stays as it stands aside; each with a few
-## words under it, and one still locked shown as ????. The kit on show then
-## follows the highlight.
+## highlighted, so the piece on show stays as it stands aside; each with a
+## few words under it, and one still locked shown as ????. The piece aside
+## and the gear under it follow the highlight.
 func origins() -> Words:
-	var menu := Words.new("", &"ShadeSide")
+	var menu := _menu()
 	var all := Kit.origins()
 	menu.open_on(all.find(main.last_kit()))
 	for kit in all:
@@ -259,15 +318,17 @@ func origins() -> Words:
 		else:
 			menu.add("????", Callable())
 	menu.moved.connect(func(at: int) -> void:
-		if main.showpiece != null:
-			main.showpiece.picked = all[at])
+		menu.shows = all[at].id
+		menu.set_aside(gear(all[at])))
 	return menu
 
 
 ## Which rules the new run plays by, for good, laid out as the origins are:
 ## Normal highlighted. An origin the game isn't balanced round has no Ironman.
 func modes(kit: Kit) -> Words:
-	var menu := Words.new("", &"ShadeSide")
+	var menu := _menu()
+	menu.shows = kit.id
+	menu.set_aside(gear(kit))
 	menu.add("Normal", main.new_game.bind(false, false, kit), Callable(), "saves as you go")
 	if kit.balanced:
 		menu.add("Ironman", main.new_game.bind(true, false, kit), Callable(), "death ends the run")
@@ -289,7 +350,7 @@ func show_death() -> void:
 
 
 func options() -> Words:
-	var menu := Words.new("Options")
+	var menu := _menu("Options")
 	menu.add(func() -> String: return "Volume   %d%%" % roundi(Settings.volume * 100.0),
 		_change.bind(1, &"volume", true), _change.bind(&"volume", false))
 	menu.add(func() -> String: return "Fullscreen   %s" % _on(Settings.fullscreen),
@@ -308,7 +369,7 @@ func options() -> Words:
 
 ## Every key as it's bound now, to read; remapping comes later.
 func controls() -> Words:
-	var menu := Words.new("Controls")
+	var menu := _menu("Controls")
 	var list := Controls.keys_label()
 	list.text = Controls.help()
 	var panel := PanelContainer.new()
@@ -320,7 +381,7 @@ func controls() -> Words:
 
 ## A question with the safe answer highlighted; back also declines.
 func confirm(question: String, no: String, yes: String, act: Callable) -> Words:
-	var menu := Words.new(question)
+	var menu := _menu(question)
 	menu.add(no, close_top)
 	menu.add(yes, func() -> void:
 		close_top()
