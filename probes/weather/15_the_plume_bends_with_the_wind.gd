@@ -59,7 +59,8 @@ func _at(t: float) -> void:
 	world.time = t
 	world.weather.forecast_now()
 	await physics_frames(3)
-	await get_tree().process_frame
+	for i in Plume.READS.size() * 4:
+		await get_tree().process_frame
 
 
 ## How high it stands where it's this far downwind of its mouth, m.

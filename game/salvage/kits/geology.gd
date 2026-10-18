@@ -30,7 +30,7 @@ const BANK := 14.0
 const BANK_GRADE := 0.6
 ## It looks along the rift this far either way, m, this often, for the place
 ## whose dunes its apron holds best.
-const LOOK := 48.0
+const LOOK := 24.0
 const LOOK_STEP := 12.0
 
 

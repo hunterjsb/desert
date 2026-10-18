@@ -22,6 +22,9 @@ const KEEP_M := 1.0
 const DRAPE_M := 8.0
 ## Main-thread time a frame may take looking over newly laid units, µs.
 const UNITS_US := 250
+## Past the hand-over a landmark's least size falls off as distance to this
+## power, slower than perspective, so the eye still snags on it far off.
+const LANDMARK_FALL := 0.3
 ## Floats an instance of a box and of a glint takes in its view's buffer.
 const BOX_FLOATS := 20
 const GLINT_FLOATS := 20
@@ -120,6 +123,7 @@ func setup(world: World) -> void:
 	_box_look.shader = BOX_SHADER
 	_box_look.set_shader_parameter("thinnest_px", _tuning.skyline_thinnest_px)
 	_box_look.set_shader_parameter("landmark_px", _tuning.skyline_landmark_px)
+	_box_look.set_shader_parameter("landmark_fall", LANDMARK_FALL)
 	_boxes = RenderingServer.multimesh_create()
 	_cube.size = Vector3.ONE
 	RenderingServer.multimesh_set_mesh(_boxes, _cube.get_rid())
@@ -128,6 +132,7 @@ func setup(world: World) -> void:
 	_glint_look.shader = GLINT_SHADER
 	_glint_look.set_shader_parameter("sparkle_px", _tuning.glint_px)
 	_glint_look.set_shader_parameter("landmark_px", _tuning.skyline_landmark_px)
+	_glint_look.set_shader_parameter("landmark_fall", LANDMARK_FALL)
 	_glint_look.set_shader_parameter("brightness", _tuning.glint_brightness)
 	_glints = RenderingServer.multimesh_create()
 	_quad.size = Vector2.ONE * 2.0

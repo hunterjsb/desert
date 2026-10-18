@@ -58,6 +58,8 @@ const FAR_OFF := 3000.0
 const READS := [0.0, 40.0, 150.0, 400.0]
 const VEIL_EDGE := 150.0
 ## Past this the puffs are drawn nearer and smaller, m: the camera's far plane.
+## Past the skyline's reach it's a landmark, as the skyline's are: it thins
+## out more slowly than the air between would have it (Skyline.LANDMARK_FALL).
 const NEAR_REACH := 4200.0
 ## Its ash fan on the sand runs down the long-term wind, by e this often, m.
 const FAN := 260.0
@@ -92,6 +94,8 @@ var _next := 0
 var _frames := 0
 var _distance := 0.0
 var _last_t := -INF
+## The storm map's first moment when the storms were last read in full.
+var _map_t0 := -INF
 ## The sheet as the root was last found from: its follows and units laid.
 var _found_at := Vector2i(-1, -1)
 
@@ -113,6 +117,7 @@ func setup(world: World, weather: Weather) -> void:
 	material.set_shader_parameter("oldest", OLDEST)
 	material.set_shader_parameter("crowd", CROWD)
 	material.set_shader_parameter("reach", Vector3(NEAR_REACH, _tuning.wall_fade_begin, _tuning.wall_fade_end))
+	material.set_shader_parameter("landmark", Vector2(_tuning.skyline_m, Skyline.LANDMARK_FALL))
 	var quad := QuadMesh.new()
 	quad.size = Vector2.ONE
 	var puffs := MultiMesh.new()
@@ -158,8 +163,12 @@ func _process(_delta: float) -> void:
 	var moved := _found_at
 	visible = _follow()
 	if visible:
-		# A jump in time or place, or a first sight, works it all out at once.
-		var whole := not was or moved != _found_at or absf(_world.time - _last_t) > 1.0
+		# A jump in time or place, a first sight, or a storm map made afresh
+		# for one, works it all out at once.
+		var whole := not was or moved != _found_at or absf(_world.time - _last_t) > 1.0 \
+			or absf(_weather.map.t0 - _map_t0) > 5.0
+		if whole:
+			_map_t0 = _weather.map.t0
 		_streak(_world.time, POINTS if whole else (EACH_FRAME if _distance < FAR_OFF else EACH_FRAME / 2))
 		_upload()
 	_last_t = _world.time

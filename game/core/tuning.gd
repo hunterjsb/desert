@@ -733,7 +733,7 @@ static var _current: Tuning
 @export_group("Plume")
 ## A live vent's seep as a buoyancy flux, m⁴/s³ at this tuning's gravity: how
 ## hard what it lets out climbs. Bursts multiply it (Geology).
-@export var plume_buoyancy: float = 8000.0
+@export var plume_buoyancy: float = 25000.0
 
 @export_group("Radio")
 ## What a radio draws while it's on, W.
