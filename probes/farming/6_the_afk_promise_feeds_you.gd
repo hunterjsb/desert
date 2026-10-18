@@ -1,8 +1,8 @@
 extends CampProbe
 ## Farming probe 6: the AFK promise feeds you. Idle in the reference camp at
 ## the equator for three days of the run's own weather, with water and
-## nothing to eat, you're fed by its farm alone and never go hungry: carrots
-## ripen in the clear and fungus in the storm, the harvesters store them and
+## nothing to eat, you're fed by its farm alone and never go hungry: root-tubers
+## ripen in the clear and vat fungus in the storm, the harvesters store them and
 ## sow again, and the planters drop food onto you. At the end the farm is
 ## still sown, its tanks still hold water, and it has food to spare.
 ## Time limit: 600 s
@@ -32,7 +32,7 @@ func run() -> void:
 	check(vitals.eaten > 0.0 and vitals.eaten <= fed + 1e-6,
 		"everything you ate, the farm dropped onto you")
 	check(seen.low > world.tuning.eat_below * Vitals.FULL - 5.0, "you never went hungry (%.0f at the lowest)" % seen.low)
-	check(ripened.get(&"carrot", 0) > 0 and ripened.get(&"fungus", 0) > 0,
-		"carrots ripened in the clear and fungus in the storm")
+	check(ripened.get(&"root_tuber", 0) > 0 and ripened.get(&"vat_fungus", 0) > 0,
+		"root-tubers ripened in the clear and vat fungus in the storm")
 	check(sown == planters.size() * Scenarios.FARM_CROPS.size() and water > 0.0 and stored > 0.0,
 		"the farm is still sown and watered, with food to spare")

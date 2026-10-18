@@ -4,8 +4,9 @@ extends Node
 ## is shot without its marks, fresh, and aged by eight minutes of storm (or 36
 ## of calm), in a clear day, a storm by day, a clear night, a storm at night,
 ## and a storm at night by a lamp like a device's, its only light. It prints
-## what pressing them cost the main thread, and what drawing them costs the GPU:
-##   godot --path . --disable-vsync res://look/tracks/tracks.tscn -- --capture <dir>
+## what pressing them cost the main thread, and what drawing them costs the GPU.
+## At the fixed exposure, or with --eye as the eye sees them, settled on each light:
+##   godot --path . --disable-vsync res://look/tracks/tracks.tscn -- --capture <dir> [--eye]
 ## look/tracks/shoot.sh builds the sheets. A small window that never takes
 ## focus, nothing but this script moving anything, and silence.
 
@@ -37,6 +38,8 @@ var _times := {}
 
 func _enter_tree() -> void:
 	Tuning.current().run_seed = SEED
+	# The fixed exposure, not the eye's, so shots and readings compare across builds.
+	Tuning.current().eye_adapts = OS.get_cmdline_user_args().has("--eye")
 
 
 func _ready() -> void:
@@ -138,6 +141,7 @@ func _capture(out_dir: String) -> void:
 	for light: String in LIGHTS:
 		world.time = _times[light.trim_suffix("_lamp")]
 		world.time_warp = 1.0
+		world.weather.forecast_now()
 		lamp.visible = light.ends_with("_lamp")
 		for subject: Array in [["walk", WALK], ["board", BOARD], ["drag", DRAG]]:
 			var start: Vector2 = world.spawn + subject[1]

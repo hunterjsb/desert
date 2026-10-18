@@ -47,6 +47,7 @@ PRD; this PRD owns what flows through the battery slot.
 | **Solar** | Clear skies, daytime, toward the poles | Storms (some types keep a little), night | None, beyond the weather |
 | **Wind** | Storms, toward the stormy equator | Calm | It has to be planted to work, so you stay or leave it behind |
 | **Heavy generator** | Always: strong and steady | Out of fuel | It rides on caterpillar tracks, slows the camp, and burns fuel |
+| **Burner** (proposed, session 4, part 4) | Night and storm, when solar can't help: it runs on stored fuel | Out of fuel | Its fuel is coalcane, which needs water and a day's light to grow ([below](#fuel-crops-and-the-burner-proposed-not-built)) |
 
 **Solar comes in forms that trade portability for output:**
 - **Light:** placeable and picked back up. This is the starting source.
@@ -66,6 +67,65 @@ shield PRD), a turbine inside a wind shield feels no wind and makes nothing. It 
 stand outside, in the storm, and take the damage. The alternative is a shield that
 lets wind through, like the late-game temperature shield. That trade-off comes free from
 the felt-weather rule.
+
+## Fuel crops and the burner (proposed, not built)
+
+*[Session 4, part 4](../plants-worldgen-ruins-2026-10-17.md); implied equipment, direction only, with no
+number set. It is the fuel half of "Fuel grown from plants" above.*
+
+**Coalcane is the only renewable fuel crop** ([Farming](farming.md#each-crop-ancestor-engineering-drift-and-hooks-agreed)):
+"a night/storm counterpart to solar, burned in a **new burner device**." The stalk stores oils and
+resins, not sugar, and "trades water for power." Old petrified groves are "a big one-time fuel haul"
+and a sign of ancient water. The session lists the new equipment as a "burner/generator (for coalcane
+fuel)" and a humidifier, "both crate parts like the existing devices" ([Devices &
+mods](devices-and-mods.md#the-burner-and-the-humidifier-proposed-not-built)).
+
+Readings, not in the session:
+- **It makes "fuel grown from plants" concrete.** The cane grows on a day's light and the planter's
+  water, is cut, and is burned when the sun is not there. Rule 1 holds if the burner's output
+  is the stalk's energy and no more: the sun's share is stored in the stalk, and the water it took came
+  from the condenser's power or a canister. The session gives no energy per stalk, and no water per
+  stalk, so whether the loop pays (the condenser's draw against the burner's output) is a number to set,
+  and probe 1 is the check.
+- **The burner is a source with a store.** It reads no weather, so a storm and a night do not matter
+  to it, and it draws on stock, the way a battery does. Its fuel is carried or fed, and not wired.
+- **The heavy generator may be the same machine.** The table's "heavy generator" burns fuel and rides
+  on tracks, and the session's burner is a "crate part." They are read as two devices, a big tracked
+  one and a small fitted one, which the session does not say (open questions).
+- **The humidifier and the lamp are loads.** The humidifier raises humidity for the storm family and
+  the lamp lights the office fern. Both draw from the pool like any device ("Instruments, farming gear
+  and tools draw small amounts"). Neither draw is set.
+- **Quietbloom is a load that gives nothing back.** It "grows by eating your power," draining a
+  battery or a radio slowly. Rule 1 needs the drained energy to go somewhere: into the plant's growth, as
+  stored value, and not vanish. How it is metered, and whether it takes from any device nearby or from
+  one it grows toward, is not said.
+- **A wind surge is a back-burner idea.** "Turbines spike; charge batteries hard" in a storm
+  ([Wind & storms](wind-and-storms.md#storm-only-mechanics-back-burner)). The turbine here makes up
+  to 200 W in a gale, so a surge would be a term above that.
+
+## The kiln and its fuel (Agreed, session 4, part 5; not built)
+
+*[Session 4, part 5](../gods-gear-farside-2026-10-17.md), section 5; direction only, with no number set.
+[Devices & mods](devices-and-mods.md#the-kiln-agreed-session-4-part-5-not-built) has the kiln itself.*
+"The kiln is a new processing device that burns coalcane," in three era variants: the colonial **electric
+furnace** ("most efficient; runs on power, not coalcane"), the First Kingdoms' **brass-fitted forge**
+(middle efficiency) and the second age's **beehive clay kiln** (lossy). A variant's job is the same, and its
+"efficiency and fuel draw" differ.
+
+Readings, not in the session:
+- **Coalcane has more mouths.** The burner turns it to power, the kiln to heat, and the Stoker eats it
+  ("feeding... calms it"; [the lore](../lore-research.md#the-stoker-and-the-end-of-zan-agreed-session-4-part-5)).
+  Cane is thirsty and rare, and the session sets no figure for a stalk's energy or its water, so whether
+  a farm can feed all three is a number to set (the burner's own loop is unset already).
+- **The kiln's heat is not power.** A stalk burned in the kiln gives ceramic, salt or safe water and no
+  watts; the same stalk in the burner gives watts. They are two devices that want one crop, and the game
+  has no heat model to join them.
+- **The electric furnace is a load, like any device.** It draws from the pool while it works, so rule 1
+  holds with its draw counted. The session gives no draw.
+- **A requisition is a drain.** The Quartermaster module "requisitions a cut of your camp power." Energy
+  taken has to go somewhere (rule 1); the session does not say where, or what share.
+- **"Restored vent taps" read as the colonial vent power stations** along the rift (part 4's generated
+  pieces), which feed the Stoker. Whether a restored tap can also power a camp is not said.
 
 ## What draws power
 
@@ -169,18 +229,33 @@ the felt-weather rule.
   your grip. A loose plug on either kind is dragged along by what drifts off with
   the other end, never slung, however long it was caught.
 - **The reference camp** (Stage 12, 2026-10-17) is what probe 4 leaves alone. The "afk"
-  dev scenario parks it round you, running: the base shield in the middle on a big
-  battery, two planters with harvesters beside it, and behind you, downwind, the
-  floater: a crate resting on its tray, moored to a stake, with two big batteries, the
-  light panel on one top mount, cabled to the shield, and a found panel on the other. A
-  strong cable from the crate holds the turbine out in the wind beyond the bubble. In
-  all, a 1,000 Wh bank and 90 W of panels. Since 2026-10-17 a condenser beyond the
-  shield waters the planters on hoses (Survival), on a battery and a panel of its own,
-  out of the bank. At 45° north, through two days and nights of
-  the probes' seed, 24 minutes of them full storm, nothing in it went dark and its bank
-  never fell below 98%: the turbine carries most of the shield's 200 W in a storm and
-  all of its sip at night. The kit's power under a found shield (the light panel and a
-  battery half charged) went dark in the same weather at 1.34 days.
+  dev scenario parks it round you, running, on a deck two pieces by two (Hunter,
+  2026-10-17: "add a 2x2 pimped out chassis to afk scenario"), a tray under every piece and
+  a hook on every free ring, floating about a metre up. Standing on it, their own trays
+  off: the base shield on a big battery and a condenser on a battery and a panel, on the
+  upwind pieces; the crate, with two big batteries, the light panel and a found panel;
+  and a second crate with two more big batteries, a found panel and a lamp. All of it is
+  one pool, and a strong cable from the crate's port holds the turbine out in the wind
+  beyond the bubble, its battery in the pool too: a 1,700 Wh bank and 210 W of panels.
+  The deck is moored to a stake upwind of it. Two harvester planters float upwind of it
+  on their own trays and batteries, on hoses from the condenser (Survival), each moored
+  to a stake of its own. Floating, the deck draws about 370 W, its 185 kg at 2 W a
+  kilogram, more than all the rest together. At 45° north, through two days and nights
+  of the probes' seed, 24 minutes of them full storm, nothing in it went dark and its bank
+  fell to 84% (it never fell below 98% when the camp sat on the sand, its trays resting,
+  before the deck). At the equator the deck floated for 7.4 days, nearly six of them
+  storm, until the bank was down to its reserve and the deck gave way to the shield,
+  settling on the sand; the planters' own batteries ran out about the sixth day, and
+  they settled too, still growing. The kit's power under a found shield (the light panel
+  and a battery half charged) went dark in the same weather at 1.34 days.
+- **Holding a turbine out from a deck is tight.** A strong cable is 6 m and the base
+  shield's bubble 7 m, so a turbine on a cable from a deck under it stands only just
+  outside. On the 2x2 deck the shield stands on the piece across from the crate, as far
+  from its port as the deck allows, and the turbine stands 7.6 to 7.9 m from the shield.
+  A wind that swings round toward the shield's side can bring it inside, where it makes
+  nothing. A floating deck on a strong cable to a turbine on the sand also creeps toward
+  it, drawn by the cable's weight, about 0.3 m a day until its mooring is taut, so the
+  scenario moors it nearly taut.
 - **A turbine has to be held out there.** Nothing plants one yet (the probes freeze
   theirs), and standing loose, a storm slides it over the sand, making nothing while it
   moves: in a first try at the camp it slid 33 m in the first storm, until its cable
@@ -190,11 +265,12 @@ the felt-weather rule.
   nothing mends it: on the probes' seed it goes on the third day (2.45 days in at the
   equator, 2.67 at 45°), having made about 90 Wh for the camp, less than a battery
   holds. That's why probe 4 runs two days. A wrecked device leaves its pool, and its
-  battery's charge with it. After that the bank carries the base shield alone, about
-  67 Wh a day of storm: at the equator the camp's bank was down to 63% after eight
-  days, nearly six of them storm.
+  battery's charge with it. After that the bank carries the camp alone: the camp on the
+  sand, before the deck, was down to 63% after eight days at the equator, nearly six of
+  them storm, where the floating deck reached its reserve at 7.4 days (above).
 - **Panels hardly count against a storm.** Over probe 4's two days the camp's panels
-  made about 5 Wh, and it passes with them broken. A day of storm costs the base shield
+  made about 5 Wh, and it passes with them broken (the camp on the sand, before the
+  deck). A day of storm costs the base shield
   about 67 Wh, which 90 W of panels earn back in about eleven clear days at the equator.
 - **The turbine's blades turn with what it makes** (2026-10-17). A real rotor turns with
   the wind and makes power with the wind cubed, so its speed goes with the cube root of
@@ -282,3 +358,33 @@ standing.
   batteries and power like a crate." Not said: what a screen, a radar or another computer mod
   draws, whether a Console on a dark pool goes blind, and what its weight adds to the tray's draw
   at 2 W a kilogram.
+
+Session 4, part 4 (2026-10-17) adds the following. Each is quoted old and new, and the PRD follows the
+session as direction.
+
+- **The burner against the heavy generator.** Here (Sources): the "heavy generator" "rides on
+  caterpillar tracks, slows the camp, and burns fuel," with "fuel grown from plants" among its fuels.
+  The session: a "burner/generator (for coalcane fuel)" as a "crate part." *Follows the session for the
+  burner.* Not said whether the heavy generator also takes coalcane, or whether they are one device.
+- **A plant that drains power against "energy is conserved."** Here: "Every battery has a charge, every
+  device a draw... The numbers always add up." The session: quietbloom "grows by eating your power" and
+  "slowly drains" radios and batteries. Not said where the energy goes, or what the plant draws from.
+- **What coalcane is worth.** The session says "trades water for power" and gives no figures. Not said
+  how much water, light and time a stalk takes, or how much power it gives, so whether burning it pays
+  is unset.
+
+Session 4, part 5 (2026-10-17, [the gods session](../gods-gear-farside-2026-10-17.md)) adds the
+following. Each is quoted old and new, and the PRD follows the session as direction.
+
+- **A second burner of coalcane.** Here (Fuel crops and the burner): coalcane "is the only renewable fuel
+  crop," burned in "a new burner device." The session: the kiln "burns coalcane" too, and a fed Stoker
+  eats it. *Follows the session.* Not said how many stalks each takes, or which a farm should feed first.
+- **The electric furnace against "no real electrical simulation."** Here (out of scope): "Real electrical
+  simulation, like voltage or wire resistance." The session: a furnace "runs on power." Read as a load
+  with a draw, which needs no simulation. Not said what it draws.
+- **A requisition against "energy is conserved."** Here: "Every battery has a charge, every device a
+  draw... The numbers always add up." The session: the Quartermaster "requisitions a cut of your camp
+  power." Not said where the cut goes, or whether the module is a load that gives nothing back, as
+  quietbloom is above.
+- **A god module's draw.** The session gives none for the Walker, the Quartermaster, Mother Cistern or
+  the Almanac. Not said whether a module runs on the deck's pool, its own battery, or nothing.

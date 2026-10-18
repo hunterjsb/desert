@@ -5,8 +5,9 @@ extends Node
 ## the run's kit crate, its shield up, and a charger's lamp beside it, without
 ## the headlamp and with it. It prints the sand's lightness (CIE L*) 5, 10 and
 ## 15 m ahead and how much darker the steps there are, and what the headlamp
-## costs the GPU, with and without shadows:
-##   godot --path . --disable-vsync res://look/headlamp/headlamp.tscn -- --capture <dir>
+## costs the GPU, with and without shadows. At the fixed exposure, or with --eye
+## as the eye sees it, settled on each light:
+##   godot --path . --disable-vsync res://look/headlamp/headlamp.tscn -- --capture <dir> [--eye]
 ## look/headlamp/shoot.sh builds the sheet. A small window that never takes
 ## focus, nothing but this script moving anything, and silence.
 
@@ -31,6 +32,8 @@ const GPU_ROUNDS := 4
 func _enter_tree() -> void:
 	var tuning := Tuning.current()
 	tuning.run_seed = SEED
+	# The fixed exposure, not the eye's, so shots and readings compare across builds.
+	tuning.eye_adapts = OS.get_cmdline_user_args().has("--eye")
 	# A full storm everywhere that never passes, in still air.
 	tuning.storm_ramp = 0.04
 	tuning.storm_threshold = -2.0
@@ -146,6 +149,8 @@ func _lamp(lamp: Headlamp, lit: bool) -> void:
 	if not lit:
 		lamp.visible = false
 	await _ticks(120)
+	world.weather.eye.settle()
+	await _ticks(10)
 
 
 ## The sand's lightness over the walk's line `at` (world metres), with every

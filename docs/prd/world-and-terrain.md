@@ -116,10 +116,227 @@ It bends two things here and leaves the rest alone:
 - **The seed.** The terrain comes from the run's seed, and a landmark is "the same in every
   run." Its ground has to be pinned to the landmark whatever the seed says: a footprint in
   `height_at` like a ruin's, but at fixed coordinates. How, and whether the moon's lap holds all
-  of them, is open.
+  of them, is open. *Overtaken by session 4, part 4 (below): landmarks are placed per seed, so the
+  ground is generated around them and nothing is pinned against the seed.*
 
 Rules 1 to 3, 5 and 6 are untouched: the ground is still one function, and a landmark is placed
 into it, never dug or moved.
+
+**Sister (Agreed, session 4, part 3).** Session 4, part 3 ([lore
+session](../lore-session-2026-10-17-part-3.md)) gives the first landmark a description: "a
+fixed-coordinate prefab landmark: half-buried temple, dormant terminal, basin that refills slowly.
+Restoration and linking can wait for the endings work." It is Mother Cistern's temple city, near
+Halfrise on the Rim ([Salvage & ruins](salvage-and-ruins.md#landmarks) has the site, [the
+lore](../lore-research.md#mother-cistern-and-her-order-agreed-session-4-part-3) the story).
+Readings, not in the session:
+- **Where it stands is a longitude question.** The Rim is a region of the sky's map, Tu half-risen
+  on the horizon, and the game has only latitude. Sister's coordinates wait for the regions
+  ([the vision](../vision.md#the-world)), and so do Halfrise and the other great sites.
+- **Its basin is state a chunk can't hold.** How full it is, and whether Mother Cistern is dormant,
+  restored or linked, belong with the landmark's record in the save, the reading above
+  ([Profile & saves](profile-and-saves.md#ending-flags-proposed)).
+- **It is one more fixed place on a map that has none,** so it leans on the same open question as
+  the other landmarks: how a fixed landmark sits on a seeded world (open questions).
+
+**Placement per seed (Agreed, session 4, part 4).** Part 4 settles most of how a landmark sits on a
+seeded world. Its fixed landmarks (Port Morgan, the Halloran refinery and H-Town, the black site,
+Starcom, the observatory, the orbital launch site (replaced by the Rim depot in part 5), Sister, Halfrise) are "placed procedurally per
+seed, but always present, because the endings depend on them." The newer session wins, so a landmark
+is no longer "the same in every run" at "fixed coordinates on the planet grid" (part 2): every world
+has them, along the line toward Tu, and the terrain is generated around them, history first
+([World generation by layers](#world-generation-by-layers-agreed-session-4-part-4-not-built)). The
+exception to unloading stays: what you changed in one is kept whatever the distance.
+
+## World generation by layers (Agreed, session 4, part 4; not built)
+
+*[Session 4, part 4](../plants-worldgen-ruins-2026-10-17.md), with its labels as given: **Agreed** is
+settled direction, **Idea** is proposed and not confirmed, **Back burner** is liked and not to be
+built yet, and anything under its open questions is undecided and not to be hard-coded. None of it is
+built. Its scope warning: "the game has no structures and no terrain generation yet. Lore here is
+deliberately deeper than what should be built now." What to build first is the session's ten steps
+in the [skeleton plan](../skeleton-plan.md#the-newer-proposed-order-session-4-part-4). Hard rule: no NPCs, no
+dialogue, no exposition; history reaches the player through objects, terrain, instruments and
+radio.*
+
+**The takeaway: generate history first, then terrain and loot.** The session describes today as 99%
+of loot "loose in sand and the rest in one copy-pasted ruin," on a world that is "fully procedural
+with an underlying coordinate system but no terrain generation phase yet." The ground here is built
+(Ridges, the first pass of underlying topography); what the session means is that no phase yet
+decides what was where. It adds one, in layers:
+
+### The layers (Agreed)
+
+1. **Colonial layer.** Place the fixed colonial landmarks first, then the colonial skeleton: main
+   highways, pipelines, power corridors, water-import aqueducts and hab tunnels.
+2. **Skimmer layer.** Wrecks, pads and camps, mostly overlapping colonial ruins and clustering around
+   Han.
+3. **First Kingdoms layer (the first age).** Settlements along dead colonial lines and near water;
+   first-age water lines link them. Part 5 says part 2 is canon for the age: the keepers' holdings, a
+   citadel and toll towns, as well as part 4's pipe towns and cisterns ([Salvage &
+   ruins](salvage-and-ruins.md#structures-by-era-and-the-loot-model-agreed-session-4-part-4-not-built)).
+4. **Second-age layer.** Towns on top of or near first-age sites, with Halfrise and Sister as
+   anchors and a dense road network.
+5. **Feral layer.** Plants placed along the roads, water lines and ruins the layers left
+   ([Farming](farming.md#propagation-growth-stages-and-wild-habitats-agreed)).
+6. **Sand.** Everything is buried at a depth matching its era, and storms take over from there
+   ([Salvage & ruins](salvage-and-ruins.md#structures-by-era-and-the-loot-model-agreed-session-4-part-4-not-built)).
+
+"Each layer builds on the last, so history stays coherent per seed."
+
+**The order, restored by part 5.** The history pass runs in the session's order: "colonial → collapse →
+skimmer era → **First Kingdoms** (first age) → **Dark Age** → second age → feral." The layers above are
+the ones that place sites. The Dark Age "generates no sites of its own": it is a lineage rule on loot
+([Salvage & ruins](salvage-and-ruins.md#the-dark-age-as-a-lineage-rule-agreed-session-4-part-5-not-built)).
+The collapse has no layer either, in part 4 or part 5; a reading is that it adds no site and changes
+what the earlier layers hold, their burial and abandonment. So the order of sites is unchanged:
+colonial, skimmer era, First Kingdoms, second age, feral, sand.
+### Roads and water lines are placement rules (Agreed)
+
+"The roads themselves are gone; the player never sees a road surface." Generate invisible paths
+between anchors, then scatter structures and feral plants along them. The pattern of saltbush lines,
+shrines and watchtowers is what traces the road.
+
+### The colonial skeleton (Agreed)
+
+(The session's word; it is not the game's skeleton build.)
+- Port Morgan is the colonial hub, on the Tu-facing side. **Spokes** run outward to the ring; some
+  routes run **around** the ring and some **in** toward the hub.
+- The **main artery** runs inward from the Rim (Halfrise, Sister), through Mon (Port Morgan), down to
+  Han (Halloran, the black site).
+- The **observatory** sits alone in the dark zone on its own long spoke: a maintenance road with power
+  lines, giving a reason to cross the dark. (Part 5: it is the elevator stub on the far-side volcano, at
+  the anti-Tu point.)
+- **Starcom** is high altitude, on a peak or ridge above the weather.
+- Density tapers: rich at the Rim, thinner in Mon, sparse and grim in Han.
+
+### Fixed landmarks in every world (Agreed)
+
+"Placed procedurally per seed, but always present, because the endings depend on them": Port Morgan;
+the Halloran refinery and H-Town (Aitch); the black site; Starcom; the observatory; the orbital
+launch site; Sister; Halfrise. (**Part 5 replaces the orbital launch site** with the Rim depot:
+[below](#the-rim-depot-the-twin-fires-and-the-elevator-stub-agreed-session-4-part-5-not-built).) The
+session corrects two places on the way: the black site sits on the
+main artery, not an isolated spoke, and Starcom and the orbital launch site are separate places
+([the lore](../lore-research.md#corrections-and-places-agreed-session-4-part-4)).
+
+### Keeping a huge moon interesting (Agreed)
+
+Arteries alone leave most of the moon empty. The fixes:
+- **Dense networks:** each era made many minor paths, farm tracks and local wells, not just main
+  roads.
+- **Off-network sites:** skimmer wrecks crash anywhere; colonial survey beacons and relay towers sit on
+  a grid; First Kingdoms hermits and holdouts lived remote.
+- **Drift** fills the gaps ([Salvage & ruins](salvage-and-ruins.md#two-channels-agreed)).
+- **Meaningful emptiness:** some deep desert stays empty on purpose as the dangerous zone between
+  settled areas.
+- **Region identity:** the hot zone, the dark zone and the ring band each have their own plants,
+  storms and sites.
+
+### Readability
+
+Arteries must be legible from the dunes: "a straight line in nature means people." Saltbush lines,
+watchtower silhouettes, pylon stubs and pipeline humps run in straight lines. A basic survey mod on
+the Console picks up buried metal, so colonial pipelines show as lines on screen
+([Devices & mods](devices-and-mods.md#the-console-proposed-not-built)).
+
+### Spawns and the early goal (Agreed)
+
+The early game for everyone: **find an artery and follow it.** Spawn position depends on the kit:
+- **Surveyor:** deep desert with detection gear; finding an artery is their early game.
+- **Salvager:** near a skimmer wreck field.
+- **Homesteader:** right on a road, near a wayshrine.
+
+### Readings, not in the session
+
+- **A layer plan is still the one function.** Rule 4 says a chunk is "pure output of the seed and its
+  coordinates." Roads, anchors and sites can be so if they are a plan of the whole moon made from the
+  seed, and a chunk only reads it. The moon is finite, about 150 km round, so a coarse plan is a
+  fixed-size job done once a run, as each ruin candidate's ground is surveyed once a run now
+  ([Salvage & ruins](salvage-and-ruins.md)). The roads are paths on the sphere, so they are sampled
+  from latitude and longitude, which the terrain's fixed fields do not yet use ("still sampled from
+  flat world coordinates").
+- **The sand layer is the footprint trick.** A built ruin is pressed into `height_at` so the sand
+  meets its floor. A structure "buried at a depth matching its era" is the same trick with the sand
+  over its roof, set when the chunk is made. Nothing reshapes loaded ground (rule 2).
+- **Per-seed landmarks answer a standing question.** "How a fixed landmark sits on a seeded world"
+  (open questions) was hard when landmarks were "the same in every run." Placed per seed along the
+  axis, with the terrain generated around them, they sit on any seed. Whether a landmark's changes
+  carry across runs is untouched.
+- **The ring is the Rim's band, a reading.** "The ring" is new to the docs. Spokes "run outward to
+  the ring," the black site is "inside the ring," and the hot zone, dark zone and ring band are
+  regions with their own plants. They fit the sky's three regions: hot zone under Tu, ring band the
+  Rim, dark zone the far side ([the lore](../lore-research.md#tu-the-tidal-lock-and-the-water-agreed-session-4-part-2)).
+- **Scale.** The Rim to the point under Tu is a quarter of a lap, about 37 km, the same as equator
+  to pole here, a walk of several hours. Caravanserais "at day-long intervals on the artery" would
+  be about 1.7 km apart if a day is the game's 20 minutes on foot, so about twenty of them along the
+  line, or a handful if "day" means a lore day's march. The session does not say.
+- **Density is regional, and the built ruin density is not.** One ruin in each 5 by 5 chunks,
+  about 650 m apart, holds everywhere today. Rich at the Rim and sparse in Han is a field over the
+  moon.
+
+## The Rim depot, the twin fires and the elevator stub (Agreed, session 4, part 5; not built)
+
+*[Session 4, part 5](../gods-gear-farside-2026-10-17.md), section 6, labels as given (everything is
+**Agreed** unless marked). None of it is built. The lore is in [the lore
+research](../lore-research.md#the-rim-depot-and-the-twin-fires-agreed-session-4-part-5).* "Part 4's
+'orbital launch site' landmark is **replaced** by two things: the Rim depot and the far-side elevator
+stub, which is also the observatory."
+
+- **The Rim depot** is a suborbital port near Sister, built for the terraforming effort. It is a
+  landmark in the launch site's place. Interstellar freight landed at Port Morgan and hopped
+  suborbitally, or went by rail and truck, out to the Rim, so later roads follow the colonial rail and
+  truck line from Port Morgan to the Rim: the **main artery** has a reason. It gives the Rim real colonial
+  loot (hoppers, pads, rail yards, terraforming equipment), and it explains why Mother Cistern, Sister and
+  Halfrise sit where they do.
+- **The twin fires.** Tidal heating peaks at the point facing Tu and the point opposite it, and
+  volcanism clusters at both: Halloran's rift vents at the sub-Tu point (the Stoker's) and a great
+  far-side volcano at the anti-Tu point, "far-side centre, on the equator" (the Eye's).
+- **The elevator stub is the observatory.** The summit of the far-side volcano holds the finished ground
+  anchor and lower tether of a space elevator, and the cultists built the observatory out of the tower
+  stub: "the tallest structure on Zan, above the dust, out in the dark," with one of the moon's major
+  vent caps under it.
+- **Hoppers (late-game travel; deferred):** from the depot out to the observatory, up to Starcom, or
+  into Port Morgan carrying parts or fuel. "Flying over Han's coverage without having dealt with the
+  Quartermaster gets you shot down."
+
+The landmark list is now Port Morgan; the Halloran refinery and H-Town (Aitch); the black site; Starcom;
+the observatory; the Rim depot; Sister; and Halfrise.
+
+Readings, not in the session:
+- **The far side has a place to walk to.** The anti-Tu point is half a lap from the sub-Tu point, about
+  75 km on the game's lap, and a quarter lap past the Rim, so about 37 km, the walk from the Rim to the
+  point under Tu, across the dark. The observatory's "own long spoke" of part 4 (a maintenance road
+  with power lines) is the tower's service line. Nothing is placed there yet.
+- **A tower is a landmark you can steer by.** The tallest structure on Zan, standing out of the dust
+  in a black sky, is visible from far. It meets the same missing landform as Starcom's peak: the ground
+  has only basins, rises and ridges (open questions).
+- **The depot is the Rim's, and the main artery now runs from it.** The artery runs inward from the
+  Rim "through Mon, down to Han"; its Rim end is the depot, Sister and Halfrise together.
+- **The twin fires are two regions of one rule.** Volcanic ground is heat, vents and ash; the sub-Tu
+  and anti-Tu points each get it, and the ground between is the Rim's and the cold. The rift valley is
+  the first, and the second has no description beyond the volcano and its tower.
+
+## Ambient life: sand beetles (Agreed, session 4, part 4; not built)
+
+Zan now has colonial insects as well as feral plants (Agreed). "The constraint: they must be cheap to
+model."
+- **Sand beetles** are colonial pollinators or decomposers that went feral: small ambient creatures
+  that scuttle, with no AI beyond that.
+- They tie into the plants. Dewleaf's ancestor is the fog-basking beetle, glowcap attracts them, and
+  wild stormcups trap blown-in insects ([Farming](farming.md#the-plant-system-agreed-session-4-part-4-partly-built)).
+- *Open:* whether beetles are pests, pollinators, or both.
+
+Readings, not in the session:
+- **They sit with "no native life."** Part 3 says "Zan has no native life, only feral colonial
+  imports ('rogue plants'), plus the last nomad city and possibly a bunker holdout." Beetles are
+  colonial imports, so the line holds, with insects added to the plants.
+- **A scuttle needs no body.** Rule 3 is about physical things leaving collision, and a beetle is not
+  one: no physics body and no collision, drawn only in loaded ground near the player, placed from the
+  seed by habitat (near glowcap, in buried ruins' cracks). The vision's "No AI enemies, so no
+  creature rigging" is untouched, since they are not enemies, and one rigid mesh moving needs no rig.
+- **Pests and pollinators would each add a rule.** A pest breaks Farming's "Pests and diseases" out of
+  scope, and a pollinator would need a crossing rule (Farming asks "can players create new strains?").
+  The session decides neither.
 
 ## Tracks
 
@@ -163,12 +380,14 @@ trail touching 30 to 60) if a resumed run should keep its trail.
   of it, leaves the oldest steps 61% of their depth (probe 10). Tuning's Tracks group
   holds the window and both rates.
 - **How they read**, as lightness (CIE L*) over each mark against the sand beside it,
-  fresh and after eight minutes of storm, from `look/tracks` (measured before Tu's light
-  replaced the old night light everywhere, so the night figures are due again): in clear day the sand is
-  76 and steps 9 darker fresh, 3 aged; in a storm by day the sand is 20 and steps 6
-  darker, 5 aged; at night the sand is 9 and steps 4 darker, nearly half its light, 2
-  aged. **In a storm at night there's no light at all** (the sand is 0.7): no ground
-  reads, so neither do tracks, except in a lamp's or a shield's light. A lamp like a
+  fresh and after eight minutes of storm, from `look/tracks` at the fixed exposure: in
+  clear day the sand is 76 and steps 9 darker fresh, 3 aged; in a storm by day the sand
+  is 20 and steps 6 darker, 5 aged. At night under Tu's light, Tu half lit near
+  midnight (measured again 2026-10-17), the sand is 2 and steps about 1 darker, too
+  faint to tell fresh from aged. The eye ([art direction](../art-direction.md#eye-adaptation))
+  opens on it, and then the sand is 5 and steps 2 darker (`look/tracks --eye`). **In a
+  storm at night there's no light at all** (the sand is 0, and 0.4 with the eye): no
+  ground reads, so neither do tracks, except in a lamp's or a shield's light. A lamp like a
   device's at your side lights about 5 m, where steps are half the sand's light. The
   suit's headlamp (Survival) is the light you carry that makes storm nights navigable.
 - **Cost**, measured with the game running beside it: pressing takes at most 0.2 ms of
@@ -244,6 +463,10 @@ Built after the skeleton loop works end to end, in roughly this order:
   exact.
 - **Shifting dunes.** Land generated after a storm passes comes out different. This
   only affects newly generated chunks; rule 2 still holds.
+- **World generation by layers** (session 4, part 4; above): a plan of the moon made from the seed,
+  colonial landmarks and skeleton first and the feral layer last, with sand over all of it. The
+  session's order starts with the colonial skeleton and the second-age roads only
+  ([skeleton plan](../skeleton-plan.md#the-newer-proposed-order-session-4-part-4)).
 - **Distance rendering.** This is core, not polish, because the clear-day view is a
   reward. Lower-detail rings out to the horizon (with skirts so no gaps show),
   generation on worker threads, and heat shimmer softening the far edge. In a storm,
@@ -336,10 +559,80 @@ fail.
   1.28 ms headless, against 1.16 ms walking (probe 7 here) and the 2.0 ms line, and
   1.21 ms in a real window at 144 Hz (`look/stream`). The board reads loaded ground,
   about a dozen reads a step at 240 steps a second, 0.15 ms a tick.*
-- **How a fixed landmark sits on a seeded world.** Landmarks are "the same in every run,"
+- **How a fixed landmark sits on a seeded world.** *Narrowed by session 4, part 4: landmarks are
+  "placed procedurally per seed, but always present" (below).* Landmarks are "the same in every run,"
   while the vision has "RNG driving both the terrain and the finds." The terrain under a
   landmark would have to ignore the seed (Landmarks above). Whether "persist the player's
-  changes" means within a run or across runs is not said.
+  changes" means within a run or across runs is not said. Session 4, part 3's Sister adds a
+  place on the Rim, and the Rim needs longitude regions the game doesn't have yet.
 
 Chunk size and the exact view distance are tuning decisions. The skeleton measures
 them; they aren't design questions.
+
+Session 4, part 4 (2026-10-17) adds the following. Each is quoted old and new. The newest session wins
+in the living docs, so this PRD follows it where it can, and says so on each line.
+
+- **Landmarks per seed against "the same in every run."** Here (Landmarks, from part 2): "prefab sites
+  at fixed coordinates on the planet grid, the same in every run." The session: "Placed procedurally
+  per seed, but always present." *Follows the session.* Not said whether a landmark keeps the same
+  shape in every seed, or only its role; "persist the player's changes" is still unsaid as within a
+  run or across runs.
+- **A plan of the whole moon against "Only what's around the player exists."** Here (the vision):
+  "Only what's around the player exists," and "Stateless." The session: roads, anchors and layers
+  generated as history, "coherent per seed." Read above as a plan the chunks read, finite because the
+  moon is. Not said how coarse the plan is, or whether anything of it is kept in a save.
+- **Landforms the ground doesn't have.** Here: underlying topography is "broad basins and rises about
+  12 m high and never steeper than about 1°" and ridges up to about 40 m. The session needs a plateau
+  for Port Morgan, a rift valley and wall for Halloran and the black site, and a peak "above the
+  weather" for Starcom. Not said whether the topography grows these or the sites stand on the
+  ground as it is.
+- **The dangerous deep desert in a game with no enemies.** The session: "some deep desert stays empty
+  on purpose as the dangerous zone between settled areas." The vision: "No enemies to fight." Read as
+  the danger being distance from water and roads, since the pressure is "the moon itself: wind,
+  storms, heat, thirst."
+- **"Find an artery" for everyone against wandering, and the oyster.** The session: "Early game for
+  everyone: find an artery and follow it." The vision: wander "wherever you like," and the
+  Homesteader (the oyster) is "fully stationary." The session puts the Homesteader on a road, so
+  the artery finds them. Not said how the Surveyor's artery is found "deep" in the desert beyond
+  "detection gear."
+- **Spawns by kit against the built spawn and the built kit.** Here: "A run never starts on a ruin's
+  ground," and starts on flat ground near the first chunk's middle (Salvage & ruins); the Surveyor's
+  kit is a crate, standard shield, tray, multi-compass, stake tether and radio (the vision), with no
+  detection gear, and the Archaeologist is the start with ground-penetrating radar. The session: the
+  Salvager near a skimmer wreck field, the Homesteader "near a wayshrine," the Surveyor with
+  "detection gear." *Follows the session* for where each starts. Not said whether the Surveyor's
+  detection gear is in the kit or a find, or whether a start beside a wayshrine breaks "never on a
+  ruin's ground" (it is beside, not on) or the vision's "oysters never find ruins."
+- **How much storm-driven dune movement the terrain can support.** The session's own open question.
+  Here, rule 2: loaded ground never changes, and "Shifting dunes" only change newly generated chunks.
+- **The orbital launch site.** *Answered by session 4, part 5: there is none, and the Rim depot and
+  the elevator-stub observatory replace it (above).* The session's own open question: location and
+  structure. The ladder
+  launches "from Port Morgan," and Port Morgan's colonial pads are a landmark of their own
+  ([Salvage & ruins](salvage-and-ruins.md#landmarks)). Not said whether the launch site is those pads
+  or a separate place.
+
+Session 4, part 5 (2026-10-17, [the gods session](../gods-gear-farside-2026-10-17.md)) adds the
+following. Each is quoted old and new. The newest session wins in the living docs, so this PRD follows
+it as direction and says so on each line.
+
+- **The orbital launch site against the Rim depot.** Here (above, from part 4): the launch site is a
+  fixed landmark and "location and structure" is the session's own open question. The session: it is
+  "**replaced**" by the Rim depot and the elevator stub. *Follows the session; the question is
+  answered.* Not said whether the launch endings fly from the depot. The ladder says they launch "from
+  Port Morgan," and the depot is suborbital.
+- **A volcano and a tower on a ground of low rises.** Here: underlying topography is "broad basins and
+  rises about 12 m high and never steeper than about 1°," with ridges up to about 40 m. The session: a
+  "great far-side volcano" with the tallest structure on Zan on its summit. Not said whether the
+  topography grows a mountain or a rise carries a tower that only looks tall; the same open question as
+  the plateau, the rift and Starcom's peak.
+- **A far side nobody has built.** Here: the game has latitude and no longitude regions, and a run starts
+  on the near side. The session puts a landmark at the far-side centre. Not said how the regions arrive,
+  or whether a run ever goes there before the sky does (the Tu spec's open question).
+- **Hoppers against a game with no flight.** Here: movement is the board, the tray and the sailboat. The
+  session: suborbital hoppers as late-game travel. *Deferred in the session.* Not said what a hopper is
+  as a thing in the world.
+- **The tidal heating at both bulges.** Here (the moon): a fading, rounding orbit with the vents going
+  quiet. The session: the heat peaks at two points and the volcano at the far one is a vent cap that
+  still matters at the end. Not said where the First Kingdoms' vents went, or whether they went to the far
+  side ([the lore, section 19](../lore-research.md#19-open-after-session-4-part-5)).

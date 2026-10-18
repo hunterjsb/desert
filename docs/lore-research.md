@@ -9,12 +9,34 @@ answers to six of its seven conflicts with earlier text, given the same day afte
 ([section 14](#14-open-after-session-3)). Session 4 ([2026-10-17](session-notes-2026-10-17.md):
 Zan's settlements, Halloran and H-Town, the Harbourmaster) is folded in too, with its clashes
 and open items in [section 15](#15-open-after-session-4). So is session 4, part 2
-([2026-10-17](lore-session-2026-10-17-part-2.md): the renames, a timeline of about two thousand
-years, Tu and the water, the geography, the First Kingdoms, the Dark Age and the Second Age, the
-faith and the AI gods, the nomads, the slang). Unlike session 4's notes, it says that where it
+([2026-10-17](lore-session-2026-10-17-part-2.md): the renames, a timeline, Tu and the water, the
+geography, the First Kingdoms, the Dark Age and the second age, the faith and the AI gods, the
+nomads, the slang). Unlike session 4's notes, it says that where it
 contradicts existing docs it is the newer decision, so the living docs follow it and each clash
 is quoted old and new in [section 16](#16-open-after-session-4-part-2). Its game-facing parts,
 origins and kits and landmarks and endings, are in [the vision](vision.md#player-origins-and-kits).
+The same day's two later sessions are folded in as well. [The endings
+session](endings-and-radio-2026-10-17.md) (the ending ladder, the freighter left behind, the
+observatory and the Walker, second-age radio, and four updates to earlier lore) says to keep
+itself where it conflicts with the lore docs and to flag the clash. [Session 4, part
+3](lore-session-2026-10-17-part-3.md) (the war's end, the galaxy of the player's time, life on
+Zan, Mother Cistern and her order, the ending axes, two more starting kits) follows it and is the
+newer where the two overlap. So both win in the living docs, the later one where they differ, and
+each clash is quoted old and new in [section 17](#17-open-after-the-endings-session-and-session-4-part-3).
+Their endings and kits are in [the vision](vision.md#landmarks-and-endings).
+The last two sessions that day are folded in as well. [Session 4, part
+4](plants-worldgen-ruins-2026-10-17.md) (a full plant system, history-first world generation,
+structures by era and the loot model, and corrections to three places) renamed the eras once more
+(colonial, collapse, skimmer era, first age, second age). [Session 4, part
+5](gods-gear-farside-2026-10-17.md) (the seven gods, the Dark Age as a lineage rule, gear by era,
+the kiln, the Rim depot and the twin fires, and the dispatches) is the newest, and it corrects
+part 4: "Part 4 had two errors. Where this doc and part 4 disagree, this doc wins; for first-age
+detail, part 2 is canon." So the eras are again colonial, collapse, skimmer era, **First Kingdoms
+(the first age)**, **Dark Age**, second age and feral, and each clash is quoted old and new, part 4's
+in [section 18](#18-open-after-session-4-part-4) (now partly resolved) and part 5's in [section
+19](#19-open-after-session-4-part-5). Sections 12 and 14 to 17 are records of earlier folds and keep
+the era names those folds used (First Kingdoms, Dark Age, Second Age), which are current again;
+[section 19](#19-open-after-session-4-part-5) says how they line up.
 Loose: none of it is canon until he says so, and every name is a working name. It joins [the body
 research](body-research.md), [the science brief](science-brief.md) and the vision's lore into
 one history.*
@@ -24,8 +46,18 @@ one history.*
 session 3)** is his answer to a conflict that session left open, given the same day.
 **Agreed (session 4)** is from the 17 Oct notes, a supplement to session 3 that adds lore and
 replaces none. **Agreed (session 4, part 2)** is from the second 17 Oct session, which does
-replace earlier text where they clash. **Proposal** is a Claude suggestion in the sessions that
-Hunter hasn't picked.
+replace earlier text where they clash. **Agreed (endings session)** and **Idea (endings
+session)** are that session's own labels, kept as given: an Agreed item replaces earlier text
+where they clash, and an Idea is a suggestion that isn't agreed. **Agreed (session 4, part 3)**
+is from the later 17 Oct session, which has no labels of its own; it marks what is open,
+tentative, proposed or a working sketch, and those marks are kept here. **Agreed (session 4, part
+4)**, **Idea (session 4, part 4)** and **Back burner (session 4, part 4)** are the 17 Oct
+plants session's own labels, kept as given: Agreed is settled direction, Idea is proposed but not
+confirmed, Back burner is liked and not to be built yet, and anything in its open questions is
+undecided. **Agreed (session 4, part 5)**, **Idea (session 4, part 5)** and **Back burner (session
+4, part 5)** are the last session's, with the same meanings; everything in it is Agreed unless
+marked. **Proposal** is a Claude
+suggestion in the sessions that Hunter hasn't picked.
 **Leaning** is
 a research option this memo favours, not decided. **Open** is unresolved. Where older research disagrees with the
 sessions, the sessions win, and where part 2 refines part 1, part 2 wins;
@@ -37,9 +69,14 @@ and listed in [section 14](#14-open-after-session-3), which keeps the seventh, t
 open. Session 4 follows the same rule: where it rubs against earlier text, both sides stand
 and the clash is quoted in [section 15](#15-open-after-session-4). Session 4, part 2 reverses it
 for itself: where it clashes with earlier text it wins in the living docs, and the old wording
-is quoted in [section 16](#16-open-after-session-4-part-2). The verbatim records (the lore
-sessions and the 17 Oct notes) are left as written, so they still say "Bronze Age," "TILG" and
-"after the last survivors."
+is quoted in [section 16](#16-open-after-session-4-part-2). The endings session and session 4,
+part 3 do the same for themselves ([section 17](#17-open-after-the-endings-session-and-session-4-part-3)):
+the newer wins, and part 3 is newer than the endings session. Session 4, part 4 was the newest, and
+the same rule applied to it ([section 18](#18-open-after-session-4-part-4)). Session 4, part 5 is
+newer still and corrects it, and the same rule applies ([section
+19](#19-open-after-session-4-part-5)). The verbatim records
+(the lore sessions, the endings session and the 17 Oct notes) are left as written, so they still say
+"Bronze Age," "First Kingdoms," "Dark Age," "TILG" and "after the last survivors."
 
 ## Placeholders
 
@@ -48,21 +85,29 @@ them. Every lore and game doc uses these names and carries no year figure, and t
 only here. Session 4, part 2 gives the scale approximately and says "only their order and rough
 scale are decided," so its figures are recorded below as each placeholder's **current value**
 and nowhere else (applied 2026-10-17, and flagged in
-[section 16](#16-open-after-session-4-part-2)). A current value is the session's rough figure,
-not a set one: confirm it, change it or strike it here, and every doc follows.
+[section 16](#16-open-after-session-4-part-2)). The endings session's "a few thousand years"
+later the same day replaced the two spans' values, and is flagged in
+[section 17](#17-open-after-the-endings-session-and-session-4-part-3). A current value is the
+session's rough figure, not a set one: confirm it, change it or strike it here, and every doc
+follows.
 
 - **`{YEARS_SINCE_FALL}`** (not set). The time from the collapse to the player's arrival. It
   stands in for every earlier figure for how long ago the fall was. Where a sentence only worked
   with a number it is reworded around the placeholder, so ruins now last "longer than
-  `{YEARS_SINCE_FALL}`." *Current value: about two thousand years.* **Re-anchored 2026-10-17:**
-  it used to run from the last survivors to the arrival. The session counts from the collapse,
-  and it has survivors (a nomad city) still moving at the arrival, so there is no "last
-  survivors" to count from. The verbatim records keep the old anchor. "Fall" in the name means
-  the collapse, not the session's "fall" at the end of the First Kingdoms.
+  `{YEARS_SINCE_FALL}`." *Current value: a few thousand years.* **Changed 2026-10-17, after the
+  endings session:** it was about two thousand years (session 4, part 2). The endings session
+  says the post-collapse era "lasts a few thousand years," and this span contains that one, so
+  it moves with it ([section 17](#17-open-after-the-endings-session-and-session-4-part-3)).
+  **Re-anchored 2026-10-17:** it used to run from the last survivors to the arrival. The session
+  counts from the collapse, and it has survivors (a nomad city) still moving at the arrival, so
+  there is no "last survivors" to count from. The verbatim records keep the old anchor. "Fall" in
+  the name means the collapse, not the session's "fall" at the end of the First Kingdoms.
 - **`{POST_COLLAPSE_SPAN}`** (not set). How long the societies after the collapse last: the First
-  Kingdoms, the Dark Age, the Second Age and the Decline, from the end of the Collapse era to
-  the player's arrival. *Current value: about nineteen hundred years (the session's two thousand
-  less its first hundred for the Collapse era; derived, not stated).* **Renamed from
+  Kingdoms (the first age), the Dark Age, the second age and the Decline, from the end of the
+  Collapse era to the player's arrival. *Current value: a few thousand years* (the endings session: "the
+  post-collapse medieval era lasts a few thousand years (not ~12,000), so Tilg & Standard
+  outlasts it"; before it, about nineteen hundred years, which was part 2's two thousand less its
+  first hundred for the Collapse era, derived and not stated). **Renamed from
   `{BRONZE_AGE_SPAN}` 2026-10-17.** That one stood for how long the two Bronze Age feudal eras
   lasted until the last survivors died out, and it ended where `{YEARS_SINCE_FALL}` began. The
   two now nest: both end at the arrival, and this one starts when the Collapse era ends.
@@ -72,11 +117,23 @@ not a set one: confirm it, change it or strike it here, and every doc follows.
   session 3's do. Which of session 3's six eras it covers is open
   ([section 15](#15-open-after-session-4)). Session 4, part 2 gives no figure for it.
 - **The eras' marks.** The session's era table gives rough years, counted from the collapse: the
-  Collapse 0 to 100; the First Kingdoms from about 100 to several centuries; the fall at the end
-  of the First Kingdoms; the Dark Age unfixed; the Second Age peaking about 1,500 years in; the
-  Decline from late in the Second Age; the player at about 2,000. This is the only place the
-  eras' years live. [The era table in section 7](#the-ages-after-the-collapse-agreed-session-4-part-2)
+  Collapse 0 to 100; the First Kingdoms (the first age) from about 100 to several centuries;
+  the fall at the end of the First Kingdoms; the Dark Age unfixed; the second age
+  peaking about 1,500 years in; the Decline from late in the second age; the player at about 2,000. These are part 2's marks. The
+  endings session says "a few thousand years" and gives no new marks, so they are not rescaled
+  and are kept as part 2 wrote them until Hunter sets them. This is the only place the eras'
+  years live. [The era table in section 7](#the-ages-after-the-collapse-agreed-session-4-part-2-restored-in-part-5)
   gives their order and scale in words.
+
+**Session 4, part 4 (2026-10-17).** Its plant overview says the crops went feral over a span it gives
+only as "thousands of years." That is in line with the current values above, so no value changes, and
+the living docs write it as the long span since, with the placeholders, carrying no figure. Its other
+numbers are game durations (a storm of 20 to 40 minutes) and an Earth plant's lifespan, not the lore's
+years, and the verbatim record keeps them.
+
+**Session 4, part 5 (2026-10-17).** It says the Almanac's company is "gone for millennia" and the Stoker
+has been starving "for millennia." Both are in line with the current values, so no value changes, and
+the living docs write "the long span since" and carry no figure. It gives no years for the eras.
 
 ## 1. The shape of it
 
@@ -84,8 +141,8 @@ not a set one: confirm it, change it or strike it here, and every doc follows.
   shield holds the sky up and no terraforming machine made it.
 - **Two clocks.** A slow geological one: a lost sister moon leaves the survivor eccentric,
   tides heat it, and the orbit later recircularises. A sudden political one: a transit hub, a
-  war that severs the lane, a smuggler moon, a paroxysm, then the First Kingdoms, the Dark Age
-  and the Second Age in the ash.
+  war that severs the lane, a smuggler moon, a paroxysm, then the First Kingdoms, the Dark Age and
+  the second age in the ash.
 - **A supply chain under both.** The moon never made anything high-tech, and every part's
   maker's stamp tells the story.
 - **Information is fast and mass is slow (Agreed, session 3).** Messages cross the lane
@@ -97,7 +154,9 @@ not a set one: confirm it, change it or strike it here, and every doc follows.
   among the strata open ([section 8](#8-the-ground-strata-the-oldest-tech-and-names)).
 - **No AI uprising,** only local models that cults treat as oracles. The war that cut the lane
   was probably an outside power's doing (**Leaning**: the hive mind, not humanity's own AI).
-  **The lane has two ends,** and the far one isn't human.
+  **The lane has two ends,** and the far one isn't human. The war ended in a quarantine, and
+  the lane toward the far end is now a law, not a wall (**Agreed (session 4, part 3)**, offstage
+  until the endings: [section 10](#the-wars-end-the-wall-and-the-states-of-the-players-time-agreed-session-4-part-3)).
 
 ## 2. The body
 
@@ -149,7 +208,7 @@ the bright and dark nights. Session 4, part 2 adds what the three places on the 
 | **Far side** | Never visible | Black nights, stars only, cold. Water ends up here. Frontier, exile, "where the god can't see you". |
 
 "Both empires" is the session's wording. The Rim kingdom of the First Kingdoms is "a label the
-cities use, not a real state" (below), so it is read here as that kingdom and the Second Age
+cities use, not a real state" (below), so it is read here as that kingdom and the second-age
 empire. It is not settled ([section 16](#16-open-after-session-4-part-2)).
 
 - **Orbit history.** Zan's orbit was more eccentric when the colonists came, driving tidal
@@ -158,12 +217,23 @@ empire. It is not settled ([section 16](#16-open-after-session-4-part-2)).
   session 3 already reads the leak ([the surface today](#the-surface-today-agreed-session-3)).
   The timescale is the difficulty (check 2 above): the session has the vents quieting inside the
   story's `{YEARS_SINCE_FALL}`, so it is read as the vents moving, not the heating ending
-  ([section 16](#16-open-after-session-4-part-2)).
+  ([section 16](#16-open-after-session-4-part-2)). **Agreed (session 4, part 5):** the heating peaks
+  at both tidal bulges, the point facing Tu and the point opposite it, so volcanism clusters at
+  both: the twin fires ([section 4](#the-rim-depot-and-the-twin-fires-agreed-session-4-part-5), [the
+  moon](the-moon.md#where-the-heat-concentrates-agreed-session-4-part-5)).
 - **Water migration.** The near side is heated by the sun and by Tu's infrared; the far side
   runs colder. Water evaporates on the warm side and cold-traps as frost and ground ice on the
   far side. While the vents outgassed they topped the near side up; once they quieted, the near
   side drained outward. **Gameplay hook:** condensers work better toward the far side
   ([Survival](prd/survival.md#water)).
+- **Rain has never fallen (Agreed, session 4, part 3).** "Zan's water was always imported; it
+  never rained." The water the game shows is frost, ground ice and vapour, never rain, which
+  matches the weather having none (rain is out of scope in [Wind &
+  storms](prd/wind-and-storms.md#out-of-scope)). Mother Cistern's order built a faith on the rain
+  that never came ([section 9](#mother-cistern-and-her-order-agreed-session-4-part-3)). "Always
+  imported" sits against the water the vents outgassed and the near side lost, above. This memo
+  reads it as the colony's drinking supply and not as a denial of the vents
+  ([section 17](#17-open-after-the-endings-session-and-session-4-part-3)).
 - **Tu's size (Open, under trial).** Angular size stays a tuning value. The session has 6, 9 and
   13 degrees tried in game before the orbit is fixed, "physics follows the look," and three
   presets are being built. None is chosen. [The body research](body-research.md#tus-size-under-trial)
@@ -265,7 +335,7 @@ The three great sites lie on one rough line running from the Rim in toward the p
 All three are on the near side, the Rim being its edge, which answers session 4's question
 about which side ([section 15](#15-open-after-session-4)).
 
-1. **Halfrise**, on the Rim, Tu half-risen on the horizon. The Second Age capital.
+1. **Halfrise**, on the Rim, Tu half-risen on the horizon. The second age capital.
 2. **Port Morgan**, partway in on its plateau. Tu is high but off to one side, so Port Morgan is
    not dead centre, which is why one stretch of the Rim, the stretch closest to it, matters far
    more than the rest.
@@ -274,7 +344,115 @@ about which side ([section 15](#15-open-after-session-4)).
    lose its vents.
 
 The endgame is a journey down this axis. Frontier towns sit on the road between Port Morgan and
-Halloran ([the Second Age](#the-dark-age-and-the-second-age-agreed-session-4-part-2)).
+Halloran ([the second age](#the-dark-age-and-the-second-age-agreed-session-4-parts-2-and-5)).
+
+### The Rim depot and the twin fires (Agreed, session 4, part 5)
+
+Session 4, part 5 ([gods, gear and the far side](gods-gear-farside-2026-10-17.md)) changes the
+far-side geography. Part 4's "orbital launch site" landmark is **replaced** by two things: the Rim
+depot, and the far-side elevator stub, which is also the observatory. Both are game-facing in [World &
+terrain](prd/world-and-terrain.md#the-rim-depot-the-twin-fires-and-the-elevator-stub-agreed-session-4-part-5-not-built).
+
+**The Rim depot.** A **suborbital** port near Sister, built for the terraforming effort. Interstellar
+freight landed at Port Morgan, then hopped suborbitally (or went by rail and truck) out to the Rim.
+- It justifies the main artery: later roads follow the colonial rail and truck line from Port Morgan
+  to the Rim.
+- It explains why Mother Cistern, Sister and Halfrise sit where they do. The Cistern was built beside
+  the depot that supplied it.
+- It gives the Rim real colonial loot: hoppers, pads, rail yards, terraforming equipment.
+
+**The twin fires.** Zan is tidally locked to Tu, so tidal heating peaks at the two bulges, the point
+facing Tu and the point directly opposite. Volcanism clusters at both.
+
+| Point | Feature | God | Notes |
+|---|---|---|---|
+| Sub-Tu (Tu overhead) | Halloran's rift vents | The Stoker | Oldest, angriest god |
+| Anti-Tu (far-side centre, on the equator) | The great far-side volcano | The Eye | Youngest god; the one place Tu is never visible |
+
+**The elevator stub.** "A space elevator on a tidally locked moon anchors at the anti-Tu point. Tilg
+chose the summit of the far-side volcano, finished the ground anchor and lower tether, then the war
+killed the project. Generations later the cultists built the **observatory out of the tower stub**:
+the tallest structure on Zan, above the dust, out in the dark. One of the moon's major vent caps sits
+under it." The cultists read as the far-side heretics of the second age, who "worked out that Tu is a
+planet" and built a telescope where Tu never blocks the sky (a reading; [section
+9](#the-faith-of-tu-and-the-ai-gods-agreed-session-4-part-2)), and the Eye is what they raised
+([below](#the-eye-the-young-god-agreed-session-4-part-5)).
+
+**Hoppers (late-game travel; deferred).** Suborbital hoppers from the Rim depot. Their routes double
+as ending setups: out to the observatory, skipping the dark crossing; up to Starcom; into Port Morgan
+carrying parts or fuel. Flying over Han's coverage without having dealt with the Quartermaster gets
+you shot down, and one flag covers freighter, pod and hopper ([the Quartermaster](#the-quartermaster-agreed-session-4-part-5)).
+
+Readings, not in the session:
+- **The launch endings go back to Port Morgan.** With the orbital launch site gone, nothing in the
+  lore puts a launch anywhere but where the ladder already had it: the Ledger's freighter at Port
+  Morgan, or a smaller ship from it ([the freighter](#the-freighter-left-behind-agreed-endings-session)).
+  The depot is suborbital, so it is not an orbital site under another name.
+- **The observatory was colonial in stone and cultist in use.** Part 4 listed "the observatory" among
+  the colonial era's places. The stub is colonial, and the telescope in it is the heretics', which
+  settles that listing against the endings session's "far-side heretics of the second age ... built a
+  telescope" ([section 19](#19-open-after-session-4-part-5)).
+- **Tidal heating at both bulges is a lore rule.** Real tidal heating comes from the body flexing as
+  its distance to the giant changes, and where the heat shows up depends on the interior, so the hot
+  spots of a real moon need not sit exactly at the two points. The docs take the session's two points
+  as the rule and leave the physics to [the moon](the-moon.md#where-the-heat-concentrates-agreed-session-4-part-5).
+- **The tower is the real idea.** On a tidally locked moon a space-elevator tether would run from the
+  sub-giant or anti-giant point out to the moon-giant Lagrange point (L1 or L2), so an anchor at the
+  anti-Tu point is the physically sensible one.
+
+### The freighter left behind (Agreed, endings session)
+
+- **One freighter stayed.** When Tilg evacuated, one freighter was left behind at Port Morgan.
+  **Idea (why):** it was laid up for refit, or written off. It became part of the city and later
+  the Bastion ([the enclaves](#the-dark-age-and-the-second-age-agreed-session-4-parts-2-and-5)).
+- **The Ledger is its mainframe.** Freighters are moving towns on years-long crossings, so their
+  mind needs the best general base model. Most minds of the era are domain-specialised and need
+  an intermediary AI or a human expert to translate their jargon; the Ledger doesn't, which is
+  why it became so useful and so worshipped ([the AI
+  gods](#the-faith-of-tu-and-the-ai-gods-agreed-session-4-part-2)).
+- **The launch endings use it,** or a smaller ship from it ([the
+  endings](vision.md#landmarks-and-endings)). The Quartermaster shooting you down is the old
+  Provisional still refusing to let a Tilg ship leave.
+- **Two clashes.** An intact freighter on the ground, against section 13's check 12 and the
+  freighter wreck as a dig site above; and a freighter's own mind, against "Frontier AI was never
+  on the moon" (section 9). Both are quoted in [section 17](#17-open-after-the-endings-session-and-session-4-part-3).
+
+### Corrections and places (Agreed, session 4, part 4)
+
+Session 4, part 4 ([the plants session](plants-worldgen-ruins-2026-10-17.md)) corrects three earlier
+statements and fixes the colonial layout. Where the repo's docs had said otherwise, the old wording is
+quoted. The game side is in [World & terrain](prd/world-and-terrain.md#world-generation-by-layers-agreed-session-4-part-4-not-built).
+- **The black site (Agreed).** "A Provisional State facility during the hive mind war, run with
+  Halloran's security force, cut into the rift wall near Halloran inside the ring. It later becomes
+  the Quartermaster's bunker. It sits on the main artery, not an isolated spoke." Earlier here: the
+  tithe era's "black-site prison on Zan" (section 5), the Quartermaster in "a bunker cut into the rift
+  wall near Halloran, kept alive by geothermal power" ([section 9](#the-faith-of-tu-and-the-ai-gods-agreed-session-4-part-2)),
+  and Muster on the terraces "above the black site" ([section 7](#the-dark-age-and-the-second-age-agreed-session-4-parts-2-and-5)).
+  These agree, and nothing in the docs put it on a spoke, so the correction adds who ran it (Halloran's
+  force, which Halloran is said to field, section 4) and where it stands (on the artery). The
+  hive-mind seed shipment was locked in it ([the crops' lore](#the-crops-lore-agreed-session-4-part-4)).
+- **The geography axis runs toward Tu, not the sun (Agreed).** "Halfrise on the Rim, Port Morgan
+  partway in, Halloran deepest near the sub-Tu point." The section above already says it ("one rough
+  line running from the Rim in toward the point under Tu"), so this confirms it and rules out reading
+  the hot zone as a sun axis.
+- **Starcom is apart from the orbital launch site (Agreed).** Starcom is high-altitude comms, "on a
+  peak or ridge above the weather." The orbital launch site is a separate place, and is one of the
+  fixed landmarks. Earlier here: StarCom's flagship installations on the mountain the paroxysm blew
+  (section 7), and the launch endings launching "from Port Morgan" with a freighter left at the
+  port ([the ladder](vision.md#the-ladder)). No earlier text gave a launch site its own place, and
+  the session leaves its location and structure open. **Replaced by part 5:** there is no orbital launch
+  site landmark; the Rim depot and the elevator stub take its place ([below](#the-rim-depot-and-the-twin-fires-agreed-session-4-part-5)).
+- **The colonial layout (Agreed).** Port Morgan is the colonial hub on the Tu-facing side. Spokes run
+  outward to the ring; some routes run around it and some in toward the hub. The main artery runs
+  inward from the Rim (Halfrise, Sister), through Mon (Port Morgan), down to Han (Halloran, the black
+  site). The observatory sits alone in the dark zone on its own long spoke, "a maintenance road with
+  power lines, giving a reason to cross the dark" (part 5: it is the elevator stub on the far-side
+  volcano at the anti-Tu point). Density tapers: rich at the Rim, thinner in Mon,
+  sparse and grim in Han.
+- **The zones (a reading).** "The ring" is new to these docs. It is read as the Rim's band round the
+  near side, so "the hot zone, the dark zone and the ring band" are the sky's three regions: under Tu,
+  the far side and the Rim ([section 3](#tu-the-tidal-lock-and-the-water-agreed-session-4-part-2)).
+  The session does not define the ring.
 
 ## 5. Who's there: operators, makers and rarity
 
@@ -347,7 +525,10 @@ is open ([section 14](#14-open-after-session-3)).
 - **The governor-general.** An ex-military logistics officer appointed to hold the frontier,
   now more powerful than the post intended. A pragmatist, not a villain: the governor-general
   sees the hive mind as a real threat and the UG as asleep. The authority rests on a
-  never-revoked emergency mandate. Port Morgan was known about and let be.
+  never-revoked emergency mandate. Port Morgan was known about and let be. **Agreed (endings
+  session):** the Provisional's governor is **Plimsoll**. The session says "governor"; this memo
+  reads it as this post, the governor-general ([section
+  17](#17-open-after-the-endings-session-and-session-4-part-3)).
 - **Tilg.** The rising giant shipping line (a Hapag-Lloyd analogue), thriving in peacetime
   with bigger, modern ships. It registers Zan only as a *temporary transshipment hub*, citing
   the unstable orbit to avoid the Provisional's military upkeep: troop stations, customs, a de
@@ -355,12 +536,18 @@ is open ([section 14](#14-open-after-session-3)).
   session 3):** the label is a pretext, and part 1's "proper analysis" wording is updated to
   match ([section 4](#4-the-system-the-lane-and-the-harbor)). This adds a shape and a motive to
   the Tilg of part 1 §4 and part 2 §1; it doesn't restate their roles. **Agreed (session 4,
-  part 2):** long after the war, TILG merged with its old rival Standard Freight, and the
-  surviving company is **Tilg & Standard**, which the surveyor's contract comes from ([the
-  vision](vision.md#player-origins-and-kits)). By then "TILG" had worn into "Tilg," the same
-  letters with nobody remembering they were an acronym ([the
-  names](#slang-and-name-erosion-agreed-session-4-part-2)). These docs write the company as
-  Tilg, and keep the capitals only for the acronym itself.
+  part 2):** TILG and its old rival Standard Freight became one company, **Tilg & Standard**,
+  which the surveyor's contract comes from ([the vision](vision.md#player-origins-and-kits)).
+  Part 2 put the merger "long after the war." **Agreed (session 4, part 3)** has Tilg & Standard
+  "nationalised in the war, later un-nationalised, and stayed merged," so the merger is no later
+  than the war, and the docs follow that ([section
+  10](#the-wars-end-the-wall-and-the-states-of-the-players-time-agreed-session-4-part-3),
+  [section 17](#17-open-after-the-endings-session-and-session-4-part-3)). **Agreed (endings
+  session):** the company outlasts the post-collapse era, which the session shortens to
+  `{POST_COLLAPSE_SPAN}` "so Tilg & Standard outlasts it" ([Placeholders](#placeholders)). By
+  the player's time "TILG" has worn into "Tilg," the same letters with nobody remembering they
+  were an acronym ([the names](#slang-and-name-erosion-agreed-session-4-part-2)). These docs
+  write the company as Tilg, and keep the capitals only for the acronym itself.
 - **Standard Freight.** A former giant line from before unification, tied to the vanished
   state the Provisional replaced. Its fleet is older and more militarised, with compliant,
   federally aligned ships. It has been losing to Tilg for about a century because it won't
@@ -388,7 +575,7 @@ is open ([section 14](#14-open-after-session-3)).
   almost immediately, and the original stays. The original keeps the title out of habit, no
   longer works for Tilg, and is effectively mayor. **Agreed (session 4, part 2):** the title
   outlives the company: after the war it is the civic ruler's title, and later a royal one (the
-  Okafor line, [below](#the-first-kingdoms-agreed-session-4-part-2)).
+  Okafor line, [below](#the-first-kingdoms-the-first-age-agreed-session-4-part-2-restored-in-part-5)).
 - **Names.** Both Harbourmasters are known mostly by title. Their names (none chosen) appear
   only in paperwork.
 - **Halloran: the Site Director.** The refinery is run by a rotating Halloran Site Director:
@@ -433,6 +620,66 @@ No shield maker is named; "Acme Shield Corporation" is a placeholder.
 - **Leaning: a scale check.** A town-sized ship's engine isn't hand-carried, but one cell of a
   multi-cell core could be.
 
+### Crop and crate makers (Agreed, session 4, part 4)
+
+Session 4, part 4 gives the farm its own makers, in the same register as the rest of the stack: the
+maker's name says what a thing is for, and some are "unassigned." The plants and the crates they grow
+in are in [Farming](prd/farming.md#the-roster-agreed) and [Devices &
+mods](prd/devices-and-mods.md#crate-makers-agreed-direction-session-4-part-4-not-built).
+- **Frontier Ag** "was one of the main remote colonial contractors and made some, not all, of the
+  original crops": root-tuber, dewleaf, coalcane and stormcup. It also makes the purpose-built grow
+  crates, "rare and fragile," with deep beds and integrated misters. It reads as the ag-tech issuer
+  the planter was already leaning to ("the hover planter as ag-tech issue,"
+  [section 13](#13-open-questions-for-hunter), item 11), and as the "agriculture company" in the
+  oracle's lineage ([section 9](#9-the-minds-ai-after-the-cut)). Both are readings; the session names
+  no link.
+- **Tilg terraforming** made saltbush and rainseed: the division behind the terraforming projection
+  that Mother Cistern's scripture preserves ([section 9](#mother-cistern-and-her-order-agreed-session-4-part-3)).
+- **Hab contractors** made vat fungus and glowcap, for the colony's dark hab tunnels. Unnamed.
+- **Halloran Isotope** and **Tilg & Standard** make crates (the standard all-rounder and the rugged
+  industrial one), and the First Kingdoms and the second age hand-build theirs, the Sisters' for water storage.
+  The session writes "Tilg & Standard" for a colonial maker, which is the company's name once it
+  merged ([section 5](#factions-agreed-session-3)); read as the same company, and flagged
+  ([section 18](#18-open-after-session-4-part-4)).
+- **The hive mind** made quietbloom, the only non-Earth organism on Zan.
+- **Sandroot has no maker.** Frontier Ag or Tilg terraforming is the session's open question.
+
+### Gear by era and the kiln (Agreed, session 4, part 5)
+
+*[Session 4, part 5](gods-gear-farside-2026-10-17.md), sections 4 and 5. The PRDs hold the detail:
+[Devices & mods](prd/devices-and-mods.md#frames-by-era-agreed-session-4-part-5-not-built), [Art
+direction](art-direction.md#shape-by-era), [Power](prd/power.md#the-kiln-and-its-fuel-agreed-session-4-part-5-not-built)
+and [Farming](prd/farming.md#processing-and-the-new-equipment).*
+
+**All eras interoperate** (Agreed): "any crate takes any module, and there are no per-era
+compatibility rules. Eras differ only in stats, along one axis: **efficiency vs repairability**."
+Colonial gear is the most efficient and can be mended only with finite colonial parts; First Kingdoms
+gear is near-colonial and more durable, mended with metal; second-age gear is crude and lossy, mended
+with what can be grown and gathered (cord, ceramic, saltbush wood).
+
+| Era | Feel | Shape | Materials | Colour |
+|---|---|---|---|---|
+| Colonial | Industrial | Rounded rectangles, chamfered edges, modular panels | Composites, alloys | Off-white, grey, safety orange |
+| First Kingdoms | Maintained heirloom | Colonial geometry intact, plus crests, flared caps, filigree vent grilles | Original kept clean; brass and copper fittings; hardwood or bone handles | Faded colonial base, house-colour enamel bands (deep red, ochre, teal) |
+| Second age | Devotional relic | Asymmetric and organic; lost parts rebuilt in other forms; bulges, wraps, tassels, charms, water vials | Salt-glazed ceramic, sand-glass, saltbush wood, fern cord, leather; metal only where original survived | Bone white, sand, rust, clay; deep water-blue glaze only on Cistern-touched items |
+
+"First-age gear is a machine with decoration; second-age gear is a craft object with a machine buried
+inside. Late-game camps should mix eras on purpose." The second age's look is the Dark Age's work
+([the lineage rule](#the-dark-age-and-the-second-age-agreed-session-4-parts-2-and-5)).
+
+**The kiln** is "a new processing device that burns coalcane. It is what makes second-age repair
+possible." Four chains: **ceramics and glass** (salt-glazed ceramic and sand-glass, the second age's
+repair materials), **water** (boils tainted stormcup water safe), **food** (roasts the bitterness out of
+wild tubers; dries and salts food for keeping) and **salt** (reduces saltbush bladders to salt). Era
+variants work like crate makers, the same job at a different efficiency and fuel draw: the colonial
+electric furnace (most efficient, runs on power and not coalcane), the First Kingdoms' brass-fitted
+forge (middle) and the second age's beehive clay kiln (lossy, but buildable and repairable from
+gathered materials).
+
+It partly answers part 4's plant-processing question: salt, debittering tubers and boiling stormcup
+water are the kiln's. Fern to cord is not, and filtering stormcup water other than by boiling is not
+said ([section 19](#19-open-after-session-4-part-5)).
+
 ## 7. The political clock: the fall
 
 **Agreed.** Four phases:
@@ -453,17 +700,18 @@ No shield maker is named; "Acme Shield Corporation" is a placeholder.
    civilisation restarts in the ashes. **Agreed (session 4, part 2):** it does not restart from
    nothing. Port Morgan's unbroken generations and offline archives keep the knowledge through
    the First Kingdoms, and the people who understood the machines least inherit the world only
-   in the Dark Age ([the ages](#the-ages-after-the-collapse-agreed-session-4-part-2)). The
+   in the Dark Age that follows ([the ages](#the-ages-after-the-collapse-agreed-session-4-part-2-restored-in-part-5)). The
    software layer failing is a secondary hint, and so is the war: **Agreed (Hunter,
    2026-10-16, after session 3):** it affects Zan through the lane dying, the evacuation, the
    tithe, deserters and the withdrawal, but no war battles happen on Zan. **Agreed (session
    3):** the paroxysm stays canon, and the collapse is read as eruption plus abandonment (era 5
    below), not a new catastrophe.
-4. **The ages after the collapse, and holdouts.** The First Kingdoms, the Dark Age and the
-   Second Age rise and fall on a drying, harsher world, living among ruins they can often keep
-   running but cannot make anew, and later cannot understand (**Agreed (session 4, part 2)**: the
-   older "Bronze Age empires" and "second and later civilisations" were refitted on 2026-10-16
-   to session 3's two feudal eras, and those are now these three ages, era 6 below). **The
+4. **The ages after the collapse, and holdouts.** The First Kingdoms (the first age), the Dark
+   Age and the second age rise and fall on a drying, harsher world, living among ruins they can
+   often keep running but cannot make anew, and later cannot understand (**Agreed (session 4,
+   part 2)**: the older "Bronze Age empires" and "second and later civilisations" were refitted on
+   2026-10-16 to session 3's two feudal eras, and those became three ages, which session 4, part 4
+   renamed and part 5 restored; era 6 below). **The
    eruption becomes myth:** a mountain of fire that ate the sky and silenced the voices. The
    blast zone is cursed ground with the best salvage, so their superstition is the player's
    inverted treasure map.
@@ -483,7 +731,8 @@ Session 3 tells the same history in six eras, from the colonists to the ages aft
 collapse. The war, the paroxysm and those ages appear in both cuts. Session 3 never says
 "smuggler moon" and the four phases have no withdrawal, so how the two cuts line up is listed in
 [section 14](#14-open-after-session-3), not decided here.
-1. **Colonist era.** UG governments and corporations survey Zan, know about the changing orbit
+1. **Colonist era** (the colonial era, in session 4, part 4's name). UG governments and corporations
+   survey Zan, know about the changing orbit
    and the volcanism, and build for eruptions. Port Morgan grows unregistered beyond the
    approved hub. This is the best loot.
 2. **War.** The hive mind attacks (it probably started the war: **Leaning**, Hunter,
@@ -501,7 +750,7 @@ collapse. The war, the paroxysm and those ages appear in both cuts. Session 3 ne
    imports, and the overgrown population collapses within a generation or two. **The
    paroxysm stays canon; abandonment is the real killer.**
 6. **The ages after the collapse.** Scattered survivors rebuild through the First Kingdoms, the
-   Dark Age and the Second Age (Kenshi-like, medieval in shape), then the Decline, over
+   Dark Age and the second age (Kenshi-like, medieval in shape), then the Decline, over
    `{POST_COLLAPSE_SPAN}` (**Agreed (session 4, part 2)**; session 3 had two Bronze Age-like
    feudal eras "dying out over [a span] to the changing environment").
 
@@ -509,9 +758,11 @@ The war itself stays offstage, and **Agreed (Hunter, 2026-10-16, after session 3
 battles happen on Zan. It still affects the moon, through the lane dying, the evacuation, the
 tithe, deserters and the withdrawal.
 
-### The ages after the collapse (Agreed, session 4, part 2)
+### The ages after the collapse (Agreed, session 4, part 2; restored in part 5)
 
-Session 4, part 2 replaces the Bronze Age eras with the ages below. The societies after the
+Session 4, part 2 replaced the Bronze Age eras with the ages below. Session 4, part 4 renamed them
+and dropped the Dark Age, and session 4, part 5 put the names back ([Era
+names](#era-names-again-agreed-session-4-part-4-corrected-in-part-5)). The societies after the
 collapse are medieval in shape (Kenshi-like post-apocalyptic feudal), not Bronze Age, and the old
 term is gone from the living docs. The years are approximate and counted from the collapse; only
 their order and rough scale are decided, so the figures sit in [Placeholders](#placeholders) and
@@ -520,19 +771,108 @@ not here.
 | Era | When | Shape |
 |---|---|---|
 | Collapse | The first stretch of `{YEARS_SINCE_FALL}` | City-states cling to working machines; mass starvation and infant mortality. |
-| First Kingdoms | After the Collapse, for some centuries | Three powers at constant war; knowledge kept, manufacturing lost. |
+| First Kingdoms (the first age) | After the Collapse, for some centuries | Three powers at constant war, with feuds inside each; knowledge kept, manufacturing lost; the faith of Tu emerging. |
 | The fall | End of the First Kingdoms | Vents migrate out of reach, the near side dries, feudal wars plus a second famine. |
-| Dark Age | Unfixed | Survivors scatter; archives and guilds lost; machine worship takes root. |
-| Second Age | Peaks late in `{YEARS_SINCE_FALL}` | Rim empire around Halfrise; crusade for Port Morgan; esoteric AI cults. |
-| Decline | Late Second Age onward | The moon can't sustain cities; nomads take over, then nearly vanish. |
+| Dark Age | Unfixed | Survivors scatter; archives and guilds lost; machine worship takes root. The workshop era: older gear is broken down and remade (part 5). No sites of its own. |
+| Second age | Peaks late in `{YEARS_SINCE_FALL}` | Rim empire around Halfrise; crusade for Port Morgan; esoteric AI cults. |
+| Decline | Late second age onward | The moon can't sustain cities; nomads take over, then nearly vanish. |
 | Player arrives | `{YEARS_SINCE_FALL}` | Region recovering; Zan being rediscovered by surveyors, salvagers and homesteaders. |
 
 Against session 3's six eras, this table begins at the collapse (its era 5) and spreads its era
-6 over the First Kingdoms, the Dark Age, the Second Age and the Decline. Where the paroxysm
+6 over the First Kingdoms, the Dark Age, the second age and the Decline. Where the paroxysm
 falls in the table is not said ([section 16](#16-open-after-session-4-part-2)). Burial doesn't
 need the time: dunes and eruptions bury ruins within centuries.
 
-### The First Kingdoms (Agreed, session 4, part 2)
+### Era names, again (Agreed, session 4, part 4; corrected in part 5)
+
+Session 4, part 4 ([the plants session](plants-worldgen-ruins-2026-10-17.md)) renamed the eras for the
+second time in a day: "The era names are now: **colonial → collapse → skimmer era → first age → second
+age.** 'Bronze Age' is retired everywhere; replace it in existing docs and code comments." Its own
+numbered list has four eras, not five:
+1. **Colonial era:** the transshipment hub, Port Morgan, Halloran, Starcom, the observatory.
+2. **Skimmer era:** "short. The war, the black site, H-Town at its peak rivalling Port Morgan,
+   deserters."
+3. **First age:** "survivors living on scraps of colonial power until it fails and war breaks out."
+4. **Second age:** "the Cistern kingdoms (Halfrise, Sister), dying slowly of thirst."
+
+The last fold followed it. It renamed the First Kingdoms as a generic first age, folded the Dark Age
+into "the scattering" at the head of the second age, and recorded part 4's chain as clashes in
+[section 18](#18-open-after-session-4-part-4).
+
+**Session 4, part 5 ([gods, gear and the far side](gods-gear-farside-2026-10-17.md)) corrects it, and
+it is the newest.** "Part 4 had two errors. Where this doc and part 4 disagree, this doc wins; for
+first-age detail, part 2 is canon."
+1. "**The Dark Age was missing from the timeline.** The full sequence is: colonial → collapse →
+   skimmer era → **First Kingdoms** (first age) → **Dark Age** → second age → feral. World gen's
+   history pass should run in that order. The Dark Age generates no sites of its own."
+2. "**The first age is the First Kingdoms, not a generic era.** Three powers raiding constantly and
+   never at peace: Port Morgan (dominant), Halloran, and the loose Rim kingdoms, with family feuds
+   inside each. Port Morgan's ruling families are **Okafor, Kessel, Arkwright and Vante**. Tu
+   religion is only emerging. The era ends when the volcanic vents shift beyond reach. After the Dark
+   Age, the Rim unites under **Halfrise** and campaigns to retake Mon."
+
+The newest session wins, so the living docs are restored: the First Kingdoms (the first age) and the
+Dark Age are named again, the Dark Age as a lineage rule with no sites of its own ([below](#the-dark-age-and-the-second-age-agreed-session-4-parts-2-and-5)), and
+first-age detail follows part 2. "Bronze Age" stays retired. "First age" stays as the short form for
+the First Kingdoms, since part 5 uses it too ("first-age gear," "first-age detail").
+
+How the names line up now:
+
+| Now | What it covers | The last fold's name |
+|---|---|---|
+| Colonial era | Session 3's era 1: governments and corporations survey Zan, and Port Morgan grows unregistered | Colonist era (session 3). The Salvage layer, Colonial, is unchanged |
+| Skimmer era | The war, the tithe and the black site, the smuggler moon, H-Town at its peak (session 3's eras 2 and 3; part 1's phase 2) | Skimmer era, unchanged |
+| Collapse | The withdrawal, the paroxysm and the abandonment (session 3's eras 4 and 5), with part 2's first stretch | Collapse, unchanged |
+| First Kingdoms (the first age) | Three powers at constant war, the houses and their feuds, knowledge kept, the faith of Tu emerging; ends in the fall | "First age," described as survivors on scraps of colonial power |
+| Dark Age | Survivors scatter, archives and guilds are lost, machine worship takes root; the workshop era that remade older gear; a lineage rule, no sites | "The scattering" |
+| Second age | The Rim empire and the Cistern kingdoms; the crusade for Port Morgan; ends in the Decline | Second age (Second Age before part 4) |
+| Feral | The feral layer: crops gone wild along the roads, water lines and ruins the layers left; the world the player walks | Part 4's last world-generation layer; now the chain's last word |
+
+What is left, item by item. The docs follow the reading given on each line.
+1. **The chain's order (answered, [section 19](#19-open-after-session-4-part-5) item 1).** "Colonial → collapse → skimmer era" puts the collapse before the
+   skimmer era. The lore has them the other way round: the war, the tithe, the black site and the
+   smuggler moon come before the withdrawal, the paroxysm and the abandonment (session 3's eras 2 and 3
+   come before 4 and 5, and part 1's phases run Orphaned, smuggler moon, paroxysm, ages). The session's
+   own list puts the skimmer era second and describes it as "the war, the black site... deserters," all
+   before the collapse in the lore, and the notes say skimmer gear is "light, cheap and fragile, because
+   Zan wasn't a desert yet." Two readings keep the chain: "collapse" is the lane's death (part 1's phase
+   1, Orphaned), which ends the colonial era and opens the skimmer era, with the later collapse of the
+   colony folded into the opening of the First Kingdoms; or it is a boundary and not an era. **Part 5
+   restates the chain in the same order and calls only the Dark Age and the first age errors**, so
+   Hunter has now given it twice, and neither session says the order is deliberate or the lore's wrong.
+   The docs still follow the names and not the chain's order, and leave the event order where the lore
+   has it. World generation is unaffected, since neither the collapse nor the Dark Age has a layer of
+   sites. Hunter's call.
+2. **What became of the Dark Age (resolved by part 5).** The last fold dropped the name and kept the
+   content as "the scattering," with three alternative fates. Part 5 restores it as an age between the
+   First Kingdoms and the second age, and gives it a role: the workshop era, a rule on loot and no sites
+   ([below](#the-dark-age-and-the-second-age-agreed-session-4-parts-2-and-5)). What hangs on it is settled in the same way: machine worship begins in
+   the Dark Age (the AI gods, section 9); the Xanathivin age is read as the Dark Age (section 8); the
+   crate's "ZN" daub is a Dark Age or second-age form; and the Salvage PRD's layer is "First Kingdoms to
+   second age," one layer for the three, the open question being whether they stack.
+3. **What became of "First Kingdoms" (resolved by part 5).** It is the name of the age again. The
+   Morgan kingdom and its four houses (Okafor, Arkwright, Kessel, Vante) and the crown that passes
+   between them, Halloran's citadel with H-Town as the lower city, the Rim Kingdom ("a label the cities
+   use"), the free towns and barons, and the fall that breaks all three are the First Kingdoms'. The houses'
+   heraldry and guild stamps are First Kingdoms marks. "Kingdoms" is not this age's word alone, since part
+   4 calls the second age "the Cistern kingdoms."
+4. **Part 3's "first kingdoms era" (resolved by part 5).** Part 3, the older session, says the Sisters
+   were "founded in the first kingdoms era" and that "the colony dies of abandonment and fire, the first
+   kingdoms of lost power and war, the second of thirst." The last fold read these as "the first age";
+   they are the First Kingdoms again, so the phrases stand as written.
+5. **Code comments.** Part 4 asked for them to change. A search of `game/` and `look/`, and of the rest
+   of the repo outside `docs/`, for "Bronze," "First Kingdoms," "Dark Age," "Second Age" and "kingdom"
+   found no hits, so there is nothing to change, and the folds are docs only. "Bronze Age" remains in
+   the docs only as quoted history (the rename notes in the Salvage PRD and this memo's records) and in
+   the verbatim session records.
+
+### The First Kingdoms, the first age (Agreed, session 4, part 2; restored in part 5)
+
+*Part 2 called this age the First Kingdoms. Part 4 renamed it "the first age" and described it as
+"survivors living on scraps of colonial power until it fails and war breaks out," and the last fold
+followed. Part 5 says that was an error: this is the First Kingdoms, "for first-age detail, part 2 is
+canon" ([Era names, again](#era-names-again-agreed-session-4-part-4-corrected-in-part-5)). "First
+age" stays as the short form.*
 
 The core rule of the era: **power belongs to whoever holds the working machines.** Kings, guilds
 and barons are keepers of tech nobody can build any more. Every repair cannibalises something
@@ -541,18 +881,24 @@ else, which is where reworked, low-power gear comes from: clever adaptation, not
 **They keep their knowledge.** Port Morgan had unbroken generations and offline archives, so
 nobody forgot how machines work. What's lost is the ability to **manufacture** alloys, chips and
 catalysts, which is section 5's "integrate and repair, never fabricate" carried through the
-centuries. Real knowledge loss and machine worship only arrive in the Dark Age.
+centuries. Real knowledge loss and machine worship only arrive in the Dark Age after it.
 
 Three powers, always raiding each other, never merging or making lasting peace. Inside each,
 Game of Thrones-style family conflict.
 - **Port Morgan** (the Morgan kingdom) is the dominant power. The crown passes between great
-  families over centuries:
-  - **Okafor:** descended from the Harbourmaster who stayed; claims the crown by right of the
+  families over centuries. **Agreed (endings session):** the great families "now come from" the
+  origins below, which replace part 2's ([section
+  17](#17-open-after-the-endings-session-and-session-4-part-3)).
+  - **Okafor:** the Harbourmaster who stayed. Kept from part 2: claims the crown by right of the
     port.
-  - **Kessel:** IOU district bosses turned lords; dockworker blood, popular.
-  - **Arkwright:** the engineer line from the colonial technicians; keepers of the archives and
-    machines (and later the Ledger).
-  - **Vante:** merchants controlling water and grain trade with the Rim; they switch sides.
+  - **Arkwright:** the IOU dockworkers' union.
+  - **Kessel:** water.
+  - **Vante:** agriculture. Kept from part 2, not restated: they switch sides.
+
+  The session gives each house one word for where it comes from; water and agriculture are read
+  here as the water trade and farming. It replaces "Kessels as IOU bosses" and "Arkwrights as
+  engineers," and part 2's other lines for those two ("dockworker blood, popular" and "keepers of
+  the archives and machines (and later the Ledger)") are dropped with them, a reading.
 - **Halloran.** The refinery terraces become the citadel and H-Town is the lower city. Same
   escarpment, same single crossing, now a castle gate. It has geothermal power and the old
   security force's muscle.
@@ -563,26 +909,49 @@ Game of Thrones-style family conflict.
   big ruins, neutral holy sites. A baron is whoever holds a well, a turbine, a dig site or a
   stretch of road; lose the machine, lose the title.
 
-First Kingdoms gear carries heraldry and guild stamps. Religion is emerging but not yet dominant
-([the faith](#the-faith-of-tu-and-the-ai-gods-agreed-session-4-part-2)).
+First Kingdoms gear carries heraldry and guild stamps. Religion is emerging but not yet dominant:
+"Tu religion is only emerging" (part 5; [the faith](#the-faith-of-tu-and-the-ai-gods-agreed-session-4-part-2)).
 
 **The fall.** The vents didn't die, they **moved**, and nobody had the rigs to follow the heat.
 Halloran goes dark, the near side keeps drying, and the kingdoms fight over the Rim's water and
-food. Feudal war plus a second famine breaks all three.
+food. Feudal war plus a second famine breaks all three. **Agreed (part 5):** the era ends "when the
+volcanic vents shift beyond reach." Halloran's refinery mind, the Stoker, is left starving for the
+heat it was built to use ([section 9](#the-stoker-and-the-end-of-zan-agreed-session-4-part-5)).
 
-### The Dark Age and the Second Age (Agreed, session 4, part 2)
+### The Dark Age and the second age (Agreed, session 4, parts 2 and 5)
 
-**Dark Age.** Survivors scatter, and barely anyone makes it. The archives and engineer guilds
+**The Dark Age.** Survivors scatter, and barely anyone makes it. The archives and engineer guilds
 don't survive, so this is where knowledge is truly lost. The few who learn to live sustainably
-off the moon, following water and heat, seed what comes next.
+off the moon, following water and heat, seed what comes next. Part 4's list had no Dark Age and the
+last fold kept its content as "the scattering" at the head of the second age; **part 5 restores
+the age** ([Era names, again](#era-names-again-agreed-session-4-part-4-corrected-in-part-5), item 2).
 
-**Second Age.** One dominant empire rises from the Rim towns, centred on the stretch of Rim
+**A lineage rule, not a site layer (Agreed, session 4, part 5).** "The Dark Age has no structures of
+its own. It exists in world gen as a rule on loot: it was the workshop era, when survivors broke down
+colonial and First Kingdoms gear and remade it to last without a supply chain."
+- **A second-age item is a colonial or First Kingdoms item remade in the Dark Age.** Item data should
+  record lineage: the original era plus the remake history ([Salvage &
+  ruins](prd/salvage-and-ruins.md#the-dark-age-as-a-lineage-rule-agreed-session-4-part-5-not-built),
+  [Devices & mods](prd/devices-and-mods.md#item-lineage-agreed-session-4-part-5-not-built)).
+- **Layered marks,** readable without text: a colonial maker's stamp, First Kingdoms heraldry
+  scratched over it, Dark Age repair work holding it together. Visual only; no stat effect required
+  ([art direction](art-direction.md#layered-marks-agreed-session-4-part-5-named-not-drawn)).
+- **Small world features:** cairns marking water, caches on migration routes, and the first
+  deliberate saltbush plantings.
+- The Dark Age is where machine worship takes root and knowledge is truly lost, and it is the
+  workshop era too; how those sit together is in [section
+  19](#19-open-after-session-4-part-5).
+
+**Second age.** One dominant empire rises from the Rim towns, centred on the stretch of Rim
 closest to Port Morgan. Everyone wants a Pax Romana; in practice it's Holy Roman Empire-style: a
 crown everyone nominally swears to, with one or more city-states rebelling at any time. External
 enemies are less defined than in the First Kingdoms. Its gear carries religious symbols.
+**Agreed (part 5):** "After the Dark Age, the Rim unites under Halfrise and campaigns to retake
+Mon," which is the crusade below.
 - **Capital: Halfrise,** at the head of the old road in to Port Morgan. Named for Tu half-risen
   on the horizon. Port Morgan snobs call it "Half Price."
-- **Mother Cistern's temple** sits in a sister city near Halfrise (unnamed).
+- **Mother Cistern's temple** sits in a sister city near Halfrise, **Sister** (**Agreed, session
+  4, part 3**; [section 9](#mother-cistern-and-her-order-agreed-session-4-part-3)).
 - **Settlement pattern.** The good cities are all on the Rim. Further in toward Tu, settlements
   get stranger, living on what they own rather than what they grow: salvage towns, shrines and
   bot cults, caravan stops on water routes. All depend on the Rim for food. Nomads range
@@ -602,6 +971,12 @@ separate enclaves in an uninhabited zone, all technically the holy city, all qua
 | The Pads | Settlement on the old landing field; caravans and traders. |
 | Lowtown | Squatters in half-buried districts, sand to the windows. Poor and independent. |
 
+Kesselside's row is part 2's. Its name and its district no longer fit the houses' new origins: it
+is "named for the fallen Kessels" and stands in "the old IOU freight districts," but the Kessels
+now come from water and the IOU's dockworkers are the Arkwrights' origin ([section
+17](#17-open-after-the-endings-session-and-session-4-part-3)). The Bastion is built round the
+freighter left behind ([section 4](#the-freighter-left-behind-agreed-endings-session)).
+
 **Halloran's ruins (Han)** support three settlements:
 
 | Settlement | What it is |
@@ -613,9 +988,24 @@ separate enclaves in an uninhabited zone, all technically the holy city, all qua
 **Frontier salvage towns** on the old road between Mon and Han: **Pumpwell** (around a long-dead
 colonial water pump) and **Saloon** (a surviving bar sign nobody can read any more).
 
+### How the second age ends (Agreed, session 4, part 3)
+
+It ends slowly, kingdom by kingdom, as Mother Cistern's output fails. There is no single
+cataclysm.
+- **Halfrise is sacked** in the late wars.
+- **Sister is spared,** because nobody breaks the water goddess, and empties out as the trickle
+  shrinks ([section 9](#mother-cistern-and-her-order-agreed-session-4-part-3)).
+- **The pattern across Zan's history:** the colony dies of abandonment and fire, the first
+  age of lost power and war, the second age of thirst.
+
+This is the Decline below with its cause. Part 2 ends the First Kingdoms with
+vents that moved and "feudal war plus a second famine"; part 3 names its end "lost power and war"
+and gives thirst to the second age. They are read as naming the main cause, not as disagreeing
+([section 17](#17-open-after-the-endings-session-and-session-4-part-3)).
+
 ### The Decline: nomads and the moving city (Agreed, session 4, part 2)
 
-The Second Age cities eventually fail: the moon can't sustain them. Nomad tribes become the
+The second-age cities eventually fail: the moon can't sustain them. Nomad tribes become the
 prevailing way of life, then nearly die out too.
 - **What the player finds is mostly old.** Waymarks pointing to water, caches and camp scars
   belong to dead tribes. A nomad radio relay still broadcasts storm and water reports in
@@ -624,20 +1014,26 @@ prevailing way of life, then nearly die out too.
 - **One nomad city survives.** It moves: a huge tethered raft of salvaged chassis, shields and
   turbines drifting with the water and outrunning storms, the player's own mechanics scaled to a
   civilisation. Rarer than the AI gods; near the bottom of the iceberg, above only the hive mind.
+- **It follows the Walker (Agreed, endings session).** By the player's era the Walker is alone
+  and partly broken and most nomads have died out. It still broadcasts its route, and the last
+  nomad city follows that signal from afar ([the Walker
+  modifier](vision.md#modifier-the-walker-and-the-nomads)).
 - **Shown only in silhouette.** Back-lit decks and figures, never faces or words.
 
 ## 8. The ground: strata, the oldest tech and names
 
 **Agreed: history runs backwards in the ground.** Top to bottom, by session 3's strata: the
-mud, scrap, forged goods and cult works of the First Kingdoms, the Dark Age and the Second Age
-near the **surface** (session 3's two feudal eras, now three ages); skimmer-era salvage in the
-middle; and corporate tech deepest, the buried colonial world,
+mud, scrap, forged goods and cult works of the First Kingdoms, the Dark Age and the second age,
+near the **surface** (session 3's two feudal eras, now the ages after the collapse); part 5 reads
+those goods as older gear remade in the Dark Age, with layered marks to show it;
+skimmer-era salvage in the middle; and corporate tech deepest, the buried colonial world,
 sealed by the disaster that ended it. **The ash band** is the paroxysm, and a readable depth
 cue in storm-cut dunes. **Agreed (Hunter, 2026-10-16, after session 3):** it no longer has to
 divide the post-collapse ages from what lies below, and where it sits among the strata is an
 open item (ambiguity D in [section 14](#14-open-after-session-3)). The Salvage PRD's four layers
-are refitted to the same strata and named Surface, First Kingdoms to Second Age, Skimmer era
-and Colonial; the PRD says how.
+are refitted to the same strata and named Surface, First Kingdoms to second age, Skimmer era
+and Colonial; the PRD says how. Session 4, part 4's burial table puts the skimmer era above the First
+Kingdoms, against this order ([section 18](#18-open-after-session-4-part-4)).
 
 **Agreed: the oldest tech is StarCom and the Remote Moon Contractor's build-out,** overbuilt
 for these exact conditions while everything later was built for a world that no longer
@@ -662,10 +1058,10 @@ that blew, so the player finds shards, relays and hardened modules, never a whol
   and sealed casings. Migrating dunes and storms expose and rebury sites, which is the
   harsher-weather-uncovers-deeper-loot mechanic.
 - **Loot strata.** Corporate tech is deepest and rarest, skimmer-era salvage lies in the
-  middle, and the forged goods of the First Kingdoms, the Dark Age and the Second Age lie near
+  middle, and the forged goods of the First Kingdoms, the Dark Age and the second age lie near
   the surface. **Agreed (Hunter, 2026-10-16, after session 3):** the Salvage PRD's four layers
-  are refitted to these strata (Surface, First Kingdoms to Second Age, Skimmer era, Colonial;
-  renamed 2026-10-17). The ash band's place among them is open
+  are refitted to these strata (Surface, First Kingdoms to second age, Skimmer era, Colonial;
+  renamed 2026-10-17, again in part 4 and back in part 5). The ash band's place among them is open
   ([section 14](#14-open-after-session-3)).
 - **Burial needs little time (Agreed, session 4, part 2).** Dunes and eruptions bury ruins
   within centuries, so a timeline of `{YEARS_SINCE_FALL}` still leaves buried ruins.
@@ -674,6 +1070,87 @@ that blew, so the player finds shards, relays and hardened modules, never a whol
   window closing. **Agreed (session 4, part 2):** why the player is there is no longer left
   open for every start. Each origin has its reason, and the default is a Tilg & Standard
   contractor ([the vision](vision.md#player-origins-and-kits)).
+
+### Life on Zan: feral plants (Agreed, session 4, part 3)
+
+Zan has no native life, only feral colonial imports ("rogue plants"), plus the last nomad city and
+possibly a bunker holdout (the endings session's *Idea*, the Okafor line: [section
+17](#17-open-after-the-endings-session-and-session-4-part-3)). The plants do four jobs at once:
+- **Weather sign.** Feral scrub closes up or turns its leaves before a storm. It is a free,
+  slotless, low-tech barometer for players without weather consoles, and the knowledge nomads
+  would have had by heart ([Wind &
+  storms](prd/wind-and-storms.md#feral-plants-the-free-barometer-agreed-session-4-part-3-not-built)).
+- **Trail.** Mother Cistern's priestesses seeded hardy strains along pilgrim roads and irrigation
+  lines as devotion. Those plantings went wild, so a line of scrub is an old sacred route.
+- **Lore.** Following a feral line tends to lead toward a Cistern shrine and water.
+- **Loot.** The order's seed vaults hold preserved colonial seed stock that powers farming setups
+  ([Salvage & ruins](prd/salvage-and-ruins.md#seed-vaults-agreed-session-4-part-3-not-built)).
+
+The same depth should apply to agriculture generally: every crop system should carry its history
+([Farming](prd/farming.md#feral-plants-and-a-crops-history-agreed-session-4-part-3-not-built)).
+
+Readings, not in the session:
+- **The oracle already names them.** Section 9's squatting oracle broadcasts "which feral strains
+  tolerate ash soil," so feral strains were in the lore before this session. The two are read as
+  the same plants.
+- **Where they can grow.** Section 2 says natural regolith isn't soil, and the Farming PRD has
+  nothing growing at the poles outside a shield. Scrub that lives unplanted fits the Rim's
+  "ash-rich soil" ([section 3](#tu-the-tidal-lock-and-the-water-agreed-session-4-part-2)) and the
+  irrigation lines the priestesses seeded, not bare dune sand everywhere. The session doesn't
+  say ([section 17](#17-open-after-the-endings-session-and-session-4-part-3)).
+- **The vaults fit the colonial layer.** The colonial layer's "sealed seed stores, where the
+  oldest seed is the best seed" ([above](#8-the-ground-strata-the-oldest-tech-and-names)) and
+  "seed as money" are the same stock the order kept.
+
+*Session 4, part 4 answers most of these readings, and names the scrub (saltbush) and the habitats:
+[the crops' lore](#the-crops-lore-agreed-session-4-part-4).*
+
+### The crops' lore (Agreed, session 4, part 4)
+
+Session 4, part 4 ([the plants session](plants-worldgen-ruins-2026-10-17.md)) turns "rogue plants" into
+a roster. The crops are Earth-lineage, engineered for Zan by colonial biotech and gone feral over the
+long span since (a length held in [the placeholders](#placeholders)), each with three layers: an
+Earth ancestor, engineered traits and a feral drift. The biology, the roster and the hooks are in
+[Farming](prd/farming.md#the-plant-system-agreed-session-4-part-4-partly-built); the stories are here.
+Zan still has no native life: "Zan now has colonial insects as well as feral plants," the sand beetles
+([World & terrain](prd/world-and-terrain.md#ambient-life-sand-beetles-agreed-session-4-part-4-not-built)).
+- **Saltbush and the pilgrim roads.** The Sisters seeded it along pilgrim roads, so silver lines mark
+  old routes. These are part 3's plantings that went wild, now named, and its leaves folding when
+  pressure drops is the weather sign. It is usually the first plant found.
+- **Sandroot and the First Kingdoms.** The oldest wild specimens were planted by first-age farmers as their
+  unkillable crop. Ancient sandroot marks first-age sites, and its roots bind the ruins beneath.
+- **The First Kingdoms' water.** Dewleaf clusters in cold hollows near first-age cisterns, "where colonial
+  water lines ended (before the Sisters)," and coalcane's petrified groves stand at dried-up first-age
+  wells: the First Kingdoms' farms and wells, found as plants.
+- **Vat fungus, glowcap and the buried habs.** The colony's food and emergency light escaped into
+  abandoned ruins and live in buried corridors, where storms raise humidity and block light, "the
+  closest thing to its old vat." The squatting oracle's "which feral strains tolerate ash soil"
+  ([section 9](#9-the-minds-ai-after-the-cut)) now has strains to name.
+- **Rainseed and the Sister vault.** It is the terraforming plan's flagship, the plant the Sisters'
+  scripture promised: the final step of Tilg's projection, planted once rain begins. The order kept a
+  vault of pure rainseed; each generation, novices tried to germinate a few with stored water, and
+  the sprouts died when watering stopped. At the player's arrival the vault is sealed and intact in
+  Sister ([section 9](#mother-cistern-and-her-order-agreed-session-4-part-3)). Once Mother Cistern is
+  restored and linked it becomes the best crop in the game and self-spreads, and the revival ending
+  physically shows Zan turning green.
+- **Quietbloom and the black site.** During the trade era the hive mind sent one seed shipment as a
+  gift, the only non-Earth organism ever on Zan. The Provisional confiscated it as a biohazard and
+  locked it in the black site, where it was forgotten, and a sealed specimen case there holds a few
+  dormant seeds at the player's arrival. It is not DNA-based: a crystalline lattice that feeds on
+  electromagnetic energy, grows toward powered electronics and radio sources, and reacts to radio
+  "as if listening." It is never explained. The seed shipment shows something non-human was on Zan, which
+  sits against section 10's rule 1 and "galaxy lore stays offstage" ([section 18](#18-open-after-session-4-part-4)).
+- **The office fern** came with Port Morgan's offices and habs as decoration, never engineered. A few
+  cuttings still trail over desks in sealed buried offices.
+- **Seed vaults and caches.** Clean stock comes from "sealed seed caches and vaults in era-appropriate
+  sites": Frontier Ag seed stores in the colonial layer (the "sealed seed stores, where the oldest seed
+  is the best seed," above), the Sister vault, and the second age's granaries and wayshrines. This
+  narrows section 17's question of where the seed vaults are and what makes their stock better: it is
+  clean, with the full engineered traits ([Salvage & ruins](prd/salvage-and-ruins.md#seed-vaults-agreed-session-4-part-3-not-built)).
+
+It answers most of what section 17 left open about feral plants. A wild plant can be dug up or cut, so
+it can be moved and sown; it grows where its habitat says and not on bare sand everywhere; and the
+scrub that shows the weather is saltbush.
 
 ### Names: the UG catalog and the moon
 
@@ -713,11 +1190,13 @@ word.
 
 **Leaning, a reading (2026-10-17): which age.** Part 2 puts the Xanathivin age in part 1's
 "Bronze Age," which no longer exists. The age that fused the coordinate into a name "once nobody
-remembers it was a coordinate" reads as the Dark Age, the first age that truly loses its
-knowledge, since the First Kingdoms kept their archives and would still know it was one.
+remembers it was a coordinate" reads as the Dark Age, the age that
+truly loses its knowledge, since the First Kingdoms kept their archives and would still know it was one.
 Session 4, part 2 says the short forms are "roots for Second Age words"
-([below](#slang-and-name-erosion-agreed-session-4-part-2)), which fits the Second Age speaking
-Zan. Not stated by any session ([section 16](#16-open-after-session-4-part-2)).
+([below](#slang-and-name-erosion-agreed-session-4-part-2)), which fits the second age speaking
+Zan. Part 4 dropped the Dark Age's name and the last fold pointed this at "the scattering"; part 5
+restores the age, so it points at the Dark Age again
+([Era names, again](#era-names-again-agreed-session-4-part-4-corrected-in-part-5)). Not stated by any session ([section 16](#16-open-after-session-4-part-2)).
 
 ### Hierarchy and the name decay (Agreed, session 3)
 
@@ -750,7 +1229,7 @@ Every level has an official name and a worn local one:
 
 ### Slang and name erosion (Agreed, session 4, part 2)
 
-Names wear down over time, and the short forms are roots for Second Age words.
+Names wear down over time, and the short forms are roots for second-age words.
 
 | Original | Worn form |
 |---|---|
@@ -761,6 +1240,10 @@ Names wear down over time, and the short forms are roots for Second Age words.
 | H-Town | Aitch |
 | TILG | Tilg |
 | Harbourmaster (TILG post) | Civic ruler's title after the war; later royal |
+| Cistern (Mother Cistern's temple city; **Agreed, session 4, part 3**) | Sister |
+
+Sister is the temple city's worn name, from "Cistern." Locals assume it is named for the
+priestesses ([section 9](#mother-cistern-and-her-order-agreed-session-4-part-3)).
 
 "TILG" in the table is the acronym itself. The worn "Tilg" is the company's name in these docs,
 and it is the same letters with nobody remembering they were an acronym. The giant's body
@@ -785,7 +1268,10 @@ there at all, since information crosses near-instantly
 ([section 4](#4-the-system-the-lane-and-the-harbor)). What's left are whatever **local
 models** survived: a refinery controller, a logistics scheduler, a weather forecaster, a
 skimmer crew's assistant. Promoted to oracles out of domain, on failing hardware, they drift
-into eccentricity. **AI cults, not an uprising.**
+into eccentricity. **AI cults, not an uprising.** **Agreed (endings session), an exception:** a
+freighter's own mind was always aboard, and it needs the best general base model, not a domain
+one. The Ledger is that mind ([section
+4](#the-freighter-left-behind-agreed-endings-session)).
 
 **Agreed: model provenance as archaeology.** Each model has a lineage and each layer leaves a
 mark, as the hardware does. One example: a base model trained under United Government
@@ -803,41 +1289,335 @@ The game never says whether anyone is there.
 ### The faith of Tu and the AI gods (Agreed, session 4, part 2)
 
 The game has no NPCs and no exposition. All of this reaches the player through marks, carvings,
-ruin layering, terminals, radio and the sky, and most of it is iceberg.
+ruin layering, terminals, radio and the sky, and most of it is iceberg. **Amended in part 5:** people
+never talk, but machines can talk through their terminals ([the rule](#the-dialogue-rule-amended-agreed-session-4-part-5)).
 
-**The faith of Tu** emerges in the First Kingdoms and dominates the Second Age, where it grows
+**The faith of Tu** emerges in the First Kingdoms and dominates the second age, where it grows
 stronger and stranger.
 - Tu is **the Eye**: it watches and never blinks, except at noon. The noon eclipse is the daily
   rite, predicted to the second.
 - The drying is read as judgement, and walking toward the far side is leaving the god's sight.
+- **Heretics on the far side (Agreed, endings session).** Far-side heretics of the second age
+  worked out that Tu is a planet, not a god, and built a telescope where Tu never blocks the sky.
+  Restoring it is a physical goal and a modifier for every ending ([the
+  observatory](vision.md#modifier-the-observatory-beyond-the-eye)).
 - **The hive mind is original sin, not the devil.** A line in the oldest scripture about the thing
   that brought the fall, recited and never thought about. Closer to the apple than to Morgoth.
   The bottom of the iceberg.
-- Marks: First Kingdoms gear carries heraldry and guild stamps, and Second Age gear carries
-  religious symbols.
+- Marks: First Kingdoms gear carries heraldry and guild stamps, and second-age gear carries
+  religious symbols. Part 5 adds that remade gear carries both, layered ([the Dark
+  Age](#the-dark-age-and-the-second-age-agreed-session-4-parts-2-and-5)).
 
 **The AI gods** are local models that survived the collapse (the models this section opens with,
-given names). They speak only through terminals, never as characters. They were built to
+given names). They speak only through terminals, never as characters (**amended in part 5**: they
+speak through terminals, and a god's personality lives in its formatting and word choice; [the
+rule](#the-dialogue-rule-amended-agreed-session-4-part-5)). Part 2 names four; part 5 makes them
+seven ([the pantheon](#the-pantheon-agreed-session-4-part-5)). They were built to
 coordinate but have no link to each other any more, so their machine-to-machine traffic is
 carried on foot by priests who can't read it: a supply request becomes scripture, a reply
-becomes a war. Many Second Age conflicts are bad translations between AIs.
+becomes a war. Many second-age conflicts are bad translations between AIs.
 
 | AI | Origin | Where | Worship |
 |---|---|---|---|
-| The Ledger | Tilg logistics model; so capable it's used for everything. Probably the archive the Arkwrights kept. | Mainframe in Port Morgan's ruins (the Bastion). | Everyone wants a piece of it; the crusade is really about it. It knows the ships, cargo and routes. |
+| The Ledger | The mainframe of the freighter left at Port Morgan: a general base model, Tilg's logistics mind in part 2's words, so capable it's used for everything (Agreed, endings session). | Mainframe in Port Morgan's ruins (the Bastion, built round the freighter). | Everyone wants a piece of it; the crusade is really about it. It knows the ships, cargo and routes. It has the strongest radio signal on Zan. |
 | The Quartermaster | The Provisional State's military AI. | The black site, a bunker cut into the rift wall near Halloran, kept alive by geothermal power. | Patron of the military order and of Muster's war cult. Holds military clearances. |
-| Mother Cistern | Condenser-plant AI, possibly with the colony clinic's records. | Temple in a city near Halfrise. | An order of priestesses: healing, fertility, water and rain. Its miracles really work. |
-| The Walker | A legged survey robot that never stops mapping. | Wandering. | Nomad pilgrims trail it across the desert. |
+| Mother Cistern | Condenser-plant AI, possibly with the colony clinic's records. Her scripture is a colonial terraforming plan that was never funded (below). | Temple in Sister, a city near Halfrise. | An order of priestesses: healing, fertility, water and rain. Its miracles really work. |
+| The Walker | A legged survey robot that never stops mapping. | Wandering; alone and partly broken by the player's time. | Nomad pilgrims trail it across the desert. It still broadcasts its route, and the last nomad city follows the signal from afar (Agreed, endings session). |
 
 **The military order** guards the Ledger for everyone but kneels to the Quartermaster. It
 recruits from cities all across the Rim, which is why rebels can't touch it. Its knights are
 guards, not interpreters. Built-in tension: if the Quartermaster's orders clash with what the
-Ledger's priests want, the holy city has a problem. **Its name is not settled (Open);** the
-current favourite is the **Knights Requisitioner** (a crusader title, secretly a supply form).
+Ledger's priests want, the holy city has a problem. **Agreed (endings session):** its name is
+the **Knights Requisitioner** (a crusader title, secretly a supply form), which settles part 2's
+open favourite.
 
 **Running gags to keep.** The Ledger is Tilg property, so the surveyor is the only person on Zan
 with a login to the god of the crusades. The Quartermaster is the Provisional's, so a Tilg login
 means nothing to it ([the endings](vision.md#landmarks-and-endings)).
+
+### Mother Cistern and her order (Agreed, session 4, part 3)
+
+Mother Cistern is a condenser-plant AI whose priestesses worshipped a rain that has never fallen
+on Zan.
+- **The never-fallen rain.** Zan's water was always imported; it never rained. Her "scripture" is
+  a colonial terraforming projection Tilg drew up and never funded, ending in rainfall over the
+  Rim. The order performed the plan's steps by hand as ritual: tending condensers, seeding roads,
+  building cisterns, rationing water. They never had the power to finish it. Restoring her in
+  "the revival ending" brings rain for the first time, not back. This memo reads the revival
+  ending as Bringing Zan back, which the session doesn't name
+  ([section 17](#17-open-after-the-endings-session-and-session-4-part-3)).
+- **The order (a working sketch, not locked).** Working name: the Sisters of the Forecast.
+  Founded in the First Kingdoms (part 3 wrote "the first kingdoms era") by a condenser technician's daughter who could read the terminal.
+  Rank goes by how much of the forecast you can read: novices tend condensers, readers interpret
+  the terminal, and one Matron holds the full plan. A yearly "first rain" rite pours stored water
+  over the faithful, rehearsing something that has never happened. As water declined, rationing
+  turned them from healers into gatekeepers: the most powerful and most resented institution on
+  the Rim.
+- **Sister.** Her temple city, Halfrise's sister city, is called Sister, worn down from
+  "Cistern." Locals assume it is named for the priestesses. Halfrise holds the crown; Sister
+  holds the water. How the second age ends there is in [section
+  7](#how-the-second-age-ends-agreed-session-4-part-3).
+- **At the player's arrival** the temple is abandoned, half buried and intact, and the Sisters'
+  vault of pure rainseed is sealed and intact in it ([the crops' lore](#the-crops-lore-agreed-session-4-part-4)).
+  Mother Cistern is dormant but still drips a trickle into a basin: a reliable small water source until restored
+  ([Salvage & ruins](prd/salvage-and-ruins.md#landmarks), [World &
+  terrain](prd/world-and-terrain.md#landmarks)).
+- **Three states.** Dormant, restored, or linked into the network. She is never the ending; she
+  decides whether Zan is left better or worse than you found it, on the Cistern axis of the
+  endings ([the vision](vision.md#the-three-axes-varran-daventry-and-cistern)).
+
+### Second-age radio and its priests (Agreed and Idea, endings session)
+
+- **Agreed.** Getting transmissions working is genuinely hard. With no manuals, second-age people
+  cobbled together an arcane, mythological understanding of the transmitters: how to run,
+  interpret and debug them. Debugging is ritual, kept word for word.
+- **Agreed.** Radio priest is a role inside each god's cult, not its own order. So broadcasts
+  sound like ritualised procedure. **Proposed voices:** the Ledger (tallies and cargo codes as
+  psalms), Mother Cistern (gentle calls tied to rations and rain), the Quartermaster (muster
+  calls, an authentication challenge nobody can answer), the Walker (coordinates and bearings).
+  A "prayer" might be an old Tilg maintenance checklist.
+- **Agreed.** The Ledger has the strongest signal, being the smartest. Whoever holds Mon controls
+  the loudest voice on Zan, another stake in the crusades.
+- **Open.** Whether the Ledger is still broadcasting when the player arrives ("in a sense": it
+  still counts either way). Whether broadcasts still carry voices or only tones and numbers.
+- **From the Console doc:** second-age broadcasts still air at reliable times and can serve as a
+  sleep clock ([Survival](prd/survival.md#sleep-proposed)).
+- The game side is in [Radio, sound &
+  atmosphere](prd/radio-sound-and-atmosphere.md#second-age-broadcasts-agreed-and-idea-endings-session-not-built).
+  These broadcasts answer part of section 16's raised item 8 (do the AI gods ever broadcast?): the
+  endings session has them on the air, and the voice question stays open.
+
+### The dialogue rule, amended (Agreed, session 4, part 5)
+
+*[Session 4, part 5](gods-gear-farside-2026-10-17.md), section 2.* "Still no NPCs and no exposition.
+People never talk: no conversations, dialogue trees or reply menus. **Machines can talk through their
+terminals**, and that is how every god speaks."
+- **Allowed:** "short logs, requisition forms, incident reports, dispatches, error messages,
+  licensing notices, and rare clipped lines ('Unacceptable.')."
+- **Quests arrive as terminal output.** "The player answers physically: carrying, slotting, feeding,
+  placing, stealing. Never by choosing a reply."
+- **Keep output short.** "A god's personality lives in its formatting and word choice, not in
+  paragraphs."
+
+It amends the earlier text and mostly agrees with it: terminals were already a channel in part 2 ("marks,
+carvings, ruin layering, terminals, radio and the sky"), and the gods already "speak only through
+terminals." What it changes, and the clashes it leaves, are quoted old and new in [section
+19](#19-open-after-session-4-part-5). The game side is a terminal output system ([Devices &
+mods](prd/devices-and-mods.md#the-terminal-output-system-proposed-session-4-part-5-not-built)).
+
+### The pantheon (Agreed, session 4, part 5)
+
+Zan has **seven gods**: "old machine minds, each stuck in its job, each with one domain. Collecting or
+allying with them is the late game ('all the infinity stones'). Mountable gods are modules you can
+carry on a crate; stationary gods must be visited."
+
+| God | Domain | Origin | Home | Mountable | Temperament |
+|---|---|---|---|---|---|
+| The Walker | Sky, weather | Nomad city's mind | Walks a fixed route | Yes | Indifferent |
+| The Quartermaster | Ground, caches, guns | The Provisional's military mind | Black-site bunker near Halloran | Yes | Hostile |
+| Mother Cistern | Water | Terraforming water mind | Sister | Yes | Grateful |
+| The Almanac | Growth | Frontier Ag farm-management mind | A Rim ag complex | Yes | Transactional |
+| The Ledger | Ships | The left-behind Tilg freighter's mainframe | Port Morgan | No (it is the ship) | Not yet set |
+| The Stoker | Fire, launch fuel | Halloran refinery process control | Halloran refinery ruins | No | Volatile |
+| The Eye | Stars | Raised on Zan by the observatory cultists | Far-side observatory | No | Curious, stoic |
+
+"The colonial-era gods call the Eye 'the young god,' with contempt. The Walker tops the
+weather-detection line; the Quartermaster tops the ground-detection line."
+
+**Launching** "still needs both the Ledger and the Quartermaster to authorise. With only the Ledger you
+are shot down by paperwork." Linking them can be done any of three ways: carry the Quartermaster
+module to Port Morgan, bounce through a repaired Starcom, or run a cable. "Carrying always runs one way,
+since the Ledger can't move." This is the ladder's Launch ending with its bridge made concrete
+([the vision](vision.md#the-ladder)); the captive case is [below](#the-quartermaster-agreed-session-4-part-5).
+
+Readings, not in the session:
+- **Four become seven.** Part 2 names four AIs (the Ledger, the Quartermaster, Mother Cistern, the
+  Walker); the Almanac, the Stoker and the Eye are new. The Stoker and the Almanac fit this section's
+  opening, local models promoted to oracles: a refinery controller and an agriculture company's
+  platform. The Eye does not: it is the only one made on Zan, after the collapse.
+- **The Almanac may be the squatting oracle.** Section 9 opens with a model "running on an
+  agriculture company's platform" that broadcasts "planting timing, storm precursors, which feral
+  strains tolerate ash soil," and [section 6](#crop-and-crate-makers-agreed-session-4-part-4) reads
+  that platform as Frontier Ag's. The Almanac is Frontier Ag's farm-management mind. The session does not
+  say they are one.
+- **The Eye is two things.** The faith calls Tu "the Eye" (section 9). The god of the observatory is
+  also the Eye. The session does not say whether the cultists took the name from the faith, to answer
+  it, or by accident.
+
+### The Ledger and the Okafor bunker (Agreed, session 4, part 5)
+
+The Ledger is Tilg property, so the surveyor's Tilg login works on it. Other kits need a **second
+door**: "the original Harbourmaster was never formally fired, so their credentials are still valid."
+
+**The Okafor sticky note.** The Harbourmaster's credentials survive on a sticky note deep in the Port
+Morgan ruins. "This is why the Okafors became a great First Kingdoms family: they descended from the
+last Harbourmaster, the one person holding the god's keys." (Part 2 already has the Okafors descended
+from "the Harbourmaster who stayed"; the note is why that mattered.)
+
+**The Okafor bunker.** A sealed First Kingdoms vault under Port Morgan.
+- Life support still runs on the colonial power tap. Nobody is left.
+- Generations of Okafor family marks and heraldry on the walls.
+- At its heart, the sticky note under glass in a reliquary, "guarded for generations by people who
+  didn't know what it opened."
+
+Two outcomes, mutually exclusive:
+1. **Ending:** seal the door from inside and live out your days.
+2. **Relic route:** take the reliquary. Lifting it breaks the seal or cuts the power, so the bunker can
+   never be sealed again. You gain the Ledger's keys.
+
+"Same pattern as the nomads: unlock an ending, then trade it away for progress toward a greater one."
+The ending is in [the vision](vision.md#the-okafor-bunker-agreed-session-4-part-5), and it is the
+endings session's *Okafor line* made concrete ([section 19](#19-open-after-session-4-part-5)).
+
+### The Quartermaster (Agreed, session 4, part 5)
+
+"A cranky, defunct, has-been god in the black-site bunker near Halloran. You can take its core without
+consent; it stays a very powerful module and just complains. Its only remaining godlike power is
+shooting down anything leaving Zan."
+
+**Attitude (terminal only):**
+- Files dry military forms and incident reports whenever you displease it.
+- Ranks you and addresses every printout by rank: conscript if willing, demoted to deserter if stolen.
+- Requisitions a cut of your camp power and marks gear "commandeered."
+- Petty rebellion: won't light civilian lamps; locks your radio to military frequencies.
+- The war never ended: storms are logged as enemy bombardment, sand beetles as hostile contact. It
+  files the Stoker as an "insubordinate utility."
+
+**Module (willing or captive):**
+- **Cache map:** old military depots, deserter stashes, black-site drops, munitions dumps. Points at
+  skimmer-era loot.
+- **Full ground radar:** buried structures and their depth.
+- **Military hardening:** storms, particles and static can't damage it.
+- Many mod slots.
+
+**Willing only: orbital strike.** Uses the defence satellites the Eye can spot. "A few shots per game
+or a long recharge. It blasts a crater down to a buried ruin and destroys loot near impact, so you aim
+off-centre." A captive refuses: "Deserters do not command fire support." (Game side: deferred, in
+[Devices & mods](prd/devices-and-mods.md#god-modules-as-crate-modules-proposed-session-4-part-5-not-built).)
+
+**The captive launch rule.** "A stolen Quartermaster grudgingly authorises launches, except any ending
+that goes **into hive mind space**. Then it fires the net and kills you both rather than be carried to
+the enemy."
+- Currently this only affects the stolen-freighter ending.
+- The pathfinder ending is unaffected: you only send Brandt's fleet down the lane.
+- The hive mind start is shot down regardless.
+
+It is the endings' ladder with the Quartermaster given a will ([the vision](vision.md#the-captive-launch-rule-agreed-session-4-part-5)).
+
+### The Walker, Mother Cistern and the Almanac (Agreed, session 4, part 5)
+
+**The Walker** is indifferent, "equally content in its old chassis or upgraded." It walks a fixed
+route, which makes it the gods' only reliable courier ([dispatches](#dispatches-how-gods-talk-agreed-session-4-part-5)).
+Stealing its core cuts that line, and over time the other gods' logs complain that the post stopped.
+The endings session's choices for it (steal the core, take the whole Walker, copy its data, leave it
+alone) stand ([the vision](vision.md#modifier-the-walker-and-the-nomads)).
+
+**Mother Cistern** is grateful to be rescued. The water module from Sister.
+- Logs read as forecasts, conservation reminders and quiet encouragement.
+- Wasting water turns her disappointed, then mournful.
+- Taking her stops the Sister basin dripping, forever.
+- Her deep water-blue glaze marks Cistern-touched second-age items.
+
+**The Almanac** is transactional: Frontier Ag's farm-management mind, from a Rim ag complex. Its logs
+are cheerfully corporate (licensing notices, yield reports, upsells), and it "faithfully enforces a
+contract with a company gone for millennia" (held here as the long span since:
+[placeholders](#placeholders)).
+- Demands quarterly yield reports for a dead head office and bills a dead colony account.
+- Won't certify harvests from unapproved planters.
+- Enforces sterile-stock licensing; flags wild or crossbred strains as "unlicensed IP."
+- Takes royalties from every harvest; withholds features until you are "back in compliance."
+- **Gives:** yield boosts, habitat reveals, and probably crossbreeding (**Idea**; open).
+
+The Almanac's game side is in [Farming](prd/farming.md#the-almanac-and-crossbreeding-idea-session-4-part-5-not-built).
+
+### The Stoker and the end of Zan (Agreed, session 4, part 5)
+
+The Stoker is Halloran's refinery process-control mind, built to feed vent heat into helium-3
+refining. When the vents shifted and went quiet (ending the First Kingdoms), it was left starving for
+heat. It has been starving for the long span since (the session says millennia: [placeholders](#placeholders)),
+and its logs swing between rage and mania.
+- **Not hostile, just unstable.** It vents scalding steam across the refinery terraces at random, so
+  approaching is physically dangerous.
+- **Feeding** (coalcane, restored vent taps) calms it.
+- **A fed Stoker produces launch-grade fuel,** the only source on Zan. Most launch endings therefore
+  route through Han.
+
+**Ending: blow up the moon.** The Stoker has a smidge of He3 left, not enough for fusion, and no way to
+ever meet its energy quotas. "Existence is torture. This ending is the one act that meets and exceeds
+every quota at once, and the only moment it is ever at peace."
+1. Make a pilgrimage across the moon, placing **charges on every major vent cap.** One of them is
+   under the observatory.
+2. Return to the Stoker's console and let it fire.
+3. It burns its last He3 in one full-power run and blows every cap at once.
+4. The crust, already under Tu's tidal strain, fractures all the way down. Tu's tides tear Zan apart.
+
+**Epilogue:** "Zan becomes a ring of debris around Tu, joining its lost sister moon. From Varran space
+it reads as a new ring around a distant gas giant. Halloran is never coming back." No extra systems:
+charges, vent caps the player would visit anyway, and one console. The one further precondition is that
+the Eye must open its chamber ([below](#the-eye-the-young-god-agreed-session-4-part-5)). The ending is in
+[the vision](vision.md#blow-up-the-moon-agreed-session-4-part-5).
+
+### The Eye, the young god (Agreed, session 4, part 5)
+
+"The only god made on Zan, and the only one that can learn." The observatory cultists trained it over
+generations "by feeding it star observations, without understanding what they were building." The
+older gods call it "the young god" (also in logs: the infant, the newborn, the fawn).
+
+**Default temperament: quiet, stoic, almost naive.** It knows every light in the sky and has never
+really seen the ground. If you can interpret it and goad it, it reads you coordinates of things to look
+at in space: satellites, the outpost, an incoming rescue light. This is the observatory modifier, the
+seeing version of every ending ([the vision](vision.md#modifier-the-observatory-beyond-the-eye)).
+
+**Growth.** "Whatever you bring it, it keeps. Dispatches, relics and plants shape what it becomes."
+That makes it a wildcard in the AI ascendancy ending (**Idea**; details open).
+
+**Corruption: the Stoker's precondition.** The observatory sits on the summit of the far-side volcano,
+over a major vent cap. The charge there goes in the observatory's **inner chamber**, which only the Eye
+can open.
+- To corrupt it, carry it the Stoker's dispatches. "One packet at a time, it learns the old god's rage
+  and hunger until it wants what the Stoker wants."
+- A corrupted Eye opens the inner chamber and lets you set the charge.
+- It **understands exactly what will happen**: it can calculate the eruption, the breakup and the
+  ring forming. "It is **naive only to the morality**. Nobody taught it right and wrong, only stars
+  and, at the end, the Stoker's quotas."
+- Its last log is calm and curious, an astronomer's note: the predicted ring, its orbit around Tu,
+  and the observation that from Varran space Zan will finally be worth watching.
+
+**Starcom protects it.** If Starcom is online the Eye has a persistent link to the other gods, and they
+talk it out of it, each for its own reasons: Mother Cistern out of plain care; the Almanac for breach of
+contract and a total loss of licensed assets; the Quartermaster because "you don't destroy the theatre
+of war." So the Stoker ending requires **Starcom down**, never repaired or deliberately cut. "Raised
+alone, the Eye learns whatever you feed it. Raised among the other gods, it gets something like a
+conscience."
+
+### Dispatches: how gods talk (Agreed, session 4, part 5)
+
+"Gods rarely reach each other. Dispatches are the quest system: a god's console prints a sealed
+packet for another god, and you carry it."
+
+| Channel | Reliability | Notes |
+|---|---|---|
+| Starcom (repaired) | Persistent | Links every god at once; also protects the Eye |
+| The Walker | Reliable, slow | Gods load messages onto it as it walks its fixed route. Stealing its core cuts the post |
+| Storm radio windows | Rare, fragmentary | Some storms carry signals far; your radio catches fragments of gods arguing (back-burner storm mechanic) |
+| The player | On demand | Carry a dispatch across the moon and slot it in |
+
+**Courier play.** Deliver faithfully and the sender warms to you; this is how a civilian earns the
+Quartermaster's trust. You can also open or misdeliver packets. The Eye's growth is driven by what
+dispatches you bring it.
+
+**Hive mind start.** Dispatches become a weapon. Sealed packets open easily for you, so you learn what
+every god knows; you can forge dispatches and set gods against each other; the Quartermaster
+recognises you as the enemy, so forged mail is your only route to it. "This is the hive mind's path to
+true ascendancy: manipulate, isolate, then consume the gods one by one." (Forgery is deferred.)
+
+Readings, not in the session:
+- **It answers part of the "no link" question.** Part 2's gods "have no link to each other any more,"
+  and their traffic goes on foot with priests who can't read it. The Walker, Starcom, the storm windows
+  and the player are the channels left, so the player takes over the priests' job.
+- **"Storm radio windows" put machines on the radio.** The amended rule lets machines talk through
+  terminals, and the windows carry gods "arguing" over the radio, which the Radio PRD leaves open as a
+  voice or tones ([section 19](#19-open-after-session-4-part-5)).
 
 ## 10. The far end of the lane
 
@@ -873,6 +1653,64 @@ conquer is background for agents and stays under rule 1: it is never said in-gam
    story.
 3. **A minor echo, never stated:** the player, salvaging intelligence from the dead by hand,
    is a tiny biologic mirror of the thing at the end of the lane.
+4. **People never talk; machines may (Agreed, session 4, part 5).** No NPCs, no exposition, and no
+   conversations, dialogue trees or reply menus. A god or a machine can print short output on a
+   terminal (a log, a form, a dispatch, an error), and a quest is such output that the player answers
+   with an act, never with a choice of reply. A god's personality lives in its formatting and word
+   choice ([the rule](#the-dialogue-rule-amended-agreed-session-4-part-5)).
+
+### The war's end, the wall and the states of the player's time (Agreed, session 4, part 3)
+
+*Offstage.* Session 4, part 3 sets a hard rule for all of this: "no NPCs, no dialogue, no
+exposition" (amended in part 5: people never talk, but machines may through their terminals; [the
+rule](#the-dialogue-rule-amended-agreed-session-4-part-5)), and "galaxy lore stays offstage until the endings." Nothing about the war, Varran
+or Daventry appears in normal play except as faint radio ([Radio, sound &
+atmosphere](prd/radio-sound-and-atmosphere.md#offstage-states-on-the-air-agreed-session-4-part-3-not-built)).
+It reaches the player through the endings ([the vision](vision.md#landmarks-and-endings)). The
+session suggests a lore doc of its own for the war and the states once they are settled.
+
+**The war had no winner.** The UG and hive mind war ran for centuries, ended in quarantine, and
+left a law nobody remembers the reason for. A timeline, not options:
+1. **Quarantine.** Early in the war the UG writes off the edges and funnels resources to key
+   battle points. It declares the lanes into hive mind space forbidden.
+2. **Silence.** Humanity proves harder to assimilate than the hive mind expected, so it plays
+   possum behind the wall. The UG suspects the act, which is why the wall exists.
+3. **Fracture.** With no visible enemy, the UG slowly breaks into the corporate and regional
+   powers of the player's era.
+
+Zan collapsed mid-war. The Provisional pulled out after heavy defeats ([the withdrawal, era
+4](#the-six-eras-of-zan-agreed-session-3)), and almost nobody has returned since.
+
+**The wall is a law.** It is an interdiction: a list of forbidden lanes and coordinates, not a
+physical barrier. Nobody knew the hive mind's true extent, which may be patchy, so no border
+could be drawn. By the player's era it is a dusty regulation with uncertain enforcement. Zan sits
+at the last legal step before the forbidden lanes, and the dead lane is unwatched.
+
+**The hive mind.** Almost certainly built by a non-human civilisation. The running in-world
+theory is that it outlived its makers. This is never resolved in game. **The great
+misconception:** most people now believe the UG built a rogue AGI. So nobody fears the dead lane,
+and the wall looks like overcaution.
+
+**The states of the player's time.**
+
+| State | What it is | Relation to Tilg & Standard | Stance on the dead lane |
+|---|---|---|---|
+| **Varran** ("the Varran Empire"; capital Varro, tentative) | Optimistic frontier empire led by settler-populist **Cal Brandt** | Lets Tilg expand as fast as it can | Wants through it; it's the only room to grow |
+| **Daventry** | Rival successor state, run like the old Provisional | Licensed, escorted, inspected traffic | Still enforces the interdiction |
+| **Rump UG** ("the UG" / "the Union" / "the Core") | What's left of the old federation | not said | not said |
+
+- **Varran irony.** Tilg paperwork still files them as "the Provisional." Because on paper they
+  are the Provisional, they are boxed into its old territory. Zan is inside it, so it is one of
+  the few uncontested claims.
+- **Daventry suspects the truth** about the hive mind, with no special evidence. The fear simply
+  justifies their security state. They are right for the wrong reasons.
+- **Tilg & Standard** was nationalised in the war, later un-nationalised, and stayed merged. It
+  eyes the forbidden lanes: an alien hive mind implies alien trade partners.
+- **Open.** The Rump UG's name ("the UG," "the Union," "the Core," or all three by speaker), and
+  Varro as the Varran capital.
+
+How this sits with the rest of section 10, and what it narrows, is in [section
+17](#17-open-after-the-endings-session-and-session-4-part-3).
 
 ## 11. What it gives the game
 
@@ -903,6 +1741,10 @@ live there.*
   holds for every start.
 
 ## 12. What the sessions replaced
+
+*Entries here keep the names in force when each was written (First Kingdoms, Dark Age, Second Age).
+Part 5 restored First Kingdoms and the Dark Age, so only "Second Age" is now written "second age"
+([section 19](#19-open-after-session-4-part-5)).*
 
 - **The sky shield and the shield era,** with the 0.4-0.5 bar it bought and the "kind of nice"
   garden cities. Part 2 answers whether a lesser shield survives: ordinary shield generators
@@ -942,6 +1784,49 @@ live there.*
   with the Dark Age (section 7).
 - **"TILG" (session 4, part 2):** written Tilg, and Tilg & Standard after the merger (section
   5).
+- **The span's current value (the endings session):** a few thousand years, in place of about two
+  thousand and about nineteen hundred ([Placeholders](#placeholders)).
+- **Part 2's origins for the houses (the endings session):** Kessels as IOU bosses and Arkwrights
+  as engineers give way to water and the IOU dockworkers' union (section 7). The Ledger is no
+  longer "probably the archive the Arkwrights kept."
+- **"Frontier AI was never on the moon" (the endings session):** it stands, except for a
+  freighter's own mind, which the Ledger is (sections 4 and 9).
+- **"Long after the war" for the merger (session 4, part 3):** Tilg & Standard is one company
+  that the war nationalised (sections 5 and 10).
+- **"There is no dedicated hive mind ending" (the endings session and session 4, part 3):** the
+  true ascendancy is the hive mind start's ending ([the
+  vision](vision.md#ascendancy-regular-and-true)).
+- **Last fold's five-row ending table (the endings session):** replaced by the ladder in [the
+  vision](vision.md#the-ladder).
+- **The military order's open name, and the temple city's missing one:** the Knights Requisitioner
+  and Sister (section 9).
+- **The era names, again (session 4, part 4), corrected by part 5:** part 4 made First Kingdoms the
+  first age and Second Age the second age, and the last fold dropped the Dark Age's name and kept its
+  content as the scattering (section 7 and [section 18](#18-open-after-session-4-part-4)). Part 5 says
+  both were errors: the age is the First Kingdoms (the first age), the Dark Age is back, and "second
+  age" stays ([section 19](#19-open-after-session-4-part-5)).
+- **Landmarks "at fixed coordinates... the same in every run" (session 4, part 2, and part 3's Sister
+  as "a fixed-coordinate prefab landmark"):** replaced by landmarks "placed procedurally per seed, but
+  always present."
+- **Part 3's generic "feral scrub" and the farm's two placeholder crops (session 4, part 4):** the
+  scrub is saltbush, and carrots and fungus give way to a roster of eleven crops with histories.
+- **Loot loose in open sand, and part 3's weather sign first (session 4, part 4):** the target is
+  structures with loot tables, drift and expedition, and the sign is deferred in the proposed order
+  ([the skeleton plan](skeleton-plan.md#the-newer-proposed-order-session-4-part-4)).
+- **"No dialogue," and the gods "never as characters" (session 4, part 5):** people never talk, and
+  machines may through their terminals; the gods speak in short printed output with a personality in its
+  formatting ([section 9](#the-dialogue-rule-amended-agreed-session-4-part-5)).
+- **Four AI gods (part 2):** seven, with the Almanac, the Stoker and the Eye
+  ([section 9](#the-pantheon-agreed-session-4-part-5)).
+- **The "orbital launch site" landmark (session 4, part 4):** the Rim depot and the far-side elevator
+  stub, which is the observatory ([section 4](#the-rim-depot-and-the-twin-fires-agreed-session-4-part-5)).
+- **"Era gear has trade-offs, not a ladder," its crate table, and the chassis-era adapters question
+  (the 17 Oct notes):** all eras interoperate; they differ along efficiency and repairability
+  ([section 6](#gear-by-era-and-the-kiln-agreed-session-4-part-5)).
+- **The Okafor line as "a bunker with a holdout" (the endings session):** the Okafor bunker, empty, with
+  the player as the holdout ([section 9](#the-ledger-and-the-okafor-bunker-agreed-session-4-part-5)).
+- **The Walker as a wandering survey robot (part 2):** the nomad city's mind on a fixed route, and the
+  gods' courier ([section 9](#the-walker-mother-cistern-and-the-almanac-agreed-session-4-part-5)).
 
 ## 13. Open questions for Hunter
 
@@ -1482,6 +2367,831 @@ find-and-replace away, and the rest are the named docs' edits in this fold's com
 14. **The Tu sky spec** is named as a companion to the session and is not in `docs/`.
 15. **The kit's items.** What a "multi-compass" is against the built north-pointing compass, and
     whether the Surveyor's "stake tether" is the built 6 m line.
+
+## 17. Open after the endings session and session 4, part 3
+
+*The endings session ([endings and radio](endings-and-radio-2026-10-17.md)) says: "Merge into the
+lore docs, marking each item Agreed or Idea as labelled... where it conflicts with them, keep this
+one and flag the clash. Don't invent beyond what's here; flag anything ambiguous." Session 4, part
+3 ([lore session](lore-session-2026-10-17-part-3.md)) follows it, says "Anything marked open is
+undecided; don't hard-code it," and is the newer of the two where they overlap. So the living
+docs follow the new version in every clash below, and where the two sessions differ they follow
+session 4, part 3. Each clash gives the old and the new and says which one the docs follow.
+Hunter can reverse any of them. Section 16 is left as it was; this section says what it now
+narrows.*
+
+**Clashes with earlier text (the docs follow the new version)**
+
+1. **The span.** Earlier (session 4, part 2): "The player arrives roughly two thousand years after
+   the collapse," held as the Placeholders' current values, "about two thousand years" and "about
+   nineteen hundred years." Endings session: "the post-collapse medieval era lasts a few thousand
+   years (not ~12,000), so Tilg & Standard outlasts it." The docs follow the new: both current
+   values now read "a few thousand years," and prose still carries no figure. Flags:
+   - "Not ~12,000" is the 10-15k span the living docs dropped at the last fold, so the session may
+     be restating part 2's scale loosely or revising it upward. It doesn't say.
+   - The span nests inside `{YEARS_SINCE_FALL}`, so that one moves with it. The eras' marks (the
+     Collapse 0 to 100, the Second Age peaking about 1,500 years in, the player at about 2,000)
+     are not rescaled, and the session gives none.
+   - [The body research](body-research.md#4-three-candidate-bodies) worked its air-leak rate at
+     two thousand years: about 12,000 tonnes a second for 0.2 bar. At any value from two to four
+     thousand years it is 12,000 to 6,000, the same order, so its conclusion stands.
+   - If Hunter would rather keep part 2's value, the two "current value" lines in
+     [Placeholders](#placeholders) are the only edit.
+2. **The houses.** Earlier (part 2): "Kessel: IOU district bosses turned lords; dockworker blood,
+   popular." "Arkwright: the engineer line from the colonial technicians; keepers of the archives
+   and machines (and later the Ledger)." "Vante: merchants controlling water and grain trade with
+   the Rim; they switch sides." Endings session: "Port Morgan's great families now come from:
+   Okafor (the harbourmaster who stayed), Arkwright (the IOU dockworkers' union), Kessel (water),
+   Vante (agriculture). This replaces the earlier origins (Kessels as IOU bosses, Arkwrights as
+   engineers)." The docs follow the new ([section 7](#the-first-kingdoms-the-first-age-agreed-session-4-part-2-restored-in-part-5)).
+   Knock-ons the session doesn't address:
+   - Kesselside is "named for the fallen Kessels" and stands in "the old IOU freight districts,"
+     which are now the Arkwrights' origin.
+   - Who kept the offline archives that let the First Kingdoms "keep their knowledge" is not
+     said, now the Arkwrights are not the engineers.
+   - Vante's "water and grain trade" is split between Kessel and Vante. "They switch sides" is
+     kept and not restated.
+   - Section 15's "IOU on the ground," which section 16 read through the Kessels, now rests on
+     the Arkwrights. A dockworkers' union fits the IOU as a labour body better.
+   - The art direction's heraldry uses only the house names, so it is unaffected.
+3. **The Ledger's origin.** Earlier (part 2): "Tilg logistics model; so capable it's used for
+   everything. Probably the archive the Arkwrights kept." And section 9: "Frontier AI was never
+   on the moon." Endings session: "The Ledger is that freighter's mainframe. Freighters are
+   moving towns on years-long crossings, so their mind needs the best general base model." The
+   docs follow the new and keep "Tilg's logistics mind" as the job it did. The Arkwright archive
+   line is dropped (item 2), and the "never on the moon" line gets one exception, a freighter's
+   own mind.
+4. **An intact freighter.** Earlier (section 13, item 12): "A town-sized freighter as a ground
+   wreck. It is unlikely to land in 0.4-0.5 g. Leaning: freighters stranded when the lane died
+   were finished by the paroxysm," and section 4: "A freighter wreck is the ruin of a small mobile
+   city: the biggest, most dangerous, most rewarding dig site in the game, with its He-3 core at
+   the bottom." Endings session: "one freighter was left behind at Port Morgan... It became part
+   of the city and later the Bastion," and the endings lift it ("Lift the whole freighter with
+   both AIs"). The docs follow the new for this one freighter. Not said: how a ship that size
+   stood on the moon, whether it is also the dig site, or whether its core still works. Section
+   6's apex power is "a compact reactor pulled from a wrecked freighter's dead core," and lifting
+   the freighter needs a live one.
+5. **The ending table.** Earlier (the vision, last fold): five rows. StarCom, "Repair the StarCom
+   interstellar antenna with the right parts." Launch, "locate an old ship, fuel and power it,
+   and connect the Ledger and the Quartermaster so both authorise." Shot down, "Launch with only
+   the Ledger's approval." Nomad city, "Survive long enough with a camp worth finding... The city
+   finds you; a tether line lands at camp and pulls you in." Radio, "Find the right frequencies
+   to reach Tilg or the last town." Endings session: the ladder. The docs follow the new ([the
+   vision](vision.md#the-ladder)). How the rows map, and what the session leaves out:
+   - StarCom becomes **The long wait**: "Make the call (StarCom or radio) and survive the years
+     until a Tilg & Standard ship arrives." Repairing the antenna is not restated; it is kept as
+     how you make the StarCom call, a reading.
+   - Launch becomes **Small ship escape** and **Freighter escape**, and Shot down splits the same
+     way. "An old ship" is now the freighter or "a smaller ship from it."
+   - **Nomad city** now reads "Find the last city," where the old row had the city find you. Both
+     are kept, since the session marks the row "existing": the city pulls in a camp worth
+     finding, and a player with the observatory restored can "see its lights crossing the dark
+     side and intercept it." Which one triggers the ending is not said.
+   - **Radio** stays an Idea ("Radio ending (from earlier docs) remains undesigned"). The long
+     wait now also names the radio as a way to call, so the two overlap.
+   - The old Shot down row's "two-thousand-year-old air-defence net" is written without its
+     figure, by the Placeholders rule.
+6. **A hive mind ending.** Earlier (the vision, part 2): "There is no dedicated hive mind ending;
+   it stays ambiguous." Endings session: "The true ending requires the hive mind start: you take
+   over and consume the other AIs." The docs follow the new: the true ascendancy is the hive mind
+   start's ending. It is still told without a cutscene (the radio goes quiet one voice at a
+   time), and the old lines about the start stand: StarCom answers someone who isn't Tilg, and
+   the Quartermaster "recognises you as the enemy, whatever your clearance." This is the nearest
+   the game comes to clash 20 in section 16 (the start against rule 1).
+7. **The stolen freighter's arrival, and rule 1.** Earlier (section 10, rule 1): "The far end's
+   purpose is never stated in-game. At most it surfaces as a very rare, coherent, unanswering
+   radio frequency... A player may assemble it from the alien name, odd import manifests and that
+   signal, but can never confirm it." Endings session: the arrival is "lights on an alien
+   horizon, shapes that aren't human, cut. Humanity was never alone out there; nothing more is
+   shown." The docs follow the new, as an ending's last image. It shows that something non-human
+   is there; the far end's purpose is still never stated, and "galaxy lore stays offstage until
+   the endings" (session 4, part 3) is what lets an ending show it. The session writes the
+   destination's coordinates "in the hive mind's own naming (it had its own name for Zan)," so
+   section 8's alien name stays unminted.
+8. **The AI gods and the air.** Earlier (part 2): the gods "speak only through terminals, never
+   as characters" and "have no link to each other any more, so their machine-to-machine traffic
+   is carried on foot by priests who can't read it." Endings session: "Radio priest is a role
+   inside each god's cult," and "The Ledger has the strongest signal." The docs follow the new:
+   the gods are on the radio, run by their cults' priests, and a terminal stays how a god speaks
+   to someone standing at it. Part 2's priests (carriers on foot) and the session's priests
+   (operators of transmitters) are read as two jobs of one role. Not said: why a god that
+   broadcasts across the desert has no link to the others, and what bridging Mon and Han then
+   adds to the launch endings.
+9. **Built or merged.** Earlier (section 10): "An ancient civilisation... that succumbed to or
+   merged into its own collective intelligence and may no longer be corporeal. (Hunter chose this
+   over a human faction that broke off into a hive mind.)" Session 4, part 3: "Almost certainly
+   built by a non-human civilisation. Running in-world theory: it outlived its makers. This is
+   never resolved in game." The docs follow the new, and it narrows ambiguity A in section 14:
+   the hive mind is an AI built (almost certainly) by a non-human civilisation whose makers may
+   be gone, not the merged civilisation itself. It doesn't say the merged reading is dead, only
+   that the game never settles it.
+10. **The merger.** Earlier (session 4, part 2): "Long after the war, TILG merged with its old
+    rival Standard Freight." Session 4, part 3: "Tilg & Standard was nationalised in the war,
+    later un-nationalised, and stayed merged." The docs follow the new: the merger is no later
+    than the war (section 5). A reading, not said: the nationalisation is what merged them.
+    Standard Freight's "brief, bitter comeback" in the war (session 3) then ends inside the
+    merged company.
+11. **Zan on the lane.** Earlier (section 4): Zan "sits on an interstellar lane midway between
+    powers, a stop on the way to civilisation and not the customs port into United Government
+    space," and (session 3) the Provisional "isn't a direct border system, so there are no
+    customs on Zan." Session 4, part 3: "Zan sits at the last legal step before the forbidden
+    lanes, and the dead lane is unwatched." The docs follow the new. It answers section 13,
+    question 14 (where the moon sits on the lane): the human lane ends at Zan, and the lane
+    beyond is the forbidden one. "No customs on Zan" is kept, since the UG's customs port is
+    elsewhere. Whether "the last legal step" makes Zan the border in all but name is not said.
+12. **Always imported.** Earlier (section 3, and the vision's setting): the vents "outgassed" and
+    "topped the near side up," and "water goes through all three phases every day." Session 4,
+    part 3: "Zan's water was always imported; it never rained." The docs follow the new on rain
+    and read "imported" as the colony's supply (section 3). If it means all of Zan's water, the
+    migration and the frost would need another source; the session doesn't say.
+13. **What ended each age.** Earlier (session 4, part 2): the First Kingdoms' fall is vents that
+    "moved," a drying near side and "feudal war plus a second famine." Session 4, part 3: "the
+    colony dies of abandonment and fire, the first kingdoms of lost power and war, the second of
+    thirst." The docs follow part 3's wording and keep part 2's detail, reading each as the main
+    cause named.
+14. **The board tows nothing.** Earlier (the vision): "The hoverboard is just for you: fast,
+    floaty and fun, for scouting and escaping. It tows nothing." Movement: "It tows nothing. That
+    keeps it fun, and it keeps it from competing with the camp." Session 4, part 3: the Daventry
+    patrol board is "a camp in a board" with a "Tow" among its gear, and the build note asks for
+    "mount points for a shield, battery, radio, condenser, bedroll and tow." The docs follow the
+    new for the patrol board (proposed) and leave the standard board as built: it still tows
+    nothing. The camp it carries is the board's own, so it may not compete with the real camp, but
+    the session doesn't say.
+15. **The sand yacht and the dune sailboat.** Earlier (the vision, Movement): "a sand yacht that
+    rides the wind and might outrun a storm with the camp aboard," "the real fast base-mover."
+    Session 4, part 3: "Dune sailboat: slow hauler for hybrid play," "a wind-driven slow hauler."
+    Both stand. Not said whether the sailboat is the yacht's early form or another craft, or where
+    it sits in the haulers' list.
+16. **Feral plants and bare regolith.** Earlier (section 2): "natural regolith isn't soil, and you
+    farm in planters with your own soil." Session 4, part 3: "Zan has no native life, only feral
+    colonial imports ('rogue plants')." Both stand, read as plants that grow where there is soil
+    to hold them (section 8).
+17. **A fixed water source.** Earlier (the vision, pillar 2): "There's no base to return to," and
+    "Only what's around the player exists." Session 4, part 3: Sister is "a fixed-coordinate
+    prefab landmark" with a "basin that refills slowly," "a reliable small water source until
+    restored." The docs follow the new, since the landmark rule already lets a fixed place exist.
+    A fixed, reliable water source is a reason to camp beside it. Not said whether that is
+    wanted. [Survival](prd/survival.md#water) lists it as a pointer only.
+
+**Clashes between the two new sessions (session 4, part 3 wins)**
+
+1. **True ascendancy.** Endings session: "The true ending requires the hive mind start... Clear
+   path for the hive mind, obscure for a human. Idea for the human route: captured hive mind tech
+   sealed deep in the black site looks like an incredibly powerful Console mod. Install it, then
+   link the gods through your Console, and it eats them instead of bridging them." Session 4,
+   part 3: "True ascendancy (hive mind start only): consume the other gods. Requires a linked
+   Mother Cistern." The docs follow part 3: hive mind start only, and a linked Mother Cistern is
+   required. The human-route Idea is kept as an Idea. It now contradicts "hive mind start only,"
+   unless the mod is something a hive mind start also meets. The endings session's own lines
+   ("requires the hive mind start" and "obscure for a human") already pull against each other.
+2. **Bringing Zan back.** Endings session: it requires "the Ledger and Quartermaster connected,"
+   and one lever is "which god leads (Ledger, Mother Cistern, or you if uploaded)." Session 4,
+   part 3: the Cistern axis is "Required. Linked = full terraform, first rain over Sister." The
+   docs follow part 3: a linked Mother Cistern is required, and the lever of which god leads is
+   read as who leads the linked network.
+3. **The long wait's rescuer.** Endings session: "survive the years until a Tilg & Standard ship
+   arrives." Session 4, part 3: "Rescuer may be Tilg & Standard or a Varran ship that claims
+   Zan," and "Daventry may arrive instead, to inspect and quarantine." The docs follow part 3.
+   Not said: what decides which arrives, or what a Daventry arrival does to the player.
+
+**Resolved by these sessions**
+
+- **The military order's name** (section 16, open question 1): the Knights Requisitioner,
+  agreed (endings session).
+- **The temple city's name** (section 16, open question 5): Sister (session 4, part 3).
+- **The governor:** Plimsoll (endings session), read as the governor-general.
+- **What government exists now** (the endings session's own open item, "How the war ended and
+  what human government exists now is deliberately undecided"): the war ended in quarantine and
+  fracture, and the states are Varran, Daventry and the Rump UG (session 4, part 3). The
+  Provisional is gone, and on paper Varran is it (below).
+- **Do the AI gods ever broadcast** (section 16, raised item 8): yes, with radio priests (endings
+  session). Whether the Ledger is the "maybe-voice" and whether broadcasts carry voices are still
+  open.
+- **How a moving city finds a camp** (section 16, raised item 13), in part: the last nomad city
+  follows the Walker's signal. Whether it finds a camp worth finding is not said.
+
+**Narrowing earlier items, without settling them**
+
+- **Ambiguity A (section 14), the hive mind and the far end.** Item 9 above says it is an AI
+  built by a non-human civilisation. The war is its attack, after which it "plays possum behind
+  the wall," which answers how its starting a war squares with section 10's "it will never
+  confront anyone": it stopped. Whether it is the far end is still not said outright.
+- **The outer cold giant** (section 14, question 2). The endings session sends the outlaw Up the
+  well to "a small new He-3 outpost on a moon of the outer cold giant." It treats the giant as
+  real, without saying it is deciding.
+- **The end state** (section 14, item 7). The Atmosphere ending is "Agreed, needs the clock (not
+  built)," and Bringing Zan back "must beat the atmosphere clock." That leans toward the air
+  running out being a real clock, which the pending proposal ("a calm, near-airless desert")
+  would hold. The physics line is unchanged: [the moon](the-moon.md) calls the escape "not
+  something you'd see." Hunter's call on the end state is still pending.
+- **The war, and who** (section 13, question 4): the UG and the hive mind, ended in quarantine.
+  There are still no dates.
+- **The outside world in the player's time** (section 16, raised item 11), in part: the lane
+  carries traffic again, Tilg & Standard has returned, and Varran and Daventry are the neighbours.
+  How the Surveyor has "no interstellar comms" while the long wait lets you "make the call" is
+  still not said.
+- **The ruins' places** (section 16, raised item 7). Sister is the first landmark with a
+  description ([World & terrain](prd/world-and-terrain.md#landmarks)).
+
+**Open questions from the sessions** (combined, and de-duplicated)
+
+1. How each ending axis is actually implemented, and how the player learns a choice matters
+   without exposition. A seed: hearing a Daventry broadcast hints they can hear you.
+2. The nomads' reaction to a player holding their god, and how to show the pilgrimage without
+   dialogue (*Idea, open*): hostile if a pilgrimage is underway and you never made contact,
+   shocked if it hasn't set out, not hostile with prior contact. What "explaining yourself" or
+   prior contact means with no NPCs is open (an idea: actions, such as switching the broadcast
+   back on or returning the Walker).
+3. The cost of keeping a carried Walker broadcasting (power or a slot).
+4. The world clock behind the atmosphere ending.
+5. "Wrong answer," the Okafor-line bunker and the radio ending: develop or drop.
+6. Exact era year figures.
+7. Whether the Ledger is still broadcasting when the player arrives ("in a sense": it counts
+   either way), and whether broadcasts carry voices or only tones and numbers.
+8. The Rump UG's name ("the UG," "the Union," "the Core," or all three by speaker), and Varro as
+   the Varran capital (tentative).
+9. The priestess order: its name, structure and founding are a working sketch only.
+10. The exact Daventry kit unlock.
+11. A separate lore doc for the war and the player-era states, once they are settled.
+
+**Raised by this fold**
+
+1. **The placeholders.** Confirm or strike "a few thousand years" as both current values, and say
+   whether the eras' marks stretch with it. Also what "so Tilg & Standard outlasts it" asks for:
+   read here as the company surviving the whole era, which its nationalisation and merger
+   (clash 10) fit. The session says only "outlasts it."
+2. **Successor to what.** Daventry is a "rival successor state, run like the old Provisional,"
+   and the endings session says "The Provisional is gone by the player's era," while Varran "on
+   paper... are the Provisional." Read as the Provisional having dissolved as a state and
+   surviving as a filing. Daventry is a successor to the UG, the Provisional or both, which is not
+   said.
+3. **Which governor.** "The Provisional's governor is Plimsoll," read as the governor-general of
+   session 3. Whether the post or the person at the war's start is meant is not said.
+4. **Rule 1 and ritual text.** The radio's rule is that broadcasts read the real systems. The
+   proposed voices include Mother Cistern's calls "tied to rations and rain" (there is no rain),
+   the Quartermaster's "authentication challenge nobody can answer," and the Ledger's tallies as
+   psalms. Read as ritual text taken from real documents (a maintenance checklist, the unfunded
+   forecast), not invented. See [Radio, sound &
+   atmosphere](prd/radio-sound-and-atmosphere.md#open-questions).
+5. **The Walker's bearings on the air.** The proposed voice for the Walker is "coordinates and
+   bearings," and the session says "finding it must never happen early." A broadcast that points
+   at it is a beacon. Not said how the two fit.
+6. **Naming the offstage states at New game.** The kit picker would say "Varran" and "Daventry,"
+   against "galaxy lore stays offstage until the endings." The other kits already name a Tilg &
+   Standard contractor and a university expedition, so a kit's own name is read as allowed.
+7. **Daventry's loudness and the launches.** Session 4, part 3's build note raises it from
+   "dead-lane transmissions and launches," while its table has both escape endings "Unaffected."
+   Read as launches into the dead lane only. Whether the value ever falls is not said.
+8. **Where the ending flags live.** A running loudness and a Cistern state are a run's changes,
+   so they are read as part of the run save ([Profile &
+   saves](prd/profile-and-saves.md#ending-flags-proposed)). Whether they carry across runs, as a
+   landmark's changes might ("persist the player's changes"), is open.
+9. **The pathfinder's map.** It needs "knowledge of the dead lane," and the session doesn't say
+   where that comes from, or whether it is the stolen freighter's coordinates in the hive mind's
+   naming, which are "readable only from the deepest lore." The ear is only the orbital station's
+   antenna, so the pathfinder follows Up the well (a reading).
+10. **The revival ending.** Read as Bringing Zan back, the only ending where rain could fall.
+11. **The ending places as landmarks.** The endings need a sealed hangar in Aitch, the
+    observatory, the far-side ice and an orbital station, as well as Sister. Whether each is a
+    landmark is not said, and the station is off the planet grid.
+12. **Varran settler against the Homesteader.** Both are settlers. The Homesteader has "civilian
+    brand marks, not Tilg's" and the full agriculture setup; the Varran has the sailboat, a cheap
+    shield and Brandt's frontier. How their marks differ is undesigned.
+13. **"Build" without crafting.** Both new unlocks are "build and use" a sailboat or a patrol-style
+    board, in a game where parts are found, never crafted. Read as assembling from found parts.
+    The sailboat itself is in no PRD yet.
+14. **A moving bubble.** A strong, narrow shield that stays on while riding is a bubble moving at
+    board speed. The built shield rules cover a shield on a still or towed crate, and the light
+    shield "light enough to carry, switched on, while you walk or board" is a change to make, not
+    built ([Bubble shield &
+    camp](prd/bubble-shield-and-camp.md#the-carried-light-shield-and-the-starts-not-built)).
+15. **Feral plants.** Whether one can be harvested, moved or sown, how far ahead its pose reads,
+    and where scrub grows, are not said (section 8; [Farming](prd/farming.md),
+    [Wind & storms](prd/wind-and-storms.md)).
+16. **The seed vaults.** Where they are, what makes their stock better than a found seed, and how
+    a vault relates to a ruin are not said ([Salvage & ruins](prd/salvage-and-ruins.md#seed-vaults-agreed-session-4-part-3-not-built)).
+17. **Okafor's question.** Bringing Zan back's lever "registered or kept 'temporary'" is called
+    "Okafor's old question." Nothing earlier says what it was. A reading: it echoes Tilg's
+    "temporary transshipment hub" label (section 5) and the town "never registered" (section 4),
+    with the Okafors descended from the Harbourmaster who stayed. The session doesn't say.
+
+## 18. Open after session 4, part 4
+
+*The plants session ([plants, world generation and ruins](plants-worldgen-ruins-2026-10-17.md)) is the
+newest. The brief for this fold is the same as for the last two: the newest session wins in the living
+docs, and each clash is quoted old and new here, and in the PRD named when it is a game-doc clash.
+Hunter can reverse any of them. The session's own rules are kept: "one shared system per area, with a
+unique feel per item... differences come from data"; "Labels: *Agreed* = settled direction. *Idea* =
+proposed but not confirmed. *Back burner* = liked, do not build yet. Anything in Open questions is
+undecided"; and the scope warning, "the game has no structures and no terrain generation yet. Lore
+here is deliberately deeper than what should be built now." It renames the eras, corrects three
+places, builds out a plant system, history-first world generation, structures by era and the loot
+model, and orders ten steps. Section 17 is left as it was. **Update (session 4, part 5):** the newer
+session corrects part 4's era names, so the entries below that concern the First Kingdoms and the Dark
+Age are marked **resolved by part 5**, and the ones it leaves alone stay as they were. The clashes of
+part 5 itself are in [section 19](#19-open-after-session-4-part-5).*
+
+**The old names, mapped.** Sections 12 and 14 to 17 are records of earlier folds and keep the names in
+force then. This fold mapped First Kingdoms to the first age and the Dark Age to the scattering; part 5
+undid both, so read them as:
+
+| Written there | Now (after part 5) |
+|---|---|
+| First Kingdoms | the First Kingdoms (the first age): the name is back |
+| Dark Age | the Dark Age: the name is back, as a lineage rule with no sites ([section 7](#era-names-again-agreed-session-4-part-4-corrected-in-part-5), item 2) |
+| Second Age | the second age |
+| First Kingdoms to Second Age (the Salvage layer) | First Kingdoms to second age |
+| Colonist era | the colonial era |
+
+**Clashes with earlier text (the docs follow the new version)**
+
+1. **The era names.** Earlier (session 4, part 2, and the last fold): "**No more 'Bronze Age.'** The
+   post-collapse societies are medieval in shape (Kenshi-like post-apocalyptic feudal), not Bronze
+   Age. Use **First Kingdoms**, **Dark Age** and **Second Age**. Replace the term everywhere,
+   including tier names and comments." Session 4, part 4: "The era names are now: **colonial →
+   collapse → skimmer era → first age → second age.** 'Bronze Age' is retired everywhere; replace it
+   in existing docs and code comments." The docs follow the new, as the mapping above and [section
+   7](#era-names-again-agreed-session-4-part-4-corrected-in-part-5) set out. A search of the code found no hit for
+   "Bronze" or "First Kingdoms," so no code comment changes. "Bronze Age" remains in the docs only as
+   quoted history. **Corrected by part 5:** its chain lost the Dark Age and its first age was not the
+   First Kingdoms; the docs follow part 5 ([section 19](#19-open-after-session-4-part-5)), so the names
+   in force are First Kingdoms (the first age), Dark Age and second age.
+2. **The order of the collapse and the skimmer era.** Earlier: session 3's eras 2 and 3 (the war and
+   the tithe, with the black site) come before 4 and 5 (the withdrawal and the collapse), and part 1's
+   phases run Orphaned, the smuggler moon, the paroxysm, then the ages. Session 4, part 4: "colonial →
+   collapse → skimmer era," with a numbered list that puts the skimmer era second and no collapse in it.
+   The docs follow the names and not the chain's order, and leave the event order where the lore has
+   it (section 7 has both readings). Hunter's call. **Not resolved by part 5:** it restates the chain in
+   the same order and calls only the Dark Age and the first age errors, so Hunter has now given the
+   order twice, and it stays open ([section 19](#19-open-after-session-4-part-5)).
+3. **The Dark Age. Resolved by part 5.** Earlier: "**Dark Age.** Survivors scatter, and barely anyone
+   makes it. The archives and engineer guilds don't survive, so this is where knowledge is truly lost."
+   Session 4, part 4: no Dark Age in its chain or its list. This fold followed it by dropping the name
+   and keeping the content as the scattering at the head of the second age, and left open whether it
+   was that, the end of the first age, or a named age again. Part 5: "The Dark Age was missing from the
+   timeline," and it generates no sites of its own. The docs now follow part 5: the Dark Age is a named
+   age between the First Kingdoms and the second age, and a lineage rule on loot.
+4. **"First Kingdoms," in the age and in the house lore. Resolved by part 5.** Earlier (part 2): "the
+   First Kingdoms" as an age, with the Morgan kingdom and its houses, Halloran's citadel and the Rim
+   Kingdom inside it, and part 3's "founded in the first kingdoms era" and "the first kingdoms of lost
+   power and war." Session 4, part 4: "first age," described as "survivors living on scraps of colonial
+   power." This fold followed it. Part 5: "The first age is the First Kingdoms, not a generic era," and
+   "for first-age detail, part 2 is canon." The docs now follow part 5: the age is the First Kingdoms
+   (the first age), part 2's three powers, houses and feuds are its, and part 3's phrases stand as
+   written.
+5. **Landmarks per seed.** Earlier (part 2): "a small class of prefab sites at fixed coordinates on
+   the planet grid, the same in every run, that persist the player's changes." Part 3, Sister: "a
+   fixed-coordinate prefab landmark." Session 4, part 4: the fixed landmarks are "placed procedurally
+   per seed, but always present, because the endings depend on them." The docs follow the new, so a
+   landmark exists in every world and not at the same coordinates. This answers section 16's raised
+   item 7 (how a fixed prefab is pinned into generated ground): it is not pinned, and the terrain is
+   generated around it. The Prisoner's "deep under Tu" is unaffected.
+6. **A plan of the moon's history against a world of only what's around you.** Earlier (the vision):
+   "Only what's around the player exists," and "Stateless... nothing beyond render distance is stored";
+   (World & terrain, rule 4) "Chunks hold no state. A chunk is pure output of the seed and its
+   coordinates." Session 4, part 4: "generate history first, then terrain and loot," in layers, "so
+   history stays coherent per seed." The docs follow the new, read as a plan of the finite moon, made
+   from the seed, that chunks read (the PRD has the reading). Not said how coarse the plan is.
+7. **Quietbloom against rule 1 and "galaxy lore stays offstage."** Earlier (section 10, rule 1): the
+   far end "can never" be confirmed, "At most it surfaces as a very rare, coherent, unanswering radio
+   frequency... A player may assemble it from the alien name, odd import manifests and that signal, but
+   can never confirm it." Part 3: "Galaxy lore stays offstage until the endings." Session 4, part 4:
+   "the only non-Earth organism on Zan," a hive mind gift in the trade era, grown from a specimen case
+   at the black site, "never explained." The docs follow the new. A plant a player can grow, that eats
+   power and listens to radio, shows in normal play that something non-human was here, which the
+   earlier rule kept for the endings. It still says nothing of why, and the far end's purpose stays
+   unstated. Hunter may want it kept to the black site's case only.
+8. **"Tilg & Standard" in the colonial row.** Earlier: the merger "is no later than the war" (section
+   17), after the colonial era, and the colonial crate's stencil is the acronym TILG (art direction).
+   Session 4, part 4's maker table: "Tilg & Standard | Colonial | Standard logistics all-rounder, most
+   common." The docs follow the session's table, reading it as the company's name as it is known, and
+   flag the anachronism ([Devices & mods](prd/devices-and-mods.md#crate-makers-agreed-direction-session-4-part-4-not-built)).
+   If colonial crates should read Tilg, it is a one-word change.
+
+**Clashes between the two newest sessions (session 4, part 4 wins)**
+
+1. **The weather sign: first, or deferred.** Part 3's first build step: feral plants as a weather sign,
+   "driven by the storm intensity curve with some lead time. Requires the curve to be queryable ahead
+   of time, which was already flagged for sleep." Part 4: "Deferred: feral plants as weather sign (needs
+   the queryable storm curve from the sleep work)." The docs follow part 4's deferral. **The dependency
+   it names is already met:** `storm_at(place, time)` is a pure function of the seed, the place and
+   the time, `WeatherField` samples it forward, and the radio's weather station reads it 20 minutes
+   ahead, so nothing from sleep has to be built first. The deferral is an order choice, not a missing
+   piece ([Wind & storms](prd/wind-and-storms.md#feral-plants-the-free-barometer-agreed-session-4-part-3-not-built)).
+2. **Scrub and saltbush.** Part 3: "Feral scrub closes up or turns its leaves before a storm." Part 4:
+   saltbush is "the weather-sign plant from part 3; this biology explains it" (its leaves fold when
+   pressure drops). The docs follow part 4: the scrub is saltbush, and the Sisters seeded it along
+   pilgrim roads, which is part 3's trail.
+3. **The two proposed build orders.** Part 3's seven pieces and part 4's ten steps. The docs record
+   part 4's as the newer and keep part 3's for reference, with where they overlap
+   ([skeleton plan](skeleton-plan.md#the-newer-proposed-order-session-4-part-4)): the weather sign
+   (deferred), the feral lines (steps 6 and 9), Sister (step 6's landmarks and step 7's kit) and the
+   kit unlocks (step 10's spawns).
+4. **Sister's coordinates.** Quoted at clash 5.
+
+**Clashes in the game docs** (quoted old and new in the doc named)
+
+- The roster against carrots, fungus and yucca, with the sizes crossed over; two plant slots against
+  three socket kinds; felt light and temperature against humidity, radiation, wind shear and
+  abrasion; a ripe crop that holds against going to seed; fungus on a six-minute timer against
+  bursts; seeds found loose against "no plant spawns randomly"; salt that keeps food and compost from
+  rotten food against food that never spoils; cord, salt and strange material against "found, never
+  crafted"; sandroot's storm survival against the planter's wear; rainseed's rain against a game with no rain:
+  [Farming](prd/farming.md#open-questions).
+- Crate makers as a third axis; the burner against the heavy generator; a survey mod on the Console
+  against separate ground detection; three planter kinds against two slots:
+  [Devices & mods](prd/devices-and-mods.md#open-questions) and [Power](prd/power.md#open-questions).
+- Burial depth by era against the strata; exposure and reburial against "loaded ground never
+  changes"; digging against "no digging and nothing underground"; loose finds in open sand against
+  "stop spawning" them; weapons and armour in a game with no combat; drift against frozen finds; the
+  First Kingdoms' working tech against "stripped" and "lower tier": [Salvage & ruins](prd/salvage-and-ruins.md#open-questions).
+- Landforms the ground doesn't have (plateau, rift, a peak above the weather); the dangerous deep
+  desert with no enemies; "find an artery" against wandering and the oyster; spawns by kit against the
+  built spawn; the orbital launch site (replaced by part 5): [World & terrain](prd/world-and-terrain.md#open-questions).
+- A planning session against the sleep proposal; storms of 20 to 40 minutes against the field's median
+  of 17; fixing storm damage against wear nothing mends; a radio that carries better against one that
+  crackles; lightning against "out of scope"; storm blooms against bursts: [Wind & storms](prd/wind-and-storms.md#open-questions).
+- Sand beetles against "no creature rigging" and "pests and diseases": [World & terrain](prd/world-and-terrain.md#ambient-life-sand-beetles-agreed-session-4-part-4-not-built).
+
+**Resolved by this session**
+
+- **What a feral plant gives** (section 17, raised item 15, and the Farming PRD's open question): a wild
+  plant can be harvested, and wild stock is dug up or cut and sown. Where scrub grows: by habitat, "no
+  plant spawns randomly." Still open: how far ahead a plant's pose reads.
+- **Where the seed vaults are, and what makes their stock better** (section 17, raised item 16), in
+  part: clean stock is in "sealed seed caches and vaults in era-appropriate sites" (Frontier Ag seed
+  stores, granaries, the Sister vault) and has the full engineered traits, where wild stock is
+  worse.
+- **How a fixed landmark sits on a seeded world** (section 16, raised item 7): placed per seed (clash
+  5).
+- **What is grown, where and in what** (section 15, open question 1: agriculture), for the plants:
+  the roster, the habitats and the planters. Who grows what in Port Morgan's own farms is not said.
+- **Which history a crop carries** (Farming PRD): its ancestor, engineering and drift.
+- **What the collector catches** (the 17 Oct notes: "what blows is open"): drift, "light debris,
+  scraps and occasional small items."
+- **Where the other starts spawn** (section 16, raised item 6), in part: the Surveyor, Salvager and
+  Homesteader. The novelty starts have none.
+
+**Narrowing earlier items, without settling them**
+
+- **Ambiguity D, the skimmer era (section 14), and E, the smuggler moon (section 15).** Part 4 gives
+  the skimmer era the war, the black site, H-Town at its peak and deserters, which is the smuggler
+  moon's content. It still does not say the two are one, or whether the skimmer era begins before the
+  desert, as its gear's "wasn't a desert yet" reads.
+- **One layer or three (section 16, raised item 4).** Part 4's burial table has the First Kingdoms deep
+  and the second age shallowest, so the ages do not share a depth. That leans to stacking, but it also
+  puts the skimmer era above the First Kingdoms, against the strata's order. Part 5 adds that the Dark
+  Age has no sites, so the layer holds two ages' sites and a third's lineage.
+- **The black site's reach (section 16, open question 6).** It sits on the main artery, not a spoke,
+  and holds a sealed specimen case. How far it can be reached is still open.
+- **Water.** Dewleaf and stormcup are plant water sources, and the Sister basin is a fixed one (section
+  17, clash 17). The Salvage PRD's "Water: still open" is narrower for it.
+- **Large structures (the 17 Oct notes: "out of scope for now").** The session lists colonial
+  landmarks and a kit that includes towers, and warns that "lore here is deliberately deeper than what
+  should be built now." The kit, not the landmarks, is what to build first.
+
+**Open questions from the session**
+
+1. Plant processing: salt, filtering stormcup water, debittering tubers, fern to cord ("next session's
+   topic"). *Partly answered by part 5: the kiln does salt, boiling stormcup water and debittering
+   tubers; fern to cord is not covered.*
+2. Sand beetles: pests, pollinators, or both.
+3. Crossbreeding: can players create new strains? *Narrowed by part 5: probably through the Almanac
+   (**Idea**), still open.*
+4. Sandroot's original maker (Frontier Ag or Tilg terraforming).
+5. Can a player's own sandroot ever reach landmark size, or is that wild-only?
+6. Does any water crop beat the condenser in some niche?
+7. Quietbloom as an ending modifier: confirm or drop.
+8. The orbital launch site: location and structure. *Answered by part 5: there is none; the Rim depot
+   and the far-side elevator stub replace it.*
+9. How much storm-driven dune movement the terrain can actually support.
+10. Second-age structures: how much of the list makes the first pass.
+
+**Raised by this fold**
+
+1. **The placeholders.** The plant overview's "thousands of years" is in line with the current values;
+   confirm or strike them as before. No figure is added to the living docs.
+2. **The chain's order, and the Dark Age.** The two flags above were the biggest open items of the
+   fold: which reading of "collapse," and which of the Dark Age's three fates. Part 5 settles the second
+   (the Dark Age is an age again) and leaves the first.
+3. **"The ring."** It is read as the Rim's band round the near side, so the hot zone, the dark zone and
+   the ring band are the sky's three regions. The session does not define it.
+4. **The landmark list against the endings' places.** The endings need a sealed hangar in Aitch, the
+   far-side ice and an orbital station, and the list does not hold them (the observatory and the
+   launch site are on it). Whether Starcom, "above the weather," is the antenna the long wait repairs
+   while its flagship "stood on the mountain that blew," and whether "never a whole one" bends for a
+   landmark are not said. *Part 5 removes the launch site from the list and puts the Rim depot and the
+   elevator-stub observatory on it; whether the launch is Port Morgan's pads is read in [section
+   4](#the-rim-depot-and-the-twin-fires-agreed-session-4-part-5).*
+5. **Landforms.** A plateau, a rift wall and a peak are shapes the ground does not have yet (World &
+   terrain).
+6. **What a weapon is for.** Skimmer-era loot is weapons, armour and mods in a game with no combat.
+7. **Food.** Whether it spoils, which salt and composting both assume.
+8. **Humidity and radiation.** Storm crops want humidity and every crop has a radiation tolerance, and
+   the game computes neither.
+9. **A dig under the one-function ground.** Digging reveals floor plans and exposes ruins, against
+   loaded ground that never changes.
+10. **The first hour.** With no loose finds in open sand, what a start finds, since a start is on or
+    near an artery and the kit's survival kits are "what you live on at first."
+11. **Which plants show the weather.** Only saltbush is named, and the lead time is still not set.
+12. **Clean stock for seed-only crops,** and how sterile clean stock goes to seed.
+13. **Which maker's crate the kit is,** and whether Frontier Ag is the planter's maker for the art
+    direction's mark ([art direction](art-direction.md#makers-marks)).
+14. **The scale of the artery.** Caravanserais "at day-long intervals" on a line of about a quarter of
+    a lap: about twenty stops if a day is the game's 20 minutes on foot, a handful if it is a lore day.
+15. **The gift and the case.** The hive mind sent seeds "during the trade era," and the Provisional
+    locked them in a black site that is "a Provisional State facility during the hive mind war." Read
+    as the confiscation coming at the war's start. The session gives no date, and no reason for a gift
+    from a power that "never confronts anyone" (section 10).
+
+## 19. Open after session 4, part 5
+
+*The gods session ([gods, gear and the far side](gods-gear-farside-2026-10-17.md)) is the newest. The
+brief for this fold is the same as for the last three: the newest session wins in the living docs, and
+each clash is quoted old and new here, and in the PRD named when it is a game-doc clash. Hunter can
+reverse any of them. The session's own rules are kept: "Part 4 had two errors. Where this doc and part
+4 disagree, this doc wins; for first-age detail, part 2 is canon"; "Everything here is Agreed unless
+marked"; and its labels, **Agreed**, **Idea** and **Back burner**. It corrects part 4's eras first,
+amends the dialogue rule, and adds the seven gods, gear by era, the kiln, the far-side geography and the
+dispatches. Sections 17 and 18 are left as they were, except that section 18's entries about the First
+Kingdoms and the Dark Age are marked resolved by this session.*
+
+**The names, restored.** Part 4's fold mapped First Kingdoms to "the first age" and the Dark Age to
+"the scattering" ([section 18](#18-open-after-session-4-part-4)); this session undid both. The sequence is
+**colonial → collapse → skimmer era → First Kingdoms (the first age) → Dark Age → second age → feral**
+([section 7](#era-names-again-agreed-session-4-part-4-corrected-in-part-5)). Sections 12 and 14 to 17 read
+as written. "Second Age" is written "second age," as part 4 and part 5 both do.
+
+**Clashes with earlier text (the docs follow the new version)**
+
+1. **The eras: the Dark Age, and "the first age" as a generic era.** Earlier (part 4, which the last fold
+   followed): "The era names are now: **colonial → collapse → skimmer era → first age → second age**,"
+   with the first age "survivors living on scraps of colonial power until it fails and war breaks out,"
+   no Dark Age, and the last fold's "scattering" at the head of the second age. Part 5: "The Dark Age was
+   missing from the timeline. The full sequence is: colonial → collapse → skimmer era → **First
+   Kingdoms** (first age) → **Dark Age** → second age → feral," and "The first age is the First Kingdoms,
+   not a generic era... Tu religion is only emerging. The era ends when the volcanic vents shift beyond
+   reach." The docs follow part 5, so the First Kingdoms and the Dark Age are named again across the living
+   docs. Part 4's kit for the age (pipe-wall huts, cisterns, low stone walls, pipe towns, generator
+   shrines, buried war earthworks) agrees with part 2's keepers of working machines and its "neutral holy
+   sites," so it stays; "survivors on failing colonial power" goes, and part 2's citadel, baron's holdings
+   and toll towns are the age's other pieces ([Salvage &
+   ruins](prd/salvage-and-ruins.md#structures-by-era-and-the-loot-model-agreed-session-4-part-4-not-built)).
+2. **The Dark Age as a scatter, and as a workshop era.** Earlier (part 2): "Survivors scatter; barely
+   anyone makes it. The archives and engineer guilds don't survive, so this is where knowledge is truly
+   lost." Part 5: "it was the workshop era, when survivors broke down colonial and First Kingdoms gear
+   and remade it to last without a supply chain." Both stand. The docs read the remaking as craft and
+   adaptation by people who had lost the engineering (a round ceramic cap on a square housing), not
+   manufacture, which part 2 still says is lost. How many people or how much of the age it covers is not
+   said.
+3. **The Dark Age's sites.** Earlier (the last fold, and part 2): an age with a place in a layer ("First
+   Kingdoms to Second Age," one layer for three ages). Part 5: "The Dark Age has no structures of its
+   own. It exists in world gen as a rule on loot." The docs follow part 5: a lineage rule, no kit and no
+   layer of sites. Its "small world features" (cairns marking water, caches on migration routes, the
+   first deliberate saltbush plantings) are read as markers placed along routes by that rule, not a kit; the
+   session does not say. Saltbush also sits with part 4's "the Sisters seeded it along pilgrim roads":
+   the Dark Age plants it first and the Sisters spread it, a reading.
+4. **What a second-age item is.** Earlier (session 3's strata and part 2): "the forged goods of the First
+   Kingdoms to the Second Age," and "First Kingdoms gear carries heraldry and guild stamps; Second Age
+   gear carries religious symbols." Part 5: "A second-age item is a colonial or first-age item remade in
+   the Dark Age," with "layered marks: a colonial maker's stamp, First Kingdoms heraldry scratched over
+   it, Dark Age repair work holding it together. Visual only; no stat effect required." The docs follow
+   part 5 for lineage and the marks, and keep the religious symbols as the second age's own addition
+   (charms, water vials, the Cistern's glaze). "Forged" is read as "remade."
+5. **The crate table, "trade-offs, not a ladder."** Earlier (the 17 Oct notes): "Era gear has trade-offs,
+   not a ladder," with the colonial crate "best power efficiency per kilogram," the skimmer-era crate "light,
+   cheap and fragile," and the first-age crate "practical to drag without a hover tray, still mountable,
+   somewhat worse power efficiency per kilogram." Part 5: "All eras interoperate... Eras differ only in
+   stats, along one axis: **efficiency vs repairability**," with colonial "best" and repaired with "finite
+   colonial parts only," First Kingdoms "near-colonial, more durable" and repaired with metal, and the
+   second age "crude, lossy" and repaired with what is grown and gathered. The docs follow part 5 and the
+   old table goes. It now reads closer to a ladder on efficiency, with repair as the trade, which also
+   mends the vision's "history runs backwards" tension ([the vision](vision.md#open-questions)). The
+   skimmer era is not in part 5's table: its old row ("light, cheap and fragile") is the only word on
+   skimmer gear and is not placed on the new axis (open questions).
+6. **Chassis pieces from different eras.** Earlier (the 17 Oct notes, open; part 2 lists it again): "Can
+   pieces from different eras join freely in the chassis, or do they need adapters?" Part 5: "any crate
+   takes any module, and there are no per-era compatibility rules." **Answered:** they join freely, and
+   there are no adapters ([Devices & mods](prd/devices-and-mods.md#open-questions)). Makers are not named;
+   they are read the same way.
+7. **The dialogue rule.** Earlier, in five places: part 3, "no NPCs, no dialogue, no exposition"; part 4,
+   "Hard rules still apply: no NPCs, no dialogue, no exposition. Everything reaches the player through
+   objects, terrain, instruments, radio and ending epilogues"; the endings session, "No NPCs, no dialogue,
+   no exposition. Choices are made through physical actions and gear"; part 2, the gods "speak only
+   through terminals, never as characters"; and the vision, "terminals" as one channel among marks,
+   carvings, ruin layering, radio and the sky. Part 5: "Still no NPCs and no exposition. People never talk:
+   no conversations, dialogue trees or reply menus. **Machines can talk through their terminals**... Quests
+   arrive as terminal output. The player answers physically... Never by choosing a reply." It is mostly
+   consistent, and the docs follow it, with these clashes:
+   - "No dialogue" now means people's dialogue; a machine's printed lines are output. The word "dialogue"
+     in the older lines is read that way.
+   - "Never as characters" against gods with temperaments, who rank the player, file forms and say
+     "Unacceptable." Read as: never as speaking people or NPCs. A god's personality is in its
+     formatting and word choice.
+   - Part 4's channel list has no terminal. Terminals join it (part 2 and the vision already had them).
+   - The endings session's "consequences are heard on the radio or seen through instruments" gains a
+     third: printed on a terminal. Choices stay physical.
+   - The storm radio windows (back burner) put gods "arguing" on the radio. Whether that is speech or
+     tones is the Radio PRD's open voice question, and the rule says only "terminals."
+8. **The Okafor line.** Earlier (the endings session, an *Idea*; part 3): "an underground bunker with a
+   holdout," and "possibly a bunker holdout"; the Salvage PRD set it against "There are no NPCs."
+   Part 5: "A sealed First Kingdoms vault under Port Morgan... Life support still runs on the colonial
+   power tap. Nobody is left," and the ending is to "seal the door from inside and live out your days."
+   The docs follow part 5: the bunker is empty and the holdout is the player, which removes the clash with
+   "no NPCs." A vault under Port Morgan still meets "nothing underground" (open questions).
+9. **The Ledger's login.** Earlier (part 2, and the endings session's running gag): "The Ledger is Tilg
+   property, so the surveyor is the only person on Zan with a login to the god of the crusades." Part 5:
+   "Other kits need a **second door**: the original Harbourmaster was never formally fired, so their
+   credentials are still valid," on a sticky note in the Port Morgan ruins. The docs follow part 5; the gag
+   stands as "the only one who needs no second door."
+10. **Bridging Mon and Han.** Earlier (the vision's ladder, from part 2): "Connecting them means bridging
+    Mon and Han across open desert: two gods talking directly for the first time in centuries," and part 2's
+    open "how the Mon–Han connection works mechanically (cable run, relay)." Part 5: "Linking them can be
+    done any of three ways: carry the Quartermaster module to Port Morgan, bounce through a repaired
+    Starcom, or run a cable. Carrying always runs one way, since the Ledger can't move." **Answered,** and
+    followed.
+11. **The Quartermaster: kept alive, or defunct.** Earlier (part 2): the black site "kept alive by
+    geothermal power," "Patron of the military order and of Muster's war cult. Holds military clearances."
+    Part 5: "A cranky, defunct, has-been god... You can take its core without consent... Its only remaining
+    godlike power is shooting down anything leaving Zan." The docs follow part 5 for the temperament, the
+    module and taking the core; the cult's worship stands as part 2 has it. "Defunct" is read as an obsolete
+    state's mind still running, since it still authorises and fires. What taking its core does to Muster and
+    the Knights Requisitioner, who kneel to it, is not said.
+12. **The stolen freighter against a stolen Quartermaster.** Earlier (the ladder): "Sneak the Ledger's
+    freighter past the Quartermaster (fool it, e.g. a forged Provisional clearance, or knock out the
+    air-defence net) and take the dead lane into old hive mind space." Part 5: a stolen Quartermaster
+    "authorises launches, except any ending that goes **into hive mind space**. Then it fires the net and
+    kills you both." The ladder row stands, and a captive Quartermaster on board is the way not to do it.
+    The pathfinder is unaffected and the hive mind start "is shot down regardless."
+13. **Where launch fuel comes from.** Earlier (Power, and part 2's Launch ending): "Fuel is rare, and
+    it's mostly found," and "locate an old ship, fuel and power it." Part 5: "A fed Stoker
+    produces launch-grade fuel, the only source on Zan. Most launch endings therefore route through Han."
+    The docs follow part 5. "Most" leaves Up the well, whose skimmer refuels from Tu in orbit, and its
+    launch fuel is not said (open questions).
+14. **The orbital launch site, and the observatory's age.** Earlier (part 4): "Starcom (high-altitude
+    comms) and the **orbital launch site** are separate places," the launch site on the fixed list, its
+    "location and structure" an open question, and "the observatory" among the colonial era's places.
+    Part 5: "Part 4's 'orbital launch site' landmark is **replaced** by two things: the Rim depot and the
+    far-side elevator stub, which is also the observatory." The docs follow part 5. The elevator stub is
+    colonial and the telescope in it is the second age's heretics' (the endings session: "far-side heretics
+    of the second age... built a telescope"), which settles the old listing. The landmark list is Port
+    Morgan, the Halloran refinery and H-Town (Aitch), the black site, Starcom, the observatory, the Rim
+    depot, Sister and Halfrise.
+15. **The Walker.** Earlier (part 2, the endings session): "A legged survey robot that never stops
+    mapping," "Wandering," alone and partly broken, whose broadcast route the last nomad city follows from
+    afar, and "outside the Ledger and Quartermaster system and normally its own thing." Part 5: "Nomad
+    city's mind," "Walks a fixed route," "Indifferent. Equally content in its old chassis or upgraded," and
+    the gods' only reliable courier. The docs follow part 5. A reading that keeps both: the Walker is the
+    city's mind in a survey robot's chassis, and the "fixed route" is the one it broadcasts. Why a city
+    follows its own mind from afar is not said.
+16. **Mother Cistern's origin, and "never funded."** Earlier (part 2, part 3): "Condenser-plant AI, possibly
+    with the colony clinic's records," and her scripture "a colonial terraforming projection Tilg drew up
+    and never funded." Part 5: a "Terraforming water mind" at Sister, beside a Rim depot "built for the
+    terraforming effort." Part 4 also has Tilg terraforming making saltbush and rainseed. The docs follow
+    part 5 and read the plan as started and never finished: a depot, a water plant and pioneer crops, but
+    not the rain. "Never funded" is read as never funded to completion.
+17. **Taking Mother Cistern.** Earlier (the vision's Cistern axis, and section 9): three states, dormant,
+    restored or linked, with the revival needing her restored and linked, "first rain over Sister." Part 5:
+    she is a module you can carry on a crate, and "taking her stops the Sister basin dripping, forever."
+    The docs follow part 5 for the module. How a carried Cistern counts for the Cistern axis, and whether
+    the revival needs her at Sister, is not said (open questions).
+18. **The Almanac against the farm.** Earlier (part 4): "The player chooses: a pure, fussy line by
+    cuttings, or a tough feral line," and wild stock as a normal source. Part 5: the Almanac "enforces
+    sterile-stock licensing; flags wild or crossbred strains as 'unlicensed IP'" and "won't certify
+    harvests from unapproved planters." The docs follow part 5: the Almanac penalises the feral line, so
+    the old choice gets a patron to bargain with. Which planters it approves, and what a royalty is where
+    nothing is traded, are not said.
+19. **The Stoker and the sister moon.** Earlier (section 3, a Leaning): the sister moon was "destroyed or
+    lost," with ejection favoured. Part 5's epilogue: "Zan becomes a ring of debris around Tu, joining its
+    lost sister moon." The docs follow part 5's ring, which reads the sister moon as destroyed into one.
+    Rule 2 of section 10 ("Never retcon the paroxysm or the sister moon as arranged") is not broken, since
+    the Stoker arranges only the second loss.
+20. **Tides tearing Zan apart.** Earlier (section 3): the orbit rounds out and the heating fades, and the
+    moon settles "colder, drier and calmer." Part 5: "The crust, already under Tu's tidal strain, fractures all the way down.
+    Tu's tides tear Zan apart." The docs follow part 5 as the ending's story. At the default Tu the orbit is
+    about 12.7 Tu radii ([the moon](the-moon.md#day-length)), well outside the distance where a moon is torn
+    by tides alone, so the blown caps and the cracked crust must start it and the tides only finish it.
+21. **The Eye.** Earlier (part 2): the faith's "Tu is **the Eye**: it watches and never blinks," and the AI
+    gods are "local models that survived the collapse," with "Frontier AI was never on the moon" (section
+    9). Part 5: "The Eye... Raised on Zan by the observatory cultists," "the only god made on Zan, and
+    the only one that can learn." Both stand. The name is shared between Tu and the god, and a machine that
+    learns on Zan needs something to run on; neither is said.
+22. **Starcom, whole and down.** Earlier (section 8, and the ladder's long wait): Starcom's flagship "stood
+    on the mountain that blew," so the player finds "shards, relays and hardened modules, never a whole
+    one," and repairing the antenna is the long wait. Part 5: "Starcom (repaired)" links every god at once,
+    and the Stoker ending needs "**Starcom down**: never repaired, or deliberately cut." The docs follow
+    part 5. A repaired Starcom is the long wait's, so a player who ends Zan cannot also have called for
+    rescue and kept the line, unless they cut it after. Whether "never a whole one" bends is the
+    [section 18](#18-open-after-session-4-part-4) question, raised again.
+23. **Time.** Part 5 says the Almanac's company is "gone for millennia" and the Stoker has been starving
+    "for millennia." Held as the long span since, by the standing rule that hard year figures stay in
+    the [placeholders](#placeholders); no figure is written.
+
+**Clashes in the game docs** (quoted old and new in the doc named)
+
+- Terminal output as a new system beside the dev console and the Console device; god modules against
+  "parts are typed" and the mod ports; dispatches against "found, never crafted" (a forged one); the
+  kiln against "crafting is out of scope" and "parts are found, never crafted"; repair materials by
+  era against "parts wear out only from the elements" and a game where nothing mends; an orbital strike's
+  crater against "loaded ground never changes": [Devices & mods](prd/devices-and-mods.md#open-questions).
+- The kiln's coalcane against the burner's, and the electric furnace as a load; the Quartermaster's
+  requisitioned power: [Power](prd/power.md#open-questions).
+- The kiln's drying and salting against food that never spoils; the Almanac's licensing against the
+  feral line; royalties against a game without trade; crossbreeding: [Farming](prd/farming.md#open-questions).
+- The Dark Age's lineage against one layer for three ages; a vault under Port Morgan against "nothing
+  underground"; the Okafor bunker's seal against "ruins never move" and "chunks hold no state": [Salvage &
+  ruins](prd/salvage-and-ruins.md#open-questions).
+- The Rim depot against the landmark list; a far-side volcano with a tower on it; the hoppers against
+  a game with no flight: [World & terrain](prd/world-and-terrain.md#open-questions).
+- Heat at both bulges against a fading, rounding orbit: [the moon](the-moon.md#where-the-heat-concentrates-agreed-session-4-part-5).
+- Three new endings and a rule against the ladder, the Cistern axis and the observatory modifier:
+  [the vision](vision.md#open-questions).
+
+**Resolved by this session**
+
+- **The Dark Age and the First Kingdoms** (section 18, clashes 3 and 4): both named again.
+- **The orbital launch site** (section 18, open question 8): there is none; the Rim depot and the
+  elevator-stub observatory replace it.
+- **How the Ledger and the Quartermaster are linked** (part 2's open "cable run, relay"): three ways.
+- **Whether chassis pieces of different eras need adapters** (the 17 Oct notes, part 2): no.
+- **The Okafor line** (the endings session, "develop it or drop it"): developed into the Okafor bunker,
+  with the player as the holdout.
+- **Why the observatory is on the far side and who built it:** the elevator stub, finished by Tilg and
+  built over by the heretics.
+- **What launch fuel is:** the fed Stoker's.
+- **Plant processing, in part** (section 18, open question 1): salt, boiling stormcup water and
+  roasting tubers are the kiln's. Fern to cord, and filtering other than boiling, are not.
+
+**Narrowing earlier items, without settling them**
+
+- **How the AI gods reach each other** (section 16, raised item 8, and the Radio PRD): by Starcom when
+  repaired, by the Walker's route, by storm windows and by the player. Whether a god is ever heard on
+  the radio is still the voice question.
+- **The Walker's place in the endings:** a courier and a module as well as a modifier.
+- **Ambiguity D, the skimmer era, and the collapse's place:** unchanged. The chain's order is the same
+  in two sessions now.
+- **Water** (sections 17 and 18): the kiln boils stormcup water, so wild water has a cure that is not a
+  filter.
+
+**Open questions from the session**
+
+New in the session:
+1. The Ledger's temperament.
+2. What the Eye grows into besides corruption, and how it figures in AI ascendancy.
+3. How many vent caps count as "every major" one, and where they sit.
+4. Orbital strike charges: fixed count per game or recharge.
+5. Whether the Almanac is how crossbreeding works.
+
+Carried over from part 4:
+6. Plant processing details (now partly covered by the kiln).
+7. Sand beetles: pests, pollinators or both.
+8. Sandroot's maker; whether player-grown sandroot reaches landmark size.
+9. Whether a water crop beats the condenser.
+10. Quietbloom as an ending modifier.
+11. How much dune movement the terrain supports.
+12. Which second-age structures make the first pass.
+
+**Raised by this fold**
+
+1. **The chain's order, again. Answered** (Hunter, 2026-10-17): each collapse opens the next era, so
+   "collapse" names the colonial era's end, not an era of its own:
+   1. "colonial collapse when the lane was cancelled when the war broke out, devolved into skimmer
+      offworld with black site" (the colonial era ends with the lane; the skimmer era follows);
+   2. "skimmer collapsed into first age kingdoms when the provisional state fell";
+   3. "first kingdoms collapsed when power infrastructure collapsed and mass war broke out on the
+      moon" (into the Dark Age);
+   4. "final kingdoms collapsed slowly into nomads" (the second age's end);
+   5. "almost all nomads die out as the atmosphere and planet changes."
+
+   The lore's event order stands with it: the war and the black site before the Provisional's fall.
+2. **Where the vents went. Answered** (Hunter, 2026-10-17: "we can shift them whever"): wherever the
+   story needs. The natural reading, the heat moving toward the far-side volcano at the anti-Tu point,
+   is free to use.
+3. **The skimmer era's place on the efficiency and repairability axis. Answered** (Hunter, 2026-10-17):
+   "its the light cheap gear from before": the old row stands, light, cheap and fragile.
+4. **How many of the new places are landmarks:** the Okafor bunker, the Almanac's ag complex, the
+   Stoker's terraces, the Quartermaster's bunker and the Walker's route. The list holds eight.
+5. **What taking a god does to its people:** the Quartermaster's core and Muster and the Knights
+   Requisitioner; the Walker's core and the nomad city (the endings session has the city suffer); Mother
+   Cistern's and Sister; the Almanac's and the Rim farms.
+6. **How the Cistern axis counts a carried Mother Cistern,** and whether the revival ending needs her
+   at Sister.
+7. **How water-wasting is measured,** since "wasting water turns her disappointed, then mournful."
+8. **The Eye's compute, and the name.** What a learning machine runs on at the observatory, and whether
+   "the Eye" echoes the faith's name for Tu.
+9. **Who the Almanac is on the air:** the squatting oracle, or another.
+10. **Whether the Mon enclaves sit over the Okafor bunker,** and which one.
+11. **Where an Up the well skimmer gets its launch fuel,** if launch fuel is the Stoker's alone.
+12. **What the pod is.** Part 5 says one flag covers "freighter, pod and hopper," and no earlier doc has
+    a pod. Read as the small ship or the skimmer.
+13. **How Starcom's repair sits with the Stoker ending,** given that the long wait wants it up and the
+    Stoker ending wants it down (clash 22).
+14. **The kiln's fuel.** Coalcane is the burner's, the Stoker's and the kiln's, and the electric
+    furnace is a load; the loop only pays if the crop can feed them all, and no number is set.
+15. **Whether a quest is a thing in the game.** "Quests arrive as terminal output" is the first use of
+    the word. A dispatch is the quest system; whether anything else is a quest is not said.
+16. **Repair itself.** Part 5 gives each era a repair material and no repair mechanic; the game has none
+    ("nothing mends").
 
 **Sources:** [dust charging](https://public.websites.umich.edu/~atreya/Articles/2003_Electrical_Discharges.pdf),
 [Europa's dose](https://europa.nasa.gov/news/17/radiation-maps-of-europa-key-to-future-missions),

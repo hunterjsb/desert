@@ -37,6 +37,8 @@ var _highest := OVERHEAD
 var _hold := Basis.IDENTITY
 var _heading := 0.0
 var _slipping := 0.0
+## It just slipped from your hands, for the hands to say so.
+var slipped := false
 
 
 func _init(player: Player) -> void:
@@ -117,6 +119,7 @@ func step(h: float) -> void:
 	_slipping = _slipping + h if Vector2(off.x, off.z).length() > tuning.hold_slip else 0.0
 	if _slipping > SLIP_SECONDS:
 		body = null
+		slipped = true
 		return
 	var share := 1.0 - exp(-tuning.hold_rate * DAMPED * h)
 	var mine := Vector3(_player.velocity.x, 0.0, _player.velocity.z) + Vector3.UP.cross(beside) * turning

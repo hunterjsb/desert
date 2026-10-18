@@ -10,7 +10,7 @@ extends FarmProbe
 const RATES := [30, 60, 120]
 const START := 60.0
 const END := 1500.0
-const CROPS := [&"carrot", &"carrot", &"carrot", &"fungus"]
+const CROPS := [&"root_tuber", &"root_tuber", &"root_tuber", &"vat_fungus"]
 ## Ticks run this many times faster than real time, each as long as at its rate.
 const SPEEDUP := 4
 

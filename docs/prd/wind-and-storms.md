@@ -121,6 +121,8 @@ whether the hardest thing is possible before we depend on it.
 ## Reading the weather
 
 - **Your own senses first:** the wind on you, the colour of the sky, the sound.
+- **The plants** (Agreed, session 4, part 3; not built): feral scrub closes up before a storm,
+  a free barometer for anyone ([below](#feral-plants-the-free-barometer-agreed-session-4-part-3-not-built)).
 - **Instruments are finds and upgrades.** A barometer shows a storm coming hours ahead.
   A wind vane shows direction and strength. A weather radio picks up forecasts, and
   maybe there's a storm map.
@@ -159,7 +161,11 @@ reads together.
 - **Ground and ruin detection is separate equipment,** "looking down, not up," and "likely a
   different camp setup." It is not in this table. A loot beacon already points at a find from the
   radio, and the Archaeologist start lists a ground-penetrating radar ([the
-  vision](../vision.md#player-origins-and-kits)).
+  vision](../vision.md#player-origins-and-kits)). *Session 4, part 4, the newer, softens this:* "a
+  basic survey mod on the console picks up buried metal," so colonial pipelines show as lines on
+  screen ([Devices & mods](devices-and-mods.md#the-console-proposed-not-built), [World &
+  terrain](world-and-terrain.md#readability)). A basic survey mod is a Console mod; heavier ground
+  detection is read as staying separate.
 - **The radio** is the table's radio row, and it already does the forecast half. Its weather
   station ([Radio, sound & atmosphere](radio-sound-and-atmosphere.md), as built) speaks a
   forecast read from this field. The Console's screen would show it beside the other stats.
@@ -196,6 +202,100 @@ Readings, not in the session:
   threshold, and storms ride the prevailing wind, so a front's heading is the wind's. The storm
   map that draws the wall already samples the field out to 20 km each way on a 128 by 128 grid,
   once a second. A mini-map is that grid on a screen, finer with more gear.
+
+### Feral plants: the free barometer (Agreed, session 4, part 3; not built)
+
+*Session 4, part 3 ([lore session](../lore-session-2026-10-17-part-3.md)); the first piece of its
+build order, and none of it is built.* Feral scrub "closes up or turns its leaves before a storm."
+It is "a free, slotless, low-tech barometer for players without weather consoles, and the
+knowledge nomads would have had by heart" ([the
+lore](../lore-research.md#life-on-zan-feral-plants-agreed-session-4-part-3)). It sits beside the
+instruments above as their cheapest form: the barometer row's "rough warning of an incoming
+storm," with no device, no slot and no power. The session's build note: "A plant prop whose pose
+(open → closed / leaves turning) is driven by the storm intensity curve with some lead time.
+Requires the curve to be queryable ahead of time, which was already flagged for sleep."
+
+**The curve is queryable ahead already, so nothing in the field changes.** The Console session
+asked the same question and it is answered above: `storm_at(place, time)` is a pure function of the
+run's seed, the place and the time, and `WeatherField` samples it forward for the radio. A plant's
+pose is that function at the plant's own place, a lead time ahead. It keeps no state and is
+deterministic like the rest of the field.
+
+Readings, not in the session:
+- **It is a forecast for the plant's own place,** as the radio's is for where the radio stands. A
+  plant by the road you are walking shows the storm at that spot, not at you, and walking into
+  the wind brings the storm sooner than the plant says.
+- **The plant reads the field, not the felt weather.** Inside a base shield the felt storm reads
+  zero, but scrub stands out in the world, and it has to show the storm that is coming, so it reads
+  `storm_at` and nothing else.
+- **The lead time is the open part.** "Some lead time" is the session's. For scale, a wall gives
+  about 5 minutes from first sight to impact, the radio looks 20 minutes ahead, and a game day is
+  20 minutes. A lead shorter than the radio's keeps the plant the lowest rung of the ladder, which
+  is its role; the session sets none.
+- **Which pose goes with which intensity is tuning.** Open when the field is quiet, closed or
+  turned as it rises toward the storm threshold; the session says only "open → closed / leaves
+  turning."
+- **Cost is a handful of samples a plant,** only for plants in loaded chunks, at a low rate like
+  the radio's 5 seconds. The count in view is a tuning matter.
+
+The plants are also a trail and a source of lore and loot ([Farming](farming.md#feral-plants-and-a-crops-history-agreed-session-4-part-3-not-built)).
+
+**Session 4, part 4 names the plant, and defers it (Agreed).** The weather-sign plant is
+**saltbush**: its leaves fold when pressure drops, protecting the salt bladders, and the Sisters
+seeded it along pilgrim roads, so a line of it is also a trail ([Farming](farming.md#each-crop-ancestor-engineering-drift-and-hooks-agreed)).
+That is the generic feral scrub of part 3 given a species and a reason. The same session puts
+"feral plants as weather sign" among its deferred pieces, "needs the queryable storm curve from the
+sleep work," and orders the plants' placement after world generation. Part 3's order had the weather
+sign first. The newest wins, so it is deferred in the proposed order.
+
+**The dependency it names is already met.** The session waits on "the queryable storm curve from the
+sleep work." That curve exists: `storm_at(place, time)` is a pure function of the run's seed, the
+place and the time, `WeatherField` samples it forward, and the radio's weather station reads it 20
+minutes ahead every 5 seconds (the section above answers the Console session's same question, "yes,
+already"). Nothing in the field or in sleep has to be built first, so the deferral is a matter of
+order, not of a missing piece. A saltbush's pose is `storm_at` at its own place, a lead time ahead.
+It can be built whenever the plant prop exists, and it needs nothing from sleep.
+
+## Storms as planning sessions (Agreed, session 4, part 4; not built)
+
+*[Session 4, part 4](../plants-worldgen-ruins-2026-10-17.md); labels as the session gives them (Agreed,
+Idea, Back burner, and anything under its open questions undecided). None of it is built.*
+
+"A storm can last 20-40 minutes, a whole play session. It becomes the reflective half of the loop;
+calm is the active half." The storm is for:
+- **Reading the storm.** The Console and the plants show where it is heading and what it may uncover.
+- **Planning routes.** Map, known roads, spotted signs; pick the post-storm target and the long-term
+  goal.
+- **Tending camp.** Water crops fill, fungus blooms and glowcap lights up; harvest and process.
+- **Listening.** The radio carries better in some storms.
+- **Crafting and repairing.** Fix storm damage, rearrange mods.
+
+This is the other half of the loop in [Salvage & ruins](salvage-and-ruins.md#two-channels-agreed):
+shelter and catch drift while the storm rages, then go into its wake to hunt what it uncovered.
+
+Readings, not in the session:
+- **The length is the long end of the field's.** Here the median storm is 17 minutes and 71% pass
+  within a base shield's 30 (open questions), the longest past three hours. A storm of "20-40
+  minutes" is a long one, not a typical one, and the multi-day ones are the sleep proposal's case
+  ([Survival](survival.md#sleep-proposed)). The two answer different storms. Whether a planning
+  session makes sleep less needed is not said.
+- **"What it may uncover" needs exposure to be forecastable.** If a site's state is a function of the
+  weather (Salvage & ruins), the same function run ahead says which stretch of ground a storm will
+  strip. The session does not say the Console shows it.
+
+### Storm-only mechanics (Back burner)
+
+Liked, and not to be built yet:
+- **Wind power surge:** turbines spike and charge batteries hard.
+- **Static harvest:** particle storms build charge, and a lightning rod or collector captures a big
+  spike, risking fried electronics. Ties to quietbloom.
+- **Deep exposure:** mid-storm sand movement briefly opens the deepest ruin layers.
+- **Storm blooms:** storm crops fruit only now.
+- **Radio windows:** some conditions carry distant transmissions.
+- **Glass forming:** lightning in heat storms fuses sand into glass, a crafting material collected in
+  the wake.
+
+Deferred in the same list: feral plants as a weather sign, landmark interiors and heat shields.
 
 ## What storms do to everything else
 
@@ -319,6 +419,8 @@ Readings, not in the session:
   by Survival). Prevailing wind bands by latitude.
 - Storm sizes, from dust haze to an ordinary storm to a great wall.
 - Instruments and forecasts (the Console's set is proposed above).
+- Feral plants as a free weather sign (proposed above; first in part 3's proposed order and
+  deferred in part 4's, the newer: [skeleton plan](../skeleton-plan.md#the-newer-proposed-order-session-4-part-4)).
 - Real dune shapes facing the prevailing wind (decided; see World & terrain).
 - Wind particles and sound, with Sand Game's particles and recordings as the reference.
 - **Storms wear dunes down** (Hunter, 2026-10-17, loose: "later on in the game, when we
@@ -363,6 +465,13 @@ All run without a window, with a fixed seed.
 12. **Local time follows longitude.** A quarter of the way round to the east it's six hours
     later, and the drawn sun, the light, the warmth and a radio's day music follow; to the
     west it's six hours earlier.
+13. **The eye** ([art direction](../art-direction.md#eye-adaptation)). Handed readings as
+    its meter would give them, it's as before in daylight. On a frame as black as a night
+    with no Tu it opens over time, never at once: about a doubling in the first few
+    seconds, then on to its floor within half a minute, never past it. Back in daylight
+    it closes within two seconds, never past where it began. With Tu's disc in view it
+    opens only so far as keeps it short of white. The camera takes its exposure, and the
+    fixed one with the eye off.
 
 ## Out of scope
 
@@ -397,6 +506,16 @@ with everything else.
   than Zan, so the whole near side is in it at once; its "centre" is the point under Tu, where
   the sun stood highest and the eclipse's chill is deepest, so a squall would point there.
 
+Session 4, part 3 (2026-10-17) adds two. Each is quoted on both sides and left standing.
+
+- **How far ahead a plant reads.** The session: the pose is driven by the intensity curve "with
+  some lead time." Not said how much, against the barometer's "rough warning" and the radio's 20
+  minutes (the open question below about "hours ahead").
+- **A free sign against the instruments.** Here: "Instruments are finds and upgrades," and
+  "Better instruments see further into the field." The session: scrub is "a free, slotless,
+  low-tech barometer." Not said whether it sees as far as a found barometer or only the near
+  front, or whether a player with the instruments still has a reason to watch the plants.
+
 The Console session (2026-10-17) answers one of its own questions and adds the rest. Each is
 quoted on both sides and left standing.
 
@@ -422,3 +541,38 @@ quoted on both sides and left standing.
   broadcasts: forecast beyond the horizon." Not said whether that is further in distance (a
   forecast for another place), further in time, or a found channel (the lore hook above: "a
   colonial weather station still broadcasting").
+
+Session 4, part 4 (2026-10-17) adds the following. Each is quoted old and new. The newest session wins
+in the living docs, so this PRD follows it as direction and says so on each line.
+
+- **The weather sign: first, or deferred.** Session 4, part 3's first step is the sign, and part 4
+  defers it "needs the queryable storm curve from the sleep work." *Follows part 4.* The curve is
+  queryable already (above), so the stated reason no longer holds and the order is the only open part.
+- **Saltbush against "feral scrub."** Part 3: "Feral scrub closes up or turns its leaves before a
+  storm." Part 4: saltbush is the weather-sign plant. *Follows part 4;* the scrub is saltbush. Not
+  said whether other feral plants (dewleaf, stormcup) also show the weather.
+- **A planning session against the sleep proposal.** Here ([Survival](survival.md#sleep-proposed)):
+  "waiting one out early game is boring," and sleep is "the preferred fix." The session: a storm is
+  "the reflective half of the loop." Both can hold if planning is for the 20-40 minute storm and
+  sleep for the multi-day ones; the session does not say.
+- **Storms of 20-40 minutes against the field.** Here: the median storm is 17 minutes, 71% pass within
+  30, and some run past three hours. Not said whether the field is to be retuned toward the
+  session's length; "how long storms last is a tuning target."
+- **Fixing storm damage against wear that nothing mends.** Here (Power): the turbine's storm wear
+  "nothing mends," and parts are "found, never crafted." The session: "craft and repair: fix storm
+  damage, rearrange mods." *Follows the session as an activity;* no repair exists and none is
+  designed.
+- **Radio that carries better, against a radio that crackles.** Here (Radio, sound & atmosphere):
+  "Reception crackles and distorts as storms build," and static is "full inside" a storm. The session
+  lists "the radio carries better in some storms" among the Agreed uses, and its back burner has "radio
+  windows." Read as the activity agreed and the mechanic that makes some storms carry better on the
+  back burner.
+- **Lightning against "out of scope."** Here (Out of scope): "Rain, lightning and other weather." The
+  back burner's static harvest ("lightning rod") and glass forming ("lightning in heat storms") need
+  it. Back burner, so nothing now.
+- **"Storm blooms" against bursts.** The session's Agreed growth stage is that storm crops "fruit in
+  bursts during storms, not on a timer," and the back burner is "storm blooms: storm crops fruit only
+  now." Read as bursts agreed and the "only" held back ([Farming](farming.md#open-questions)).
+- **Storm-driven dune movement.** The session's own open question: how much the terrain can support.
+  Here, loaded ground never changes (World & terrain, rule 2), and "Storms wear dunes down" is
+  already a loose full-version line.

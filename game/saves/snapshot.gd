@@ -19,10 +19,10 @@ static var _kept := [
 	[ShieldGenerator, ["on", "size", "_up", "_since"]],
 	[Radio, ["channel", "target"]],
 	[Planter, ["tank_l", "split", "stored", "seeds", "ripened", "replanted", "banked", "dropped", "picked",
-		"fed_kcal", "_gives", "_owed"]],
+		"fed_kcal", "_owed"]],
 	[Condenser, ["made_l"]],
 	[Battery, ["charge_wh"]],
-	[Plant, ["growth", "state"]],
+	[Plant, ["growth", "fruit", "state", "wild"]],
 	[Device, ["resting", "lift_share"]],
 ]
 const PLAYER := ["stamina", "flying", "mode", "crouched", "own", "slope", "wind", "low", "sink", "_sliding",
@@ -75,7 +75,8 @@ static func take(world: World) -> Dictionary:
 static func problem(data: Dictionary) -> String:
 	var unknown := PackedStringArray()
 	var look := func(rec: Dictionary, again: Callable) -> void:
-		if rec.has("id") and not (Catalog.PARTS.has(rec.id) or Catalog.DEVICES.has(rec.id) or rec.id == &"stake"):
+		var id: StringName = Catalog.current(rec.get("id", &""))
+		if rec.has("id") and not (Catalog.PARTS.has(id) or Catalog.DEVICES.has(id) or id == &"stake"):
 			unknown.append(str(rec.id))
 		for entry: Array in rec.get("sockets", []) + rec.get("added", []):
 			again.call(entry[1], again)
@@ -175,6 +176,10 @@ func finish(data: Dictionary) -> void:
 		suit.carried.append(_make(rec))
 	for pair in _states:
 		_set_state(pair[0], pair[1])
+	# What a save from before needs brought up to date.
+	for pair in _states:
+		if pair[0].has_method(&"restored"):
+			pair[0].restored()
 	suit.carry_devices()
 	# Back on the board you rode, going as you were.
 	var rode: Dictionary = data.get("ride", {})
@@ -487,7 +492,7 @@ func _set_state(body: RigidBody3D, rec: Dictionary) -> void:
 func _make(rec: Dictionary) -> RigidBody3D:
 	var body: RigidBody3D = _made.get(rec.ref)
 	if body == null:
-		var id: StringName = rec.id
+		var id := Catalog.current(rec.id)
 		body = Catalog.stake() if id == &"stake" else (Catalog.part(id) if Catalog.PARTS.has(id) else Catalog.device(id))
 		_made[rec.ref] = body
 	_states.append([body, rec])

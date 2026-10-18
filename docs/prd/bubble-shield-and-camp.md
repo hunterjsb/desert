@@ -196,6 +196,12 @@ One per playstyle ([the vision](../vision.md#player-origins-and-kits)):
 - **Surveyor (the hybrid, the default):** a standard shield.
 - **Homesteader (the oyster):** a "solid shield," with no hover.
 
+Session 4, part 3's two novelty starts add two more shields ([the
+vision](../vision.md#player-origins-and-kits)). The Varran settler's is cheap. The Daventry patrol
+board's is "strong but narrow" and "can practically stay on permanently," seated on the board's
+superchassis ([Movement](movement.md#the-patrol-board-a-superchassis-agreed-session-4-part-3-not-built)).
+Neither is balanced, and neither has an Ironman mode.
+
 The notes had put "a normal shield, heavy enough not to be blown around" on "the nomad and
 oyster starts," and the docs read "nomad" as the hybrid. Session 4, part 2 makes the Nomad a
 different start (from the moving city, a mythic kit), so that reading is gone. Today there is
@@ -308,3 +314,14 @@ The Console session (2026-10-17) adds three, quoted on both sides and left stand
   parties making and modding shields and Consoles." Not said: whether the parties are in-world
   makers (the lore has them) or people outside the game making and modding its devices, and what
   "making" means with crafting out of scope.
+
+Session 4, part 4 (2026-10-17) adds one, quoted on both sides. The newest session wins in the living
+docs, so this PRD follows it as direction.
+
+- **Crops' tolerances are the shield's work.** Here: the base shield holds back wind and dust and not
+  heat or cold, and a thermal shield is a full-version type, with one test-only copy in the probes. The
+  session: every crop has separate tolerances for wind shear, particle abrasion, heat, cold and
+  radiation, and "shields (wind/particle now, heat later) remove most weather factors," so late-game
+  farming manages light and water with lamps and humidifiers ([Farming](farming.md#progression-agreed)).
+  "There is no heat shield in the game yet." *Follows the session.* Not said what blocks radiation, or
+  whether a shield blocks humidity (a storm crop's input) as it blocks the storm's wind and dust.

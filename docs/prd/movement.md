@@ -186,6 +186,38 @@ even storms that last for days.
   between the last tick and this one; the ticks never see it.
 - The numbers are in Tuning's Hoverboard group.
 
+### The patrol board: a superchassis (Agreed, session 4, part 3; not built)
+
+*Session 4, part 3 ([lore session](../lore-session-2026-10-17-part-3.md)); a novelty start's
+centrepiece, proposed, and none of it is built.* The Daventry patrol board is a "heavily modded
+military hoverboard: a camp in a board, its own bespoke superchassis" ([the
+kit](../vision.md#player-origins-and-kits)). It carries a strong but narrow shield that "can
+practically stay on permanently," a tow, a bedroll (sleep out storms under the shield), a compact
+high-capacity battery, a small direction-finding radio and a tiny condenser. Its weakness is few
+slots: "anything big still needs a camp."
+
+The session's build note: the board "needs mount points for a shield, battery, radio, condenser,
+bedroll and tow, as a chassis rather than special-cased slots. A narrow shield that stays on while
+riding. This also generalises the existing board." [Devices & mods](devices-and-mods.md#the-patrol-board-as-a-superchassis-proposed-not-built)
+has the frame's side.
+
+Readings, not in the session:
+- **The standard board stays as built.** "Generalises the existing board" is read as the same idea
+  with more sockets, not a change to the board in this PRD: the kit's board, racked on a crate,
+  still tows nothing, and the probes above are unchanged.
+- **It would be the first board that tows,** against "It tows nothing" above, which keeps the
+  board fun and out of the camp's way. The patrol board's camp is its own, so it may not compete
+  with a real one, but the session doesn't say ([the
+  clash](../lore-research.md#17-open-after-the-endings-session-and-session-4-part-3)).
+- **A shield that stays on while riding** is a bubble moving at board speed. It has a precedent:
+  the light shield is meant to be "light enough to carry, switched on, while you walk or board" ([Bubble shield
+  & camp](bubble-shield-and-camp.md#the-carried-light-shield-and-the-starts-not-built)). The
+  patrol board's is seated on the board instead, strong and narrow. How a bubble this narrow
+  behaves at board speed is not said.
+- **Sleeping under the shield** is the sleep proposal's bubble, on a board
+  ([Survival](survival.md#sleep-proposed)). The bedroll shares no rack here, since the board is
+  the rack's occupant on a crate; the superchassis carries its own.
+
 ## Haulers: moving the base faster
 
 The base gets faster through a progression of haulers:
@@ -201,6 +233,25 @@ The base gets faster through a progression of haulers:
 
 Early on you weather storms. Later, the yacht lets you choose between weathering one
 and outrunning it.
+
+### The dune sailboat (Agreed, session 4, part 3; not built)
+
+*Session 4, part 3 ([lore session](../lore-session-2026-10-17-part-3.md)); the Varran settler's
+centrepiece, proposed, and none of it is built.* "Dune sailboat: slow hauler for hybrid play." It
+is "a wind-driven slow hauler that reads the wind vector already in the world," with "tow capacity
+well above the board." The kit that carries it is fragile, needs wind and has low-quality parts
+([the kit](../vision.md#player-origins-and-kits)).
+
+Readings, not in the session:
+- **The wind vector is `wind_at`,** the prevailing wind plus gusts and a front's outflow. Rule 2
+  below has movement read the felt wind, so the sail works outside a bubble, where the wind is.
+- **It is not the sand yacht.** The list above makes the yacht the late "real fast base-mover,"
+  fast with the wind and tacking upwind, and a good one might outrun a storm. The sailboat is
+  slow. Whether it is the yacht's early form, a rung between the beast and the yacht, or another
+  craft is not said, and Wind & storms probe 7 (the sand yacht) is unchanged.
+- **"Build and use" is the kit's unlock** ([Profile & saves](profile-and-saves.md#kits-are-data)).
+  Parts are found, never crafted, so building is read as fitting found parts, and no PRD has the
+  sailboat's frame yet.
 
 ## Leaving your camp behind
 
@@ -264,6 +315,9 @@ All built: on foot alongside Stage 5, the board and the camp-range warnings at S
 - **Tricks.**
 - **Board mods** in its sockets: battery, hover pads and the like (Devices & mods).
 - **The beast, the sand yacht and big carriers.**
+- **The dune sailboat and the patrol board's superchassis** (proposed above; the third and fourth
+  pieces of the proposed build order in the [skeleton
+  plan](../skeleton-plan.md#waiting-for-the-full-version)).
 - **The board's feel and sound,** polished.
 
 ## Probes
@@ -369,6 +423,20 @@ The board after Hunter's first ride has its own:
   tow on foot.
 - **Slip faces steep enough to slide you:** yes (Hunter, 2026-10-15). The Ridges dunes
   (World & terrain) have them, at 31.5°, and the probes find them near spawn.
+
+Session 4, part 3 (2026-10-17) adds three. Each is quoted on both sides and left standing.
+
+- **The board's tow.** Here: "It tows nothing. That keeps it fun, and it keeps it from competing
+  with the camp." The session: the patrol board has a "Tow," and the sailboat's "tow capacity
+  [is] well above the board." Not said whether the standard board towing something small is
+  meant, or only the patrol board; this PRD follows the second.
+- **A slow sailboat against a fast yacht.** Here: the yacht is "the real fast base-mover" and
+  "might outrun a storm with the camp aboard." The session: a "slow hauler." Not said how the two
+  relate.
+- **A moving bubble.** Here: riding you "take only loose things on no line," and the notes want
+  the light shield "light enough to carry, switched on, while you walk or board." The session: "a narrow shield
+  that stays on while riding," seated on the board's superchassis. Not said how it is mounted or
+  how a bubble that narrow rides at speed.
 
 The sleep session (2026-10-17) adds one. It is quoted on both sides and left standing.
 

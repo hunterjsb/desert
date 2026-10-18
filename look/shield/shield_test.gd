@@ -28,7 +28,7 @@ const AHEAD := 2.0
 const CAMP := [
 	[&"crate_frame", -2.2, 1.0, 15.0, [&"battery", &"hook", &"hook"]],
 	[&"crate_frame", -2.9, 2.6, -20.0, [&"battery", &"hover_tray", &"hook"]],
-	[&"planter", 2.4, 0.6, -10.0, [&"battery", &"carrot", &"carrot", &"carrot", &"fungus"]],
+	[&"planter", 2.4, 0.6, -10.0, [&"battery", &"root_tuber", &"root_tuber", &"root_tuber", &"vat_fungus"]],
 	[&"charger", 1.4, -1.6, 30.0, [&"battery", &"solar_panel"]],
 ]
 ## Capture mode's shots: scenario kind, front distance, metres the camera
@@ -70,6 +70,8 @@ var _jump := ""
 func _enter_tree() -> void:
 	# Before the World's _ready builds the weather from it.
 	Tuning.current().run_seed = SEED
+	# The fixed exposure, not the eye's, so shots and readings compare across builds.
+	Tuning.current().eye_adapts = false
 	# Its own props only: nothing found lies among them.
 	Tuning.current().salvage = false
 

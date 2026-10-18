@@ -36,6 +36,8 @@ dev gravity toggle tries the lower value. **Everything else stays honest.**
   research](lore-research.md#the-surface-today-agreed-session-3)). **Agreed (session 4, part
   2):** the orbit was more eccentric when the colonists came and has been rounding out since, so
   the heating fades and the vents go quiet ([the lore](lore-research.md#tu-the-tidal-lock-and-the-water-agreed-session-4-part-2)).
+  **Agreed (session 4, part 5):** the heat peaks at both tidal bulges, so volcanism clusters at the point
+  under Tu and the point opposite ([below](#where-the-heat-concentrates-agreed-session-4-part-5)).
 - **Thin air still makes real wind.** Mars, at under 1% of Earth's pressure, has global
   dust storms and moving dunes, but its winds would barely push you. At 0.3 bar, 130 km/h
   gusts push like an Earth gale even at near-Earth gravity (at the leaning 0.4–0.5 g,
@@ -55,6 +57,25 @@ dev gravity toggle tries the lower value. **Everything else stays honest.**
   on Mars. It's why the stormy equator is milder and the clear poles swing wider: hotter
   days, colder nights. The latitude dial is real physics.
 
+## Where the heat concentrates (Agreed, session 4, part 5)
+
+*[Session 4, part 5](gods-gear-farside-2026-10-17.md), "The twin fires." A lore rule, not built.*
+Zan is tidally locked to Tu, so "tidal heating peaks at the two bulges: the point facing Tu and the
+point directly opposite. Volcanism clusters at both." The sub-Tu point is Halloran's rift vents, and the
+anti-Tu point, far-side centre on the equator, is a great volcano. The heat was never only under Tu.
+
+What it changes here, as readings and not in the session:
+- **The far side is cold and has a fire.** The far side stays the coldest place for the water to end
+  up, as above, and it holds one hot spot: the volcano under the observatory, a vent cap that matters
+  at the end. The cold is the air and the sun's absence; the fire is local.
+- **"The vents go quiet" has two places to go quiet.** Part 2 has the orbit rounding out so heating fades
+  and the vents go quiet, and the First Kingdoms end when the vents "shift beyond reach." Where they went is
+  not said. The far-side volcano is the natural place the heat is still found.
+- **The physics is looser than the rule.** The tide raises a bulge at both points, but where an
+  interior turns the flexing into heat depends on how it is built, and on Io, the model case, the hot
+  spots cluster toward the two sides without sitting exactly on the two points (a reading from memory, not
+  checked). The docs take the session's two points as the rule and leave the offset to the lore.
+
 ## Water goes through all three phases every day
 
 Liquid water needs enough air pressure; below about 0.6% of Earth's, ice turns straight
@@ -70,7 +91,9 @@ gives water a daily rhythm:
 - **Open water doesn't last.** It has to be stored sealed.
 - **Condensers pull water from the air.** They're found, they draw power, they can be
   towed, and they work best at night, and better toward the far side (below).
-- **Plants that store water,** like the yucca.
+- **Plants that store water,** like the yucca. Session 4, part 4 (proposed, not built) names the
+  roster's water crops instead: dewleaf gathers dew at night, which fits the dawn harvest above, and
+  stormcup gathers a storm's moisture ([Farming](prd/farming.md#the-plant-system-agreed-session-4-part-4-partly-built)).
 - **Sealed fresh water in ruins** keeps you going early on.
 - **Water drifts to the far side** (Agreed, session 4, part 2). The near side is heated by the
   sun and by Tu's infrared, and the far side runs colder. Water evaporates on the warm side and
@@ -89,10 +112,13 @@ real day is one lap round it.
 angular size a tuning value; test 6°, 9° and 13° in game before fixing the orbit. Physics
 follows the look."). The tuning value is how wide Tu is across the sky. The orbit, the
 eclipse and the night light follow from it, and a dev command switches among them during a
-run. 13° is the default. None is chosen. The working is in [the body
+run. **9° is the default now** (2026-10-17): Hunter leaned "6 or 9 probably" after playing
+all three and asked which makes the most sense, and 9° was picked for its 26 s eclipse and
+landmark, its orbit inside Tu's belts, which gives the air its slow leak (the world's clock)
+while the air column keeps the ground's dose mild. Not final until he says so. The working is in [the body
 research](body-research.md#tus-size-under-trial).
 
-| | 6° | 9° | 13° (the default) |
+| | 6° | 9° (the default) | 13° |
 |---|---|---|---|
 | Orbit, in Tu radii | 19.1 | 12.7 | 8.8, Io-like |
 | Real day, at 4 Jupiter masses | 6.0 Earth days | 3.2 | 1.9 |
@@ -116,9 +142,14 @@ coming up behind you and a bright, waning Tu ahead.
 
 **The eclipse.** Once a day the sun passes behind Tu, and the whole near side sees it
 total. Tu is far wider than the sun, so the partial phase either side lasts only a few
-seconds. The sky and the sunlight drop near dark and the stars come out, the sun's corona
-and a red ring of sunset light on Tu's rim show briefly, the air cools a few degrees, and
-solar makes nothing, so a camp needs storage or wind to ride it out. It falls at noon at the
+seconds. The last light goes copper, and a diamond ring blazes where the sun goes in. The
+sky and the sunlight drop near dark and the stars come out. Tu's rim is a ring of fire,
+Tu's air bending sunset light round its limb, flaring as the sun goes in and comes out,
+with the sun's corona past it. Its red light is all the light there is: the land faintly
+coppery, the air glowing low all round the horizon, and in a storm the dust glowing from
+within about the ring's bearing. The wind's sound hushes, the air cools a few degrees, and
+solar makes nothing, so a camp needs storage or wind to ride it out ([as
+built](art-direction.md#the-eclipse-as-built)). It falls at noon at the
 sub-Tu point and later the further east you are: where a run starts, at 16:00.
 
 **The Rim** (Hunter, 2026-10-17, lore session part 2). Between the near side and the far
@@ -135,13 +166,13 @@ later. At the sub-Tu point that's noon and midnight; where a run starts, full Tu
 **Nights.** On the near side Tu lights the night: a weak, cool light from Tu's direction,
 scaled by its phase, a thin crescent's after the eclipse and a full Tu's in the small hours.
 It's far too weak for panels. Its brightness has a tuning scale of its own on top of the
-physical value, 1 by default, so how bright a night is can be tuned apart from Tu's size. The
-game has no eye adaptation, so at 1 a full-Tu night reads on screen as deep night, the dunes
-barely there: a seventh of the light the game's nights had before at 13°, a fifteenth at 9°
-and a thirty-fourth at 6°. At 13° and a scale of 3 the dunes read and it's still plainly
-night; at 10 it's an overcast dusk (`~/Desktop/tu_more.png`). Hunter's answer is eye
-adaptation, to build after Tu, with Tu's light kept physical ([art
-direction](art-direction.md#eye-adaptation)), so the scale stays at 1.
+physical value, so how bright a night is can be tuned apart from Tu's size. It stays at 1,
+which is physical. At that, a full-Tu night at 13° has a seventh of the light the game's
+nights had before; at 9° a fifteenth, and at 6° a thirty-fourth. Shown as it is, the dunes
+are barely there. A scale of 3 was suggested (`~/Desktop/tu_more.png`), and Hunter chose eye
+adaptation instead ([art direction](art-direction.md#eye-adaptation)). On a full-Tu night at
+9°, the eye opens about six times: the dunes read as the 13° night did, which Hunter found
+bright enough, and it's still plainly night.
 The far side never sees Tu, and its nights are truly dark, lit by the stars alone.
 
 **The stars** turn once a day round the spin axis. A bright star marks the north celestial

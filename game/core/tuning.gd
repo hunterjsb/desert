@@ -102,6 +102,29 @@ static var _current: Tuning
 ## It fades on and off over this long, s.
 @export var headlamp_fade_seconds: float = 1.5
 
+@export_group("Eye")
+## The camera adapts to the light as an eye does (game/weather/eye.gd). Off, it
+## holds the exposure above, as the look-tests that compare lightness do.
+@export var eye_adapts: bool = true
+## The eye opens only on a frame dimmer than this, as its meter reads it (all
+## the light in the frame, its mean luminance), so a clear day, a dusk and a
+## veil of dust look as they always have; and then by this share of each stop
+## dimmer.
+@export var eye_dim: float = 0.033
+@export var eye_share: float = 0.51
+## It opens no further than keeps the brightest patch in view (Tu's disc at
+## night) under this, so Tu's bands never burn out.
+@export var eye_white: float = 0.6
+## The most it opens, times the exposure: the floor, where a black night stays black.
+@export var eye_most: float = 7.0
+## Opening toward the dark, stops a second at most: the pupil opens up to
+## eye_quick_stops over the retina at eye_open_rate, and the retina carries the
+## rest at eye_slow_rate. Both close back toward the bright at eye_close_rate.
+@export var eye_quick_stops: float = 1.0
+@export var eye_open_rate: float = 0.35
+@export var eye_slow_rate: float = 0.07
+@export var eye_close_rate: float = 2.5
+
 @export_group("Tracks")
 ## The ground round you that keeps your marks: texels a side, and metres a
 ## texel. Marks further off are forgotten.
@@ -197,9 +220,9 @@ static var _current: Tuning
 @export_group("Tu")
 ## How wide Tu is across the sky, degrees. Physics follows the look: it sets
 ## how far out Tu's orbit is, and so how long the eclipse lasts and how bright
-## Tu-shine is. Three are under trial (docs/the-moon.md), 6, 9 and 13; the dev
-## console's tu switches among them.
-@export var tu_degrees: float = 13.0
+## Tu-shine is. Three are under trial (docs/the-moon.md), 6, 9 and 13, and 9
+## is the default; the dev console's tu switches among them.
+@export var tu_degrees: float = 9.0
 ## The longitude under Tu, degrees: 60° west of spawn stands Tu 30° up, due
 ## west, where a run begins.
 @export var tu_longitude_degrees: float = -60.0
@@ -559,27 +582,9 @@ static var _current: Tuning
 @export_group("Farming")
 ## A planter's water tank, L. Found empty.
 @export var planter_tank_litres: float = 4.0
-## Each crop, by its name in the catalog: the felt light it starts to grow
-## at and grows full at (fungus wants the dark, so its run the other way);
-## the felt temperatures it grows between, and survives between, °C; minutes
-## of full growth to ripen; a harvest, in units of food, and the kcal in
-## each; and the water it drinks on its way to ripe, L.
-@export var carrot_light: Vector2 = Vector2(0.25, 0.6)
-@export var carrot_grows: Vector2 = Vector2(-10.0, 60.0)
-@export var carrot_hardy: Vector2 = Vector2(-30.0, 70.0)
-@export var carrot_minutes: float = 3.0
-@export var carrot_harvest: int = 4
-@export var carrot_kcal: float = 150.0
-@export var carrot_litres: float = 0.25
-@export var fungus_light: Vector2 = Vector2(0.5, 0.25)
-@export var fungus_grows: Vector2 = Vector2(-5.0, 45.0)
-@export var fungus_hardy: Vector2 = Vector2(-15.0, 55.0)
-@export var fungus_minutes: float = 6.0
-@export var fungus_harvest: int = 4
-@export var fungus_kcal: float = 150.0
-@export var fungus_litres: float = 0.3
-## Past its hardy limits a crop loses growth this many times faster than it
-## gains it at its best.
+## Each crop's own numbers are its data in the catalog. Past what it holds
+## through, a crop loses growth this many times faster than it gains it at
+## its best.
 @export var wilt_rate: float = 2.0
 ## The share of each harvest a harvester replants, to start with. A quarter
 ## of a harvest of four keeps every slot sown.

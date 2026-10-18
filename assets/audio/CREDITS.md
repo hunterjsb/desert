@@ -20,6 +20,7 @@ integrated loudness, peaks never past -6 dBTP. A hard limiter on Master holds -1
 | impact.ogg | a hard landing | Sand Game `player_impact1.wav` | Sand Game | -28 hardest | -8 |
 | seat_a.ogg, seat_b.ogg | fitting a part or mod | Sand Game `object_metal_clank-005`/`-002`, ring cut off, under Kenney Interface `click_001`/`click_003` | Sand Game + CC0 | -30 | -11, -16 |
 | unseat.ogg | taking a part out | Sand Game `object_metal_clank-005`, higher, after Kenney Interface `click_005` | Sand Game + CC0 | -32 | -14 |
+| refuse.ogg | take or use refused: a slot full, a tray in the way, no room | Sand Game `object_metal_clank-007`, lowered to 0.6, its ring dulled under 1.1 kHz and cut to a 0.28 s knock | Sand Game | -36 | -21 |
 | tie.ogg | a line's end tied on | a creak from Sand Game `rope_creak_ambient-001.mp3` | Sand Game | -35 | -12 |
 | reel.ogg | a notch of line drawn hand over hand, lower paid out | a creak from Sand Game `rope_creak_ambient-001.mp3` (at 11.65 s), its low end cut | Sand Game | -38 | -14 |
 | creak.ogg | taut rope | Sand Game `rope_creak_ambient-001.mp3` | Sand Game | -27 at full strain | -3 |

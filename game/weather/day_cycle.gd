@@ -17,6 +17,8 @@ const SUN_RADIUS := PI / 180.0 * 0.54
 ## Tu's nod over each day: the orbit's slight eccentricity, and a slighter tilt.
 const LIBRATION_LONGITUDE := PI / 180.0 * 1.0
 const LIBRATION_LATITUDE := PI / 180.0 * 0.4
+## The ring's light through totality, as a share of its flare at the contacts.
+const RING_FLOOR := 0.2
 
 var _tuning: Tuning
 var _day_seconds: float
@@ -74,6 +76,26 @@ func sun_shown(t: float) -> float:
 	# past a chord d of its radii from the centre.
 	var d := clampf((apart - tu_radius()) / SUN_RADIUS, -1.0, 1.0)
 	return 1.0 - (acos(d) - d * sqrt(1.0 - d * d)) / PI
+
+
+## The eclipse as it stands: how far Tu's rim is backlit (0 to 1, from just
+## before first contact), the ring's flare as the sun goes in or comes out (1
+## at the edge, fading as it goes deeper), and the sun's centre from Tu's edge
+## in its own radii (1 at first contact, -1 at second).
+func eclipse(t: float) -> Vector3:
+	var apart := _sun(t).angle_to(_tu(t))
+	var r := tu_radius()
+	return Vector3(smoothstep(r + 0.05, r - 0.01, apart), exp(-maxf(r - apart, 0.0) / (0.25 * r)),
+		(apart - r) / SUN_RADIUS)
+
+
+## The ring of fire's light, Tu's air bending the sun round its limb, as a
+## share of its brightest: none with the sun clear, growing as the sun goes in,
+## its most about second and third contact, and a steady fifth through
+## totality. Red, and far too weak for panels.
+func ring_light(t: float) -> float:
+	var now := eclipse(t)
+	return now.x * lerpf(RING_FLOOR, 1.0, now.y) * smoothstep(1.0, -1.0, now.z)
 
 
 ## Tu's angular radius: half its width across the sky.

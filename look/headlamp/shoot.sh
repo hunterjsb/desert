@@ -2,22 +2,14 @@
 # Shoots the headlamp look-test, then builds its sheet: the walked path, then
 # the camp, each without the headlamp and with it.
 #   look/headlamp/shoot.sh <out dir> [sheet]
-# The window never takes focus. A game running (Proton, Wine, gamescope) holds
-# the launch until it's gone.
+# No window: it runs unseen (scripts/unseen.sh), so it shoots while someone plays.
 set -uo pipefail
 cd "$(dirname "$0")/../.." || exit 2
 
 out=${1:?an output directory}
 sheet=${2:-$out/sheet.png}
-godot=${GODOT:-godot}
+godot=${GODOT:-scripts/unseen.sh}
 
-gaming() {
-	ps -eo args | grep -iE 'proton|wine|gamescope|\.exe' | grep -v grep >/dev/null
-}
-while gaming; do
-	echo "a game is running; waiting to open a window"
-	sleep 60
-done
 timeout 600 "$godot" --path . --disable-vsync res://look/headlamp/headlamp.tscn -- --capture "$out" 2>&1 |
 	grep -E '^headlamp'
 

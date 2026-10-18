@@ -41,6 +41,8 @@ var _across := Vector3.RIGHT
 
 func _ready() -> void:
 	Tuning.current().run_seed = SEED
+	# The fixed exposure, not the eye's, so shots and readings compare across builds.
+	Tuning.current().eye_adapts = false
 	# Its own props only: nothing found lies among them.
 	Tuning.current().salvage = false
 	world = WORLD_SCENE.instantiate()

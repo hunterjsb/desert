@@ -5,7 +5,7 @@ extends WorldProbe
 ## The part that goes in each kind of socket when a device is fitted out; a
 ## rack takes a whole board, so filling leaves it be.
 const FILL := {&"battery": &"battery", &"ring": &"hook", &"bottom": &"hover_tray", &"top": &"solar_panel",
-	&"plant_small": &"carrot", &"plant_large": &"fungus", &"port": &"plug", &"mod": &"harvester"}
+	&"plant_pot": &"vat_fungus", &"plant_standard": &"root_tuber", &"port": &"plug", &"mod": &"harvester"}
 
 
 ## A device of the catalog, dropped in front of the player at a height, with

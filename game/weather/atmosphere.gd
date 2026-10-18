@@ -14,6 +14,10 @@ const PUFF := preload("res://game/weather/puff.gdshader")
 const MUFFLED_GAIN := 0.3
 const MUFFLED_HZ := 600.0
 const OPEN_HZ := 20000.0
+## The eclipse's hush: the wind's sound dips by this share through totality,
+## easing in and out over about this many seconds.
+const HUSH := 0.45
+const HUSH_SECONDS := 2.0
 
 var _streamers: GPUParticles3D
 var _grit: GPUParticles3D
@@ -23,6 +27,7 @@ var _roar: AudioStreamPlayer
 var _buffet := FastNoiseLite.new()
 var _buffet_time := 0.0
 var _muffle: AudioEffectLowPassFilter
+var _hush := 0.0
 
 
 func _ready() -> void:
@@ -83,7 +88,8 @@ func show_weather(camera: Camera3D, ground: float, wind: Vector3, sheltered: flo
 	# shell takes its edge off at once: inside is a place.
 	var through := lerpf(1.0, MUFFLED_GAIN, sheltered)
 	_muffle.cutoff_hz = OPEN_HZ * pow(MUFFLED_HZ / OPEN_HZ, sheltered)
-	_wind_sound.volume_db = linear_to_db(clampf(blow / 25.0, 0.0, 1.0) * (1.0 - seen) * 0.7 * through + 0.0001)
+	_wind_sound.volume_db = linear_to_db(clampf(blow / 25.0, 0.0, 1.0) * (1.0 - seen) * 0.7 * through
+		* (1.0 - HUSH * _hush) + 0.0001)
 	_roar.volume_db = linear_to_db(maxf(seen, 0.5 * smoothstep(0.3, 1.0, near)) * through + 0.0001)
 	_wind_sound.stream_paused = not running
 	_roar.stream_paused = not running
@@ -93,6 +99,17 @@ func show_weather(camera: Camera3D, ground: float, wind: Vector3, sheltered: flo
 	_buffet_time += delta if running else 0.0
 	camera.rotation.z = deg_to_rad(0.5) * smoothstep(7.0, 22.0, blow) * (1.0 - sheltered) \
 		* _buffet.get_noise_1d(_buffet_time * 90.0)
+
+
+## Each tick, before show_weather: the eclipse ring's light on the grains,
+## thrown forward about its bearing (none outside an eclipse), and how far the
+## sun is behind Tu, 0 to 1, which hushes the wind.
+func show_eclipse(toward: Vector3, glow: Vector3, hidden: float, delta: float) -> void:
+	for system: GPUParticles3D in [_streamers, _grit, _puffs]:
+		var look := (system.draw_pass_1 as QuadMesh).material as ShaderMaterial
+		look.set_shader_parameter("ring_dir", toward)
+		look.set_shader_parameter("ring_glow", glow)
+	_hush = lerpf(_hush, hidden, 1.0 - exp(-delta / HUSH_SECONDS))
 
 
 ## How far the sound is muffled now: 0 open, 1 inside a bubble.

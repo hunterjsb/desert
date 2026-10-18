@@ -4,7 +4,8 @@ extends WeatherProbe
 ## in front of you; going looking stands you before a ruin's door with finds
 ## round it; the farm stands in front of you growing; a charged board lies at
 ## your feet by a small camp; a radio and a shield stand in front of you with a
-## beacon in reach; the reference camp stands round you, running; the lee
+## beacon in reach; the reference camp stands round you on its deck,
+## running; the lee
 ## stands you under a tall slip face, facing up it into the wind over its
 ## crest, the wind on you cut and a storm due; chassis pieces, their trays,
 ## a charged crate and a condenser lie in front of you; the eclipse faces Tu
@@ -142,53 +143,63 @@ func _radio_lands() -> void:
 		body.free()
 
 
-## The reference camp stands round you, running: the shield's bubble takes
-## you, the planters, the condenser and the crate, and the turbine stands out
-## beyond it; the shield, the crate with its two panels and the turbine are
-## one pool, its bank full; the trays rest on the sand; the planters are sown,
-## watered and harvesting, near enough to drop food onto you, and hosed to
-## the condenser; the crate is moored to a driven stake and holds the turbine
-## on its strong cable; you're fed and watered, carrying canisters and no
-## food.
+## The reference camp stands round you, running, on its deck: a tray under
+## every piece floats the deck level, the condenser, the shield and two
+## crates standing on it, their own trays off; it and the turbine are one
+## pool, its bank full; the bubble takes you, the deck and the planters, the
+## turbine out beyond it on its strong cable; the deck is moored to a driven
+## stake and each planter to its own; the planters float, sown, watered and
+## harvesting, near enough to drop food onto you, on hoses from the
+## condenser; you're fed and watered, carrying canisters, spare stakes, a
+## coil and a hose, and no food.
 func _afk_lands() -> void:
 	await settle(true)
 	var dropped := Scenarios.afk(world)
 	await physics_frames(60)
 	var player := world.player
+	var deck: Chassis = dropped.filter(func(b: Node) -> bool: return b is Chassis)[0]
 	var shield: ShieldGenerator = dropped.filter(func(b: Node) -> bool: return b is ShieldGenerator)[0]
 	var planters := dropped.filter(func(b: Node) -> bool: return b is Planter)
 	var turbine: Device = dropped.filter(func(b: Node) -> bool: return b is Device and b.stats().turbine_w > 0.0)[0]
-	var crate: Device = dropped.filter(func(b: Node) -> bool: return b is Device and b.label == "Crate frame")[0]
-	var stake: Stake = dropped.filter(func(b: Node) -> bool: return b is Stake)[0]
 	var condenser: Condenser = dropped.filter(func(b: Node) -> bool: return b is Condenser)[0]
-	var inside := func(b: Node3D) -> bool: return b.global_position.distance_to(shield.global_position) < shield.size - 0.5
-	check(shield.running() and inside.call(player) and inside.call(crate) and inside.call(condenser)
-		and planters.all(inside) and turbine.global_position.distance_to(shield.global_position) > shield.size + 0.5,
-		"afk: the shield stands over you, the planters, the condenser and the crate, the turbine out beyond it")
+	var standing := deck.mounted()
+	var crates := standing.filter(func(d: Device) -> bool: return d.label == "Crate frame")
+	var tilt := rad_to_deg(deck.global_basis.y.normalized().angle_to(Vector3.UP))
+	check(deck.pieces().size() == 4 and deck.stats().lift_kg >= 4.0 * 80.0 and deck.stats().hovering and tilt < 2.5
+		and standing.size() == 4 and crates.size() == 2 and standing.has(shield) and standing.has(condenser)
+		and not standing.any(func(d: Device) -> bool: return d.has_tray()),
+		"afk: a tray under every piece floats the deck level (%.1f°), four devices standing on it, their trays off" % tilt)
 	var room := 0.0
-	for device: Device in [shield, crate, turbine]:
+	for device: Device in standing + [turbine]:
 		for cell in device.batteries():
 			room += cell.capacity()
-	var bank := world.power.pool_wh(shield)
-	check(bank == world.power.pool_wh(crate) and bank == world.power.pool_wh(turbine) and absf(bank - room) < 1e-6
-		and crate.stats().solar_w > 0.0 and crate.mounted().any(func(d: Device) -> bool: return d.stats().solar_w > 0.0),
-		"afk: the shield, the crate with its two panels and the turbine share one full bank (%.0f Wh)" % bank)
-	check(([crate] + planters).all(func(d: Device) -> bool: return d.resting and clearance(d) < 0.5)
-		and clearance(turbine) < 0.3, "afk: the trays rest, everything on the sand")
+	var bank := world.power.pool_wh(deck)
+	var pooled := standing.all(func(d: Device) -> bool: return world.power.pool_wh(d) == bank)
+	var panelled := func(c: Device) -> bool: return c.stats().solar_w > 0.0 and c.mounted().any(func(d: Device) -> bool: return d.stats().solar_w > 0.0)
+	check(pooled and bank == world.power.pool_wh(turbine) and absf(bank - room) < 1e-6 and crates.any(panelled),
+		"afk: the deck, all on it and the turbine share one full bank, a crate with two panels (%.0f Wh)" % bank)
+	var inside := func(b: Node3D) -> bool: return b.global_position.distance_to(shield.global_position) < shield.size - 0.5
+	check(shield.running() and inside.call(player) and planters.all(inside)
+		and turbine.global_position.distance_to(shield.global_position) > shield.size + 0.5 and clearance(turbine) < 0.3,
+		"afk: the bubble takes you and the planters, the turbine on the sand out beyond it")
 	var farming := func(p: Planter) -> bool:
 		return p.harvests() and p.plants().size() == 4 and p.tank_l >= world.tuning.planter_tank_litres \
+			and p.stats().hovering and clearance(p) > 0.8 \
 			and p.global_position.distance_to(player.global_position) < world.tuning.drop_reach
 	check(planters.size() == 2 and planters.all(farming),
-		"afk: two planters sown, watered and harvesting, near enough to drop food onto you")
+		"afk: two planters floating, sown, watered and harvesting, near enough to drop food onto you")
 	var watered := Water.network(world, condenser)
 	check(planters.all(func(p: Planter) -> bool: return watered.has(p)) and condenser.powered,
 		"afk: both on hoses from the condenser, running")
-	check(stake.driven and world.ropes.ropes.size() == 2 + planters.size(),
-		"afk: the crate is moored to a driven stake, the turbine on its strong cable, the planters on their hoses")
-	var carried := player.suit.carried.map(func(p: RigidBody3D) -> String: return p.label)
+	var stakes := dropped.filter(func(b: Node) -> bool: return b is Stake and b.driven)
+	check(stakes.size() == 1 + planters.size() and world.ropes.ropes.size() == 2 + 2 * planters.size(),
+		"afk: the deck and each planter moored to a driven stake, the turbine on its strong cable, the planters on their hoses")
+	var carried := player.suit.carried.map(func(p: RigidBody3D) -> String: return Suit._name(p))
 	check(player.vitals.health > 99.0 and player.vitals.hunger > 99.0 and player.vitals.thirst > 99.0
-		and carried.count("Water canister") == Scenarios.AFK_CANISTERS and carried.size() == Scenarios.AFK_CANISTERS,
-		"afk: you start fed and watered, carrying water and nothing else (%s)" % ", ".join(carried))
+		and carried.count("Water canister") == Scenarios.AFK_CANISTERS and carried.count("Stake") == Scenarios.AFK_STAKES
+		and carried.count("Rope coil") == 1 and carried.count("Hose") == 1
+		and carried.size() == Scenarios.AFK_CANISTERS + Scenarios.AFK_STAKES + 2,
+		"afk: you start fed and watered, carrying water, spare stakes, a coil and a hose (%s)" % ", ".join(carried))
 	for body in dropped:
 		if is_instance_valid(body):
 			body.free()
@@ -252,10 +263,11 @@ func _board_lands() -> void:
 
 ## Two planters float in front of you, each on its line to a driven stake,
 ## sown and part grown, one with a harvester and a full tank, the other's
-## half full, their carrots growing in the clear; a charged shield generator
-## stands between them, switched off, near enough for its bubble to take
-## them, with a full canister by your feet and a spare carrot carried.
-## In the wind, nothing slides off or drifts past its line.
+## half full and a saltbush in it, their root-tubers growing in the clear and
+## the saltbush's leaves open with the storm still minutes off; a charged
+## shield generator stands between them, switched off, near enough for its
+## bubble to take them, with a full canister by your feet and a spare
+## root-tuber carried. In the wind, nothing slides off or drifts past its line.
 func _farm_lands() -> void:
 	await settle(true)
 	var dropped := Scenarios.farm(world)
@@ -271,9 +283,11 @@ func _farm_lands() -> void:
 	for i in dropped.size():
 		moved = maxf(moved, dropped[i].global_position.distance_to(set_down[i]))
 	var growing := 0
+	var open := 0
 	for planter: Planter in planters:
 		for plant in planter.plants():
-			growing += 1 if plant.crop == &"carrot" and plant.state == Plant.GROWING and plant.growth > 0.85 else 0
+			growing += 1 if plant.crop == &"root_tuber" and plant.state == Plant.GROWING and plant.growth > 0.85 else 0
+			open += 1 if plant.crop == &"saltbush" and plant.fold == 0.0 else 0
 			check(plant.growth >= 0.5 and not plant.ripe(), "farm: %s sown part grown (%.2f)" % [plant.label, plant.growth])
 		check(planter.plants().size() == 4 and planter.stats().hovering and clearance(planter) > 0.8
 			and planter.global_position.distance_to(shield.global_position) < radius - 1.0,
@@ -282,12 +296,13 @@ func _farm_lands() -> void:
 		"farm: each on its line to a stake, none drifted off (%.2f m at most)" % moved)
 	check(planters.size() == 2 and planters.filter(func(p: Planter) -> bool: return p.harvests()).size() == 1
 		and tanks.has(1.0) and tanks.has(0.5), "farm: two planters, one with a harvester, tanks full and half (%s)" % [tanks])
-	check(growing == 6, "farm: the carrots are growing in the clear (%d)" % growing)
+	check(growing == 5, "farm: the root-tubers are growing in the clear (%d)" % growing)
+	check(open == 1, "farm: a saltbush, its leaves open with the storm minutes off")
 	check(not shield.on and shield.battery().charge_wh >= shield.battery().capacity(),
 		"farm: a charged shield generator, switched off")
 	var loose := dropped.filter(func(b: Node3D) -> bool: return b is Supply and b.kind == &"water" and b.amount >= 2.0)
 	check(loose.size() == 1 and world.player.suit.carried.any(func(p: RigidBody3D) -> bool: return p is Plant),
-		"farm: a full canister, and a spare carrot carried")
+		"farm: a full canister, and a spare root-tuber carried")
 	for body in dropped:
 		if is_instance_valid(body):
 			body.free()

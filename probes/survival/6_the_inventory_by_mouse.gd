@@ -33,6 +33,12 @@ func run() -> void:
 		"clicked empty-handed, a thing comes to your hands")
 	click_at(Vector2(576.0, 60.0))
 	check(suit.carried.has(canister) and hands.held == null, "a click anywhere on the view puts what you hold in")
+	click_at(suit.tile_rect(0).get_center())
+	await physics_frames(30)
+	point_at(suit.tile_rect(suit.stacks().size()).get_center())
+	var on_plus := suit.hover == suit.stacks().size()
+	click_at(suit.tile_rect(suit.stacks().size()).get_center())
+	check(on_plus and suit.carried.has(canister) and hands.held == null, "the + after the stacks lights under the mouse, and a click there puts it in")
 
 	var fresh := part(&"canister", player.camera.global_transform.translated_local(Vector3(0.0, -0.2, -0.5))) as Supply
 	canister.drain(1.5)

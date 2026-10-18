@@ -34,6 +34,8 @@ func _enter_tree() -> void:
 	# Before the World's _ready builds the ground and weather from them.
 	var tuning := Tuning.current()
 	tuning.run_seed = SEED
+	# The fixed exposure, not the eye's, so shots and readings compare across builds.
+	tuning.eye_adapts = false
 	# Clear skies: this judges the dunes, and the equator is stormy.
 	tuning.storm_threshold = 0.9
 	var args := OS.get_cmdline_user_args()

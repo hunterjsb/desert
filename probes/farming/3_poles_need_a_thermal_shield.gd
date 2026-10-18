@@ -1,10 +1,10 @@
 extends FarmProbe
 ## Farming probe 3: the poles need a thermal shield. Far toward a pole, 60°
-## out on a clear day, a carrot and a fungus sown at dawn and left a day in
-## the open wilt in the heat and the cold and end it with nothing. Inside a
-## test-only thermal shield, a shield generator whose bubble holds back
-## temperature, both grow by its 20 °C: the carrot in what sun there is, the
-## fungus through the night, and neither ever wilts.
+## out on a clear day, a root-tuber and a vat fungus sown at dawn and left a
+## day in the open wilt in the heat and the cold and end it with nothing.
+## Inside a test-only thermal shield, a shield generator whose bubble holds
+## back temperature, both grow by its 20 °C: the root-tuber in what sun there
+## is, the fungus through the night, and neither ever wilts.
 
 const LATITUDE := 60.0
 const DAY := 1200.0
@@ -14,7 +14,7 @@ const ALL := {&"wind": 1.0, &"storm": 1.0, &"temperature": 1.0}
 
 func run() -> void:
 	await load_storm(0.0)
-	var planter := planter_at(ahead(3.0), [&"carrot", &"fungus"])
+	var planter := planter_at(ahead(3.0), [&"root_tuber", &"vat_fungus"])
 	var shield := shield_at(world.player.global_position, false)
 	shield.shelter.blocks = ALL
 	shield.freeze = true

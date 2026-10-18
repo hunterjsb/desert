@@ -30,6 +30,8 @@ const GPU_ROUNDS := 3
 func _enter_tree() -> void:
 	var tuning := Tuning.current()
 	tuning.run_seed = SEED
+	# The fixed exposure, not the eye's, so shots and readings compare across builds.
+	tuning.eye_adapts = false
 	# No storm anywhere, and still air, so nothing but the sky changes.
 	tuning.storm_threshold = 10.0
 	tuning.prevailing_speed = 0.0
@@ -74,6 +76,7 @@ func _capture(out_dir: String) -> void:
 	var day := world.weather.day
 	var spawn_lon := tuning.spawn_longitude_degrees
 	var tu_lon := tuning.tu_longitude_degrees
+	var default_size := tuning.tu_degrees
 	for degrees: float in DayCycle.TU_SIZES:
 		tuning.tu_degrees = degrees
 		var size := "tu%d" % degrees
@@ -91,7 +94,7 @@ func _capture(out_dir: String) -> void:
 		var dawn := _at_hour(0.27, tu_lon + LOW_AT)
 		await _shot(out_dir, "%s_low" % size, dawn, 0.0, tu_lon + LOW_AT, _to_tu(dawn, tu_lon + LOW_AT), 3.0)
 
-	tuning.tu_degrees = DayCycle.TU_SIZES[-1]
+	tuning.tu_degrees = default_size
 	var midnight := _at_hour(0.0, tu_lon + 180.0)
 	await _shot(out_dir, "far_side", midnight, FAR_LATITUDE, tu_lon + 180.0, 0.0, 18.0)
 	var full_night := day.next_eclipse(0.0) + tuning.day_minutes * 30.0

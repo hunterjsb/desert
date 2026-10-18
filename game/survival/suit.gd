@@ -17,7 +17,7 @@ extends Node
 ## Built in and free, so nothing ever drains them. The headlamp is the
 ## camera's (Headlamp), so it looks where you look.
 const BUILT_IN := "air, radiation, headlamp"
-const HINT := "click a thing to take it out, or the view to put in what you hold · {interact} on a thing uses it · {inventory} closes"
+const HINT := "click a thing to take it out, or + to put in what you hold · {interact} on a thing uses it · {inventory} closes"
 const TILE := Vector2(120.0, 128.0)
 ## The thing's picture across the top of its tile, px.
 const PICTURE := Vector2i(120, 88)
@@ -383,11 +383,11 @@ static func _held_in(thing: RigidBody3D) -> float:
 
 
 ## Where a stack's tile is drawn, and clicked, in the view, of `count`
-## stacks (all you carry, untold): rows of them low in the middle, the last
-## row's foot clear of a radio's line of words.
+## tiles (all you carry and the + after it, untold): rows of them low in the
+## middle, the last row's foot clear of a radio's line of words.
 func tile_rect(at: int, count := -1) -> Rect2:
 	var size := _view.get_rect().size
-	count = maxi(count if count >= 0 else stacks().size(), 1)
+	count = maxi(count if count >= 0 else stacks().size() + 1, 1)
 	var across := _across()
 	var cols := mini(count, across)
 	var rows := ceili(float(count) / across)
@@ -402,8 +402,9 @@ func _across() -> int:
 	return clampi(floori((_view.get_rect().size.x - 64.0) / (TILE.x + GAP)), 1, ROW)
 
 
+## The stack under a point, or past the last the + after them, else -1.
 func _stack_at(point: Vector2) -> int:
-	var count := stacks().size()
+	var count := stacks().size() + 1
 	for i in count:
 		if tile_rect(i, count).has_point(point):
 			return i
@@ -466,8 +467,9 @@ func look_of(stack: int) -> InventoryLook:
 func _draw_view() -> void:
 	var tuning := Tuning.current()
 	var shown := stacks()
-	var first := tile_rect(0, shown.size())
-	var cols := mini(maxi(shown.size(), 1), _across())
+	var tiles := shown.size() + 1
+	var first := tile_rect(0, tiles)
+	var cols := mini(tiles, _across())
 	var width := maxf(cols * TILE.x + (cols - 1) * GAP, 420.0)
 	var left := (_view.get_rect().size.x - width) * 0.5
 	var weight := kg()
@@ -483,12 +485,19 @@ func _draw_view() -> void:
 			bar.size.y)), _palette(&"accent"))
 	_view.draw_rect(Rect2(bar.position + Vector2(bar.size.x * easy - 1.0, -2.0), Vector2(2.0, bar.size.y + 4.0)),
 		_palette(&"text"))
+	# The + after them, so it's plain that a click there puts what you hold in.
+	var add := tile_rect(shown.size(), tiles)
+	var lit := hover == shown.size() and _player.hands.held != null
+	_view.draw_rect(add, _palette(&"panel"))
+	_view.draw_rect(add, _palette(&"text" if lit else &"faint"), false, 2.0 if lit else 1.0)
+	var mid := add.position + Vector2(TILE.x * 0.5, PICTURE.y * 0.5)
+	var plus := _palette(&"text" if lit else &"dim")
+	_view.draw_line(mid - Vector2(14.0, 0.0), mid + Vector2(14.0, 0.0), plus, 2.0)
+	_view.draw_line(mid - Vector2(0.0, 14.0), mid + Vector2(0.0, 14.0), plus, 2.0)
 	if shown.is_empty():
-		_view.draw_rect(first, _palette(&"panel"))
-		_view.draw_rect(first, _palette(&"faint"), false, 1.0)
-		_text(&"Label", first.position + Vector2(6.0, PICTURE.y + 16.0), "nothing carried", TILE.x - 12.0)
+		_text(&"Label", add.position + Vector2(6.0, PICTURE.y + 16.0), "nothing carried", TILE.x - 12.0)
 	for i in shown.size():
-		var box := tile_rect(i, shown.size())
+		var box := tile_rect(i, tiles)
 		_view.draw_rect(box, _palette(&"panel"))
 		_view.draw_rect(box, _palette(&"text" if i == hover else &"faint"), false, 2.0 if i == hover else 1.0)
 		if i < _looks.size():
@@ -498,7 +507,7 @@ func _draw_view() -> void:
 			_text(&"Readout", box.position + Vector2(6.0, 16.0), "×%d" % things.size(), TILE.x - 12.0)
 		_text(&"Label", box.position + Vector2(6.0, PICTURE.y + 16.0), _name(things[0]), TILE.x - 12.0)
 		_text(&"Readout", box.position + Vector2(6.0, PICTURE.y + 32.0), _brief(things), TILE.x - 12.0)
-	var under := tile_rect(maxi(shown.size(), 1) - 1, shown.size()).end.y
+	var under := tile_rect(tiles - 1, tiles).end.y
 	var tied := PackedStringArray()
 	for body in _player.waist.tied:
 		if is_instance_valid(body):
