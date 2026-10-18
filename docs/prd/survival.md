@@ -115,6 +115,23 @@ There's no hard-coded "camp feeds you" rule. Instead:
 
 With the setup right, you can go fully AFK. You just have to build it.
 
+## Waiting out a storm: auto-walk, then sleep (agreed, 2026-10-18 spec)
+
+Hunter's [storms, signals & sailing spec](../storms-signals-sailing-2026-10-18.md) settles the sleep question below: storms are the
+cozy stress test of your build, tanking them is the stationary, AFK way to play, and clear weather is
+the active phase. Three layers fix the early wait:
+- **Auto-walk first:** it holds your heading while you steer by the compass or the Console, so a storm
+  still lets you make distance. Low risk, so it ships before sleep.
+- **Sleep:** a bedroll, beds in some ruins, maybe the open sand if the camp is stable. Use offers so
+  many hours, until a time, or through the storm; gear such as a radio adds more (wake for a
+  broadcast). **Physics never fast-forwards:** the camp freezes, its batteries and shield are worked
+  out against the storm curve over the hours slept, and the result is applied ("shield held", "a
+  crate broke loose"). A bedroll may share the hoverboard's mount on a crate.
+- **Something to do under the shield:** swapping mods and repairing gear, watching for loot blowing
+  in, the radio.
+
+Open: which failures can happen asleep and how likely.
+
 ## Sleep (proposed)
 
 *Hunter, 2026-10-17 ([session](../console-sensors-sleep-2026-10-17.md)). Direction, not agreed.

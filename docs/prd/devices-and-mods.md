@@ -474,6 +474,16 @@ Console two late uses ([the vision](../vision.md#landmarks-and-endings)):
   a storm mini-map ([Wind & storms](wind-and-storms.md#instruments-and-the-console-screen-proposed-first-version-built)).
   Not said: what frame a legged robot is, or whether it stands on a deck mount, which takes one
   device the size of a crate.
+- **Teaching and taking the Walker** (agreed, 2026-10-18, [spec](../storms-signals-sailing-2026-10-18.md)).
+  The Walker is a legged survey robot that exists only to understand Zan's weather, indifferent to
+  its flock; the nomads followed it for centuries until it walked them into the anomaly. Survive
+  an anomaly recording your own sensor logs, plug your Console into the Walker and upload them,
+  and from then anomalies show on your map and its moon-wide feed flags them, for anyone
+  listening. It doesn't mind its chassis being taken as long as it keeps roaming and surveying;
+  kept still too long it goes bad (its feed degrades, its draw rises, its logs turn subtly wrong).
+  Taken before the nomads' line is done, they may go on pilgrimage and find their god gone, and
+  turn aggressive only if it hasn't been taught; teaching it afterwards calls them off. Aggro
+  mostly touches the endings.
 - **Captured hive mind tech (Idea).** Sealed deep in the black site, it "looks like an incredibly
   powerful Console mod," the endings session's route for a human to consume the other gods.
   Session 4, part 3 makes that ending hive mind start only, so this is an Idea with a clash
