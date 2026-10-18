@@ -52,3 +52,4 @@ assembled = Dictionary[StringName, Dictionary]({
 })
 charge = 0.5
 shown = &"farm"
+shown_turn = 180.0

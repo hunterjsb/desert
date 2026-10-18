@@ -174,8 +174,8 @@ static func _light_up(device: Device) -> void:
 
 
 ## A device's looks, in its own frame, under a node of their own, on the
-## prop's render layer; the device is freed. A picture drawn live, a
-## Console's screen, goes with it.
+## prop's render layer; the device is freed. What drives a look, such as a
+## rotor's spin, and a picture drawn live, a Console's screen, go with it.
 func _looks(device: Device) -> Node3D:
 	var piece := Node3D.new()
 	add_child(piece)
@@ -184,6 +184,7 @@ func _looks(device: Device) -> Node3D:
 		var drawn := look.material_override as BaseMaterial3D
 		if look.is_visible_in_tree() and not (drawn != null and drawn.albedo_texture is ViewportTexture):
 			var pose := to_device * look.global_transform
+			look.set_script(null)
 			look.get_parent().remove_child(look)
 			piece.add_child(look)
 			look.transform = pose
