@@ -97,7 +97,7 @@ of this, then we will need to just stop dropping things out the tooltip.")
   run but is dark; a condenser's water as it makes it ("water 8.7 L/h"); what a planter's tank,
   a canister or the survival kit holds ("1.5/4.0 L"); food left ("150 kcal"); a battery's
   charge ("63/100 Wh"); a radio's station; "output 120 W" on what makes power; "draws 371 W"
-  on what uses it; a rolled-up coil's length ("12 m"). The longest is five words, where a
+  on what uses it; a rolled-up coil's length ("12 m"). Six words at most, its name included, where a
   floating deck had 24.
 - **Shown another way instead:** weight in what you carry and how you walk; a device's charge
   on its charge light; floating or resting by where it hangs and its hum; a line's strain in

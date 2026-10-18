@@ -1031,13 +1031,18 @@ static func sail(world: World) -> Array[Node3D]:
 
 ## A line from a mast's boom's end to your waist, a little slack.
 static func sheet_to_waist(world: World, mast: Mast) -> Line:
+	return to_waist(world, mast._tie())
+
+
+## A line from a device's tie socket to your waist, a little slack.
+static func to_waist(world: World, tie: Socket) -> Line:
 	var line := Line.new()
 	line._world = world
 	world.content.add_child(line)
-	var tie := mast._tie()
-	var at := mast.global_transform * tie.transform
+	var device := tie.get_parent() as Device
+	var at := device.global_transform * tie.transform
 	var ends: Array[Part] = [line._end(at), line._end(world.player.global_transform)]
-	mast.fit(ends[0], tie)
+	device.fit(ends[0], tie)
 	world.player.waist.tie(ends[1])
 	line.ends = ends
 	var span := Line._tip(ends[0]).global_position.distance_to(Line._tip(ends[1]).global_position)
