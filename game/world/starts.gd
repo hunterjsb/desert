@@ -4,16 +4,18 @@ extends RefCounted
 ## from the history, pure in the seed and the kit's start. "Early game for
 ## everyone: find an artery and follow it." The Surveyor's is deep desert with
 ## an artery or spoke a fair walk off, crossed by walking in toward Tu, the one
-## way that's always in the sky, and a structure on its horizon; the
-## Salvager's by a skimmer wreck field, a hull in sight; the Homesteader's on
-## a road by a wayshrine it can see. Every start is on the near side, near
+## way that's always in the sky, and a structure on its horizon that catches
+## the sun for you on the first day; the Salvager's by a skimmer wreck field,
+## a hull in sight; the Homesteader's on a road by a wayshrine it can see.
+## Every start is on the near side, near
 ## enough the equator for the suit, clear of the landmarks, never on a site's
 ## ground, and has something to walk to in sight from where its run's ground
 ## begins, over the dunes as they're drawn, however deep the sand lies on it.
 
 ## The lines a Surveyor looks for.
 const ARTERIES: Array[StringName] = [&"artery", &"spoke"]
-## How many places a start tries before it gives up on its rule.
+## How many places a start tries before it gives up on its rule (a
+## Surveyor's, on each of its two looks).
 const TRIES := 1000
 ## Kept clear of any site's ground, m: a camp's flat patch and then some.
 const CLEAR := 15.0
@@ -42,6 +44,15 @@ const BARE_RINGS := 24
 ## How many bare flats it tries, at least this far apart, m.
 const BARE_GROUNDS := 5
 const BARE_APART := 1500.0
+## True to its size, a Surveyor's mast on its horizon is a sharp eye's find;
+## what catches the eye is its glint. On the run's first day it shines for
+## your eye where the run begins at least this brightly (Skyline.shine) for
+## at least this long, s, looked at this often, s; its search looks first
+## for one that shines in its first this many s, the first day's daylight.
+const GLINT_SOON := 540.0
+const GLINT_SEEN := 0.5
+const GLINT_LASTS := 15.0
+const GLINT_STEP := 5.0
 
 
 ## The start a kit names on this world's history, or none: the tuning's spawn point.
@@ -51,16 +62,23 @@ static func find(shape: TerrainShape, start: StringName, tuning: Tuning) -> Vect
 		return spawn
 	var history := shape.history
 	var rng := RandomNumberGenerator.new()
-	rng.seed = hash([history.run_seed, "start", start])
 	var looked := {}
 	var each := grounds(shape, tuning, start)
-	for g in each:
-		looked[&"ground"] = g
-		looked.erase(&"lookouts")
-		for i in TRIES / each.size():
-			var p := _candidate(shape, start, tuning, rng, looked)
-			if p != Vector3.ZERO and holds(shape, start, p, tuning, looked):
-				return p
+	# A Surveyor's looks first for a mast that shines soon, each look its own draw.
+	var passes: Array[float] = [0.0]
+	if start == &"artery":
+		passes = [GLINT_SOON, 0.0]
+	for within in passes:
+		rng.seed = hash([history.run_seed, "start", start] + ([within] if within > 0.0 else []))
+		looked[&"within"] = within
+		for g in each:
+			looked[&"ground"] = g
+			looked.erase(&"lookouts")
+			looked.erase(&"lit")
+			for i in TRIES / each.size():
+				var p := _candidate(shape, start, tuning, rng, looked)
+				if p != Vector3.ZERO and holds(shape, start, p, tuning, looked):
+					return p
 	push_warning("no %s start on seed %d; the tuning's spawn instead" % [start, history.run_seed])
 	return spawn
 
@@ -76,7 +94,7 @@ static func holds(shape: TerrainShape, start: StringName, p: Vector3, tuning: Tu
 			var band := tuning.start_artery_m
 			return toward_tu(history, p, band.y) <= band.y and nearest_line(history, p, ARTERIES) >= band.x \
 				and _deep(history, p, tuning.start_deep_m) and _off_sites(history, p) \
-				and in_sight(shape, start, p, tuning, looked) != null
+				and catches_sun(shape, p, in_sight(shape, start, p, tuning, looked), tuning, looked)
 		&"wreck_field":
 			return nearest_site(history, p, &"wreck_hull", tuning.start_wrecks_m, &"wreck_field") <= tuning.start_wrecks_m \
 				and _off_sites(history, p) and in_sight(shape, start, p, tuning, looked) != null
@@ -112,12 +130,15 @@ static func grounds(shape: TerrainShape, tuning: Tuning, start: StringName) -> A
 
 
 ## Where a start's run begins: the first of its grounds from which what its
-## rule wants in sight shows, p being the start.
+## rule wants in sight shows (and for a Surveyor, catches the sun), p being
+## the start.
 static func ground(shape: TerrainShape, tuning: Tuning, start: StringName, p: Vector3) -> Vector2:
 	var each := grounds(shape, tuning, start)
 	if each.size() > 1:
 		for g in each:
-			if in_sight(shape, start, p, tuning, {&"ground": g}) != null:
+			var looked := {&"ground": g}
+			var seen := in_sight(shape, start, p, tuning, looked)
+			if seen != null and (start != &"artery" or catches_sun(shape, p, seen, tuning, looked)):
 				return g
 	return each[0]
 
@@ -178,13 +199,48 @@ static func _shows(shape: TerrainShape, p: Vector3, each: Dictionary, tuning: Tu
 		return null
 	var eye := Vector3(at.x, shape.dunes(at.x, at.y) + Skyline.EYE, at.y)
 	var center := Vector2i(floori(at.x / tuning.chunk_size), floori(at.y / tuning.chunk_size))
-	# Past the loaded ground it's its stand-in, on the far ring's ground.
-	var base := site.pad() if Skyline.on_loaded(tuning, center, Vector2(site.x, site.z)) \
-		else FarRing.ground(shape, tuning, site.x, site.z)
-	var top := Vector3(site.x, base + site.top_in(Exposure.BURIED), site.z)
+	var top := Vector3(site.x, _base(shape, tuning, site, center) + site.top_in(Exposure.BURIED), site.z)
 	var dist := Vector2(top.x - eye.x, top.z - eye.z).length()
 	var least := (tuning.start_sight_px + SIGHT_SPARE) * Skyline.PIXEL
 	return site if Skyline.clearance(shape, tuning, eye, top, center, site.reach, exact) >= least * dist else null
+
+
+## Where a site stands as drawn from around a chunk: on its own pad on the
+## loaded ground, and past it its stand-in, on the far ring's ground.
+static func _base(shape: TerrainShape, tuning: Tuning, site: Structure, center: Vector2i) -> float:
+	return site.pad() if Skyline.on_loaded(tuning, center, Vector2(site.x, site.z)) \
+		else FarRing.ground(shape, tuning, site.x, site.z)
+
+
+## Whether a site in sight shines for your eye where the run begins (looked's)
+## within the run's first `within` s (a day without), as GLINT_ says, the
+## moon's point at p, however deep the sand lies on it.
+static func catches_sun(shape: TerrainShape, p: Vector3, site: Structure, tuning: Tuning, looked: Dictionary,
+		within := 0.0) -> bool:
+	if site == null:
+		return false
+	var at: Vector2 = looked[&"ground"]
+	var eye := Vector3(at.x, shape.dunes(at.x, at.y) + Skyline.EYE, at.y)
+	var center := Vector2i(floori(at.x / tuning.chunk_size), floori(at.y / tuning.chunk_size))
+	var glints := Skyline.glints_on(site, Exposure.BURIED, site.frame_on(Exposure.BURIED, _base(shape, tuning, site, center)))
+	if glints.is_empty():
+		return false
+	var day := DayCycle.new(tuning)
+	var latitude := Sphere.latitude(p)
+	var longitude := Sphere.longitude(p)
+	var lit := 0.0
+	var t := 0.0
+	while t <= (within if within > 0.0 else tuning.day_minutes * 60.0):
+		var sun := day.sun_direction(t, latitude, longitude)
+		var most := 0.0
+		if sun.y > 0.1 and day.sun_shown(t) > 0.5:
+			for each in glints:
+				most = maxf(most, Skyline.shine(each, eye, sun))
+		lit = lit + GLINT_STEP if most >= GLINT_SEEN else 0.0
+		if lit > GLINT_LASTS:
+			return true
+		t += GLINT_STEP
+	return false
 
 
 ## How far off anything can show by start_sight_px, m: what the tallest
@@ -204,15 +260,18 @@ static func _candidate(shape: TerrainShape, start: StringName, tuning: Tuning, r
 			# on a spot of the ground where it would show from where the run
 			# begins, on the way in toward Tu.
 			var masts := _masts(history, tuning, looked)
-			var spots := _lookouts(shape, tuning, looked)
-			if masts.is_empty() or spots.is_empty():
+			if masts.is_empty():
 				return Vector3.ZERO
 			var mast: Dictionary = masts[rng.randi() % masts.size()][0]
+			var spots := _lit(shape, tuning, mast, looked)
+			if spots.is_empty():
+				return Vector3.ZERO
 			var spot: Vector2 = spots[rng.randi() % spots.size()]
 			var p := _behind(mast.p, spot.x, spot.y / history.radius)
 			if absf(angle_difference(Sphere.bearing(p, history.sub_tu), spot.x)) > TOWARD_MAST:
 				return Vector3.ZERO
-			return p if _in_band(p, tuning) and _shows(shape, p, mast, tuning, looked) != null else Vector3.ZERO
+			return p if _in_band(p, tuning) and catches_sun(shape, p, _shows(shape, p, mast, tuning, looked), tuning, looked,
+				looked.get(&"within", 0.0)) else Vector3.ZERO
 		&"wreck_field":
 			# A cell anywhere on the near side near the equator, and a hull of a field in it.
 			var most := sin(deg_to_rad(tuning.start_latitude_degrees))
@@ -306,6 +365,55 @@ static func _lookouts(shape: TerrainShape, tuning: Tuning, looked: Dictionary) -
 			worst = maxf(worst, (Skyline.drawn(shape, tuning, center, here.x, here.y) - eye) / d)
 			d = Skyline.next_look(d)
 	looked[&"lookouts"] = spots
+	return spots
+
+
+## The lookouts from which a mast would shine for your eye within the run's
+## first `within` s (looked's, a day without), roughly: where the sun comes
+## off a glint of its about level with you, within twice its sweep. Once a
+## mast and a while.
+static func _lit(shape: TerrainShape, tuning: Tuning, mast: Dictionary, looked: Dictionary) -> Array:
+	if not looked.has(&"lit"):
+		looked[&"lit"] = {}
+	var known: Dictionary = looked[&"lit"]
+	var within: float = looked.get(&"within", 0.0)
+	if within <= 0.0:
+		within = tuning.day_minutes * 60.0
+	var key := Vector4(mast.p.x, mast.p.y, mast.p.z, within)
+	if known.has(key):
+		return known[key]
+	var spots := []
+	var at: Vector2 = looked[&"ground"]
+	var history := shape.history
+	var site := shape.sites.would_lay(mast, at.x, at.y,
+		_behind(mast.p, 0.0, tuning.start_horizon_m.x / history.radius), true) as Structure
+	if site != null:
+		var bins := PackedByteArray()
+		bins.resize(LOOKOUTS)
+		var day := DayCycle.new(tuning)
+		var latitude := Sphere.latitude(mast.p)
+		var longitude := Sphere.longitude(mast.p)
+		var glints := Skyline.glints_on(site, Exposure.BURIED, Transform3D(site.frame().basis, Vector3.ZERO))
+		var t := 0.0
+		while t <= within:
+			var sun := day.sun_direction(t, latitude, longitude)
+			if sun.y > 0.1 and day.sun_shown(t) > 0.5:
+				for each in glints:
+					var n: Vector3 = each[1]
+					var off := n * 2.0 * n.dot(sun) - sun
+					var wide := 2.0 * (each[2] as float)
+					var low := absf(asin(clampf(off.y, -1.0, 1.0)))
+					if n.dot(sun) > 0.0 and low < wide:
+						# Seen from where the run begins, the mast lies the other way.
+						var toward := atan2(off.x, -off.z) + PI
+						var half := sqrt(wide * wide - low * low)
+						for k in range(floori((toward - half) / TAU * LOOKOUTS), ceili((toward + half) / TAU * LOOKOUTS) + 1):
+							bins[posmod(k, LOOKOUTS)] = 1
+			t += GLINT_STEP
+		for spot: Vector2 in _lookouts(shape, tuning, looked):
+			if bins[posmod(roundi(spot.x / TAU * LOOKOUTS), LOOKOUTS)] == 1:
+				spots.append(spot)
+	known[key] = spots
 	return spots
 
 

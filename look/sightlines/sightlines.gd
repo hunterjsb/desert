@@ -18,6 +18,12 @@ const WINDOW := Vector2i(320, 180)
 const ZOOM := 3
 ## A glint this far off is shot before any nearer, m.
 const FAR_GLINT := 300.0
+## The tall pieces a far shot looks for.
+const TALL: Array[StringName] = [&"relay_mast", &"watchtower"]
+## Walking in to the Surveyor's mast: shot from these far, m, zoomed this
+## much closer, across the hand-over (Tuning skyline_handover_m).
+const HANDOVER: Array[float] = [560.0, 500.0, 460.0, 420.0, 340.0]
+const HANDOVER_ZOOM := 6
 
 var world: World
 var _out := ""
@@ -50,8 +56,11 @@ func _ready() -> void:
 			await _aim(eye, Vector3(seen.x, seen.pad() + seen.top_in(seen.state()) * 0.6, seen.z))
 			await _shoot(name, "%s %.0f m off%s" % [seen.kind, seen.distance_to(spawn.x, spawn.y), _drawn(seen, eye)])
 		if kit.start == &"artery":
+			if seen != null:
+				await _handover(seen)
 			await _far_tower(world.spawn)
-			await _glint(0.2)
+			# What catches the eye from where the run begins, that first day.
+			await _glint(0.2, false)
 			costs.append(await _cost("camp-free"))
 			await _afk()
 			costs.append(await _cost("AFK camp"))
@@ -99,7 +108,7 @@ func _far_tower(spawn: Vector2) -> void:
 	var far := 0.0
 	var landmarks: Array[Structure] = []
 	for site in world.terrain.skyline.seen():
-		if site.piece.far_landmark:
+		if site.kind in TALL:
 			landmarks.append(site)
 	landmarks.sort_custom(func(a: Structure, b: Structure) -> bool:
 		return a.distance_to(spawn.x, spawn.y) < b.distance_to(spawn.x, spawn.y))
@@ -140,33 +149,81 @@ func _far_tower(spawn: Vector2) -> void:
 	await _shoot("far_tower", "%s %.0f m off%s" % [best.kind, best.distance_to(from.x, from.z), _drawn(best, from)])
 
 
-## How a landmark's stand-in is drawn from an eye, as said: its own height in
-## pixels at 1080 rows, and the least the skyline draws it (skyline.gdshader).
+## How tall a mast's or tower's stand-in stands from an eye, and how wide its
+## body is, in pixels at 1080 rows as it is (skyline.gdshader draws nothing
+## thinner than skyline_thinnest_px).
 func _drawn(site: Structure, eye: Vector3) -> String:
-	if not site.piece.far_landmark:
+	if not site.kind in TALL:
 		return ""
 	var d := Vector2(site.x - eye.x, site.z - eye.z).length()
-	var own := site.top_in(site.state()) / d / Skyline.PIXEL
-	var least: Vector2 = world.tuning.skyline_landmark_px * pow(1000.0 / d, 0.3)
-	return "; %.1f px tall as it stands, drawn %.0f px tall and at least %.1f wide" % [own, maxf(own, least.y), least.x]
+	var tall := site.top_in(site.state()) / d / Skyline.PIXEL
+	# Its body's width: the far box that stands tallest.
+	var body := AABB()
+	for each: Array in site.piece.far:
+		if (each[0] as AABB).size.y > body.size.y:
+			body = each[0]
+	var wide := body.size.x / d / Skyline.PIXEL
+	return "; %.1f px tall and %.1f wide as it stands" % [tall, wide]
 
 
-## The moment today, and the place within a short walk of where you are, a
-## glint is at its brightest, one far off before one near: shot if it's past
-## `least` (a near one counts a tenth).
-func _glint(least: float) -> void:
+## Walking in to it across the hand-over, from the clearest view of it on
+## the way at each distance: as you see it, then from the same spot with only
+## its real look and with only its stand-in, which should look alike.
+func _handover(seen: Structure) -> void:
+	var spawn := world.spawn
+	var bearing := (spawn - Vector2(seen.x, seen.z)).angle()
+	var mid := seen.pad() + seen.top_in(seen.state()) * 0.5
+	var center := world.terrain.chunk_at(seen.x, seen.z)
+	for d: float in HANDOVER:
+		var eye := _eye_at(Vector2(seen.x, seen.z) + Vector2.from_angle(bearing) * d)
+		var clear := -INF
+		for k in range(-6, 7):
+			var at := _eye_at(Vector2(seen.x, seen.z) + Vector2.from_angle(bearing + k * 0.08) * d)
+			var by := Skyline.clearance(world.shape, world.tuning, at, Vector3(seen.x, mid, seen.z), center, 2.0)
+			if by > clear:
+				clear = by
+				eye = at
+		await _aim(eye, Vector3(seen.x, mid, seen.z))
+		var what := "%s %.0f m off%s" % [seen.kind, d, _drawn(seen, eye)]
+		await _shoot("handover_%d" % d, what, HANDOVER_ZOOM)
+		for only in ["real", "far"]:
+			_only(only)
+			await _ticks(3)
+			await _shoot("handover_%d_%s" % [d, only], what, HANDOVER_ZOOM)
+		_only("")
+
+
+## Draws a structure with a stand-in only as its real look ("real"), only as
+## its stand-in ("far"), or as played ("").
+func _only(which: String) -> void:
+	var handover := world.tuning.skyline_handover_m
+	var look: ShaderMaterial = world.terrain.skyline._box_look
+	look.set_shader_parameter("handover", {"real": Vector2(1.0e6, 1.0e6 + 1.0), "far": Vector2(0.0, 0.001)}
+		.get(which, handover))
+	for made: GeometryInstance3D in world.find_children("*", "GeometryInstance3D", true, false):
+		if made.visibility_range_fade_mode == GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF:
+			made.visibility_range_end = 0.0 if which == "real" else handover.x
+			made.visible = which != "far"
+
+
+## The moment today, and the place within a short walk of where you are (or
+## right where you are, unless `around`), a glint is at its brightest, one
+## far off before one near: shot if it's past `least` (a near one counts a
+## tenth).
+func _glint(least: float, around := true) -> void:
 	var spawn := world.spawn
 	var day := world.weather.day
 	var moon := world.moon
 	var skyline := world.terrain.skyline
-	var t0 := world.time
+	# Right where you are, over the run's own first day.
+	var t0 := world.time if around else 0.0
 	var spots := []
 	for site in skyline.seen():
 		for each in skyline.glints_of(site):
 			spots.append(each)
 	# Where you are, and the rises round you a short walk off.
 	var eyes: Array[Vector3] = []
-	for ring in 5:
+	for ring in (5 if around else 1):
 		for k in (1 if ring == 0 else 12):
 			eyes.append(_eye_at(spawn + Vector2.from_angle(TAU * k / 12.0) * ring * 75.0))
 	var best := 0.0
@@ -180,11 +237,7 @@ func _glint(least: float) -> void:
 			for eye in eyes:
 				for each: Array in spots:
 					var at: Vector3 = each[0]
-					var n: Vector3 = each[1]
-					var v := (eye - at).normalized()
-					if n.dot(v) <= 0.0 or n.dot(sun) <= 0.0:
-						continue
-					var g := smoothstep(each[2], lerpf(each[2], 1.0, 0.75), n.dot((v + sun).normalized())) \
+					var g := Skyline.shine(each, eye, sun) \
 						* (1.0 if Vector2(at.x - eye.x, at.z - eye.z).length() >= FAR_GLINT else 0.1)
 					if g > best and Skyline.clearance(world.shape, world.tuning, eye, at,
 							world.terrain.chunk_at(eye.x, eye.z), 1.0) > 0.0:
@@ -200,7 +253,8 @@ func _glint(least: float) -> void:
 	await _ticks(10)
 	await _aim(from, spot)
 	var off := Vector2(spot.x - from.x, spot.z - from.z).length()
-	await _shoot("glint", "%.0f m off, %.0f%% of its brightest" % [off, best * (100.0 if off >= FAR_GLINT else 1000.0)])
+	await _shoot("glint", "%.0f m off, %.0f%% of its brightest%s" % [off, best * (100.0 if off >= FAR_GLINT else 1000.0),
+		"" if around else ", %.1f min into the run, from where it begins" % (when / 60.0)])
 
 
 ## A road read from a distance: travelled to, stood off on a rise, looking along it.
@@ -318,7 +372,7 @@ func _aim(eye: Vector3, target: Vector3, settle := true) -> void:
 
 
 ## The shot, and the zoom round the middle of the screen, where it's aimed.
-func _shoot(name: String, what: String) -> void:
+func _shoot(name: String, what: String, zoom_by := ZOOM) -> void:
 	for layer: CanvasLayer in world.find_children("*", "CanvasLayer", true, false):
 		layer.visible = false
 	await get_tree().process_frame
@@ -326,8 +380,9 @@ func _shoot(name: String, what: String) -> void:
 	var shot := get_viewport().get_texture().get_image()
 	shot.save_png(_out.path_join(name + ".png"))
 	var middle := shot.get_size() / 2
-	var zoom := shot.get_region(Rect2i(middle - WINDOW / 2, WINDOW))
-	zoom.resize(WINDOW.x * ZOOM, WINDOW.y * ZOOM, Image.INTERPOLATE_NEAREST)
+	var window := WINDOW * ZOOM / zoom_by
+	var zoom := shot.get_region(Rect2i(middle - window / 2, window))
+	zoom.resize(window.x * zoom_by, window.y * zoom_by, Image.INTERPOLATE_NEAREST)
 	zoom.save_png(_out.path_join(name + "_zoom.png"))
 	print("sightlines: %s, %s; %d things seen from afar" % [name, what, world.terrain.skyline.seen().size()])
 
