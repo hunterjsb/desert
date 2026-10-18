@@ -459,6 +459,27 @@ Readings, not in the session:
   wrote it; the Dark Age is where the knowledge is lost.
 - **The Dark Age leaves no mark of its own on buildings,** only on things: it has no structures.
 
+**As drawn** (2026-10-18; [the world system](world-system.md#the-marks)). A thing's lineage stacks its
+marks over its own look, each layer added as pieces in the paint pass, not repainted:
+- **The maker's stamp** is the look's own, from its first hands' row: colonial gear the colonial row, the
+  company's issue the new one.
+- **The First Kingdoms** add an enamel band in the house's colour round a frame's top edges, a round
+  housing or a part's end, and a small enamel plaque with the house's crest cut through it to bright metal
+  (a new scratched ink), two brass rivets at its top: Okafor's key (they kept the last Harbourmaster's),
+  Kessel's cauldron, Arkwright's arch, Vante's tower, in deep red, ochre, teal, and ochre with red.
+- **The Dark Age** adds cord lashed round corner posts or round a body, a round ceramic cap on a square
+  corner, a saltbush-wood splint lashed along an edge, and a plate off another thing in its paint, riveted
+  on crooked, with "ZN" daubed back on it where the thing was consigned.
+- **The second age** adds the sign of Tu, half-risen and banded, daubed on a limewashed patch, a charm on
+  cord, a dyed tassel, a sand-glass water vial tied on; the Cistern's touch a blue-glazed cap and charm.
+
+The wear shader chips every layer by its own share: the enamel chips, the cord and ceramic hardly, so the
+newest work reads freshest on an old thing. The atlas grew a fourth row for the ages after
+(`marks.py`): the four crests and the sign of Tu, read by mark number past the sixth; a stamp can now
+also name its row, so the Dark Age's "ZN" sits on a colonial crate whose own stencil still reads TILG.
+They're one merged mesh a lineage, no new material or draw. Seen so far only on a flat CPU render of their
+meshes: `look/lineage/shoot.sh` shoots the sheet once the GPU is back.
+
 ## Tu and the sky
 
 *2026-10-17, from [the Tu spec](tu-and-day-2026-10-17.md): the behaviour is in [the
@@ -636,9 +657,9 @@ so its reflection map is kept at the smallest size and costs next to nothing to 
 - **Era shapes against the skimmer era.** Part 5's shape table has colonial, First Kingdoms and second
   age, and no skimmer era; the notes' "light, cheap and fragile" is the only word on its gear. Not said
   what it looks like, or whether it is the colonial shape worn hard.
-- **Layered marks against the atlas.** The atlas has six marks in three rows (the colonial, surface and
-  new rows). A find with three eras of marks needs them layered on one piece, which the paint pass was not built
-  for. Not said whether it is drawn as a stack of marks or as a few presets.
+- **Layered marks against the atlas.** *Answered 2026-10-18:* a stack, each lineage entry its own pieces
+  over the look from a few presets a layer (a house, a set of repairs, a set of gifts), the atlas a row
+  longer.
 - **Remodelling against "models wait for the loop".** Here: "Every game object keeps its
   grey-box shape until the loop works," and "models wait for the loop." The notes: "Device
   models should differ by era in shape... The shield comes first." Not said: whether the
