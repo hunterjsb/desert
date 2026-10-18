@@ -125,8 +125,8 @@ planet changes."
 
 ### The layers
 
-1. **Colonial.** The fixed landmarks first ([Landmarks](#landmarks)), then the colonial skeleton between
-   them: the main artery, the spokes from Port Morgan to the ring, the ring routes, the observatory's
+1. **Colonial.** The fixed landmarks first ([Landmarks](#landmarks)), then the ground they stand on
+   ([Geology](#geology)), then the colonial skeleton between them: the main artery, the spokes from Port Morgan to the ring, the ring routes, the observatory's
    long spoke, Starcom's spur, Han's pipelines along the rift, and what runs along them (power
    corridors, water-import aqueducts, the depot's rail line). Then colonial settlements along that
    skeleton: frontier towns on the spokes, pump stations on the aqueducts, Frontier Ag farm domes near
@@ -154,6 +154,7 @@ planet changes."
 ### What it produces
 
 - `History.landmarks`: the eight, with their parts ([Landmarks](#landmarks)).
+- `History.geology`: the rift, its vents and the volcano's capped summit ([Geology](#geology)).
 - `History.network`: the path graph, its nodes and edges, each edge a spline on the sphere
   ([Paths](#paths)).
 - `History.settlements`: every settlement node, with its era, kind, size and seed.
@@ -200,6 +201,108 @@ kit package draws them:
 
 Landmarks keep their changes whatever the distance (the one exception to unloading). That record lives
 with the world and the save, keyed by the landmark's id, and is the endings work's to define.
+
+## Geology
+
+*Built 2026-10-18, on the `plumes` branch, from Hunter's brief ([geology and
+plumes](geology-and-plumes-2026-10-18.md)): "Give Zan's plumes a convincing geological source and a
+consistent relationship to wind, the atmosphere, and the moon's history. Start with one compelling
+plume, not a sprawling simulation."*
+
+The ground the landmarks stand on, made once a run (`Geology`, on `History`) after the landmarks and
+before the colonial layer, which reads it. It holds only what something reads.
+
+- **Where the heat is.** The lore's twin fires: tidal heating peaks at the two bulges, so volcanism
+  clusters at the point under Tu and the point opposite ([the moon](the-moon.md#where-the-heat-concentrates-agreed-session-4-part-5)).
+  The landmarks already stand on both, so the two provinces are where they are, not drawn: Han's rift
+  round Halloran, and the far side's volcano under the observatory. No heat field is kept; nothing
+  reads one yet.
+- **The rift.** One line, its floor's middle: the great circle through Aitch along Halloran's heading
+  (the heading history already drew for the rift), running 8 to 11 km either way **(default)**, held as
+  points no more than 250 m apart. Its floor is 600 m across (Aitch's) and its walls climb to 1.6 km
+  from its middle **(default)**, so the black site, 1.0 to 1.6 km out from the refinery, is in its far
+  wall and the refinery on its near terraces. The rift is constrained by the landmarks, not drawn
+  against them: nothing in the landmark table moves. It has no landform yet ([Open](#open)).
+- **The vents.** Each is `{id, name, state, p, bearing, along, seed}`, `bearing` the rift's there and
+  `along` its metres from Aitch:
+  - two **tapped** vents, one each way 1.5 to 3 km along the floor **(default, the vent stations' old
+    rule)**: the vents live when the colony came, which its vent stations tapped and Han's lines piped
+    to the refinery. Quiet since the fall.
+  - the **live** vent, 5 to 7.5 km along one way **(default)**, at least 2 km past the farther pipe and
+    still in Han, under Tu nearly overhead. Part 2's fall: "The vents didn't die, they moved, and
+    nobody had the rigs to follow the heat." The heat moved on along the rift as it propagated, and
+    this is where it still comes up.
+  - the volcano's **capped** summit vent, the observatory's vent cap: Tilg's anchor seals it. No plume.
+- **What a vent is doing** is a pure function of the time, as the weather is:
+  `geology.venting(vent, t)` gives how hard, as a share of its seep, and the share of ash in what it
+  carries. A live vent breathes by a fifth over periods of 170 and 410 s, and bursts: each slot of
+  1,800 s (a day and a half) holds one 55% of the time, rising over 25 s, holding 40 s and fading by e
+  every 180 s, at 4 to 7 times the seep; ash is a fifth of what it carries seeping and 85% at a burst's
+  peak **(defaults)**. `next_burst(vent, t)` says when the next begins. Quiet and capped vents give
+  nothing. Nothing in the world reads the plume: what it shows is `venting`'s.
+- **Magnetized crust.** `geology.magnetized(p)`, 0 to 1: lava that cooled in the old field stays
+  magnetized, so the rift's dykes (across its walls, fading 2 km past its ends) and the volcano's flows
+  (its 3 km footprint, gone by 6 km) read 1 and ordinary ground 0 **(default)**. A few products a call:
+  what the compass will read its local deviation from.
+- **Its mouth on the ground.** The live vent's mouth is a kit piece of the ground's own era
+  (`Eras.GEOLOGY`, `GeologyKit`, built as `VentMouth`): a fissure along the rift, its 12 m pit 1.2 m
+  under the dunes' mean, a spatter rampart round it 2.4 m high, sulphur crusting its throat, and an
+  apron of its own ash out to 56 m that the dunes rise or fall from no steeper than 18°, banking at the
+  sand's own slope over its last 14 m **(defaults)**. It stands where geology put it, sliding up to
+  24 m along the rift to where its apron holds the dunes best, so it stands on every seed (24 of 24
+  tried, a third of them slid); nothing round it is steeper than its 24° throat. It's the same in every exposure state (a live vent keeps itself clear),
+  laid by the sheet like any site (a cell part of its own), and never gives way to a structure: the
+  ground's own comes first. Its ash fan on the sand is the sand's look
+  ([Wind & storms](prd/wind-and-storms.md#a-vents-plume)).
+- **Determinism.** Geology draws only from its own streams (the seed, "geology", what it's for), and
+  runs after the landmarks, which never read it. The colonial layer's vent stations now stand on its
+  tapped vents and their pipelines run to them, in the same order and number as before, so nothing else
+  in history moves: on seeds 1234, 7 and 42, of 13,015 lines of landmarks, paths, settlements and path
+  cells' sites, the 113 that changed are Han's lines (the two vent stations, their pipelines, the pylon
+  stubs and pipe along them, a skimmer camp scarring a station and a First Kingdoms town on a pipeline).
+  Every landmark is where it was.
+
+### The brief's questions, answered
+
+1. **A geology layer now?** Yes, a small one, because something reads it at once: the colonial
+   layer's vent stations stand on its tapped vents, the plume and the vent's mouth on its live one, and
+   the compass on its magnetized crust. It's the rift, its vents and the capped summit; no heat field,
+   no impact basin, nothing else until something needs it.
+2. **What does the plume emit?** Gas, which doesn't show (carbon dioxide, sulphur gases and water
+   vapour are the science brief's guesses, not fixed), carrying what does: fine basalt ash, dark and soon
+   fallen out; steam, only where the air is cold enough to hold it, so it's grey by a hot day and white
+   in the cold of night and dawn; and the pale blue sulphate haze its gas makes over minutes, which is
+   most of what a far plume is.
+3. **Seeping, intermittent or bursting?** It seeps all the time, breathing, and bursts now and then.
+   The tapped vents are quiet and the summit capped: one unmistakable source in a quiet landscape.
+4. **Is the observatory volcano part of a province?** Yes: the far side's, one of the two tidal-heating
+   provinces, its summit vent capped by the elevator's anchor. The colonial vent stations are the other
+   province's, Han's, on the rift. Both are the same heat, from the same tides.
+5. **The rift and the province: independent, constrained, or derived?** Constrained by the landmarks.
+   The provinces are the bulges, which the landmarks already mark; the rift is the line Halloran's
+   heading already drew, through Aitch, with the black site in its wall; only its length and the vents
+   along it are geology's own draws.
+6. **The smallest rendering?** One draw of 248 soft puffs whose places the shader works out from a line
+   of 24 points computed on the main thread, and the sand's look for the ash; no new full-screen pass,
+   no particle simulation, nothing per vent but the one live one in sight
+   ([Wind & storms](prd/wind-and-storms.md#a-vents-plume)).
+7. **Visual only, or more?** Visual and atmospheric, with history's vent stations moved onto the
+   vents and the magnetized crust for the compass. No hazard, no visibility cut, no sound yet.
+8. **Which physical assumptions now?** Settled now: the plume's rise and bend follow Briggs's
+   buoyant-plume laws in the field's wind and an air stability that's steadier by night; gravity enters
+   both the buoyancy and the stability, so how high a plume levels doesn't change with it, only how
+   hard it climbs at first; ash falls out, steam needs cold air, haze forms over minutes. Qualitative:
+   the gases' mixture, the vent's real heat output (its buoyancy is a look value, `plume_buoyancy`), and
+   the outgassing's share of the air, which a single vent doesn't sustain: the air still leaks.
+9. **Which tests?** Geology's purity and shape on twelve worlds (geology 1), venting as the time's alone
+   (geology 2), the plume following the field's drift and bending in its wind and storms hiding it
+   (wind & storms 15), and its life through a run: a stopped clock, a pause, an origin shift, walking
+   off and back, a storm over it, its cost (wind & storms 16). The kits' probes take the mouth like any
+   piece.
+10. **Left out:** the rift's and the volcano's landforms; a plume at the far side (the summit is capped,
+   and a flank vent waits for the volcano's ground); dormant scars at the tapped vents (the vent
+   stations' kit will stand on them); deposits that grow with bursts; hazards, readings and sound; the
+   far stand-in hand-over to the skyline, once it lands.
 
 ## Paths
 
@@ -1066,8 +1169,21 @@ group.
   to all; loose finds 0.15 a chunk within 60 m of a path or a settlement's site; drift 1 a metre an hour in
   a storm's heart, 0.25 snagging in the open and 1.0 more in a full lee, drawn every 20 s, 8 to a line.
 
+- Geology ([Geology](#geology)): the rift 8 to 11 km either way from Aitch, its floor 600 m across and
+  its walls to 1.6 km; the tapped vents 1.5 to 3 km along it, the live one 5 to 7.5 km; a live vent's
+  breath a fifth over 170 and 410 s, a burst in a 1,800 s slot 55% of the time, rising 25 s, holding
+  40 s, fading by e every 180 s, 4 to 7 times the seep, ash a fifth seeping and 85% at a peak; the
+  magnetized crust across the rift's walls, 2 km past its ends and over the volcano's footprint to 6 km;
+  the mouth's pit, rampart and 56 m apron, sliding up to 24 m along the rift.
+
 ## Open
 
+- **The rift's and the volcano's landforms.** Geology holds the rift's line, floor and walls for the
+  landform package to carve; until then the vent's mouth stands on the dunes as they are. The far
+  side's heat waits on the volcano's ground: its summit vent is capped, and a live flank vent there
+  is the natural second plume.
+- **The tapped vents' ground.** The vent stations stand on cold vents; their kit, when it's built,
+  carries the old vent's scar.
 - **Seams at high latitude.** Near the poles cells are small and dead reckoning is unsteady. History is
   thin there by richness, but the Rim's ring route runs over both poles, and its seams would show
   there.

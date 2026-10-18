@@ -40,6 +40,16 @@ uniform float track_rim = 0.25;
 // in one sits in it: a 1 m lattice can't draw the dent itself.
 uniform float track_lift = 0.03;
 
+// A live vent's ash (Plume): dark cinder round its mouth, sulphur in its
+// throat, and a fan of grey ash down the long-term wind, the record of its
+// bursts. Its mouth's world x and z, and how far the fan runs (by e), m; none
+// while that's 0. Its slot's way, world x and z.
+uniform vec3 vent_ash = vec3(0.0);
+uniform vec2 vent_slot = vec2(0.0, 1.0);
+const vec3 CINDER = vec3(0.025, 0.021, 0.019);
+const vec3 ASH_GREY = vec3(0.15, 0.145, 0.14);
+const vec3 SULPHUR = vec3(0.69, 0.54, 0.1);
+
 varying vec3 world_pos;
 varying vec3 world_normal;
 
@@ -88,6 +98,20 @@ void fragment() {
 	vec3 colour = sand * mix(trough_shade, vec3(1.0), smoothstep(0.2, 0.8, broad) * 0.5 + 0.5);
 	colour *= 1.0 + (value_noise(at / 7.0) - 0.5) * patchiness;
 	colour *= mix(vec3(1.0), slip_shade, lee * 0.8);
+	if (vent_ash.z > 0.0) {
+		vec2 off = at - vent_ash.xy;
+		float down = dot(off, downwind);
+		float aside = dot(off, vec2(-downwind.y, downwind.x));
+		float from_slot = length(vec2(dot(off, vec2(vent_slot.y, -vent_slot.x)), max(abs(dot(off, vent_slot)) - 6.0, 0.0)));
+		float cinder = 1.0 - smoothstep(16.0, 44.0, from_slot);
+		float fan = exp(-max(down, 0.0) / vent_ash.z) * exp(-pow(aside / (35.0 + 0.35 * max(down, 0.0)), 2.0))
+			* smoothstep(-60.0, 10.0, down);
+		// Fresh sand slides down a slip face over it.
+		float ash = clamp(max(cinder, 0.85 * fan) * (0.75 + 0.5 * value_noise(at / 9.0)), 0.0, 1.0) * (1.0 - 0.5 * lee);
+		colour = mix(colour, mix(ASH_GREY, CINDER, cinder), ash);
+		float crust = (1.0 - smoothstep(3.0, 8.0, from_slot)) * smoothstep(0.55, 0.7, value_noise(at / 1.7));
+		colour = mix(colour, SULPHUR, crust * 0.8);
+	}
 
 	// Convex where the normal turns the way the surface runs: a crest.
 	vec3 dpx = dFdx(world_pos);
