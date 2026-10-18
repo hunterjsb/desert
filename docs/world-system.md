@@ -72,9 +72,9 @@ The cost is seams. Two cells laid at different moments, from points you'd walked
 little off. On the equator, or walking along a meridian, they meet exactly. Elsewhere the offset grows
 with how far east or west you walked between the two and with tan(latitude). At the Rim's latitudes
 (the axis keeps them under 25°, [Landmarks](#landmarks)), the widest seam on a 3 km walk east past
-Halfrise at 22° was 24 m (probe 4). Paths are invisible and sites stand tens of metres apart, so a seam reads as nothing.
-Inside one cell everything is laid together and agrees to the centimetre. The probes measure the seams
-(probe 4).
+Halfrise at 22° was 24 m (probe 4 measures it). Paths are invisible and sites stand tens to hundreds of
+metres apart, so a seam reads as nothing. Inside one cell everything is laid together and agrees to the
+centimetre.
 
 ## Scale
 
@@ -141,9 +141,9 @@ planet changes."
    remote. The keepers' holdings are where the colonial machines were: the three powers sit on Port
    Morgan, Halloran and the Rim's farm towns.
 5. **Dark Age.** No sites, by part 5's rule. It writes two things: the **lineage rule** every later
-   loot draw uses ([Item lineage](#item-lineage)), and **signs** along the migration routes between
-   first-age water and second-age towns: cairns marking water, caches, the first deliberate saltbush
-   plantings. Signs are markers, not structures ([Sites](#sites)).
+   loot draw uses ([Item lineage](#item-lineage)), and **signs** along the migration routes, the First
+   Kingdoms' water lines the survivors followed: cairns marking water, caches, the first deliberate
+   saltbush plantings. Signs are markers, not structures ([Sites](#sites)).
 6. **Second age.** Towns on top of or near first-age sites, most on the Rim; Halfrise and Sister as
    anchors; a dense road network between towns; pilgrim roads with wayshrines; caravanserais at a day's
    walk on the artery; battlefields round Halfrise; crusader bunkers on colonial sites in Mon.
@@ -269,14 +269,14 @@ stands on the lattice also turns in quarter turns and surveys its floor, as the 
   a pipeline, relay masts every 1.5 km on colonial roads, wayshrines every 700 m on pilgrim roads,
   watchtowers every 2.5 km on second-age roads, caravanserais a day's walk apart on the artery (2.2 km),
   dugouts along the artery in Han **(defaults)**. Each place on that spacing keeps its site as often as
-  richness says, so the Rim is rich and Han sparse. Sites are placed by running length along the edge, so a cell gets the same sites whichever
-  cell asked first.
+  richness says, so the Rim is rich and Han sparse. Sites are placed by running length along the edge,
+  so a cell gets the same sites whichever cell asked first.
 - **In settlements.** A settlement is a cluster of its era's kinds within its radius: a walled village is
   house ruins, a wall and a granary; a pipe town is pipe-wall huts on a colonial pipeline; a skimmer camp
   is a pad, fuel bladders and a dugout on a colonial site.
 - **Off the network.** Survey beacons and relay towers on a grid of latitude and longitude every 6°
-  (2.5 km) on the near side, a relay tower at every second; skimmer wrecks that "crash anywhere," likelier toward Han; First Kingdoms
-  hermits far from any path.
+  (2.5 km) on the near side, a relay tower at every second; skimmer wrecks that "crash anywhere,"
+  likelier toward Han; First Kingdoms hermits far from any path.
 - **Meaningful emptiness.** Nothing else. A cell no path or settlement reaches holds only the grid and the
   rare wreck or hermit. Some deep desert is empty on purpose: "the dangerous zone between settled areas,"
   dangerous by being far from water and roads.
@@ -312,7 +312,7 @@ What chunks and systems ask:
 | `history.nearest_landmark(point)` | The nearest landmark on the sphere, its distance and bearing, however far |
 | `history.region_of(point)`, `history.richness(point)` | Where on the moon a point is, and how built up |
 
-A chunk's own query costs a few lookups and no allocation beyond its answer **(budget: 50 µs)**. The
+A chunk's own query costs a few lookups **(budget: 50 µs)**. The
 probes check every answer against a scan of everything laid (probe 4).
 
 ### The sheet
