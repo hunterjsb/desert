@@ -344,10 +344,9 @@ device already stays a body of its own on the host's power pool.
   - **The map loses resolution, not itself,** as instruments come off: the more gear, the finer
     it is; with less, it coarsens.
   - **On the map:** the wind as a gyro vector in its legend, a compass too (in detail on the
-    stats page);
-    pressure as a bar (in detail on stats); humidity laid over the map itself, varying, when a
-    hygrometer gives it; the front's numbers written on the map where the front is; the
-    forecast as a line along the map's foot.
+    stats page); pressure as a bar (in detail on stats); humidity laid over the map itself,
+    varying, when a hygrometer gives it; the front's numbers written on the map where the front
+    is; the forecast as a line along the map's foot.
 - **The screen** (as built, 2026-10-18) is a part, 0.62 by 1.12 m and 3 kg, the whole front of
   the rack, drawn on a canvas of 580 by 1080. It's a terminal in the game's theme, monospaced,
   and its pages go in the order of its tabs:
@@ -424,15 +423,15 @@ device already stays a body of its own on the host's power pool.
 - **Its draw cost is small.** The screen is a small canvas of its own. It's drawn only when what
   it shows has changed, checked at most four times a second of world time, and only while
   someone stands within 15 m. Taken out, a screen's canvas is hidden and kept, not freed, so
-  putting a screen back makes nothing new.
+  putting a screen back makes nothing new. The radar's map is sampled a few rows a tick, a whole
+  pass a second of world time, by one Console in the system; one sample per cell gives its
+  storm, sand and humidity alike.
 - **Taking the screen out never stutters** (Hunter: "game stutters when the screen is
   removed"). It was the first part taken out in a run, whatever it was: its frame stalled about
   10 ms (22 ms against 16.7) while the GPU compiled the shader of the ghost that shows where a
   held part fits, and in the "console" scenario the screen is what you take first. Taken out
   again, it cost 0.8 ms. The ghost's shader compiles while the world loads now, as the sand's
-  does. The radar's map is sampled a few rows a tick, a whole pass a second
-  of world time, by one Console in the system; one sample per cell gives its storm, sand and
-  humidity alike.
+  does.
 - **Linking.** Every Console on one chassis deck is one system: the deck and everything standing
   or seated on it. Their instruments pool, so each screen shows every reading in the system,
   each taken from the first Console that has it. A Console off a deck is a system of its own,

@@ -9,7 +9,9 @@ extends Node
 ## At the fixed exposure:
 ##   godot --path . --disable-vsync res://look/console/console.tscn -- --capture <dir>
 ## look/console/shoot.sh builds the sheet. A small window that never takes
-## focus, nothing but this script moving anything, and silence.
+## focus, nothing but this script moving anything, and silence. First of all
+## it takes the screen out by hand and says how long that frame took: the
+## hitch check a headless probe can't make, since only a GPU compiles shaders.
 
 const SEED := 1234
 ## Standing: this far back from the screen, m, at the game's own lens, °.
@@ -69,6 +71,7 @@ func _capture(out_dir: String) -> void:
 	player.set_physics_process(false)
 	player.flying = true
 	await _ticks(150)
+	await _take_screen(made)
 	await _whole(out_dir, "deck", deck, made, 3.2, -0.5)
 	await _standing(out_dir, "standing_map", made)
 	made.page = Console.Page.STATS
@@ -155,6 +158,37 @@ func _capture(out_dir: String) -> void:
 	get_tree().quit()
 
 
+## Takes the screen out by hand, the first thing taken this run, standing at
+## it, and puts it back: its frame against the frames before.
+func _take_screen(made: Console) -> void:
+	var middle := _middle(made)
+	_place(middle + _normal(made) * 1.0, middle, LENS)
+	await _ticks(30)
+	var hands := world.player.hands
+	var before: Array[float] = []
+	var last := Time.get_ticks_usec()
+	for i in 30:
+		await get_tree().process_frame
+		before.append((Time.get_ticks_usec() - last) / 1000.0)
+		last = Time.get_ticks_usec()
+	var screen := made._screen()
+	var started := Time.get_ticks_usec()
+	hands.grab()
+	await get_tree().process_frame
+	var took := (Time.get_ticks_usec() - started) / 1000.0
+	before.sort()
+	print("console: the screen taken out by hand, its frame %.1f ms, the frames before %.1f" % [took,
+		before[before.size() / 2]])
+	var part := hands.held as Part
+	if part != null:
+		hands._let_go()
+		await get_tree().physics_frame
+		part.get_parent().remove_child(part)
+		world.content.add_child(part)
+		made.fit(part, screen)
+	await _ticks(30)
+
+
 ## The whole of it, from a few steps off and a little to one side, standing.
 func _whole(out_dir: String, name: String, centre: Node3D, made: Console, off: float, swing: float) -> void:
 	var normal := _normal(made).rotated(Vector3.UP, swing)
@@ -184,13 +218,7 @@ func _normal(made: Console) -> Vector3:
 
 
 func _shoot(out_dir: String, name: String, made: Console, eye: Vector3, target: Vector3, lens: float) -> void:
-	var player := world.player
-	var to := target - eye
-	player.rotation = Vector3(0.0, atan2(-to.x, -to.z), 0.0)
-	player.global_position = eye - player.camera.position
-	player.camera.rotation = Vector3(atan2(to.y, Vector2(to.x, to.z).length()), 0.0, 0.0)
-	player.feel.set_process(false)
-	player.camera.fov = lens
+	_place(eye, target, lens)
 	await _ticks(20)
 	for layer: CanvasLayer in world.find_children("*", "CanvasLayer", true, false):
 		layer.visible = false
@@ -198,6 +226,17 @@ func _shoot(out_dir: String, name: String, made: Console, eye: Vector3, target: 
 	await get_tree().process_frame
 	get_viewport().get_texture().get_image().save_png(out_dir.path_join(name + ".png"))
 	print("console: %s, %d cells" % [name, made.map_cells()])
+
+
+## Your eyes at a place, looking at a target through a lens.
+func _place(eye: Vector3, target: Vector3, lens: float) -> void:
+	var player := world.player
+	var to := target - eye
+	player.rotation = Vector3(0.0, atan2(-to.x, -to.z), 0.0)
+	player.global_position = eye - player.camera.position
+	player.camera.rotation = Vector3(atan2(to.y, Vector2(to.x, to.z).length()), 0.0, 0.0)
+	player.feel.set_process(false)
+	player.camera.fov = lens
 
 
 func _ground() -> void:
