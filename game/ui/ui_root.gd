@@ -225,7 +225,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 
 
-## The title, and Resume (with a save), New game, Options, Quit, over the live desert.
+## The title, and Resume (with a save), New game, Deeds, Options, Quit, over the live desert.
 func show_main_menu(note := "") -> void:
 	close_all()
 	Dev.show_hint(false)
@@ -237,16 +237,18 @@ func show_main_menu(note := "") -> void:
 	if main.has_save():
 		menu.add("Resume", main.resume)
 	menu.add("New game", _new_game)
+	menu.add("Deeds", _deeds)
 	menu.add("Options", func() -> void: open(options()))
 	menu.add("Quit", main.quit)
 	open(menu)
 
 
-## Options, Save in a Normal run, and Save & quit, over the running game.
+## Options, Deeds, Save in a Normal run, and Save & quit, over the running game.
 ## Save says how it went in its own word.
 func system_menu() -> Words:
 	var menu := Words.new("")
 	menu.add("Options", func() -> void: open(options()))
+	menu.add("Deeds", _deeds)
 	if main.saves() != null and not main.ironman():
 		var said := ["Save"]
 		menu.add(func() -> String: return said[0], func() -> void:
@@ -336,6 +338,10 @@ func confirm(question: String, no: String, yes: String, act: Callable) -> Words:
 		close_top()
 		act.call())
 	return menu
+
+
+func _deeds() -> void:
+	open(DeedsGrid.menu(main.profile(), close_top))
 
 
 func _new_game() -> void:

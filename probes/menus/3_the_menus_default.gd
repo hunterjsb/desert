@@ -33,7 +33,7 @@ func run() -> void:
 		and main.view.devices().is_empty() and eye.is_position_in_frustum(piece.global_position)
 		and (eye.global_transform.affine_inverse() * piece.global_transform).is_equal_approx(was),
 		"the starting crate floats in view, only to look at, and the storm doesn't move it")
-	check(menu.words() == PackedStringArray(["NEW GAME", "OPTIONS", "QUIT"]) and menu.highlighted() == 0,
+	check(menu.words() == PackedStringArray(["NEW GAME", "DEEDS", "OPTIONS", "QUIT"]) and menu.highlighted() == 0,
 		"with no save, Resume is absent and New game is highlighted (%s)" % ", ".join(menu.words()))
 	check(AudioServer.is_bus_mute(AudioServer.get_bus_index(Sounds.WORLD)) and not AudioServer.is_bus_mute(0),
 		"the menu's storm makes no sound, and its words can")
@@ -56,10 +56,9 @@ func run() -> void:
 	teleport(world.spawn.x + 6.0, world.spawn.y - 9.0)
 	await physics_frames(30)
 	press(&"ui_cancel")
-	check(main.ui.top().words() == PackedStringArray(["OPTIONS", "SAVE", "SAVE & QUIT"]),
-		"the system menu holds Options, Save and Save & quit (%s)" % ", ".join(main.ui.top().words()))
-	press(&"ui_down")
-	press(&"ui_down")
+	check(main.ui.top().words() == PackedStringArray(["OPTIONS", "DEEDS", "SAVE", "SAVE & QUIT"]),
+		"the system menu holds Options, Deeds, Save and Save & quit (%s)" % ", ".join(main.ui.top().words()))
+	press(&"ui_up")
 	var stood := Vector2(world.player_world_x(), world.player_world_z())
 	var clock := world.time
 	var played_on := world.run_seed
@@ -68,7 +67,7 @@ func run() -> void:
 	menu = main.ui.top()
 	check(saves().has_run() and not main.in_run() and menu != null and menu.root,
 		"Save & quit saves the run and goes back to the main menu")
-	check(menu.words() == PackedStringArray(["RESUME", "NEW GAME", "OPTIONS", "QUIT"]) and menu.highlighted() == 0,
+	check(menu.words() == PackedStringArray(["RESUME", "NEW GAME", "DEEDS", "OPTIONS", "QUIT"]) and menu.highlighted() == 0,
 		"with a save, Resume is there and highlighted (%s)" % ", ".join(menu.words()))
 
 	var back := {}
