@@ -3,8 +3,22 @@ extends RefCounted
 ## The crude far view: one coarse, visual-only mesh out to the haze, with a hole
 ## where the chunks are. It overlaps the outermost chunk ring by one chunk and sits
 ## a little lower, so a ring that lags the player by a chunk still shows no gap.
-## Its samples are 32 m apart and on the lattice, so it reads the dunes alone: a
-## ruin is too small to show this far.
+## Its samples are 32 m apart and on the lattice, so it reads the dunes alone:
+## what stands on it far off is the skyline's (Skyline), set on its ground.
+
+
+## Its own ground at a world place: the dunes at its lattice points, split
+## into triangles as its mesh is, and dropped as it's drawn. What stands on
+## it far off stands on this, not on the dunes it skips between samples.
+static func ground(shape: TerrainShape, tuning: Tuning, x: float, z: float) -> float:
+	var step := float(tuning.far_step)
+	var i := floorf(x / step)
+	var j := floorf(z / step)
+	var fx := x / step - i
+	var fz := z / step - j
+	var corner := shape.dunes(i * step, j * step) if fx + fz <= 1.0 else shape.dunes((i + 1.0) * step, (j + 1.0) * step)
+	return TerrainShape.across(fx, fz, shape.dunes((i + 1.0) * step, j * step), shape.dunes(i * step, (j + 1.0) * step),
+		corner) - tuning.far_drop
 
 
 static func make(shape: TerrainShape, center: Vector2i, tuning: Tuning) -> Array:

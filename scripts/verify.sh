@@ -8,7 +8,7 @@ name=${1:?a name for the verify branch}
 land=${2:-}
 sha=$(git rev-parse HEAD)
 # Quiet: GitHub's remote lines offer a pull request for every new branch.
-git push -q -f origin "HEAD:verify-$name" 2> >(grep -v '^remote:' >&2)
+git push -q -f origin "HEAD:refs/heads/verify-$name" 2> >(grep -v '^remote:' >&2)
 id=""
 for _ in $(seq 60); do
 	id=$(gh run list -c "$sha" --json databaseId -q '.[0].databaseId' 2>/dev/null || true)
