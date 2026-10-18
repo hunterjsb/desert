@@ -55,6 +55,8 @@ var _memo := Exposure.Memo.new()
 var _shown := NAN
 var _held := false
 var _followed := NAN
+## Held as a resumed save had it, whoever stands on it, until the resume is done.
+var _kept := false
 ## The ticks either side of the moment it last followed, and their sand.
 var _ticks := Vector2i(-1000000000, -1000000000)
 var _ends := Vector4.ZERO
@@ -462,18 +464,42 @@ func forget() -> void:
 	pinned_at = NAN
 
 
-## Its ground is first built: shown from now as the weather has it.
-func hold_ground() -> void:
+## Its ground is first built: shown from now as the weather has it, or as
+## a save had it held over you or your camp (`kept`, m) where that's more.
+func hold_ground(kept := NAN) -> void:
 	_shown = pure_taken(_ctx.clock.call())
 	_held = false
+	_kept = false
+	keep(kept)
 	_followed = _ctx.clock.call()
 	ground = piece.step_of(level())
+
+
+## Held as a save had it over you or your camp, `sand` m off it, where that's
+## more than the weather has; its ground follows as it next follows the weather.
+func keep(sand: float) -> void:
+	if sand > _shown:
+		_shown = sand
+		_held = true
+		_kept = true
+
+
+## The sand off it as it's held over you or your camp, m; NAN where it's the
+## weather's: what a save keeps.
+func held_sand() -> float:
+	return _shown if _held else NAN
+
+
+## A resume is done: from now it's held only while something of yours stands on it.
+func resumed() -> void:
+	_kept = false
 
 
 ## Nothing holds its ground any more: it's the weather's alone again.
 func release_ground() -> void:
 	_shown = NAN
 	_held = false
+	_kept = false
 	ground = -1
 	_lock.lock()
 	_grids.clear()
@@ -495,20 +521,19 @@ func follow(t: float, occupied: Callable) -> int:
 	if pure >= _shown:
 		_shown = pure
 		_held = false
-	elif occupied.call(self):
+		_kept = false
+	elif _kept or occupied.call(self):
 		_held = true
 	elif _held:
 		_shown = maxf(pure, _shown - _ctx.tuning.site_rebury_m_s * dt)
 		_held = _shown > pure
 	else:
 		_shown = pure
-	if _shown == was:
-		return 0
 	var step := piece.step_of(level())
-	if step == ground:
-		return MOVED
-	ground = step
-	return MOVED | STEPPED
+	if step != ground:
+		ground = step
+		return MOVED | STEPPED
+	return MOVED if _shown != was else 0
 
 
 # --- What it holds, and what's built of it. ---

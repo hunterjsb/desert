@@ -133,6 +133,9 @@ var _by_hand := BY_HAND
 ## Where laying was last asked from, and how far round it everything is laid.
 var _ready_at := Vector2(INF, INF)
 var _ready_m := -1.0
+## Sand a resumed save had held off sites over you or your camp, by site id, m:
+## each taken up as that site's ground is built again.
+var _kept := {}
 
 
 func _init(world_history: History, shape: TerrainShape, tuning: Tuning) -> void:
@@ -331,7 +334,8 @@ func hold(coord: Vector2i) -> Array[Structure]:
 		if each == null or _yields(each, true):
 			continue
 		if each.holders.is_empty():
-			each.hold_ground()
+			each.hold_ground(_kept.get(each.id, NAN))
+			_kept.erase(each.id)
 		each.holders[coord] = true
 		held.append(each)
 	return held
@@ -484,6 +488,41 @@ func anchored() -> bool:
 ## Nothing waiting to be laid.
 func is_idle() -> bool:
 	return _queue.is_empty() and _surveying.is_empty()
+
+
+## What a save keeps of the sand held off sites over you or your camp:
+## [site id, sand off it, m] for each so held.
+func held() -> Array:
+	var out := []
+	for unit in units():
+		for site in unit.sites:
+			var each := site as Structure
+			if each != null and not is_nan(each.held_sand()):
+				out.append([each.id, each.held_sand()])
+	return out
+
+
+## A resumed run's held sand: each site comes back as held as it was, never
+## burying what of yours stands on it, until the resume is done (resumed).
+func recall_held(memories: Array) -> void:
+	_kept.clear()
+	for each: Array in memories:
+		_kept[each[0]] = each[1]
+	# What's held already, its ground kept from before the resume.
+	for unit in units():
+		for site in unit.sites:
+			if site is Structure and not site.holders.is_empty() and _kept.has(site.id):
+				site.keep(_kept[site.id])
+				_kept.erase(site.id)
+
+
+## A resume is done: held sand is the live rule's again.
+func resumed() -> void:
+	_kept.clear()
+	for unit in units():
+		for site in unit.sites:
+			if site is Structure:
+				site.resumed()
 
 
 ## What a save keeps: each laid unit's key and the anchor it was laid from.

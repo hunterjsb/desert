@@ -4,8 +4,8 @@ extends RefCounted
 ## ground, the weather and the finds come again from the seed, so the save
 ## keeps you, the clock, everything of yours in the world with its parts and
 ## state, every line between them, of the finds near you only which were
-## taken and how hard the weather had been there, and what was taken from
-## each site laid. Places are world metres;
+## taken and how hard the weather had been there, what was taken from each
+## site laid, and the sand held off any site over you or your camp. Places are world metres;
 ## the engine origin is kept too, so a resumed run computes in the same
 ## floats as the one saved and plays on tick for tick.
 ##
@@ -174,6 +174,9 @@ func begin(data: Dictionary) -> Array[Vector2]:
 	world.salvage.recall_sites(data.get("sites", []))
 	# History laid where it was; a save from before has none, and lays afresh.
 	world.shape.sites.recall(data.get("sheet", []))
+	# Sand held off a site over you or your camp stays off it: a pit you
+	# stood in comes back dug out.
+	world.shape.sites.recall_held(data.get("held", []))
 	world.farm.feral.recall(data.get("feral", []), world.terrain.chunk_at(world.player_world_x(), world.player_world_z()))
 	var places: Array[Vector2] = [Vector2(world.player_world_x(), world.player_world_z())]
 	for rec: Dictionary in data.things:
@@ -296,6 +299,7 @@ func finish(data: Dictionary) -> void:
 	var grasped: Variant = data.grasp.get("body")
 	if grasped != null and _made.has(grasped):
 		hands.grasp.recall(_made[grasped], data.grasp)
+	world.shape.sites.resumed()
 
 
 func _take() -> Dictionary:
@@ -390,6 +394,7 @@ func _take() -> Dictionary:
 	data.finds = world.salvage.memories()
 	data.sites = world.salvage.site_memories()
 	data.sheet = world.shape.sites.memories()
+	data.held = world.shape.sites.held()
 	data.feral = world.farm.feral.memories()
 	return data
 
