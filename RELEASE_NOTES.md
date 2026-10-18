@@ -37,7 +37,8 @@ broken.
    - **Linux:** `Sandgame.x86_64`. If it won't start, make it executable first:
      `chmod +x Sandgame.x86_64`.
 3. Choose **New game**, pick who you come as, then **Normal**.
-4. Press **F1** for the keys list. It shows every key as it's bound now.
+4. Press **F1** for the keys list. It shows every key as it's bound now. **F11**
+   switches fullscreen.
 
 You'll need a graphics card with Vulkan (Windows and Linux) or a Mac on macOS 13 or
 later (Apple silicon) or 11 or later (Intel). The window and the app are called
