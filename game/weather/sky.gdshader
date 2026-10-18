@@ -174,12 +174,15 @@ void sky() {
 			float lat = asin(clamp(dot(n, tu_pole), -1.0, 1.0));
 			float lon = atan(dot(n, cross(tu_pole, toward)), dot(n, toward));
 			float mu = clamp(dot(n, -d), 0.0, 1.0);
+			float lit = dot(n, sun_dir);
 			// A pixel's width where the ray meets Tu, foreshortened toward the
-			// limb; fwidth's sum of both ways makes px about 1.4 pixels.
+			// limb; fwidth's sum of both ways makes px about 1.4 pixels. The
+			// night face keeps only its broad bands, so in the eclipse only
+			// the ring holds the eye.
 			float fp = px * 0.7 * (b - sqrt(h)) / max(mu, 0.2);
+			fp = max(fp, 0.08 * smoothstep(0.05, -0.12, lit));
 			vec3 albedo = tu_clouds(lat, lon - tu_spin, tu_time, fp);
 			albedo = mix(albedo, vec3(dot(albedo, vec3(0.333))), low * 0.5);
-			float lit = dot(n, sun_dir);
 			// A deep atmosphere: a soft terminator, gentle limb darkening, a
 			// thin bright rim on the lit side and a night face only just there.
 			float shade = pow(max((lit + 0.06) / 1.06, 0.0), 1.15);

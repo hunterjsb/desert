@@ -85,12 +85,12 @@ vec3 tu_oval(vec3 c, vec2 q, float turned, vec3 tint, vec3 core, float px) {
 		// Two arms wound a turn and a bit from rim to core, pale lanes
 		// along them and dark ones between, broken up along their length.
 		float a = atan(q.y, q.x) - turned;
-		float wind = sin(TAU * (a / TAU * 2.0 + e * 1.2)) + (tu_noise(vec2(a / TAU * 6.0 + e * 3.0, e * 6.0), 6.0) - 0.5) * 1.5;
+		float wind = sin(TAU * (a / TAU * 2.0 + e * 1.2)) + (tu_noise(vec2(a / TAU * 6.0 + e * 3.0, e * 6.0), 6.0) - 0.5) * 1.8;
 		float shown = tu_shown(0.3, px) * smoothstep(0.08, 0.4, e);
 		vec3 inside = mix(tint * 0.68, tint, smoothstep(0.98, 0.74, e) * tu_shown(0.25, px));
 		inside = mix(inside, core, smoothstep(0.58, 0.1, e));
-		inside = mix(inside, mix(core, CREAM, 0.3), smoothstep(0.35, 1.0, wind) * 0.45 * shown);
-		inside *= 1.0 - 0.28 * smoothstep(-0.35, -1.0, wind) * shown;
+		inside = mix(inside, mix(core, CREAM, 0.3), smoothstep(0.35, 1.0, wind) * 0.38 * shown);
+		inside *= 1.0 - 0.24 * smoothstep(-0.35, -1.0, wind) * shown;
 		c = mix(c, inside, smoothstep(1.04, 0.94, e));
 	}
 	return c;

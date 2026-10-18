@@ -392,6 +392,14 @@ device already stays a body of its own on the host's power pool.
   off a deck the Console's own front, its screen's. The wind is a vector flying in from where it
   comes from, as long as it's strong, and an arc joins the two, the angle written under the
   gyro: the wind angle a sailor trims to, in degrees, to starboard or port, as "45° STBD".
+- **Tu-ward on the gyro** (Hunter, 2026-10-18: "we should also show 'tu-ward' on the compasses.
+  on the computer yes for sure"; built). A mark on the gyro's rim in Tu's pale blue, marked TU
+  just inside it, on the radar's legend and on the stats page alike: the great-circle bearing
+  from where you stand toward the point under Tu, nodding with Tu as it does. The Console works
+  it from where it is on the moon, so it reads on the far side too, where Tu is below the
+  horizon, and points the way to walk to see it rise. Within a degree of the point under Tu, or
+  of the one opposite, every way is Tu-ward and the mark goes. The hand-held compass never shows
+  it ([survival](survival.md)).
 - **The wind is as the deck feels it.** Before, the anemometer read the field's wind over the
   sand, which a deck under way doesn't feel. It reads the field's wind less the deck's own way
   over the sand now, as a masthead anemometer would, still from the field, so a bubble doesn't
@@ -1157,6 +1165,9 @@ a water socket of its own on top, so a canister or another hose goes on there to
     own use would: the shield on and off, the radio's dial, the lamp off, the deck's trays
     resting. What the panel says is drawn is what the pool's devices draw, and its bank what
     they hold.
+29. **The gyro points Tu-ward** (2026-10-18). A Console with an anemometer, carried round the
+    moon: on the near side, the Rim and the far side, its gyro's Tu-ward mark is the way Tu
+    stands in the sky there, or would past the horizon, to within a degree.
 
 ## Out of scope
 

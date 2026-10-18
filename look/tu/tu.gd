@@ -7,7 +7,9 @@ extends Node
 ## true turn, watched at each rate under trial. It prints where Tu sits in
 ## each frame and how wide, and times the sky against the stock one with Tu
 ## in view and with Tu filling it:
-##   godot --path . --disable-vsync res://look/tu/tu.tscn -- --capture <dir> [--only sizes,close,spin,gpu]
+##   godot --path . --disable-vsync res://look/tu/tu.tscn -- --capture <dir> [--only sizes,close,spin,gpu] [--against <shader>]
+## --against times another sky shader too, fed the same, such as the one
+## before a change.
 ## look/tu/shoot.sh builds the sheet. A small window that never takes focus,
 ## nothing but this script moving anything, and silence.
 
@@ -115,8 +117,9 @@ func _capture() -> void:
 			if rate > 0.0:
 				tuning.tu_spin_hours = day.real_day_hours() / (rate + 1.0)
 			var name := "true" if rate == 0.0 else "%d" % rate
+			# Most of it before the full, so it all stays night.
 			for k in STRIP:
-				await _shot("spin_%s_%d" % [name, k], night + turn * k / STRIP, PITCH_TO_TU, true, 3)
+				await _shot("spin_%s_%d" % [name, k], night + turn * (float(k) / STRIP - 0.6), PITCH_TO_TU, true, 3)
 			tuning.tu_spin_hours = hours
 	if _wants("gpu"):
 		await _gpu_cost(night)
@@ -221,18 +224,25 @@ func _at_hour(hour: float) -> float:
 	return fposmod(hour - now, 1.0) * world.tuning.day_minutes * 60.0
 
 
-## The GPU's time per frame with this sky and with the stock one, on a
-## full-Tu night: Tu in view as the game shows it, and Tu filling the frame,
-## where every pixel pays for its clouds. Alternated so a busy machine weighs
-## on each alike.
+## The GPU's time per frame with this sky, the stock one, and any other
+## asked for, on a full-Tu night: Tu in view as the game shows it, and Tu
+## filling the frame, where every pixel pays for its clouds. Alternated so a
+## busy machine weighs on each alike.
 func _gpu_cost(night: float) -> void:
 	var rid := get_viewport().get_viewport_rid()
 	RenderingServer.viewport_set_measure_render_time(rid, true)
 	var environment: Environment = (world.get_node("WorldEnvironment") as WorldEnvironment).environment
-	var ours := environment.sky.sky_material
+	var ours := environment.sky.sky_material as ShaderMaterial
 	var stock := ProceduralSkyMaterial.new()
 	stock.sky_horizon_color = Color(0.86, 0.78, 0.66)
 	stock.ground_horizon_color = Color(0.86, 0.78, 0.66)
+	var skies: Array[Material] = [ours, stock]
+	var args := OS.get_cmdline_user_args()
+	var against := args.find("--against")
+	if against != -1 and args.size() > against + 1:
+		var other := ShaderMaterial.new()
+		other.shader = load(args[against + 1])
+		skies.append(other)
 	var radius := world.weather.day.tu_radius()
 	var fov := world.player.feel._fov
 	for view: String in ["in view", "filling the frame"]:
@@ -242,18 +252,23 @@ func _gpu_cost(night: float) -> void:
 			world.player.feel._fov = rad_to_deg(2.0 * atan(tan(radius) * 0.6))
 			world.player.camera.rotation.x = asin(tu.y)
 		await _settle()
-		var sums := [0.0, 0.0]
+		var sums: Array[float] = []
+		sums.resize(skies.size())
 		for round in GPU_ROUNDS:
-			for way in 2:
-				environment.sky.sky_material = ours if way == 0 else stock
+			for way in skies.size():
+				if skies[way] != ours and skies[way] is ShaderMaterial:
+					for each: Dictionary in ours.shader.get_shader_uniform_list():
+						skies[way].set_shader_parameter(each.name, ours.get_shader_parameter(each.name))
+				environment.sky.sky_material = skies[way]
 				await _frames(10)
 				for i in GPU_FRAMES:
 					await get_tree().process_frame
 					sums[way] += RenderingServer.viewport_get_measured_render_time_gpu(rid)
 		environment.sky.sky_material = ours
 		var n := float(GPU_ROUNDS * GPU_FRAMES)
-		print("tu: gpu %s: %.3f ms a frame with this sky, %.3f with the stock one, Tu %d px across%s"
-			% [view, sums[0] / n, sums[1] / n, roundi(_disc().z * 2.0), _shared_gpu()])
+		print("tu: gpu %s: %.3f ms a frame with this sky, %.3f with the stock one%s, Tu %d px across%s"
+			% [view, sums[0] / n, sums[1] / n, ", %.3f with %s" % [sums[2] / n, args[against + 1]] if skies.size() > 2 else "",
+				roundi(_disc().z * 2.0), _shared_gpu()])
 		world.player.feel._fov = fov
 
 
