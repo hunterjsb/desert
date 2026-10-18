@@ -46,7 +46,11 @@ var field: WeatherField
 var day: DayCycle
 var map: StormMap
 var sky: SkyView
-var plume: Plume
+## The plumes drawn now, each its own source's.
+var plumes: Array[Plume] = []
+var rumbles: Rumbles
+var _plumes_due := 0.0
+var _plumes_at := 0.0
 var lee: Lee
 var eye: Eye
 ## The weather at the player this tick, which the game plays by.
@@ -110,9 +114,14 @@ func setup(world: World) -> void:
 	sky = SkyView.new()
 	add_child(sky)
 	sky.setup(world, day, _environment, face, _sun)
-	plume = Plume.new()
-	add_child(plume)
-	plume.setup(world, self)
+	for i in Plume.AT_ONCE:
+		var plume := Plume.new()
+		add_child(plume)
+		plume.setup(world, self)
+		plumes.append(plume)
+	rumbles = Rumbles.new()
+	add_child(rumbles)
+	rumbles.setup(world, self)
 
 
 ## Each felt_*() reads now, or a given world time t: power ticks read theirs.
@@ -266,6 +275,13 @@ func _exit_tree() -> void:
 
 ## Every drawn frame, after the world has moved and shifted.
 func _process(delta: float) -> void:
+	# Before the plumes draw: each its source in sight, looked over a few
+	# times a second, and at once after a jump.
+	_plumes_due -= delta
+	if _plumes_due <= 0.0 or absf(_world.time - _plumes_at) > 2.0:
+		_plumes_due = 0.25
+		Plume.assign(plumes, _world)
+	_plumes_at = _world.time
 	if _meter.enabled != _tuning.eye_adapts:
 		_meter.enabled = _tuning.eye_adapts
 		eye.settle()
@@ -280,6 +296,14 @@ func _process(delta: float) -> void:
 			glows.append(shelter.glow)
 	face.sync(_world.time, holes, glows)
 	atmosphere.carve(holes)
+
+
+## The plume drawing a source of Geology's, by its id, or null.
+func plume_for(id: StringName) -> Plume:
+	for plume in plumes:
+		if plume.source.get("id") == id:
+			return plume
+	return null
 
 
 ## How much the wind grabs a body: its own say if it has one, else its
@@ -410,9 +434,11 @@ func _show(delta: float) -> void:
 		_environment.fog_density))
 	# The light round the camera, which a shell's glass catches.
 	face.set_light("shell_light", _linear(_environment.ambient_light_color) * _environment.ambient_light_energy)
-	plume.light(sun, sun_light, sky_light, ring_light, _linear(haze_color) * haze_light,
-		Vector3(_environment.fog_depth_begin, _environment.fog_depth_end, _environment.fog_density),
-		day.tu_direction(t, moon.latitude, moon.longitude), _linear(SkyView.TU_SHINE_COLOR) * _sun_energy * tu_light)
+	var tu := day.tu_direction(t, moon.latitude, moon.longitude)
+	for plume in plumes:
+		plume.light(sun, sun_light, sky_light, ring_light, _linear(haze_color) * haze_light,
+			Vector3(_environment.fog_depth_begin, _environment.fog_depth_end, _environment.fog_density),
+			tu, _linear(SkyView.TU_SHINE_COLOR) * _sun_energy * tu_light)
 
 	# Outside a bubble the dust is the storm's own: it rides the open air's
 	# wind, slowed in a lee, and thickens with the storm, and the bubble only
