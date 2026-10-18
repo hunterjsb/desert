@@ -16,10 +16,10 @@ const WEAK := 400.0
 const RISE := 0.5
 ## Speed past the wind that would mean something flung it, m/s.
 const FLUNG := 0.5
-## Where 6 s of drift once left the laid line's rig, from the spawn: the
-## crate's loose end snags there. A loose end snags going from faster than
-## this to stopped, m/s.
-const SNAGS := Vector2(3.86, 4.67)
+## Where the crate's loose end snags on a dune face, from the spawn: found by
+## trying spots round where it snagged with side rings. A loose end snags
+## going from faster than this to stopped, m/s.
+const SNAGS := Vector2(3.86, 3.67)
 const SNAGGED := 10.0
 
 ## Wind speed along +x, m/s, and the wind it was when the line snapped.

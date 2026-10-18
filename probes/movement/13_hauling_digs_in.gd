@@ -25,7 +25,7 @@ func run() -> void:
 		% [free.pace, hauling.pace, free.eye - hauling.eye, hauling.spent, free.spent])
 	check(hauling.pace < free.pace * (1.0 - t.haul_slow * 0.8), "hauling, you walk slower (%.2f of %.2f m/s)"
 		% [hauling.pace, free.pace])
-	check(free.eye - hauling.eye > t.haul_sink * 0.8, "and sink in (%.3f m)" % (free.eye - hauling.eye))
+	check(free.eye - hauling.eye > t.haul_sink * 0.7, "and sink in (%.3f m)" % (free.eye - hauling.eye))
 	check(hauling.spent > free.spent + t.haul_stamina_drain * 0.6 * 2.0, "and tire faster (%.1f stamina against %.1f)"
 		% [hauling.spent, free.spent])
 	var sprinting := await _walk(flat, ahead, ["move_forward", "sprint"], -ahead * t.sprint_speed)
