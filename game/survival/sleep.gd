@@ -211,6 +211,7 @@ func fall_asleep(how: StringName, arg := 0) -> void:
 ## radio given wakes you as its station calls a storm. Then everything goes
 ## on from where the night left it. Returns what happened.
 func overnight(until: float, station: Radio = null) -> Dictionary:
+	var started := Time.get_ticks_usec()
 	var world := _world
 	var player := world.player
 	var from := world.time
@@ -262,6 +263,7 @@ func overnight(until: float, station: Radio = null) -> Dictionary:
 	# The storm pass's map is drawn again for the hour you woke to while it's dark.
 	world.weather.map.update(t, 1.0)
 	last = night
+	Dev.put("sleep/last", "%.1f h in %d ms" % [(t - from) / (_day() / 24.0), (Time.get_ticks_usec() - started) / 1000])
 	return night
 
 
