@@ -49,7 +49,7 @@ behind them, and since 2026-10-18 are bigger and roomier still, below.)
 - **The scene** is the real world seen from a fixed camera, with no player spawned and
   the weather running at normal speed. It keeps its simulation cheap, and it's silent:
   a storm at the menu is only to look at (Hunter, 2026-10-16: "super super loud").
-  Sound comes back with the run.
+  Sound comes back with the run; the menu's own music is below.
 - **The words:** Resume (only when a save exists), New game, Options, Quit.
 - **Confirm** triggers the highlighted word. Resume is highlighted when a save exists,
   otherwise New game.
@@ -81,8 +81,9 @@ behind them, and since 2026-10-18 are bigger and roomier still, below.)
 - **Resume opens the same view:** the prop is your last camp as the save holds it, what stood
   round you when you saved, with the save's numbers beside it (time played, when it was saved,
   the day, who you came as), and confirm carries on.
-- **Music at the main menu,** the radio's day or night track by the menu's own light, with a
-  mute switch in the bottom left that stays as you leave it. The menu's storm stays silent.
+- **Music at the main menu,** its own theme, Hunter's "Salt" (Hunter, 2026-10-18: "use this for a
+  main menu theme"), with a mute switch in the bottom left that stays as you leave it. The menu's
+  storm stays silent.
 - **At night the prop still reads:** a soft light on it, the night kept round it (Hunter: "the
   camp can become night in the menu which is extremely cool, but its so dark you cant see the
   gear").
@@ -235,10 +236,11 @@ is a menu of its own, reached from the main menu and the system menu.
   Under it, the save's numbers: time played, when it was saved by the clock on the wall
   (today 13:40, yesterday 21:05, 3 days ago), the run's day, and who you came as. A save
   from before time played was kept lists the rest. Confirm carries on; back goes back.
-- **Music** at the main menu: the radio's day or night track by the menu's own light
-  (`Radio.track_at`), from where the station has got to, on the menus' bus while the
-  menu's storm stays silent (`game/ui/menu_music.gd`). It changes track through a moment's
-  quiet and fades out with the screen into a run. A speaker in the bottom left switches it,
+- **Music** at the main menu: Hunter's "Salt" (`assets/audio/menu_theme.ogg`, 80 s, looping,
+  stereo), from its start as the menu's desert shows, on the menus' bus while the menu's storm
+  stays silent (`game/ui/menu_music.gd`). It fades in once the screen is up and out with the
+  screen into a run, and comes back from its start on Save & quit. (It was the radio's day or
+  night track by the menu's own light.) A speaker in the bottom left switches it,
   by a click or by the menu's up and down, round past the first and last words: waves
   while it plays, a cross while it's off, and it stays as you leave it (`Settings.music`).
 - **Into the game:** a fade to black, the run built (`game/run.tscn`, which is what
@@ -332,6 +334,8 @@ is a menu of its own, reached from the main menu and the system menu.
    music's switch, reached by the menu's actions, stays muted into the next session.
 10. **A how-to once a profile.** The first sheet at your waist shows its how-to, its keys as
     bound; tied on again it doesn't, nor in a new run on the same profile.
+11. **The menu theme.** On the main menu "Salt" fades in on the menus' bus while the world is
+    muted; a new run fades it out and stops it; Save & quit brings it back from its start.
 
 ## Out of scope
 

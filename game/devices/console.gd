@@ -1052,8 +1052,9 @@ func _switches(device: Device, called: String, radar: bool) -> Array:
 			return String(m).to_upper()), _set_shield))
 	var radio := device as Radio
 	if radio != null:
-		groups.append(keys.call(range(Radio.CHANNELS.size()), radio.channel,
-			Radio.CHANNELS.map(func(c: String) -> String: return c.to_upper()), _tune))
+		# The dial's own controls: its switch, use's sweep and its volume knob.
+		groups.append(keys.call([&"off", &"on"], &"on" if radio.on else &"off", ["OFF", "ON"], _switch_radio)
+			+ keys.call([&"sweep", &"quieter", &"louder"], &"", ["SWEEP", "VOL -", "VOL +"], _work_dial))
 	if device.has_tray() and device.host() == null:
 		groups.append(keys.call([&"float", &"rest"], &"rest" if device.resting else &"float", ["FLOAT", "REST"], _rest))
 	if device.lamp_w() > 0.0:
@@ -1077,9 +1078,18 @@ func _set_shield(shield: ShieldGenerator, to: StringName, called: String, text: 
 	_say("%s %s" % [called, text])
 
 
-func _tune(radio: Radio, to: int, called: String, text: String) -> void:
-	radio.tune(to)
-	_say("%s %s" % [called, text])
+func _switch_radio(radio: Radio, to: StringName, called: String, text: String) -> void:
+	if radio.switch(to == &"on"):
+		_say("%s %s" % [called, text])
+
+
+func _work_dial(radio: Radio, to: StringName, called: String, _text: String) -> void:
+	if to == &"sweep":
+		radio.interact(null)
+	elif not radio.turn_volume(1 if to == &"louder" else -1):
+		return
+	_say("%s %s" % [called, ("%d KHZ" % roundi(radio.frequency) if radio.on else "OFF") if to == &"sweep"
+		else "VOL %d%%" % roundi(radio.volume * 100.0)])
 
 
 func _rest(device: Device, to: StringName, called: String, text: String) -> void:

@@ -5,7 +5,8 @@ extends LineProbe
 ## carried on the same channel with the same charge, playing from you, its
 ## line of words showing; the compass is carried, and the three canisters
 ## stack as one, each with its water. And a save from before, when what you
-## carried was five slots, resumes with their contents carried.
+## carried was five slots and a radio a channel, resumes with their contents
+## carried, the radio on the weather station's carrier.
 
 
 func run() -> void:
@@ -46,7 +47,7 @@ func run() -> void:
 	var said := (world.player.get_node(^"Broadcast") as Broadcast).said
 	print("resumed: the radio %s, the line says \"%s\"; water %s" % ["plays" if back[0].playing() else "is silent",
 		said, _water(suit)])
-	check(back[0].playing() and back[0].get_parent() == world.player and said.begins_with("Weather"),
+	check(back[0].playing() and back[0].get_parent() == world.player and said.begins_with("%d kHz · " % roundi(back[0].frequency)),
 		"playing from you, its words showing")
 	var cans := suit.stacks().filter(func(s: Array) -> bool: return s[0] is Supply and s[0].kind == &"water")
 	check(suit.carried.any(func(p: RigidBody3D) -> bool: return p is Compass) and cans.size() == 1
@@ -56,14 +57,21 @@ func run() -> void:
 	var file: Dictionary = SaveFile.read(saves.path(), saves.KIND, saves.VERSION).data
 	var old: Array = file.carried.slice(0, 5)
 	old.resize(5)
+	for rec: Variant in old:
+		if rec != null and rec.id == &"radio":
+			for key: String in ["on", "frequency", "volume"]:
+				rec.state.erase(key)
+			rec.state["channel"] = Radio.WEATHER
 	file.slots = old
 	file.erase("carried")
 	SaveFile.write(saves.path(), saves.KIND, saves.VERSION, file)
 	check(await resume(), "a save with five slots resumes")
 	suit = world.player.suit
 	print("from five slots: %s" % ", ".join(suit.carried.map(func(p: RigidBody3D) -> String: return p.label)))
-	check(suit.carried.size() == 5 and suit.carried.any(func(p: RigidBody3D) -> bool: return p is Radio),
-		"their contents carried")
+	var radios := suit.carried.filter(func(p: RigidBody3D) -> bool: return p is Radio)
+	check(suit.carried.size() == 5 and radios.size() == 1, "their contents carried")
+	await simulate(0.5)
+	check(not radios.is_empty() and radios[0].channel == Radio.WEATHER, "the radio's channel on the dial, the weather station's carrier")
 
 
 ## Each canister's water, L, in the order you carry them.

@@ -197,7 +197,8 @@ calls them from Save, Save & quit, Resume, New game, the death screen and Option
   last save is Resume, and New run is New game in Normal.
 - **What a save holds:** you (where you stand, which way you face and look, how you're
   moving, stamina, your bars, everything you carry (each thing with its state, as a
-  radio's channel, beacon and charge; a save from before, with five slots, resumes with
+  radio's dial, volume, beacon and charge, one saved before the dial on its channel's
+  carrier; a save from before, with five slots, resumes with
   their contents carried), what's in your hands, at your waist or being
   hauled, and the board you ride with its ride as it stood), the clock, how long the run
   has been played (a save from before kept none, and its run never counts it) and when it
@@ -282,10 +283,11 @@ calls them from Save, Save & quit, Resume, New game, the death screen and Option
     with every tray, what stood where with its charge, the shield running and the line
     tied, and it floats on.
 13. **What you carry.** Saved carrying a radio on the weather station, a compass and
-    three canisters and resumed, the radio is carried on the same channel with the same
+    three canisters and resumed, the radio is carried on the same frequency with the same
     charge, playing from you with its words showing, the compass is carried, and the
-    canisters stack as one, each with its water. A save from before, with five slots,
-    resumes with their contents carried.
+    canisters stack as one, each with its water. A save from before, with five slots and a
+    radio kept as a channel, resumes with their contents carried, the radio on that channel's
+    carrier.
 14. **An older crate.** Two crates saved as a build from before 2026-10-17 numbered
     them, side rings and all: one floating, moored by hooks on both side rings, and one
     resting with a hook on all four rings, its side hooks tied to stakes. Resumed, every

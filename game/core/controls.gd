@@ -10,7 +10,8 @@ const HELP := [
 		["{jump}", "jump"], ["{crouch}", "crouch, slide"], ["{ride}", "board on or off"]]],
 	["HANDS", [["{hands_grab}", "take, put down"], ["{interact}", "use"], ["{hands_throw}", "throw"],
 		["{hands_rotate}", "turn what you hold"], ["{bring_near} / {push_out}", "nearer, further"],
-		["{reel_in} / {pay_out}", "reel in, pay out"]]],
+		["{reel_in} / {pay_out}", "reel in, pay out; tune a radio"],
+		["{tune_fine_up} / {tune_fine_down}", "fine tune"], ["{volume_up} / {volume_down}", "radio volume"]]],
 	["YOU", [["{inventory}", "what you carry"], ["{headlamp}", "headlamp"]]],
 	["GAME", [["{ui_cancel}", "back, menu"], ["{quick_save}", "quick save"], ["{quick_load}", "quick load"],
 		["{toggle_keys}", "these keys"], ["{fullscreen}", "fullscreen"]]],
@@ -66,9 +67,19 @@ const BUTTONS := {
 }
 ## Mouse buttons with ctrl held: what you hold has the wheel apart from the
 ## lines, which have it bare since reeling matters more (sails, the waist).
+## The bare wheel tunes a radio you look at; shift steps it finely, alt turns
+## its volume.
 const CTRL_BUTTONS := {
 	"bring_near": MOUSE_BUTTON_WHEEL_UP,
 	"push_out": MOUSE_BUTTON_WHEEL_DOWN,
+}
+const SHIFT_BUTTONS := {
+	"tune_fine_up": MOUSE_BUTTON_WHEEL_UP,
+	"tune_fine_down": MOUSE_BUTTON_WHEEL_DOWN,
+}
+const ALT_BUTTONS := {
+	"volume_up": MOUSE_BUTTON_WHEEL_UP,
+	"volume_down": MOUSE_BUTTON_WHEEL_DOWN,
 }
 
 ## A gamepad works the menus too; its D-pad already moves them.
@@ -94,12 +105,15 @@ func _enter_tree() -> void:
 		event.physical_keycode = KEYS[action]
 		InputMap.add_action(action)
 		InputMap.action_add_event(action, event)
-	for action: String in BUTTONS.merged(CTRL_BUTTONS):
+	for action: String in BUTTONS.merged(CTRL_BUTTONS).merged(SHIFT_BUTTONS).merged(ALT_BUTTONS):
 		if InputMap.has_action(action):
 			continue
 		var click := InputEventMouseButton.new()
-		click.button_index = BUTTONS.get(action, CTRL_BUTTONS.get(action))
+		click.button_index = BUTTONS.get(action, CTRL_BUTTONS.get(action, SHIFT_BUTTONS.get(action,
+			ALT_BUTTONS.get(action))))
 		click.ctrl_pressed = CTRL_BUTTONS.has(action)
+		click.shift_pressed = SHIFT_BUTTONS.has(action)
+		click.alt_pressed = ALT_BUTTONS.has(action)
 		InputMap.add_action(action)
 		InputMap.action_add_event(action, click)
 	for action: String in PADS:
@@ -137,7 +151,8 @@ static func key_for(action: StringName) -> String:
 			return _key_name(key.keycode)
 		var button := event as InputEventMouseButton
 		if button != null:
-			return ("ctrl + " if button.ctrl_pressed else "") + BUTTON_NAMES.get(button.button_index, "mouse %d" % button.button_index)
+			return ("ctrl + " if button.ctrl_pressed else "") + ("shift + " if button.shift_pressed else "") \
+				+ ("alt + " if button.alt_pressed else "") + BUTTON_NAMES.get(button.button_index, "mouse %d" % button.button_index)
 	return "unbound"
 
 
