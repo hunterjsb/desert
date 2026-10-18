@@ -255,7 +255,8 @@ static func _frame(id: StringName, size: Vector3, extra: float) -> ArrayMesh:
 				for s in [-1, 1]:
 					b.box(Vector3(size.x - 0.1, 0.06, 0.06), Vector3(0.0, y * (h.y - 0.03), s * (h.z - 0.03)), gun)
 					b.box(Vector3(0.06, 0.06, size.z - 0.1), Vector3(s * (h.x - 0.03), y * (h.y - 0.03), 0.0), gun)
-			for side in [1, 2, 3]:
+			# Back, right and left: the front (a half turn) is the screen's.
+			for side in [0, 1, 3]:
 				var turn := Basis(Vector3.UP, side * PI * 0.5)
 				var depth := h.z if side % 2 == 0 else h.x
 				if side == 3:
