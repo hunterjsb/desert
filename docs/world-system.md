@@ -477,6 +477,64 @@ on a road within 100 m of a wayshrine. The prisoner's is the black site. A start
 sphere; the world sets the moon position there and the sheet lays history round it. Never on a site's
 ground.
 
+### What the feral layer does now
+
+*Built 2026-10-18, on the `feral` branch (`game/farming/feral.gd`).*
+
+- **Where they grow.** A table of habitats, a row each, is the whole rule (`Feral.HABITATS`):
+
+  | Crop | Grows | As built |
+  |---|---|---|
+  | Saltbush | Both sides of every pilgrim road | A bush every 3.2 m, 2.2 to 3.2 m off the line; 60 m stretches live 95% of the time on the Rim, 85% in Mon |
+  | Saltbush | Every other road the second age used (its own roads, the ring, the artery, the spokes) | One side a stretch, a bush every 4 m, 90 m stretches live 55% of the time on the Rim, 30% in Mon, 8% in Han |
+  | Saltbush | The Dark Age's plantings on the First Kingdoms' water lines (`saltbush_planting` signs) | A clump of 4 to 9 within 4 m |
+  | Root-tuber | Near the colonial aqueducts (paths carrying water, colonial) | A patch of 3 to 6 every 160 m, 8 to 35 m off the line, by region |
+  | Root-tuber | By colonial pump stations | 3 to 7 within 14 m |
+  | Vat fungus | Colonial habs, pump stations and vent stations a kit stands on the ground | 3 to 8 within 5 m, only where a kit builds the site (`planned` false) and it's partly exposed or exposed (its `state()`, Exposure's, past buried) |
+
+  Dewleaf (by cisterns), coalcane (by cisterns), sandroot (on First Kingdoms sites), glowcap and the
+  office fern (in colonial habs a kit stands) have rows already; each places nothing until its crop is
+  in the catalog. Stormcup waits on a way to ask for Han's rift by its landmark parts. Every slot is
+  drawn from the seed by its path and running length, or its site, never by which chunk asks, as
+  history's own rows are; a row's place in the table seeds its plants, so rows are appended.
+- **How lines read.** The old bushes stand 0.95 to 1.4 of the bush's own size on pilgrim roads, a
+  metre and more across: a double silver line, straight over the dunes, with the second age's roads a
+  broken single line. Bushes keep clear of a ruin's ground. Away from roads, water
+  lines and sites there's nothing: at the start of seed 1234, 12 km from the nearest second-age road,
+  no chunk loaded holds a plant.
+- **What you can do.** Near you (on ground with collision) each wild plant is a real crop of its row's
+  catalog id, marked wild, standing in the sand: take on it as on a planted crop. Ripe, its harvest
+  comes at the wild share (half, never none of a part) with its propagule, a cutting, tuber or spores,
+  and a crop that regrows stays cut back to its share; not ripe, a crop grown from cuttings gives a
+  cutting and is cut back to the ground, and anything else, or one cut to the ground, comes up whole.
+  What you carry away is wild stock: it grows in your planter as clean stock does and gives the wild
+  share; its seed stays wild (Farming).
+- **The barometer.** Saltbush folds before a storm as it does in a planter: once a second, within 400
+  m of you (Tuning `feral_fold_m`), each chunk's bushes read the storm field over the chunk now and two
+  minutes on, close over half a minute, and open once it's clear. Folded, a line goes narrow and dull
+  green, so it reads from as far as it can be seen. Farther lines hold their pose until you come near.
+- **What it costs** (measured on a pilgrim road out of Sister, 289 chunks loaded, 38 with wild plants,
+  736 plants, 192 of them standing as crops). No plant is a node of its own: a chunk's plants are drawn
+  as one instanced mesh a look, the bush's near look (6,400 vertices) giving way to a plain one (2,000)
+  past 80 m, and the ones you can stand among are a few frozen bodies a chunk, six plants each, that
+  nothing moving touches (a layer only rays see). On the main thread, in Feral's own 0.3 ms a frame
+  (Tuning `feral_budget_ms`): making a chunk's plants from the laid history, 0.09 ms on average and
+  0.44 ms at most; drawing it, 0.02 ms, 0.39 at most; a stand of six, 0.33 ms at most. Walking 2 km,
+  no frame of it took more than 0.46 ms. On the farm's tick only crops that aren't ripe grow, 0.11 ms a
+  tick on average; once a second the fold reads the field twice a chunk within 400 m, 0.45 ms. The
+  bush's looks, every stage at every step of the fold, are made once a run while the world loads,
+  92 ms. On the GPU (an RTX 3070 at 1080p, someone playing meanwhile), looking down a double line
+  running away from you cost 0.5 to 0.75 ms a frame, and the other views nothing measurable.
+- **Saves.** Plants are derived. What you took or cut is remembered per chunk while it's loaded, by
+  each plant's id, and is all a save keeps of the wild (`Snapshot`: `feral`); a forgotten chunk's
+  plants grow back whole, as its finds lie there again.
+- **Probes** (`probes/farming/`): 11 saltbush lines a pilgrim road, 547 bushes all within 3.2 m of
+  its line and 85% of every ten metres lined both sides; 12 no wild plant away from its habitat, 1,405
+  of them from the open desert at the start (none there) and 2 km on over the Rim; 13 a wild saltbush
+  folds before a storm; 14 a wild cutting gives the wild share in a planter and stays wild, and a save
+  keeps only what you cut; 15 wild plants are the seed's and the laid history's alone, and laid from
+  another point they move no more than the road's line does (3.8 m, the seam 400 m off at 20°).
+
 ## Budgets
 
 | | Budget | Measured (probe 6) |
