@@ -71,8 +71,8 @@ laid near you, from where you are, and kept while it's near.
 The cost is seams. Two cells laid at different moments, from points you'd walked between, can meet a
 little off. On the equator, or walking along a meridian, they meet exactly. Elsewhere the offset grows
 with how far east or west you walked between the two and with tan(latitude). At the Rim's latitudes
-(the axis keeps them under 25°, [Landmarks](#landmarks)), it's about 15 m at a cell's edge after 500 m of
-walking across. Paths are invisible and sites stand tens of metres apart, so a seam reads as nothing.
+(the axis keeps them under 25°, [Landmarks](#landmarks)), the widest seam on a 3 km walk east past
+Halfrise at 22° was 24 m (probe 4). Paths are invisible and sites stand tens of metres apart, so a seam reads as nothing.
 Inside one cell everything is laid together and agrees to the centimetre. The probes measure the seams
 (probe 4).
 
@@ -115,7 +115,9 @@ planet changes."
   lore](lore-research.md#corrections-and-places-agreed-session-4-part-4)).
 - **Richness** is how much was ever built there, tapering as the lore says: "rich at the Rim, thinner
   in Mon, sparse and grim in Han." **(default)** The Rim 1.0, Mon 0.5, Han 0.25, the far side 0.12,
-  blended across a band's edges. Every density in the pass is multiplied by it.
+  blended across a band's edges, and thinning toward the calm poles, from 50° of latitude to 30% at
+  80° (the poles have "less loot, and nothing unique," Salvage & ruins). Every density in the pass is
+  multiplied by it.
 - **The axis** is the line the three great sites lie on, from the Rim in toward the point under Tu: a
   great circle from the sub-Tu point at a bearing the seed picks, east or west within 25° **(default)**,
   so the Rim end stays under 25° of latitude, where seams are small and the sky's latitude dials stay
@@ -266,14 +268,14 @@ stands on the lattice also turns in quarter turns and surveys its floor, as the 
   far to the side, in which eras. Pylon stubs every 150 m along power, pipeline segments every 120 m on
   a pipeline, relay masts every 1.5 km on colonial roads, wayshrines every 700 m on pilgrim roads,
   watchtowers every 2.5 km on second-age roads, caravanserais a day's walk apart on the artery (2.2 km),
-  dugouts along the artery in Han **(defaults)**. Spacing grows as richness falls, so the Rim is rich and
-  Han sparse. Sites are placed by running length along the edge, so a cell gets the same sites whichever
+  dugouts along the artery in Han **(defaults)**. Each place on that spacing keeps its site as often as
+  richness says, so the Rim is rich and Han sparse. Sites are placed by running length along the edge, so a cell gets the same sites whichever
   cell asked first.
 - **In settlements.** A settlement is a cluster of its era's kinds within its radius: a walled village is
   house ruins, a wall and a granary; a pipe town is pipe-wall huts on a colonial pipeline; a skimmer camp
   is a pad, fuel bladders and a dugout on a colonial site.
-- **Off the network.** Survey beacons and relay towers on a grid of latitude and longitude every 3°
-  (1.25 km) on the near side; skimmer wrecks that "crash anywhere," likelier toward Han; First Kingdoms
+- **Off the network.** Survey beacons and relay towers on a grid of latitude and longitude every 6°
+  (2.5 km) on the near side, a relay tower at every second; skimmer wrecks that "crash anywhere," likelier toward Han; First Kingdoms
   hermits far from any path.
 - **Meaningful emptiness.** Nothing else. A cell no path or settlement reaches holds only the grid and the
   rare wreck or hermit. Some deep desert is empty on purpose: "the dangerous zone between settled areas,"
@@ -316,13 +318,16 @@ probes check every answer against a scan of everything laid (probe 4).
 ### The sheet
 
 - **Units.** The sheet lays moon cells, and landmarks as their own units because their footprints are big.
-- **Laying.** Each streaming step the world gives the sheet its anchor: the last place the moon position
-  was reckoned at, in world metres, with that latitude, longitude and facing (which way north lies on the
-  ground, turned round past a pole). Every unit whose ground comes within 1,300 m of you is laid
-  **(default)**: each site's sphere point goes through the anchor's map (its distance and bearing from
-  the anchor, as metres east and north) into world metres. Loaded ground reaches about 900 m, so a unit is
-  laid long before its ground loads. Laying is spread over frames inside the streaming budget, and any
-  unit whose ground is about to be built is laid first, at once.
+- **Laying.** Each time you cross into another chunk, on the physics tick, the world gives the sheet its
+  anchor: the place the moon position was just reckoned at, in world metres, with that latitude,
+  longitude and facing (which way north lies on the ground, turned round past a pole). Every unit whose
+  ground comes within 1,300 m of you is laid **(default)**: each site's sphere point goes through the
+  anchor's map (its distance and bearing from the anchor, as metres east and north) into world metres.
+  Loaded ground reaches about 900 m, so a unit is laid long before its ground loads. Laying is spread
+  over frames inside the streaming budget, a part at a time (one path's sites, one settlement's, the
+  cell's own), and anything within reach of ground about to be built is laid at once, on the tick: the
+  terrain builds no chunk until it is. Each unit keeps the anchor it was offered with, so where things
+  land never depends on frame timing.
 - **Lifting.** A unit is lifted once every part of it is more than 1,800 m away on the ground
   **(default)**, well past the last chunk that could touch it.
 - **Jumps.** A dev teleport, a scenario that puts you elsewhere on the moon, or a resume, moves the moon
@@ -476,12 +481,12 @@ ground.
 
 | | Budget | Measured (probe 6) |
 |---|---|---|
-| The history pass | 40 ms once per run | see [What the spine does now](#what-the-spine-does-now) |
-| Making one cell's sites | 1 ms on average | |
-| Laying one unit on the sheet | under the 0.5 ms streaming budget, split if not | |
-| A chunk's query | 50 µs | |
-| Memory | under 8 MB for the history and the sheet | |
-| Per tick, for anything static | zero: no site, path or landmark has a process step | |
+| The history pass | 40 ms once per run | 32 ms (the best of three seeds) |
+| Making one cell's sites | 1 ms on average | 0.37 ms where paths run, 0.02 ms over the whole moon |
+| Laying one unit on the sheet | no part of it past the hitch line's room (1.5 ms), begun as the 0.5 ms streaming budget ends | 0.43 ms a unit in about 6 parts at the Rim; the slowest part 0.54 ms |
+| A chunk's query | 50 µs | 10 µs at the Rim |
+| Memory | under 8 MB for the history and the sheet | 3.6 MB with a Rim sheet laid |
+| Per tick, for anything static | zero: no site, path or landmark has a process step | none: standing still for 300 ticks, the sheet never ran |
 
 The pass, the cells and the index are `RefCounted`, with no node and no process step. Laying runs in the
 terrain's streaming step, inside its budget, and only when the ground under you changes chunk.
@@ -531,7 +536,39 @@ Shared files each package may touch, and nothing else outside its own: `Tuning` 
 
 ## What the spine does now
 
-*Filled in as built.*
+*Built 2026-10-17, on the `world` branch.*
+
+- **The history pass** (`game/history/`): `History` runs the layers above on the sphere for every seed,
+  from `Sphere` (the moon's geometry), `MoonCells` (its 28,650 cells of 500 m), `Eras` (the order,
+  burial, loot identity, the Dark Age's lineage rule), `SiteKinds` (the registry, today's ruin as the
+  house ruin) and `PathNetwork` (the graph and its splines). It makes the eight landmarks, about 530
+  paths (some 900 km of them) and about 240 settlements per seed, and a cell's sites when asked.
+- **What it looks like, by the numbers** (probe 3, three seeds, away from the landmarks' own ground):
+  history's own sites about 1.1 a km² on the Rim, 0.45 in Mon and 0.05 to 0.3 in Han; path about 950 m a
+  km² on the Rim, 370 in Mon, 60 to 180 in Han; towns 0.059 a km² on the Rim, 0.017 in Mon, 0.005 in
+  Han; and 90% of the near side's cells reached by no path or settlement at all. Round Halfrise a
+  walker sees a structure every few hundred metres along the roads and open desert between them.
+- **The sheet and the index** (`game/world/sites.gd`, `site.gd`): `Sites` on `TerrainShape` lays cells and
+  landmarks round you from the moon position's own point, in the terrain's streaming step, and answers
+  every call in the table above. The terrain builds no chunk until the history that could touch it is
+  laid. Today's ruins come through it from their grid, unmoved.
+- **Navigation:** the dev overlay's world column names the region and how high Tu stands
+  (`zone`) and the nearest landmark with its distance and compass point (`lmk`), at every chunk you
+  cross; `history.nearest_landmark` is there for the compass. The radio's beacon picks its ruin through
+  `sites.nearest`.
+- **To see it in game** (dev console): `goto` alone lists the landmarks with how far each is and which
+  way; `goto port_morgan` (or any landmark or part: `aitch`, `muster`, `bastion`, `sister`,
+  `observatory`...) stands you a little in front of it on fresh ground, facing it. `map` toggles the
+  history map, `map 4000` makes it 4 km across: what's laid is bright (paths in their latest era's colour,
+  water lines blue, sites by era, hollow where only planned, the grid's ruins filled, landmarks and
+  their parts named), the loaded ground and the laying's reach are outlined, and past what's laid the
+  whole plan shows faint, so `map 60000` shows the artery, the spokes and the great sites.
+- **The save** keeps the sheet's anchors (`Snapshot`: `sheet`).
+- **Probes** (`probes/history/`): 1 the pass is the seed's alone; 2 every landmark where its rule puts it,
+  on thirteen worlds, Tu's height checked through `DayCycle`; 3 the network's shape and its taper; 4 the
+  index against a scan, cells laid before loaded ground, laid sites never moving, seams within 30 m at
+  22° north, and a jump keeping loaded ground as it was; 5 today's ruins exactly where master put them;
+  6 the budgets.
 
 ## Defaults
 
@@ -540,7 +577,7 @@ group.
 
 - The regions: Han under 20° from the sub-Tu point, Mon to 75°, the Rim 75° to 105°, the far side
   beyond.
-- Richness: the Rim 1.0, Mon 0.5, Han 0.25, the far side 0.12.
+- Richness: the Rim 1.0, Mon 0.5, Han 0.25, the far side 0.12; thinning from 50° of latitude to 30% at 80°.
 - The axis: east or west of the sub-Tu point, within 25°.
 - Halloran 3° to 5° from the sub-Tu point; the black site 1.0 to 1.6 km from it up the artery; Port Morgan
   38° to 48°; Halfrise 88.5° to 90°; Sister 1.6 to 2.6 km from Halfrise; the depot 0.7 to 1.2 km from
@@ -550,7 +587,12 @@ group.
 - A path's corridor: 60 m either side.
 - Spacing along edges: pylon stubs 150 m, pipeline segments 120 m, relay masts 1.5 km, wayshrines
   700 m, watchtowers 2.5 km, caravanserais 2.2 km (a game day's walk), at full richness.
-- The survey grid: every 3° of latitude and longitude on the near side.
+- The survey grid: every 6° of latitude and longitude on the near side, a relay tower at every second.
+- Wreck fields: one cell in fifty holds one under Tu, one in five hundred far from it; two or three more at
+  the end of skimmer tracks out of Halloran, 2 to 6 km out. A hermit in one empty cell in eighty.
+- Settlements along the lines: frontier towns every 4 km, First Kingdoms towns every 2.5 km, Rim towns every
+  2.5 km of the ring, each kept as often as richness says; a second-age village on a First Kingdoms town
+  85% of the time on the Rim, 45% in Mon, 15% in Han.
 - Moon cells 500 m; a unit laid within 1,300 m and lifted past 1,800 m.
 - Burial: colonial 2 to 6 m, skimmer 0.2 to 1 m tilted 10° to 35°, First Kingdoms 0.8 to 2 m, second age 0
   to 0.6 m.
@@ -561,10 +603,17 @@ group.
 
 ## Open
 
-- **Seams at high latitude.** Near the poles cells are small and dead reckoning is unsteady; history
-  is thin there by richness, but a road over a pole would show its seams. None is placed there now.
+- **Seams at high latitude.** Near the poles cells are small and dead reckoning is unsteady. History is
+  thin there by richness, but the Rim's ring route runs over both poles, and its seams would show
+  there.
 - **A landmark's changes across runs.** Within a run, kept whatever the distance; across runs, not said.
 - **Landforms.** The plateau, the rift, Starcom's peak and the volcano wait on the terrain; until then a
   landmark stands on the ground as it is.
+- **A jump in place.** A scenario that moves the moon point without moving you (the far side's) keeps the
+  old place's history under the ground you stand on, and lays none of the new place's over it until you
+  walk off that ground, about a kilometre. The console's goto lands on fresh ground for this reason.
+- **How dense history should be.** Away from the great sites the Rim has about one structure a km²
+  besides the grid's ruins, Mon half that: open desert with structures strung along the roads. The rows
+  and settlements tables set it, and the kit package will tune it in play.
 - **The Rim's far stretch.** The second-age empire is "centred on the stretch of Rim closest to Port
   Morgan." How built up the Rim is on the far side of the sub-Tu point is the richness default.

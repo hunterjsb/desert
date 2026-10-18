@@ -221,6 +221,10 @@ Readings, not in the session:
 
 ## Structures by era and the loot model (Agreed, session 4, part 4; not built)
 
+*Designed whole in [the world system](../world-system.md): the structure framework, exposure, the loot
+model and the migration of today's loose finds are its packages. Today's ruin is registered there as
+the second age's house ruin, and stands where it always has.*
+
 *[Session 4, part 4](../plants-worldgen-ruins-2026-10-17.md), with its labels as given: **Agreed** is
 settled, **Idea** is proposed and not confirmed, **Back burner** is liked and not to be built yet, and
 anything under its open questions is undecided. None of it is built. It follows "Gear and ruins by
