@@ -322,7 +322,8 @@ func _streak(t: float, which := PackedInt32Array()) -> void:
 	if which.is_empty():
 		for i in READS.size() * 2:
 			_read_storms(t)
-	var blowing := field.steady_wind_at(root.x, root.z, t)
+	# The steady wind runs along the prevailing one, as hard as the air reads.
+	var blowing := field.prevailing_at(t).normalized() * now.w
 	material.set_shader_parameter("wind", Vector3(blowing.x, 0.0, blowing.y))
 	material.set_shader_parameter("now_mix", Vector4(venting.x if not dusty else 0.0, venting.y, _cold, 0.0))
 	material.set_shader_parameter("ash_tone", DUST_TONE if dusty else ASH_TONE)
