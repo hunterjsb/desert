@@ -30,9 +30,11 @@ const LOW_SECONDS := 0.12
 const SLIP_HOLD := 2.0
 ## A board this near your feet, m, is one you can step onto.
 const BOARD_REACH := 1.5
-## Thrown off by a caught edge, you keep this share of your way, and the
-## board tumbles on over its edge, rad/s, popping up off the sand, m/s.
+## A caught edge stops the board in the sand and throws you on: you keep this
+## share of your way, it this share, tumbling over its edge, rad/s, popping
+## up off the sand, m/s.
 const THROWN_KEEPS := 0.6
+const BOARD_KEEPS := 0.25
 const TUMBLE := 7.0
 const POP := 2.0
 
@@ -364,8 +366,8 @@ func _ride(delta: float, input: Vector2) -> void:
 
 
 ## A caught edge throws you off: you stumble on across the sand with most of
-## your way, knocked and winded, and the board tumbles on over its edge. It
-## never takes your last health.
+## your way, knocked and winded, and the board tumbles over its edge behind
+## you. It never takes your last health.
 func wipe_out() -> void:
 	var speed := ride.velocity.length()
 	var low := signf(ride.bank) if ride.bank != 0.0 else 1.0
@@ -376,6 +378,7 @@ func wipe_out() -> void:
 	_left = velocity
 	if is_instance_valid(tumbling):
 		var ahead := -tumbling.global_basis.z
+		tumbling.linear_velocity *= BOARD_KEEPS
 		tumbling.linear_velocity.y = maxf(tumbling.linear_velocity.y, 0.0) + POP
 		tumbling.angular_velocity = ahead * low * TUMBLE
 	vitals.health = maxf(vitals.health - _tuning.board_wipeout_hurt, minf(vitals.health, 1.0))

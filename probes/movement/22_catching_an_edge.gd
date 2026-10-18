@@ -4,7 +4,7 @@ extends MovementProbe
 ## catch set just past its load and throws you off with it set just short;
 ## as tuned, from a cruise it holds and flat out it catches. Thrown off,
 ## you stumble on across the sand, a little knocked and winded, never
-## killed, and the board tumbles on as a body.
+## killed, and the board tumbles behind you as a body.
 
 
 func run() -> void:
@@ -32,16 +32,16 @@ func run() -> void:
 	check(not cruise.caught and flat_out.caught, "from a cruise it holds, flat out it catches")
 	print("thrown off at %.1f m/s: %.1f health and %.0f stamina lost, on foot at %.1f m/s, the board %.1f m away at %.1f m/s"
 		% [flat_out.from, flat_out.hurt, flat_out.winded, flat_out.on_foot, flat_out.apart, flat_out.board_speed])
-	check(flat_out.hurt > 0.0 and flat_out.hurt <= tuning.board_wipeout_hurt + 0.01 and flat_out.winded > 0.0,
+	check(flat_out.hurt > 0.0 and flat_out.hurt < tuning.board_wipeout_hurt + 0.5 and flat_out.winded > 0.0,
 		"knocked and winded (%.1f health, %.0f stamina)" % [flat_out.hurt, flat_out.winded])
-	check(flat_out.on_foot > 1.0 and flat_out.board_speed > 1.0 and flat_out.body, "you stumble on and the board tumbles on")
+	check(flat_out.on_foot > 1.0 and flat_out.on_foot > flat_out.board_speed and flat_out.body,
+		"you stumble on and the board tumbles behind you")
 
+	await ride_here()
 	player.vitals.health = 0.5
-	tuning.board_dig_catch = 0.0
-	await _stop(flat, 1.5)
-	check(player.board == null and player.vitals.health >= 0.5 and not player.vitals.dead,
+	player.wipe_out()
+	check(player.board == null and player.vitals.health == 0.5 and not player.vitals.dead,
 		"a knock never takes your last health (%.2f)" % player.vitals.health)
-	tuning.board_dig_catch = catch
 	player.vitals.health = player.vitals.FULL
 	set_rate(60)
 

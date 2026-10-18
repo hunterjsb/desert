@@ -43,7 +43,7 @@ func _towed(flat: Dictionary, keys: Array) -> Dictionary:
 		if seen.tick == 2 * ticks_per_second():
 			seen.from = where()
 		player.ride.tow(Vector3(downwind.x, 0.0, downwind.y) * PULL / ticks_per_second()))
-	var gone := where() - seen.from
+	var gone: Vector3 = where() - seen.from
 	var flat_gone := Vector2(gone.x, gone.z)
 	hold([])
 	return {"went": flat_gone.length(), "off": absf(downwind.angle_to(flat_gone)), "speed": flat_speed()}
