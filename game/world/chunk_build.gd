@@ -9,8 +9,10 @@ var step: int
 ## their ground is in the heights already.
 var structures: Array[Structure] = []
 var states := PackedInt32Array()
-## (n+1)^2 samples in rows along z: the collision data and the seam check.
+## (n+1)^2 samples in rows along z: the mesh's, the seam check's and the reads'.
 var heights: PackedFloat32Array
+## Collision's: these and a lip a sample out all round (Terrain.LIP).
+var lipped: PackedFloat32Array
 var arrays: Array
 ## The arrays as a RenderingServer mesh, once a worker has filled it.
 var mesh: RID
@@ -59,6 +61,13 @@ static func make(shape: TerrainShape, coord: Vector2i, size: int, step: int, ski
 			for i in range(lo.x, hi.x):
 				var k := (cj * across + int(x0 + (i - 1) * step - gx)) * 2
 				bordered[j * w + i] = lerpf(made[k], bordered[j * w + i], made[k + 1])
+
+	if step == 1:
+		build.lipped = bordered.duplicate()
+		for j in w:
+			for i in w:
+				if i == 0 or j == 0 or i == w - 1 or j == w - 1:
+					build.lipped[j * w + i] -= Terrain.LIP
 
 	var grid := (n + 1) * (n + 1)
 	build.heights.resize(grid)

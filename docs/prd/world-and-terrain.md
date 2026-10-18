@@ -411,7 +411,12 @@ This is the minimum that makes the whole game loop possible. Every item gets bui
   values to tune: **64 m chunks with 1 m height samples**, collision within 2 chunks
   of the player, visible ground out to about 8 chunks.
 - Collision from the same samples as the visible mesh up close, so what you see is
-  exactly what you stand on.
+  exactly what you stand on. *(2026-10-18: each chunk's collision runs a metre past its
+  edges, 5 cm below the neighbour's ground there. A heightmap's edge is a real edge to
+  Jolt, and a small body riding a centimetre into the sand hit the next chunk's like a
+  step: a rope's loose end dragged across a seam at 13 m/s came out at 3, against 10.7
+  mid-chunk. With the lip it comes out at 9.8, what the slope costs it there. Rope probe
+  5's loose end had been snagging on a seam, not the dune face it was laid for.)*
 - A **crude far ring**: low-detail ground, visual only, reaching a few kilometres
   out. It proves early that the far view is cheap and stays separate from collision
   (rule 2), because the big views depend on it.
@@ -517,7 +522,8 @@ All of these run without a window, use a fixed seed, and assert:
    of loaded chunks stays bounded, and memory stays flat.
 4. **Origin shift is invisible.** A resting stack of boxes and a jointed pair survive
    an origin shift without moving relative to the ground or to each other.
-5. **No seams.** Neighbouring chunks agree exactly on their shared edge.
+5. **No seams.** Neighbouring chunks agree exactly on their shared edge, and the
+   collision inside each chunk's edges holds exactly its mesh's samples.
 6. **Deterministic.** The same seed and coordinates always give the same heights.
 7. **No hitches.** No frame spends longer than a set line of main-thread time on
    streaming, from the first chunk on. Headless runs can't see the shader compile or

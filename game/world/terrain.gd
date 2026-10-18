@@ -15,6 +15,12 @@ signal unloaded(coord: Vector2i)
 ## Collision samples are 1 m apart, so near chunks are too: what you see is
 ## exactly what you stand on.
 const NEAR_STEP := 1
+## Each chunk's collision runs a metre past its edges and this far below the
+## neighbour's ground there, m. A heightmap's edge is a real edge to Jolt: a
+## small body riding sunk in the sand hit the next chunk's like a step, and a
+## loose end dragged across a seam at 13 m/s came out at 3. Deeper than a body
+## sinks, the lip's own edge is never met.
+const LIP := 0.05
 
 ## Main-thread time streaming took this frame, and the most it has in any one:
 ## the hitch probe and F3 read them.

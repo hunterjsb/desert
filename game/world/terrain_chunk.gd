@@ -10,6 +10,8 @@ var side := 64
 ## Metres between samples; 0 until the first build arrives.
 var step := 0
 var heights: PackedFloat32Array
+## What its collision is built from: the heights and a lip (ChunkBuild.lipped).
+var lipped: PackedFloat32Array
 
 var _view: GeometryInstance3D
 ## A RenderingServer mesh, owned here: a worker made it, so no Mesh resource does.
@@ -34,6 +36,7 @@ func show_build(build: ChunkBuild) -> void:
 	build.mesh = RID()
 	step = build.step
 	heights = build.heights
+	lipped = build.lipped
 	_show_structures(build.structures, build.states)
 
 
@@ -60,12 +63,13 @@ func _show_structures(structures: Array[Structure], states: PackedInt32Array) ->
 ## Needs 1 m samples: a heightmap's samples are one unit apart.
 func add_collision(size: int, sand: PhysicsMaterial) -> void:
 	_shape = HeightMapShape3D.new()
-	_shape.map_width = size + 1
-	_shape.map_depth = size + 1
-	_shape.map_data = heights
+	_shape.map_width = size + 3
+	_shape.map_depth = size + 3
+	_shape.map_data = lipped
 	var holder := CollisionShape3D.new()
 	holder.shape = _shape
-	# A heightmap is centred on its node; the chunk's origin is its corner.
+	# A heightmap is centred on its node; the chunk's origin is its corner, and
+	# its lip reaches a metre past every edge.
 	holder.position = Vector3(size * 0.5, 0.0, size * 0.5)
 	_body = StaticBody3D.new()
 	_body.physics_material_override = sand
@@ -117,8 +121,16 @@ func _at(structure: Structure, state: int) -> Vector3:
 	return Vector3(structure.x - coord.x * side, structure.floor_in(state), structure.z - coord.y * side)
 
 
+## The samples its collision holds inside its edges, without the lip.
 func collision_data() -> PackedFloat32Array:
-	return _shape.map_data if _shape else PackedFloat32Array()
+	if _shape == null:
+		return PackedFloat32Array()
+	var all := _shape.map_data
+	var w := _shape.map_width
+	var inside := PackedFloat32Array()
+	for j in range(1, w - 1):
+		inside.append_array(all.slice(j * w + 1, j * w + w - 1))
+	return inside
 
 
 func _notification(what: int) -> void:
