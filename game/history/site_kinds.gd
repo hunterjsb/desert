@@ -40,6 +40,8 @@ const KINDS := {
 	&"granary": {"era": Eras.SECOND, "reach": 7.0, "lattice": true},
 	&"earthwork": {"era": Eras.SECOND, "reach": 12.0},
 	&"bunker": {"era": Eras.SECOND, "reach": 12.0, "lattice": true},
+	# The ground's own: a live vent's mouth on the rift.
+	&"vent_mouth": {"era": Eras.GEOLOGY},
 	# Signs: the Dark Age's markers on the migration routes.
 	&"cairn": {"era": Eras.DARK, "reach": 1.0, "sign": true},
 	&"cache": {"era": Eras.DARK, "reach": 1.0, "sign": true},
