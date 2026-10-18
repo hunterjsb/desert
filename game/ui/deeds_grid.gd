@@ -20,9 +20,12 @@ const HEAD := 30.0
 const TIP := 300.0
 const TIP_OFF := 12.0
 ## A deed open but not done, at this share of a done one's brightness; one
-## still locked, a shape in the dark.
+## still locked, only its thing's outline, faint.
 const UNLIT := 0.55
-const LOCKED := Color(0.0, 0.0, 0.0, 0.8)
+const SILHOUETTE := "shader_type canvas_item;\nuniform vec4 ink : source_color;\n" \
+	+ "void fragment() { COLOR = vec4(ink.rgb, texture(TEXTURE, UV).a * ink.a); }"
+
+static var _shadow: ShaderMaterial
 
 var _profile: Node
 var _tuning: Tuning
@@ -135,14 +138,14 @@ func _card(id: StringName) -> Button:
 		shown.texture = ItemIcons.of(Engine.get_main_loop(), icon)
 		shown.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		shown.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		if not open:
+			shown.material = _silhouette()
 		picture = shown
 	else:
 		picture = Control.new()
-		picture.draw.connect(_draw_mark.bind(picture))
+		picture.draw.connect(_draw_mark.bind(picture, not open))
 	picture.custom_minimum_size = Vector2(ICON, ICON)
 	picture.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	if not open:
-		picture.modulate = LOCKED
 	column.add_child(picture)
 	var title := Label.new()
 	title.theme_type_variation = &"DeedCardName"
@@ -202,9 +205,20 @@ func _draw() -> void:
 				lit if Deeds.is_open(_profile, id) else faint, 2.0, true)
 
 
-## A landmark's mark: a mast on the skyline with its pennant.
-static func _draw_mark(on: Control) -> void:
-	var ink := on.get_theme_color(&"text", &"Palette")
+## Its thing's shape alone, in the theme's faint ink.
+static func _silhouette() -> ShaderMaterial:
+	if _shadow == null:
+		var shader := Shader.new()
+		shader.code = SILHOUETTE
+		_shadow = ShaderMaterial.new()
+		_shadow.shader = shader
+		_shadow.set_shader_parameter(&"ink", ThemeDB.get_project_theme().get_color(&"faint", &"Palette"))
+	return _shadow
+
+
+## A landmark's mark: a mast on the skyline with its pennant, faint while locked.
+static func _draw_mark(on: Control, locked: bool) -> void:
+	var ink := on.get_theme_color(&"faint" if locked else &"text", &"Palette")
 	var s := on.size
 	var foot := Vector2(s.x * 0.5, s.y * 0.88)
 	var top := Vector2(s.x * 0.5, s.y * 0.14)

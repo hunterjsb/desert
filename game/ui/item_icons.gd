@@ -14,7 +14,7 @@ const LOOKS := {
 	&"crop": {"part": &"root_tuber", "turn": Vector2(30.0, 20.0)},
 	&"planter": {"frame": &"planter", "sockets": {0: &"root_tuber", 1: &"root_tuber", 2: &"saltbush", 3: &"vat_fungus"},
 		"turn": Vector2(25.0, 35.0)},
-	&"mast": {"frame": &"mast", "sockets": {0: &"sail"}, "turn": Vector2(60.0, 15.0)},
+	&"mast": {"frame": &"mast", "sockets": {0: &"sail"}, "turn": Vector2(90.0, 8.0)},
 	&"chassis": {"frame": &"chassis", "turn": Vector2(30.0, 40.0)},
 	&"console": {"frame": &"console", "sockets": {7: &"screen"}, "turn": Vector2(155.0, 15.0)},
 	&"turbine": {"frame": &"turbine", "turn": Vector2(30.0, 15.0)},

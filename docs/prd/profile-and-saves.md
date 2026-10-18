@@ -124,29 +124,46 @@ names it), and so can a kit variant or a mark on your gear (Hunter: "they should
   - Story: **The Old City**, reach Port Morgan; **Hot Tourist Destinations**, reach every named
     landmark; a structure of each of the four ages stood in.
 - **Shown in a grid,** reached from the main menu and the system menu: each deed a tile, named,
-  with a short line saying what it asks, lit once done (Menus & UI).
+  with a short line saying what it asks, lit once done (Menus & UI). Then (Hunter, 2026-10-18): a
+  tree of what waits on what, each card only a name and a picture of its thing, and what it asks
+  and how far along you are beside the card highlighted.
 
 **Built (2026-10-18).** One table, `Deeds.TABLE` (`game/saves/deeds.gd`): each deed's id, name, the
-line saying what it asks, whether it's hidden (none is), and its X, which is Tuning's (the Deeds
-group). What a deed opens is each kit's own `unlock`, so it has one owner. The names Hunter didn't
-give are proposals, his to rename; the id stays.
+line saying what it asks, its family and the deeds it waits on, its card's thing, whether it's hidden
+(none is), and its goal, which is Tuning's (the Deeds group). What a deed opens is each kit's own
+`unlock`, so it has one owner. The names Hunter didn't give are proposals, his to rename; the id
+stays. Green Thumb is new, so Crop Rotation has one before it.
 
-| Id | Name | Asks | Recorded |
-|---|---|---|---|
-| `board_height` | Big Air | Fly 8 m over the sand on a board | the ride, each tick, by the board's height over the sand under it |
-| `board_distance` | Frequent Flyer | Ride a board 5 km without stepping off; opens the Salvager | the ride, by how far it has come (kept in the save mid-ride) |
-| `board_storm` | Flying Bling | Ride into a storm by night or in an eclipse | the ride, the tick you go from clear air into a storm, the sun down or partly behind Tu |
-| `shield_storm` | Sandblasted | Hold off 60 minutes of storm with one shield | Wear's tick: a running shield counts the storm where it stands, kept on the shield and in the save |
-| `shield_day` | Hermit | Spend a whole day under a shield; opens the Homesteader | Wear's tick: time under a bubble without a break, a day's length, kept in the save |
-| `crops` | Crop Rotation | Grow 3 kinds of crop | a planter's harvest, by hand or by its harvester, each kind counted once a profile |
-| `planters_towed` | Meals on Wheels | Have 2 planters in tow at once | a line tied or moved, something tied at your waist or taken in your hand: planters along the lines from you, or standing on what they reach, short of a driven stake |
-| `sail_waist` | Set Sail | Tie a sail's sheet at your waist | your waist, as the sheet ties on |
-| `deck_pieces` | Six Pack | Join 6 chassis pieces into one deck | a piece joining a deck |
-| `deck_home` | All Mod Cons | A Console, a condenser and a crate on one deck | a device standing on a deck, or a piece joining with one on it |
-| `power` | Power Trip | Make over 300 W in one system | Power's tick, by what each pool makes |
-| `port_morgan` | The Old City | Reach Port Morgan | the world, as the history follows you, inside the landmark's footprint |
-| `landmarks` | Hot Tourist Destinations | Reach every named landmark | the same, each of the eight counted once a profile |
-| `ages` | Carbon Dated | Stand in a structure of each of the four ages | the world, stepping onto a structure's ground, its era counted once a profile; the Dark Age built nothing |
+| Id | Name | Asks | After | Recorded |
+|---|---|---|---|---|
+| `board_distance` | Frequent Flyer | Ride a board 5,000 m without stepping off; opens the Salvager | | the ride, by how far it has come (kept in the save mid-ride) |
+| `board_height` | Big Air | Fly 8 m over the sand on a board | Frequent Flyer | the ride, each tick, by the board's height over the sand under it |
+| `board_storm` | Flying Bling | Ride into a storm by night or in an eclipse | Big Air | the ride, the tick you go from clear air into a storm, the sun down or partly behind Tu |
+| `shield_day` | Hermit | Spend a whole day under a shield, never stepping out; opens the Homesteader | | Wear's tick: time under a bubble without a break, a day's length, kept in the save |
+| `shield_storm` | Sandblasted | Hold off 60 minutes of storm with one shield | Hermit | Wear's tick: a running shield counts the storm where it stands, kept on the shield and in the save |
+| `crop` | Green Thumb | Grow a crop | | a planter's harvest, by hand or by its harvester |
+| `crops` | Crop Rotation | Grow 3 kinds of crop | Green Thumb | the same, each kind counted once a profile |
+| `planters_towed` | Meals on Wheels | Have 2 planters in tow at once | Green Thumb | a line tied or moved, something tied at your waist or taken in your hand: planters along the lines from you, or standing on what they reach, short of a driven stake |
+| `deck_home` | All Mod Cons | A Console, a condenser and a crate on one deck | | a device standing on a deck, or a piece joining with one on it |
+| `sail_waist` | Set Sail | Tie a sail's sheet at your waist | | your waist, once the sheet tied on there is laid |
+| `deck_pieces` | Six Pack | Join 6 chassis pieces into one deck | All Mod Cons | a piece joining a deck |
+| `power` | Power Trip | Make 300 W in one system | Set Sail | Power's tick, by what each pool makes |
+| `port_morgan` | The Old City | Reach Port Morgan | | the world, as the history follows you, inside the landmark's footprint |
+| `ages` | Carbon Dated | Stand in a structure of each of the four ages | | the world, stepping onto a structure's ground, its era counted once a profile; the Dark Age built nothing |
+| `landmarks` | Hot Tourist Destinations | Reach every named landmark | The Old City | the same as The Old City, each of the eight counted once a profile |
+
+- **What waits on what** (Hunter, 2026-10-18: "even though we dont have any deps yet, so make up
+  some deps"): made up, each family a branch from an easy deed to harder ones, and the two that open
+  starts, Frequent Flyer and Hermit, wait on nothing. A deed's branch is open once everything it
+  waits on is done and open in turn.
+- **Done out of order:** recording never waits. A deed done before what it waits on is kept in the
+  profile with its run all the same, and opens its start if it names one; it shows, lit and
+  counted, once its branch opens, and its note waits until then, said beside the deed that opened it
+  ("Deed: Big Air, Flying Bling").
+- **How far along:** a deed that's a number to reach goes through `Deeds.measure(world, id,
+  value)`, which keeps the best so far in the profile (`Profile.best`, `improve`), a step at a time
+  (250 m, half a metre, a minute, 10 W, one), and records the deed once the goal is reached. A deed
+  of different things counts them (`Profile.toward`).
 
 How each X was chosen, from the probes' numbers:
 - **8 m over the sand.** A hop on the flat flies 1.7 m over the sand, a pop from a crouch 2.9,
@@ -172,14 +189,15 @@ How each X was chosen, from the probes' numbers:
 - **Only a player's own run counts** (`World.counts_deeds`): the game sets it on a run that isn't
   a dev scenario's and clears it the moment `scenario` is used, and a death in that run keeps it.
   The menu's world, a probe's and a look-test's count nothing.
-- **Kept in the profile** (`Profile.deed`, `did`, `deeds`, `toward`): each deed with when, the
-  run's seed and origin, and whether it was Ironman; and what has counted toward each. Achievements
+- **Kept in the profile** (`Profile.deed`, `did`, `deeds`, `toward`, `best`): each deed with when,
+  the run's seed and origin, and whether it was Ironman; what has counted toward each, and the best
+  toward each that's a number. Achievements
   attach at `Profile.deed`, as unlocks do at `unlock`. Only reset empties them, and the dev
   console's `deeds clear`.
 - **The dev console**, at the main menu too: `unlockall` opens every start whatever deeds are done
   (through `Profile.unlock`, so forgetting the deeds leaves them open; reset closes them), `deed
   <id>` grants one, `deeds` lists what's done and what isn't, and `deeds clear` forgets them all.
-- **Probes** 17 to 22.
+- **Probes** 17 to 22, and Menus & UI probe 11.
 
 ## Ending flags (proposed)
 

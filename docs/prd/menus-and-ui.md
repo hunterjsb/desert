@@ -157,13 +157,25 @@ resets"): `unlockall` opens every start, and deeds can be granted or cleared to 
 **The deeds grid** ([Profile & saves](profile-and-saves.md#deeds-achievements-agreed-2026-10-18-built))
 is a menu of its own, reached from the main menu and the system menu.
 
-**Built** (2026-10-18, `game/ui/deeds_grid.gd`): Deeds stands under New game on the main menu and
-under Options in the system menu. It opens a grid of every deed, three across in the table's order,
-under how many you've done ("5 of 14 deeds"), with Back. Each tile is a dark panel with the deed's
-name, the line saying what it asks, its X as the tuning has it, and what it opens ("opens the
-Salvager"); a deed done is lit, the rest dimmer on the same dark tile, so they still read over bright
-sand. A hidden deed would show ???? until done; none is hidden. `look/deeds` shoots it over the main
-menu and over a run, with five deeds done (`look/deeds/shoot.sh` builds the sheet).
+**Built** (2026-10-18, `game/ui/deeds_grid.gd`), after Hunter's "show relations and a hierarchy":
+Deeds stands under New game on the main menu and under Options in the system menu. It opens a tree
+of every deed under how many show done ("6 of 15 deeds"), with Back: a column or two for each family
+(Board, Shield, Farming, Camp, Story, named over them), each deed a row below the deepest it waits on,
+and a line down from each to what it opens, brighter once that's open.
+- **A card** is the deed's name and a picture of its thing: the board, the shield, a crop, a planter,
+  the Console, the mast with its sail, a chassis piece, the turbine, and for the story a landmark's
+  mast and pennant. Done, it's lit; open but not done, dimmer; still waiting on another, only its
+  thing's outline in faint ink and ????.
+- **The pictures** are Dress's looks of each thing's frame and what's fitted (`ItemIcons`), drawn
+  once in a little world of their own the first time they're asked for and kept, so a card costs a
+  texture. With no screen to draw on, as in a probe, they stay blank.
+- **The card highlighted,** by the mouse over it or the menu's selection, which moves between the
+  cards as between words and starts on the first, has a small panel beside it, on whichever side
+  has room: the deed's name, what it asks, how far along you are where it's a number or a count
+  ("3,250 / 5,000 m", "2 / 3 kinds") or done (in Ironman, if it was), and what it opens. A card
+  still locked says only what it waits on.
+- `look/deeds` shoots it over the main menu and over a run, seven done, one of them early, a card
+  highlighted (`look/deeds/shoot.sh` builds the sheet).
 
 ## Skeleton version
 
@@ -307,6 +319,9 @@ menu and over a run, with five deeds done (`look/deeds/shoot.sh` builds the shee
    session's.
 10. **A how-to once a profile.** The first sheet at your waist shows its how-to, its keys as
     bound; tied on again it doesn't, nor in a new run on the same profile.
+11. **Deeds open in order** (2026-10-18). A deed done before the deeds it waits on is kept but shows
+    dark and uncounted; once they're done it shows done and counts. The card highlighted has its
+    panel.
 
 ## Out of scope
 
