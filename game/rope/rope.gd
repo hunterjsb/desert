@@ -44,6 +44,10 @@ var parted := Callable()
 ## Called instead of snapping when its load passes breaking, if whatever owns
 ## it gives way some other way, as a hose pops an end out of its socket.
 var gives := Callable()
+## Called with each step it's reeled, m, before its length changes, if
+## whatever owns it takes some of the line in another way, as a sheet hauls
+## its sail in; returns what's left of the step for the line itself.
+var hauls := Callable()
 
 ## Pull this tick, and the load sustained long enough to break things, N.
 var tension := 0.0

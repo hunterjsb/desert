@@ -14,7 +14,8 @@ const SURFACE := &"surface"
 const DEEP := &"deep"
 ## What each layer holds, as [catalog id, weight]: loose parts, and whole
 ## devices. Rope and wire are common, hose a little less and a compass
-## uncommon; a harvester is a rare, better part.
+## uncommon; a harvester is a rare, better part. A sand yacht's pieces, the
+## runners, a sail and a mast, are rare, and the sail and mast lie deep.
 const PARTS := {
 	SURFACE: [
 		[&"battery", 4],
@@ -25,6 +26,7 @@ const PARTS := {
 		[&"plug", 3],
 		[&"hose_end", 2],
 		[&"compass", 1],
+		[&"skates", 1],
 	],
 	DEEP: [
 		[&"big_battery", 3],
@@ -34,6 +36,9 @@ const PARTS := {
 		[&"hook", 1],
 		[&"strong_plug", 2],
 		[&"harvester", 1],
+		[&"sail", 1],
+		[&"skates", 1],
+		[&"board_plate", 1],
 	],
 }
 const DEVICES := {
@@ -53,6 +58,7 @@ const DEVICES := {
 		[&"shield", 2],
 		[&"board", 1],
 		[&"chassis", 1],
+		[&"mast", 1],
 	],
 }
 ## What a ruin's floor holds besides, by layer: seeds and rations, kept from
@@ -91,7 +97,7 @@ const KIT_SEEDS_IN_THE_OPEN := 0.1
 const FILLS := {
 	SURFACE: {&"battery": [&"battery"], &"ring": [&"hook"], &"top": [&"lamp"], &"water": [&"canister"]},
 	DEEP: {&"battery": [&"big_battery", &"battery"], &"ring": [&"hook"], &"bottom": [&"hover_tray"],
-		&"top": [&"solar_panel", &"lamp"], &"water": [&"canister"]},
+		&"top": [&"solar_panel", &"lamp"], &"water": [&"canister"], &"sail": [&"sail"]},
 }
 ## Per layer: the share of a device's sockets found filled, the range of a
 ## battery's charge and of a device's soundness, and how much of a buried

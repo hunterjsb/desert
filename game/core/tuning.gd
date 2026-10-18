@@ -488,6 +488,15 @@ static var _current: Tuning
 ## What you hold slips from your hands this far from where you'd have it, m.
 @export var hold_slip: float = 1.5
 
+@export_group("Sailing")
+## A raised sail's push felt this long (Mast.LOAD_SECONDS) tears it past
+## sail_tear_n, N, and snaps its mast past mast_snap_n: in a 10 m/s breeze a
+## sail makes a quarter of the first, in a storm far past both. Set against a
+## line's 1,500 N and a stake's 2,500 N, so a camp moored with its sail up
+## loses the sail and then the mast before its line or its stake.
+@export var sail_tear_n: float = 600.0
+@export var mast_snap_n: float = 1000.0
+
 @export_group("Rope")
 ## A line's own weight, kg per metre. It's what makes a lightly loaded line
 ## droop and straighten only as the pull builds, so the load reads by eye.

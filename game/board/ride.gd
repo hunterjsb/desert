@@ -38,6 +38,9 @@ const EASE := 0.4
 ## Flying, its tilt follows the sand below at this share of the pull it has
 ## lying on it.
 const AIR_LIE := 0.1
+## A line at your waist pulling you this hard, m/s², and the board's push
+## gives nothing: it tows nothing, and towed, your keys only carve.
+const HELD_BACK := 0.6
 
 var player: Player
 var board: Hoverboard
@@ -92,6 +95,8 @@ var _ahead_was := Vector2(0.0, -1.0)
 ## Steps until you can kick again, and steps left of a kick's push.
 var _kick_wait := 0
 var _stroke := 0
+## What the lines at your waist pulled you by this tick, m/s along engine x and z.
+var _towed := Vector2.ZERO
 
 
 func _init(by: Player, on: Hoverboard) -> void:
@@ -103,6 +108,12 @@ func _init(by: Player, on: Hoverboard) -> void:
 	_ahead_was = ahead
 	var at := Vector2(by.global_position.x, by.global_position.z)
 	y = maxf(by.global_position.y - _thick, _floor(at))
+
+
+## A line's pull on you this tick, as the change in your way it makes: your
+## camp towing you, sand-kiting, or a line holding you back.
+func tow(by: Vector3) -> void:
+	_towed += Vector2(by.x, by.z)
 
 
 ## One tick: `dir` is where your keys steer, flat, forward and to the sides;
@@ -131,6 +142,14 @@ func step(delta: float, dir: Vector2, hop: bool, brake := 0.0, kick := false, cr
 	if hop and gap < t.board_hold_reach and not _hopping:
 		vy += t.board_hop + t.board_pop * player.low
 		_hopping = true
+	# Towed, the line carries you along and the hover's grip carves against
+	# it: the board can't push against the line or run past it, and left
+	# alone it swings round to run where the line leads, as a towed ski does.
+	velocity += _towed
+	var pull := _towed / delta
+	var free := clampf(1.0 - pull.length() / HELD_BACK, 0.0, 1.0)
+	var lead := pull.normalized() if pull.length() > HELD_BACK else Vector2.ZERO
+	_towed = Vector2.ZERO
 	for i in n:
 		var when := world.time + i * h * world.time_warp
 		var middle := _height(at)
@@ -215,8 +234,11 @@ func step(delta: float, dir: Vector2, hop: bool, brake := 0.0, kick := false, cr
 			else:
 				var swing := (t.board_drift_turn if drifting else t.board_turn_rate) * h
 				ahead = ahead.rotated(clampf(ahead.angle_to(dir), -swing, swing))
-				pushing = clampf(ahead.dot(dir), 0.0, 1.0) * contact * (1.0 - stopping)
+				pushing = clampf(ahead.dot(dir), 0.0, 1.0) * contact * (1.0 - stopping) * free
 				velocity += ahead * t.board_push * pushing * h
+		elif lead != Vector2.ZERO:
+			var swing := t.board_turn_rate * contact * h
+			ahead = ahead.rotated(clampf(ahead.angle_to(lead), -swing, swing))
 		if stopping > 0.0:
 			velocity = velocity.move_toward(Vector2.ZERO, t.board_brake * stopping * contact * h)
 		pushed += pushing / n
@@ -232,7 +254,7 @@ func step(delta: float, dir: Vector2, hop: bool, brake := 0.0, kick := false, cr
 			kicks += 1
 		if _stroke > 0:
 			_stroke -= 1
-			var spare := clampf(1.0 - velocity.length() / t.board_top_speed, 0.0, 1.0)
+			var spare := clampf(1.0 - velocity.length() / t.board_top_speed, 0.0, 1.0) * free
 			velocity += ahead * t.board_kick / KICK_SECONDS * spare * contact * h
 		if not kick:
 			player.stamina = minf(player.stamina + t.stamina_regen * h, t.stamina_max)

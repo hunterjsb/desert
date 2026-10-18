@@ -20,6 +20,7 @@ const KINDS := {
 	&"food": Color(0.8, 0.7, 0.35),
 	&"rack": Color(0.95, 0.35, 0.3),
 	&"deck": Color(0.55, 0.45, 0.95),
+	&"sail": Color(0.92, 0.86, 0.7),
 }
 
 ## Parts: the socket kind they fit, weight, size (z is how far they stand out
@@ -34,6 +35,21 @@ const PARTS := {
 		"color": Color(0.6, 0.6, 0.65), "stats": {"hooks": 1}, "tie": Vector3(0.0, 0.0, 0.16)},
 	&"hover_tray": {"kind": &"bottom", "label": "Hover tray", "mass": 6.0, "size": Vector3(0.7, 0.7, 0.08),
 		"color": Color(0.25, 0.45, 0.6), "stats": {"lift_kg": 80.0}},
+	# Runners fit a bottom mount in place of a tray and ride the sand, along
+	# their device's length: hold is the share of the load they hold at rest,
+	# glide the share they drag sliding and plough how much more for each m/s,
+	# grip the most of the load they hold across, and keel how far the blades
+	# reach below the frame they hang from, so only they meet the sand. Skates are two long blades that bite hard; a
+	# board plate drags a little more and lets go across sooner, so a camp on
+	# it skids where one on skates would trip.
+	&"skates": {"kind": &"bottom", "label": "Skates", "mass": 4.0, "size": Vector3(0.66, 0.9, 0.03),
+		"color": Color(0.5, 0.52, 0.55), "stats": {"glide": 0.035, "plough": 0.03, "grip": 0.9, "hold": 0.1, "keel": 0.05}},
+	&"board_plate": {"kind": &"bottom", "label": "Board plate", "mass": 6.0, "size": Vector3(0.72, 0.9, 0.02),
+		"color": Color(0.35, 0.37, 0.4), "stats": {"glide": 0.05, "plough": 0.04, "grip": 0.45, "hold": 0.12, "keel": 0.03}},
+	# A sail furled on its boom: it fits a mast, and its sheet ties on at the
+	# boom's end.
+	&"sail": {"kind": &"sail", "label": "Sail", "mass": 5.0, "size": Vector3(0.18, 0.18, 2.2),
+		"color": Color(0.85, 0.8, 0.68), "stats": {"sail_m2": 5.5}, "tie": Vector3(0.0, 0.0, 2.26)},
 	# Half a crate's top, so two ride side by side.
 	&"solar_panel": {"kind": &"top", "label": "Solar panel", "mass": 5.0, "size": Vector3(0.8, 0.4, 0.04),
 		"color": Color(0.1, 0.15, 0.35), "stats": {"solar_w": 60.0}},
@@ -241,6 +257,14 @@ const DEVICES := {
 			[&"battery", Vector3(0.0, 0.04, -0.5), Vector3.UP],
 			[&"port", Vector3(0.0, 0.0, 0.65), Vector3.BACK],
 		]},
+	# A sail's mount: a pole that seats on a top mount or stands on a deck
+	# mount, stowed short to carry and standing its full height once seated,
+	# its sail fitting low on it at the boom's root. Found buried on end.
+	&"mast": {"label": "Mast", "size": Vector3(0.14, 1.3, 0.14), "mass": 8.0, "rig": true, "fits": &"top",
+		"deck": true, "carryable": true, "on_end": true, "stats": {"face_m2": 0.18},
+		"sockets": [
+			[&"sail", Vector3(0.0, 0.3, -0.07), Vector3.FORWARD],
+		]},
 	# A piece of a bigger floater: a flat frame a little wider than a crate,
 	# a ring on each edge where the next piece joins or a hook goes, its own
 	# tray under it and one device standing on top. No battery, no port: the
@@ -423,7 +447,8 @@ static func device(id: StringName) -> Device:
 		else (Planter.new() if spec.get("planter", false) \
 		else (Hoverboard.new() if spec.get("board", false) \
 		else (Radio.new() if spec.get("radio", false) \
-		else (Chassis.new() if spec.get("chassis", false) else Device.new())))))
+		else (Mast.new() if spec.get("rig", false) \
+		else (Chassis.new() if spec.get("chassis", false) else Device.new()))))))
 	made.set_meta(&"catalog", id)
 	made.label = spec.label
 	made.frame_mass = spec.mass
