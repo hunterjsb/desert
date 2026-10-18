@@ -89,7 +89,7 @@ func run() -> void:
 	press(&"ui_cancel")
 	check(main.ui.top() == menu and menu.highlighted() == 0, "back goes back")
 	# As a save from before time played was kept.
-	var older := saves().held()
+	var older: Dictionary = saves().held()
 	older.erase("played")
 	SaveFile.write(saves().path(), saves().KIND, saves().VERSION, older)
 	press(&"ui_accept")

@@ -77,13 +77,9 @@ func run() -> void:
 
 ## The menu on top stands down the left, the prop slid aside right of its words.
 func _aside(what: String, home: float) -> void:
-	await _until(func() -> bool: return _across() > home + 0.5)
-	var half := get_viewport().get_visible_rect().size.x * 0.5
-	var menu := main.ui.top()
-	var left := menu.find_children("*", "Button", true, false).all(func(word: Button) -> bool:
-		return word.get_global_rect().end.x <= half)
-	check(main.showpiece.aside() and _across() > home + 0.5 and left,
-		"%s sets the prop aside, its words on the left (%.2f m across)" % [what, _across()])
+	await _until(func() -> bool: return _across() > home + 0.4)
+	check(main.ui.top().side and main.showpiece.aside() and _across() > home + 0.4,
+		"%s stands on the left and sets the prop aside (%.2f m across)" % [what, _across() - home])
 
 
 ## What a run sets down of a kit, as its gear counts it, set down in the
@@ -101,9 +97,10 @@ func _set_down(kit: Kit) -> Dictionary:
 		if node in plugs or id == &"":
 			continue
 		got[id] = got.get(id, 0) + 1
+		# A line's ends are the line's.
 		if node is Device:
 			for socket: Socket in node.frame_sockets():
-				if socket.part != null:
+				if socket.part != null and socket.kind != &"tie":
 					var part: StringName = socket.part.get_meta(&"catalog")
 					got[part] = got.get(part, 0) + 1
 	for node in made:

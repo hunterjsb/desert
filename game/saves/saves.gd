@@ -51,9 +51,9 @@ func held() -> Dictionary:
 	return _read()
 
 
-## When the save was last written, unix time.
+## When the run was saved, unix time; from before saves kept it, when the file was written.
 func saved_at() -> int:
-	return FileAccess.get_modified_time(path())
+	return _read().get("saved", FileAccess.get_modified_time(path()))
 
 
 ## Saves the run, in its mode: safe at any moment, mid-storm included, and it
@@ -116,6 +116,7 @@ func _taken(world: World, ironman: bool) -> PackedByteArray:
 	var data := Snapshot.take(world)
 	data.ironman = ironman
 	data.kit = world.kit.id if world.kit != null else &""
+	data.saved = floori(Time.get_unix_time_from_system())
 	return var_to_bytes(data)
 
 
