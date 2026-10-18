@@ -17,7 +17,7 @@ extends RefCounted
 static var _kept := [
 	[Stake, ["driven", "pulled", "sustained", "holding", "pull"]],
 	[ShieldGenerator, ["on", "size", "_up", "_since"]],
-	[Radio, ["channel", "target"]],
+	[Radio, ["on", "frequency", "target"]],
 	[Planter, ["tank_l", "split", "stored", "seeds", "ripened", "replanted", "banked", "dropped", "picked",
 		"fed_kcal", "_owed"]],
 	[Condenser, ["made_l"]],

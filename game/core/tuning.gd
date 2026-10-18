@@ -688,6 +688,32 @@ static var _current: Tuning
 ## one running in.
 @export var radio_reach_m: float = 3000.0
 @export var beacon_share: float = 0.3
+## The dial: a carrier comes in this wide either side, kHz (its fall to a
+## sixtieth), and a wheel notch moves it this far, or the fine step with shift.
+@export var dial_width_khz: float = 3.0
+@export var dial_notch_khz: float = 5.0
+@export var dial_fine_khz: float = 1.0
+## A god's bearing is given to sixteen points within the first distance, m,
+## to eight within the second, and past that only as a way across the moon.
+@export var god_exact_m: float = 12000.0
+@export var god_rough_m: float = 40000.0
+## How far a ground wave carries at or under 500 kHz, m; above it the reach
+## falls as the square of the frequency. At night a sky wave comes down past
+## the skip, m, at this strength, for any frequency over 500 kHz.
+@export var ground_wave_m: float = 80000.0
+@export var skip_m: float = 15000.0
+@export var sky_wave: float = 0.6
+## Under this share of a clean signal, a transmission is lost in the static.
+@export var signal_floor: float = 0.08
+## The storm on the path toward a god is read this far out at most, m, and
+## at this many points. Through a full storm the carrier drifts this far
+## either way, kHz, and the signal drops out this share of the time.
+@export var interference_reach_m: float = 3000.0
+@export var interference_samples: int = 8
+@export var storm_warp_khz: float = 6.0
+@export var storm_cuts: float = 0.6
+## The Walker's pace round the Rim, m/s.
+@export var walker_speed: float = 1.5
 
 @export_group("Console")
 ## How often a Console's instruments read the field, s of world time, and how

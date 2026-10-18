@@ -457,6 +457,8 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed("hands_throw") and held != null and not Controls.mouse_free:
 		throw()
 		get_viewport().set_input_as_handled()
+	elif _tunes(event):
+		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("reel_in") or event.is_action_pressed("pay_out"):
 		# Each wheel step is a press: a notch.
 		if reel.working() and reel.notch(1 if event.is_action_pressed("reel_in") else -1):
@@ -465,6 +467,39 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed("bring_near", false, true) or event.is_action_pressed("push_out", false, true):
 		if scroll(1 if event.is_action_pressed("bring_near", false, true) else -1):
 			get_viewport().set_input_as_handled()
+
+
+## The wheel on a radio turns its dial: looking at one, or at a console with
+## one in its system, with your hands free; holding one, with ctrl, since the
+## plain wheel moves what you hold. Shift makes each notch a fine step.
+func _tunes(event: InputEvent) -> bool:
+	var wheel := event as InputEventMouseButton
+	if wheel == null or not wheel.pressed \
+			or wheel.button_index not in [MOUSE_BUTTON_WHEEL_UP, MOUSE_BUTTON_WHEEL_DOWN]:
+		return false
+	var radio: Radio = null
+	if held is Radio and phase == Phase.HELD and wheel.ctrl_pressed:
+		radio = held
+	elif held == null and grasp.body == null and not wheel.ctrl_pressed:
+		_look()
+		radio = tuned_by_look()
+	if radio == null:
+		return false
+	return radio.tune(1 if wheel.button_index == MOUSE_BUTTON_WHEEL_UP else -1, wheel.shift_pressed)
+
+
+## The radio your look tunes: the one you look at, or the first in the system
+## of a console you look at.
+func tuned_by_look() -> Radio:
+	if look_device is Radio:
+		return look_device
+	var console := look_device as Console
+	if console != null:
+		for each in console.linked():
+			for seated in each.mounted():
+				if seated is Radio:
+					return seated
+	return null
 
 
 func _physics_process(delta: float) -> void:

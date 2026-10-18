@@ -563,5 +563,5 @@ static func _brief(things: Array) -> String:
 	var radio := device as Radio
 	if radio == null:
 		return held
-	var tuned := Radio.CHANNELS[radio.channel]
+	var tuned: String = radio.stats()["tuned"]
 	return tuned if held == "" else tuned + " · " + held

@@ -1,32 +1,35 @@
 class_name Radio
 extends Device
-## A radio you carry, set down or seat on a top mount, and tune with use: off,
-## music, the weather station, a beacon, and off again. It reads the real
-## systems and never makes anything up. The music is the day's track while
-## the sun is up and the night's after; the weather station reads the storm
-## field ahead where the radio is; a beacon points at a find the world will
-## lay out. Static comes in with a front's outflow, before the wall, and
-## inside a bubble too: it's the sand charging up, not the storm's sound. It
-## draws a little while it's on, from its battery or the pool it sits in, and
-## plays from where it is.
+## A radio you carry, set down or seat on a top mount, and tune: a dial from 0
+## to 2000 kHz, rolled with the wheel as you look at it, and use to sweep up
+## to the next carrier, and off past the last. Nothing on the dial says what a
+## carrier is. Music plays on one, a beacon pings on another, and the seven
+## gods each broadcast in their own band from where they stand: the Walker's
+## is the weather station. It reads the real systems and never makes anything
+## up. A god's signal comes in by how far off it is, its frequency and the
+## hour, and the storm between you and it garbles, slides and cuts it. Static
+## comes in with a front's outflow, before the wall, and inside a bubble too:
+## it's the sand charging up, not the storm's sound. It draws a little while
+## it's on, from its battery or the pool it sits in, and plays from where it is.
 
 const GROUP := &"radios"
-## The dial, in the order use turns it.
+## What it's tuned to, as the dial reads: off, a carrier, or nothing but static.
 const OFF := 0
 const MUSIC := 1
 const WEATHER := 2
 const BEACON := 3
-const CHANNELS: Array[String] = ["off", "music", "weather", "beacon"]
+const GOD := 4
+const STATIC := 5
+const CHANNELS: Array[String] = ["off", "music", "weather", "beacon", "god", "static"]
 const POINTS: Array[String] = ["north", "north-north-east", "north-east", "east-north-east", "east",
 	"east-south-east", "south-east", "south-south-east", "south", "south-south-west", "south-west",
 	"west-south-west", "west", "west-north-west", "north-west", "north-north-west"]
 ## Heard at its level this far off, m: through a light shield's bubble round it.
 const HEARD := 3.0
-## Of full static, the hiss under a station's signal, and on a beacon's
-## channel with nothing to hear.
+## Of full static, the hiss under a clean signal, and with nothing to hear.
 const CARRIER := 0.2
 const NOTHING := 0.6
-## The weather station sounds its tones before each reading this often, s.
+## A god's tones sound this often, s.
 const TONES_EVERY := 8.0
 ## A beacon pings this often from as far as FAINT and this often close by, s.
 ## Past FAINT it's faint, past CLEAR clear, nearer strong, and within HERE, m,
@@ -36,17 +39,35 @@ const PING_NEAR := 0.5
 const FAINT := 1000.0
 const CLEAR := 250.0
 const HERE := 15.0
+## Tuned within this many widths of a carrier, the dial counts it as on it.
+const ON_IT := 2.0
+## A signal this clean or better comes through whole.
+const WHOLE := 0.5
 
-var channel := OFF:
+static var _gods: Gods
+
+## Whether it's switched on, and where its dial stands, kHz.
+var on := false:
 	set(to):
-		channel = to
+		on = to
 		_recompute()
+var frequency := 0.0
+## What the dial reads now (OFF to STATIC). Set, as old saves do, it moves
+## the dial to that channel's carrier.
+var channel: int:
+	get:
+		return _reads()
+	set(to):
+		_tune_to_channel(to)
 ## What the beacon points at, decided when it was tuned to it: {x, z, coord,
 ## index} in world metres, or {} for no signal.
 var target := {}
 ## The weather station's last reading (forecast()), and when it was read.
 var reading := {}
 var read_at := -INF
+## The last god signal it heard: {id, khz, metres, bearing, way, storm,
+## strength, clean, cut, useful, text}, or {} off a god.
+var reception := {}
 ## What it says now, for the line in view; "" while it plays music, or doesn't play.
 var said := ""
 ## How much of the storm's static gets in now, 0 to 1.
@@ -61,6 +82,7 @@ var _since_signal := INF
 ## playing a moment after it's told, so it keeps its own word on what it plays.
 var _on_air: AudioStream
 var _hissing := false
+var _was := OFF
 
 
 func _init() -> void:
@@ -84,20 +106,31 @@ func _exit_tree() -> void:
 	_off_air()
 
 
-## Use: turns the dial on a channel, with a burst of static between stations.
-## Coming to the beacon, it decides then which one it hears.
+## The gods of a world's history, made once.
+static func gods_of(of: World) -> Gods:
+	if _gods == null or _gods.history != of.shape.history:
+		_gods = Gods.new(of.shape.history, of.run_seed, Tuning.current())
+	return _gods
+
+
+## Use: sweeps the dial up to the next carrier, with a burst of static; past
+## the last it goes off, and from off it comes on at the first.
 func interact(_by: Player) -> bool:
 	if wrecked():
 		return false
 	# Found in the sand, it's yours as you use it, so this use can start it.
 	world.salvage.claim(self)
-	var next := (channel + 1) % CHANNELS.size()
-	if next == BEACON:
-		target = Finds.beacon(world.run_seed, world.shape.sites, world.world_x(global_position.x),
-			world.world_z(global_position.z), _tuning, world.salvage.taken)
-	read_at = -INF
-	_since_signal = INF
-	channel = next
+	var before := channel
+	if not on:
+		frequency = Dial.LOWEST
+		on = true
+	var next := _carrier_above(frequency + _tuning.dial_width_khz * ON_IT)
+	if is_nan(next):
+		frequency = Dial.LOWEST
+		on = false
+	else:
+		frequency = next
+	_retuned(before)
 	if powered:
 		Sounds.play_at(self, Sounds.RADIO_TUNE, 0.0, HEARD)
 	return true
@@ -108,9 +141,39 @@ func use(by: Player, _at: Vector3) -> bool:
 	return interact(by)
 
 
+## The wheel: moves the dial `notches`, a notch or a fine step each. A dark
+## radio comes on where its dial stands.
+func tune(notches: int, fine := false) -> bool:
+	if wrecked() or world == null:
+		return false
+	world.salvage.claim(self)
+	var before := channel
+	on = true
+	var step := _tuning.dial_fine_khz if fine else _tuning.dial_notch_khz
+	frequency = clampf(snappedf(frequency + notches * step, step), Dial.LOWEST, Dial.HIGHEST)
+	_retuned(before)
+	return true
+
+
 ## Whether it plays: on, powered, whole and in the world.
 func playing() -> bool:
-	return channel != OFF and powered and not wrecked() and world != null and is_inside_tree()
+	return on and powered and not wrecked() and world != null and is_inside_tree()
+
+
+## The carrier the dial is on now, by its id (&"music", &"beacon" or a god's),
+## or &"" between carriers. Storms slide a god off it; the dial goes by where
+## its carrier belongs.
+func tuned_to() -> StringName:
+	if world == null:
+		return &""
+	var best := &""
+	var nearest := _tuning.dial_width_khz * ON_IT
+	for each in Dial.carriers(gods_of(world), world.time):
+		var off := absf(frequency - each[0])
+		if off <= nearest:
+			nearest = off
+			best = each[1]
+	return best
 
 
 ## The bearing from it to what its beacon points at, degrees; NAN with no signal.
@@ -120,18 +183,30 @@ func beacon_bearing() -> float:
 	return bearing(Vector2(target.x - world.world_x(global_position.x), target.z - world.world_z(global_position.z)))
 
 
+## Where a god is from it now: {metres, bearing (on the ground, degrees from
+## -z), way (as it would say it)}.
+func god_way(id: StringName) -> Dictionary:
+	var x := world.world_x(global_position.x)
+	var z := world.world_z(global_position.z)
+	var p := point_at(x, z)
+	var q := gods_of(world).home(id, world.time)
+	var ground := ground_bearing(rad_to_deg(Sphere.bearing(p, q)))
+	return {"metres": Sphere.angle(p, q) * world.moon.radius, "bearing": ground,
+		"way": Dial.way(world.shape.history, p, q, ground, say_point, _tuning)}
+
+
 ## The track it plays now, or null.
 func track() -> AudioStream:
 	return _on_air if playing() and channel == MUSIC else null
 
 
 func demand_w(t := NAN) -> float:
-	return super(t) + (_tuning.radio_w if channel != OFF and not wrecked() else 0.0)
+	return super(t) + (_tuning.radio_w if on and not wrecked() else 0.0)
 
 
 func stats() -> Dictionary:
 	var now := super()
-	now["tuned"] = CHANNELS[channel]
+	now["tuned"] = "%d kHz" % roundi(frequency) if on else "off"
 	return now
 
 
@@ -139,7 +214,7 @@ func _recompute() -> void:
 	super()
 	# Its dial lights only while it's on.
 	if frame_view != null:
-		frame_view.set_instance_shader_parameter(&"lit", 1.0 if channel != OFF and powered else 0.0)
+		frame_view.set_instance_shader_parameter(&"lit", 1.0 if on and powered else 0.0)
 
 
 func _physics_process(delta: float) -> void:
@@ -147,11 +222,60 @@ func _physics_process(delta: float) -> void:
 	_listen(delta)
 
 
+## What the dial reads, from where it stands.
+func _reads() -> int:
+	if not on:
+		return OFF
+	match tuned_to():
+		&"music":
+			return MUSIC
+		&"walker":
+			return WEATHER
+		&"beacon":
+			return BEACON
+		&"":
+			return STATIC
+	return GOD
+
+
+## An old save's channel, or a scenario's, as a place on the dial.
+func _tune_to_channel(to: int) -> void:
+	on = to != OFF
+	match to:
+		MUSIC:
+			frequency = Dial.MUSIC_KHZ
+		BEACON:
+			frequency = Dial.BEACON_KHZ
+		WEATHER:
+			var b := Gods.band(&"walker")
+			frequency = gods_of(world).carrier(&"walker", world.time) if world != null else (b.x + b.y) * 0.5
+
+
+## The first carrier above a frequency, or NAN past the last.
+func _carrier_above(khz: float) -> float:
+	for each in Dial.carriers(gods_of(world), world.time):
+		if each[0] > khz:
+			return each[0]
+	return NAN
+
+
+## After the dial moved: coming onto the beacon, it decides then which one it hears.
+func _retuned(before: int) -> void:
+	var now := channel
+	if now == BEACON and before != BEACON:
+		target = Finds.beacon(world.run_seed, world.shape.sites, world.world_x(global_position.x),
+			world.world_z(global_position.z), _tuning, world.salvage.taken)
+	if now != before:
+		read_at = -INF
+		_since_signal = INF
+
+
 ## What it plays this tick, from the systems it reads.
 func _listen(delta: float) -> void:
 	if not playing():
 		noise = 0.0
 		said = ""
+		reception = {}
 		if _on_air != null or _hissing:
 			_off_air()
 		return
@@ -160,40 +284,82 @@ func _listen(delta: float) -> void:
 	var t := world.time
 	var field := world.weather.field
 	noise = field.outflow_at(x, z, t)
-	var under := 0.0
-	if channel == MUSIC:
+	var now := channel
+	if now != _was:
+		_retuned(_was)
+		_was = now
+	var dial := "%d kHz · " % roundi(frequency)
+	var under := NOTHING
+	if now == MUSIC:
 		said = ""
+		under = lerpf(NOTHING, 0.0, Dial.pull(frequency - Dial.MUSIC_KHZ, _tuning.dial_width_khz))
 		_play_music(t)
 	elif _on_air != null:
 		music.stop()
 		_on_air = null
-	if channel == WEATHER:
-		if t >= read_at + _tuning.radio_forecast_every or t < read_at:
-			reading = forecast(field, x, z, t, _tuning.radio_forecast_minutes * 60.0, Weather.FORECAST_STEP)
-			read_at = t
-		said = "Weather · " + _weather_words(t)
-		under = CARRIER
-		_every(delta, TONES_EVERY, Sounds.RADIO_TONES)
-	elif channel == BEACON:
-		if target.is_empty():
-			said = "Beacon · no signal"
-			under = NOTHING
-		else:
-			var far := Vector2(target.x - x, target.z - z).length()
-			said = "Beacon · a signal, right here" if far <= HERE \
-				else "Beacon · a signal, %s · %s" % [_point(beacon_bearing()), "faint" if far > FAINT
-					else ("clear" if far > CLEAR else "strong")]
-			under = CARRIER
-			_every(delta, lerpf(PING_NEAR, PING_FAR, clampf(far / FAINT, 0.0, 1.0)), Sounds.RADIO_PING)
+	reception = {}
+	match now:
+		WEATHER, GOD:
+			var id := tuned_to()
+			if now == WEATHER and (t >= read_at + _tuning.radio_forecast_every or t < read_at):
+				reading = forecast(field, x, z, t, _tuning.radio_forecast_minutes * 60.0, Weather.FORECAST_STEP)
+				read_at = t
+			reception = receive(id, x, z, t)
+			if reception.cut:
+				said = dial + "· · ·"
+			elif reception.clean <= 0.0:
+				said = dial + "static"
+			else:
+				said = dial + reception.text
+			under = NOTHING if reception.cut else lerpf(NOTHING, CARRIER, reception.clean)
+			if not reception.cut and reception.clean > 0.0:
+				_signal.pitch_scale = (0.6 + Gods.ids().find(id) * 0.12) \
+					* (1.0 + 0.08 * reception.storm * sin(t * 3.1))
+				_every(delta, TONES_EVERY, Sounds.RADIO_TONES)
+		BEACON:
+			var heard := Dial.pull(frequency - Dial.BEACON_KHZ, _tuning.dial_width_khz)
+			if target.is_empty():
+				said = dial + "no signal"
+			else:
+				var far := Vector2(target.x - x, target.z - z).length()
+				said = dial + ("a signal, right here" if far <= HERE else "a signal, %s · %s" % [
+					say_point(beacon_bearing()), "faint" if far > FAINT else ("clear" if far > CLEAR else "strong")])
+				under = lerpf(NOTHING, CARRIER, heard)
+				_signal.pitch_scale = 1.0
+				_every(delta, lerpf(PING_NEAR, PING_FAR, clampf(far / FAINT, 0.0, 1.0)), Sounds.RADIO_PING)
+		STATIC:
+			said = dial + "static"
 	hiss.volume_db = linear_to_db(maxf(noise, under) + 0.0001)
 	if not _hissing:
 		hiss.play(fposmod(t, hiss.stream.get_length()))
 		_hissing = true
 
 
-## The day's track while the sun is up, the night's after, from where the
-## station is in it: it plays on whether anyone listens. It changes over
-## through a burst of static.
+## A god's signal as it reaches a place at world time t: how far it came and
+## from which way, how much storm lies between, how strong and how clean it
+## arrives, whether it's cut, and what's left of what it says.
+func receive(id: StringName, x: float, z: float, t: float) -> Dictionary:
+	var gods := gods_of(world)
+	var p := point_at(x, z)
+	var q := gods.home(id, t)
+	var metres := Sphere.angle(p, q) * world.moon.radius
+	var ground := ground_bearing(rad_to_deg(Sphere.bearing(p, q)))
+	var night := not world.weather.day.is_day(t, Sphere.longitude(p))
+	var khz := gods.carrier(id, t)
+	var storm := Interference.along(world.weather.field, x, z, ground, metres, t, _tuning)
+	var slid := Interference.warp(storm, t, id, _tuning)
+	var strength := Dial.pull(frequency - khz - slid, _tuning.dial_width_khz) \
+		* Dial.strength(id, khz, metres, night, _tuning)
+	var clean := smoothstep(_tuning.signal_floor, WHOLE, strength) * (1.0 - 0.8 * storm)
+	var words := Transmissions.say(id, self, gods, p, x, z, t)
+	return {"id": id, "khz": khz, "metres": metres, "bearing": ground,
+		"way": Dial.way(world.shape.history, p, q, ground, say_point, _tuning), "storm": storm,
+		"warp": slid, "strength": strength, "clean": clean, "cut": Interference.cut(storm, t, id, _tuning),
+		"useful": words.useful, "words": words.text, "text": Interference.distort(words.text, clean, t, id)}
+
+
+## The music for the hour, from where the station is in it: it plays on
+## whether anyone listens. It changes over through a burst of static.
 func _play_music(t: float) -> void:
 	var now: AudioStream = Sounds.RADIO_DAY if world.weather.day.is_day(t, world.moon.longitude) else Sounds.RADIO_NIGHT
 	if _on_air == now:
@@ -221,18 +387,21 @@ func _every(delta: float, seconds: float, stream: AudioStream) -> void:
 		_signal.play()
 
 
-func _weather_words(t: float) -> String:
-	var from := _point(reading.from)
+## The weather station's words for its last reading.
+func weather_words(t: float) -> String:
+	if reading.is_empty():
+		return "no reading"
+	var from := say_point(reading.from)
 	var wind := roundi(reading.wind)
 	var horizon := roundi(_tuning.radio_forecast_minutes)
 	if reading.stormy:
 		return "in a storm from the %s · winds to %d m/s · %s" % [from, wind,
-			"clearing in %s" % _span(reading.change - t) if reading.change < INF
+			"clearing in %s" % span(reading.change - t) if reading.change < INF
 			else "no clearing for %d min" % horizon]
 	if reading.change == INF:
 		return "clear for %d min and more · wind %d m/s from the %s" % [horizon, wind, from]
-	return "a storm from the %s in %s · winds to %d m/s · %s" % [from, _span(reading.change - t), wind,
-		"for %s" % _span(reading.back - reading.change) if reading.back < INF
+	return "a storm from the %s in %s · winds to %d m/s · %s" % [from, span(reading.change - t), wind,
+		"for %s" % span(reading.back - reading.change) if reading.back < INF
 		else "lasting past %d min" % horizon]
 
 
@@ -270,14 +439,42 @@ static func compass(degrees: float) -> String:
 	return POINTS[roundi(degrees / 22.5) % POINTS.size()]
 
 
+## A bearing on the ground, from the world's -z, by the moon's north where you
+## are, degrees: past a pole the two are opposite. The same turn takes one on
+## the sphere back to the ground.
+func true_bearing(degrees: float) -> float:
+	return fposmod(degrees if world.moon.north().z < 0.0 else degrees + 180.0, 360.0)
+
+
+func ground_bearing(degrees: float) -> float:
+	return true_bearing(degrees)
+
+
 ## A bearing from the world's -z, said by the moon's north where you are, as
-## a compass reads it: past a pole the two still agree.
-func _point(degrees: float) -> String:
-	return compass(degrees if world.moon.north().z < 0.0 else degrees + 180.0)
+## a compass reads it.
+func say_point(degrees: float) -> String:
+	return compass(true_bearing(degrees))
+
+
+## The place on the moon under a world place: dead-reckoned from where you
+## stand, as the sheet lays history.
+func point_at(x: float, z: float) -> Vector3:
+	var moon := world.moon
+	var facing := -moon.north().z
+	var off := Vector2((x - world.player_world_x()) * facing, -(z - world.player_world_z()) * facing) / moon.radius
+	return Sphere.from_flat(Sphere.point(moon.latitude, moon.longitude), off)
+
+
+## A place on the moon as world metres from where you stand: point_at's inverse.
+func ground_of(q: Vector3) -> Vector2:
+	var moon := world.moon
+	var facing := -moon.north().z
+	var off := Sphere.flat_from(Sphere.point(moon.latitude, moon.longitude), q) * moon.radius
+	return Vector2(world.player_world_x() + off.x * facing, world.player_world_z() - off.y * facing)
 
 
 ## Seconds as a station says them.
-static func _span(seconds: float) -> String:
+static func span(seconds: float) -> String:
 	return "%d s" % maxi(0, roundi(seconds)) if seconds < 90.0 else "%d min" % roundi(seconds / 60.0)
 
 
