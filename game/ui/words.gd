@@ -20,7 +20,7 @@ const MOON_GAP := 22.0
 const UNLIT := 0.72
 ## The list under the prop aside starts this far down the screen, and goes
 ## two to a line past this many.
-const ASIDE_TOP := 0.69
+const ASIDE_TOP := 0.71
 const ASIDE_ROWS := 6
 ## The corner's speaker, across, px.
 const SPEAKER := 30.0

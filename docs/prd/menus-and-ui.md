@@ -216,9 +216,9 @@ is a menu of its own, reached from the main menu and the system menu.
   brighten with it, and ???? for one still locked, which the selection passes over; the
   origin last played is highlighted, the Surveyor before any, so the piece on show stays as
   it is. The highlighted origin's piece shows aside, the last one shrinking away and the
-  next growing in as the selection moves, and under it on the right its gear, small: each
-  thing and how many, read from the kit as a run sets it down (`Kit.gear`), two to a line
-  once there are many. Then which mode, laid out the same over the chosen origin's piece
+  next growing in as the selection moves, and under it on the right its gear, at 17 on a
+  soft dark field of its own (the theme's `Field`): each thing and how many, read from the
+  kit as a run sets it down (`Kit.gear`), two to a line once there are many. Then which mode, laid out the same over the chosen origin's piece
   and gear: Normal, highlighted, "saves as you go", and Ironman, "death ends the run"; back
   goes back a step, the save untouched. The origin a run is begun or resumed as is kept in
   the profile (Profile & saves).
@@ -238,9 +238,10 @@ is a menu of its own, reached from the main menu and the system menu.
   while it plays, a cross while it's off, and it stays as you leave it (`Settings.music`).
 - **Into the game:** a fade to black, the run built (`game/run.tscn`, which is what
   `main.tscn` used to be), and back from black once the sand round you is solid.
-- **The system menu**, over the running game on a soft dark scrim, darkest behind its words
-  and lighter toward the screen's edges (the theme's `Scrim`, which every menu over a run
-  stands on): Options, Save in a Normal run, and Save & quit. Save keeps the menu up and its
+- **The system menu**, over the running game, its words at the menus' 20 on a soft dark
+  field close behind them, no box (`Field`), over a lighter wash darkest in the middle
+  (`Scrim`); every menu over a run stands so: Options, Save in a Normal run, and Save &
+  quit. Save keeps the menu up and its
   word says how it went: Saved, or Couldn't save. Nothing pauses.
 - **The death screen,** in a Normal run, over the running game: "You died", with Load
   last save, highlighted, and New run. Back doesn't close it. Load is Resume, through
@@ -265,9 +266,10 @@ is a menu of its own, reached from the main menu and the system menu.
   The look-tests keep their own keys and have no console.
 - **Options:** volume, fullscreen, vsync and render scale (confirm steps a value on,
   menu left and right change it either way), kept on this machine in
-  `user://settings.cfg`, apart from the profile; the controls list, read-only, every key
-  read from the bindings; and Reset profile behind a question, shown only when there is
-  a profile.
+  `user://settings.cfg`, apart from the profile; the controls list, the keys list's own
+  table at the menus' 20 with no box (`KeysList`): each key as bound now beside what it does
+  in a word or two, under Moving, Hands, You, Game and Dev, read-only until remapping
+  comes; and Reset profile behind a question, shown only when there is a profile.
 - **Saves and the profile** are reached only through `/root/Saves` and `/root/Profile`
   (Profile & saves), and a missing one means there are none: no Resume, and Save & quit
   becomes Quit to menu. Resume builds the world on the save's seed, puts the run back

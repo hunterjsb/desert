@@ -60,24 +60,19 @@ fill_to = Vector2(1, 0.5)
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_scrim"]
 texture = SubResource("GradientTexture2D_scrim")
 
-[sub_resource type="Gradient" id="Gradient_field"]
-offsets = PackedFloat32Array(0, 0.68, 1)
-colors = PackedColorArray(0, 0, 0, 0.6, 0, 0, 0, 0.55, 0, 0, 0, 0)
-
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_field"]
-gradient = SubResource("Gradient_field")
-width = 128
-height = 128
-fill = 2
-fill_from = Vector2(0.5, 0.5)
-fill_to = Vector2(1, 0.5)
-
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_field"]
-content_margin_left = 96.0
-content_margin_top = 44.0
-content_margin_right = 96.0
-content_margin_bottom = 44.0
-texture = SubResource("GradientTexture2D_field")
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_field"]
+content_margin_left = 28.0
+content_margin_top = 14.0
+content_margin_right = 28.0
+content_margin_bottom = 14.0
+bg_color = Color(0, 0, 0, 0)
+corner_radius_top_left = 48
+corner_radius_top_right = 48
+corner_radius_bottom_right = 48
+corner_radius_bottom_left = 48
+corner_detail = 12
+shadow_color = Color(0, 0, 0, 0.55)
+shadow_size = 56
 
 [sub_resource type="Gradient" id="Gradient_shade"]
 colors = PackedColorArray(0, 0, 0, 0, 0, 0, 0, 0.55)
@@ -179,7 +174,7 @@ DevConsoleOut/fonts/normal_font = ExtResource("2_7y804")
 DevConsolePanel/base_type = &"PanelContainer"
 DevConsolePanel/styles/panel = SubResource("StyleBoxFlat_dev_console")
 Field/base_type = &"PanelContainer"
-Field/styles/panel = SubResource("StyleBoxTexture_field")
+Field/styles/panel = SubResource("StyleBoxFlat_field")
 Fade/base_type = &"Panel"
 Fade/styles/panel = SubResource("StyleBoxFlat_ta3wi")
 Hint/base_type = &"RichTextLabel"
