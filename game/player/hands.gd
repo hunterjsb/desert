@@ -451,13 +451,13 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed("hands_throw") and held != null and not Controls.mouse_free:
 		throw()
 		get_viewport().set_input_as_handled()
-	elif event.is_action_pressed("reel_in") or event.is_action_pressed("pay_out"):
+	# Exactly, so ctrl and the wheel moving what you hold never reel a line too.
+	elif event.is_action_pressed("reel_in", false, true) or event.is_action_pressed("pay_out", false, true):
 		# Each wheel step is a press: a notch.
-		if reel.working() and reel.notch(1 if event.is_action_pressed("reel_in") else -1):
+		if reel.working() and reel.notch(1 if event.is_action_pressed("reel_in", false, true) else -1):
 			get_viewport().set_input_as_handled()
-	# Exactly, so the line's ctrl and the wheel never move what you hold too.
-	elif event.is_action_pressed("bring_near", false, true) or event.is_action_pressed("push_out", false, true):
-		if scroll(1 if event.is_action_pressed("bring_near", false, true) else -1):
+	elif event.is_action_pressed("bring_near") or event.is_action_pressed("push_out"):
+		if scroll(1 if event.is_action_pressed("bring_near") else -1):
 			get_viewport().set_input_as_handled()
 
 

@@ -76,7 +76,8 @@ silent.
 - **Reel in and pay out** (Hunter, 2026-10-16): on a line, they shorten and lengthen it
   (Rope & tethering). **Bring near and push out** are their own actions (Hunter,
   2026-10-17: "switch rope scrolling to control + scroll so it doesnt conflict with object
-  moving"): on anything you hold or have hold of, they bring it nearer or push it farther,
+  moving"; then, 2026-10-18, the other way round, as lines matter more: the wheel bare reels,
+  held with control it moves what you hold): on anything you hold or have hold of, they bring it nearer or push it farther,
   within reason, and never touch a line. *As built:* a notch is 0.25 m. What you carry goes from
   0.5 m to 2 m in front of your eyes, never nearer than clears you, and still stops short
   of the sand or anything in the way; what you have hold of goes from just clear of you
@@ -473,6 +474,16 @@ Console two late uses ([the vision](../vision.md#landmarks-and-endings)):
   a storm mini-map ([Wind & storms](wind-and-storms.md#instruments-and-the-console-screen-proposed-first-version-built)).
   Not said: what frame a legged robot is, or whether it stands on a deck mount, which takes one
   device the size of a crate.
+- **Teaching and taking the Walker** (agreed, 2026-10-18, [spec](../storms-signals-sailing-2026-10-18.md)).
+  The Walker is a legged survey robot that exists only to understand Zan's weather, indifferent to
+  its flock; the nomads followed it for centuries until it walked them into the anomaly. Survive
+  an anomaly recording your own sensor logs, plug your Console into the Walker and upload them,
+  and from then anomalies show on your map and its moon-wide feed flags them, for anyone
+  listening. It doesn't mind its chassis being taken as long as it keeps roaming and surveying;
+  kept still too long it goes bad (its feed degrades, its draw rises, its logs turn subtly wrong).
+  Taken before the nomads' line is done, they may go on pilgrimage and find their god gone, and
+  turn aggressive only if it hasn't been taught; teaching it afterwards calls them off. Aggro
+  mostly touches the endings.
 - **Captured hive mind tech (Idea).** Sealed deep in the black site, it "looks like an incredibly
   powerful Console mod," the endings session's route for a human to consume the other gods.
   Session 4, part 3 makes that ending hive mind start only, so this is an Idea with a clash

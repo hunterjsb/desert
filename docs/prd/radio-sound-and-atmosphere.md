@@ -94,6 +94,20 @@ it and it crackles.
 - **Not yet:** bumps crackling, distorted tracks in storms, more channels, lore, oracles,
   frequencies as finds and antennas.
 
+### Stations: the Walker and the living city (agreed, 2026-10-18 spec)
+
+From Hunter's [storms, signals & sailing spec](../storms-signals-sailing-2026-10-18.md). A station is a node with a place, a
+frequency, a range and what it says; its signal falls off with distance.
+- **The Walker's survey feed:** moon-wide, the strongest after the Ledger's; a dry log of bearings,
+  wind readings and terrain, the planet's weather hard to read but very useful. Found by scanning.
+  Its contact log records every signal it hears, indifferent to its flock: a nomad praying to it is
+  a bearing, and several from different places triangulate the living city.
+- **The living city's chatter:** a few km, for its own scouts; coded tones, no voices ("storm
+  coming, tether in", "city moving"), sometimes its own coordinates written as star positions, the
+  nomads navigating by the stars. Its frequency is found by exploring (scratched on a radio in the
+  dead city), its codes learned by noticing what follows them. Open: how the tones sound and how
+  many messages.
+
 ### The ghost relay
 
 *Agreed, session 4, part 2 ([lore session](../lore-session-2026-10-17-part-2.md)); loose, and not
@@ -209,6 +223,13 @@ Everything that matters can be heard, so you can read the world by ear:
 - **One table.** Every sound's file is named once, in `game/core/sounds.gd`, and a
   probe checks that each one the game names loads and that the buses exist.
 - **Not yet:** a turbine's whir by its speed, and clanks when things knock together.
+
+### Distant phenomena (agreed, 2026-10-18 spec)
+
+Gas-pocket dust plumes and far volcano plumes stay distant spectacles, never close enough to hurt
+([spec](../storms-signals-sailing-2026-10-18.md)): a gentle rumble by distance and no camera shake, arriving after you see it as
+thunder does after lightning (the delay sells the scale), losing its high end with distance, and
+a big plume marking a vent's direction to steer by.
 
 ## Atmosphere
 

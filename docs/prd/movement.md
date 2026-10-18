@@ -188,6 +188,18 @@ even storms that last for days.
   between the last tick and this one; the ticks never see it.
 - The numbers are in Tuning's Hoverboard group.
 
+### Dig and carve (agreed, 2026-10-18 spec; building)
+
+From Hunter's [storms, signals & sailing spec](../storms-signals-sailing-2026-10-18.md). The board's feel stays (never sinks, gets
+air, crouch pumps, kick, carving, the drift); move back becomes the **dig**: one edge drops so the
+hover field bites the sand, trading speed for sideways grip with a big spray. Moving back while
+steering digs into the carve; alone it swings the board sideways to a hockey stop. Digging past
+what the speed and slip allow catches an edge: a stumble off the board and a knock. The dug edge
+resists the sideways pull of a tow, which is what lets a kite-towed board tack. It lives or dies on
+its feedback: a rooster tail of sand off the dug edge, the board tilting, a little camera roll, the
+hum dropping under load with a gritty hiss growing, a whoosh on release, a small shake as the edge
+bites and a bigger one as it catches. Open: the catch threshold and what a wipeout costs.
+
 ### The patrol board: a superchassis (Agreed, session 4, part 3; not built)
 
 *Session 4, part 3 ([lore session](../lore-session-2026-10-17-part-3.md)); a novelty start's
@@ -372,6 +384,22 @@ your own camp's parts rather than found whole:
   tick rate; 8, furling in a breeze never tears the sail, and it raises again (Hunter: it
   couldn't be raised once brought down: the furled bundle's drag over the last of the cloth
   showing read as a tearing load). Profile & saves probe 16: a rigged camp resumes.
+
+### Sailing, from kite to yacht (agreed, 2026-10-18 spec; not built)
+
+Sailing is how hybrid play travels fast enough that storms are worth avoiding; the strongest wind
+is a storm's, so the fastest move is running just ahead of a front on its wind
+([spec](../storms-signals-sailing-2026-10-18.md)):
+1. **Kitesurf, early:** a minimal camp (chassis, shield, sail as one unit) ahead of you on the
+   board, a light control line to the sail, carving with the board's dug edge.
+2. **A larger camp:** sail in front, you in the middle, the camp close behind in the shield; a
+   hidden tow line runs from sail to camp, and you're the helm, not the load path.
+3. **Land yacht, from found parts:** a helm seat and a keel part on the camp; you ride it and steer.
+And the camp can sail itself downwind while you scout alongside.
+**Never make you the link between a heavy sail and a heavy camp:** it would fold you in half, and a
+small body under tension from both sides is where Jolt jitters. Without lateral grip you can only
+run downwind; the dug edge or the keel is what tacks. Open: where the helm seat and keel are found,
+and from which era.
 
 ### The dune sailboat (Agreed, session 4, part 3; not built)
 
