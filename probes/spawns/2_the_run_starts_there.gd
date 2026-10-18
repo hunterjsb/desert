@@ -73,8 +73,8 @@ func _wanted(kit: Kit) -> Dictionary:
 func _round_you(kit: Kit, spawn: Vector2, tuning: Tuning) -> String:
 	var sites := world.shape.sites
 	var near := func(kind: StringName, metres: float) -> bool:
-		return sites.nearest(spawn.x, spawn.y, metres, func(k: StringName, _x: float, _z: float) -> bool:
-			return k == kind, true) != null
+		return sites.nearest(spawn.x, spawn.y, metres, func(site: Site) -> bool:
+			return site.kind == kind, true) != null
 	match kit.start:
 		&"artery":
 			var deep := tuning.start_deep_m
