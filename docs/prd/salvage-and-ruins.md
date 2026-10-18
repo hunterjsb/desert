@@ -819,7 +819,9 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
   part 2 adds the crusader bunkers on older sites and the landmarks (both above).
 - **Lore through item descriptions** that hint and never state.
 - **Radio frequencies.**
-- **Beds in some ruins** (proposed, 2026-10-17; [Survival](survival.md#sleep-proposed)).
+- **Beds in some ruins** (proposed 2026-10-17, built 2026-10-18; [Survival](survival.md#sleep-as-built-2026-10-18)):
+  a kit piece marks boxes as beds, the hab pod's bunk and the house ruin's sleeping bench in its back
+  room; use on one sleeps there. Bedrolls lie on deserters' dugout floors and now and then on open sand.
 - **Seed vaults and Sister** (session 4, part 3; both above, neither built).
 - **Structures by era and the new loot model** (session 4, part 4; above): the kit per era with three
   exposure states, drift and expedition in place of loose finds on open sand, loot tables by era.
@@ -939,12 +941,16 @@ The sleep session (2026-10-17) adds two. Each is quoted on both sides and left s
   fixed thing you use. Not said: which ruin type or era has beds, whether a bed can be taken (as
   a bedroll), and where it sits. A roofed room keeps no weather out as built, since only a bubble
   or a dune's lee shelters you, so a ruin bed helps in a storm only under a shield. And oysters
-  "never find ruins" (the vision's playstyles), so they never see one.
+  "never find ruins" (the vision's playstyles), so they never see one. *Built:* a bed is a box of
+  the ruin's, fixed, which use works; the hab pod's bunk and the house ruin's bench; it can't be
+  taken, and sleeping on it in a storm needs a shield.
 - **Loot while you sleep.** Here: "Things surfacing during a storm" is a full-version line, and
   finds are laid out when a chunk's ground becomes solid; a loaded chunk only "remembers what you
   took." The session: "Storm-loot mechanics will help once they're in." Not said whether a storm
   slept through lays things bare as it passes, or only one you're awake for, and how an unseen
-  span would place them. The sleep's arithmetic would have to say what surfaced.
+  span would place them. The sleep's arithmetic would have to say what surfaced. *As built:* nothing
+  surfaces yet; a catch line's drift since you lay down comes in at once on waking, as after any
+  jump, at most its bound.
 
 Session 4, part 4 (2026-10-17, [the plants session](../plants-worldgen-ruins-2026-10-17.md)) adds the
 following. Each is quoted old and new. The newest session wins in the living docs, so this PRD follows
