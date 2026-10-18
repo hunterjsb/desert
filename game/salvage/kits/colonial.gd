@@ -59,7 +59,8 @@ static func _pylon_stub() -> StructureKit.Piece:
 	StructureKit.far_box(p, Vector3(-0.3, 0.4, -0.3), Vector3(0.3, 4.8, 0.3), DARK)
 	StructureKit.far_box(p, Vector3(-0.15, 4.4, -1.4), Vector3(0.15, 4.7, 1.4), Paint.STEEL)
 	StructureKit.glint(p, Vector3(0.0, 4.7, 0.0), Vector3(0.0, 1.0, 0.25), 4.0)
-	StructureKit.glint(p, Vector3(0.0, 4.36, 1.25), Vector3(0.3, 0.8, 0.5), 6.0)
+	StructureKit.glint(p, Vector3(0.1, 4.3, 1.25), Vector3(0.9, 0.35, 0.25), 5.0)
+	StructureKit.glint(p, Vector3(-0.1, 4.3, -1.25), Vector3(-0.9, 0.35, -0.25), 5.0)
 	return p
 
 
@@ -101,8 +102,8 @@ static func _pipeline_segment() -> StructureKit.Piece:
 	p.look = _pipe_look
 	# Its lengths in a row are a run of old pipe across the dunes.
 	StructureKit.far_box(p, Vector3(-0.7, 0.4, -6.0), Vector3(0.7, 1.9, 6.0), PANEL)
-	StructureKit.glint(p, Vector3(0.0, 1.8, -3.0), Vector3(0.35, 1.0, 0.0), 5.0)
-	StructureKit.glint(p, Vector3(0.0, 1.8, 3.5), Vector3(-0.35, 1.0, 0.0), 5.0)
+	StructureKit.glint(p, Vector3(0.66, 1.35, -3.0), Vector3(0.94, 0.34, 0.0), 4.0)
+	StructureKit.glint(p, Vector3(-0.66, 1.35, 3.5), Vector3(-0.94, 0.34, 0.0), 4.0)
 	return p
 
 
@@ -213,7 +214,8 @@ static func _relay_mast() -> StructureKit.Piece:
 	StructureKit.far_box(p, Vector3(-0.14, 14.0, -0.14), Vector3(0.14, 14.3, 0.14), ORANGE)
 	# Its dish, and the lamp's glass on its top.
 	StructureKit.glint(p, Vector3(0.0, 12.9, 0.62), Vector3(0.0, 0.25, 0.97), 5.0)
-	StructureKit.glint(p, Vector3(0.0, 14.2, 0.0), Vector3(0.4, 0.6, -0.7), 4.0)
+	StructureKit.glint(p, Vector3(0.1, 14.15, 0.1), Vector3(0.7, 0.3, 0.6), 6.0)
+	StructureKit.glint(p, Vector3(-0.1, 14.15, -0.1), Vector3(-0.7, 0.3, -0.6), 6.0)
 	return p
 
 

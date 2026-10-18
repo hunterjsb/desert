@@ -73,6 +73,7 @@ static func _wreck_hull() -> StructureKit.Piece:
 	for side in [-1.0, 1.0]:
 		StructureKit.far_box(p, Vector3(side * 2.7 - 0.6, 0.6, 1.0), Vector3(side * 2.7 + 0.6, 1.8, 5.5), GUNMETAL)
 	StructureKit.glint(p, Vector3(0.0, 1.9, -6.22), Vector3(0.0, 0.3, -1.0), 3.0)
+	StructureKit.glint(p, Vector3(2.21, 1.6, -1.5), Vector3(1.0, 0.25, 0.1), 3.0)
 	StructureKit.glint(p, Vector3(0.6, 3.27, -2.0), Vector3(0.1, 1.0, -0.2), 4.0)
 	StructureKit.glint(p, Vector3(0.0, 3.1, 5.1), Vector3(0.0, 0.7, 0.7), 6.0)
 	return p

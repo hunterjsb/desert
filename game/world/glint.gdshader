@@ -15,7 +15,7 @@ render_mode unshaded, blend_add, depth_draw_never, cull_disabled, shadows_disabl
 uniform vec3 sun_dir = vec3(0.0, 1.0, 0.0);
 uniform float glare = 0.0;
 uniform vec3 sun_light = vec3(1.0, 0.95, 0.85);
-uniform float peak_px = 9.0;
+uniform float peak_px = 12.0;
 uniform float brightness = 6.0;
 // The haze's begin and end, m, and the most of the view it hides.
 uniform vec3 haze = vec3(400.0, 9000.0, 0.7);

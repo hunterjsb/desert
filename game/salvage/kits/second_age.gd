@@ -132,7 +132,8 @@ static func _wayshrine() -> StructureKit.Piece:
 	p.look = _wayshrine_look
 	# The water in its basin, and its glazed cap.
 	StructureKit.glint(p, Vector3(0.0, 0.8, 0.1), Vector3(0.0, 1.0, 0.0), 3.0)
-	StructureKit.glint(p, Vector3(0.21, 2.4, -0.58), Vector3(0.0, 0.7, 0.7), 8.0)
+	StructureKit.glint(p, Vector3(0.6, 2.2, -0.4), Vector3(0.85, 0.4, 0.35), 5.0)
+	StructureKit.glint(p, Vector3(-0.1, 2.2, -0.2), Vector3(-0.5, 0.4, 0.75), 5.0)
 	return p
 
 
@@ -215,7 +216,8 @@ static func _watchtower() -> StructureKit.Piece:
 	StructureKit.far_box(p, Vector3(-3.0, 4.5, -3.0), Vector3(3.0, 7.2, 3.0), LIME)
 	StructureKit.far_box(p, Vector3(-3.0, 7.2, -3.0), Vector3(3.0, 8.6, 3.0), LIME)
 	StructureKit.far_box(p, Vector3(1.2, 7.5, -2.8), Vector3(2.8, 9.58, -1.2), CLAY)
-	StructureKit.glint(p, Vector3(2.0, 9.2, -2.0), Vector3(0.3, 0.8, 0.4), 8.0)
+	StructureKit.glint(p, Vector3(2.7, 9.0, -1.7), Vector3(0.85, 0.4, 0.35), 5.0)
+	StructureKit.glint(p, Vector3(1.6, 9.0, -1.3), Vector3(-0.5, 0.4, 0.75), 5.0)
 	return p
 
 

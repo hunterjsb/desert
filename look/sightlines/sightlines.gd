@@ -50,11 +50,13 @@ func _ready() -> void:
 			await _shoot(name, "%s %.0f m off" % [seen.kind, seen.distance_to(spawn.x, spawn.y)])
 		if kit.start == &"artery":
 			await _far_tower()
+			await _glint(0.2)
 			costs.append(await _cost("camp-free"))
 			await _afk()
 			costs.append(await _cost("AFK camp"))
 		if kit.start == &"wayshrine":
-			await _glint()
+			if not FileAccess.file_exists(_out.path_join("glint.png")):
+				await _glint(0.0)
 			await _road(&"pilgrim_road", "road_saltbush")
 			await _road(&"spoke", "road_pylons")
 	for line in costs:
@@ -115,9 +117,10 @@ func _far_tower() -> void:
 		Vector2(drawn.x - from.x, drawn.z - from.z).length(), clear / Skyline.PIXEL])
 
 
-## The moment today, and the place within a few tens of metres of where you
-## are, a glint is at its brightest, one far off before one near.
-func _glint() -> void:
+## The moment today, and the place within a short walk of where you are, a
+## glint is at its brightest, one far off before one near: shot if it's past
+## `least` (a near one counts a tenth).
+func _glint(least: float) -> void:
 	var spawn := world.spawn
 	var day := world.weather.day
 	var moon := world.moon
@@ -127,10 +130,11 @@ func _glint() -> void:
 	for site in skyline.seen():
 		for each in skyline.glints_of(site):
 			spots.append(each)
+	# Where you are, and the rises round you a short walk off.
 	var eyes: Array[Vector3] = []
-	for ring in 4:
-		for k in (1 if ring == 0 else 8):
-			eyes.append(_eye_at(spawn + Vector2.from_angle(TAU * k / 8.0) * ring * 25.0))
+	for ring in 5:
+		for k in (1 if ring == 0 else 12):
+			eyes.append(_eye_at(spawn + Vector2.from_angle(TAU * k / 12.0) * ring * 75.0))
 	var best := 0.0
 	var when := t0
 	var spot := Vector3.ZERO
@@ -155,8 +159,8 @@ func _glint() -> void:
 						spot = at
 						from = eye
 		t += 10.0
-	if best <= 0.0:
-		print("sightlines: glint, none today")
+	if best <= least:
+		print("sightlines: glint, none past %.1f today" % least)
 		return
 	world.time = when
 	await _ticks(10)

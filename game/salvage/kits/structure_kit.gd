@@ -400,8 +400,10 @@ static func far_box(p: Piece, lo: Vector3, hi: Vector3, tone: Color) -> void:
 	p.far.append([AABB(lo, hi - lo), tone])
 
 
-## A spot the sun can catch, facing `facing` in plan axes; a flat plate's
-## sparkle sweeps a few degrees, a curve's wider and dimmer.
+## A spot the sun can catch, facing `facing` in plan axes, sweeping a few
+## degrees. Seen from far off a glint reaches your eye only off a face
+## turned up by about half the sun's height, so a curve takes a spot or two
+## facing out low; what faces the sky glints for those above it.
 static func glint(p: Piece, at: Vector3, facing: Vector3, degrees := 3.0) -> void:
 	p.glints.append([at, facing.normalized(), deg_to_rad(degrees)])
 

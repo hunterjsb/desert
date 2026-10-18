@@ -421,7 +421,7 @@ past that the far ring showed the dunes alone.
   in a basin, the way each faces and how wide its sparkle sweeps, 3° to 8°, each site's turned a little
   by its loot seed. A glint lights where the way it faces halves the angle between the sun and your eye,
   a smooth function of the three, so it swells and fades as you or the sun move and never strobes, and
-  it's a few pixels across (3 to 9, `glint_px`) at any distance, dimmed by the haze. None at night, behind
+  it's a few pixels across (3 to 12, `glint_px`) at any distance, dimmed by the haze. None at night, behind
   Tu, in a storm round you, or where a storm stands at it or between (the storm map's fronts, read in its
   shader), and only where the site's state leaves it bare of sand. Near, it's on the structure; past the
   built ground, on its stand-in. The sun turns once in a 20-minute day, so a plate's sparkle comes and

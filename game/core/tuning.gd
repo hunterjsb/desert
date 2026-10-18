@@ -110,7 +110,7 @@ static var _current: Tuning
 @export var skyline_thinnest_px: float = 2.0
 ## A glint's sparkle at its brightest, pixels across, and how bright, times
 ## the sun on white.
-@export var glint_px: float = 9.0
+@export var glint_px: float = 12.0
 @export var glint_brightness: float = 6.0
 
 @export_group("Light")
