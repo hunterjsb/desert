@@ -283,7 +283,7 @@ static func clearance(shape: TerrainShape, tuning: Tuning, eye: Vector3, to: Vec
 	var upto := dist - short
 	while d < upto:
 		var at := from + way * d
-		if exact and not _on_loaded(tuning, center, at):
+		if exact and not on_loaded(tuning, center, at):
 			break
 		worst = maxf(worst, (drawn(shape, tuning, center, at.x, at.y) - eye.y) / d)
 		d = d + 1.0 if exact else next_look(d)
@@ -304,7 +304,8 @@ static func clearance(shape: TerrainShape, tuning: Tuning, eye: Vector3, to: Vec
 	return to.y - eye.y - (worst * dist if worst > -INF else -INF)
 
 
-static func _on_loaded(tuning: Tuning, center: Vector2i, at: Vector2) -> bool:
+## Whether a world place is on the chunks loaded round `center`.
+static func on_loaded(tuning: Tuning, center: Vector2i, at: Vector2) -> bool:
 	var off := Vector2i(floori(at.x / tuning.chunk_size), floori(at.y / tuning.chunk_size)) - center
 	return maxi(absi(off.x), absi(off.y)) <= tuning.view_radius
 
@@ -312,7 +313,7 @@ static func _on_loaded(tuning: Tuning, center: Vector2i, at: Vector2) -> bool:
 ## The ground as it's drawn at a world place with the chunks loaded round
 ## `center`: the dunes on them, the far ring's past them.
 static func drawn(shape: TerrainShape, tuning: Tuning, center: Vector2i, x: float, z: float) -> float:
-	return shape.dunes(x, z) if _on_loaded(tuning, center, Vector2(x, z)) else FarRing.ground(shape, tuning, x, z)
+	return shape.dunes(x, z) if on_loaded(tuning, center, Vector2(x, z)) else FarRing.ground(shape, tuning, x, z)
 
 
 ## The next place along a sightline it's looked at, m: closer together near

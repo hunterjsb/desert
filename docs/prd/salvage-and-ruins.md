@@ -454,12 +454,12 @@ past that the far ring showed the dunes alone.
   supply at most 0.15, five tried, 1.5 km or more apart), and its search sets it out behind one of its
   line's relay masts so the mast stands on a spot of the ground where it would show, on the way in
   toward Tu; the line it starts off may now be as near as the deep desert's 600 m. On 32 seeds every
-  Surveyor start keeps all its rules with a relay mast 606 to 960 m off on its horizon, found in 0.18 to
-  0.76 s once a run.
+  Surveyor start keeps all its rules with a relay mast 606 to 912 m off on its horizon, judged at its
+  stand-in's height on the far ring, found in 0.23 to 0.79 s once a run.
 
 **How far each reads, at 1920x1080, unzoomed.** A relay mast, a dark post with an orange top, to 3 km:
-the Surveyor's at 960 m, 5.4 px tall as it stands, drawn 14 by 4, and one at 1.66 km, 3.1 px as it
-stands, drawn 12 by 3.4; a watchtower likewise. A wreck's hull to 2 to 3 km exposed (the Salvager's at
+seed 1234's Surveyor's at 656 m, 7.8 px tall as it stands, drawn 16 by 4.5, and the same mast from
+1.86 km, 2.8 px as it stands, drawn 12 by 3.3; a watchtower likewise. A wreck's hull to 2 to 3 km exposed (the Salvager's at
 143 m, a dark shape on the skyline); a pylon stub only once a storm has stripped it (buried, its
 crossarm is a 2 px dash at a kilometre); a saltbush line to 3 km as a dark line across the dunes facing
 you; a glint, a 16 px white star at its brightest, to 3 km.

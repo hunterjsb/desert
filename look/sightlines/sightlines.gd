@@ -91,8 +91,8 @@ func _begin(kit: Kit) -> void:
 
 
 ## A far mast or watchtower on the horizon: a landmark a kilometre and more
-## off whose top shows, from where you are or a walk back from the nearest,
-## the farthest found.
+## off whose top clears the dunes, from where you are, a walk back from the
+## nearest or the rises round, the farthest found.
 func _far_tower(spawn: Vector2) -> void:
 	var best: Structure = null
 	var from := Vector3.ZERO
@@ -110,35 +110,40 @@ func _far_tower(spawn: Vector2) -> void:
 		var away := (spawn - Vector2(landmarks[0].x, landmarks[0].z)).normalized()
 		for k in range(2, 13):
 			eyes.append(spawn + away * k * 100.0)
+	# And the highest ground a short walk off.
+	var rises := []
+	for j in range(-8, 9):
+		for i in range(-8, 9):
+			var at := spawn + Vector2(i, j) * 50.0
+			rises.append([world.shape.dunes(at.x, at.y), at])
+	rises.sort_custom(func(a: Array, b: Array) -> bool: return a[0] > b[0])
+	for each in rises.slice(0, 12):
+		eyes.append(each[1])
 	for at in eyes:
 		var eye := _eye_at(at)
 		var center := world.terrain.chunk_at(at.x, at.y)
 		for site in landmarks:
 			var by := site.distance_to(at.x, at.y)
-			var drawn := world.terrain.skyline.stand_in(site)
-			if by < 1100.0 or by <= far or drawn.is_empty():
+			if by < 1100.0 or by <= far:
 				continue
-			if Skyline.clearance(world.shape, world.tuning, eye, Vector3(drawn.x, drawn.top, drawn.z), center, site.reach) \
-					>= world.tuning.start_sight_px * Skyline.PIXEL * by:
+			# Its top as drawn from there: on the far ring, past that eye's built ground.
+			var top := FarRing.ground(world.shape, world.tuning, site.x, site.z) + site.top_in(site.state())
+			if Skyline.clearance(world.shape, world.tuning, eye, Vector3(site.x, top, site.z), center, site.reach) > 0.0:
 				far = by
 				best = site
 				from = eye
 	if best == null:
 		print("sightlines: far_tower, none")
 		return
-	var drawn := world.terrain.skyline.stand_in(best)
-	await _aim(from, Vector3(drawn.x, drawn.top - 3.0, drawn.z))
-	# Walked back, what's drawn may have moved with the sheet: aimed again.
-	drawn = world.terrain.skyline.stand_in(best) if not world.terrain.skyline.stand_in(best).is_empty() else drawn
-	await _aim(from, Vector3(drawn.x, drawn.top - 3.0, drawn.z), false)
-	await _shoot("far_tower", "%s %.0f m off%s" % [best.kind, Vector2(drawn.x - from.x, drawn.z - from.z).length(),
-		_drawn(best, from)])
+	var top := FarRing.ground(world.shape, world.tuning, best.x, best.z) + best.top_in(best.state())
+	await _aim(from, Vector3(best.x, top - 3.0, best.z))
+	await _shoot("far_tower", "%s %.0f m off%s" % [best.kind, best.distance_to(from.x, from.z), _drawn(best, from)])
 
 
 ## How a landmark's stand-in is drawn from an eye, as said: its own height in
 ## pixels at 1080 rows, and the least the skyline draws it (skyline.gdshader).
 func _drawn(site: Structure, eye: Vector3) -> String:
-	if not site.piece.far_landmark or world.terrain.is_loaded_at(site.x, site.z):
+	if not site.piece.far_landmark:
 		return ""
 	var d := Vector2(site.x - eye.x, site.z - eye.z).length()
 	var own := site.top_in(site.state()) / d / Skyline.PIXEL

@@ -177,9 +177,12 @@ static func _shows(shape: TerrainShape, p: Vector3, each: Dictionary, tuning: Tu
 	if site == null or not site.stands():
 		return null
 	var eye := Vector3(at.x, shape.dunes(at.x, at.y) + Skyline.EYE, at.y)
-	var top := Vector3(site.x, site.pad() + site.top_in(Exposure.BURIED), site.z)
-	var dist := Vector2(top.x - eye.x, top.z - eye.z).length()
 	var center := Vector2i(floori(at.x / tuning.chunk_size), floori(at.y / tuning.chunk_size))
+	# Past the loaded ground it's its stand-in, on the far ring's ground.
+	var base := site.pad() if Skyline.on_loaded(tuning, center, Vector2(site.x, site.z)) \
+		else FarRing.ground(shape, tuning, site.x, site.z)
+	var top := Vector3(site.x, base + site.top_in(Exposure.BURIED), site.z)
+	var dist := Vector2(top.x - eye.x, top.z - eye.z).length()
 	var least := (tuning.start_sight_px + SIGHT_SPARE) * Skyline.PIXEL
 	return site if Skyline.clearance(shape, tuning, eye, top, center, site.reach, exact) >= least * dist else null
 
@@ -297,7 +300,7 @@ static func _lookouts(shape: TerrainShape, tuning: Tuning, looked: Dictionary) -
 			var here := at + way * d
 			if d >= next:
 				next += LOOKOUT_STEP
-				var top := shape.dunes(here.x, here.y) + shows
+				var top := Skyline.drawn(shape, tuning, center, here.x, here.y) + shows
 				if top - eye - worst * d >= least * d and _takes(shape, here, mast):
 					spots.append(Vector2(bearing, d))
 			worst = maxf(worst, (Skyline.drawn(shape, tuning, center, here.x, here.y) - eye) / d)
