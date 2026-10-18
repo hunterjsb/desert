@@ -1,10 +1,11 @@
 extends MenuProbe
 ## Spawns probe 3: the origin and its start outlast a save. A Homesteader's
 ## run saved out on the sand and resumed is the Homesteader's still, begun
-## at the same start on the moon, you where you stood; a new run after a
-## death there comes as a Homesteader again, on a new seed. A save from
-## before origins has none: it resumes with the start it had, the tuning's,
-## and no origin of its own.
+## at the same start on the moon and clock time, Resume calling it day 1,
+## you where you stood; a new run after a death there comes as a Homesteader
+## again, on a new seed. A save from before origins has none: it resumes
+## with the start it had, the tuning's, and no origin of its own; one from
+## before the run's start was kept counts its days from the clock's zero.
 
 
 func run() -> void:
@@ -19,13 +20,17 @@ func run() -> void:
 	var stood := Vector2(world.player_world_x(), world.player_world_z())
 	var moon := Vector2(world.moon.latitude, world.moon.longitude)
 	check(main.save_run(), "the Homesteader's run saved")
+	var begun_at := world.began
+	var summary := Snapshot.summary(SaveFile.read(saves().path(), saves().KIND, saves().VERSION).data)
+	check(begun_at > 0.0 and summary.day == 1, "Resume calls a run begun %.1f days on the clock day %d"
+		% [begun_at / (world.tuning.day_minutes * 60.0), summary.day])
 	await main._quit_to_menu()
 	main.resume()
 	await faded_in()
 	if saves().restoring:
 		await saves().restored
-	check(main.in_run() and world.has_meta(&"resumed") and world.kit == homesteader and world.start == began,
-		"resumed, it's the Homesteader's run from the same start")
+	check(main.in_run() and world.has_meta(&"resumed") and world.kit == homesteader and world.start == began
+		and world.began == begun_at, "resumed, it's the Homesteader's run from the same start")
 	check(Vector2(world.player_world_x(), world.player_world_z()).distance_to(stood) < 0.1
 		and Vector2(world.moon.latitude, world.moon.longitude).distance_to(moon) < 1e-6,
 		"you're back where you stood, there on the moon too")
@@ -46,6 +51,7 @@ func run() -> void:
 	check(main.save_run(), "the run with no origin saved")
 	var data: Dictionary = SaveFile.read(saves().path(), saves().KIND, saves().VERSION).data
 	data.erase("kit")
+	data.erase("began")
 	SaveFile.write(saves().path(), saves().KIND, saves().VERSION, data)
 	await main._quit_to_menu()
 	main.resume()
@@ -55,6 +61,7 @@ func run() -> void:
 	var tuning := Tuning.current()
 	var old_start := Sphere.point(deg_to_rad(tuning.spawn_latitude_degrees), deg_to_rad(tuning.spawn_longitude_degrees))
 	check(main.in_run() and world.has_meta(&"resumed") and world.kit == null and world.start == old_start
+		and world.began == 0.0
 		and Sphere.point(world.moon._spawn_latitude, world.moon._spawn_longitude).distance_to(old_start) < 1e-6
 		and Vector2(world.moon.latitude, world.moon.longitude).distance_to(moon) < 1e-6,
 		"a save from before origins resumes with the start it had")

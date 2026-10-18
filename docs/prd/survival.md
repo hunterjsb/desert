@@ -610,6 +610,8 @@ Death means a new run (see Runs in the vision).
   of a day to a day (Hunter, 2026-10-18: "it took me 3 sleeps and about 100 hours to sleep
   through that storm"): the start looks on through the mornings for one, so the run's
   clock may begin days in, and with none in reach it takes the first storm that comes.
+  The run's days count from its own start, kept in its save, so it begins on day 1
+  wherever a day is shown (Resume, the Console's clock).
   On ninety starts (thirty worlds, each origin) the first storm ran 5 to 20 minutes, the
   median 14, the clock beginning on day 10 at the median and day 122 at the latest;
   before, a third ran past a day, the longest 92 minutes, and the clock began by day 24.

@@ -50,9 +50,10 @@ func is_day(t: float, longitude: float) -> bool:
 	return absf(time_of_day(t, longitude) - 0.5) < 0.25
 
 
-## Whole local days since the run began, counting the first as day 1.
-func day(t: float, longitude: float) -> int:
-	return floori(_clock(t, longitude)) + 1
+## Local days since the run began at world time `began`, counting the day
+## it began as day 1.
+func day(t: float, longitude: float, began := 0.0) -> int:
+	return floori(_clock(t, longitude)) - floori(_clock(began, longitude)) + 1
 
 
 ## How far round its orbit Zan is: 0 with the sun behind Tu, 0.5 with Tu full.

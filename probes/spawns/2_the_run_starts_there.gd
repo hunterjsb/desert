@@ -4,7 +4,8 @@ extends MenuProbe
 ## any; each origin chosen, then Normal, starts its run there: the moon at
 ## that origin's start, a clear morning there with the first storm three to
 ## eight minutes off and passing within a day, never the field's days-long
-## tail, its kit beside you and on you, and round you the
+## tail, on the run's day 1 however far on the clock, its kit beside you and
+## on you, and round you the
 ## history its start was chosen by, as the sheet lays it: nothing a path or
 ## settlement left near the Surveyor, the Salvager's wreck field, the
 ## Homesteader's road and wayshrine.
@@ -41,6 +42,9 @@ func run() -> void:
 		var day := tuning.day_minutes * 60.0
 		var lasts := field.next_change(spawn.x, spawn.y, world.time + due, 30.0 * day, 10.0)
 		check(lasts <= day, "the %s's first storm passes within a day (%.2f days)" % [kit.label, lasts / day])
+		var today := world.weather.day.day(world.time, world.moon.longitude, world.began)
+		check(today == 1, "the %s's run begins on its day 1 (day %d, %.1f days on the clock)"
+			% [kit.label, today, world.time / day])
 		var carried := PackedStringArray(world.player.suit.carried.map(func(b: Node) -> String: return str(b.get_meta(&"catalog"))))
 		check(_made(world.get_meta(&"kit", [])) == _wanted(kit)
 			and carried == PackedStringArray(kit.carried_ids().map(func(id: StringName) -> String: return str(id))),
