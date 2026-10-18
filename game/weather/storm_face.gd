@@ -15,6 +15,8 @@ const TILT_B := Basis(Vector3(0.6967, 0.3307, 0.6366), Vector3(-0.4258, 0.9047, 
 	Vector3(-0.5711, -0.2689, 0.7756))
 ## The billow noise: 64 texels a side, tiling.
 const NOISE := 64
+## Twin of the shader's: the ring's light counts each metre of depth as this many.
+const RING_DEPTH := 8.0
 
 var material := ShaderMaterial.new()
 
@@ -112,10 +114,14 @@ func sun_at(p: Vector3, sun: Vector3) -> float:
 	return minf(1.0, exp(-0.004 * path) + 0.3 * exp(-0.0008 * path))
 
 
-## Twin of ring_through(): the eclipse ring's red light left at a point, which
-## carries far deeper into the dust than the sun's.
+## Twin of ring_through(ring_path()): the eclipse ring's red light left at a
+## point, which carries far deeper into the dust than the sun's, in from the
+## billowed face and down through the roof.
 func ring_at(p: Vector3, sun: Vector3) -> float:
-	return exp(-0.00015 * _sun_path(p, sun))
+	if not _map.ready:
+		return 1.0
+	var depth := edge_at(p)
+	return exp(-0.00015 * minf(_roof_path(p.y) / maxf(sun.y, 0.02), maxf(depth, 0.0) * RING_DEPTH))
 
 
 ## Twin of storm_sun_path: metres of roof-thin dust between a point and the sun.

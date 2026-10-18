@@ -7,10 +7,13 @@ extends Node
 ## glow all round the horizon; and a full-Tu night once the eye has adapted.
 ## With --storm, in a full storm everywhere, blowing: mid-totality out in the
 ## dust, then the next day's inside a bubble at a small camp with its lamp lit.
+## With --walls, the run's own storms, found in its weather: a wall coming at
+## you from WALL_AT m and the deep inside of one, each at mid-totality and by
+## day.
 ## It prints each shot's eye and the sand's lightness (CIE L*) low in the
 ## frame, and what the eclipse's light costs the GPU at 1920x1080 at
 ## mid-totality, against the same frame without it:
-##   godot --path . --disable-vsync res://look/eclipse/eclipse.tscn -- --capture <dir> [--storm]
+##   godot --path . --disable-vsync res://look/eclipse/eclipse.tscn -- --capture <dir> [--storm|--walls]
 ## look/eclipse/shoot.sh shoots both and builds the sheet. A small window that
 ## never takes focus, nothing but this script moving anything, and silence.
 
@@ -29,12 +32,18 @@ const CAMP := [
 	[&"crate_frame", -1.6, 1.2, 20.0, [&"battery", &"lamp"]],
 	[&"planter", 1.8, 0.4, -10.0, [&"battery", &"carrot", &"carrot"]],
 ]
+## How far off the wall stands, m, and how far up you look at it.
+const WALL_AT := 500.0
+const PITCH_WALL := 6.0
 const GPU_FRAMES := 60
 const GPU_ROUNDS := 4
 
 @onready var world: World = $World
 
 var _storm := OS.get_cmdline_user_args().has("--storm")
+var _walls := OS.get_cmdline_user_args().has("--walls")
+## Where you stand, world metres: spawn, or a storm found in the run's weather.
+var _place := Vector2.ZERO
 var _out := ""
 ## While set, each frame's drawing goes without the eclipse's light.
 var _without := false
@@ -45,7 +54,10 @@ func _enter_tree() -> void:
 	tuning.run_seed = SEED
 	tuning.eye_adapts = true
 	tuning.salvage = false
-	if _storm:
+	if _walls:
+		# The run's own weather, as the game plays it.
+		pass
+	elif _storm:
 		# A full storm everywhere that never passes, its wind blowing.
 		tuning.storm_ramp = 0.04
 		tuning.storm_threshold = -2.0
@@ -99,7 +111,12 @@ func _capture() -> void:
 	var day := world.weather.day
 	var spawn_lon := tuning.spawn_longitude_degrees
 	var mid := day.next_eclipse(0.0)
+	_place = world.spawn
 	print("eclipse: Tu %d° across, %.1f s of totality" % [roundi(tuning.tu_degrees), day.totality()])
+	if _walls:
+		await _storms()
+		get_tree().quit()
+		return
 	if _storm:
 		await _watch(mid, {0.0: "storm_out"})
 		await _gpu_cost("storm, out in the dust")
@@ -123,7 +140,8 @@ func _capture() -> void:
 ## Watches the eclipse round mid from BEFORE s ahead of first contact, live,
 ## the eye adapting as it goes, turned this far from Tu and looking up this
 ## far, and saves a shot at each moment: -2 the sun's last LAST_LIGHT, -1
-## second contact, 0 mid-totality, 1 third contact.
+## second contact, 0 mid-totality, 0.1 and 0.2 one and two seconds on, 1
+## third contact.
 func _watch(mid: float, moments: Dictionary, turn := 0.0, pitch := PITCH_TO_TU) -> void:
 	var day := world.weather.day
 	var spawn_lon := world.tuning.spawn_longitude_degrees
@@ -139,7 +157,7 @@ func _watch(mid: float, moments: Dictionary, turn := 0.0, pitch := PITCH_TO_TU) 
 	var last_light := first
 	while day.sun_shown(last_light) > LAST_LIGHT:
 		last_light += 0.01
-	var at := {-2.0: last_light, -1.0: second, 0.0: mid, 1.0: third}
+	var at := {-2.0: last_light, -1.0: second, 0.0: mid, 1.0: third, 0.1: mid + 1.0, 0.2: mid + 2.0}
 	world.time = first - BEFORE
 	world.time_warp = 0.0
 	world.moon.place(0.0, spawn_lon)
@@ -165,6 +183,40 @@ func _watch(mid: float, moments: Dictionary, turn := 0.0, pitch := PITCH_TO_TU) 
 	print("eclipse: totality %.1f s; s from second contact and stops open: %s" % [third - second, ", ".join(series)])
 
 
+## The run's own storms: a wall WALL_AT m upwind, faced, and the deep inside
+## of one, facing Tu; each at an eclipse's mid-totality, watched live, and by
+## day.
+func _storms() -> void:
+	var day := world.weather.day
+	var spawn_lon := world.tuning.spawn_longitude_degrees
+	for when: String in ["eclipse", "day"]:
+		for kind: String in ["front", "deep"]:
+			var name := "%s_%s" % [kind, when]
+			var scenario := {"key": name, "kind": kind, "distance": WALL_AT, "day": [0.4, 0.55]}
+			if when == "eclipse":
+				scenario["eclipse"] = -day.totality() * 0.5
+			var place := Scenarios.find(world, scenario)
+			if place.is_empty():
+				print("eclipse: %s: none in the run's weather" % name)
+				continue
+			_place = Vector2(place.x, place.z)
+			world.respawn(place.x, place.z, 0.0, place.time)
+			world.time_warp = 0.0
+			await _ground()
+			for i in 600:
+				if world.weather.map.ready:
+					break
+				await get_tree().process_frame
+			var upwind := -world.weather.field.prevailing_at(place.time).normalized()
+			var yaw := atan2(-upwind.x, -upwind.y)
+			if when == "eclipse":
+				var turn := yaw - _to_tu(place.time, spawn_lon) if kind == "front" else 0.0
+				var moments := {0.0: name} if kind == "front" else {0.0: name, 0.1: name + "_1s", 0.2: name + "_2s"}
+				await _watch(place.time, moments, turn, PITCH_WALL if kind == "front" else PITCH_TO_TU)
+			else:
+				await _shot(name, place.time, yaw, PITCH_WALL)
+
+
 ## A moment shot once the eye has settled on it.
 func _shot(name: String, t: float, yaw: float, pitch: float) -> void:
 	world.time = t
@@ -180,7 +232,7 @@ func _shot(name: String, t: float, yaw: float, pitch: float) -> void:
 
 func _stand(yaw: float, pitch: float) -> void:
 	var player := world.player
-	var at := Vector3(world.engine_x(world.spawn.x), 0.0, world.engine_z(world.spawn.y))
+	var at := Vector3(world.engine_x(_place.x), 0.0, world.engine_z(_place.y))
 	player.global_position = Vector3(at.x, world.height_under(at) + 1.65, at.z) - player.camera.position
 	player.rotation.y = yaw
 	player.camera.rotation_degrees.x = pitch
