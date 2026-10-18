@@ -53,5 +53,7 @@ integrated loudness, peaks never past -6 dBTP. A hard limiter on Master holds -1
 | radio_eye.ogg | the Eye's drone, now and then on its frequency | Hunter's `A-Mx-Drone.wav`, mono, levelled to the music, 0.5 s fades | Hunter's own | -28 at 3 m | -9 |
 | menu_move/confirm/back.ogg | the menus | Kenney Interface `click_002`, `select_002`, `back_002` | CC0 | -49, -40, -43 | -21, -16, -19 |
 | menu_theme.ogg | the main menu's theme, "Salt" | Hunter's `A-Mx-salt.wav`, stereo, levelled to about -20 dBFS, 20 ms fades for a seamless loop | Hunter's own | about -20 LUFS, on the UI bus | -5 |
+| boom.ogg | a vent's burst or a gas pocket's blowout, from far off | made here: a short thump of air over a falling 42 Hz drop, then the blast rolling back duller nine times and a long low tail | CC0 | -18.5 (its loudest 400 ms); played by distance, -2 dB at a kilometre, 6 dB less each doubling, and low-passed | -6 |
+| vent_roar.ogg | a live vent's steady roar, near | made here: brown noise under 260 Hz breathing over its 7 s, a little hiss over it, looped | CC0 | -29 at 150 m seeping | -6 |
 
 The rope's snap is still made in code (`ropes.gd`), at about -28 LUFS from 8 m.
