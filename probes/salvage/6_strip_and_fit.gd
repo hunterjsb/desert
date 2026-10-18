@@ -27,7 +27,8 @@ func run() -> void:
 	var ids := {}
 	for layer: StringName in Finds.DEVICES:
 		for entry: Array in Finds.DEVICES[layer]:
-			if entry[0] != &"stake":
+			# Nothing to strip from a stake or a bedroll: they have no sockets to fill.
+			if entry[0] != &"stake" and not Catalog.DEVICES[entry[0]].sockets.is_empty():
 				ids[entry[0]] = true
 	var tally := {"parts": 0, "out": 0, "fitted": 0, "pulled": 0, "yours": 0}
 	var k := 0

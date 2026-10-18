@@ -87,7 +87,7 @@ func restock() -> void:
 			if _player.is_node_ready():
 				_on_you(device)
 			else:
-				_on_you.call_deferred(device)
+				_carry_once_ready.call_deferred(device)
 			carried.append(device)
 		else:
 			carried.append(Catalog.stake() if id == &"stake" else Catalog.part(id))
@@ -340,6 +340,13 @@ func _on_you(device: Device) -> void:
 	device.angular_velocity = Vector3.ZERO
 	_player.add_child(device)
 	device.transform = Transform3D(Basis.IDENTITY, POUCH)
+
+
+## A device of the kit's on you once you're set up, unless a restock has
+## dropped it meanwhile.
+func _carry_once_ready(device: Variant) -> void:
+	if is_instance_valid(device) and carried.has(device) and (device as Device).get_parent() == null:
+		_on_you(device)
 
 
 ## Off you again, a body as it was, for your hands.
