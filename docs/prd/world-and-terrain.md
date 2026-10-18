@@ -411,12 +411,16 @@ This is the minimum that makes the whole game loop possible. Every item gets bui
   values to tune: **64 m chunks with 1 m height samples**, collision within 2 chunks
   of the player, visible ground out to about 8 chunks.
 - Collision from the same samples as the visible mesh up close, so what you see is
-  exactly what you stand on. *(2026-10-18: each chunk's collision runs a metre past its
-  edges, 5 cm below the neighbour's ground there. A heightmap's edge is a real edge to
-  Jolt, and a small body riding a centimetre into the sand hit the next chunk's like a
-  step: a rope's loose end dragged across a seam at 13 m/s came out at 3, against 10.7
-  mid-chunk. With the lip it comes out at 9.8, what the slope costs it there. Rope probe
-  5's loose end had been snagging on a seam, not the dune face it was laid for.)*
+  exactly what you stand on. *(2026-10-18: a chunk's collision comes in four 32 m
+  heightmaps, built on the main thread one a frame before anything else. A whole
+  chunk's took up to 1.25 ms headless, and under load it was what most often took a
+  frame past the hitch line, stretched to 2 to 14 ms; a quarter takes about 0.15.
+  Each piece runs a metre past its edges, 5 cm below the neighbour's ground there. A
+  heightmap's edge is a real edge to Jolt, and a small body riding a centimetre into
+  the sand hit the next one's like a step: a rope's loose end dragged across a seam at
+  13 m/s came out at 3, against 10.7 mid-chunk. With the lip it comes out at 9.8, what
+  the slope costs it there. Rope probe 5's loose end had been snagging on a seam, not
+  the dune face it was laid for.)*
 - A **crude far ring**: low-detail ground, visual only, reaching a few kilometres
   out. It proves early that the far view is cheap and stays separate from collision
   (rule 2), because the big views depend on it.
@@ -566,7 +570,8 @@ fail.
   the shape, or fewer noise calls. *Measured at Stage 10: cheap enough for now. Flat out
   on the board, 20 m/s, at sixty frames a second, the ground was solid at least 120 m
   ahead the whole way (Movement probe 7), and the worst streaming frame was 1.17 to
-  1.28 ms headless, against 1.16 ms walking (probe 7 here) and the 2.0 ms line, and
+  1.28 ms headless (0.9 ms since collision comes in quarters, 2026-10-18), against
+  1.16 ms walking (probe 7 here) and the 2.0 ms line, and
   1.21 ms in a real window at 144 Hz (`look/stream`). The board reads loaded ground,
   about a dozen reads a step at 240 steps a second, 0.15 ms a tick.*
 - **How a fixed landmark sits on a seeded world.** *Narrowed by session 4, part 4: landmarks are

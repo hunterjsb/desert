@@ -2,7 +2,12 @@ class_name TerrainChunk
 extends Node3D
 ## One square of ground, and the structures whose middle stands on it. Its
 ## collision is built once from the same samples as its mesh, with their boxes
-## in the same body, and never reshaped while it exists.
+## in its first body, and never reshaped while it exists.
+
+## Its collision is this many heightmaps a side, each a body of its own with a
+## lip all round (Terrain.LIP): a quarter's build is a quarter of the main
+## thread's time, and the terrain adds one a frame.
+const SPLIT := 2
 
 var coord: Vector2i
 ## Metres a side.
@@ -10,14 +15,14 @@ var side := 64
 ## Metres between samples; 0 until the first build arrives.
 var step := 0
 var heights: PackedFloat32Array
-## What its collision is built from: the heights and a lip (ChunkBuild.lipped).
-var lipped: PackedFloat32Array
+## What its collision is built from (ChunkBuild.pieces).
+var pieces: Array[PackedFloat32Array] = []
 
 var _view: GeometryInstance3D
 ## A RenderingServer mesh, owned here: a worker made it, so no Mesh resource does.
 var _mesh: RID
-var _body: StaticBody3D
-var _shape: HeightMapShape3D
+var _bodies: Array[StaticBody3D] = []
+var _shapes: Array[HeightMapShape3D] = []
 ## The structures standing on it, part of its ground, each in the state its
 ## build read: drawn from the first build, solid with the sand.
 var _structures: Array[Structure] = []
@@ -36,7 +41,7 @@ func show_build(build: ChunkBuild) -> void:
 	build.mesh = RID()
 	step = build.step
 	heights = build.heights
-	lipped = build.lipped
+	pieces = build.pieces
 	_show_structures(build.structures, build.states)
 
 
@@ -60,35 +65,43 @@ func _show_structures(structures: Array[Structure], states: PackedInt32Array) ->
 	_states = states
 
 
-## Needs 1 m samples: a heightmap's samples are one unit apart.
-func add_collision(size: int, sand: PhysicsMaterial) -> void:
-	_shape = HeightMapShape3D.new()
-	_shape.map_width = size + 3
-	_shape.map_depth = size + 3
-	_shape.map_data = lipped
+## Its next piece of collision; true once it has all of them. Needs 1 m
+## samples: a heightmap's samples are one unit apart.
+func add_collision_piece(size: int, sand: PhysicsMaterial) -> bool:
+	var piece := _bodies.size()
+	var part := size / SPLIT
+	var corner := Vector2i(piece % SPLIT, piece / SPLIT) * part
+	var shape := HeightMapShape3D.new()
+	shape.map_width = part + 3
+	shape.map_depth = part + 3
+	shape.map_data = pieces[piece]
 	var holder := CollisionShape3D.new()
-	holder.shape = _shape
-	# A heightmap is centred on its node; the chunk's origin is its corner, and
-	# its lip reaches a metre past every edge.
-	holder.position = Vector3(size * 0.5, 0.0, size * 0.5)
-	_body = StaticBody3D.new()
-	_body.physics_material_override = sand
-	_body.add_child(holder)
-	for i in _structures.size():
-		_structures[i].add_shapes(_body, _at(_structures[i], _states[i]), _states[i])
-	add_child(_body)
+	holder.shape = shape
+	# A heightmap is centred on its node; the chunk's origin is its corner.
+	holder.position = Vector3(corner.x + part * 0.5, 0.0, corner.y + part * 0.5)
+	var body := StaticBody3D.new()
+	body.physics_material_override = sand
+	body.add_child(holder)
+	if piece == 0:
+		for i in _structures.size():
+			_structures[i].add_shapes(body, _at(_structures[i], _states[i]), _states[i])
+	add_child(body)
+	_bodies.append(body)
+	_shapes.append(shape)
+	return has_collision()
 
 
 ## Freed now, not queued, so the cost lands inside the terrain's frame budget.
 func remove_collision() -> void:
-	if _body:
-		_body.free()
-	_body = null
-	_shape = null
+	for body in _bodies:
+		body.free()
+	_bodies.clear()
+	_shapes.clear()
 
 
+## All of it, not some.
 func has_collision() -> bool:
-	return _body != null
+	return _bodies.size() == SPLIT * SPLIT
 
 
 ## The structures standing on it, and the state each stands in.
@@ -121,15 +134,21 @@ func _at(structure: Structure, state: int) -> Vector3:
 	return Vector3(structure.x - coord.x * side, structure.floor_in(state), structure.z - coord.y * side)
 
 
-## The samples its collision holds inside its edges, without the lip.
+## The samples its collision holds inside its edges, its pieces put together
+## without their lips.
 func collision_data() -> PackedFloat32Array:
-	if _shape == null:
+	if not has_collision():
 		return PackedFloat32Array()
-	var all := _shape.map_data
-	var w := _shape.map_width
+	var part := side / SPLIT
 	var inside := PackedFloat32Array()
-	for j in range(1, w - 1):
-		inside.append_array(all.slice(j * w + 1, j * w + w - 1))
+	inside.resize((side + 1) * (side + 1))
+	for piece in _shapes.size():
+		var corner := Vector2i(piece % SPLIT, piece / SPLIT) * part
+		var all := _shapes[piece].map_data
+		var w := _shapes[piece].map_width
+		for j in part + 1:
+			for i in part + 1:
+				inside[(corner.y + j) * (side + 1) + corner.x + i] = all[(j + 1) * w + i + 1]
 	return inside
 
 
