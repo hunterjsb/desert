@@ -35,6 +35,10 @@ static var _current: Tuning
 @export var start_wrecks_m: float = 300.0
 ## A Homesteader starts on a road within this of a wayshrine, m.
 @export var start_wayshrine_m: float = 100.0
+## Every start has a structure in sight from where its ground begins: its
+## top clear over the dunes between by this many pixels at 1080 rows,
+## however deep the sand lies on it. A Surveyor's stands past start_deep_m.
+@export var start_sight_px: float = 3.0
 
 @export_group("Saves")
 ## A Normal run saves itself after this many minutes of play since its last
@@ -93,6 +97,21 @@ static var _current: Tuning
 @export var haze_end: float = 9000.0
 ## Most of the view the haze ever hides, at haze_end and beyond.
 @export var haze_strength: float = 0.7
+
+@export_group("Skyline")
+## What stands on the dunes past the built ground, out to the far ring's
+## reach: tall structures' stand-ins, glints, and the saltbush lines on the
+## roads. Off, nothing shows past the built ground but the dunes.
+@export var skyline: bool = true
+## How far it draws, m.
+@export var skyline_m: float = 3000.0
+## The thinnest a stand-in or a line is drawn, pixels, so a mast far off
+## never breaks into flickering bits.
+@export var skyline_thinnest_px: float = 1.5
+## A glint's sparkle at its brightest, pixels across, and how bright, times
+## the sun on white.
+@export var glint_px: float = 9.0
+@export var glint_brightness: float = 6.0
 
 @export_group("Light")
 ## The sand in full light, before the sun and sky light it. Real desert sand

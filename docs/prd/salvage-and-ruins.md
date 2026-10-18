@@ -398,6 +398,10 @@ with no map or marker:
 - **A site in sight at every start.** Each origin begins with something to walk to in view: the
   Salvager's wrecks, the Homesteader's wayshrine, and for the Surveyor a site on the horizon.
 
+#### What's built (2026-10-18, the `sightlines` branch)
+
+SKYLINE_SECTION
+
 ### Readings, not in the session
 
 - **The strata and the table don't agree about two eras.** Session 3's strata, which "History runs

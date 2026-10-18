@@ -53,6 +53,12 @@ static func _pylon_stub() -> StructureKit.Piece:
 	p.sockets.append(StructureKit.SiteSocket.new(Vector3(0.55, 1.2, 0.0), &"shelf"))
 	p.approach = Vector2(4.0, 5.0)
 	p.look = _pylon_look
+	# A row of them is a power line's trace across the dunes.
+	StructureKit.far_box(p, Vector3(-1.0, -0.8, -1.0), Vector3(1.0, 0.4, 1.0), CONCRETE)
+	StructureKit.far_box(p, Vector3(-0.3, 0.4, -0.3), Vector3(0.3, 4.8, 0.3), GREY)
+	StructureKit.far_box(p, Vector3(-0.15, 4.4, -1.4), Vector3(0.15, 4.7, 1.4), Paint.STEEL)
+	StructureKit.glint(p, Vector3(0.0, 4.7, 0.0), Vector3(0.0, 1.0, 0.25), 4.0)
+	StructureKit.glint(p, Vector3(0.0, 4.36, 1.25), Vector3(0.3, 0.8, 0.5), 6.0)
 	return p
 
 
@@ -92,6 +98,10 @@ static func _pipeline_segment() -> StructureKit.Piece:
 	p.sockets.append(StructureKit.SiteSocket.new(Vector3(0.0, 1.8, 2.0), &"cache", 0.5))
 	p.approach = Vector2(5.0, 4.0)
 	p.look = _pipe_look
+	# Its lengths in a row are a run of old pipe across the dunes.
+	StructureKit.far_box(p, Vector3(-0.7, 0.4, -6.0), Vector3(0.7, 1.9, 6.0), PANEL)
+	StructureKit.glint(p, Vector3(0.0, 1.8, -3.0), Vector3(0.35, 1.0, 0.0), 5.0)
+	StructureKit.glint(p, Vector3(0.0, 1.8, 3.5), Vector3(-0.35, 1.0, 0.0), 5.0)
 	return p
 
 
@@ -142,6 +152,10 @@ static func _hab_pod() -> StructureKit.Piece:
 		Vector2(-1.5, 0.5), Vector2(-1.5, 3.5), Vector2(-1.5, 8.0)])
 	p.approach = Vector2(-1.5, 13.0)
 	p.look = _hab_look
+	# Its windows, and the roof hatch.
+	for side in [-1.0, 1.0]:
+		StructureKit.glint(p, Vector3(side * 4.01, 1.95, 0.0), Vector3(side, 0.2, 0.0), 3.0)
+	StructureKit.glint(p, Vector3(2.0, 3.55, -0.4), Vector3(0.0, 1.0, 0.3), 4.0)
 	return p
 
 
@@ -190,6 +204,15 @@ static func _relay_mast() -> StructureKit.Piece:
 	p.sockets.append(StructureKit.SiteSocket.new(Vector3(1.25, 1.0, 0.0), &"shelf"))
 	p.approach = Vector2(5.0, 8.0)
 	p.look = _mast_look
+	# The colony's line of sight: the tallest thing on the dunes.
+	StructureKit.far_box(p, Vector3(-1.3, -0.9, -1.3), Vector3(1.3, 0.35, 1.3), CONCRETE)
+	StructureKit.far_box(p, Vector3(-0.35, 0.35, -0.35), Vector3(0.35, 14.0, 0.35), GREY)
+	StructureKit.far_box(p, Vector3(0.55, 0.35, -0.5), Vector3(1.25, 1.95, 0.5), PANEL)
+	StructureKit.far_box(p, Vector3(-0.7, 12.4, 0.45), Vector3(0.7, 13.4, 0.75), PANEL)
+	StructureKit.far_box(p, Vector3(-0.14, 14.0, -0.14), Vector3(0.14, 14.3, 0.14), ORANGE)
+	# Its dish, and the lamp's glass on its top.
+	StructureKit.glint(p, Vector3(0.0, 12.9, 0.62), Vector3(0.0, 0.25, 0.97), 5.0)
+	StructureKit.glint(p, Vector3(0.0, 14.2, 0.0), Vector3(0.4, 0.6, -0.7), 4.0)
 	return p
 
 

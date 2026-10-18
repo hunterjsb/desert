@@ -18,6 +18,9 @@ const SAND_UNDER := 0.03
 const SHOWS := 0.02
 ## A socket can be reached from the sand up to this high, m: a hand's reach.
 const HANDS := 1.7
+## A glint needs this much clear of the sand under it, m: dust lies on what
+## the sand just let go.
+const GLINT_CLEAR := 0.15
 
 
 static var _pieces := {}
@@ -129,6 +132,13 @@ class Piece:
 	var marks := 1
 	## What it's built as on the ground: a Structure, or a kind of one.
 	var builds: Script
+	## How it reads past the built ground (Skyline): plan boxes as [AABB, tone],
+	## its outline in the colour its paint shows at a distance. None for what's
+	## too low to read there.
+	var far: Array[Array] = []
+	## Bare metal, glass or glaze the sun can catch: [plan point, the way it
+	## faces, how wide its sparkle sweeps, rad].
+	var glints: Array[Array] = []
 	## How far its ground reaches from its middle, any way round, m.
 	var reach := 0.0
 
@@ -206,6 +216,10 @@ class Piece:
 
 	func looks() -> int:
 		return maxi(1, variants.size())
+
+	## Whether it shows from far off: a far look or a glint.
+	func seen() -> bool:
+		return not far.is_empty() or not glints.is_empty()
 
 	## Its look in a state: one mesh every site of the kind and look shares,
 	## its foot where the sand meets it. Leaning, it looks the same buried or not.
@@ -379,6 +393,17 @@ static func room(lo: Vector2, hi: Vector2, floor := 0.0, ramp := Vector3(-1.0, 0
 static func box(p: Piece, lo: Vector3, hi: Vector3, coat: String) -> void:
 	p.boxes.append(AABB(lo, hi - lo))
 	p.coats.append(coat)
+
+
+## A box of its far look, plan m, in the tone it reads as from far off.
+static func far_box(p: Piece, lo: Vector3, hi: Vector3, tone: Color) -> void:
+	p.far.append([AABB(lo, hi - lo), tone])
+
+
+## A spot the sun can catch, facing `facing` in plan axes; a flat plate's
+## sparkle sweeps a few degrees, a curve's wider and dimmer.
+static func glint(p: Piece, at: Vector3, facing: Vector3, degrees := 3.0) -> void:
+	p.glints.append([at, facing.normalized(), deg_to_rad(degrees)])
 
 
 ## A wall from `a0` to `a1` along u (or v), `b0` to `b1` thick, from `y0` to
