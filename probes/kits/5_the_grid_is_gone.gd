@@ -35,5 +35,5 @@ func run() -> void:
 	check(Vector2(heard.x, heard.z).distance_to(hall) < 0.01, "it points at the ruin's hall")
 	await go(heard.x, heard.z + 6.0)
 	var found := salvage.finds().filter(func(b: Node) -> bool:
-		return b.get_meta(&"find") == [heard.coord, heard.index])
+		return b.get_meta(&"find") == [heard.coord, heard.index, heard.site])
 	check(found.size() == 1, "and its device lies there")

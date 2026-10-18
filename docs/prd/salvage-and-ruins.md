@@ -219,12 +219,13 @@ Readings, not in the session:
   stores in colonial ruins, granaries and the Sister vault, which holds pure rainseed*
   ([Farming](farming.md#propagation-growth-stages-and-wild-habitats-agreed)).
 
-## Structures by era and the loot model (Agreed, session 4, part 4; the kits built)
+## Structures by era and the loot model (Agreed, session 4, part 4; the kits and the loot built)
 
 *Designed whole in [the world system](../world-system.md): the structure framework, exposure, the loot
 model and the migration of today's loose finds are its packages. The first, the structure kits, is
-built (2026-10-18, below and [in the world system](../world-system.md#what-the-structure-kits-do-now));
-loot, lineage, feral and spawns are not yet.*
+built (2026-10-18, below and [in the world system](../world-system.md#what-the-structure-kits-do-now)),
+and the second, the loot (2026-10-18, below and [in the world
+system](../world-system.md#what-loot-does-now)); lineage is not yet.*
 
 **Built: the structure kits (2026-10-18).** Every era's repeatable kit stands where history put it, as
 data in one shared system, each piece with its three exposure states:
@@ -267,11 +268,29 @@ warning: "the game has no structures and no terrain generation yet. Lore here is
 than what should be built now." Hard rule: no NPCs, no dialogue, no exposition.*
 
 **The loot model in one line:** "Loot follows history: it comes from sites, and storms decide what's
-reachable. Stop spawning items loose in open sand." Today the PRD does the opposite: finds are laid out
+reachable. Stop spawning items loose in open sand." The skeleton did the opposite: finds were laid out
 loose and half-buried on open sand, 1.5 a chunk, with one walk-in ruin to every 5 by 5 chunks (the
 skeleton version below). The relocation is the session's eighth step
-([skeleton plan](../skeleton-plan.md#the-newer-proposed-order-session-4-part-4)), and until it is built the
-skeleton stands.
+([skeleton plan](../skeleton-plan.md#the-newer-proposed-order-session-4-part-4)).
+
+**Built: the loot (2026-10-18).** Loot is history's now. Every kit piece's sockets hold what its era's
+table says, a row for each kind of socket, its kind's own where the kind says what fits, its region how
+generous, each socket drawn from the site's loot seed alone: colonial infrastructure (crates, chassis,
+condensers and turbines, big batteries, trays and panels, at its best Consoles and shield generators),
+the skimmer era's single items (survival kits, radios, hoverboards, at its best military shield
+generators, radar and harvesters), the First Kingdoms' working machines (condensers, turbines, planters,
+nearly full and sound, water kept), the second age's worn gear, water, seeds and salt (a house ruin's
+floor as it always was, a wayshrine's offerings, a watchtower's cache). Han's sites hold less, and a third
+of what they hold is their era's best. The sand decides what's within reach: buried, only what lies on
+top of it; partly exposed, some, half in the sand, more the more the storms took off; dug out, all of it
+but what's higher than a hand reaches; and the best, which lies deeper than the rest of its site, only once
+a storm has stripped past it, so a storm come and gone means a revisit finds more. A site remembers what
+you took while it's laid, and the save keeps that. **Drift:** a line strung between two stakes driven in
+the sand catches what a storm carries (saltbush leaves, salt, a wild cutting, scraps, now and then a small
+part), a steady trickle that a lee below a crest multiplies several times over; what it catches lies on
+the sand just downwind of it until you take it up. Open sand keeps a tenth of its loose finds, only on the
+way, along paths and among a settlement's sites. Every origin's first hour finds something worth finding
+within a fair walk: the Homesteader's wayshrine, the Salvager's wrecks, the Surveyor's line.
 
 ### Two tiers, and the repeatable kit (Agreed direction)
 
@@ -535,7 +554,8 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
 
 - **Finds** are laid out when a chunk's ground becomes solid, from the run's seed, the
   chunk's coordinates and how hard the weather has been there, and go when it stops
-  being solid. While the chunk stays loaded it remembers what you took, so its finds
+  being solid. *Since 2026-10-18 (the loot): open sand holds 0.15 a chunk, only on the way,
+  and the rest of what's found is the sites' (above); what follows is the loose finds'.* While the chunk stays loaded it remembers what you took, so its finds
   come back as they were less that; once the chunk is forgotten, so is that. Open sand
   holds 1.5 finds a chunk on average, at most 4. Each find draws from its own stream of
   the seed, where it lies first, so the weather changes what a find is but never where it
@@ -649,7 +669,9 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
   on whatever sand is in the hall; the floor's other finds lie only where it's dug out.* The dev overlay's
   salvage column shows the finds in memory, and how hard the weather has been where you
   stand with the deep layer's share there.
-- **Probe 5** also checks every kind turns up, rope and wire are common, seeds are mostly
+- *Since 2026-10-18, probe 5 is the expedition: a site shows more and better the more the storms took
+  off it, and every kind a site holds turns up; loose finds still come deeper where the weather was hard.*
+- **Probe 5** also checked every kind turns up, rope and wire are common, seeds are mostly
   in ruins and the harvester is the rarest part; **probe 2** lays by hand any kind its
   walk didn't meet; **probe 6** strips a survival kit and unrolls a found coil, plug and
   strong plug through the hands.
@@ -831,7 +853,9 @@ it as direction and says so on each line. The built skeleton is not changed.
   carried by storm wind." *Follows the session as the target; the skeleton stands until step 8.* Not
   said what the first hour finds, since a start is on or near an artery and not near loose finds. The
   session's "99%" is its own estimate: this PRD counts seeds, 58 of 99 in ruins, and puts a ruin in
-  each 5 by 5 chunks.
+  each 5 by 5 chunks. *Built 2026-10-18 ([the loot](../world-system.md#what-loot-does-now)): open sand
+  keeps a tenth, on the way; the first hour finds the sites by each origin's start, measured on six
+  seeds.*
 - **Weapons and armour in a game with no combat.** Here and in the vision: "Cozy, not hostile. No
   enemies to fight." The session: skimmer-era loot is "military weapons, armour, mods," dugouts and
   watchtowers hold "weapons caches," and the black site's mods are the best single items. Not said
@@ -851,7 +875,10 @@ it as direction and says so on each line. The built skeleton is not changed.
   blows is open." The session: drift is "light debris, scraps and occasional small items," caught "as
   it blows past, perhaps with a net or tether mod." *Narrows the collector question.* Not said whether
   drift is a stream computed from the storm and the camp's place (stateless) or objects carried across
-  chunks, or what happens when its chunk unloads.
+  chunks, or what happens when its chunk unloads. *Built 2026-10-18: a stream read from
+  the weather and the ground at a catch line, a body only where the line catches it, held where it
+  fell until you take it up; nothing caught on a chunk not solid ([the
+  loot](../world-system.md#what-loot-does-now)).*
 - **Second-age structures: how much makes the first pass.** The session's own open question. Its
   order starts with the wayshrine, the watchtower and the house ruin.
 

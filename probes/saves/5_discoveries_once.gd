@@ -8,7 +8,15 @@ extends SavesProbe
 
 func run() -> void:
 	var profile := get_node("/root/Profile")
+	start_among(1234)
+	# Dug out, so its hall's device is there to take.
+	Tuning.current().site_return_m = -1.0
 	await load_world(1234, false, true)
+	var ruins := structures_near(&"house_ruin", 2000.0)
+	check(not ruins.is_empty(), "a house ruin stands near")
+	if not ruins.is_empty():
+		var at := (ruins[0] as Ruin).to_world(Ruin.APPROACH)
+		teleport(at.x, at.y)
 	for i in 600:
 		await get_tree().physics_frame
 		if world.salvage.is_idle() and world.terrain.is_idle():
@@ -21,6 +29,8 @@ func run() -> void:
 			device = body
 			break
 	check(device != null, "a found device with parts in it")
+	if device == null:
+		return
 	var kinds := [str(device.get_meta(&"catalog"))]
 	for part in device.parts():
 		if not kinds.has(str(part.get_meta(&"catalog"))):

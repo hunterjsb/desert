@@ -435,6 +435,8 @@ loose in open sand."
   near ([Spawns](#the-feral-layer-and-spawns)). Each step keeps Salvage's probes passing, rewritten to the
   new placement where they asked for loose finds.
 
+*Built 2026-10-18: [What loot does now](#what-loot-does-now).*
+
 ## Item lineage
 
 "A second-age item is a colonial or first-age item remade in the Dark Age. Item data should record
@@ -890,6 +892,118 @@ paint's age.
 - **The skimmer era** has no look of its own: its stamps' colonial row and a worn paint, and "scrap" for
   its repair is a default.
 
+## What loot does now
+
+*Built 2026-10-18, on the `loot` branch: package 2.*
+
+- **Site loot** (`SiteLoot`, `game/salvage/site_loot.gd`). Every kit piece's sockets are filled from its
+  era's table, a row for each kind of socket (floor, shelf, cache, bed) and a best that every socket lying
+  deeper than the rest of its site holds; a kind may put its own row in place of its era's, which is how
+  the kind says what fits. Each socket draws from its own stream of the site's loot seed, so a site holds
+  the same things whoever comes, whenever, laid from wherever on the ground. What each era's sites hold:
+  - **Colonial,** infrastructure: crates, chargers, chassis pieces, a condenser or turbine, big batteries,
+    trays, panels and strong cable on its floors; batteries, lamps, plugs and instruments on its shelves;
+    clean root-tuber and vat fungus in its beds; at its best Consoles, shield generators, turbines,
+    condensers, big batteries, trays and panels, radar, screens and harvesters. A hab pod's shelf holds
+    vat fungus and rations, a relay mast's cabinet its instruments and power, a pipeline's hatch hose,
+    water and a condenser. A little over half its sockets still hold something, sound and charged.
+  - **Skimmer era,** the single items: survival kits, radios, now and then a hoverboard, batteries and
+    rations on its floors; at its best military shield generators, hoverboards, radar, harvesters and the
+    wind and particle instruments. A wreck still holds nine things in ten it carried, a dugout eight;
+    found light and fragile, half to nine tenths sound.
+  - **First Kingdoms,** working colonial machines kept running: condensers, turbines, chargers, planters
+    and crates, three sockets in four filled, instruments on the shelves, water kept sealed; a cistern's
+    floor water and hose, its bed and a field plot's seed and saltbush. Near sound.
+  - **Second age,** worn reused gear, water, seeds and salt: a house ruin's floor holds what its floor
+    always did (parts, devices, seeds, rations and survival kits), its hall a later visitor's device with
+    parts to strip on whatever sand is there; shelves hold water, salt, seeds and cord; a wayshrine's
+    basin and niche its offerings (water vials, salt, a few seeds) and its plinth a pilgrim's survival
+    kit; a watchtower's platform the late wars' cache (shield generators, radios, survival kits, cord). Its
+    best is the deep layer's of old. Worn, water kept sealed.
+  - **The region** says how generous **(defaults)**: the Rim keeps all of it, Mon nine tenths with one
+    floor or cache in twelve holding its era's best, Han three quarters with a third holding the best
+    (the jackpot for single items), the far side three fifths.
+- **What's within reach.** A find rests on the highest of its site's boxes under its socket no higher
+  than the socket, moved clear of any it would stand in and off the way through the piece (its tour), or
+  on the sand over that, frozen there: placed, never dropped. Buried, only what lies on top of the sand
+  shows. Otherwise a find with sand over it shows half buried where at least a third of it and 10 cm
+  stand out; deeper, it lies in the sand that fills the site, surfacing as the storms strip it: partly
+  exposed, as many of a site's as the sand taken off has gone from a third of its depth toward all of it,
+  each socket at its own share **(default)**; dug out, all of it. Nothing shows higher over the sand than a
+  hand reaches, and what lies deeper than the rest of a site only once a storm has stripped past it. Of what
+  twelve of each kind held (loot probe 2), buried 19 of 305 showed (a house's hall and a watchtower's
+  platform, level with the sand), partly exposed 118, dug out 298 (all but the watchtower's platform, out
+  of reach), every deep socket hidden short of a storm past it and shown past it.
+- **The expedition.** Exposure is read when a site's ground is built (the kits'), so a storm that has come
+  and gone means a revisit finds it deeper: round twelve towns on two seeds (salvage probe 5), at each
+  site's most stripped moment of six through three days 621 finds lay within reach against 466 at its
+  least, the mean tier rising from 1.08 to 1.14: the First Kingdoms' four times as many, the second
+  age's a quarter more (they lie shallowest, mostly dug out already), the colonial nothing short of the
+  hardest storms. The good things are deep: an era's best lies in the sockets a storm must strip past,
+  and elsewhere only in Han's floors and caches (a third of them) and Mon's (one in twelve).
+- **Memory.** What's taken from a site is remembered by its id while it's laid, and dropped with it
+  once the sheet lifts it, so a site walked 2 km away from comes back whole; the save keeps it
+  (`Snapshot`: `sites`, a site's id and its sockets taken), and a save from before resumes with none.
+  Open sand's loose finds keep their chunk's memory as before. Whether a site was opened waits on an act
+  that opens one; none does yet.
+- **Drift** (`Drift`, `game/salvage/drift.gd`). The catcher is a line strung between two stakes driven in
+  the sand, at least 1.5 m: what the kits' stakes and coils already make, laid by the actions that lay
+  any line; a mooring line to a floating device doesn't count. Every 20 s of world time each catch line
+  on solid ground draws from its own stream of the seed (its stakes' places and the tick) whether it
+  caught something, at a rate of things an hour of 1 a metre of line straight across the wind, times how
+  hard it blows there (the reading exposure uses, none in the clear), times 0.25 for what snags on a line
+  in the open plus 1.0 times the ground's lee for what falls out where the wind slows **(defaults)**. What
+  it catches (saltbush leaves, salt, a wild saltbush cutting, a hook, now and then a compass, a lamp or a
+  battery with a little charge) lies on the sand 0.3 to 0.9 m downwind of the line, held there, yours,
+  a surface find, until you take it up; a line's pile holds 8 before more blows past. Over three days of
+  seed 1234's weather an 8 m line across the run's wind would catch 357 things at the foot of a tall slip
+  face and 76 on open sand (loot probe 5): in a 30-minute storm, three or four in a good lee and one in
+  the open. The dev overlay's salvage column shows what a 10 m line would catch an hour where you stand.
+- **Loose finds** (migration step 3). Open sand holds 0.15 finds a chunk on the way, a tenth of the 1.5
+  it held, and none elsewhere: on the way is within a laid path's 60 m corridor, or 60 m of a
+  settlement's site, built or only planned **(default)**, where what travellers dropped lies. They are
+  what they always were, deeper the harder the weather. At seed 1234's start, deep desert, the 769 chunks
+  within a kilometre hold 2 (loot probe 4); round a town 166 chunks on the way hold about one in ten.
+- **The first hour** (step 4, loot probe 6, six seeds). The Surveyor walks in toward Tu 1 to 1.3 km to
+  the line it starts off and finds what lies loose along it (a condenser, a radio, a crate, a canister of
+  water) or a watchtower's; the Salvager finds the wreck field's hulls 70 to 240 m off, a hoverboard or a
+  survival kit half buried in one, or what lies among the wrecks 90 to 350 m off (a charger, a planter, a
+  chassis piece), and once in six, where the dunes took every hull, a wayshrine's 430 m off; the
+  Homesteader finds the wayshrine 26 to 52 m off holding water, seeds or a saltbush cutting, and once in
+  six, where its offerings were gone, a chassis piece lying on the road 360 m along. Something worth finding (water, food, a survival kit or a
+  device) lies within a fair walk, 3 km, of every start.
+- **What moved.** The house ruin's floor finds are its socket loot; `Finds.plan` lays open sand's alone,
+  asking `on_way`. The radio's beacon points at a house ruin's hall, now its socket 0, its choice drawn
+  from the ruin's loot seed and passing over one whose hall you've taken (`Salvage.taken(site id,
+  socket)`); every standing house ruin holds its own. A site's find is a find of the chunk its
+  structure's middle stands on, `[coord, socket, site id]`. The `radio` scenario's beacon test takes the
+  site; the `lee` scenario strings a catch line across the wind in front of you.
+- **Lineage.** Every site find is given the hands it passed through by the lineage package's call,
+  `Catalog.found_in(body, era, kind, seed)`, as it's made, before it's in the world and after its layer's
+  mark: its site's era and kind, and its own seed (from the site's loot seed and its socket); each part
+  it's found with takes its own call, seeded by its place among them. So a find made again as its chunk
+  loads is the same thing, and nothing is saved until it's yours. On this branch `found_in` is a stand-in
+  drawing by the Dark Age's rule until the branches meet. Open sand's loose finds and drift take none and
+  keep their layer's look.
+- **Cost.** Every socket's resting spots for what it may hold, by kind and state, are worked out once
+  while the world loads, 64 ms. Each socket's loot is a piece of the streaming budget of its own; in the
+  world a house ruin's nine came to 0.4 to 0.7 ms all told, and the slowest frame laying out finds took
+  0.70 ms in a town and at a ruin dug out (1.0 to 1.1 ms headless before, by the PRD). Drift is drawn
+  every 20 s of world time for each catch line, nothing between; the overlay's reading is a few reads
+  of the field a tick.
+- **Probes** (`probes/loot/`): 1 site loot is pure per seed and site, laid from anywhere, and made again
+  is given the same hands; 2 the sand decides what's within reach, and your hands take what lies on a dug-out floor; 4
+  open sand holds no random finds; 5 drift is caught at a camp in a storm and grows in a lee; 6 each
+  origin's first hour finds something within reach. Saves probe 2 is the taken loot staying taken across
+  a save and a resume, and an older save resuming. Rewritten to the new placement: salvage probes 1, 2, 5
+  (now the expedition), 7 and 8, saves probe 5, the scenarios probe, the kits' probe 5, movement probe 7. Each of the
+  six fails on a deliberately broken build: the draw seeded by where a site lies; buried sites showing
+  what's under their sand; a save that forgets the sites; loose finds laid off the way; drift blind to
+  the lee; no site laying its loot and no loose finds.
+- **To see it** (unseen, on a GPU): `look/kits/shoot.sh <dir>` stands every kit piece in each state, now
+  with what it holds within reach laid in it; the `lee` scenario stands you at a slip face's foot with a
+  catch line strung and a storm minutes off.
+
 ## Defaults
 
 Every value this doc picked where the lore was silent. Change any of them here and in Tuning's History
@@ -933,6 +1047,12 @@ group.
   1.05, 1.10, 1.25; tough 1.0, 1.5, 0.5, 0.9; the skimmer era's weight 0.7; the skimmer era mended with
   scrap.
 - The houses' colours: Okafor deep red, Kessel ochre, Arkwright teal, Vante ochre with a red plaque.
+
+- Loot ([What loot does now](#what-loot-does-now)): each era's tables and each kind's rows; the regions'
+  generosity (the Rim all, Mon 0.9, Han 0.75 with a third of floors and caches its era's best, the far side
+  0.6); a partly exposed site's buried loot surfacing as the sand taken off goes from a third of its depth
+  to all; loose finds 0.15 a chunk within 60 m of a path or a settlement's site; drift 1 a metre an hour in
+  a storm's heart, 0.25 snagging in the open and 1.0 more in a full lee, drawn every 20 s, 8 to a line.
 
 ## Open
 

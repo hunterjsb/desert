@@ -94,6 +94,7 @@ func run() -> void:
 				var cut := 1.0 - world.weather.wind.length() / world.weather.field_wind(world.player.global_position).length()
 				check(cut >= Scenarios.LEE_SHARE * Tuning.current().lee_wind and Dev.read("weather/lee") != "-",
 					"lee: the wind on you is cut by its lee, and the overlay says so (%.2f)" % cut)
+				await _catch_line_lands(upwind)
 			"deep":
 				check(field.storm_at(at.x, at.y, t) == 1.0, "deep: full storm")
 				check(_edge(at, upwind, t, true) > 250.0 and _edge(at, -upwind, t, true) > 250.0,
@@ -362,10 +363,9 @@ func _ruin_ahead(at: Vector2, ahead: Vector2) -> void:
 			break
 		await get_tree().process_frame
 	var mine := Scenarios.yours(world)
-	var coord := world.terrain.chunk_at(first.center.x, first.center.y)
 	var finds := world.salvage.finds()
 	var on_floor := finds.filter(func(b: Node) -> bool:
-		return b.get_meta(&"find")[0] == coord and b.get_meta(&"find")[1] >= Finds.IN_RUIN)
+		return b.get_meta(&"find").size() > 2 and b.get_meta(&"find")[2] == first.id)
 	var strippable := on_floor.filter(func(b: Node) -> bool: return b is Device and not (b as Device).parts().is_empty())
 	check(finds.size() >= 5 and on_floor.size() >= 3 and not strippable.is_empty(),
 		"ruin: finds lie round you (%d), on its floor (%d), a device among them with parts to strip"
@@ -374,6 +374,21 @@ func _ruin_ahead(at: Vector2, ahead: Vector2) -> void:
 		"ruin: your own bare frame lands beside you")
 	for body in mine:
 		body.free()
+
+
+## Two stakes driven a few steps ahead with a line strung between them,
+## across the wind: a catch line for the drift.
+func _catch_line_lands(upwind: Vector2) -> void:
+	await settle(true)
+	var dropped := Scenarios.catch_line(world)
+	await physics_frames(2)
+	var lines := Drift.lines(world)
+	check(lines.size() == 1 and absf((lines[0][2] - lines[0][1]).normalized().dot(upwind)) < 0.05,
+		"lee: a catch line strung across the wind")
+	# Its line goes with its stakes.
+	for body in dropped:
+		if body is Stake:
+			body.free()
 
 
 ## Two devices and every kit part land on the sand in front of you, within a
