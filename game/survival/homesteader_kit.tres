@@ -51,8 +51,5 @@ assembled = Dictionary[StringName, Dictionary]({
 }
 })
 charge = 0.5
-shown = Dictionary[StringName, float]({
-&"farm": 0.0,
-&"solid_shield": 0.0,
-&"still": 0.0
-})
+shown = &"farm"
+shown_turn = 180.0

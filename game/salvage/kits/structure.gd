@@ -182,15 +182,20 @@ func place_step() -> bool:
 	if piece.lattice:
 		x = roundf(x)
 		z = roundf(z)
-	_pad = got.x
+	_columns = {}
+	_stand(got.x)
+	return true
+
+
+## Stands where it is, its floor's top at `pad`.
+func _stand(pad: float) -> void:
+	_pad = pad
 	_stands = true
 	planned = false
-	_columns = {}
 	_grid_x = floorf(x - _reach.x)
 	_grid_z = floorf(z - _reach.y)
 	_grid_w = int(ceilf(x + _reach.x) - _grid_x) + 1
 	_grid_d = ceilf(z + _reach.y) - _grid_z + 1.0
-	return true
 
 
 ## One placement's ground along its slide, from columns of the dunes sampled
@@ -407,6 +412,58 @@ func add_shapes(body: StaticBody3D, at: Vector3, s: int) -> void:
 ## Where its frame's origin is, world metres.
 func origin() -> Vector3:
 	return Vector3(x, floor_y, z)
+
+
+# --- How it's seen from far off (Skyline). ---
+
+## Its frame in a state with the dunes' mean under it at `ground`: its own
+## pad where it's built, the far ground's height for a stand-in.
+func frame_on(s: int, ground: float) -> Transform3D:
+	return Transform3D(basis(), Vector3(x, ground - piece.sink[s], z)) * _lean()
+
+
+## Its far look in a state: each box as [a unit cube's transform in its
+## frame, tone], cut off at the sand.
+func far_look(s: int) -> Array[Array]:
+	var out: Array[Array] = []
+	var line := piece.sink[s] if piece.lean == 0.0 else -INF
+	for each in piece.far:
+		var box: AABB = each[0]
+		var lo := maxf(box.position.y, line)
+		if box.end.y <= lo + StructureKit.SHOWS:
+			continue
+		var size := Vector3(box.size.x, box.end.y - lo, box.size.z)
+		out.append([Transform3D(Basis.from_scale(size), Vector3(box.get_center().x, lo + size.y * 0.5,
+			box.get_center().z)), each[1]])
+	return out
+
+
+## How high it rises over the dunes' mean under it in a state, m: its far
+## look's top, or its boxes' for what has none.
+func top_in(s: int) -> float:
+	var frame := frame_on(s, 0.0)
+	var top := -INF
+	var boxes: Array = far_look(s).map(func(each: Array) -> Transform3D: return each[0]) if not piece.far.is_empty() \
+		else piece.boxes.map(func(b: AABB) -> Transform3D: return Transform3D(Basis.from_scale(b.size), b.get_center()))
+	for each: Transform3D in boxes:
+		var box := frame * each
+		for i in 8:
+			top = maxf(top, (box * (Vector3(i & 1, (i >> 1) & 1, (i >> 2) & 1) - Vector3.ONE * 0.5)).y)
+	return top
+
+
+## Its glints the sand leaves bare in a state: [place in its frame, the way
+## it faces, how wide it sweeps].
+func bare_glints(s: int) -> Array[Array]:
+	var lean := _lean()
+	var out: Array[Array] = []
+	for each in piece.glints:
+		var at: Vector3 = lean * (each[0] as Vector3)
+		var bare := at.y - piece.sink[s] >= StructureKit.GLINT_CLEAR if piece.lean > 0.0 \
+			else StructureKit.shows(piece, s, at.y - StructureKit.GLINT_CLEAR, Vector2(at.x, at.z))
+		if bare:
+			out.append([at, lean.basis * (each[1] as Vector3), each[2]])
+	return out
 
 
 ## How it leans, about its kind's pivot, so its free end digs into the sand.

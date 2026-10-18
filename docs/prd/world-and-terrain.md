@@ -319,6 +319,8 @@ Readings, not in the session:
 - **The twin fires are two regions of one rule.** Volcanic ground is heat, vents and ash; the sub-Tu
   and anti-Tu points each get it, and the ground between is the Rim's and the cold. The rift valley is
   the first, and the second has no description beyond the volcano and its tower.
+  *Built 2026-10-18: the world system's [Geology](../world-system.md#geology) holds the rift's line and
+  its vents, and the one live vent's plume is in [Wind & storms](wind-and-storms.md#a-vents-plume).*
 
 ## Ambient life: sand beetles (Agreed, session 4, part 4; not built)
 

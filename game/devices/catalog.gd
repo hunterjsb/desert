@@ -169,6 +169,9 @@ const BARE: Array[StringName] = [&"hook", &"plug", &"strong_plug", &"hose_end", 
 	&"screen", &"compass"]
 ## The stake's frame, which has no entry of its own.
 const STAKE := {"mass": 2.0, "stats": {"toughness": INF}}
+## What things with no entry of their own are called.
+const NAMES := {&"stake": "Stake", &"line": "Line", &"cable": "Cable", &"strong_cable": "Strong cable",
+	&"hose": "Hose"}
 
 ## Frames: their box, weight, wind catch and sockets as [kind, position, outward].
 ## Those marked "deck" stand on a chassis piece's deck mount too. A "short"
@@ -353,6 +356,16 @@ const DEVICES := {
 }
 
 
+## What a thing is called where there's little room, by its id: a device's
+## short name, else its label.
+static func short_label(id: StringName) -> String:
+	if DEVICES.has(id):
+		return DEVICES[id].get("short", DEVICES[id].label)
+	if PARTS.has(id):
+		return PARTS[id].label
+	return NAMES.get(id, str(id))
+
+
 static func part(id: StringName) -> Part:
 	var spec: Dictionary = PARTS[id]
 	# A hose's end fits where water goes but holds none itself.
@@ -484,7 +497,7 @@ static func _lay(world: World, made: Cable, at: Vector3, end: StringName, first:
 static func stake() -> Stake:
 	var made := Stake.new()
 	made.set_meta(&"catalog", &"stake")
-	made.label = "Stake"
+	made.label = NAMES[&"stake"]
 	made.frame_mass = STAKE.mass
 	made.carryable = true
 	# A spike of iron: nothing in it the weather wears out.

@@ -33,6 +33,8 @@ const SAND_SHADER := preload("res://game/world/sand.gdshader")
 var sand_material: Material
 ## The marks left on the sand, which it's drawn with.
 var tracks: Tracks
+## What stands on the far ring past the built ground.
+var skyline: Skyline
 
 var _world: World
 var _tuning: Tuning
@@ -80,6 +82,9 @@ func setup(world: World) -> void:
 	tracks = Tracks.new()
 	add_child(tracks)
 	tracks.setup(world, sand_material)
+	skyline = Skyline.new()
+	add_child(skyline)
+	skyline.setup(world)
 	# Structures read their exposure as their ground is built, and hold it
 	# while that ground is loaded.
 	world.shape.sites.set_clock(func() -> float: return world.time)
@@ -218,7 +223,7 @@ func is_settled_around(world_x: float, world_z: float) -> bool:
 ## Nothing left to build, near or far.
 func is_idle() -> bool:
 	return _planned and _tasks.is_empty() and _wanted.is_empty() and _far_task == -1 \
-		and _far_mesh.is_valid() and _far_center == _center
+		and _far_mesh.is_valid() and _far_center == _center and skyline.is_idle()
 
 
 func chunks() -> Array:
@@ -247,6 +252,7 @@ func reposition() -> void:
 	for chunk: TerrainChunk in _chunks.values():
 		_place(chunk)
 	_place_far()
+	skyline.reposition()
 	# The sand's patterns are drawn in world metres, not the engine's.
 	if sand_material is ShaderMaterial:
 		sand_material.set_shader_parameter("origin", Vector2(_world.origin_chunk) * _size)

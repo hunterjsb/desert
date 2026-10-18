@@ -264,12 +264,30 @@ func add(site: Structure) -> void:
 
 ## A site of history's as the sheet would lay it from a place on the ground,
 ## world metres, with the moon's point there, facing north: not laid, for
-## asking where something would stand before going there.
-func would_lay(each: Dictionary, x: float, z: float, p: Vector3) -> Site:
-	var site := _site(each, Anchor.new(x, z, p, 1.0, history.radius))
+## asking where something would stand before going there. `built` asks for
+## its kit's structure even where salvage is off, as a start does.
+func would_lay(each: Dictionary, x: float, z: float, p: Vector3, built := false) -> Site:
+	return sighted(each, Anchor.new(x, z, p, 1.0, history.radius), built)
+
+
+## A site of history's as the sheet would lay it from an anchor, surveyed,
+## not laid: what the skyline draws past the sheet's reach. Reads only what
+## never changes, so a worker can.
+func sighted(each: Dictionary, anchor: Anchor, built := false) -> Site:
+	var site := _site(each, anchor, built or _built)
 	if site is Structure:
 		site.place()
 	return site
+
+
+## Where laying is done from now, or null before the first anchor.
+func anchor() -> Anchor:
+	return _anchor
+
+
+## Whether a moon cell is laid on this sheet.
+func has_unit(key: int) -> bool:
+	return _units.has(key)
 
 
 ## The narrowest any structure's ground is, m: a rectangle no wider can only
@@ -337,19 +355,21 @@ func _square(coord: Vector2i) -> Rect2:
 
 ## Two structures' grounds never overlap: where they would, the smaller gives
 ## way, or the one with the larger id, whether or not the other stands, so
-## which stands is the seed's alone. Kept once its ground is first built:
-## by then everything that could overlap it is laid. Asked sooner, of ground
-## not yet built, it's asked afresh.
+## which stands is the seed's alone; the ground's own never does. Kept once
+## its ground is first built: by then everything that could overlap it is
+## laid. Asked sooner, of ground not yet built, it's asked afresh.
 func _yields(site: Structure, keep := false) -> bool:
 	if site.yields >= 0:
 		return site.yields == 1
+	if site.era == Eras.GEOLOGY:
+		return false
 	var gives := false
 	var r := site.reach + SiteKinds.most_reach() + 2.0
 	for other in query(Rect2(site.x - r, site.z - r, r * 2.0, r * 2.0)):
 		var each := other as Structure
 		if each == null or each == site or site.distance_to(each.x, each.z) > site.reach + each.reach + 2.0:
 			continue
-		if each.reach > site.reach or (each.reach == site.reach and each.id < site.id):
+		if each.era == Eras.GEOLOGY or each.reach > site.reach or (each.reach == site.reach and each.id < site.id):
 			gives = true
 			break
 	if keep:
@@ -604,8 +624,8 @@ func _put(unit: Unit, anyway := false) -> void:
 			_hash(unit, _pieces, piece, Rect2(piece.points[i], Vector2.ZERO).expand(piece.points[i + 1]))
 
 
-func _site(each: Dictionary, anchor: Anchor) -> Site:
-	var piece := StructureKit.piece(each.kind) if _built else null
+func _site(each: Dictionary, anchor: Anchor, built := _built) -> Site:
+	var piece := StructureKit.piece(each.kind) if built else null
 	var site: Site = piece.builds.new() if piece != null else Site.new()
 	site.id = each.id
 	site.kind = each.kind
@@ -629,11 +649,19 @@ func _site(each: Dictionary, anchor: Anchor) -> Site:
 
 ## The cell's stretches of path: each belongs to the cell its middle is in.
 func _lay_pieces(unit: Unit, cell: int) -> void:
-	var anchor := unit.anchor
+	unit.pieces.append_array(pieces_of(cell, unit.anchor))
+
+
+## A cell's stretches of path as the sheet would lay them from an anchor,
+## those `keep(path)` keeps: reads only what never changes, so a worker can.
+func pieces_of(cell: int, anchor: Anchor, keep := Callable()) -> Array[Piece]:
+	var made: Array[Piece] = []
 	var cells := history.cells
 	var reaching := history.paths_in_cell(cell)
 	for path_id: int in reaching:
 		var path: PathNetwork.Path = history.network.paths[path_id]
+		if keep.is_valid() and not keep.call(path):
+			continue
 		var span: Vector2 = reaching[path_id]
 		var piece: Piece = null
 		for i in range(path.segment(span.x), path.segment(span.y) + 1):
@@ -648,8 +676,9 @@ func _lay_pieces(unit: Unit, cell: int) -> void:
 				piece.eras = path.eras
 				piece.carries = path.carries
 				piece.points.append(anchor.place(path.points[i]))
-				unit.pieces.append(piece)
+				made.append(piece)
 			piece.points.append(anchor.place(path.points[i + 1]))
+	return made
 
 
 func _lay_mark(unit: Unit, each: Dictionary) -> void:

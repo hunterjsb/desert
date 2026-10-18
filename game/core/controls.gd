@@ -13,7 +13,7 @@ const HELP := [
 		["{reel_in} / {pay_out}", "reel in, pay out"]]],
 	["YOU", [["{inventory}", "what you carry"], ["{headlamp}", "headlamp"]]],
 	["GAME", [["{ui_cancel}", "back, menu"], ["{quick_save}", "quick save"], ["{quick_load}", "quick load"],
-		["{toggle_keys}", "these keys"]]],
+		["{toggle_keys}", "these keys"], ["{fullscreen}", "fullscreen"]]],
 ]
 ## The developer's keys, listed apart under their own heading.
 const DEV_HELP := [["{console}", "console"], ["{toggle_dev_overlay}", "numbers"]]
@@ -41,6 +41,7 @@ const KEYS := {
 	"move_right": KEY_D,
 	"sprint": KEY_SHIFT,
 	"toggle_keys": KEY_F1,
+	"fullscreen": KEY_F11,
 	"toggle_dev_overlay": KEY_F3,
 	"quick_save": KEY_F5,
 	"quick_load": KEY_F9,
@@ -60,13 +61,14 @@ const KEYS := {
 const BUTTONS := {
 	"hands_throw": MOUSE_BUTTON_LEFT,
 	"hands_rotate": MOUSE_BUTTON_RIGHT,
-	"bring_near": MOUSE_BUTTON_WHEEL_UP,
-	"push_out": MOUSE_BUTTON_WHEEL_DOWN,
-}
-## Mouse buttons with ctrl held: the line has the wheel apart from what you hold.
-const CTRL_BUTTONS := {
 	"reel_in": MOUSE_BUTTON_WHEEL_UP,
 	"pay_out": MOUSE_BUTTON_WHEEL_DOWN,
+}
+## Mouse buttons with ctrl held: what you hold has the wheel apart from the
+## lines, which have it bare since reeling matters more (sails, the waist).
+const CTRL_BUTTONS := {
+	"bring_near": MOUSE_BUTTON_WHEEL_UP,
+	"push_out": MOUSE_BUTTON_WHEEL_DOWN,
 }
 
 ## A gamepad works the menus too; its D-pad already moves them.

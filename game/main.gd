@@ -25,7 +25,7 @@ const VIEW_PITCH := -2.0
 var run: Node
 ## The menu's world, or null in a run.
 var view: World
-## The kit on show in the menu's foreground, or null in a run.
+## The prop in the menu's foreground, or null in a run.
 var showpiece: Showpiece
 ## The run in play is a dev scenario's: the save on disk, the player's own,
 ## is never written over or deleted by it.
@@ -290,9 +290,9 @@ func _end_run() -> void:
 
 
 ## The real world from a fixed camera: no one stands there, nothing of yours
-## is in it but the kit on show, and only the weather moves, at its
-## own pace, without a sound: a storm at the menu is only to look at, while
-## the menu's own words are heard.
+## is in it but the prop, and only the weather moves, at its own pace,
+## without a sound: a storm at the menu is only to look at, while the menu's
+## own words and its music are heard.
 func _show_view() -> void:
 	Dev.clear()
 	AudioServer.set_bus_mute(AudioServer.get_bus_index(Sounds.WORLD), true)
@@ -326,6 +326,10 @@ func _show_view() -> void:
 	showpiece.camera = eye.camera
 	showpiece.home = last_kit()
 	view.add_child(showpiece)
+	var music := MenuMusic.new()
+	music.view = view
+	music.ui = ui
+	view.add_child(music)
 
 
 static func _make(path: String) -> Node:

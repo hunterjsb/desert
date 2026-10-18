@@ -292,6 +292,67 @@ static func _clump(r: int, at: Vector2, first_id: int, rect: Rect2, out: Array[D
 			"size": size})
 
 
+## A line's plants this close or closer read as one line far off, m apart.
+const LINE_EVERY := 5.0
+
+
+## Whether a path carries a line of wild plants far off (Skyline): a habitat
+## along it that grows a close line of a crop the catalog has.
+static func lines_along(path: PathNetwork.Path) -> bool:
+	var piece := Sites.Piece.new()
+	piece.kind = path.kind
+	piece.eras = path.eras
+	piece.carries = path.carries
+	for row: Dictionary in HABITATS:
+		if row.has("along") and row.every <= LINE_EVERY and Catalog.PARTS.has(row.crop) and _runs_along(row.along, piece):
+			return true
+	return false
+
+
+## Where a laid stretch of path's wild lines live, for drawing them far off:
+## each living stretch of a close line, a side at a time, as [from, to] world
+## metres, how tall and how wide its plants stand there. The fates are the
+## draws its plants are made by, so a line far off runs where they stand.
+## Its own streams: a worker asks.
+static func far_lines(history: History, piece: Sites.Piece) -> Array[Array]:
+	var out: Array[Array] = []
+	var path: PathNetwork.Path = history.network.paths[piece.path]
+	var fate := RandomNumberGenerator.new()
+	for r in HABITATS.size():
+		var row: Dictionary = HABITATS[r]
+		if not row.has("along") or row.every > LINE_EVERY or not Catalog.PARTS.has(row.crop) \
+				or not _runs_along(row.along, piece):
+			continue
+		var alive: float = row.alive.get(history.region_of(path.points[piece.first]), 0.0)
+		var side: float = (row.side.x + row.side.y) * 0.5
+		var size: float = (row.size.x + row.size.y) * 0.5
+		for k in piece.points.size() - 1:
+			var a := piece.points[k]
+			var b := piece.points[k + 1]
+			var la := path.lengths[piece.first + k]
+			var lb := path.lengths[piece.first + k + 1]
+			if lb - la <= 0.0:
+				continue
+			var run := (b - a) / (lb - la)
+			var across := Vector2(-run.y, run.x)
+			for stretch in range(floori(la / row.stretch), ceili(lb / row.stretch)):
+				fate.seed = _seed(history.run_seed, path.id, r + STRETCHES, stretch)
+				if fate.randf() >= alive:
+					continue
+				var sign := 1.0 if fate.randf() < 0.5 else -1.0
+				var from := maxf(stretch * row.stretch, la) - la
+				var to := minf((stretch + 1) * row.stretch, lb) - la
+				for j in (2 if row.get("both", false) else 1):
+					var off := across * side * (sign if j == 0 else -sign)
+					out.append([a + run * from + off, a + run * to + off, BUSH_TALL * size, BUSH_WIDE * size])
+	return out
+
+
+## A grown wild bush's height and width at its look's own size, m.
+const BUSH_TALL := 0.5
+const BUSH_WIDE := 1.04
+
+
 ## Two streams the placing draws from, reseeded for each slot and stretch:
 ## a stretch's fate and a site's slot draw apart from a path's slots.
 static var _rng := RandomNumberGenerator.new()

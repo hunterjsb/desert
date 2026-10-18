@@ -102,6 +102,30 @@ isn't balanced is offered Normal only. The run keeps its origin (`World.kit`) an
 (`kit`); a new run after a death comes as the same origin. A save from before origins has none and
 resumes as it was, from the tuning's start. Spawns probes 2 and 3.
 
+## Deeds (achievements; agreed 2026-10-18, building)
+
+What you've done across every run, kept in the profile, which only grows. A deed both tells
+your story and opens things: a start still shown "????" opens by a deed (each kit's `unlock`
+names it), and so can a kit variant or a mark on your gear (Hunter: "they should do both").
+
+- **Recorded where it happens:** the system that knows (the board, the shield, the planter, the
+  sail, the deck, power, the world's landmarks and sites) records the deed through one shared
+  hook the moment it's done. Nothing polls for them.
+- **Only real runs count:** a dev scenario's run never records one; Ironman deeds are marked
+  as such.
+- **The first list** (Hunter, 2026-10-18; the X's are tuning, set to be reachable but earned):
+  - Board: jump X m high on it; travel X m on it; **Flying Bling**, ride into a storm at night or
+    during an eclipse.
+  - Shield: take X of a storm's wear on a shield; **Hermit**, a full day under a shield.
+  - Farming: grow three kinds of crop; two planters in tow at once.
+  - Sailing: **Set Sail**, a sail's sheet tied at your waist.
+  - Camp: six chassis pieces joined in one deck; a Console, a condenser and a crate on one deck.
+  - Power: over X W made in one system.
+  - Story: **The Old City**, reach Port Morgan; **Hot Tourist Destinations**, reach every named
+    landmark; a structure of each of the four ages stood in.
+- **Shown in a grid,** reached from the main menu and the system menu: each deed a tile, named,
+  with a short line saying what it asks, lit once done (Menus & UI).
+
 ## Ending flags (proposed)
 
 *Session 4, part 3 ([lore session](../lore-session-2026-10-17-part-3.md)); proposed, and none of it
@@ -175,8 +199,10 @@ calls them from Save, Save & quit, Resume, New game, the death screen and Option
   moving, stamina, your bars, everything you carry (each thing with its state, as a
   radio's channel, beacon and charge; a save from before, with five slots, resumes with
   their contents carried), what's in your hands, at your waist or being
-  hauled, and the board you ride with its ride as it stood), the clock, the moon position, the engine's origin, and where power, wear,
-  farming and your body are in their ticks. Then everything of yours: each thing by its
+  hauled, and the board you ride with its ride as it stood), the clock, how long the run
+  has been played (a save from before kept none, and its run never counts it) and when it
+  was saved, the moon position, the engine's origin, and where power, wear, farming and
+  your body are in their ticks. Then everything of yours: each thing by its
   catalog id, where it is and how it's moving, its wear, charge, water, growth and
   harvests, a shield's switch and how far its bubble has bloomed, a stake driven or not,
   and every part in every socket, down to a line's end on a hook's ring and a shield

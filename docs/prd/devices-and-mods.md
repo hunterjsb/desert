@@ -76,7 +76,8 @@ silent.
 - **Reel in and pay out** (Hunter, 2026-10-16): on a line, they shorten and lengthen it
   (Rope & tethering). **Bring near and push out** are their own actions (Hunter,
   2026-10-17: "switch rope scrolling to control + scroll so it doesnt conflict with object
-  moving"): on anything you hold or have hold of, they bring it nearer or push it farther,
+  moving"; then, 2026-10-18, the other way round, as lines matter more: the wheel bare reels,
+  held with control it moves what you hold): on anything you hold or have hold of, they bring it nearer or push it farther,
   within reason, and never touch a line. *As built:* a notch is 0.25 m. What you carry goes from
   0.5 m to 2 m in front of your eyes, never nearer than clears you, and still stops short
   of the sand or anything in the way; what you have hold of goes from just clear of you
@@ -392,6 +393,14 @@ device already stays a body of its own on the host's power pool.
   off a deck the Console's own front, its screen's. The wind is a vector flying in from where it
   comes from, as long as it's strong, and an arc joins the two, the angle written under the
   gyro: the wind angle a sailor trims to, in degrees, to starboard or port, as "45° STBD".
+- **Tu-ward on the gyro** (Hunter, 2026-10-18: "we should also show 'tu-ward' on the compasses.
+  on the computer yes for sure"; built). A small disc on the gyro's rim in Tu's pale blue, TU
+  written just inside it, on the radar's legend and on the stats page alike: the great-circle bearing
+  from where you stand toward the point under Tu, nodding with Tu as it does. The Console works
+  it from where it is on the moon, so it reads on the far side too, where Tu is below the
+  horizon, and points the way to walk to see it rise. Within a degree of the point under Tu, or
+  of the one opposite, every way is Tu-ward and the mark goes. The hand-held compass never shows
+  it ([survival](survival.md)).
 - **The wind is as the deck feels it.** Before, the anemometer read the field's wind over the
   sand, which a deck under way doesn't feel. It reads the field's wind less the deck's own way
   over the sand now, as a masthead anemometer would, still from the field, so a bubble doesn't
@@ -473,6 +482,16 @@ Console two late uses ([the vision](../vision.md#landmarks-and-endings)):
   a storm mini-map ([Wind & storms](wind-and-storms.md#instruments-and-the-console-screen-proposed-first-version-built)).
   Not said: what frame a legged robot is, or whether it stands on a deck mount, which takes one
   device the size of a crate.
+- **Teaching and taking the Walker** (agreed, 2026-10-18, [spec](../storms-signals-sailing-2026-10-18.md)).
+  The Walker is a legged survey robot that exists only to understand Zan's weather, indifferent to
+  its flock; the nomads followed it for centuries until it walked them into the anomaly. Survive
+  an anomaly recording your own sensor logs, plug your Console into the Walker and upload them,
+  and from then anomalies show on your map and its moon-wide feed flags them, for anyone
+  listening. It doesn't mind its chassis being taken as long as it keeps roaming and surveying;
+  kept still too long it goes bad (its feed degrades, its draw rises, its logs turn subtly wrong).
+  Taken before the nomads' line is done, they may go on pilgrimage and find their god gone, and
+  turn aggressive only if it hasn't been taught; teaching it afterwards calls them off. Aggro
+  mostly touches the endings.
 - **Captured hive mind tech (Idea).** Sealed deep in the black site, it "looks like an incredibly
   powerful Console mod," the endings session's route for a human to consume the other gods.
   Session 4, part 3 makes that ending hive mind start only, so this is an Idea with a clash
@@ -1157,6 +1176,9 @@ a water socket of its own on top, so a canister or another hose goes on there to
     own use would: the shield on and off, the radio's dial, the lamp off, the deck's trays
     resting. What the panel says is drawn is what the pool's devices draw, and its bank what
     they hold.
+29. **The gyro points Tu-ward** (2026-10-18). A Console with an anemometer, carried round the
+    moon: on the near side, the Rim and the far side, its gyro's Tu-ward mark is the way Tu
+    stands in the sky there, or would past the horizon, to within a degree.
 
 ## Out of scope
 

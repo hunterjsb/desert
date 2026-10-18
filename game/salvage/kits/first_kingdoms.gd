@@ -67,6 +67,9 @@ static func _pipe_wall_hut() -> StructureKit.Piece:
 		Vector2(-1.5, 0.5), Vector2(-1.5, 3.5), Vector2(-1.5, 8.0)])
 	p.approach = Vector2(-1.5, 12.0)
 	p.look = _hut_look
+	# Its hull-plate roof, and the brass where the pipe's lengths meet.
+	StructureKit.glint(p, Vector3(0.5, 2.36, -1.2), Vector3(0.0, 1.0, 0.25), 4.0)
+	StructureKit.glint(p, Vector3(1.0, 1.4, 3.05), Vector3(0.0, 0.3, 1.0), 5.0)
 	return p
 
 
