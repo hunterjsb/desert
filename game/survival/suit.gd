@@ -455,7 +455,7 @@ func _show_looks(shown: Array[Array]) -> void:
 			look.key = now
 			look.show_thing(thing)
 		if thing is Compass:
-			look.turn_needle(Compass.turn(face, _player.world.moon.north()))
+			look.turn_needle((thing as Compass).needle_on(face, _player.world))
 
 
 ## The picture of a stack, for anything that reads the view.
