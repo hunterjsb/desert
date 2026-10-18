@@ -132,8 +132,8 @@ func _card(id: StringName) -> Button:
 	column.modulate = Color.WHITE if done or not open else Color(UNLIT, UNLIT, UNLIT)
 	card.add_child(column)
 	var picture: Control
-	var icon: StringName = Deeds.TABLE[id].get("icon", &"")
-	if icon != &"":
+	var icon: StringName = Deeds.TABLE[id].get("icon", &"landmark")
+	if ItemIcons.LOOKS.has(icon):
 		var shown := TextureRect.new()
 		shown.texture = ItemIcons.of(Engine.get_main_loop(), icon)
 		shown.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
@@ -143,7 +143,7 @@ func _card(id: StringName) -> Button:
 		picture = shown
 	else:
 		picture = Control.new()
-		picture.draw.connect(_draw_mark.bind(picture, not open))
+		picture.draw.connect(_draw_mark.bind(picture, icon, not open))
 	picture.custom_minimum_size = Vector2(ICON, ICON)
 	picture.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	column.add_child(picture)
@@ -216,13 +216,21 @@ static func _silhouette() -> ShaderMaterial:
 	return _shadow
 
 
-## A landmark's mark: a mast on the skyline with its pennant, faint while locked.
-static func _draw_mark(on: Control, locked: bool) -> void:
+## A mark drawn in the theme's ink, faint while locked: a landmark's mast on
+## the skyline with its pennant, or a sail on its mast.
+static func _draw_mark(on: Control, mark: StringName, locked: bool) -> void:
 	var ink := on.get_theme_color(&"faint" if locked else &"text", &"Palette")
 	var s := on.size
 	var foot := Vector2(s.x * 0.5, s.y * 0.88)
-	var top := Vector2(s.x * 0.5, s.y * 0.14)
+	var top := Vector2(s.x * 0.5, s.y * 0.12)
 	on.draw_line(Vector2(s.x * 0.2, foot.y), Vector2(s.x * 0.8, foot.y), ink, 2.0, true)
+	if mark == &"sail":
+		var boom := Vector2(s.x * 0.5, s.y * 0.74)
+		on.draw_line(boom + Vector2(0.0, s.y * 0.14), top, ink, 3.0, true)
+		on.draw_colored_polygon(PackedVector2Array([top + Vector2(4.0, 4.0), boom + Vector2(4.0, -2.0),
+			boom + Vector2(s.x * 0.34, -2.0)]), ink)
+		on.draw_line(boom, boom + Vector2(s.x * 0.36, 0.0), ink, 2.0, true)
+		return
 	on.draw_line(foot, top, ink, 3.0, true)
 	for k in 3:
 		var y := lerpf(foot.y, top.y, 0.25 + k * 0.2)

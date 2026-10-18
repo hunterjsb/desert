@@ -163,8 +163,8 @@ of every deed under how many show done ("6 of 15 deeds"), with Back: a column or
 (Board, Shield, Farming, Camp, Story, named over them), each deed a row below the deepest it waits on,
 and a line down from each to what it opens, brighter once that's open.
 - **A card** is the deed's name and a picture of its thing: the board, the shield, a crop, a planter,
-  the Console, the mast with its sail, a chassis piece, the turbine, and for the story a landmark's
-  mast and pennant. Done, it's lit; open but not done, dimmer; still waiting on another, only its
+  the Console, a chassis piece, the turbine; drawn in the theme's ink, a sail on its mast, and for
+  the story a landmark's mast and pennant. Done, it's lit; open but not done, dimmer; still waiting on another, only its
   thing's outline in faint ink and ????.
 - **The pictures** are Dress's looks of each thing's frame and what's fitted (`ItemIcons`), drawn
   once in a little world of their own the first time they're asked for and kept, so a card costs a

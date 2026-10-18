@@ -13,8 +13,8 @@ const ALL := &"*"
 const HOME := [&"console", &"condenser", &"crate_frame"]
 ## Each deed in the order the grid lays them out, a family a column or two:
 ##   name; asks, what it asks, its goal in place of %s; family; after, the
-##   deeds it waits on; icon, its card's thing (ItemIcons), or none for a
-##   landmark's mark;
+##   deeds it waits on; icon, its card's thing (ItemIcons), or a mark drawn
+##   (DeedsGrid): a sail, or a landmark's for none;
 ##   goal, a number to reach (measure) or of different things to count
 ##   (`parts`): a tuning field, or every landmark, every age that built, or
 ##   the home's three; unit, what its progress counts; step, how much better
@@ -39,7 +39,7 @@ const TABLE := {
 		"after": [&"crop"], "icon": &"planter", "goal": "deed_planters_towed", "unit": "planters", "step": 1.0},
 	&"deck_home": {"name": "All Mod Cons", "asks": "A Console, a condenser and a crate on one deck", "family": &"camp",
 		"icon": &"console", "goal": "home", "unit": "on one deck", "step": 1.0},
-	&"sail_waist": {"name": "Set Sail", "asks": "Tie a sail's sheet at your waist", "family": &"camp", "icon": &"mast"},
+	&"sail_waist": {"name": "Set Sail", "asks": "Tie a sail's sheet at your waist", "family": &"camp", "icon": &"sail"},
 	&"deck_pieces": {"name": "Six Pack", "asks": "Join %s chassis pieces into one deck", "family": &"camp",
 		"after": [&"deck_home"], "icon": &"chassis", "goal": "deed_deck_pieces", "unit": "pieces", "step": 1.0},
 	&"power": {"name": "Power Trip", "asks": "Make %s W in one system", "family": &"camp", "after": [&"sail_waist"],
