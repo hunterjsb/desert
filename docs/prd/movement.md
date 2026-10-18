@@ -233,6 +233,30 @@ The base gets faster through a progression of haulers:
 Early on you weather storms. Later, the yacht lets you choose between weathering one
 and outrunning it.
 
+### Sailing the camp (Hunter, 2026-10-17)
+
+"Feeling the weight of your camp around your waist or in your hands is gonna be a really big
+part of the game. the camp should be able to be used as a sail, especially when paired with
+some sort of skates or board plate and actual sail mount... deep, fun, intuitive yet realistic
+windsailing mechanics... it can be quite large." This is the vision's sand yacht, built from
+your own camp's parts rather than found whole:
+
+- **A sail mount and a sail.** A mast seats on a crate's top mount or a deck mount, and a large
+  sail rides it. Raised, it catches the real wind; furled, it doesn't.
+- **Runners: skates or a board plate.** Fitted under a crate or a deck in place of trays, they
+  slide easily along their length and grip hard across it, as a land yacht's runners do, so a
+  camp on runners sails across the wind and can work upwind, where a floating camp only
+  drifts downwind.
+- **Realistic, and felt.** The sail makes lift and drag by its angle to the apparent wind; its
+  pull acts high up, so the camp heels in a gust and can tip; reaching is fastest, dead
+  downwind is slower, straight upwind is impossible, so you tack. The pull reaches you down
+  your lines: on foot or on the board, tied at your waist, your camp tows you.
+- **Trimmed by its sheet.** The sheet is a line from the sail you hold or tie at your waist:
+  reeling it in hauls the sail in, paying out eases it, so trimming is the reeling you
+  already do.
+- **Storms.** A raised sail in a storm is the danger it should be: reef or furl it, or it
+  tears and the mast can snap.
+
 ### The dune sailboat (Agreed, session 4, part 3; not built)
 
 *Session 4, part 3 ([lore session](../lore-session-2026-10-17-part-3.md)); the Varran settler's

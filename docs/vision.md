@@ -76,7 +76,11 @@ upgrade the camp → the camp sustains more of itself → go further, or into th
   a post or ruin to tie to is precious.
 - **Haulers make the base faster later:** a rusty mechanical beast that follows and
   carries (stiff parts, so no skin rigging), a sand yacht that rides the wind and might
-  outrun a storm with the camp aboard, and big carriers. (Agreed, session 4, part 3: the Varran
+  outrun a storm with the camp aboard, and big carriers. **The yacht is your own camp**
+  (Hunter, 2026-10-17): a mast, a large sail and runners on your crate or deck, trimmed by
+  its sheet, its pull felt at your waist ([Movement](prd/movement.md#sailing-the-camp-hunter-2026-10-17)).
+  "Feeling the weight of your camp around your waist or in your hands is gonna be a really
+  big part of the game." (Agreed, session 4, part 3: the Varran
   start has a dune sailboat, a slow wind-driven hauler, which the Movement PRD keeps apart from
   the yacht: [Movement](prd/movement.md#the-dune-sailboat-agreed-session-4-part-3-not-built).)
 - **The hoverboard is just for you:** fast, floaty and fun, for scouting and escaping. It
