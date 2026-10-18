@@ -49,8 +49,9 @@ jobs:
   elsewhere:
     # The whole suite on macOS and Windows, in fewer groups of about equal
     # wall clock; macOS runs it on the bash 3.2 it ships. Keep REST_EXCEPT in
-    # step with the groups. The probes that time real frames only report
-    # here: these runners hitch where real machines don't.
+    # step with the groups. A probe that fails here gets a second run by
+    # itself: these runners are slower and noisier than the machines the
+    # probes' timings were set on.
     strategy:
       fail-fast: false
       matrix:
@@ -70,7 +71,7 @@ jobs:
         probes/rope probes/devices probes/weather probes/salvage probes/shield
         probes/saves probes/kits probes/survival probes/sail probes/power probes/farming
       BASH_FOR_PROBES: ${{ startsWith(matrix.os, 'macos') && '/bin/bash' || 'bash' }}
-      PROBE_UNTIMED: 1
+      PROBE_RETRY: 1
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/godot
@@ -86,14 +87,6 @@ jobs:
           else
             $BASH_FOR_PROBES scripts/probe.sh ${{ matrix.group }}
           fi
-
-      - name: The probes that time real frames, reported only
-        if: matrix.group == 'the rest'
-        continue-on-error: true
-        run: |
-          timed=$(grep -rl --include='*.gd' '^## Runs alone' probes)
-          # shellcheck disable=SC2086
-          PROBE_UNTIMED='' $BASH_FOR_PROBES scripts/probe.sh $timed
 
   builds:
     uses: ./.github/workflows/builds.yml
