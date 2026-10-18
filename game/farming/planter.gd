@@ -44,9 +44,9 @@ var _owed := {}
 func tick(seconds: float, t: float) -> void:
 	var crops := plants()
 	if not crops.is_empty():
-		var felt := felt(t)
+		var feels := felt(t)
 		for plant in crops:
-			tank_l = maxf(tank_l - plant.grow(seconds, felt, tank_l), 0.0)
+			tank_l = maxf(tank_l - plant.grow(seconds, feels, tank_l), 0.0)
 			var lead: float = plant.data.stages.get("folds", 0.0) * 60.0
 			if lead > 0.0:
 				plant.forecast(_stormy(t) or _stormy(t + lead), seconds)
