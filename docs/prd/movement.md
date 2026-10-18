@@ -45,7 +45,10 @@ their own actions. Crouching at a run or heading downhill turns into a slide. Sl
 above about 6°, and sand steeper than 28° slides you whatever you do. The jump is 0.45 m
 at 1 g and 1.0 m at 0.45 g, because the push-off is the same on any moon. Crouching cuts
 your wind catch to 45%. Hauling hard against a line digs you in: up to 35% slower, and
-your stamina drains faster. A load past what you carry easily sinks you in the same way,
+your stamina drains faster. You start to dig in once a line takes 35% of your pace, and
+are all the way in, within about a second, once it takes the 65% you'd manage dug in
+(2026-10-18: the depth had been read against the pace you were already sunk to, so a
+pull near that edge took over two seconds to dig you in). A load past what you carry easily sinks you in the same way,
 standing too, but tires you only on the move, and past sunk in it slows you further
 (Survival, 2026-10-17). The feel settings live in their own "Body feel" tuning group.
 
@@ -541,9 +544,10 @@ All built: on foot alongside Stage 5, the board and the camp-range warnings at S
    and no jump. *(Built: flat out in real time at sixty frames a second, ruins and finds
    laid out as you go, across four shifts in 1.1 km: your way changes no more at a shift
    than anywhere, the ground stays solid 120 m ahead, and no frame spends longer than
-   1.2 to 1.3 ms streaming headless, against the 2.0 ms line. In a real window at 144 Hz
-   (`look/stream`, which now rides a board flat out downwind too) the worst was 1.21 ms
-   over 410 m; the ring of collision round you came up short for a moment after a
+   0.9 ms streaming headless, against the 2.0 ms line: 1.1 to 1.4 ms before a chunk's
+   collision came in quarters (World & terrain, 2026-10-18). In a real window at
+   144 Hz (`look/stream`, which now rides a board flat out downwind too) the worst was
+   1.21 ms over 410 m; the ring of collision round you came up short for a moment after a
    crossing in 92 of its 2,857 frames.)*
 
 Movement on foot, built alongside Stage 5, has its own:

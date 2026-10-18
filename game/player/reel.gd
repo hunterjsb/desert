@@ -185,7 +185,7 @@ func _line_of(body: Variant) -> Rope:
 	if not is_instance_valid(body) or not (body is Part):
 		return null
 	# A scenario cleared away may free a line whose end is still on you.
-	var laid: Variant = body.get_meta(&"line", null)
+	var laid: Variant = body.get_meta(&"line") if body.has_meta(&"line") else null
 	if laid != null and (not is_instance_valid(laid) or (laid as Line).state != Line.State.LAID):
 		return null
 	for child in body.get_children():

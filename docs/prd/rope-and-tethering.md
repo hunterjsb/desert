@@ -259,7 +259,13 @@ Reliability is the whole point here, so this list is long. All run without a win
    that snaps one line holds on two.
 5. **Snaps cleanly.** Raise the wind until a line passes its breaking strength. It
    snaps, the object drifts downwind, and nothing spikes. A loose end that snags as
-   it's dragged off is dragged free, never flung.
+   it's dragged off is dragged free, never flung. *(2026-10-18: the probe's snag had
+   been the next chunk's collision edge, not the dune face it was laid for, and
+   with that edge gone nothing on open sand snags a loose end: laid before a 30° slip
+   face, the end climbs it at the crate's own pace. Taking the cap off the line's
+   closing speed changed nothing the old snag measured, either. So the probe lets go
+   of a line stretched past its stop, as a snag on something solid leaves one: it
+   drags its end back at 3.1 m/s, and 52 m/s without the cap.)*
 6. **What you see is what holds.** Drawn rope ends sit on the attachment points every
    frame, the drawn length matches the constraint, and the drawn rope hangs as its
    weight and pull say: straight only under real load.

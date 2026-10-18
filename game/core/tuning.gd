@@ -385,6 +385,7 @@ static var _current: Tuning
 @export var slide_brake: float = 0.3
 ## Hauling: a line has to take this share of your pace before your feet dig
 ## in; fully dug in you lose this share of it and tire this much faster, per s.
+## You're fully dug in once it takes all the pace you'd manage dug in.
 @export var haul_from: float = 0.35
 @export var haul_slow: float = 0.35
 @export var haul_stamina_drain: float = 10.0
