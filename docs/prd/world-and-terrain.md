@@ -412,7 +412,7 @@ This is the minimum that makes the whole game loop possible. Every item gets bui
   of the player, visible ground out to about 8 chunks.
 - Collision from the same samples as the visible mesh up close, so what you see is
   exactly what you stand on. *(2026-10-18: a chunk's collision comes in four 32 m
-  heightmaps, built on the main thread one a frame before anything else. A whole
+  heightmaps, built first in a frame, as many as the streaming budget holds. A whole
   chunk's took up to 1.25 ms headless, and under load it was what most often took a
   frame past the hitch line, stretched to 2 to 14 ms; a quarter takes about 0.15.
   Each piece runs a metre past its edges, 5 cm below the neighbour's ground there. A

@@ -503,9 +503,9 @@ All built: on foot alongside Stage 5, the board and the camp-range warnings at S
    laid out as you go, across four shifts in 1.1 km: your way changes no more at a shift
    than anywhere, the ground stays solid 120 m ahead, and no frame spends longer than
    0.9 ms streaming headless, against the 2.0 ms line: 1.1 to 1.4 ms before a chunk's
-   collision came in quarters, one a frame (World & terrain, 2026-10-18). In a real
-   window at 144 Hz (`look/stream`, which now rides a board flat out downwind too) the worst was 1.21 ms
-   over 410 m; the ring of collision round you came up short for a moment after a
+   collision came in quarters (World & terrain, 2026-10-18). In a real window at
+   144 Hz (`look/stream`, which now rides a board flat out downwind too) the worst was
+   1.21 ms over 410 m; the ring of collision round you came up short for a moment after a
    crossing in 92 of its 2,857 frames.)*
 
 Movement on foot, built alongside Stage 5, has its own:
