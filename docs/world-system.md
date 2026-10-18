@@ -726,6 +726,9 @@ terrain's streaming step, inside its budget, and only when the ground under you 
   taken and whether it was opened (a door forced, a cache broken), kept while the site is laid and
   dropped with it, as `Salvage` keeps a loaded chunk's memory now. A landmark's record is kept whatever the
   distance.
+- **The sand held off a site over you or your camp is saved** (2026-10-18): a site's exposure is the
+  weather's, but where a storm let go while something of yours stood on it, the sand it held off is
+  kept by the site's id, so a resume never buries you.
 - **Discoveries** go to the profile as now: the first of each kind of thing, and later the first sight of
   each landmark.
 
@@ -1191,7 +1194,10 @@ paint's age.
 - **Never over you or your camp.** While you or one of your camp's devices stands on a site's ground, the
   sand never comes back over it; once you're off it comes back no faster than 5 cm a second
   (`site_rebury_m_s`). A house's rooms keep their sand level as it sinks, so its floor goes down under
-  you rather than the sand up over you; the hold is for pits and drift, and for the rule.
+  you rather than the sand up over you; the hold is for pits and drift, and for the rule. **A save
+  keeps it:** the sand held off a site over you or your camp is saved (`sites.held`), and resumed, the
+  site comes back as held whoever stands there yet, until the resume is done; a pit you saved in comes
+  back dug out round you (saves probe 23).
 - **The desert ate it.** When the last chunk holding a site's ground is forgotten (`sites.release`),
   nothing holds it; come back and it's built as the weather has it then.
 - **The best loot shows mid-storm.** A site's deepest sockets, where its era's best lies, are reached only
@@ -1235,9 +1241,10 @@ paint's age.
   can cost a few tens of milliseconds once where sites stand thick.
 - **Probes:** kits 3 (a loaded site follows the storm, smoothly, and never buries you), kits 4 (exposure is
   pure, and a storm works a site), loot 7 (what a storm bares blows downwind), sightlines 3 (a glint
-  through the dust only near). Each fails on a deliberately broken build: no hold over you, no ground
+  through the dust only near), saves 23 (a save never buries you). Each fails on a deliberately broken build: no hold over you, no ground
   pressed afresh, a look that doesn't follow; the storm's sand never coming back, or read only on its
-  ticks; drift shed upwind as well; glints through the dust at any range, or every bare glint.
+  ticks; drift shed upwind as well; glints through the dust at any range, or every bare glint; a
+  resume that forgets the held sand.
 - **To see it** (unseen, on a GPU): `look/exposure/shoot.sh <dir>` stands a hab pod where a storm lays it
   bare by day and shoots it from off its ground in the clear before the storm, rising half out of the
   sand in it, at its height and in the clear after, and from out in the dust its bared windows glinting
