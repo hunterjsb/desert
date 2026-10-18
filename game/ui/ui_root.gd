@@ -210,6 +210,10 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed(&"console") and not dev_console.visible:
 		open_dev_console()
 		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed(&"fullscreen"):
+		# The same switch as Options', so either shows how it stands.
+		_change(0, &"fullscreen", false)
+		get_viewport().set_input_as_handled()
 	elif (is_open() or dev_console.visible) and not event is InputEventMouseMotion:
 		# A menu or the console is up: nothing reaches the game behind it.
 		get_viewport().set_input_as_handled()

@@ -102,6 +102,30 @@ isn't balanced is offered Normal only. The run keeps its origin (`World.kit`) an
 (`kit`); a new run after a death comes as the same origin. A save from before origins has none and
 resumes as it was, from the tuning's start. Spawns probes 2 and 3.
 
+## Deeds (achievements; agreed 2026-10-18, building)
+
+What you've done across every run, kept in the profile, which only grows. A deed both tells
+your story and opens things: a start still shown "????" opens by a deed (each kit's `unlock`
+names it), and so can a kit variant or a mark on your gear (Hunter: "they should do both").
+
+- **Recorded where it happens:** the system that knows (the board, the shield, the planter, the
+  sail, the deck, power, the world's landmarks and sites) records the deed through one shared
+  hook the moment it's done. Nothing polls for them.
+- **Only real runs count:** a dev scenario's run never records one; Ironman deeds are marked
+  as such.
+- **The first list** (Hunter, 2026-10-18; the X's are tuning, set to be reachable but earned):
+  - Board: jump X m high on it; travel X m on it; **Flying Bling**, ride into a storm at night or
+    during an eclipse.
+  - Shield: take X of a storm's wear on a shield; **Hermit**, a full day under a shield.
+  - Farming: grow three kinds of crop; two planters in tow at once.
+  - Sailing: **Set Sail**, a sail's sheet tied at your waist.
+  - Camp: six chassis pieces joined in one deck; a Console, a condenser and a crate on one deck.
+  - Power: over X W made in one system.
+  - Story: **The Old City**, reach Port Morgan; **Hot Tourist Destinations**, reach every named
+    landmark; a structure of each of the four ages stood in.
+- **Shown in a grid,** reached from the main menu and the system menu: each deed a tile, named,
+  with a short line saying what it asks, lit once done (Menus & UI).
+
 ## Ending flags (proposed)
 
 *Session 4, part 3 ([lore session](../lore-session-2026-10-17-part-3.md)); proposed, and none of it
