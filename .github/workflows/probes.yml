@@ -49,9 +49,9 @@ jobs:
   elsewhere:
     # The whole suite on macOS and Windows, in fewer groups of about equal
     # wall clock; macOS runs it on the bash 3.2 it ships. Keep REST_EXCEPT in
-    # step with the groups. A probe that fails here gets a second run by
-    # itself: these runners are slower and noisier than the machines the
-    # probes' timings were set on.
+    # step with the groups. These runners are slower and noisier than the
+    # machines the probes' timings were set on, so the probes that time real
+    # frames are left to Linux, and a probe that fails gets a second run.
     strategy:
       fail-fast: false
       matrix:
@@ -71,7 +71,7 @@ jobs:
         probes/rope probes/devices probes/weather probes/salvage probes/shield
         probes/saves probes/kits probes/survival probes/sail probes/power probes/farming
       BASH_FOR_PROBES: ${{ startsWith(matrix.os, 'macos') && '/bin/bash' || 'bash' }}
-      PROBE_RETRY: 1
+      PROBE_NOISY: 1
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/godot

@@ -20,10 +20,10 @@
 # PROBE_JOBS probes run at once (default one per physical core, at least 4, or
 # 2 while someone is playing), the slowest first by the last run's times; a
 # probe whose header says "## Runs alone" times real frames, so it runs after
-# the rest, by itself. PROBE_RETRY runs each probe that didn't pass once more,
-# by itself, and the second verdict counts: for CI's macOS and Windows
-# runners, slower and noisier than the machines the probes' timings were set
-# on. Both verdicts are printed.
+# the rest, by itself. PROBE_NOISY is for a runner slower and noisier than
+# the machines the probes' timings were set on (CI's macOS and Windows): the
+# probes that run alone are left out, and any other that fails gets one more
+# run by itself, whose verdict counts. Both verdicts are printed.
 #
 # Bash 3.2 and up, so it runs as it is on macOS and in Git Bash on Windows:
 # no mapfile, wait -n or flock, and no timeout where there's none.
@@ -167,12 +167,13 @@ together=()
 alone=()
 while IFS= read -r probe; do
 	[[ -n $probe ]] || continue
-	probes+=("$probe")
 	if grep -q '^## Runs alone' "$probe"; then
+		[[ -z ${PROBE_NOISY:-} ]] || continue
 		alone+=("$probe")
 	else
 		together+=("$probe")
 	fi
+	probes+=("$probe")
 done <"$reports/list"
 
 trap 'kill $(jobs -p) 2>/dev/null; exit 130' INT TERM
@@ -256,7 +257,7 @@ for probe in ${alone[@]+"${alone[@]}"}; do
 	collect
 	n=$((n + 1))
 done
-if [[ -n ${PROBE_RETRY:-} ]]; then
+if [[ -n ${PROBE_NOISY:-} ]]; then
 	for failed in "$reports"/*.failed; do
 		[[ -e $failed ]] || continue
 		probe=$(cut -d' ' -f2- "${failed%.failed}.took")
