@@ -42,6 +42,7 @@ func _ready() -> void:
 	_keys_layer.visible = false
 	add_child(_keys_layer)
 	_keys = Controls.keys_label()
+	_keys.theme_type_variation = &"KeysList"
 	_keys.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT, Control.PRESET_MODE_MINSIZE, 10)
 	_keys.grow_vertical = Control.GROW_DIRECTION_BEGIN
 	_keys_layer.add_child(_keys)
@@ -88,11 +89,8 @@ func _write_keys() -> void:
 		_hint.text = hint
 	if not _keys_layer.visible:
 		return
-	var lines := PackedStringArray([Controls.help()])
 	# A look-test's own keys are raw keys, not actions.
-	for pair: Array in _scene_keys:
-		lines.append("%s  %s" % [Controls.tint(pair[0]), pair[1]])
-	var text := "\n".join(lines)
+	var text := Controls.help(_scene_keys.map(func(pair: Array) -> Array: return [Controls.tint(pair[0]), pair[1]]))
 	if _keys.text != text:
 		_keys.text = text
 

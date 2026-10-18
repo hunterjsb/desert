@@ -2,22 +2,29 @@ extends Node
 ## Every input binding, registered in code so they live in one readable place.
 ## Physical keys, so movement sits in the same spot on any keyboard layout.
 
-## What the keys list shows, before whatever the scene adds: each {action}
-## is drawn as its key.
+## What the keys list shows, in groups, before whatever the scene adds: each
+## {action} drawn as its key, and what it does in a word or two. The rest is
+## learned where it's needed (UIRoot.teach) or by doing.
 const HELP := [
-	["{hands_throw}", "throw what you hold"],
-	["{hands_rotate}", "held, the mouse turns what you hold or have hold of, not your view: right what's tipped over"],
-	["{reel_in} {pay_out}", "a notch at a time, reel in or pay out the line in your hand, or the one at your waist you look along; a sail's sheet hauls the sail in or eases it, riding too"],
-	["{bring_near} {push_out}", "bring what you hold or have hold of nearer, or push it out"],
-	["{move_forward} {move_left} {move_back} {move_right}", "move"], ["{sprint}", "sprint"],
-	["{hands_grab}", "pick up, take out, put in, put down"], ["{interact}", "use what you look at or hold: switch a shield, tune a radio, drive a stake, waist a line, water a planter, set a tray floating or resting, raise or furl a sail"],
-	["{inventory}", "what you carry and your waist, by mouse: click a thing to take it out, or the view to put in what you hold; {interact} on a thing uses it, as a radio's dial"], ["{ui_cancel}", "back: close what's open, or the menu"],
-	["{toggle_keys}", "these keys"], ["{quick_save}", "quick save"], ["{quick_load}", "quick load: back to your last save"],
-	["{jump}", "jump"], ["{crouch}", "crouch; at a run or downhill, slide"], ["{headlamp}", "the headlamp, on or off"],
-	["{ride}", "get on or off a hoverboard; riding, the move keys push and carve where they point but {move_back} only brakes, {sprint} kicks off the sand, {jump} hops, {crouch} tucks, and crouched into a hard carve you drift; a sheet at your waist stays tied, and your camp tows you"],
+	["MOVING", [["{move_forward}{move_left}{move_back}{move_right}", "move"], ["{sprint}", "sprint"],
+		["{jump}", "jump"], ["{crouch}", "crouch, slide"], ["{ride}", "board on or off"]]],
+	["HANDS", [["{hands_grab}", "take, put down"], ["{interact}", "use"], ["{hands_throw}", "throw"],
+		["{hands_rotate}", "turn what you hold"], ["{bring_near} / {push_out}", "nearer, further"],
+		["{reel_in} / {pay_out}", "reel in, pay out"]]],
+	["YOU", [["{inventory}", "what you carry"], ["{headlamp}", "headlamp"]]],
+	["GAME", [["{ui_cancel}", "back, menu"], ["{quick_save}", "quick save"], ["{quick_load}", "quick load"],
+		["{toggle_keys}", "these keys"]]],
 ]
 ## The developer's keys, listed apart under their own heading.
-const DEV_HELP := [["{console}", "the console: help lists its commands"], ["{toggle_dev_overlay}", "numbers"]]
+const DEV_HELP := [["{console}", "console"], ["{toggle_dev_overlay}", "numbers"]]
+## Riding takes more than its key says, so it's taught the first time you ride.
+const RIDE_HOW_TO := "ride"
+const RIDE_HOW_TO_SAYS := "The move keys push and carve where they point; {move_back} only brakes.\n" \
+	+ "{sprint} kicks off the sand, {jump} hops, {crouch} tucks; crouched into a hard carve, you drift."
+## A heading in the keys list sits back in the theme's dim text.
+static var DIM: Color:
+	get:
+		return ThemeDB.get_project_theme().get_color(&"dim", &"Palette")
 ## Keys on screen stand out in the theme's key colour.
 static var KEY_COLOR: Color:
 	get:
@@ -142,15 +149,19 @@ static func tint(key: String) -> String:
 	return "[color=#%s]%s[/color]" % [KEY_COLOR.to_html(false), key]
 
 
-## Every key as bound now, one per line, the developer's under their heading, as BBCode.
-static func help() -> String:
-	var lines := PackedStringArray()
-	for pair: Array in HELP:
-		lines.append("%s  %s" % [bbcode(pair[0]), bbcode(pair[1])])
-	lines.append("DEV")
-	for pair: Array in DEV_HELP:
-		lines.append("%s  %s" % [bbcode(pair[0]), bbcode(pair[1])])
-	return "\n".join(lines)
+## Every key as bound now, a table of key and what it does under each
+## group's heading, the developer's last, as BBCode.
+static func help(extra: Array = []) -> String:
+	var groups := HELP + [["DEV", DEV_HELP]]
+	if not extra.is_empty():
+		groups.append(["HERE", extra])
+	var cells := PackedStringArray()
+	for group: Array in groups:
+		cells.append("[cell][color=#%s]%s[/color][/cell][cell][/cell]" % [DIM.to_html(), group[0]])
+		for pair: Array in group[1]:
+			cells.append("[cell][right]%s[/right][/cell][cell]%s[/cell]" % [bbcode(pair[0]), bbcode(pair[1])])
+	return "[table=2]%s[/table]" % "".join(cells)
+
 
 
 ## Text with each {action} in it as that action's key, coloured, as BBCode.

@@ -283,6 +283,8 @@ func get_on(on: Hoverboard) -> bool:
 	motion_mode = MOTION_MODE_FLOATING
 	_sliding = false
 	_jumped = false
+	if Controls.ui != null and Controls.playing():
+		Controls.ui.teach(Controls.RIDE_HOW_TO, Controls.RIDE_HOW_TO_SAYS)
 	return true
 
 
