@@ -54,7 +54,7 @@ const POCKET_GROUND := Vector2(1500.0, 13000.0)
 const POCKET_SLOT := 500.0
 const POCKET_ODDS := 0.5
 const POCKET_BLOWS := Vector3(20.0, 50.0, 12.0)
-const POCKET_SIZE := Vector2(1.0, 4.0)
+const POCKET_SIZE := Vector2(20.0, 80.0)
 ## A pocket's plume lasts this long after it starts, s: the streakline's oldest.
 const POCKET_LIFE := 600.0
 

@@ -231,6 +231,30 @@ Gas-pocket dust plumes and far volcano plumes stay distant spectacles, never clo
 thunder does after lightning (the delay sells the scale), losing its high end with distance, and
 a big plume marking a vent's direction to steer by.
 
+*Built 2026-10-18, on the `plumes` branch* (`Rumbles`, `game/weather/rumbles.gd`, under Weather; the
+plumes are [Wind & storms](wind-and-storms.md#plumes)'):
+- **A boom at a burst's onset**, a vent's or a gas pocket's blowout, heard within 45 km. It comes as long
+  after the burst began as sound takes to come that far: sqrt(γRT/M) for nitrogen, Zan's air (γ 1.4, M
+  0.028 kg/mol), at the air's temperature where you stand, so about 353 m/s at 27 °C, 337 at 0 °C and
+  372 in a 60 °C afternoon. How thin the air is doesn't change it (it changes how loud a sound can be,
+  not how fast it goes). So a burst 10 km off is heard half a minute after its column starts up.
+- **Quieter and duller with distance.** -2 dB over its file at a kilometre for a vent's least burst,
+  louder by its size, 8 dB less for a pocket's, and 6 dB less each time the distance doubles, as sound
+  spreads; and through its own low-pass (the Booms bus) at 3 kHz by a kilometre, falling as distance to
+  the 0.9 past it, 300 Hz at 13 km and 100 Hz past 40: air takes a sound's high end first, and thin air
+  the more. Bigger bursts are lower, a pocket's blowout sharper.
+- **From its way.** The boom is played 20 m off you toward its source, so it's heard from the vent's
+  bearing as the column is seen there; no camera shake, sound alone.
+- **A live vent's roar near:** within 2.5 km of a live vent, its steady roar, at its file's level 150 m
+  off and fading with distance, harder as it vents harder, through its own low-pass (the Vents bus),
+  from its way. Both buses run through Weather, so a bubble muffles them as it does the storm.
+- **Sounds:** `boom.ogg` and `vent_roar.ogg`, made here with Python and ffmpeg, CC0
+  ([credits](../../assets/audio/CREDITS.md)).
+- **Probe** (wind & storms 17): from 3 km and from 12 km off the rift's live vent a burst's boom comes
+  as long after it began as sound takes to come that far (9.35 and 36.97 s), never before; from 12 km
+  it's 9 dB quieter and under half as bright (323 Hz against 1,116); it comes from the vent's way, to
+  under 2°; and a jump in time past it plays nothing late.
+
 ## Atmosphere
 
 - **Clear skies:** big, lonely views, heat shimmer at the horizon, and quiet apart from

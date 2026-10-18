@@ -98,7 +98,7 @@ func _moment(shot: Array) -> Dictionary:
 	if moment == "pocket":
 		for each in geology.pockets(600.0, span):
 			var at := _root_of(each)
-			var t: float = each.start + 50.0
+			var t: float = each.start + 90.0
 			var eye := _eye(at, t, shot)
 			if daylight.call(t) and _clear_eye(eye, t) and Plume.seen_through(field, world.tuning, eye, at + Vector3.UP * 50.0, t) > 0.9:
 				return {"t": t, "source": each, "root": at, "says": "a pocket blowing, x%.1f" % geology.venting(each, t).x}
@@ -111,7 +111,8 @@ func _moment(shot: Array) -> Dictionary:
 			var top := _top(source, root, t)
 			var foot := Plume.seen_through(field, world.tuning, eye, root + Vector3.UP * 50.0, t)
 			var tower := Plume.seen_through(field, world.tuning, eye, top, t)
-			var wanted := foot < 0.1 and tower > 0.8 if moment == "over" else foot > 0.9 and tower > 0.8
+			var wanted := foot < 0.1 and tower > 0.8 if moment == "over" \
+				else tower > 0.8 and (foot > 0.9 or shot[2] > 10000.0)
 			if daylight.call(t) and _clear_eye(eye, t) and wanted:
 				return {"t": t, "source": source, "root": root, "says": "venting x%.0f, its top %.1f km up" % [
 					geology.venting(source, t).x, top.y / 1000.0]}
@@ -219,14 +220,14 @@ func _shoot(name: String, found: Dictionary, shot: Array, out: String) -> void:
 		else (plume._point(25.0 if shot[1] == "near" else 45.0) if plume != null else root)
 	await _look(eye, target)
 	get_viewport().get_texture().get_image().save_png(out.path_join(name + ".png"))
-	var cost := await _time()
-	_costs.append("%s: GPU %.2f ms a frame with them, which adds %.2f; their main thread %.3f ms a frame" % [
-		name, cost.x, cost.y, cost.z])
-	world.tuning.eye_adapts = false
 	var drawn := []
 	for each in world.weather.plumes:
 		if each.visible:
 			drawn.append("%s %.1f km" % [each.source.id, Vector2(each.root.x - eye.x, each.root.z - eye.z).length() / 1000.0])
+	var cost := await _time()
+	_costs.append("%s: GPU %.2f ms a frame with them, which adds %.2f; their main thread %.3f ms a frame" % [
+		name, cost.x, cost.y, cost.z])
+	world.tuning.eye_adapts = false
 	print("plume: %s from %.1f km; drawn: %s" % [name, Vector2(root.x - eye.x, root.z - eye.z).length() / 1000.0,
 		", ".join(drawn)])
 
