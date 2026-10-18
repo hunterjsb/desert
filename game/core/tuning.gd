@@ -854,6 +854,13 @@ static var _current: Tuning
 @export var dial_width_khz: float = 3.0
 @export var dial_notch_khz: float = 5.0
 @export var dial_fine_khz: float = 1.0
+## Tuning brings the view in to the radio's face: this far off it, m,
+## through this narrow a lens, degrees, easing in and out over about this
+## long, s; it stays this long after the last turn, s, while you look at it.
+@export var dial_close_m: float = 0.45
+@export var dial_close_fov: float = 40.0
+@export var dial_close_seconds: float = 0.35
+@export var dial_close_hold: float = 3.0
 ## A god's bearing is given to sixteen points within the first distance, m,
 ## to eight within the second, and past that only as a way across the moon.
 @export var god_exact_m: float = 12000.0

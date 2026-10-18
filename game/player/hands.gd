@@ -182,6 +182,7 @@ var _mark_look: StandardMaterial3D
 var _readout: Label
 ## The aim dot and its line, out of the way while a menu is up.
 var _hud: CanvasLayer
+var _dot: Control
 var _sound: AudioStreamPlayer
 var _hum: AudioStreamPlayer
 var _seated_count := 0
@@ -319,6 +320,8 @@ func interact() -> bool:
 		return _player.world.sleep.offer(_player)
 	if look_device != null and look_device.interact(_player):
 		_player.world.salvage.claim(look_device)
+		if look_device is Radio:
+			_player.close_up.tuned(look_device)
 		return true
 	if held == null:
 		if grasp.body == null and _player.waist.give_back():
@@ -331,6 +334,8 @@ func interact() -> bool:
 		used = (held as Part).use(_player, look_point)
 	elif held is Device:
 		used = (held as Device).use(_player, look_point)
+	if used and held is Radio:
+		_player.close_up.tuned(held)
 	if used or _player.waist.take_from_hands():
 		return true
 	return refuse("no use for it there") if look_device != null else false
@@ -484,7 +489,10 @@ func _tunes(event: InputEvent) -> bool:
 			if radio == null:
 				return false
 			var how: Array = TUNES[action]
-			return radio.turn_volume(how[0]) if how[2] else radio.tune(how[0], how[1])
+			var turned := radio.turn_volume(how[0]) if how[2] else radio.tune(how[0], how[1])
+			if turned:
+				_player.close_up.tuned(radio)
+			return turned
 	return false
 
 
@@ -492,9 +500,14 @@ func _tunes(event: InputEvent) -> bool:
 ## the system of a console you look at, unless you're reeling the line in
 ## your hand; else the one you hold, while there's no line at your waist to reel.
 func dialled() -> Radio:
+	_look()
+	return dial()
+
+
+## The radio the tuning actions work, as your look last fell.
+func dial() -> Radio:
 	if reel.in_hand() != null:
 		return null
-	_look()
 	var radio := tuned_by_look()
 	if radio == null and held is Radio and phase == Phase.HELD and reel.line() == null:
 		radio = held
@@ -526,6 +539,10 @@ func _physics_process(delta: float) -> void:
 		_forget()
 	_look()
 	_held_at = _away + (_held_at - _away) * exp(-HOLD_EASE * delta)
+	# A radio in your hands you tune turns its face up to your eyes, to read its dial.
+	if held is Radio and _player.close_up.radio == held:
+		var to_eyes := Basis(Vector3.RIGHT, _player.camera.rotation.x)
+		_carry = _carry.slerp(to_eyes, 1.0 - exp(-HOLD_EASE * delta)).orthonormalized()
 	match phase:
 		Phase.TAKING:
 			if not is_instance_valid(_source):
@@ -556,6 +573,8 @@ func _physics_process(delta: float) -> void:
 func _process(_delta: float) -> void:
 	if _hud != null:
 		_hud.visible = Controls.playing()
+		# Close up on a dial the view isn't your aim.
+		_dot.visible = _player.close_up.close < 0.5
 	if phase == Phase.HELD and is_instance_valid(held):
 		held.global_transform = _within_reach(_pose(true))
 		held.global_position += reel.stroke(held)
@@ -1637,6 +1656,7 @@ func _build_hud() -> void:
 	add_child(hud)
 	_hud = hud
 	var dot := Control.new()
+	_dot = dot
 	dot.set_anchors_preset(Control.PRESET_CENTER)
 	dot.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	dot.draw.connect(func() -> void:

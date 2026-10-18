@@ -1,8 +1,9 @@
 class_name Gods
 extends RefCounted
 ## The seven gods on the air: old machine minds, each stuck in its job, each
-## broadcasting in its own band from where it stands. Six stand still at the
-## landmarks history placed; the Walker walks the Rim and never stops. Each
+## broadcasting in its own band from its home. Six stand still where history
+## put them, five at their landmarks and the Almanac in Frontier Ag's farm
+## domes nearest Halfrise; the Walker walks the Rim and never stops. Each
 ## one's carrier wanders inside its band, a fresh place every day from the
 ## seed, so it has to be hunted for. Pure in the seed and world time.
 
@@ -18,8 +19,6 @@ const ROSTER := [
 	[&"stoker", "the Stoker", Vector2(1180.0, 1240.0), &"halloran", 1.2],
 	[&"eye", "the Eye", Vector2(1720.0, 1790.0), &"observatory", 0.8],
 ]
-## The Almanac's ag complex stands this far along the Rim from Halfrise, degrees.
-const ALMANAC_ALONG := Vector2(6.0, 14.0)
 ## A carrier keeps this far inside its band, kHz.
 const BAND_MARGIN := 4.0
 
@@ -39,8 +38,9 @@ var _quiet := {}
 ## When the Stoker's furnace song was last called up, world time: the dev
 ## console's meltdown, for now.
 var meltdown_at := -INF
-## The Walker's Rim: the great circle 90° from the point under Tu, as two axes
-## in its plane, and where on it the run began, rad.
+## The Walker's route, its only home: the Rim, the great circle 90° from the
+## point under Tu that the ring road is laid along, as two axes in its plane,
+## and where on it the run began, rad.
 var _rim_u: Vector3
 var _rim_v: Vector3
 var _walker_from: float
@@ -60,11 +60,23 @@ func _init(world_history: History, seed_value: int, tuning: Tuning) -> void:
 	_rim_u = (halfrise - sub * halfrise.dot(sub)).normalized()
 	_rim_v = sub.cross(_rim_u).normalized()
 	_walker_from = rng.randf() * TAU
-	var along := deg_to_rad(rng.randf_range(ALMANAC_ALONG.x, ALMANAC_ALONG.y)) * (1.0 if rng.randf() < 0.5 else -1.0)
-	_homes[&"almanac"] = (_rim_u * cos(along) + _rim_v * sin(along)).normalized()
+	_homes[&"almanac"] = ag_complex(history)
 	for row: Array in ROSTER:
 		if row[3] != &"":
 			_homes[row[0]] = history.landmark(row[3]).p
+
+
+## The Almanac's Rim ag complex: Frontier Ag's farm domes nearest Halfrise,
+## the colony's on the Rim; Halfrise itself on a moon history left none.
+static func ag_complex(of: History) -> Vector3:
+	var halfrise: Vector3 = of.landmark(&"halfrise").p
+	var best := halfrise
+	var near := INF
+	for each in of.settlements:
+		if each.kind == &"farm_dome" and Sphere.angle(each.p, halfrise) < near:
+			near = Sphere.angle(each.p, halfrise)
+			best = each.p
+	return best
 
 
 static func ids() -> Array[StringName]:
@@ -101,8 +113,8 @@ static func in_band(khz: float) -> StringName:
 	return &""
 
 
-## Where a god is on the sphere at world time t: the Walker somewhere round
-## the Rim, the rest at home.
+## Where a god is on the sphere at world time t, which its signal comes
+## from: the Walker as far round the Rim as it has walked, the rest at home.
 func home(id: StringName, t: float) -> Vector3:
 	if id == &"walker":
 		var at := _walker_from + _walk * t / _radius
