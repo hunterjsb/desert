@@ -252,7 +252,7 @@ func _draw_legend(map: Dictionary, box: Rect2) -> void:
 		_label(Vector2(x, box.end.y - 44.0), scale + (" · est." if map.get("estimate", false) else ""), SMALL - 4, dim)
 
 
-## A compass gyro, north up: Tu-ward, a mark on the rim in Tu's colour; the
+## A compass gyro, north up: Tu-ward, a disc on the rim in Tu's colour; the
 ## way the deck points, a line out to a mark on the rim; the wind as the deck
 ## feels it, a vector flying in from where it comes from, as long as it's
 ## strong; and the angle between the two marked. A dimmer vector for the
@@ -269,7 +269,8 @@ func _gyro(centre: Vector2, radius: float, gyro: Dictionary, steady: bool) -> vo
 	_label_centred(centre + Vector2.from_angle(turn - PI * 0.5) * (radius + 22.0) - Vector2(0.0, SMALL * 0.6), "N", SMALL, accent)
 	if gyro.has("tu"):
 		var tu := _way(gyro.tu, turn)
-		draw_line(centre + tu * radius * 0.8, centre + tu * (radius + 6.0), TU, 5.0)
+		draw_line(centre + tu * radius * 0.8, centre + tu * radius, TU, 5.0)
+		draw_circle(centre + tu * radius, 8.0, TU)
 		# Inside the rim: out past it, west runs off the legend's edge.
 		_label_centred(centre + tu * radius * 0.6 - Vector2(0.0, KEY * 0.6), "TU", KEY, TU)
 	var bow := _way(gyro.heading, turn)

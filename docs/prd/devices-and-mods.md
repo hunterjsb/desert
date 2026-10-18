@@ -393,8 +393,8 @@ device already stays a body of its own on the host's power pool.
   comes from, as long as it's strong, and an arc joins the two, the angle written under the
   gyro: the wind angle a sailor trims to, in degrees, to starboard or port, as "45° STBD".
 - **Tu-ward on the gyro** (Hunter, 2026-10-18: "we should also show 'tu-ward' on the compasses.
-  on the computer yes for sure"; built). A mark on the gyro's rim in Tu's pale blue, marked TU
-  just inside it, on the radar's legend and on the stats page alike: the great-circle bearing
+  on the computer yes for sure"; built). A small disc on the gyro's rim in Tu's pale blue, TU
+  written just inside it, on the radar's legend and on the stats page alike: the great-circle bearing
   from where you stand toward the point under Tu, nodding with Tu as it does. The Console works
   it from where it is on the moon, so it reads on the far side too, where Tu is below the
   horizon, and points the way to walk to see it rise. Within a degree of the point under Tu, or

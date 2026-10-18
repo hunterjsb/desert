@@ -18,7 +18,7 @@ const SEED := 1234
 const PITCH_TO_TU := 12.0
 ## Dusk: this local hour, the sun just down behind Tu's crescent.
 const DUSK := 0.76
-## The red spot's longitude on Tu and its drift, as sky.gdshader sets it,
+## The red spot's longitude on Tu and its drift, as tu_clouds.gdshaderinc has them,
 ## so each night shot has it in view, this far past the middle of the face.
 const SPOT_LON := 0.35
 const SPOT_RATE := 1.5e-5
