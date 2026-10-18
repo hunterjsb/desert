@@ -127,6 +127,21 @@ Readings, not in the session:
 - **"Restored vent taps" read as the colonial vent power stations** along the rift (part 4's generated
   pieces), which feed the Stoker. Whether a restored tap can also power a camp is not said.
 
+## The deck's pool and the power box (agreed, 2026-10-18 spec; not built)
+
+From the [chassis spec](../chassis-kits-dunes-2026-10-18.md): battery slots leave every device. Everything on one deck shares
+one pool, loose batteries included; cables and hoses only reach other bodies (a turbine staked on
+the sand), and they drag but are much weaker than rope. Early on: one chassis on a tray with a
+loose battery, a panel, the shield and the bedroll on top. The **power box** is the upgrade: many
+battery bays, each charging or supplying, a light strip per bay reading direction and fill at a
+glance; a Console's Power page mirrors it with exact numbers, priorities and switches.
+- **By era** (the spec's riff, confirmed): **colonial** (Tilg or RMC) a big clean industrial
+  cabinet, many bays, precise readouts, full Console integration, rare and heavy; **First
+  Kingdoms** have no model of their own, they ran colonial cabinets patched and repurposed;
+  **skimmer** a bodged rack of mismatched bays, some dead, high capacity, shared pool only, no
+  priorities; **second age** temple-made, few bays, ornate, crude; **company issue** small, light,
+  about four bays, clean but built to a budget. Nomads have none.
+
 ## What draws power
 
 - **Shields,** by type. A full base shield lasts about 30 minutes in a storm. The main
