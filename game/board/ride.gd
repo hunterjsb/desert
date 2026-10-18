@@ -8,10 +8,10 @@ extends RefCounted
 ## your way to a hockey stop, and too hard at speed it catches. Sprint kicks
 ## off the sand on your stamina, and standing up as the hover presses into a
 ## dip (crouching as it unloads over a crest) pumps speed into it, as on a
-## skateboard in a bowl. Its tilt settles onto the sand and into a carve as a spring would,
-## so it never twitches. Slopes pull it along as they pull a slide, drag
-## holds it to its top speed, and the air's share of that drag is felt
-## against the felt wind, so shelter applies to it. Its hover rides the
+## skateboard in a bowl. Its tilt settles onto the sand and into a carve as a
+## spring would, so it never twitches. Slopes pull it along as they pull a
+## slide, drag holds it to its top speed, and the air's share of that drag is
+## felt against the felt wind, so shelter applies to it. Its hover rides the
 ## ground's one function, never the sand's collision, so no seam between
 ## chunks can catch it: stiff toward the sand and soft off it, it skims a
 ## slope and floats off a crest. It hits things and ruins. Stepped at a fixed
@@ -41,7 +41,7 @@ const EASE := 0.4
 ## lying on it.
 const AIR_LIE := 0.1
 ## A line at your waist pulling you this hard, m/s², and the board's push
-## gives nothing: it tows nothing, and towed, your keys only carve.
+## gives nothing: it tows nothing, and towed, your keys only turn it.
 const HELD_BACK := 0.6
 ## The edge goes in and comes out over about this long, s.
 const DIG_SECONDS := 0.2
@@ -165,9 +165,8 @@ func step(delta: float, dir: Vector2, hop: bool, digging := 0.0, kick := false, 
 	if hop and gap < t.board_hold_reach and not _hopping:
 		vy += t.board_hop + t.board_pop * player.low
 		_hopping = true
-	# Towed, the line carries you along and the hover's grip carves against
-	# it: the board can't push against the line or run past it, and left
-	# alone it swings round to run where the line leads, as a towed ski does.
+	# Towed, the line carries you along: the board can't push against the
+	# line or run past it, and left alone it runs where the line leads.
 	velocity += _towed
 	var pull := _towed / delta
 	var free := clampf(1.0 - pull.length() / HELD_BACK, 0.0, 1.0)
@@ -274,8 +273,10 @@ func step(delta: float, dir: Vector2, hop: bool, digging := 0.0, kick := false, 
 			pushing = clampf(ahead.dot(dir), 0.0, 1.0) * contact * (1.0 - dig) * free
 			velocity += ahead * t.board_push * pushing * h
 		elif lead != Vector2.ZERO:
+			# Nothing holding it sideways, it trails its own way, as a towed ski does.
+			var trail := velocity / speed if speed > 0.5 else lead
 			var swing := t.board_turn_rate * contact * h
-			ahead = ahead.rotated(clampf(ahead.angle_to(lead), -swing, swing))
+			ahead = ahead.rotated(clampf(ahead.angle_to(trail), -swing, swing))
 		dig = wants + (dig - wants) * digging_in
 		pushed += pushing / n
 		# A kick off the sand, like a skateboard's: from rest it gets you
@@ -297,7 +298,8 @@ func step(delta: float, dir: Vector2, hop: bool, digging := 0.0, kick := false, 
 		# Its hover grips sideways, so your way follows the board round, as
 		# far as its grip; past that it skids, and a skid bleeds speed. A
 		# drift grips less and bleeds far less. A line's pull drags that grip
-		# out from under it, and stopping you let it go: only a dug edge holds.
+		# out from under it, and stopping you let it go, so only a dug edge
+		# holds then.
 		speed = velocity.length()
 		var turn := 0.0
 		var dug_pull := 0.0

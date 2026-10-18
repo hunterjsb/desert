@@ -402,7 +402,8 @@ your own camp's parts rather than found whole:
   across the pull ([the dig](#dig-and-carve-agreed-2026-10-18-spec-built)). It pushes and
   kicks against no line, so it still tows nothing.
   Reeling works riding, so you trim the sheet as you go. On the "sail" deck in 10 m/s, with the
-  sheet tended, the camp tows you at 3.5 m/s on the end of the sheet.
+  sheet tended, the camp tows you at 3.3 m/s on the end of the sheet (3.5 before the dig let the
+  hover's grip go under a line).
 - **Storms and breaking.** A raised sail tears by the wind it stands in, drawing or luffing or
   lying over: past 600 N of load (what a 20 m/s wind does to it raised, or a reach drawing hard
   at 18 m/s) it loses a fifth of its cloth a second for each share past that, shrinking its

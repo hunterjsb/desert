@@ -5,9 +5,9 @@ extends Node3D
 ## view at speed, footsteps, and a slide's hiss and spray; on a board, a lean
 ## into the carve, a dug edge's rooster tail of sand and its hiss, a shake as
 ## the edge bites and a harder one as it catches, and your view smoothed
-## between ticks, which at its speed would otherwise stutter. It reads the player and never writes to it, so
-## none of it can change where you go: it moves only the camera, and makes
-## only sound and dust.
+## between ticks, which at its speed would otherwise stutter. It reads the
+## player and never writes to it, so none of it can change where you go: it
+## moves only the camera, and makes only sound and dust.
 
 ## Landings slower than this, m/s, are settling, like a respawn's drop.
 const SOFTEST := 1.5
@@ -308,8 +308,8 @@ func _dig_sand(ride: Ride, grit: float) -> void:
 	if low == 0.0:
 		low = 1.0
 	var size: Vector3 = Catalog.DEVICES[&"board"].size
-	var nose := Vector3(pose.basis.z.x, 0.0, pose.basis.z.z).normalized()
-	var flat := Basis(Vector3.UP.cross(nose).normalized(), Vector3.UP, nose)
+	var back := Vector3(pose.basis.z.x, 0.0, pose.basis.z.z).normalized()
+	var flat := Basis(Vector3.UP.cross(back).normalized(), Vector3.UP, back)
 	_spray.global_transform = Transform3D(flat, pose * Vector3(low * size.x * 0.5, -size.y * 0.5, 0.0))
 	_spray.emission_box_extents = Vector3(0.03, 0.02, size.z * 0.4)
 	_spray.direction = Vector3(-low * 0.8, 1.0, 0.2).normalized()
