@@ -25,7 +25,7 @@ const VIEW_PITCH := -2.0
 var run: Node
 ## The menu's world, or null in a run.
 var view: World
-## The starting crate in the menu's foreground, or null in a run.
+## The kit on show in the menu's foreground, or null in a run.
 var showpiece: Showpiece
 ## The run in play is a dev scenario's: the save on disk, the player's own,
 ## is never written over or deleted by it.
@@ -184,6 +184,15 @@ func reset_profile() -> void:
 	var store := profile()
 	if store != null:
 		store.reset()
+	if showpiece != null:
+		showpiece.home = last_kit()
+
+
+## The kit of the origin you last came as, the Surveyor's before any.
+func last_kit() -> Kit:
+	var store := profile()
+	var kit := Kit.named(store.last_origin()) if store != null else null
+	return kit if kit != null else Kit.standard()
 
 
 func quit() -> void:
@@ -248,6 +257,8 @@ func _into(next: Node, resuming: bool) -> void:
 		if store.get(&"restoring"):
 			await store.restored
 		await _settled()
+	if profile() != null:
+		profile().remember_origin(Kit.of(world()).id)
 	Dev.show_hint(true)
 	Controls.free_mouse(false)
 	await ui.fade(false)
@@ -279,7 +290,7 @@ func _end_run() -> void:
 
 
 ## The real world from a fixed camera: no one stands there, nothing of yours
-## is in it but the starting crate on show, and only the weather moves, at its
+## is in it but the kit on show, and only the weather moves, at its
 ## own pace, without a sound: a storm at the menu is only to look at, while
 ## the menu's own words are heard.
 func _show_view() -> void:
@@ -313,6 +324,7 @@ func _show_view() -> void:
 	showpiece = Showpiece.new()
 	showpiece.ui = ui
 	showpiece.camera = eye.camera
+	showpiece.home = last_kit()
 	view.add_child(showpiece)
 
 

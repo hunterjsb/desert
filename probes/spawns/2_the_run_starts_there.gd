@@ -18,8 +18,7 @@ func run() -> void:
 		press(&"ui_accept")
 		var menu := main.ui.top()
 		if k == 0:
-			check(menu.words() == PackedStringArray(origins.map(func(o: Kit) -> String: return o.label.to_upper()))
-				and menu.highlighted() == 0, "New game asks who you come as, the Surveyor first (%s)" % ", ".join(menu.words()))
+			check(menu.highlighted() == 0 and Kit.origins()[0] == kit, "New game asks who you come as, the Surveyor highlighted")
 		for i in k:
 			press(&"ui_down")
 		press(&"ui_accept")

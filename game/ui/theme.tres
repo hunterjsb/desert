@@ -72,6 +72,17 @@ fill_to = Vector2(0, 1)
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_shade_high"]
 texture = SubResource("GradientTexture2D_shade_high")
 
+[sub_resource type="Gradient" id="Gradient_shade_side"]
+colors = PackedColorArray(0, 0, 0, 0.5, 0, 0, 0, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_shade_side"]
+gradient = SubResource("Gradient_shade_side")
+width = 64
+height = 4
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_shade_side"]
+texture = SubResource("GradientTexture2D_shade_side")
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dev_console"]
 content_margin_left = 10.0
 content_margin_top = 8.0
@@ -138,8 +149,14 @@ LineEdit/styles/normal = SubResource("StyleBoxFlat_line")
 LineEdit/styles/read_only = SubResource("StyleBoxFlat_line")
 MenuList/base_type = &"VBoxContainer"
 MenuList/constants/separation = 14
+MenuLine/base_type = &"Label"
+MenuLine/colors/font_color = Color(0.92, 0.92, 0.9, 0.75)
+MenuLine/font_sizes/font_size = 15
+MenuLine/fonts/font = SubResource("FontVariation_mippt")
 MenuListMain/base_type = &"MenuList"
 MenuListMain/constants/separation = 18
+MenuListSide/base_type = &"MenuList"
+MenuListSide/constants/separation = 30
 MenuNote/base_type = &"Label"
 MenuNote/colors/font_color = Color(0.92, 0.92, 0.9, 0.45)
 MenuNote/font_sizes/font_size = 15
@@ -157,6 +174,8 @@ MenuWord/font_sizes/font_size = 20
 MenuWord/fonts/font = SubResource("FontVariation_mippt")
 MenuWordMain/base_type = &"MenuWord"
 MenuWordMain/font_sizes/font_size = 24
+MenuWordSide/base_type = &"MenuWord"
+MenuWordSide/font_sizes/font_size = 34
 Palette/colors/accent = Color(0.25, 0.86, 0.8, 1)
 Palette/colors/dim = Color(0.92, 0.92, 0.9, 0.45)
 Palette/colors/faint = Color(0.92, 0.92, 0.9, 0.22)
@@ -181,6 +200,8 @@ ShadeHigh/base_type = &"Panel"
 ShadeHigh/styles/panel = SubResource("StyleBoxTexture_shade_high")
 Shade/base_type = &"Panel"
 Shade/styles/panel = SubResource("StyleBoxTexture_shade")
+ShadeSide/base_type = &"Panel"
+ShadeSide/styles/panel = SubResource("StyleBoxTexture_shade_side")
 Scrim/base_type = &"Panel"
 Scrim/styles/panel = SubResource("StyleBoxFlat_dtkh1")
 Warning/base_type = &"Label"

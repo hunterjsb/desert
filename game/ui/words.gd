@@ -1,15 +1,21 @@
 class_name Words
 extends Control
 ## A menu as a few small words, low on the screen over the menu's desert and in
-## the middle over a running game. The highlighted word is bright and the rest
-## dim, never boxed. Menu up and down move the highlight, confirm triggers it,
-## and left and right change a setting's value, each with a very quiet click.
-## The mouse can pick too.
+## the middle over a running game; or, for choosing a new run, bigger words
+## down the left with a short line under each, the kit on show beside them.
+## The highlighted word is bright and the rest dim, never boxed. Menu up and
+## down move the highlight, confirm triggers it, and left and right change a
+## setting's value, each with a very quiet click. The mouse can pick too.
+
+## The highlight moved to the word at this place, or landed there on opening.
+signal moved(at: int)
 
 ## The title's moon, across, and how far it stands off the name, as far as
 ## the name's letters stand apart, px.
 const MOON := 32.0
 const MOON_GAP := 22.0
+## A word's line while another is highlighted, as a share of its brightness.
+const UNLIT := 0.5
 
 ## Back never closes it: the main menu is the bottom of the stack.
 var root := false
@@ -18,6 +24,8 @@ var title: Label
 ## Over the menu's desert: the words a little bigger and roomier, low on the screen.
 ## Over a running game they stand in the middle.
 var _main := false
+## Down the left of the menu's desert, each word with its line under it.
+var side := false
 
 var _list: VBoxContainer
 var _items: Array[Dictionary] = []
@@ -26,7 +34,8 @@ var _was := 0
 
 
 ## A question or a note above the words. Under them, a dark wash over the
-## running game (Scrim), or only a shade low down, over the menu's desert (Shade).
+## running game (Scrim), or only a shade low down over the menu's desert
+## (Shade), or down its left side (ShadeSide).
 func _init(note := "", under := &"Scrim") -> void:
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 	# Every click lands here, so none reaches the world to throw or look.
@@ -36,13 +45,16 @@ func _init(note := "", under := &"Scrim") -> void:
 	wash.set_anchors_preset(Control.PRESET_FULL_RECT)
 	if under == &"Shade":
 		wash.anchor_top = 0.6
+	elif under == &"ShadeSide":
+		wash.anchor_right = 0.6
 	wash.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(wash)
 	_main = under == &"Shade"
+	side = under == &"ShadeSide"
 	_list = VBoxContainer.new()
-	_list.theme_type_variation = &"MenuListMain" if _main else &"MenuList"
-	_list.anchor_left = 0.0
-	_list.anchor_right = 1.0
+	_list.theme_type_variation = &"MenuListMain" if _main else &"MenuListSide" if side else &"MenuList"
+	_list.anchor_left = 0.1 if side else 0.0
+	_list.anchor_right = 0.5 if side else 1.0
 	if _main:
 		_list.anchor_top = 1.0
 		_list.anchor_bottom = 1.0
@@ -126,13 +138,38 @@ func add_body(body: Control) -> void:
 
 ## A word: `text` is its words, or a Callable giving them as they stand now.
 ## Confirm runs `act`; left and right run `step` with -1 or 1, if it has one.
-func add(text: Variant, act: Callable, step := Callable()) -> Button:
+## Down the left, `line` is a few words under it, brighter while it's highlighted.
+func add(text: Variant, act: Callable, step := Callable(), line := "") -> Button:
 	var word := Button.new()
-	word.theme_type_variation = &"MenuWordMain" if _main else &"MenuWord"
-	word.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	word.theme_type_variation = &"MenuWordMain" if _main else &"MenuWordSide" if side else &"MenuWord"
+	word.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN if side else Control.SIZE_SHRINK_CENTER
+	word.alignment = HORIZONTAL_ALIGNMENT_LEFT if side else HORIZONTAL_ALIGNMENT_CENTER
 	word.focus_mode = Control.FOCUS_ALL
 	var item := {"button": word, "text": text, "act": act, "step": step}
 	_items.append(item)
+	var under: Label = null
+	if side:
+		var pair := VBoxContainer.new()
+		pair.theme_type_variation = &"Column"
+		pair.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		under = Label.new()
+		under.theme_type_variation = &"MenuLine"
+		# A space keeps a word without a line as tall as one with.
+		under.text = line if line != "" else " "
+		under.uppercase = true
+		under.modulate.a = UNLIT
+		pair.add_child(word)
+		pair.add_child(under)
+		_list.add_child(pair)
+	else:
+		_list.add_child(word)
+	if not act.is_valid():
+		# Locked: shown, never highlighted.
+		word.disabled = true
+		word.focus_mode = Control.FOCUS_NONE
+		_wrap()
+		refresh()
+		return word
 	word.pressed.connect(func() -> void:
 		_click(Sounds.MENU_CONFIRM)
 		act.call()
@@ -143,10 +180,15 @@ func add(text: Variant, act: Callable, step := Callable()) -> Button:
 		var at := _items.find(item)
 		if at != _was:
 			_click(Sounds.MENU_MOVE)
-		_was = at)
+		_was = at
+		if under != null:
+			under.modulate.a = 1.0
+		moved.emit(at))
+	word.focus_exited.connect(func() -> void:
+		if under != null:
+			under.modulate.a = UNLIT)
 	word.focus_exited.connect(_keep_focus, CONNECT_DEFERRED)
 	word.gui_input.connect(func(event: InputEvent) -> void: _on_word_input(item, event))
-	_list.add_child(word)
 	_wrap()
 	refresh()
 	return word
@@ -175,10 +217,13 @@ func highlighted() -> int:
 	return -1
 
 
-## The first word, or the one last highlighted.
+## The one last highlighted, or the first that can be.
 func highlight() -> void:
-	if not _items.is_empty():
-		(_items[clampi(_was, 0, _items.size() - 1)].button as Button).grab_focus()
+	var open := _open()
+	if open.is_empty():
+		return
+	var was: Button = _items[clampi(_was, 0, _items.size() - 1)].button
+	(was if was in open else open[0]).grab_focus()
 
 
 ## Another menu opens over this one.
@@ -198,14 +243,25 @@ func _keep_focus() -> void:
 		highlight()
 
 
-## Up from the top word goes round to the bottom, and down from the bottom to the top.
+## Up from the top word goes round to the bottom, and down from the bottom to
+## the top, passing over a locked one.
 func _wrap() -> void:
-	for i in _items.size():
-		var word: Button = _items[i].button
-		word.focus_neighbor_top = word.get_path_to(_items[i - 1].button)
-		word.focus_neighbor_bottom = word.get_path_to(_items[(i + 1) % _items.size()].button)
+	var open := _open()
+	for i in open.size():
+		var word := open[i]
+		word.focus_neighbor_top = word.get_path_to(open[i - 1])
+		word.focus_neighbor_bottom = word.get_path_to(open[(i + 1) % open.size()])
 		word.focus_neighbor_left = NodePath(".")
 		word.focus_neighbor_right = NodePath(".")
+
+
+## The words that can be highlighted, in order.
+func _open() -> Array[Button]:
+	var out: Array[Button] = []
+	for item in _items:
+		if item.act.is_valid():
+			out.append(item.button)
+	return out
 
 
 func _on_word_input(item: Dictionary, event: InputEvent) -> void:
