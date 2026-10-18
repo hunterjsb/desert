@@ -703,6 +703,11 @@ static var _current: Tuning
 @export var site_strip_m: float = 0.5
 @export var site_return_m: float = 0.2
 
+@export_group("Plume")
+## A live vent's seep as a buoyancy flux, m⁴/s³ at this tuning's gravity: how
+## hard what it lets out climbs. Bursts multiply it (Geology).
+@export var plume_buoyancy: float = 8000.0
+
 @export_group("Radio")
 ## What a radio draws while it's on, W.
 @export var radio_w: float = 2.0

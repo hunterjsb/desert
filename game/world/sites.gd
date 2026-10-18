@@ -272,6 +272,17 @@ func would_lay(each: Dictionary, x: float, z: float, p: Vector3) -> Site:
 	return site
 
 
+## Where a place on the moon lies on the ground as the sheet would lay it
+## from where you are now, world metres; and a bearing there on the sphere as
+## one on the ground. Only once the sheet has somewhere to lay from.
+func on_ground(p: Vector3) -> Vector2:
+	return _anchor.place(p)
+
+
+func ground_bearing(bearing: float) -> float:
+	return _anchor.ground_bearing(bearing)
+
+
 ## The narrowest any structure's ground is, m: a rectangle no wider can only
 ## meet one's ground by a corner, so asking covering() at its corners is
 ## enough. INF where nothing is built.

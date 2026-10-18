@@ -24,3 +24,15 @@ func find_time(wanted: Callable, from := 0.0, step := 30.0) -> float:
 
 func player_storm_at(t: float) -> float:
 	return field.storm_at(world.player_world_x(), world.player_world_z(), t)
+
+
+## Stands you `aside` m off the rift's live vent, across the rift, on fresh
+## ground, its mouth laid and its plume drawn; the vent.
+func beside_vent(aside: float) -> Dictionary:
+	var vent: Dictionary = world.shape.history.geology.live()[0]
+	var at := Sphere.toward(vent.p, vent.bearing + PI * 0.5, aside / world.shape.history.radius)
+	world.travel(rad_to_deg(Sphere.latitude(at)), rad_to_deg(Sphere.longitude(at)), 0.0)
+	await settle()
+	for i in 4:
+		await get_tree().process_frame
+	return vent

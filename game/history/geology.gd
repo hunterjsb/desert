@@ -34,6 +34,11 @@ const BURST_SHAPE := Vector3(25.0, 40.0, 180.0)
 const BURST_SIZE := Vector2(4.0, 7.0)
 ## The share of what it carries that's ash: seeping, and at a burst's peak.
 const ASH := Vector2(0.2, 0.85)
+## Lava cooled in the old field stays magnetized: the rift's dykes, across its
+## walls and fading this far past its ends, m, and the far-side volcano's
+## flows over its footprint, gone by this far from its summit, m (defaults).
+const MAGNETIC_ENDS := 2000.0
+const VOLCANO := Vector2(3000.0, 6000.0)
 
 enum { TAPPED_VENT, LIVE_VENT, CAPPED_VENT }
 
@@ -48,6 +53,13 @@ var rift_bearing: float
 var vents: Array[Dictionary] = []
 
 var _seed: int
+var _bursts := {}
+## The rift's great circle: its pole, its middle at Aitch, and how far it runs
+## each way from there, m; and the volcano's summit.
+var _pole: Vector3
+var _middle: Vector3
+var _ends: Vector2
+var _summit: Vector3
 
 
 ## From the seed and the landmarks it explains: Halloran's (its heading is
@@ -62,6 +74,10 @@ func _init(run_seed: int, moon_radius: float, halloran: Dictionary, observatory:
 	var count := ceili((ends.x + ends.y) / STEP)
 	for k in count + 1:
 		rift.append(_on_rift(aitch, lerpf(-ends.y, ends.x, float(k) / count)))
+	_middle = aitch
+	_ends = ends
+	_pole = rift[0].cross(rift[rift.size() - 1]).normalized()
+	_summit = observatory.p
 	var taps := _stream(["tapped"])
 	for way in [1.0, -1.0]:
 		_vent(&"tapped_vent" if way > 0.0 else &"tapped_vent_2", "a tapped vent", TAPPED_VENT, aitch,
@@ -74,6 +90,19 @@ func _init(run_seed: int, moon_radius: float, halloran: Dictionary, observatory:
 		"p": _part(observatory, &"vent_cap"), "bearing": 0.0, "along": 0.0, "seed": hash([_seed, "geology", "cap"])})
 
 
+## How strongly magnetized the crust is at a place, 0 to 1: the rift's dykes
+## and the far-side volcano's flows, cooled in the old field; 0 on ordinary
+## ground. What a compass's needle feels off true.
+func magnetized(p: Vector3) -> float:
+	var across := asin(clampf(p.dot(_pole), -1.0, 1.0)) * radius
+	var flat := (p - _pole * p.dot(_pole)).normalized()
+	var along := atan2(flat.dot(_pole.cross(_middle)), flat.dot(_middle)) * radius
+	var past := maxf(along - _ends.x, -along - _ends.y)
+	var rift_rock := exp(-pow(across / WALLS, 2.0)) * exp(-pow(maxf(past, 0.0) / MAGNETIC_ENDS, 2.0))
+	var lavas := 1.0 - smoothstep(VOLCANO.x, VOLCANO.y, Sphere.angle(p, _summit) * radius)
+	return maxf(rift_rock, lavas)
+
+
 func live() -> Array[Dictionary]:
 	return vents.filter(func(v: Dictionary) -> bool: return v.state == LIVE_VENT)
 
@@ -82,20 +111,16 @@ func tapped() -> Array[Dictionary]:
 	return vents.filter(func(v: Dictionary) -> bool: return v.state == TAPPED_VENT)
 
 
-## How hard a vent is venting at world time t, as a share of its seep: none
-## for a quiet or capped vent; a live one breathes round 1 and bursts.
-func activity(each: Dictionary, t: float) -> float:
+## How a vent is venting at world time t: how hard, as a share of its seep
+## (a live one breathes round 1 and bursts; a quiet or capped one, none), and
+## the share of ash in what it carries, more the harder it bursts.
+func venting(each: Dictionary, t: float) -> Vector2:
 	if each.state != LIVE_VENT:
-		return 0.0
+		return Vector2.ZERO
 	var phase := float(each.seed & 0xffff) / 65536.0 * TAU
 	var breath := 1.0 + BREATH.z * 0.5 * (sin(TAU * t / BREATH.x + phase) + sin(TAU * t / BREATH.y + phase * 1.7))
-	return breath + _burst(each, t)
-
-
-## The share of ash in what a vent carries at time t: more the harder it bursts.
-func ash(each: Dictionary, t: float) -> float:
 	var over := _burst(each, t)
-	return lerpf(ASH.x, ASH.y, clampf(over / (BURST_SIZE.x - 1.0), 0.0, 1.0)) if each.state == LIVE_VENT else 0.0
+	return Vector2(breath + over, lerpf(ASH.x, ASH.y, clampf(over / (BURST_SIZE.x - 1.0), 0.0, 1.0)))
 
 
 ## When a vent's next burst begins after t, world s; INF if it never does.
@@ -105,7 +130,7 @@ func next_burst(each: Dictionary, t: float) -> float:
 	var slot := floori(t / BURST_SLOT)
 	for k in range(slot, slot + 64):
 		var at := _burst_at(each, k)
-		if at.x > t:
+		if at.y > 0.0 and at.x > t:
 			return at.x
 	return INF
 
@@ -125,13 +150,21 @@ func _burst(each: Dictionary, t: float) -> float:
 	return over
 
 
-## Slot k's burst: when it begins and how big, or none (0).
+## Slot k's burst: when it begins and how big, or none (0). Drawn once.
 func _burst_at(each: Dictionary, k: int) -> Vector2:
+	var key: int = ((each.seed & 0xffffffff) << 24) ^ (k & 0xffffff)
+	var known: Variant = _bursts.get(key)
+	if known != null:
+		return known
 	var rng := RandomNumberGenerator.new()
 	rng.seed = hash([each.seed, "burst", k])
 	var when := (k + rng.randf()) * BURST_SLOT
 	var size := rng.randf_range(BURST_SIZE.x, BURST_SIZE.y)
-	return Vector2(when, size if rng.randf() < BURST_ODDS else 0.0)
+	var made := Vector2(when, size if rng.randf() < BURST_ODDS else 0.0)
+	if _bursts.size() > 256:
+		_bursts.clear()
+	_bursts[key] = made
+	return made
 
 
 func _vent(id: StringName, name: String, state: int, aitch: Vector3, along: float) -> void:

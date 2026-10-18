@@ -46,6 +46,7 @@ var field: WeatherField
 var day: DayCycle
 var map: StormMap
 var sky: SkyView
+var plume: Plume
 var lee: Lee
 var eye: Eye
 ## The weather at the player this tick, which the game plays by.
@@ -109,6 +110,9 @@ func setup(world: World) -> void:
 	sky = SkyView.new()
 	add_child(sky)
 	sky.setup(world, day, _environment, face, _sun)
+	plume = Plume.new()
+	add_child(plume)
+	plume.setup(world, self)
 
 
 ## Each felt_*() reads now, or a given world time t: power ticks read theirs.
@@ -381,6 +385,8 @@ func _show(delta: float) -> void:
 		_environment.fog_density))
 	# The light round the camera, which a shell's glass catches.
 	face.set_light("shell_light", _linear(_environment.ambient_light_color) * _environment.ambient_light_energy)
+	plume.light(sun, sun_light, sky_light, ring_light, _linear(haze_color) * haze_light,
+		Vector3(_environment.fog_depth_begin, _environment.fog_depth_end, _environment.fog_density))
 
 	# Outside a bubble the dust is the storm's own: it rides the open air's
 	# wind, slowed in a lee, and thickens with the storm, and the bubble only
