@@ -147,7 +147,8 @@ even storms that last for days.
     sixty ticks (it snapped up to 60° before), the pitch at most 1.4°.
   - **Move back only brakes,** 8 m/s², from 13 m/s to a stop in about 1.5 s whichever
     way you look; from rest it does nothing. It never steers you round into reverse, and
-    the sideways moves still carve while it brakes.
+    the sideways moves still carve while it brakes. *Replaced by the dig on 2026-10-18
+    ([below](#dig-and-carve-agreed-2026-10-18-spec-built)).*
   - **Sprint kicks off the sand,** like a skateboard push: 2.5 m/s along the board from
     rest, less the faster you go and nothing at top speed, a kick every 0.6 s while it's
     held, 6 stamina each, and only with the board near the sand. Holding it you don't get
@@ -205,7 +206,7 @@ even storms that last for days.
   between the last tick and this one; the ticks never see it.
 - The numbers are in Tuning's Hoverboard group.
 
-### Dig and carve (agreed, 2026-10-18 spec; building)
+### Dig and carve (agreed, 2026-10-18 spec; built)
 
 From Hunter's [storms, signals & sailing spec](../storms-signals-sailing-2026-10-18.md). The board's feel stays (never sinks, gets
 air, crouch pumps, kick, carving, the drift); move back becomes the **dig**: one edge drops so the
@@ -215,7 +216,59 @@ what the speed and slip allow catches an edge: a stumble off the board and a kno
 resists the sideways pull of a tow, which is what lets a kite-towed board tack. It lives or dies on
 its feedback: a rooster tail of sand off the dug edge, the board tilting, a little camera roll, the
 hum dropping under load with a gritty hiss growing, a whoosh on release, a small shake as the edge
-bites and a bigger one as it catches. Open: the catch threshold and what a wipeout costs.
+bites and a bigger one as it catches. Open then: the catch threshold and what a wipeout costs,
+both answered below.
+
+**Built (2026-10-18, `game/board/ride.gd`, `game/player/feel.gd`, `game/board/board.gd`,
+`probes/movement/`).** The rest of the ride is as it was; move back's flat brake is gone.
+- **The dig** is how deep one edge is in the sand, 0 to 1, following move back over about
+  0.2 s (a stick held partway digs partway). Dug, the field rides 0.3 m lower and the low
+  edge comes down to 1 cm off the sand, never into it (1.7 cm at most in a dug carve,
+  against 27 cm standing). Its edge takes out your way across the board: slicing along its
+  length it holds 2.5 times the hover's grip, 45 m/s², and dragged across, as in a stop, no
+  more than the hover's 18. The sand drags a quarter of your speed a second at full dig,
+  and dug you don't push. The board leans with the edge's pull as with a carve's.
+- **Into a carve** (move back while steering) it bites: from 19.4 m/s a hard turn comes
+  round 81° in 0.67 s at 8.9 m/s, sliding 21° at most, where standing it skids round in
+  1.05 s at 12.9 m/s, sliding 46°.
+- **The hockey stop** (move back alone). The board swings across your way at 5 rad/s,
+  faster than its hover follows, its hover letting go, and the edge digs in as it comes
+  across: from 13.4 m/s you stop in 0.78 s and 5.8 m on your line (14 cm off it), never
+  reversed, whichever way you look; coasting goes 66 m. From rest it does nothing.
+  Steering back against your way keeps the flat brake, 8 m/s²: looking back at the storm
+  flat out must never dig in or throw you, and a skid alone couldn't stop a board sliding
+  back down a slope to push it up again.
+- **Catching an edge.** The edge's load is dig times your way across the board; past
+  6.5 m/s it catches. A full hockey stop loads it to about 0.38 of your speed, so it holds
+  up to about 17 m/s and catches flat out (7.3 from 19.4 m/s); a cruise loads it to 4.0. Tapping
+  move back, or carving the speed off first, keeps it under. Digging into a carve barely
+  loads it, since the edge grips.
+- **A wipeout costs** a stumble and a knock, gently: the board stops in the sand and
+  you're thrown on with 60% of your way, sliding on your feet; you lose 5 health (unharmed,
+  it's back in a minute; a knock never takes your last) and 25 stamina; the board keeps a
+  quarter of its way, pops up 2 m/s and tumbles over its edge behind you, a body you walk
+  back to. Nothing is lost or broken. The numbers are Tuning's `board_dig_catch`,
+  `board_wipeout_hurt` and `board_wipeout_winded`.
+- **Towed** (a sail's sheet, a kite), a line's pull drags the hover's grip out from under
+  it, so only the dug edge holds against the line's sideways pull, and left alone the board
+  trails its own way (a camp tows you at 3.3 m/s, where it was 3.5). Pulled 3 m/s² downwind
+  with the board steered 60° across, undug it runs straight downwind at 2.9 m/s; dug in it
+  holds its line 60° across at 3.8 m/s, 34 m in 10 s. That's the tack.
+- **Feedback,** drawn and heard, never fed back. A rooster tail of sand off the dug edge's
+  length, thrown up and outward, away from where the edge pulls the board (ahead of you in
+  a stop), left behind as you go: bigger, faster and higher the deeper and faster
+  you dig, most dragged across (thicker, not more grains: it's the slide's spray, 192 grains
+  riding). The slide's
+  hiss grows with it. The hover's hum drops up to 28% under the dig's load, and letting a
+  deep dig out at speed whooshes (the throw's sweep, low). Your view rolls with the board's
+  lean as it does carving; a small shake as the edge bites (dug past half at 5 m/s or
+  more), a big one, a lurch and a thud as it catches.
+- **Frame-rate proof.** All of it is stepped with the ride at 240 Hz: a dug carve and a
+  hockey stop stop in 3.3901 m at 30, 60 and 120 ticks, on the same path to a tenth of a
+  millimetre. Saves keep the dig.
+- **Tuning:** `board_dig_grip` 2.5, `board_dig_drag` 0.25, `board_dig_depth` 0.3,
+  `board_dig_catch` 6.5. The look-test `look/dig` shoots the spray at three depths, the
+  stop and the lean.
 
 ### The patrol board: a superchassis (Agreed, session 4, part 3; not built)
 
@@ -366,9 +419,12 @@ your own camp's parts rather than found whole:
   windward runners a little harder.
 - **Towed on the board.** Stepping onto the board, a sheet at your waist stays tied, while any
   other line at your waist is untied first, as before. Towed, the board runs where the line
-  leads and your keys carve; it pushes and kicks against no line, so it still tows nothing.
+  leads and your keys turn it; only its dug edge holds against the line, so dug it carves
+  across the pull ([the dig](#dig-and-carve-agreed-2026-10-18-spec-built)). It pushes and
+  kicks against no line, so it still tows nothing.
   Reeling works riding, so you trim the sheet as you go. On the "sail" deck in 10 m/s, with the
-  sheet tended, the camp tows you at 3.5 m/s on the end of the sheet.
+  sheet tended, the camp tows you at 3.3 m/s on the end of the sheet (3.5 before the dig let the
+  hover's grip go under a line).
 - **Storms and breaking.** A raised sail tears by the wind it stands in, drawing or luffing or
   lying over: past 600 N of load (what a 20 m/s wind does to it raised, or a reach drawing hard
   at 18 m/s) it loses a fifth of its cloth a second for each share past that, shrinking its
@@ -537,9 +593,10 @@ All built: on foot alongside Stage 5, the board and the camp-range warnings at S
    line never drops or changes its form, the loss is told once, and for 30 s after it
    nothing is up and nothing chimes.)*
 6. **Frame-rate proof.** The same ride at 30, 60 and 120 frames per second follows the
-   same path. *(Built: kicks from rest, a push, a carve, a hop, a drift, a coast and a
-   brake over 85 m: the same path to a tenth of a millimetre, with the same charge and
-   stamina left, and the same path to the bit with the drawing switched off.)*
+   same path. *(Built: kicks from rest, a push, a carve, a hop, a drift, a coast, a dug
+   carve and a hockey stop over 84 m: the same path to a tenth of a millimetre, the stop
+   3.3901 m at each rate, with the same charge and stamina left, and the same path to the
+   bit with the drawing switched off.)*
 7. **Origin shift at speed.** Riding across an origin shift at top speed causes no hitch
    and no jump. *(Built: flat out in real time at sixty frames a second, ruins and finds
    laid out as you go, across four shifts in 1.1 km: your way changes no more at a shift
@@ -567,9 +624,11 @@ Movement on foot, built alongside Stage 5, has its own:
 
 The board after Hunter's first ride has its own:
 
-15. **Move back brakes.** From rest it never moves you; riding, it stops you and never
-    reverses you, even looking off your way. *(Built: from 13.4 m/s, stopped in 1.45 s,
-    looking along your way or 34° off it.)*
+15. **The hockey stop** (was "move back brakes", until the dig). From rest move back
+    never moves you; riding, the board swings across and stops you far shorter than
+    coasting, never reversing you or turning you off your line, even looking off your way.
+    *(Built: from 13.4 m/s, 5.8 m in 0.78 s, looking along your way or 34° off it; coasting,
+    66 m. The flat brake stopped in 1.45 s.)*
 16. **The kick.** From rest a kick gets you going and costs stamina, with none there's no
     kick, and kicking climbs a slip face faster. *(Built: kicks alone, 6.8 m/s in 2 s for
     24 stamina; up a 31.7° slip face from its foot in 3 s, 13.9 m against 8.8 m.)*
@@ -599,6 +658,17 @@ Auto-walk has its own:
     stand on. *(Built: 5.2198 m in 3 s from rest either way, at 1.8 m/s; the view turned
     450° in 3 s and the way held to 0.001°; into a wall it stops dead; walking up to a
     31.9° face it climbs 4.7 m of the foot and stops where the sand passes 28°, then stands.)*
+
+The dig has its own ([Dig and carve](#dig-and-carve-agreed-2026-10-18-spec-built)):
+
+22. **The dug carve.** A hard turn from speed skids standing and grips dug, coming round
+    sooner and slower, its low edge down to the sand and never into it. *(Built: 21°
+    sliding against 46°, 1.7 cm off the sand.)*
+23. **Catching an edge.** A hockey stop flat out holds with the catch set just past its
+    load and throws you off set just short; as tuned, a cruise holds and flat out catches;
+    thrown, you're knocked and winded, never killed, and the board tumbles behind you.
+24. **The dug edge tacks.** Towed by a steady pull, a board steered across it runs
+    downwind undug and holds its line dug. *(Built: 0° against 60°.)*
 
 ## Out of scope
 
