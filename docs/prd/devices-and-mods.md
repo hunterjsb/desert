@@ -321,6 +321,17 @@ device already stays a body of its own on the host's power pool.
     With the full set it adds a storm map at the right.
   - **Shield:** a form for each smart shield, shown only when there is one.
   - **Log:** the last fourteen lines logged.
+- **The radar first** (Hunter, 2026-10-18, after playing it: "the console is kind of
+  information overload... we shouldnt directly drop any of it... i love the map"). Nothing is
+  dropped; it's rearranged so the map leads, and readable from where you stand:
+  - **Pages:** the weather radar map first, the whole screen; then stats, every reading in
+    detail; then the log.
+  - **The map loses resolution, not itself,** as instruments come off: the more gear, the finer
+    it is; with less, it coarsens.
+  - **On the map:** the wind as a gyro vector in its legend (in detail on the stats page);
+    pressure as a bar (in detail on stats); humidity laid over the map itself, varying, when a
+    hygrometer gives it; the front's numbers written on the map where the front is; the
+    forecast as a line along the map's foot.
 - **Working the screen** takes only use. Along its foot are its keys: page, and with a smart
   shield, shield and auto. Each says how it stands ("SHIELD: OFF", "AUTO: ON") and lights up as
   you aim at it, and use there presses it. Use anywhere else on the screen steps to the next page.
