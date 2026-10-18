@@ -25,9 +25,9 @@ const KEEP_M := 1.0
 const UNITS_US := 250
 const VEIL_US := 100
 ## What's drawn is read for storms afresh once the clock has run this long,
-## s, or you've gone this far, m, since the last reading began: a storm moves
-## a few metres in that time.
-const VEIL_EVERY := Vector2(0.5, 25.0)
+## s, or you've gone this far, m, since the last reading began: a storm
+## moves metres in that time, and a veil's edge is 150 (Weather.VEIL_EDGE).
+const VEIL_EVERY := Vector2(1.0, 25.0)
 ## Floats an instance of a box or a far bush, and of a glint, takes in its
 ## view's buffer.
 const BOX_FLOATS := 20

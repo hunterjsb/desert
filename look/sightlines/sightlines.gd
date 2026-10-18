@@ -315,8 +315,7 @@ func _rise_by(here: Vector2, run: Vector2, off: Vector2, back: float) -> Vector2
 	return stand
 
 
-## A road read from a distance: travelled to, stood off on a rise `off` m
-## from it, looking along it; at its far bushes where it has them.
+## A road read from a distance (_road_view), shot.
 func _road(kind: StringName, name: String, off: Vector2) -> void:
 	var view := await _road_view(kind, off)
 	if view.is_empty():
@@ -325,9 +324,9 @@ func _road(kind: StringName, name: String, off: Vector2) -> void:
 		await _shoot(name, view[1])
 
 
-## Stood off a road of a kind on a rise `off` m from it, looking along it at
-## its far bushes where it has them: [where you stand, what's aimed at as
-## said, the chunk of bushes aimed at or Vector2i.MAX], or [].
+## Stood off a road of a kind on a rise `off` m from it, looking along it,
+## and for a pilgrim road at its far bushes: [where you stand, what's aimed
+## at as said, the chunk of bushes aimed at or Vector2i.MAX], or [].
 func _road_view(kind: StringName, off: Vector2) -> Array:
 	var road := await _to_road(kind)
 	if road.is_empty():
@@ -351,23 +350,22 @@ func _road_view(kind: StringName, off: Vector2) -> Array:
 			target = at
 	await _aim(eye, Vector3(target.x, FarRing.ground(world.shape, world.tuning, target.x, target.y), target.y))
 	var what := "%s %.0f m off" % [kind, stand.distance_to(here)]
-	# From there, at the chunk of its far bushes nearest that far off that shows best.
-	var bushes := world.terrain.skyline.far_bushes()
-	clear = -INF
+	# From there, at the chunk with the most far bushes about that far off that clear the dunes.
+	var bushes := world.terrain.skyline.far_bushes() if kind == &"pilgrim_road" else {}
+	var most := 0
 	var aimed := Vector2.INF
 	var chunk := Vector2i.MAX
 	for coord: Vector2i in bushes:
 		var at: Vector2 = bushes[coord][2]
 		var by := at.distance_to(stand)
-		if bushes[coord][0] < 4 or by < off.x or by > off.y + 400.0:
+		if bushes[coord][0] <= most or by < off.x or by > off.y + 400.0:
 			continue
 		var top := Vector3(at.x, FarRing.ground(world.shape, world.tuning, at.x, at.y) + 0.6, at.y)
-		var shows := Skyline.clearance(world.shape, world.tuning, eye, top, world.terrain.chunk_at(stand.x, stand.y), 5.0) / by
-		if shows > clear:
-			clear = shows
+		if Skyline.clearance(world.shape, world.tuning, eye, top, world.terrain.chunk_at(stand.x, stand.y), 5.0) > 0.0:
+			most = bushes[coord][0]
 			aimed = at
 			chunk = coord
-			what = "%d of its far bushes %.2f km off" % [bushes[coord][0], by / 1000.0]
+			what = "%d of its far bushes %.2f km off" % [most, by / 1000.0]
 	if aimed != Vector2.INF:
 		await _aim(eye, Vector3(aimed.x, FarRing.ground(world.shape, world.tuning, aimed.x, aimed.y), aimed.y), false)
 	return [stand, what, chunk]

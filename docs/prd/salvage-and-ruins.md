@@ -461,7 +461,7 @@ past that the far ring showed the dunes alone.
   structure's stand-in, its boxes over its own ground and its glints; a chunk's far bushes) takes the
   plume's own reading of the storm map's fronts along the line between, and of the dust round you
   (`Weather.veil`, moved from the plume, which reads it there too). It's read on the main thread a few
-  at a time within 0.1 ms a frame (`VEIL_US`), all of them in turn each half second of the clock or 25 m
+  at a time within 0.1 ms a frame (`VEIL_US`), all of them in turn each second of the clock or 25 m
   you go (`VEIL_EVERY`), and handed to the shaders a texel each, by the index each instance carries.
   What comes newly into view is hidden until it's read. The glint shader's own reading of the fronts
   went with it.
