@@ -42,7 +42,7 @@ const EXTEND_SECONDS := 0.6
 ## controls do, never how to sail well (Hunter, 2026-10-18: "we want this to
 ## require skill").
 const HOW_TO := "sheet"
-const HOW_TO_SAYS := "Your sail's sheet is at your waist: its length sets how far the boom swings out.\n" \
+const HOW_TO_SAYS := "The rope from the sail's boom, its sheet, is at your waist: the shorter it is, the closer in the sail.\n" \
 	+ "{reel_in} trims the sail in, {pay_out} lets it out.\nYou steer by where you walk, as with a tiller."
 ## Lift rises to its most at this angle of attack and stalls past it; drag
 ## grows with lift's square, and square on it pushes as any face that size.

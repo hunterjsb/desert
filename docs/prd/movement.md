@@ -298,9 +298,9 @@ your own camp's parts rather than found whole:
   ([Rope & tethering](rope-and-tethering.md)), so you trim by looking at the sail.
 - **The how-to** (2026-10-18, Hunter: "i need an explanation on trimming with the sheet at my
   waist"). The first time a sheet is at your waist, once a profile, a short how-to shows near
-  the top of the screen for nine seconds, its keys as bound: "Your sail's sheet is at your
-  waist: its length sets how far the boom swings out. Reel in trims the sail in, pay out lets
-  it out. You steer by where you walk, as with a tiller." It says what the controls do, never
+  the top of the screen for nine seconds, its keys as bound: "The rope from the sail's
+  boom, its sheet, is at your waist: the shorter it is, the closer in the sail. Reel in trims
+  the sail in, pay out lets it out. You steer by where you walk, as with a tiller." It says what the controls do, never
   how to sail well. The words are `Mast.HOW_TO_SAYS`.
 - **The sail's push.** Lift and drag by the sail's angle of attack to the apparent wind, the
   felt wind less the camp's own way at the sail: lift rises to 1.3 at 18° and stalls past it,
