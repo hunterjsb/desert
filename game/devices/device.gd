@@ -79,6 +79,10 @@ var _unseated_mode := RigidBody3D.FREEZE_MODE_STATIC
 var _sockets: Array[Socket] = []
 var _sockets_known := false
 var _face := NAN
+## All its shapes' bounds together, in its own frame, kept until its children
+## change or move (a recompute): what the world holds clear of the sand.
+var _bounds := AABB()
+var _bounds_known := false
 
 
 func _ready() -> void:
@@ -92,6 +96,7 @@ func _notification(what: int) -> void:
 	if what == NOTIFICATION_CHILD_ORDER_CHANGED:
 		_sockets_known = false
 		_face = NAN
+		_bounds_known = false
 	elif what == NOTIFICATION_PREDELETE:
 		for socket in sockets():
 			if socket.part != null:
@@ -496,6 +501,7 @@ func stats() -> Dictionary:
 
 
 func _recompute() -> void:
+	_bounds_known = false
 	var weight := 0.0
 	var moment := Vector3.ZERO
 	for frame: Array in _frame_masses():
@@ -532,6 +538,23 @@ func _recompute() -> void:
 		sleeping = false
 	set_meta(&"wind_catch", now["catch"])
 	parts_changed.emit()
+
+
+## All its shapes' bounds together, in its own frame.
+func shape_bounds() -> AABB:
+	if not _bounds_known:
+		var first := true
+		for child in get_children():
+			var shape := child as CollisionShape3D
+			if shape == null or shape.shape == null:
+				continue
+			var box := shape.transform * Catalog.bounds(shape.shape)
+			_bounds = box if first else _bounds.merge(box)
+			first = false
+		if first:
+			_bounds = AABB()
+		_bounds_known = true
+	return _bounds
 
 
 ## Its frame's weight and where it sits, in its own frame, as [kg, position]s.

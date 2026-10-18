@@ -288,6 +288,10 @@ func _keep_bodies_on_ground() -> void:
 ## skin with no inside, so a thin part pressed past halfway (a crate that lost
 ## power dropping onto a panel) would otherwise go out the bottom.
 func _hold_above_sand(body: RigidBody3D) -> void:
+	# A device clear of it as a whole, as one floating is, has no shape to look at.
+	var device := body as Device
+	if device != null and _clear_of_sand(body.global_transform * device.shape_bounds()):
+		return
 	var deepest := 0.0
 	for child in body.get_children():
 		var shape := child as CollisionShape3D
