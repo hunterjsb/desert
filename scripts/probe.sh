@@ -33,7 +33,13 @@ fi
 
 # Godot serves assets from .godot/imported, so a change is invisible to a
 # probe until it has been imported.
-if ! timeout 600 "$godot" --headless --path . --import >/dev/null 2>&1; then
+# Its own log, never the user's: probes writing there would rotate a played
+# game's crash log out of the last five within seconds.
+reports=$(mktemp -d)
+trap 'rm -rf -- "${reports:?}"' EXIT
+log=$reports/godot.log
+
+if ! timeout 600 "$godot" --headless --log-file "$log" --path . --import >/dev/null 2>&1; then
 	echo "import failed; open the project in the editor to see why" >&2
 	exit 2
 fi
@@ -44,7 +50,7 @@ took=0
 run_probe() {
 	local started=$SECONDS code own
 	own=$(sed -n 's/^## Time limit: \([0-9]\+\) s.*/\1/p' "$1" 2>/dev/null | head -n 1)
-	output=$(timeout --kill-after=5 "${own:-$limit}" "$godot" --headless --path . \
+	output=$(timeout --kill-after=5 "${own:-$limit}" "$godot" --headless --log-file "$log" --path . \
 		res://probes/lib/host.tscn -- "res://$1" 2>&1)
 	code=$?
 	if grep -qE 'SCRIPT ERROR|Parse Error|Failed to load script' <<<"$output"; then
@@ -119,8 +125,6 @@ else
 	fi
 fi
 
-reports=$(mktemp -d)
-trap 'rm -rf -- "${reports:?}"' EXIT
 trap 'kill $(jobs -p) 2>/dev/null; exit 130' INT TERM
 
 # One probe's verdict, with its output if it didn't pass, printed whole as it
