@@ -104,8 +104,8 @@ func fits(body: Object) -> bool:
 		return false
 	if part.has_meta(&"line"):
 		return (part.get_meta(&"line") as Line).stowable()
-	# A hook with its line still on it, popped off a deck, would lose its end.
-	if _player.waist.carries_line(part):
+	# A hook popped off a deck with its line's end still on it would lose that end.
+	if part.get_children().any(func(n: Node) -> bool: return n is Socket and (n as Socket).part != null):
 		return false
 	return not (part.kind == &"port" or Hose.is_end(part)) or part.has_meta(&"rolled") or _loose_cable(part) != null
 

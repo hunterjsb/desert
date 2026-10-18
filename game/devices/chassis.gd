@@ -325,9 +325,10 @@ static func free_ring(ring: Socket) -> bool:
 ## line on them still tied: on the deck's edges facing its place, and on its
 ## own edges that will meet the deck. Loose parts lying where it goes move
 ## out the same way, so a row of pieces is never held up by what the last
-## join dropped. A save rebuilds a deck off the tree, with nothing in its way.
+## join dropped. A save rebuilds a deck off the tree, with nothing in its way,
+## and a deck outside a world has no sand to drop anything on.
 func _make_way(piece: Chassis, ring: Socket, k: int) -> void:
-	if not is_inside_tree() or not piece.is_inside_tree():
+	if world == null or not is_inside_tree() or not piece.is_inside_tree():
 		return
 	var to := _cell_of(ring) + _step(ring)
 	var cells := {to: true}
@@ -352,7 +353,9 @@ func _make_way(piece: Chassis, ring: Socket, k: int) -> void:
 ## the world, the sand aside.
 func in_the_way(piece: Chassis, pose: Transform3D) -> Array[CollisionObject3D]:
 	var query := PhysicsShapeQueryParameters3D.new()
-	var skip: Array[RID] = [get_rid(), world.player.get_rid()]
+	var skip: Array[RID] = [get_rid()]
+	if world != null and world.player != null:
+		skip.append(world.player.get_rid())
 	var shapes: Array[CollisionShape3D] = []
 	var riding: Array[Device] = [piece]
 	while not riding.is_empty():
