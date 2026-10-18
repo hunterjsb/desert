@@ -121,7 +121,9 @@ Hunter's [storms, signals & sailing spec](../storms-signals-sailing-2026-10-18.m
 cozy stress test of your build, tanking them is the stationary, AFK way to play, and clear weather is
 the active phase. Three layers fix the early wait:
 - **Auto-walk first:** it holds your heading while you steer by the compass or the Console, so a storm
-  still lets you make distance. Low risk, so it ships before sleep.
+  still lets you make distance. Low risk, so it ships before sleep. *Built (2026-10-18): its own
+  action holds the way you faced while your own walk carries you, until you move yourself or
+  something stops you ([Movement](movement.md#on-foot)).*
 - **Sleep:** a bedroll, beds in some ruins, maybe the open sand if the camp is stable. Use offers so
   many hours, until a time, or through the storm; gear such as a radio adds more (wake for a
   broadcast). **Physics never fast-forwards:** the camp freezes, its batteries and shield are worked
@@ -148,7 +150,8 @@ first storm sits on the spawn for more than three and a half days on the probes'
 starting kit, in the skeleton's list below).
 
 **Sleep, not auto-walk.** "Sleep to fast-forward is the preferred fix over auto-walk, but not
-settled." Auto-walk is in no doc and no code, so nothing has to come out.
+settled." Auto-walk was then in no doc and no code; the 2026-10-18 spec put it first, and it's built
+(above).
 
 **The worry, and the proposal.** "Main worry: physics stability while time skips." The proposal
 under discussion: "check camp stability with real physics before sleep, then only do resource
