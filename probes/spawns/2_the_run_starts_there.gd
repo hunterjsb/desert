@@ -28,7 +28,7 @@ func run() -> void:
 		await started()
 		var at := world.start
 		var spawn := world.spawn
-		check(world.kit == kit and at == Starts.find(world.shape.history, kit.start, tuning)
+		check(world.kit == kit and at == Starts.find(world.shape, kit.start, tuning)
 			and Sphere.point(world.moon._spawn_latitude, world.moon._spawn_longitude).distance_to(at) < 1e-6,
 			"the %s's run is the %s's, begun at its start on the moon" % [kit.label, kit.label])
 		var field := world.weather.field

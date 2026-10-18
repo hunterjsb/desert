@@ -27,7 +27,10 @@ static var _current: Tuning
 @export var start_latitude_degrees: float = 12.0
 ## A Surveyor starts at least the first this far from any artery or spoke,
 ## m, and walking in toward Tu crosses one within the second.
-@export var start_artery_m := Vector2(1000.0, 3000.0)
+@export var start_artery_m := Vector2(600.0, 3000.0)
+## What a Surveyor has in sight stands this far off, m: on its horizon, not
+## at its feet, and near enough to know at a glance.
+@export var start_horizon_m := Vector2(600.0, 1000.0)
 ## No path and no settlement comes within this of a Surveyor's start, m:
 ## past the ground you can see.
 @export var start_deep_m: float = 600.0
@@ -35,6 +38,10 @@ static var _current: Tuning
 @export var start_wrecks_m: float = 300.0
 ## A Homesteader starts on a road within this of a wayshrine, m.
 @export var start_wayshrine_m: float = 100.0
+## Every start has a structure in sight from where its ground begins: its
+## top clear over the dunes between by this many pixels at 1080 rows,
+## however deep the sand lies on it.
+@export var start_sight_px: float = 3.0
 
 @export_group("Saves")
 ## A Normal run saves itself after this many minutes of play since its last
@@ -108,6 +115,26 @@ static var _current: Tuning
 @export var haze_end: float = 9000.0
 ## Most of the view the haze ever hides, at haze_end and beyond.
 @export var haze_strength: float = 0.7
+
+@export_group("Skyline")
+## What stands on the dunes past the built ground, out to the far ring's
+## reach: tall structures' stand-ins, glints, and the saltbush lines on the
+## roads. Off, nothing shows past the built ground but the dunes.
+@export var skyline: bool = true
+## How far it draws, m.
+@export var skyline_m: float = 3000.0
+## The thinnest a stand-in is drawn, pixels, so what's far off never breaks
+## into flickering bits; a saltbush line's least thickness.
+@export var skyline_thinnest_px: float = 2.0
+@export var skyline_line_px: float = 3.0
+## The least a landmark (a mast, a tower) stands on screen at a kilometre,
+## pixels wide and tall, shrinking more slowly than perspective past it: the
+## thing on the horizon the eye snags on.
+@export var skyline_landmark_px := Vector2(4.0, 14.0)
+## A glint's sparkle, pixels across as it lights and at its brightest, and
+## how bright, times the sun on white.
+@export var glint_px := Vector2(8.0, 16.0)
+@export var glint_brightness: float = 9.0
 
 @export_group("Light")
 ## The sand in full light, before the sun and sky light it. Real desert sand
