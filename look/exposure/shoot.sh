@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Shoots the exposure look-test at 1920x1080, then builds the sheet
-# ~/Desktop/exposure.png: a hab pod before a storm, at its height and after,
-# and from out in the dust its bared windows glinting through.
+# ~/Desktop/exposure.png: a hab pod before a storm, rising half out of the
+# sand in it, at its height and after, and from out in the dust its bared
+# windows glinting through.
 #   look/exposure/shoot.sh <out dir>            shoot, then build the sheet
 #   look/exposure/shoot.sh <out dir> --sheet    build the sheet from what's there
 # No window: it runs unseen (scripts/unseen.sh), so it shoots while someone plays.
@@ -15,10 +16,11 @@ if [[ ${2:-} != --sheet ]]; then
 		-- --capture "$out" 2>&1 | tee "$out/godot.txt" | grep -E '^exposure' | tee "$out/log.txt"
 fi
 
-declare -A labels=([before]="before the storm" [mid]="at the storm's height" [after]="after it"
-	[glint]="from out in the dust" [glint_zoom]="zoomed round the middle")
+declare -A labels=([before]="before the storm" [rising]="in it, rising out of the sand"
+	[mid]="at the storm's height" [after]="after it" [glint]="from out in the dust"
+	[glint_zoom]="zoomed round the middle")
 shots=()
-for shot in before mid after glint glint_zoom; do
+for shot in before rising mid after glint glint_zoom; do
 	[[ -f $out/$shot.png ]] || continue
 	said=$(grep -m1 "^exposure: ${shot%_zoom}," "$out/log.txt" 2>/dev/null | sed "s/^exposure: ${shot%_zoom}, //")
 	shots+=(-label "${labels[$shot]}: $said" "$out/$shot.png")

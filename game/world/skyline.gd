@@ -63,6 +63,17 @@ var _glint_look: ShaderMaterial
 var _line_look: ShaderMaterial
 var _box_room := 0
 var _glint_room := 0
+## Glints on what its own chunk draws, as it stands now: drawn again as storms
+## move it, apart from the rest. The entries drawn so, and the state each
+## landmark's own boxes were drawn in.
+var _own: RID
+var _own_view: RID
+var _own_room := 0
+var _own_entries: Array[Entry] = []
+var _own_states := {}
+## Each one's glints as last read, and how far it was sunk then: read again
+## only once it's moved.
+var _own_rows := {}
 ## Glints through a storm's dust, off what it has just laid bare near you:
 ## drawn from the chunk you're on.
 var _dust_glints: RID
@@ -159,6 +170,9 @@ func setup(world: World) -> void:
 	_quad.size = Vector2.ONE * 2.0
 	RenderingServer.multimesh_set_mesh(_glints, _quad.get_rid())
 	_glint_view = _instance(_glints, _glint_look, scenario)
+	_own = RenderingServer.multimesh_create()
+	RenderingServer.multimesh_set_mesh(_own, _quad.get_rid())
+	_own_view = _instance(_own, _glint_look, scenario)
 	_dust_look = _glint_look.duplicate()
 	_dust_look.set_shader_parameter("dust_reach", _tuning.storm_glint_m)
 	_dust_glints = RenderingServer.multimesh_create()
@@ -191,7 +205,7 @@ func _exit_tree() -> void:
 		_task = -1
 	if _job != null and _job != _shown and _job.lines.is_valid():
 		RenderingServer.free_rid(_job.lines)
-	for rid in [_box_view, _glint_view, _line_view, _dust_view, _boxes, _glints, _dust_glints, _line_mesh]:
+	for rid in [_box_view, _glint_view, _own_view, _line_view, _dust_view, _boxes, _glints, _own, _dust_glints, _line_mesh]:
 		if rid.is_valid():
 			RenderingServer.free_rid(rid)
 
@@ -203,6 +217,7 @@ func _process(_delta: float) -> void:
 	var shown := _tuning.skyline and _world.terrain.is_far_shown()
 	RenderingServer.instance_set_visible(_box_view, shown)
 	RenderingServer.instance_set_visible(_glint_view, shown)
+	RenderingServer.instance_set_visible(_own_view, shown)
 	RenderingServer.instance_set_visible(_line_view, shown)
 	# Inside a storm, what it has just laid bare: the far ring's hidden then.
 	var in_dust := _tuning.skyline and not _world.terrain.is_far_shown()
@@ -225,11 +240,14 @@ func _process(_delta: float) -> void:
 		_tick = tick
 		_follows = -1
 	var now := Time.get_ticks_usec()
-	if _shown != null and (_dirty or (_moved and now - _drawn_at >= REDRAW_S * 1e6)):
+	if _dirty and _shown != null:
 		_dirty = false
+		_draw()
+		_moved = true
+	if _moved and _shown != null and now - _drawn_at >= REDRAW_S * 1e6:
 		_moved = false
 		_drawn_at = now
-		_draw()
+		_draw_own()
 	if in_dust and now - _dust_at >= REDRAW_S * 1e6:
 		_dust_at = now
 		_draw_dust()
@@ -631,6 +649,7 @@ func _drape(history: History, pieces: Array[Sites.Piece], center: Vector2i) -> A
 
 func _swap(job: Job) -> void:
 	_shown = job
+	_own_rows.clear()
 	_place()
 	RenderingServer.instance_set_base(_line_view, job.lines)
 	if _line_mesh.is_valid():
@@ -645,18 +664,41 @@ func _draw() -> void:
 	var boxes := PackedFloat32Array()
 	var glints := PackedFloat32Array()
 	var terrain := _world.terrain
+	_own_entries.clear()
+	_own_states.clear()
 	for entry in _shown.entries:
 		# Its ground, built since, gave way to a bigger one's.
 		if entry.site.yields == 1:
 			continue
 		if terrain.is_loaded_at(entry.site.x, entry.site.z):
-			boxes.append_array(entry.near_boxes[StructureKit.Piece.shown_state(entry.site.level())])
-			_own_glints(entry.site, glints, _shown.center)
+			var s := StructureKit.Piece.shown_state(entry.site.level())
+			boxes.append_array(entry.near_boxes[s])
+			_own_entries.append(entry)
+			_own_states[entry] = s
 		else:
 			boxes.append_array(entry.boxes)
 			glints.append_array(entry.far_glints)
 	_box_room = _fill(_boxes, boxes, _box_room, BOX_FLOATS, true)
 	_glint_room = _fill(_glints, glints, _glint_room, GLINT_FLOATS, true)
+
+
+## What its own chunk draws, glinting as it stands now.
+func _draw_own() -> void:
+	var glints := PackedFloat32Array()
+	for entry in _own_entries:
+		var site := entry.site
+		var level := site.level()
+		if site.piece.far_landmark and _own_states[entry] != StructureKit.Piece.shown_state(level):
+			_dirty = true
+		var sink := site.piece.sink_at(level)
+		var had: Array = _own_rows.get(entry, [])
+		if had.is_empty() or absf(had[0] - sink) > TerrainChunk.MOVES:
+			var rows := PackedFloat32Array()
+			_own_glints(site, rows, _shown.center)
+			had = [sink, rows]
+			_own_rows[entry] = had
+		glints.append_array(had[1])
+	_own_room = _fill(_own, glints, _own_room, GLINT_FLOATS, true)
 
 
 ## Puts a buffer of instances in a multimesh, a transform, a colour if
@@ -695,6 +737,7 @@ func _draw_dust() -> void:
 			_clang(site, each[1], by)
 	_dust_rows = rows
 	_dust_room = _fill(_dust_glints, rows, _dust_room, GLINT_FLOATS, true)
+	Dev.put("terrain/dust", "%d glints" % (rows.size() / GLINT_FLOATS))
 
 
 ## A chance for what a storm has just laid bare to clang, once each CLANG_S;
@@ -735,6 +778,7 @@ func _place() -> void:
 	RenderingServer.instance_set_transform(_line_view, Transform3D(Basis.IDENTITY, at))
 	RenderingServer.instance_set_transform(_box_view, Transform3D(Basis.IDENTITY, at))
 	RenderingServer.instance_set_transform(_glint_view, Transform3D(Basis.IDENTITY, at))
+	RenderingServer.instance_set_transform(_own_view, Transform3D(Basis.IDENTITY, at))
 
 
 ## The sun and the air on the glints, each frame.

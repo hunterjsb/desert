@@ -1,20 +1,22 @@
 extends Node
 ## Look-test: storms expose and rebury ruins. A hab pod stood by hand where a
 ## storm will lay it bare by day, shot from beside it in the clear before the
-## storm, in it as it works hardest, and in the clear again after; and in the
-## storm from out in the dust, past where you'd see it, its bared windows
-## glinting through.
+## storm, in it as it rises half out of the sand and as it works hardest, and
+## in the clear again after; and in the storm from out in the dust, past where
+## you'd see it, its bared windows glinting through.
 ##   scripts/unseen.sh --path . --disable-vsync res://look/exposure/exposure.tscn -- --capture <dir>
-## Shots: before, mid, after, glint, and glint_zoom round the middle.
+## Shots: before, rising, mid, after, glint, and glint_zoom round the middle.
 
 const SEED := 1234
 const KIND := &"hab_pod"
 ## Shot from this far off its window side, m, and from out in the dust.
-const NEAR := 16.0
+const NEAR := 9.0
 const FAR := 55.0
 const EYE := 1.65
-## Its storm works hardest between these times of day, local.
+## Shot by day: its storm works hardest between these times of day, local,
+## and it's clear before and after between these.
 const DAY := Vector2(0.36, 0.6)
+const LIGHT := Vector2(0.3, 0.72)
 
 @onready var world: World = $World
 
@@ -43,8 +45,9 @@ func _ready() -> void:
 	var site := sites.by_hand(KIND, found.x, found.z, 0.0, found.depth)
 	sites.add(site)
 	var side := (site.to_world(Vector2(1.0, 0.0)) - Vector2(site.x, site.z)).normalized()
-	for shot: Array in [["before", found.before, NEAR], ["mid", found.peak, NEAR], ["after", found.after, NEAR],
-			["glint", found.peak, FAR]]:
+	var rising := _rising(site, found.before, found.peak)
+	for shot: Array in [["before", found.before, NEAR], ["rising", rising, NEAR], ["mid", found.peak, NEAR],
+			["after", found.after, NEAR], ["glint", found.peak, FAR]]:
 		world.time = shot[1]
 		var eye2: Vector2 = Vector2(site.x, site.z) + side * (4.0 + float(shot[2]))
 		var eye := Vector3(eye2.x, world.shape.height_at(eye2.x, eye2.y) + EYE, eye2.y)
@@ -81,7 +84,7 @@ func _find() -> Dictionary:
 			if not sites.by_hand(KIND, at.x, at.y, 0.0, 0.0).stands():
 				continue
 			var memo := Exposure.Memo.new()
-			for m in range(60, 2 * 24 * 60):
+			for m in range(90, 3 * 24 * 60):
 				var t := (m + 1) * Exposure.SURGE_STEP_S
 				var day := world.weather.day.time_of_day(t, world.moon.longitude)
 				if day < DAY.x or day > DAY.y:
@@ -103,14 +106,26 @@ func _find() -> Dictionary:
 	return best
 
 
-## The nearest moment 20 to 60 minutes before (`way` -1) or after a storm's
-## height that's clear at a place; NAN if none.
+## The nearest moment 15 to 90 minutes before (`way` -1) or after a storm's
+## height that's clear at a place by day; NAN if none.
 func _clear(field: WeatherField, at: Vector2, t: float, way: float) -> float:
-	for minutes in range(20, 61, 2):
+	for minutes in range(15, 91, 1):
 		var when := t + way * minutes * 60.0
-		if field.raw_storm_at(at.x, at.y, when) < -0.05:
+		var day := world.weather.day.time_of_day(when, world.moon.longitude)
+		if field.raw_storm_at(at.x, at.y, when) < -0.05 and day >= LIGHT.x and day <= LIGHT.y:
 			return when
 	return NAN
+
+
+## The moment between two it's half out of the sand, the partly exposed look.
+func _rising(site: Structure, from: float, to: float) -> float:
+	for i in 40:
+		var mid := (from + to) * 0.5
+		if Exposure.level(site.depth, site.pure_taken(mid)) < 1.0:
+			from = mid
+		else:
+			to = mid
+	return to
 
 
 func _look(eye: Vector3, target: Vector3) -> void:
