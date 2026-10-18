@@ -6,6 +6,7 @@
 script = ExtResource("1_kit")
 id = &"homesteader"
 label = "Homesteader"
+unlock = "shield_day"
 about = "stays put"
 start = &"wayshrine"
 balanced = true

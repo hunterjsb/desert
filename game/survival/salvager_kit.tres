@@ -6,6 +6,7 @@
 script = ExtResource("1_kit")
 id = &"salvager"
 label = "Salvager"
+unlock = "board_distance"
 about = "rides light"
 start = &"wreck_field"
 balanced = true
