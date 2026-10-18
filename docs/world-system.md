@@ -1201,7 +1201,7 @@ paint's age.
   five times as many in a full lee: a stationary camp downwind gets some.
 - **A glint through the dust** (Skyline). Inside a storm the clear sky's glints are hidden as before, and
   what the storm has newly laid bare near you, the metal or glass its settled sand would still cover,
-  glints through the dust: out to 90 m, fading from 36 m, at about a third of the open sky's glare, and
+  glints through the dust: out to 90 m, fading from 45 m, at 0.7 of the open sky's glare, and
   since the dust glows all round it shines whichever way it faces you, strongest face on, coming and
   going as the dust thickens and thins **(defaults)**. Looked over five times a second, by area
   (`sites.newly_exposed`).
@@ -1211,8 +1211,8 @@ paint's age.
 - **The hook for the Console's sensors.** `sites.newly_exposed(x, z, radius)` lists the sites near a place a
   storm has newly laid bare, nearest first, with how much further out of the sand it has them: what a
   particle sensor or ground radar will pin on the Console. Nothing calls it from the Console yet.
-- **Cost** (17 sites by hand coming out of the sand round you as a storm rises, headless, `terrain/site` on
-  the dev overlay): following them, 0.10 ms a frame on average and 0.43 at most, about 6 µs a moving
+- **Cost** (17 sites by hand coming out of the sand round you as a storm rises, headless; `terrain/site` on
+  the dev overlay, and `terrain/dust` the glints through the dust): following them, 0.10 ms a frame on average and 0.43 at most, about 6 µs a moving
   site, and nothing for sites the weather isn't moving; 12 presses a minute at play speed, each 4 ms on a
   worker and swapped in within 0.64 ms on the main thread (the heightmap's rebuild), 101 a minute at ten
   times speed; loot read again, 0.27 ms in a frame at most; the terrain's slowest frame 0.95 ms, under the
@@ -1261,7 +1261,7 @@ group.
   changing over 15 minutes, leaning a quarter toward moving off and swinging 1.3. Sand never back over you
   or your camp; once you're off, back at 5 cm a second at most. Site drift 120 things an hour in a heart,
   laid a level bare, carried 150 m, 4 m wide and 15 cm wider a metre. A glint through the dust to 90 m at
-  0.35 of the glare; a clang heard to 140 m.
+  0.7 of the glare; a clang heard to 140 m.
 - Where a structure may stand: the most the dunes over its ground may rise and how steep they may be,
   and how far it may look along its line for ground that takes it, per kit piece (the era files).
 - Spawns: the Surveyor 0.6 to 3 km from an artery or spoke (first set at 2 to 4, brought in to a fair

@@ -63,7 +63,7 @@ void vertex() {
 	if (dust_reach > 0.0) {
 		a = dot(n, v);
 		g = smoothstep(0.0, 0.6, a) * (0.6 + 0.4 * sin(dust_time * 1.3 + dot(at, vec3(0.37, 0.11, 0.53)) * 3.0));
-		dust = smoothstep(dust_reach * 0.4, dust_reach, d);
+		dust = smoothstep(dust_reach * 0.5, dust_reach, d);
 	} else if (storm_map_ready > 0.5) {
 		for (int k = 0; k <= 4; k++) {
 			vec3 p = mix(at, CAMERA_POSITION_WORLD, float(k) / 4.0);

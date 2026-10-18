@@ -9,8 +9,9 @@ extends Node
 
 const SEED := 1234
 const KIND := &"hab_pod"
-## Shot from this far off its window side, m, and from out in the dust.
-const NEAR := 9.0
+## Shot from this far off its window side, m, off its ground, where you'd
+## hold the sand off it; and from out in the dust.
+const NEAR := 12.0
 const FAR := 55.0
 const EYE := 1.65
 ## Shot by day: its storm works hardest between these times of day, local,
@@ -117,15 +118,13 @@ func _clear(field: WeatherField, at: Vector2, t: float, way: float) -> float:
 	return NAN
 
 
-## The moment between two it's half out of the sand, the partly exposed look.
+## The last moment before the storm's height it's half out of the sand, the
+## partly exposed look, as it rises in the storm.
 func _rising(site: Structure, from: float, to: float) -> float:
-	for i in 40:
-		var mid := (from + to) * 0.5
-		if Exposure.level(site.depth, site.pure_taken(mid)) < 1.0:
-			from = mid
-		else:
-			to = mid
-	return to
+	var t := to
+	while t > from and Exposure.level(site.depth, site.pure_taken(t)) > 1.0:
+		t -= 1.0
+	return t
 
 
 func _look(eye: Vector3, target: Vector3) -> void:

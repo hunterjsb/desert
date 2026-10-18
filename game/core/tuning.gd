@@ -138,7 +138,7 @@ static var _current: Tuning
 ## A glint through a storm's dust off what the storm just laid bare: seen
 ## this far, m, and how much of the open sky's glare the dust's glow leaves it.
 @export var storm_glint_m: float = 90.0
-@export var storm_glint_light: float = 0.35
+@export var storm_glint_light: float = 0.7
 ## The clang of what the storm just laid bare, on the wind: heard this far, m.
 @export var storm_clang_m: float = 140.0
 
