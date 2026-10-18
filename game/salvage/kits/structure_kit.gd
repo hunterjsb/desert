@@ -136,6 +136,9 @@ class Piece:
 	## its outline in the colour its paint shows at a distance. None for what's
 	## too low to read there.
 	var far: Array[Array] = []
+	## Whether its far look is a landmark's, drawn never smaller than one
+	## (Tuning skyline_landmark_px): what stands tall enough to steer by.
+	var far_landmark := false
 	## Bare metal, glass or glaze the sun can catch: [plan point, the way it
 	## faces, how wide its sparkle sweeps, rad].
 	var glints: Array[Array] = []

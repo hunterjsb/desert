@@ -414,21 +414,31 @@ past that the far ring showed the dunes alone.
   wreck hull and the pipeline segment have one. A stand-in stands at its structure's place and turn,
   as deep as its state sinks it and cut at the sand, on the far ring's own ground (`FarRing.ground`, its
   32 m triangles), so it never floats or sinks where the ring skips a crest. It's never drawn thinner
-  than 2 px (`skyline_thinnest_px`), so a mast kilometres off holds steady as you move instead of
-  breaking into bits; a lattice reads dark against the sky. Its state is its chunk's once that's
-  built, else read on the worker at the last exposure tick, and read again at the next.
+  than 2 px (`skyline_thinnest_px`), so what's kilometres off holds steady as you move instead of
+  breaking into bits. Its state is its chunk's once that's built, else read on the worker at the last
+  exposure tick, and read again at the next.
+- **Landmarks.** The relay mast and the watchtower are landmarks (`far_landmark`): past where the real
+  thing hands over (380 to 560 m, where the stand-in, drawn over its own built ground, grows from the
+  real size), each is drawn at least 4 px wide and 14 px tall at a kilometre (`skyline_landmark_px`),
+  grown about its foot, shrinking as distance to the 0.3 past it, more slowly than perspective, so at
+  3 km it's still 3 by 10. Dark against the bright sky (the mast's lattice in its own shade, the tower's
+  walls their shade side), the mast with its orange lamp on top: the one thing on a clean horizon the
+  eye snags on. Its glints ride up with it.
 - **Glints.** A piece says where the sun can catch it (`glints`): bare metal, glass, glaze or the water
   in a basin, the way each faces and how wide its sparkle sweeps, 3° to 8°, each site's turned a little
-  by its loot seed. A glint lights where the way it faces halves the angle between the sun and your eye,
-  a smooth function of the three, so it swells and fades as you or the sun move and never strobes, and
-  it's a few pixels across (3 to 12, `glint_px`) at any distance, dimmed by the haze. None at night, behind
-  Tu, in a storm round you, or where a storm stands at it or between (the storm map's fronts, read in its
-  shader), and only where the site's state leaves it bare of sand. Near, it's on the structure; past the
-  built ground, on its stand-in. The sun turns once in a 20-minute day, so a plate's sparkle comes and
-  goes in seconds, and a glint on a far dune is worth walking to.
+  by its loot seed. Seen from far off a glint reaches your eye only off a face turned up by about half
+  the sun's height, so curves and plates have spots facing out low; what faces the sky glints for those
+  above it. A glint lights where the way it faces halves the angle between the sun and your eye, a
+  smooth function of the three, so it swells as they line up, twinkles slowly as the angle keeps turning
+  (once each 1.2°, a few seconds as the sun goes) and fades, never strobing. It's a white star 8 px across
+  as it lights and 16 at its brightest (`glint_px`) at any distance, held in front of what it lies on,
+  dimmed by the haze. None at night, behind Tu, in a storm round you, or where a storm stands at it or
+  between (the storm map's fronts, read in its shader), and only where the site's state leaves it bare
+  of sand. Near, it's on the structure; past the built ground, on its stand-in. The sun turns once in a
+  20-minute day, so a far plate's sparkle lasts a minute or so: long enough to turn and look.
 - **Roads.** The saltbush lines on the second age's roads (Feral's rows that grow a line closer than
-  5 m) run on past the built ground to 3 km as a low ridge in the leaf's silver-green draped on the far
-  ground, a side at a time where Feral's stretch fates say a stretch lives (`Feral.far_lines`, the same
+  5 m) run on past the built ground to 3 km as a low ridge in the leaf's shade-side green, at least 3 px
+  thick (`skyline_line_px`), draped on the far ground: a dark line across the sand, a side at a time where Feral's stretch fates say a stretch lives (`Feral.far_lines`, the same
   draws its bushes come from), so a line far off runs where the bushes stand. Pylon rows and pipe runs
   are their stand-ins in a row.
 - **A site in sight at every start** (`Starts.in_sight`). Every origin's start must have something to
@@ -436,29 +446,34 @@ past that the far ring showed the dunes alone.
   between (the dunes on the loaded chunks, a metre at a time, and the far ring past them, at every edge
   of its triangles) by 3 px at 1080 rows (Tuning `start_sight_px`, half a pixel more asked than
   promised), however deep the sand lies on it: the Salvager a hull of its wreck field, the Homesteader
-  its wayshrine, the Surveyor a structure drawn past the built ground, beyond the deep desert's 600 m.
+  its wayshrine, the Surveyor a structure drawn past the built ground, 600 to 1000 m off
+  (`start_horizon_m`): on its horizon, not at its feet, near enough to know at a glance.
   The Salvager's and Homesteader's starts find one at once (a hull 40 to 230 m off, a wayshrine 22 to
   62 m off, in 2 to 113 ms on 16 seeds). From the usual spawn, low between dunes, the Surveyor's
   horizon was blocked on most seeds, so its run begins on the nearest bare flats (the ground's sand
   supply at most 0.15, five tried, 1.5 km or more apart), and its search sets it out behind one of its
   line's relay masts so the mast stands on a spot of the ground where it would show, on the way in
-  toward Tu. On 32 seeds every Surveyor start keeps all its rules with a relay mast 0.9 to 1.7 km off on
-  its horizon, found in 0.22 to 1.4 s once a run.
+  toward Tu; the line it starts off may now be as near as the deep desert's 600 m. On 32 seeds every
+  Surveyor start keeps all its rules with a relay mast 606 to 960 m off on its horizon, found in 0.18 to
+  0.76 s once a run.
 
-**How far each reads, at 1920x1080.** A relay mast reads as a dark tick with an orange top to 3 km, a
-few pixels tall past 1.5 km buried; a watchtower and a wreck's hull to 2 to 3 km exposed, a pylon stub
-only once a storm has stripped it (buried, its crossarm is a 2 px dash at a kilometre); a saltbush line
-to 3 km as a broken silver-green line across the dunes facing you; a glint to 3 km.
+**How far each reads, at 1920x1080, unzoomed.** A relay mast, a dark post with an orange top, to 3 km:
+the Surveyor's at 960 m, 5.4 px tall as it stands, drawn 14 by 4, and one at 1.66 km, 3.1 px as it
+stands, drawn 12 by 3.4; a watchtower likewise. A wreck's hull to 2 to 3 km exposed (the Salvager's at
+143 m, a dark shape on the skyline); a pylon stub only once a storm has stripped it (buried, its
+crossarm is a 2 px dash at a kilometre); a saltbush line to 3 km as a dark line across the dunes facing
+you; a glint, a 16 px white star at its brightest, to 3 km.
 
 **What it costs** (an RTX 3070 at 1080p, someone playing meanwhile; the look-test's `cost` lines). On
 the GPU, looking round the horizon from the Surveyor's start, 5.93 ms a frame with it and 6.27
 without; with the AFK camp parked round you, 6.17 and 6.17; with the GPU to itself, 2.54 against 2.52
-and 2.54 against 2.52: within what the GPU's own noise moves. Its main thread 0.04 ms a frame on
+and 2.54 against 2.52, and with landmarks drawn larger, 2.63 against 2.63 and 2.64 against 2.60: within
+what the GPU's own noise moves. Its main thread 0.04 ms a frame on
 average; at most, headless, 0.85 ms walking a kilometre among towns and 0.7 ms after a jump (newly laid
 units are looked over a quarter of a millisecond a frame), and once 3.3 ms in a windowed run as the
 world loaded. Nothing in it is proportional to the moon: what's laid near you, and a cell at a time of
-what isn't. Its worker, 2 to 60 ms a job, one each time the sheet follows you. Power probe 11's own measure, a tick's work on the main thread: the
-world alone 1.84 ms without it and 1.92 with it, with the AFK camp parked 4.23 and 4.45, the camp 2.30
+what isn't. Its worker, 2 to 60 ms a job, one each time the sheet follows you. Power probe 11's own
+measure, a tick's work on the main thread: the world alone 1.84 ms without it and 1.92 with it, with the AFK camp parked 4.23 and 4.45, the camp 2.30
 and 2.31 times the world alone either way.
 
 **Probes** (`probes/sightlines/`): 1 every origin begins with something in sight, on three worlds, the
@@ -469,9 +484,13 @@ with the new starts.
 
 **To see it** (unseen, on a GPU): `look/sightlines/shoot.sh <dir>` shoots each origin's start looking at
 what's in sight, a far mast, a glint, a saltbush line and a row of pylon stubs, each with a zoom, and
-the cost lines, and builds `~/Desktop/sightlines.png`.
+the cost lines, and builds `~/Desktop/sightlines.png`. It shoots in clear air (no storms), so what's
+far off is seen as on a clear day.
 
 **Fragile.**
+- A landmark is drawn larger than it is past the hand-over: the Surveyor's mast 960 m off is drawn 2.6
+  times its own height. It grows from its real size between 380 and 560 m, over its own built ground,
+  where the real one stands too, so closing on it you see it settle to what it is.
 - A stand-in past the sheet's reach is laid from where you are now, so the sheet's own seams move it a
   metre or two as you walk; it keeps its survey until it's moved one (`KEEP_M`), and when the sheet lays
   it, it's where the stand-in last stood. A survey on the line between standing and not can still flip

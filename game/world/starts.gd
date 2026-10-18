@@ -123,8 +123,8 @@ static func ground(shape: TerrainShape, tuning: Tuning, start: StringName, p: Ve
 
 
 ## The structure of history's in sight where a start's run begins, by its
-## rule: a Surveyor's on its horizon, past the deep desert's reach, of a kind
-## drawn there; a Salvager's a hull of its wreck field, a Homesteader's its
+## rule: a Surveyor's on its horizon, start_horizon_m off, of a kind drawn
+## there; a Salvager's a hull of its wreck field, a Homesteader's its
 ## wayshrine. The nearest that stands where the sheet would lay it and shows
 ## over the dunes between from your eye by start_sight_px, however deep the
 ## sand lies on it; null if none.
@@ -135,7 +135,7 @@ static func in_sight(shape: TerrainShape, start: StringName, p: Vector3, tuning:
 	match start:
 		&"artery":
 			wanted = func(each: Dictionary) -> bool: return Skyline.stands_far(each.kind)
-			band = Vector2(tuning.start_deep_m, tuning.skyline_m)
+			band = tuning.start_horizon_m
 		&"wreck_field":
 			wanted = func(each: Dictionary) -> bool: return each.kind == &"wreck_hull" and each.source == &"wreck_field"
 			band = Vector2(0.0, tuning.start_wrecks_m)
@@ -272,7 +272,7 @@ static func _masts(history: History, tuning: Tuning, looked: Dictionary) -> Arra
 
 ## Spots on the ground round where a Surveyor's run begins (looked's) that
 ## take a relay mast and from which it would show however deep the sand lay
-## on it, past the line a Surveyor keeps clear of: as Vector2(bearing, m off),
+## on it, start_horizon_m off: as Vector2(bearing, m off),
 ## the bearing on the ground as on the moon. Once a search, looked along
 ## each bearing in one pass.
 static func _lookouts(shape: TerrainShape, tuning: Tuning, looked: Dictionary) -> Array:
@@ -286,12 +286,12 @@ static func _lookouts(shape: TerrainShape, tuning: Tuning, looked: Dictionary) -
 	var shows: float = mast.far.map(func(each: Array) -> float: return (each[0] as AABB).end.y).max() \
 		- mast.sink[Exposure.BURIED]
 	var least := tuning.start_sight_px * Skyline.PIXEL
-	var reach := sight_reach(tuning)
+	var reach := minf(sight_reach(tuning), tuning.start_horizon_m.y)
 	for k in LOOKOUTS:
 		var bearing := TAU * k / LOOKOUTS
 		var way := Vector2(sin(bearing), -cos(bearing))
 		var worst := -INF
-		var next := tuning.start_artery_m.x
+		var next := tuning.start_horizon_m.x
 		var d := 2.0
 		while d <= reach:
 			var here := at + way * d

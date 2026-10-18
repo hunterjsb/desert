@@ -22,6 +22,9 @@ const KEEP_M := 1.0
 const DRAPE_M := 8.0
 ## Main-thread time a frame may take looking over newly laid units, µs.
 const UNITS_US := 250
+## Floats an instance of a box and of a glint takes in its view's buffer.
+const BOX_FLOATS := 20
+const GLINT_FLOATS := 20
 
 const BOX_SHADER := preload("res://game/world/skyline.gdshader")
 const GLINT_SHADER := preload("res://game/world/glint.gdshader")
@@ -77,6 +80,8 @@ class Entry:
 	var state: int
 	var ground: float
 	var boxes: Array[PackedFloat32Array] = []
+	## A landmark's boxes over its own built ground, till the real thing takes over.
+	var near_boxes: Array[PackedFloat32Array] = []
 	var far_glints: Array[PackedFloat32Array] = []
 	var near_glints: Array[PackedFloat32Array] = []
 
@@ -114,13 +119,15 @@ func setup(world: World) -> void:
 	_box_look = ShaderMaterial.new()
 	_box_look.shader = BOX_SHADER
 	_box_look.set_shader_parameter("thinnest_px", _tuning.skyline_thinnest_px)
+	_box_look.set_shader_parameter("landmark_px", _tuning.skyline_landmark_px)
 	_boxes = RenderingServer.multimesh_create()
 	_cube.size = Vector3.ONE
 	RenderingServer.multimesh_set_mesh(_boxes, _cube.get_rid())
 	_box_view = _instance(_boxes, _box_look, scenario)
 	_glint_look = ShaderMaterial.new()
 	_glint_look.shader = GLINT_SHADER
-	_glint_look.set_shader_parameter("peak_px", _tuning.glint_px)
+	_glint_look.set_shader_parameter("sparkle_px", _tuning.glint_px)
+	_glint_look.set_shader_parameter("landmark_px", _tuning.skyline_landmark_px)
 	_glint_look.set_shader_parameter("brightness", _tuning.glint_brightness)
 	_glints = RenderingServer.multimesh_create()
 	_quad.size = Vector2.ONE * 2.0
@@ -130,7 +137,9 @@ func setup(world: World) -> void:
 	_line_look.shader = BOX_SHADER
 	_line_look.set_shader_parameter("thinnest_px", _tuning.skyline_thinnest_px)
 	_line_look.set_shader_parameter("draped", true)
-	_line_look.set_shader_parameter("leaf", Feral.LEAF[1].srgb_to_linear())
+	# The leaf's shade side: a line far off reads by how it darkens the sand.
+	_line_look.set_shader_parameter("leaf", Feral.LEAF[2].srgb_to_linear())
+	_line_look.set_shader_parameter("line_px", _tuning.skyline_line_px)
 	_line_view = RenderingServer.instance_create()
 	RenderingServer.instance_set_scenario(_line_view, scenario)
 	RenderingServer.instance_geometry_set_material_override(_line_view, _line_look.get_rid())
@@ -214,7 +223,7 @@ func stand_in(site: Structure) -> Dictionary:
 				return {}
 			var top := -INF
 			var rows := entry.boxes[s]
-			for k in range(0, rows.size(), 16):
+			for k in range(0, rows.size(), BOX_FLOATS):
 				var box := Transform3D(Basis(Vector3(rows[k], rows[k + 4], rows[k + 8]), Vector3(rows[k + 1], rows[k + 5],
 					rows[k + 9]), Vector3(rows[k + 2], rows[k + 6], rows[k + 10])), Vector3(rows[k + 3], rows[k + 7], rows[k + 11]))
 				for i in 8:
@@ -237,9 +246,9 @@ func glints_of(site: Structure) -> Array[Array]:
 			continue
 		var s := _state(entry)
 		var rows := entry.near_glints[s] if _world.terrain.is_loaded_at(site.x, site.z) else entry.far_glints[s]
-		for k in range(0, rows.size(), 16):
-			out.append([Vector3(rows[k + 3], rows[k + 7], rows[k + 11]) + shift, Vector3(rows[k + 12], rows[k + 13],
-				rows[k + 14]), rows[k + 15]])
+		for k in range(0, rows.size(), GLINT_FLOATS):
+			out.append([Vector3(rows[k + 3], rows[k + 7], rows[k + 11]) + shift, Vector3(rows[k + 16], rows[k + 17],
+				rows[k + 18]), rows[k + 19]])
 	return out
 
 
@@ -431,37 +440,53 @@ func _entry(site: Structure, center: Vector2i) -> Entry:
 	entry.ground = FarRing.ground(_world.shape, _tuning, site.x, site.z)
 	var shift := Vector3(center.x * _size, 0.0, center.y * _size)
 	var rng := RandomNumberGenerator.new()
+	var landmark := site.piece.far_landmark
 	for s in 3:
-		var boxes := PackedFloat32Array()
 		var frame := site.frame_on(s, entry.ground).translated(-shift)
-		for each in site.far_look(s):
-			_put_box(boxes, frame * (each[0] as Transform3D), (each[1] as Color).srgb_to_linear())
-		entry.boxes.append(boxes)
+		var own := site.frame_on(s, site.pad()).translated(-shift)
+		var tall := site.top_in(s)
+		entry.boxes.append(_boxes_of(site, s, frame, entry.ground, tall if landmark else 0.0, shift))
+		entry.near_boxes.append(_boxes_of(site, s, own, site.pad(), -tall, shift) if landmark else PackedFloat32Array())
 		var far := PackedFloat32Array()
 		var near := PackedFloat32Array()
-		var own := site.frame_on(s, site.pad()).translated(-shift)
 		rng.seed = site.loot
 		for each in site.bare_glints(s):
 			# No two sites' plates lie quite the same way.
 			var facing := (Basis(Vector3.UP, rng.randf_range(-0.3, 0.3)) * Basis(Vector3.RIGHT, rng.randf_range(-0.12, 0.12))
 				* (each[1] as Vector3)).normalized()
-			for into: Array in [[far, frame], [near, own]]:
+			# On a landmark it rides with its stand-in as that's drawn larger.
+			for into: Array in [[far, frame, entry.ground, tall], [near, own, site.pad(), -tall]]:
 				var at: Transform3D = into[1]
-				_put_glint(into[0], at * (each[0] as Vector3), (at.basis * facing).normalized(), each[2])
+				var spot := at * (each[0] as Vector3)
+				var foot := Vector3(site.x, into[2], site.z) - shift
+				_put_glint(into[0], spot, (at.basis * facing).normalized(), each[2], foot - spot,
+					into[3] if landmark else 0.0)
 		entry.far_glints.append(far)
 		entry.near_glints.append(near)
 	return entry
 
 
-static func _put_box(into: PackedFloat32Array, box: Transform3D, tone: Color) -> void:
-	var b := box.basis
-	into.append_array(PackedFloat32Array([b.x.x, b.y.x, b.z.x, box.origin.x, b.x.y, b.y.y, b.z.y, box.origin.y,
-		b.x.z, b.y.z, b.z.z, box.origin.z, tone.r, tone.g, tone.b, 1.0]))
+## A stand-in's boxes in a state on a frame, each with the way to its foot
+## and, for a landmark, how tall it stands (negative over its own ground).
+func _boxes_of(site: Structure, s: int, frame: Transform3D, ground: float, tall: float, shift: Vector3) -> PackedFloat32Array:
+	var rows := PackedFloat32Array()
+	var foot := Vector3(site.x, ground, site.z) - shift
+	for each in site.far_look(s):
+		var box := frame * (each[0] as Transform3D)
+		var b := box.basis
+		var tone := (each[1] as Color).srgb_to_linear()
+		var to := foot - box.origin
+		rows.append_array(PackedFloat32Array([b.x.x, b.y.x, b.z.x, box.origin.x, b.x.y, b.y.y, b.z.y, box.origin.y,
+			b.x.z, b.y.z, b.z.z, box.origin.z, tone.r, tone.g, tone.b, 1.0, to.x, to.y, to.z, tall]))
+	return rows
 
 
-static func _put_glint(into: PackedFloat32Array, at: Vector3, facing: Vector3, sweep: float) -> void:
+## A glint: where it is, with the way to its foot and its landmark's height
+## as the box's are, then the way it faces and how wide it sweeps.
+static func _put_glint(into: PackedFloat32Array, at: Vector3, facing: Vector3, sweep: float, to: Vector3,
+		tall: float) -> void:
 	into.append_array(PackedFloat32Array([1.0, 0.0, 0.0, at.x, 0.0, 1.0, 0.0, at.y, 0.0, 0.0, 1.0, at.z,
-		facing.x, facing.y, facing.z, cos(sweep)]))
+		to.x, to.y, to.z, tall, facing.x, facing.y, facing.z, cos(sweep)]))
 
 
 ## The lines' arrays: each living stretch draped on the far ground as a low
@@ -541,12 +566,13 @@ func _draw() -> void:
 			continue
 		var s := _state(entry)
 		if terrain.is_loaded_at(entry.site.x, entry.site.z):
+			boxes.append_array(entry.near_boxes[s])
 			glints.append_array(entry.near_glints[s])
 		else:
 			boxes.append_array(entry.boxes[s])
 			glints.append_array(entry.far_glints[s])
-	_box_room = _fill(_boxes, boxes, _box_room, true)
-	_glint_room = _fill(_glints, glints, _glint_room, false)
+	_box_room = _fill(_boxes, boxes, _box_room, BOX_FLOATS, true)
+	_glint_room = _fill(_glints, glints, _glint_room, GLINT_FLOATS, true)
 
 
 ## An entry's state now: as its chunk's build read it where that's drawn,
@@ -555,17 +581,16 @@ func _state(entry: Entry) -> int:
 	return entry.site.state() if _world.terrain.is_loaded_at(entry.site.x, entry.site.z) else entry.state
 
 
-## Puts a buffer of 16-float instances in a multimesh, a transform and a
-## colour or custom data each, growing its room as needed.
-static func _fill(multimesh: RID, buffer: PackedFloat32Array, room: int, colours: bool) -> int:
-	var count := buffer.size() / 16
+## Puts a buffer of instances in a multimesh, a transform, a colour if
+## `colours`, and custom data each, growing its room as needed.
+static func _fill(multimesh: RID, buffer: PackedFloat32Array, room: int, stride: int, colours: bool) -> int:
+	var count := buffer.size() / stride
 	if count > room:
 		room = maxi(count, room * 2)
-		RenderingServer.multimesh_allocate_data(multimesh, room, RenderingServer.MULTIMESH_TRANSFORM_3D, colours,
-			not colours)
+		RenderingServer.multimesh_allocate_data(multimesh, room, RenderingServer.MULTIMESH_TRANSFORM_3D, colours, true)
 	if count > 0:
 		var full := buffer.duplicate()
-		full.resize(room * 16)
+		full.resize(room * stride)
 		RenderingServer.multimesh_set_buffer(multimesh, full)
 	RenderingServer.multimesh_set_visible_instances(multimesh, count)
 	return room

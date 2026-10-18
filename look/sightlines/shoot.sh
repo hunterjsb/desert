@@ -24,10 +24,10 @@ for shot in start_surveyor start_salvager start_homesteader far_tower glint road
 	[[ -f $out/$shot.png ]] || continue
 	said=$(grep -m1 "^sightlines: $shot," "$out/log.txt" 2>/dev/null | sed "s/^sightlines: $shot, //; s/; .*//")
 	montage -label "${labels[$shot]}: ${said}" "$out/$shot.png" -label "zoomed three times round the middle" \
-		"$out/${shot}_zoom.png" -tile 2x1 -geometry 960x540+6+6 -pointsize 22 -background '#f4efe6' "$out/row_$shot.png"
+		"$out/${shot}_zoom.png" -tile 2x1 -geometry 960x540+6+6 -pointsize 22 -background '#f4efe6' -depth 8 +repage "$out/row_$shot.png"
 	rows+=("$out/row_$shot.png")
 done
 magick "${rows[@]}" -background '#f4efe6' -gravity center -append \
 	-gravity north -splice 0x60 -pointsize 34 -annotate +0+12 'Sites found by eye from far off, at 1920x1080' \
-	"$HOME/Desktop/sightlines.png"
+	-depth 8 +repage "$HOME/Desktop/sightlines.png"
 echo "sheet: $HOME/Desktop/sightlines.png ($(du -h "$HOME/Desktop/sightlines.png" | cut -f1))"

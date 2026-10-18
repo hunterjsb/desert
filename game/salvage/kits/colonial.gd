@@ -206,11 +206,12 @@ static func _relay_mast() -> StructureKit.Piece:
 	p.sockets.append(StructureKit.SiteSocket.new(Vector3(1.25, 1.0, 0.0), &"shelf"))
 	p.approach = Vector2(5.0, 8.0)
 	p.look = _mast_look
-	# The colony's line of sight: the tallest thing on the dunes.
+	# The colony's line of sight: the tallest thing on the dunes, a landmark.
+	p.far_landmark = true
 	StructureKit.far_box(p, Vector3(-1.3, -0.9, -1.3), Vector3(1.3, 0.35, 1.3), CONCRETE)
 	StructureKit.far_box(p, Vector3(-0.35, 0.35, -0.35), Vector3(0.35, 14.0, 0.35), DARK)
 	StructureKit.far_box(p, Vector3(0.55, 0.35, -0.5), Vector3(1.25, 1.95, 0.5), PANEL)
-	StructureKit.far_box(p, Vector3(-0.7, 12.4, 0.45), Vector3(0.7, 13.4, 0.75), PANEL)
+	StructureKit.far_box(p, Vector3(-0.7, 12.4, 0.45), Vector3(0.7, 13.4, 0.75), GREY)
 	StructureKit.far_box(p, Vector3(-0.14, 14.0, -0.14), Vector3(0.14, 14.3, 0.14), ORANGE)
 	# Its dish, and the lamp's glass on its top.
 	StructureKit.glint(p, Vector3(0.0, 12.9, 0.62), Vector3(0.0, 0.25, 0.97), 5.0)
