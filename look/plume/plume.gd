@@ -49,7 +49,7 @@ func _ready() -> void:
 	for i in 5:
 		await get_tree().process_frame
 	_root = _plume.root
-	_raw = world.shape.sites.on_ground(_vent.p)
+	_raw = world.shape.sites.anchor().place(_vent.p)
 	print("plume: the vent's mouth at %.0f,%.0f,%.0f" % [_root.x, _root.y, _root.z])
 	var moments := _moments()
 	for each: Array in moments:

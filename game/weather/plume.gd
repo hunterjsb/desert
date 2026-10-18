@@ -204,8 +204,8 @@ func _follow() -> bool:
 ## else where the sheet would lay it from where you are.
 func _root() -> void:
 	var sites := _world.shape.sites
-	var guess := sites.on_ground(vent.p)
-	slot = Vector2.from_angle(sites.ground_bearing(vent.bearing) - PI * 0.5)
+	var guess := sites.anchor().place(vent.p)
+	slot = Vector2.from_angle(sites.anchor().ground_bearing(vent.bearing) - PI * 0.5)
 	root = Vector3(guess.x, _world.shape.dunes(guess.x, guess.y), guess.y)
 	for site in sites.query(Rect2(guess - Vector2.ONE * 150.0, Vector2.ONE * 300.0)):
 		var mouth := site as VentMouth

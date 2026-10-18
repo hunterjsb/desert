@@ -582,7 +582,7 @@ Plants are signs or props placed per chunk from these, by the feral package; nev
 
 **Spawns by kit.** "Early game for everyone: find an artery and follow it." Each origin's kit names its
 start (`Kit.start`) and `Starts` finds it in the history, pure in the seed and the start: the
-**Surveyor** in deep desert, no path or settlement within 600 m, the nearest artery or spoke 1 to 3 km
+**Surveyor** in deep desert, no path or settlement within 600 m, the nearest artery or spoke 0.6 to 3 km
 off, and walking in toward Tu crosses one within 3 km **(default)**, so the bearing is the one thing
 always in the sky; the **Salvager** within 300 m of a skimmer wreck field's hulls; the **Homesteader** on
 a second-age road within 100 m of a wayshrine. Every start is on the near side, within 12° of the
@@ -603,6 +603,16 @@ between 80 m and 24 km from the nearest artery. The Homesteader's is on the arte
 Port Morgan, or on the Rim's ring and roads by Halfrise and the depot, a wayshrine 20 to 60 m off and
 most often a watchtower, a house ruin or a pylon stub within a few hundred metres. Until the
 structure kits build history's sites none of this stands on the ground: the map shows it.
+
+*In sight, 2026-10-18 (`sightlines`).* Every start also has something to walk to in sight from where its
+run's ground begins (`Starts.in_sight`): a structure history put there that stands where the sheet
+would lay it, its top clear over the ground as drawn by 3 px at 1080 rows however deep the sand lies on
+it; the Salvager's a hull of its field, the Homesteader's its wayshrine, the Surveyor's one drawn past the
+built ground, 600 to 1000 m off. A start knows where its ground begins before there's a world (`Starts.ground`,
+on the dunes alone, as `World.flat_near` finds it): the usual flat patch, and for the Surveyor the
+nearest bare flats, where the horizon is far; its search sets it out behind a relay mast of its line so
+the mast stands on a spot of that ground it shows from. What's in sight is drawn by the skyline
+([Salvage & ruins](prd/salvage-and-ruins.md#whats-built-2026-10-18-the-sightlines-branch)).
 
 ### What the feral layer does now
 
@@ -1138,10 +1148,12 @@ group.
   back.
 - Where a structure may stand: the most the dunes over its ground may rise and how steep they may be,
   and how far it may look along its line for ground that takes it, per kit piece (the era files).
-- Spawns: the Surveyor 1 to 3 km from an artery or spoke (first set at 2 to 4, brought in to a fair walk
-  on 2026-10-18), crossed walking in toward Tu within 3 km, no path or settlement within 600 m; the
+- Spawns: the Surveyor 0.6 to 3 km from an artery or spoke (first set at 2 to 4, brought in to a fair
+  walk, then to the deep desert's edge for a mast 600 to 1000 m off on its horizon, on 2026-10-18),
+  crossed walking in toward Tu within 3 km, no path or settlement within 600 m; the
   Salvager within 300 m of a wreck field; the Homesteader on a road within 100 m of a wayshrine; every
-  start within 12° of the equator and 500 m clear of a landmark's footprint.
+  start within 12° of the equator and 500 m clear of a landmark's footprint; and something in sight by
+  3 px buried, the Surveyor's from bare flats (sand at most 0.15).
 - The Okafor bunker under the Bastion.
 - Lineage: a second-age find keeps a house's marks half the time and is blessed 40% of the time, 90% at a
   wayshrine and 60% at a stepwell, half of those the Cistern's, 5% elsewhere; five sets of Dark Age repair
