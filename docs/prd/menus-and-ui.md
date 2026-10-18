@@ -154,7 +154,7 @@ The console opens at the main menu too, for what needs no world (Hunter, 2026-10
 useful for like an `unlockall` command for classes in case i want to test a new class and achv
 resets"): `unlockall` opens every start, and deeds can be granted or cleared to test them.
 
-**The deeds grid** ([Profile & saves](profile-and-saves.md#deeds-achievements-agreed-2026-10-18-building))
+**The deeds grid** ([Profile & saves](profile-and-saves.md#deeds-achievements-agreed-2026-10-18-built))
 is a menu of its own, reached from the main menu and the system menu.
 
 ## Skeleton version
@@ -233,8 +233,12 @@ is a menu of its own, reached from the main menu and the system menu.
   alone stepping x1, x10, x60; `gravity [m/s²]`, alone low gravity or back; `time <0–1>`,
   on to the next such moment of your local day; `tu [6|9|13]`, Tu's width across the sky in degrees,
   the three under trial, alone the next of them (2026-10-17); `give <id> [n]`, a part into your hands, or a
-  device, a stake, a coil or a cable at your feet, by catalog id; and `fresh`, fed,
-  watered and whole on a fresh suit's kit. The keys list and Options' controls list
+  device, a stake, a coil or a cable at your feet, by catalog id; `fresh`, fed,
+  watered and whole on a fresh suit's kit; and the deeds' (2026-10-18): `unlockall`, every start
+  open whatever deeds are done, `deed <id>`, one granted, `deeds`, which are done, and `deeds
+  clear`, all forgotten (Profile & saves). Those and `help` and `scenarios` need no world, so the
+  console opens over the main menu too, with nothing else open there, standing over its words;
+  the rest say "only in a run". Closed there, the menu's word is highlighted again. The keys list and Options' controls list
   show the console action and the dev overlay's under a heading of their own, and the
   function keys the dev tools held now go to quick save and quick load (Profile & saves).
   The look-tests keep their own keys and have no console.
