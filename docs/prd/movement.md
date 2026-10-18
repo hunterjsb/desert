@@ -267,7 +267,7 @@ your own camp's parts rather than found whole:
   All lie deep, the mast rarely, and a mast is found with its sail on it.
 - **Runners** fit a bottom mount in place of a tray: under a crate, or under each piece of a
   deck. A device carries trays or runners, never both, and a refusal says "runners and trays
-  don't mix"; a device standing on a deck takes none ("on a deck it takes no runners"), and one
+  don't mix"; a device standing on a deck takes none ("no runners on a deck"), and one
   with runners in is refused a deck mount with "take its runners off first". A deck's runners
   turn to its length, however its pieces sit on the grid. Runners draw no power. They ride the
   ground's one function, never the sand's collision: each corner of a runner's face reads
@@ -293,7 +293,15 @@ your own camp's parts rather than found whole:
   line itself no shorter; paying out eases it, and once the sail is all the way out a notch
   pays the line out instead. A sail pulling harder than your strength (400 N) won't come in.
   With nothing holding the sheet's far end (dropped, untied, snapped) it runs, and the boom
-  swings free and spills the wind; tied on again, it holds the boom where it is.
+  swings free and spills the wind; tied on again, it holds the boom where it is. With another
+  line at your waist too, reeling works the one you look nearest along
+  ([Rope & tethering](rope-and-tethering.md)), so you trim by looking at the sail.
+- **The how-to** (2026-10-18, Hunter: "i need an explanation on trimming with the sheet at my
+  waist"). The first time a sheet is at your waist, once a profile, a short how-to shows near
+  the top of the screen for nine seconds, its keys as bound: "Your sail's sheet is at your
+  waist: its length sets how far the boom swings out. Reel in trims the sail in, pay out lets
+  it out. You steer by where you walk, as with a tiller." It says what the controls do, never
+  how to sail well. The words are `Mast.HOW_TO_SAYS`.
 - **The sail's push.** Lift and drag by the sail's angle of attack to the apparent wind, the
   felt wind less the camp's own way at the sail: lift rises to 1.3 at 18° and stalls past it,
   falling away to a flat sheet's, and drag grows from 0.05 to 1.8 square on, where it catches

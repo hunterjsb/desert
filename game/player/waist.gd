@@ -1,10 +1,10 @@
 class_name Waist
 extends Node3D
 ## Your waist: a line tied on here leaves your hands free, at the price of
-## walking slower and catching more wind. F with a line in your hand and
+## walking slower and catching more wind. Use with a line in your hand and
 ## nothing to work ties it on, and with your hands empty takes the last one
-## back into them; G with your hands empty lets go of them all. Tying is
-## instant; untying takes a moment, so a gust can catch you still tied on.
+## back into them. Tying is instant; untying takes a moment, so a gust can
+## catch you still tied on. The first sail's sheet tied here teaches its how-to.
 
 ## Where things tied on sit, in your own frame.
 const AT := Vector3(0.0, 0.95, -0.15)
@@ -21,6 +21,8 @@ var _was := {}
 var _falling: Array[RigidBody3D] = []
 ## Letting go of only these, or of all when empty.
 var _only: Array[RigidBody3D] = []
+## The sheet's how-to has had its chance this session.
+var _taught := false
 
 
 func _ready() -> void:
@@ -110,6 +112,9 @@ func _physics_process(delta: float) -> void:
 			_undone()
 	_place()
 	_clear_of_you()
+	if not _taught and Controls.ui != null and Controls.playing() and tied.any(Mast.sheet_end):
+		_taught = true
+		Controls.ui.teach(Mast.HOW_TO, Mast.HOW_TO_SAYS)
 	Dev.put("player/waist", "untying %.1fs" % maxf(untying, 0.0) if untying >= 0.0
 		else ("%d tied" % tied.size() if not tied.is_empty() else "-"))
 

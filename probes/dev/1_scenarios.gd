@@ -8,7 +8,8 @@ extends WeatherProbe
 ## running; the lee
 ## stands you under a tall slip face, facing up it into the wind over its
 ## crest, the wind on you cut and a storm due; chassis pieces, their trays,
-## a charged crate and a condenser lie in front of you; a Console on a
+## a charged crate, a condenser, hooks and a coil lie in front of you, one
+## piece's hook moored to a stake; a Console on a
 ## floating deck shows its finest map and every reading, the storm coming, its
 ## shield smart and off; the eclipse faces Tu
 ## just before the sun goes behind it; the far side has no Tu. Checked against
@@ -210,9 +211,11 @@ func _afk_lands() -> void:
 			body.free()
 
 
-## Bare chassis pieces lie flat on the sand in front of you, a tray before
-## each, with a crate frame holding two charged batteries and a condenser
-## with a battery and an empty canister, all within a few steps.
+## Chassis pieces lie flat on the sand in front of you, a tray before each,
+## with a crate frame holding two charged batteries, a condenser with a
+## battery and an empty canister, and two hooks and a coil, all within a few
+## steps. All the pieces are bare but the first, whose hook is moored to a
+## stake, and another piece is offered that ring with room to join there.
 func _chassis_lands() -> void:
 	await settle(true)
 	var dropped := Scenarios.chassis(world)
@@ -224,8 +227,18 @@ func _chassis_lands() -> void:
 	var pieces := dropped.filter(func(b: Node3D) -> bool: return b is Chassis)
 	var trays := dropped.filter(func(b: Node3D) -> bool: return b is Part and b.kind == &"bottom")
 	check(pieces.size() == Scenarios.CHASSIS_PIECES.size() and trays.size() == pieces.size()
-		and pieces.all(func(p: Chassis) -> bool: return p.parts().is_empty() and p.global_basis.y.dot(Vector3.UP) > 0.99),
-		"chassis: bare pieces lying flat, a tray for each")
+		and pieces.all(func(p: Chassis) -> bool: return p.global_basis.y.dot(Vector3.UP) > 0.99)
+		and pieces.slice(1).all(func(p: Chassis) -> bool: return p.parts().is_empty()),
+		"chassis: pieces lying flat, a tray for each, all bare but the first")
+	var stake: Stake = dropped.filter(func(b: Node3D) -> bool: return b is Stake)[0]
+	var first: Chassis = pieces[0]
+	var outer := Scenarios._on_piece(first, Vector2i.ZERO, &"ring", Vector2i(-1, 0))
+	check(world.ropes.ropes.any(func(r: Rope) -> bool: return [r.a.holder, r.b.holder] in [[first, stake], [stake, first]])
+		and pieces[1].fits_in(outer)
+		and first.room_for(pieces[1], first.global_transform * first._pose_at(outer, 0)),
+		"chassis: the first piece's hook moored to a stake, a piece offered its ring and room there")
+	check(dropped.filter(func(b: Node3D) -> bool: return b is Part and b.kind == &"ring").size() == 2
+		and dropped.any(func(b: Node3D) -> bool: return b is Part and b.kind == &"coil"), "chassis: two hooks and a coil")
 	var crate: Device = dropped.filter(func(b: Node3D) -> bool: return b is Device and b.label == "Crate frame")[0]
 	var condenser: Condenser = dropped.filter(func(b: Node3D) -> bool: return b is Condenser)[0]
 	check(crate.batteries().size() == 2 and crate.charge_share() >= 1.0 and condenser.battery() != null
@@ -251,12 +264,12 @@ func _console_lands() -> void:
 	var shield: ShieldGenerator = dropped[3]
 	var screen := made.global_basis * Vector3.FORWARD
 	var eyes := player.camera.global_position.y - made.global_position.y
-	check(made.on_deck() and made.host() == deck and shield.host() == deck and not shield.on
+	check(made.on_deck() and made.host() == deck and shield.host() == deck and not shield.on and shield.smart
 		and made.smart_shields().size() == 1 and made.smart_shields()[0] == shield
 		and screen.dot(player.global_position - made.global_position) > 0.0 and deck.stats().hovering and absf(eyes) < 0.5,
 		"console: on a floating deck, its screen to you at your eyes (%.2f m off), the shield beside it off and smart" % eyes)
 	var stats := made.screen_text(Console.Page.STATS)
-	var shown := ["WIND", "PRESS", "HUMID", "SAND", "FRONT", "FCST", "SHIELD OFF"].all(func(l: String) -> bool: return l in stats)
+	var shown := ["WIND", "PRESS", "HUMID", "SAND", "FRONT", "FCST", "SHIELD"].all(func(l: String) -> bool: return l in stats)
 	var full := Tuning.current().storm_map_radar_cells + 5 * Tuning.current().storm_map_cells_per_instrument
 	check(shown and made.map_cells() == full and made._map.size() == full * full,
 		"console: every reading on its stats, and its map at %d cells across:\n%s" % [made.map_cells(), stats])

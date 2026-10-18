@@ -38,6 +38,12 @@ const STEP_HZ := 120.0
 const RAISE_SECONDS := 1.5
 ## Seated, it stands to its full height over this long, s.
 const EXTEND_SECONDS := 0.6
+## What the first sheet at your waist teaches, once a profile: what the
+## controls do, never how to sail well (Hunter, 2026-10-18: "we want this to
+## require skill").
+const HOW_TO := "sheet"
+const HOW_TO_SAYS := "Your sail's sheet is at your waist: its length sets how far the boom swings out.\n" \
+	+ "{reel_in} trims the sail in, {pay_out} lets it out.\nYou steer by where you walk, as with a tiller."
 ## Lift rises to its most at this angle of attack and stalls past it; drag
 ## grows with lift's square, and square on it pushes as any face that size.
 const LIFT_MOST := 1.3
@@ -165,16 +171,6 @@ func carrier() -> Device:
 	while at != null and at.host() != null:
 		at = at.host()
 	return at
-
-
-func stats() -> Dictionary:
-	var now := super()
-	if sail() != null:
-		now["sail_m2"] = sail_m2()
-		now["sail"] = "torn" if sail_m2() <= 0.0 else ("raised" if raised else "furled")
-		now["boom_deg"] = rad_to_deg(boom)
-		now["sail_n"] = force.length()
-	return now
 
 
 ## Out the way it went in: the sail comes off with its boom straight back.

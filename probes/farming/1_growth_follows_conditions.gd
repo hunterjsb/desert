@@ -75,7 +75,7 @@ func run() -> void:
 	check(hands.grab(), "you take the ripe root-tuber")
 	await physics_frames(40)
 	var food := hands.held as Supply
-	print("picked by hand: %s" % (Hands.describe(food.label, food.mass, food.stats) if food != null else "nothing"))
+	print("picked by hand: %s" % (Hands.describe(food.label, food.stats) if food != null else "nothing"))
 	check(food != null and food.kind == &"food" and food.amount == harvest and hands.phase == Hands.Phase.HELD,
 		"its harvest comes to your hands as food, %d kcal" % harvest)
 	var seeds := world.player.suit.carried.filter(func(p: RigidBody3D) -> bool: return p is Plant)
@@ -92,7 +92,7 @@ func run() -> void:
 	check(hands.grab(), "you take the ripe fungus")
 	await physics_frames(40)
 	var caps := hands.held as Supply
-	print("picked by hand: %s" % (Hands.describe(caps.label, caps.mass, caps.stats) if caps != null else "nothing"))
+	print("picked by hand: %s" % (Hands.describe(caps.label, caps.stats) if caps != null else "nothing"))
 	check(caps != null and caps.amount == fungus.harvest * fungus.kcal and hands.phase == Hands.Phase.HELD,
 		"its caps come to your hands, %d kcal" % (fungus.harvest * fungus.kcal))
 	check(fungus.socket != null and fungus.growth == 0.0 and planter.picked.get(&"vat_fungus", 0) == fungus.harvest,

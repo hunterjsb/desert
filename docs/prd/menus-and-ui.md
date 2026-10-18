@@ -38,7 +38,7 @@ world. The pressure comes from the moon, and a menu is no shelter from it.
 ## The main menu
 
 A title at the top, "Desert" for now in a light logo like the prototype's, and the
-starting crate in the foreground tilting toward the mouse, as the prototype's shield and
+starting kit in the foreground tilting toward the mouse, as the prototype's shield and
 radio did (Hunter, 2026-10-16). A few small words at the bottom of the screen, over the
 live desert. No background art,
 no panels, no big centred buttons. (Hunter, 2026-10-16: the main menu's words "a tad
@@ -66,16 +66,16 @@ aim dot hidden behind them.)
   each and "????" for one still locked, and nothing written above the list. The starting kit in
   the foreground slides over to the right as New game opens the choice, and shows the
   highlighted origin's own kit as the selection moves. The main menu shows the kit of the
-  origin last played.
+  origin last played, kept in the profile.
 
 ## The system menu
 
 The back action, with nothing else open, brings up the system menu over the running
 game. It holds **Options** (controls, audio, graphics), **Save** in a Normal run, and
 **Save & quit**, all safe at any moment, mid-storm included (Profile & saves). **New game**
-asks who you come as, the Surveyor highlighted, then which mode, Normal highlighted or
-Ironman; **dying** in a Normal run shows Load last
-save, highlighted, and New run (Hunter, 2026-10-16).
+asks who you come as, the origin last played highlighted, then which mode, Normal
+highlighted or Ironman; **dying** in a Normal run shows Load last save, highlighted, and
+New run (Hunter, 2026-10-16).
 
 ## Saying less
 
@@ -90,6 +90,30 @@ of this, then we will need to just stop dropping things out the tooltip.")
 - **Teaching happens once, where it's needed:** a skill like trimming a sail by the sheet at
   your waist gets a short how-to the first time, then is left to you. Sailing should take
   skill; the how-to says what the controls do, not how to win.
+
+**Built** (2026-10-18, `Hands.describe`):
+- **The line** is the thing's name and at most one state after it, the first it has of: ripe,
+  or why a sown crop isn't growing ("too bright", "dry"); "no power" on a device that would
+  run but is dark; a condenser's water as it makes it ("water 8.7 L/h"); what a planter's tank,
+  a canister or the survival kit holds ("1.5/4.0 L"); food left ("150 kcal"); a battery's
+  charge ("63/100 Wh"); a radio's station; "output 120 W" on what makes power; "draws 371 W"
+  on what uses it; a rolled-up coil's length ("12 m"). Six words at most, its name included, where a
+  floating deck had 24.
+- **Shown another way instead:** weight in what you carry and how you walk; a device's charge
+  on its charge light; floating or resting by where it hangs and its hum; a line's strain in
+  its creak; how much line you've reeled in by the coil at your hand; a sail raised, furled
+  or torn by its cloth; a find's layer by its paint; what take would move on a deck by a faint
+  highlight in the ghost's colour, the bare piece alone where it comes off, else every piece.
+- **Not said at all:** hooks and pieces counted, a tray's lift, runners, a panel's or lamp's
+  rating, a stake's holding, a sail's area and pull, a planter's stored food, seeds and
+  replant share, a Console's instruments counted.
+- **Refusals** stay a few words with their soft knock; the stake's are "not sand" and "out of
+  reach".
+- **How-tos** go through one path, `UIRoot.teach`: shown once a profile (`Profile.learn`)
+  near the top of the screen, its keys drawn as bound in the keys' colour, for nine seconds.
+  The sheet's is the only one ([Movement](movement.md#sailing-the-camp-hunter-2026-10-17)).
+- **Probes:** Menus & UI probe 10, a how-to once a profile; Devices & mods probes 18, 19 and 22
+  check what the readout and highlight do, never their words.
 
 ## The dev console
 
@@ -122,28 +146,39 @@ save and quick load.
 - **The main menu** is the game's own scene (`game/main.tscn`): the real world on a seed
   of its own, from a fixed camera on the highest sand near its spawn, facing upwind
   where the weather comes from. No one stands there and nothing of yours is in it; only
-  the weather moves, at its own pace. A low shade under the words keeps them readable
-  over bright sand. The selection shows by brightness alone.
+  the weather moves, at its own pace. A low shade under the words, and a soft dark edge
+  on every menu word and line, keep them readable over bright sand and in a storm,
+  highlighted or not. The selection shows by brightness alone.
 - **The title** at the top of the main menu is the game's name, "Desert" for now, kept in
   one place (`UIRoot.TITLE`), so a rename is one line. It's uppercase and widely spaced
   in Geist Light, off-white, centred over the words, with a small moon hung to its left
   as the prototype's logo had: a lit crescent over the faint rest of the disc, drawn in
   the theme's colours. A faint high shade, the twin of the low one, keeps it readable
   over a bright sky; in a storm it reads on its own.
-- **The showpiece** (`game/ui/showpiece.gd`) is the starting crate floating between the
-  title and the words, put together from the kit as a new run's is: the light shield and
-  the light panel on top, the board racked on its side, the batteries half full and
-  their lights showing it. It tilts toward the mouse, up to 25°, easing there, and rests
-  facing you until the mouse moves and once it leaves the window. Dragged, it spins, and
+- **The showpiece** (`game/ui/showpiece.gd`) is the kit of the origin last played,
+  floating between the title and the words, put together as a new run's is. Before any
+  run it's the Surveyor's crate: the light shield and the light panel on top, the board
+  racked on its side, the batteries half full and their lights showing it. Each kit says
+  what of it is shown, side by side (`Kit.shown`): the Salvager's board and light shield,
+  the Homesteader's planter, shield and condenser; one much wider than the crate is shown
+  smaller, to fit where the crate does. It tilts toward the mouse, up to 25°, easing
+  there, and rests facing you until the mouse moves and once it leaves the window. Dragged, it spins, and
   let go it keeps a little of the spin; a press on a word is always the word's, and
   under Options it can't be grabbed. Only its looks are kept, never a body, so it can't
   fall, blow away or be saved, and it stands in the desert's own light and weather,
   dark in a storm but for its tells, its charge lights and the shield's blue band. New game over a save asks
   "this ends your saved run" with the safe answer highlighted, and back declines too.
-  Then New game asks who you come as, the Surveyor highlighted over the Salvager and the
-  Homesteader, under a line saying how each plays (2026-10-18), and then which mode, Normal
-  highlighted and Ironman below it, under a line saying what each means; back goes back a
-  step, the save untouched. Into the
+  Then New game asks who you come as, with nothing written above: the origins down the
+  left in bigger words, well spaced, each with a few smaller words under it (tows a camp,
+  rides light, stays put) that brighten with it, and ???? for one still locked, which the
+  selection passes over; the origin last played is highlighted, the Surveyor before any,
+  so the kit on show stays as it is. As the choice opens the showpiece
+  slides aside to the right, easing there, and shows the highlighted origin's kit, the
+  last one shrinking away and the next growing in as the selection moves; back slides it
+  home to the kit of the origin last played. Then which mode, laid out the same: Normal,
+  highlighted, "saves as you go", and Ironman, "death ends the run"; back goes back a
+  step, the save untouched. The origin a run is begun or resumed as is kept in the
+  profile (Profile & saves). Into the
   game: a fade to black, the run built (`game/run.tscn`, which is what `main.tscn` used
   to be), and back from black once the sand round you is solid.
 - **The system menu**, over the running game under a dark wash: Options, Save in a
@@ -186,8 +221,10 @@ save and quick load.
   player's own save is left as it was. A run the console's `scenario` has been used in
   is the same from then on.
 - `look/menus` shoots the main menu, with its title and crate, in a storm and on a clear
-  day, and the system menu, to judge by eye.
-- Probes 1–8 pass, each proven against a broken build. Probes 3, 4 and 7 use the real
+  day; who you come as with each origin highlighted and with one locked, and the modes;
+  the main menu after a Homesteader's run; and the system menu, to judge by eye
+  (`look/menus/shoot.sh` builds the sheet).
+- Probes 1–9 pass, each proven against a broken build. Probes 3, 4 and 7 use the real
   saves, kept in each probe's own folder; probe 3 is the whole trip: New game, Save &
   quit out on the sand, Resume, and you're back where you were.
 
@@ -219,6 +256,12 @@ save and quick load.
 8. **The dev console.** Its action opens it over a run; typed and held keys reach only
    it, `warp 4` runs the clock four times as fast and `scenario dusk` puts you at dusk in
    a run that's never saved; back closes it and nothing else, and so does its action.
+9. **The kit on show.** Before any run the main menu shows the Surveyor's kit. New game
+   slides it aside, and with the Salvager highlighted it shows the Salvager's; back slides
+   it home. After a Salvager run the menu shows the Salvager's kit, and so does the next
+   session's.
+10. **A how-to once a profile.** The first sheet at your waist shows its how-to, its keys as
+    bound; tied on again it doesn't, nor in a new run on the same profile.
 
 ## Out of scope
 

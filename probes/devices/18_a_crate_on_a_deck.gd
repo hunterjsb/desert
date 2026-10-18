@@ -1,7 +1,7 @@
 extends DeckProbe
 ## Devices & mods probe 18: a crate on a deck. Having hold of a crate beside
 ## a two-piece deck, its own tray still in, no deck mount is offered and the
-## readout says to take its tray off first; tray out, the nearer free deck
+## readout says why; tray out, the nearer free deck
 ## mount is offered, and take stands the crate on it. Standing there it keeps
 ## its own sockets: a battery goes into its free slot through your hands, and
 ## a light shield onto the other piece's deck mount. The deck floats on the
@@ -27,8 +27,8 @@ func run() -> void:
 	check(await take_at(crate.global_position + Vector3(-1.4, 0.5, 0.0), crate.global_position) and hands.grasp.body == crate,
 		"you take hold of the crate")
 	await simulate(0.1)
-	check(hands.stand == null and hands._readout.text.contains("take its tray off first"),
-		"its own tray in, no deck mount is offered, and the readout says to take its tray off first")
+	check(hands.stand == null and hands.notice != "" and hands.line() == hands.notice,
+		"its own tray in, no deck mount is offered, and the readout says why")
 	hands.grab()
 	crate.take(own.socket).free()
 	await simulate(1.0)

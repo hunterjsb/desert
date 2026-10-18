@@ -21,8 +21,8 @@ extends RefCounted
 ## parks the reference camp round you on a floating deck, running, to be left
 ## alone, its farm watered by a condenser on hoses. "lee" stands you at the foot of a tall
 ## slip face, facing up it into the wind coming over its crest, with a storm
-## on its way and a catch line strung across the wind for its drift. "chassis" lays out pieces, their trays, a crate and a
-## condenser to build a deck from. "console" stands a Console with every
+## on its way and a catch line strung across the wind for its drift. "chassis" lays out pieces, their trays, a crate, a
+## condenser, hooks and a coil to build a deck from, one piece's hook moored to a stake where the next piece pops it. "console" stands a Console with every
 ## instrument and a radio on a small deck beside a shield, with a storm due
 ## in a few minutes, to watch its screen as it comes. "eclipse" faces Tu in
 ## the clear, the sun `eclipse` s from going behind it. "moon" stands you elsewhere on the moon:
@@ -68,7 +68,7 @@ const LIST: Array[Dictionary] = [
 	# A storm due soon, so the lee is felt in the clear and then as it comes over the crest.
 	{"key": "lee", "label": "lee: at the foot of a tall slip face, the wind over its crest, a storm minutes off, a catch line strung across it",
 		"kind": "lee", "day": [0.35, 0.55], "due": [120.0, 360.0], "drift": true},
-	{"key": "chassis", "label": "chassis: pieces, their trays, a crate and a condenser to build a deck from, clear and calm",
+	{"key": "chassis", "label": "chassis: pieces, their trays, a crate, a condenser, hooks and a coil to build a deck from, one hook moored where the next piece pops it, clear and calm",
 		"kind": "clear", "day": [0.35, 0.5], "calm": 6.0, "chassis": true},
 	# A steady breeze across open sand: the wind on your left, the camp
 	# facing across it ahead of you, ready to raise its sail and go.
@@ -169,6 +169,12 @@ const CHASSIS_PIECES := [[-1.8, 3.6], [-0.6, 3.6], [0.6, 3.6], [1.8, 3.6]]
 const CHASSIS_TRAYS := [[-1.8, 2.2], [-0.6, 2.2], [0.6, 2.2], [1.8, 2.2]]
 const CHASSIS_CRATE := [3.4, 2.4]
 const CHASSIS_CONDENSER := [-3.4, 2.4]
+## The first piece's outer ring has a hook moored to a stake just short of
+## where a piece joined there goes, so that join pops it; two hooks and a coil
+## lie at your feet to moor more.
+const CHASSIS_STAKE := [-2.8, 2.6]
+const CHASSIS_HOOKS := [[-0.3, 1.4], [0.3, 1.4]]
+const CHASSIS_COIL := [0.9, 1.4]
 
 ## The sailing camp on a deck two by two, right and ahead, facing across the
 ## wind ahead of you: its first piece at the front on the windward side, the
@@ -915,19 +921,31 @@ static func wire(world: World, a: Device, b: Device, strong := false) -> Cable:
 	return cable
 
 
-## Four chassis pieces lying bare on the sand ahead of you, a hover tray on
-## its back in front of each, and either side a crate frame with two charged
+## Four chassis pieces lying on the sand ahead of you, a hover tray on its
+## back in front of each, and either side a crate frame with two charged
 ## batteries, whose power floats the deck once it stands on it, and a
-## condenser with a battery and an empty canister. Returns what it dropped.
+## condenser with a battery and an empty canister. The first piece's outer
+## ring has a hook with a line to a stake, which a piece joined there pops;
+## two more hooks and a coil lie at your feet. Returns what it dropped.
 static func chassis(world: World) -> Array[Node3D]:
 	var dropped: Array[Node3D] = []
 	for where: Array in CHASSIS_PIECES:
 		dropped.append(standing(world, &"chassis", [], where))
+	var first := dropped[0] as Chassis
+	first.fit(Catalog.part(&"hook"), _on_piece(first, Vector2i.ZERO, &"ring", Vector2i(-1, 0)))
+	var stake := _driven(world, CHASSIS_STAKE)
+	Line.between(world, _deck_tie(first, Vector2i.ZERO, Vector2i(-1, 0)), stake.free_tie(first.global_position))
+	dropped.append(stake)
 	var yaw := Basis(Vector3.UP, world.player.global_rotation.y)
 	for where: Array in CHASSIS_TRAYS:
 		var tray := Catalog.part(&"hover_tray")
 		drop(world, tray, Transform3D(yaw * Basis(Vector3.RIGHT, -PI / 2.0), Vector3.ZERO), where[0], where[1])
 		dropped.append(tray)
+	for where: Array in CHASSIS_HOOKS:
+		var hook := Catalog.part(&"hook")
+		drop(world, hook, Transform3D(yaw, Vector3(0.0, 0.04, 0.0)), where[0], where[1])
+		dropped.append(hook)
+	dropped.append_array(stakes_and_coils(world, [], [CHASSIS_COIL]))
 	dropped.append(standing(world, &"crate_frame", [&"battery", &"battery"], CHASSIS_CRATE))
 	var condenser := standing(world, &"condenser", [&"battery", &"canister"], CHASSIS_CONDENSER) as Condenser
 	condenser.canister().drain(INF)
@@ -1013,13 +1031,18 @@ static func sail(world: World) -> Array[Node3D]:
 
 ## A line from a mast's boom's end to your waist, a little slack.
 static func sheet_to_waist(world: World, mast: Mast) -> Line:
+	return to_waist(world, mast._tie())
+
+
+## A line from a device's tie socket to your waist, a little slack.
+static func to_waist(world: World, tie: Socket) -> Line:
 	var line := Line.new()
 	line._world = world
 	world.content.add_child(line)
-	var tie := mast._tie()
-	var at := mast.global_transform * tie.transform
+	var device := tie.get_parent() as Device
+	var at := device.global_transform * tie.transform
 	var ends: Array[Part] = [line._end(at), line._end(world.player.global_transform)]
-	mast.fit(ends[0], tie)
+	device.fit(ends[0], tie)
 	world.player.waist.tie(ends[1])
 	line.ends = ends
 	var span := Line._tip(ends[0]).global_position.distance_to(Line._tip(ends[1]).global_position)

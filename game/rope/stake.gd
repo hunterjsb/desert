@@ -16,8 +16,8 @@ const RING := Vector3(0.0, 0.4, 0.0)
 ## Looking at anything this near, m, use means to drive it in there; past it
 ## you're looking out over the sand.
 const AIMED := 5.0
-const NOT_SAND := "Not sand: a stake only goes into the sand"
-const OUT_OF_REACH := "Out of reach: look at sand nearer you"
+const NOT_SAND := "not sand"
+const OUT_OF_REACH := "out of reach"
 
 ## Newtons of sustained pull it holds.
 var holding := 2500.0
@@ -76,14 +76,6 @@ func use(by: Player, at: Vector3) -> bool:
 	if off == INF and by.waist.carries_line(self):
 		return false
 	return hands.refuse(NOT_SAND if off <= Tuning.current().reach else OUT_OF_REACH)
-
-
-func stats() -> Dictionary:
-	var now := super()
-	if driven:
-		now["holding"] = holding
-		now["load"] = sustained / holding
-	return now
 
 
 func _physics_process(delta: float) -> void:

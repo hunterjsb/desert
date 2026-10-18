@@ -105,15 +105,21 @@ hands take it in at up to 1 m/s, and only the line draws, on both its ends, so w
 it comes only as hard as your hand strength (400 N): the draw eases off from half your
 strength and stops at all of it. Whatever doesn't come, a stake or something too heavy,
 you step in to along the line instead, at about 0.5 m/s. Nothing on a line ever closes
-faster than its 3 m/s. The line in your hand reels first, else the last one tied at your
-waist. A floating thing drawn in keeps gliding when you stop, as anything pushed does. A
+faster than its 3 m/s. **Which line reels** (2026-10-18): the line in your hand first;
+else, of the lines at your waist, the one whose far end you look nearest, so with a sheet
+and a mooring line both there you trim by looking at the sail and reel the mooring by
+looking at its stake. The line being reeled stays the one until another's far end is
+30% nearer your aim; with two equally near, the last tied wins. Before, it was
+always the last tied, so a stake line tied on after the sheet took the reel off the sail.
+A floating thing drawn in keeps gliding when you stop, as anything pushed does. A
 strong cable reels too, since it's a rope: its plugs keep their rules, and it pays out
 to its full 6 m. Each notch dips the end in your hand and lifts it again, across the line
 so the drawn line keeps its length; the rope you've taken in gathers in a coil where the
 line is on you, growing as you reel; and each notch rubs, a soft creak from Sand Game's
 rope recording, lower as you pay out. In a menu or with the inventory open it
-does nothing. A reeled line keeps its length when you let go of it, and the look-at line
-reads how much of it is out.
+does nothing. A reeled line keeps its length when you let go of it. The look-at line says a
+rolled-up coil's length; a laid line says nothing more, since its length shows, the coil you
+gather shows what you've taken in, and its strain creaks.
 
 **The sheet** (2026-10-18). A line whose end is on a sail's boom is its sheet, and it's held
 the way any line is: in your hand, at your waist, or made fast on a ring or a stake. Reeling
@@ -279,6 +285,10 @@ Reliability is the whole point here, so this list is long. All run without a win
     at sand out of reach and then at the crate, stays in your hand each time, neither
     driven nor at your waist, and the readout says why. At sand in reach it goes in at
     the ground's height; looking out over the sand, use ties it at your waist.
+16. **The line you look along.** A sail's sheet and a line to a stake both at your waist:
+    looking along the sheet, two notches trim the sail half a metre and leave the stake's
+    line be; looking along the stake's line, two notches draw it in half a metre and leave
+    the trim be.
 
 Every probe is first run against a deliberately broken rope, to prove it can fail.
 
