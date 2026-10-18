@@ -341,6 +341,17 @@ No Varran, Daventry or war content goes into normal play beyond radio noise
 The seed vaults and the second-age broadcasts are proposed too, but the session's list doesn't
 include them, so they are not in this order.
 
+### The world system, built whole (Hunter, 2026-10-17)
+
+"Flesh out the ruin gen... so we can stop just having totally random loot just all over the
+desert. actually lets go for the whole system, who am i kidding? half assing is what killed
+last sand game. a giant isnt built of small human skeletons." So part 4's world steps (6 to 10)
+and part 5's lineage and landmark steps are built as one system, not a piece at a time: the
+history pass and its landmarks and paths, structures by era with their exposure, loot that
+comes from sites and storms instead of open sand, item lineage and layered marks, the feral
+layer, and spawns by kit. It starts with its architecture and spine (one design, one set of
+interfaces), then parallel builders on top of it.
+
 ### The newer proposed order: session 4, part 4
 
 *Session 4, part 4 (2026-10-17, [the plants session](plants-worldgen-ruins-2026-10-17.md)) lists ten
