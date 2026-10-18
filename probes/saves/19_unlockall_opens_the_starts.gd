@@ -1,11 +1,19 @@
 extends MenuProbe
-## Profile & saves probe 19: unlockall opens the starts. On a fresh profile
-## only the Surveyor is open. The console action opens the console over the
-## main menu, with no run; unlockall there opens every start, and New game
-## then shows none locked. Forgetting the deeds leaves them open.
+## Profile & saves probe 19: unlockall opens the starts. With the Salvager
+## and the Homesteader behind their deeds, a fresh profile has only the
+## Surveyor open. The console action opens the console over the main menu,
+## with no run; unlockall there opens every start, and New game then shows
+## none locked. Forgetting the deeds leaves them open.
+
+
+## Held, so the locks stay on the kits every lookup finds.
+var _kits: Array[Kit] = []
 
 
 func run() -> void:
+	_kits = Kit.origins()
+	Kit.named(&"salvager").unlock = "board_distance"
+	Kit.named(&"homesteader").unlock = "shield_day"
 	await open_main()
 	var profile := get_node(^"/root/Profile")
 	var all := Kit.origins().size()

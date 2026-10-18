@@ -94,9 +94,11 @@ last played highlighted and the Surveyor before any (Menus & UI). Each is a `Kit
 (`game/survival/`): its id, name and words, its start on the moon ([the world
 system](../world-system.md#the-feral-layer-and-spawns)), whether it's balanced, what unlocks it
 and what of it the main menu shows. The menu lists every origin, one not open to
-the profile (`Kit.is_open_to`, through `Profile.has`) as ????. Since the deeds (below) count a
-playstyle, the Salvager opens with Frequent Flyer (a long ride on the board) and the Homesteader
-with Hermit (a whole day under a shield); the Surveyor is open from the first run. The profile keeps the origin a run was last begun or resumed as (`Profile.last_origin`), whose
+the profile (`Kit.is_open_to`, through `Profile.has`) as ????. A kit's `unlock` can name a deed
+(below), which then opens it. Frequent Flyer (a long ride on the board) is proposed for the Salvager
+and Hermit (a whole day under a shield) for the Homesteader, but Hunter hasn't decided whether they
+should be locked, so all three are open from the first run; locking one is its kit's `unlock`, one
+line. The profile keeps the origin a run was last begun or resumed as (`Profile.last_origin`), whose
 kit the main menu shows; reset forgets it. The novelty kits aren't built; an origin that
 isn't balanced is offered Normal only. The run keeps its origin (`World.kit`) and so does its save
 (`kit`); a new run after a death comes as the same origin. A save from before origins has none and
@@ -136,10 +138,10 @@ stays. Green Thumb is new, so Crop Rotation has one before it.
 
 | Id | Name | Asks | After | Recorded |
 |---|---|---|---|---|
-| `board_distance` | Frequent Flyer | Ride a board 5,000 m without stepping off; opens the Salvager | | the ride, by how far it has come (kept in the save mid-ride) |
+| `board_distance` | Frequent Flyer | Ride a board 5,000 m without stepping off; proposed to open the Salvager | | the ride, by how far it has come (kept in the save mid-ride) |
 | `board_height` | Big Air | Fly 8 m over the sand on a board | Frequent Flyer | the ride, each tick, by the board's height over the sand under it |
 | `board_storm` | Flying Bling | Ride into a storm by night or in an eclipse | Big Air | the ride, the tick you go from clear air into a storm, the sun down or partly behind Tu |
-| `shield_day` | Hermit | Spend a whole day under a shield, never stepping out; opens the Homesteader | | Wear's tick: time under a bubble without a break, a day's length, kept in the save |
+| `shield_day` | Hermit | Spend a whole day under a shield, never stepping out; proposed to open the Homesteader | | Wear's tick: time under a bubble without a break, a day's length, kept in the save |
 | `shield_storm` | Sandblasted | Hold off 60 minutes of storm with one shield | Hermit | Wear's tick: a running shield counts the storm where it stands, kept on the shield and in the save |
 | `crop` | Green Thumb | Grow a crop | | a planter's harvest, by hand or by its harvester |
 | `crops` | Crop Rotation | Grow 3 kinds of crop | Green Thumb | the same, each kind counted once a profile |
@@ -153,8 +155,8 @@ stays. Green Thumb is new, so Crop Rotation has one before it.
 | `landmarks` | Hot Tourist Destinations | Reach every named landmark | The Old City | the same as The Old City, each of the eight counted once a profile |
 
 - **What waits on what** (Hunter, 2026-10-18: "even though we dont have any deps yet, so make up
-  some deps"): made up, each family a branch from an easy deed to harder ones, and the two that open
-  starts, Frequent Flyer and Hermit, wait on nothing. A deed's branch is open once everything it
+  some deps"): made up, each family a branch from an easy deed to harder ones, and the two proposed to
+  open starts, Frequent Flyer and Hermit, wait on nothing. A deed's branch is open once everything it
   waits on is done and open in turn.
 - **Done out of order:** recording never waits. A deed done before what it waits on is kept in the
   profile with its run all the same, and opens its start if it names one; it shows, lit and
@@ -382,9 +384,9 @@ calls them from Save, Save & quit, Resume, New game, the death screen and Option
     it.
 18. **A dev run counts nothing.** While the console's god holds you, and once a dev scenario is
     used in a run, reaching Port Morgan records no deed, and no landmark toward them all.
-19. **Unlockall opens the starts.** A fresh profile has the Surveyor alone; the console opens over
-    the main menu, unlockall there opens every start, New game shows none locked, and forgetting
-    the deeds leaves them open.
+19. **Unlockall opens the starts.** With the Salvager and the Homesteader behind their proposed
+    deeds, a fresh profile has the Surveyor alone; the console opens over the main menu, unlockall
+    there opens every start, New game shows none locked, and forgetting the deeds leaves them open.
 20. **A hermit's whole day.** Under the reference camp's shield most of a day, its bubble down a
     moment, then most of a day again, is no Hermit; a little longer and it is.
 21. **All four ages.** Stepping onto two colonial structures, a skimmer wreck and a First Kingdoms
@@ -405,8 +407,9 @@ calls them from Save, Save & quit, Resume, New game, the death screen and Option
   offered the last one back, and where a camp that has to outlive its run is kept.
 - **What each playstyle unlock counts.** "Long board distance," "surviving a storm on carried
   gear" and "riding out big storms without moving camp" are examples, not rules, and the
-  Archaeologist's condition is open in the session. Built for now: Frequent Flyer opens the
-  Salvager and Hermit the Homesteader; either is a line in the kit's data to change.
+  Archaeologist's condition is open in the session. Built: a deed can open a start, and Frequent
+  Flyer and Hermit are proposed for the Salvager and the Homesteader; whether either is locked at
+  all is Hunter's, so both are open for now.
 - **"Build" in the two new unlocks.** The session: "Build and use a dune sailboat," "Build a
   patrol-style board yourself (proposed)." Here: parts are found, never crafted, and an unlock is
   a discovery or something done. Not said what building a craft reports, or when it counts as

@@ -9,7 +9,6 @@ label = "Salvager"
 about = "rides light"
 start = &"wreck_field"
 balanced = true
-unlock = "board_distance"
 carried = Dictionary[StringName, int]({
 &"canister": 1,
 &"ration": 1
