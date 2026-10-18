@@ -300,9 +300,10 @@ const DEVICES := {
 			[&"port", Vector3(0.0, 0.0, 0.65), Vector3.BACK],
 		]},
 	# Something to sleep on (Sleep): laid on the sand, carried, or rolled in a
-	# crate's rack where the board would go. Lying, the wind meets its side.
-	&"bedroll": {"label": "Bedroll", "size": Vector3(0.24, 0.24, 0.9), "mass": 2.5, "bedroll": true,
-		"carryable": true, "fits": &"rack", "sockets": []},
+	# crate's rack where the board would go. Round and low, it lets most of a
+	# breeze over it: a storm slides it, a breeze doesn't.
+	&"bedroll": {"label": "Bedroll", "size": Vector3(0.24, 0.24, 0.9), "mass": 3.0, "bedroll": true,
+		"carryable": true, "fits": &"rack", "stats": {"face_m2": 0.13}, "sockets": []},
 	# A sail's mount: a pole that seats on a top mount or stands on a deck
 	# mount, stowed short to carry and standing its full height once seated,
 	# its sail fitting low on it at the boom's root. Found buried on end.

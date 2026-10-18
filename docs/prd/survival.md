@@ -143,7 +143,7 @@ food running out, each from the night's own numbers rather than dice.
 
 **Where you sleep.**
 - **The bedroll** is a device by the catalog's rules: the rack seats devices (the board), and a part
-  becomes its device's shapes, worked by nothing. Rolled company canvas 0.9 m long, 2.5 kg. Use on it
+  becomes its device's shapes, worked by nothing. Rolled company canvas 0.9 m long, 3 kg, low and round, so a breeze leaves it be on the sand and a storm slides it. Use on it
   wherever it is, laid on the sand, in your hands, among what you carry, or in a crate's rack in the
   board's place, asks how long to sleep. The Surveyor and the Homesteader start carrying one; the
   Salvager, riding light, finds one or a ruin's bed. It's found on deserters' dugout floors (3 in 12 of
@@ -371,9 +371,9 @@ Death means a new run (see Runs in the vision).
     way hauling on a line digs you in (Movement): lower by a few centimetres, slower and
     tiring faster on the move, standing too but tiring only as you walk. By 60 kg you're
     sunk in as far as hauling takes you, at 65% of your pace, and every kilogram past
-    that slows you further (at 90 kg, a third of it). The run's kit carries 5.4 kg, a
+    that slows you further (at 90 kg, a third of it). The run's kit carries 5.9 kg, a
     canister, a ration and a bedroll (2026-10-18); every carryable thing of the kit, its stake, its
-    board with the board's battery and the light panel too, comes to 23.4 kg, comfortably under.
+    board with the board's battery and the light panel too, comes to 23.9 kg, comfortably under.
     Probe 14 measured 1.80 m/s with the kit and 1.17 m/s at 59.9 kg, sunk 6.5 cm. Only
     what you carry counts, not what's in your hands. On a board you ride as ever.
   - **Stacks.** Like things stack as one: canisters, rations, batteries, stakes, hooks,

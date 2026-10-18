@@ -635,8 +635,8 @@ static var _current: Tuning
 ## weight: up to this much, kg, you don't feel it; past it you sink into the
 ## sand and slow, by this much sunk in as far as hauling digs you in, and
 ## slower still for every kilogram more. The kit you start with carries
-## 5.4 kg, and every carryable thing of it, its stake, its board with the
-## board's battery and the light panel too, 23.4 kg.
+## 5.9 kg, and every carryable thing of it, its stake, its board with the
+## board's battery and the light panel too, 23.9 kg.
 @export var carry_easy_kg: float = 30.0
 @export var carry_sunk_kg: float = 60.0
 ## A sealed canister holds this much water, L, and a ration this much food, kcal.
