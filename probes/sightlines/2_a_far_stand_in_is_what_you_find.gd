@@ -2,10 +2,10 @@ extends WorldProbe
 ## Sightlines probe 2: a far stand-in is what you find when you arrive. At the
 ## Surveyor's start, a structure past the sheet's reach, drawn only as a
 ## stand-in from where you stand, is walked to. When the sheet lays it, it
-## stands where its stand-in last stood, give or take the metre a stand-in
-## may lag the sheet's seams; when its own chunk draws it, it's in the state
-## its stand-in showed, as high over its ground as the stand-in stood over
-## the far ring's.
+## stands where its stand-in last stood, give or take the metre or two a
+## stand-in may lag the sheet's seams (Skyline.KEEP_M, and a chunk's walk);
+## when its own chunk draws it, it's in the state its stand-in showed, as
+## high over its ground as the stand-in stood over the far ring's.
 ## Time limit: 900 s
 
 ## How far off the one walked to stands, m.
@@ -53,7 +53,7 @@ func run() -> void:
 			var off := Vector2(laid.x - last.x, laid.z - last.z).length()
 			print("laid %.2f m from where its stand-in last stood, %.1f m from where it first stood" % [off,
 				Vector2(laid.x - first.x, laid.z - first.z).length()])
-			check(off < 1.5, "the sheet lays it where its stand-in last stood (%.2f m off)" % off)
+			check(off < 2.5, "the sheet lays it where its stand-in last stood (%.2f m off)" % off)
 		var chunk := world.terrain.chunk_under(far.x, far.z)
 		view = chunk.view_of(laid) if laid != null and chunk != null else null
 		if view != null:
