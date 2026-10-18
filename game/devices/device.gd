@@ -14,8 +14,10 @@ signal parts_changed
 const SETTLE_BELOW := 3.0
 
 @export var label := "device"
-## The bare frame's weight, kg.
+## The bare frame's weight, kg, and where it sits in its own frame: a tall
+## frame built heavy at its foot says so.
 @export var frame_mass := 15.0
+@export var frame_middle := Vector3.ZERO
 ## What the bare frame does by itself, like a turbine's turbine_w.
 @export var frame_stats: Dictionary = {}
 ## Small enough to pick up and carry in your hands, like a stake.
@@ -523,7 +525,7 @@ func _recompute() -> void:
 
 ## Its frame's weight and where it sits, in its own frame, as [kg, position]s.
 func _frame_masses() -> Array:
-	return [[frame_mass, Vector3.ZERO]]
+	return [[frame_mass, frame_middle]]
 
 
 ## Where a fitted part's shapes sit on average, in the device's frame.

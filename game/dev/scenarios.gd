@@ -167,7 +167,7 @@ const CHASSIS_CONDENSER := [-3.4, 2.4]
 ## The Console's deck, two pieces, right and ahead of you; the Console on the
 ## first, its screen to you, and the base shield on the second. What the
 ## Console holds; the stake that moors the deck, upwind beyond it.
-const CONSOLE_DECK := [-0.5, 2.6]
+const CONSOLE_DECK := [-0.5, 2.3]
 const CONSOLE_PARTS := [&"big_battery", &"big_battery", &"screen", &"anemometer", &"barometer", &"hygrometer",
 	&"particle_sensor", &"radar"]
 const CONSOLE_STAKE := [-0.5, 4.6]
@@ -747,16 +747,17 @@ static func chassis(world: World) -> Array[Node3D]:
 	return dropped
 
 
-## A Console on a deck of two pieces resting on the sand, its screen to you,
-## two big batteries in it, its screen, every instrument and a radio on its
-## top; the base shield beside it on the other piece with a battery,
-## switched off, smart from the Console; the deck moored by a hook on its far
-## ring to a stake upwind. You start fed and watered. Returns what it dropped,
-## the deck first.
+## A Console on a deck of two pieces floating on a tray each, its screen to
+## you at your eyes, two big batteries in it, its screen, every instrument and
+## a radio on its top; the base shield beside it on the other piece with a
+## battery, switched off, smart from the Console; the deck moored by a hook on
+## its far ring to a stake upwind. You start fed and watered. Returns what it
+## dropped, the deck first.
 static func console(world: World) -> Array[Node3D]:
 	world.player.vitals.fresh()
 	var deck := standing(world, &"chassis", [], CONSOLE_DECK) as Chassis
 	deck.join(Catalog.device(&"chassis") as Chassis, _on_piece(deck, Vector2i.ZERO, &"ring", Vector2i(1, 0)), 0)
+	fill(world, deck, [&"hover_tray", &"hover_tray"])
 	var made := _stand_on(world, deck, &"console", CONSOLE_PARTS, Vector2i.ZERO) as Console
 	var radio := Catalog.device(&"radio")
 	world.content.add_child(radio)
@@ -767,6 +768,7 @@ static func console(world: World) -> Array[Node3D]:
 	var screen := made.global_basis * Vector3.FORWARD
 	if screen.dot(world.player.global_position - made.global_position) < 0.0:
 		deck.global_basis = deck.global_basis.rotated(Vector3.UP, PI)
+	_afloat(world, deck)
 	var stake := _driven(world, CONSOLE_STAKE)
 	var far := Vector2i(0, -1) if deck.global_basis.z.dot(world.player.global_basis.z) > 0.0 else Vector2i(0, 1)
 	var hook := _on_piece(deck, Vector2i.ZERO, &"ring", far)

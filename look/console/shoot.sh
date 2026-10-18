@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# Shoots the Console look-test, then builds its sheet: the Console, its screen
-# with one instrument, with the full set, and its storm map with the front near.
+# Shoots the Console look-test, then builds its sheet: the Console on its deck
+# and alone, its map and stats read standing a step or two back, its map at
+# each resolution its gear gives, its stats close, and the front near.
 #   look/console/shoot.sh <out dir> [sheet]
 # No window: it runs unseen (scripts/unseen.sh), so it shoots while someone plays.
 set -uo pipefail
@@ -14,17 +15,24 @@ timeout 900 "$godot" --path . --disable-vsync res://look/console/console.tscn --
 	grep -E '^console'
 
 args=()
-for shot in console one full map; do
+for shot in deck alone standing_map standing_stats estimate radar radar_two full linked stats near; do
 	file="$out/$shot.png"
 	[[ -f $file ]] || file="xc:gray"
 	case $shot in
-	console) label="the Console on its deck, every instrument and a radio" ;;
-	one) label="its screen, one instrument: the anemometer" ;;
-	full) label="the full set: every reading and the storm map" ;;
-	map) label="the front near: the map, and the shield switched on" ;;
+	deck) label="on its floating deck, beside the shield" ;;
+	alone) label="alone on its own tray" ;;
+	standing_map) label="the map, standing a step or two back" ;;
+	standing_stats) label="the stats, standing a step or two back" ;;
+	estimate) label="no radar, three instruments: an estimate, 7 across" ;;
+	radar) label="a radar alone: 8 across" ;;
+	radar_two) label="a radar and two more: 16 across" ;;
+	full) label="the full set: 28 across" ;;
+	linked) label="two Consoles linked: 42 across" ;;
+	stats) label="the stats, close" ;;
+	near) label="the front near, the shield switched on" ;;
 	esac
 	args+=(-label "$label" "$file")
 done
-montage "${args[@]}" -tile 2x -geometry 960x540+6+6 -pointsize 22 -depth 8 \
+montage "${args[@]}" -tile 4x -geometry 720x405+6+6 -pointsize 22 -depth 8 \
 	-background '#f4efe6' -title "the Console" "$sheet"
 echo "sheet: $sheet"

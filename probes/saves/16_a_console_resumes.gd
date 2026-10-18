@@ -34,7 +34,7 @@ func run() -> void:
 	print("resumed: ", after)
 	check(str(after) == str(before), "the same Console: its parts, page, switch and log")
 	await simulate(2.0)
-	var text: String = found[0].screen_text(Console.Page.WEATHER)
+	var text: String = found[0].screen_text(Console.Page.STATS)
 	check("WIND" in text and "PRESS" in text and "FRONT" in text, "and it reads on")
 
 

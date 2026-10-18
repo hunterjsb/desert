@@ -8,9 +8,9 @@ extends WeatherProbe
 ## running; the lee
 ## stands you under a tall slip face, facing up it into the wind over its
 ## crest, the wind on you cut and a storm due; chassis pieces, their trays,
-## a charged crate and a condenser lie in front of you; a Console on a deck
-## shows every reading its full set gives, the storm coming, its shield
-## smart and off; the eclipse faces Tu
+## a charged crate and a condenser lie in front of you; a Console on a
+## floating deck shows its finest map and every reading, the storm coming, its
+## shield smart and off; the eclipse faces Tu
 ## just before the sun goes behind it; the far side has no Tu. Checked against
 ## the field itself and against what the game then shows.
 
@@ -235,25 +235,30 @@ func _chassis_lands() -> void:
 			body.free()
 
 
-## A Console stands on a two-piece deck in front of you, its screen to you,
-## every instrument and a radio in it, and a shield on the other piece,
-## switched off and smart from it; the deck moored to a driven stake; its
-## screen shows every reading, the storm on its way, and the storm map.
+## A Console stands on a two-piece deck floating in front of you, its screen
+## to you at about your eyes, every instrument and a radio in it, and a
+## shield on the other piece, switched off and smart from it; the deck moored
+## to a driven stake; its map at its finest for one Console, its stats every
+## reading, the storm on its way.
 func _console_lands() -> void:
 	await settle(true)
 	var dropped := Scenarios.console(world)
-	await physics_frames(90)
+	await physics_frames(120)
 	var player := world.player
 	var deck: Chassis = dropped[0]
 	var made: Console = dropped[1]
 	var shield: ShieldGenerator = dropped[3]
 	var screen := made.global_basis * Vector3.FORWARD
+	var eyes := player.camera.global_position.y - made.global_position.y
 	check(made.on_deck() and made.host() == deck and shield.host() == deck and not shield.on
-		and made.smart_shields().size() == 1 and made.smart_shields()[0] == shield and screen.dot(player.global_position - made.global_position) > 0.0,
-		"console: on a deck, its screen to you, the shield beside it off and smart")
-	var text := made.screen_text(Console.Page.WEATHER)
-	var shown := ["WIND", "PRESS", "HUMID", "SAND", "FRONT", "FCST", "SHIELD OFF"].all(func(l: String) -> bool: return l in text)
-	check(shown and made._full_set() and made._map.size() > 0, "console: every reading on its screen, and its map:\n%s" % text)
+		and made.smart_shields().size() == 1 and made.smart_shields()[0] == shield
+		and screen.dot(player.global_position - made.global_position) > 0.0 and deck.stats().hovering and absf(eyes) < 0.5,
+		"console: on a floating deck, its screen to you at your eyes (%.2f m off), the shield beside it off and smart" % eyes)
+	var stats := made.screen_text(Console.Page.STATS)
+	var shown := ["WIND", "PRESS", "HUMID", "SAND", "FRONT", "FCST", "SHIELD OFF"].all(func(l: String) -> bool: return l in stats)
+	var full := Tuning.current().storm_map_radar_cells + 5 * Tuning.current().storm_map_cells_per_instrument
+	check(shown and made.map_cells() == full and made._map.size() == full * full,
+		"console: every reading on its stats, and its map at %d cells across:\n%s" % [made.map_cells(), stats])
 	check(made.pooled_readings().forecast.change < INF and (dropped[4] as Stake).driven and world.ropes.ropes.size() == 1,
 		"console: the storm on its way, the deck moored")
 	for body in dropped:

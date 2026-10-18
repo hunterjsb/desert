@@ -237,9 +237,9 @@ Readings, not in the session:
 **As built (2026-10-17, a first version):**
 - **Which shields are smart:** every shield in a Console's system, standing on its deck, seated
   on its top mount, or seated on anything on the deck. A shield off the deck isn't.
-- **What it reports:** a line on the screen's weather page, and on its own page a form: on or
-  off, running or out of power, what it draws, its pool, its time left at that draw, its bubble,
-  and auto. Nothing new is kept on the shield; the screen reads what it already knows.
+- **What it reports:** a line on the screen's stats page, its state on the screen's shield
+  key, and on its own page a form: on or off, running or out of power, what it draws, its pool,
+  its time left at that draw, its bubble, and auto. Nothing new is kept on the shield; the screen reads what it already knows.
 - **Switched from the screen:** the screen's shield key switches every smart shield, all off if
   any is on, else all on, just as use at it would. With nothing to run on it won't start, and the
   log says so.

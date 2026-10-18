@@ -652,9 +652,12 @@ static var _current: Tuning
 @export var barometer_trend_seconds: float = 120.0
 @export var barometer_warn_minutes: float = 15.0
 ## Humidity in the cold air a condenser makes its most in, 0 to 1, falling
-## with its yield as the air warms, and what a full storm's air adds.
+## with its yield as the air warms; what a storm's air adds, and how far
+## ahead of its front the air grows humid, in the field's own units (about a
+## kilometre or two).
 @export var humidity_cold: float = 0.6
 @export var humidity_storm: float = 0.25
+@export var humidity_reach: float = 0.25
 ## Sand in the air at a storm's heart, g/m³; the share of it at its wall,
 ## and the share a front's outflow carries ahead of the wall.
 @export var sand_full_g_m3: float = 3.0
@@ -663,8 +666,17 @@ static var _current: Tuning
 ## A radar sweeps this many bearings, one a tick, stepping out this far, m.
 @export var radar_bearings: int = 36
 @export var radar_step_m: float = 100.0
-## Cells across the storm map a full set of instruments draws.
-@export var storm_map_screen_cells: int = 18
+## The storm map's cells across: a radar alone draws this many, each other
+## kind of instrument this many more, and a second radar linked half as many
+## again. With no radar its other instruments only estimate a map, this
+## coarse with one and this many more with each other kind, odd so that
+## where it stands has a cell. It's sampled again this often, s of world time.
+@export var storm_map_radar_cells: int = 8
+@export var storm_map_cells_per_instrument: int = 4
+@export var storm_map_second_radar: float = 1.5
+@export var storm_map_estimate_cells: int = 3
+@export var storm_map_estimate_per_instrument: int = 2
+@export var storm_map_every: float = 1.0
 ## A smart shield switches itself on once the radar sees a front this near, m.
 @export var smart_shield_auto_m: float = 1500.0
 
