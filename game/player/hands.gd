@@ -357,6 +357,8 @@ func hold(body: RigidBody3D) -> void:
 	grasp.let_go()
 	_grip(body)
 	_arrive_from(body.global_transform)
+	# A line's end in your hand tows what it leads to.
+	_player.world.ropes._towing()
 
 
 ## Reel in by `notches`, or pay out for a negative count: a line's end in

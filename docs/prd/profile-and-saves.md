@@ -139,7 +139,7 @@ give are proposals, his to rename; the id stays.
 | `shield_storm` | Sandblasted | Hold off 60 minutes of storm with one shield | Wear's tick: a running shield counts the storm where it stands, kept on the shield and in the save |
 | `shield_day` | Hermit | Spend a whole day under a shield; opens the Homesteader | Wear's tick: time under a bubble without a break, a day's length, kept in the save |
 | `crops` | Crop Rotation | Grow 3 kinds of crop | a planter's harvest, by hand or by its harvester, each kind counted once a profile |
-| `planters_towed` | Meals on Wheels | Have 2 planters in tow at once | a line tied or moved, or something tied at your waist: planters along the lines from you, or standing on what they reach, short of a driven stake |
+| `planters_towed` | Meals on Wheels | Have 2 planters in tow at once | a line tied or moved, something tied at your waist or taken in your hand: planters along the lines from you, or standing on what they reach, short of a driven stake |
 | `sail_waist` | Set Sail | Tie a sail's sheet at your waist | your waist, as the sheet ties on |
 | `deck_pieces` | Six Pack | Join 6 chassis pieces into one deck | a piece joining a deck |
 | `deck_home` | All Mod Cons | A Console, a condenser and a crate on one deck | a device standing on a deck, or a piece joining with one on it |
