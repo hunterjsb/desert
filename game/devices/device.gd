@@ -95,8 +95,7 @@ func _ready() -> void:
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_CHILD_ORDER_CHANGED:
 		_sockets_known = false
-		_face = NAN
-		_bounds_known = false
+		_shapes_changed()
 	elif what == NOTIFICATION_PREDELETE:
 		for socket in sockets():
 			if socket.part != null:
@@ -473,15 +472,7 @@ func take(socket: Socket) -> Part:
 
 ## Everything the device can do, from the frame and what's fitted.
 func stats() -> Dictionary:
-	# The wind grabs the frame and everything fitted, by their size; a frame
-	# that lies flat says what it shows the wind.
-	var face: float = frame_stats.get("face_m2", NAN)
-	if is_nan(face):
-		if is_nan(_face):
-			_face = Weather.biggest_face(self)
-		face = _face
-	var catch := face * world.tuning.wind_catch_per_m2 if world != null else 0.0
-	var total := {"mass": mass, "catch": catch, "capacity_wh": 0.0, "hooks": 0,
+	var total := {"mass": mass, "catch": wind_catch(), "capacity_wh": 0.0, "hooks": 0,
 		"lift_kg": 0.0, "solar_w": 0.0, "light_w": 0.0, "plants": 0, "turbine_w": 0.0}
 	for source: Dictionary in [frame_stats] + parts().map(func(p: Part) -> Dictionary: return p.stats):
 		for key: String in source:
@@ -501,7 +492,7 @@ func stats() -> Dictionary:
 
 
 func _recompute() -> void:
-	_bounds_known = false
+	_shapes_changed()
 	var weight := 0.0
 	var moment := Vector3.ZERO
 	for frame: Array in _frame_masses():
@@ -538,6 +529,23 @@ func _recompute() -> void:
 		sleeping = false
 	set_meta(&"wind_catch", now["catch"])
 	parts_changed.emit()
+
+
+## How hard the wind grabs it: the frame and everything fitted, by their
+## size; a frame that lies flat says what it shows the wind.
+func wind_catch() -> float:
+	var face: float = frame_stats.get("face_m2", NAN)
+	if is_nan(face):
+		if is_nan(_face):
+			_face = Weather.biggest_face(self)
+		face = _face
+	return face * world.tuning.wind_catch_per_m2 if world != null else 0.0
+
+
+## Its shapes came, went or moved: what was worked out from them goes.
+func _shapes_changed() -> void:
+	_face = NAN
+	_bounds_known = false
 
 
 ## All its shapes' bounds together, in its own frame.
