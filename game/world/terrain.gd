@@ -15,11 +15,24 @@ signal unloaded(coord: Vector2i)
 ## Collision samples are 1 m apart, so near chunks are too: what you see is
 ## exactly what you stand on.
 const NEAR_STEP := 1
+## Structures a storm works on follow it every frame within this many chunks
+## of you; further off, this many chunks' worth a frame in turn.
+const FOLLOW_NEAR := 3
+const FOLLOW_FAR := 6
+## Loaded ground pressed afresh at once, at most; and how many steps behind
+## what stands in it a mid chunk's ground may fall first: past the near
+## ground nobody sees a few centimetres.
+const PRESSES := 2
+const MID_BEHIND := 8
 
 ## Main-thread time streaming took this frame, and the most it has in any one:
 ## the hitch probe and F3 read them.
 var frame_ms := 0.0
 var slowest_frame_ms := 0.0
+## Main-thread time following what storms work on took this frame, ms, and
+## how many loaded chunks' ground has been pressed afresh, all run.
+var follow_ms := 0.0
+var presses := 0
 
 const SAND_SHADER := preload("res://game/world/sand.gdshader")
 
@@ -54,6 +67,15 @@ var _far_center := Vector2i.ZERO
 var _far_building := Vector2i.ZERO
 var _far_task := -1
 var _far_next: RID
+## Chunks with structures standing on them, by coord; those whose ground is
+## behind what stands in it; presses in flight, and their results.
+var _standing := {}
+var _behind := {}
+var _pressing := {}
+var _pressed := {}
+var _far_turn := 0
+var _occupants := PackedVector2Array()
+var _occupants_frame := -1
 
 
 func setup(world: World) -> void:
@@ -99,6 +121,9 @@ func _process(_delta: float) -> void:
 	_retire()
 	_update_far()
 	_collect()
+	_follow_sites()
+	_press()
+	_collect_presses()
 	_world.salvage.stream(_deadline)
 	_world.shape.sites.step(_deadline)
 	frame_ms = (Time.get_ticks_usec() - started) / 1000.0
@@ -107,6 +132,7 @@ func _process(_delta: float) -> void:
 	Dev.put("terrain/col", "%d" % collision_count())
 	Dev.put("terrain/bld", "%d" % (_tasks.size() + _wanted.size()))
 	Dev.put("terrain/upl", "%.1fms" % slowest_frame_ms)
+	Dev.put("terrain/site", "%.2fms %d pressed" % [follow_ms, presses])
 
 
 func _exit_tree() -> void:
@@ -114,6 +140,12 @@ func _exit_tree() -> void:
 	for id: int in _tasks.values():
 		WorkerThreadPool.wait_for_task_completion(id)
 	_tasks.clear()
+	for id: int in _pressing.values():
+		WorkerThreadPool.wait_for_task_completion(id)
+	_pressing.clear()
+	for build: ChunkBuild in _pressed.values():
+		RenderingServer.free_rid(build.mesh)
+	_pressed.clear()
 	_world.shape.sites.finish()
 	if _far_task != -1:
 		WorkerThreadPool.wait_for_task_completion(_far_task)
@@ -196,6 +228,7 @@ func forget(rect: Rect2) -> void:
 			unloaded.emit(coord)
 			chunk.free()
 			_chunks.erase(coord)
+			_standing.erase(coord)
 	_planned = false
 
 
@@ -291,12 +324,15 @@ func _launch() -> void:
 		if _tasks.has(key):
 			continue
 		var held := _world.shape.sites.hold(Vector2i(key.x, key.y))
-		_tasks[key] = WorkerThreadPool.add_task(_build.bind(key, RenderingServer.mesh_create(), held))
+		var steps := PackedInt32Array()
+		for each in held:
+			steps.append(each.ground)
+		_tasks[key] = WorkerThreadPool.add_task(_build.bind(key, RenderingServer.mesh_create(), held, steps))
 
 
-func _build(key: Vector3i, mesh: RID, held: Array[Structure]) -> void:
+func _build(key: Vector3i, mesh: RID, held: Array[Structure], steps: PackedInt32Array) -> void:
 	var build := ChunkBuild.make(_world.shape, Vector2i(key.x, key.y), _size, key.z,
-		_tuning.skirt_depth, _indices[key.z], held)
+		_tuning.skirt_depth, _indices[key.z], held, steps)
 	ChunkBuild.fill(mesh, build.arrays, _material_rid)
 	build.mesh = mesh
 	_mutex.lock()
@@ -336,6 +372,11 @@ func _upload(build: ChunkBuild) -> void:
 		add_child(chunk)
 		_place(chunk)
 	chunk.show_build(build)
+	if not chunk.structures().is_empty():
+		_standing[chunk.coord] = chunk
+	if not chunk.carved.is_empty():
+		# A storm may have moved what stands in it while it was built.
+		_behind[chunk.coord] = true
 	if build.step == NEAR_STEP and d <= _tuning.near_radius and not chunk.has_collision():
 		chunk.add_collision(_size, _sand)
 		grounded.emit(chunk)
@@ -353,6 +394,7 @@ func _retire() -> void:
 			# Freed now, not queued, so the cost lands inside the budget.
 			chunk.free()
 			_chunks.erase(coord)
+			_standing.erase(coord)
 		elif d > _tuning.near_radius + 1:
 			if chunk.has_collision():
 				ungrounded.emit(chunk)
@@ -361,6 +403,121 @@ func _retire() -> void:
 			# Back in range after leaving it: the same samples, so the same ground.
 			chunk.add_collision(_size, _sand)
 			grounded.emit(chunk)
+
+
+# --- What a storm works on. ---
+
+## Every structure standing on loaded ground follows the weather: those
+## round you every frame, so they rise and sink smoothly before your eyes,
+## the rest a few chunks a frame in turn. Its ground is pressed afresh when
+## its step changes. Never burying you or your camp: the sand never comes back
+## over a site's ground while either stands on it.
+func _follow_sites() -> void:
+	if _standing.is_empty():
+		return
+	var started := Time.get_ticks_usec()
+	var t := _world.time
+	for dz in range(-FOLLOW_NEAR, FOLLOW_NEAR + 1):
+		for dx in range(-FOLLOW_NEAR, FOLLOW_NEAR + 1):
+			var chunk: TerrainChunk = _standing.get(_center + Vector2i(dx, dz))
+			if chunk != null:
+				_follow_chunk(chunk, t)
+	var coords := _standing.keys()
+	for k in mini(FOLLOW_FAR, coords.size()):
+		if _out_of_time():
+			break
+		_far_turn = (_far_turn + 1) % coords.size()
+		var coord: Vector2i = coords[_far_turn]
+		if _distance(coord) > FOLLOW_NEAR:
+			_follow_chunk(_standing[coord], t)
+	follow_ms = (Time.get_ticks_usec() - started) / 1000.0
+
+
+func _follow_chunk(chunk: TerrainChunk, t: float) -> void:
+	for each in chunk.structures():
+		if each.follow(t, _occupied):
+			for coord: Vector2i in each.holders:
+				_behind[coord] = true
+	if chunk.follow_structures():
+		skyline.moved()
+		if chunk.has_collision():
+			_world.salvage.follow(chunk)
+
+
+## Whether you or one of your camp's devices stands on a structure's ground:
+## where you are read once a frame, and only when a structure asks.
+func _occupied(structure: Structure) -> bool:
+	var frame := Engine.get_process_frames()
+	if frame != _occupants_frame:
+		_occupants_frame = frame
+		_occupants = PackedVector2Array([Vector2(_world.player_world_x(), _world.player_world_z())])
+		for device in _world.devices():
+			_occupants.append(Vector2(_world.world_x(device.global_position.x), _world.world_z(device.global_position.z)))
+	for at in _occupants:
+		if structure.reaches(at.x, at.y, 1.0):
+			return true
+	return false
+
+
+## Loaded ground behind what stands in it is pressed afresh on a worker,
+## from the dunes it kept.
+func _press() -> void:
+	for coord: Vector2i in _behind.keys():
+		if _pressing.size() >= PRESSES or _out_of_time():
+			return
+		if _pressing.has(coord):
+			continue
+		var chunk: TerrainChunk = _chunks.get(coord)
+		if chunk == null or chunk.dunes.is_empty() or _tasks.has(Vector3i(coord.x, coord.y, NEAR_STEP)) \
+				or _tasks.has(Vector3i(coord.x, coord.y, _tuning.mid_step)):
+			_behind.erase(coord)
+			continue
+		_behind.erase(coord)
+		if not chunk.behind(1 if chunk.step == NEAR_STEP else MID_BEHIND):
+			continue
+		var steps := PackedInt32Array()
+		for k in chunk.carved.size():
+			var each := chunk.carved[k]
+			steps.append(each.ground if each.ground >= 0 else chunk.carved_steps[k])
+		_pressing[coord] = WorkerThreadPool.add_task(_press_one.bind(coord, chunk.dunes, chunk.step,
+			chunk.carved.duplicate(), steps, RenderingServer.mesh_create()))
+
+
+func _press_one(coord: Vector2i, dunes: PackedFloat32Array, step: int, carved: Array[Structure],
+		steps: PackedInt32Array, mesh: RID) -> void:
+	var build := ChunkBuild.pressed(dunes, coord, _size, step, _tuning.skirt_depth, _indices[step], carved, steps)
+	ChunkBuild.fill(mesh, build.arrays, _material_rid)
+	build.mesh = mesh
+	_mutex.lock()
+	_pressed[coord] = build
+	_mutex.unlock()
+
+
+func _collect_presses() -> void:
+	for coord: Vector2i in _pressing.keys():
+		if _out_of_time():
+			return
+		if not WorkerThreadPool.is_task_completed(_pressing[coord]):
+			continue
+		WorkerThreadPool.wait_for_task_completion(_pressing[coord])
+		_pressing.erase(coord)
+		_mutex.lock()
+		var build: ChunkBuild = _pressed.get(coord)
+		_pressed.erase(coord)
+		_mutex.unlock()
+		var chunk: TerrainChunk = _chunks.get(coord)
+		if chunk == null or chunk.step != build.step:
+			RenderingServer.free_rid(build.mesh)
+			continue
+		chunk.show_pressed(build)
+		presses += 1
+		# It may have moved on again meanwhile.
+		_behind[coord] = true
+
+
+## Nothing a storm works on is behind or being pressed.
+func is_pressed() -> bool:
+	return _behind.is_empty() and _pressing.is_empty()
 
 
 func _update_far() -> void:

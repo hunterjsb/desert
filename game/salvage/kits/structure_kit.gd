@@ -21,6 +21,9 @@ const HANDS := 1.7
 ## A glint needs this much clear of the sand under it, m: dust lies on what
 ## the sand just let go.
 const GLINT_CLEAR := 0.15
+## A site's loaded ground follows it out of the sand in steps that move no
+## sand more than this, m, so the ground and what stands in it never part.
+const STEP_M := 0.025
 
 
 static var _pieces := {}
@@ -144,6 +147,10 @@ class Piece:
 	var glints: Array[Array] = []
 	## How far its ground reaches from its middle, any way round, m.
 	var reach := 0.0
+	## How finely its ground follows its level: steps from buried to dug out,
+	## each moving no sand more than STEP_M; and its rooms' lowest floor, plan m.
+	var steps := 1
+	var low := 0.0
 
 	var _shown := {}
 	var _shapes: Array[BoxShape3D] = []
@@ -160,6 +167,59 @@ class Piece:
 			far = Vector2(maxf(far.x, maxf(absf(box.position.x), absf(box.end.x))),
 				maxf(far.y, maxf(absf(box.position.z), absf(box.end.z))))
 		reach = far.length() + apron
+		for room in rooms:
+			low = minf(low, room.floor)
+		steps = _steps()
+
+	## Between its states: how far it sinks, how high the sand drifts against
+	## it and how high the sand fills its rooms at a level (Exposure.level).
+	func sink_at(level: float) -> float:
+		return _between(sink, level)
+
+	func drift_at(level: float) -> float:
+		return _between(drift, level)
+
+	func fill_at(level: float) -> float:
+		if level <= 1.0:
+			return lerpf(fill[0], fill[1], level)
+		return lerpf(fill[1], low, level - 1.0)
+
+	static func _between(values: PackedFloat32Array, level: float) -> float:
+		if level <= 1.0:
+			return lerpf(values[0], values[1], level)
+		return lerpf(values[1], values[2], level - 1.0)
+
+	## The step its ground is built at for a level, and the level of a step.
+	func step_of(level: float) -> int:
+		return clampi(roundi(level / Exposure.DUG_OUT * steps), 0, steps)
+
+	func level_of(step: int) -> float:
+		return Exposure.DUG_OUT * step / steps
+
+	## The state whose look and boxes it shows at a level: the least buried
+	## whose sand line lies no lower, so all it leaves out is under the sand.
+	static func shown_state(level: float) -> int:
+		return Exposure.BURIED if level <= 0.0 else (Exposure.PARTLY if level <= 1.0 else Exposure.EXPOSED)
+
+	## Enough steps that between two no sand moves more than STEP_M: the most
+	## its rooms' sand or its drift moves for a level, read across the levels.
+	func _steps() -> int:
+		var heights := [0.0, low]
+		for room in rooms:
+			if room.ramp.x >= 0.0:
+				for k in 5:
+					heights.append(lerpf(room.floor, 0.0, k / 4.0))
+		var most := 0.0
+		var d := 0.05
+		var e := 0.0
+		while e < Exposure.DUG_OUT - 0.001:
+			for h: float in heights:
+				var a := maxf(h, fill_at(e)) - sink_at(e)
+				var b := maxf(h, fill_at(e + d)) - sink_at(e + d)
+				most = maxf(most, absf(b - a) / d)
+			most = maxf(most, absf(drift_at(e + d) - drift_at(e)) / d)
+			e += d
+		return clampi(ceili(Exposure.DUG_OUT * most / STEP_M), 1, 400)
 
 	## How far a plan point is outside its footprint, m: 0 within it.
 	func out_of(p: Vector2) -> float:
@@ -208,6 +268,13 @@ class Piece:
 			if room.holds(p):
 				return maxf(room.sand(p), fill[state]) - SAND_UNDER
 		return sink[state] - SAND_UNDER
+
+	## The same at a level between states.
+	func sand_line_at(p: Vector2, level: float) -> float:
+		for room in rooms:
+			if room.holds(p):
+				return maxf(room.sand(p), fill_at(level)) - SAND_UNDER
+		return sink_at(level) - SAND_UNDER
 
 	func shape(i: int) -> BoxShape3D:
 		if _shapes.is_empty():

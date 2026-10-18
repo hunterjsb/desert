@@ -5,7 +5,9 @@ shader_type spatial;
 // it swells as they line up, twinkles slowly as the angle between them keeps
 // turning, and fades, never strobing; big enough at any distance to catch
 // out of the corner of the eye. None in a storm, at it or on the way to it,
-// and the haze dims it.
+// and the haze dims it; but what a storm has just laid bare glints through
+// its dust from near (dust_reach), in the dust's scattered light, coming and
+// going as the dust thickens and thins.
 render_mode unshaded, blend_add, depth_draw_never, cull_disabled, shadows_disabled, fog_disabled,
 	skip_vertex_transform;
 
@@ -27,6 +29,11 @@ uniform float landmark_fall = 0.3;
 uniform vec2 landmark_near = vec2(380.0, 560.0);
 // The haze's begin and end, m, and the most of the view it hides.
 uniform vec3 haze = vec3(400.0, 9000.0, 0.7);
+// Seen through a storm's dust out to this far, m (0: never), its sweep
+// wider by this in the scattered light, rad; and the world's clock, s.
+uniform float dust_reach = 0.0;
+uniform float widen = 0.0;
+uniform float dust_time = 0.0;
 
 varying float shine;
 varying float turn;
@@ -52,10 +59,16 @@ void vertex() {
 	vec3 n = normalize(INSTANCE_CUSTOM.xyz);
 	// The cosine of how wide its sparkle sweeps.
 	float edge = INSTANCE_CUSTOM.w;
+	if (dust_reach > 0.0) {
+		edge = cos(min(acos(clamp(edge, -1.0, 1.0)) + widen, 1.4));
+	}
 	float a = dot(n, normalize(v + sun_dir));
 	float g = smoothstep(edge, mix(edge, 1.0, 0.75), a) * step(0.0, dot(n, v)) * step(0.0, dot(n, sun_dir));
 	float dust = 0.0;
-	if (storm_map_ready > 0.5) {
+	if (dust_reach > 0.0) {
+		dust = smoothstep(dust_reach * 0.4, dust_reach, d);
+		g *= 0.6 + 0.4 * sin(dust_time * 1.3 + dot(at, vec3(0.37, 0.11, 0.53)) * 3.0);
+	} else if (storm_map_ready > 0.5) {
 		for (int k = 0; k <= 4; k++) {
 			vec3 p = mix(at, CAMERA_POSITION_WORLD, float(k) / 4.0);
 			dust = max(dust, smoothstep(-150.0, 0.0, storm_front(p.xz).x));

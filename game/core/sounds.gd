@@ -66,6 +66,8 @@ const RADIO_TONES := preload("res://assets/audio/radio_tones.ogg")
 # Weather.
 const STORM := preload("res://assets/audio/storm.ogg")
 const WIND := preload("res://assets/audio/wind.ogg")
+# What a storm has just laid bare, banging on the wind.
+const CLANG := preload("res://assets/audio/clang.ogg")
 # Menus: very quiet.
 const MENU_MOVE := preload("res://assets/audio/menu_move.ogg")
 const MENU_CONFIRM := preload("res://assets/audio/menu_confirm.ogg")

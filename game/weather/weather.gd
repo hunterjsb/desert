@@ -64,6 +64,9 @@ var seen_front := -INF
 ## The light on open ground round the camera, 0 to 1 of the sun overhead and
 ## the whole sky's, as the screen lights it: what the suit's headlamp reads.
 var seen_light := 1.0
+## Where the light comes from where your eyes are, engine axes: the sun, or
+## inside a storm the dust glowing overhead.
+var light_dir := Vector3.UP
 ## World time the storm state at the player next flips; INF beyond the horizon.
 var next_change_time := INF
 
@@ -333,6 +336,7 @@ func _show(delta: float) -> void:
 	var sky_left := 1.0 - 0.55 * coverage
 	var overhead := Vector3(sun.x * 0.15, 1.0, sun.z * 0.15).normalized()
 	var light_from := sun.slerp(overhead, seen_shade * up)
+	light_dir = light_from
 	_sun.global_basis = Basis.looking_at(-light_from, Vector3.UP if absf(light_from.y) < 0.9 else Vector3.FORWARD)
 	# The sun's light and the ring's come from about the same place.
 	var direct := risen + ring

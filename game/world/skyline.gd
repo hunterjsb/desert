@@ -4,7 +4,8 @@ extends Node3D
 ## Tall structures stand on the far ring as stand-ins, a few boxes of their
 ## shape in their paint's tone; bare metal, glass and glaze glints when the
 ## sun catches it, near and far; and the saltbush lines on the second age's
-## roads run on across the dunes. All of it is what the sheet laid, or what
+## roads run on across the dunes. Inside a storm, what it has just laid bare
+## near you glints through the dust and clangs on the wind. All of it is what the sheet laid, or what
 ## it would lay from where you are, surveyed as it would be: a stand-in
 ## stands where its structure will, as high as the sand leaves it, so what's
 ## far off is what you find there. A worker makes it each time the sheet
@@ -25,6 +26,16 @@ const UNITS_US := 250
 ## Floats an instance of a box and of a glint takes in its view's buffer.
 const BOX_FLOATS := 20
 const GLINT_FLOATS := 20
+## What stands on loaded ground is drawn again at most this often as a storm
+## moves it, and what a storm has just laid bare looked over this often, s.
+const REDRAW_S := 0.2
+## What a storm has just laid bare clangs on the wind: a chance each this
+## many s of world time, by how far it's laid bare; heard after the sound's
+## trip, at its level from this far, m.
+const CLANG_S := 4.0
+const CLANG_CHANCE := 0.35
+const CLANG_UNIT := 20.0
+const SOUND_SPEED := 343.0
 
 const BOX_SHADER := preload("res://game/world/skyline.gdshader")
 const GLINT_SHADER := preload("res://game/world/glint.gdshader")
@@ -52,6 +63,20 @@ var _glint_look: ShaderMaterial
 var _line_look: ShaderMaterial
 var _box_room := 0
 var _glint_room := 0
+## Glints through a storm's dust, off what it has just laid bare near you:
+## drawn from the chunk you're on.
+var _dust_glints: RID
+var _dust_view: RID
+var _dust_look: ShaderMaterial
+var _dust_room := 0
+var _dust_center := Vector2i.ZERO
+## Each site's last chance to clang, by its tick.
+var _clanged := {}
+## Whether what stands on loaded ground has moved since it was last drawn,
+## and when anything was last drawn or looked over, usec.
+var _moved := false
+var _drawn_at := 0
+var _dust_at := 0
 ## The meshes every stand-in box and glint is drawn from, kept: the views
 ## hold only their RIDs.
 var _cube := BoxMesh.new()
@@ -70,8 +95,8 @@ var _cells := {}
 
 
 ## One thing seen from afar: a structure, laid or sighted, and how it's drawn
-## in each state: its stand-in's boxes and glints, and its own glints for
-## when its chunk draws it. Slices of the views' buffers, from the job's
+## in each state: its stand-in's boxes and glints. Where its chunk draws it,
+## its own glints are read as it stands. Slices of the views' buffers, from the job's
 ## centre.
 class Entry:
 	var site: Structure
@@ -83,7 +108,6 @@ class Entry:
 	## A landmark's boxes over its own built ground, till the real thing takes over.
 	var near_boxes: Array[PackedFloat32Array] = []
 	var far_glints: Array[PackedFloat32Array] = []
-	var near_glints: Array[PackedFloat32Array] = []
 
 
 ## A sighting past the sheet: history's site as the sheet would lay it from
@@ -133,6 +157,12 @@ func setup(world: World) -> void:
 	_quad.size = Vector2.ONE * 2.0
 	RenderingServer.multimesh_set_mesh(_glints, _quad.get_rid())
 	_glint_view = _instance(_glints, _glint_look, scenario)
+	_dust_look = _glint_look.duplicate()
+	_dust_look.set_shader_parameter("dust_reach", _tuning.storm_glint_m)
+	_dust_look.set_shader_parameter("widen", deg_to_rad(_tuning.storm_glint_widen_degrees))
+	_dust_glints = RenderingServer.multimesh_create()
+	RenderingServer.multimesh_set_mesh(_dust_glints, _quad.get_rid())
+	_dust_view = _instance(_dust_glints, _dust_look, scenario)
 	_line_look = ShaderMaterial.new()
 	_line_look.shader = BOX_SHADER
 	_line_look.set_shader_parameter("thinnest_px", _tuning.skyline_thinnest_px)
@@ -160,7 +190,7 @@ func _exit_tree() -> void:
 		_task = -1
 	if _job != null and _job != _shown and _job.lines.is_valid():
 		RenderingServer.free_rid(_job.lines)
-	for rid in [_box_view, _glint_view, _line_view, _boxes, _glints, _line_mesh]:
+	for rid in [_box_view, _glint_view, _line_view, _dust_view, _boxes, _glints, _dust_glints, _line_mesh]:
 		if rid.is_valid():
 			RenderingServer.free_rid(rid)
 
@@ -173,6 +203,9 @@ func _process(_delta: float) -> void:
 	RenderingServer.instance_set_visible(_box_view, shown)
 	RenderingServer.instance_set_visible(_glint_view, shown)
 	RenderingServer.instance_set_visible(_line_view, shown)
+	# Inside a storm, what it has just laid bare: the far ring's hidden then.
+	var in_dust := _tuning.skyline and not _world.terrain.is_far_shown()
+	RenderingServer.instance_set_visible(_dust_view, in_dust)
 	if not _tuning.skyline:
 		return
 	var swapped := false
@@ -184,15 +217,21 @@ func _process(_delta: float) -> void:
 	# The next job begins a frame after a swap: that frame is busy enough.
 	if _task == -1 and not swapped and _sites.follows != _follows and _sites.anchor() != null:
 		_launch()
-	# What the sand leaves of a far site can change at an exposure tick: read
-	# afresh on a worker.
-	var tick := floorf(_world.time / (_tuning.site_exposure_step_minutes * 60.0))
+	# What the sand leaves of a far site changes as storms work on it: read
+	# afresh on a worker each time the storm's work is read.
+	var tick := floorf(_world.time / Exposure.SURGE_STEP_S)
 	if tick != _tick:
 		_tick = tick
 		_follows = -1
-	if _dirty and _shown != null:
+	var now := Time.get_ticks_usec()
+	if _shown != null and (_dirty or (_moved and now - _drawn_at >= REDRAW_S * 1e6)):
 		_dirty = false
+		_moved = false
+		_drawn_at = now
 		_draw()
+	if in_dust and now - _dust_at >= REDRAW_S * 1e6:
+		_dust_at = now
+		_draw_dust()
 	_shade()
 	frame_ms = (Time.get_ticks_usec() - started) / 1000.0
 	slowest_ms = maxf(slowest_ms, frame_ms)
@@ -209,6 +248,12 @@ func is_idle() -> bool:
 func reposition() -> void:
 	if _shown != null:
 		_place()
+	_place_dust()
+
+
+## What stands on loaded ground moved: drawn again soon.
+func moved() -> void:
+	_moved = true
 
 
 ## A structure's stand-in as drawn now, for probes: its frame's origin in
@@ -244,12 +289,31 @@ func glints_of(site: Structure) -> Array[Array]:
 	for entry in _shown.entries:
 		if entry.site != site:
 			continue
-		var s := _state(entry)
-		var rows := entry.near_glints[s] if _world.terrain.is_loaded_at(site.x, site.z) else entry.far_glints[s]
-		for k in range(0, rows.size(), GLINT_FLOATS):
-			out.append([Vector3(rows[k + 3], rows[k + 7], rows[k + 11]) + shift, Vector3(rows[k + 16], rows[k + 17],
-				rows[k + 18]), rows[k + 19]])
+		var rows := entry.far_glints[_state(entry)]
+		if _world.terrain.is_loaded_at(site.x, site.z):
+			rows = PackedFloat32Array()
+			_own_glints(site, rows, _shown.center)
+		_unpack(rows, shift, out)
 	return out
+
+
+## The glints through a storm's dust drawn now: each [world place, the way
+## it faces, the cosine of how wide it sweeps].
+func dust_glints() -> Array[Array]:
+	var out: Array[Array] = []
+	var rows := PackedFloat32Array()
+	rows.resize(_dust_room * GLINT_FLOATS)
+	if _dust_room > 0:
+		rows = RenderingServer.multimesh_get_buffer(_dust_glints)
+	rows.resize(RenderingServer.multimesh_get_visible_instances(_dust_glints) * GLINT_FLOATS)
+	_unpack(rows, Vector3(_dust_center.x * _size, 0.0, _dust_center.y * _size), out)
+	return out
+
+
+static func _unpack(rows: PackedFloat32Array, shift: Vector3, out: Array[Array]) -> void:
+	for k in range(0, rows.size(), GLINT_FLOATS):
+		out.append([Vector3(rows[k + 3], rows[k + 7], rows[k + 11]) + shift, Vector3(rows[k + 16], rows[k + 17],
+			rows[k + 18]), rows[k + 19]])
 
 
 ## Every structure seen from afar now, laid or sighted.
@@ -440,7 +504,6 @@ func _entry(site: Structure, center: Vector2i) -> Entry:
 	entry.state = site.state()
 	entry.ground = FarRing.ground(_world.shape, _tuning, site.x, site.z)
 	var shift := Vector3(center.x * _size, 0.0, center.y * _size)
-	var rng := RandomNumberGenerator.new()
 	var landmark := site.piece.far_landmark
 	for s in 3:
 		var frame := site.frame_on(s, entry.ground).translated(-shift)
@@ -449,22 +512,43 @@ func _entry(site: Structure, center: Vector2i) -> Entry:
 		entry.boxes.append(_boxes_of(site, s, frame, entry.ground, tall if landmark else 0.0, shift))
 		entry.near_boxes.append(_boxes_of(site, s, own, site.pad(), -tall, shift) if landmark else PackedFloat32Array())
 		var far := PackedFloat32Array()
-		var near := PackedFloat32Array()
-		rng.seed = site.loot
-		for each in site.bare_glints(s):
-			# No two sites' plates lie quite the same way.
-			var facing := (Basis(Vector3.UP, rng.randf_range(-0.3, 0.3)) * Basis(Vector3.RIGHT, rng.randf_range(-0.12, 0.12))
-				* (each[1] as Vector3)).normalized()
+		for each in site.bare_glints_at(s):
 			# On a landmark it rides with its stand-in as that's drawn larger.
-			for into: Array in [[far, frame, entry.ground, tall], [near, own, site.pad(), -tall]]:
-				var at: Transform3D = into[1]
-				var spot := at * (each[0] as Vector3)
-				var foot := Vector3(site.x, into[2], site.z) - shift
-				_put_glint(into[0], spot, (at.basis * facing).normalized(), each[2], foot - spot,
-					into[3] if landmark else 0.0)
+			var spot := frame * (each[0] as Vector3)
+			var foot := Vector3(site.x, entry.ground, site.z) - shift
+			_put_glint(far, spot, (frame.basis * _facing(site, each)).normalized(), each[2], foot - spot,
+				tall if landmark else 0.0)
 		entry.far_glints.append(far)
-		entry.near_glints.append(near)
 	return entry
+
+
+## No two sites' plates lie quite the same way: a glint's own turn, the same
+## each time it shows.
+static func _facing(site: Structure, glint: Array) -> Vector3:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = hash([site.loot, glint[3]])
+	return (Basis(Vector3.UP, rng.randf_range(-0.3, 0.3)) * Basis(Vector3.RIGHT, rng.randf_range(-0.12, 0.12))
+		* (glint[1] as Vector3)).normalized()
+
+
+## A loaded structure's own glints where the sand leaves them bare as it
+## stands now, from a chunk's corner; with `newly`, only those the storm
+## working on it has just laid bare.
+func _own_glints(site: Structure, into: PackedFloat32Array, center: Vector2i, newly := false) -> void:
+	var level := site.level()
+	var shift := Vector3(center.x * _size, 0.0, center.y * _size)
+	var frame := site.frame_at(level).translated(-shift)
+	var foot := Vector3(site.x, site.pad(), site.z) - shift
+	var tall := -site.top_in(StructureKit.Piece.shown_state(level)) if site.piece.far_landmark else 0.0
+	var before := {}
+	if newly:
+		for each in site.bare_glints_at(Exposure.level(site.depth, site.settled())):
+			before[each[3]] = true
+	for each in site.bare_glints_at(level):
+		if before.has(each[3]):
+			continue
+		var spot := frame * (each[0] as Vector3)
+		_put_glint(into, spot, (frame.basis * _facing(site, each)).normalized(), each[2], foot - spot, tall)
 
 
 ## A stand-in's boxes in a state on a frame, each with the way to its foot
@@ -568,7 +652,7 @@ func _draw() -> void:
 		var s := _state(entry)
 		if terrain.is_loaded_at(entry.site.x, entry.site.z):
 			boxes.append_array(entry.near_boxes[s])
-			glints.append_array(entry.near_glints[s])
+			_own_glints(entry.site, glints, _shown.center)
 		else:
 			boxes.append_array(entry.boxes[s])
 			glints.append_array(entry.far_glints[s])
@@ -597,6 +681,60 @@ static func _fill(multimesh: RID, buffer: PackedFloat32Array, room: int, stride:
 	return room
 
 
+## Inside a storm: what it has just laid bare near you glints through the
+## dust, and now and then clangs on the wind. Asked of the index by area.
+func _draw_dust() -> void:
+	var x := _world.player_world_x()
+	var z := _world.player_world_z()
+	var center := _world.terrain.chunk_at(x, z)
+	if center != _dust_center:
+		_dust_center = center
+		_place_dust()
+	var rows := PackedFloat32Array()
+	for each in _sites.newly_exposed(x, z, maxf(_tuning.storm_glint_m, _tuning.storm_clang_m)):
+		var site: Structure = each[0]
+		if site.piece.glints.is_empty():
+			continue
+		var by := site.distance_to(x, z)
+		if by <= _tuning.storm_glint_m and _world.terrain.is_loaded_at(site.x, site.z):
+			_own_glints(site, rows, center, true)
+		if by <= _tuning.storm_clang_m:
+			_clang(site, each[1], by)
+	_dust_room = _fill(_dust_glints, rows, _dust_room, GLINT_FLOATS, true)
+
+
+## A chance for what a storm has just laid bare to clang, once each CLANG_S;
+## heard after the sound has come that far, duller the further.
+func _clang(site: Structure, bared: float, by: float) -> void:
+	var tick := floori(_world.time / CLANG_S)
+	if _clanged.get(site, -1) == tick:
+		return
+	if _clanged.size() > 256:
+		_clanged.clear()
+	_clanged[site] = tick
+	var rng := RandomNumberGenerator.new()
+	rng.seed = hash([site.loot, "clang", tick])
+	if rng.randf() >= CLANG_CHANCE * clampf(bared, 0.0, 1.0):
+		return
+	var top := site.frame() * Vector3(0.0, site.top_in(StructureKit.Piece.shown_state(site.level())) * 0.5, 0.0)
+	get_tree().create_timer(by / SOUND_SPEED).timeout.connect(_ring.bind(top))
+
+
+func _ring(at: Vector3) -> void:
+	var voice := Sounds.world_voice(Sounds.CLANG, 0.0, CLANG_UNIT)
+	voice.attenuation_filter_cutoff_hz = 2500.0
+	voice.attenuation_filter_db = -18.0
+	voice.finished.connect(voice.queue_free)
+	add_child(voice)
+	voice.global_position = Vector3(_world.engine_x(at.x), at.y, _world.engine_z(at.z))
+	voice.play()
+
+
+func _place_dust() -> void:
+	RenderingServer.instance_set_transform(_dust_view, Transform3D(Basis.IDENTITY,
+		Vector3((_dust_center.x - _world.origin_chunk.x) * _size, 0.0, (_dust_center.y - _world.origin_chunk.y) * _size)))
+
+
 func _place() -> void:
 	var at := Vector3((_shown.center.x - _world.origin_chunk.x) * _size, 0.0,
 		(_shown.center.y - _world.origin_chunk.y) * _size)
@@ -621,6 +759,10 @@ func _shade() -> void:
 		var uniforms := weather.map.uniforms(t)
 		for key: String in uniforms:
 			_glint_look.set_shader_parameter(key, uniforms[key])
+	# In the dust the light comes from all round overhead, and less of it.
+	_dust_look.set_shader_parameter("sun_dir", weather.light_dir)
+	_dust_look.set_shader_parameter("glare", risen * _tuning.storm_glint_light)
+	_dust_look.set_shader_parameter("dust_time", t)
 
 
 static func _instance(multimesh: RID, look: Material, scenario: RID) -> RID:
