@@ -46,8 +46,9 @@ func _ready() -> void:
 		await _carve(0.34 + 0.33 * depth)
 		var pose := player.ride.board_pose(true)
 		var nose := -pose.basis.z
-		var outward := Vector3(nose.z, 0.0, -nose.x)
-		await shoot(depth, pose.origin - nose * 5.5 + outward * 3.0 + Vector3.UP * 1.6, pose.origin + nose * 1.5 + Vector3.UP * 0.4)
+		# Carving left: from ahead on the inside, the tail streams away behind.
+		var inside := Vector3(nose.z, 0.0, -nose.x)
+		await shoot(depth, pose.origin + nose * 3.0 + inside * 4.5 + Vector3.UP * 1.3, pose.origin - nose * 1.5 + Vector3.UP * 0.4)
 	await _stop()
 	var pose := player.ride.board_pose(true)
 	var way := Vector3(player.velocity.x, 0.0, player.velocity.z).normalized()
@@ -56,6 +57,8 @@ func _ready() -> void:
 	pose = player.ride.board_pose(true)
 	var ahead := -pose.basis.z
 	await shoot(4, pose.origin + ahead * 3.2 + Vector3.UP * 0.35, pose.origin + Vector3.UP * 0.1)
+	# Through your own eyes, looking down at the board.
+	player.camera.rotation.x = -0.9
 	await _stop()
 	player.camera.make_current()
 	await shoot(5, Vector3.INF, Vector3.INF)
@@ -106,9 +109,9 @@ func _carve(depth: float) -> void:
 
 ## From a cruise, move back alone: the board across your way, its edge in.
 func _stop() -> void:
-	await _get_going(2.2)
+	await _get_going(3.0)
 	_hold(["move_back"])
-	await ticks(22)
+	await ticks(30)
 
 
 func _hold(actions: Array) -> void:
@@ -127,9 +130,6 @@ func ticks(n: int) -> void:
 ## Shot `n` of the sheet, from `from` looking at `to`, or through the camera
 ## that's current.
 func shoot(n: int, from: Vector3, to: Vector3) -> void:
-	# The storm pass is drawn about your own eyes; under clear skies it has
-	# nothing to show, and from a chase camera it would black out round you.
-	world.weather.face.visible = from == Vector3.INF
 	if from != Vector3.INF:
 		camera.make_current()
 		camera.global_transform = Transform3D(Basis.looking_at(to - from, Vector3.UP), from)
