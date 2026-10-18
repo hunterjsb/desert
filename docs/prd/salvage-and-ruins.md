@@ -61,8 +61,9 @@ in. See [the lore research](../lore-research.md).
 The deeper the layer, the older the find, and the better its technology:
 
 1. **Surface:** recent traces, and rare hints of holdouts.
-2. **First age to second age:** forged goods and cult works from the ages after the collapse (the
-   first age and the second age, with the scattering between them), which share this layer.
+2. **First Kingdoms to second age:** forged goods and cult works from the ages after the collapse (the
+   First Kingdoms, the Dark Age and the second age), which share this layer. Session 4, part 5 reads
+   the goods as older gear remade in the Dark Age ([below](#the-dark-age-as-a-lineage-rule-agreed-session-4-part-5-not-built)).
 3. **Skimmer era:** skimmer-era salvage, in the middle.
 4. **Colonial:** the original colonists' technology, which session 3 calls corporate tech.
    It's the oldest, the rarest and the best. You'll almost never find it in shallow erosion;
@@ -85,20 +86,22 @@ place of the two feudal eras. It is one layer spanning all three, as the two sha
 Whether the three should stack as three layers instead is open (the lore research, [section
 16](../lore-research.md#16-open-after-session-4-part-2)).
 
-**Renamed a third time (Agreed, session 4, part 4, 2026-10-17).** The layer called First Kingdoms to
-Second Age is now **first age to second age.** The session's eras are "colonial → collapse → skimmer
-era → first age → second age," with no First Kingdoms and no Dark Age, so the layer takes its two
-names and the Dark Age's content is kept as "the scattering" at the head of the second age (a reading;
-[the lore research](../lore-research.md#era-names-again-agreed-session-4-part-4) flags it). It is
-still one layer. The history above is left as the earlier folds wrote it.
+**Renamed a third time (Agreed, session 4, part 4, 2026-10-17), and back (session 4, part 5).** Part 4's
+eras were "colonial → collapse → skimmer era → first age → second age," with no First Kingdoms and no
+Dark Age, so the last fold called the layer **first age to second age** and kept the Dark Age's content as
+"the scattering." Part 5 says part 4 had two errors: the first age is the First Kingdoms and the Dark
+Age is missing. The newest session wins, so the layer is **First Kingdoms to second age** again, one
+layer for three ages, of which the Dark Age has no sites of its own
+([the lore research](../lore-research.md#era-names-again-agreed-session-4-part-4-corrected-in-part-5)).
+The history above is left as the earlier folds wrote it.
 
 **The ash band** is the paroxysm, and a readable depth cue in storm-cut dunes. It no longer
-has to divide the first age to second age layer from the Skimmer era one, and where it sits
+has to divide the First Kingdoms to second age layer from the Skimmer era one, and where it sits
 among the layers is an open item (Agreed, Hunter, 2026-10-16, after session 3), so the full
 version's ash band waits on the answer.
 
 **In the world (Agreed, session 3).** Corporate tech lies deepest and rarest, skimmer-era
-salvage in the middle, and the forged goods of the first age to the second age near the
+salvage in the middle, and the forged goods of the First Kingdoms to the second age near the
 surface. Dry, low-oxygen sand preserves ruins, and migrating dunes and storms expose and rebury
 them, which is why harsher weather uncovers deeper loot. Burial needs little time: dunes and
 eruptions bury ruins within centuries (session 4, part 2). The four layers above are these three
@@ -106,10 +109,10 @@ strata with a surface layer on top. How finds from the three ages differ inside 
 is not said, so this PRD doesn't try.
 
 **Where structures stand (Agreed, session 4, part 4).** The newest session gives each era's structures
-a burial depth of their own: colonial deepest and rarely exposed, first age deep and barely visible,
+a burial depth of their own: colonial deepest and rarely exposed, First Kingdoms deep and barely visible,
 skimmer era shallow and tilted, second age shallowest ([Structures by
 era](#structures-by-era-and-the-loot-model-agreed-session-4-part-4-not-built)). That puts the skimmer
-era above the first age, where the layer list puts it below. This PRD follows the table for
+era above the First Kingdoms, where the layer list puts it below. This PRD follows the table for
 structures and keeps the list as the skeleton's two-layer naming (open questions).
 
 **The weather decides how deep the sand is stripped.** Stronger storms and fiercer
@@ -136,30 +139,30 @@ current ruin is a placeholder, and large structures are out of scope for now.*
 were only shipped in then. So the best loot is **intact, sealed colonial facilities**, with
 space-age power generation and late-game base gear. Most scattered ruins were stripped by the
 societies after the collapse (the notes' wording predates the rename), so they hold **worn,
-reused space-age items with carvings**: the first age's heraldry and guild stamps, the
+reused space-age items with carvings**: the First Kingdoms' heraldry and guild stamps, the
 second age's religious symbols. Some carry useful mods, such as tuning for low-power setups,
-which is the first age's reworked, low-power gear (session 4, part 2: "every repair
+which is the First Kingdoms' reworked, low-power gear (session 4, part 2: "every repair
 cannibalises something else"). They're generally lower tier. The layer list above says "forged
-goods and cult works" for the first age to second age layer; this adds what they stripped
-and reused. Which is commoner is not said.
+goods and cult works" for the First Kingdoms to second age layer; this adds what they stripped
+and reused, and part 5 says the reuse was done in the Dark Age. Which is commoner is not said.
 
-**Era gear has trade-offs, not a ladder.** The notes' example is the crate:
-
-| Era | Crate |
-|---|---|
-| **Colonial** | Best power efficiency per kilogram |
-| **Skimmer era** | Light, cheap and fragile, because Zan wasn't a desert yet and gear wasn't built for storms |
-| **First age** | Practical to drag without a hover tray, still mountable, somewhat worse power efficiency per kilogram |
-
-The notes name this row for the societies after the collapse. Session 4, part 2 ties reworked,
-low-power gear to the first age, so the row is theirs. What a second-age crate is like is not said
-(nor one from the scattering, which the session names no age for). Session 4, part 4 adds the
-makers' side of it ([Devices & mods](devices-and-mods.md#crate-makers-agreed-direction-session-4-part-4-not-built)). [Devices & mods](devices-and-mods.md#frames-by-era) has the frames' side of
-it. The shield's shape is the first to change by era
-([art direction](../art-direction.md#shape-by-era)).
+**Era gear: superseded by session 4, part 5.** The notes said "Era gear has trade-offs, not a ladder,"
+with the colonial crate "best power efficiency per kilogram," the skimmer-era crate "light, cheap and
+fragile, because Zan wasn't a desert yet and gear wasn't built for storms," and the first-age crate
+"practical to drag without a hover tray, still mountable, somewhat worse power efficiency per
+kilogram." Part 5 replaces the table: "All eras interoperate: any crate takes any module, and there
+are no per-era compatibility rules. Eras differ only in stats, along one axis: **efficiency vs
+repairability**" ([Devices & mods](devices-and-mods.md#frames-by-era-agreed-session-4-part-5-not-built)
+has the table; [the lore](../lore-research.md#gear-by-era-and-the-kiln-agreed-session-4-part-5) the
+story). Colonial gear is the most efficient and mended only with finite colonial parts; First Kingdoms
+gear is near-colonial and more durable, mended with metal; second-age gear is crude and lossy, mended
+with what is grown and gathered. The skimmer era is not in part 5's table, and its old row is the only
+word on it (open questions). Session 4, part 4 adds the makers' side
+([Devices & mods](devices-and-mods.md#crate-makers-agreed-direction-session-4-part-4-not-built)), and the
+shield's shape is the first to change by era ([art direction](../art-direction.md#shape-by-era)).
 
 **Ruins by era, kept simple.**
-- **First age to second age:** pillars and wall stubs from an outpost or complex, holding that
+- **First Kingdoms to second age:** pillars and wall stubs from an outpost or complex, holding that
   era's gear. The base case. The notes don't say which age built it, so it spans them. The second age
   adds the crusader bunkers (below). Session 4, part 4 replaces this base case with a kit per era
   ([Structures by era](#structures-by-era-and-the-loot-model-agreed-session-4-part-4-not-built)).
@@ -180,7 +183,7 @@ them).
 *Agreed, session 4, part 2 ([lore session](../lore-session-2026-10-17-part-2.md)); loose, and
 none of it is built.* The second-age empire can't reliably hold Port Morgan, so holding it is a
 Templar-style holy war, kept by a military order with water convoys and fortified outposts dug
-into colonial ruins ([the lore](../lore-research.md#the-scattering-and-the-second-age-agreed-session-4-parts-2-and-4)).
+into colonial ruins ([the lore](../lore-research.md#the-dark-age-and-the-second-age-agreed-session-4-parts-2-and-5)).
 **The gameplay, the session's own: crusader bunkers sit on top of much older sites.**
 
 Readings, not in the session:
@@ -243,7 +246,7 @@ three or four small, cheap pieces an era:
 |---|---|---|
 | Colonial | Pylon stubs, pipeline segments, hab pods, relay masts | Deepest; rarely exposed |
 | Skimmer era | Wreck hulls, fuel bladders, dugouts | Shallow, at an angle; exposed and reburied fast |
-| First age | Pipe-wall huts, cisterns, low stone walls | Deep; barely visible |
+| First Kingdoms (first age) | Pipe-wall huts, cisterns, low stone walls | Deep; barely visible |
 | Second age | Wayshrines, watchtowers, house ruins | Shallowest; most often exposed |
 
 Each piece has **three exposure states: buried, partly exposed, exposed.** Storms shift them. "A
@@ -265,10 +268,18 @@ structures.** Wreck hulls, improvised landing pads with fuel bladders, fortified
 weapons caches, black-site checkpoints and patrol posts around the rift, and squatter habs patched with
 scrap. *Encounter:* half-buried at an angle, and the wind exposes and reburies them fast. Loot it now.
 
-**First age.** Survivors on failing colonial power, then war. Pipe towns built into colonial
-pipelines; generator shrines around the last working generators (possibly the first sacred sites);
-cut-and-cover halls roofed with hull plates; cisterns where colonial water lines ended (before the
-Sisters); low walls and old sandroot field plots; buried war earthworks. *Encounter:* low stone
+**First Kingdoms (the first age).** Part 4 described it as "survivors on failing colonial power, then
+war"; part 5 says that was wrong and "for first-age detail, part 2 is canon." So this is part 2's age:
+three powers at constant war, with feuds inside each, whose kings, guilds and barons are keepers of
+working machines nobody can build any more, and a barony is a well, a turbine, a dig site or a stretch
+of road. Part 4's pieces stand, read as the keepers' and the common folk's: pipe towns built into
+colonial pipelines; generator shrines around the last working generators (possibly the first sacred
+sites, part 2's "neutral holy sites"); cut-and-cover halls roofed with hull plates; cisterns where
+colonial water lines ended (before the Sisters); low walls and old sandroot field plots; buried war
+earthworks. Part 2's pieces are the other half, as readings of its places and not a kit the session
+lists: Halloran's refinery terraces as a citadel with a single crossing for its gate, the lower
+city beneath it, road towns that charge tolls, salvage towns on big ruins, and the great houses'
+holdings in Port Morgan, with heraldry and guild stamps on what they hold. *Encounter:* low stone
 foundations, found by surface signs (saltbush lines, ancient sandroot). Digging reveals a floor plan.
 More likely than second-age sites to hold working colonial tech.
 
@@ -306,8 +317,9 @@ the same ruin, so revisiting pays.
 |---|---|
 | Colonial | Infrastructure: power, crates, big systems |
 | Skimmer era | **Best single-item gear:** military weapons, armour, mods from deserters and the black site |
-| First age | Intact working colonial tech used in new ways |
-| Second age | Worn reused gear; water, seeds and salt |
+| First Kingdoms (first age) | Intact working colonial tech used in new ways |
+| Dark Age | No sites, so no loot of its own: it is the lineage of the second age's gear (below) |
+| Second age | Worn reused gear, remade in the Dark Age; water, seeds and salt |
 
 H-Town at its peak and the black site make **Han** the jackpot for single items: sparse, dangerous,
 rewarding.
@@ -322,7 +334,7 @@ beneath ([Farming](farming.md#propagation-growth-stages-and-wild-habitats-agreed
 - **The strata and the table don't agree about two eras.** Session 3's strata, which "History runs
   backwards in the ground" above rests on, put corporate tech deepest, skimmer-era salvage in the
   middle and the ages after the collapse near the surface. The table puts the skimmer era shallow and
-  the first age deep. They can both hold if the strata are about where loot lay when the sand began
+  the First Kingdoms deep. They can both hold if the strata are about where loot lay when the sand began
   and the table is about how deep a standing structure sits now (a wreck stands up out of the sand,
   a low stone foundation doesn't), but it is a reading, and this PRD follows the table for
   structures (open questions).
@@ -341,6 +353,39 @@ beneath ([Farming](farming.md#propagation-growth-stages-and-wild-habitats-agreed
   wayshrine, a watchtower and a house ruin are three smaller or taller pieces of the same kind, each
   with a loot table, and the step that builds them replaces the notes' base case of "pillars and wall
   stubs."
+
+## The Dark Age as a lineage rule (Agreed, session 4, part 5; not built)
+
+*[Session 4, part 5](../gods-gear-farside-2026-10-17.md), section 3. Loose, and none of it is built.*
+"The Dark Age has no structures of its own. It exists in world gen as a rule on loot: it was the
+workshop era, when survivors broke down colonial and First Kingdoms gear and remade it to last without
+a supply chain." So the Dark Age adds no ruin type, no kit piece and no layer of sites. What it adds is
+where a find came from.
+
+- **A second-age item is a colonial or First Kingdoms item remade in the Dark Age.** "Item data should
+  record lineage: original era plus remake history." The detail is in [Devices &
+  mods](devices-and-mods.md#item-lineage-agreed-session-4-part-5-not-built).
+- **Layered marks,** readable without text: "a colonial maker's stamp, First Kingdoms heraldry scratched
+  over it, Dark Age repair work holding it together. Visual only; no stat effect required." The marks are
+  in [art direction](../art-direction.md#layered-marks-agreed-session-4-part-5-named-not-drawn).
+- **Small world features:** "cairns marking water, caches on migration routes, and the first deliberate
+  saltbush plantings."
+
+Readings, not in the session:
+- **It fits the layer list without a fourth layer.** The layer is "First Kingdoms to second age," and a
+  Dark Age find is a second-age find whose lineage says so. A second-age ruin's loot is worn reused gear
+  ("Loot identity by era" above), and part 5 says the reuse was done in the Dark Age; a First Kingdoms
+  ruin's loot is the earlier gear, kept and mended.
+- **Lineage is data on the part, not a rule per item.** A part already carries its stamps and its layer
+  (the look-at line says which layer a find came from). A lineage is a short list of eras on the same
+  part, so a find can read as three eras at once without a new system, and "typed parts" (rule 6) holds.
+- **The features are placed by a rule along routes, not as a kit.** Cairns by water, caches on the
+  migration routes, early saltbush: small props like the saltbush lines of the feral layer, placed from the
+  seed where the routes run. The session does not say which layer places them.
+- **The workshop era is craft, not manufacture.** Part 2 says the ability to manufacture alloys, chips
+  and catalysts is lost and that knowledge is truly lost in the Dark Age. Remaking is adaptation: a round
+  ceramic cap on a square housing. It does not make new parts, which keeps "never crafted" for the
+  player's side.
 
 ## Landmarks
 
@@ -380,14 +425,18 @@ the session:
   side, the far-side ice and an orbital station. Whether each is a landmark is not said, and the
   station is off the planet grid.
 
-**More fixed places (Agreed, session 4, part 4).** The session's fixed landmarks, "always present,
-because the endings depend on them," are Port Morgan, the Halloran refinery and H-Town (Aitch), the
-black site, Starcom, the observatory, the orbital launch site, Sister and Halfrise, "placed
-procedurally per seed" ([World & terrain](world-and-terrain.md#landmarks)). Three of them hold a
+**More fixed places (Agreed, session 4, part 4; the launch site replaced in part 5).** The session's
+fixed landmarks, "always present, because the endings depend on them," are Port Morgan, the Halloran
+refinery and H-Town (Aitch), the black site, Starcom, the observatory, the orbital launch site, Sister
+and Halfrise, "placed procedurally per seed" ([World & terrain](world-and-terrain.md#landmarks)). Three of them hold a
 find the crops need: the black site's sealed specimen case (a few dormant quietbloom seeds), Sister's
 vault (sealed, intact pure rainseed) and the colonial layer's Frontier Ag seed stores. The sealed
 hangar in Aitch for Up the well is not in the session's list. Hand-built interiors for landmarks
-are deferred: "Deferred: ... landmark interiors, heat shields."
+are deferred: "Deferred: ... landmark interiors, heat shields." **Part 5:** "Part 4's 'orbital launch
+site' landmark is **replaced**" by the Rim depot, a suborbital port near Sister, and the elevator stub,
+which is the observatory on the far-side volcano ([World &
+terrain](world-and-terrain.md#the-rim-depot-the-twin-fires-and-the-elevator-stub-agreed-session-4-part-5-not-built)).
+The Okafor bunker, the Almanac's ag complex and the Stoker's terraces are not on the session's list.
 
 ## People: only hinted
 
@@ -402,7 +451,9 @@ The game never answers the question.
 **An idea from the endings session, not agreed:** the Okafor line, an underground bunker with a
 holdout. Session 4, part 3 says Zan has the last nomad city "and possibly a bunker holdout." A
 holdout would be a person, against the rule above, in a bunker underground, against this PRD's
-"nothing underground." The session says to develop it or drop it.
+"nothing underground." The session says to develop it or drop it. **Developed by session 4, part 5:**
+the Okafor bunker, a sealed First Kingdoms vault under Port Morgan with nobody left in it, where the
+holdout is the player who seals the door ([the lore](../lore-research.md#the-ledger-and-the-okafor-bunker-agreed-session-4-part-5)).
 
 ## What Sand Game taught us
 
@@ -565,7 +616,7 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
 
 ## Full version
 
-- **All four layers,** from recent traces down to colonial: Surface, First age to second age,
+- **All four layers,** from recent traces down to colonial: Surface, First Kingdoms to second age,
   Skimmer era and Colonial, with the ash band's place still open.
 - **Things surfacing during a storm.** Sand pours off something new right beside you.
   It's placed, not dug.
@@ -636,7 +687,9 @@ Session 4's clashes with what's above are quoted and left standing. Nothing here
   better its technology"; the vision: "Everything built after them is cruder"; art direction:
   "this is where 'older is better' reads best"; and the deep shield "is an upgrade." The
   notes: "Era gear has trade-offs, not a ladder." Colonial wins on power efficiency, but the
-  skimmer-era crate is lighter and cheaper and the first-age one drags without a tray. Both
+  skimmer-era crate is lighter and cheaper and the first-age one drags without a tray. *Superseded by
+  part 5: all eras interoperate and differ along efficiency against repairability, which reads closer
+  to a ladder on efficiency with repair as the trade; see "Era gear" above.* Both
   can hold if tier orders how good a find is while a frame's traits trade (the notes call
   the ruins of the ages after the collapse "generally lower tier"). Not said whether that is the
   reading.
@@ -655,10 +708,10 @@ Session 4's clashes with what's above are quoted and left standing. Nothing here
   not dropped"; the vision: "Only what's around the player exists," and stateless. The notes:
   "a net... that catches wind-blown loot. What blows is open." Not said: what blows, where it
   comes from, and whether the net works only while its chunk is loaded.
-- **One layer or three.** The layer list has one for the first age, the scattering and the second
-  age (the First Kingdoms, the Dark Age and the Second Age before session 4, part 4). Session 4, part
+- **One layer or three.** The layer list has one for the First Kingdoms, the Dark Age and the second
+  age (named so before session 4, part 4, and again after part 5). Session 4, part
   2 names three ages and says dunes and eruptions bury ruins within centuries, so the oldest could
-  lie deepest, and part 4's table puts the first age deeper than the second. Not said whether they
+  lie deepest, and part 4's table puts the First Kingdoms deeper than the second age. Not said whether they
   stack.
 - **Crusader bunkers: "dug into" or "on top of."** Here: "Everything is above ground: there's no
   digging and nothing underground." The session: the order holds "fortified outposts dug into
@@ -706,7 +759,7 @@ it as direction and says so on each line. The built skeleton is not changed.
 - **Burial depth against the strata.** Here: "The deeper the layer, the older the find, and the better
   its technology," with the skimmer era in the middle and the first and second ages sharing the layer
   near the surface (session 3's strata). The session: skimmer-era sites sit "shallow, at an angle,"
-  the first age is "deep; barely visible," the second age "shallowest," and "everything [is] buried
+  the First Kingdoms (the session's "first age") are "deep; barely visible," the second age "shallowest," and "everything [is] buried
   at a depth matching its era." *Follows the session for structures.* Not said whether the order of
   finds changes with it, or how it sits with the vision's "history runs backwards in the ground."
 - **Exposure and reburial against "loaded ground never changes."** Here: a find "is part of its chunk
@@ -736,10 +789,10 @@ it as direction and says so on each line. The built skeleton is not changed.
   watchtowers hold "weapons caches," and the black site's mods are the best single items. Not said
   what a weapon is for. A reading: gear in this game is parts (the military shield blocks heat and
   dust together), so weapons and armour would be lore, trade or suit items, never used on anyone.
-- **The first age's "working colonial tech" against "stripped" and "lower tier."** Here: most
+- **The First Kingdoms' "working colonial tech" against "stripped" and "lower tier."** Here: most
   scattered ruins "were stripped" and hold "worn, reused space-age items... generally lower tier."
   The session: first-age sites are "more likely than second-age sites to hold working colonial tech,"
-  and second-age loot is "worn reused gear." Both fit if the first age is the higher of the two lower
+  and second-age loot is "worn reused gear." Both fit if the First Kingdoms are the higher of the two lower
   tiers; the session does not say.
 - **The notes' simple ruins against the session's kit.** Here ("Ruins by era, kept simple"):
   "pillars and wall stubs" as the base case, "wreck props" for the skimmer era, and "buried bunkers"
@@ -753,3 +806,35 @@ it as direction and says so on each line. The built skeleton is not changed.
   chunks, or what happens when its chunk unloads.
 - **Second-age structures: how much makes the first pass.** The session's own open question. Its
   order starts with the wayshrine, the watchtower and the house ruin.
+
+Session 4, part 5 (2026-10-17, [the gods session](../gods-gear-farside-2026-10-17.md)) adds the
+following. Each is quoted old and new. The newest session wins in the living docs, so this PRD follows
+it as direction and says so on each line. The built skeleton is not changed.
+
+- **The Dark Age's lineage against one layer for three ages.** Here: one layer, "First Kingdoms to
+  second age," with the open question whether three ages stack. The session: the Dark Age "has no
+  structures of its own"; it is "a rule on loot." *Follows the session.* The layer holds two ages' sites
+  and a third's lineage, which narrows "one layer or three": the Dark Age cannot be a layer of its own.
+- **Era gear against part 5's table.** Quoted above in "Era gear." *Follows the session.* The skimmer era
+  is not in its table. Not said where skimmer gear sits on efficiency against repairability, or what
+  mends it.
+- **A vault under Port Morgan against "nothing underground."** Here: "Everything is above ground:
+  there's no digging and nothing underground." The session: "A sealed First Kingdoms vault under Port
+  Morgan." *Follows the session as direction.* Not said whether it is a descent or a sealed building the
+  sand has buried to its roof, as with the colonial bunker and the seed vaults above. A game that lets
+  the player seal a door from inside needs a door that closes; "ruins never move" and "never physics
+  objects" (rule 4) mean the seal is a placed state, not a moving door.
+- **The Okafor bunker's seal against stateless chunks.** The bunker "can never be sealed again" once the
+  reliquary is lifted, and the seal-and-stay ending is a player's choice. Both are changes a chunk cannot
+  hold ("Chunks hold no state"), so they live with the landmark's record in the save, as Sister's basin
+  does (Profile & saves). Not said whether the bunker is a landmark.
+- **The Okafor holdout against "no NPCs."** Here: the open "holdout against 'no NPCs'" above. The
+  session: "Nobody is left," and the player seals themselves in. *Follows the session; the clash is
+  gone,* since no person is there to see.
+- **An orbital strike against the ground.** The session: the Quartermaster module's strike "blasts a
+  crater down to a buried ruin and destroys loot near impact." Here: "Loaded ground never changes" (World
+  & terrain rule 2) and no digging. Deferred in the session; a crater would be a placed change, as a dig
+  is read to be above. Not built.
+- **The depot's loot.** The session: the Rim depot "gives the Rim real colonial loot: hoppers, pads, rail
+  yards, terraforming equipment." Here: a hopper is a vehicle and the game has none but the board and
+  the tray. Hoppers are deferred in the session; a wrecked one is a prop until they are built.

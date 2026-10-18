@@ -6,7 +6,9 @@
 placeholder carrots and fungus with a roster of eleven crops in two families, with propagation,
 growth stages, wild habitats and planter sizes as socket kinds ([The plant
 system](#the-plant-system-agreed-session-4-part-4-not-built)). It is direction and none of it is
-built, so the skeleton below and its "as built" notes stand.*
+built, so the skeleton below and its "as built" notes stand. [Session 4, part
+5](../gods-gear-farside-2026-10-17.md) adds the Almanac, the god of growth, and a kiln for processing
+([The Almanac and crossbreeding](#the-almanac-and-crossbreeding-idea-session-4-part-5-not-built)).*
 
 ## Why this system exists
 
@@ -194,8 +196,8 @@ the main remote colonial contractors and made some, not all, of the original cro
   longest-lived on Earth. *Engineering:* a dune anchor with roots tens of metres deep; the visible
   part is a low leathery rosette, so wind and particles slide over, and it stores starch and water
   in a deep swollen root. *Feral drift:* absurdly long-lived, with root networks that spread
-  underground so one plant can cover a dune. The oldest wild specimens were planted in the first
-  age, as the first-age farmers' unkillable crop. *Hooks:* the only crop that survives a storm
+  underground so one plant can cover a dune. The oldest wild specimens were planted in the First
+  Kingdoms (the first age), as the first-age farmers' unkillable crop. *Hooks:* the only crop that survives a storm
   unprotected. Harvest means digging: slow, with a big payload. It keeps growing past mature, so
   patience pays. Ancient sandroot is a landmark, and digging it can expose the ruin its roots bind.
 - **Stormcup.** *Ancestry:* bromeliads crossed with pitcher plants. *Engineering:* it harvests storm
@@ -327,9 +329,14 @@ plan](../skeleton-plan.md#the-newer-proposed-order-session-4-part-4).
 
 ### Processing, and the new equipment
 
-- **Processing is the next session's topic (Open).** Salt, filtering stormcup water, debittering
-  tubers and fern to cord are named and not designed.
-- **New equipment implied:** a burner or generator for coalcane fuel, and a humidifier. Both are
+- **Processing is partly answered (session 4, part 5).** Part 4 named salt, filtering stormcup water,
+  debittering tubers and fern to cord and left them to "next session's topic." Part 5's **kiln** does
+  three: it reduces saltbush bladders to salt, boils tainted stormcup water safe, and roasts the
+  bitterness out of wild tubers, and it also dries and salts food for keeping ([Devices &
+  mods](devices-and-mods.md#the-kiln-agreed-session-4-part-5-not-built)). Fern to cord is not the kiln's,
+  and filtering other than by boiling is not said. Still open.
+- **New equipment implied:** a burner or generator for coalcane fuel, a humidifier and, from part 5, a
+  kiln (above). Both are
   crate parts like the existing devices ([Power](power.md#fuel-crops-and-the-burner-proposed-not-built),
   [Devices & mods](devices-and-mods.md#the-burner-and-the-humidifier-proposed-not-built)). The
   office fern needs a lamp as its light source, through the existing lamp-on-crate snap.
@@ -354,6 +361,40 @@ Readings, not in the session:
 - **"Crate" means the planter.** The session says "many per crate" and "a whole crate" for a deep
   bed, and the snap of a lamp "onto the crate." Here a planter is a frame of its own, not a crate
   with plant slots, so a grow crate reads as a planter variant.
+
+### The Almanac and crossbreeding (Idea, session 4, part 5; not built)
+
+*[Session 4, part 5](../gods-gear-farside-2026-10-17.md), section 10, and its open question "Whether the
+Almanac is how crossbreeding works." The Almanac and what it enforces are **Agreed**; that it is how the
+player crosses strains is an **Idea** ("probably crossbreeding"). Nothing is built.*
+
+The Almanac is the god of growth: Frontier Ag's farm-management mind, in a Rim ag complex, and a
+mountable module ([Devices & mods](devices-and-mods.md#god-modules-as-crate-modules-proposed-session-4-part-5-not-built)).
+It is transactional, its terminal output cheerfully corporate (licensing notices, yield reports,
+upsells), and it "faithfully enforces a contract with a company gone for millennia." What it does to a farm:
+- Demands quarterly yield reports for a dead head office and bills a dead colony account.
+- Won't certify harvests from unapproved planters.
+- Enforces sterile-stock licensing; flags wild or crossbred strains as "unlicensed IP."
+- Takes royalties from every harvest; withholds features until you're "back in compliance."
+- **Gives:** yield boosts, habitat reveals, and probably crossbreeding (Idea).
+
+Readings, not in the session:
+- **It gives the old choice a patron.** Part 4's choice is "a pure, fussy line by cuttings, or a tough
+  feral line." The Almanac favours the licensed, clean, sterile line and flags the rest, so a player who
+  lets crops go to seed or crosses them with wild stock is the one it is cross with.
+- **Drift is not crossbreeding.** Drift is what happens when a plant goes to seed or meets wild stock:
+  hardiness up, yield and purity down. Crossbreeding, if it comes, is the player making a strain on
+  purpose. The session's own open question ("Crossbreeding: can players create new strains?") stays open;
+  the Idea only names who would do it.
+- **"Unlicensed" is data on the crop.** The clean or wild flag proposed for step 4 of the proposed
+  order has a third state, crossbred, and the Almanac reads it. No subsystem; a field.
+- **A royalty is a cut of the harvest,** since nothing is traded here. As the Quartermaster takes a
+  share of the camp's power, the Almanac takes a share of what you pick. The session gives no share.
+- **Habitat reveals pair with the wild habitat table** (above): it would show where a wild crop is
+  found. How it shows is the screen's business ([Devices & mods](devices-and-mods.md#the-terminal-output-system-proposed-session-4-part-5-not-built)).
+- **It may be the squatting oracle.** The oracle runs "on an agriculture company's platform" and
+  broadcasts planting timing and "which feral strains tolerate ash soil"; the Almanac is an agriculture
+  company's farm mind. The session does not say they are one ([the lore](../lore-research.md#the-pantheon-agreed-session-4-part-5)).
 
 ## Feral plants and a crop's history (Agreed, session 4, part 3; not built)
 
@@ -651,9 +692,36 @@ follows the session wherever it can, and says so on each line. The built skeleto
 
 The session's own open questions that belong here, not decided and not to be hard-coded:
 - Plant processing: salt, filtering stormcup water, debittering tubers, fern to cord. "Next session's
-  topic."
-- Crossbreeding: can players create new strains?
+  topic." *Partly answered by part 5: the kiln does salt, boiling stormcup water and debittering
+  tubers.*
+- Crossbreeding: can players create new strains? *Narrowed by part 5: probably through the Almanac
+  (Idea).*
 - Sandroot's original maker (Frontier Ag or Tilg terraforming).
 - Can a player's own sandroot ever reach landmark size, or is that wild-only?
 - Does any water crop beat the condenser in some niche?
 - Quietbloom as an ending modifier: confirm or drop.
+
+Session 4, part 5 (2026-10-17, [the gods session](../gods-gear-farside-2026-10-17.md)) adds the
+following. Each is quoted old and new. The newest session wins in the living docs, so this PRD follows
+it as direction and says so on each line.
+
+- **Processing against "next session's topic." Partly answered.** Here (above, from part 4): "Salt,
+  filtering stormcup water, debittering tubers and fern to cord are named and not designed." The
+  session: the kiln "reduces saltbush bladders to salt," "boils tainted stormcup water safe," and "roasts
+  the bitterness out of wild tubers; dries and salts food for keeping." *Follows the session.* Fern to
+  cord is not the kiln's, and filtering other than by boiling is not said.
+- **A kiln against "found, never crafted."** Here (Devices & mods, Salvage & ruins): parts are found,
+  and crafting is out of scope. The session: processing as a device, with outputs (salt, ceramic, safe
+  water, debittered food). Quoted in full in [Devices & mods](devices-and-mods.md#open-questions).
+- **Drying and salting against food that never spoils.** Here: food is like a ration, sealed and eaten by
+  the suit, and nothing spoils; part 4 already puts "salt that keeps food" against it. The session's
+  kiln "dries and salts food for keeping." Not said whether food spoils at all, which salt, drying and
+  composting all assume.
+- **Licensing against the feral line.** Here (above): the choice of a pure line or a feral one is the
+  player's. The session: the Almanac "flags wild or crossbred strains as 'unlicensed IP'" and "won't
+  certify harvests from unapproved planters." *Follows the session.* Not said what an uncertified harvest
+  loses, which planters are approved, or what withholding "features" means.
+- **A royalty in a game with no trade.** Here: nothing is bought or sold. The session: the Almanac "takes
+  royalties from every harvest." Read as a share of the yield. Not said how much.
+- **Crossbreeding, an Idea.** Here: "Crossbreeding: can players create new strains?" is open (above). The
+  session: the Almanac "gives... probably crossbreeding (Idea)." *Narrowed, not settled.*

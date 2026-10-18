@@ -103,6 +103,30 @@ Readings, not in the session:
   ([Wind & storms](wind-and-storms.md#storm-only-mechanics-back-burner)). The turbine here makes up
   to 200 W in a gale, so a surge would be a term above that.
 
+## The kiln and its fuel (Agreed, session 4, part 5; not built)
+
+*[Session 4, part 5](../gods-gear-farside-2026-10-17.md), section 5; direction only, with no number set.
+[Devices & mods](devices-and-mods.md#the-kiln-agreed-session-4-part-5-not-built) has the kiln itself.*
+"The kiln is a new processing device that burns coalcane," in three era variants: the colonial **electric
+furnace** ("most efficient; runs on power, not coalcane"), the First Kingdoms' **brass-fitted forge**
+(middle efficiency) and the second age's **beehive clay kiln** (lossy). A variant's job is the same, and its
+"efficiency and fuel draw" differ.
+
+Readings, not in the session:
+- **Coalcane has more mouths.** The burner turns it to power, the kiln to heat, and the Stoker eats it
+  ("feeding... calms it"; [the lore](../lore-research.md#the-stoker-and-the-end-of-zan-agreed-session-4-part-5)).
+  Cane is thirsty and rare, and the session sets no figure for a stalk's energy or its water, so whether
+  a farm can feed all three is a number to set (the burner's own loop is unset already).
+- **The kiln's heat is not power.** A stalk burned in the kiln gives ceramic, salt or safe water and no
+  watts; the same stalk in the burner gives watts. They are two devices that want one crop, and the game
+  has no heat model to join them.
+- **The electric furnace is a load, like any device.** It draws from the pool while it works, so rule 1
+  holds with its draw counted. The session gives no draw.
+- **A requisition is a drain.** The Quartermaster module "requisitions a cut of your camp power." Energy
+  taken has to go somewhere (rule 1); the session does not say where, or what share.
+- **"Restored vent taps" read as the colonial vent power stations** along the rift (part 4's generated
+  pieces), which feed the Stoker. Whether a restored tap can also power a camp is not said.
+
 ## What draws power
 
 - **Shields,** by type. A full base shield lasts about 30 minutes in a storm. The main
@@ -348,3 +372,19 @@ session as direction.
 - **What coalcane is worth.** The session says "trades water for power" and gives no figures. Not said
   how much water, light and time a stalk takes, or how much power it gives, so whether burning it pays
   is unset.
+
+Session 4, part 5 (2026-10-17, [the gods session](../gods-gear-farside-2026-10-17.md)) adds the
+following. Each is quoted old and new, and the PRD follows the session as direction.
+
+- **A second burner of coalcane.** Here (Fuel crops and the burner): coalcane "is the only renewable fuel
+  crop," burned in "a new burner device." The session: the kiln "burns coalcane" too, and a fed Stoker
+  eats it. *Follows the session.* Not said how many stalks each takes, or which a farm should feed first.
+- **The electric furnace against "no real electrical simulation."** Here (out of scope): "Real electrical
+  simulation, like voltage or wire resistance." The session: a furnace "runs on power." Read as a load
+  with a draw, which needs no simulation. Not said what it draws.
+- **A requisition against "energy is conserved."** Here: "Every battery has a charge, every device a
+  draw... The numbers always add up." The session: the Quartermaster "requisitions a cut of your camp
+  power." Not said where the cut goes, or whether the module is a load that gives nothing back, as
+  quietbloom is above.
+- **A god module's draw.** The session gives none for the Walker, the Quartermaster, Mother Cistern or
+  the Almanac. Not said whether a module runs on the deck's pool, its own battery, or nothing.

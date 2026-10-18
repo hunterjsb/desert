@@ -347,7 +347,8 @@ include them, so they are not in this order.
 steps, "roughly in the order things can land. Follow existing conventions; no one-off exceptions in
 core systems." It is a proposed order, not a schedule: none has a stage or a date, none is built, and
 each waits for the skeleton's gate as the full version does. It is the newer, so it supersedes part
-3's list above where they overlap. The session's scope warning stands: "the game has no structures and
+3's list above where they overlap. [Part 5's list](#the-newest-proposed-order-session-4-part-5), below,
+is newer still. The session's scope warning stands: "the game has no structures and
 no terrain generation yet. Lore here is deliberately deeper than what should be built now."*
 1. **The crop data model.** Replace carrot and fungus with a data-driven crop definition: family,
    water need, light source, growth speed, yield, output type, per-axis tolerances, planter socket
@@ -394,3 +395,53 @@ landmark interiors and heat shields.
 Neither list holds the Console, sleep, the seed vaults, the second-age broadcasts or the endings.
 Part 3's list also says no Varran, Daventry or war content goes into normal play beyond radio noise,
 and part 4 adds none.
+
+### The newest proposed order: session 4, part 5
+
+*Session 4, part 5 (2026-10-17, [the gods session](gods-gear-farside-2026-10-17.md)) lists ten steps. They
+"follow part 4's ten items. Gear and world work comes first; the gods build on top." This is a proposed
+order, not a schedule: none has a stage or a date, none is built, and each waits for the skeleton's gate
+as the full version does. It is the newest, so it supersedes the earlier lists where they overlap.*
+1. **Timeline fix.** Add the Dark Age to world generation's history pass: lineage only, no sites.
+2. **Item lineage data.** Original era plus remake history on every item. It drives the layered marks
+   ([Devices & mods](prd/devices-and-mods.md#item-lineage-agreed-session-4-part-5-not-built), [art
+   direction](art-direction.md#layered-marks-agreed-session-4-part-5-named-not-drawn)).
+3. **Era stats.** Efficiency against repairability for each era, and the repair materials: colonial
+   parts, metal, and cord, ceramic and saltbush wood ([Devices &
+   mods](prd/devices-and-mods.md#frames-by-era-agreed-session-4-part-5-not-built)).
+4. **Kiln.** The device, its four chains and its three era variants ([Devices &
+   mods](prd/devices-and-mods.md#the-kiln-agreed-session-4-part-5-not-built), [Power](prd/power.md#the-kiln-and-its-fuel-agreed-session-4-part-5-not-built)).
+5. **Landmark swap.** Remove the orbital launch site. Add the Rim depot near Sister, and the far-side
+   volcano with the elevator-stub observatory at the anti-Tu point ([World &
+   terrain](prd/world-and-terrain.md#the-rim-depot-the-twin-fires-and-the-elevator-stub-agreed-session-4-part-5-not-built)).
+6. **Terminal output system.** Short god logs, forms and dispatches shown on consoles. One system serves
+   every god ([Devices & mods](prd/devices-and-mods.md#the-terminal-output-system-proposed-session-4-part-5-not-built)).
+7. **God module framework.** Mountable gods as crate modules with innate powers; stationary gods as
+   consoles; per-god state (willing, captive, fed, corrupted) ([Devices &
+   mods](prd/devices-and-mods.md#god-modules-as-crate-modules-proposed-session-4-part-5-not-built)).
+8. **Dispatch items.** Sealed packets with a sender, a recipient and opened and forged flags.
+9. **The gods, in order:** the Quartermaster, Mother Cistern, the Almanac, the Stoker, the Eye. The
+   Walker and the Ledger "already exist in part 2 canon."
+10. **Endings.** The Okafor bunker, the captive-launch rule, blow up the moon ([the
+    vision](vision.md#the-okafor-bunker-agreed-session-4-part-5)).
+
+*Deferred, in the session's own words:* hoppers, orbital strike, storm radio windows, hive mind forgery,
+and the Eye's growth beyond corruption.
+
+**Where it overlaps the earlier lists.**
+
+| Part 5 | Earlier | How they meet |
+|---|---|---|
+| 1. Timeline fix | Part 4, step 6, the history phase | The pass keeps part 4's layers and adds no layer: the Dark Age has no sites. Its order is colonial, collapse, skimmer era, First Kingdoms, Dark Age, second age, feral. Part 4 starts that phase with the colonial skeleton and the second-age roads only, so the Dark Age has nothing to write until loot tables exist (steps 2 and 8). |
+| 2. Item lineage | Part 4, step 8, loot relocation | Lineage is drawn with a find, so it comes with the loot tables. |
+| 3. Era stats | Part 4, step 5, new devices, and the crate makers | Era is a field on a frame, as the maker is: both are catalog data, and new sockets are appended and never inserted. |
+| 4. Kiln | Part 4, step 5, the burner and humidifier | The same family of devices, burning the same coalcane. The kiln is the first device that processes. |
+| 5. Landmark swap | Part 4, step 6, fixed landmarks per seed | One of the eight landmarks is swapped. How they are placed does not change. |
+| 6. Terminal output | The Console, in neither earlier list | The output system and the Console's screen are one thing. |
+| 7. God module framework | The Console's computer-mod port; part 3, step 3, the superchassis | A module is a typed part, and its sockets are appended. |
+| 9. The gods | Part 3, step 6, Sister and Mother Cistern | Sister is the landmark of part 3's step 6 and part 4's step 6. Mother Cistern's terminal and module are part 5's. |
+| 10. Endings | Part 3, step 7, ending flags | The new endings and the gods' states are more flags ([Profile & saves](prd/profile-and-saves.md#ending-flags-proposed)). |
+| 8. Dispatch items | none | No counterpart in the earlier lists. |
+
+Part 4's steps 1 to 4, 7, 9 and 10 and part 3's steps 1 to 5 have no counterpart in part 5 and stand as
+they are. Neither list holds sleep, the seed vaults or the second-age broadcasts.

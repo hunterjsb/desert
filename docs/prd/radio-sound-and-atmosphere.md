@@ -307,7 +307,12 @@ left standing.
   terminals" and "have no link to each other any more," and part 2's Launch ending needed
   "bridging Mon and Han across open desert." The endings session: "Radio priest is a role inside each god's
   cult," and "The Ledger has the strongest signal." Not said why a god heard across the desert
-  can't reach the others, or what the bridge adds if it is already on the air.
+  can't reach the others, or what the bridge adds if it is already on the air. *Narrowed by session 4,
+  part 5: gods "rarely reach each other," and the channels left are a repaired Starcom, the Walker's
+  route, rare storm radio windows that catch "fragments of gods arguing" (back burner), and the player
+  carrying a dispatch. Part 5 also amends "speak only through terminals": machines may talk through
+  terminals, and whether a god is ever heard as a voice is still this PRD's open question
+  ([the lore](../lore-research.md#dispatches-how-gods-talk-agreed-session-4-part-5)).*
 - **Ritual text against rule 1.** Here: "Broadcasts read the real systems" and "never makes things
   up." The session's proposed voices include Mother Cistern's calls "tied to rations and rain"
   when it has never rained, the Quartermaster's "authentication challenge nobody can answer," and
