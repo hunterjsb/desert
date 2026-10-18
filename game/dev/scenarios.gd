@@ -66,6 +66,10 @@ const LIST: Array[Dictionary] = [
 		"kind": "lee", "day": [0.35, 0.55], "due": [120.0, 360.0]},
 	{"key": "chassis", "label": "chassis: pieces, their trays, a crate and a condenser to build a deck from, clear and calm",
 		"kind": "clear", "day": [0.35, 0.5], "calm": 6.0, "chassis": true},
+	# A steady breeze across open sand: the wind on your left, the camp
+	# facing across it ahead of you, ready to raise its sail and go.
+	{"key": "sail", "label": "sail: a 2x2 deck on skates with a mast and sail, a crate, a shield (off), the sheet at your waist, the board at your feet, a steady breeze on open sand",
+		"kind": "sail", "day": [0.35, 0.5], "breeze": [8.5, 11.5], "sail": true},
 ]
 
 ## The test kit, as [catalog id, metres to your right, metres ahead]: empty
@@ -158,6 +162,35 @@ const CHASSIS_TRAYS := [[-1.8, 2.2], [-0.6, 2.2], [0.6, 2.2], [1.8, 2.2]]
 const CHASSIS_CRATE := [3.4, 2.4]
 const CHASSIS_CONDENSER := [-3.4, 2.4]
 
+## The sailing camp on a deck two by two, right and ahead, facing across the
+## wind ahead of you: its first piece at the front on the windward side, the
+## mast on it and the crate behind it, ballast to windward, the shield (off)
+## behind on the leeward side. The board lies at your feet, and the sheet's
+## laid this much longer than the way from the boom's end to your waist, m.
+const SAIL_DECK := [-0.5, 7.0]
+const SAIL_MAST_ON := Vector2i(0, 0)
+const SAIL_CRATE_ON := Vector2i(0, 1)
+const SAIL_SHIELD_ON := Vector2i(1, 1)
+const SAIL_BOARD := [0.6, 1.0]
+const SAIL_SHEET_SLACK := 1.5
+## The sheet starts eased to let the boom swing this far out, degrees.
+const SAIL_EASED := 75.0
+## Open sand to sail on: level within this much, m, for this far either way
+## across the run's long-term wind, m, read every so far along it, m, and
+## sought this far up and down the wind from where the run began, m, in
+## steps this long, along lines this far apart across it, m.
+const OPEN_RISE := 0.6
+const OPEN_ACROSS := 120.0
+const OPEN_EVERY := 15.0
+const OPEN_SEARCH := 3000.0
+const OPEN_STEP := 20.0
+const OPEN_LINES := [0.0, 300.0, -300.0, 600.0, -600.0, 900.0, -900.0, 1200.0, -1200.0]
+## The level runs this far up and down the wind of its line too, m: room to
+## slip sideways and come back.
+const OPEN_WIDE := [0.0, 40.0, -40.0]
+## At most this share of a full lee there.
+const OPEN_LEE := 0.05
+
 ## Your own frame, to fit what you find to: right and ahead.
 const YOURS := [1.5, 2.5]
 ## How far from where the run began to look for a ruin, m.
@@ -205,7 +238,7 @@ static func apply(world: World, scenario: Dictionary) -> void:
 	world.remove_meta(&"scenario_kit")
 	if not (scenario.kind in ["kit", "ruin"] or scenario.get("camp", false) or scenario.get("survive", false)
 			or scenario.get("farm", false) or scenario.get("board", false) or scenario.get("radio", false)
-			or scenario.get("afk", false) or scenario.get("chassis", false)):
+			or scenario.get("afk", false) or scenario.get("chassis", false) or scenario.get("sail", false)):
 		return
 	# Bodies dropped before the sand under them has collision would be frozen or forgotten.
 	while is_instance_valid(world) and not world.terrain.is_settled_around(place.x, place.z):
@@ -232,6 +265,8 @@ static func apply(world: World, scenario: Dictionary) -> void:
 		dropped = afk(world)
 	elif scenario.get("chassis", false):
 		dropped = chassis(world)
+	elif scenario.get("sail", false):
+		dropped = sail(world)
 	else:
 		dropped = camp(world) if scenario.get("camp", false) else survive(world)
 	world.set_meta(&"scenario_kit", dropped)
@@ -270,6 +305,8 @@ static func find(world: World, scenario: Dictionary) -> Dictionary:
 		return _at_ruin(world, scenario)
 	if scenario.kind == "lee":
 		return _in_lee(world, scenario)
+	if scenario.kind == "sail":
+		return _open_breeze(world, scenario)
 	var field := world.weather.field
 	var day := world.weather.day
 	var moon := moon_at(world, scenario)
@@ -292,11 +329,13 @@ static func find(world: World, scenario: Dictionary) -> Dictionary:
 static func _place(field: WeatherField, scenario: Dictionary, from: Vector2, upwind: Vector2,
 		t: float) -> Dictionary:
 	match scenario.kind:
-		"clear", "sky", "kit", "ruin", "lee":
+		"clear", "sky", "kit", "ruin", "lee", "sail":
 			# No storm for ten minutes, or one due within the window asked.
 			var due: Array = scenario.get("due", [INF, INF])
+			var breeze: Array = scenario.get("breeze", [0.0, INF])
+			var blowing := field.wind_at(from.x, from.y, t).length()
 			if field.raw_storm_at(from.x, from.y, t) <= 0.0 \
-					and field.wind_at(from.x, from.y, t).length() < scenario.get("calm", INF) \
+					and blowing < scenario.get("calm", INF) and _within(blowing, breeze) \
 					and (scenario.kind == "sky" or _within(field.next_change(from.x, from.y, t, minf(due[1], 600.0), 10.0), due)):
 				return {"x": from.x, "z": from.y}
 		"front", "back":
@@ -370,6 +409,62 @@ static func _in_lee(world: World, scenario: Dictionary) -> Dictionary:
 				return {"x": foot.x, "z": foot.y, "yaw": atan2(-upwind.x, -upwind.y), "time": t}
 			t += TIME_STEP
 	return {}
+
+
+## Level sand across the run's long-term wind, nearest where the run began
+## down it, at a moment in the day's window that's clear for ten minutes with
+## a breeze in the range asked, the breeze on your left and you facing across it.
+static func _open_breeze(world: World, scenario: Dictionary) -> Dictionary:
+	var field := world.weather.field
+	var day := world.weather.day
+	var at := open_sand(world)
+	if is_nan(at.x):
+		return {}
+	var longitude := moon_at(world, scenario).y
+	var t := 0.0
+	while t < HORIZON:
+		var hour := day.time_of_day(t, longitude)
+		var blowing := field.wind_at(at.x, at.y, t)
+		# Out in the open wind, no dune's lee taking it.
+		if hour >= scenario.day[0] and hour <= scenario.day[1] and not _place(field, scenario, at, Vector2.ZERO, t).is_empty() \
+				and world.weather.lee.share(at.x, at.y, blowing.angle()) < OPEN_LEE:
+			var upwind := -blowing.normalized()
+			var ahead := Vector2(-upwind.y, upwind.x)
+			return {"x": at.x, "z": at.y, "yaw": atan2(-ahead.x, -ahead.y), "time": t}
+		t += TIME_STEP
+	return {}
+
+
+## The nearest place to where the run began whose sand runs level across
+## the run's long-term wind both ways, so a camp sails across it on the flat:
+## between the dunes, which lie across that wind. NAN if none.
+static func open_sand(world: World) -> Vector2:
+	var down := Vector2.from_angle(WeatherField.mean_heading(world.run_seed))
+	var across := down.orthogonal()
+	var found := Vector2(NAN, NAN)
+	var nearest := INF
+	for side: float in OPEN_LINES:
+		var d := -OPEN_SEARCH
+		while d < OPEN_SEARCH:
+			var at := world.spawn + down * d + across * side
+			if at.distance_to(world.spawn) < nearest and _level_across(world, at, across):
+				nearest = at.distance_to(world.spawn)
+				found = at
+			d += OPEN_STEP
+	return found
+
+
+static func _level_across(world: World, at: Vector2, across: Vector2) -> bool:
+	var h := world.shape.height_at(at.x, at.y)
+	var down := -across.orthogonal()
+	for wide: float in OPEN_WIDE:
+		var off := -OPEN_ACROSS
+		while off <= OPEN_ACROSS:
+			var p := at + across * off + down * wide
+			if absf(world.shape.height_at(p.x, p.y) - h) > OPEN_RISE:
+				return false
+			off += OPEN_EVERY
+	return true
 
 
 ## Feet of tall slip faces round where the run began, facing a wind blowing
@@ -749,6 +844,47 @@ static func _free(device: Device, kind: StringName) -> Socket:
 		if socket.kind == kind and socket.is_open():
 			return socket
 	return null
+
+
+## The sailing camp: a deck two pieces by two on skates under every piece,
+## facing across the wind ahead of you, a mast with its sail furled on the
+## front piece to windward, a crate with two batteries behind it and a
+## charged shield, switched off, behind to leeward. The sheet runs from the
+## boom's end to your waist, and a charged board lies at your feet. Use the
+## mast to raise the sail, and ride.
+static func sail(world: World) -> Array[Node3D]:
+	var deck := standing(world, &"chassis", [], SAIL_DECK) as Chassis
+	for at: Array in [[Vector2i.ZERO, Vector2i(1, 0)], [Vector2i.ZERO, Vector2i(0, 1)], [Vector2i(1, 0), Vector2i(0, 1)]]:
+		deck.join(Catalog.device(&"chassis") as Chassis, _on_piece(deck, at[0], &"ring", at[1]), 0)
+	for i in deck.pieces().size():
+		fill(world, deck, [&"skates"])
+	var mast := _stand_on(world, deck, &"mast", [&"sail"], SAIL_MAST_ON) as Mast
+	var crate := _stand_on(world, deck, &"crate_frame", [&"battery", &"battery"], SAIL_CRATE_ON)
+	var shield := _stand_on(world, deck, &"shield", [&"battery"], SAIL_SHIELD_ON)
+	_afloat(world, deck)
+	var board := standing(world, &"board", [&"battery"], SAIL_BOARD)
+	var sheet := sheet_to_waist(world, mast)
+	# Eased for a start across the wind: reel in as it picks up speed.
+	mast.trim = 2.0 * Mast.BOOM * sin(deg_to_rad(SAIL_EASED) * 0.5)
+	return [deck, mast, crate, shield, board, sheet]
+
+
+## A line from a mast's boom's end to your waist, a little slack.
+static func sheet_to_waist(world: World, mast: Mast) -> Line:
+	var line := Line.new()
+	line._world = world
+	world.content.add_child(line)
+	var tie := mast._tie()
+	var at := mast.global_transform * tie.transform
+	var ends: Array[Part] = [line._end(at), line._end(world.player.global_transform)]
+	mast.fit(ends[0], tie)
+	world.player.waist.tie(ends[1])
+	line.ends = ends
+	var span := Line._tip(ends[0]).global_position.distance_to(Line._tip(ends[1]).global_position)
+	line.full = maxf(span + SAIL_SHEET_SLACK, Line.SHORTEST)
+	line._tie(line.full)
+	line.state = Line.State.LAID
+	return line
 
 
 ## Your own bare crate frame on the sand beside you, to fit what you find to.
