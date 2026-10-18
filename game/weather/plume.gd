@@ -51,16 +51,20 @@ const THINS := 0.7
 ## to the second in the cold, s, and shows below the first air temperature,
 ## fully below the second, °C. How thick each looks for what it is: ash or
 ## dust, steam, haze.
-const ASH_FALLS := Vector2(90.0, 50.0)
+const ASH_FALLS := Vector2(90.0, 35.0)
 const HAZE_FORMS := 120.0
 const STEAM_LASTS := Vector2(15.0, 240.0)
 const STEAM_AIR := Vector2(30.0, -5.0)
 const SHOWS := Vector3(1.0, 1.5, 0.6)
-## A pocket's dust is this many times as thick as a seep's ash for its lift.
+## A pocket's dust is this many times as thick as a seep's ash for its lift,
+## and its gas, no volcano's, makes this share of a seep's haze.
 const DUSTY := 4.0
-## What a vent's ash looks like, and a pocket's dust, linear.
-const ASH_TONE := Vector3(0.075, 0.068, 0.062)
-const DUST_TONE := Vector3(0.36, 0.25, 0.15)
+const POCKET_HAZE := 0.05
+## What a vent's ash looks like, and a pocket's dust, linear; and how much
+## light its shaded side keeps, thick: sand scatters on most of what reaches
+## it, so light works through a dust cloud as it can't through basalt ash.
+const ASH_TONE := Vector4(0.075, 0.068, 0.062, 0.0)
+const DUST_TONE := Vector4(0.36, 0.25, 0.15, 0.45)
 ## The line changes slowly, its young end fastest in a burst: of its first
 ## this many points one is worked out again every other frame, and of the rest
 ## one every this many frames, a quarter as often once you're this far off, m;
@@ -312,10 +316,10 @@ func _streak(t: float, which := PackedInt32Array()) -> void:
 		var deep := parcel[1].x
 		# Thinner as it deepens and the wind draws it out; less than mass alone
 		# says, since what's left is the finest and shows the most.
-		var thick := THICK.z * v.x * pow(THICK.x * THICK.y / (deep * parcel[1].y), THINS) * (DUSTY if dusty else 1.0)
-		var ash := v.y * exp(-age / falls) * SHOWS.x
+		var thick := THICK.z * v.x * pow(THICK.x * THICK.y / (deep * parcel[1].y), THINS)
+		var ash := v.y * exp(-age / falls) * SHOWS.x * (DUSTY if dusty else 1.0)
 		var steam := _cold * exp(-age / lasts) * SHOWS.y
-		var haze := (1.0 - exp(-age / HAZE_FORMS)) * (1.0 - 0.5 * v.y) * SHOWS.z * (0.2 if dusty else 1.0)
+		var haze := (1.0 - exp(-age / HAZE_FORMS)) * (1.0 - 0.5 * v.y) * SHOWS.z * (POCKET_HAZE if dusty else 1.0)
 		line[k] = parcel[0]
 		matter[k] = Vector4(thick * ash, thick * steam, thick * haze, deep)
 	_changed = true

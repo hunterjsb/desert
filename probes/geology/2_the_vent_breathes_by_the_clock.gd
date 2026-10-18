@@ -5,7 +5,7 @@ extends Probe
 ## burst dying away; a gas pocket blows out once and is spent; the tapped
 ## vents and the capped summit are quiet.
 
-## Thirty days: a burst's slot is a day and a half.
+## Thirty days: a burst's slot is a day.
 const DAYS := 30.0
 
 

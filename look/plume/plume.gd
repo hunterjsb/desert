@@ -22,8 +22,11 @@ const SHOTS := [
 ## Frames timed in each turn with the plumes drawn, and without, and the turns.
 const TIMED := 12
 const TURNS := 6
-## How far moments are looked for, game days.
+## How far moments are looked for, game days; how many a far shot tries
+## before it keeps one its source is hidden in, as the ground's laying far off
+## puts it a little aside from where it was looked for.
 const DAYS := 200
+const TRIES := 8
 
 @onready var world: World = $World
 
@@ -72,8 +75,17 @@ func _ready() -> void:
 		if found.is_empty():
 			print("plume: no %s moment found" % name)
 			continue
-		print("plume: %s at t=%.0f (local %.3f) %s" % [name, found.t, _local(found.t, found.source), found.says])
-		await _shoot(name, found, shot, out)
+		for i in TRIES:
+			print("plume: %s at t=%.0f (local %.3f) %s" % [name, found.t, _local(found.t, found.source), found.says])
+			var last: bool = i == TRIES - 1 or shot[2] < 10000.0
+			var showed: bool = await _shoot(name, found, shot, out, last)
+			if showed or last:
+				break
+			var next := _moment(shot, found.t)
+			if next.is_empty():
+				await _shoot(name, found, shot, out, true)
+				break
+			found = next
 	if only.is_empty() or only.has("mouth_close"):
 		await _mouth(out)
 	for line in _costs:
@@ -83,7 +95,7 @@ func _ready() -> void:
 
 ## A moment for a shot, the run's own: {t, source, root (world), says}; {} if
 ## none within DAYS.
-func _moment(shot: Array) -> Dictionary:
+func _moment(shot: Array, after := 600.0) -> Dictionary:
 	var geology := world.shape.history.geology
 	var field := world.weather.field
 	var moment: String = shot[0]
@@ -96,7 +108,7 @@ func _moment(shot: Array) -> Dictionary:
 	var daylight := func(t: float) -> bool: return _local(t, source) > 0.33 and _local(t, source) < 0.62 \
 		and world.weather.day.sun_shown(t) >= 1.0
 	if moment == "pocket":
-		for each in geology.pockets(600.0, span):
+		for each in geology.pockets(after, span):
 			var at := _root_of(each)
 			var t: float = each.start + 90.0
 			var eye := _eye(at, t, shot)
@@ -104,20 +116,25 @@ func _moment(shot: Array) -> Dictionary:
 				return {"t": t, "source": each, "root": at, "says": "a pocket blowing, x%.1f" % geology.venting(each, t).x}
 		return {}
 	if moment in ["burst", "over"]:
-		var b := geology.next_burst(source, 600.0)
+		var far: bool = shot[2] > 10000.0
+		# Far off, from any side, and later in its climb, when it stands tallest.
+		var turns := range(8) if far and moment == "burst" else [0]
+		var b := geology.next_burst(source, after)
 		while b < span:
-			var t := b + (240.0 if moment == "over" else 180.0)
-			var eye := _eye(root, t, shot)
-			var top := _top(source, root, t)
-			var foot := Plume.seen_through(field, world.tuning, eye, root + Vector3.UP * 50.0, t)
-			var tower := Plume.seen_through(field, world.tuning, eye, top, t)
-			var wanted := foot < 0.1 and tower > 0.8 if moment == "over" \
-				else tower > 0.8 and (foot > 0.9 or shot[2] > 10000.0)
-			var far: bool = shot[2] > 10000.0
+			var t := b + (240.0 if moment == "over" else (360.0 if far else 180.0))
 			var lit: bool = daylight.call(t) or far and _local(t, source) > 0.28 and _local(t, source) < 0.7
-			if lit and (_clear_eye(eye, t) or far and world.weather.field.raw_storm_at(eye.x, eye.z, t) < -0.05) and wanted:
-				return {"t": t, "source": source, "root": root, "says": "venting x%.0f, its top %.1f km up" % [
-					geology.venting(source, t).x, top.y / 1000.0]}
+			var top := _top(source, root, t) if lit else root
+			for turn: int in turns:
+				if not lit:
+					break
+				var eye := _eye(root, t, shot, turn * PI / 4.0, false)
+				var foot := Plume.seen_through(field, world.tuning, eye, root + Vector3.UP * 50.0, t)
+				var tower := Plume.seen_through(field, world.tuning, eye, top, t)
+				var wanted: bool = foot < 0.1 and tower > 0.8 if moment == "over" \
+					else tower > 0.8 and (foot > 0.9 or far)
+				if (_clear_eye(eye, t) or far and world.weather.field.raw_storm_at(eye.x, eye.z, t) < -0.05) and wanted:
+					return {"t": t, "source": source, "root": root, "turn": turn * PI / 4.0,
+						"says": "venting x%.0f, its top %.1f km up" % [geology.venting(source, t).x, top.y / 1000.0]}
 			b = geology.next_burst(source, b + 1.0)
 		return {}
 	var best := {}
@@ -163,11 +180,11 @@ func _clear_eye(eye: Vector3, t: float) -> bool:
 ## Where a shot's eye stands for a source rising at `root`: off to the side
 ## across the wind, a little downwind; far off, on the highest sand near, as
 ## you'd climb a crest to look.
-func _eye(root: Vector3, t: float, shot: Array) -> Vector3:
+func _eye(root: Vector3, t: float, shot: Array, turn := 0.0, crest := true) -> Vector3:
 	var away: float = shot[2]
 	var wind := world.weather.field.steady_wind_at(root.x, root.z, t).normalized()
-	var at := Vector2(root.x, root.z) + Vector2(-wind.y, wind.x) * away + wind * away * 0.25
-	if away >= 6000.0:
+	var at := Vector2(root.x, root.z) + (Vector2(-wind.y, wind.x) * away + wind * away * 0.25).rotated(turn)
+	if away >= 6000.0 and crest:
 		var best := at
 		for j in range(-8, 9):
 			for i in range(-8, 9):
@@ -207,31 +224,45 @@ func _top(source: Dictionary, root: Vector3, t: float) -> Vector3:
 	return top
 
 
-func _shoot(name: String, found: Dictionary, shot: Array, out: String) -> void:
+## Whether its source showed; unless `keep`, a shot it didn't is dropped.
+func _shoot(name: String, found: Dictionary, shot: Array, out: String, keep := true) -> bool:
 	var source: Dictionary = found.source
 	var root: Vector3 = found.root
 	var t: float = found.t
-	var eye := _eye(root, t, shot)
+	var eye := _eye(root, t, shot, found.get("turn", 0.0))
 	await _stand(Vector2(eye.x, eye.z), t, source)
 	world.tuning.eye_adapts = shot[0] == "night"
 	world.weather.forecast_now()
 	eye.y = world.height_at(eye.x, eye.z) + float(shot[3])
 	var plume := world.weather.plume_for(source.id)
-	# At the bend, or for a burst its middle height, a pocket's what's blown up.
+	# At the bend, or for a burst its middle height, a pocket's what's blown up;
+	# far off, where it's drawn, which the ground's laying puts a little aside.
 	var target := _top(source, root, t).lerp(root, 0.5) if shot[0] in ["burst", "over", "pocket"] \
 		else (plume._point(25.0 if shot[1] == "near" else 45.0) if plume != null else root)
+	if plume != null and shot[0] in ["burst", "over", "pocket"]:
+		target += plume.root - root
 	await _look(eye, target)
-	get_viewport().get_texture().get_image().save_png(out.path_join(name + ".png"))
 	var drawn := []
+	var showed := false
 	for each in world.weather.plumes:
 		if each.visible:
-			drawn.append("%s %.1f km" % [each.source.id, Vector2(each.root.x - eye.x, each.root.z - eye.z).length() / 1000.0])
+			var shown := Vector2(INF, 0.0)
+			for k in Plume.POINTS:
+				shown = Vector2(minf(shown.x, each.seen[k].x), maxf(shown.y, each.seen[k].x))
+			showed = showed or each == plume and shown.y > 0.5
+			drawn.append("%s %.1f km shown %.2f-%.2f" % [each.source.id,
+				Vector2(each.root.x - eye.x, each.root.z - eye.z).length() / 1000.0, shown.x, shown.y])
+	if not showed and not keep:
+		print("plume: %s hidden there (%s); on to the next" % [name, ", ".join(drawn)])
+		return false
+	get_viewport().get_texture().get_image().save_png(out.path_join(name + ".png"))
 	var cost := await _time()
 	_costs.append("%s: GPU %.2f ms a frame with them, which adds %.2f; their main thread %.3f ms a frame" % [
 		name, cost.x, cost.y, cost.z])
 	world.tuning.eye_adapts = false
 	print("plume: %s from %.1f km; drawn: %s" % [name, Vector2(root.x - eye.x, root.z - eye.z).length() / 1000.0,
 		", ".join(drawn)])
+	return showed
 
 
 ## The rift vent's mouth up close, on the calm's moment.

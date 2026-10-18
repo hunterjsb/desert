@@ -471,7 +471,8 @@ burst a dark column kilometres high spreading out at its top.
   hold it (it shows below 30 °C and fully below -5 °C, and lasts from 15 s in the heat to 4 minutes in the
   cold), so by a hot day a plume is grey and in the cold of night and dawn white at its root; and the pale
   blue sulphate haze its gas makes over two minutes, which is most of what a far seep is. A pocket's gas
-  comes up cold and dry, carrying the sand it blew out: tan dust, falling out faster, no steam.
+  comes up cold and dry, carrying the sand it blew out: tan dust, falling out faster, no steam, and lit
+  well into its shaded side, since sand scatters most of the light that reaches it where basalt ash takes it.
 - **How it rises: Briggs's buoyant plume.** Bent over by the wind it climbs as 1.6 F^1/3 x^2/3 / u
   (x downwind, u the wind), and levels where the air's stability stops it, at 2.6 (F / u N²)^1/3, or
   5 F^1/4 N^-3/4 in still air. Levelled, it spreads out sideways as a current does in stable air, a

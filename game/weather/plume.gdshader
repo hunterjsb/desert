@@ -56,7 +56,8 @@ uniform sampler2D depth_tex : hint_depth_texture, filter_nearest;
 
 // What it carries, as each looks: basalt ash, or a pocket's dust; steam; and
 // the pale blue of sulphate haze, which throws the light forward as droplets do.
-uniform vec3 ash_tone = vec3(0.075, 0.068, 0.062);
+// The ash's w is how much light its thick shaded side keeps (Plume's).
+uniform vec4 ash_tone = vec4(0.075, 0.068, 0.062, 0.0);
 const vec3 STEAM = vec3(0.82, 0.84, 0.86);
 const vec3 HAZE = vec3(0.42, 0.48, 0.56);
 
@@ -186,6 +187,7 @@ void vertex() {
 		vec3 sun_across = sun_dir - along * dot(sun_dir, along);
 		float sunward = length(sun_across) > 1.0e-3 ? dot(dir, normalize(sun_across)) * out_by / 0.55 : 0.0;
 		shade = exp(-(m.x + m.y + m.z) * 0.6 * (1.0 - sunward) * 0.5);
+		shade = mix(shade, 1.0, ash_tone.w * m.x / max(m.x + m.y + m.z, 1.0e-5));
 		vec2 ends = f == COLUMN ? vec2(2.0, 20.0) : (f == BODY ? vec2(20.0, 40.0) : vec2(40.0, 140.0));
 		fade = smoothstep(fam.z, fam.z + ends.x, age) * (1.0 - smoothstep(fam.w - ends.y, fam.w, age));
 	}
@@ -232,7 +234,7 @@ void fragment() {
 	float wet = v_mix.y + v_mix.z;
 	float forward = mix(1.0, phase_hg(c, 0.55), 0.5 * wet);
 	float lit = mix(0.3, 1.0, clamp(dot(nw, sun_dir) * 0.6 + 0.5, 0.0, 1.0));
-	vec3 albedo = ash_tone * v_mix.x + STEAM * v_mix.y + HAZE * v_mix.z;
+	vec3 albedo = ash_tone.rgb * v_mix.x + STEAM * v_mix.y + HAZE * v_mix.z;
 	float tu_lit = mix(0.3, 1.0, clamp(dot(nw, tu_dir) * 0.6 + 0.5, 0.0, 1.0)) * step(0.0, tu_dir.y);
 	vec3 light = sun_light * v_sun * lit * forward + sky_light * (0.55 + 0.45 * max(nw.y, 0.0))
 		+ ring_light * ring_phase(c) * wet + tu_light * tu_lit;
