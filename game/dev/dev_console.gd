@@ -25,6 +25,7 @@ const COMMANDS := {
 	"unlockall": ["", "every start open, deeds or not"],
 	"deed": ["<id>", "a deed done, by its id"],
 	"deeds": ["[clear]", "which deeds are done; clear forgets them all"],
+	"meltdown": ["", "the Stoker plays its furnace song on its frequency, once, from now"],
 }
 ## What works with no world, at the main menu too.
 const WORLDLESS := ["help", "scenarios", "unlockall", "deed", "deeds"]
@@ -230,6 +231,13 @@ func _give(args: PackedStringArray, world: World) -> void:
 			Scenarios.drop(world, Catalog.part(id), lying, 0.0, ahead)
 			ahead += 0.3
 	_say("%d %s" % [count, id])
+
+
+func _meltdown(_args: PackedStringArray, world: World) -> void:
+	var gods := Radio.gods_of(world)
+	gods.meltdown(world.time)
+	_say("meltdown: the Stoker's song on %d kHz for %d s" % [roundi(gods.carrier(&"stoker", world.time)),
+		roundi(Sounds.RADIO_STOKER.get_length())])
 
 
 func _fresh(_args: PackedStringArray, world: World) -> void:

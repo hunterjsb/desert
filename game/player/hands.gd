@@ -64,6 +64,10 @@ const HOLD_NEAREST := 0.5
 const HOLD_FARTHEST := 2.0
 ## How fast what you carry eases to a new distance, 1/s.
 const HOLD_EASE := 12.0
+## How each tuning action works a radio: [notches, fine, the volume knob].
+const TUNES := {&"reel_in": [1, false, false], &"pay_out": [-1, false, false],
+	&"tune_fine_up": [1, true, false], &"tune_fine_down": [-1, true, false],
+	&"volume_up": [1, false, true], &"volume_down": [-1, false, true]}
 ## What you have hold of comes no nearer than this clear of you, m.
 const GRASP_CLEAR := 0.1
 ## Having hold of a device, a free deck mount whose seat is this near it is
@@ -414,7 +418,7 @@ static func describe(label: String, stats: Dictionary) -> String:
 
 ## The first of these a thing has: a crop ripe or why it isn't growing, a
 ## device that would run but has no power, what a thing holds, a radio's
-## station, then power, said as the device does it: output, or draws.
+## frequency, then power, said as the device does it: output, or draws.
 static func _state(stats: Dictionary) -> String:
 	if stats.get("ripe", false):
 		return "ripe"
@@ -451,7 +455,9 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed("hands_throw") and held != null and not Controls.mouse_free:
 		throw()
 		get_viewport().set_input_as_handled()
-	# Exactly, so ctrl and the wheel moving what you hold never reel a line too.
+	elif _tunes(event):
+		get_viewport().set_input_as_handled()
+	# Exactly, so bringing near or pushing out never reels a line too.
 	elif event.is_action_pressed("reel_in", false, true) or event.is_action_pressed("pay_out", false, true):
 		# Each wheel step is a press: a notch.
 		if reel.working() and reel.notch(1 if event.is_action_pressed("reel_in", false, true) else -1):
@@ -459,6 +465,50 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed("bring_near") or event.is_action_pressed("push_out"):
 		if scroll(1 if event.is_action_pressed("bring_near") else -1):
 			get_viewport().set_input_as_handled()
+
+
+## Reel in and pay out tune a radio a notch, the fine-tune actions a fine
+## step and the volume actions turn its knob, on the radio dialled() picks;
+## with none, reel in and pay out reel.
+func _tunes(event: InputEvent) -> bool:
+	if not reel.working():
+		return false
+	for action: StringName in TUNES:
+		# Exactly, so each modifier means only its own.
+		if event.is_action_pressed(action, false, true):
+			var radio := dialled()
+			if radio == null:
+				return false
+			var how: Array = TUNES[action]
+			return radio.turn_volume(how[0]) if how[2] else radio.tune(how[0], how[1])
+	return false
+
+
+## The radio the tuning actions work: the one you look at, or the first in
+## the system of a console you look at, unless you're reeling the line in
+## your hand; else the one you hold, while there's no line at your waist to reel.
+func dialled() -> Radio:
+	if reel.in_hand() != null:
+		return null
+	_look()
+	var radio := tuned_by_look()
+	if radio == null and held is Radio and phase == Phase.HELD and reel.line() == null:
+		radio = held
+	return radio
+
+
+## The radio your look tunes: the one you look at, or the first in the system
+## of a console you look at.
+func tuned_by_look() -> Radio:
+	if look_device is Radio:
+		return look_device
+	var console := look_device as Console
+	if console != null:
+		for each in console.linked():
+			for seated in each.mounted():
+				if seated is Radio:
+					return seated
+	return null
 
 
 func _physics_process(delta: float) -> void:

@@ -769,14 +769,82 @@ static var _current: Tuning
 @export_group("Radio")
 ## What a radio draws while it's on, W.
 @export var radio_w: float = 2.0
+## At full volume a radio plays this much louder than the levels its tracks
+## are made at, dB: a radio is meant to be heard across a camp. It's heard at
+## that level out to this far, m, and fades 6 dB each time that doubles.
+@export var radio_loudness_db: float = 15.0
+## The volume knob spans this many dB from full to its first notch's tenth:
+## a fixed step a notch (6 dB at 60), so a tenth is barely audible.
+@export var radio_volume_range_db: float = 60.0
+## A radio is a small speaker: everything it plays loses what's under this, Hz.
+@export var radio_highpass_hz: float = 400.0
+## Under anything you can hear (a song, a god, the beacon), the static sinks
+## this far, dB, by how clearly it comes through; with nothing, it's all there is.
+@export var radio_static_duck_db: float = 18.0
+@export var radio_heard_m: float = 15.0
+## The relay satellite that carries the music: how high it orbits, in the
+## moon's radii, and how long a lap takes, minutes of world time. Its carrier
+## slides this far either way as it comes and goes, kHz, and it fades in this
+## far over the horizon, degrees. Its signal crosses the dust of a storm this
+## high, m: the lower it is, the longer the way through.
+@export var relay_altitude_radii: float = 3.0
+## Short, so it crosses the night sky at least twice as fast as the stars and
+## stands out from them, and not a whole share of a day, or it would cross
+## the same sky at the same hour every time.
+@export var relay_period_minutes: float = 6.5
+@export var relay_doppler_khz: float = 1.5
+@export var relay_rise_degrees: float = 8.0
+@export var dust_height_m: float = 1500.0
+## The Eye's drone comes now and then out of silences of between these many
+## minutes, its first one included.
+@export var eye_quiet_minutes: Vector2 = Vector2(2.0, 8.0)
 ## How far ahead the weather station reads the storm field, minutes, and how
 ## often it reads it again, s of world time.
 @export var radio_forecast_minutes: float = 20.0
 @export var radio_forecast_every: float = 5.0
+## With something to report, the weather station reads it aloud this often, s
+## of world time, and at once when a report breaks in; heard this far, m.
+@export var radio_speak_every: float = 30.0
+@export var radio_voice_m: float = 30.0
+## The weather station has nothing to report, and plays its clear-skies song,
+## while no storm is on you or due within this many minutes. Clear for 5
+## minutes ahead is about half of all clear time; for 20, almost never.
+@export var radio_calm_minutes: float = 5.0
 ## How far a radio hears a beacon, m, and the share of ruins the seed left
 ## one running in.
 @export var radio_reach_m: float = 3000.0
 @export var beacon_share: float = 0.3
+## The dial: a carrier comes in this wide either side, kHz (its fall to a
+## sixtieth), and a notch of tuning moves it this far, or a fine step this far.
+@export var dial_width_khz: float = 3.0
+@export var dial_notch_khz: float = 5.0
+@export var dial_fine_khz: float = 1.0
+## A god's bearing is given to sixteen points within the first distance, m,
+## to eight within the second, and past that only as a way across the moon.
+@export var god_exact_m: float = 12000.0
+@export var god_rough_m: float = 40000.0
+## How far a ground wave carries at or under 500 kHz, m; above it the reach
+## falls as the square of the frequency. At night a sky wave comes down past
+## the skip, m, at this strength, for any frequency over 500 kHz.
+@export var ground_wave_m: float = 80000.0
+@export var skip_m: float = 15000.0
+@export var sky_wave: float = 0.6
+## Under this share of a clean signal, a transmission is lost in the static.
+@export var signal_floor: float = 0.08
+## The storm on the path toward a god is read this far out at most, m, and
+## at this many points. Through a full storm the carrier drifts this far
+## either way, kHz, and the signal drops out this share of the time.
+@export var interference_reach_m: float = 3000.0
+@export var interference_samples: int = 12
+## The way toward a signal is read from this far out, m, so a storm beside
+## you blocks only what lies its way; and a storm that bad or worse on the way
+## blocks a signal entirely.
+@export var interference_near_m: float = 50.0
+@export var storm_blocks: float = 0.5
+@export var storm_warp_khz: float = 6.0
+@export var storm_cuts: float = 0.6
+## The Walker's pace round the Rim, m/s.
+@export var walker_speed: float = 1.5
 
 @export_group("Console")
 ## How often a Console's instruments read the field, s of world time, and how

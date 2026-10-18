@@ -65,11 +65,9 @@ func _ready() -> void:
 ## a sheet and a mooring line both there you trim looking at the sail; the
 ## last tied on a tie. None while a coil still pays it out.
 func line() -> Rope:
-	var hands := _player.hands
-	if hands.phase == Hands.Phase.HELD and is_instance_valid(hands.held):
-		var held := _line_of(hands.held)
-		if held != null:
-			return held
+	var held := in_hand()
+	if held != null:
+		return held
 	var tied := _player.waist.tied
 	var eye := _player.camera.global_transform
 	var best: Rope = null
@@ -85,6 +83,12 @@ func line() -> Rope:
 			nearest = off
 			best = waisted
 	return best
+
+
+## The line whose end is in your hand, or null.
+func in_hand() -> Rope:
+	var hands := _player.hands
+	return _line_of(hands.held) if hands.phase == Hands.Phase.HELD and is_instance_valid(hands.held) else null
 
 
 ## A notch in, or out for a negative `by`. Says whether there was a line to work.

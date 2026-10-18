@@ -18,7 +18,8 @@ extends RefCounted
 static var _kept := [
 	[Stake, ["driven", "pulled", "sustained", "holding", "pull"]],
 	[ShieldGenerator, ["on", "smart", "size", "_up", "_since", "held_minutes"]],
-	[Radio, ["channel", "target"]],
+	# A save from before the dial kept "channel": setting it places the dial.
+	[Radio, ["on", "frequency", "volume", "target"]],
 	[Planter, ["tank_l", "split", "stored", "seeds", "ripened", "replanted", "banked", "dropped", "picked",
 		"fed_kcal", "_owed"]],
 	[Condenser, ["made_l"]],

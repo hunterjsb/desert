@@ -333,7 +333,6 @@ func _show_view() -> void:
 	showpiece.home = last_kit()
 	view.add_child(showpiece)
 	var music := MenuMusic.new()
-	music.view = view
 	music.ui = ui
 	view.add_child(music)
 

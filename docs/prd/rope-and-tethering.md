@@ -111,6 +111,10 @@ and a mooring line both there you trim by looking at the sail and reel the moori
 looking at its stake. The line being reeled stays the one until another's far end is
 30% nearer your aim; with two equally near, the last tied wins. Before, it was
 always the last tied, so a stake line tied on after the sheet took the reel off the sail.
+**A radio shares them** (2026-10-18): looking at a radio, and not reeling the line in your
+hand, reel in and pay out tune it instead of reeling the line at your waist; holding one,
+they tune it while there's no line at your waist to reel ([Radio](radio-sound-and-atmosphere.md#the-dial-and-the-gods-on-the-air-hunter-2026-10-18-built)).
+Bring near and push out always move what you hold, never a line or a dial.
 A floating thing drawn in keeps gliding when you stop, as anything pushed does. A
 strong cable reels too, since it's a rope: its plugs keep their rules, and it pays out
 to its full 6 m. Each notch dips the end in your hand and lifts it again, across the line

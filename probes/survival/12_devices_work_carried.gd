@@ -1,8 +1,8 @@
 extends HandsProbe
 ## Survival probe 12: a device works carried. A radio playing in your hands
 ## goes in with what you carry, whole, and plays on from you on its own
-## battery. With the inventory open, use on it turns its dial to the weather
-## station, and its line of words shows; use on your canister drinks from it
+## battery. With the inventory open, use on it sweeps its dial on to the
+## next carrier, and its line of words shows, by frequency alone; use on your canister drinks from it
 ## where it is, and switches nothing you look at in the world, while use off
 ## the things you carry switches the shield you look at as ever. Clicked, the
 ## radio comes back to your hands, still on.
@@ -23,7 +23,8 @@ func run() -> void:
 	fit_part(radio, &"battery")
 	hands.hold(radio)
 	await physics_frames(30)
-	radio.interact(player)
+	while radio.channel != Radio.MUSIC:
+		radio.interact(player)
 	await physics_frames(10)
 	check(radio.playing() and radio.music.playing, "tuned to music in your hands, it plays")
 
@@ -42,8 +43,9 @@ func run() -> void:
 	point_at(suit.tile_rect(stack_of(radio)).get_center())
 	press(&"interact")
 	await simulate(1.0)
-	print("used where it is: %s; the line says \"%s\"" % [Radio.CHANNELS[radio.channel], broadcast.said])
-	check(radio.channel == Radio.WEATHER and broadcast.said.begins_with("Weather"),
+	var swept := radio.channel
+	print("used where it is: %s; the line says \"%s\"" % [Radio.CHANNELS[swept], broadcast.said])
+	check(swept != Radio.MUSIC and swept != Radio.OFF and broadcast.said.begins_with("%d kHz · " % roundi(radio.frequency)),
 		"use on it turns its dial, and its words show")
 	var canister := suit.supply(&"water")
 	var water := canister.amount
@@ -61,5 +63,5 @@ func run() -> void:
 
 	click_at(suit.tile_rect(stack_of(radio)).get_center())
 	await physics_frames(30)
-	check(hands.held == radio and radio.visible and radio.playing() and radio.channel == Radio.WEATHER,
+	check(hands.held == radio and radio.visible and radio.playing() and radio.channel == swept,
 		"clicked, it comes back to your hands, still on")
