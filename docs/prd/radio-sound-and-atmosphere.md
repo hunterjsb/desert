@@ -110,7 +110,10 @@ terminals" by Hunter's call. The squatting oracles above are now the gods.
 
 - **The dial runs 0–2000 kHz.** The wheel tunes it while you look at a radio, or at a console with
   one in its system: 5 kHz a notch, or 1 kHz with shift held. Holding a radio, it's ctrl+wheel.
-  Use sweeps up to the next carrier, and past the last one it goes off. Nothing names a carrier:
+  Use sweeps up to the next carrier, and past the last one it goes off. **A volume knob** (Hunter, 2026-10-18:
+  "give the radio also an adjustable volume knob"): the wheel with alt, a tenth a notch from full to
+  silent. It turns down everything the radio plays (music, tones and hiss), which plays on at any
+  setting. The look-at readout gives it beside the frequency, and a save keeps it. Nothing names a carrier:
   the line low in the view reads only `262 kHz · …`, and the look-at readout reads the frequency.
 - **Carriers:** the music at 1020 kHz and the beacon at 1930, both behaving as above, and the seven
   gods. The weather station is **the Walker**: its band is where the forecast is.
@@ -145,7 +148,7 @@ terminals" by Hunter's call. The squatting oracles above are now the gods.
 - **Code:** `game/radio/gods.gd`, `dial.gd`, `interference.gd` and `transmissions.gd`, with `radio.gd`.
   Old saves' channels move the dial to that carrier.
 - **Probes:** radio 6 (each god has its bearing), 7 (storms garble the gods), 8 (the dial finds each
-  god) and 9 (useful only in its window). Probes 1, 2, 4 and 5 tune by the dial.
+  god), 9 (useful only in its window) and 10 (the volume knob). Probes 1, 2, 4 and 5 tune by the dial.
 - **Not yet:** a god's own voice beyond tones, frequencies as finds, antennas, and the far end's
   signal.
 
