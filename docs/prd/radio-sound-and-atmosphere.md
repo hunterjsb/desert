@@ -237,6 +237,12 @@ terminals" by Hunter's call. The squatting oracles above are now the gods.
 - **Not yet:** a god's own voice beyond tones, frequencies as finds, antennas, and the far end's
   signal.
 
+### The dial in your hands (Hunter, 2026-10-18)
+
+Tuning brings the radio up close and you turn its dial itself: the view moves in to the set and
+the knob turns under your hand, the needle crossing the band. Each god's station is at its home,
+its signal and bearing from that landmark wherever you hear it.
+
 ### Stations: the Walker and the living city (agreed, 2026-10-18 spec)
 
 From Hunter's [storms, signals & sailing spec](../storms-signals-sailing-2026-10-18.md). A station is a node with a place, a

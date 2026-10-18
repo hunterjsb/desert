@@ -67,6 +67,9 @@ behind them, and since 2026-10-18 are bigger and roomier still, below.)
   the foreground slides over to the right as New game opens the choice, and shows the
   highlighted origin's own kit as the selection moves. The main menu shows the kit of the
   origin last played, kept in the profile.
+- **The Surveyor is the game as meant, the others novel starts,** shown by design and never said
+  (Hunter, 2026-10-18): the Surveyor leads the choice in its own right, and the deed-opened starts
+  sit apart from it as variations.
 - **The prop steps aside for every menu over it** (Hunter, 2026-10-18: "the minimal, no
   background text works for the top title and main menu bc they have a consistent sand or sky
   background... we should always move the prop"). The title and the main menu's words stand
