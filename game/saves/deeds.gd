@@ -3,7 +3,8 @@ extends RefCounted
 ## What you've done across every run (Profile & saves, deeds): one table,
 ## and one hook every system records a deed through the moment it's done,
 ## never a check that goes looking for them. Only a player's own run counts
-## (World.counts_deeds): a dev scenario's never does. A deed done is kept in
+## (World.counts_deeds): a dev scenario's never does, nor one while the dev
+## console's god holds you. A deed done is kept in
 ## the profile with its run, and a start that names it as its unlock opens.
 ## Deeds wait on others (`after`), so they open a branch at a time; one done
 ## early is kept all the same, and shows once its branch opens.
@@ -99,9 +100,10 @@ static func reached(world: World, landmark: StringName) -> void:
 
 
 ## The profile a deed would be kept in now, or null: none, a world whose
-## deeds don't count, or the deed done already.
+## deeds don't count or whose player the dev console's god holds, or the
+## deed done already.
 static func _counting(world: World, id: StringName) -> Node:
-	if world == null or not world.counts_deeds or not TABLE.has(id):
+	if world == null or not world.counts_deeds or world.player.vitals.god or not TABLE.has(id):
 		return null
 	var profile := world.get_node_or_null(^"/root/Profile")
 	return null if profile == null or profile.did(id) else profile

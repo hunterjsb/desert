@@ -188,7 +188,8 @@ How each X was chosen, from the probes' numbers:
   Hermit").
 - **Only a player's own run counts** (`World.counts_deeds`): the game sets it on a run that isn't
   a dev scenario's and clears it the moment `scenario` is used, and a death in that run keeps it.
-  The menu's world, a probe's and a look-test's count nothing.
+  Nothing counts while the dev console's `god` holds you. The menu's world, a probe's and a
+  look-test's count nothing.
 - **Kept in the profile** (`Profile.deed`, `did`, `deeds`, `toward`, `best`): each deed with when,
   the run's seed and origin, and whether it was Ironman; what has counted toward each, and the best
   toward each that's a number. Achievements
@@ -377,8 +378,8 @@ calls them from Save, Save & quit, Resume, New game, the death screen and Option
 17. **A deed is kept** (2026-10-18). Reaching Port Morgan in a run records The Old City there and
     then, with the run's seed and origin and not Ironman, and the next session's profile still has
     it.
-18. **A dev run counts nothing.** Once a dev scenario is used in a run, reaching Port Morgan
-    records no deed, and no landmark toward them all.
+18. **A dev run counts nothing.** While the console's god holds you, and once a dev scenario is
+    used in a run, reaching Port Morgan records no deed, and no landmark toward them all.
 19. **Unlockall opens the starts.** A fresh profile has the Surveyor alone; the console opens over
     the main menu, unlockall there opens every start, New game shows none locked, and forgetting
     the deeds leaves them open.
