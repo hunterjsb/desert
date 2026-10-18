@@ -137,6 +137,53 @@ func snap(rope: Rope, halves := true) -> void:
 		rope.parted.call(rope.strand, tail)
 
 
+## Loaded past its strength, a line gives way as its kind does: a hose pops
+## an end out, anything else snaps.
+func give_way(rope: Rope) -> void:
+	if rope.gives.is_valid():
+		rope.gives.call()
+	else:
+		snap(rope)
+
+
+## What a line bears now, and its share of the wind's push on each loose
+## thing it holds, past what the sand's friction holds of it: what load_at
+## reckons another time's load from.
+func bearing(rope: Rope) -> Dictionary:
+	var shares := {}
+	for end: RopeEnd in [rope.a, rope.b]:
+		var body := end.holder as RigidBody3D
+		if body != null and not body.freeze:
+			shares[body] = _share(body, NAN, 0.0)
+	return {"now": rope.sustained, "shares": shares}
+
+
+## The load a line would bear over `span` s from world time t with
+## everything held where it is now, N: what it bore, as `bearing` took it,
+## changed by how much more of the wind's push on what it holds is its share
+## then. A thing on several lines shares its push among them, so one gone
+## leaves more to the rest. Lines asked of the same moment share `shares`.
+func load_at(rope: Rope, t: float, span: float, was: Dictionary, shares := {}) -> float:
+	var most: float = was.now
+	for body: RigidBody3D in was.shares:
+		if not is_instance_valid(body) or body.freeze:
+			continue
+		if not shares.has(body):
+			shares[body] = _share(body, t, span)
+		most = maxf(most, was.now + shares[body] - was.shares[body])
+	return maxf(most, 0.0)
+
+
+## Each of a body's lines' share of the wind's push on it held still, past
+## what the sand holds of it, N.
+func _share(body: RigidBody3D, t: float, span: float) -> float:
+	var lines := 0
+	for rope in ropes:
+		if rope.a.holder == body or rope.b.holder == body:
+			lines += 1
+	return maxf(world.weather.wind_load(body, t, span) - world.grip(body), 0.0) / maxi(lines, 1)
+
+
 func lines_on(end: RopeEnd) -> Array[Rope]:
 	return ropes.filter(func(rope: Rope) -> bool: return rope.a == end or rope.b == end)
 
@@ -371,10 +418,7 @@ func _bear(h: float) -> void:
 	for rope: Rope in ropes.duplicate():
 		rope.sustained += (rope.tension - rope.sustained) * alpha
 		if rope.sustained > rope.breaking:
-			if rope.gives.is_valid():
-				rope.gives.call()
-			else:
-				snap(rope)
+			give_way(rope)
 	for stake: Node3D in _pulls:
 		if stake.feel(_pulls[stake], alpha):
 			stake.pull_out(world.height_under(stake.global_position))

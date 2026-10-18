@@ -630,6 +630,23 @@ static var _current: Tuning
 @export var condenser_hot: float = 40.0
 @export var condenser_hot_share: float = 0.2
 
+@export_group("Sleep")
+## A night is lived in steps this long, s of world time: each system's own
+## sums over each, the camp held still (live, they tick every power_tick).
+## No sleep runs past sleep_most_days, whatever it waits for.
+@export var sleep_tick: float = 10.0
+@export var sleep_most_days: float = 4.0
+## So many hours, of the 24 in a day, is first offered as this many.
+@export var sleep_hours: int = 8
+## The camp is your devices and stakes within this of you, m; it's still
+## while none moves faster than this, m/s, or turns faster than this, rad/s.
+@export var sleep_camp_m: float = 30.0
+@export var sleep_still_speed: float = 0.3
+@export var sleep_still_spin: float = 0.6
+## Asleep with nothing left to drink or eat, you wake once thirst or hunger
+## falls to this share.
+@export var sleep_wake_need: float = 0.25
+
 @export_group("Farming")
 ## A planter's water tank, L. Found empty.
 @export var planter_tank_litres: float = 4.0

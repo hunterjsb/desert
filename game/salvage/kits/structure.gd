@@ -401,6 +401,8 @@ func add_shapes(body: StaticBody3D, at: Vector3, s: int) -> void:
 		var holder := CollisionShape3D.new()
 		holder.shape = piece.shape(i)
 		holder.transform = placed.translated_local(piece.boxes[i].get_center())
+		if i in piece.beds:
+			holder.set_meta(&"bed", true)
 		body.add_child(holder)
 
 

@@ -12,6 +12,7 @@ balanced = true
 carried = Dictionary[StringName, int]({
 &"canister": 1,
 &"ration": 1,
+&"bedroll": 1,
 &"stake": 3
 })
 beside = Dictionary[StringName, Vector2]({

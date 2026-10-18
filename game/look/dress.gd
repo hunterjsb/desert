@@ -268,6 +268,14 @@ static func _frame(id: StringName, size: Vector3, extra: float) -> ArrayMesh:
 			for s in [-1, 1]:
 				b.box(Vector3(size.x, size.y, 0.03), Vector3(0.0, 0.0, s * (h.z - 0.015)), gun, 0.006)
 			_cells(b, Vector2(size.x - 0.04, size.z - 0.08), 4, 2, Basis(Vector3.RIGHT, -PI / 2.0), Vector3(0.0, 0.008, 0.0))
+		&"bedroll":
+			# Company canvas rolled tight on its pad, the pale lining showing at
+			# each end, two black straps round it.
+			var along := Basis(Vector3.RIGHT, PI / 2.0)
+			b.drum(h.x - 0.005, size.z - 0.04, Vector3.ZERO, Paint.coat(Paint.TEAL, 0.0, 0.0, 0.95), along, 18)
+			for z in [-1, 1]:
+				b.drum(h.x - 0.03, 0.02, Vector3(0.0, 0.0, z * (h.z - 0.02)), Paint.coat(Paint.BONE, 0.0, 0.0, 0.95), along, 18)
+				b.drum(h.x + 0.002, 0.04, Vector3(0.0, 0.0, z * 0.26), black, along, 18)
 		&"survival_kit":
 			# Packed to be found: the brightest thing on the sand.
 			b.box(Vector3(size.x - 0.02, size.y - 0.02, size.z - 0.02), Vector3.ZERO, Paint.coat(Paint.YELLOW, 0.7), 0.03)

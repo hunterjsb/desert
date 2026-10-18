@@ -17,6 +17,9 @@ const DAUB := Color(0.5, 0.2, 0.1)
 const GLAZE := Color(0.12, 0.3, 0.5)
 const WATER := Color(0.05, 0.12, 0.16)
 
+## The house ruin's bench, plan m, clear of the way through the back room.
+const BENCH := AABB(Vector3(6.0, 0.0, -1.1), Vector3(2.0, 0.45, 0.9))
+
 static var _coats := {}
 
 
@@ -60,6 +63,8 @@ static func _house_ruin() -> StructureKit.Piece:
 	StructureKit.wall(p, false, 1.8, 2.2, -inner.y, inner.y, low, high, [-2.5, 2.5], "render")
 	StructureKit.wall(p, true, -0.2, 0.2, 2.2, inner.x, low, high, [5.0], "render")
 	StructureKit.box(p, Vector3(1.8, high, -f.y), Vector3(f.x, high + Ruin.ROOF, f.y), "render")
+	# A sleeping bench of saltbush wood in the back room, against its wall.
+	StructureKit.bed(p, BENCH.position, BENCH.end, "wood")
 	# The water jar on the front corner, solid where it stands out of the sand.
 	StructureKit.box(p, Vector3(-f.x, high, f.y - 1.0), Vector3(-f.x + 1.0, high + 0.95, f.y), "")
 	for k in Ruin.SPOTS.size():
@@ -100,6 +105,10 @@ static func _house_look(b: Paint.Pieces, p: StructureKit.Piece, state: int) -> v
 		b.drum(0.36, 0.45, jar + Vector3(0.0, 0.22, 0.0), c.clay, Basis.IDENTITY, 12)
 		b.ball(0.42, jar + Vector3(0.0, 0.58, 0.0), c.bone, Vector3(1.0, 0.85, 1.0))
 		b.drum(0.16, 0.12, jar + Vector3(0.0, 0.95, 0.0), c.clay, Basis.IDENTITY, 10)
+	# A woven mat on the bench.
+	var mat := BENCH.get_center() + Vector3(0.0, BENCH.size.y * 0.5, 0.0)
+	if StructureKit.shows(p, state, mat.y, Vector2(mat.x, mat.z)):
+		b.box(Vector3(BENCH.size.x - 0.12, 0.04, BENCH.size.z - 0.12), mat + Vector3(0.0, 0.02, 0.0), c.cord, 0.01)
 	# Tu, half risen over the horizon, daubed by the front door; charms on a
 	# cord over it.
 	if StructureKit.shows(p, state, 2.1):

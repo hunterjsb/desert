@@ -296,6 +296,10 @@ const DEVICES := {
 			[&"battery", Vector3(0.0, 0.04, -0.5), Vector3.UP],
 			[&"port", Vector3(0.0, 0.0, 0.65), Vector3.BACK],
 		]},
+	# Something to sleep on (Sleep): laid on the sand, carried, or rolled in a
+	# crate's rack where the board would go. Lying, the wind meets its side.
+	&"bedroll": {"label": "Bedroll", "size": Vector3(0.24, 0.24, 0.9), "mass": 2.5, "bedroll": true,
+		"carryable": true, "fits": &"rack", "sockets": []},
 	# A sail's mount: a pole that seats on a top mount or stands on a deck
 	# mount, stowed short to carry and standing its full height once seated,
 	# its sail fitting low on it at the boom's root. Found buried on end.
@@ -519,7 +523,8 @@ static func device(id: StringName) -> Device:
 		else (Radio.new() if spec.get("radio", false) \
 		else (Mast.new() if spec.get("rig", false) \
 		else (Chassis.new() if spec.get("chassis", false) \
-		else (Console.new() if spec.get("console", false) else Device.new())))))))
+		else (Bedroll.new() if spec.get("bedroll", false) \
+		else (Console.new() if spec.get("console", false) else Device.new()))))))))
 	made.set_meta(&"catalog", id)
 	made.label = spec.label
 	made.frame_mass = spec.mass

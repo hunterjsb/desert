@@ -46,6 +46,7 @@ var gravity: float
 @onready var ropes: Ropes = $Ropes
 @onready var salvage: Salvage = $Salvage
 @onready var farm: Farm = $Farm
+@onready var sleep: Sleep = $Sleep
 
 var _last_x: float
 var _last_z: float
@@ -74,6 +75,7 @@ func _ready() -> void:
 	ropes.setup(self)
 	salvage.setup(self)
 	farm.setup(self)
+	sleep.setup(self)
 	_set_scene()
 	spawn = Starts.ground(shape, tuning, kit.start if kit != null else &"", start)
 	player.global_position = Vector3(engine_x(spawn.x), height_at(spawn.x, spawn.y) + 0.1, engine_z(spawn.y))
@@ -236,6 +238,13 @@ func has_ground_under(engine_position: Vector3) -> bool:
 const BELOW_SAND := 0.3
 ## How far a corner may rest in the sand: Jolt lets contacts sink 2 cm.
 const SAND_SLOP := 0.04
+
+## What the sand's friction holds a loose body against, N, before the wind
+## slides it or a line takes the rest: none while it floats.
+func grip(body: RigidBody3D) -> float:
+	var floats := body is Device and (body as Device).hovering()
+	return 0.0 if floats else tuning.sand_friction * gravity * body.mass
+
 
 ## Bodies found below the sand and put back on top. Never zero means a bug:
 ## every world probe fails on it, and it's on the dev overlay.

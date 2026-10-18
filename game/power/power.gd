@@ -49,6 +49,13 @@ func _physics_process(_delta: float) -> void:
 	Dev.put("power/stored", "%.2fWh" % stored_wh())
 
 
+## One tick lived by a sleep, which steps the clock itself (Sleep): the same
+## sums, and the next tick waits for the clock to pass this one.
+func live(seconds: float, t: float) -> void:
+	_tick(seconds, t)
+	_next = t + seconds
+
+
 ## Everything stored right now, Wh, in batteries fitted or loose.
 func stored_wh() -> float:
 	var total := 0.0

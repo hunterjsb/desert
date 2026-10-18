@@ -97,6 +97,8 @@ class Piece:
 	## takes, by name.
 	var boxes: Array[AABB] = []
 	var coats := PackedStringArray()
+	## The boxes you can sleep on, by their place in boxes: a bunk, a bench.
+	var beds := PackedInt32Array()
 	var sockets: Array[SiteSocket] = []
 	## In each state (Exposure's order): how far it sinks below the sand, and
 	## how high the sand fills its rooms, plan m (-INF: dug out to the floor).
@@ -396,6 +398,12 @@ static func room(lo: Vector2, hi: Vector2, floor := 0.0, ramp := Vector3(-1.0, 0
 static func box(p: Piece, lo: Vector3, hi: Vector3, coat: String) -> void:
 	p.boxes.append(AABB(lo, hi - lo))
 	p.coats.append(coat)
+
+
+## A box that's a bed as well: use on it sleeps there (Sleep).
+static func bed(p: Piece, lo: Vector3, hi: Vector3, coat: String) -> void:
+	p.beds.append(p.boxes.size())
+	box(p, lo, hi, coat)
 
 
 ## A box of its far look, plan m, in the tone it reads as from far off.

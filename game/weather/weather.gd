@@ -288,6 +288,21 @@ static func biggest_face(body: Node) -> float:
 	return total
 
 
+## The wind's push on a body held still, N, by its catch and the felt wind's
+## square: at its hardest over `span` s from world time t, read each second,
+## so a step that long meets its gusts. What a line holding it bears.
+func wind_load(body: CollisionObject3D, t := NAN, span := 0.0) -> float:
+	var hardest := 0.0
+	var k := 0
+	while true:
+		var at := minf(k, span)
+		hardest = maxf(hardest, felt_wind(body.global_position, _when(t) + at).length_squared())
+		if at >= span:
+			break
+		k += 1
+	return catch_of(body) * hardest
+
+
 ## Loose bodies feel drag: a push along the air's speed past them, growing
 ## with its square, so a breeze leaves a box be and a storm slides it.
 func _blow_loose_bodies() -> void:

@@ -81,7 +81,16 @@ func restock() -> void:
 		thing.free()
 	carried.clear()
 	for id in Kit.of(World.of(self)).carried_ids():
-		carried.append(Catalog.stake() if id == &"stake" else Catalog.part(id))
+		if Catalog.DEVICES.has(id):
+			var device := Catalog.device(id)
+			# You may still be setting up, too busy to take it on yet.
+			if _player.is_node_ready():
+				_on_you(device)
+			else:
+				_on_you.call_deferred(device)
+			carried.append(device)
+		else:
+			carried.append(Catalog.stake() if id == &"stake" else Catalog.part(id))
 
 
 ## Whether it goes in: anything you can carry in your hands with nothing

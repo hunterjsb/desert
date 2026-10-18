@@ -169,6 +169,21 @@ func stand(up: bool) -> void:
 	_show()
 
 
+## Straight to what its power says, open or down, with no bloom: the clock
+## stepped past both while the camp was held still (Sleep).
+func settle() -> void:
+	if running() == _up:
+		return
+	_up = running()
+	_since = INF
+	if _up and not hum.playing:
+		hum.pitch_scale = HUM_PITCH
+		hum.play()
+	elif not _up:
+		hum.stop()
+	_show()
+
+
 ## A sip in the clear, the most holding back a full storm, by the storm where
 ## it stands; a wider bubble costs more by its shell's area. Off, only what
 ## its parts draw.

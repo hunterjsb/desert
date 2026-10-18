@@ -29,9 +29,19 @@ func _physics_process(_delta: float) -> void:
 	if _world.time < _next - step or _world.time - _next > 60.0:
 		_next = _world.time
 	while _next + step <= _world.time + 1e-9:
-		for device in _world.devices():
-			device.wear(rate_at(device.global_position, _next) * step)
+		_tick(step, _next)
 		_next += step
+
+
+## One tick lived by a sleep, which steps the clock itself (Sleep).
+func live(seconds: float, t: float) -> void:
+	_tick(seconds, t)
+	_next = t + seconds
+
+
+func _tick(seconds: float, t: float) -> void:
+	for device in _world.devices():
+		device.wear(rate_at(device.global_position, t) * seconds)
 
 
 ## The share of a new device's life the weather at a place takes a second,
