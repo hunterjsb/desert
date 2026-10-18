@@ -285,7 +285,6 @@ func anchor() -> Anchor:
 	return _anchor
 
 
-
 ## Whether a moon cell is laid on this sheet.
 func has_unit(key: int) -> bool:
 	return _units.has(key)

@@ -41,7 +41,7 @@ var _box_view: RID
 var _glints: RID
 var _glint_view: RID
 var _line_view: RID
-## The lines' mesh drawn now, and the next, a worker's to fill.
+## The lines' mesh drawn now; each job's own is a worker's to fill.
 var _line_mesh: RID
 var _environment: Environment
 var _box_look: ShaderMaterial
@@ -49,7 +49,8 @@ var _glint_look: ShaderMaterial
 var _line_look: ShaderMaterial
 var _box_room := 0
 var _glint_room := 0
-## The meshes every stand-in box and glint is drawn from: kept, as views hold only their RIDs.
+## The meshes every stand-in box and glint is drawn from, kept: the views
+## hold only their RIDs.
 var _cube := BoxMesh.new()
 var _quad := QuadMesh.new()
 ## What's drawn now: the job it came from, and each thing's entry.
@@ -74,7 +75,6 @@ class Entry:
 	## Its state as the job read it, on the worker: reading the weather that
 	## far back costs too much for the main thread.
 	var state: int
-	var chunk: Vector2i
 	var ground: float
 	var boxes: Array[PackedFloat32Array] = []
 	var far_glints: Array[PackedFloat32Array] = []
@@ -86,7 +86,6 @@ class Entry:
 class Sighting:
 	var site: Site
 	var placed: Vector2
-	var cell: int
 
 
 ## One worker's making: what it's given, then what it made.
@@ -394,7 +393,6 @@ func _make(job: Job) -> void:
 				had = Sighting.new()
 				had.site = _sites.sighted(each, anchor)
 				had.placed = placed
-				had.cell = cell
 			job.sightings[each.id] = had
 		if _tuning.feral:
 			pieces.append_array(_sites.pieces_of(cell, anchor, Feral.lines_along))
@@ -430,7 +428,6 @@ func _entry(site: Structure, center: Vector2i) -> Entry:
 	var entry := Entry.new()
 	entry.site = site
 	entry.state = site.state()
-	entry.chunk = Vector2i(floori(site.x / _size), floori(site.z / _size))
 	entry.ground = FarRing.ground(_world.shape, _tuning, site.x, site.z)
 	var shift := Vector3(center.x * _size, 0.0, center.y * _size)
 	var rng := RandomNumberGenerator.new()
