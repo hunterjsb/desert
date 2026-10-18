@@ -125,7 +125,7 @@ func _physics_process(delta: float) -> void:
 	if _boarding != null:
 		if not is_instance_valid(_boarding) or _boarding.global_position.distance_to(global_position) > BOARD_REACH * 2.0:
 			_boarding = null
-		elif waist.tied.is_empty():
+		elif _holding_back().is_empty():
 			get_on(_boarding)
 	if world == null or not world.has_ground_under(global_position):
 		_stop()
@@ -253,7 +253,8 @@ func toggle_board() -> bool:
 
 ## Onto a board, if it has the charge to carry you. It tows nothing, so you
 ## let go of what you hold on a line or drag; a line at your waist has to be
-## untied first, and you step on once it is.
+## untied first, and you step on once it is. A sheet stays tied: its sail
+## tows you.
 func get_on(on: Hoverboard) -> bool:
 	_boarding = null
 	if on == null or board != null or flying:
@@ -267,8 +268,9 @@ func get_on(on: Hoverboard) -> bool:
 	hands.grasp.let_go()
 	if hands.held != null and waist.carries_line(hands.held):
 		hands.drop()
-	if not waist.tied.is_empty():
-		waist.let_go()
+	var holding := _holding_back()
+	if not holding.is_empty():
+		waist.let_go(holding)
 		_boarding = on
 		return true
 	# Racked, it comes off the crate straight under your feet, its own pool again.
@@ -342,6 +344,16 @@ func _ride(delta: float, input: Vector2) -> void:
 	if ride != null:
 		Dev.put("player/board", "%.2fm up, %d%%" % [ride.gap + _tuning.board_ride_height,
 			roundi(100.0 * board.charge_share())])
+
+
+## What's at your waist that would hold the board back: every line but a
+## sail's sheet.
+func _holding_back() -> Array[RigidBody3D]:
+	var back: Array[RigidBody3D] = []
+	for body in waist.tied:
+		if is_instance_valid(body) and not Mast.sheet_end(body):
+			back.append(body)
+	return back
 
 
 ## The board in your hands, the one you look at, or the nearest lying at your feet.

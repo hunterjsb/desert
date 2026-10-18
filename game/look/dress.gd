@@ -240,6 +240,21 @@ static func _frame(id: StringName, size: Vector3, extra: float) -> ArrayMesh:
 				var turn := Basis(Vector3.UP, side * PI * 0.5)
 				for x in [-0.22, 0.22]:
 					_hazard(b, Vector3(0.2, 0.03, 0.012), turn * Vector3(x, 0.0, h.z - 0.004), turn)
+		&"mast":
+			# A stowed pole, its upper reach telescoped inside, a collar at its
+			# foot and the gooseneck the boom swings on.
+			b.drum(0.05, size.y, Vector3.ZERO, Paint.coat(Paint.STEEL, 0.8, 0.6, 0.45))
+			b.drum(0.07, 0.08, Vector3(0.0, -h.y + 0.04, 0.0), Paint.coat(Paint.BLACK, 0.7, 0.3))
+			b.drum(0.062, 0.05, Vector3(0.0, Mast.BOOM_AT.y, 0.0), gun)
+			b.box(Vector3(0.05, 0.05, 0.1), Vector3(0.0, Mast.BOOM_AT.y, -0.07), gun, 0.008)
+			b.drum(0.058, 0.03, Vector3(0.0, h.y - 0.015, 0.0), Paint.coat(Paint.BLACK, 0.7, 0.3))
+		&"mast_top":
+			# Its upper reach, up from the stowed pole, and a cap at the masthead.
+			b.drum(size.x * 0.5, size.y, Vector3(0.0, h.y, 0.0), Paint.coat(Paint.STEEL, 0.8, 0.6, 0.45), Basis.IDENTITY, 12)
+			b.drum(size.x * 0.6, 0.06, Vector3(0.0, size.y - 0.03, 0.0), Paint.coat(Paint.BLACK, 0.7, 0.3), Basis.IDENTITY, 12)
+		&"boom":
+			b.drum(size.x * 0.5, size.z, Vector3(0.0, 0.0, h.z), Paint.coat(Paint.STEEL, 0.8, 0.6, 0.45), Basis(Vector3.RIGHT, PI / 2.0), 10)
+			b.drum(size.x * 0.75, 0.05, Vector3(0.0, 0.0, size.z - 0.03), Paint.coat(Paint.BLACK, 0.7, 0.3), Basis(Vector3.RIGHT, PI / 2.0), 10)
 		&"console":
 			# A rack: four rails on a plinth, a cap, teal side panels vented in two
 			# columns either side of their computer-mod ports, its back panel with
@@ -311,6 +326,42 @@ static func _part(id: StringName, size: Vector3, count := -1) -> ArrayMesh:
 				for y in [-1, 1]:
 					b.drum(0.08, 0.02, Vector3(x * 0.18, y * 0.18, 0.065), Paint.coat(Paint.BLACK, 0.3, 0.3), along, 16)
 					b.drum(0.06, 0.012, Vector3(x * 0.18, y * 0.18, 0.074), Paint.coat(Color(0.45, 0.8, 1.0), 0.0, 0.0, 0.3, 0.3, 2.0), along, 16)
+		&"skates":
+			# Two long blades below a frame across them, reaching past it to the
+			# sand, their noses turned up so a crest's lip never digs one in.
+			var keel: float = Catalog.PARTS[id].stats.keel
+			var reach := size.z + keel
+			for x in [-1, 1]:
+				var blade := Vector3(x * (h.x - 0.05), 0.0, 0.0)
+				b.box(Vector3(0.025, size.y - 0.12, 0.05), blade + Vector3(0.0, 0.0, reach - 0.025), steel, 0.006)
+				for y in [-1, 1]:
+					b.box(Vector3(0.025, 0.09, 0.04), blade + Vector3(0.0, y * (h.y - 0.05), reach - 0.045),
+						steel, 0.006, Basis(Vector3.RIGHT, y * 0.5))
+				b.box(Vector3(0.05, size.y - 0.2, keel), blade + Vector3(0.0, 0.0, size.z + keel * 0.5 - 0.01), gun, 0.008)
+			for y in [-0.28, 0.28]:
+				b.box(Vector3(size.x - 0.04, 0.06, size.z), Vector3(0.0, y, size.z * 0.5), gun, 0.008)
+			_hazard(b, Vector3(size.x * 0.6, 0.035, 0.012), Vector3(0.0, 0.0, size.z + 0.002), Basis.IDENTITY)
+		&"board_plate":
+			# One wide plate on struts below its frame, its nose and tail
+			# turned up like a sled's.
+			var keel: float = Catalog.PARTS[id].stats.keel
+			b.box(Vector3(size.x, size.y - 0.12, size.z), Vector3(0.0, 0.0, h.z), gun, 0.01)
+			for x in [-1, 1]:
+				for y in [-1, 1]:
+					b.box(Vector3(0.05, 0.05, keel), Vector3(x * (h.x - 0.1), y * (h.y - 0.15), size.z + keel * 0.5), gun, 0.006)
+			b.box(Vector3(size.x, size.y - 0.12, 0.02), Vector3(0.0, 0.0, size.z + keel - 0.01), gun, 0.006)
+			for y in [-1, 1]:
+				b.box(Vector3(size.x, 0.1, 0.02), Vector3(0.0, y * (h.y - 0.04), size.z + keel - 0.025), gun, 0.006,
+					Basis(Vector3.RIGHT, y * 0.45))
+			b.box(Vector3(size.x - 0.08, size.y - 0.2, 0.006), Vector3(0.0, 0.0, size.z + keel + 0.002), Paint.coat(Paint.STEEL, 0.5, 0.7, 0.3), 0.002)
+			for x in [-1, 1]:
+				_hazard(b, Vector3(0.05, size.y * 0.6, 0.012), Vector3(x * (h.x - 0.06), 0.0, -0.004), Basis.IDENTITY)
+		&"sail":
+			# Furled on its boom, lashed every so often.
+			b.drum(0.035, size.z, Vector3(0.0, 0.0, h.z), steel, along, 10)
+			b.drum(0.08, size.z - 0.3, Vector3(0.0, 0.0, h.z + 0.05), Paint.coat(Color(0.86, 0.8, 0.68), 0.5, 0.0, 0.95), along, 12)
+			for i in 5:
+				b.drum(0.084, 0.03, Vector3(0.0, 0.0, 0.35 + i * 0.38), Paint.coat(Paint.ROPE, 0.4, 0.0, 0.9), along, 12)
 		&"solar_panel":
 			b.box(Vector3(size.x, size.y, 0.03), Vector3(0.0, 0.0, 0.015), Paint.coat(Paint.STEEL, 0.4, 0.5), 0.006)
 			_cells(b, Vector2(size.x - 0.04, size.y - 0.04), 4, 2, Basis.IDENTITY, Vector3(0.0, 0.0, 0.032))

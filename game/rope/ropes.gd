@@ -331,6 +331,12 @@ func pull_player(impulse: Vector3) -> void:
 ## through its one hook, the rope_drag meta.
 func _drag_player(h: float) -> void:
 	var player := world.player
+	# Riding, the board's own grip and drag answer the pull: it tows you.
+	if player.ride != null:
+		player.ride.tow(_drag)
+		_drag = Vector3.ZERO
+		player.set_meta(&"rope_drag", Vector3.ZERO)
+		return
 	var tied := ropes.any(at_waist)
 	var own: Vector3 = player.velocity - player.get_meta(&"rope_drag", Vector3.ZERO)
 	own.y = 0.0

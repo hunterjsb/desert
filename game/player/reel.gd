@@ -81,7 +81,10 @@ func notch(by: int) -> bool:
 	if now != rope:
 		rope = now
 		wanted = now.length
-	wanted = clampf(wanted - by * NOTCH, minf(SHORTEST, now.length), now.full)
+	# A sheet pays out into its sail even with all of the line out; what the
+	# sail can't take, the line won't give past all there is of it.
+	var most := INF if now.hauls.is_valid() else now.full
+	wanted = clampf(wanted - by * NOTCH, minf(SHORTEST, now.length), most)
 	return true
 
 
@@ -120,7 +123,11 @@ func _physics_process(delta: float) -> void:
 		var far := _far(rope).global_position - _player.global_position
 		walk_in = Vector2(far.x, far.z).normalized() * PACE * strain
 	var step := clampf(off, -pace * delta, pace * delta)
-	rope.length += step
+	# What a sheet takes in hauls its sail instead, and the line needn't.
+	var left: float = rope.hauls.call(step) if rope.hauls.is_valid() else step
+	left = minf(left, rope.full - rope.length)
+	wanted -= step - left
+	rope.length += left
 	rope.strand.set_length(rope.length)
 	if _stroke == 0.0 and step != 0.0:
 		_rub()
@@ -130,9 +137,10 @@ func _physics_process(delta: float) -> void:
 		_rub()
 
 
-## Your hands are on it: no menu up, the inventory shut, not riding.
+## Your hands are on it: no menu up, the inventory shut. Riding, it works the
+## line at your waist: a sheet the board stays tied to.
 func working() -> bool:
-	return Controls.playing() and not _player.suit.open and _player.board == null
+	return Controls.playing() and not _player.suit.open
 
 
 ## The rope gathered where the line is on you, as a coil growing with it.

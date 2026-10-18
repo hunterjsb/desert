@@ -77,7 +77,7 @@ const TOUCHES := 64
 const SOCKET_NAMES := {&"battery": "battery slot", &"ring": "ring", &"bottom": "tray mount", &"top": "top mount",
 	&"plant_pot": "pot", &"plant_standard": "planter", &"plant_deep": "deep bed", &"port": "port", &"tie": "hook",
 	&"water": "water socket", &"mod": "mod mount", &"food": "food slot", &"rack": "rack", &"deck": "deck mount",
-	&"computer_mod": "computer-mod port", &"computer_top": "computer-mod top", &"screen": "screen port"}
+	&"computer_mod": "computer-mod port", &"computer_top": "computer-mod top", &"screen": "screen port", &"sail": "sail mount"}
 const RIDING := "not from the board"
 
 var held: RigidBody3D
@@ -402,6 +402,14 @@ static func describe(label: String, mass: float, stats: Dictionary) -> String:
 		bits.append(stats.take)
 	if stats.get("lift_kg", 0.0) > 0.0:
 		bits.append("floats %d kg" % roundi(stats.lift_kg))
+	if stats.get("runners", 0) > 0:
+		bits.append("on runners")
+	elif stats.has("glide"):
+		bits.append("glides on the sand")
+	if stats.has("sail"):
+		bits.append("sail %s" % stats.sail if stats.sail == "torn" else "%.1f m² sail %s" % [stats.sail_m2, stats.sail])
+	if stats.has("sail_n") and stats.get("sail", "") == "raised":
+		bits.append("pulls %d N" % roundi(stats.sail_n))
 	if stats.get("resting", false):
 		bits.append("resting")
 	elif stats.get("can_float", false):
@@ -650,11 +658,10 @@ func _no_fit() -> String:
 	if not free:
 		return "no free %s" % SOCKET_NAMES.get(named, "socket")
 	if piece != null:
+		if _mixes(piece, target):
+			return "runners and trays don't mix"
 		return "wrecked" if piece.wrecked() or target.wrecked() else "no room at that ring"
-	# Standing on a deck, a device takes no tray: the deck's carry it.
-	if held is Part and (held as Part).stats.get("lift_kg", 0.0) > 0.0 and target.on_deck():
-		return "on a deck it takes no tray"
-	return ""
+	return target.refuses(held) if held is Part else ""
 
 
 ## Last on, first off: aimed at a hook with a line tied to it, it's the line's
@@ -877,9 +884,9 @@ func _find_stand() -> void:
 		if best != null and not _stands_clear(device, best):
 			_stand_why = "something's in the way"
 			best = null
-		# The deck's trays carry what stands on it; its own would sit in the deck.
-		if best != null and device.has_tray():
-			_stand_why = "take its tray off first"
+		# The deck's trays or runners carry what stands on it; its own would sit in the deck.
+		if best != null and device.carriage() != &"":
+			_stand_why = "take its tray off first" if device.has_tray() else "take its runners off first"
 			say(_stand_why)
 			best = null
 		if best != null:
@@ -912,6 +919,9 @@ func _find_ring(piece: Chassis) -> Socket:
 	if best == null:
 		return null
 	var deck := best.get_parent() as Chassis
+	if _mixes(piece, deck):
+		_stand_why = "runners and trays don't mix"
+		return null
 	var turns := deck._turns_for(piece, best, piece.global_basis)
 	if turns < 0:
 		_stand_why = "wrecked" if piece.wrecked() or deck.wrecked() else "no room at that ring"
@@ -949,6 +959,13 @@ func _joins_clear(piece: Chassis, pose: Transform3D, deck: Chassis) -> bool:
 			if not _sand(hit):
 				return false
 	return true
+
+
+## Whether a piece joining a deck would put trays and runners on one deck.
+static func _mixes(piece: Device, deck: Device) -> bool:
+	var a := piece.carriage()
+	var b := deck.carriage()
+	return a != &"" and b != &"" and a != b
 
 
 ## How far a device is from where it would stand on a deck mount, m.
@@ -1209,9 +1226,11 @@ func _takes(each: Socket) -> bool:
 	if not each.is_open():
 		return false
 	if held is Chassis and each.kind == &"ring":
-		return (held as Chassis).fits_in(each) and _room_for(_seat(each), each.get_parent())
-	# Standing on a deck, a device takes no tray: the deck's carry it.
-	if held is Part and (held as Part).stats.get("lift_kg", 0.0) > 0.0 and (each.get_parent() as Device).on_deck():
+		return (held as Chassis).fits_in(each) and not _mixes(held, each.get_parent()) \
+			and _room_for(_seat(each), each.get_parent())
+	# Standing on a deck a device takes no tray or runners, and a device
+	# takes trays or runners, never both.
+	if held is Part and (each.get_parent() as Device).refuses(held) != "":
 		return false
 	return (held as Device).fits_in(each) if held is Device else each.kind == held.get(&"kind")
 

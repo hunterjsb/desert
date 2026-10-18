@@ -1,0 +1,178 @@
+class_name SailProbe
+extends DeckProbe
+## For sailing probes: a camp on runners with a mast and sail, on level sand
+## running across the wind, in a wind the probe picks.
+
+var deck: Chassis
+var mast: Mast
+## Level sand across the run's long-term wind, world metres, and the ways
+## along and across it.
+var level := Vector2.ZERO
+var downwind := Vector2.ZERO
+var across := Vector2.ZERO
+## That sand where the engine has it now: it moves as the origin shifts.
+var open: Vector3:
+	get:
+		var at := Vector3(world.engine_x(level.x), 0.0, world.engine_z(level.y))
+		at.y = world.height_under(at)
+		return at
+
+
+func load_sailing(run_seed := 1234) -> void:
+	await load_lines(run_seed)
+	level = Scenarios.open_sand(world)
+	check(not is_nan(level.x), "there's level sand to sail on")
+	downwind = Vector2.from_angle(WeatherField.mean_heading(world.run_seed))
+	across = downwind.orthogonal()
+	follow(open)
+	await settle(true)
+	follow(open)
+
+
+## A deck two pieces by two at a place, facing `heading` (engine x, z), on
+## `carried` under every piece (skates, a board plate or hover trays), a mast
+## with its sail on the front piece to `windward` (1 its left, -1 its right),
+## a crate with two batteries behind it, and unless `cleated` is false the
+## sheet made fast on the deck's own hook, so it holds its trim: a camp left
+## to sail itself.
+func rig(at: Vector3, heading: Vector2, carried := &"skates", windward := 1, cleated := true) -> Chassis:
+	deck = Catalog.device(&"chassis") as Chassis
+	world.content.add_child(deck)
+	var yaw := atan2(-heading.x, -heading.y)
+	deck.global_transform = Transform3D(Basis(Vector3.UP, yaw), at + Vector3.UP * 0.5)
+	var left := 0 if windward > 0 else 1
+	for each: Array in [[Vector2i.ZERO, Vector2i(1, 0)], [Vector2i.ZERO, Vector2i(0, 1)], [Vector2i(1, 0), Vector2i(0, 1)]]:
+		deck.join(Catalog.device(&"chassis") as Chassis, ring(deck, each[0], each[1]), 0)
+	for i in 4:
+		fit_part(deck, carried)
+	mast = Catalog.device(&"mast") as Mast
+	world.content.add_child(mast)
+	fit_part(mast, &"sail")
+	deck.mount(mast, socket_on(deck, Vector2i(left, 0), &"deck"))
+	var crate := Catalog.device(&"crate_frame")
+	world.content.add_child(crate)
+	fit_part(crate, &"battery")
+	fit_part(crate, &"battery")
+	deck.mount(crate, socket_on(deck, Vector2i(left, 1), &"deck"))
+	if cleated:
+		fit_part(deck, &"hook")
+		Line.between(world, mast._tie(), deck.free_tie(deck.global_position), 6.0)
+	set_down(deck)
+	return deck
+
+
+## The deck moored to a stake driven this far upwind of it, m, by a hook on
+## the ring nearest it.
+func moor(upwind := 4.0) -> void:
+	fit_part(deck, &"hook")
+	var at := deck.global_position - ground(downwind) * upwind
+	var stake := driven_stake(Vector3(at.x, world.height_under(at), at.z))
+	Line.between(world, deck.free_tie(stake.global_position), stake.free_tie(deck.global_position), 0.3)
+
+
+## The lowest any corner of the deck or what's seated on it comes below the
+## sand under it, m: never far.
+func sunk() -> float:
+	var deepest := -INF
+	var riding: Array[Device] = [deck]
+	while not riding.is_empty():
+		var each: Device = riding.pop_back()
+		riding.append_array(each.mounted())
+		for child in each.get_children():
+			var shape := child as CollisionShape3D
+			if shape == null or shape.shape == null:
+				continue
+			var box := Catalog.bounds(shape.shape)
+			for i in 8:
+				var corner := each.global_transform * shape.transform * box.get_endpoint(i)
+				deepest = maxf(deepest, world.height_under(corner) - corner.y)
+	return deepest
+
+
+## Sets a device down on the sand where it stands, as high as what carries it holds it.
+func set_down(device: Device) -> void:
+	var sand := 0.0
+	var spots: Array = (device as Chassis).pieces().map(func(p: Chassis) -> Vector3: return p.pose().origin) \
+		if device is Chassis else [Vector3.ZERO]
+	var middle := Vector3.ZERO
+	for spot: Vector3 in spots:
+		sand += world.height_under(device.global_transform * spot) / spots.size()
+		middle += spot / spots.size()
+	device.global_position.y += sand + device.rest_height() - (device.global_transform * middle).y
+	device.linear_velocity = Vector3.ZERO
+	device.angular_velocity = Vector3.ZERO
+
+
+## The sail up at once, its boom free to swing as far as `degrees` either way.
+func hoist(degrees: float) -> void:
+	mast.raised = true
+	mast.raise = 1.0
+	trim(degrees)
+
+
+## The sheet hauled to hold the boom within `degrees` of straight back.
+func trim(degrees: float) -> void:
+	mast.trim = 2.0 * Mast.BOOM * sin(deg_to_rad(degrees) * 0.5)
+
+
+## A heading as an engine direction on the flat.
+static func ground(way: Vector2) -> Vector3:
+	return Vector3(way.x, 0.0, way.y)
+
+
+## Where the deck is to keep heading, as you would steer it by its lines: a
+## turn toward it no harder than a pull on a line could give, N·m. Unset,
+## it sails where its rig takes it.
+var course := Vector2.ZERO
+var helm := 300.0
+## Tending the sheet as a sailor would, reeling the sail to meet the wind at
+## this angle of attack, rad, and easing it as the camp starts to heel; 0
+## leaves the trim be.
+var tending := 0.0
+
+
+func _steer() -> void:
+	if tending > 0.0 and is_instance_valid(mast) and mast.sail() != null:
+		var meet := tending * clampf(1.0 - (roll() - 2.0) / 4.0, 0.0, 1.0)
+		var want := clampf(absf(mast.boom) + absf(mast.attack) - meet, 0.0, Mast.MOST)
+		mast.trim = lerpf(mast.trim, 2.0 * Mast.BOOM * sin(want * 0.5), 0.05)
+	if course == Vector2.ZERO or deck == null:
+		return
+	var ahead := -deck.global_basis.z
+	var off := Vector2(ahead.x, ahead.z).angle_to(course)
+	deck.apply_torque(Vector3.UP * clampf(-off * 600.0 - deck.angular_velocity.y * 200.0, -helm, helm))
+
+
+## You stand beside a place, so the ground round it stays solid and loaded.
+func follow(at: Vector3) -> void:
+	world.player.global_position = at + Vector3(0.0, 2.0, 0.0)
+
+
+## Ticks for a span, you keeping pace with the deck; `each` after every tick.
+func sail_for(seconds: float, each := Callable()) -> void:
+	await simulate(seconds, func() -> void:
+		follow(deck.global_position + Vector3(0.0, 0.0, 8.0))
+		_steer()
+		if each.is_valid():
+			each.call())
+
+
+## The deck's way over the sand, engine x and z.
+func way() -> Vector2:
+	return Vector2(deck.linear_velocity.x, deck.linear_velocity.z)
+
+
+## How far it leans from level, degrees.
+func heel() -> float:
+	return rad_to_deg(deck.global_basis.y.normalized().angle_to(Vector3.UP))
+
+
+## How far it leans to its side, degrees, whatever its nose does.
+func roll() -> float:
+	return rad_to_deg(asin(clampf(absf(deck.global_basis.x.normalized().y), 0.0, 1.0)))
+
+
+## The engine heading a deck faces across the wind with the wind on its left
+## (1) or right (-1), turned `off` degrees toward the wind.
+func heading(windward := 1, off := 0.0) -> Vector2:
+	return (across * windward).rotated(-deg_to_rad(off) * windward)

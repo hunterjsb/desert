@@ -12,6 +12,8 @@ signal parts_changed
 ## Settling, a tray's all-lifting height sinks this many falloffs below the
 ## sand, so what it holds is down on the sand before it stops.
 const SETTLE_BELOW := 3.0
+## Leaning past this far, rad, what's seated on it can meet the sand.
+const TIPPED := deg_to_rad(25.0)
 
 @export var label := "device"
 ## The bare frame's weight, kg, and where it sits in its own frame: a tall
@@ -68,6 +70,8 @@ var lift_share := 1.0:
 var carried_kg := 0.0
 
 var world: World
+## Its runners, if it rides the sand on any, or null.
+var glider: Runners
 var _hovering := false
 ## Its trays, each as [kg it lifts, the corners of its face, the way it faces
 ## out], in its own frame: each lifts under its own spot.
@@ -195,6 +199,30 @@ func host() -> Device:
 ## Whether it has a hover tray fitted.
 func has_tray() -> bool:
 	return not _trays.is_empty()
+
+
+## What carries it: &"tray" for hover trays, &"runner" for runners on the
+## sand, or none.
+func carriage() -> StringName:
+	return &"tray" if has_tray() else (&"runner" if glider != null else &"")
+
+
+## What a part in a bottom mount carries its device on, or none.
+static func carries(part: Part) -> StringName:
+	return &"tray" if part.stats.get("lift_kg", 0.0) > 0.0 else (&"runner" if part.stats.has("glide") else &"")
+
+
+## Why a part can't go in one of its sockets, or "": standing on a deck it
+## takes no tray or runners, since the deck's carry it, and trays and
+## runners don't mix on one device.
+func refuses(part: Part) -> String:
+	var kind := carries(part)
+	if kind == &"":
+		return ""
+	if on_deck():
+		return "on a deck it takes no %s" % ("tray" if kind == &"tray" else "runners")
+	var now := carriage()
+	return "runners and trays don't mix" if now != &"" and now != kind else ""
 
 
 ## Seated on a chassis piece's deck mount, where it keeps its own sockets.
@@ -491,6 +519,7 @@ func stats() -> Dictionary:
 		if socket.kind == &"battery" and part is Battery:
 			charge += (part as Battery).charge_wh
 			cells += 1
+	total["runners"] = glider.runners.size() if glider != null else 0
 	total["can_float"] = total["lift_kg"] >= mass
 	total["resting"] = resting
 	total["hovering"] = total["can_float"] and powered and lift_share > 0.0
@@ -529,6 +558,13 @@ func _recompute() -> void:
 	for socket in sockets():
 		if socket.part != null and socket.part.stats.get("lift_kg", 0.0) > 0.0:
 			_trays.append(_tray(socket))
+	var runners := Runners.of(self)
+	if runners.is_empty():
+		glider = null
+	else:
+		if glider == null:
+			glider = Runners.new()
+		glider.runners = runners
 	var now := stats()
 	_hovering = now["hovering"]
 	# Lamps shine, and lenses and emitters glow, only while it has the power.
@@ -541,9 +577,10 @@ func _recompute() -> void:
 				node.visible = powered
 			elif Paint.is_worn(node):
 				(node as GeometryInstance3D).set_instance_shader_parameter(&"lit", lit)
-	# A resting body sleeps, and a sleeping one ignores the tray's lift.
-	can_sleep = not _hovering
-	if _hovering:
+	# A resting body sleeps, and a sleeping one ignores the tray's lift and
+	# the runners' hold.
+	can_sleep = not _hovering and glider == null
+	if not can_sleep:
 		sleeping = false
 	set_meta(&"wind_catch", now["catch"])
 	parts_changed.emit()
@@ -613,9 +650,32 @@ func _physics_process(delta: float) -> void:
 	if lift_share != goal:
 		lift_share = move_toward(lift_share, goal, delta / tuning.hover_settle_seconds)
 	carried_kg = 0.0
-	if freeze or not _hovering:
+	if freeze:
 		return
-	_lift(tuning, delta)
+	if glider != null:
+		glider.glide(self, world, delta)
+	if _hovering:
+		_lift(tuning, delta)
+	if not _seats.is_empty() and global_basis.y.normalized().dot(Vector3.UP) < cos(TIPPED):
+		_rest_seated(delta)
+
+
+## Tipped over, what's seated on it meets the sand too, by the corners of its
+## frame, as any end would: a crate standing on a capsized deck rests on its
+## edge, never through the sand.
+func _rest_seated(h: float) -> void:
+	var riding := mounted()
+	while not riding.is_empty():
+		var each: Device = riding.pop_back()
+		riding.append_array(each.mounted())
+		for child in each.get_children():
+			var shape := child as CollisionShape3D
+			if shape == null or shape.shape == null or shape.has_meta(&"socket"):
+				continue
+			var box := Catalog.bounds(shape.shape)
+			var to_world := each.global_transform * shape.transform
+			for i in 8:
+				Runners.touch(self, world, to_world * box.get_endpoint(i), 0.6, h)
 
 
 ## Each tray reads the sand under its face, on average, and pushes straight
@@ -695,6 +755,8 @@ func _tray(socket: Socket) -> Array:
 ## How high its middle rides over level sand, its load shared out as its
 ## trays lift: where to set it down floating. Too heavy, on the sand.
 func rest_height() -> float:
+	if glider != null:
+		return glider.rest_height()
 	var lift := 0.0
 	var depth := 0.0
 	var count := 0

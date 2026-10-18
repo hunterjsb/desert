@@ -14,7 +14,8 @@ const SURFACE := &"surface"
 const DEEP := &"deep"
 ## What each layer holds, as [catalog id, weight]: loose parts, and whole
 ## devices. Rope and wire are common, hose a little less and a compass
-## uncommon; a harvester is a rare, better part.
+## uncommon; a harvester is a rare, better part. A sand yacht's pieces, the
+## runners, a sail and a mast, lie deep.
 const PARTS := {
 	SURFACE: [
 		[&"battery", 4],
@@ -34,6 +35,9 @@ const PARTS := {
 		[&"hook", 1],
 		[&"strong_plug", 2],
 		[&"harvester", 1],
+		[&"sail", 2],
+		[&"skates", 2],
+		[&"board_plate", 2],
 	],
 }
 const DEVICES := {
@@ -54,6 +58,7 @@ const DEVICES := {
 		[&"board", 1],
 		[&"chassis", 1],
 		[&"console", 1],
+		[&"mast", 1],
 	],
 }
 ## What a ruin's floor holds besides, by layer: seeds and rations, kept from
@@ -94,7 +99,8 @@ const FILLS := {
 	SURFACE: {&"battery": [&"battery"], &"ring": [&"hook"], &"top": [&"lamp"], &"water": [&"canister"]},
 	DEEP: {&"battery": [&"big_battery", &"battery"], &"ring": [&"hook"], &"bottom": [&"hover_tray"],
 		&"top": [&"solar_panel", &"lamp"], &"water": [&"canister"], &"screen": [&"screen"],
-		&"computer_mod": [&"anemometer", &"barometer", &"hygrometer", &"particle_sensor"], &"computer_top": [&"radar"]},
+		&"computer_mod": [&"anemometer", &"barometer", &"hygrometer", &"particle_sensor"], &"computer_top": [&"radar"],
+		&"sail": [&"sail"]},
 }
 ## Per layer: the share of a device's sockets found filled, the range of a
 ## battery's charge and of a device's soundness, and how much of a buried

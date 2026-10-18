@@ -499,7 +499,9 @@ All run without a window, with a fixed seed.
 7. **Clear skies are earned.** Over a long simulated run, four reference travellers
    (sitting still, drifting with the wind, chasing gaps on foot, chasing gaps by sand
    yacht) each spend a share of time in the clear that lands inside their target band.
-   The share has to rise with skill and speed.
+   The share has to rise with skill and speed. *(Waiting: the sand yacht is built as of
+   2026-10-18, [Movement](movement.md#sailing-the-camp-hunter-2026-10-17), but no traveller
+   sails it yet. At 3 to 4.5 m/s in a 10 m/s wind it runs well under a front's 6 to 14 m/s.)*
 8. **Storms pass.** For a traveller sitting still, most storms pass within a full base
    shield's charge, and longer ones exist.
 9. **The lee of a dune.** In a steady gale along the dunes' own heading, the wind at the
