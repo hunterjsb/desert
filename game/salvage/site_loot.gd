@@ -146,15 +146,15 @@ static func draw(site: Site, i: int) -> Dictionary:
 	var best: bool = socket.deep > 0.0 or (socket.kind in [FLOOR, CACHE] and rng.randf() < region.best)
 	var table: Array = kind[HALL] if hall else (kind.get(BEST, era[BEST]) if best else kind.get(socket.kind, era[socket.kind]))
 	var id := Finds._pick(rng, table)
-	var spec := {"id": id, "device": Catalog.DEVICES.has(id), "layer": era.layer, "era": site.era,
-		"tier": 2 if best else 1, "index": i, "site": site.id, "yaw": rng.randf() * TAU, "lean": rng.randf() * TAU,
+	var spec := {"id": id, "device": Catalog.DEVICES.has(id), "layer": era.layer, "era": site.era, "kind": site.kind,
+		"seed": hash([site.loot, i]), "tier": 2 if best else 1, "index": i, "site": site.id, "yaw": rng.randf() * TAU,
+		"lean": rng.randf() * TAU,
 		"lean_by": deg_to_rad(rng.randf() * Finds.LEAN), "sealed": era.sealed, "frozen": true, "drop": DROP}
 	spec.charge = rng.randf_range(era.charge.x, era.charge.y)
 	spec.sound = rng.randf_range(era.sound.x, era.sound.y)
 	spec.fill = []
 	if spec.device:
 		_fill(spec, rng, era, Finds.HALL_PARTS if hall else 0)
-	spec.lineage = Eras.lineage(site.era, _stream(site.loot, i, "lineage"))
 	return spec
 
 

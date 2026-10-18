@@ -510,6 +510,22 @@ static func device(id: StringName) -> Device:
 	return made
 
 
+## Stand-in for the lineage package's call of the same name until the
+## branches meet (docs/world-system.md, "What lineage does now"): a find's
+## lineage from the site it lay in, drawn from its own seed by the Dark Age's
+## rule and kept on it; a crop, food or salt takes none. What it was given.
+static func found_in(body: Node, era: StringName, _kind: StringName, seed_value: int) -> Array:
+	var id: StringName = body.get_meta(&"catalog", &"")
+	var spec: Dictionary = PARTS.get(id, {})
+	if spec.has("crop") or spec.get("kind") in [&"food", &"salt"]:
+		return []
+	var rng := RandomNumberGenerator.new()
+	rng.seed = hash([seed_value, &"lineage"])
+	var line := Eras.lineage(era, rng)
+	body.set_meta(&"lineage", line)
+	return line
+
+
 ## A basis whose +Z points along outward.
 static func _facing(outward: Vector3) -> Basis:
 	var up := Vector3.UP if absf(outward.dot(Vector3.UP)) < 0.9 else Vector3.BACK

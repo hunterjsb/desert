@@ -4,12 +4,15 @@ extends Probe
 ## seed, laid from places on the ground kilometres apart: the site the same,
 ## the sheet not. Two sites of a kind seldom draw alike; what lies within
 ## reach at any moment is drawn as the site holds it, whatever the weather;
-## and each find carries its site's era and the lineage it was drawn with.
+## and each find carries its site's era and kind and a seed of its own, so
+## made again it's given the same hands it passed through.
 
 const SEED := 1234
 const TOWNS := 6
 ## Two sites of a kind with a few sockets draw alike at most this share of the time.
 const ALIKE := 0.2
+## Devices made from what's within reach, twice each, for their lineage.
+const MADE := 10
 
 
 func run() -> void:
@@ -24,6 +27,8 @@ func run() -> void:
 	var pairs := 0
 	var off_draw := 0
 	var lineage_wrong := 0
+	var shared := 0
+	var made := 0
 	var shown := 0
 	for town in StructureKit.starts_among(SEED, tuning, Sphere.point(0.0, 0.0), grounds[0], TOWNS):
 		for k in 2:
@@ -39,6 +44,11 @@ func run() -> void:
 			matched += 1
 			var draws := _draws(site)
 			differ += int(var_to_str(draws) != var_to_str(_draws(other)))
+			var seeds := {}
+			for each: Dictionary in draws:
+				if not each.is_empty():
+					seeds[each.seed] = true
+			shared += draws.filter(func(d: Dictionary) -> bool: return not d.is_empty()).size() - seeds.size()
 			var seen: Array = by_kind.get(site.kind, [])
 			if site.piece.sockets.size() >= 3:
 				for each: Array in seen:
@@ -52,8 +62,15 @@ func run() -> void:
 					shown += 1
 					var drawn := SiteLoot.draw(site, spec.index)
 					off_draw += int(drawn.id != spec.id or var_to_str(drawn.fill) != var_to_str(spec.fill))
-					lineage_wrong += int(spec.era != site.era or spec.lineage.is_empty() or spec.lineage[0][1] != &"made"
-						or (site.era == Eras.SECOND and not spec.lineage.has([Eras.DARK, &"remade"])))
+					lineage_wrong += int(spec.era != site.era or spec.kind != site.kind)
+					if made < MADE and spec.device:
+						made += 1
+						var one_body := Finds.make(spec)
+						var two_body := Finds.make(spec)
+						lineage_wrong += int(not one_body.has_meta(&"lineage")
+							or var_to_str(one_body.get_meta(&"lineage")) != var_to_str(two_body.get_meta(&"lineage")))
+						one_body.free()
+						two_body.free()
 				site.forget()
 	print("%d structures matched in both, %d finds shown over three moments, %d pairs of a kind compared"
 		% [matched, shown, pairs])
@@ -61,7 +78,9 @@ func run() -> void:
 		% [differ, matched])
 	check(pairs > 20 and unlike <= pairs * ALIKE, "two sites of a kind seldom draw alike (%d of %d)" % [unlike, pairs])
 	check(shown > 20 and off_draw == 0, "what lies within reach is what the site holds (%d off)" % off_draw)
-	check(lineage_wrong == 0, "each find carries its site's era and lineage (%d wrong)" % lineage_wrong)
+	check(shared == 0 and made == MADE and lineage_wrong == 0,
+		"each find carries its site's era and kind and a seed of its own, made with the same hands each time (%d wrong)"
+		% (lineage_wrong + shared))
 
 
 ## The standing structures of a laid sheet, by id.

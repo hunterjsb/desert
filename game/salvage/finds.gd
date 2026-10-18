@@ -264,7 +264,8 @@ static func make(spec: Dictionary) -> RigidBody3D:
 
 ## A find's body before its parts: a part whole, or a device's bare frame.
 ## Making one is split this way so no piece of the streaming budget is long.
-## A site's find carries its era and its lineage, for the marks it wears.
+## A site's find is given the hands it passed through from its own seed, by
+## its site's era and kind, before it's in the world.
 static func bare(spec: Dictionary) -> RigidBody3D:
 	var body: RigidBody3D
 	if not spec.device:
@@ -275,8 +276,7 @@ static func bare(spec: Dictionary) -> RigidBody3D:
 		body.center_of_mass_mode = RigidBody3D.CENTER_OF_MASS_MODE_CUSTOM
 		mark(body, spec.layer)
 	if spec.has("era"):
-		body.set_meta(&"era", spec.era)
-		body.set_meta(&"lineage", spec.lineage)
+		Catalog.found_in(body, spec.era, spec.kind, spec.seed)
 	return body
 
 
@@ -291,11 +291,14 @@ static func mark(body: Node, layer: StringName) -> void:
 	Paint.show_age(body, Paint.age_of(layer, (sound.x + sound.y) * 0.5))
 
 
-## Fits the k-th part a device was found with.
+## Fits the k-th part a device was found with; a site's part has hands of
+## its own, from its own seed.
 static func fit(device: Device, spec: Dictionary, k: int) -> void:
 	var entry: Array = spec.fill[k]
-	device.fit(_part(entry[1], entry[2], spec.layer, spec.id == &"survival_kit" or spec.get("sealed", false)),
-		device.sockets()[entry[0]])
+	var part := _part(entry[1], entry[2], spec.layer, spec.id == &"survival_kit" or spec.get("sealed", false))
+	if spec.has("era"):
+		Catalog.found_in(part, spec.era, spec.kind, hash([spec.seed, k]))
+	device.fit(part, device.sockets()[entry[0]])
 
 
 ## Nothing found runs until it's yours; its light still shows what it holds.
