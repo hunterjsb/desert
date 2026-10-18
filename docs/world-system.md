@@ -482,17 +482,17 @@ A start is a point on the sphere; the world sets the moon position there before 
 (`World.start`), and the sheet lays history round it. A world with no origin, the menu's, a probe's or
 a save's from before origins, starts where the tuning says.
 
-*Built 2026-10-18.* On twenty seeds every start held its rule on the first search, in at most 45 ms once
-a run, after the pass. What history puts round each (spawns probe 1 measures the rules; the numbers
-are from twenty seeds): the Surveyor's in Mon, 4.6 to 11 km from Port Morgan or Starcom, has nothing
-within 700 m but now and then the survey grid's beacon or relay mast, and the spoke it walks in to is
-1.5 to 2.9 km off toward Tu, a colonial line of pylon stubs and relay masts with the second age's
-wayshrines on it. The Salvager's is 40 to 240 m from a wreck's hull and its fuel bladders, half the
-time in Han within 10 km of Halloran or the black site, otherwise in Mon, between 80 m and 24 km from
-the nearest artery. The Homesteader's is on the artery or a spoke near Port Morgan, or on the Rim's
-ring and roads near Halfrise, Sister and the depot, a wayshrine 20 to 85 m off and most often a
-watchtower, a house ruin or a pylon stub within a few hundred metres. Until the structure kits build
-history's sites, none of this stands on the ground: the map shows it.
+*Built 2026-10-18.* On twenty seeds every start found a place keeping its rule, in at most 45 ms
+once a run on a quiet machine, after the pass. What history puts round each, on those twenty (spawns
+probe 1 measures the rules on eight): the Surveyor's, always in Mon 4.6 to 11 km from Port Morgan or
+Starcom, has nothing within 700 m but now and then the survey grid's beacon or relay mast, and the
+line it walks in to is 1.5 to 2.9 km off toward Tu, a spoke: a colonial line of pylon stubs and relay masts
+with the second age's wayshrines on it. The Salvager's is 40 to 240 m from a wreck's hull and its fuel
+bladders, two times in five in Han within 10 km of Halloran or the black site, otherwise in Mon, and
+between 80 m and 24 km from the nearest artery. The Homesteader's is on the artery or a spoke out of
+Port Morgan, or on the Rim's ring and roads by Halfrise and the depot, a wayshrine 20 to 60 m off and
+most often a watchtower, a house ruin or a pylon stub within a few hundred metres. Until the
+structure kits build history's sites none of this stands on the ground: the map shows it.
 
 ## Budgets
 
