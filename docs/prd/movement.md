@@ -34,6 +34,9 @@ outrun,** at least until the late-game haulers arrive.
   gravity. Crouching makes you smaller to the wind, so you brace against a storm.
 - **Your feet sink when you haul** (decided 2026-10-15). Walking or sprinting against a
   heavy pull on a line, you dig in: you sink a little, slow down and tire faster.
+- **Auto-walk** (Hunter, [2026-10-18 spec](../storms-signals-sailing-2026-10-18.md)). It holds
+  your heading while you steer by the compass or other instruments, so a storm still lets you
+  make long-range progress.
 - **The body feels it:** sway as you walk, a spring in the step, a dip when you land,
   and a lean into strong wind. Sand Game's footstep, slide and impact recordings.
 
@@ -45,6 +48,17 @@ your wind catch to 45%. Hauling hard against a line digs you in: up to 35% slowe
 your stamina drains faster. A load past what you carry easily sinks you in the same way,
 standing too, but tires you only on the move, and past sunk in it slows you further
 (Survival, 2026-10-17). The feel settings live in their own "Body feel" tuning group.
+
+**Auto-walk, built (2026-10-18, `game/player/auto_walk.gd`, probe 21).** Its own action turns
+it on and off. It holds the way you faced when it began, not the camera, so you can look round,
+read the compass in your hand or watch the storm and keep going the same way. It only gives
+your walk its way: the same pace, stamina, slopes, slides and wind, a sprint while you hold
+sprint, and against a line at your waist you dig in as usual. It ends when you move yourself (a
+move held as it began counts once you've let it go), turn it off, walk into something solid
+near head-on, start up a face too steep to stand on, get on the board, a line at your waist goes
+taut against a stake or anything else held fast behind you, you die, or a menu or the console
+comes up. The inventory doesn't end it. A small chevron low in the view says it's on and points
+the way it holds as you look round. Saves don't keep it: a resumed run starts with it off.
 
 ## Meeting a storm
 
@@ -572,6 +586,15 @@ The board after Hunter's first ride has its own:
     up; and landing, pushing or popping off the crests, it never slams, bottoms out or
     bounces. *(Built: the numbers are under Air, above; the hardest moment flying or
     landing is 3.7 g.)*
+
+Auto-walk has its own:
+
+21. **Auto-walk.** It walks you exactly as holding move forward does, and holds its way
+    while the view turns right round. A move of your own ends it (one held as it began
+    counts once you let go), and so does walking into a wall or up a face too steep to
+    stand on. *(Built: 5.2198 m in 3 s from rest either way, at 1.8 m/s; the view turned
+    450° in 3 s and the way held to 0.001°; into a wall it stops dead; walking up to a
+    31.9° face it climbs 4.7 m of the foot and stops where the sand passes 28°, then stands.)*
 
 ## Out of scope
 
