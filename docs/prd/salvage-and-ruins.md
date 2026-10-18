@@ -535,6 +535,10 @@ should really flesh this feature out further once the skeleton is properly load-
 a nice intuitive driver. just need to make those tall structures look reallyyyy good and fit our
 vibe and scenario"): finding by eye is a driver of the game, to grow once the skeleton holds, and
 the tall structures want an art pass of their own.
+Then (round three, 2026-10-18): the masts and towers read right at true size; the far saltbush lines
+didn't ("look like giant ridges or serpents from afar, or even maybe a shadow glitch, and you can
+see them through storms"), so far off they're a broken line of bushes, as faint as the haze makes
+them and hidden by a storm like anything else; and the glint is toned down a little.
 
 ### Readings, not in the session
 
