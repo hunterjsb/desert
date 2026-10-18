@@ -74,8 +74,7 @@ var root := Vector3.ZERO
 var slot := Vector2(0.0, 1.0)
 ## The streakline: each point's place from the root, m in engine axes, and
 ## width; what it carries, as optical depths across its middle of ash, steam
-## and haze, and how hard the vent was venting as it left; the storms' veil
-## between you and it, and the sun left on it.
+## and haze; the storms' veil between you and it, and the sun left on it.
 var line := PackedVector4Array()
 var matter := PackedVector4Array()
 var seen := PackedVector4Array()
@@ -263,7 +262,7 @@ func _streak(t: float, count := POINTS) -> void:
 		var steam := cold * exp(-age / lasts) * SHOWS.y
 		var haze := (1.0 - exp(-age / HAZE_FORMS)) * (1.0 - 0.5 * v.y) * SHOWS.z
 		line[k] = Vector4(gone.x, rise, gone.y, width)
-		matter[k] = Vector4(thick * ash, thick * steam, thick * haze, v.x)
+		matter[k] = Vector4(thick * ash, thick * steam, thick * haze, 0.0)
 	_next = (_next + count) % POINTS
 	_frames += 1
 	if count == POINTS:
