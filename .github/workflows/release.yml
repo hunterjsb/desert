@@ -1,0 +1,40 @@
+name: Release
+
+# A v* tag publishes a GitHub pre-release of the builds, each smoke-tested on
+# its own OS, with RELEASE_NOTES.md as its notes. Run by hand it's a dry run:
+# the zips are only the run's artifacts.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+jobs:
+  builds:
+    uses: ./.github/workflows/builds.yml
+
+  publish:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: builds
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: desert-*
+          path: build
+          merge-multiple: true
+      - name: Publish the pre-release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          version=$(sed -n 's/^config\/version="\(.*\)"$/\1/p' project.godot)
+          # The tag names the version the builds say they are, or nothing ships.
+          if [[ $TAG != "v$version" ]]; then
+            echo "the tag is $TAG but project.godot says $version" >&2
+            exit 1
+          fi
+          gh release create "$TAG" build/desert-"$version"-*.zip --verify-tag --prerelease \
+            --title "Desert $version" --notes-file RELEASE_NOTES.md

@@ -37,11 +37,12 @@ trap 'rm -rf -- "${reports:?}"' EXIT
 log=$reports/godot.log
 
 # The command, killed after $1 s: 124 or 137 then, or 142 from perl's alarm
-# where there's no timeout (macOS).
+# where there's no GNU timeout (macOS; Windows' own timeout only waits).
+timeout --version >/dev/null 2>&1 && gnu_timeout=1 || gnu_timeout=""
 limited() {
 	local secs=$1
 	shift
-	if command -v timeout >/dev/null; then
+	if [[ -n $gnu_timeout ]]; then
 		timeout --kill-after=5 "$secs" "$@"
 	else
 		perl -e 'alarm shift; exec @ARGV or die "$ARGV[0]: $!\n"' "$secs" "$@"
@@ -188,11 +189,11 @@ report() {
 # Printed here, one at a time as they finish, so reports never interleave.
 running=0
 collect() {
-	local done
-	for done in "$reports"/*.done; do
-		[[ -e $done ]] || continue
-		cat "${done%.done}"
-		rm -f "$done"
+	local finished
+	for finished in "$reports"/*.done; do
+		[[ -e $finished ]] || continue
+		cat "${finished%.done}"
+		rm -f "$finished"
 		running=$((running - 1))
 	done
 }
