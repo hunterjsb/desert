@@ -6,7 +6,8 @@ extends Node
 ## quit only quits. A Normal run also saves itself as you play and when you
 ## quit, and a death in it offers the last save back; quick save and quick
 ## load are its own. A dev scenario (`-- --scenario=<key>`, or the console's
-## scenario) skips the menu, and its run is never saved.
+## scenario) skips the menu, and its run is never saved. `-- --smoke` is an
+## exported build's check instead (Smoke).
 
 ## Loaded when wanted, not preloaded: the world's own scripts reach back here
 ## through the UI root, and a preload would go round in a circle.
@@ -38,6 +39,9 @@ var _played := 0.0
 
 func _ready() -> void:
 	ui.main = self
+	if Smoke.asked():
+		Smoke.run(self)
+		return
 	var asked := _scenario_asked()
 	_scenario = asked != ""
 	if opens_on_menu and not _scenario:

@@ -1,6 +1,7 @@
 extends MenuProbe
 ## Menus & UI probe 3: the menu's default, end to end. The main menu's title
-## is the game's name, over the starting crate, which is only to look at: no
+## is the game's name, the project's version small in a corner, over the
+## starting crate, which is only to look at: no
 ## body in it, and the storm doesn't move it. With no save, Resume is
 ## absent, New game is highlighted, and confirm asks who you come as, then
 ## which mode, Normal highlighted and Ironman below it; confirm again starts
@@ -24,6 +25,9 @@ func run() -> void:
 	var menu := main.ui.top()
 	check(menu.title != null and menu.title.text == UIRoot.TITLE and menu.title.is_visible_in_tree(),
 		"the main menu's title is the game's name")
+	var build: String = ProjectSettings.get_setting("application/config/version", "")
+	check(build != "" and menu.version != null and menu.version.text == build and menu.version.is_visible_in_tree(),
+		"the main menu shows the project's version (%s)" % build)
 	var piece := main.showpiece
 	var eye := main.view.player.camera
 	var was := eye.global_transform.affine_inverse() * piece.global_transform
