@@ -142,9 +142,9 @@ terminals" by Hunter's call. The squatting oracles above are now the gods.
 | God | Band, kHz | Where it stands | Worth hearing | What it says then |
 |---|---|---|---|---|
 | The Quartermaster | 140–175 | The black site | Through the eclipse ("blackout drill") | Bearing and range to the nearest cache, dugout, checkpoint or bunker history laid near you |
-| The Walker | 230–290 | Walks the Rim, 1.5 m/s, from a seeded start | Always: the forecast where the radio is. At dusk, and when a storm starts or ends at its feet, the long report too | The weather station's reading; then 40 minutes ahead, and whether there's a storm at the Walker |
+| The Walker | 230–290 | Walks the Rim, the ring road's line, 1.5 m/s, from a seeded start | Always: the forecast where the radio is. At dusk, and when a storm starts or ends at its feet, the long report too | The weather station's reading; then 40 minutes ahead, and whether there's a storm at the Walker |
 | Mother Cistern | 410–450 | Sister | Dawn, 05:00–07:00 local | Frost or dew tonight with the 03:00 temperature, and the nearest cistern or stepwell |
-| The Almanac | 600–660 | A Rim ag complex 6–14° along the Rim from Halfrise | Sunrise and sunset | The day's range, and which crops would hold through it out in the open, and which to hold back |
+| The Almanac | 600–660 | Frontier Ag's farm domes nearest Halfrise, on the Rim | Sunrise and sunset | The day's range, and which crops would hold through it out in the open, and which to hold back |
 | The Ledger | 880–940 | Port Morgan | About midnight ("berth inventory") | Bearings and ranges to Halloran, the Rim depot and Starcom. It sends strongest |
 | The Stoker | 1180–1240 | Halloran | The hot hours, 13:00–16:00 local | A countdown to the next eclipse, and the peak temperature in the next 5 minutes |
 | The Eye | 1720–1790 | The observatory, at the anti-Tu point | Night where the radio is | Your latitude and longitude, and the local time |
@@ -237,11 +237,58 @@ terminals" by Hunter's call. The squatting oracles above are now the gods.
 - **Not yet:** a god's own voice beyond tones, frequencies as finds, antennas, and the far end's
   signal.
 
-### The dial in your hands (Hunter, 2026-10-18)
+### The dial in your hands (Hunter, 2026-10-18; built)
 
-Tuning brings the radio up close and you turn its dial itself: the view moves in to the set and
-the knob turns under your hand, the needle crossing the band. Each god's station is at its home,
-its signal and bearing from that landmark wherever you hear it.
+*Hunter: "the radio dial, we should have you zoom in and turn the physical dial, and make sure we tie
+our god stations to their homes."* Tuning brings the radio up close and you turn its dial itself: the
+view moves in to the set and the knob turns under your hand, the needle crossing the band. Each god's
+station is at its home, its signal and bearing from that landmark wherever you hear it.
+
+- **Up close.** Reel in, pay out, the fine-tune or volume actions, or use's sweep, on the radio they
+  work (one you look at, the one on a Console you look at, one standing on a deck, or one in your
+  hands) ease the view in over 0.35 s (`dial_close_seconds`) to 0.45 m off its face (`dial_close_m`)
+  through a 40° lens (`dial_close_fov`), against the game's 75°, so the face fills most of the view.
+  It meets the face square, or as near your own line of sight as 30° off square, its up the set's own
+  so the band reads level, swung round the set rather than through it and never nearer the sand than
+  12 cm. It's a camera of its own, so your aim stays yours: look off the radio and the view eases back
+  out at once, and 3 s (`dial_close_hold`) after the last turn it eases out anyway. The aim dot hides
+  while it's in; the look-at line stays. A radio in your hands turns its face up to your eyes as it's
+  closed in on. No new actions.
+- **The face** (`Dress`, B's paint): across the top a band scale in a gunmetal bezel, lit while it plays,
+  a tick every 100 kHz and a long one every 500, numbered 0 to 20 in hundreds as old sets were; a thin
+  red needle crossing it, lit too; under it the speaker's slats, the tuning knob and a smaller volume
+  knob, each black and ridged with a bone line on its cap. The tuning knob goes once round every
+  100 kHz, so a notch turns it 18° clockwise and a fine step 3.6°; the volume knob sweeps three quarters
+  round from silent to full. The needle and knobs follow the dial in about 0.05 s, so a sweep spins the
+  knob round and you see the needle go.
+- **Each god at its home.** Every god's bearing, its distance and the strength and storm it comes in
+  through are worked from one point, `Gods.home`: for five gods their landmark's middle in the
+  history, where its god's part stands (the Quartermaster's bunker in the black site, Mother Cistern's
+  temple in Sister, the Bastion in Port Morgan, the refinery terraces at Halloran, the tower at the
+  observatory). The Almanac stood at a point 6–14° along the Rim from Halfrise with nothing there; it
+  now stands in Frontier Ag's farm domes nearest Halfrise, the history's own `farm_dome` settlement
+  (Halfrise itself on a moon with none, which no seed tried had). **The Walker's home is its route:**
+  it has no landmark, and nothing stands where it is yet (its module isn't built); its signal comes
+  from where it has walked to round the Rim, the great circle 90° from under Tu that the ring road is
+  laid along, 1.5 m/s from a seeded start, so its bearing turns as it goes. On seed 1234 (probe 22):
+
+  | God | Home | From the start | Beside Port Morgan | Beside the farm domes |
+  |---|---|---|---|---|
+  | The Quartermaster | The black site | 28.1 km, somewhere west | 15.2 km, somewhere east | 33.2 km, somewhere east |
+  | The Walker | Where it walks on the Rim | 31.1 km, somewhere south | 47.2 km, across the face of Tu, right | 56.6 km, across the face of Tu, right |
+  | Mother Cistern | Sister | 60.2 km, toward Tu | 19.3 km, somewhere west | 3.4 km, south-south-west |
+  | The Almanac | The farm domes nearest Halfrise | 58.3 km, toward Tu | 19.6 km, somewhere north-west | 1.2 km, west |
+  | The Ledger | Port Morgan | 44.0 km, toward Tu | 1.2 km, west-north-west | 17.3 km, somewhere east |
+  | The Stoker | Halloran | 26.6 km, somewhere west | 16.7 km, somewhere east | 34.7 km, somewhere east |
+  | The Eye | The observatory | 50.0 km, away from Tu | 56.6 km, away from Tu | 38.7 km, somewhere west |
+
+  The two spots beside a home stand 1.2 km from it on its Tu-ward side. Compass points within 12 km,
+  rough ones within 40 km, past that a way across the moon, as above.
+- **Code:** `game/player/close_up.gd` (the close view), the needle and knobs in `game/radio/radio.gd`
+  and their looks in `game/look/dress.gd`, the Almanac's home in `game/radio/gods.gd`. The look-test is
+  `look/dial` (`look/dial/shoot.sh`).
+- **Probes:** radio 21 (tuning brings the dial close: in and out, the knob and needle by the notch, held
+  and on a Console) and 22 (each god at its home, against where the world lays it).
 
 ### Stations: the Walker and the living city (agreed, 2026-10-18 spec)
 

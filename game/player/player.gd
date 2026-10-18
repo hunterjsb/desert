@@ -49,6 +49,8 @@ var low := 0.0
 var sink := 0.0
 var feel: Feel
 var walker: AutoWalk
+## Tuning a radio brings the view in to its dial.
+var close_up: CloseUp
 ## The board you ride, or null, and the ride that moves you on it.
 var board: Hoverboard
 var ride: Ride
@@ -86,6 +88,8 @@ func _ready() -> void:
 	stamina = _tuning.stamina_max
 	feel = Feel.new()
 	add_child(feel)
+	close_up = CloseUp.new()
+	add_child(close_up)
 	walker = AutoWalk.new()
 	add_child(walker)
 
