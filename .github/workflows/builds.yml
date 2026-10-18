@@ -47,13 +47,13 @@ jobs:
         include:
           - os: ubuntu-latest
             build: linux-x86_64
-            game: desert-*-linux-x86_64/Sandgame.x86_64
+            game: desert-*-linux-x86_64/Desert.x86_64
           - os: windows-latest
             build: windows-x86_64
-            game: desert-*-windows-x86_64/Sandgame.exe
+            game: desert-*-windows-x86_64/Desert.exe
           - os: macos-latest
             build: macos-universal
-            game: Sandgame.app/Contents/MacOS/Sandgame
+            game: Desert.app/Contents/MacOS/Desert
     name: smoke (${{ matrix.build }})
     runs-on: ${{ matrix.os }}
     timeout-minutes: 15

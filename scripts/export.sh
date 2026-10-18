@@ -51,7 +51,7 @@ mkdir -p "$stage/empty"
 mkdir -p "$out"
 out=$(cd "$out" && pwd)
 # preset, its file in the zip, the zip's name for the OS.
-for each in "Linux:Sandgame.x86_64:linux-x86_64" "Windows:Sandgame.exe:windows-x86_64" "macOS:Sandgame.app:macos-universal"; do
+for each in "Linux:Desert.x86_64:linux-x86_64" "Windows:Desert.exe:windows-x86_64" "macOS:Desert.app:macos-universal"; do
 	IFS=: read -r preset file os <<<"$each"
 	name=desert-$version-$os
 	dir=$stage/$name

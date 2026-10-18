@@ -1,4 +1,4 @@
-# Sandgame
+# Desert
 
 A cozy survival game on a dead desert moon. Working title.
 
