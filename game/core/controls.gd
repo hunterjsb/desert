@@ -7,7 +7,8 @@ extends Node
 ## learned where it's needed (UIRoot.teach) or by doing.
 const HELP := [
 	["MOVING", [["{move_forward}{move_left}{move_back}{move_right}", "move"], ["{sprint}", "sprint"],
-		["{jump}", "jump"], ["{crouch}", "crouch, slide"], ["{ride}", "board on or off"]]],
+		["{auto_walk}", "auto-walk"], ["{jump}", "jump"], ["{crouch}", "crouch, slide"],
+		["{ride}", "board on or off"]]],
 	["HANDS", [["{hands_grab}", "take, put down"], ["{interact}", "use"], ["{hands_throw}", "throw"],
 		["{hands_rotate}", "turn what you hold"], ["{bring_near} / {push_out}", "nearer, further"],
 		["{reel_in} / {pay_out}", "reel in, pay out"]]],
@@ -39,6 +40,8 @@ const KEYS := {
 	"move_back": KEY_S,
 	"move_left": KEY_A,
 	"move_right": KEY_D,
+	# Beside forward: turned on or off without leaving the move keys.
+	"auto_walk": KEY_Q,
 	"sprint": KEY_SHIFT,
 	"toggle_keys": KEY_F1,
 	"fullscreen": KEY_F11,
