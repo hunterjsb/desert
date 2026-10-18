@@ -94,6 +94,61 @@ it and it crackles.
 - **Not yet:** bumps crackling, distorted tracks in storms, more channels, lore, oracles,
   frequencies as finds and antennas.
 
+### The dial and the gods on the air (Hunter, 2026-10-18; built)
+
+*Hunter's direction, 2026-10-18: "Each god [has] its own dynamic direction tracked relative to the
+player's position. A radio may tune its frequency from 0 to 2000 kHz. Assign each god a frequency
+range, and world position. Some are so far away you may reduce it to an abstract direction. Weather
+interference between the radio and the god will cause distortion, warping, and cutting of the
+transmission. Transmissions will vary. The difference between noise and useful information is if
+the player knows when to listen." And: "use the weather god for the weather station." Use the
+music, weather and beacon "but don't explicitly name each channel for what it is."*
+
+This replaces "use turns the dial: off, music, weather, beacon" above, and it answers the open
+question of whether the gods broadcast: they do. That goes past the lore's "speak only through
+terminals" by Hunter's call. The squatting oracles above are now the gods.
+
+- **The dial runs 0–2000 kHz.** The wheel tunes it while you look at a radio, or at a console with
+  one in its system: 5 kHz a notch, or 1 kHz with shift held. Holding a radio, it's ctrl+wheel.
+  Use sweeps up to the next carrier, and past the last one it goes off. Nothing names a carrier:
+  the line low in the view reads only `262 kHz · …`, and the look-at readout reads the frequency.
+- **Carriers:** the music at 1020 kHz and the beacon at 1930, both behaving as above, and the seven
+  gods. The weather station is **the Walker**: its band is where the forecast is.
+- **Each god's carrier** lies inside its band and moves to a fresh place each moon day, from the seed,
+  so it has to be found. A signal comes in within about 3 kHz either side (`dial_width_khz`).
+
+| God | Band, kHz | Where it stands | Worth hearing | What it says then |
+|---|---|---|---|---|
+| The Quartermaster | 140–175 | The black site | Through the eclipse ("blackout drill") | Bearing and range to the nearest cache, dugout, checkpoint or bunker history laid near you |
+| The Walker | 230–290 | Walks the Rim, 1.5 m/s, from a seeded start | Always: the forecast where the radio is. At dusk, and when a storm starts or ends at its feet, the long report too | The weather station's reading; then 40 minutes ahead, and whether there's a storm at the Walker |
+| Mother Cistern | 410–450 | Sister | Dawn, 05:00–07:00 local | Frost or dew tonight with the 03:00 temperature, and the nearest cistern or stepwell |
+| The Almanac | 600–660 | A Rim ag complex 6–14° along the Rim from Halfrise | Sunrise and sunset | The day's range, and which crops would hold through it out in the open, and which to hold back |
+| The Ledger | 880–940 | Port Morgan | About midnight ("berth inventory") | Bearings and ranges to Halloran, the Rim depot and Starcom. It sends strongest |
+| The Stoker | 1180–1240 | Halloran | The hot hours, 13:00–16:00 local | A countdown to the next eclipse, and the peak temperature in the next 5 minutes |
+| The Eye | 1720–1790 | The observatory, at the anti-Tu point | Night where the radio is | Your latitude and longitude, and the local time |
+
+  Outside its window each god talks noise in its own voice: roll calls, survey telemetry, the
+  terraforming hymn, prices for goods nobody sells, empty manifests, boiler alarms, and from the Eye
+  silence. Everything said in a window is read from the real systems.
+- **Direction.** Each god's bearing is worked from where the radio stands to where the god is on the
+  sphere, every reading, so the Walker's moves as it walks. Within 12 km it's a compass point, within
+  40 km a rough one ("somewhere west"), and past that only a way across the moon: toward Tu, away from
+  Tu, across the face of Tu left or right, or, near the opposite point, from everywhere.
+- **Reach.** At or under 500 kHz a ground wave carries 80 km. Above it, the reach falls as the square of
+  the frequency by day, and at night a sky wave comes down past a 15 km skip at 0.6 strength, real AM
+  behaviour. So the Eye, high and far, comes in only at night, and the Stoker carries far only after dark.
+- **Weather between you and the god.** The storm field is read at 8 points along the way toward the god,
+  out to 3 km. The more storm there is, the more of each line turns to noise glyphs (**distortion**), the
+  further the carrier slides off where you tuned, up to 6 kHz either way, so you chase it (**warping**,
+  with the tones wobbling too), and the more often it drops out, up to 60% of the time
+  (**cutting**). A weak signal frays the same way. Below the floor it's only static.
+- **Code:** `game/radio/gods.gd`, `dial.gd`, `interference.gd` and `transmissions.gd`, with `radio.gd`.
+  Old saves' channels move the dial to that carrier.
+- **Probes:** radio 6 (each god has its bearing), 7 (storms garble the gods), 8 (the dial finds each
+  god) and 9 (useful only in its window). Probes 1, 2, 4 and 5 tune by the dial.
+- **Not yet:** a god's own voice beyond tones, frequencies as finds, antennas, and the far end's
+  signal.
+
 ### The ghost relay
 
 *Agreed, session 4, part 2 ([lore session](../lore-session-2026-10-17-part-2.md)); loose, and not
