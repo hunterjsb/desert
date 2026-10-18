@@ -85,7 +85,7 @@ Sources, from early to late:
 4. **Water-storing plants,** like the yucca. Session 4, part 4 (proposed, not built) replaces the
    yucca with the roster's water crops: dewleaf (a night trickle, collected at dawn), stormcup (water
    from a storm, tainted when wild) and sandroot (starch and water, dug from a deep root)
-   ([Farming](farming.md#the-plant-system-agreed-session-4-part-4-not-built)). Whether a water crop
+   ([Farming](farming.md#the-plant-system-agreed-session-4-part-4-partly-built)). Whether a water crop
    beats the condenser in some niche is open.
 
 Open water doesn't last, so water lives in sealed containers.
@@ -101,7 +101,7 @@ open ([the lore](../lore-research.md#17-open-after-the-endings-session-and-sessi
 
 From farming, and from sealed rations in ruins. Session 4, part 4 adds salt, a crop output that
 "makes food last longer," and has vat fungus grow on "rotten food or plant waste" as compost
-([Farming](farming.md#the-plant-system-agreed-session-4-part-4-not-built)). Nothing here spoils yet:
+([Farming](farming.md#the-plant-system-agreed-session-4-part-4-partly-built)). Nothing here spoils yet:
 food is a ration, sealed or carried, and eaten by the suit. Whether it should is open
 ([Farming](farming.md#open-questions)).
 

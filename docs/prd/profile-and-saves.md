@@ -274,7 +274,7 @@ living docs, so this PRD follows it as direction.
   wild, in a stage (seedling, growing, mature, going to seed), and carries a propagule item. *Follows
   the session:* a planted crop's stage and its clean or wild flag are the run's changes, and so are a
   propagule you carry. Wild plants placed by habitat are the seed's, and are saved only once you have
-  dug one up ([Farming](farming.md#the-plant-system-agreed-session-4-part-4-not-built)).
+  dug one up ([Farming](farming.md#the-plant-system-agreed-session-4-part-4-partly-built)).
 - **A structure's state.** The session gives each structure three states (buried, partly exposed,
   exposed) that storms shift. If a state is a function of the seed and the weather, nothing is saved
   (rule 1). If you dig one open, or a landmark is repaired, that is a change and is saved, keyed by the

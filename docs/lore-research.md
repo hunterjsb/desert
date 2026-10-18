@@ -1111,7 +1111,7 @@ Session 4, part 4 ([the plants session](plants-worldgen-ruins-2026-10-17.md)) tu
 a roster. The crops are Earth-lineage, engineered for Zan by colonial biotech and gone feral over the
 long span since (a length held in [the placeholders](#placeholders)), each with three layers: an
 Earth ancestor, engineered traits and a feral drift. The biology, the roster and the hooks are in
-[Farming](prd/farming.md#the-plant-system-agreed-session-4-part-4-not-built); the stories are here.
+[Farming](prd/farming.md#the-plant-system-agreed-session-4-part-4-partly-built); the stories are here.
 Zan still has no native life: "Zan now has colonial insects as well as feral plants," the sand beetles
 ([World & terrain](prd/world-and-terrain.md#ambient-life-sand-beetles-agreed-session-4-part-4-not-built)).
 - **Saltbush and the pilgrim roads.** The Sisters seeded it along pilgrim roads, so silver lines mark

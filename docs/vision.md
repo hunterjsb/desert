@@ -67,7 +67,7 @@ upgrade the camp → the camp sustains more of itself → go further, or into th
   and that went feral, in two families, one that runs on light and one on dark and humidity. Early on,
   weather decides what you can grow; late, shields take the weather away and light and water become
   the managed inputs. One shared system, with a unique feel per item: differences come from data
-  ([Farming](prd/farming.md#the-plant-system-agreed-session-4-part-4-not-built)).
+  ([Farming](prd/farming.md#the-plant-system-agreed-session-4-part-4-partly-built)).
 - **The camp may get a computer, and a bed** (Hunter, 2026-10-17, proposed and loose). A Console
   reads the weather instruments onto a screen ([Devices & mods](prd/devices-and-mods.md#the-console-proposed-not-built)),
   and sleep may skip the wait on a long storm ([Survival](prd/survival.md#sleep-proposed)).

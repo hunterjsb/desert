@@ -323,7 +323,7 @@ model."
 - **Sand beetles** are colonial pollinators or decomposers that went feral: small ambient creatures
   that scuttle, with no AI beyond that.
 - They tie into the plants. Dewleaf's ancestor is the fog-basking beetle, glowcap attracts them, and
-  wild stormcups trap blown-in insects ([Farming](farming.md#the-plant-system-agreed-session-4-part-4-not-built)).
+  wild stormcups trap blown-in insects ([Farming](farming.md#the-plant-system-agreed-session-4-part-4-partly-built)).
 - *Open:* whether beetles are pests, pollinators, or both.
 
 Readings, not in the session:

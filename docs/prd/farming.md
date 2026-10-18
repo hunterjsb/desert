@@ -5,8 +5,9 @@
 *Updated 2026-10-17: [session 4, part 4](../plants-worldgen-ruins-2026-10-17.md) replaces the
 placeholder carrots and fungus with a roster of eleven crops in two families, with propagation,
 growth stages, wild habitats and planter sizes as socket kinds ([The plant
-system](#the-plant-system-agreed-session-4-part-4-not-built)). It is direction and none of it is
-built, so the skeleton below and its "as built" notes stand. [Session 4, part
+system](#the-plant-system-agreed-session-4-part-4-partly-built)). Its first three steps are built
+(2026-10-17): crops as data, root-tuber, vat fungus and saltbush, and the planter kinds; the rest is
+direction, and the "as built" notes below say what stands. [Session 4, part
 5](../gods-gear-farside-2026-10-17.md) adds the Almanac, the god of growth, and a kiln for processing
 ([The Almanac and crossbreeding](#the-almanac-and-crossbreeding-idea-session-4-part-5-not-built)).*
 
@@ -26,7 +27,7 @@ the farm is what pulls a thermal shield into your life.
 | **Fungus** | No | Very stable | Near the equator only, and it thrives in storms |
 
 The table is the skeleton's. Carrots and fungus are the session 4, part 4 "placeholders" the roster
-replaces ([below](#the-plant-system-agreed-session-4-part-4-not-built)), and yucca, from Sand Game,
+replaces ([below](#the-plant-system-agreed-session-4-part-4-partly-built)), and yucca, from Sand Game,
 is not in the roster: its water goes to the roster's water crops (open questions).
 
 **Why fungus loves storms, physically.** Storms are dark, and their dust blankets the
@@ -78,7 +79,7 @@ why the temperature shield sets how big the farm can be (Bubble shield & camp).
   how they are processed is open.
 - **Fuel,** at different grades (Power).
 
-## The plant system (Agreed, session 4, part 4; not built)
+## The plant system (Agreed, session 4, part 4; partly built)
 
 *Session 4, part 4 ([the plants session](../plants-worldgen-ruins-2026-10-17.md)). Its labels are kept
 as given: **Agreed** is settled direction, **Idea** is proposed and not confirmed, **Back burner** is

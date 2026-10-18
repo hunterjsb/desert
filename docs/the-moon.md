@@ -93,7 +93,7 @@ gives water a daily rhythm:
   towed, and they work best at night, and better toward the far side (below).
 - **Plants that store water,** like the yucca. Session 4, part 4 (proposed, not built) names the
   roster's water crops instead: dewleaf gathers dew at night, which fits the dawn harvest above, and
-  stormcup gathers a storm's moisture ([Farming](prd/farming.md#the-plant-system-agreed-session-4-part-4-not-built)).
+  stormcup gathers a storm's moisture ([Farming](prd/farming.md#the-plant-system-agreed-session-4-part-4-partly-built)).
 - **Sealed fresh water in ruins** keeps you going early on.
 - **Water drifts to the far side** (Agreed, session 4, part 2). The near side is heated by the
   sun and by Tu's infrared, and the far side runs colder. Water evaporates on the warm side and
