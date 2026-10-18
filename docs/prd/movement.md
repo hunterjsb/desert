@@ -199,7 +199,8 @@ what the speed and slip allow catches an edge: a stumble off the board and a kno
 resists the sideways pull of a tow, which is what lets a kite-towed board tack. It lives or dies on
 its feedback: a rooster tail of sand off the dug edge, the board tilting, a little camera roll, the
 hum dropping under load with a gritty hiss growing, a whoosh on release, a small shake as the edge
-bites and a bigger one as it catches. Open: the catch threshold and what a wipeout costs.
+bites and a bigger one as it catches. Open then: the catch threshold and what a wipeout costs,
+both answered below.
 
 **Built (2026-10-18, `game/board/ride.gd`, `game/player/feel.gd`, `game/board/board.gd`,
 `probes/movement/`).** The rest of the ride is as it was; move back's flat brake is gone.
@@ -222,7 +223,7 @@ bites and a bigger one as it catches. Open: the catch threshold and what a wipeo
   back down a slope to push it up again.
 - **Catching an edge.** The edge's load is dig times your way across the board; past
   6.5 m/s it catches. A full hockey stop loads it to about 0.38 of your speed, so it holds
-  from 16 m/s and catches flat out (7.3 from 19.4 m/s); a cruise loads it to 4.0. Tapping
+  up to about 17 m/s and catches flat out (7.3 from 19.4 m/s); a cruise loads it to 4.0. Tapping
   move back, or carving the speed off first, keeps it under. Digging into a carve barely
   loads it, since the edge grips.
 - **A wipeout costs** a stumble and a knock, gently: the board stops in the sand and
@@ -232,13 +233,15 @@ bites and a bigger one as it catches. Open: the catch threshold and what a wipeo
   back to. Nothing is lost or broken. The numbers are Tuning's `board_dig_catch`,
   `board_wipeout_hurt` and `board_wipeout_winded`.
 - **Towed** (a sail's sheet, a kite), a line's pull drags the hover's grip out from under
-  it, so only the dug edge holds against the line's sideways pull. Pulled 3 m/s² downwind
+  it, so only the dug edge holds against the line's sideways pull, and left alone the board
+  trails its own way (a camp tows you at 3.3 m/s, where it was 3.5). Pulled 3 m/s² downwind
   with the board steered 60° across, undug it runs straight downwind at 2.9 m/s; dug in it
   holds its line 60° across at 3.8 m/s, 34 m in 10 s. That's the tack.
 - **Feedback,** drawn and heard, never fed back. A rooster tail of sand off the dug edge's
   length, thrown up and outward, away from where the edge pulls the board (ahead of you in
-  a stop), left behind as you go: denser, bigger, faster and higher the deeper and faster
-  you dig, most dragged across; it's the slide's spray, 192 grains riding. The slide's
+  a stop), left behind as you go: bigger, faster and higher the deeper and faster
+  you dig, most dragged across (thicker, not more grains: it's the slide's spray, 192 grains
+  riding). The slide's
   hiss grows with it. The hover's hum drops up to 28% under the dig's load, and letting a
   deep dig out at speed whooshes (the throw's sweep, low). Your view rolls with the board's
   lean as it does carving; a small shake as the edge bites (dug past half at 5 m/s or

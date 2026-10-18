@@ -400,7 +400,7 @@ static var _current: Tuning
 @export var board_dig_depth: float = 0.3
 ## Dig times the way across the board past this, m/s, and the edge catches:
 ## you're thrown off, losing this much health and stamina. A full hockey stop
-## from flat out catches; from 16 m/s it holds.
+## from flat out catches; up to about 17 m/s it holds.
 @export var board_dig_catch: float = 6.5
 @export var board_wipeout_hurt: float = 5.0
 @export var board_wipeout_winded: float = 25.0
