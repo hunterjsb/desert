@@ -16,6 +16,8 @@ const MORNING := 0.38
 ## The zoom's window, pixels of the shot, and how much larger it's drawn.
 const WINDOW := Vector2i(320, 180)
 const ZOOM := 3
+## A glint this far off is shot before any nearer, m.
+const FAR_GLINT := 300.0
 
 var world: World
 var _out := ""
@@ -33,6 +35,8 @@ func _ready() -> void:
 	tuning.run_seed = SEED
 	tuning.eye_adapts = false
 	tuning.salvage = true
+	# Clear skies, so what's far off is seen as it is on a clear day.
+	tuning.storm_threshold = 0.9
 	var costs := []
 	for kit in Kit.origins():
 		await _begin(kit)
@@ -46,11 +50,11 @@ func _ready() -> void:
 			await _shoot(name, "%s %.0f m off" % [seen.kind, seen.distance_to(spawn.x, spawn.y)])
 		if kit.start == &"artery":
 			await _far_tower()
-			await _glint()
 			costs.append(await _cost("camp-free"))
 			await _afk()
 			costs.append(await _cost("AFK camp"))
 		if kit.start == &"wayshrine":
+			await _glint()
 			await _road(&"pilgrim_road", "road_saltbush")
 			await _road(&"spoke", "road_pylons")
 	for line in costs:
@@ -111,44 +115,54 @@ func _far_tower() -> void:
 		Vector2(drawn.x - from.x, drawn.z - from.z).length(), clear / Skyline.PIXEL])
 
 
-## The moment today a glint seen from where you are is at its brightest.
+## The moment today, and the place within a few tens of metres of where you
+## are, a glint is at its brightest, one far off before one near.
 func _glint() -> void:
 	var spawn := world.spawn
-	var eye := _eye_at(spawn)
 	var day := world.weather.day
 	var moon := world.moon
 	var skyline := world.terrain.skyline
 	var t0 := world.time
+	var spots := []
+	for site in skyline.seen():
+		for each in skyline.glints_of(site):
+			spots.append(each)
+	var eyes: Array[Vector3] = []
+	for ring in 4:
+		for k in (1 if ring == 0 else 8):
+			eyes.append(_eye_at(spawn + Vector2.from_angle(TAU * k / 8.0) * ring * 25.0))
 	var best := 0.0
 	var when := t0
 	var spot := Vector3.ZERO
-	for site in skyline.seen():
-		if site.distance_to(spawn.x, spawn.y) > world.tuning.skyline_m:
-			continue
-		for each in skyline.glints_of(site):
-			var at: Vector3 = each[0]
-			if Skyline.clearance(world.shape, world.tuning, eye, at, world.terrain.chunk_at(spawn.x, spawn.y), 1.0) < 0.0:
-				continue
-			var t := t0
-			while t < t0 + world.tuning.day_minutes * 60.0:
-				var sun := day.sun_direction(t, moon.latitude, moon.longitude)
-				if sun.y > 0.1:
-					var v := (eye - at).normalized()
+	var from := eyes[0]
+	var t := t0
+	while t < t0 + world.tuning.day_minutes * 60.0:
+		var sun := day.sun_direction(t, moon.latitude, moon.longitude)
+		if sun.y > 0.1:
+			for eye in eyes:
+				for each: Array in spots:
+					var at: Vector3 = each[0]
 					var n: Vector3 = each[1]
-					var a := n.dot((v + sun).normalized())
-					var g := smoothstep(each[2], lerpf(each[2], 1.0, 0.75), a) if n.dot(v) > 0.0 and n.dot(sun) > 0.0 else 0.0
-					if g > best:
+					var v := (eye - at).normalized()
+					if n.dot(v) <= 0.0 or n.dot(sun) <= 0.0:
+						continue
+					var g := smoothstep(each[2], lerpf(each[2], 1.0, 0.75), n.dot((v + sun).normalized())) \
+						* (1.0 if Vector2(at.x - eye.x, at.z - eye.z).length() >= FAR_GLINT else 0.1)
+					if g > best and Skyline.clearance(world.shape, world.tuning, eye, at,
+							world.terrain.chunk_at(eye.x, eye.z), 1.0) > 0.0:
 						best = g
 						when = t
 						spot = at
-				t += 5.0
+						from = eye
+		t += 10.0
 	if best <= 0.0:
 		print("sightlines: glint, none today")
 		return
 	world.time = when
 	await _ticks(10)
-	await _aim(eye, spot)
-	await _shoot("glint", "%.0f m off, %.0f%% of its brightest" % [Vector2(spot.x - eye.x, spot.z - eye.z).length(), best * 100.0])
+	await _aim(from, spot)
+	var off := Vector2(spot.x - from.x, spot.z - from.z).length()
+	await _shoot("glint", "%.0f m off, %.0f%% of its brightest" % [off, best * (100.0 if off >= FAR_GLINT else 1000.0)])
 
 
 ## A road read from a distance: travelled to, stood off on a rise, looking along it.
@@ -179,8 +193,21 @@ func _road(kind: StringName, name: String) -> void:
 			if h > best:
 				best = h
 				stand = at
-	var target := Geometry2D.get_closest_point_to_segment(stand, here - run * 2000.0, here + run * 2000.0)
-	await _aim(_eye_at(stand) + Vector3.UP * 2.0, Vector3(target.x, world.shape.dunes(target.x, target.y), target.y))
+	# Looking at the stretch of it past the built ground that shows best.
+	var eye := _eye_at(stand) + Vector3.UP * 2.0
+	var target := here
+	var clear := -INF
+	for along in range(-1500, 1501, 50):
+		var at := here + run * along
+		if at.distance_to(stand) < 600.0:
+			continue
+		var top := Vector3(at.x, FarRing.ground(world.shape, world.tuning, at.x, at.y) + 0.5, at.y)
+		var by := Skyline.clearance(world.shape, world.tuning, eye, top, world.terrain.chunk_at(stand.x, stand.y), 5.0) \
+			/ at.distance_to(stand)
+		if by > clear:
+			clear = by
+			target = at
+	await _aim(eye, Vector3(target.x, FarRing.ground(world.shape, world.tuning, target.x, target.y), target.y))
 	await _shoot(name, "%s %.0f m off" % [kind, stand.distance_to(here)])
 
 

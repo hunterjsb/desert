@@ -43,7 +43,7 @@ void vertex() {
 	shine = g;
 	// Off its own surface toward you, so what it lies on never hides it.
 	vec3 c = (VIEW_MATRIX * vec4(at + v * min(0.6, d * 0.02), 1.0)).xyz;
-	float px = 2.0 * -c.z / (PROJECTION_MATRIX[1][1] * VIEWPORT_SIZE.y);
+	float px = 2.0 * -c.z / (abs(PROJECTION_MATRIX[1][1]) * VIEWPORT_SIZE.y);
 	float size = g > 0.003 ? px * mix(3.0, peak_px, sqrt(g)) * 0.5 : 0.0;
 	VERTEX = c + vec3(VERTEX.xy * size, 0.0);
 }

@@ -55,7 +55,8 @@ static func _pylon_stub() -> StructureKit.Piece:
 	p.look = _pylon_look
 	# A row of them is a power line's trace across the dunes.
 	StructureKit.far_box(p, Vector3(-1.0, -0.8, -1.0), Vector3(1.0, 0.4, 1.0), CONCRETE)
-	StructureKit.far_box(p, Vector3(-0.3, 0.4, -0.3), Vector3(0.3, 4.8, 0.3), GREY)
+	# A lattice reads dark against the sky far off: its members are in their own shade.
+	StructureKit.far_box(p, Vector3(-0.3, 0.4, -0.3), Vector3(0.3, 4.8, 0.3), DARK)
 	StructureKit.far_box(p, Vector3(-0.15, 4.4, -1.4), Vector3(0.15, 4.7, 1.4), Paint.STEEL)
 	StructureKit.glint(p, Vector3(0.0, 4.7, 0.0), Vector3(0.0, 1.0, 0.25), 4.0)
 	StructureKit.glint(p, Vector3(0.0, 4.36, 1.25), Vector3(0.3, 0.8, 0.5), 6.0)
@@ -206,7 +207,7 @@ static func _relay_mast() -> StructureKit.Piece:
 	p.look = _mast_look
 	# The colony's line of sight: the tallest thing on the dunes.
 	StructureKit.far_box(p, Vector3(-1.3, -0.9, -1.3), Vector3(1.3, 0.35, 1.3), CONCRETE)
-	StructureKit.far_box(p, Vector3(-0.35, 0.35, -0.35), Vector3(0.35, 14.0, 0.35), GREY)
+	StructureKit.far_box(p, Vector3(-0.35, 0.35, -0.35), Vector3(0.35, 14.0, 0.35), DARK)
 	StructureKit.far_box(p, Vector3(0.55, 0.35, -0.5), Vector3(1.25, 1.95, 0.5), PANEL)
 	StructureKit.far_box(p, Vector3(-0.7, 12.4, 0.45), Vector3(0.7, 13.4, 0.75), PANEL)
 	StructureKit.far_box(p, Vector3(-0.14, 14.0, -0.14), Vector3(0.14, 14.3, 0.14), ORANGE)

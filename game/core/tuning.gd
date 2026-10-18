@@ -107,7 +107,7 @@ static var _current: Tuning
 @export var skyline_m: float = 3000.0
 ## The thinnest a stand-in or a line is drawn, pixels, so a mast far off
 ## never breaks into flickering bits.
-@export var skyline_thinnest_px: float = 1.5
+@export var skyline_thinnest_px: float = 2.0
 ## A glint's sparkle at its brightest, pixels across, and how bright, times
 ## the sun on white.
 @export var glint_px: float = 9.0

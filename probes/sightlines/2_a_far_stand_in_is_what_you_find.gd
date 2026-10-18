@@ -18,7 +18,7 @@ func run() -> void:
 	tuning.salvage = true
 	tuning.run_seed = 1234
 	world = WORLD_SCENE.instantiate()
-	world.kit = Kit.origins()[0]
+	world.kit = Kit.origins().filter(func(each: Kit) -> bool: return each.start == &"artery")[0]
 	add_child(world)
 	await settle()
 	# Its state holds still while you walk to it.

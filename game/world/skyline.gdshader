@@ -13,9 +13,10 @@ uniform vec3 leaf = vec3(0.38, 0.46, 0.41);
 
 varying vec3 tone;
 
-// Metres a pixel spans at a world place.
+// Metres a pixel spans at a world place. The projection's y is flipped for
+// some renderers, so only its size counts.
 float pixel_at(vec3 at, mat4 projection, vec2 viewport, vec3 eye) {
-	return 2.0 * length(eye - at) / (projection[1][1] * viewport.y);
+	return 2.0 * length(eye - at) / (abs(projection[1][1]) * viewport.y);
 }
 
 void vertex() {
