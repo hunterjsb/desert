@@ -165,17 +165,23 @@ floater out of pieces:
   closes and takes nothing. A ring isn't offered where something stands beyond it (a
   piece joined over a crate would throw it) or for a wrecked piece. A hook in the way pops
   off instead (Hunter, 2026-10-17: "hooks should pop off when its obstructing a chassis
-  snap"): a hook on a neighbouring edge, or on either ring that closes, where the new piece
-  goes comes loose onto the sand as the piece snaps in, with any line on it still tied,
-  where before the ring wasn't offered. A piece with something standing on it
-  is too heavy to carry, so it joins from your hold: having hold of it, the free ring of a
-  deck whose place beside it is within 1.2 m of the piece is offered, with its ghost, if
-  the piece and all on it would sit clear there, and take joins it, turned the quarter
-  turn nearest how it lies. Only a lone piece joins: two whole decks don't merge yet.
-  Joined on a slope, a deck lifts clear
-  of the sand as a crate does onto a tray. Your hands reach a deck by its nearest piece,
-  so a long deck's far end is as easy to work as its first. A deck wears as one device,
-  as worn as its most worn piece when they joined.
+  snap"): a hook on either ring that closes, or on a neighbouring edge facing where the new
+  piece goes, comes loose as the piece snaps in, carried or joined from your hold alike.
+  It lands on the sand just past the deck's edge, facing out, where its line leads, or
+  with no line nearest where it sat, and its line stays tied to it, let out if it must be
+  to reach: taken up, the line comes with it, as with a stake, and put on a free ring it
+  ties there again, and a save keeps it so. With its line on, it doesn't go in your
+  inventory. A loose part lying where the piece goes, anything your hands carry but a
+  device, moves clear the same way as it snaps in, so a row isn't held up by the hook
+  the last join dropped (2026-10-18). A device, a deck, a wall or a find still in the sand
+  there still blocks. A piece with something standing on it is too heavy to carry, so it
+  joins from your hold: having hold of it, the free ring of a deck whose place beside it is
+  within 1.2 m of the piece is offered, with its ghost, if the piece and all on it would sit
+  clear there, and take joins it, turned the quarter turn nearest how it lies. Only a lone
+  piece joins: two whole decks don't merge yet. Joined on a slope, a deck lifts clear of the
+  sand as a crate does onto a tray. Your hands reach a deck by its nearest piece, so a long
+  deck's far end is as easy to work as its first. A deck wears as one device, as worn as its
+  most worn piece when they joined.
 - **Taking a deck apart** (2026-10-17, after Hunter's playtest). Take aimed at a deck
   takes hold of the whole of it, to drag it, as with a crate's frame, unless the piece
   you aim at is bare (no tray, no hook, nothing standing on it) and the rest of the deck
@@ -1084,9 +1090,9 @@ a water socket of its own on top, so a canister or another hose goes on there to
     joins it there, the crate standing on the deck now, in its pool.
 22. **A refusal says why.** A battery held to a crate whose slots are full stays in your
     hands; a crate with its tray in, taken hold of beside a deck, is let go with word to
-    take its tray off first; a piece held to a deck whose one free ring is blocked stays
-    in your hands; use at a bare crate frame has nothing to work. Each time the readout
-    says why and the knock sounds.
+    take its tray off first; a piece held to one with a crate standing beyond every ring,
+    its hooked one too, stays in your hands; use at a bare crate frame has nothing to
+    work. Each time the readout says why and the knock sounds.
 24. **Consoles on a deck are one system** (2026-10-17). Two Consoles on a deck, one with an
     anemometer and one with a barometer, each show both readings; a third on the sand beside
     them shows only its own and lends them nothing. A radar on each of the two, both draw one
@@ -1101,6 +1107,13 @@ a water socket of its own on top, so a canister or another hose goes on there to
     its one tray leaning only a little, then rides two minutes of a gusting storm moored by one
     line from its back ring, upright, never rocking over. Standing on a deck of two pieces on
     their trays beside a shield, the deck moored by its own ring, it rides as steady.
+27. **A hook in the way pops off** (2026-10-18). A piece with a hook on its east and west
+    rings, each with a line to a stake beyond: a piece carried to the east ring is offered
+    it and joins, and a piece with a crate on it joins at the west from your hold. Each
+    hook lies loose on the sand clear of the deck, its line still tied to it, and still
+    does once saved and resumed; taken up and put on a free ring, its line ties the deck
+    again. A third piece carried to where the east hook landed joins there, and the hook
+    moves clear again, still tied.
 
 ## Out of scope
 

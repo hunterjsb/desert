@@ -141,6 +141,17 @@ func lines_on(end: RopeEnd) -> Array[Rope]:
 	return ropes.filter(func(rope: Rope) -> bool: return rope.a == end or rope.b == end)
 
 
+## An end moved further off than its lines reach lets them out to reach it:
+## held to their length, they'd yank what's on them.
+func let_out(end: RopeEnd) -> void:
+	for rope in lines_on(end):
+		var span := rope.a.global_position.distance_to(rope.b.global_position)
+		if span > rope.length:
+			rope.length = span
+			rope.full = maxf(rope.full, span)
+			rope.strand.set_length(span)
+
+
 ## Whether a body is on you: in your hands or at your waist.
 func on_you(body: Node) -> bool:
 	var player := world.player
