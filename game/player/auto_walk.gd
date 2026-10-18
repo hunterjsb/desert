@@ -97,7 +97,7 @@ func _process(delta: float) -> void:
 
 ## A chevron pointing the way it holds.
 func _draw_mark() -> void:
-	var side := _way.orthogonal() * 5.0
-	var chevron := PackedVector2Array([-_way * 2.0 + side, _way * 4.0, -_way * 2.0 - side])
+	var side := _way.orthogonal() * 4.5
+	var chevron := PackedVector2Array([-_way * 3.0 + side, _way * 5.0, -_way * 3.0 - side])
 	_mark.draw_polyline(chevron, _mark.get_theme_color(&"shadow", &"Palette"), 4.0, true)
 	_mark.draw_polyline(chevron, _mark.get_theme_color(&"text", &"Palette"), 2.0, true)
