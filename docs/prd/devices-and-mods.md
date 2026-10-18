@@ -749,13 +749,14 @@ Proposed, in this PRD's terms:
 |---|---|---|
 | Battery slot | Batteries | Power |
 | Ring mount | Rope hooks; on a chassis piece, another piece's edge | Rope & tethering |
-| Bottom mount | Hover trays | Bubble shield & camp |
-| Top mount | Solar panels, instruments such as the radio, lamps, the shield generator | Power and others |
+| Bottom mount | Hover trays, or runners: skates and a board plate (2026-10-18), never both on one device or deck | Bubble shield & camp, Movement |
+| Top mount | Solar panels, instruments such as the radio, lamps, the shield generator, the mast (2026-10-18) | Power and others |
 | Rack | The hoverboard, seated along a crate's side, riding and charging with it (Hunter, 2026-10-16) | Movement |
 | Plant slot (small, large) | Seedlings | Farming |
 | Plant slot (small pot, standard planter, deep bed) | Crops by the size they declare. Proposed (session 4, part 4); new kinds are appended to a frame, never inserted | Farming |
 | Water socket | A canister or a hose's end, one at a time (2026-10-17) | Survival, Farming |
-| Deck mount | One device standing on a chassis piece: a crate, a condenser, a shield, a charger (2026-10-17) | Devices & mods |
+| Deck mount | One device standing on a chassis piece: a crate, a condenser, a shield, a charger (2026-10-17), a mast (2026-10-18) | Devices & mods |
+| Sail mount | A sail, on its boom, low on a mast; seated, it adds a tie at the boom's end for the sheet (2026-10-18) | Movement |
 | Computer-mod port | Computer mods, on a Console. Proposed (2026-10-17); a kind of its own, unless it is the planter's mod mount (open questions) | Devices & mods |
 | Computer-mod top | Antennas, radar and the like, on a Console's top. Proposed (2026-10-17) | Devices & mods, Wind & storms |
 | Screen port | A full-face screen, one side of a Console. Proposed (2026-10-17) | Devices & mods |
@@ -772,6 +773,7 @@ Proposed, in this PRD's terms:
 | Shield generator | 1 | 1 | 1 | | 1 | fits a top mount or a deck mount itself |
 | Light shield generator | 1 | 1 | 1 | | 1 | fits a top mount or a deck mount itself |
 | Chassis piece | | 4 | 1 | | | a deck mount; its rings join other pieces |
+| Mast | | | | | | a sail mount; fits a top mount or a deck mount itself (2026-10-18) |
 | Light solar panel | | | | | 1 | |
 | Hoverboard | 1 | | | | 1 | fits a rack itself |
 | Radio | 1 | | | | 1 | fits a top mount itself |
@@ -780,6 +782,13 @@ Proposed, in this PRD's terms:
 **Carried, a device works as anywhere else** (Hunter, 2026-10-17): a carryable device goes
 in with what the suit carries whole and works on its own battery, riding on you (Survival).
 There's no flag for it: no device is an exception.
+
+**Runners and the mast** (2026-10-18). A bottom mount takes a hover tray or runners: skates or a
+board plate, which ride the sand on their blades, slide along their length and grip across it. A
+device or a deck carries one or the other, never both, and each mixing refuses with "runners and
+trays don't mix"; standing on a deck, a device takes neither. The mast seats on a top mount or
+stands on a deck mount as the shield does, and its sail fits its sail mount. How they sail is in
+[Movement](movement.md#sailing-the-camp-hunter-2026-10-17).
 
 Some parts **add sockets of their own**. An extra-hook mod fits a mount and provides a
 hook. That's how found mods expand a device. A hose's end fitted in a water socket offers

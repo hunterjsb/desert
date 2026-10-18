@@ -111,9 +111,20 @@ strong cable reels too, since it's a rope: its plugs keep their rules, and it pa
 to its full 6 m. Each notch dips the end in your hand and lifts it again, across the line
 so the drawn line keeps its length; the rope you've taken in gathers in a coil where the
 line is on you, growing as you reel; and each notch rubs, a soft creak from Sand Game's
-rope recording, lower as you pay out. In a menu, with the inventory open, or riding, it
+rope recording, lower as you pay out. In a menu or with the inventory open it
 does nothing. A reeled line keeps its length when you let go of it, and the look-at line
 reads how much of it is out.
+
+**The sheet** (2026-10-18). A line whose end is on a sail's boom is its sheet, and it's held
+the way any line is: in your hand, at your waist, or made fast on a ring or a stake. Reeling
+it hauls the sail in, a notch at a time, rather than the line, which stays as long as it was;
+paying it out eases the sail, and with the sail all the way out a notch pays out the line. A
+sail pulling harder than your strength won't come in. With nothing holding its far end it
+runs, and the sail swings free. Riding, a sheet at your waist stays tied as you step on, and
+reeling works it there: your camp tows you by it, and the board pushes against no line.
+(Before, reeling did nothing riding, and every line at your waist was untied before you
+stepped on; any line but a sheet still is.) The sail's side is in
+[Movement](movement.md#sailing-the-camp-hunter-2026-10-17).
 
 ## Wind on tethered things
 
@@ -152,6 +163,8 @@ The hoverboard tows nothing.
   problem that sank Delve.
 - **A sand yacht.** It rides the wind, fast. No sail goes straight into the wind, but it
   can zigzag upwind (tacking), so it makes travelling into the wind possible at speed.
+  *Built (2026-10-18) as your own camp under sail, towing you on its sheet
+  ([Movement](movement.md#sailing-the-camp-hunter-2026-10-17)).*
 
 ## Skeleton version
 

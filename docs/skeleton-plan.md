@@ -150,7 +150,8 @@ own storm field so the wall and the probes agree.
 **You play:** watch storms roll in and over you. Read the wind. Get pushed around.
 
 **Probes:** Wind & storms 1–6 and 8, and the scenarios probe. Probe 7 waits for the full
-version, because its fourth traveller needs the sand yacht.
+version, because its fourth traveller needs the sand yacht. (The yacht exists since
+2026-10-18; its traveller doesn't yet.)
 
 ## Stage 3: Devices & mods
 
@@ -301,7 +302,9 @@ in your pack for moving the planters about.
 ## Waiting for the full version
 
 These probes need content the skeleton doesn't have:
-- Wind & storms 7 (the sand yacht).
+- Wind & storms 7 (the sand yacht). The yacht is built now, as your own camp under sail
+  ([Movement](prd/movement.md#sailing-the-camp-hunter-2026-10-17)), but the probe still
+  waits: it needs a reference traveller that sails it, chasing gaps, over a long run.
 - Survival 5 (the water rhythm).
 
 **A proposed build order for the lore and kits pieces (part 3's, kept for reference).** Session 4,
