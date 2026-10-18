@@ -17,8 +17,9 @@ var planters: Array[Planter] = []
 
 ## The world in its own weather, you `latitude` degrees north of where the run
 ## began, facing upwind as the scenario stands you, at time zero, with the
-## reference camp parked round you and carrying what it stocks you with.
-func load_camp(latitude := 0.0) -> void:
+## reference camp parked round you and carrying what it stocks you with, or
+## not yet if `parked` is false.
+func load_camp(latitude := 0.0, parked := true) -> void:
 	await load_world(1234, false)
 	if latitude != 0.0:
 		teleport(world.player_world_x(), world.player_world_z() - deg_to_rad(latitude) * world.moon.radius)
@@ -30,7 +31,8 @@ func load_camp(latitude := 0.0) -> void:
 	# with nothing lived meanwhile.
 	world.time = 0.0
 	world.weather.forecast_now()
-	park()
+	if parked:
+		park()
 
 
 ## The reference camp round you, its pieces named.

@@ -248,6 +248,17 @@ Readings, not in the session:
   settling on the sand; the planters' own batteries ran out about the sixth day, and
   they settled too, still growing. The kit's power under a found shield (the light panel
   and a battery half charged) went dark in the same weather at 1.34 days.
+- **What the camp costs** (2026-10-18, from Hunter feeling it lag). Running, the
+  reference camp cost the main thread about 7 ms a tick over the world without it, and
+  its slowest tick each second 7 to 9 ms more. Most of it was the hard floor under loose
+  bodies reading the sand under all eight corners of each of the deck's 60-odd shapes;
+  then ropes reading the sand under their links every frame, and devices walking all
+  their children for their sockets and their face to the wind. Now the floor passes over
+  a device or a shape clear of the highest sand under it, ropes keep what they read
+  through points that haven't moved, and devices keep what they work out from their
+  children until those change: about 1.5 ms a tick, and 4 ms on the slowest, headless
+  on the desktop. The camp comes out the same to the bit. What's left is mostly the ropes
+  and the power tick, four times a second. Probe 11 holds it.
 - **Holding a turbine out from a deck is tight.** A strong cable is 6 m and the base
   shield's bubble 7 m, so a turbine on a cable from a deck under it stands only just
   outside. On the 2x2 deck the shield stands on the piece across from the crate, as far
@@ -328,6 +339,9 @@ Readings, not in the session:
    until it floats again.
 10. **The rotor turns.** A planted turbine's blades turn faster in a gale than in a
     light wind, and stand still while it's dragged or once it's wrecked.
+11. **The camp costs little.** Parked and running, the reference camp's scripts take
+    at most three times a tick what the same world's took just before it was parked,
+    so a slow machine is slow on both sides.
 
 ## Out of scope
 
