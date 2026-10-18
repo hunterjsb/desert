@@ -251,11 +251,8 @@ static func apply(world: World, scenario: Dictionary) -> void:
 		return
 	stand(world, scenario, place)
 	Dev.put("world/scn", scenario.key)
-	# Untyped: what the ground unloaded once you moved away is freed already.
-	for body in world.get_meta(&"scenario_kit", []):
-		if is_instance_valid(body):
-			body.queue_free()
-	world.remove_meta(&"scenario_kit")
+	for body in _left(world, &"scenario_kit"):
+		body.queue_free()
 	if not (scenario.kind in ["kit", "ruin"] or scenario.get("camp", false) or scenario.get("survive", false)
 			or scenario.get("farm", false) or scenario.get("board", false) or scenario.get("radio", false)
 			or scenario.get("afk", false) or scenario.get("chassis", false) or scenario.get("console", false)
@@ -267,10 +264,8 @@ static func apply(world: World, scenario: Dictionary) -> void:
 	if not is_instance_valid(world):
 		return
 	# Its own kit takes the place of the run's, gone before anything lands on it.
-	for body in world.get_meta(&"kit", []):
-		if is_instance_valid(body):
-			body.free()
-	world.remove_meta(&"kit")
+	for body in _left(world, &"kit"):
+		body.free()
 	var dropped: Array[Node3D]
 	if scenario.kind == "ruin":
 		dropped = yours(world)
@@ -295,6 +290,17 @@ static func apply(world: World, scenario: Dictionary) -> void:
 	else:
 		dropped = camp(world) if scenario.get("camp", false) else survive(world)
 	world.set_meta(&"scenario_kit", dropped)
+
+
+## What a kit set down that's still lying about, its list gone: what you've
+## put in your suit or hold is yours now, and stays.
+static func _left(world: World, key: StringName) -> Array:
+	var player := world.player
+	# Untyped: what the ground unloaded once you moved away is freed already.
+	var left: Array = world.get_meta(key, []).filter(func(body: Variant) -> bool:
+		return is_instance_valid(body) and not body in player.suit.carried and body != player.hands.held)
+	world.remove_meta(key)
+	return left
 
 
 ## Puts you where find() found, there on the moon too.
