@@ -28,7 +28,7 @@ jobs:
       - name: What it publishes
         id: what
         env:
-          TAG: ${{ github.event_name == 'push' && github.ref_name || '' }}
+          TAG: ${{ github.event_name == 'push' && github.ref_type == 'tag' && github.ref_name || '' }}
         run: |
           version=$(sed -n 's/^config\/version="\(.*\)"$/\1/p' project.godot)
           # The tag names the version the builds say they are, or nothing ships.
