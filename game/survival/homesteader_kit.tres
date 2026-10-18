@@ -9,6 +9,7 @@ label = "Homesteader"
 about = "stays put"
 start = &"wayshrine"
 balanced = true
+unlock = "shield_day"
 carried = Dictionary[StringName, int]({
 &"canister": 1,
 &"ration": 1,

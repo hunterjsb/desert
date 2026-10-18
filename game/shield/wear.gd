@@ -5,9 +5,14 @@ extends Node
 ## whatever a bubble shelters, parts and all, doesn't wear. Placeholder
 ## numbers, until parts wear on their own. On power's tick of world time, so
 ## F5 wears as it charges and the frame rate never changes a device's life.
+## A running shield counts the storm it holds off, and you the time you've
+## been under a bubble without a break: the shield's deeds.
 
 ## The wind past wind_harm_speed at which wind_wreck_minutes holds, m/s.
 const WIND_SPAN := 10.0
+
+## Seconds of world time you've been under a bubble, unbroken.
+var sheltered := 0.0
 
 var _world: World
 var _next := 0.0
@@ -31,7 +36,30 @@ func _physics_process(_delta: float) -> void:
 	while _next + step <= _world.time + 1e-9:
 		for device in _world.devices():
 			device.wear(rate_at(device.global_position, _next) * step)
+			if device is ShieldGenerator:
+				_held(device, step, _next)
+		_under(step)
 		_next += step
+
+
+## The full storm a running shield holds off, minutes of it, kept on the shield.
+func _held(shield: ShieldGenerator, step: float, t: float) -> void:
+	if not shield.running():
+		return
+	shield.held_minutes += _world.weather.field_storm(shield.global_position, t) * step / 60.0
+	if shield.held_minutes >= _world.tuning.deed_storm_minutes:
+		Deeds.done(_world, &"shield_storm")
+
+
+## A whole day under a bubble, without once stepping out.
+func _under(step: float) -> void:
+	var player := _world.player
+	if player.vitals.dead or _world.weather.shelter_at(player.global_position, &"storm") <= 0.0:
+		sheltered = 0.0
+		return
+	sheltered += step
+	if sheltered >= _world.tuning.day_minutes * 60.0:
+		Deeds.done(_world, &"shield_day")
 
 
 ## The share of a new device's life the weather at a place takes a second,

@@ -17,7 +17,7 @@ extends RefCounted
 ## What each kind of thing keeps besides where it is, by property.
 static var _kept := [
 	[Stake, ["driven", "pulled", "sustained", "holding", "pull"]],
-	[ShieldGenerator, ["on", "smart", "size", "_up", "_since"]],
+	[ShieldGenerator, ["on", "smart", "size", "_up", "_since", "held_minutes"]],
 	[Radio, ["channel", "target"]],
 	[Planter, ["tank_l", "split", "stored", "seeds", "ripened", "replanted", "banked", "dropped", "picked",
 		"fed_kcal", "_owed"]],
@@ -111,6 +111,7 @@ func begin(data: Dictionary) -> Array[Vector2]:
 	world._last_z = data.last[1]
 	world.power._next = data.ticks.power
 	world.wear._next = data.ticks.wear
+	world.wear.sheltered = data.ticks.get("sheltered", 0.0)
 	world.farm._next = data.ticks.farm
 	world.power.generated_wh = data.ledger[0]
 	world.power.used_wh = data.ledger[1]
@@ -266,7 +267,8 @@ func _take() -> Dictionary:
 			"_spawn_latitude": world.moon._spawn_latitude, "_spawn_longitude": world.moon._spawn_longitude,
 			"_facing": world.moon._facing},
 		"last": [world._last_x, world._last_z],
-		"ticks": {"power": world.power._next, "wear": world.wear._next, "farm": world.farm._next},
+		"ticks": {"power": world.power._next, "wear": world.wear._next, "farm": world.farm._next,
+			"sheltered": world.wear.sheltered},
 		"ledger": [world.power.generated_wh, world.power.used_wh, world.power.spilled_wh]}
 	var you := {"at": _transform_out(player.global_transform), "pitch": player.camera.rotation.x,
 		"v": player.velocity, "drag": player.get_meta(&"rope_drag", Vector3.ZERO), "state": {}, "vitals": {}}

@@ -42,6 +42,9 @@ func _ready() -> void:
 	await _held(view, "in the clear,")
 	_shoot(out.path_join("menu_main.png"))
 	var origins := Kit.origins()
+	for kit in origins:
+		if kit.unlock != "":
+			get_node(^"/root/Profile").unlock(kit.unlock)
 	_press(&"ui_accept")
 	for k in origins.size():
 		if k > 0:
@@ -53,12 +56,13 @@ func _ready() -> void:
 	_shoot(out.path_join("menu_modes.png"))
 	_press(&"ui_cancel")
 	_press(&"ui_cancel")
-	# Locked, as an origin will be until its unlock is found.
+	# Locked, as an origin is until its deed is done.
+	var unlock := origins[1].unlock
 	origins[1].unlock = "look_locked"
 	_press(&"ui_accept")
 	await _settle(main)
 	_shoot(out.path_join("menu_origin_locked.png"))
-	origins[1].unlock = ""
+	origins[1].unlock = unlock
 	_press(&"ui_cancel")
 	main.showpiece.home = origins[2]
 	await _settle(main)

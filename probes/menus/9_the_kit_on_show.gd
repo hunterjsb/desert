@@ -7,6 +7,7 @@ extends MenuProbe
 
 
 func run() -> void:
+	open_every_start()
 	await open_main()
 	var surveyor := Kit.named(&"surveyor")
 	var salvager := Kit.named(&"salvager")

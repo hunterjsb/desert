@@ -162,6 +162,7 @@ func join(piece: Chassis, ring: Socket, k := -1) -> void:
 		if node is CollisionShape3D:
 			shapes.append(node)
 	_rise_clear_of_sand(shapes)
+	_deeds()
 
 
 ## Takes an outer piece off again, with all that's its own and whatever
@@ -505,6 +506,19 @@ func _after_change() -> void:
 func mount(other: Device, socket: Socket) -> void:
 	super(other, socket)
 	carryable = false
+	_deeds()
+
+
+## The deck's deeds as it grows: enough pieces in one, and a home's three
+## standing on it.
+func _deeds() -> void:
+	if world == null or not world.counts_deeds:
+		return
+	if pieces().size() >= world.tuning.deed_deck_pieces:
+		Deeds.done(world, &"deck_pieces")
+	var on := mounted().map(func(d: Device) -> StringName: return d.get_meta(&"catalog", &""))
+	if Deeds.HOME.all(func(id: StringName) -> bool: return on.has(id)):
+		Deeds.done(world, &"deck_home")
 
 
 func dismount(socket: Socket) -> Device:

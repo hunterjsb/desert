@@ -109,17 +109,23 @@ func _shown_for(words: Control, fading: Tween, seconds: float) -> Tween:
 	return tween
 
 
-## The console over a run with nothing else open: typing goes to it.
+## The console over a run with nothing else open, or over the main menu
+## alone for what needs no world: typing goes to it, over every menu.
 func open_dev_console() -> void:
-	if is_open() or main == null or not main.in_run():
+	if main == null or (is_open() if main.in_run() else not (_menus.size() == 1 and top().root)):
 		return
+	move_child(dev_console, -1)
+	move_child(_fade, -1)
 	dev_console.open()
 	Controls.free_mouse(true)
 
 
+## Back to the run, or to the menu it was opened over.
 func close_dev_console() -> void:
 	dev_console.close()
-	if main != null and main.in_run() and not is_open():
+	if is_open():
+		top().highlight()
+	elif main != null and main.in_run():
 		Controls.free_mouse(false)
 
 
