@@ -176,7 +176,7 @@ func _time(args: PackedStringArray, world: World) -> void:
 	var longitude := world.moon.longitude
 	world.time += fposmod(of_day - day.time_of_day(world.time, longitude), 1.0) * world.tuning.day_minutes * 60.0
 	world.weather.forecast_now()
-	_say("day %d, %.3f of it" % [day.day(world.time, longitude), day.time_of_day(world.time, longitude)])
+	_say("day %d, %.3f of it" % [day.day(world.time, longitude, world.began), day.time_of_day(world.time, longitude)])
 
 
 func _tu(args: PackedStringArray, world: World) -> void:

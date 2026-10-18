@@ -1067,7 +1067,7 @@ Proposed, in this PRD's terms:
 | Light solar panel | | | | | 1 | |
 | Hoverboard | 1 | | | | 1 | fits a rack itself |
 | Radio | 1 | | | | 1 | fits a top mount itself |
-| Bedroll | | | | | | fits a rack itself; use on it sleeps ([Survival](survival.md#sleep-as-built-2026-10-18)) |
+| Bedroll | | | | | | fits a rack itself; use on it sleeps, and in your hands lays it out ([Survival](survival.md#sleep-as-built-2026-10-18)) |
 | Survival kit | | | | | | a water and a food socket, 2 small and 1 large plant slot |
 
 **Carried, a device works as anywhere else** (Hunter, 2026-10-17): a carryable device goes

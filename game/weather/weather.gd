@@ -446,7 +446,7 @@ func _report() -> void:
 	var t := _world.time
 	var hours := day.time_of_day(t, _world.moon.longitude) * 24.0
 	var warp := "" if _world.time_warp == 1.0 else " x%d" % _world.time_warp
-	Dev.put("weather/t", "d%d %02d:%02d%s" % [day.day(t, _world.moon.longitude), floori(hours),
+	Dev.put("weather/t", "d%d %02d:%02d%s" % [day.day(t, _world.moon.longitude, _world.began), floori(hours),
 		floori(fmod(hours, 1.0) * 60.0), warp])
 	# Compass bearing the wind comes from; north is -z.
 	var from := fposmod(rad_to_deg(atan2(-wind.x, wind.z)), 360.0)

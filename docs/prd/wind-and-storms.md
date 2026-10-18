@@ -793,6 +793,17 @@ in the living docs, so this PRD follows it as direction and says so on each line
 - **Storms of 20-40 minutes against the field.** Here: the median storm is 17 minutes, 71% pass within
   30, and some run past three hours. Not said whether the field is to be retuned toward the
   session's length; "how long storms last is a tuning target."
+  *Measured 2026-10-18* over the starts of twelve worlds, 200 days each (2,916 storms): median 17.7
+  minutes; 45% run past a day (20 minutes), 18% past two, 6% past three; the longest 8.4 days (2.8
+  hours), and 79% of all storm time is in storms past a day. The tail keeps its shape whatever the
+  scale: the longest is near ten times the median in every tuning tried. Faster evolving (3 or 6
+  times) or a slow lull carved through the field barely moves it. Raising the threshold to -0.05 makes
+  the moon stormy 56% of the time, not 70, and storms past three days 2%, the median 13 minutes;
+  halving the wavelength to 8 km halves every storm (median 8 minutes, the longest 71, past three
+  days 0.3%) with walls twice as often. *Proposed, not built:* leave the field, since a sleep covers
+  four days and the kit's shield lasts about that long, or raise the threshold a little (-0.10: 63%
+  stormy, 4% past three days). Only the run's first storm is held to an ordinary length
+  ([Survival](survival.md#skeleton-version)).
 - **Fixing storm damage against wear that nothing mends.** Here (Power): the turbine's storm wear
   "nothing mends," and parts are "found, never crafted." The session: "craft and repair: fix storm
   damage, rearrange mods." *Follows the session as an activity;* no repair exists and none is

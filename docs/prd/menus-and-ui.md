@@ -264,7 +264,8 @@ set aside to its right; over a run, in the middle on the soft dark field.
   of it, 8 at most, each with everything seated in it and its state (charge, crops, a
   shield's switch), seen from where you stood toward it and fitted to the crate's span.
   Under it, the save's numbers: time played, when it was saved by the clock on the wall
-  (today 13:40, yesterday 21:05, 3 days ago), the run's day, and who you came as; then how many
+  (today 13:40, yesterday 21:05, 3 days ago), the run's day (counted from its own start, the
+  day it began day 1), and who you came as; then how many
   deeds show done ("Deeds 6 of 15"). A save
   from before time played was kept lists the rest. Confirm carries on; back goes back.
 - **Music** at the main menu: Hunter's "Salt" (`assets/audio/menu_theme.ogg`, 80 s, looping,

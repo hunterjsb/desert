@@ -1156,4 +1156,4 @@ func _clock(t: float, with_day := false) -> String:
 	var day := world.weather.day
 	var hours := day.time_of_day(t, world.moon.longitude) * 24.0
 	var at := "%02d:%02d" % [floori(hours), floori(fmod(hours, 1.0) * 60.0)]
-	return "D%d %s" % [day.day(t, world.moon.longitude), at] if with_day else at
+	return "D%d %s" % [day.day(t, world.moon.longitude, world.began), at] if with_day else at
