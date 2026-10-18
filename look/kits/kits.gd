@@ -69,7 +69,7 @@ func _stand_all() -> void:
 					var site := sites.by_hand(kind, at.x, at.y, 0.25, 0.0, lean)
 					if not site.stands():
 						continue
-					var taken := Exposure.stripped(world.weather.field, site.x, site.z, world.time, world.tuning)
+					var taken := Exposure.taken(world.weather.field, site.x, site.z, world.time, world.tuning)
 					site.depth = [taken * 4.0, taken * 2.0, 0.0][s]
 					sites.add(site)
 					_placed.append([site, s])

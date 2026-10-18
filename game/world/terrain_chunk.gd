@@ -165,10 +165,14 @@ func view_of(structure: Structure) -> MeshInstance3D:
 	return _views.get(structure, [null])[0]
 
 
+## A structure's boxes as this chunk makes them solid, or null.
+func body_of(structure: Structure) -> StaticBody3D:
+	return _bodies.get(structure, [null])[0]
+
+
 ## The state a structure's look stands in, as drawn now; -1 if it isn't.
 func state_of(structure: Structure) -> int:
-	var view: Array = _views.get(structure, [])
-	return Exposure.BURIED if view.is_empty() else structure.state()
+	return structure.state() if _views.has(structure) else -1
 
 
 ## How far a structure's look is sunk under its pad, as drawn now; NAN if it isn't.

@@ -216,7 +216,8 @@ static func _lies(site: Structure, i: int, spec: Dictionary, height: Callable) -
 	var p := Vector2(socket.at.x, socket.at.z)
 	var surface := socket.at.y
 	if piece.lean == 0.0 or site.tilt == 0.0:
-		var spot := _spot(piece, state, i, size)
+		# On what stands of it now, between states too.
+		var spot := _spot(piece, StructureKit.Piece.shown_state(site.level()), i, size)
 		if not spot.is_finite():
 			return false
 		p = Vector2(spot.x, spot.y)

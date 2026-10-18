@@ -441,7 +441,7 @@ func release_ground() -> void:
 func follow(t: float, occupied: Callable) -> bool:
 	if is_nan(_shown):
 		return false
-	var dt := clampf(t - _followed, 0.0, 1.0) if not is_nan(_followed) else 0.0
+	var dt := maxf(t - _followed, 0.0) if not is_nan(_followed) else 0.0
 	_followed = t
 	var pure := pure_taken(t)
 	if pure >= _shown:
