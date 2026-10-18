@@ -321,6 +321,9 @@ device already stays a body of its own on the host's power pool.
     With the full set it adds a storm map at the right.
   - **Shield:** a form for each smart shield, shown only when there is one.
   - **Log:** the last fourteen lines logged.
+- **A rack, not a crate** (Hunter, 2026-10-18: "instead of a crate, the console should be a
+  taller server rack like thing, so we can make the displays bigger"): the Console stands tall
+  and narrow, like a server rack, its whole front a big screen.
 - **The radar first** (Hunter, 2026-10-18, after playing it: "the console is kind of
   information overload... we shouldnt directly drop any of it... i love the map"). Nothing is
   dropped; it's rearranged so the map leads, and readable from where you stand:
