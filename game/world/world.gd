@@ -139,7 +139,7 @@ func _follow_history() -> void:
 
 ## A run starts on ground this flat: a camp-sized patch whose sand rises no
 ## more than FLAT_RISE m across FLAT_SPAN m, found within FLAT_SEARCH m, and
-## never on a ruin's ground.
+## never on a structure's ground.
 const FLAT_SPAN := 10.0
 const FLAT_RISE := 0.5
 const FLAT_SEARCH := 300.0
@@ -159,7 +159,7 @@ func _flat_near(x: float, z: float) -> Vector2:
 
 
 func _flat(at: Vector2) -> bool:
-	if shape.ruins.covering(at.x, at.y) != null:
+	if shape.sites.covering(at.x, at.y) != null:
 		return false
 	var low := INF
 	var high := -INF

@@ -5,8 +5,10 @@ extends RefCounted
 
 var coord: Vector2i
 var step: int
-## The ruin standing on it, or null: its ground is in the heights already.
-var ruin: Ruin
+## The structures whose middle stands on it, and the state each was built in:
+## their ground is in the heights already.
+var structures: Array[Structure] = []
+var states := PackedInt32Array()
 ## (n+1)^2 samples in rows along z: the collision data and the seam check.
 var heights: PackedFloat32Array
 var arrays: Array
@@ -15,15 +17,26 @@ var mesh: RID
 
 
 static func make(shape: TerrainShape, coord: Vector2i, size: int, step: int, skirt: float,
-		indices: PackedInt32Array) -> ChunkBuild:
+		indices: PackedInt32Array, held: Array[Structure] = []) -> ChunkBuild:
 	var build := ChunkBuild.new()
 	build.coord = coord
 	build.step = step
 	var n := size / step
 	var x0 := float(coord.x * size)
 	var z0 := float(coord.y * size)
-	# A ruin's ground never leaves its chunk, so it's the only one these samples can meet.
-	build.ruin = shape.ruins.in_chunk(coord)
+	# The structures the index held for it, read here on the worker: the
+	# ground of each that stands is pressed into these samples, from what its
+	# state makes of each lattice point (Structure.carve), as the ground's one
+	# function presses it.
+	var carves: Array[Array] = []
+	var square := Rect2(x0, z0, size, size)
+	for each in held:
+		if not each.stands():
+			continue
+		carves.append(each.carve())
+		if square.has_point(Vector2(each.x, each.z)):
+			build.structures.append(each)
+			build.states.append(each.state())
 
 	# One sample of border, so edge normals match the neighbour's.
 	var w := n + 3
@@ -31,7 +44,21 @@ static func make(shape: TerrainShape, coord: Vector2i, size: int, step: int, ski
 	bordered.resize(w * w)
 	for j in w:
 		for i in w:
-			bordered[j * w + i] = shape.sample(x0 + (i - 1) * step, z0 + (j - 1) * step, build.ruin)
+			bordered[j * w + i] = shape.dunes(x0 + (i - 1) * step, z0 + (j - 1) * step)
+	# Then each structure over the samples its ground covers, and no others.
+	for carve in carves:
+		var made: PackedFloat32Array = carve[0]
+		var gx: float = carve[1]
+		var gz: float = carve[2]
+		var across := int(carve[3])
+		var lo := Vector2i(ceili((gx - x0) / step) + 1, ceili((gz - z0) / step) + 1).clamp(Vector2i.ZERO, Vector2i.ONE * w)
+		var hi := Vector2i(floori((gx + carve[3] - 1.0 - x0) / step) + 2, floori((gz + carve[4] - 1.0 - z0) / step) + 2) \
+			.clamp(Vector2i.ZERO, Vector2i.ONE * w)
+		for j in range(lo.y, hi.y):
+			var cj := int(z0 + (j - 1) * step - gz)
+			for i in range(lo.x, hi.x):
+				var k := (cj * across + int(x0 + (i - 1) * step - gx)) * 2
+				bordered[j * w + i] = lerpf(made[k], bordered[j * w + i], made[k + 1])
 
 	var grid := (n + 1) * (n + 1)
 	build.heights.resize(grid)

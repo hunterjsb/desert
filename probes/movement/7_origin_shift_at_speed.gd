@@ -80,18 +80,20 @@ func _process(delta: float) -> void:
 		_over += 1
 
 
-## A way out from spawn whose first 1.4 km passes no ruin within 30 m and no
-## find within 2 m; Vector2.ZERO if none.
+## A way out from spawn whose first 1.4 km passes no structure within 30 m of
+## its ground and no find within 2 m; Vector2.ZERO if none.
 func _clear_way() -> Vector2:
 	var from := Vector2(world.player_world_x(), world.player_world_z())
 	var size := world.tuning.chunk_size
 	for k in 16:
 		var way := Vector2.from_angle(k * TAU / 16.0)
 		var clear := true
-		for ruin in world.shape.ruins.around(from.x, from.y, 1500.0):
-			var off := Vector2(ruin.center) - from
+		for site in world.shape.sites.query(Rect2(from - Vector2.ONE * 1500.0, Vector2.ONE * 3000.0), false):
+			if not (site is Structure and site.stands()):
+				continue
+			var off := Vector2(site.x, site.z) - from
 			var along := clampf(off.dot(way), 0.0, 1400.0)
-			clear = clear and off.distance_to(way * along) > 30.0
+			clear = clear and off.distance_to(way * along) > 30.0 + site.reach
 		var seen := {}
 		var m := 0.0
 		while clear and m < 1400.0:
@@ -100,7 +102,7 @@ func _clear_way() -> Vector2:
 			if not seen.has(coord):
 				seen[coord] = true
 				for find in Finds.plan(world.run_seed, coord, 0.0, world.tuning, world.height_at,
-						world.shape.ruins.in_chunk(coord)):
+						world.shape.sites.ruin_in(coord), world.salvage.on_site):
 					var off := Vector2(find.x, find.z) - from
 					clear = clear and off.distance_to(way * clampf(off.dot(way), 0.0, 1400.0)) > 2.0
 			m += size * 0.5

@@ -645,12 +645,6 @@ static var _current: Tuning
 ## this hard as much as a storm's heart, m/s.
 @export var exposure_calm_wind: float = 16.0
 @export var exposure_gale_wind: float = 30.0
-## At most one ruin in each square this many chunks a side.
-@export var ruin_cell_chunks: int = 5
-## A ruin stands only where the dunes over its ground rise no more than
-## this, m, and are nowhere steeper than this, degrees.
-@export var ruin_max_rise: float = 1.5
-@export var ruin_max_degrees: float = 20.0
 
 @export_group("History")
 ## The moon's cells history is made and laid in, m across.
@@ -676,6 +670,14 @@ static var _current: Tuning
 @export var axis_spread_degrees: float = 25.0
 ## Spokes from Port Morgan out to the ring, besides the artery.
 @export var spokes: int = 5
+## A structure's exposure: the weather at it over this many hours before its
+## ground is built, read every this many minutes of world time.
+@export var site_exposure_hours: float = 12.0
+@export var site_exposure_step_minutes: float = 30.0
+## Sand a storm's heart strips off a structure in a tick, and sand the wind
+## lays back on it every tick, m.
+@export var site_strip_m: float = 0.5
+@export var site_return_m: float = 0.2
 
 @export_group("Radio")
 ## What a radio draws while it's on, W.

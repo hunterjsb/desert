@@ -349,6 +349,9 @@ history (house ruins in second-age villages and along roads), the grid source is
 house ruin stands only where history put one. Until then the grid's ruins are the only sites with
 ground, and history's sites are a plan the map shows.
 
+*Done 2026-10-18: the house ruin stands from history and the grid source is gone ([What the structure
+kits do now](#what-the-structure-kits-do-now)).*
+
 ## The structure framework
 
 A kit piece is data in the kind registry (`SiteKinds`), and one shared system builds every kind:
@@ -645,6 +648,110 @@ Shared files each package may touch, and nothing else outside its own: `Tuning` 
   22° north, and a jump keeping loaded ground as it was; 5 today's ruins exactly where master put them;
   6 the budgets.
 
+## What the structure kits do now
+
+*Built 2026-10-18, on the `kits` branch: package 1.*
+
+- **The framework** (`game/salvage/kits/`). `StructureKit` holds every kit piece as data, from one file
+  per era (`colonial.gd`, `skimmer.gd`, `first_kingdoms.gd`, `second_age.gd`): its footprint, its rooms
+  (where the sand lies just under a floor once dug out, with a drift ramp down into a pit), its openings
+  (where the drift falls away level), its boxes in plan metres with the coat each takes, its sockets,
+  how far each exposure state sinks it and fills its rooms, its survey, how much of its site's lean it
+  takes, a tour through its openings, and its look in Paint's worn pieces. A `Structure` is a `Site`
+  built from a piece; `Ruin` is the house ruin's, its old names kept. `SiteKinds` answers a kind's reach
+  from its piece. The doc's `Kit` was already the survival kit's name, so the framework is
+  `StructureKit` and its socket `SiteSocket` (`Socket` is the devices').
+- **Sockets**, the loot package's interface: each is a plan point on what it rests on, a kind (`floor`,
+  `shelf`, `cache`, `bed`) and how much deeper than the rest of the site it lies, as a share of its
+  burial a storm must strip past it. `Structure.socket_at(i)` gives its place; `reached(i)` whether it
+  can be reached now: clear of the sand, no higher than a hand reaches from it, and stripped deep enough.
+  `dug(p)` and `rest(p)` say whether a floor spot is dug out and where something set there rests.
+- **Where a structure stands.** History's site is surveyed as the sheet lays it, on a worker (a unit's
+  structures as one task, ahead of chunk builds; the unit is laid once they're surveyed, and the terrain
+  builds nothing they could touch until then): the dunes over its ground on a grid of up to 4 m, rising
+  no more than its survey's rise and nowhere steeper than its slope. Where they won't take it, it looks
+  along its line, up to 10 to 24 m either way (across the way it faces, or along it for what runs with a
+  line: pylons, pipe, wrecks), as a road's builders would; on the lattice by whole metres. Where none
+  does, the dunes took it and it's a plan on the map. Two structures' grounds never overlap: the smaller
+  gives way, whether or not the bigger stands, so which stands is the seed's alone; it's decided when
+  its ground is first built, when everything that could overlap it is laid. Measured round thirty
+  settlements and the roads through them on three seeds: 55% of house ruins stand, 60 to 70% of
+  wayshrines and watchtowers, half the dugouts, about 40% of pipe-wall huts, low walls, pylon stubs and
+  relay masts, 30% of hab pods, cisterns and fuel bladders, 23% of pipeline segments. What the dunes take
+  is what lies under the dune seas, which is where it would be.
+- **Exposure** (`Exposure`, Tuning's History group). The sand taken off a site is the weather's work over
+  the last 12 hours in 30-minute ticks, read as finds read it (`Exposure.reading`, which `Finds.exposure`
+  now shares): each tick a storm's heart strips 0.5 m and the wind lays 0.2 m back, and the older a tick
+  the more has drifted back since, so one big storm strips a lot and calm lets the sand return, never a
+  hard timer **(defaults)**. Against its depth: under a third stripped, buried; under all of it, partly
+  exposed; past it, exposed. Measured over 600 places and moments with the wind: the second age is
+  exposed 80% of the time and buried 11%; the skimmer era exposed 66%; the First Kingdoms mostly partly
+  exposed (52%, buried 26%); colonial sites buried 73% and partly exposed 26%, and dug out only in the
+  hardest storms at their shallowest.
+- **How the states read.** A state sinks the piece into the sand and fills its rooms to the sand line;
+  dug out, its rooms go down to their floors. Buried, only a top shows: a hab pod's roof and hatch, a
+  watchtower's platform level with the sand (walk onto it through the parapet's gap and its weapons
+  cache is in reach), a pylon's crossarm, a relay mast's upper half, a wreck's fin, the coping of a
+  cistern, the top course of a low wall, a hump of sand over a pipeline, the jar on a house's corner and
+  its wall tops. Partly exposed shows the tops of the walls, doors dark slots under their lintels.
+  Exposed is dug out: sand drifted up the walls, level at the openings, floors swept. What a state leaves
+  out of a piece's boxes lies wholly under the sand, so the carve and the boxes always agree.
+- **Loaded ground never changes.** A structure's exposure is read when the first chunk touching its
+  ground is launched (`sites.hold`, at the world's time) and held while any chunk touching it is loaded
+  or building; when the last is forgotten (`sites.release`, on the terrain's `unloaded`) it's read afresh
+  next time. So a site changes while you're away, and a storm that has come and gone means a revisit
+  finds it deeper; its deepest sockets only once a storm strips past them.
+- **History-driven.** Every piece stands where history's rows and settlements put it: pylon stubs every
+  150 m on a power line, pipe every 120 m on a pipeline, wayshrines every 700 m on second-age roads,
+  watchtowers and house ruins along them, relay masts on colonial roads and the survey grid, pipe-wall
+  huts and low walls on the First Kingdoms' lines, skimmer camps and wreck fields, villages and Rim towns
+  of house ruins. The grid source is gone (`RuinSites` deleted): a house ruin stands only where history
+  put one. The chunk build's boxes and the carve read `sites.in_chunk` and `sites.covering`.
+- **The old grid's users, moved.** The radio's beacon picks a house ruin history put there, the first
+  standing in its chunk (`sites.ruin_in`, which the chunk's finds are laid out in too), through
+  `sites.nearest`, whose test now takes the site. The hall's device is a later visitor's: it lies on
+  whatever sand is in the hall, so the beacon's choice stays the seed's alone; the floor's other finds
+  are laid only where the floor is dug out, and loose finds keep off every structure's ground
+  (`Finds.plan`'s `on_site`). The `ruin` scenario finds history's house ruin nearest the run's start
+  however far round the moon, and stands you on fresh ground before its door at a moment it's dug out.
+  The `radio` scenario, there to follow a beacon, stands you on fresh ground beside the nearest town
+  where one is heard. Probes and look-tests that need ruins start the run beside a town where they
+  stand (`StructureKit.starts_among`); a run's own start is deep desert.
+- **The sheet, two fixes.** A unit waiting in the queue now takes the distance it's at as you walk
+  toward it, not the one it was offered at, while keeping the anchor it was offered from; and
+  everything that ground about to be built, or kept a chunk past the view, could touch is laid at once.
+  Before, both were covered only while laying kept ahead, which structures' surveys no longer let it.
+- **Laid by hand** (`sites.by_hand`, `sites.add`): a structure of any kind at a world place, for probes
+  and look-tests; laying it over loaded ground builds that ground again, a dev action like a jump, and
+  it's never saved.
+- **Cost.** Building every piece's looks while the world loads, 270 ms (a house's colours are recoloured
+  copies, a leaning piece one look for every state). A structure's survey takes at most 0.5 ms on a
+  worker (the house ruin; the rest under 0.25 ms); laying a town's sheet all at once, 11 ms; laying a
+  unit on the main thread, 0.48 ms in about 7 parts, the slowest 0.6 (the spine's 0.43). On the chunk
+  workers, a near chunk with structures costs 3% more to build than one without, 6% the first time over
+  a structure, which then keeps its carve for each lattice point in its state; a mid chunk the same.
+  Holding a chunk's structures as it's launched, 6 µs on the main thread. The ground's one function on a
+  structure's ground, 12.9 µs against 12.0 on open sand. Static things cost nothing per tick: no
+  structure has a process step; its look and its boxes are part of its chunk.
+- **Probes** (`probes/kits/`): 1 every kind sits in the sand in every state; 2 you can walk through every
+  kind's doors and openings, up a pit's drift as slowly as up any slope (it replaces salvage's probe 4,
+  which walked only the ruin); 3 loaded ground never changes across an exposure change, and a site
+  changes while you're away; 4 exposure is pure, and a returning storm reaches deeper; 5 the grid is gone
+  and the beacon still finds a site (it replaces the spine's probe 5, which held the grid's ruins in
+  place). Each fails on a deliberately broken build: rooms dug out in every state; doorways half a metre
+  wide; exposure read afresh at every chunk launched; exposure read off the clock rather than its ticks;
+  the beacon only in the grid's ruins.
+- **To see them** (unseen, on a GPU): `look/kits/shoot.sh <dir>` stands every piece by era in each
+  state on fresh ground, shoots each and the artery out of Halfrise with its sites, and builds
+  `~/Desktop/structures.png`.
+- **Hand-offs.** World's start searches for flat ground with `sites.covering` before the sheet is first
+  laid, so it can't see history's structures yet: the spawns package's to order. The performance pass's
+  `held_height_at` and `highest_in` on master ask `ruins.covering` and `RuinSites.MARGIN`: on this branch
+  they become `sites.covering` and `sites.narrowest()`, the narrowest any structure's ground is.
+- **Planned only, still:** survey beacons, pump stations, farm domes, vent stations, checkpoints,
+  generator shrines, caravanserais, stepwells, ration gates, granaries, earthworks, bunkers and the signs:
+  history's plan, for the map and the packages to come.
+
 ## Defaults
 
 Every value this doc picked where the lore was silent. Change any of them here and in Tuning's History
@@ -671,7 +778,11 @@ group.
 - Moon cells 500 m; a unit laid within 1,300 m and lifted past 1,800 m.
 - Burial: colonial 2 to 6 m, skimmer 0.2 to 1 m tilted 10° to 35°, First Kingdoms 0.8 to 2 m, second age 0
   to 0.6 m.
-- Exposure's window: 12 hours of world time in 30-minute ticks.
+- Exposure's window: 12 hours of world time in 30-minute ticks; a storm's heart strips 0.5 m a tick, the
+  wind lays 0.2 m back every tick, and a tick's work counts less the older it is, down to nothing 12 hours
+  back.
+- Where a structure may stand: the most the dunes over its ground may rise and how steep they may be,
+  and how far it may look along its line for ground that takes it, per kit piece (the era files).
 - Spawns: the Surveyor 1 to 3 km from an artery or spoke (first set at 2 to 4, brought in to a fair walk
   on 2026-10-18), crossed walking in toward Tu within 3 km, no path or settlement within 600 m; the
   Salvager within 300 m of a wreck field; the Homesteader on a road within 100 m of a wayshrine; every

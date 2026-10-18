@@ -11,11 +11,13 @@ extends RefCounted
 ## in: 0 is midnight, 0.5 noon. "camp" drops a floating camp in front of you,
 ## each piece on one line to a stake, with stakes and coils to add more.
 ## "survive" starts you over on sealed water, with a crude camp to keep you.
-## "ruin" stands you in front of the ruin nearest where the run began, clear
-## and calm, with finds round it and a bare crate frame of your own. "farm"
+## "ruin" stands you in front of history's house ruin nearest where the run
+## began on the moon, however far, dug out, clear and calm, with finds round
+## it and a bare crate frame of your own. "farm"
 ## sets two planters growing in front of you, one with a harvester, and a
 ## shield for the storm on its way. "radio" sets a radio and a shield in front
-## of you with a storm on its way, to sit it out and follow a beacon. "afk"
+## of you with a storm on its way, to sit it out and follow a beacon: beside a
+## town where history left house ruins ("among"), so a beacon is in reach. "afk"
 ## parks the reference camp round you on a floating deck, running, to be left
 ## alone, its farm watered by a condenser on hoses. "lee" stands you at the foot of a tall
 ## slip face, facing up it into the wind coming over its crest, with a storm
@@ -59,7 +61,7 @@ const LIST: Array[Dictionary] = [
 	{"key": "board", "label": "ride: a charged hoverboard at your feet by a small camp, a shield and a crate, clear and calm",
 		"kind": "clear", "day": [0.35, 0.5], "calm": 6.0, "board": true},
 	{"key": "radio", "label": "radio: a radio and a charged shield in front of you, a storm 300 m off", "kind": "front",
-		"distance": 300.0, "day": [0.35, 0.55], "radio": true},
+		"distance": 300.0, "day": [0.35, 0.55], "radio": true, "among": true},
 	# A morning like a run's, the first storm minutes off, so it soon shows what the camp does in one.
 	{"key": "afk", "label": "AFK: the reference camp on a floating 2x2 deck, moored, its farm floating beside it on hoses, a turbine out in the wind",
 		"kind": "clear", "day": [0.3, 0.4], "due": [180.0, 480.0], "afk": true},
@@ -174,8 +176,10 @@ const CONSOLE_STAKE := [-0.5, 4.6]
 
 ## Your own frame, to fit what you find to: right and ahead.
 const YOURS := [1.5, 2.5]
-## How far from where the run began to look for a ruin, m.
-const RUIN_SEARCH := 4000.0
+## How far round the moon from where the run began to look for a house ruin,
+## m, and how many places on fresh ground to try standing it at.
+const RUIN_SEARCH := 40000.0
+const RUIN_STANDS := 6
 
 ## A tall slip face's foot: level sand at the bottom of a drop whose crest
 ## stands at least this far above it, m, and a lee there of at least this
@@ -256,7 +260,9 @@ static func apply(world: World, scenario: Dictionary) -> void:
 ## Puts you where find() found, there on the moon too.
 static func stand(world: World, scenario: Dictionary, place: Dictionary) -> void:
 	world.respawn(place.x, place.z, place.yaw, place.time)
-	if scenario.has("moon"):
+	if place.has("moon"):
+		world.moon.place(place.moon.x, place.moon.y)
+	elif scenario.has("moon"):
 		var at := moon_at(world, scenario)
 		world.moon.place(rad_to_deg(at.x), rad_to_deg(at.y))
 
@@ -286,9 +292,18 @@ static func find(world: World, scenario: Dictionary) -> Dictionary:
 		return _at_ruin(world, scenario)
 	if scenario.kind == "lee":
 		return _in_lee(world, scenario)
+	# Without salvage there's no structure to stand among: where the run began.
+	if scenario.get("among", false) and world.tuning.salvage:
+		return _among(world, scenario)
+	return _search(world, scenario, spawn, moon_at(world, scenario).y)
+
+
+## The first moment and place in three days a scenario's weather and hour
+## hold, from a world place, local time at a longitude, rad.
+static func _search(world: World, scenario: Dictionary, spawn: Vector2, longitude: float) -> Dictionary:
 	var field := world.weather.field
 	var day := world.weather.day
-	var moon := moon_at(world, scenario)
+	var moon := Vector2(moon_at(world, scenario).x, longitude)
 	var t := 0.0
 	if scenario.has("eclipse"):
 		t = day.next_eclipse(0.0) - day.totality() * 0.5 - scenario.eclipse
@@ -347,21 +362,75 @@ static func _place(field: WeatherField, scenario: Dictionary, from: Vector2, upw
 	return {}
 
 
-## In front of the nearest ruin's door, facing it, at a moment in the day's
-## window that's clear and calm there and stays clear ten minutes.
+## Where a scenario stands you among history's house ruins, a beacon in
+## reach: on fresh ground, the moon's point beside the nearest town where one
+## is heard from there, laid from where you'll stand; the weather searched
+## there, the hour by the town's longitude.
+static func _among(world: World, scenario: Dictionary) -> Dictionary:
+	var tuning := world.tuning
+	# Past where the history kept under the loaded ground could reach, however
+	# far upwind the weather's search goes.
+	var off := (tuning.history_lay_m + tuning.history_cell_m) * 2.0 + world.history_due() + REACH
+	var fresh := Vector2(roundf(world.player_world_x() + off), roundf(world.player_world_z()))
+	var spawn_moon := moon_at(world, scenario)
+	var from := Sphere.point(spawn_moon.x, spawn_moon.y)
+	var heard := func(laid: TerrainShape, ground: Vector2) -> bool:
+		return not Finds.beacon(world.run_seed, laid.sites, ground.x, ground.y, tuning,
+			func(_coord: Vector2i, _index: int) -> bool: return false).is_empty()
+	var shape := TerrainShape.new(world.run_seed, tuning)
+	for town in StructureKit.towns_near(shape.history, from, 12):
+		var at := StructureKit.beside(shape.history, town, from, 400.0)
+		var place := _search(world, scenario, fresh, Sphere.longitude(at))
+		if not place.is_empty() and StructureKit.stands_among(shape, at, Vector2(place.x, place.z), 400.0 + town.radius,
+				4, heard):
+			place.moon = Vector2(rad_to_deg(Sphere.latitude(at)), rad_to_deg(Sphere.longitude(at)))
+			return place
+	return {}
+
+
+## In front of the front door of history's house ruin nearest where the run
+## began on the moon, facing it, at a moment in the day's window that's clear
+## and calm there, stays clear ten minutes, and finds it dug out. You stand on
+## fresh ground with the moon's point put where its door is, so the sheet lays
+## it in front of you: {x, z, yaw, time, moon} with the moon's point in degrees.
 static func _at_ruin(world: World, scenario: Dictionary) -> Dictionary:
 	var field := world.weather.field
 	var day := world.weather.day
-	for ruin in world.shape.ruins.around(world.spawn.x, world.spawn.y, RUIN_SEARCH):
-		var at := ruin.to_world(Ruin.APPROACH)
-		var door := ruin.to_world(Ruin.DOORS[0][0])
-		var t := 0.0
-		while t < HORIZON:
-			var hour := day.time_of_day(t, Sphere.longitude(world.start))
-			if hour >= scenario.day[0] and hour <= scenario.day[1] and not _place(field, scenario, at, Vector2.ZERO, t).is_empty():
-				var facing := (door - at).normalized()
-				return {"x": at.x, "z": at.y, "yaw": atan2(-facing.x, -facing.y), "time": t}
-			t += TIME_STEP
+	var sites := world.shape.sites
+	var radius := world.shape.history.radius
+	var moon := moon_at(world, scenario)
+	var from := Sphere.point(moon.x, moon.y)
+	# Past where the history kept under the loaded ground could reach.
+	var off := (world.tuning.history_lay_m + world.tuning.history_cell_m) * 2.0 + world.history_due()
+	for each in StructureKit.nearest_on_moon(world.shape.history, from, &"house_ruin", RUIN_SEARCH):
+		for k in RUIN_STANDS:
+			var at := Vector2(roundf(world.player_world_x() + off + k * 250.0), roundf(world.player_world_z()))
+			# Laid from its own point first, to learn which way its door faces.
+			var guess := sites.would_lay(each, at.x, at.y, each.p) as Ruin
+			var out := guess.to_world(Ruin.APPROACH) - Vector2(guess.x, guess.z)
+			var point := Sphere.from_flat(each.p, Vector2(out.x, -out.y) / radius)
+			var ruin := sites.would_lay(each, at.x, at.y, point) as Ruin
+			if not ruin.stands():
+				continue
+			var door := ruin.to_world(Ruin.DOORS[0][0])
+			var longitude := Sphere.longitude(point)
+			var tick := NAN
+			var dug := false
+			var t := 0.0
+			while t < HORIZON:
+				var hour := day.time_of_day(t, longitude)
+				if hour >= scenario.day[0] and hour <= scenario.day[1] \
+						and not _place(field, scenario, at, Vector2.ZERO, t).is_empty():
+					var now := floorf(t / (world.tuning.site_exposure_step_minutes * 60.0))
+					if now != tick:
+						tick = now
+						dug = Exposure.state(ruin.depth, Exposure.stripped(field, ruin.x, ruin.z, t, world.tuning)) \
+							== Exposure.EXPOSED
+					if dug:
+						var facing := (door - at).normalized()
+						return {"x": at.x, "z": at.y, "yaw": atan2(-facing.x, -facing.y), "time": t,
+							"moon": Vector2(rad_to_deg(Sphere.latitude(point)), rad_to_deg(longitude))}
+				t += TIME_STEP
 	return {}
 
 

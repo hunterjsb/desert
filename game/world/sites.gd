@@ -1,9 +1,11 @@
 class_name Sites
 extends RefCounted
 ## The site index: every site, path piece and landmark laid on the ground near
-## you, in world metres and hashed by the chunks they touch, with today's
-## ruins from the ground's own grid. It answers what chunks and systems ask:
-## what touches this area, whose ground is under this point, what's nearest.
+## you, in world metres and hashed by the chunks they touch. It answers what
+## chunks and systems ask: what touches this area, whose ground is under this
+## point, what's nearest. A site whose kind has a kit is a Structure, built on
+## the ground once its ground is; the index holds its exposure as it was read
+## while any ground built over it is loaded.
 ##
 ## History is laid by the sheet. The flat ground can't hold the moon, so the
 ## history near you is laid from where you are: a moon cell, or a landmark,
@@ -94,7 +96,6 @@ class Unit:
 
 
 var history: History
-var ruins: RuinSites
 ## Whether any of a rectangle of world metres is loaded ground, and builds
 ## that ground again: the world's.
 var loaded := func(_rect: Rect2) -> bool: return false
@@ -108,35 +109,52 @@ var laid := 0
 var _size: float
 var _lay: float
 var _lift: float
+## Structures are built on the ground only with salvage on; else every site is a plan.
+var _built: bool
+var _ctx := StructureKit.Context.new()
 var _anchor: Anchor
 ## The units of this sheet, by key: a cell's id, or -1 - a landmark's index.
 var _units := {}
 ## Units laid by an earlier sheet, kept while their ground is loaded.
 var _orphans: Array[Unit] = []
-## Units waiting to be laid, nearest first: [key, anchor, metres off].
+## Units waiting to be laid, nearest first: [key, anchor, metres off]; and
+## every key waiting, to its entry, or true once out of the queue to be surveyed.
 var _queue: Array[Array] = []
 var _queued := {}
 ## The unit at the head of the queue, part made.
 var _making: Unit
+## Units made and handed to a worker to survey their structures: [unit, task].
+var _surveying: Array[Array] = []
 var _sites := {}
 var _pieces := {}
+## The next key for a unit laid by hand, below every landmark's.
+const BY_HAND := -1000000
+var _by_hand := BY_HAND
 ## Where laying was last asked from, and how far round it everything is laid.
 var _ready_at := Vector2(INF, INF)
 var _ready_m := -1.0
 
 
-func _init(world_history: History, grid: RuinSites, tuning: Tuning) -> void:
+func _init(world_history: History, shape: TerrainShape, tuning: Tuning) -> void:
 	history = world_history
-	ruins = grid
 	_size = tuning.chunk_size
 	_lay = tuning.history_lay_m
 	_lift = tuning.history_lift_m
+	_built = tuning.salvage
+	_ctx.shape = weakref(shape)
+	_ctx.tuning = tuning
+	_ctx.field = WeatherField.new(history.run_seed, tuning)
+
+
+## Where structures read the time from: the world's clock, world seconds.
+func set_clock(clock: Callable) -> void:
+	_ctx.clock = clock
 
 
 # --- What chunks and systems ask. ---
 
 ## Every site whose ground touches a rectangle of world metres: laid ones,
-## planned ones too unless asked not to, and the grid's ruins.
+## planned ones too unless asked not to.
 func query(rect: Rect2, planned := true) -> Array[Site]:
 	var found: Array[Site] = []
 	var seen := {}
@@ -145,8 +163,6 @@ func query(rect: Rect2, planned := true) -> Array[Site]:
 			if not seen.has(site) and (planned or not site.planned) and site.touches(rect):
 				seen[site] = true
 				found.append(site)
-	for ruin in ruins.touching(rect):
-		found.append(ruin)
 	return found
 
 
@@ -178,33 +194,167 @@ func in_chunk(coord: Vector2i) -> Array[Site]:
 	for site: Site in _sites.get(coord, []):
 		if square.has_point(Vector2(site.x, site.z)):
 			found.append(site)
-	var ruin := ruins.in_chunk(coord)
-	if ruin != null:
-		found.append(ruin)
 	return found
 
 
-## The site whose ground a world place is on, or null: what the ground's one
-## function asks. Only the grid's ruins press into the ground yet.
-func covering(x: float, z: float) -> Site:
-	return ruins.covering(x, z)
+## The house ruin a chunk's finds are laid out in: of those standing in it,
+## the one made first.
+func ruin_in(coord: Vector2i) -> Ruin:
+	var first: Ruin = null
+	for site in in_chunk(coord):
+		var each := site as Ruin
+		if each != null and (first == null or each.id < first.id) and each.stands() and not _yields(each):
+			first = each
+	return first
 
 
-## The nearest site within `radius` m of a world place that `wanted(kind, x,
-## z)` keeps, asked before a grid ruin's ground is surveyed; built ones only
-## unless asked.
+## The structure whose ground a world place is on, or within a metre and a
+## half of it, so the lattice points round the place are too; null where the
+## dunes are the ground's own. What the ground's one function asks, on the
+## main thread: chunk builds are handed theirs (hold).
+func covering(x: float, z: float) -> Structure:
+	if not _built:
+		return null
+	for site: Site in _sites.get(Vector2i(floori(x / _size), floori(z / _size)), []):
+		var each := site as Structure
+		if each != null and each.reaches(x, z, 1.5) and each.stands() and not _yields(each):
+			return each
+	return null
+
+
+## A structure of a kind made by hand at a world place, facing `bearing`,
+## lying `depth` m deep and leaning `lean` rad, surveyed: what the dev
+## console, probes and look-tests stand where they need one. Not laid.
+func by_hand(kind: StringName, x: float, z: float, bearing: float, depth: float, lean := 0.0) -> Structure:
+	var piece := StructureKit.piece(kind)
+	var site: Structure = piece.builds.new()
+	site.id = hash([kind, x, z, bearing]) & 0x3fffffffffffffff
+	site.kind = kind
+	site.era = piece.era
+	site.x = x
+	site.z = z
+	site.bearing = bearing
+	site.depth = depth
+	site.tilt = lean
+	site.loot = site.id
+	site.source = &"hand"
+	if _anchor != null:
+		site.point = _anchor.point_at(x, z)
+		site.region = history.region_of(site.point)
+	site.setup(piece, _ctx)
+	site.place()
+	return site
+
+
+## Lays a structure made by hand, as a unit of its own. Ground already
+## loaded under it is built again, since laying it changes that ground: a dev
+## action, like a jump, never part of play. Lifted like any other once you're
+## far from it, and never saved.
+func add(site: Structure) -> void:
+	var unit := Unit.new()
+	unit.key = _by_hand
+	_by_hand -= 1
+	unit.anchor = _anchor
+	unit.sites.append(site)
+	unit.ground = Rect2(site.x - site.reach, site.z - site.reach, site.reach * 2.0, site.reach * 2.0)
+	_put(unit, true)
+	if loaded.call(unit.ground):
+		rebuild.call(unit.ground)
+
+
+## A site of history's as the sheet would lay it from a place on the ground,
+## world metres, with the moon's point there, facing north: not laid, for
+## asking where something would stand before going there.
+func would_lay(each: Dictionary, x: float, z: float, p: Vector3) -> Site:
+	var site := _site(each, Anchor.new(x, z, p, 1.0, history.radius))
+	if site is Structure:
+		site.place()
+	return site
+
+
+## The narrowest any structure's ground is, m: a rectangle no wider can only
+## meet one's ground by a corner, so asking covering() at its corners is
+## enough. INF where nothing is built.
+func narrowest() -> float:
+	return StructureKit.narrowest() if _built else INF
+
+
+## The nearest site within `radius` m of a world place that `wanted(site)`
+## keeps, asked before a structure's ground is surveyed, so a test of the seed
+## alone spares the surveys a wide search would cost; built ones only, and
+## standing, unless asked.
 func nearest(x: float, z: float, radius: float, wanted: Callable, planned := false) -> Site:
-	var best: Site = null
-	var near := radius
+	var near: Array[Array] = []
 	for unit in units():
 		for site in unit.sites:
 			var by := site.distance_to(x, z)
-			if by <= near and (planned or not site.planned) and wanted.call(site.kind, site.x, site.z):
-				best = site
-				near = by
-	var ruin := ruins.nearest(x, z, near, func(middle: Vector2i) -> bool:
-		return wanted.call(&"house_ruin", float(middle.x), float(middle.y)))
-	return ruin if ruin != null else best
+			if by <= radius and (planned or not site.planned):
+				near.append([by, site])
+	near.sort_custom(func(a: Array, b: Array) -> bool: return a[0] < b[0])
+	for each in near:
+		var site: Site = each[1]
+		if not wanted.call(site):
+			continue
+		if not planned and site is Structure and (not site.stands() or _yields(site)):
+			continue
+		return site
+	return null
+
+
+## The structures a chunk's ground is built with: every one standing whose
+## ground touches it, its exposure held from now while that ground is loaded,
+## read now if nothing held it. Asked on the main thread as the build is
+## launched; the build itself surveys them, on its worker.
+func hold(coord: Vector2i) -> Array[Structure]:
+	var held: Array[Structure] = []
+	if not _built:
+		return held
+	for site in query(_square(coord)):
+		var each := site as Structure
+		if each == null or _yields(each, true):
+			continue
+		if each.holders.is_empty():
+			each.decide(_ctx.clock.call())
+		each.holders[coord] = true
+		held.append(each)
+	return held
+
+
+## A chunk's ground is gone: what only it held can read afresh next time.
+func release(coord: Vector2i) -> void:
+	if not _built:
+		return
+	for site in query(_square(coord)):
+		var each := site as Structure
+		if each != null and each.holders.erase(coord) and each.holders.is_empty():
+			each.forget()
+
+
+## A chunk's square, with the border its build samples.
+func _square(coord: Vector2i) -> Rect2:
+	return Rect2(Vector2(coord) * _size, Vector2.ONE * _size).grow(4.0)
+
+
+## Two structures' grounds never overlap: where they would, the smaller gives
+## way, or the one with the larger id, whether or not the other stands, so
+## which stands is the seed's alone. Kept once its ground is first built:
+## by then everything that could overlap it is laid. Asked sooner, of ground
+## not yet built, it's asked afresh.
+func _yields(site: Structure, keep := false) -> bool:
+	if site.yields >= 0:
+		return site.yields == 1
+	var gives := false
+	var r := site.reach + SiteKinds.most_reach() + 2.0
+	for other in query(Rect2(site.x - r, site.z - r, r * 2.0, r * 2.0)):
+		var each := other as Structure
+		if each == null or each == site or site.distance_to(each.x, each.z) > site.reach + each.reach + 2.0:
+			continue
+		if each.reach > site.reach or (each.reach == site.reach and each.id < site.id):
+			gives = true
+			break
+	if keep:
+		site.yields = 1 if gives else 0
+	return gives
 
 
 ## Every unit laid, this sheet's and any kept from an earlier one.
@@ -221,6 +371,10 @@ func units() -> Array[Unit]:
 func ready(rect: Rect2) -> bool:
 	for corner in [rect.position, rect.end, Vector2(rect.position.x, rect.end.y), Vector2(rect.end.x, rect.position.y)]:
 		if corner.distance_to(_ready_at) > _ready_m:
+			return false
+	# Nor while what could touch it is still being surveyed.
+	for each in _surveying:
+		if each[0].ground.intersects(rect):
 			return false
 	return true
 
@@ -251,8 +405,14 @@ func follow(x: float, z: float, latitude: float, longitude: float, facing: float
 		var each: Dictionary = history.landmarks[i]
 		_offer(-1 - i, anchor, Sphere.angle(anchor.p, each.p) * history.radius - each.radius)
 	_queue.sort_custom(func(a: Array, b: Array) -> bool: return a[2] < b[2])
-	while not _queue.is_empty() and _queue[0][2] <= due:
-		_lay_next()
+	# Ground `due` off, or kept a chunk past it, can touch a site a structure's
+	# reach and a corridor past it.
+	var reach := due + _size + SiteKinds.most_reach() + PathNetwork.CORRIDOR
+	while not _queue.is_empty() and _queue[0][2] <= reach:
+		_lay_next(true)
+	for each in _surveying.duplicate():
+		if not _off_by(each[0], x, z, reach):
+			_surveyed(each)
 	_ready_at = Vector2(x, z)
 	_ready_m = due
 
@@ -260,9 +420,19 @@ func follow(x: float, z: float, latitude: float, longitude: float, facing: float
 ## Lays waiting units until the frame's streaming deadline, Time ticks (usec).
 func step(deadline: int) -> void:
 	var started := Time.get_ticks_usec()
+	for each in _surveying.duplicate():
+		if WorkerThreadPool.is_task_completed(each[1]):
+			_surveyed(each)
 	while not _queue.is_empty() and Time.get_ticks_usec() < deadline:
 		_lay_next()
 	slowest_ms = maxf(slowest_ms, (Time.get_ticks_usec() - started) / 1000.0)
+
+
+## Waits for every survey a worker has in hand: before the shape goes.
+func finish() -> void:
+	for each in _surveying:
+		WorkerThreadPool.wait_for_task_completion(each[1])
+	_surveying.clear()
 
 
 ## Whether the sheet has somewhere to lay from: not before its first anchor,
@@ -273,13 +443,15 @@ func anchored() -> bool:
 
 ## Nothing waiting to be laid.
 func is_idle() -> bool:
-	return _queue.is_empty()
+	return _queue.is_empty() and _surveying.is_empty()
 
 
 ## What a save keeps: each laid unit's key and the anchor it was laid from.
 func memories() -> Array:
 	var out := []
 	for unit: Unit in _units.values():
+		if unit.key <= BY_HAND:
+			continue
 		var a := unit.anchor
 		out.append([unit.key, a.x, a.z, Sphere.latitude(a.p), Sphere.longitude(a.p), a.facing])
 	return out
@@ -304,6 +476,7 @@ func recall(memories: Array) -> void:
 			_lift_rebuilding(unit)
 	for unit in _orphans.duplicate():
 		_lift_rebuilding(unit)
+	finish()
 	_queue.clear()
 	_queued.clear()
 	_making = null
@@ -322,14 +495,25 @@ static func _same(a: Anchor, b: Anchor) -> bool:
 
 
 func _offer(key: int, anchor: Anchor, metres: float) -> void:
-	if metres > _lay or _units.has(key) or _queued.has(key):
+	if metres > _lay or _units.has(key):
 		return
-	_queue.append([key, anchor, metres])
-	_queued[key] = true
+	# Waiting already: laid from the anchor it was offered with, but as near
+	# as it is now.
+	var waiting: Variant = _queued.get(key)
+	if waiting is Array:
+		waiting[2] = minf(waiting[2], metres)
+		return
+	if waiting != null:
+		return
+	var entry := [key, anchor, metres]
+	_queue.append(entry)
+	_queued[key] = entry
 
 
-## One part of the unit at the head of the queue; the last lays it.
-func _lay_next() -> void:
+## One part of the unit at the head of the queue; the last hands its
+## structures to a worker to survey, and it's laid once they're surveyed, or
+## at once if `now`.
+func _lay_next(now := false) -> void:
 	var head: Array = _queue[0]
 	if _making == null or _making.key != head[0]:
 		_making = _begun(head[0], head[1])
@@ -338,10 +522,34 @@ func _lay_next() -> void:
 		if not _making.todo.is_empty():
 			return
 	_queue.pop_front()
-	_queued.erase(head[0])
 	var unit := _making
 	_making = null
+	# Out of the queue, its survey on a worker: still not to be offered again.
+	_queued[head[0]] = true
+	if now or not unit.sites.any(func(site: Site) -> bool: return site is Structure):
+		_survey(unit.sites)
+		_queued.erase(head[0])
+		_put(unit)
+		return
+	# Ahead of chunk builds: the ground waits on it.
+	_surveying.append([unit, WorkerThreadPool.add_task(_survey.bind(unit.sites), true)])
+
+
+## A unit whose survey is done, laid; it waits for it if it isn't.
+func _surveyed(each: Array) -> void:
+	WorkerThreadPool.wait_for_task_completion(each[1])
+	_surveying.erase(each)
+	var unit: Unit = each[0]
+	_queued.erase(unit.key)
 	_put(unit)
+
+
+## Surveys structures where they're laid: pure in the seed and the dunes, so
+## a worker can, and nothing else touches them until they're laid.
+static func _survey(made: Array[Site]) -> void:
+	for site in made:
+		if site is Structure:
+			site.place()
 
 
 ## All of a unit at once.
@@ -349,6 +557,7 @@ func _lay_unit(key: int, anchor: Anchor, anyway := false) -> void:
 	var unit := _begun(key, anchor)
 	while not unit.todo.is_empty():
 		_make(unit, unit.todo.pop_front())
+	_survey(unit.sites)
 	_put(unit, anyway)
 
 
@@ -396,7 +605,8 @@ func _put(unit: Unit, anyway := false) -> void:
 
 
 func _site(each: Dictionary, anchor: Anchor) -> Site:
-	var site := Site.new()
+	var piece := StructureKit.piece(each.kind) if _built else null
+	var site: Site = piece.builds.new() if piece != null else Site.new()
 	site.id = each.id
 	site.kind = each.kind
 	site.era = each.era
@@ -412,6 +622,8 @@ func _site(each: Dictionary, anchor: Anchor) -> Site:
 	site.loot = each.loot
 	site.source = each.source
 	site.region = each.region
+	if piece != null:
+		(site as Structure).setup(piece, _ctx)
 	return site
 
 
@@ -493,6 +705,7 @@ func _take_up(unit: Unit) -> void:
 ## Every unit of this sheet becomes an earlier sheet's: kept while its ground
 ## is loaded, lifted otherwise. Nothing waiting is laid from the old anchor.
 func _new_sheet() -> void:
+	finish()
 	for unit: Unit in _units.values():
 		if loaded.call(unit.ground):
 			_orphans.append(unit)
@@ -514,10 +727,14 @@ func _jumped(anchor: Anchor) -> bool:
 
 
 func _off(unit: Unit, x: float, z: float) -> bool:
+	return _off_by(unit, x, z, _lift)
+
+
+func _off_by(unit: Unit, x: float, z: float, metres: float) -> bool:
 	var g := unit.ground
 	var dx := maxf(maxf(g.position.x - x, 0.0), x - g.end.x)
 	var dz := maxf(maxf(g.position.y - z, 0.0), z - g.end.y)
-	return dx * dx + dz * dz > _lift * _lift
+	return dx * dx + dz * dz > metres * metres
 
 
 func _chunks_of(rect: Rect2) -> Array[Vector2i]:

@@ -22,8 +22,8 @@ var ruin: Ruin
 func run() -> void:
 	await load_salvage()
 	world.time_warp = 0.0
-	var place := Scenarios.find(world, Scenarios.by_key("ruin"))
-	ruin = world.shape.ruins.around(place.x, place.z, 30.0)[0]
+	ruin = await go_looking()
+	world.time_warp = 0.0
 	var inside := ruin.to_world(Vector2(-3.0, 0.0))
 	await go(inside.x, inside.y)
 	await _held_out()
@@ -121,11 +121,13 @@ func _heaviest() -> float:
 	return most
 
 
-## A crate found lying on the ruin's floor at a plan point, settled.
+## A crate found lying on the ruin's floor at a plan point, settled, turned
+## with the ruin as it lay in the one this was first walked in, a quarter turn
+## round: which hook a line ties to is which faces you.
 func _found(index: int, p: Vector2, fill: Array) -> Device:
 	var at := ruin.to_world(p)
 	var spec := {"index": index, "id": &"crate_frame", "device": true, "layer": Finds.DEEP, "x": at.x,
-		"z": at.y, "yaw": 0.3, "lean": 0.0, "lean_by": 0.0, "bury": 0.0, "loose": true, "sound": 0.9, "charge": 0.0,
+		"z": at.y, "yaw": 0.3 + (ruin.turn - 1) * PI * 0.5, "lean": 0.0, "lean_by": 0.0, "bury": 0.0, "loose": true, "sound": 0.9, "charge": 0.0,
 		"floor": ruin.floor_y, "fill": fill}
 	var crate := salvage.lay(world.terrain.chunk_at(at.x, at.y), spec) as Device
 	await simulate(Salvage.SETTLE_SECONDS)
