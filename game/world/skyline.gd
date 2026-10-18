@@ -11,7 +11,7 @@ extends Node3D
 ## worker makes it each time the sheet follows you; the main thread swaps it
 ## in. Over the built ground a stand-in comes in across the hand-over as the
 ## real thing dithers away. A storm between you and any of it hides it, as it
-## hides the ground behind (Weather.veil).
+## hides the ground behind and the plume (Plume.seen_through).
 
 ## The eye over the sand, m, and what a pixel spans at the screen's middle,
 ## rad: 1080 rows under the camera's 75°.
@@ -26,7 +26,7 @@ const UNITS_US := 250
 const VEIL_US := 100
 ## What's drawn is read for storms afresh once the clock has run this long,
 ## s, or you've gone this far, m, since the last reading began: a storm
-## moves metres in that time, and a veil's edge is 150 (Weather.VEIL_EDGE).
+## moves metres in that time.
 const VEIL_EVERY := Vector2(1.0, 25.0)
 ## Floats an instance of a box or a far bush, and of a glint, takes in its
 ## view's buffer.
@@ -67,13 +67,13 @@ var _quad := QuadMesh.new()
 var _mound := _mound_mesh()
 ## How much of each thing drawn shows past the storms between you and it, by
 ## the index its instances carry, a few read afresh each frame in turn; and
-## where each stands, world metres.
+## where each is looked at, world metres.
 var _veils := PackedFloat32Array()
-var _aims := PackedVector2Array()
+var _aims := PackedVector3Array()
 var _veil_next := 0
 ## When and where the last reading began; NAN once one is due.
 var _veil_t := NAN
-var _veil_eye := Vector2.ZERO
+var _veil_eye := Vector3.ZERO
 var _veil_texture := ImageTexture.new()
 ## What's drawn now: the job it came from, and each thing's entry.
 var _shown: Job
@@ -129,9 +129,9 @@ class Job:
 	var bushes := {}
 	var bushed := 0
 	## What each veil's index is of, a site's id or a chunk's coord, and where
-	## it stands.
+	## it's looked at: a structure's middle, a chunk's bushes' ground.
 	var keys := []
-	var aims := PackedVector2Array()
+	var aims := PackedVector3Array()
 
 
 func setup(world: World) -> void:
@@ -474,9 +474,10 @@ func _make(job: Job) -> void:
 			shown.append(site)
 	for site: Structure in shown:
 		if site.distance_to(here.x, here.y) <= reach:
-			job.entries.append(_entry(site, job.center, job.keys.size()))
+			var entry := _entry(site, job.center, job.keys.size())
+			job.entries.append(entry)
 			job.keys.append(site.id)
-			job.aims.append(Vector2(site.x, site.z))
+			job.aims.append(Vector3(site.x, entry.ground + site.top_in(entry.state) * 0.5, site.z))
 	_bushes_of(history, pieces, job)
 	job_ms = (Time.get_ticks_usec() - started) / 1000.0
 
@@ -578,8 +579,9 @@ func _bushes_of(history: History, pieces: Array[Sites.Piece], job: Job) -> void:
 	var grown := Vector3(Feral.BUSH_WIDE, Feral.BUSH_TALL, Feral.BUSH_WIDE)
 	for coord: Vector2i in by_chunk:
 		var index := job.keys.size()
+		var middle := (Vector2(coord) + Vector2.ONE * 0.5) * _size
 		job.keys.append(coord)
-		job.aims.append((Vector2(coord) + Vector2.ONE * 0.5) * _size)
+		job.aims.append(Vector3(middle.x, FarRing.ground(shape, _tuning, middle.x, middle.y), middle.y))
 		var rows := PackedFloat32Array()
 		for each: Dictionary in by_chunk[coord]:
 			var b := Basis(Vector3.UP, each.yaw) * Basis.from_scale(grown * each.size)
@@ -713,7 +715,7 @@ func _read_storms() -> void:
 	if count == 0:
 		return
 	var camera := _world.player.camera.global_position
-	var eye := Vector2(_world.world_x(camera.x), _world.world_z(camera.z))
+	var eye := Vector3(_world.world_x(camera.x), camera.y, _world.world_z(camera.z))
 	if _veil_next == 0:
 		if not is_nan(_veil_t) and absf(_world.time - _veil_t) < VEIL_EVERY.x \
 				and eye.distance_to(_veil_eye) < VEIL_EVERY.y:
@@ -721,10 +723,11 @@ func _read_storms() -> void:
 		_veil_t = _world.time
 		_veil_eye = eye
 	var weather := _world.weather
+	var round_you := 1.0 - weather.seen_storm
 	var until := Time.get_ticks_usec() + VEIL_US
 	var changed := false
 	while Time.get_ticks_usec() < until:
-		var through := weather.veil(eye, _aims[_veil_next], _world.time)
+		var through := Plume.seen_through(weather.field, _tuning, eye, _aims[_veil_next], _world.time) * round_you
 		if absf(through - _veils[_veil_next]) > 0.005:
 			_veils[_veil_next] = through
 			changed = true

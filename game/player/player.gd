@@ -13,6 +13,10 @@ extends CharacterBody3D
 ## Touched down from the air at this speed, m/s.
 signal landed(speed: float)
 signal jumped
+## On the board, its dug edge bit at this speed, m/s, or caught and threw you
+## off, as you were going.
+signal edge_bit(speed: float)
+signal wiped_out(speed: float)
 
 ## Slides and the air step at this rate whatever the physics tick, and the
 ## rest is exact over a tick, so the same keys trace the same path at 30, 60
@@ -27,6 +31,13 @@ const LOW_SECONDS := 0.12
 const SLIP_HOLD := 2.0
 ## A board this near your feet, m, is one you can step onto.
 const BOARD_REACH := 1.5
+## A caught edge stops the board in the sand and throws you on: you keep this
+## share of your way, it this share, tumbling over its edge, rad/s, popping
+## up off the sand, m/s.
+const THROWN_KEEPS := 0.6
+const BOARD_KEEPS := 0.25
+const TUMBLE := 7.0
+const POP := 2.0
 
 var world: World
 var stamina: float
@@ -323,8 +334,9 @@ func step_off() -> void:
 
 
 ## A tick on the board: your keys say where it pushes and carves, move back
-## brakes, sprint kicks, a jump hops, a crouch tucks you small to the wind
-## and drifts a hard turn. Out of charge, you step off.
+## digs in, sprint kicks, a jump hops, a crouch tucks you small to the wind
+## and drifts a hard turn. Out of charge you step off; an edge caught throws
+## you off.
 func _ride(delta: float, input: Vector2) -> void:
 	if not is_instance_valid(board):
 		board = null
@@ -336,8 +348,9 @@ func _ride(delta: float, input: Vector2) -> void:
 	if not world.has_ground_under(global_position):
 		ride.wait()
 		return
-	# Move back only brakes: it never steers you round into reverse.
+	# Move back digs in: it never steers you round into reverse.
 	var wish := global_basis * Vector3(input.x, 0.0, minf(input.y, 0.0))
+	var dig := Input.get_action_strength("move_back") if Controls.playing() else 0.0
 	var crouch := Controls.held("crouch")
 	var jump := Controls.held("jump")
 	var hop := _jump_queued or (jump and not _jump_was)
@@ -345,7 +358,10 @@ func _ride(delta: float, input: Vector2) -> void:
 	_jump_was = jump
 	_crouch_was = crouch
 	crouched = crouch
-	ride.step(delta, Vector2(wish.x, wish.z).normalized(), hop, maxf(input.y, 0.0), Controls.held("sprint"), crouch)
+	ride.step(delta, Vector2(wish.x, wish.z).normalized(), hop, dig, Controls.held("sprint"), crouch)
+	if ride.caught:
+		wipe_out()
+		return
 	own = ride.velocity
 	wind = world.weather.felt_wind(global_position)
 	sink = 0.0
@@ -358,8 +374,30 @@ func _ride(delta: float, input: Vector2) -> void:
 	Dev.put("player/spd", "%.1fkm/h" % (own.length() * 3.6))
 	Dev.put("player/stam", "%d/%d" % [stamina, _tuning.stamina_max])
 	if ride != null:
-		Dev.put("player/board", "%.2fm up, %d%%" % [ride.gap + _tuning.board_ride_height,
-			roundi(100.0 * board.charge_share())])
+		Dev.put("player/board", "%.2fm up, %d%%, dug %d%% at %.1f/%.1f" % [ride.gap + _tuning.board_ride_height
+			- ride.dig * _tuning.board_dig_depth, roundi(100.0 * board.charge_share()), roundi(100.0 * ride.dig),
+			ride.edge, _tuning.board_dig_catch])
+
+
+## A caught edge throws you off: you stumble on across the sand with most of
+## your way, knocked and winded, and the board tumbles over its edge behind
+## you. It never takes your last health.
+func wipe_out() -> void:
+	var speed := ride.velocity.length()
+	var low := signf(ride.bank) if ride.bank != 0.0 else 1.0
+	var tumbling := board
+	step_off()
+	velocity *= THROWN_KEEPS
+	own *= THROWN_KEEPS
+	_left = velocity
+	if is_instance_valid(tumbling):
+		var ahead := -tumbling.global_basis.z
+		tumbling.linear_velocity *= BOARD_KEEPS
+		tumbling.linear_velocity.y = maxf(tumbling.linear_velocity.y, 0.0) + POP
+		tumbling.angular_velocity = ahead * low * TUMBLE
+	vitals.health = maxf(vitals.health - _tuning.board_wipeout_hurt, minf(vitals.health, 1.0))
+	stamina = maxf(stamina - _tuning.board_wipeout_winded, 0.0)
+	wiped_out.emit(speed)
 
 
 ## What's at your waist that would hold the board back: every line but a

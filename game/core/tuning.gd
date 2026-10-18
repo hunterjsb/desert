@@ -400,10 +400,24 @@ static var _current: Tuning
 ## The share of that drag that's the air's, felt against the wind: a tailwind
 ## carries you faster, a headwind holds you back, and a tuck shows it less.
 @export var board_air_share: float = 0.35
-## Move back brakes this hard, m/s²; coasting, the hover's own drag slows
-## you this much, m/s².
+## Steering back against your way brakes this hard, m/s²; coasting, the
+## hover's own drag slows you this much, m/s².
 @export var board_brake: float = 8.0
 @export var board_coast: float = 0.3
+## The dig, move back: one edge drops into the sand. Slicing along its length
+## the dug edge grips this many times as hard as the hover, so a carve holds;
+## dragged across, as in a hockey stop, no harder than the hover. Dug, the
+## sand drags this share of your speed a second, and the board rides this much
+## lower, m, its low edge down to the sand.
+@export var board_dig_grip: float = 2.5
+@export var board_dig_drag: float = 0.25
+@export var board_dig_depth: float = 0.3
+## Dig times the way across the board past this, m/s, and the edge catches:
+## you're thrown off, losing this much health and stamina. A full hockey stop
+## from flat out catches; up to about 17 m/s it holds.
+@export var board_dig_catch: float = 6.5
+@export var board_wipeout_hurt: float = 5.0
+@export var board_wipeout_winded: float = 25.0
 ## How fast the board turns under you, rad/s; the most sideways pull its
 ## hover grips with, m/s², before a carve slides out into a skid; and the
 ## share of its speed a full sideways skid bleeds a second.
@@ -432,7 +446,8 @@ static var _current: Tuning
 ## floats, faster and it twitches.
 @export var board_tilt_hertz: float = 5.0
 @export var board_lean_hertz: float = 1.2
-## Its underside rides this high over the sand, m, and never comes nearer than this.
+## Its underside rides this high over the sand, m, and its edges never come
+## nearer than this but dug.
 @export var board_ride_height: float = 0.35
 @export var board_clearance: float = 0.08
 ## The hover's spring: stiff pressed toward the sand, softer lifting off it,
@@ -780,6 +795,9 @@ static var _current: Tuning
 ## A live vent's seep as a buoyancy flux, m⁴/s³ at this tuning's gravity: how
 ## hard what it lets out climbs. Bursts multiply it (Geology).
 @export var plume_buoyancy: float = 25000.0
+## A plume dissolves into the distance between these, m: further than the
+## storm walls, since what towers over the haze stands clear of it.
+@export var plume_fade_m := Vector2(30000.0, 45000.0)
 
 @export_group("Radio")
 ## What a radio draws while it's on, W.

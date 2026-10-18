@@ -458,12 +458,12 @@ past that the far ring showed the dunes alone.
   the built ground without a change. Pylon rows and pipe runs are their stand-ins in a row.
 - **Storms hide it** (round four). A storm between you and anything drawn far off hides it, as the
   storm pass hides the ground behind it and the plume's veil hides the plume: each thing drawn (a
-  structure's stand-in, its boxes over its own ground and its glints; a chunk's far bushes) takes the
-  plume's own reading of the storm map's fronts along the line between, and of the dust round you
-  (`Weather.veil`, moved from the plume, which reads it there too). It's read on the main thread a few
-  at a time within 0.1 ms a frame (`VEIL_US`), all of them in turn each second of the clock or 25 m
-  you go (`VEIL_EVERY`), and handed to the shaders a texel each, by the index each instance carries.
-  What comes newly into view is hidden until it's read. The glint shader's own reading of the fronts
+  structure's stand-in, its boxes over its own ground and its glints, looked at halfway up; a chunk's
+  far bushes, at its middle) takes the plume's own reading of the storm field along the line between
+  (`Plume.seen_through`), and of the dust round you. It's read on the main thread a few at a time
+  within 0.1 ms a frame (`VEIL_US`), all of them in turn each second of the clock or 25 m you go
+  (`VEIL_EVERY`), and handed to the shaders a texel each, by the index each instance carries. What
+  comes newly into view is hidden until it's read. The glint shader's own reading of the storm map
   went with it.
 - **A site in sight at every start** (`Starts.in_sight`). Every origin's start must have something to
   walk to in sight from where its run's ground begins: its top clear over the ground as it's drawn
@@ -548,9 +548,8 @@ with the air between clear.
   and only where the run begins; a step aside moves it a little.
 - A lattice's real members are thinner than a pixel past a hundred metres or so and draw as a broken
   line that crawls as you move; the stand-in past the hand-over is the steady line it averages to.
-- The veil reads the fronts every 800 m or so along the line between (as the plume's always has), so a
-  storm narrower than that can slip between its reads; and a chunk's far bushes are veiled as one, at
-  its middle.
+- The veil reads the field every 800 m or so along the line between, as the plume's does, so a storm
+  narrower than that can slip between its reads; a chunk's far bushes are veiled as one, at its middle.
 - Far bushes are placed without the clearing of a ruin's walls (the worker can't ask the sheet), so a
   few can stand where a ruin covers the road until its chunk is drawn.
 

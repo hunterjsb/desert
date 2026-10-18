@@ -9,14 +9,20 @@ extends Device
 ## both. What it draws is metered tick by tick in world time, so its charge
 ## comes out the same at any frame rate.
 
-## The hover's pitch at rest and at top speed, and how far it sags as the
-## battery runs out over its last WARNING seconds, ticking faster as it goes.
+## The hover's pitch at rest and at top speed, how far it sags as the
+## battery runs out over its last WARNING seconds, ticking faster as it goes,
+## and how far it drops under a dug edge's load, full from DUG_FAST m/s.
 const HUM_REST := 0.8
 const HUM_FAST := 1.4
 const HUM_SAG := 0.7
+const HUM_DUG := 0.72
+const DUG_FAST := 12.0
 const WARNING := 60.0
 const TICK_SLOW := 2.0
 const TICK_FAST := 0.5
+## A dug edge let out this fast, m/s, from at least this deep, whooshes.
+const WHOOSH_FROM := 5.0
+const WHOOSH_DEEP := 0.5
 ## Racked, it stands this far proud of the rack, m, and its underside rides
 ## this far off the crate.
 const RISE := 0.07
@@ -33,7 +39,11 @@ var _tuning := Tuning.current()
 var _drawn: Array[Array] = []
 var _layers := Vector2i.ONE
 var _hum: AudioStreamPlayer
+var _whoosh: AudioStreamPlayer
 var _tick_in := 0.0
+## The deepest the edge has been dug since it last came out, or below 0
+## once it has whooshed.
+var _dug_most := 0.0
 
 
 func _init() -> void:
@@ -118,6 +128,12 @@ func carry(by: Player) -> void:
 		_hum.stream = looping
 		_hum.bus = Sounds.WORLD
 		add_child(_hum)
+		_whoosh = AudioStreamPlayer.new()
+		_whoosh.stream = Sounds.THROW
+		_whoosh.bus = Sounds.WORLD
+		_whoosh.pitch_scale = 0.6
+		add_child(_whoosh)
+	_dug_most = 0.0
 	_hum.play()
 	Sounds.play(self, Sounds.BOARD_ON)
 
@@ -181,10 +197,23 @@ func seconds_left() -> float:
 func _process(delta: float) -> void:
 	if rider == null or rider.ride == null:
 		return
-	global_transform = rider.ride.board_pose(true)
-	var speed := rider.ride.velocity.length() / _tuning.board_top_speed
+	var ride := rider.ride
+	global_transform = ride.board_pose(true)
+	var going := ride.velocity.length()
+	var speed := going / _tuning.board_top_speed
 	var low := clampf(1.0 - seconds_left() / WARNING, 0.0, 1.0)
-	_hum.pitch_scale = lerpf(HUM_REST, HUM_FAST, clampf(speed, 0.0, 1.2)) * lerpf(1.0, HUM_SAG, low)
+	var load := ride.dig * clampf(going / DUG_FAST, 0.0, 1.0)
+	_hum.pitch_scale = lerpf(HUM_REST, HUM_FAST, clampf(speed, 0.0, 1.2)) * lerpf(1.0, HUM_SAG, low) \
+		* lerpf(1.0, HUM_DUG, load)
+	# Let out, the edge leaves the sand with a whoosh, once.
+	if ride.dig < 0.1:
+		_dug_most = 0.0
+	elif _dug_most >= 0.0:
+		_dug_most = maxf(_dug_most, ride.dig)
+		if _dug_most > WHOOSH_DEEP and ride.dig < _dug_most * 0.8 and going > WHOOSH_FROM:
+			_whoosh.volume_db = linear_to_db(clampf(going / _tuning.board_top_speed, 0.4, 1.0))
+			_whoosh.play()
+			_dug_most = -1.0
 	_tick_in -= delta
 	if low > 0.0 and _tick_in <= 0.0:
 		Sounds.play(self, Sounds.LOW_TICK)

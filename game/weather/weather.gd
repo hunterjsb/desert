@@ -42,15 +42,15 @@ const COPPER := Color(1.0, 0.55, 0.3)
 ## the ground.
 const RING_HORIZON := 14.0
 
-## A front this near the line between you and something far off counts as
-## part way in, m (veil).
-const VEIL_EDGE := 150.0
-
 var field: WeatherField
 var day: DayCycle
 var map: StormMap
 var sky: SkyView
-var plume: Plume
+## The plumes drawn now, each its own source's.
+var plumes: Array[Plume] = []
+var rumbles: Rumbles
+var _plumes_due := 0.0
+var _plumes_at := 0.0
 var lee: Lee
 var eye: Eye
 ## The weather at the player this tick, which the game plays by.
@@ -114,23 +114,14 @@ func setup(world: World) -> void:
 	sky = SkyView.new()
 	add_child(sky)
 	sky.setup(world, day, _environment, face, _sun)
-	plume = Plume.new()
-	add_child(plume)
-	plume.setup(world, self)
-
-
-## How much of what's at a world place shows from another past the storms on
-## the line between, 0 to 1, by the field's fronts: nothing through a storm,
-## and nothing from inside one's dust.
-func veil(from: Vector2, to: Vector2, t: float) -> float:
-	if not map.ready:
-		return 1.0
-	var through := 1.0 - seen_storm
-	var count := clampi(ceili(from.distance_to(to) / 800.0), 2, 8)
-	for k in range(1, count + 1):
-		var at := from.lerp(to, float(k) / count)
-		through *= smoothstep(VEIL_EDGE, -VEIL_EDGE, map.front_at(at.x, at.y, t).x)
-	return through
+	for i in Plume.AT_ONCE:
+		var plume := Plume.new()
+		add_child(plume)
+		plume.setup(world, self)
+		plumes.append(plume)
+	rumbles = Rumbles.new()
+	add_child(rumbles)
+	rumbles.setup(world, self)
 
 
 ## Each felt_*() reads now, or a given world time t: power ticks read theirs.
@@ -274,6 +265,13 @@ func _exit_tree() -> void:
 
 ## Every drawn frame, after the world has moved and shifted.
 func _process(delta: float) -> void:
+	# Before the plumes draw: each its source in sight, looked over a few
+	# times a second, and at once after a jump.
+	_plumes_due -= delta
+	if _plumes_due <= 0.0 or absf(_world.time - _plumes_at) > 2.0:
+		_plumes_due = 0.25
+		Plume.assign(plumes, _world)
+	_plumes_at = _world.time
 	if _meter.enabled != _tuning.eye_adapts:
 		_meter.enabled = _tuning.eye_adapts
 		eye.settle()
@@ -288,6 +286,14 @@ func _process(delta: float) -> void:
 			glows.append(shelter.glow)
 	face.sync(_world.time, holes, glows)
 	atmosphere.carve(holes)
+
+
+## The plume drawing a source of Geology's, by its id, or null.
+func plume_for(id: StringName) -> Plume:
+	for plume in plumes:
+		if plume.source.get("id") == id:
+			return plume
+	return null
 
 
 ## How much the wind grabs a body: its own say if it has one, else its
@@ -418,9 +424,11 @@ func _show(delta: float) -> void:
 		_environment.fog_density))
 	# The light round the camera, which a shell's glass catches.
 	face.set_light("shell_light", _linear(_environment.ambient_light_color) * _environment.ambient_light_energy)
-	plume.light(sun, sun_light, sky_light, ring_light, _linear(haze_color) * haze_light,
-		Vector3(_environment.fog_depth_begin, _environment.fog_depth_end, _environment.fog_density),
-		day.tu_direction(t, moon.latitude, moon.longitude), _linear(SkyView.TU_SHINE_COLOR) * _sun_energy * tu_light)
+	var tu := day.tu_direction(t, moon.latitude, moon.longitude)
+	for plume in plumes:
+		plume.light(sun, sun_light, sky_light, ring_light, _linear(haze_color) * haze_light,
+			Vector3(_environment.fog_depth_begin, _environment.fog_depth_end, _environment.fog_density),
+			tu, _linear(SkyView.TU_SHINE_COLOR) * _sun_energy * tu_light)
 
 	# Outside a bubble the dust is the storm's own: it rides the open air's
 	# wind, slowed in a lee, and thickens with the storm, and the bubble only
