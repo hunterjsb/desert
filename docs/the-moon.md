@@ -125,12 +125,26 @@ research](body-research.md#tus-size-under-trial).
 | Totality | 16 game seconds, 24 from first contact to last | 26 s, and 34 | 40 s, and 47 |
 | A full Tu's light at night | about 140 lux, 0.14% of the sun's | 310 lux, 0.31% | 640 lux, 0.64% |
 | Walk for Tu to rise or sink by its own width | 2.5 km | 3.8 km | 5.4 km |
+| Tu's turns a day, seen from Zan | 13.3, one each 90 game seconds | 6.8, one each 177 s | 3.5, one each 344 s |
 
 **Tu hangs fixed in the sky,** at a place set by where you stand: overhead at the sub-Tu
 point, lower the further you are from it, on the horizon 90° away, and never seen on the
 far side. Its height tells you how far you are from that point, and its bearing which way.
 It nods by about a degree over each day, since the orbit is slightly eccentric. On the
 compressed lap a degree is about 420 m, so a few kilometres' travel moves it plainly.
+
+**Tu turns** (Hunter, 2026-10-18: "yeah we should tackle it"; built). Tu stays put, but its
+clouds don't: the whole of them turns about Tu's pole, which is Zan's, so its storms and ovals
+come round one limb, cross its face and go behind the other, and its bands still slide on it,
+each at its own wind. A super-Jupiter turns in about ten hours (`tu_spin_hours`), and the
+game's day stands for Zan's real one, so it turns as often in a game day as it would in a real
+day, one fewer as seen from Zan, which always faces it: at 9°, 7.8 turns against the stars in
+the real day of 77.7 hours, and 6.8 seen from Zan, one each 2 minutes 57 of the 20-minute day.
+It follows Tu's size, since the size sets the day (the table above). From where a run begins,
+with Tu in the west, its clouds sink toward the horizon as the sun does, about half as fast as
+the stars go over. Built true to scale; one turn a day and three are under trial against it
+(`~/Desktop/tu.png`, the look-test `look/tu`). Its tipped field turns with it and sways the
+compass once a turn ([survival](prd/survival.md)).
 
 **Local time follows longitude.** The sun and the stars turn round the sky once a day and
 only Tu stays put, so the further east you are, the later in the day it is. There's still

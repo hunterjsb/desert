@@ -12,13 +12,15 @@ const DARK := &"dark"
 const SECOND := &"second"
 ## The company's own issue now, what a run starts with: colonial make, new.
 const NEW := &"new"
+## The ground's own: older than every era, what geology leaves standing.
+const GEOLOGY := &"geology"
 const ORDER: Array[StringName] = [COLONIAL, &"collapse", SKIMMER, FIRST, DARK, SECOND, &"feral", &"sand"]
 ## The eras that left structures.
 const BUILT: Array[StringName] = [COLONIAL, SKIMMER, FIRST, SECOND]
 ## As bits, for what a path was used in.
 const BITS := {COLONIAL: 1, SKIMMER: 2, FIRST: 4, DARK: 8, SECOND: 16}
 const NAMES := {COLONIAL: "colonial", SKIMMER: "skimmer era", FIRST: "First Kingdoms", DARK: "Dark Age",
-	SECOND: "second age", NEW: "company issue"}
+	SECOND: "second age", NEW: "company issue", GEOLOGY: "the ground's own"}
 
 ## Sand over a site by its era, m, least and most (part 4's burial table):
 ## colonial deepest, the First Kingdoms' low foundations deep, skimmer wrecks

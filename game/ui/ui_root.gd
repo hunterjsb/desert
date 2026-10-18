@@ -109,17 +109,23 @@ func _shown_for(words: Control, fading: Tween, seconds: float) -> Tween:
 	return tween
 
 
-## The console over a run with nothing else open: typing goes to it.
+## The console over a run with nothing else open, or over the main menu
+## alone for what needs no world: typing goes to it, over every menu.
 func open_dev_console() -> void:
-	if is_open() or main == null or not main.in_run():
+	if main == null or (is_open() if main.in_run() else not (_menus.size() == 1 and top().root)):
 		return
+	move_child(dev_console, -1)
+	move_child(_fade, -1)
 	dev_console.open()
 	Controls.free_mouse(true)
 
 
+## Back to the run, or to the menu it was opened over.
 func close_dev_console() -> void:
 	dev_console.close()
-	if main != null and main.in_run() and not is_open():
+	if is_open():
+		top().highlight()
+	elif main != null and main.in_run():
 		Controls.free_mouse(false)
 
 
@@ -219,7 +225,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 
 
-## The title, and Resume (with a save), New game, Options, Quit, over the live desert.
+## The title, and Resume (with a save), New game, Deeds, Options, Quit, over
+## the live desert, and the music's switch in the bottom left.
 func show_main_menu(note := "") -> void:
 	close_all()
 	Dev.show_hint(false)
@@ -229,18 +236,79 @@ func show_main_menu(note := "") -> void:
 	menu.root = true
 	menu.add_title(TITLE)
 	if main.has_save():
-		menu.add("Resume", main.resume)
+		menu.add("Resume", func() -> void: open(resume_view()))
 	menu.add("New game", _new_game)
+	menu.add("Deeds", _deeds)
 	menu.add("Options", func() -> void: open(options()))
 	menu.add("Quit", main.quit)
+	menu.add_corner(func() -> bool: return Settings.music, func() -> void:
+		Settings.music = not Settings.music
+		Settings.save())
 	open(menu)
 
 
-## Options, Save in a Normal run, and Save & quit, over the running game.
+## A menu laid out for where it opens: over the menu's desert down the left,
+## the prop aside; over a run in the middle, on the scrim.
+func _menu(note := "") -> Words:
+	return Words.new(note, &"Scrim" if main == null or main.in_run() else &"ShadeSide")
+
+
+## Resume shows your last camp aside as the save holds it, the save's
+## numbers under it and how many deeds show done; confirm carries on.
+func resume_view() -> Words:
+	var store := main.saves()
+	var data: Dictionary = store.held()
+	var menu := _menu()
+	menu.add("Continue", main.resume)
+	menu.set_aside(numbers(Snapshot.summary(data), store.saved_at())
+		+ [["Deeds", "%d of %d" % [Deeds.count(main.profile()), Deeds.TABLE.size()]]])
+	if main.showpiece != null:
+		main.showpiece.show_camp(data)
+		menu.shows = Showpiece.CAMP
+	return menu
+
+
+## A save's numbers as Resume lists them; one from before time played was
+## kept lists the rest.
+static func numbers(save: Dictionary, saved: int) -> Array:
+	var rows := []
+	if not is_nan(save.played):
+		var minutes := floori(save.played / 60.0)
+		rows.append(["Played", "%d min" % minutes if minutes < 60
+			else "%d h %d min" % [floori(minutes / 60.0), minutes % 60]])
+	rows.append(["Saved", when(saved, floori(Time.get_unix_time_from_system()))])
+	rows.append(["Day", str(save.day)])
+	var kit := Kit.named(save.kit)
+	rows.append(["Came as", (kit if kit != null else Kit.standard()).label])
+	return rows
+
+
+## When, by the clock on the wall where you are: today or yesterday and the
+## time, else how many days ago.
+static func when(unix: int, now: int) -> String:
+	var bias := int(Time.get_time_zone_from_system().bias) * 60
+	var days := floori((now + bias) / 86400.0) - floori((unix + bias) / 86400.0)
+	var at := Time.get_datetime_dict_from_unix_time(unix + bias)
+	if days >= 2:
+		return "%d days ago" % days
+	return "%s %02d:%02d" % ["yesterday" if days == 1 else "today", at.hour, at.minute]
+
+
+## A kit's gear as the list under the prop shows it.
+static func gear(kit: Kit) -> Array:
+	var rows := []
+	var all := kit.gear()
+	for id in all:
+		rows.append(["%d m line" % roundi(kit.rope_m) if id == &"line" else Catalog.short_label(id), str(all[id])])
+	return rows
+
+
+## Options, Deeds, Save in a Normal run, and Save & quit, over the running game.
 ## Save says how it went in its own word.
 func system_menu() -> Words:
 	var menu := Words.new("")
 	menu.add("Options", func() -> void: open(options()))
+	menu.add("Deeds", _deeds)
 	if main.saves() != null and not main.ironman():
 		var said := ["Save"]
 		menu.add(func() -> String: return said[0], func() -> void:
@@ -250,11 +318,11 @@ func system_menu() -> Words:
 
 
 ## Who the new run comes as, down the left, the origin last played
-## highlighted, so the kit on show stays as it stands aside; each with a few
-## words under it, and one still locked shown as ????. The kit on show then
-## follows the highlight.
+## highlighted, so the piece on show stays as it stands aside; each with a
+## few words under it, and one still locked shown as ????. The piece aside
+## and the gear under it follow the highlight.
 func origins() -> Words:
-	var menu := Words.new("", &"ShadeSide")
+	var menu := _menu()
 	var all := Kit.origins()
 	menu.open_on(all.find(main.last_kit()))
 	for kit in all:
@@ -263,15 +331,17 @@ func origins() -> Words:
 		else:
 			menu.add("????", Callable())
 	menu.moved.connect(func(at: int) -> void:
-		if main.showpiece != null:
-			main.showpiece.picked = all[at])
+		menu.shows = all[at].id
+		menu.set_aside(gear(all[at])))
 	return menu
 
 
 ## Which rules the new run plays by, for good, laid out as the origins are:
 ## Normal highlighted. An origin the game isn't balanced round has no Ironman.
 func modes(kit: Kit) -> Words:
-	var menu := Words.new("", &"ShadeSide")
+	var menu := _menu()
+	menu.shows = kit.id
+	menu.set_aside(gear(kit))
 	menu.add("Normal", main.new_game.bind(false, false, kit), Callable(), "saves as you go")
 	if kit.balanced:
 		menu.add("Ironman", main.new_game.bind(true, false, kit), Callable(), "death ends the run")
@@ -293,7 +363,7 @@ func show_death() -> void:
 
 
 func options() -> Words:
-	var menu := Words.new("Options")
+	var menu := _menu("Options")
 	menu.add(func() -> String: return "Volume   %d%%" % roundi(Settings.volume * 100.0),
 		_change.bind(1, &"volume", true), _change.bind(&"volume", false))
 	menu.add(func() -> String: return "Fullscreen   %s" % _on(Settings.fullscreen),
@@ -310,26 +380,37 @@ func options() -> Words:
 	return menu
 
 
-## Every key as it's bound now, to read; remapping comes later.
+## Every key as it's bound now, beside what it does, as the keys list shows
+## them; remapping comes later.
 func controls() -> Words:
-	var menu := Words.new("Controls")
+	var menu := _menu("Controls")
 	var list := Controls.keys_label()
+	list.theme_type_variation = &"KeysList"
 	list.text = Controls.help()
-	var panel := PanelContainer.new()
-	panel.add_child(list)
-	menu.add_body(panel)
+	menu.add_body(list)
 	menu.add("Back", close_top)
 	return menu
 
 
 ## A question with the safe answer highlighted; back also declines.
 func confirm(question: String, no: String, yes: String, act: Callable) -> Words:
-	var menu := Words.new(question)
+	var menu := _menu(question)
 	menu.add(no, close_top)
 	menu.add(yes, func() -> void:
 		close_top()
 		act.call())
 	return menu
+
+
+## Every deed in its tree, under how many show done, laid out for where it opens.
+func deeds() -> Words:
+	var menu := _menu("%d of %d deeds" % [Deeds.count(main.profile()), Deeds.TABLE.size()])
+	DeedsGrid.fill(menu, main.profile(), close_top)
+	return menu
+
+
+func _deeds() -> void:
+	open(deeds())
 
 
 func _new_game() -> void:

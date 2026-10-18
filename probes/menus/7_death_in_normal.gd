@@ -20,9 +20,10 @@ func run() -> void:
 	var clock := world.time
 	var played_on := world.run_seed
 	press(&"ui_down")
+	press(&"ui_down")
 	press(&"ui_accept")
 	check(saves().has_run() and saves().run_seed() == played_on and main.in_run() and main.ui.top() == system
-		and system.words()[1] == "SAVED", "Save saves the run, keeps you in it and says so (%s)" % ", ".join(system.words()))
+		and system.words()[2] == "SAVED", "Save saves the run, keeps you in it and says so (%s)" % ", ".join(system.words()))
 	press(&"ui_cancel")
 
 	teleport(world.spawn.x - 8.0, world.spawn.y + 5.0)

@@ -455,7 +455,7 @@ func _show_looks(shown: Array[Array]) -> void:
 			look.key = now
 			look.show_thing(thing)
 		if thing is Compass:
-			look.turn_needle(Compass.turn(face, _player.world.moon.north()))
+			look.turn_needle((thing as Compass).needle_on(face, _player.world))
 
 
 ## The picture of a stack, for anything that reads the view.
@@ -536,16 +536,16 @@ func _text(type: StringName, at: Vector2, line: String, width: float, color := &
 static func _name(thing: RigidBody3D) -> String:
 	match thing.get_meta(&"rolled", &""):
 		&"plug":
-			return "Cable"
+			return Catalog.NAMES[&"cable"]
 		&"strong_plug":
-			return "Strong cable"
+			return Catalog.NAMES[&"strong_cable"]
 		&"hose_end":
-			return "Hose"
+			return Catalog.NAMES[&"hose"]
 	return thing.get(&"label")
 
 
 ## What a stack holds that you'd want to know at a glance, all of it
-## together: water, food, charge, a coil's length, a radio's channel.
+## together: water, food, charge, a coil's length, a radio's frequency.
 static func _brief(things: Array) -> String:
 	var first: RigidBody3D = things[0]
 	if first.has_meta(&"rolled_m"):
@@ -566,5 +566,5 @@ static func _brief(things: Array) -> String:
 	var radio := device as Radio
 	if radio == null:
 		return held
-	var tuned := Radio.CHANNELS[radio.channel]
+	var tuned: String = radio.stats()["tuned"]
 	return tuned if held == "" else tuned + " · " + held

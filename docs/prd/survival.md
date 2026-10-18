@@ -121,7 +121,9 @@ Hunter's [storms, signals & sailing spec](../storms-signals-sailing-2026-10-18.m
 cozy stress test of your build, tanking them is the stationary, AFK way to play, and clear weather is
 the active phase. Three layers fix the early wait:
 - **Auto-walk first:** it holds your heading while you steer by the compass or the Console, so a storm
-  still lets you make distance. Low risk, so it ships before sleep.
+  still lets you make distance. Low risk, so it ships before sleep. *Built (2026-10-18): its own
+  action holds the way you faced while your own walk carries you, until you move yourself or
+  something stops you ([Movement](movement.md#on-foot)).*
 - **Sleep:** a bedroll, beds in some ruins, maybe the open sand if the camp is stable. Use offers so
   many hours, until a time, or through the storm; gear such as a radio adds more (wake for a
   broadcast). **Physics never fast-forwards:** the camp freezes, its batteries and shield are worked
@@ -148,7 +150,8 @@ first storm sits on the spawn for more than three and a half days on the probes'
 starting kit, in the skeleton's list below).
 
 **Sleep, not auto-walk.** "Sleep to fast-forward is the preferred fix over auto-walk, but not
-settled." Auto-walk is in no doc and no code, so nothing has to come out.
+settled." Auto-walk was then in no doc and no code; the 2026-10-18 spec put it first, and it's built
+(above).
 
 **The worry, and the proposal.** "Main worry: physics stability while time skips." The proposal
 under discussion: "check camp stability with real physics before sleep, then only do resource
@@ -323,7 +326,7 @@ Death means a new run (see Runs in the vision).
   - **Each thing or stack is a tile** with a picture of its own painted model, seen from a
     little above and to one side (a compass nearly straight on, to read), its name, the
     number that matters for all of the stack together (water, food, charge, a coil's
-    length, a radio's channel with its battery's charge) and, for a stack, how many. Tiles
+    length, a radio's frequency with its battery's charge) and, for a stack, how many. Tiles
     run in rows of up to eight, low in the middle of the screen. The light is a clear
     day's, the world's own sun and sky colours, whatever the hour or the weather outside,
     so a tile reads in a storm at night.
@@ -341,13 +344,13 @@ Death means a new run (see Runs in the vision).
     rejecting a pocket flag and a built-in cell as exceptions to core systems): it rides on
     you out of sight, touching nothing, and the weather doesn't wear it in the suit. So a
     radio plays from you, its line of words showing as ever.
-  - **Use on a thing uses it where it is:** a device is worked (the radio's dial turns),
+  - **Use on a thing uses it where it is:** a device is worked (the radio's dial sweeps on),
     and water or food you drink or eat your fill of, the least full first, as the suit
     would. Anything else does nothing. Over a thing, use never reaches the world, so it
     can't switch what you happen to be looking at; off the tiles it works the world as
     ever. A click brings a radio to your hands still playing.
   - **Saves** keep everything you carry, each thing with its state, so stacks come back as
-    they were, and a radio its channel, beacon and charge. A save from before, with five
+    they were, and a radio its dial, volume, beacon and charge. A save from before, with five
     slots, resumes with what was in them carried.
 - **The compass** (2026-10-17): a small find, a part, whose needle points to the moon's
   north. Held, you read it in your hand; carried, in the inventory. The sun gives you the
@@ -355,19 +358,36 @@ Death means a new run (see Runs in the vision).
   everywhere, stands to the south at noon north of the equator (north of you south of it,
   overhead on it), and morning shadows point west. A storm hides it; the compass doesn't
   care.
-  - **Tu's field moves it** (agreed 2026-10-18, building). Zan has no field of its own, only
-    patches of old magnetism in its volcanic ground. The needle lines up with Tu's, which in
-    Tu's equatorial plane runs along the axis Tu and Zan share, so it points north, but weakly:
-    a few tenths of a microtesla at 12.7 Tu radii, a hundredth of Earth's or less. So it's slow
-    to settle, sways about ten degrees either way once each time Tu turns (Tu's field is
-    tipped from its spin like Jupiter's), and swims over old volcanic ground and in a storm's
-    charged dust. It never shows Tu-ward: a needle can't know it, and the Console can.
-  As built:
+  - **Tu's field moves it** (agreed 2026-10-18, built but for the ground). Zan has no field of
+    its own, only patches of old magnetism in its volcanic ground. The needle lines up with
+    Tu's, which in Tu's equatorial plane runs along the axis Tu and Zan share, so it points
+    north, but weakly: a few tenths of a microtesla at 12.7 Tu radii, a hundredth of Earth's or
+    less. So it's slow to settle, sways about ten degrees either way once each time Tu turns
+    (Tu's field is tipped from its spin like Jupiter's), and swims over old volcanic ground and
+    in a storm's charged dust. It never shows Tu-ward: a needle can't know it, and the Console
+    can. As built:
+    - **Slow to settle.** The needle swings about the field once in about three seconds and
+      settles by a damping of 0.4, so it overshoots and comes back; the liquid in its case
+      drags it along as the case turns. Spin round half a turn and it's dragged nearly 60°
+      off, swings back after a second and a half and settles within a degree in about six.
+    - **The sway** follows Tu's turn as the sky draws it, from the one account
+      (`DayCycle.tu_turn`): ten degrees east of north as Tu's tipped field swings one way and
+      ten west as it swings back, once a turn, so about every three minutes at 9°.
+    - **In a storm** the storm field where the compass is, not the weather you feel, swims it
+      up to 35° in a full storm, wandering over a few seconds, the same in every run of a
+      seed; a bubble doesn't stop it.
+    - **Old volcanic ground** has its hook (`Compass.ground_deviation`) and turns it by nothing
+      until the geology says where that ground lies.
+    - The needle is worked in world time, so it pauses with the game and keeps up with the
+      dev time warp. Unread for ten seconds or more, in the pouch, it comes out settled.
+      Its numbers are tuning (`compass_swing_seconds`, `compass_damping`,
+      `compass_sway_degrees`, `compass_storm_degrees`).
+  As built before, and still:
   - **A 12 cm field compass,** 0.2 kg, company issue: a gunmetal case, a bone card under a
     black bezel, north marked on the card in safety yellow, and a needle whose red north
     half glows a little, so it reads at night and in a storm. Nothing takes it: it's read,
     not fitted.
-  - **Held flat** (taken up from the sand), it points north along the ground. **Held up**
+  - **Held flat** (taken up from the sand), it points along the field on the ground. **Held up**
     (out of the inventory, it comes to your hands facing you) it reads as if laid level
     with its top away from you: north ahead is straight up the card, north on your right
     is to the right. Carried, the inventory shows it the same way, turning as you turn.
@@ -594,12 +614,17 @@ Death means a new run (see Runs in the vision).
 13. **The compass reads true.** Held flat it points north whichever way you face; held
     up, north ahead is up its card and north on your right is right; carried, the
     inventory reads the same, live as you turn. Over a pole the needle turns round with
-    the moon's north, in your hand and in the inventory.
+    the moon's north, in your hand and in the inventory. Tu's sway, a storm's swim and the
+    needle's slow swing are tuned out for it.
 14. **Weight is the only limit.** Whatever you can carry goes in, a board, a light panel,
     a survival kit and a stake among them, and ten batteries stack as one. With the kit's
     load you walk at your full pace, standing tall; with twice what you carry easily you
     sink in and walk slower by the share the inventory shows, and it says you're
     encumbered and by how much.
+15. **Tu's field moves the compass** (2026-10-18). Lying flat and still in clear air through
+    one turn of Tu, its needle sways with the turn, ten degrees east of north and ten west,
+    never further. Spun half round in half a second it's dragged along, swings back after
+    more than a second, not snapping, and settles within a degree inside ten.
 
 ## Out of scope
 

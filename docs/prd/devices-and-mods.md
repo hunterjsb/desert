@@ -381,9 +381,10 @@ device already stays a body of its own on the host's power pool.
     at it. What draws hangs off it below, each device with what it draws now, a dark one marked,
     and their total. Under each device that can be worked is a row of switches, the one lit saying
     how it stands, and use on one works the device through its own use: a shield off, on or smart;
-    a radio's dial, off, music, weather or beacon; a tray floating or resting, the deck's, or a
-    Console's alone on its own; and a device's lamps on or off. Each switch logs what it did
-    ("SHIELD SMART", "RADIO WEATHER", "DECK REST"). A device's lamps are switched only from here.
+    a radio's own controls, off or on, a sweep to the next carrier as its use does, and its
+    volume down or up (the dial in [Radio](radio-sound-and-atmosphere.md#the-dial-and-the-gods-on-the-air-hunter-2026-10-18-built));
+    a tray floating or resting, the deck's, or a Console's alone on its own; and a device's lamps
+    on or off. Each switch logs what it did ("SHIELD SMART", "RADIO 262 KHZ", "DECK REST"). A device's lamps are switched only from here.
   - **Log:** the last lines logged, each under its time; the sender shows only when it isn't a
     Console.
 - **The gyro is a compass too** (Hunter, 2026-10-18: "show both the wind direction and mag with a
@@ -393,6 +394,14 @@ device already stays a body of its own on the host's power pool.
   off a deck the Console's own front, its screen's. The wind is a vector flying in from where it
   comes from, as long as it's strong, and an arc joins the two, the angle written under the
   gyro: the wind angle a sailor trims to, in degrees, to starboard or port, as "45° STBD".
+- **Tu-ward on the gyro** (Hunter, 2026-10-18: "we should also show 'tu-ward' on the compasses.
+  on the computer yes for sure"; built). A small disc on the gyro's rim in Tu's pale blue, TU
+  written just inside it, on the radar's legend and on the stats page alike: the great-circle bearing
+  from where you stand toward the point under Tu, nodding with Tu as it does. The Console works
+  it from where it is on the moon, so it reads on the far side too, where Tu is below the
+  horizon, and points the way to walk to see it rise. Within a degree of the point under Tu, or
+  of the one opposite, every way is Tu-ward and the mark goes. The hand-held compass never shows
+  it ([survival](survival.md)).
 - **The wind is as the deck feels it.** Before, the anemometer read the field's wind over the
   sand, which a deck under way doesn't feel. It reads the field's wind less the deck's own way
   over the sand now, as a masthead anemometer would, still from the field, so a bubble doesn't
@@ -918,7 +927,7 @@ Readings, not in the session:
 - **Only the Console prints through it so far,** under the sender CON. Its readout is its weather
   rows, a table. Its log lines are its own messages, short and in caps, the numbers in their
   units: "FRONT 1.2 km N · 5 min", "SHIELD AUTO-ON", "PRESSURE ▼ · STORM ~6 min", "STORM PASSED",
-  "SHIELD DOWN · NO POWER", "SHIELD OFF", "RADIO WEATHER", "RADAR ONLINE", "LINKED · 2 CONSOLES".
+  "SHIELD DOWN · NO POWER", "SHIELD OFF", "RADIO ON", "RADAR ONLINE", "LINKED · 2 CONSOLES".
   The storm's arrival is a form: "IN STORM", then its sand and when it clears.
 - **The voice is in the formatting.** A "!" before a line marks it urgent, and it shows in a
   storm's amber; a row indented runs on from the one before and shows dim; a row's cells apart
@@ -1165,9 +1174,12 @@ a water socket of its own on top, so a canister or another hose goes on there to
 28. **Switched from the screen** (2026-10-18). A Console with a radio on its top, a shield and a
     crate with a lamp stand on a floating deck of three pieces. Use on the screen's power tab
     opens the power page, and its switches, pressed where they're drawn, work each device as its
-    own use would: the shield on and off, the radio's dial, the lamp off, the deck's trays
+    own use would: the shield on and off, the radio's switch, sweep and volume, the lamp off, the deck's trays
     resting. What the panel says is drawn is what the pool's devices draw, and its bank what
     they hold.
+29. **The gyro points Tu-ward** (2026-10-18). A Console with an anemometer, carried round the
+    moon: on the near side, the Rim and the far side, its gyro's Tu-ward mark is the way Tu
+    stands in the sky there, or would past the horizon, to within a degree.
 
 ## Out of scope
 

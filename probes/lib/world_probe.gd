@@ -59,14 +59,17 @@ func structures_near(kind: StringName, radius := 1500.0) -> Array[Structure]:
 
 
 ## Waits until the ground round the player has collision and, unless only_near,
-## until nothing is left to build either.
-func settle(only_near := false, max_frames := 1200) -> void:
-	for i in max_frames:
+## until nothing is left to build either. A busy machine builds it slower but
+## builds it, so the limit is time, not frames: frames come faster the less a
+## frame has to do, and on CI 1,200 ran out while the ground was still coming.
+func settle(only_near := false, max_seconds := 60.0) -> void:
+	var until := Time.get_ticks_msec() + roundi(max_seconds * 1000.0)
+	while Time.get_ticks_msec() < until:
 		await get_tree().process_frame
 		if world.terrain.is_settled_around(world.player_world_x(), world.player_world_z()) \
 				and (only_near or world.terrain.is_idle()):
 			return
-	check(false, "terrain settled within %d frames" % max_frames)
+	check(false, "terrain settled within %.0f s" % max_seconds)
 
 
 ## Nothing may ever have gone through the sand, in any world probe.

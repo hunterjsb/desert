@@ -6,7 +6,8 @@ extends Node
 ## quit only quits. A Normal run also saves itself as you play and when you
 ## quit, and a death in it offers the last save back; quick save and quick
 ## load are its own. A dev scenario (`-- --scenario=<key>`, or the console's
-## scenario) skips the menu, and its run is never saved.
+## scenario) skips the menu, and its run is never saved. `-- --smoke` is an
+## exported build's check instead (Smoke).
 
 ## Loaded when wanted, not preloaded: the world's own scripts reach back here
 ## through the UI root, and a preload would go round in a circle.
@@ -25,7 +26,7 @@ const VIEW_PITCH := -2.0
 var run: Node
 ## The menu's world, or null in a run.
 var view: World
-## The kit on show in the menu's foreground, or null in a run.
+## The prop in the menu's foreground, or null in a run.
 var showpiece: Showpiece
 ## The run in play is a dev scenario's: the save on disk, the player's own,
 ## is never written over or deleted by it.
@@ -38,6 +39,9 @@ var _played := 0.0
 
 func _ready() -> void:
 	ui.main = self
+	if Smoke.asked():
+		Smoke.run(self)
+		return
 	var asked := _scenario_asked()
 	_scenario = asked != ""
 	if opens_on_menu and not _scenario:
@@ -60,10 +64,11 @@ static func _scenario_asked() -> String:
 
 
 ## Drops the run in play into a dev scenario. From then on it's a dev
-## scenario's run: never saved, and a death in it begins a new run without
-## touching the save on disk, which is the player's own.
+## scenario's run: never saved, no deed counts in it, and a death in it begins
+## a new run without touching the save on disk, which is the player's own.
 func start_scenario(scenario: Dictionary) -> void:
 	_scenario = true
+	world().counts_deeds = false
 	run.get_node("Runs").offer = Callable()
 	Scenarios.apply(world(), scenario)
 
@@ -276,6 +281,7 @@ func _begin(next: Node) -> void:
 	Dev.clear()
 	if not _scenario:
 		next.get_node("Runs").offer = ui.show_death
+	(next.get_node("World") as World).counts_deeds = not _scenario
 	add_child(next)
 	move_child(next, 0)
 	run = next
@@ -290,9 +296,9 @@ func _end_run() -> void:
 
 
 ## The real world from a fixed camera: no one stands there, nothing of yours
-## is in it but the kit on show, and only the weather moves, at its
-## own pace, without a sound: a storm at the menu is only to look at, while
-## the menu's own words are heard.
+## is in it but the prop, and only the weather moves, at its own pace,
+## without a sound: a storm at the menu is only to look at, while the menu's
+## own words and its music are heard.
 func _show_view() -> void:
 	Dev.clear()
 	AudioServer.set_bus_mute(AudioServer.get_bus_index(Sounds.WORLD), true)
@@ -326,6 +332,9 @@ func _show_view() -> void:
 	showpiece.camera = eye.camera
 	showpiece.home = last_kit()
 	view.add_child(showpiece)
+	var music := MenuMusic.new()
+	music.ui = ui
+	view.add_child(music)
 
 
 static func _make(path: String) -> Node:

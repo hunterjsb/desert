@@ -11,8 +11,7 @@ func run() -> void:
 	# A run lived in for a while, saved and quit.
 	world.time += 600.0
 	press(&"ui_cancel")
-	press(&"ui_down")
-	press(&"ui_down")
+	press(&"ui_up")
 	press(&"ui_accept")
 	await faded_in()
 	var kept := FileAccess.get_file_as_bytes(saves().path())

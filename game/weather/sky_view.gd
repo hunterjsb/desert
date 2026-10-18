@@ -10,6 +10,8 @@ extends Node
 const TU_SHINE_COLOR := Color(0.78, 0.86, 1.0)
 ## Tu's edge is softened over this much, radians, where it cuts the sun.
 const TU_EDGE := 0.0008
+## How bright the relay shows at night, against the brightest stars' 0.09.
+const RELAY_LIGHT := 0.35
 
 var material := ShaderMaterial.new()
 ## Tu's light on open ground round the camera, as a share of the sun's overhead.
@@ -68,9 +70,11 @@ func show(t: float, eye: Vector3, sun: Vector3, sun_shown: float, glow: Vector3,
 	# Tu spins about Zan's own axis.
 	material.set_shader_parameter("tu_pole", Vector3(0.0, sin(moon.latitude), -cos(moon.latitude)))
 	material.set_shader_parameter("tu_time", t)
+	material.set_shader_parameter("tu_spin", _day.tu_turn(t))
 	material.set_shader_parameter("to_stars", _day.stars_from(t, moon.latitude, moon.longitude))
 	material.set_shader_parameter("eclipse", _day.eclipse(t))
 	material.set_shader_parameter("eclipse_air", ring_air)
+	_show_relay(t)
 	_face.set_light("tu_dir", tu)
 	_face.set_light("tu_edge", Vector2(cos(radius + TU_EDGE), cos(radius - TU_EDGE)))
 	_face.set_light("sun_shown", sun_shown)
@@ -90,6 +94,21 @@ func show(t: float, eye: Vector3, sun: Vector3, sun_shown: float, glow: Vector3,
 		_sun.shadow_enabled = not tu_leads
 	tu_seen = energy / _sun_energy * maxf(tu.y, 0.0)
 	_report(t, tu)
+
+
+## The relay satellite, a bright point crossing the night sky while it's over
+## the horizon and the sun lights it, gone into Zan's shadow; the stars' own
+## darkness decides whether it shows.
+func _show_relay(t: float) -> void:
+	var moon := _world.moon
+	var relay := Radio.relay_of(_world)
+	var p := Sphere.point(moon.latitude, moon.longitude)
+	var to := relay.under(t) * (1.0 + relay.altitude) - p
+	var dir := DayCycle.local(to.normalized(), moon.latitude, moon.longitude)
+	var lit := relay.sunlit(t, _day.sun_toward(t))
+	var up := smoothstep(0.0, deg_to_rad(4.0), asin(clampf(dir.y, -1.0, 1.0)))
+	material.set_shader_parameter("relay_dir", dir)
+	material.set_shader_parameter("relay_light", RELAY_LIGHT * up * (1.0 if lit else 0.0))
 
 
 func _report(t: float, tu: Vector3) -> void:
