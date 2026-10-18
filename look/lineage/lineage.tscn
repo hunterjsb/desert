@@ -1,0 +1,9 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://look/lineage/lineage.gd" id="1_lineage"]
+[ext_resource type="PackedScene" path="res://game/world/world.tscn" id="2_world"]
+
+[node name="LineageTest" type="Node"]
+script = ExtResource("1_lineage")
+
+[node name="World" parent="." instance=ExtResource("2_world")]

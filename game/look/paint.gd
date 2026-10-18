@@ -630,16 +630,21 @@ class Shell:
 		var hit := _hit.intersect_ray(to_thing * from, to_thing.basis * way)
 		return to_thing.affine_inverse() * (hit.position as Vector3) if not hit.is_empty() else Vector3.INF
 
-	## Its solid top: the lowest its corners stand, so a rim never floats.
+	## Its solid top: the lowest its edges stand, each read just in from it
+	## past any bevel, so a rim never floats.
 	func _top() -> float:
 		var y := INF
 		var mid := (lo + hi) * 0.5
 		var half := (hi - lo) * 0.5
 		for edge in [Vector2(1, 0), Vector2(-1, 0), Vector2(0, 1), Vector2(0, -1)]:
-			var at := _cast(Vector3(mid.x + edge.x * (half.x - unit * 1.2), hi.y + 1.0, mid.z + edge.y * (half.z - unit * 1.2)),
-				Vector3.DOWN)
-			if at.is_finite():
-				y = minf(y, at.y)
+			var edge_y := -INF
+			for inset in [0.6, 1.5]:
+				var at := _cast(Vector3(mid.x + edge.x * (half.x - unit * inset), hi.y + 1.0,
+					mid.z + edge.y * (half.z - unit * inset)), Vector3.DOWN)
+				if at.is_finite():
+					edge_y = maxf(edge_y, at.y)
+			if is_finite(edge_y):
+				y = minf(y, edge_y)
 		return y if is_finite(y) else hi.y
 
 	func _find_corners(keep: PackedVector3Array) -> void:
