@@ -3,8 +3,7 @@
 # before and after, close up, from 5 m, and the 5 m frame's middle blown up.
 #   look/marks/shoot.sh <out dir>                  shoot this build
 #   look/marks/shoot.sh --sheets <before> <after>  sheets to ~/Desktop/marks_<thing>.png
-# The window never takes focus. A game running (Proton, Wine, gamescope)
-# holds the launch until it's gone.
+# No window: it runs unseen (scripts/unseen.sh), so it shoots while someone plays.
 set -uo pipefail
 cd "$(dirname "$0")/../.." || exit 2
 
@@ -36,10 +35,6 @@ if [[ ${1:-} == --sheets ]]; then
 fi
 
 out=${1:?an output directory}
-godot=${GODOT:-godot}
-while ps -eo args | grep -iE 'proton|wine|gamescope|\.exe' | grep -v grep >/dev/null; do
-	echo "a game is running; waiting to open a window"
-	sleep 60
-done
+godot=${GODOT:-scripts/unseen.sh}
 timeout 600 "$godot" --path . --disable-vsync res://look/marks/marks.tscn -- --look grey --capture "$out" 2>&1 |
 	grep -E '^(style|  )'

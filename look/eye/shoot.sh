@@ -3,22 +3,15 @@
 # each moment at the fixed exposure the game had before beside the eye's, and
 # the eclipse as the eye lives through it.
 #   look/eye/shoot.sh <out dir> [sheet]
-# The window never takes focus. A game running holds the launch until it's gone.
+# No window: it runs unseen (scripts/unseen.sh), so it shoots while someone plays.
 set -uo pipefail
 cd "$(dirname "$0")/../.." || exit 2
 
 out=${1:?an output directory}
 sheet=${2:-$out/eye_adaptation.png}
-godot=${GODOT:-godot}
+godot=${GODOT:-scripts/unseen.sh}
 
-gaming() {
-	pgrep -a -x godot | grep -qv -- '--headless' || ps -eo args | grep -iE 'proton|wine|gamescope|\.exe' | grep -v grep >/dev/null
-}
 for weather in clear storm; do
-	while gaming; do
-		echo "a game is running; waiting to open a window"
-		sleep 60
-	done
 	flag=()
 	[[ $weather == storm ]] && flag=(--storm)
 	timeout 900 "$godot" --path . --disable-vsync res://look/eye/eye.tscn -- --capture "$out" "${flag[@]}" 2>&1 |

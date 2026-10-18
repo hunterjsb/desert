@@ -3,14 +3,13 @@
 # one contact sheet per shot with the looks side by side.
 #   look/style/shoot.sh <out dir> [look ...]
 #   look/style/shoot.sh <out dir> --sheets    (rebuild the sheets from what's there)
-# Each run opens a small window that never takes focus. A game running
-# (Proton, Wine, gamescope) holds each launch until it's gone.
+# No window: it runs unseen (scripts/unseen.sh), so it shoots while someone plays.
 set -uo pipefail
 cd "$(dirname "$0")/../.." || exit 2
 
 out=${1:?an output directory}
 shift
-godot=${GODOT:-godot}
+godot=${GODOT:-scripts/unseen.sh}
 looks=("$@")
 [[ ${#looks[@]} -gt 0 ]] || looks=(grey a b c d)
 [[ ${looks[0]} == --sheets ]] && looks=()
@@ -19,16 +18,9 @@ shots=(camp8_morning camp8_midmorning camp8_noon camp8_dusk camp50 crate5 crate 
 declare -A titles=([grey]="the game (today)" [a]="A: Sand Game's models" [b]="B: chunky worn industrial"
 	[c]="C: low-poly, flat, tight palette" [d]="D: cel-shaded, inked")
 
-gaming() {
-	ps -eo args | grep -iE 'proton|wine|gamescope|\.exe' | grep -v grep >/dev/null
-}
 
 for look in "${looks[@]+"${looks[@]}"}"; do
 	for weather in clear storm; do
-		while gaming; do
-			echo "a game is running; waiting to open a window"
-			sleep 60
-		done
 		flags=(--look "$look" --capture "$out/$look")
 		[[ $weather == storm ]] && flags+=(--storm)
 		timeout 600 "$godot" --path . --disable-vsync res://look/style/style.tscn -- "${flags[@]}" 2>&1 |

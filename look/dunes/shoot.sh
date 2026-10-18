@@ -2,27 +2,19 @@
 # Shoots the dunes with the sand shader and without, then builds one contact
 # sheet per time of day: the two looks across, the shots down.
 #   look/dunes/shoot.sh <out dir> [--tune name=value ...]
-# Each look opens a small window that never takes focus. A game running
-# (Proton, Wine, gamescope) holds each launch until it's gone.
+# No window: it runs unseen (scripts/unseen.sh), so it shoots while someone plays.
 set -uo pipefail
 cd "$(dirname "$0")/../.." || exit 2
 
 out=${1:?an output directory}
 shift
-godot=${GODOT:-godot}
+godot=${GODOT:-scripts/unseen.sh}
 shots=(sea_eye_upwind sea_eye_downwind sea_30m sea_200m edge_eye_upwind edge_200m)
 moments=(morning midmorning noon dusk)
 looks=(shader flat)
 
-gaming() {
-	ps -eo args | grep -iE 'proton|wine|gamescope|\.exe' | grep -v grep >/dev/null
-}
 
 for look in "${looks[@]}"; do
-	while gaming; do
-		echo "a game is running; waiting to open a window"
-		sleep 60
-	done
 	timeout 600 "$godot" --path . --disable-vsync res://look/dunes/dunes.tscn -- "$@" \
 		--tune "sand_shader=$([[ $look == shader ]] && echo true || echo false)" --capture "$out/$look" 2>&1 |
 		grep -E '^(dunes|  )'

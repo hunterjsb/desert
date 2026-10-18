@@ -4,22 +4,15 @@
 # Tu and away from it, third contact, mid-totality out in a storm's dust and in
 # a bubble, and a full-Tu night once the eye has adapted.
 #   look/eclipse/shoot.sh <out dir> [sheet]
-# The window never takes focus. A game running holds the launch until it's gone.
+# No window: it runs unseen (scripts/unseen.sh), so it shoots while someone plays.
 set -uo pipefail
 cd "$(dirname "$0")/../.." || exit 2
 
 out=${1:?an output directory}
 sheet=${2:-$out/eclipse_epic.png}
-godot=${GODOT:-godot}
+godot=${GODOT:-scripts/unseen.sh}
 
-gaming() {
-	pgrep -a -x godot | grep -qv -- '--headless' || ps -eo args | grep -iE 'proton|wine|gamescope|\.exe' | grep -v grep >/dev/null
-}
 for weather in clear storm; do
-	while gaming; do
-		echo "a game is running; waiting to open a window"
-		sleep 60
-	done
 	flag=()
 	[[ $weather == storm ]] && flag=(--storm)
 	timeout 900 "$godot" --path . --disable-vsync res://look/eclipse/eclipse.tscn -- --capture "$out" "${flag[@]}" 2>&1 |

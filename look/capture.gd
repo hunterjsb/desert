@@ -1,7 +1,8 @@
 extends Node
 ## Look-test helper: builds the world on a fixed seed, waits for the far ring,
-## aims the camera and saves a screenshot. Needs a window, not --headless:
-##   godot --path . res://look/capture.tscn -- out.png [yaw] [pitch] [lift_m] [run_seconds] [--f3]
+## aims the camera and saves a screenshot. Needs a GPU, not --headless;
+## scripts/unseen.sh gives it one with no window:
+##   scripts/unseen.sh --path . res://look/capture.tscn -- out.png [yaw] [pitch] [lift_m] [run_seconds] [--f3]
 
 const WORLD_SCENE := preload("res://game/world/world.tscn")
 

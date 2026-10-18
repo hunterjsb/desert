@@ -3,21 +3,14 @@
 # trial side by side at the same moments, and Tu low, the far side's stars and
 # a full-Tu night's ground at a few Tu-shine scales.
 #   look/sky/shoot.sh <out dir> [sheet dir]
-# The window never takes focus. A game running holds the launch until it's gone.
+# No window: it runs unseen (scripts/unseen.sh), so it shoots while someone plays.
 set -uo pipefail
 cd "$(dirname "$0")/../.." || exit 2
 
 out=${1:?an output directory}
 sheets=${2:-$out}
-godot=${GODOT:-godot}
+godot=${GODOT:-scripts/unseen.sh}
 
-gaming() {
-	pgrep -a -x godot | grep -qv -- '--headless' || ps -eo args | grep -iE 'proton|wine|gamescope|\.exe' | grep -v grep >/dev/null
-}
-while gaming; do
-	echo "a game is running; waiting to open a window"
-	sleep 60
-done
 timeout 900 "$godot" --path . --disable-vsync res://look/sky/sky.tscn -- --capture "$out" 2>&1 | grep -E '^sky'
 
 shot() {
