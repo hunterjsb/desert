@@ -292,7 +292,8 @@ static func find(world: World, scenario: Dictionary) -> Dictionary:
 		return _at_ruin(world, scenario)
 	if scenario.kind == "lee":
 		return _in_lee(world, scenario)
-	if scenario.get("among", false):
+	# Without salvage there's no structure to stand among: where the run began.
+	if scenario.get("among", false) and world.tuning.salvage:
 		return _among(world, scenario)
 	return _search(world, scenario, spawn, moon_at(world, scenario).y)
 
