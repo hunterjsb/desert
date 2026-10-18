@@ -608,6 +608,19 @@ on probe 1's three worlds, as before).
   with a loot table, and the step that builds them replaces the notes' base case of "pillars and wall
   stubs."
 
+## Nomad gear (agreed, 2026-10-18 spec; not built)
+
+From the [chassis spec](../chassis-kits-dunes-2026-10-18.md): a neglected tier, common and found all over, open wilderness
+included: ruins give power and tech, the wilderness gives mobility. Wrecked nomad rigs are its
+common source, and nomads leave their gear in other eras' wrecks too, looting as you do. Active
+nomad camps are very rare and nobody's ever home, always just gone, their rig kept up with decent
+sailing gear and anything of any era, all lootable. Sails come from it: a broken nomad rig always
+carries one, and now and then one lies in a second-age ruin. A **wind streamer** points downwind and
+flaps by strength, read in hand or the inventory like the compass, or stuck on a rig as a telltale;
+the anemometer stays the precise one. A sail's mast takes things stuck on it (heavy up high
+raises the centre of mass), and a **crow's nest** is a mast mount you climb into, a seat with a long
+view for glints, plumes and fronts.
+
 ## The Dark Age as a lineage rule (Agreed, session 4, part 5; not built)
 
 *[Session 4, part 5](../gods-gear-farside-2026-10-17.md), section 3. Loose, and none of it is built.*

@@ -326,6 +326,9 @@ func origins() -> Words:
 	var all := Kit.origins()
 	menu.open_on(all.find(main.last_kit()))
 	for kit in all:
+		# The Surveyor is the game as meant; the starts deeds open are variations on it.
+		if kit != all[0]:
+			menu.set_apart()
 		if kit.is_open_to(main.profile()):
 			menu.add(kit.label, func() -> void: open(modes(kit)), Callable(), kit.about)
 		else:

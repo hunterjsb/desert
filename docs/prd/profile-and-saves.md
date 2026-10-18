@@ -202,6 +202,25 @@ How each X was chosen, from the probes' numbers:
   <id>` grants one, `deeds` lists what's done and what isn't, and `deeds clear` forgets them all.
 - **Probes** 17 to 22, and Menus & UI probe 11.
 
+## Starts on the chassis, and two new kits (agreed, 2026-10-18 spec; not built)
+
+From the [chassis spec](../chassis-kits-dunes-2026-10-18.md); balance targets the Surveyor only.
+- **The Surveyor:** two chassis joined as a deck and a frame with an upright on its side, its gear
+  stuck on so the system is learned by sight: a battery, the shield, a compass, and the hoverboard
+  hung on the upright. It keeps the board: it's how the Surveyor tows its camp and kites.
+- **The archaeologist** (a woman on a Daventry-funded university expedition, hunting proof of why
+  humanity must be careful; Zan only partly fits that story: the hive-mind war mattered, but
+  abandonment, oversight and human failings killed it): ground radar on a Console, a digging tool
+  and sifting gear. Opened by two hard deeds: assemble the archaeology setup; dig a ruin out of a
+  dune yourself, its site laid bare by your digging rather than a storm's.
+- **The Varran settler** (an imperial settler who trusted tech over the land): a minimal fast sailing
+  rig, an out-of-place heavy navigation computer rich in wind and storm, two batteries, a small
+  shield carried with its own battery and raised round himself in storms (never on the sail: the
+  bubble would block its wind), riding a hoverboard as the keel. Opened by building and using a
+  dune sailboat. What sits outside his bubble wears in a long storm, as anything does; a light
+  panel can go on top, weakly.
+- **The Salvager and Homesteader** stay deed-opened and get reworked onto the chassis.
+
 ## Ending flags (proposed)
 
 *Session 4, part 3 ([lore session](../lore-session-2026-10-17-part-3.md)); proposed, and none of it

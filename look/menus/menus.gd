@@ -2,8 +2,9 @@ extends Node
 ## Look-test helper: shoots the main menu, its title and crate, over its desert
 ## as it opens and once its storm has passed, and with its music switched
 ## off; Options, its controls list and the question over a save with the prop
-## aside; who you come as with each origin highlighted, its piece and gear,
-## one of them locked, and the modes; the main menu after a Homesteader's run;
+## aside; who you come as on a first run, the Surveyor alone open, then with
+## each origin highlighted, its piece and gear, and with one locked beside one
+## open and highlighted, and the modes; the main menu after a Homesteader's run;
 ## the system menu over a run; Resume with that run's camp, and with the save
 ## LOOK_SAVE names if it's set; then the main menu and Resume at the menu's
 ## darkest.
@@ -68,6 +69,11 @@ func _ready() -> void:
 	_press(&"ui_cancel")
 	_press(&"ui_up")
 	_press(&"ui_up")
+	# A first run's: the Surveyor alone open.
+	_press(&"ui_accept")
+	await _settle(main)
+	_shoot("origin_first")
+	_press(&"ui_cancel")
 	var origins := Kit.origins()
 	for kit in origins:
 		if kit.unlock != "":
@@ -83,10 +89,11 @@ func _ready() -> void:
 	_shoot("modes")
 	_press(&"ui_cancel")
 	_press(&"ui_cancel")
-	# Locked, as an origin is until its deed is done.
+	# Locked, as an origin is until its deed is done, beside one open and highlighted.
 	var unlock := origins[1].unlock
 	origins[1].unlock = "look_locked"
 	_press(&"ui_accept")
+	_press(&"ui_down")
 	await _settle(main)
 	_shoot("origin_locked")
 	origins[1].unlock = unlock
