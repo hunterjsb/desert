@@ -61,13 +61,14 @@ const KEYS := {
 const BUTTONS := {
 	"hands_throw": MOUSE_BUTTON_LEFT,
 	"hands_rotate": MOUSE_BUTTON_RIGHT,
-	"bring_near": MOUSE_BUTTON_WHEEL_UP,
-	"push_out": MOUSE_BUTTON_WHEEL_DOWN,
-}
-## Mouse buttons with ctrl held: the line has the wheel apart from what you hold.
-const CTRL_BUTTONS := {
 	"reel_in": MOUSE_BUTTON_WHEEL_UP,
 	"pay_out": MOUSE_BUTTON_WHEEL_DOWN,
+}
+## Mouse buttons with ctrl held: what you hold has the wheel apart from the
+## lines, which have it bare since reeling matters more (sails, the waist).
+const CTRL_BUTTONS := {
+	"bring_near": MOUSE_BUTTON_WHEEL_UP,
+	"push_out": MOUSE_BUTTON_WHEEL_DOWN,
 }
 
 ## A gamepad works the menus too; its D-pad already moves them.

@@ -504,6 +504,12 @@ far off is seen as on a clear day.
 - The Surveyor's search is the dearest start, up to 1.4 s at New game, and leans on relay masts: a seed
   whose band held none on its lines would fall back to the tuning's spawn (none of 32 did).
 
+After playing it (Hunter, 2026-10-18: "sightlines are awesome... wow! transformed the game... we
+should really flesh this feature out further once the skeleton is properly load-bearing -- this is
+a nice intuitive driver. just need to make those tall structures look reallyyyy good and fit our
+vibe and scenario"): finding by eye is a driver of the game, to grow once the skeleton holds, and
+the tall structures want an art pass of their own.
+
 ### Readings, not in the session
 
 - **The strata and the table don't agree about two eras.** Session 3's strata, which "History runs
