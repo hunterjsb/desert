@@ -51,10 +51,8 @@ const GEAR := {
 }
 ## The numbers each factor scales: what a thing gives, and what it draws.
 const KEEPS: Array[String] = ["capacity_wh", "solar_w", "turbine_w", "lift_kg"]
-const DRAWS: Array[String] = ["draw_w", "light_w", "clear_w", "storm_w", "hover_draw"]
+const DRAWS: Array[String] = ["draw_w", "light_w", "clear_w", "storm_w"]
 
-## A run's own things: issued new by the company, Tilg's consignment.
-const ISSUED := [[NEW, &"made", [&"tilg"]]]
 ## Port Morgan's ruling families, whose heraldry First Kingdoms gear carries
 ## (part 5). Halloran's and the Rim's houses aren't named.
 const HOUSES: Array[StringName] = [&"okafor", &"kessel", &"arkwright", &"vante"]

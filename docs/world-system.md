@@ -856,10 +856,12 @@ paint's age.
 
 ### Cost and probes
 
-- **Cost** (measured with other agents' suites running alongside, so rough): every thing's shell while the
-  world loads, %SHELLS%; the first time each of a thing's lineage entries is drawn, %ENTRY%, once a run;
-  a lineage's look merged from entries already drawn, %MERGE%. A marked look adds a few hundred triangles
-  to a thing and no draw.
+- **Cost**, on the main thread of a quiet machine: every thing's shell while the world loads, 20 ms for
+  the 24 that take marks (the Console's slowest, 2.8 ms); the first time each of a thing's lineage entries
+  is drawn, once a run, 0.3 ms (0.6 ms for nine in ten, 2.3 ms at most, the first of a size of piece:
+  every piece is a prototype placed natively after); a lineage's look merged from entries already drawn,
+  0.2 ms for a crate frame and less for anything smaller. A marked look adds a few hundred triangles to a
+  thing and no draw.
 - **Probes** (`probes/lineage/`): 1 a lineage is its seed's alone, for every era and kind of site; 2 the
   Dark Age's rule, every second-age find an older thing remade; 3 era stats scale the numbers as the table
   says, a colonial battery holding the most and a second-age one the least; 4 a crate, its parts and a
