@@ -3,7 +3,8 @@ extends WeatherProbe
 ## clear air through one turn of Tu, its needle sways with the turn, east of
 ## north as Tu's tipped field swings one way and west as it swings back, and
 ## never past the sway's bound. Spun half round in half a second, it's dragged
-## along, then swings back slowly rather than snapping, and settles.
+## along, then swings back slowly rather than snapping, and settles. Off old
+## volcanic ground, the ground's own magnetism leaves it be.
 
 ## Steps of world time it's read in, s.
 const STEP := 1.0 / 60.0
@@ -63,6 +64,10 @@ func run() -> void:
 	print("spun half round: dragged %.0f° off, back within 5° after %.2f s, settled within 1° after %.1f s"
 		% [dragged, back, settled])
 	check(dragged > 20.0 and back > 1.0 and settled < 10.0, "spun, it's dragged along, swings back slowly and settles")
+	var ground := world.shape.sites.anchor().point_at(x, z)
+	check(world.shape.history.geology.magnetized(ground) > 0.0
+		or Compass.ground_deviation(world, world.player.global_position) == 0.0,
+		"off old volcanic ground, the ground's own magnetism doesn't turn it")
 
 
 ## How far its needle points east of the moon's north, degrees.

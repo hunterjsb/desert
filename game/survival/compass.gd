@@ -8,6 +8,8 @@ extends Part
 ## Tu-ward. Read it in your hand, held up or flat, or in the inventory. Its
 ## needle glows, so it reads at night and in a storm, when the sun can't tell you.
 
+## How far apart, m, the ground's own fields turn the needle one way then back.
+const GROUND_SWIM_M := 40.0
 ## Where the needle turns, above its card.
 const PIVOT := Vector3(0.0, 0.0, 0.034)
 ## Its swing is worked in steps no longer than this, s, nor than this share
@@ -79,9 +81,19 @@ static func field_bearing(world: World, at: Vector3, t: float) -> float:
 
 
 ## How far old volcanic ground's own magnetism turns the field at a place,
-## rad clockwise: none until the geology says where that ground lies.
-static func ground_deviation(_world: World, _at: Vector3) -> float:
-	return 0.0
+## rad clockwise: the rift's dykes and the volcano's flows cooled in fields of
+## their own, lying every which way, so over them the needle swims as you walk.
+static func ground_deviation(world: World, at: Vector3) -> float:
+	var anchor := world.shape.sites.anchor()
+	if anchor == null:
+		return 0.0
+	var p := anchor.point_at(world.world_x(at.x), world.world_z(at.z))
+	var strength := world.shape.history.geology.magnetized(p)
+	if strength <= 0.0:
+		return 0.0
+	var q := p * world.tuning.moon_circumference / TAU / GROUND_SWIM_M
+	var swim := 0.6 * sin(q.x + 1.3 * q.y) + 0.4 * sin(1.7 * q.z - q.x)
+	return deg_to_rad(world.tuning.compass_ground_degrees) * strength * swim
 
 
 ## The needle on its pivot, turned `angle` rad clockwise from the card's top.

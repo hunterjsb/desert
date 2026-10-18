@@ -642,6 +642,8 @@ static var _current: Tuning
 @export var compass_damping: float = 0.4
 @export var compass_sway_degrees: float = 10.0
 @export var compass_storm_degrees: float = 35.0
+## Over the most magnetized old volcanic ground, the needle swims this far either way.
+@export var compass_ground_degrees: float = 40.0
 
 @export_group("Farming")
 ## A planter's water tank, L. Found empty.
