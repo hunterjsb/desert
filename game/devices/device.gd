@@ -373,6 +373,24 @@ func mount(other: Device, socket: Socket) -> void:
 	_recompute()
 
 
+## What sat on it freed under it, by a scenario clearing or the ground
+## forgetting it: that seat is open again. Read by index, untyped, since a
+## freed element can't be held in a typed loop.
+func _drop_freed_seats() -> void:
+	var kept: Array[Socket] = []
+	for i in _seats.size():
+		var socket = _seats[i]
+		if is_instance_valid(socket) and is_instance_valid(socket.mounted):
+			kept.append(socket)
+		elif is_instance_valid(socket):
+			socket.mounted = null
+			if socket.marker != null:
+				socket.marker.visible = true
+	if kept.size() != _seats.size():
+		_seats = kept
+		_recompute()
+
+
 ## Takes a seated device off again, loose where it sat; the caller lifts it
 ## clear along the socket's +Z.
 func dismount(socket: Socket) -> Device:
@@ -522,6 +540,7 @@ func _middle(nodes: Array[Node3D]) -> Vector3:
 func _physics_process(delta: float) -> void:
 	# What's seated rides exactly on its seat: a frozen body under a moving one
 	# is left a tick behind each tick, and on a floating crate that adds up.
+	_drop_freed_seats()
 	for socket in _seats:
 		socket.mounted.transform = socket.transform * socket.mounted.seat()
 	if world == null:
