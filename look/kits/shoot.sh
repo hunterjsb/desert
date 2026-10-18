@@ -25,14 +25,14 @@ for era in colonial skimmer first second; do
 		montage -label "${eras[$era]}: ${kind//_/ }, buried" "$out/${era}_${kind}_buried.png" \
 			-label "partly exposed" "$out/${era}_${kind}_partly.png" \
 			-label "exposed" "$out/${era}_${kind}_exposed.png" \
-			-tile 3x1 -geometry 640x360+4+4 -pointsize 20 -background '#f4efe6' "$row"
+			-tile 3x1 -geometry 640x360+4+4 -pointsize 20 -background '#f4efe6' -depth 8 +repage "$row"
 		rows+=("$row")
 	done
 done
 montage -label "the artery out of Halfrise, from beside it" "$out/road_low.png" \
 	-label "and from above: a line of pylon stubs, shrines and towers" "$out/road_high.png" \
-	-tile 2x1 -geometry 964x542+4+4 -pointsize 22 -background '#f4efe6' "$out/row_road.png"
+	-tile 2x1 -geometry 964x542+4+4 -pointsize 22 -background '#f4efe6' -depth 8 +repage "$out/row_road.png"
 magick "${rows[@]}" "$out/row_road.png" -background '#f4efe6' -gravity center -append \
 	-gravity north -splice 0x60 -pointsize 34 -annotate +0+12 'Structure kits by era, in each exposure state' \
-	"$HOME/Desktop/structures.png"
+	-depth 8 +repage "$HOME/Desktop/structures.png"
 echo "sheet: $HOME/Desktop/structures.png ($(du -h "$HOME/Desktop/structures.png" | cut -f1))"

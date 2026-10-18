@@ -17,17 +17,17 @@ func run() -> void:
 	var tuning := Tuning.current()
 	var wrong := PackedStringArray()
 	for s: int in SEEDS:
-		var history := History.new(s, tuning)
-		var again := History.new(s, tuning)
+		var shape := TerrainShape.new(s, tuning)
+		var again := TerrainShape.new(s, tuning)
 		for kit in Kit.origins():
-			var p := Starts.find(history, kit.start, tuning)
-			var why := _setting(history, kit.start, p, tuning)
+			var p := Starts.find(shape, kit.start, tuning)
+			var why := _setting(shape.history, kit.start, p, tuning)
 			if Starts.find(again, kit.start, tuning) != p:
 				why = "not the seed's alone"
 			if why != "":
 				wrong.append("seed %d, the %s: %s" % [s, kit.label, why])
-		var others := History.new(s + 1, tuning)
-		if Starts.find(others, &"artery", tuning) == Starts.find(history, &"artery", tuning):
+		var others := TerrainShape.new(s + 1, tuning)
+		if Starts.find(others, &"artery", tuning) == Starts.find(shape, &"artery", tuning):
 			wrong.append("seeds %d and %d start the Surveyor in the same place" % [s, s + 1])
 	for line in wrong:
 		printerr(line)

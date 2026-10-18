@@ -23,7 +23,7 @@ func run() -> void:
 	for s: int in SEEDS:
 		var shape := TerrainShape.new(s, tuning)
 		for kit in Kit.origins():
-			var at := Starts.find(shape.history, kit.start, tuning)
+			var at := Starts.find(shape, kit.start, tuning)
 			shape.sites.follow(ground.x, ground.y, Sphere.latitude(at), Sphere.longitude(at), 1.0, INF)
 			var best := _nearest(shape, ground, tuning)
 			if best.is_empty():
