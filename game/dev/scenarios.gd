@@ -258,10 +258,10 @@ const CONSOLE_PARTS := [&"big_battery", &"big_battery", &"screen", &"anemometer"
 const CONSOLE_STAKE := [-0.5, 4.6]
 
 ## The camp built for wind, on the reference camp's deck plan resting on the
-## sand, moored upwind: a Console reading the wind and the sand with a radio
+## sand, moored upwind: a Console whose radar sees the storm coming, clean, with a radio
 ## on its top, the base shield on one battery, a bare crate whose port holds
 ## the turbine out downwind beyond the bubble.
-const ANOMALY_CONSOLE := [&"screen", &"anemometer", &"particle_sensor"]
+const ANOMALY_CONSOLE := [&"screen", &"anemometer", &"barometer", &"particle_sensor", &"radar"]
 ## An anomaly's heart is looked for this far round where the run began, m,
 ## over at most this many days from the clock's start, coming over at most
 ## this long after its wall, s. Hearts are sparse: 30 km and 30 days found

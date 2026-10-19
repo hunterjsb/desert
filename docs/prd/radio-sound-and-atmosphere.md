@@ -209,7 +209,9 @@ terminals" by Hunter's call. The squatting oracles above are now the gods.
   further the carrier slides off where you tuned, up to 6 kHz either way, so you chase it (**warping**,
   with the tones wobbling too), and the more often it drops out, up to 60% of the time
   (**cutting**). A weak signal frays the same way. Below the floor it's only static.
-- **Spoken reports** (Hunter: "implement text-to-speech weather broadcast readouts"): with something to
+- **Spoken reports** (Hunter: "implement text-to-speech weather broadcast readouts"; then, hearing
+  it, "that TTS just scared me. is it talking out of the radio?": it isn't, it's the OS voice in your
+  ear, so Options has a "Radio voice" switch, on by default): with something to
   report, the weather station reads it aloud through the system's text-to-speech (Godot's, the OS voice),
   at once as a report breaks in on Clear Skies and every 30 s after (`radio_speak_every`); never while it
   holds. Units are read in words, and words a storm garbles are lost to "...". You hear the nearest radio
