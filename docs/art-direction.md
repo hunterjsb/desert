@@ -752,8 +752,9 @@ the wind turned 36°, and a storm, over the deep dune sea near spawn:
   32 bits, jitters by centimetres on the CPU as on the GPU.
 
 **What it costs,** on the RTX 3070 at 1920x1080, by the GPU's own clock: 0.026 ms a frame standing,
-0.031 ms moving a texel every frame, 0.067 ms the one frame after a jump when all the heights refill.
-The main thread spends 26 µs a frame packing and recording it.
+0.031 ms moving a texel every frame, and 0.07 to 0.1 ms the one frame after a jump, when all the
+heights refill. The main thread spends about 25 µs a frame packing and recording it, and 20 ms
+compiling its shaders as a world loads.
 
 **The prototypes:** a `Texture2DRD` reads correctly in a spatial shader's `vertex()` and `fragment()`
 and in a particle shader's `process()`, each within 0.002 of the map read back. Use `textureLod`.

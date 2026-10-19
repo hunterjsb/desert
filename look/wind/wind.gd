@@ -340,8 +340,14 @@ func _gpu_cost() -> void:
 	for i in GPU_FRAMES:
 		map.bake()
 	var cpu := (Time.get_ticks_usec() - started) / float(GPU_FRAMES)
-	print("wind: gpu %.3f ms a frame standing, %.3f moving a texel a frame, %.3f the frame all heights refill; cpu %.0f µs a bake%s"
-		% [still / GPU_FRAMES, moving / GPU_FRAMES, jump, cpu, _shared_gpu()])
+	# Its shaders compiled from source, as a world loads.
+	started = Time.get_ticks_usec()
+	var spare := WindMap.new(world)
+	var built := (Time.get_ticks_usec() - started) / 1000.0
+	spare.finish()
+	print("wind: gpu %.3f ms a frame standing, %.3f moving a texel a frame, %.3f the frame all heights refill; " % [
+		still / GPU_FRAMES, moving / GPU_FRAMES, jump]
+		+ "cpu %.0f µs a bake, %.0f ms to build as a world loads%s" % [cpu, built, _shared_gpu()])
 	_expect(still / GPU_FRAMES <= 0.1 and moving / GPU_FRAMES <= 0.1, "gpu cost")
 
 
