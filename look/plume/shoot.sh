@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # Shoots the plumes in the run's own weather (the rift vent in a calm, a
-# strong wind, a burst, dusk, a front and a storm over it, night; a burst over
-# a storm from 15 km; a gas pocket; the far side's flank vent) from near and
-# far, and the rift vent's mouth up close, then builds the sheet
+# strong wind, a burst, dusk, a front coming over it, night; walking into its
+# dust and standing in it; from inside a storm; a burst over a storm from 15
+# km; a gas pocket; the far side's flank vent) far and mid, and the rift
+# vent's mouth up close, then builds the sheet
 # ~/Desktop/plume.png. Each shot also times the GPU with the plumes and
 # without; the times print at the end.
 #   look/plume/shoot.sh <out dir>            shoot, then build the sheet
@@ -20,17 +21,17 @@ if [[ ${2:-} != --sheet ]]; then
 	[[ ${2:-} == --only ]] && exit 0
 fi
 
-declare -A says=([calm_near]="the calm, 260 m" [calm_mid]="the calm, 1.5 km" [calm_far]="the calm, 7 km"
-	[wind_near]="a strong wind, 260 m" [wind_mid]="a strong wind, 1.5 km" [wind_far]="a strong wind, 7 km"
-	[burst_near]="a burst, 1.5 km" [burst_mid]="a burst, 7 km" [burst_far]="a burst, 25 km"
-	[over_far]="a burst over a storm by the vent, 15 km" [dusk_mid]="dusk, 1.5 km"
-	[storm_mid]="a front coming over it, 1.5 km" [swallowed_mid]="a storm over it, 1.5 km" [night_mid]="night, 1.5 km"
-	[pocket_far]="a gas pocket blowing, 6 km" [flank_far]="the far-side volcano's flank vent, 7 km"
-	[mouth_close]="the rift vent's mouth, 48 m")
+declare -A says=([calm_far]="the calm, 7 km" [burst_far]="a burst, 25 km"
+	[flank_far]="the far-side volcano's flank vent, 7 km" [calm_mid]="the calm, 1.5 km" [burst_mid]="a burst, 7 km"
+	[burst_near]="a burst, 1.5 km" [approach_near]="walking into its dust, 450 m" [into_near]="standing in it, 40 m"
+	[mouth_close]="the rift vent's mouth, 48 m" [storm_mid]="a front coming over it, 1.5 km"
+	[over_far]="a burst over a storm by the vent, 15 km" [instorm_mid]="from inside a storm, 1.5 km"
+	[night_mid]="night, 1.5 km" [dusk_mid]="dusk, 1.5 km" [pocket_far]="a gas pocket blowing, 6 km"
+	[wind_mid]="a strong wind, 1.5 km")
 rows=()
 n=0
-for group in "calm_near calm_mid calm_far" "wind_near wind_mid wind_far" "burst_near burst_mid burst_far" \
-	"over_far dusk_mid night_mid" "storm_mid swallowed_mid pocket_far" "flank_far mouth_close"; do
+for group in "calm_far burst_far flank_far" "calm_mid burst_mid burst_near" "approach_near into_near mouth_close" \
+	"storm_mid over_far instorm_mid" "night_mid dusk_mid pocket_far" "wind_mid"; do
 	shots=()
 	for name in $group; do
 		[[ -f $out/$name.png ]] && shots+=(-label "${says[$name]}" "$out/$name.png")

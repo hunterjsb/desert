@@ -28,15 +28,15 @@ const TAPPED := Vector2(1500.0, 3000.0)
 const LIVE := Vector2(5000.0, 7500.0)
 ## A live vent seeps, breathing over these two periods, s, by this share.
 const BREATH := Vector3(170.0, 410.0, 0.2)
-## It bursts, an explosion clearing its throat and a column of ash after:
-## each slot of this many s holds one this often, at a time the slot draws. A
-## burst rises over the first s, holds the second and fades by e every third,
-## at this many times the seep, least and most: a vulcanian burst's, its
-## column standing 6 to 10 km in a breeze (defaults).
+## It bursts, a blast of gas clearing its throat and swelling the column of
+## dust it lifts: each slot of this many s holds one this often, at a time
+## the slot draws. A burst rises over the first s, holds the second and fades
+## by e every third, at this many times the seep, least and most: its column
+## standing 6 to 10 km in a breeze (defaults).
 const BURST_SLOT := 1200.0
-const BURST_ODDS := 0.6
-const BURST_SHAPE := Vector3(10.0, 40.0, 150.0)
-const BURST_SIZE := Vector2(300.0, 2000.0)
+const BURST_ODDS := 0.7
+const BURST_SHAPE := Vector3(10.0, 90.0, 220.0)
+const BURST_SIZE := Vector2(25.0, 170.0)
 ## The share of what it carries that's ash: seeping, and at a burst's peak.
 const ASH := Vector2(0.2, 0.85)
 ## Lava cooled in the old field stays magnetized: the rift's dykes, across its
@@ -54,7 +54,7 @@ const POCKET_GROUND := Vector2(1500.0, 13000.0)
 const POCKET_SLOT := 500.0
 const POCKET_ODDS := 0.5
 const POCKET_BLOWS := Vector3(20.0, 50.0, 12.0)
-const POCKET_SIZE := Vector2(20.0, 80.0)
+const POCKET_SIZE := Vector2(1.7, 6.7)
 ## A pocket's plume lasts this long after it starts, s: the streakline's oldest.
 const POCKET_LIFE := 600.0
 

@@ -93,7 +93,7 @@ func _stop_voice() -> void:
 
 ## Whether the system has a voice to read with: none headless.
 func _can_speak() -> bool:
-	if not ProjectSettings.get_setting("audio/general/text_to_speech", false) \
+	if not Settings.radio_voice or not ProjectSettings.get_setting("audio/general/text_to_speech", false) \
 			or not DisplayServer.has_feature(DisplayServer.FEATURE_TEXT_TO_SPEECH):
 		return false
 	if _voice == "":

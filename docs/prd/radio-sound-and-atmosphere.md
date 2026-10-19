@@ -209,7 +209,9 @@ terminals" by Hunter's call. The squatting oracles above are now the gods.
   further the carrier slides off where you tuned, up to 6 kHz either way, so you chase it (**warping**,
   with the tones wobbling too), and the more often it drops out, up to 60% of the time
   (**cutting**). A weak signal frays the same way. Below the floor it's only static.
-- **Spoken reports** (Hunter: "implement text-to-speech weather broadcast readouts"): with something to
+- **Spoken reports** (Hunter: "implement text-to-speech weather broadcast readouts"; then, hearing
+  it, "that TTS just scared me. is it talking out of the radio?": it isn't, it's the OS voice in your
+  ear, so Options has a "Radio voice" switch, on by default): with something to
   report, the weather station reads it aloud through the system's text-to-speech (Godot's, the OS voice),
   at once as a report breaks in on Clear Skies and every 30 s after (`radio_speak_every`); never while it
   holds. Units are read in words, and words a storm garbles are lost to "...". You hear the nearest radio
@@ -310,6 +312,22 @@ frequency, a range and what it says; its signal falls off with distance.
   nomads navigating by the stars. Its frequency is found by exploring (scratched on a radio in the
   dead city), its codes learned by noticing what follows them. Open: how the tones sound and how
   many messages.
+
+### The nomads' tones follow a thief (Agreed, session 5; not built)
+
+*[Session 5](../lore-session-2026-10-18-mitchell-wow-shoemaker.md), "Nomad reputation." The whole
+relationship with the nomads runs through gifts, shrines and radio tones, so they stay secret
+([the vision](../vision.md#nomad-reputation-agreed-session-5-not-built)).* Steal from them and **their
+short-range radio tones follow you around, getting ruder.**
+
+Readings, not in the session:
+- **They are the living city's coded tones** (above): short range, no voices, learned by noticing what
+  follows them. Their usual run is free early warning ("storm coming, tether in"); a thief's run is the same
+  code turned against you, and "ruder" is a pattern the player learns to read, not words.
+- **They follow by range:** a few km, wherever you are within it, so a camp inside their reach hears them
+  and one outside doesn't.
+- **Not said:** what a ruder tone sounds like, how many steps there are between polite and rude, and
+  whether rep ever recovers the way a returned sail earns a gift.
 
 ### The ghost relay
 
@@ -561,6 +579,8 @@ left standing.
   carrying a dispatch. Part 5 also amends "speak only through terminals": machines may talk through
   terminals, and whether a god is ever heard as a voice is still this PRD's open question
   ([the lore](../lore-research.md#dispatches-how-gods-talk-agreed-session-4-part-5)).*
+  *Session 5, ruled by Hunter (2026-10-18): the gods do have links. Mother Cistern can switch Mitchell off,
+  so "no link" is read as "most links lost."*
 - **Ritual text against rule 1.** Here: "Broadcasts read the real systems" and "never makes things
   up." The session's proposed voices include Mother Cistern's calls "tied to rations and rain"
   when it has never rained, the Quartermaster's "authentication challenge nobody can answer," and

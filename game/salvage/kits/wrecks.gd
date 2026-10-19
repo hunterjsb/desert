@@ -108,7 +108,7 @@ static func wreck_hull() -> StructureKit.Piece:
 	StructureKit.box(p, Vector3(-2.2, -0.25, -6.0), Vector3(2.2, 0.0, 6.0), "hull")
 	StructureKit.box(p, Vector3(-2.2, 0.0, -6.0), Vector3(-2.0, 3.0, 6.0), "olive")
 	# The starboard wall, a hatch through it over the engine pod.
-	holed(p, Vector3(2.0, 0.0, -6.0), Vector3(2.2, 3.0, 6.0), Vector3(2.0, 1.85, 2.0), Vector3(2.2, 2.85, 4.0), "olive")
+	holed(p, Vector3(2.0, 0.0, -6.0), Vector3(2.2, 3.0, 6.0), Vector3(2.0, 2.05, 2.0), Vector3(2.2, 2.9, 4.0), "olive")
 	StructureKit.box(p, Vector3(-2.2, 3.0, -6.0), Vector3(2.2, 3.25, 4.4), "hull")
 	StructureKit.box(p, Vector3(-2.0, 0.0, -6.2), Vector3(2.0, 2.6, -5.0), "hull")
 	StructureKit.box(p, Vector3(-0.12, 3.25, 2.4), Vector3(0.12, 4.6, 5.9), "")
@@ -118,22 +118,23 @@ static func wreck_hull() -> StructureKit.Piece:
 	# walls, and the partition walling the charger bay off to starboard.
 	StructureKit.box(p, Vector3(-2.0, 0.0, 0.6), Vector3(2.0, 3.0, 0.8), "scrap")
 	StructureKit.box(p, Vector3(-2.0, 1.45, 1.2), Vector3(-1.3, 1.55, 4.2), "steel")
-	StructureKit.box(p, Vector3(1.3, 1.45, 1.2), Vector3(2.0, 1.55, 4.2), "steel")
+	# The charger bay's shelf, up at the hatch's sill, so it's reached from the sand.
+	StructureKit.box(p, Vector3(1.3, 2.0, 2.0), Vector3(2.0, 2.1, 4.0), "steel")
 	StructureKit.box(p, Vector3(1.1, 0.0, 2.0), Vector3(1.3, 3.0, 4.0), "scrap")
 	p.sockets.append(StructureKit.SiteSocket.new(Vector3(-1.2, 0.0, 5.0), &"floor"))
 	p.sockets.append(StructureKit.SiteSocket.new(Vector3(1.2, 0.0, 5.2), &"floor"))
 	p.sockets.append(StructureKit.SiteSocket.new(Vector3(0.0, 0.8, 2.2), &"cache", 0.4))
 	var aft := module(p, Vector3(-1.65, 1.55, 3.7))
 	var fore := module(p, Vector3(-1.65, 1.55, 1.7))
-	var charger := module(p, Vector3(1.65, 1.55, 2.6))
+	var charger := module(p, Vector3(1.65, 2.1, 2.6))
 	var w := WreckPlan.new()
 	w.armour = 1.0
-	var hatch := w.plate(Vector3(2.02, 1.85, 2.0), Vector3(2.2, 2.85, 4.0), 0, 1.0, "starboard hatch")
+	var hatch := w.plate(Vector3(2.02, 2.05, 2.0), Vector3(2.2, 2.9, 4.0), 0, 1.0, "starboard hatch")
 	var bay := w.hold(Vector3(-1.98, 0.0, 0.82), Vector3(1.08, 2.98, 4.4), 3, Vector3.BACK, "cargo bay",
 		"blown in through the torn tail")
 	w.module(aft, [[&"hold", bay, 1]])
 	w.module(fore, [[&"hold", bay, 3]])
-	w.module(charger, [[&"plate", hatch]], Wreckage.ELECTRICAL, Vector3(1.65, 1.85, 3.55))
+	w.module(charger, [[&"plate", hatch]], Wreckage.ELECTRICAL, Vector3(1.65, 2.4, 3.55))
 	p.wreck = w
 	p.tour = PackedVector2Array([Vector2(0.0, 12.0), Vector2(0.0, 5.3), Vector2(0.0, 12.0)])
 	p.approach = Vector2(6.0, 12.0)
@@ -218,7 +219,7 @@ static func _tithe_hauler() -> StructureKit.Piece:
 	StructureKit.box(p, Vector3(-2.5, 0.25, 8.0), Vector3(2.5, 3.25, 8.4), "armour")
 	StructureKit.box(p, Vector3(-2.3, 0.25, 3.0), Vector3(2.3, 3.65, 3.2), "armour")
 	# The requisition locker's wall, its door plated over.
-	holed(p, Vector3(-2.3, 0.25, -1.1), Vector3(2.3, 3.65, -0.9), Vector3(-0.8, 0.25, -1.1), Vector3(0.8, 2.25, -0.9), "armour")
+	holed(p, Vector3(-2.3, 0.25, -1.1), Vector3(2.3, 3.65, -0.9), Vector3(-0.8, 0.5, -1.1), Vector3(0.8, 2.25, -0.9), "armour")
 	StructureKit.box(p, Vector3(1.7, 1.1, -0.8), Vector3(2.3, 1.2, 2.9), "steel")
 	p.sockets.append(StructureKit.SiteSocket.new(Vector3(2.0, 1.2, 0.4), &"shelf"))
 	p.sockets.append(StructureKit.SiteSocket.new(Vector3(1.6, 1.15, 7.4), &"cache", 0.3))
@@ -228,7 +229,7 @@ static func _tithe_hauler() -> StructureKit.Piece:
 	var w := WreckPlan.new()
 	w.armour = 2.0
 	var door := w.plate(Vector3(-2.5, 0.55, -6.0), Vector3(-2.32, 3.25, -2.0), 0, -1.0, "armoured cargo door")
-	var locker_door := w.plate(Vector3(-0.8, 0.25, -1.1), Vector3(0.8, 2.25, -0.95), 2, -1.0, "locker door")
+	var locker_door := w.plate(Vector3(-0.8, 0.5, -1.1), Vector3(0.8, 2.25, -0.95), 2, -1.0, "locker door")
 	var cab_door := w.plate(Vector3(-2.5, 0.55, 4.6), Vector3(-2.32, 2.55, 6.0), 0, -1.0, "cab door")
 	var cab_sand := w.hold(Vector3(-2.28, 0.25, 3.22), Vector3(2.28, 3.63, 7.98), 3, Vector3.LEFT, "cab",
 		"poured in through the roof breach")
@@ -469,9 +470,8 @@ static func _hopper() -> StructureKit.Piece:
 	p.slide = Vector2(0.0, 1.0)
 	p.slide_m = 14.0
 	p.solids = [[Vector2(-1.7, -5.6), Vector2(1.7, 5.6)], [Vector2(-5.6, -4.0), Vector2(3.4, 1.0)]]
-	# The troop bay and cockpit, and the fan's nacelle, their floors bare once dug out.
+	# The troop bay and cockpit, their floors bare once dug out.
 	p.rooms.append(StructureKit.room(Vector2(-1.4, -5.5), Vector2(1.4, 5.5)))
-	p.rooms.append(StructureKit.room(Vector2(-4.0, -3.3), Vector2(-1.6, 0.3)))
 	StructureKit.box(p, Vector3(-1.6, -0.25, -5.5), Vector3(1.6, 0.0, 5.5), "grey")
 	StructureKit.box(p, Vector3(-1.6, 0.0, -5.5), Vector3(-1.4, 2.6, 5.5), "lime")
 	StructureKit.box(p, Vector3(1.4, 0.0, -5.5), Vector3(1.6, 2.6, 5.5), "lime")
@@ -483,13 +483,15 @@ static func _hopper() -> StructureKit.Piece:
 	holed(p, Vector3(-1.6, 0.0, -5.7), Vector3(1.6, 2.8, -5.5), Vector3(-1.2, 0.0, -5.7), Vector3(1.2, 2.4, -5.5), "lime")
 	StructureKit.box(p, Vector3(-1.2, -0.05, -7.6), Vector3(1.2, 0.08, -5.7), "grey")
 	# The cockpit's bulkhead, its door plated shut.
-	holed(p, Vector3(-1.4, 0.0, 1.0), Vector3(1.4, 2.6, 1.2), Vector3(-0.5, 0.0, 1.0), Vector3(0.5, 2.0, 1.2), "panel")
-	# The port wing and its lift-fan nacelle, cowled; the starboard wing
-	# snapped short, its end lying in the sand.
+	holed(p, Vector3(-1.4, 0.0, 1.0), Vector3(1.4, 2.6, 1.2), Vector3(-0.5, 0.3, 1.0), Vector3(0.5, 2.0, 1.2), "panel")
+	# The port wing and its lift-fan nacelle on top of it, cowled at your
+	# chest on its outer side over a lip; the starboard wing snapped short,
+	# its end lying in the sand.
 	StructureKit.box(p, Vector3(-5.6, 0.8, -4.0), Vector3(-1.6, 1.0, 1.0), "lime")
-	StructureKit.box(p, Vector3(-4.0, 0.0, -3.5), Vector3(-1.6, 0.1, 0.5), "dark")
-	StructureKit.box(p, Vector3(-4.0, 0.1, -3.5), Vector3(-1.6, 0.8, -3.3), "dark")
-	StructureKit.box(p, Vector3(-4.0, 0.1, 0.3), Vector3(-1.6, 0.8, 0.5), "dark")
+	StructureKit.box(p, Vector3(-4.0, 1.0, -3.5), Vector3(-1.6, 2.0, -3.3), "dark")
+	StructureKit.box(p, Vector3(-4.0, 1.0, 0.3), Vector3(-1.6, 2.0, 0.5), "dark")
+	StructureKit.box(p, Vector3(-4.0, 2.0, -3.5), Vector3(-1.6, 2.1, 0.5), "dark")
+	StructureKit.box(p, Vector3(-4.0, 1.0, -3.3), Vector3(-3.82, 1.25, 0.3), "dark")
 	StructureKit.box(p, Vector3(1.6, 0.8, -4.0), Vector3(3.4, 1.0, 0.0), "lime")
 	StructureKit.box(p, Vector3(3.8, -0.1, -5.0), Vector3(5.4, 0.1, -2.2), "lime")
 	StructureKit.box(p, Vector3(-0.12, 2.8, -5.5), Vector3(0.12, 4.2, -3.2), "lime")
@@ -497,13 +499,13 @@ static func _hopper() -> StructureKit.Piece:
 	p.sockets.append(StructureKit.SiteSocket.new(Vector3(0.0, 0.08, -6.6), &"floor"))
 	p.sockets.append(StructureKit.SiteSocket.new(Vector3(0.0, 0.7, 5.1), &"shelf"))
 	var flight := module(p, Vector3(0.0, 0.0, 3.4), true)
-	var fan := module(p, Vector3(-2.8, 0.1, -1.5))
+	var fan := module(p, Vector3(-2.8, 1.0, -1.5))
 	var water := module(p, Vector3(-0.6, 0.0, -0.9), true)
 	var stores := module(p, Vector3(0.5, 0.0, -3.9), true)
 	var w := WreckPlan.new()
 	w.armour = 1.0
-	var door := w.plate(Vector3(-0.5, 0.0, 1.0), Vector3(0.5, 2.0, 1.15), 2, -1.0, "cockpit door")
-	var cowl := w.plate(Vector3(-4.0, 0.1, -3.3), Vector3(-3.82, 0.8, 0.3), 0, -1.0, "fan cowling", [true, true, false, true])
+	var door := w.plate(Vector3(-0.5, 0.3, 1.0), Vector3(0.5, 2.0, 1.15), 2, -1.0, "cockpit door")
+	var cowl := w.plate(Vector3(-4.0, 1.25, -3.3), Vector3(-3.82, 1.95, 0.3), 0, -1.0, "fan cowling")
 	var bay := w.hold(Vector3(-1.38, 0.0, -5.48), Vector3(1.38, 2.58, 0.98), 3, Vector3.FORWARD, "troop bay",
 		"blown in up the lowered ramp")
 	w.module(flight, [[&"hold", bay, 3], [&"plate", door]], Wreckage.ELECTRICAL, Vector3(0.9, 0.3, 2.0))
@@ -527,6 +529,7 @@ static func _hopper() -> StructureKit.Piece:
 	StructureKit.far_box(p, Vector3(-0.12, 2.8, -5.5), Vector3(0.12, 4.2, -3.2), c.lime)
 	StructureKit.glint(p, Vector3(0.0, 2.41, 4.8), Vector3(0.0, 1.0, 0.5), 5.0)
 	StructureKit.glint(p, Vector3(3.55, 0.95, -1.75), Vector3(0.5, 0.85, 0.0), 4.0)
+	StructureKit.glint(p, Vector3(-3.0, 2.11, -1.5), Vector3(0.0, 1.0, 0.0), 4.0)
 	return p
 
 
@@ -543,17 +546,18 @@ static func _hopper_look(b: Paint.Pieces, p: StructureKit.Piece, state: int) -> 
 		b.box(Vector3(0.02, 0.22, 0.9), Vector3(side * 1.62, 1.8, 0.0), c.daub, 0.004)
 	b.box(Vector3(0.26, 0.9, 0.2), Vector3(0.0, 3.6, -4.2), c.daub, 0.004)
 	b.box(Vector3(0.26, 0.2, 0.8), Vector3(0.0, 3.8, -4.2), c.daub, 0.004)
-	# Cord lashings the Knights tied round its broken wing, and the nacelle's
-	# fan ring showing through its cowl's gap.
+	# Cord lashings the Knights tied round its broken wing, and the fan's
+	# ring on top of its nacelle.
 	for u: float in [2.6, 3.2]:
 		b.box(Vector3(0.05, 0.3, 0.1), Vector3(u, 0.9, -2.0), c.cord, 0.004)
-	b.ring(0.25, 0.32, Vector3(-2.8, 0.82, -1.5), c.dark, Basis.IDENTITY, 12)
+	b.ring(0.25, 0.32, Vector3(-2.8, 2.12, -1.5), c.steel, Basis.IDENTITY, 12)
 	# Its main engines over the ramp, scorched; the burn it left down its
 	# belly as it came in; the wing's torn root, its ribs bare.
 	for u: float in [-0.8, 0.8]:
 		b.drum(0.38, 0.6, Vector3(u, 2.3, -5.9), c.dark, Basis(Vector3.RIGHT, PI * 0.5), 12, 0.3)
 		b.drum(0.28, 0.05, Vector3(u, 2.3, -6.2), c.black, Basis(Vector3.RIGHT, PI * 0.5), 12)
-	b.box(Vector3(3.24, 0.5, 7.0), Vector3(0.0, 0.2, -1.0), Paint.coat(Paint.BLACK, 0.4, 0.0, 0.95, 1.4), 0.0)
+	for side in [-1.0, 1.0]:
+		b.box(Vector3(0.012, 0.35, 7.0), Vector3(side * 1.607, 0.2, -1.0), Paint.coat(Paint.BLACK, 0.4, 0.0, 0.95, 1.4), 0.0)
 	for v: float in [-3.4, -2.3, -1.2, -0.1]:
 		b.box(Vector3(0.6, 0.08, 0.08), Vector3(3.5, 0.9, v), c.steel, 0.01)
 	# Inside the troop bay, its benches down both walls.

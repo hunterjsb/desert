@@ -432,12 +432,18 @@ Readings, not in the session:
 *Session 4, part 2 ([lore session](lore-session-2026-10-17-part-2.md)); named, not drawn, and
 none of it is in the atlas.* The atlas stops at the colonial, surface and new rows. The session
 names what the ages after the collapse would carry, to be drawn when there is a find to carry it:
-- **First Kingdoms** gear carries heraldry and guild stamps (houses such as Okafor, Kessel,
-  Arkwright and Vante; the guilds of the keepers).
+- **First Kingdoms** gear carries heraldry and guild stamps (houses such as Haberjack, Pellicott,
+  Crake and Vonatelli; the guilds of the keepers).
 - **Second-age** gear carries religious symbols (the faith of Tu).
 - **Homesteader** gear carries civilian brand marks, not Tilg's.
 - **Carvings and daubs** use the worn slang (Monward, Hanmen, Zanborn, the tu- prefix) and the
   worn names (Zan, Tu, Han, Mon, Aitch): [the names](lore-research.md#slang-and-name-erosion-agreed-session-4-part-2).
+- **Session 5 (named, not drawn)** ([lore session](lore-session-2026-10-18-mitchell-wow-shoemaker.md)): the
+  Tabbed's **tab-stone**, carved with what a family owes and is owed, and the Ashwalkers' pendant ones;
+  the **Mitchells**, stamped company scrip whose brand outlived its meaning; and the **singing stone**, black and
+  glassy, scored with melted grooves, warm to the touch
+  ([the lore](lore-research.md#mitchell-the-dead-god-agreed-session-5)). A tab-stone is a second-age
+  thing and a Mitchell a First Kingdoms one, so each fits the layered marks below.
 
 ### Layered marks (Agreed, session 4, part 5; named, not drawn)
 
@@ -465,8 +471,8 @@ marks over its own look, each layer added as pieces in the paint pass, not repai
   company's issue the new one.
 - **The First Kingdoms** add an enamel band in the house's colour round a frame's top edges, a round
   housing or a part's end, and a small enamel plaque with the house's crest cut through it to bright metal
-  (a new scratched ink), two brass rivets at its top: Okafor's key (they kept the last Harbourmaster's),
-  Kessel's cauldron, Arkwright's arch, Vante's tower, in deep red, ochre, teal, and ochre with red.
+  (a new scratched ink), two brass rivets at its top: Haberjack's key (they kept the last Harbourmaster's),
+  Pellicott's cauldron, Crake's arch, Vonatelli's tower, in deep red, ochre, teal, and ochre with red.
 - **The Dark Age** adds cord lashed round corner posts or round a body, a round ceramic cap on a square
   corner, a saltbush-wood splint lashed along an edge, and a plate off another thing in its paint, riveted
   on crooked, with "ZN" daubed back on it where the thing was consigned.

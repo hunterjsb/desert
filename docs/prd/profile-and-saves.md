@@ -125,6 +125,10 @@ names it), and so can a kit variant or a mark on your gear (Hunter: "they should
   - Power: over X W made in one system.
   - Story: **The Old City**, reach Port Morgan; **Hot Tourist Destinations**, reach every named
     landmark; a structure of each of the four ages stood in.
+- **Earning one is an event** (Hunter, 2026-10-18: "achv should be a bigger deal when you get them
+  in game, sound + badge, plus indication of your unlock on the menu"): a sound of its own and its
+  badge, its card's picture and name, shown a moment over the game; and the main menu marks what's
+  new, the Deeds word and a start a deed has opened, until you've looked.
 - **Shown in a grid,** reached from the main menu and the system menu: each deed a tile, named,
   with a short line saying what it asks, lit once done (Menus & UI). Then (Hunter, 2026-10-18): a
   tree of what waits on what, each card only a name and a picture of its thing, and what it asks
@@ -232,6 +236,10 @@ vision](../vision.md#the-three-axes-varran-daventry-and-cistern)).
   lane. "Player control is how careful you are with the transmitter." The stolen freighter and the
   pathfinder read it: loud, and Daventry waits at the lane; quiet, and the passage is unnoticed.
 - **The Cistern state** is one of three: dormant, restored, or linked into the network.
+- **Nomad reputation** (session 5, [the vision](../vision.md#nomad-reputation-agreed-session-5-not-built)) is a
+  third running value: a number that rises with sails and goods returned at a shrine and falls with theft,
+  and that, through the nomad quest line the Walker's quest ties closely to, decides whether you may tend to
+  the Walker. How it is counted is not said.
 
 Readings, not in the session:
 - **They are a run's changes, so they belong to the run save,** whose rule is that a save holds
