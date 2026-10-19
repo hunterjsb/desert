@@ -3,8 +3,8 @@ extends WorldProbe
 ## at the points both have, and collision holds exactly the mesh's samples. A
 ## rope's loose end slid across a seam at 13 m/s never catches on it.
 
-## The most of its pace one tick there may take, m/s: crossing the lip costs it
-## 0.8, and catching on the next chunk's edge took 7.5.
+## The most of its pace one tick may take, m/s: landing costs it 1.2, the seam
+## under 0.2, and catching on the next chunk's edge took 7.5.
 const CAUGHT := 2.0
 
 
@@ -41,7 +41,7 @@ func run() -> void:
 	var seam := (floorf(world.player_world_x() / size) + 1.0) * size
 	var end := Catalog.part(&"rope_end")
 	world.content.add_child(end)
-	var start := Vector3(world.engine_x(seam - 4.0), 0.0, world.player.global_position.z)
+	var start := Vector3(world.engine_x(seam - 3.0), 0.0, world.player.global_position.z)
 	end.global_position = start + Vector3.UP * (world.height_under(start) + 0.03)
 	end.linear_velocity = Vector3.RIGHT * 13.0
 	var slid := {"worst": 0.0, "last": 13.0}
