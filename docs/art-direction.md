@@ -965,6 +965,14 @@ as the sand needing to look solid rather than painted on:
 - **Shadow in the hollows:** soft shadow in the troughs and under the brinks, so the ripples and
   dunes have depth at every sun.
 
+**Implementation (2026-10-19, in progress):** keep dune shading baked into the streamed vertices.
+For close ripple relief, trace the view through the same rounded, lopsided ripple profile the
+shader already lights: a short parallax search through its millimetre-scale crests and troughs,
+fading out over a few metres. This lets nearby crests cover their troughs as you move. Keep the
+ground's metre lattice and collision authoritative, and the complete visual change under the
+existing roughly 0.8 ms GPU budget. Measure the bake and the close relief separately against the
+previous shader, and inspect noon, low sun, night, tracks and storm captures before landing.
+
 ## Open questions
 
 - **Tu's palette** (open in the spec: "Tu's palette, to be settled against
