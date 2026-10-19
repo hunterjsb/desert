@@ -69,8 +69,9 @@ behind them, and since 2026-10-18 are bigger and roomier still, below.)
   origin last played, kept in the profile.
 - **The Surveyor is the game as meant, the others novel starts,** shown by design and never said
   (Hunter, 2026-10-18): the Surveyor leads the choice in its own right, and the deed-opened starts
-  sit apart from it as variations. Four starts since 2026-10-19: the Surveyor, then apart from it the
-  Salvager, the Homesteader and the Varran settler, each ???? until its deed (Profile & saves probe 32).
+  sit apart from it as variations. Five starts since 2026-10-19: the Surveyor, then apart from it the
+  Salvager, the Homesteader, the Varran settler and the Archaeologist, each ???? until its deed or, the
+  Archaeologist, both of hers (Profile & saves probes 32 and 34).
 - **The prop steps aside for every menu over it** (Hunter, 2026-10-18: "the minimal, no
   background text works for the top title and main menu bc they have a consistent sand or sky
   background... we should always move the prop"). The title and the main menu's words stand
@@ -79,7 +80,8 @@ behind them, and since 2026-10-18 are bigger and roomier still, below.)
   left, as the origin choice does; the question slides it before the origins come up.
 - **Each origin shows one compact piece,** not its kit scattered: the Surveyor its deck as
   put together, the Salvager its board, the Homesteader its planter, the Varran settler his rig
-  (2026-10-19), its sail raised as a sail on show always is, its boom swung a little off. Under the piece, on the
+  (2026-10-19), its sail raised as a sail on show always is, its boom swung a little off, and the
+  Archaeologist her dig camp of three. Under the piece, on the
   right, its gear is listed, each thing and how many, in bare words with no background
   behind them (Hunter, 2026-10-18: no translucent panel), big enough and edged enough to
   read on their own over bright sand.
@@ -236,6 +238,7 @@ resets"): `unlockall` opens every start, and deeds can be granted or cleared to 
   | board | remade | one board by a plate and a bare piece; now a board of every make, charged, by a deck of two resting on the sand |
   | boards | cut | merged into board |
   | vent | new | across the rift from its live vent, facing it, a minute before it bursts in clear daylight, a charged board at your feet |
+  | dig | new (2026-10-19) | by a big dune's ruin a storm has just laid bare, the slip face behind it, a scoop in your hands and a sieve carried: dune archaeology's dig, to be tried |
 - **Probes:** Dev probe 6 (the creative menu) and dev probe 1 (every scenario starts and lays what it
   stages without an error).
 
@@ -244,7 +247,7 @@ is a menu of its own, reached from the main menu and the system menu.
 
 **Built** (2026-10-18, `game/ui/deeds_grid.gd`), after Hunter's "show relations and a hierarchy":
 Deeds stands under New game on the main menu and under Options in the system menu. It opens a tree
-of every deed under how many show done ("16 of 37 deeds"), with Back: a branch or two for each family
+of every deed under how many show done ("16 of 40 deeds"), with Back: a branch or two for each family
 (Board, Wind, Weather, Camp, Farming, Ruins, Scrap, Signals, Far, Story, Nomad since round two,
 2026-10-19, named down the left), each deed a step right of the furthest it waits on, and a line across
 from each to what it opens, brighter once that's open. It's laid out as every menu is where it opens:

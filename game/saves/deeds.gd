@@ -14,6 +14,9 @@ const ALL := &"*"
 const HOME := [&"console", &"condenser", &"battery"]
 ## An anomaly's tells, each noticed where it's shown to you.
 const TELLS := [&"compass", &"crackle", &"load"]
+## What the archaeology setup asks on one deck: a Console with a ground radar
+## fitted, a scoop and a sieve.
+const SETUP := [&"ground_radar", &"sand_scoop", &"sieve"]
 ## Each deed in the order the grid lays them out, a family a branch or two:
 ##   name; asks, what it asks, its goal in place of %s; family; after, the
 ##   deeds it waits on; icon, its card's thing (ItemIcons), or a mark drawn
@@ -65,6 +68,13 @@ const TABLE := {
 		"after": [&"ages"], "icon": &"ruin"},
 	&"storm_chaser": {"name": "Storm Chaser", "asks": "Reach %s freshly bared sites in one storm", "family": &"ruins",
 		"after": [&"bared"], "icon": &"ruin", "goal": "deed_bared_sites", "unit": "sites", "step": 1.0},
+	&"dune_reader": {"name": "Dune Reader", "asks": "Find a ruin buried in a dune's own lee", "family": &"ruins",
+		"after": [&"storm_chaser"], "icon": &"dune"},
+	&"dig_setup": {"name": "Field Kit", "asks": "A Console with a ground radar, a scoop and a sieve on one deck",
+		"family": &"ruins", "after": [&"dune_reader"], "icon": &"sieve", "goal": "setup", "unit": "on one deck",
+		"step": 1.0},
+	&"dune_dig": {"name": "Spadework", "asks": "Dig a dune's ruin out yourself", "family": &"ruins",
+		"after": [&"dune_reader"], "icon": &"sand_scoop"},
 	&"first_cut": {"name": "First Cut", "asks": "Cut a wreck's seam through", "family": &"scrap", "icon": &"cutter"},
 	&"stripped": {"name": "Stripped", "asks": "Free every module on one wreck", "family": &"scrap",
 		"after": [&"first_cut"], "icon": &"survival_kit"},
@@ -175,6 +185,8 @@ static func goal(id: StringName, tuning: Tuning) -> float:
 			return HOME.size()
 		"tells":
 			return TELLS.size()
+		"setup":
+			return SETUP.size()
 		"gods":
 			return Gods.ROSTER.size()
 		"wrecks":
@@ -237,7 +249,7 @@ static func progress(profile: Node, id: StringName, tuning: Tuning) -> String:
 static func opens(id: StringName) -> Array[Kit]:
 	var out: Array[Kit] = []
 	for kit in Kit.origins():
-		if kit.unlock == id:
+		if kit.unlocks().has(String(id)):
 			out.append(kit)
 	return out
 

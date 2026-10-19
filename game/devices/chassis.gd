@@ -263,7 +263,7 @@ func join(piece: Chassis, ring: Socket, k := -1) -> void:
 		if node is CollisionShape3D:
 			shapes.append(node)
 	_rise_clear_of_sand(shapes)
-	_deeds()
+	deeds()
 
 
 ## Takes an outer piece off again, with all that's its own and whatever is
@@ -673,18 +673,18 @@ func _move_house() -> void:
 
 func mount(other: Device, socket: Socket) -> void:
 	super(other, socket)
-	_deeds()
+	deeds()
 
 
 func fit(part: Part, socket: Socket) -> void:
 	super(part, socket)
 	if socket.stuck():
-		_deeds()
+		deeds()
 
 
-## The deck's deeds as it grows: enough pieces in one, and a home's three
-## on it.
-func _deeds() -> void:
+## The deck's deeds as it grows: enough pieces in one, a home's three on
+## it, and the archaeology setup's, its ground radar fitted to a Console on it.
+func deeds() -> void:
 	if world == null or not world.counts_deeds:
 		return
 	Deeds.measure(world, &"deck_pieces", pieces().size())
@@ -692,7 +692,10 @@ func _deeds() -> void:
 	for socket in stuck():
 		var thing: Node = socket.part if socket.part != null else socket.mounted
 		on.append(thing.get_meta(&"catalog", &""))
+		if thing is Console and (thing as Console).stats().get("ground_radar", 0) > 0:
+			on.append(&"ground_radar")
 	Deeds.measure(world, &"deck_home", Deeds.HOME.filter(func(id: StringName) -> bool: return on.has(id)).size())
+	Deeds.measure(world, &"dig_setup", Deeds.SETUP.filter(func(id: StringName) -> bool: return on.has(id)).size())
 
 
 func dismount(socket: Socket) -> Device:

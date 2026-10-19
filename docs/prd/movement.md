@@ -697,7 +697,7 @@ as built, unchanged.
 **Built (2026-10-19): stage 1 afloat, the Varran settler's rig** (`varran_kit.tres`,
 `game/player/player.gd`, `probes/sail/13`). A rig with no runners and no keel, floating, towing you on
 the board, your dug edge its only grip across the wind: the Varran rides his board as its keel
-([Profile & saves](profile-and-saves.md#starts-on-the-chassis-and-two-new-kits-agreed-2026-10-18-spec-the-starts-and-the-varran-settler-built-the-archaeologist-not)).
+([Profile & saves](profile-and-saves.md#starts-on-the-chassis-and-two-new-kits-agreed-2026-10-18-spec-built)).
 - **It flies as a kite does, on two lines.** On its sheet alone a floating rig hangs off its boom's
   end like a flag and only drags you downwind; nothing holds the sail at an angle to the wind. So its
   bow line goes to your waist too, from a hook on one of its front corners' outer rings: hung from

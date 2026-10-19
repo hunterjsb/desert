@@ -219,7 +219,7 @@ waits." The session balances the first three kits.
 ## The Varran settler's personal shield (built, 2026-10-19)
 
 The chassis spec's "small shield carried with its own battery, raised around himself in storms"
-([Profile & saves](profile-and-saves.md#starts-on-the-chassis-and-two-new-kits-agreed-2026-10-18-spec-the-starts-and-the-varran-settler-built-the-archaeologist-not)),
+([Profile & saves](profile-and-saves.md#starts-on-the-chassis-and-two-new-kits-agreed-2026-10-18-spec-built)),
 and the seam the chassis rework left for it: a shield off a deck goes dark, so this one keeps a
 battery of its own, as the radio and the heat cutter do. Not a built-in cell and not a pocketable
 flag, both rejected above: a battery slot, and the suit's rule that a device you carry works on you.
