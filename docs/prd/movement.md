@@ -1260,3 +1260,25 @@ at or below 1,500 N, none parts and no wipeout is emitted. The normal powered ph
 4.2 seconds slack and retension while riding. Two official focused sailing-14 runs pass
 (13 seconds each); the direct measurement replay also passes. No physics or presentation
 source changed.
+
+## Mooring-stake teaching for unassisted departure (agreed, 2026-10-19)
+
+Sanddune's minimum unassisted Surveyor departure needs the existing mooring actions to be
+findable. First holding a stake with a live attached line teaches the two meanings of Use:
+look out past nearby gear to tie it at the waist and tow; return it to the hand, aim at
+nearby sand and Use to drive it again. Dropping a stake leaves it loose, not anchored.
+This uses `UIRoot.teach` once per profile, with live action bindings. A bare stake, a
+not-yet-held pickup and menu/showpiece gear do not trigger it. No handling, load or binding
+changes follow from the lesson.
+
+The lesson is a profile how-to, not a new feat: existing towing outcomes keep their existing
+deed paths (`Ropes._towing`, including planters in tow, and the sail-at-waist deed). No new
+deed is awarded for reading instructions.
+
+As built: `Stake._physics_process` checks that the player's hands have finished taking the
+stake and that it still carries a live rope before calling the profile how-to. It waits
+while a menu holds input. Headless import completed on the pinned Godot version; no new
+probe or gameplay behavior run was performed for this teaching-only change. A later
+1280×720 capture showed the existing mooring stake held and both instruction lines
+fitting at the top of the view. The external helper hit a teardown-only script error
+after saving the image; its call was corrected without changing game code.

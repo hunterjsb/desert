@@ -18,6 +18,9 @@ const RING := Vector3(0.0, 0.4, 0.0)
 const AIMED := 5.0
 const NOT_SAND := "not sand"
 const OUT_OF_REACH := "out of reach"
+const HOW_TO := "mooring_stake"
+const HOW_TO_SAYS := "With this mooring stake in hand, look out past nearby gear and {interact} to tie it at your waist and tow.\n" \
+	+ "To anchor, return it to your hand, aim at nearby sand and {interact}. Dropping it leaves it loose."
 
 ## Newtons of sustained pull it holds.
 var holding := 2500.0
@@ -29,6 +32,7 @@ var driven := false
 var pulled := false
 ## Where a bare line ties on (the look-test's); a line's end snaps into the socket.
 var ring: RopeEnd
+var _taught := false
 
 
 ## Called once a tick with the net pull of its lines; true when it gives way.
@@ -88,6 +92,13 @@ func _physics_process(delta: float) -> void:
 	# Let go in the open, it's lying loose.
 	if driven and not freeze:
 		driven = false
+	if not _taught and world != null and is_instance_valid(world.player) \
+			and Controls.ui != null and Controls.playing():
+		var hands := world.player.hands
+		# The mooring's two uses matter only once its live end is in your hand.
+		if hands.held == self and hands.phase == Hands.Phase.HELD and world.player.waist.carries_line(self):
+			_taught = true
+			Controls.ui.teach(HOW_TO, HOW_TO_SAYS)
 
 
 ## Light and often dragged: it never sleeps through a pull.
