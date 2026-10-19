@@ -1055,6 +1055,15 @@ static var _current: Tuning
 ## two frictions, so the sand itself is this squared, against a body's 1.0.
 @export var sand_friction: float = 0.5
 
+@export_group("Wind on faces")
+## A face with another just upwind square across it catches this share of
+## what it would alone: the one in front took the wind (Faces).
+@export var face_shaded: float = 0.1
+## A frame open into the wind with its back closed, and every side round
+## about, catches this many times what its back would flat: a parachute's
+## cup against a flat plate's drag.
+@export var face_cup: float = 1.3
+
 
 ## One shared instance, held here so probe overrides can't be dropped by the
 ## resource cache between being set and being read.

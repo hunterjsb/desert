@@ -402,6 +402,8 @@ static func part(id: StringName) -> Part:
 	else:
 		# Standing out from its socket along +Z.
 		look = _add_box(made, size, Vector3(0.0, 0.0, size.z * 0.5), spec.color, Dress.part(id, size))
+	if spec.kind == &"face":
+		made.add_child(Faces.cloth(size))
 	Paint.show_age(made, Paint.age_of(&"", 1.0))
 	if made is Battery:
 		# Found full, for now; salvage will find them at any charge.
