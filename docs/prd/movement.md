@@ -1099,7 +1099,7 @@ The sleep session (2026-10-17) adds one. It is quoted on both sides and left sta
 - **Rope motion:** the waist-to-rig rope looks "glitchy and nauseating ... blurry and jumping around erratically" when looking down while sailing. Make its presentation follow the displayed camera and attachment positions smoothly; preserve the physical simulation and real tension.
 - **Several waist lines (design open):** "not so sure about having three ropes tied to your waist"; explain and manage which line is tied, untied and reeled. Measure both the resultant pull and opposing loads on the player before choosing a safe-force limit or release behavior. Do not silently remove the bridle or invent a force cap.
 
-**Built follow-up (2026-10-19; visual capture pending).** The Varran's two physical bow hooks
+**Built follow-up (2026-10-19; rendered checks passed).** The Varran's two physical bow hooks
 were seated on its chassis, including through riding, reeling and saving. The floating hook
 was the sheet's drawn inboard deck ring: every mast projected it under the fully hauled boom,
 2.33 m behind the mast, beyond the compact Varran's deck. It now rests on the nearest actual
@@ -1115,7 +1115,12 @@ offset as the camera. Slack chain links also interpolate for drawing, then follo
 endpoints; simulation points and forces are untouched. Rope probe 17 checks the relative
 position through five fractions of a frame and confirms drawing leaves simulation positions
 unchanged. The existing rendered-ring/length/sag, origin-shift, towing and sheet-hauling probes
-pass. Actual GPU capture remains required before visual acceptance.
+pass. A loaded Varran recording at about 6.3 m/s and 190 N, with all three lines retained,
+shows coherent near-waist lines and the seated ring through a motor-assisted turn.
+The recorded cadence was about 60–61 FPS with variable frame intervals, not a 144 Hz test;
+rope probe 17 separately checks five interpolation fractions. The render-pass ring
+refresh also removes a measured 102 mm tick lag: over 210 rendered frames its anchor
+error stayed within 0.016 mm, with zero drawn inboard endpoint error.
 
 **Powered-board measurement before the approved redesign.** With the actual Varran board in still air,
 its stationary rig's three lines extended to 100 m and carrying zero tension, holding forward
@@ -1180,4 +1185,6 @@ old side. Sailing 13 exercises that sequence without moving an attachment; the f
 teach it. The undug wind-only comparison and movement's dug-edge probe explicitly disable
 motor force to isolate the wind's sideways shove from the newly permitted powered steering.
 Sailing 14 retains the no-catapult and at-most-rope-rating checks when racing past the rig.
-Visual and sound acceptance still requires a GPU capture and listening on the desktop.
+Rendered loaded sailing and motor-assisted turning checks passed with all three lines.
+The changed motor hum has not received a separate listening-quality acceptance;
+its sputter follows the tested overload pulse.

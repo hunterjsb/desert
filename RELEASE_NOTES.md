@@ -1,7 +1,6 @@
-## 0.2.1-alpha “Sailboat” — release candidate
+## 0.2.1-alpha “Sailboat”
 
-This patch gathers the current sand and Nomad gear work with playtest fixes.
-Cross-platform publication is pending verification of the combined candidate.
+Richer sand and trails, recoverable Nomad sailing gear, and fixes from sailing playtests.
 
 - More depth and shade in dune sand and nearby ripples.
 - Sand trails gain shaped depressions and rims that flatten the surrounding ripples.

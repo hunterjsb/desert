@@ -1040,3 +1040,15 @@ night, the headlamp, storm, a walked track, and close ripples. The look-test can
 ## Playtest follow-up (Hunter, 2026-10-19; agreed, in progress)
 
 Hunter: "sand looks great ... our best iteration yet" and "we need our sand trails to look as good as our sand." The accepted sand appearance is the baseline. Improve walking trails and board/skid gouges with soft compressed floors, loose raised rims and nearby relief that belongs to the rippled surface. Keep marks stable while moving and through origin shifts, preserve their lifetime and physical ground, and measure the extra GPU cost against the accepted sand build. Prefer a bounded nearby shader treatment within the existing visual budget before expanding the track map or adding a separate mesh patch.
+
+
+**Trail follow-up built and rendered (2026-10-19).** Signed compressed floors and loose
+rims use bounded near relief and local wall horizons. Deep board gouges get extra depth;
+boots and shallow hover wakes keep their own pressure scale. The physical ground, mark
+lifetimes and track-map memory are unchanged. Filled bare-sand comparison regions match
+the accepted sand build exactly. The direct combined shader comparison against `14cb3d0`
+measured paired median increments of 0.204 ms in daylight and 0.365 ms in low sun at
+1080p on the same test renderer (nine alternated rounds, 60 frames, 30 settling frames).
+Those representative views remain below the roughly 0.8 ms budget; individual rounds
+are noisier. These are direct measurements, not a sum of different camera cases.
+See [Tracks](prd/world-and-terrain.md) for the full profile and measured checks.
