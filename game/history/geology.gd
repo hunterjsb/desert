@@ -35,7 +35,7 @@ const BREATH := Vector3(170.0, 410.0, 0.2)
 ## standing 6 to 10 km in a breeze (defaults).
 const BURST_SLOT := 1200.0
 const BURST_ODDS := 0.7
-const BURST_SHAPE := Vector3(10.0, 40.0, 150.0)
+const BURST_SHAPE := Vector3(10.0, 90.0, 220.0)
 const BURST_SIZE := Vector2(25.0, 170.0)
 ## The share of what it carries that's ash: seeping, and at a burst's peak.
 const ASH := Vector2(0.2, 0.85)

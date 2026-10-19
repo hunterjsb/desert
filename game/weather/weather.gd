@@ -29,6 +29,8 @@ const STORM_TINT := Color(0.95, 0.8, 0.62)
 const STORM_FOG := Vector2(50.0, 400.0)
 ## Stood in a plume's dust, the light dims by this share of a storm's.
 const PLUME_SHADE := 0.5
+## The haze thins with height over this many m (the storm pass's).
+const PLUME_HAZE_HEIGHT := 700.0
 ## Grains in the air are lit from every side and throw the sun forward, so they
 ## show half again brighter than the same sand lying on the ground.
 const GRAIN_GLOW := 1.5
@@ -92,6 +94,11 @@ var _forecast_due := 0.0
 var _shelters: Array[Node] = []
 var _shelters_seen := -1
 var _meter: EyeMeter
+## The plumes' drawing, and the light it's handed: the sun's way and light, the
+## sky's, the ring's, the haze's colour and its fog, and Tu's way and shine.
+var plume_draw: PlumeDraw
+var _plume_light: Array[Vector3] = []
+var _in_plume := 0.0
 
 
 func setup(world: World) -> void:
@@ -116,7 +123,10 @@ func setup(world: World) -> void:
 	eye = Eye.new(_tuning)
 	_meter = EyeMeter.new()
 	_meter.on_reading = eye.see
-	var effects: Array[CompositorEffect] = [_meter]
+	# The plumes over the storm pass, before the eye takes in the frame.
+	plume_draw = PlumeDraw.new()
+	var effects: Array[CompositorEffect] = [plume_draw, _meter]
+	RenderingServer.frame_pre_draw.connect(_hand_plumes)
 	world.player.camera.compositor = Compositor.new()
 	world.player.camera.compositor.compositor_effects = effects
 	face.setup(world, field, map)
@@ -278,10 +288,48 @@ func _physics_process(delta: float) -> void:
 
 
 func _exit_tree() -> void:
+	if RenderingServer.frame_pre_draw.is_connected(_hand_plumes):
+		RenderingServer.frame_pre_draw.disconnect(_hand_plumes)
 	if map != null:
 		map.finish()
 	if wind_map != null:
 		wind_map.finish()
+
+
+## Just before each frame draws, after every plume has worked itself out: the
+## light, the storm map and the plumes in sight, to PlumeDraw.
+func _hand_plumes() -> void:
+	var drawn: Array[Plume] = []
+	for plume in plumes:
+		if plume.visible:
+			drawn.append(plume)
+	var values := face.uniforms
+	if drawn.is_empty() or _plume_light.size() < 8 or values.is_empty():
+		plume_draw.show(PackedFloat32Array(), 0, [])
+		return
+	var l := _plume_light
+	var albedo := _linear(_tuning.wall_dust_color)
+	var shift: Vector2 = values.storm_map_shift
+	var air: Vector2 = values.storm_air
+	var frame := PackedFloat32Array([
+		l[0].x, l[0].y, l[0].z, _tuning.wall_glow,
+		l[1].x, l[1].y, l[1].z, PLUME_HAZE_HEIGHT,
+		l[2].x, l[2].y, l[2].z, 0.0,
+		l[3].x, l[3].y, l[3].z, 0.0,
+		l[6].x, l[6].y, l[6].z, 0.0,
+		l[7].x, l[7].y, l[7].z, 0.0,
+		albedo.x, albedo.y, albedo.z, 0.0,
+		l[4].x, l[4].y, l[4].z, 0.0,
+		l[5].x, l[5].y, l[5].z, 0.0,
+		_tuning.plume_fade_m.x, _tuning.plume_fade_m.y, _tuning.skyline_m, Plume.FAR_FALL,
+		_tuning.wall_fade_begin, _tuning.wall_fade_end, _tuning.wall_height, _tuning.wall_roof_soft,
+		values.storm_map_blend, values.storm_map_ready, values.storm_map_extent, 0.0,
+		shift.x, shift.y, air.x, air.y,
+		_world.time, _in_plume, 0.0, 0.0])
+	for plume in drawn:
+		frame.append_array(plume.block)
+	var noise: Texture3D = face.material.get_shader_parameter("storm_noise")
+	plume_draw.show(frame, drawn.size(), [map.texture_a.get_rid(), map.texture_b.get_rid(), noise.get_rid()])
 
 
 ## Every drawn frame, after the world has moved and shifted.
@@ -401,6 +449,7 @@ func _show(delta: float) -> void:
 		if plume.visible and plume.air > in_plume:
 			in_plume = plume.air
 			plume_seen = plume.seen_m
+	_in_plume = in_plume
 	var dim := lerpf(1.0, 1.0 - _tuning.storm_darkness, maxf(seen_shade, in_plume * PLUME_SHADE))
 	var sky_left := 1.0 - 0.55 * coverage
 	var overhead := Vector3(sun.x * 0.15, 1.0, sun.z * 0.15).normalized()
@@ -458,11 +507,10 @@ func _show(delta: float) -> void:
 	# The light round the camera, which a shell's glass catches.
 	face.set_light("shell_light", _linear(_environment.ambient_light_color) * _environment.ambient_light_energy)
 	var tu := day.tu_direction(t, moon.latitude, moon.longitude)
-	for plume in plumes:
-		# A column faces half the sky, as a wall does.
-		plume.light(sun, sun_light, sky_light * 0.6, ring_light, _linear(haze_color) * haze_light,
-			Vector3(_environment.fog_depth_begin, _environment.fog_depth_end, _environment.fog_density),
-			tu, _linear(SkyView.TU_SHINE_COLOR) * _sun_energy * tu_light)
+	# A column faces half the sky, as a wall does.
+	_plume_light = [sun, sun_light, sky_light * 0.6, ring_light, _linear(haze_color) * haze_light,
+		Vector3(_environment.fog_depth_begin, _environment.fog_depth_end, _environment.fog_density),
+		tu, _linear(SkyView.TU_SHINE_COLOR) * _sun_energy * tu_light]
 
 	# Outside a bubble the dust is the storm's own: it rides the open air's
 	# wind, slowed in a lee, and thickens with the storm, and the bubble only

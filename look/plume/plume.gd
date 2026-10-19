@@ -124,7 +124,8 @@ func _moment(shot: Array, after := 600.0) -> Dictionary:
 		var turns := range(8) if far and moment == "burst" else [0]
 		var b := geology.next_burst(source, after)
 		while b < span:
-			var t := b + (240.0 if moment == "over" else (360.0 if far else 180.0))
+			# Levelled and spreading its umbrella; far off, further on still.
+			var t := b + (240.0 if moment == "over" else (420.0 if far else 300.0))
 			var lit: bool = daylight.call(t) or far and _local(t, source) > 0.28 and _local(t, source) < 0.7
 			var top := _top(source, root, t) if lit else root
 			for turn: int in turns:
@@ -266,8 +267,8 @@ func _shoot(name: String, found: Dictionary, shot: Array, out: String, keep := t
 		return false
 	get_viewport().get_texture().get_image().save_png(out.path_join(name + ".png"))
 	var cost := await _time()
-	_costs.append("%s: GPU %.2f ms a frame with them, which adds %.2f; their main thread %.3f ms a frame" % [
-		name, cost.x, cost.y, cost.z])
+	_costs.append("%s: GPU %.2f ms a frame with them, which adds %.2f, their drawing's own %.2f; their main thread %.3f ms a frame" % [
+		name, cost.x, cost.y, cost.w, cost.z])
 	world.tuning.eye_adapts = false
 	print("plume: %s from %.1f km; drawn: %s" % [name, Vector2(root.x - eye.x, root.z - eye.z).length() / 1000.0,
 		", ".join(drawn)])
@@ -308,14 +309,16 @@ func _stand(eye2: Vector2, t: float, source: Dictionary) -> void:
 
 ## GPU ms a frame with the plumes drawn, and what they add over the same view
 ## without: the median of the turns' differences, each turn a window drawn and
-## one not, side by side, since the GPU's clock wanders; and their own
-## main-thread ms a frame while drawn.
-func _time() -> Vector3:
+## one not, side by side, since the GPU's clock wanders; their own
+## main-thread ms a frame while drawn; and their drawing's own GPU ms, as its
+## timestamps read it, the median frame's.
+func _time() -> Vector4:
 	var vp := get_viewport().get_viewport_rid()
 	var with := PackedFloat32Array()
 	var adds := PackedFloat32Array()
 	var cpu := 0.0
 	var frames := 0
+	var own := PackedFloat32Array()
 	for turn in TURNS:
 		var sums := Vector2.ZERO
 		for drawn in [true, false]:
@@ -333,6 +336,7 @@ func _time() -> Vector3:
 					for plume in world.weather.plumes:
 						cpu += plume.frame_ms
 					frames += 1
+					own.append(world.weather.plume_draw.gpu_ms)
 				else:
 					sums.y += gpu
 		with.append(sums.x / TIMED)
@@ -341,7 +345,8 @@ func _time() -> Vector3:
 		plume.process_mode = Node.PROCESS_MODE_INHERIT
 	with.sort()
 	adds.sort()
-	return Vector3(with[with.size() / 2], adds[adds.size() / 2], cpu / frames)
+	own.sort()
+	return Vector4(with[with.size() / 2], adds[adds.size() / 2], cpu / frames, own[own.size() / 2])
 
 
 func _look(eye: Vector3, target: Vector3) -> void:

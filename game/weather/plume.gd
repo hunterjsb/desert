@@ -1,5 +1,5 @@
 class_name Plume
-extends MeshInstance3D
+extends Node3D
 ## A plume as it looks from where you stand: a live vent's, or a gas pocket's
 ## blowing out. The vents let out mostly gas, hot and invisible, and what shows
 ## is the sand and dust it sweeps up from round the mouth and lifts: a vast
@@ -10,11 +10,10 @@ extends MeshInstance3D
 ## drift away, so its tail curls as the wind turns. Here, each frame, its
 ## streakline (where what left at each age is now, how wide and how much dust
 ## it carries) is worked out from the time, the source and the weather alone;
-## the shader marches the column round it as the storm walls are marched,
+## PlumeDraw marches the column round it as the storm walls are marched,
 ## billowed and lit as they are. Nothing in the world reads it. Storms between
 ## hide what's under their roofs, and what towers over them shows.
 
-const SHADER := preload("res://game/weather/plume.gdshader")
 ## How many plumes can be drawn at once, the nearest sources first.
 const AT_ONCE := 3
 ## The streakline: this many points, the oldest this many s, crowded toward
@@ -50,6 +49,11 @@ const DUSTY := 12.0
 ## round the mouth as it rises, this share of it there and all by this many s.
 const FALLS := Vector2(150.0, 0.35)
 const GATHERS := Vector2(0.5, 40.0)
+## Its width swells and narrows along it by up to this share seeping, and a
+## burst's by the second: what left at stronger and weaker moments, riding up
+## it, over these periods, s.
+const WOBBLE := Vector2(0.15, 0.4)
+const WOBBLE_S := Vector2(70.0, 29.0)
 ## A burst's ash, its faint trace: how much of a burst's core it darkens at
 ## most, falling out by e over this many s.
 const ASHEN := Vector2(0.3, 90.0)
@@ -70,14 +74,12 @@ const JUMP := 5.0
 ## Storms between you and it past the storm map, and their shadow on it, are
 ## read at these ages, s, one read every fourth frame.
 const READS := [0.0, 40.0, 150.0, 400.0]
-## Past this the column is drawn nearer and smaller, m: the camera's far
-## plane. Past the skyline's reach the haze takes it as if it were only as far
-## as distance to this power says, more slowly than the air between would.
-const NEAR_REACH := 4200.0
+## Past the skyline's reach the haze takes it as if it were only as far as
+## distance to this power says, more slowly than the air between would.
 const FAR_FALL := 0.3
 ## Its billows stand out past its width by this share of it at most (the
 ## shader's).
-const BILLOWS := 0.39
+const BILLOWS := 0.5
 ## Stood in, its dust closes in from this share of its width outside its edge
 ## to all of it this share inside, all round you once this many m of it would
 ## hide what's behind; and you see through it as through a storm's (3 over
@@ -98,7 +100,6 @@ const SEEN_STEPS := Vector3i(80, 1500, 48)
 const FAN := 260.0
 const FAN_SHOWN := 3200.0
 
-var material := ShaderMaterial.new()
 ## What it's drawing, a live vent or a pocket from Geology, or {}; where it
 ## rises on the ground, world metres; and which way a vent's slot runs there,
 ## world x and z.
@@ -138,18 +139,18 @@ var _air_read_at := -INF
 var _frames := 0
 var _distance := 0.0
 var _last_t := -INF
-## The line or the reads have changed since they were last handed the shader.
+## The line or the reads have changed since they were last packed.
 var _changed := true
-## The column as the shader reads it: each point's place and width; its dust
-## a metre, depth for its width, veil and sun; its ash; and its bounds.
+## The column as PlumeDraw reads it (its EACH vec4s): its root in engine
+## metres, then each point's place and width; its dust a metre, depth for its
+## width, veil and sun; and its ash and whether the stretch on is drawn.
+var block := PackedFloat32Array()
 var _shape := PackedVector4Array()
 var _dust := PackedVector4Array()
 var _ashen := PackedVector2Array()
+## Its bounds from the root, m.
 var _lo := Vector3.ZERO
 var _hi := Vector3.ZERO
-## The storm map's textures as last handed the shader.
-var _map_a: Texture2D
-var _map_b: Texture2D
 ## What the sand was last told of this plume's ash, if it's this plume's.
 var _laid_ash := Vector3.INF
 ## The storm map's first moment when the storms were last read in full.
@@ -163,28 +164,11 @@ func setup(world: World, weather: Weather) -> void:
 	_world = world
 	_weather = weather
 	_tuning = world.tuning
-	material.shader = SHADER
-	# After the storm pass, which overwrites the scene, and before the dust round you.
-	material.render_priority = -50
-	material.set_shader_parameter("storm_noise", weather.face.material.get_shader_parameter("storm_noise"))
-	material.set_shader_parameter("storm_height", _tuning.wall_height)
-	material.set_shader_parameter("storm_roof_soft", _tuning.wall_roof_soft)
-	material.set_shader_parameter("dust_albedo", _linear(_tuning.wall_dust_color))
-	material.set_shader_parameter("storm_glow", _tuning.wall_glow)
-	material.set_shader_parameter("far_fade", Vector2(_tuning.wall_fade_begin, _tuning.wall_fade_end))
-	material.set_shader_parameter("reach", Vector3(NEAR_REACH, _tuning.plume_fade_m.x, _tuning.plume_fade_m.y))
-	material.set_shader_parameter("landmark", Vector2(_tuning.skyline_m, FAR_FALL))
-	var box := BoxMesh.new()
-	box.size = Vector3.ONE
-	mesh = box
-	# Placed in the shader, so never culled.
-	custom_aabb = AABB(Vector3.ONE * -1.0e5, Vector3.ONE * 2.0e5)
-	material_override = material
-	cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	line.resize(POINTS)
 	matter.resize(POINTS)
 	seen.resize(POINTS)
 	seen.fill(Vector4(1.0, 1.0, 0.0, 0.0))
+	block.resize(PlumeDraw.EACH * 4)
 	_shape.resize(COLUMN.size())
 	_dust.resize(COLUMN.size())
 	_ashen.resize(COLUMN.size())
@@ -216,21 +200,6 @@ static func assign(plumes: Array[Plume], world: World) -> void:
 	for each: Dictionary in wanted:
 		if not plumes.any(func(p: Plume) -> bool: return p.source.get("id") == each.id) and not free.is_empty():
 			free.pop_front().source = each
-
-
-## Each tick, from Weather, as it lights the storm walls: the sun's way and
-## light, the sky's, the eclipse ring's, the haze's colour and its depth fog
-## (begin, end, strength), and Tu's way and its shine.
-func light(sun: Vector3, sun_light: Vector3, sky_light: Vector3, ring_light: Vector3, haze_color: Vector3,
-		haze: Vector3, tu: Vector3, tu_light: Vector3) -> void:
-	material.set_shader_parameter("tu_dir", tu)
-	material.set_shader_parameter("tu_light", tu_light)
-	material.set_shader_parameter("sun_dir", sun)
-	material.set_shader_parameter("sun_light", sun_light)
-	material.set_shader_parameter("sky_light", sky_light)
-	material.set_shader_parameter("ring_light", ring_light)
-	material.set_shader_parameter("haze_color", haze_color)
-	material.set_shader_parameter("haze", haze)
 
 
 func _process(_delta: float) -> void:
@@ -328,6 +297,10 @@ func _streak(t: float, which := PackedInt32Array()) -> void:
 		var age := OLDEST * pow(float(k) / (POINTS - 1), CROWD)
 		var v := venting if k == 0 else geology.venting(source, t - age)
 		var parcel := parcel_at(field, _tuning, Vector2(root.x, root.z), t, age, v.x, _stable, g, now)
+		var left := t - age
+		var phase := float(source.seed & 0xffff) * 0.001
+		var swell := 0.6 * sin(TAU * left / WOBBLE_S.x + phase) + 0.4 * sin(TAU * left / WOBBLE_S.y + phase * 2.3)
+		parcel[0].w *= 1.0 + lerpf(WOBBLE.x, WOBBLE.y, clampf((v.x - 1.0) / 10.0, 0.0, 1.0)) * swell
 		var deep := parcel[1].x
 		var thick := THICK.z * v.x * pow(THICK.x * THICK.y / (deep * parcel[1].y), THINS) \
 			* (DUSTY if source.state == Geology.POCKET else 1.0) \
@@ -532,24 +505,9 @@ func _around() -> void:
 
 func _upload() -> void:
 	var at := Vector3(_world.engine_x(root.x), root.y, _world.engine_z(root.z))
-	material.set_shader_parameter("root", at)
-	var map := _weather.map
-	var values := _weather.face.uniforms
-	if values.is_empty():
-		return
-	var fresh := map.texture_a != _map_a or map.texture_b != _map_b
-	if fresh:
-		_map_a = map.texture_a
-		_map_b = map.texture_b
-		material.set_shader_parameter("storm_map_a", _map_a)
-		material.set_shader_parameter("storm_map_b", _map_b)
-		material.set_shader_parameter("storm_map_extent", values.storm_map_extent)
-		material.set_shader_parameter("storm_map_cells", values.storm_map_cells)
-	# They move a fifth of a metre a frame: every other frame will do.
-	if fresh or _frames % 2 == 0:
-		for key: String in ["storm_map_blend", "storm_map_shift", "storm_air", "storm_map_ready"]:
-			material.set_shader_parameter(key, values[key])
-		material.set_shader_parameter("storm_time", _world.time)
+	block[0] = at.x
+	block[1] = at.y
+	block[2] = at.z
 	if not _changed:
 		return
 	_changed = false
@@ -568,13 +526,18 @@ func _upload() -> void:
 		var out := Vector3(p.w, p.w * squash, p.w) * (1.0 + BILLOWS)
 		lo = lo.min(Vector3(p.x, p.y, p.z) - out)
 		hi = hi.max(Vector3(p.x, p.y, p.z) + out)
+		for c in 4:
+			block[(1 + j) * 4 + c] = p[c]
+			block[(1 + PlumeDraw.POINTS + j) * 4 + c] = _dust[j][c]
+		block[(1 + 2 * PlumeDraw.POINTS + j) * 4] = _ashen[j].x
+		block[(1 + 2 * PlumeDraw.POINTS + j) * 4 + 1] = _ashen[j].y
 	_lo = lo
 	_hi = hi
-	material.set_shader_parameter("shape", _shape)
-	material.set_shader_parameter("dust", _dust)
-	material.set_shader_parameter("ashen", _ashen)
-	material.set_shader_parameter("box_lo", _lo)
-	material.set_shader_parameter("box_hi", _hi)
+
+
+## Where it's drawn from, engine metres: its root as last packed.
+func drawn() -> Vector3:
+	return Vector3(block[0], block[1], block[2])
 
 
 ## The ash the vent has laid on the sand round its mouth and down the wind,

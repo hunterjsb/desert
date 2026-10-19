@@ -40,7 +40,7 @@ func run() -> void:
 
 	world.shift_origin(Vector2i(3, -2))
 	await get_tree().process_frame
-	var drawn: Vector3 = plume.material.get_shader_parameter("root")
+	var drawn := plume.drawn()
 	check(plume.root == root and drawn.is_equal_approx(Vector3(world.engine_x(root.x), root.y, world.engine_z(root.z))),
 		"across an origin shift it stays where it was")
 
