@@ -93,6 +93,9 @@ func _thrown(flat: Dictionary, how: StringName) -> Dictionary:
 	seen.thrown = ride.thrown
 	var tumble := player.tumble
 	if tumble == null:
+		hold([])
+		if wall != null:
+			wall.free()
 		return seen
 	hold(["move_forward"])
 	await simulate(6.0, func() -> void:
