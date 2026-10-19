@@ -71,4 +71,11 @@ the game:
 | scoop.wav | a stroke of the scoop | made here: a blade through packed sand | CC0 | about -31 | -14 |
 | seal.wav | sealant over a breach | made here: a spray and the plop of it setting | CC0 | about -30 | -14 |
 
+A deed's sound is made here too, numpy only, by `make_deed_sound.py` (CC0), as WAV, levelled by its
+loudest 400 ms (momentary LUFS) on the menus' bus:
+
+| File | What it is | Made from | Licence | Heard at | Peak |
+|---|---|---|---|---|---|
+| deed.wav | a deed done, as its badge shows | made here: three soft bell notes rising, A, E and A an octave up, over a warm low swell and a breath of high air | CC0 | -28 | -18 |
+
 The rope's snap is still made in code (`ropes.gd`), at about -28 LUFS from 8 m.

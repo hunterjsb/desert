@@ -935,6 +935,7 @@ static func _tethered(world: World, id: StringName, right: float, ahead: float) 
 ## cable to join them, and spare rations. Returns what it dropped.
 static func survive(world: World) -> Array[Node3D]:
 	world.player.vitals.fresh()
+	world.player.suit.restock()
 	var condenser := standing(world, &"condenser", [&"battery", &"solar_panel", &"canister"], SURVIVE_CONDENSER)
 	(condenser as Condenser).canister().drain(INF)
 	var dropped: Array[Node3D] = [condenser, standing(world, &"shield", [&"battery"], SURVIVE_SHIELD)]
@@ -962,6 +963,7 @@ static func survive(world: World) -> Array[Node3D]:
 ## suit's kit and a spare root-tuber to sow. Returns what it dropped.
 static func farm(world: World) -> Array[Node3D]:
 	world.player.vitals.fresh()
+	world.player.suit.restock()
 	world.player.suit.carried.append(Catalog.part(&"root_tuber"))
 	var dropped: Array[Node3D] = []
 	for where: Array in [FARM_BY_HAND, FARM_HARVESTER]:
@@ -1099,6 +1101,7 @@ static func afk(world: World) -> Array[Node3D]:
 static func anomaly_camp(world: World) -> Array[Node3D]:
 	var player := world.player
 	player.vitals.fresh()
+	player.suit.restock()
 	player.suit.carried.append(Catalog.part(&"compass"))
 	var deck := standing(world, &"chassis", [], AFK_DECK) as Chassis
 	for at: Array in [[Vector2i.ZERO, Vector2i(1, 0)], [Vector2i.ZERO, Vector2i(0, 1)], [Vector2i(1, 0), Vector2i(0, 1)]]:
@@ -1227,6 +1230,7 @@ static func chassis(world: World) -> Array[Node3D]:
 ## dropped, the deck first.
 static func console(world: World) -> Array[Node3D]:
 	world.player.vitals.fresh()
+	world.player.suit.restock()
 	var deck := standing(world, &"chassis", [], CONSOLE_DECK) as Chassis
 	deck.join(Catalog.device(&"chassis") as Chassis, _on_piece(deck, Vector2i.ZERO, &"ring", Vector2i(1, 0)), 0)
 	fill(world, deck, [&"hover_tray", &"hover_tray"])

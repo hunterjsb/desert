@@ -128,7 +128,14 @@ names it), and so can a kit variant or a mark on your gear (Hunter: "they should
 - **Earning one is an event** (Hunter, 2026-10-18: "achv should be a bigger deal when you get them
   in game, sound + badge, plus indication of your unlock on the menu"): a sound of its own and its
   badge, its card's picture and name, shown a moment over the game; and the main menu marks what's
-  new, the Deeds word and a start a deed has opened, until you've looked.
+  new, the Deeds word and a start a deed has opened, until you've looked. Built (2026-10-18): the
+  badge (`DeedBadge`, through `UIRoot.badge`) is a small dark panel a fifth of the way down the
+  screen, under the notes and how-tos at the top, the deed's card picture beside "Deed done" and its
+  name; it rises into place over a third of a second, stays three and a half, and fades. Its sound,
+  three soft bell notes rising (`deed.wav`, made here, CC0), plays as it shows, on the menus' bus.
+  Two done at once wait their turn, each shown and heard alone. Nothing else is said: no note.
+  The marks are the profile's (`Profile.is_new`, `seen`): each deed done, and each start it opens
+  that wasn't open, is new until the deeds menu is opened, or that start highlighted.
 - **Shown in a grid,** reached from the main menu and the system menu: each deed a tile, named,
   with a short line saying what it asks, lit once done (Menus & UI). Then (Hunter, 2026-10-18): a
   tree of what waits on what, each card only a name and a picture of its thing, and what it asks
@@ -164,8 +171,8 @@ stays. Green Thumb is new, so Crop Rotation has one before it.
   waits on is done and open in turn.
 - **Done out of order:** recording never waits. A deed done before what it waits on is kept in the
   profile with its run all the same, and opens its start if it names one; it shows, lit and
-  counted, once its branch opens, and its note waits until then, said beside the deed that opened it
-  ("Deed: Big Air, Flying Bling").
+  counted, once its branch opens, and its badge waits until then, shown after the deed that opened it
+  (Big Air's, then Flying Bling's).
 - **How far along:** a deed that's a number to reach goes through `Deeds.measure(world, id,
   value)`, which keeps the best so far in the profile (`Profile.best`, `improve`), a step at a time
   (250 m, half a metre, a minute, 10 W, one), and records the deed once the goal is reached. A deed
@@ -190,11 +197,11 @@ How each X was chosen, from the probes' numbers:
 - **The hook.** `Deeds.done(world, id, part)` records a deed the moment it's done; with a part (a
   crop, a landmark, an era) the part counts toward it and it's done once enough different ones
   have, across every run. Each check is a comparison where the system already works, and nothing
-  looks for deeds on its own. A deed done says so in the note under the top of the screen ("Deed:
-  Hermit").
+  looks for deeds on its own. A deed done shows its badge, with its sound.
 - **Only a player's own run counts** (`World.counts_deeds`): the game sets it on a run that isn't
-  a dev scenario's and clears it the moment `scenario` is used, and a death in that run keeps it.
-  Nothing counts while the dev console's `god` holds you. The menu's world, a probe's and a
+  a dev scenario's and clears it the moment `scenario` is used, or any dev command that changes the
+  run (`god` among them; Menus & UI, the dev console), and a death in that run keeps it. The save
+  keeps it cleared (`dev_run`), so a dev run resumed is one still. The menu's world, a probe's and a
   look-test's count nothing.
 - **Kept in the profile** (`Profile.deed`, `did`, `deeds`, `toward`, `best`): each deed with when,
   the run's seed and origin, and whether it was Ironman; what has counted toward each, and the best
@@ -412,8 +419,9 @@ calls them from Save, Save & quit, Resume, New game, the death screen and Option
 17. **A deed is kept** (2026-10-18). Reaching Port Morgan in a run records The Old City there and
     then, with the run's seed and origin and not Ironman, and the next session's profile still has
     it.
-18. **A dev run counts nothing.** While the console's god holds you, and once a dev scenario is
-    used in a run, reaching Port Morgan records no deed, and no landmark toward them all.
+18. **A dev run counts nothing.** The console's listing commands leave a run counting; once warp has
+    changed it, reaching Port Morgan records no deed, and no landmark toward them all, and saved and
+    resumed it's a dev run still.
 19. **Unlockall opens the starts.** With the Salvager and the Homesteader behind their proposed
     deeds, a fresh profile has the Surveyor alone; the console opens over the main menu, unlockall
     there opens every start, New game shows none locked, and forgetting the deeds leaves them open.

@@ -84,8 +84,16 @@ behind them, and since 2026-10-18 are bigger and roomier still, below.)
 - **Resume opens the same view:** the prop is your last camp as the save holds it, what stood
   round you when you saved, with the save's numbers beside it (time played, when it was saved,
   the day, who you came as), and confirm carries on.
-- **Unmuting starts the theme at once,** with no silence before it.
-- **The deeds menu opens on the deed done last,** or the first one open to do, never always the first.
+- **Unmuting starts the theme at once,** with no silence before it. Built (2026-10-18): it comes
+  up in a twentieth of a second, not half a second from silence, where the mute left it, or where
+  the song starts when that was in the file's own quiet, the four seconds it opens on and the two
+  and a half it ends on (`MenuMusic.SOUNDS`).
+- **The deeds menu opens on the deed done last,** or the first one open to do, never always the
+  first. Built (2026-10-18, `DeedsGrid.opening`): the latest done of those that show done, or with
+  none, the first card open and still to do.
+- **The main menu marks what's new** (Profile & saves, deeds), built 2026-10-18: a small dot after
+  Deeds while a deed done hasn't been looked at in the deeds menu, and after a start in who you come
+  as that a deed has opened, until it's been highlighted (`Words.mark_new`, `Profile.is_new`).
 - **Music at the main menu,** its own theme, Hunter's "Salt" (Hunter, 2026-10-18: "use this for a
   main menu theme"), with a mute switch in the bottom left that stays as you leave it. The menu's
   storm stays silent.
@@ -172,6 +180,25 @@ resets"): `unlockall` opens every start, and deeds can be granted or cleared to 
 - **`fresh` fills you up and leaves what you carry;** the suit's kit isn't restocked.
 - **`god`** also lifts the weight limit and lets you take hold of anything, however heavy.
 - **The console scrolls back** through what it said.
+
+**Built** (2026-10-18):
+- **A dev run:** each of those commands, once it has changed something, clears `World.counts_deeds`,
+  the flag a dev scenario clears, and the console says "a dev run from now: no deed counts in it"
+  the first time. A command that only shows something, `goto` alone, or `map`, its usage after a
+  typo, and the profile's own (`unlockall`, `deed`, `reset`) leave it as it was. The save keeps the
+  flag (`dev_run`), and a resumed run takes it back, so a resumed dev run stays one; a death in
+  Ironman carries it to the next run, as it does a scenario's.
+- **`fresh`** fills health, hunger and thirst and leaves your suit as it is; the scenarios that
+  begin on a fresh suit's kit restock it themselves.
+- **`god`** has the grasp's strength without limit and never digs you in, and what you carry weighs
+  nothing on your pace or your stance (`Grasp.step`, `Suit.burden`): a check on `Vitals.god` at
+  those limits, nothing else.
+- **Scrolling:** the console keeps its last 200 lines; the wheel scrolls them two lines a notch
+  wherever the mouse is, and the page-up and page-down actions a page at a time, while up and down
+  still step through what was typed. The head line says how far back it is. While the console is
+  up the wheel reaches nothing else, so reeling and bringing nearer or pushing further never fire
+  behind it. Anything said brings it back to the latest.
+- **Probes:** Dev probes 4 and 5, Menus & UI probe 15, Profile & saves probe 18.
 - **A creative menu** for building crafts in a dev run: every part and device in a grid, taken
   straight into your hands. Built once the chassis rework lands, since that's what you build with.
 - **Scenarios are pruned and modernised:** the old ones the chassis and the newer systems have
@@ -195,7 +222,7 @@ set aside to its right; over a run, in the middle on the soft dark field.
   once in a little world of their own the first time they're asked for and kept, so a card costs a
   texture. With no screen to draw on, as in a probe, they stay blank.
 - **The card highlighted,** by the mouse over it or the menu's selection, which moves between the
-  cards as between words and starts on the first, has a small panel beside it, on whichever side
+  cards as between words and starts on the deed done last, has a small panel beside it, on whichever side
   has room: the deed's name, what it asks, how far along you are where it's a number or a count
   ("3,250 / 5,000 m", "2 / 3 kinds") or done (in Ironman, if it was), and what it opens. A card
   still locked says only what it waits on.
@@ -286,7 +313,7 @@ set aside to its right; over a run, in the middle on the soft dark field.
 - **Music** at the main menu: Hunter's "Salt" (`assets/audio/menu_theme.ogg`, 80 s, looping,
   stereo), from its start as the menu's desert shows, on the menus' bus while the menu's storm
   stays silent (`game/ui/menu_music.gd`). It fades in once the screen is up and out with the
-  screen into a run, and comes back from its start on Save & quit. (It was the radio's day or
+  screen into a run, and comes back from its start on Save & quit; unmuted, it's there at once. (It was the radio's day or
   night track by the menu's own light.) A speaker in the bottom left switches it,
   by a click or by the menu's up and down, round past the first and last words: waves
   while it plays, a cross while it's off, and it stays as you leave it (`Settings.music`).
@@ -302,7 +329,7 @@ set aside to its right; over a run, in the middle on the soft dark field.
   the fade; New run is New game in Normal, on a new seed, the save deleted. Dying before
   the run has ever been saved offers only New run. In Ironman there's no screen: the
   caption says you died and a new run begins at once.
-- **The dev console** (`game/dev/console.gd`), opened by the console action in a run with
+- **The dev console** (`game/dev/dev_console.gd`), opened by the console action in a run with
   nothing else open: a small dark panel near the top of the screen, a line to type into
   under the last few lines it said. While it's up every key goes to it and nothing
   reaches the game: held keys wait as under a menu, the mouse is free, and the world
@@ -314,7 +341,7 @@ set aside to its right; over a run, in the middle on the soft dark field.
   on to the next such moment of your local day; `tu [6|9|13]`, Tu's width across the sky in degrees,
   the three under trial, alone the next of them (2026-10-17); `give <id> [n]`, a part into your hands, or a
   device, a stake, a coil or a cable at your feet, by catalog id; `fresh`, fed,
-  watered and whole on a fresh suit's kit; and the deeds' (2026-10-18): `unlockall`, every start
+  watered and whole, carrying what you carried; and the deeds' (2026-10-18): `unlockall`, every start
   open whatever deeds are done, `deed <id>`, one granted, `deeds`, which are done, and `deeds
   clear`, all forgotten (Profile & saves). Those and `help` and `scenarios` need no world, so the
   console opens over the main menu too, with nothing else open there, standing over its words;
@@ -394,6 +421,11 @@ set aside to its right; over a run, in the middle on the soft dark field.
 13. **The Surveyor leads** (2026-10-18). On a fresh profile New game opens on the Surveyor, first
     and highlighted, its crate on show, and down passes over the starts still locked; with every
     start open it still opens there, its word larger than the rest.
+14. **The deeds open on the latest** (2026-10-18). With none done the deeds open on the first card
+    still to do; with Green Thumb done and then Hermit, on Hermit. Deeds is new until they're looked at.
+15. **The console scrolls back** (2026-10-18). After `help`, the wheel scrolls up to its first lines,
+    and what you hold isn't brought nearer; the page actions scroll a page each way, the line
+    keeping its focus, and a command run shows at once.
 
 ## Out of scope
 

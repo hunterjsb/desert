@@ -101,6 +101,8 @@ const MENU_CONFIRM := preload("res://assets/audio/menu_confirm.ogg")
 const MENU_BACK := preload("res://assets/audio/menu_back.ogg")
 # The main menu's theme, "Salt", over its silent desert.
 const MENU_THEME := preload("res://assets/audio/menu_theme.ogg")
+# A deed done, made here (make_deed_sound.py): three soft bell notes rising.
+const DEED := preload("res://assets/audio/deed.wav")
 
 ## Small things are heard at their level from this far, m, and fade past it.
 const NEAR := 2.0

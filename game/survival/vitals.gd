@@ -44,7 +44,7 @@ func _ready() -> void:
 	add_child(wounds)
 
 
-## Fed, watered and whole, on a fresh suit's kit.
+## Fed, watered and whole, and counting afresh; what you carry stays.
 func fresh() -> void:
 	health = FULL
 	hunger = FULL
@@ -54,7 +54,6 @@ func fresh() -> void:
 	eaten = 0.0
 	for harm in HARMS:
 		taken[harm] = 0.0
-	_player.suit.restock()
 
 
 ## Health a second each harm takes at a place, now or at world time t: the
