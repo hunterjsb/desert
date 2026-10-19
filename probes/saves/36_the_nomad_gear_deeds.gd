@@ -42,6 +42,9 @@ func run() -> void:
 	teleport(camp.x, camp.z)
 	await physics_frames(5)
 	check(profile.did("just_missed"), "stepped into a nomads' camp: Just Missed Them")
+	# New loose gear must wait for the destination's ground, too. Five
+	# physics ticks alone need not finish streaming on another machine.
+	await settle_finds()
 
 	var deck := Catalog.device(&"chassis") as Chassis
 	world.content.add_child(deck)
@@ -52,6 +55,9 @@ func run() -> void:
 	mast = Rig.make([&"mast", [&"sail"]]) as Mast
 	Stick.put(deck, deck, Chassis.TOP, Vector2.ZERO, PI, mast)
 	await physics_frames(60)
+	check(is_instance_valid(mast), "the trim rig remains on the settled ground")
+	if not is_instance_valid(mast):
+		return
 	mast.raised = true
 	mast.raise = 1.0
 	Line.to_waist(world, mast._tie(), 1.0)
