@@ -1,10 +1,10 @@
 extends SailProbe
 ## Sailing probe 6: your camp tows you on the board. Standing behind a camp
 ## on skates with its sheet tied at your waist, you step onto a board and the
-## sheet stays tied. The sail up in a steady 10 m/s wind, keys let go but the
-## sheet tended, the camp sails off and tows you after it by the sheet, the
-## board running where the line leads. Paying the sheet out on the board
-## eases the sail.
+## sheet stays tied. The sail up in a steady 10 m/s wind, keys let go, the
+## sheet tended and the camp held across the wind as you'd steer it by its
+## lines, it sails off and tows you after it by the sheet, the board running
+## where the line leads. Paying the sheet out on the board eases the sail.
 
 
 func run() -> void:
@@ -30,8 +30,9 @@ func run() -> void:
 	check(player.waist.tied.has(sheet.ends[1]), "the sheet stays tied at your waist")
 	blow(downwind * 10.0)
 	hoist(60.0)
-	# You tend the sheet at your waist as you go.
+	# You tend the sheet at your waist as you go, and steer by where you pull.
 	tending = deg_to_rad(15.0)
+	course = heading()
 	# Lambdas copy what they're given: what they change lives in here.
 	var seen := {"pulled": 0.0}
 	await simulate(25.0, func() -> void:
@@ -47,6 +48,7 @@ func run() -> void:
 		"keeping pace with it, on the end of the sheet (%.1f m)" % apart)
 	check(pulled > 30.0, "the sheet pulls you (%d N)" % roundi(pulled))
 	tending = 0.0
+	course = Vector2.ZERO
 	trim(35.0)
 	var was := mast.trim
 	check(player.hands.reel.notch(-2), "the reel works the sheet riding")

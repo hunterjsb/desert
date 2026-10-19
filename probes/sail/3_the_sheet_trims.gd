@@ -2,8 +2,10 @@ extends SailProbe
 ## Sailing probe 3: the sheet trims the drive. Steered on a beam reach in a
 ## steady 10 m/s wind, its sheet tended to meet the wind well it sails
 ## fastest; eased right out it spills the wind and barely moves, and hauled
-## in flat it stalls and slows. Reeling the sheet at your waist hauls the sail in a notch at a time,
-## its line no shorter, and letting go of the sheet spills the wind.
+## in flat it stalls and slows. Reeling the sheet at your waist takes its
+## inboard in through the block at the boom's end a notch at a time, the line
+## to you no shorter and the coil at your waist growing by it; letting go of
+## the sheet spills the wind.
 
 
 func run() -> void:
@@ -36,11 +38,14 @@ func run() -> void:
 	trim(35.0)
 	var was := mast.trim
 	var length := sheet.rope.length
+	var coiled := sheet.rope.haul_gathered
 	check(hands.reel.notch(2), "the reel works the sheet at your waist")
 	await simulate(1.0)
-	print("reeled two notches: trim %.2f m from %.2f, line %.2f m from %.2f" % [mast.trim, was, sheet.rope.length, length])
-	check(absf(was - mast.trim - 2.0 * Reel.NOTCH) < 0.01 and absf(sheet.rope.length - length) < 0.01,
-		"two notches haul the sail in half a metre, the line as long as it was")
+	print("reeled two notches: trim %.2f m from %.2f, line %.2f m from %.2f, coiled %.2f m more" % [mast.trim, was,
+		sheet.rope.length, length, sheet.rope.haul_gathered - coiled])
+	check(absf(was - mast.trim - 2.0 * Reel.NOTCH) < 0.01 and absf(sheet.rope.length - length) < 0.01
+		and absf(sheet.rope.haul_gathered - coiled - 2.0 * Reel.NOTCH) < 0.01,
+		"two notches haul the inboard in half a metre, the line to you as long as it was, the coil the longer")
 	world.player.waist.untie(sheet.ends[1])
 	await sail_for(2.0)
 	check(not mast.sheeted() and absf(mast.boom) > deg_to_rad(60.0), "let go, the sheet runs and the sail swings free (%.0f°)" % rad_to_deg(mast.boom))
