@@ -8,7 +8,9 @@ extends Node
 ## At the fixed exposure, or with --eye as the eye sees them, settled on each light:
 ##   godot --path . --disable-vsync res://look/tracks/tracks.tscn -- --capture <dir> [--eye]
 ## Optional --before <shader> compares frozen frames against that shader and its
-## own defaults; --lights low,day,... narrows the captures.
+## own defaults; --lights low,day,... and --subjects walk,gouge,... narrow the
+## captures. --skid-only skips live trail generation for quick profile comparisons;
+## --try track_depth=0.12,... adds scalar shader variants.
 ## look/tracks/shoot.sh builds the sheets. A small window that never takes
 ## focus, nothing but this script moving anything, and silence.
 
@@ -18,7 +20,7 @@ const SEED := 1234
 const WALK := Vector2(0.0, 0.0)
 const DRAG := Vector2(0.0, 4.0)
 const BOARD := Vector2(0.0, -5.0)
-const GOUGE := Vector2(0.0, -10.0)
+const GOUGE := Vector2(20.0, -10.0)
 const WALK_SECONDS := 9.0
 const DRAG_SECONDS := 8.0
 const DRAG_SPEED := 1.4
@@ -32,7 +34,7 @@ const LIGHTS := ["low", "day", "storm", "night", "storm_night", "storm_night_lam
 const AGED := 8.0 * 60.0 / 1200.0
 ## Frames per sample, and samples each way, when timing the GPU.
 const GPU_FRAMES := 60
-const GPU_ROUNDS := 4
+const GPU_ROUNDS := 9
 
 @onready var world: World = $World
 
@@ -40,6 +42,7 @@ var _times := {}
 var _before: Shader
 var _after: Shader
 var _baseline_values := {}
+var _tries: Array[Dictionary] = []
 
 
 func _enter_tree() -> void:
@@ -84,58 +87,66 @@ func _capture(out_dir: String) -> void:
 	if baseline != -1:
 		_before = Shader.new()
 		_before.code = FileAccess.get_file_as_string(args[baseline + 1])
-		for parameter: Dictionary in RenderingServer.get_shader_parameter_list(_after.get_rid()):
-			var name: String = parameter.name
-			if name.begins_with("track_") and name not in ["track_map", "track_clock", "track_shift", "track_window", "track_extent", "track_texel"]:
-				_baseline_values[name] = material.get_shader_parameter(name)
-	# The crate, dragged east along the sand as a line would tow it.
-	var crate := _crate(world.spawn + DRAG)
-	await _ticks(60)
-	tracks.slowest_tick_ms = 0.0
-	var dragged := 0.0
-	while dragged < DRAG_SECONDS:
-		await get_tree().physics_frame
-		dragged += get_physics_process_delta_time()
-		crate.linear_velocity = Vector3(DRAG_SPEED, minf(crate.linear_velocity.y, 0.0), 0.0)
-	crate.linear_velocity = Vector3.ZERO
-	print("tracks: drag, slowest tick %.3f ms" % tracks.slowest_tick_ms)
+	for parameter: Dictionary in RenderingServer.get_shader_parameter_list(_after.get_rid()):
+		var name: String = parameter.name
+		if name.begins_with("track_") and name not in ["track_map", "track_clock", "track_shift", "track_window", "track_extent", "track_texel"]:
+			_baseline_values[name] = material.get_shader_parameter(name)
+	for i in args.size() - 1:
+		if args[i] == "--try":
+			var values := {}
+			for setting: String in args[i + 1].split(","):
+				var pair := setting.split("=")
+				values[pair[0]] = pair[1].to_float()
+			_tries.append(values)
+	if not args.has("--skid-only"):
+		# The crate, dragged east along the sand as a line would tow it.
+		var crate := _crate(world.spawn + DRAG)
+		await _ticks(60)
+		tracks.slowest_tick_ms = 0.0
+		var dragged := 0.0
+		while dragged < DRAG_SECONDS:
+			await get_tree().physics_frame
+			dragged += get_physics_process_delta_time()
+			crate.linear_velocity = Vector3(DRAG_SPEED, minf(crate.linear_velocity.y, 0.0), 0.0)
+		crate.linear_velocity = Vector3.ZERO
+		print("tracks: drag, slowest tick %.3f ms" % tracks.slowest_tick_ms)
 
-	# A walk east, wandering a little.
-	_put(world.spawn + WALK, -PI * 0.5)
-	await _ticks(30)
-	tracks.slowest_tick_ms = 0.0
-	Input.action_press("move_forward")
-	var walked := 0.0
-	while walked < WALK_SECONDS:
-		await get_tree().physics_frame
-		walked += get_physics_process_delta_time()
-		player.rotation.y = -PI * 0.5 + 0.25 * sin(walked * 0.7)
-	Input.action_release("move_forward")
-	print("tracks: walk, slowest tick %.3f ms" % tracks.slowest_tick_ms)
-	await _ticks(30)
+		# A walk east, wandering a little.
+		_put(world.spawn + WALK, -PI * 0.5)
+		await _ticks(30)
+		tracks.slowest_tick_ms = 0.0
+		Input.action_press("move_forward")
+		var walked := 0.0
+		while walked < WALK_SECONDS:
+			await get_tree().physics_frame
+			walked += get_physics_process_delta_time()
+			player.rotation.y = -PI * 0.5 + 0.25 * sin(walked * 0.7)
+		Input.action_release("move_forward")
+		print("tracks: walk, slowest tick %.3f ms" % tracks.slowest_tick_ms)
+		await _ticks(30)
 
-	# A short ride east, then off; the board coasts on and lies there.
-	_put(world.spawn + BOARD, -PI * 0.5)
-	await _ticks(30)
-	var board := Catalog.device(&"board") as Hoverboard
-	world.content.add_child(board)
-	var cell := Catalog.part(&"battery")
-	world.content.add_child(cell)
-	board.fit(cell, board.sockets()[0])
-	board.global_position = player.global_position + Vector3.UP * 0.06
-	await _ticks(2)
-	print("tracks: on the board %s" % player.get_on(board))
-	tracks.slowest_tick_ms = 0.0
-	Input.action_press("move_forward")
-	var rode := 0.0
-	while rode < RIDE_SECONDS:
-		await get_tree().physics_frame
-		rode += get_physics_process_delta_time()
-	Input.action_release("move_forward")
-	await _ticks(40)
-	print("tracks: ride, slowest tick %.3f ms" % tracks.slowest_tick_ms)
-	player.step_off()
-	await _ticks(180)
+		# A short ride east, then off; the board coasts on and lies there.
+		_put(world.spawn + BOARD, -PI * 0.5)
+		await _ticks(30)
+		var board := Catalog.device(&"board") as Hoverboard
+		world.content.add_child(board)
+		var cell := Catalog.part(&"battery")
+		world.content.add_child(cell)
+		board.fit(cell, board.sockets()[0])
+		board.global_position = player.global_position + Vector3.UP * 0.06
+		await _ticks(2)
+		print("tracks: on the board %s" % player.get_on(board))
+		tracks.slowest_tick_ms = 0.0
+		Input.action_press("move_forward")
+		var rode := 0.0
+		while rode < RIDE_SECONDS:
+			await get_tree().physics_frame
+			rode += get_physics_process_delta_time()
+		Input.action_release("move_forward")
+		await _ticks(40)
+		print("tracks: ride, slowest tick %.3f ms" % tracks.slowest_tick_ms)
+		player.step_off()
+		await _ticks(180)
 	print("tracks: slowest frame (uploads) %.3f ms" % tracks.slowest_frame_ms)
 
 	player.set_physics_process(false)
@@ -148,10 +159,19 @@ func _capture(out_dir: String) -> void:
 	tracks.set_physics_process(false)
 	# A controlled skid strip uses the same swept footprint as a board turning sideways.
 	for i in 20:
-		var start: Vector2 = world.spawn + GOUGE + Vector2(i * 0.6, 0.4 * sin(i * 0.12))
+		var start: Vector2 = world.spawn + GOUGE + Vector2(0.4 * sin(i * 0.12), i * 0.6)
 		var corners := tracks._footprint(start, Vector2(0.7, 0.7).normalized(), Catalog.DEVICES[&"board"].size)
-		corners.append_array(tracks._footprint(start + Vector2(0.6, 0.0), Vector2(0.7, 0.7).normalized(), Catalog.DEVICES[&"board"].size))
+		corners.append_array(tracks._footprint(start + Vector2(0.0, 0.6), Vector2(0.7, 0.7).normalized(), Catalog.DEVICES[&"board"].size))
 		tracks.press_hull(corners, Tracks.DEEPEST, Tracks.GOUGE_SOFT)
+	# A resting board crosses the deepest floor for the contact/parallax check.
+	var at_gouge := world.spawn + GOUGE + Vector2(0.0, 1.5)
+	var resting_board := Catalog.device(&"board") as RigidBody3D
+	world.content.add_child(resting_board)
+	resting_board.freeze = true
+	resting_board.rotation.y = PI * 0.5
+	resting_board.global_position = Vector3(world.engine_x(at_gouge.x),
+		world.height_at(at_gouge.x, at_gouge.y) + Catalog.DEVICES[&"board"].size.y * 0.5,
+		world.engine_z(at_gouge.y))
 	var made := tracks.clock
 	var rid := get_viewport().get_viewport_rid()
 	RenderingServer.viewport_set_measure_render_time(rid, true)
@@ -161,6 +181,10 @@ func _capture(out_dir: String) -> void:
 	lamp.omni_range = 7.0
 	lamp.position = Vector3(0.4, -0.6, -0.3)
 	player.camera.add_child(lamp)
+	var subjects := PackedStringArray()
+	var subject_arg := args.find("--subjects")
+	if subject_arg != -1:
+		subjects = args[subject_arg + 1].split(",")
 	var chosen := LIGHTS.duplicate()
 	var only := args.find("--lights")
 	if only != -1:
@@ -171,18 +195,22 @@ func _capture(out_dir: String) -> void:
 		world.weather.forecast_now()
 		lamp.visible = light.ends_with("_lamp")
 		for subject: Array in [["walk", WALK], ["board", BOARD], ["gouge", GOUGE], ["drag", DRAG]]:
+			if not subjects.is_empty() and not subjects.has(subject[0]):
+				continue
 			var start: Vector2 = world.spawn + subject[1]
-			var eye := Vector3(world.engine_x(start.x - BACK), world.height_at(start.x - BACK, start.y) + EYE,
-				world.engine_z(start.y))
+			var behind := Vector2(0.0, -BACK) if subject[0] == "gouge" else Vector2(-BACK, 0.0)
+			var eye_at := start + behind
+			var eye := Vector3(world.engine_x(eye_at.x), world.height_at(eye_at.x, eye_at.y) + EYE,
+				world.engine_z(eye_at.y))
 			player.global_position = eye - player.camera.position
-			player.rotation.y = -PI * 0.5
+			player.rotation.y = PI if subject[0] == "gouge" else -PI * 0.5
 			player.camera.rotation_degrees.x = PITCH
 			# Before, every mark filled; then fresh; then aged.
 			for state: Array in [["before", 10.0], ["fresh", 0.0], ["aged", AGED]]:
 				tracks.clock = made + state[1]
 				await _ticks(24)
 				var name := "%s_%s_%s" % [subject[0], light, state[0]]
-				for look: String in (["before", "after"] if _before != null else ["after"]):
+				for look: String in _looks():
 					_wear(look)
 					await _ticks(8)
 					get_viewport().get_texture().get_image().save_png(out_dir.path_join(name + ("_" + look if _before != null else "") + ".png"))
@@ -191,7 +219,7 @@ func _capture(out_dir: String) -> void:
 				print("  %-26s storm %3d%%" % [name, roundi(world.weather.storm * 100.0)])
 			if light == "day" and subject[0] in ["walk", "gouge"]:
 				tracks.clock = made
-				await _gpu_cost(rid)
+				await _gpu_cost(rid, "%s/%s" % [light, subject[0]])
 	get_tree().quit()
 
 
@@ -199,10 +227,10 @@ func _capture(out_dir: String) -> void:
 func _moving(out_dir: String, name: String) -> void:
 	var player := world.player
 	var start := player.global_position
-	for look: String in (["before", "after"] if _before != null else ["after"]):
+	for look: String in _looks():
 		_wear(look)
 		for frame in 12:
-			player.global_position = start + Vector3(0.0, 0.0, frame * 0.025)
+			player.global_position = start + player.global_basis.x * (frame * 0.025)
 			await _ticks(2)
 			get_viewport().get_texture().get_image().save_png(out_dir.path_join("%s_%s_move_%02d.png" % [name, look, frame]))
 	player.global_position = start
@@ -211,18 +239,22 @@ func _moving(out_dir: String, name: String) -> void:
 
 ## The GPU's time per frame with the sand reading its marks and without,
 ## alternated so a busy machine weighs on both alike.
-func _gpu_cost(rid: RID) -> void:
+func _gpu_cost(rid: RID, subject: String) -> void:
 	var tracks := world.terrain.tracks
-	var keys: Array[String] = ["before", "after"] if _before != null else ["off", "on"]
+	var keys: Array[String] = []
+	keys.assign(["before", "after"] if _before != null else ["off", "on"])
 	var sums := {keys[0]: 0.0, keys[1]: 0.0}
 	var differences: Array[float] = []
 	for round in GPU_ROUNDS:
 		var got := {}
-		for look: String in keys:
+		var order := keys.duplicate()
+		if round % 2 == 1:
+			order.reverse()
+		for look: String in order:
 			tracks.drawn = look != "off"
 			if _before != null:
 				_wear(look)
-			for i in 10:
+			for i in 30:
 				await get_tree().process_frame
 			var total := 0.0
 			for i in GPU_FRAMES:
@@ -234,10 +266,18 @@ func _gpu_cost(rid: RID) -> void:
 	tracks.drawn = true
 	_wear("after")
 	differences.sort()
-	print("tracks: gpu %.3f ms %s, %.3f ms %s; median delta %+.3f (%+.3f to %+.3f), at %s%s" % [
+	print("tracks: gpu %s %.3f ms %s, %.3f ms %s; median delta %+.3f (%+.3f to %+.3f), at %s%s" % [subject,
 		sums[keys[0]] / GPU_ROUNDS, keys[0], sums[keys[1]] / GPU_ROUNDS, keys[1],
-		(differences[1] + differences[2]) * 0.5, differences[0], differences[-1],
+		differences[floori(GPU_ROUNDS / 2.0)], differences[0], differences[-1],
 		get_viewport().get_visible_rect().size, _shared_gpu()])
+
+
+func _looks() -> Array[String]:
+	var result: Array[String] = []
+	result.assign(["before", "after"] if _before != null else ["after"])
+	for i in _tries.size():
+		result.append("try%d" % (i + 1))
+	return result
 
 
 ## Keep baseline defaults with its shader; the live scene otherwise retains tuning overrides.
@@ -246,6 +286,10 @@ func _wear(look: String) -> void:
 	material.shader = _before if look == "before" else _after
 	for name: String in _baseline_values:
 		material.set_shader_parameter(name, null if look == "before" else _baseline_values[name])
+	if look.begins_with("try"):
+		var values: Dictionary = _tries[look.trim_prefix("try").to_int() - 1]
+		for name: String in values:
+			material.set_shader_parameter(name, values[name])
 
 
 ## Another Godot on the same GPU skews frame times; say so beside them.

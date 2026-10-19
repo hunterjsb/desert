@@ -219,9 +219,14 @@ static var _current: Tuning
 @export var track_texel: float = 0.25
 ## Drawn dent depth, m, and the share of its near view-ray relief.
 @export var track_depth: float = 0.08
+## Extra drawn depth and loose lip for the deepest sideways board skid, m.
+@export var track_gouge_depth: float = 0.08
+@export var track_gouge_rim: float = 0.02
 @export var track_relief: float = 1.0
 ## Compacted sand loses this share of its colour.
-@export var track_shade: float = 0.24
+@export var track_shade: float = 0.16
+## Curvature of a soft stamp that raises a full loose lip.
+@export var track_rim_shape: float = 0.08
 ## How long the wind takes to fill a fresh, full-depth mark, minutes: in calm
 ## air, and in a full storm. A step still reads with a tenth of its depth left.
 @export var track_calm_minutes: float = 90.0

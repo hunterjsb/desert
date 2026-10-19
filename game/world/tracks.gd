@@ -132,8 +132,11 @@ func setup(world: World, material: Material) -> void:
 		_material.set_shader_parameter("track_extent", _cells * _texel)
 		_material.set_shader_parameter("track_texel", _texel)
 		_material.set_shader_parameter("track_depth", _tuning.track_depth)
+		_material.set_shader_parameter("track_gouge_depth", _tuning.track_gouge_depth)
+		_material.set_shader_parameter("track_gouge_rim", _tuning.track_gouge_rim)
 		_material.set_shader_parameter("track_relief", _tuning.track_relief)
 		_material.set_shader_parameter("track_shade", _tuning.track_shade)
+		_material.set_shader_parameter("track_rim_shape", _tuning.track_rim_shape)
 
 
 func _exit_tree() -> void:

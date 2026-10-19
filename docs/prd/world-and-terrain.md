@@ -413,29 +413,53 @@ trail touching 30 to 60) if a resumed run should keep its trail.
   64 MB of its memory. Streaming stayed within its line in `look/stream` (1.54 ms
   against 2.0; under the same load master's own run went over it, at 3.6).
 
-### Trail relief follow-up (2026-10-19; prototype, awaiting visual verification)
+### Trail relief follow-up (2026-10-19; candidate built)
 
-Hunter approved the sand's current appearance and asked for trails of the same quality.
-The [art brief](../art-direction.md#playtest-follow-up-hunter-2026-10-19-agreed-in-progress)
-calls for compressed floors, loose rims, nearby relief and stable marks in motion. Keep
-the existing map, lifetime, world anchoring and authoritative ground. Prototype a bounded
-nearby shader treatment before adding a mesh patch or expanding track memory.
+Hunter approved the current sand and asked for trails of the same quality. The
+[art brief](../art-direction.md#playtest-follow-up-hunter-2026-10-19-agreed-in-progress)
+calls for compressed floors, loose rims, nearby relief and stable marks in motion.
+The map, fill clock, world anchoring and authoritative ground remain the same.
 
-The prototype adds a single view-ray lookup on marked sand within 8 m, fading from 2 m,
-bounded at grazing views. Central differences shape the dent and the outer rim's opposite
-slope; quarter-metre texels still set the smallest detail. Tuning holds the drawn depth
-(8 cm), relief share (1) and compacted sand's colour loss (24%). Map allocation remains
-64 MB, and stamping and filling are unchanged. These values are provisional until the
-rendered comparison and GPU measurements pass.
+- **The floor and lip have a signed height for shading.** A full boot mark is drawn
+  8 cm deep; only pressure above a full step gets the board's extra depression,
+  reaching 24 cm at the deepest sideways skid. A loose lip rises up to 3 cm round
+  ordinary marks and 5 cm round deep skids. Soft stamp curvature reaches a full lip
+  at `track_rim_shape` (0.08). These values live in Tuning's Tracks group.
+- **Nearby relief is bounded.** One view-ray lookup shifts the sampled floor within
+  8 m, fading from 2 m, capped at one map texel so a grazing view stays beside objects
+  resting on the unchanged physical ground. It does not move the physical floor or
+  the rendered silhouette. A resting board crossing a deep skid is in `look/tracks`.
+- **The walls receive light as walls.** Central differences of the signed profile
+  shape both sides of a loose rim. Local wall horizons shade the floor from a low sun;
+  their hidden sky replaces a blanket darkening over a wide floor. Compacted sand loses
+  up to 16% of its colour, rather than 32%. Shallow hover wakes retain more ripples;
+  full footsteps and deep skids flatten them. Aged marks keep their trodden shading.
+- **Detail costs only near marks.** Eight extra cached map reads shape the rim, four
+  wider reads find a skid's walls, and one reads the shifted floor; these are gated
+  to nearby marked ground. Bare sand skips them. The map stays 64 MB, and stamping,
+  filling, residency and collision are unchanged.
 
-The focused tracks and origin-shift probes pass, including filling, marks under objects,
-unchanged height/collision, and stable world coordinates. An earlier derivative-based rim prototype exposed grid facets in actual
-captures and was replaced with central differences. The final shader has **not** yet had
-its visual or GPU check: the graphics driver faulted at the earlier capture's teardown.
-`look/tracks` now accepts `--before <shader>` and `--lights low,day,...`, freezes the scene
-for paired frames, includes a controlled board-skid strip, and records low-sun lateral
-motion and paired GPU timings at walking and skid views. Use the accepted sand shader
-from commit `5e67998` for the comparison. No performance conclusion is available yet.
+**Checks.** The focused tracks and origin-shift probes pass. Paired captures against
+accepted sand commit `5e67998` cover fresh and storm-aged walking, hover wakes, a
+cross-lit controlled board skid and dragging, in low sun, clear day and a storm-night
+lamp. The skid includes a resting board for contact checks. Bare sand in a 500×350 px
+foreground region matches exactly in the fully filled before/after frames at low sun
+and clear day. The helper supports `--before`, light/subject filters, scalar `--try`
+profiles and a quick `--skid-only` mode.
+
+**GPU cost against the accepted sand**, at 1920×1080 on an RTX 3070, from nine paired
+rounds of 60 measured frames after 30 settling frames, reversing the order each round:
+
+| View | Before, mean | Candidate, mean | Median paired difference |
+| --- | ---: | ---: | ---: |
+| Walking path, clear day | 5.319 ms | 5.629 ms | +0.195 ms |
+| Cross-lit skid, clear day | 5.382 ms | 5.687 ms | +0.159 ms |
+
+Individual round differences were noisy (-0.153 to +1.821 ms walking, -0.225 to
++1.889 ms at the skid). The direct combined sand/trail budget check against `14cb3d0`
+is pending; adding measurements from different camera cases would not establish it.
+The quarter-metre map still limits boot detail; true contact silhouettes would require
+a finer mesh patch. No map expansion or separate patch is added here.
 
 ## Skeleton version
 

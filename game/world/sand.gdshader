@@ -95,14 +95,17 @@ uniform float track_texel = 0.25;
 uniform vec3 track_window = vec3(0.0, 0.0, -1.0);
 // How deep a full mark is drawn, m: its walls tilt the light by it.
 uniform float track_depth = 0.08;
+// Additional depression and loose lip for a full sideways board gouge only.
+uniform float track_gouge_depth = 0.08;
+uniform float track_gouge_rim = 0.02;
 // View-ray depth near you, fading before a mark becomes smaller than a pixel.
 uniform float track_relief = 1.0;
 // The share of light trodden sand loses, and how much less of the sky a mark
 // sees: the night's only light is the sky's.
-uniform float track_shade = 0.24;
+uniform float track_shade = 0.16;
 uniform float track_occlusion = 0.35;
-// Loose sand pushed up round a mark catches the light this much more.
-uniform float track_rim = 0.25;
+// Curvature at which displaced loose sand reaches its full lip height.
+uniform float track_rim_shape = 0.08;
 // The drawn sand stands this much higher round marks, m, so whatever rests
 // in one sits in it: a 1 m lattice can't draw the dent itself.
 uniform float track_lift = 0.03;
@@ -136,6 +139,8 @@ varying vec4 dune_light;
 varying vec3 crest_way;
 varying vec3 ripple_light;
 varying vec3 ripple_way;
+// Local track-wall horizons to east, west, south and north for light().
+varying vec4 track_horizon;
 
 // The finest glitter cell, m: a power of two, so a chunk holds whole cells
 // and cells stay put through origin shifts.
@@ -255,6 +260,12 @@ float track_at(vec2 xz) {
 	return clamp(textureLod(track_map, xz / track_extent + track_shift, 0.0).r - track_clock, 0.0, 2.0);
 }
 
+// A step never reaches the board's deepest pressure; only a skid gets this extra depth.
+float track_below(float pressure) {
+	float deep = max(pressure - 1.0, 0.0);
+	return track_depth * pressure + track_gouge_depth * deep * deep;
+}
+
 bool in_tracks(vec2 xz) {
 	vec2 off = abs(xz - track_window.xy);
 	return max(off.x, off.y) < track_window.z;
@@ -351,19 +362,25 @@ void fragment() {
 	// the light, and the loose lip round it is lighter. Nothing glows: at
 	// night and in a storm the contrast is the sand's own.
 	float trodden = 0.0;
+	float compacted = 0.0;
 	vec3 dent = vec3(0.0);
+	track_horizon = vec4(0.0);
 	if (in_tracks(world_pos.xz)) {
 		vec2 xz = world_pos.xz;
 		float h = track_texel;
 		float c = track_at(xz);
 		vec3 eye = INV_VIEW_MATRIX[3].xyz - world_pos;
-		float relief = track_relief * (1.0 - smoothstep(2.0, 8.0, length(eye)));
+		float close = 1.0 - smoothstep(2.0, 8.0, length(eye));
+		float relief = track_relief * close;
 		if (relief > 0.001 && c > 0.0) {
 			// Looking into a dent meets its floor further along the ray. Bound
 			// grazing views to keep the rim from swimming across the surface.
 			vec3 view = normalize(eye);
 			vec2 ray = -view.xz / max(dot(view, n), 0.3);
-			xz += ray * track_depth * c * relief;
+			vec2 offset = ray * track_below(c);
+			// Limit the optical shift to one texel so a grazing floor stays
+			// beside objects resting on the unchanged physical ground.
+			xz += offset * min(1.0, track_texel / max(length(offset), 1e-5)) * relief;
 			c = track_at(xz);
 		}
 		float e = track_at(xz + vec2(h, 0.0));
@@ -371,14 +388,49 @@ void fragment() {
 		float s = track_at(xz + vec2(0.0, h));
 		float nn = track_at(xz - vec2(0.0, h));
 		float lip = clamp((e + w + s + nn) * 0.25 - c, 0.0, 1.0);
-		// Opposite slopes across the loose outer rim; the wide differences
-		// keep the quarter-metre map from exposing its bilinear cell edges.
-		float rim_wall = smoothstep(0.0, 0.2, lip) * (1.0 - smoothstep(0.0, 0.2, c));
-		dent = vec3(e - w, 0.0, s - nn) / (2.0 * h) * (track_depth - 4.0 * track_lift * rim_wall);
+		dent = vec3(e - w, 0.0, s - nn) / (2.0 * h) * (track_depth + 2.0 * track_gouge_depth * max(c - 1.0, 0.0));
+		if (close > 0.001 && c + e + w + s + nn > 0.0) {
+			// The displaced sand is a signed height: compressed floor below,
+			// loose lip above. Differences across it keep both rim slopes soft.
+			float ee = track_at(xz + vec2(2.0 * h, 0.0));
+			float ww = track_at(xz - vec2(2.0 * h, 0.0));
+			float ss = track_at(xz + vec2(0.0, 2.0 * h));
+			float north = track_at(xz - vec2(0.0, 2.0 * h));
+			float es = track_at(xz + vec2(h, h));
+			float en = track_at(xz + vec2(h, -h));
+			float ws = track_at(xz + vec2(-h, h));
+			float wn = track_at(xz - vec2(h, h));
+			float peak = max(max(max(c, max(e, w)), max(s, nn)), max(max(ee, ww), max(ss, north)));
+			float loose_height = track_lift + track_gouge_rim * smoothstep(1.0, 2.0, peak);
+			float floor_height = -track_below(c) + loose_height * smoothstep(0.0, track_rim_shape, lip);
+			vec4 depths = vec4(e, w, s, nn);
+			vec4 rims = max(vec4(ee + c + es + en, ww + c + ws + wn,
+				ss + c + es + ws, north + c + en + wn) * 0.25 - depths, vec4(0.0));
+			vec4 pressed_depths = vec4(track_below(e), track_below(w), track_below(s), track_below(nn));
+			vec4 heights = -pressed_depths + loose_height * smoothstep(vec4(0.0), vec4(track_rim_shape), rims);
+			vec3 pressed = -vec3(heights.x - heights.y, 0.0, heights.z - heights.w) / (2.0 * h);
+			dent = mix(dent, pressed, close);
+			// The wide floor of a skid can be a metre from its walls.
+			float reach = 4.0 * h;
+			vec4 far_depths = vec4(track_at(xz + vec2(reach, 0.0)), track_at(xz - vec2(reach, 0.0)),
+				track_at(xz + vec2(0.0, reach)), track_at(xz - vec2(0.0, reach)));
+			vec4 far_heights = -vec4(track_below(far_depths.x), track_below(far_depths.y),
+				track_below(far_depths.z), track_below(far_depths.w));
+			track_horizon = max(max((heights - floor_height) / h,
+				(far_heights - floor_height) / reach), vec4(0.0)) * close;
+		}
 		trodden = smoothstep(0.0, 0.3, c);
-		colour *= mix(1.0, 1.0 - track_shade * (0.5 + 0.5 * smoothstep(0.0, 0.8, c)), trodden)
-			* (1.0 + track_rim * lip);
-		AO = 1.0 - track_occlusion * smoothstep(0.0, 0.9, c);
+		compacted = smoothstep(0.0, 0.8, c);
+		colour *= mix(1.0, 1.0 - track_shade * (0.5 + 0.5 * smoothstep(0.0, 0.8, c)), trodden);
+		AO = 1.0;
+		if (c > 0.0 || dot(track_horizon, vec4(1.0)) > 0.0) {
+			// A broad floor still sees almost all the sky; its walls occlude
+			// the edge, rather than giving the whole mark one dark pigment.
+			vec4 horizons = track_horizon / max(close, 0.001);
+			float hidden = 1.0 - dot(inversesqrt(vec4(1.0) + horizons * horizons), vec4(0.25));
+			float distant_sky = 1.0 - 0.25 * track_occlusion * smoothstep(0.0, 0.9, c);
+			AO = mix(distant_sky, max(1.0 - dune_sky * hidden, 0.0), close);
+		}
 	}
 
 	// Ripples across the wind, gone wherever a pixel spans more than about a
@@ -389,7 +441,7 @@ void fragment() {
 	// them out. The way they run tilts the light.
 	float spans = fwidth(phase);
 	float shown = 1.0 - smoothstep(0.09, 0.27, spans);
-	float fade = shown * (1.0 - trodden);
+	float fade = shown * (1.0 - compacted);
 	vec2 way = vec2(0.0);
 	ripple_light = vec3(0.0, 1.0, 1.0);
 	ripple_way = vec3(0.0, 1.0, 0.0);
@@ -460,7 +512,7 @@ void fragment() {
 	// The swell, wandering more and stronger in patches.
 	float swell_phase = (dot(at, downwind) + 0.8 * sin(dot(at, across) * 0.23) + 2.5 * value_noise(at / 11.0)) / swell_spacing;
 	float swell_shown = 1.0 - smoothstep(0.06, 0.18, fwidth(swell_phase));
-	float swell = swell_shown * (1.0 - lee) * (1.0 - trodden) * swell_depth * (0.4 + 0.6 * broad);
+	float swell = swell_shown * (1.0 - lee) * (1.0 - compacted) * swell_depth * (0.4 + 0.6 * broad);
 	float swell_wave = swell_phase * TAU;
 	way += downwind * (sin(swell_wave) + 0.35 * sin(2.0 * swell_wave)) * swell;
 	vec3 tilt = vec3(way.x, 0.0, way.y);
@@ -559,7 +611,16 @@ void light() {
 		float crests = lit_over(rise, dot(LIGHT, crest_way), dune_light.x, dune_light.y, dune_penumbra);
 		float ripples = lit_over(rise, dot(LIGHT, ripple_way), ripple_light.x / max(ripple_light.y, 1e-4),
 			ripple_light.x / max(ripple_light.z, 1e-4), ripple_penumbra);
-		incoming *= mix(1.0, crests, dune_light.z) * ripples;
+		float tracks = 1.0;
+		if (dot(track_horizon, vec4(1.0)) > 0.0) {
+			vec2 along = vec2(dot(LIGHT, VIEW_MATRIX[0].xyz), dot(LIGHT, VIEW_MATRIX[2].xyz));
+			float wall_x = (along.x > 0.0 ? track_horizon.x : track_horizon.y) * abs(along.x);
+			float wall_z = (along.y > 0.0 ? track_horizon.z : track_horizon.w) * abs(along.y);
+			float wall = max(wall_x, wall_z);
+			float floor_rise = rise + dot(world_normal.xz, along) / max(world_normal.y, 0.1);
+			tracks = wall > 0.0 ? smoothstep(-ripple_penumbra, ripple_penumbra, floor_rise - wall) : 1.0;
+		}
+		incoming *= mix(1.0, crests, dune_light.z) * ripples * tracks;
 	}
 	// Fujii's Oren-Nayar, as Lambert where grains hide nothing (s = 0). Only
 	// a sky light under about 20 degrees: higher, or a lamp by your eye, it
