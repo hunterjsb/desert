@@ -797,3 +797,20 @@ docs, so the radio follows it as direction.
   ([Wind & storms](wind-and-storms.md#storm-only-mechanics-back-burner)). Read as a plant's pattern
   being one more real system to read, which the session never explains. Not said what a pattern
   sounds like, whether it needs the Console, or which storms carry better.
+
+### Dropout continuity check (2026-10-19)
+
+The Stoker's song must keep the same active playback when a storm cuts its signal. Radio probe
+11 now checks the non-null `AudioStreamPlayback` instance and that it remains playing, alongside
+its existing song and gain assertions. Advancing the audio clock across eight physics ticks is
+not the contract: headless audio mixes on a separate clock. The pinned Godot implementation
+creates a new playback for each `AudioStreamPlayer3D.play()` call, so playback identity directly
+detects a restart even when its new cursor has already advanced. No radio behaviour changes.
+
+Measured on Linux with Godot 4.7.2: the original focused check passed normally. An external
+diagnostic compressed only the storm observation's physics ticks between audio mixes: the
+cursor stayed at 0.09578231 s, the playback instance stayed identical, and the old assertion
+failed. The corrected probe passed; temporarily forcing `music.play(0.0)` on storm entry made
+it fail specifically at the continuity assertion. After removing that mutation it passed again.
+Native macOS verification remains required; Linux diagnostics explain the timing assumption
+but do not establish the failed runner's exact audio schedule.
