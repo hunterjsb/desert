@@ -322,7 +322,8 @@ func link_pair() -> Array[Rope]:
 func _hide() -> void:
 	var pair := link_pair()
 	if hidden != null and (pair.is_empty() or pair[0] != _sheet or pair[1] != _carried
-			or not is_instance_valid(hidden.a) or not is_instance_valid(hidden.b) or not is_instance_valid(hidden.through)):
+			or not is_instance_valid(hidden.a) or not is_instance_valid(hidden.b) or not is_instance_valid(hidden.through)
+			or not is_instance_valid(_block) or _block.holder != hidden.a.holder):
 		_unhide()
 	if pair.is_empty() or hidden != null:
 		return
