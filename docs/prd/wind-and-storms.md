@@ -441,8 +441,8 @@ From Hunter's [storms, signals & sailing spec](../storms-signals-sailing-2026-10
   days: hearts are sparse, and 30 km and 30 days found none on one seed in eight (how Hunter met
   it, 2026-10-18), where this finds one within 23 days on each of 60 seeds tried. The dev overlay
   shows the hidden term where you stand (`weather/anom`).
-- **Its deeds** (agreed 2026-10-18): Eye of the Anomaly and Tells, hidden, in the Weather tree, and
-  Taught with the Walker's quest ([Profile & saves](profile-and-saves.md#round-two-the-trees-that-tie-it-together-agreed-2026-10-18-not-built)).
+- **Its deeds** (agreed 2026-10-18): Eye of the Anomaly and Tells, hidden, in the Weather tree (built
+  2026-10-19), and Taught with the Walker's quest ([Profile & saves](profile-and-saves.md#round-two-the-trees-that-tie-it-together-agreed-2026-10-18-step-1-built-2026-10-19)).
 
 ## Dune archaeology (agreed, 2026-10-18 spec; not built)
 
