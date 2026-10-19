@@ -94,10 +94,12 @@ uniform float track_texel = 0.25;
 // The window's middle in engine x and z, and its reach; none while negative.
 uniform vec3 track_window = vec3(0.0, 0.0, -1.0);
 // How deep a full mark is drawn, m: its walls tilt the light by it.
-uniform float track_depth = 0.06;
+uniform float track_depth = 0.08;
+// View-ray depth near you, fading before a mark becomes smaller than a pixel.
+uniform float track_relief = 1.0;
 // The share of light trodden sand loses, and how much less of the sky a mark
 // sees: the night's only light is the sky's.
-uniform float track_shade = 0.32;
+uniform float track_shade = 0.24;
 uniform float track_occlusion = 0.35;
 // Loose sand pushed up round a mark catches the light this much more.
 uniform float track_rim = 0.25;
@@ -354,18 +356,29 @@ void fragment() {
 		vec2 xz = world_pos.xz;
 		float h = track_texel;
 		float c = track_at(xz);
+		vec3 eye = INV_VIEW_MATRIX[3].xyz - world_pos;
+		float relief = track_relief * (1.0 - smoothstep(2.0, 8.0, length(eye)));
+		if (relief > 0.001 && c > 0.0) {
+			// Looking into a dent meets its floor further along the ray. Bound
+			// grazing views to keep the rim from swimming across the surface.
+			vec3 view = normalize(eye);
+			vec2 ray = -view.xz / max(dot(view, n), 0.3);
+			xz += ray * track_depth * c * relief;
+			c = track_at(xz);
+		}
 		float e = track_at(xz + vec2(h, 0.0));
 		float w = track_at(xz - vec2(h, 0.0));
 		float s = track_at(xz + vec2(0.0, h));
 		float nn = track_at(xz - vec2(0.0, h));
-		// The sand drawn depth * c lower: its slope is the depth's, inverted.
-		dent = vec3(e - w, 0.0, s - nn) / (2.0 * h) * track_depth;
-		// Any mark at all reads as trodden; a shallow one, half as dark.
-		trodden = smoothstep(0.0, 0.2, c);
 		float lip = clamp((e + w + s + nn) * 0.25 - c, 0.0, 1.0);
-		colour *= mix(1.0, 1.0 - track_shade * (0.5 + 0.5 * smoothstep(0.0, 0.5, c)), trodden)
-			* (1.0 + track_rim * smoothstep(0.0, 0.2, lip));
-		AO = 1.0 - track_occlusion * smoothstep(0.0, 0.6, c);
+		// Opposite slopes across the loose outer rim; the wide differences
+		// keep the quarter-metre map from exposing its bilinear cell edges.
+		float rim_wall = smoothstep(0.0, 0.2, lip) * (1.0 - smoothstep(0.0, 0.2, c));
+		dent = vec3(e - w, 0.0, s - nn) / (2.0 * h) * (track_depth - 4.0 * track_lift * rim_wall);
+		trodden = smoothstep(0.0, 0.3, c);
+		colour *= mix(1.0, 1.0 - track_shade * (0.5 + 0.5 * smoothstep(0.0, 0.8, c)), trodden)
+			* (1.0 + track_rim * lip);
+		AO = 1.0 - track_occlusion * smoothstep(0.0, 0.9, c);
 	}
 
 	// Ripples across the wind, gone wherever a pixel spans more than about a
