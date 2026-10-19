@@ -80,6 +80,10 @@ func _ready() -> void:
 	add_child(_fade)
 
 
+func _process(_delta: float) -> void:
+	# Teaching belongs to the run; covered hints compete with a page's title.
+	_how_to.visible = not holds_input()
+
 func is_open() -> bool:
 	return not _menus.is_empty()
 

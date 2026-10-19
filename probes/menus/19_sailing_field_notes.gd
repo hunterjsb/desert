@@ -27,6 +27,8 @@ func run() -> void:
 		"the practice rig carries a streamer for reading apparent wind")
 	check(notes.interact(world.player) and main.ui.is_open(), "using loose notes opens their chapter list")
 	var chapters := main.ui.top()
+	await _layout()
+	check(not main.ui._how_to.visible, "sailing hints do not overlap the reading menu")
 	for chapter in SailingNotes.PAGES.size():
 		var paragraphs: PackedStringArray = SailingNotes.PAGES[chapter][1].split("\n\n", false)
 		for paragraph in paragraphs.size():
@@ -44,7 +46,9 @@ func run() -> void:
 			press(&"ui_cancel")
 			check(main.ui.top() == chapters, "back returns to chapters")
 	press(&"ui_cancel")
-	check(not main.ui.is_open() and not Controls.mouse_free, "closing the booklet returns to the run")
+	await _layout()
+	check(not main.ui.is_open() and not Controls.mouse_free and main.ui._how_to.visible,
+		"closing the booklet returns to the run and uncovers its hints")
 	world.player.hands.hold(notes)
 	await physics_frames(20)
 	check(notes.use(world.player, Vector3.ZERO) and main.ui.is_open(), "the carried booklet can be read again")
