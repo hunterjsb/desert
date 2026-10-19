@@ -50,7 +50,7 @@ func run() -> void:
 			listed[id] -= on_you[id]
 			if listed[id] == 0:
 				listed.erase(id)
-		var got := _set_down(kit)
+		var got := await _set_down(kit)
 		if str(_sorted(listed)) != str(_sorted(got)):
 			drift.append("the %s lists %s, a run sets down %s" % [kit.label, _sorted(listed), _sorted(got)])
 	check(drift.is_empty(), "each origin's gear as listed is what its run sets down (%s)" % "; ".join(drift))
@@ -119,12 +119,17 @@ func _set_down(kit: Kit) -> Dictionary:
 				if socket.part != null:
 					var part: StringName = socket.part.get_meta(&"catalog")
 					got[part] = got.get(part, 0) + 1
+	# A line tied at your waist is waited on a frame, as a sheet there is.
 	var waist := main.view.player.waist
+	var tied := []
 	for node in made:
 		if node is Line:
 			for end in (node as Line).ends:
 				if waist.holds(end):
-					waist.untie(end).free()
+					tied.append(waist.untie(end))
+	await get_tree().process_frame
+	for end in tied:
+		end.free()
 	for node in made:
 		if is_instance_valid(node):
 			node.free()

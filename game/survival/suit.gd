@@ -84,7 +84,9 @@ func restock() -> void:
 	for id in kit.carried_ids():
 		if Catalog.DEVICES.has(id):
 			var device := Catalog.device(id)
-			# It comes with its batteries, to work on you from the first.
+			# It comes with its batteries, to work on you from the first;
+			# fitted before it's in the world, so before its _ready would set this.
+			device.center_of_mass_mode = RigidBody3D.CENTER_OF_MASS_MODE_CUSTOM
 			for socket in device.sockets():
 				if socket.kind == &"battery":
 					var cell := Catalog.part(&"battery") as Battery

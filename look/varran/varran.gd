@@ -106,6 +106,8 @@ func _storm() -> void:
 	Scenarios.stand(world, front, Scenarios.find(world, front))
 	await _ground()
 	var player := world.player
+	player.suit.restock()
+	await ticks(2)
 	var shield: ShieldGenerator = player.suit.carried.filter(func(b: Node) -> bool: return b is ShieldGenerator)[0]
 	shield.stand(true)
 	var down := _downwind()

@@ -723,8 +723,8 @@ the board, your dug edge its only grip across the wind: the Varran rides his boa
   | 10 m/s | 0.8 | 3.0 | 4.8 | 6.0 | 4.8 | 5.1 |
   | 14 m/s | 1.9 | 5.3 | 7.1 | 10.0 | 8.1 | 8.3 |
 
-  At 75° in 10 m/s it makes 0.8 m/s against the wind, and at 60° only stalls toward it: higher than a
-  close reach a kite doesn't go. It's the same on either tack (4.77 and 4.80 m/s on a beam reach), each
+  At 75° in 10 m/s it makes 0.8 m/s against the wind, and at 60° crawls, 0.4 of its 0.8 upwind: a
+  kite points no higher than a close reach. It's the same on either tack (4.77 and 4.80 m/s on a beam reach), each
   line pulls about 170 N, and it heels 3° in 10 m/s and 10° in 14. Undug on that beam reach it makes
   1.6 m/s across and is blown 5.0 m/s downwind: the edge is the keel. In 18 m/s it goes over on a
   beam reach and runs at 11 m/s, its sail at the edge of tearing: furl it, or run.
