@@ -1,6 +1,7 @@
 extends Node
 ## Look-test: the Console on seed 1234, as the "console" scenario stands it on
-## its floating deck with a storm due, and one alone on its own tray. Shot as
+## its floating deck with a storm due, and one alone on a floating piece of
+## its own. Shot as
 ## you'd see them standing a step or two back, at the game's own lens, and
 ## its screen close: the map at each resolution its gear gives (estimated
 ## with no radar, a radar alone, a radar and two more, the full set, two
@@ -67,7 +68,7 @@ func _capture(out_dir: String) -> void:
 	await _ground()
 	var dropped := Scenarios.console(world)
 	var deck: Chassis = dropped[0]
-	var made: Console = dropped[1]
+	var made: Console = dropped.filter(func(b: Node) -> bool: return b is Console)[0]
 	player.set_physics_process(false)
 	player.flying = true
 	await _ticks(150)
@@ -85,9 +86,11 @@ func _capture(out_dir: String) -> void:
 	await _ticks(10)
 	await _close(out_dir, "full", made)
 
-	# Each tier: the instruments it keeps, the rest set aside meanwhile.
-	var radio := made.mounted()[0]
-	var top := made.seat_of(radio)
+	# Each tier: the instruments it keeps, the rest set aside meanwhile, the
+	# deck's radio too.
+	var radio: Radio = dropped.filter(func(b: Node) -> bool: return b is Radio)[0]
+	var radio_on := deck.seat_of(radio)
+	var radio_at := [radio_on.transform, radio_on.out, deck.own_piece(radio_on)]
 	var spare := {}
 	for socket in made.sockets():
 		if socket.kind in [&"computer_mod", &"computer_top"] and socket.part != null:
@@ -101,8 +104,8 @@ func _capture(out_dir: String) -> void:
 				var part := Catalog.part(spare[socket])
 				world.content.add_child(part)
 				made.fit(part, socket)
-		if made.seat_of(radio) != null:
-			made.dismount(top)
+		if deck.seat_of(radio) != null:
+			deck.unstick(deck.seat_of(radio))
 			radio.get_parent().remove_child(radio)
 		await _ticks(200)
 		await _close(out_dir, tier[0], made)
@@ -111,21 +114,18 @@ func _capture(out_dir: String) -> void:
 			var part := Catalog.part(spare[socket])
 			world.content.add_child(part)
 			made.fit(part, socket)
-	made.mount(radio, top)
+	deck.stick(radio, radio_at[0], radio_at[1], radio_at[2])
 
 	# A second Console linked on a third piece, its own radar: finer still.
 	var piece := Catalog.device(&"chassis") as Chassis
 	world.content.add_child(piece)
 	piece.global_position = deck.global_position + Vector3(0.0, 3.0, 0.0)
-	deck.join(piece, Scenarios._on_piece(deck, Vector2i.ZERO, &"ring", Vector2i(-1, 0)), 0)
-	Scenarios.fill(world, deck, [&"hover_tray"])
-	var other := Catalog.device(&"console") as Console
-	world.content.add_child(other)
-	Scenarios.fill(world, other, [&"big_battery", &"screen", &"radar"])
-	for socket in deck.sockets():
-		if socket.kind == &"deck" and socket.is_open():
-			deck.mount(other, socket)
-			break
+	deck.join(piece, Rig.ring_of(deck, Vector2i.ZERO, Vector2i(-1, 0)), 0)
+	var third := Rig.piece(deck, Vector2i(-1, 0))
+	Stick.put(deck, third, Chassis.BOTTOM, Vector2.ZERO, 0.0, Catalog.part(&"hover_tray"))
+	Stick.put(deck, third, Chassis.TOP, Vector2(0.3, 0.32), 0.0, Catalog.part(&"big_battery"))
+	var other := Rig.make([&"console", [&"screen", &"radar"]]) as Console
+	Stick.put(deck, third, Chassis.TOP, Vector2(0.0, -0.18), PI, other)
 	await _ticks(200)
 	await _close(out_dir, "linked", made)
 	deck.dismount(deck.seat_of(other)).queue_free()
@@ -145,14 +145,17 @@ func _capture(out_dir: String) -> void:
 	await _close(out_dir, "near_power", made)
 	made.page = Console.Page.RADAR
 
-	# One alone, floating on its own tray beside the deck.
-	var alone := Catalog.device(&"console") as Console
-	world.content.add_child(alone)
-	Scenarios.fill(world, alone, [&"hover_tray", &"big_battery", &"big_battery", &"screen", &"anemometer", &"barometer",
-		&"hygrometer", &"particle_sensor", &"radar"])
+	# One alone, on a floating piece of its own beside the deck.
+	var own := Rig.build(world.content, [[&"stick", Vector2i.ZERO, &"bottom", Vector2.ZERO, 0.0, &"hover_tray"],
+		[&"stick", Vector2i.ZERO, &"top", Vector2(0.0, -0.18), 180.0, [&"console", [&"screen", &"anemometer", &"barometer",
+			&"hygrometer", &"particle_sensor", &"radar"]]],
+		[&"stick", Vector2i.ZERO, &"top", Vector2(-0.2, 0.32), 0.0, &"big_battery"],
+		[&"stick", Vector2i.ZERO, &"top", Vector2(0.2, 0.32), 0.0, &"big_battery"]]).deck
+	var alone := own.mounted()[0] as Console
 	var beside := made.global_position + _normal(made) * 3.5 - made.global_basis.x * 3.5
-	alone.global_transform = Transform3D(Basis(Vector3.UP, atan2(-_normal(made).x, -_normal(made).z)),
-		Vector3(beside.x, world.height_under(beside) + alone.rest_height(), beside.z))
+	# Its screen, the Console's front, to the deck's side as the deck's faces.
+	own.global_transform = Transform3D(Basis(Vector3.UP, atan2(_normal(made).x, _normal(made).z)),
+		Vector3(beside.x, world.height_under(beside) + own.rest_height(), beside.z))
 	await _ticks(240)
 	await _whole(out_dir, "alone", alone, alone, 2.4, -0.45)
 	get_tree().quit()

@@ -1,13 +1,14 @@
 extends Node
 ## Look-test: the art direction. A camp beside the corner of the ruin nearest
 ## the run's start, on seed 1234 in the game's own light and weather: a
-## floating crate frame with a hover tray, a battery and a hook, a planter, a
-## shield generator with its bubble up, a stake with a line to the crate, and
-## a charger under a solar panel. Each candidate look draws over the same real
+## floating chassis with a hover tray, a battery and a hook, a planter, a
+## shield generator on its plate with its bubble up, a stake with a line to
+## the floating chassis, and a chassis with a battery and a solar panel.
+## Each candidate look draws over the same real
 ## devices, so sizes, sockets and the rope are the game's; nothing in game/
 ## changes. --storm stands the camp in a storm instead of clear skies.
 ##   godot --path . res://look/style/style.tscn -- --look b [--storm]
-##   godot --path . --disable-vsync res://look/style/style.tscn -- --look b [--storm] --capture <dir> [--only crate]
+##   godot --path . --disable-vsync res://look/style/style.tscn -- --look b [--storm] --capture <dir> [--only floater]
 ## look/style/shoot.sh shoots every candidate and builds the contact sheets.
 
 const SEED := 1234
@@ -25,13 +26,17 @@ const MOMENTS := {"morning": 0.285, "midmorning": 0.4, "noon": 0.5, "dusk": 0.71
 const CAMP_AT := Vector2(13.5, 3.0)
 const CAMP_TURN := 12.0
 ## The camp in its own frame, x right and z toward the 8 m camera, m: catalog
-## id, x, z, yaw degrees, parts. The crate floats; the rest stand on the sand.
+## id, x, z, yaw degrees, parts, fitted, or stuck on a chassis; a shield
+## stands on a plate with its battery. The first floats; the rest stand on
+## the sand.
 const CAMP := [
-	[&"crate_frame", -1.9, 0.6, 25.0, [&"battery", &"hover_tray"]],
+	[&"chassis", -1.9, 0.6, 25.0, [&"battery", &"hover_tray"]],
 	[&"planter", 2.0, 0.7, -18.0, [&"battery", &"root_tuber", &"root_tuber", &"root_tuber", &"vat_fungus"]],
-	[&"charger", 1.1, -1.6, 35.0, [&"battery", &"solar_panel"]],
+	[&"chassis", 1.1, -1.6, 35.0, [&"battery", &"solar_panel"]],
 	[&"shield", 0.0, 0.0, 10.0, [&"battery"]],
 ]
+## Where things go on a chassis's top, in turn.
+const ON_TOP := [Vector2(-0.22, 0.24), Vector2(0.12, -0.22), Vector2(0.3, 0.3)]
 const STAKE_AT := Vector2(-3.9, -0.9)
 ## Where the two finds lie half-buried, x and z, with their lean, degrees.
 const FINDS := [[Vector2(-0.55, 2.6), 14.0], [Vector2(0.75, 2.75), -9.0]]
@@ -43,8 +48,8 @@ const SHOTS := [
 	["camp8_noon", "noon", Vector3(1.6, 1.7, 8.0), Vector3(0.0, 0.5, 0.0)],
 	["camp8_dusk", "dusk", Vector3(1.6, 1.7, 8.0), Vector3(0.0, 0.5, 0.0)],
 	["camp50", "midmorning", Vector3(14.0, 4.0, 48.0), Vector3(0.0, 1.0, 0.0)],
-	["crate", "midmorning", Vector3(-2.5, 1.12, 2.05), Vector3(-1.9, 1.08, 0.6)],
-	["crate5", "midmorning", Vector3(-3.65, 1.7, 5.3), Vector3(-1.9, 1.1, 0.6)],
+	["floater", "midmorning", Vector3(-2.5, 1.12, 2.05), Vector3(-1.9, 1.08, 0.6)],
+	["floater5", "midmorning", Vector3(-3.65, 1.7, 5.3), Vector3(-1.9, 1.1, 0.6)],
 	["finds", "midmorning", Vector3(0.1, 0.62, 3.45), Vector3(0.1, 0.04, 2.68)],
 	["storm", "storm", Vector3(0.9, 1.7, 5.2), Vector3(0.0, 0.5, 0.0)],
 ]
@@ -172,23 +177,39 @@ func _build_camp() -> void:
 	for entry: Array in CAMP:
 		var device := Catalog.device(entry[0])
 		device.set_meta(&"id", entry[0])
-		world.content.add_child(device)
+		var body := device
+		if device is ShieldGenerator:
+			# On its plate, its battery stuck beside it.
+			body = Catalog.device(&"chassis")
+			body.set_meta(&"id", &"chassis")
+			Stick.put(body as Chassis, body as Chassis, Chassis.TOP, Vector2.ZERO, 0.0, device)
+		world.content.add_child(body)
+		var spot := 0
 		for part_id: StringName in entry[4]:
 			var part := Catalog.part(part_id)
 			world.content.add_child(part)
+			var deck := body as Chassis
+			if deck != null:
+				var under := Device.carries(part) != &""
+				Stick.put(deck, deck, Chassis.BOTTOM if under else Chassis.TOP,
+					Vector2.ZERO if under else ON_TOP[spot + (2 if deck != device else 0)], 0.0, part)
+				spot += 0 if under else 1
+				continue
 			for socket in device.sockets():
 				if socket.kind == part.kind and socket.part == null:
 					device.fit(part, socket)
 					break
-		var size: Vector3 = Catalog.DEVICES[entry[0]].size
+		var size: Vector3 = Catalog.DEVICES[body.get_meta(&"id")].size
 		var floats: bool = entry[4].has(&"hover_tray")
-		var at := _engine(Vector3(entry[1], device.rest_height() if floats else size.y * 0.5 + 0.02, entry[2]))
-		device.global_transform = Transform3D(turn * Basis(Vector3.UP, deg_to_rad(entry[3])), at)
-		device.freeze = true
-		camp.append(device)
+		var at := _engine(Vector3(entry[1], body.rest_height() if floats else size.y * 0.5 + 0.02, entry[2]))
+		body.global_transform = Transform3D(turn * Basis(Vector3.UP, deg_to_rad(entry[3])), at)
+		body.freeze = true
+		camp.append(body)
+		if body != device:
+			camp.append(device)
 		if device is ShieldGenerator:
 			generator = device
-	var crate := camp[0]
+	var floater := camp[0]
 	var stake := Catalog.stake()
 	stake.set_meta(&"id", &"stake")
 	world.content.add_child(stake)
@@ -196,13 +217,13 @@ func _build_camp() -> void:
 	stake.drive(spot, spot.y)
 	# The hook goes on the ring mount facing the stake.
 	var ring: Socket = null
-	for socket in crate.sockets():
+	for socket in floater.sockets():
 		if socket.kind == &"ring" and (ring == null or socket.global_position.distance_to(spot) < ring.global_position.distance_to(spot)):
 			ring = socket
 	var hook := Catalog.part(&"hook")
 	world.content.add_child(hook)
-	crate.fit(hook, ring)
-	Line.between(world, crate.free_tie(spot), stake.free_tie(crate.global_position), 0.6)
+	floater.fit(hook, ring)
+	Line.between(world, floater.free_tie(spot), stake.free_tie(floater.global_position), 0.6)
 	camp.append(stake)
 	generator.stand(true)
 
@@ -310,7 +331,8 @@ func _capture(out_dir: String, only: PackedStringArray) -> void:
 	for shot: Array in _shots():
 		if (shot[1] == "storm") != storm or (not only.is_empty() and not only.has(shot[0])):
 			continue
-		generator.battery().charge_wh = generator.battery().capacity()
+		var cell := generator.host().battery()
+		cell.charge_wh = cell.capacity()
 		var eye := _engine(shot[2])
 		world.player.global_position = eye - _eye
 		await _ground()

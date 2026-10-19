@@ -1,13 +1,14 @@
 extends SavesProbe
 ## Profile & saves probe 1: the round trip. A camp runs mid-storm: a shield
-## up, a crate floating outside it on two lines to stakes with a light shield
-## seated on it, a planter growing inside, their batteries draining, a line
+## up on its plate, a chassis floating outside it on two lines to stakes with
+## a light shield stuck on it, a planter growing inside, their batteries
+## draining, a line
 ## from a stake to your waist and a battery in your hands. One run carries
 ## on a minute, never saved. Another,
 ## the same to the tick, is saved there; saving changes nothing in it, and
 ## resumed from the file into a fresh world on the same seed, the next
 ## minute matches the one never saved, within what physics repeats to. A
-## save that drops one thing (how the floating crate was moving) doesn't.
+## save that drops one thing (how the floating chassis was moving) doesn't.
 
 ## How close the resumed minute keeps to the one never saved: where things
 ## stand, m, and any number they carry, as a share of it. What physics
@@ -21,9 +22,9 @@ func run() -> void:
 	await load_camp()
 	var start := reading()
 	var never := await minute()
-	check(never[-1].numbers["shield#0 Wh"] < start.numbers["shield#0 Wh"]
-		and never[-1].numbers["crate_frame#2 Wh"] < start.numbers["crate_frame#2 Wh"], "their charges drain")
-	check(never[-1].numbers["planter#1 growth 2"] > start.numbers["planter#1 growth 2"], "the planter's fungus grows")
+	check(never[-1].numbers["chassis#0 Wh"] < start.numbers["chassis#0 Wh"]
+		and never[-1].numbers["chassis#3 Wh"] < start.numbers["chassis#3 Wh"], "their charges drain")
+	check(never[-1].numbers["planter#2 growth 2"] > start.numbers["planter#2 growth 2"], "the planter's fungus grows")
 
 	await fresh_world()
 	await load_camp()
@@ -43,10 +44,10 @@ func run() -> void:
 	check(drift.metres <= METRES, "everything stands where it would have, within %.2f m" % METRES)
 	check(drift.number <= NUMBER, "every number matches, within %.1f%%" % (NUMBER * 100.0))
 
-	# Broken on purpose: the save forgets how the floating crate was moving.
+	# Broken on purpose: the save forgets how the floating chassis was moving.
 	var data: Dictionary = SaveFile.read(saves.path(), saves.KIND, saves.VERSION).data
 	for rec: Dictionary in data.things:
-		if rec.id == &"crate_frame":
+		if rec.id == &"chassis" and rec.stuck.any(func(e: Array) -> bool: return e[2].id == &"hover_tray"):
 			rec.v = Vector3.ZERO
 			rec.w = Vector3.ZERO
 	SaveFile.write(saves.path(), saves.KIND, saves.VERSION, data)

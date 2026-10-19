@@ -7,7 +7,7 @@
 set -uo pipefail
 cd "$(dirname "$0")/../.." || exit 2
 
-things=(crate_deep crate_surface crate_yours crates shield light_shield turbine condenser board ruin)
+things=(chassis_deep chassis_surface chassis_yours chassis_pair shield light_shield turbine condenser board ruin)
 
 if [[ ${1:-} == --sheets ]]; then
 	before=${2:?a before directory}

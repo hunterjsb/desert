@@ -1,5 +1,5 @@
 extends "res://look/style/style.gd"
-## Look-test: lineage. A crate frame with a battery on the sand before it for
+## Look-test: lineage. A chassis piece with a battery on the sand before it for
 ## each era and lineage, in a row in front of the camp, each shot close up and
 ## from 5 m, and the row whole: the company's issue (the kit's), colonial, a
 ## First Kingdoms house's, the skimmer era's, remade in the Dark Age, remade
@@ -26,11 +26,11 @@ func _dress() -> void:
 	# The camp's bubble down: the row stands inside it.
 	generator.stand(false)
 	for entry: Array in ROW:
-		var crate := Catalog.device(&"crate_frame")
+		var piece := Catalog.device(&"chassis")
 		var cell := Catalog.part(&"battery")
-		Catalog.inherit(crate, entry[1])
+		Catalog.inherit(piece, entry[1])
 		Catalog.inherit(cell, entry[1])
-		for each: Array in [[crate, Vector3(entry[2], 0.0, ROW_Z), 0.0], [cell, Vector3(entry[2] + 0.1, 0.0, ROW_Z + 0.75), PI * 0.15]]:
+		for each: Array in [[piece, Vector3(entry[2], 0.0, ROW_Z), 0.0], [cell, Vector3(entry[2] + 0.1, 0.0, ROW_Z + 0.75), PI * 0.15]]:
 			var body: RigidBody3D = each[0]
 			var at := _to_world(each[1])
 			world.content.add_child(body)

@@ -1,6 +1,6 @@
 extends MenuProbe
 ## Menus & UI probe 9: the prop aside, and the music's switch. Before any run
-## the main menu shows the Surveyor's crate. Every menu opened off it stands
+## the main menu shows the Surveyor's camp. Every menu opened off it stands
 ## down the left with the prop slid aside: the deeds, Options, the controls
 ## list, the question before a reset, who you come as and the mode; back slides it
 ## home. Who you come as shows the highlighted Salvager's board, and each
@@ -15,7 +15,7 @@ func run() -> void:
 	await open_main()
 	var surveyor := Kit.named(&"surveyor")
 	var salvager := Kit.named(&"salvager")
-	check(main.showpiece.shown == surveyor.id, "before any run, the menu shows the Surveyor's crate")
+	check(main.showpiece.shown == surveyor.id, "before any run, the menu shows the Surveyor's camp")
 	var home := _across()
 	press(&"ui_down")
 	press(&"ui_accept")
@@ -102,11 +102,21 @@ func _set_down(kit: Kit) -> Dictionary:
 			else (&"cable" if node is Cable else node.get_meta(&"catalog", &"")))
 		if node in plugs or id == &"":
 			continue
-		got[id] = got.get(id, 0) + 1
-		# A line's ends are the line's.
-		if node is Device:
-			for socket: Socket in node.frame_sockets():
-				if socket.part != null and socket.kind != &"tie":
+		var deck := node as Chassis
+		# A deck counts each of its pieces, and the parts stuck on it; the
+		# devices stuck on it are in what was made already.
+		var bodies: Array = deck.pieces() if deck != null else [node]
+		for body: Node in bodies:
+			got[id] = got.get(id, 0) + 1
+			# A line's ends are the line's.
+			if body is Device:
+				for socket: Socket in body.frame_sockets():
+					if socket.part != null and socket.kind != &"tie":
+						var part: StringName = socket.part.get_meta(&"catalog")
+						got[part] = got.get(part, 0) + 1
+		if deck != null:
+			for socket in deck.stuck():
+				if socket.part != null:
 					var part: StringName = socket.part.get_meta(&"catalog")
 					got[part] = got.get(part, 0) + 1
 	for node in made:
