@@ -431,8 +431,10 @@ From Hunter's [storms, signals & sailing spec](../storms-signals-sailing-2026-10
   reference camp's deck resting on the sand, moored upwind; a Console reading the wind and the sand;
   a radio on the weather station; the base shield on one battery, running; and a turbine out in the
   gale on a strong cable, enough for an ordinary storm. A compass is in your suit. It's searched
-  round where the run began, wherever a heart passes, over 30 days from the grace's end. The dev
-  overlay shows the hidden term where you stand (`weather/anom`).
+  wherever a heart passes within 60 km of where the run began, from the grace's end for up to 200
+  days: hearts are sparse, and 30 km and 30 days found none on one seed in eight (how Hunter met
+  it, 2026-10-18), where this finds one within 23 days on each of 60 seeds tried. The dev overlay
+  shows the hidden term where you stand (`weather/anom`).
 - **A deed, proposed and not added.** "Survive an anomaly" fits, as the first step of teaching the
   Walker, but the deeds grid names every deed, so its tile would say anomalies exist before you've
   learnt them by their tells. The proposal: a hidden deed (the table has the flag; none uses it yet),
