@@ -41,28 +41,12 @@ const ROPE := ["length", "kg_per_m", "breaking", "frequency", "damping", "max_st
 	"spring_impulse", "stop_impulse"]
 const STRAND := ["length", "_rest", "_velocity", "_ground", "_slope", "_near", "_bulge", "_age", "_phase",
 	"_hanging", "_bow"]
-## How the save numbers the frames' sockets. One without it is from before
-## the crate lost its side rings (2026-10-17), and numbers them as RENUMBERED
-## says.
-const LAYOUT := 1
-## Each frame whose sockets have changed, as an older save numbers them: by
-## old socket, its number now, or, for one the frame no longer has, that
-## socket as the catalog had it, [kind, position, outward].
-const RENUMBERED := {&"crate_frame": [0, [&"ring", Vector3(0.4, 0.0, 0.0), Vector3.RIGHT],
-	[&"ring", Vector3(-0.4, 0.0, 0.0), Vector3.LEFT], 1, 2, 3, 4, 5, 6, 7, 8]}
-
 var _world: World
 ## Capture: the number each body is known by. Restore: the body each number made.
 var _refs := {}
 var _made := {}
 ## Restore: [body, record] for every body made, whose state goes on last.
 var _states: Array[Array] = []
-## Restore: the save's LAYOUT; [device, socket] for each socket put back on a
-## frame that no longer has it, to be emptied once the frame stands; and each
-## socket a part moved to from one a frame lost.
-var _layout := LAYOUT
-var _spilled: Array[Array] = []
-var _moved: Array[Socket] = []
 
 
 func _init(world: World) -> void:
@@ -84,10 +68,12 @@ static func problem(data: Dictionary) -> String:
 			unknown.append(str(rec.id))
 		for entry: Array in rec.get("sockets", []) + rec.get("added", []):
 			again.call(entry[1], again)
+		for entry: Array in rec.get("stuck", []):
+			again.call(entry[2], again)
 		if rec.has("mounted"):
 			again.call(rec.mounted, again)
 		for entry: Array in rec.get("joined", []):
-			again.call(entry[3], again)
+			again.call(entry[1], again)
 	for rec: Dictionary in data.get("things", []) + _carried(data):
 		look.call(rec, look)
 	return "" if unknown.is_empty() else "it holds things this build doesn't know: " + ", ".join(unknown)
@@ -106,7 +92,6 @@ static func summary(data: Dictionary) -> Dictionary:
 ## seated in it. Each as [body, its pose about you as you stood, facing -z].
 ## Out of the tree; dress() them once they're in it.
 func camp(data: Dictionary, reach: float, most: int) -> Array[Array]:
-	_layout = data.get("layout", 0)
 	var you: Array = data.player.at
 	var off := func(rec: Dictionary, from: Array) -> float:
 		return Vector2(rec.at[1] - from[1], rec.at[3] - from[3]).length()
@@ -193,7 +178,6 @@ func begin(data: Dictionary) -> Array[Vector2]:
 func finish(data: Dictionary) -> void:
 	var world := _world
 	var ropes := world.ropes
-	_layout = data.get("layout", 0)
 	var lines: Array[Line] = []
 	for rec: Dictionary in data.lines:
 		lines.append(_line(rec))
@@ -220,12 +204,6 @@ func finish(data: Dictionary) -> void:
 		# Still held by the sand: only taking hold of it pulls it up.
 		if rec.get("buried", false):
 			body.set_meta(&"buried", true)
-	# What sat in a socket its frame has lost comes out beside it, as your
-	# hands would take it out: a line's end on it first, loose, then itself.
-	for pair in _spilled:
-		pair[0].take(pair[1])
-		pair[1].free()
-	_spilled.clear()
 	var suit := world.player.suit
 	for thing in suit.carried:
 		thing.free()
@@ -273,9 +251,6 @@ func finish(data: Dictionary) -> void:
 			strand.world = world
 			ropes.strands.append(strand)
 		_strand_in(strand, data.strands[i])
-	for socket in _moved:
-		_let_out(socket)
-	_moved.clear()
 	# Solved in the order they were: lines sharing a load settle it in turn.
 	var was := []
 	for rec: Dictionary in data.lines + data.cables:
@@ -314,7 +289,7 @@ func _take() -> Dictionary:
 	var ropes := world.ropes
 	var player := world.player
 	var hands := player.hands
-	var data := {"layout": LAYOUT, "seed": world.run_seed, "time": world.time, "began": world.began,
+	var data := {"seed": world.run_seed, "time": world.time, "began": world.began,
 		"gravity": world.gravity,
 		"origin": world.origin_chunk,
 		"moon": {"latitude": world.moon.latitude, "longitude": world.moon.longitude,
@@ -491,16 +466,46 @@ func _body(body: RigidBody3D, loose: bool) -> Dictionary:
 			if not inside.is_empty():
 				filled.append([i, inside])
 		out.sockets = filled
-	# A deck's pieces in the order they joined, each as [the piece it joined,
-	# that piece's ring, its quarter turns, itself].
+	# A deck's pieces in the order they joined, each with what's stuck on it:
+	# [how it joined, itself]. Across a ring: ["ring", the piece it joined,
+	# that piece's ring, its quarter turns]; on a frame's face: ["face", the
+	# piece the frame stands on, the frame among what's stuck there, the face].
 	var deck := body as Chassis
-	if deck != null and not deck.joined.is_empty():
-		var pieces := deck.pieces()
-		out.joined = []
-		for piece in deck.joined:
-			var on: Chassis = piece.joined_at.get_meta(&"piece", deck)
-			out.joined.append([pieces.find(on), on.frame_sockets().find(piece.joined_at), piece.turns,
-				_body(piece, false)])
+	if deck != null:
+		var on := deck if deck.deck == null else deck.deck
+		out.stuck = _stuck_out(on, deck)
+		if deck.deck == null and not deck.joined.is_empty():
+			var pieces := deck.pieces()
+			out.joined = []
+			for piece in deck.joined:
+				var how: Array
+				if piece.on_frame():
+					var host := deck.own_piece(piece.joined_at)
+					var frame_in: Socket = piece.joined_at.get_meta(&"socket")
+					how = ["face", pieces.find(host), _stuck_of(deck, host).find(frame_in),
+						piece.joined_at.get_meta(&"face")]
+				else:
+					var ring_on := deck.own_piece(piece.joined_at)
+					how = ["ring", pieces.find(ring_on), ring_on.frame_sockets().find(piece.joined_at), piece.turns]
+				out.joined.append([how, _body(piece, false)])
+	return out
+
+
+## What's stuck on a deck's piece, in the order it went on.
+static func _stuck_of(deck: Chassis, piece: Chassis) -> Array[Socket]:
+	return deck.stuck().filter(func(s: Socket) -> bool: return deck.own_piece(s) == piece)
+
+
+## What's stuck on a piece, each as [its pose on the piece, the face's way
+## out, what it is]: a part, or a device with what's in its own sockets.
+func _stuck_out(deck: Chassis, piece: Chassis) -> Array:
+	var back := piece.pose().affine_inverse() if piece.deck != null else Transform3D.IDENTITY
+	var out := []
+	for socket in _stuck_of(deck, piece):
+		var inside := _body(socket.part, false) if _known(socket.part) \
+			else (_body(socket.mounted, false) if _known(socket.mounted) else {})
+		if not inside.is_empty():
+			out.append([back * socket.transform, back.basis * socket.out, inside])
 	return out
 
 
@@ -591,12 +596,22 @@ func _make(rec: Dictionary) -> RigidBody3D:
 	var device := body as Device
 	if device != null:
 		device.center_of_mass_mode = RigidBody3D.CENTER_OF_MASS_MODE_CUSTOM
-		for entry: Array in _filled(device, rec):
-			_socket_in(device, entry[0], entry[1])
+		var frame := device.frame_sockets()
+		for entry: Array in rec.get("sockets", []):
+			_socket_in(device, frame[entry[0]], entry[1])
+		# A piece's own stuck things go on while it's still alone, in its own frame.
+		for entry: Array in rec.get("stuck", []):
+			device.stick(_make(entry[2]), entry[0], entry[1])
+		var deck := device as Chassis
 		for entry: Array in rec.get("joined", []):
-			var deck := device as Chassis
-			var on: Chassis = deck.pieces()[entry[0]]
-			deck.join(_make(entry[3]) as Chassis, on.frame_sockets()[entry[1]], entry[2])
+			var how: Array = entry[0]
+			var pieces := deck.pieces()
+			var piece := _make(entry[1]) as Chassis
+			if how[0] == "face":
+				var frame_in := _stuck_of(deck, pieces[how[1]])[how[2]]
+				deck.join(piece, (frame_in.part as Frame).faces()[how[3]])
+			else:
+				deck.join(piece, pieces[how[1]].frame_sockets()[how[2]], how[3])
 	# Its line's end goes on a hook before the hook goes anywhere, and moves
 	# with it into a device.
 	var part := body as Part
@@ -611,51 +626,6 @@ func _make(rec: Dictionary) -> RigidBody3D:
 static func _added(part: Part) -> Array:
 	var nodes: Array = part.socket.fitted if part.socket != null else part.get_children()
 	return nodes.filter(func(n: Node) -> bool: return n is Socket and n.has_meta(&"socket") == (part.socket != null))
-
-
-## What a record has in each of its frame's sockets, as [socket, what's in
-## it]. In an older save, what sat in a socket the frame has lost goes in the
-## free socket of that kind nearest where it was, or with none free, back in
-## that socket for now, to come out loose once the frame stands in the world.
-func _filled(device: Device, rec: Dictionary) -> Array[Array]:
-	var frame := device.frame_sockets()
-	var was: Array = RENUMBERED.get(rec.id, []) if _layout < LAYOUT else []
-	var out: Array[Array] = []
-	var lost: Array[Array] = []
-	for entry: Array in rec.get("sockets", []):
-		var now: Variant = entry[0] if was.is_empty() else was[entry[0]]
-		if now is int:
-			out.append([frame[now], entry[1]])
-		else:
-			lost.append([now, entry[1]])
-	for entry in lost:
-		var gone: Array = entry[0]
-		var free := frame.filter(func(s: Socket) -> bool:
-			return s.kind == gone[0] and not out.any(func(e: Array) -> bool: return e[0] == s))
-		free.sort_custom(func(a: Socket, b: Socket) -> bool:
-			return a.position.distance_to(gone[1]) < b.position.distance_to(gone[1]))
-		if not free.is_empty():
-			_moved.append(free[0])
-		out.append([free[0] if not free.is_empty() else _spill(device, gone), entry[1]])
-	return out
-
-
-## A line on a hook that moved to another ring, let out if it must be to
-## reach it there: past its length, it would yank what it holds.
-func _let_out(socket: Socket) -> void:
-	for node in socket.fitted:
-		var tie := node as Socket
-		if tie != null and tie.part != null and tie.part.has_meta(&"tip"):
-			_world.ropes.let_out(tie.part.get_meta(&"tip"))
-
-
-func _spill(device: Device, was: Array) -> Socket:
-	var socket := Socket.new()
-	socket.kind = was[0]
-	socket.transform = Transform3D(Catalog._facing(was[2]), was[1])
-	device.add_child(socket)
-	_spilled.append([device, socket])
-	return socket
 
 
 func _socket_in(device: Device, socket: Socket, rec: Dictionary) -> void:

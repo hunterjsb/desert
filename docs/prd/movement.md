@@ -90,10 +90,10 @@ even storms that last for days.
 - **It's for scouting and escaping.** Unloaded and charged, it outruns a storm front. It
   runs on its own battery.
 - **It tows nothing.** That keeps it fun, and it keeps it from competing with the camp.
-- **It travels racked** (Hunter, 2026-10-16: "i like a rack"). A crate frame has a rack
-  along its side; the board seats in it the way the shield seats on a top mount, rides
-  wherever the crate goes, and charges from the camp's power, after the shield. Pack up
-  and walk with the camp, and the board comes; take it off the rack to scout.
+- **It travels on the camp** (Hunter, 2026-10-16: "i like a rack"; the rack went with the
+  crate, 2026-10-18). Stuck on a deck, hung on an upright as often as not, it rides wherever
+  the deck goes and charges from the camp's power, after the shield. Pack up and walk with the
+  camp, and the board comes; take it off to scout.
   When the shield dies deep in a storm, you take what's in your hand and go. Before you
   find a board, a shield failure deep in a storm is fatal, so early runs stay in
   shallow storms and carry spare batteries.
@@ -112,19 +112,16 @@ even storms that last for days.
   can tow you, and the board pushes against no line (2026-10-18,
   [sailing](#sailing-the-camp-hunter-2026-10-17)); so does a camp's line beside it, which
   its rig tows past you ([stage 2](#sailing-from-kite-to-yacht-agreed-2026-10-18-spec-built)).
-- **Racked** (2026-10-16). A crate frame's rack runs along the top of its left side. The
-  board is longer than the crate, 1.3 m against 0.8 m, so it overhangs 25 cm front and
-  back. It stands on its edge, nose forward and deck out, 1 cm off the side and 17 cm
-  proud of the top (clear of the ring mount below it, until the crate lost its side
-  rings on 2026-10-17). It seats the way the
-  shield seats on a top mount: holding it at the rack, the tug leans it in and take seats
-  it, and take lifts it off again, whole. Racked, it rides exactly on its seat wherever
-  the crate goes (towed 40 m, it moved 0.008 mm off its seat at most), its 11 kg join the
-  crate's hover load, and it charges from the camp after the shield (Power). You can't
-  ride it racked: the ride action at a racked board takes it off and steps you onto it,
-  as the ride action at any board you look at puts it under your feet. It saves and
-  resumes racked. Every run starts with the board racked on the kit's crate (Hunter,
-  2026-10-16: "i think it should start you w a *racked* hoverboard"; Survival).
+- **On a deck** (2026-10-18, replacing the crate's rack). The board sticks on any sticky face
+  of a chassis it fits, flat on its underside: across a deck's top, or hung on an upright's
+  face ([Devices & mods](devices-and-mods.md#the-chassis-as-the-one-structure-built-2026-10-18)).
+  Held to the face it's shown there itself, and take leaves it; take lifts it off again, whole.
+  Stuck, it rides held fast wherever the deck goes, its 11 kg join the deck's hover load, and it
+  charges from the deck's pool after the shield (Power). You can't ride it stuck: the ride action
+  at a board on a deck takes it off and steps you onto it, as the ride action at any board you
+  look at puts it under your feet. It saves and resumes where it was stuck. Every Surveyor run
+  starts with the board hung across the kit's upright (Hunter, 2026-10-16: "i think it should
+  start you w a *racked* hoverboard"; Survival).
 - **Fast.** 20 m/s, 72 km/h, flat out on the flat in still air, against storm fronts
   riding the prevailing wind at 6 to 14 m/s. Drag grows with speed², and a third of it
   is the air's, felt against the felt wind: a tailwind carries you faster and a headwind
@@ -391,7 +388,7 @@ has the frame's side.
 
 Readings, not in the session:
 - **The standard board stays as built.** "Generalises the existing board" is read as the same idea
-  with more sockets, not a change to the board in this PRD: the kit's board, racked on a crate,
+  with more sockets, not a change to the board in this PRD: the kit's board, hung on its deck,
   still tows nothing, and the probes above are unchanged.
 - **It would be the first board that tows,** against "It tows nothing" above, which keeps the
   board fun and out of the camp's way. The patrol board's camp is its own, so it may not compete
@@ -403,8 +400,8 @@ Readings, not in the session:
   patrol board's is seated on the board instead, strong and narrow. How a bubble this narrow
   behaves at board speed is not said.
 - **Sleeping under the shield** is the sleep proposal's bubble, on a board
-  ([Survival](survival.md#sleep-proposed)). The bedroll shares no rack here, since the board is
-  the rack's occupant on a crate; the superchassis carries its own.
+  ([Survival](survival.md#sleep-proposed)). On a deck a bedroll sticks beside the board; the
+  superchassis carries its own.
 
 ## Haulers: moving the base faster
 
@@ -433,9 +430,9 @@ some sort of skates or board plate and actual sail mount... deep, fun, intuitive
 windsailing mechanics... it can be quite large." This is the vision's sand yacht, built from
 your own camp's parts rather than found whole:
 
-- **A sail mount and a sail.** A mast seats on a crate's top mount or a deck mount, and a large
-  sail rides it. Raised, it catches the real wind; furled, it doesn't.
-- **Runners: skates or a board plate.** Fitted under a crate or a deck in place of trays, they
+- **A sail mount and a sail.** A mast stands on a deck, and a large sail rides it. Raised, it
+  catches the real wind; furled, it doesn't.
+- **Runners: skates or a board plate.** Stuck under a deck in place of trays, they
   slide easily along their length and grip hard across it, as a land yacht's runners do, so a
   camp on runners sails across the wind and can work upwind, where a floating camp only
   drifts downwind.
@@ -455,11 +452,10 @@ your own camp's parts rather than found whole:
 - **The parts.** Three finds, each a `give` id: skates (`skates`) and a board plate
   (`board_plate`), which are runners, and a mast (`mast`) with a sail (`sail`) to fit it.
   All lie deep, the mast rarely, and a mast is found with its sail on it.
-- **Runners** fit a bottom mount in place of a tray: under a crate, or under each piece of a
-  deck. A device carries trays or runners, never both, and a refusal says "runners and trays
-  don't mix"; a device standing on a deck takes none ("no runners on a deck"), and one
-  with runners in is refused a deck mount with "take its runners off first". A deck's runners
-  turn to its length, however its pieces sit on the grid. Runners draw no power. They ride the
+- **Runners** stick under a deck's pieces in place of trays (held to a deck's top, they go
+  under it), or fit a planter's tray mount. A deck carries trays or runners, never both, and a
+  refusal says "runners and trays don't mix". A deck's runners turn to its length, however its
+  pieces sit on the grid. Runners draw no power. They ride the
   ground's one function, never the sand's collision: each corner of a runner's face reads
   `height_at` and is a spring on the sand that, with the others, holds up the load and settles
   it about 1 cm in; only the blades reach the sand, 5 cm below the frame they hang from (3 cm
@@ -469,11 +465,11 @@ your own camp's parts rather than found whole:
   sideways way as if its share of the load came to rest in 0.04 s, as far as its grip, 90% of
   the load for skates and 45% for the plate, so the plate skids sideways where skates bite.
   So a camp on runners is driven along them; a floating one only drifts.
-- **The mast** seats on a crate's top mount or stands on a deck mount, from your hands like
-  the shield. Stowed it's a 1.3 m pole, 8 kg; seated, it stands to 4.4 m over its mount. The
-  sail, 5 kg, fits low on it, furled along its 2.3 m boom, and is 5.5 m² raised: 3.4 m up the
+- **The mast** stands upright on a deck's top, stuck there from your hands like the shield.
+  Stowed it's a 1.3 m pole, 8 kg; stuck, it stands to 4.4 m over the deck. The sail, 5 kg, fits
+  its sail mount low on it, furled along its 2.3 m boom, and is 5.5 m² raised: 3.4 m up the
   mast, the boom's length along its foot, 1 m across its head. A camp sails the way it faces:
-  seated, the boom trails behind its host.
+  the boom trails behind the mast, which way the mast was turned as it was stuck.
 - **Raising and furling** are use on the mast (its pole or the boom), 1.5 s each, with the sound
   of cloth. Off its mount, the sail comes down. Furled, the wind sees only the bundle on the boom.
 - **The sheet** is any line whose end is on the boom's end, where the sail adds a tie. It runs
@@ -523,7 +519,9 @@ your own camp's parts rather than found whole:
   sail feels what the bubble lets through, like everything: nothing in a base shield's, 15% of
   the wind in a light shield's. Sail with the shield off; when a storm comes, furl it and put
   the bubble up, or run before the storm in clear air.
-- **Points of sail.** The "sail" deck, 89 kg on skates, steered and its sheet tended, in a
+- **Points of sail.** Measured with the crate's rig, before the chassis rework; the rebuilt deck,
+  its ballast two big batteries, is not yet re-measured. The "sail" deck, 89 kg on skates,
+  steered and its sheet tended, in a
   steady 10 m/s wind: dead downwind 3.4 m/s, under the wind's speed; a broad reach (120°) 4.5;
   a beam reach 4.3, sliding sideways 0.1 m/s; a close reach (70°) 2.9; close-hauled at 60° 1.9,
   making 1.0 m/s upwind. From rest at 60° it barely gets going, and at 50° not at all: bear away
@@ -543,7 +541,7 @@ your own camp's parts rather than found whole:
   it on its course; swing out to its windward side and it bears away, to its lee and it heads
   up. A line from a ring at its bow steers the other way round, like reins. Taking hold of it
   and rotating turns it as you'd turn any camp. Left to itself with its sheet made fast, a camp
-  on the "sail" deck rounds up gently into the wind and stops: its crate to windward drags its
+  on the "sail" deck rounds up gently into the wind and stops: its ballast to windward drags its
   windward runners a little harder.
 - **Towed on the board.** Stepping onto the board, a sheet at your waist stays tied, while any
   other line at your waist is untied first, as before, but for a camp's line beside the sheet
@@ -579,8 +577,10 @@ your own camp's parts rather than found whole:
   floating.
 - **The "sail" scenario** stands you on level open sand in a steady 8.5 to 11.5 m/s breeze out
   of any lee, facing across it with the wind on your left. Ahead stands a deck two pieces by
-  two on skates, the mast and its furled sail on its front piece to windward, a crate with two
-  batteries behind it and a shield, switched off, behind to leeward; the sheet runs from the
+  two on skates, the mast and its furled sail on its front piece to windward, two big batteries
+  and a battery in a frame behind it and a shield, switched off, behind to leeward, all one
+  pool, and a bare tail piece behind the frame where the sheet's ring sits, 2.33 m behind the
+  mast under the boom's end hauled right in (the yacht has the same tail); the sheet runs from the
   boom's end to your waist, eased to let the boom out 75°, and a charged board lies at your
   feet. Use the mast to raise the sail, step on the board, and reel in as it picks up speed.
 - **Sailing probes** (`probes/sail/`): 1, runners sail across the wind where a floating camp
@@ -633,13 +633,15 @@ as built, unchanged.
   carve dug a third in turns the rig +49° off the wind in 2.5 s to windward and −46° to leeward,
   against −2° with no carve. Left alone the rig rounds up and stops, as stage 1's does, so you keep
   steering; the probes hold its course as a helmsman would, by a turn on the rig.
-- **The numbers.** The rig is the "sail" deck less its shield, 88 kg on skates; the camp a deck two
-  by two on skates with the shield and a crate, 86 kg, its line from the hook on its front left
-  ring. On a broad reach (120°) in a steady 10 m/s, held to its course, the rig makes 1.7 m/s
-  towing the camp (2.5 m/s towing you alone): the hidden line carries 37 N, your sheet 30 N, and the
-  lines on you pull 59 N all told, against 57 N with the rig towing you alone. As the link you'd have
-  borne about 130 N. That reach lays the boom on its 85° stop, where the sail stalls till the rig
-  gets going, so it draws and stalls by turns; the numbers are from 8 to 12 s in. A skates camp halves a rig's speed; a floating one is blown downwind round
+- **The numbers** (measured with the crate's rig; not yet re-measured on the rebuilt decks, whose
+  ballast sits in a frame where the crate stood). The rig is the "sail" deck less its shield, 88 kg
+  on skates; the camp a deck two by two on skates with the shield and, as built now, two big
+  batteries, its line from the hook on its front left ring. On a broad reach (120°) in a steady
+  10 m/s, held to its course, the rig makes 1.7 m/s towing the camp (2.5 m/s towing you alone):
+  the hidden line carries 37 N, your sheet 30 N, and the lines on you pull 59 N all told, against
+  57 N with the rig towing you alone. As the link you'd have borne about 130 N. That reach lays the
+  boom on its 85° stop, where the sail stalls till the rig gets going, so it draws and stalls by
+  turns; the numbers are from 8 to 12 s in. A skates camp halves a rig's speed; a floating one is blown downwind round
   the rig and rounds it up, and plates drag too hard to tow.
 - **The fulcrum.** Rope & tethering's rule, which the spec takes as there already and wasn't: lines
   snap past their load (1,500 N held, as ever), and your body bears what the lines on it pull against
@@ -648,23 +650,26 @@ as built, unchanged.
   never your last, and your view shakes. Braced 4 m to windward of the hidden line with the camp
   moored, the line bends round you at up to 500 N in 12 m/s and takes 9 health in 10 s; the lines
   hold. Riding either stage you're never hurt.
-- **Stage 3: the helm seat** (`helm_seat`, 7 kg), a skimmer pilot's, fitted to the camp the way
-  anything is (a deck mount, for now). Use on it sits you there: you ride the camp as what's seated
+- **Stage 3: the helm seat** (`helm_seat`, 7 kg), a skimmer pilot's, stuck upright on a deck's
+  top the way anything that stands is. Use on it sits you there: you ride the camp as what's stuck
   on it does, your weight its, low in the seat, touching nothing, and lines at your waist pull the
   deck. The sideways moves turn the camp as a hovercraft's do, its hover field pushing it round
   toward a turn of 0.5 rad/s by up to 800 N·m (`helm_turn`, `helm_torque`), and letting go holds
   its heading. Reeling works the sheet at your waist. Ride, or use on it again, stands you up off the
   side it slides away from, onto the sand with its way; leaning past 40° throws you off. The first
   sit teaches, once a profile, what the controls do (`Helm.HOW_TO_SAYS`). Saves keep you at the helm.
-- **The keel** (`keel`, 7 kg), a skimmer's ventral strake: a hover tray drawn out into a fin, fitted
-  where a tray goes and lifting 60 kg. Floating, its field bites the sand across its length as a
+- **The keel** (`keel`, 7 kg), a skimmer's ventral strake: a hover tray drawn out into a fin, stuck
+  under a deck where a tray goes and lifting 60 kg as it faces the sand. Floating, its field bites the sand across its length as a
   runner ploughs, taking the slip out as a runner does, exactly over the tick, as hard as 0.6 of
   the weight its camp floats; along it, it drags 0.02 of that. It lies along its deck however its
   piece is turned. Its grip and its seat's ways are the parts' own, found by what they are, not
   where they fit.
 - **The yacht.** The "yacht" scenario: a deck three by two floating on five trays and the keel
   (under the aft leeward piece), the mast at its front to windward, the helm seat aft on its middle
-  line over a tray, a crate to windward of it; 134 kg, 224 kg with you, on 460 kg of lift. (Sat at a
+  line over a tray, two big batteries and a battery in a frame to windward of it, and the tail
+  behind them for the sheet's ring; 146 kg as built now (134 with the crate it had), on 460 kg
+  of lift, floating within 2° of level. The figures below were measured with the crate and aren't yet
+  re-measured. (Sat at a
   corner of a deck two by two, a tray can't hold you and the corner drops to the sand.) In a steady
   10 m/s, steered from its helm up to 60° off the wind, it makes 5.0 m/s and 36 m upwind in 20 s,
   sliding 0.1 m/s; with a tray in the keel's place it slides off at 7.6 m/s and goes 136 m
@@ -733,7 +738,7 @@ camp, and the last 160 m before it; braking and turning back takes about 20 m. T
 is a skeleton's, until the open question below is answered: a chime (three quick beeps
 for the last, a falling tone for a loss) and one line of text at the top of the view,
 "Leaving camp range · lost in 18 s", "LAST WARNING · camp lost in 6 s · turn back",
-"Camp lost · Crate frame". The line counts down once the edge is 20 s off at your pace,
+"Camp lost · Chassis piece". The line counts down once the edge is 20 s off at your pace,
 and gives the distance, "LAST WARNING · camp 140 m from the edge · turn back", once
 it's 40 s off: you've turned back or stopped, not carved. The numbers are in Tuning's
 Camp range group.
@@ -945,10 +950,7 @@ Session 4, part 3 (2026-10-17) adds three. Each is quoted on both sides and left
 
 The sleep session (2026-10-17) adds one. It is quoted on both sides and left standing.
 
-- **The rack against a bedroll.** Here: a crate frame has one rack, along its left side, holding
-  one thing, and every run starts with the board racked on it. The session: bedrolls, "probably
-  sharing the hoverboard's mount slot on a crate." Not said: whether sharing means swapping (take
-  the board off to rack the bedroll), a second rack, or a bedroll small enough to ride beside the
-  board; how big a bedroll is; or whether a Console, a crate variant, keeps a rack. The board was
-  fitted to clear everything a full crate holds by bounds (survival probe 9), and a bedroll would
-  need the same.
+- **The rack against a bedroll.** Here: a crate frame had one rack, holding one thing. The
+  session: bedrolls, "probably sharing the hoverboard's mount slot on a crate." *Settled by the
+  chassis (2026-10-18):* the crate and its rack are gone, and the board and a bedroll each stick
+  anywhere on a deck they fit, side by side.

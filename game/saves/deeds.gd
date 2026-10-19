@@ -10,8 +10,8 @@ extends RefCounted
 ## early is kept all the same, and shows once its branch opens.
 
 const ALL := &"*"
-## What all deck_home asks to stand on one deck, by catalog id.
-const HOME := [&"console", &"condenser", &"crate_frame"]
+## What all deck_home asks to be stuck on one deck, by catalog id.
+const HOME := [&"console", &"condenser", &"battery"]
 ## Each deed in the order the grid lays them out, a family a column or two:
 ##   name; asks, what it asks, its goal in place of %s; family; after, the
 ##   deeds it waits on; icon, its card's thing (ItemIcons), or a mark drawn
@@ -38,7 +38,7 @@ const TABLE := {
 		"icon": &"planter", "goal": "deed_crop_kinds", "parts": true, "unit": "kinds"},
 	&"planters_towed": {"name": "Meals on Wheels", "asks": "Have %s planters in tow at once", "family": &"farm",
 		"after": [&"crop"], "icon": &"planter", "goal": "deed_planters_towed", "unit": "planters", "step": 1.0},
-	&"deck_home": {"name": "All Mod Cons", "asks": "A Console, a condenser and a crate on one deck", "family": &"camp",
+	&"deck_home": {"name": "All Mod Cons", "asks": "A Console, a condenser and a battery on one deck", "family": &"camp",
 		"icon": &"console", "goal": "home", "unit": "on one deck", "step": 1.0},
 	&"sail_waist": {"name": "Set Sail", "asks": "Tie a sail's sheet at your waist", "family": &"camp", "icon": &"sail"},
 	&"deck_pieces": {"name": "Six Pack", "asks": "Join %s chassis pieces into one deck", "family": &"camp",

@@ -344,7 +344,9 @@ plan](../skeleton-plan.md#the-newer-proposed-order-session-4-part-4).
   kiln (above). Both are
   crate parts like the existing devices ([Power](power.md#fuel-crops-and-the-burner-proposed-not-built),
   [Devices & mods](devices-and-mods.md#the-burner-and-the-humidifier-proposed-not-built)). The
-  office fern needs a lamp as its light source, through the existing lamp-on-crate snap.
+  office fern needs a lamp as its light source: since the chassis rework a lamp sticks on a deck as
+  anything does, and a planter, which stands on its own, has no place for one, so how the lamp
+  reaches the fern is open.
 
 Readings, not in the session:
 - **The harvester holds a line clean.** It harvests the tick a crop ripens, so nothing is left to go

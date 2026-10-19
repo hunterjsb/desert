@@ -371,7 +371,7 @@ no terrain generation yet. Lore here is deliberately deeper than what should be 
    kind, propagule type and stage behaviour. Root-tuber and vat fungus go in first, as direct
    replacements, then the rest ([Farming](prd/farming.md#the-crop-data-model-the-first-step-of-the-proposed-order)).
 2. **Planter socket kinds.** Small, standard and deep sockets in the typed-socket system, appended to
-   existing frames and never inserted ([Devices & mods](prd/devices-and-mods.md#socket-types-to-start)).
+   existing frames and never inserted ([Devices & mods](prd/devices-and-mods.md#slots-and-sticky-faces)).
 3. **Shared growth stages.** Seedling, growing, mature, to seed, with per-crop flags: keeps growing
    (sandroot), storm-burst fruiting, cyclic water output (dewleaf, stormcup), regrow from the stump
    (coalcane), stall until rain (rainseed).

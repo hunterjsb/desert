@@ -1,12 +1,9 @@
 class_name Bedroll
 extends Device
-## A bedroll: laid on the sand, carried, or rolled on a crate's rack in the
-## board's place. Use on it, laid, racked or among what you carry, asks how
-## long to sleep (Sleep); in your hands, use lays it out, whatever the camp is
-## doing: only sleeping waits for a still camp.
-
-## Racked, it stands this far proud of the rack, m, along the crate's side.
-const GAP := 0.01
+## A bedroll: laid on the sand, carried, or stuck on a deck. Use on it,
+## laid, stuck or among what you carry, asks how long to sleep (Sleep); in
+## your hands, use lays it out, whatever the camp is doing: only sleeping
+## waits for a still camp.
 ## Looking at nothing in reach flat enough to lie on, it's laid this far
 ## ahead of your feet, m; flat enough is a normal this near straight up.
 const FEET := 0.8
@@ -39,7 +36,3 @@ func use(by: Player, at: Vector3) -> bool:
 	Sounds.play_at(self, Sounds.SAND_PUT)
 	return true
 
-
-## Racked, it lies along the rack as the board does, its length fore and aft.
-func seat() -> Transform3D:
-	return Transform3D(Basis(Vector3.UP, Vector3.BACK, Vector3.RIGHT), Vector3(0.0, 0.0, super().origin.z + GAP))

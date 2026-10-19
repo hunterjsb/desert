@@ -5,9 +5,9 @@ extends RopeProbe
 ## load passes its strength: it snaps near its rating, the floater drifts off
 ## downwind no faster than the wind, and nothing spikes. A strong line on a
 ## weak stake pulls the stake out instead, and the stake goes with the floater.
-## And a line laid ring to ring, from a floating crate's hook to a stake,
+## And a line laid ring to ring, from a floating planter's hook to a stake,
 ## parts into two lines when it snaps, each with a loose end where it broke:
-## the stake keeps one, the crate drags the other off downwind. And a line a
+## the stake keeps one, the planter drags the other off downwind. And a line a
 ## snag lets go of, stretched past its stop while the other end drove on,
 ## drags its end free and never slings it.
 
@@ -163,22 +163,22 @@ func _strands_sane() -> void:
 
 
 func _line_parts() -> void:
-	var crate := Catalog.device(&"crate_frame")
-	world.content.add_child(crate)
-	crate.global_position = spot(6.0, 0.0) + Vector3.UP * world.tuning.hover_height
+	var planter := Catalog.device(&"planter")
+	world.content.add_child(planter)
+	planter.global_position = spot(6.0, 0.0) + Vector3.UP * world.tuning.hover_height
 	# Its front ring toward the stake upwind.
-	crate.global_basis = Basis(Vector3.UP, PI / 2.0)
+	planter.global_basis = Basis(Vector3.UP, PI / 2.0)
 	for id: StringName in [&"hover_tray", &"battery", &"hook", &"hook"]:
 		var part := Catalog.part(id)
 		world.content.add_child(part)
-		for socket in crate.sockets():
+		for socket in planter.sockets():
 			if socket.kind == part.kind and socket.part == null:
-				crate.fit(part, socket)
+				planter.fit(part, socket)
 				break
 	var stake := Catalog.stake()
 	world.content.add_child(stake)
 	stake.drive(spot(0.0, 0.0), world.height_under(spot(0.0, 0.0)))
-	var line := Line.between(world, crate.free_tie(stake.global_position), stake.free_tie(crate.global_position), 0.3)
+	var line := Line.between(world, planter.free_tie(stake.global_position), stake.free_tie(planter.global_position), 0.3)
 	line.rope.breaking = WEAK
 	await simulate(4.0)
 	var fastest := {"v": -INF}
@@ -192,13 +192,13 @@ func _line_parts() -> void:
 		return n is Part and n.has_meta(&"line") and n.socket == null)
 	var on_stake: Line = lines.filter(func(l: Line) -> bool: return l.ends.any(func(e: Part) -> bool:
 		return e.socket != null and e.socket.get_parent() == stake))[0] if lines.size() == 2 else null
-	var with_crate: Line = lines.filter(func(l: Line) -> bool: return l != on_stake)[0] if on_stake != null else null
-	print("snapped in a %.1f m/s wind: %d lines, %d loose ends; the crate dragged its half %.1f m off; a loose end at most %.2f m/s past the wind"
-		% [_snapped_in, lines.size(), loose.size(), crate.global_position.distance_to(stake.global_position), fastest.v])
+	var with_planter: Line = lines.filter(func(l: Line) -> bool: return l != on_stake)[0] if on_stake != null else null
+	print("snapped in a %.1f m/s wind: %d lines, %d loose ends; the planter dragged its half %.1f m off; a loose end at most %.2f m/s past the wind"
+		% [_snapped_in, lines.size(), loose.size(), planter.global_position.distance_to(stake.global_position), fastest.v])
 	check(lines.size() == 2 and loose.size() == 2 and lines.all(func(l: Line) -> bool: return ropes.ropes.has(l.rope)),
 		"a laid line parts into two, each a line with a loose end where it broke")
-	check(on_stake != null and with_crate != null and with_crate.ends.any(func(e: Part) -> bool:
-		return e.socket != null and e.socket.get_parent() == crate), "the stake keeps one half, the crate the other")
-	check(crate.global_position.distance_to(stake.global_position) > 10.0, "and drags it off downwind")
+	check(on_stake != null and with_planter != null and with_planter.ends.any(func(e: Part) -> bool:
+		return e.socket != null and e.socket.get_parent() == planter), "the stake keeps one half, the planter the other")
+	check(planter.global_position.distance_to(stake.global_position) > 10.0, "and drags it off downwind")
 	check(fastest.v < FLUNG, "with nothing flung")
 	_strands_sane()

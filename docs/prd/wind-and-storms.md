@@ -135,7 +135,7 @@ whether the hardest thing is possible before we depend on it.
 function of friction. Everything catches wind by its size: drag grows with the square
 of the wind and with a thing's biggest face, at the rate the rope look-test's floater
 was tuned to. Resting on sand, a thing has a friction of 0.5 to beat, so a breeze
-leaves a crate be and a storm slides it. Floating, nothing holds it, so it drifts off
+leaves a loaded deck be and a storm slides it. Floating, nothing holds it, so it drifts off
 downwind unless it's tied down. That's what rope is for.
 
 ### Instruments and the Console screen (proposed; first version built)
@@ -241,7 +241,8 @@ second of world time.
   "FRONT 1.2 km N", then under it its eta, "5 min", which way it's moving, "8 m/s ESE", and
   "hits 1.8 g/m³". It samples the field round the Console itself rather than reading the wall's
   map, which is centred on you, not on your camp.
-- **A radio on the Console's top mount** adds the forecast it already makes (`Radio.forecast`, 20
+- **A radio on the Console's deck** (on its top mount until the chassis rework) adds the forecast
+  it already makes (`Radio.forecast`, 20
   minutes ahead, read again every 5 s, where the radio is): "FCST 5 min storm", then under it
   where it's from, "WNW", its winds, "27 m/s", and how long it lasts, "9 min". It feeds the Console while it's powered and whole, whatever its
   dial plays aloud.
@@ -433,8 +434,9 @@ From Hunter's [storms, signals & sailing spec](../storms-signals-sailing-2026-10
 - **The scenario,** "anomaly": clear, its storm due in two and a half to five minutes, the heart's
   full over you within five minutes of the wall, facing upwind beside a camp built for wind: the
   reference camp's deck resting on the sand, moored upwind; a Console reading the wind and the sand;
-  a radio on the weather station; the base shield on one battery, running; and a turbine out in the
-  gale on a strong cable, enough for an ordinary storm. A compass is in your suit. It's searched
+  a radio on the weather station; the base shield on one battery, running, all stuck on the deck;
+  and a turbine out in the gale on a strong cable from the radio's port, enough for an ordinary
+  storm. A compass is in your suit. It's searched
   wherever a heart passes within 60 km of where the run began, from the clock's start for up to 200
   days: hearts are sparse, and 30 km and 30 days found none on one seed in eight (how Hunter met
   it, 2026-10-18), where this finds one within 23 days on each of 60 seeds tried. The dev overlay

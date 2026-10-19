@@ -6,7 +6,7 @@ extends WreckProbe
 ## away in about the time its seams take, drawing on its battery as it fires,
 ## and the hatch falls. A scoop held on the cargo bay's sand clears its open
 ## slice in the time its sand takes. A stake from your hands grounds the
-## charger's live bank; empty-handed you take the charger, while a module the
+## power module's live bank; empty-handed you take the module, while a module the
 ## sand still holds won't come and says why.
 
 
@@ -93,7 +93,7 @@ func run() -> void:
 	hands.drop()
 	await physics_frames(20)
 
-	# A stake across the bank; the charger taken; a module the sand holds refused.
+	# A stake across the bank; the module taken; a module the sand holds refused.
 	var bank := -1
 	for socket: int in wreck.plan.modules:
 		if wreck.hazard(socket) != &"":
@@ -111,12 +111,12 @@ func run() -> void:
 	print("looking at the bank: \"%s\"" % hands.line())
 	check(hands.interact() and wreck.hazard(bank) == &"", "a stake from your hands grounds the bank")
 	await physics_frames(30)
-	var charger: RigidBody3D = modules_of(wreck)[bank]
-	look(through + out * 0.9 + Vector3.UP * 0.6, middle_of(charger))
+	var module: RigidBody3D = modules_of(wreck)[bank]
+	look(through + out * 0.9 + Vector3.UP * 0.6, middle_of(module))
 	await physics_frames(2)
 	hands.grab()
 	await physics_frames(40)
-	check(hands.held == charger or hands.grasp.body == charger, "empty-handed you take the charger")
+	check(hands.held == module or hands.grasp.body == module, "empty-handed you take the module")
 	hands.drop()
 	await physics_frames(20)
 	var held := -1

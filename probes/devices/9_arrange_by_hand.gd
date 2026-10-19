@@ -54,16 +54,16 @@ func run() -> void:
 	check(seen.fastest < t.walk_speed + t.hold_speed and after < 0.5,
 		"nothing is flung: at most %.2f m/s as you walk it, %.2f m/s after" % [seen.fastest, after])
 
-	var crate := _resting(&"crate_frame", 1.6, 200.0)
+	var heavy := _resting(&"condenser", 1.6, 200.0)
 	await simulate(1.0)
-	_look_at(crate)
-	check(player.hands.grab() and player.hands.grasp.body == crate, "you take hold of a heavy crate on the sand")
-	from = crate.global_position
+	_look_at(heavy)
+	check(player.hands.grab() and player.hands.grasp.body == heavy, "you take hold of a heavy condenser on the sand")
+	from = heavy.global_position
 	hold(["move_back"])
 	await simulate(3.0)
 	hold([])
-	var dragged := (crate.global_position - from).length()
-	print("a 200 kg crate on the sand moved %.2f m; your grip %s" % [dragged,
+	var dragged := (heavy.global_position - from).length()
+	print("a 200 kg condenser on the sand moved %.2f m; your grip %s" % [dragged,
 		"held" if player.hands.grasp.body != null else "slipped"])
 	check(dragged < 0.5 and player.hands.grasp.body == null,
 		"one too heavy to drag barely moves (%.2f m) and slips from your hands" % dragged)

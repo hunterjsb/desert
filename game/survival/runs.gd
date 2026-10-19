@@ -132,15 +132,11 @@ static func kit(world: World, from: Kit = null) -> Array[Node]:
 		from = Kit.of(world)
 	var made: Array[Node] = []
 	var named := {}
-	# What an assembly seats from beside you is made first, so it's there to seat.
-	var seating: Array = from.assembled.values().reduce(func(all: Array, spec: Dictionary) -> Array:
-		return all + spec.sockets.values(), [])
-	var order := from.beside.keys().filter(func(id: StringName) -> bool: return id in seating)
-	order.append_array(from.beside.keys().filter(func(id: StringName) -> bool: return not id in seating))
-	for id: StringName in order:
+	for id: StringName in from.beside:
 		var where: Vector2 = from.beside[id]
 		var lying := Transform3D(Basis(Vector3.UP, world.player.global_rotation.y) * Basis(Vector3.RIGHT, -PI / 2.0),
 			_beside(world, where) + Vector3.UP * 0.02)
+		var spec: Dictionary = from.assembled.get(id, {})
 		if id == &"coil":
 			var line := Line.make(world, from.rope_m)
 			line.coil.global_transform = lying
@@ -161,29 +157,32 @@ static func kit(world: World, from: Kit = null) -> Array[Node]:
 			world.content.add_child(part)
 			part.global_transform = lying
 			made.append(part)
+		elif spec.has("rig"):
+			var rig := Rig.build(null, spec.rig, from.charge)
+			# A camp staying put rests on its trays from the start.
+			rig.deck.resting = not spec.get("floating", false)
+			rig.deck.lift_share = 0.0 if rig.deck.resting else 1.0
+			_set_down(world, rig.deck, where)
+			# What's on it first, so freeing the kit in order frees each once.
+			made.append_array(rig.made.slice(1))
+			made.append(rig.deck)
+			named[id] = rig.deck
 		else:
-			var spec: Dictionary = from.assembled.get(id, {"frame": id, "sockets": {}})
+			if spec.is_empty():
+				spec = {"frame": id, "sockets": {}}
 			var device := Catalog.device(spec.frame)
 			# Down before anything's fitted, so nothing fitted starts under the sand.
 			_set_down(world, device, where)
 			var sockets := device.sockets()
 			var filling: Dictionary = spec.sockets
 			for k: int in filling:
-				if named.has(filling[k]):
-					device.mount(named[filling[k]], sockets[k])
-				elif Catalog.PARTS.has(filling[k]):
-					_fit(world, device, Catalog.part(filling[k]), sockets[k], from.charge)
-				else:
-					var seated := Catalog.device(filling[k])
-					device.mount(seated, sockets[k])
-					made.append(seated)
+				_fit(world, device, Catalog.part(filling[k]), sockets[k], from.charge)
 			# A plain device comes with its batteries.
 			if not from.assembled.has(id):
 				for socket in sockets:
 					if socket.kind == &"battery":
 						_fit(world, device, Catalog.part(&"battery"), socket, from.charge)
 			_set_down(world, device, where)
-			# After what's seated on it, so freeing the kit in order frees each once.
 			made.append(device)
 			named[id] = device
 	for id in from.lines:
@@ -214,8 +213,8 @@ static func _set_down(world: World, device: Device, where: Vector2) -> void:
 	var at := _beside(world, where)
 	if device.get_parent() == null:
 		world.content.add_child(device)
-	device.global_transform = Transform3D(Basis(Vector3.UP, world.player.global_rotation.y),
-		at + Vector3.UP * device.rest_height())
+	var up := -Finds.bounds(device).position.y + 0.02 if device.resting else device.rest_height()
+	device.global_transform = Transform3D(Basis(Vector3.UP, world.player.global_rotation.y), at + Vector3.UP * up)
 
 
 static func _fit(world: World, device: Device, part: Part, socket: Socket, charge: float) -> void:

@@ -1,6 +1,6 @@
 extends WeatherProbe
-## Devices & mods probe 30: a Console with a radio on it says its battery is
-## low. As its pool's charge falls past console_battery_low it logs it and,
+## Devices & mods probe 30: a Console with a radio on its deck says its
+## battery is low. As its pool's charge falls past console_battery_low it logs it and,
 ## after its tones, says "Battery low." in the radio's voice, from the radio
 ## on its bus; once, until the charge is back over the line. Falling past
 ## console_battery_critical it says "Battery critical." With Options' Radio
@@ -10,11 +10,12 @@ extends WeatherProbe
 func run() -> void:
 	await load_weather()
 	world.player.set_physics_process(false)
-	var made := Scenarios.standing(world, &"console", [&"big_battery", &"screen"], [0.0, 3.0]) as Console
-	var radio := Catalog.device(&"radio") as Radio
-	world.content.add_child(radio)
-	made.mount(radio, Scenarios._free(made, &"top"))
-	made.freeze = true
+	var rig := Scenarios.rig_at(world, [[&"stick", Vector2i.ZERO, &"top", Vector2(0.0, -0.15), 0.0,
+		[&"console", [&"screen"]], &"console"], [&"stick", Vector2i.ZERO, &"top", Vector2(-0.3, 0.35), 0.0, &"big_battery"],
+		[&"stick", Vector2i.ZERO, &"top", Vector2(0.25, 0.35), 0.0, &"radio", &"radio"]], [0.0, 3.0], false)
+	var made: Console = rig.named.console
+	var radio: Radio = rig.named.radio
+	rig.deck.freeze = true
 	await physics_frames(10)
 	var tuning := Tuning.current()
 

@@ -14,7 +14,8 @@ the shield generator with its bubble up; a stake with a line to the crate's hook
 charger under a solar panel. They're the game's own devices, sizes, sockets and rope, with
 each candidate drawn over them, so only the look changes. B, C and D also lay two finds in
 the sand in front of the camp: a crude surface-era lamp made from a can, and an overbuilt
-sealed colonial module whose light is still on.
+sealed colonial module whose light is still on. (The test was run on the crate frame and the
+charger, before the chassis rework of 2026-10-18 replaced both; its verdicts below are on those.)
 
 Shots, each candidate beside today's grey boxes: the camp from 8 m at morning, mid-morning,
 noon and dusk; from 50 m, and that frame's middle blown up two times; the crate from 5 m,
@@ -300,7 +301,7 @@ ragged and flaked in patches. They read close up; at 5 m they're a smudge.
 | **Member state's seal:** rings round a chevron, in another hand's paint | One of the governments the UG federated, before it stood as one: early ruins show member-state and corporate markings that don't match ([session 3](lore-research.md#factions-agreed-session-3)) | The ruin, beside the contractor's tag |
 | **Shield maker's sign:** a bubble on its ground, the emitter beneath | The main shield OEM, the common make; it's unnamed, and "Acme Shield Corporation" is the lore's own placeholder ([part 2 §3](lore-session-2026-10-14-part-2.md#3-shields)) | The light shield you start with, on its body; a found shield, small, on its emitter cap |
 | **Wind maker's sign:** three vanes in a ring | Wind's maker, a different one from solar's ([part 2 §4](lore-session-2026-10-14-part-2.md#4-power)) | The turbine |
-| **Consignment label,** by era | The box says who ordered it; the parts inside say who made them ([part 2 §1](lore-session-2026-10-14-part-2.md#1-the-oem-tier-who-actually-makes-things)). The deep one is Tilg's, stencilled in the capitals of the acronym it still was, the shipping line that registered Zan as a temporary transshipment hub ([session 3](lore-research.md#factions-agreed-session-3)) | The crate frame's two ring sides; the company's issue hoverboard's tail (2026-10-18, [boards by make](prd/movement.md#the-rides-feel-and-boards-by-make-hunter-2026-10-18-built)) |
+| **Consignment label,** by era | The box says who ordered it; the parts inside say who made them ([part 2 §1](lore-session-2026-10-14-part-2.md#1-the-oem-tier-who-actually-makes-things)). The deep one is Tilg's, stencilled in the capitals of the acronym it still was, the shipping line that registered Zan as a temporary transshipment hub ([session 3](lore-research.md#factions-agreed-session-3)) | A chassis piece's top (the crate frame's two ring sides, until the crate went in the chassis rework); the company's issue hoverboard's tail (2026-10-18, [boards by make](prd/movement.md#the-rides-feel-and-boards-by-make-hunter-2026-10-18-built)) |
 | **Skimmer crew's patch,** painted by hand: the giant, a dive across it, a tally | The hoverboard as skimmer-culture personal gear, not official issue ([lore research, question 11](lore-research.md#13-open-questions-for-hunter)) | The skimmer racer's tail, which is what shows when it's found nose-down; a new one, the Salvager's, is plain (2026-10-18: the patch was on every board until the boards by make) |
 
 **Why these.** The marks go where the lore names a maker or issuer. The ruin's wall shows
@@ -314,7 +315,7 @@ one carries the tag of the contractor who fitted it, with the maker's sign small
 inside. The crate is the lore's own example of the box and its label.
 
 **Left blank on purpose.** Batteries and the other commodity parts carry no mark ([part 2
-§4](lore-session-2026-10-14-part-2.md#4-power)). So do the survival kit and the charger, since the lore doesn't say who made
+§4](lore-session-2026-10-14-part-2.md#4-power)). So does the survival kit (and so did the charger, until it went), since the lore doesn't say who made
 them, and inventing an issuer would be making canon. The next candidates were left out to keep
 this to a few:
 
@@ -325,8 +326,8 @@ this to a few:
   game.
 
 **How era shows.** The atlas has a row per era: a recent make (yours), the surface and the
-deep. A found device takes its layer's row. So far the crate's label is the mark that changes
-most from row to row:
+deep. A found device takes its layer's row. So far the consignment label, a chassis piece's
+since the crate went, is the mark that changes most from row to row:
 
 - **Deep:** "TILG" over "XN 0217", Tilg's consignment stencil in the acronym's capitals (it
   hasn't worn into "Tilg" yet: [the names](lore-research.md#slang-and-name-erosion-agreed-session-4-part-2)),

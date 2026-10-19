@@ -3,7 +3,7 @@ extends DeckProbe
 ## sand with a hook on its east ring and another on its west, each with a
 ## line to a stake beyond. A piece carried to the east ring is offered it and
 ## joins, and a third joins beyond it, where the hook landed; a piece with a
-## crate on it joins at the west from your hold. Each hook comes loose onto
+## condenser on it joins at the west from your hold. Each hook comes loose onto
 ## the sand clear of the deck, its line still tied to it. Saved and resumed,
 ## the loose hooks keep their lines, and one put back on a free ring ties its
 ## line to the deck again.
@@ -31,16 +31,15 @@ func run() -> void:
 	check(absf(landed.x - 2.0) < 0.5 and await join_by_hand(deck, piece(spot(-3.0, 1.5)), ring(deck, Vector2i(1, 0),
 		Vector2i(1, 0))) and deck.pieces().size() == 3, "a third piece joins beyond it, where the hook lies")
 	var loaded := piece(deck.global_transform * Vector3(-1.3, 0.0, 0.0))
-	var crate := Catalog.device(&"crate_frame")
-	world.content.add_child(crate)
-	fit_part(crate, &"battery")
-	loaded.mount(crate, socket_on(loaded, Vector2i.ZERO, &"deck"))
+	var condenser := Catalog.device(&"condenser")
+	Stick.put(loaded, loaded, Chassis.TOP, Vector2.ZERO, 0.0, condenser)
+	fit_part(loaded, &"battery")
 	await simulate(1.0)
 	var edge := loaded.global_transform * Vector3(-0.5, 0.0, 0.0)
 	check(await take_at(edge - loaded.global_basis.x * 1.0 + Vector3.UP * 0.3, edge) and hands.grasp.body == loaded,
-		"you take hold of a piece with a crate on it")
+		"you take hold of a piece with a condenser on it")
 	await simulate(0.1)
-	check(hands.stand == west and hands.grab() and loaded.deck == deck and crate.on_deck(),
+	check(hands.stand == west and hands.grab() and loaded.deck == deck and condenser.on_deck(),
 		"beside the other hooked ring, it's offered and joins from your hold")
 	await simulate(1.5)
 	for pair: Array in [[east_hook, east_stake], [west_hook, west_stake]]:

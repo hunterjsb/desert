@@ -533,7 +533,7 @@ static var _current: Tuning
 ## battery's 100 Wh lasts twenty minutes flat out, about 24 km.
 @export var board_hover_w: float = 40.0
 @export var board_push_w: float = 260.0
-## Racked on a crate, it charges from the camp at up to this, W: a base
+## On a deck, it charges from the camp at up to this, W: a base
 ## battery in two hours, as far as the camp can spare it.
 @export var board_charge_w: float = 50.0
 
@@ -582,7 +582,7 @@ static var _current: Tuning
 ## A hover tray pushes all it can lift with its face this high over the sand
 ## or nearer, m, and a share of it higher up, falling off by e each
 ## hover_falloff m: a cushion, so every load bobs at one rate and a light one
-## rides higher. The kit's crate rides with its middle about 1.2 m up.
+## rides higher.
 @export var hover_height: float = 0.84
 @export var hover_falloff: float = 0.06
 ## How much the cushion's bounce dies in one swing (1 settles without bouncing).
@@ -613,6 +613,9 @@ static var _current: Tuning
 @export var throw_speed: float = 6.0
 ## Your strength on what you hold too heavy to carry, or walk into, N.
 @export var hand_strength: float = 400.0
+## Having hold of something, a throw punches it where you look instead, a
+## small shove to right a tipped rig with, N·s.
+@export var punch_impulse: float = 45.0
 ## How fast what you hold comes to where you'd have it, 1/s, and the most it
 ## comes faster than you, m/s, so nothing you swing round is flung.
 @export var hold_rate: float = 4.0

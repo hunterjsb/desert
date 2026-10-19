@@ -33,9 +33,9 @@ func run() -> void:
 
 	world.time = met.heart
 	await physics_frames(10)
-	var console: Console = met.camp[1]
-	var shield: ShieldGenerator = met.camp[3]
-	var turbine: Device = met.camp[7]
+	var console: Console = met.camp.filter(func(n: Node) -> bool: return n is Console)[0]
+	var shield: ShieldGenerator = met.camp.filter(func(n: Node) -> bool: return n is ShieldGenerator)[0]
+	var turbine: Device = met.camp.filter(func(n: Node) -> bool: return n is Device and (n as Device).stats().turbine_w > 0.0)[0]
 	var cx := world.world_x(console.global_position.x)
 	var cz := world.world_z(console.global_position.z)
 	var sand: float = console.readings.get("sand", {}).get("g_m3", NAN)

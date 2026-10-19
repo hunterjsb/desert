@@ -1,21 +1,24 @@
 extends HandsProbe
-## Devices & mods probe 1: no accidental snaps. Parts are pressed into free
-## sockets, rested in them, dropped on, thrown at and dragged against devices
-## thousands of times, and let go through the hands while the tug is pulling
-## them in. Nothing fits. Then, so this can't pass by nothing ever fitting, a
-## held and aimed part fits through the hands: a battery and a root-tuber by aim
-## alone, and a hover tray slid under a resting planter with take. And standing
-## at your full height by a crate on the sand, looking at it is enough: a tray
-## is offered its bottom mount, a hook the ring on your side, or from a side
-## where neither of its rings faces you the one nearer your aim, and a shield
-## the nearer top mount; each waits for take. A fitted part still comes out to an empty hand.
+## Devices & mods probe 1: no accidental snaps or sticks. Parts are pressed
+## into free slots, rested in them and on chassis tops, dropped on, thrown at
+## and dragged against devices thousands of times, and let go through the
+## hands while the tug is pulling them in or while they're shown where they'd
+## stick. Nothing fits or sticks. Then, so this can't pass by nothing ever
+## going on, held and aimed parts go on through the hands: a battery stuck on
+## a chassis top, a root-tuber and a battery into a planter by aim alone, and
+## a hover tray slid under a resting planter with take. And standing at your
+## full height by a chassis and a planter on the sand, looking at them is
+## enough: a tray is shown under the chassis, a hook offered the ring on your
+## side, or from a side where neither of a planter's rings faces you the one
+## nearer your aim, and a shield shown on the chassis top; each waits for
+## take. A fitted part still comes out to an empty hand.
 
 const ROUNDS := 30
 const THROWN := 30
 const DRAGGED := 16
 const LET_GO := 4
 
-var _crate: Device
+var _resting: Device
 var _planter: Device
 var _floater: Device
 var _devices: Array[Device] = []
@@ -28,15 +31,12 @@ var _hand_fits := 0
 func run() -> void:
 	await load_hands()
 	speed_up(20)
-	_crate = device(&"crate_frame", spot(-2.5, -4.0), 0.27)
+	_resting = device(&"chassis", spot(-2.5, -4.0), 0.07)
 	_planter = device(&"planter", spot(1.5, -4.0), 0.2)
-	_floater = device(&"crate_frame", spot(-0.5, -8.0), 1.2)
-	var tray := Catalog.part(&"hover_tray")
-	world.content.add_child(tray)
-	for socket in _floater.sockets():
-		if socket.kind == &"bottom":
-			_floater.fit(tray, socket)
-	_devices = [_crate, _planter, _floater]
+	_floater = device(&"chassis", spot(-0.5, -8.0), 1.2)
+	Stick.put(_floater as Chassis, _floater as Chassis, Chassis.BOTTOM, Vector2.ZERO, 0.0, Catalog.part(&"hover_tray"))
+	Stick.put(_floater as Chassis, _floater as Chassis, Chassis.BOTTOM, Vector2(0.4, 0.4), 0.0, Catalog.part(&"battery"))
+	_devices = [_resting, _planter, _floater]
 	await simulate(3.0)
 	for each in _devices:
 		_homes.append(each.global_transform)
@@ -44,7 +44,7 @@ func run() -> void:
 	hands.fitted.connect(func(_p: Part, _d: Device, _s: Socket) -> void: _hand_fits += 1)
 
 	for n in ROUNDS:
-		for step: Callable in [_pressed_in, _thrown, _dragged, _let_go_in_the_tug]:
+		for step: Callable in [_pressed_in, _thrown, _dragged, _let_go_in_the_tug, _let_go_where_shown]:
 			await step.call()
 			if _fitted() != before:
 				printerr("parts fitted on their own in round %d, %s" % [n, step.get_method()])
@@ -78,6 +78,12 @@ func _pressed_in() -> void:
 			var pressed := _add(FILL[socket.kind], pose)
 			pressed.linear_velocity = -at.basis.z * randf_range(0.0, 1.5)
 			_add(_any_id(), pose.translated(at.basis.z * 0.3 + Vector3.UP * 0.2))
+	# Rested and pressed on the chassis tops, right where they'd stick.
+	for deck: Chassis in [_resting as Chassis, _floater as Chassis]:
+		for k in 3:
+			var at := deck.global_transform * Chassis.FACES[Chassis.TOP] * Vector3(randf_range(-0.3, 0.3), randf_range(-0.3, 0.3), 0.08)
+			var pressed := _add(_any_id(), Transform3D(Basis(Vector3.RIGHT, -PI / 2.0) * Basis(Vector3.BACK, randf() * TAU), at))
+			pressed.linear_velocity = Vector3.DOWN * randf_range(0.0, 1.5)
 	look(_floater.global_position + Vector3(0.0, 0.4, 1.4), _floater.global_position)
 	await _settle(1.0)
 
@@ -101,7 +107,7 @@ func _thrown() -> void:
 
 ## Both resting devices dragged across a strip of parts lying on the sand.
 func _dragged() -> void:
-	for each: Device in [_crate, _planter]:
+	for each: Device in [_resting, _planter]:
 		var start := each.global_position
 		for i in DRAGGED / 2:
 			var at := start + Vector3(0.8 + i * 0.25, 0.0, randf_range(-0.3, 0.3))
@@ -109,7 +115,7 @@ func _dragged() -> void:
 			_add(_any_id(), Transform3D(Basis(Vector3.RIGHT, -PI / 2.0), at))
 	await simulate(0.3)
 	await simulate(1.5, func() -> void:
-		for each: Device in [_crate, _planter]:
+		for each: Device in [_resting, _planter]:
 			each.linear_velocity = Vector3(2.0, each.linear_velocity.y, 0.0))
 	await _settle(0.0)
 
@@ -129,7 +135,25 @@ func _let_go_in_the_tug() -> void:
 		await simulate(0.15)
 		check(hands.socket == socket and hands.pull > 0.0 and hands.held == lying,
 			"the tug was pulling a %s when it was let go (gap %.2f, %s)" % [lying.label, hands.gap,
-				"the one aimed at" if hands.socket == socket else hands.socket])
+				"the one aimed at" if hands.socket == socket else "%s, aimed at %s" % [_named(hands.socket), _named(socket)]])
+		if i % 2 == 0:
+			hands.drop()
+		else:
+			hands.throw()
+		await _settle(1.0)
+
+
+## A part taken in hand and shown where it would stick on a chassis's top,
+## then dropped or thrown onto it.
+func _let_go_where_shown() -> void:
+	for i in LET_GO:
+		var deck: Chassis = [_resting, _floater][i % 2]
+		var lying := await _take_in_hand([&"battery", &"lamp", &"solar_panel", &"canister"][i])
+		var at := deck.global_transform * Chassis.FACES[Chassis.TOP] * Vector3(randf_range(-0.3, 0.3), randf_range(-0.3, 0.3), 0.0)
+		look(at + Vector3(0.0, 1.2, 1.0), at)
+		await simulate(0.15)
+		check(not hands.sticking.is_empty() and hands.held == lying and lying.socket == null,
+			"a %s was shown where it would stick when it was let go" % lying.label)
 		if i % 2 == 0:
 			hands.drop()
 		else:
@@ -138,8 +162,8 @@ func _let_go_in_the_tug() -> void:
 
 
 ## Where to look from and at so your sight runs straight down a seat's axis,
-## 14-26 cm beside the part as it would sit there, and clear of every other
-## free seat of its kind; {} if there's no such side.
+## 14-26 cm beside the part as it would sit there, and clear all along of
+## every other free seat of its kind; {} if there's no such side.
 func _beside(socket: Socket, lying: Part) -> Dictionary:
 	var at := seat(socket)
 	var mid := at * middle(lying)
@@ -149,10 +173,12 @@ func _beside(socket: Socket, lying: Part) -> Dictionary:
 		var clear := true
 		for each in _devices:
 			for other in each.sockets():
-				if other != socket and other.part == null and other.kind == socket.kind \
-						and minf(_gap(seat(other), lying, target), _gap(seat(other), lying,
-							target - at.basis.z * 0.5)) < world.tuning.snap_reach + 0.05:
-					clear = false
+				if other == socket or other.part != null or other.kind != socket.kind:
+					continue
+				# Anywhere along the look, which runs on across a deck to its far rings.
+				for t: float in [0.0, 0.5, 1.0, 1.5, 2.0]:
+					if _gap(seat(other), lying, target - at.basis.z * t) < world.tuning.snap_reach + 0.05:
+						clear = false
 		if clear:
 			return {"eye": target + at.basis.z * 1.0, "target": target}
 	return {}
@@ -182,12 +208,19 @@ func _settle(seconds: float) -> void:
 		_devices[i].angular_velocity = Vector3.ZERO
 
 
-## The control: held, aimed and taken home, parts do fit.
+## The control: held, aimed and taken home, parts do go on.
 func _held_and_aimed_fits() -> void:
 	var fits_before := _hand_fits
+	var cell := await _take_in_hand(&"battery")
+	var top := _resting.global_transform * Chassis.FACES[Chassis.TOP] * Vector3(0.2, -0.2, 0.0)
+	look(top + Vector3(0.0, 1.2, 1.0), top)
+	await simulate(0.6)
+	check(cell.socket == null and not hands.sticking.is_empty() and hands.sticking.why == "",
+		"a held battery is shown on the chassis's top and waits for take")
+	hands.grab()
+	check(cell.socket != null and cell.socket.get_parent() == _resting, "a held battery, aimed, sticks on the chassis's top")
 	# The planter gets a battery too: a tray only floats a device with power.
-	for job: Array in [[_crate, &"battery", false], [_planter, &"plant_standard", false],
-			[_planter, &"battery", false], [_planter, &"bottom", true]]:
+	for job: Array in [[_planter, &"plant_standard", false], [_planter, &"battery", false], [_planter, &"bottom", true]]:
 		var owner: Device = job[0]
 		var socket: Socket
 		for each in owner.sockets():
@@ -218,30 +251,32 @@ func _held_and_aimed_fits() -> void:
 		"the planter floats on the tray slid under it")
 
 
-## Standing 1.5 m from crates resting on the sand, you look at them, never at
-## the socket, and what you hold is offered the one it fits.
+## Standing 1.5 m from a chassis and a planter resting on the sand, you look
+## at them, never at a socket, and what you hold is shown where it would
+## stick, or offered the slot it fits.
 func _fits_standing() -> void:
-	var crate := device(&"crate_frame", spot(6.0, 1.0), 0.27)
-	var other := device(&"crate_frame", spot(6.0, 5.0), 0.27)
+	var plate := device(&"chassis", spot(6.0, 1.0), 0.07) as Chassis
+	var other := device(&"planter", spot(6.0, 5.0), 0.19)
 	await simulate(2.0)
-	var bottom := _socket_on(crate, &"bottom", Vector3.ZERO)
 	var tray := await _take_in_hand(&"hover_tray")
-	look(_stand_by(crate, Vector3.RIGHT), crate.global_transform * Vector3(0.4, 0.2, 0.0))
-	await _offered(tray, bottom, "looking at a resting crate's side, a held tray")
+	look(_stand_by(plate, Vector3.RIGHT), plate.global_transform * Vector3(0.3, 0.06, 0.0))
+	await simulate(0.6)
+	check(hands.held == tray and hands.sticking.get("face") == Chassis.BOTTOM and tray.socket == null,
+		"looking at a resting chassis's top, a held tray is shown under it and waits for take")
 	hands.grab()
 	await simulate(2.0 / 60.0)
-	check(bottom.part == tray and _lowest(crate) > -0.005,
-		"take seats the tray under the crate, lifted clear of the sand (lowest %.2f m)" % _lowest(crate))
+	check(tray.socket != null and tray.socket.get_parent() == plate and _lowest(plate) > -0.005,
+		"take sticks the tray under the chassis, lifted clear of the sand (lowest %.2f m)" % _lowest(plate))
 	await simulate(1.0)
 
-	var ring := _socket_on(crate, &"ring", Vector3(0.0, 0.0, 0.4))
+	var ring := _socket_on(plate, &"ring", Vector3(0.0, 0.0, 0.5))
 	var hook := await _take_in_hand(&"hook")
-	look(_stand_by(crate, Vector3.BACK), crate.global_transform * Vector3(0.05, 0.25, 0.15))
-	await _offered(hook, ring, "looking at the crate's top, a held hook")
+	look(_stand_by(plate, Vector3.BACK), plate.global_transform * Vector3(0.05, 0.06, 0.3))
+	await _offered(hook, ring, "looking at the chassis's top, a held hook")
 	hands.grab()
 	check(ring.part == hook, "take seats the hook on the ring on your side")
 	await simulate(0.2)
-	look(_stand_by(crate, Vector3.BACK), seat(ring) * middle(hook))
+	look(_stand_by(plate, Vector3.BACK), seat(ring) * middle(hook))
 	await simulate(1.0 / 60.0)
 	check(hands.grab() and hands.held == hook and hands.phase == Hands.Phase.TAKING and ring.part == null,
 		"looking straight at the fitted hook, an empty hand takes it out")
@@ -249,29 +284,28 @@ func _fits_standing() -> void:
 	hands.drop()
 	await simulate(0.5)
 
-	var front := _socket_on(other, &"ring", Vector3(0.0, 0.0, -0.4))
-	var back := _socket_on(other, &"ring", Vector3(0.0, 0.0, 0.4))
+	var front := _socket_on(other, &"ring", Vector3(0.0, 0.0, -0.3))
+	var back := _socket_on(other, &"ring", Vector3(0.0, 0.0, 0.3))
 	var side := _stand_by(other, Vector3.RIGHT)
 	var second := await _take_in_hand(&"hook")
-	look(side, other.global_transform * Vector3(0.15, 0.25, -0.2))
-	await _offered(second, front, "from the side, aimed nearer the front ring, a held hook")
-	look(side, other.global_transform * Vector3(0.0, 0.25, 0.2))
+	look(side, other.global_transform * Vector3(0.15, 0.17, -0.2))
+	await _offered(second, front, "from the planter's side, aimed nearer the front ring, a held hook")
+	look(side, other.global_transform * Vector3(0.0, 0.17, 0.2))
 	await _offered(second, back, "aimed nearer the back ring, it")
 	hands.grab()
 	check(back.part == second, "take seats the hook on the ring nearer your aim")
 
-	var top := _socket_on(other, &"top", Vector3(0.0, 0.25, 0.2))
 	var shield := Catalog.device(&"light_shield")
 	world.content.add_child(shield)
 	shield.global_position = eye() + Vector3.UP
 	hands.hold(shield)
 	await simulate(0.5)
-	look(_stand_by(other, Vector3.RIGHT), other.global_transform * Vector3(0.4, 0.15, 0.1))
+	look(_stand_by(plate, Vector3.RIGHT), plate.global_transform * Vector3(0.2, 0.06, 0.25))
 	await simulate(0.6)
-	check(hands.socket == top and shield.host() == null,
-		"looking at the crate's side, a held shield is offered the nearer top mount, and waits for take")
+	check(not hands.sticking.is_empty() and hands.sticking.why == "" and shield.host() == null,
+		"looking at the chassis's top, a held shield is shown there, and waits for take")
 	hands.grab()
-	check(shield.host() == other, "take seats the shield there")
+	check(shield.host() == plate, "take sticks the shield there")
 
 
 ## Waits a moment looking: what you hold leans toward `socket` and stays out of it.
@@ -290,12 +324,12 @@ func _socket_on(on: Device, kind: StringName, near: Vector3) -> Socket:
 	return best
 
 
-## Where your eyes are standing 1.5 m off a resting crate's face or corner, the
-## way `out` points in its frame.
-func _stand_by(crate: Device, out: Vector3) -> Vector3:
-	var away := crate.global_basis * out
+## Where your eyes are standing 1.5 m off a resting device's face or corner,
+## the way `out` points in its frame.
+func _stand_by(device: Device, out: Vector3) -> Vector3:
+	var away := device.global_basis * out
 	away.y = 0.0
-	var at := crate.global_transform * (out * 0.4) + away.normalized() * 1.5
+	var at := device.global_transform * (out * 0.4) + away.normalized() * 1.5
 	at.y = world.height_under(at) + world.player.camera.position.y
 	return at
 

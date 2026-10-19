@@ -1,6 +1,6 @@
 extends Node
 ## Look-test: saying less, shot three ways onto one sheet. Empty-handed at a
-## deck three pieces long with a crate on its last, every piece is
+## deck three pieces long with a battery stuck on its last, every piece is
 ## highlighted as what take would drag; at a bare outer piece, that piece
 ## alone; the sheet at your waist, its how-to, and that how-to as it reads
 ## at full size. The game's own run, on a
@@ -45,11 +45,7 @@ func _ready() -> void:
 	for x in [1, 2]:
 		deck.join(_piece(world, at), _ring(deck, Vector2i(x - 1, 0)), 0)
 	deck.fit(Catalog.part(&"hook"), _ring(deck, Vector2i.ZERO, Vector2i(-1, 0)))
-	var crate := Catalog.device(&"crate_frame")
-	world.content.add_child(crate)
-	for socket in deck.sockets():
-		if socket.kind == &"deck" and deck._cell_of(socket) == Vector2i(2, 0):
-			deck.mount(crate, socket)
+	Stick.put(deck, Rig.piece(deck, Vector2i(2, 0)), Chassis.TOP, Vector2(0.2, 0.2), 0.0, Catalog.part(&"battery"))
 	await ticks(30)
 	await _aim(player, deck.global_transform * Vector3(1.0, 0.06, 0.0), 0)
 	deck.take(_ring(deck, Vector2i.ZERO, Vector2i(-1, 0))).free()

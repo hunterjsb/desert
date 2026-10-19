@@ -19,12 +19,12 @@ const ASIDE_RISE := 0.12
 ## How long it takes to slide aside or home, and to swap one piece for another, s.
 const SLIDE_SECONDS := 0.6
 const SWAP_SECONDS := 0.3
-## A piece wider corner to corner than this, m, is shown smaller, to fit where the crate does.
+## A piece wider corner to corner than this, m, is shown smaller, to fit where the Surveyor's camp does.
 const SPAN := 2.4
-## Another origin's piece stands back from the crate's place, this much smaller:
+## Another origin's piece stands back from the Surveyor's camp's place, this much smaller:
 ## a variation on the Surveyor, the game as meant.
 const NOVEL := 0.78
-## Turned to show its front, the board racked beyond it, and tipped to show
+## Turned to show the upright with the board hung on it, and tipped to show
 ## what rides on top, degrees.
 const YAW := 205.0
 const TIP := 24.0
@@ -247,18 +247,17 @@ func _looks(device: Device) -> Node3D:
 
 ## One of the kit's things put together as it says, in the tree for a moment,
 ## as a run's kit is set down, so each device dresses itself as it would
-## there. A plain one beside you comes with its batteries.
+## there: a deck by its rig, as a run's is. A plain one beside you comes with
+## its batteries.
 func _thing(from: Kit, id: StringName) -> Device:
 	var spec: Dictionary = from.assembled.get(id, {"frame": id, "sockets": {}})
+	if spec.has("rig"):
+		return Rig.build(self, spec.rig, from.charge).deck
 	var device := Catalog.device(spec.frame)
 	add_child(device)
 	var sockets := device.sockets()
 	for k: int in spec.sockets:
-		var fill: StringName = spec.sockets[k]
-		if Catalog.PARTS.has(fill):
-			_fit_part(device, Catalog.part(fill), sockets[k], from.charge)
-		else:
-			device.mount(_thing(from, fill), sockets[k])
+		_fit_part(device, Catalog.part(spec.sockets[k]), sockets[k], from.charge)
 	if not from.assembled.has(id) and from.beside.has(id):
 		for socket in sockets:
 			if socket.kind == &"battery":

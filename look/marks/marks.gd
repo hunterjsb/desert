@@ -1,6 +1,7 @@
 extends "res://look/style/style.gd"
 ## Look-test: maker's marks. Every marked thing stood in a row in front of the
-## camp with its mark toward the camera, crates of each era side by side, and
+## camp with its mark toward the camera, chassis pieces of each era side by
+## side, their stencils on their tops, and
 ## the ruin's wall by its corner; each shot close up and from 5 m, so a sheet
 ## sets the game before marks beside after.
 ##   godot --path . --disable-vsync res://look/marks/marks.tscn -- --look grey --capture <dir> [--motion]
@@ -12,9 +13,9 @@ extends "res://look/style/style.gd"
 ## The row, camp frame: catalog id, layer ("" yours, new), soundness, x, how
 ## it's turned to show its mark, and how deep it's buried.
 const ROW := [
-	[&"crate_frame", &"deep", 0.95, -3.4, &"side", 0.0],
-	[&"crate_frame", &"surface", 0.5, -2.3, &"side", 0.0],
-	[&"crate_frame", &"", 1.0, -1.2, &"side", 0.0],
+	[&"chassis", &"deep", 0.95, -3.4, &"top", 0.0],
+	[&"chassis", &"surface", 0.5, -2.3, &"top", 0.0],
+	[&"chassis", &"", 1.0, -1.2, &"top", 0.0],
 	[&"shield", &"deep", 0.9, 0.0, &"back", 0.0],
 	[&"light_shield", &"", 1.0, 0.7, &"back", 0.0],
 	[&"turbine", &"deep", 0.9, 1.6, &"back", 0.0],
@@ -23,11 +24,12 @@ const ROW := [
 ]
 const ROW_Z := 5.0
 ## Shots: name, the thing's x in the row, how high its mark is over the sand,
-## and how far the close shot stands off, m.
+## how far the close shot stands off, m, and how high it stands over the mark
+## where that isn't a little (a stencil on a top is looked down on).
 const CLOSE := [
-	["crate_deep", -3.4, 0.3, 0.7],
-	["crate_surface", -2.3, 0.3, 0.7],
-	["crate_yours", -1.2, 0.3, 0.7],
+	["chassis_deep", -3.4, 0.12, 0.7, 0.6],
+	["chassis_surface", -2.3, 0.12, 0.7, 0.6],
+	["chassis_yours", -1.2, 0.12, 0.7, 0.6],
 	["shield", 0.0, 0.22, 0.55],
 	["light_shield", 0.7, 0.16, 0.45],
 	["turbine", 1.6, 0.15, 0.6],
@@ -62,12 +64,13 @@ func _shots() -> Array:
 	var out := []
 	for shot: Array in CLOSE:
 		var x: float = shot[1]
-		out.append([shot[0] + "_close", "midmorning", Vector3(x + 0.08, shot[2] + 0.06, ROW_Z + shot[3]),
+		var over: float = shot[4] if shot.size() > 4 else 0.06
+		out.append([shot[0] + "_close", "midmorning", Vector3(x + 0.08, shot[2] + over, ROW_Z + shot[3]),
 			Vector3(x, shot[2], ROW_Z)])
 		out.append([shot[0] + "_5m", "midmorning", Vector3(x + 1.0, 1.6, ROW_Z + 4.9), Vector3(x, shot[2], ROW_Z)])
-	# The deep crate and the surface one side by side.
-	out.append(["crates_close", "midmorning", Vector3(-2.85, 0.55, ROW_Z + 1.5), Vector3(-2.85, 0.3, ROW_Z)])
-	out.append(["crates_5m", "midmorning", Vector3(-2.0, 1.6, ROW_Z + 4.9), Vector3(-2.85, 0.3, ROW_Z)])
+	# The deep piece and the surface one side by side.
+	out.append(["chassis_pair_close", "midmorning", Vector3(-2.85, 1.0, ROW_Z + 1.5), Vector3(-2.85, 0.12, ROW_Z)])
+	out.append(["chassis_pair_5m", "midmorning", Vector3(-2.0, 1.6, ROW_Z + 4.9), Vector3(-2.85, 0.12, ROW_Z)])
 	# The end wall's stencils by its far corner; the sand drifts 0.7 m up it.
 	var mark := _camp(ruin.to_world(Vector2(Ruin.HALF.x, -Ruin.HALF.y + 2.45)))
 	var out_n := _camp(ruin.to_world(Vector2(Ruin.HALF.x + 1.0, -Ruin.HALF.y + 2.45))) - mark

@@ -1,23 +1,24 @@
 extends SavesProbe
 ## Lineage probe 4: a thing keeps its lineage across a save. A First Kingdoms
-## crate with a second-age battery and a skimmer-era tray fitted, a colonial
-## shield beside it, and two things without a lineage, a battery never found
-## and a deep find from before lineage, are saved and resumed into a fresh
-## world on the same seed: each has the lineage it had, with its numbers and
-## its look; the two without have none, and look as they did.
+## chassis with a second-age battery stuck on it and a skimmer-era tray under
+## it, a colonial shield beside it, and two things without a lineage, a
+## battery never found and a deep find from before lineage, are saved and
+## resumed into a fresh world on the same seed: each has the lineage it had,
+## with its numbers and its look; the two without have none, and look as they did.
 
 
 func run() -> void:
 	saves = get_node(^"/root/Saves")
 	await load_world(1234)
-	var crate := _beside(Catalog.device(&"crate_frame"), 3.0, Eras.FIRST, &"pipe_wall_hut", 31) as Device
-	for each: Array in [[&"battery", Eras.SECOND, &"house_ruin", 32], [&"hover_tray", Eras.SKIMMER, &"wreck_hull", 33]]:
+	var deck := _beside(Catalog.device(&"chassis"), 3.0, Eras.FIRST, &"pipe_wall_hut", 31) as Chassis
+	for each: Array in [[&"battery", Eras.SECOND, &"house_ruin", 32, Chassis.TOP],
+			[&"hover_tray", Eras.SKIMMER, &"wreck_hull", 33, Chassis.BOTTOM]]:
 		var part := Catalog.part(each[0])
 		Catalog.found_in(part, each[1], each[2], each[3])
-		crate.fit(part, crate.sockets().filter(func(s: Socket) -> bool: return s.kind == part.kind and s.is_open())[0])
+		Stick.put(deck, deck, each[4], Vector2.ZERO, 0.0, part)
 	_beside(Catalog.device(&"shield"), 5.0, Eras.COLONIAL, &"hab_pod", 34)
 	_beside(Catalog.part(&"big_battery"), 6.5)
-	_beside(Finds.make({"id": &"charger", "device": true, "layer": Finds.DEEP, "fill": []}), 8.0)
+	_beside(Finds.make({"id": &"radio", "device": true, "layer": Finds.DEEP, "fill": []}), 8.0)
 	await physics_frames(30)
 	var before := _things()
 	print("before: %s" % "; ".join(before.keys().map(func(k: String) -> String: return "%s %s" % [k, before[k][0]])))

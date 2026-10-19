@@ -287,7 +287,7 @@ func _stop() -> void:
 
 
 ## Ride: riding, step off, and at the helm stand up; otherwise step onto the
-## board in your hands, the one you look at, racked or not, or the nearest at
+## board in your hands, the one you look at, on a deck or not, or the nearest at
 ## your feet. Says whether it did anything.
 func toggle_board() -> bool:
 	if helm != null:
@@ -322,8 +322,8 @@ func get_on(on: Hoverboard) -> bool:
 		waist.let_go(holding)
 		_boarding = on
 		return true
-	# Racked, it comes off the crate straight under your feet, its own pool again.
-	if on.racked():
+	# On a deck, it comes off straight under your feet, its own pool again.
+	if on.on_deck():
 		on.host().dismount(on.host().seat_of(on))
 		world.power.wake(on)
 	board = on

@@ -1,12 +1,13 @@
 extends HandsProbe
 ## Devices probe 8: nothing goes through the sand, the bug that killed Sand
-## Game. A floating crate loses power and drops onto every kind of part; dead
-## crates fall onto parts from 3 m; parts are thrown hard at the sand; a storm
-## blows a floating crate off on a cable until the plug pops out; and Hunter's
-## case, through the hands: a battery taken from a floating planter is
-## dropped right under it as it falls. Nothing ever needs rescuing, nothing
-## goes deeper than the rescue line even for a tick (a crate landing at 8 m/s
-## can press a panel in for one step; the sand floor puts it back the next),
+## Game. A floating chassis loses power and drops onto every kind of part;
+## dead chassis fall onto parts from 3 m; parts are thrown hard at the sand;
+## a storm blows a floating chassis off on a cable until the plug pops out;
+## and Hunter's case, through the hands: a battery taken from a floating
+## planter is dropped right under it as it falls. Nothing ever needs
+## rescuing, nothing goes deeper than the rescue line even for a tick (a
+## chassis landing at 8 m/s can press a panel in for one step; the sand
+## floor puts it back the next),
 ## and once things settle nothing rests in the sand past Jolt's slop.
 
 ## Jolt lets contacts sink 2 cm; a settled corner past this is in the sand.
@@ -38,9 +39,9 @@ func _crushed_by_a_floater_that_dies() -> void:
 	for i in PARTS.size():
 		var under := spot(-8.0 + i * 2.0, -4.0)
 		part(PARTS[i], Transform3D(Basis(Vector3.RIGHT, -PI / 2.0), under + Vector3.UP * 0.05))
-		var crate := device(&"crate_frame", under, 1.2)
-		fit_part(crate, &"hover_tray")
-		fit_part(crate, &"battery")
+		var deck := device(&"chassis", under, 1.2)
+		fit_part(deck, &"hover_tray")
+		fit_part(deck, &"battery")
 	await simulate(2.0, _watch)
 	for node in world.content.get_children():
 		if node is Device and node.battery() != null:
@@ -53,8 +54,10 @@ func _dropped_on_from_height() -> void:
 	for i in PARTS.size():
 		var under := spot(-8.0 + i * 2.0, 4.0)
 		part(PARTS[i], Transform3D(Basis.IDENTITY, under + Vector3.UP * 0.1))
-		var crate := device(&"crate_frame", under, 3.0, true)
-		crate.take(crate.battery().socket).queue_free()
+		var deck := device(&"chassis", under, 3.0, true)
+		for id: StringName in [&"hover_tray", &"battery", &"solar_panel"]:
+			fit_part(deck, id)
+		deck.take(deck.battery().socket).queue_free()
 	await simulate(4.0, _watch)
 	_clear()
 
@@ -92,17 +95,20 @@ func _cable_pulled_until_the_plug_pops() -> void:
 	var tuning := Tuning.current()
 	tuning.prevailing_speed = 25.0
 	world.weather.field = WeatherField.new(world.run_seed, tuning)
-	var charger := device(&"charger", spot(0.0, 0.0), 0.2)
-	charger.freeze = true
-	var crate := device(&"crate_frame", spot(0.0, 2.0), 1.2)
-	fit_part(crate, &"hover_tray")
-	fit_part(crate, &"battery")
-	var cable := Catalog.cable(world, charger.global_position + Vector3.UP)
-	for pair: Array in [[charger, cable.plugs[0]], [crate, cable.plugs[1]]]:
+	var turbine := device(&"turbine", spot(0.0, 0.0), 0.2)
+	turbine.freeze = true
+	var deck := device(&"chassis", spot(0.0, 2.0), 1.2)
+	fit_part(deck, &"hover_tray")
+	fit_part(deck, &"battery")
+	# Its port: a light panel stuck on it.
+	var panel := Catalog.device(&"light_panel")
+	Stick.put(deck as Chassis, deck as Chassis, Chassis.TOP, Vector2(0.0, -0.25), 0.0, panel)
+	var cable := Catalog.cable(world, turbine.global_position + Vector3.UP)
+	for pair: Array in [[turbine, cable.plugs[0]], [panel, cable.plugs[1]]]:
 		var end: Device = pair[0]
 		end.fit(pair[1], end.sockets().filter(func(s: Socket) -> bool: return s.kind == &"port")[0])
 	await simulate(8.0, _watch)
-	check(cable.plugs.any(func(p: Part) -> bool: return p.socket == null), "the drifting crate pulled a plug out")
+	check(cable.plugs.any(func(p: Part) -> bool: return p.socket == null), "the drifting chassis pulled a plug out")
 	await simulate(4.0, _watch)
 	tuning.prevailing_speed = 0.0
 	world.weather.field = WeatherField.new(world.run_seed, tuning)

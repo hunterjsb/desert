@@ -11,7 +11,7 @@ func run() -> void:
 	var day := world.weather.day
 	var x := world.player_world_x()
 	var z := world.player_world_z()
-	var panel := spawn_device(&"charger", 2.0, 0.2, false)
+	var panel := spawn_device(&"chassis", 2.0, 0.2, false)
 	fit_part(panel, &"solar_panel")
 	var turbine := spawn_device(&"turbine", -2.0, 0.2, false)
 	await physics_frames(60)
@@ -66,10 +66,12 @@ func run() -> void:
 		world.time = when[1]
 		await get_tree().physics_frame
 		output[when[0]] = turbine.production_w()
+	var plate := Catalog.device(&"chassis") as Chassis
+	world.content.add_child(plate)
+	plate.global_position = turbine.global_position + Vector3(2.0, 0.0, 0.0)
 	var shield := Catalog.device(&"shield") as ShieldGenerator
-	world.content.add_child(shield)
-	shield.global_position = turbine.global_position + Vector3(2.0, 0.0, 0.0)
-	fit_part(shield, &"battery")
+	Stick.put(plate, plate, Chassis.TOP, Vector2.ZERO, 0.0, shield)
+	Stick.put(plate, plate, Chassis.TOP, Vector2(0.3, 0.3), 0.0, Catalog.part(&"battery"))
 	shield.stand(true)
 	await get_tree().physics_frame
 	output["in a bubble"] = turbine.production_w()

@@ -76,8 +76,8 @@ behind them, and since 2026-10-18 are bigger and roomier still, below.)
   alone over the sand and sky. Every menu opened from them, Options, the "this ends your saved
   run" question, who you come as and the mode, slides the prop to the right and stands on the
   left, as the origin choice does; the question slides it before the origins come up.
-- **Each origin shows one compact piece,** not its kit scattered: the Surveyor its crate as
-  assembled, the Salvager its board, the Homesteader its planter. Under the piece, on the
+- **Each origin shows one compact piece,** not its kit scattered: the Surveyor its deck as
+  put together, the Salvager its board, the Homesteader its planter. Under the piece, on the
   right, its gear is listed, each thing and how many, in bare words with no background
   behind them (Hunter, 2026-10-18: no translucent panel), big enough and edged enough to
   read on their own over bright sand.
@@ -263,10 +263,11 @@ set aside to its right; over a run, in the middle on the soft dark field.
   over a bright sky; in a storm it reads on its own.
 - **The prop** (`game/ui/showpiece.gd`) is one compact piece of the origin last played's
   kit (`Kit.shown`), floating between the title and the words, put together as a new
-  run's is: the Surveyor's crate as assembled, the light shield and the light panel on top,
-  the board racked on its side, the batteries half full and their lights showing it; the
+  run's is, from the same rig (Rig): the Surveyor's two-piece deck, its battery, light
+  shield and light panel on the near piece and the frame on the far one, the board and the
+  compass hung on its upright, the batteries half full and their lights showing it; the
   Salvager's board; the Homesteader's planter with its crops, battery, harvester and
-  canister. One much wider than the crate is shown smaller, to fit where the crate does.
+  canister. One much wider than the Surveyor's deck is shown smaller, to fit where it does.
   It tilts toward the mouse, up to 25°, easing there, and rests facing you until the mouse
   moves and once it leaves the window. Dragged, it spins, and let go it keeps a little of
   the spin; a press on a word is always the word's, and under another menu it can't be
@@ -290,7 +291,7 @@ set aside to its right; over a run, in the middle on the soft dark field.
   top in larger words (48, its line 18), a shade brighter at rest than the rest; after a clear
   gap the starts the deeds open stand apart beneath it, smaller (26, their lines 15), closer
   together and dimmer, coming up a moment after it as the choice opens, and one still locked
-  fainter still (`Words.set_apart`). Their pieces stand back from the crate's place, shown
+  fainter still (`Words.set_apart`). Their pieces stand back from the Surveyor's place, shown
   smaller, at home and aside (`Showpiece.NOVEL`). The origin last played is highlighted, the
   Surveyor before any, so the piece on show stays as it is. The highlighted origin's piece
   shows aside, the last one shrinking away and the next growing in as the selection moves,
@@ -304,8 +305,8 @@ set aside to its right; over a run, in the middle on the soft dark field.
 - **Resume** opens the same view: Continue, highlighted, on the left, and aside your last
   camp as the save holds it, built from the save's own data with no world
   (`Snapshot.camp`): the thing of yours nearest where you stood and what stood within 12 m
-  of it, 8 at most, each with everything seated in it and its state (charge, crops, a
-  shield's switch), seen from where you stood toward it and fitted to the crate's span.
+  of it, 8 at most, each with everything stuck or fitted on it and its state (charge, crops, a
+  shield's switch), seen from where you stood toward it and fitted to the Surveyor's span.
   Under it, the save's numbers: time played, when it was saved by the clock on the wall
   (today 13:40, yesterday 21:05, 3 days ago), the run's day (counted from its own start, the
   day it began day 1), and who you came as; then how many
@@ -366,7 +367,7 @@ set aside to its right; over a run, in the middle on the soft dark field.
   never saved: no Save, Quit to menu in place of Save & quit, and no autosave, so the
   player's own save is left as it was. A run the console's `scenario` has been used in
   is the same from then on.
-- `look/menus` shoots the main menu, with its title and crate, in a storm, on a clear day
+- `look/menus` shoots the main menu, with its title and the Surveyor's deck, in a storm, on a clear day
   and with its music off; Options, its controls list and the question over a save with
   the prop aside; who you come as on a first run, the Surveyor alone open, then with each
   origin highlighted, its piece and gear, and with one locked beside one open, and the
@@ -390,7 +391,7 @@ set aside to its right; over a run, in the middle on the soft dark field.
    exactly as they do with it closed.
 2. **Back closes the topmost first.** With the inventory open, back closes it; pressed
    again, it opens the system menu; again, it closes that.
-3. **The menu's default.** The title is the game's name, over the starting crate, which
+3. **The menu's default.** The title is the game's name, over the starting deck, which
    is only to look at: no body in it, and a storm doesn't move it. With a save, Resume
    is highlighted and confirm shows the save's camp and numbers, and confirm again
    resumes; a save from before time played was kept still opens. With none, Resume is
@@ -420,7 +421,7 @@ set aside to its right; over a run, in the middle on the soft dark field.
 12. **The menu theme.** On the main menu "Salt" fades in on the menus' bus while the world is
     muted; a new run fades it out and stops it; Save & quit brings it back from its start.
 13. **The Surveyor leads** (2026-10-18). On a fresh profile New game opens on the Surveyor, first
-    and highlighted, its crate on show, and down passes over the starts still locked; with every
+    and highlighted, its deck on show, and down passes over the starts still locked; with every
     start open it still opens there, its word larger than the rest.
 14. **The deeds open on the latest** (2026-10-18). With none done the deeds open on the first card
     still to do; with Green Thumb done and then Hermit, on Hermit. Deeds is new until they're looked at.

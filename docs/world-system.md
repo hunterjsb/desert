@@ -501,7 +501,7 @@ sockets (`Ruin.SPOTS`) and mesh.
 
 | Era | Kit (part 4) | Burial **(default)** | Loot identity (part 4) |
 |---|---|---|---|
-| Colonial | Pylon stubs, pipeline segments, hab pods, relay masts | Deepest: 2 to 6 m of sand over the roof; rarely exposed | Infrastructure: power, crates, big systems |
+| Colonial | Pylon stubs, pipeline segments, hab pods, relay masts | Deepest: 2 to 6 m of sand over the roof; rarely exposed | Infrastructure: power, chassis, big systems |
 | Skimmer era | Wreck hulls, fuel bladders, dugouts | Shallow, 0.2 to 1 m, tilted 10° to 35°; exposed and reburied fast | Best single-item gear: from deserters and the black site |
 | First Kingdoms | Pipe-wall huts, cisterns, low stone walls | Deep, 0.8 to 2 m: low foundations, barely visible | Intact working colonial tech used in new ways |
 | Dark Age | No sites | None | No loot of its own: the lineage of second-age gear |
@@ -921,8 +921,8 @@ Shared files each package may touch, and nothing else outside its own: `Tuning` 
 
 - **A lineage is a short list on the thing** (its `lineage`, saved with it), each entry [era, what was
   done, how], from its making on:
-  - [colonial, made, who]: who made it, as its stamp says (`Catalog.MAKERS`): Tilg on crate frames and
-    chassis pieces, the contractor RMC on the condenser, the Console and the fitted shield, the shield's
+  - [colonial, made, who]: who made it, as its stamp says (`Catalog.MAKERS`): Tilg on chassis pieces
+    and frames, the contractor RMC on the condenser, the Console and the fitted shield, the shield's
     maker on the light shield, the wind maker on the turbine; commodity parts name none.
   - [First Kingdoms, marked, house]: a Port Morgan house kept it and marked it: Haberjack, Pellicott, Crake
     or Vonatelli.
@@ -941,7 +941,7 @@ Shared files each package may touch, and nothing else outside its own: `Tuning` 
 - **Its era** is its last hands': a Dark Age remake is second-age gear. That era sets its numbers, and its
   first hands' set the row its own stamp is from. A thing with no lineage is what it was before: the
   company's issue when it was never found (the run's kit: colonial numbers, the "new" row, LOT 3127 on
-  the crate), and its layer's look when a save from before lineage found it.
+  its chassis), and its layer's look when a save from before lineage found it.
 
 ### The interface for loot
 
@@ -955,8 +955,9 @@ returns it.
 - `seed`: the thing's own draw from the site's loot seed (its socket, its index), so each thing in a site
   has its own lineage. The same seed gives the same lineage, numbers and look, so a find made again as its
   chunk loads needs nothing saved.
-- Each part fitted in a found device takes its own call and seed, fitted or not yet: a crate's battery can
-  be another era's than the crate. Nothing anywhere asks what era a thing is: any crate takes any module.
+- Each part fitted in a found device, or stuck on a found chassis, takes its own call and seed: a chassis's
+  battery can be another era's than the chassis. Nothing anywhere asks what era a thing is: anything sticks
+  on any era's chassis, and pieces of any eras join.
 - A crop, food or salt takes none, and it returns an empty list.
 - What's taken keeps its lineage through the save (`Snapshot`: a thing's `lineage`).
 - `Eras.lineage(era, kind, seed)` is the draw alone; `Catalog.inherit(body, lineage)` gives a known one.
@@ -979,7 +980,7 @@ order)**
 
 So a battery holds 100, 92, 85 and 75 Wh by era, a big battery 300, 276, 255 and 225; a panel makes 60,
 55, 51 and 45 W, a turbine 200, 184, 170 and 150; a tray floats 80, 74, 68 and 60 kg at 2.0, 2.1, 2.2
-and 2.5 W a kilogram; the base shield holds a storm back on 200, 210, 220 and 250 W. A mixed crate's trays
+and 2.5 W a kilogram; the base shield holds a storm back on 200, 210, 220 and 250 W. A mixed deck's trays
 draw by each one's share of the lift. Probe 3 checks each.
 
 **Repair is needed and not built.** Nothing mends yet; each era's material is data
@@ -1007,7 +1008,7 @@ marks"):
   cap and a blue charm.
 
 Where they go is worked out once a thing, from its own look (`Paint.Shell`): its box, or the round body in
-it (`Catalog.ROUND`), its faces cast against with rays so a plaque sits on a crate's recessed panel, not
+it (`Catalog.ROUND`), its faces cast against with rays so a plaque sits on a device's recessed panel, not
 in the air before it, and four spots clear of its sockets, its charge light, its mast and its stamps, a
 part's face out of its socket first. Each entry's marks are drawn alone on those, so they cache by entry
 and stack in any lineage; the lineage's look is its own merged with them (`Paint.merged`), one mesh and
@@ -1021,23 +1022,23 @@ paint's age.
   the 24 that take marks (the Console's slowest, 2.8 ms); the first time each of a thing's lineage entries
   is drawn, once a run, 0.3 ms (0.6 ms for nine in ten, 2.3 ms at most, the first of a size of piece:
   every piece is a prototype placed natively after); a lineage's look merged from entries already drawn,
-  0.2 ms for a crate frame and less for anything smaller. A marked look adds a few hundred triangles to a
+  0.2 ms for a crate frame (since removed with the slots) and less for anything smaller. A marked look adds a few hundred triangles to a
   thing and no draw.
 - **Probes** (`probes/lineage/`): 1 a lineage is its seed's alone, for every era and kind of site; 2 the
   Dark Age's rule, every second-age find an older thing remade; 3 era stats scale the numbers as the table
-  says, a colonial battery holding the most and a second-age one the least; 4 a crate, its parts and a
-  shield keep their lineages, numbers and looks across a save and resume, and things without one stay so;
-  5 every era's battery, tray, hook, panel and light shield fit every era's crate and chassis pieces join
-  across eras. Each fails on a deliberately broken build: a lineage drawn from no seed; a second age made,
+  says, a colonial battery holding the most and a second-age one the least; 4 a found device, its parts
+  and a shield keep their lineages, numbers and looks across a save and resume, and things without one
+  stay so; 5 every era's battery, tray, hook, panel and light shield go on every era's chassis and
+  chassis pieces join across eras (both reworked off the crate with the chassis, 2026-10-18). Each fails on a deliberately broken build: a lineage drawn from no seed; a second age made,
   not remade; numbers left unscaled; a save that drops a thing's lineage; a fit refused across eras.
-- **To see them** (unseen, on a GPU): `look/lineage/shoot.sh <dir>` stands a crate and a battery in each era
+- **To see them** (unseen, on a GPU): `look/lineage/shoot.sh <dir>` stands a device and a battery in each era
   and lineage before the camp and builds `~/Desktop/lineage.png`. Not shot yet: the GPU needs a reboot.
 
 ### What's fragile
 
 - **Seen only flat.** The marks were checked on a CPU render of their meshes, not on the GPU: no wear
   shader, light, dust or scale. The sheet above is the test.
-- **A house's teal on the colonial teal.** Crake's band reads weakly on a teal crate; its plaque does.
+- **A house's teal on the colonial teal.** Crake's band reads weakly on a teal chassis; its plaque does.
 - **Hanging is a part's guess.** What hangs from a part hangs as if its socket faced sideways; on a top
   mount it stands out.
 - **Marks follow the look.** They settle on a thing's look by ray; change a look in Dress and its marks
@@ -1060,7 +1061,7 @@ paint's age.
   deeper than the rest of its site holds; a kind may put its own row in place of its era's, which is how
   the kind says what fits. Each socket draws from its own stream of the site's loot seed, so a site holds
   the same things whoever comes, whenever, laid from wherever on the ground. What each era's sites hold:
-  - **Colonial,** infrastructure: crates, chargers, chassis pieces, a condenser or turbine, big batteries,
+  - **Colonial,** infrastructure: chassis pieces and frames, a condenser or turbine, big batteries,
     trays, panels and strong cable on its floors; batteries, lamps, plugs and instruments on its shelves;
     clean root-tuber and vat fungus in its beds; at its best Consoles, shield generators, turbines,
     condensers, big batteries, trays and panels, radar, screens and harvesters. A hab pod's shelf holds
@@ -1072,8 +1073,8 @@ paint's age.
     found light and fragile, half to nine tenths sound. A wreck hull's best is its own (2026-10-18):
     the land yacht's helm seat and keel, 3 in 13 each, with shields, boards, radar, a harvester and a
     big battery ([Movement](prd/movement.md#sailing-from-kite-to-yacht-agreed-2026-10-18-spec-built)).
-  - **First Kingdoms,** working colonial machines kept running: condensers, turbines, chargers, planters
-    and crates, three sockets in four filled, instruments on the shelves, water kept sealed; a cistern's
+  - **First Kingdoms,** working colonial machines kept running: condensers, turbines, frames, planters
+    and chassis pieces, three sockets in four filled, instruments on the shelves, water kept sealed; a cistern's
     floor water and hose, its bed and a field plot's seed and saltbush. Near sound.
   - **Second age,** worn reused gear, water, seeds and salt: a house ruin's floor holds what its floor
     always did (parts, devices, seeds, rations and survival kits), its hall a later visitor's device with
@@ -1127,7 +1128,8 @@ paint's age.
   settlement's site, built or only planned **(default)**, where what travellers dropped lies. They are
   what they always were, deeper the harder the weather. At seed 1234's start, deep desert, the 769 chunks
   within a kilometre hold 2 (loot probe 4); round a town 166 chunks on the way hold about one in ten.
-- **The first hour** (step 4, loot probe 6, six seeds). The Surveyor walks in toward Tu 1 to 1.3 km to
+- **The first hour** (step 4, loot probe 6, six seeds; measured before the chassis rework, when crates and
+  chargers lay where chassis pieces, frames and light panels lie now). The Surveyor walks in toward Tu 1 to 1.3 km to
   the line it starts off and finds what lies loose along it (a condenser, a radio, a crate, a canister of
   water) or a watchtower's; the Salvager finds the wreck field's hulls 70 to 240 m off, a hoverboard or a
   survival kit half buried in one, or what lies among the wrecks 90 to 350 m off (a charger, a planter, a

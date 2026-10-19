@@ -1,7 +1,7 @@
 extends MovementProbe
 ## Dev probe 5: god carries anything. Past twice what you carry easily, as
-## god you walk at your full pace standing tall; and a 200 kg crate on the
-## sand, one a mortal can't drag, follows you as you back away.
+## god you walk at your full pace standing tall; and a 200 kg condenser on
+## the sand, one a mortal can't drag, follows you as you back away.
 
 const AHEAD := Vector2(1.0, 0.0)
 
@@ -25,20 +25,20 @@ func run() -> void:
 		"as god you walk at your full pace, standing tall (%.2f m/s)" % pace)
 
 	await place(flat.x, flat.z, AHEAD)
-	var crate := Catalog.device(&"crate_frame")
-	crate.frame_mass = 200.0
-	world.content.add_child(crate)
+	var heavy := Catalog.device(&"condenser")
+	heavy.frame_mass = 200.0
+	world.content.add_child(heavy)
 	var at := player.global_position - player.global_basis.z * 1.6
-	crate.global_position = Vector3(at.x, world.height_under(at) + Catalog.DEVICES[&"crate_frame"].size.y * 0.5 + 0.02, at.z)
+	heavy.global_position = Vector3(at.x, world.height_under(at) + Catalog.DEVICES[&"condenser"].size.y * 0.5 + 0.02, at.z)
 	await simulate(1.0)
-	var to := crate.global_position - player.camera.global_position
+	var to := heavy.global_position - player.camera.global_position
 	player.camera.rotation.x = atan2(to.y, Vector2(to.x, to.z).length())
-	check(player.hands.grab() and player.hands.grasp.body == crate, "you take hold of the crate")
-	var from := crate.global_position
+	check(player.hands.grab() and player.hands.grasp.body == heavy, "you take hold of the condenser")
+	var from := heavy.global_position
 	hold(["move_back"])
 	await simulate(3.0)
 	hold([])
-	var dragged := (crate.global_position - from).length()
-	print("a 200 kg crate dragged %.2f m as god" % dragged)
-	check(dragged > 2.0 and player.hands.grasp.body == crate, "it follows as you back away (%.2f m)" % dragged)
+	var dragged := (heavy.global_position - from).length()
+	print("a 200 kg condenser dragged %.2f m as god" % dragged)
+	check(dragged > 2.0 and player.hands.grasp.body == heavy, "it follows as you back away (%.2f m)" % dragged)
 	set_rate(60)

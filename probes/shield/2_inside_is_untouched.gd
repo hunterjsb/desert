@@ -47,7 +47,7 @@ func run() -> void:
 		var moved: Vector3 = device.global_position - start[device]
 		drift = maxf(drift, Vector2(moved.x, moved.z).length())
 	print("after %.0f min: felt %.3f, drift %.3f m, turbine %.2f W, shield %.1f Wh left"
-		% [world.time / 60.0, felt, drift, made, generator.battery().charge_wh])
+		% [world.time / 60.0, felt, drift, made, world.power.pool_wh(generator)])
 	if not first.is_empty():
 		print("first felt: ", first)
 	check(world.weather.field_storm(middle) == 1.0 and world.weather.field_wind(middle).length() >= WIND - 0.01,

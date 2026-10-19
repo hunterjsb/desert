@@ -15,7 +15,7 @@ const LOOKS := {
 	&"planter": {"frame": &"planter", "sockets": {0: &"root_tuber", 1: &"root_tuber", 2: &"saltbush", 3: &"vat_fungus"},
 		"turn": Vector2(25.0, 35.0)},
 	&"chassis": {"frame": &"chassis", "turn": Vector2(30.0, 40.0)},
-	&"console": {"frame": &"console", "sockets": {7: &"screen"}, "turn": Vector2(155.0, 15.0)},
+	&"console": {"frame": &"console", "sockets": {1: &"screen"}, "turn": Vector2(155.0, 15.0)},
 	&"turbine": {"frame": &"turbine", "turn": Vector2(30.0, 15.0)},
 }
 ## Pixels a side.

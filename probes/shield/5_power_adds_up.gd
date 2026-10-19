@@ -1,13 +1,11 @@
 extends ShieldProbe
-## Bubble shield probe 5: power adds up. A running base shield drains its
-## battery at shield_clear_w in the clear and shield_storm_w in the worst
-## storm, between the two in a middling one, and nothing while it's off; a
-## bubble half as wide again costs more by its shell's area. And when the
-## battery runs flat the bubble collapses, and at a place inside every
-## consumer, the game's and the senses', loses its shelter on the same frame.
-## Seated on a crate's top mount, a shield with no battery of its own runs
-## on the crate's at the same sip, and a panel on the crate's other top mount
-## charges the shield's own battery in the sun.
+## Bubble shield probe 5: power adds up. A running base shield on a plate
+## drains the battery stuck beside it at shield_clear_w in the clear and
+## shield_storm_w in the worst storm, between the two in a middling one, and
+## nothing while it's off; a bubble half as wide again costs more by its
+## shell's area. And when the battery runs flat the bubble collapses, and at a
+## place inside every consumer, the game's and the senses', loses its
+## shelter on the same frame.
 
 ## World seconds each rate is measured over.
 const SPAN := 120.0
@@ -25,7 +23,7 @@ func run() -> void:
 	var rates := {}
 	for intensity: float in [1.0, 0.5, 0.0]:
 		weather_everywhere(intensity, WIND)
-		var cells: Array = [base, big, idle].map(func(g: ShieldGenerator) -> Battery: return g.battery())
+		var cells: Array = [base, big, idle].map(func(g: ShieldGenerator) -> Battery: return g.host().batteries()[0])
 		var before: Array = cells.map(func(c: Battery) -> float: return c.charge_wh)
 		var t0 := world.time
 		await live(SPAN, 30.0)
@@ -50,7 +48,7 @@ func run() -> void:
 	var eye := base.shelter.global_position + Vector3(0.0, 0.9, 3.0)
 	world.player.global_position = eye - world.player.camera.position
 	await physics_frames(5)
-	base.battery().charge_wh = 0.02
+	base.host().batteries()[0].charge_wh = 0.02
 	world.time_warp = 1.0
 	var at := {"frame": 0}
 	var flips := {}
@@ -75,59 +73,6 @@ func run() -> void:
 	check(flips.size() == _consumers(eye).size(), "every consumer lost its shelter")
 	check(disagree.is_empty(), "every consumer lost it on the same frame: %s" % "; ".join(disagree.slice(0, 3)))
 	check(base.shelter.radius == 0.0 and not base.running(), "the bubble collapsed")
-	await _seated()
-
-
-## A crate with a battery, and a shield seated on one of its top mounts.
-func _seated() -> void:
-	weather_everywhere(0.0, WIND)
-	var tuning := Tuning.current()
-	var crate := Catalog.device(&"crate_frame")
-	world.content.add_child(crate)
-	var at := ahead(-24.0)
-	crate.global_position = at + Vector3.UP * 0.27
-	var cell := fit_part(crate, &"battery") as Battery
-	var shield := Catalog.device(&"shield") as ShieldGenerator
-	world.content.add_child(shield)
-	var tops := crate.sockets().filter(func(s: Socket) -> bool: return s.kind == &"top")
-	crate.mount(shield, tops[1])
-	await physics_frames(10)
-	check(shield.battery() == null and shield.interact(world.player) and shield.running(),
-		"a seated shield with no battery of its own starts on the crate's")
-	var before := cell.charge_wh
-	var t0 := world.time
-	await live(SPAN, 30.0)
-	var drawn := (before - cell.charge_wh) / ((world.time - t0) / 3600.0)
-	print("seated on a crate, the shield drew %.2f W from the crate's battery" % drawn)
-	check(shield.running() and absf(drawn / tuning.shield_clear_w - 1.0) < 0.01,
-		"and runs on it at shield_clear_w (%.2f W)" % drawn)
-	# Off, a half-charged battery of its own, and a panel beside it in the sun.
-	shield.interact(world.player)
-	var own := Catalog.part(&"battery") as Battery
-	own.charge_wh = own.capacity() * 0.5
-	world.content.add_child(own)
-	crate.dismount(tops[1])
-	shield.fit(own, shield.sockets().filter(func(s: Socket) -> bool: return s.kind == &"battery")[0])
-	crate.mount(shield, tops[1])
-	var panel := Catalog.part(&"solar_panel")
-	world.content.add_child(panel)
-	crate.fit(panel, tops[0])
-	# The crate's own battery full, so all the panel makes goes to the shield's,
-	# and the next noon's sun on it.
-	cell.charge_wh = cell.capacity()
-	var day := tuning.day_minutes * 60.0
-	world.time = (ceilf(world.time / day - (0.5 - tuning.start_time_of_day)) + 0.5 - tuning.start_time_of_day) * day
-	await physics_frames(2)
-	var light := world.weather.felt_light(crate.global_position + Vector3.UP * 0.5)
-	var from := own.charge_wh
-	t0 = world.time
-	await live(SPAN, 30.0)
-	light = minf(light, world.weather.felt_light(crate.global_position + Vector3.UP * 0.5))
-	var expected: float = panel.stats.solar_w * light * (world.time - t0) / 3600.0
-	print("in a felt light of at least %.2f the crate's panel took the shield's own battery from %.2f to %.2f Wh"
-		% [light, from, own.charge_wh])
-	check(light > 0.2 and own.charge_wh - from > expected * 0.9,
-		"a panel on the crate charges the seated shield's battery (%.2f Wh, at least %.2f)" % [own.charge_wh - from, expected])
 
 
 ## Whether each consumer at p says it's sheltered. Your eyes are at p.

@@ -1,11 +1,13 @@
 class_name Device
 extends RigidBody3D
-## A frame with sockets. A fitted part becomes part of the device: its shapes
-## and weight join this body, never through a joint, so there's nothing left to
-## wobble. Everything the device can do is computed from what's fitted. Power
-## (Stage 4) says whether it's running; a dark device can't float or shine.
-## Outside a bubble the weather wears it down (Wear), and wrecked it's dark
-## for good.
+## A frame with its few sockets: plugs, water taps and what's its own. A
+## fitted part, or one stuck on a chassis's sticky face, becomes part of the
+## body: its shapes and weight join it, never through a joint, so there's
+## nothing left to wobble. A device stuck on a chassis stays a body of its own
+## held fast there, in the deck's power pool. Everything a body can do is
+## computed from what's on it. Power says whether it's running; a dark device
+## can't float or shine. Outside a bubble the weather wears it down (Wear),
+## and wrecked it's dark for good.
 
 signal parts_changed
 
@@ -24,10 +26,11 @@ const TIPPED := deg_to_rad(25.0)
 @export var frame_stats: Dictionary = {}
 ## Small enough to pick up and carry in your hands, like a stake.
 @export var carryable := false
-## The socket kind it seats in, like a shield on a top mount; none for most.
-@export var kind: StringName
-## It stands on a chassis piece's deck mount too, as a crate does.
-@export var stands_on_deck := false
+## It sticks on a chassis's sticky face; standing, only upright on one that
+## faces up; tall, too tall to stand under a frame.
+@export var sticks := false
+@export var stands := false
+@export var tall := false
 ## How much its draw matters when its pool runs short: lower ranks give way
 ## first, so what keeps you alive keeps its power (Power).
 @export var rank := 0
@@ -79,7 +82,8 @@ var world: World
 var glider: Runners
 var _hovering := false
 ## Its trays, each as [kg it lifts, the corners of its face, the way it faces
-## out], in its own frame: each lifts under its own spot.
+## out], in its own frame: each lifts under its own spot, toward the sand it
+## faces.
 var _trays: Array = []
 ## Its keels, as Runners.keels has them: floating, each holds it across.
 var _keels: Array = []
@@ -181,19 +185,17 @@ func free_tie(near: Vector3) -> Socket:
 	return best
 
 
-## The battery in its first filled battery slot, or null.
+## The battery in its first filled battery slot, or stuck on it, or null.
 func battery() -> Battery:
-	for socket in sockets():
-		if socket.kind == &"battery" and socket.part is Battery:
-			return socket.part
-	return null
+	var all := batteries()
+	return all[0] if not all.is_empty() else null
 
 
-## Every battery in its battery slots.
+## Every battery in its battery slots, and loose on its sticky faces.
 func batteries() -> Array[Battery]:
 	var found: Array[Battery] = []
 	for socket in sockets():
-		if socket.kind == &"battery" and socket.part is Battery:
+		if (socket.kind == &"battery" or socket.kind == Socket.STUCK) and socket.part is Battery:
 			found.append(socket.part)
 	return found
 
@@ -213,7 +215,7 @@ func charge_share() -> float:
 	return held / room if room > 0.0 else 0.0
 
 
-## The devices seated on its sockets.
+## The devices seated on its sockets, or stuck on it.
 func mounted() -> Array[Device]:
 	var found: Array[Device] = []
 	for socket in sockets():
@@ -248,37 +250,65 @@ static func carries(part: Part) -> StringName:
 	return &"tray" if part.stats.get("lift_kg", 0.0) > 0.0 else (&"runner" if part.stats.has("glide") else &"")
 
 
-## Why a part can't go in one of its sockets, or "": standing on a deck it
-## takes no tray or runners, since the deck's carry it, and trays and
-## runners don't mix on one device.
+## Why a part can't go on it, or "": trays and runners don't mix on one body.
 func refuses(part: Part) -> String:
 	var kind := carries(part)
-	if kind == &"":
-		return ""
-	if on_deck():
-		return "no %s on a deck" % ("trays" if kind == &"tray" else "runners")
 	var now := carriage()
-	return "runners and trays don't mix" if now != &"" and now != kind else ""
+	return "runners and trays don't mix" if kind != &"" and now != &"" and now != kind else ""
 
 
-## Seated on a chassis piece's deck mount, where it keeps its own sockets.
+## Stuck on a chassis, where it keeps its own sockets.
 func on_deck() -> bool:
-	var seat_in := host().seat_of(self) if host() != null else null
-	return seat_in != null and seat_in.kind == &"deck"
+	return host() is Chassis
 
 
-## Whether it seats in a socket: one of the kind it fits, or a deck mount.
-func fits_in(socket: Socket) -> bool:
-	return socket.kind == kind or socket.kind == &"deck" and stands_on_deck
+## Whether it seats in a socket: none takes a device but a chassis's own
+## ways of joining (Chassis).
+func fits_in(_socket: Socket) -> bool:
+	return false
 
 
 ## Its frame's own sockets, in the catalog's order: what a save numbers.
+## What's stuck on it isn't the catalog's.
 func frame_sockets() -> Array[Socket]:
 	var own: Array[Socket] = []
 	for socket in sockets():
-		if not socket.has_meta(&"socket"):
+		if not socket.has_meta(&"socket") and not socket.stuck():
 			own.append(socket)
 	return own
+
+
+## What's stuck on its sticky faces, as their sockets.
+func stuck() -> Array[Socket]:
+	var found: Array[Socket] = []
+	for socket in sockets():
+		if socket.stuck() and (socket.part != null or socket.mounted != null):
+			found.append(socket)
+	return found
+
+
+## Sticks a part or a device on it at a pose in its frame, on a sticky face
+## whose way out is `out`, belonging to one of a deck's pieces: a socket is
+## made there for it, and it's fitted or seated there as in any socket.
+func stick(thing: RigidBody3D, pose: Transform3D, out: Vector3, piece: Device = null) -> Socket:
+	var socket := Socket.new()
+	socket.kind = Socket.STUCK
+	socket.transform = pose
+	socket.out = out.normalized()
+	if piece != null and piece != self:
+		socket.set_meta(&"piece", piece)
+	add_child(socket)
+	if thing is Part:
+		fit(thing as Part, socket)
+	else:
+		mount(thing as Device, socket)
+	return socket
+
+
+## Takes what's stuck in a socket off again, loose where it was, and the
+## socket made for it goes. What came off.
+func unstick(socket: Socket) -> RigidBody3D:
+	return take(socket) if socket.part != null else dismount(socket)
 
 
 ## The socket a device is seated in on it, or null.
@@ -382,10 +412,11 @@ func socket_of(node: Node) -> Socket:
 	return node.get_meta(&"socket") if node != null and node.has_meta(&"socket") else null
 
 
-## Moves a part into a free socket of its kind: its shapes and meshes join this
-## body at exactly the socket's pose, and the part leaves the physics world.
+## Moves a part into a free socket of its kind, or one made where it sticks:
+## its shapes and meshes join this body at exactly the socket's pose, and the
+## part leaves the physics world.
 func fit(part: Part, socket: Socket) -> void:
-	assert(socket.is_open() and socket.kind == part.kind and socket.get_parent() == self)
+	assert(socket.is_open() and socket.get_parent() == self)
 	Device.seat_part(part, socket)
 	if socket.marker != null:
 		socket.marker.visible = false
@@ -415,7 +446,7 @@ static func seat_part(part: Part, socket: Socket) -> void:
 	part.socket = socket
 
 
-## A tray slid under a crate resting on the sand lifts the crate onto it: a
+## A tray stuck under a deck resting on the sand lifts the deck onto it: a
 ## shape left below the sand would wedge the body so nothing could move it.
 func _rise_clear_of_sand(nodes: Array[Node3D]) -> void:
 	if world == null:
@@ -433,8 +464,14 @@ func _rise_clear_of_sand(nodes: Array[Node3D]) -> void:
 		global_position.y += deepest + 0.01
 
 
-## Where a device seated in a socket sits, in the socket's frame: upright
-## along the socket's outward axis, its base on the socket's face.
+## Where a device seated in a socket sits, in the socket's frame: a socket
+## made where it sticks is its pose already.
+func seat_for(socket: Socket) -> Transform3D:
+	return Transform3D.IDENTITY if socket.stuck() else seat()
+
+
+## Upright along a face's outward axis, its base on the face: how it stands
+## where it's stuck, in the face's frame.
 func seat() -> Transform3D:
 	var base := 0.0
 	for child in get_children():
@@ -444,16 +481,16 @@ func seat() -> Transform3D:
 	return Transform3D(Basis(Vector3.RIGHT, PI / 2.0), Vector3(0.0, 0.0, base))
 
 
-## Seats a small device in a free socket of the kind it fits, as a lamp sits on
-## a top mount. It stays a body of its own, held fast on this one (frozen, and
-## touching nothing of it) so it carries on working as itself: it rides with
-## this frame, its weight joins it, and Power pools the two.
+## Seats a device in a socket made where it sticks. It stays a body of its
+## own, held fast on this one (frozen, and touching nothing of it) so it
+## carries on working as itself: it rides with this frame, its weight joins
+## it, and Power pools the two.
 func mount(other: Device, socket: Socket) -> void:
-	assert(socket.is_open() and other.fits_in(socket) and socket.get_parent() == self)
+	assert(socket.is_open() and socket.get_parent() == self)
 	if other.get_parent() != null:
 		other.get_parent().remove_child(other)
 	add_child(other)
-	other.transform = socket.transform * other.seat()
+	other.transform = socket.transform * other.seat_for(socket)
 	other._unseated_mode = other.freeze_mode
 	other.freeze_mode = RigidBody3D.FREEZE_MODE_KINEMATIC
 	other.freeze = true
@@ -464,9 +501,8 @@ func mount(other: Device, socket: Socket) -> void:
 	_seats.append(socket)
 	if socket.marker != null:
 		socket.marker.visible = false
-	# What stands on a deck keeps its sockets, so its weight can change there.
-	if socket.kind == &"deck":
-		other.parts_changed.connect(_recompute)
+	# What's stuck on keeps its sockets, so its weight can change there.
+	other.parts_changed.connect(_recompute)
 	_recompute()
 
 
@@ -483,13 +519,14 @@ func _drop_freed_seats() -> void:
 			socket.mounted = null
 			if socket.marker != null:
 				socket.marker.visible = true
+			_unmade(socket)
 	if kept.size() != _seats.size():
 		_seats = kept
 		_recompute()
 
 
 ## Takes a seated device off again, loose where it sat; the caller lifts it
-## clear along the socket's +Z.
+## clear along the socket's way out. A socket made for it goes with it.
 func dismount(socket: Socket) -> Device:
 	var other := socket.mounted
 	assert(other != null)
@@ -507,8 +544,16 @@ func dismount(socket: Socket) -> Device:
 	_seats.erase(socket)
 	if socket.marker != null:
 		socket.marker.visible = true
+	_unmade(socket)
 	_recompute()
 	return other
+
+
+## A socket made where something stuck goes once it's empty.
+func _unmade(socket: Socket) -> void:
+	if socket.stuck() and socket.get_parent() == self:
+		remove_child(socket)
+		socket.queue_free()
 
 
 ## Where loose things go when they come off it: whatever holds it, past any
@@ -565,6 +610,7 @@ func _unfit(socket: Socket, whole: bool) -> Part:
 	_holder().add_child(part)
 	part.global_transform = global_transform * socket.transform
 	part.linear_velocity = linear_velocity
+	_unmade(socket)
 	_recompute()
 	return part
 
@@ -587,16 +633,21 @@ func stats() -> Dictionary:
 	_sum_into(total, frame_stats)
 	var charge := 0.0
 	var cells := 0
-	# A lossier make's tray draws more a kilogram, by its share of the lift.
+	# A tray lifts as far as it faces down in its body, none on a wall: what
+	# it lifts counts that share. A lossier make's draws more a kilogram.
+	var lifts := 0.0
 	var draws_kg := 0.0
 	for socket in sockets():
 		var part := socket.part
 		if part != null:
 			_sum_into(total, part.stats)
-			draws_kg += part.stats.get("lift_kg", 0.0) * part.stats.get("hover_draw", 1.0)
-		if socket.kind == &"battery" and part is Battery:
+			var lift: float = part.stats.get("lift_kg", 0.0) * Device.facing_down(socket.outward())
+			lifts += lift
+			draws_kg += lift * part.stats.get("hover_draw", 1.0)
+		if (socket.kind == &"battery" or socket.stuck()) and part is Battery:
 			charge += (part as Battery).charge_wh
 			cells += 1
+	total["lift_kg"] = lifts
 	if not lamps:
 		total["light_w"] = 0.0
 	total["runners"] = glider.runners.size() if glider != null else 0
@@ -612,6 +663,11 @@ func stats() -> Dictionary:
 		total["charge_wh"] = charge
 	total["durability"] = durability
 	return total
+
+
+## How squarely a way out faces down, 1 straight down to 0 level or up.
+static func facing_down(out: Vector3) -> float:
+	return clampf(-out.normalized().y, 0.0, 1.0)
 
 
 static func _sum_into(total: Dictionary, source: Dictionary) -> void:
@@ -722,10 +778,10 @@ func _middle(nodes: Array[Node3D]) -> Vector3:
 ## Its trays lift it where they are; sideways, the wind and its lines decide.
 func _physics_process(delta: float) -> void:
 	# What's seated rides exactly on its seat: a frozen body under a moving one
-	# is left a tick behind each tick, and on a floating crate that adds up.
+	# is left a tick behind each tick, and on a floating deck that adds up.
 	_drop_freed_seats()
 	for socket in _seats:
-		socket.mounted.transform = socket.transform * socket.mounted.seat()
+		socket.mounted.transform = socket.transform * socket.mounted.seat_for(socket)
 	if world == null:
 		return
 	var tuning := world.tuning
@@ -746,8 +802,8 @@ func _physics_process(delta: float) -> void:
 
 
 ## Tipped over, what's seated on it meets the sand too, by the corners of its
-## frame, as any end would: a crate standing on a capsized deck rests on its
-## edge, never through the sand.
+## frame, as any end would: a Console standing on a capsized deck rests on
+## its edge, never through the sand.
 func _rest_seated(h: float) -> void:
 	var riding := mounted()
 	while not riding.is_empty():
@@ -834,7 +890,7 @@ func _tray(socket: Socket) -> Array:
 				var x := box.position.x if i % 2 == 0 else box.end.x
 				var y := box.position.y if i < 2 else box.end.y
 				corners.append(shape.transform * Vector3(x, y, box.end.z))
-	return [socket.part.stats.lift_kg, corners, socket.transform.basis.z]
+	return [socket.part.stats.lift_kg, corners, socket.outward()]
 
 
 ## How high its middle rides over level sand, its load shared out as its
@@ -846,7 +902,7 @@ func rest_height() -> float:
 	var depth := 0.0
 	var count := 0
 	for tray: Array in _trays:
-		lift += tray[0]
+		lift += tray[0] * Device.facing_down(tray[2])
 		for corner: Vector3 in tray[1]:
 			depth -= corner.y
 			count += 1
