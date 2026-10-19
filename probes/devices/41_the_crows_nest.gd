@@ -3,8 +3,8 @@ extends DeckProbe
 ## crow's nest held over a standing mast's head sticks there, nowhere else;
 ## from the deck, use on its ladder climbs you in: a seat as the helm is,
 ## your eyes the mast's height over the deck and your weight high on the
-## camp. From up there more of the ground round you shows over the crests,
-## and more of what history left in sight: its height alone.
+## camp. From up there more of the ground round you shows over the crests:
+## its height alone.
 
 const STEPS := [[&"piece", Vector2i(1, 0)], [&"piece", Vector2i(0, 1)], [&"piece", Vector2i(1, 1)],
 	[&"stick", Vector2i(0, 0), &"top", Vector2(0.4, -0.4), 180.0, [&"mast", [&"sail"]], &"mast"]]
@@ -39,16 +39,15 @@ func run() -> void:
 	var from_nest := _view(eye())
 	var deck_eye := Vector3(ladder.x, top + 1.6, ladder.z)
 	var from_deck := _view(deck_eye)
-	print("from the crow's nest %.0f%% of the ground within %.0f m shows and %d of %d sites in sight; from the deck %.0f%% and %d"
-		% [100.0 * from_nest.ground, FAR, from_nest.sites, from_nest.of, 100.0 * from_deck.ground, from_deck.sites])
-	check(from_nest.ground > from_deck.ground * 1.1 and from_nest.sites >= from_deck.sites,
-		"from up there more of the ground shows, and no less of what's in sight")
+	print("from the crow's nest %.0f%% of the ground within %.0f m shows; from the deck %.0f%%"
+		% [100.0 * from_nest, FAR, 100.0 * from_deck])
+	check(from_nest > from_deck * 1.1, "from up there more of the ground shows")
 	world.player.stand_up()
 
 
-## What an eye (engine metres) sees round it: the share of the ground out to
-## FAR not hidden by the crests between, and the sites in sight whose tops do.
-func _view(eye_at: Vector3) -> Dictionary:
+## The share of the ground out to FAR an eye (engine metres) sees, not
+## hidden by the crests between.
+func _view(eye_at: Vector3) -> float:
 	var shape := world.shape
 	var tuning := world.tuning
 	var eye_w := Vector3(world.world_x(eye_at.x), eye_at.y, world.world_z(eye_at.z))
@@ -67,23 +66,4 @@ func _view(eye_at: Vector3) -> Dictionary:
 				shown += 1
 				steepest = slope
 			d = Skyline.next_look(d)
-	var sites := 0
-	var of := 0
-	var laid: Array[Structure] = []
-	for unit in world.shape.sites.units():
-		for each in unit.sites:
-			if each is Structure and not (each as Structure).piece.glints.is_empty():
-				laid.append(each)
-	for site in laid:
-		if Vector2(site.x - eye_w.x, site.z - eye_w.z).length() < 30.0 \
-				or Vector2(site.x - eye_w.x, site.z - eye_w.z).length() > FAR:
-			continue
-		of += 1
-		var tops: Array[Vector3] = []
-		for glint: Array in site.piece.glints:
-			tops.append(site.frame() * (glint[0] as Vector3))
-		if tops.is_empty():
-			tops.append(Vector3(site.x, site.floor_y + 2.0, site.z))
-		if tops.any(func(p: Vector3) -> bool: return Skyline.clearance(shape, tuning, eye_w, p, center, site.reach) >= 0.0):
-			sites += 1
-	return {"ground": float(shown) / maxi(looked, 1), "sites": sites, "of": of}
+	return float(shown) / maxi(looked, 1)

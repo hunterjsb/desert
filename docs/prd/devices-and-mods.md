@@ -337,8 +337,8 @@ gives a long view for spotting glints, plumes and storm fronts." Found with the 
   deck of four pieces you stand its middle 2.59 m higher, so a hard gust heels it further. Ride or use
   again climbs you down off the deck's side. Its first sit teaches what it is (`CrowsNest.NEST_HOW_TO`).
 - **The view is height alone.** Nothing draws farther from up there and no lens closes in: the dunes
-  are what hide what's far off, and over the crests round you more of the ground and what stands on
-  it shows. Round the probe's deck, 25% of the ground out to 2.5 km is in sight from the nest against
+  are what hide what's far off, and over the crests round you more of the ground shows, and what
+  stands on it. Round the probe's deck, 25% of the ground out to 2.5 km is in sight from the nest against
   19% from the deck (probe 41). A glint the crests hid from the deck, a plume's foot, a front's sand
   under its wall: each is there or not by the same sightlines the Glint deed reads. Why not more: a
   farther haze or skyline from up there would be a rule the ground doesn't keep, and the sightline
