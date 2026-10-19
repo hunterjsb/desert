@@ -198,6 +198,23 @@ func pool_wh(device: Device) -> float:
 	return held
 
 
+## How full the batteries in a device's pool are together, 0 to 1; NAN with none.
+func pool_share(device: Device) -> float:
+	var cells: Array[Battery] = []
+	for each: Device in pool_of(device):
+		cells.append_array(each.pooled())
+	return _fraction(cells) if not cells.is_empty() else NAN
+
+
+## The share of its pool's charge a device gives way at as the pool runs
+## short: the reserve kept for anything in it ranked higher, else none.
+func gives_way_at(device: Device) -> float:
+	for each: Device in pool_of(device):
+		if each.rank > device.rank:
+			return RESERVE
+	return 0.0
+
+
 ## The devices sharing a device's pool; none for a wrecked one.
 func pool_of(device: Device) -> Array:
 	for pool: Array in _pools():

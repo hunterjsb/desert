@@ -11,6 +11,9 @@ func run() -> void:
 			named[found.get_string()] = script
 	check(named.size() >= 30, "the game names its sounds (%d found)" % named.size())
 	for sound: String in named:
+		# A path with a blank names a bank, which its own probe checks (radio 23, the voice's).
+		if sound.contains("%"):
+			continue
 		var stream := load(sound) as AudioStream if ResourceLoader.exists(sound) else null
 		check(stream != null and stream.get_length() > 0.0, "%s, named in %s, loads" % [sound, named[sound]])
 	for bus in [Sounds.WORLD, Sounds.WEATHER, Sounds.UI]:
