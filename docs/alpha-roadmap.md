@@ -63,8 +63,10 @@ They can be split into named minor releases after their scope is agreed.
    [terrain](prd/world-and-terrain.md) and [storms](prd/wind-and-storms.md).
    Protect the single terrain truth, stable origins, deterministic history and
    bounded residency while extending exploration. Audit landmark landforms and
-   persistent interactive interiors, the full water rhythm and thermal suit/travel
-   gates explicitly; generated history alone does not complete these packages.
+   only the persistent interactions/interiors required by the selected ending
+   routes; full landmark interiors are explicitly outside the current world
+   system's scope. Audit the full water rhythm and thermal suit/travel gates
+   explicitly; generated history alone does not complete these packages.
 4. **Endings:** the [vision's ladder](vision.md#the-ladder) describes several
    agreed and proposed outcomes, modifiers and prerequisites; it is not a built
    campaign. Select the required Alpha routes explicitly. Audit the observatory,
