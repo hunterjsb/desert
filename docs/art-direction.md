@@ -956,6 +956,15 @@ Each defect pair skips pixels out of its reach, so a pixel takes the twist of on
 - The grains' cells, like the glitter's, hold still through origin shifts only because a 64 m chunk
   holds whole cells.
 
+**Playtest (Hunter, 2026-10-19; agreed, not built):** "improved but we still need more volume." Read
+as the sand needing to look solid rather than painted on:
+- **Dune-scale shading:** crests lighter and hollows darker, from the ground's own height, which
+  the shader doesn't read yet.
+- **Ripple relief near you:** real ripples in the surface close up, the roadmap's displaced patch,
+  not only in the shading.
+- **Shadow in the hollows:** soft shadow in the troughs and under the brinks, so the ripples and
+  dunes have depth at every sun.
+
 ## Open questions
 
 - **Tu's palette** (open in the spec: "Tu's palette, to be settled against

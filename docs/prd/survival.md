@@ -254,6 +254,9 @@ storm":
   [Wind & storms](wind-and-storms.md#open-questions)'s question. A night slept through an anomaly
   lives its real damage on a plan made from the clean curve.
 
+**Playtest (Hunter, 2026-10-19; agreed, not built).** "I still wanna see the sleepingbag unroll when
+you place it." A bedroll set down unrolls out flat over a moment; picked up, it rolls back up.
+
 ## Sleep (proposed)
 
 *Hunter, 2026-10-17 ([session](../console-sensors-sleep-2026-10-17.md)). The 2026-10-18 spec agreed

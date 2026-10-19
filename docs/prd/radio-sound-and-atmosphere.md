@@ -232,6 +232,10 @@ terminals" by Hunter's call. The squatting oracles above are now the gods.
   voice" (on by default), it stops. A Console with the radio in its system speaks in the same voice,
   through the radio's speaker whatever it's tuned to: "Battery low." and "Battery critical."
   ([Devices & mods](devices-and-mods.md)). (It was the system's text-to-speech, heard flat in your ear.)
+  **Playtest (Hunter, 2026-10-19; agreed, not built):** "Voice is better, just make the sentences
+  shorter still. and probably announce less often." Two to four words a sentence, and a report
+  spoken only when it has news: a storm newly due or arriving, or its clearing. A calm repeat stays
+  in the line low in your view, unspoken.
 - **The Eye's drone** (Hunter: "implement this as a random ambient track that can play from 'the eye'"):
   the Eye's frequency begins a run silent, then now and then plays Hunter's drone (`radio_eye.ogg`, 66 s)
   through once, each silence before it 2 to 8 minutes (`eye_quiet_minutes`), the seed's pick. Between

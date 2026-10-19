@@ -279,6 +279,15 @@ four steps of 190 px cards); over a run, in the middle on the soft dark field.
   some done, one of them early, a hidden one done and one not, and a card highlighted
   (`look/deeds/shoot.sh` builds the sheet).
 
+**Playtest (Hunter, 2026-10-19; agreed, not built).**
+- **The console has a scroll bar and can be resized.** "There are so many scenarios they dont fit
+  in the console. i see we added scroll but lets add a scroll bar and make it resizeable so the
+  player can make it bigger." A bar shows where you are in what it said, and you can drag the
+  console bigger, kept between sessions.
+- **The creative menu scales.** "We will need to find a way to scale it as we will likely have many
+  more items." It stays a grid of pictures, with a way to narrow it as it grows: its groups to
+  pick from, and a search.
+
 ## Skeleton version
 
 *As built, 2026-10-16.*
