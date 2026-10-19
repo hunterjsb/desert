@@ -540,3 +540,7 @@ four steps of 190 px cards); over a run, in the middle on the soft dark field.
   stand out by brightness in a thin keycap instead, or keep a colour of their own. For
   now they keep a colour of their own, a soft lavender, one entry in the theme, so
   trying another is a one-line change.
+
+## Playtest follow-up (Hunter, 2026-10-19; agreed, in progress)
+
+"I had to go back to main menu ... for unlockall, I should be able to do that from any menu." The console action opens over every menu, including nested origin selection, options, deeds, pause/system menus and creative search. Suspend the covered menu's input, then restore the previous selection and exact usable focus on close. Profile-changing commands such as unlockall refresh a menu already showing locked starts; returning to the main menu is not required.

@@ -1538,3 +1538,7 @@ note](../lore-session-2026-10-18-mitchell-wow-shoemaker.md#clashes).
 - **A module that costs you another god.** The session: carrying Mitchell "costs you" Mother Cistern. Here:
   nothing but a module's own draw ("What a god module draws," above). Not said how the loss is counted, or
   how it sits with the Cistern axis, which wants her restored and linked.
+
+## Playtest follow-up (Hunter, 2026-10-19; agreed, in progress)
+
+The streamer is "one of my fav items" and "helps a lot"; keep its readable wind response. The crow's nest is inaccessible to place: "cant hop up high enough." Holding a nest and aiming at an accessible part of a standing mast should target the masthead for fitting, with an understandable placement preview; jumping is not required. The resulting seat stays on the head and still respects blocked placement, weight, climbing and dismounting. The sail scenario should also offer readable sailing notes; mechanics and the open multiple-line design are recorded in Movement.

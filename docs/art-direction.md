@@ -1036,3 +1036,7 @@ night, the headlamp, storm, a walked track, and close ripples. The look-test can
   models should differ by era in shape... The shield comes first." Not said: whether the
   shield's remodel is the first exception or waits with the rest, and whether a new shape keeps
   the grey box's collision and sockets, as the paint pass did.
+
+## Playtest follow-up (Hunter, 2026-10-19; agreed, in progress)
+
+Hunter: "sand looks great ... our best iteration yet" and "we need our sand trails to look as good as our sand." The accepted sand appearance is the baseline. Improve walking trails and board/skid gouges with soft compressed floors, loose raised rims and nearby relief that belongs to the rippled surface. Keep marks stable while moving and through origin shifts, preserve their lifetime and physical ground, and measure the extra GPU cost against the accepted sand build. Prefer a bounded nearby shader treatment within the existing visual budget before expanding the track map or adding a separate mesh patch.

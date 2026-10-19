@@ -1090,3 +1090,11 @@ The sleep session (2026-10-17) adds one. It is quoted on both sides and left sta
   session: bedrolls, "probably sharing the hoverboard's mount slot on a crate." *Settled by the
   chassis (2026-10-18):* the crate and its rack are gone, and the board and a bedroll each stick
   anywhere on a deck they fit, side by side.
+
+## Playtest follow-up (Hunter, 2026-10-19; in progress)
+
+- **Board and rig:** "board speed is broken ... cant speed up to normal board speeds when attached to the rig." Investigate and measure the powered board's attached behavior against its free behavior and the existing protection against pushing a slack tow into free energy. The previous tow-speed restriction is intentional in the implementation; the desired powered-board behavior needs reconciliation with this playtest.
+- **Varran attachment bug:** "the second line on the sail is attached to a floating hook, not on a chassis." Every bridle end must stay seated in its actual chassis hook across initial assembly, riding, hauling, saving and resuming. Fix the attachment before evaluating the three-line rig's handling.
+- **Rope motion:** the waist-to-rig rope looks "glitchy and nauseating ... blurry and jumping around erratically" when looking down while sailing. Make its presentation follow the displayed camera and attachment positions smoothly; preserve the physical simulation and real tension.
+- **Several waist lines (design open):** "not so sure about having three ropes tied to your waist"; explain and manage which line is tied, untied and reeled. Measure both the resultant pull and opposing loads on the player before choosing a safe-force limit or release behavior. Do not silently remove the bridle or invent a force cap.
+- **Learning to sail (agreed):** "a sailing tutorial in the sail scenario"; Hunter suggested physical items explaining the mechanics in depth. Give the sail scenario an accessible tutorial, with readable sailing notes for wind and heading, sheet trim, board edging, and the Varran bridle. Teach the current controls and why the rig responds, without taking away the skill of sailing. This extends the earlier brief controls-only how-to.
