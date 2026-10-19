@@ -54,8 +54,9 @@ const BOARD_ON := preload("res://assets/audio/board_on.ogg")
 const BOARD_OFF := preload("res://assets/audio/board_off.ogg")
 # The ride, made here (make_board_sounds.py): a carve's hiss, the wind's
 # rush, a pop off a lip, a landing and a hard one, a crash's knock, a skid
-# biting again, and each make's hum, the issue's the hover's own; and the
-# battery's two cues, low and then critical.
+# biting again, and each make's hum, the issue's the hover's own; the
+# battery's two cues, low and then critical; and two of your body hitting the
+# sand as you tumble.
 const BOARD_CARVE := preload("res://assets/audio/board_carve.wav")
 const BOARD_RUSH := preload("res://assets/audio/board_rush.wav")
 const BOARD_POP := preload("res://assets/audio/board_pop.wav")
@@ -68,6 +69,8 @@ const BOARD_HUMS := {&"board": HOVER, &"racer_board": preload("res://assets/audi
 	&"temple_board": preload("res://assets/audio/hum_temple.wav")}
 const BATTERY_LOW := preload("res://assets/audio/battery_low.wav")
 const BATTERY_CRITICAL := preload("res://assets/audio/battery_critical.wav")
+const TUMBLE: Array[AudioStream] = [preload("res://assets/audio/tumble_a.wav"),
+	preload("res://assets/audio/tumble_b.wav")]
 # Devices.
 const SHIELD_BOOT := preload("res://assets/audio/shield_boot.ogg")
 const SHIELD_HUM := preload("res://assets/audio/shield_hum.ogg")

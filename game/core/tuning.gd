@@ -55,6 +55,9 @@ static var _current: Tuning
 @export var deed_board_height_m: float = 8.0
 ## One ride without stepping off, m: more than a scout round camp.
 @export var deed_board_m: float = 5000.0
+## Tumbled in one wipeout, m: thrown off near flat out, past what an edge
+## caught in a stop throws you.
+@export var deed_tumble_m: float = 12.0
 ## Full storm one shield holds off, minutes, over however many storms.
 @export var deed_storm_minutes: float = 60.0
 ## Made at once in one system, W: more than the reference camp makes at its best.

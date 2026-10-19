@@ -1,9 +1,10 @@
 class_name Tracks
 extends Node
 ## The marks you leave on the sand, so your way back can be followed through a
-## storm or the night: footprints, the board's wake, the groove of anything
-## dragged and the imprint under anything resting. A layer the sand is drawn
-## with, never its shape: height_at, collision and physics never see it.
+## storm or the night: footprints, the board's wake and a skid's gouge, where
+## you tumbled, the groove of anything dragged and the imprint under anything
+## resting. A layer the sand is drawn with, never its shape: height_at,
+## collision and physics never see it.
 ##
 ## A window of ground round you, track_cells texels a side, wrapped round on
 ## itself so it scrolls without redrawing and holds still in world metres
@@ -19,7 +20,9 @@ const TILE := 64
 ## Tiles sent to the GPU per frame at most; a scroll clears a column of them.
 const UPLOADS := 32
 ## A full mark's depth; marks are fractions of it, and fill at one a clock unit.
+## A skid's gouge goes deeper, the deepest of all, so it takes longer to fill.
 const FULL := 1.0
+const DEEPEST := 2.0
 ## Ticks between looks for tiles whose every mark has filled, which go.
 const SWEEP_TICKS := 240
 ## Each foot lands this far either side of your middle, and its print runs
@@ -39,6 +42,20 @@ const SLIDE_DEPTH := 0.6
 ## deeper pressed into a dip, none once it's this far over it, m.
 const WAKE_DEPTH := 0.25
 const WAKE_REACH := 1.0
+## Sliding across its way (Ride.slide_across), the board gouges the sand as
+## wide as it sweeps: from this much way across it, m/s, at least GOUGE_LEAST
+## of the deepest, all of it from GOUGE_FAST.
+const GOUGE_FROM := 1.0
+const GOUGE_FAST := 6.0
+const GOUGE_LEAST := 0.4
+## Its walls slope over this much, m, as sand shoved aside slumps.
+const GOUGE_SOFT := 0.5
+## Tumbling, each hit leaves your body's imprint this long and wide, m, as
+## deep as a footprint from a hit this hard, m/s; sliding, you plough a groove
+## this wide.
+const BODY_LENGTH := 1.6
+const BODY_WIDTH := 0.5
+const BODY_HARD := 6.0
 ## Something on the sand: a corner this near it touches, m. Resting, it sits
 ## in an imprint this deep; dragged, it ploughs one this deep.
 const CONTACT := 0.05
@@ -69,7 +86,7 @@ var _texel: float
 var _tiles: int
 ## Per tile of the window (row-major, wrapped), while it holds a mark: an
 ## Image of the fill clock's readings at which its texels are filled, and the
-## clock when it was last pressed.
+## reading by which all of them are.
 var _held := {}
 var _held_at := {}
 ## What a tile with no marks uploads.
@@ -84,6 +101,8 @@ var _phase := 0.0
 var _foot := 1.0
 var _slid_from := Vector2.INF
 var _wake_from := Vector2.INF
+var _gouge_from := Vector2.INF
+var _gouge_ahead := Vector2.ZERO
 var _ticks := 0
 ## Per loose body: where it last pressed (world xz) and when (world time).
 var _pressed := {}
@@ -103,6 +122,7 @@ func setup(world: World, material: Material) -> void:
 	_dirty.resize(_tiles * _tiles)
 	_material = material as ShaderMaterial
 	world.player.landed.connect(_on_landed)
+	world.player.tumbled.connect(_on_tumbled)
 	# After you move and the weather is read, before the origin shifts.
 	process_physics_priority = 140
 	# Headless has no GPU: marks are still kept, just never drawn.
@@ -138,7 +158,7 @@ func depth_at(x: float, z: float) -> float:
 	var v := fz - j
 	var top := lerpf(_read(i, j), _read(i + 1, j), u)
 	var bottom := lerpf(_read(i, j + 1), _read(i + 1, j + 1), u)
-	return clampf(lerpf(top, bottom, v) - clock, 0.0, FULL)
+	return clampf(lerpf(top, bottom, v) - clock, 0.0, DEEPEST)
 
 
 ## Tiles holding a mark, of the window's track_cells² / TILE².
@@ -154,7 +174,7 @@ func deepest_near(x: float, z: float, reach: float) -> float:
 	var j0 := floori(z / _texel)
 	for j in range(j0 - r, j0 + r + 1):
 		for i in range(i0 - r, i0 + r + 1):
-			deepest = maxf(deepest, clampf(_read(i, j) - clock, 0.0, FULL))
+			deepest = maxf(deepest, clampf(_read(i, j) - clock, 0.0, DEEPEST))
 	return deepest
 
 
@@ -202,6 +222,40 @@ func press_box(middle: Vector2, axis: Vector2, half_along: float, half_across: f
 		for i in range(floori((middle.x - reach) / _texel), floori((middle.x + reach) / _texel) + 1):
 			var at := Vector2((i + 0.5) * _texel, (j + 0.5) * _texel) - middle
 			var outside := maxf(absf(at.dot(axis)) - half_along, absf(at.dot(across)) - half_across)
+			_deepen(i, j, depth * (1.0 - smoothstep(0.0, soft, outside)))
+
+
+## Presses the outline round world places, as a box swept between two does,
+## `depth` of a full one, soft over `soft` m at its edge, a texel unless said.
+func press_hull(points: PackedVector2Array, depth: float, soft := 0.0) -> void:
+	var hull := Geometry2D.convex_hull(points)
+	var sides := hull.size() - 1
+	if sides < 3:
+		return
+	var middle := Vector2.ZERO
+	for i in sides:
+		middle += hull[i] / sides
+	var normals := PackedVector2Array()
+	var offsets := PackedFloat32Array()
+	var low := middle
+	var high := middle
+	for i in sides:
+		var edge := (hull[i + 1] - hull[i]).normalized()
+		var normal := Vector2(edge.y, -edge.x)
+		if normal.dot(middle - hull[i]) > 0.0:
+			normal = -normal
+		normals.append(normal)
+		offsets.append(normal.dot(hull[i]))
+		low = low.min(hull[i])
+		high = high.max(hull[i])
+	soft = maxf(soft, _texel)
+	var reach := 2.0 * soft
+	for j in range(floori((low.y - reach) / _texel), floori((high.y + reach) / _texel) + 1):
+		for i in range(floori((low.x - reach) / _texel), floori((high.x + reach) / _texel) + 1):
+			var at := Vector2((i + 0.5) * _texel, (j + 0.5) * _texel)
+			var outside := -INF
+			for k in sides:
+				outside = maxf(outside, normals[k].dot(at) - offsets[k])
 			_deepen(i, j, depth * (1.0 - smoothstep(0.0, soft, outside)))
 
 
@@ -291,10 +345,10 @@ func _drop(tile: int) -> void:
 		_mark(tile)
 
 
-## Tiles whose last mark is a full fill old hold nothing any more.
+## Tiles whose every mark has filled hold nothing any more.
 func _sweep() -> void:
 	for tile: int in _held_at.keys():
-		if _held_at[tile] + FULL < clock:
+		if _held_at[tile] < clock:
 			_drop(tile)
 
 
@@ -322,7 +376,7 @@ func _deepen(i: int, j: int, depth: float) -> void:
 	var filled := clock + depth
 	if image.get_pixel(px % TILE, py % TILE).r < filled:
 		image.set_pixel(px % TILE, py % TILE, Color(filled, 0.0, 0.0))
-		_held_at[tile] = clock
+		_held_at[tile] = maxf(_held_at.get(tile, 0.0), filled)
 		_mark(tile)
 
 
@@ -332,17 +386,18 @@ func _mark(tile: int) -> void:
 		_dirty_list.append(tile)
 
 
-## Footprints on alternate feet, a stride apart as feel's steps are, and a
-## slide's groove.
+## Footprints on alternate feet, a stride apart as feel's steps are, and the
+## groove a slide or a tumble's slide ploughs.
 func _walk(delta: float) -> void:
 	var player := _world.player
 	if player.ride != null or player.helm != null or player.flying or not _on_sand(player.global_position):
 		_slid_from = Vector2.INF
 		return
 	var at := _world_xz(player.global_position)
-	if player.mode == "slide":
+	var tumbling := player.tumble != null and player.tumble.ploughing()
+	if player.mode == "slide" or tumbling:
 		if _slid_from != Vector2.INF and _slid_from.distance_to(at) > _texel * 0.5:
-			press(_slid_from, at, SLIDE_WIDTH * 0.5, SLIDE_DEPTH)
+			press(_slid_from, at, (BODY_WIDTH if tumbling else SLIDE_WIDTH) * 0.5, SLIDE_DEPTH)
 			_slid_from = at
 		elif _slid_from == Vector2.INF:
 			_slid_from = at
@@ -381,8 +436,10 @@ func _wake() -> void:
 	var ride := _world.player.ride
 	if ride == null:
 		_wake_from = Vector2.INF
+		_gouge_from = Vector2.INF
 		return
 	var at := _world_xz(ride.board_pose(false).origin)
+	_gouge(ride, at)
 	var close := clampf(1.0 - ride.gap / WAKE_REACH, 0.0, 1.0)
 	if close <= 0.0 or _wake_from == Vector2.INF:
 		_wake_from = at
@@ -393,6 +450,41 @@ func _wake() -> void:
 	var half := (Catalog.DEVICES[&"board"].size.x as float) * 0.5
 	press(_wake_from, at, half, minf(WAKE_DEPTH * close * pressed, FULL))
 	_wake_from = at
+
+
+## Sliding across its way, the board's hover shoves the sand out from under
+## its whole length: a gouge as wide as it sweeps, deep as the slide is hard,
+## all it swept since it last gouged, so a fast slide leaves no gaps.
+func _gouge(ride: Ride, at: Vector2) -> void:
+	var across := ride.slide_across()
+	if across < GOUGE_FROM:
+		_gouge_from = Vector2.INF
+		return
+	var size: Vector3 = Catalog.DEVICES[&"board"].size
+	var corners := _footprint(at, ride.ahead, size)
+	if _gouge_from != Vector2.INF:
+		corners.append_array(_footprint(_gouge_from, _gouge_ahead, size))
+	press_hull(corners, DEEPEST * clampf(across / GOUGE_FAST, GOUGE_LEAST, 1.0), GOUGE_SOFT)
+	_gouge_from = at
+	_gouge_ahead = ride.ahead
+
+
+## The corners of the board's footprint at a world place, its nose along `ahead`.
+func _footprint(at: Vector2, ahead: Vector2, size: Vector3) -> PackedVector2Array:
+	var along := ahead * size.z * 0.5
+	var across := Vector2(-ahead.y, ahead.x) * size.x * 0.5
+	return PackedVector2Array([at + along + across, at + along - across, at - along - across, at - along + across])
+
+
+## A hit as you tumble leaves your body's imprint along your way.
+func _on_tumbled(speed: float) -> void:
+	var player := _world.player
+	if not _on_sand(player.global_position):
+		return
+	var way := player.own.normalized() if player.own.length() > 0.1 else \
+		-Vector2(player.global_basis.z.x, player.global_basis.z.z).normalized()
+	press_box(_world_xz(player.global_position), way, BODY_LENGTH * 0.5, BODY_WIDTH * 0.5,
+		FULL * clampf(speed / BODY_HARD, 0.5, 1.0))
 
 
 ## Whatever loose lies on the sand sits in its own imprint, and anything
