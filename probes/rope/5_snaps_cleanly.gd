@@ -1,7 +1,9 @@
 extends RopeProbe
 ## Rope & tethering probe 5: too much load breaks something, and never
-## explodes. A gust spike far past a line's breaking strength, too brief to
-## sustain, leaves it holding. Then the wind rises until the line's sustained
+## explodes, and never pulls past its strength. A gust spike far past a
+## line's breaking strength never pulls it past that: holding would take
+## more, so it gives and parts. A spike it can stretch through it rides out:
+## sailing probe 14. On a fresh line the wind rises until the line's sustained
 ## load passes its strength: it snaps near its rating, the floater drifts off
 ## downwind no faster than the wind, and nothing spikes. A strong line on a
 ## weak stake pulls the stake out instead, and the stake goes with the floater.
@@ -67,14 +69,27 @@ func _line_snaps() -> void:
 	var rope := stake_line(spot(0.0, 0.0), floater, 0.3, WEAK, INF)
 	await simulate(6.0)
 	# A gust worth two and a half times the line's strength, for a tenth of a second.
-	var peak := {"pull": 0.0}
+	var peak := {"pull": 0.0, "asked": 0.0}
+	var watch_peak := func() -> void:
+		if ropes.ropes.has(rope):
+			peak.pull = maxf(peak.pull, rope.tension)
+			peak.asked = maxf(peak.asked, rope.asked)
 	_blowing = 45.0
-	await simulate(0.1, func() -> void: peak.pull = maxf(peak.pull, rope.tension))
+	await simulate(0.1, watch_peak)
 	_blowing = 12.0
-	await simulate(3.0, func() -> void: peak.pull = maxf(peak.pull, rope.tension))
-	print("a 0.1 s spike pulled %.0f N on a %.0f N line" % [peak.pull, WEAK])
-	check(peak.pull > WEAK, "the spike really pulled past the breaking strength")
-	check(ropes.ropes.has(rope), "and the line held, since it wasn't sustained")
+	await simulate(3.0, watch_peak)
+	print("a 0.1 s gust asked %.0f N of a %.0f N line, which pulled %.0f N at most and %s" % [peak.asked, WEAK, peak.pull,
+		"held" if ropes.ropes.has(rope) else "parted"])
+	check(peak.asked > WEAK and peak.pull <= WEAK + 0.5, "the gust asked past the line's strength, and it never pulled past it")
+	check(not ropes.ropes.has(rope), "it gave, and parted")
+	for body: Node3D in world.content.get_children():
+		if body is RigidBody3D:
+			body.free()
+	ropes.clear()
+	floater = Props.floater(world, spot(6.0, 0.0))
+	rope = stake_line(spot(0.0, 0.0), floater, 0.3, WEAK, INF)
+	_snapped_in = -1.0
+	await simulate(6.0)
 
 	# Watched from before the snap, so the tick it lets go is seen too.
 	var h := 1.0 / ticks_per_second()

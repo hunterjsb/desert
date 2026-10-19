@@ -6,7 +6,9 @@ extends RefCounted
 ## a spring defined by how fast it springs back and how much it bounces takes
 ## over. Solved from both ends' masses with Catto's soft step, so it can only
 ## take energy out. A hard stop sits at max_stretch. Tension pulls both ends
-## equally, at the attachment points.
+## equally, at the attachment points. It never pulls past its strength: asked
+## for more, it gives at that and stretches, and asked for it long enough, it
+## parts.
 
 ## The hard stop's own softness: stiff enough to read as a wall, soft enough
 ## that hitting it never kicks back.
@@ -59,8 +61,10 @@ var hauls := Callable()
 var haul_n := 0.0
 var haul_gathered := 0.0
 
-## Pull this tick, and the load sustained long enough to break things, N.
+## Pull this tick, never past breaking; what holding would have taken; and
+## that load sustained long enough to break things, N.
 var tension := 0.0
+var asked := 0.0
 var sustained := 0.0
 var strand: RopeStrand
 var creak: AudioStreamPlayer3D
@@ -145,6 +149,7 @@ func prepare(h: float, gravity: float) -> void:
 		normal = along / distance if distance > 1e-5 else Vector3.UP
 		normal_b = normal
 	_beyond = distance - length * (1.0 + max_stretch)
+	asked = 0.0
 	var arm_a := _ra.cross(normal)
 	var arm_b := _rb.cross(normal_b)
 	_turn_a = body_a.inv_inertia * arm_a
@@ -240,6 +245,15 @@ func solve() -> void:
 		var eased := minf(over, stop)
 		stop -= eased
 		spring = maxf(0.0, spring - (over - eased))
+		change = spring - spring_impulse + stop - stop_impulse
+	asked = maxf(asked, (spring + stop) / _h)
+	var most_pull := breaking * _h
+	if spring + stop > most_pull:
+		# Past its strength it gives at that, the stop first.
+		var past := spring + stop - most_pull
+		var given := minf(past, stop)
+		stop -= given
+		spring -= past - given
 		change = spring - spring_impulse + stop - stop_impulse
 	spring_impulse = spring
 	stop_impulse = stop
