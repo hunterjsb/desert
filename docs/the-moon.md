@@ -84,16 +84,24 @@ A neighbouring moon, **Shoemaker**, fell into Tu. No human ever observed it, so 
 designation and is only a theory, inferred from Zan's wobbling orbit and the black stones in the sand. Its
 fragments rained on Zan for weeks: black, glassy, scored with melted grooves, warm and strongly magnetic.
 
+**Ruled (Hunter, 2026-10-18, after session 5): it fell into Tu naturally, and that is what caused the tidal
+changes and the changes in the orbit of Zan.** It is the lost sister moon: its fall left Zan's orbit more
+eccentric, which drove the tidal heating and volcanism the colonists found, and the orbit has been rounding
+out since (the orbit history in [the lore](lore-research.md#3-the-geological-clock-a-lost-sister-moon)). It
+replaces the lore's old leaning that the sister moon was ejected.
+
 Readings, not in the session:
-- **The wobble is the orbit's eccentricity,** which nods Tu by about a degree each day (Day length, below).
-  Shoemaker is read as the lost sister moon whose loss left the orbit eccentric; the session never says so.
-- **"Fell into Tu" is not "ejected."** The lore's leaning favoured ejection, since losing a resonant partner
-  doesn't pump a survivor. A fall can: it is Comet Shoemaker-Levy 9's end, a body broken up and taken in.
-  It also sits beside the Stoker ending's ring ([Clashes, item 9](lore-session-2026-10-18-mitchell-wow-shoemaker.md#clashes)).
+- **The wobble is the orbit's eccentricity,** which nods Tu by about a degree each day (Day length, below),
+  and it is the clue the theory is inferred from.
+- **A fall can pump a survivor where plain destruction doesn't:** it is Comet Shoemaker-Levy 9's end, a body
+  broken up and taken in. The Stoker ending's epilogue still has Zan join "its lost sister moon" as a ring of
+  debris; whether Shoemaker left a ring of its own is not said.
 - **The stones are magnetic like the rift's and the volcano's crust,** where lava that cooled in the old
   field moves the compass ([World system](world-system.md#geology)). Whether it is one effect is not said.
-- **When it fell is not said.** If Wow saw it after its network went quiet, it was recent against the millions
-  of years the orbit needs to round out ([the lore](lore-research.md#3-the-geological-clock-a-lost-sister-moon)).
+- **When it fell is not said.** If Wow saw it after its network went quiet (some eleven thousand years
+  before the player), it was recent against the millions of years the orbit needs to round out
+  ([the lore](lore-research.md#3-the-geological-clock-a-lost-sister-moon)). That is the one open edge of the
+  ruling.
 
 ## Water goes through all three phases every day
 

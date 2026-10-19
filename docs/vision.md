@@ -357,13 +357,13 @@ revealed; that stays with the stolen freighter.
   Kept as the endings session wrote it. It clashes with part 3's "hive mind start only," which is
   the newer, so as things stand it is an Idea with nowhere to land ([section
   17](lore-research.md#17-open-after-the-endings-session-and-session-4-part-3)).
-- **Idea (session 5, a sketch): Wow.** A hive mind survey probe buried under the black site wants two
-  things: Mother Cistern woken and linked to its climate models, so rain falls over Sister (toward Bringing
-  Zan back), and its network reached again (toward ascendancy: help it assimilate other AIs, betray it,
-  assimilate yourself, or let it contact the greater possum).
-  It may be the "captured hive mind tech" above, a reading. Only its name is settled; how players meet it is
-  open ([the lore](lore-research.md#wow-the-probe-under-facility-4-a-sketch-session-5); it sits against the
-  rule that the far end is never confirmed in game).
+- **Idea (session 5, a sketch): Wow.** A hive mind survey probe buried deep under a place not yet chosen
+  wants two things: Mother Cistern woken and linked to its climate models, so rain falls over Sister (toward
+  Bringing Zan back), and its network reached again (toward ascendancy: help it assimilate other AIs, betray
+  it, assimilate yourself, or let it contact the greater possum). **Ruled (Hunter, 2026-10-18):** you cannot
+  reach Wow. It is confirmed, but extremely rare and almost implied; you can tell it is. So the wishes are the
+  lore behind those endings, and how a player serves them is open ([the
+  lore](lore-research.md#wow-the-hive-mind-probe-a-sketch-session-5)).
 
 ### Bringing Zan back (staying)
 
@@ -472,8 +472,9 @@ Quartermaster gets you shot down, and "one flag covers freighter, pod and hopper
 ### Modifier: the Walker and the nomads
 
 - **Agreed.** By the player's era the Walker is alone and partly broken; most nomads have died
-  out. It still broadcasts its route, and the last nomad city follows that signal from afar. The
-  Walker is outside the Ledger and Quartermaster system and normally its own thing; finding it
+  out. It still broadcasts its route, and the last nomad city listens to that signal from afar. **Ruled
+  (Hunter, 2026-10-18, after session 5):** the Walker walks alone. The nomads still listen and pray, but
+  they abandoned it after the anomaly. The Walker is outside the Ledger and Quartermaster system and normally its own thing; finding it
   must never happen early.
 - **Agreed choices:**
   - **Steal its core:** a legendary module. The city doesn't lose its way but suffers badly, and
@@ -489,8 +490,9 @@ Quartermaster gets you shot down, and "one flag covers freighter, pod and hopper
 - **Agreed.** Keeping a carried Walker broadcasting (a "religious zeal" module) costs you
   something (power or a slot), so players are tempted to switch it off. If it keeps broadcasting,
   the nomads follow you, a pilgrimage.
-- **Session 4, part 5.** The Walker is the nomad city's mind, walks a fixed route and is the gods' only
-  reliable courier; stealing its core cuts the post, and over time the other gods' logs complain that it
+- **Session 4, part 5.** The Walker walks a fixed route and is the gods' only reliable courier (part 5
+  called it the nomad city's mind; **ruled by Hunter, 2026-10-18:** it is the colonial survey mind, as in
+  part 2); stealing its core cuts the post, and over time the other gods' logs complain that it
   stopped. It stays "indifferent... equally content in its old chassis or upgraded"
   ([the lore](lore-research.md#the-walker-mother-cistern-and-the-almanac-agreed-session-4-part-5)).
 - **Idea, open.** Meeting the city while holding their god: if their pilgrimage is underway and
@@ -510,10 +512,11 @@ runs through gifts, shrines and radio tones, which keeps the nomads secret.
   stitched patch for your board.
 - **Steal from them** and their short-range radio tones follow you around, getting ruder
   ([Radio](prd/radio-sound-and-atmosphere.md#the-nomads-tones-follow-a-thief-agreed-session-5-not-built)).
-- **High rep lets you tend to the Walker.** Beyond that, rep mostly feeds endings. The Walker's quest is
-  also taught by delivering a singing stone (Agreed, session 5: [the lore](lore-research.md#shoemaker-and-the-singing-stones-agreed-session-5)).
-  Neither fits the Walker's quest line as written, which has no reputation and teaches it from your sensor
-  logs ([Clashes, items 5 and 6](lore-session-2026-10-18-mitchell-wow-shoemaker.md#clashes)).
+- **High rep lets you tend to the Walker.** Beyond that, rep mostly feeds endings. **Ruled (Hunter,
+  2026-10-18):** the Walker's own quest line has no reputation, but it ties closely to the nomad quest line,
+  which has. Its quest ends with teaching it the anomaly's tells, one piece of evidence for each (the compass
+  drift, the radio's crackle, the shield's load), and the singing stone and your own sensor logs are two
+  forms of that evidence, "probably more" ([the lore](lore-research.md#shoemaker-and-the-singing-stones-agreed-session-5)).
 - **Lore root:** an old Tabbed custom carried on by the Ashwalkers, debts settled with gifts left at shrines
   ([the lore](lore-research.md#mitchells-company-agreed-session-5)).
 
