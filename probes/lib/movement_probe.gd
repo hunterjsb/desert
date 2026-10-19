@@ -137,9 +137,9 @@ func flat_speed() -> float:
 	return Vector2(player.velocity.x, player.velocity.z).length()
 
 
-## A hoverboard lying at your feet, nose your way, with a full battery of this kind.
-func board_here(cell := &"battery") -> Hoverboard:
-	var made := Catalog.device(&"board") as Hoverboard
+## A hoverboard of this make lying at your feet, nose your way, with a full battery of this kind.
+func board_here(cell := &"battery", make := BoardMakes.ISSUE) -> Hoverboard:
+	var made := Catalog.device(make) as Hoverboard
 	world.content.add_child(made)
 	var part := Catalog.part(cell)
 	world.content.add_child(part)
@@ -149,8 +149,8 @@ func board_here(cell := &"battery") -> Hoverboard:
 
 
 ## On a charged board at your feet, as the ride action puts you, settled on its hover.
-func ride_here(cell := &"battery") -> Hoverboard:
-	var made := board_here(cell)
+func ride_here(cell := &"battery", make := BoardMakes.ISSUE) -> Hoverboard:
+	var made := board_here(cell, make)
 	check(player.get_on(made) and player.board == made, "you step onto the board")
 	await simulate(1.0)
 	return made

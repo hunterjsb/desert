@@ -13,10 +13,13 @@ extends CharacterBody3D
 ## Touched down from the air at this speed, m/s.
 signal landed(speed: float)
 signal jumped
-## On the board, its dug edge bit at this speed, m/s, or caught and threw you
-## off, as you were going.
+## On the board, its dug edge bit at this speed, m/s, or it threw you off as
+## you were going: how (Ride.thrown), and how hard, m/s. It popped up off the
+## sand this fast, and met it again after flying this hard, m/s.
 signal edge_bit(speed: float)
-signal wiped_out(speed: float)
+signal wiped_out(speed: float, how: StringName)
+signal took_off(speed: float)
+signal touched_down(speed: float)
 
 ## Slides and the air step at this rate whatever the physics tick, and the
 ## rest is exact over a tick, so the same keys trace the same path at 30, 60
@@ -31,13 +34,15 @@ const LOW_SECONDS := 0.12
 const SLIP_HOLD := 2.0
 ## A board this near your feet, m, is one you can step onto.
 const BOARD_REACH := 1.5
-## A caught edge stops the board in the sand and throws you on: you keep this
+## Thrown off, the board stops in the sand and throws you on: you keep this
 ## share of your way, it this share, tumbling over its edge, rad/s, popping
-## up off the sand, m/s.
+## up off the sand, m/s; off something solid it bounces back this share of
+## what it hit it with.
 const THROWN_KEEPS := 0.6
 const BOARD_KEEPS := 0.25
 const TUMBLE := 7.0
 const POP := 2.0
+const BOUNCE := 0.3
 
 var world: World
 var stamina: float
@@ -354,8 +359,8 @@ func step_off() -> void:
 
 ## A tick on the board: your keys say where it pushes and carves, move back
 ## digs in, sprint kicks, a jump hops, a crouch tucks you small to the wind
-## and drifts a hard turn. Out of charge you step off; an edge caught throws
-## you off.
+## and drifts a hard turn. Out of charge you step off; an edge caught, a
+## landing too hard or a crash throws you off.
 func _ride(delta: float, input: Vector2) -> void:
 	if not is_instance_valid(board):
 		board = null
@@ -393,16 +398,21 @@ func _ride(delta: float, input: Vector2) -> void:
 	Dev.put("player/spd", "%.1fkm/h" % (own.length() * 3.6))
 	Dev.put("player/stam", "%d/%d" % [stamina, _tuning.stamina_max])
 	if ride != null:
-		Dev.put("player/board", "%.2fm up, %d%%, dug %d%% at %.1f/%.1f" % [ride.gap + _tuning.board_ride_height
-			- ride.dig * _tuning.board_dig_depth, roundi(100.0 * board.charge_share()), roundi(100.0 * ride.dig),
-			ride.edge, _tuning.board_dig_catch])
+		var slid := absf(ride.velocity.angle_to(ride.ahead)) if ride.velocity.length() > 0.5 else 0.0
+		Dev.put("player/board", "%s %.2fm up, %d%%, dug %d%% at %.1f/%.1f%s" % [board.label, ride.gap
+			+ _tuning.board_ride_height * ride.make.height - ride.dig * _tuning.board_dig_depth,
+			roundi(100.0 * board.charge_share()), roundi(100.0 * ride.dig), ride.edge, _tuning.board_dig_catch
+			* ride.make.sturdy, ", skid %d°" % roundi(rad_to_deg(minf(slid, PI - slid))) if ride.skidding else ""])
 
 
-## A caught edge throws you off: you stumble on across the sand with most of
-## your way, knocked and winded, and the board tumbles over its edge behind
-## you. It never takes your last health.
+## An edge caught, a landing too hard or a crash throws you off: you stumble
+## on across the sand with most of your way, knocked and winded, and the
+## board tumbles over its edge behind you, off what it struck if it struck
+## something. It never takes your last health.
 func wipe_out() -> void:
-	var speed := ride.velocity.length()
+	var how := ride.thrown if ride.thrown != &"" else &"edge"
+	var speed := ride.thrown_at if ride.thrown_at > 0.0 else ride.velocity.length()
+	var struck := ride.struck
 	var low := signf(ride.bank) if ride.bank != 0.0 else 1.0
 	var tumbling := board
 	step_off()
@@ -412,11 +422,12 @@ func wipe_out() -> void:
 	if is_instance_valid(tumbling):
 		var ahead := -tumbling.global_basis.z
 		tumbling.linear_velocity *= BOARD_KEEPS
+		tumbling.linear_velocity += Vector3(struck.x, 0.0, struck.y) * speed * BOUNCE
 		tumbling.linear_velocity.y = maxf(tumbling.linear_velocity.y, 0.0) + POP
 		tumbling.angular_velocity = ahead * low * TUMBLE
 	vitals.health = maxf(vitals.health - _tuning.board_wipeout_hurt, minf(vitals.health, 1.0))
 	stamina = maxf(stamina - _tuning.board_wipeout_winded, 0.0)
-	wiped_out.emit(speed)
+	wiped_out.emit(speed, how)
 
 
 ## What's at your waist that would hold the board back: every line but a

@@ -1,8 +1,10 @@
 extends Node
-## Look-test helper: shoots the deeds' tree with a few done, one of them
-## early, and a card highlighted, over the main menu's desert and over a
-## run; then Resume, counting them. Needs a GPU, not --headless; shoot.sh
-## runs it unseen:
+## Look-test helper: shoots the main menu marking the deeds new, and the
+## starts they opened; the deeds' tree with a few done, one of them early,
+## and a card highlighted, over the main menu's desert and over a run; two
+## deeds' badges done at once in a run, the first showing and its sound
+## playing; then Resume, counting them. Needs a GPU, not --headless;
+## shoot.sh runs it unseen:
 ##   scripts/unseen.sh --path . res://look/deeds/deeds.tscn -- <out dir>
 
 const MAIN := preload("res://game/main.tscn")
@@ -38,6 +40,12 @@ func _ready() -> void:
 	main.showpiece.set_process_input(false)
 	await _idle(main.view)
 	await _ticks(120)
+	await get_tree().create_timer(SETTLE).timeout
+	_shoot(out.path_join("deeds_marked.png"))
+	main.ui.open(main.ui.origins())
+	await get_tree().create_timer(SETTLE).timeout
+	_shoot(out.path_join("deeds_new_starts.png"))
+	main.ui.close_top()
 	await _opened(main, &"crops")
 	_shoot(out.path_join("deeds_menu.png"))
 	main.ui.close_top()
@@ -46,6 +54,14 @@ func _ready() -> void:
 		await get_tree().process_frame
 	await _idle(main.world())
 	await _ticks(60)
+	# Two at once: the second waits its turn.
+	main.ui.badge(&"crops")
+	main.ui.badge(&"shield_storm")
+	await get_tree().create_timer(DeedBadge.IN_SECONDS + 0.3).timeout
+	_shoot(out.path_join("deeds_badge.png"))
+	await get_tree().create_timer(DeedBadge.HOLD_SECONDS + DeedBadge.OUT_SECONDS + DeedBadge.BETWEEN_SECONDS
+		+ DeedBadge.IN_SECONDS).timeout
+	_shoot(out.path_join("deeds_badge_next.png"))
 	main.ui.back()
 	await _opened(main, &"shield_storm")
 	_shoot(out.path_join("deeds_run.png"))

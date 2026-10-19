@@ -33,6 +33,7 @@ func load_camp(settle_seconds := 10.0) -> void:
 	var player := world.player
 	# However long the ground took to build, you start the camp fresh.
 	player.vitals.fresh()
+	player.suit.restock()
 	var here := player.global_position
 	var downwind := world.weather.field_wind(here).normalized()
 	var east := Vector3.RIGHT

@@ -10,9 +10,10 @@ extends Device
 ## reading in detail as a table, the deck's electrics as a panel with each
 ## device's switches, and its log. A shield in the system is smart: with a
 ## radar it switches itself on as a front nears. Its messages go out through
-## its Terminal, and its screen draws only when what it shows has changed.
+## its Terminal, a radio in its system sounding them and saying its battery
+## running out, and its screen draws only when what it shows has changed.
 ## Use on the screen presses the key you aim at, a tab along its foot or a
-## switch; use at the frame works its tray.
+## switch; use at the frame works its deck's trays.
 
 ## Its pages, numbered as older saves knew them: the Shield page's number is
 ## Power's now, so a save on it opens there.
@@ -39,6 +40,9 @@ const HISTORY := 20
 const HISTORY_EVERY := 30.0
 ## Storms riding a wind slower than this have no time to them, m/s.
 const CLOSING := 0.5
+## Its battery warnings are said again only once what's left climbs this far
+## back over their line, so a charge wavering on it isn't announced over and over.
+const REARM := 0.02
 ## With no radar, the map estimates this far round it, m: what a storm the
 ## barometer feels, carried by the wind, covers in its warning's reach.
 const ESTIMATE_REACH := 6000.0
@@ -599,6 +603,31 @@ func _watch() -> void:
 			_shields_down[shield] = true
 		else:
 			_shields_down.erase(shield)
+	_battery()
+
+
+## Its pool's charge running out, said aloud: low, then critical, each once as
+## what's left to run it on falls past its line (straight past both, only
+## critical), and again once it's back over. What's left is the charge above
+## where it gives way: Power's reserve while something outranks it, a shield.
+func _battery() -> void:
+	var share := world.power.pool_share(self)
+	if is_nan(share):
+		return
+	var dark_at := world.power.gives_way_at(self)
+	var left := (share - dark_at) / (1.0 - dark_at)
+	if left >= _tuning.console_battery_critical + REARM:
+		_alerts.erase("battery_critical")
+	if left >= _tuning.console_battery_low + REARM:
+		_alerts.erase("battery_low")
+	if left < _tuning.console_battery_critical:
+		if not _alerts.has("battery_critical"):
+			_alerts["battery_critical"] = true
+			_alerts["battery_low"] = true
+			_say("!BATTERY CRITICAL · %d%%" % roundi(share * 100.0), [], "Battery critical.")
+	elif left < _tuning.console_battery_low and not _alerts.has("battery_low"):
+		_alerts["battery_low"] = true
+		_say("!BATTERY LOW · %d%%" % roundi(share * 100.0), [], "Battery low.")
 
 
 func _once(key: String, text: String) -> void:
@@ -608,8 +637,9 @@ func _once(key: String, text: String) -> void:
 
 
 ## A line of its own to its terminal, or a form with these fields, and a
-## radio seated in its system gives it a voice.
-func _say(text: String, fields := []) -> void:
+## radio seated in its system gives it a voice: its tones, then `aloud` said
+## in the radio's.
+func _say(text: String, fields := [], aloud := "") -> void:
 	var lead := _lead()
 	var t := world.time if world != null else 0.0
 	if fields.is_empty():
@@ -620,6 +650,8 @@ func _say(text: String, fields := []) -> void:
 		var radio := device as Radio
 		if radio != null and radio.powered and not radio.wrecked() and radio.is_inside_tree():
 			Sounds.play_at(radio, Sounds.RADIO_TONES, -8.0, Radio.HEARD)
+			if aloud != "":
+				radio.announce(PackedStringArray([aloud]))
 			break
 
 

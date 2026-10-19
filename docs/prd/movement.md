@@ -166,9 +166,10 @@ even storms that last for days.
     your way, and the board slides out on purpose: it swings round at 3.5 rad/s, grips at
     14 m/s², and a slide fully sideways bleeds a quarter of its speed a second instead of
     all of it. Steer it with the move keys; it ends when you stand up or the board comes
-    back within 8° of your way. From 19.4 m/s, a hard turn standing skids round 80° in
-    1.05 s and comes out at 12.9 m/s, sliding 46° at most; drifting it comes round in
-    1.4 s at 16.6 m/s, sliding 60°.
+    back within 8° of your way. From 19.4 m/s, a hard turn standing skids round 81° in
+    1.18 s and comes out at 14.3 m/s, sliding 50° at most (1.05 s, 12.9 m/s and 46° before
+    the [skid](#the-rides-feel-and-boards-by-make-hunter-2026-10-18-built)); drifting it comes
+    round in 1.38 s at 16.7 m/s, sliding 61°.
 - **Floaty, and it catches air.** Its underside rides 0.35 m over the sand and keeps
   8 cm clear of it, about 6 cm at a corner. The spring is stiff pressed down and softer
   lifting off, and pulls you back down at most 15 m/s² past gravity, but only while the
@@ -180,7 +181,8 @@ even storms that last for days.
   hardest it gets, about 5 g for a moment.
 - **Air** (Hunter, 2026-10-16: "it doesnt really seem like we can catch air on the
   board"; built the same day). Flying, only the air's drag slows you, not the hover's,
-  and you turn the board slowly to the sand below so it lands along it. Coming down,
+  and you turn the board slowly to the sand below so it lands along it (since 2026-10-18 it
+  [flies true](#the-rides-feel-and-boards-by-make-hunter-2026-10-18-built) instead). Coming down,
   the hover brakes your fall evenly to meet the sand at its pace by ride height, about
   12 m/s² and never more than 36, so a landing from high up is a firm press, never a
   slam or a bounce. A jump hops 4 m/s up and the hop falls at 0.6 g; from a crouch it
@@ -203,6 +205,106 @@ even storms that last for days.
   between ticks, so Feel draws you, and the board, its tilt and its turn, smoothed
   between the last tick and this one; the ticks never see it.
 - The numbers are in Tuning's Hoverboard group.
+
+### The ride's feel, and boards by make (Hunter, 2026-10-18; built)
+
+"slide on hard turns and landings, not just brakes. orient the board properly when in the air and
+taking off. allow for hard landing and turn skidding. consider crashes. lets also add some variety
+to the look and feel for diff makes of boards. lore accurate. more sounds and audio queues too"
+- **It slides:** a hard carve past its grip skids sideways, and a landing at speed or at an angle
+  slides out before it bites, not only the dig's stop.
+- **It flies true:** off a lip the board pitches with its path and rolls with its carve, and in the
+  air it eases toward the way it's going; it lands on the slope it meets.
+- **Hard landings and crashes:** a landing too steep, too fast or crossed slides out, jars you, or
+  past worse throws you off as the dig's wipeout does; a crash into something solid at speed is a
+  wipeout too, gentle in cost.
+- **Boards by make:** each era and maker builds its own, true to the lore (the hoverboard is
+  skimmer-culture gear; a colonial issue board, a knights' patrol board and the second age's
+  temple-made ones differ): their looks, weight, grip, top speed, hover height and sound differ as
+  data on one ride.
+- **It sounds like riding:** carve and skid hiss, lip pops, landings by how hard, wind rush with
+  speed, the hum by make, and a knock on a crash.
+
+**Built (2026-10-18, `game/board/ride.gd`, `game/board/makes.gd`, `game/board/ride_sound.gd`,
+`game/player/feel.gd`, `game/look/dress.gd`, `probes/movement/` 25 to 29).** The dig, its hockey
+stop and the crouch drift ride as they did.
+- **The skid.** Standing, a carve the hover can't hold breaks loose: at 7 m/s or faster, once the
+  board points 12° off your way, it skids, its hover keeping 0.9 of its grip, and a full sideways
+  skid bleeds 0.6 of its speed a second where the scrub before it bled all of it. It slides on
+  while you turn into it and bites again once it comes back within 5° of your way. It can't skid
+  dug past a third, drifting, stopping, braking or towed. Flat out, turning your view at 0.4 rad/s
+  it grips; at 1.6 rad/s it breaks loose in 0.35 s and holds 29° to 43° off its way for 2.2 s of
+  2.5, out at 11.4 m/s, and straightened bites in 0.4 s. The hard turn from 19.4 m/s now comes
+  round in 1.18 s at 14.3 m/s, sliding 50° (1.05 s, 12.9 m/s and 46° before); the drift still
+  slides furthest and keeps the most, 61° and 16.7 m/s.
+- **It flies true.** From 0.25 m over its ride height it flies free, all of it 1 m higher: its
+  pitch eases toward its path's at 2.5 Hz (5 Hz on the sand), nose up as it rises and down as it
+  falls (less below 6 m/s along its nose, never past 35°); it levels across, and it leans with how
+  fast you turn it in the air, so it rolls on with a carve. With nothing steering it, its nose
+  comes round to its way at 1.2 rad/s. Coming down, over the last 0.6 s before the last 0.15 s,
+  it turns to the sand where it'll meet it. Popped from a crouch at 19.7 m/s, its nose rises
+  9.8° and falls 7.0°, 2.2° off its path on average, and it lands 0.5° off the sand's slope;
+  turned 30° off its way at the top, it lands along it. Flying it grips nothing: its hover takes
+  the sand again 0.4 m over its ride height, which is when it has landed. Your view leans with
+  the board as you see it from where you look (0.35 of its lean and its lie across the sand), so
+  a board across your way leans your view less.
+- **Landings.** How hard it lands is the fastest it came down at the sand while it flew (the
+  hover's cushion still brakes it, so height alone is soft), counted harder crossed: up to twice,
+  sideways at 10 m/s or more. A landing knocks the hover's grip loose by as much, up to 80% of it
+  at the jar, coming back over about 0.6 s, and while it's loose a slide breaks loose from 5°:
+  crossed 25° from a 12 m drop flat out it slides 2.19 m across before it bites, in 0.57 s,
+  against 1.62 m in 0.37 s for the same crossing on the sand. Past 9 m/s it **jars** you: a shake,
+  a slam and a burst of sand. Past 15 m/s it **throws you off**, the dig's wipeout (5 health, 25
+  stamina, never your last). A 1 m drop lands at 4.2 m/s; 12 m, 10.3 straight and 14.5 crossed
+  25°; over the long ride's 20 km the hardest was 8.0, pushing off the biggest crest 6.8, and
+  popping 16.5 m off it 12.8, which jars and holds. Landing crossed is the mistake that throws you.
+- **Crashes.** Into something held fast or 12 kg or heavier (a ruin wall, a wreck, a deck, a crate)
+  faster than 7 m/s, all of your way into a wall or a slope's share of it, throws you off, and so
+  does sand rising into it faster than its hover lifts it, head on into a face, which the long
+  ride never met. Lighter things you shove. The board bounces back off what it hit by 0.3 of the
+  speed it hit with. Head on at 18.5 m/s you're thrown and it comes back at 5.5 m/s; at a crawl
+  the wall only stops you, and at a glance, 4.8 m/s into it, you slide along at 17.3 m/s.
+- **Boards by make** (`BoardMakes`). A make is its catalog id, so a save keeps it as it keeps any
+  thing, and every make has the issue's box and rack seat. Its ride is shares of the Hoverboard
+  tuning; its look is Dress's; its lineage's marks go over it as over anything.
+
+  | Make | Who made it | Weight | Flat out | Rides | Grip and skid | Landing | Draw | Hum |
+  |---|---|---|---|---|---|---|---|---|
+  | Hoverboard (`board`) | Tilg & Standard's issue, the colony's yard and survey board and still the company's: gunmetal, teal and safety yellow, its batch stencil on the tail (TILG XN 0217 on a deep one) | 7 kg | 20 m/s | 0.35 m | grips 18 m/s², skids keeping 0.9 and bleeding 0.6 | jars at 9 m/s, throws at 15 | 40 W + 260 W | the hover's own |
+  | Skimmer racer (`racer_board`) | The skimmer era's own: light, cheap imports H-Town's crews raced while Zan wasn't a desert; narrow and pointed, a kicked tail, hand-painted crew red with a pale stripe, tape round its rails, three small pads, the crew's patch on its tail | 5.5 kg | 23 m/s | 0.42 m, springier | grips 15.3 m/s², breaks loose soonest and skids longest, keeping 0.72 of it and bleeding 0.39 | throws you sooner (0.85 of the thresholds), slower to bite | 1.1 times | a thin bright whine |
+  | Patrol board (`patrol_board`) | The Knights Requisitioner's, the Ledger's armed auditors, ridden ahead of the crusade's water convoys: wide and plated, olive armour down its rails, a steel bumper lashed with cord, its deck the order's grey with their daubed sign, as on their hopper, and a stencil on its tail, every crate accounted for; four dim pads | 11 kg | 18 m/s | 0.30 m | grips 22.5 m/s², skids short and scrubby, keeping 0.99 and bleeding 0.78 | sturdiest (1.3), bites back fast | 1.15 times | a deep pulsing thrum |
+  | Temple board (`temple_board`) | Made at Mother Cistern's temple: an old hover core under saltbush planks lashed with fern cord, a round ceramic cap on its nose in her blue glaze, the sign of Tu on a limewashed patch, a water vial and a tassel | 9 kg | 17 m/s | 0.46 m, the softest spring | grips 17.1 m/s², slides soft, keeping 0.81 and bleeding 0.48 | the biggest cushion (1.35), sturdy 1.1, slowest to bite | 1.25 times | a soft hum with a ceramic ring |
+
+  The makes are readings: the lore calls the hoverboard skimmer-culture gear and names the
+  Knights Requisitioner and the Cistern's temple, and says nothing of their boards; the numbers
+  are defaults, all but their order. Lineage still
+  sets the era's numbers: a racer found in the skimmer era's ruins weighs 0.7 of that and wears
+  out twice as fast. On the flat flat out the racer does 22.5 m/s 0.43 m off the sand and the
+  patrol board 17.7 m/s 0.30 m off; carving at 1.4 rad/s the racer breaks loose in 0.32 s and
+  slides 54° off its way, the patrol board holds within 6°.
+- **Where they're found.** The issue on the colonial era's floors and loose in the deep layer, as
+  before; racers in the skimmer era's floors and best, a wreck hull's best among them; patrol
+  boards in a watchtower's cache and as a Knights' hopper's best; temple boards among the second
+  age's best. The Salvager starts with a new racer, plain; every other run racks the issue. The
+  `boards` scenario lays one of each in front of you. The patrol board's superchassis is still
+  [proposed](#the-patrol-board-a-superchassis-agreed-session-4-part-3-not-built): the Knights' board
+  is a make of the one ride, not the Daventry kit.
+- **Sounds** (`RideSound`, made here, `assets/audio/make_board_sounds.py`): each make's hum, rising
+  with speed, sagging as the battery dies, dropping under a dug edge; a carve's hiss as hard as the
+  hover holds you round; the slide's hiss and its rooster tail of sand off a skid, a drift or a
+  landing's slide, as a dug edge's (Feel); the wind's rush with speed; a pop off a lip or a hop; a
+  landing by how hard, a slam past the jar; a scuff as a skid bites again; a knock and a thud on a
+  crash. The battery says "do-doo" once a minute from flat at full push and lower, once, 15 s from
+  it, in place of the low-battery ticking (`Sounds.battery_low` and `battery_critical`; the hum's
+  sag is the tell between).
+- **Frame-rate proof.** All of it steps with the ride at 240 Hz: the extended route, with a skid, a
+  pop turned in the air and a crossed landing sliding out, follows the same path to a tenth of a
+  millimetre at 30, 60 and 120 ticks on the issue (165 m) and on a racer (180 m).
+- **Saves** keep a make. They don't keep a skid, a landing's loosened grip or a flight under way: a
+  ride resumed mid-skid starts gripping.
+- **Tuning:** `board_skid_speed` 7, `board_skid_grip` 0.9, `board_skid_drag` 0.6, `board_air_hertz`
+  2.5, `board_land_jar` 9, `board_land_throw` 15, `board_crash` 7; the makes in `BoardMakes.MAKES`.
+  The look-test `look/boards/shoot.sh` shoots each make, a skid, a hard landing and a pop's pitch.
 
 ### Dig and carve (agreed, 2026-10-18 spec; built)
 
@@ -249,7 +351,8 @@ both answered below.
   `board_wipeout_hurt` and `board_wipeout_winded`.
 - **Towed** (a sail's sheet, a kite), a line's pull drags the hover's grip out from under
   it, so only the dug edge holds against the line's sideways pull, and left alone the board
-  trails its own way (a camp tows you at 3.3 m/s, where it was 3.5). Pulled 3 m/s² downwind
+  trails its own way (a camp tows you at 2.8 m/s held across the wind; it towed you at 3.5 before
+  the dig, 3.3 before its sail's twist reached it whole). Pulled 3 m/s² downwind
   with the board steered 60° across, undug it runs straight downwind at 2.9 m/s; dug in it
   holds its line 60° across at 3.8 m/s, 34 m in 10 s. That's the tack.
 - **Feedback,** drawn and heard, never fed back. A rooster tail of sand off the dug edge's
@@ -263,7 +366,7 @@ both answered below.
   more), a big one, a lurch and a thud as it catches.
 - **Frame-rate proof.** All of it is stepped with the ride at 240 Hz: a dug carve and a
   hockey stop stop in 3.3901 m at 30, 60 and 120 ticks, on the same path to a tenth of a
-  millimetre. Saves keep the dig.
+  millimetre (2.952 m since the ride's feel, its route longer). Saves keep the dig.
 - **Tuning:** `board_dig_grip` 2.5, `board_dig_drag` 0.25, `board_dig_depth` 0.3,
   `board_dig_catch` 6.5. The look-test `look/dig` shoots the spray at three depths, the
   stop and the lean.
@@ -339,7 +442,9 @@ your own camp's parts rather than found whole:
   your lines: on foot or on the board, tied at your waist, your camp tows you.
 - **Trimmed by its sheet.** The sheet is a line from the sail you hold or tie at your waist:
   reeling it in hauls the sail in, paying out eases it, so trimming is the reeling you
-  already do.
+  already do. The line does it, never the control itself: reeling shortens the sheet, and the
+  wind swings the boom against it (Hunter, 2026-10-18: "having scroll magically rotate the sail
+  along with pulling the rope has been an issue both from a sense perspective and gameplay").
 - **Storms.** A raised sail in a storm is the danger it should be: reef or furl it, or it
   tears and the mast can snap.
 
@@ -367,29 +472,49 @@ your own camp's parts rather than found whole:
   the boom trails behind the mast, which way the mast was turned as it was stuck.
 - **Raising and furling** are use on the mast (its pole or the boom), 1.5 s each, with the sound
   of cloth. Off its mount, the sail comes down. Furled, the wind sees only the bundle on the boom.
-- **The sheet** is any line whose end is on the boom's end, where the sail adds a tie. The wind
-  swings the boom out to leeward until the sheet holds it: the sheet's inboard length says how
-  far, as if it ran from the boom's end to a block on the camp below it. Reeling it, in your
-  hand or at your waist, hauls the sail in a notch at a time (0.25 m, about 7° of swing), the
-  line itself no shorter; paying out eases it, and once the sail is all the way out a notch
-  pays the line out instead. A sail pulling harder than your strength (400 N) won't come in.
-  With nothing holding the sheet's far end (dropped, untied, snapped) it runs, and the boom
-  swings free and spills the wind; tied on again, it holds the boom where it is. With another
-  line at your waist too, reeling works the one you look nearest along
-  ([Rope & tethering](rope-and-tethering.md)), so you trim by looking at the sail.
+- **The sheet** is any line whose end is on the boom's end, where the sail adds a tie. It runs
+  through a block there and in to a ring on the camp, under where the boom's end lies hauled
+  right in, and that inboard part holds the boom: the wind swings it out to leeward until the
+  inboard is taut. Both are drawn, the inboard straight while it holds the boom and sagging when
+  it doesn't. Reeling the sheet, in your hand or at your waist, takes the inboard in through the
+  block a notch at a time (0.25 m, about 7° of swing) at your hands' 1 m/s; the line to you is
+  no shorter, so the rope comes to the coil where the sheet is on you, all 3.1 m of the inboard
+  once it's hauled right in. The boom comes in after it, drawn by the sheet's pull: the sail's
+  twist over the sheet's lever, about 25 to 75 N in 10 m/s. Hauling slows from half your strength
+  (400 N) and stops at all of it, as any line's does, so a loaded sail in a storm comes in slowly
+  or not at all. Paying out gives line back and the wind takes the boom out after it: the boom
+  swings with its own weight (12 kg·m²), its gooseneck's drag and the air the sail swings
+  through, so in a breeze it follows the line out and in light air it lags, the inboard slack
+  until it catches up; with no wind it stays where it is. Taut, the sheet holds it springing back
+  six times a second, damped as a line is, and draws its end in no faster than a rope closes.
+  Once the inboard is all in a notch reels the line itself, and once it's all out (85°) a notch
+  pays the line out. With nothing holding the sheet's far end (dropped, untied, snapped) it runs,
+  and the boom swings free and spills the wind; tied on again, it holds the boom where it is. With
+  another line at your waist too, reeling works the one you look nearest along
+  ([Rope & tethering](rope-and-tethering.md)), so you trim by looking at the sail. *Before
+  (to 2026-10-18), a notch moved the boom's limit directly and the sail swung in step with the
+  reeling, nothing drawn between the boom and the camp and no rope gathered; a sail too loaded to
+  come in had the notch reel the line instead, drawing you to the camp.*
+- **Reading the trim.** The cloth shows it, and reading it is the skill: eased past meeting the
+  wind, under 12° of attack, its luff lifts first, just behind the mast, the lifting spreading aft
+  as it's eased further until under 2° the whole sail flogs, harder in a harder wind. Drawing, it
+  bellies as hard as the air presses across it, on a reach or running, and hangs in under 3 m/s.
+  Over-sheeted past the stall it stays full but drives less: the cloth can't show that, the
+  camp's way and lean do. A slack inboard says the sail is eased further than the wind takes it.
 - **The how-to** (2026-10-18, Hunter: "i need an explanation on trimming with the sheet at my
   waist"). The first time a sheet is at your waist, once a profile, a short how-to shows near
-  the top of the screen for nine seconds, its keys as bound: "The rope from the sail's
-  boom, its sheet, is at your waist: the shorter it is, the closer in the sail. Reel in trims
-  the sail in, pay out lets it out. You steer by where you walk, as with a tiller." It says what the controls do, never
-  how to sail well. The words are `Mast.HOW_TO_SAYS`.
+  the top of the screen for nine seconds, its keys as bound: "The rope at your waist is the
+  sail's sheet: it runs through the boom's end to a ring on the camp. Reel in draws the boom in
+  toward the ring, pay out lets the wind take it out. You steer by where you walk, as with a
+  tiller." It says what the controls do, never how to sail well. The words are `Mast.HOW_TO_SAYS`.
 - **The sail's push.** Lift and drag by the sail's angle of attack to the apparent wind, the
   felt wind less the camp's own way at the sail: lift rises to 1.3 at 18° and stalls past it,
   falling away to a flat sheet's, and drag grows from 0.05 to 1.8 square on, where it catches
   the wind as any face that size does. The push acts 1.5 m up the sail, a third of the way back
   along it, 2.6 m over the sand on a deck, so the camp heels. Held out by its sheet, the sail's
-  twist goes into the camp through the sheet; swinging free, as in a gybe, only its drag
-  against swinging, and brought up short by its sheet its swing slams into the camp. Lying over
+  twist goes into the camp through the sheet, every moment the sheet holds it, easing or not;
+  swinging free, as in a gybe, only its drag against swinging, and brought up at its 85° stop
+  its swing slams into the camp. Lying over
   past 40° it fades, and past 70° it meets the sand, not the wind. Inside a running bubble the
   sail feels what the bubble lets through, like everything: nothing in a base shield's, 15% of
   the wind in a light shield's. Sail with the shield off; when a storm comes, furl it and put
@@ -399,8 +524,8 @@ your own camp's parts rather than found whole:
   steered and its sheet tended, in a
   steady 10 m/s wind: dead downwind 3.4 m/s, under the wind's speed; a broad reach (120°) 4.5;
   a beam reach 4.3, sliding sideways 0.1 m/s; a close reach (70°) 2.9; close-hauled at 60° 1.9,
-  making 1.0 m/s upwind. At 50° it can't get going from rest: bear away to build speed, then
-  head up. Head to wind it makes no ground, blown back 0.7 m/s, so you tack. On a plate the beam
+  making 1.0 m/s upwind. From rest at 60° it barely gets going, and at 50° not at all: bear away
+  to build speed, then head up. Head to wind it makes no ground, blown back 0.7 m/s, so you tack. On a plate the beam
   reach is 2.9 m/s. A 6 m/s breeze is too light to start it; at 14 m/s it heels 12° and must be
   eased to hold a beam reach, at 4.6 m/s.
 - **Heel and capsize.** In 10 m/s on a beam reach its windward blades unload and it leans under
@@ -424,9 +549,11 @@ your own camp's parts rather than found whole:
   leads and your keys turn it; only its dug edge holds against the line, so dug it carves
   across the pull ([the dig](#dig-and-carve-agreed-2026-10-18-spec-built)). It pushes and
   kicks against no line, so it still tows nothing.
-  Reeling works riding, so you trim the sheet as you go. On the "sail" deck in 10 m/s, with the
-  sheet tended, the camp tows you at 3.3 m/s on the end of the sheet (3.5 before the dig let the
-  hover's grip go under a line).
+  Reeling works riding, so you trim the sheet as you go. On the "sail" deck in 10 m/s, the sheet
+  tended and the camp held across the wind, it tows you at 2.8 m/s on the end of the sheet, itself
+  at 2.6. Left to steer itself with its sheet tended, it bears off onto a run, its boom at its 85°
+  stop, and slows: before the sail's twist reached the camp whole (2026-10-18) it held a broad
+  reach and towed you at 3.3 m/s.
 - **Storms and breaking.** A raised sail tears by the wind it stands in, drawing or luffing or
   lying over: past 600 N of load (what a 20 m/s wind does to it raised, or a reach drawing hard
   at 18 m/s) it loses a fifth of its cloth a second for each share past that, shrinking its
@@ -439,12 +566,15 @@ your own camp's parts rather than found whole:
   changed, so older saves load as before.
 - **Stability.** Physics ticks only. The runners hold the load up together, solved for the
   body's rise and tilt at once, and plough by the way it went before anything pushed it this
-  tick, so a reach sails the same at 30, 60 and 120 ticks a second (2.938, 2.938 and 2.936 m/s,
-  51.2 m in 20 s each). In four minutes back and forth in gusts, over eight chunk seams and
-  through three origin shifts, no tick changes its way by more than 0.12 m/s, it never spins
-  faster than 1.2 rad/s, leans 7° at most and never touches the sand but by its blades.
-- **Cost.** About 100 µs a tick for a deck's runners and 80 µs for its sail, measured in the
-  probes on a loaded machine; a camp on runners spends nothing floating.
+  tick, so a reach sails the same at 30, 60 and 120 ticks a second (2.903, 2.902 and 2.900 m/s,
+  50.4, 50.3 and 50.2 m in 20 s). In four minutes back and forth in gusts, over eight chunk seams
+  and through three origin shifts, no tick changes its way by more than 0.13 m/s, it spins no
+  faster than 1.6 rad/s, turning hard about at each end, leans under 8° and never touches the
+  sand but by its blades. (It turned at 1.2 rad/s while its swinging boom dragged on it as hard
+  as the air does; now only its gooseneck does.)
+- **Cost.** About 100 to 130 µs a tick for a deck's runners and 110 µs for its sail, its drawn
+  sheet with it, measured in the probes on a loaded machine; a camp on runners spends nothing
+  floating.
 - **The "sail" scenario** stands you on level open sand in a steady 8.5 to 11.5 m/s breeze out
   of any lee, facing across it with the wind on your left. Ahead stands a deck two pieces by
   two on skates, the mast and its furled sail on its front piece to windward, two big batteries
@@ -453,12 +583,15 @@ your own camp's parts rather than found whole:
   feet. Use the mast to raise the sail, step on the board, and reel in as it picks up speed.
 - **Sailing probes** (`probes/sail/`): 1, runners sail across the wind where a floating camp
   drifts; 2, no ground straight upwind, ground on either tack; 3, the sheet trims the drive and
-  reeling hauls the sail; 4, it heels in a gust and recovers, and a blast puts it over
-  smoothly; 5, a raised sail tears in a storm and a furled one doesn't, and a blast snaps the
-  mast; 6, your camp tows you on the board; 7, nothing flings, and it sails the same at any
-  tick rate; 8, furling in a breeze never tears the sail, and it raises again (Hunter: it
-  couldn't be raised once brought down: the furled bundle's drag over the last of the cloth
-  showing read as a tearing load). Profile & saves probe 16: a rigged camp resumes.
+  reeling takes its inboard in, the coil at your waist growing by it; 4, it heels in a gust and
+  recovers, and a blast puts it over smoothly; 5, a raised sail tears in a storm and a furled one
+  doesn't, and a blast snaps the mast; 6, your camp tows you on the board; 7, nothing flings, and
+  it sails the same at any tick rate; 8, furling in a breeze never tears the sail, and it raises
+  again (Hunter: it couldn't be raised once brought down: the furled bundle's drag over the last
+  of the cloth showing read as a tearing load); 12, reeling in draws the boom in over two seconds
+  behind the line, the sheet taut and pulling, never a jump, paying out lets the wind take it out
+  till the sheet holds it, and in still air it stays and the sheet hangs slack. Profile & saves
+  probe 16: a rigged camp resumes.
 
 ### Sailing, from kite to yacht (agreed, 2026-10-18 spec; built)
 
@@ -495,23 +628,25 @@ as built, unchanged.
 - **Steering is the carve.** Dig in and carve off the line and its bend pulls the boom's end and
   the camp's nose toward you; the dug edge holds you there, as it holds a tack. Out to windward the
   rig bears away, to leeward it heads up. On the "sail_tow" camp on a broad reach in 10 m/s, a 20°
-  carve dug a third in turns the rig +50° off the wind in 2.5 s to windward and −45° to leeward,
-  against +15° with no carve. Left alone the rig rounds up and stops, as stage 1's does, so you keep
+  carve dug a third in turns the rig +49° off the wind in 2.5 s to windward and −46° to leeward,
+  against −2° with no carve. Left alone the rig rounds up and stops, as stage 1's does, so you keep
   steering; the probes hold its course as a helmsman would, by a turn on the rig.
-- **The numbers** (measured with the crate's rig; not yet re-measured on the rebuilt decks). The
-  rig is the "sail" deck less its shield, 88 kg on skates; the camp a deck two by two on skates
-  with the shield and, as built now, two big batteries, its line from the hook on its front left
-  ring. On a broad reach (120°) in a steady 10 m/s, held to its course, the rig makes 2.1 m/s
-  towing the camp (3.5 m/s towing you alone): the hidden line carries 69 N, your sheet 21 N, and the
-  lines on you pull 58 N all told, against 66 N with the rig towing you alone. As the link you'd have
-  borne about 200 N. A skates camp halves a rig's speed; a floating one is blown downwind round
+- **The numbers** (measured with the crate's rig; not yet re-measured on the rebuilt decks, whose
+  ballast sits in a frame where the crate stood). The rig is the "sail" deck less its shield, 88 kg
+  on skates; the camp a deck two by two on skates with the shield and, as built now, two big
+  batteries, its line from the hook on its front left ring. On a broad reach (120°) in a steady
+  10 m/s, held to its course, the rig makes 1.7 m/s towing the camp (2.5 m/s towing you alone):
+  the hidden line carries 37 N, your sheet 30 N, and the lines on you pull 59 N all told, against
+  57 N with the rig towing you alone. As the link you'd have borne about 130 N. That reach lays the
+  boom on its 85° stop, where the sail stalls till the rig gets going, so it draws and stalls by
+  turns; the numbers are from 8 to 12 s in. A skates camp halves a rig's speed; a floating one is blown downwind round
   the rig and rounds it up, and plates drag too hard to tow.
 - **The fulcrum.** Rope & tethering's rule, which the spec takes as there already and wasn't: lines
   snap past their load (1,500 N held, as ever), and your body bears what the lines on it pull against
   each other plus any line's bend round you. Held past your strength, 400 N (`fulcrum_n`), for as
   long as a line's load is held, you lose 8 health a second for each share more (`fulcrum_hurt`),
   never your last, and your view shakes. Braced 4 m to windward of the hidden line with the camp
-  moored, the line bends round you at up to 527 N in 12 m/s and takes 13 health in 10 s; the lines
+  moored, the line bends round you at up to 500 N in 12 m/s and takes 9 health in 10 s; the lines
   hold. Riding either stage you're never hurt.
 - **Stage 3: the helm seat** (`helm_seat`, 7 kg), a skimmer pilot's, stuck upright on a deck's
   top the way anything that stands is. Use on it sits you there: you ride the camp as what's stuck
@@ -533,26 +668,27 @@ as built, unchanged.
   had), on 460 kg of lift. The figures below were measured with the crate and aren't yet
   re-measured. (Sat at a
   corner of a deck two by two, a tray can't hold you and the corner drops to the sand.) In a steady
-  10 m/s, steered from its helm up to 60° off the wind, it makes 4.9 m/s and 36 m upwind in 20 s,
-  sliding 0.1 m/s; with a tray in the keel's place it slides off at 7.5 m/s and goes 137 m
+  10 m/s, steered from its helm up to 60° off the wind, it makes 5.0 m/s and 36 m upwind in 20 s,
+  sliding 0.1 m/s; with a tray in the keel's place it slides off at 7.6 m/s and goes 136 m
   downwind however it's steered. Floating, it has no runners' drag: borne away to a broad reach
   it's at 9.6 m/s 20 s on, near the wind's own speed.
 - **Sailing itself downwind** still works: the "sail" deck floating, its sheet made fast and nobody
-  aboard, runs downwind at 8.1 m/s in 10 m/s while you ride where you like.
+  aboard, runs downwind at 8.2 m/s in 10 m/s while you ride where you like.
 - **Where they're found.** Both lie in skimmer wrecks, in the wreck hull's best: what its deep cache
   holds once a storm strips past it, and in Han a third of its floors and caches. The skimmer era is
   the best single-item gear, a skimmer's pilot sat in that seat and it rode that strake, and the
   hoverboard is skimmer-culture gear already; wrecks lie shallow and tilted, exposed and reburied
   fast, so they're an expedition's find, near the Salvager's start. Each is 3 in 13 of a wreck's best.
 - **Frame-rate proof.** Physics ticks only. Over 15 s at 30, 60 and 120 ticks a second the yacht
-  sails 38.1, 38.3 and 38.4 m and the towing rig 29.5, 31.9 and 32.0 m (the lines swing you a tick at
+  sails 38.1, 38.2 and 38.2 m and the towing rig 29.4, 31.4 and 31.9 m (the lines swing you a tick at
   a time); nothing changes its way faster than 4.3 m/s² or spins past 0.5 rad/s.
 - **Scenarios:** "sail_tow" (stage 2, both lines at your waist, the board at your feet) and "yacht"
   (the sheet at your waist, by the helm), in the sail scenario's breeze. The look-test `look/sail`
   shoots them as its fifth and sixth shots.
-- **Probes** (`probes/sail/`): 9, the hidden tow line, your load and the carve steering, and the
-  fulcrum; 10, the yacht tacks with its keel and only runs downwind without, a floating camp sails
-  itself downwind, and a save at the helm resumes there; 11, nothing flings aboard at 30, 60 and 120
+- **Probes** (`probes/sail/`): 9, the hidden tow line, your load and the carve steering, the
+  fulcrum, and reeling the sheet in tow leaves the camp's line be; 10, the yacht tacks with its keel
+  and only runs downwind without, a floating camp sails itself downwind, reeling at the helm hauls
+  the sheet, and a save at the helm resumes there; 11, nothing flings aboard at 30, 60 and 120
   ticks a second.
 
 ### The dune sailboat (Agreed, session 4, part 3; not built)
@@ -652,7 +788,8 @@ All built: on foot alongside Stage 5, the board and the camp-range warnings at S
    its ride height and 2.0 s long, none within half a second of a landing; no judder;
    the hardest moment 5.0 g; the ground solid under you all the way. Before the air, 55
    launches, at most 1.9 m and 0.7 s, and the probe allowed 3 m; it now allows 8 m and
-   counts bounces.)*
+   counts bounces. Since it flies true (2026-10-18), 59 launches, the underside at least
+   5.1 cm off the sand, the hardest landing 8.0 m/s, under the jar, and never thrown.)*
 2. **The escape is real.** A charged board escapes a storm front from a set distance.
    *(Built: in the run's own weather, a front 50 m upwind. Flat out downwind on a base
    battery, the front falls behind at about 11 m/s, 2.1 km behind after three minutes,
@@ -675,9 +812,11 @@ All built: on foot alongside Stage 5, the board and the camp-range warnings at S
    nothing is up and nothing chimes.)*
 6. **Frame-rate proof.** The same ride at 30, 60 and 120 frames per second follows the
    same path. *(Built: kicks from rest, a push, a carve, a hop, a drift, a coast, a dug
-   carve and a hockey stop over 84 m: the same path to a tenth of a millimetre, the stop
-   3.3901 m at each rate, with the same charge and stamina left, and the same path to the
-   bit with the drawing switched off.)*
+   carve and a hockey stop, then (2026-10-18) a hard carve that skids, a pop turned in the
+   air and a crossed landing that slides out, over 165 m on the issue and 180 m on a
+   skimmer racer: the same path to a tenth of a millimetre, the stop 2.952 m (2.407 m on
+   the racer) at each rate to a millimetre, with the same charge and stamina left, and the
+   same path to the bit with the drawing switched off.)*
 7. **Origin shift at speed.** Riding across an origin shift at top speed causes no hitch
    and no jump. *(Built: flat out in real time at sixty frames a second, ruins and finds
    laid out as you go, across four shifts in 1.1 km: your way changes no more at a shift
@@ -718,7 +857,7 @@ The board after Hunter's first ride has its own:
     30 s, 544.3 m against 540.1 m, +0.8%; the wrong way round 536.0 m.)*
 18. **The drift.** A hard turn crouched slides further out and keeps more speed than the
     same turn skidding, and standing up grips again. *(Built: from 19.4 m/s, out at
-    16.6 m/s against 12.9, sliding 60° against 46°.)*
+    16.7 m/s against 14.3, sliding 61° against 50°; before the skid, 16.6 against 12.9.)*
 19. **The tilt settles.** Flat out across the ridges, carving hard each way, the board's
     pitch and lean never jump. *(Built: at sixty ticks, the lean at most 2.9° a tick, the
     pitch 1.4°; before, the lean snapped up to 60° and the pitch moved up to 1.8°. Since
@@ -729,7 +868,8 @@ The board after Hunter's first ride has its own:
     it pops higher; off a big crest flat out the board flies 1.5 s or more, 3 m or more
     up; and landing, pushing or popping off the crests, it never slams, bottoms out or
     bounces. *(Built: the numbers are under Air, above; the hardest moment flying or
-    landing is 3.7 g.)*
+    landing is 3.7 g. Off the biggest crest it lands at 6.8 m/s pushing and 12.8 popping,
+    which jars and holds.)*
 
 Auto-walk has its own:
 
@@ -744,12 +884,34 @@ The dig has its own ([Dig and carve](#dig-and-carve-agreed-2026-10-18-spec-built
 
 22. **The dug carve.** A hard turn from speed skids standing and grips dug, coming round
     sooner and slower, its low edge down to the sand and never into it. *(Built: 21°
-    sliding against 46°, 1.7 cm off the sand.)*
+    sliding against 50°, 1.7 cm off the sand.)*
 23. **Catching an edge.** A hockey stop flat out holds with the catch set just past its
     load and throws you off set just short; as tuned, a cruise holds and flat out catches;
     thrown, you're knocked and winded, never killed, and the board tumbles behind you.
 24. **The dug edge tacks.** Towed by a steady pull, a board steered across it runs
     downwind undug and holds its line dug. *(Built: 0° against 60°.)*
+
+The ride's feel has its own ([The ride's feel](#the-rides-feel-and-boards-by-make-hunter-2026-10-18-built)):
+
+25. **A hard carve skids.** Flat out, a carve the hover holds grips; a harder one breaks loose
+    and skids well off its way for as long as you turn into it, and straightened it bites.
+    *(Built: turning 0.4 rad/s it grips; 1.6 rad/s, loose in 0.35 s, 29° to 43° off its way for
+    2.2 s of 2.5, biting again 0.4 s after.)*
+26. **Hard landings.** A small drop presses and a big one jars; landing crossed hits harder; a
+    big crossed landing slides out further and longer before it bites than the same crossing on
+    the sand; and past the throw you're thrown off, knocked and winded, never killed. *(Built:
+    4.2 and 10.3 m/s, 14.5 crossed 25°; 2.19 m in 0.57 s against 1.62 m in 0.37 s; thrown with
+    the throw set just short of the landing, holding set just past it.)*
+27. **A crash wipes out.** Head on into a wall at speed throws you and the board bounces back;
+    at a crawl the wall only stops you; at a glance you slide along it and ride on. *(Built:
+    18.5 m/s, the board back at 5.5 m/s; 1.5 m/s; 4.8 m/s into it, on at 17.3.)*
+28. **It flies true.** Popped off the flat, the board's nose rises and falls with its path and it
+    lands along the sand; turned off its way in the air with nothing steering, it comes round.
+    *(Built: 9.8° up, 7.0° down, 2.2° off its path on average, 0.5° off the sand; turned 30°, it
+    lands along its way.)*
+29. **Boards by make.** A skimmer racer and a patrol board: the racer faster flat out, higher,
+    breaking loose sooner and sliding further, and each its own weight, look and hum. *(Built:
+    22.5 against 17.7 m/s, 0.43 against 0.30 m, 54° against 6°.)*
 
 ## Out of scope
 

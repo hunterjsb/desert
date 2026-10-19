@@ -154,8 +154,10 @@ func kg() -> float:
 
 
 ## How far past what you carry easily you are: 0 up to carry_easy_kg, 1 at
-## carry_sunk_kg, and on.
+## carry_sunk_kg, and on. The dev console's god carries anything easily.
 func burden() -> float:
+	if _player.vitals.god:
+		return 0.0
 	var tuning := Tuning.current()
 	return maxf(kg() - tuning.carry_easy_kg, 0.0) / (tuning.carry_sunk_kg - tuning.carry_easy_kg)
 
@@ -174,6 +176,8 @@ func pace() -> float:
 func weight_words() -> String:
 	var weight := kg()
 	var easy := Tuning.current().carry_easy_kg
+	if _player.vitals.god and weight > easy:
+		return "carried %.1f kg, all of it easily as god" % weight
 	if burden() <= 0.0:
 		return "carried %.1f of the %d kg you carry easily" % [weight, roundi(easy)]
 	return "encumbered: %.1f kg, %.1f over · %d%% pace" % [weight, weight - easy, roundi(pace() * 100.0)]

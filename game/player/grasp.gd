@@ -11,7 +11,8 @@ extends RefCounted
 ## back on you the way a line does, so hauling something heavy digs you in.
 ## Shown where it would stick or join, it's held still there, touching
 ## nothing, the real thing in its place, until it's set there or taken away
-## again, back where it was.
+## again, back where it was. The dev console's god has the strength for
+## anything, and is never dug in.
 
 ## Held farther than hold_slip from where you'd have it this long, it slips, s.
 const SLIP_SECONDS := 0.5
@@ -192,9 +193,12 @@ func step(h: float) -> void:
 	var force := miss * body.mass * share / h
 	# On the sand it's never pressed in, so dragging is no harder for looking down.
 	force.y = maxf(force.y, 0.0)
-	force = force.limit_length(tuning.hand_strength)
+	var god := _player.vitals.god
+	if not god:
+		force = force.limit_length(tuning.hand_strength)
 	body.apply_central_force(force)
-	_player.world.ropes.pull_player(-Vector3(force.x, 0.0, force.z) * h)
+	if not god:
+		_player.world.ropes.pull_player(-Vector3(force.x, 0.0, force.z) * h)
 
 	var now := body.global_basis.orthonormalized()
 	var as_held := (facing.inverse() * now).get_rotation_quaternion()
@@ -209,7 +213,7 @@ func step(h: float) -> void:
 	# gentler turn would stall short on a light thing.
 	var state := PhysicsServer3D.body_get_direct_state(body.get_rid())
 	var twist := state.inverse_inertia_tensor.inverse() * (spin - body.angular_velocity) / h
-	body.apply_torque(twist.limit_length(tuning.hand_strength * LEVER))
+	body.apply_torque(twist if god else twist.limit_length(tuning.hand_strength * LEVER))
 
 
 ## Where you'd have it above your eyes, m: as far up or down as you look, at

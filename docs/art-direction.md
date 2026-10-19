@@ -301,8 +301,8 @@ ragged and flaked in patches. They read close up; at 5 m they're a smudge.
 | **Member state's seal:** rings round a chevron, in another hand's paint | One of the governments the UG federated, before it stood as one: early ruins show member-state and corporate markings that don't match ([session 3](lore-research.md#factions-agreed-session-3)) | The ruin, beside the contractor's tag |
 | **Shield maker's sign:** a bubble on its ground, the emitter beneath | The main shield OEM, the common make; it's unnamed, and "Acme Shield Corporation" is the lore's own placeholder ([part 2 §3](lore-session-2026-10-14-part-2.md#3-shields)) | The light shield you start with, on its body; a found shield, small, on its emitter cap |
 | **Wind maker's sign:** three vanes in a ring | Wind's maker, a different one from solar's ([part 2 §4](lore-session-2026-10-14-part-2.md#4-power)) | The turbine |
-| **Consignment label,** by era | The box says who ordered it; the parts inside say who made them ([part 2 §1](lore-session-2026-10-14-part-2.md#1-the-oem-tier-who-actually-makes-things)). The deep one is Tilg's, stencilled in the capitals of the acronym it still was, the shipping line that registered Zan as a temporary transshipment hub ([session 3](lore-research.md#factions-agreed-session-3)) | A chassis piece's top (the crate frame's two ring sides, until the crate went in the chassis rework) |
-| **Skimmer crew's patch,** painted by hand: the giant, a dive across it, a tally | The hoverboard as skimmer-culture personal gear, not official issue ([lore research, question 11](lore-research.md#13-open-questions-for-hunter)) | A found hoverboard's tail, which is what shows when it's found nose-down; a board of your own is new and plain |
+| **Consignment label,** by era | The box says who ordered it; the parts inside say who made them ([part 2 §1](lore-session-2026-10-14-part-2.md#1-the-oem-tier-who-actually-makes-things)). The deep one is Tilg's, stencilled in the capitals of the acronym it still was, the shipping line that registered Zan as a temporary transshipment hub ([session 3](lore-research.md#factions-agreed-session-3)) | A chassis piece's top (the crate frame's two ring sides, until the crate went in the chassis rework); the company's issue hoverboard's tail (2026-10-18, [boards by make](prd/movement.md#the-rides-feel-and-boards-by-make-hunter-2026-10-18-built)) |
+| **Skimmer crew's patch,** painted by hand: the giant, a dive across it, a tally | The hoverboard as skimmer-culture personal gear, not official issue ([lore research, question 11](lore-research.md#13-open-questions-for-hunter)) | The skimmer racer's tail, which is what shows when it's found nose-down; a new one, the Salvager's, is plain (2026-10-18: the patch was on every board until the boards by make) |
 
 **Why these.** The marks go where the lore names a maker or issuer. The ruin's wall shows
 session 3's early markings that don't match: a corporate builder's tag and number beside a
@@ -344,7 +344,7 @@ since the crate went, is the mark that changes most from row to row:
   the Surveyor's starting gear "is company issue, which fits the existing 'new' mark row and its
   cheap batch stencil."
 
-The crew's patch has only two states: a found board carries it, and a board of your own is
+The crew's patch has only two states: a found racer carries it, and a racer of your own is
 plain, since nobody has painted it yet.
 
 Wear does the rest, from the same amount that wears the paint: ragged edges, patches flaked
@@ -422,7 +422,8 @@ Readings, not in the session:
   house colours (red, ochre, teal) are the houses' enamel, which the heraldry in "Marks by era" sits on.
 - **The second age's colour is the sand's.** Bone, sand, rust and clay are the dunes' own, so
   second-age gear blends in and the blue glaze is the one thing that doesn't: the Cistern's mark.
-- **The skimmer era has no row.** The notes' skimmer crate was "light, cheap and fragile"; part 5's table
+- **The skimmer era has no row.** (2026-10-18: the skimmer racer is the first thing drawn as the era's own,
+  hand-painted crew red with tape round its rails.) The notes' skimmer crate was "light, cheap and fragile"; part 5's table
   skips it. Its look (hasty, welded, improvised) is B's wreckage texture, and nothing here draws it.
 - **One shield first.** The notes asked for the shield to change first. Three silhouettes of one device
   (a chamfered housing, the same with a crest and a vent grille, and an asymmetric one with a ceramic cap)
@@ -433,12 +434,18 @@ Readings, not in the session:
 *Session 4, part 2 ([lore session](lore-session-2026-10-17-part-2.md)); named, not drawn, and
 none of it is in the atlas.* The atlas stops at the colonial, surface and new rows. The session
 names what the ages after the collapse would carry, to be drawn when there is a find to carry it:
-- **First Kingdoms** gear carries heraldry and guild stamps (houses such as Okafor, Kessel,
-  Arkwright and Vante; the guilds of the keepers).
+- **First Kingdoms** gear carries heraldry and guild stamps (houses such as Haberjack, Pellicott,
+  Crake and Vonatelli; the guilds of the keepers).
 - **Second-age** gear carries religious symbols (the faith of Tu).
 - **Homesteader** gear carries civilian brand marks, not Tilg's.
 - **Carvings and daubs** use the worn slang (Monward, Hanmen, Zanborn, the tu- prefix) and the
   worn names (Zan, Tu, Han, Mon, Aitch): [the names](lore-research.md#slang-and-name-erosion-agreed-session-4-part-2).
+- **Session 5 (named, not drawn)** ([lore session](lore-session-2026-10-18-mitchell-wow-shoemaker.md)): the
+  Tabbed's **tab-stone**, carved with what a family owes and is owed, and the Ashwalkers' pendant ones;
+  the **Mitchells**, stamped company scrip whose brand outlived its meaning; and the **singing stone**, black and
+  glassy, scored with melted grooves, warm to the touch
+  ([the lore](lore-research.md#mitchell-the-dead-god-agreed-session-5)). A tab-stone is a second-age
+  thing and a Mitchell a First Kingdoms one, so each fits the layered marks below.
 
 ### Layered marks (Agreed, session 4, part 5; named, not drawn)
 
@@ -466,8 +473,8 @@ marks over its own look, each layer added as pieces in the paint pass, not repai
   company's issue the new one.
 - **The First Kingdoms** add an enamel band in the house's colour round a frame's top edges, a round
   housing or a part's end, and a small enamel plaque with the house's crest cut through it to bright metal
-  (a new scratched ink), two brass rivets at its top: Okafor's key (they kept the last Harbourmaster's),
-  Kessel's cauldron, Arkwright's arch, Vante's tower, in deep red, ochre, teal, and ochre with red.
+  (a new scratched ink), two brass rivets at its top: Haberjack's key (they kept the last Harbourmaster's),
+  Pellicott's cauldron, Crake's arch, Vonatelli's tower, in deep red, ochre, teal, and ochre with red.
 - **The Dark Age** adds cord lashed round corner posts or round a body, a round ceramic cap on a square
   corner, a saltbush-wood splint lashed along an edge, and a plate off another thing in its paint, riveted
   on crooked, with "ZN" daubed back on it where the thing was consigned.
@@ -852,6 +859,102 @@ measured 0.2 to 0.3 ms the same way, so the times and the count agree.
   Tu under the open eye would bloom too.
 - Times were taken with Hunter's game on the same GPU; between runs a frame's own time moved by
   2 ms, and only the alternated differences hold.
+
+**Built: sand that reads as sand (2026-10-18).** Hunter, after the light: "glitter is decent, and
+yeah the glow is nice, but i wanted the sand to be a little more... realistic?" Set against real
+dune fields, what read unreal was mostly the ripples: one pattern everywhere, swirled like a
+fingerprint, torn along straight lines, with smooth plastic between them close up. The colour, the
+third of the light sent back, Ridges, the palette, the eye and the light are as they were.
+- **Ripples no longer tear.** The sand's noise hashed its lattice with `sin`, which out here,
+  kilometres from the origin, gave the same corner different numbers in the cells either side of it
+  (most likely as the GPU folds the arithmetic differently), so the noise jumped at its lattice lines;
+  the ripples, warped by it, tore along lines 3 m apart, the jagged seams at dusk that read as a slip
+  face's edge. The noise now hashes integers (`lattice()`).
+- **Lopsided ripples,** a long gentle windward side and a short steep lee, as sand climbs a ripple
+  and spills off its crest: about 4° and 11° to 14° at most, a height about 5% of their length,
+  where real ripples' is 4 to 7%. It's a rounded sawtooth (the slope of arg(1 - k e^-iw)), crisper
+  on windward slopes (k 0.58) than on flats (0.4), with the old wave's mean square, so the sheen and
+  the light overall are as they were. A low sun now leaves thin shadows on their lee faces.
+- **Ripples fork and end,** as real ones do, never one unbroken crest for metres: pairs of opposite
+  twists in their phase (dislocations) 5 to 12 crests apart, one pair in four-fifths of 2.4 m cells,
+  each adding one short crest with a fork at each end.
+- **Their heading and spacing drift** by about 10° over a few metres, where the old warp swirled
+  them by up to 40° and more in 3 m; their light tilts the way they run. They're patchy, 0.55 to 1.3
+  of their depth over 5 m, and fade toward a slip face over a ragged line rather than at the
+  lattice's triangles.
+- **They reach about half again further,** fading out as a pixel spans from a tenth to a quarter of
+  a ripple (it was a sixteenth to a sixth), easing to a plain wave first so nothing finer than a pixel
+  is drawn: at a low sun the ripples' grain runs on into the middle distance where it stopped short.
+- **Coarse crests, fine troughs.** The wind sorts grains: the coarser gather on the crests, a shade
+  darker and redder (2.5, 4.5 and 6% off red, green and blue at a full crest, as much added in a
+  trough), so even at noon, when the light can't show the ripples, they show faintly. It fades with
+  the ripples, so the sand's mean colour is unchanged.
+- **Grainflows down slip faces:** tongues a hand or two wide and a few metres long, and a metre wide
+  and longer, a few percent lighter or darker, down the fall line (the nearest two of a fan of
+  headings, blended, as the face turns), fresh in some places and smoothed in others. They read from
+  the next dune.
+- **Ribbons down the wind.** The broad colour's 23 m patches and the 7 m ones are drawn out down the
+  wind, 16 by 48 m and 7 by 30 m (the small ones now ±4%), as the wind lays coarser and finer sand
+  in ribbons; and a small mottle, ±3% over 0.6 m, out to about 20 m.
+- **Grains at your feet.** A pixel's mean of n grains varies as 1/√n, so cells two pixels or so
+  across, stepped by powers of two and blended as the glitter's are, vary the less the larger they
+  are (7% for a 2 mm cell): grainy at your feet, gone within 5 m, and holding still as you move.
+- **Fewer glints flash full.** A grain's weight is its draw to the fourth power, not the square, so
+  most glint faintly and few clip to white: the even white dots at your feet read as stylised.
+
+Weighed and left out:
+- **A sharper brink,** turning the light faster than the lattice between a windward grade and a slip
+  face's: from 200 m it changed 35 pixels of the frame. The lattice already turns within a pixel or
+  two.
+- **Cooler shade on the shadow side.** On Earth the shade is cooled by a blue sky; this sky is dust,
+  and Godot's sky light already lights the shade with it.
+- **The wind map orienting the ripples.** Its wind is one heading for the whole window (the
+  prevailing wind and its gusts), turning with the hours, so it has nothing to steer ripples by
+  place; ripples that turn with the wind, with the minutes of lag real ones have, are P6's. Ripples
+  and grainflows follow the dunes' own downwind, the long-term wind that built them.
+- **Finer crests and coarse interdunes** at the dunes' own scale: the shader doesn't know a place's
+  height above its dune's foot. From 200 m the sand changed least.
+
+**How it looks,** master's sand against this, shot as the light was (`look/sandlight/shoot.sh`,
+which now also shoots your feet at noon, ripples from a crest down its windward face with the sun
+14° up, and the tallest slip face near the spot from its foot; `--only` without `storm` skips the
+storm's pass). The sheet is `~/Desktop/sandreal.png`, its last rows at full size. A different hash
+lays the patches differently, so the same shot lands on different ones, and lightness moves by about
+a level either way for that alone.
+
+| Moment | L* before, after | Spread before, after |
+|---|---|---|
+| Noon | 81.9, 82.1 | 1.3, 2.1 |
+| Your feet at noon | 82.3, 83.1 | 5.0, 5.6 |
+| Ripples over a dune, the sun 14° up | 62.1, 63.1 | 16.3, 16.4 |
+| A low sun (8°) ahead | 51.8, 51.9 | 7.3, 8.3 |
+| The same from 200 m up | 56.9, 56.4 | 17.1, 16.9 |
+| The same sun behind you | 55.7, 55.0 | 13.5, 15.5 |
+| Dusk (2°), the sun behind you | 45.8, 44.3 | 14.1, 16.8 |
+| A slip face from its foot | 79.0, 79.0 | 3.7, 5.1 |
+| A full-Tu night; by the headlamp | 4.8, 4.9; 23.6, 23.9 | 0.8, 1.0; 73.9, 74.2 |
+| Deep in a storm by day | 24.2, 24.3 | 9.4, 9.8 |
+| A walked track at midmorning | 77.5, 77.1 | 6.2, 5.9 |
+
+The low sun and dusk changed most: ripples that fork and end, lean, shadow on their lee and run on
+into the distance, untorn. At your feet the sand is grainy, with fewer, fainter glints; slip faces
+carry grainflows; noon shows the ripples faintly by their crests' colour. From the air little
+changed, and the night, the lamp, the storm and the track are as they were.
+
+**What it costs,** on the RTX 3070 at 1920x1080 with Hunter's game on the GPU, the middle of nine
+alternated rounds, over three runs: 0.12 to 0.29 ms a frame at noon, 0.46 to 0.63 into a low sun,
+0.15 to 0.65 with sand filling the frame, and 0.16 in a storm; the same shader against itself
+measured within 0.2 ms either way. Almost all of it is near you, behind branches: the ripples'
+drift, defects, profile and sorting where ripples show, the grains within 5 m, the mottle within
+20 m, the grainflows on slip faces. A first cut that did the ripples' work everywhere cost 1.7 ms.
+Each defect pair skips pixels out of its reach, so a pixel takes the twist of one or two, not four.
+
+**Fragile:**
+- Any new noise in the sand hashes integers (`lattice()`, `hash6`): a `sin` hash tears this far out.
+- The ripples' phase is laid along the dunes' fixed downwind. Ripples that turn with the wind (P6)
+  need it accumulated instead, and the defects and drift with it.
+- The grains' cells, like the glitter's, hold still through origin shifts only because a 64 m chunk
+  holds whole cells.
 
 ## Open questions
 

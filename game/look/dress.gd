@@ -285,15 +285,93 @@ static func _frame(id: StringName, size: Vector3, extra: float) -> ArrayMesh:
 						b.box(Vector3(0.06, 0.06, 0.06), Vector3(x * (h.x - 0.03), y * (h.y - 0.03), z * (h.z - 0.03)), gun, 0.01)
 				b.box(Vector3(0.03, 0.06, 0.012), Vector3(x * (h.x - 0.03), h.y - 0.07, h.z - 0.003), black, 0.004)
 		&"board":
-			# A skimmer crew's patch on the tail, what shows when it's found.
+			# Tilg & Standard's issue in the company's paint: its batch stencil
+			# on the tail, the company's consignment code on a deep one.
 			var tail := Basis(Vector3.LEFT, Vector3.BACK, Vector3.UP)
-			b.stamp(Paint.Mark.SKIMMER_CREW, Vector3(0.0, h.y, h.z - 0.1), 0.26, tail, Paint.Ink.PALE)
+			b.stamp(Paint.Mark.CONSIGNMENT, Vector3(0.0, h.y, h.z - 0.1), 0.26, tail, Paint.Ink.PALE)
 			b.box(Vector3(size.x, 0.03, size.z), Vector3(0.0, h.y - 0.015, 0.0), teal, 0.01)
 			b.box(Vector3(size.x - 0.06, 0.006, size.z * 0.55), Vector3(0.0, h.y, 0.08), Paint.coat(Color(0.05, 0.05, 0.05), 0.2, 0.0, 0.95, 1.0), 0.002)
 			b.box(Vector3(size.x - 0.04, size.y - 0.03, size.z - 0.1), Vector3(0.0, -0.015, 0.0), gun, 0.012)
 			_hazard(b, Vector3(size.x + 0.004, 0.05, 0.034), Vector3(0.0, h.y - 0.015, -h.z + 0.06), Basis(Vector3.RIGHT, -PI / 2.0))
 			for z in [-0.35, 0.35]:
 				b.drum(0.07, 0.012, Vector3(0.0, -h.y + 0.005, z), Paint.coat(Color(0.45, 0.8, 1.0), 0.0, 0.0, 0.3, 0.3, 2.0), Basis.IDENTITY, 16)
+		&"racer_board":
+			# The skimmer era's racer: narrow, a pointed nose and a kicked tail,
+			# in its crew's hand-painted red with a pale stripe, tape round its
+			# rails, three small pads, and the crew's patch on its tail.
+			var red := Paint.coat(SkimmerKit.PLATE_RED, 0.9, 0.0, 0.55)
+			var tape := Paint.coat(SkimmerKit.TAPE, 0.2, 0.0, 0.8, 0.6)
+			b.box(Vector3(0.26, size.y - 0.035, size.z - 0.2), Vector3(0.0, -0.012, 0.04), gun, 0.01)
+			b.box(Vector3(0.3, 0.024, 0.86), Vector3(0.0, h.y - 0.018, 0.05), red, 0.008)
+			for s in [-1.0, 1.0]:
+				b.box(Vector3(0.17, 0.024, 0.3), Vector3(s * 0.055, h.y - 0.018, -h.z + 0.19), red, 0.008,
+					Basis(Vector3.UP, s * 0.42))
+			b.box(Vector3(0.28, 0.024, 0.2), Vector3(0.0, h.y - 0.004, h.z - 0.1), red, 0.008, Basis(Vector3.RIGHT, -0.22))
+			b.box(Vector3(0.035, 0.004, 1.0), Vector3(0.0, h.y - 0.005, -0.02), Paint.coat(Paint.BONE, 0.7), 0.001)
+			b.box(Vector3(0.2, 0.004, 0.4), Vector3(0.0, h.y - 0.004, -0.1), Paint.coat(Color(0.05, 0.05, 0.05), 0.2, 0.0, 0.95, 1.0), 0.001)
+			for z in [-0.24, 0.3]:
+				b.box(Vector3(0.31, 0.032, 0.04), Vector3(0.0, h.y - 0.018, z), tape, 0.004)
+			b.stamp(Paint.Mark.SKIMMER_CREW, Vector3(0.0, h.y + 0.001, h.z - 0.32), 0.22, Basis(Vector3.LEFT, Vector3.BACK, Vector3.UP),
+				Paint.Ink.PALE)
+			b.box(Vector3(0.24, 0.004, 0.13), Vector3(0.0, h.y - 0.001, h.z - 0.32), red, 0.001)
+			for z in [-0.42, 0.0, 0.4]:
+				b.drum(0.055, 0.012, Vector3(0.0, -h.y + 0.006, z), Paint.coat(Color(0.45, 0.8, 1.0), 0.0, 0.0, 0.3, 0.3, 2.0), Basis.IDENTITY, 14)
+			b.box(Vector3(0.012, 0.04, 0.12), Vector3(0.0, -h.y + 0.01, h.z - 0.12), gun, 0.004)
+		&"patrol_board":
+			# The Knights' patrol board: wide and plated, a steel bumper on its
+			# nose lashed with cord, armour down its rails, its deck the order's
+			# grey with their daubed sign and, every crate accounted for, its
+			# stencil on the tail; four dim pads under its weight.
+			var grey := Paint.coat(Color(0.46, 0.46, 0.44), 0.6, 0.0, 0.85)
+			var cord := Paint.coat(Paint.CORD, 0.1, 0.0, 0.9, 0.5)
+			var daub := Paint.coat(SecondAgeKit.DAUB, 0.5, 0.0, 0.9, 0.8)
+			var plate := Paint.coat(SkimmerKit.OLIVE, 1.0, 0.4, 0.6)
+			var steel := Paint.coat(Paint.STEEL, 0.6, 0.8, 0.45)
+			b.box(Vector3(size.x - 0.02, size.y - 0.03, size.z - 0.08), Vector3(0.0, -0.015, 0.0), gun, 0.012)
+			b.stamp(Paint.Mark.CONSIGNMENT, Vector3(0.0, h.y, h.z - 0.1), 0.24, Basis(Vector3.LEFT, Vector3.BACK, Vector3.UP),
+				Paint.Ink.PALE)
+			b.box(Vector3(size.x - 0.04, 0.03, size.z - 0.06), Vector3(0.0, h.y - 0.015, 0.01), grey, 0.01)
+			for s in [-1.0, 1.0]:
+				b.box(Vector3(0.03, size.y - 0.01, size.z - 0.18), Vector3(s * (h.x - 0.015), -0.005, 0.03), plate, 0.008)
+			b.box(Vector3(size.x + 0.02, 0.045, 0.045), Vector3(0.0, -0.005, -h.z + 0.02), steel, 0.01)
+			for s in [-1.0, 1.0]:
+				b.box(Vector3(0.03, 0.03, 0.1), Vector3(s * 0.12, -0.01, -h.z + 0.08), steel, 0.006)
+				b.box(Vector3(0.04, 0.04, 0.02), Vector3(s * 0.12, -0.01, -h.z + 0.07), cord, 0.004)
+			b.box(Vector3(0.04, 0.004, 0.34), Vector3(0.0, h.y + 0.001, 0.18), daub, 0.001)
+			b.box(Vector3(0.22, 0.004, 0.04), Vector3(0.0, h.y + 0.001, 0.09), daub, 0.001)
+			b.box(Vector3(size.x - 0.1, 0.004, 0.36), Vector3(0.0, h.y + 0.0005, -0.28), Paint.coat(Color(0.05, 0.05, 0.05), 0.2, 0.0, 0.95, 1.0), 0.001)
+			for z in [-0.48, -0.16, 0.16, 0.48]:
+				b.drum(0.06, 0.012, Vector3(0.0, -h.y + 0.005, z), Paint.coat(Color(0.45, 0.8, 1.0), 0.0, 0.0, 0.3, 0.3, 1.1), Basis.IDENTITY, 14)
+		&"temple_board":
+			# Made at Mother Cistern's temple: an old hover core under a deck of
+			# saltbush planks lashed with fern cord, a round ceramic cap on its
+			# nose in her blue glaze, the sign of Tu on a limewashed patch, a
+			# water vial tied at one side and a tassel at the tail.
+			var wood := Paint.coat(Paint.SALTWOOD, 0.2, 0.0, 0.8, 0.8)
+			var cord := Paint.coat(Paint.CORD, 0.1, 0.0, 0.9, 0.5)
+			var lime := Paint.coat(Paint.LIMEWASH, 0.35, 0.0, 0.88)
+			var glaze := Paint.coat(Paint.GLAZE, 0.25, 0.0, 0.25, 0.4)
+			var ceramic := Paint.coat(Paint.CERAMIC, 0.5, 0.0, 0.35, 0.7)
+			b.box(Vector3(0.24, size.y - 0.035, size.z - 0.4), Vector3(0.0, -0.014, 0.02), gun, 0.01)
+			var planks := [[-0.115, 1.18], [0.0, 1.24], [0.115, 1.14]]
+			for k in planks.size():
+				var x: float = planks[k][0]
+				b.box(Vector3(0.104, 0.022, planks[k][1]), Vector3(x, h.y - 0.014, 0.02 + k * 0.012), wood, 0.006)
+			for z in [-0.44, -0.12, 0.2, 0.48]:
+				b.box(Vector3(size.x + 0.008, 0.03, 0.022), Vector3(0.0, h.y - 0.016, z), cord, 0.004)
+			b.ball(0.1, Vector3(0.0, -0.004, -h.z + 0.02), ceramic, Vector3(1.7, 0.5, 0.6))
+			b.box(Vector3(size.x - 0.02, 0.036, 0.03), Vector3(0.0, -0.004, -h.z + 0.07), glaze, 0.006)
+			b.stamp(Paint.Mark.TU, Vector3(0.0, h.y + 0.0, 0.3), 0.18, Basis(Vector3.LEFT, Vector3.BACK, Vector3.UP))
+			b.box(Vector3(0.2, 0.004, 0.11), Vector3(0.0, h.y - 0.002, 0.3), lime, 0.001)
+			b.drum(0.022, 0.09, Vector3(h.x + 0.01, -0.005, 0.05), Paint.coat(Paint.SAND_GLASS, 0.3, 0.2, 0.1, 0.4),
+				Basis(Vector3.RIGHT, PI / 2.0), 10)
+			b.box(Vector3(0.03, 0.045, 0.02), Vector3(h.x + 0.005, -0.005, 0.05), cord, 0.003)
+			for i in 3:
+				b.box(Vector3(0.008, 0.07, 0.008), Vector3(-h.x + 0.05 + i * 0.012, -0.02, h.z + 0.012),
+					Paint.coat(Paint.DYED, 0.3, 0.0, 0.85), 0.0, Basis(Vector3.BACK, (i - 1) * 0.12))
+			for z in [-0.3, 0.32]:
+				b.drum(0.075, 0.014, Vector3(0.0, -h.y + 0.004, z), ceramic, Basis.IDENTITY, 16)
+				b.drum(0.055, 0.016, Vector3(0.0, -h.y + 0.004, z), Paint.coat(Color(0.45, 0.8, 1.0), 0.0, 0.0, 0.3, 0.3, 1.6), Basis.IDENTITY, 14)
 		&"radio":
 			# A set made to carry: across the top of its face a band scale that
 			# lights while it plays, under it a speaker's slats and the bosses

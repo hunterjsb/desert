@@ -209,14 +209,29 @@ terminals" by Hunter's call. The squatting oracles above are now the gods.
   further the carrier slides off where you tuned, up to 6 kHz either way, so you chase it (**warping**,
   with the tones wobbling too), and the more often it drops out, up to 60% of the time
   (**cutting**). A weak signal frays the same way. Below the floor it's only static.
-- **Spoken reports** (Hunter: "implement text-to-speech weather broadcast readouts"): with something to
-  report, the weather station reads it aloud through the system's text-to-speech (Godot's, the OS voice),
-  at once as a report breaks in on Clear Skies and every 30 s after (`radio_speak_every`); never while it
-  holds. Units are read in words, and words a storm garbles are lost to "...". You hear the nearest radio
-  on the weather station within 30 m (`radio_voice_m`), as loud as its knob, its signal and the distance
-  allow; tuned away or left behind, the voice stops. A report already reaching you is read to its end
-  through a dropout. The OS voice can't be placed in the world or run through the static: it's heard
-  flat, as a voice in your ear, and headless there's none.
+- **Spoken reports** (Hunter: "implement text-to-speech weather broadcast readouts"; then, hearing the
+  OS voice, "that TTS just scared me. is it talking out of the radio?" and "the TTS is too crazy of a
+  voice, can we do something smoother? and shorter phrases?"; he chose a bundled voice): with something to
+  report, the weather station reads it aloud, at once as a report breaks in on Clear Skies and every 30 s
+  after (`radio_speak_every`); never while it holds. **The voice** is Piper's LJ Speech voice, public
+  domain, rendered once into a bank of 165 phrases (`assets/audio/voice/`, by `make_voice.py`, each take
+  kept only once Whisper hears it right through the radio's speaker; licences in
+  `assets/audio/CREDITS.md`), so it sounds the same on every computer. **The phrases** are its own,
+  shorter than the line in view, which stays as it is (`Radio.report`): a storm on its way is "Storm
+  coming. From the north-east. Four minutes. Wind speed forty."; one on you, "Storm here. Wind speed
+  twenty-six. Clearing, ten minutes." (or "No clearing, twenty minutes."); at dusk or with news at the
+  Walker's feet it adds "Long range. Next storm, thirty minutes." Numbers are exact to sixty and to the
+  ten past it; spans are seconds to the ten under a minute and a half, else minutes. Bare "South.",
+  "Storm." and "Winds forty." were heard as "So", "Store" and "Wins forty" over the speaker, hence "From
+  the", "Storm coming" and "Wind speed".
+  **From the radio:** the station's tones sound, then each phrase plays from the radio itself with a
+  breath between, on its bus through the speaker's high-pass, over its static and an anomaly's crackle,
+  its volume knob turning it down, and coming and going with the signal as a song does: silent while a
+  storm cuts it, and the phrases a weak signal loses left as gaps of static ("..." in what it said). Its
+  tones keep off till it's done. Tuned away, held for Clear Skies or switched off with Options' "Radio
+  voice" (on by default), it stops. A Console with the radio in its system speaks in the same voice,
+  through the radio's speaker whatever it's tuned to: "Battery low." and "Battery critical."
+  ([Devices & mods](devices-and-mods.md)). (It was the system's text-to-speech, heard flat in your ear.)
 - **The Eye's drone** (Hunter: "implement this as a random ambient track that can play from 'the eye'"):
   the Eye's frequency begins a run silent, then now and then plays Hunter's drone (`radio_eye.ogg`, 66 s)
   through once, each silence before it 2 to 8 minutes (`eye_quiet_minutes`), the seed's pick. Between
@@ -234,9 +249,9 @@ terminals" by Hunter's call. The squatting oracles above are now the gods.
   Walker's carrier that day, with the save's version unchanged.
 - **Probes:** radio 6 (each god has its bearing), 7 (storms garble the gods), 8 (the dial finds each
   god), 9 (useful only in its window), 10 (the volume knob), 11 (clear skies, and the Stoker's song), 12 (the clear-skies scenario), 13 (the relay carries the music), 14 (spoken reports, and the meltdown), 15 (storms tell you which way), 16 (the Eye's drone), 17 (the relay at night), 18 (static sinks under a signal), 19 (the music goes in a far-side
-  storm) and 20 (tuning shares reel in with the reel). Probes 1, 2, 4 and 5 tune by the dial, and so do Survival 12, Profile & saves 13 and
+  storm), 20 (tuning shares reel in with the reel) and 23 (the voice comes from the radio). Probes 1, 2, 4 and 5 tune by the dial, and so do Survival 12, Profile & saves 13 and
   Devices & mods 28, the power page's row.
-- **Not yet:** a god's own voice beyond tones, frequencies as finds, antennas, and the far end's
+- **Not yet:** a voice for the other gods beyond tones, frequencies as finds, antennas, and the far end's
   signal.
 
 ### The dial in your hands (Hunter, 2026-10-18; built)
@@ -310,6 +325,22 @@ frequency, a range and what it says; its signal falls off with distance.
   nomads navigating by the stars. Its frequency is found by exploring (scratched on a radio in the
   dead city), its codes learned by noticing what follows them. Open: how the tones sound and how
   many messages.
+
+### The nomads' tones follow a thief (Agreed, session 5; not built)
+
+*[Session 5](../lore-session-2026-10-18-mitchell-wow-shoemaker.md), "Nomad reputation." The whole
+relationship with the nomads runs through gifts, shrines and radio tones, so they stay secret
+([the vision](../vision.md#nomad-reputation-agreed-session-5-not-built)).* Steal from them and **their
+short-range radio tones follow you around, getting ruder.**
+
+Readings, not in the session:
+- **They are the living city's coded tones** (above): short range, no voices, learned by noticing what
+  follows them. Their usual run is free early warning ("storm coming, tether in"); a thief's run is the same
+  code turned against you, and "ruder" is a pattern the player learns to read, not words.
+- **They follow by range:** a few km, wherever you are within it, so a camp inside their reach hears them
+  and one outside doesn't.
+- **Not said:** what a ruder tone sounds like, how many steps there are between polite and rude, and
+  whether rep ever recovers the way a returned sail earns a gift.
 
 ### The ghost relay
 
@@ -562,6 +593,8 @@ left standing.
   carrying a dispatch. Part 5 also amends "speak only through terminals": machines may talk through
   terminals, and whether a god is ever heard as a voice is still this PRD's open question
   ([the lore](../lore-research.md#dispatches-how-gods-talk-agreed-session-4-part-5)).*
+  *Session 5, ruled by Hunter (2026-10-18): the gods do have links. Mother Cistern can switch Mitchell off,
+  so "no link" is read as "most links lost."*
 - **Ritual text against rule 1.** Here: "Broadcasts read the real systems" and "never makes things
   up." The session's proposed voices include Mother Cistern's calls "tied to rations and rain"
   when it has never rained, the Quartermaster's "authentication challenge nobody can answer," and

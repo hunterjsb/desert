@@ -126,11 +126,16 @@ rolled-up coil's length; a laid line says nothing more, since its length shows, 
 gather shows what you've taken in, and its strain creaks.
 
 **The sheet** (2026-10-18). A line whose end is on a sail's boom is its sheet, and it's held
-the way any line is: in your hand, at your waist, or made fast on a ring or a stake. Reeling
-it hauls the sail in, a notch at a time, rather than the line, which stays as long as it was;
-paying it out eases the sail, and with the sail all the way out a notch pays out the line. A
-sail pulling harder than your strength won't come in. With nothing holding its far end it
-runs, and the sail swings free. Riding, a sheet at your waist stays tied as you step on, and
+the way any line is: in your hand, at your waist, or made fast on a ring or a stake. It runs
+through a block at the boom's end and in to a ring on the camp, and that inboard part is what
+holds the boom (2026-10-18, Hunter: "having scroll magically rotate the sail along with pulling
+the rope has been an issue both from a sense perspective and gameplay"). Reeling it takes line in
+through the block a notch at a time, the line to you no shorter: it gathers in the coil where
+the sheet is on you, and the boom comes in after it, drawn by the sheet. The draw eases off as the
+sail's pull on it nears your strength, as any line's does, so a loaded sail comes in slowly or not
+at all. Paying out gives line back and the wind takes the boom out after it; once the inboard is all
+in, a notch reels the line itself, and once it's all out a notch pays the line out. With nothing
+holding its far end it runs, and the sail swings free. Riding, a sheet at your waist stays tied as you step on, and
 reeling works it there: your camp tows you by it, and the board pushes against no line.
 (Before, reeling did nothing riding, and every line at your waist was untied before you
 stepped on; any line but a sheet still is.) The sail's side is in
@@ -151,7 +156,7 @@ you end up as the fulcrum"); it wasn't. Now your body bears what the lines on it
 other plus any line's bend round you, held as long as a line's load is (0.3 s). Past your strength,
 400 N (`fulcrum_n`), you lose 8 health a second for each share more (`fulcrum_hurt`), never your
 last, and your view shakes. Lines still snap only past their own load. Sailing probe 9 braces you
-off the hidden line with the camp moored: it bends round you at 527 N and hurts you; the lines hold.
+off the hidden line with the camp moored: it bends round you at 500 N and hurts you; the lines hold.
 
 ## Wind on tethered things
 
@@ -313,9 +318,9 @@ Reliability is the whole point here, so this list is long. All run without a win
     driven nor at your waist, and the readout says why. At sand in reach it goes in at
     the ground's height; looking out over the sand, use ties it at your waist.
 16. **The line you look along.** A sail's sheet and a line to a stake both at your waist:
-    looking along the sheet, two notches trim the sail half a metre and leave the stake's
-    line be; looking along the stake's line, two notches draw it in half a metre and leave
-    the trim be.
+    looking along the sheet, two notches haul half a metre of the sheet's inboard in and
+    leave the stake's line be; looking along the stake's line, two notches draw it in half a
+    metre and leave the trim be.
 
 Every probe is first run against a deliberately broken rope, to prove it can fail.
 

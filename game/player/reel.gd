@@ -5,8 +5,9 @@ extends Node3D
 ## hand, else the line at your waist you look nearest along. Only the line draws, pulling
 ## both its ends, so what's on it comes only as hard as your strength allows;
 ## against a stake, or anything too heavy to come, you step in along it
-## instead. Each notch is a stroke of your hand, the rope gathers into a coil
-## where it's on you, and it rubs through your hands as it comes.
+## instead. A sheet runs through its block, so what comes in is its inboard,
+## as hard as its sail allows. Each notch is a stroke of your hand, the rope
+## gathers into a coil where it's on you, and it rubs through your hands as it comes.
 
 ## One scroll step, m.
 const NOTCH := 0.25
@@ -135,9 +136,10 @@ func _physics_process(delta: float) -> void:
 	var pace := PACE
 	_way = signf(-off)
 	if off < 0.0:
-		# Slower as the pull nears your strength: what won't come, you step in to.
+		# Slower as the pull nears your strength, a sheet's sail's too: what
+		# won't come along the line, you step in to.
 		var strain := smoothstep(STRAIN, 1.0, rope.tension / _tuning.hand_strength)
-		pace *= 1.0 - strain
+		pace *= 1.0 - maxf(strain, smoothstep(STRAIN, 1.0, rope.haul_n / _tuning.hand_strength))
 		var far := _far(rope).global_position - _player.global_position
 		walk_in = Vector2(far.x, far.z).normalized() * PACE * strain
 	var step := clampf(off, -pace * delta, pace * delta)
@@ -164,7 +166,7 @@ func working() -> bool:
 ## The rope gathered where the line is on you, as a coil growing with it.
 func _process(_delta: float) -> void:
 	var now := line()
-	var gathered := now.full - now.length if now != null else 0.0
+	var gathered := now.full - now.length + now.haul_gathered if now != null else 0.0
 	_coil.visible = gathered > 0.05
 	if not _coil.visible:
 		return

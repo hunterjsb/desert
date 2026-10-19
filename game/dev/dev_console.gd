@@ -3,9 +3,12 @@ extends Control
 ## Dev: a line to type commands into over the running game, or over the main
 ## menu for what needs no world, with what they said above it. The UI root
 ## opens and closes it and keeps every key from the game while it's up; up
-## and down step through what was typed before, and the focus-next key
-## finishes a command's name, a scenario or an id. Each command is a thin
-## call into the game's own code.
+## and down step through what was typed before, the focus-next key finishes
+## a command's name, a scenario or an id, and the wheel and the page actions
+## scroll back through what was said. Each command is a thin call into the
+## game's own code. One that changes the run makes it a dev run, whose deeds
+## never count (World.counts_deeds); one that only lists, or works on the
+## profile, leaves it as it was.
 
 ## Each command's arguments and what it does, in the order help lists them.
 const COMMANDS := {
@@ -18,8 +21,8 @@ const COMMANDS := {
 	"time": ["<0-1>", "on to the next such moment of your local day: 0 is midnight, 0.5 noon"],
 	"tu": ["[6|9|13]", "Tu's width across the sky under trial, degrees; alone, the next"],
 	"give": ["<id> [n]", "a part in your hands or a device at your feet, by its catalog id"],
-	"fresh": ["", "fed, watered and whole, on a fresh suit's kit"],
-	"god": ["", "nothing harms you and you never hunger or thirst; again, mortal"],
+	"fresh": ["", "fed, watered and whole; what you carry stays"],
+	"god": ["", "nothing harms you, you never hunger or thirst, and nothing is too heavy; again, mortal"],
 	"goto": ["[landmark]", "stand by a landmark, one of its parts or a vent, on fresh ground; alone, how far each is"],
 	"map": ["[metres]", "the history under the sand round you, this wide; alone, on or off"],
 	"unlockall": ["", "every start open, deeds or not"],
@@ -34,8 +37,11 @@ const WORLDLESS := ["help", "scenarios", "unlockall", "deed", "deeds", "reset"]
 const STANDOFF := 60.0
 ## Parts that only come on something else: a cable's plugs, a hose's ends, a line's ends.
 const ON_SOMETHING := [&"plug", &"strong_plug", &"hose_end", &"rope_end"]
-## Lines of output shown, commands remembered, and the most give makes at once.
+## Lines of output shown, kept to scroll back through, and moved a wheel's
+## notch; commands remembered, and the most give makes at once.
 const SHOWN := 10
+const KEPT := 200
+const NOTCH := 2
 const REMEMBERED := 50
 const MOST := 20
 ## Its panel's width and how far down it hangs, px.
@@ -49,6 +55,8 @@ var _said := PackedStringArray()
 var _typed := PackedStringArray()
 ## How far back up has gone through what was typed; 0 is a new line.
 var _back := 0
+## How many lines back the output is scrolled; 0 shows the latest.
+var _up := 0
 
 
 func _ready() -> void:
@@ -100,6 +108,7 @@ func close() -> void:
 	_line.clear()
 	_line.release_focus()
 	_back = 0
+	_up = 0
 
 
 ## Runs one line as if typed and confirmed.
@@ -115,7 +124,15 @@ func run(line: String) -> void:
 	if world == null and name not in WORLDLESS:
 		_say("only in a run")
 		return
+	var counted := world != null and world.counts_deeds
 	call("_" + name, words.slice(1), world)
+	if counted and not world.counts_deeds:
+		_say("a dev run from now: no deed counts in it")
+
+
+## The run changed by the console: a dev run from now, saved as one.
+static func _changed(world: World) -> void:
+	world.counts_deeds = false
 
 
 func _help(_args: PackedStringArray, _world: World) -> void:
@@ -141,6 +158,7 @@ func _fly(_args: PackedStringArray, world: World) -> void:
 	var player := world.player
 	player.step_off()
 	player.flying = not player.flying
+	_changed(world)
 	_say(Controls.bbcode("flying: {fly_up} up, {fly_down} down, {sprint} faster") if player.flying else "walking")
 
 
@@ -153,6 +171,7 @@ func _warp(args: PackedStringArray, world: World) -> void:
 	else:
 		_say(_usage("warp"))
 		return
+	_changed(world)
 	_say(("time x%d" if world.time_warp == roundf(world.time_warp) else "time x%.2f") % world.time_warp)
 
 
@@ -164,6 +183,7 @@ func _gravity(args: PackedStringArray, world: World) -> void:
 	else:
 		_say(_usage("gravity"))
 		return
+	_changed(world)
 	_say("gravity %.2f m/s², %.2f g" % [world.gravity, world.gravity / Player.ONE_G])
 
 
@@ -177,6 +197,7 @@ func _time(args: PackedStringArray, world: World) -> void:
 	var longitude := world.moon.longitude
 	world.time += fposmod(of_day - day.time_of_day(world.time, longitude), 1.0) * world.tuning.day_minutes * 60.0
 	world.weather.forecast_now()
+	_changed(world)
 	_say("day %d, %.3f of it" % [day.day(world.time, longitude, world.began), day.time_of_day(world.time, longitude)])
 
 
@@ -191,6 +212,7 @@ func _tu(args: PackedStringArray, world: World) -> void:
 		_say(_usage("tu"))
 		return
 	world.tuning.tu_degrees = size
+	_changed(world)
 	var day := world.weather.day
 	_say("Tu %d° across: an orbit of %.1f of its radii, %d s of totality" % [roundi(size), day.tu_orbit(), roundi(day.totality())])
 
@@ -202,6 +224,7 @@ func _give(args: PackedStringArray, world: World) -> void:
 	var id := StringName(args[0])
 	var count := clampi(args[1].to_int(), 1, MOST) if args.size() > 1 else 1
 	var player := world.player
+	_changed(world)
 	var ahead := 1.0
 	for i in count:
 		if Catalog.DEVICES.has(id):
@@ -237,19 +260,22 @@ func _give(args: PackedStringArray, world: World) -> void:
 func _meltdown(_args: PackedStringArray, world: World) -> void:
 	var gods := Radio.gods_of(world)
 	gods.meltdown(world.time)
+	_changed(world)
 	_say("meltdown: the Stoker's song on %d kHz for %d s" % [roundi(gods.carrier(&"stoker", world.time)),
 		roundi(Sounds.RADIO_STOKER.get_length())])
 
 
 func _fresh(_args: PackedStringArray, world: World) -> void:
 	world.player.vitals.fresh()
+	_changed(world)
 	_say("fed, watered and whole")
 
 
 func _god(_args: PackedStringArray, world: World) -> void:
 	var vitals := world.player.vitals
 	vitals.god = not vitals.god
-	_say("god: nothing harms you" if vitals.god else "mortal")
+	_changed(world)
+	_say("god: nothing harms you, nothing is too heavy" if vitals.god else "mortal")
 
 
 func _goto(args: PackedStringArray, world: World) -> void:
@@ -264,13 +290,19 @@ func _goto(args: PackedStringArray, world: World) -> void:
 	if target.is_empty():
 		_say("%s, an id of: %s" % [_usage("goto"), " ".join(_goto_ids(history))])
 		return
-	# A little in front of it, facing it.
+	_changed(world)
+	go_to(world, target)
+	var p: Vector3 = target.p
+	_say("%s: %s, %s" % [target.name, history.region_of(p), history.tu_words(p)])
+
+
+## Stands you a little in front of a landmark, a part of one or a vent, facing it.
+static func go_to(world: World, target: Dictionary) -> void:
+	var history := world.shape.history
 	var heading: float = target.get("bearing", 0.0)
 	var stand := Sphere.toward(target.p, heading + PI, STANDOFF / history.radius)
 	world.travel(rad_to_deg(Sphere.latitude(stand)), rad_to_deg(Sphere.longitude(stand)),
 		-Sphere.bearing(stand, target.p))
-	var p: Vector3 = target.p
-	_say("%s: %s, %s" % [target.name, history.region_of(p), history.tu_words(p)])
 
 
 func _map(args: PackedStringArray, _world: World) -> void:
@@ -420,20 +452,42 @@ func _submit(text: String) -> void:
 
 func _say(line: String) -> void:
 	_said.append(line)
-	if _said.size() > SHOWN:
-		_said = _said.slice(_said.size() - SHOWN)
+	if _said.size() > KEPT:
+		_said = _said.slice(_said.size() - KEPT)
+	_up = 0
 	_write()
 
 
-## Written as it opens too, so a rebound key shows as it is now.
+## Back through what was said by `by` lines, or down again for a negative `by`.
+func scroll(by: int) -> void:
+	_up = clampi(_up + by, 0, maxi(_said.size() - SHOWN, 0))
+	_write()
+
+
+## The latest lines, or as far back as it's scrolled. Written as it opens
+## too, so a rebound key shows as it is now.
 func _write() -> void:
-	var head := "[color=#%s]%s[/color]" % [get_theme_color(&"dim", &"Palette").to_html(),
-		Controls.bbcode("help lists the commands   {console} or {ui_cancel} closes")]
-	_out.text = "\n".join(PackedStringArray([head]) + _said)
+	var dim := get_theme_color(&"dim", &"Palette").to_html()
+	var head := "[color=#%s]%s[/color]" % [dim, Controls.bbcode("help lists the commands   {console} or {ui_cancel} closes")
+		if _up == 0 else Controls.bbcode("%d lines back   {ui_page_down} or the wheel comes down" % _up)]
+	var last := _said.size() - _up
+	_out.text = "\n".join(PackedStringArray([head]) + _said.slice(maxi(last - SHOWN, 0), last))
+
+
+## The wheel scrolls what was said wherever the mouse is, and nothing of the
+## game's on the wheel hears it meanwhile.
+func _input(event: InputEvent) -> void:
+	var wheel := event as InputEventMouseButton
+	if not visible or wheel == null or wheel.button_index not in [MOUSE_BUTTON_WHEEL_UP, MOUSE_BUTTON_WHEEL_DOWN]:
+		return
+	if wheel.pressed:
+		scroll(NOTCH * (1 if wheel.button_index == MOUSE_BUTTON_WHEEL_UP else -1))
+	get_viewport().set_input_as_handled()
 
 
 ## The line keeps these keys from the menus' focus moving: up and down step
-## through what was typed, and the focus-next key completes.
+## through what was typed, the focus-next key completes, and the page actions
+## scroll what was said a page at a time.
 func _on_line_input(event: InputEvent) -> void:
 	if event.is_action_pressed(&"ui_up", true):
 		_recall(1)
@@ -441,6 +495,10 @@ func _on_line_input(event: InputEvent) -> void:
 		_recall(-1)
 	elif event.is_action_pressed(&"ui_focus_next", true):
 		_complete()
+	elif event.is_action_pressed(&"ui_page_up", true):
+		scroll(SHOWN - 1)
+	elif event.is_action_pressed(&"ui_page_down", true):
+		scroll(1 - SHOWN)
 	else:
 		return
 	_line.accept_event()

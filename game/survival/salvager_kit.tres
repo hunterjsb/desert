@@ -18,7 +18,7 @@ carried = Dictionary[StringName, int]({
 &"med_kit": 1
 })
 beside = Dictionary[StringName, Vector2]({
-&"board": Vector2(0.0, 1.4),
+&"racer_board": Vector2(0.0, 1.4),
 &"plate": Vector2(1.4, 2.0),
 &"cutter": Vector2(-1.0, 1.6)
 })
@@ -28,5 +28,5 @@ assembled = Dictionary[StringName, Dictionary]({
 }
 })
 charge = 1.0
-shown = &"board"
+shown = &"racer_board"
 shown_turn = 90.0

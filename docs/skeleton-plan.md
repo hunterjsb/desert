@@ -438,8 +438,8 @@ as the full version does. It is the newest, so it supersedes the earlier lists w
 8. **Dispatch items.** Sealed packets with a sender, a recipient and opened and forged flags.
 9. **The gods, in order:** the Quartermaster, Mother Cistern, the Almanac, the Stoker, the Eye. The
    Walker and the Ledger "already exist in part 2 canon."
-10. **Endings.** The Okafor bunker, the captive-launch rule, blow up the moon ([the
-    vision](vision.md#the-okafor-bunker-agreed-session-4-part-5)).
+10. **Endings.** The Haberjack bunker, the captive-launch rule, blow up the moon ([the
+    vision](vision.md#the-haberjack-bunker-agreed-session-4-part-5)).
 
 *Deferred, in the session's own words:* hoppers, orbital strike, storm radio windows, hive mind forgery,
 and the Eye's growth beyond corruption.

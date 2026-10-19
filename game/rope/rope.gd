@@ -54,6 +54,10 @@ var gives := Callable()
 ## whatever owns it takes some of the line in another way, as a sheet hauls
 ## its sail in; returns what's left of the step for the line itself.
 var hauls := Callable()
+## While it takes the line in that way: what that pulls against, N, and how
+## much of it lies gathered on you from there, m.
+var haul_n := 0.0
+var haul_gathered := 0.0
 
 ## Pull this tick, and the load sustained long enough to break things, N.
 var tension := 0.0

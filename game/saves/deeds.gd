@@ -3,9 +3,9 @@ extends RefCounted
 ## What you've done across every run (Profile & saves, deeds): one table,
 ## and one hook every system records a deed through the moment it's done,
 ## never a check that goes looking for them. Only a player's own run counts
-## (World.counts_deeds): a dev scenario's never does, nor one while the dev
-## console's god holds you. A deed done is kept in
-## the profile with its run, and a start that names it as its unlock opens.
+## (World.counts_deeds): never a dev run, one a dev scenario or a dev command
+## that changed it has made one. A deed done is kept in the profile with its
+## run, a start that names it as its unlock opens, and its badge shows.
 ## Deeds wait on others (`after`), so they open a branch at a time; one done
 ## early is kept all the same, and shows once its branch opens.
 
@@ -65,15 +65,16 @@ static func done(world: World, id: StringName, part: StringName = &"") -> bool:
 	if not profile.deed(id, {"seed": world.run_seed, "origin": str(Kit.of(world).id),
 			"ironman": runs != null and runs.ironman}):
 		return false
-	# Said once it shows: done in its branch, with any done early that it opens.
-	var said := PackedStringArray()
+	# Shown once it shows: done in its branch, with any done early that it opens.
+	var said: Array[StringName] = []
 	if is_open(profile, id):
-		said.append(TABLE[id].name)
+		said.append(id)
 		for each: StringName in TABLE:
 			if TABLE[each].get("after", []).has(id) and profile.did(each) and is_open(profile, each):
-				said.append(TABLE[each].name)
-	if Controls.ui != null and not said.is_empty():
-		Controls.ui.note("Deed: " + ", ".join(said))
+				said.append(each)
+	if Controls.ui != null:
+		for each in said:
+			Controls.ui.badge(each)
 	return true
 
 
@@ -100,10 +101,9 @@ static func reached(world: World, landmark: StringName) -> void:
 
 
 ## The profile a deed would be kept in now, or null: none, a world whose
-## deeds don't count or whose player the dev console's god holds, or the
-## deed done already.
+## deeds don't count, or the deed done already.
 static func _counting(world: World, id: StringName) -> Node:
-	if world == null or not world.counts_deeds or world.player.vitals.god or not TABLE.has(id):
+	if world == null or not world.counts_deeds or not TABLE.has(id):
 		return null
 	var profile := world.get_node_or_null(^"/root/Profile")
 	return null if profile == null or profile.did(id) else profile
@@ -135,6 +135,15 @@ static func is_open(profile: Node, id: StringName) -> bool:
 ## Done and showing so.
 static func lit(profile: Node, id: StringName) -> bool:
 	return profile != null and profile.did(id) and is_open(profile, id)
+
+
+## Done and showing, and not looked at in the deeds menu yet: the main menu marks them.
+static func unseen(profile: Node) -> Array[StringName]:
+	var out: Array[StringName] = []
+	for id: StringName in TABLE:
+		if lit(profile, id) and profile.is_new(id):
+			out.append(id)
+	return out
 
 
 ## How many show done.

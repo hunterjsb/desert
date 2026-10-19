@@ -399,6 +399,9 @@ Readings, not in the session:
   share of the camp's power, the Almanac takes a share of what you pick. The session gives no share.
 - **Habitat reveals pair with the wild habitat table** (above): it would show where a wild crop is
   found. How it shows is the screen's business ([Devices & mods](devices-and-mods.md#the-terminal-output-system-proposed-session-4-part-5-first-piece-built)).
+- **Session 5 (Idea):** the pantheon reminder calls the Almanac "a living, portable, transactional frontier
+  agriculture mind, probably part of the Mother Cistern ending" ([the lore](../lore-research.md#mitchell-among-the-gods-agreed-session-5)).
+  Not said how it figures in that ending.
 - **It may be the squatting oracle.** The oracle runs "on an agriculture company's platform" and
   broadcasts planting timing and "which feral strains tolerate ash soil"; the Almanac is an agriculture
   company's farm mind. The session does not say they are one ([the lore](../lore-research.md#the-pantheon-agreed-session-4-part-5)).

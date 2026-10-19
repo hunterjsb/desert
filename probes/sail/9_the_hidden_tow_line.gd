@@ -6,7 +6,8 @@ extends SailProbe
 ## towing you alone, where as the link you'd bear the camp's pull twice over.
 ## Carving out to windward bears the rig away, to leeward heads it up,
 ## against the same start with no carve. Braced off its way with the camp
-## moored, you're the fulcrum the line bends round, and it hurts you.
+## moored, you're the fulcrum the line bends round, and it hurts you; looking
+## along the rig there, reeling hauls its sheet and leaves the camp's line be.
 
 ## The point of sail, degrees off a beam reach (Scenarios' heading), the
 ## carve, rad off the rig's way, and how hard the edge digs in.
@@ -83,6 +84,16 @@ func run() -> void:
 	check(bent.most > world.tuning.fulcrum_n and player.vitals.health < Vitals.FULL and player.vitals.health >= 1.0,
 		"as the fulcrum you're hurt (%.0f health)" % player.vitals.health)
 	check(ropes.hidden != null and ropes.ropes.size() == 2, "and below their breaking the lines hold")
+	tending = 0.0
+	var sheet: Rope = (kit[7] as Line).rope
+	var carried: Rope = (kit[8] as Line).rope
+	var was := [mast.trim, carried.length]
+	look(eye(), Line._tip((kit[7] as Line).ends[0]).global_position)
+	check(hands.reel.line() == sheet and hands.reel.notch(2), "looking along the rig, the reel works its sheet")
+	await simulate(1.0, _steer)
+	check(absf(was[0] - mast.trim - 2.0 * Reel.NOTCH) < 0.01 and absf(carried.length - was[1]) < 0.01 and ropes.hidden != null,
+		"two notches haul its inboard in half a metre, the camp's line and the hidden one let be (%.2f m, %.2f m)" % [
+		was[0] - mast.trim, carried.length - was[1]])
 	speed_up(1)
 
 
