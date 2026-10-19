@@ -30,8 +30,8 @@ from piper import PiperVoice, SynthesisConfig
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 # Every phrase sits at this loudness through its voiced part, so a report
-# reads level, about -26 LUFS: a little over the radio's music (-28), since
-# it has to come through the static. Peaks stay under -6 dBFS.
+# reads level, about -25 LUFS through the radio's speaker: a little over its
+# music (-28), since it has to come through the static. Peaks stay under -6 dBFS.
 VOICED_RMS_DB = -23.0
 PEAK_DB = -6.0
 # A touch slower than Piper's pace: a station reading a log, not chatting.

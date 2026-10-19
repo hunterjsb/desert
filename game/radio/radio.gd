@@ -594,8 +594,8 @@ func receive(id: StringName, x: float, z: float, t: float) -> Dictionary:
 	return {"id": id, "khz": khz, "metres": metres, "bearing": ground,
 		"way": Dial.way(world.shape.history, p, q, ground, say_point, _tuning), "storm": storm,
 		"warp": slid, "strength": strength, "clean": clean, "cut": Interference.cut(storm, t, id, _tuning),
-		"useful": words.useful, "calm": words.get("calm", false), "spoken": words.get("spoken", PackedStringArray()),
-		"text": Interference.distort(words.text, clean, t, id)}
+		"useful": words.useful, "calm": words.get("calm", false), "words": words.text,
+		"spoken": words.get("spoken", PackedStringArray()), "text": Interference.distort(words.text, clean, t, id)}
 
 
 ## The relay's signal as it reaches a place at world time t: where the relay
@@ -683,7 +683,7 @@ func report(t: float, long := {}) -> PackedStringArray:
 		out.append_array(_ahead(reading, t, horizon))
 	elif not Transmissions.calm(reading, t):
 		out.append_array(PackedStringArray(["Storm coming.", "From the %s." % say_point(reading.from),
-			spoken_span(reading.change - t), wind]))
+			_sentence(spoken_span(reading.change - t)), wind]))
 	else:
 		out.append("All clear.")
 		out.append_array(_ahead(reading, t, horizon))
@@ -697,8 +697,8 @@ func report(t: float, long := {}) -> PackedStringArray:
 ## the next storm, or none within the horizon, s.
 static func _ahead(of: Dictionary, t: float, horizon: float) -> PackedStringArray:
 	if of.change == INF:
-		return PackedStringArray(["No clearing," if of.stormy else "No storms,", spoken_span(horizon)])
-	return PackedStringArray(["Clearing," if of.stormy else "Next storm,", spoken_span(of.change - t)])
+		return PackedStringArray(["No clearing," if of.stormy else "No storms,", spoken_span(horizon) + "."])
+	return PackedStringArray(["Clearing," if of.stormy else "Next storm,", spoken_span(of.change - t) + "."])
 
 
 ## Seconds as the station says them aloud: to the ten under a minute and a
@@ -706,9 +706,9 @@ static func _ahead(of: Dictionary, t: float, horizon: float) -> PackedStringArra
 static func spoken_span(seconds: float) -> String:
 	var s := maxi(0, roundi(seconds))
 	if s < 90:
-		return _sentence("%s seconds" % number_words(maxi(10, roundi(s / 10.0) * 10)))
+		return "%s seconds" % number_words(maxi(10, roundi(s / 10.0) * 10))
 	var m := roundi(s / 60.0)
-	return "One minute." if m == 1 else _sentence("%s minutes" % number_words(m))
+	return "one minute" if m == 1 else "%s minutes" % number_words(m)
 
 
 ## A number in words: exactly up to EXACT, past it to the ten, a hundred at most.

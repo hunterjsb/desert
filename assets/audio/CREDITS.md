@@ -90,5 +90,6 @@ station's reports and a Console's battery warnings. It's rendered here, once, by
 
 Credit is optional and given here. Each phrase is trimmed to a breath either side, eased in
 and out over 5 and 30 ms so phrases join without a click, and levelled to -23 dBFS RMS over
-its voiced part, peaks under -6 dBFS; a report reads at about -26 LUFS, a little over the
-music, to come through the static. Mono Vorbis at 22.05 kHz, about 40 kbps.
+its voiced part, peaks under -6 dBFS; a report through the radio's speaker reads at about
+-25 LUFS, 3 dB over the music, to come through the static. Mono Vorbis at 22.05 kHz, about
+40 kbps: 165 phrases, 1.4 MB.
