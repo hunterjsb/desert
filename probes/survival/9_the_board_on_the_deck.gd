@@ -64,7 +64,8 @@ func run() -> void:
 	check(taken and hands.held == stake and world.player.waist.take_from_hands(),
 		"you take up its stake and tie it at your waist")
 	var seen := {"low": INF, "drift": 0.0, "off": 0}
-	await walk_to(world.player.global_position + heading * AWAY, func() -> void:
+	# To level sand: set down on a dune's face, the camp tips in the crosswind.
+	await walk_to(_level(world.player.global_position, heading), func() -> void:
 		seen.low = minf(seen.low, clearance(deck))
 		seen.drift = maxf(seen.drift, _off_seat(deck, board, home))
 		seen.off += int(board.host() != deck))
@@ -115,6 +116,25 @@ func _hang(deck: Chassis, wall: Chassis, board: Hoverboard) -> bool:
 		hands.grab()
 	await simulate(0.2)
 	return shown and board.host() == deck
+
+
+## The levellest sand AWAY m from `from`, within 60° either side of `heading`,
+## over the span a camp trailing on its line may rest in.
+func _level(from: Vector3, heading: Vector3) -> Vector3:
+	var best := from + heading * AWAY
+	var least := INF
+	for k in range(-6, 7):
+		var at := from + heading.rotated(Vector3.UP, deg_to_rad(10.0 * k)) * AWAY
+		var low := INF
+		var high := -INF
+		for i in 25:
+			var h := world.height_under(at + Vector3((i % 5 - 2) * 4.0, 0.0, (floori(i / 5.0) - 2) * 4.0))
+			low = minf(low, h)
+			high = maxf(high, h)
+		if high - low < least:
+			least = high - low
+			best = at
+	return best
 
 
 ## The deck's loose battery just above the shield's reserve, the board low,
