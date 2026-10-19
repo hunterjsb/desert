@@ -2,8 +2,9 @@ shader_type spatial;
 render_mode cull_disabled;
 
 // A sail's cloth on a unit grid: UV.x runs from the mast to its leech, UV.y
-// from the boom to its head. Raised, it stands its full height, filled it
-// bellies to leeward, and luffing it ripples at the leech; torn, it's rags.
+// from the boom to its head. Raised, it stands its full height, pressed it
+// bellies to leeward; eased too far its luff lifts first, just behind the
+// mast, the lifting spreading aft until the whole sail flogs. Torn, it's rags.
 
 uniform float luff = 3.4;
 uniform float foot = 2.3;
@@ -28,10 +29,14 @@ void vertex() {
 	float height = UV.y * luff * raise;
 	float chord = mix(foot, head, UV.y);
 	float full = sin(3.14159 * UV.x) * (0.35 + 0.65 * sin(3.14159 * clamp(UV.y * 1.15, 0.0, 1.0)));
-	float ripple = flutter * UV.x * sin(TIME * 13.0 + UV.x * 9.0 + UV.y * 5.0);
+	float luffing = clamp(flutter, 0.0, 1.0);
+	float lifting = (1.0 - smoothstep(0.05, 0.2 + 0.8 * luffing, UV.x)) * smoothstep(0.0, 0.06, UV.x);
+	float lifted = lifting * luffing;
+	float ripple = flutter * (0.12 * lifting * sin(TIME * 19.0 + UV.y * 8.0 + UV.x * 14.0)
+		+ 0.07 * luffing * luffing * UV.x * sin(TIME * 13.0 + UV.x * 9.0 + UV.y * 5.0));
 	// Furled, what's left of it gathers along the boom.
 	float gathered = 1.0 - smoothstep(0.0, 0.25, raise);
-	VERTEX = vec3((belly * full + ripple) * chord * (1.0 - gathered), height, -UV.x * chord);
+	VERTEX = vec3((belly * full * (1.0 - lifted) + ripple) * chord * (1.0 - gathered), height, -UV.x * chord);
 	NORMAL = vec3(1.0, 0.0, belly * 0.6);
 }
 

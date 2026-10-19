@@ -342,7 +342,9 @@ your own camp's parts rather than found whole:
   your lines: on foot or on the board, tied at your waist, your camp tows you.
 - **Trimmed by its sheet.** The sheet is a line from the sail you hold or tie at your waist:
   reeling it in hauls the sail in, paying out eases it, so trimming is the reeling you
-  already do.
+  already do. The line does it, never the wheel: reeling shortens the sheet, and the wind
+  swings the boom against it (Hunter, 2026-10-18: "having scroll magically rotate the sail
+  along with pulling the rope has been an issue both from a sense perspective and gameplay").
 - **Storms.** A raised sail in a storm is the danger it should be: reef or furl it, or it
   tears and the mast can snap.
 
@@ -371,29 +373,48 @@ your own camp's parts rather than found whole:
   seated, the boom trails behind its host.
 - **Raising and furling** are use on the mast (its pole or the boom), 1.5 s each, with the sound
   of cloth. Off its mount, the sail comes down. Furled, the wind sees only the bundle on the boom.
-- **The sheet** is any line whose end is on the boom's end, where the sail adds a tie. The wind
-  swings the boom out to leeward until the sheet holds it: the sheet's inboard length says how
-  far, as if it ran from the boom's end to a block on the camp below it. Reeling it, in your
-  hand or at your waist, hauls the sail in a notch at a time (0.25 m, about 7° of swing), the
-  line itself no shorter; paying out eases it, and once the sail is all the way out a notch
-  pays the line out instead. A sail pulling harder than your strength (400 N) won't come in.
-  With nothing holding the sheet's far end (dropped, untied, snapped) it runs, and the boom
-  swings free and spills the wind; tied on again, it holds the boom where it is. With another
-  line at your waist too, reeling works the one you look nearest along
-  ([Rope & tethering](rope-and-tethering.md)), so you trim by looking at the sail.
+- **The sheet** is any line whose end is on the boom's end, where the sail adds a tie. It runs
+  through a block there and in to a ring on the camp, under where the boom's end lies hauled
+  right in, and that inboard part holds the boom: the wind swings it out to leeward until the
+  inboard is taut. Both are drawn, the inboard straight while it holds the boom and sagging when
+  it doesn't. Reeling the sheet, in your hand or at your waist, takes the inboard in through the
+  block a notch at a time (0.25 m, about 7° of swing) at your hands' 1 m/s; the line to you is
+  no shorter, so the rope comes to the coil where the sheet is on you, all 3.1 m of the inboard
+  once it's hauled right in. The boom comes in after it, drawn by the sheet's pull: the sail's
+  twist over the sheet's lever, about 25 to 75 N in 10 m/s. Hauling slows from half your strength
+  (400 N) and stops at all of it, as any line's does, so a loaded sail in a storm comes in slowly
+  or not at all. Paying out gives line back and the wind takes the boom out after it: the boom
+  swings with its own weight (12 kg·m²), its gooseneck's drag and the air the sail swings
+  through, so in a breeze it follows the line out and in light air it lags, the inboard slack
+  until it catches up; with no wind it stays where it is. Taut, the sheet holds it springing back
+  six times a second, damped as a line is, and draws its end in no faster than a rope closes.
+  Once the inboard is all in a notch reels the line itself, and once it's all out (85°) a notch
+  pays the line out. With nothing holding the sheet's far end (dropped, untied, snapped) it runs,
+  and the boom swings free and spills the wind; tied on again, it holds the boom where it is. With
+  another line at your waist too, reeling works the one you look nearest along
+  ([Rope & tethering](rope-and-tethering.md)), so you trim by looking at the sail. *Before
+  (to 2026-10-18), a notch moved the boom's limit directly and the sail swung in step with the
+  wheel, nothing drawn between the boom and the camp and no rope gathered; a sail too loaded to
+  come in had the notch reel the line instead, drawing you to the camp.*
+- **Reading the trim.** The cloth shows it, and reading it is the skill: eased past meeting the
+  wind, under 12° of attack, its luff lifts first, just behind the mast, the lifting spreading aft
+  as it's eased further until under 2° the whole sail flogs, harder in a harder wind. Drawing, it
+  bellies as hard as the air presses across it, on a reach or running, and hangs in under 3 m/s.
+  Over-sheeted past the stall it stays full but drives less: the cloth can't show that, the
+  camp's way and lean do. A slack inboard says the sail is eased further than the wind takes it.
 - **The how-to** (2026-10-18, Hunter: "i need an explanation on trimming with the sheet at my
   waist"). The first time a sheet is at your waist, once a profile, a short how-to shows near
-  the top of the screen for nine seconds, its keys as bound: "The rope from the sail's
-  boom, its sheet, is at your waist: the shorter it is, the closer in the sail. Reel in trims
-  the sail in, pay out lets it out. You steer by where you walk, as with a tiller." It says what the controls do, never
-  how to sail well. The words are `Mast.HOW_TO_SAYS`.
+  the top of the screen for nine seconds, its keys as bound: "The rope at your waist is the
+  sail's sheet: it runs through the boom's end to a ring on the camp. Reel in draws the boom in
+  toward the ring, pay out lets the wind take it out. You steer by where you walk, as with a
+  tiller." It says what the controls do, never how to sail well. The words are `Mast.HOW_TO_SAYS`.
 - **The sail's push.** Lift and drag by the sail's angle of attack to the apparent wind, the
   felt wind less the camp's own way at the sail: lift rises to 1.3 at 18° and stalls past it,
   falling away to a flat sheet's, and drag grows from 0.05 to 1.8 square on, where it catches
   the wind as any face that size does. The push acts 1.5 m up the sail, a third of the way back
   along it, 2.6 m over the sand on a deck, so the camp heels. Held out by its sheet, the sail's
   twist goes into the camp through the sheet; swinging free, as in a gybe, only its drag
-  against swinging, and brought up short by its sheet its swing slams into the camp. Lying over
+  against swinging, and brought up at its 85° stop its swing slams into the camp. Lying over
   past 40° it fades, and past 70° it meets the sand, not the wind. Inside a running bubble the
   sail feels what the bubble lets through, like everything: nothing in a base shield's, 15% of
   the wind in a light shield's. Sail with the shield off; when a storm comes, furl it and put
