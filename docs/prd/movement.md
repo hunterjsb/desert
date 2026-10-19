@@ -753,7 +753,8 @@ All built: on foot alongside Stage 5, the board and the camp-range warnings at S
    its ride height and 2.0 s long, none within half a second of a landing; no judder;
    the hardest moment 5.0 g; the ground solid under you all the way. Before the air, 55
    launches, at most 1.9 m and 0.7 s, and the probe allowed 3 m; it now allows 8 m and
-   counts bounces.)*
+   counts bounces. Since it flies true (2026-10-18), 59 launches, the underside at least
+   5.1 cm off the sand, the hardest landing 8.0 m/s, under the jar, and never thrown.)*
 2. **The escape is real.** A charged board escapes a storm front from a set distance.
    *(Built: in the run's own weather, a front 50 m upwind. Flat out downwind on a base
    battery, the front falls behind at about 11 m/s, 2.1 km behind after three minutes,
@@ -832,7 +833,8 @@ The board after Hunter's first ride has its own:
     it pops higher; off a big crest flat out the board flies 1.5 s or more, 3 m or more
     up; and landing, pushing or popping off the crests, it never slams, bottoms out or
     bounces. *(Built: the numbers are under Air, above; the hardest moment flying or
-    landing is 3.7 g.)*
+    landing is 3.7 g. Off the biggest crest it lands at 6.8 m/s pushing and 12.8 popping,
+    which jars and holds.)*
 
 Auto-walk has its own:
 
