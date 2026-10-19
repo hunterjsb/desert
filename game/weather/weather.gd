@@ -59,6 +59,10 @@ var rumbles: Rumbles
 var _plumes_due := 0.0
 var _plumes_at := 0.0
 var lee: Lee
+## Every deck's faces that cast a lee, as of the last tick (Faces).
+var walls: Array[Faces] = []
+## What the wind on decks' faces cost last tick, µs.
+var faces_us := 0.0
 ## The wind, the lee and the sand they move round you, as the GPU draws with them.
 var wind_map: WindMap
 var eye: Eye
@@ -147,22 +151,38 @@ func setup(world: World) -> void:
 
 
 ## Each felt_*() reads now, or a given world time t: power ticks read theirs.
-## Shelter is always as it stands now; the lee is the wind's at that time.
-## A bubble keeps out its share of what the lee lets through.
-func felt_storm(at: Vector3, t := NAN) -> float:
-	return field_storm(at, t) * (1.0 - lee_at(at, &"storm", t)) * (1.0 - shelter_at(at, &"storm"))
+## Shelter and the camps' walls are always as they stand now; the ground's
+## lee is the wind's at that time. A wall's lee takes its share of what the
+## ground's lets through, and a bubble its share of what's left. `except`, a
+## deck, reads as if its own walls didn't stand: its own faces shade each
+## other instead (Faces).
+func felt_storm(at: Vector3, t := NAN, except: Object = null) -> float:
+	return field_storm(at, t) * (1.0 - lee_at(at, &"storm", t)) * (1.0 - _tuning.lee_storm * walls_at(at, except)) \
+		* (1.0 - shelter_at(at, &"storm"))
 
 
 ## Horizontal wind, m/s, in engine axes.
-func felt_wind(at: Vector3, t := NAN) -> Vector3:
-	return open_wind(at, t) * (1.0 - shelter_at(at, &"wind"))
+func felt_wind(at: Vector3, t := NAN, except: Object = null) -> Vector3:
+	return open_wind(at, t, except) * (1.0 - shelter_at(at, &"wind"))
 
 
 ## The wind in the open air at a place, as if no bubble stood: the field's,
-## less what the ground's lee takes. What the dust outside a bubble rides.
-func open_wind(at: Vector3, t := NAN) -> Vector3:
+## less what the ground's lee and the camps' walls take. What the dust
+## outside a bubble rides.
+func open_wind(at: Vector3, t := NAN, except: Object = null) -> Vector3:
 	var blowing := field_wind(at, t)
-	return blowing * (1.0 - _lee(at, blowing, _tuning.lee_wind))
+	return blowing * (1.0 - _lee(at, blowing, _tuning.lee_wind)) * (1.0 - _tuning.lee_wind * walls_at(at, except))
+
+
+## How much of a full lee the camps' upright faces give a place, 0 to 1, as
+## they stand now: the best of them, a deck's own aside if it's `except`.
+func walls_at(at: Vector3, except: Object = null) -> float:
+	var best := 0.0
+	var skip := except.get_instance_id() if except != null else 0
+	for faces in walls:
+		if faces.deck_id != skip:
+			best = maxf(best, faces.lee_at(at))
+	return best
 
 
 ## Sunlight reaching a place, 0 to 1: the sky's share after Tu and the storm
@@ -411,16 +431,29 @@ func wind_load(body: CollisionObject3D, t := NAN, span := 0.0) -> float:
 
 
 ## Loose bodies feel drag: a push along the air's speed past them, growing
-## with its square, so a breeze leaves a box be and a storm slides it.
+## with its square, so a breeze leaves a box be and a storm slides it. A
+## deck's whole faces each take their own (Faces), and cast the lee the felt
+## wind reads from the next tick.
 func _blow_loose_bodies() -> void:
+	var casting: Array[Faces] = []
+	var faces_took := 0
 	for child in _world.content.get_children():
 		var body := child as RigidBody3D
 		if body == null or body.freeze:
 			continue
-		var catch := catch_of(body)
-		var past := felt_wind(body.global_position) - body.linear_velocity
+		var deck := body as Chassis
+		var catch := catch_of(body) if deck == null else deck.middle_catch()
+		var felt := felt_wind(body.global_position, NAN, body)
+		var past := felt - body.linear_velocity
 		past.y = 0.0
 		body.apply_central_force(past * past.length() * catch)
+		if deck != null:
+			var from := Time.get_ticks_usec()
+			if deck.faces.blow(deck, felt):
+				casting.append(deck.faces)
+			faces_took += Time.get_ticks_usec() - from
+	walls = casting
+	faces_us = faces_took
 
 
 func _show(delta: float) -> void:
@@ -555,7 +588,8 @@ func _report() -> void:
 		if seen_front >= 0.0 else "%dm" % roundi(-seen_front)))
 	Dev.put("weather/seen", "%d%%" % roundi(seen_storm * 100.0))
 	Dev.put("weather/shel", "in" if shelter_at(_world.player.global_position, &"storm") > 0.0 else "-")
-	var lee_cut := lee_at(_world.player.global_position, &"wind")
+	var lee_cut := 1.0 - (1.0 - lee_at(_world.player.global_position, &"wind")) \
+		* (1.0 - _tuning.lee_wind * walls_at(_world.player.global_position))
 	Dev.put("weather/lee", "%d%%" % roundi(lee_cut * 100.0) if lee_cut > 0.0 else "-")
 	var eta := next_change_time - t
 	Dev.put("weather/next", "%s %s" % ["clr" if in_storm else "stm",
@@ -565,6 +599,7 @@ func _report() -> void:
 	Dev.put("weather/eye", "x%.1f" % eye.exposure() if _tuning.eye_adapts else "off")
 	Dev.put("weather/temp", "%d°C" % roundi(felt_temperature(_world.player.global_position)))
 	Dev.put("weather/map", "%.1fms %d jumps" % [map.max_upload_ms, map.rebuilds])
+	Dev.put("weather/faces", "%dus" % roundi(faces_us))
 
 
 static func _linear(color: Color) -> Vector3:

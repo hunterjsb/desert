@@ -73,6 +73,10 @@ func run() -> void:
 		% [AWAY, seen.low, seen.drift])
 	check(seen.low > 0.6 and seen.off == 0 and seen.drift < 1e-3, "on the deck, it rides with it in tow")
 
+	# Camped, the deck set down to rest, as you'd leave it for days: floating
+	# still on a slack line, its pool's last charge would drop it mid-swing.
+	deck.rest(true)
+	await simulate(3.0)
 	await _charge(deck, shield, board)
 
 	out = deck.global_basis * wall.pose().basis.y
