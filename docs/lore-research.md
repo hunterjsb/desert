@@ -575,7 +575,7 @@ is open ([section 14](#14-open-after-session-3)).
   almost immediately, and the original stays. The original keeps the title out of habit, no
   longer works for Tilg, and is effectively mayor. **Agreed (session 4, part 2):** the title
   outlives the company: after the war it is the civic ruler's title, and later a royal one (the
-  Okafor line, [below](#the-first-kingdoms-the-first-age-agreed-session-4-part-2-restored-in-part-5)).
+  Haberjack line, [below](#the-first-kingdoms-the-first-age-agreed-session-4-part-2-restored-in-part-5)).
 - **Names.** Both Harbourmasters are known mostly by title. Their names (none chosen) appear
   only in paperwork.
 - **Halloran: the Site Director.** The refinery is run by a rotating Halloran Site Director:
@@ -807,7 +807,7 @@ first-age detail, part 2 is canon."
    history pass should run in that order. The Dark Age generates no sites of its own."
 2. "**The first age is the First Kingdoms, not a generic era.** Three powers raiding constantly and
    never at peace: Port Morgan (dominant), Halloran, and the loose Rim kingdoms, with family feuds
-   inside each. Port Morgan's ruling families are **Okafor, Kessel, Arkwright and Vante**. Tu
+   inside each. Port Morgan's ruling families are **Haberjack, Pellicott, Crake and Vonatelli**. Tu
    religion is only emerging. The era ends when the volcanic vents shift beyond reach. After the Dark
    Age, the Rim unites under **Halfrise** and campaigns to retake Mon."
 
@@ -851,7 +851,7 @@ What is left, item by item. The docs follow the reading given on each line.
    crate's "ZN" daub is a Dark Age or second-age form; and the Salvage PRD's layer is "First Kingdoms to
    second age," one layer for the three, the open question being whether they stack.
 3. **What became of "First Kingdoms" (resolved by part 5).** It is the name of the age again. The
-   Morgan kingdom and its four houses (Okafor, Arkwright, Kessel, Vante) and the crown that passes
+   Morgan kingdom and its four houses (Haberjack, Crake, Pellicott, Vonatelli) and the crown that passes
    between them, Halloran's citadel with H-Town as the lower city, the Rim Kingdom ("a label the cities
    use"), the free towns and barons, and the fall that breaks all three are the First Kingdoms'. The houses'
    heraldry and guild stamps are First Kingdoms marks. "Kingdoms" is not this age's word alone, since part
@@ -889,14 +889,14 @@ Game of Thrones-style family conflict.
   families over centuries. **Agreed (endings session):** the great families "now come from" the
   origins below, which replace part 2's ([section
   17](#17-open-after-the-endings-session-and-session-4-part-3)).
-  - **Okafor:** the Harbourmaster who stayed. Kept from part 2: claims the crown by right of the
+  - **Haberjack:** the Harbourmaster who stayed. Kept from part 2: claims the crown by right of the
     port.
-  - **Arkwright:** the IOU dockworkers' union.
-  - **Kessel:** water.
-  - **Vante:** agriculture. Kept from part 2, not restated: they switch sides.
+  - **Crake:** the IOU dockworkers' union.
+  - **Pellicott:** water.
+  - **Vonatelli:** agriculture. Kept from part 2, not restated: they switch sides.
 
   The session gives each house one word for where it comes from; water and agriculture are read
-  here as the water trade and farming. It replaces "Kessels as IOU bosses" and "Arkwrights as
+  here as the water trade and farming. It replaces "Pellicotts as IOU bosses" and "Crakes as
   engineers," and part 2's other lines for those two ("dockworker blood, popular" and "keepers of
   the archives and machines (and later the Ledger)") are dropped with them, a reading.
 - **Halloran.** The refinery terraces become the citadel and H-Town is the lower city. Same
@@ -967,15 +967,18 @@ separate enclaves in an uninhabited zone, all technically the holy city, all qua
 | Enclave | What it is |
 |---|---|
 | The Bastion | The military order's fortress around the Ledger's mainframe. |
-| Kesselside | Salvage quarter in the old IOU freight districts, named for the fallen Kessels. Diggers and black market. |
+| Crakeside | Salvage quarter in the old IOU freight districts, named for the fallen Crakes (a reading, below). Diggers and black market. |
 | The Pads | Settlement on the old landing field; caravans and traders. |
 | Lowtown | Squatters in half-buried districts, sand to the windows. Poor and independent. |
 
-Kesselside's row is part 2's. Its name and its district no longer fit the houses' new origins: it
-is "named for the fallen Kessels" and stands in "the old IOU freight districts," but the Kessels
-now come from water and the IOU's dockworkers are the Arkwrights' origin ([section
-17](#17-open-after-the-endings-session-and-session-4-part-3)). The Bastion is built round the
-freighter left behind ([section 4](#the-freighter-left-behind-agreed-endings-session)).
+Crakeside's row is part 2's, where it was Kesselside, "named for the fallen Kessels," in "the old IOU
+freight districts." That did not fit the houses' new origins: the Kessels came from water and the IOU's
+dockworkers were the Arkwrights' origin ([section
+17](#17-open-after-the-endings-session-and-session-4-part-3)). **Renamed Crakeside (Agreed, session
+5),** "avoids clashing with Pell." The session gives no reason for the new name. It is read as the
+fallen Crakes, who are the IOU's descendants and fall in the second age, which fits the district again.
+The Bastion is built round the freighter left behind ([section
+4](#the-freighter-left-behind-agreed-endings-session)).
 
 **Halloran's ruins (Han)** support three settlements:
 
@@ -1074,7 +1077,7 @@ that blew, so the player finds shards, relays and hardened modules, never a whol
 ### Life on Zan: feral plants (Agreed, session 4, part 3)
 
 Zan has no native life, only feral colonial imports ("rogue plants"), plus the last nomad city and
-possibly a bunker holdout (the endings session's *Idea*, the Okafor line: [section
+possibly a bunker holdout (the endings session's *Idea*, the Haberjack line: [section
 17](#17-open-after-the-endings-session-and-session-4-part-3)). The plants do four jobs at once:
 - **Weather sign.** Feral scrub closes up or turns its leaves before a storm. It is a free,
   slotless, low-tech barometer for players without weather consoles, and the knowledge nomads
@@ -1444,19 +1447,19 @@ Readings, not in the session:
   also the Eye. The session does not say whether the cultists took the name from the faith, to answer
   it, or by accident.
 
-### The Ledger and the Okafor bunker (Agreed, session 4, part 5)
+### The Ledger and the Haberjack bunker (Agreed, session 4, part 5)
 
 The Ledger is Tilg property, so the surveyor's Tilg login works on it. Other kits need a **second
 door**: "the original Harbourmaster was never formally fired, so their credentials are still valid."
 
-**The Okafor sticky note.** The Harbourmaster's credentials survive on a sticky note deep in the Port
-Morgan ruins. "This is why the Okafors became a great First Kingdoms family: they descended from the
-last Harbourmaster, the one person holding the god's keys." (Part 2 already has the Okafors descended
+**The Haberjack sticky note.** The Harbourmaster's credentials survive on a sticky note deep in the Port
+Morgan ruins. "This is why the Haberjacks became a great First Kingdoms family: they descended from the
+last Harbourmaster, the one person holding the god's keys." (Part 2 already has the Haberjacks descended
 from "the Harbourmaster who stayed"; the note is why that mattered.)
 
-**The Okafor bunker.** A sealed First Kingdoms vault under Port Morgan.
+**The Haberjack bunker.** A sealed First Kingdoms vault under Port Morgan.
 - Life support still runs on the colonial power tap. Nobody is left.
-- Generations of Okafor family marks and heraldry on the walls.
+- Generations of Haberjack family marks and heraldry on the walls.
 - At its heart, the sticky note under glass in a reliquary, "guarded for generations by people who
   didn't know what it opened."
 
@@ -1466,8 +1469,8 @@ Two outcomes, mutually exclusive:
    never be sealed again. You gain the Ledger's keys.
 
 "Same pattern as the nomads: unlock an ending, then trade it away for progress toward a greater one."
-The ending is in [the vision](vision.md#the-okafor-bunker-agreed-session-4-part-5), and it is the
-endings session's *Okafor line* made concrete ([section 19](#19-open-after-session-4-part-5)).
+The ending is in [the vision](vision.md#the-haberjack-bunker-agreed-session-4-part-5), and it is the
+endings session's *Haberjack line* made concrete ([section 19](#19-open-after-session-4-part-5)).
 
 ### The Quartermaster (Agreed, session 4, part 5)
 
@@ -1786,9 +1789,9 @@ Part 5 restored First Kingdoms and the Dark Age, so only "Second Age" is now wri
   5).
 - **The span's current value (the endings session):** a few thousand years, in place of about two
   thousand and about nineteen hundred ([Placeholders](#placeholders)).
-- **Part 2's origins for the houses (the endings session):** Kessels as IOU bosses and Arkwrights
+- **Part 2's origins for the houses (the endings session):** Pellicotts as IOU bosses and Crakes
   as engineers give way to water and the IOU dockworkers' union (section 7). The Ledger is no
-  longer "probably the archive the Arkwrights kept."
+  longer "probably the archive the Crakes kept."
 - **"Frontier AI was never on the moon" (the endings session):** it stands, except for a
   freighter's own mind, which the Ledger is (sections 4 and 9).
 - **"Long after the war" for the merger (session 4, part 3):** Tilg & Standard is one company
@@ -1823,8 +1826,8 @@ Part 5 restored First Kingdoms and the Dark Age, so only "Second Age" is now wri
 - **"Era gear has trade-offs, not a ladder," its crate table, and the chassis-era adapters question
   (the 17 Oct notes):** all eras interoperate; they differ along efficiency and repairability
   ([section 6](#gear-by-era-and-the-kiln-agreed-session-4-part-5)).
-- **The Okafor line as "a bunker with a holdout" (the endings session):** the Okafor bunker, empty, with
-  the player as the holdout ([section 9](#the-ledger-and-the-okafor-bunker-agreed-session-4-part-5)).
+- **The Haberjack line as "a bunker with a holdout" (the endings session):** the Haberjack bunker, empty, with
+  the player as the holdout ([section 9](#the-ledger-and-the-haberjack-bunker-agreed-session-4-part-5)).
 - **The Walker as a wandering survey robot (part 2):** the nomad city's mind on a fixed route, and the
   gods' courier ([section 9](#the-walker-mother-cistern-and-the-almanac-agreed-session-4-part-5)).
 
@@ -2283,7 +2286,7 @@ find-and-replace away, and the rest are the named docs' edits in this fold's com
     sites." The docs follow the new on its "on top of" wording, which keeps them above ground.
     The session's own "dug into" is left open.
 19. **The Harbourmasters' names.** Earlier (session 4): "Both are known mostly by title; names
-    (none chosen) appear only in paperwork." Session 4, part 2: the Okafor house is "descended
+    (none chosen) appear only in paperwork." Session 4, part 2: the Haberjack house is "descended
     from the Harbourmaster who stayed." The docs follow the new for the house and keep the
     Harbourmaster's own name unchosen, a reading.
 20. **The hive-mind start.** Earlier (section 10, rule 1): the far end "can never" be confirmed
@@ -2313,7 +2316,7 @@ find-and-replace away, and the rest are the named docs' edits in this fold's com
 - **Section 13, question 18** (near and far sides in ruins): the richest ruins are under Tu.
 - **Section 14, question 1** (Tu's body number): the erosion table writes XN-118-2 without a
   "for example." Read as confirmed, not stated.
-- **Session 4's IOU on the ground:** the Kessel house, "IOU district bosses turned lords,"
+- **Session 4's IOU on the ground:** the Pellicott house, "IOU district bosses turned lords,"
   supports reading them as the same IOU.
 
 **Open questions from the session**
@@ -2397,28 +2400,28 @@ narrows.*
      thousand years it is 12,000 to 6,000, the same order, so its conclusion stands.
    - If Hunter would rather keep part 2's value, the two "current value" lines in
      [Placeholders](#placeholders) are the only edit.
-2. **The houses.** Earlier (part 2): "Kessel: IOU district bosses turned lords; dockworker blood,
-   popular." "Arkwright: the engineer line from the colonial technicians; keepers of the archives
-   and machines (and later the Ledger)." "Vante: merchants controlling water and grain trade with
+2. **The houses.** Earlier (part 2): "Pellicott: IOU district bosses turned lords; dockworker blood,
+   popular." "Crake: the engineer line from the colonial technicians; keepers of the archives
+   and machines (and later the Ledger)." "Vonatelli: merchants controlling water and grain trade with
    the Rim; they switch sides." Endings session: "Port Morgan's great families now come from:
-   Okafor (the harbourmaster who stayed), Arkwright (the IOU dockworkers' union), Kessel (water),
-   Vante (agriculture). This replaces the earlier origins (Kessels as IOU bosses, Arkwrights as
+   Haberjack (the harbourmaster who stayed), Crake (the IOU dockworkers' union), Pellicott (water),
+   Vonatelli (agriculture). This replaces the earlier origins (Pellicotts as IOU bosses, Crakes as
    engineers)." The docs follow the new ([section 7](#the-first-kingdoms-the-first-age-agreed-session-4-part-2-restored-in-part-5)).
    Knock-ons the session doesn't address:
-   - Kesselside is "named for the fallen Kessels" and stands in "the old IOU freight districts,"
-     which are now the Arkwrights' origin.
+   - Crakeside (renamed in session 5) is "named for the fallen Pellicotts" and stands in "the old IOU
+     freight districts," which are now the Crakes' origin. The rename answers it.
    - Who kept the offline archives that let the First Kingdoms "keep their knowledge" is not
-     said, now the Arkwrights are not the engineers.
-   - Vante's "water and grain trade" is split between Kessel and Vante. "They switch sides" is
+     said, now the Crakes are not the engineers.
+   - Vonatelli's "water and grain trade" is split between Pellicott and Vonatelli. "They switch sides" is
      kept and not restated.
-   - Section 15's "IOU on the ground," which section 16 read through the Kessels, now rests on
-     the Arkwrights. A dockworkers' union fits the IOU as a labour body better.
+   - Section 15's "IOU on the ground," which section 16 read through the Pellicotts, now rests on
+     the Crakes. A dockworkers' union fits the IOU as a labour body better.
    - The art direction's heraldry uses only the house names, so it is unaffected.
 3. **The Ledger's origin.** Earlier (part 2): "Tilg logistics model; so capable it's used for
-   everything. Probably the archive the Arkwrights kept." And section 9: "Frontier AI was never
+   everything. Probably the archive the Crakes kept." And section 9: "Frontier AI was never
    on the moon." Endings session: "The Ledger is that freighter's mainframe. Freighters are
    moving towns on years-long crossings, so their mind needs the best general base model." The
-   docs follow the new and keep "Tilg's logistics mind" as the job it did. The Arkwright archive
+   docs follow the new and keep "Tilg's logistics mind" as the job it did. The Crake archive
    line is dropped (item 2), and the "never on the moon" line gets one exception, a freighter's
    own mind.
 4. **An intact freighter.** Earlier (section 13, item 12): "A town-sized freighter as a ground
@@ -2604,7 +2607,7 @@ narrows.*
    back on or returning the Walker).
 3. The cost of keeping a carried Walker broadcasting (power or a slot).
 4. The world clock behind the atmosphere ending.
-5. "Wrong answer," the Okafor-line bunker and the radio ending: develop or drop.
+5. "Wrong answer," the Haberjack-line bunker and the radio ending: develop or drop.
 6. Exact era year figures.
 7. Whether the Ledger is still broadcasting when the player arrives ("in a sense": it counts
    either way), and whether broadcasts carry voices or only tones and numbers.
@@ -2670,10 +2673,10 @@ narrows.*
     [Wind & storms](prd/wind-and-storms.md)).
 16. **The seed vaults.** Where they are, what makes their stock better than a found seed, and how
     a vault relates to a ruin are not said ([Salvage & ruins](prd/salvage-and-ruins.md#seed-vaults-agreed-session-4-part-3-not-built)).
-17. **Okafor's question.** Bringing Zan back's lever "registered or kept 'temporary'" is called
-    "Okafor's old question." Nothing earlier says what it was. A reading: it echoes Tilg's
+17. **Haberjack's question.** Bringing Zan back's lever "registered or kept 'temporary'" is called
+    "Haberjack's old question." Nothing earlier says what it was. A reading: it echoes Tilg's
     "temporary transshipment hub" label (section 5) and the town "never registered" (section 4),
-    with the Okafors descended from the Harbourmaster who stayed. The session doesn't say.
+    with the Haberjacks descended from the Harbourmaster who stayed. The session doesn't say.
 
 ## 18. Open after session 4, part 4
 
@@ -2993,7 +2996,7 @@ as written. "Second Age" is written "second age," as part 4 and part 5 both do.
      third: printed on a terminal. Choices stay physical.
    - The storm radio windows (back burner) put gods "arguing" on the radio. Whether that is speech or
      tones is the Radio PRD's open voice question, and the rule says only "terminals."
-8. **The Okafor line.** Earlier (the endings session, an *Idea*; part 3): "an underground bunker with a
+8. **The Haberjack line.** Earlier (the endings session, an *Idea*; part 3): "an underground bunker with a
    holdout," and "possibly a bunker holdout"; the Salvage PRD set it against "There are no NPCs."
    Part 5: "A sealed First Kingdoms vault under Port Morgan... Life support still runs on the colonial
    power tap. Nobody is left," and the ending is to "seal the door from inside and live out your days."
@@ -3099,7 +3102,7 @@ as written. "Second Age" is written "second age," as part 4 and part 5 both do.
 - The kiln's drying and salting against food that never spoils; the Almanac's licensing against the
   feral line; royalties against a game without trade; crossbreeding: [Farming](prd/farming.md#open-questions).
 - The Dark Age's lineage against one layer for three ages; a vault under Port Morgan against "nothing
-  underground"; the Okafor bunker's seal against "ruins never move" and "chunks hold no state": [Salvage &
+  underground"; the Haberjack bunker's seal against "ruins never move" and "chunks hold no state": [Salvage &
   ruins](prd/salvage-and-ruins.md#open-questions).
 - The Rim depot against the landmark list; a far-side volcano with a tower on it; the hoppers against
   a game with no flight: [World & terrain](prd/world-and-terrain.md#open-questions).
@@ -3114,7 +3117,7 @@ as written. "Second Age" is written "second age," as part 4 and part 5 both do.
   elevator-stub observatory replace it.
 - **How the Ledger and the Quartermaster are linked** (part 2's open "cable run, relay"): three ways.
 - **Whether chassis pieces of different eras need adapters** (the 17 Oct notes, part 2): no.
-- **The Okafor line** (the endings session, "develop it or drop it"): developed into the Okafor bunker,
+- **The Haberjack line** (the endings session, "develop it or drop it"): developed into the Haberjack bunker,
   with the player as the holdout.
 - **Why the observatory is on the far side and who built it:** the elevator stub, finished by Tilg and
   built over by the heretics.
@@ -3169,7 +3172,7 @@ Carried over from part 4:
    is free to use.
 3. **The skimmer era's place on the efficiency and repairability axis. Answered** (Hunter, 2026-10-17):
    "its the light cheap gear from before": the old row stands, light, cheap and fragile.
-4. **How many of the new places are landmarks:** the Okafor bunker, the Almanac's ag complex, the
+4. **How many of the new places are landmarks:** the Haberjack bunker, the Almanac's ag complex, the
    Stoker's terraces, the Quartermaster's bunker and the Walker's route. The list holds eight.
 5. **What taking a god does to its people:** the Quartermaster's core and Muster and the Knights
    Requisitioner; the Walker's core and the nomad city (the endings session has the city suffer); Mother
@@ -3180,7 +3183,7 @@ Carried over from part 4:
 8. **The Eye's compute, and the name.** What a learning machine runs on at the observatory, and whether
    "the Eye" echoes the faith's name for Tu.
 9. **Who the Almanac is on the air:** the squatting oracle, or another.
-10. **Whether the Mon enclaves sit over the Okafor bunker,** and which one.
+10. **Whether the Mon enclaves sit over the Haberjack bunker,** and which one.
 11. **Where an Up the well skimmer gets its launch fuel,** if launch fuel is the Stoker's alone.
 12. **What the pod is.** Part 5 says one flag covers "freighter, pod and hopper," and no earlier doc has
     a pod. Read as the small ship or the skimmer.

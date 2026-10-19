@@ -276,7 +276,7 @@ shorter table of StarCom, Launch, Shot down, Nomad city and Radio.
 | AI ascendancy | Upload yourself, or, as the hive mind, eat the other gods. Split into regular and true: see below. | Agreed |
 | Bringing Zan back | Court Tilg & Standard into investing and terraforming. The rarest; funnels in every other ending. See below. | Agreed |
 | Atmosphere | Outlast everything until the air runs out. Not chosen: it arises from a world clock. | Agreed, needs the clock (not built) |
-| The Okafor bunker | Seal the door of the sealed vault under Port Morgan from inside and live out your days. Not placed on the ladder. See below. | Agreed (session 4, part 5) |
+| The Haberjack bunker | Seal the door of the sealed vault under Port Morgan from inside and live out your days. Not placed on the ladder. See below. | Agreed (session 4, part 5) |
 | Blow up the moon | Corrupt the Eye, place charges on every major vent cap and let the Stoker fire. Not placed on the ladder. See below. | Agreed (session 4, part 5) |
 
 **Carried over from the last fold's table,** where the ladder doesn't contradict it:
@@ -295,8 +295,8 @@ shorter table of StarCom, Launch, Shot down, Nomad city and Radio.
   17](lore-research.md#17-open-after-the-endings-session-and-session-4-part-3)).
 
 **Ideas still loose.** *Wrong answer* (you call out and something that isn't Tilg answers) fits
-the hive mind start as the way you discover what you are. *Okafor line*: an underground bunker
-with a holdout (developed by session 4, part 5 into [the Okafor bunker](#the-okafor-bunker-agreed-session-4-part-5), where the holdout is the player). *Radio ending* (from earlier docs, "Find the right frequencies to reach Tilg or
+the hive mind start as the way you discover what you are. *Haberjack line*: an underground bunker
+with a holdout (developed by session 4, part 5 into [the Haberjack bunker](#the-haberjack-bunker-agreed-session-4-part-5), where the holdout is the player). *Radio ending* (from earlier docs, "Find the right frequencies to reach Tilg or
 the last town") remains undesigned. *Quietbloom* (session 4, part 4, **Idea**, open: "confirm or
 drop"): carrying the alien crystal lattice onto a freighter or into the AI endings could be a quiet
 modifier ([Farming](prd/farming.md#each-crop-ancestor-engineering-drift-and-hooks-agreed)).
@@ -373,7 +373,7 @@ revealed; that stays with the stolen freighter.
 - **Agreed.** It fans out into variants by construction, not menus: the player should know Zan
   plays out as they intended, even if it isn't simulated. Epilogue as a few still frames.
   Proposed levers: who you call (Tilg & Standard, the outpost drifters, the nomads); registered or
-  kept "temporary" (Okafor's old question); which god leads (Ledger, Mother Cistern, or you if
+  kept "temporary" (Haberjack's old question); which god leads (Ledger, Mother Cistern, or you if
   uploaded); and what you did about the nomads (below).
 - **Answered by session 4, part 3.** The endings session left it open: "The Provisional is gone by
   the player's era. How the war ended and what human government exists now is deliberately
@@ -408,14 +408,14 @@ Not placed on the ladder by the session, and not named official or outlaw. A rea
 asks for a pilgrimage, a corrupted Eye and a silent Starcom, which also shuts out the long wait. The
 clashes are in [the lore research, section 19](lore-research.md#19-open-after-session-4-part-5).
 
-### The Okafor bunker (Agreed, session 4, part 5)
+### The Haberjack bunker (Agreed, session 4, part 5)
 
 *[Session 4, part 5](gods-gear-farside-2026-10-17.md), section 8; the lore is in [the lore
-research](lore-research.md#the-ledger-and-the-okafor-bunker-agreed-session-4-part-5).* A sealed First
+research](lore-research.md#the-ledger-and-the-haberjack-bunker-agreed-session-4-part-5).* A sealed First
 Kingdoms vault under Port Morgan, with life support still running on the colonial power tap and nobody
-left in it. The walls carry generations of Okafor family marks and heraldry, and at its heart is the
+left in it. The walls carry generations of Haberjack family marks and heraldry, and at its heart is the
 Harbourmaster's sticky note under glass in a reliquary, guarded for generations by people who didn't
-know what it opened. It is the endings session's *Okafor line* made concrete, with the player as the
+know what it opened. It is the endings session's *Haberjack line* made concrete, with the player as the
 holdout. Two outcomes, mutually exclusive:
 1. **Ending: seal the door from inside and live out your days.**
 2. **Relic route:** take the reliquary. "Lifting it breaks the seal or cuts the power, so the bunker can
@@ -523,7 +523,7 @@ with a login to the god of the crusades. The Quartermaster is the Provisional's,
 means nothing to it ([the AI
 gods](lore-research.md#the-faith-of-tu-and-the-ai-gods-agreed-session-4-part-2)). *Session 4, part 5:*
 other kits need a **second door**, the original Harbourmaster's credentials on a sticky note, because
-the Harbourmaster "was never formally fired" ([the Okafor bunker](#the-okafor-bunker-agreed-session-4-part-5)).
+the Harbourmaster "was never formally fired" ([the Haberjack bunker](#the-haberjack-bunker-agreed-session-4-part-5)).
 
 **The hive mind start changes the endings without a cutscene.** Fix StarCom and someone answers,
 but not Tilg. Try to launch and the Quartermaster recognises you as the enemy, whatever your
@@ -707,7 +707,7 @@ The order we build them in is the [skeleton plan](skeleton-plan.md).
   section 17](lore-research.md#17-open-after-the-endings-session-and-session-4-part-3), with what
   they leave open: how the three axes are implemented and learned without exposition, the exact
   Daventry unlock, the world clock behind the atmosphere ending, whether the Ledger still
-  broadcasts, and which loose ideas (wrong answer, the Okafor line, the radio ending) to develop
+  broadcasts, and which loose ideas (wrong answer, the Haberjack line, the radio ending) to develop
   or drop.
 - **Session 4, part 4's clashes with this page.** Landmarks "placed per seed" against "the same in
   every run"; a plan of the moon's history against "Only what's around the player exists" and
@@ -721,7 +721,7 @@ The order we build them in is the [skeleton plan](skeleton-plan.md).
   ground, and where the orbital launch site stands.
 - **Session 4, part 5's clashes with this page.** The dialogue rule amended to let machines talk through
   terminals; the Ledger's login against the second door; "bridging Mon and Han" against three ways to
-  link; the stolen freighter against a stolen Quartermaster; the Okafor line's holdout against a bunker
+  link; the stolen freighter against a stolen Quartermaster; the Haberjack line's holdout against a bunker
   with nobody left; the orbital launch site against the Rim depot; "history runs backwards in the
   ground" against gear by era (eased: efficiency falls with age, and repair is the trade); and the Cistern
   axis against a Mother Cistern you can carry away. The newest session wins, so they are applied above as

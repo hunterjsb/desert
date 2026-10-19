@@ -826,7 +826,7 @@ are deferred: "Deferred: ... landmark interiors, heat shields." **Part 5:** "Par
 site' landmark is **replaced**" by the Rim depot, a suborbital port near Sister, and the elevator stub,
 which is the observatory on the far-side volcano ([World &
 terrain](world-and-terrain.md#the-rim-depot-the-twin-fires-and-the-elevator-stub-agreed-session-4-part-5-not-built)).
-The Okafor bunker, the Almanac's ag complex and the Stoker's terraces are not on the session's list.
+The Haberjack bunker, the Almanac's ag complex and the Stoker's terraces are not on the session's list.
 
 ## People: only hinted
 
@@ -838,12 +838,12 @@ There are no NPCs. The moon is empty, or *almost* empty, and we only ever hint a
 
 The game never answers the question.
 
-**An idea from the endings session, not agreed:** the Okafor line, an underground bunker with a
+**An idea from the endings session, not agreed:** the Haberjack line, an underground bunker with a
 holdout. Session 4, part 3 says Zan has the last nomad city "and possibly a bunker holdout." A
 holdout would be a person, against the rule above, in a bunker underground, against this PRD's
 "nothing underground." The session says to develop it or drop it. **Developed by session 4, part 5:**
-the Okafor bunker, a sealed First Kingdoms vault under Port Morgan with nobody left in it, where the
-holdout is the player who seals the door ([the lore](../lore-research.md#the-ledger-and-the-okafor-bunker-agreed-session-4-part-5)).
+the Haberjack bunker, a sealed First Kingdoms vault under Port Morgan with nobody left in it, where the
+holdout is the player who seals the door ([the lore](../lore-research.md#the-ledger-and-the-haberjack-bunker-agreed-session-4-part-5)).
 
 ## What Sand Game taught us
 
@@ -1140,7 +1140,7 @@ Session 4, part 3 (2026-10-17) adds three. Each is quoted on both sides and left
   "basin that refills slowly." Not said whether it refills while you are away, or what a player
   who camps beside it for days gets (every other source in Survival is carried, towed or used
   up).
-- **A holdout against "no NPCs."** Here: "There are no NPCs." The endings session's Okafor line,
+- **A holdout against "no NPCs."** Here: "There are no NPCs." The endings session's Haberjack line,
   "an underground bunker with a holdout," and part 3's "possibly a bunker holdout." Not said what
   the player would see of a holdout, and the session puts it among the ideas to develop or drop.
 
@@ -1243,11 +1243,11 @@ it as direction and says so on each line. The built skeleton is not changed.
   sand has buried to its roof, as with the colonial bunker and the seed vaults above. A game that lets
   the player seal a door from inside needs a door that closes; "ruins never move" and "never physics
   objects" (rule 4) mean the seal is a placed state, not a moving door.
-- **The Okafor bunker's seal against stateless chunks.** The bunker "can never be sealed again" once the
+- **The Haberjack bunker's seal against stateless chunks.** The bunker "can never be sealed again" once the
   reliquary is lifted, and the seal-and-stay ending is a player's choice. Both are changes a chunk cannot
   hold ("Chunks hold no state"), so they live with the landmark's record in the save, as Sister's basin
   does (Profile & saves). Not said whether the bunker is a landmark.
-- **The Okafor holdout against "no NPCs."** Here: the open "holdout against 'no NPCs'" above. The
+- **The Haberjack holdout against "no NPCs."** Here: the open "holdout against 'no NPCs'" above. The
   session: "Nobody is left," and the player seals themselves in. *Follows the session; the clash is
   gone,* since no person is there to see.
 - **An orbital strike against the ground.** The session: the Quartermaster module's strike "blasts a
