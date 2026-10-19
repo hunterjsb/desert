@@ -226,8 +226,9 @@ the system that knows, through the one hook.
 
 **What moves.** The shield family becomes **Weather**. Set Sail moves from Camp to the head of
 **Wind**, so Power Trip waits on All Mod Cons instead. Carbon Dated moves from Story to the head of
-**Ruins**. All Mod Cons and Six Pack follow the chassis rework: no crate, so the home is whatever the
-rework makes a camp's store, and frames count as pieces.
+**Ruins**. All Mod Cons and Six Pack follow the chassis rework (built): the home is a Console, a
+condenser and a battery stuck on one deck, and a wall or shelf on a frame's face is a piece, where
+the frame is a part stuck on the deck.
 
 | Tree | Deed | Asks | After | Recorded |
 |---|---|---|---|---|
@@ -272,15 +273,16 @@ rework makes a camp's store, and frames count as pieces.
 - **The grid holds every tree:** about forty deeds in eleven trees, each tree a column under its
   name. It scrolls, and opens on the latest done (the devex round).
 - **The order.** Each part waits for what it reads to land:
-  1. After the devex, chassis, sail-trim and board rounds land: the hidden flag, "any of a
-     family", the grid holding every tree, the moves above, and Wind (without its start), Weather
-     to Tells, Scrap, Far, and Nomad's first three.
+  1. After the devex, chassis, sail-trim and board rounds land (all landed 2026-10-19): the hidden
+     flag, the grid holding every tree, the moves above, and every deed whose system is built:
+     Wind (without its start), Weather to Tells, Ruins to Storm Chaser, Scrap, Signals to Pantheon,
+     Far, and Nomad's first three.
   2. With the chassis spec's starts and kits: Storm Runner opens the Varran settler.
   3. With dune archaeology: Dune Reader and the archaeologist's two, which open the Archaeologist.
   4. With the radio stations' second pass and the Walker's quest: Triangulated, The Living City,
      and Taught.
-  5. Last, once every tree it reads has landed: Nomad, so that what it asks never changes after
-     someone has earned it.
+  5. Last, once every tree it reads has landed: Nomad and its "any of a family", so that what it
+     asks never changes after someone has earned it.
 
 ## Starts on the chassis, and two new kits (agreed, 2026-10-18 spec; the starts built, the kits not)
 
