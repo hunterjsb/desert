@@ -183,7 +183,9 @@ func heading(windward := 1, off := 0.0) -> Vector2:
 ## kit lays them, and you on a board facing `way`, still. It's turned to lie
 ## with the hook on its side `windward` names nearer you (1, the wind on
 ## your left). The lines: that bow line, the sheet, the other bow line.
-func varran(way: Vector2, windward := 1) -> Array[Line]:
+## An outboard passing lane lets overrun probes test rope loads without
+## racing into the mast; its ends are laid there, never teleported.
+func varran(way: Vector2, windward := 1, passing_lane := 0.0) -> Array[Line]:
 	var kit := Kit.named(&"varran")
 	var built := Rig.build(world.content, kit.assembled.rig.rig, 1.0)
 	deck = built.deck
@@ -194,6 +196,11 @@ func varran(way: Vector2, windward := 1) -> Array[Line]:
 	set_down(deck)
 	var player := world.player
 	var at := open - ground(toward) * 7.0
+	if passing_lane != 0.0:
+		var side := way.orthogonal()
+		if (-toward).dot(side) < 0.0:
+			side = -side
+		at += ground(side) * passing_lane
 	at.y = world.height_under(at) + 0.1
 	world.teleport(player, Transform3D(Basis(Vector3.UP, atan2(-way.x, -way.y)), at))
 	player.velocity = Vector3.ZERO

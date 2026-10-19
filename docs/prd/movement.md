@@ -1188,3 +1188,15 @@ Sailing 14 retains the no-catapult and at-most-rope-rating checks when racing pa
 Rendered loaded sailing and motor-assisted turning checks passed with all three lines.
 The changed motor hum has not received a separate listening-quality acceptance;
 its sputter follows the tested overload pulse.
+
+
+**Overrun probe correction (2026-10-19).** With powered movement enabled, the old straight
+passing path could hit the rig's mast: the reproduced dismount at 20.60 s was a real
+`crash` at 8.51 m/s, not a rope-induced launch. Preserve that collision behavior. Sailing 14
+now lays its lines from a 2 m farther outboard passing lane before either end starts moving.
+It requires actual slack followed by retension, no rope force beyond its rating and a rider
+still aboard; its forced 12 m/s phase must also reach at least 90% of the rope rating.
+Three checks passed on the corrected fixture. The measured run spent 4.1 s with all lines
+slack, retensioned while the rider stayed aboard and reached exactly 1,500 N; the forced
+phase reached 1,500 N and one line parted. A failed ride check now stops before dereferencing
+the absent ride, preserving the original failure instead of adding a secondary script error.
