@@ -1,6 +1,6 @@
 class_name Radio
 extends Device
-## A radio you carry, set down or seat on a top mount, and tune: a dial from 0
+## A radio you carry, set down or stick on a deck, and tune: a dial from 0
 ## to 2000 kHz, rolled a notch at a time as you look at it, and use to sweep up
 ## to the next carrier, and off past the last; its needle crosses the band on
 ## its face and its knobs turn as you do. Nothing on the dial says what a

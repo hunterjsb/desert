@@ -250,10 +250,12 @@ const CHASSIS_COIL := [0.9, 1.4]
 ## across the wind ahead of you: its first piece at the front on the windward
 ## side, the mast on it and behind it the ballast, three batteries in an open
 ## frame where the crate stood, catching the wind as it did, the shield (off)
-## behind on the leeward side. The board lies at your feet, and
-## the sheet's laid this much longer than the way from the boom's end to your
-## waist, m.
+## behind on the leeward side, and a bare tail piece behind the ballast for
+## the sheet's ring, which sits under the boom's end hauled right in. The
+## board lies at your feet, and the sheet's laid this much longer than the
+## way from the boom's end to your waist, m.
 const SAIL_DECK := [-0.5, 7.0]
+const SAIL_TAIL := [&"piece", Vector2i(0, 2)]
 const SKATES := [[&"stick", Vector2i(0, 0), &"bottom", Vector2.ZERO, 0.0, &"skates"],
 	[&"stick", Vector2i(1, 0), &"bottom", Vector2.ZERO, 0.0, &"skates"],
 	[&"stick", Vector2i(0, 1), &"bottom", Vector2.ZERO, 0.0, &"skates"],
@@ -280,14 +282,15 @@ const TOW_STORES := [[&"stick", Vector2i(1, 0), &"top", Vector2(0.0, 0.1), 0.0, 
 ## The yacht: a deck three pieces across and two long, right and ahead,
 ## floating: the mast at its front to windward, the helm seat on its middle
 ## line aft, where a tray takes your weight, the ballast in its frame to
-## windward of it and the keel under the aft leeward piece, lengthwise.
+## windward of it and the keel under the aft leeward piece, lengthwise; the
+## sail's tail behind the ballast, its tray set back toward it to keep it level.
 const YACHT_DECK := [-3.5, 2.5]
 const YACHT_RIG := [[&"piece", Vector2i(1, 0)], [&"piece", Vector2i(2, 0)], [&"piece", Vector2i(0, 1)],
 	[&"piece", Vector2i(1, 1)], [&"piece", Vector2i(2, 1)],
 	[&"stick", Vector2i(0, 0), &"bottom", Vector2.ZERO, 0.0, &"hover_tray"],
 	[&"stick", Vector2i(1, 0), &"bottom", Vector2.ZERO, 0.0, &"hover_tray"],
 	[&"stick", Vector2i(2, 0), &"bottom", Vector2.ZERO, 0.0, &"hover_tray"],
-	[&"stick", Vector2i(0, 1), &"bottom", Vector2.ZERO, 0.0, &"hover_tray"],
+	[&"stick", Vector2i(0, 1), &"bottom", Vector2(0.0, 0.25), 0.0, &"hover_tray"],
 	[&"stick", Vector2i(1, 1), &"bottom", Vector2.ZERO, 0.0, &"hover_tray"],
 	[&"stick", Vector2i(2, 1), &"bottom", Vector2.ZERO, 0.0, &"keel"],
 	[&"stick", Vector2i(0, 0), &"top", Vector2.ZERO, 180.0, [&"mast", [&"sail"]], &"mast"],
@@ -1388,7 +1391,7 @@ static func _free(device: Device, kind: StringName) -> Socket:
 ## end to your waist, and a charged board lies at your feet. Use the mast to
 ## raise the sail, and ride.
 static func sail(world: World) -> Array[Node3D]:
-	var rig := rig_at(world, SQUARE + SKATES + [SAIL_MAST] + SAIL_BALLAST + [SAIL_SHIELD], SAIL_DECK)
+	var rig := rig_at(world, SQUARE + [SAIL_TAIL] + SKATES + [SAIL_MAST] + SAIL_BALLAST + [SAIL_SHIELD], SAIL_DECK)
 	var mast: Mast = rig.named.mast
 	var board := standing(world, &"board", [&"battery"], SAIL_BOARD)
 	var sheet := sheet_to_waist(world, mast)
@@ -1406,7 +1409,7 @@ static func sail(world: World) -> Array[Node3D]:
 ## a hidden line of its own past you; the board at your feet. Raise the
 ## sail, ride, and carve to steer.
 static func sail_tow(world: World) -> Array[Node3D]:
-	var rig := rig_at(world, SQUARE + SKATES + [SAIL_MAST] + SAIL_BALLAST, SAIL_DECK)
+	var rig := rig_at(world, SQUARE + [SAIL_TAIL] + SKATES + [SAIL_MAST] + SAIL_BALLAST, SAIL_DECK)
 	var mast: Mast = rig.named.mast
 	var camp := rig_at(world, SQUARE + SKATES + TOW_STORES, TOW_CAMP)
 	var board := standing(world, &"board", [&"battery"], SAIL_BOARD)
@@ -1424,7 +1427,7 @@ static func sail_tow(world: World) -> Array[Node3D]:
 ## ballast in a frame beside it to windward; the sheet at your waist. Raise the sail,
 ## sit at the helm, and reel in.
 static func yacht(world: World) -> Array[Node3D]:
-	var rig := rig_at(world, YACHT_RIG, YACHT_DECK)
+	var rig := rig_at(world, YACHT_RIG + [SAIL_TAIL], YACHT_DECK)
 	var mast: Mast = rig.named.mast
 	var sheet := sheet_to_waist(world, mast)
 	mast.trim = 2.0 * Mast.BOOM * sin(deg_to_rad(SAIL_EASED) * 0.5)

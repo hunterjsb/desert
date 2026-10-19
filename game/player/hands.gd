@@ -92,7 +92,7 @@ const SLIDE_OFF := 0.15
 ## once for each of its faces a shape crosses, which mustn't crowd out the rest.
 const TOUCHES := 64
 ## What a refusal calls each kind of socket that's full.
-const SOCKET_NAMES := {&"battery": "battery slot", &"ring": "ring", &"bottom": "tray mount", &"top": "top mount",
+const SOCKET_NAMES := {&"battery": "battery slot", &"ring": "ring", &"bottom": "tray mount",
 	&"plant_pot": "pot", &"plant_standard": "planter", &"plant_deep": "deep bed", &"port": "port", &"tie": "hook",
 	&"water": "water socket", &"mod": "mod mount", &"food": "food slot", &"face": "frame face",
 	&"computer_mod": "computer-mod port", &"computer_top": "computer-mod top", &"screen": "screen port", &"sail": "sail mount"}

@@ -578,7 +578,9 @@ your own camp's parts rather than found whole:
 - **The "sail" scenario** stands you on level open sand in a steady 8.5 to 11.5 m/s breeze out
   of any lee, facing across it with the wind on your left. Ahead stands a deck two pieces by
   two on skates, the mast and its furled sail on its front piece to windward, two big batteries
-  behind it and a shield, switched off, behind to leeward, all one pool; the sheet runs from the
+  and a battery in a frame behind it and a shield, switched off, behind to leeward, all one
+  pool, and a bare tail piece behind the frame where the sheet's ring sits, 2.33 m behind the
+  mast under the boom's end hauled right in (the yacht has the same tail); the sheet runs from the
   boom's end to your waist, eased to let the boom out 75°, and a charged board lies at your
   feet. Use the mast to raise the sail, step on the board, and reel in as it picks up speed.
 - **Sailing probes** (`probes/sail/`): 1, runners sail across the wind where a floating camp
@@ -664,8 +666,9 @@ as built, unchanged.
   where they fit.
 - **The yacht.** The "yacht" scenario: a deck three by two floating on five trays and the keel
   (under the aft leeward piece), the mast at its front to windward, the helm seat aft on its middle
-  line over a tray, two big batteries to windward of it; 129 kg as built now (134 with the crate it
-  had), on 460 kg of lift. The figures below were measured with the crate and aren't yet
+  line over a tray, two big batteries and a battery in a frame to windward of it, and the tail
+  behind them for the sheet's ring; 146 kg as built now (134 with the crate it had), on 460 kg
+  of lift, floating within 2° of level. The figures below were measured with the crate and aren't yet
   re-measured. (Sat at a
   corner of a deck two by two, a tray can't hold you and the corner drops to the sand.) In a steady
   10 m/s, steered from its helm up to 60° off the wind, it makes 5.0 m/s and 36 m upwind in 20 s,

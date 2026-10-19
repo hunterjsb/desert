@@ -1,8 +1,8 @@
 class_name Mast
 extends Device
-## A mast for a sail. It seats on a crate's top mount or stands on a deck
-## mount, and the sail fitted to it swings round it on its boom, held by its
-## sheet, a line from the boom's end. Use raises or furls the sail.
+## A mast for a sail. It stands on a deck's top, and the sail fitted to it
+## swings round it on its boom, held by its sheet, a line from the boom's
+## end. Use raises or furls the sail.
 ##
 ## Raised, the sail makes lift and drag by its angle to the wind it feels, the
 ## felt wind less the camp's own way: lift peaks near 18° and stalls past it,

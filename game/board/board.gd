@@ -135,7 +135,7 @@ func meter(from: float, to: float, seconds: float) -> void:
 
 
 ## Now, what it draws; read by a power tick ending at world time t, the mean
-## over that tick of what the ticks ridden in it drew. Racked, its charging.
+## over that tick of what the ticks ridden in it drew. On a deck, its charging.
 func demand_w(t := NAN) -> float:
 	var parts_w := super(t) + charge_w()
 	if is_nan(t):

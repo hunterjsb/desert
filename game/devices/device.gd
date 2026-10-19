@@ -446,7 +446,7 @@ static func seat_part(part: Part, socket: Socket) -> void:
 	part.socket = socket
 
 
-## A tray slid under a crate resting on the sand lifts the crate onto it: a
+## A tray stuck under a deck resting on the sand lifts the deck onto it: a
 ## shape left below the sand would wedge the body so nothing could move it.
 func _rise_clear_of_sand(nodes: Array[Node3D]) -> void:
 	if world == null:
@@ -778,7 +778,7 @@ func _middle(nodes: Array[Node3D]) -> Vector3:
 ## Its trays lift it where they are; sideways, the wind and its lines decide.
 func _physics_process(delta: float) -> void:
 	# What's seated rides exactly on its seat: a frozen body under a moving one
-	# is left a tick behind each tick, and on a floating crate that adds up.
+	# is left a tick behind each tick, and on a floating deck that adds up.
 	_drop_freed_seats()
 	for socket in _seats:
 		socket.mounted.transform = socket.transform * socket.mounted.seat_for(socket)
@@ -802,8 +802,8 @@ func _physics_process(delta: float) -> void:
 
 
 ## Tipped over, what's seated on it meets the sand too, by the corners of its
-## frame, as any end would: a crate standing on a capsized deck rests on its
-## edge, never through the sand.
+## frame, as any end would: a Console standing on a capsized deck rests on
+## its edge, never through the sand.
 func _rest_seated(h: float) -> void:
 	var riding := mounted()
 	while not riding.is_empty():

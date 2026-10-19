@@ -4,9 +4,9 @@ extends Node
 ## never changes a charge and F5 speeds charging like everything else. Devices
 ## joined by cables share one pool: what they make feeds what they draw, then
 ## fills their batteries; a pool that can't meet its draw goes dark. A device
-## seated on another, like a shield on a crate, shares its pool. Running short,
-## a pool's lower-ranked devices give way first, like a crate's tray to the
-## shield on it, or a board racked on it charging. A ledger proves no energy
+## on a deck, like a shield stuck on one, shares its pool. Running short, a
+## pool's lower-ranked devices give way first, like a deck's tray to the
+## shield on it, or a board on it charging. A ledger proves no energy
 ## appears from nowhere. A pool making more than the tuning's deed asks is a deed.
 
 ## A dark pool waits until its batteries hold this share before it tries again.

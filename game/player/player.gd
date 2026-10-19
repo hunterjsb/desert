@@ -287,7 +287,7 @@ func _stop() -> void:
 
 
 ## Ride: riding, step off, and at the helm stand up; otherwise step onto the
-## board in your hands, the one you look at, racked or not, or the nearest at
+## board in your hands, the one you look at, on a deck or not, or the nearest at
 ## your feet. Says whether it did anything.
 func toggle_board() -> bool:
 	if helm != null:
