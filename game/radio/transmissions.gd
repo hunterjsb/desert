@@ -103,7 +103,8 @@ static func _walker(radio: Radio, gods: Gods, x: float, z: float, t: float, loca
 	if now != before or _within(local, DUSK):
 		var tuning := Tuning.current()
 		var long := Radio.forecast(field, x, z, t, tuning.radio_forecast_minutes * 120.0, Weather.FORECAST_STEP)
-		var ahead := "no storm for %d min" % roundi(tuning.radio_forecast_minutes * 2.0) if long.change == INF \
+		var none := "no clearing for %d min" if long.stormy else "no storm for %d min"
+		var ahead := none % roundi(tuning.radio_forecast_minutes * 2.0) if long.change == INF \
 			else ("storm clears in %s" % Radio.span(long.change - t) if long.stormy
 				else "storm in %s" % Radio.span(long.change - t))
 		var feet_say := "storm at the walker" if now else "clear at the walker"
