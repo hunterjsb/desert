@@ -52,6 +52,9 @@ const vec3 SULPHUR = vec3(0.69, 0.54, 0.1);
 
 varying vec3 world_pos;
 varying vec3 world_normal;
+varying vec4 wind_vertex;
+
+#include "res://game/weather/wind_map.gdshaderinc"
 
 float hash(vec2 p) {
 	return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
@@ -77,6 +80,7 @@ bool in_tracks(vec2 xz) {
 void vertex() {
 	world_pos = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	world_normal = normalize((MODEL_MATRIX * vec4(NORMAL, 0.0)).xyz);
+	wind_vertex = wind_view_vertex(world_pos.xz);
 	if (in_tracks(world_pos.xz)) {
 		// The deepest mark within half a lattice square, so one between
 		// vertices still lifts the sand round it.
@@ -152,7 +156,7 @@ void fragment() {
 	vec3 tilt = vec3(downwind.x, 0.0, downwind.y) * slope * fade;
 	vec3 rippled = normalize(n - tilt + dent);
 
-	ALBEDO = colour;
+	ALBEDO = wind_view_colour(colour, world_pos.xz, wind_vertex);
 	ROUGHNESS = 1.0;
 	NORMAL = normalize((VIEW_MATRIX * vec4(rippled, 0.0)).xyz);
 }

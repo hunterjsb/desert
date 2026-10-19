@@ -716,6 +716,60 @@ shading and the tracks' healing alike, and they stay consistent. Its roadmap, in
 - Each untested Godot piece is prototyped before it's relied on: a `Texture2DRD` sampled in
   `vertex()` and in particle shaders, varyings into `light()`, and the cost of a displaced patch.
 
+**Built: P0, the wind map (2026-10-18).** `WindMap` (`game/weather/wind_map.gd`) bakes a texture
+every drawn frame, 128 texels a side over the 256 m round you, 2 m a texel and snapped to whole
+texels so it never swims. It's an RGBA16F compute pass on the main RenderingDevice, read through a
+`Texture2DRD` as in Godot's Compute Texture demo, its shaders built from source as the eye meter's
+are (a `.glsl` file won't import headless). Each texel holds:
+- **rg, the wind on the ground,** m/s in world x and z: `wind_at`'s twin in GLSL, from Godot's own
+  FastNoiseLite ported as Godot runs it (`game/world/noise_glsl.gd`).
+- **b, the lee,** the share of a full lee along the wind blowing there: `Lee.exact`'s twin, so the
+  lee turns with the wind continuously, not by the 4 m lattice and 2° headings. It reads the ground
+  from a wrapped kilometre of 2 m heights, baked from the dunes' own twin and filled only where the
+  window moves on.
+- **a, the sand the wind moves,** 0 to 1: the wind past sand's threshold (from 5 m/s, all it can by
+  8), out of the lee (1 - b), by the hour (most in the afternoon heat, a quarter of it at night) or
+  by a front's outflow, day or night, whichever is more.
+
+The open air's wind is rg * (1 - `lee_wind` * b), as `Weather.open_wind`. `wind_at`, the lee and
+the storms stay on the CPU, the authority for play and sound; nothing reads the map back.
+
+The lee isn't the research's ten taps and 10°-15° ramp. Desert's dunes stand 260 m apart and a lee
+reaches seven crest heights, a hundred metres and more, where ten 2 m taps see twenty. So the GPU
+runs the lee the game already plays by: its 32 taps out to 250 m, and its ramp from two to seven
+crest heights, an elevation angle from about 27° down to 8°.
+
+**Checked against the CPU** in `look/wind` (headless has no RenderingDevice, so this is the map's
+probe; `look/wind/shoot.sh` runs it unseen): in light air, a breeze, the breeze some days on with
+the wind turned 36°, and a storm, over the deep dune sea near spawn:
+- the wind within 0.022 m/s of `wind_at`, 0.1%, which is the half floats' own step;
+- the lee within 0.004 of `Lee.exact` (99% within 0.0005). The lattice the game plays by, `Lee.share`,
+  is within 0.002 of it on average and 0.04 for 99% of texels, but 0.16 at worst, at a lee's sharp
+  edge, which is the lattice's own blending;
+- the sand moved within 0.003, the heights within 3 mm of the dunes;
+- 59 km out and 40 days on (the air drifted 480 km): the wind within 0.016 m/s, the lee within 0.01,
+  the heights within 7 cm. Out there the dunes' wander, a difference over 0.3 m of a noise read at
+  32 bits, jitters by centimetres on the CPU as on the GPU.
+
+**What it costs,** on the RTX 3070 at 1920x1080, by the GPU's own clock: 0.026 ms a frame standing,
+0.031 ms moving a texel every frame, 0.067 ms the one frame after a jump when all the heights refill.
+The main thread spends 26 µs a frame packing and recording it.
+
+**The prototypes:** a `Texture2DRD` reads correctly in a spatial shader's `vertex()` and `fragment()`
+and in a particle shader's `process()`, each within 0.002 of the map read back. Use `textureLod`.
+Particle shaders take no varyings, so the shared include (`wind_map.gdshaderinc`) holds none. The
+sand's marks already read a `Texture2DRD` in `vertex()`. The one consumer so far is the sand's own
+view of the map for the look-test (`wind_view`, off in the game): arrows, the lee as `vertex()`
+read it, and the sand moved.
+
+**Not built:** the coarse 64² map over a kilometre.
+
+**Fragile:**
+- Three GPU twins must change with their CPU functions: `TerrainShape.dunes()`, `wind_at()` and
+  `Lee.exact()`. Each sits beside its twin, but only the look-test, on a GPU, catches a drift.
+- Structures aren't in the GPU's heights, so round a ruin the map's lee is the bare dunes'.
+- `NoiseGLSL` draws only smooth simplex with plain FBm, and complains of any other noise.
+
 ## Open questions
 
 - **Tu's palette** (open in the spec: "Tu's palette, to be settled against
