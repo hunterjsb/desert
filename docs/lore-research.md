@@ -979,8 +979,8 @@ heat it was built to use ([section 9](#the-stoker-and-the-end-of-zan-agreed-sess
 ### The houses and Crakeside, renamed (Agreed, session 5)
 
 *[Session 5](lore-session-2026-10-18-mitchell-wow-shoemaker.md), "Renames": "Five names change everywhere
-in the older lore docs." The sweep is one commit of its own; the older session records and the code's
-identifiers keep the old names.*
+in the older lore docs." The sweep is one commit of its own; a later one (2026-10-19) carried them into
+the older session records and the code.*
 
 | Old name | New name | Who or what |
 |---|---|---|
@@ -3624,7 +3624,7 @@ of the session; this section lists what he ruled.*
 6. Whether the Port Morgan Harbourmaster AI exists as a separate, dead entity, now the dead god slot went to
    Mitchell. (Nothing earlier has such an entity; the Ledger's login is the Harbourmaster's credentials on
    a sticky note, [section 9](#the-ledger-and-the-haberjack-bunker-agreed-session-4-part-5).)
-7. The renames in the older docs. *Done in the living docs ([section 7](#the-houses-and-crakeside-renamed-agreed-session-5)).*
+7. The renames in the older docs. *Done in the living docs, then the older session records and the code ([section 7](#the-houses-and-crakeside-renamed-agreed-session-5)).*
 
 **Raised by this fold**
 
