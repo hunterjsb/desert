@@ -79,6 +79,8 @@ const RADIO_EYE := preload("res://assets/audio/radio_eye.ogg")
 # Weather.
 const STORM := preload("res://assets/audio/storm.ogg")
 const WIND := preload("res://assets/audio/wind.ogg")
+# What a storm has just laid bare, banging on the wind.
+const CLANG := preload("res://assets/audio/clang.ogg")
 # The ground: a burst's or a pocket's boom, and a live vent's roar.
 const BOOM := preload("res://assets/audio/boom.ogg")
 const VENT_ROAR := preload("res://assets/audio/vent_roar.ogg")

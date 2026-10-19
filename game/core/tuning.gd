@@ -133,6 +133,12 @@ static var _current: Tuning
 ## how bright, times the sun on white.
 @export var glint_px := Vector2(7.0, 12.0)
 @export var glint_brightness: float = 7.0
+## A glint through a storm's dust off what the storm just laid bare: seen
+## this far, m, and how much of the open sky's glare the dust's glow leaves it.
+@export var storm_glint_m: float = 90.0
+@export var storm_glint_light: float = 0.7
+## The clang of what the storm just laid bare, on the wind: heard this far, m.
+@export var storm_clang_m: float = 140.0
 
 @export_group("Light")
 ## The sand in full light, before the sun and sky light it. Real desert sand
@@ -767,6 +773,14 @@ static var _current: Tuning
 @export var drift_tick_s: float = 20.0
 @export var drift_most: int = 8
 @export var drift_shortest_m: float = 1.5
+## Drift off a site a storm lays bare (Drift.from_sites): things an hour it
+## sheds in a storm's heart once the storm has dug it right out; how far
+## downwind the stream carries before most of it has fallen out, m; and how
+## wide it leaves the site, m, spreading this much a metre downwind.
+@export var site_drift_per_hour: float = 120.0
+@export var site_drift_carry_m: float = 150.0
+@export var site_drift_width_m: float = 4.0
+@export var site_drift_spread: float = 0.15
 ## Share of finds from the deep layer where the weather has been calm, and
 ## where it has been as hard as it gets the whole time; between, by how hard
 ## it's been.
@@ -816,6 +830,23 @@ static var _current: Tuning
 ## lays back on it every tick, m.
 @export var site_strip_m: float = 0.5
 @export var site_return_m: float = 0.2
+## A storm working on a site (Exposure.surge): its big dunes move off the
+## site or onto it a minute at a time. Sand a storm's heart moves in a minute
+## where they're moving off it, m; how long what it moved takes to come back
+## once the storm lets go, minutes; and how far back its work counts, minutes.
+@export var site_surge_m: float = 0.8
+@export var site_surge_return_minutes: float = 5.0
+@export var site_surge_window_minutes: float = 25.0
+## Where a storm's dunes move off ground or onto it (WeatherField.dune_shift_at):
+## patches this many metres across, changing over this many minutes, leaning
+## this far toward moving off and swinging this hard.
+@export var dune_shift_m: float = 400.0
+@export var dune_shift_minutes: float = 15.0
+@export var dune_shift_lean: float = 0.25
+@export var dune_shift_swing: float = 1.3
+## Sand never comes back over a site while you or your camp stand on its
+## ground; once you're off, it comes back this fast at most, m/s.
+@export var site_rebury_m_s: float = 0.05
 
 @export_group("Plume")
 ## A live vent's seep as a buoyancy flux, m⁴/s³ at this tuning's gravity: how

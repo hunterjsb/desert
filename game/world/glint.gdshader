@@ -6,7 +6,10 @@ shader_type spatial;
 // turning, and fades, never strobing; big enough at any distance to catch
 // out of the corner of the eye. None in a storm round you, or at it or
 // between, by its veil, read by Skyline, by the index it carries; and the
-// haze dims it.
+// haze dims it. But what a storm has just laid bare glints through its dust
+// from near (dust_reach), veiled by nothing else: the dust glows all round,
+// so it shines whichever way it faces you, coming and going as the dust
+// thickens and thins.
 render_mode unshaded, blend_add, depth_draw_never, cull_disabled, shadows_disabled, fog_disabled,
 	skip_vertex_transform;
 
@@ -23,6 +26,9 @@ uniform float twinkle_degrees = 1.2;
 // The haze's begin and end, m, and the most of the view it hides.
 uniform vec3 haze = vec3(400.0, 9000.0, 0.7);
 uniform sampler2D veils : filter_nearest, repeat_disable;
+// Seen through a storm's dust out to this far, m (0: never); and the world's clock, s.
+uniform float dust_reach = 0.0;
+uniform float dust_time = 0.0;
 
 varying float shine;
 varying float turn;
@@ -42,6 +48,11 @@ void vertex() {
 	float a = dot(n, normalize(v + sun_dir));
 	float g = smoothstep(edge, mix(edge, 1.0, 0.75), a) * step(0.0, dot(n, v)) * step(0.0, dot(n, sun_dir));
 	float veil = texelFetch(veils, ivec2(int(COLOR.r + 0.5), 0), 0).r;
+	if (dust_reach > 0.0) {
+		a = dot(n, v);
+		g = smoothstep(0.0, 0.6, a) * (0.75 + 0.25 * sin(dust_time * 1.3 + dot(at, vec3(0.37, 0.11, 0.53)) * 3.0));
+		veil = 1.0 - smoothstep(dust_reach * 0.5, dust_reach, d);
+	}
 	g *= glare * veil * (1.0 - clamp((d - haze.x) / (haze.y - haze.x), 0.0, 1.0) * haze.z);
 	turn = degrees(acos(clamp(a, -1.0, 1.0))) / twinkle_degrees;
 	shine = g * (0.7 + 0.3 * cos(turn * TAU));

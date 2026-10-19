@@ -46,6 +46,8 @@ instance uniform float age = 1.0;
 instance uniform float lit = 0.0;
 // Whose hands its mark is from: 0 a recent make, 1 the surface's, 2 the deep's.
 instance uniform float era = 0.0;
+// How far over its foot the sand stands now, m: a structure between states.
+instance uniform float foot_shift = 0.0;
 
 varying vec3 obj_pos;
 varying vec3 obj_n;
@@ -64,7 +66,7 @@ void vertex() {
 	piece_pos = kit ? CUSTOM0.xyz : VERTEX;
 	piece = kit ? vec4(CUSTOM1.xyz, CUSTOM0.w > 1.5 ? 1.0 : 0.0) : vec4(half_size, round_xz);
 	finish = kit ? vec4(CUSTOM1.w, CUSTOM2.x, CUSTOM2.y, CUSTOM2.w) : vec4(paint_metal, paint_rough, dust_amount, 1.0);
-	above = kit ? CUSTOM3.x : piece_pos.y + piece.y;
+	above = kit ? CUSTOM3.x - foot_shift : piece_pos.y + piece.y;
 	stamp = kit ? vec4(UV, UV2) : vec4(0.0);
 	// The colour's alpha carries the piece's glow on.
 	COLOR.a = kit ? CUSTOM2.z : 0.0;

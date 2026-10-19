@@ -59,10 +59,11 @@ func _stood(shape: TerrainShape, field: WeatherField, tuning: Tuning, kind: Stri
 			continue
 		for hour in 72:
 			var t := hour * 3600.0
-			var taken := Exposure.stripped(field, site.x, site.z, t, tuning)
+			var taken := Exposure.taken(field, site.x, site.z, t, tuning)
 			if taken < 0.3:
 				continue
-			site.depth = [taken * 4.0, taken * 2.0, 0.0][s]
+			# Partly exposed's own look: two thirds of its depth off.
+			site.depth = [taken * 4.0, taken * 1.5, 0.0][s]
 			site.decide(t)
 			if site.state() == s:
 				return site
