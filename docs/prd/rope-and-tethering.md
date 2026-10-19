@@ -156,7 +156,7 @@ you end up as the fulcrum"); it wasn't. Now your body bears what the lines on it
 other plus any line's bend round you, held as long as a line's load is (0.3 s). Past your strength,
 400 N (`fulcrum_n`), you lose 8 health a second for each share more (`fulcrum_hurt`), never your
 last, and your view shakes. Lines still snap only past their own load. Sailing probe 9 braces you
-off the hidden line with the camp moored: it bends round you at 527 N and hurts you; the lines hold.
+off the hidden line with the camp moored: it bends round you at 510 N and hurts you; the lines hold.
 
 ## Wind on tethered things
 

@@ -36,6 +36,10 @@ const MOST := deg_to_rad(85.0)
 ## against swinging, N·m·s/rad: the air the sail swings through does the rest.
 const SWING_MASS := 12.0
 const SWING_DRAG := 8.0
+## The cloth swinging meets the air as its middle would swinging this much
+## faster: further out it sweeps faster, and over more of it (the cloth's
+## second moment over its area and the middle's distance squared).
+const SWEPT := 3.0
 ## Taut, the sheet holds the boom springing back this many times a second.
 const SHEET_HZ := 6.0
 ## The boom swings at this rate within a tick, so a gybe never skips past its sheet.
@@ -106,6 +110,8 @@ var force := Vector3.ZERO
 var attack := 0.0
 var lift := 0.0
 var _felt := 0.0
+## The wind at the sail last tick, for its slack sheet to stir in.
+var _wind := Vector3.ZERO
 ## How far out the sheet let the boom swing last tick, rad; NAN if nothing held it.
 var _trimmed := NAN
 
@@ -123,6 +129,7 @@ var _top: MeshInstance3D
 ## The sheet's inboard as it's drawn, and its ring on the camp.
 var _inboard: RopeStrand
 var _ring: Node3D
+var _inboard_taut := false
 static var _look: ShaderMaterial
 
 
@@ -260,7 +267,8 @@ func _sail(on: Device, area: float, h: float) -> void:
 	var middle := on.global_transform * on.center_of_mass
 	var centre := global_transform * _middle_at(boom)
 	var moving := state.linear_velocity + state.angular_velocity.cross(centre - middle)
-	var air := world.weather.felt_wind(centre) - moving
+	_wind = world.weather.felt_wind(centre)
+	var air := _wind - moving
 	var beating := world.tuning.wind_catch_per_m2 / SQUARE * air.length_squared()
 	air -= axis * air.dot(axis)
 	var showing := area * raise
@@ -285,7 +293,7 @@ func _sail(on: Device, area: float, h: float) -> void:
 	for i in n:
 		var arm := turned * (_middle_at(boom) - BOOM_AT)
 		# Swinging, the sail meets the air it swings through.
-		felt = air - axis.cross(arm) * boom_spin
+		felt = air - axis.cross(arm) * boom_spin * SWEPT
 		var push := _push(felt, boom, showing, catch * felt.length_squared(), turned)
 		var twist := arm.cross(push).dot(axis)
 		# Worked as how far out it is, either side.
@@ -441,17 +449,22 @@ func _draw_inboard(h: float) -> void:
 	_ring.visible = rigged
 	_inboard.visible = rigged and trim > 0.02
 	if not _inboard.visible:
+		_inboard_taut = false
 		return
 	# As long as from the ring to the block, and what's slack in the inboard.
 	var drop := _ring.position.distance_to(BOOM_AT + Vector3(0.0, 0.0, -BOOM))
 	var chord := 2.0 * BOOM * sin(absf(boom) * 0.5)
-	var length := _ring.global_position.distance_to(tip.global_position) \
-		+ maxf(Vector2(trim, drop).length() - Vector2(chord, drop).length(), 0.0)
+	var span := _ring.global_position.distance_to(tip.global_position)
+	var slack := maxf(Vector2(trim, drop).length() - Vector2(chord, drop).length(), 0.0)
 	# Hung afresh on another sheet, or once the world's origin has moved under it.
 	if _inboard.b != tip or _inboard.points.is_empty() or _inboard.points[0].distance_to(_ring.global_position) > 1.0:
-		_inboard.hang(world, length, _ring, tip)
-	_inboard.set_length(length)
-	_inboard.step(h, world.weather.felt_wind(_ring.global_position))
+		_inboard.hang(world, span + slack, _ring, tip)
+		_inboard_taut = false
+	# Taut, it's drawn straight between its ends each frame: no chain to step.
+	if slack > 0.0 or not _inboard_taut:
+		_inboard.set_length(span + slack)
+		_inboard.step(h, _wind)
+	_inboard_taut = slack <= 0.0
 
 
 func _process(_delta: float) -> void:

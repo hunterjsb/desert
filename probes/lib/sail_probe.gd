@@ -125,16 +125,16 @@ static func ground(way: Vector2) -> Vector3:
 ## it sails where its rig takes it.
 var course := Vector2.ZERO
 var helm := 300.0
-## Tending the sheet as a sailor would, reeling the sail to meet the wind at
-## this angle of attack, rad, and easing it as the camp starts to heel; 0
-## leaves the trim be.
+## Tending the sheet as a sailor would, easing or hauling it by how far the
+## sail meets the wind past this angle of attack, rad, and easing it as the
+## camp starts to heel; 0 leaves the trim be.
 var tending := 0.0
 
 
 func _steer() -> void:
 	if tending > 0.0 and is_instance_valid(mast) and mast.sail() != null:
 		var meet := tending * clampf(1.0 - (roll() - 2.0) / 4.0, 0.0, 1.0)
-		var want := clampf(absf(mast.boom) + absf(mast.attack) - meet, 0.0, Mast.MOST)
+		var want := clampf(mast.trimmed_to() + absf(mast.attack) - meet, 0.0, Mast.MOST)
 		mast.trim = lerpf(mast.trim, 2.0 * Mast.BOOM * sin(want * 0.5), 0.05)
 	if course == Vector2.ZERO or deck == null:
 		return
