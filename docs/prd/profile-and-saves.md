@@ -125,6 +125,10 @@ names it), and so can a kit variant or a mark on your gear (Hunter: "they should
   - Power: over X W made in one system.
   - Story: **The Old City**, reach Port Morgan; **Hot Tourist Destinations**, reach every named
     landmark; a structure of each of the four ages stood in.
+- **Earning one is an event** (Hunter, 2026-10-18: "achv should be a bigger deal when you get them
+  in game, sound + badge, plus indication of your unlock on the menu"): a sound of its own and its
+  badge, its card's picture and name, shown a moment over the game; and the main menu marks what's
+  new, the Deeds word and a start a deed has opened, until you've looked.
 - **Shown in a grid,** reached from the main menu and the system menu: each deed a tile, named,
   with a short line saying what it asks, lit once done (Menus & UI). Then (Hunter, 2026-10-18): a
   tree of what waits on what, each card only a name and a picture of its thing, and what it asks
