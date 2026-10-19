@@ -7,7 +7,9 @@ extends RefCounted
 ## The storm's own: while a storm works on a site its big dunes move, a
 ## minute at a time, laying it bare or burying it again, and once the storm
 ## lets go the sand comes back within minutes. Both are read between their
-## ticks, so the sand on a site never jumps.
+## ticks, so the sand on a site never jumps. Where it lies among the dunes
+## weighs both (dune_at): a windward face or crest is stripped harder, a lee
+## buried harder.
 
 enum { BURIED, PARTLY, EXPOSED }
 const NAMES: Array[String] = ["buried", "partly exposed", "exposed"]
@@ -17,6 +19,12 @@ const DUG_OUT := 2.0
 const SURGE_STEP_S := 60.0
 
 static var _lock := Mutex.new()
+
+## The dune term reads the dunes this far up and down the wind, m: a face's
+## slope, a crest over the ground round it, a crest upwind sheltering a lee.
+const FACE_M := 6.0
+const CREST_M := 50.0
+const LEE_M: Array[float] = [8.0, 16.0, 32.0, 64.0, 128.0]
 
 
 ## A site's readings kept by tick, so asking every frame costs a lookup. The
@@ -42,24 +50,28 @@ static func reading(field: WeatherField, x: float, z: float, t: float, tuning: T
 ## of the window a storm strips by how hard it blew and the wind lays some
 ## back, and the older the tick the more has drifted back since, so one big
 ## storm strips a lot, calm lets the sand return, and nothing is a hard timer.
-static func stripped(field: WeatherField, x: float, z: float, t: float, tuning: Tuning, memo: Memo = null) -> float:
-	return stripped_at(field, x, z, floori(t / (tuning.site_exposure_step_minutes * 60.0)), tuning, memo)
+static func stripped(field: WeatherField, x: float, z: float, t: float, tuning: Tuning, memo: Memo = null,
+		dune := 0.0) -> float:
+	return stripped_at(field, x, z, floori(t / (tuning.site_exposure_step_minutes * 60.0)), tuning, memo, dune)
 
 
 ## The same by its tick.
-static func stripped_at(field: WeatherField, x: float, z: float, tick: int, tuning: Tuning, memo: Memo = null) -> float:
+static func stripped_at(field: WeatherField, x: float, z: float, tick: int, tuning: Tuning, memo: Memo = null,
+		dune := 0.0) -> float:
 	var step := tuning.site_exposure_step_minutes * 60.0
 	var known: Variant = _recall(memo, &"settled", tick)
 	if known != null:
 		return known
 	var count := maxi(1, roundi(tuning.site_exposure_hours * 60.0 / tuning.site_exposure_step_minutes))
+	var strip := tuning.site_strip_m * (1.0 + tuning.site_dune_strip * maxf(dune, 0.0))
+	var back := tuning.site_return_m * (1.0 + tuning.site_dune_bury * maxf(-dune, 0.0))
 	var sum := 0.0
 	for k in count:
 		var r: Variant = _recall(memo, &"readings", tick - k)
 		if r == null:
 			r = reading(field, x, z, (tick - k) * step, tuning)
 			_keep(memo, &"readings", tick - k, r, count)
-		sum += (tuning.site_strip_m * float(r) - tuning.site_return_m) * (1.0 - float(k) / count)
+		sum += (strip * float(r) - back) * (1.0 - float(k) / count)
 	var out := maxf(sum, 0.0)
 	_keep(memo, &"settled", tick, out, 4)
 	return out
@@ -67,22 +79,27 @@ static func stripped_at(field: WeatherField, x: float, z: float, tick: int, tuni
 
 ## The settled sand at a moment, between its ticks: a tick behind, so it's
 ## only ever the weather that has been.
-static func settled(field: WeatherField, x: float, z: float, t: float, tuning: Tuning, memo: Memo = null) -> float:
+static func settled(field: WeatherField, x: float, z: float, t: float, tuning: Tuning, memo: Memo = null,
+		dune := 0.0) -> float:
 	var at := t / (tuning.site_exposure_step_minutes * 60.0)
 	var tick := floori(at)
-	return lerpf(stripped_at(field, x, z, tick - 1, tuning, memo), stripped_at(field, x, z, tick, tuning, memo), at - tick)
+	return lerpf(stripped_at(field, x, z, tick - 1, tuning, memo, dune), stripped_at(field, x, z, tick, tuning, memo, dune),
+		at - tick)
 
 
 ## The sand a storm working on a place has moved off it by a minute's tick, m:
 ## each minute its heart moves sand off where the dunes are moving off and
 ## onto where they're moving on, and what it moved comes back as the minutes
 ## pass. Never below none.
-static func surge_at(field: WeatherField, x: float, z: float, tick: int, tuning: Tuning, memo: Memo = null) -> float:
+static func surge_at(field: WeatherField, x: float, z: float, tick: int, tuning: Tuning, memo: Memo = null,
+		dune := 0.0) -> float:
 	var known: Variant = _recall(memo, &"surges", tick)
 	if known != null:
 		return known
 	var count := maxi(1, roundi(tuning.site_surge_window_minutes * 60.0 / SURGE_STEP_S))
 	var keep := exp(-SURGE_STEP_S / (tuning.site_surge_return_minutes * 60.0))
+	var off := 1.0 + tuning.site_dune_strip * maxf(dune, 0.0)
+	var on := 1.0 + tuning.site_dune_bury * maxf(-dune, 0.0)
 	var sum := 0.0
 	var weight := 1.0
 	for k in count:
@@ -90,7 +107,7 @@ static func surge_at(field: WeatherField, x: float, z: float, tick: int, tuning:
 		if work == null:
 			work = _work(field, x, z, (tick - k) * SURGE_STEP_S, tuning)
 			_keep(memo, &"works", tick - k, work, count)
-		sum += float(work) * weight
+		sum += float(work) * (off if float(work) > 0.0 else on) * weight
 		weight *= keep
 	var out := maxf(sum, 0.0)
 	_keep(memo, &"surges", tick, out, 4)
@@ -98,15 +115,40 @@ static func surge_at(field: WeatherField, x: float, z: float, tick: int, tuning:
 
 
 ## The storm's work at a moment, between its ticks, a tick behind.
-static func surge(field: WeatherField, x: float, z: float, t: float, tuning: Tuning, memo: Memo = null) -> float:
+static func surge(field: WeatherField, x: float, z: float, t: float, tuning: Tuning, memo: Memo = null,
+		dune := 0.0) -> float:
 	var at := t / SURGE_STEP_S
 	var tick := floori(at)
-	return lerpf(surge_at(field, x, z, tick - 1, tuning, memo), surge_at(field, x, z, tick, tuning, memo), at - tick)
+	return lerpf(surge_at(field, x, z, tick - 1, tuning, memo, dune), surge_at(field, x, z, tick, tuning, memo, dune),
+		at - tick)
 
 
 ## All the sand taken off a place at a moment, m: the settled sand and the storm's.
-static func taken(field: WeatherField, x: float, z: float, t: float, tuning: Tuning, memo: Memo = null) -> float:
-	return settled(field, x, z, t, tuning, memo) + surge(field, x, z, t, tuning, memo)
+static func taken(field: WeatherField, x: float, z: float, t: float, tuning: Tuning, memo: Memo = null,
+		dune := 0.0) -> float:
+	return settled(field, x, z, t, tuning, memo, dune) + surge(field, x, z, t, tuning, memo, dune)
+
+
+## Where a place lies among the dunes, -1 to 1: toward 1 on a windward face or
+## a crest, which the wind strips; toward -1 on a slip face or in the lee of a
+## crest upwind, where what it carries falls out. Pure in the dunes alone and
+## the run's long-term wind, which they face, so a worker can read it.
+static func dune_at(shape: TerrainShape, x: float, z: float, tuning: Tuning) -> float:
+	var down := shape.downwind()
+	var here := shape.dunes(x, z)
+	var climb := (shape.dunes(x + down.x * FACE_M, z + down.y * FACE_M)
+		- shape.dunes(x - down.x * FACE_M, z - down.y * FACE_M)) / (2.0 * FACE_M)
+	var low := minf(shape.dunes(x - down.x * CREST_M, z - down.y * CREST_M),
+		shape.dunes(x + down.x * CREST_M, z + down.y * CREST_M))
+	var slip := smoothstep(0.2, 0.45, -climb)
+	var bared := maxf(smoothstep(0.02, 0.15, climb), smoothstep(2.0, 10.0, here - low) * (1.0 - slip))
+	var lee := slip
+	for s in LEE_M:
+		var tall := shape.dunes(x - down.x * s, z - down.y * s) - here
+		if tall > tuning.lee_tall.x:
+			lee = maxf(lee, (1.0 - smoothstep(tuning.lee_heights.x, tuning.lee_heights.y, s / tall))
+				* smoothstep(tuning.lee_tall.x, tuning.lee_tall.y, tall))
+	return clampf(bared - lee, -1.0, 1.0)
 
 
 ## A site's state, from the sand taken off it against how deep it lies: under

@@ -19,7 +19,6 @@ func run() -> void:
 	var tuning := Tuning.current()
 	tuning.salvage = true
 	var shape := TerrainShape.new(SEED, tuning)
-	var field := WeatherField.new(SEED, tuning)
 	var ground := Vector2.ONE * tuning.chunk_size * 0.5
 	shape.sites.follow(ground.x, ground.y, 0.0, 0.0, 1.0, tuning.history_lay_m)
 	var faults := 0
@@ -29,7 +28,7 @@ func run() -> void:
 		var piece := StructureKit.piece(kind)
 		var lean := deg_to_rad(Eras.TILT.get(piece.era, Vector2.ZERO).y)
 		for s in 3:
-			var site := _stood(shape, field, tuning, kind, lean, s, ground + Vector2(300.0, 200.0), tried)
+			var site := _stood(shape, kind, lean, s, ground + Vector2(300.0, 200.0), tried)
 			tried += 1
 			if site == null:
 				faults += 1
@@ -49,7 +48,7 @@ func run() -> void:
 ## A kind stood by hand where the dunes take it, near `near`, in state `s`:
 ## read at a moment the weather had stripped sand there, lying as deep as
 ## puts it in that state.
-func _stood(shape: TerrainShape, field: WeatherField, tuning: Tuning, kind: StringName, lean: float, s: int,
+func _stood(shape: TerrainShape, kind: StringName, lean: float, s: int,
 		near: Vector2, start: int) -> Structure:
 	for n in 200:
 		var k := (n + start * 7) % 200
@@ -59,7 +58,7 @@ func _stood(shape: TerrainShape, field: WeatherField, tuning: Tuning, kind: Stri
 			continue
 		for hour in 72:
 			var t := hour * 3600.0
-			var taken := Exposure.taken(field, site.x, site.z, t, tuning)
+			var taken := site.pure_taken(t)
 			if taken < 0.3:
 				continue
 			# Partly exposed's own look: two thirds of its depth off.

@@ -170,6 +170,8 @@ func begin(data: Dictionary) -> Array[Vector2]:
 	# Sand held off a site over you or your camp stays off it: a pit you
 	# stood in comes back dug out.
 	world.shape.sites.recall_held(data.get("held", []))
+	# Sand dug off sites by hand stays off; a dune's ruin built comes back.
+	world.shape.sites.recall_dug(data.get("dug", []), data.get("dunes", []))
 	world.farm.feral.recall(data.get("feral", []), world.terrain.chunk_at(world.player_world_x(), world.player_world_z()))
 	var places: Array[Vector2] = [Vector2(world.player_world_x(), world.player_world_z())]
 	for rec: Dictionary in data.things:
@@ -391,6 +393,8 @@ func _take() -> Dictionary:
 	data.sites = world.salvage.site_memories()
 	data.sheet = world.shape.sites.memories()
 	data.held = world.shape.sites.held()
+	data.dug = world.shape.sites.dug_memories()
+	data.dunes = world.shape.sites.dunes.memories()
 	data.feral = world.farm.feral.memories()
 	return data
 

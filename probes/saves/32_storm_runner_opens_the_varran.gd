@@ -1,6 +1,6 @@
 extends MenuProbe
 ## Profile & saves probe 32: the Varran settler waits for Storm Runner. On a
-## fresh profile New game lists four starts, the Surveyor first and
+## fresh profile New game lists every start, the Surveyor first and
 ## highlighted, the Varran settler's place still ????, and nothing opens it
 ## but its deed: Storm Runner done, it's there by name, new, and offers
 ## Normal only, as a start the game isn't balanced round.
@@ -14,8 +14,9 @@ func run() -> void:
 		"the Varran settler is opened by Storm Runner, and isn't balanced")
 	press(&"ui_accept")
 	var menu: Words = main.ui.top()
-	check(menu.words().size() == 4 and menu.words()[0] == Kit.standard().label.to_upper() and menu.highlighted() == 0
-		and menu.words()[3] == "????", "a fresh profile's New game: four starts, the Surveyor first, the Varran's ???? (%s)"
+	check(menu.words().size() == Kit.origins().size() and menu.words()[0] == Kit.standard().label.to_upper()
+		and menu.highlighted() == 0 and menu.words()[3] == "????",
+		"a fresh profile's New game: every start, the Surveyor first, the Varran's ???? (%s)"
 		% ", ".join(menu.words()))
 	press(&"ui_cancel")
 	for id in ["sail_waist", "close_hauled", "land_yacht"]:

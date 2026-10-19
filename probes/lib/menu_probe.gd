@@ -35,7 +35,8 @@ func open_every_start() -> void:
 	var profile := get_node(^"/root/Profile")
 	for kit in Kit.origins():
 		if not kit.is_open_to(profile):
-			profile.unlock(kit.unlock)
+			for each in kit.unlocks():
+				profile.unlock(each)
 
 
 ## The game's saves, in the probe's own folder.

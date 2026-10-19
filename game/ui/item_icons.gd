@@ -23,6 +23,8 @@ const LOOKS := {
 	&"cutter": {"frame": &"cutter", "turn": Vector2(60.0, 25.0)},
 	&"survival_kit": {"frame": &"survival_kit", "turn": Vector2(30.0, 30.0)},
 	&"sealant": {"part": &"sealant", "turn": Vector2(30.0, 25.0)},
+	&"sand_scoop": {"part": &"sand_scoop", "turn": Vector2(35.0, 40.0)},
+	&"sieve": {"part": &"sieve", "turn": Vector2(20.0, 50.0)},
 	&"radio": {"frame": &"radio", "turn": Vector2(160.0, 15.0)},
 	&"bedroll": {"frame": &"bedroll", "turn": Vector2(40.0, 30.0)},
 }

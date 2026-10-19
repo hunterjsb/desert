@@ -108,6 +108,11 @@ const SEAM_BURIED := "that seam's under the sand"
 const CUTTER_FLAT := "the cutter's battery is flat"
 ## A scoop stroke takes this long, s.
 const STROKE := 0.45
+## A scoop on sand with no ruin under it, or on one dug out; a sieve this
+## near the dig sifts it, m.
+const NO_RUIN := "no ruin under this sand"
+const DUG_OUT := "dug out: what's left is the weather's"
+const SIFT_REACH := 4.0
 const AT_HELM := "not from the helm"
 
 var held: RigidBody3D
@@ -394,6 +399,9 @@ func interact() -> bool:
 	if look_wreck != null and op in [Wreckage.CUT, Wreckage.CLEAR]:
 		var where := look_wreck.nearest_work(op, look_point)
 		return refuse(where if where != "" else "nothing left on it for that")
+	if op == Wreckage.CLEAR and look_sand:
+		# Held down, it digs (scrap).
+		return true
 	if look_device != null and _player.world.salvage.held_fast(look_device) != "":
 		return refuse(_player.world.salvage.held_fast(look_device))
 	if look_device != null and look_device.interact(_player):
@@ -671,6 +679,8 @@ func scrap(delta: float) -> bool:
 			ScrapFx.burst(_player.world.content, result.at, 60, 3.0)
 			say("the %s comes away" % label)
 		return true
+	if op == Wreckage.CLEAR and what.is_empty() and look_sand:
+		return _dig(delta)
 	if op != Wreckage.CLEAR or what.is_empty() or what[0] != Wreckage.CLEAR:
 		return false
 	var wreck: Wreckage = look_work.get_meta(&"wreckage")
@@ -683,6 +693,70 @@ func scrap(delta: float) -> bool:
 		say(wreck.not_yet(look_work))
 		return false
 	return true
+
+
+## A scoop held on the sand over a ruin digs it out, a stroke and a spray at
+## a time, as a storm would lay it bare (Sites.dig_at); a sieve in your suit
+## or set down near sifts what it digs for the small things in it. A dune's
+## ruin dug out with half its sand or more off by your hand is yours, not a
+## storm's. Says whether it dug.
+func _dig(delta: float) -> bool:
+	var world := _player.world
+	var got := world.shape.sites.dig_at(world.world_x(look_point.x), world.world_z(look_point.z), delta, world.time)
+	var site: Structure = got[0]
+	if site == null:
+		say(NO_RUIN)
+		return false
+	if got[1] <= 0.0:
+		say(DUG_OUT)
+		return false
+	_stroke -= delta
+	if _stroke <= 0.0:
+		_stroke = STROKE
+		Sounds.play_at(_player, Sounds.SCOOP, -4.0, 2.0)
+		ScrapFx.spray(world.content, look_point, sight_from - look_point, Wreckage.SAND)
+	if _sieved():
+		_sift(site, got[2])
+	if site.source == &"dune" and site.dug_m >= site.depth * _tuning.dig_own_share \
+			and site.with_dug(site.pure_taken(world.time)) >= site.depth:
+		Deeds.done(world, &"dune_dig")
+	return true
+
+
+## Whether a sieve sifts what you dig: carried, or lying or stuck on a deck near.
+func _sieved() -> bool:
+	for each in _player.suit.carried:
+		if is_instance_valid(each) and each.get_meta(&"catalog", &"") == &"sieve":
+			return true
+	var world := _player.world
+	for node in world.content.get_children():
+		var near := node is Node3D and (node as Node3D).global_position.distance_to(_player.global_position) <= SIFT_REACH + 3.0
+		if not near:
+			continue
+		var things: Array = (node as Chassis).camp() if node is Chassis else [node]
+		for each: Node in things:
+			if each is Node3D and each.get_meta(&"catalog", &"") == &"sieve" \
+					and (each as Node3D).global_position.distance_to(_player.global_position) <= SIFT_REACH:
+				return true
+	return false
+
+
+## What a sieve finds in `m3` more of a site's sand: one of the light things of
+## its lesser rows (Drift.carried_from) each time sift_per_m3 more is
+## through, from its own stream of the site's id and how many have come, laid
+## on the sand at your feet.
+func _sift(site: Structure, m3: float) -> void:
+	var world := _player.world
+	var before := floori(site.sifted_m3 * _tuning.sift_per_m3)
+	site.sifted_m3 += m3
+	for k in range(before, floori(site.sifted_m3 * _tuning.sift_per_m3)):
+		var rng := RandomNumberGenerator.new()
+		rng.seed = hash([site.id, "sift", k])
+		var at := Vector2(world.player_world_x(), world.player_world_z()) + Vector2.from_angle(rng.randf() * TAU) * 0.8
+		Drift.lay(world, {"id": Finds._pick(rng, Drift.carried_from(site)), "x": at.x, "z": at.y,
+			"yaw": rng.randf() * TAU, "charge": rng.randf() * Drift.CHARGE,
+			"layer": SiteLoot.ERAS[site.era].layer if SiteLoot.ERAS.has(site.era) else Finds.SURFACE})
+		say("the sieve turns something up")
 
 
 func _physics_process(delta: float) -> void:

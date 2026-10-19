@@ -384,6 +384,12 @@ static func _draw_mark(on: Control, mark: StringName, locked: bool) -> void:
 			for k in 3:
 				on.draw_arc(c, u * (0.38 - 0.11 * k), 0.0, TAU, 32, ink, 2.0, true)
 			on.draw_circle(c, u * 0.07, ink)
+		&"dune":
+			# A dune's slip face, and a ruin's roof in its lee.
+			ground.call()
+			on.draw_colored_polygon(PackedVector2Array([Vector2(u * 0.08, foot.y), Vector2(u * 0.5, s.y * 0.22),
+				Vector2(u * 0.66, s.y * 0.26), Vector2(u * 0.8, foot.y)]), ink)
+			on.draw_rect(Rect2(u * 0.74, s.y * 0.7, u * 0.18, foot.y - s.y * 0.7), ink)
 		&"ruin":
 			# Broken walls standing out of a dune.
 			for x: Array in [[0.24, 0.42], [0.42, 0.22], [0.66, 0.34]]:
