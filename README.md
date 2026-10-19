@@ -42,7 +42,9 @@ each build on its own OS for a smoke test (`scripts/probe.sh smoke <game>`).
 - **Cut a release:** set the version in `project.godot`, update `RELEASE_NOTES.md`,
   merge to master, then tag that commit `v<version>` and push the tag. The Release
   workflow builds and smoke-tests it again and publishes a GitHub pre-release with the
-  zips and the notes. A tag that doesn't match the version publishes nothing.
+  zips and the notes only after that tag's full Probes run succeeds. A failed,
+  cancelled or missing probe run blocks publication. A tag that doesn't match
+  the version publishes nothing.
 
 ## Layout
 

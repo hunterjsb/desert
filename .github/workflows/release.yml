@@ -15,8 +15,11 @@ jobs:
   publish:
     needs: builds
     runs-on: ubuntu-latest
+    timeout-minutes: 90
     permissions:
       contents: write
+      actions: read
+      checks: read
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
@@ -46,6 +49,27 @@ jobs:
           echo "release_name=$release_name" >>"$GITHUB_OUTPUT"
           echo "Desert $version, a pre-release of:"
           ls -l "${zips[@]}"
+
+      - name: Require the tag's full probe run
+        if: github.event_name == 'push' && github.ref_type == 'tag'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # The tag starts Probes separately; publication must wait for its result.
+          probe_run=""
+          for _ in $(seq 60); do
+            probe_run=$(gh run list --workflow probes.yml --commit "$GITHUB_SHA" --event push \
+              --limit 100 --json databaseId,headBranch | \
+              jq -r --arg tag "$GITHUB_REF_NAME" \
+                '[.[] | select(.headBranch == $tag)] | max_by(.databaseId).databaseId // empty')
+            [[ -n $probe_run ]] && break
+            sleep 5
+          done
+          if [[ -z $probe_run ]]; then
+            echo "No tag probe run found for $GITHUB_REF_NAME at $GITHUB_SHA" >&2
+            exit 1
+          fi
+          gh run watch "$probe_run" --exit-status
 
       - name: Publish the pre-release
         if: github.event_name == 'push' && github.ref_type == 'tag'
