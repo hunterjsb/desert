@@ -12,16 +12,19 @@ extends RefCounted
 const ALL := &"*"
 ## What all deck_home asks to be stuck on one deck, by catalog id.
 const HOME := [&"console", &"condenser", &"battery"]
-## Each deed in the order the grid lays them out, a family a column or two:
+## An anomaly's tells, each noticed where it's shown to you.
+const TELLS := [&"compass", &"crackle", &"load"]
+## Each deed in the order the grid lays them out, a family a branch or two:
 ##   name; asks, what it asks, its goal in place of %s; family; after, the
 ##   deeds it waits on; icon, its card's thing (ItemIcons), or a mark drawn
-##   (DeedsGrid): a sail, or a landmark's for none;
+##   (DeedsGrid), a landmark's for none;
 ##   goal, a number to reach (measure) or of different things to count
-##   (`parts`): a tuning field, or every landmark, every age that built, or
-##   the home's three; unit, what its progress counts; step, how much better
-##   a best must be before the profile keeps it;
+##   (`parts`): a tuning field, or every landmark, every age that built,
+##   the home's three, the tells, every god or every wreck kind; unit, what
+##   its progress counts; step, how much better a best must be before the
+##   profile keeps it;
 ##   landmark, where it's reached, or every landmark for ALL; hidden, ????
-##   until done (none is).
+##   and no picture until it's done, so the grid never says what it is.
 const TABLE := {
 	&"board_distance": {"name": "Frequent Flyer", "asks": "Ride a board %s m without stepping off", "family": &"board",
 		"icon": &"board", "goal": "deed_board_m", "unit": "m", "step": 250.0},
@@ -29,27 +32,70 @@ const TABLE := {
 		"after": [&"board_distance"], "icon": &"board", "goal": "deed_board_height_m", "unit": "m", "step": 0.5},
 	&"board_storm": {"name": "Flying Bling", "asks": "Ride into a storm by night or in an eclipse", "family": &"board",
 		"after": [&"board_height"], "icon": &"board"},
+	&"sail_waist": {"name": "Set Sail", "asks": "Tie a sail's sheet at your waist", "family": &"wind", "icon": &"sail"},
+	&"close_hauled": {"name": "Close-Hauled", "asks": "Make %s m upwind under sail", "family": &"wind",
+		"after": [&"sail_waist"], "icon": &"sail", "goal": "deed_upwind_m", "unit": "m", "step": 50.0},
+	&"land_yacht": {"name": "Land Yacht", "asks": "Sail a keeled camp %s m from its helm", "family": &"wind",
+		"after": [&"close_hauled"], "icon": &"helm", "goal": "deed_yacht_m", "unit": "m", "step": 250.0},
+	&"storm_runner": {"name": "Storm Runner", "asks": "Sail %s m on a storm's outflow, ahead of its wall",
+		"family": &"wind", "after": [&"land_yacht"], "icon": &"storm", "goal": "deed_outflow_m", "unit": "m",
+		"step": 100.0},
 	&"shield_day": {"name": "Hermit", "asks": "Spend a whole day under a shield, never stepping out",
-		"family": &"shield", "icon": &"shield", "goal": "day_minutes", "unit": "min", "step": 1.0},
-	&"shield_storm": {"name": "Sandblasted", "asks": "Hold off %s minutes of storm with one shield", "family": &"shield",
+		"family": &"weather", "icon": &"shield", "goal": "day_minutes", "unit": "min", "step": 1.0},
+	&"shield_storm": {"name": "Sandblasted", "asks": "Hold off %s minutes of storm with one shield", "family": &"weather",
 		"after": [&"shield_day"], "icon": &"shield", "goal": "deed_storm_minutes", "unit": "min", "step": 1.0},
+	&"anomaly_eye": {"name": "Eye of the Anomaly", "asks": "Live through an anomaly's heart", "family": &"weather",
+		"after": [&"shield_storm"], "icon": &"eye", "hidden": true},
+	&"tells": {"name": "Tells", "asks": "Notice each of an anomaly's three tells", "family": &"weather",
+		"after": [&"anomaly_eye"], "icon": &"compass", "goal": "tells", "parts": true, "unit": "tells", "hidden": true},
+	&"deck_home": {"name": "All Mod Cons", "asks": "A Console, a condenser and a battery on one deck", "family": &"camp",
+		"icon": &"console", "goal": "home", "unit": "on one deck", "step": 1.0},
+	&"deck_pieces": {"name": "Six Pack", "asks": "Join %s chassis pieces into one deck", "family": &"camp",
+		"after": [&"deck_home"], "icon": &"chassis", "goal": "deed_deck_pieces", "unit": "pieces", "step": 1.0},
+	&"power": {"name": "Power Trip", "asks": "Make %s W in one system", "family": &"camp", "after": [&"deck_home"],
+		"icon": &"turbine", "goal": "deed_power_w", "unit": "W", "step": 10.0},
 	&"crop": {"name": "Green Thumb", "asks": "Grow a crop", "family": &"farm", "icon": &"crop"},
 	&"crops": {"name": "Crop Rotation", "asks": "Grow %s kinds of crop", "family": &"farm", "after": [&"crop"],
 		"icon": &"planter", "goal": "deed_crop_kinds", "parts": true, "unit": "kinds"},
 	&"planters_towed": {"name": "Meals on Wheels", "asks": "Have %s planters in tow at once", "family": &"farm",
 		"after": [&"crop"], "icon": &"planter", "goal": "deed_planters_towed", "unit": "planters", "step": 1.0},
-	&"deck_home": {"name": "All Mod Cons", "asks": "A Console, a condenser and a battery on one deck", "family": &"camp",
-		"icon": &"console", "goal": "home", "unit": "on one deck", "step": 1.0},
-	&"sail_waist": {"name": "Set Sail", "asks": "Tie a sail's sheet at your waist", "family": &"camp", "icon": &"sail"},
-	&"deck_pieces": {"name": "Six Pack", "asks": "Join %s chassis pieces into one deck", "family": &"camp",
-		"after": [&"deck_home"], "icon": &"chassis", "goal": "deed_deck_pieces", "unit": "pieces", "step": 1.0},
-	&"power": {"name": "Power Trip", "asks": "Make %s W in one system", "family": &"camp", "after": [&"sail_waist"],
-		"icon": &"turbine", "goal": "deed_power_w", "unit": "W", "step": 10.0},
-	&"port_morgan": {"name": "The Old City", "asks": "Reach Port Morgan", "family": &"story", "landmark": &"port_morgan"},
-	&"ages": {"name": "Carbon Dated", "asks": "Stand in a structure of each of the four ages", "family": &"story",
+	&"ages": {"name": "Carbon Dated", "asks": "Stand in a structure of each of the four ages", "family": &"ruins",
 		"goal": "ages", "parts": true, "unit": "ages"},
+	&"bared": {"name": "Bared", "asks": "Take loot from a site a storm has stripped", "family": &"ruins",
+		"after": [&"ages"], "icon": &"ruin"},
+	&"storm_chaser": {"name": "Storm Chaser", "asks": "Reach %s freshly bared sites in one storm", "family": &"ruins",
+		"after": [&"bared"], "icon": &"ruin", "goal": "deed_bared_sites", "unit": "sites", "step": 1.0},
+	&"first_cut": {"name": "First Cut", "asks": "Cut a wreck's seam through", "family": &"scrap", "icon": &"cutter"},
+	&"stripped": {"name": "Stripped", "asks": "Free every module on one wreck", "family": &"scrap",
+		"after": [&"first_cut"], "icon": &"survival_kit"},
+	&"clean_hands": {"name": "Clean Hands", "asks": "Make a live wreck's hazards safe without a shock or a sickness",
+		"family": &"scrap", "after": [&"stripped"], "icon": &"sealant"},
+	&"bonepicker": {"name": "Bonepicker", "asks": "Scrap one of each of the five wreck kinds", "family": &"scrap",
+		"after": [&"clean_hands"], "icon": &"wreck", "goal": "wrecks", "parts": true, "unit": "kinds"},
+	&"god_heard": {"name": "First Light", "asks": "Hear a god inside its window", "family": &"signals", "icon": &"radio"},
+	&"gods": {"name": "Pantheon", "asks": "Hear all seven gods", "family": &"signals", "after": [&"god_heard"],
+		"icon": &"signal", "goal": "gods", "parts": true, "unit": "gods"},
+	&"totality": {"name": "Totality", "asks": "Watch a whole eclipse out in the open", "family": &"far",
+		"icon": &"eclipse"},
+	&"glint": {"name": "Glint", "asks": "Reach a site whose glint you saw from %s m off", "family": &"far",
+		"after": [&"totality"], "icon": &"glint", "goal": "deed_glint_m"},
+	&"live_vent": {"name": "Live Vent", "asks": "Stand at a live vent's mouth", "family": &"far", "after": [&"glint"],
+		"icon": &"vent"},
+	&"thunder": {"name": "Thunder", "asks": "Hear a burst's boom from %s m away", "family": &"far",
+		"after": [&"live_vent"], "icon": &"boom", "goal": "deed_thunder_m"},
+	&"under_tu": {"name": "Under Tu", "asks": "Stand with Tu overhead", "family": &"far", "after": [&"totality"],
+		"icon": &"tu"},
+	&"dark_side": {"name": "The Dark Side", "asks": "Stand where Tu never rises", "family": &"far",
+		"after": [&"under_tu"], "icon": &"dark"},
+	&"port_morgan": {"name": "The Old City", "asks": "Reach Port Morgan", "family": &"story", "landmark": &"port_morgan"},
 	&"landmarks": {"name": "Hot Tourist Destinations", "asks": "Reach every named landmark", "family": &"story",
 		"after": [&"port_morgan"], "landmark": ALL, "goal": "landmarks", "parts": true, "unit": "landmarks"},
+	&"ten_days": {"name": "Ten Days", "asks": "Live %s days in one run", "family": &"nomad", "icon": &"sun",
+		"goal": "deed_days", "unit": "days", "step": 1.0},
+	&"moved_house": {"name": "Moved House", "asks": "Move your camp %s m in one day", "family": &"nomad",
+		"after": [&"ten_days"], "icon": &"chassis", "goal": "deed_moved_m", "unit": "m", "step": 250.0},
+	&"slept_it_off": {"name": "Slept It Off", "asks": "Sleep through a storm with nothing lost from your camp",
+		"family": &"nomad", "after": [&"ten_days"], "icon": &"bedroll"},
 }
 ## The hook: a deed done in this world's run, now. With a `part`, that thing
 ## counts toward it, and it's done once enough different ones have. Says
@@ -100,6 +146,12 @@ static func reached(world: World, landmark: StringName) -> void:
 			done(world, id, landmark)
 
 
+## Whether a deed would still be kept if done now: a world whose deeds count,
+## and it not done yet. What's worth working out only for a deed asks this.
+static func waiting(world: World, id: StringName) -> bool:
+	return _counting(world, id) != null
+
+
 ## The profile a deed would be kept in now, or null: none, a world whose
 ## deeds don't count, or the deed done already.
 static func _counting(world: World, id: StringName) -> Node:
@@ -121,6 +173,12 @@ static func goal(id: StringName, tuning: Tuning) -> float:
 			return Eras.BUILT.size()
 		"home":
 			return HOME.size()
+		"tells":
+			return TELLS.size()
+		"gods":
+			return Gods.ROSTER.size()
+		"wrecks":
+			return Wreckage.kinds().size()
 	return float(tuning.get(named))
 
 
@@ -135,6 +193,11 @@ static func is_open(profile: Node, id: StringName) -> bool:
 ## Done and showing so.
 static func lit(profile: Node, id: StringName) -> bool:
 	return profile != null and profile.did(id) and is_open(profile, id)
+
+
+## Whether its name and picture show: a hidden deed's only once it shows done.
+static func revealed(profile: Node, id: StringName) -> bool:
+	return not TABLE[id].get("hidden", false) or lit(profile, id)
 
 
 ## Done and showing, and not looked at in the deeds menu yet: the main menu marks them.

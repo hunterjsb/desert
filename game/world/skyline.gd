@@ -46,6 +46,8 @@ const CLANG_UNIT := 20.0
 const SOUND_SPEED := 343.0
 ## A far bush's metalness and roughness: the real leaf's.
 const BUSH_FINISH := Vector2(0.12, 0.62)
+## A glint is seen once this much of it shows past the storms between.
+const GLINT_THROUGH := 0.5
 
 const BOX_SHADER := preload("res://game/world/skyline.gdshader")
 const GLINT_SHADER := preload("res://game/world/glint.gdshader")
@@ -55,6 +57,8 @@ const GLINT_SHADER := preload("res://game/world/glint.gdshader")
 var frame_ms := 0.0
 var slowest_ms := 0.0
 var job_ms := 0.0
+## The sites whose glint shone for your eye from deed_glint_m or further, by id.
+var glinted := {}
 
 var _world: World
 var _tuning: Tuning
@@ -396,6 +400,29 @@ static func shine(glint: Array, eye: Vector3, sun: Vector3) -> float:
 		return 0.0
 	var edge := cos(glint[2] as float)
 	return smoothstep(edge, lerpf(edge, 1.0, 0.75), n.dot((v + sun).normalized()))
+
+
+## Whether a far stand-in's glint shines for your eye now, past the storms
+## and over the dunes between, the sun up and clear of Tu: its site's glint
+## seen from far off.
+func _glance(entry: Entry, eye: Vector3, through: float) -> void:
+	var site := entry.site
+	if through < GLINT_THROUGH or entry.far_glints.is_empty() or glinted.has(site.id) \
+			or Vector2(site.x - eye.x, site.z - eye.z).length() < _tuning.deed_glint_m \
+			or not Deeds.waiting(_world, &"glint"):
+		return
+	var weather := _world.weather
+	var t := _world.time
+	var sun := weather.day.sun_direction(t, _world.moon.latitude, _world.moon.longitude)
+	if sun.y <= 0.1 or weather.day.sun_shown(t) <= 0.5 or weather.in_storm:
+		return
+	var glints: Array[Array] = []
+	_unpack(entry.far_glints, Vector3(_shown.center.x * _size, 0.0, _shown.center.y * _size), glints)
+	for each in glints:
+		if shine(each, eye, sun) >= Starts.GLINT_SEEN \
+				and clearance(_world.shape, _tuning, eye, each[0], _shown.center, site.reach) >= 0.0:
+			glinted[site.id] = true
+			return
 
 
 ## Every structure seen from afar now, laid or sighted.
@@ -911,6 +938,8 @@ func _read_storms() -> void:
 		if absf(through - _veils[_veil_next]) > 0.005:
 			_veils[_veil_next] = through
 			changed = true
+		if _veil_next < _shown.entries.size():
+			_glance(_shown.entries[_veil_next], eye, through)
 		_veil_next = (_veil_next + 1) % count
 		if _veil_next == 0:
 			break

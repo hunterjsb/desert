@@ -77,6 +77,10 @@ var _followed_jumps := 0
 ## onto, so stepping onto one is noticed once.
 var _stood_at := Vector2i.MAX
 var _stood: Structure
+## The sites a storm had freshly bared as you reached them, by id, while
+## you've stayed in it; and the whole days lived as last counted.
+var chased := {}
+var _lived := -1
 
 
 func _ready() -> void:
@@ -322,6 +326,8 @@ func _physics_process(delta: float) -> void:
 		_follow_history()
 	if counts_deeds:
 		_step_onto(x, z)
+		if not weather.in_storm:
+			chased.clear()
 
 	var stray := Vector2i(floori(player.global_position.x / tuning.chunk_size),
 		floori(player.global_position.z / tuning.chunk_size))
@@ -331,6 +337,8 @@ func _physics_process(delta: float) -> void:
 	_keep_bodies_on_ground()
 	time += delta * time_warp
 	played += delta
+	if counts_deeds:
+		_live_days()
 
 	Dev.put("world/seed", "%d" % run_seed)
 	if rescued > 0:
@@ -343,7 +351,9 @@ func _physics_process(delta: float) -> void:
 
 
 ## Stepping onto a structure's ground counts its age toward standing in one
-## of each age that built.
+## of each age that built; reaches it freshly bared, in the storm baring it,
+## or as the site whose glint you saw from far off. A live vent's mouth is
+## stood at once you're inside its rampart's crest.
 func _step_onto(x: float, z: float) -> void:
 	var at := Vector2i(floori(x), floori(z))
 	if at == _stood_at:
@@ -354,6 +364,21 @@ func _step_onto(x: float, z: float) -> void:
 		_stood = site
 		if Eras.BUILT.has(site.era):
 			Deeds.done(self, &"ages", site.era)
+		if weather.in_storm and Deeds.waiting(self, &"storm_chaser") and site.bared() > 0.0:
+			chased[site.id] = true
+			Deeds.measure(self, &"storm_chaser", chased.size())
+		if terrain.skyline.glinted.has(site.id):
+			Deeds.done(self, &"glint")
+	if site is VentMouth and GeologyKit.from_slot(site.plan(x - site.x, z - site.z)) <= GeologyKit.CREST:
+		Deeds.done(self, &"live_vent")
+
+
+## Each whole day lived in the run, counted toward living many.
+func _live_days() -> void:
+	var lived := floori((time - began) / (tuning.day_minutes * 60.0))
+	if lived != _lived:
+		_lived = lived
+		Deeds.measure(self, &"ten_days", lived)
 
 
 ## Nothing physical is ever outside collision: a body whose ground is gone is

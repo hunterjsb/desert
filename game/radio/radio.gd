@@ -64,6 +64,8 @@ const CRACKLE_LEVEL := 0.5
 const VOLUME_STEP := 0.1
 ## A signal this clean or better comes through whole.
 const WHOLE := 0.5
+## An anomaly's crackle this deep, heard, is a tell.
+const CRACKLE_TELL := 0.25
 ## The weather station's voice: its phrases, one recording each, said this
 ## far apart after a full stop and after a comma, s, once its tones have sounded.
 const VOICE := "res://assets/audio/voice/%s.ogg"
@@ -402,6 +404,13 @@ func _physics_process(delta: float) -> void:
 	_listen(delta)
 
 
+## Whether you hear it where you are: its words in the line low in your
+## view, or what it plays within earshot.
+func heard() -> bool:
+	var far := global_position.distance_to(world.player.camera.global_position)
+	return far < Broadcast.EARSHOT or far < _tuning.radio_heard_m and volume > 0.0
+
+
 ## What the dial reads, from where it stands.
 func _reads() -> int:
 	if not on:
@@ -498,6 +507,9 @@ func _listen(delta: float) -> void:
 				reading = forecast(field, x, z, t, _tuning.radio_forecast_minutes * 60.0, Weather.FORECAST_STEP)
 				read_at = t
 			reception = receive(id, x, z, t)
+			if reception.useful and not reception.cut and reception.clean > 0.0 and heard():
+				Deeds.done(world, &"god_heard")
+				Deeds.done(world, &"gods", id)
 			if reception.cut:
 				said = dial + "· · ·"
 			elif reception.clean <= 0.0:
@@ -566,6 +578,8 @@ func _listen(delta: float) -> void:
 	var burst := Interference.crackle(t)
 	crackle.pitch_scale = lerpf(CRACKLE_PITCH.x, CRACKLE_PITCH.y, burst.y)
 	crackle.volume_db = linear_to_db(odd * burst.x * CRACKLE_LEVEL * ducked + 0.0001) + knob_db()
+	if odd >= CRACKLE_TELL and volume > 0.0 and heard():
+		Deeds.done(world, &"tells", &"crackle")
 	_loudness()
 	_read(delta, now)
 	if not _hissing:

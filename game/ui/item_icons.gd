@@ -17,6 +17,13 @@ const LOOKS := {
 	&"chassis": {"frame": &"chassis", "turn": Vector2(30.0, 40.0)},
 	&"console": {"frame": &"console", "sockets": {1: &"screen"}, "turn": Vector2(155.0, 15.0)},
 	&"turbine": {"frame": &"turbine", "turn": Vector2(30.0, 15.0)},
+	&"helm": {"frame": &"helm_seat", "turn": Vector2(150.0, 20.0)},
+	&"compass": {"part": &"compass", "turn": Vector2(0.0, 55.0)},
+	&"cutter": {"frame": &"cutter", "turn": Vector2(60.0, 25.0)},
+	&"survival_kit": {"frame": &"survival_kit", "turn": Vector2(30.0, 30.0)},
+	&"sealant": {"part": &"sealant", "turn": Vector2(30.0, 25.0)},
+	&"radio": {"frame": &"radio", "turn": Vector2(160.0, 15.0)},
+	&"bedroll": {"frame": &"bedroll", "turn": Vector2(40.0, 30.0)},
 }
 ## How a thing as it comes is turned to be seen.
 const TURN := Vector2(30.0, 40.0)

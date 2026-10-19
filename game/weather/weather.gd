@@ -198,8 +198,14 @@ func felt_light(at: Vector3, t := NAN) -> float:
 ## everything that deals damage: wear, harm, crops and a shield's load. Every
 ## forecast and instrument reads the clean field instead.
 func hidden(at: Vector3, t := NAN) -> Vector2:
-	var h := field.anomaly_at(_world.world_x(at.x), _world.world_z(at.z), _when(t))
+	var h := anomaly(at, t)
 	return Vector2(lerpf(1.0, _tuning.anomaly_particles, h), lerpf(1.0, _tuning.anomaly_wind, h))
+
+
+## How deep in an anomaly's heart a place stands, now or at world time t, 0
+## to 1: its hidden term.
+func anomaly(at: Vector3, t := NAN) -> float:
+	return field.anomaly_at(_world.world_x(at.x), _world.world_z(at.z), _when(t))
 
 
 ## The storm the field makes at a place, as if no shelter stood.

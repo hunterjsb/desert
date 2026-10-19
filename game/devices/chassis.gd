@@ -52,6 +52,10 @@ var turns := 0
 
 ## Its own frame and sockets while they live in the deck's body.
 var _own: Array[Node3D] = []
+## As a camp: the day it's moving in, where you are, and where it stood as
+## that day began, world metres.
+var _today := -1
+var _day_from := Vector2.ZERO
 ## What the wind grabs of it but its whole faces, until they change.
 var _loose := NAN
 ## The wind on its whole faces, and the lee they cast.
@@ -62,6 +66,22 @@ var faces := Faces.new()
 func pieces() -> Array[Chassis]:
 	var all: Array[Chassis] = [self]
 	all.append_array(joined)
+	return all
+
+
+## The deck as your camp: its pieces, every part fitted to them, frames
+## among them, and every device stuck on it with what's fitted to that, all
+## the way up. One pool, as its power is.
+func camp() -> Array[Node]:
+	var all: Array[Node] = []
+	all.append_array(pieces())
+	var devices: Array[Device] = [self]
+	while not devices.is_empty():
+		var each: Device = devices.pop_back()
+		if each != self:
+			all.append(each)
+		all.append_array(each.parts())
+		devices.append_array(each.mounted())
 	return all
 
 
@@ -630,6 +650,25 @@ func _after_change() -> void:
 func _recompute() -> void:
 	super()
 	carryable = joined.is_empty() and mounted().is_empty() and mass <= CARRIES_KG
+
+
+func _physics_process(delta: float) -> void:
+	super(delta)
+	if world != null and world.counts_deeds and not freeze:
+		_move_house()
+
+
+## How far it has come as a camp since the day began where you are, from
+## where it stood then; carried in your hands, it's no camp moving.
+func _move_house() -> void:
+	if not Deeds.waiting(world, &"moved_house") or world.player.hands.held == self:
+		return
+	var at := Vector2(world.world_x(global_position.x), world.world_z(global_position.z))
+	var today := world.weather.day.day(world.time, world.moon.longitude, world.began)
+	if today != _today:
+		_today = today
+		_day_from = at
+	Deeds.measure(world, &"moved_house", at.distance_to(_day_from))
 
 
 func mount(other: Device, socket: Socket) -> void:
