@@ -54,6 +54,12 @@ const EXTEND_SECONDS := 0.6
 const HOW_TO := "sheet"
 const HOW_TO_SAYS := "The rope at your waist is the sail's sheet: it runs through the boom's end to a ring on the camp.\n" \
 	+ "{reel_in} draws the boom in toward the ring, {pay_out} lets the wind take it out.\nYou steer by where you walk, as with a tiller."
+## What a rig flown from both its bow corners teaches, the first time you
+## ride it: the bridle's two bow lines, and changing tack by them.
+const BRIDLE_HOW_TO := "bridle"
+const BRIDLE_HOW_TO_SAYS := "The rig flies on its sheet and a bow line from each bow corner, both at your waist.\n" \
+	+ "To change tack, look at its far bow corner and {reel_in} that line as you bear away: it pulls the rig across.\n" \
+	+ "Head up onto the new side and {pay_out} it again."
 ## Lift rises to its most at this angle of attack and stalls past it; drag
 ## grows with lift's square, and square on it pushes as any face that size.
 const LIFT_MOST := 1.3

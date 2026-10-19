@@ -178,10 +178,11 @@ func heading(windward := 1, off := 0.0) -> Vector2:
 
 
 ## The Varran settler's rig as his kit builds it, floating downwind of you
-## toward `way` and lying across its lines as it flies, its sail up: its bow
-## line from the hook on its side `windward` names (1, the wind on your
-## left; Kit's own bow) and its sheet both at your waist, laid as the kit
-## lays them, and you on a board facing `way`, still. The lines, bow first.
+## toward `way` and lying across its lines as it flies, its sail up: a bow
+## line from each of its bow hooks and its sheet at your waist, laid as the
+## kit lays them, and you on a board facing `way`, still. It's turned to lie
+## with the hook on its side `windward` names nearer you (1, the wind on
+## your left). The lines: that bow line, the sheet, the other bow line.
 func varran(way: Vector2, windward := 1) -> Array[Line]:
 	var kit := Kit.named(&"varran")
 	var built := Rig.build(world.content, kit.assembled.rig.rig, 1.0)
@@ -209,7 +210,8 @@ func varran(way: Vector2, windward := 1) -> Array[Line]:
 	hooks.sort_custom(func(a: Socket, b: Socket) -> bool:
 		return deck.to_local(a.global_position).x < deck.to_local(b.global_position).x)
 	var lines: Array[Line] = [Line.to_waist(world, hooks[0] if windward > 0 else hooks[-1], kit.waist[&"bow"]),
-		Line.to_waist(world, mast._tie(), kit.waist[&"mast"])]
+		Line.to_waist(world, mast._tie(), kit.waist[&"mast"]),
+		Line.to_waist(world, hooks[-1] if windward > 0 else hooks[0], kit.waist[&"bow_right"])]
 	player.get_on(board)
 	await physics_frames(2)
 	hoist(20.0)

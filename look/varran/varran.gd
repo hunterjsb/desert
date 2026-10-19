@@ -164,8 +164,9 @@ func _launch(across: Vector2, down: Vector2) -> void:
 	player.rotation.y = atan2(-across.x, -across.y)
 	await ticks(10)
 	var mast: Mast = rig.named.mast
-	lines = [Line.to_waist(world, Runs._tie_of(rig.named.bow, player.global_position), kit.waist[&"bow"]),
-		Line.to_waist(world, mast._tie(), kit.waist[&"mast"])]
+	lines.clear()
+	for id: StringName in kit.waist:
+		lines.append(Line.to_waist(world, Runs._tie_of(rig.named[id], player.global_position), kit.waist[id]))
 	player.get_on(board)
 	mast.raised = true
 	mast.raise = 1.0
