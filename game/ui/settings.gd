@@ -11,6 +11,9 @@ const SCALES: Array[float] = [0.5, 0.75, 1.0]
 static var volume := 1.0
 ## The main menu's music, which its switch mutes.
 static var music := true
+## The weather station read aloud in the system's own voice, which speaks in
+## your ear, not from the radio: a switch, since it can startle.
+static var radio_voice := true
 static var fullscreen := false
 static var vsync := true
 ## The 3D view's resolution, as a share of the window's.
@@ -23,6 +26,7 @@ static func load_saved() -> void:
 		return
 	volume = clampf(file.get_value("audio", "volume", volume), 0.0, 1.0)
 	music = file.get_value("audio", "music", music)
+	radio_voice = file.get_value("audio", "radio_voice", radio_voice)
 	fullscreen = file.get_value("graphics", "fullscreen", fullscreen)
 	vsync = file.get_value("graphics", "vsync", vsync)
 	render_scale = file.get_value("graphics", "render_scale", render_scale)
@@ -32,6 +36,7 @@ static func save() -> void:
 	var file := ConfigFile.new()
 	file.set_value("audio", "volume", volume)
 	file.set_value("audio", "music", music)
+	file.set_value("audio", "radio_voice", radio_voice)
 	file.set_value("graphics", "fullscreen", fullscreen)
 	file.set_value("graphics", "vsync", vsync)
 	file.set_value("graphics", "render_scale", render_scale)

@@ -369,6 +369,8 @@ func options() -> Words:
 	var menu := _menu("Options")
 	menu.add(func() -> String: return "Volume   %d%%" % roundi(Settings.volume * 100.0),
 		_change.bind(1, &"volume", true), _change.bind(&"volume", false))
+	menu.add(func() -> String: return "Radio voice   %s" % _on(Settings.radio_voice),
+		_change.bind(1, &"radio_voice", true), _change.bind(&"radio_voice", false))
 	menu.add(func() -> String: return "Fullscreen   %s" % _on(Settings.fullscreen),
 		_change.bind(1, &"fullscreen", true), _change.bind(&"fullscreen", false))
 	menu.add(func() -> String: return "Vsync   %s" % _on(Settings.vsync),
@@ -432,6 +434,8 @@ func _change(by: int, what: StringName, wrap: bool) -> void:
 			Settings.volume = (0.0 if to > 1.0 else to) if wrap else clampf(to, 0.0, 1.0)
 		&"fullscreen":
 			Settings.fullscreen = not Settings.fullscreen
+		&"radio_voice":
+			Settings.radio_voice = not Settings.radio_voice
 		&"vsync":
 			Settings.vsync = not Settings.vsync
 		&"render_scale":

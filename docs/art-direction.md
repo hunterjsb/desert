@@ -432,12 +432,18 @@ Readings, not in the session:
 *Session 4, part 2 ([lore session](lore-session-2026-10-17-part-2.md)); named, not drawn, and
 none of it is in the atlas.* The atlas stops at the colonial, surface and new rows. The session
 names what the ages after the collapse would carry, to be drawn when there is a find to carry it:
-- **First Kingdoms** gear carries heraldry and guild stamps (houses such as Okafor, Kessel,
-  Arkwright and Vante; the guilds of the keepers).
+- **First Kingdoms** gear carries heraldry and guild stamps (houses such as Haberjack, Pellicott,
+  Crake and Vonatelli; the guilds of the keepers).
 - **Second-age** gear carries religious symbols (the faith of Tu).
 - **Homesteader** gear carries civilian brand marks, not Tilg's.
 - **Carvings and daubs** use the worn slang (Monward, Hanmen, Zanborn, the tu- prefix) and the
   worn names (Zan, Tu, Han, Mon, Aitch): [the names](lore-research.md#slang-and-name-erosion-agreed-session-4-part-2).
+- **Session 5 (named, not drawn)** ([lore session](lore-session-2026-10-18-mitchell-wow-shoemaker.md)): the
+  Tabbed's **tab-stone**, carved with what a family owes and is owed, and the Ashwalkers' pendant ones;
+  the **Mitchells**, stamped tokens whose brand outlived its meaning; and the **singing stone**, black and
+  glassy, scored with melted grooves, warm to the touch
+  ([the lore](lore-research.md#mitchell-the-dead-god-agreed-session-5)). A tab-stone is a second-age
+  thing and a Mitchell a First Kingdoms one, so each fits the layered marks below.
 
 ### Layered marks (Agreed, session 4, part 5; named, not drawn)
 
@@ -465,8 +471,8 @@ marks over its own look, each layer added as pieces in the paint pass, not repai
   company's issue the new one.
 - **The First Kingdoms** add an enamel band in the house's colour round a frame's top edges, a round
   housing or a part's end, and a small enamel plaque with the house's crest cut through it to bright metal
-  (a new scratched ink), two brass rivets at its top: Okafor's key (they kept the last Harbourmaster's),
-  Kessel's cauldron, Arkwright's arch, Vante's tower, in deep red, ochre, teal, and ochre with red.
+  (a new scratched ink), two brass rivets at its top: Haberjack's key (they kept the last Harbourmaster's),
+  Pellicott's cauldron, Crake's arch, Vonatelli's tower, in deep red, ochre, teal, and ochre with red.
 - **The Dark Age** adds cord lashed round corner posts or round a body, a round ceramic cap on a square
   corner, a saltbush-wood splint lashed along an edge, and a plate off another thing in its paint, riveted
   on crooked, with "ZN" daubed back on it where the thing was consigned.
@@ -770,6 +776,87 @@ read it, and the sand moved.
   `Lee.exact()`. Each sits beside its twin, but only the look-test, on a GPU, catches a drift.
 - Structures aren't in the GPU's heights, so round a ruin the map's lee is the bare dunes'.
 - `NoiseGLSL` draws only smooth simplex with plain FBm, and complains of any other noise.
+
+**Built: P1, the sand's own light (2026-10-18).** The sand shader (`game/world/sand.gdshader`) lights
+itself in its own `light()`, once a light, over the colour Hunter settled (about a third of the light
+sent back, Ridges, the palette), which is unchanged. The aim was the powdery glow of a low sun behind
+you, a soft sheen and glitter that never crawls, not a brighter desert.
+- **The grains' shade (Fujii's Oren-Nayar, at 0.6).** Grains shadow each other, so sand lit from behind
+  you glows and sand you look at against the light dims. It's Lambert wherever grains hide nothing, so
+  noon is as it was. It's a low sky light's only, fading out between 10° and 30° up: from higher it
+  flattens the ripples, as the full Moon looks flat, and Tu stands 30° up all night where a run
+  begins. Looking into the light it dims half as far as Fujii has it: quartz grains pass light on, and
+  at full strength the dunes seen from the air into a low sun lost a quarter to a third of their
+  contrast. Lamps keep Lambert, so the headlamp's pool and the tracks in it read as before.
+- **The sheen, the brighter of two.** "Ocean", the sun's broad glare off the grains, as off a sea
+  (normalised Blinn-Phong, so a wider lobe is a dimmer one); and the rim, light skimming off grains
+  seen edge-on toward the sun (Fresnel over the widest lobe), at what Godot's own rough specular gave,
+  since that is what the ripples facing a low sun were read by. As the ripples and the swell fade with
+  distance, the slope they no longer draw widens the ocean's lobe (Toksvig), from a power of 50 near
+  you to about 33 far off, so far dunes keep a soft sheen.
+- **Glitter, after Wang and Bowles.** One grain in each cell of 12 pixels or so, on a facet leaning
+  about 17° off the surface, flashing where it mirrors the light into your eye. Cells step by powers of
+  two with the pixel's footprint, two scales blended so none pops as you walk, and each grain is drawn
+  round on screen a pixel or two across, so none is ever smaller than a pixel to crawl. It fades out
+  between 3 and 12 cm a pixel, about 6 to 12 m ahead at eye height, further looking down. A flash goes
+  past 1, but the game has no glow, so it clips to white rather than blooms.
+- **Gone in the dust and on tracks.** Weather hands the sand its `seen_shade` (the uniform `storm`):
+  in the dust the light comes from all round, so nothing glints or shines. Trodden sand has no glitter
+  and a third of the sheen.
+- **The swell,** sand waves 1.9 m long under the ripples, gentler and patchy, holding on about twelve
+  times further out, so sand that has lost its ripples to distance still shows the wind's grain.
+
+Weighed and left out: Journey's contrast terminator. Tried, it took the low sun off the slope you
+look across, the glow it was to sit beside (L* 50.6 against 55.7 with the sun behind you), and
+darkened midmorning by 6.
+
+**The prototypes.** Varyings written in `fragment()` reach `light()`, even written inside a branch.
+`fwidth` compiles in `light()` and matched `fragment()`'s on test planes under a directional and a
+spot light, but `light()` runs in Godot's loop over lights, which for lamps differs pixel to pixel,
+where derivatives are undefined; so every derivative is taken in `fragment()` and handed on. Godot
+multiplies `DIFFUSE_LIGHT` by the albedo after `light()`, and `LIGHT_COLOR` carries π: a hand-made
+Lambert matched Godot's to a level in 255.
+
+**How it looks,** before and after, the eye on as in play (`look/sandlight/shoot.sh <dir> [sheet]`,
+which shoots master's sand against this; the sheet is `~/Desktop/sandlight.png`). The sand's L* low in
+the frame, and its spread:
+
+| Moment | L* before, after | Spread before, after |
+|---|---|---|
+| Noon | 82.1, 81.9 | 1.3, 1.3 |
+| A low sun (8°) ahead | 52.1, 51.8 | 8.0, 7.3 |
+| The same from 200 m up | 57.4, 56.4 | 18.9, 16.8 |
+| The same sun behind you, the ground ahead lit | 52.8, 55.7 | 7.7, 13.5 |
+| Dusk (2°), the sun behind you | 41.4, 45.8 | 8.2, 14.1 |
+| A full-Tu night, Tu behind you | 4.8, 4.8 (the eye 6.1 times both) | 0.8, 0.8 |
+| The same night by the headlamp | 23.6, 23.6 | 74, 74 |
+| Deep in a storm by day | 24.2, 24.0 | 8.3, 7.9 |
+| A walked track at midmorning, toward the sun | 77.0, 77.5 | 3.2, 6.2 |
+
+With the low sun behind you the slopes ahead glow and their ripples stand out, where before they lay
+flat; dusk the same, warmer. Looking into a low sun the ripples read as before, with the swell beyond
+them and glitter down the sun's path; from the air the dunes into it keep nine-tenths of their
+contrast. At midmorning a soft glare lies toward the sun, sprinkled with
+glints, and the footprints hold none. Close up, sliding a centimetre a frame or walking on, each glint
+stays on its grain and twinkles; none crawls.
+
+**What it costs,** on the RTX 3070 at 1920x1080 with Hunter's game sharing the GPU, so rough, each the
+middle of nine alternated rounds: 0.03 to 0.17 ms a frame at noon and 0.04 to 0.34 ms looking into a
+low sun over seven runs, lost in the noise in a storm, and 0.5 ms with sand filling the whole frame by
+a low sun, steady over six runs. It's about 85 operations a light (45
+counting a vector's as one, as the research did), 25 more where a grain lies, and about 170 a pixel
+near you for the swell and the glitter, which is skipped further out. A chain of 128 multiply-adds
+measured 0.2 to 0.3 ms the same way, so the times and the count agree.
+
+**Fragile:**
+- A sand shader that fails to compile draws flat and says so only on a GPU: headless never compiles
+  it, so the probes can't catch it. The look-test prints any shader error.
+- The backscatter's fade by height was judged with Tu 30° up. Where Tu stands lower, toward the far
+  side, its light glows behind you as a low sun's does; not shot.
+- No glow, so glints clip to white. Glow would be the whole frame's change: the sun's disc, lamps and
+  Tu under the open eye would bloom too.
+- Times were taken with Hunter's game on the same GPU; between runs a frame's own time moved by
+  2 ms, and only the alternated differences hold.
 
 ## Open questions
 

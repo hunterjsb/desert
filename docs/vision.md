@@ -276,7 +276,7 @@ shorter table of StarCom, Launch, Shot down, Nomad city and Radio.
 | AI ascendancy | Upload yourself, or, as the hive mind, eat the other gods. Split into regular and true: see below. | Agreed |
 | Bringing Zan back | Court Tilg & Standard into investing and terraforming. The rarest; funnels in every other ending. See below. | Agreed |
 | Atmosphere | Outlast everything until the air runs out. Not chosen: it arises from a world clock. | Agreed, needs the clock (not built) |
-| The Okafor bunker | Seal the door of the sealed vault under Port Morgan from inside and live out your days. Not placed on the ladder. See below. | Agreed (session 4, part 5) |
+| The Haberjack bunker | Seal the door of the sealed vault under Port Morgan from inside and live out your days. Not placed on the ladder. See below. | Agreed (session 4, part 5) |
 | Blow up the moon | Corrupt the Eye, place charges on every major vent cap and let the Stoker fire. Not placed on the ladder. See below. | Agreed (session 4, part 5) |
 
 **Carried over from the last fold's table,** where the ladder doesn't contradict it:
@@ -295,9 +295,9 @@ shorter table of StarCom, Launch, Shot down, Nomad city and Radio.
   17](lore-research.md#17-open-after-the-endings-session-and-session-4-part-3)).
 
 **Ideas still loose.** *Wrong answer* (you call out and something that isn't Tilg answers) fits
-the hive mind start as the way you discover what you are. *Okafor line*: an underground bunker
-with a holdout (developed by session 4, part 5 into [the Okafor bunker](#the-okafor-bunker-agreed-session-4-part-5), where the holdout is the player). *Radio ending* (from earlier docs, "Find the right frequencies to reach Tilg or
-the last town") remains undesigned. *Quietbloom* (session 4, part 4, **Idea**, open: "confirm or
+the hive mind start as the way you discover what you are. *Haberjack line*: an underground bunker
+with a holdout (developed by session 4, part 5 into [the Haberjack bunker](#the-haberjack-bunker-agreed-session-4-part-5), where the holdout is the player). *Radio ending* (from earlier docs, "Find the right frequencies to reach Tilg or
+the last town") remains undesigned. *Wow* (session 5, a sketch): see the ascendancy notes below. *Quietbloom* (session 4, part 4, **Idea**, open: "confirm or
 drop"): carrying the alien crystal lattice onto a freighter or into the AI endings could be a quiet
 modifier ([Farming](prd/farming.md#each-crop-ancestor-engineering-drift-and-hooks-agreed)).
 
@@ -357,6 +357,13 @@ revealed; that stays with the stolen freighter.
   Kept as the endings session wrote it. It clashes with part 3's "hive mind start only," which is
   the newer, so as things stand it is an Idea with nowhere to land ([section
   17](lore-research.md#17-open-after-the-endings-session-and-session-4-part-3)).
+- **Idea (session 5, a sketch): Wow.** A hive mind survey probe buried under the black site wants two
+  things: Mother Cistern woken and linked to its climate models, so rain falls over Sister (toward Bringing
+  Zan back), and its network reached again (toward ascendancy: help it assimilate other AIs, betray it,
+  assimilate yourself, or let it contact the greater possum).
+  It may be the "captured hive mind tech" above, a reading. Only its name is settled; how players meet it is
+  open ([the lore](lore-research.md#wow-the-probe-under-facility-4-a-sketch-session-5); it sits against the
+  rule that the far end is never confirmed in game).
 
 ### Bringing Zan back (staying)
 
@@ -373,8 +380,11 @@ revealed; that stays with the stolen freighter.
 - **Agreed.** It fans out into variants by construction, not menus: the player should know Zan
   plays out as they intended, even if it isn't simulated. Epilogue as a few still frames.
   Proposed levers: who you call (Tilg & Standard, the outpost drifters, the nomads); registered or
-  kept "temporary" (Okafor's old question); which god leads (Ledger, Mother Cistern, or you if
+  kept "temporary" (Haberjack's old question); which god leads (Ledger, Mother Cistern, or you if
   uploaded); and what you did about the nomads (below).
+- **Idea (session 5, a sketch):** Wow's first wish leads toward this ending: wake Mother Cistern and link her
+  to its climate models ([above](#ascendancy-regular-and-true)). The Almanac is probably part of the
+  Mother Cistern ending too (Idea; the session's pantheon reminder).
 - **Answered by session 4, part 3.** The endings session left it open: "The Provisional is gone by
   the player's era. How the war ended and what human government exists now is deliberately
   undecided." The war ended in quarantine and fracture, and the states are Varran, Daventry and
@@ -408,14 +418,14 @@ Not placed on the ladder by the session, and not named official or outlaw. A rea
 asks for a pilgrimage, a corrupted Eye and a silent Starcom, which also shuts out the long wait. The
 clashes are in [the lore research, section 19](lore-research.md#19-open-after-session-4-part-5).
 
-### The Okafor bunker (Agreed, session 4, part 5)
+### The Haberjack bunker (Agreed, session 4, part 5)
 
 *[Session 4, part 5](gods-gear-farside-2026-10-17.md), section 8; the lore is in [the lore
-research](lore-research.md#the-ledger-and-the-okafor-bunker-agreed-session-4-part-5).* A sealed First
+research](lore-research.md#the-ledger-and-the-haberjack-bunker-agreed-session-4-part-5).* A sealed First
 Kingdoms vault under Port Morgan, with life support still running on the colonial power tap and nobody
-left in it. The walls carry generations of Okafor family marks and heraldry, and at its heart is the
+left in it. The walls carry generations of Haberjack family marks and heraldry, and at its heart is the
 Harbourmaster's sticky note under glass in a reliquary, guarded for generations by people who didn't
-know what it opened. It is the endings session's *Okafor line* made concrete, with the player as the
+know what it opened. It is the endings session's *Haberjack line* made concrete, with the player as the
 holdout. Two outcomes, mutually exclusive:
 1. **Ending: seal the door from inside and live out your days.**
 2. **Relic route:** take the reliquary. "Lifting it breaks the seal or cuts the power, so the bunker can
@@ -491,6 +501,28 @@ Quartermaster gets you shot down, and "one flag covers freighter, pod and hopper
   "explaining yourself" or prior contact means with no NPCs (idea: actions, like switching the
   broadcast back on or returning the Walker).
 
+### Nomad reputation (Agreed, session 5; not built)
+
+*[Session 5](lore-session-2026-10-18-mitchell-wow-shoemaker.md), "Nomad reputation and Mario."* A
+repeatable way to build rep with the nomads without ever putting one on screen. The whole relationship
+runs through gifts, shrines and radio tones, which keeps the nomads secret.
+- **Return a nomad's sail** (or leave goods) at a shrine, and the next storm brings back a gift, such as a
+  stitched patch for your board.
+- **Steal from them** and their short-range radio tones follow you around, getting ruder
+  ([Radio](prd/radio-sound-and-atmosphere.md#the-nomads-tones-follow-a-thief-agreed-session-5-not-built)).
+- **High rep lets you tend to the Walker.** Beyond that, rep mostly feeds endings. The Walker's quest is
+  also taught by delivering a singing stone (Agreed, session 5: [the lore](lore-research.md#shoemaker-and-the-singing-stones-agreed-session-5)).
+  Neither fits the Walker's quest line as written, which has no reputation and teaches it from your sensor
+  logs ([Clashes, items 5 and 6](lore-session-2026-10-18-mitchell-wow-shoemaker.md#clashes)).
+- **Lore root:** an old Tabbed custom carried on by the Ashwalkers, debts settled with gifts left at shrines
+  ([the lore](lore-research.md#mitchells-company-agreed-session-5)).
+
+Readings, not in the session: the rep is a running value kept with the run, like the axes
+([Profile & saves](prd/profile-and-saves.md#ending-flags-proposed)); a gift "the next storm brings" rides the
+drift channel ([Salvage & ruins](prd/salvage-and-ruins.md#two-channels-agreed)); the sail is a broken nomad
+rig's ([nomad gear](prd/salvage-and-ruins.md#nomad-gear-agreed-2026-10-18-spec-not-built)). Not said: what a
+shrine is, how much rep a gift or a theft is, or what "tend to" the Walker does.
+
 ### The three axes: Varran, Daventry and Cistern
 
 *Agreed, session 4, part 3.* They are cross-cutting modifiers beside the observatory and the
@@ -523,7 +555,7 @@ with a login to the god of the crusades. The Quartermaster is the Provisional's,
 means nothing to it ([the AI
 gods](lore-research.md#the-faith-of-tu-and-the-ai-gods-agreed-session-4-part-2)). *Session 4, part 5:*
 other kits need a **second door**, the original Harbourmaster's credentials on a sticky note, because
-the Harbourmaster "was never formally fired" ([the Okafor bunker](#the-okafor-bunker-agreed-session-4-part-5)).
+the Harbourmaster "was never formally fired" ([the Haberjack bunker](#the-haberjack-bunker-agreed-session-4-part-5)).
 
 **The hive mind start changes the endings without a cutscene.** Fix StarCom and someone answers,
 but not Tilg. Try to launch and the Quartermaster recognises you as the enemy, whatever your
@@ -595,7 +627,8 @@ is in the lore sessions ([part 1](lore-session-2026-10-14.md), [part
 4](session-notes-2026-10-17.md), [session 4, part 2](lore-session-2026-10-17-part-2.md), [the
 endings session](endings-and-radio-2026-10-17.md), [session 4, part
 3](lore-session-2026-10-17-part-3.md), [session 4, part 4](plants-worldgen-ruins-2026-10-17.md) and
-[session 4, part 5](gods-gear-farside-2026-10-17.md)) and [the lore research](lore-research.md).
+[session 4, part 5](gods-gear-farside-2026-10-17.md) and [session
+5](lore-session-2026-10-18-mitchell-wow-shoemaker.md)) and [the lore research](lore-research.md).
 
 You're a **scavenger and a survivor, in a suit**, because nobody survives here without
 one. The suit is the one gift this world gives you. Why you're out here gets revealed
@@ -707,7 +740,7 @@ The order we build them in is the [skeleton plan](skeleton-plan.md).
   section 17](lore-research.md#17-open-after-the-endings-session-and-session-4-part-3), with what
   they leave open: how the three axes are implemented and learned without exposition, the exact
   Daventry unlock, the world clock behind the atmosphere ending, whether the Ledger still
-  broadcasts, and which loose ideas (wrong answer, the Okafor line, the radio ending) to develop
+  broadcasts, and which loose ideas (wrong answer, the Haberjack line, the radio ending) to develop
   or drop.
 - **Session 4, part 4's clashes with this page.** Landmarks "placed per seed" against "the same in
   every run"; a plan of the moon's history against "Only what's around the player exists" and
@@ -721,7 +754,7 @@ The order we build them in is the [skeleton plan](skeleton-plan.md).
   ground, and where the orbital launch site stands.
 - **Session 4, part 5's clashes with this page.** The dialogue rule amended to let machines talk through
   terminals; the Ledger's login against the second door; "bridging Mon and Han" against three ways to
-  link; the stolen freighter against a stolen Quartermaster; the Okafor line's holdout against a bunker
+  link; the stolen freighter against a stolen Quartermaster; the Haberjack line's holdout against a bunker
   with nobody left; the orbital launch site against the Rim depot; "history runs backwards in the
   ground" against gear by era (eased: efficiency falls with age, and repair is the trade); and the Cistern
   axis against a Mother Cistern you can carry away. The newest session wins, so they are applied above as

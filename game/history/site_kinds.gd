@@ -20,8 +20,14 @@ const KINDS := {
 	&"pump_station": {"era": Eras.COLONIAL, "reach": 14.0, "lattice": true},
 	&"farm_dome": {"era": Eras.COLONIAL, "reach": 18.0},
 	&"vent_station": {"era": Eras.COLONIAL, "reach": 16.0, "lattice": true},
+	# Wrecks from the colony's end: a contractor's freight pod and a
+	# freighter's lifeboat, down after the rest was built, so shallower.
+	&"freight_pod": {"era": Eras.COLONIAL, "burial": Vector2(1.0, 3.0)},
+	&"lifeboat": {"era": Eras.COLONIAL, "burial": Vector2(0.8, 2.5)},
 	# Skimmer era: scars on colonial structures, and wrecks anywhere.
 	&"wreck_hull": {"era": Eras.SKIMMER},
+	# A Provisional tithe hauler, down where the war's traffic ran.
+	&"tithe_hauler": {"era": Eras.SKIMMER},
 	&"fuel_bladder": {"era": Eras.SKIMMER},
 	&"dugout": {"era": Eras.SKIMMER},
 	&"checkpoint": {"era": Eras.SKIMMER, "reach": 8.0, "lattice": true},
@@ -40,6 +46,8 @@ const KINDS := {
 	&"granary": {"era": Eras.SECOND, "reach": 7.0, "lattice": true},
 	&"earthwork": {"era": Eras.SECOND, "reach": 12.0},
 	&"bunker": {"era": Eras.SECOND, "reach": 12.0, "lattice": true},
+	# A colonial hopper the Knights Requisitioner flew on the crusade.
+	&"hopper": {"era": Eras.SECOND},
 	# The ground's own: a live vent's mouth on the rift.
 	&"vent_mouth": {"era": Eras.GEOLOGY},
 	# Signs: the Dark Age's markers on the migration routes.
@@ -51,6 +59,12 @@ const KINDS := {
 
 static func era(kind: StringName) -> StringName:
 	return KINDS[kind].era
+
+
+## Sand over a site of the kind, m, least and most: its own where it says,
+## else its era's.
+static func burial(kind: StringName) -> Vector2:
+	return KINDS[kind].get("burial", Eras.BURIAL.get(era(kind), Vector2.ZERO))
 
 
 static func reach(kind: StringName) -> float:

@@ -152,6 +152,8 @@ class Piece:
 	## each moving no sand more than STEP_M; and its rooms' lowest floor, plan m.
 	var steps := 1
 	var low := 0.0
+	## A wreck's scrapping: its plates, holds and modules (Wreckage), or null.
+	var wreck: WreckPlan
 
 	var _shown := {}
 	var _shapes: Array[BoxShape3D] = []
@@ -433,7 +435,7 @@ static func prepare() -> void:
 static func _load() -> void:
 	if not _pieces.is_empty():
 		return
-	for era: Script in [ColonialKit, SkimmerKit, FirstKingdomsKit, SecondAgeKit, GeologyKit]:
+	for era: Script in [ColonialKit, SkimmerKit, FirstKingdomsKit, SecondAgeKit, GeologyKit, WreckKit]:
 		for each: Piece in era.pieces():
 			each.finish()
 			_pieces[each.kind] = each

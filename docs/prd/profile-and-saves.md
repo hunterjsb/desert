@@ -232,6 +232,9 @@ vision](../vision.md#the-three-axes-varran-daventry-and-cistern)).
   lane. "Player control is how careful you are with the transmitter." The stolen freighter and the
   pathfinder read it: loud, and Daventry waits at the lane; quiet, and the passage is unnoticed.
 - **The Cistern state** is one of three: dormant, restored, or linked into the network.
+- **Nomad reputation** (session 5, [the vision](../vision.md#nomad-reputation-agreed-session-5-not-built)) is a
+  third running value: a number that rises with sails and goods returned at a shrine and falls with theft,
+  and that decides whether you may tend to the Walker. How it is counted is not said.
 
 Readings, not in the session:
 - **They are a run's changes, so they belong to the run save,** whose rule is that a save holds

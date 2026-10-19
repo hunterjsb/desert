@@ -816,6 +816,21 @@ static var _current: Tuning
 ## this hard as much as a storm's heart, m/s.
 @export var exposure_calm_wind: float = 16.0
 @export var exposure_gale_wind: float = 30.0
+## Scrapping a wreck (Wreckage): seconds a heat cutter's hot spot takes
+## through each metre of a plate's seam (times the wreck's armour), and a
+## scoop through each m³ of packed sand. The cutter draws this while it
+## fires, W: its battery's 60 Wh last half an hour of cutting.
+@export var cut_seconds_per_m: float = 1.5
+@export var clear_seconds_per_m3: float = 0.35
+@export var cutter_w: float = 120.0
+## A live capacitor bank's shock: health it takes at once, and seconds you're
+## stunned. A breached store's sickness: health a second it takes, for how
+## many seconds of world time, and how much faster you thirst meanwhile.
+@export var shock_harm: float = 25.0
+@export var shock_stun: float = 1.5
+@export var sickness_harm: float = 0.08
+@export var sickness_seconds: float = 240.0
+@export var sick_thirst: float = 1.8
 
 @export_group("History")
 ## The moon's cells history is made and laid in, m across.
