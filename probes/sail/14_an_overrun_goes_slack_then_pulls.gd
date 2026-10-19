@@ -3,7 +3,7 @@ extends SailProbe
 ## ever pulls past its strength. On the Varran rig running in a steady 10 m/s,
 ## forward held in a clear passing lane: the motor can run past it on slack
 ## lines, which come taut again at no more than their strength, still riding.
-## Forced past it at 12 m/s, a line either holds, never
+## Forced away along a bow line at 12 m/s relative to the rig, it either holds, never
 ## pulling past its strength, or parts.
 
 const WIND := 10.0
@@ -60,17 +60,25 @@ func run() -> void:
 	if player.ride == null:
 		return
 
-	# Forced on past it: your way thrown hard downwind past the rig.
-	var held := {"past": 0, "peak": 0.0}
+	# Head out along a real bow line: a fixed downwind shove can instead
+	# close the gap after the powered run, testing slack rather than overload.
+	var forced: Rope = _lines[0].rope
+	var radial := player.global_position - forced.a.global_position
+	var away := Vector2(radial.x, radial.z).normalized()
+	var held := {"past": 0, "peak": 0.0, "bow": 0.0}
 	ropes.snapped.connect(func(_rope: Rope) -> void: seen.parted += 1)
-	player.ride.velocity = Vector2(downwind.x, downwind.y) * 12.0 + Vector2(way.x, way.y) * 4.0
+	player.ride.velocity = Vector2(deck.linear_velocity.x, deck.linear_velocity.z) + away * 12.0
+	var facing := player.ride.velocity.normalized()
 	await simulate(4.0, func() -> void:
-		player.rotation.y = atan2(-way.x, -way.y)
+		player.rotation.y = atan2(-facing.x, -facing.y)
 		for line in _lines:
 			if is_instance_valid(line) and line.rope != null and ropes.ropes.has(line.rope):
 				held.peak = maxf(held.peak, line.rope.tension)
+				if line.rope == forced:
+					held.bow = maxf(held.bow, line.rope.tension)
 				held.past += int(line.rope.tension > line.rope.breaking + 0.5))
-	print("thrown past it at 12 m/s: the lines' peak %d N, %d parted" % [roundi(held.peak), seen.parted])
+	print("drawn away along its bow line at 12 m/s: bow peak %d N, all lines' peak %d N, %d parted" % [
+		roundi(held.bow), roundi(held.peak), seen.parted])
 	check(held.past == 0, "a line asked past its strength never pulls past it: it holds or it parts (%d N)" % roundi(held.peak))
-	check(held.peak > world.tuning.rope_breaking * 0.9, "the forced overrun reaches the rope's limiting load")
+	check(held.bow > forced.breaking * 0.9, "the forced overrun reaches the rope's limiting load")
 	speed_up(1)

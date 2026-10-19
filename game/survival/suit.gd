@@ -475,7 +475,11 @@ func _waist_height() -> float:
 
 
 func _process(_delta: float) -> void:
-	if open:
+	var showing := open and Controls.playing()
+	if showing and not _layer.visible:
+		Controls.free_mouse(true)
+	_layer.visible = showing
+	if showing:
 		_waist_lines.refresh()
 		_show_looks(stacks())
 		_view.queue_redraw()

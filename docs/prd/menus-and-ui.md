@@ -547,3 +547,12 @@ four steps of 190 px cards); over a run, in the middle on the soft dark field.
 **Built:** `UIRoot` takes the console action before focused controls can consume it, covers the current menu, and restores its exact word, deed card or search field on close. The origin list is rebuilt with its prior selection so `unlockall` takes effect immediately. Menus probe 18 exercises origin selection, options, deeds, the run system menu, nested run options and creative search; existing console probe 8 still passes.
 
 The once-per-profile how-to is hidden while menus, the console or a fade hold input, so a sail controls hint does not overlap a sailing-notes chapter heading. Its usual timeout continues; it returns to the run only if still current. Menus probe 19 checks covered hints alongside the booklet's bounded text and navigation.
+
+## Reading carried field notes (Sanddune, 2026-10-19)
+
+The normal Varran kit carries its sailing notes so spawn weather cannot blow the
+booklet away. Using it from the carry view opens the normal reader. The carried
+objects and waist list are hidden while a menu covers them; closing the reader
+restores that view with its mouse free. Deed toasts are hidden over menus as
+how-to hints already are, so they do not overlap chapter headings. Their normal
+timeout continues and the profile retains its unread-deed indication.

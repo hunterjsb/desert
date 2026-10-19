@@ -55,6 +55,10 @@ func _init() -> void:
 	words.add_child(_name)
 
 
+func _process(_delta: float) -> void:
+	visible = showing != &"" and Controls.playing()
+
+
 ## None waiting, and the one showing gone.
 func clear() -> void:
 	_waiting.clear()
@@ -85,7 +89,7 @@ func _next() -> void:
 	_row.add_child(picture)
 	_row.move_child(picture, 0)
 	_name.text = Deeds.TABLE[showing].name
-	visible = true
+	visible = Controls.playing()
 	Sounds.play(get_tree().root, Sounds.DEED, Sounds.UI)
 	offset_top = RISE
 	offset_bottom = RISE

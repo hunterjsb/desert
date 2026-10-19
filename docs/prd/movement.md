@@ -1200,3 +1200,63 @@ Three checks passed on the corrected fixture. The measured run spent 4.1 s with 
 slack, retensioned while the rider stayed aboard and reached exactly 1,500 N; the forced
 phase reached 1,500 N and one line parted. A failed ride check now stops before dereferencing
 the absent ride, preserving the original failure instead of adding a secondary script error.
+
+### Normal-play sailing teaching (agreed Sanddune work)
+
+Learning through objects applies to the normal Varran start as well as the dev sailing scenario.
+The existing field booklet is available from the suit and a streamer flies on the rig's mast.
+The shared booklet must distinguish the practice rig's skates from the Varran's floating,
+three-line rig, explain raising the sail and floating the deck, and keep the personal shield on
+the rider so it does not shelter the sail. No new input action, item type or reading deed is needed.
+The player can read and carry the notes through the existing device/menu system.
+
+The line-handling chapter also teaches the agreed named waist-line choice in the carry view:
+select a line to keep working it, or choose Follow gaze to return to aiming along a line. A held
+line still takes priority. Empty-handed use unties the selected waist line after the normal delay.
+
+**Initial placement:** `varran_kit.tres` placed `sailing_notes` 0.73 m beside the board and mounted a
+`streamer` on the existing named mast through the same rig step used by the sailing scenario.
+`SailingNotes` uses the existing chapter/page reader and control macros; its opening covers both
+rig types, floating the Varran deck and keeping its personal shield on the rider. The line chapter
+describes carry-view selection and Follow gaze. Existing saves are not retroactively supplied
+with the starting pair. Source inspection found no Varran fixture count/index assumptions to
+change; this bounded change adds no probes.
+
+**Storm-access correction:** A normal seed-1234 Varran capture found the loose booklet 23.5 m
+from the rider after the opening fade and 90 further physics ticks, with an active storm at spawn.
+Starting guidance must survive that weather: the Varran now carries the physical booklet in the
+existing suit inventory, where its existing Use opens the reader. The practice scenario keeps
+its loose booklet beside the board. The mast streamer remains mounted. This supersedes the
+normal-start loose placement above; no new item, action or UI is required.
+
+The carried-booklet visual check also exposed inventory tiles behind reader text.
+The covered carry view is now hidden until the reader closes, then returns with
+mouse interaction restored; deed toasts no longer cover menu headings.
+
+**Rendered acceptance:** a fresh storm Varran run showed the carried booklet and
+mounted streamer at 1280×720. Inventory Use opened the actual reader. Opening and
+line-handling pages fit with their navigation; the carry view and deed toast stayed
+hidden behind them. Closing the reader restored carried objects, all three waist
+line rows and a free pointer. The final visual helper exited without runtime errors.
+
+**Radial overload coverage (2026-10-19).** The normal Varran's added streamer changes the
+trajectory enough that sailing 14's later fixed downwind velocity no longer challenges a
+line. On the exact teaching candidate, the normal phase still gave 4.2 seconds slack,
+retension and a 1,500 N peak while riding; the forced phase peaked at only 345 N locally
+(296 N on CI), correctly failing its unchanged 90%-of-rating coverage assertion. Measured
+relative velocity along the near bow line was **-8.48 m/s**: the imposed motion closed the
+gap, making slack instead of applying overload. This is a fixture direction error, not
+evidence that the strength limiter changed.
+
+Keep the normal powered run and both strength/coverage requirements. For the forced
+phase, move at 12 m/s away from the actual near bow attachment relative to the moving
+rig, facing along the resulting motion. This heads into the open lane away from the rig,
+without crossing its chassis or mast, and must load that specific line to at least 90%
+of its rating while no line pulls past its rating. Do not change gameplay physics.
+
+With that fixture correction the near bow's measured opening speed is 11.98 m/s along its
+three-dimensional radial (12 m/s horizontally); it reaches exactly 1,500 N, all lines stay
+at or below 1,500 N, none parts and no wipeout is emitted. The normal powered phase retains
+4.2 seconds slack and retension while riding. Two official focused sailing-14 runs pass
+(13 seconds each); the direct measurement replay also passes. No physics or presentation
+source changed.
