@@ -7,6 +7,7 @@ extends WeatherProbe
 ## round you; a storm over the vent hides it and it comes back after; what it
 ## shows is the vent's venting at that moment; and it costs the main thread
 ## little.
+## Runs alone: it times real frames.
 
 ## Its mean main-thread cost a frame may be this, ms.
 const BUDGET := 0.25

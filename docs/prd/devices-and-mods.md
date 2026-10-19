@@ -658,6 +658,12 @@ what a Console's full-face screen shows, and a god module is a part of the compu
 modules](#god-modules-as-crate-modules-proposed-session-4-part-5-not-built)). A Walker taken whole is
 still the Console with weather sensing built in, above.
 
+**One map, with filters (Hunter, 2026-10-19; agreed, not built).** "Instead of more tabs im
+thinking one map tab with filters: weather, archeology, and navigation." The Console keeps one Map
+page. What used to want its own page lays over it as a filter you switch on and off: weather (the
+radar, fronts, anomalies once the Walker is taught), archaeology (the ground radar's Survey) and
+navigation (bearings, the Walker's contacts, the course and the sail's ideal).
+
 ## The patrol board as a superchassis (proposed, not built)
 
 *Session 4, part 3 ([lore session](../lore-session-2026-10-17-part-3.md)). Direction, not a spec:

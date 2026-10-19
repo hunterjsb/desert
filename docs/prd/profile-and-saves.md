@@ -235,6 +235,7 @@ the frame is a part stuck on the deck.
 
 | Tree | Deed | Asks | After | Recorded |
 |---|---|---|---|---|
+| Board | **Yard Sale** (hidden) | Tumble 12 m in one wipeout | Big Air | `Tumble`'s tick: how far you've tumbled since you were thrown off ([Movement](movement.md#the-rides-feel-and-boards-by-make-hunter-2026-10-18-built)). Built 2026-10-19 |
 | Wind | Set Sail | Tie a sail's sheet at your waist (as now) | | your waist |
 | Wind | **Hand-Me-Down** | Take the sail off a wrecked nomad rig | Set Sail | `Salvage.claim`: the find a nomad rig always carries (its mast with its sail, the socket `SiteLoot.RIGGED`) becoming yours |
 | Wind | **Telltale** | Trim a sail with a streamer flying on its rig | Hand-Me-Down | `Mast`'s haul: its sheet's inboard taken in or let out a notch, its sail all the way up and yours to sail, with a wind streamer anywhere on its camp, its mast too |
@@ -283,7 +284,7 @@ the frame is a part stuck on the deck.
 - **Nomad ties the trees together:** its card stands apart, with a line from each of the five
   trees, lit where you've done one. It waits on any one deed of a tree, not a named one, so the
   table's `after` gains "any of a family".
-- **The grid holds every tree** (built for step 1, Menus & UI): 43 deeds in eleven families since the nomads' gear, each a
+- **The grid holds every tree** (built for step 1, Menus & UI): 44 deeds in eleven families since the nomads' gear, each a
   branch or two beside its name down the left, as round one's were (eleven columns side by side
   wouldn't stand left of the prop). It scrolls, and opens on the latest done.
 - **The order.** Each part waits for what it reads to land:
@@ -333,6 +334,9 @@ How each X was chosen, from the probes' numbers (the probes' seed, 2026-10-19):
 - **5,000 m in one day,** not 20 km. A day is 20 minutes and the yacht's best is 11.7 m/s, 14 km if
   it never turned. Five km is the yacht on its reaches for half a day, or a camp on skates at its
   4.3 m/s beam reach for all of one.
+- **12 m in one wipeout:** thrown off a flat-out landing you tumble 12.3 m, and riding at 15 m/s
+  13.4; an edge caught in a flat-out stop throws you at 13.5 m/s and only 9.7 m, and a crash bounces
+  you back 3.2.
 - **5° and 10 days** are the table's. Tu nods about a degree a day, so overhead is a circle about 2
   km across the point under Tu, 25 km from the tuning's start; the Dark Side begins 95.5° from it, 15
   km the other way. Ten days is 200 minutes without dying.
@@ -354,6 +358,11 @@ How each X was chosen, from the probes' numbers (the probes' seed, 2026-10-19):
 - **Probes** 25 to 31, one a tree, and Menus & UI probe 16; 33, the dune deeds through play (a ruin
   stepped onto, dug out by hand and not before half its sand is yours, and the setup not done until its
   ground radar is fitted), and 34, the Archaeologist locked until both of hers.
+
+**New features come with deeds (Hunter, 2026-10-19).** "I love all the new deeds, we should keep
+the creed that new features should be exposed via deeds." Every feature that lands brings a deed
+or more for doing what it's for, in the tree it fits, recorded where it happens. A deed makes a new
+system something you go and do.
 
 ## Starts on the chassis, and two new kits (agreed, 2026-10-18 spec; built)
 

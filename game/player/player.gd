@@ -9,6 +9,7 @@ extends CharacterBody3D
 ## Never moves where the ground has no collision yet, and never ends up in
 ## the sand. How it feels is Feel's: the camera's. Auto-walk gives your walk
 ## only its way. Sat at a helm you ride the camp, and the sideways moves turn it.
+## Thrown off the board you tumble (Tumble), and get up once you've come to rest.
 
 ## Touched down from the air at this speed, m/s.
 signal landed(speed: float)
@@ -20,6 +21,8 @@ signal edge_bit(speed: float)
 signal wiped_out(speed: float, how: StringName)
 signal took_off(speed: float)
 signal touched_down(speed: float)
+## Tumbling, you hit the sand this hard, m/s.
+signal tumbled(speed: float)
 
 ## Slides and the air step at this rate whatever the physics tick, and the
 ## rest is exact over a tick, so the same keys trace the same path at 30, 60
@@ -34,13 +37,13 @@ const LOW_SECONDS := 0.12
 const SLIP_HOLD := 2.0
 ## A board this near your feet, m, is one you can step onto.
 const BOARD_REACH := 1.5
-## Thrown off, the board stops in the sand and throws you on: you keep this
-## share of your way, it this share, tumbling over its edge, rad/s, popping
-## up off the sand, m/s; off something solid it bounces back this share of
-## what it hit it with.
-const THROWN_KEEPS := 0.6
+## Thrown off, the board stops in the sand and throws you on: it keeps this
+## share of its way, tumbling over its edge and end over end at this share of
+## that, rad/s, popping up off the sand, m/s; off something solid it bounces
+## back this share of what it hit it with.
 const BOARD_KEEPS := 0.25
 const TUMBLE := 7.0
+const END_OVER := 0.6
 const POP := 2.0
 const BOUNCE := 0.3
 
@@ -67,9 +70,11 @@ var feel: Feel
 var walker: AutoWalk
 ## Tuning a radio brings the view in to its dial.
 var close_up: CloseUp
-## The board you ride, or null, and the ride that moves you on it.
+## The board you ride, or null, and the ride that moves you on it; thrown
+## off it, your tumble until you're up again.
 var board: Hoverboard
 var ride: Ride
+var tumble: Tumble
 ## The helm you sit at, or null.
 var helm: Helm
 
@@ -122,6 +127,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		Controls.free_mouse(false)
 	elif event.is_action_pressed("ui_cancel"):
 		Controls.free_mouse(true)
+	elif tumble != null:
+		return
 	elif event.is_action_pressed("ride"):
 		if toggle_board():
 			get_viewport().set_input_as_handled()
@@ -161,6 +168,13 @@ func _physics_process(delta: float) -> void:
 	if ride != null:
 		_ride(delta, input)
 		return
+	if tumble != null:
+		# Moved from outside (a probe, a respawn, a load), you're as you're put.
+		if velocity != _left:
+			_get_up()
+		else:
+			_tumble(delta)
+			return
 	if _boarding != null:
 		if not is_instance_valid(_boarding) or _boarding.global_position.distance_to(global_position) > BOARD_REACH * 2.0:
 			_boarding = null
@@ -307,6 +321,8 @@ func get_on(on: Hoverboard) -> bool:
 	_boarding = null
 	if on == null or board != null or flying:
 		return false
+	if tumble != null:
+		_get_up()
 	if world.salvage.lying(on):
 		world.salvage.unbury(on)
 	if not on.can_run():
@@ -420,10 +436,11 @@ func _ride(delta: float, input: Vector2) -> void:
 			* ride.make.sturdy, ", skid %d°" % roundi(rad_to_deg(minf(slid, PI - slid))) if ride.skidding else ""])
 
 
-## An edge caught, a landing too hard or a crash throws you off: you stumble
-## on across the sand with most of your way, knocked and winded, and the
-## board tumbles over its edge behind you, off what it struck if it struck
-## something. It never takes your last health.
+## An edge caught, a landing too hard or a crash throws you off: you let go
+## of what you held and tumble on over the sand with your way, toward the
+## board's low side, knocked and winded, and the board tumbles away behind
+## you on its own, off what it struck if it struck something. It never takes
+## your last health.
 func wipe_out() -> void:
 	var how := ride.thrown if ride.thrown != &"" else &"edge"
 	var speed := ride.thrown_at if ride.thrown_at > 0.0 else ride.velocity.length()
@@ -431,18 +448,49 @@ func wipe_out() -> void:
 	var low := signf(ride.bank) if ride.bank != 0.0 else 1.0
 	var tumbling := board
 	step_off()
-	velocity *= THROWN_KEEPS
-	own *= THROWN_KEEPS
-	_left = velocity
+	walker.stop()
+	hands.grasp.let_go()
+	hands.drop()
+	tumble = Tumble.new(self, own, how, low, struck * speed * Tumble.REBOUND)
+	motion_mode = MOTION_MODE_FLOATING
 	if is_instance_valid(tumbling):
 		var ahead := -tumbling.global_basis.z
 		tumbling.linear_velocity *= BOARD_KEEPS
 		tumbling.linear_velocity += Vector3(struck.x, 0.0, struck.y) * speed * BOUNCE
 		tumbling.linear_velocity.y = maxf(tumbling.linear_velocity.y, 0.0) + POP
-		tumbling.angular_velocity = ahead * low * TUMBLE
+		tumbling.angular_velocity = (ahead * low - tumbling.global_basis.x * END_OVER) * TUMBLE
 	vitals.health = maxf(vitals.health - _tuning.board_wipeout_hurt, minf(vitals.health, 1.0))
 	stamina = maxf(stamina - _tuning.board_wipeout_winded, 0.0)
 	wiped_out.emit(speed, how)
+
+
+## A tick of your tumble: nothing but the tumble moves you until you're up.
+func _tumble(delta: float) -> void:
+	if not world.has_ground_under(global_position):
+		tumble.wait()
+		return
+	tumble.step(delta)
+	own = tumble.velocity
+	sink = 0.0
+	_hold_above_sand()
+	_left = velocity
+	mode = "tumble"
+	if tumble.up():
+		velocity = Vector3.ZERO
+		own = Vector2.ZERO
+		_left = velocity
+		_get_up()
+	Dev.put("player/mode", mode)
+	Dev.put("player/spd", "%.1fkm/h" % (own.length() * 3.6))
+
+
+## On your feet again, standing where the tumble left you.
+func _get_up() -> void:
+	tumble = null
+	motion_mode = MOTION_MODE_GROUNDED
+	_jump_queued = false
+	_jump_buffer = 0.0
+	_since_ground = 0.0
 
 
 ## What's at your waist that would hold the board back: every line but a

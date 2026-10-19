@@ -530,6 +530,15 @@ func step(delta: float, dir: Vector2, hop: bool, digging := 0.0, kick := false, 
 	_deeds(world)
 
 
+## How fast it slides across the sand, m/s: its way across the board while
+## it skids, drifts, slides out of a landing or drags a dug edge, its hover
+## on the sand; 0 gripping or flying. What gouges the sand (Tracks).
+func slide_across() -> float:
+	if gap > AIR_FROM or not (skidding or drifting or loose > 0.1 or dig > SKID_DIG):
+		return 0.0
+	return absf(velocity.dot(Vector2(-ahead.y, ahead.x)))
+
+
 ## It throws you off: how, and how hard, m/s.
 func _throw(how: StringName, speed: float) -> void:
 	caught = true

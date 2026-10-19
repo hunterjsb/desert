@@ -182,6 +182,35 @@ corner_radius_bottom_left = 2
 shadow_color = Color(0, 0, 0, 0.35)
 shadow_size = 14
 
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_group"]
+content_margin_left = 10.0
+content_margin_top = 4.0
+content_margin_right = 10.0
+content_margin_bottom = 6.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_group_picked"]
+content_margin_left = 10.0
+content_margin_top = 4.0
+content_margin_right = 10.0
+content_margin_bottom = 6.0
+draw_center = false
+border_width_bottom = 2
+border_color = Color(0.92, 0.92, 0.9, 0.7)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_search"]
+content_margin_left = 6.0
+content_margin_top = 4.0
+content_margin_right = 6.0
+content_margin_bottom = 6.0
+draw_center = false
+border_width_bottom = 1
+border_color = Color(0.92, 0.92, 0.9, 0.22)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_search_focus"]
+draw_center = false
+border_width_bottom = 1
+border_color = Color(0.92, 0.92, 0.9, 0.7)
+
 [resource]
 default_font = ExtResource("3_ixh7b")
 default_font_size = 12
@@ -229,6 +258,27 @@ Column/base_type = &"VBoxContainer"
 Column/constants/separation = 0
 Columns/base_type = &"HBoxContainer"
 Columns/constants/separation = 14
+CreativeGroup/base_type = &"Button"
+CreativeGroup/colors/font_color = Color(0.62, 0.62, 0.6, 1)
+CreativeGroup/colors/font_focus_color = Color(0.92, 0.92, 0.9, 1)
+CreativeGroup/colors/font_hover_color = Color(0.92, 0.92, 0.9, 1)
+CreativeGroup/colors/font_hover_pressed_color = Color(0.92, 0.92, 0.9, 1)
+CreativeGroup/colors/font_outline_color = Color(0, 0, 0, 0.55)
+CreativeGroup/colors/font_pressed_color = Color(0.92, 0.92, 0.9, 1)
+CreativeGroup/constants/outline_size = 4
+CreativeGroup/font_sizes/font_size = 15
+CreativeGroup/fonts/font = SubResource("FontVariation_mippt")
+CreativeGroup/styles/disabled = SubResource("StyleBoxEmpty_group")
+CreativeGroup/styles/focus = SubResource("StyleBoxEmpty_5mt7h")
+CreativeGroup/styles/hover = SubResource("StyleBoxEmpty_group")
+CreativeGroup/styles/hover_pressed = SubResource("StyleBoxFlat_group_picked")
+CreativeGroup/styles/normal = SubResource("StyleBoxEmpty_group")
+CreativeGroup/styles/pressed = SubResource("StyleBoxFlat_group_picked")
+CreativeSearch/base_type = &"LineEdit"
+CreativeSearch/font_sizes/font_size = 16
+CreativeSearch/fonts/font = SubResource("FontVariation_mippt")
+CreativeSearch/styles/focus = SubResource("StyleBoxFlat_search_focus")
+CreativeSearch/styles/normal = SubResource("StyleBoxFlat_search")
 DeedBadge/base_type = &"PanelContainer"
 DeedBadge/styles/panel = SubResource("StyleBoxFlat_badge")
 DeedBadgeRow/base_type = &"HBoxContainer"

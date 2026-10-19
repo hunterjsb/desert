@@ -306,6 +306,58 @@ stop and the crouch drift ride as they did.
   2.5, `board_land_jar` 9, `board_land_throw` 15, `board_crash` 7; the makes in `BoardMakes.MAKES`.
   The look-test `look/boards/shoot.sh` shoots each make, a skid, a hard landing and a pop's pitch.
 
+**Playtest (Hunter, 2026-10-19; agreed, built).** "Hover boards are feeling better, but
+skidding should leave deep marks, and is it still possible to fall off the board? i liked that
+feature. just make it clear youre really tumbling."
+- **A skid gouges the sand:** deep, wide marks where the board slides sideways, plainly more than a
+  carve's line, kept the way tracks are.
+- **Falling off is kept,** and reads as a real tumble: your view rolls and tumbles over the sand
+  with you, sand thrown and thuds as you hit, before you come to rest. Falling off still happens on
+  a landing past the throw, a crash and the edge catch.
+
+**Built (2026-10-19, `game/player/tumble.gd`, `game/world/tracks.gd`, `game/player/feel.gd`,
+`game/player/player.gd`, `probes/movement/` 30 and 31).**
+- **The gouge.** Wherever the board slides across its way on the sand (`Ride.slide_across`: a skid,
+  a drift, a landing's slide, a dug edge dragged across in a stop) at 1 m/s across or more, its hover
+  shoves the sand out from under its whole length: the tracks press all it swept since the last
+  tick, its walls sloping over half a metre. It's as deep as the slide is hard, all of it from
+  6 m/s across and never under 0.4 of that: twice a footprint at its deepest, drawn 12 cm down where
+  a footprint is 6 cm (the sand shader's marks now go to twice a full one). The tracks keep and
+  heal it as any mark, so it takes twice a footprint's time to fill: three hours in calm air, forty
+  minutes in a full storm. Flat out, the carve the hover holds leaves its line 0.25 of a footprint
+  deep and 0.65 m wide; turned hard enough to skid, a gouge 2.0 deep and 2.1 m wide. The tracks'
+  tick, gouging, takes about 1 ms at worst.
+- **The tumble.** Thrown off, you let go of what you held and tumble on over the sand with all of
+  your way, toward the board's low side, off a wall bouncing back at 0.3 of what you hit it with.
+  You go over onto the sand over 0.3 s; each time you come down at 1 m/s or more you hit it, which
+  takes 0.4 of your way and throws you into the next roll at a quarter of what's left (2.4 m/s at
+  most), and below that you plough to a stop at 1 g. You roll over at half a radian a second for
+  each m/s of your way, never more than three quarters of a turn a second, and down on the sand you
+  roll onto your nearer side. At rest you lie 0.5 s, then get up over 0.6 s; until you're up you
+  can't move, look about or step back on. Something solid
+  in the way stops you as it would on foot. The cost is the wipeout's, unchanged: 5 health, never
+  your last, and 25 stamina.
+  - An edge caught in a flat-out hockey stop throws you at 13.5 m/s: three hits, rolled three
+    quarters of a turn, 9.7 m and at rest in 1.42 s, up 1.1 s later.
+  - A landing past the throw at 15.4 m/s: three hits, 10.8 m in 1.48 s; flat out, 16.6 m/s, 12.3 m
+    in 1.62 s.
+  - A crash head on at 19.2 m/s: back off the wall at 5.8 m/s, one hit, 3.2 m in 0.87 s.
+  - It steps at 240 Hz inside each tick, as the ride does: from the same throw it goes 13.3719 m at
+    30, 60 and 120 ticks.
+- **Your view** goes over onto the sand with you, your eyes 0.25 m over it lying, and rolls with
+  your body, but never past 75°: rolling on, it pitches into the sand instead, as far as 60° face
+  down, so it never turns over however you do, and righted as you get up. Options has no motion
+  setting, so the roll stays bounded for everyone. Each hit thuds by how hard (`tumble_a.wav`,
+  `tumble_b.wav`, made here in `make_board_sounds.py`, CC0), throws a burst of sand up ahead of you
+  along your way, shakes your view and leaves your body's imprint, 1.6 by 0.5 m, in the sand;
+  ploughing to a stop you hiss, spray sand and groove it as a slide does.
+- **The board tumbles away on its own,** a body again: it keeps a quarter of its way, pops up
+  2 m/s and spins over its edge and end over end.
+- **Yard Sale** (hidden, Board, after Big Air): tumble 12 m in one wipeout, recorded by the tumble
+  as it goes (Profile & saves). Near flat out it's yours; an edge caught in a stop isn't enough.
+- **Not saved:** a save mid-tumble resumes you on your feet. The look-test `look/tumble/shoot.sh`
+  shoots a skid's gouge beside a carve's line and a tumble through your eyes and from behind.
+
 ### Dig and carve (agreed, 2026-10-18 spec; built)
 
 From Hunter's [storms, signals & sailing spec](../storms-signals-sailing-2026-10-18.md). The board's feel stays (never sinks, gets
@@ -343,12 +395,13 @@ both answered below.
   up to about 17 m/s and catches flat out (7.3 from 19.4 m/s); a cruise loads it to 4.0. Tapping
   move back, or carving the speed off first, keeps it under. Digging into a carve barely
   loads it, since the edge grips.
-- **A wipeout costs** a stumble and a knock, gently: the board stops in the sand and
-  you're thrown on with 60% of your way, sliding on your feet; you lose 5 health (unharmed,
-  it's back in a minute; a knock never takes your last) and 25 stamina; the board keeps a
-  quarter of its way, pops up 2 m/s and tumbles over its edge behind you, a body you walk
-  back to. Nothing is lost or broken. The numbers are Tuning's `board_dig_catch`,
-  `board_wipeout_hurt` and `board_wipeout_winded`.
+- **A wipeout costs** a knock, gently: the board stops in the sand and you're thrown on,
+  tumbling ([since 2026-10-19](#the-rides-feel-and-boards-by-make-hunter-2026-10-18-built); till
+  then you slid on your feet with 60% of your way); you lose 5 health (unharmed, it's back in
+  a minute; a knock never takes your last) and 25 stamina; the board keeps a quarter of its
+  way, pops up 2 m/s and tumbles behind you, a body you walk back to. Nothing is lost or
+  broken. The numbers are Tuning's `board_dig_catch`, `board_wipeout_hurt` and
+  `board_wipeout_winded`.
 - **Towed** (a sail's sheet, a kite), a line's pull drags the hover's grip out from under
   it, so only the dug edge holds against the line's sideways pull, and left alone the board
   trails its own way (a camp tows you at 2.8 m/s held across the wind; it towed you at 3.5 before
@@ -760,6 +813,21 @@ the board, your dug edge its only grip across the wind: the Varran rides his boa
   on one tack and then, its far bow line reeled in and out as you turn, the other, no line moved;
   undug it runs off downwind. 14: an overrun goes slack, then pulls under the lines' strength, and
   forced past it, a line never pulls past its strength.
+
+**Playtest (Hunter, 2026-10-19; agreed, not built).**
+- **The boom is solid to you.** "The horizontal part of the mast hitting you in the face and phasing
+  through you. it should run into you and do damage at speed and potentially knock you off the
+  craft, forcing you to design around it." A swinging boom strikes you by its speed where it meets
+  you: a knock, harm at speed, and a hard one throws you off the deck. Where you sit or stand
+  against where the boom sweeps is part of designing a rig.
+- **Sailing stays hard and real, with a way to learn it.** "Sailing is cool rn but im bad at it so
+  i think having an ideal comparison would help learn, an easy mode if you will, cuz i want to keep
+  sailing hard and realistic." A Console with navigation equipment on a yacht shows the ideal: the
+  sheet and heading that would sail best for where you're going, against what you're doing.
+- **Console control:** "a mod that is some sort of rotor you can tie the sail rope to if you want
+  console control." A winch, stuck on a deck, that takes the sheet. With a Console it trims the
+  sail to the ideal, and with a keel, helps you drive: driving by computer shows you what ideal
+  sailing looks like.
 
 ### The dune sailboat (Agreed, session 4, part 3; superseded)
 

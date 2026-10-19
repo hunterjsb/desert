@@ -2,7 +2,10 @@ extends MenuProbe
 ## Dev probe 6: the creative menu. Its action opens it over a run, which is a
 ## dev run from then on; a card picked puts a fresh one of its thing in your
 ## hands, and with them full in your suit. Every thing give makes is on it,
-## once. Its action closes it again.
+## once, and shows at first. By keys alone, up from the cards reaches the
+## groups, and along them one shows alone; up again, a search narrows it as
+## it's typed. Every thing is reached through its group, once. Its action
+## closes it again.
 
 
 func run() -> void:
@@ -32,5 +35,31 @@ func run() -> void:
 	on_it.sort()
 	made.sort()
 	check(on_it == made, "every thing give makes is on it, once (%d of %d)" % [on_it.size(), made.size()])
+	check(_sorted(grid.shown()) == on_it, "all of it shows at first")
+	grid.first().grab_focus()
+	press(&"ui_up")
+	press(&"ui_right")
+	var chassis: Array = CreativeGrid.GROUPS[0][1]
+	check(_sorted(grid.shown()) == _sorted(chassis), "up from the cards reaches the groups, and along them one shows alone (%s)"
+		% ", ".join(_sorted(grid.shown())))
+	press(&"ui_right")
+	press(&"ui_up")
+	type("batt")
+	await get_tree().process_frame
+	check(_sorted(grid.shown()) == ["battery", "big_battery", "power_rack"], "up again, a search narrows it as it's typed (%s)"
+		% ", ".join(_sorted(grid.shown())))
+	grid._search.clear()
+	var reached := []
+	for i in CreativeGrid.GROUPS.size():
+		grid._pick(i + 1)
+		reached.append_array(grid.shown())
+	check(_sorted(reached) == on_it, "every thing is reached through its group, once")
+	grid.first().grab_focus()
 	press(&"creative")
 	check(not ui.is_open(), "its action closes it")
+
+
+func _sorted(ids: Array) -> Array:
+	var out := ids.map(func(id: StringName) -> String: return str(id))
+	out.sort()
+	return out
