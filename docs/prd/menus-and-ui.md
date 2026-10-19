@@ -220,8 +220,8 @@ resets"): `unlockall` opens every start, and deeds can be granted or cleared to 
   condenser, a shield, a planter, a turbine) stands in front of you, and you have hold of it if your
   hands are free, which `god` makes light work of. Rope, wire and hose come rolled, as found. A line
   under the grid says where the last one went. Opening it makes the run a dev run, and the first time
-  that line says so. Too big for the screen, it's drawn smaller to fit. Its pictures are drawn as the
-  game starts, with the deeds'. `look/creative` shoots it over a run, and with `--scenarios` the
+  that line says so. (Since the playtest below, a search and a pick of its groups narrow it, and it
+  scrolls.) Its pictures are drawn as the game starts, with the deeds'. `look/creative` shoots it over a run, and with `--scenarios` the
   still camp, every make of board, and the vent as you arrive and as it bursts.
 - **`scenario`** alone, or `scenarios`, lists each with a line on what it stages. Each scenario names
   what it lays (`lays`), and `Scenarios.lay` lays it, so dev probe 1 starts every one as the console
@@ -257,7 +257,8 @@ four steps of 190 px cards); over a run, in the middle on the soft dark field.
   thirds of the screen's height of its page, and the wheel or the selection moves it, keeping the card
   highlighted in view. It draws its own bar at its right, what shows in the theme's dim ink over the
   whole in its faint, so nothing in it reaches past the one theme (an engine scroll container's own
-  parts style themselves). It opens scrolled to stand the deed done last in the middle of what shows.
+  parts style themselves); since 2026-10-19 the bar is the console's and the creative menu's too, and
+  dragging it scrolls the tree. It opens scrolled to stand the deed done last in the middle of what shows.
 - **A card** is the deed's name and a picture of its thing: the board, the shield, a crop, a planter,
   the Console, a chassis piece, the turbine, the helm, the compass, the heat cutter, a survival kit,
   sealant, a radio, the bedroll; drawn in the theme's ink, a sail on its mast, a storm's wall, an
@@ -279,7 +280,7 @@ four steps of 190 px cards); over a run, in the middle on the soft dark field.
   some done, one of them early, a hidden one done and one not, and a card highlighted
   (`look/deeds/shoot.sh` builds the sheet).
 
-**Playtest (Hunter, 2026-10-19; agreed, not built).**
+**Playtest (Hunter, 2026-10-19; agreed, built below).**
 - **The console has a scroll bar and can be resized.** "There are so many scenarios they dont fit
   in the console. i see we added scroll but lets add a scroll bar and make it resizeable so the
   player can make it bigger." A bar shows where you are in what it said, and you can drag the
@@ -287,6 +288,37 @@ four steps of 190 px cards); over a run, in the middle on the soft dark field.
 - **The creative menu scales.** "We will need to find a way to scale it as we will likely have many
   more items." It stays a grid of pictures, with a way to narrow it as it grows: its groups to
   pick from, and a search.
+
+**Built** (2026-10-19), after the playtest:
+- **The console's bar** stands beside what it said: what shows of its 200 lines, along the whole, in
+  the theme's dim ink over its faint, brighter while held or pointed at. Dragged, or pressed along, it
+  scrolls them, as the wheel and the page actions still do; the head line above stays put, saying how
+  far back it is. It scrolls a whole line at a time.
+- **Resizing:** its sides, its foot and the corners between are taken hold of to pull it bigger or
+  smaller, about its middle, from the top where it hangs; the pointer shows which way, and two short
+  strokes mark its foot's corner. It stays within the screen, no narrower than 360 px and a few lines
+  tall at the least, always whole lines tall. Let go, its size is kept in the settings
+  (`Settings.console_size`) and the next session's opens at it; a smaller screen fits it in.
+- **At first it's 800 px wide and as tall as `scenario`'s whole list needs**, with the line it was
+  typed on and its usage, so the list is read at once wherever the screen has room (a 1080 px screen
+  does; at 648 px it's a line short). `scenario` alone and `scenarios` list each on a line of its own,
+  their keys in a column, and `help` its commands so.
+- **The creative menu scales:** a search line over it narrows the grid to the cards whose name, label or
+  id has what's typed, as it's typed; under it, a row of its groups, All first, picks one to show, or
+  all of them under their headings, the one picked lit and underlined. What shows is one grid, as many
+  cards to a row as the screen has room for (ten at most), as tall as the screen has room for, and the
+  rest scrolls by the wheel, its bar (the console's) or the selection, which keeps the card highlighted
+  in view; nothing by the name searched for says so. It opens on the first card. By keys alone: up from
+  the top row reaches the groups, where moving along picks at once, and up again the search, typing at
+  once; down or confirm leaves it for the groups or the first card. The pointer picks a group by
+  pressing. `GROUPS` stays the one list of what's on it.
+- **One bar** (`game/ui/page_bar.gd`) for the console, the creative menu and the deeds, drawn by the game
+  itself since an engine scroll bar styles itself past the one theme.
+- `look/creative` with `--devui` shoots the menu narrowed by a search and the console pulled bigger
+  saying help and the scenarios.
+- **Probes:** Menus & UI probe 15 (its bar tracks each scroll and dragged scrolls it), 17 (the size is
+  kept), and dev probe 6 (the search and the groups narrow it, by keys alone, and every thing is still
+  reached through its group, once).
 
 ## Skeleton version
 
@@ -390,8 +422,8 @@ four steps of 190 px cards); over a run, in the middle on the soft dark field.
   the run has ever been saved offers only New run. In Ironman there's no screen: the
   caption says you died and a new run begins at once.
 - **The dev console** (`game/dev/dev_console.gd`), opened by the console action in a run with
-  nothing else open: a small dark panel near the top of the screen, a line to type into
-  under the last few lines it said. While it's up every key goes to it and nothing
+  nothing else open: a dark panel hanging from the top of the screen, a line to type into
+  under what it said, its bar beside it, pulled to any size within the screen and kept so. While it's up every key goes to it and nothing
   reaches the game: held keys wait as under a menu, the mouse is free, and the world
   runs on. Back closes it before anything else, and so does the console action. Up and
   down step through what was typed, and the focus-next key finishes a command's name, a
@@ -483,13 +515,17 @@ four steps of 190 px cards); over a run, in the middle on the soft dark field.
     start open it still opens there, its word larger than the rest.
 14. **The deeds open on the latest** (2026-10-18). With none done the deeds open on the first card
     still to do; with Green Thumb done and then Hermit, on Hermit. Deeds is new until they're looked at.
-15. **The console scrolls back** (2026-10-18). After `help`, the wheel scrolls up to its first lines,
-    and what you hold isn't brought nearer; the page actions scroll a page each way, the line
-    keeping its focus, and a command run shows at once.
+15. **The console scrolls back** (2026-10-18). After it has said more than shows, the wheel scrolls up
+    to its first line, and what you hold isn't brought nearer; the page actions scroll a page each way,
+    the line keeping its focus, and a command run shows at once. Its bar tracks each scroll, and dragged
+    to its top shows the first line (2026-10-19).
 16. **A hidden deed** (2026-10-19). Open but not done, Eye of the Anomaly is ???? with no picture, its
     panel giving nothing away, and Tells after it waits on ????; done, it shows its name and picture.
     The tree is taller than it shows and opens scrolled to the deed done last, far down it, in view
     with its panel beside it.
+17. **The console keeps its size** (2026-10-19). At first it shows every scenario at once, each on a
+    line of its own. Pulled out as far as can be, it stays within the screen; pulled in, it's smaller
+    about its middle, by whole lines; the settings keep that size, and the next session's opens at it.
 
 ## Out of scope
 

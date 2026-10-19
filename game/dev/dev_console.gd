@@ -142,6 +142,7 @@ func close() -> void:
 	_line.release_focus()
 	_back = 0
 	_up = 0
+	_pulling = Vector2.ZERO
 
 
 ## Runs one line as if typed and confirmed.
@@ -552,13 +553,15 @@ func shown() -> String:
 
 ## Its size as kept, or at first, within the screen: wide enough for a
 ## scenario's line and as tall as scenario's whole list, the line it was
-## typed on and its usage needs.
+## typed on and its usage need. Always whole lines tall, so none shows cut.
 func _fit(want := Settings.console_size) -> void:
+	# What's round the lines said: its edge, the head line and the typing line.
+	var around := _panel.get_combined_minimum_size().y - _out.get_combined_minimum_size().y
 	if want == Vector2.ZERO:
-		want = Vector2(WIDTH, _panel.get_combined_minimum_size().y - _out.get_combined_minimum_size().y
-			+ (Scenarios.LIST.size() + 2) * _tall())
+		want = Vector2(WIDTH, around + (Scenarios.LIST.size() + 2) * _tall())
 	var room := get_viewport_rect().size - Vector2(EDGE * 2.0, TOP + EDGE)
 	var fits := want.clamp(SMALLEST.min(room), room)
+	fits.y = around + maxf(floorf((fits.y - around) / _tall()), 1.0) * _tall()
 	_panel.offset_left = -roundf(fits.x * 0.5)
 	_panel.offset_right = roundf(fits.x * 0.5)
 	_panel.offset_bottom = TOP + roundf(fits.y)

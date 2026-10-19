@@ -175,7 +175,9 @@ func _init(world: World) -> void:
 	_page.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_view.add_child(_page)
 	_bar = PageBar.new()
-	_bar.set_anchors_and_offsets_preset(Control.PRESET_RIGHT_WIDE, Control.PRESET_MODE_MINSIZE)
+	_bar.set_anchors_preset(Control.PRESET_RIGHT_WIDE)
+	_bar.offset_left = -PageBar.ACROSS
+	_bar.offset_right = 0.0
 	_bar.moved.connect(func(at: float) -> void: scroll = at)
 	_view.add_child(_bar)
 	for group: Array in GROUPS:

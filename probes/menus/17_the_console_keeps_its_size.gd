@@ -2,8 +2,8 @@ extends MenuProbe
 ## Menus & UI probe 17: the console keeps its size. At first it shows every
 ## scenario at once, each on a line of its own. Its corner pulled out as far
 ## as can be, it stays within the screen; pulled in again, it's smaller about
-## its middle. Let go, the settings keep that size, and the next session's
-## console opens at it.
+## its middle, by whole lines. Let go, the settings keep that size, and the
+## next session's console opens at it.
 
 
 func run() -> void:
@@ -30,9 +30,11 @@ func run() -> void:
 	corner = out.end - Vector2(2.0, 2.0)
 	drag(corner, corner - Vector2(150.0, 200.0))
 	await get_tree().process_frame
-	var kept := out.size - Vector2(300.0, 200.0)
-	check(panel.size == kept and is_equal_approx(panel.get_global_rect().get_center().x, screen.get_center().x),
-		"pulled in, it's smaller about its middle (%s, %s wanted)" % [panel.size, kept])
+	var kept := panel.size
+	var wanted := out.size - Vector2(300.0, 200.0)
+	check(kept.x == wanted.x and absf(kept.y - wanted.y) < console._tall()
+		and is_equal_approx(panel.get_global_rect().get_center().x, screen.get_center().x),
+		"pulled in, it's smaller about its middle, by whole lines (%s, %s wanted)" % [kept, wanted])
 	check(Settings.console_size == kept, "let go, the settings keep its size")
 	main.queue_free()
 	await get_tree().process_frame

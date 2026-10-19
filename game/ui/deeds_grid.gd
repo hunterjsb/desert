@@ -88,7 +88,9 @@ func _init(profile: Node, tuning: Tuning) -> void:
 	_page.mouse_filter = Control.MOUSE_FILTER_PASS
 	_page.draw.connect(_draw_lines)
 	add_child(_page)
-	_bar.set_anchors_and_offsets_preset(Control.PRESET_RIGHT_WIDE, Control.PRESET_MODE_MINSIZE)
+	_bar.set_anchors_preset(Control.PRESET_RIGHT_WIDE)
+	_bar.offset_left = -PageBar.ACROSS
+	_bar.offset_right = 0.0
 	_bar.moved.connect(func(at: float) -> void: scroll = at)
 	add_child(_bar)
 	_lay_out()
