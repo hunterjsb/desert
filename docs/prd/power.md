@@ -251,26 +251,24 @@ already shows the pool it would mirror.
   4,000 N. While you hold one of its plugs, the rope pulls on you, not on the plug in
   your grip. A loose plug on either kind is dragged along by what drifts off with
   the other end, never slung, however long it was caught.
-- **The reference camp** (Stage 12, 2026-10-17) is what probe 4 leaves alone. The "afk"
-  dev scenario parks it round you, running, on a deck two pieces by two (Hunter,
-  2026-10-17: "add a 2x2 pimped out chassis to afk scenario"), a tray under every piece and
-  a hook on every free ring, floating about a metre up. Standing on it, their own trays
-  off: the base shield on a big battery and a condenser on a battery and a panel, on the
-  upwind pieces; the crate, with two big batteries, the light panel and a found panel;
-  and a second crate with two more big batteries, a found panel and a lamp. All of it is
-  one pool, and a strong cable from the crate's port holds the turbine out in the wind
-  beyond the bubble, its battery in the pool too: a 1,700 Wh bank and 210 W of panels.
-  The deck is moored to a stake upwind of it. Two harvester planters float upwind of it
-  on their own trays and batteries, on hoses from the condenser (Survival), each moored
-  to a stake of its own. Floating, the deck draws about 370 W, its 185 kg at 2 W a
-  kilogram, more than all the rest together. At 45° north, through two days and nights
-  of the probes' seed, 24 minutes of them full storm, nothing in it went dark and its bank
-  fell to 84% (it never fell below 98% when the camp sat on the sand, its trays resting,
-  before the deck). At the equator the deck floated for 7.4 days, nearly six of them
-  storm, until the bank was down to its reserve and the deck gave way to the shield,
-  settling on the sand; the planters' own batteries ran out about the sixth day, and
-  they settled too, still growing. The kit's power under a found shield (the light panel
-  and a battery half charged) went dark in the same weather at 1.34 days.
+- **The reference camp** (Stage 12, 2026-10-17; on the chassis 2026-10-18) is what probe 4
+  leaves alone. The "afk" dev scenario parks it round you, running, on a deck two pieces by
+  two (Hunter, 2026-10-17: "add a 2x2 pimped out chassis to afk scenario"), a tray under
+  every piece and a hook on every free ring, floating about a metre up. Stuck on it: upwind,
+  the condenser, its tap toward the planters, a lamp and a panel, and the base shield with
+  another panel; downwind, the bank, five big batteries and a battery, the light panel and
+  a third panel. All of it is one pool, and a strong cable from the light panel's port holds
+  the turbine out in the wind beyond the bubble, its battery in the pool too: a 1,700 Wh
+  bank and 210 W of panels, as before. The deck is moored to a stake upwind of it, and its
+  weight sits behind its trays, which are set a little upwind against the mooring's pull, so
+  it floats about 2.3° off level. Two harvester planters float upwind of it on their own
+  trays and batteries, on hoses from the condenser (Survival), each moored to a stake of its
+  own. Floating, the deck draws about 310 W, its 155 kg at 2 W a kilogram (the crates' deck
+  was 185 kg and 370 W). At 45° north, through two days and nights of the probes' seed, 24
+  minutes of them full storm, nothing in it went dark and its bank fell to 85.9%; the
+  turbine made 71 Wh before it wore. The kit's power under a found shield (the light panel
+  and a battery half charged) went dark in the same weather at 1.34 days. The equator's run,
+  7.4 days floating with the crates, isn't re-measured.
 - **What the camp costs** (2026-10-18, from Hunter feeling it lag). Running, the
   reference camp cost the main thread about 7 ms a tick over the world without it, and
   its slowest tick each second 7 to 9 ms more. Most of it was the hard floor under loose
@@ -284,8 +282,9 @@ already shows the pool it would mirror.
   and the power tick, four times a second. Probe 11 holds it.
 - **Holding a turbine out from a deck is tight.** A strong cable is 6 m and the base
   shield's bubble 7 m, so a turbine on a cable from a deck under it stands only just
-  outside. On the 2x2 deck the shield stands on the piece across from the crate, as far
-  from its port as the deck allows, and the turbine stands 7.6 to 7.9 m from the shield.
+  outside. On the 2x2 deck the shield stands at the front of the upwind piece across from
+  the light panel's port, as far from it as the deck allows, and the turbine stands 7.5 to
+  7.8 m from the shield.
   A wind that swings round toward the shield's side can bring it inside, where it makes
   nothing. A floating deck on a strong cable to a turbine on the sand also creeps toward
   it, drawn by the cable's weight, about 0.3 m a day until its mooring is taut, so the
@@ -293,7 +292,7 @@ already shows the pool it would mirror.
 - **A turbine has to be held out there.** Nothing plants one yet (the probes freeze
   theirs), and standing loose, a storm slides it over the sand, making nothing while it
   moves: in a first try at the camp it slid 33 m in the first storm, until its cable
-  popped. On a strong cable from the moored crate, through three minutes of full storm
+  popped. On a strong cable from the moored crate (2026-10-17), through three minutes of full storm
   in real time, it made power 99% of the time and drifted 1.4 m.
 - **The storm wears the turbine out.** About half an hour of full storm wrecks it, and
   nothing mends it: on the probes' seed it goes on the third day (2.45 days in at the
@@ -345,8 +344,8 @@ already shows the pool it would mirror.
    parked at mid-latitude runs through 24 simulated hours of weather without any
    device going dark. A deliberately underbuilt camp fails the same test, which proves
    the test can fail.
-5. **Clean swaps.** A swapped battery takes effect immediately, and no charge is counted
-   twice.
+5. **Clean swaps.** A battery swapped on a floating deck takes effect within a tick, and
+   no charge is counted twice.
 6. **Thirty minutes.** A full base shield in a storm lasts about 30 minutes.
 7. **A strong cable holds.** In a 20 m/s wind, a floating planter on a strong cable
    to a staked turbine stays on the end of it, joined and powered. On a common cable
@@ -356,8 +355,8 @@ already shows the pool it would mirror.
    plug over the dunes and round your legs, from several starts and winds. The plug
    never closes on the port dragging it much faster than 3 m/s, and never outruns
    the wind.
-9. **The shield comes first.** The run's kit crate under clear skies, its shield on and
-   its battery just above a quarter: its tray gives way at a quarter and it settles on
+9. **The shield comes first.** The run's kit deck under clear skies, its shield on and
+   its battery just above a quarter: its trays give way at a quarter and it settles on
    the sand while the shield keeps running, and the light panel brings the battery back
    until it floats again.
 10. **The rotor turns.** A planted turbine's blades turn faster in a gale than in a
@@ -365,6 +364,10 @@ already shows the pool it would mirror.
 11. **The camp costs little.** Parked and running, the reference camp's scripts take
     at most three times a tick what the same world's took just before it was parked,
     so a slow machine is slow on both sides.
+12. **One pool a deck** (2026-10-18). Two pieces joined, a loose battery on one and a
+    shield and a Console with none of their own on the other: the shield runs and the
+    Console reads on the loose battery, which drains for both. Taken off the deck, it's in
+    no pool and they go dark; stuck back on, anywhere on the deck, they run.
 
 ## Out of scope
 
