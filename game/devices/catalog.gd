@@ -5,7 +5,7 @@ extends RefCounted
 ## The only slots left are plugs and water taps, and what's a thing's own (a
 ## planter's beds, a Console's ports, a mast's sail, a carried thing's
 ## battery); everything else sticks on a chassis's sticky faces (Stick).
-## Salvage finds them, and the test kit scenario drops a set round you.
+## Salvage finds them, and the creative menu hands any of them over.
 
 ## Socket kinds, with the colour of the tell that marks a free one.
 const KINDS := {

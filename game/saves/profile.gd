@@ -224,6 +224,14 @@ func _load() -> void:
 	_taught = data.get("taught", {})
 	_deeds = data.get("deeds", {})
 	_toward = data.get("toward", {})
+	# A place counted under an id since renamed counts under the new one.
+	for id: String in _toward:
+		var counted: Dictionary = _toward[id]
+		for part: String in counted.keys():
+			var now := str(History.RENAMED.get(StringName(part), part))
+			if now != part:
+				counted[now] = counted.get(now, counted[part])
+				counted.erase(part)
 	_best = data.get("best", {})
 	_new = data.get("new", {})
 	_origin = str(data.get("origin", ""))

@@ -26,7 +26,7 @@ func run() -> void:
 	check(world.player.suit.put_in(), "the radio goes in your suit")
 	Scenarios.apply(world, Scenarios.by_key("board"))
 	var board := await _landed()
-	check(board.size() == 4 and (not is_instance_valid(shield) or shield.is_queued_for_deletion()),
+	check(not board.is_empty() and board[0] is Hoverboard and (not is_instance_valid(shield) or shield.is_queued_for_deletion()),
 		"board: its own things in place of the radio's")
 	check(is_instance_valid(radio) and not radio.is_queued_for_deletion() and radio in world.player.suit.carried,
 		"the radio you put in your suit stays yours")

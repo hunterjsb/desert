@@ -708,6 +708,8 @@ close it's no thing at all: walking into it the air thickens round you, as walki
   front hide it. The flat world shows it further than a real moon's curve would.
 - **Booms and a roar:** [Radio, sound &
   atmosphere](radio-sound-and-atmosphere.md#distant-phenomena-agreed-2026-10-18-spec).
+- **The "vent" dev scenario** stands you 1.5 km across the rift from its live vent, facing it, a
+  minute before a burst in clear daylight, with a charged board at your feet.
 - **The dev overlay** names the nearest live vent drawn, how far and which way, and whether it's
   seeping or bursting (`weather/vent`), and a pocket blowing (`weather/pocket`); `goto live_vent`,
   `goto live_vent_2` and `goto flank_vent` stand you by them.

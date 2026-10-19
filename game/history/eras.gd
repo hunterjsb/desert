@@ -57,7 +57,9 @@ const DRAWS: Array[String] = ["draw_w", "light_w", "clear_w", "storm_w"]
 
 ## Port Morgan's ruling families, whose heraldry First Kingdoms gear carries
 ## (part 5). Halloran's and the Rim's houses aren't named.
-const HOUSES: Array[StringName] = [&"okafor", &"kessel", &"arkwright", &"vante"]
+const HOUSES: Array[StringName] = [&"haberjack", &"pellicott", &"crake", &"vonatelli"]
+## The houses by the names older saves knew them by (session 5's renames).
+const RENAMED := {&"okafor": &"haberjack", &"kessel": &"pellicott", &"arkwright": &"crake", &"vante": &"vonatelli"}
 ## How the Dark Age held a thing together, each a set of repair work: lashed
 ## with cord, a lost part rebuilt round in ceramic, a splint of saltbush wood,
 ## a plate off something else. Defaults.
@@ -111,6 +113,12 @@ static func lineage(era: StringName, kind: StringName, seed_value: int) -> Array
 				line.append([SECOND, &"blessed", (CISTERN if cistern < shares.cistern else blessing).duplicate()])
 			return line
 	return []
+
+
+## A lineage an older save kept, by the houses' names now.
+static func current(line: Array) -> Array:
+	return line.map(func(entry: Array) -> Array:
+		return [entry[0], entry[1], entry[2].map(func(how: StringName) -> StringName: return RENAMED.get(how, how))])
 
 
 ## The era a thing's numbers are of: its last hands', the Dark Age's remake

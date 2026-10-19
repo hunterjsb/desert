@@ -18,7 +18,7 @@ const HELP := [
 		["{toggle_keys}", "these keys"], ["{fullscreen}", "fullscreen"]]],
 ]
 ## The developer's keys, listed apart under their own heading.
-const DEV_HELP := [["{console}", "console"], ["{toggle_dev_overlay}", "numbers"]]
+const DEV_HELP := [["{console}", "console"], ["{creative}", "creative"], ["{toggle_dev_overlay}", "numbers"]]
 ## Riding takes more than its key says, so it's taught the first time you ride.
 const RIDE_HOW_TO := "ride"
 const RIDE_HOW_TO_SAYS := "The move keys push and carve where they point; {move_back} digs an edge in, to bite into a carve" \
@@ -51,6 +51,7 @@ const KEYS := {
 	"quick_save": KEY_F5,
 	"quick_load": KEY_F9,
 	"console": KEY_QUOTELEFT,
+	"creative": KEY_N,
 	"fly_up": KEY_SPACE,
 	"fly_down": KEY_C,
 	"jump": KEY_SPACE,
