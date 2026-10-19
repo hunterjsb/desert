@@ -1,7 +1,7 @@
 extends Node
 ## Look-test: boards by make and the ride's feel, shot one by one into a
 ## folder for look/boards/shoot.sh to build a sheet from. On level sand on
-## the fixed seed in a low morning sun: each make lying on the sand, close,
+## the fixed seed in a low morning sun: each make lying on the sand as found, close,
 ## and all four together; a skid with its spray; a hard landing, crossed,
 ## sliding out; and a pop off the flat at speed from the side as it rises,
 ## tops out, falls and lands. Each shot pauses the world, so what's shot is
@@ -15,6 +15,9 @@ const KEYS := ["move_forward", "move_back", "move_left", "move_right", "sprint",
 const MORNING := 0.36
 ## The pop's frames, s after it leaves the sand.
 const STRIP := [0.2, 0.75, 1.3, 1.85]
+## Each make as found: the era and kind of site it lay in, and the seed of its draw.
+const FOUND := [[Eras.COLONIAL, &"hab_pod", 3], [Eras.SKIMMER, &"wreck_hull", 1], [Eras.SECOND, &"watchtower", 2],
+	[Eras.SECOND, &"house_ruin", 4]]
 
 var world: World
 var player: Player
@@ -38,6 +41,8 @@ func _ready() -> void:
 	tuning.prevailing_sway = 0.0
 	tuning.storm_threshold = 0.9
 	world = WORLD_SCENE.instantiate()
+	# Paused while it's shot; this look-test isn't.
+	world.process_mode = Node.PROCESS_MODE_PAUSABLE
 	add_child(world)
 	world.time = fposmod(MORNING - world.weather.day.time_of_day(0.0, world.moon.longitude), 1.0) \
 		* tuning.day_minutes * 60.0
@@ -48,15 +53,16 @@ func _ready() -> void:
 	add_child(camera)
 	await _settled()
 
-	# Each make on the sand, its nose to your left, seen from above its tail.
+	# Each make on the sand as it's found, from the era its makers worked in,
+	# its nose to your left, seen from above its tail.
 	var laid: Array[Hoverboard] = []
 	for i in BoardMakes.ALL.size():
-		laid.append(_lay(BoardMakes.ALL[i], Vector3(0.0, 0.0, -1.0 + i * 0.7)))
+		laid.append(_lay(BoardMakes.ALL[i], Vector3(0.0, 0.0, -1.5 + i * 1.0), FOUND[i]))
 	await ticks(30)
 	for i in laid.size():
 		var at := laid[i].global_position
-		await shoot("make_%d" % i, at + Vector3(1.05, 0.75, 0.35), at + Vector3(-0.15, -0.03, 0.0))
-	await shoot("makes", laid[1].global_position + Vector3(2.4, 1.7, 1.1),
+		await shoot("make_%d" % i, at + Vector3(1.25, 1.05, 0.3), at + Vector3(-0.2, -0.05, 0.0))
+	await shoot("makes", laid[1].global_position + Vector3(3.2, 2.3, 1.5),
 		laid[1].global_position.lerp(laid[2].global_position, 0.5) + Vector3(-0.2, -0.1, 0.0))
 	for board in laid:
 		board.free()
@@ -107,16 +113,17 @@ func _ready() -> void:
 		if flown >= roundi(STRIP[next] * 60.0):
 			pose = ride.board_pose(true)
 			way = Vector3(ride.velocity.x, 0.0, ride.velocity.y).normalized()
-			await shoot("pop_%d" % next, pose.origin - way.cross(Vector3.UP) * 4.0 - way * 0.6 + Vector3.UP * 0.3,
+			await shoot("pop_%d" % next, pose.origin - way.cross(Vector3.UP) * 2.6 - way * 0.4 + Vector3.UP * 0.25,
 				pose.origin)
 			next += 1
 	get_tree().quit()
 
 
 ## A board of this make lying on the level sand with a battery in it, nose
-## to -x, `off` from the place.
-func _lay(make: StringName, off: Vector3) -> Hoverboard:
+## to -x, `off` from the place, found as `found` says.
+func _lay(make: StringName, off: Vector3, found: Array) -> Hoverboard:
 	var board := Catalog.device(make) as Hoverboard
+	Catalog.found_in(board, found[0], found[1], found[2])
 	world.content.add_child(board)
 	var cell := Catalog.part(&"battery")
 	world.content.add_child(cell)

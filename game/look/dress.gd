@@ -340,9 +340,9 @@ static func _frame(id: StringName, size: Vector3, extra: float) -> ArrayMesh:
 			b.box(Vector3(0.2, 0.004, 0.4), Vector3(0.0, h.y - 0.004, -0.1), Paint.coat(Color(0.05, 0.05, 0.05), 0.2, 0.0, 0.95, 1.0), 0.001)
 			for z in [-0.24, 0.3]:
 				b.box(Vector3(0.31, 0.032, 0.04), Vector3(0.0, h.y - 0.018, z), tape, 0.004)
-			b.stamp(Paint.Mark.SKIMMER_CREW, Vector3(0.0, h.y - 0.006, h.z - 0.32), 0.22, Basis(Vector3.LEFT, Vector3.BACK, Vector3.UP),
+			b.stamp(Paint.Mark.SKIMMER_CREW, Vector3(0.0, h.y + 0.001, h.z - 0.32), 0.22, Basis(Vector3.LEFT, Vector3.BACK, Vector3.UP),
 				Paint.Ink.PALE)
-			b.box(Vector3(0.24, 0.004, 0.13), Vector3(0.0, h.y - 0.008, h.z - 0.32), red, 0.001)
+			b.box(Vector3(0.24, 0.004, 0.13), Vector3(0.0, h.y - 0.001, h.z - 0.32), red, 0.001)
 			for z in [-0.42, 0.0, 0.4]:
 				b.drum(0.055, 0.012, Vector3(0.0, -h.y + 0.006, z), Paint.coat(Color(0.45, 0.8, 1.0), 0.0, 0.0, 0.3, 0.3, 2.0), Basis.IDENTITY, 14)
 			b.box(Vector3(0.012, 0.04, 0.12), Vector3(0.0, -h.y + 0.01, h.z - 0.12), gun, 0.004)
