@@ -34,6 +34,9 @@ const FACES := {
 }
 ## Off the grid, a piece on a frame has no grid place: far off it.
 const OFF_GRID := Vector2i(1 << 20, 1 << 20)
+## A lone piece carries in your hands at most this heavy, kg: bare, or with
+## a tray or a battery stuck on it; more, and you take hold of it to drag it.
+const CARRIES_KG := 16.0
 
 ## The pieces joined to this one, each after one it sits beside or on a
 ## frame it hangs from, as they joined or as a save rebuilds them. Each waits
@@ -615,16 +618,20 @@ func _after_change() -> void:
 			socket.closed = not own_piece(socket).on_frame() and cells.has(_cell_of(socket) + _step(socket))
 		if socket.marker != null:
 			socket.marker.visible = socket.is_open()
-	# A deck, or one with a device on it, is too much to carry.
-	carryable = joined.is_empty() and mounted().is_empty()
 	remove_meta(&"hands_box")
 	show_wear()
 	_recompute()
 
 
+## A deck, a piece with a device on it, or one loaded past what your hands
+## carry, is too much to carry: you take hold of it instead.
+func _recompute() -> void:
+	super()
+	carryable = joined.is_empty() and mounted().is_empty() and mass <= CARRIES_KG
+
+
 func mount(other: Device, socket: Socket) -> void:
 	super(other, socket)
-	carryable = false
 	_deeds()
 
 
@@ -648,9 +655,7 @@ func _deeds() -> void:
 
 
 func dismount(socket: Socket) -> Device:
-	var other := super(socket)
-	carryable = joined.is_empty() and mounted().is_empty()
-	return other
+	return super(socket)
 
 
 func _frame_masses() -> Array:

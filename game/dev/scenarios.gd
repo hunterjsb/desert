@@ -191,34 +191,35 @@ const AFK_PLANTERS := [[-2.2, 4.3], [1.2, 4.3]]
 const AFK_PLANTER_STAKES := [[-2.2, 5.8], [1.2, 5.8]]
 ## The turbine stands this far straight back from the light panel's port, m,
 ## its strong cable all but taut.
-const AFK_TURBINE_BACK := 5.6
-## Upwind, the condenser, its tap toward the planters, with the bank's
-## batteries and a lamp; the shield across at the front, so the light
-## panel's port downwind, toward the turbine, is as far from it as a deck
-## this size allows; the panels downwind. A tray under every piece and a
-## hook on every free ring.
+const AFK_TURBINE_BACK := 5.85
+## Upwind, the condenser, its tap toward the planters, a lamp and a panel;
+## the shield across at the front, so the light panel's port downwind, toward
+## the turbine, is as far from it as a deck this size allows; the bank of
+## batteries and the other panels downwind, the weight behind the trays, which
+## are set a little upwind under every piece against the mooring's pull, so it
+## floats within a couple of degrees of level. A hook on every free ring.
 const AFK_RIG := [[&"piece", Vector2i(1, 0)], [&"piece", Vector2i(0, 1)], [&"piece", Vector2i(1, 1)],
-	[&"stick", Vector2i(0, 0), &"bottom", Vector2.ZERO, 0.0, &"hover_tray"],
-	[&"stick", Vector2i(1, 0), &"bottom", Vector2.ZERO, 0.0, &"hover_tray"],
-	[&"stick", Vector2i(0, 1), &"bottom", Vector2.ZERO, 0.0, &"hover_tray"],
-	[&"stick", Vector2i(1, 1), &"bottom", Vector2.ZERO, 0.0, &"hover_tray"],
+	[&"stick", Vector2i(0, 0), &"bottom", Vector2(0.0, -0.15), 0.0, &"hover_tray"],
+	[&"stick", Vector2i(1, 0), &"bottom", Vector2(0.0, -0.15), 0.0, &"hover_tray"],
+	[&"stick", Vector2i(0, 1), &"bottom", Vector2(0.0, -0.15), 0.0, &"hover_tray"],
+	[&"stick", Vector2i(1, 1), &"bottom", Vector2(0.0, -0.15), 0.0, &"hover_tray"],
 	[&"hook", Vector2i(0, 0), Vector2i(-1, 0)], [&"hook", Vector2i(0, 0), Vector2i(0, -1)],
 	[&"hook", Vector2i(1, 0), Vector2i(1, 0)], [&"hook", Vector2i(1, 0), Vector2i(0, -1)],
 	[&"hook", Vector2i(0, 1), Vector2i(-1, 0)], [&"hook", Vector2i(0, 1), Vector2i(0, 1)],
 	[&"hook", Vector2i(1, 1), Vector2i(1, 0)], [&"hook", Vector2i(1, 1), Vector2i(0, 1)],
-	[&"stick", Vector2i(0, 0), &"top", Vector2(-0.2, 0.2), 180.0, &"condenser", &"condenser"],
-	[&"stick", Vector2i(0, 0), &"top", Vector2(0.32, 0.3), 0.0, &"big_battery"],
-	[&"stick", Vector2i(0, 0), &"top", Vector2(0.32, 0.05), 0.0, &"big_battery"],
-	[&"stick", Vector2i(0, 0), &"top", Vector2(0.32, -0.25), 0.0, &"battery"],
-	[&"stick", Vector2i(0, 0), &"top", Vector2(-0.2, -0.3), 0.0, &"lamp"],
+	[&"stick", Vector2i(0, 0), &"top", Vector2(-0.2, -0.15), 180.0, &"condenser", &"condenser"],
+	[&"stick", Vector2i(0, 0), &"top", Vector2(0.35, -0.35), 0.0, &"lamp"],
+	[&"stick", Vector2i(0, 0), &"top", Vector2(0.28, 0.2), 90.0, &"solar_panel"],
 	[&"stick", Vector2i(1, 0), &"top", Vector2(0.0, 0.28), 0.0, &"shield", &"shield"],
-	[&"stick", Vector2i(1, 0), &"top", Vector2(-0.3, -0.15), 0.0, &"big_battery"],
-	[&"stick", Vector2i(1, 0), &"top", Vector2(0.0, -0.15), 0.0, &"big_battery"],
-	[&"stick", Vector2i(1, 0), &"top", Vector2(0.3, -0.15), 0.0, &"big_battery"],
-	[&"stick", Vector2i(0, 1), &"top", Vector2(0.0, 0.27), 0.0, &"solar_panel"],
+	[&"stick", Vector2i(1, 0), &"top", Vector2(0.0, -0.27), 0.0, &"solar_panel"],
 	[&"stick", Vector2i(0, 1), &"top", Vector2(0.0, -0.29), 0.0, &"light_panel", &"port"],
+	[&"stick", Vector2i(0, 1), &"top", Vector2(-0.3, 0.0), 0.0, &"big_battery"],
+	[&"stick", Vector2i(0, 1), &"top", Vector2(0.0, 0.0), 0.0, &"big_battery"],
+	[&"stick", Vector2i(0, 1), &"top", Vector2(0.3, 0.0), 0.0, &"battery"],
 	[&"stick", Vector2i(1, 1), &"top", Vector2(0.0, 0.27), 0.0, &"solar_panel"],
-	[&"stick", Vector2i(1, 1), &"top", Vector2(0.0, -0.27), 0.0, &"solar_panel"]]
+	[&"stick", Vector2i(1, 1), &"top", Vector2(-0.3, -0.27), 0.0, &"big_battery"],
+	[&"stick", Vector2i(1, 1), &"top", Vector2(0.0, -0.27), 0.0, &"big_battery"],
+	[&"stick", Vector2i(1, 1), &"top", Vector2(0.3, -0.27), 0.0, &"big_battery"]]
 ## What you carry, as you'd leave yourself: nothing brings you water yet, the
 ## condenser waters only the farm, so this many canisters, and no food: the
 ## farm drops it onto you. Spare stakes, a coil and a hose, to move the

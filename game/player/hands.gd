@@ -887,7 +887,7 @@ func _no_fit() -> String:
 	if target == null or target == held:
 		return ""
 	var piece := held as Chassis
-	var kind: StringName = &"ring" if piece != null else held.get(&"kind")
+	var kind: StringName = &"ring" if piece != null else (held.kind if held is Part else &"")
 	var named := kind
 	var any := false
 	var free := false
