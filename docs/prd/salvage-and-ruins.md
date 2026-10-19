@@ -414,8 +414,8 @@ past that the far ring showed the dunes alone.
   is. The relay mast, the watchtower, the pylon stub, the wreck hull and the pipeline segment have one.
   A stand-in stands at its structure's place and turn, as deep as its state sinks it and cut at the
   sand, on the far ring's own ground (`FarRing.ground`, its 32 m triangles), so it never floats or sinks
-  where the ring skips a crest. Its state is its chunk's once that's built, else read on the worker at
-  the last exposure tick, and read again at the next.
+  where the ring skips a crest. Its level out of the sand is read on the worker, and read again each
+  minute as storms work on it (2026-10-18); once its chunk draws it, it's the structure's own, as it stands.
 - **True to the real piece** (2026-10-18, round three, after Hunter: "i thought they were huge
   towers, but up close theyre just small antennae... we need better less obvious models and a smoother
   transition"). A stand-in is the piece's own shape at low detail at its own size: the mast's footing,
@@ -444,7 +444,10 @@ past that the far ring showed the dunes alone.
   as it lights and 12 at its brightest (`glint_px`), 7 times the sun on white (`glint_brightness`), at
   any distance, held in front of what it lies on, dimmed by the haze. None at night, behind Tu, in a
   storm round you, or where a storm stands at it or between (its site's veil, below), and only where the
-  site's state leaves it bare of sand. Near, it's on the structure; past the built ground, on its stand-in. The sun turns once in a
+  site's state leaves it bare of sand. Near, it's on the structure, rising and sinking with it; past the
+  built ground, on its stand-in. Inside a storm, what it has newly laid bare glints through its dust
+  instead, near and veiled by nothing else (2026-10-18,
+  [Wind & storms](wind-and-storms.md#storms-with-a-payoff-agreed-2026-10-18-spec)). The sun turns once in a
   20-minute day, so a far plate's sparkle lasts a minute or so: long enough to turn and look.
 - **Roads.** The saltbush on the second age's roads (Feral's rows that grow a line closer than 5 m)
   stands on past the built ground to 3 km bush by bush: each plant its chunk would place, from the same
@@ -529,7 +532,8 @@ arrive: walked to from 1.5 to 2.6 km, it's laid where its stand-in last stood an
 its ground, in the state its stand-in showed; 3 a storm hides what's far off: from the Surveyor's
 start, clear where you stand, a storm between you and a relay mast 2.9 km off, and between you and a
 chunk's far bushes 2.1 km off, hides each (drawn 0.00 shown), and with the air between clear both show
-(1.00). Spawns probes 1 to 3 and loot probe 6 keep their rules with the new starts.
+(1.00); 4 a glint shows through a storm's dust only near (2026-10-18). Spawns probes 1 to 3 and loot
+probe 6 keep their rules with the new starts.
 
 **To see it** (unseen, on a GPU): `look/sightlines/shoot.sh <dir>` shoots each origin's start looking at
 what's in sight, a far mast, the Surveyor's glint from where its run begins, a saltbush line from 1 km
@@ -597,6 +601,8 @@ on probe 1's three worlds, as before).
   state (buried, partly exposed, exposed) can be read the same way when its chunk is made, so a storm
   that has passed gives a different state to a chunk loaded after it, and nothing under your feet is
   reshaped (rule 2). A state that changes while you stand there is another matter (open questions).
+  *Since 2026-10-18 it does, smoothly, as a storm works the site, and never over you
+  ([Wind & storms](wind-and-storms.md#storms-with-a-payoff-agreed-2026-10-18-spec)).*
 - **Drift answers the collector's question.** The notes' collector "catches wind-blown loot. What
   blows is open." Part 4 says what: light debris, scraps and occasional small items. That narrows the
   question and does not settle how it sits with finds that are "frozen where they lie."
@@ -1055,7 +1061,10 @@ it as direction and says so on each line. The built skeleton is not changed.
   expose a deeper layer of the same ruin." Its back burner adds "deep exposure," mid-storm sand
   movement briefly opening the deepest layers. *Follows the session as direction.* Read above as
   exposure set by the weather when a chunk is made; a state that changes while you stand there would
-  have to be a staged swap of placed pieces, and whether that fits rule 2 is open.
+  have to be a staged swap of placed pieces, and whether that fits rule 2 is open. *Answered by the
+  2026-10-18 spec: a site changes while you stand there, mid-storm, as a pure function of the weather,
+  its pieces and loot rising and sinking smoothly and its ground pressed afresh, rule 2's one exception
+  ([the world system](../world-system.md#what-storms-do-to-sites-now)).*
 - **Digging against "no digging and nothing underground."** Here: "Everything is above ground:
   there's no digging and nothing underground," and out of scope, "Digging, and anything underground."
   The session: colonial sites, "dig or find a breach; the best loot is deepest"; first-age sites,

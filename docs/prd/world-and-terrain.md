@@ -35,7 +35,10 @@ These rules come straight from Sand Game's failure, and they don't bend.
    chunk's own samples instead of computing them again: the same numbers, cheaper.
 2. **Loaded ground never changes.** A chunk's collision is built once, when it comes
    into range, and it's never rebuilt or reshaped while it exists. Detail levels only
-   change how the ground looks, never how it collides.
+   change how the ground looks, never how it collides. The one exception (2026-10-18): the
+   ground of a site a storm works on follows the weather's own function, pressed afresh
+   in steps of 2.5 cm, mesh and collision together, never over you or your camp
+   ([Wind & storms](wind-and-storms.md#storms-with-a-payoff-agreed-2026-10-18-spec)).
 3. **Nothing physical is ever outside collision.** Collision reaches further than any
    physics object is allowed to be. Anything that's about to leave that range gets
    frozen or forgotten first, so nothing can drop into the void. What's on you, in your
@@ -261,7 +264,8 @@ The early game for everyone: **find an artery and follow it.** Spawn position de
   flat world coordinates").
 - **The sand layer is the footprint trick.** A built ruin is pressed into `height_at` so the sand
   meets its floor. A structure "buried at a depth matching its era" is the same trick with the sand
-  over its roof, set when the chunk is made. Nothing reshapes loaded ground (rule 2).
+  over its roof, set when the chunk is made. Nothing reshapes loaded ground (rule 2) but a storm
+  working a site, live (2026-10-18).
 - **Per-seed landmarks answer a standing question.** "How a fixed landmark sits on a seeded world"
   (open questions) was hard when landmarks were "the same in every run." Placed per seed along the
   axis, with the terrain generated around them, they sit on any seed. Whether a landmark's changes
@@ -622,6 +626,7 @@ in the living docs, so this PRD follows it where it can, and says so on each lin
   ruin's ground" (it is beside, not on) or the vision's "oysters never find ruins."
 - **How much storm-driven dune movement the terrain can support.** The session's own open question.
   Here, rule 2: loaded ground never changes, and "Shifting dunes" only change newly generated chunks.
+  Since 2026-10-18 a site's own ground follows a storm live (rule 2's exception).
 - **The orbital launch site.** *Answered by session 4, part 5: there is none, and the Rim depot and
   the elevator-stub observatory replace it (above).* The session's own open question: location and
   structure. The ladder
