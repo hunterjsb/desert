@@ -319,7 +319,7 @@ static func _freight_pod() -> StructureKit.Piece:
 	p.sockets.append(StructureKit.SiteSocket.new(Vector3(-0.8, 0.0, 7.6), &"floor"))
 	var console := module(p, Vector3(1.6, 0.0, 4.2), true)
 	var shield := module(p, Vector3(-1.6, 0.0, 1.6))
-	var crate := module(p, Vector3(-1.2, 0.0, -3.0), true)
+	var freight := module(p, Vector3(-1.2, 0.0, -3.0), true)
 	var charger := module(p, Vector3(1.5, 0.0, -4.6))
 	var w := WreckPlan.new()
 	w.armour = 1.5
@@ -330,7 +330,7 @@ static func _freight_pod() -> StructureKit.Piece:
 		"sifted in round the side panel")
 	w.module(console, [[&"hold", front, 2]], Wreckage.ELECTRICAL, Vector3(2.4, 0.3, 3.2))
 	w.module(shield, [[&"hold", front, 4]])
-	w.module(crate, [[&"plate", side], [&"hold", rear, 2]], Wreckage.BIO, Vector3(-2.3, 0.3, -4.9))
+	w.module(freight, [[&"plate", side], [&"hold", rear, 2]], Wreckage.BIO, Vector3(-2.3, 0.3, -4.9))
 	w.module(charger, [[&"plate", side], [&"hold", rear, 1]])
 	p.wreck = w
 	p.tour = PackedVector2Array([Vector2(0.0, 12.0), Vector2(0.0, 6.8), Vector2(0.0, 12.0)])

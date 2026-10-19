@@ -83,6 +83,8 @@ var _lean: Node3D
 var _plates := {}
 var _beads := {}
 var _buried := {}
+## The sand under each seam cell of a plate near it, world height.
+var _sands := {}
 var _heat := {}
 var _slices := {}
 var _hazards := {}
@@ -507,16 +509,22 @@ func _standing(i: int) -> void:
 
 ## Which of a plate's seam cells the sand holds, as the wreck stands now.
 ## Each cell's sand is asked only of a plate whose foot comes near the sand
-## round it: most stand well clear.
+## round it, most standing well clear, and once: a storm moves the wreck,
+## not the sand on its ground.
 func _bury(i: int) -> void:
 	var p: WreckPlan.Plate = plan.plates[i]
 	var buried := PackedByteArray()
 	buried.resize(p.cells.size())
 	var frame := _frame()
-	if _near_sand(p, frame):
+	var sands: PackedFloat32Array = _sands.get(i, PackedFloat32Array())
+	if sands.is_empty() and _near_sand(p, frame):
+		sands.resize(p.cells.size())
 		for c in p.cells.size():
 			var w := frame * p.cells[c]
-			buried[c] = 1 if w.y < float(_height.call(w.x, w.z)) + UNDER_SAND else 0
+			sands[c] = _height.call(w.x, w.z)
+		_sands[i] = sands
+	for c in sands.size():
+		buried[c] = 1 if (frame * p.cells[c]).y < sands[c] + UNDER_SAND else 0
 	_buried[i] = buried
 
 

@@ -3,7 +3,7 @@ extends WreckProbe
 ## it can be taken without making it safe, at a price. Grabbing a skimmer's
 ## charger by its live capacitor bank shocks you: health gone at once, thrown
 ## off it, stunned, unable to walk or close your hands, the bank spent. A
-## hauler's crate by a breached store makes you sick: health drained a little
+## hauler's cargo by a breached store makes you sick: health drained a little
 ## at a time, thirst faster, no healing, until it wears off, and a med kit
 ## cures it. With a stake laid across a bank's terminals, and sealant over a
 ## store's breach, both from your hands, every hazard on a pod, a lifeboat and
@@ -62,8 +62,8 @@ func run() -> void:
 	var hauler := await wreck_at(&"tithe_hauler", spot.x + APART, spot.y)
 	var store := _hazard_of(hauler, Wreckage.BIO)
 	free_module(hauler, store)
-	var crate: RigidBody3D = modules_of(hauler)[store]
-	_reach(crate)
+	var cargo: RigidBody3D = modules_of(hauler)[store]
+	_reach(cargo)
 	hands.grab()
 	await physics_frames(2)
 	check(wounds.sick > 0.0 and wounds.sicknesses == 1 and hauler.hazard(store) == &"",
