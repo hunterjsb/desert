@@ -7,7 +7,9 @@ shader_type spatial;
 // shade darker, over a longer swell that holds on further out; crests catch a
 // thin highlight; patches drawn out along the wind vary the colour so
 // distance reads; and close up it's grainy. Its own light() lights it as
-// sand, not paint.
+// sand, not paint. And it has volume: crests lighter and hollows darker,
+// hollows seeing less sky, the crests' shadows past the sun's shadow map, and
+// the ripples' own shadows and troughs.
 
 uniform vec3 sand : source_color = vec3(0.71, 0.59, 0.43);
 // Shares of the sand's colour each channel keeps on slip faces and in troughs.
@@ -57,6 +59,28 @@ uniform float glitter = 10.0;
 // light comes from all round, so nothing glints or shines.
 uniform float storm = 0.0;
 
+// Volume. Each vertex carries its dune shading (TerrainShape.shade, CUSTOM0).
+// Fine sand gathers on the crests and coarse in the hollows: the share each
+// channel gains on a crest and loses in a hollow dune_relief m over or under
+// its dunes' mean, paler up and redder down.
+uniform vec3 dune_sorting = vec3(0.05, 0.08, 0.11);
+uniform float dune_relief = 15.0;
+// How much of the sky the crests round a hollow hide counts: 1 as they hide
+// an even sky, more as a dusty one is brightest low down. A ripple's trough
+// at its deepest loses this share of its sky. And the share of that the
+// sun's light loses too: none in nature, but with the sun overhead nothing
+// else shows the hollows and troughs.
+uniform float dune_sky = 3.0;
+uniform float ripple_sky = 0.25;
+uniform float cavity_light = 0.35;
+// The sun's shadow map ends this far off, m (Weather sets it), fading from
+// 0.8 of it; past it the crests' horizons shade the sand, faded in from 0.6.
+uniform float shadow_reach = 100.0;
+// How soft the crests' and ripples' shadows are: the tangent of the angle
+// a light fades over going under their horizon.
+uniform float dune_penumbra = 0.02;
+uniform float ripple_penumbra = 0.04;
+
 // Tracks (game/world/tracks.gd): each texel holds the fill clock's reading at
 // which its mark will be filled, so a mark's depth is that less the clock.
 // Wrapped round on itself; uv = engine xz / extent + shift.
@@ -97,6 +121,17 @@ varying vec4 wind_vertex;
 // its lobe's power and that lobe's peak.
 varying vec4 glint_seen;
 varying vec3 shine;
+// Volume: the dune shading as baked; and for light(), the crests' horizon
+// tangents up and down the wind, how far past the shadow map, and what of the
+// hollows' occlusion all light takes; the way across them (view space); a
+// ripple's depth under its crest, m, the crests either side, m, and its way
+// (view space).
+varying vec4 dune_shade;
+varying vec2 crest_normal;
+varying vec4 dune_light;
+varying vec3 crest_way;
+varying vec3 ripple_light;
+varying vec3 ripple_way;
 
 // The finest glitter cell, m: a power of two, so a chunk holds whole cells
 // and cells stay put through origin shifts.
@@ -223,6 +258,8 @@ bool in_tracks(vec2 xz) {
 void vertex() {
 	world_pos = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	world_normal = normalize((MODEL_MATRIX * vec4(NORMAL, 0.0)).xyz);
+	dune_shade = CUSTOM0;
+	crest_normal = downwind * cos(CUSTOM0.w) + vec2(-downwind.y, downwind.x) * sin(CUSTOM0.w);
 	wind_vertex = wind_view_vertex(world_pos.xz);
 	if (in_tracks(world_pos.xz)) {
 		// The deepest mark within half a lattice square, so one between
@@ -332,6 +369,9 @@ void fragment() {
 	float shown = 1.0 - smoothstep(0.09, 0.27, spans);
 	float fade = shown * (1.0 - trodden);
 	vec2 way = vec2(0.0);
+	ripple_light = vec3(0.0, 1.0, 1.0);
+	ripple_way = vec3(0.0, 1.0, 0.0);
+	float trough = 0.0;
 	if (fade > 0.0) {
 		vec3 drift = value_noise_d(at / 9.0) * vec3(0.9, 0.1, 0.1) + value_noise_d(at / 2.3) * vec3(0.3, 0.13, 0.13);
 		phase += drift.x / ripple_spacing + defects(at, across, ripple_defects);
@@ -353,6 +393,16 @@ void fragment() {
 		// in the troughs. The crest is where the slope turns down.
 		colour *= 1.0 - sorting * cos(wave + acos(lean)) * fade * strength;
 		way = normalize(heading) * slope * fade * strength * ripple_depth;
+		// Volume: the ripple's own height, the integral of that slope, for its
+		// shadow and its trough's sky.
+		float spacing_here = ripple_spacing / max(length(heading), 0.2);
+		float height = 0.75 * sqrt(2.0 * (1.0 - lean * lean)) / lean * fade * strength * ripple_depth * spacing_here / TAU;
+		float under = height * (asin(lean) + atan(lean * sin(wave), 1.0 - lean * bow));
+		float since = fract(phase + acos(lean) / TAU);
+		ripple_light = vec3(under, since * spacing_here, (1.0 - since) * spacing_here);
+		vec2 runs = normalize(heading);
+		ripple_way = mat3(VIEW_MATRIX) * vec3(runs.x, 0.0, runs.y);
+		trough = under / max(2.0 * height * asin(lean), 1e-6) * fade;
 	}
 	// The swell, wandering more and stronger in patches.
 	float swell_phase = (dot(at, downwind) + 0.8 * sin(dot(at, across) * 0.23) + 2.5 * value_noise(at / 11.0)) / swell_spacing;
@@ -412,9 +462,35 @@ void fragment() {
 		// 0.16 is value noise's own spread.
 		colour *= 1.0 + speck / 0.16 * grains * exp2(-speck_scale) * (1.0 - smoothstep(0.008, 0.016, foot));
 	}
+	// Volume. The dunes: a crest stands lighter and a hollow darker, by its
+	// height over its dunes' mean; a hollow sees less sky, by how far the
+	// crests either side stand over the ground's own slope (a long trough's,
+	// cosine-weighted); and past the sun's shadow map the crests shade it,
+	// as light() reads their horizons. A ripple's trough sees less sky too.
+	colour *= 1.0 + dune_sorting * clamp(dune_shade.x / dune_relief, -1.0, 1.0);
+	vec2 across_crests = normalize(crest_normal);
+	float rises = -dot(n.xz, across_crests) / max(n.y, 0.05);
+	float over_back = max(dune_shade.y - max(-rises, 0.0), 0.0);
+	float over_ahead = max(dune_shade.z - max(rises, 0.0), 0.0);
+	float hidden = 1.0 - 0.5 * (inversesqrt(1.0 + over_back * over_back) + inversesqrt(1.0 + over_ahead * over_ahead));
+	float occluded = max(1.0 - dune_sky * hidden, 0.0) * (1.0 - ripple_sky * trough);
+	AO *= occluded;
+	dune_light = vec4(dune_shade.yz, smoothstep(0.6, 0.8, -VERTEX.z / shadow_reach), mix(1.0, occluded, cavity_light));
+	crest_way = mat3(VIEW_MATRIX) * vec3(across_crests.x, 0.0, across_crests.y);
 	ALBEDO = wind_view_colour(colour, world_pos.xz, wind_vertex);
 	ROUGHNESS = 1.0;
 	NORMAL = normalize((VIEW_MATRIX * vec4(rippled, 0.0)).xyz);
+}
+
+// Volume: the share of a directional light past occluders whose horizon
+// tangents are `back` up the way (along < 0 has the light there) and `ahead`
+// down it, `rise` and `along` the light's own up and along that way. Soft by
+// the tangent of the angle the light is under its horizon, so a light just
+// over a bare horizon is whole.
+float lit_over(float rise, float along, float back, float ahead, float soft) {
+	float steep = rise / max(abs(along), 1e-4);
+	float horizon = along < 0.0 ? back : ahead;
+	return smoothstep(-soft, 0.0, (steep - horizon) / (1.0 + max(steep * horizon, 0.0)));
 }
 
 void light() {
@@ -422,6 +498,16 @@ void light() {
 	float lit = max(nl, 0.0);
 	float nv = max(dot(NORMAL, VIEW), 1e-3);
 	vec3 incoming = LIGHT_COLOR * ATTENUATION;
+	// Volume: past the shadow map the crests shade the sand; near, the ripples
+	// shade themselves.
+	incoming *= dune_light.w;
+	if (LIGHT_IS_DIRECTIONAL) {
+		float rise = dot(LIGHT, VIEW_MATRIX[1].xyz);
+		float crests = lit_over(rise, dot(LIGHT, crest_way), dune_light.x, dune_light.y, dune_penumbra);
+		float ripples = lit_over(rise, dot(LIGHT, ripple_way), ripple_light.x / max(ripple_light.y, 1e-4),
+			ripple_light.x / max(ripple_light.z, 1e-4), ripple_penumbra);
+		incoming *= mix(1.0, crests, dune_light.z) * ripples;
+	}
 	// Fujii's Oren-Nayar, as Lambert where grains hide nothing (s = 0). Only
 	// a sky light under about 20 degrees: higher, or a lamp by your eye, it
 	// flattens the ripples, as the full Moon looks flat; and Tu stands 30

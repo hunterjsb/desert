@@ -6,7 +6,8 @@ extends Node
 ## noon; a low sun ahead, from the ground and from 200 m up, and behind you
 ## where it lights what you see; dusk the same; a full-Tu night with Tu behind
 ## you, and by the headlamp; a walked track at midmorning; your feet at noon;
-## ripples over a dune and a slip face from its foot; and close up into the
+## ripples over a dune, ripples into the low sun, and a slip face from its
+## foot; and close up into the
 ## low sun, the camera sliding a centimetre a frame and then walking on, to
 ## see the glitter hold still. With --storm, deep in a storm by day instead.
 ## It prints the ground's lightness, spread and clipped share (look/dunes'
@@ -39,6 +40,7 @@ const MOVES := 3
 ## Looking down at your feet, degrees; and standing this far from a slip
 ## face's foot, m.
 const FEET_PITCH := -68.0
+const RIP_PITCH := -16.0
 const SLIP_OFF := 7.0
 const GPU_FRAMES := 60
 const GPU_ROUNDS := 9
@@ -160,6 +162,8 @@ func _capture() -> void:
 	sun = _sun(morning)
 	await _pair("low_into", morning, atan2(-sun.x, -sun.z), -6.0)
 	await _gpu_cost("low sun ahead")
+	# Ripples into the low sun, looking down over the few metres they show in.
+	await _pair("rip_into", morning, atan2(-sun.x, -sun.z), RIP_PITCH)
 	# Nothing but sand in view, glinting: what the shader itself costs.
 	await _pair("sand_only", morning, atan2(-sun.x, -sun.z), -50.0)
 	await _gpu_cost("sand filling the frame")
@@ -169,6 +173,8 @@ func _capture() -> void:
 	var dusk := _sun_at(DUSK_SUN, false)
 	sun = _sun(dusk)
 	await _pair("dusk", dusk, atan2(sun.x, sun.z), -4.0, _backlit(sun))
+	# And from 200 m up, the sun behind you and to one side: the crests' long shadows.
+	await _pair("air_dusk", dusk, atan2(sun.x, sun.z) + 0.6, -12.0, _spot, 200.0)
 	var full := day.next_eclipse(0.0) + world.tuning.day_minutes * 30.0
 	var tu := day.tu_direction(full, world.moon.latitude, world.moon.longitude)
 	await _pair("night", full, atan2(tu.x, tu.z), -6.0)

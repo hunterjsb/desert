@@ -120,6 +120,10 @@ func setup(world: World) -> void:
 	_environment = (world.get_node("WorldEnvironment") as WorldEnvironment).environment
 	_sun = world.get_node("Sun")
 	_sun_energy = _sun.light_energy
+	# Past the sun's shadow map the sand's crests shade it themselves.
+	var sand := world.terrain.sand_material as ShaderMaterial
+	if sand != null:
+		sand.set_shader_parameter("shadow_reach", _sun.directional_shadow_max_distance)
 	# The storm pass draws the disc, so a wall can cover it.
 	_sun.sky_mode = DirectionalLight3D.SKY_MODE_LIGHT_ONLY
 	_haze_color = _environment.fog_light_color

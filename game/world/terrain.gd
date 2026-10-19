@@ -564,7 +564,7 @@ func _press_one(coord: Vector2i, dunes: PackedFloat32Array, step: int, carved: A
 		steps: PackedInt32Array, mesh: RID) -> void:
 	var started := Time.get_ticks_usec()
 	var build := ChunkBuild.make(_world.shape, coord, _size, step, _tuning.skirt_depth, _indices[step], carved, steps) \
-		if dunes.is_empty() else ChunkBuild.pressed(dunes, coord, _size, step, _tuning.skirt_depth, _indices[step], carved, steps)
+		if dunes.is_empty() else ChunkBuild.pressed(_world.shape, dunes, coord, _size, step, _tuning.skirt_depth, _indices[step], carved, steps)
 	ChunkBuild.fill(mesh, build.arrays, _material_rid)
 	build.mesh = mesh
 	_mutex.lock()

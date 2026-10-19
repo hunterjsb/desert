@@ -38,13 +38,13 @@ static func make(shape: TerrainShape, coord: Vector2i, size: int, step: int, ski
 	for j in w:
 		for i in w:
 			bordered[j * w + i] = shape.dunes(x0 + (i - 1) * step, z0 + (j - 1) * step)
-	return pressed(bordered, coord, size, step, skirt, indices, held, steps)
+	return pressed(shape, bordered, coord, size, step, skirt, indices, held, steps)
 
 
 ## A chunk from its dunes, with structures pressed in at steps: a whole
 ## build's last part, and all of a loaded chunk's as a storm moves what
 ## stands on it.
-static func pressed(bordered: PackedFloat32Array, coord: Vector2i, size: int, step: int, skirt: float,
+static func pressed(shape: TerrainShape, bordered: PackedFloat32Array, coord: Vector2i, size: int, step: int, skirt: float,
 		indices: PackedInt32Array, held: Array[Structure], steps: PackedInt32Array) -> ChunkBuild:
 	var build := ChunkBuild.new()
 	build.coord = coord
@@ -101,8 +101,10 @@ static func pressed(bordered: PackedFloat32Array, coord: Vector2i, size: int, st
 	build.heights.resize(grid)
 	var vertices := PackedVector3Array()
 	var normals := PackedVector3Array()
+	var shades := PackedFloat32Array()
 	vertices.resize(grid + 4 * (n + 1))
 	normals.resize(grid + 4 * (n + 1))
+	shades.resize(4 * vertices.size())
 	for j in n + 1:
 		for i in n + 1:
 			var b := (j + 1) * w + (i + 1)
@@ -111,6 +113,7 @@ static func pressed(bordered: PackedFloat32Array, coord: Vector2i, size: int, st
 			vertices[k] = Vector3(i * step, ground[b], j * step)
 			normals[k] = Vector3(ground[b - 1] - ground[b + 1], 2.0 * step,
 				ground[b - w] - ground[b + w]).normalized()
+			put_shade(shades, k, shape.shade(x0 + i * step, z0 + j * step, ground[b]))
 
 	# Skirts hang below each edge, hiding cracks where a detailed chunk meets a coarse one.
 	var v := grid
@@ -118,13 +121,24 @@ static func pressed(bordered: PackedFloat32Array, coord: Vector2i, size: int, st
 		for k in edge:
 			vertices[v] = vertices[k] - Vector3(0, skirt, 0)
 			normals[v] = normals[k]
+			for c in 4:
+				shades[4 * v + c] = shades[4 * k + c]
 			v += 1
 
 	build.arrays.resize(Mesh.ARRAY_MAX)
 	build.arrays[Mesh.ARRAY_VERTEX] = vertices
 	build.arrays[Mesh.ARRAY_NORMAL] = normals
+	build.arrays[Mesh.ARRAY_CUSTOM0] = shades
 	build.arrays[Mesh.ARRAY_INDEX] = indices
 	return build
+
+
+## A vertex's dune shading (TerrainShape.shade), the sand shader's CUSTOM0.
+static func put_shade(into: PackedFloat32Array, k: int, shade: Vector4) -> void:
+	into[4 * k] = shade.x
+	into[4 * k + 1] = shade.y
+	into[4 * k + 2] = shade.z
+	into[4 * k + 3] = shade.w
 
 
 ## Converting arrays to the GPU's layout is most of an upload, so a worker does it,
@@ -133,7 +147,8 @@ static func pressed(bordered: PackedFloat32Array, coord: Vector2i, size: int, st
 ## memory, which the RenderingServer queues for its next call there, outside the
 ## streaming budget.
 static func fill(into: RID, mesh_arrays: Array, material: RID) -> void:
-	RenderingServer.mesh_add_surface_from_arrays(into, RenderingServer.PRIMITIVE_TRIANGLES, mesh_arrays)
+	RenderingServer.mesh_add_surface_from_arrays(into, RenderingServer.PRIMITIVE_TRIANGLES, mesh_arrays, [], {},
+		RenderingServer.ARRAY_CUSTOM_RGBA_FLOAT << RenderingServer.ARRAY_FORMAT_CUSTOM0_SHIFT)
 	RenderingServer.mesh_surface_set_material(into, 0, material)
 
 

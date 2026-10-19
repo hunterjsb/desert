@@ -4,7 +4,8 @@
 # frame by frame as the camera moves, blown up. Anything after the sheet goes
 # to the look-test, such as --try name=value,...
 #   look/sandlight/shoot.sh <out dir> [sheet] [look-test arguments]
-# "Before" is master's sand shader; BEFORE names another ref.
+# "Before" is master's sand shader; BEFORE names another ref. ROWS picks the
+# moments and their order (names, comma-separated), TITLE the sheet's title.
 # No window: it runs unseen (scripts/unseen.sh), so it shoots while someone plays.
 set -uo pipefail
 cd "$(dirname "$0")/../.." || exit 2
@@ -27,10 +28,19 @@ for weather in clear storm; do
 done
 
 args=()
-for pair in "noon:noon" "low_into:low sun, facing it" "air_low:the same from 200 m up" \
-	"low_behind:low sun behind you" "dusk:dusk, the sun behind you" "night:a full-Tu night, Tu behind you" \
-	"lamp:the same, by the headlamp" "storm:deep in a storm by day" "track:a walked track, midmorning" \
-	"feet:at your feet, noon" "ripples:ripples over a dune, a low sun" "slip:a slip face from its foot"; do
+pairs=("noon:noon" "low_into:low sun, facing it" "air_low:the same from 200 m up"
+	"low_behind:low sun behind you" "dusk:dusk, the sun behind you" "air_dusk:dusk from 200 m up" "night:a full-Tu night, Tu behind you"
+	"lamp:the same, by the headlamp" "storm:deep in a storm by day" "track:a walked track, midmorning"
+	"feet:at your feet, noon" "ripples:ripples over a dune, a low sun" "rip_into:ripples into the low sun"
+	"slip:a slip face from its foot")
+if [[ -n ${ROWS:-} ]]; then
+	ordered=()
+	for name in ${ROWS//,/ }; do
+		for pair in "${pairs[@]}"; do [[ ${pair%%:*} == "$name" ]] && ordered+=("$pair"); done
+	done
+	pairs=("${ordered[@]}")
+fi
+for pair in "${pairs[@]}"; do
 	[[ -f $out/${pair%%:*}_after.png ]] || continue
 	for look in before after; do
 		file="$out/${pair%%:*}_$look.png"
@@ -61,12 +71,14 @@ for motion in "slide:+0+60:sliding sideways" "walk:+0+140:walking on"; do
 		done
 	done
 done
+title="The sand's own light: before (left) and after (right); then the glitter as the camera moves, blown up three times"
+title=${TITLE:-$title}
 parts=(-label "" "$out/moments.png")
 if [[ -f $out/slide_0_after.png ]]; then
 	montage "${crops[@]}" -tile 3x -geometry 960x540+6+6 -pointsize 20 -background '#f4efe6' "$out/glitter.png"
 	parts+=(-label "" "$out/glitter.png")
 fi
 montage "${parts[@]}" -tile 1x -geometry +0+12 -background '#f4efe6' \
-	-title "The sand's own light: before (left) and after (right); then the glitter as the camera moves, blown up three times" \
+	-title "$title" \
 	-pointsize 28 -depth 8 "$sheet"
 echo "sheet: $sheet"
