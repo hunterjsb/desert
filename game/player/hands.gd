@@ -390,7 +390,7 @@ func grab() -> bool:
 
 
 ## Use: work the device you look at, or use what you hold. Holding a line with
-## nothing else to do, it goes on your waist; empty-handed, the last line at
+## nothing else to do, it goes on your waist; empty-handed, the selected line at
 ## your waist comes back to your hands. Says whether it did anything.
 func interact() -> bool:
 	_look()
@@ -2072,6 +2072,9 @@ func _show(delta: float) -> void:
 	if _notice_left <= 0.0:
 		notice = ""
 	var said := line()
+	var waisted := reel.waist_readout()
+	if waisted != "":
+		said += ("\n" if said != "" else "") + waisted
 	if said != "" and said != _readout.text:
 		_readout.text = said
 	_readout.modulate.a = move_toward(_readout.modulate.a, 1.0 if said != "" else 0.0, delta * 8.0)

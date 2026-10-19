@@ -2,7 +2,7 @@ class_name Waist
 extends Node3D
 ## Your waist: a line tied on here leaves your hands free, at the price of
 ## walking slower and catching more wind. Use with a line in your hand and
-## nothing to work ties it on, and with your hands empty takes the last one
+## nothing to work ties it on, and with your hands empty takes the selected one
 ## back into them. Tying is instant; untying takes a moment, so a gust can
 ## catch you still tied on. The first sail's sheet tied here teaches its how-to.
 
@@ -14,6 +14,7 @@ var tied: Array[RigidBody3D] = []
 ## Seconds left untying, or -1; and whether it ends in your hand or on the sand.
 var untying := -1.0
 var _to_hand := false
+var _taking: RigidBody3D
 var _player: Player
 var _tuning := Tuning.current()
 var _was := {}
@@ -77,11 +78,15 @@ func take_from_hands() -> bool:
 	return true
 
 
-## The last line tied on back into your hands, once it's untied. Says whether
+## The selected line back into your hands, once it's untied. Says whether
 ## there was one to untie.
 func give_back() -> bool:
 	if untying >= 0.0 or tied.is_empty() or _player.hands.held != null:
 		return false
+	_taking = _player.hands.reel.waist_body()
+	# A stake carrying several lines has no single reel target.
+	if _taking == null:
+		_taking = tied.back()
 	untying = _tuning.untie_seconds
 	_to_hand = true
 	return true
@@ -134,8 +139,10 @@ func _process(_delta: float) -> void:
 
 func _undone() -> void:
 	var hands := _player.hands
-	if _to_hand and hands.held == null:
-		hands.hold(untie(tied.back()))
+	if _to_hand:
+		if hands.held == null and is_instance_valid(_taking) and tied.has(_taking):
+			hands.hold(untie(_taking))
+		_taking = null
 		return
 	var going: Array[RigidBody3D] = tied.duplicate()
 	if not _only.is_empty():

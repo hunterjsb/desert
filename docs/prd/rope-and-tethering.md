@@ -351,5 +351,12 @@ Every probe is first run against a deliberately broken rope, to prove it can fai
 
 ## Open questions
 
+**Waist-line selection (Hunter playtest, 2026-10-19; agreed follow-up).** Several lines need
+one understandable target. Keep the existing gaze selection for reeling, show that line's
+name, length and current tension while a waist line is selected, and make empty-handed use
+take that same line back from the waist. Once untying begins, retain that chosen end through
+the untie delay even if the view turns. A held line still takes priority when reeling. No new
+binding, release-all interaction or player-force cap is part of this change; those remain open.
+
 - **How much rope do you carry,** and is every coil the same length? The skeleton's
   coils are all 12 m.
