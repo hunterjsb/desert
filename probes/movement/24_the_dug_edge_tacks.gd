@@ -11,6 +11,9 @@ const ACROSS := deg_to_rad(60.0)
 
 func run() -> void:
 	await load_moving()
+	# This measures the edge holding a wind tow, without motor work turning
+	# the flat board across it as a powered tug can now do.
+	world.tuning.board_push = 0.0
 	set_rate(60, 4)
 	var flat := flat_place(world.player_world_x(), world.player_world_z(), 200.0, 40.0)
 	var flat_run := await _towed(flat, ["move_left"])

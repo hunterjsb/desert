@@ -1,8 +1,8 @@
 class_name Hoverboard
 extends Device
 ## The hoverboard: a find, fast, floaty and fun to carve, for scouting and for
-## running when the shield dies. It runs on its own battery and nothing ties
-## to it, so it tows nothing. Lying on the sand it's a device like any other:
+## running when the shield dies. It runs on its own battery; sailing lines
+## load it through the rider, with too much grounding its hover. On the sand it's a device like any other:
 ## take it, carry it, swap its battery, cable it to charge. Stuck on a deck,
 ## hung on an upright as often as not, it travels with the camp and charges
 ## from it. Ridden, it leaves the
@@ -22,6 +22,8 @@ const REARM := 1.5
 var rider: Player
 ## The share of a full push this tick, 0 to 1.
 var push := 0.0
+## Electrical input for work the motor supplies against a line this tick.
+var tow_work_w := 0.0
 
 var _tuning := Tuning.current()
 ## Energy drawn riding, as [from, to, Wh] in world time for each tick the
@@ -83,7 +85,7 @@ func work(seconds: float, _t: float) -> float:
 
 
 ## Under your feet: out of the physics world, touching nothing. A cable in
-## its port pops out, since it tows nothing.
+## its port pops out, so a charging cable cannot trail behind it.
 func carry(by: Player) -> void:
 	for socket in sockets():
 		if socket.kind == &"port" and socket.part != null:
@@ -91,6 +93,7 @@ func carry(by: Player) -> void:
 			plug.global_position += global_basis * socket.transform.basis.z * plug.depth()
 	rider = by
 	push = 0.0
+	tow_work_w = 0.0
 	_layers = Vector2i(collision_layer, collision_mask)
 	freeze_mode = RigidBody3D.FREEZE_MODE_KINEMATIC
 	freeze = true
@@ -109,6 +112,7 @@ func carry(by: Player) -> void:
 func set_down(velocity: Vector3) -> void:
 	rider = null
 	push = 0.0
+	tow_work_w = 0.0
 	freeze = false
 	freeze_mode = RigidBody3D.FREEZE_MODE_STATIC
 	collision_layer = _layers.x
@@ -123,7 +127,7 @@ func set_down(velocity: Vector3) -> void:
 func draw_w() -> float:
 	if rider == null or wrecked():
 		return 0.0
-	return (_tuning.board_hover_w + _tuning.board_push_w * push) * BoardMakes.of(BoardMakes.make_of(self)).draw
+	return (_tuning.board_hover_w + _tuning.board_push_w * push + tow_work_w) * BoardMakes.of(BoardMakes.make_of(self)).draw
 
 
 ## One tick ridden: what it drew over its own `seconds`, spread over the world

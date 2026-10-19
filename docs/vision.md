@@ -83,11 +83,13 @@ upgrade the camp → the camp sustains more of itself → go further, or into th
   big part of the game." (Agreed, session 4, part 3: the Varran
   start has a dune sailboat, a slow wind-driven hauler, which the Movement PRD keeps apart from
   the yacht: [Movement](prd/movement.md#the-dune-sailboat-agreed-session-4-part-3-not-built).)
-- **The hoverboard is just for you:** fast, floaty and fun, for scouting and escaping. It
-  tows nothing. (The one proposed exception is the Daventry patrol board, a novelty start whose
-  board is its own superchassis with a tow:
+- **The hoverboard is just for you:** fast, floaty and fun, for scouting and escaping.
+  (Hunter, 2026-10-19) Attached to a sailing rig it may pull, race ahead and act as its
+  moving keel or counterbalance. Its motor can crawl with a tiny load; a large load
+  overloads its hover, grounds it and makes it sputter. Slack lines allow fast powered
+  catch-up. This replaces the earlier absolute no-towing rule; it remains a poor camp
+  hauler. The proposed Daventry patrol board is still its own superchassis with a tow:
   [Movement](prd/movement.md#the-patrol-board-a-superchassis-agreed-session-4-part-3-not-built).
-  The standard board still tows nothing.)
 - **Your hands plus what the suit carries, by weight, and almost no menus.** Things live
   in the world and in your hands, not in an inventory screen. (Hunter, 2026-10-15, loose:
   one action brings up a very minimal overlay of what you carry and what's at your waist,

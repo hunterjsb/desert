@@ -313,10 +313,8 @@ func toggle_board() -> bool:
 	return get_on(_board_near())
 
 
-## Onto a board, if it has the charge to carry you. It tows nothing, so you
-## let go of what you hold on a line or drag; a line at your waist has to be
-## untied first, and you step on once it is. A sheet stays tied: its sail
-## tows you.
+## Safe boarding drops a hand-held load and unties ordinary waist lines.
+## Sailing lines stay: wind and the board's limited motor can pull them.
 func get_on(on: Hoverboard) -> bool:
 	_boarding = null
 	if on == null or board != null or flying:

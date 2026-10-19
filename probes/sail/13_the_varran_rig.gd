@@ -39,6 +39,9 @@ func run() -> void:
 		and _lines.map(func(l: Line) -> Socket: return (l.ends[0] as Part).socket) == hooked,
 		"and no line moved: each where it was laid")
 	await _launch(1)
+	# The undug comparison isolates the wind's sideways shove from powered
+	# course changes; the powered reaches and tack were exercised above.
+	world.tuning.board_push = 0.0
 	var loose := await _sail(heading(1), 25.0, 0.0)
 	check(loose.y > loose.x, "undug, it runs off downwind (%.2f m/s across, %.2f down)" % [loose.x, loose.y])
 	speed_up(1)
@@ -57,7 +60,7 @@ func _launch(windward: int) -> void:
 ## downwind over the last 10 s, m/s.
 func _sail(way: Vector2, seconds: float, dig: float) -> Vector2:
 	var player := world.player
-	var seen := {"t": 0, "across": 0.0, "down": 0.0}
+	var seen := {"t": 0, "across": 0.0, "down": 0.0, "aiding": 0, "hot": 0.0}
 	var last := roundi(seconds * 60.0) - 600
 	await simulate(seconds, func() -> void:
 		player.rotation.y = atan2(-way.x, -way.y)
@@ -69,10 +72,19 @@ func _sail(way: Vector2, seconds: float, dig: float) -> Vector2:
 		if seen.t > last:
 			var mine := Vector2(player.velocity.x, player.velocity.z)
 			seen.across += mine.dot(way) / 600.0
-			seen.down += mine.dot(downwind) / 600.0)
+			seen.down += mine.dot(downwind) / 600.0
+			var pull := Vector3.ZERO
+			for force in ropes._on_you:
+				pull += force
+			if Vector2(pull.x, pull.z).dot(player.ride.ahead) > 30.0:
+				seen.aiding += 1
+				seen.hot = maxf(seen.hot, player.ride.overload))
 	print("toward %s, dug %.2f: %.2f m/s across, %.2f downwind; the bow lines %d and %d N, the sheet %d N, heeling %.1f°" % [
 		"the wind's left" if way.dot(heading(1)) > 0.0 else "its right", dig, seen.across, seen.down,
 		_lines[0].rope.tension, _lines[2].rope.tension, _lines[1].rope.tension, heel()])
+	print("aiding wind load: %d ticks, peak motor heat %.3f" % [seen.aiding, seen.hot])
+	if dig > 0.0:
+		check(seen.aiding > 60 and seen.hot < 0.1, "loaded aiding wind keeps the motor cool")
 	return Vector2(seen.across, seen.down)
 
 
@@ -83,13 +95,28 @@ func _tack() -> void:
 	var way := heading(-1)
 	var far: Rope = _lines[2].rope
 	var full := far.length
-	var reel := {"in": true}
 	var pace := Reel.PACE / 60.0
-	await simulate(2.0 * REEL / Reel.PACE + 0.5, func() -> void:
-		player.rotation.y = atan2(-way.x, -way.y)
+	# Ease the motor and brake before sending the rig across; a full-throttle
+	# reversal fights its old tack and stalls the hover.
+	Input.action_release("move_forward")
+	Input.action_press("move_back", 1.0)
+	await simulate(2.0)
+	Input.action_press("move_back", DIG)
+	Input.action_press("move_forward", 1.0)
+	var elapsed := {"t": 0.0}
+	await simulate(2.0 * REEL / Reel.PACE + 12.5, func() -> void:
+		elapsed.t += 1.0 / 60.0
+		var broad := (way + downwind).normalized()
+		var course := downwind if elapsed.t < 4.0 else broad
+		if elapsed.t > REEL / Reel.PACE + 12.0:
+			course = broad.slerp(way, clampf((elapsed.t - REEL / Reel.PACE - 12.0) / (REEL / Reel.PACE), 0.0, 1.0))
+		player.rotation.y = atan2(-course.x, -course.y)
 		_steer()
-		reel.in = reel.in and far.length > full - REEL
-		far.length = far.length - pace if reel.in else minf(far.length + pace, full))
+		if elapsed.t < REEL / Reel.PACE:
+			far.length = maxf(far.length - pace, full - REEL)
+		elif elapsed.t > REEL / Reel.PACE + 12.0:
+			far.length = minf(far.length + pace, full)
+	)
 	print("tacked: its far bow line taken in %.1f m and let out to %.1f m" % [REEL, far.length])
 
 

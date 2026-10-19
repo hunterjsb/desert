@@ -52,12 +52,8 @@ const EASE := 0.4
 ## Flying, its tilt follows the sand below at this share of the pull it has
 ## lying on it.
 const AIR_LIE := 0.1
-## A line at your waist pulling you this hard, m/s², and the board's push
-## gives nothing: it tows nothing, and towed, your keys only turn it.
+## A line pulling this hard, m/s², lets the board trail as a towed ski.
 const HELD_BACK := 0.6
-## Its push gives out as you come this much faster than what your lines lead
-## to, m/s, as far as they're slack: slack in a tow never lets you run past it.
-const OUTRUN := 1.0
 ## The edge goes in and comes out over about this long, s.
 const DIG_SECONDS := 0.2
 ## Stopping, the board swings across your way this fast, rad/s, faster than
@@ -112,6 +108,12 @@ var vy := 0.0
 var gap := 0.0
 ## How far you went last tick: what drawing smooths between ticks.
 var last_step := Vector3.ZERO
+## A hot motor grounds the hover and pulses. Grounding adds real sand drag.
+var overload := 0.0
+var motor_pulse := 1.0
+var _motor_load := 0.0
+var _line_load := 0.0
+var _motor_age := 0.0
 ## How far it leans into a carve, radians, positive turning right; and how
 ## it lies along the sand under it, nose up and right side up.
 var bank := 0.0
@@ -172,10 +174,8 @@ var _ahead_was := Vector2(0.0, -1.0)
 ## Steps until you can kick again, and steps left of a kick's push.
 var _kick_wait := 0
 var _stroke := 0
-## What the lines at your waist pulled you by this tick, m/s along engine x
-## and z, and how fast what each leads to goes.
+## What the lines at your waist pulled you by this tick, m/s along engine x and z.
 var _towed := Vector2.ZERO
-var _leads: Array[Vector2] = []
 ## Whether the edge has bitten since it last came out.
 var _bitten := false
 ## In a storm as the last tick ended, so riding into one is noticed.
@@ -200,24 +200,17 @@ func _init(by: Player, on: Hoverboard) -> void:
 
 
 ## A line's pull on you this tick, as the change in your way it makes: your
-## camp towing you, sand-kiting, or a line holding you back; and how fast
-## what the lines lead to goes.
-func tow(by: Vector3, leads: Array[Vector3] = []) -> void:
+## camp towing you, sand-kiting, or a line holding you back.
+func tow(by: Vector3) -> void:
 	_towed += Vector2(by.x, by.z)
-	_leads.clear()
-	for lead in leads:
-		_leads.append(Vector2(lead.x, lead.z))
 
 
-## How much of its push the board gives going this fast: none once you'd
-## outrun what your lines lead to.
-func _keeps_behind(way: Vector2) -> float:
-	if _leads.is_empty():
-		return 1.0
-	var fastest := 0.0
-	for lead in _leads:
-		fastest = maxf(fastest, lead.length())
-	return clampf(1.0 - (way.length() - fastest) / OUTRUN, 0.0, 1.0)
+## Motor effort under line load is limited by force and mechanical power.
+func _motor_force(free_force: float, speed: float) -> float:
+	var t := _tuning
+	var loaded := smoothstep(0.0, t.board_tow_load_n, _line_load)
+	var tow := minf(t.board_tow_force_n, t.board_tow_work_w / maxf(speed, 1e-3))
+	return lerpf(free_force, minf(free_force, tow), loaded) * motor_pulse
 
 
 ## One tick: `dir` is where your keys steer, flat, forward and to the sides;
@@ -249,6 +242,7 @@ func step(delta: float, dir: Vector2, hop: bool, digging := 0.0, kick := false, 
 	var digging_in := exp(-h / DIG_SECONDS)
 	var biting := exp(-h / (LOOSE_SECONDS * m.bite))
 	var pushed := 0.0
+	var tow_work := 0.0
 	var hit := 0.0
 	pressing = 0.0
 	edge = 0.0
@@ -263,13 +257,28 @@ func step(delta: float, dir: Vector2, hop: bool, digging := 0.0, kick := false, 
 		vy += up
 		popped = up
 		_hopping = true
-	# Towed, the line carries you along: the board can't push against the
-	# line or run past it, and left alone it runs where the line leads.
+	# Ropes transfer real momentum. Only motor effort against their pull
+	# overloads the hover; aiding sail pull never heats it.
 	velocity += _towed
 	var pull := _towed / delta
 	var free := clampf(1.0 - pull.length() / HELD_BACK, 0.0, 1.0)
 	var lead := pull.normalized() if pull.length() > HELD_BACK else Vector2.ZERO
 	_towed = Vector2.ZERO
+	var opposed := maxf(0.0, -pull.dot(ahead)) * t.player_mass
+	_motor_load += (opposed - _motor_load) * (1.0 - exp(-delta / t.board_tow_response_s))
+	_line_load += (pull.length() * t.player_mass - _line_load) * (1.0 - exp(-delta / t.board_tow_response_s))
+	var motoring := dir.dot(ahead) > 0.0 and push > 0.0 and digging < 1.0
+	var heating := _motor_load / t.board_tow_overload_n - 1.0 if motoring else -1.0
+	# Once grounded, the sand itself stalls the motor even as its line goes
+	# quiet between pulses. Releasing the throttle lets the hover recover.
+	if motoring and (_motor_load > t.board_tow_load_n or overload > t.board_tow_latch) \
+			and velocity.length() < t.board_tow_stall_speed:
+		heating = maxf(heating, 1.0)
+	overload = clampf(overload + heating * delta / t.board_tow_hot_s, 0.0, 1.0)
+	_motor_age += delta
+	var on := 1.0 if fposmod(_motor_age * t.board_tow_sputter_hz, 1.0) < t.board_tow_sputter_on else 0.0
+	motor_pulse = lerpf(1.0, on, overload)
+	ride_height = lerpf(ride_height, t.board_tow_ground_height, overload)
 	for i in n:
 		var when := world.time + i * h * world.time_warp
 		var middle := _height(at)
@@ -399,8 +408,13 @@ func step(delta: float, dir: Vector2, hop: bool, digging := 0.0, kick := false, 
 			var swing := (t.board_drift_turn if drifting else turn_rate) * h
 			yawed = clampf(ahead.angle_to(dir), -swing, swing)
 			ahead = ahead.rotated(yawed)
-			pushing = clampf(ahead.dot(dir), 0.0, 1.0) * contact * (1.0 - dig) * free * lerpf(1.0, _keeps_behind(velocity), free)
-			velocity += ahead * push * pushing * h
+			pushing = clampf(ahead.dot(dir), 0.0, 1.0) * contact * (1.0 - dig)
+			var force := _motor_force(push * t.player_mass, maxf(velocity.dot(ahead), 0.0)) * pushing
+			var before := velocity
+			velocity += ahead * force / t.player_mass * h
+			var work_speed := maxf((before + velocity).dot(ahead) * 0.5, 0.0)
+			var line_load := maxf(0.0, -pull.dot(ahead)) * t.player_mass
+			tow_work += minf(line_load, force) * work_speed / n
 		elif lead != Vector2.ZERO:
 			# Nothing holding it sideways, it trails its own way, as a towed ski does.
 			var trail := velocity / speed if speed > 0.5 else lead
@@ -425,7 +439,7 @@ func step(delta: float, dir: Vector2, hop: bool, digging := 0.0, kick := false, 
 			kicks += 1
 		if _stroke > 0:
 			_stroke -= 1
-			var spare := clampf(1.0 - velocity.length() / top, 0.0, 1.0) * free * lerpf(1.0, _keeps_behind(velocity), free)
+			var spare := clampf(1.0 - velocity.length() / top, 0.0, 1.0)
 			velocity += ahead * t.board_kick / KICK_SECONDS * spare * contact * h
 		if not kick:
 			player.stamina = minf(player.stamina + t.stamina_regen * h, t.stamina_max)
@@ -479,6 +493,7 @@ func step(delta: float, dir: Vector2, hop: bool, digging := 0.0, kick := false, 
 			+ drag * t.board_air_share * catch * air_way.length() * air_way) * h
 		if pushing == 0.0 and _stroke == 0:
 			velocity = velocity.move_toward(Vector2.ZERO, t.board_coast * contact * h)
+		velocity = velocity.move_toward(Vector2.ZERO, t.board_tow_ground_drag * overload * contact * h)
 		if pumped != 0.0:
 			speed = velocity.length()
 			if speed > 0.05:
@@ -517,6 +532,7 @@ func step(delta: float, dir: Vector2, hop: bool, digging := 0.0, kick := false, 
 		player.edge_bit.emit(velocity.length())
 	_bitten = _bitten and dig > BITE * 0.5
 	board.push = pushed
+	board.tow_work_w = tow_work / t.board_tow_efficiency
 	board.meter(world.time, world.time + delta * world.time_warp, delta)
 	if hit > BUMP:
 		bottomed += 1

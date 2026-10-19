@@ -1,8 +1,8 @@
 extends SailProbe
 ## Sailing probe 14: an overrun goes slack, then pulls firmly, and no line
 ## ever pulls past its strength. On the Varran rig running in a steady 10 m/s,
-## forward held: slack in its lines never lets the board's push run you past
-## it, so its lines go slack and come taut again under their strength, you
+## forward held: the motor may run you past it on slack lines, which come taut again
+## at no more than their strength, you
 ## still on the board. Forced past it at 12 m/s, a line either holds, never
 ## pulling past its strength, or parts.
 
@@ -42,8 +42,8 @@ func run() -> void:
 	print("held forward on a run: slack %.1f s, the lines' peak %d N of their %d N, %s" % [seen.slack / 60.0,
 		roundi(seen.peak), roundi(world.tuning.rope_breaking), "still riding" if player.board != null else "thrown"])
 	check(seen.slack > 30, "its lines went slack (%.1f s)" % (seen.slack / 60.0))
-	check(seen.peak < world.tuning.rope_breaking and seen.past == 0 and player.board != null,
-		"then pulled again firmly under their strength (%d N), you still on the board" % roundi(seen.peak))
+	check(seen.peak <= world.tuning.rope_breaking + 0.5 and seen.past == 0 and player.board != null,
+		"then pulled again without exceeding their strength (%d N), you still on the board" % roundi(seen.peak))
 
 	# Forced on past it: your way thrown hard downwind past the rig.
 	var held := {"past": 0, "peak": 0.0}

@@ -620,7 +620,7 @@ func _drag_player(h: float) -> void:
 		player.set_meta(&"rope_drag", Vector3.ZERO)
 		return
 	if player.ride != null:
-		player.ride.tow(_drag, _leads())
+		player.ride.tow(_drag)
 		_drag = Vector3.ZERO
 		player.set_meta(&"rope_drag", Vector3.ZERO)
 		return
@@ -639,16 +639,6 @@ func _drag_player(h: float) -> void:
 	# Slower only while you walk, so the wind's own shove on you isn't eased.
 	var walking := player.mode == "walk" or player.mode == "sprint"
 	player.set_meta(&"rope_drag", _drag - own * _tuning.waist_slow if tied and walking else _drag)
-
-
-## How fast what the lines at your waist lead to goes, each, m/s.
-func _leads() -> Array[Vector3]:
-	var found: Array[Vector3] = []
-	for rope in ropes:
-		if rope.body_a == null or rope.body_b == null or not at_waist(rope):
-			continue
-		found.append((rope.body_b if rope.body_a.player != null else rope.body_a).velocity)
-	return found
 
 
 ## Sustained load breaks ropes and pulls stakes; a spike alone never does,
