@@ -471,6 +471,22 @@ static var _current: Tuning
 @export var board_drift_grip: float = 14.0
 @export var board_drift_slide: float = 0.25
 @export var board_drift_speed: float = 8.0
+## A skid: standing, a carve past the hover's grip breaks loose this fast or
+## faster, m/s, and slides on keeping this share of that grip, a full
+## sideways slide bleeding this share of its speed a second, until it comes
+## back near your way and bites.
+@export var board_skid_speed: float = 7.0
+@export var board_skid_grip: float = 0.9
+@export var board_skid_drag: float = 0.6
+## Flying, the board's tilt follows its path this fast, Hz: its nose up off a
+## lip and down as it falls, easing to the sand it's coming down on.
+@export var board_air_hertz: float = 2.5
+## Landing, the speed it meets the sand at, m/s (harder crossed): past the
+## first it slides out and jars you, past the second it throws you off. Into
+## something solid faster than this, m/s, it throws you off.
+@export var board_land_jar: float = 9.0
+@export var board_land_throw: float = 15.0
+@export var board_crash: float = 7.0
 ## A kick off the sand: m/s along the board from rest, less the faster you
 ## go and nothing at top speed; one this often while sprint is held, s, for
 ## this much stamina. Kicking, you don't get your breath back.
@@ -884,8 +900,9 @@ static var _current: Tuning
 
 @export_group("Plume")
 ## A live vent's seep as a buoyancy flux, m⁴/s³ at this tuning's gravity: how
-## hard what it lets out climbs. Bursts multiply it (Geology).
-@export var plume_buoyancy: float = 25000.0
+## hard the hot gas it lets out climbs, lifting its column of dust 1.5 to 3
+## km. Bursts multiply it (Geology).
+@export var plume_buoyancy: float = 300000.0
 ## A plume dissolves into the distance between these, m: further than the
 ## storm walls, since what towers over the haze stands clear of it.
 @export var plume_fade_m := Vector2(30000.0, 45000.0)
@@ -927,9 +944,8 @@ static var _current: Tuning
 @export var radio_forecast_minutes: float = 20.0
 @export var radio_forecast_every: float = 5.0
 ## With something to report, the weather station reads it aloud this often, s
-## of world time, and at once when a report breaks in; heard this far, m.
+## of world time, and at once when a report breaks in.
 @export var radio_speak_every: float = 30.0
-@export var radio_voice_m: float = 30.0
 ## The weather station has nothing to report, and plays its clear-skies song,
 ## while no storm is on you or due within this many minutes. Clear for 5
 ## minutes ahead is about half of all clear time; for 20, almost never.
@@ -1020,6 +1036,11 @@ static var _current: Tuning
 @export var storm_map_every: float = 1.0
 ## A smart shield switches itself on once the radar sees a front this near, m.
 @export var smart_shield_auto_m: float = 1500.0
+## A Console with a radio in its system says aloud that its battery is low,
+## then critical, once each as what its pool has left to run it on falls past
+## these shares: the charge above where it gives way (Power).
+@export var console_battery_low: float = 0.2
+@export var console_battery_critical: float = 0.05
 
 @export_group("Loose objects")
 ## Wind drag per (m/s)² per m² of a thing's biggest face: half the air density

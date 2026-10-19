@@ -92,7 +92,8 @@ static func _quartermaster(radio: Radio, x: float, z: float) -> String:
 
 
 ## The weather station: the routine forecast for where the radio is, always;
-## at dusk or with storm news where it walks, the long report too.
+## at dusk or with storm news where it walks, the long report too. What it
+## reads aloud is shorter (Radio.report).
 static func _walker(radio: Radio, gods: Gods, x: float, z: float, t: float, local: float) -> Dictionary:
 	var routine := radio.weather_words(t)
 	var at := radio.ground_of(gods.home(&"walker", t))
@@ -102,13 +103,14 @@ static func _walker(radio: Radio, gods: Gods, x: float, z: float, t: float, loca
 	if now != before or _within(local, DUSK):
 		var tuning := Tuning.current()
 		var long := Radio.forecast(field, x, z, t, tuning.radio_forecast_minutes * 120.0, Weather.FORECAST_STEP)
-		var ahead := "no storm for %d min" % roundi(tuning.radio_forecast_minutes * 2.0) if long.change == INF \
+		var none := "no clearing for %d min" if long.stormy else "no storm for %d min"
+		var ahead := none % roundi(tuning.radio_forecast_minutes * 2.0) if long.change == INF \
 			else ("storm clears in %s" % Radio.span(long.change - t) if long.stormy
 				else "storm in %s" % Radio.span(long.change - t))
 		var feet_say := "storm at the walker" if now else "clear at the walker"
 		return {"text": "%s · long range: %s · %s" % [routine, ahead, feet_say], "useful": true,
-			"calm": calm(radio.reading, t)}
-	return {"text": routine, "useful": true, "calm": calm(radio.reading, t)}
+			"calm": calm(radio.reading, t), "spoken": radio.report(t, long)}
+	return {"text": routine, "useful": true, "calm": calm(radio.reading, t), "spoken": radio.report(t)}
 
 
 ## Nothing to report at world time t: no storm on you, and none due within

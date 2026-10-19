@@ -174,7 +174,7 @@ const RENAMED := {&"carrot": &"root_tuber", &"fungus": &"vat_fungus", &"carrots"
 
 ## Who made each thing colonial hands made, as its stamp says (art
 ## direction's maker's marks): commodity parts carry none.
-const MAKERS := {&"crate_frame": &"tilg", &"chassis": &"tilg", &"condenser": &"rmc", &"console": &"rmc",
+const MAKERS := {&"crate_frame": &"tilg", &"chassis": &"tilg", &"board": &"tilg", &"condenser": &"rmc", &"console": &"rmc",
 	&"shield": &"rmc", &"light_shield": &"shield_maker", &"turbine": &"wind_maker"}
 ## Where a lineage's marks sit on what isn't a box: round about its top's
 ## axis, as [its radius over its half width, and the shares of its height its
@@ -192,6 +192,11 @@ const STAKE := {"mass": 2.0, "stats": {"toughness": INF}}
 const NAMES := {&"stake": "Stake", &"line": "Line", &"cable": "Cable", &"strong_cable": "Strong cable",
 	&"hose": "Hose"}
 
+## Every board's: its battery at its nose, its port at its tail.
+const BOARD_SOCKETS := [
+	[&"battery", Vector3(0.0, 0.04, -0.5), Vector3.UP],
+	[&"port", Vector3(0.0, 0.0, 0.65), Vector3.BACK],
+]
 ## Frames: their box, weight, wind catch and sockets as [kind, position, outward].
 ## Those marked "deck" stand on a chassis piece's deck mount too. A "short"
 ## name is what a Console's screen calls it, where its label is too long.
@@ -320,11 +325,15 @@ const DEVICES := {
 	# rack from the camp. Found buried on end, nose down. Lying flat, the wind
 	# meets its edge.
 	&"board": {"label": "Hoverboard", "size": Vector3(0.36, 0.08, 1.3), "mass": 7.0, "board": true, "on_end": true,
-		"carryable": true, "fits": &"rack", "stats": {"face_m2": 0.1},
-		"sockets": [
-			[&"battery", Vector3(0.0, 0.04, -0.5), Vector3.UP],
-			[&"port", Vector3(0.0, 0.0, 0.65), Vector3.BACK],
-		]},
+		"carryable": true, "fits": &"rack", "stats": {"face_m2": 0.1}, "sockets": BOARD_SOCKETS},
+	# Boards by make (BoardMakes): one box and one rack seat, so any make racks
+	# as the issue does; each its own weight, look and ride.
+	&"racer_board": {"label": "Skimmer racer", "size": Vector3(0.36, 0.08, 1.3), "mass": 5.5, "board": true,
+		"on_end": true, "carryable": true, "fits": &"rack", "stats": {"face_m2": 0.09}, "sockets": BOARD_SOCKETS},
+	&"patrol_board": {"label": "Patrol board", "size": Vector3(0.36, 0.08, 1.3), "mass": 11.0, "board": true,
+		"on_end": true, "carryable": true, "fits": &"rack", "stats": {"face_m2": 0.11}, "sockets": BOARD_SOCKETS},
+	&"temple_board": {"label": "Temple board", "size": Vector3(0.36, 0.08, 1.3), "mass": 9.0, "board": true,
+		"on_end": true, "carryable": true, "fits": &"rack", "stats": {"face_m2": 0.12}, "sockets": BOARD_SOCKETS},
 	# Something to sleep on (Sleep): laid on the sand, carried, or rolled in a
 	# crate's rack where the board would go. Round and low, it lets most of a
 	# breeze over it: a storm slides it, a breeze doesn't.

@@ -4,9 +4,10 @@ extends ShieldProbe
 ## meltdown (the dev console's, for now) calls it up, when it plays through
 ## once from its start and stops; called up again while it plays, it starts
 ## over. The weather station says nothing aloud while it holds on Clear
-## Skies; once a storm breaks in, it reads the report aloud at once, units in
-## words, and your ears hear it, and again every radio_speak_every s while
-## there's something to report.
+## Skies; once a storm breaks in, it reads the report aloud at once, in
+## phrases from its bank of recordings, the storm taking some, in the radio's
+## own voice, and again every radio_speak_every s while there's something to
+## report.
 
 
 func run() -> void:
@@ -45,7 +46,6 @@ func run() -> void:
 	world.time = 0.0
 	radio.frequency = gods.carrier(&"walker", world.time)
 	await physics_frames(5)
-	var broadcast := world.player.get_node(^"Broadcast") as Broadcast
 	check(radio.on_air() == Sounds.RADIO_CLEAR_SKIES and radio.spoken_count == 0, "holding on Clear Skies, it says nothing aloud")
 	weather_everywhere(0.3)
 	radio.read_at = -INF
@@ -53,13 +53,10 @@ func run() -> void:
 		await get_tree().physics_frame
 		if radio.spoken_count > 0:
 			break
-	# The voice is the view's: it hears the radio on a drawn frame, not a tick.
-	for i in 3:
-		await get_tree().process_frame
-	print("the storm breaks in: \"%s\"; you hear \"%s\"" % [radio.spoken, broadcast.reading])
-	check(radio.spoken_count == 1 and (radio.spoken.contains("minutes") or radio.spoken.contains("metres")),
-		"a storm breaking in, it reads the report aloud, units in words")
-	check(broadcast.reading == radio.spoken, "and your ears hear it")
+	print("the storm breaks in: \"%s\"" % " ".join(radio.spoken))
+	check(radio.spoken_count == 1 and radio.spoken.size() >= 3 and Array(radio.spoken).all(func(phrase: String) -> bool:
+		return phrase == "..." or Radio.clip(phrase) != null), "a storm breaking in, it reads the report aloud from its bank")
+	check(radio.reader.bus == Sounds.RADIO, "in the radio's own voice")
 	var first := radio.spoken_at
 	world.time = first + tuning.radio_speak_every * 0.5
 	await physics_frames(5)

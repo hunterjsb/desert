@@ -7,6 +7,8 @@ extends Control
 ## not done, and a dark silhouette while what it waits on isn't done. The
 ## card highlighted, by the mouse or the menu's selection, has a small panel
 ## beside it saying what it asks, how far along you are, and what it opens.
+## The selection starts on the deed done last, or with none done the first
+## still to do. Opened, it's looked at: what was new in it isn't any more.
 
 ## A card, the picture on it, and the room round them: between a family's
 ## branches, between families, and between one deed and the next, where
@@ -45,6 +47,8 @@ static func fill(words: Words, profile: Node, back: Callable) -> void:
 	words.add_body(tree)
 	var word := words.add("Back", back)
 	word.focus_neighbor_top = word.get_path_to(tree.first())
+	for id in Deeds.unseen(profile):
+		profile.seen(id)
 
 
 func _init(profile: Node, tuning: Tuning) -> void:
@@ -72,12 +76,30 @@ func _init(profile: Node, tuning: Tuning) -> void:
 
 func _ready() -> void:
 	# Over Back, which the menu highlights as it opens.
-	first().grab_focus.call_deferred()
+	opening().grab_focus.call_deferred()
 
 
-## The first card, where the selection starts.
+## The first card, top left.
 func first() -> Button:
 	return _cards[Deeds.TABLE.keys()[0]]
+
+
+## Where the selection starts: the deed done last, or with none done the
+## first open and still to do.
+func opening() -> Button:
+	var last := &""
+	var when := -INF
+	var done: Dictionary = _profile.deeds() if _profile != null else {}
+	for id: StringName in Deeds.TABLE:
+		if Deeds.lit(_profile, id) and done[str(id)].get("at", 0.0) > when:
+			last = id
+			when = done[str(id)].get("at", 0.0)
+	if last != &"":
+		return _cards[last]
+	for id: StringName in Deeds.TABLE:
+		if Deeds.is_open(_profile, id):
+			return _cards[id]
+	return first()
 
 
 ## Each family a branch per deed at its widest step, each deed one step
@@ -135,23 +157,7 @@ func _card(id: StringName) -> Button:
 	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	row.modulate = Color.WHITE if done or not open else Color(UNLIT, UNLIT, UNLIT)
 	card.add_child(row)
-	var picture: Control
-	var icon: StringName = Deeds.TABLE[id].get("icon", &"landmark")
-	if ItemIcons.LOOKS.has(icon):
-		var shown := TextureRect.new()
-		shown.texture = ItemIcons.of(Engine.get_main_loop(), icon)
-		shown.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		shown.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		if not open:
-			shown.material = _silhouette()
-		picture = shown
-	else:
-		picture = Control.new()
-		picture.draw.connect(_draw_mark.bind(picture, icon, not open))
-	picture.custom_minimum_size = Vector2(ICON, ICON)
-	picture.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	picture.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	row.add_child(picture)
+	row.add_child(picture(id, open, ICON))
 	var title := Label.new()
 	title.theme_type_variation = &"DeedCardName"
 	title.text = Deeds.TABLE[id].name if open and not (Deeds.TABLE[id].get("hidden", false) and not done) else "????"
@@ -210,6 +216,28 @@ func _draw() -> void:
 			var bend := (from.x + to.x) * 0.5
 			draw_polyline(PackedVector2Array([from, Vector2(bend, from.y), Vector2(bend, to.y), to]),
 				lit if Deeds.is_open(_profile, id) else faint, 2.0, true)
+
+
+## A deed's card's picture, `across` px: its thing's look, or a mark drawn;
+## only an outline while it's locked.
+static func picture(id: StringName, open: bool, across: float) -> Control:
+	var shown: Control
+	var icon: StringName = Deeds.TABLE[id].get("icon", &"landmark")
+	if ItemIcons.LOOKS.has(icon):
+		var look := TextureRect.new()
+		look.texture = ItemIcons.of(Engine.get_main_loop(), icon)
+		look.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		look.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		if not open:
+			look.material = _silhouette()
+		shown = look
+	else:
+		shown = Control.new()
+		shown.draw.connect(_draw_mark.bind(shown, icon, not open))
+	shown.custom_minimum_size = Vector2(across, across)
+	shown.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	shown.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	return shown
 
 
 ## Its thing's shape alone, in the theme's faint ink.

@@ -180,7 +180,7 @@ by a rule that keeps it true to Tu's geography. All angles are from the sub-Tu p
 |---|---|---|---|
 | **Halloran and Aitch** | On the axis, 3° to 5° from the sub-Tu point (1.3–2.1 km): Tu all but overhead. A rift crosses the axis there. | "Deepest in, near the sub-Tu point. Rift valley; refinery on the terraces, H-Town on the floor." The Stoker's twin fire. | The refinery terraces (Muster on them), the Crossing at the switchback, Aitch on the rift floor 600 m across |
 | **The black site** | On the artery 1.0–1.6 km from the refinery toward Port Morgan, in the rift wall | "Cut into the rift wall near Halloran inside the ring... on the main artery, not an isolated spoke." The Quartermaster's bunker | The bunker, the specimen case |
-| **Port Morgan** | On the axis, 38° to 48° from the sub-Tu point (16–20 km from it, 17–22 km in from the Rim): Tu 42° to 52° up | "Partway in on its plateau. Tu high but off to one side." The colonial hub every spoke leaves | The Pads, the Bastion (the freighter and the Ledger), Kesselside, Lowtown, the Okafor bunker under the Bastion **(default: which enclave is open)** |
+| **Port Morgan** | On the axis, 38° to 48° from the sub-Tu point (16–20 km from it, 17–22 km in from the Rim): Tu 42° to 52° up | "Partway in on its plateau. Tu high but off to one side." The colonial hub every spoke leaves | The Pads, the Bastion (the freighter and the Ledger), Crakeside, Lowtown, the Haberjack bunker under the Bastion **(default: which enclave is open)** |
 | **Halfrise** | On the axis at the Rim, 88.5° to 90°: Tu half-risen | "On the Rim, Tu half-risen on the horizon... at the head of the old road in to Port Morgan" | The citadel |
 | **Sister** | On the Rim 1.6 to 2.6 km from Halfrise, either way along it | "A sister city near Halfrise," Mother Cistern's temple | The temple, the basin, the seed vault |
 | **The Rim depot** | 0.7 to 1.2 km from Sister, on the Rim, away from Halfrise | "A suborbital port near Sister... The Cistern was built beside the depot that supplied it" | The pads, the rail yard |
@@ -210,7 +210,10 @@ with the world and the save, keyed by the landmark's id, and is the endings work
 *Built 2026-10-18, on the `plumes` branch, from Hunter's brief ([geology and
 plumes](geology-and-plumes-2026-10-18.md)): "Give Zan's plumes a convincing geological source and a
 consistent relationship to wind, the atmosphere, and the moon's history. Start with one compelling
-plume, not a sprawling simulation."*
+plume, not a sprawling simulation." The plumes' look was settled in a third round, when the smoke didn't
+sit right with him: "its mostly emitting gas at this point so its just massive sand plumes that are epic
+from a distance but really just blend into the storm and or the haze when up close cuz theyres so big"
+([Wind & storms](prd/wind-and-storms.md#plumes)).*
 
 The ground the landmarks stand on, made once a run (`Geology`, on `History`) after the landmarks and
 before the colonial layer, which reads it. It holds only what something reads.
@@ -242,15 +245,16 @@ before the colonial layer, which reads it. It holds only what something reads.
 - **Gas pockets.** Round the rift, gas trapped under the old flows breaks out now and then:
   `geology.pockets(t0, t1)` gives those whose plumes show in a span, each a point 1.5 to 13 km from the
   point under Tu, a start, a size and how long it blows. One slot of 500 s in two holds one; it blows 20
-  to 50 s at 20 to 80 times the rift's seep and fades by e every 12 s, a dust column a kilometre or two
-  high **(defaults)**. Harmless, as everything is: a spectacle and a boom.
+  to 50 s at 1.7 to 6.7 times the rift's seep and fades by e every 12 s, a dust column a kilometre or
+  two high **(defaults)**. Harmless, as everything is: a spectacle and a boom.
 - **What a vent is doing** is a pure function of the time, as the weather is:
   `geology.venting(vent, t)` gives how hard, as a share of its seep, and the share of ash in what it
-  carries. A live vent breathes by a fifth over periods of 170 and 410 s, and bursts: a vulcanian burst,
-  an explosion clearing its throat and a column of ash after. Each slot of 1,200 s (a game day) holds
-  one 60% of the time, rising over 10 s, holding 40 s and fading by e every 150 s, at 300 to 2,000 times
-  the seep, a column standing 6 to 10 km in a breeze; ash is a fifth of what it carries seeping and 85%
-  at a burst's peak **(defaults)**. `next_burst(vent, t)` says when the next begins and `last_burst(vent,
+  carries. What comes out is mostly gas, which lifts the sand and dust round the mouth; that's what
+  shows. A live vent breathes by a fifth over periods of 170 and 410 s, and bursts: a blast of gas
+  clearing its throat that swells its column of dust. Each slot of 1,200 s (a game day) holds one 70% of
+  the time, rising over 10 s, holding 90 s and fading by e every 220 s, at 25 to 170 times the seep
+  (whose own lift is the steady column's, 1.5 to 3 km), a column standing 6 to 10 km in a breeze; ash is
+  a fifth of what it carries seeping and 85% at a burst's peak, a faint trace in the dust **(defaults)**. `next_burst(vent, t)` says when the next begins and `last_burst(vent,
   t)` when the last did, and how big. A pocket's venting is its blowout's. Quiet and capped vents give
   nothing. Nothing in the world reads the plumes: what they show is `venting`'s.
 - **Magnetized crust.** `geology.magnetized(p)`, 0 to 1: lava that cooled in the old field stays
@@ -281,14 +285,15 @@ before the colonial layer, which reads it. It holds only what something reads.
    layer's vent stations stand on its tapped vents, the plume and the vent's mouth on its live one, and
    the compass on its magnetized crust. It's the rift, its vents and the capped summit; no heat field,
    no impact basin, nothing else until something needs it.
-2. **What does the plume emit?** Gas, which doesn't show (carbon dioxide, sulphur gases and water
-   vapour are the science brief's guesses, not fixed), carrying what does: fine basalt ash, dark and soon
-   fallen out; steam, only where the air is cold enough to hold it, so it's grey by a hot day and white
-   in the cold of night and dawn; and the pale blue sulphate haze its gas makes over minutes, which is
-   most of what a far plume is.
+2. **What does the plume emit?** Mostly gas, which doesn't show (carbon dioxide, sulphur gases and
+   water vapour are the science brief's guesses, not fixed), sweeping up and lifting the sand and dust
+   round the mouth, which does: a vast column of the storms' own dust, with a faint trace of ash at a
+   burst's core. Round two's ash, steam and sulphate haze were dropped in round three, when the smoke
+   read wrong.
 3. **Seeping, intermittent or bursting?** It seeps all the time, breathing, and bursts now and then.
-   The tapped vents are quiet and the summit capped. Round two made the bursts vulcanian (columns of 6
-   to 10 km, booming) and added the rift's second live vent, the volcano's flank vent and gas pockets.
+   The tapped vents are quiet and the summit capped. Round two made the bursts tower (columns of 6 to
+   10 km, booming) and added the rift's second live vent, the volcano's flank vent and gas pockets;
+   round three made the seep's own column 1.5 to 3 km and the bursts a little more often.
 4. **Is the observatory volcano part of a province?** Yes: the far side's, one of the two tidal-heating
    provinces, its summit vent capped by the elevator's anchor. The colonial vent stations are the other
    province's, Han's, on the rift. Both are the same heat, from the same tides.
@@ -296,9 +301,10 @@ before the colonial layer, which reads it. It holds only what something reads.
    The provinces are the bulges, which the landmarks already mark; the rift is the line Halloran's
    heading already drew, through Aitch, with the black site in its wall; only its length and the vents
    along it are geology's own draws.
-6. **The smallest rendering?** One draw of 248 soft puffs a plume, whose places the shader works out from
-   a line of 24 points computed on the main thread, up to three plumes at once, and the sand's look for
-   the ash; no new full-screen pass, no particle simulation ([Wind & storms](prd/wind-and-storms.md#plumes)).
+6. **The smallest rendering?** The storm walls' own: a dust volume marched round a line of points
+   computed on the main thread, up to three plumes in one compute pass at half the screen's size and
+   brought up by depth, with the walls' billows, light and haze, and near you the haze and grit you stand in rather than anything drawn; the
+   sand's look for the old ash; no particle simulation ([Wind & storms](prd/wind-and-storms.md#plumes)).
 7. **Visual only, or more?** Visual and atmospheric, with history's vent stations moved onto the
    vents, the magnetized crust for the compass, and booms and a roar ([Radio, sound &
    atmosphere](prd/radio-sound-and-atmosphere.md#distant-phenomena-agreed-2026-10-18-spec)). No hazard
@@ -306,7 +312,7 @@ before the colonial layer, which reads it. It holds only what something reads.
 8. **Which physical assumptions now?** Settled now: the plume's rise and bend follow Briggs's
    buoyant-plume laws in the field's wind and an air stability that's steadier by night; gravity enters
    both the buoyancy and the stability, so how high a plume levels doesn't change with it, only how
-   hard it climbs at first; ash falls out, steam needs cold air, haze forms over minutes. Qualitative:
+   hard it climbs at first; the sand it lifts falls out over minutes, the fines staying up. Qualitative:
    the gases' mixture, the vent's real heat output (its buoyancy is a look value, `plume_buoyancy`), and
    the outgassing's share of the air, which a single vent doesn't sustain: the air still leaks.
 9. **Which tests?** Geology's purity and shape on twelve worlds (geology 1), venting and pockets as the
@@ -918,8 +924,8 @@ Shared files each package may touch, and nothing else outside its own: `Tuning` 
   - [colonial, made, who]: who made it, as its stamp says (`Catalog.MAKERS`): Tilg on crate frames and
     chassis pieces, the contractor RMC on the condenser, the Console and the fitted shield, the shield's
     maker on the light shield, the wind maker on the turbine; commodity parts name none.
-  - [First Kingdoms, marked, house]: a Port Morgan house kept it and marked it: Okafor, Kessel, Arkwright
-    or Vante.
+  - [First Kingdoms, marked, house]: a Port Morgan house kept it and marked it: Haberjack, Pellicott, Crake
+    or Vonatelli.
   - [Dark Age, remade, work]: what held it together, one of five sets of cord, ceramic, a saltbush-wood
     splint and a plate off something else **(default)**.
   - [second age, blessed, gifts]: one of four sets of the sign of Tu, a charm, a tassel and a water vial,
@@ -990,8 +996,8 @@ marks"):
   RMC), the new row for the company's issue.
 - **A First Kingdoms house's** is an enamel band in the house's colour round the top edges of a frame,
   round a round housing or round a part's end, and an enamel plaque with the house's crest cut through to
-  bright metal, riveted in brass: Okafor's key, Kessel's cauldron, Arkwright's arch, Vante's tower; deep
-  red, ochre, teal, and ochre with red for Vante **(default)**.
+  bright metal, riveted in brass: Haberjack's key, Pellicott's cauldron, Crake's arch, Vonatelli's tower; deep
+  red, ochre, teal, and ochre with red for Vonatelli **(default)**.
 - **The Dark Age's repair** is cord lashed round two corner posts or round a part's body or a round
   housing, a round ceramic cap on a square corner, a saltbush-wood splint lashed along an edge, and a
   plate off something else in its paint, riveted on crooked; on what was consigned, the code daubed back
@@ -1031,7 +1037,7 @@ paint's age.
 
 - **Seen only flat.** The marks were checked on a CPU render of their meshes, not on the GPU: no wear
   shader, light, dust or scale. The sheet above is the test.
-- **A house's teal on the colonial teal.** Arkwright's band reads weakly on a teal crate; its plaque does.
+- **A house's teal on the colonial teal.** Crake's band reads weakly on a teal crate; its plaque does.
 - **Hanging is a part's guess.** What hangs from a part hangs as if its socket faced sideways; on a top
   mount it stands out.
 - **Marks follow the look.** They settle on a thing's look by ray; change a look in Dress and its marks
@@ -1310,14 +1316,14 @@ group.
   Salvager within 300 m of a wreck field; the Homesteader on a road within 100 m of a wayshrine; every
   start within 12° of the equator and 500 m clear of a landmark's footprint; and something in sight by
   3 px buried, the Surveyor's from bare flats (sand at most 0.15).
-- The Okafor bunker under the Bastion.
+- The Haberjack bunker under the Bastion.
 - Lineage: a second-age find keeps a house's marks half the time and is blessed 40% of the time, 90% at a
   wayshrine and 60% at a stepwell, half of those the Cistern's, 5% elsewhere; five sets of Dark Age repair
   and four of blessings.
 - Era stats: keeps 1.00, 0.92, 0.85, 0.75 (colonial, First Kingdoms, skimmer, second age); draws 1.00,
   1.05, 1.10, 1.25; tough 1.0, 1.5, 0.5, 0.9; the skimmer era's weight 0.7; the skimmer era mended with
   scrap.
-- The houses' colours: Okafor deep red, Kessel ochre, Arkwright teal, Vante ochre with a red plaque.
+- The houses' colours: Haberjack deep red, Pellicott ochre, Crake teal, Vonatelli ochre with a red plaque.
 
 - Loot ([What loot does now](#what-loot-does-now)): each era's tables and each kind's rows; the regions'
   generosity (the Rim all, Mon 0.9, Han 0.75 with a third of floors and caches its era's best, the far side
@@ -1328,9 +1334,9 @@ group.
 - Geology ([Geology](#geology)): the rift 8 to 11 km either way from Aitch, its floor 600 m across and
   its walls to 1.6 km; the tapped vents 1.5 to 3 km along it, the live ones 5 to 7.5 km either way; the
   volcano's flank vent 1.2 to 2.4 km from its summit; a live vent's breath a fifth over 170 and 410 s,
-  a burst in a 1,200 s slot 60% of the time, rising 10 s, holding 40 s, fading by e every 150 s, 300 to
-  2,000 times the seep, ash a fifth seeping and 85% at a peak; gas pockets 1.5 to 13 km from the point
-  under Tu, one in two 500 s slots, blowing 20 to 50 s at 1 to 4 times the seep; the magnetized crust
+  a burst in a 1,200 s slot 70% of the time, rising 10 s, holding 90 s, fading by e every 220 s, 25 to
+  170 times the seep, ash a fifth seeping and 85% at a peak; gas pockets 1.5 to 13 km from the point
+  under Tu, one in two 500 s slots, blowing 20 to 50 s at 1.7 to 6.7 times the seep; the magnetized crust
   across the rift's walls, 2 km past its ends and over the volcano's footprint to 6 km; the mouth's
   pit, rampart and 56 m apron, sliding up to 24 m along the rift.
 
@@ -1353,5 +1359,9 @@ group.
 - **How dense history should be.** Away from the great sites the Rim has about one structure a km²
   besides the grid's ruins, Mon half that: open desert with structures strung along the roads. The rows
   and settlements tables set it, and the kit package will tune it in play.
+- **Session 5's places** ([the lore](lore-research.md#mitchell-the-dead-god-agreed-session-5)). The Counting House
+  in Crakeside and Halfrise's stone cradles are not parts of any landmark yet. The Counting House is the
+  likeliest new part of Port Morgan; the cradles wait on their kit. Wow's resting place is unplaced (Hunter,
+  2026-10-18: not under the black site), so it is no part of any landmark.
 - **The Rim's far stretch.** The second-age empire is "centred on the stretch of Rim closest to Port
   Morgan." How built up the Rim is on the far side of the sub-Tu point is the richness default.

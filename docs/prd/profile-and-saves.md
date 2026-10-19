@@ -125,6 +125,18 @@ names it), and so can a kit variant or a mark on your gear (Hunter: "they should
   - Power: over X W made in one system.
   - Story: **The Old City**, reach Port Morgan; **Hot Tourist Destinations**, reach every named
     landmark; a structure of each of the four ages stood in.
+- **Earning one is an event** (Hunter, 2026-10-18: "achv should be a bigger deal when you get them
+  in game, sound + badge, plus indication of your unlock on the menu"): a sound of its own and its
+  badge, its card's picture and name, shown a moment over the game; and the main menu marks what's
+  new, the Deeds word and a start a deed has opened, until you've looked. Built (2026-10-18): the
+  badge (`DeedBadge`, through `UIRoot.badge`) is a small dark panel a fifth of the way down the
+  screen, under the notes and how-tos at the top, the deed's card picture beside "Deed done" and its
+  name; it rises into place over a third of a second, stays three and a half, and fades. Its sound,
+  three soft bell notes rising (`deed.wav`, made here, CC0), plays as it shows, on the menus' bus.
+  Two done at once wait their turn, each shown and heard alone, and the run's end takes any still
+  waiting. Nothing else is said: no note.
+  The marks are the profile's (`Profile.is_new`, `seen`): each deed done, and each start it opens
+  that wasn't open, is new until the deeds menu is opened, or that start highlighted.
 - **Shown in a grid,** reached from the main menu and the system menu: each deed a tile, named,
   with a short line saying what it asks, lit once done (Menus & UI). Then (Hunter, 2026-10-18): a
   tree of what waits on what, each card only a name and a picture of its thing, and what it asks
@@ -160,8 +172,8 @@ stays. Green Thumb is new, so Crop Rotation has one before it.
   waits on is done and open in turn.
 - **Done out of order:** recording never waits. A deed done before what it waits on is kept in the
   profile with its run all the same, and opens its start if it names one; it shows, lit and
-  counted, once its branch opens, and its note waits until then, said beside the deed that opened it
-  ("Deed: Big Air, Flying Bling").
+  counted, once its branch opens, and its badge waits until then, shown after the deed that opened it
+  (Big Air's, then Flying Bling's).
 - **How far along:** a deed that's a number to reach goes through `Deeds.measure(world, id,
   value)`, which keeps the best so far in the profile (`Profile.best`, `improve`), a step at a time
   (250 m, half a metre, a minute, 10 W, one), and records the deed once the goal is reached. A deed
@@ -186,11 +198,11 @@ How each X was chosen, from the probes' numbers:
 - **The hook.** `Deeds.done(world, id, part)` records a deed the moment it's done; with a part (a
   crop, a landmark, an era) the part counts toward it and it's done once enough different ones
   have, across every run. Each check is a comparison where the system already works, and nothing
-  looks for deeds on its own. A deed done says so in the note under the top of the screen ("Deed:
-  Hermit").
+  looks for deeds on its own. A deed done shows its badge, with its sound.
 - **Only a player's own run counts** (`World.counts_deeds`): the game sets it on a run that isn't
-  a dev scenario's and clears it the moment `scenario` is used, and a death in that run keeps it.
-  Nothing counts while the dev console's `god` holds you. The menu's world, a probe's and a
+  a dev scenario's and clears it the moment `scenario` is used, or any dev command that changes the
+  run (`god` among them; Menus & UI, the dev console), and a death in that run keeps it. The save
+  keeps it cleared (`dev_run`), so a dev run resumed is one still. The menu's world, a probe's and a
   look-test's count nothing.
 - **Kept in the profile** (`Profile.deed`, `did`, `deeds`, `toward`, `best`): each deed with when,
   the run's seed and origin, and whether it was Ironman; what has counted toward each, and the best
@@ -201,6 +213,73 @@ How each X was chosen, from the probes' numbers:
   (through `Profile.unlock`, so forgetting the deeds leaves them open; reset closes them), `deed
   <id>` grants one, `deeds` lists what's done and what isn't, and `deeds clear` forgets them all.
 - **Probes** 17 to 22, and Menus & UI probe 11.
+
+### Round two: the trees that tie it together (agreed 2026-10-18; not built)
+
+Hunter, 2026-10-18: "what are the big deeds and deed trees we're missing to tie everything
+together?", then "lets do it, and do it right, in the right order." Sailing, ruins, storms, wrecks,
+the anomaly, the radio gods, the sky and the far places had no deed. Each tree runs from an easy
+deed to a hard one, and each ends in a start opening or a step in the story. The numbers are
+starting points, tuned from the probes' numbers as the first batch was. Each deed is recorded by
+the system that knows, through the one hook.
+
+**What moves.** The shield family becomes **Weather**. Set Sail moves from Camp to the head of
+**Wind**, so Power Trip waits on All Mod Cons instead. Carbon Dated moves from Story to the head of
+**Ruins**. All Mod Cons and Six Pack follow the chassis rework: no crate, so the home is whatever the
+rework makes a camp's store, and frames count as pieces.
+
+| Tree | Deed | Asks | After | Recorded |
+|---|---|---|---|---|
+| Wind | Set Sail | Tie a sail's sheet at your waist (as now) | | your waist |
+| Wind | **Close-Hauled** | Make 1 km upwind under sail | Set Sail | the sail's pull on you or your camp: ground made against the wind, kept through tacks |
+| Wind | **Land Yacht** | Sail a keeled camp 5 km from its helm | Close-Hauled | the helm, by the ground its camp covers with you seated and a keel under it |
+| Wind | **Storm Runner** | Sail 3 km on a storm's outflow, ahead of its wall; opens the Varran settler | Land Yacht | the sail, while the field puts you in a front's outflow and short of its wall |
+| Weather | Hermit, Sandblasted | (as now) | | Wear |
+| Weather | **Eye of the Anomaly** (hidden) | Live through an anomaly's heart | Sandblasted | Vitals: the hidden term where you stand reaches its full and falls back to nothing with you alive |
+| Weather | **Tells** (hidden) | Notice each of an anomaly's three tells | Eye of the Anomaly | each tell where it's shown to you: the compass leaning in your hand, the crackle on a radio you hear, a shield's load past 100% read off the shield or the Console |
+| Weather | **Taught** (hidden) | Teach the Walker the anomaly | Tells | the Walker, once it holds evidence for each tell (the session 5 ruling); built with its quest |
+| Ruins | Carbon Dated | (as now) | | the world |
+| Ruins | **Bared** | Take loot from a site a storm has stripped | Carbon Dated | site loot, from a site whose exposure the storm raised |
+| Ruins | **Storm Chaser** | Reach 3 freshly bared sites in one storm | Bared | the world, reaching a site whose exposure this storm raised |
+| Ruins | **Dune Reader** | Find a ruin buried in a dune's own lee | Storm Chaser | dune archaeology; built with it |
+| Ruins | the archaeologist's two | Assemble the archaeology setup; dig a ruin out yourself; together they open the Archaeologist | Dune Reader | the chassis spec's two deeds, built with the kit |
+| Scrap | **First Cut** | Cut a wreck's seam through | | Wreckage, a seam's last cell cut |
+| Scrap | **Stripped** | Free every module on one wreck | First Cut | Wreckage, the last module of a wreck freed |
+| Scrap | **Clean Hands** | Make a live wreck's hazards safe without a shock or a sickness | Stripped | Wreckage, the last hazard of a wreck made safe, none of them set off |
+| Scrap | **Bonepicker** | Scrap one of each of the five wreck kinds | Clean Hands | Wreckage, by kind: hull, hauler, freight pod, lifeboat, hopper |
+| Signals | **First Light** | Hear a god inside its window | | the radio, a god's own transmission heard |
+| Signals | **Pantheon** | Hear all seven gods | First Light | the same, each god counted once a profile |
+| Signals | **Triangulated** | Take three bearings on the living city | Pantheon | the Walker's contact log; built with the stations' second pass |
+| Signals | **The Living City** | Find the living city | Triangulated | the world; built with it |
+| Far | **Totality** | Watch a whole eclipse out in the open | | the sky, the sun gone in and come out with you outside any bubble |
+| Far | **Glint** | Reach a site whose glint you saw from 5 km off | Totality | the Skyline marking a stand-in's glint shown to you, the world reaching that site |
+| Far | **Live Vent** | Stand at a live vent's mouth | Glint | geology, a vent's mouth while it's live |
+| Far | **Thunder** | Hear a burst's boom from 20 km away | Live Vent | Rumbles, a boom heard at that distance |
+| Far | **Under Tu** | Stand with Tu overhead | Totality | the sky, Tu within 5° of straight up |
+| Far | **The Dark Side** | Stand where Tu never rises | Under Tu | the sky, past the Rim |
+| Nomad | **Ten Days** | Live 10 days in one run | | the run's clock, from World.began |
+| Nomad | **Moved House** | Move your camp 20 km in one day | Ten Days | the camp, its deck's ground covered since the day began |
+| Nomad | **Slept It Off** | Sleep through a storm with nothing lost from your camp | Ten Days | Sleep, waking after the storm with every piece of your camp still on it |
+| Nomad | **Nomad** | A deed from each of Wind, Weather, Ruins, Signals and Far | each of those trees | the hook, once the last of them is done |
+
+- **Hidden deeds** show "????" and no picture until they're done; their branch's lines still show
+  that something waits there. The anomaly's deeds are hidden so the grid doesn't say anomalies
+  exist before you've learnt them by their tells.
+- **Nomad ties the trees together:** its card stands apart, with a line from each of the five
+  trees, lit where you've done one. It waits on any one deed of a tree, not a named one, so the
+  table's `after` gains "any of a family".
+- **The grid holds every tree:** about forty deeds in eleven trees, each tree a column under its
+  name. It scrolls, and opens on the latest done (the devex round).
+- **The order.** Each part waits for what it reads to land:
+  1. After the devex, chassis, sail-trim and board rounds land: the hidden flag, "any of a
+     family", the grid holding every tree, the moves above, and Wind (without its start), Weather
+     to Tells, Scrap, Far, and Nomad's first three.
+  2. With the chassis spec's starts and kits: Storm Runner opens the Varran settler.
+  3. With dune archaeology: Dune Reader and the archaeologist's two, which open the Archaeologist.
+  4. With the radio stations' second pass and the Walker's quest: Triangulated, The Living City,
+     and Taught.
+  5. Last, once every tree it reads has landed: Nomad, so that what it asks never changes after
+     someone has earned it.
 
 ## Starts on the chassis, and two new kits (agreed, 2026-10-18 spec; not built)
 
@@ -232,6 +311,10 @@ vision](../vision.md#the-three-axes-varran-daventry-and-cistern)).
   lane. "Player control is how careful you are with the transmitter." The stolen freighter and the
   pathfinder read it: loud, and Daventry waits at the lane; quiet, and the passage is unnoticed.
 - **The Cistern state** is one of three: dormant, restored, or linked into the network.
+- **Nomad reputation** (session 5, [the vision](../vision.md#nomad-reputation-agreed-session-5-not-built)) is a
+  third running value: a number that rises with sails and goods returned at a shrine and falls with theft,
+  and that, through the nomad quest line the Walker's quest ties closely to, decides whether you may tend to
+  the Walker. How it is counted is not said.
 
 Readings, not in the session:
 - **They are a run's changes, so they belong to the run save,** whose rule is that a save holds
@@ -404,8 +487,9 @@ calls them from Save, Save & quit, Resume, New game, the death screen and Option
 17. **A deed is kept** (2026-10-18). Reaching Port Morgan in a run records The Old City there and
     then, with the run's seed and origin and not Ironman, and the next session's profile still has
     it.
-18. **A dev run counts nothing.** While the console's god holds you, and once a dev scenario is
-    used in a run, reaching Port Morgan records no deed, and no landmark toward them all.
+18. **A dev run counts nothing.** The console's listing commands leave a run counting; once warp has
+    changed it, reaching Port Morgan records no deed, and no landmark toward them all, and saved and
+    resumed it's a dev run still.
 19. **Unlockall opens the starts.** With the Salvager and the Homesteader behind their proposed
     deeds, a fresh profile has the Surveyor alone; the console opens over the main menu, unlockall
     there opens every start, New game shows none locked, and forgetting the deeds leaves them open.

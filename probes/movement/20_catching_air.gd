@@ -41,9 +41,9 @@ func run() -> void:
 	var start := Vector2(big.x, big.y) - down * 300.0
 	for popping: bool in [false, true]:
 		var seen := await _crests(start, down, popping)
-		print("%s flat out over the biggest crest, %.1f m over the trough: the longest flight %.2f s, %.2f m over its ride height, %.0f m long, from %.1f m/s; the hardest %.1f m/s², %d bounces, bottomed %d"
+		print("%s flat out over the biggest crest, %.1f m over the trough: the longest flight %.2f s, %.2f m over its ride height, %.0f m long, from %.1f m/s; the hardest %.1f m/s², %d bounces, bottomed %d, landing at %.1f m/s at most"
 			% ["popping" if popping else "pushing", big.z, seen.air, seen.high, seen.long, seen.speed, seen.hardest,
-			seen.bounces, seen.bottomed])
+			seen.bounces, seen.bottomed, seen.landing])
 		if not popping:
 			check(seen.air >= CREST_AIR and seen.high >= CREST_HIGH, "off a big crest it flies %.1f s or more, %.0f m or more up (%.2f s, %.2f m)"
 				% [CREST_AIR, CREST_HIGH, seen.air, seen.high])
@@ -118,7 +118,8 @@ func _crests(from: Vector2, down: Vector2, popping: bool) -> Dictionary:
 			keys.append("crouch")
 		hold(keys))
 	hold([])
-	seen.bottomed = player.ride.bottomed
+	seen.bottomed = player.ride.bottomed if player.ride != null else -1
+	seen.landing = player.ride.landed_hardest if player.ride != null else INF
 	return seen
 
 

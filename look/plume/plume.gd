@@ -1,23 +1,23 @@
 extends Node
 ## Look-test: the plumes. The rift's live vent in moments the run's own
-## weather gives (a calm, a strong wind, a burst, dusk, a front coming over it
-## and a storm over it, night), each shot from the side across the wind, near
-## and far; a burst towering over a storm by the vent from 15 km; a gas
-## pocket's dust; the far-side volcano's flank vent; and the rift vent's mouth
-## up close. Each shot also times the GPU with the plumes drawn and without.
+## weather gives (a calm, a strong wind, a burst, dusk, a front coming over it,
+## night), each shot from the side across the wind, far and mid; walking into
+## its dust in the calm and standing in it; from inside a storm; a burst
+## towering over a storm by the vent from 15 km; a gas pocket's dust; the
+## far-side volcano's flank vent; and the rift vent's mouth up close. Each
+## shot also times the GPU with the plumes drawn and without.
 ##   scripts/unseen.sh --path . --disable-vsync res://look/plume/plume.tscn -- --capture <dir> [--only a_b,c_d]
 ## Each shot is <moment>_<range>.png.
 
 const SEED := 1234
 ## The shots: [moment, range, m off, eye's height over the sand, m].
 const SHOTS := [
-	["calm", "near", 260.0, 6.0], ["calm", "mid", 1500.0, 3.0], ["calm", "far", 7000.0, 2.0],
-	["wind", "near", 260.0, 6.0], ["wind", "mid", 1500.0, 3.0], ["wind", "far", 7000.0, 2.0],
-	["burst", "near", 1500.0, 3.0], ["burst", "mid", 7000.0, 2.0], ["burst", "far", 25000.0, 2.0],
-	["over", "far", 15000.0, 2.0],
-	["dusk", "mid", 1500.0, 3.0],
-	["storm", "mid", 1500.0, 3.0], ["swallowed", "mid", 1500.0, 3.0], ["night", "mid", 1500.0, 3.0],
-	["pocket", "far", 6000.0, 2.0], ["flank", "far", 7000.0, 2.0],
+	["calm", "far", 7000.0, 2.0], ["burst", "far", 25000.0, 2.0], ["flank", "far", 7000.0, 2.0],
+	["calm", "mid", 1500.0, 3.0], ["burst", "mid", 7000.0, 2.0], ["burst", "near", 1500.0, 3.0],
+	["approach", "near", 450.0, 2.0], ["into", "near", 40.0, 1.7],
+	["storm", "mid", 1500.0, 3.0], ["over", "far", 15000.0, 2.0], ["instorm", "mid", 1500.0, 2.0],
+	["night", "mid", 1500.0, 3.0], ["dusk", "mid", 1500.0, 3.0], ["pocket", "far", 6000.0, 2.0],
+	["wind", "mid", 1500.0, 3.0],
 ]
 ## Frames timed in each turn with the plumes drawn, and without, and the turns.
 const TIMED := 12
@@ -99,6 +99,9 @@ func _moment(shot: Array, after := 600.0) -> Dictionary:
 	var geology := world.shape.history.geology
 	var field := world.weather.field
 	var moment: String = shot[0]
+	# Walking into it and standing in it, in the calm.
+	if moment in ["approach", "into"]:
+		moment = "calm"
 	var span := DAYS * world.tuning.day_minutes * 60.0
 	var source := _vent
 	if moment == "flank":
@@ -121,7 +124,8 @@ func _moment(shot: Array, after := 600.0) -> Dictionary:
 		var turns := range(8) if far and moment == "burst" else [0]
 		var b := geology.next_burst(source, after)
 		while b < span:
-			var t := b + (240.0 if moment == "over" else (360.0 if far else 180.0))
+			# Levelled and spreading its umbrella; far off, further on still.
+			var t := b + (240.0 if moment == "over" else (420.0 if far else 300.0))
 			var lit: bool = daylight.call(t) or far and _local(t, source) > 0.28 and _local(t, source) < 0.7
 			var top := _top(source, root, t) if lit else root
 			for turn: int in turns:
@@ -130,8 +134,10 @@ func _moment(shot: Array, after := 600.0) -> Dictionary:
 				var eye := _eye(root, t, shot, turn * PI / 4.0, false)
 				var foot := Plume.seen_through(field, world.tuning, eye, root + Vector3.UP * 50.0, t)
 				var tower := Plume.seen_through(field, world.tuning, eye, top, t)
+				# Far off, its middle shows too, not just its top past walls by you.
+				var middle := Plume.seen_through(field, world.tuning, eye, top.lerp(root, 0.5), t) if far else 1.0
 				var wanted: bool = foot < 0.1 and tower > 0.8 if moment == "over" \
-					else tower > 0.8 and (foot > 0.9 or far)
+					else tower > 0.8 and middle > 0.8 and (foot > 0.9 or far)
 				if (_clear_eye(eye, t) or far and world.weather.field.raw_storm_at(eye.x, eye.z, t) < -0.05) and wanted:
 					return {"t": t, "source": source, "root": root, "turn": turn * PI / 4.0,
 						"says": "venting x%.0f, its top %.1f km up" % [geology.venting(source, t).x, top.y / 1000.0]}
@@ -154,13 +160,17 @@ func _moment(shot: Array, after := 600.0) -> Dictionary:
 			"storm":
 				var raw := field.raw_storm_at(root.x, root.z, t)
 				wanted = daylight.call(t) and raw > -0.03 and raw < -0.005
-			"swallowed":
-				wanted = daylight.call(t) and field.raw_storm_at(root.x, root.z, t) > 0.08
+			"instorm":
+				wanted = daylight.call(t) and v < 1.3 and field.raw_storm_at(root.x, root.z, t) < -0.05
 		if wanted:
 			var eye := _eye(root, t, shot)
-			var line: bool = moment in ["storm", "swallowed"] or (clear.call(root, t) and clear.call(root, t - 600.0)
+			var line: bool = moment in ["storm", "instorm"] or (clear.call(root, t) and clear.call(root, t - 600.0)
 				and Plume.seen_through(field, world.tuning, eye, root + Vector3.UP * 50.0, t) > 0.9)
-			if line and _clear_eye(eye, t):
+			var placed := field.raw_storm_at(eye.x, eye.z, t) > 0.05 if moment == "instorm" else _clear_eye(eye, t)
+			# Far off, its top shows too, past any wall by you.
+			if placed and shot[2] > 5000.0 and not moment in ["storm", "instorm"]:
+				placed = Plume.seen_through(field, world.tuning, eye, _top(source, root, t), t) > 0.9
+			if line and placed:
 				var wind := field.steady_wind_at(root.x, root.z, t).length()
 				var says := "steady wind %.1f m/s" % wind
 				if moment == "calm" and wind < best_wind or moment == "wind" and wind > best_wind:
@@ -238,7 +248,7 @@ func _shoot(name: String, found: Dictionary, shot: Array, out: String, keep := t
 	# At the bend, or for a burst its middle height, a pocket's what's blown up;
 	# far off, where it's drawn, which the ground's laying puts a little aside.
 	var target := _top(source, root, t).lerp(root, 0.5) if shot[0] in ["burst", "over", "pocket"] \
-		else (plume._point(25.0 if shot[1] == "near" else 45.0) if plume != null else root)
+		else (plume._point(12.0 if shot[0] == "into" else 45.0) if plume != null else root)
 	if plume != null and shot[0] in ["burst", "over", "pocket"]:
 		target += plume.root - root
 	await _look(eye, target)
@@ -257,8 +267,8 @@ func _shoot(name: String, found: Dictionary, shot: Array, out: String, keep := t
 		return false
 	get_viewport().get_texture().get_image().save_png(out.path_join(name + ".png"))
 	var cost := await _time()
-	_costs.append("%s: GPU %.2f ms a frame with them, which adds %.2f; their main thread %.3f ms a frame" % [
-		name, cost.x, cost.y, cost.z])
+	_costs.append("%s: GPU %.2f ms a frame with them, which adds %.2f, their drawing's own %.2f; their main thread %.3f ms a frame" % [
+		name, cost.x, cost.y, cost.w, cost.z])
 	world.tuning.eye_adapts = false
 	print("plume: %s from %.1f km; drawn: %s" % [name, Vector2(root.x - eye.x, root.z - eye.z).length() / 1000.0,
 		", ".join(drawn)])
@@ -299,14 +309,16 @@ func _stand(eye2: Vector2, t: float, source: Dictionary) -> void:
 
 ## GPU ms a frame with the plumes drawn, and what they add over the same view
 ## without: the median of the turns' differences, each turn a window drawn and
-## one not, side by side, since the GPU's clock wanders; and their own
-## main-thread ms a frame while drawn.
-func _time() -> Vector3:
+## one not, side by side, since the GPU's clock wanders; their own
+## main-thread ms a frame while drawn; and their drawing's own GPU ms, as its
+## timestamps read it, the median frame's.
+func _time() -> Vector4:
 	var vp := get_viewport().get_viewport_rid()
 	var with := PackedFloat32Array()
 	var adds := PackedFloat32Array()
 	var cpu := 0.0
 	var frames := 0
+	var own := PackedFloat32Array()
 	for turn in TURNS:
 		var sums := Vector2.ZERO
 		for drawn in [true, false]:
@@ -324,6 +336,7 @@ func _time() -> Vector3:
 					for plume in world.weather.plumes:
 						cpu += plume.frame_ms
 					frames += 1
+					own.append(world.weather.plume_draw.gpu_ms)
 				else:
 					sums.y += gpu
 		with.append(sums.x / TIMED)
@@ -332,7 +345,8 @@ func _time() -> Vector3:
 		plume.process_mode = Node.PROCESS_MODE_INHERIT
 	with.sort()
 	adds.sort()
-	return Vector3(with[with.size() / 2], adds[adds.size() / 2], cpu / frames)
+	own.sort()
+	return Vector4(with[with.size() / 2], adds[adds.size() / 2], cpu / frames, own[own.size() / 2])
 
 
 func _look(eye: Vector3, target: Vector3) -> void:

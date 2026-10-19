@@ -495,6 +495,17 @@ device already stays a body of its own on the host's power pool.
 - **Its messages** go out through [the terminal output
   system](#the-terminal-output-system-proposed-session-4-part-5-first-piece-built), and a radio
   seated anywhere in the system sounds its tones as a line prints: that's the Console's audio.
+- **Its battery, aloud** (Hunter: "...unless you have a speaker'd or radio'd Console on its
+  chassis, then we should use the Valve 'battery low' voicebit"): with a radio in its system, the
+  Console logs its pool running out and, after its tones, says "Battery low." and then "Battery
+  critical." in the radio's voice ([Radio](radio-sound-and-atmosphere.md)), from the radio, at its
+  knob, on or off and whatever it's tuned to. Each is said once as what's left to run the Console
+  on falls past 20% and 5% (`console_battery_low`, `console_battery_critical`), and again once it's
+  back 2 points over. What's left is measured from where the Console goes dark: the pool's empty
+  batteries, or with a shield in the pool its 25% reserve, below which the Console and the radio
+  give way to the shield ([Power](power.md)); so there "low" comes at 40% of the bank and
+  "critical" at 29%. The Radio voice switch in Options silences it; without a radio there's no
+  voice.
 - **Saves** keep its page and its log, and its parts and anything seated on it as any device's;
   a shield keeps its smart switch, and a device whether its lamps are on. Older saves load as
   before, their shields smart: the Console's old auto switch isn't read.
@@ -523,9 +534,13 @@ Console two late uses ([the vision](../vision.md#landmarks-and-endings)):
   device the size of a crate.
 - **Teaching and taking the Walker** (agreed, 2026-10-18, [spec](../storms-signals-sailing-2026-10-18.md)).
   The Walker is a legged survey robot that exists only to understand Zan's weather, indifferent to
-  its flock; the nomads followed it for centuries until it walked them into the anomaly. Survive
-  an anomaly recording your own sensor logs, plug your Console into the Walker and upload them,
-  and from then anomalies show on your map and its moon-wide feed flags them, for anyone
+  its flock; the nomads followed it for centuries until it walked them into the anomaly, and then they
+  abandoned it (Hunter, 2026-10-18: it walks alone, and they still listen and pray). Teaching it takes
+  evidence for each of the anomaly's tells (the compass drift, the radio's crackle, the shield's load; Hunter,
+  2026-10-18, after session 5). Your own sensor logs, recorded through an anomaly and uploaded by plugging
+  your Console into the Walker, are one form of that evidence, and a singing stone
+  ([below](#the-singing-stone-agreed-session-5-not-built)) is another, "at least those two things, probably
+  more." Once it is taught, anomalies show on your map and its moon-wide feed flags them, for anyone
   listening. It doesn't mind its chassis being taken as long as it keeps roaming and surveying;
   kept still too long it goes bad (its feed degrades, its draw rises, its logs turn subtly wrong).
   Taken before the nomads' line is done, they may go on pilgrimage and find their god gone, and
@@ -1014,6 +1029,60 @@ Proposed, in this PRD's terms:
   off-centre." A captive one refuses. It needs a placed change to the ground (open questions) and a count
   or a recharge (the session's own open question).
 
+## The singing stone (Agreed, session 5; not built)
+
+*[Session 5](../lore-session-2026-10-18-mitchell-wow-shoemaker.md), "Singing stones." Direction, not a
+spec; nothing is built. The lore is in [the lore research](../lore-research.md#shoemaker-and-the-singing-stones-agreed-session-5).*
+Fragments of Shoemaker, black, glassy and scored with melted grooves, warm and strongly magnetic.
+- **The item:** low tech, no attachments, mountable on a chassis.
+- **What it tells you.** Wind plays its grooves like a flute, so its note follows the open wind even when
+  you are sheltered behind a dune. Because it is magnetic, it sings slightly off-key before an anomaly, while
+  compass drift is starting.
+- **A quest piece.** The Walker can't sense anomalies and a stone can, so delivering one teaches the Walker
+  the anomaly tell, tying into its quest line ([Console](#the-console-proposed-first-version-built)).
+  **Ruled (Hunter, 2026-10-18):** teaching takes one piece of evidence for each tell, and the stone and your
+  own sensor logs are two forms of it, "at least those two things, probably more." Which form gives which
+  tell is not said; the stone's off-key note is the compass drift's, a reading.
+
+Readings, not in the session:
+- **It is one more tell,** beside the compass drift, the odd static and the shield's particle load
+  ([Wind & storms](wind-and-storms.md#the-anomaly-as-built-2026-10-18)), and it is audio. The off-key note
+  reads the same hidden term the other tells do; the plain note is the wind's.
+- **"No attachments" means no sockets,** so it is a typed part with nothing seated on it, mounted like a
+  wind streamer ([nomad gear](salvage-and-ruins.md#nomad-gear-agreed-2026-10-18-spec-not-built)).
+- **Not said:** the note's pitch and loudness, whether several stones change it, how far ahead of an anomaly
+  the off-key note is, and where stones are found beyond the black stones in the sand, Halfrise's cradles and
+  Sister's stone.
+
+## Mitchell as a module (Idea, session 5; not built)
+
+*[Session 5](../lore-session-2026-10-18-mitchell-wow-shoemaker.md), "Player era: the undead god" and "Relationships
+and module interactions." The core is **Agreed**: Mitchell's core is silent but intact, and it can be revived
+and carried as a console module, like the other non-stationary gods. What it does is the session's "likely
+mechanic (not designed yet)," so it is an Idea. The lore is in [the lore
+research](../lore-research.md#mitchell-the-dead-god-agreed-session-5).*
+- **Idea:** it heals or makes medicine on credit, and starts quietly charging in water or salvage if you
+  fall too far behind. **Ruled (Hunter, 2026-10-18):** the player crafts nothing. The module would
+  auto-craft its recipes, turning resources into health or healing on its own. Still an Idea.
+- **Beside the Quartermaster:** the Quartermaster grants Mitchell clearance it gives no one else (Idea:
+  perhaps unlocking military med-tech recipes), and Mitchell immediately opens a tab on the Quartermaster.
+- **Beside the Ledger:** they won't get on. **Beside Mother Cistern:** carrying it costs you her, at least
+  while it is on the cart. With the three linked, the Quartermaster might broker peace (left open).
+- **Its voice** is its formatting and word choice ([the terminal output
+  system](#the-terminal-output-system-proposed-session-4-part-5-first-piece-built)): it greets you by name,
+  says "your little balance" and never "debt," never threatens and only remembers out loud, and calls itself
+  "a full-service institution."
+
+Readings, not in the session:
+- **It is a god module like the others** (a typed part found at its landmark, its state saved with it), so
+  the table above grows a fifth row; the session gives it no innate powers beyond the Idea.
+- **A tab is a number on the part,** printed on the terminal, and charging is the same move as the
+  Quartermaster's requisitioned power and the Almanac's royalty: a god takes a cut. Health already mends
+  with rest ([Survival](survival.md)), so "heals" is a faster mend, and the auto-crafted healing turns
+  resources (water, salvage, food) into it.
+- **The Clerk's field synthesiser** is a found device in the second age's ruins; the session says players
+  find "working Clerk synthesisers" and not what one does.
+
 ## Dispatch items (proposed, session 4, part 5; not built)
 
 *[Session 4, part 5](../gods-gear-farside-2026-10-17.md), section 13 and step 8: "Dispatch items: sealed
@@ -1226,6 +1295,9 @@ a water socket of its own on top, so a canister or another hose goes on there to
 29. **The gyro points Tu-ward** (2026-10-18). A Console with an anemometer, carried round the
     moon: on the near side, the Rim and the far side, its gyro's Tu-ward mark is the way Tu
     stands in the sky there, or would past the horizon, to within a degree.
+30. **The Console says its battery is low** (2026-10-18). A Console with a radio on it logs and
+    says "Battery low." from the radio as its pool falls past the low line, once until it's back
+    over, then "Battery critical."; with the Radio voice off, it only logs it.
 
 ## Out of scope
 
@@ -1392,3 +1464,19 @@ it as direction and says so on each line.
 - **What a god module draws.** Here: "Instruments, farming gear and tools draw small amounts" (Power).
   The session gives a module no draw. Not said whether a Quartermaster's hardening, a Walker's sensing or
   a Cistern's forecasts cost power, or whether a god module can be left without any.
+
+Session 5 (2026-10-18, [the Mitchell session](../lore-session-2026-10-18-mitchell-wow-shoemaker.md)) raised
+the following. Hunter ruled on the first three afterwards (2026-10-18), and the rulings replace the old
+wording above; the last is still open. Each clash is in the session's [Clashes
+note](../lore-session-2026-10-18-mitchell-wow-shoemaker.md#clashes).
+
+- **Eight gods against seven. Ruled:** Mitchell is a dead god who can be revived to become an eighth. It is
+  a fifth mountable module beside the four above; the seven stay seven.
+- **Medicine, a tab and recipes against "crafting, for now" out of scope. Ruled:** no player crafting. A
+  device such as Mitchell's module would auto-craft its recipes, turning resources into health or healing on
+  its own (Idea). Crafting stays out of scope for the player.
+- **A stone against the sensor logs. Ruled:** both. Teaching the Walker takes evidence for each tell of the
+  anomaly, and a singing stone and your own sensor logs are two forms of it.
+- **A module that costs you another god.** The session: carrying Mitchell "costs you" Mother Cistern. Here:
+  nothing but a module's own draw ("What a god module draws," above). Not said how the loss is counted, or
+  how it sits with the Cistern axis, which wants her restored and linked.

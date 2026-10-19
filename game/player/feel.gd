@@ -2,10 +2,11 @@ class_name Feel
 extends Node3D
 ## How moving feels: the head's bob and sway, a spring on footfalls, landings
 ## and changes of pace, a lean into strong wind with gusts nudging it, a wider
-## view at speed, footsteps, and a slide's hiss and spray; on a board, a lean
-## into the carve, a dug edge's rooster tail of sand and its hiss, a shake as
-## the edge bites and a harder one as it catches, a shake while lines wrench
-## you past what your body takes, and your view smoothed
+## view at speed, footsteps, and a slide's hiss and spray; on a board, your
+## view leaning as the board under you does, a dug edge's or a skid's rooster
+## tail of sand and its hiss, a shake as the edge bites, a jar as a landing
+## slams, a harder one as you're thrown off and a knock if you hit something,
+## a shake while lines wrench you past what your body takes, and your view smoothed
 ## between ticks, which at its speed would otherwise stutter. It reads the
 ## player and never writes to it, so none of it can change where you go: it
 ## moves only the camera, and makes only sound and dust.
@@ -23,7 +24,8 @@ const LEAN_SECONDS := 0.5
 const VIEW_SECONDS := 0.3
 ## A slide this fast, m/s, hisses loudest and widens the view most.
 const FAST := 10.0
-## The share of a board's lean into its carve your view leans with it.
+## The share of a board's lean your view leans with it, as you see it: into
+## a carve and across the sand.
 const BANK_SHARE := 0.35
 ## A dug edge this fast across or along the sand, m/s, throws all it can.
 const GRIT_FAST := 12.0
@@ -37,6 +39,8 @@ const SHAKE_REACH := 0.035
 const SHAKE_ROLL := 0.03
 const SHAKE_SECONDS := 0.18
 const BITE_SHAKE := 0.35
+## A landing at its jar shakes your view this share of the hardest.
+const JAR_SHAKE := 0.7
 
 var _player: Player
 var _tuning := Tuning.current()
@@ -63,6 +67,7 @@ var _rng := RandomNumberGenerator.new()
 var _feet: Array[AudioStreamPlayer] = []
 var _slide: AudioStreamPlayer
 var _thud: AudioStreamPlayer
+var _knock: AudioStreamPlayer
 var _spray: CPUParticles3D
 var _tail: CPUParticles3D
 var _puff: CPUParticles3D
@@ -79,6 +84,7 @@ func _ready() -> void:
 	hiss.loop = true
 	_slide = _voice(hiss)
 	_thud = _voice(Sounds.LANDING)
+	_knock = _voice(Sounds.BOARD_KNOCK)
 	_spray = _sand(64, 0.8, false)
 	_tail = _sand(TAIL_GRAINS, 0.8, false)
 	_tail.spread = 20.0
@@ -91,6 +97,7 @@ func _ready() -> void:
 	_player.jumped.connect(_on_jumped)
 	_player.edge_bit.connect(_on_edge_bit)
 	_player.wiped_out.connect(_on_wiped_out)
+	_player.touched_down.connect(_on_touched_down)
 	# Before the hands draw what you hold from where your eyes are this frame.
 	process_priority = -1
 
@@ -165,7 +172,7 @@ func _process(delta: float) -> void:
 	var between := Vector3.ZERO
 	if ride != null:
 		between = to_you * -ride.last_step * (1.0 - Engine.get_physics_interpolation_fraction())
-	_bank = _ease(_bank, -ride.tilt(true).z * BANK_SHARE if ride != null else 0.0, EYE_SECONDS, delta)
+	_bank = _ease(_bank, _view_lean(ride, to_you) if ride != null else 0.0, EYE_SECONDS, delta)
 
 	var sliding := _player.mode == "slide"
 	# The sand judders through you on a fast slide.
@@ -216,21 +223,49 @@ func _on_jumped() -> void:
 	_step(_tuning.step_db + 2.0)
 
 
+## How far your view leans with the board under you, radians: as you see it
+## from where you look, so a board across your way leans your view less.
+func _view_lean(ride: Ride, to_you: Basis) -> float:
+	var up := to_you * ride.board_pose(true).basis.y
+	return -atan2(up.x, up.y) * BANK_SHARE
+
+
 ## The edge bit: a small shake, harder the faster you go.
 func _on_edge_bit(speed: float) -> void:
 	_shake = maxf(_shake, BITE_SHAKE * clampf(speed / _tuning.board_top_speed, 0.4, 1.0))
 
 
-## The edge caught and threw you: a hard shake, a lurch and a thud into the sand.
-func _on_wiped_out(speed: float) -> void:
+## Thrown off: a hard shake, a lurch and a thud into the sand; off something
+## you hit, a knock as you meet it and the head thrown on.
+func _on_wiped_out(speed: float, how: StringName) -> void:
 	_shake = 1.0
-	_kick(Vector3(0.0, -1.0, -0.5) * speed)
+	_kick((Vector3(0.0, -0.5, -1.0) if how == &"crash" else Vector3(0.0, -1.0, -0.5)) * speed)
 	_thud.pitch_scale = _rng.randf_range(0.85, 0.95)
 	_thud.volume_db = 0.0
 	_thud.play()
+	if how == &"crash":
+		_knock.pitch_scale = _rng.randf_range(0.9, 1.05)
+		_knock.volume_db = linear_to_db(clampf(speed / (_tuning.board_crash * 2.0), 0.5, 1.0))
+		_knock.play()
 	_puff.global_position = _player.global_position + Vector3.UP * 0.1
 	_puff.gravity = Vector3.DOWN * _player.world.gravity
 	_puff.restart()
+
+
+## The board met the sand after flying: a dip as it presses, and past half
+## its jar a shake, at its jar a hard one and a burst of sand.
+func _on_touched_down(speed: float) -> void:
+	var ride := _player.ride
+	var sturdy: float = ride.make.sturdy if ride != null else 1.0
+	var hard := speed / (_tuning.board_land_jar * sturdy)
+	_kick(Vector3.DOWN * _tuning.land_dip * speed)
+	if hard < 0.5:
+		return
+	_shake = maxf(_shake, JAR_SHAKE * clampf(hard, 0.0, 1.0))
+	if hard >= 1.0:
+		_puff.global_position = _player.global_position + Vector3.DOWN * 0.3
+		_puff.gravity = Vector3.DOWN * _player.world.gravity
+		_puff.restart()
 
 
 func _on_landed(speed: float) -> void:
@@ -292,19 +327,23 @@ func _throw_sand(sliding: bool, own: Vector2, speed: float) -> void:
 	_spray.gravity = Vector3.DOWN * _player.world.gravity
 
 
-## How hard a dug edge throws sand, 0 to 1: deeper and faster, and most
-## dragged across.
+## How hard a dug edge or a slide throws sand, 0 to 1: deeper and faster,
+## and most dragged across; a skid, a drift or a landing's slide as hard as
+## it slides across, on the sand.
 func _grit(ride: Ride) -> float:
 	var v := ride.velocity
 	var speed := v.length()
 	var across := absf(sin(v.angle_to(ride.ahead))) if speed > 0.05 else 0.0
-	return ride.dig * clampf(speed / GRIT_FAST, 0.0, 1.0) * lerpf(0.6, 1.0, across)
+	var fast := clampf(speed / GRIT_FAST, 0.0, 1.0)
+	var dug := ride.dig * fast * lerpf(0.6, 1.0, across)
+	var sliding := ride.skidding or ride.drifting or ride.loose > 0.1
+	return maxf(dug, across * fast if sliding and ride.gap < Ride.AIR_FROM else 0.0)
 
 
-## A dug edge throws a rooster tail of sand up off its length and outward,
-## away from where it pulls the board, carrying most of the board's way: in
-## a carve it rises off the edge and falls behind, in a stop it flies on
-## ahead. It's the slide's spray, thicker the deeper the dig.
+## A dug edge or a slide throws a rooster tail of sand up off its length and
+## outward, away from where it pulls the board, carrying most of the board's
+## way: in a carve it rises off the edge and falls behind, in a stop it flies
+## on ahead. It's the slide's spray, thicker the harder it digs or slides.
 func _dig_sand(ride: Ride, grit: float) -> void:
 	_tail.emitting = ride != null and grit > 0.03
 	if not _tail.emitting:

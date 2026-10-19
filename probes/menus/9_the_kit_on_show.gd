@@ -24,12 +24,11 @@ func run() -> void:
 	press(&"ui_down")
 	press(&"ui_accept")
 	await _aside("Options", home)
-	for i in 4:
-		press(&"ui_down")
+	_down_to("controls")
 	press(&"ui_accept")
 	await _aside("the controls list", home)
 	press(&"ui_cancel")
-	press(&"ui_down")
+	_down_to("reset")
 	press(&"ui_accept")
 	await _aside("the question before a reset", home)
 	press(&"ui_cancel")
@@ -134,3 +133,12 @@ func _until(done: Callable, max_frames := 600) -> void:
 		if done.call():
 			return
 		await get_tree().process_frame
+
+
+## Down the menu on top to the word that begins so, wherever Options puts it.
+func _down_to(start: String) -> void:
+	var menu: Words = main.ui.top()
+	for i in menu.words().size():
+		if menu.words()[menu.highlighted()].to_lower().begins_with(start):
+			return
+		press(&"ui_down")

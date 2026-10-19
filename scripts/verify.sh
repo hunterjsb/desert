@@ -7,6 +7,17 @@ set -euo pipefail
 name=${1:?a name for the verify branch}
 land=${2:-}
 sha=$(git rev-parse HEAD)
+git fetch -q origin
+# Docs alone run no CI (probes.yml ignores them): nothing to wait for.
+if [[ -z $(git diff --name-only origin/master "$sha" -- . ':!docs' ':!*.md') ]]; then
+	echo "docs only at ${sha:0:7}: no CI to run"
+	if [[ $land == --land ]]; then
+		git merge-base --is-ancestor origin/master "$sha" || { echo "master moved past it: merge master and verify again" >&2; exit 1; }
+		git push -q origin "$sha:master"
+		echo "landed ${sha:0:7} on master"
+	fi
+	exit 0
+fi
 # Quiet: GitHub's remote lines offer a pull request for every new branch.
 git push -q -f origin "HEAD:refs/heads/verify-$name" 2> >(grep -v '^remote:' >&2)
 id=""

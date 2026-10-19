@@ -74,6 +74,8 @@ const LIST: Array[Dictionary] = [
 		"kind": "clear", "day": [0.33, 0.37], "due": [150.0, 200.0], "farm": true},
 	{"key": "board", "label": "ride: a charged hoverboard at your feet by a small camp, a shield and a crate, clear and calm",
 		"kind": "clear", "day": [0.35, 0.5], "calm": 6.0, "board": true},
+	{"key": "boards", "label": "boards by make: one of each charged on the sand in front of you, the issue, a skimmer racer, a Knights' patrol board and a temple board, clear and calm",
+		"kind": "clear", "day": [0.35, 0.5], "calm": 6.0, "boards": true},
 	{"key": "radio", "label": "radio: a radio and a charged shield in front of you, a storm 300 m off", "kind": "front",
 		"distance": 300.0, "day": [0.35, 0.55], "radio": true, "among": true},
 	# The next storm far enough off that the weather station has nothing to
@@ -258,10 +260,10 @@ const CONSOLE_PARTS := [&"big_battery", &"big_battery", &"screen", &"anemometer"
 const CONSOLE_STAKE := [-0.5, 4.6]
 
 ## The camp built for wind, on the reference camp's deck plan resting on the
-## sand, moored upwind: a Console reading the wind and the sand with a radio
+## sand, moored upwind: a Console whose radar sees the storm coming, clean, with a radio
 ## on its top, the base shield on one battery, a bare crate whose port holds
 ## the turbine out downwind beyond the bubble.
-const ANOMALY_CONSOLE := [&"screen", &"anemometer", &"particle_sensor"]
+const ANOMALY_CONSOLE := [&"screen", &"anemometer", &"barometer", &"particle_sensor", &"radar"]
 ## An anomaly's heart is looked for this far round where the run began, m,
 ## over at most this many days from the clock's start, coming over at most
 ## this long after its wall, s. Hearts are sparse: 30 km and 30 days found
@@ -324,6 +326,7 @@ static func apply(world: World, scenario: Dictionary) -> void:
 	_clear(world, &"scenario_kit", false)
 	if not (scenario.kind in ["kit", "ruin"] or scenario.get("camp", false) or scenario.get("survive", false)
 			or scenario.get("farm", false) or scenario.get("board", false) or scenario.get("radio", false)
+			or scenario.get("boards", false)
 			or scenario.get("afk", false) or scenario.get("chassis", false) or scenario.get("console", false)
 			or scenario.get("sail", false) or scenario.get("tow", false) or scenario.get("yacht", false)
 			or scenario.get("drift", false) or scenario.get("walker", false)
@@ -345,6 +348,8 @@ static func apply(world: World, scenario: Dictionary) -> void:
 		dropped = farm(world)
 	elif scenario.get("board", false):
 		dropped = board(world)
+	elif scenario.get("boards", false):
+		dropped = boards(world)
 	elif scenario.get("radio", false):
 		dropped = radio(world)
 	elif scenario.get("walker", false):
@@ -935,6 +940,7 @@ static func _tethered(world: World, id: StringName, right: float, ahead: float) 
 ## cable to join them, and spare rations. Returns what it dropped.
 static func survive(world: World) -> Array[Node3D]:
 	world.player.vitals.fresh()
+	world.player.suit.restock()
 	var condenser := standing(world, &"condenser", [&"battery", &"solar_panel", &"canister"], SURVIVE_CONDENSER)
 	(condenser as Condenser).canister().drain(INF)
 	var dropped: Array[Node3D] = [condenser, standing(world, &"shield", [&"battery"], SURVIVE_SHIELD)]
@@ -962,6 +968,7 @@ static func survive(world: World) -> Array[Node3D]:
 ## suit's kit and a spare root-tuber to sow. Returns what it dropped.
 static func farm(world: World) -> Array[Node3D]:
 	world.player.vitals.fresh()
+	world.player.suit.restock()
 	world.player.suit.carried.append(Catalog.part(&"root_tuber"))
 	var dropped: Array[Node3D] = []
 	for where: Array in [FARM_BY_HAND, FARM_HARVESTER]:
@@ -991,6 +998,15 @@ static func farm(world: World) -> Array[Node3D]:
 static func board(world: World) -> Array[Node3D]:
 	return [standing(world, &"board", [&"battery"], BOARD_AT), standing(world, &"shield", [&"battery"], BOARD_SHIELD),
 		standing(world, &"crate_frame", [], BOARD_CRATE)]
+
+
+## One board of each make side by side in front of you, noses ahead, each
+## with a full battery, the issue nearest your right hand.
+static func boards(world: World) -> Array[Node3D]:
+	var dropped: Array[Node3D] = []
+	for i in BoardMakes.ALL.size():
+		dropped.append(standing(world, BoardMakes.ALL[i], [&"battery"], [0.6 - i * 0.6, 1.6]))
+	return dropped
 
 
 ## A radio with a full battery on the sand in front of you, switched off, and
@@ -1099,6 +1115,7 @@ static func afk(world: World) -> Array[Node3D]:
 static func anomaly_camp(world: World) -> Array[Node3D]:
 	var player := world.player
 	player.vitals.fresh()
+	player.suit.restock()
 	player.suit.carried.append(Catalog.part(&"compass"))
 	var deck := standing(world, &"chassis", [], AFK_DECK) as Chassis
 	for at: Array in [[Vector2i.ZERO, Vector2i(1, 0)], [Vector2i.ZERO, Vector2i(0, 1)], [Vector2i(1, 0), Vector2i(0, 1)]]:
@@ -1227,6 +1244,7 @@ static func chassis(world: World) -> Array[Node3D]:
 ## dropped, the deck first.
 static func console(world: World) -> Array[Node3D]:
 	world.player.vitals.fresh()
+	world.player.suit.restock()
 	var deck := standing(world, &"chassis", [], CONSOLE_DECK) as Chassis
 	deck.join(Catalog.device(&"chassis") as Chassis, _on_piece(deck, Vector2i.ZERO, &"ring", Vector2i(1, 0)), 0)
 	fill(world, deck, [&"hover_tray", &"hover_tray"])
