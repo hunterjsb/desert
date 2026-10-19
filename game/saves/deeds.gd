@@ -35,6 +35,8 @@ const TABLE := {
 		"after": [&"board_distance"], "icon": &"board", "goal": "deed_board_height_m", "unit": "m", "step": 0.5},
 	&"board_storm": {"name": "Flying Bling", "asks": "Ride into a storm by night or in an eclipse", "family": &"board",
 		"after": [&"board_height"], "icon": &"board"},
+	&"yard_sale": {"name": "Yard Sale", "asks": "Tumble %s m in one wipeout", "family": &"board",
+		"after": [&"board_height"], "icon": &"board", "goal": "deed_tumble_m", "unit": "m", "step": 1.0, "hidden": true},
 	&"sail_waist": {"name": "Set Sail", "asks": "Tie a sail's sheet at your waist", "family": &"wind", "icon": &"sail"},
 	&"close_hauled": {"name": "Close-Hauled", "asks": "Make %s m upwind under sail", "family": &"wind",
 		"after": [&"sail_waist"], "icon": &"sail", "goal": "deed_upwind_m", "unit": "m", "step": 50.0},
