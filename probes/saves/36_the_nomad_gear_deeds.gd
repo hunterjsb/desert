@@ -47,6 +47,9 @@ func run() -> void:
 	world.content.add_child(deck)
 	deck.global_position = Vector3(world.player.global_position.x + 3.0, 0.0, world.player.global_position.z)
 	deck.global_position.y = world.height_under(deck.global_position) + 0.2
+	# The distant wreck can unload after visiting the camp; trim a fresh rig
+	# here rather than depending on its dropped salvage remaining resident.
+	mast = Rig.make([&"mast", [&"sail"]]) as Mast
 	Stick.put(deck, deck, Chassis.TOP, Vector2.ZERO, PI, mast)
 	await physics_frames(60)
 	mast.raised = true
