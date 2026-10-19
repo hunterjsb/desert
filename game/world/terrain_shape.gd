@@ -153,7 +153,8 @@ func sample(x: float, z: float, on: Structure = null) -> float:
 	return h if on == null else on.sand(x, z, h)
 
 
-## The dunes alone at a lattice point, before any structure.
+## The dunes alone at a lattice point, before any structure. Its GPU twin
+## is DUNES_GLSL.
 func dunes(x: float, z: float) -> float:
 	var land := _land.get_noise_2d(x, z)
 	# Down the wind, and across it.
@@ -215,3 +216,60 @@ static func _rounded_min(a: float, b: float, k: float) -> float:
 static func _rounded_max0(a: float, k: float) -> float:
 	var h := maxf(k - absf(a), 0.0) / k
 	return maxf(a, 0.0) + h * h * k * 0.25
+
+
+## dunes() on the GPU, for the wind map's lee (WindMap), reading what
+## pack_dunes() packs into its params block p: change one, change the other.
+## No structures: their ground is pressed in on the CPU only.
+const DUNES_PARAMS := "vec4 dune_a; vec4 dune_b; vec4 dune_c; vec4 dune_d; Noise land; Noise sand; Noise meander; Noise fork_meander; Noise fork_patch; Noise saddle;"
+const DUNES_GLSL := """
+float dune_rounded_min(float a, float b, float k) {
+	float h = max(k - abs(a - b), 0.0) / k;
+	return min(a, b) - h * h * k * 0.25;
+}
+
+float dune_rounded_max0(float a, float k) {
+	float h = max(k - abs(a), 0.0) / k;
+	return max(a, 0.0) + h * h * k * 0.25;
+}
+
+float dune_ridge_set(float u, float v, Noise meander, float rise, float bare) {
+	float spacing = p.dune_a.x;
+	float stretch = p.dune_c.y;
+	float wander = p.dune_b.z;
+	float su = u * stretch;
+	float w = noise2(meander, su, v) * wander;
+	float wu = 1.0 + noise2(meander, su + stretch, v) * wander - w;
+	float wv = noise2(meander, su, v + 1.0) * wander - w;
+	float span = spacing / sqrt(wu * wu + wv * wv);
+	float q = (u + w) / spacing;
+	float t = q - floor(q);
+	float crest = dune_rounded_min(span * (t - bare) * rise, span * (1.0 - t) * p.dune_a.z, p.dune_a.w);
+	return dune_rounded_max0(max(crest, -span * t * p.dune_a.z), p.dune_c.x * clamp(rise / 0.05, 0.02, 1.0));
+}
+
+float dunes(vec2 at) {
+	float land = noise2(p.land, at.x, at.y);
+	float u = at.x * p.dune_b.x + at.y * p.dune_b.y;
+	float v = at.y * p.dune_b.x - at.x * p.dune_b.y;
+	float sand = clamp(0.5 + 0.9 * noise2(p.sand, at.x, at.y) - 0.4 * land, 0.0, 1.0);
+	float rise = p.dune_a.y;
+	float saddle = 1.0 - p.dune_c.z + p.dune_c.z * noise2(p.saddle, u * p.dune_c.y, v);
+	float bare = mix(p.dune_d.x, p.dune_d.y, sand);
+	float h = dune_ridge_set(u, v, p.meander, rise * sand * saddle, bare);
+	float fork = smoothstep(0.05, 0.45, noise2(p.fork_patch, u, v)) * sand;
+	if (fork > 0.0) {
+		h = -dune_rounded_min(-h, -dune_ridge_set(u + 0.5 * p.dune_a.x, v, p.fork_meander, rise * fork * saddle, bare),
+			p.dune_c.w * fork);
+	}
+	return land * p.dune_b.w + h;
+}
+"""
+
+
+func pack_dunes(into: StreamPeerBuffer) -> void:
+	for v: float in [_spacing, _rise, _slip, _crest_round, _down.x, _down.y, _wander, _land_height,
+			_toe_round, WANDER_STRETCH, SADDLE_DEPTH, FORK_ROUND, BARE.x, BARE.y, 0.0, 0.0]:
+		into.put_float(v)
+	for noise in [_land, _sand, _meander, _fork_meander, _fork_patch, _saddle]:
+		NoiseGLSL.pack(noise, into)
