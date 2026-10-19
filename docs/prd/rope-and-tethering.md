@@ -243,7 +243,9 @@ The hoverboard tows nothing.
   deck or a ruin's wall, it stays in your hand and the readout says why; before, one
   with lines on it went to your waist instead and stood in the air in front of you.
   Used looking out over the sand, not down at it, one with lines on it ties at your
-  waist, to tow what's on them.
+  waist, to tow what's on them. Torn out by its lines, it lies on the sand with its head
+  toward their pull (2026-10-19): stood on its point, the sand's friction caught it, and a
+  strong line tore rather than drag it.
 - **Rings are a chassis's and a planter's** (since the chassis rework, 2026-10-18): a
   chassis piece has one on every edge, which takes a hook or the next piece, and a planter
   two, front and back; nothing else takes a hook. A deck takes as many lines as it has
