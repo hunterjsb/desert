@@ -51,7 +51,22 @@ const LANDING := preload("res://assets/audio/impact.ogg")
 const HOVER := preload("res://assets/audio/hover.ogg")
 const BOARD_ON := preload("res://assets/audio/board_on.ogg")
 const BOARD_OFF := preload("res://assets/audio/board_off.ogg")
-const LOW_TICK := preload("res://assets/audio/low_tick.ogg")
+# The ride, made here (make_board_sounds.py): a carve's hiss, the wind's
+# rush, a pop off a lip, a landing and a hard one, a crash's knock, a skid
+# biting again, and each make's hum, the issue's the hover's own; and the
+# battery's two cues, low and then critical.
+const BOARD_CARVE := preload("res://assets/audio/board_carve.wav")
+const BOARD_RUSH := preload("res://assets/audio/board_rush.wav")
+const BOARD_POP := preload("res://assets/audio/board_pop.wav")
+const BOARD_LAND := preload("res://assets/audio/board_land.wav")
+const BOARD_SLAM := preload("res://assets/audio/board_slam.wav")
+const BOARD_KNOCK := preload("res://assets/audio/board_knock.wav")
+const BOARD_BITE := preload("res://assets/audio/board_bite.wav")
+const BOARD_HUMS := {&"board": HOVER, &"racer_board": preload("res://assets/audio/hum_racer.wav"),
+	&"patrol_board": preload("res://assets/audio/hum_patrol.wav"),
+	&"temple_board": preload("res://assets/audio/hum_temple.wav")}
+const BATTERY_LOW := preload("res://assets/audio/battery_low.wav")
+const BATTERY_CRITICAL := preload("res://assets/audio/battery_critical.wav")
 # Devices.
 const SHIELD_BOOT := preload("res://assets/audio/shield_boot.ogg")
 const SHIELD_HUM := preload("res://assets/audio/shield_hum.ogg")
@@ -143,6 +158,15 @@ static func play(owner: Node, stream: AudioStream, bus := WORLD, db := 0.0) -> v
 	voice.autoplay = true
 	voice.finished.connect(voice.queue_free)
 	owner.add_child.call_deferred(voice)
+
+
+## A battery running low, "do-doo", from beside `owner`; and critical, lower.
+static func battery_low(owner: Node) -> void:
+	play(owner, BATTERY_LOW)
+
+
+static func battery_critical(owner: Node) -> void:
+	play(owner, BATTERY_CRITICAL)
 
 
 ## Heard from a point in the world, and from `owner` as it moves.

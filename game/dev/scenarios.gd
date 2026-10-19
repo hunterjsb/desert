@@ -74,6 +74,8 @@ const LIST: Array[Dictionary] = [
 		"kind": "clear", "day": [0.33, 0.37], "due": [150.0, 200.0], "farm": true},
 	{"key": "board", "label": "ride: a charged hoverboard at your feet by a small camp, a shield and a crate, clear and calm",
 		"kind": "clear", "day": [0.35, 0.5], "calm": 6.0, "board": true},
+	{"key": "boards", "label": "boards by make: one of each charged on the sand in front of you, the issue, a skimmer racer, a Knights' patrol board and a temple board, clear and calm",
+		"kind": "clear", "day": [0.35, 0.5], "calm": 6.0, "boards": true},
 	{"key": "radio", "label": "radio: a radio and a charged shield in front of you, a storm 300 m off", "kind": "front",
 		"distance": 300.0, "day": [0.35, 0.55], "radio": true, "among": true},
 	# The next storm far enough off that the weather station has nothing to
@@ -324,6 +326,7 @@ static func apply(world: World, scenario: Dictionary) -> void:
 	_clear(world, &"scenario_kit", false)
 	if not (scenario.kind in ["kit", "ruin"] or scenario.get("camp", false) or scenario.get("survive", false)
 			or scenario.get("farm", false) or scenario.get("board", false) or scenario.get("radio", false)
+			or scenario.get("boards", false)
 			or scenario.get("afk", false) or scenario.get("chassis", false) or scenario.get("console", false)
 			or scenario.get("sail", false) or scenario.get("tow", false) or scenario.get("yacht", false)
 			or scenario.get("drift", false) or scenario.get("walker", false)
@@ -345,6 +348,8 @@ static func apply(world: World, scenario: Dictionary) -> void:
 		dropped = farm(world)
 	elif scenario.get("board", false):
 		dropped = board(world)
+	elif scenario.get("boards", false):
+		dropped = boards(world)
 	elif scenario.get("radio", false):
 		dropped = radio(world)
 	elif scenario.get("walker", false):
@@ -991,6 +996,15 @@ static func farm(world: World) -> Array[Node3D]:
 static func board(world: World) -> Array[Node3D]:
 	return [standing(world, &"board", [&"battery"], BOARD_AT), standing(world, &"shield", [&"battery"], BOARD_SHIELD),
 		standing(world, &"crate_frame", [], BOARD_CRATE)]
+
+
+## One board of each make side by side in front of you, noses ahead, each
+## with a full battery, the issue nearest your right hand.
+static func boards(world: World) -> Array[Node3D]:
+	var dropped: Array[Node3D] = []
+	for i in BoardMakes.ALL.size():
+		dropped.append(standing(world, BoardMakes.ALL[i], [&"battery"], [0.6 - i * 0.6, 1.6]))
+	return dropped
 
 
 ## A radio with a full battery on the sand in front of you, switched off, and

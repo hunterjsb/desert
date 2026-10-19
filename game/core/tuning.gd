@@ -471,6 +471,22 @@ static var _current: Tuning
 @export var board_drift_grip: float = 14.0
 @export var board_drift_slide: float = 0.25
 @export var board_drift_speed: float = 8.0
+## A skid: standing, a carve past the hover's grip breaks loose this fast or
+## faster, m/s, and slides on keeping this share of that grip, a full
+## sideways slide bleeding this share of its speed a second, until it comes
+## back near your way and bites.
+@export var board_skid_speed: float = 7.0
+@export var board_skid_grip: float = 0.9
+@export var board_skid_drag: float = 0.6
+## Flying, the board's tilt follows its path this fast, Hz: its nose up off a
+## lip and down as it falls, easing to the sand it's coming down on.
+@export var board_air_hertz: float = 2.5
+## Landing, the speed it meets the sand at, m/s (harder crossed): past the
+## first it slides out and jars you, past the second it throws you off. Into
+## something solid faster than this, m/s, it throws you off.
+@export var board_land_jar: float = 9.0
+@export var board_land_throw: float = 15.0
+@export var board_crash: float = 7.0
 ## A kick off the sand: m/s along the board from rest, less the faster you
 ## go and nothing at top speed; one this often while sprint is held, s, for
 ## this much stamina. Kicking, you don't get your breath back.
