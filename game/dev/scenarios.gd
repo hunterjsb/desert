@@ -237,10 +237,12 @@ const CONSOLE_STAKE := [-0.5, 4.6]
 ## the turbine out downwind beyond the bubble.
 const ANOMALY_CONSOLE := [&"screen", &"anemometer", &"particle_sensor"]
 ## An anomaly's heart is looked for this far round where the run began, m,
-## over this many days from the grace's end, coming over at most this long
-## after its wall, s.
-const ANOMALY_SEARCH := 30000.0
-const ANOMALY_DAYS := 30.0
+## over at most this many days from the grace's end, coming over at most
+## this long after its wall, s. Hearts are sparse: 30 km and 30 days found
+## none on one seed in eight; this finds one within 23 days on every seed
+## tried, in a few tens of milliseconds.
+const ANOMALY_SEARCH := 60000.0
+const ANOMALY_DAYS := 200.0
 const ANOMALY_WALL := 300.0
 
 ## Your own frame, to fit what you find to: right and ahead.
@@ -289,7 +291,7 @@ static func apply(world: World, scenario: Dictionary) -> void:
 		return
 	var place := find(world, scenario)
 	if place.is_empty():
-		Dev.put("world/scn", "%s: none in 3 days" % scenario.key)
+		Dev.put("world/scn", "%s: none found" % scenario.key)
 		return
 	stand(world, scenario, place)
 	Dev.put("world/scn", scenario.key)
