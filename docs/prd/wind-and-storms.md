@@ -703,7 +703,7 @@ the most where it fills the view beside a wall; 3 to 3.7 ms walking into it or s
 covers the screen; and 0.2 ms from inside a storm, which hides it before it's marched. In a quieter run
 the near views took 1.2 to 1.9 ms. It's the storm walls' kind of cost, a ray a pixel, more than the
 puffs it replaced (0.5 to 1.8 ms near); drawing it at half resolution would take most of it back. On the
-main thread a plume in sight takes CI_MS ms a frame on CI (wind & storms probe 16, four turns of 120
+main thread a plume in sight takes 0.052 to 0.090 ms a frame on CI (wind & storms probe 16, four turns of 120
 frames, against its 0.25 ms bound), 0.065 ms on a busy desktop, and all of them together 0.1 to 0.27 ms
 in the look-test; the one frame after a jump in time or place works a whole line out at once.
 
