@@ -206,7 +206,7 @@ func _build_strips() -> void:
 		_readout.double_sided = false
 		var h: Vector3 = Catalog.DEVICES[id].size * 0.5
 		# Facing out of its front, on the dark glass across its head.
-		_readout.transform = Transform3D(Basis(Vector3.UP, PI), Vector3(0.0, h.y - 0.08, -h.z - 0.004))
+		_readout.transform = Transform3D(Basis(Vector3.UP, PI), Vector3(0.0, h.y - 0.08, -h.z - 0.007))
 		add_child(_readout)
 
 

@@ -251,9 +251,9 @@ const _RACK_BAYS := [
 ]
 ## Two niches low and one high, off true, each with its tube beside it.
 const _SHRINE_BAYS := [
-	[&"battery", Vector3(0.18, -0.18, -0.14), Vector3.FORWARD, {"fills": &"bay", "strip": Vector2(-0.175, 0.0)}],
-	[&"battery", Vector3(-0.18, -0.18, -0.14), Vector3.FORWARD, _BAY],
-	[&"battery", Vector3(0.04, 0.13, -0.14), Vector3.FORWARD, _BAY],
+	[&"battery", Vector3(0.18, -0.24, -0.14), Vector3.FORWARD, {"fills": &"bay", "strip": Vector2(-0.172, 0.0)}],
+	[&"battery", Vector3(-0.18, -0.24, -0.14), Vector3.FORWARD, {"fills": &"bay", "strip": Vector2(0.172, 0.0)}],
+	[&"battery", Vector3(0.04, 0.07, -0.14), Vector3.FORWARD, _BAY],
 ]
 ## Frames: their box, weight, wind catch and sockets as [kind, position,
 ## outward], a bay with what it is too.
@@ -427,9 +427,9 @@ const DEVICES := {
 		"power_box": true, "sticks": true, "stands": true, "tall": true,
 		"sockets": _RACK_BAYS + [[&"port", Vector3(0.3, -0.35, 0.18), Vector3.BACK]]},
 	# Temple-made round an old bus: three niches in an ornate casing.
-	&"power_shrine": {"label": "Power shrine", "short": "Shrine", "size": Vector3(0.8, 0.78, 0.38), "mass": 16.0,
+	&"power_shrine": {"label": "Power shrine", "short": "Shrine", "size": Vector3(0.8, 0.9, 0.38), "mass": 16.0,
 		"power_box": true, "sticks": true, "stands": true,
-		"sockets": _SHRINE_BAYS + [[&"port", Vector3(-0.2, -0.3, 0.19), Vector3.BACK]]},
+		"sockets": _SHRINE_BAYS + [[&"port", Vector3(-0.2, -0.36, 0.19), Vector3.BACK]]},
 }
 
 

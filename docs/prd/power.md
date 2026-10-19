@@ -37,8 +37,9 @@ maker's mark. See [the lore research](../lore-research.md).
 
 ## Modular, like everything else
 
-A battery is a part like any other: it sticks loose on a deck, or fits the battery slot of
-what works away from one (the board, the radio, the heat cutter, the planter, the turbine). A
+A battery is a part like any other: it sticks loose on a deck, goes in a power box's bay, or
+fits the battery slot of what works away from one (the board, the radio, the heat cutter, the
+planter, the turbine). A
 better battery is an upgrade you stick on. Sticking and slots belong to the Devices & mods
 PRD; this PRD owns what flows through them.
 
@@ -129,7 +130,7 @@ Readings, not in the session:
 - **"Restored vent taps" read as the colonial vent power stations** along the rift (part 4's generated
   pieces), which feed the Stoker. Whether a restored tap can also power a camp is not said.
 
-## The deck's pool and the power box (agreed, 2026-10-18 spec; the pool built, the box not)
+## The deck's pool and the power box (agreed, 2026-10-18 spec; the pool built 2026-10-18, the box 2026-10-19)
 
 From the [chassis spec](../chassis-kits-dunes-2026-10-18.md): battery slots leave every device. Everything on one deck shares
 one pool, loose batteries included; cables and hoses only reach other bodies (a turbine staked on
@@ -149,9 +150,64 @@ batteries, are one pool (`Power._pools` joins a stuck device to its deck), so th
 condenser and the Console, which lost their battery slots, run on whatever batteries are stuck
 anywhere on the same deck: on one piece's top, a wall, a shelf. A battery taken off leaves the
 pool at once. The board, stuck on a deck, keeps its own battery and charges it from the pool as
-a draw ranked below the shield. The power box isn't built: it will be a device with battery
-bays that sticks like any other, its bays a slot of its own, and the Console's Power page
-already shows the pool it would mirror.
+a draw ranked below the shield.
+
+**Built (2026-10-19): the power box.** A device with battery bays that sticks on a deck like any
+other and joins its one pool (`PowerBox`, `game/power/power_box.gd`). A bay is a slot of its own:
+a battery goes in and comes out with take, the tug and the ghost as any slot's, and a box with
+batteries in its bays is stored power you carry or drag like anything else.
+- **Each bay charges or supplies.** A bay supplies by default: it gives to the pool when the pool
+  draws on its batteries and takes its share of what's spare. Use at a battery in a bay holds the
+  bay to charge only, saying "charging only" (again, "supplying"): it takes what's spare and gives
+  nothing, a charger for a spare for the board or the radio. The pool runs short, and goes dark,
+  on what its supplying batteries hold; the Console's bank is theirs.
+- **A light strip per bay** reads at a glance: lit from its foot as far as the bay is full, green,
+  amber when low, red nearly gone, as every charge light; a pulse runs up it while the bay
+  charges and down it while it supplies, faster the harder it flows (full pace from 60 W), still
+  while it rests. A held bay's dark segments glow a cool blue; a dead or empty one is dark. The
+  strips are one draw a box (a multimesh, the state on each instance), animated on the GPU.
+- **By era**, each its own catalog id, in its era's coats (`PowerLooks`, through Dress):
+
+| Model | Id | Bays | Frame | Strips | Sticks | Its terms |
+|---|---|---|---|---|---|---|
+| Colonial cabinet (RMC's) | `power_cabinet` | 8, two columns of four, numbered | 0.8 × 1.2 × 0.45 m, 30 kg | 10 segments; its bank read out across its head (Wh, %, W) | stands, tall | held by hand; from a Console its bays set, ranks and switches |
+| Company issue | `power_box` | 4, set in its face | 0.62 × 0.12 × 0.5 m, 6 kg, carried | 5 segments | any face, a wall too | held by hand; switches |
+| Skimmer rack | `power_rack` | 12, mismatched, 3 dead | 0.96 × 1.06 × 0.36 m, 16 kg (11.2 found, the era's make) | 4 segments, under each bay | stands, tall | shared pool only: nothing |
+| Second-age shrine | `power_shrine` | 3 niches | 0.8 × 0.9 × 0.38 m, 16 kg | a smooth sand-glass tube | stands | held by hand; ranks |
+
+  The First Kingdoms have no model of their own: their sites hold colonial cabinets, marked by a
+  house as their lineage says. Nomads have none. The colonial cabinet is off-white modular
+  panels, grey and safety orange; the company's dock gunmetal, teal and yellow with rubber
+  corners and its batch stencil; the skimmer rack a tube frame of olive, red plate and scrap
+  housings, taped, its dead bays sooted, plated half over and daubed with a red cross; the
+  shrine limewashed render round ceramic-linteled niches, saltbush posts, a dome, the sign of
+  Tu, cord, charms and tassels, the old bus's plate at its back. A box's capacity is its
+  batteries': with big batteries the rack holds the most, 2,700 Wh in its nine live bays, the
+  cabinet 2,400, the dock 1,200 and the shrine 900.
+- **Why the middle two get what they get** (the spec says colonial fully, skimmer not at all):
+  company issue has breakers but no load-shedding logic, built to a budget, so a Console can
+  switch its devices off but they're served in the order every pool keeps, the shield first; the
+  temple's box ranks what's served, its order a rite, but has no breakers, crude, so everything
+  wired to it runs while there's power. Bays are set from a Console only on the cabinet, its
+  full integration; on the rack not even by hand.
+- **Ranks and switches** (Power): a device's `priority`, set from a Console, and `switched_off`
+  count only while a box in its pool allows them, so a box taken away takes its logic with it.
+  Switched off, a device is a draw the pool skips: dark and drawing nothing, however full the bank.
+  Ranks run 0 to 5, a shield's own 1 and the rest 0, so a shield is first unless something is
+  ranked over it. Running short, the highest rank keeps the last of the charge and the lowest
+  gives way at the reserve, the rest evenly between: with three ranks the middle one at 12.5%.
+  A device runs past its share while the sources carry it and everything ranked over it. With
+  two ranks this is the shield-first rule as it was.
+- **Where they're found** (`SiteLoot`, `Finds`): the cabinet among colonial sites' best (1 in
+  18) and a freight pod's bays (1 in 10), and on First Kingdoms floors (1 in 19) and among their
+  best (1 in 15); the rack on skimmer-era floors (1 in 15), among their best (1 in 17) and in a
+  tithe hauler's bays (1 in 9); the shrine on second-age floors (1 in 53), among their best (1 in
+  37) and a wayshrine's (1 in 10); the company's dock lying on the way, what a surveyor before
+  you dropped, a surface find (1 in 15 of the devices there). A found box's bays hold the
+  standard cells it was built for (`Finds.FILLS`' "bay"), never big ones, so the heaviest found,
+  a cabinet with all eight, is 62 kg and still drags by hand.
+- **Saves** keep each bay's hold and each device's rank and switch.
+- **Starts are unchanged**: no kit carries a box yet.
 
 ## What draws power
 
@@ -325,7 +381,8 @@ already shows the pool it would mirror.
 - **Battery tiers,** chargers, wires, and central capacitors built from them.
 - **Tracked and mounted solar.**
 - **Priorities beyond the shield's.** When the capacitor runs low, the shield is the
-  last thing to lose power (begun in the skeleton: two ranks, one reserve).
+  last thing to lose power (begun in the skeleton: two ranks, one reserve; ranked from a
+  Console through a power box, 2026-10-19).
 - **The heavy generator** on caterpillar tracks, with fuels: rare consumables,
   fissile material with something to burn it, and fuel grown from plants.
 - **Draw by state:** idle, active, holding back a storm.
@@ -368,6 +425,20 @@ already shows the pool it would mirror.
     shield and a Console with none of their own on the other: the shield runs and the
     Console reads on the loose battery, which drains for both. Taken off the deck, it's in
     no pool and they go dark; stuck back on, anywhere on the deck, they run.
+13. **A box joins the pool** (2026-10-19). A battery goes into the company's dock by hand and
+    the dock sticks on a deck by hand beside a shield: the shield runs on the bay, which
+    drains; the battery taken out by hand, it goes dark, and put straight back, it runs.
+14. **A bay charges and supplies.** A cabinet's two half-full bays, the second held by use at
+    it, run a shield: the first supplies, its strip running down, the held one gives nothing;
+    with more made than drawn both charge, both strips running up, each lit as full as it is.
+15. **Switched off and ranked.** A cabinet, a Console, a shield and a condenser on a deck: the
+    page's switch turns the condenser off with the bank full, and on; short, the shield is
+    served and the condenser gives way, until ranked over the shield it runs and the shield
+    gives way. With a skimmer's rack instead, the page offers neither and the rank no longer
+    counts.
+16. **A dead bay holds nothing.** Held to a rack's dead bays a battery goes in a live one;
+    filled from data or found, the dead stay empty and their strips dark; use at a bay says
+    "shared pool only".
 
 ## Out of scope
 

@@ -200,9 +200,15 @@ workstation) rather than filled slots.
   Looking at a deck empty-handed, what take would move is highlighted, faintly in the ghost's
   colour.
 - **Seams for what's next:** `Chassis.plates()` lists a deck's whole-face plates (walls,
-  shelves, screens, fabric) with their way out and area, for wind on faces; the power box will
-  be a device with battery bays that sticks like any other; a screen on a frame's face is dark
-  until something drives it.
+  shelves, screens, fabric) with their way out and area, for wind on faces; a screen on a
+  frame's face is dark until something drives it.
+- **The power box (built, 2026-10-19)** is a device with battery bays that sticks like any
+  other and joins its deck's pool, its bays a slot of its own that batteries go into and come
+  out of with take, as any slot's. A light strip by each bay reads its fill and which way it
+  flows; use at a battery in a bay holds the bay to charge only. Four makes by era, each its own
+  catalog id: the colonial cabinet, the company's dock, a skimmer's rack with dead bays and a
+  temple's shrine ([Power](power.md#the-decks-pool-and-the-power-box-agreed-2026-10-18-spec-the-pool-built-2026-10-18-the-box-2026-10-19)
+  has their numbers, looks and terms, and where they're found).
 - **Saves** keep a deck's pieces as they joined, across a ring or on a frame's face, and each
   thing stuck on each piece by its pose on that piece and the face's way out, with its own
   state (Profile & saves).
@@ -331,13 +337,24 @@ device already stays a body of its own on the host's power pool.
     the top, each source with what it makes now, and their total under OUTPUT ("what makes power
     says output", Hunter, 2026-10-18). The batteries sit on it, with
     their charge as a share, a bar and Wh, the net flow, and how long until they're empty or full
-    at it. What draws hangs off it below, each device with what it draws now, a dark one marked,
+    at it. A power box on the deck sits on the line above them (2026-10-19), mirroring it exactly:
+    its row with its charge, then each bay as a cell, its strip as a bar in the charge lights'
+    colours, an arrow up as it charges or down as it supplies, its share and its watts; held to
+    charge it reads blue, and a dead or empty bay says so. The bank is then what supplies. What
+    draws hangs off it below, each device with what it draws now, a dark one marked,
     and their total. Under each device that can be worked is a row of switches, the one lit saying
     how it stands, and use on one works the device through its own use: a shield off, on or smart;
     a radio's own controls, off or on, a sweep to the next carrier as its use does, and its
     volume down or up (the dial in [Radio](radio-sound-and-atmosphere.md#the-dial-and-the-gods-on-the-air-hunter-2026-10-18-built));
     the deck's trays floating or resting; and a device's lamps
     on or off. Each switch logs what it did ("SHIELD SMART", "RADIO 262 KHZ", "DECK REST"). A device's lamps are switched only from here.
+    As far as the deck's power box allows (Power): each draw is numbered where it's served, 1 the
+    first, with PRI + and PRI - to rank it, and one without a switch of its own (a condenser, a
+    board charging) gets ON and OFF, switching it off as a draw the pool skips ("CONDENSER OFF",
+    "CONDENSER PRI 1"); a cabinet's bays are keys that hold them to charge or let them supply
+    ("CABINET BAY 6 CHARGE"). A Console never switches itself off. These join a device's row of
+    switches where there's room. When the draws are more than the page holds, a key at its foot
+    pages to the rest, then back to the top.
   - **Log:** the last lines logged, each under its time; the sender shows only when it isn't a
     Console.
 - **The gyro is a compass too** (Hunter, 2026-10-18: "show both the wind direction and mag with a
@@ -970,6 +987,7 @@ its own; everything else sticks on a chassis's sticky faces.
 |---|---|---|
 | Sticky face | Anything that isn't for a slot only, anywhere it fits on a chassis piece's top or underside, a wall's or a shelf's: batteries, trays, runners, a keel, panels, lamps, canisters, frames, and every device that sticks. A socket is made where a thing sticks, its pose its own | Devices & mods |
 | Battery slot | Batteries, in what works away from a deck: the board, the radio, the heat cutter, the planter and the turbine | Power |
+| Battery bay | Batteries, in a power box's bays; a skimmer rack's dead bays take nothing (2026-10-19) | Power |
 | Ring | Rope hooks, on a chassis piece's edges and a planter's; on a grid piece, another piece's edge | Rope & tethering |
 | Port | A cable's plug | Power |
 | Water socket | A canister or a hose's end, one at a time (2026-10-17) | Survival, Farming |
@@ -999,6 +1017,10 @@ its own; everything else sticks on a chassis's sticky faces.
 | Heat cutter | 1 | | | | any face |
 | Bedroll | | | | use on it sleeps, and in your hands lays it out ([Survival](survival.md#sleep-as-built-2026-10-18)) | any face |
 | Survival kit | | | | a water and a food socket, 2 standard and 1 pot slot | any face |
+| Power cabinet | 8 bays | | 1 | a readout | stands, tall |
+| Power box (company issue) | 4 bays | | 1 | | any face |
+| Battery rack | 12 bays, 3 dead | | 1 | | stands, tall |
+| Power shrine | 3 bays | | 1 | | stands |
 
 The crate and the charger are gone: a chassis does what the crate did, and a battery stuck on a
 deck with a panel charges as the charger did.

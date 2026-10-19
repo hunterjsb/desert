@@ -82,7 +82,7 @@ static func _cabinet(b: Paint.Pieces, size: Vector3) -> void:
 	var bays := _bays(&"power_cabinet")
 	for i in bays.size():
 		var at: Transform3D = bays[i][1]
-		b.box(Vector3(0.296, 0.201, 0.006), at * Vector3(0.0, 0.0, -0.003), dark, 0.002, at.basis)
+		b.box(Vector3(0.296, 0.201, 0.004), at * Vector3(0.0, 0.0, 0.003), dark, 0.002, at.basis)
 		for x in [-0.05, 0.05]:
 			b.box(Vector3(0.03, 0.02, 0.012), at * Vector3(x, -0.06, 0.0), orange, 0.002, at.basis)
 		_digits(b, str(i + 1), at * Transform3D(Basis.IDENTITY, Vector3(-0.135, 0.131, recess + 0.0005)), 0.022, orange)
@@ -99,7 +99,7 @@ static func _cabinet(b: Paint.Pieces, size: Vector3) -> void:
 		b.box(Vector3(size.z - 0.1, 0.42, 0.01), turn * Vector3(0.0, -0.25, h.x - 0.005), panel, 0.004, turn)
 		for i in 8:
 			b.box(Vector3(size.z - 0.18, 0.012, 0.016), turn * Vector3(0.0, -0.42 + i * 0.045, h.x - 0.004), black, 0.002, turn)
-		b.box(Vector3(0.03, 0.2, 0.03), Vector3(x * (h.x + 0.0), 0.12, -0.05), orange, 0.008)
+		b.box(Vector3(0.03, 0.2, 0.03), Vector3(x * h.x, 0.12, -0.05), orange, 0.008)
 	# Its back: the fan, the port's plate.
 	b.box(Vector3(size.x - 0.1, size.y - 0.2, 0.012), Vector3(0.0, 0.02, h.z - 0.004), panel, 0.004)
 	b.ring(0.1, 0.14, Vector3(0.0, 0.2, h.z - 0.002), black, Basis(Vector3.RIGHT, PI / 2.0), 12)
@@ -124,7 +124,7 @@ static func _dock(b: Paint.Pieces, size: Vector3) -> void:
 		b.box(Vector3(size.x, recess, bar.y - bar.x), Vector3(0.0, y, (bar.x + bar.y) * 0.5), teal, 0.003)
 	for each: Array in _bays(&"power_box"):
 		var at: Transform3D = each[1]
-		b.box(Vector3(0.276, 0.196, 0.004), at * Vector3(0.0, 0.0, -0.002), Paint.coat(Color(0.05, 0.05, 0.05), 0.2), 0.001, at.basis)
+		b.box(Vector3(0.276, 0.196, 0.004), at * Vector3(0.0, 0.0, 0.003), Paint.coat(Color(0.05, 0.05, 0.05), 0.2), 0.001, at.basis)
 	_bezels(b, &"power_box", black, 0.006)
 	# Rubber corners, the batch stencil on its front, grips in its sides.
 	for x in [-1, 1]:
@@ -208,16 +208,18 @@ static func _shrine(b: Paint.Pieces, size: Vector3) -> void:
 	var gun := Paint.coat(Paint.GUNMETAL)
 	var recess: float = PowerBox.MODELS[&"power_shrine"].recess
 	var face := -h.z
+	var top := 0.26
 	# Saltbush planks under it, the render body behind the niches.
 	for k in 3:
 		b.box(Vector3(size.x - 0.01 * k, 0.035, 0.12), Vector3(0.004 * k, -h.y + 0.0175, -0.12 + k * 0.12), wood, 0.006)
-	b.box(Vector3(size.x - 0.02, size.y - 0.11, size.z - recess), Vector3(0.0, -0.015, recess * 0.5), render, 0.03)
+	var foot := -h.y + 0.035
+	b.box(Vector3(size.x - 0.02, top - foot, size.z - recess), Vector3(0.0, (top + foot) * 0.5, recess * 0.5), render, 0.03)
 	# Its limewashed face round the niches.
 	var z := face + recess * 0.5
-	var bands := [[Vector2(-0.4, 0.4), Vector2(-0.355, -0.29)], [Vector2(-0.4, 0.4), Vector2(-0.07, 0.02)],
-		[Vector2(-0.4, 0.4), Vector2(0.24, 0.32)], [Vector2(0.33, 0.39), Vector2(-0.29, -0.07)],
-		[Vector2(-0.03, 0.03), Vector2(-0.29, -0.07)], [Vector2(-0.39, -0.33), Vector2(-0.29, -0.07)],
-		[Vector2(0.19, 0.39), Vector2(0.02, 0.24)], [Vector2(-0.39, -0.11), Vector2(0.02, 0.24)]]
+	var bands := [[Vector2(-0.4, 0.4), Vector2(foot, -0.35)], [Vector2(-0.4, 0.4), Vector2(-0.13, -0.04)],
+		[Vector2(-0.4, 0.4), Vector2(0.18, top)], [Vector2(0.33, 0.39), Vector2(-0.35, -0.13)],
+		[Vector2(-0.03, 0.03), Vector2(-0.35, -0.13)], [Vector2(-0.39, -0.33), Vector2(-0.35, -0.13)],
+		[Vector2(0.19, 0.39), Vector2(-0.04, 0.18)], [Vector2(-0.39, -0.11), Vector2(-0.04, 0.18)]]
 	for band: Array in bands:
 		var x: Vector2 = band[0]
 		var y: Vector2 = band[1]
@@ -225,11 +227,11 @@ static func _shrine(b: Paint.Pieces, size: Vector3) -> void:
 	# Each niche: clay inside, a ceramic lintel with its round cap over it.
 	for each: Array in _bays(&"power_shrine"):
 		var at: Transform3D = each[1]
-		b.box(Vector3(0.296, 0.216, 0.006), at * Vector3(0.0, 0.0, -0.003), clay, 0.002, at.basis)
+		b.box(Vector3(0.296, 0.216, 0.004), at * Vector3(0.0, 0.0, 0.003), clay, 0.002, at.basis)
 		b.box(Vector3(0.34, 0.03, 0.022), at * Vector3(0.0, 0.126, recess + 0.008), ceramic, 0.008, at.basis)
 		b.ball(0.034, at * Vector3(0.0, 0.13, recess + 0.018), ceramic, Vector3(1.0, 1.0, 0.45), at.basis)
-		b.box(Vector3(0.012, 0.22, 0.012), at * Vector3(0.155, 0.0, recess + 0.004), ceramic, 0.004, at.basis)
-		b.box(Vector3(0.012, 0.22, 0.012), at * Vector3(-0.155, 0.0, recess + 0.004), ceramic, 0.004, at.basis)
+		for x in [-0.152, 0.152]:
+			b.box(Vector3(0.01, 0.22, 0.012), at * Vector3(x, 0.0, recess + 0.004), ceramic, 0.003, at.basis)
 	# The tubes: sand-glass behind each strip, brass at its ends.
 	var spec: Dictionary = PowerBox.MODELS[&"power_shrine"]
 	for each: Array in _bays(&"power_shrine"):
@@ -238,24 +240,32 @@ static func _shrine(b: Paint.Pieces, size: Vector3) -> void:
 		b.box(Vector3(spec.wide + 0.014, spec.long + 0.01, 0.006), at * Vector3(0.0, 0.0, -0.005), glass, 0.003, at.basis)
 		for s in [-1, 1]:
 			b.drum(0.024, 0.02, at * Vector3(0.0, s * (spec.long * 0.5 + 0.012), -0.004), brass, at.basis, 10)
-	# The dome on its collar, the sign of Tu over the high niche.
-	b.drum(0.24, 0.035, Vector3(0.0, h.y - 0.055, 0.02), ceramic, Basis.IDENTITY, 20)
-	b.ball(0.22, Vector3(0.0, h.y - 0.04, 0.02), ceramic, Vector3(1.0, 0.18, 0.75))
-	b.stamp(Paint.Mark.TU, Vector3(0.04, 0.28, face - 0.002), 0.11, FRONT)
-	b.box(Vector3(0.13, 0.065, 0.004), Vector3(0.04, 0.28, face - 0.002), lime, 0.001)
-	# Cord lashed round it, a charm, tassels at its corners, a water vial tied on.
-	for y in [-0.2, 0.17]:
+	# A frieze of ceramic knobs along its head, saltbush posts at its front
+	# corners, the dome on its collar with a brass finial, the sign of Tu on
+	# limewash beside the high niche.
+	for i in 9:
+		b.ball(0.016, Vector3(-0.34 + i * 0.085, top - 0.025, face - 0.008), ceramic, Vector3(1.0, 1.0, 0.6))
+	for x in [-1, 1]:
+		b.box(Vector3(0.024, top - foot, 0.04), Vector3(x * (h.x - 0.012), (top + foot) * 0.5, face + 0.005), wood, 0.006)
+		b.ball(0.026, Vector3(x * (h.x - 0.014), top + 0.01, face + 0.005), ceramic)
+	b.drum(0.25, 0.04, Vector3(0.0, top + 0.02, 0.02), ceramic, Basis.IDENTITY, 20)
+	b.ball(0.21, Vector3(0.0, top + 0.04, 0.02), ceramic, Vector3(1.0, 0.62, 0.8))
+	b.drum(0.012, 0.03, Vector3(0.0, h.y - 0.015, 0.02), brass, Basis.IDENTITY, 8)
+	b.stamp(Paint.Mark.TU, Vector3(0.28, 0.07, face - 0.002), 0.11, FRONT)
+	b.box(Vector3(0.13, 0.07, 0.004), Vector3(0.28, 0.07, face - 0.002), lime, 0.001)
+	# Cord lashed round its bands, a charm, tassels at its corners, a water vial tied on.
+	for y in [(foot - 0.35) * 0.5, -0.085]:
 		b.box(Vector3(size.x - 0.005, 0.016, 0.012), Vector3(0.0, y, face - 0.004), cord, 0.003)
-	b.box(Vector3(0.006, 0.06, 0.006), Vector3(-0.0, -0.1, face - 0.008), cord, 0.0)
-	b.ball(0.02, Vector3(0.0, -0.135, face - 0.012), ceramic)
+	b.box(Vector3(0.006, 0.06, 0.006), Vector3(0.0, -0.16, face - 0.008), cord, 0.0)
+	b.ball(0.02, Vector3(0.0, -0.195, face - 0.012), ceramic)
 	for x in [-1, 1]:
 		for i in 3:
-			b.box(Vector3(0.008, 0.07, 0.008), Vector3(x * (h.x - 0.05) + i * 0.012, -0.29, face - 0.01), dyed, 0.0,
+			b.box(Vector3(0.008, 0.07, 0.008), Vector3(x * (h.x - 0.06) + i * 0.012, -0.36, face - 0.01), dyed, 0.0,
 				Basis(Vector3.BACK, (i - 1) * 0.12))
-	b.drum(0.022, 0.09, Vector3(-h.x - 0.0, -0.05, -0.02), glass, Basis.IDENTITY, 10)
-	b.box(Vector3(0.03, 0.02, 0.05), Vector3(-h.x + 0.005, -0.0, -0.02), cord, 0.003)
+	b.drum(0.022, 0.09, Vector3(-h.x, -0.11, -0.02), glass, Basis.IDENTITY, 10)
+	b.box(Vector3(0.03, 0.02, 0.05), Vector3(-h.x + 0.005, -0.06, -0.02), cord, 0.003)
 	# The machine buried in it: the old bus's plate and its port at the back.
-	b.box(Vector3(0.3, 0.18, 0.008), Vector3(-0.2, -0.27, h.z - 0.004), gun, 0.003)
+	b.box(Vector3(0.3, 0.18, 0.008), Vector3(-0.2, -0.33, h.z - 0.004), gun, 0.003)
 
 
 ## Digits in strokes, `tall` m high, reading left to right as you face the
