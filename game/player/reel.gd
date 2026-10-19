@@ -92,6 +92,38 @@ func in_hand() -> Rope:
 	return _line_of(hands.held) if hands.phase == Hands.Phase.HELD and is_instance_valid(hands.held) else null
 
 
+## The waist end selected by the same gaze as the reel, if one is selected.
+func waist_body() -> RigidBody3D:
+	var selected := line()
+	if selected == null:
+		return null
+	for end in [selected.a, selected.b]:
+		if is_instance_valid(end) and _player.waist.holds(end.holder):
+			return end.holder
+	return null
+
+
+## A named target and its live load make the wheel's choice visible.
+func waist_readout() -> String:
+	var body := waist_body()
+	if body == null:
+		return ""
+	var selected := line()
+	var label := "Sail sheet" if Mast.sheet_end(body) else "Waist line"
+	var far := _far(selected)
+	if label == "Waist line" and far.holder is Chassis and _player._bridled():
+		var deck := far.holder as Chassis
+		var middle := 0.0
+		for piece in deck.pieces():
+			middle += piece.pose().origin.x / deck.pieces().size()
+		label = "Left bow line" if deck.to_local(far.global_position).x < middle else "Right bow line"
+	elif label == "Waist line" and far.holder is Device:
+		label = "Line to " + (far.holder as Device).label.to_lower()
+	elif label == "Waist line" and far.holder is Stake:
+		label = "Stake line"
+	return "%s · %.1f m · %d N" % [label, selected.length, roundi(selected.tension)]
+
+
 ## A notch in, or out for a negative `by`. Says whether there was a line to work.
 func notch(by: int) -> bool:
 	var now := line()

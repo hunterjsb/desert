@@ -278,6 +278,10 @@ func finish(data: Dictionary) -> void:
 			waist.tie(_made[ref])
 	waist.untying = data.waist.untying
 	waist._to_hand = data.waist.to_hand
+	if data.waist.has("taking"):
+		waist._taking = _made.get(data.waist.taking) if data.waist.taking != null else null
+	elif waist._to_hand and not waist.tied.is_empty():
+		waist._taking = waist.tied.back()
 	var held: Variant = data.hands.get("held")
 	if held != null and _made.has(held):
 		var body: RigidBody3D = _made[held]
@@ -377,7 +381,8 @@ func _take() -> Dictionary:
 			data.solver.bodies.append(["player" if body.node == player else _refs[body.node], body.tick, body.left,
 				body.left_spin])
 	data.waist = {"tied": player.waist.tied.filter(_known).map(_ref), "untying": player.waist.untying,
-		"to_hand": player.waist._to_hand}
+		"to_hand": player.waist._to_hand,
+		"taking": _ref(player.waist._taking) if _known(player.waist._taking) else null}
 	data.hands = {}
 	if hands.held != null and _known(hands.held):
 		data.hands = {"held": _ref(hands.held), "carry": hands._carry}

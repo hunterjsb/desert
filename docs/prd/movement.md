@@ -1124,6 +1124,14 @@ suppresses even unloaded repositioning. Simply allowing thrust toward the rig is
 the resulting momentum can pass it and load the ropes later. Any future motor assistance must
 account for that stored energy, or explicitly accept battery-funded towing. The current board
 physics is unchanged while that decision remains open.
+
+**Powered-board direction approved (Hunter, 2026-10-19; implementation pending).** The board
+may influence its rig by pulling or racing ahead; its momentum as a keel, swing and
+counterbalance is part of the fun. Replace the blanket no-tow speed suppression with motor
+overload: towing a tiny rig should crawl, while a large rig should ground the board and make
+its motor sputter. Slack lines should allow fast powered catch-up toward the rig. The earlier
+absolute prohibition on motor-assisted towing is superseded by this decision. Implement load,
+motor and battery behavior together, retaining rope strength and anti-launch safeguards.
 - **Learning to sail (agreed):** "a sailing tutorial in the sail scenario"; Hunter suggested physical items explaining the mechanics in depth. Give the sail scenario an accessible tutorial, with readable sailing notes for wind and heading, sheet trim, board edging, and the Varran bridle. Teach the current controls and why the rig responds, without taking away the skill of sailing. This extends the earlier brief controls-only how-to.
 
 **Sailing notes implementation plan (2026-10-19).** One physical, carryable and mountable field booklet lies beside the sail scenario's starting board; a streamer on the mast supplies the wind cue it explains. Use on the booklet, loose or held, opens a chapter list and short readable pages through the existing menu root. Chapters explain felt wind and points of sail, raising/furling and sheet trim, the board's edge and powered limitations while tied, Varran's three-line bridle and tack, and named gaze-based line selection shared by reeling and untying. Controls render from action bindings. Reading adds no deed: this dev-scenario teaching aid points to the existing sailing actions whose deeds already record practice.
