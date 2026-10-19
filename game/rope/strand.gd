@@ -161,7 +161,61 @@ func pin_ends(at_a: Vector3, at_b: Vector3, fraction := 1.0) -> void:
 			var p := _hung(at_a, at_b, _bow, float(i) / last)
 			p.y = maxf(p.y, _floor(i, p))
 			shown[i] = p
+	else:
+		shown = _keep_arc(shown)
 	_upload(shown, _bulges(shown))
+
+
+## Blending two bent chains can shorten their arc. Adjust only the bend,
+## not the visible rings or the physical chain, to keep this tick's length.
+func _keep_arc(shown: PackedVector3Array) -> PackedVector3Array:
+	if shown == points:
+		return shown
+	var target := maxf(_arc(points), shown[0].distance_to(shown[-1]))
+	var arc := _arc(shown)
+	if absf(arc - target) < 1e-4:
+		return shown
+	var low := 0.0
+	var high := 1.0
+	var candidate := shown.duplicate()
+	if arc < target:
+		for i in 4:
+			high *= 2.0
+			_bend(shown, high, candidate)
+			if _arc(candidate) >= target:
+				break
+		# A perfectly straight interpolated chain has no bend to enlarge.
+		if _arc(candidate) < target:
+			return shown
+	for i in 12:
+		var middle := (low + high) * 0.5
+		_bend(shown, middle, candidate)
+		var length_here := _arc(candidate)
+		if absf(length_here - target) < 1e-4:
+			break
+		if length_here < target:
+			low = middle
+		else:
+			high = middle
+	return candidate
+
+
+func _bend(through: PackedVector3Array, scale_by: float, bent: PackedVector3Array) -> void:
+	var last := bent.size() - 1
+	for i in range(1, last):
+		var chord := through[0].lerp(through[last], float(i) / last)
+		var at := chord + (through[i] - chord) * scale_by
+		var floor_y := _floor(i, at)
+		if is_finite(floor_y):
+			at.y = maxf(at.y, floor_y)
+		bent[i] = at
+
+
+static func _arc(through: PackedVector3Array) -> float:
+	var arc := 0.0
+	for i in through.size() - 1:
+		arc += through[i].distance_to(through[i + 1])
+	return arc
 
 
 func let_go(end: Node3D) -> void:

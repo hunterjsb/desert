@@ -341,6 +341,18 @@ Reliability is the whole point here, so this list is long. All run without a win
     leave the stake's line be; looking along the stake's line, two notches draw it in half a
     metre and leave the trim be.
 
+**Interpolation arc correction (2026-10-19).** Reeling exposed a presentation-only
+shortening: a current simulated strand was 1.54630 m long on a 1.57957 m paid-out line
+(2.11% short, within the existing 3% tolerance), but blending old points and pinning the
+visible ends contracted its drawn arc to 1.52918 m (3.19% short). Preserve the current
+simulated strand's arc when interpolating its bend, keeping both visible rings fixed and
+clamping interior points to their sampled sand planes. This must change neither the
+solver's points nor momentum, and must not weaken the existing rendered-length tolerance.
+The correction skips unchanged or already accurate arcs, uses one scratch buffer, and
+scales the bend with a bounded numerical search. Probe 19 checks changing bends, moved
+visible ends, ground contact and unchanged physical points. The original reeling, drawn
+length/sag, camera interpolation, ground-rest and thirty-loaded-line cost probes pass.
+
 Every probe is first run against a deliberately broken rope, to prove it can fail.
 
 ## Out of scope
