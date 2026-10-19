@@ -84,6 +84,8 @@ behind them, and since 2026-10-18 are bigger and roomier still, below.)
 - **Resume opens the same view:** the prop is your last camp as the save holds it, what stood
   round you when you saved, with the save's numbers beside it (time played, when it was saved,
   the day, who you came as), and confirm carries on.
+- **Unmuting starts the theme at once,** with no silence before it.
+- **The deeds menu opens on the deed done last,** or the first one open to do, never always the first.
 - **Music at the main menu,** its own theme, Hunter's "Salt" (Hunter, 2026-10-18: "use this for a
   main menu theme"), with a mute switch in the bottom left that stays as you leave it. The menu's
   storm stays silent.
@@ -162,6 +164,18 @@ save and quick load.
 The console opens at the main menu too, for what needs no world (Hunter, 2026-10-18: "would be
 useful for like an `unlockall` command for classes in case i want to test a new class and achv
 resets"): `unlockall` opens every start, and deeds can be granted or cleared to test them.
+
+**The dev console for building and testing** (Hunter, 2026-10-18):
+- **Any dev command that changes the run** (give, goto, fly, warp, time, gravity, tu, god, fresh,
+  scenario) makes it a dev run for deeds: none count from then on. Listing commands (help,
+  scenarios, deeds) don't.
+- **`fresh` fills you up and leaves what you carry;** the suit's kit isn't restocked.
+- **`god`** also lifts the weight limit and lets you take hold of anything, however heavy.
+- **The console scrolls back** through what it said.
+- **A creative menu** for building crafts in a dev run: every part and device in a grid, taken
+  straight into your hands. Built once the chassis rework lands, since that's what you build with.
+- **Scenarios are pruned and modernised:** the old ones the chassis and the newer systems have
+  overtaken are cut or remade around what the game is now.
 
 **The deeds grid** ([Profile & saves](profile-and-saves.md#deeds-achievements-agreed-2026-10-18-built))
 is a menu of its own, reached from the main menu and the system menu.
