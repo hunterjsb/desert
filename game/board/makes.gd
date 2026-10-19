@@ -35,7 +35,7 @@ const MAKES := {
 		"sturdy": 0.85, "draw": 1.1, "bite": 1.2, "hum": [1.0, 1.75]},
 	# Plated and heavy, low and planted: slower flat out, it grips hard and
 	# skids short, and it takes a harder landing or knock before it throws you.
-	PATROL: {"top": 0.9, "push": 0.92, "grip": 1.25, "turn": 0.9, "skid": 1.2, "skid_drag": 1.3,
+	PATROL: {"top": 0.9, "push": 0.92, "grip": 1.25, "turn": 0.9, "skid": 1.1, "skid_drag": 1.3,
 		"drift_grip": 1.15, "drift_slide": 1.3, "height": 0.85, "spring": 0.95, "cushion": 1.15, "hop": 0.85,
 		"sturdy": 1.3, "draw": 1.15, "bite": 0.75, "hum": [0.62, 1.0]},
 	# Crude and lossy: the slowest and thirstiest, floating highest and

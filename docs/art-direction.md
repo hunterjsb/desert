@@ -300,8 +300,8 @@ ragged and flaked in patches. They read close up; at 5 m they're a smudge.
 | **Member state's seal:** rings round a chevron, in another hand's paint | One of the governments the UG federated, before it stood as one: early ruins show member-state and corporate markings that don't match ([session 3](lore-research.md#factions-agreed-session-3)) | The ruin, beside the contractor's tag |
 | **Shield maker's sign:** a bubble on its ground, the emitter beneath | The main shield OEM, the common make; it's unnamed, and "Acme Shield Corporation" is the lore's own placeholder ([part 2 §3](lore-session-2026-10-14-part-2.md#3-shields)) | The light shield you start with, on its body; a found shield, small, on its emitter cap |
 | **Wind maker's sign:** three vanes in a ring | Wind's maker, a different one from solar's ([part 2 §4](lore-session-2026-10-14-part-2.md#4-power)) | The turbine |
-| **Consignment label,** by era | The box says who ordered it; the parts inside say who made them ([part 2 §1](lore-session-2026-10-14-part-2.md#1-the-oem-tier-who-actually-makes-things)). The deep one is Tilg's, stencilled in the capitals of the acronym it still was, the shipping line that registered Zan as a temporary transshipment hub ([session 3](lore-research.md#factions-agreed-session-3)) | The crate frame's two ring sides |
-| **Skimmer crew's patch,** painted by hand: the giant, a dive across it, a tally | The hoverboard as skimmer-culture personal gear, not official issue ([lore research, question 11](lore-research.md#13-open-questions-for-hunter)) | A found hoverboard's tail, which is what shows when it's found nose-down; a board of your own is new and plain |
+| **Consignment label,** by era | The box says who ordered it; the parts inside say who made them ([part 2 §1](lore-session-2026-10-14-part-2.md#1-the-oem-tier-who-actually-makes-things)). The deep one is Tilg's, stencilled in the capitals of the acronym it still was, the shipping line that registered Zan as a temporary transshipment hub ([session 3](lore-research.md#factions-agreed-session-3)) | The crate frame's two ring sides; the company's issue hoverboard's tail (2026-10-18, [boards by make](prd/movement.md#the-rides-feel-and-boards-by-make-hunter-2026-10-18-built)) |
+| **Skimmer crew's patch,** painted by hand: the giant, a dive across it, a tally | The hoverboard as skimmer-culture personal gear, not official issue ([lore research, question 11](lore-research.md#13-open-questions-for-hunter)) | The skimmer racer's tail, which is what shows when it's found nose-down; a new one, the Salvager's, is plain (2026-10-18: the patch was on every board until the boards by make) |
 
 **Why these.** The marks go where the lore names a maker or issuer. The ruin's wall shows
 session 3's early markings that don't match: a corporate builder's tag and number beside a
@@ -343,7 +343,7 @@ most from row to row:
   the Surveyor's starting gear "is company issue, which fits the existing 'new' mark row and its
   cheap batch stencil."
 
-The crew's patch has only two states: a found board carries it, and a board of your own is
+The crew's patch has only two states: a found racer carries it, and a racer of your own is
 plain, since nobody has painted it yet.
 
 Wear does the rest, from the same amount that wears the paint: ragged edges, patches flaked
@@ -421,7 +421,8 @@ Readings, not in the session:
   house colours (red, ochre, teal) are the houses' enamel, which the heraldry in "Marks by era" sits on.
 - **The second age's colour is the sand's.** Bone, sand, rust and clay are the dunes' own, so
   second-age gear blends in and the blue glaze is the one thing that doesn't: the Cistern's mark.
-- **The skimmer era has no row.** The notes' skimmer crate was "light, cheap and fragile"; part 5's table
+- **The skimmer era has no row.** (2026-10-18: the skimmer racer is the first thing drawn as the era's own,
+  hand-painted crew red with tape round its rails.) The notes' skimmer crate was "light, cheap and fragile"; part 5's table
   skips it. Its look (hasty, welded, improvised) is B's wreckage texture, and nothing here draws it.
 - **One shield first.** The notes asked for the shield to change first. Three silhouettes of one device
   (a chamfered housing, the same with a crest and a vent grille, and an asymmetric one with a ceramic cap)

@@ -169,9 +169,10 @@ even storms that last for days.
     your way, and the board slides out on purpose: it swings round at 3.5 rad/s, grips at
     14 m/s², and a slide fully sideways bleeds a quarter of its speed a second instead of
     all of it. Steer it with the move keys; it ends when you stand up or the board comes
-    back within 8° of your way. From 19.4 m/s, a hard turn standing skids round 80° in
-    1.05 s and comes out at 12.9 m/s, sliding 46° at most; drifting it comes round in
-    1.4 s at 16.6 m/s, sliding 60°.
+    back within 8° of your way. From 19.4 m/s, a hard turn standing skids round 81° in
+    1.18 s and comes out at 14.3 m/s, sliding 50° at most (1.05 s, 12.9 m/s and 46° before
+    the [skid](#the-rides-feel-and-boards-by-make-hunter-2026-10-18-built)); drifting it comes
+    round in 1.38 s at 16.7 m/s, sliding 61°.
 - **Floaty, and it catches air.** Its underside rides 0.35 m over the sand and keeps
   8 cm clear of it, about 6 cm at a corner. The spring is stiff pressed down and softer
   lifting off, and pulls you back down at most 15 m/s² past gravity, but only while the
@@ -183,7 +184,8 @@ even storms that last for days.
   hardest it gets, about 5 g for a moment.
 - **Air** (Hunter, 2026-10-16: "it doesnt really seem like we can catch air on the
   board"; built the same day). Flying, only the air's drag slows you, not the hover's,
-  and you turn the board slowly to the sand below so it lands along it. Coming down,
+  and you turn the board slowly to the sand below so it lands along it (since 2026-10-18 it
+  [flies true](#the-rides-feel-and-boards-by-make-hunter-2026-10-18-built) instead). Coming down,
   the hover brakes your fall evenly to meet the sand at its pace by ride height, about
   12 m/s² and never more than 36, so a landing from high up is a firm press, never a
   slam or a bounce. A jump hops 4 m/s up and the hop falls at 0.6 g; from a crouch it
@@ -207,7 +209,7 @@ even storms that last for days.
   between the last tick and this one; the ticks never see it.
 - The numbers are in Tuning's Hoverboard group.
 
-### The ride's feel, and boards by make (Hunter, 2026-10-18; building)
+### The ride's feel, and boards by make (Hunter, 2026-10-18; built)
 
 "slide on hard turns and landings, not just brakes. orient the board properly when in the air and
 taking off. allow for hard landing and turn skidding. consider crashes. lets also add some variety
@@ -225,6 +227,87 @@ to the look and feel for diff makes of boards. lore accurate. more sounds and au
   data on one ride.
 - **It sounds like riding:** carve and skid hiss, lip pops, landings by how hard, wind rush with
   speed, the hum by make, and a knock on a crash.
+
+**Built (2026-10-18, `game/board/ride.gd`, `game/board/makes.gd`, `game/board/ride_sound.gd`,
+`game/player/feel.gd`, `game/look/dress.gd`, `probes/movement/` 25 to 29).** The dig, its hockey
+stop and the crouch drift ride as they did.
+- **The skid.** Standing, a carve the hover can't hold breaks loose: at 7 m/s or faster, once the
+  board points 12° off your way, it skids, its hover keeping 0.9 of its grip, and a full sideways
+  skid bleeds 0.6 of its speed a second where the scrub before it bled all of it. It slides on
+  while you turn into it and bites again once it comes back within 5° of your way. It can't skid
+  dug past a third, drifting, stopping, braking or towed. Flat out, turning your view at 0.4 rad/s
+  it grips; at 1.6 rad/s it breaks loose in 0.35 s and holds 29° to 43° off its way for 2.2 s of
+  2.5, out at 11.4 m/s, and straightened bites in 0.4 s. The hard turn from 19.4 m/s now comes
+  round in 1.18 s at 14.3 m/s, sliding 50° (1.05 s, 12.9 m/s and 46° before); the drift still
+  slides furthest and keeps the most, 61° and 16.7 m/s.
+- **It flies true.** From 0.25 m over its ride height it flies free, all of it 1 m higher: its
+  pitch eases toward its path's at 2.5 Hz (5 Hz on the sand), nose up as it rises and down as it
+  falls (less below 6 m/s along its nose, never past 35°); it levels across, and it leans with how
+  fast you turn it in the air, so it rolls on with a carve. With nothing steering it, its nose
+  comes round to its way at 1.2 rad/s. Coming down, over the last 0.6 s before the last 0.15 s,
+  it turns to the sand where it'll meet it. Popped from a crouch at 19.7 m/s, its nose rises
+  9.8° and falls 7.0°, 2.2° off its path on average, and it lands 0.5° off the sand's slope;
+  turned 30° off its way at the top, it lands along it. Flying it grips nothing: its hover takes
+  the sand again 0.4 m over its ride height, which is when it has landed. Your view leans with
+  the board as you see it from where you look (0.35 of its lean and its lie across the sand), so
+  a board across your way leans your view less.
+- **Landings.** How hard it lands is the fastest it came down at the sand while it flew (the
+  hover's cushion still brakes it, so height alone is soft), counted harder crossed: up to twice,
+  sideways at 10 m/s or more. A landing knocks the hover's grip loose by as much, up to 80% of it
+  at the jar, coming back over about 0.6 s, and while it's loose a slide breaks loose from 5°:
+  crossed 25° from a 12 m drop flat out it slides 2.19 m across before it bites, in 0.57 s,
+  against 1.62 m in 0.37 s for the same crossing on the sand. Past 9 m/s it **jars** you: a shake,
+  a slam and a burst of sand. Past 15 m/s it **throws you off**, the dig's wipeout (5 health, 25
+  stamina, never your last). A 1 m drop lands at 4.2 m/s; 12 m, 10.3 straight and 14.5 crossed
+  25°; over the long ride's 20 km the hardest was 8.0, pushing off the biggest crest 6.8, and
+  popping 16.5 m off it 12.8, which jars and holds. Landing crossed is the mistake that throws you.
+- **Crashes.** Into something held fast or 12 kg or heavier (a ruin wall, a wreck, a deck, a crate)
+  faster than 7 m/s, all of your way into a wall or a slope's share of it, throws you off, and so
+  does sand rising into it faster than its hover lifts it, head on into a face, which the long
+  ride never met. Lighter things you shove. The board bounces back off what it hit by 0.3 of the
+  speed it hit with. Head on at 18.5 m/s you're thrown and it comes back at 5.5 m/s; at a crawl
+  the wall only stops you, and at a glance, 4.8 m/s into it, you slide along at 17.3 m/s.
+- **Boards by make** (`BoardMakes`). A make is its catalog id, so a save keeps it as it keeps any
+  thing, and every make has the issue's box and rack seat. Its ride is shares of the Hoverboard
+  tuning; its look is Dress's; its lineage's marks go over it as over anything.
+
+  | Make | Who made it | Weight | Flat out | Rides | Grip and skid | Landing | Draw | Hum |
+  |---|---|---|---|---|---|---|---|---|
+  | Hoverboard (`board`) | Tilg & Standard's issue, the colony's yard and survey board and still the company's: gunmetal, teal and safety yellow, its batch stencil on the tail (TILG XN 0217 on a deep one) | 7 kg | 20 m/s | 0.35 m | grips 18 m/s², skids keeping 0.9 and bleeding 0.6 | jars at 9 m/s, throws at 15 | 40 W + 260 W | the hover's own |
+  | Skimmer racer (`racer_board`) | The skimmer era's own: light, cheap imports H-Town's crews raced while Zan wasn't a desert; narrow and pointed, a kicked tail, hand-painted crew red with a pale stripe, tape round its rails, three small pads, the crew's patch on its tail | 5.5 kg | 23 m/s | 0.42 m, springier | grips 15.3 m/s², breaks loose soonest and skids longest, keeping 0.72 of it and bleeding 0.39 | throws you sooner (0.85 of the thresholds), slower to bite | 1.1 times | a thin bright whine |
+  | Patrol board (`patrol_board`) | The Knights Requisitioner's, the Ledger's armed auditors, ridden ahead of the crusade's water convoys: wide and plated, olive armour down its rails, a steel bumper lashed with cord, its deck the order's grey with their daubed sign, as on their hopper, and a stencil on its tail, every crate accounted for; four dim pads | 11 kg | 18 m/s | 0.30 m | grips 22.5 m/s², skids short and scrubby, keeping 0.99 and bleeding 0.78 | sturdiest (1.3), bites back fast | 1.15 times | a deep pulsing thrum |
+  | Temple board (`temple_board`) | Made at Mother Cistern's temple: an old hover core under saltbush planks lashed with fern cord, a round ceramic cap on its nose in her blue glaze, the sign of Tu on a limewashed patch, a water vial and a tassel | 9 kg | 17 m/s | 0.46 m, the softest spring | grips 17.1 m/s², slides soft, keeping 0.81 and bleeding 0.48 | the biggest cushion (1.35), sturdy 1.1, slowest to bite | 1.25 times | a soft hum with a ceramic ring |
+
+  The makes are readings: the lore calls the hoverboard skimmer-culture gear and names the
+  Knights Requisitioner and the Cistern's temple, and says nothing of their boards; the numbers
+  are defaults, all but their order. Lineage still
+  sets the era's numbers: a racer found in the skimmer era's ruins weighs 0.7 of that and wears
+  out twice as fast. On the flat flat out the racer does 22.5 m/s 0.43 m off the sand and the
+  patrol board 17.7 m/s 0.30 m off; carving at 1.4 rad/s the racer breaks loose in 0.32 s and
+  slides 54° off its way, the patrol board holds within 6°.
+- **Where they're found.** The issue on the colonial era's floors and loose in the deep layer, as
+  before; racers in the skimmer era's floors and best, a wreck hull's best among them; patrol
+  boards in a watchtower's cache and as a Knights' hopper's best; temple boards among the second
+  age's best. The Salvager starts with a new racer, plain; every other run racks the issue. The
+  `boards` scenario lays one of each in front of you. The patrol board's superchassis is still
+  [proposed](#the-patrol-board-a-superchassis-agreed-session-4-part-3-not-built): the Knights' board
+  is a make of the one ride, not the Daventry kit.
+- **Sounds** (`RideSound`, made here, `assets/audio/make_board_sounds.py`): each make's hum, rising
+  with speed, sagging as the battery dies, dropping under a dug edge; a carve's hiss as hard as the
+  hover holds you round; the slide's hiss and its rooster tail of sand off a skid, a drift or a
+  landing's slide, as a dug edge's (Feel); the wind's rush with speed; a pop off a lip or a hop; a
+  landing by how hard, a slam past the jar; a scuff as a skid bites again; a knock and a thud on a
+  crash. The battery says "do-doo" once a minute from flat at full push and lower, once, 15 s from
+  it, in place of the low-battery ticking (`Sounds.battery_low` and `battery_critical`; the hum's
+  sag is the tell between).
+- **Frame-rate proof.** All of it steps with the ride at 240 Hz: the extended route, with a skid, a
+  pop turned in the air and a crossed landing sliding out, follows the same path to a tenth of a
+  millimetre at 30, 60 and 120 ticks on the issue (165 m) and on a racer (180 m).
+- **Saves** keep a make. They don't keep a skid, a landing's loosened grip or a flight under way: a
+  ride resumed mid-skid starts gripping.
+- **Tuning:** `board_skid_speed` 7, `board_skid_grip` 0.9, `board_skid_drag` 0.6, `board_air_hertz`
+  2.5, `board_land_jar` 9, `board_land_throw` 15, `board_crash` 7; the makes in `BoardMakes.MAKES`.
+  The look-test `look/boards/shoot.sh` shoots each make, a skid, a hard landing and a pop's pitch.
 
 ### Dig and carve (agreed, 2026-10-18 spec; built)
 
@@ -285,7 +368,7 @@ both answered below.
   more), a big one, a lurch and a thud as it catches.
 - **Frame-rate proof.** All of it is stepped with the ride at 240 Hz: a dug carve and a
   hockey stop stop in 3.3901 m at 30, 60 and 120 ticks, on the same path to a tenth of a
-  millimetre. Saves keep the dig.
+  millimetre (2.952 m since the ride's feel, its route longer). Saves keep the dig.
 - **Tuning:** `board_dig_grip` 2.5, `board_dig_drag` 0.25, `board_dig_depth` 0.3,
   `board_dig_catch` 6.5. The look-test `look/dig` shoots the spray at three depths, the
   stop and the lean.
@@ -693,9 +776,11 @@ All built: on foot alongside Stage 5, the board and the camp-range warnings at S
    nothing is up and nothing chimes.)*
 6. **Frame-rate proof.** The same ride at 30, 60 and 120 frames per second follows the
    same path. *(Built: kicks from rest, a push, a carve, a hop, a drift, a coast, a dug
-   carve and a hockey stop over 84 m: the same path to a tenth of a millimetre, the stop
-   3.3901 m at each rate, with the same charge and stamina left, and the same path to the
-   bit with the drawing switched off.)*
+   carve and a hockey stop, then (2026-10-18) a hard carve that skids, a pop turned in the
+   air and a crossed landing that slides out, over 165 m on the issue and 180 m on a
+   skimmer racer: the same path to a tenth of a millimetre, the stop 2.952 m (2.407 m on
+   the racer) at each rate to a millimetre, with the same charge and stamina left, and the
+   same path to the bit with the drawing switched off.)*
 7. **Origin shift at speed.** Riding across an origin shift at top speed causes no hitch
    and no jump. *(Built: flat out in real time at sixty frames a second, ruins and finds
    laid out as you go, across four shifts in 1.1 km: your way changes no more at a shift
@@ -736,7 +821,7 @@ The board after Hunter's first ride has its own:
     30 s, 544.3 m against 540.1 m, +0.8%; the wrong way round 536.0 m.)*
 18. **The drift.** A hard turn crouched slides further out and keeps more speed than the
     same turn skidding, and standing up grips again. *(Built: from 19.4 m/s, out at
-    16.6 m/s against 12.9, sliding 60° against 46°.)*
+    16.7 m/s against 14.3, sliding 61° against 50°; before the skid, 16.6 against 12.9.)*
 19. **The tilt settles.** Flat out across the ridges, carving hard each way, the board's
     pitch and lean never jump. *(Built: at sixty ticks, the lean at most 2.9° a tick, the
     pitch 1.4°; before, the lean snapped up to 60° and the pitch moved up to 1.8°. Since
@@ -762,12 +847,34 @@ The dig has its own ([Dig and carve](#dig-and-carve-agreed-2026-10-18-spec-built
 
 22. **The dug carve.** A hard turn from speed skids standing and grips dug, coming round
     sooner and slower, its low edge down to the sand and never into it. *(Built: 21°
-    sliding against 46°, 1.7 cm off the sand.)*
+    sliding against 50°, 1.7 cm off the sand.)*
 23. **Catching an edge.** A hockey stop flat out holds with the catch set just past its
     load and throws you off set just short; as tuned, a cruise holds and flat out catches;
     thrown, you're knocked and winded, never killed, and the board tumbles behind you.
 24. **The dug edge tacks.** Towed by a steady pull, a board steered across it runs
     downwind undug and holds its line dug. *(Built: 0° against 60°.)*
+
+The ride's feel has its own ([The ride's feel](#the-rides-feel-and-boards-by-make-hunter-2026-10-18-built)):
+
+25. **A hard carve skids.** Flat out, a carve the hover holds grips; a harder one breaks loose
+    and skids well off its way for as long as you turn into it, and straightened it bites.
+    *(Built: turning 0.4 rad/s it grips; 1.6 rad/s, loose in 0.35 s, 29° to 43° off its way for
+    2.2 s of 2.5, biting again 0.4 s after.)*
+26. **Hard landings.** A small drop presses and a big one jars; landing crossed hits harder; a
+    big crossed landing slides out further and longer before it bites than the same crossing on
+    the sand; and past the throw you're thrown off, knocked and winded, never killed. *(Built:
+    4.2 and 10.3 m/s, 14.5 crossed 25°; 2.19 m in 0.57 s against 1.62 m in 0.37 s; thrown with
+    the throw set just short of the landing, holding set just past it.)*
+27. **A crash wipes out.** Head on into a wall at speed throws you and the board bounces back;
+    at a crawl the wall only stops you; at a glance you slide along it and ride on. *(Built:
+    18.5 m/s, the board back at 5.5 m/s; 1.5 m/s; 4.8 m/s into it, on at 17.3.)*
+28. **It flies true.** Popped off the flat, the board's nose rises and falls with its path and it
+    lands along the sand; turned off its way in the air with nothing steering, it comes round.
+    *(Built: 9.8° up, 7.0° down, 2.2° off its path on average, 0.5° off the sand; turned 30°, it
+    lands along its way.)*
+29. **Boards by make.** A skimmer racer and a patrol board: the racer faster flat out, higher,
+    breaking loose sooner and sliding further, and each its own weight, look and hum. *(Built:
+    22.5 against 17.7 m/s, 0.43 against 0.30 m, 54° against 6°.)*
 
 ## Out of scope
 
