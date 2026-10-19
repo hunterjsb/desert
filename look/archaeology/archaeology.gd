@@ -79,7 +79,8 @@ func _ready() -> void:
 	if lee.is_empty():
 		print("archaeology: no slip face's foot with a storm by day")
 	else:
-		_shot(out, "lee", "%d light things fell round you through the storm, %s" % [lee.fallen, _clock()])
+		_shot(out, "lee", "%d light things fell round you through the storm, %d of them here, %s" % [lee.fallen,
+			lee.get("together", 0), _clock()])
 	get_tree().quit()
 
 
@@ -148,13 +149,18 @@ func _lee_fall() -> Dictionary:
 					fallen.append(Vector3(world.world_x(p.x), p.y, world.world_z(p.z)))
 			if fallen.is_empty():
 				return {"fallen": 0}
-			# Over the nearest of them, the slip face behind, the rest beyond.
-			fallen.sort_custom(func(a: Vector3, b: Vector3) -> bool:
-				return Vector2(a.x, a.z).distance_to(foot) < Vector2(b.x, b.z).distance_to(foot))
-			var near := Vector2(fallen[0].x, fallen[0].z)
-			var eye := _at(near - up * 2.4)
-			await _look(eye - Vector3(0.0, 0.25, 0.0), fallen[0])
-			return {"fallen": fallen.size()}
+			# Over where most of them lie together, the slip face behind.
+			var most: Array[Vector3] = []
+			for each in fallen:
+				var close := fallen.filter(func(o: Vector3) -> bool: return Vector2(o.x, o.z).distance_to(Vector2(each.x, each.z)) < 7.0)
+				if close.size() > most.size():
+					most.assign(close)
+			var middle := Vector3.ZERO
+			for each in most:
+				middle += each / most.size()
+			var eye := _at(Vector2(middle.x, middle.z) - up * 4.5) + Vector3(0.0, 0.6, 0.0)
+			await _look(eye, middle)
+			return {"fallen": fallen.size(), "together": most.size()}
 	return {}
 
 
