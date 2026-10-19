@@ -29,6 +29,31 @@ statuses are historical and must not be used as a current inventory.
 
 ## Release sequence
 
+### Current inventory
+
+This uses current as-built accounts rather than historical “not built” headings.
+The remaining column identifies work and decisions; it does not approve every
+proposal for Alpha. The release sequence below chooses outcomes from this inventory.
+
+| System | Built now | Remaining work or scope choice |
+| --- | --- | --- |
+| [World and terrain](prd/world-and-terrain.md) | Streaming dunes, stable origins/spherical travel, generated history/paths/sites, sand and tracks. | Destination-specific landforms/interactions; decide shifting dunes and ambient creatures. Full landmark interiors remain excluded. |
+| [Wind and storms](prd/wind-and-storms.md) | Weather field, visible walls/lee, forecasts/instruments, anomalies, vents/plumes/rumbles, exposure and archaeology. | Close agreed forecast relationships and long-run storm planning. Saltbush's free barometer already works; deferred storm mechanics stay deferred. |
+| [Shield and camp](prd/bubble-shield-and-camp.md) | Travelling protection, load/collapse, radar auto-on and Varran personal shield. | Thermal/combo protection and nested late-game setups. Do not confuse the working personal shield with older carried-shield proposals. |
+| [Movement](prd/movement.md) | Foot traversal, boards, dig/carve/tumble, skate rigs, yacht/helm/keel and board-as-keel sailing. | Finish current load/control playtests. Patrol-board superchassis is an agreed unbuilt direction; select whether mechanical haulers/carriers belong in Alpha. |
+| [Rope](prd/rope-and-tethering.md) | Stakes/hooks/waist ties, load/breaking/drag, reeling/towing, physical sheet/bridle and selected-line handling. | Upgrade/anchor variety and winch automation; settle player-load behavior from playtests. Reeling itself is built. |
+| [Devices](prd/devices-and-mods.md) | Sticky chassis/frame assembly, pooled mass, Console/screens/sensors, radar/sieve, mast gear, lineage/era stats. | Repair actions/materials, per-part wear and agreed filtered Map page. General god modules/state/dispatches are a separate incomplete package. |
+| [Power](prd/power.md) | Solar/turbine/cells, deck/cable pools, board charging, era boxes/banks, priorities and reference camp. | Crop-fuel burner/kiln chain. Decide tracked solar/heavy generators; do not rebuild existing bank/priority/charging foundations. |
+| [Survival](prd/survival.md) | Needs/harms, suit burden, food/drink, condenser/canisters/hoses, death and physical bedroll/ruin-bed sleep. | Thermal suit/travel gear and full frost/dew/open-water rhythm; crop water depends on the remaining farm roster. |
+| [Farming](prd/farming.md) | Shared crop data/growth, three crops, typed sockets, feral lineage/habitats, harvest automation and saltbush weather response. | Eight agreed crops, deep-bed hardware, going-to-seed/clean-to-wild details and processors. Keep crossbreeding's Idea status separate from the agreed Almanac role. |
+| [Salvage](prd/salvage-and-ruins.md) | Era kits/loot/exposure, walkable ruins, excavation/scrapping/wrecks, nomads and distant signs/glints. | Seed vaults/Sister and ending-linked interactions. Generated site shells are not yet functional ending destinations. |
+| [Radio and atmosphere](prd/radio-sound-and-atmosphere.md) | Signals/broadcasts, weather voice, world audio, Walker evidence/teaching, triangulation and living-city lights. | Reputation/pilgrimage/aggro, Walker taking/copying and general god-state interactions. City discovery is not a completed city ending; proposed variants stay proposed. |
+| [Profile and saves](prd/profile-and-saves.md) | Run/profile/assembly persistence, Normal/Ironman, deeds/unlocks and five origins including Varran/Archaeologist. | Selected ending axes/flags/completion/unlocks and novelty starts. Steam/cloud are separate integration choices. |
+| [Menus](prd/menus-and-ui.md) | Main/system/options/origins/deeds/creative, save flows, themed bars, console access and scenario sailing booklet. | Input remapping and unassisted onboarding in normal play. Seamless camera drop-in remains deferred. |
+| [Endings](vision.md#landmarks-and-endings) | Walker/city discovery and landmark/flag foundations supply prerequisites. | Finished routes are not recorded as built. Select the required ladder, then complete destinations, dependencies, conclusions and persistent unlocks. |
+
+### Playable milestones
+
 | Milestone | Playable outcome | Completion evidence |
 | --- | --- | --- |
 | 0.2.1 patch | Current sand/Nomad work and reported playtest fixes work together. | Combined CI, real trail/rope captures, start/save checks and smoke-tested builds on three OSes. |
