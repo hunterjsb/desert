@@ -23,6 +23,12 @@ const SLACK_SHARE := 0.1
 
 var a: RopeEnd
 var b: RopeEnd
+## The ring it runs through between them, or null.
+var through: RopeEnd
+## Where a's pull lands, if not at a: a sheet's at the block it runs
+## through, on its way from the boom's end; and b's.
+var at_a: RopeEnd
+var at_b: RopeEnd
 var length: float
 ## All there is of it, m: paid out, it lengthens no further.
 var full: float
@@ -60,9 +66,14 @@ var creak_level := 0.0
 ## Solver state for this tick, owned by Ropes.
 var body_a: RopeBody
 var body_b: RopeBody
+var body_p: RopeBody
+## Which way it leaves a, and which way it comes into b: the same but through
+## a ring, where it bends by their difference.
 var normal := Vector3.UP
+var normal_b := Vector3.UP
 var point_a := Vector3.ZERO
 var point_b := Vector3.ZERO
+var point_p := Vector3.ZERO
 ## How far the spring is from letting go, m: past it, it pulls.
 var stretch := 0.0
 ## How far the middle hangs below the line between its ends, by its weight and
@@ -74,8 +85,10 @@ var stop_impulse := 0.0
 
 var _ra := Vector3.ZERO
 var _rb := Vector3.ZERO
+var _rp := Vector3.ZERO
 var _turn_a := Vector3.ZERO
 var _turn_b := Vector3.ZERO
+var _turn_p := Vector3.ZERO
 var _mass := 0.0
 var _beyond := 0.0
 var _h := 1.0 / 60.0
@@ -109,20 +122,36 @@ func share() -> float:
 
 
 func prepare(h: float, gravity: float) -> void:
-	point_a = a.global_position
-	point_b = b.global_position
+	point_a = (at_a if at_a != null else a).global_position
+	point_b = (at_b if at_b != null else b).global_position
 	_ra = point_a - body_a.center
 	_rb = point_b - body_b.center
-	var along := point_b - point_a
-	var distance := along.length()
-	normal = along / distance if distance > 1e-5 else Vector3.UP
+	var distance: float
+	if through != null:
+		point_p = through.global_position
+		_rp = point_p - body_p.center
+		var one := point_p - point_a
+		var two := point_b - point_p
+		normal = one.normalized() if one.length() > 1e-5 else Vector3.UP
+		normal_b = two.normalized() if two.length() > 1e-5 else normal
+		distance = one.length() + two.length()
+	else:
+		var along := point_b - point_a
+		distance = along.length()
+		normal = along / distance if distance > 1e-5 else Vector3.UP
+		normal_b = normal
 	_beyond = distance - length * (1.0 + max_stretch)
 	var arm_a := _ra.cross(normal)
-	var arm_b := _rb.cross(normal)
+	var arm_b := _rb.cross(normal_b)
 	_turn_a = body_a.inv_inertia * arm_a
 	_turn_b = body_b.inv_inertia * arm_b
 	var k := normal.dot(body_a.inv_mass * normal) + arm_a.dot(_turn_a) \
-		+ normal.dot(body_b.inv_mass * normal) + arm_b.dot(_turn_b)
+		+ normal_b.dot(body_b.inv_mass * normal_b) + arm_b.dot(_turn_b)
+	if through != null:
+		var turned := bend()
+		var arm_p := _rp.cross(turned)
+		_turn_p = body_p.inv_inertia * arm_p
+		k += turned.dot(body_p.inv_mass * turned) + arm_p.dot(_turn_p)
 	_mass = 1.0 / k if k > 1e-9 else 0.0
 	if h != _h or _stop == Vector3.ZERO:
 		_stop = soft_step(STOP_HERTZ, STOP_DAMPING, h)
@@ -177,10 +206,15 @@ func solve() -> void:
 	var ba := body_a
 	var bb := body_b
 	# How fast the ends move apart along the rope, at the attachment points.
-	var rate := normal.dot(bb.velocity + bb.spin.cross(_rb) - ba.velocity - ba.spin.cross(_ra))
+	var rate := normal_b.dot(bb.velocity + bb.spin.cross(_rb)) - normal.dot(ba.velocity + ba.spin.cross(_ra))
 	# Against the ends as they move, not as the rope expects them to: a snag can
 	# push back harder than it credits, and lets go all at once.
-	var expected := normal.dot(bb.expected + bb.expected_spin.cross(_rb) - ba.expected - ba.expected_spin.cross(_ra))
+	var expected := normal_b.dot(bb.expected + bb.expected_spin.cross(_rb)) - normal.dot(ba.expected + ba.expected_spin.cross(_ra))
+	if through != null:
+		var bp := body_p
+		var turned := bend()
+		rate -= turned.dot(bp.velocity + bp.spin.cross(_rp))
+		expected -= turned.dot(bp.expected + bp.expected_spin.cross(_rp))
 	var most := _mass * (rate - expected + CLOSING_SPEED)
 	var spring := 0.0
 	if stretch > 0.0:
@@ -208,14 +242,28 @@ func solve() -> void:
 	_push(change)
 
 
-## Impulse on end a this tick; end b gets its opposite.
+## Impulse on end a this tick; end b gets its opposite, along the way it comes in.
 func impulse() -> Vector3:
 	return normal * (spring_impulse + stop_impulse)
 
 
-## Tension pulls each end toward the other, at its attachment point.
+func impulse_b() -> Vector3:
+	return -normal_b * (spring_impulse + stop_impulse)
+
+
+## What the ring it runs through takes, per unit of pull: the bend, nothing
+## while it runs straight.
+func bend() -> Vector3:
+	return normal_b - normal
+
+
+## Tension pulls each end toward the other, at its attachment point; a ring
+## between is pushed into the bend.
 func _push(amount: float) -> void:
 	body_a.velocity += body_a.inv_mass * normal * amount
 	body_a.spin += _turn_a * amount
-	body_b.velocity -= body_b.inv_mass * normal * amount
+	body_b.velocity -= body_b.inv_mass * normal_b * amount
 	body_b.spin -= _turn_b * amount
+	if through != null:
+		body_p.velocity += body_p.inv_mass * bend() * amount
+		body_p.spin += _turn_p * amount

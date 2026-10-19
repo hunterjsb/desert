@@ -242,6 +242,9 @@ func finish(data: Dictionary) -> void:
 	var rode: Dictionary = data.get("ride", {})
 	if not rode.is_empty() and _made.has(rode.board) and world.player.get_on(_made[rode.board]):
 		_ride_in(world.player.ride, rode)
+	var seat: int = data.get("helm", -1)
+	if _made.get(seat) is Helm:
+		world.player.sit(_made[seat])
 	# The lines last: their ends are all where they belong now.
 	var strands: Array[RopeStrand] = []
 	for rec: Dictionary in data.strands:
@@ -367,6 +370,9 @@ func _take() -> Dictionary:
 				rec.freeze = false
 				rec.sleeping = false
 		data.ride = _ride_out(ride)
+	# At the helm, you sit there again on resume.
+	if player.helm != null and _refs.has(player.helm):
+		data.helm = _refs[player.helm]
 	data.things = things
 	data.order = order
 	data.carried = player.suit.carried.filter(_known).map(func(p: RigidBody3D) -> Dictionary: return _body(p, false))

@@ -49,6 +49,13 @@ const PARTS := {
 		"color": Color(0.5, 0.52, 0.55), "stats": {"glide": 0.035, "plough": 0.03, "grip": 0.9, "hold": 0.1, "keel": 0.05}},
 	&"board_plate": {"kind": &"bottom", "label": "Board plate", "mass": 6.0, "size": Vector3(0.72, 0.9, 0.02),
 		"color": Color(0.35, 0.37, 0.4), "stats": {"glide": 0.05, "plough": 0.04, "grip": 0.45, "hold": 0.12, "keel": 0.03}},
+	# A skimmer's ventral strake: a hover tray drawn out into a fin, lifting
+	# less, whose field bites the sand across its length as a runner ploughs,
+	# holding the camp it floats by `keel` of its weight, so a floating camp
+	# sails across the wind and tacks. Along its length it drags `keel_drag`
+	# of that. Lengthwise along its deck, as runners turn.
+	&"keel": {"kind": &"bottom", "label": "Keel", "mass": 7.0, "size": Vector3(0.24, 0.9, 0.08),
+		"color": Color(0.33, 0.35, 0.24), "stats": {"lift_kg": 60.0, "keel": 0.6, "keel_drag": 0.02}},
 	# A sail furled on its boom: it fits a mast, and its sheet ties on at the
 	# boom's end.
 	&"sail": {"kind": &"sail", "label": "Sail", "mass": 5.0, "size": Vector3(0.18, 0.18, 2.2),
@@ -331,6 +338,10 @@ const DEVICES := {
 		"sockets": [
 			[&"sail", Vector3(0.0, 0.3, -0.07), Vector3.FORWARD],
 		]},
+	# A skimmer pilot's seat, stood on a deck mount: use on it sits you at
+	# the helm (Helm).
+	&"helm_seat": {"label": "Helm seat", "short": "Helm", "size": Vector3(0.5, 0.5, 0.55), "mass": 7.0, "helm": true,
+		"deck": true, "carryable": true, "sockets": []},
 	# A piece of a bigger floater: a flat frame a little wider than a crate,
 	# a ring on each edge where the next piece joins or a hook goes, its own
 	# tray under it and one device standing on top. No battery, no port: the
@@ -556,8 +567,11 @@ static func device(id: StringName) -> Device:
 		else (Hoverboard.new() if spec.get("board", false) \
 		else (Radio.new() if spec.get("radio", false) \
 		else (Mast.new() if spec.get("rig", false) \
+		else (Helm.new() if spec.get("helm", false) \
 		else (Chassis.new() if spec.get("chassis", false) \
-		else (Bedroll.new() if spec.get("bedroll", false) 		else (Console.new() if spec.get("console", false) 		else (Cutter.new() if spec.get("cutter", false) else Device.new())))))))))
+		else (Bedroll.new() if spec.get("bedroll", false) \
+		else (Console.new() if spec.get("console", false) \
+		else (Cutter.new() if spec.get("cutter", false) else Device.new()))))))))))
 	made.set_meta(&"catalog", id)
 	made.label = spec.label
 	made.frame_mass = spec.mass

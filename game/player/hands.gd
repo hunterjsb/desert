@@ -102,6 +102,7 @@ const SEAM_BURIED := "that seam's under the sand"
 const CUTTER_FLAT := "the cutter's battery is flat"
 ## A scoop stroke takes this long, s.
 const STROKE := 0.45
+const AT_HELM := "not from the helm"
 
 var held: RigidBody3D
 var phase := Phase.EMPTY
@@ -291,6 +292,10 @@ func grab() -> bool:
 	var salvage := _player.world.salvage
 	if _player.vitals.wounds.stunned():
 		return refuse(STUNNED)
+	# The board tows nothing: riding, you take only what comes off no line,
+	# loose, into your hands. Aboard at the helm, nothing.
+	if _player.helm != null:
+		return refuse(AT_HELM) if look_device != null or look_part != null else false
 	# A module still held fast in its wreck won't come, and taking hold of one
 	# with a live hazard on it sets that off: a shock throws you off it.
 	var target: Node = look_part if look_part != null else look_device
@@ -299,8 +304,6 @@ func grab() -> bool:
 		return refuse(fast)
 	if salvage.touched(target, _player) == Wreckage.ELECTRICAL:
 		return true
-	# The board tows nothing: riding, you take only what comes off no line,
-	# loose, into your hands.
 	var riding := _player.board != null
 	# Standing on a deck, a device keeps its sockets: a part you aim at comes out of it.
 	var own_part := look_socket != null and look_socket.part != null
