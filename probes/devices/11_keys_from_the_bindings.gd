@@ -16,7 +16,7 @@ func run() -> void:
 	check(_row(keys, "E", "take") and _row(keys, "click", "throw"),
 		"the keys list shows take and throw as bound, coloured")
 	press(&"console")
-	check(Controls.tint(Controls.key_for(&"console")) in console._out.text, "and the console says what closes it")
+	check(Controls.tint(Controls.key_for(&"console")) in console._head.text, "and the console says what closes it")
 	press(&"console")
 
 	_rebind(&"hands_grab", _key(KEY_G))
@@ -33,7 +33,7 @@ func run() -> void:
 		"rebound, the keys list follows, a mouse button too")
 	check(Controls.tint("F12") in Dev._hint.text, "and so does its hint")
 	press(&"console")
-	check(console.visible and Controls.tint("F10") in console._out.text, "and the console, opened by its new key")
+	check(console.visible and Controls.tint("F10") in console._head.text, "and the console, opened by its new key")
 	press(&"console")
 	press(&"toggle_keys")
 	check(not console.visible and not Dev._keys_layer.visible, "both close on their new keys")
