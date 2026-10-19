@@ -35,7 +35,7 @@ const WALK_PITCH := -16.0
 const STRIDE := 0.05
 const MOVES := 3
 const GPU_FRAMES := 60
-const GPU_ROUNDS := 6
+const GPU_ROUNDS := 9
 
 @onready var world: World = $World
 
@@ -153,6 +153,9 @@ func _capture() -> void:
 	sun = _sun(morning)
 	await _pair("low_into", morning, atan2(-sun.x, -sun.z), -6.0)
 	await _gpu_cost("low sun ahead")
+	# Nothing but sand in view, glinting: what the shader itself costs.
+	await _pair("sand_only", morning, atan2(-sun.x, -sun.z), -50.0)
+	await _gpu_cost("sand filling the frame")
 	await _pair("low_behind", morning, atan2(sun.x, sun.z), -6.0, _backlit(sun))
 	var dusk := _sun_at(DUSK_SUN, false)
 	sun = _sun(dusk)
@@ -259,22 +262,30 @@ func _save(name: String) -> void:
 
 
 ## The GPU's time per frame with each look, alternated so a busy machine
-## weighs on both alike.
+## weighs on both alike; and the middle of the rounds' differences, which a
+## burst of someone else's load in one round moves least.
 func _gpu_cost(what: String) -> void:
 	if not _only.is_empty() and not OS.get_cmdline_user_args().has("--gpu"):
 		return
 	var sums := {"before": 0.0, "after": 0.0}
+	var differences := PackedFloat32Array()
 	for round in GPU_ROUNDS:
+		var got := {}
 		for look: String in sums:
 			_wear(look)
 			for i in 10:
 				await get_tree().process_frame
+			var sum := 0.0
 			for i in GPU_FRAMES:
 				await get_tree().process_frame
-				sums[look] += RenderingServer.viewport_get_measured_render_time_gpu(get_viewport().get_viewport_rid())
-	var n := float(GPU_ROUNDS * GPU_FRAMES)
-	print("sandlight: gpu at %s: %.3f ms a frame before, %.3f after, at %s%s" % [what, sums.before / n,
-		sums.after / n, get_viewport().get_visible_rect().size, _shared_gpu()])
+				sum += RenderingServer.viewport_get_measured_render_time_gpu(get_viewport().get_viewport_rid())
+			got[look] = sum / GPU_FRAMES
+			sums[look] += got[look]
+		differences.append(got.after - got.before)
+	differences.sort()
+	print("sandlight: gpu at %s: %.3f ms a frame before, %.3f after, %+.3f in the middle round (%+.3f to %+.3f), at %s%s"
+		% [what, sums.before / GPU_ROUNDS, sums.after / GPU_ROUNDS, differences[floori(GPU_ROUNDS / 2.0)], differences[0],
+		differences[GPU_ROUNDS - 1], get_viewport().get_visible_rect().size, _shared_gpu()])
 
 
 ## A standpoint near the spot where the sun behind you lights what you see:

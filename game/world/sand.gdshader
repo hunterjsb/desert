@@ -75,12 +75,10 @@ const vec3 SULPHUR = vec3(0.69, 0.54, 0.1);
 varying vec3 world_pos;
 varying vec3 world_normal;
 // Handed from fragment() to light(), which has no neighbours to measure the
-// pixel by: each scale's glint facet (view space) and weight; the sheen's
-// share and its lobe's power.
-varying vec4 glint_fine;
-varying vec4 glint_coarse;
-varying vec2 shine;
-varying vec3 sheen_tint;
+// pixel by: the grain's facet (view space) and weight, and the sheen's share,
+// its lobe's power and that lobe's peak.
+varying vec4 glint_seen;
+varying vec3 shine;
 
 // The finest glitter cell, m: a power of two, so a chunk holds whole cells
 // and cells stay put through origin shifts.
@@ -91,6 +89,8 @@ const float GRAIN = 1.0 / 64.0;
 const float CELL_PIXELS = 12.0;
 const float LEAN = 0.3;
 const float GLINT_SHARP = 400.0;
+// Grains are pale quartz: the sheen is the light's colour, warmed a little.
+const vec3 SHEEN = vec3(1.0, 0.89, 0.77);
 
 float hash(vec2 p) {
 	return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
@@ -109,6 +109,20 @@ void hash6(ivec3 p, out vec3 a, out vec3 b) {
 	v.z += v.x * v.y;
 	a = vec3(v >> 16u) * (1.0 / 65535.0);
 	b = vec3(v & uvec3(65535u)) * (1.0 / 65535.0);
+}
+
+// One glitter scale's grain at this pixel: its facet and how much of it the
+// pixel holds, by its distance in pixels from the grain (to_px turns world
+// xz into pixels).
+vec4 glint(vec2 xz, vec2 origin_xz, float cell, int scale, mat2 to_px, vec3 normal) {
+	vec2 local = xz / cell;
+	vec2 id = floor(local) + floor(origin_xz / cell + 0.5);
+	vec3 r;
+	vec3 lean;
+	hash6(ivec3(ivec2(id), scale), r, lean);
+	vec2 off = to_px * ((0.25 + 0.5 * r.xy - fract(local)) * cell);
+	float spot = 1.0 - smoothstep(0.7, 1.7, length(off));
+	return vec4(normalize(normal + LEAN * (lean * 2.0 - 1.0)), spot * r.z * r.z);
 }
 
 float value_noise(vec2 p) {
@@ -220,7 +234,9 @@ void fragment() {
 	float lost = 0.56 * (ripple_depth * ripple_depth * (1.0 - shown * shown)
 		+ swell_depth * swell_depth * (1.0 - swell_shown * swell_shown));
 	float clear = 1.0 - storm;
-	shine = vec2((1.0 - 0.7 * trodden) * clear, ocean_power / (1.0 + ocean_power * lost));
+	float power = ocean_power / (1.0 + ocean_power * lost);
+	// Normalised Blinn-Phong, so a wider lobe is a dimmer one.
+	shine = vec3((1.0 - 0.7 * trodden) * clear, power, ocean * (power + 8.0) / (8.0 * PI));
 
 	// Glitter, after Wang and Bowles: cells sized to the pixel, each with one
 	// jittered grain and its own facet. Two scales a factor of two apart,
@@ -228,31 +244,24 @@ void fragment() {
 	// grain drawn round on screen a pixel or two across, so none is ever
 	// smaller than a pixel to crawl. Gone with distance, on tracks (trodden
 	// sand is rough) and in the dust.
-	float det = dpx.x * dpy.z - dpy.x * dpx.z;
-	mat2 to_px = mat2(vec2(dpy.z, -dpx.z), vec2(-dpy.x, dpx.x)) / (det < 0.0 ? min(det, -1e-14) : max(det, 1e-14));
 	float foot = max(length(dpx.xz), length(dpy.xz));
 	float level = max(log2(foot * CELL_PIXELS / GRAIN), 0.0);
 	float scale = floor(level);
 	float blend = level - scale;
 	float near = (1.0 - smoothstep(0.03, 0.12, foot)) * (1.0 - trodden) * clear * clear;
-	vec4 glints[2];
-	for (int k = 0; k < 2; k++) {
-		float cell = GRAIN * exp2(scale + float(k));
-		vec2 local = world_pos.xz / cell;
-		vec2 id = floor(local) + floor(origin / cell + 0.5);
-		vec3 r;
-		vec3 r2;
-		hash6(ivec3(ivec2(id), int(scale) + k), r, r2);
-		vec2 off = to_px * ((0.25 + 0.5 * r.xy - fract(local)) * cell);
-		float spot = 1.0 - smoothstep(0.7, 1.7, length(off));
-		vec3 facet = normalize(rippled + LEAN * (r2 * 2.0 - 1.0));
-		float weight = spot * (k == 0 ? 1.0 - blend : blend) * near * r.z * r.z;
-		glints[k] = vec4(mat3(VIEW_MATRIX) * facet, weight);
+	glint_seen = vec4(0.0);
+	if (near > 0.0) {
+		float det = dpx.x * dpy.z - dpy.x * dpx.z;
+		mat2 to_px = mat2(vec2(dpy.z, -dpx.z), vec2(-dpy.x, dpx.x)) / (det < 0.0 ? min(det, -1e-14) : max(det, 1e-14));
+		float cell = GRAIN * exp2(scale);
+		vec4 fine = glint(world_pos.xz, origin, cell, int(scale), to_px, rippled);
+		vec4 coarse = glint(world_pos.xz, origin, cell * 2.0, int(scale) + 1, to_px, rippled);
+		fine.w *= 1.0 - blend;
+		coarse.w *= blend;
+		// A pixel seldom holds a grain of each: it takes the brighter.
+		vec4 grain = fine.w > coarse.w ? fine : coarse;
+		glint_seen = vec4(mat3(VIEW_MATRIX) * grain.xyz, grain.w * near);
 	}
-	glint_fine = glints[0];
-	glint_coarse = glints[1];
-	// Grains are pale quartz: the sheen is the light's colour, warmed a little.
-	sheen_tint = mix(vec3(1.0), colour / max(colour.r, 1e-3), 0.35);
 
 	ALBEDO = colour;
 	ROUGHNESS = 1.0;
@@ -273,18 +282,15 @@ void light() {
 	float rough = LIGHT_IS_DIRECTIONAL ? backscatter * (1.0 - smoothstep(0.17, 0.5, up)) : 0.0;
 	float fon = 1.0 + rough * (s > 0.0 ? s / max(max(lit, nv), 1e-3) : s);
 	DIFFUSE_LIGHT += incoming * lit * max(fon, 0.0) / PI;
-	// Normalised Blinn-Phong, so a wider lobe is a dimmer one.
 	vec3 h = normalize(LIGHT + VIEW);
-	float p = shine.y;
-	float sea = ocean * (p + 8.0) / (8.0 * PI) * pow(max(dot(NORMAL, h), 0.0), p);
+	float sea = shine.z * pow(max(dot(NORMAL, h), 0.0), shine.y);
 	// Schlick's Fresnel over a lobe as wide as it gets (GGX at roughness 1).
 	float fresnel = 0.04 + 0.96 * pow(1.0 - max(dot(LIGHT, h), 0.0), 5.0);
 	float grazing = rim * fresnel * 0.5 / (PI * (lit + nv));
-	SPECULAR_LIGHT += incoming * max(sea, grazing) * lit * shine.x * sheen_tint;
+	SPECULAR_LIGHT += incoming * max(sea, grazing) * lit * shine.x * SHEEN;
 	// Most pixels hold no grain: they skip it.
-	if (glint_fine.w + glint_coarse.w > 0.0) {
-		float flash = glint_fine.w * pow(max(dot(reflect(-LIGHT, glint_fine.xyz), VIEW), 0.0), GLINT_SHARP)
-			+ glint_coarse.w * pow(max(dot(reflect(-LIGHT, glint_coarse.xyz), VIEW), 0.0), GLINT_SHARP);
+	if (glint_seen.w > 0.0) {
+		float flash = glint_seen.w * pow(max(dot(reflect(-LIGHT, glint_seen.xyz), VIEW), 0.0), GLINT_SHARP);
 		SPECULAR_LIGHT += incoming * flash * glitter * smoothstep(0.0, 0.1, nl);
 	}
 }
