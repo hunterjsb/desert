@@ -779,7 +779,9 @@ you, a soft sheen and glitter that never crawls, not a brighter desert.
   you glows and sand you look at against the light dims. It's Lambert wherever grains hide nothing, so
   noon is as it was. It's a low sky light's only, fading out between 10° and 30° up: from higher it
   flattens the ripples, as the full Moon looks flat, and Tu stands 30° up all night where a run
-  begins. Lamps keep Lambert, so the headlamp's pool and the tracks in it read as before.
+  begins. Looking into the light it dims half as far as Fujii has it: quartz grains pass light on, and
+  at full strength the dunes seen from the air into a low sun lost a quarter to a third of their
+  contrast. Lamps keep Lambert, so the headlamp's pool and the tracks in it read as before.
 - **The sheen, the brighter of two.** "Ocean", the sun's broad glare off the grains, as off a sea
   (normalised Blinn-Phong, so a wider lobe is a dimmer one); and the rim, light skimming off grains
   seen edge-on toward the sun (Fresnel over the widest lobe), at what Godot's own rough specular gave,
@@ -816,24 +818,26 @@ the frame, and its spread:
 | Moment | L* before, after | Spread before, after |
 |---|---|---|
 | Noon | 82.1, 81.9 | 1.3, 1.3 |
-| A low sun (8°) ahead | 52.1, 51.5 | 8.0, 6.1 |
+| A low sun (8°) ahead | 52.1, 51.8 | 8.0, 7.3 |
+| The same from 200 m up | 57.4, 56.4 | 18.9, 16.8 |
 | The same sun behind you, the ground ahead lit | 52.8, 55.7 | 7.7, 13.5 |
-| Dusk (2.5°), the sun behind you | 44.5, 49.6 | 8.9, 15.0 |
+| Dusk (2°), the sun behind you | 41.4, 45.8 | 8.2, 14.1 |
 | A full-Tu night, Tu behind you | 4.8, 4.8 (the eye 6.1 times both) | 0.8, 0.8 |
 | The same night by the headlamp | 23.6, 23.6 | 74, 74 |
-| Deep in a storm by day | 24.5, 24.3 | 8.7, 8.3 |
+| Deep in a storm by day | 24.2, 24.0 | 8.3, 7.9 |
 | A walked track at midmorning, toward the sun | 77.0, 77.5 | 3.2, 6.2 |
 
 With the low sun behind you the slopes ahead glow and their ripples stand out, where before they lay
 flat; dusk the same, warmer. Looking into a low sun the ripples read as before, with the swell beyond
-them and glitter down the sun's path. At midmorning a soft glare lies toward the sun, sprinkled with
+them and glitter down the sun's path; from the air the dunes into it keep nine-tenths of their
+contrast. At midmorning a soft glare lies toward the sun, sprinkled with
 glints, and the footprints hold none. Close up, sliding a centimetre a frame or walking on, each glint
 stays on its grain and twinkles; none crawls.
 
 **What it costs,** on the RTX 3070 at 1920x1080 with Hunter's game sharing the GPU, so rough, each the
-middle of nine alternated rounds: 0.03 to 0.16 ms a frame at noon and 0.04 to 0.34 ms looking into a
-low sun over six runs, lost in the noise in a storm, and 0.5 ms with sand filling the whole frame by
-a low sun, steady over five runs. It's about 85 operations a light (45
+middle of nine alternated rounds: 0.03 to 0.17 ms a frame at noon and 0.04 to 0.34 ms looking into a
+low sun over seven runs, lost in the noise in a storm, and 0.5 ms with sand filling the whole frame by
+a low sun, steady over six runs. It's about 85 operations a light (45
 counting a vector's as one, as the research did), 25 more where a grain lies, and about 170 a pixel
 near you for the swell and the glitter, which is skipped further out. A chain of 128 multiply-adds
 measured 0.2 to 0.3 ms the same way, so the times and the count agree.

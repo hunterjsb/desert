@@ -23,7 +23,7 @@ for weather in clear storm; do
 done
 
 args=()
-for pair in "noon:noon" "low_into:low sun, facing it" "low_behind:low sun behind you" "dusk:dusk, the sun behind you" \
+for pair in "noon:noon" "low_into:low sun, facing it" "air_low:the same from 200 m up" "low_behind:low sun behind you" "dusk:dusk, the sun behind you" \
 	"night:a full-Tu night, Tu behind you" "lamp:the same, by the headlamp" "storm:deep in a storm by day" \
 	"track:a walked track, midmorning"; do
 	for look in before after; do

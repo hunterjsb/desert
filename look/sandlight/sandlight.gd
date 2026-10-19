@@ -3,14 +3,15 @@ extends Node
 ## dune sea nearest spawn (look/dunes' "sea"), in still air with the eye on, as
 ## the game plays. Each moment is shot with the sand shader given by --before
 ## and then with the game's own, the light, the eye and the frame unchanged:
-## noon; a low sun ahead, and behind you where it lights what you see; dusk
-## the same; a full-Tu night with Tu behind you, and by the headlamp; a walked
-## track at midmorning; and close up into the low sun, the camera sliding a
-## centimetre a frame and then walking on, to see the glitter hold still. With
-## --storm, deep in a storm by day instead. It prints the ground's lightness, spread and clipped
-## share (look/dunes' measure), the eye, and the GPU's frame time either way,
-## alternated. --only shoots just the named shots; each --try shoots the
-## game's shader again with those values, as try1, try2 and on:
+## noon; a low sun ahead, from the ground and from 200 m up, and behind you
+## where it lights what you see; dusk the same; a full-Tu night with Tu behind
+## you, and by the headlamp; a walked track at midmorning; and close up into
+## the low sun, the camera sliding a centimetre a frame and then walking on, to
+## see the glitter hold still. With --storm, deep in a storm by day instead.
+## It prints the ground's lightness, spread and clipped share (look/dunes'
+## measure), the eye, and the GPU's frame time either way, alternated. --only
+## shoots just the named shots; each --try shoots the game's shader again with
+## those values, as try1, try2 and on:
 ##   godot --path . --disable-vsync res://look/sandlight/sandlight.tscn -- --capture <dir> --before <shader>
 ##       [--storm] [--only noon,slide,...] [--gpu] [--try name=value,... ...]
 ## look/sandlight/shoot.sh shoots both and builds the sheet. A small window that
@@ -158,6 +159,8 @@ func _capture() -> void:
 	await _pair("sand_only", morning, atan2(-sun.x, -sun.z), -50.0)
 	await _gpu_cost("sand filling the frame")
 	await _pair("low_behind", morning, atan2(sun.x, sun.z), -6.0, _backlit(sun))
+	# The dunes from 200 m up into the low sun, a little to one side of it.
+	await _pair("air_low", morning, atan2(-sun.x, -sun.z) + 0.6, -9.0, _spot, 200.0)
 	var dusk := _sun_at(DUSK_SUN, false)
 	sun = _sun(dusk)
 	await _pair("dusk", dusk, atan2(sun.x, sun.z), -4.0, _backlit(sun))
@@ -201,13 +204,13 @@ func _moving(name: String, t: float, yaw: float, pitch: float, step: Vector3) ->
 
 
 ## A moment shot with each look, the eye settled on each.
-func _pair(name: String, t: float, yaw: float, pitch: float, at := Vector2.INF) -> void:
+func _pair(name: String, t: float, yaw: float, pitch: float, at := Vector2.INF, over := 0.0) -> void:
 	if not _only.is_empty() and not _only.has(name):
 		return
 	for look: String in _all_looks():
 		_wear(look)
 		_set_time(t)
-		_stand(yaw, pitch, _spot if at == Vector2.INF else at)
+		_stand(yaw, pitch, _spot if at == Vector2.INF else at, over)
 		await _ticks(30)
 		for i in 6:
 			await get_tree().process_frame
@@ -242,10 +245,10 @@ func _set_time(t: float) -> void:
 	world.weather.forecast_now()
 
 
-func _stand(yaw: float, pitch: float, at: Vector2) -> void:
+func _stand(yaw: float, pitch: float, at: Vector2, over := 0.0) -> void:
 	var player := world.player
 	var engine := Vector3(world.engine_x(at.x), 0.0, world.engine_z(at.y))
-	player.global_position = Vector3(engine.x, world.height_under(engine) + EYE, engine.z) - player.camera.position
+	player.global_position = Vector3(engine.x, world.height_under(engine) + EYE + over, engine.z) - player.camera.position
 	player.rotation.y = yaw
 	player.camera.rotation_degrees.x = pitch
 

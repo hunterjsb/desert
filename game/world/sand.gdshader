@@ -115,8 +115,8 @@ void hash6(ivec3 p, out vec3 a, out vec3 b) {
 }
 
 // One glitter scale's grain at this pixel: its facet and how much of it the
-// pixel holds, by its distance in pixels from the grain (to_px turns world
-// xz into pixels).
+// pixel holds, by its distance in pixels from the grain (to_px turns a step
+// in world x and z into pixels).
 vec4 glint(vec2 xz, vec2 origin_xz, float cell, int scale, mat2 to_px, vec3 normal) {
 	vec2 local = xz / cell;
 	vec2 id = floor(local) + floor(origin_xz / cell + 0.5);
@@ -280,11 +280,12 @@ void light() {
 	// Fujii's Oren-Nayar, as Lambert where grains hide nothing (s = 0). Only
 	// a sky light under about 20 degrees: higher, or a lamp by your eye, it
 	// flattens the ripples, as the full Moon looks flat; and Tu stands 30
-	// degrees up where a run begins.
+	// degrees up where a run begins. Facing the light it dims half as far:
+	// quartz passes light on, and dunes into a low sun are read by it.
 	float s = dot(LIGHT, VIEW) - nl * nv;
 	float up = dot(LIGHT, VIEW_MATRIX[1].xyz);
 	float rough = LIGHT_IS_DIRECTIONAL ? backscatter * (1.0 - smoothstep(0.17, 0.5, up)) : 0.0;
-	float fon = 1.0 + rough * (s > 0.0 ? s / max(max(lit, nv), 1e-3) : s);
+	float fon = 1.0 + rough * (s > 0.0 ? s / max(max(lit, nv), 1e-3) : 0.5 * s);
 	DIFFUSE_LIGHT += incoming * lit * max(fon, 0.0) / PI;
 	vec3 h = normalize(LIGHT + VIEW);
 	float sea = shine.z * pow(max(dot(NORMAL, h), 0.0), shine.y);
