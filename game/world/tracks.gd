@@ -131,6 +131,9 @@ func setup(world: World, material: Material) -> void:
 		RenderingServer.call_on_render_thread(_create_map)
 		_material.set_shader_parameter("track_extent", _cells * _texel)
 		_material.set_shader_parameter("track_texel", _texel)
+		_material.set_shader_parameter("track_depth", _tuning.track_depth)
+		_material.set_shader_parameter("track_relief", _tuning.track_relief)
+		_material.set_shader_parameter("track_shade", _tuning.track_shade)
 
 
 func _exit_tree() -> void:

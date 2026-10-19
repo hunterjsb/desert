@@ -413,6 +413,30 @@ trail touching 30 to 60) if a resumed run should keep its trail.
   64 MB of its memory. Streaming stayed within its line in `look/stream` (1.54 ms
   against 2.0; under the same load master's own run went over it, at 3.6).
 
+### Trail relief follow-up (2026-10-19; prototype, awaiting visual verification)
+
+Hunter approved the sand's current appearance and asked for trails of the same quality.
+The [art brief](../art-direction.md#playtest-follow-up-hunter-2026-10-19-agreed-in-progress)
+calls for compressed floors, loose rims, nearby relief and stable marks in motion. Keep
+the existing map, lifetime, world anchoring and authoritative ground. Prototype a bounded
+nearby shader treatment before adding a mesh patch or expanding track memory.
+
+The prototype adds a single view-ray lookup on marked sand within 8 m, fading from 2 m,
+bounded at grazing views. Central differences shape the dent and the outer rim's opposite
+slope; quarter-metre texels still set the smallest detail. Tuning holds the drawn depth
+(8 cm), relief share (1) and compacted sand's colour loss (24%). Map allocation remains
+64 MB, and stamping and filling are unchanged. These values are provisional until the
+rendered comparison and GPU measurements pass.
+
+The focused tracks probe passes, including filling, marks under objects, and unchanged
+height/collision. An earlier derivative-based rim prototype exposed grid facets in actual
+captures and was replaced with central differences. The final shader has **not** yet had
+its visual or GPU check: the graphics driver faulted at the earlier capture's teardown.
+`look/tracks` now accepts `--before <shader>` and `--lights low,day,...`, freezes the scene
+for paired frames, includes a controlled board-skid strip, and records low-sun lateral
+motion and paired GPU timings at walking and skid views. Use the accepted sand shader
+from commit `5e67998` for the comparison. No performance conclusion is available yet.
+
 ## Skeleton version
 
 This is the minimum that makes the whole game loop possible. Every item gets built.

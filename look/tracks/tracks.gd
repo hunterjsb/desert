@@ -7,6 +7,8 @@ extends Node
 ## what pressing them cost the main thread, and what drawing them costs the GPU.
 ## At the fixed exposure, or with --eye as the eye sees them, settled on each light:
 ##   godot --path . --disable-vsync res://look/tracks/tracks.tscn -- --capture <dir> [--eye]
+## Optional --before <shader> compares frozen frames against that shader and its
+## own defaults; --lights low,day,... narrows the captures.
 ## look/tracks/shoot.sh builds the sheets. A small window that never takes
 ## focus, nothing but this script moving anything, and silence.
 
@@ -16,6 +18,7 @@ const SEED := 1234
 const WALK := Vector2(0.0, 0.0)
 const DRAG := Vector2(0.0, 4.0)
 const BOARD := Vector2(0.0, -5.0)
+const GOUGE := Vector2(0.0, -10.0)
 const WALK_SECONDS := 9.0
 const DRAG_SECONDS := 8.0
 const DRAG_SPEED := 1.4
@@ -24,7 +27,7 @@ const RIDE_SECONDS := 2.2
 const BACK := 2.5
 const EYE := 1.65
 const PITCH := -28.0
-const LIGHTS := ["day", "storm", "night", "storm_night", "storm_night_lamp"]
+const LIGHTS := ["low", "day", "storm", "night", "storm_night", "storm_night_lamp"]
 ## Eight minutes of a full storm's filling, in fill-clock units.
 const AGED := 8.0 * 60.0 / 1200.0
 ## Frames per sample, and samples each way, when timing the GPU.
@@ -34,6 +37,9 @@ const GPU_ROUNDS := 4
 @onready var world: World = $World
 
 var _times := {}
+var _before: Shader
+var _after: Shader
+var _baseline_values := {}
 
 
 func _enter_tree() -> void:
@@ -71,6 +77,17 @@ func _capture(out_dir: String) -> void:
 	await _ground()
 
 	var tracks := world.terrain.tracks
+	var material := world.terrain.sand_material as ShaderMaterial
+	_after = material.shader
+	var args := OS.get_cmdline_user_args()
+	var baseline := args.find("--before")
+	if baseline != -1:
+		_before = Shader.new()
+		_before.code = FileAccess.get_file_as_string(args[baseline + 1])
+		for parameter: Dictionary in RenderingServer.get_shader_parameter_list(_after.get_rid()):
+			var name: String = parameter.name
+			if name.begins_with("track_") and name not in ["track_map", "track_clock", "track_shift", "track_window", "track_extent", "track_texel"]:
+				_baseline_values[name] = material.get_shader_parameter(name)
 	# The crate, dragged east along the sand as a line would tow it.
 	var crate := _crate(world.spawn + DRAG)
 	await _ticks(60)
@@ -129,6 +146,12 @@ func _capture(out_dir: String) -> void:
 	print("tracks: %d tiles hold marks" % world.terrain.tracks.held_tiles())
 	# Held still: nothing presses again or fills while the clock is set by hand.
 	tracks.set_physics_process(false)
+	# A controlled skid strip uses the same swept footprint as a board turning sideways.
+	for i in 20:
+		var start: Vector2 = world.spawn + GOUGE + Vector2(i * 0.6, 0.4 * sin(i * 0.12))
+		var corners := tracks._footprint(start, Vector2(0.7, 0.7).normalized(), Catalog.DEVICES[&"board"].size)
+		corners.append_array(tracks._footprint(start + Vector2(0.6, 0.0), Vector2(0.7, 0.7).normalized(), Catalog.DEVICES[&"board"].size))
+		tracks.press_hull(corners, Tracks.DEEPEST, Tracks.GOUGE_SOFT)
 	var made := tracks.clock
 	var rid := get_viewport().get_viewport_rid()
 	RenderingServer.viewport_set_measure_render_time(rid, true)
@@ -138,12 +161,16 @@ func _capture(out_dir: String) -> void:
 	lamp.omni_range = 7.0
 	lamp.position = Vector3(0.4, -0.6, -0.3)
 	player.camera.add_child(lamp)
-	for light: String in LIGHTS:
+	var chosen := LIGHTS.duplicate()
+	var only := args.find("--lights")
+	if only != -1:
+		chosen = args[only + 1].split(",")
+	for light: String in chosen:
 		world.time = _times[light.trim_suffix("_lamp")]
-		world.time_warp = 1.0
+		world.time_warp = 0.0
 		world.weather.forecast_now()
 		lamp.visible = light.ends_with("_lamp")
-		for subject: Array in [["walk", WALK], ["board", BOARD], ["drag", DRAG]]:
+		for subject: Array in [["walk", WALK], ["board", BOARD], ["gouge", GOUGE], ["drag", DRAG]]:
 			var start: Vector2 = world.spawn + subject[1]
 			var eye := Vector3(world.engine_x(start.x - BACK), world.height_at(start.x - BACK, start.y) + EYE,
 				world.engine_z(start.y))
@@ -155,31 +182,70 @@ func _capture(out_dir: String) -> void:
 				tracks.clock = made + state[1]
 				await _ticks(24)
 				var name := "%s_%s_%s" % [subject[0], light, state[0]]
-				get_viewport().get_texture().get_image().save_png(out_dir.path_join(name + ".png"))
+				for look: String in (["before", "after"] if _before != null else ["after"]):
+					_wear(look)
+					await _ticks(8)
+					get_viewport().get_texture().get_image().save_png(out_dir.path_join(name + ("_" + look if _before != null else "") + ".png"))
+				if light == "low" and subject[0] in ["walk", "gouge"] and state[0] == "fresh":
+					await _moving(out_dir, name)
 				print("  %-26s storm %3d%%" % [name, roundi(world.weather.storm * 100.0)])
-			if light == "day" and subject[0] == "walk":
+			if light == "day" and subject[0] in ["walk", "gouge"]:
 				tracks.clock = made
 				await _gpu_cost(rid)
 	get_tree().quit()
+
+
+## A short lateral move shows whether the drawn floor stays attached to its rim.
+func _moving(out_dir: String, name: String) -> void:
+	var player := world.player
+	var start := player.global_position
+	for look: String in (["before", "after"] if _before != null else ["after"]):
+		_wear(look)
+		for frame in 12:
+			player.global_position = start + Vector3(0.0, 0.0, frame * 0.025)
+			await _ticks(2)
+			get_viewport().get_texture().get_image().save_png(out_dir.path_join("%s_%s_move_%02d.png" % [name, look, frame]))
+	player.global_position = start
+	_wear("after")
 
 
 ## The GPU's time per frame with the sand reading its marks and without,
 ## alternated so a busy machine weighs on both alike.
 func _gpu_cost(rid: RID) -> void:
 	var tracks := world.terrain.tracks
-	var sums := {true: 0.0, false: 0.0}
+	var keys: Array[String] = ["before", "after"] if _before != null else ["off", "on"]
+	var sums := {keys[0]: 0.0, keys[1]: 0.0}
+	var differences: Array[float] = []
 	for round in GPU_ROUNDS:
-		for drawn in [false, true]:
-			tracks.drawn = drawn
+		var got := {}
+		for look: String in keys:
+			tracks.drawn = look != "off"
+			if _before != null:
+				_wear(look)
 			for i in 10:
 				await get_tree().process_frame
+			var total := 0.0
 			for i in GPU_FRAMES:
 				await get_tree().process_frame
-				sums[drawn] += RenderingServer.viewport_get_measured_render_time_gpu(rid)
+				total += RenderingServer.viewport_get_measured_render_time_gpu(rid)
+			got[look] = total / GPU_FRAMES
+			sums[look] += got[look]
+		differences.append(got[keys[1]] - got[keys[0]])
 	tracks.drawn = true
-	var n := float(GPU_ROUNDS * GPU_FRAMES)
-	print("tracks: gpu %.3f ms a frame drawing marks, %.3f without, at %s%s" % [sums[true] / n, sums[false] / n,
+	_wear("after")
+	differences.sort()
+	print("tracks: gpu %.3f ms %s, %.3f ms %s; median delta %+.3f (%+.3f to %+.3f), at %s%s" % [
+		sums[keys[0]] / GPU_ROUNDS, keys[0], sums[keys[1]] / GPU_ROUNDS, keys[1],
+		(differences[1] + differences[2]) * 0.5, differences[0], differences[-1],
 		get_viewport().get_visible_rect().size, _shared_gpu()])
+
+
+## Keep baseline defaults with its shader; the live scene otherwise retains tuning overrides.
+func _wear(look: String) -> void:
+	var material := world.terrain.sand_material as ShaderMaterial
+	material.shader = _before if look == "before" else _after
+	for name: String in _baseline_values:
+		material.set_shader_parameter(name, null if look == "before" else _baseline_values[name])
 
 
 ## Another Godot on the same GPU skews frame times; say so beside them.
@@ -197,7 +263,7 @@ func _find_times(at: Vector2) -> Dictionary:
 	var day := world.weather.day
 	var found := {}
 	var t := 120.0
-	while t < 6.0 * 24.0 * 3600.0 and found.size() < 4:
+	while t < 6.0 * 24.0 * 3600.0 and found.size() < 5:
 		var hour := day.time_of_day(t, world.moon.longitude)
 		var storm := field.storm_at(at.x, at.y, t)
 		var held := storm >= 1.0 and field.storm_at(at.x, at.y, t - 60.0) >= 1.0 \
@@ -205,6 +271,9 @@ func _find_times(at: Vector2) -> Dictionary:
 		var clear := field.raw_storm_at(at.x, at.y, t) < -0.1 and field.raw_storm_at(at.x, at.y, t + 60.0) < -0.1
 		var lit := hour > 0.38 and hour < 0.55
 		var dark := hour > 0.96 or hour < 0.04
+		var sun := day.sun_direction(t, world.moon.latitude, world.moon.longitude)
+		if clear and sun.y > 0.1 and sun.y < 0.2 and not found.has("low"):
+			found["low"] = t
 		if lit and clear and not found.has("day"):
 			found["day"] = t
 		elif lit and held and not found.has("storm"):

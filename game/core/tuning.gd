@@ -217,6 +217,11 @@ static var _current: Tuning
 ## texel. Marks further off are forgotten.
 @export var track_cells: int = 4096
 @export var track_texel: float = 0.25
+## Drawn dent depth, m, and the share of its near view-ray relief.
+@export var track_depth: float = 0.08
+@export var track_relief: float = 1.0
+## Compacted sand loses this share of its colour.
+@export var track_shade: float = 0.24
 ## How long the wind takes to fill a fresh, full-depth mark, minutes: in calm
 ## air, and in a full storm. A step still reads with a tenth of its depth left.
 @export var track_calm_minutes: float = 90.0
