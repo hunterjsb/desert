@@ -252,7 +252,7 @@ before the colonial layer, which reads it. It holds only what something reads.
   carries. What comes out is mostly gas, which lifts the sand and dust round the mouth; that's what
   shows. A live vent breathes by a fifth over periods of 170 and 410 s, and bursts: a blast of gas
   clearing its throat that swells its column of dust. Each slot of 1,200 s (a game day) holds one 70% of
-  the time, rising over 10 s, holding 40 s and fading by e every 150 s, at 25 to 170 times the seep
+  the time, rising over 10 s, holding 90 s and fading by e every 220 s, at 25 to 170 times the seep
   (whose own lift is the steady column's, 1.5 to 3 km), a column standing 6 to 10 km in a breeze; ash is
   a fifth of what it carries seeping and 85% at a burst's peak, a faint trace in the dust **(defaults)**. `next_burst(vent, t)` says when the next begins and `last_burst(vent,
   t)` when the last did, and how big. A pocket's venting is its blowout's. Quiet and capped vents give
@@ -301,9 +301,9 @@ before the colonial layer, which reads it. It holds only what something reads.
    The provinces are the bulges, which the landmarks already mark; the rift is the line Halloran's
    heading already drew, through Aitch, with the black site in its wall; only its length and the vents
    along it are geology's own draws.
-6. **The smallest rendering?** The storm walls' own: a dust volume marched per pixel round a line of
-   points computed on the main thread, on a box round each of up to three plumes, with the walls'
-   billows, light and haze, and near you the haze and grit you stand in rather than anything drawn; the
+6. **The smallest rendering?** The storm walls' own: a dust volume marched round a line of points
+   computed on the main thread, up to three plumes in one compute pass at half the screen's size and
+   brought up by depth, with the walls' billows, light and haze, and near you the haze and grit you stand in rather than anything drawn; the
    sand's look for the old ash; no particle simulation ([Wind & storms](prd/wind-and-storms.md#plumes)).
 7. **Visual only, or more?** Visual and atmospheric, with history's vent stations moved onto the
    vents, the magnetized crust for the compass, and booms and a roar ([Radio, sound &
@@ -1320,7 +1320,7 @@ group.
 - Geology ([Geology](#geology)): the rift 8 to 11 km either way from Aitch, its floor 600 m across and
   its walls to 1.6 km; the tapped vents 1.5 to 3 km along it, the live ones 5 to 7.5 km either way; the
   volcano's flank vent 1.2 to 2.4 km from its summit; a live vent's breath a fifth over 170 and 410 s,
-  a burst in a 1,200 s slot 70% of the time, rising 10 s, holding 40 s, fading by e every 150 s, 25 to
+  a burst in a 1,200 s slot 70% of the time, rising 10 s, holding 90 s, fading by e every 220 s, 25 to
   170 times the seep, ash a fifth seeping and 85% at a peak; gas pockets 1.5 to 13 km from the point
   under Tu, one in two 500 s slots, blowing 20 to 50 s at 1.7 to 6.7 times the seep; the magnetized crust
   across the rift's walls, 2 km past its ends and over the volcano's footprint to 6 km; the mouth's

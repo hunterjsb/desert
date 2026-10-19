@@ -99,6 +99,8 @@ var _meter: EyeMeter
 var plume_draw: PlumeDraw
 var _plume_light: Array[Vector3] = []
 var _in_plume := 0.0
+## Main-thread time handing the plumes to PlumeDraw this frame, ms.
+var plumes_hand_ms := 0.0
 
 
 func setup(world: World) -> void:
@@ -299,6 +301,12 @@ func _exit_tree() -> void:
 ## Just before each frame draws, after every plume has worked itself out: the
 ## light, the storm map and the plumes in sight, to PlumeDraw.
 func _hand_plumes() -> void:
+	var started := Time.get_ticks_usec()
+	_pack_plumes()
+	plumes_hand_ms = (Time.get_ticks_usec() - started) / 1000.0
+
+
+func _pack_plumes() -> void:
 	var drawn: Array[Plume] = []
 	for plume in plumes:
 		if plume.visible:

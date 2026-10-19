@@ -635,7 +635,8 @@ close it's no thing at all: walking into it the air thickens round you, as walki
   km in a 10 m/s wind by day and 3 km in a calm, lower and flatter at night. A burst, at 25 to 170 times
   the seep (7.5 to 50 million m⁴/s³, the strongest an active vent's explosions honestly reach short of a
   great eruption), climbs for three minutes or so to 6 to 10 km in a breeze and spreads over many
-  kilometres; a pocket's blowout, at 1.7 to 6.7 times, throws a kilometre or two up the sand it bursts
+  kilometres, holding its height for a minute and a half and fading by e over four minutes; a pocket's
+  blowout, at 1.7 to 6.7 times, throws a kilometre or two up the sand it bursts
   through, twelve times a vent's dust for its lift. It rises
   from 150 m wide, the sand swept up round the mouth, widens by a quarter of its rise and spreads by 4%
   of how far it's gone.
@@ -669,22 +670,30 @@ close it's no thing at all: walking into it the air thickens round you, as walki
   from the time, its source and the weather alone (its young end, which changes fast in a burst, one
   point every other frame, the rest one point in eight frames, a quarter as often past 3 km), all at once
   after a jump. Nothing is simulated or stored: it's a pure function of the time.
-- **The column** (`plume.gdshader`), drawn on a box round it: a ray per pixel, marched through the dust
-  round 15 points of the streakline (all of its young end, where a burst's column stands, and every
-  few of its tail), each stretch a cone as wide as the plume there and, levelled, as flat; its face billowed with the storm walls' noise and billow shape, read harder (the noise mostly
-  sits at its middle, a crease, which a wall's big amplitudes hide but a column's would show as smooth
-  stretches), big billows about its width across churning slowly up it. Its dust takes at most five
-  optical depths a width, so a face builds over a few steps and shows its billows. Where a burst began
-  between two points the stretch joining them isn't drawn: the burst's first gas there is thin. The march
-  strides through clear air by how near any stretch's billows may come.
+- **The column** (`PlumeDraw`, `game/weather/plume_draw.gd`): a compute pass after the storm pass,
+  every plume in sight marched at half the screen's size, a quarter of the rays, and brought up to full
+  size by depth, each pixel from the half-size ones nearest it in distance, so a dune's edge in front
+  of it stays sharp. The march runs through the dust round 15 points of the streakline (all of its
+  young end, where a burst's column stands, and every few of its tail), each stretch a cone as wide as
+  the plume there and, levelled, as flat, the stretches blended where they meet so none hands over to
+  the next with a seam. Its face carries the storm walls' own billows, their two big octaves under
+  their slow warp, at its scale: a wall's biggest tile three of its widths, churning slowly up it. Its
+  width swells and narrows along it by up to a sixth seeping and two fifths in a burst, by what left
+  at stronger and weaker moments, so the swellings ride up it. Its dust takes at most five optical
+  depths a width, its face stepped finely where it's that dense, so a face shows its billows' shape;
+  through thin dust the steps lengthen. Lit as a wall is, with its own shadow read half its width
+  toward the sun: dark in its body, its sunlit tops bright. Where a burst began between two points the
+  stretch joining them isn't drawn: the burst's first gas there is thin. The march strides through clear
+  air by how near any stretch may come, never by where its bounds start, so where a ray meets it
+  doesn't hang on them. Each group of rays reads the plumes into its shared memory once.
 - **Up close it dissolves.** Within 120 m none of it is drawn, fading in by 500 m, and the air you stand
   in takes over: stood in its dust (`Plume.air`, from the column as the shader would find it), the haze
   closes in to how far that dust lets you see (3 over its dust a metre, 60 m to 4 km), in the storm's
   fog colour and as thick as the haze can be, the light dims by half a storm's, and Atmosphere's grit
   and dust parcels blow round you, a storm's grit seven-tenths as thick. At a seeping vent's mouth in a
   breeze you see about 2.6 km; under its thicker column, or a burst's, far less.
-- **Far off.** Past the camera's 4.2 km reach its box is drawn nearer and smaller, the same in the view,
-  and it dissolves into the distance between 30 and 45 km (Tuning `plume_fade_m`), much further than the
+- **Far off.** Its rays aren't the camera's far plane's: it dissolves into the distance between 30 and
+  45 km (Tuning `plume_fade_m`), much further than the
   storm walls, since what towers over the haze stands clear of it. Past the skyline's reach (3 km) it's
   a landmark: the haze takes it as if it were only as far as distance to the 0.3 power says. Dunes in
   front hide it. The flat world shows it further than a real moon's curve would.
@@ -696,16 +705,17 @@ close it's no thing at all: walking into it the air thickens round you, as walki
 
 ### What it costs
 
-On the RTX 3070 at 1280 by 720 (look/plume: the GPU's frame time with every plume drawn and without,
-the median of paired turns), measured while a game shared the GPU, which makes the same shot vary by
-about two times from run to run: 0.2 to 1.1 ms a frame from 7 to 25 km; 0.7 to 2.7 ms from 1.5 to 7 km,
-the most where it fills the view beside a wall; 3 to 3.7 ms walking into it or standing in it, where it
-covers the screen; and 0.2 ms from inside a storm, which hides it before it's marched. In a quieter run
-the near views took 1.2 to 1.9 ms. It's the storm walls' kind of cost, a ray a pixel, more than the
-puffs it replaced (0.5 to 1.8 ms near); drawing it at half resolution would take most of it back. On the
-main thread a plume in sight takes 0.052 to 0.090 ms a frame on CI (wind & storms probe 16, four turns of 120
-frames, against its 0.25 ms bound), 0.065 ms on a busy desktop, and all of them together 0.1 to 0.27 ms
-in the look-test; the one frame after a jump in time or place works a whole line out at once.
+On the RTX 3070 at 1280 by 720, measured while Hunter's game held the GPU at 64 to 79% (look/plume:
+the GPU's frame time with every plume drawn and without, the median of paired turns; and the drawing's
+own GPU time from timestamps round its two passes): drawn at half size, walking into it adds 0.8 to
+1.6 ms a frame and standing in it 1.0 to 1.4 ms, a burst at 1.5 km 0.7 to 1.3 ms, a seep at 1.5 km 0.6
+to 1.0 ms, and from 7 to 25 km 0.3 to 1.4 ms; from inside a storm, which hides it before it's marched,
+nothing measurable. Its own timestamps read 1.3 to 2.3 ms near, but they never fall below about 0.8
+ms even with nothing of it in view, the game's work falling between them, so the frame difference is
+the truer reading. Drawn at full size the same views took 3 to 3.7 ms. On the main thread a plume in
+sight takes 0.088 ms a frame on a busy desktop with its share of handing the plumes to the drawing
+(wind & storms probe 16, against its 0.25 ms bound), and all of them together 0.1 to 0.27 ms in the
+look-test; the one frame after a jump in time or place works a whole line out at once.
 
 ### Probes
 
@@ -724,8 +734,9 @@ in the look-test; the one frame after a jump in time or place works a whole line
 17. **A burst is heard after it's seen** ([Radio, sound &
     atmosphere](radio-sound-and-atmosphere.md#distant-phenomena-agreed-2026-10-18-spec)).
 18. **A plume from far now and then.** Sitting three hours where each origin starts on six worlds,
-    looking every minute: 14 of 18 starts see a plume from 5 km or more (it must be three in four), a
-    median 3% of the time (it must be 3%), most often a burst's column over the storms.
+    looking every minute: 15 of 18 starts see a plume from 5 km or more (it must be three in four), a
+    median 7% of the time (it must be 3%), most often a burst's column over the storms, which holds its
+    height for a minute and a half.
 
 Geology's own probes are the world system's (geology 1 and 2), and the kits' probes take the mouth
 like any piece.
@@ -745,9 +756,10 @@ m), shoots from inside a storm, and the rift vent's mouth up close, times each, 
   same wind all the way up and can't punch through a lid or spread under one. Its stability is a day and
   a night value, not the air's own profile, and a burst's 10 km climbs through an atmosphere that doesn't
   thin with height.
-- **A chain of cones.** Its 14 stretches are cones, each its own slope, so where one meets the next its
-  face creases a little: seen close against the light, a burst's column shows faint rings. Its dust is
-  dithered through its face, a fine grain close up.
+- **Soft, not cauliflower.** Its billows are a wall's at its scale, but its dust is thinner than a
+  wall's, so a burst reads as a soft sunlit mass with lumps on its face rather than hard turrets, most
+  of all against the light. Its steps are staggered by a fixed pattern, a fine regular dither in its
+  densest views.
 - **The far storm veil is coarse.** Past the storm walls' reach the storms between are read at four
   ages along it, not pixel by pixel, and against the field's threshold, not the billowed faces.
 - **Its mouth hands over.** Past the sheet's reach a vent's plume rises from where it would be laid from

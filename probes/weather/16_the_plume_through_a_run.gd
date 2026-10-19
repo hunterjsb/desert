@@ -102,7 +102,7 @@ func run() -> void:
 	var spent := 0.0
 	for i in 120:
 		await get_tree().process_frame
-		spent += plume.frame_ms
+		spent += plume.frame_ms + world.weather.plumes_hand_ms
 	print("its main-thread cost: %.3f ms a frame on average, %.3f at most" % [spent / 120.0, plume.slowest_ms])
 	check(spent / 120.0 < BUDGET, "it costs the main thread little (%.3f ms a frame)" % (spent / 120.0))
 
