@@ -415,6 +415,9 @@ calls them from Save, Save & quit, Resume, New game, the death screen and Option
     hut is three ages; onto a second-age house ruin too, Carbon Dated is done.
 22. **Six pieces, one deck.** A deck of five beside one of three is no six-piece deck; the first
     deck's sixth piece makes Six Pack.
+23. **A save never buries you** (2026-10-18). Saved standing on a cistern's floor as the storm that
+    dug it out lets go, the sand held off it over you, a resume brings it back dug out round you, the
+    sand at your feet and not over them, though the weather alone would have it filled.
 
 ## Out of scope
 

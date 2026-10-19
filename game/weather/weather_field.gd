@@ -11,6 +11,11 @@ const HEARTS_KEPT := 4096
 
 var _storm := FastNoiseLite.new()
 var _gust := FastNoiseLite.new()
+var _shift := FastNoiseLite.new()
+var _shift_m: float
+var _shift_s: float
+var _shift_lean: float
+var _shift_swing: float
 var _threshold: float
 var _ramp: float
 var _lead: float
@@ -45,6 +50,14 @@ func _init(run_seed: int, tuning: Tuning) -> void:
 	_gust.seed = run_seed + 1
 	_gust.noise_type = FastNoiseLite.TYPE_SIMPLEX_SMOOTH
 	_gust.frequency = 1.0 / tuning.gust_wavelength
+	_shift.seed = run_seed + 2
+	_shift.noise_type = FastNoiseLite.TYPE_SIMPLEX_SMOOTH
+	_shift.frequency = 1.0
+	_shift.fractal_octaves = 2
+	_shift_m = tuning.dune_shift_m
+	_shift_s = tuning.dune_shift_minutes * 60.0
+	_shift_lean = tuning.dune_shift_lean
+	_shift_swing = tuning.dune_shift_swing
 	_threshold = tuning.storm_threshold
 	_ramp = tuning.storm_ramp
 	_lead = tuning.storm_outflow_lead
@@ -127,6 +140,14 @@ func outflow_at(x: float, z: float, t: float) -> float:
 ## A front's outflow where the field before its threshold stands at `raw`.
 func outflow_of(raw: float) -> float:
 	return clampf((raw + _lead) / (_lead + _ramp), 0.0, 1.0)
+
+
+## Where a storm's big dunes move at a place, -1 to 1: off it where it's
+## above 0, onto it below. Patches of ground that change over minutes, so a
+## storm lays one site bare while burying the next, and may turn on either.
+func dune_shift_at(x: float, z: float, t: float) -> float:
+	return clampf(_shift_lean + _shift.get_noise_3d(x / _shift_m, z / _shift_m, t / _shift_s) * _shift_swing,
+		-1.0, 1.0)
 
 
 ## The wind without its gusts, m/s, in world x and z: the prevailing wind and
