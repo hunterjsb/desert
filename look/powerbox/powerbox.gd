@@ -116,7 +116,7 @@ func _capture(out_dir: String) -> void:
 	console.page = Console.Page.POWER
 	await _ticks(240)
 
-	await _look(home + Vector3.UP * 2.0 - ahead * 1.2, home + ahead * 4.4 + Vector3.UP * 0.2 + right * 0.7)
+	await _look(home + Vector3.UP * 1.8 + ahead * 0.6 + right * 0.7, home + ahead * 4.4 + Vector3.UP * 0.25 + right * 0.7)
 	await _shoot(out_dir, "decks")
 	await _close(out_dir, "cabinet", cabinet, 1.5, 0.15)
 	await _close(out_dir, "dock", dock, 0.75, 0.6)
@@ -137,7 +137,7 @@ func _capture(out_dir: String) -> void:
 	if not dusk.is_empty():
 		world.time = dusk.time
 		await _ticks(120)
-		await _look(home + Vector3.UP * 1.8 - ahead * 0.8, home + ahead * 4.4 + Vector3.UP * 0.3 + right * 0.7)
+		await _look(home + Vector3.UP * 1.7 + ahead * 0.4 + right * 0.7, home + ahead * 4.4 + Vector3.UP * 0.3 + right * 0.7)
 		await _shoot(out_dir, "dusk")
 	get_tree().quit()
 
