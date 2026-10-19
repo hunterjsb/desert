@@ -78,13 +78,23 @@ func _process(_delta: float) -> void:
 	var heading := Sphere.bearing(leg[0], leg[3])
 	var ahead := Walker.ground(_world, Sphere.toward(q, heading, 100.0 / _world.shape.history.radius)) - at
 	var yaw := atan2(-ahead.x, -ahead.y) if ahead.length() > 1e-3 else 0.0
-	var sand := FarRing.ground(_world.shape, _tuning, at.x, at.y)
-	global_transform = Transform3D(Basis(Vector3.UP, yaw), Vector3(middle.x, sand, middle.z))
+	global_transform = Transform3D(Basis(Vector3.UP, yaw), Vector3(middle.x, _riding(at, yaw), middle.z))
 	if t >= _looked_at + LOOK_EVERY or t < _looked_at:
 		_looked_at = t
 		_look_over(eye)
 	_look.set_shader_parameter("shown", shown)
 	_look.set_shader_parameter("veil", veil)
+
+
+## How high it rides, world metres: its rafts float over the highest sand
+## across its length and breadth, so no dune buries a deck.
+func _riding(at: Vector2, yaw: float) -> float:
+	var high := -INF
+	for i in 3:
+		for j in 5:
+			var off := Vector2((i - 1) * WIDE, (j - 2) * LONG * 0.5).rotated(-yaw)
+			high = maxf(high, _world.shape.height_at(at.x + off.x, at.y + off.y))
+	return high
 
 
 ## The storms between you and it, and whether you see its lights now:

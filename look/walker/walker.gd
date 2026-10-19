@@ -77,10 +77,10 @@ func _walker() -> Walker:
 ## Far off, as you'd see it on the skyline, and that far off through a long lens.
 func _far(walker: Walker) -> void:
 	var at := walker.global_position
-	var away := at + walker.global_basis.x * 1200.0
+	var away := _in_sight(at, 1200.0, 2.5)
 	world.player.global_position = Vector3(away.x, world.height_under(away), away.z)
 	await _ground()
-	var eye := world.player.global_position + Vector3.UP * 4.0
+	var eye := world.player.global_position + Vector3.UP * 1.65
 	at = walker.global_position
 	camera.fov = 60.0
 	await shoot("far", eye, at + Vector3.UP * 1.0)
@@ -126,17 +126,53 @@ func _city() -> void:
 		world.time = t
 		world.time_warp = 0.0
 		await _ground()
-		var me := world.player.camera.global_position
-		var to := Walker.ground(world, city.at(t))
-		var middle := Vector3(world.engine_x(to.x), me.y + 4.0, world.engine_z(to.y))
+		await ticks(5)
+		var lights: CityLights = world.get_children().filter(func(n: Node) -> bool: return n is CityLights)[0]
+		var middle := lights.global_position + Vector3.UP * 10.0
+		# Where its lights show over the dunes, as far off.
+		var stand := _in_sight(middle, each[0], 0.0)
+		world.player.global_position = Vector3(stand.x, world.height_under(stand), stand.z)
+		await _ground()
 		await ticks(30)
-		await shoot(each[1], me + Vector3.UP * 2.0, middle)
+		await shoot(each[1], world.player.global_position + Vector3.UP * 1.65, middle)
 	var lights: CityLights = world.get_children().filter(func(n: Node) -> bool: return n is CityLights)[0]
 	print("walker: the city shown %.2f past storms %.2f" % [lights.shown, lights.veil])
 
 
-## A Console's screen, from in front of it.
+## A place about `far` m from `at` on the sand whose eye sees `high` m over
+## it clear of the dunes (over its sand, or over `at` itself for none), of
+## sixteen ways round and a few distances; the highest of them if none does.
+func _in_sight(at: Vector3, far: float, high: float) -> Vector3:
+	var shape := world.shape
+	var top := at
+	if high > 0.0:
+		top.y = shape.height_at(world.world_x(at.x), world.world_z(at.z)) + high
+	var best := at + Vector3(far, 0.0, 0.0)
+	var highest := -INF
+	for d in [1.0, 0.9, 1.1, 0.8, 1.2]:
+		for k in 16:
+			var way := Vector3(cos(TAU * k / 16.0), 0.0, sin(TAU * k / 16.0))
+			var spot := at + way * far * d
+			spot.y = 0.0
+			var sand := shape.height_at(world.world_x(spot.x), world.world_z(spot.z))
+			var eye := Vector3(spot.x, sand + 1.65, spot.z)
+			var clear := true
+			for i in range(1, 60):
+				var p := eye.lerp(top, i / 60.0)
+				if shape.height_at(world.world_x(p.x), world.world_z(p.z)) > p.y:
+					clear = false
+					break
+			if clear:
+				return spot
+			if sand > highest:
+				highest = sand
+				best = spot
+	return best
+
+
+## A Console's screen, from in front of it, drawn afresh with the clock stopped.
 func _screen(console: Console, name: String) -> void:
+	console._screen_at = -INF
 	var front := -console.global_basis.z
 	world.player.global_position = console.global_position + front * 1.4 - Vector3.UP * 1.0
 	await ticks(20)

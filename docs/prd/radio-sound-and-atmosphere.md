@@ -452,7 +452,8 @@ that teaching it takes evidence for each tell.
   never under 2.5 px so it reads kilometres off, dimmed by the haze and hidden by a storm between; and
   against the glow its silhouettes, eighteen rafts of chassis 14 to 40 m across, eight with a second tier,
   five turbines 26 to 40 m tall, three shield domes and its people on their decks, in ink, never a face.
-  Laid out from the seed, about 110 m by 260 m, along its way. Come within 500 m (`city_douse_m`) and its
+  Laid out from the seed, about 110 m by 260 m, along its way, floating over the highest sand across it
+  so no dune buries a deck. Come within 500 m (`city_douse_m`) and its
   lights go out: it isn't found by walking up to it (probe 28). Being found by it, its tether landing at
   camp, stays the ending.
 - **Evidence** (Chart, on a Console): each tell its system witnesses through an anomaly, by the sensor that
