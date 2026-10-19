@@ -29,7 +29,8 @@ static var _kept := [
 	[Mast, ["raised", "raise", "boom", "boom_spin", "trim", "load_n", "bend_n", "extend", "upwind_m", "outflow_m"]],
 	[Helm, ["sailed_m"]],
 	[Chassis, ["_today", "_day_from"]],
-	[Device, ["resting", "lift_share", "lamps"]],
+	[PowerBox, ["held"]],
+	[Device, ["resting", "lift_share", "lamps", "priority", "switched_off"]],
 ]
 const PLAYER := ["stamina", "flying", "mode", "crouched", "own", "slope", "wind", "low", "sink", "_sliding",
 	"_jumped", "_since_ground", "_touchdown", "_jump_buffer", "_jump_was", "_jump_queued", "_crouch_was",

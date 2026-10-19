@@ -52,6 +52,8 @@ const PICTURE := Vector2(0.58, 1.08)
 ## Slower over the sand than this, m/s, the deck's own way is left out of
 ## what the stats page says of the wind.
 const STILL := 0.5
+## The highest rank the power page sets a device to.
+const MOST_RANK := 5
 
 var page := Page.RADAR
 var terminal := Terminal.new()
@@ -108,6 +110,8 @@ var _shown := ""
 var _aim := -1
 ## The keys on the screen as last drawn, for what you aim at.
 var _keys: Array = []
+## The first load the power page shows, as it pages through them.
+var _first_load := 0
 
 
 func _ready() -> void:
@@ -1012,13 +1016,17 @@ static func _trend(by: float, still: float) -> String:
 	return "▲" if by > still else ("▼" if by < -still else "–")
 
 
-## The deck's electrics, its power pool: what makes power, the batteries and
-## their charge, and what draws it, each with its watts, and a row of
-## switches for each way a device can be worked: a shield's off, on or smart,
-## a radio's dial, a tray floating or resting, a lamp on or off. Each switch
-## works the device as its own use would.
+## The deck's electrics, its power pool: what makes power, each power box
+## with its bays as they stand, the batteries and their charge, and what
+## draws it, each with its watts, and a row of switches for each way a device
+## can be worked: a shield's off, on or smart, a radio's dial, a tray floating
+## or resting, a lamp on or off. Each switch works the device as its own use
+## would. A box that lets it ranks each draw and switches it off here, and a
+## colonial cabinet's bays are set here too, held to charge or supplying.
 func _panel(shown: Dictionary, all: Dictionary) -> void:
 	var pool := world.power.pool_of(self)
+	var can := world.power.control(pool)
+	var places := _places(pool, can)
 	var order: Array[Device] = []
 	for device in _system():
 		if device in pool:
@@ -1027,6 +1035,7 @@ func _panel(shown: Dictionary, all: Dictionary) -> void:
 		if not device in order:
 			order.append(device)
 	var sources := []
+	var boxes := []
 	var loads := []
 	var makes := 0.0
 	var draws := 0.0
@@ -1035,22 +1044,26 @@ func _panel(shown: Dictionary, all: Dictionary) -> void:
 	for device in order:
 		var called := _name(device)
 		var now := device.stats()
-		for cell in device.pooled():
+		for cell in device.supplies():
 			held += cell.charge_wh
 			room += cell.capacity()
 		if now.solar_w > 0.0 or now.turbine_w > 0.0:
 			var made := device.production_w()
 			makes += made
 			sources.append({"row": _row(" " + called, "%d" % roundi(made), "W")})
-		var groups := _switches(device, called, all.has("front"))
+		if device is PowerBox:
+			boxes.append(_box(device as PowerBox, called))
+		var groups := _switches(device, called, all.has("front"), can)
 		var drawn := device.demand_w() if device.powered else 0.0
 		if drawn > 0.0 or not groups.is_empty():
 			draws += drawn
 			# A smart shield says whether it's up now: its switch says only that it's smart.
 			var shield := device as ShieldGenerator
-			var note := "DARK" if not device.powered else ("ON" if shield != null and shield.on
-				and _mode(shield, all.has("front")) == "SMART" else "")
-			loads.append({"row": _row(" " + called, "%d" % roundi(drawn), "W", note),
+			var off: bool = can.switches and device.switched_off
+			var note := "OFF" if off else ("DARK" if not device.powered else ("ON" if shield != null and shield.on
+				and _mode(shield, all.has("front")) == "SMART" else ""))
+			var named := ("%d %s" % [places[device], called]) if can.ranks else called
+			loads.append({"row": _row(" " + named, "%d" % roundi(drawn), "W", note),
 				"dark": not device.powered, "groups": groups})
 	var net := makes - draws
 	var left := INF
@@ -1063,11 +1076,18 @@ func _panel(shown: Dictionary, all: Dictionary) -> void:
 			else _row("BANK", "none"),
 		"net": _row(" net", "%+d" % roundi(net), "W"),
 		"left": _row(" full" if net > 0.0 else " left", _span_parts(left)[0], _span_parts(left)[1])}
-	shown["panel"] = {"makes": _row("OUTPUT", "%d" % roundi(makes), "W"), "sources": sources, "bank": bank,
-		"draws": _row("DRAWS", "%d" % roundi(draws), "W"), "loads": loads}
+	if _first_load >= loads.size():
+		_first_load = 0
+	shown["panel"] = {"makes": _row("OUTPUT", "%d" % roundi(makes), "W"), "sources": sources, "boxes": boxes,
+		"bank": bank, "draws": _row("DRAWS", "%d" % roundi(draws), "W"), "loads": loads, "first": _first_load,
+		"more": {"text": "", "lit": false, "act": _page_loads, "device": null, "to": &"more"}}
 	var rows := PackedStringArray([shown.panel.makes])
 	for source: Dictionary in sources:
 		rows.append(source.row)
+	for box: Dictionary in boxes:
+		rows.append(box.row)
+		for bay: Dictionary in box.bays:
+			rows.append(bay.line)
 	rows.append_array(PackedStringArray([bank.row, bank.net, bank.left, shown.panel.draws]))
 	for load: Dictionary in loads:
 		var lit := PackedStringArray()
@@ -1079,9 +1099,53 @@ func _panel(shown: Dictionary, all: Dictionary) -> void:
 	shown["rows"] = rows
 
 
+## A power box on the page: its row, its charge as its own, and each bay as
+## it stands, exactly: how full, which way and how hard it flows, or held,
+## dead or empty. A cabinet's bays are keys that hold them or let them supply.
+func _box(box: PowerBox, called: String) -> Dictionary:
+	var bays := []
+	var held := 0.0
+	var room := 0.0
+	var all := box.bays()
+	for i in all.size():
+		var cell := all[i].part as Battery
+		var bay := {"state": 2 if all[i].kind == PowerBox.DEAD else (3 if cell == null else (1 if box.is_held(i) else 0)),
+			"share": 0.0, "flow": 0.0, "pct": "DEAD" if all[i].kind == PowerBox.DEAD else "—", "w": ""}
+		if cell != null:
+			held += cell.charge_wh
+			room += cell.capacity()
+			bay.share = cell.charge_wh / maxf(cell.capacity(), 1e-9)
+			bay.flow = cell.flow_w
+			bay.pct = "%d%%" % roundi(bay.share * 100.0)
+			bay.w = "%+dW" % roundi(cell.flow_w)
+		bay["line"] = _row("  BAY %d" % (i + 1), bay.pct.trim_suffix("%"), "%" if cell != null else "",
+			("HOLD " if bay.state == 1 else "") + bay.w)
+		if box.model().get("screen_bays", false) and bay.state < 2:
+			bay["key"] = {"text": "", "lit": bay.state == 1, "act": _hold_bay.bind(box, i, called), "device": box, "to": i}
+		bays.append(bay)
+	return {"row": _row(" " + called, "%d" % roundi(100.0 * held / room), "%", "%d Wh" % floori(held)) if room > 0.0
+		else _row(" " + called, "none"), "bays": bays}
+
+
+## Where each device in a pool stands in who's served first, 1 the first.
+func _places(pool: Array, can: Dictionary) -> Dictionary:
+	var levels: Array[int] = []
+	for device: Device in pool:
+		var rank := Power.rank_in(device, can)
+		if not levels.has(rank):
+			levels.append(rank)
+	levels.sort()
+	levels.reverse()
+	var places := {}
+	for device: Device in pool:
+		places[device] = levels.find(Power.rank_in(device, can)) + 1
+	return places
+
+
 ## A device's switches on the power page, a row of keys for each way it can
-## be worked, the one lit that says how it stands.
-func _switches(device: Device, called: String, radar: bool) -> Array:
+## be worked, the one lit that says how it stands; and as its pool's boxes
+## allow, its rank up and down and its own switch, joining a row with room.
+func _switches(device: Device, called: String, radar: bool, can := {}) -> Array:
 	var groups := []
 	if device.wrecked():
 		return groups
@@ -1107,6 +1171,22 @@ func _switches(device: Device, called: String, radar: bool) -> Array:
 		groups.append(keys.call([&"float", &"rest"], &"rest" if device.resting else &"float", ["FLOAT", "REST"], _rest))
 	if device.lamp_w() > 0.0:
 		groups.append(keys.call([true, false], device.lamps, ["LAMP ON", "LAMP OFF"], _lamps))
+	if not (device.demand_w() > 0.0 or not groups.is_empty() or device.switched_off):
+		return groups
+	var circuit := []
+	if can.get("ranks", false):
+		circuit += keys.call([&"rank_up", &"rank_down"], &"", ["PRI +", "PRI -"], _rank)
+	# What has a switch of its own is switched there; a Console never blinds itself.
+	if can.get("switches", false) and groups.is_empty() and not device is Console:
+		circuit += keys.call([&"switch_on", &"switch_off"], &"switch_off" if device.switched_off else &"switch_on",
+			["ON", "OFF"], _switch)
+	if circuit.is_empty():
+		return groups
+	for group: Array in groups:
+		if group.size() + circuit.size() <= 5 and group.all(func(k: Dictionary) -> bool: return k.text.length() <= 5):
+			group.append_array(circuit)
+			return groups
+	groups.append(circuit)
 	return groups
 
 
@@ -1148,6 +1228,35 @@ func _rest(device: Device, to: StringName, called: String, text: String) -> void
 func _lamps(device: Device, on: bool, called: String, text: String) -> void:
 	if device.switch_lamps(on):
 		_say("%s %s" % [called, text])
+
+
+## Ranks a device one up or down in who its pool serves first.
+func _rank(device: Device, to: StringName, called: String, _text: String) -> void:
+	var pool := world.power.pool_of(self)
+	var can := world.power.control(pool)
+	var now := Power.rank_in(device, can)
+	device.priority = clampi(now + (1 if to == &"rank_up" else -1), 0, MOST_RANK)
+	if device.priority != now:
+		_say("%s PRI %d" % [called, _places(pool, can)[device]])
+
+
+## Switches a device off at the box, a draw its pool skips, or on again.
+func _switch(device: Device, to: StringName, called: String, text: String) -> void:
+	var off := to == &"switch_off"
+	if off != device.switched_off:
+		device.switched_off = off
+		_say("%s %s" % [called, text])
+
+
+## A cabinet's bay held to charge only, or let supply.
+func _hold_bay(box: PowerBox, i: int, called: String) -> void:
+	if box.hold(i, not box.is_held(i)):
+		_say("%s BAY %d %s" % [called, i + 1, "CHARGE" if box.is_held(i) else "SUPPLY"])
+
+
+## The power page shows its next loads, from the first again after the last.
+func _page_loads(to: int) -> void:
+	_first_load = to
 
 
 ## What the screen calls a device: its catalog's short name, or its label.

@@ -7,8 +7,9 @@ extends Control
 ## blue, unknown air dark; the front's numbers where the front is, the
 ## pressure's bar down its edge, the forecast along its foot, and under it the
 ## gyro and the legend. Its power page is the deck's electrics as a panel: one
-## line from what makes power through the batteries to what draws it, each
-## device's switches on its row. Its other pages draw rows as a Terminal
+## line from what makes power through each power box, its bays as its strips
+## show them, and the batteries to what draws it, each device's switches on its
+## row, paged when they're more than it holds. Its other pages draw rows as a Terminal
 ## prints them: a table's labels in the accent, numbers right-aligned, units
 ## after; what's urgent in amber, rows that run on dim. Nothing wraps: a row
 ## too long for its line is cut. Its tabs run along its foot. Drawn only when
@@ -45,6 +46,12 @@ const PANEL := 56.0
 const LINE := 40.0
 const SWITCHES := 52.0
 const BAR := 28.0
+## A power box's bays: a row of them, the gap between, a bay's strip's width.
+const BAY_ROW := 66.0
+const BAY_GAP := 6.0
+const BAY_STRIP := 14.0
+## Held to charge only, a bay reads in the strips' cool blue.
+const HELD := Color(0.3, 0.55, 1.0)
 ## The legend's gyro, its middle in from the legend's corner and its radius,
 ## and the stats page's.
 const LEGEND_GYRO := Vector3(118.0, 128.0, 92.0)
@@ -89,14 +96,31 @@ static func lay_out(model: Dictionary) -> void:
 		for source: Dictionary in panel.sources:
 			source["y"] = y
 			y += LINE
+		for box: Dictionary in panel.get("boxes", []):
+			box["y"] = y
+			y += LINE
+			var n: int = box.bays.size()
+			var columns := n if n <= 5 else (4 if n % 4 == 0 else 5)
+			var cell := (canvas.x - MARGIN - PANEL - BAY_GAP * (columns - 1)) / columns
+			for i in n:
+				var bay: Dictionary = box.bays[i]
+				bay["box"] = Rect2(Vector2(PANEL + (i % columns) * (cell + BAY_GAP), y + (i / columns) * BAY_ROW),
+					Vector2(cell, BAY_ROW - BAY_GAP))
+				if bay.has("key"):
+					bay.key["box"] = bay.box
+					keys.append(bay.key)
+			y += ceili(n / float(columns)) * BAY_ROW
 		panel.bank["y"] = y
 		y += 3.0 * LINE + BAR
 		panel["draws_y"] = y
 		y += LINE
 		var shown := 0
-		for load: Dictionary in panel.loads:
+		var loads: Array = panel.loads
+		var first: int = panel.get("first", 0)
+		for k in range(first, loads.size()):
+			var load: Dictionary = loads[k]
 			var tall: float = LINE + SWITCHES * load.groups.size()
-			# Room is kept for a row saying how many more there are.
+			# Room is kept for a row paging to the rest.
 			if y + tall > top - LINE:
 				break
 			load["y"] = y
@@ -110,6 +134,13 @@ static func lay_out(model: Dictionary) -> void:
 			shown += 1
 		panel["shown"] = shown
 		panel["end_y"] = y
+		if panel.has("more") and (first > 0 or first + shown < loads.size()):
+			var next := first + shown if first + shown < loads.size() else 0
+			var more: Dictionary = panel.more
+			more.text = "+%d MORE" % (loads.size() - first - shown) if next > 0 else "FROM THE TOP"
+			more.act = (more.act as Callable).bind(next)
+			more["box"] = Rect2(Vector2(PANEL, y + 2.0), Vector2(canvas.x - MARGIN - PANEL, LINE - 4.0))
+			keys.append(more)
 	model["keys"] = keys
 
 
@@ -133,6 +164,7 @@ func _draw() -> void:
 			_draw_header()
 			_draw_rows(keys_top)
 	_draw_keys()
+	_draw_bays()
 
 
 func _color(name: StringName) -> Color:
@@ -409,6 +441,9 @@ func _draw_power() -> void:
 		var at: float = source.y + mid
 		_arrow(Vector2(PANEL - 6.0, at), Vector2(BUS + 6.0, at), accent, 3.0)
 		nodes.append(at)
+	for box: Dictionary in panel.get("boxes", []):
+		_power_row(box.row, box.y, true)
+		nodes.append(box.y + mid)
 	var bank: Dictionary = panel.bank
 	_power_row(bank.row, bank.y)
 	nodes.append(bank.y + mid)
@@ -421,23 +456,69 @@ func _draw_power() -> void:
 	_power_row(panel.draws, panel.draws_y)
 	nodes.append(panel.draws_y + mid)
 	var loads: Array = panel.loads
+	var first: int = panel.get("first", 0)
 	for i in panel.shown:
-		var load: Dictionary = loads[i]
+		var load: Dictionary = loads[first + i]
 		_power_row(("!" if load.dark else "") + load.row, load.y, true)
 		# What draws takes from the line.
 		var at: float = load.y + mid
 		_arrow(Vector2(BUS + 6.0, at), Vector2(PANEL - 8.0, at), dim if load.dark else text, 3.0)
 		nodes.append(at)
-	if panel.shown < loads.size():
+	if panel.shown < loads.size() and not panel.has("more"):
 		_power_row(" +%d more" % (loads.size() - panel.shown), panel.end_y)
 	draw_line(Vector2(BUS, nodes[0]), Vector2(BUS, nodes[-1]), accent, 4.0)
 	for at in nodes:
 		draw_circle(Vector2(BUS, at), 5.0, accent)
-	# The batteries sit on the line: a cell's mark.
-	var cell := Rect2(Vector2(BUS - 12.0, bank.y + mid - 7.0), Vector2(24.0, 14.0))
-	draw_rect(cell, GLASS)
-	draw_rect(cell, accent, false, 2.0)
-	draw_rect(Rect2(Vector2(BUS - 4.0, cell.position.y - 4.0), Vector2(8.0, 4.0)), accent)
+	# The batteries sit on the line, a box's and the bank: a cell's mark.
+	var stores: Array[float] = [bank.y + mid]
+	for box: Dictionary in panel.get("boxes", []):
+		stores.append(box.y + mid)
+	for y in stores:
+		var cell := Rect2(Vector2(BUS - 12.0, y - 7.0), Vector2(24.0, 14.0))
+		draw_rect(cell, GLASS)
+		draw_rect(cell, accent, false, 2.0)
+		draw_rect(Rect2(Vector2(BUS - 4.0, cell.position.y - 4.0), Vector2(8.0, 4.0)), accent)
+
+
+## Each box's bays as its strips show them: a bar as full as the bay, in the
+## charge lights' colours, an arrow up as it charges and down as it supplies,
+## its share and its watts beside; held to charge, it reads blue; dead or
+## empty, it says so. Over the keys, so a cabinet's bay reads as you aim at it.
+func _draw_bays() -> void:
+	var panel: Dictionary = _model.get("panel", {})
+	if panel.is_empty() or _model.page != "POWER":
+		return
+	var text := _color(&"text")
+	var dim := _color(&"dim")
+	var faint := _color(&"faint")
+	var keys: Array = _model.keys
+	for box: Dictionary in panel.get("boxes", []):
+		for bay: Dictionary in box.bays:
+			var r: Rect2 = bay.box
+			var aimed: bool = bay.has("key") and _model.aim == keys.find(bay.key)
+			var ink := GLASS if aimed else text
+			if not bay.has("key"):
+				draw_rect(r, Color(faint, 0.5), false, 2.0)
+			var strip := Rect2(r.position + Vector2(6.0, 6.0), Vector2(BAY_STRIP, r.size.y - 12.0))
+			draw_rect(strip, Color(GLASS, 0.9))
+			var state: int = bay.state
+			var share: float = bay.share
+			var level := ChargeLight.COLORS[3 if share > 0.5 else (2 if share > 0.2 else (1 if share > 0.0 else 0))]
+			if state < 2 and share > 0.0:
+				var tall := strip.size.y * share
+				draw_rect(Rect2(Vector2(strip.position.x, strip.end.y - tall), Vector2(strip.size.x, tall)), level)
+			draw_rect(strip, HELD if state == 1 else Color(faint, 0.8), false, 3.0 if state == 1 else 1.0)
+			var x := strip.end.x + 8.0
+			var line := (r.size.y - 4.0) * 0.5
+			var flow: float = bay.flow
+			if state < 2 and absf(flow) >= 0.5:
+				_trend(Vector2(x + ARROW * 0.5, r.position.y + 2.0 + line * 0.5), "▲" if flow > 0.0 else "▼", level)
+			var size := KEY
+			var at := x + ARROW + 4.0
+			var room := r.end.x - at - 4.0
+			var base := r.position.y + 2.0 + (line + FONT.get_ascent(size) - FONT.get_descent(size)) * 0.5
+			_words(Vector2(at, base), bay.pct, room, size, (HELD if state == 1 and not aimed else ink) if state < 2 else dim)
+			_words(Vector2(x, base + line), bay.w, r.end.x - x - 4.0, size - 2, dim if not aimed else GLASS)
 
 
 ## A row of the power panel, centred in its line.
