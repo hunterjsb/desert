@@ -109,17 +109,50 @@ static func clear(thing: Node3D, pose: Transform3D, player: Node) -> String:
 	return ""
 
 
-## The sticky face a hit on a deck's shape lies on, as [piece, face], or []:
-## only a piece's own plate is sticky. A hit on its edge counts as the face
-## your look comes from.
-static func face_hit(deck: Chassis, shape: Node, normal: Vector3, looking: Vector3) -> Array:
-	if shape == null or not shape is CollisionShape3D or shape.has_meta(&"socket"):
+## The sticky face a hit lies on or over, as [deck, piece, face], or []: a
+## piece's own plate, the face your look comes from on its edge; or what's
+## stuck on one, so a thing aimed at a neighbour is shown where it would
+## clip it rather than nowhere.
+static func face_hit(hit: Dictionary, looking: Vector3) -> Array:
+	var body := hit.get("collider") as CollisionObject3D
+	if body == null:
 		return []
+	var shape := body.shape_owner_get_owner(body.shape_find_owner(hit.shape)) as Node
+	var deck := body as Chassis
+	var device := body as Device
+	if deck == null and device != null and device.host() is Chassis:
+		var seat := device.host().seat_of(device)
+		return _under(device.host() as Chassis, seat) if seat != null and seat.stuck() else []
+	if deck == null or shape == null or not shape is CollisionShape3D:
+		return []
+	if shape.has_meta(&"socket"):
+		var on: Socket = shape.get_meta(&"socket")
+		while on.has_meta(&"socket"):
+			on = on.get_meta(&"socket")
+		return _under(deck, on) if on.stuck() else []
 	var piece: Chassis = shape.get_meta(&"piece") if shape.has_meta(&"piece") else deck
-	var way := (deck.global_basis * piece.pose().basis).inverse() * normal
+	var way: Vector3 = (deck.global_basis * piece.pose().basis).inverse() * (hit.normal as Vector3)
 	if absf(way.y) < 0.5:
 		way = -((deck.global_basis * piece.pose().basis).inverse() * looking)
-	return [piece, Chassis.TOP if way.y >= 0.0 else Chassis.BOTTOM]
+	return [deck, piece, Chassis.TOP if way.y >= 0.0 else Chassis.BOTTOM]
+
+
+## The face what's stuck in a socket stands on.
+static func _under(deck: Chassis, socket: Socket) -> Array:
+	var piece := deck.own_piece(socket)
+	var top := deck.face_frame(piece, Chassis.TOP).basis.z
+	return [deck, piece, Chassis.TOP if socket.out.dot(top) > 0.0 else Chassis.BOTTOM]
+
+
+## The face a thing aimed at a piece's face goes on: a tray or runners aimed
+## at a top facing up go under it, below where you aim, since a tray lifts
+## toward the sand it faces and a top lies on it.
+static func face_for(deck: Chassis, piece: Chassis, face: StringName, thing: Node) -> StringName:
+	var part := thing as Part
+	if part != null and Device.carries(part) != &"" and face == Chassis.TOP \
+			and deck.face_frame(piece, face).basis.z.y >= UPWARD:
+		return Chassis.BOTTOM
+	return face
 
 
 ## Where a thing aimed at a point on a face would sit, as [place, turn]: under
@@ -128,7 +161,9 @@ static func face_hit(deck: Chassis, shape: Node, normal: Vector3, looking: Vecto
 ## when near one. `held` is how it's turned in the world now.
 static func aim(deck: Chassis, piece: Chassis, face: StringName, point: Vector3, held: Basis, thing: Node) -> Array:
 	var frame := deck.global_transform * deck.face_frame(piece, face)
+	# On the face, under the point: aimed through the plate at its other face too.
 	var local := frame.affine_inverse() * point
+	local.z = 0.0
 	var yaw := 0.0
 	if thing is Frame:
 		yaw = roundf(_turn(frame.basis, held, thing) / Chassis.QUARTER) * Chassis.QUARTER

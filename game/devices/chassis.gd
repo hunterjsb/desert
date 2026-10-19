@@ -107,6 +107,15 @@ func comes_off(piece: Chassis) -> bool:
 	return true
 
 
+## Why what's in a socket won't come out by hand, or "": a frame holds the
+## walls and shelf on its faces.
+func holds(socket: Socket) -> String:
+	var frame := socket.part as Frame
+	if frame != null and frame.faces().values().any(func(f: Socket) -> bool: return f.closed):
+		return "take its walls off first"
+	return ""
+
+
 ## Where a joined piece sits in the deck's frame: on the grid, or on its
 ## frame's face.
 func pose() -> Transform3D:

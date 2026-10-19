@@ -32,7 +32,7 @@ func load_sailing(run_seed := 1234) -> void:
 ## A deck two pieces by two at a place, facing `heading` (engine x, z), on
 ## `carried` under every piece (skates, a board plate or hover trays), a mast
 ## with its sail on the front piece to `windward` (1 its left, -1 its right),
-## a crate with two batteries behind it, and unless `cleated` is false the
+## two big batteries and a battery behind it, and unless `cleated` is false the
 ## sheet made fast on the deck's own hook, so it holds its trim: a camp left
 ## to sail itself.
 func rig(at: Vector3, heading: Vector2, carried := &"skates", windward := 1, cleated := true) -> Chassis:
@@ -45,15 +45,12 @@ func rig(at: Vector3, heading: Vector2, carried := &"skates", windward := 1, cle
 		deck.join(Catalog.device(&"chassis") as Chassis, ring(deck, each[0], each[1]), 0)
 	for i in 4:
 		fit_part(deck, carried)
-	mast = Catalog.device(&"mast") as Mast
-	world.content.add_child(mast)
-	fit_part(mast, &"sail")
-	deck.mount(mast, socket_on(deck, Vector2i(left, 0), &"deck"))
-	var crate := Catalog.device(&"crate_frame")
-	world.content.add_child(crate)
-	fit_part(crate, &"battery")
-	fit_part(crate, &"battery")
-	deck.mount(crate, socket_on(deck, Vector2i(left, 1), &"deck"))
+	mast = Rig.make([&"mast", [&"sail"]]) as Mast
+	# Its boom swung back over the deck, as a sail mount's always had it.
+	Stick.put(deck, Rig.piece(deck, Vector2i(left, 0)), Chassis.TOP, Vector2.ZERO, PI, mast)
+	for at: Vector2 in [Vector2(-0.25, 0.0), Vector2(0.0, 0.0), Vector2(0.25, 0.0)]:
+		Stick.put(deck, Rig.piece(deck, Vector2i(left, 1)), Chassis.TOP, at, 0.0,
+			Catalog.part(&"battery" if at.x == 0.0 else &"big_battery"))
 	if cleated:
 		fit_part(deck, &"hook")
 		Line.between(world, mast._tie(), deck.free_tie(deck.global_position), 6.0)

@@ -1,7 +1,7 @@
 class_name DeckProbe
 extends LineProbe
 ## For chassis probes: pieces lying on the sand, joined into decks through
-## your hands, and what stands on them.
+## your hands, and what's stuck on them.
 
 
 ## A bare chassis piece lying on the sand at a place.
@@ -18,11 +18,45 @@ func ring(deck: Chassis, at: Vector2i, toward: Vector2i) -> Socket:
 	return null
 
 
-## A deck's free socket of a kind on the piece at a grid place.
-func socket_on(deck: Chassis, at: Vector2i, kind: StringName) -> Socket:
-	for socket in deck.sockets():
-		if socket.kind == kind and not socket.has_meta(&"socket") and deck._cell_of(socket) == at:
-			return socket
+## Holds a thing and looks at a point from `from`, an offset from it, long
+## enough for what you hold to go where it would stick there.
+func hold_at(thing: RigidBody3D, at: Vector3, from: Vector3) -> void:
+	if hands.held != thing:
+		if thing.get_parent() == null:
+			world.content.add_child(thing)
+		hands.hold(thing)
+		await simulate(0.3)
+	look(at + from, at)
+	await simulate(0.3)
+
+
+## Holds a thing aimed at a point and takes: whether it stuck there.
+func stick_by_hand(thing: RigidBody3D, at: Vector3, from: Vector3) -> bool:
+	await hold_at(thing, at, from)
+	if hands.sticking.is_empty() or hands.sticking.why != "" or not hands.grab():
+		print("%s didn't stick: %s" % [thing.get(&"label"), "nothing there" if hands.sticking.is_empty() else hands.sticking.why])
+		return false
+	return thing.socket != null if thing is Part else (thing as Device).host() != null
+
+
+## A world point on a piece's face, at a place on it.
+func on_face(deck: Chassis, piece: Chassis, face: StringName, at := Vector2.ZERO) -> Vector3:
+	return deck.global_transform * deck.face_frame(piece, face) * Vector3(at.x, at.y, 0.0)
+
+
+## The piece on a frame's face, or null.
+func on_frame(deck: Chassis, face: Socket) -> Chassis:
+	for each in deck.joined:
+		if each.joined_at == face:
+			return each
+	return null
+
+
+## The frame stuck on a piece, or null.
+func frame_on(deck: Chassis, piece: Chassis) -> Frame:
+	for socket in deck.stuck():
+		if socket.part is Frame and deck.own_piece(socket) == piece:
+			return socket.part
 	return null
 
 

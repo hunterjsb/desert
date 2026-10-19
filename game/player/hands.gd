@@ -204,9 +204,9 @@ var _tints := {}
 ## onto the part, and what it was doing before.
 var _source: Device
 var _source_was := {}
-## The socket a part just came out of: it won't tug again, nor its device offer
-## anything, until you look away.
-var _rearm: Socket
+## Take pressed while what you took is still on its way to your hands: done
+## the moment it's there, so a part taken off goes straight back on.
+var _take_queued := false
 var _aim := Vector3.ZERO
 ## Where on the device you look at you aim, for its offer.
 var _offer_at := Vector3.ZERO
@@ -301,7 +301,9 @@ func grab() -> bool:
 		return true
 	if held != null:
 		if phase != Phase.HELD:
-			return false
+			# On its way to your hands: done once it's there.
+			_take_queued = true
+			return true
 		if socket != null:
 			_fit(socket)
 			return true
@@ -349,6 +351,9 @@ func grab() -> bool:
 	if look_socket != null and look_socket.part != null:
 		if riding:
 			return refuse(RIDING)
+		var deck_holds := (look_device as Chassis).holds(look_socket) if look_device is Chassis else ""
+		if deck_holds != "":
+			return refuse(deck_holds)
 		salvage.claim(look_device)
 		_take_out(look_device, look_socket)
 		return true
@@ -715,6 +720,10 @@ func _physics_process(delta: float) -> void:
 			held.global_transform = _within_reach(_pose(false))
 	if phase == Phase.HELD:
 		_ticked = held.global_transform
+		if _take_queued:
+			_take_queued = false
+			_tug(0.0)
+			grab()
 	grasp.step(delta)
 	if grasp.slipped:
 		grasp.slipped = false
@@ -871,11 +880,11 @@ func refuse(why: String) -> bool:
 
 
 ## Holding something aimed at a device with sockets of its kind but nowhere
-## it goes: why. "" where it has none of the kind, or one just emptied that
-## waits for you to look away, and what you hold is simply put down.
+## it goes: why. "" where it has none of the kind, and what you hold is
+## simply put down.
 func _no_fit() -> String:
 	var target := _root(look_device) if look_device != null else null
-	if target == null or target == held or _rearm != null and _on(_rearm):
+	if target == null or target == held:
 		return ""
 	var piece := held as Chassis
 	var kind: StringName = &"ring" if piece != null else held.get(&"kind")
@@ -1090,7 +1099,6 @@ func _unjoin(deck: Chassis, off: Chassis) -> void:
 	_slide_from = 0.0
 	_t = 0.0
 	phase = Phase.TAKING
-	_rearm = from
 
 
 ## Having hold of a lone piece: the deck's free ring or frame face it would
@@ -1201,24 +1209,22 @@ func _stick_target(thing: RigidBody3D, held_basis: Basis) -> Dictionary:
 	skip.append(thing.get_rid())
 	ray.exclude = skip
 	var hit := get_world_3d().direct_space_state.intersect_ray(ray)
-	var deck := hit.get("collider") as Chassis
-	if deck == null:
-		return {}
-	var shape := deck.shape_owner_get_owner(deck.shape_find_owner(hit.shape)) as Node
-	var on := Stick.face_hit(deck, shape, hit.normal, -_player.camera.global_basis.z)
+	var on := Stick.face_hit(hit, -_player.camera.global_basis.z)
 	if on.is_empty():
 		return {}
-	var placed := Stick.aim(deck, on[0], on[1], hit.position, held_basis, thing)
-	var pose := Stick.pose_on(deck, on[0], on[1], placed[0], placed[1], thing)
-	var why := Stick.why_not(deck, on[0], on[1], thing)
+	var deck: Chassis = on[0]
+	var face := Stick.face_for(deck, on[1], on[2], thing)
+	var placed := Stick.aim(deck, on[1], face, hit.position, held_basis, thing)
+	var pose := Stick.pose_on(deck, on[1], face, placed[0], placed[1], thing)
+	var why := Stick.why_not(deck, on[1], face, thing)
 	if why == "":
 		why = Stick.clear(thing, deck.global_transform * pose, _player)
 	# Floating now, and too much for its trays with this on: it'd settle.
 	var now := deck.stats()
 	var warn := "too heavy" if now.can_float and not deck.resting \
 		and now.lift_kg + _lift_of(thing) < deck.mass + thing.mass else ""
-	return {"deck": deck, "piece": on[0], "face": on[1], "pose": pose,
-		"out": deck.face_frame(on[0], on[1]).basis.z, "why": why, "warn": warn}
+	return {"deck": deck, "piece": on[1], "face": face, "pose": pose,
+		"out": deck.face_frame(on[1], face).basis.z, "why": why, "warn": warn}
 
 
 ## What a thing lifts once it's stuck facing down: a tray its lift, else none.
@@ -1275,8 +1281,6 @@ func _take_out(device: Device, from: Socket) -> void:
 	_slide_from = from.part.depth() if from.part != null else 0.0
 	_t = 0.0
 	phase = Phase.TAKING
-	# Just stuck off, it's shown where it would stick again as you look: no wait.
-	_rearm = null if from.stuck() else from
 	_play(Sounds.PICK if device is Planter and part.kind == &"food" else Sounds.UNSEAT)
 	taken.emit(part, device, from)
 
@@ -1365,11 +1369,9 @@ func _tug(delta: float) -> void:
 ## the devices in reach, reached from its open side: measured from where the
 ## part would sit there, so aiming at the spot or at the ghost is the same.
 ## Aimed near none, the device you look at offers its own, so a low socket
-## needs no crouch. One just emptied waits until you look away from its device.
+## needs no crouch. Worked out afresh every tick from what's free now, so one
+## just emptied takes a part straight back.
 func _find_socket() -> void:
-	if _rearm != null and (not is_instance_valid(_rearm) or not _rearm.is_open()
-			or not _on(_rearm) and _sight_gap(_seat(_rearm)) > _tuning.snap_reach):
-		_rearm = null
 	var target := _looked_at()
 	var best: Socket = null
 	var nearest := INF
@@ -1377,7 +1379,7 @@ func _find_socket() -> void:
 		if device == held or _far(device):
 			continue
 		for each in device.sockets():
-			if not _takes(each) or each == _rearm:
+			if not _takes(each):
 				continue
 			var seat := _seat(each)
 			var d := _sight_gap(seat)
@@ -1389,7 +1391,7 @@ func _find_socket() -> void:
 		best = null
 		# Short of a slot you aim right at, a sticky face your look meets wins.
 		sticking = _stick_target(held, _held_basis())
-		if sticking.is_empty() and target != null and not (_rearm != null and _on(_rearm)):
+		if sticking.is_empty() and target != null:
 			best = _offer(target)
 		nearest = _sight_gap(_seat(best)) if best != null else INF
 	gap = nearest
@@ -1426,7 +1428,7 @@ func _offer(device: Device) -> Socket:
 	var best_facing := false
 	var nearest := INF
 	for each in device.sockets():
-		if not _takes(each) or each == _rearm:
+		if not _takes(each):
 			continue
 		var seat := _seat(each)
 		if _within_reach(seat) != seat:
@@ -1626,6 +1628,7 @@ func _let_go() -> void:
 
 func _forget() -> void:
 	_release_source()
+	_take_queued = false
 	_tint_as(null, {})
 	held = null
 	phase = Phase.EMPTY

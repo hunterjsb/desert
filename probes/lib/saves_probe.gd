@@ -7,8 +7,8 @@ extends ShieldProbe
 const STORM := 0.8
 const WIND := 11.0
 ## The camp round where you stand, m east: a shield with its bubble up, a
-## planter growing inside it, a floating crate outside on two lines to
-## stakes upwind with a light shield seated on it, and a stake beside you
+## planter growing inside it, a floating chassis outside on two lines to
+## stakes upwind with a light shield stuck on it, and a stake beside you
 ## with a line to your waist.
 const SHIELD_AT := 1.5
 const PLANTER_AT := -2.0
@@ -47,17 +47,14 @@ func load_camp(settle_seconds := 10.0) -> void:
 	for plant in planter.plants():
 		plant.set_growth(0.3)
 	at = here + east * FLOATER_AT
-	floater = Catalog.device(&"crate_frame")
+	floater = Catalog.device(&"chassis")
 	world.content.add_child(floater)
 	floater.global_position = Vector3(at.x, world.height_under(at) + tuning.hover_height, at.z)
 	for id: StringName in [&"hover_tray", &"battery", &"hook", &"hook"]:
 		fit_part(floater, id)
-	# A light shield seated on it, running on the crate's power.
+	# A light shield stuck on it, running on its battery.
 	var seated := Catalog.device(&"light_shield") as ShieldGenerator
-	for socket in floater.sockets():
-		if socket.kind == seated.kind and socket.is_open():
-			floater.mount(seated, socket)
-			break
+	Stick.put(floater as Chassis, floater as Chassis, Chassis.TOP, Vector2(0.2, -0.2), 0.0, seated)
 	seated.stand(true)
 	floater.global_position.y += floater.rest_height() - tuning.hover_height
 	for side: float in [-1.5, 1.5]:
