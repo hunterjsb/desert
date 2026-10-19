@@ -1,7 +1,7 @@
 extends WreckProbe
 ## Wreck probe 3: the unprepared are wounded. A module with a live hazard on
 ## it can be taken without making it safe, at a price. Grabbing a skimmer's
-## charger by its live capacitor bank shocks you: health gone at once, thrown
+## power module by its live capacitor bank shocks you: health gone at once, thrown
 ## off it, stunned, unable to walk or close your hands, the bank spent. A
 ## hauler's cargo by a breached store makes you sick: health drained a little
 ## at a time, thirst faster, no healing, until it wears off, and a med kit
@@ -23,16 +23,16 @@ func run() -> void:
 	var skimmer := await wreck_at(&"wreck_hull", spot.x, spot.y)
 	var bank := _hazard_of(skimmer, Wreckage.ELECTRICAL)
 	free_module(skimmer, bank)
-	var charger: RigidBody3D = modules_of(skimmer)[bank]
+	var bank_module: RigidBody3D = modules_of(skimmer)[bank]
 	var health := vitals.health
-	_reach(charger)
+	_reach(bank_module)
 	hands.grab()
 	await physics_frames(2)
 	print("shocked: health %.1f to %.1f, stunned %.2f s" % [health, vitals.health, wounds.stun])
 	check(absf(health - vitals.health - tuning.shock_harm) < 0.5 and wounds.stunned() and wounds.shocks == 1,
 		"grabbing it by a live bank shocks you: %.0f health and stunned" % tuning.shock_harm)
-	check(hands.held != charger and hands.grasp.body != charger and charger.has_meta(&"find"),
-		"and throws you off it, the charger still lying there")
+	check(hands.held != bank_module and hands.grasp.body != bank_module and bank_module.has_meta(&"find"),
+		"and throws you off it, the module still lying there")
 	check(skimmer.hazard(bank) == &"" and skimmer.hazard_body(bank).has_meta(&"hazard_done"), "the bank is spent")
 	hands.grab()
 	check(hands.held == null and hands.grasp.body == null, "stunned, your hands won't close")
@@ -52,10 +52,10 @@ func run() -> void:
 	world.player.collision_mask = 0
 	await physics_frames(roundi(tuning.shock_stun * Engine.physics_ticks_per_second) + 5)
 	check(not wounds.stunned(), "the stun passes in %.1f s" % tuning.shock_stun)
-	_reach(charger)
+	_reach(bank_module)
 	hands.grab()
 	await physics_frames(30)
-	check(hands.held == charger or hands.grasp.body == charger, "spent, the charger comes into your hands")
+	check(hands.held == bank_module or hands.grasp.body == bank_module, "spent, the module comes into your hands")
 	hands.drop()
 
 	# Unprepared: a sickness.

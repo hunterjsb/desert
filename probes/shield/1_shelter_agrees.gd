@@ -20,14 +20,14 @@ func run() -> void:
 	world.respawn(place.x, place.z, place.yaw, place.time)
 	world.time_warp = 0.0
 	await settle(true)
-	# Set down beside you, opposite the way the walk goes.
-	var generator := Catalog.device(&"shield") as ShieldGenerator
-	world.content.add_child(generator)
-	generator.global_position = Vector3(world.engine_x(place.x - 2.0), world.height_at(place.x - 2.0, place.z) + 0.22,
+	# Set down beside you on a plate with its battery, opposite the way the walk goes.
+	var plate := Catalog.device(&"chassis") as Chassis
+	world.content.add_child(plate)
+	plate.global_position = Vector3(world.engine_x(place.x - 2.0), world.height_at(place.x - 2.0, place.z) + 0.07,
 		world.engine_z(place.z))
-	var cell := Catalog.part(&"battery")
-	world.content.add_child(cell)
-	generator.fit(cell, generator.sockets().filter(func(s: Socket) -> bool: return s.kind == &"battery")[0])
+	var generator := Catalog.device(&"shield") as ShieldGenerator
+	Stick.put(plate, plate, Chassis.TOP, Vector2.ZERO, 0.0, generator)
+	Stick.put(plate, plate, Chassis.TOP, Vector2(0.3, 0.3), 0.0, Catalog.part(&"battery"))
 	check(generator.interact(world.player), "use switches the shield on")
 	await physics_frames(roundi((Tuning.current().shield_bloom_seconds + 0.1) * Engine.physics_ticks_per_second))
 	var shelter := generator.shelter

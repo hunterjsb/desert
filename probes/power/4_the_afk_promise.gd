@@ -11,11 +11,10 @@ extends CampProbe
 const LATITUDE := 45.0
 ## On the third day the storm's wear wrecks the turbine (Power, "As built").
 const DAYS := 2.0
-## The underbuilt camp stands this far across the wind, m, its shield and
-## its crate this far right and ahead of you there.
+## The underbuilt camp stands this far across the wind, m, its plate this
+## far right and ahead of you there.
 const APART := 40.0
-const WEAK_SHIELD := [0.0, 2.0]
-const WEAK_CRATE := [0.0, -2.0]
+const WEAK := [0.0, 2.0]
 
 
 func run() -> void:
@@ -66,21 +65,19 @@ func run() -> void:
 	check(seen.weak_dark >= 0.0, "the underbuilt camp went dark in the same weather")
 
 
-## The kit's power under a found shield, across the wind: the shield on one
-## battery, as charged as the kit's, cabled to the light panel on a crate
-## resting beside it.
+## The kit's power under a found shield, across the wind: the base shield on
+## a plate resting on the sand, one battery as charged as the kit's and the
+## light panel stuck beside it.
 func _underbuilt() -> ShieldGenerator:
 	var player := world.player
 	var home := player.global_transform
 	world.teleport(player, home.translated(player.global_basis.x * APART))
-	var made := Scenarios.standing(world, &"shield", [&"battery"], WEAK_SHIELD) as ShieldGenerator
-	made.battery().charge_wh = made.battery().capacity() * Kit.standard().charge
-	var holder := Scenarios.standing(world, &"crate_frame", [&"hover_tray"], WEAK_CRATE)
-	holder.resting = true
-	holder.lift_share = 0.0
-	var panel := Catalog.device(&"light_panel")
-	holder.mount(panel, holder.sockets().filter(func(s: Socket) -> bool: return s.kind == &"top")[0])
-	Scenarios.wire(world, panel, made)
+	var rig := Scenarios.rig_at(world, [[&"stick", Vector2i.ZERO, &"top", Vector2(-0.25, 0.25), 0.0, &"shield", &"shield"],
+		[&"stick", Vector2i.ZERO, &"top", Vector2(0.25, 0.25), 0.0, &"battery"],
+		[&"stick", Vector2i.ZERO, &"top", Vector2(0.0, -0.27), 0.0, &"light_panel"]], WEAK, false)
+	var cell := rig.deck.batteries()[0]
+	cell.charge_wh = cell.capacity() * Kit.standard().charge
+	var made: ShieldGenerator = rig.named.shield
 	made.stand(true)
 	world.teleport(player, home)
 	await physics_frames(2)
