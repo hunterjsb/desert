@@ -45,32 +45,33 @@ const ERAS := {
 		CACHE: [[&"big_battery", 2], [&"strong_plug", 2], [&"hover_tray", 1], [&"screen", 1]],
 		BED: [[&"root_tuber", 3], [&"vat_fungus", 2]],
 		BEST: [[&"console", 2], [&"shield", 2], [&"turbine", 2], [&"condenser", 1], [&"big_battery", 3],
-			[&"hover_tray", 2], [&"solar_panel", 2], [&"radar", 1], [&"screen", 1], [&"harvester", 1]]},
+			[&"hover_tray", 2], [&"solar_panel", 2], [&"radar", 1], [&"screen", 1], [&"harvester", 1],
+			[&"power_cabinet", 1]]},
 	# The best single-item gear, from deserters and the black site: light,
 	# cheap and fragile, made before Zan was a desert. Its boards are its
 	# crews' racers.
 	Eras.SKIMMER: {"kept": 0.6, "layer": Finds.DEEP, "charge": Vector2(0.2, 0.9), "sound": Vector2(0.5, 0.9),
 		"fills": Finds.DEEP, "fill": 0.5, "sealed": false,
 		FLOOR: [[&"survival_kit", 3], [&"radio", 2], [&"racer_board", 1], [&"light_panel", 1], [&"battery", 2],
-			[&"big_battery", 1], [&"coil", 1], [&"strong_plug", 1], [&"ration", 2]],
+			[&"big_battery", 1], [&"coil", 1], [&"strong_plug", 1], [&"ration", 2], [&"power_rack", 1]],
 		SHELF: [[&"battery", 2], [&"ration", 2], [&"hook", 1], [&"plug", 1], [&"anemometer", 1],
 			[&"particle_sensor", 1], [&"compass", 1], [&"lamp", 1], [&"sand_scoop", 1], [&"sealant", 1]],
 		CACHE: [[&"big_battery", 2], [&"battery", 2], [&"strong_plug", 1], [&"hose_end", 1], [&"med_kit", 1],
 			[&"sealant", 1]],
 		BED: [[&"vat_fungus", 1]],
 		BEST: [[&"shield", 3], [&"racer_board", 2], [&"radar", 2], [&"harvester", 2], [&"particle_sensor", 1],
-			[&"anemometer", 1], [&"big_battery", 2], [&"console", 1], [&"cutter", 2]]},
+			[&"anemometer", 1], [&"big_battery", 2], [&"console", 1], [&"cutter", 2], [&"power_rack", 1]]},
 	# Intact working colonial tech, kept running and used in new ways.
 	Eras.FIRST: {"kept": 0.6, "layer": Finds.SURFACE, "charge": Vector2(0.4, 1.0), "sound": Vector2(0.75, 1.0),
 		"fills": Finds.DEEP, "fill": 0.75, "sealed": true,
 		FLOOR: [[&"condenser", 3], [&"turbine", 2], [&"frame", 2], [&"planter", 2], [&"chassis", 2],
-			[&"radio", 1], [&"canister", 2], [&"hose_end", 2], [&"battery", 2]],
+			[&"radio", 1], [&"canister", 2], [&"hose_end", 2], [&"battery", 2], [&"power_cabinet", 1]],
 		SHELF: [[&"battery", 2], [&"barometer", 2], [&"hygrometer", 2], [&"compass", 2], [&"lamp", 2],
 			[&"hose_end", 2], [&"canister", 1]],
 		CACHE: [[&"battery", 2], [&"big_battery", 1], [&"canister", 2], [&"compass", 1]],
 		BED: [[&"root_tuber", 3], [&"saltbush", 1], [&"vat_fungus", 1]],
 		BEST: [[&"condenser", 2], [&"turbine", 2], [&"shield", 2], [&"console", 1], [&"big_battery", 2],
-			[&"harvester", 2], [&"hover_tray", 1], [&"radar", 1], [&"screen", 1]]},
+			[&"harvester", 2], [&"hover_tray", 1], [&"radar", 1], [&"screen", 1], [&"power_cabinet", 1]]},
 	# Worn reused gear; water, seeds and salt. Its floors hold what a house
 	# ruin's always did; its best, what the deep layer did, its board the
 	# temple's make.
@@ -79,7 +80,7 @@ const ERAS := {
 		FLOOR: [[&"battery", 4], [&"hook", 4], [&"lamp", 2], [&"canister", 2], [&"coil", 3], [&"plug", 3],
 			[&"hose_end", 2], [&"compass", 1], [&"chassis", 4], [&"frame", 1], [&"fabric", 1], [&"planter", 2],
 			[&"survival_kit", 5], [&"radio", 2], [&"root_tuber", 6], [&"vat_fungus", 4],
-			[&"ration", 2], [&"salt", 2], [&"saltbush", 2]],
+			[&"ration", 2], [&"salt", 2], [&"saltbush", 2], [&"power_shrine", 1]],
 		SHELF: [[&"canister", 3], [&"salt", 3], [&"saltbush", 2], [&"root_tuber", 2], [&"ration", 2],
 			[&"coil", 2], [&"lamp", 1], [&"compass", 1], [&"hook", 1]],
 		CACHE: [[&"survival_kit", 2], [&"canister", 2], [&"coil", 2], [&"radio", 1], [&"compass", 1]],
@@ -87,7 +88,7 @@ const ERAS := {
 		BEST: [[&"big_battery", 3], [&"battery", 2], [&"hover_tray", 3], [&"solar_panel", 3],
 			[&"strong_plug", 2], [&"harvester", 1], [&"chassis", 3], [&"turbine", 2], [&"condenser", 2],
 			[&"shield", 2], [&"temple_board", 1], [&"console", 1], [&"survival_kit", 2],
-			[&"root_tuber", 4], [&"vat_fungus", 4], [&"ration", 1]]},
+			[&"root_tuber", 4], [&"vat_fungus", 4], [&"ration", 1], [&"power_shrine", 1]]},
 }
 ## What a kind holds in place of its era's, by socket kind (and "kept": its
 ## own share left holding something): the kind says what fits.
@@ -111,10 +112,10 @@ const KINDS := {
 		MODULE: [[&"survival_kit", 3], [&"radio", 2], [&"light_panel", 2], [&"shield", 1], [&"light_shield", 2]]},
 	&"tithe_hauler": {"kept": 0.9,
 		MODULE: [[&"shield", 3], [&"light_shield", 2], [&"radio", 2], [&"survival_kit", 2]],
-		BAY: [[&"shield", 3], [&"condenser", 2], [&"chassis", 2], [&"console", 1]]},
+		BAY: [[&"shield", 3], [&"condenser", 2], [&"chassis", 2], [&"console", 1], [&"power_rack", 1]]},
 	&"freight_pod": {"kept": 0.8,
 		MODULE: [[&"shield", 2], [&"light_panel", 3], [&"turbine", 2], [&"radio", 1]],
-		BAY: [[&"condenser", 3], [&"console", 2], [&"turbine", 2], [&"planter", 2]]},
+		BAY: [[&"condenser", 3], [&"console", 2], [&"turbine", 2], [&"planter", 2], [&"power_cabinet", 1]]},
 	&"lifeboat": {"kept": 0.9,
 		MODULE: [[&"radio", 3], [&"survival_kit", 4], [&"light_panel", 2], [&"light_shield", 2]]},
 	&"hopper": {"kept": 0.85, BEST: [[&"patrol_board", 3], [&"shield", 2], [&"radio", 1], [&"survival_kit", 2]],
@@ -135,7 +136,8 @@ const KINDS := {
 	# seeds; a pilgrim's cache in the plinth.
 	&"wayshrine": {"kept": 0.9, SHELF: [[&"canister", 4], [&"salt", 3], [&"saltbush", 3], [&"root_tuber", 2],
 		[&"vat_fungus", 1], [&"ration", 1]],
-		BEST: [[&"survival_kit", 4], [&"canister", 2], [&"radio", 1], [&"compass", 1], [&"coil", 1]]},
+		BEST: [[&"survival_kit", 4], [&"canister", 2], [&"radio", 1], [&"compass", 1], [&"coil", 1],
+			[&"power_shrine", 1]]},
 	# The late wars' weapons cache, on the platform, a Knights' patrol board among it.
 	&"watchtower": {CACHE: [[&"shield", 2], [&"light_shield", 1], [&"radio", 2], [&"survival_kit", 2],
 		[&"compass", 1], [&"coil", 2], [&"big_battery", 1], [&"patrol_board", 1]]},

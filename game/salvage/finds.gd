@@ -54,6 +54,8 @@ const DEVICES := {
 		[&"survival_kit", 1],
 		[&"radio", 2],
 		[&"bedroll", 1],
+		# What a company surveyor before you dropped: its own issue.
+		[&"power_box", 1],
 	],
 	DEEP: [
 		[&"chassis", 3],
@@ -75,10 +77,12 @@ const KIT_SEEDS_IN_THE_OPEN := 0.1
 ## What a found device's sockets hold, by socket kind, and a found chassis's
 ## spots, by the fills each names (top, battery, bottom); a kind not listed
 ## is found empty. A Console is a deep find, and its screen and instruments
-## come only in one.
+## come only in one. A power box's bays hold the cells it was built for, so
+## the heaviest box found still drags by hand.
 const FILLS := {
-	SURFACE: {&"battery": [&"battery"], &"ring": [&"hook"], &"top": [&"lamp"], &"water": [&"canister"]},
-	DEEP: {&"battery": [&"big_battery", &"battery"], &"ring": [&"hook"], &"bottom": [&"hover_tray"],
+	SURFACE: {&"battery": [&"battery"], &"bay": [&"battery"], &"ring": [&"hook"], &"top": [&"lamp"],
+		&"water": [&"canister"]},
+	DEEP: {&"battery": [&"big_battery", &"battery"], &"bay": [&"battery"], &"ring": [&"hook"], &"bottom": [&"hover_tray"],
 		&"top": [&"solar_panel", &"lamp"], &"water": [&"canister"], &"screen": [&"screen"],
 		&"computer_mod": [&"anemometer", &"barometer", &"hygrometer", &"particle_sensor"], &"computer_top": [&"radar"],
 		&"sail": [&"sail"]},
@@ -245,7 +249,7 @@ static func holds(id: StringName) -> Array[StringName]:
 	var out: Array[StringName] = []
 	var spec: Dictionary = Catalog.DEVICES[id]
 	for socket: Array in spec.sockets:
-		out.append(socket[0])
+		out.append(socket[3].get("fills", socket[0]) if socket.size() > 3 else socket[0])
 	for spot: Array in spec.get("spots", []):
 		out.append(spot[3])
 	return out

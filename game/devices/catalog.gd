@@ -191,7 +191,7 @@ const SLOT_ONLY: Array[StringName] = [&"ring", &"port", &"tie", &"plant_pot", &"
 ## Who made each thing colonial hands made, as its stamp says (art
 ## direction's maker's marks): commodity parts carry none.
 const MAKERS := {&"chassis": &"tilg", &"frame": &"tilg", &"board": &"tilg", &"condenser": &"rmc", &"console": &"rmc",
-	&"shield": &"rmc", &"light_shield": &"shield_maker", &"turbine": &"wind_maker"}
+	&"shield": &"rmc", &"light_shield": &"shield_maker", &"turbine": &"wind_maker", &"power_cabinet": &"rmc"}
 ## Where a lineage's marks sit on what isn't a box: round about its top's
 ## axis, as [its radius over its half width, and the shares of its height its
 ## round body spans].
@@ -213,7 +213,50 @@ const BOARD_SOCKETS := [
 	[&"battery", Vector3(0.0, 0.04, -0.5), Vector3.UP],
 	[&"port", Vector3(0.0, 0.0, 0.65), Vector3.BACK],
 ]
-## Frames: their box, weight, wind catch and sockets as [kind, position, outward].
+## A power box's bays, by make: [kind, position, outward, what it is]: a bay
+## found holds the cells it was built for, a dead one nothing, and a bay may
+## sit turned about its way out, degrees, and its strip elsewhere than its
+## make's (PowerBox).
+const _BAY := {"fills": &"bay"}
+const _CABINET_BAYS := [
+	[&"battery", Vector3(0.21, 0.3275, -0.165), Vector3.FORWARD, _BAY],
+	[&"battery", Vector3(-0.15, 0.3275, -0.165), Vector3.FORWARD, _BAY],
+	[&"battery", Vector3(0.21, 0.0875, -0.165), Vector3.FORWARD, _BAY],
+	[&"battery", Vector3(-0.15, 0.0875, -0.165), Vector3.FORWARD, _BAY],
+	[&"battery", Vector3(0.21, -0.1525, -0.165), Vector3.FORWARD, _BAY],
+	[&"battery", Vector3(-0.15, -0.1525, -0.165), Vector3.FORWARD, _BAY],
+	[&"battery", Vector3(0.21, -0.3925, -0.165), Vector3.FORWARD, _BAY],
+	[&"battery", Vector3(-0.15, -0.3925, -0.165), Vector3.FORWARD, _BAY],
+]
+const _DOCK_BAYS := [
+	[&"battery", Vector3(0.155, 0.01, -0.11), Vector3.UP, _BAY],
+	[&"battery", Vector3(-0.155, 0.01, -0.11), Vector3.UP, _BAY],
+	[&"battery", Vector3(0.155, 0.01, 0.13), Vector3.UP, _BAY],
+	[&"battery", Vector3(-0.155, 0.01, 0.13), Vector3.UP, _BAY],
+]
+## Bolted in where they'd go, none quite square; three burnt out.
+const _RACK_BAYS := [
+	[&"battery", Vector3(0.305, 0.392, -0.13), Vector3.FORWARD, {"fills": &"bay", "turn": 2.0}],
+	[&"battery", Vector3(-0.006, 0.384, -0.13), Vector3.FORWARD, {"fills": &"bay", "turn": -1.5}],
+	[&"battery", Vector3(-0.298, 0.396, -0.13), Vector3.FORWARD, {"fills": &"bay", "turn": 3.0}],
+	[&"dead_bay", Vector3(0.296, 0.136, -0.13), Vector3.FORWARD, {"turn": -3.5}],
+	[&"battery", Vector3(0.008, 0.142, -0.13), Vector3.FORWARD, {"fills": &"bay", "turn": 1.0}],
+	[&"battery", Vector3(-0.31, 0.131, -0.13), Vector3.FORWARD, {"fills": &"bay"}],
+	[&"battery", Vector3(0.302, -0.112, -0.13), Vector3.FORWARD, {"fills": &"bay", "turn": -2.0}],
+	[&"dead_bay", Vector3(-0.004, -0.104, -0.13), Vector3.FORWARD, {"turn": 4.0}],
+	[&"battery", Vector3(-0.296, -0.116, -0.13), Vector3.FORWARD, {"fills": &"bay", "turn": -1.0}],
+	[&"battery", Vector3(0.31, -0.362, -0.13), Vector3.FORWARD, {"fills": &"bay", "turn": 1.5}],
+	[&"dead_bay", Vector3(0.002, -0.37, -0.13), Vector3.FORWARD, {"turn": -2.5}],
+	[&"battery", Vector3(-0.302, -0.357, -0.13), Vector3.FORWARD, {"fills": &"bay", "turn": 2.5}],
+]
+## Two niches low and one high, off true, each with its tube beside it.
+const _SHRINE_BAYS := [
+	[&"battery", Vector3(0.18, -0.18, -0.14), Vector3.FORWARD, {"fills": &"bay", "strip": Vector2(-0.175, 0.0)}],
+	[&"battery", Vector3(-0.18, -0.18, -0.14), Vector3.FORWARD, _BAY],
+	[&"battery", Vector3(0.04, 0.13, -0.14), Vector3.FORWARD, _BAY],
+]
+## Frames: their box, weight, wind catch and sockets as [kind, position,
+## outward], a bay with what it is too.
 ## "sticks" goes on a chassis's sticky face; "stands" only upright on one
 ## facing up; "tall" too tall to stand under a frame. A "short" name is what
 ## a Console's screen calls it, where its label is too long. A chassis's
@@ -367,6 +410,26 @@ const DEVICES := {
 			[&"computer_mod", Vector3(-0.35, 0.12, 0.0), Vector3.LEFT],
 			[&"computer_mod", Vector3(-0.35, -0.12, 0.0), Vector3.LEFT],
 		]},
+	# Power boxes: battery bays sticking on a deck, joining its pool, each make
+	# on its own terms (PowerBox). The colony's cabinet, rare and heavy: eight
+	# precise bays in two columns, its bank read out across its head.
+	&"power_cabinet": {"label": "Power cabinet", "short": "Cabinet", "size": Vector3(0.8, 1.2, 0.45), "mass": 30.0,
+		"middle": Vector3(0.0, -0.2, 0.0), "power_box": true, "sticks": true, "stands": true, "tall": true,
+		"sockets": _CABINET_BAYS + [[&"port", Vector3(0.0, -0.42, 0.225), Vector3.BACK]]},
+	# The company's issue: a light dock of four bays on its face, sticking
+	# anywhere, a wall too, built to a budget.
+	&"power_box": {"label": "Power box", "short": "Power box", "size": Vector3(0.62, 0.12, 0.5), "mass": 6.0,
+		"power_box": true, "carryable": true, "sticks": true,
+		"sockets": _DOCK_BAYS + [[&"port", Vector3(0.31, -0.01, 0.0), Vector3.RIGHT]]},
+	# A skimmer crew's bodged rack: a dozen mismatched bays, three dead,
+	# shared pool only.
+	&"power_rack": {"label": "Battery rack", "short": "Rack", "size": Vector3(0.96, 1.06, 0.36), "mass": 16.0,
+		"power_box": true, "sticks": true, "stands": true, "tall": true,
+		"sockets": _RACK_BAYS + [[&"port", Vector3(0.3, -0.35, 0.18), Vector3.BACK]]},
+	# Temple-made round an old bus: three niches in an ornate casing.
+	&"power_shrine": {"label": "Power shrine", "short": "Shrine", "size": Vector3(0.8, 0.78, 0.38), "mass": 16.0,
+		"power_box": true, "sticks": true, "stands": true,
+		"sockets": _SHRINE_BAYS + [[&"port", Vector3(-0.2, -0.3, 0.19), Vector3.BACK]]},
 }
 
 
@@ -555,7 +618,8 @@ static func device(id: StringName) -> Device:
 		else (Chassis.new() if spec.get("chassis", false) \
 		else (Bedroll.new() if spec.get("bedroll", false) \
 		else (Console.new() if spec.get("console", false) \
-		else (Cutter.new() if spec.get("cutter", false) else Device.new()))))))))))
+		else (PowerBox.new() if spec.get("power_box", false) \
+		else (Cutter.new() if spec.get("cutter", false) else Device.new())))))))))))
 	made.set_meta(&"catalog", id)
 	made.label = spec.label
 	made.frame_mass = spec.mass
@@ -573,7 +637,8 @@ static func device(id: StringName) -> Device:
 		made.rotor.mesh = Dress.rotor(id)
 		made.rotor.position = Vector3(0.0, size.y * 0.5 + spec.mast, 0.0)
 		made.add_child(made.rotor)
-	if spec.sockets.any(func(e: Array) -> bool: return e[0] == &"battery"):
+	# A power box shows its charge bay by bay, on its strips.
+	if spec.sockets.any(func(e: Array) -> bool: return e[0] == &"battery") and not spec.get("power_box", false):
 		made.charge_light = ChargeLight.make(Vector3(0.05, 0.05, 0.05))
 		# High on its right side, where nothing on its top mounts covers it.
 		made.charge_light.position = Vector3(size.x * 0.5 + 0.025, size.y * 0.5 - 0.05, size.z * 0.5 - 0.05)
@@ -581,15 +646,18 @@ static func device(id: StringName) -> Device:
 	for entry: Array in spec.sockets:
 		var socket := Socket.new()
 		socket.kind = entry[0]
-		var outward: Vector3 = entry[2]
-		socket.transform = Transform3D(_facing(outward), entry[1])
+		socket.transform = PowerBox.bay_frame(entry)
+		if entry.size() > 3:
+			socket.set_meta(&"bay", entry[3])
+		made.add_child(socket)
+		if socket.kind == PowerBox.DEAD:
+			continue
 		var tell := MeshInstance3D.new()
 		tell.mesh = Dress.tell(socket.kind)
 		# Its tab glows a little, so a free socket reads at dusk.
 		tell.set_instance_shader_parameter(&"lit", 1.0)
 		socket.add_child(tell)
 		socket.marker = tell
-		made.add_child(socket)
 	made.show_wear()
 	return made
 

@@ -201,6 +201,8 @@ static func _frame(id: StringName, size: Vector3, extra: float) -> ArrayMesh:
 	var gun := Paint.coat(Paint.GUNMETAL)
 	var teal := Paint.coat(Paint.TEAL)
 	var black := Paint.coat(Paint.BLACK, 0.3, 0.3, 0.6)
+	if PowerLooks.frame(b, id, size):
+		return b.commit()
 	match id:
 		&"planter":
 			# Another maker's growing tub, bone white on gunmetal skids.
