@@ -9,7 +9,7 @@ extends Resource
 const STANDARD := "res://game/survival/standard_kit.tres"
 ## The origins New game offers, the default first.
 const ORIGINS: Array[String] = [STANDARD, "res://game/survival/salvager_kit.tres",
-	"res://game/survival/homesteader_kit.tres"]
+	"res://game/survival/homesteader_kit.tres", "res://game/survival/varran_kit.tres"]
 
 ## Who you came as, by id and by name, and the few words New game says
 ## under the name.
@@ -42,7 +42,12 @@ const ORIGINS: Array[String] = [STANDARD, "res://game/survival/salvager_kit.tres
 ## Lines laid between two things beside you, by name, each a coil's length:
 ## a floater moored to its stake, the stake to be taken up to tow it.
 @export var lines: Dictionary[StringName, StringName] = {}
-## How full the batteries in what's beside you start, 0 to 1.
+## Lines laid to your waist from what's beside you, by name, or from what a
+## rig's steps name, each this much slack, m: from a mast, its sheet at the
+## boom's end; from a hook, its tie; else the thing's free tie nearest you.
+@export var waist: Dictionary[StringName, float] = {}
+## How full the batteries in what's beside you and the devices you carry
+## start, 0 to 1.
 @export var charge := 1.0
 ## How long a coil or a line beside you lays, m.
 @export var rope_m := 12.0
@@ -96,8 +101,9 @@ func carried_ids() -> Array[StringName]:
 
 
 ## Everything it gives you and how many of each, beside you and carried, in
-## the order it comes: catalog ids, a line laid or coiled as &"line". It
-## reads beside, assembled and lines as a run sets them down (Runs.kit).
+## the order it comes: catalog ids, a line laid or coiled as &"line", and a
+## device's batteries. It reads beside, assembled, lines and waist as a run
+## sets them down (Runs.kit).
 func gear() -> Dictionary[StringName, int]:
 	var out: Dictionary[StringName, int] = {}
 	for id: StringName in beside:
@@ -120,8 +126,24 @@ func gear() -> Dictionary[StringName, int]:
 					_count(out, &"battery")
 	for id in lines:
 		_count(out, &"line")
+	for id in waist:
+		_count(out, &"line")
+	var on_you := carried_gear()
+	for id in on_you:
+		_count(out, id, on_you[id])
+	return out
+
+
+## What the suit carries of it, counted as gear() counts: a device you carry
+## comes with its batteries.
+func carried_gear() -> Dictionary[StringName, int]:
+	var out: Dictionary[StringName, int] = {}
 	for id in carried:
 		_count(out, id, carried[id])
+		if Catalog.DEVICES.has(id):
+			for socket: Array in Catalog.DEVICES[id].sockets:
+				if socket[0] == &"battery":
+					_count(out, &"battery", carried[id])
 	return out
 
 

@@ -80,9 +80,19 @@ func restock() -> void:
 	for thing in carried:
 		thing.free()
 	carried.clear()
-	for id in Kit.of(World.of(self)).carried_ids():
+	var kit := Kit.of(World.of(self))
+	for id in kit.carried_ids():
 		if Catalog.DEVICES.has(id):
 			var device := Catalog.device(id)
+			# It comes with its batteries, to work on you from the first;
+			# fitted before it's in the world, so before its _ready would set this.
+			device.center_of_mass_mode = RigidBody3D.CENTER_OF_MASS_MODE_CUSTOM
+			for socket in device.sockets():
+				if socket.kind == &"battery":
+					var cell := Catalog.part(&"battery") as Battery
+					cell.charge_wh = cell.capacity() * kit.charge
+					device.fit(cell, socket)
+					cell.show_charge()
 			# You may still be setting up, too busy to take it on yet.
 			if _player.is_node_ready():
 				_on_you(device)
