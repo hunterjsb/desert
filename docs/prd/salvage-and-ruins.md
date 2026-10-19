@@ -826,7 +826,50 @@ are deferred: "Deferred: ... landmark interiors, heat shields." **Part 5:** "Par
 site' landmark is **replaced**" by the Rim depot, a suborbital port near Sister, and the elevator stub,
 which is the observatory on the far-side volcano ([World &
 terrain](world-and-terrain.md#the-rim-depot-the-twin-fires-and-the-elevator-stub-agreed-session-4-part-5-not-built)).
-The Okafor bunker, the Almanac's ag complex and the Stoker's terraces are not on the session's list.
+The Haberjack bunker, the Almanac's ag complex and the Stoker's terraces are not on the session's list.
+
+## Session 5's finds and places (Agreed and Idea; not built)
+
+*[Session 5](../lore-session-2026-10-18-mitchell-wow-shoemaker.md); direction, and none of it is built.
+What the session states plainly is Agreed and what it marks perhaps, possible or a sketch is an Idea. The
+stories are in [the lore research](../lore-research.md#mitchell-the-dead-god-agreed-session-5).*
+
+**Finds (Agreed).**
+- **Tab-stones** in ruined homes: the Tabbed's family stones, carved with what a family owes and is owed;
+  the Ashwalkers wear small ones as pendants.
+- **Mitchells** in the sand: the stamped tokens of the First Kingdoms' money, long after the word lost its
+  meaning.
+- **Working Clerk synthesisers,** the second age's field medicine, carried like reliquaries.
+- **Singing stones** ([Devices & mods](devices-and-mods.md#the-singing-stone-agreed-session-5-not-built)):
+  the black stones in the sand, and the cradles on Halfrise's walls, the highest empty.
+- **Mario's voice logs** (an easter egg), left in the Halloran refinery; some were recorded in Mitchell's
+  back room, with Mitchell laughing in the background. Every log collected gives his master key and the
+  punchline about the pipe.
+- **Rosalind's notes** in the back room (they explain why children are always free) and **Mitchell's
+  notebook** from the second age ("Subject saw the Eye weep. Fascinating. Repeat Thursday.").
+
+**Places.**
+- **The Counting House** (Agreed): the original freight warehouse in Crakeside, with its stalls, scales and
+  counting tables in the old freight halls, sacked by the Knights Requisitioner. *Idea (perhaps):* one last
+  unpaid debt carved on its wall.
+- **Mitchell's back room** (Agreed): a room in that warehouse, sealed and buried when the machine went dark,
+  and dug out again by the Crakes.
+- **Halfrise's stone choir and Sister's stone** (Agreed): the walls ringed with stones as a storm-alarm
+  choir; Sister's stone sang the deepest note. The jar chamber's wall carries a priestess's half-carved name.
+- **Facility 4** (a sketch): Wow lies deep under the black site, which the Provisional's governor built on top
+  of it.
+- **The deserter Knight's trail** (*Idea, a possible trail*): a grey cloak in a cave, a manifest with his own
+  name crossed out, and a tab-stone with one entry, Mitchell's, marked paid.
+
+Readings, not in the session:
+- **The Counting House is one more place in Mon's ruins.** It is a part of Crakeside beside the Bastion, the
+  Pads and Lowtown, or a landmark of its own; the session does not say, and the world system's eight do not
+  include it ([World system](../world-system.md#landmarks)).
+- **A sealed, buried room is the colonial bunker's case:** you camp outside and go down. The same open
+  question applies ("Buried bunkers against 'nothing underground'").
+- **The finds are second-age and First Kingdoms lineage, not new eras:** a tab-stone is a second-age house's
+  stone, a Mitchell a First Kingdoms coin, and the stamped Mitchells sit with the layered marks
+  ([art direction](../art-direction.md#marks-by-era-after-the-collapse)).
 
 ## People: only hinted
 
@@ -838,12 +881,12 @@ There are no NPCs. The moon is empty, or *almost* empty, and we only ever hint a
 
 The game never answers the question.
 
-**An idea from the endings session, not agreed:** the Okafor line, an underground bunker with a
+**An idea from the endings session, not agreed:** the Haberjack line, an underground bunker with a
 holdout. Session 4, part 3 says Zan has the last nomad city "and possibly a bunker holdout." A
 holdout would be a person, against the rule above, in a bunker underground, against this PRD's
 "nothing underground." The session says to develop it or drop it. **Developed by session 4, part 5:**
-the Okafor bunker, a sealed First Kingdoms vault under Port Morgan with nobody left in it, where the
-holdout is the player who seals the door ([the lore](../lore-research.md#the-ledger-and-the-okafor-bunker-agreed-session-4-part-5)).
+the Haberjack bunker, a sealed First Kingdoms vault under Port Morgan with nobody left in it, where the
+holdout is the player who seals the door ([the lore](../lore-research.md#the-ledger-and-the-haberjack-bunker-agreed-session-4-part-5)).
 
 ## What Sand Game taught us
 
@@ -1140,7 +1183,7 @@ Session 4, part 3 (2026-10-17) adds three. Each is quoted on both sides and left
   "basin that refills slowly." Not said whether it refills while you are away, or what a player
   who camps beside it for days gets (every other source in Survival is carried, towed or used
   up).
-- **A holdout against "no NPCs."** Here: "There are no NPCs." The endings session's Okafor line,
+- **A holdout against "no NPCs."** Here: "There are no NPCs." The endings session's Haberjack line,
   "an underground bunker with a holdout," and part 3's "possibly a bunker holdout." Not said what
   the player would see of a holdout, and the session puts it among the ideas to develop or drop.
 
@@ -1243,11 +1286,11 @@ it as direction and says so on each line. The built skeleton is not changed.
   sand has buried to its roof, as with the colonial bunker and the seed vaults above. A game that lets
   the player seal a door from inside needs a door that closes; "ruins never move" and "never physics
   objects" (rule 4) mean the seal is a placed state, not a moving door.
-- **The Okafor bunker's seal against stateless chunks.** The bunker "can never be sealed again" once the
+- **The Haberjack bunker's seal against stateless chunks.** The bunker "can never be sealed again" once the
   reliquary is lifted, and the seal-and-stay ending is a player's choice. Both are changes a chunk cannot
   hold ("Chunks hold no state"), so they live with the landmark's record in the save, as Sister's basin
   does (Profile & saves). Not said whether the bunker is a landmark.
-- **The Okafor holdout against "no NPCs."** Here: the open "holdout against 'no NPCs'" above. The
+- **The Haberjack holdout against "no NPCs."** Here: the open "holdout against 'no NPCs'" above. The
   session: "Nobody is left," and the player seals themselves in. *Follows the session; the clash is
   gone,* since no person is there to see.
 - **An orbital strike against the ground.** The session: the Quartermaster module's strike "blasts a
@@ -1257,3 +1300,19 @@ it as direction and says so on each line. The built skeleton is not changed.
 - **The depot's loot.** The session: the Rim depot "gives the Rim real colonial loot: hoppers, pads, rail
   yards, terraforming equipment." Here: a hopper is a vehicle and the game has none but the board and
   the tray. Hoppers are deferred in the session; a wrecked one is a prop until they are built.
+
+Session 5 (2026-10-18, [the Mitchell session](../lore-session-2026-10-18-mitchell-wow-shoemaker.md)) adds
+the following. It has no labels and does not say the newer wins, so each is quoted old and new and left
+standing, as its [Clashes note](../lore-session-2026-10-18-mitchell-wow-shoemaker.md#clashes) has them.
+
+- **Wow deep under Facility 4 against "nothing underground."** Here: "Everything is above ground: there's no
+  digging and nothing underground." The session: Wow is "buried deep under Facility 4," and Mitchell's back
+  room "is sealed and buried." Same open question as the buried bunker, the seed vaults and the vault under
+  Port Morgan above. A sketch.
+- **A market-church in Mon against "an uninhabited zone."** Here (the lore): Mon is "separate enclaves in an
+  uninhabited zone, all technically the holy city, all quarrelling," and Crakeside is diggers and a black
+  market. The session: the Counting House's stalls, scales and counting tables in the old freight halls,
+  "half market and half church," in Crakeside. Read as one more enclave before the sack; nobody is shown.
+- **Mario's logs against "no NPCs, no exposition."** The logs are voice recordings by a person, and some have
+  Mitchell laughing in the background. Read as machine and recorded output, which the amended rule allows
+  ("short logs"), with no one present. Not said whether they are heard or read.

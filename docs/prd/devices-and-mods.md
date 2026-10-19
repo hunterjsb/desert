@@ -1014,6 +1014,55 @@ Proposed, in this PRD's terms:
   off-centre." A captive one refuses. It needs a placed change to the ground (open questions) and a count
   or a recharge (the session's own open question).
 
+## The singing stone (Agreed, session 5; not built)
+
+*[Session 5](../lore-session-2026-10-18-mitchell-wow-shoemaker.md), "Singing stones." Direction, not a
+spec; nothing is built. The lore is in [the lore research](../lore-research.md#shoemaker-and-the-singing-stones-agreed-session-5).*
+Fragments of Shoemaker, black, glassy and scored with melted grooves, warm and strongly magnetic.
+- **The item:** low tech, no attachments, mountable on a chassis.
+- **What it tells you.** Wind plays its grooves like a flute, so its note follows the open wind even when
+  you are sheltered behind a dune. Because it is magnetic, it sings slightly off-key before an anomaly, while
+  compass drift is starting.
+- **A quest piece.** The Walker can't sense anomalies and a stone can, so delivering one teaches the Walker
+  the anomaly tell, tying into its quest line ([Console](#the-console-proposed-first-version-built)).
+
+Readings, not in the session:
+- **It is one more tell,** beside the compass drift, the odd static and the shield's particle load
+  ([Wind & storms](wind-and-storms.md#the-anomaly-as-built-2026-10-18)), and it is audio. The off-key note
+  reads the same hidden term the other tells do; the plain note is the wind's.
+- **"No attachments" means no sockets,** so it is a typed part with nothing seated on it, mounted like a
+  wind streamer ([nomad gear](salvage-and-ruins.md#nomad-gear-agreed-2026-10-18-spec-not-built)).
+- **Not said:** the note's pitch and loudness, whether several stones change it, how far ahead of an anomaly
+  the off-key note is, and where stones are found beyond the black stones in the sand, Halfrise's cradles and
+  Sister's stone.
+
+## Mitchell as a module (Idea, session 5; not built)
+
+*[Session 5](../lore-session-2026-10-18-mitchell-wow-shoemaker.md), "Player era: the undead god" and "Relationships
+and module interactions." The core is **Agreed**: Mitchell's core is silent but intact, and it can be revived
+and carried as a console module, like the other non-stationary gods. What it does is the session's "likely
+mechanic (not designed yet)," so it is an Idea. The lore is in [the lore
+research](../lore-research.md#mitchell-the-dead-god-agreed-session-5).*
+- **Idea:** it heals or makes medicine on credit, and starts quietly charging in water or salvage if you
+  fall too far behind.
+- **Beside the Quartermaster:** the Quartermaster grants Mitchell clearance it gives no one else (Idea:
+  perhaps unlocking military med-tech recipes), and Mitchell immediately opens a tab on the Quartermaster.
+- **Beside the Ledger:** they won't get on. **Beside Mother Cistern:** carrying it costs you her, at least
+  while it is on the cart. With the three linked, the Quartermaster might broker peace (left open).
+- **Its voice** is its formatting and word choice ([the terminal output
+  system](#the-terminal-output-system-proposed-session-4-part-5-first-piece-built)): it greets you by name,
+  says "your little balance" and never "debt," never threatens and only remembers out loud, and calls itself
+  "a full-service institution."
+
+Readings, not in the session:
+- **It is a god module like the others** (a typed part found at its landmark, its state saved with it), so
+  the table above grows a fifth row; the session gives it no innate powers beyond the Idea.
+- **A tab is a number on the part,** printed on the terminal, and charging is the same move as the
+  Quartermaster's requisitioned power and the Almanac's royalty: a god takes a cut. Health already mends
+  with rest ([Survival](survival.md)), so "heals" is a faster mend, and "makes medicine" is the open part.
+- **The Clerk's field synthesiser** is a found device in the second age's ruins; the session says players
+  find "working Clerk synthesisers" and not what one does.
+
 ## Dispatch items (proposed, session 4, part 5; not built)
 
 *[Session 4, part 5](../gods-gear-farside-2026-10-17.md), section 13 and step 8: "Dispatch items: sealed
@@ -1392,3 +1441,21 @@ it as direction and says so on each line.
 - **What a god module draws.** Here: "Instruments, farming gear and tools draw small amounts" (Power).
   The session gives a module no draw. Not said whether a Quartermaster's hardening, a Walker's sensing or
   a Cistern's forecasts cost power, or whether a god module can be left without any.
+
+Session 5 (2026-10-18, [the Mitchell session](../lore-session-2026-10-18-mitchell-wow-shoemaker.md)) adds
+the following. The session has no labels and does not say the newer wins, so each is quoted old and new and
+left standing, as its [Clashes note](../lore-session-2026-10-18-mitchell-wow-shoemaker.md#clashes) has them.
+
+- **Eight gods against seven.** Here: "Zan has seven gods," four of them mountable. The session: Mitchell, a
+  dead god, carried as a console module "like the other non-stationary gods." Folded as a fifth mountable
+  module; the pantheon tables are not rewritten.
+- **Medicine, a tab and recipes against "crafting, for now" out of scope.** Here: parts are found, never
+  crafted. The session's Idea: Mitchell "heals or makes medicine on credit," charges in water or salvage, and
+  with the Quartermaster "perhaps" unlocks "military med-tech recipes." Not said what a recipe is in a game
+  with no crafting.
+- **A stone against the sensor logs.** Here (the storms spec): the Walker is taught by surviving an anomaly
+  recording your own logs and uploading them. The session: a singing stone "is how the player teaches the
+  Walker the anomaly tell." Not said whether the stone is a second route, a first step or a replacement.
+- **A module that costs you another god.** The session: carrying Mitchell "costs you" Mother Cistern. Here:
+  nothing but a module's own draw ("What a god module draws," above). Not said how the loss is counted, or
+  how it sits with the Cistern axis, which wants her restored and linked.

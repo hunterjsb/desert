@@ -150,6 +150,12 @@ has them, along the line toward Tu, and the terrain is generated around them, hi
 ([World generation by layers](#world-generation-by-layers-agreed-session-4-part-4-not-built)). The
 exception to unloading stays: what you changed in one is kept whatever the distance.
 
+**Session 5's places (Agreed and Idea).** [Session 5](../lore-session-2026-10-18-mitchell-wow-shoemaker.md)
+adds no landmark to the eight. It puts the Counting House in Crakeside, in Port Morgan's ruins; a sketch of
+Wow deep under the black site (Facility 4); and Halfrise's walls ringed with singing-stone cradles, with
+Sister's stone ([Salvage & ruins](salvage-and-ruins.md#session-5s-finds-and-places-agreed-and-idea-not-built)
+has them). Whether the Counting House is a part of Port Morgan or a landmark of its own is open.
+
 ## World generation by layers (Agreed, session 4, part 4; not built)
 
 *Designed whole in [the world system](../world-system.md), which is the contract for building it. Its
