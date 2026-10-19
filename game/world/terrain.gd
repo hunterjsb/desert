@@ -100,8 +100,8 @@ func setup(world: World) -> void:
 	# Compiles the sand's shader now, while the world loads: otherwise the first
 	# chunk to arrive stalls its frame on it (18 ms on an RTX 3070).
 	_material_rid = sand_material.get_rid()
-	# Squared: Jolt takes the geometric mean against a body's own 1.0.
-	_sand.friction = _tuning.sand_friction * _tuning.sand_friction
+	# Godot's Jolt takes the lesser of two frictions, and bodies keep their own 1.0.
+	_sand.friction = _tuning.sand_friction
 	for step in [NEAR_STEP, _tuning.mid_step]:
 		_indices[step] = ChunkBuild.indices_for(_size / step)
 	_far = GeometryInstance3D.new()

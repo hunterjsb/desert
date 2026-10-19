@@ -40,12 +40,17 @@ func feel(pull: Vector3, alpha: float) -> bool:
 	return sustained > holding
 
 
-## Out of the sand and standing on it, so it doesn't start inside the ground.
+## Out of the sand and lying on it, its head toward what tore it out: stood
+## on its point, the sand's friction catches it and its line drags nothing.
 func pull_out(ground: float) -> void:
 	pulled = true
 	driven = false
 	sustained = 0.0
-	global_position.y = ground + LENGTH * 0.5 + 0.02
+	var toward := Vector3(pull.x, 0.0, pull.z)
+	var head := toward.normalized() if toward.length() > 1e-3 else Vector3(global_basis.z.x, 0.0, global_basis.z.z).normalized()
+	var at := global_position
+	var under := maxf(ground, maxf(world.height_under(at + head * LENGTH * 0.5), world.height_under(at - head * LENGTH * 0.5)))
+	global_transform = Transform3D(Basis(head.cross(Vector3.UP), head, Vector3.UP), Vector3(at.x, under + 0.05, at.z))
 	freeze = false
 
 
