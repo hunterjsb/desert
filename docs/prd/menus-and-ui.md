@@ -139,7 +139,8 @@ of this, then we will need to just stop dropping things out the tooltip.")
   reach".
 - **How-tos** go through one path, `UIRoot.teach`: shown once a profile (`Profile.learn`)
   near the top of the screen, its keys drawn as bound in the keys' colour, for nine seconds.
-  The sheet's is the only one ([Movement](movement.md#sailing-the-camp-hunter-2026-10-17)).
+  There are three: the sheet's, the ride's and the helm's ([Movement](movement.md#sailing-the-camp-hunter-2026-10-17),
+  [the helm](movement.md#sailing-from-kite-to-yacht-agreed-2026-10-18-spec-built)).
 - **Probes:** Menus & UI probe 10, a how-to once a profile; Devices & mods probes 18, 19 and 22
   check what the readout and highlight do, never their words.
 

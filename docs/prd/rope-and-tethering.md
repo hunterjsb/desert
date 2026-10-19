@@ -136,6 +136,23 @@ reeling works it there: your camp tows you by it, and the board pushes against n
 stepped on; any line but a sheet still is.) The sail's side is in
 [Movement](movement.md#sailing-the-camp-hunter-2026-10-17).
 
+**Never the link** (2026-10-18, Hunter's spec: "Never make the player the link between a heavy
+sail and a heavy camp"). A sheet and a line to a camp (any device but a stake) both at your waist
+would make you the link, so a hidden line runs from the sheet's tie through a ring at your waist to
+the camp's tie. A line can run through a ring: the ring slides, bearing only the line's bend, never
+its pull, so solved as one line the camp's pull passes you by, however light you are. The camp's
+line rides on it and is drawn as it lies; the sheet's pull lands at its block on the rig's middle
+line meanwhile. Untie either, or sit at a helm, and it's gone; it's never saved, only made again
+from the lines. The ride keeps the camp's line tied as it keeps the sheet. [Movement](movement.md#sailing-from-kite-to-yacht-agreed-2026-10-18-spec-built)
+has the steering and the numbers.
+
+**The fulcrum** (2026-10-18). The spec takes it as the rope's rule already ("you take damage if
+you end up as the fulcrum"); it wasn't. Now your body bears what the lines on it pull against each
+other plus any line's bend round you, held as long as a line's load is (0.3 s). Past your strength,
+400 N (`fulcrum_n`), you lose 8 health a second for each share more (`fulcrum_hurt`), never your
+last, and your view shakes. Lines still snap only past their own load. Sailing probe 9 braces you
+off the hidden line with the camp moored: it bends round you at 527 N and hurts you; the lines hold.
+
 ## Wind on tethered things
 
 Every object that can be tethered has a **wind catch**: how much the wind grabs it,

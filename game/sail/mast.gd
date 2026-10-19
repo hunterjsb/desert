@@ -162,10 +162,18 @@ func boom_most() -> float:
 ## Whether a line's end is a sheet's: the other end of its line is tied at a
 ## sail's boom.
 static func sheet_end(end: Node) -> bool:
-	var line: Line = end.get_meta(&"line") if end != null and end.has_meta(&"line") else null
-	if line == null or line.rope == null:
+	# Untyped: a scenario cleared away may have freed the line.
+	var line = end.get_meta(&"line") if end != null and end.has_meta(&"line") else null
+	if not is_instance_valid(line) or line.rope == null:
 		return false
 	return line.rope.a.get_parent() is Mast or line.rope.b.get_parent() is Mast
+
+
+## Where its sheet would run through a block on the camp: under the boom's
+## end hauled right in, on the camp's middle line. A camp it tows goes from
+## here.
+func block() -> Vector3:
+	return global_transform * (BOOM_AT + Vector3(0.0, 0.0, -BOOM))
 
 
 ## The device whose body takes its push: what it's seated on, all the way down.

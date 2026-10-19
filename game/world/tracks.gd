@@ -336,7 +336,7 @@ func _mark(tile: int) -> void:
 ## slide's groove.
 func _walk(delta: float) -> void:
 	var player := _world.player
-	if player.ride != null or player.flying or not _on_sand(player.global_position):
+	if player.ride != null or player.helm != null or player.flying or not _on_sand(player.global_position):
 		_slid_from = Vector2.INF
 		return
 	var at := _world_xz(player.global_position)

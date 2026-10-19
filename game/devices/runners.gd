@@ -51,20 +51,10 @@ static func of(device: Device) -> Array:
 	for socket in device.sockets():
 		if socket.part == null or not socket.part.stats.has("glide"):
 			continue
-		var shape: CollisionShape3D = null
-		for node in socket.fitted:
-			if node is CollisionShape3D:
-				shape = node
+		var shape := _lengthwise(socket)
 		if shape == null:
 			continue
 		var along := shape.transform.basis.y.normalized()
-		if absf(along.z) < 0.7:
-			var out := socket.transform.basis.z.normalized()
-			var turn := Transform3D(Basis(out, PI / 2.0), Vector3.ZERO)
-			var pivot := Transform3D(Basis.IDENTITY, socket.position)
-			for node in socket.fitted:
-				node.transform = pivot * turn * pivot.affine_inverse() * node.transform
-			along = shape.transform.basis.y.normalized()
 		var box := Catalog.bounds(shape.shape)
 		var stats: Dictionary = socket.part.stats
 		var corners := PackedVector3Array()
@@ -75,6 +65,65 @@ static func of(device: Device) -> Array:
 		found.append([corners, along, stats.glide, stats.get("plough", 0.0), stats.get("grip", 0.0),
 			stats.get("hold", stats.glide)])
 	return found
+
+
+## The keels fitted to a device, as [the middle of its face, its length's
+## way, keel, keel_drag], in its device's frame, turned along its length as
+## runners are.
+static func keels(device: Device) -> Array:
+	var found: Array = []
+	for socket in device.sockets():
+		if socket.part == null or not socket.part.stats.has("keel"):
+			continue
+		var shape := _lengthwise(socket)
+		if shape == null:
+			continue
+		var face := Vector3(0.0, 0.0, Catalog.bounds(shape.shape).end.z)
+		found.append([shape.transform * face, shape.transform.basis.y.normalized(), socket.part.stats.keel,
+			socket.part.stats.get("keel_drag", 0.0)])
+	return found
+
+
+## A bottom mount's part, its length (its shape's y) turned along its
+## device's, so a deck's runners and keels agree however its pieces sit; its
+## shape, or null.
+static func _lengthwise(socket: Socket) -> CollisionShape3D:
+	var shape: CollisionShape3D = null
+	for node in socket.fitted:
+		if node is CollisionShape3D:
+			shape = node
+	if shape == null:
+		return null
+	if absf(shape.transform.basis.y.normalized().z) < 0.7:
+		var out := socket.transform.basis.z.normalized()
+		var turn := Transform3D(Basis(out, PI / 2.0), Vector3.ZERO)
+		var pivot := Transform3D(Basis.IDENTITY, socket.position)
+		for node in socket.fitted:
+			node.transform = pivot * turn * pivot.affine_inverse() * node.transform
+	return shape
+
+
+## A keel's bite on the camp it floats, `weight` N of it: across its length
+## its slip goes as a runner's plough takes it, exactly over the tick by the
+## mass it meets there, so it never overshoots at any tick rate, as far as
+## its keel share of the weight; along it, it drags its keel_drag share.
+static func bite(body: RigidBody3D, keel: Array, weight: float, h: float) -> void:
+	var state := PhysicsServer3D.body_get_direct_state(body.get_rid())
+	var turn := state.inverse_inertia_tensor
+	var at := body.global_transform * (keel[0] as Vector3)
+	var length := body.global_basis * (keel[1] as Vector3)
+	var along := Vector3(length.x, 0.0, length.z).normalized()
+	if along == Vector3.ZERO:
+		return
+	var across := Vector3(-along.z, 0.0, along.x)
+	var arm := at - body.global_transform * body.center_of_mass
+	var moving := state.linear_velocity + state.angular_velocity.cross(arm)
+	var inv_mass := 1.0 / body.mass
+	var most: float = keel[2] * weight * h
+	var held := clampf(-_mass(inv_mass, turn, arm, across) * moving.dot(across) * (1.0 - exp(-h / PLOUGH)), -most, most)
+	var slide := moving.dot(along)
+	var drag := -signf(slide) * minf(_mass(inv_mass, turn, arm, along) * absf(slide), keel[3] * weight * h)
+	body.apply_impulse(across * held + along * drag, at - body.global_position)
 
 
 ## How high a device on these runners rides over level sand: its middle,

@@ -81,6 +81,8 @@ var _hovering := false
 ## Its trays, each as [kg it lifts, the corners of its face, the way it faces
 ## out], in its own frame: each lifts under its own spot.
 var _trays: Array = []
+## Its keels, as Runners.keels has them: floating, each holds it across.
+var _keels: Array = []
 ## The sockets with a device seated in them.
 var _seats: Array[Socket] = []
 ## How it froze before it was seated on another device.
@@ -637,6 +639,7 @@ func _recompute() -> void:
 	for socket in sockets():
 		if socket.part != null and socket.part.stats.get("lift_kg", 0.0) > 0.0:
 			_trays.append(_tray(socket))
+	_keels = Runners.keels(self)
 	var runners := Runners.of(self)
 	if runners.is_empty():
 		glider = null
@@ -736,6 +739,8 @@ func _physics_process(delta: float) -> void:
 		glider.glide(self, world, delta)
 	if _hovering:
 		_lift(tuning, delta)
+		for keel: Array in _keels:
+			Runners.bite(self, keel, carried_kg * world.gravity / _keels.size(), delta)
 	if not _seats.is_empty() and global_basis.y.normalized().dot(Vector3.UP) < cos(TIPPED):
 		_rest_seated(delta)
 
