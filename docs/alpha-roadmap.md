@@ -7,9 +7,9 @@ game loop with progression and conclusions; final art and final balance can foll
 
 ## Version policy
 
-- Fix releases increment the patch: the current combined candidate is **0.2.1-alpha**.
+- Fix releases increment the patch: **0.2.1-alpha “Sailboat”** is published.
 - Named alpha sub-releases increment the minor and reset the patch. Reserve
-  **0.3 “Sanddune”** for the next such release. Later names can be chosen freely.
+  **0.3 “Sanddune”** for the next such release, followed by **0.4 “Spaceport”**.
 - **1.0.0-alpha** marks the full Alpha gate below. It is still a pre-release.
 - Each release needs accurate notes and Linux, Windows and macOS builds from the
   same verified commit. A version change alone does not publish a release.
@@ -57,14 +57,48 @@ proposal for Alpha. The release sequence below chooses outcomes from this invent
 | Milestone | Playable outcome | Completion evidence |
 | --- | --- | --- |
 | 0.2.1 patch | Current sand/Nomad work and reported playtest fixes work together. | Combined CI, real trail/rope captures, start/save checks and smoke-tested builds on three OSes. |
-| 0.3 “Sanddune” | A new player can travel, sail, salvage and maintain a camp without developer guidance. | Tutorial playtest; explicit line management and understood board/rig speeds; storm preparation and recovery; measured rendering budget. |
+| 0.3 “Sanddune” minimum | A new player can travel, sail, salvage and maintain a camp without developer guidance. | Tutorial playtest; explicit line management and understood board/rig speeds; storm preparation and recovery; measured rendering budget. |
+| 0.4 “Spaceport” | Next named minor release; scope remains to be selected, with unfinished Sanddune stretch work eligible. | Agree its playable outcome and acceptance checks when selecting scope. |
 | Camp progression | Salvage and farming make the camp progressively self-sufficient. | Audit remaining crop roster, propagation, processing and equipment against the farming PRD; demonstrate sustainable clear/night/storm power, water and food. |
 | Exploration progression | Better gear opens meaningful new journeys across latitude and history. | Audit biome/era loot and thermal gates; complete agreed instrument and navigation dependencies; prove viable trips and returns with ordinary finds. |
 | Conclusions | Long runs have discoverable destinations and outcomes. | Choose and implement a coherent ending ladder and its prerequisites; save/resume each route and record completion/unlocks. |
 | 1.0 Alpha candidate | Those systems form one understandable, persistent game. | Fresh-profile runs, long-run reliability, accessible controls and menus, supported-platform release gates, then Hunter's playtest acceptance. |
 
-The intermediate rows are dependency groups, not assigned version numbers or dates.
+The remaining intermediate rows are dependency groups, not assigned version numbers or dates.
 They can be split into named minor releases after their scope is agreed.
+
+### Sanddune minimum and stretch work
+
+**Agreed, 2026-10-19:** the Sanddune outcome above is a bare minimum, with stretch
+goals that may ship in Sanddune or move to **0.4 “Spaceport”**. The name Spaceport is
+reserved; its feature scope is open.
+
+The minimum has three connected acceptance goals:
+
+1. **Confident sailing:** players understand which line they select, tie, reel and
+   release, and can predict board assistance and player loads. Settle remaining
+   load and control decisions in the movement and rope PRDs before implementation.
+2. **Learning through objects:** the sailing notes, streamer and other in-world
+   teaching let a new player learn without developer guidance.
+3. **A complete expedition:** from a fresh profile, leave camp, find salvage,
+   prepare for and weather a storm, return and improve the camp without the dev
+   console. Save/resume must preserve the journey.
+
+These goals must work together. Stretch work can enrich Sanddune after the
+minimum is secure; unfinished stretch goals can move to Spaceport without
+blocking Sanddune.
+
+**Proposed stretch candidates, pending scope selection:**
+
+| Candidate | Playable benefit | Dependencies to settle |
+| --- | --- | --- |
+| Repair and salvage progression | A recovered part can be maintained and earns its place in the camp. | Devices PRD repair acts/materials and era tradeoffs; choose one complete path. |
+| A farming and processing chain | Growing something new makes the camp more self-sufficient. | Choose crops, planter hardware and processing from the farming/devices PRDs as a usable chain. |
+| Navigation and discovery | Players can plan a salvage trip and find their way through it. | Agreed Console Map page and instrument/world dependencies. |
+
+These are candidates for prioritization, not an implementation commitment or a
+requirement to finish the full crop roster in Sanddune. Each selected goal needs
+its system design decisions and a concrete playtest outcome before work begins.
 
 ## Scope audit before committing the full Alpha
 
