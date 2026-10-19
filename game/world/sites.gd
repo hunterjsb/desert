@@ -497,14 +497,17 @@ func finish() -> void:
 func step_dunes(x: float, z: float, t: float, delta: float) -> void:
 	if not _built or _anchor == null:
 		return
+	var started := Time.get_ticks_usec()
 	for seed in dunes.step(x, z, t, delta):
 		seed.again = false
 		if join(seed.site):
 			seed.built = true
 			dunes.builds += 1
-			return
+			break
 		# Over a structure standing already: the dunes took it.
 		seed.site = null
+	dunes.slowest_ms = maxf(dunes.slowest_ms, (Time.get_ticks_usec() - started) / 1000.0)
+	Dev.put("terrain/dune", "%d seen %d built %.2fms" % [dunes.reads, dunes.builds, dunes.slowest_ms])
 
 
 ## Lays a dune's ruin into the index once something of it shows and you've

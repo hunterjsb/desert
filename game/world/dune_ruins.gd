@@ -60,11 +60,13 @@ class Seed:
 
 
 ## How many reads and builds there have been, the slowest worker turn, ms,
-## and the main thread's most in a frame, ms: the dev overlay's, and the probes'.
+## the main thread's most in a frame looking over the seeds, ms, and with a
+## build in it (Sites.step_dunes): the dev overlay's, and the probes'.
 var reads := 0
 var builds := 0
 var slowest_turn_ms := 0.0
 var slowest_step_ms := 0.0
+var slowest_ms := 0.0
 
 var _ctx: StructureKit.Context
 var _tuning: Tuning
@@ -133,7 +135,7 @@ func watch(id: int, x: float, z: float, radius: float, t: float) -> void:
 ## The seeds found within `radius` m of a world place, nearest first.
 func near(x: float, z: float, radius: float) -> Array[Seed]:
 	var out: Array[Seed] = []
-	for seed in _cells_near(Vector2(x, z), radius, false):
+	for seed in cells_near(Vector2(x, z), radius, false):
 		if seed.found and seed.site != null and seed.site.distance_to(x, z) <= radius:
 			out.append(seed)
 	out.sort_custom(func(a: Seed, b: Seed) -> bool: return a.site.distance_to(x, z) < b.site.distance_to(x, z))
@@ -142,7 +144,7 @@ func near(x: float, z: float, radius: float) -> Array[Seed]:
 
 ## The seed found whose ground a world place is on, or null.
 func under(x: float, z: float) -> Seed:
-	for seed in _cells_near(Vector2(x, z), 1.0, false):
+	for seed in cells_near(Vector2(x, z), 1.0, false):
 		if seed.found and seed.site != null and seed.site.reaches(x, z):
 			return seed
 	return null
@@ -162,7 +164,7 @@ func dig(seed: Seed, m: float, t: float) -> float:
 
 
 ## Every seed in a cell within `radius` m of a place, made as they're asked.
-func _cells_near(at: Vector2, radius: float, make := true) -> Array[Seed]:
+func cells_near(at: Vector2, radius: float, make := true) -> Array[Seed]:
 	var shape: TerrainShape = _ctx.shape.get_ref()
 	var out: Array[Seed] = []
 	if shape == null:
@@ -203,12 +205,12 @@ func _stale(here: Vector2, t: float) -> Array[Seed]:
 	var wanted: Array[Array] = []
 	for place in places:
 		var at: Vector2 = place[0]
-		for seed in _cells_near(at, place[1]):
+		for seed in cells_near(at, place[1]):
 			if seed.found and (seed.site == null or seed.built):
 				continue
 			if seed.found and t - seed.read_at < _tuning.dune_ruin_recheck_s and t >= seed.read_at:
 				continue
-			var by := seed.site.distance_to(at.x, at.y) if seed.site != null else _middle(seed).distance_to(at)
+			var by := seed.site.distance_to(at.x, at.y) if seed.site != null else middle(seed).distance_to(at)
 			if by <= place[1] + LEE_M:
 				wanted.append([by, seed])
 	wanted.sort_custom(func(a: Array, b: Array) -> bool: return a[0] < b[0])
@@ -222,7 +224,7 @@ func _stale(here: Vector2, t: float) -> Array[Seed]:
 
 
 ## A cell's middle, world metres.
-func _middle(seed: Seed) -> Vector2:
+func middle(seed: Seed) -> Vector2:
 	var shape: TerrainShape = _ctx.shape.get_ref()
 	var down := shape.downwind()
 	var u := (seed.key.x + 0.5) * _tuning.dune_spacing
@@ -349,7 +351,7 @@ func _forget(here: Vector2) -> void:
 	var lift := _tuning.history_lift_m
 	for key: Vector2i in _cells.keys():
 		var seed: Seed = _cells[key]
-		if _middle(seed).distance_to(here) > lift + _tuning.dune_spacing:
+		if middle(seed).distance_to(here) > lift + _tuning.dune_spacing:
 			_cells.erase(key)
 
 

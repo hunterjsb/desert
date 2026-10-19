@@ -23,7 +23,7 @@ func run() -> void:
 	var big := 0
 	var ruins: Array[Structure] = []
 	var same := true
-	for seed in dunes._cells_near(Vector2.ZERO, RADIUS):
+	for seed in dunes.cells_near(Vector2.ZERO, RADIUS):
 		dunes.locate(seed)
 		big += int(seed.crest >= tuning.dune_ruin_big_m)
 		if seed.site != null:

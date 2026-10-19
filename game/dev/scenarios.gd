@@ -9,7 +9,7 @@ extends RefCounted
 ## kind: "spawn", "clear", "front" (a storm `distance` m upwind, coming at
 ## you), "deep" (inside, far from any edge), "back" (inside, clear air
 ## `distance` m upwind), "sky" (clear, facing the light), or a search of its
-## own: "ruin", "lee", "sail", "anomaly" and "vent". day is the window of
+## own: "ruin", "lee", "sail", "anomaly", "vent" and "dig". day is the window of
 ## local time of day to look in: 0 is midnight, 0.5 noon; calm and breeze
 ## bound the wind, m/s; due is when a storm comes, s, in place of ten clear
 ## minutes; moon is [latitude, degrees east of the point under Tu], so
@@ -87,6 +87,9 @@ const LIST: Array[Dictionary] = [
 	# Clear long enough for the burst to tower, and by daylight.
 	{"key": "vent", "label": "across the rift from its live vent, a minute before it bursts", "kind": "vent",
 		"day": [0.2, 0.62], "due": [180.0, INF], "lays": &"vent"},
+	# Before the sand comes back over it: stand on it and it stays off.
+	{"key": "dig", "label": "a big dune's ruin a storm has just laid bare, a scoop in hand and a sieve carried",
+		"kind": "dig", "lays": &"dig"},
 ]
 
 ## A floater's stake is driven this far further upwind of it, m.
@@ -417,6 +420,7 @@ static func lay(world: World, scenario: Dictionary, place: Dictionary) -> Array[
 		&"anomaly_camp": dropped = anomaly_camp(world)
 		&"sleep": dropped = sleep(world)
 		&"vent": dropped = vent(world)
+		&"dig": dropped = dig(world)
 	world.set_meta(&"scenario_kit", dropped)
 	return dropped
 
@@ -559,6 +563,14 @@ static func find(world: World, scenario: Dictionary) -> Dictionary:
 		return _before_anomaly(world, scenario)
 	if scenario.kind == "vent":
 		return _before_burst(world, scenario)
+	if scenario.kind == "dig":
+		var found := bared_dune_ruin(world, world.spawn, DUNE_SEARCH, 3.0, 0.25, true)
+		if found.is_empty():
+			return {}
+		var site: Structure = found.site
+		var at := Vector2(site.x, site.z) + world.shape.downwind() * (site.reach + DUNE_STAND)
+		var facing := (Vector2(site.x, site.z) - at).normalized()
+		return {"x": at.x, "z": at.y, "yaw": atan2(-facing.x, -facing.y), "time": found.time}
 	# Without salvage there's no structure to stand among: where the run began.
 	if scenario.get("among", false) and world.tuning.salvage:
 		return _among(world, scenario)
@@ -1415,6 +1427,50 @@ static func sleep(world: World) -> Array[Node3D]:
 	_on_station(world, rig.named.radio)
 	(rig.named.shield as ShieldGenerator).stand(true)
 	return _of(rig)
+
+
+## How far round the run's start a dune's ruin is looked for, m, and how far
+## off its ground you stand downwind of it.
+const DUNE_SEARCH := 2500.0
+const DUNE_STAND := 6.0
+
+
+## A big dune's ruin round a world place, nearest first, and the first minute
+## in `days` a storm has it at least `least` out of the sand (Exposure.level),
+## with `passed` once the storm has let go of it: {key, site, time}, or {}.
+## Each found on a copy of its seed, so the world's own is looked at as play
+## would look at it.
+static func bared_dune_ruin(world: World, from: Vector2, radius: float, days := 2.0, least := 0.3,
+		passed := false) -> Dictionary:
+	var dunes := world.shape.sites.dunes
+	var field := world.weather.field
+	var seeds := dunes.cells_near(from, radius)
+	seeds.sort_custom(func(a: DuneRuins.Seed, b: DuneRuins.Seed) -> bool:
+		return dunes.middle(a).distance_to(from) < dunes.middle(b).distance_to(from))
+	for each in seeds:
+		var copy := DuneRuins.Seed.new()
+		copy.key = each.key
+		copy.id = each.id
+		dunes.locate(copy)
+		if copy.site == null:
+			continue
+		for m in range(30, roundi(days * 24.0 * 60.0)):
+			var t := m * 60.0
+			if Exposure.level(copy.site.depth, copy.site.pure_taken(t)) >= least \
+					and (not passed or field.raw_storm_at(copy.site.x, copy.site.z, t) < 0.0):
+				return {"key": copy.key, "site": copy.site, "time": t}
+	return {}
+
+
+## A scoop in your hands and a sieve in your suit, to dig the ruin out.
+static func dig(world: World) -> Array[Node3D]:
+	var player := world.player
+	var sieve := Catalog.part(&"sieve")
+	player.suit.carried.append(sieve)
+	var scoop := Catalog.part(&"sand_scoop")
+	drop(world, scoop, Transform3D(Basis.IDENTITY, Vector3(0.0, 0.1, 0.0)), 0.0, 0.8)
+	player.hands.hold(scoop)
+	return [scoop]
 
 
 ## A charged board at your feet, to ride to the vent.

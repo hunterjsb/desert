@@ -18,7 +18,7 @@ func run() -> void:
 	var down := shape.downwind()
 	var lee := Vector2(NAN, NAN)
 	var face := Vector2(NAN, NAN)
-	for seed in shape.sites.dunes._cells_near(Vector2.ZERO, 1500.0):
+	for seed in shape.sites.dunes.cells_near(Vector2.ZERO, 1500.0):
 		shape.sites.dunes.locate(seed)
 		if seed.site == null:
 			continue

@@ -837,7 +837,7 @@ static var _current: Tuning
 ## With no line at all, light things fall out in the lee of a crest near
 ## camp: this many an hour on a hundred square metres of full lee in a storm's
 ## heart, within this far of you or a deck of yours, m.
-@export var drift_lee_fall: float = 1.0
+@export var drift_lee_fall: float = 0.5
 @export var drift_lee_fall_m: float = 24.0
 ## Drift off a site a storm lays bare (Drift.from_sites): things an hour it
 ## sheds in a storm's heart once the storm has dug it right out; how far
