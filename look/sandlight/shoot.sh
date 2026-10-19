@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # Shoots the sand's light before and after, in the clear and in a storm, then
 # builds the sheet: each moment before beside after, and the glitter close up
-# frame by frame as the camera slides, blown up.
-#   look/sandlight/shoot.sh <out dir> [sheet] [--set name=value ...]
+# frame by frame as the camera moves, blown up. Anything after the sheet goes
+# to the look-test, such as --try name=value,...
+#   look/sandlight/shoot.sh <out dir> [sheet] [look-test arguments]
 # "Before" is master's sand shader; BEFORE names another ref.
 # No window: it runs unseen (scripts/unseen.sh), so it shoots while someone plays.
 set -uo pipefail
@@ -23,9 +24,9 @@ for weather in clear storm; do
 done
 
 args=()
-for pair in "noon:noon" "low_into:low sun, facing it" "air_low:the same from 200 m up" "low_behind:low sun behind you" "dusk:dusk, the sun behind you" \
-	"night:a full-Tu night, Tu behind you" "lamp:the same, by the headlamp" "storm:deep in a storm by day" \
-	"track:a walked track, midmorning"; do
+for pair in "noon:noon" "low_into:low sun, facing it" "air_low:the same from 200 m up" \
+	"low_behind:low sun behind you" "dusk:dusk, the sun behind you" "night:a full-Tu night, Tu behind you" \
+	"lamp:the same, by the headlamp" "storm:deep in a storm by day" "track:a walked track, midmorning"; do
 	for look in before after; do
 		file="$out/${pair%%:*}_$look.png"
 		label="${pair#*:}, $look"
