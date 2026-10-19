@@ -1097,4 +1097,31 @@ The sleep session (2026-10-17) adds one. It is quoted on both sides and left sta
 - **Varran attachment bug:** "the second line on the sail is attached to a floating hook, not on a chassis." Every bridle end must stay seated in its actual chassis hook across initial assembly, riding, hauling, saving and resuming. Fix the attachment before evaluating the three-line rig's handling.
 - **Rope motion:** the waist-to-rig rope looks "glitchy and nauseating ... blurry and jumping around erratically" when looking down while sailing. Make its presentation follow the displayed camera and attachment positions smoothly; preserve the physical simulation and real tension.
 - **Several waist lines (design open):** "not so sure about having three ropes tied to your waist"; explain and manage which line is tied, untied and reeled. Measure both the resultant pull and opposing loads on the player before choosing a safe-force limit or release behavior. Do not silently remove the bridle or invent a force cap.
+
+**Built follow-up (2026-10-19; visual capture pending).** The Varran's two physical bow hooks
+were seated on its chassis, including through riding, reeling and saving. The floating hook
+was the sheet's drawn inboard deck ring: every mast projected it under the fully hauled boom,
+2.33 m behind the mast, beyond the compact Varran's deck. It now rests on the nearest actual
+chassis top surface, inset by the rope radius, and the drawn line ends exactly there. Its
+slack uses the distance between that anchor and the boom at the permitted trim. This is a
+presentation correction; the physical sheet still pulls at the boom's end. Sailing probe 15
+checks support and all three physical attachments before riding, after hauling and after resume.
+
+The board and its camera already interpolate between physics ticks; the waist lines used
+raw tick positions. At 5 m/s that put the nearby line up to 8.3 cm ahead of the displayed rider
+at 60 ticks/s, then jumped it back every tick. Waist endpoints now use the same ride/tumble
+offset as the camera. Slack chain links also interpolate for drawing, then follow the displayed
+endpoints; simulation points and forces are untouched. Rope probe 17 checks the relative
+position through five fractions of a frame and confirms drawing leaves simulation positions
+unchanged. The existing rendered-ring/length/sag, origin-shift, towing and sheet-hauling probes
+pass. Actual GPU capture remains required before visual acceptance.
+
+**Powered-board measurement, design still open.** With the actual Varran board in still air,
+its stationary rig's three lines extended to 100 m and carrying zero tension, holding forward
+for eight seconds reached 0.992 m/s. Detaching those lines, resetting board velocity and holding
+forward for another eight seconds reached 19.753 m/s. The magnitude-based tow limiter therefore
+suppresses even unloaded repositioning. Simply allowing thrust toward the rig is insufficient:
+the resulting momentum can pass it and load the ropes later. Any future motor assistance must
+account for that stored energy, or explicitly accept battery-funded towing. The current board
+physics is unchanged while that decision remains open.
 - **Learning to sail (agreed):** "a sailing tutorial in the sail scenario"; Hunter suggested physical items explaining the mechanics in depth. Give the sail scenario an accessible tutorial, with readable sailing notes for wind and heading, sheet trim, board edging, and the Varran bridle. Teach the current controls and why the rig responds, without taking away the skill of sailing. This extends the earlier brief controls-only how-to.

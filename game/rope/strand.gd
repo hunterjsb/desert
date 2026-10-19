@@ -44,6 +44,7 @@ var length: float
 var a: Node3D
 var b: Node3D
 var points := PackedVector3Array()
+var _previous := PackedVector3Array()
 var _velocity := PackedVector3Array()
 var _ground := PackedFloat32Array()
 var _slope := PackedVector2Array()
@@ -136,11 +137,23 @@ func set_length(to: float) -> void:
 
 ## Draws both ends exactly at their rings this frame; a line hanging as its
 ## rope says is hung again between them. Drawn only: the next tick steps on
-## from its own points, since how many frames fall between ticks depends on
-## the machine, and a snap leaves its loose ends where those points are.
-func pin_ends(at_a: Vector3, at_b: Vector3) -> void:
+## from its own points. Slack links interpolate between ticks and follow
+## the ends' displayed poses; a snap still uses the simulation's positions.
+func pin_ends(at_a: Vector3, at_b: Vector3, fraction := 1.0) -> void:
 	var shown := points.duplicate()
 	var last := shown.size() - 1
+	if not _hanging and _previous.size() == shown.size():
+		for i in shown.size():
+			shown[i] = _previous[i].lerp(points[i], fraction)
+		# Both ends follow their visible rings; carry that correction along
+		# the chain without changing any of the solver's positions.
+		var move_a := at_a - shown[0]
+		var move_b := at_b - shown[last]
+		for i in range(1, last):
+			shown[i] += move_a.lerp(move_b, float(i) / last)
+			var floor_y := _floor(i, shown[i])
+			if is_finite(floor_y):
+				shown[i].y = maxf(shown[i].y, floor_y)
 	shown[0] = at_a
 	shown[last] = at_b
 	if _hanging:
@@ -163,6 +176,8 @@ func shift(by: Vector3) -> void:
 	_bulged_through.clear()
 	for i in points.size():
 		points[i] += by
+		if _previous.size() == points.size():
+			_previous[i] += by
 		# The ground read under a point stays where it was in the world.
 		_sampled[i] += Vector2(by.x, by.z)
 
@@ -184,6 +199,7 @@ func drawn_length() -> float:
 ## One physics tick: wind is the felt wind at the strand, sag how far its rope
 ## says its middle hangs (NAN: by its length alone).
 func step(h: float, wind: Vector3, sag := NAN) -> void:
+	_previous = points.duplicate()
 	_age += h
 	var t := _age
 	var n := points.size()
@@ -389,6 +405,7 @@ func _floor(i: int, p: Vector3) -> float:
 
 func _fit() -> void:
 	var n := points.size()
+	_previous = points.duplicate()
 	_rest = length / (n - 1)
 	_velocity.resize(n)
 	_ground.resize(n)
