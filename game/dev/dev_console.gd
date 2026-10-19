@@ -4,9 +4,10 @@ extends Control
 ## menu for what needs no world, with what they said above it. The UI root
 ## opens and closes it and keeps every key from the game while it's up; up
 ## and down step through what was typed before, the focus-next key finishes
-## a command's name, a scenario or an id, and the wheel and the page actions
-## scroll back through what was said. Each command is a thin call into the
-## game's own code. One that changes the run makes it a dev run, whose deeds
+## a command's name, a scenario or an id, and the wheel, the page actions and
+## its bar scroll back through what was said. Its sides and foot pull it
+## bigger or smaller, and the settings keep its size. Each command is a thin
+## call into the game's own code. One that changes the run makes it a dev run, whose deeds
 ## never count (World.counts_deeds); one that only lists, or works on the
 ## profile, leaves it as it was.
 
@@ -38,21 +39,29 @@ const WORLDLESS := ["help", "scenarios", "unlockall", "deed", "deeds", "reset"]
 const STANDOFF := 60.0
 ## Parts that only come on something else: a cable's plugs, a hose's ends, a line's ends.
 const ON_SOMETHING := [&"plug", &"strong_plug", &"hose_end", &"rope_end"]
-## Lines of output shown, kept to scroll back through, and moved a wheel's
-## notch; commands remembered, and the most give makes at once.
-const SHOWN := 10
+## Lines of output kept to scroll back through, and moved a wheel's notch;
+## commands remembered, and the most give makes at once.
 const KEPT := 200
 const NOTCH := 2
 const REMEMBERED := 50
 const MOST := 20
 ## Said the first time the run turns a dev run.
 const DEV_RUN := "a dev run from now: no deed counts in it"
-## Its panel's width and how far down it hangs, px.
-const WIDTH := 640.0
+## Its panel's first width, wide enough for a scenario's line, and how far
+## down it hangs, px; at first it's as tall as scenario's whole list needs.
+const WIDTH := 800.0
 const TOP := 24.0
+## The smallest it pulls to, how near the screen's edges it may come, and how
+## far either side of a side or its foot it's taken hold of, px.
+const SMALLEST := Vector2(360.0, 160.0)
+const EDGE := 8.0
+const GRIP := 8.0
 
 var ui: UIRoot
+var _panel: PanelContainer
+var _head: RichTextLabel
 var _out: RichTextLabel
+var _bar: PageBar
 var _line: LineEdit
 var _said := PackedStringArray()
 var _typed := PackedStringArray()
@@ -60,6 +69,10 @@ var _typed := PackedStringArray()
 var _back := 0
 ## How many lines back the output is scrolled; 0 shows the latest.
 var _up := 0
+## The sides being pulled, -1 or 1 across and 1 down, from where and at what size.
+var _pulling := Vector2.ZERO
+var _from := Vector2.ZERO
+var _was := Vector2.ZERO
 
 
 func _ready() -> void:
@@ -67,20 +80,35 @@ func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	# Every click lands here, so none reaches the world to throw or look.
 	mouse_filter = Control.MOUSE_FILTER_STOP
-	var panel := PanelContainer.new()
-	panel.theme_type_variation = &"DevConsolePanel"
-	panel.set_anchors_preset(Control.PRESET_CENTER_TOP)
-	panel.offset_left = -WIDTH * 0.5
-	panel.offset_right = WIDTH * 0.5
-	panel.offset_top = TOP
-	panel.offset_bottom = TOP
-	add_child(panel)
+	_panel = PanelContainer.new()
+	_panel.theme_type_variation = &"DevConsolePanel"
+	_panel.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	_panel.offset_top = TOP
+	# Its edge inside passes a press on, to be taken hold of.
+	_panel.mouse_filter = Control.MOUSE_FILTER_PASS
+	_panel.draw.connect(_draw_grip)
+	add_child(_panel)
 	var stack := VBoxContainer.new()
-	panel.add_child(stack)
+	_panel.add_child(stack)
+	_head = Controls.keys_label()
+	_head.theme_type_variation = &"DevConsoleOut"
+	stack.add_child(_head)
+	var row := HBoxContainer.new()
+	row.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	stack.add_child(row)
+	# Scrolled a whole line at a time, by its own bar.
 	_out = Controls.keys_label()
 	_out.theme_type_variation = &"DevConsoleOut"
+	_out.fit_content = false
 	_out.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	stack.add_child(_out)
+	_out.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_child(_out)
+	_bar = PageBar.new()
+	_bar.moved.connect(func(at: float) -> void:
+		_up = _out.get_line_count() - _rows() - roundi(at)
+		_place())
+	row.add_child(_bar)
+	_out.resized.connect(_place)
 	_line = LineEdit.new()
 	_line.theme_type_variation = &"DevConsoleLine"
 	_line.keep_editing_on_text_submit = true
@@ -94,11 +122,13 @@ func _ready() -> void:
 	_line.gui_input.connect(_on_line_input)
 	_line.focus_exited.connect(_keep_focus, CONNECT_DEFERRED)
 	stack.add_child(_line)
+	get_viewport().size_changed.connect(_fit)
 
 
 func open() -> void:
 	visible = true
-	_write()
+	_place()
+	_fit()
 	_line.grab_focus()
 	_line.edit()
 
@@ -112,6 +142,7 @@ func close() -> void:
 	_line.release_focus()
 	_back = 0
 	_up = 0
+	_pulling = Vector2.ZERO
 
 
 ## Runs one line as if typed and confirmed.
@@ -139,13 +170,20 @@ static func _changed(world: World) -> void:
 
 
 func _help(_args: PackedStringArray, _world: World) -> void:
+	var wide := 0
 	for name: String in COMMANDS:
-		_say("%s  %s" % [_usage(name), COMMANDS[name][1]])
+		wide = maxi(wide, _usage(name).length())
+	for name: String in COMMANDS:
+		_say("%s  %s" % [_usage(name).rpad(wide), COMMANDS[name][1]])
 
 
+## Each in a line of its own, their keys in a column.
 func _scenarios(_args: PackedStringArray, _world: World) -> void:
+	var wide := 0
 	for scenario in Scenarios.LIST:
-		_say("%s  %s" % [scenario.key, scenario.label])
+		wide = maxi(wide, scenario.key.length())
+	for scenario in Scenarios.LIST:
+		_say("%s  %s" % [scenario.key.rpad(wide), scenario.label])
 
 
 ## Alone, or with a key it doesn't know, it lists them.
@@ -466,23 +504,117 @@ func _say(line: String) -> void:
 	if _said.size() > KEPT:
 		_said = _said.slice(_said.size() - KEPT)
 	_up = 0
-	_write()
+	_out.text = "\n".join(_said)
+	_place()
 
 
 ## Back through what was said by `by` lines, or down again for a negative `by`.
 func scroll(by: int) -> void:
-	_up = clampi(_up + by, 0, maxi(_said.size() - SHOWN, 0))
-	_write()
+	_up += by
+	_place()
 
 
-## The latest lines, or as far back as it's scrolled. Written as it opens
-## too, so a rebound key shows as it is now.
-func _write() -> void:
+## How many lines of what was said show at its size now.
+func _rows() -> int:
+	return maxi(floori((_out.size.y + 0.5) / _tall()), 1)
+
+
+## A line of what was said, px.
+func _tall() -> float:
+	var font := _out.get_theme_font(&"normal_font")
+	return font.get_height(_out.get_theme_font_size(&"normal_font_size")) + _out.get_theme_constant(&"line_separation")
+
+
+## The latest lines, or as far back as it's scrolled, its bar to match, and
+## the head line saying which. Placed as it opens too, so a rebound key shows
+## as it is now.
+func _place() -> void:
+	var lines := _out.get_line_count()
+	var shown := _rows()
+	_up = clampi(_up, 0, maxi(lines - shown, 0))
+	var top := maxi(lines - shown - _up, 0)
+	_out.scroll_to_line(top)
+	_bar.show_page(lines, shown, top)
 	var dim := get_theme_color(&"dim", &"Palette").to_html()
-	var head := "[color=#%s]%s[/color]" % [dim, Controls.bbcode("help lists the commands   {console} or {ui_cancel} closes")
+	_head.text = "[color=#%s]%s[/color]" % [dim, Controls.bbcode("help lists the commands   {console} or {ui_cancel} closes")
 		if _up == 0 else Controls.bbcode("%d lines back   {ui_page_down} or the wheel comes down" % _up)]
-	var last := _said.size() - _up
-	_out.text = "\n".join(PackedStringArray([head]) + _said.slice(maxi(last - SHOWN, 0), last))
+
+
+## What shows of what was said, as plain text.
+func shown() -> String:
+	var lines := _out.get_line_count()
+	var top := maxi(lines - _rows() - _up, 0)
+	var last := mini(top + _rows(), lines) - 1
+	if last < top:
+		return ""
+	var from := _out.get_line_range(top).x
+	return _out.get_parsed_text().substr(from, _out.get_line_range(last).y - from).strip_edges(false, true)
+
+
+## Its size as kept, or at first, within the screen: wide enough for a
+## scenario's line and as tall as scenario's whole list, the line it was
+## typed on and its usage need. Always whole lines tall, so none shows cut.
+func _fit(want := Settings.console_size) -> void:
+	# What's round the lines said: its edge, the head line and the typing line.
+	var around := _panel.get_combined_minimum_size().y - _out.get_combined_minimum_size().y
+	if want == Vector2.ZERO:
+		want = Vector2(WIDTH, around + (Scenarios.LIST.size() + 2) * _tall())
+	var room := get_viewport_rect().size - Vector2(EDGE * 2.0, TOP + EDGE)
+	var fits := want.clamp(SMALLEST.min(room), room)
+	fits.y = around + maxf(floorf((fits.y - around) / _tall()), 1.0) * _tall()
+	_panel.offset_left = -roundf(fits.x * 0.5)
+	_panel.offset_right = roundf(fits.x * 0.5)
+	_panel.offset_bottom = TOP + roundf(fits.y)
+
+
+## Its sides, its foot and the corners between are taken hold of to pull it
+## bigger or smaller, about its middle; the pointer shows which way, and let
+## go its size is kept.
+func _gui_input(event: InputEvent) -> void:
+	var press := event as InputEventMouseButton
+	var motion := event as InputEventMouseMotion
+	if press != null and press.button_index == MOUSE_BUTTON_LEFT:
+		if not press.pressed and _pulling != Vector2.ZERO:
+			Settings.console_size = _panel.size
+			Settings.save()
+		_pulling = _sides(press.position) if press.pressed else Vector2.ZERO
+		_from = press.position
+		_was = _panel.size
+		accept_event()
+	elif motion != null and _pulling != Vector2.ZERO:
+		_fit(_was + (motion.position - _from) * _pulling * Vector2(2.0, 1.0))
+		accept_event()
+	elif motion != null:
+		var at := _sides(motion.position)
+		var shape := CURSOR_ARROW
+		if at.x != 0.0 and at.y != 0.0:
+			shape = CURSOR_FDIAGSIZE if at.x > 0.0 else CURSOR_BDIAGSIZE
+		elif at != Vector2.ZERO:
+			shape = CURSOR_HSIZE if at.x != 0.0 else CURSOR_VSIZE
+		mouse_default_cursor_shape = shape
+		_panel.mouse_default_cursor_shape = shape
+
+
+## Which of its sides and foot a point is near enough to take hold of.
+func _sides(at: Vector2) -> Vector2:
+	var edge := _panel.get_rect()
+	var out := Vector2.ZERO
+	if at.y >= edge.position.y and at.y <= edge.end.y + GRIP:
+		if absf(at.x - edge.position.x) <= GRIP:
+			out.x = -1.0
+		elif absf(at.x - edge.end.x) <= GRIP:
+			out.x = 1.0
+	if absf(at.y - edge.end.y) <= GRIP and at.x >= edge.position.x - GRIP and at.x <= edge.end.x + GRIP:
+		out.y = 1.0
+	return out
+
+
+## Two short strokes in its foot's corner: it can be pulled.
+func _draw_grip() -> void:
+	var ink := get_theme_color(&"faint", &"Palette")
+	var corner := _panel.size - Vector2(3.0, 3.0)
+	for reach: float in [6.0, 10.0]:
+		_panel.draw_line(corner - Vector2(reach, 0.0), corner - Vector2(0.0, reach), ink, 1.0, true)
 
 
 ## The wheel scrolls what was said wherever the mouse is, and nothing of the
@@ -507,9 +639,9 @@ func _on_line_input(event: InputEvent) -> void:
 	elif event.is_action_pressed(&"ui_focus_next", true):
 		_complete()
 	elif event.is_action_pressed(&"ui_page_up", true):
-		scroll(SHOWN - 1)
+		scroll(_rows() - 1)
 	elif event.is_action_pressed(&"ui_page_down", true):
-		scroll(1 - SHOWN)
+		scroll(1 - _rows())
 	else:
 		return
 	_line.accept_event()

@@ -4,8 +4,8 @@ extends Control
 ## its name down the left, each deed right of the ones it waits on, a line
 ## from each to what it opens, narrow enough to stand left of the prop
 ## aside. Taller than the screen has room for, it shows a part of its page at
-## a time, scrolled by the wheel or the selection, keeps the card highlighted
-## in view, and draws its bar beside it in the theme's faint ink.
+## a time, scrolled by the wheel, its bar beside it or the selection, and
+## keeps the card highlighted in view.
 ## A card shows its name and its thing: lit once done, dimmer while open but
 ## not done, and a dark silhouette while what it waits on isn't done. A
 ## hidden deed is ???? with no picture until it shows done, though its place
@@ -36,11 +36,10 @@ const TIP_OFF := 12.0
 const TIP_EDGE := 16.0
 ## Of the screen's height, the most the tree shows at once; the rest scrolls,
 ## this far a notch of the wheel, px, keeping a highlighted card this far
-## inside what shows. Its bar is this wide and this far off the page.
+## inside what shows.
 const SHOWN := 0.66
 const WHEEL := 70.0
 const MARGIN := 12.0
-const BAR := Vector2(4.0, 8.0)
 ## A deed open but not done, at this share of a done one's brightness; one
 ## still locked, only its thing's outline, faint.
 const UNLIT := 0.55
@@ -54,13 +53,14 @@ var scroll := 0.0:
 	set(to):
 		scroll = clampf(to, 0.0, maxf(_page.size.y - size.y, 0.0))
 		_page.position.y = -scroll
-		queue_redraw()
+		_bar.show_page(_page.size.y, size.y, scroll)
 
 var _profile: Node
 var _tuning: Tuning
 ## Everything it shows, as tall as all of it: the families, the cards and the
 ## lines between them.
 var _page := Control.new()
+var _bar := PageBar.new()
 ## Each deed's card, and where its middle stands, px.
 var _cards := {}
 var _at := {}
@@ -88,6 +88,11 @@ func _init(profile: Node, tuning: Tuning) -> void:
 	_page.mouse_filter = Control.MOUSE_FILTER_PASS
 	_page.draw.connect(_draw_lines)
 	add_child(_page)
+	_bar.set_anchors_preset(Control.PRESET_RIGHT_WIDE)
+	_bar.offset_left = -PageBar.ACROSS
+	_bar.offset_right = 0.0
+	_bar.moved.connect(func(at: float) -> void: scroll = at)
+	add_child(_bar)
 	_lay_out()
 	# Over everything round it, so a scroll never cuts it off.
 	_tip = PanelContainer.new()
@@ -110,9 +115,10 @@ func _init(profile: Node, tuning: Tuning) -> void:
 
 
 func _ready() -> void:
-	custom_minimum_size = Vector2(_page.size.x + BAR.y + BAR.x,
+	custom_minimum_size = Vector2(_page.size.x + PageBar.ACROSS,
 		minf(_page.size.y, get_viewport_rect().size.y * SHOWN))
 	size = custom_minimum_size
+	scroll = scroll
 	# Over Back, which the menu highlights as it opens.
 	_open.call_deferred()
 
@@ -287,17 +293,6 @@ func _place_tip(card: Button) -> void:
 	var right := at.end.x + TIP_OFF + TIP < room.x
 	_tip.position = Vector2(at.end.x + TIP_OFF if right else at.position.x - TIP_OFF - TIP,
 		clampf(at.position.y, TIP_EDGE, maxf(room.y - _tip.size.y - TIP_EDGE, TIP_EDGE)))
-
-
-## Its bar beside the page while there's more than shows: what shows, along
-## the whole, in the theme's dim ink over its faint.
-func _draw() -> void:
-	var whole := _page.size.y
-	if whole <= size.y + 0.5:
-		return
-	var x := _page.size.x + BAR.y
-	draw_rect(Rect2(x, 0.0, BAR.x, size.y), get_theme_color(&"faint", &"Palette") * Color(1.0, 1.0, 1.0, 0.5))
-	draw_rect(Rect2(x, size.y * scroll / whole, BAR.x, size.y * size.y / whole), get_theme_color(&"dim", &"Palette"))
 
 
 ## From each deed across to each it opens: brighter once it's open.

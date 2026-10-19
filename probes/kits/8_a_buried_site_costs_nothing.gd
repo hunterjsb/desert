@@ -4,6 +4,7 @@ extends WorldProbe
 ## ridden past fast, a stone's throw off, nothing of it is found, read or
 ## built, and the frame pays a few microseconds for the seeds; stopped near
 ## it, it's read on a worker, builds into the index, and its chunk draws it.
+## Runs alone: it times real frames.
 
 const SPEED := 20.0
 const RIDE := 600.0
