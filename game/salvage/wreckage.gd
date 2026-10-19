@@ -8,10 +8,16 @@ extends Node3D
 ## rest) is a dictionary the site's memory keeps (Salvage), so it comes back
 ## as it was while the site is laid, and is forgotten with it.
 ##
-## It stands in the wreck's frame turned but not leaning, at its floor in the
-## state its chunk holds it in: what leans with the wreck (its plates, its
-## hazards, the holds cleared in from an end) is under its lean, and a hold
-## cleared down from the top lies in level layers, as sand settles.
+## It stands in the wreck's frame turned but not leaning, at its floor as
+## its chunk draws it, rising and sinking with it as a storm works the wreck
+## (Structure.follow): what leans with the wreck (its plates, its hazards,
+## the holds cleared in from an end) is under its lean, and a hold cleared
+## down from the top lies in level layers, as sand settles, on the sand in
+## the hull. A storm moves no sand on a wreck's ground: its rooms fill as far
+## as it sinks. So what's cut stays cut and what's cleared stays cleared,
+## under the sand or bared; a plate cut away rides the wreck where it came
+## to rest on it, and on the sand sinks with the wreck as a storm buries it
+## past where it was, but never rises off the sand it fell on.
 
 const CUT := &"cut"
 const CLEAR := &"clear"
@@ -30,9 +36,13 @@ const KERF := 0.11
 ## A cell just cut glows, cooling by this much a second.
 const COOL := 0.4
 ## A seam's cell no higher than this over the sand is under it, m; a plate's
-## cells are each asked only once its foot comes this near the sand.
+## cells are each asked only once its foot comes this near the sand, and
+## again each time a storm has moved the wreck this far. A fallen plate
+## whose lowest corner is no higher over the sand than this lies on the sand.
 const UNDER_SAND := 0.03
 const NEAR_SAND := 0.4
+const RESAND := 0.03
+const ON_SAND := 0.1
 ## A hazard's box, m.
 const HAZARD_BOX := Vector3(0.5, 0.6, 0.4)
 ## A plate cut free falls, and once it's been still this long, s (or after
@@ -62,8 +72,9 @@ static var _bead_look: ShaderMaterial
 var site: Structure
 var plan: WreckPlan
 ## {"cut": [PackedFloat32Array per plate], "cleared": PackedFloat32Array per
-## hold, "hazards": {socket: SAFE or SPENT}, "fallen": {plate: where it lies
-## from its middle on the dunes' mean}}.
+## hold, "hazards": {socket: SAFE or SPENT}, "fallen": {plate: [where it came
+## to rest in this frame, how far the wreck was sunk then if it lies on the
+## sand, NAN on the wreck]}}.
 var state: Dictionary
 
 ## The world's one ground function, world metres.
@@ -76,6 +87,9 @@ var _heat := {}
 var _slices := {}
 var _hazards := {}
 var _falling: Array[Array] = []
+## Fallen plates come to rest, by plate; and its floor when the sand was last asked.
+var _fallen := {}
+var _asked := NAN
 ## What's left to build, a piece at a time.
 var _steps: Array = []
 var _blink := 0.0
@@ -138,6 +152,7 @@ func build_step() -> bool:
 		_lean.name = "Lean"
 		_lean.transform = site.lean_frame()
 		add_child(_lean)
+		_asked = position.y
 		_steps = []
 		for i in plan.plates.size():
 			_steps.append([&"plate", i])
@@ -165,6 +180,33 @@ func build_step() -> bool:
 ## Whether all of it is built.
 func built() -> bool:
 	return _lean != null and _steps.is_empty()
+
+
+## Stands at its wreck's floor as its chunk draws it now: what lies cut away
+## keeps to its rule, and once the wreck has moved RESAND the sand is asked
+## again of its seams and its holds packed from the top.
+func follow(chunk: TerrainChunk) -> void:
+	var sink := chunk.sink_of(site)
+	var y := site.pad() - sink if not is_nan(sink) else site.floor_y
+	if y == position.y:
+		return
+	position.y = y
+	for i: int in _fallen:
+		if is_instance_valid(_fallen[i]):
+			(_fallen[i] as Node3D).transform = lying_at(i)
+	if _lean == null or absf(y - _asked) < RESAND:
+		return
+	_asked = y
+	for i: int in _plates:
+		_bury(i)
+	for h: int in _slices:
+		if (plan.holds[h] as WreckPlan.Hold).from == WreckPlan.TOP:
+			_pack(h)
+
+
+## Its frame in world metres as it stands now: at its floor, turned, leaning.
+func _frame() -> Transform3D:
+	return Transform3D(site.basis(), Vector3(site.x, position.y, site.z)) * site.lean_frame()
 
 
 # --- What it asks. ---
@@ -451,24 +493,30 @@ func _standing(i: int) -> void:
 	var cells: PackedFloat32Array = state.cut[i]
 	var heat := PackedFloat32Array()
 	heat.resize(p.cells.size())
-	var buried := PackedByteArray()
-	buried.resize(p.cells.size())
-	# Each cell's sand is asked only of a plate whose foot comes near the
-	# sand round it: most stand well clear.
-	var frame := site.frame()
-	var near := _near_sand(p, frame)
 	for c in p.cells.size():
 		beads.set_instance_transform(c, _bead_at(p, c, cells[c] >= 1.0))
 		beads.set_instance_custom_data(c, Color(0.0, cells[c], 0.0, 0.0))
-		if near:
-			var w := frame * p.cells[c]
-			buried[c] = 1 if w.y < float(_height.call(w.x, w.z)) + UNDER_SAND else 0
 	var view := MultiMeshInstance3D.new()
 	view.multimesh = beads
 	view.material_override = _bead_material()
 	body.add_child(view)
 	_beads[i] = beads
 	_heat[i] = heat
+	_bury(i)
+
+
+## Which of a plate's seam cells the sand holds, as the wreck stands now.
+## Each cell's sand is asked only of a plate whose foot comes near the sand
+## round it: most stand well clear.
+func _bury(i: int) -> void:
+	var p: WreckPlan.Plate = plan.plates[i]
+	var buried := PackedByteArray()
+	buried.resize(p.cells.size())
+	var frame := _frame()
+	if _near_sand(p, frame):
+		for c in p.cells.size():
+			var w := frame * p.cells[c]
+			buried[c] = 1 if w.y < float(_height.call(w.x, w.z)) + UNDER_SAND else 0
 	_buried[i] = buried
 
 
@@ -506,6 +554,7 @@ func _lying(i: int) -> void:
 	body.set_meta(&"wreckage", self)
 	body.transform = lying_at(i)
 	add_child(body)
+	_fallen[i] = body
 
 
 ## Cut through: it comes away and falls outward off the hull, its welds
@@ -540,37 +589,39 @@ func _fall(i: int) -> void:
 	Sounds.play_at(body, Sounds.PLATE_FREE, -4.0, 3.0)
 
 
-## A hold's slices still standing, the first worn down as far as it's cleared.
+## A hold's slices still standing, the first worn down as far as it's
+## cleared; packed again as the wreck moves, those from the top on the sand
+## in the hull as it lies now.
 func _pack(h: int) -> void:
 	var hold: WreckPlan.Hold = plan.holds[h]
-	var standing: Array = []
+	var standing: Array = _slices.get(h, [])
+	standing.resize(hold.slices)
 	var first := cleared(h)
 	for k in hold.slices:
-		if k < first:
-			standing.append(null)
-			continue
-		var box := _slice_box(h, k)
+		var box := _slice_box(h, k) if k >= first else AABB()
+		var body: StaticBody3D = standing[k]
 		if box.size.y <= 0.02:
-			standing.append(null)
+			if body != null:
+				_gone(body)
+				standing[k] = null
 			continue
-		var body := StaticBody3D.new()
-		body.name = "Sand%d_%d" % [h, k]
-		var shape := CollisionShape3D.new()
-		shape.shape = BoxShape3D.new()
-		body.add_child(shape)
-		var look := MeshInstance3D.new()
-		look.mesh = _unit_box()
-		look.material_override = _sand_material()
-		body.add_child(look)
-		body.set_meta(&"work", [CLEAR, h, k])
-		body.set_meta(&"wreckage", self)
+		if body == null:
+			body = StaticBody3D.new()
+			body.name = "Sand%d_%d" % [h, k]
+			var shape := CollisionShape3D.new()
+			shape.shape = BoxShape3D.new()
+			body.add_child(shape)
+			var look := MeshInstance3D.new()
+			look.mesh = _unit_box()
+			look.material_override = _sand_material()
+			body.add_child(look)
+			body.set_meta(&"work", [CLEAR, h, k])
+			body.set_meta(&"wreckage", self)
+			(self if hold.from == WreckPlan.TOP else _lean).add_child(body)
+			standing[k] = body
 		body.set_meta(&"box", box)
-		(self if hold.from == WreckPlan.TOP else _lean).add_child(body)
-		standing.append(body)
+		_fit(body, box)
 	_slices[h] = standing
-	for k in hold.slices:
-		if standing[k] != null:
-			_fit(standing[k], standing[k].get_meta(&"box"))
 	_shape_slice(h)
 
 
@@ -617,8 +668,8 @@ func _slice_box(h: int, k: int) -> AABB:
 		top = maxf(top, at.y)
 		bottom = minf(bottom, at.y)
 	# The sand under the hold's middle, in this frame: what's under it is the dunes'.
-	var middle := site.frame() * hold.box.get_center()
-	var sand := float(_height.call(middle.x, middle.z)) - site.origin().y
+	var middle := _frame() * hold.box.get_center()
+	var sand := float(_height.call(middle.x, middle.z)) - position.y
 	bottom = maxf(bottom, sand)
 	var each := (top - bottom) / hold.slices
 	if each <= 0.0:
@@ -757,7 +808,8 @@ func _settle(delta: float) -> void:
 			look.set_instance_shader_parameter(&"lit", maxf(0.6 - each[2] * 0.15, 0.0))
 		if each[3] >= SETTLE or each[2] >= SETTLE_MOST:
 			body.freeze = true
-			state.fallen[each[0]] = _kept(body.transform)
+			state.fallen[each[0]] = _kept(body)
+			_fallen[each[0]] = body
 			_falling.remove_at(n)
 
 
@@ -791,20 +843,35 @@ func _exit_tree() -> void:
 	for each in _falling:
 		var body: RigidBody3D = each[1]
 		if is_instance_valid(body):
-			state.fallen[each[0]] = _kept(body.transform)
+			state.fallen[each[0]] = _kept(body)
 	_falling.clear()
 
 
-## Where a fallen plate lies, as kept: from the wreck's middle on the dunes'
-## mean, not from its floor, which sinks and rises with its state while the
-## sand the plate lies on outside it doesn't.
-func _kept(lying: Transform3D) -> Transform3D:
-	return lying.translated(Vector3.UP * (transform.origin.y - site.pad()))
+## Where a fallen plate came to rest, as kept: in this frame, and how far
+## the wreck was sunk then if it lies on the sand, its lowest corner no
+## higher over it than ON_SAND; NAN if it lies on the wreck itself.
+func _kept(body: CollisionObject3D) -> Array:
+	var shape := body.get_child(0) as CollisionShape3D
+	var half := (shape.shape as BoxShape3D).size * 0.5
+	var frame := Transform3D(site.basis(), Vector3(site.x, position.y, site.z)) * body.transform * shape.transform
+	var low := Vector3(0.0, INF, 0.0)
+	for c in 8:
+		var at := frame * ((Vector3(c & 1, (c >> 1) & 1, (c >> 2) & 1) * 2.0 - Vector3.ONE) * half)
+		if at.y < low.y:
+			low = at
+	var on_sand := low.y <= float(_height.call(low.x, low.z)) + ON_SAND
+	return [body.transform, site.pad() - position.y if on_sand else NAN]
 
 
-## Where a fallen plate lies now, from the wreck's floor in the state it's in.
+## Where a fallen plate lies now, in this frame. On the wreck it rides it;
+## on the sand it sinks with the wreck once a storm has it deeper than when
+## the plate fell, and while it's shallower stays where it fell.
 func lying_at(i: int) -> Transform3D:
-	return (state.fallen[i] as Transform3D).translated(Vector3.UP * (site.pad() - transform.origin.y))
+	var kept: Array = state.fallen[i]
+	var sunk: float = kept[1]
+	if is_nan(sunk):
+		return kept[0]
+	return (kept[0] as Transform3D).translated(Vector3.UP * minf(site.pad() - position.y - sunk, 0.0))
 
 
 func _cut_through(i: int) -> bool:

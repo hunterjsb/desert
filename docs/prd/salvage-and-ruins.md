@@ -412,7 +412,7 @@ past that the far ring showed the dunes alone.
 
 - **Stand-ins.** A kit piece says how it reads far off (`far`, in its era's file): a few boxes of its
   shape, each in the coat its real look shows there (colour, metalness, roughness), lit as the ground
-  is. The relay mast, the watchtower, the pylon stub, the wreck hull and the pipeline segment have one.
+  is. The relay mast, the watchtower, the pylon stub, the pipeline segment and the five wrecks have one.
   A stand-in stands at its structure's place and turn, as deep as its state sinks it and cut at the
   sand, on the far ring's own ground (`FarRing.ground`, its 32 m triangles), so it never floats or sinks
   where the ring skips a crest. Its level out of the sand is read on the worker, and read again each
@@ -686,8 +686,26 @@ inside a wreck, above the ground, and nothing is dug out of the dunes.
     you carry. A save keeps it.
   A live bank blinks red and crackles; a breached store hisses and seeps a sickly mist.
 - **The readout** says what each piece is, how far its work has got and what does it ("starboard hatch ·
-  seams 72% cut · hold F with a heat cutter along its seams", "packed sand · cargo bay, blown in through
-  the torn tail · slice 1 of 3"); a cutter or scoop used on the hull says where its work is.
+  seams 72% cut · hold use with a heat cutter along its seams", "packed sand · cargo bay, blown in
+  through the torn tail · slice 1 of 3"), naming use by its binding; a cutter or scoop used on the hull
+  says where its work is.
+- **Storms work wrecks too** (2026-10-18, on master's live exposure: [What storms do to sites
+  now](../world-system.md#what-storms-do-to-sites-now)). A wreck rises out of the sand and sinks back as a
+  storm works it, and its scrapping goes with it frame by frame: its plates, hazards and packed holds
+  stand at its floor as its chunk draws it (`Wreckage.follow`, from `Salvage.follow`), and its modules
+  are read again as any site's finds are. A storm moves no sand on a wreck's ground (no drift, and its
+  rooms fill as far as it sinks), so burying one is its sinking. What's cut stays cut and what's cleared
+  stays cleared, under the sand or bared, since the storm's work and the wreck's memory are apart: one
+  is the weather's function, the other what you did. Each 3 cm it moves, the sand is asked again of its
+  seams (a buried seam can't be cut, a bared one can) and its holds packed from the top are laid again on
+  the sand in the hull, so a cargo deck under the sand when its ground was built has sand to clear once
+  a storm bares it. **A cut plate stays where it fell, and is buried with the wreck:** one lying on the
+  wreck itself (its lowest corner over 10 cm above the sand: a pod's top, a deck) rides it; one on the
+  sand sinks with the wreck as a storm buries it deeper than when the plate fell, out of sight, and
+  comes back up to where it fell as it's bared, but never rises off the sand it lies on as the wreck
+  rises past that. The hold over you is the site's own, so it holds the wreck and its plates alike, and
+  a save keeps the plates' rule with them (`fallen`: where each came to rest in the wreck's frame, and
+  how far the wreck was sunk then if it lies on the sand).
 - **Memory.** What was cut, cleared and made safe, and where each plate fell, is kept with the site's
   memory of what was taken (`Salvage`, the site's id): built again as it was left whenever its ground
   is, and in a save once worked (an untouched wreck saves nothing). Once the sheet lifts it, it's
@@ -705,7 +723,11 @@ inside a wreck, above the ground, and nothing is dug out of the dunes.
   least lean and its most; 2 a wreck needs its operations (held until the last need, the wrong tool
   does nothing, only the seams cut, a plate falls outward and lies on the sand, holds clear from their
   open end, a top-down hold lies level); 3 the unprepared are wounded, and the prepared aren't; 4 a wreck
-  remembers, across its ground going and coming, and a save; 5 scrapping by hand, with the keys.
+  remembers, across its ground going and coming, a save and a burial (its plate sunk with it, and where
+  it fell once it's dug out); 5 scrapping by hand, through the actions; 6 building one is cheap enough;
+  7 a storm keeps what you cut (a hauler bared and buried again as you watch: its welds follow its hull
+  frame by frame, its cargo deck has sand once bared, its fallen door sinks with it and comes back where
+  it fell, its half-cut seams and cleared slice kept; it fails with a wreckage that stands still).
 - **Not yet:** a use for cut plates (Hunter: "just scrap for now"), a freighter wreck as the big dig
   site the lore promises, and more hazards (a pressurised tank was offered and set aside).
 
@@ -1033,7 +1055,7 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
 8. **Out the door.** A found device, once yours, can be taken hold of and walked out of
    a ruin's doors, and towed out of them on a line.
 
-Wrecks have their own five, in `probes/wrecks/` ([Wrecks and scrapping](#wrecks-and-scrapping-hunter-2026-10-18-built)).
+Wrecks have their own seven, in `probes/wrecks/` ([Wrecks and scrapping](#wrecks-and-scrapping-hunter-2026-10-18-built)).
 
 ## Out of scope
 

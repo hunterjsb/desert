@@ -1250,6 +1250,12 @@ paint's age.
   dunes, 18 KB near and 5 KB mid. `sites.newly_exposed` within 140 m takes 56 µs. A drift tick for a
   line with 18 sites near is 0.27 ms, 16 µs with none, so the drift a clock jump draws (540 ticks at most)
   can cost a few tens of milliseconds once where sites stand thick.
+- **Wrecks follow it too.** A wreck's scrapping (`Wreckage`) stands at its floor as its chunk draws it,
+  so its plates, hazards and packed holds rise and sink with its hull, and its modules are read again
+  as any finds are; what's cut and cleared is its memory, apart from the weather's function, so a
+  storm never undoes it. A cut plate rides the wreck it lies on, and one on the sand is buried with
+  the wreck as it sinks deeper than when it fell, never lifted off its sand as it rises (wrecks probe 7;
+  [Salvage & ruins](prd/salvage-and-ruins.md#wrecks-and-scrapping-hunter-2026-10-18-built)).
 - **Probes:** kits 3 (a loaded site follows the storm, smoothly, and never buries you), kits 4 (exposure is
   pure, and a storm works a site), loot 7 (what a storm bares blows downwind), sightlines 4 (a glint
   through the dust only near), saves 23 (a save never buries you). Each fails on a deliberately broken build: no hold over you, no ground

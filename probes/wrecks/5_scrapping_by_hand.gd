@@ -1,5 +1,5 @@
 extends WreckProbe
-## Wreck probe 5: scrapping by hand, with the keys. A skimmer hull, worked as
+## Wreck probe 5: scrapping by hand, through the actions. A skimmer hull, worked as
 ## a player works it. Its readout says what each piece is and what does its
 ## work. A heat cutter held off the seams cuts nothing and says to trace them;
 ## traced cell by cell round its hatch with use held down, it cuts the hatch

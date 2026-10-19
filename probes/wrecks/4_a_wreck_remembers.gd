@@ -5,8 +5,9 @@ extends WreckProbe
 ## back, it's built again as it was left: the plate lying where it fell, the
 ## slice gone, the bank dead. Saved and resumed, the same, and a save of it
 ## holds what was done and nothing of an untouched wreck; buried by a storm
-## while you're away, its plate still lies where it fell. Once you've gone so
-## far the sheet lifts it, it's forgotten, as any site is.
+## while you're away, its plate has sunk with it, and dug out again it lies
+## where it fell. Once you've gone so far the sheet lifts it, it's
+## forgotten, as any site is.
 
 ## Gone this far, m: the ground goes, the site stays laid; then far enough
 ## that the sheet lifts it.
@@ -85,18 +86,26 @@ func run() -> void:
 	wreck = await _built(again)
 	_as_left(wreck, plate, fallen, bank, "resumed at")
 
-	# Buried by a storm while you're away, it's sunk deep; the plate lying on
-	# the sand outside it hasn't moved.
+	# Buried by a storm while you're away, it's built again sunk deep, its
+	# plate sunk with it; dug out again, the plate lies where it fell.
+	var depth := again.depth
+	var sunk := again.piece.sink_at(again.level())
 	again.depth = again.taken() * 4.0 + 1.0
 	await go(here.x + AWAY, here.y)
 	await go(here.x, here.y)
 	wreck = await _built(again)
 	if wreck != null:
 		var lying := _fallen_at(wreck, plate)
-		print("buried, the wreck is %s; its plate lies %.3f m from where it fell" % [Exposure.NAMES[again.state()],
-			lying.distance_to(fallen)])
-		check(again.state() != Exposure.EXPOSED and lying.distance_to(fallen) < 0.05,
-			"buried, its fallen plate still lies where it fell")
+		var sank := again.piece.sink_at(again.level()) - sunk
+		print("buried, the wreck is %s, %.2f m deeper; its plate %.3f m deeper" % [Exposure.NAMES[again.state()], sank,
+			fallen.y - lying.y])
+		check(again.state() != Exposure.EXPOSED and sank > 0.5 and absf(fallen.y - sank - lying.y) < 0.05
+			and Vector2(lying.x, lying.z).distance_to(Vector2(fallen.x, fallen.z)) < 0.05,
+			"buried, its fallen plate sank with it")
+		again.depth = depth
+		for k in 10:
+			await get_tree().process_frame
+		_as_left(wreck, plate, fallen, bank, "dug out again")
 
 	# Lifted, forgotten.
 	await go(here.x + LIFTED, here.y)

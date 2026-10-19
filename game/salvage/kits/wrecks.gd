@@ -241,10 +241,15 @@ static func _tithe_hauler() -> StructureKit.Piece:
 	p.tour = PackedVector2Array([Vector2(-8.0, -4.0), Vector2(-3.5, -4.0), Vector2(-8.0, -4.0)])
 	p.approach = Vector2(-11.0, 2.0)
 	p.look = _hauler_look
-	StructureKit.far_box(p, Vector3(-2.5, 0.0, -8.2), Vector3(2.5, 3.85, 8.4), coats().armour)
-	StructureKit.glint(p, Vector3(0.0, 2.45, 8.41), Vector3(0.0, 0.3, 1.0), 3.0)
-	StructureKit.glint(p, Vector3(-2.51, 2.85, 6.8), Vector3(-1.0, 0.3, 0.0), 3.0)
-	StructureKit.glint(p, Vector3(1.0, 3.86, -4.0), Vector3(0.1, 1.0, 0.1), 4.0)
+	# Its armoured body, the cab's lower front and the olive roof; the cab's
+	# slit windows, the one in its door and its empty gun ring catch the sun.
+	var c := coats()
+	StructureKit.far_box(p, Vector3(-2.5, 0.0, -8.2), Vector3(2.5, 3.65, 8.0), c.armour)
+	StructureKit.far_box(p, Vector3(-2.5, 0.0, 8.0), Vector3(2.5, 3.25, 8.4), c.armour)
+	StructureKit.far_box(p, Vector3(-2.5, 3.65, -8.2), Vector3(2.5, 3.85, 8.0), c.olive)
+	StructureKit.glint(p, Vector3(0.0, 2.65, 8.42), Vector3(0.0, 0.3, 1.0), 3.0)
+	StructureKit.glint(p, Vector3(-2.54, 2.9, 5.3), Vector3(-1.0, 0.3, 0.0), 3.0)
+	StructureKit.glint(p, Vector3(0.52, 3.89, -3.0), Vector3(0.1, 1.0, 0.1), 4.0)
 	return p
 
 
@@ -331,10 +336,15 @@ static func _freight_pod() -> StructureKit.Piece:
 	p.tour = PackedVector2Array([Vector2(0.0, 12.0), Vector2(0.0, 6.8), Vector2(0.0, 12.0)])
 	p.approach = Vector2(7.0, 12.0)
 	p.look = _pod_look
-	StructureKit.far_box(p, Vector3(-3.0, -0.25, -6.0), Vector3(3.0, 4.2, 6.0), coats().panel)
+	# Its panelled body under its grey roof, its hatch swung wide; the roof,
+	# its flank and the hatch's grab handles catch the sun.
+	var c := coats()
+	StructureKit.far_box(p, Vector3(-3.0, -0.25, -6.0), Vector3(3.0, 4.0, 6.0), c.panel)
+	StructureKit.far_box(p, Vector3(-3.0, 4.0, -6.0), Vector3(3.0, 4.2, 6.0), c.grey)
+	StructureKit.far_box(p, Vector3(1.5, 0.0, 6.0), Vector3(1.62, 3.2, 9.0), c.panel)
 	StructureKit.glint(p, Vector3(0.0, 4.21, 2.0), Vector3(0.0, 1.0, 0.2), 4.0)
 	StructureKit.glint(p, Vector3(-3.01, 3.0, -3.0), Vector3(-1.0, 0.3, 0.0), 3.0)
-	StructureKit.glint(p, Vector3(0.0, 0.09, 8.6), Vector3(0.0, 1.0, 0.4), 5.0)
+	StructureKit.glint(p, Vector3(1.7, 2.2, 8.4), Vector3(1.0, 0.35, 0.1), 5.0)
 	return p
 
 
@@ -410,8 +420,12 @@ static func _lifeboat() -> StructureKit.Piece:
 	p.tour = PackedVector2Array([Vector2(-7.0, 0.0), Vector2(-2.6, -0.2), Vector2(-7.0, 0.0)])
 	p.approach = Vector2(-9.0, 4.0)
 	p.look = _lifeboat_look
-	StructureKit.far_box(p, Vector3(-2.0, -0.55, -4.5), Vector3(2.0, 3.2, 4.5), coats().panel)
-	StructureKit.glint(p, Vector3(0.0, 2.1, 4.51), Vector3(0.0, 0.3, 1.0), 3.0)
+	# Its panelled body under its cobalt roof; the glass left in its viewport
+	# and the roof catch the sun.
+	var c := coats()
+	StructureKit.far_box(p, Vector3(-2.0, -0.25, -4.5), Vector3(2.0, 3.0, 4.5), c.panel)
+	StructureKit.far_box(p, Vector3(-2.0, 3.0, -4.5), Vector3(2.0, 3.2, 4.5), c.cobalt)
+	StructureKit.glint(p, Vector3(0.8, 2.25, 4.45), Vector3(0.0, 0.3, 1.0), 3.0)
 	StructureKit.glint(p, Vector3(1.0, 3.21, 0.0), Vector3(0.2, 1.0, 0.0), 4.0)
 	return p
 
@@ -500,11 +514,19 @@ static func _hopper() -> StructureKit.Piece:
 	p.tour = PackedVector2Array([Vector2(0.0, -12.0), Vector2(0.0, -6.0), Vector2(0.0, -12.0)])
 	p.approach = Vector2(-8.0, -11.0)
 	p.look = _hopper_look
-	StructureKit.far_box(p, Vector3(-1.6, -0.25, -5.5), Vector3(1.6, 2.8, 6.4), coats().lime)
-	StructureKit.far_box(p, Vector3(-5.6, 0.8, -4.0), Vector3(3.4, 1.0, 1.0), coats().lime)
-	StructureKit.far_box(p, Vector3(-0.12, 2.8, -5.5), Vector3(0.12, 4.2, -3.2), coats().daub)
+	# Its limed body stepping down to the cockpit and nose, the port wing and
+	# the starboard stub, the fan's dark nacelle and the fin; the canopy and
+	# the broken wing's bare ribs catch the sun.
+	var c := coats()
+	StructureKit.far_box(p, Vector3(-1.6, -0.25, -5.5), Vector3(1.6, 2.8, 4.0), c.lime)
+	StructureKit.far_box(p, Vector3(-1.6, -0.25, 4.0), Vector3(1.6, 2.6, 5.5), c.lime)
+	StructureKit.far_box(p, Vector3(-1.6, -0.25, 5.5), Vector3(1.6, 1.6, 6.4), c.lime)
+	StructureKit.far_box(p, Vector3(-5.6, 0.8, -4.0), Vector3(-1.6, 1.0, 1.0), c.lime)
+	StructureKit.far_box(p, Vector3(1.6, 0.8, -4.0), Vector3(3.4, 1.0, 0.0), c.lime)
+	StructureKit.far_box(p, Vector3(-4.0, 0.0, -3.5), Vector3(-1.6, 0.8, 0.5), c.dark)
+	StructureKit.far_box(p, Vector3(-0.12, 2.8, -5.5), Vector3(0.12, 4.2, -3.2), c.lime)
 	StructureKit.glint(p, Vector3(0.0, 2.41, 4.8), Vector3(0.0, 1.0, 0.5), 5.0)
-	StructureKit.glint(p, Vector3(-3.0, 1.01, -1.5), Vector3(0.0, 1.0, 0.0), 4.0)
+	StructureKit.glint(p, Vector3(3.55, 0.95, -1.75), Vector3(0.5, 0.85, 0.0), 4.0)
 	return p
 
 

@@ -186,11 +186,15 @@ func stream(deadline: int) -> void:
 
 
 ## A loaded site a storm is working on, read again when enough sand has
-## come off it or gone back: called each time its chunk moves what stands on it.
+## come off it or gone back: called each time its chunk moves what stands on
+## it. A wreck's scrapping moves with it every time.
 func follow(chunk: TerrainChunk) -> void:
 	var lot: Lot = _lots.get(chunk.coord)
 	if lot == null or lot.chunk != chunk:
 		return
+	for wreck in lot.wrecks:
+		if is_instance_valid(wreck):
+			wreck.follow(chunk)
 	for site in chunk.structures():
 		var was: Variant = lot.seen.get(site)
 		if was == null or lot.waiting.has(site):
@@ -501,14 +505,14 @@ func _plan(coord: Vector2i, lot: Lot) -> void:
 			_queue.append(Piece.new(coord, spec))
 
 
-## A wreck's scrapping, built as it was left, in the state its chunk holds it.
+## A wreck's scrapping, built as it was left, at its floor as its chunk draws it.
 func _build_wreck(lot: Lot, site: Structure) -> void:
 	var memory := _memory_of(site)
 	var wreck := Wreckage.new(site, memory[2], _world.height_at)
 	var chunk := lot.chunk
-	var s := chunk.state_of(site)
-	wreck.transform = Transform3D(site.basis(), Vector3(site.x - chunk.coord.x * chunk.side, site.floor_in(s),
+	wreck.transform = Transform3D(site.basis(), Vector3(site.x - chunk.coord.x * chunk.side, 0.0,
 		site.z - chunk.coord.y * chunk.side))
+	wreck.follow(chunk)
 	chunk.add_child(wreck)
 	lot.wrecks.append(wreck)
 	_wreckage[site] = wreck
