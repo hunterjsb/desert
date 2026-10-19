@@ -1,5 +1,5 @@
 extends HandsProbe
-## Profile & saves probe 32: the archaeologist's deeds, through play. A big
+## Profile & saves probe 33: the archaeologist's deeds, through play. A big
 ## dune's ruin a storm has laid bare: stopped near, it builds, and stepping
 ## onto it is Dune Reader. A scoop held on its sand digs it; half its sand
 ## and more off by hand, dug out, is Spadework, and not before. On a deck, a

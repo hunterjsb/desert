@@ -560,7 +560,7 @@ the detail):
   and a sieve carried.
 - **Probes:** kits 6 (the dune term strips a windward face more than its lee), 7 (a big dune's ruin bares
   only past an intense storm), 8 (a buried site costs nothing until it's bared and you've slowed by), loot 8
-  (light loot falls in a crest's lee) and loot 7 standing its ruin in the open; Profile & saves 32 and 33.
+  (light loot falls in a crest's lee) and loot 7 standing its ruin in the open; Profile & saves 33 and 34.
 
 ## What storms do to everything else
 

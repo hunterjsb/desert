@@ -344,9 +344,9 @@ How each X was chosen, from the probes' numbers (the probes' seed, 2026-10-19):
   minutes. A storm that has taken half or more off one leaves it the storm's: you wait for the sand to
   come back, or find another.
 
-- **Probes** 25 to 31, one a tree, and Menus & UI probe 16; 32, the dune deeds through play (a ruin
+- **Probes** 25 to 31, one a tree, and Menus & UI probe 16; 33, the dune deeds through play (a ruin
   stepped onto, dug out by hand and not before half its sand is yours, and the setup not done until its
-  ground radar is fitted), and 33, the Archaeologist locked until both of hers.
+  ground radar is fitted), and 34, the Archaeologist locked until both of hers.
 
 ## Starts on the chassis, and two new kits (agreed, 2026-10-18 spec; the starts built, the kits not)
 

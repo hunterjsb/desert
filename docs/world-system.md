@@ -1322,7 +1322,7 @@ paint's age.
   through the dust only near), saves 23 (a save never buries you); and for dune archaeology kits 6 (the dune
   term strips a windward face more than its lee), kits 7 (a big dune's ruin bares only past an intense
   storm), kits 8 (a buried site costs nothing until bared and slowed by), loot 8 (light loot falls in a
-  crest's lee), saves 32 (the dune deeds through play). Kits 1 and loot 2 read a site's weather through
+  crest's lee), saves 33 (the dune deeds through play). Kits 1 and loot 2 read a site's weather through
   the site, its dune term and all. Each fails on a deliberately broken build: no hold over you, no ground
   pressed afresh, a look that doesn't follow; the storm's sand never coming back, or read only on its
   ticks; drift shed upwind as well; glints through the dust at any range, or every bare glint; a

@@ -755,7 +755,7 @@ there already was, the scoop clearing a wreck's packed holds.
   its shelves sieves, batteries, a lamp, a compass, a scoop or a ration; its caches big batteries, a
   screen, a sieve or a ground radar; its deepest a ground radar most often, else a Console, big batteries,
   a shield or a screen (`SiteLoot.DUNE`). A relay mast's cabinet now and then holds a ground radar.
-- **Probes:** Profile & saves 32 digs one out through the hands.
+- **Probes:** Profile & saves 33 digs one out through the hands.
 
 ## Nomad gear (agreed, 2026-10-18 spec; not built)
 
