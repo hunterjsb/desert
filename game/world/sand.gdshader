@@ -5,8 +5,9 @@ shader_type spatial;
 // grainflows; gentler slopes carry wind ripples across the wind, lopsided,
 // forking and ending, faded out before they alias, their crests coarse and a
 // shade darker, over a longer swell that holds on further out; crests catch a
-// thin highlight; and patches drawn out along the wind vary the colour so
-// distance reads. Its own light() lights it as sand, not paint.
+// thin highlight; patches drawn out along the wind vary the colour so
+// distance reads; and close up it's grainy. Its own light() lights it as
+// sand, not paint.
 
 uniform vec3 sand : source_color = vec3(0.71, 0.59, 0.43);
 // Shares of the sand's colour each channel keeps on slip faces and in troughs.
@@ -252,6 +253,7 @@ void fragment() {
 	vec3 colour = sand * mix(trough_shade, vec3(1.0), smoothstep(0.2, 0.8, broad) * 0.5 + 0.5);
 	// Patches, drawn out down the wind as ribbons of coarser and finer sand.
 	colour *= 1.0 + (value_noise(along / vec2(7.0, 30.0)) - 0.5) * 2.0 * patchiness;
+	// The small mottle, faded as a pixel spans more of it.
 	if (foot < 0.3) {
 		colour *= 1.0 + (value_noise(at / 0.6) - 0.5) * 2.0 * mottle * (1.0 - smoothstep(0.15, 0.5, foot / 0.6));
 	}
