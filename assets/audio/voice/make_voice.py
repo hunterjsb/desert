@@ -1,8 +1,9 @@
 """Renders the radio's voice: every phrase the weather station's spoken
 reports are put together from (Radio.report in game/radio/radio.gd), and a
-Console's battery warnings, one mono OGG each, named by its words. Piper with the public-domain LJ Speech voice; the source
-and licences are in assets/audio/CREDITS.md. Run once, offline, from a venv
-of its own, never the repo's:
+Console's battery warnings, one mono OGG each, named by its words. Piper with
+the public-domain LJ Speech voice; the source and licences are in
+assets/audio/CREDITS.md. Run once, offline, from a venv of its own, never the
+repo's:
 
     uv venv --python 3.12 /tmp/voice-venv
     VIRTUAL_ENV=/tmp/voice-venv uv pip install "piper-tts[alignment]==1.8.0" faster-whisper==1.2.1 numpy
@@ -14,8 +15,8 @@ Each phrase is said after "the", which is cut off, since this voice starts
 an utterance from silence too softly ("battery" comes out "factory"). Piper's
 takes vary, a word now and then slurred, so each is rendered up to TAKES
 times and the one Whisper hears surest as its words through the radio's
-small speaker is kept. Named phrases ("Winds forty.") are rendered again
-alone. Needs ffmpeg.
+small speaker is kept. Named phrases ("Wind speed forty.") are rendered
+again alone. Needs ffmpeg.
 """
 import argparse
 import os
@@ -76,7 +77,7 @@ def key(phrase):
 
 
 def render(voice, phrase):
-    """A take of the phrase, said after "the" and cut where it ends."""
+    """A take of the phrase, said after "the" and cut where "the" ends."""
     said = next(iter(voice.synthesize("The " + phrase[0].lower() + phrase[1:], SynthesisConfig(length_scale=PACE),
                                       include_alignments=True)))
     cut = 0
