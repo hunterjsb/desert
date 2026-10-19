@@ -8,7 +8,7 @@ extends CharacterBody3D
 ## against a line you dig in. On a hoverboard the ride moves you instead.
 ## Never moves where the ground has no collision yet, and never ends up in
 ## the sand. How it feels is Feel's: the camera's. Auto-walk gives your walk
-## only its way.
+## only its way. Sat at a helm you ride the camp, and the sideways moves turn it.
 
 ## Touched down from the air at this speed, m/s.
 signal landed(speed: float)
@@ -63,6 +63,8 @@ var walker: AutoWalk
 ## The board you ride, or null, and the ride that moves you on it.
 var board: Hoverboard
 var ride: Ride
+## The helm you sit at, or null.
+var helm: Helm
 
 var _tuning := Tuning.current()
 var _sliding := false
@@ -83,6 +85,11 @@ var _left := Vector3.ZERO
 ## just stepped off, which can't touch you until it's clear of you.
 var _boarding: Hoverboard
 var _stepped_off: Hoverboard
+## The deck you stood up from, and what's on it, which can't push you until
+## you're clear of it.
+var _stood_off: Array[Device] = []
+## What you touched before you sat, so standing up gives it back.
+var _touching := Vector2i.ONE
 
 @onready var camera: Camera3D = $Camera3D
 @onready var hands: Hands = $Hands
@@ -136,6 +143,10 @@ func _physics_process(delta: float) -> void:
 		_stop()
 		return
 	_clear_of_board()
+	_clear_of_deck()
+	if helm != null:
+		_at_helm(input)
+		return
 	# A board freed under you (a scenario's, say) still leaves a ride to end.
 	if ride != null:
 		_ride(delta, input)
@@ -265,10 +276,13 @@ func _stop() -> void:
 	_left = velocity
 
 
-## Ride: riding, step off; otherwise step onto the board in your hands, the
-## one you look at, racked or not, or the nearest at your feet. Says whether
-## it did anything.
+## Ride: riding, step off, and at the helm stand up; otherwise step onto the
+## board in your hands, the one you look at, racked or not, or the nearest at
+## your feet. Says whether it did anything.
 func toggle_board() -> bool:
+	if helm != null:
+		stand_up()
+		return true
 	if board != null:
 		step_off()
 		return true
@@ -401,13 +415,108 @@ func wipe_out() -> void:
 
 
 ## What's at your waist that would hold the board back: every line but a
-## sail's sheet.
+## sail's sheet, and a camp's line its rig tows past you.
 func _holding_back() -> Array[RigidBody3D]:
 	var back: Array[RigidBody3D] = []
+	var towed := world.ropes.link_pair()
 	for body in waist.tied:
-		if is_instance_valid(body) and not Mast.sheet_end(body):
+		if is_instance_valid(body) and not Mast.sheet_end(body) \
+				and not (towed.size() == 2 and world.ropes.line_at(body) == towed[1]):
 			back.append(body)
 	return back
+
+
+## Down at a helm: off the board first, your hands let go of what they had
+## hold of, and you ride the camp aboard it, touching nothing, low in the seat.
+func sit(at: Helm) -> bool:
+	if helm != null or flying or at.rider != null:
+		return false
+	if board != null:
+		step_off()
+	walker.stop()
+	hands.grasp.let_go()
+	helm = at
+	at.rider = self
+	at._recompute()
+	_touching = Vector2i(collision_layer, collision_mask)
+	collision_layer = 0
+	collision_mask = 0
+	motion_mode = MOTION_MODE_FLOATING
+	_sliding = false
+	_place_at_helm()
+	if Controls.ui != null and Controls.playing():
+		Controls.ui.teach(Helm.HOW_TO, Helm.HOW_TO_SAYS)
+	return true
+
+
+## Up from the helm and off the deck's side onto the sand, keeping its way:
+## faster than you can run, you skid. Off the side it slides away from, so
+## sliding it never runs you down; else the seat's own side.
+func stand_up() -> void:
+	if helm == null:
+		return
+	var at := helm
+	helm = null
+	var deck := at.carrier() if is_instance_valid(at) else null
+	var going := Vector3.ZERO
+	var to := global_position
+	if deck != null:
+		going = at.carried_at(at.feet())
+		var bounds := deck.shape_bounds()
+		var local := deck.to_local(at.feet())
+		var sliding := (deck.global_basis.inverse() * going).x
+		var side := (1.0 if local.x >= bounds.get_center().x else -1.0) if absf(sliding) < 0.3 else -signf(sliding)
+		local.x = (bounds.end.x if side > 0.0 else bounds.position.x) + side * (Helm.CLEAR + 0.35)
+		local.y = bounds.position.y
+		to = deck.to_global(local)
+	if is_instance_valid(at):
+		at.rider = null
+		at.turning = 0.0
+		at._recompute()
+	if deck != null:
+		_stood_off.assign([deck] + deck.mounted())
+		for device in _stood_off:
+			add_collision_exception_with(device)
+	to.y = world.height_under(to) + 0.05
+	world.teleport(self, Transform3D(global_basis, to))
+	collision_layer = _touching.x
+	collision_mask = _touching.y
+	motion_mode = MOTION_MODE_GROUNDED
+	velocity = Vector3(going.x, 0.0, going.z)
+	own = Vector2(going.x, going.z)
+	_left = velocity
+	_since_ground = INF
+
+
+## A tick at the helm: you sit where it is, low, and the sideways moves turn
+## it. Thrown off as its deck goes over, or once it's gone.
+func _at_helm(input: Vector2) -> void:
+	if not is_instance_valid(helm) or helm.carrier() == null or helm.tipped():
+		stand_up()
+		return
+	helm.turning = input.x
+	crouched = true
+	low = 1.0
+	_place_at_helm()
+	wind = world.weather.felt_wind(camera.global_position)
+	mode = "helm"
+	Dev.put("player/mode", mode)
+	Dev.put("player/spd", "%.1fkm/h" % (own.length() * 3.6))
+
+
+## Where the helm has you: on its seat, going as its deck goes.
+func _place_at_helm() -> void:
+	global_position = helm.feet()
+	velocity = helm.carried_at(global_position)
+	own = Vector2(velocity.x, velocity.z)
+	sink = 0.0
+	_left = velocity
+
+
+## Drawn where the helm is this frame, as what's seated on a deck is.
+func _process(_delta: float) -> void:
+	if helm != null and is_instance_valid(helm):
+		global_position = helm.feet()
 
 
 ## The board in your hands, the one you look at, or the nearest lying at your feet.
@@ -428,6 +537,21 @@ func _board_near() -> Hoverboard:
 			nearest = d
 			best = each
 	return best
+
+
+## The deck you stood up from touches you again once you're clear of it.
+func _clear_of_deck() -> void:
+	if _stood_off.is_empty():
+		return
+	var deck := _stood_off[0]
+	if is_instance_valid(deck):
+		var bounds := deck.shape_bounds()
+		if deck.to_local(global_position).distance_to(bounds.get_center()) < bounds.size.length() * 0.5 + 0.8:
+			return
+	for device in _stood_off:
+		if is_instance_valid(device):
+			remove_collision_exception_with(device)
+	_stood_off.clear()
 
 
 ## The board you stepped off touches you again once it's clear of you.

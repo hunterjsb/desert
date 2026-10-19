@@ -87,6 +87,7 @@ const SOCKET_NAMES := {&"battery": "battery slot", &"ring": "ring", &"bottom": "
 	&"water": "water socket", &"mod": "mod mount", &"food": "food slot", &"rack": "rack", &"deck": "deck mount",
 	&"computer_mod": "computer-mod port", &"computer_top": "computer-mod top", &"screen": "screen port", &"sail": "sail mount"}
 const RIDING := "not from the board"
+const AT_HELM := "not from the helm"
 
 var held: RigidBody3D
 var phase := Phase.EMPTY
@@ -264,7 +265,9 @@ func grab() -> bool:
 	_look()
 	var salvage := _player.world.salvage
 	# The board tows nothing: riding, you take only what comes off no line,
-	# loose, into your hands.
+	# loose, into your hands. Aboard at the helm, nothing.
+	if _player.helm != null:
+		return refuse(AT_HELM) if look_device != null or look_part != null else false
 	var riding := _player.board != null
 	# Standing on a deck, a device keeps its sockets: a part you aim at comes out of it.
 	var own_part := look_socket != null and look_socket.part != null

@@ -574,6 +574,10 @@ static var _current: Tuning
 ## loses the sail and then the mast before its line or its stake.
 @export var sail_tear_n: float = 600.0
 @export var mast_snap_n: float = 1000.0
+## At the helm, the sideways moves turn the camp as a hovercraft's do: toward
+## this fast a turn, rad/s, by a turning push of at most this much, N·m.
+@export var helm_turn: float = 0.5
+@export var helm_torque: float = 800.0
 
 @export_group("Rope")
 ## A line's own weight, kg per metre. It's what makes a lightly loaded line
@@ -610,6 +614,11 @@ static var _current: Tuning
 @export var waist_slow: float = 0.3
 @export var waist_catch: float = 0.12
 @export var untie_seconds: float = 1.0
+## Your body between lines pulling it apart, or bent round by one, takes this
+## much held, N, and past it loses this much health a second for each share
+## more.
+@export var fulcrum_n: float = 400.0
+@export var fulcrum_hurt: float = 8.0
 
 @export_group("Power")
 ## Seconds of world time per power tick.

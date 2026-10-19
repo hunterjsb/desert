@@ -101,7 +101,7 @@ func refusal(bed: Node = null) -> String:
 	var player := _world.player
 	if player.vitals.dead:
 		return "dead"
-	if player.flying or player.ride != null:
+	if player.flying or player.ride != null or player.helm != null:
 		return "not on your feet"
 	if player.hands.held != null and player.hands.held != bed or player.hands.grasp.body != null:
 		return "hands full"

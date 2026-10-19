@@ -4,7 +4,8 @@ extends Node3D
 ## and changes of pace, a lean into strong wind with gusts nudging it, a wider
 ## view at speed, footsteps, and a slide's hiss and spray; on a board, a lean
 ## into the carve, a dug edge's rooster tail of sand and its hiss, a shake as
-## the edge bites and a harder one as it catches, and your view smoothed
+## the edge bites and a harder one as it catches, a shake while lines wrench
+## you past what your body takes, and your view smoothed
 ## between ticks, which at its speed would otherwise stutter. It reads the
 ## player and never writes to it, so none of it can change where you go: it
 ## moves only the camera, and makes only sound and dust.
@@ -171,6 +172,9 @@ func _process(delta: float) -> void:
 	var judder := Vector3(sin(_clock * 41.0), sin(_clock * 53.0 + 1.3), 0.0) * 0.003 \
 		* clampf(speed / FAST, 0.0, 1.0) if sliding else Vector3.ZERO
 	_shake *= exp(-delta / SHAKE_SECONDS)
+	var ropes := _player.world.ropes
+	if ropes != null and ropes.wrench_n > t.fulcrum_n:
+		_shake = maxf(_shake, BITE_SHAKE * clampf(ropes.wrench_n / t.fulcrum_n - 1.0, 0.2, 1.0))
 	var shake := Vector3(sin(_clock * 67.0), sin(_clock * 79.0 + 0.7), 0.0) * SHAKE_REACH * _shake
 	camera.position = _rest + bob + _spring + _lean + judder + shake + Vector3.DOWN * _drop + between
 	camera.rotation.z = roll + _roll + _bank + sin(_clock * 59.0 + 2.1) * SHAKE_ROLL * _shake
