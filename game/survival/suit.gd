@@ -286,6 +286,8 @@ func use(stack: int) -> bool:
 	var device := things[-1] as Device
 	if device != null:
 		return device.interact(_player)
+	if things[-1] is Remedy:
+		return things[-1].use(_player, Vector3.ZERO)
 	var least: Supply = null
 	for each in things:
 		var it := each as Supply

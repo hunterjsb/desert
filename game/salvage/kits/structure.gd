@@ -702,6 +702,12 @@ func bare_glints_at(at_level: float) -> Array[Array]:
 	return out
 
 
+## How it leans in its frame: about its kind's pivot, so its free end digs
+## into the sand.
+func lean_frame() -> Transform3D:
+	return _lean()
+
+
 ## How it leans, about its kind's pivot, so its free end digs into the sand.
 func _lean() -> Transform3D:
 	if piece.lean == 0.0 or tilt == 0.0:

@@ -153,6 +153,18 @@ const PARTS := {
 		"color": Color(0.18, 0.4, 0.43), "stats": {"hygrometer": 1, "draw_w": 0.3}},
 	&"particle_sensor": {"kind": &"computer_mod", "label": "Particle sensor", "mass": 0.7, "size": Vector3(0.16, 0.12, 0.14),
 		"color": Color(0.86, 0.62, 0.12), "stats": {"particle_sensor": 1, "draw_w": 1.5}},
+	# Scrapping: a scoop to clear the sand storms packed into a wreck, a
+	# canister of sealant for a breached store, what a cut plate drops as, and
+	# a med kit for what a breached store leaves you with. "tool" is the work
+	# one does on a wreck in your hands (Wreck).
+	&"sand_scoop": {"kind": &"tool", "label": "Sand scoop", "mass": 1.5, "size": Vector3(0.3, 0.08, 0.6),
+		"color": Color(0.6, 0.58, 0.5), "stats": {}, "tool": &"clear"},
+	&"sealant": {"kind": &"tool", "label": "Sealant canister", "mass": 0.8, "size": Vector3(0.1, 0.1, 0.22),
+		"color": Color(0.86, 0.62, 0.12), "stats": {}, "tool": &"seal"},
+	&"hull_plate": {"kind": &"scrap", "label": "Hull plate", "mass": 6.0, "size": Vector3(0.6, 0.6, 0.04),
+		"color": Color(0.4, 0.36, 0.3), "stats": {}},
+	&"med_kit": {"kind": &"medicine", "label": "Med kit", "mass": 0.5, "size": Vector3(0.18, 0.12, 0.07),
+		"color": Color(0.8, 0.76, 0.66), "stats": {}},
 	&"radar": {"kind": &"computer_top", "label": "Weather radar", "mass": 2.5, "size": Vector3(0.32, 0.32, 0.26),
 		"color": Color(0.8, 0.76, 0.66), "stats": {"radar": 1, "radar_m": 6000.0, "draw_w": 6.0}},
 }
@@ -279,6 +291,13 @@ const DEVICES := {
 		"sockets": [
 			[&"port", Vector3(0.4, 0.0, 0.0), Vector3.RIGHT],
 		]},
+	# A heat cutter: held, it cuts a wreck's plates away while use is held
+	# down, on its own battery (Cutter).
+	&"cutter": {"label": "Heat cutter", "size": Vector3(0.12, 0.16, 0.55), "mass": 3.0, "cutter": true,
+		"carryable": true,
+		"sockets": [
+			[&"battery", Vector3(0.0, 0.08, -0.1), Vector3.UP],
+		]},
 	# Music, the weather station and beacons, a channel a use. Carried, set
 	# down or seated on a top mount, it runs on its battery or what it sits on.
 	&"radio": {"label": "Radio", "size": Vector3(0.32, 0.22, 0.16), "mass": 2.5, "radio": true, "fits": &"top",
@@ -388,7 +407,8 @@ static func part(id: StringName) -> Part:
 	var made: Part = Battery.new() if spec.kind == &"battery" \
 		else (Supply.new() if Supply.HOLDS.has(spec.kind) and id != Hose.END \
 		else (Plant.new() if spec.has("crop") \
-		else (Compass.new() if spec.kind == &"compass" else Part.new())))
+		else (Compass.new() if spec.kind == &"compass" \
+		else (Remedy.new() if spec.kind == &"medicine" else Part.new()))))
 	made.kind = spec.kind
 	made.label = spec.label
 	made.mass = spec.mass
@@ -550,7 +570,8 @@ static func device(id: StringName) -> Device:
 		else (Helm.new() if spec.get("helm", false) \
 		else (Chassis.new() if spec.get("chassis", false) \
 		else (Bedroll.new() if spec.get("bedroll", false) \
-		else (Console.new() if spec.get("console", false) else Device.new())))))))))
+		else (Console.new() if spec.get("console", false) \
+		else (Cutter.new() if spec.get("cutter", false) else Device.new()))))))))))
 	made.set_meta(&"catalog", id)
 	made.label = spec.label
 	made.frame_mass = spec.mass

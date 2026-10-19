@@ -12,11 +12,15 @@ start = &"wreck_field"
 balanced = true
 carried = Dictionary[StringName, int]({
 &"canister": 1,
-&"ration": 1
+&"ration": 1,
+&"sand_scoop": 1,
+&"sealant": 1,
+&"med_kit": 1
 })
 beside = Dictionary[StringName, Vector2]({
 &"board": Vector2(0.0, 1.4),
-&"light_shield": Vector2(1.2, 1.8)
+&"light_shield": Vector2(1.2, 1.8),
+&"cutter": Vector2(-1.0, 1.6)
 })
 charge = 1.0
 shown = &"board"

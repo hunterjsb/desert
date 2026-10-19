@@ -15,6 +15,14 @@ const SHELF := &"shelf"
 const CACHE := &"cache"
 const BED := &"bed"
 const BEST := &"best"
+## A wreck's modules (WreckPlan): a small device on a rack, a big one on a
+## floor. Every one holds a device with at least MODULE_PARTS parts fitted,
+## since wrecks were left in a hurry, and lies exactly where it was stowed,
+## held fast in its wreck until what's in its way is gone.
+const MODULE := &"module"
+const BAY := &"bay"
+const MODULES: Array[StringName] = [MODULE, BAY]
+const MODULE_PARTS := 2
 ## The house ruin's first floor spot: a later visitor's device with parts to
 ## strip, on whatever sand is in the hall.
 const HALL := &"hall"
@@ -33,7 +41,7 @@ const ERAS := {
 		FLOOR: [[&"crate_frame", 3], [&"charger", 2], [&"chassis", 2], [&"condenser", 1], [&"turbine", 1],
 			[&"big_battery", 2], [&"hover_tray", 2], [&"solar_panel", 2], [&"strong_plug", 2]],
 		SHELF: [[&"battery", 3], [&"big_battery", 1], [&"lamp", 2], [&"strong_plug", 2], [&"plug", 1],
-			[&"barometer", 1], [&"hygrometer", 1], [&"compass", 1]],
+			[&"barometer", 1], [&"hygrometer", 1], [&"compass", 1], [&"med_kit", 1]],
 		CACHE: [[&"big_battery", 2], [&"strong_plug", 2], [&"hover_tray", 1], [&"screen", 1]],
 		BED: [[&"root_tuber", 3], [&"vat_fungus", 2]],
 		BEST: [[&"console", 2], [&"shield", 2], [&"turbine", 2], [&"condenser", 1], [&"big_battery", 3],
@@ -45,11 +53,12 @@ const ERAS := {
 		FLOOR: [[&"survival_kit", 3], [&"radio", 2], [&"board", 1], [&"charger", 1], [&"battery", 2],
 			[&"big_battery", 1], [&"coil", 1], [&"strong_plug", 1], [&"ration", 2]],
 		SHELF: [[&"battery", 2], [&"ration", 2], [&"hook", 1], [&"plug", 1], [&"anemometer", 1],
-			[&"particle_sensor", 1], [&"compass", 1], [&"lamp", 1]],
-		CACHE: [[&"big_battery", 2], [&"battery", 2], [&"strong_plug", 1], [&"hose_end", 1]],
+			[&"particle_sensor", 1], [&"compass", 1], [&"lamp", 1], [&"sand_scoop", 1], [&"sealant", 1]],
+		CACHE: [[&"big_battery", 2], [&"battery", 2], [&"strong_plug", 1], [&"hose_end", 1], [&"med_kit", 1],
+			[&"sealant", 1]],
 		BED: [[&"vat_fungus", 1]],
 		BEST: [[&"shield", 3], [&"board", 2], [&"radar", 2], [&"harvester", 2], [&"particle_sensor", 1],
-			[&"anemometer", 1], [&"big_battery", 2], [&"console", 1]]},
+			[&"anemometer", 1], [&"big_battery", 2], [&"console", 1], [&"cutter", 2]]},
 	# Intact working colonial tech, kept running and used in new ways.
 	Eras.FIRST: {"kept": 0.6, "layer": Finds.SURFACE, "charge": Vector2(0.4, 1.0), "sound": Vector2(0.75, 1.0),
 		"fills": Finds.DEEP, "fill": 0.75, "sealed": true,
@@ -89,11 +98,26 @@ const KINDS := {
 	# The inspection hatch: the line's own hose, valves and water.
 	&"pipeline_segment": {BEST: [[&"hose_end", 3], [&"canister", 2], [&"condenser", 1], [&"strong_plug", 1],
 		[&"big_battery", 1]]},
-	# A wreck nobody reached before the sand did, and a deserters' dugout. A
+	# A wreck nobody reached before the sand did, and a deserters' dugout.
+	# A wreck's modules are what its crew stowed: the skimmer era's single
+	# items, the Provisional's military kit and the black site's, colonial
+	# freight and a lifeboat's survival stores, the Knights' convoy gear. A
 	# skimmer's pilot sat in its helm seat and it rode its ventral keel, so the
 	# land yacht's two parts lie deep in its wreck, with what else it carried.
 	&"wreck_hull": {"kept": 0.9, BEST: [[&"helm_seat", 3], [&"keel", 3], [&"shield", 2], [&"board", 2], [&"radar", 1],
-		[&"harvester", 1], [&"big_battery", 1]]},
+		[&"harvester", 1], [&"big_battery", 1]],
+		MODULE: [[&"survival_kit", 3], [&"radio", 2], [&"charger", 2], [&"shield", 1], [&"light_shield", 2]]},
+	&"tithe_hauler": {"kept": 0.9,
+		MODULE: [[&"shield", 3], [&"light_shield", 2], [&"radio", 2], [&"survival_kit", 2]],
+		BAY: [[&"shield", 3], [&"condenser", 2], [&"charger", 2], [&"console", 1]]},
+	&"freight_pod": {"kept": 0.8,
+		MODULE: [[&"shield", 2], [&"charger", 3], [&"turbine", 2], [&"radio", 1]],
+		BAY: [[&"condenser", 3], [&"console", 2], [&"turbine", 2], [&"planter", 2]]},
+	&"lifeboat": {"kept": 0.9,
+		MODULE: [[&"radio", 3], [&"survival_kit", 4], [&"charger", 2], [&"light_shield", 2]]},
+	&"hopper": {"kept": 0.85,
+		MODULE: [[&"turbine", 3], [&"charger", 2], [&"radio", 1]],
+		BAY: [[&"console", 2], [&"condenser", 3], [&"charger", 2], [&"shield", 1]]},
 	# Where deserters slept: their bedrolls and kits, and what kept them.
 	&"dugout": {"kept": 0.8, FLOOR: [[&"bedroll", 3], [&"survival_kit", 3], [&"radio", 1], [&"battery", 2],
 		[&"ration", 2], [&"coil", 1]]},
@@ -146,6 +170,8 @@ static func draw(site: Site, i: int) -> Dictionary:
 	var region: Dictionary = REGIONS.get(site.region, REGIONS[&"rim"])
 	var rng := _stream(site.loot, i)
 	var hall := kind.has(HALL) and i == 0
+	if socket.kind in MODULES:
+		return _module(site, i, socket, kind, era, rng)
 	if not hall and rng.randf() >= float(kind.get("kept", era.kept)) * region.kept:
 		return {}
 	var best: bool = socket.deep > 0.0 or (socket.kind in [FLOOR, CACHE] and rng.randf() < region.best)
@@ -160,6 +186,22 @@ static func draw(site: Site, i: int) -> Dictionary:
 	spec.fill = []
 	if spec.device:
 		_fill(spec, rng, era, Finds.HALL_PARTS if hall else 0)
+	return spec
+
+
+## A wreck's module: always there, a device from its kind's row with at
+## least two parts fitted, sounder than what lies loose, frozen where it was
+## stowed.
+static func _module(site: Site, i: int, socket: StructureKit.SiteSocket, kind: Dictionary, era: Dictionary,
+		rng: RandomNumberGenerator) -> Dictionary:
+	var id := Finds._pick(rng, kind[socket.kind])
+	var spec := {"id": id, "device": true, "layer": era.layer, "era": site.era, "kind": site.kind,
+		"seed": hash([site.loot, i]), "tier": 2, "index": i, "site": site.id, "yaw": rng.randf_range(-0.12, 0.12),
+		"lean": 0.0, "lean_by": 0.0, "sealed": era.sealed, "frozen": true, "drop": DROP, "module": true}
+	spec.charge = rng.randf_range(era.charge.x, era.charge.y)
+	spec.sound = rng.randf_range(maxf(era.sound.x, 0.6), maxf(era.sound.y, 0.85))
+	spec.fill = []
+	_fill(spec, rng, era, MODULE_PARTS)
 	return spec
 
 
@@ -200,12 +242,31 @@ static func prepare() -> void:
 		var own: Dictionary = KINDS.get(kind, {})
 		for i in piece.sockets.size():
 			var socket: StructureKit.SiteSocket = piece.sockets[i]
+			if socket.kind in MODULES:
+				continue
 			var tables: Array = [own.get(socket.kind, era[socket.kind]), own.get(BEST, era[BEST]), own.get(HALL, [])]
 			for table: Array in tables:
 				for entry: Array in table:
 					var size := _size({"id": entry[0], "device": Catalog.DEVICES.has(entry[0])})
 					for state in 3:
 						_spot(piece, state, i, size)
+
+
+## Where a wreck's module lies, set on its spec as the frame its foot stands
+## in, world metres: on its rack or floor, leaning with the wreck. False
+## while the dunes still cover where it stands; the sand packed in the
+## wreck's holds is its own, and doesn't keep it.
+static func _stowed(site: Structure, socket: StructureKit.SiteSocket, spec: Dictionary, height: Callable) -> bool:
+	var base := site.frame() * Transform3D(Basis(Vector3.UP, spec.yaw), socket.at)
+	var sand: float = height.call(base.origin.x, base.origin.z)
+	if sand > base.origin.y + ON_TOP:
+		return false
+	spec.base = base
+	spec.x = base.origin.x
+	spec.z = base.origin.z
+	spec.loose = false
+	spec.bury = 0.0
+	return true
 
 
 ## Where a socket's find lies, set on its spec; false while the sand keeps it.
@@ -221,6 +282,8 @@ static func _lies(site: Structure, i: int, spec: Dictionary, height: Callable) -
 	var socket: StructureKit.SiteSocket = piece.sockets[i]
 	if socket.deep > 0.0 and site.taken() < site.depth * (1.0 + socket.deep):
 		return false
+	if spec.get("module", false):
+		return _stowed(site, socket, spec, height)
 	var size := _size(spec)
 	var state := site.state()
 	var p := Vector2(socket.at.x, socket.at.z)

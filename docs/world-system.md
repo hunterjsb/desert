@@ -897,6 +897,14 @@ Shared files each package may touch, and nothing else outside its own: `Tuning` 
   laid, so it can't see history's structures yet: the spawns package's to order. The performance pass's
   `held_height_at` and `highest_in` on master ask `ruins.covering` and `RuinSites.MARGIN`: on this branch
   they become `sites.covering` and `sites.narrowest()`, the narrowest any structure's ground is.
+- **Wrecks** (2026-10-18, the `wrecks` branch): five kit pieces with a scrapping plan, in one file of
+  their own (`WreckKit`): the skimmer hull (the wreck fields' hull, now at half its site's lean), the
+  tithe hauler (wreck fields and the black site's checkpoints), the freight pod (by frontier towns,
+  1 to 3 m deep, a kind's own burial over its era's: `SiteKinds.burial`), the lifeboat (a row off the
+  roads into Port Morgan, within 16 km of it: a row may say how `near` a landmark it lies) and the
+  Knights' hopper (a row along the artery, and by crusader bunkers). New kinds are appended to their
+  settlements' members and to the rows, so every older site keeps its stream. Their plates, packed
+  holds, held modules and hazards are [Salvage & ruins'](prd/salvage-and-ruins.md#wrecks-and-scrapping-hunter-2026-10-18-built).
 - **Planned only, still:** survey beacons, pump stations, farm domes, vent stations, checkpoints,
   generator shrines, caravanserais, stepwells, ration gates, granaries, earthworks, bunkers and the signs:
   history's plan, for the map and the packages to come.
@@ -1242,6 +1250,12 @@ paint's age.
   dunes, 18 KB near and 5 KB mid. `sites.newly_exposed` within 140 m takes 56 µs. A drift tick for a
   line with 18 sites near is 0.27 ms, 16 µs with none, so the drift a clock jump draws (540 ticks at most)
   can cost a few tens of milliseconds once where sites stand thick.
+- **Wrecks follow it too.** A wreck's scrapping (`Wreckage`) stands at its floor as its chunk draws it,
+  so its plates, hazards and packed holds rise and sink with its hull, and its modules are read again
+  as any finds are; what's cut and cleared is its memory, apart from the weather's function, so a
+  storm never undoes it. A cut plate rides the wreck it lies on, and one on the sand is buried with
+  the wreck as it sinks deeper than when it fell, never lifted off its sand as it rises (wrecks probe 7;
+  [Salvage & ruins](prd/salvage-and-ruins.md#wrecks-and-scrapping-hunter-2026-10-18-built)).
 - **Probes:** kits 3 (a loaded site follows the storm, smoothly, and never buries you), kits 4 (exposure is
   pure, and a storm works a site), loot 7 (what a storm bares blows downwind), sightlines 4 (a glint
   through the dust only near), saves 23 (a save never buries you). Each fails on a deliberately broken build: no hold over you, no ground
