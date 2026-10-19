@@ -1025,7 +1025,9 @@ paint's age.
   - **Skimmer era,** the single items: survival kits, radios, now and then a hoverboard, batteries and
     rations on its floors; at its best military shield generators, hoverboards, radar, harvesters and the
     wind and particle instruments. A wreck still holds nine things in ten it carried, a dugout eight;
-    found light and fragile, half to nine tenths sound.
+    found light and fragile, half to nine tenths sound. A wreck hull's best is its own (2026-10-18):
+    the land yacht's helm seat and keel, 3 in 13 each, with shields, boards, radar, a harvester and a
+    big battery ([Movement](prd/movement.md#sailing-from-kite-to-yacht-agreed-2026-10-18-spec-built)).
   - **First Kingdoms,** working colonial machines kept running: condensers, turbines, chargers, planters
     and crates, three sockets in four filled, instruments on the shelves, water kept sealed; a cistern's
     floor water and hose, its bed and a field plot's seed and saltbush. Near sound.

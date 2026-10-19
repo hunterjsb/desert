@@ -1003,13 +1003,13 @@ Proposed, in this PRD's terms:
 |---|---|---|
 | Battery slot | Batteries | Power |
 | Ring mount | Rope hooks; on a chassis piece, another piece's edge | Rope & tethering |
-| Bottom mount | Hover trays, or runners: skates and a board plate (2026-10-18), never both on one device or deck | Bubble shield & camp, Movement |
+| Bottom mount | Hover trays, or runners: skates and a board plate (2026-10-18), never both on one device or deck; a keel counts as a tray (2026-10-18) | Bubble shield & camp, Movement |
 | Top mount | Solar panels, instruments such as the radio, lamps, the shield generator, the mast (2026-10-18) | Power and others |
 | Rack | The hoverboard, seated along a crate's side, riding and charging with it (Hunter, 2026-10-16); or a bedroll in its place (2026-10-18) | Movement, Survival |
 | Plant slot (small, large) | Seedlings | Farming |
 | Plant slot (small pot, standard planter, deep bed) | Crops by the size they declare. Proposed (session 4, part 4); new kinds are appended to a frame, never inserted | Farming |
 | Water socket | A canister or a hose's end, one at a time (2026-10-17) | Survival, Farming |
-| Deck mount | One device standing on a chassis piece: a crate, a condenser, a shield, a charger (2026-10-17), a mast (2026-10-18) | Devices & mods |
+| Deck mount | One device standing on a chassis piece: a crate, a condenser, a shield, a charger (2026-10-17), a mast, a helm seat (2026-10-18) | Devices & mods |
 | Sail mount | A sail, on its boom, low on a mast; seated, it adds a tie at the boom's end for the sheet (2026-10-18) | Movement |
 | Computer-mod port | Computer mods, on a Console: the anemometer, barometer, hygrometer and particle sensor. Built (2026-10-17), a kind of its own, not the planter's mod mount | Devices & mods |
 | Computer-mod top | Antennas, radar and the like, on a Console's top. Built (2026-10-17) with the radar; an antenna is still proposed | Devices & mods, Wind & storms |
@@ -1033,6 +1033,7 @@ Proposed, in this PRD's terms:
 | Hoverboard | 1 | | | | 1 | fits a rack itself |
 | Radio | 1 | | | | 1 | fits a top mount itself |
 | Bedroll | | | | | | fits a rack itself; use on it sleeps ([Survival](survival.md#sleep-as-built-2026-10-18)) |
+| Helm seat | | | | | | stands on a deck mount; use on it sits you at the helm ([Movement](movement.md#sailing-from-kite-to-yacht-agreed-2026-10-18-spec-built)) |
 | Survival kit | | | | | | a water and a food socket, 2 small and 1 large plant slot |
 
 **Carried, a device works as anywhere else** (Hunter, 2026-10-17): a carryable device goes
@@ -1045,6 +1046,12 @@ device or a deck carries one or the other, never both, and each mixing refuses w
 trays don't mix"; standing on a deck, a device takes neither. The mast seats on a top mount or
 stands on a deck mount as the shield does, and its sail fits its sail mount. How they sail is in
 [Movement](movement.md#sailing-the-camp-hunter-2026-10-17).
+
+**The keel and the helm seat** (2026-10-18). The keel fits a bottom mount as a tray does and lifts
+like one, less; floating, it holds its camp across the wind. The helm seat stands on a deck mount.
+Each one's behaviour is its own, found by what it is (the keel by its grip, the seat by being one),
+never by the socket it's in, so they go wherever a camp takes them once fitting changes. How they
+sail is in [Movement](movement.md#sailing-from-kite-to-yacht-agreed-2026-10-18-spec-built).
 
 Some parts **add sockets of their own**. An extra-hook mod fits a mount and provides a
 hook. That's how found mods expand a device. A hose's end fitted in a water socket offers

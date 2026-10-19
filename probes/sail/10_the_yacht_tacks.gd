@@ -5,7 +5,8 @@ extends SailProbe
 ## keel holds it there and it makes ground upwind; the same yacht with a
 ## tray in the keel's place only runs downwind, sliding off sideways however
 ## it's steered. Left to itself, its sheet made fast and nobody aboard, a
-## floating camp still sails itself downwind.
+## floating camp still sails itself downwind. Saved at the helm, you resume
+## there.
 
 var kit: Array[Node3D] = []
 
@@ -56,6 +57,15 @@ func run() -> void:
 	var downwind_speed := way().dot(downwind)
 	print("left to itself: downwind at %.2f m/s" % downwind_speed)
 	check(downwind_speed > 2.0, "left to itself it sails downwind (%.2f m/s)" % downwind_speed)
+	deck.free()
+	await _set_up(true)
+	check((kit[2] as Helm).interact(player), "back at the helm")
+	await simulate(3.0)
+	check(get_node(^"/root/Saves").save(world), "saved at the helm")
+	check(await resume(), "resumed")
+	var at := world.player.helm
+	check(at != null and at.carrier() != null and Runners.keels(at.carrier()).size() == 1,
+		"resumed at the helm of a deck with its keel")
 	speed_up(1)
 
 
