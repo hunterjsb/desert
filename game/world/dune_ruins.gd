@@ -109,17 +109,20 @@ func step(x: float, z: float, t: float, delta: float) -> Array[Seed]:
 		_working.clear()
 	due.append_array(_again)
 	_again.clear()
-	if slowed():
+	var slow := slowed()
+	if slow:
 		for seed in near(x, z, _tuning.dune_ruin_build_m):
 			if seed.site != null and not seed.built and seed.level > 0.0:
 				due.append(seed)
-	var now := Time.get_ticks_msec() / 1000.0
-	if now >= _turn_at + TURN_S:
-		var batch := _stale(here, t)
-		if not batch.is_empty():
-			_turn_at = now
-			_working = batch
-			_task = WorkerThreadPool.add_task(_turn.bind(batch, t), false)
+	# A fast traveller without radar has no survey candidates to select.
+	if slow or not _watch.is_empty():
+		var now := Time.get_ticks_msec() / 1000.0
+		if now >= _turn_at + TURN_S:
+			var batch := _stale(here, t)
+			if not batch.is_empty():
+				_turn_at = now
+				_working = batch
+				_task = WorkerThreadPool.add_task(_turn.bind(batch, t), false)
 	_forget(here)
 	slowest_step_ms = maxf(slowest_step_ms, (Time.get_ticks_usec() - started) / 1000.0)
 	return due

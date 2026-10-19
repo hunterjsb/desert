@@ -1304,10 +1304,15 @@ paint's age.
   it blows there **(defaults)**; what falls, what the wind carries, lies on the sand in the square, as drift
   does. Fewer than a pile's worth (8) lie round you first; a clock that jumps draws its last 90 ticks of
   them at most. Loot probe 8.
-- **Cost, dune archaeology.** A ride's frame pays 0.03 ms for the seeds, nothing found or built (kits probe
-  8, 20 m/s 40 m off a bared one). Built as history's are, as you pass, the same ride along the crests
-  hitched the terrain's frame to 4.5 ms, laying their finds 4.2 ms (a found Console among them), against
-  0.95 ms lazily. A build, once you've slowed: the index's join and the chunks' hold well under a
+- **Cost, dune archaeology.** A fast traveller without a ground radar skips worker-candidate selection
+  entirely (2026-10-19): there is no survey to select while riding past. Pace, completed-worker handling,
+  resumed builds and seed residency still run. Previously the empty selection allocated arrays and a
+  sorting callable every frame, since an empty batch never started a worker turn. Kits probe 8 (20 m/s,
+  40 m off a bared ruin) measured a local wall-time maximum of 0.104 ms before, then 0.047 and 0.018 ms
+  in two focused runs after; no seed was found or built riding past, and stopping still surveyed, built
+  and drew the ruin. Its 0.2 ms limit is unchanged. Wall-time maxima can include scheduler pauses.
+  Built as history's are, as you pass, the same ride along the crests hitched the terrain's frame to
+  4.5 ms, laying their finds 4.2 ms (a found Console among them), against 0.95 ms lazily. A build, once you've slowed: the index's join and the chunks' hold well under a
   millisecond on the main thread, each chunk pressed on a worker in a few ms and swapped in within 0.2 ms,
   and its finds a socket at a time in the streaming budget. Lee falls: a tick reads the wind and the lee at
   about 60 squares, every 20 s, only while the weather blows; a clock that jumps, 90 ticks at most.
