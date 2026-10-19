@@ -11,8 +11,8 @@ const SCALES: Array[float] = [0.5, 0.75, 1.0]
 static var volume := 1.0
 ## The main menu's music, which its switch mutes.
 static var music := true
-## The weather station read aloud in the system's own voice, which speaks in
-## your ear, not from the radio: a switch, since it can startle.
+## The weather station's voice reading its reports from the radio: a switch,
+## since a voice out of nowhere can startle.
 static var radio_voice := true
 static var fullscreen := false
 static var vsync := true

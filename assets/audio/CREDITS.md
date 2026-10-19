@@ -72,3 +72,23 @@ the game:
 | seal.wav | sealant over a breach | made here: a spray and the plop of it setting | CC0 | about -30 | -14 |
 
 The rope's snap is still made in code (`ropes.gd`), at about -28 LUFS from 8 m.
+
+**The radio's voice** (`voice/`, one OGG a phrase, named by its words) reads the weather
+station's reports and a Console's battery warnings. It's rendered here, once, by
+`voice/make_voice.py` with [Piper](https://github.com/OHF-Voice/piper1-gpl) 1.8.0 and the
+`en_US-ljspeech-high` voice from [rhasspy/piper-voices](https://huggingface.co/rhasspy/piper-voices/tree/main/en/en_US/ljspeech/high):
+
+- **The voice model:** trained from scratch on LJ Speech by Bryce Beattie, who releases it as
+  public domain ("Feel free to use these for any legal and ethical purpose",
+  [brycebeattie.com/files/tts](https://brycebeattie.com/files/tts/)); the piper-voices
+  repository is MIT.
+- **Its training data:** [LJ Speech](https://keithito.com/LJ-Speech-Dataset/), recordings by
+  Linda Johnson for LibriVox: "in the public domain in the US (and most likely other countries
+  as well)", with no limits on its use.
+- **Piper** (GPL) and the Whisper model the script checks each take with are tools only; none of
+  their code or weights ship, and neither claims what they make.
+
+Credit is optional and given here. Each phrase is trimmed to a breath either side, eased in
+and out over 5 and 30 ms so phrases join without a click, and levelled to -23 dBFS RMS over
+its voiced part, peaks under -6 dBFS; a report reads at about -26 LUFS, a little over the
+music, to come through the static. Mono Vorbis at 22.05 kHz, about 40 kbps.

@@ -495,6 +495,17 @@ device already stays a body of its own on the host's power pool.
 - **Its messages** go out through [the terminal output
   system](#the-terminal-output-system-proposed-session-4-part-5-first-piece-built), and a radio
   seated anywhere in the system sounds its tones as a line prints: that's the Console's audio.
+- **Its battery, aloud** (Hunter: "...unless you have a speaker'd or radio'd Console on its
+  chassis, then we should use the Valve 'battery low' voicebit"): with a radio in its system, the
+  Console logs its pool running out and, after its tones, says "Battery low." and then "Battery
+  critical." in the radio's voice ([Radio](radio-sound-and-atmosphere.md)), from the radio, at its
+  knob, on or off and whatever it's tuned to. Each is said once as what's left to run the Console
+  on falls past 20% and 5% (`console_battery_low`, `console_battery_critical`), and again once it's
+  back 2 points over. What's left is measured from where the Console goes dark: the pool's empty
+  batteries, or with a shield in the pool its 25% reserve, below which the Console and the radio
+  give way to the shield ([Power](power.md)); so there "low" comes at 40% of the bank and
+  "critical" at 29%. The Radio voice switch in Options silences it; without a radio there's no
+  voice.
 - **Saves** keep its page and its log, and its parts and anything seated on it as any device's;
   a shield keeps its smart switch, and a device whether its lamps are on. Older saves load as
   before, their shields smart: the Console's old auto switch isn't read.
@@ -1226,6 +1237,9 @@ a water socket of its own on top, so a canister or another hose goes on there to
 29. **The gyro points Tu-ward** (2026-10-18). A Console with an anemometer, carried round the
     moon: on the near side, the Rim and the far side, its gyro's Tu-ward mark is the way Tu
     stands in the sky there, or would past the horizon, to within a degree.
+30. **The Console says its battery is low** (2026-10-18). A Console with a radio on it logs and
+    says "Battery low." from the radio as its pool falls past the low line, once until it's back
+    over, then "Battery critical."; with the Radio voice off, it only logs it.
 
 ## Out of scope
 

@@ -927,9 +927,8 @@ static var _current: Tuning
 @export var radio_forecast_minutes: float = 20.0
 @export var radio_forecast_every: float = 5.0
 ## With something to report, the weather station reads it aloud this often, s
-## of world time, and at once when a report breaks in; heard this far, m.
+## of world time, and at once when a report breaks in.
 @export var radio_speak_every: float = 30.0
-@export var radio_voice_m: float = 30.0
 ## The weather station has nothing to report, and plays its clear-skies song,
 ## while no storm is on you or due within this many minutes. Clear for 5
 ## minutes ahead is about half of all clear time; for 20, almost never.
@@ -1020,6 +1019,11 @@ static var _current: Tuning
 @export var storm_map_every: float = 1.0
 ## A smart shield switches itself on once the radar sees a front this near, m.
 @export var smart_shield_auto_m: float = 1500.0
+## A Console with a radio in its system says aloud that its battery is low,
+## then critical, once each as what its pool has left to run it on falls past
+## these shares: the charge above where it gives way (Power).
+@export var console_battery_low: float = 0.2
+@export var console_battery_critical: float = 0.05
 
 @export_group("Loose objects")
 ## Wind drag per (m/s)² per m² of a thing's biggest face: half the air density
