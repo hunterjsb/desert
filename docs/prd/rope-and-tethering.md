@@ -61,7 +61,9 @@ The rope was three systems that disagreed:
 5. **Frame-rate proof.** The same setup behaves the same at any frame rate.
 6. **Too much load breaks something; it never explodes.** Every rope has a breaking
    strength and every anchor has a holding strength. A brief spike doesn't snap a rope,
-   only sustained load past its limit does.
+   only sustained load past its limit does. **A line holds or parts** (2026-10-19, Hunter: "a
+   line rated 1,500 N either holds or parts, consistently"): it never pulls past its strength.
+   Asked for more, it gives at that and stretches; asked for more long enough, it parts.
 7. **Ropes only touch the sand.** Drawn rope rests on `height_at` from World & terrain.
    That's a cheap lookup with no raycasts. Ropes pass through objects and each other,
    which means no tangling and no snagging, and none of the bugs those bring.
@@ -157,6 +159,20 @@ other plus any line's bend round you, held as long as a line's load is (0.3 s). 
 400 N (`fulcrum_n`), you lose 8 health a second for each share more (`fulcrum_hurt`), never your
 last, and your view shakes. Lines still snap only past their own load. Sailing probe 9 braces you
 off the hidden line with the camp moored: it bends round you at 500 N and hurts you; the lines hold.
+
+**Holds or parts** (2026-10-19, Hunter: "a line rated 1,500 N either holds or parts,
+consistently"). Overrunning the Varran rig on a run, the board's push took you past it at 15 m/s
+while its lines lay slack, and they came taut again at 7.6 m/s: 6,750 N for a tick on lines rated
+1,500 N, still holding, since only their load held for 0.3 s broke them, and a jolt like that once
+threw the rider. Now a line never pulls past its strength: what holding would take more than that
+(its `asked`), it gives at its strength (its `tension`, never more) and stretches. Pulled apart past
+its strength for most of the last 0.3 s (`Rope.STRAINED`, 0.7 of `rope_load_seconds`), it parts;
+its pull held past its strength that long parts it too, as ever. So a snatch it can stretch through
+it rides out at no more than its strength, and an overload it can't, it parts: a 0.1 s gust worth
+2.5 times a 400 N line's strength asks 2,460 N of it, it pulls 400 N and holds; the wind rising past
+it parts it at 397 N. A storm's gust swinging a moored deck round onto its line stays under its
+strength. The cause of that snatch was the board, and it's the board's rule (Movement): towed, slack
+in your lines never lets the board's push take you more than 1 m/s faster than what they lead to.
 
 ## Wind on tethered things
 
@@ -285,7 +301,8 @@ Reliability is the whole point here, so this list is long. All run without a win
 3. **Equal and opposite.** The force on the anchor matches the pull on the object.
 4. **Lines share load.** Two identical parallel lines each carry about half. A load
    that snaps one line holds on two.
-5. **Snaps cleanly.** Raise the wind until a line passes its breaking strength. It
+5. **Snaps cleanly.** A gust spike far past a line's strength never pulls it past that, and
+   too brief to sustain, the line rides it out. Raise the wind until a line passes its breaking strength. It
    snaps, the object drifts downwind, and nothing spikes. A loose end that snags as
    it's dragged off is dragged free, never flung. *(2026-10-18: the probe's snag had
    been the next chunk's collision edge, not the dune face it was laid for, and

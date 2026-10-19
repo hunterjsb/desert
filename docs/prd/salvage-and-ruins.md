@@ -414,7 +414,8 @@ past that the far ring showed the dunes alone.
 
 - **Stand-ins.** A kit piece says how it reads far off (`far`, in its era's file): a few boxes of its
   shape, each in the coat its real look shows there (colour, metalness, roughness), lit as the ground
-  is. The relay mast, the watchtower, the pylon stub, the pipeline segment and the five wrecks have one.
+  is. The relay mast, the watchtower, the pylon stub, the pipeline segment, the six wrecks and the nomads'
+  camp have one.
   A stand-in stands at its structure's place and turn, as deep as its state sinks it and cut at the
   sand, on the far ring's own ground (`FarRing.ground`, its 32 m triangles), so it never floats or sinks
   where the ring skips a crest. Its level out of the sand is read on the worker, and read again each
@@ -635,7 +636,7 @@ seams, the shock and the sickness, and cut plates as scrap for now (2026-10-18).
 Built on the `wrecks` branch. "No digging and nothing underground" holds: the sand you clear is packed
 inside a wreck, above the ground, and nothing is dug out of the dunes.
 
-- **Five wrecks, each a kit piece history lays** (`WreckKit`, `game/salvage/kits/wrecks.gd`), standing,
+- **Six wrecks, each a kit piece history lays** (`WreckKit`, `game/salvage/kits/wrecks.gd`), standing,
   surveyed, sunk and seen from far off like any structure (stand-ins and glints), each with a scrapping
   plan (`WreckPlan`):
   - **The skimmer hull** (skimmer era; the wreck fields' hulls, as before): a He-3 scoop ship down nose
@@ -655,6 +656,10 @@ inside a wreck, above the ground, and nothing is dug out of the dunes.
     crusade, lime-washed over its maker's tag, their daubed sign on it): down on its belly, a wing
     snapped off, its troop bay packed up the lowered ramp, a cockpit door and its lift fan's cowling
     welded. Along the artery to Port Morgan, and by some crusader bunkers.
+  - **The nomad rig** (the nomads', now; since 2026-10-19, [Nomad gear](#nomad-gear-agreed-2026-10-18-spec-built-2026-10-19)):
+    their sailing rig wrecked out anywhere, a scrap plate they welded over the battery rack they
+    scavenged, its cloth locker packed with sand, its mast down beside its snapped post with the sail
+    always furled on it. Light plate: cut at 0.6 times the seconds.
 - **Cut.** A plate is welded over an opening at its seams, a bead along each edge. Hold use with a heat
   cutter (`Cutter`) and its hot spot lands where you aim; on a seam it cuts the weld, the cells under it
   and either side of it, at 1.5 s a metre of seam times the wreck's armour (Tuning `cut_seconds_per_m`;
@@ -757,7 +762,7 @@ there already was, the scoop clearing a wreck's packed holds.
   a shield or a screen (`SiteLoot.DUNE`). A relay mast's cabinet now and then holds a ground radar.
 - **Probes:** Profile & saves 33 digs one out through the hands.
 
-## Nomad gear (agreed, 2026-10-18 spec; not built)
+## Nomad gear (agreed, 2026-10-18 spec; built 2026-10-19)
 
 From the [chassis spec](../chassis-kits-dunes-2026-10-18.md): a neglected tier, common and found all over, open wilderness
 included: ruins give power and tech, the wilderness gives mobility. Wrecked nomad rigs are its
@@ -769,6 +774,57 @@ flaps by strength, read in hand or the inventory like the compass, or stuck on a
 the anemometer stays the precise one. A sail's mast takes things stuck on it (heavy up high
 raises the centre of mass), and a **crow's nest** is a mast mount you climb into, a seat with a long
 view for glints, plumes and fronts.
+
+**Built (2026-10-19, the `nomad` branch).** The nomads' own era (`Eras.NOMAD`, "the nomads'"): now,
+not in history's order, building nothing that lasts. Nothing in it is the nomads' make but the
+streamer; what they carry and leave is any era's, each thing's lineage drawn from their row's
+`from` (colonial 2, skimmer 2, First Kingdoms 1, second age 3, by weight, from the loot seed alone),
+so a nomad's chassis can be a colony's and its frame a house's. Nomad reputation isn't built, and
+nothing records what you take from them.
+- **Wrecked nomad rigs** (`nomad_rig`, a wreck: [Wrecks and scrapping](#wrecks-and-scrapping-hunter-2026-10-18-built)).
+  History lays one in 8% of its 500 m cells, anywhere off its landmarks, wilds and all (`History.NOMAD_RIGS`),
+  about one a 3 km², never buried: too new for the sand to have taken. A found chassis rig, nomad-built
+  from scavenged parts: five pieces of three eras' chassis (teal, olive and a second age's lime) with the
+  sixth torn off and tipped against the gap it left, a frame for a locker walled in ochre and indigo
+  cloth and packed with sand through its open side (two slices, its gear in it), a skimmer crew's
+  battery rack lashed at the bow behind a scrap plate they welded on (cut at 0.6 times the seconds; a
+  live bank rides on it), and the post their mast stood in, snapped off short, cord-wound, a pennant
+  still on it. Its mast lies beside the post, its sail furled on its boom (`SiteLoot.RIGGED`, always
+  there, free to take), so every one yields a sail. Its far look is its deck, locker and post with
+  the pennant; the brass fitting on the post glints. Its modules: survival kits, radios, a light
+  shield, a streamer; the rack. Its floors, shelf and deep cache hold the nomads' row: coils,
+  streamers, skates, plates, bedrolls, chassis, frames, fabric, water; at their best sails, masts,
+  skates, a keel, a helm seat, a crow's nest, a racer.
+- **Nomad gear in other eras' wrecks.** They loot as you do and leave what they don't need: of what
+  lies loose in any other wreck (its floors, shelves and caches, not its best or its modules), a
+  fifth is theirs (`SiteLoot.LEFT_SHARE`), from their own stream of the loot seed so nothing else
+  any wreck holds changes: coils, streamers, water, skates, a bedroll, fabric, now and then a sail.
+- **Their camps** (`nomad_camp`, `NomadKit`, `game/salvage/kits/nomads.gd`). One in 0.2% of cells
+  (`History.NOMAD_CAMPS`): round three worlds' Surveyor's starts, 25 camps in 14,700 cells against
+  868 wrecked rigs, one a 147 km² against one a 4 km². Kept, never buried, and just left: a windbreak
+  of cloth on saltbush posts, a sun shade over where they slept with a crate under it, a fire ring
+  with its embers still glowing and a kettle on its stones, a chassis on two stones for a table, a
+  water cache under a plate, a saltbush in a pot, mirror shards strung at the shade that the sun
+  catches, and their tracks leading off: footprints and two runners' lines. Everything there is kept
+  (`kept` 1.0) and sound (0.7 to 0.9): the rig they sail on, whole (`SiteLoot.RIG`, a deck built from
+  `NomadKit.RIGS`): a deck two by two on skates, its mast and sail, a streamer up the mast, its
+  ballast in a frame, a bedroll, a coil and a hook (two in three), or the yacht floating on its trays
+  over a keel with a helm seat aft and a crow's nest on its mast's head (one in three); and on its
+  floors, shelves and caches anything of any era, chassis included: frames, a turbine, a condenser,
+  shields, batteries, radios, survival kits, bedrolls, a planter, skates, a battery rack, a sail, a
+  mast, streamers, a compass, instruments, water, food, a med kit, saltbush. Take hold of their rig
+  and it's yours, all of it, as anything found is (`Salvage.claim` finds a seated thing's rig).
+- **Second-age sails.** A sail now and then on a second-age floor: weight 1 in its 54.
+- **How near the first one lies** (wreck probe 8, six worlds, every origin's start, the nearest sail
+  within reach as you'd find it when you'd walked there): 476 m at least, 1,140 m on the median, 2,922 m
+  at most, every one a nomad rig's, with 1 to 10 rigs within 3 km of a start. So a first run that goes
+  looking finds one within a fair walk, and none is at anyone's feet. (Measured with rigs in 6% of cells;
+  set to 8% after, for the worlds where only one stood in reach.)
+- **The streamer, mast mounts and crow's nest** are [Devices & mods](devices-and-mods.md#mast-mounts-the-streamer-and-the-crows-nest-built-2026-10-19).
+- **Deeds:** Hand-Me-Down (take the sail off a wrecked nomad rig) and Telltale in Wind, Just Missed
+  Them (reach a nomads' camp, hidden) in Far ([Profile & saves](profile-and-saves.md)).
+- **Probes:** wreck probe 8 (a nomad rig always yields a sail; the nearest within reach, none at
+  your feet; taken, you hold it); structure kits probe 9 (camps rare, kept, lootable, their rig yours).
 
 ## The Dark Age as a lineage rule (Agreed, session 4, part 5; not built)
 
@@ -1128,7 +1184,8 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
 8. **Out the door.** A found device, once yours, can be taken hold of and walked out of
    a ruin's doors, and towed out of them on a line.
 
-Wrecks have their own seven, in `probes/wrecks/` ([Wrecks and scrapping](#wrecks-and-scrapping-hunter-2026-10-18-built)).
+Wrecks have their own eight, in `probes/wrecks/` ([Wrecks and scrapping](#wrecks-and-scrapping-hunter-2026-10-18-built)),
+the eighth the nomad rig's sail ([Nomad gear](#nomad-gear-agreed-2026-10-18-spec-built-2026-10-19)).
 
 ## Out of scope
 
