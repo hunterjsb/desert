@@ -145,7 +145,7 @@ names it), and so can a kit variant or a mark on your gear (Hunter: "they should
 
 **Built (2026-10-18).** One table, `Deeds.TABLE` (`game/saves/deeds.gd`): each deed's id, name, the
 line saying what it asks, its family and the deeds it waits on, its card's thing, whether it's hidden
-(none is), and its goal, which is Tuning's (the Deeds group). What a deed opens is each kit's own
+(round two's two anomaly deeds are), and its goal, which is Tuning's (the Deeds group). What a deed opens is each kit's own
 `unlock`, so it has one owner. The names Hunter didn't give are proposals, his to rename; the id
 stays. Green Thumb is new, so Crop Rotation has one before it.
 
@@ -162,7 +162,7 @@ stays. Green Thumb is new, so Crop Rotation has one before it.
 | `deck_home` | All Mod Cons | A Console, a condenser and a battery on one deck | | a device or a part stuck on a deck, or a piece joining with one on it |
 | `sail_waist` | Set Sail | Tie a sail's sheet at your waist | | your waist, once the sheet tied on there is laid |
 | `deck_pieces` | Six Pack | Join 6 chassis pieces into one deck | All Mod Cons | a piece joining a deck |
-| `power` | Power Trip | Make 300 W in one system | Set Sail | Power's tick, by what each pool makes |
+| `power` | Power Trip | Make 300 W in one system | All Mod Cons (Set Sail until round two) | Power's tick, by what each pool makes |
 | `port_morgan` | The Old City | Reach Port Morgan | | the world, as the history follows you, inside the landmark's footprint |
 | `ages` | Carbon Dated | Stand in a structure of each of the four ages | | the world, stepping onto a structure's ground, its era counted once a profile; the Dark Age built nothing |
 | `landmarks` | Hot Tourist Destinations | Reach every named landmark | The Old City | the same as The Old City, each of the eight counted once a profile |
@@ -218,74 +218,119 @@ How each X was chosen, from the probes' numbers:
   <id>` grants one, `deeds` lists what's done and what isn't, and `deeds clear` forgets them all.
 - **Probes** 17 to 22, and Menus & UI probe 11.
 
-### Round two: the trees that tie it together (agreed 2026-10-18; not built)
+### Round two: the trees that tie it together (agreed 2026-10-18; step 1 built 2026-10-19)
 
 Hunter, 2026-10-18: "what are the big deeds and deed trees we're missing to tie everything
 together?", then "lets do it, and do it right, in the right order." Sailing, ruins, storms, wrecks,
 the anomaly, the radio gods, the sky and the far places had no deed. Each tree runs from an easy
-deed to a hard one, and each ends in a start opening or a step in the story. The numbers are
-starting points, tuned from the probes' numbers as the first batch was. Each deed is recorded by
-the system that knows, through the one hook.
+deed to a hard one, and each ends in a start opening or a step in the story. The numbers were
+starting points, tuned from the probes' numbers as the first batch was (below). Each deed is
+recorded by the system that knows, through the one hook.
 
-**What moves.** The shield family becomes **Weather**. Set Sail moves from Camp to the head of
-**Wind**, so Power Trip waits on All Mod Cons instead. Carbon Dated moves from Story to the head of
-**Ruins**. All Mod Cons and Six Pack follow the chassis rework (built): the home is a Console, a
+**What moves** (built). The shield family becomes **Weather**. Set Sail moves from Camp to the head
+of **Wind**, so Power Trip waits on All Mod Cons instead. Carbon Dated moves from Story to the head
+of **Ruins**. All Mod Cons and Six Pack follow the chassis rework (built): the home is a Console, a
 condenser and a battery stuck on one deck, and a wall or shelf on a frame's face is a piece, where
 the frame is a part stuck on the deck.
 
 | Tree | Deed | Asks | After | Recorded |
 |---|---|---|---|---|
 | Wind | Set Sail | Tie a sail's sheet at your waist (as now) | | your waist |
-| Wind | **Close-Hauled** | Make 1 km upwind under sail | Set Sail | the sail's pull on you or your camp: ground made against the wind, kept through tacks |
-| Wind | **Land Yacht** | Sail a keeled camp 5 km from its helm | Close-Hauled | the helm, by the ground its camp covers with you seated and a keel under it |
-| Wind | **Storm Runner** | Sail 3 km on a storm's outflow, ahead of its wall; opens the Varran settler | Land Yacht | the sail, while the field puts you in a front's outflow and short of its wall |
+| Wind | **Close-Hauled** | Make 500 m upwind under sail | Set Sail | `Mast`'s tick: while its sail is all the way up and yours to sail (its sheet on you, or you at the helm of its camp), its camp's way against the field's wind, kept through tacks and never below none; gone once it isn't yours to sail. Kept in the save |
+| Wind | **Land Yacht** | Sail a keeled camp 5,000 m from its helm | Close-Hauled | `Helm`'s tick: the ground its camp covers while you sit there, floating on a keel under a raised sail; gone when you stand up. Kept in the save |
+| Wind | **Storm Runner** | Sail 3,000 m on a storm's outflow, ahead of its wall | Land Yacht | `Mast`'s tick, as Close-Hauled: the ground its camp covers while the field puts it in a front's outflow and short of its wall, gone once it leaves the outflow. Opens nothing yet (step 2) |
 | Weather | Hermit, Sandblasted | (as now) | | Wear |
-| Weather | **Eye of the Anomaly** (hidden) | Live through an anomaly's heart | Sandblasted | Vitals: the hidden term where you stand reaches its full and falls back to nothing with you alive |
-| Weather | **Tells** (hidden) | Notice each of an anomaly's three tells | Eye of the Anomaly | each tell where it's shown to you: the compass leaning in your hand, the crackle on a radio you hear, a shield's load past 100% read off the shield or the Console |
+| Weather | **Eye of the Anomaly** (hidden) | Live through an anomaly's heart | Sandblasted | `Vitals`' tick, asleep too: the hidden term where you stand reaches its full (0.99), then falls back to nothing with you alive. Kept in the save |
+| Weather | **Tells** (hidden) | Notice each of an anomaly's three tells | Eye of the Anomaly | each where it's shown to you, once a profile: the compass in your hands leaning 10° or more toward a heart (`Compass`); a radio you hear crackling a quarter deep or more (`Radio`); a shield's load past 100%, its hum straining with you in its bubble (`ShieldGenerator`) or its load row on the stats page of a Console near enough to read (`Console`) |
 | Weather | **Taught** (hidden) | Teach the Walker the anomaly | Tells | the Walker, once it holds evidence for each tell (the session 5 ruling); built with its quest |
 | Ruins | Carbon Dated | (as now) | | the world |
-| Ruins | **Bared** | Take loot from a site a storm has stripped | Carbon Dated | site loot, from a site whose exposure the storm raised |
-| Ruins | **Storm Chaser** | Reach 3 freshly bared sites in one storm | Bared | the world, reaching a site whose exposure this storm raised |
+| Ruins | **Bared** | Take loot from a site a storm has stripped | Carbon Dated | `Salvage.claim`: a find taken from a site the storm working on it has further out of the sand than its settled sand would (`Structure.bared`) |
+| Ruins | **Storm Chaser** | Reach 3 freshly bared sites in one storm | Bared | the world, stepping onto a site so bared while you're in a storm, each counted once; the count goes the moment you're out of the storm |
 | Ruins | **Dune Reader** | Find a ruin buried in a dune's own lee | Storm Chaser | dune archaeology; built with it |
 | Ruins | the archaeologist's two | Assemble the archaeology setup; dig a ruin out yourself; together they open the Archaeologist | Dune Reader | the chassis spec's two deeds, built with the kit |
-| Scrap | **First Cut** | Cut a wreck's seam through | | Wreckage, a seam's last cell cut |
-| Scrap | **Stripped** | Free every module on one wreck | First Cut | Wreckage, the last module of a wreck freed |
-| Scrap | **Clean Hands** | Make a live wreck's hazards safe without a shock or a sickness | Stripped | Wreckage, the last hazard of a wreck made safe, none of them set off |
-| Scrap | **Bonepicker** | Scrap one of each of the five wreck kinds | Clean Hands | Wreckage, by kind: hull, hauler, freight pod, lifeboat, hopper |
-| Signals | **First Light** | Hear a god inside its window | | the radio, a god's own transmission heard |
+| Scrap | **First Cut** | Cut a wreck's seam through | | `Wreckage.cut`: a plate's last cell cut, and it falls |
+| Scrap | **Stripped** | Free every module on one wreck | First Cut | `Salvage.claim`: a wreck's module taken out once it's free, every module of that wreck taken |
+| Scrap | **Clean Hands** | Make a live wreck's hazards safe without a shock or a sickness | Stripped | `Wreckage.make_safe`: its last hazard made safe, every one of them safe and none set off |
+| Scrap | **Bonepicker** | Scrap one of each of the five wreck kinds | Clean Hands | `Salvage.claim`: a module taken from a wreck counts its kind, hull, hauler, freight pod, lifeboat or hopper (`Wreckage.kinds`), once a profile |
+| Signals | **First Light** | Hear a god inside its window | | `Radio`'s tick: tuned to a god while its words are useful, coming through and not cut, and you hearing it: its line in your view, or its sound within earshot with the volume up |
 | Signals | **Pantheon** | Hear all seven gods | First Light | the same, each god counted once a profile |
 | Signals | **Triangulated** | Take three bearings on the living city | Pantheon | the Walker's contact log; built with the stations' second pass |
 | Signals | **The Living City** | Find the living city | Triangulated | the world; built with it |
-| Far | **Totality** | Watch a whole eclipse out in the open | | the sky, the sun gone in and come out with you outside any bubble |
-| Far | **Glint** | Reach a site whose glint you saw from 5 km off | Totality | the Skyline marking a stand-in's glint shown to you, the world reaching that site |
-| Far | **Live Vent** | Stand at a live vent's mouth | Glint | geology, a vent's mouth while it's live |
-| Far | **Thunder** | Hear a burst's boom from 20 km away | Live Vent | Rumbles, a boom heard at that distance |
-| Far | **Under Tu** | Stand with Tu overhead | Totality | the sky, Tu within 5° of straight up |
-| Far | **The Dark Side** | Stand where Tu never rises | Under Tu | the sky, past the Rim |
-| Nomad | **Ten Days** | Live 10 days in one run | | the run's clock, from World.began |
-| Nomad | **Moved House** | Move your camp 20 km in one day | Ten Days | the camp, its deck's ground covered since the day began |
-| Nomad | **Slept It Off** | Sleep through a storm with nothing lost from your camp | Ten Days | Sleep, waking after the storm with every piece of your camp still on it |
+| Far | **Totality** | Watch a whole eclipse out in the open | | `SkyView`, each frame: the sun seen going in behind Tu, through totality and out again, up all the while, you in no bubble, the clock never jumping |
+| Far | **Glint** | Reach a site whose glint you saw from 1,000 m off | Totality | `Skyline`, as it reads the storms between you and what it draws: a stand-in's glint that far off shining for your eye, as a start's sighting is judged, over the dunes and past the storms with the sun up; then the world, stepping onto that site |
+| Far | **Live Vent** | Stand at a live vent's mouth | Glint | the world, stepping inside a vent mouth's rampart (every mouth is a live vent's) |
+| Far | **Thunder** | Hear a burst's boom from 35,000 m away | Live Vent | `Rumbles`, a vent's burst booming that far off; a gas pocket's doesn't count |
+| Far | **Under Tu** | Stand with Tu overhead | Totality | `SkyView`: Tu within 5° of straight up |
+| Far | **The Dark Side** | Stand where Tu never rises | Under Tu | `SkyView`: Tu's whole disc under the horizon however far it nods (`DayCycle.never_rises`), 95.5° from the point under Tu at 9° |
+| Nomad | **Ten Days** | Live 10 days in one run | | the world's clock, each whole day since `World.began`, which a death's respawn sets afresh |
+| Nomad | **Moved House** | Move your camp 5,000 m in one day | Ten Days | `Chassis`' tick: a deck's distance from where it stood as the day began where you are; not while it's in your hands. Kept in the save |
+| Nomad | **Slept It Off** | Sleep through a storm with nothing lost from your camp | Ten Days | `Sleep.overnight`: a storm over where you lie at some time in the night, none as you wake, and every deck near you still there with all of its camp on it, nothing wrecked that wasn't |
 | Nomad | **Nomad** | A deed from each of Wind, Weather, Ruins, Signals and Far | each of those trees | the hook, once the last of them is done |
 
-- **Hidden deeds** show "????" and no picture until they're done; their branch's lines still show
-  that something waits there. The anomaly's deeds are hidden so the grid doesn't say anomalies
-  exist before you've learnt them by their tells.
+- **Your camp** is a deck as the chassis rework made it (`Chassis.camp`): its pieces
+  (`Chassis.pieces()`), every part fitted to them, a frame on a piece among them, and every device
+  stuck on it with what's fitted to that, all one pool as its power is. Moved House reads any deck you
+  aren't carrying. Slept It Off takes each deck within `sleep_camp_m` of where you lie down.
+- **Hidden deeds** show "????" and no picture until they show done, and their panel says only
+  "????"; a deed after one waits on "????". Their place and the lines to them still show. The
+  anomaly's deeds are hidden so the grid doesn't say anomalies exist before you've learnt them by
+  their tells. Their badge says their name. Built: the table's `hidden`, read through
+  `Deeds.revealed`.
 - **Nomad ties the trees together:** its card stands apart, with a line from each of the five
   trees, lit where you've done one. It waits on any one deed of a tree, not a named one, so the
   table's `after` gains "any of a family".
-- **The grid holds every tree:** about forty deeds in eleven trees, each tree a column under its
-  name. It scrolls, and opens on the latest done (the devex round).
+- **The grid holds every tree** (built for step 1, Menus & UI): 37 deeds in eleven families, each a
+  branch or two beside its name down the left, as round one's were (eleven columns side by side
+  wouldn't stand left of the prop). It scrolls, and opens on the latest done.
 - **The order.** Each part waits for what it reads to land:
-  1. After the devex, chassis, sail-trim and board rounds land (all landed 2026-10-19): the hidden
-     flag, the grid holding every tree, the moves above, and every deed whose system is built:
-     Wind (without its start), Weather to Tells, Ruins to Storm Chaser, Scrap, Signals to Pantheon,
-     Far, and Nomad's first three.
+  1. **Built 2026-10-19.** After the devex, chassis, sail-trim and board rounds landed: the hidden
+     flag, the grid holding every tree, the moves above, and every deed whose system is built: Wind
+     (without its start), Weather to Tells, Ruins to Storm Chaser, Scrap, Signals to Pantheon, Far,
+     and Nomad's first three.
   2. With the chassis spec's starts and kits: Storm Runner opens the Varran settler.
   3. With dune archaeology: Dune Reader and the archaeologist's two, which open the Archaeologist.
   4. With the radio stations' second pass and the Walker's quest: Triangulated, The Living City,
      and Taught.
   5. Last, once every tree it reads has landed: Nomad and its "any of a family", so that what it
      asks never changes after someone has earned it.
+
+How each X was chosen, from the probes' numbers (the probes' seed, 2026-10-19):
+- **500 m upwind,** not 1 km. The "yacht", its sheet tended, settles about 64° off a steady 10 m/s
+  at 4.6 m/s, 2.0 m/s of it against the wind (109 m in its first 45 s close-hauled; Movement's 36 m
+  in 20 s); the "sail" deck on skates makes 1.0. So 500 m is four to five minutes close-hauled on the
+  yacht or eight on skates, and the tacks on top; 1 km was most of a day of it.
+- **5,000 m from the helm.** On a broad reach in 10 m/s the yacht comes up to 11.7 m/s, past the
+  wind's own speed, 508 m in its first minute from across the wind; close-hauled it makes 4.6. Its
+  700 Wh run its trays' 470 W for an hour and a half. So 5 km is about ten minutes at the helm, half
+  a day, and the battery is no limit.
+- **3,000 m on the outflow.** Over 200 fronts on the probes' seed, the outflow ahead of a wall runs
+  360 m deep at the median (115 to 4,120), blowing 14 to 17 m/s, and the wall comes on at 9 m/s (5 to
+  14). In 15 m/s the yacht tears its sail on a beam reach (728 N against the 600 that tears it) but
+  holds on a broad reach at 20 m/s, 11 of them downwind: it gains on the wall about 2 m/s, so entered
+  at the wall the band slips past it in three minutes, about 3.6 km sailed. So 3 km is the band held
+  nearly whole.
+- **3 bared sites.** Within 1.5 km of the Surveyor's start stand 21 structures, and each of its
+  first eight storms (2 to 92 minutes long) bares 9 to 16 of them; round the Homesteader's 48, bared
+  13 to 38 at a time; round the Salvager's deep desert 7, bared 0 to 3. Three is a storm chased where
+  history stands thick, under a shield you carry.
+- **1,000 m off,** not 5 km: the skyline draws to 3 km. Glints in sight are rare: from 15 places round
+  the three starts, five saw a glint shine over the dunes at some time of day, for 20 to 50 s, from
+  584, 1,378, 2,028 (twice) and 2,326 m. Past 1 km is past the built ground, where all but the
+  nearest of them shone from.
+- **35,000 m away,** not 20 km. The rift's live vents stand 24 to 30 km from the Surveyor's start,
+  10 to 16 from the Salvager's and 9 to 10 from the Homesteader's, and a boom carries 45 km. At 20 km
+  the Surveyor would have it at its start; 35 km is past every start, out toward the Rim, a low
+  rumble at about -33 dB.
+- **5,000 m in one day,** not 20 km. A day is 20 minutes and the yacht's best is 11.7 m/s, 14 km if
+  it never turned. Five km is the yacht on its reaches for half a day, or a camp on skates at its
+  4.3 m/s beam reach for all of one.
+- **5° and 10 days** are the table's. Tu nods about a degree a day, so overhead is a circle about 2
+  km across the point under Tu, 25 km from the tuning's start; the Dark Side begins 95.5° from it, 15
+  km the other way. Ten days is 200 minutes without dying.
+- **Where a tell shows:** 10° of lean is a needle plainly off north in your hand (it leans up to
+  60°); a quarter of the crackle's depth bursts at an eighth of full static, plain under the hiss.
+
+- **Probes** 25 to 31, one a tree, and Menus & UI probe 16.
 
 ## Starts on the chassis, and two new kits (agreed, 2026-10-18 spec; the starts built, the kits not)
 

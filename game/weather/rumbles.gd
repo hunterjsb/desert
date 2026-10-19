@@ -125,6 +125,8 @@ func _boom(source: Dictionary, metres: float, delay: float, size: float, t: floa
 	player.play()
 	heard.append({"source": source.id, "at": t, "distance": metres, "delay": delay, "volume_db": volume,
 		"cutoff_hz": cutoff, "toward": toward})
+	if not pocket and metres >= _world.tuning.deed_thunder_m:
+		Deeds.done(_world, &"thunder")
 	if heard.size() > 16:
 		heard.pop_front()
 

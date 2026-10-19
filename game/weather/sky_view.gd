@@ -13,9 +13,18 @@ const TU_EDGE := 0.0008
 ## How bright the relay shows at night, against the brightest stars' 0.09.
 const RELAY_LIGHT := 0.35
 
+## An eclipse watched: none going on, watched since the sun began to go in,
+## watched through totality, or missed some of.
+enum { CLEAR, GOING_IN, TOTAL, MISSED }
+## A jump in the clock this long, s, is no eclipse watched through.
+const JUMP := 2.0
+
 var material := ShaderMaterial.new()
 ## Tu's light on open ground round the camera, as a share of the sun's overhead.
 var tu_seen := 0.0
+## How the eclipse going on now has been watched, and the clock when last seen.
+var watched := CLEAR
+var _watched_at := -INF
 
 var _world: World
 var _day: DayCycle
@@ -94,6 +103,30 @@ func show(t: float, eye: Vector3, sun: Vector3, sun_shown: float, glow: Vector3,
 		_sun.shadow_enabled = not tu_leads
 	tu_seen = energy / _sun_energy * maxf(tu.y, 0.0)
 	_report(t, tu)
+	if _world.counts_deeds:
+		_deeds(t, sun, sun_shown, tu)
+
+
+## What the sky shows you counts: an eclipse watched whole in the open, from
+## the sun going in until it's out again, Tu overhead, or Tu never rising.
+func _deeds(t: float, sun: Vector3, sun_shown: float, tu: Vector3) -> void:
+	var moon := _world.moon
+	var open := _world.weather.shelter_at(_world.player.global_position, &"storm") <= 0.0
+	if sun_shown >= 1.0:
+		if watched == TOTAL:
+			Deeds.done(_world, &"totality")
+		watched = CLEAR
+	elif watched == CLEAR:
+		watched = GOING_IN if open and sun.y > 0.0 and absf(t - _watched_at) < JUMP else MISSED
+	elif not open or sun.y <= 0.0 or absf(t - _watched_at) >= JUMP:
+		watched = MISSED
+	elif sun_shown <= 0.0 and watched == GOING_IN:
+		watched = TOTAL
+	_watched_at = t
+	if tu.y >= cos(deg_to_rad(_world.tuning.deed_tu_overhead_degrees)):
+		Deeds.done(_world, &"under_tu")
+	if _day.never_rises(moon.latitude, moon.longitude):
+		Deeds.done(_world, &"dark_side")
 
 
 ## The relay satellite, a bright point crossing the night sky while it's over

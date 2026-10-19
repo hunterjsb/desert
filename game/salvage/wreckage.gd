@@ -65,6 +65,7 @@ const FIRST := "clear the sand in front of it first"
 const FIRST_TOP := "clear the sand on top of it first"
 
 static var _bead_mesh: BoxMesh
+static var _kinds: Array[StringName] = []
 ## Each plate's look, standing and fallen, made once.
 static var _plate_meshes := {}
 static var _bead_look: ShaderMaterial
@@ -125,6 +126,15 @@ static func prepare() -> void:
 	_unit_box()
 	_sand_material()
 	ScrapFx.prepare()
+
+
+## Every kind of wreck there is: the kit pieces with a plan for scrapping.
+static func kinds() -> Array[StringName]:
+	if _kinds.is_empty():
+		for kind: StringName in StructureKit.kinds():
+			if StructureKit.piece(kind).wreck != null:
+				_kinds.append(kind)
+	return _kinds
 
 
 ## A wreck as found: nothing cut or cleared, every hazard live.
@@ -326,6 +336,7 @@ func cut(body: Object, point: Vector3, seconds: float) -> Dictionary:
 	_cooling = true
 	if _cut_through(i):
 		_fall(i)
+		Deeds.done(World.of(self), &"first_cut")
 		return {"seam": true, "at": at, "through": true}
 	return {"seam": true, "at": at}
 
@@ -372,7 +383,16 @@ func make_safe(body: Object, op: StringName) -> bool:
 	state.hazards[socket] = SAFE
 	state.touched = true
 	_quiet(socket)
+	_cleaned()
 	return true
+
+
+## Its last hazard made safe, none of them ever set off on anyone.
+func _cleaned() -> void:
+	for at: int in plan.modules:
+		if (plan.modules[at] as WreckPlan.Module).hazard != &"" and state.hazards.get(at, LIVE) != SAFE:
+			return
+	Deeds.done(World.of(self), &"clean_hands")
 
 
 ## A live hazard has gone off on someone: it can't again.

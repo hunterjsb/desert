@@ -1,29 +1,46 @@
 class_name DeedsGrid
 extends Control
 ## Every deed as a card in a tree (Deeds): a branch or two for each family,
-## each deed right of the ones it waits on, a line from each to what it
-## opens, narrow enough to stand left of the prop aside.
+## its name down the left, each deed right of the ones it waits on, a line
+## from each to what it opens, narrow enough to stand left of the prop
+## aside. Taller than the screen has room for, it shows a part of its page at
+## a time, scrolled by the wheel or the selection, keeps the card highlighted
+## in view, and draws its bar beside it in the theme's faint ink.
 ## A card shows its name and its thing: lit once done, dimmer while open but
-## not done, and a dark silhouette while what it waits on isn't done. The
-## card highlighted, by the mouse or the menu's selection, has a small panel
-## beside it saying what it asks, how far along you are, and what it opens.
-## The selection starts on the deed done last, or with none done the first
-## still to do. Opened, it's looked at: what was new in it isn't any more.
+## not done, and a dark silhouette while what it waits on isn't done. A
+## hidden deed is ???? with no picture until it shows done, though its place
+## and the line to it show. The card highlighted, by the mouse or the menu's
+## selection, has a small panel beside it saying what it asks, how far along
+## you are, and what it opens. The selection starts on the deed done last,
+## or with none done the first still to do. Opened, it's looked at: what was
+## new in it isn't any more.
 
 ## A card, the picture on it, and the room round them: between a family's
 ## branches, between families, and between one deed and the next, where
 ## the lines run, px.
-const CARD := Vector2(204.0, 62.0)
-const ICON := 46.0
+const CARD := Vector2(190.0, 58.0)
+const ICON := 42.0
 const GAP := 8.0
-const FAMILY_GAP := 20.0
-const STEP := 34.0
-## The families' names, down the left beside their branches, and that column's width, px.
-const FAMILIES := {&"board": "Board", &"shield": "Shield", &"farm": "Farming", &"camp": "Camp", &"story": "Story"}
+const FAMILY_GAP := 16.0
+const STEP := 28.0
+## The families in the order they stand, and their names down the left
+## beside their branches, in a column this wide, px.
+const FAMILIES := {&"board": "Board", &"wind": "Wind", &"weather": "Weather", &"camp": "Camp", &"farm": "Farming",
+	&"ruins": "Ruins", &"scrap": "Scrap", &"signals": "Signals", &"far": "Far", &"story": "Story",
+	&"nomad": "Nomad"}
 const HEAD := 96.0
-## The panel's width, and how far it stands off its card, px.
+## The panel's width, how far it stands off its card, and how near the
+## screen's edge it may come, px.
 const TIP := 300.0
 const TIP_OFF := 12.0
+const TIP_EDGE := 16.0
+## Of the screen's height, the most the tree shows at once; the rest scrolls,
+## this far a notch of the wheel, px, keeping a highlighted card this far
+## inside what shows. Its bar is this wide and this far off the page.
+const SHOWN := 0.66
+const WHEEL := 70.0
+const MARGIN := 12.0
+const BAR := Vector2(4.0, 8.0)
 ## A deed open but not done, at this share of a done one's brightness; one
 ## still locked, only its thing's outline, faint.
 const UNLIT := 0.55
@@ -32,13 +49,25 @@ const SILHOUETTE := "shader_type canvas_item;\nuniform vec4 ink : source_color;\
 
 static var _shadow: ShaderMaterial
 
+## How far down its page it's scrolled, px.
+var scroll := 0.0:
+	set(to):
+		scroll = clampf(to, 0.0, maxf(_page.size.y - size.y, 0.0))
+		_page.position.y = -scroll
+		queue_redraw()
+
 var _profile: Node
 var _tuning: Tuning
+## Everything it shows, as tall as all of it: the families, the cards and the
+## lines between them.
+var _page := Control.new()
 ## Each deed's card, and where its middle stands, px.
 var _cards := {}
 var _at := {}
 var _tip: PanelContainer
 var _said: Array[Label] = []
+## The card the panel stands beside.
+var _told: Button
 
 
 ## The tree in a menu laid out for where it opens, and Back under it.
@@ -54,12 +83,18 @@ static func fill(words: Words, profile: Node, back: Callable) -> void:
 func _init(profile: Node, tuning: Tuning) -> void:
 	_profile = profile
 	_tuning = tuning
-	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	clip_contents = true
+	mouse_filter = Control.MOUSE_FILTER_PASS
+	_page.mouse_filter = Control.MOUSE_FILTER_PASS
+	_page.draw.connect(_draw_lines)
+	add_child(_page)
 	_lay_out()
+	# Over everything round it, so a scroll never cuts it off.
 	_tip = PanelContainer.new()
 	_tip.theme_type_variation = &"DeedTip"
 	_tip.custom_minimum_size.x = TIP
 	_tip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_tip.top_level = true
 	_tip.visible = false
 	var column := VBoxContainer.new()
 	column.theme_type_variation = &"Column"
@@ -75,8 +110,25 @@ func _init(profile: Node, tuning: Tuning) -> void:
 
 
 func _ready() -> void:
+	custom_minimum_size = Vector2(_page.size.x + BAR.y + BAR.x,
+		minf(_page.size.y, get_viewport_rect().size.y * SHOWN))
+	size = custom_minimum_size
 	# Over Back, which the menu highlights as it opens.
-	opening().grab_focus.call_deferred()
+	_open.call_deferred()
+
+
+## The wheel scrolls it.
+func _gui_input(event: InputEvent) -> void:
+	var wheel := event as InputEventMouseButton
+	if wheel != null and wheel.pressed and wheel.button_index in [MOUSE_BUTTON_WHEEL_UP, MOUSE_BUTTON_WHEEL_DOWN]:
+		scroll += WHEEL * (-1.0 if wheel.button_index == MOUSE_BUTTON_WHEEL_UP else 1.0) * wheel.factor
+		accept_event()
+
+
+## The panel follows its card as the tree scrolls under it.
+func _process(_delta: float) -> void:
+	if _tip.visible and is_instance_valid(_told):
+		_place_tip(_told)
 
 
 ## The first card, top left.
@@ -100,6 +152,15 @@ func opening() -> Button:
 		if Deeds.is_open(_profile, id):
 			return _cards[id]
 	return first()
+
+
+## Opens on its card, scrolled to stand it in the middle of what shows.
+func _open() -> void:
+	if not is_inside_tree():
+		return
+	var card := opening()
+	scroll = card.position.y + CARD.y * 0.5 - size.y * 0.5
+	card.grab_focus()
 
 
 ## Each family a branch per deed at its widest step, each deed one step
@@ -133,20 +194,23 @@ func _lay_out() -> void:
 		head.size = Vector2(HEAD, tall)
 		head.position = Vector2(0.0, y)
 		head.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-		add_child(head)
+		_page.add_child(head)
 		y += tall + FAMILY_GAP
-	custom_minimum_size = Vector2(HEAD + (deepest + 1) * (CARD.x + STEP) - STEP, y - FAMILY_GAP)
+	_page.size = Vector2(HEAD + (deepest + 1) * (CARD.x + STEP) - STEP, y - FAMILY_GAP)
+	custom_minimum_size = _page.size
 	for id: StringName in Deeds.TABLE:
 		_cards[id] = _card(id)
-		add_child(_cards[id])
+		_page.add_child(_cards[id])
 
 
 func _card(id: StringName) -> Button:
 	var open := Deeds.is_open(_profile, id)
 	var done := Deeds.lit(_profile, id)
+	var shown := Deeds.revealed(_profile, id)
 	var card := Button.new()
 	card.theme_type_variation = &"DeedCard"
 	card.focus_mode = Control.FOCUS_ALL
+	card.mouse_filter = Control.MOUSE_FILTER_PASS
 	card.size = CARD
 	card.position = _at[id] - CARD * 0.5
 	card.set_meta(&"deed", id)
@@ -157,10 +221,12 @@ func _card(id: StringName) -> Button:
 	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	row.modulate = Color.WHITE if done or not open else Color(UNLIT, UNLIT, UNLIT)
 	card.add_child(row)
-	row.add_child(picture(id, open, ICON))
+	var picture := picture(id, open, ICON) if shown else Control.new()
+	picture.custom_minimum_size = Vector2(ICON, ICON)
+	row.add_child(picture)
 	var title := Label.new()
 	title.theme_type_variation = &"DeedCardName"
-	title.text = Deeds.TABLE[id].name if open and not (Deeds.TABLE[id].get("hidden", false) and not done) else "????"
+	title.text = Deeds.TABLE[id].name if open and shown else "????"
 	title.uppercase = true
 	title.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -174,39 +240,68 @@ func _card(id: StringName) -> Button:
 
 
 ## The panel beside a card: what it asks, how far along you are, and what it
-## opens; locked, only what it waits on.
+## opens; locked, only what it waits on; hidden and not done, nothing it
+## would give away.
 func _tell(id: StringName) -> void:
 	Sounds.play(get_tree().root, Sounds.MENU_MOVE, Sounds.UI)
 	var spec: Dictionary = Deeds.TABLE[id]
 	var lines := PackedStringArray(["????", "", "", ""])
-	if Deeds.is_open(_profile, id):
+	if not Deeds.revealed(_profile, id):
+		pass
+	elif Deeds.is_open(_profile, id):
 		var record: Dictionary = _profile.deeds().get(str(id), {}) if _profile != null else {}
 		var opens := PackedStringArray(Deeds.opens(id).map(func(k: Kit) -> String: return "opens the " + k.label))
 		lines = PackedStringArray([spec.name, Deeds.line(id, _tuning),
 			("done" + (" in Ironman" if record.get("ironman", false) else "")) if Deeds.lit(_profile, id)
 				else Deeds.progress(_profile, id, _tuning), ", ".join(opens)])
-	else:
+	if not Deeds.is_open(_profile, id):
 		var waits := PackedStringArray()
 		for before: StringName in spec.get("after", []):
 			if not Deeds.lit(_profile, before):
-				waits.append(Deeds.TABLE[before].name if Deeds.is_open(_profile, before) else "????")
+				waits.append(Deeds.TABLE[before].name if Deeds.is_open(_profile, before)
+					and Deeds.revealed(_profile, before) else "????")
 		lines[2] = "after " + " and ".join(waits)
 	for i in _said.size():
 		_said[i].text = lines[i]
 		_said[i].visible = lines[i] != ""
-	_tip.reset_size()
-	# Beside the card, on whichever side has room on the screen.
-	var card: Button = _cards[id]
-	var room := get_viewport_rect().size.x
-	var right := card.global_position.x + CARD.x + TIP_OFF + TIP < room
-	_tip.position = Vector2(card.position.x + CARD.x + TIP_OFF if right else card.position.x - TIP_OFF - TIP,
-		card.position.y)
+	_told = _cards[id]
+	_show_card(_told)
+	_place_tip(_told)
 	_tip.visible = true
-	move_child(_tip, -1)
+
+
+## Scrolled as little as keeps a card wholly in what shows.
+func _show_card(card: Button) -> void:
+	if card.position.y - MARGIN < scroll:
+		scroll = card.position.y - MARGIN
+	elif card.position.y + CARD.y + MARGIN > scroll + size.y:
+		scroll = card.position.y + CARD.y + MARGIN - size.y
+
+
+## Beside the card, on whichever side has room on the screen, kept on it:
+## as tall as its words wrap to now they've a width to wrap in.
+func _place_tip(card: Button) -> void:
+	_tip.reset_size()
+	var at := card.get_global_rect()
+	var room := get_viewport_rect().size
+	var right := at.end.x + TIP_OFF + TIP < room.x
+	_tip.position = Vector2(at.end.x + TIP_OFF if right else at.position.x - TIP_OFF - TIP,
+		clampf(at.position.y, TIP_EDGE, maxf(room.y - _tip.size.y - TIP_EDGE, TIP_EDGE)))
+
+
+## Its bar beside the page while there's more than shows: what shows, along
+## the whole, in the theme's dim ink over its faint.
+func _draw() -> void:
+	var whole := _page.size.y
+	if whole <= size.y + 0.5:
+		return
+	var x := _page.size.x + BAR.y
+	draw_rect(Rect2(x, 0.0, BAR.x, size.y), get_theme_color(&"faint", &"Palette") * Color(1.0, 1.0, 1.0, 0.5))
+	draw_rect(Rect2(x, size.y * scroll / whole, BAR.x, size.y * size.y / whole), get_theme_color(&"dim", &"Palette"))
 
 
 ## From each deed across to each it opens: brighter once it's open.
-func _draw() -> void:
+func _draw_lines() -> void:
 	var lit := get_theme_color(&"dim", &"Palette")
 	var faint := get_theme_color(&"faint", &"Palette")
 	for id: StringName in Deeds.TABLE:
@@ -214,7 +309,7 @@ func _draw() -> void:
 			var from: Vector2 = _at[before] + Vector2(CARD.x * 0.5, 0.0)
 			var to: Vector2 = _at[id] - Vector2(CARD.x * 0.5, 0.0)
 			var bend := (from.x + to.x) * 0.5
-			draw_polyline(PackedVector2Array([from, Vector2(bend, from.y), Vector2(bend, to.y), to]),
+			_page.draw_polyline(PackedVector2Array([from, Vector2(bend, from.y), Vector2(bend, to.y), to]),
 				lit if Deeds.is_open(_profile, id) else faint, 2.0, true)
 
 
@@ -251,25 +346,122 @@ static func _silhouette() -> ShaderMaterial:
 	return _shadow
 
 
-## A mark drawn in the theme's ink, faint while locked: a landmark's mast on
-## the skyline with its pennant, or a sail on its mast.
+## A mark drawn in the theme's ink, faint while locked, where no thing fits:
+## a landmark's mast with its pennant, a sail, a storm's wall, an anomaly's
+## eye, a ruin bared, a wreck, a mast's signal, the eclipse, a glint, a vent
+## and its boom, Tu overhead, the dark side's stars, the sun's days.
 static func _draw_mark(on: Control, mark: StringName, locked: bool) -> void:
 	var ink := on.get_theme_color(&"faint" if locked else &"text", &"Palette")
 	var s := on.size
-	var foot := Vector2(s.x * 0.5, s.y * 0.88)
-	var top := Vector2(s.x * 0.5, s.y * 0.12)
-	on.draw_line(Vector2(s.x * 0.2, foot.y), Vector2(s.x * 0.8, foot.y), ink, 2.0, true)
-	if mark == &"sail":
-		var boom := Vector2(s.x * 0.5, s.y * 0.74)
-		on.draw_line(boom + Vector2(0.0, s.y * 0.14), top, ink, 3.0, true)
-		on.draw_colored_polygon(PackedVector2Array([top + Vector2(4.0, 4.0), boom + Vector2(4.0, -2.0),
-			boom + Vector2(s.x * 0.34, -2.0)]), ink)
-		on.draw_line(boom, boom + Vector2(s.x * 0.36, 0.0), ink, 2.0, true)
-		return
-	on.draw_line(foot, top, ink, 3.0, true)
-	for k in 3:
-		var y := lerpf(foot.y, top.y, 0.25 + k * 0.2)
-		var half := s.x * (0.16 - k * 0.04)
-		on.draw_line(Vector2(foot.x - half, y), Vector2(foot.x + half, y), ink, 2.0, true)
-	on.draw_colored_polygon(PackedVector2Array([top, top + Vector2(s.x * 0.26, s.y * 0.07),
-		top + Vector2(0.0, s.y * 0.14)]), ink)
+	var c := s * 0.5
+	var u := s.x
+	var foot := Vector2(c.x, s.y * 0.88)
+	var top := Vector2(c.x, s.y * 0.12)
+	var ground := func() -> void: on.draw_line(Vector2(u * 0.12, foot.y), Vector2(u * 0.88, foot.y), ink, 2.0, true)
+	match mark:
+		&"sail":
+			ground.call()
+			var boom := Vector2(c.x, s.y * 0.74)
+			on.draw_line(boom + Vector2(0.0, s.y * 0.14), top, ink, 3.0, true)
+			on.draw_colored_polygon(PackedVector2Array([top + Vector2(4.0, 4.0), boom + Vector2(4.0, -2.0),
+				boom + Vector2(u * 0.34, -2.0)]), ink)
+			on.draw_line(boom, boom + Vector2(u * 0.36, 0.0), ink, 2.0, true)
+		&"storm":
+			# A wall of dust rolling in over the sand.
+			ground.call()
+			var wall := PackedVector2Array([Vector2(u * 0.12, foot.y)])
+			for k in 7:
+				var a := PI * k / 6.0
+				wall.append(Vector2(u * (0.2 + 0.06 * k), s.y * (0.3 + 0.12 * sin(a * 3.0) * (1.0 - k / 7.0))))
+			wall.append(Vector2(u * 0.6, foot.y))
+			on.draw_colored_polygon(wall, ink)
+			for k in 3:
+				var y := s.y * (0.45 + 0.13 * k)
+				on.draw_line(Vector2(u * 0.66, y), Vector2(u * 0.88, y), ink, 2.0, true)
+		&"eye":
+			# An anomaly's heart: rings closing on a dark eye.
+			for k in 3:
+				on.draw_arc(c, u * (0.38 - 0.11 * k), 0.0, TAU, 32, ink, 2.0, true)
+			on.draw_circle(c, u * 0.07, ink)
+		&"ruin":
+			# Broken walls standing out of a dune.
+			for x: Array in [[0.24, 0.42], [0.42, 0.22], [0.66, 0.34]]:
+				on.draw_rect(Rect2(u * x[0] - u * 0.06, s.y * x[1], u * 0.12, foot.y - s.y * x[1]), ink)
+			on.draw_colored_polygon(PackedVector2Array([Vector2(u * 0.08, foot.y), Vector2(u * 0.3, s.y * 0.7),
+				Vector2(u * 0.55, s.y * 0.78), Vector2(u * 0.92, foot.y)]), ink)
+		&"wreck":
+			# A hull nosed into the sand.
+			ground.call()
+			var hull := Transform2D(-0.35, Vector2(c.x, s.y * 0.62))
+			on.draw_set_transform_matrix(hull)
+			on.draw_colored_polygon(PackedVector2Array([Vector2(-u * 0.36, -s.y * 0.1), Vector2(u * 0.22, -s.y * 0.12),
+				Vector2(u * 0.38, 0.0), Vector2(u * 0.22, s.y * 0.1), Vector2(-u * 0.36, s.y * 0.08)]), ink)
+			on.draw_line(Vector2(-u * 0.1, -s.y * 0.12), Vector2(-u * 0.2, -s.y * 0.26), ink, 2.0, true)
+			on.draw_set_transform_matrix(Transform2D.IDENTITY)
+		&"signal":
+			# A mast sending: arcs either side of its head.
+			ground.call()
+			var head := Vector2(c.x, s.y * 0.36)
+			on.draw_line(foot, head, ink, 3.0, true)
+			for k in 3:
+				var r := u * (0.12 + 0.1 * k)
+				on.draw_arc(head, r, -PI * 0.25, PI * 0.25, 12, ink, 2.0, true)
+				on.draw_arc(head, r, PI * 0.75, PI * 1.25, 12, ink, 2.0, true)
+		&"eclipse":
+			# Tu dark before the sun, its ring of fire round its limb.
+			on.draw_arc(c, u * 0.34, 0.0, TAU, 40, ink, 3.0, true)
+			on.draw_circle(c, u * 0.27, ink * Color(1.0, 1.0, 1.0, 0.35))
+			for k in 8:
+				var a := TAU * k / 8.0
+				on.draw_line(c + Vector2.from_angle(a) * u * 0.4, c + Vector2.from_angle(a) * u * 0.46, ink, 2.0, true)
+		&"glint":
+			# A sparkle far off on the skyline.
+			ground.call()
+			var at := Vector2(c.x, s.y * 0.45)
+			on.draw_colored_polygon(PackedVector2Array([at + Vector2(0.0, -u * 0.32), at + Vector2(u * 0.06, -u * 0.06),
+				at + Vector2(u * 0.32, 0.0), at + Vector2(u * 0.06, u * 0.06), at + Vector2(0.0, u * 0.32),
+				at + Vector2(-u * 0.06, u * 0.06), at + Vector2(-u * 0.32, 0.0), at + Vector2(-u * 0.06, -u * 0.06)]), ink)
+		&"vent", &"boom":
+			# A vent's rampart and the plume it breathes; booming, the sound's arcs.
+			on.draw_colored_polygon(PackedVector2Array([Vector2(u * 0.1, foot.y), Vector2(u * 0.36, s.y * 0.62),
+				Vector2(u * 0.44, s.y * 0.66), Vector2(u * 0.56, s.y * 0.66), Vector2(u * 0.64, s.y * 0.62),
+				Vector2(u * 0.9, foot.y)]), ink)
+			for k in 3:
+				on.draw_circle(Vector2(c.x + u * (0.04 * k - 0.02), s.y * (0.5 - 0.15 * k)), u * (0.07 + 0.03 * k), ink)
+			if mark == &"boom":
+				for k in 2:
+					var r := u * (0.3 + 0.12 * k)
+					on.draw_arc(Vector2(c.x, s.y * 0.35), r, -PI * 0.2, PI * 0.2, 10, ink, 2.0, true)
+					on.draw_arc(Vector2(c.x, s.y * 0.35), r, PI * 0.8, PI * 1.2, 10, ink, 2.0, true)
+		&"tu":
+			# Tu straight overhead, its bands across it.
+			on.draw_circle(c, u * 0.34, ink * Color(1.0, 1.0, 1.0, 0.5))
+			on.draw_arc(c, u * 0.34, 0.0, TAU, 40, ink, 2.0, true)
+			for k in 3:
+				var y := (k - 1) * u * 0.12
+				var half := sqrt(maxf(pow(u * 0.34, 2.0) - y * y, 0.0))
+				on.draw_line(c + Vector2(-half, y), c + Vector2(half, y), ink, 2.0, true)
+		&"dark":
+			# Stars over a horizon Tu never clears.
+			ground.call()
+			on.draw_arc(Vector2(c.x, foot.y), u * 0.26, PI, TAU, 24, ink * Color(1.0, 1.0, 1.0, 0.4), 2.0, true)
+			for at: Vector2 in [Vector2(0.2, 0.2), Vector2(0.5, 0.14), Vector2(0.78, 0.26), Vector2(0.34, 0.42),
+					Vector2(0.66, 0.5)]:
+				on.draw_circle(Vector2(u * at.x, s.y * at.y), u * 0.03, ink)
+		&"sun":
+			# The sun up over the horizon, its rays: the days.
+			ground.call()
+			var sun := Vector2(c.x, foot.y)
+			on.draw_arc(sun, u * 0.2, PI, TAU, 20, ink, 3.0, true)
+			for k in 5:
+				var a := PI + PI * (k + 1) / 6.0
+				on.draw_line(sun + Vector2.from_angle(a) * u * 0.28, sun + Vector2.from_angle(a) * u * 0.4, ink, 2.0, true)
+		_:
+			ground.call()
+			on.draw_line(foot, top, ink, 3.0, true)
+			for k in 3:
+				var y := lerpf(foot.y, top.y, 0.25 + k * 0.2)
+				var half := u * (0.16 - k * 0.04)
+				on.draw_line(Vector2(foot.x - half, y), Vector2(foot.x + half, y), ink, 2.0, true)
+			on.draw_colored_polygon(PackedVector2Array([top, top + Vector2(u * 0.26, s.y * 0.07),
+				top + Vector2(0.0, s.y * 0.14)]), ink)

@@ -1,18 +1,21 @@
 extends Node
 ## Look-test helper: shoots the main menu marking the deeds new, and the
-## starts they opened; the deeds' tree with a few done, one of them early,
-## and a card highlighted, over the main menu's desert and over a run; two
-## deeds' badges done at once in a run, the first showing and its sound
+## starts they opened; the whole of the deeds' tree, scrolled to its top and
+## to its foot, with a few done, one of them early, a hidden one done and one
+## not, and a card highlighted, over the main menu's desert and over a run;
+## two deeds' badges done at once in a run, the first showing and its sound
 ## playing; then Resume, counting them. Needs a GPU, not --headless;
 ## shoot.sh runs it unseen:
 ##   scripts/unseen.sh --path . res://look/deeds/deeds.tscn -- <out dir>
 
 const MAIN := preload("res://game/main.tscn")
-## Done, one of them early: Six Pack before All Mod Cons, so it's still dark.
 ## Long enough for the prop to slide aside and swap, s.
 const SETTLE := Showpiece.SLIDE_SECONDS + Showpiece.SWAP_SECONDS + 0.4
-const DONE: Array[StringName] = [&"board_distance", &"board_height", &"shield_day", &"crop", &"sail_waist",
-	&"port_morgan", &"deck_pieces"]
+## Done, one of them early: Six Pack before All Mod Cons, so it's still dark;
+## Eye of the Anomaly done and shown, Tells after it hidden still.
+const DONE: Array[StringName] = [&"board_distance", &"board_height", &"shield_day", &"shield_storm", &"anomaly_eye",
+	&"crop", &"sail_waist", &"close_hauled", &"port_morgan", &"deck_pieces", &"ages", &"first_cut", &"god_heard",
+	&"totality", &"under_tu", &"ten_days", &"slept_it_off"]
 
 
 func _ready() -> void:
@@ -46,8 +49,10 @@ func _ready() -> void:
 	await get_tree().create_timer(SETTLE).timeout
 	_shoot(out.path_join("deeds_new_starts.png"))
 	main.ui.close_top()
-	await _opened(main, &"crops")
-	_shoot(out.path_join("deeds_menu.png"))
+	await _opened(main, &"crops", 0.0)
+	_shoot(out.path_join("deeds_menu_top.png"))
+	await _opened(main, &"slept_it_off", 1.0, false)
+	_shoot(out.path_join("deeds_menu_foot.png"))
 	main.ui.close_top()
 	main.new_game()
 	while main.world() == null or main.ui._fading:
@@ -62,9 +67,12 @@ func _ready() -> void:
 	await get_tree().create_timer(DeedBadge.HOLD_SECONDS + DeedBadge.OUT_SECONDS + DeedBadge.BETWEEN_SECONDS
 		+ DeedBadge.IN_SECONDS).timeout
 	_shoot(out.path_join("deeds_badge_next.png"))
+	await get_tree().create_timer(DeedBadge.HOLD_SECONDS + DeedBadge.OUT_SECONDS).timeout
 	main.ui.back()
-	await _opened(main, &"shield_storm")
-	_shoot(out.path_join("deeds_run.png"))
+	await _opened(main, &"tells", 0.0)
+	_shoot(out.path_join("deeds_run_top.png"))
+	await _opened(main, &"thunder", 1.0, false)
+	_shoot(out.path_join("deeds_run_foot.png"))
 	main.ui.close_all()
 	await main.save_and_quit()
 	main.ui.open(main.ui.resume_view())
@@ -73,13 +81,18 @@ func _ready() -> void:
 	get_tree().quit()
 
 
-## The deeds open, the prop aside, a card highlighted, and their pictures drawn.
-func _opened(main: Main, highlighted: StringName) -> void:
-	main.ui.open(main.ui.deeds())
-	await get_tree().create_timer(SETTLE).timeout
+## The deeds open, the prop aside, a card highlighted, the tree scrolled to
+## `down` of the way to its foot, and their pictures drawn.
+func _opened(main: Main, highlighted: StringName, down: float, fresh := true) -> void:
+	if fresh:
+		main.ui.open(main.ui.deeds())
+		await get_tree().create_timer(SETTLE).timeout
 	for card: Button in main.ui.top().find_children("*", "Button", true, false):
 		if card.get_meta(&"deed", &"") == highlighted:
 			card.grab_focus()
+	await _ticks(2)
+	var tree: DeedsGrid = main.ui.top().find_children("*", "DeedsGrid", true, false)[0]
+	tree.scroll = down * (tree._page.size.y - tree.size.y)
 	await _ticks(10)
 
 

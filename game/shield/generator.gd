@@ -254,6 +254,9 @@ func _show() -> void:
 		# Holding back more than a full storm's sand, it strains up in pitch.
 		var strain := clampf((particle_load() - 1.0) / (_tuning.anomaly_particles - 1.0), 0.0, 1.0)
 		hum.pitch_scale = lerpf(lerpf(HUM_PITCH, STRAIN_PITCH, strain), SAG_PITCH, low)
+		# Heard straining from inside its bubble: an anomaly's tell.
+		if strain > 0.0 and world.player.global_position.distance_to(global_position) < shelter.radius:
+			Deeds.done(world, &"tells", &"load")
 		if low > 0.0 and randf() < 0.1 + 0.4 * low:
 			glow *= FLICKER
 	elif hum.playing:

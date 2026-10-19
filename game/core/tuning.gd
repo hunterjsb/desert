@@ -63,6 +63,29 @@ static var _current: Tuning
 @export var deed_crop_kinds: int = 3
 @export var deed_planters_towed: int = 2
 @export var deed_deck_pieces: int = 6
+## Ground made against the wind under one sail, m, through its tacks: a
+## keeled yacht's half a day close-hauled, a camp on skates' most of one.
+@export var deed_upwind_m: float = 500.0
+## Sailed in one sitting at a keeled camp's helm, m: half a day on its reaches.
+@export var deed_yacht_m: float = 5000.0
+## Sailed on a front's outflow ahead of its wall, m, without leaving it: a
+## broad reach entered at the wall, holding it as the band slips behind.
+@export var deed_outflow_m: float = 3000.0
+## Sites a storm has freshly bared, reached in that one storm.
+@export var deed_bared_sites: int = 3
+## How far off a glint was seen, m, its site reached after: past the built
+## ground, where most glints in sight shine from.
+@export var deed_glint_m: float = 1000.0
+## How far a vent's burst is heard booming from, m: further than any start
+## stands from the rift's live vents.
+@export var deed_thunder_m: float = 35000.0
+## Tu this near straight up, degrees, is overhead.
+@export var deed_tu_overhead_degrees: float = 5.0
+## Days lived in one run.
+@export var deed_days: int = 10
+## A deck moved this far in one day, m, from where it stood as the day began:
+## a yacht's reaches over half of one, a camp on skates' all of one.
+@export var deed_moved_m: float = 5000.0
 
 @export_group("Terrain")
 @export var chunk_size: int = 64

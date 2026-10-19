@@ -242,15 +242,24 @@ is a menu of its own, reached from the main menu and the system menu.
 
 **Built** (2026-10-18, `game/ui/deeds_grid.gd`), after Hunter's "show relations and a hierarchy":
 Deeds stands under New game on the main menu and under Options in the system menu. It opens a tree
-of every deed under how many show done ("6 of 15 deeds"), with Back: a branch or two for each family
-(Board, Shield, Farming, Camp, Story, named down the left), each deed a step right of the furthest it
-waits on, and a line across from each to what it opens, brighter once that's open. It's laid out as
-every menu is where it opens: over the main menu it stands on the left, narrow enough for the prop
-set aside to its right; over a run, in the middle on the soft dark field.
+of every deed under how many show done ("16 of 37 deeds"), with Back: a branch or two for each family
+(Board, Wind, Weather, Camp, Farming, Ruins, Scrap, Signals, Far, Story, Nomad since round two,
+2026-10-19, named down the left), each deed a step right of the furthest it waits on, and a line across
+from each to what it opens, brighter once that's open. It's laid out as every menu is where it opens:
+over the main menu it stands on the left, narrow enough for the prop set aside to its right (940 px,
+four steps of 190 px cards); over a run, in the middle on the soft dark field.
+- **It scrolls** (round two): taller than the screen has room for (1,062 px), it shows at most two
+  thirds of the screen's height of its page, and the wheel or the selection moves it, keeping the card
+  highlighted in view. It draws its own bar at its right, what shows in the theme's dim ink over the
+  whole in its faint, so nothing in it reaches past the one theme (an engine scroll container's own
+  parts style themselves). It opens scrolled to stand the deed done last in the middle of what shows.
 - **A card** is the deed's name and a picture of its thing: the board, the shield, a crop, a planter,
-  the Console, a chassis piece, the turbine; drawn in the theme's ink, a sail on its mast, and for
-  the story a landmark's mast and pennant. Done, it's lit; open but not done, dimmer; still waiting on another, only its
-  thing's outline in faint ink and ????.
+  the Console, a chassis piece, the turbine, the helm, the compass, the heat cutter, a survival kit,
+  sealant, a radio, the bedroll; drawn in the theme's ink, a sail on its mast, a storm's wall, an
+  anomaly's eye, a bared ruin, a wreck in the sand, a mast's signal, the eclipse, a glint, a vent and
+  its boom, Tu overhead, the dark side's stars, the sun's days, and for the story a landmark's mast and
+  pennant. Done, it's lit; open but not done, dimmer; still waiting on another, only its thing's
+  outline in faint ink and ????. A hidden deed is ???? with no picture until it shows done.
 - **The pictures** are Dress's looks of each thing's frame and what's fitted (`ItemIcons`), drawn
   once in a little world of their own as the game starts and kept, so a card costs a texture. (Drawn
   later in a session, once the menu's world had run a few seconds, they came out as slivers, 2026-10-18;
@@ -259,9 +268,11 @@ set aside to its right; over a run, in the middle on the soft dark field.
   cards as between words and starts on the deed done last, has a small panel beside it, on whichever side
   has room: the deed's name, what it asks, how far along you are where it's a number or a count
   ("3,250 / 5,000 m", "2 / 3 kinds") or done (in Ironman, if it was), and what it opens. A card
-  still locked says only what it waits on.
-- `look/deeds` shoots it over the main menu and over a run, seven done, one of them early, a card
-  highlighted (`look/deeds/shoot.sh` builds the sheet).
+  still locked says only what it waits on, a hidden one only ????. The panel stands over everything
+  round the tree, so the scroll never cuts it off, kept on the screen and following its card.
+- `look/deeds` shoots the whole tree, its top and its foot, over the main menu and over a run, with
+  some done, one of them early, a hidden one done and one not, and a card highlighted
+  (`look/deeds/shoot.sh` builds the sheet).
 
 ## Skeleton version
 
@@ -461,6 +472,10 @@ set aside to its right; over a run, in the middle on the soft dark field.
 15. **The console scrolls back** (2026-10-18). After `help`, the wheel scrolls up to its first lines,
     and what you hold isn't brought nearer; the page actions scroll a page each way, the line
     keeping its focus, and a command run shows at once.
+16. **A hidden deed** (2026-10-19). Open but not done, Eye of the Anomaly is ???? with no picture, its
+    panel giving nothing away, and Tells after it waits on ????; done, it shows its name and picture.
+    The tree is taller than it shows and opens scrolled to the deed done last, far down it, in view
+    with its panel beside it.
 
 ## Out of scope
 

@@ -135,6 +135,14 @@ func sub_tu(t: float) -> Vector3:
 	return _tu(t)
 
 
+## Whether Tu never shows over the horizon at a place: its whole disc under
+## it however far it nods.
+func never_rises(latitude: float, longitude: float) -> bool:
+	var mean := Vector3(cos(_tu_longitude), sin(_tu_longitude), 0.0)
+	var here := Vector3(cos(latitude) * cos(longitude), cos(latitude) * sin(longitude), sin(latitude))
+	return here.angle_to(mean) > PI * 0.5 + tu_radius() + LIBRATION_LONGITUDE
+
+
 ## Unit vector toward Tu's centre in engine axes.
 func tu_direction(t: float, latitude: float, longitude: float) -> Vector3:
 	return _local(_tu(t), latitude, longitude)

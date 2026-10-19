@@ -15,6 +15,9 @@ const GROUND_SWIM_M := 40.0
 const HEART_M := 300.0
 ## Where the needle turns, above its card.
 const PIVOT := Vector3(0.0, 0.0, 0.034)
+## Leaning this far toward an anomaly's heart in your hand, rad, it's a tell
+## you've seen.
+const TELL := deg_to_rad(10.0)
 ## Its swing is worked in steps no longer than this, s, nor than this share
 ## of a radian of its swing; after longer than SETTLED unread it has long
 ## since settled.
@@ -39,6 +42,10 @@ func _enter_tree() -> void:
 func _process(_delta: float) -> void:
 	if _world != null and needle != null:
 		needle.transform = pose(needle_on(global_basis, _world))
+		if _world.player.hands.held == self and Deeds.waiting(_world, &"tells"):
+			var north := _world.moon.north()
+			if absf(anomaly_lean(_world, global_position, _world.time, atan2(north.x, -north.z))) >= TELL:
+				Deeds.done(_world, &"tells", &"compass")
 
 
 ## Where its needle lies on a card facing out along `face`'s +Z, rad
