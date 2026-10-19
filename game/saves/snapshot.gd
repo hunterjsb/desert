@@ -473,6 +473,10 @@ func _body(body: RigidBody3D, loose: bool) -> Dictionary:
 			if not inside.is_empty():
 				filled.append([i, inside])
 		out.sockets = filled
+	# What's stuck on a mast, by its pose on the mast and the face's way out,
+	# as a piece's is.
+	if body is Device and not body is Chassis and not (body as Device).stuck().is_empty():
+		out.stuck = _stuck_out_of(body as Device)
 	# A deck's pieces in the order they joined, each with what's stuck on it:
 	# [how it joined, itself]. Across a ring: ["ring", the piece it joined,
 	# that piece's ring, its quarter turns]; on a frame's face: ["face", the
@@ -513,6 +517,17 @@ func _stuck_out(deck: Chassis, piece: Chassis) -> Array:
 			else (_body(socket.mounted, false) if _known(socket.mounted) else {})
 		if not inside.is_empty():
 			out.append([back * socket.transform, back.basis * socket.out, inside])
+	return out
+
+
+## What's stuck on a device that isn't a deck, each as a piece's is.
+func _stuck_out_of(device: Device) -> Array:
+	var out := []
+	for socket in device.stuck():
+		var inside := _body(socket.part, false) if _known(socket.part) \
+			else (_body(socket.mounted, false) if _known(socket.mounted) else {})
+		if not inside.is_empty():
+			out.append([socket.transform, socket.out, inside])
 	return out
 
 

@@ -10,7 +10,7 @@ extends Control
 ## Each era's colour on the map.
 const ERA := {Eras.COLONIAL: Color(0.62, 0.72, 0.82), Eras.SKIMMER: Color(0.9, 0.55, 0.25),
 	Eras.FIRST: Color(0.83, 0.68, 0.2), Eras.DARK: Color(0.6, 0.55, 0.46), Eras.SECOND: Color(0.93, 0.87, 0.74),
-	Eras.GEOLOGY: Color(0.85, 0.76, 0.34)}
+	Eras.GEOLOGY: Color(0.85, 0.76, 0.34), Eras.NOMAD: Color(0.82, 0.42, 0.28)}
 const WATER := Color(0.36, 0.64, 0.86)
 ## The map's side as a share of the screen's height, and its edge, px.
 const SHARE := 0.8

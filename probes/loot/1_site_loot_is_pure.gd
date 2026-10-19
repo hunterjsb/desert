@@ -4,8 +4,9 @@ extends Probe
 ## seed, laid from places on the ground kilometres apart: the site the same,
 ## the sheet not. Two sites of a kind seldom draw alike; what lies within
 ## reach at any moment is drawn as the site holds it, whatever the weather;
-## and each find carries its site's era and kind and a seed of its own, so
-## made again it's given the same hands it passed through.
+## and each find carries its site's era and kind and a seed of its own (what
+## the nomads left or keep, the era that made it), so made again it's given
+## the same hands it passed through.
 
 const SEED := 1234
 const TOWNS := 6
@@ -62,7 +63,9 @@ func run() -> void:
 					shown += 1
 					var drawn := SiteLoot.draw(site, spec.index)
 					off_draw += int(drawn.id != spec.id or var_to_str(drawn.fill) != var_to_str(spec.fill))
-					lineage_wrong += int(spec.era != site.era or spec.kind != site.kind)
+					var made_by: bool = spec.era == site.era or (spec.get("nomads", false) or site.era == Eras.NOMAD) \
+						and Eras.BUILT.has(spec.era)
+					lineage_wrong += int(not made_by or spec.kind != site.kind)
 					if made < MADE and spec.device:
 						made += 1
 						var one_body := Finds.make(spec)

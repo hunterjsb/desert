@@ -20,6 +20,10 @@ extends RefCounted
 ## - The hopper: a colonial suborbital hopper the Knights Requisitioner flew
 ##   on the crusade for Port Morgan, down on its belly, a wing broken off,
 ##   its troop bay packed through the lowered ramp.
+## - The nomad rig: a nomads' sailing rig wrecked out in the wilds, five
+##   pieces of three eras' chassis, its mast down beside its snapped post
+##   with its sail furled on it, a cloth locker packed with sand, a battery
+##   rack they scavenged behind a scrap plate they welded on.
 ##
 ## The skimmer hull is master's wreck_hull, its look and far look as they
 ## were; what it holds is new.
@@ -34,7 +38,7 @@ static var _coats := {}
 ## The wrecks after the skimmer hull, which SkimmerKit lists among its era's
 ## pieces where it always stood.
 static func pieces() -> Array[StructureKit.Piece]:
-	return [_tithe_hauler(), _freight_pod(), _lifeboat(), _hopper()]
+	return [_tithe_hauler(), _freight_pod(), _lifeboat(), _hopper(), _nomad_rig()]
 
 
 ## Every era's coats the wrecks are painted in, by name, and their own.
@@ -43,6 +47,9 @@ static func coats() -> Dictionary:
 		_coats.merge(SkimmerKit.coats())
 		_coats.merge(ColonialKit.coats())
 		_coats.merge(SecondAgeKit.coats())
+		_coats.merge(NomadLooks.coats())
+		_coats["teal"] = Paint.coat(Paint.TEAL, 1.0, 0.3, 0.5)
+		_coats["rail"] = Paint.coat(Paint.GUNMETAL, 1.0, 0.5, 0.5)
 		_coats["armour"] = Paint.coat(ARMOUR, 1.0, 0.55, 0.55)
 		_coats["cobalt"] = Paint.coat(COBALT, 1.0, 0.3, 0.45)
 		_coats["seat"] = Paint.coat(SEAT, 0.3, 0.0, 0.9)
@@ -565,3 +572,120 @@ static func _hopper_look(b: Paint.Pieces, p: StructureKit.Piece, state: int) -> 
 		b.box(Vector3(0.45, 0.45, 4.0), Vector3(side * 1.15, 0.22, -3.0), c.seat, 0.02)
 	# The colonial hopper's own orange stripe, half under the lime wash.
 	b.box(Vector3(0.02, 0.18, 6.0), Vector3(-1.61, 0.6, 2.0), c.orange, 0.003)
+
+
+# --- The nomad rig: a nomads' sailing rig, wrecked, its mast down beside it. ---
+
+static func _nomad_rig() -> StructureKit.Piece:
+	var p := StructureKit.define(&"nomad_rig", Vector2(2.2, 1.6), Vector2(0.4, 0.4), Vector2(0.15, 0.15))
+	p.apron = 3.5
+	p.drift_reach = 1.5
+	p.drift = PackedFloat32Array([0.05, 0.1, 0.15])
+	p.survey = Vector2(1.0, 20.0)
+	p.age = Vector2(0.35, 0.6)
+	p.marks = 1
+	p.slide = Vector2(0.0, 1.0)
+	p.slide_m = 10.0
+	p.solids = [[Vector2(-1.0, -1.5), Vector2(1.0, 1.5)], [Vector2(1.15, 0.55), Vector2(2.15, 1.55)]]
+	# On its deck the sand lies under the plates, blown off it.
+	p.rooms.append(StructureKit.room(Vector2(-1.0, -1.5), Vector2(1.0, 1.5)))
+	# Five pieces of three eras' chassis, the sixth torn off and lying tipped
+	# beside the gap it left.
+	for piece: Array in [[Vector2(-1.0, -1.5), "teal"], [Vector2(0.0, -1.5), "olive"], [Vector2(-1.0, -0.5), "lime"],
+			[Vector2(0.0, -0.5), "teal"], [Vector2(-1.0, 0.5), "olive"]]:
+		var lo: Vector2 = piece[0]
+		StructureKit.box(p, Vector3(lo.x, -0.06, lo.y), Vector3(lo.x + 1.0, 0.06, lo.y + 1.0), piece[1])
+	StructureKit.box(p, Vector3(1.15, 0.0, 0.55), Vector3(2.15, 0.3, 1.55), "")
+	# The locker: a frame on the middle piece walled in cloth on three sides,
+	# a piece across its top for a shelf, packed with sand through its open side.
+	for u: float in [-1.0, -0.05]:
+		for v: float in [-0.5, 0.45]:
+			StructureKit.box(p, Vector3(u, 0.06, v), Vector3(u + 0.05, 1.06, v + 0.05), "rail")
+	StructureKit.box(p, Vector3(-1.0, 1.06, -0.5), Vector3(0.0, 1.18, 0.5), "lime")
+	StructureKit.box(p, Vector3(-1.0, 0.06, -0.45), Vector3(-0.988, 1.06, 0.45), "ochre")
+	StructureKit.box(p, Vector3(-0.95, 0.06, 0.488), Vector3(-0.05, 1.06, 0.5), "indigo")
+	StructureKit.box(p, Vector3(-0.95, 0.06, -0.5), Vector3(-0.05, 1.06, -0.488), "indigo")
+	# A skimmer crew's battery rack lashed at the bow, a scrap plate welded
+	# across it between two posts to keep the sand out of its bays.
+	for u: float in [-0.06, 1.01]:
+		StructureKit.box(p, Vector3(u, 0.06, -1.3), Vector3(u + 0.05, 1.2, -1.2), "scrap")
+	StructureKit.box(p, Vector3(-0.06, 1.15, -1.3), Vector3(1.06, 1.2, -1.2), "scrap")
+	# The post their mast stood in, snapped off short, a pennant on it still.
+	StructureKit.box(p, Vector3(-0.56, 0.06, 0.94), Vector3(-0.44, 2.5, 1.06), "scrap")
+	p.sockets.append(StructureKit.SiteSocket.new(Vector3(-0.5, 0.06, 0.72), SiteLoot.RIGGED))
+	p.sockets[-1].turn = -PI * 0.5
+	p.sockets.append(StructureKit.SiteSocket.new(Vector3(0.5, 0.06, 0.0), &"floor"))
+	p.sockets.append(StructureKit.SiteSocket.new(Vector3(-0.5, 0.06, -1.0), &"floor"))
+	p.sockets.append(StructureKit.SiteSocket.new(Vector3(-0.5, 1.18, 0.0), &"shelf"))
+	p.sockets.append(StructureKit.SiteSocket.new(Vector3(0.6, 0.06, -0.15), &"cache", 0.4))
+	var rack := module(p, Vector3(0.5, 0.06, -0.98), true)
+	var near := module(p, Vector3(-0.27, 0.06, 0.0))
+	var far := module(p, Vector3(-0.72, 0.06, 0.0))
+	var w := WreckPlan.new()
+	w.armour = 0.6
+	var plate := w.plate(Vector3(0.0, 0.3, -1.3), Vector3(1.0, 1.1, -1.26), 2, -1.0, "scrap plate")
+	var locker := w.hold(Vector3(-0.98, 0.06, -0.48), Vector3(-0.06, 1.04, 0.48), 2, Vector3.RIGHT, "locker",
+		"drifted in through its open side")
+	w.module(rack, [[&"plate", plate]], Wreckage.ELECTRICAL, Vector3(0.78, 0.36, -0.6))
+	w.module(near, [[&"hold", locker, 1]])
+	w.module(far, [[&"hold", locker, 2]])
+	p.wreck = w
+	p.tour = PackedVector2Array([Vector2(4.0, -0.2), Vector2(1.45, -0.2), Vector2(4.0, -0.2)])
+	p.approach = Vector2(5.0, -4.0)
+	p.look = _nomad_rig_look
+	# Its post and pennant over the dunes, and the brass on the post the sun catches.
+	var c := coats()
+	StructureKit.far_box(p, Vector3(-1.0, -0.06, -1.5), Vector3(1.0, 0.06, 1.5), c.teal)
+	StructureKit.far_box(p, Vector3(-1.0, 0.06, -0.5), Vector3(0.0, 1.18, 0.5), c.ochre)
+	StructureKit.far_box(p, Vector3(-0.56, 0.06, 0.94), Vector3(-0.44, 2.5, 1.06), c.scrap)
+	StructureKit.far_box(p, Vector3(-0.5, 2.05, 1.0), Vector3(-0.49, 2.45, 1.75), c.rust)
+	for k in 3:
+		var a := TAU * k / 3.0
+		StructureKit.glint(p, Vector3(-0.5 + cos(a) * 0.07, 2.35, 1.0 + sin(a) * 0.07), Vector3(cos(a), 0.45, sin(a)), 7.0)
+	return p
+
+
+static func _nomad_rig_look(b: Paint.Pieces, p: StructureKit.Piece, state: int) -> void:
+	var c := coats()
+	StructureKit.draw_boxes(b, p, state, c, 0.02)
+	# Each piece's rails round its plate, black corner caps, a hazard band at
+	# its rings: three eras' make, none of them the nomads'.
+	for i in 5:
+		var each := p.boxes[i]
+		var mid := each.get_center()
+		for s in [-1.0, 1.0]:
+			b.box(Vector3(1.0, 0.05, 0.05), mid + Vector3(0.0, 0.04, s * 0.475), c.rail, 0.01)
+			b.box(Vector3(0.05, 0.05, 0.9), mid + Vector3(s * 0.475, 0.04, 0.0), c.rail, 0.01)
+	# The torn-off piece, tipped up on its edge against the dune, its rails
+	# twisted, and a dead tray under it.
+	var tipped := Basis(Vector3.BACK, 0.32)
+	b.box(Vector3(1.0, 0.12, 1.0), Vector3(1.65, 0.17, 1.05), c.teal, 0.02, tipped)
+	b.box(Vector3(1.0, 0.05, 0.05), Vector3(1.65, 0.24, 0.57), c.rail, 0.01, tipped * Basis(Vector3.UP, 0.08))
+	b.box(Vector3(0.7, 0.05, 0.7), Vector3(1.62, 0.06, 1.05), Paint.coat(Color(0.25, 0.45, 0.6), 1.0, 0.4, 0.5), 0.01, tipped)
+	# Cord lashed round the rack's posts and plate, and a cloth patch tied
+	# over its top against the sand.
+	for u: float in [-0.035, 1.035]:
+		for y: float in [0.45, 0.85]:
+			b.box(Vector3(0.08, 0.04, 0.14), Vector3(u, y, -1.25), c.cord, 0.005)
+	b.box(Vector3(1.0, 0.02, 0.5), Vector3(0.5, 1.21, -1.05), c.rust, 0.0, Basis(Vector3.RIGHT, 0.12))
+	# The locker's frame rails at its head, cord stitching its cloth walls, a
+	# rope coil hung on its corner.
+	for v: float in [-0.475, 0.475]:
+		b.box(Vector3(1.0, 0.05, 0.05), Vector3(-0.5, 1.035, v), c.rail, 0.008)
+	for y: float in [0.3, 0.6, 0.9]:
+		b.box(Vector3(0.016, 0.03, 0.9), Vector3(-1.0, y, 0.0), c.cord, 0.004)
+	b.ring(0.12, 0.17, Vector3(-0.02, 0.8, 0.52), c.cord, Basis(Vector3.RIGHT, PI / 2.0), 8)
+	# The post: cord wound up it, a brass fitting the mast stood in, a guy
+	# cord down to the deck's corner, and the pennant still flying from it.
+	for y: float in [0.6, 1.4, 2.0]:
+		b.drum(0.075, 0.08, Vector3(-0.5, y, 1.0), c.cord, Basis.IDENTITY, 8)
+	b.drum(0.08, 0.12, Vector3(-0.5, 2.38, 1.0), c.brass, Basis.IDENTITY, 10)
+	StructureKit.rod(b, Vector3(-0.5, 2.3, 1.0), Vector3(-0.98, 0.08, 1.46), 0.015, c.cord)
+	for k in 4:
+		var droop := Basis(Vector3.RIGHT, 0.08 * k) * Basis(Vector3.UP, 0.06 * (k % 2))
+		b.box(Vector3(0.012, 0.32 - k * 0.05, 0.2), Vector3(-0.5, 2.28 - k * 0.025, 1.12 + k * 0.19), c.rust if k % 2 == 0 else c.ochre,
+			0.0, droop)
+	# Tassels and a bone toggle on the locker's open side: the nomads' own.
+	for k in 3:
+		b.box(Vector3(0.02, 0.18, 0.02), Vector3(-0.03, 0.92, -0.3 + k * 0.3), c.ochre, 0.0)
+		b.box(Vector3(0.05, 0.03, 0.03), Vector3(-0.03, 1.02, -0.3 + k * 0.3), c.bone, 0.004)

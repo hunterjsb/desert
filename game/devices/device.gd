@@ -512,7 +512,7 @@ func mount(other: Device, socket: Socket) -> void:
 	other.freeze = true
 	other.linear_velocity = Vector3.ZERO
 	other.angular_velocity = Vector3.ZERO
-	other.add_collision_exception_with(self)
+	other.touch_none_of(self, true)
 	socket.mounted = other
 	_seats.append(socket)
 	if socket.marker != null:
@@ -520,6 +520,22 @@ func mount(other: Device, socket: Socket) -> void:
 	# What's stuck on keeps its sockets, so its weight can change there.
 	other.parts_changed.connect(_recompute)
 	_recompute()
+
+
+## Seated, it and what's seated on it touch nothing of what carries it, all
+## the way down; unseated, they touch it again.
+func touch_none_of(host: Device, seated: bool) -> void:
+	var riding: Array[Device] = [self]
+	while not riding.is_empty():
+		var each: Device = riding.pop_back()
+		riding.append_array(each.mounted())
+		var at := host
+		while at != null:
+			if seated:
+				each.add_collision_exception_with(at)
+			else:
+				each.remove_collision_exception_with(at)
+			at = at.host()
 
 
 ## What sat on it freed under it, by a scenario clearing or the ground
@@ -550,7 +566,7 @@ func dismount(socket: Socket) -> Device:
 	remove_child(other)
 	_holder().add_child(other)
 	other.global_transform = pose
-	other.remove_collision_exception_with(self)
+	other.touch_none_of(self, false)
 	other.freeze_mode = other._unseated_mode
 	other.freeze = false
 	other.linear_velocity = linear_velocity
@@ -703,8 +719,9 @@ func _recompute() -> void:
 			weight += socket.part.mass
 			moment += socket.part.mass * _middle(socket.fitted)
 		elif socket.mounted != null:
+			# Where its weight is: what's stuck high on it raises its host's middle.
 			weight += socket.mounted.mass
-			moment += socket.mounted.mass * socket.mounted.position
+			moment += socket.mounted.mass * (socket.mounted.transform * socket.mounted.center_of_mass)
 	mass = weight
 	center_of_mass = moment / weight
 	_trays.clear()

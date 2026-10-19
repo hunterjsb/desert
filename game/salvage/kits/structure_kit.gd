@@ -58,6 +58,8 @@ class SiteSocket:
 	var at: Vector3
 	var kind: StringName
 	var deep: float
+	## How what it holds is turned on it, rad; NAN, any way.
+	var turn := NAN
 
 	func _init(place: Vector3, socket_kind: StringName, deeper := 0.0) -> void:
 		at = place
@@ -435,7 +437,7 @@ static func prepare() -> void:
 static func _load() -> void:
 	if not _pieces.is_empty():
 		return
-	for era: Script in [ColonialKit, SkimmerKit, FirstKingdomsKit, SecondAgeKit, GeologyKit, WreckKit]:
+	for era: Script in [ColonialKit, SkimmerKit, FirstKingdomsKit, SecondAgeKit, GeologyKit, WreckKit, NomadKit]:
 		for each: Piece in era.pieces():
 			each.finish()
 			_pieces[each.kind] = each

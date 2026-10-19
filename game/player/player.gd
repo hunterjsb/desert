@@ -467,7 +467,8 @@ func sit(at: Helm) -> bool:
 	_sliding = false
 	_place_at_helm()
 	if Controls.ui != null and Controls.playing():
-		Controls.ui.teach(Helm.HOW_TO, Helm.HOW_TO_SAYS)
+		var teaches := at.how_to()
+		Controls.ui.teach(teaches[0], teaches[1])
 	return true
 
 
@@ -517,8 +518,8 @@ func _at_helm(input: Vector2) -> void:
 		stand_up()
 		return
 	helm.turning = input.x
-	crouched = true
-	low = 1.0
+	crouched = helm.sits
+	low = 1.0 if helm.sits else 0.0
 	_place_at_helm()
 	wind = world.weather.felt_wind(camera.global_position)
 	mode = "helm"

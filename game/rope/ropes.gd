@@ -381,6 +381,7 @@ func _unhide() -> void:
 func _ride_on() -> void:
 	_carried.tension = hidden.tension
 	_carried.asked = hidden.asked
+	_carried.opening = hidden.opening
 	_carried.stretch = hidden.stretch
 	_carried.sag = NAN
 	var span := hidden.point_p.distance_to(hidden.point_b)
@@ -498,7 +499,6 @@ func _solve(h: float) -> void:
 			rope.solve()
 	for rope in live:
 		rope.tension = (rope.spring_impulse + rope.stop_impulse) / h
-		rope.asked = maxf(rope.asked, rope.tension)
 		_deliver(rope.body_a, rope.impulse(), rope.point_a, h)
 		_deliver(rope.body_b, rope.impulse_b(), rope.point_b, h)
 		if rope.through != null:
@@ -638,12 +638,13 @@ func _leads() -> Array[Vector3]:
 
 ## Sustained load breaks ropes and pulls stakes; a spike alone never does,
 ## and a line never pulls past its strength meanwhile: asked for more, it
-## gives at that, and asked for it long enough, it parts.
+## gives at that, and asked for more long enough, it parts.
 func _bear(h: float) -> void:
 	var alpha := 1.0 - exp(-h / _tuning.rope_load_seconds)
 	for rope: Rope in ropes.duplicate():
-		rope.sustained += (rope.asked - rope.sustained) * alpha
-		if rope.sustained > rope.breaking:
+		rope.sustained += (rope.tension - rope.sustained) * alpha
+		rope.straining += ((1.0 if rope.asked > rope.breaking and rope.opening else 0.0) - rope.straining) * alpha
+		if rope.parts():
 			give_way(rope)
 	for stake: Node3D in _pulls:
 		if stake.feel(_pulls[stake], alpha):

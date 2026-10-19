@@ -11,6 +11,11 @@ extends SubViewport
 ## compass nearly straight on, to read.
 const VIEW := Vector2(-35.0, 22.0)
 const READ := Vector2(0.0, 10.0)
+## A streamer from behind and above, your way ahead up the picture, so which
+## way its cloth streams reads as where the wind goes past you; drawn again
+## at most this often as it flaps, s.
+const STREAMING := Vector2(0.0, 55.0)
+const FLAP_EVERY := 1.0 / 12.0
 ## The camera's field of view, degrees, and how much of the sphere round the
 ## thing's box it frames: the box's corners never all face the camera.
 const FOV := 30.0
@@ -23,14 +28,17 @@ const PARAMS: Array[StringName] = [&"age", &"era", &"lit"]
 ## when that changes.
 var shown: RigidBody3D
 var key := []
-## The copy of a compass's needle, or null.
+## The copy of a compass's needle, or null; a streamer's cloth's copies, by
+## its own pieces.
 var needle: MeshInstance3D
+var cloth := {}
 ## How many times it has been drawn, for measuring what it costs.
 var draws := 0
 
 var _model := Node3D.new()
 var _camera := Camera3D.new()
 var _angle := NAN
+var _flapped := -INF
 
 
 func _init(pixels: Vector2i) -> void:
@@ -67,6 +75,7 @@ func show_thing(thing: RigidBody3D) -> void:
 		copy.free()
 	shown = thing
 	needle = null
+	cloth.clear()
 	_angle = NAN
 	if thing == null:
 		return
@@ -86,10 +95,12 @@ func show_thing(thing: RigidBody3D) -> void:
 		_model.add_child(copy)
 		if thing is Compass and look == (thing as Compass).needle:
 			needle = copy
+		if thing is Streamer and (thing as Streamer).cloth().has(look):
+			cloth[look] = copy
 		var each := copy.transform * look.get_aabb()
 		box = each if first else box.merge(each)
 		first = false
-	var view := READ if thing is Compass else VIEW
+	var view := READ if thing is Compass else (STREAMING if thing is Streamer else VIEW)
 	var turn := Basis(Vector3.RIGHT, deg_to_rad(view.y)) * Basis(Vector3.UP, deg_to_rad(view.x))
 	_model.transform = Transform3D(turn, -(turn * box.get_center()))
 	var reach := box.size.length() * 0.5 * ROOM
@@ -106,6 +117,17 @@ func turn_needle(angle: float) -> void:
 		return
 	_angle = angle
 	needle.transform = Compass.pose(angle)
+	_render()
+
+
+## Lays a streamer's cloth copies as its own lies now, and draws them again
+## once it's flapped on.
+func stream(thing: Streamer, now: float) -> void:
+	if cloth.is_empty() or now - _flapped < FLAP_EVERY:
+		return
+	_flapped = now
+	for piece: MeshInstance3D in cloth:
+		(cloth[piece] as MeshInstance3D).transform = _within(thing, piece)
 	_render()
 
 
