@@ -597,8 +597,9 @@ devices' wear, loose things, ropes, the turbine and other decks' faces.
   ground's lee lets through, and a bubble keeps out its share of what's left.
 - **Its own deck.** A deck's own walls don't shelter its own faces, which shade one another
   instead, but the rest of it behind them (devices, what's stuck, its pieces' edges) catches
-  only the wind they let through. A frame open away from the wind with its back closed
-  shelters its inside the same way.
+  only the wind they let through: the Surveyor's camp with its wall upwind catches about half
+  at its middle what it does with the wall to leeward. A frame open away from the wind with
+  its back closed shelters its inside the same way.
 - **As it stands now.** Read as shelters are, at any time asked; worked out again only when
   the wind's way across the deck turns 3°, and a deck held in your hands casts none. A read
   costs about 2 µs near a camp's walls and 1 µs elsewhere, on top of the field's wind.
