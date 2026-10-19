@@ -9,7 +9,8 @@ extends Resource
 const STANDARD := "res://game/survival/standard_kit.tres"
 ## The origins New game offers, the default first.
 const ORIGINS: Array[String] = [STANDARD, "res://game/survival/salvager_kit.tres",
-	"res://game/survival/homesteader_kit.tres", "res://game/survival/varran_kit.tres"]
+	"res://game/survival/homesteader_kit.tres", "res://game/survival/varran_kit.tres",
+	"res://game/survival/archaeologist_kit.tres"]
 
 ## Who you came as, by id and by name, and the few words New game says
 ## under the name.

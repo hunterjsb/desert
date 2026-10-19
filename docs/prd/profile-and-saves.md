@@ -66,7 +66,7 @@ like the default, and each unlocks through `profile.unlock`:
 | Surveyor | Default |
 | Salvager | A playstyle, e.g. long board distance or surviving a storm on carried gear |
 | Homesteader | A playstyle, e.g. riding out big storms without moving camp |
-| Archaeologist | Proposed: finding a number of landmarks |
+| Archaeologist | Two deeds, Field Kit and Spadework (built 2026-10-19) |
 | Replacement | Needs a prior save |
 | Prisoner | Finding the black site |
 | Nomad | The nomad city ending |
@@ -348,7 +348,7 @@ How each X was chosen, from the probes' numbers (the probes' seed, 2026-10-19):
   stepped onto, dug out by hand and not before half its sand is yours, and the setup not done until its
   ground radar is fitted), and 34, the Archaeologist locked until both of hers.
 
-## Starts on the chassis, and two new kits (agreed, 2026-10-18 spec; the starts and the Varran settler built, the archaeologist not)
+## Starts on the chassis, and two new kits (agreed, 2026-10-18 spec; built)
 
 From the [chassis spec](../chassis-kits-dunes-2026-10-18.md); balance targets the Surveyor only.
 - **The Surveyor:** two chassis joined as a deck and a frame with an upright on its side, its gear
@@ -416,6 +416,23 @@ Surveyor's would, deep desert with an artery to find. "Sails the storms."
 - **To sail:** use the mast to raise the sail, use a piece to float the deck, step onto the board and
   dig in. What sits outside his bubble wears in a long storm as anything does: the rig, the computer
   and the sail, which a storm's wind tears.
+
+**Built (2026-10-19), the Archaeologist** (`archaeologist_kit.tres`, the fifth origin). A novelty start:
+not balanced, so Normal only. She came out on a Daventry-funded university expedition to dig up the
+proof of why people have to be careful, and Zan only half fits the story she was sent to tell: the
+hive-mind war mattered, but what killed the place was being left, being overseen badly and people
+being people. "Digs for proof." She begins where the Surveyor would, deep desert, with big dunes
+round her as there are anywhere the sand runs deep.
+- **Opened by both her deeds,** Field Kit and Spadework (Dune Reader before them in the grid). A kit's
+  `unlock` names one deed or unlock, or several apart by commas, all of them needed (`Kit.unlocks`);
+  each one says it opens her, and she's marked new only once the last is done.
+- **The full archaeology setup on a rig** (`Rig`), beside you to your right, resting on the sand: a deck
+  of three pieces in a line, a Console on the first with its screen and a ground radar fitted, its
+  survey page in reach, two batteries in front of it; the light shield and the solar panel on the
+  second; the sieve and the scoop on the third, to take up when she goes to dig. 61 kg; it draws 11 W
+  (the Console, its screen and its radar), so its two batteries, starting at 80%, keep the survey
+  running about fourteen and a half hours of world time with no sun, and the panel gives 60 W at best.
+- **Carried:** a canister, two rations, the bedroll and a med kit.
 
 ## Ending flags (proposed)
 

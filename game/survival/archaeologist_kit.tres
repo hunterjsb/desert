@@ -8,6 +8,7 @@ id = &"archaeologist"
 label = "Archaeologist"
 unlock = "dig_setup,dune_dig"
 about = "digs for proof"
+start = &"artery"
 carried = Dictionary[StringName, int]({
 &"canister": 1,
 &"ration": 2,
