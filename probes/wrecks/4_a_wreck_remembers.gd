@@ -5,9 +5,9 @@ extends WreckProbe
 ## back, it's built again as it was left: the plate lying where it fell, the
 ## slice gone, the bank dead. Saved and resumed, the same, and a save of it
 ## holds what was done and nothing of an untouched wreck; buried by a storm
-## while you're away, its plate has sunk with it, and dug out again it lies
-## where it fell. Once you've gone so far the sheet lifts it, it's
-## forgotten, as any site is.
+## while you're away, its plate has sunk with it; stripped by one while you
+## stand there, it rises with its site and its plate lies where it fell.
+## Once you've gone so far the sheet lifts it, it's forgotten, as any site is.
 
 ## Gone this far, m: the ground goes, the site stays laid; then far enough
 ## that the sheet lifts it.
@@ -87,8 +87,7 @@ func run() -> void:
 	_as_left(wreck, plate, fallen, bank, "resumed at")
 
 	# Buried by a storm while you're away, it's built again sunk deep, its
-	# plate sunk with it; dug out again, the plate lies where it fell.
-	var depth := again.depth
+	# plate sunk with it.
 	var sunk := again.piece.sink_at(again.level())
 	again.depth = again.taken() * 4.0 + 1.0
 	await go(here.x + AWAY, here.y)
@@ -102,10 +101,16 @@ func run() -> void:
 		check(again.state() != Exposure.EXPOSED and sank > 0.5 and absf(fallen.y - sank - lying.y) < 0.05
 			and Vector2(lying.x, lying.z).distance_to(Vector2(fallen.x, fallen.z)) < 0.05,
 			"buried, its fallen plate sank with it")
-		again.depth = depth
-		for k in 10:
-			await get_tree().process_frame
-		_as_left(wreck, plate, fallen, bank, "dug out again")
+		# A storm strips it while you stand there: it rises out of the sand,
+		# its scrapping with it, and the plate lies where it fell.
+		var low := wreck.global_position.y
+		again.depth = 0.0
+		await physics_frames(60)
+		print("stripped while loaded, it rose %.2f m to stand at its site's floor (%.3f m off)"
+			% [wreck.global_position.y - low, absf(wreck.transform.origin.y - again.floor_y)])
+		check(wreck.global_position.y > low + 1.0 and absf(wreck.transform.origin.y - again.floor_y) < 0.01,
+			"stripped while you stand there, it rises with its site")
+		_as_left(wreck, plate, fallen, bank, "stripped while you stand there")
 
 	# Lifted, forgotten.
 	await go(here.x + LIFTED, here.y)
@@ -162,7 +167,7 @@ func _as_left(wreck: Wreckage, plate: int, fallen: Vector3, bank: int, how: Stri
 		return
 	var lying := _fallen_at(wreck, plate)
 	var body: Node3D = null
-	for child in wreck.get_children():
+	for child in wreck.find_children("*", "StaticBody3D", true, false):
 		if child.has_meta(&"fallen_plate") and child.get_meta(&"fallen_plate") == plate:
 			body = child
 	check(wreck.plate_body(plate) == null and body != null and body.global_position.distance_to(fallen) < 0.05

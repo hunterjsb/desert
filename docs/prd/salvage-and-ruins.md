@@ -723,8 +723,8 @@ inside a wreck, above the ground, and nothing is dug out of the dunes.
   least lean and its most; 2 a wreck needs its operations (held until the last need, the wrong tool
   does nothing, only the seams cut, a plate falls outward and lies on the sand, holds clear from their
   open end, a top-down hold lies level); 3 the unprepared are wounded, and the prepared aren't; 4 a wreck
-  remembers, across its ground going and coming, a save and a burial (its plate sunk with it, and where
-  it fell once it's dug out); 5 scrapping by hand, through the actions; 6 building one is cheap enough;
+  remembers, across its ground going and coming, a save, a burial (its plate sunk with it) and a storm
+  stripping it while you stand there (it rises with its site, its plate where it fell); 5 scrapping by hand, through the actions; 6 building one is cheap enough;
   7 a storm keeps what you cut (a hauler bared and buried again as you watch: its welds follow its hull
   frame by frame, its cargo deck has sand once bared, its fallen door sinks with it and comes back where
   it fell, its half-cut seams and cleared slice kept; it fails with a wreckage that stands still).
