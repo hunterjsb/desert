@@ -621,8 +621,9 @@ close it's no thing at all: walking into it the air thickens round you, as walki
 
 - **What shows.** The gas doesn't (which gases, and how much of each, is left open: the science
   brief's guesses are carbon dioxide, sulphur gases and water vapour). The sand and dust it lifts do,
-  the storms' own: their colour, their light and their billows. The sand falls out of it by e over 150
-  s, leaving the fine dust, a third of it, that stays up for the column's ten minutes. A burst's ash is
+  the storms' own: their colour, their light and their billows. The gas gathers it up round the mouth
+  as it rises, half of it there and all of it by 40 s; the sand falls out of it by e over 150 s,
+  leaving the fine dust, a third of it, that stays up for the column's ten minutes. A burst's ash is
   a faint trace at its core, darkening it by up to a third and gone in a minute and a half.
 - **How it rises: Briggs's buoyant plume.** Bent over by the wind it climbs as 1.6 F^1/3 x^2/3 / u
   (x downwind, u the wind), and levels where the air's stability stops it, at 2.6 (F / u N²)^1/3, or
@@ -680,8 +681,8 @@ close it's no thing at all: walking into it the air thickens round you, as walki
   in takes over: stood in its dust (`Plume.air`, from the column as the shader would find it), the haze
   closes in to how far that dust lets you see (3 over its dust a metre, 60 m to 4 km), in the storm's
   fog colour and as thick as the haze can be, the light dims by half a storm's, and Atmosphere's grit
-  and dust parcels blow round you, a storm's grit seven-tenths as thick. Inside its base you see about
-  800 m by a seep.
+  and dust parcels blow round you, a storm's grit seven-tenths as thick. At a seeping vent's mouth in a
+  breeze you see about 2.6 km; under its thicker column, or a burst's, far less.
 - **Far off.** Past the camera's 4.2 km reach its box is drawn nearer and smaller, the same in the view,
   and it dissolves into the distance between 30 and 45 km (Tuning `plume_fade_m`), much further than the
   storm walls, since what towers over the haze stands clear of it. Past the skyline's reach (3 km) it's
@@ -695,7 +696,16 @@ close it's no thing at all: walking into it the air thickens round you, as walki
 
 ### What it costs
 
-COSTS_HERE
+On the RTX 3070 at 1280 by 720 (look/plume: the GPU's frame time with every plume drawn and without,
+the median of paired turns), measured while a game shared the GPU, which makes the same shot vary by
+about two times from run to run: 0.2 to 1.1 ms a frame from 7 to 25 km; 0.7 to 2.7 ms from 1.5 to 7 km,
+the most where it fills the view beside a wall; 3 to 3.7 ms walking into it or standing in it, where it
+covers the screen; and 0.2 ms from inside a storm, which hides it before it's marched. In a quieter run
+the near views took 1.2 to 1.9 ms. It's the storm walls' kind of cost, a ray a pixel, more than the
+puffs it replaced (0.5 to 1.8 ms near); drawing it at half resolution would take most of it back. On the
+main thread a plume in sight takes CI_MS ms a frame on CI (wind & storms probe 16, four turns of 120
+frames, against its 0.25 ms bound), 0.065 ms on a busy desktop, and all of them together 0.1 to 0.27 ms
+in the look-test; the one frame after a jump in time or place works a whole line out at once.
 
 ### Probes
 
@@ -708,7 +718,7 @@ COSTS_HERE
 16. **The plume through a run.** With the clock stopped it holds still, and paused nothing moves; an
     origin shift leaves it where it was; walked 3.5 km off until its mouth's ground is forgotten it
     still shows, and back beside it rises from the same place; stood in its dust at the mouth the haze
-    closes in round you (to 789 m, against 9 km 800 m upwind); a storm over the vent hides it and it
+    closes in round you (to 2.6 km at the probe's moment, in a breeze, against 9 km 800 m upwind); a storm over the vent hides it and it
     comes back after; what it shows is the vent's venting at that moment; and it costs the main thread
     under a quarter of a millisecond a frame.
 17. **A burst is heard after it's seen** ([Radio, sound &
