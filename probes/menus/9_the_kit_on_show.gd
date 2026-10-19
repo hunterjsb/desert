@@ -45,8 +45,9 @@ func run() -> void:
 	var drift := PackedStringArray()
 	for kit in Kit.origins():
 		var listed := kit.gear()
-		for id in kit.carried:
-			listed[id] -= kit.carried[id]
+		var on_you := kit.carried_gear()
+		for id in on_you:
+			listed[id] -= on_you[id]
 			if listed[id] == 0:
 				listed.erase(id)
 		var got := _set_down(kit)
@@ -118,6 +119,12 @@ func _set_down(kit: Kit) -> Dictionary:
 				if socket.part != null:
 					var part: StringName = socket.part.get_meta(&"catalog")
 					got[part] = got.get(part, 0) + 1
+	var waist := main.view.player.waist
+	for node in made:
+		if node is Line:
+			for end in (node as Line).ends:
+				if waist.holds(end):
+					waist.untie(end).free()
 	for node in made:
 		if is_instance_valid(node):
 			node.free()

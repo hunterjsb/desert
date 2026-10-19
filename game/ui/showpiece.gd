@@ -34,6 +34,8 @@ const EASE := 5.0
 ## A drag spins it this far per pixel, degrees; let go, the spin dies away at this rate, /s.
 const SPIN_PER_PX := 0.6
 const SPIN_SETTLE := 2.5
+## A sail on show stands raised, its boom swung this far off straight back, rad.
+const SAIL_SWUNG := 0.35
 ## What a menu shows aside for your last camp.
 const CAMP := &"camp"
 ## The camp: the thing of yours nearest where you stood and what stood within
@@ -133,6 +135,13 @@ func _show(next: StringName) -> void:
 func _build(from: Kit) -> Array:
 	var device := _thing(from, from.shown)
 	_light_up(device)
+	for each in device.mounted():
+		var mast := each as Mast
+		if mast != null and mast.sail() != null:
+			mast.extend = 1.0
+			mast.raise = 1.0
+			mast.boom = SAIL_SWUNG
+			mast._swing_nodes()
 	var piece := _looks(device)
 	piece.basis = Basis(Vector3.UP, deg_to_rad(from.shown_turn))
 	var framed := _framed([piece])

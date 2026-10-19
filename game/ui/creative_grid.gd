@@ -11,9 +11,9 @@ extends VBoxContainer
 const GROUPS := [
 	["Chassis and frames", [&"chassis", &"frame", &"fabric", &"hover_tray", &"skates", &"board_plate"]],
 	["Power", [&"battery", &"big_battery", &"power_box", &"power_cabinet", &"power_rack", &"power_shrine", &"solar_panel", &"light_panel", &"turbine", &"cable", &"strong_cable"]],
-	["Devices", [&"shield", &"light_shield", &"condenser", &"console", &"screen", &"anemometer", &"barometer",
-		&"hygrometer", &"particle_sensor", &"radar", &"radio", &"lamp", &"planter", &"harvester", &"bedroll",
-		&"survival_kit"]],
+	["Devices", [&"shield", &"light_shield", &"personal_shield", &"condenser", &"console", &"nav_computer", &"screen",
+		&"anemometer", &"barometer", &"hygrometer", &"particle_sensor", &"radar", &"radio", &"lamp", &"planter",
+		&"harvester", &"bedroll", &"survival_kit"]],
 	["Sail and rope", [&"mast", &"sail", &"keel", &"helm_seat", &"coil", &"hook", &"stake"]],
 	["Tools", [&"cutter", &"sand_scoop", &"sealant", &"med_kit", &"compass", &"hull_plate"]],
 	["Food and water", [&"canister", &"hose", &"ration", &"tubers", &"fungus_caps", &"saltbush_leaves", &"salt",

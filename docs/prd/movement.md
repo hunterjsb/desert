@@ -694,10 +694,48 @@ as built, unchanged.
   the sheet, and a save at the helm resumes there; 11, nothing flings aboard at 30, 60 and 120
   ticks a second.
 
-### The dune sailboat (Agreed, session 4, part 3; not built)
+**Built (2026-10-19): stage 1 afloat, the Varran settler's rig** (`varran_kit.tres`,
+`game/player/player.gd`, `probes/sail/13`). A rig with no runners and no keel, floating, towing you on
+the board, your dug edge its only grip across the wind: the Varran rides his board as its keel
+([Profile & saves](profile-and-saves.md#starts-on-the-chassis-and-two-new-kits-agreed-2026-10-18-spec-the-starts-and-the-varran-settler-built-the-archaeologist-not)).
+- **It flies as a kite does, on two lines.** On its sheet alone a floating rig hangs off its boom's
+  end like a flag and only drags you downwind; nothing holds the sail at an angle to the wind. So its
+  bow line goes to your waist too, from a hook on one of its front corners' outer rings: hung from
+  that hook and its boom's end, the rig lies across its lines and flies out to one side of the wind.
+  The hook sets the side: with the wind on your left, the hook on its left; for the other tack, move
+  the line to the other. With its sheet at your waist, a line from the sheet's own rig stays tied as
+  you step onto the board, as a camp's line its rig tows past you does; anything else is untied, as
+  before. The two lines go to one body, so you're never the link between two.
+- **Steered by where you ride, trimmed by its sheet.** You look and press the way you mean to go,
+  dig the edge in, and the rig flies out ahead and to leeward; reeling, as ever, works the line you
+  look nearest along: look at the sail to trim it, at the rig's corner to shorten its bow line.
+- **Why a deck two by two.** Narrower decks were tried in the probes and are no rig: two pieces abreast
+  or in a line go over or hang luffing on the lines, and three in an L fly one tack only, by which side
+  its weight is on. Its four trays sit out at its corners, which keeps it up in 14 m/s on a beam
+  reach, where trays under the pieces' middles let it go over.
+- **The numbers** (the probes' seed, a steady wind, the sheet tended as probe 6's sailor tends it, the
+  edge dug a quarter; running, undug, the board left to run where the lines lead). Its speed by point
+  of sail, degrees off the wind:
+
+  | Wind | 60° | 75° | 90° | 120° | 150° | 180° |
+  |---|---|---|---|---|---|---|
+  | 6 m/s | none | 1.0 | 1.8 | 3.8 | 4.7 | 2.0 |
+  | 10 m/s | 0.8 | 3.0 | 4.8 | 6.0 | 4.8 | 5.1 |
+  | 14 m/s | 1.9 | 5.3 | 7.1 | 10.0 | 8.1 | 8.3 |
+
+  At 75° in 10 m/s it makes 0.8 m/s against the wind, and at 60° only stalls toward it: higher than a
+  close reach a kite doesn't go. It's the same on either tack (4.77 and 4.80 m/s on a beam reach), each
+  line pulls about 170 N, and it heels 3° in 10 m/s and 10° in 14. Undug on that beam reach it makes
+  1.6 m/s across and is blown 5.0 m/s downwind: the edge is the keel. In 18 m/s it goes over on a
+  beam reach and runs at 11 m/s, its sail at the edge of tearing: furl it, or run.
+- **Probe** 13: the rig sails with you on the board as its keel, both lines kept as you step on, on
+  either tack, and undug it runs off downwind.
+
+### The dune sailboat (Agreed, session 4, part 3; superseded)
 
 *Session 4, part 3 ([lore session](../lore-session-2026-10-17-part-3.md)); the Varran settler's
-centrepiece, proposed, and none of it is built.* "Dune sailboat: slow hauler for hybrid play." It
+centrepiece, proposed. The chassis spec (2026-10-18) made his craft a minimal fast sailing rig
+instead, built (above), and Storm Runner, not a sailboat built and used, opens his start.* "Dune sailboat: slow hauler for hybrid play." It
 is "a wind-driven slow hauler that reads the wind vector already in the world," with "tow capacity
 well above the board." The kit that carries it is fragile, needs wind and has low-quality parts
 ([the kit](../vision.md#player-origins-and-kits)).

@@ -175,3 +175,42 @@ func roll() -> float:
 ## (1) or right (-1), turned `off` degrees toward the wind.
 func heading(windward := 1, off := 0.0) -> Vector2:
 	return (across * windward).rotated(-deg_to_rad(off) * windward)
+
+
+## The Varran settler's rig as his kit builds it, floating downwind of you
+## toward `way` and lying across its lines as it flies, its sail up: its bow
+## line from the hook on its side `windward` names (1, the wind on your
+## left; Kit's own bow) and its sheet both at your waist, laid as the kit
+## lays them, and you on a board facing `way`, still. The lines, bow first.
+func varran(way: Vector2, windward := 1) -> Array[Line]:
+	var kit := Kit.named(&"varran")
+	var built := Rig.build(world.content, kit.assembled.rig.rig, 1.0)
+	deck = built.deck
+	mast = built.named.mast
+	var toward := downwind.rotated(signf(downwind.cross(way)) * deg_to_rad(45.0))
+	deck.global_transform = Transform3D(Basis(Vector3.UP, atan2(toward.x, toward.y) - windward * PI * 0.5),
+		open + Vector3.UP)
+	set_down(deck)
+	var player := world.player
+	var at := open - ground(toward) * 7.0
+	at.y = world.height_under(at) + 0.1
+	world.teleport(player, Transform3D(Basis(Vector3.UP, atan2(-way.x, -way.y)), at))
+	player.velocity = Vector3.ZERO
+	await physics_frames(10)
+	var board := Catalog.device(&"board")
+	world.content.add_child(board)
+	fit_part(board, &"battery")
+	board.global_position = player.global_position + Vector3.UP * 0.2
+	await physics_frames(2)
+	var hooks: Array[Socket] = []
+	for socket in deck.sockets():
+		if socket.kind == &"tie" and socket.part == null:
+			hooks.append(socket)
+	hooks.sort_custom(func(a: Socket, b: Socket) -> bool:
+		return deck.to_local(a.global_position).x < deck.to_local(b.global_position).x)
+	var lines: Array[Line] = [Line.to_waist(world, hooks[0] if windward > 0 else hooks[-1], kit.waist[&"bow"]),
+		Line.to_waist(world, mast._tie(), kit.waist[&"mast"])]
+	player.get_on(board)
+	await physics_frames(2)
+	hoist(20.0)
+	return lines

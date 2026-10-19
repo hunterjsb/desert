@@ -126,7 +126,8 @@ func _begin(at: World) -> void:
 
 ## The kit's things beside where you begin, each at its place, put together
 ## as it says, every battery as full as it says, a floater floating, and its
-## lines laid: all it made. The world's own kit unless another is given.
+## lines laid, those to your waist tied there: all it made. The world's own
+## kit unless another is given.
 static func kit(world: World, from: Kit = null) -> Array[Node]:
 	if from == null:
 		from = Kit.of(world)
@@ -167,6 +168,7 @@ static func kit(world: World, from: Kit = null) -> Array[Node]:
 			made.append_array(rig.made.slice(1))
 			made.append(rig.deck)
 			named[id] = rig.deck
+			named.merge(rig.named)
 		else:
 			if spec.is_empty():
 				spec = {"frame": id, "sockets": {}}
@@ -196,7 +198,26 @@ static func kit(world: World, from: Kit = null) -> Array[Node]:
 		var other := b.free_tie(tie.global_position)
 		var span := (tie.global_transform * Line.END_AT).distance_to(other.global_transform * Line.END_AT)
 		made.append(Line.between(world, tie, other, maxf(from.rope_m - span, 0.0)))
+	for id in from.waist:
+		var tie := _tie_of(named[id], world.player.global_position)
+		if tie != null:
+			made.append(Line.to_waist(world, tie, from.waist[id]))
 	return made
+
+
+## Where a line from a thing ties on: a mast's sheet at its boom's end, a
+## hook's at its tie, anything else at its free tie nearest a place.
+static func _tie_of(thing: Node, near: Vector3) -> Socket:
+	if thing is Mast:
+		return (thing as Mast)._tie()
+	var part := thing as Part
+	if part != null:
+		var fitted: Array = part.socket.fitted if part.socket != null else []
+		for node: Node in fitted:
+			if node is Socket and (node as Socket).kind == &"tie" and (node as Socket).part == null:
+				return node
+		return null
+	return (thing as Device).free_tie(near)
 
 
 ## A place on the sand right and ahead of where the run begins, facing as you do.

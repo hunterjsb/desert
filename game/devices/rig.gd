@@ -11,8 +11,9 @@ extends RefCounted
 ##       piece's top or bottom at a place on it: `on` a grid place, or
 ##       [cell, face] for the piece on a frame's face; `thing` a catalog id,
 ##       or [id, [what fills its own slots]]; `name` optional, for lines
-##   [&"hook", cell, toward]             a hook on that piece's ring facing
-##                                       `toward` along the grid
+##   [&"hook", cell, toward, name]       a hook on that piece's ring facing
+##                                       `toward` along the grid; `name`
+##                                       optional, for lines
 ##   [&"face", cell, face, id]           a screen or fabric on a frame's face
 ## Batteries start as full as `charge` says.
 
@@ -57,6 +58,8 @@ func _step(step: Array, charge: float) -> void:
 		&"hook":
 			var hook := Catalog.part(&"hook")
 			deck.fit(hook, ring_of(deck, step[1], step[2]))
+			if step.size() > 3:
+				named[step[3]] = hook
 		&"face":
 			var part := Catalog.part(step[3])
 			deck.fit(part, face_of(deck, step[1], step[2]))

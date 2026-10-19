@@ -401,6 +401,14 @@ func _far_from_you(rope: Rope) -> RopeEnd:
 	return rope.b if on_you(rope.a.holder) else rope.a
 
 
+## The body a line at your waist leads to, by its end there; null if none.
+func far_holder(body: Node) -> Node3D:
+	var line := line_at(body)
+	if line == null or not is_instance_valid(line.a) or not is_instance_valid(line.b):
+		return null
+	return _far_from_you(line).holder
+
+
 func _waist_end(end: RopeEnd) -> bool:
 	return end == waist or world.player.waist.holds(end.holder)
 
