@@ -11,7 +11,7 @@ render_mode unshaded, blend_mix, depth_test_disabled, depth_draw_never, cull_fro
 #include "res://game/weather/storm_field.gdshaderinc"
 
 // Plume.COLUMN's size.
-const int POINTS = 13;
+const int POINTS = 15;
 // Steps through it at most, each this share of its width there, or of the
 // distance, never under the third, m; and the share of its width its billows
 // stand out past it at most (Plume.BILLOWS).

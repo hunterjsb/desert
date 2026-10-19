@@ -166,6 +166,9 @@ func _moment(shot: Array, after := 600.0) -> Dictionary:
 			var line: bool = moment in ["storm", "instorm"] or (clear.call(root, t) and clear.call(root, t - 600.0)
 				and Plume.seen_through(field, world.tuning, eye, root + Vector3.UP * 50.0, t) > 0.9)
 			var placed := field.raw_storm_at(eye.x, eye.z, t) > 0.05 if moment == "instorm" else _clear_eye(eye, t)
+			# Far off, its top shows too, past any wall by you.
+			if placed and shot[2] > 5000.0 and not moment in ["storm", "instorm"]:
+				placed = Plume.seen_through(field, world.tuning, eye, _top(source, root, t), t) > 0.9
 			if line and placed:
 				var wind := field.steady_wind_at(root.x, root.z, t).length()
 				var says := "steady wind %.1f m/s" % wind

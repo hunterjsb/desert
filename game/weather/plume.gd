@@ -18,11 +18,12 @@ const SHADER := preload("res://game/weather/plume.gdshader")
 ## How many plumes can be drawn at once, the nearest sources first.
 const AT_ONCE := 3
 ## The streakline: this many points, the oldest this many s, crowded toward
-## the source by this power; the column is drawn through these of them.
+## the source by this power; the column is drawn through these of them, all
+## of its young end, where a burst's column stands, and every few of its tail.
 const POINTS := 24
 const OLDEST := 600.0
 const CROWD := 1.6
-const COLUMN := [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 23]
+const COLUMN := [0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 14, 16, 19, 23]
 ## What leaves rises from this wide, m: the gas sweeps up the sand round its
 ## mouth, not just what's in its throat.
 const MOUTH := 150.0
@@ -41,6 +42,9 @@ const UMBRELLA := 0.25
 ## the most.
 const THICK := Vector3(30.0, 10.0, 8.0)
 const THINS := 0.7
+## A pocket's blowout throws up the sand it bursts through: this many times a
+## vent's dust for its lift.
+const DUSTY := 12.0
 ## The sand falls out of it by e over this many s, leaving this share, the
 ## fine dust that stays up; its oldest fifth fades out.
 const FALLS := Vector2(150.0, 0.35)
@@ -86,7 +90,7 @@ const SEEN_IN := Vector2(60.0, 4000.0)
 ## more than the second, the third times at most.
 const VEIL_EDGE := 0.006
 const STEEPEST := 4.0e-4
-const SEEN_STEPS := Vector3i(60, 1500, 64)
+const SEEN_STEPS := Vector3i(80, 1500, 48)
 ## A vent's ash fan on the sand runs down the long-term wind, by e this often,
 ## m; laid within this far of you, the far ring's reach.
 const FAN := 260.0
@@ -324,6 +328,7 @@ func _streak(t: float, which := PackedInt32Array()) -> void:
 		var parcel := parcel_at(field, _tuning, Vector2(root.x, root.z), t, age, v.x, _stable, g, now)
 		var deep := parcel[1].x
 		var thick := THICK.z * v.x * pow(THICK.x * THICK.y / (deep * parcel[1].y), THINS) \
+			* (DUSTY if source.state == Geology.POCKET else 1.0) \
 			* (FALLS.y + (1.0 - FALLS.y) * exp(-age / FALLS.x)) * (1.0 - smoothstep(0.8, 1.0, age / OLDEST))
 		var ash := ASHEN.x * clampf((v.y - Geology.ASH.x) / (Geology.ASH.y - Geology.ASH.x), 0.0, 1.0) \
 			* exp(-age / ASHEN.y)
@@ -495,6 +500,10 @@ func top() -> Vector3:
 func _around() -> void:
 	var camera := _world.player.camera.global_position
 	var p := Vector3(_world.world_x(camera.x), camera.y, _world.world_z(camera.z)) - root
+	if p != p.clamp(_lo, _hi):
+		air = 0.0
+		seen_m = INF
+		return
 	var best := INF
 	var at := 0
 	var along := 0.0
@@ -525,16 +534,19 @@ func _upload() -> void:
 	var values := _weather.face.uniforms
 	if values.is_empty():
 		return
-	if map.texture_a != _map_a or map.texture_b != _map_b:
+	var fresh := map.texture_a != _map_a or map.texture_b != _map_b
+	if fresh:
 		_map_a = map.texture_a
 		_map_b = map.texture_b
 		material.set_shader_parameter("storm_map_a", _map_a)
 		material.set_shader_parameter("storm_map_b", _map_b)
 		material.set_shader_parameter("storm_map_extent", values.storm_map_extent)
 		material.set_shader_parameter("storm_map_cells", values.storm_map_cells)
-	for key: String in ["storm_map_blend", "storm_map_shift", "storm_air", "storm_map_ready"]:
-		material.set_shader_parameter(key, values[key])
-	material.set_shader_parameter("storm_time", _world.time)
+	# They move a fifth of a metre a frame: every other frame will do.
+	if fresh or _frames % 2 == 0:
+		for key: String in ["storm_map_blend", "storm_map_shift", "storm_air", "storm_map_ready"]:
+			material.set_shader_parameter(key, values[key])
+		material.set_shader_parameter("storm_time", _world.time)
 	if not _changed:
 		return
 	_changed = false
