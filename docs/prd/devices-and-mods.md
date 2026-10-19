@@ -147,7 +147,7 @@ workstation) rather than filled slots.
 - **A frame** is an open cube of rails, 1 m a side and 4 kg, that sticks square on a piece's
   top, whatever its aim off the middle, turned to the nearest quarter. Each of its five
   other faces takes a whole-face piece: **a chassis** (on a side, upright, a wall; on top,
-  flat, a shelf), **a screen**, or **fabric**, a crude sail with no wind of its own yet. A
+  flat, a shelf), **a screen**, or **fabric**, a crude sail (wind on faces, below). A
   piece is offered a free face as it is a ring, and joins the deck's one body there. A wall's
   and a shelf's faces are sticky like any piece's, their rings take hooks and ropes, and no
   piece joins them edge to edge: an upper chassis stands only on a frame. A frame comes off
@@ -200,7 +200,7 @@ workstation) rather than filled slots.
   Looking at a deck empty-handed, what take would move is highlighted, faintly in the ghost's
   colour.
 - **Seams for what's next:** `Chassis.plates()` lists a deck's whole-face plates (walls,
-  shelves, screens, fabric) with their way out and area, for wind on faces; the power box will
+  shelves, screens, fabric), which wind on faces reads (below); the power box will
   be a device with battery bays that sticks like any other; a screen on a frame's face is dark
   until something drives it.
 - **Saves** keep a deck's pieces as they joined, across a ring or on a frame's face, and each
@@ -217,6 +217,69 @@ workstation) rather than filled slots.
   the first piece's outer ring has a hook with a line to a stake short of where a piece joined
   there goes, so that join pops it. The "afk" scenario's reference camp is a deck two by two
   (Power).
+
+## Wind on faces (built, 2026-10-19)
+
+Hunter's [spec](../chassis-kits-dunes-2026-10-18.md#wind-on-faces): every vertical and fabric
+face is a flat plate that catches the wind, as close to real as can be had cheaply: no cloth
+sim, no new bodies or joints. `Faces` does it for each deck, from `Chassis.plates()`.
+
+- **A face is a flat plate.** Each whole face on a frame (a wall, a shelf, a screen, fabric)
+  is pushed square to itself by the world's catch (`wind_catch_per_m2`, 0.5 N per m² per
+  (m/s)², as a loose body's biggest face), its area, the air's speed and its speed square to
+  the face: a flat plate's normal force. A 1 m wall broadside takes 72 N in a 12 m/s wind,
+  200 N at 20 and 288 N at 24; edge-on, nothing but its edge's share of the deck's loose
+  catch; at 45°, as much across the wind as down it, which is the side force a reach needs
+  (probe 35). The push acts at the face's middle, into the deck's one body, and the air it
+  meets there is the felt wind less the deck's own motion at that spot, so a deck turning
+  through the air is slowed by its faces as much as it's driven. A shelf, level, meets a
+  level wind edge-on, and catches only as its deck tips.
+- **One face behind another catches a fraction.** Sorted along the wind, a face with another
+  just upwind across its footprint catches a tenth (`face_shaded`) of what it would alone,
+  as much less as the one in front covers it as the wind sees them, fading back to all of it
+  as a lee does, from two heights of the face in front to seven. Side by side across the
+  wind, faces don't shade each other (probe 36). No ray casts: the boxes are compared along
+  the wind's way in the deck's frame, worked out again only when that way turns 3°.
+- **Scoops.** A frame open on a side with its back closed is a scoop, judged by which of
+  its faces are filled and where its open side points. Open into the wind, its back catches
+  up to 1.3 times (`face_cup`) a flat face's, a parachute's cup against a plate, as much
+  more as its sides round about are closed (the floor always is); open away from the wind,
+  its back meets the wind as any wall and its lee shelters the inside (probe 37).
+- **Fabric is a crude sail,** on any face of a frame, but weak: it can't belly into lift or
+  be trimmed, so it pushes as a flat plate, 44 N in a 10 m/s wind square on, a sixth of the
+  268 N the sail on the same floating deck draws running before the same wind (probe 38).
+  Across the wind it gives as much side force as drag at best. A real sail stays the
+  upgrade.
+- **Fabric shows its load.** Its canvas is a cloth of its own (`fabric.gdshader`), its hem and
+  grommets as before, drawn by the very push the physics makes: its load is that push
+  across it over what 12 m/s square on would put there, so it's slack under a third of
+  that, flutters in the air going past, faster and harder the more of it, and from a load
+  of one it's taut, bellied up to 10 cm at its middle the way the air presses, the lacing
+  holding its edges. Edge-on it bears nothing and flutters hardest in a gale (probe 39).
+  Taken off a frame it hangs slack. The sail keeps its own cloth.
+- **The rest of the deck,** its pieces' edges, what's stuck on them and the devices on it,
+  still catches the wind at the deck's middle, less what its own walls' lee keeps from what
+  stands behind them. A line holding the deck and the wind that carries it off while you
+  sleep count all of it: its faces at the wind's way now and the rest.
+- **Its walls shelter what's behind them,** as a small dune does, through the felt weather
+  ([Wind & storms](wind-and-storms.md#a-walls-lee-built-2026-10-19)).
+- **Balance and flipping** (measured 2026-10-19, storm gusts half the wind). The sand holds
+  a resting body by a quarter of its weight, so a resting camp left loose slides in a strong
+  wind whatever stands on it: the Surveyor's, 70 kg, holds at 10 m/s and creeps from 12 with
+  its wall broadside, as it does with none. Moored as it starts, by its line to a stake 4 m
+  upwind, its wall broadside holds in a 24 m/s storm, leaning 14°, and at 30 m/s, leaning
+  18° with its line peaking at 1,700 N; at 36 m/s its line parts. Floating moored it leans
+  2° at 10 m/s and 9° at 24. A light deck (one piece on one tray, a frame and a wall, 34 kg)
+  moored leans 5° to 15 m/s and 10° at 30; adrift in a storm's 36 m/s gusts it goes over.
+  A tall wall is the real risk: a second storey on the Surveyor's (a shelf on the frame, a
+  frame on that and a wall, 2 m of wall in all) leans 12° moored in 10 m/s and flips at 15;
+  on a lone floating piece it won't stand upright even in still air.
+- **Cost** (the dev machine, someone playing): a camp of six faces takes about 18 µs a tick,
+  the felt wind it reads included; a rig of 45 (a deck three by three, a frame on each piece
+  with three walls, fabric and a shelf) about 50 µs. Turning, its shading and lee are worked
+  out again at most every tenth of a second: about 0.2 ms for six faces, 0.75 ms for 45. A
+  read of the walls' lee costs about 2 µs near a camp's walls, 1 µs elsewhere. On the dev
+  overlay, `faces` is what the wind on decks' faces took last tick.
 
 ## The Console (proposed; first version built)
 
@@ -1137,6 +1200,18 @@ a water socket of its own on top, so a canister or another hose goes on there to
 34. **Frames take walls and shelves,** and go only on a top; a Console never under one nor a
     frame over it; a chassis never sticks; a shelf's rings take hooks but no piece; a frame
     with walls on won't come off.
+35. **Broadside, not edge-on** (2026-10-19). A wall broadside to a steady wind is pushed
+    downwind as a flat face its size; edge-on, next to nothing; at 45°, off the wind as well
+    as down it.
+36. **One face shades another.** Two frames side by side across a steady wind, walled front
+    and back: each wall upwind takes what a lone one would, and each behind a fraction.
+37. **A scoop open upwind catches more.** A frame walled on its back, sides and top is pushed
+    harder with the wind blowing into its open side than with the same wind on its back.
+38. **Fabric pulls weakly.** Fabric facing aft on a floating deck draws it downwind with the
+    sail furled, but at under a quarter of the sail's pull in the same wind.
+39. **The cloth shows its load.** Its load goes as its push, the same share of it in a breeze
+    as in a fresh wind; slack in the breeze, taut in a gale, bellied the other way with the
+    wind round, and bearing nothing edge-on while the air stirs it.
 
 ## Out of scope
 

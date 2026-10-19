@@ -8,8 +8,8 @@ extends RefCounted
 ## footprint catches a share of what it would alone; a frame closed behind and
 ## round about, open into the wind, is a scoop that catches more. Its faces
 ## break the wind for what stands behind them as a small dune does (Weather),
-## and fabric shows the load it bears. No cloth, no new bodies or joints: every
-## push goes into the deck's one body.
+## and fabric shows the load it bears. No cloth sim, no new bodies or joints:
+## every push goes into the deck's one body.
 
 ## The wind's way in the deck's frame is worked in steps of 1/STEPS (about
 ## 3°): turning less, its shading and lee stand as they were. Turning
@@ -71,7 +71,8 @@ var _lee_centre := Vector3.ZERO
 ## What its faces catch together along the wind's way now, as a loose
 ## body's catch counts it: what a line holding the deck bears and what the
 ## wind carries off while you sleep. And what the rest of the deck catches,
-## less what their lee keeps from what stands behind them; NAN till worked out.
+## less what the faces' lee keeps from what stands behind them; NAN till
+## worked out.
 var catch_now := 0.0
 var loose_now := NAN
 ## Each face's push last tick, N, in the world; what a tick costs, µs, on average.
@@ -82,6 +83,12 @@ var _looks := PackedVector2Array()
 
 ## Its faces changed: worked out again on the next tick.
 func forget() -> void:
+	# Fabric taken off hangs slack; what's still on shows its load again next tick.
+	for i in _cloth.size():
+		if is_instance_valid(_cloth[i]):
+			_cloth[i].set_instance_shader_parameter(&"load", 0.0)
+			_cloth[i].set_instance_shader_parameter(&"air", 0.0)
+		_looks[i] = Vector2.ZERO
 	_known = false
 	_key = Vector3i.MAX
 	catch_now = 0.0
@@ -93,7 +100,7 @@ func count() -> int:
 	return _middle.size()
 
 
-## Whether a face is fabric showing its load, and what it shows: [load, air].
+## What a fabric face shows, as [load, air]; nothing for any other.
 func look_of(i: int) -> Vector2:
 	return _looks[i] if i < _looks.size() else Vector2.ZERO
 
@@ -357,7 +364,7 @@ static func cloth(size: Vector3) -> MeshInstance3D:
 	grid.subdivide_width = 10
 	grid.subdivide_depth = 10
 	grid.material = _material()
-	grid.custom_aabb = AABB(Vector3(-size.x * 0.5, -size.y * 0.5, -0.15), Vector3(size.x, size.y, 0.3))
+	grid.custom_aabb = AABB(Vector3(-size.x * 0.5, -size.y * 0.5, -0.2), Vector3(size.x, size.y, 0.4))
 	var view := MeshInstance3D.new()
 	view.mesh = grid
 	view.position = Vector3(0.0, 0.0, size.z * 0.5)

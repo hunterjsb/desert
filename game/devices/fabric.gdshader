@@ -17,28 +17,33 @@ instance uniform float age = 0.0;
 
 varying vec2 at;
 
+// How far it stands out of its face at a place on it, m.
+float lift(vec2 uv, float belly, float stir, float rate) {
+	vec2 p = uv * 3.14159;
+	float held = sin(p.x) * sin(p.y);
+	float flutter = stir * 0.03 * sin(TIME * rate + uv.x * 11.0 + uv.y * 4.0)
+		+ stir * 0.015 * sin(TIME * rate * 1.7 - uv.y * 9.0);
+	return (belly + flutter) * held;
+}
+
 void vertex() {
 	at = UV;
-	vec2 p = UV * 3.14159;
-	float held = sin(p.x) * sin(p.y);
 	float pressed = clamp(abs(load), 0.0, 1.0);
-	float belly = sign(load) * 0.075 * sqrt(pressed);
-	float stir = (1.0 - pressed) * smoothstep(0.5, 8.0, air);
+	float belly = sign(load) * 0.1 * sqrt(pressed);
+	float stir = (1.0 - pressed) * smoothstep(0.3, 5.0, air);
 	float rate = 4.0 + air * 0.9;
-	float flutter = stir * 0.022 * sin(TIME * rate + UV.x * 11.0 + UV.y * 4.0)
-		+ stir * 0.012 * sin(TIME * rate * 1.7 - UV.y * 9.0);
-	VERTEX.z += (belly + flutter) * held;
-	// The belly's slope, for the light across it.
-	vec2 slope = belly * 3.14159 / size * vec2(cos(p.x) * sin(p.y), sin(p.x) * cos(p.y));
-	NORMAL = normalize(vec3(-slope.x, slope.y, 1.0));
+	float here = lift(UV, belly, stir, rate);
+	VERTEX.z += here;
+	// Its slope either way across it, for the light: UV runs down its face.
+	float e = 0.02;
+	float along = (lift(UV + vec2(e, 0.0), belly, stir, rate) - here) / (e * size.x);
+	float down = (lift(UV + vec2(0.0, e), belly, stir, rate) - here) / (e * size.y);
+	NORMAL = normalize(vec3(-along, down, 1.0));
 }
 
 void fragment() {
-	// A coarse weave, darker where it's worn.
-	float weave = 0.04 * sin(at.x * 260.0) * sin(at.y * 260.0);
-	vec3 base = canvas * (1.0 + weave);
-	base = mix(base, base * vec3(0.78, 0.66, 0.5), age * 0.6);
-	ALBEDO = base;
+	// Darker where it's worn.
+	ALBEDO = mix(canvas, canvas * vec3(0.78, 0.66, 0.5), age * 0.6);
 	ROUGHNESS = 0.95;
 	BACKLIGHT = vec3(0.3);
 }
