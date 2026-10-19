@@ -13,6 +13,7 @@ const CORD := Color(0.42, 0.31, 0.2)
 const BONE := Color(0.86, 0.82, 0.7)
 
 static var _cloth: ArrayMesh
+static var _ladder: ArrayMesh
 
 
 static func coats() -> Dictionary:
@@ -78,10 +79,19 @@ static func _nest(b: Paint.Pieces, size: Vector3) -> void:
 		var turn := Basis(Vector3.UP, -a)
 		b.box(Vector3(0.7, 0.32, 0.012), turn * Vector3(0.0, -h.y + 0.25, h.z - 0.03), c.ochre if k != 1 else c.indigo,
 			0.0, turn)
-	# The ladder, down the mast's front: two cords and its rungs.
-	var top := -h.y
+
+
+## Deployed only on a standing mast; loose, the basket carries its ladder folded.
+static func ladder() -> ArrayMesh:
+	if _ladder != null:
+		return _ladder
+	var b := Paint.Pieces.new()
+	var c := coats()
+	var top: float = -Catalog.DEVICES[&"crows_nest"].size.y * 0.5
 	for x in [-0.13, 0.13]:
 		b.drum(0.008, CrowsNest.LADDER, Vector3(x, top - CrowsNest.LADDER * 0.5, -0.15), c.cord, Basis.IDENTITY, 6)
 	var rungs := floori(CrowsNest.LADDER / 0.32)
 	for i in rungs:
 		b.box(Vector3(0.3, 0.025, 0.03), Vector3(0.0, top - 0.2 - i * 0.32, -0.15), c.wood, 0.004)
+	_ladder = b.commit()
+	return _ladder

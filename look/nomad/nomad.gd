@@ -50,9 +50,18 @@ func _ready() -> void:
 	await _ground()
 	await _site(&"nomad_rig", "rig", 1.3)
 	await _site(&"nomad_camp", "camp", 2.4)
+	var clear := Vector2(world.player_world_x(), world.player_world_z()) + _down() * 200.0
+	world.teleport(world.player, Transform3D(Basis.IDENTITY, Vector3(world.engine_x(clear.x),
+		world.height_at(clear.x, clear.y) + 0.1, world.engine_z(clear.y))))
+	await _ground()
 	await _streamers()
 	await _nest()
+	var open := Vector2(world.player_world_x(), world.player_world_z()) + _down() * 300.0
 	for windward: int in [1, -1]:
+		world.teleport(world.player, Transform3D(Basis.IDENTITY, Vector3(world.engine_x(open.x),
+			world.height_at(open.x, open.y) + 0.1, world.engine_z(open.y))))
+		world.player.velocity = Vector3.ZERO
+		await _ground()
 		await _tack(windward)
 	get_tree().quit()
 
@@ -60,7 +69,7 @@ func _ready() -> void:
 ## A site of a kind laid by hand on the sand ahead, dug out, shot from its way in.
 func _site(kind: StringName, shot: String, back: float) -> void:
 	var sites := world.shape.sites
-	var from := Vector2(world.player_world_x(), world.player_world_z()) + _down() * 40.0
+	var from := Vector2(world.player_world_x(), world.player_world_z()) + _down() * 200.0
 	var site: Structure = null
 	for tries in 150:
 		var off := Vector2.from_angle(tries * 2.39996) * 7.0 * sqrt(tries)
@@ -223,6 +232,7 @@ func ticks(n: int) -> void:
 
 
 func shoot(name: String, from: Vector3, to: Vector3) -> void:
+	camera.make_current()
 	camera.global_transform = Transform3D(Basis.looking_at(to - from, Vector3.UP), from)
 	for i in 6:
 		await get_tree().process_frame

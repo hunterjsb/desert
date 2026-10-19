@@ -245,7 +245,7 @@ the frame is a part stuck on the deck.
 | Weather | Hermit, Sandblasted | (as now) | | Wear |
 | Weather | **Eye of the Anomaly** (hidden) | Live through an anomaly's heart | Sandblasted | `Vitals`' tick, asleep too: the hidden term where you stand reaches its full (0.99), then falls back to nothing with you alive. Kept in the save |
 | Weather | **Tells** (hidden) | Notice each of an anomaly's three tells | Eye of the Anomaly | each where it's shown to you, once a profile: the compass in your hands leaning 10° or more toward a heart (`Compass`); a radio you hear crackling a quarter deep or more (`Radio`); a shield's load past 100%, its hum straining with you in its bubble (`ShieldGenerator`) or its load row on the stats page of a Console near enough to read (`Console`) |
-| Weather | **Taught** (hidden) | Teach the Walker the anomaly | Tells | the Walker, once it holds evidence for each tell (the session 5 ruling); built with its quest |
+| Weather | **Taught** (hidden) | Teach the Walker the anomaly | Tells | `Console.upload`: a Console plugged into the Walker's port, holding evidence of each tell (the session 5 ruling), teaches it (built 2026-10-19) |
 | Ruins | Carbon Dated | (as now) | | the world |
 | Ruins | **Bared** | Take loot from a site a storm has stripped | Carbon Dated | `Salvage.claim`: a find taken from a site the storm working on it has further out of the sand than its settled sand would (`Structure.bared`) |
 | Ruins | **Storm Chaser** | Reach 3 freshly bared sites in one storm | Bared | the world, stepping onto a site so bared while you're in a storm, each counted once; the count goes the moment you're out of the storm |
@@ -258,8 +258,8 @@ the frame is a part stuck on the deck.
 | Scrap | **Bonepicker** | Scrap one of each kind of wreck | Clean Hands | `Salvage.claim`: a module taken from a wreck counts its kind, hull, hauler, freight pod, lifeboat, hopper or nomad rig (`Wreckage.kinds`; six since 2026-10-19, when it said five), once a profile |
 | Signals | **First Light** | Hear a god inside its window | | `Radio`'s tick: tuned to a god while its words are useful, coming through and not cut, and you hearing it: its line in your view, or its sound within earshot with the volume up |
 | Signals | **Pantheon** | Hear all seven gods | First Light | the same, each god counted once a profile |
-| Signals | **Triangulated** | Take three bearings on the living city | Pantheon | the Walker's contact log; built with the stations' second pass |
-| Signals | **The Living City** | Find the living city | Triangulated | the world; built with it |
+| Signals | **Triangulated** | Fix the living city with three crossing bearings | Pantheon | the Console noting the Walker's contact log (`Chart`): three of its noted bearings crossing within 3 km, 8° apart or more (built 2026-10-19) |
+| Signals | **The Living City** | See the living city's lights | Triangulated | `CityLights`: its lights shown for your eye at night within its chatter's range, in view, over the dunes and past the storms (built 2026-10-19) |
 | Far | **Totality** | Watch a whole eclipse out in the open | | `SkyView`, each frame: the sun seen going in behind Tu, through totality and out again, up all the while, you in no bubble, the clock never jumping |
 | Far | **Glint** | Reach a site whose glint you saw from 1,000 m off | Totality | `Skyline`, as it reads the storms between you and what it draws: a stand-in's glint that far off shining for your eye, as a start's sighting is judged, over the dunes and past the storms with the sun up; then the world, stepping onto that site |
 | Far | **Just Missed Them** (hidden) | Reach a nomads' camp | Glint | the world, stepping onto a nomads' camp's ground. Hidden: the grid shouldn't say anyone's out there |
@@ -284,7 +284,7 @@ the frame is a part stuck on the deck.
 - **Nomad ties the trees together:** its card stands apart, with a line from each of the five
   trees, lit where you've done one. It waits on any one deed of a tree, not a named one, so the
   table's `after` gains "any of a family".
-- **The grid holds every tree** (built for step 1, Menus & UI): 44 deeds in eleven families since the nomads' gear, each a
+- **The grid holds every tree** (built for step 1, Menus & UI): 47 deeds in eleven families since step 4, Yard Sale and the nomads' gear, each a
   branch or two beside its name down the left, as round one's were (eleven columns side by side
   wouldn't stand left of the prop). It scrolls, and opens on the latest done.
 - **The order.** Each part waits for what it reads to land:
@@ -298,9 +298,11 @@ the frame is a part stuck on the deck.
   3b. **Built 2026-10-19,** with the nomads' gear (Hunter: "New features should be exposed via
      deeds"): Hand-Me-Down and Telltale in Wind, Just Missed Them in Far, hidden. A deed for
      spotting from the crow's nest was weighed and left out: what it'd ask (a glint the crests hid
-     from the deck) the Glint deed's sightline can't yet tell apart. Profile & saves probe 35.
-  4. With the radio stations' second pass and the Walker's quest (designed 2026-10-19, [Radio](radio-sound-and-atmosphere.md#the-walkers-quest-and-the-living-city-agreed-2026-10-19-not-built)): Triangulated, The Living City,
-     and Taught.
+     from the deck) the Glint deed's sightline can't yet tell apart. Profile & saves probe 36.
+  4. **Built 2026-10-19,** with the radio stations' second pass and the Walker's quest
+     ([Radio](radio-sound-and-atmosphere.md#the-walkers-quest-and-the-living-city-agreed-2026-10-19-built-2026-10-19)):
+     Triangulated, The Living City, and Taught, hidden; 43 deeds now. Their cards are marks drawn
+     (DeedsGrid): three lines crossing, the city's decks dark against their glow, the Walker.
   5. Last, once every tree it reads has landed: Nomad and its "any of a family", so that what it
      asks never changes after someone has earned it.
 
@@ -357,7 +359,9 @@ How each X was chosen, from the probes' numbers (the probes' seed, 2026-10-19):
 
 - **Probes** 25 to 31, one a tree, and Menus & UI probe 16; 33, the dune deeds through play (a ruin
   stepped onto, dug out by hand and not before half its sand is yours, and the setup not done until its
-  ground radar is fitted), and 34, the Archaeologist locked until both of hers.
+  ground radar is fitted), and 34, the Archaeologist locked until both of hers; 35, the Walker's deeds
+  through play (Taught as the plug goes in its port, Triangulated as its noted contacts fix the city,
+  The Living City from a kilometre off on a clear night).
 
 **New features come with deeds (Hunter, 2026-10-19).** "I love all the new deeds, we should keep
 the creed that new features should be exposed via deeds." Every feature that lands brings a deed
@@ -664,7 +668,7 @@ calls them from Save, Save & quit, Resume, New game, the death screen and Option
 32. **Storm Runner opens the Varran settler** (2026-10-19). On a fresh profile New game lists four
     starts, the Surveyor first and highlighted, the Varran's ????; the Wind tree's earlier deeds don't
     open it, Storm Runner does, marked new, and it offers Normal only.
-35. **The nomads' gear's deeds** (2026-10-19). Taking a wrecked nomad rig's mast and sail is
+36. **The nomads' gear's deeds** (2026-10-19). Taking a wrecked nomad rig's mast and sail is
     Hand-Me-Down; stepping into a nomads' camp, Just Missed Them, ???? till then; trimming a raised
     sail's sheet is Telltale only with a streamer flying on its rig.
 

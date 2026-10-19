@@ -2,8 +2,9 @@ extends WeatherProbe
 ## Wind & storms probe 17: a burst booms, heard after it's seen as thunder is
 ## after lightning. From 3 km and from 12 km off the rift's live vent, a burst's
 ## boom comes as long after it began as sound takes to come that far, never
-## before; further off it's quieter and duller; it comes from the vent's way;
-## and a jump in time past it plays nothing late.
+## before; further off it's quieter and duller, its low end rolling on lower,
+## longer and more of it; it comes from the vent's way; and a jump in time
+## past it plays nothing late.
 
 ## Its arrival may be read this late, s: a few ticks.
 const SLACK := 0.1
@@ -54,6 +55,9 @@ func run() -> void:
 		booms.append(boom)
 	check(booms[1].volume_db < booms[0].volume_db - 9.0 and booms[1].cutoff_hz < booms[0].cutoff_hz * 0.5,
 		"further off it's quieter and duller")
+	check(booms[1].roll_pitch / booms[1].pitch < booms[0].roll_pitch / booms[0].pitch
+		and booms[1].roll_db - booms[1].volume_db > booms[0].roll_db - booms[0].volume_db,
+		"its low end rolls on lower, longer and more of it")
 
 	var heard := rumbles.heard.size()
 	var next := geology.next_burst(vent, onset + 1.0)

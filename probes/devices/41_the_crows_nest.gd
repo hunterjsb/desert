@@ -21,6 +21,8 @@ func run() -> void:
 	deck.global_position = flat_spot(0.0, -6.0, 3.0) + Vector3.UP * 0.3
 	await simulate(3.0)
 	var nest := Catalog.device(&"crows_nest") as CrowsNest
+	check(Finds.bounds(nest).size.y <= Catalog.DEVICES[&"crows_nest"].size.y + 0.01,
+		"loose, its folded ladder leaves the basket resting on its floor")
 	check(Stick.why_not(deck, deck, Chassis.TOP, nest) != "", "a crow's nest goes nowhere but a mast's head")
 	var head := mast.global_transform * Vector3(0.0, Mast.HEAD_Y, 0.0)
 	check(await stick_by_hand(nest, head, Vector3(0.9, 1.3, 0.3)) and nest.host() == mast,

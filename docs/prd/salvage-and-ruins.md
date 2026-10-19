@@ -775,7 +775,7 @@ the anemometer stays the precise one. A sail's mast takes things stuck on it (he
 raises the centre of mass), and a **crow's nest** is a mast mount you climb into, a seat with a long
 view for glints, plumes and fronts.
 
-**Built (2026-10-19, the `nomad` branch).** The nomads' own era (`Eras.NOMAD`, "the nomads'"): now,
+**Built (2026-10-19).** The nomads' own era (`Eras.NOMAD`, "the nomads'"): now,
 not in history's order, building nothing that lasts. Nothing in it is the nomads' make but the
 streamer; what they carry and leave is any era's, each thing's lineage drawn from their row's
 `from` (colonial 2, skimmer 2, First Kingdoms 1, second age 3, by weight, from the loot seed alone),
@@ -789,12 +789,16 @@ nothing records what you take from them.
   cloth and packed with sand through its open side (two slices, its gear in it), a skimmer crew's
   battery rack lashed at the bow behind a scrap plate they welded on (cut at 0.6 times the seconds; a
   live bank rides on it), and the post their mast stood in, snapped off short, cord-wound, a pennant
-  still on it. Its mast lies beside the post, its sail furled on its boom (`SiteLoot.RIGGED`, always
+  still on it. No drift builds above the thin deck's plates; its exposed sand stays below their floor.
+  Its mast lies beside the post, its sail furled on its boom (`SiteLoot.RIGGED`, always
   there, free to take), so every one yields a sail. Its far look is its deck, locker and post with
   the pennant; the brass fitting on the post glints. Its modules: survival kits, radios, a light
   shield, a streamer; the rack. Its floors, shelf and deep cache hold the nomads' row: coils,
   streamers, skates, plates, bedrolls, chassis, frames, fabric, water; at their best sails, masts,
-  skates, a keel, a helm seat, a crow's nest, a racer.
+  skates, a keel, a helm seat, a crow's nest, a racer. Its common mast and stowed mobility gear count
+  as surface-tier finds, rather than the premium tier of old wrecks; its best cache keeps the higher
+  tier. Across salvage probe 5's 155 sites, harder weather exposes 731 finds against 630, with mean
+  tier 1.153 against 1.121 (the required rise remains 0.03).
 - **Nomad gear in other eras' wrecks.** They loot as you do and leave what they don't need: of what
   lies loose in any other wreck (its floors, shelves and caches, not its best or its modules), a
   fifth is theirs (`SiteLoot.LEFT_SHARE`), from their own stream of the loot seed so nothing else
@@ -816,10 +820,10 @@ nothing records what you take from them.
   and it's yours, all of it, as anything found is (`Salvage.claim` finds a seated thing's rig).
 - **Second-age sails.** A sail now and then on a second-age floor: weight 1 in its 54.
 - **How near the first one lies** (wreck probe 8, six worlds, every origin's start, the nearest sail
-  within reach as you'd find it when you'd walked there): 476 m at least, 1,140 m on the median, 2,922 m
-  at most, every one a nomad rig's, with 1 to 10 rigs within 3 km of a start. So a first run that goes
-  looking finds one within a fair walk, and none is at anyone's feet. (Measured with rigs in 6% of cells;
-  set to 8% after, for the worlds where only one stood in reach.)
+  within reach as you'd find it when you'd walked there): 442 m at least, 886 m on the median, 2,922 m
+  at most, every one a nomad rig's, with 1 to 11 rigs within 3 km of a start. So a first run that goes
+  looking finds one within a fair walk, and none is at anyone's feet. Measured at the final 8% of
+  cells, on seeds 1234, 1, 2, 42, 777 and 1001 across all five origins (30 starts).
 - **The streamer, mast mounts and crow's nest** are [Devices & mods](devices-and-mods.md#mast-mounts-the-streamer-and-the-crows-nest-built-2026-10-19).
 - **Deeds:** Hand-Me-Down (take the sail off a wrecked nomad rig) and Telltale in Wind, Just Missed
   Them (reach a nomads' camp, hidden) in Far ([Profile & saves](profile-and-saves.md)).

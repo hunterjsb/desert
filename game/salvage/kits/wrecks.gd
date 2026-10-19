@@ -580,7 +580,8 @@ static func _nomad_rig() -> StructureKit.Piece:
 	var p := StructureKit.define(&"nomad_rig", Vector2(2.2, 1.6), Vector2(0.4, 0.4), Vector2(0.15, 0.15))
 	p.apron = 3.5
 	p.drift_reach = 1.5
-	p.drift = PackedFloat32Array([0.05, 0.1, 0.15])
+	# Its thin deck has no wall to hold a drift above the plates.
+	p.drift = PackedFloat32Array([0.0, 0.0, 0.0])
 	p.survey = Vector2(1.0, 20.0)
 	p.age = Vector2(0.35, 0.6)
 	p.marks = 1

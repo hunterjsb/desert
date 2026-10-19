@@ -8,8 +8,9 @@ extends Node3D
 ## slams, a harder one as you're thrown off and a knock if you hit something,
 ## then your view tumbling over the sand with you, a thud and a burst of sand
 ## each time you hit it, till you're up again; a shake while lines wrench you
-## past what your body takes, and your view smoothed between ticks, which at
-## its speed would otherwise stutter. It reads the
+## past what your body takes, the ground's own trembling near a live vent
+## (Rumbles), and your view smoothed between ticks, which at its speed would
+## otherwise stutter. It reads the
 ## player and never writes to it, so none of it can change where you go: it
 ## moves only the camera, and makes only sound and dust.
 
@@ -43,6 +44,11 @@ const SHAKE_SECONDS := 0.18
 const BITE_SHAKE := 0.35
 ## A landing at its jar shakes your view this share of the hardest.
 const JAR_SHAKE := 0.7
+## How far the ground trembling at its hardest moves your view, m, tips it
+## and rolls it, radians: slower and lower than a jolt's shake.
+const TREMBLE_REACH := 0.02
+const TREMBLE_PITCH := 0.008
+const TREMBLE_ROLL := 0.006
 ## Tumbling (Tumble): down on the sand your eyes are this high over it, m;
 ## your view rolls with your body no further than ROLL_MOST, and pitches into
 ## the sand as far as PITCH_MOST as you go face down, radians, so it never
@@ -217,8 +223,9 @@ func _process(delta: float) -> void:
 	var shake := Vector3(sin(_clock * 67.0), sin(_clock * 79.0 + 0.7), 0.0) * SHAKE_REACH * _shake
 	camera.position = _rest + bob + _spring + _lean + judder + shake + Vector3.DOWN * maxf(_drop, tumbled.x) + between
 	camera.rotation.z = roll + _roll + _bank + tumbled.y + sin(_clock * 59.0 + 2.1) * SHAKE_ROLL * _shake
+	var tip := _tremble(camera)
 	var looked := camera.rotation.x - (_pitched if is_equal_approx(camera.rotation.x, _pitch_left) else 0.0)
-	_pitched = tumbled.z
+	_pitched = tumbled.z + tip
 	camera.rotation.x = looked + _pitched
 	_pitch_left = camera.rotation.x
 	camera.fov = _fov + _widen
@@ -226,6 +233,19 @@ func _process(delta: float) -> void:
 	_sound_slide(grit, speed / (t.board_top_speed if ride != null else FAST), delta)
 	_throw_sand(sliding and ride == null, own, speed)
 	_dig_sand(ride, grit)
+
+
+## The ground trembling under you near a live vent: your view moved and
+## rolled by a few slow waves together, on top of everything else; and how
+## far they tip it, radians, which goes on your look with the tumble's pitch.
+func _tremble(camera: Camera3D) -> float:
+	var weather := _player.world.weather
+	var amount := weather.rumbles.tremble if weather != null and weather.rumbles != null else 0.0
+	var c := _clock
+	camera.position += Vector3(sin(c * 23.0 + 0.4) + 0.5 * sin(c * 37.0), sin(c * 29.0) + 0.5 * sin(c * 43.0 + 1.1),
+		0.0) * TREMBLE_REACH * amount
+	camera.rotation.z += (sin(c * 31.0 + 0.9) + 0.4 * sin(c * 47.0)) * TREMBLE_ROLL * amount
+	return (sin(c * 27.0 + 2.0) + 0.5 * sin(c * 41.0)) * TREMBLE_PITCH * amount
 
 
 ## Ground covered between footfalls at a pace, m: tracks print feet where these land.

@@ -163,7 +163,7 @@ const KINDS := {
 		[&"radio", 2], [&"turbine", 2], [&"condenser", 2], [&"shield", 2], [&"console", 1]]},
 	# A nomads' rig, wrecked: its mast down beside it with its sail always,
 	# what they stowed in its locker, the rack they scavenged for its power.
-	&"nomad_rig": {"kept": 0.85, RIGGED: [[&"mast", 1]],
+	&"nomad_rig": {"kept": 0.85, "tier": 1, RIGGED: [[&"mast", 1]],
 		MODULE: [[&"survival_kit", 3], [&"radio", 2], [&"light_shield", 1], [&"streamer", 1]],
 		BAY: [[&"power_rack", 1]]},
 	# A nomads' camp, kept up and just left: their rig, and anything of any era.
@@ -253,7 +253,7 @@ static func _module(site: Site, i: int, socket: StructureKit.SiteSocket, kind: D
 		rng: RandomNumberGenerator) -> Dictionary:
 	var id := Finds._pick(rng, kind[socket.kind])
 	var spec := {"id": id, "device": true, "layer": era.layer, "era": _made_in(site.loot, i, site.era), "kind": site.kind,
-		"seed": hash([site.loot, i]), "tier": 2, "index": i, "site": site.id, "yaw": rng.randf_range(-0.12, 0.12),
+		"seed": hash([site.loot, i]), "tier": kind.get("tier", 2), "index": i, "site": site.id, "yaw": rng.randf_range(-0.12, 0.12),
 		"lean": 0.0, "lean_by": 0.0, "sealed": era.sealed, "frozen": true, "drop": DROP, "module": true}
 	spec.charge = rng.randf_range(era.charge.x, era.charge.y)
 	spec.sound = rng.randf_range(maxf(era.sound.x, 0.6), maxf(era.sound.y, 0.85))
@@ -270,7 +270,7 @@ static func _rigged(site: Site, i: int, socket: StructureKit.SiteSocket, kind: D
 	var id := Finds._pick(rng, kind[socket.kind])
 	var whole := socket.kind == RIG
 	var spec := {"id": &"chassis" if whole else id, "device": true, "layer": era.layer,
-		"era": _made_in(site.loot, i, site.era), "kind": site.kind, "seed": hash([site.loot, i]), "tier": 2, "index": i,
+		"era": _made_in(site.loot, i, site.era), "kind": site.kind, "seed": hash([site.loot, i]), "tier": kind.get("tier", 2), "index": i,
 		"site": site.id, "yaw": socket.turn if is_finite(socket.turn) else rng.randf() * TAU, "lean": 0.0, "lean_by": 0.0,
 		"sealed": era.sealed, "frozen": true, "drop": DROP}
 	spec.charge = rng.randf_range(era.charge.x, era.charge.y)

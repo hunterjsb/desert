@@ -332,6 +332,8 @@ gives a long view for spotting glints, plumes and storm fronts." Found with the 
 - **The crow's nest** (`crows_nest`, 12 kg, `CrowsNest`, a `Helm`): a lookout's basket of wooden posts
   and bent pipe on a plank floor, cloth wound round its lower rail, its rope ladder hung 3.4 m down
   the mast's front. It goes on a standing mast's head and nowhere else ("it goes on a mast's head").
+  Loose or carried, its ladder is folded: only the basket rests on the sand. On a standing mast,
+  the ladder deploys with its reachable rungs, so its stowed shape never floats the basket above a floor.
   Use on it, on its ladder from the deck, climbs you in: a seat as the helm is, steering nothing. You
   stand in it, your eyes 6.2 m over the deck; your weight and its are the camp's, up there: on a bare
   deck of four pieces you stand its middle 2.59 m higher, so a hard gust heels it further. Ride or use
@@ -604,6 +606,15 @@ a ground radar fitted to a Console, a sand scoop and a sieve, all on one deck.
   ruin a triangle, an outline while the sand is over it, amber while a storm lays it bare
   (`sites.newly_exposed`), solid once it's out. Under it the nearest five, each its name, how far and which
   way, and a row under that: the sand over it, "bared" or "dug out".
+- **The chart, and the Walker** (built 2026-10-19, the Walker's quest in
+  [Radio](radio-sound-and-atmosphere.md#the-walkers-quest-and-the-living-city-agreed-2026-10-19-built-2026-10-19)):
+  a Console with a radio in its system tuned to the Walker notes each contact its log reads whole, and
+  its **Chart** page joins the tabs once it has noted one or the Walker's taught: the moon round it north
+  up, each bearing a line, three crossing a fix. It keeps evidence of each anomaly tell its system
+  witnesses (a compass stuck on its deck, a radio on it, a shield on it read against its particle
+  sensor), and its port plugged into the Walker's by a cable uploads it, teaching the Walker with all
+  three. Taught, its radar map and chart show the anomalies near. A save keeps its evidence and its
+  bearings (`Chart`, `game/devices/chart.gd`).
 - **The sieve** (`sieve`), a saltwood hoop rimmed in steel with a worn steel mesh, half a metre across,
   1.2 kg. Nothing takes it; it sticks on a deck. Carried, or set down or stuck on a deck within 4 m of
   where you dig, it sifts what a scoop digs off a ruin (Salvage & ruins).

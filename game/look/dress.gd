@@ -36,6 +36,58 @@ static func needle() -> ArrayMesh:
 		return b.commit())
 
 
+## A bedroll unrolling, `open` of the way from rolled to flat, in its own
+## frame: its head stays where the roll lay and the pad lies out flat along
+## +X behind the roll as it rolls away, thinner as it goes, to its foot; the
+## pillow at its head plumps up as the roll leaves it, and the straps lie
+## undone beside it. Stepped, each step made once.
+static func bedroll(open: float) -> ArrayMesh:
+	var step := clampi(roundi(open * BEDROLL_STEPS), 1, BEDROLL_STEPS)
+	return _cached(&"bedroll", StringName(str(step)), func() -> ArrayMesh: return _bedroll(float(step) / BEDROLL_STEPS))
+
+
+## Its head to its foot, laid, m; the pad's thickness and the foot's hem.
+const BEDROLL_LENGTH := 1.9
+const BEDROLL_PAD := 0.03
+const BEDROLL_HEM := 0.03
+const BEDROLL_STEPS := 40
+
+
+static func _bedroll(open: float) -> ArrayMesh:
+	var size: Vector3 = Catalog.DEVICES[&"bedroll"].size
+	var h := size * 0.5
+	var b := Paint.Pieces.new(-h.y)
+	var canvas := Paint.coat(Paint.TEAL, 0.0, 0.0, 0.95)
+	var lining := Paint.coat(Paint.BONE, 0.0, 0.0, 0.95)
+	var along := Basis(Vector3.RIGHT, PI / 2.0)
+	var wide := size.z - 0.04
+	var foot := -h.y
+	var head := -h.x
+	var r0 := h.x - 0.005
+	# What lies out has left the roll, which thins by the area it gave.
+	var r := sqrt(r0 * r0 * (1.0 - open) + BEDROLL_HEM * BEDROLL_HEM * open)
+	var x := head + r0 + open * (BEDROLL_LENGTH - r0 - BEDROLL_HEM)
+	var laid := x - head
+	b.box(Vector3(laid, BEDROLL_PAD, wide), Vector3(head + laid * 0.5, foot + BEDROLL_PAD * 0.5, 0.0), canvas, 0.006)
+	var seam := 0.45
+	while head + seam < x - r:
+		b.box(Vector3(0.014, 0.004, wide - 0.05), Vector3(head + seam, foot + BEDROLL_PAD + 0.001, 0.0),
+			Paint.coat(Paint.TEAL.darkened(0.35), 0.0, 0.0, 0.95), 0.0)
+		seam += 0.3
+	if x - r > head + 0.5:
+		# Its top turned back at the head, the lining showing.
+		b.box(Vector3(0.2, 0.012, wide - 0.02), Vector3(head + 0.38, foot + BEDROLL_PAD + 0.006, 0.0), lining, 0.004)
+	var plump := smoothstep(0.0, 0.25, open)
+	b.ball(1.0, Vector3(head + 0.13, foot + BEDROLL_PAD + 0.07 * plump, 0.0), lining,
+		Vector3(0.12, 0.07 * plump + 0.005, 0.36))
+	for z in [-1, 1]:
+		b.box(Vector3(0.34, 0.004, 0.035), Vector3(head - 0.02, foot + 0.002, z * 0.26), Paint.coat(Paint.BLACK, 0.3, 0.3, 0.6), 0.0)
+	b.drum(r, wide, Vector3(x, foot + r, 0.0), canvas, along, 18)
+	for z in [-1, 1]:
+		b.drum(maxf(r - 0.025, r * 0.5), 0.02, Vector3(x, foot + r, z * wide * 0.5), lining, along, 18)
+	return b.commit()
+
+
 ## A radio's needle, standing up its own +Y across the band: thin, red, and
 ## lit while it plays.
 static func dial_needle() -> ArrayMesh:
@@ -175,6 +227,8 @@ static func prepare() -> void:
 		shell(id)
 	Catalog.stake().free()
 	shell(&"stake")
+	for step in BEDROLL_STEPS:
+		bedroll((step + 1.0) / BEDROLL_STEPS)
 	for id: StringName in Catalog.PARTS:
 		Catalog.part(id).free()
 		shell(id)

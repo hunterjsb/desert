@@ -17,9 +17,10 @@ const GROUND_KHZ := 500.0
 const EVERYWHERE_M := 4000.0
 
 
-## Every carrier on the dial at world time t, low to high: [kHz, id].
+## Every carrier on the dial at world time t, low to high: [kHz, id]. The
+## living city's is one, heard only near it.
 static func carriers(gods: Gods, t: float) -> Array[Array]:
-	var out: Array[Array] = [[MUSIC_KHZ, &"music"], [BEACON_KHZ, &"beacon"]]
+	var out: Array[Array] = [[MUSIC_KHZ, &"music"], [BEACON_KHZ, &"beacon"], [gods.city.carrier(), &"city"]]
 	for id in Gods.ids():
 		out.append([gods.carrier(id, t), id])
 	out.sort_custom(func(a: Array, b: Array) -> bool: return a[0] < b[0])

@@ -678,14 +678,6 @@ static func device(id: StringName) -> Device:
 		made.carryable = true
 	var size: Vector3 = spec.size
 	made.frame_view = _add_box(made, size, Vector3.ZERO, Color(0.55, 0.55, 0.55), Dress.frame(id, size, spec.get("mast", 0.0)))
-	if spec.get("nest", false):
-		# Its ladder, down the mast's front: what you reach from the deck to climb.
-		var ladder := CollisionShape3D.new()
-		var rungs := BoxShape3D.new()
-		rungs.size = Vector3(0.3, CrowsNest.LADDER, 0.05)
-		ladder.shape = rungs
-		ladder.position = Vector3(0.0, -size.y * 0.5 - CrowsNest.LADDER * 0.5, -0.15)
-		made.add_child(ladder)
 	if spec.has("mast"):
 		made.rotor = Rotor.new()
 		made.rotor.mesh = Dress.rotor(id)

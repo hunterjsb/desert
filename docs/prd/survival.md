@@ -146,8 +146,14 @@ food running out, each from the night's own numbers rather than dice.
   stuck on a deck, and a part becomes its deck's shapes, worked by nothing. Rolled company canvas
   0.9 m long, 3 kg, low and round, so a breeze leaves it be on the sand and a storm slides it. Use on
   it laid on the sand, among what you carry, or stuck on a deck asks how long to sleep. In your hands, use
-  lays it out where you look, fore and aft as you face, or at your feet when nothing flat is in reach;
-  setting it down asks nothing of the camp, only sleeping does. The Surveyor and the Homesteader start
+  lays it out where you look, its head there and across you, or at your feet when nothing flat is in
+  reach; setting it down asks nothing of the camp, only sleeping does. Laid, it unrolls (2026-10-19):
+  over a second the roll rolls away from you, thinning as it goes, and leaves the pad flat behind it,
+  1.9 m from the pillow at its head to its foot, the top turned back and the straps lying undone. Taken
+  again, it rolls back up where it lay in 0.6 s, then shows in your hands; tipped over by the wind, it
+  rolls up where it lies. Only its look unrolls: its body is still the roll, under the pillow, so it
+  sleeps you, slides in a storm and sticks on a deck as it did, and use on it is at its head. A save
+  keeps it laid, and it comes back flat, not unrolling again. The Surveyor and the Homesteader start
   carrying one; the Salvager, riding light, finds one or a ruin's bed. It's found on deserters' dugout floors (3 in 12 of
   their draws, beside their survival kits) and now and then lying on open sand (1 in 14 of the
   surface's devices). There's no sleeping on bare sand without one: the bedroll is how you sleep in the
@@ -231,7 +237,7 @@ first frame, as for any jump; and a catch line's drift since you lay down comes 
 any jump. Nothing is saved mid-night, which is one frame
 under the fade, and a save made on waking resumes as you woke.
 
-**Probes** 16 to 20 (below). **Not yet:** a smart shield doesn't switch itself on asleep, since the
+**Probes** 16 to 21 (below). **Not yet:** a smart shield doesn't switch itself on asleep, since the
 Console's radar doesn't sweep, so sleep with the shield on; what drifts never snags on a dune or a
 ruin; a line's share of the wind is what it holds itself, so a deck on a line to a deck on a line to
 a stake puts only the second deck's push on the last line. The dev overlay's `sleep/last` says how
@@ -254,8 +260,10 @@ storm":
   [Wind & storms](wind-and-storms.md#open-questions)'s question. A night slept through an anomaly
   lives its real damage on a plan made from the clean curve.
 
-**Playtest (Hunter, 2026-10-19; agreed, not built).** "I still wanna see the sleepingbag unroll when
+**Playtest (Hunter, 2026-10-19; built 2026-10-19).** "I still wanna see the sleepingbag unroll when
 you place it." A bedroll set down unrolls out flat over a moment; picked up, it rolls back up.
+*Built (above; probe 21; `look/bedroll/shoot.sh` shoots it rolled, unrolling, flat and rolling back
+up).*
 
 ## Sleep (proposed)
 
@@ -768,6 +776,10 @@ Death means a new run (see Runs in the vision).
 20. **Sleep is no dodge** (2026-10-18). Asleep in the open on the probes' seed, no bubble over you, a
     storm due in the morning: its arrival wakes you, the night lived up to it, and waking says the storm
     woke you.
+21. **The bedroll unrolls** (2026-10-19). Laid out from your hands it's partway open a third of a
+    second on and flat by a second and a half; looked at by its head it's the bedroll, and it sleeps
+    you an hour; taken, it rolls up where it lay, then shows in your hands; and a save keeps it laid,
+    flat at once.
 
 ## Out of scope
 

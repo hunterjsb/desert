@@ -16,6 +16,38 @@ const NEST_HOW_TO := "crows_nest"
 const NEST_HOW_TO_SAYS := "Up in the crow's nest you ride the camp and see over the dunes round it.\n" \
 	+ "Its weight and yours are high up the mast: a hard gust heels it further. {ride} climbs you down."
 
+var _ladder: MeshInstance3D
+var _rungs: CollisionShape3D
+
+
+func _ready() -> void:
+	super()
+	_ladder = MeshInstance3D.new()
+	_ladder.mesh = NomadLooks.ladder()
+	_ladder.visible = false
+	add_child(_ladder)
+
+
+func _physics_process(delta: float) -> void:
+	super(delta)
+	var mast := host() as Mast
+	var down := mast != null and mast.standing()
+	_ladder.visible = down
+	if down == (_rungs != null):
+		return
+	if down:
+		_rungs = CollisionShape3D.new()
+		var shape := BoxShape3D.new()
+		shape.size = Vector3(0.3, LADDER, 0.05)
+		_rungs.shape = shape
+		_rungs.position = Vector3(0.0, NEST_FEET.y - 0.05 - LADDER * 0.5, -0.15)
+		add_child(_rungs)
+	else:
+		remove_child(_rungs)
+		if is_instance_valid(_rungs):
+			_rungs.queue_free()
+		_rungs = null
+
 
 func _init() -> void:
 	steers = false

@@ -52,8 +52,22 @@ integrated loudness, peaks never past -6 dBTP. A hard limiter on Master holds -1
 | radio_eye.ogg | the Eye's drone, now and then on its frequency | Hunter's `A-Mx-Drone.wav`, mono, levelled to the music, 0.5 s fades | Hunter's own | -28 at 3 m | -9 |
 | menu_move/confirm/back.ogg | the menus | Kenney Interface `click_002`, `select_002`, `back_002` | CC0 | -49, -40, -43 | -21, -16, -19 |
 | menu_theme.ogg | the main menu's theme, "Salt" | Hunter's `A-Mx-salt.wav`, stereo, levelled to about -20 dBFS, 20 ms fades for a seamless loop | Hunter's own | about -20 LUFS, on the UI bus | -5 |
-| boom.ogg | a vent's burst or a gas pocket's blowout, from far off | made here: a short thump of air over a falling 42 Hz drop, then the blast rolling back duller nine times and a long low tail | CC0 | -18.5 (its loudest 400 ms); played by distance, -2 dB at a kilometre, 6 dB less each doubling, and low-passed | -6 |
+| boom.ogg | a vent's burst or a gas pocket's blowout, from far off | made here: a short thump of air over a falling 42 Hz drop, then the blast rolling back duller nine times and a long low tail | CC0 | -18.5 (its loudest 400 ms); played by distance, -2 dB at a kilometre, 6 dB less each doubling, never over 0 dB, and low-passed | -6 |
+| boom_roll.ogg | the low roll a boom rolls on with | made here (`make_rumble_sounds.py`): brown rumble under 140 Hz surging back nine times over a steady floor, a growl under it falling from 40 to 28 Hz, dying over 16 s | CC0 | -24.5 (its loudest 400 ms), 6 dB under the thump; played with it, 1.5 dB less spreading a doubling past a kilometre and lower and longer, low-passed alike | -12 |
+| vent_build.ogg | a live vent's deep build as a burst nears, looped | made here (`make_rumble_sounds.py`): a harmonic tremor at 31 Hz wandering in pitch over brown rumble, stones rattling faintly in it, softly saturated | CC0 | -21 at its loudest, a vent's greatest burst at its onset within 300 m; played by the root of distance past that | -8.5 |
 | vent_roar.ogg | a live vent's steady roar, near | made here: brown noise under 260 Hz breathing over its 7 s, a little hiss over it, looped | CC0 | -29 at 150 m seeping | -6 |
+
+The vents' felt sounds, the roll and the build, are made here by `make_rumble_sounds.py` (numpy,
+then ffmpeg's Vorbis and its EBU R128 meter; CC0). As heard in the game (`look/rumble/record.tscn`,
+the whole stereo mix through Master, by ffmpeg's ebur128): in the "vent" scenario, 1.5 km across the
+rift in a 7 m/s breeze, the wind and the vent's roar make a bed of -37 LUFS short-term, the build
+rises over it to -30 at the burst's onset, and the boom comes 4.3 s later at -21 momentary, its roll
+-26 to -28 for four seconds; the true peak is -10 dBTP, nowhere near the limiter. From 12 km in a
+9 m/s breeze there's no build, and the boom comes 32 s after the burst at -35 momentary over a -39
+wind, rolling on about 15 s where its thump alone would last 6 (measured offline, both through the
+Booms bus's 323 Hz there). Against the music's -28 at 3 m and the wind's -30 at a gale, the build is
+at most level with a gale and under the music, and only the boom's first moment is louder: felt,
+not loud.
 
 Scrapping's sounds are made here, numpy only, by `make_scrap_sounds.py` (CC0), as WAV. Their
 level is their loudest 400 ms unweighted, an estimate short of LUFS, with the voice's offset in
@@ -97,6 +111,18 @@ loudest 400 ms (momentary LUFS) on the menus' bus:
 | File | What it is | Made from | Licence | Heard at | Peak |
 |---|---|---|---|---|---|
 | deed.wav | a deed done, as its badge shows | made here: three soft bell notes rising, A, E and A an octave up, over a warm low swell and a breath of high air | CC0 | -28 | -18 |
+
+The living city's chatter is made here too, numpy only, by `make_city_motifs.py` (CC0), as WAV at
+22.05 kHz: each tone a soft reed, odd harmonics over its fundamental, a breath of air on its attack and a
+slow vibrato, played through the radio's speaker like a god's tones:
+
+| File | What it is | Made from | Licence | Heard at | Peak |
+|---|---|---|---|---|---|
+| city_storm.wav | storm coming: three falling, G, E and A | made here: reed tones | CC0 | -36 | -31 |
+| city_tether.wav | tether in: two low and two higher, A A D D | made here: reed tones | CC0 | -37 | -31 |
+| city_moving.wav | city moving: three rising, A, D and G | made here: reed tones | CC0 | -36 | -31 |
+| city_clear.wav | all clear: up and back, E A A E | made here: reed tones | CC0 | -36 | -31 |
+| city_position.wav | its position: a run of eight | made here: reed tones | CC0 | -37 | -31 |
 
 **The radio's voice** (`voice/`, one OGG a phrase, named by its words) reads the weather
 station's reports and a Console's battery warnings. It's rendered here, once, by

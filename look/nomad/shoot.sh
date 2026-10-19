@@ -5,7 +5,7 @@
 #   look/nomad/shoot.sh <out dir>            shoot, then build the sheet
 #   look/nomad/shoot.sh <out dir> --sheet    build the sheet from what's there
 # No window: it runs unseen (scripts/unseen.sh), so it shoots while someone plays.
-set -uo pipefail
+set -euo pipefail
 cd "$(dirname "$0")/../.." || exit 2
 
 out=${1:?an output directory}
@@ -25,7 +25,7 @@ for shot in rig:"a wrecked nomad rig: its mast down by its post, its sail on it"
 	tack_left:"the Varran rig, the wind on your left" \
 	tack_right:"the same rig and lines, the wind on your right"; do
 	file="$out/${shot%%:*}.png"
-	[[ -f $file ]] || file="xc:gray"
+	[[ -f $file ]] || { echo "missing capture: $file" >&2; exit 1; }
 	args+=(-label "${shot#*:}" "$file")
 done
 montage "${args[@]}" -tile 4x2 -geometry 960x540+6+6 -pointsize 22 -background '#f4efe6' -depth 8 +repage "$out/grid.png"

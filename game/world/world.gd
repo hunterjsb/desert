@@ -55,6 +55,9 @@ var gravity: float
 ## that isn't a dev scenario's. The menu's world, a probe's and a look-test's
 ## count none unless they say so.
 var counts_deeds := false
+## The Walker taught the anomaly's tells, this run (Console.upload): its
+## feed and every map flag anomalies from then on.
+var taught := false
 
 @onready var terrain: Terrain = $Terrain
 @onready var content: Node3D = $Content
@@ -104,6 +107,8 @@ func _ready() -> void:
 	farm.setup(self)
 	sleep.setup(self)
 	_set_scene()
+	add_child(Walker.new())
+	add_child(CityLights.new())
 	spawn = Starts.ground(shape, tuning, kit.start if kit != null else &"", start)
 	player.global_position = Vector3(engine_x(spawn.x), height_at(spawn.x, spawn.y) + 0.1, engine_z(spawn.y))
 	_last_x = player_world_x()

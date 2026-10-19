@@ -1,5 +1,5 @@
 extends WreckProbe
-## Profile & saves probe 35: the nomads' gear's deeds, through play. Taking
+## Profile & saves probe 36: the nomads' gear's deeds, through play. Taking
 ## the mast off a wrecked nomad rig, its sail on it, is Hand-Me-Down;
 ## stepping into a nomads' camp, Just Missed Them, ???? till then; trimming
 ## a raised sail's sheet with a streamer flying on its rig, Telltale, and

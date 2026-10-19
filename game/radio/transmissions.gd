@@ -92,9 +92,18 @@ static func _quartermaster(radio: Radio, x: float, z: float) -> String:
 
 
 ## The weather station: the routine forecast for where the radio is, always;
-## at dusk or with storm news where it walks, the long report too. What it
-## reads aloud is shorter (Radio.report).
+## at dusk or with storm news where it walks, the long report too; taught, an
+## anomaly near the radio flagged after it. Under it its log, read an entry
+## at a time (`log`). What it reads aloud is shorter (Radio.report).
 static func _walker(radio: Radio, gods: Gods, x: float, z: float, t: float, local: float) -> Dictionary:
+	var said := _walker_report(radio, gods, x, z, t, local)
+	if radio.world.taught:
+		said.text += _flag(radio, x, z, t)
+	said.merge(walker_log(radio.world, gods, t))
+	return said
+
+
+static func _walker_report(radio: Radio, gods: Gods, x: float, z: float, t: float, local: float) -> Dictionary:
 	var routine := radio.weather_words(t)
 	var at := radio.ground_of(gods.home(&"walker", t))
 	var field := radio.world.weather.field
@@ -111,6 +120,71 @@ static func _walker(radio: Radio, gods: Gods, x: float, z: float, t: float, loca
 		return {"text": "%s · long range: %s · %s" % [routine, ahead, feet_say], "useful": true,
 			"calm": calm(radio.reading, t), "spoken": radio.report(t, long)}
 	return {"text": routine, "useful": true, "calm": calm(radio.reading, t), "spoken": radio.report(t)}
+
+
+## The anomaly whose heart stands nearest the radio within walker_flag_m,
+## flagged: how far and which way, and when it's at its full. "" with none.
+static func _flag(radio: Radio, x: float, z: float, t: float) -> String:
+	var tuning := Tuning.current()
+	var best := {}
+	for heart in radio.world.weather.field.anomalies_near(x, z, t, tuning.walker_flag_m):
+		if best.is_empty() or Vector2(heart.x - x, heart.z - z).length() < Vector2(best.x - x, best.z - z).length():
+			best = heart
+	if best.is_empty():
+		return ""
+	var off := Vector2(best.x - x, best.z - z)
+	var when := "at its full" if absf(best.peak - t) < 60.0 else (
+		"full in %s" % Radio.span(best.peak - t) if best.peak > t else "fading")
+	return " · anomaly %.1f km %s, %s" % [off.length() / 1000.0, radio.say_point(Radio.bearing(off)), when]
+
+
+## The Walker's log entry in the slot holding world time t: its survey
+## first, then each contact it keeps, latest first, round again. {log, contact}:
+## the line, and the contact it reads if it does.
+static func walker_log(world: World, gods: Gods, t: float) -> Dictionary:
+	var tuning := Tuning.current()
+	var slot := floori(t / tuning.walker_log_every)
+	var kept := gods.city.contacts(gods, t, tuning.walker_contacts_kept)
+	var k := posmod(slot, kept.size() + 1)
+	if k == 0:
+		return {"log": _survey(world, gods, slot * tuning.walker_log_every), "contact": {}}
+	var contact := kept[k - 1]
+	return {"log": "contact · %s ago · from %s · brg %03d" % [_ago(t - contact.t), fix(contact.from),
+		roundi(rad_to_deg(fposmod(contact.bearing, TAU))) % 360], "contact": contact}
+
+
+## Its survey where it walks: its leg, heading, the steady wind at its feet,
+## the ground under it and its fix.
+static func _survey(world: World, gods: Gods, t: float) -> String:
+	var p := gods.home(&"walker", t)
+	var heading := roundi(rad_to_deg(fposmod(Sphere.bearing(p, gods.home(&"walker", t + 60.0)), TAU))) % 360
+	var at := Walker.ground(world, p)
+	var wind := world.weather.field.steady_wind_at(at.x, at.y, t)
+	var from := String(Console.POINTS[roundi(fposmod(Radio.bearing(-wind), 360.0) / 22.5) % 16]).to_lower()
+	return "survey %d · hdg %03d · wind %d m/s %s · %s · fix %s" % [floori(t * Tuning.current().walker_speed / 1000.0),
+		heading, roundi(wind.length()), from, _ground_words(world, at), fix(p)]
+
+
+## A place as its log writes it: latitude and longitude to a tenth.
+static func fix(p: Vector3) -> String:
+	var lat := rad_to_deg(Sphere.latitude(p))
+	var lon := rad_to_deg(Sphere.longitude(p))
+	return "%.1f%s %.1f%s" % [absf(lat), "n" if lat >= 0.0 else "s", absf(lon), "e" if lon >= 0.0 else "w"]
+
+
+## The ground at a place in a few words: how the dunes stand and the sand lies.
+static func _ground_words(world: World, at: Vector2) -> String:
+	var shape := world.shape
+	var rise := 0.0
+	for way: Vector2 in [Vector2(20.0, 0.0), Vector2(0.0, 20.0)]:
+		rise = maxf(rise, absf(shape.height_at(at.x + way.x, at.y + way.y) - shape.height_at(at.x - way.x, at.y - way.y)))
+	var dunes := "flats" if rise < 1.0 else ("low dunes" if rise < 4.0 else "dunes, slip faces")
+	return dunes + (", sand deep" if shape.sand_at(at.x, at.y) > 0.6 else ", sand thin")
+
+
+static func _ago(seconds: float) -> String:
+	var day := Tuning.current().day_minutes * 60.0
+	return "%d d" % roundi(seconds / day) if seconds >= day * 0.5 else "%d min" % roundi(seconds / 60.0)
 
 
 ## Nothing to report at world time t: no storm on you, and none due within
