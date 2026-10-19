@@ -16,6 +16,7 @@
 - Integrate in the detached sibling `desert-wt-merge2`. Land one change at a time.
 - Push work for verification to `verify-*`. Copy `scripts/verify.sh` outside the checkout before running the copy from the worktree: `<copy> <name>` verifies, and `<copy> <name> --land` lands after green CI.
 - Merge current `origin/master` before landing; resolve conflicts and verify the combined result. Keep master green and push each completed commit through this flow.
+- Follow the release version policy in `README.md`: fixes bump patch; named alpha sub-releases bump minor. Update version and release notes together.
 - Documentation-only changes skip CI. Platform jobs run on master; check their results after landing.
 
 ## Checks and captures

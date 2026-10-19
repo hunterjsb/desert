@@ -4,9 +4,11 @@ This patch gathers the current sand and Nomad gear work with playtest fixes.
 Cross-platform publication is pending verification of the combined candidate.
 
 - More depth and shade in dune sand and nearby ripples.
+- Sand trails gain shaped depressions and rims that flatten the surrounding ripples.
 - Nomad wrecks and camps with recoverable sailing gear, a streamer and a crow's nest.
 - The dev console can open over any menu; unlocking origins updates the open menu.
 - A crow's nest can be placed on a standing mast from deck height.
+- The Varran's sheet ring rests on the deck, and waist ropes follow the rider's displayed movement.
 - Shorter weather announcements, spoken when storm news changes.
 
 ### 0.2.0-alpha
