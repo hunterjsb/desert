@@ -200,9 +200,42 @@ resets"): `unlockall` opens every start, and deeds can be granted or cleared to 
   behind it. Anything said brings it back to the latest.
 - **Probes:** Dev probes 4 and 5, Menus & UI probe 15, Profile & saves probe 18.
 - **A creative menu** for building crafts in a dev run: every part and device in a grid, taken
-  straight into your hands. Built once the chassis rework lands, since that's what you build with.
+  straight into your hands (Hunter: "a creative-style menu for building crafts in test").
 - **Scenarios are pruned and modernised:** the old ones the chassis and the newer systems have
-  overtaken are cut or remade around what the game is now.
+  overtaken are cut or remade around what the game is now (Hunter: "we should clean up old
+  scenarios or repurpose and modernize some").
+
+**Built** (2026-10-19), once the chassis rework landed:
+- **The creative menu** (`game/ui/creative_grid.gd`) opens over a run with nothing else open, by the
+  creative action (a dev key, listed under Dev) or the console's `creative`, laid out as a menu over a
+  run is, the world running on behind it; back or its action closes it. Every part and device give
+  makes is a card in the deeds' style, its picture (`ItemIcons`, which now draws any catalog thing as
+  it comes) over its name, in groups down two sides: chassis and frames, power, devices, sail and
+  rope, tools, food and water, boards by make. Picking one puts a fresh one, as the catalog makes it,
+  in your hands; with them full it goes in your suit; one too big for the suit (a Console, a
+  condenser, a shield, a planter, a turbine) stands in front of you, and you have hold of it if your
+  hands are free, which `god` makes light work of. Rope, wire and hose come rolled, as found. A line
+  under the grid says where the last one went. Opening it makes the run a dev run, and the first time
+  that line says so. Too big for the screen, it's drawn smaller to fit. Its pictures are drawn as the
+  game starts, with the deeds'. `look/creative` shoots it over a run, and with `--scenarios` the
+  still camp, every make of board, and the vent as you arrive and as it bursts.
+- **`scenario`** alone, or `scenarios`, lists each with a line on what it stages. Each scenario names
+  what it lays (`lays`), and `Scenarios.lay` lays it, so dev probe 1 starts every one as the console
+  does. A scenario clearing the last one's things unties that one's lines from your waist too, so a
+  sheet left on you doesn't keep you from sleeping.
+- **The scenarios' fates:**
+
+  | Scenario | Fate | Why, and what it stages now |
+  | --- | --- | --- |
+  | spawn, clear, wall, storm_500, storm_100, storm_20, deep, clearing, dusk, night, eclipse, far, far_storm | kept | moments of the weather and the sky; nothing of the old structure in them |
+  | survive, ruin, farm, radio, clear_skies, afk, lee, chassis, sail, sail_tow, yacht, wreck, console, anomaly | kept | already on chassis decks and plates and the newer systems |
+  | kit | cut | a test kit of lone devices and parts on the sand: the creative menu hands over every one |
+  | camp | remade as sleep | lone floaters each on a line, a duplicate of afk's moored deck; now dusk at a still camp, a deck of two resting on the sand with the bedroll, the base shield running, a wall to windward on a frame and a radio on the weather station |
+  | board | remade | one board by a plate and a bare piece; now a board of every make, charged, by a deck of two resting on the sand |
+  | boards | cut | merged into board |
+  | vent | new | across the rift from its live vent, facing it, a minute before it bursts in clear daylight, a charged board at your feet |
+- **Probes:** Dev probe 6 (the creative menu) and dev probe 1 (every scenario starts and lays what it
+  stages without an error).
 
 **The deeds grid** ([Profile & saves](profile-and-saves.md#deeds-achievements-agreed-2026-10-18-built))
 is a menu of its own, reached from the main menu and the system menu.
@@ -348,7 +381,7 @@ set aside to its right; over a run, in the middle on the soft dark field.
   clear`, all forgotten (Profile & saves). Those and `help` and `scenarios` need no world, so the
   console opens over the main menu too, with nothing else open there, standing over its words;
   the rest say "only in a run". Closed there, the menu's word is highlighted again. The keys list and Options' controls list
-  show the console action and the dev overlay's under a heading of their own, and the
+  show the console action, the creative menu's and the dev overlay's under a heading of their own, and the
   function keys the dev tools held now go to quick save and quick load (Profile & saves).
   The look-tests keep their own keys and have no console.
 - **Options:** volume, fullscreen, vsync and render scale (confirm steps a value on,

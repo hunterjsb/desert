@@ -2,144 +2,95 @@ class_name Scenarios
 extends RefCounted
 ## Dev starting conditions. Each one searches this run's own weather for a
 ## moment and a place that match, so a playtest starts where it needs to
-## without faking anything. A probe checks each delivers what it says.
+## without faking anything, and lays what it stages in front of you in
+## place of the run's kit. Dev probe 1 starts every one.
 
+## Each scenario: its key, a line on what it stages, and how it's found.
 ## kind: "spawn", "clear", "front" (a storm `distance` m upwind, coming at
 ## you), "deep" (inside, far from any edge), "back" (inside, clear air
-## `distance` m upwind), "sky" (clear, for the light) or "kit" (clear, with the
-## test kit dropped in front of you). day is the window of time of day to look
-## in: 0 is midnight, 0.5 noon. "camp" drops a floating camp in front of you,
-## each piece on one line to a stake, with stakes and coils to add more.
-## "survive" starts you over on sealed water, with a crude camp to keep you.
-## "ruin" stands you in front of history's house ruin nearest where the run
-## began on the moon, however far, dug out, clear and calm, with finds round
-## it and a bare chassis of your own. "farm"
-## sets two planters growing in front of you, one with a harvester, and a
-## shield for the storm on its way. "radio" sets a radio and a shield in front
-## of you with a storm on its way, to sit it out and follow a beacon: beside a
-## town where history left house ruins ("among"), so a beacon is in reach.
-## "clear_skies" sets it on, tuned to the weather station, with the next storm
-## far enough off for its clear-skies song. "afk"
-## parks the reference camp round you on a floating deck, running, to be left
-## alone, its farm watered by a condenser on hoses. "lee" stands you at the foot of a tall
-## slip face, facing up it into the wind coming over its crest, with a storm
-## on its way and a catch line strung across the wind for its drift. "chassis" lays out pieces, their trays, a frame,
-## batteries, a shield, a condenser, hooks and a coil to build a deck from, one piece's hook moored to a stake where the next piece pops it. "console" stands a Console with every
-## instrument and a radio on a small deck beside a shield, with a storm due
-## in a few minutes, to watch its screen as it comes. "anomaly" stands you
-## where an anomaly's heart comes over minutes after its storm's wall, beside
-## a camp built for wind. "eclipse" faces Tu in
-## the clear, the sun `eclipse` s from going behind it. "wreck" stands one of
-## every wreck in a fan ahead of you, dug out, each turned to show you its way
-## in, with what strips them at your feet: a heat cutter, a scoop, sealant,
-## stakes and a med kit. "moon" stands you elsewhere on the moon:
-## [latitude, degrees east of the point under Tu], so [30, 180] is the far
-## side, 30° north. Times of day are local. "sail_tow" and "yacht" stand you
-## in the sail scenario's breeze: a rig towing a larger camp past you, and a
-## land yacht with its helm seat and keel.
+## `distance` m upwind), "sky" (clear, facing the light), or a search of its
+## own: "ruin", "lee", "sail", "anomaly" and "vent". day is the window of
+## local time of day to look in: 0 is midnight, 0.5 noon; calm and breeze
+## bound the wind, m/s; due is when a storm comes, s, in place of ten clear
+## minutes; moon is [latitude, degrees east of the point under Tu], so
+## [30, 180] is the far side, 30° north. lays names what's laid.
 const LIST: Array[Dictionary] = [
-	{"key": "spawn", "label": "spawn: where and when the run began", "kind": "spawn"},
-	{"key": "clear", "label": "clear day, no storm for 10 min", "kind": "clear", "day": [0.42, 0.55]},
-	{"key": "wall", "label": "wall on the horizon, 3 km", "kind": "front", "distance": 3000.0, "day": [0.35, 0.5]},
-	{"key": "storm_500", "label": "storm 500 m away", "kind": "front", "distance": 500.0, "day": [0.35, 0.55]},
-	{"key": "storm_100", "label": "storm 100 m away", "kind": "front", "distance": 100.0, "day": [0.35, 0.55]},
-	{"key": "storm_20", "label": "storm 20 m away", "kind": "front", "distance": 20.0, "day": [0.35, 0.55]},
+	{"key": "spawn", "label": "where and when the run began", "kind": "spawn"},
+	{"key": "clear", "label": "a clear day, no storm for 10 min", "kind": "clear", "day": [0.42, 0.55]},
+	{"key": "wall", "label": "a storm's wall on the horizon, 3 km off", "kind": "front", "distance": 3000.0,
+		"day": [0.35, 0.5]},
+	{"key": "storm_500", "label": "a storm 500 m off, coming at you", "kind": "front", "distance": 500.0,
+		"day": [0.35, 0.55]},
+	{"key": "storm_100", "label": "a storm 100 m off", "kind": "front", "distance": 100.0, "day": [0.35, 0.55]},
+	{"key": "storm_20", "label": "a storm 20 m off", "kind": "front", "distance": 20.0, "day": [0.35, 0.55]},
 	{"key": "deep", "label": "deep in a storm", "kind": "deep", "day": [0.35, 0.55]},
-	{"key": "clearing", "label": "storm about to clear, 100 m", "kind": "back", "distance": 100.0, "day": [0.35, 0.55]},
-	{"key": "dusk", "label": "dusk, sun on the horizon", "kind": "sky", "day": [0.733, 0.745]},
+	{"key": "clearing", "label": "a storm about to clear, its back 100 m upwind", "kind": "back", "distance": 100.0,
+		"day": [0.35, 0.55]},
+	{"key": "dusk", "label": "dusk, the sun on the horizon", "kind": "sky", "day": [0.733, 0.745]},
 	# With the relay satellite up and sunlit, low enough to see facing it.
 	{"key": "night", "label": "night, facing the relay satellite crossing the sky", "kind": "sky", "day": [0.8, 0.97],
 		"relay": true},
-	{"key": "eclipse", "label": "eclipse: clear, facing Tu, the sun half a minute from going behind it",
-		"kind": "clear", "eclipse": 30.0},
-	{"key": "far", "label": "far side: a clear night with no Tu, 30° north, facing the pole star", "kind": "sky",
+	{"key": "eclipse", "label": "clear, facing Tu, the sun half a minute from going behind it", "kind": "clear",
+		"eclipse": 30.0},
+	{"key": "far", "label": "the far side: a clear night with no Tu, facing the pole star", "kind": "sky",
 		"day": [0.9, 0.97], "moon": [30.0, 180.0]},
 	# To hear the relay's music go as a storm comes over: it's well up, the radio on it.
-	{"key": "far_storm", "label": "far side storm: a radio on the music, the relay high, a storm 1.2 km off coming at you",
-		"kind": "front", "distance": 1200.0, "day": [0.0, 1.0], "moon": [30.0, 180.0], "relay_up": true, "music": true},
-	# Calm, so a floating device doesn't drift off before there's rope to hold it.
-	{"key": "kit", "label": "test kit: devices and parts, clear and calm", "kind": "kit", "day": [0.42, 0.55],
-		"calm": 6.0},
-	{"key": "camp", "label": "camp to stake: floaters on one line each, a shield, a storm 500 m off", "kind": "front",
-		"distance": 500.0, "day": [0.35, 0.55], "camp": true},
-	{"key": "survive", "label": "survive a few days: sealed water, a crude condenser, a shield, at dawn", "kind": "clear",
-		"day": [0.25, 0.3], "survive": true},
-	{"key": "ruin", "label": "go looking: a ruin and finds near you, your own bare chassis, clear and calm",
-		"kind": "ruin", "day": [0.35, 0.5], "calm": 6.0},
+	{"key": "far_storm", "label": "the far side: a radio on the relay's music, a storm 1.2 km off", "kind": "front",
+		"distance": 1200.0, "day": [0.0, 1.0], "moon": [30.0, 180.0], "relay_up": true, "lays": &"music"},
+	{"key": "survive", "label": "sealed water at dawn, a deck with a crude condenser and a shield", "kind": "clear",
+		"day": [0.25, 0.3], "lays": &"survive"},
+	{"key": "ruin", "label": "a house ruin's door, finds round it, a bare piece of your own", "kind": "ruin",
+		"day": [0.35, 0.5], "calm": 6.0, "lays": &"yours"},
 	# A clear morning, with a storm due in time to pick the root-tubers first
 	# and before the noon heat that wilts fungus, and far enough off that the
-	# saltbush is open when you arrive and folds as you watch: "due" is when,
-	# s, in place of ten clear minutes.
-	{"key": "farm", "label": "farm: root-tubers ripening in the clear, vat fungus for the storm due in minutes, a saltbush that folds before it, a harvester, a shield",
-		"kind": "clear", "day": [0.33, 0.37], "due": [150.0, 200.0], "farm": true},
-	{"key": "board", "label": "ride: a charged hoverboard at your feet by a small camp, a shield on its plate and a bare chassis, clear and calm",
-		"kind": "clear", "day": [0.35, 0.5], "calm": 6.0, "board": true},
-	{"key": "boards", "label": "boards by make: one of each charged on the sand in front of you, the issue, a skimmer racer, a Knights' patrol board and a temple board, clear and calm",
-		"kind": "clear", "day": [0.35, 0.5], "calm": 6.0, "boards": true},
-	{"key": "radio", "label": "radio: a radio and a charged shield in front of you, a storm 300 m off", "kind": "front",
-		"distance": 300.0, "day": [0.35, 0.55], "radio": true, "among": true},
+	# saltbush is open when you arrive and folds as you watch.
+	{"key": "farm", "label": "two planters ripening, a harvester, a shield, a storm minutes off", "kind": "clear",
+		"day": [0.33, 0.37], "due": [150.0, 200.0], "lays": &"farm"},
+	{"key": "board", "label": "a board of every make at your feet by a deck of two, clear and calm", "kind": "clear",
+		"day": [0.35, 0.5], "calm": 6.0, "lays": &"board"},
+	# Beside a town where history left house ruins, so a beacon is in reach.
+	{"key": "radio", "label": "a radio and a charged shield, a beacon in reach, a storm 300 m off", "kind": "front",
+		"distance": 300.0, "day": [0.35, 0.55], "among": true, "lays": &"radio"},
 	# The next storm far enough off that the weather station has nothing to
 	# report for a few minutes, then breaks off its song when it comes within
 	# radio_calm_minutes.
-	{"key": "clear_skies", "label": "clear skies: a radio on the weather station playing its song, the next storm 9 to 14 min off, a charged shield",
-		"kind": "clear", "day": [0.35, 0.55], "due": [540.0, 840.0], "walker": true},
+	{"key": "clear_skies", "label": "a radio on the weather station's song, the next storm 9 to 14 min off",
+		"kind": "clear", "day": [0.35, 0.55], "due": [540.0, 840.0], "lays": &"weather_station"},
 	# A morning like a run's, the first storm minutes off, so it soon shows what the camp does in one.
-	{"key": "afk", "label": "AFK: the reference camp on a floating 2x2 deck, moored, its farm floating beside it on hoses, a turbine out in the wind",
-		"kind": "clear", "day": [0.3, 0.4], "due": [180.0, 480.0], "afk": true},
+	{"key": "afk", "label": "the reference camp running on a floating 2x2 deck, its farm on hoses", "kind": "clear",
+		"day": [0.3, 0.4], "due": [180.0, 480.0], "lays": &"afk"},
 	# A storm due soon, so the lee is felt in the clear and then as it comes over the crest.
-	{"key": "lee", "label": "lee: at the foot of a tall slip face, the wind over its crest, a storm minutes off, a catch line strung across it",
-		"kind": "lee", "day": [0.35, 0.55], "due": [120.0, 360.0], "drift": true},
-	{"key": "chassis", "label": "chassis: pieces, their trays, a frame and a spare piece for a wall, batteries, a light shield, a condenser, hooks and a coil to build a deck from, one hook moored where the next piece pops it, clear and calm",
-		"kind": "clear", "day": [0.35, 0.5], "calm": 6.0, "chassis": true},
+	{"key": "lee", "label": "the foot of a tall slip face, a catch line across the wind, a storm minutes off",
+		"kind": "lee", "day": [0.35, 0.55], "due": [120.0, 360.0], "lays": &"catch_line"},
+	{"key": "chassis", "label": "pieces, trays, a frame, batteries, a shield and a condenser to build with",
+		"kind": "clear", "day": [0.35, 0.5], "calm": 6.0, "lays": &"chassis"},
 	# A steady breeze across open sand: the wind on your left, the camp
 	# facing across it ahead of you, ready to raise its sail and go.
-	{"key": "sail", "label": "sail: a 2x2 deck on skates with a mast and sail, its ballast in a frame, a shield (off), the sheet at your waist, the board at your feet, a steady breeze on open sand",
-		"kind": "sail", "day": [0.35, 0.5], "breeze": [8.5, 11.5], "sail": true},
-	{"key": "sail_tow", "label": "sail and tow: the rig ahead on its sheet, the camp behind on skates with a shield (off), both lines at your waist, the board at your feet, a steady breeze",
-		"kind": "sail", "day": [0.35, 0.5], "breeze": [8.5, 11.5], "tow": true},
-	{"key": "yacht", "label": "yacht: a floating 3x2 deck with a keel, a mast and sail, a helm seat and its ballast in a frame, the sheet at your waist, a steady breeze",
-		"kind": "sail", "day": [0.35, 0.5], "breeze": [8.5, 11.5], "yacht": true},
-	{"key": "wreck", "label": "scrap: every wreck in a fan ahead of you, dug out, a heat cutter, a scoop, sealant, stakes and a med kit, clear and calm",
-		"kind": "clear", "day": [0.36, 0.5], "calm": 6.0, "wreck": true},
+	{"key": "sail", "label": "a 2x2 deck on skates, its mast and sail, the sheet at your waist, a breeze",
+		"kind": "sail", "day": [0.35, 0.5], "breeze": [8.5, 11.5], "lays": &"sail"},
+	{"key": "sail_tow", "label": "the sail rig towing a camp past you on a hidden line, the board at your feet",
+		"kind": "sail", "day": [0.35, 0.5], "breeze": [8.5, 11.5], "lays": &"sail_tow"},
+	{"key": "yacht", "label": "a floating 3x2 deck with a keel, a mast and a helm seat, a breeze", "kind": "sail",
+		"day": [0.35, 0.5], "breeze": [8.5, 11.5], "lays": &"yacht"},
+	{"key": "wreck", "label": "every wreck in a fan ahead, dug out, and what strips them at your feet",
+		"kind": "clear", "day": [0.36, 0.5], "calm": 6.0, "lays": &"wrecks"},
 	# Far enough off that the radar sees the front coming before the smart
 	# shield switches itself on.
-	{"key": "console", "label": "console: a Console with every instrument and a radio on a small deck with a shield, a storm due in a few minutes",
-		"kind": "clear", "day": [0.35, 0.55], "due": [240.0, 360.0], "console": true},
+	{"key": "console", "label": "a Console with every instrument on a deck, a storm due in minutes", "kind": "clear",
+		"day": [0.35, 0.55], "due": [240.0, 360.0], "lays": &"console"},
 	# Its heart comes over minutes after the wall, on a camp ready for an
 	# ordinary storm: the one the Walker misjudged.
-	{"key": "anomaly", "label": "anomaly: a storm due in a few minutes with an anomaly at its heart, a camp built for wind: a deck moored on the sand, its shield on one battery, a turbine out in the gale, a Console reading wind and sand, a radio on the weather station, a compass in your suit",
-		"kind": "anomaly", "day": [0.3, 0.6], "due": [150.0, 300.0], "anomaly": true},
+	{"key": "anomaly", "label": "a storm with an anomaly at its heart due, by a camp built for wind",
+		"kind": "anomaly", "day": [0.3, 0.6], "due": [150.0, 300.0], "lays": &"anomaly_camp"},
+	{"key": "sleep", "label": "dusk at a still camp: a bedroll, a running shield, a wall to windward",
+		"kind": "clear", "day": [0.72, 0.745], "lays": &"sleep"},
+	# Clear long enough for the burst to tower, and by daylight.
+	{"key": "vent", "label": "across the rift from its live vent, a minute before it bursts", "kind": "vent",
+		"day": [0.2, 0.62], "due": [180.0, INF], "lays": &"vent"},
 ]
 
-## The test kit, as [catalog id, metres to your right, metres ahead]: bare
-## chassis to stick things on, a planter, a turbine and a shield, and parts
-## for every sticky face and slot.
-const KIT_DEVICES := [[&"chassis", -1.0, 3.0], [&"planter", 1.2, 3.2], [&"chassis", -2.4, 1.6],
-	[&"turbine", 2.6, 1.6], [&"shield", 0.05, 3.2]]
-## Where the kit's common cable, strong cable and hose land, right and ahead.
-const KIT_CABLE := [0.0, 2.3]
-const KIT_STRONG_CABLE := [0.0, 1.6]
-const KIT_HOSE := [0.0, 1.3]
-const KIT_PARTS := [
-	[&"battery", -1.6, 1.6], [&"big_battery", -1.2, 1.7], [&"hook", -0.8, 1.6], [&"hook", -0.55, 1.7],
-	[&"lamp", -0.25, 1.6], [&"root_tuber", 0.1, 1.7], [&"root_tuber", 0.35, 1.6], [&"saltbush", 0.6, 1.7],
-	[&"vat_fungus", 0.95, 1.6], [&"battery", 1.3, 1.7], [&"hover_tray", -2.6, 3.2],
-	[&"hover_tray", 2.8, 2.6], [&"solar_panel", -3.4, 2.6], [&"solar_panel", -3.6, 1.6],
-	[&"hook", 1.65, 1.7], [&"hook", 1.95, 1.6], [&"canister", -2.0, 1.2], [&"frame", -1.2, 5.0],
-	[&"fabric", 0.4, 4.6],
-]
-## Stakes lying across your way, and rope coils, right and ahead.
-const KIT_STAKES := [[-1.3, 1.15], [-1.3, 1.3], [-1.3, 1.45]]
-const KIT_COILS := [[0.6, 1.2], [1.2, 1.2]]
-## The camp: floaters each on a line to a stake further upwind, a planter and
-## a chassis with a tray and a battery, a charged shield on its own plate, and
-## spare stakes and coils by your feet: right and ahead.
-const CAMP_PLANTER := [-2.0, 4.0]
-const CAMP_FLOATER := [2.0, 4.0]
-const CAMP_SHIELD := [0.0, 2.6]
-const CAMP_STAKE_AHEAD := 3.0
-const CAMP_STAKES := [[-0.6, 1.2], [-0.6, 1.35], [-0.6, 1.5], [-0.6, 1.65]]
-const CAMP_COILS := [[0.4, 1.2], [0.9, 1.2], [1.4, 1.2]]
+## A floater's stake is driven this far further upwind of it, m.
+const TETHER_AHEAD := 3.0
 
 ## Survival's start, right and ahead: a deck of two resting on the sand with
 ## the condenser and its panel and battery, and the shield on its own
@@ -168,10 +119,14 @@ const FARM_CROPS := [&"root_tuber", &"root_tuber", &"root_tuber", &"vat_fungus"]
 const FARM_BY_HAND_CROPS := [&"root_tuber", &"saltbush", &"root_tuber", &"vat_fungus"]
 const FARM_GROWN := {&"root_tuber": 0.85, &"vat_fungus": 0.5, &"saltbush": 0.6}
 
-## The board, nose ahead, and the small camp beside you: right and ahead.
-const BOARD_AT := [0.0, 1.3]
-const BOARD_SHIELD := [-2.0, 3.0]
-const BOARD_CHASSIS := [2.2, 3.4]
+## A board of each make at your feet, noses ahead, the issue nearest, and
+## beside you a deck of two resting on the sand, the shield and its battery on
+## its first piece and its second bare to rack a board on: right and ahead.
+const BOARDS_AT := [[0.0, 1.3], [-0.6, 1.5], [0.6, 1.5], [-1.2, 1.7]]
+const BOARD_DECK := [2.0, 3.2]
+const BOARD_CAMP := [[&"piece", Vector2i(1, 0)],
+	[&"stick", Vector2i.ZERO, &"top", Vector2(-0.22, 0.22), 0.0, &"shield"],
+	[&"stick", Vector2i.ZERO, &"top", Vector2(0.25, -0.25), 0.0, &"battery"]]
 
 ## The radio, its face to you and far enough out to be in view as you
 ## arrive, and the shield on its plate to sit the storm out by it.
@@ -356,6 +311,27 @@ const ANOMALY_SEARCH := 60000.0
 const ANOMALY_DAYS := 200.0
 const ANOMALY_WALL := 300.0
 
+## The still camp, a deck of two resting on the sand squared to you as you
+## face upwind, right and ahead: the bedroll on its first piece by the base
+## shield and its battery, a frame on the second with a wall on its upwind
+## face, and in the frame a panel and a radio on the weather station.
+const SLEEP_DECK := [-0.5, 2.4]
+const SLEEP_RIG := [[&"piece", Vector2i(1, 0)],
+	[&"stick", Vector2i(0, 0), &"top", Vector2(-0.25, 0.0), 0.0, &"bedroll", &"bed"],
+	[&"stick", Vector2i(0, 0), &"top", Vector2(0.22, -0.25), 0.0, &"shield", &"shield"],
+	[&"stick", Vector2i(0, 0), &"top", Vector2(0.25, 0.25), 0.0, &"battery"],
+	[&"frame", Vector2i(1, 0), 0],
+	[&"wall", Vector2i(1, 0), &"front"],
+	[&"stick", Vector2i(1, 0), &"top", Vector2(0.0, 0.2), 0.0, &"solar_panel"],
+	[&"stick", Vector2i(1, 0), &"top", Vector2(0.0, -0.2), 0.0, [&"radio", [&"battery"]], &"radio"]]
+
+## The live vent is looked at from this far across the rift, m, this long
+## before a burst, s, over at most this many days from the clock's start:
+## most days it bursts, at any hour, and over the rift it's often stormy.
+const VENT_OFF := 1500.0
+const VENT_LEAD := 60.0
+const VENT_DAYS := 400.0
+
 ## Your own chassis, to stick what you find on: right and ahead.
 const YOURS := [1.5, 2.5]
 ## A catch line's stakes, right and ahead: across the wind you face.
@@ -392,9 +368,8 @@ const RELAY_UP := 60.0
 const DEEP := 300.0
 
 
-## Puts you into a scenario on this world: there and then, with its own
-## things in front of you in place of the run's kit, and the last scenario's
-## gone. Where it put you, or that it found nowhere, shows on the overlay at
+## Puts you into a scenario on this world, there and then, and lays what it
+## stages. Where it put you, or that it found nowhere, shows on the overlay at
 ## once; its things follow once the sand under them is solid.
 static func apply(world: World, scenario: Dictionary) -> void:
 	if scenario.is_empty():
@@ -406,60 +381,44 @@ static func apply(world: World, scenario: Dictionary) -> void:
 		return
 	stand(world, scenario, place)
 	Dev.put("world/scn", scenario.key)
+	await lay(world, scenario, place)
+
+
+## What a scenario stages, in front of you where it stood you, in place of
+## the last scenario's things and the run's kit. What it laid.
+static func lay(world: World, scenario: Dictionary, place: Dictionary) -> Array[Node3D]:
 	_clear(world, &"scenario_kit", false)
-	if not (scenario.kind in ["kit", "ruin"] or scenario.get("camp", false) or scenario.get("survive", false)
-			or scenario.get("farm", false) or scenario.get("board", false) or scenario.get("radio", false)
-			or scenario.get("boards", false)
-			or scenario.get("afk", false) or scenario.get("chassis", false) or scenario.get("console", false)
-			or scenario.get("sail", false) or scenario.get("tow", false) or scenario.get("yacht", false)
-			or scenario.get("drift", false) or scenario.get("walker", false)
-			or scenario.get("music", false) or scenario.get("anomaly", false) or scenario.get("wreck", false)):
-		return
+	var lays: StringName = scenario.get("lays", &"")
+	if lays == &"":
+		return []
 	# Bodies dropped before the sand under them has collision would be frozen or forgotten.
 	while is_instance_valid(world) and not world.terrain.is_settled_around(place.x, place.z):
 		await world.get_tree().physics_frame
 	if not is_instance_valid(world):
-		return
-	# Its own kit takes the place of the run's, gone before anything lands on it.
+		return []
 	_clear(world, &"kit", true)
-	var dropped: Array[Node3D]
-	if scenario.kind == "ruin":
-		dropped = yours(world)
-	elif scenario.kind == "kit":
-		dropped = kit(world)
-	elif scenario.get("farm", false):
-		dropped = farm(world)
-	elif scenario.get("board", false):
-		dropped = board(world)
-	elif scenario.get("boards", false):
-		dropped = boards(world)
-	elif scenario.get("radio", false):
-		dropped = radio(world)
-	elif scenario.get("walker", false):
-		dropped = weather_station(world)
-	elif scenario.get("music", false):
-		dropped = music_station(world)
-	elif scenario.get("afk", false):
-		dropped = afk(world)
-	elif scenario.get("chassis", false):
-		dropped = chassis(world)
-	elif scenario.get("sail", false):
-		dropped = sail(world)
-	elif scenario.get("tow", false):
-		dropped = sail_tow(world)
-	elif scenario.get("yacht", false):
-		dropped = yacht(world)
-	elif scenario.get("console", false):
-		dropped = console(world)
-	elif scenario.get("drift", false):
-		dropped = catch_line(world)
-	elif scenario.get("anomaly", false):
-		dropped = anomaly_camp(world)
-	elif scenario.get("wreck", false):
-		dropped = await wrecks(world)
-	else:
-		dropped = camp(world) if scenario.get("camp", false) else survive(world)
+	var dropped: Array[Node3D] = []
+	match lays:
+		&"yours": dropped = yours(world)
+		&"survive": dropped = survive(world)
+		&"farm": dropped = farm(world)
+		&"board": dropped = board(world)
+		&"radio": dropped = radio(world)
+		&"weather_station": dropped = weather_station(world)
+		&"music": dropped = music_station(world)
+		&"afk": dropped = afk(world)
+		&"catch_line": dropped = catch_line(world)
+		&"chassis": dropped = chassis(world)
+		&"sail": dropped = sail(world)
+		&"sail_tow": dropped = sail_tow(world)
+		&"yacht": dropped = yacht(world)
+		&"wrecks": dropped = await wrecks(world)
+		&"console": dropped = console(world)
+		&"anomaly_camp": dropped = anomaly_camp(world)
+		&"sleep": dropped = sleep(world)
+		&"vent": dropped = vent(world)
 	world.set_meta(&"scenario_kit", dropped)
+	return dropped
 
 
 ## Every wreck kind, dug out, in a fan this far ahead of you, m, this far
@@ -537,6 +496,11 @@ static func _clear(world: World, key: StringName, now: bool) -> void:
 	for body in world.get_meta(key, []):
 		if not is_instance_valid(body) or _yours(player, body):
 			continue
+		# A line of its own at your waist, a sheet or a tow, goes with it.
+		if body is Line:
+			for end in (body as Line).ends:
+				if is_instance_valid(end) and player.waist.holds(end):
+					player.waist.untie(end)
 		if now:
 			body.free()
 		else:
@@ -593,6 +557,8 @@ static func find(world: World, scenario: Dictionary) -> Dictionary:
 		return _open_breeze(world, scenario)
 	if scenario.kind == "anomaly":
 		return _before_anomaly(world, scenario)
+	if scenario.kind == "vent":
+		return _before_burst(world, scenario)
 	# Without salvage there's no structure to stand among: where the run began.
 	if scenario.get("among", false) and world.tuning.salvage:
 		return _among(world, scenario)
@@ -626,7 +592,7 @@ static func _search(world: World, scenario: Dictionary, spawn: Vector2, longitud
 static func _place(field: WeatherField, scenario: Dictionary, from: Vector2, upwind: Vector2,
 		t: float) -> Dictionary:
 	match scenario.kind:
-		"clear", "sky", "kit", "ruin", "lee", "sail":
+		"clear", "sky", "ruin", "lee", "sail", "vent":
 			var breeze: Array = scenario.get("breeze", [0.0, INF])
 			var blowing := field.wind_at(from.x, from.y, t).length()
 			if field.raw_storm_at(from.x, from.y, t) <= 0.0 \
@@ -789,6 +755,40 @@ static func _before_anomaly(world: World, scenario: Dictionary) -> Dictionary:
 	return {}
 
 
+## Across the rift from its live vent, facing it, on fresh ground with the
+## moon's point put there, VENT_LEAD s before a burst at a moment in the day's
+## window that's clear, there and over the vent, until the next storm's due,
+## and no eclipse while the burst towers: near the point under Tu, noon's
+## goes dark.
+static func _before_burst(world: World, scenario: Dictionary) -> Dictionary:
+	var history := world.shape.history
+	var geology := history.geology
+	var vent: Dictionary = geology.live()[0]
+	var stand := Sphere.toward(vent.p, vent.bearing + PI * 0.5, VENT_OFF / history.radius)
+	var yaw := -Sphere.bearing(stand, vent.p)
+	var longitude := Sphere.longitude(stand)
+	# Past where the history kept under the loaded ground could reach.
+	var off := (world.tuning.history_lay_m + world.tuning.history_cell_m) * 2.0 + world.history_due()
+	var at := World.flat_near(world.shape, world.player_world_x() + off, world.player_world_z())
+	var mouth := at + Vector2(-sin(yaw), -cos(yaw)) * VENT_OFF
+	var field := world.weather.field
+	var t := 0.0
+	while t < VENT_DAYS * world.tuning.day_minutes * 60.0:
+		var burst := geology.next_burst(vent, t)
+		var start := burst - VENT_LEAD
+		var hour := world.weather.day.time_of_day(start, longitude)
+		var towers := VENT_LEAD + Geology.BURST_SHAPE.x + Geology.BURST_SHAPE.y
+		var sunlit := range(0, int(towers) + 1, 10).all(func(s: int) -> bool:
+			return world.weather.day.sun_shown(start + s) == 1.0)
+		if start >= 0.0 and hour >= scenario.day[0] and hour <= scenario.day[1] and sunlit \
+				and not _place(field, scenario, at, Vector2.ZERO, start).is_empty() \
+				and not _place(field, scenario, mouth, Vector2.ZERO, start).is_empty():
+			return {"x": at.x, "z": at.y, "yaw": yaw, "time": start,
+				"moon": Vector2(rad_to_deg(Sphere.latitude(stand)), rad_to_deg(longitude))}
+		t = burst
+	return {}
+
+
 ## Level sand across the run's long-term wind, nearest where the run began
 ## down it, at a moment in the day's window that's clear for ten minutes with
 ## a breeze in the range asked, the breeze on your left and you facing across it.
@@ -947,78 +947,18 @@ static func _relay_up(world: World, moon: Vector2, t: float) -> bool:
 	return rad_to_deg(asin(clampf(_relay_from(world, moon, t).y, -1.0, 1.0))) >= RELAY_UP
 
 
-## Drops the test kit on the sand in front of the player, squared to them,
-## parts lying socket side down. Returns what it dropped.
-static func kit(world: World) -> Array[Node3D]:
+## A planter floating in front of you on its own tray and battery, a hook on
+## each ring, on one line from a hook to a stake driven upwind of it:
+## [planter, stake].
+static func _tethered(world: World, right: float, ahead: float) -> Array[Node3D]:
 	var player := world.player
-	var yaw := Basis(Vector3.UP, player.global_rotation.y)
-	var dropped: Array[Node3D] = []
-	for entry: Array in KIT_DEVICES:
-		var device := Catalog.device(entry[0])
-		var size: Vector3 = Catalog.DEVICES[entry[0]].size
-		drop(world, device, Transform3D(yaw, Vector3(0.0, size.y * 0.5, 0.0)), entry[1], entry[2])
-		dropped.append(device)
-	for entry: Array in KIT_PARTS:
-		var part := Catalog.part(entry[0])
-		drop(world, part, Transform3D(yaw * Basis(Vector3.RIGHT, -PI / 2.0), Vector3.ZERO), entry[1], entry[2])
-		dropped.append(part)
-	dropped.append_array(stakes_and_coils(world, KIT_STAKES, KIT_COILS))
-	var at := player.global_position + player.global_basis.x * KIT_CABLE[0] - player.global_basis.z * KIT_CABLE[1]
-	at.y = world.height_under(at)
-	var cable := Catalog.cable(world, at)
-	dropped.append(cable)
-	dropped.append_array(cable.plugs)
-	at = player.global_position + player.global_basis.x * KIT_STRONG_CABLE[0] - player.global_basis.z * KIT_STRONG_CABLE[1]
-	at.y = world.height_under(at)
-	var strong := Catalog.cable(world, at, true)
-	dropped.append(strong)
-	dropped.append_array(strong.plugs)
-	at = player.global_position + player.global_basis.x * KIT_HOSE[0] - player.global_basis.z * KIT_HOSE[1]
-	at.y = world.height_under(at)
-	var hose := Catalog.hose(world, at)
-	dropped.append(hose)
-	dropped.append_array(hose.plugs)
-	return dropped
-
-
-## Drops the camp in front of the player: a planter and a chassis floating,
-## each with a battery and a tray and a hook on every ring, on one line from
-## a hook to a stake driven upwind of it, and a shield on its plate with a
-## full battery, switched off. Returns what it dropped.
-static func camp(world: World) -> Array[Node3D]:
-	var dropped: Array[Node3D] = []
-	dropped.append_array(_tethered(world, &"planter", CAMP_PLANTER[0], CAMP_PLANTER[1]))
-	dropped.append_array(_tethered(world, &"chassis", CAMP_FLOATER[0], CAMP_FLOATER[1]))
-	dropped.append_array(plate(world, [&"shield", &"battery"], CAMP_SHIELD))
-	dropped.append_array(stakes_and_coils(world, CAMP_STAKES, CAMP_COILS))
-	return dropped
-
-
-## A floater in front of you, a battery and a tray in it or stuck on it and a
-## hook on every ring, on one line from a hook to a stake driven upwind of
-## it: [device, what's stuck on it, stake].
-static func _tethered(world: World, id: StringName, right: float, ahead: float) -> Array[Node3D]:
-	var player := world.player
-	var device: Device
-	if id == &"chassis":
-		device = rig_at(world, [[&"stick", Vector2i.ZERO, &"bottom", Vector2.ZERO, 0.0, &"hover_tray"],
-			[&"stick", Vector2i.ZERO, &"top", Vector2.ZERO, 0.0, &"battery"]], [right, ahead]).deck
-	else:
-		device = Catalog.device(id)
-		drop(world, device, Transform3D(Basis(Vector3.UP, player.global_rotation.y),
-			Vector3(0.0, world.tuning.hover_height, 0.0)), right, ahead)
-		for socket in device.sockets():
-			var fill: Variant = {&"battery": &"battery", &"bottom": &"hover_tray"}.get(socket.kind)
-			if fill != null:
-				var part := Catalog.part(fill)
-				world.content.add_child(part)
-				device.fit(part, socket)
-	for socket in device.sockets():
-		if socket.kind == &"ring" and socket.is_open():
-			device.fit(Catalog.part(&"hook"), socket)
+	var device := Catalog.device(&"planter")
+	drop(world, device, Transform3D(Basis(Vector3.UP, player.global_rotation.y),
+		Vector3(0.0, world.tuning.hover_height, 0.0)), right, ahead)
+	fill(world, device, [&"battery", &"hover_tray", &"hook", &"hook"])
 	_afloat(world, device)
 	var stake := Catalog.stake()
-	var at := device.global_position - player.global_basis.z * CAMP_STAKE_AHEAD
+	var at := device.global_position - player.global_basis.z * TETHER_AHEAD
 	world.content.add_child(stake)
 	stake.drive(at, world.height_under(at))
 	Line.between(world, device.free_tie(stake.global_position), stake.free_tie(device.global_position), 0.5)
@@ -1057,7 +997,7 @@ static func farm(world: World) -> Array[Node3D]:
 	world.player.suit.carried.append(Catalog.part(&"root_tuber"))
 	var dropped: Array[Node3D] = []
 	for where: Array in [FARM_BY_HAND, FARM_HARVESTER]:
-		var tied := _tethered(world, &"planter", where[0], where[1])
+		var tied := _tethered(world, where[0], where[1])
 		var planter := tied[0] as Planter
 		for id: StringName in (FARM_CROPS + [&"harvester"] if where == FARM_HARVESTER else FARM_BY_HAND_CROPS):
 			var part := Catalog.part(id)
@@ -1077,22 +1017,13 @@ static func farm(world: World) -> Array[Node3D]:
 	return dropped
 
 
-## A hoverboard lying at your feet, nose ahead, a full battery in it, and a
-## small camp beside you for the range warnings to watch: a charged shield
-## on its plate, switched off, and a bare chassis. Returns what it dropped.
+## A board of each make at your feet, charged, and the small camp beside you
+## for the range warnings to watch. What it dropped, the issue first.
 static func board(world: World) -> Array[Node3D]:
-	var dropped: Array[Node3D] = [standing(world, &"board", [&"battery"], BOARD_AT)]
-	dropped.append_array(plate(world, [&"shield", &"battery"], BOARD_SHIELD))
-	dropped.append(standing(world, &"chassis", [], BOARD_CHASSIS))
-	return dropped
-
-
-## One board of each make side by side in front of you, noses ahead, each
-## with a full battery, the issue nearest your right hand.
-static func boards(world: World) -> Array[Node3D]:
 	var dropped: Array[Node3D] = []
 	for i in BoardMakes.ALL.size():
-		dropped.append(standing(world, BoardMakes.ALL[i], [&"battery"], [0.6 - i * 0.6, 1.6]))
+		dropped.append(standing(world, BoardMakes.ALL[i], [&"battery"], BOARDS_AT[i]))
+	dropped.append_array(_of(rig_at(world, BOARD_CAMP, BOARD_DECK, false)))
 	return dropped
 
 
@@ -1104,14 +1035,18 @@ static func radio(world: World) -> Array[Node3D]:
 	return dropped
 
 
-## The radio of "radio" switched on and tuned to the weather station, the
-## Walker's carrier today, beside its charged shield, switched off.
+## The radio of "radio" on the weather station, beside its charged shield,
+## switched off.
 static func weather_station(world: World) -> Array[Node3D]:
 	var dropped := radio(world)
-	var tuned := dropped[0] as Radio
+	_on_station(world, dropped[0] as Radio)
+	return dropped
+
+
+## A radio switched on and tuned to the weather station: the Walker's carrier today.
+static func _on_station(world: World, tuned: Radio) -> void:
 	tuned.on = true
 	tuned.frequency = Radio.gods_of(world).carrier(&"walker", world.time)
-	return dropped
 
 
 ## The radio of "radio" switched on and tuned to the music, the relay's
@@ -1198,8 +1133,7 @@ static func anomaly_camp(world: World) -> Array[Node3D]:
 	var rig := rig_at(world, ANOMALY_RIG, AFK_DECK, false)
 	var deck := rig.deck
 	var radio: Radio = rig.named.radio
-	radio.on = true
-	radio.frequency = Radio.gods_of(world).carrier(&"walker", world.time)
+	_on_station(world, radio)
 	var shield: ShieldGenerator = rig.named.shield
 	var stake := _driven(world, AFK_STAKE)
 	var line := Line.between(world, _deck_tie(deck, Vector2i.ZERO, Vector2i(0, -1)),
@@ -1469,6 +1403,23 @@ static func catch_line(world: World) -> Array[Node3D]:
 	dropped.append(Line.between(world, (stakes[0] as Stake).free_tie(stakes[1].global_position),
 		(stakes[1] as Stake).free_tie(stakes[0].global_position), 0.3))
 	return dropped
+
+
+## The still camp to sleep at: you fed and watered by a deck of two resting
+## on the sand, its bedroll and its shield running on its battery and panel,
+## a wall to windward on a frame, and a radio on the weather station to wake
+## you when it calls a storm. What it dropped, the deck first.
+static func sleep(world: World) -> Array[Node3D]:
+	world.player.vitals.fresh()
+	var rig := rig_at(world, SLEEP_RIG, SLEEP_DECK, false)
+	_on_station(world, rig.named.radio)
+	(rig.named.shield as ShieldGenerator).stand(true)
+	return _of(rig)
+
+
+## A charged board at your feet, to ride to the vent.
+static func vent(world: World) -> Array[Node3D]:
+	return [standing(world, &"board", [&"battery"], BOARDS_AT[0])]
 
 
 ## Your own bare chassis on the sand beside you, to stick what you find on.

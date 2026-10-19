@@ -13,8 +13,9 @@ extends Control
 ## Each command's arguments and what it does, in the order help lists them.
 const COMMANDS := {
 	"help": ["", "these commands"],
-	"scenarios": ["", "the scenarios' keys"],
+	"scenarios": ["", "each scenario, and what it stages"],
 	"scenario": ["<key>", "start one; the run is a dev run from then on, never saved"],
+	"creative": ["", "every part and device, to take straight into your hands"],
 	"fly": ["", "fly through the world, or walk again"],
 	"warp": ["[n]", "the clock n times as fast; alone, the next of x1, x10, x60"],
 	"gravity": ["[m/s²]", "gravity; alone, low gravity or back"],
@@ -44,6 +45,8 @@ const KEPT := 200
 const NOTCH := 2
 const REMEMBERED := 50
 const MOST := 20
+## Said the first time the run turns a dev run.
+const DEV_RUN := "a dev run from now: no deed counts in it"
 ## Its panel's width and how far down it hangs, px.
 const WIDTH := 640.0
 const TOP := 24.0
@@ -127,7 +130,7 @@ func run(line: String) -> void:
 	var counted := world != null and world.counts_deeds
 	call("_" + name, words.slice(1), world)
 	if counted and not world.counts_deeds:
-		_say("a dev run from now: no deed counts in it")
+		_say(DEV_RUN)
 
 
 ## The run changed by the console: a dev run from now, saved as one.
@@ -141,17 +144,24 @@ func _help(_args: PackedStringArray, _world: World) -> void:
 
 
 func _scenarios(_args: PackedStringArray, _world: World) -> void:
-	_say(" ".join(_scenario_keys()))
+	for scenario in Scenarios.LIST:
+		_say("%s  %s" % [scenario.key, scenario.label])
 
 
+## Alone, or with a key it doesn't know, it lists them.
 func _scenario(args: PackedStringArray, _world: World) -> void:
 	var scenario := Scenarios.by_key(args[0]) if args.size() == 1 else {}
 	if scenario.is_empty():
-		_say("%s, a key of: %s" % [_usage("scenario"), " ".join(_scenario_keys())])
+		_say("%s, one of:" % _usage("scenario"))
+		_scenarios(args, _world)
 		return
 	ui.main.start_scenario(scenario)
 	# Where it put you shows at once; its things follow.
 	_say("%s: %s" % [Dev.read("world/scn"), scenario.label])
+
+
+func _creative(_args: PackedStringArray, _world: World) -> void:
+	ui.open_creative()
 
 
 func _fly(_args: PackedStringArray, world: World) -> void:
