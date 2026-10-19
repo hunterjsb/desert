@@ -62,10 +62,10 @@ The core rule of the era: **power belongs to whoever holds the working machines.
 Three powers, always raiding each other, never merging or making lasting peace. Inside each, Game of Thrones-style family conflict.
 
 - **Port Morgan** (the Morgan kingdom): the dominant power. The crown passes between great families over centuries:
-  - **Okafor:** descended from the Harbourmaster who stayed; claims the crown by right of the port.
-  - **Kessel:** IOU district bosses turned lords; dockworker blood, popular.
-  - **Arkwright:** the engineer line from the colonial technicians; keepers of the archives and machines (and later the Ledger).
-  - **Vante:** merchants controlling water and grain trade with the Rim; they switch sides.
+  - **Haberjack:** descended from the Harbourmaster who stayed; claims the crown by right of the port.
+  - **Pellicott:** IOU district bosses turned lords; dockworker blood, popular.
+  - **Crake:** the engineer line from the colonial technicians; keepers of the archives and machines (and later the Ledger).
+  - **Vonatelli:** merchants controlling water and grain trade with the Rim; they switch sides.
 - **Halloran:** the refinery terraces become the citadel; H-Town is the lower city. Same escarpment, same single crossing, now a castle gate. Has geothermal power and the old security force's muscle.
 - **The Rim Kingdom:** a label the cities use, not a real state. Loose, disconnected farm towns and co-ops, maybe tied by a council or market fair. Holds the food but can never agree, so the big two buy off different farms.
 - **Free towns and barons:** road towns that flip allegiance and charge tolls, salvage towns on big ruins, neutral holy sites. A baron is whoever holds a well, a turbine, a dig site or a stretch of road; lose the machine, lose the title.
@@ -90,7 +90,7 @@ Three powers, always raiding each other, never merging or making lasting peace. 
 | Enclave | What it is |
 | --- | --- |
 | The Bastion | The military order's fortress around the Ledger's mainframe. |
-| Kesselside | Salvage quarter in the old IOU freight districts, named for the fallen Kessels. Diggers and black market. |
+| Crakeside | Salvage quarter in the old IOU freight districts, named for the fallen Crakes. Diggers and black market. |
 | The Pads | Settlement on the old landing field; caravans and traders. |
 | Lowtown | Squatters in half-buried districts, sand to the windows. Poor and independent. |
 
@@ -117,7 +117,7 @@ Three powers, always raiding each other, never merging or making lasting peace. 
 
 | AI | Origin | Where | Worship |
 | --- | --- | --- | --- |
-| The Ledger | Tilg logistics model; so capable it's used for everything. Probably the archive the Arkwrights kept. | Mainframe in Port Morgan's ruins (the Bastion). | Everyone wants a piece of it; the crusade is really about it. It knows the ships, cargo and routes. |
+| The Ledger | Tilg logistics model; so capable it's used for everything. Probably the archive the Crakes kept. | Mainframe in Port Morgan's ruins (the Bastion). | Everyone wants a piece of it; the crusade is really about it. It knows the ships, cargo and routes. |
 | The Quartermaster | The Provisional State's military AI. | The black site, a bunker cut into the rift wall near Halloran, kept alive by geothermal power. | Patron of the military order and of Muster's war cult. Holds military clearances. |
 | Mother Cistern | Condenser-plant AI, possibly with the colony clinic's records. | Temple in a city near Halfrise. | An order of priestesses: healing, fertility, water and rain. Its miracles really work. |
 | The Walker | A legged survey robot that never stops mapping. | Wandering. | Nomad pilgrims trail it across the desert. |
