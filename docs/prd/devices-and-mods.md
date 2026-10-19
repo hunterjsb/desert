@@ -106,6 +106,41 @@ it, take hold of it, and let go.
    allowed but **not balanced around**. If you want something to stay, fit a tray or
    tie it down. We'll watch how it plays.
 
+## The chassis as the one structure (agreed, 2026-10-18 spec; not built)
+
+Hunter's [chassis, kits & dune archaeology spec](../chassis-kits-dunes-2026-10-18.md), from his brother's playtest ("a board he
+could just stick things to"): the crate and nearly every slot go; the chassis becomes a sticky
+square you tile, tow by its edge rings and place anything on freely, so a camp is truly the
+player's own, laid out in stations (power, weather, workstation) rather than filled slots. It
+replaces the slot model this PRD describes below, which stays until it's built.
+- **Pieces:** a **chassis** is one 1 m square whose whole top and bottom are sticky and whose edge
+  rings join pieces and take ropes; a **deck** is chassis joined edge to edge into one rigid body; a
+  **frame** is an open cube on a chassis taking a chassis on any of its five other faces (upright, a
+  wall; raised flat, a shelf).
+- **No more slots,** no crate, no deck mount, no top slots. Anything sticks anywhere it fits; the
+  limits are space (no clipping) and the trays' lift. The only slots left are plugs and water taps;
+  battery bays only on the power box; hooks only on planters and chassis edge rings.
+- **Hover trays stick onto chassis.** A tray lifts toward the sand it faces, fully facing down and
+  less as it tips, nothing on a wall: the field pushes against the sand (the dig's own fiction).
+- **Tall devices** (Console, condenser) stick straight onto a chassis, too tall for a frame; the
+  planter and turbine stand as they are. An upper chassis can't rest on devices, only on a frame.
+  A frame's face can be a chassis, a screen, or fabric (a crude sail).
+- **Placing:** the controls stay as they are. Held, a thing snaps onto the face you aim at, flat or
+  upright, and take or letting go leaves it there; the rotate gesture turns it, settling into 15°
+  detents when near one, never forced. What you hold is the real thing, not a ghost, and passes
+  through what it touches until it's set; it tints red where it would clip, with a few words why
+  ("blocked", "too heavy"). It edges gently to faces' edges and its neighbours so rows line up.
+  Taking one thing off a cluttered deck takes that thing; dragging a deck never takes it apart.
+- **Wind on faces:** every upright and fabric face is a plate catching wind on the body it belongs
+  to, from its area and how square it stands, with occlusion along the wind and scoops by which
+  faces are filled; uprights shelter what's behind them like a small dune; fabric ripples in a
+  shader driven by the same force (Wind & storms).
+- **Balance and flipping** is a real challenge: no new balance UI; a flipped rig is righted with
+  rope or shoves, and a big badly built one in a storm may only be stripped and rebuilt.
+- **Saves:** a new format, version 2: each body with what's stuck to it by face and local pose and
+  each thing's state. Older saves are refused with a plain reason (an alpha's honest break); the
+  profile and its deeds carry on untouched.
+
 ## The chassis
 
 (Hunter, 2026-10-17: "a larger, flatter "chassis", a modular frame that can attach to
@@ -367,7 +402,10 @@ device already stays a body of its own on the host's power pool.
     easy to read, like a table, and use small up or down arrows instead of rising and falling"):
     labels in one column, numbers right-aligned in the next, units after them, then a note: a
     point of the compass, a trend as a small ▲ or ▼ (– steady), a shield's mode. The rows under a
-    reading are indented and dim, and what's urgent is amber. Under the table are the larger gyro,
+    reading are indented and dim, and what's urgent is amber. A running shield's line has its
+    load under it, the sand it holds back as a share of a full storm's, amber past 100%, which
+    only an anomaly makes ([Wind & storms](wind-and-storms.md#the-anomaly-as-built-2026-10-18)).
+    Under the table are the larger gyro,
     with the wind's steady part beside the wind and the angle written under it, and the
     pressure's last ten minutes as a line with the storm's line across it.
   - **Power,** in place of the Shield page (Hunter, 2026-10-18: "shield page should be replaced
@@ -1032,7 +1070,7 @@ Proposed, in this PRD's terms:
 | Light solar panel | | | | | 1 | |
 | Hoverboard | 1 | | | | 1 | fits a rack itself |
 | Radio | 1 | | | | 1 | fits a top mount itself |
-| Bedroll | | | | | | fits a rack itself; use on it sleeps ([Survival](survival.md#sleep-as-built-2026-10-18)) |
+| Bedroll | | | | | | fits a rack itself; use on it sleeps, and in your hands lays it out ([Survival](survival.md#sleep-as-built-2026-10-18)) |
 | Helm seat | | | | | | stands on a deck mount; use on it sits you at the helm ([Movement](movement.md#sailing-from-kite-to-yacht-agreed-2026-10-18-spec-built)) |
 | Survival kit | | | | | | a water and a food socket, 2 small and 1 large plant slot |
 

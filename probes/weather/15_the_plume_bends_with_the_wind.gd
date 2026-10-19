@@ -2,8 +2,9 @@ extends WeatherProbe
 ## Wind & storms probe 15: a live vent's plume rises from its mouth and the
 ## run's wind shapes it. What left the vent at each moment lies where the
 ## field's drift has carried it since; in a strong wind the plume bends over
-## low and runs out long, in a light one it stands taller; and a storm
-## between you and it hides it, where clear air shows it.
+## low and runs out long, in a light one it stands taller; a storm between
+## you and it hides it, where clear air shows it; and what towers over a
+## storm's roof shows over it.
 
 ## How far downwind the bend is compared, m.
 const DOWNWIND := 300.0
@@ -12,7 +13,7 @@ const DOWNWIND := 300.0
 func run() -> void:
 	await load_weather(1234, true)
 	await beside_vent(400.0)
-	var plume := world.weather.plume
+	var plume := world.weather.plume_for(&"live_vent")
 	var root := plume.root
 	world.time_warp = 0.0
 	var clear := func(t: float) -> bool: return field.raw_storm_at(root.x, root.z, t) < -0.06 \
@@ -52,6 +53,17 @@ func run() -> void:
 	print("its mouth seen through a storm between %.2f, through clear air %.2f" % [hidden, shown])
 	check(hidden < 0.05, "a storm between hides it")
 	check(shown > 0.9, "clear air shows it")
+
+	# A storm by the vent, clear air nearer you: its foot is lost, and what
+	# towers over the storm's roof shows.
+	var at := func(k: float) -> Vector2: return eye.lerp(Vector2(root.x, root.z), k)
+	var by_vent := find_time(func(t: float) -> bool: return field.raw_storm_at(at.call(0.85).x, at.call(0.85).y, t) > 0.05 \
+		and field.raw_storm_at(at.call(0.5).x, at.call(0.5).y, t) < -0.03 and field.raw_storm_at(eye.x, eye.y, t) < -0.05)
+	var from := Vector3(eye.x, 2.0, eye.y)
+	var foot := Plume.seen_through(field, world.tuning, from, root, by_vent)
+	var tower := Plume.seen_through(field, world.tuning, from, root + Vector3.UP * 4000.0, by_vent)
+	print("a storm by the vent: its foot seen %.2f, 4 km up %.2f" % [foot, tower])
+	check(foot < 0.05 and tower > 0.9, "a column towering over a storm by the vent shows over it")
 
 
 ## The clock at t, and every one of the plume's reads made there.

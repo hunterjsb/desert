@@ -178,10 +178,15 @@ static func plan(site: Structure, height: Callable, taken := {}) -> Array[Dictio
 
 ## What one socket holds within reach now, or {}.
 static func within_reach(site: Structure, i: int, height: Callable, taken := {}) -> Dictionary:
-	if taken.has(i):
+	return {} if taken.has(i) else lying(site, i, draw(site, i), height)
+
+
+## The same from what it holds, drawn already.
+static func lying(site: Structure, i: int, drawn: Dictionary, height: Callable, taken := {}) -> Dictionary:
+	if taken.has(i) or drawn.is_empty():
 		return {}
-	var spec := draw(site, i)
-	return spec if not spec.is_empty() and _lies(site, i, spec, height) else {}
+	var spec := drawn.duplicate()
+	return spec if _lies(site, i, spec, height) else {}
 
 
 ## Works out every socket's resting spots for what it may hold while the
@@ -221,7 +226,8 @@ static func _lies(site: Structure, i: int, spec: Dictionary, height: Callable) -
 	var p := Vector2(socket.at.x, socket.at.z)
 	var surface := socket.at.y
 	if piece.lean == 0.0 or site.tilt == 0.0:
-		var spot := _spot(piece, state, i, size)
+		# On what stands of it now, between states too.
+		var spot := _spot(piece, StructureKit.Piece.shown_state(site.level()), i, size)
 		if not spot.is_finite():
 			return false
 		p = Vector2(spot.x, spot.y)

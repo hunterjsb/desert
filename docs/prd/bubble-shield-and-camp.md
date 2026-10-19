@@ -136,7 +136,10 @@ The shield decides how much of it is safe. All three grow with upgrades.
   with nothing to run on it only fizzles. Its light shows its charge.
 - **Draw by state:** off it draws nothing; running it sips 10 W in the clear and draws
   200 W holding back a full storm, between the two in a lesser one, so a base battery
-  lasts thirty minutes in a storm. A wider bubble costs more by its shell's area.
+  lasts thirty minutes in a storm. A wider bubble costs more by its shell's area. It
+  draws by its load, the sand it holds back as it really is: past a full storm's only in an
+  anomaly, when its hum strains higher ([Wind &
+  storms](wind-and-storms.md#the-anomaly-as-built-2026-10-18)).
 - **The warning** comes over the last two minutes at what it's drawing: the hum sags
   and the shell flickers, more and more often. Flat, it collapses over 0.6 s and every
   consumer agrees at every moment, since they all read the same shrinking radius. It

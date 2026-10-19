@@ -4,8 +4,9 @@ extends Probe
 ## another. On twelve worlds the rift is one line through Aitch's floor, the
 ## black site in its walls; every vent is on it; the vent stations stand on
 ## the tapped vents; the live vent is further along than any pipe reached,
-## still under Tu in Han; and the rift's rock and the far-side volcano's are
-## magnetized, where ordinary ground isn't.
+## still under Tu in Han; the volcano's flank vent is on its flank; gas
+## pockets break out round the rift now and then; and the rift's rock and the
+## far-side volcano's are magnetized, where ordinary ground isn't.
 
 const SEEDS := 12
 
@@ -29,6 +30,9 @@ func run() -> void:
 		var stations := history.settlements.filter(func(s: Dictionary) -> bool: return s.kind == &"vent_station")
 		var tapped := geology.tapped()
 		var live: Dictionary = geology.live()[0]
+		var flank: Dictionary = geology.live()[1]
+		var summit: Vector3 = history.landmark(&"observatory").p
+		var pockets := geology.pockets(0.0, 20.0 * 3600.0)
 		var rules := {
 			"one line": gaps <= Geology.STEP + 1.0 and rift.size() > 40,
 			"through Aitch's floor": _off(rift, aitch, r) < 1.0,
@@ -40,6 +44,10 @@ func run() -> void:
 			"the live vent past the pipes": tapped.all(func(v: Dictionary) -> bool:
 				return absf(live.along) > absf(v.along) + 1500.0),
 			"the live vent in Han": history.region_of(live.p) == &"han",
+			"the volcano's flank vent on its flank": Sphere.angle(flank.p, summit) * r > Geology.FLANK.x - 1.0
+				and Sphere.angle(flank.p, summit) * r < Geology.FLANK.y + 1.0,
+			"gas pockets round the rift, now and then": pockets.size() > 20 and pockets.all(func(p: Dictionary) -> bool:
+				return Sphere.angle(p.p, history.sub_tu) * r < Geology.POCKET_GROUND.y + 1.0),
 			"its rock magnetized, and the volcano's, not ordinary ground": geology.magnetized(aitch) > 0.99
 				and geology.magnetized(live.p) > 0.99 and geology.magnetized(history.landmark(&"observatory").p) > 0.99
 				and geology.magnetized(history.landmark(&"port_morgan").p) < 0.01

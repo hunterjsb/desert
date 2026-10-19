@@ -24,6 +24,13 @@ const ASIDE_TOP := 0.71
 const ASIDE_ROWS := 6
 ## The corner's speaker, across, px.
 const SPEAKER := 30.0
+## Words set apart under the lead stand this much further off it than the
+## list's spacing, px, and come up this long after it, s. One still locked is
+## this faint.
+const APART_GAP := 16.0
+const APART_DELAY := 0.25
+const APART_SECONDS := 0.4
+const LOCKED := 0.5
 
 ## Back never closes it: the main menu is the bottom of the stack.
 var root := false
@@ -41,6 +48,8 @@ var side := false
 var shows := &""
 
 var _list: VBoxContainer
+## The words set apart under the lead, once there are.
+var _apart: VBoxContainer
 var _aside: GridContainer
 var _items: Array[Dictionary] = []
 ## The word last highlighted.
@@ -103,6 +112,12 @@ func _init(note := "", under := &"Scrim") -> void:
 		_list.add_child(Control.new())
 
 
+func _ready() -> void:
+	if _apart != null:
+		# The lead first, the variations on it a moment after.
+		_apart.create_tween().tween_property(_apart, "modulate:a", 1.0, APART_SECONDS).set_delay(APART_DELAY)
+
+
 ## The game's name at the top of the screen in a light logo, a moon hung
 ## beside it as the prototype's had, under a high shade that keeps it
 ## readable over a bright sky, and the build's version small in a corner:
@@ -163,6 +178,26 @@ static func _draw_moon(mark: Control) -> void:
 		mark.draw_polyline(crescent + PackedVector2Array([crescent[0]]), lit, 1.0, true)
 
 
+## Down the left: the words so far lead, larger, and those added after stand
+## apart beneath them, smaller, quieter and closer together: variations on the lead.
+func set_apart() -> void:
+	if _apart != null:
+		return
+	for item in _items:
+		item.button.theme_type_variation = &"MenuWordLead"
+		if item.line != null:
+			item.line.theme_type_variation = &"MenuLineLead"
+	var gap := Control.new()
+	gap.custom_minimum_size.y = APART_GAP
+	gap.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_list.add_child(gap)
+	_apart = VBoxContainer.new()
+	_apart.theme_type_variation = &"MenuListApart"
+	_apart.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_apart.modulate.a = 0.0
+	_list.add_child(_apart)
+
+
 ## Something to read above the words, such as the controls list.
 func add_body(body: Control) -> void:
 	body.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN if side else Control.SIZE_SHRINK_CENTER
@@ -175,11 +210,12 @@ func add_body(body: Control) -> void:
 ## Down the left, `line` is a few words under it, brighter while it's highlighted.
 func add(text: Variant, act: Callable, step := Callable(), line := "") -> Button:
 	var word := Button.new()
-	word.theme_type_variation = &"MenuWordMain" if _main else &"MenuWordSide" if side else &"MenuWord"
+	word.theme_type_variation = &"MenuWordApart" if _apart != null else &"MenuWordMain" if _main \
+		else &"MenuWordSide" if side else &"MenuWord"
 	word.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN if side else Control.SIZE_SHRINK_CENTER
 	word.alignment = HORIZONTAL_ALIGNMENT_LEFT if side else HORIZONTAL_ALIGNMENT_CENTER
 	word.focus_mode = Control.FOCUS_ALL
-	var item := {"button": word, "text": text, "act": act, "step": step, "corner": false}
+	var item := {"button": word, "text": text, "act": act, "step": step, "corner": false, "line": null}
 	_items.append(item)
 	var under: Label = null
 	if side:
@@ -187,14 +223,17 @@ func add(text: Variant, act: Callable, step := Callable(), line := "") -> Button
 		pair.theme_type_variation = &"Column"
 		pair.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		under = Label.new()
-		under.theme_type_variation = &"MenuLine"
+		under.theme_type_variation = &"MenuLineApart" if _apart != null else &"MenuLine"
 		# A space keeps a word without a line as tall as one with.
 		under.text = line if line != "" else " "
 		under.uppercase = true
 		under.modulate = Color(UNLIT, UNLIT, UNLIT)
+		item.line = under
 		pair.add_child(word)
 		pair.add_child(under)
-		_list.add_child(pair)
+		if not act.is_valid():
+			pair.modulate.a = LOCKED
+		(_apart if _apart != null else _list).add_child(pair)
 	else:
 		_list.add_child(word)
 	if not act.is_valid():

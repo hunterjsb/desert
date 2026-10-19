@@ -11,7 +11,8 @@ extends WeatherProbe
 ## a charged crate, a condenser, hooks and a coil lie in front of you, one
 ## piece's hook moored to a stake; a Console on a
 ## floating deck shows its finest map and every reading, the storm coming, its
-## shield smart and off; the eclipse faces Tu
+## shield smart and off; the anomaly stands you where its heart comes over
+## minutes after its wall, by a camp built for wind; the eclipse faces Tu
 ## just before the sun goes behind it; the far side has no Tu. Checked against
 ## the field itself and against what the game then shows.
 
@@ -96,6 +97,18 @@ func run() -> void:
 				check(cut >= Scenarios.LEE_SHARE * Tuning.current().lee_wind and Dev.read("weather/lee") != "-",
 					"lee: the wind on you is cut by its lee, and the overlay says so (%.2f)" % cut)
 				await _catch_line_lands(upwind)
+			"anomaly":
+				var due := field.next_change(at.x, at.y, t, 600.0, 5.0)
+				check(not stormy and due >= scenario.due[0] - 10.0 and due <= scenario.due[1] + 10.0,
+					"anomaly: clear, its storm due in %d to %d s (%.0f s)" % [scenario.due[0], scenario.due[1], due])
+				var full := INF
+				var s := 0.0
+				while s <= due + Scenarios.ANOMALY_WALL + 10.0 and full == INF:
+					full = s if field.anomaly_at(at.x, at.y, t + s) >= 1.0 else INF
+					s += 5.0
+				check(full - due <= Scenarios.ANOMALY_WALL + 10.0 and ahead.dot(upwind) > 0.999,
+					"anomaly: facing upwind, its heart over you within %d s of the wall (%.0f s)" % [Scenarios.ANOMALY_WALL, full - due])
+				await _anomaly_camp_lands()
 			"deep":
 				check(field.storm_at(at.x, at.y, t) == 1.0, "deep: full storm")
 				check(_edge(at, upwind, t, true) > 250.0 and _edge(at, -upwind, t, true) > 250.0,
@@ -147,6 +160,31 @@ func _radio_lands() -> void:
 	check(not radio.target.is_empty(), "radio: a beacon in reach from there")
 	for body in dropped:
 		body.free()
+
+
+## The camp built for wind stands round you: its deck moored to a driven
+## stake, its shield running on one battery, the turbine out beyond the
+## bubble in the same pool, a Console reading wind and sand, the radio on
+## its top playing; a compass in your suit.
+func _anomaly_camp_lands() -> void:
+	await settle(true)
+	var dropped := Scenarios.anomaly_camp(world)
+	await physics_frames(60)
+	var deck: Chassis = dropped[0]
+	var console: Console = dropped[1]
+	var radio: Radio = dropped[2]
+	var shield: ShieldGenerator = dropped[3]
+	var turbine: Device = dropped[7]
+	check(deck.pieces().size() == 4 and (dropped[5] as Stake).driven and shield.running()
+		and shield.batteries().size() == 1 and world.power.pool_wh(turbine) == world.power.pool_wh(shield)
+		and turbine.global_position.distance_to(shield.global_position) > shield.size + 0.5,
+		"anomaly: a moored deck, its shield running on one battery, the turbine beyond the bubble in its pool")
+	check(console.running() and console.gear().has("anemometer") and console.gear().has("particle_sensor")
+		and radio.playing() and world.player.suit.carried.any(func(p: RigidBody3D) -> bool: return p is Compass),
+		"anomaly: a Console reading wind and sand, the radio playing, a compass in your suit")
+	for body in dropped:
+		if is_instance_valid(body):
+			body.free()
 
 
 ## The reference camp stands round you, running, on its deck: a tray under

@@ -414,8 +414,8 @@ past that the far ring showed the dunes alone.
   is. The relay mast, the watchtower, the pylon stub, the wreck hull and the pipeline segment have one.
   A stand-in stands at its structure's place and turn, as deep as its state sinks it and cut at the
   sand, on the far ring's own ground (`FarRing.ground`, its 32 m triangles), so it never floats or sinks
-  where the ring skips a crest. Its state is its chunk's once that's built, else read on the worker at
-  the last exposure tick, and read again at the next.
+  where the ring skips a crest. Its level out of the sand is read on the worker, and read again each
+  minute as storms work on it (2026-10-18); once its chunk draws it, it's the structure's own, as it stands.
 - **True to the real piece** (2026-10-18, round three, after Hunter: "i thought they were huge
   towers, but up close theyre just small antennae... we need better less obvious models and a smoother
   transition"). A stand-in is the piece's own shape at low detail at its own size: the mast's footing,
@@ -440,17 +440,34 @@ past that the far ring showed the dunes alone.
   the sun's height, so curves and plates have spots facing out low; what faces the sky glints for those
   above it. A glint lights where the way it faces halves the angle between the sun and your eye, a
   smooth function of the three, so it swells as they line up, twinkles slowly as the angle keeps turning
-  (once each 1.2°, a few seconds as the sun goes) and fades, never strobing. It's a white star 8 px across
-  as it lights and 16 at its brightest (`glint_px`) at any distance, held in front of what it lies on,
-  dimmed by the haze. None at night, behind Tu, in a storm round you, or where a storm stands at it or
-  between (the storm map's fronts, read in its shader), and only where the site's state leaves it bare
-  of sand. Near, it's on the structure; past the built ground, on its stand-in. The sun turns once in a
+  (once each 1.2°, a few seconds as the sun goes) and fades, never strobing. It's a white star 7 px across
+  as it lights and 12 at its brightest (`glint_px`), 7 times the sun on white (`glint_brightness`), at
+  any distance, held in front of what it lies on, dimmed by the haze. None at night, behind Tu, in a
+  storm round you, or where a storm stands at it or between (its site's veil, below), and only where the
+  site's state leaves it bare of sand. Near, it's on the structure, rising and sinking with it; past the
+  built ground, on its stand-in. Inside a storm, what it has newly laid bare glints through its dust
+  instead, near and veiled by nothing else (2026-10-18,
+  [Wind & storms](wind-and-storms.md#storms-with-a-payoff-agreed-2026-10-18-spec)). The sun turns once in a
   20-minute day, so a far plate's sparkle lasts a minute or so: long enough to turn and look.
-- **Roads.** The saltbush lines on the second age's roads (Feral's rows that grow a line closer than
-  5 m) run on past the built ground to 3 km as a low ridge in the leaf's shade-side green, at least 3 px
-  thick (`skyline_line_px`), draped on the far ground: a dark line across the sand, a side at a time where Feral's stretch fates say a stretch lives (`Feral.far_lines`, the same
-  draws its bushes come from), so a line far off runs where the bushes stand. Pylon rows and pipe runs
-  are their stand-ins in a row.
+- **Roads.** The saltbush on the second age's roads (Feral's rows that grow a line closer than 5 m)
+  stands on past the built ground to 3 km bush by bush: each plant its chunk would place, from the same
+  draws (`Feral.far_plants`), where it would stand and at its own size, a low mound on the far ring's
+  ground in the leaf's own sage, finished as the real leaf is, never darker than the real bush. Past
+  about 700 m a bush is under a pixel, so it's widened to 1.5 px and drawn as much fainter, as a
+  stand-in is, and the haze takes it as it takes everything: the line reads as a broken, dotted line of
+  silver-green, its stretches living and dying as Feral's fates say, as faint as distance makes it. The
+  far bushes are grouped by the chunk they stand on, and a chunk's give way to its real bushes while it
+  is drawn: the same plants in the same places at the same size, so the line runs on over the edge of
+  the built ground without a change. Pylon rows and pipe runs are their stand-ins in a row.
+- **Storms hide it** (round four). A storm between you and anything drawn far off hides it, as the
+  storm pass hides the ground behind it and the plume's veil hides the plume: each thing drawn (a
+  structure's stand-in, its boxes over its own ground and its glints, looked at halfway up; a chunk's
+  far bushes, at its middle) takes the plume's own reading of the storm field along the line between
+  (`Plume.seen_through`), and of the dust round you. It's read on the main thread a few at a time
+  within 0.1 ms a frame (`VEIL_US`), all of them in turn each second of the clock or 25 m you go
+  (`VEIL_EVERY`), and handed to the shaders a texel each, by the index each instance carries. What
+  comes newly into view is hidden until it's read. The glint shader's own reading of the storm map
+  went with it.
 - **A site in sight at every start** (`Starts.in_sight`). Every origin's start must have something to
   walk to in sight from where its run's ground begins: its top clear over the ground as it's drawn
   between (the dunes on the loaded chunks, a metre at a time, and the far ring past them, at every edge
@@ -480,10 +497,17 @@ past that the far ring showed the dunes alone.
 710 m, 7.2 px tall and its lattice 0.7 px wide as it stands, drawn 1.5 px wide and as much fainter,
 which you see only looking for it; a mast at 1.91 km, 2.7 px tall, all but gone; a watchtower likewise
 at its own size. What you see first is the Surveyor's mast's glint, from where the run begins 14.3 min
-in on seed 1234, a white star 8 to 16 px across on the horizon. A wreck's hull to 2 to 3 km exposed
-(the Salvager's at 143 m, a dark shape on the skyline); a pylon stub only once a storm has stripped it
-(buried, its crossarm is a 2 px dash at a kilometre); a saltbush line to 3 km as a dark line across the
-dunes facing you; a glint, a 16 px white star at its brightest, to 3 km.
+in on seed 1234, a white star 7 to 12 px across on the horizon (12 at 90% of its brightest). A wreck's
+hull to 2 to 3 km exposed (the Salvager's at 143 m, a dark shape on the skyline); a pylon stub only once
+a storm has stripped it (buried, its crossarm is a 2 px dash at a kilometre); a glint, a 12 px white
+star at its brightest, to 3 km. A saltbush line, where it leaves the built ground at 560 m, a dotted
+line of 1 to 2 px bushes, real and stand-in alike (a bush 1.5 px wide and 0.7 tall, drawn 1.5 px at
+half solid); at 1.3 km a faint broken dotted line of silver-green along the dunes, there when you look
+for it (a bush 0.7 px by 0.3, drawn a tenth solid); by 2.3 km gone (drawn 3% solid). Behind a storm,
+none of it: a relay mast 1.9 km off and far bushes 1 km off drawn 0% shown, 100% with the air between
+clear. Measured against the real bushes from 150 m, the same pixels in the same places, as light
+(the bushes' pixels' mean luminance 190 for the stand-ins against 190 for the real), weighing 0.7 of
+them on the eye: the real mound's leaves stand out past it a little.
 
 **What it costs** (an RTX 3070 at 1080p; the look-test's `cost` lines). On the GPU, looking round the
 horizon from the Surveyor's start, 2.44 ms a frame with it and 2.46 without; with the AFK camp parked
@@ -494,21 +518,32 @@ of a millisecond a frame), and once 3.3 ms in a windowed run as the world loaded
 proportional to the moon: what's laid near you, and a cell at a time of what isn't. Its worker, 2 to
 60 ms a job, one each time the sheet follows you. Power probe 11's own measure, a tick's work on the
 main thread, twice each way: the world alone 1.95 and 2.06 ms with it, 1.82 and 1.95 without; with the
-AFK camp parked, 3.63 and 4.21 with it, 3.86 and 3.99 without: within the run-to-run noise.
+AFK camp parked, 3.63 and 4.21 with it, 3.86 and 3.99 without: within the run-to-run noise. Round four,
+with the far bushes and the veils, shot while a game was being played on the same GPU: on the GPU 5.77
+ms a frame with it and 6.06 without, 5.83 and 5.95 with the AFK camp parked, within the noise; its
+main thread 0.03 ms a frame on average (with the veils' reading, all 64 things in sight in turn once a
+second), 1.9 at most under that load; its worker 22 to 40 ms a job there, 13 to 20 ms headless on
+the starts with saltbush in reach and 2 ms without: placing the far bushes is most of it.
 
 **Probes** (`probes/sightlines/`): 1 every origin begins with something in sight, on three worlds, the
 world as built and drawn looked over a metre at a time, and the Surveyor's horizon shines for you on
 the run's first day, as drawn and lit (6.4 to 13.9 min in); 2 a far stand-in is what you find when you
 arrive: walked to from 1.5 to 2.6 km, it's laid where its stand-in last stood and stands as high over
-its ground, in the state its stand-in showed. Spawns probes 1 to 3 and loot probe 6 keep their rules
-with the new starts.
+its ground, in the state its stand-in showed; 3 a storm hides what's far off: from the Surveyor's
+start, clear where you stand, a storm between you and a relay mast 2.9 km off, and between you and a
+chunk's far bushes 2.1 km off, hides each (drawn 0.00 shown), and with the air between clear both show
+(1.00); 4 a glint shows through a storm's dust only near (2026-10-18). Spawns probes 1 to 3 and loot
+probe 6 keep their rules with the new starts.
 
 **To see it** (unseen, on a GPU): `look/sightlines/shoot.sh <dir>` shoots each origin's start looking at
-what's in sight, a far mast, the Surveyor's glint from where its run begins, a saltbush line and a row
-of pylon stubs, each with a zoom; walking in to the Surveyor's mast across the hand-over from 560 to
-340 m, zoomed six times, as you see it and from the same spots as only its real look and only its
-stand-in; and the cost lines; and builds `~/Desktop/sightlines.png`. It shoots in clear air (no storms),
-so what's far off is seen as on a clear day.
+what's in sight, a far mast, the Surveyor's glint from where its run begins, a saltbush line from 1 km
+and 2 km and where it leaves the built ground, and a row of pylon stubs, each with a zoom (the glint
+and the saltbush as on a 1080p screen, the shot's middle at its own size); walking in to the
+Surveyor's mast across the hand-over from 560 to 340 m, zoomed six times, as you see it and from the
+same spots as only its real look and only its stand-in; and the cost lines; and builds
+`~/Desktop/sightlines.png`. It shoots in clear air (no storms), so what's far off is seen as on a clear
+day; then, with storms back, a storm between you and a far mast and far saltbush, beside the same views
+with the air between clear.
 
 **Fragile.**
 - Where the built ground gives way to the far ring, at 512 m or more, a stand-in moves from its own
@@ -529,6 +564,10 @@ so what's far off is seen as on a clear day.
   and only where the run begins; a step aside moves it a little.
 - A lattice's real members are thinner than a pixel past a hundred metres or so and draw as a broken
   line that crawls as you move; the stand-in past the hand-over is the steady line it averages to.
+- The veil reads the field every 800 m or so along the line between, as the plume's does, so a storm
+  narrower than that can slip between its reads; a chunk's far bushes are veiled as one, at its middle.
+- Far bushes are placed without the clearing of a ruin's walls (the worker can't ask the sheet), so a
+  few can stand where a ruin covers the road until its chunk is drawn.
 
 After playing it (Hunter, 2026-10-18: "sightlines are awesome... wow! transformed the game... we
 should really flesh this feature out further once the skeleton is properly load-bearing -- this is
@@ -538,7 +577,15 @@ the tall structures want an art pass of their own.
 Then (round three, 2026-10-18): the masts and towers read right at true size; the far saltbush lines
 didn't ("look like giant ridges or serpents from afar, or even maybe a shadow glitch, and you can
 see them through storms"), so far off they're a broken line of bushes, as faint as the haze makes
-them and hidden by a storm like anything else; and the glint is toned down a little.
+them and hidden by a storm like anything else; and the glint is toned down a little. Built (round
+four, the `farsalt` branch): the draped ridge is gone, and a far saltbush line is its plants, each
+where its chunk will stand it, at its own size, in the leaf's own sage, handed over chunk by chunk to
+the real bushes (Roads, above); it reads as a faint dotted line to a kilometre or so and is gone by
+two. Everything drawn far off, masts, towers, their glints and the bushes, takes the plume's veil
+(Storms hide it, above): a storm between you and it hides it. The glint is 12 px at its brightest,
+not 16, and 7 times the sun on white, not 9; the Surveyor's start still has its mast glint for it on
+the first day (its rule is the glint's share of its brightest, which didn't change: 6.4 to 13.9 min in
+on probe 1's three worlds, as before).
 
 ### Readings, not in the session
 
@@ -554,6 +601,8 @@ them and hidden by a storm like anything else; and the glint is toned down a lit
   state (buried, partly exposed, exposed) can be read the same way when its chunk is made, so a storm
   that has passed gives a different state to a chunk loaded after it, and nothing under your feet is
   reshaped (rule 2). A state that changes while you stand there is another matter (open questions).
+  *Since 2026-10-18 it does, smoothly, as a storm works the site, and never over you
+  ([Wind & storms](wind-and-storms.md#storms-with-a-payoff-agreed-2026-10-18-spec)).*
 - **Drift answers the collector's question.** The notes' collector "catches wind-blown loot. What
   blows is open." Part 4 says what: light debris, scraps and occasional small items. That narrows the
   question and does not settle how it sits with finds that are "frozen where they lie."
@@ -564,6 +613,19 @@ them and hidden by a storm like anything else; and the glint is toned down a lit
   wayshrine, a watchtower and a house ruin are three smaller or taller pieces of the same kind, each
   with a loot table, and the step that builds them replaces the notes' base case of "pillars and wall
   stubs."
+
+## Nomad gear (agreed, 2026-10-18 spec; not built)
+
+From the [chassis spec](../chassis-kits-dunes-2026-10-18.md): a neglected tier, common and found all over, open wilderness
+included: ruins give power and tech, the wilderness gives mobility. Wrecked nomad rigs are its
+common source, and nomads leave their gear in other eras' wrecks too, looting as you do. Active
+nomad camps are very rare and nobody's ever home, always just gone, their rig kept up with decent
+sailing gear and anything of any era, all lootable. Sails come from it: a broken nomad rig always
+carries one, and now and then one lies in a second-age ruin. A **wind streamer** points downwind and
+flaps by strength, read in hand or the inventory like the compass, or stuck on a rig as a telltale;
+the anemometer stays the precise one. A sail's mast takes things stuck on it (heavy up high
+raises the centre of mass), and a **crow's nest** is a mast mount you climb into, a seat with a long
+view for glints, plumes and fronts.
 
 ## The Dark Age as a lineage rule (Agreed, session 4, part 5; not built)
 
@@ -999,7 +1061,10 @@ it as direction and says so on each line. The built skeleton is not changed.
   expose a deeper layer of the same ruin." Its back burner adds "deep exposure," mid-storm sand
   movement briefly opening the deepest layers. *Follows the session as direction.* Read above as
   exposure set by the weather when a chunk is made; a state that changes while you stand there would
-  have to be a staged swap of placed pieces, and whether that fits rule 2 is open.
+  have to be a staged swap of placed pieces, and whether that fits rule 2 is open. *Answered by the
+  2026-10-18 spec: a site changes while you stand there, mid-storm, as a pure function of the weather,
+  its pieces and loot rising and sinking smoothly and its ground pressed afresh, rule 2's one exception
+  ([the world system](../world-system.md#what-storms-do-to-sites-now)).*
 - **Digging against "no digging and nothing underground."** Here: "Everything is above ground:
   there's no digging and nothing underground," and out of scope, "Digging, and anything underground."
   The session: colonial sites, "dig or find a breach; the best loot is deepest"; first-age sites,

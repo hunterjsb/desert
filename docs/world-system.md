@@ -45,11 +45,14 @@ The rules of [World & terrain](prd/world-and-terrain.md#rules) don't bend for hi
 
 1. **The ground is one function.** A site that changes the ground does it through its kind's carve,
    inside `height_at`, as the ruin does today. Nothing else shapes ground.
-2. **Loaded ground never changes.** A cell is laid before any chunk it touches is built, and lifted only
-   after every chunk it touches is forgotten. A site's exposure is decided when its chunk is built and
-   holds while it's loaded. A site can change while you're away; never while you look.
-3. **Nothing physical is outside collision.** A site's boxes join the collision of the chunk its middle
-   stands on, as the ruin's do, so they come and go with that chunk's sand.
+2. **Loaded ground never changes, but where a storm works a site.** A cell is laid before any chunk it
+   touches is built, and lifted only after every chunk it touches is forgotten, so nothing laid moves
+   under loaded ground. A site's exposure is the weather's at every moment; on loaded ground it follows
+   that a frame at a time, its ground pressed afresh from the chunk's own dunes in steps too fine to see,
+   mesh and collision together, and never over you or your camp. A chunk that unloads is the desert
+   eating what it held: come back and it's as the weather has it then.
+3. **Nothing physical is outside collision.** A site's boxes are a body of the chunk its middle stands
+   on, moved as it rises or sinks, so they come and go with that chunk's sand.
 4. **Chunks hold no state.** A chunk is the output of the seed, its coordinates and the sheet. The sheet
    is the world's, like the camp and the player, and the save keeps it ([Saves](#determinism-and-saves)).
 5. **Chunk streaming and origin shifts.** The index works in world metres, never engine positions, so an
@@ -228,23 +231,33 @@ before the colonial layer, which reads it. It holds only what something reads.
   - two **tapped** vents, one each way 1.5 to 3 km along the floor **(default, the vent stations' old
     rule)**: the vents live when the colony came, which its vent stations tapped and Han's lines piped
     to the refinery. Quiet since the fall.
-  - the **live** vent, 5 to 7.5 km along one way **(default)**, at least 2 km past the farther pipe and
-    still in Han, under Tu nearly overhead. Part 2's fall: "The vents didn't die, they moved, and
-    nobody had the rigs to follow the heat." The heat moved on along the rift as it propagated, and
-    this is where it still comes up.
+  - two **live** vents, one each way 5 to 7.5 km along **(default)**, at least 2 km past the farther
+    pipe and still in Han, under Tu nearly overhead: where the rift's two ends are still opening. Part
+    2's fall: "The vents didn't die, they moved, and nobody had the rigs to follow the heat." The heat
+    moved on along the rift as it propagated, and this is where it still comes up. (The second was added
+    in round two, 2026-10-18, so a run sees bursts more often.)
   - the volcano's **capped** summit vent, the observatory's vent cap: Tilg's anchor seals it. No plume.
+  - the volcano's live **flank** vent, 1.2 to 2.4 km from its summit **(default)**: capped at the top, its
+    heat came out on its side. The far side's own plume.
+- **Gas pockets.** Round the rift, gas trapped under the old flows breaks out now and then:
+  `geology.pockets(t0, t1)` gives those whose plumes show in a span, each a point 1.5 to 13 km from the
+  point under Tu, a start, a size and how long it blows. One slot of 500 s in two holds one; it blows 20
+  to 50 s at 20 to 80 times the rift's seep and fades by e every 12 s, a dust column a kilometre or two
+  high **(defaults)**. Harmless, as everything is: a spectacle and a boom.
 - **What a vent is doing** is a pure function of the time, as the weather is:
   `geology.venting(vent, t)` gives how hard, as a share of its seep, and the share of ash in what it
-  carries. A live vent breathes by a fifth over periods of 170 and 410 s, and bursts: each slot of
-  1,800 s (a day and a half) holds one 55% of the time, rising over 25 s, holding 40 s and fading by e
-  every 180 s, at 4 to 7 times the seep; ash is a fifth of what it carries seeping and 85% at a burst's
-  peak **(defaults)**. `next_burst(vent, t)` says when the next begins. Quiet and capped vents give
-  nothing. Nothing in the world reads the plume: what it shows is `venting`'s.
+  carries. A live vent breathes by a fifth over periods of 170 and 410 s, and bursts: a vulcanian burst,
+  an explosion clearing its throat and a column of ash after. Each slot of 1,200 s (a game day) holds
+  one 60% of the time, rising over 10 s, holding 40 s and fading by e every 150 s, at 300 to 2,000 times
+  the seep, a column standing 6 to 10 km in a breeze; ash is a fifth of what it carries seeping and 85%
+  at a burst's peak **(defaults)**. `next_burst(vent, t)` says when the next begins and `last_burst(vent,
+  t)` when the last did, and how big. A pocket's venting is its blowout's. Quiet and capped vents give
+  nothing. Nothing in the world reads the plumes: what they show is `venting`'s.
 - **Magnetized crust.** `geology.magnetized(p)`, 0 to 1: lava that cooled in the old field stays
   magnetized, so the rift's dykes (across its walls, fading 2 km past its ends) and the volcano's flows
   (its 3 km footprint, gone by 6 km) read 1 and ordinary ground 0 **(default)**. A few products a call:
   what the compass will read its local deviation from.
-- **Its mouth on the ground.** The live vent's mouth is a kit piece of the ground's own era
+- **Its mouth on the ground.** A live vent's mouth is a kit piece of the ground's own era
   (`Eras.GEOLOGY`, `GeologyKit`, built as `VentMouth`): a fissure along the rift, its 12 m pit 1.2 m
   under the dunes' mean, a spatter rampart round it 2.4 m high, sulphur crusting its throat, and an
   apron of its own ash out to 56 m that the dunes rise or fall from no steeper than 18°, banking at the
@@ -253,7 +266,7 @@ before the colonial layer, which reads it. It holds only what something reads.
   tried, a third of them slid); nothing round it is steeper than its 24° throat. It's the same in every exposure state (a live vent keeps itself clear),
   laid by the sheet like any site (a cell part of its own), and never gives way to a structure: the
   ground's own comes first. Its ash fan on the sand is the sand's look
-  ([Wind & storms](prd/wind-and-storms.md#a-vents-plume)).
+  ([Wind & storms](prd/wind-and-storms.md#plumes)).
 - **Determinism.** Geology draws only from its own streams (the seed, "geology", what it's for), and
   runs after the landmarks, which never read it. The colonial layer's vent stations now stand on its
   tapped vents and their pipelines run to them, in the same order and number as before, so nothing else
@@ -274,7 +287,8 @@ before the colonial layer, which reads it. It holds only what something reads.
    in the cold of night and dawn; and the pale blue sulphate haze its gas makes over minutes, which is
    most of what a far plume is.
 3. **Seeping, intermittent or bursting?** It seeps all the time, breathing, and bursts now and then.
-   The tapped vents are quiet and the summit capped: one unmistakable source in a quiet landscape.
+   The tapped vents are quiet and the summit capped. Round two made the bursts vulcanian (columns of 6
+   to 10 km, booming) and added the rift's second live vent, the volcano's flank vent and gas pockets.
 4. **Is the observatory volcano part of a province?** Yes: the far side's, one of the two tidal-heating
    provinces, its summit vent capped by the elevator's anchor. The colonial vent stations are the other
    province's, Han's, on the rift. Both are the same heat, from the same tides.
@@ -282,27 +296,26 @@ before the colonial layer, which reads it. It holds only what something reads.
    The provinces are the bulges, which the landmarks already mark; the rift is the line Halloran's
    heading already drew, through Aitch, with the black site in its wall; only its length and the vents
    along it are geology's own draws.
-6. **The smallest rendering?** One draw of 248 soft puffs whose places the shader works out from a line
-   of 24 points computed on the main thread, and the sand's look for the ash; no new full-screen pass,
-   no particle simulation, nothing per vent but the one live one in sight
-   ([Wind & storms](prd/wind-and-storms.md#a-vents-plume)).
+6. **The smallest rendering?** One draw of 248 soft puffs a plume, whose places the shader works out from
+   a line of 24 points computed on the main thread, up to three plumes at once, and the sand's look for
+   the ash; no new full-screen pass, no particle simulation ([Wind & storms](prd/wind-and-storms.md#plumes)).
 7. **Visual only, or more?** Visual and atmospheric, with history's vent stations moved onto the
-   vents and the magnetized crust for the compass. No hazard, no visibility cut, no sound yet.
+   vents, the magnetized crust for the compass, and booms and a roar ([Radio, sound &
+   atmosphere](prd/radio-sound-and-atmosphere.md#distant-phenomena-agreed-2026-10-18-spec)). No hazard
+   and no visibility cut.
 8. **Which physical assumptions now?** Settled now: the plume's rise and bend follow Briggs's
    buoyant-plume laws in the field's wind and an air stability that's steadier by night; gravity enters
    both the buoyancy and the stability, so how high a plume levels doesn't change with it, only how
    hard it climbs at first; ash falls out, steam needs cold air, haze forms over minutes. Qualitative:
    the gases' mixture, the vent's real heat output (its buoyancy is a look value, `plume_buoyancy`), and
    the outgassing's share of the air, which a single vent doesn't sustain: the air still leaks.
-9. **Which tests?** Geology's purity and shape on twelve worlds (geology 1), venting as the time's alone
-   (geology 2), the plume following the field's drift and bending in its wind and storms hiding it
-   (wind & storms 15), and its life through a run: a stopped clock, a pause, an origin shift, walking
-   off and back, a storm over it, its cost (wind & storms 16). The kits' probes take the mouth like any
-   piece.
-10. **Left out:** the rift's and the volcano's landforms; a plume at the far side (the summit is capped,
-   and a flank vent waits for the volcano's ground); dormant scars at the tapped vents (the vent
-   stations' kit will stand on them); deposits that grow with bursts; hazards, readings and sound; the
-   far stand-in hand-over to the skyline, once it lands.
+9. **Which tests?** Geology's purity and shape on twelve worlds (geology 1), venting and pockets as the
+   time's alone (geology 2), the plume following the field's drift, bending in its wind, hidden by
+   storms and towering over them (wind & storms 15), its life through a run (16), a burst heard after
+   it's seen (17), and a run seeing a plume from far now and then (18). The kits' probes take the mouth
+   like any piece.
+10. **Left out:** the rift's and the volcano's landforms; dormant scars at the tapped vents (the vent
+   stations' kit will stand on them); deposits that grow with bursts; hazards and readings.
 
 ## Paths
 
@@ -494,22 +507,30 @@ a standing wreck sits higher than a low foundation ([Salvage & ruins](prd/salvag
 
 ## Exposure
 
-A site is **buried, partly exposed or exposed**, decided purely from the storm history at its place up to
-the moment its chunk is built, as finds are today (`Finds.exposure`). Nothing is decided while you look.
+A site is **buried, partly exposed or exposed**, and between, decided purely from the weather at its
+place up to that moment (`Exposure`), so its state at any moment is known without anyone having
+watched it: a save, sleep, a far stand-in and the loaded site all agree.
 
-- **The sand taken off** is the weather's work at the site over a long window: the same reading as finds
+- **The settled sand** is the weather's work at the site over a long window: the same reading as finds
   (how deep into a storm, how far past the prevailing wind's strongest), summed over the last 12 hours of
   world time in 30-minute ticks **(default)**, so one big storm strips a lot and calm lets the sand return.
-- **The state** compares it with the site's depth: under a third of its depth stripped, buried; under its
-  whole depth, partly exposed; past it, exposed. A colonial site needs a storm far harder or longer than a
-  second-age one.
-- **Reburial** is the same function: as calm hours replace stormy ones in the window, the sand taken off
-  falls and the site goes back under. Relaxed, not a hard timer.
-- **Deeper layers on a revisit.** A site's sockets have depths too. A returning storm that strips further
-  reaches sockets lower in the same site, so revisiting pays; what was taken stays taken
+- **The storm's own work** (the 2026-10-18 spec, [Wind & storms](prd/wind-and-storms.md#storms-with-a-payoff-agreed-2026-10-18-spec)):
+  while a storm works on a site its big dunes move, a minute at a time, laying it bare where they're
+  moving off it and burying it again where they're moving on, and what they moved comes back within
+  minutes once the storm lets go. A ruin seen mid-storm may be gone by morning.
+- **The state** compares the two together with the site's depth: under a third of its depth stripped,
+  buried; under its whole depth, partly exposed; past it, exposed. A **level** runs between them, 0 buried
+  through 1 (the partly exposed look) to 2 dug out, so a site comes out of the sand smoothly.
+- **Reburial** is the same function: as calm hours replace stormy ones the sand comes back. Relaxed, not
+  a hard timer.
+- **Deeper layers mid-storm and on a revisit.** A site's sockets have depths too. A storm that strips
+  further reaches sockets lower in the same site, mid-storm most of all; what was taken stays taken
   ([Saves](#determinism-and-saves)).
-- **Fixed ticks.** It reads on fixed ticks of world time, so a chunk built any time within one reads the
-  same, and the ground is the same however you came to it.
+- **Read between ticks.** Both parts are read between their fixed ticks, a tick behind, so the sand on a
+  site never jumps and it's only ever the weather that has been.
+- **Loaded, it follows the weather** a frame at a time (the law, rule 2) and never comes back over you or
+  your camp. **The desert ate it:** once its ground unloads nothing holds it; come back and it's as the
+  weather has it then.
 
 Signs follow the same function: a saltbush line shows whatever the sand does; glow in a crack only from a
 site partly exposed.
@@ -531,6 +552,11 @@ loose in open sand."
   wind slows there and what it carries falls out. Steady and low value.
 - **Expedition.** After a big storm, sites are exposed for a while, and the good loot is in them. The
   radio's beacon, a surveyor's detection and the surface signs say where.
+- **Mid-storm** (the 2026-10-18 spec). A site a storm lays bare offers its deeper tier, its era's best,
+  while it's open, for the active player who goes out into the dust; a glint through the dust and a clang
+  on the wind say where, and later the Console's sensors. Once the sand comes back it's gone again. Its
+  lesser things blow downwind meanwhile, into the drift a camp's lines catch, so a stationary camp
+  downwind still gets some.
 - **Today's loose finds.** The migration, in order: (1) finds on a ruin's floor become the house ruin's
   socket loot, unchanged in what they are; (2) the kit package's kinds get their own tables; (3) loose finds
   on open sand fall to a tenth of today's 1.5 a chunk, kept only along paths and in settlements' scatter,
@@ -684,6 +710,7 @@ drawn by the skyline ([Salvage & ruins](prd/salvage-and-ruins.md#whats-built-202
 | A chunk's query | 50 µs | 10 µs at the Rim |
 | Memory | under 8 MB for the history and the sheet | 3.6 MB with a Rim sheet laid |
 | Per tick, for anything static | zero: no site, path or landmark has a process step | none: standing still for 300 ticks, the sheet never ran |
+| A storm working loaded sites | only the sites on loaded ground near you each frame, the rest a few chunks a frame, never all sites | 6 µs a frame for each site moving near you ([What storms do to sites now](#what-storms-do-to-sites-now)) |
 
 The pass, the cells and the index are `RefCounted`, with no node and no process step. Laying runs in the
 terrain's streaming step, inside its budget, and only when the ground under you changes chunk.
@@ -691,7 +718,7 @@ terrain's streaming step, inside its budget, and only when the ground under you 
 ## Determinism and saves
 
 - **Derived:** the history (the seed), every site, path and landmark (the seed), a site's exposure (the
-  seed, its place and the weather up to its chunk's build), its loot draw and its lineage (its loot seed).
+  seed, its place and the weather up to the moment), its loot draw and its lineage (its loot seed).
 - **The sheet is saved.** Laying depends on the way you walked, so the save keeps each laid unit's anchor,
   a few numbers a unit, and a resumed run lays the same units in the same places. Units laid after the
   resume are laid as usual.
@@ -699,6 +726,9 @@ terrain's streaming step, inside its budget, and only when the ground under you 
   taken and whether it was opened (a door forced, a cache broken), kept while the site is laid and
   dropped with it, as `Salvage` keeps a loaded chunk's memory now. A landmark's record is kept whatever the
   distance.
+- **The sand held off a site over you or your camp is saved** (2026-10-18): a site's exposure is the
+  weather's, but where a storm let go while something of yours stood on it, the sand it held off is
+  kept by the site's id, so a resume never buries you.
 - **Discoveries** go to the profile as now: the first of each kind of thing, and later the first sight of
   each landmark.
 
@@ -798,15 +828,16 @@ Shared files each package may touch, and nothing else outside its own: `Tuning` 
   wayshrines and watchtowers, half the dugouts, about 40% of pipe-wall huts, low walls, pylon stubs and
   relay masts, 30% of hab pods, cisterns and fuel bladders, 23% of pipeline segments. What the dunes take
   is what lies under the dune seas, which is where it would be.
-- **Exposure** (`Exposure`, Tuning's History group). The sand taken off a site is the weather's work over
-  the last 12 hours in 30-minute ticks, read as finds read it (`Exposure.reading`, which `Finds.exposure`
-  now shares): each tick a storm's heart strips 0.5 m and the wind lays 0.2 m back, and the older a tick
-  the more has drifted back since, so one big storm strips a lot and calm lets the sand return, never a
-  hard timer **(defaults)**. Against its depth: under a third stripped, buried; under all of it, partly
-  exposed; past it, exposed. Measured over 600 places and moments with the wind: the second age is
-  exposed 80% of the time and buried 11%; the skimmer era exposed 66%; the First Kingdoms mostly partly
-  exposed (52%, buried 26%); colonial sites buried 73% and partly exposed 26%, and dug out only in the
-  hardest storms at their shallowest.
+- **Exposure** (`Exposure`, Tuning's History group). The settled sand taken off a site is the weather's
+  work over the last 12 hours in 30-minute ticks, read as finds read it (`Exposure.reading`, which
+  `Finds.exposure` now shares): each tick a storm's heart strips 0.5 m and the wind lays 0.2 m back, and
+  the older a tick the more has drifted back since, so one big storm strips a lot and calm lets the sand
+  return, never a hard timer **(defaults)**. Against its depth: under a third stripped, buried; under all
+  of it, partly exposed; past it, exposed. Measured over 600 places and moments with the wind: the second
+  age is exposed 80% of the time and buried 11%; the skimmer era exposed 66%; the First Kingdoms mostly
+  partly exposed (52%, buried 26%); colonial sites buried 73% and partly exposed 26%, and dug out only in
+  the hardest storms at their shallowest. *Since 2026-10-18 a storm's own work adds to it, and a loaded
+  site follows both ([What storms do to sites now](#what-storms-do-to-sites-now)).*
 - **How the states read.** A state sinks the piece into the sand and fills its rooms to the sand line;
   dug out, its rooms go down to their floors. Buried, only a top shows: a hab pod's roof and hatch, a
   watchtower's platform level with the sand (walk onto it through the parapet's gap and its weapons
@@ -815,11 +846,10 @@ Shared files each package may touch, and nothing else outside its own: `Tuning` 
   its wall tops. Partly exposed shows the tops of the walls, doors dark slots under their lintels.
   Exposed is dug out: sand drifted up the walls, level at the openings, floors swept. What a state leaves
   out of a piece's boxes lies wholly under the sand, so the carve and the boxes always agree.
-- **Loaded ground never changes.** A structure's exposure is read when the first chunk touching its
-  ground is launched (`sites.hold`, at the world's time) and held while any chunk touching it is loaded
-  or building; when the last is forgotten (`sites.release`, on the terrain's `unloaded`) it's read afresh
-  next time. So a site changes while you're away, and a storm that has come and gone means a revisit
-  finds it deeper; its deepest sockets only once a storm strips past them.
+- **Loaded ground never changed** (until 2026-10-18). A structure's exposure was read when the first
+  chunk touching its ground was launched and held while any chunk touching it was loaded, so a site
+  changed only while you were away. *It now follows the weather while loaded ([What storms do to sites
+  now](#what-storms-do-to-sites-now)); `sites.hold` and `sites.release` still say which chunks hold it.*
 - **History-driven.** Every piece stands where history's rows and settlements put it: pylon stubs every
   150 m on a power line, pipe every 120 m on a pipeline, wayshrines every 700 m on second-age roads,
   watchtowers and house ruins along them, relay masts on colonial roads and the survey grid, pipe-wall
@@ -854,12 +884,12 @@ Shared files each package may touch, and nothing else outside its own: `Tuning` 
   structure has a process step; its look and its boxes are part of its chunk.
 - **Probes** (`probes/kits/`): 1 every kind sits in the sand in every state; 2 you can walk through every
   kind's doors and openings, up a pit's drift as slowly as up any slope (it replaces salvage's probe 4,
-  which walked only the ruin); 3 loaded ground never changes across an exposure change, and a site
-  changes while you're away; 4 exposure is pure, and a returning storm reaches deeper; 5 the grid is gone
-  and the beacon still finds a site (it replaces the spine's probe 5, which held the grid's ruins in
-  place). Each fails on a deliberately broken build: rooms dug out in every state; doorways half a metre
-  wide; exposure read afresh at every chunk launched; exposure read off the clock rather than its ticks;
-  the beacon only in the grid's ruins.
+  which walked only the ruin); 3 a loaded site follows the storm, smoothly, and never buries you; 4
+  exposure is pure, and a storm works a site; 5 the grid is gone and the beacon still finds a site (it
+  replaces the spine's probe 5, which held the grid's ruins in place). Each fails on a deliberately
+  broken build: rooms dug out in every state; doorways half a metre wide; no hold over you, no ground
+  pressed afresh, or a look that doesn't follow; the storm's sand never coming back, or read only on
+  its ticks; the beacon only in the grid's ruins.
 - **To see them** (unseen, on a GPU): `look/kits/shoot.sh <dir>` stands every piece by era in each
   state on fresh ground, shoots each and the artery out of Halfrise with its sites, and builds
   `~/Desktop/structures.png`.
@@ -1051,13 +1081,15 @@ paint's age.
   twelve of each kind held (loot probe 2), buried 19 of 305 showed (a house's hall and a watchtower's
   platform, level with the sand), partly exposed 118, dug out 298 (all but the watchtower's platform, out
   of reach), every deep socket hidden short of a storm past it and shown past it.
-- **The expedition.** Exposure is read when a site's ground is built (the kits'), so a storm that has come
-  and gone means a revisit finds it deeper: round twelve towns on two seeds (salvage probe 5), at each
-  site's most stripped moment of six through three days 621 finds lay within reach against 466 at its
-  least, the mean tier rising from 1.08 to 1.14: the First Kingdoms' four times as many, the second
-  age's a quarter more (they lie shallowest, mostly dug out already), the colonial nothing short of the
-  hardest storms. The good things are deep: an era's best lies in the sockets a storm must strip past,
-  and elsewhere only in Han's floors and caches (a third of them) and Mon's (one in twelve).
+- **The expedition.** A storm that has come and gone means a revisit finds a site deeper, and mid-storm
+  deeper still ([What storms do to sites now](#what-storms-do-to-sites-now)): round twelve towns on two
+  seeds (salvage probe 5), at each site's most stripped moment of six through three days and its storm's
+  height, 646 finds lay within reach against 554 at its least, the mean tier rising from 1.11 to 1.16
+  (with states read whole and no storm's own work, 621 against 466, 1.08 to 1.14: the First Kingdoms'
+  four times as many, the second age's a quarter more, as they lie shallowest, mostly dug out already,
+  the colonial nothing short of the hardest storms). The good things are deep: an era's best lies in the
+  sockets a storm must strip past, and elsewhere only in Han's floors and caches (a third of them) and
+  Mon's (one in twelve).
 - **Memory.** What's taken from a site is remembered by its id while it's laid, and dropped with it
   once the sheet lifts it, so a site walked 2 km away from comes back whole; the save keeps it
   (`Snapshot`: `sites`, a site's id and its sockets taken), and a save from before resumes with none.
@@ -1111,7 +1143,7 @@ paint's age.
 - **Probes** (`probes/loot/`): 1 site loot is pure per seed and site, laid from anywhere, and made again
   is given the same hands; 2 the sand decides what's within reach, and your hands take what lies on a dug-out floor; 4
   open sand holds no random finds; 5 drift is caught at a camp in a storm and grows in a lee; 6 each
-  origin's first hour finds something within reach. Saves probe 2 is the taken loot staying taken across
+  origin's first hour finds something within reach; 7 what a storm bares blows downwind (2026-10-18). Saves probe 2 is the taken loot staying taken across
   a save and a resume, and an older save resuming. Rewritten to the new placement: salvage probes 1, 2, 5
   (now the expedition), 7 and 8, saves probe 5, the scenarios probe, the kits' probe 5, movement probe 7. Each of the
   six fails on a deliberately broken build: the draw seeded by where a site lies; buried sites showing
@@ -1120,6 +1152,106 @@ paint's age.
 - **To see it** (unseen, on a GPU): `look/kits/shoot.sh <dir>` stands every kit piece in each state, now
   with what it holds within reach laid in it; the `lee` scenario stands you at a slip face's foot with a
   catch line strung and a storm minutes off.
+
+## What storms do to sites now
+
+*Built 2026-10-18, on the `exposure` branch: the first two bullets of [Storms with a payoff](prd/wind-and-storms.md#storms-with-a-payoff-agreed-2026-10-18-spec).*
+
+- **A storm works the site it sits on** (`Exposure.surge`). Besides the settled sand, a storm's heart moves
+  sand a minute at a time where its big dunes move (`WeatherField.dune_shift_at`: patches 400 m across,
+  changing over 15 minutes, leaning toward moving off): off a site where they're moving off it, onto it
+  where they're moving on, at most 0.8 m a minute, the last 25 minutes counting, and what it moved comes
+  back over about 5 minutes once the storm lets go **(defaults)**. So it lays a site bare over its
+  course and can bury it again mid-storm. In a storm's heart it has more than a metre off a site 45% of
+  the time; after a storm's height its sand is back to a tenth in a median 13 minutes (3 to 54 over a
+  thousand storms), under a game day: a ruin seen mid-storm may be gone by morning. Measured over twelve
+  places and three days on seed 1234: in a storm's heart a site's deepest sockets (half its depth again)
+  open, against its settled sand alone, 94% of the time against 80% at 0.3 m deep, 83% against 56% at
+  0.6 m, 38% against 1% at 1.4 m, 6% against none at 2.5 m, and never at 4 m.
+- **Pure, so nothing needs to watch it.** `Exposure.taken` is the settled sand plus the storm's, each
+  read between its ticks a tick behind, so the sand on a site never jumps (at play speed, 0.13 mm in a
+  frame at most through a storm that takes 3.2 m off) and it's only ever the weather that has been. A
+  site kept readings by tick (`Exposure.Memo`) reads exactly as one read afresh. A save, sleep, a far
+  stand-in and a loaded site all read the same function; the far ring's stand-ins are drawn at the level
+  the skyline's job read, once a minute.
+- **A level between the states** (`Exposure.level`): 0 until a third of a site's depth is off, then
+  steadily out to 2 once all of it is, through 1, the partly exposed look. Between, a piece sinks as far
+  as its states' sinks say (`Piece.sink_at`), the sand drifts as high and fills its rooms as high
+  (`drift_at`, `fill_at`); its look and boxes are those of the least buried state whose sand line lies no
+  lower (`Piece.shown_state`), so all they leave out is under the sand, and its look's sand stain moves
+  with the sand (`foot_shift`).
+- **A loaded site follows the storm, smoothly.** While its ground is loaded (`sites.hold`) a structure
+  follows the weather a frame at a time (`Structure.follow`): its look and its boxes, a body of their own,
+  rise out of the sand or sink back together. Its ground follows in steps (`Structure.ground`), each moving
+  no sand more than 2.5 cm (`StructureKit.STEP_M`; the house ruin has 21, a cistern's pit 101): a chunk
+  keeps its dunes where structures press into it, and when a step changes, each chunk it touches is
+  pressed afresh on a worker from them (`ChunkBuild.pressed`), mesh and collision swapped in together. A
+  mid chunk is pressed only once it's 8 steps behind. Structures within two chunks of you follow every
+  frame; the rest a few chunks a frame in turn.
+- **What it holds follows it.** A loaded site is read again (`Salvage.follow`) each time 2 cm more sand is
+  off it or back, or it has risen or sunk 3 cm, a socket a piece of the streaming budget, from what it holds
+  drawn once: a find still within reach eases to where it lies now over about a quarter of a second, one
+  gone out of reach sinks into the sand and is gone, one come within reach is laid coming up out of it.
+  What you've taken stays taken. Finds rest on the boxes that stand of a site at its level.
+- **Never over you or your camp.** While you or one of your camp's devices stands on a site's ground, the
+  sand never comes back over it; once you're off it comes back no faster than 5 cm a second
+  (`site_rebury_m_s`). A house's rooms keep their sand level as it sinks, so its floor goes down under
+  you rather than the sand up over you; the hold is for pits and drift, and for the rule. **A save
+  keeps it:** the sand held off a site over you or your camp is saved (`sites.held`), and resumed, the
+  site comes back as held whoever stands there yet, until the resume is done; a pit you saved in comes
+  back dug out round you (saves probe 23).
+- **The desert ate it.** When the last chunk holding a site's ground is forgotten (`sites.release`),
+  nothing holds it; come back and it's built as the weather has it then.
+- **The best loot shows mid-storm.** A site's deepest sockets, where its era's best lies, are reached only
+  once the sand off it passes them (half their depth again for most), so mid-storm the storm's work opens
+  them for the active player who goes out, and the sand coming back closes them. Read at each site's
+  storm's height as well as six moments through three days, round twelve towns on two seeds (salvage
+  probe 5), 646 finds lay within reach at each site's most stripped moment against 554 at its least, the
+  mean tier rising from 1.11 to 1.16; partly exposed, a site shows what stands proud of the sand on the
+  way out, so the least already show more than when states were read whole (466).
+- **Its lesser things blow downwind** (`Drift.from_sites`). A site a storm has laid bare, out of the sand
+  past its settled sand, sheds the light things of its floors, shelves, caches and beds (parts of 4 kg at
+  most: `Drift.carried_from`) into the drift stream, as many as 120 an hour in a storm's heart once the
+  storm has it a level further out, carried off along the wind as long as the wind takes, spreading from
+  4 m wide by 15 cm a metre and thinning as what it carries falls out, most of it within 150 m
+  **(defaults)**, the sites asked of the index by area. A catch line catches it as it catches the open
+  drift, the lee and all, its own lesser things falling just past the line in the site's era's look.
+  Through the storm a house ruin is dug out by (loot probe 7), an 8 m line 30 m downwind catches about
+  one thing of the house's in the open (1.1 expected, 0.08 at 200 m, none upwind, aside or past 450 m),
+  five times as many in a full lee: a stationary camp downwind gets some.
+- **A glint through the dust** (Skyline). Inside a storm everything far off takes the storm's veil
+  (`Plume.seen_through`, the far saltbush round's) and is hidden, glints and all, but what the storm has
+  newly laid bare near you, the metal or glass its settled sand would still cover, glints through the
+  dust, veiled by nothing else: out to 90 m, fading from 45 m, at 0.7 of the open sky's glare, and
+  since the dust glows all round it shines whichever way it faces you, strongest face on, coming and
+  going as the dust thickens and thins **(defaults)**. Looked over five times a second, by area
+  (`sites.newly_exposed`).
+- **A clang on the wind.** What a storm has newly laid bare within 140 m bangs on the wind now and then: a
+  chance every 4 s of world time by how far it's laid bare, heard from the site after the sound's trip
+  there, duller the further (`clang.ogg`, from Sand Game's metal clank, its ring kept).
+- **The hook for the Console's sensors.** `sites.newly_exposed(x, z, radius)` lists the sites near a place a
+  storm has newly laid bare, nearest first, with how much further out of the sand it has them: what a
+  particle sensor or ground radar will pin on the Console. Nothing calls it from the Console yet.
+- **Cost** (17 sites by hand coming out of the sand round you as a storm rises, headless; `terrain/site` on
+  the dev overlay, and `terrain/dust` the glints through the dust): following them, 0.10 ms a frame on average and 0.43 at most, about 6 µs a moving
+  site, and nothing for sites the weather isn't moving; 12 presses a minute at play speed, each 4 ms on a
+  worker and swapped in within 0.64 ms on the main thread (the heightmap's rebuild), 101 a minute at ten
+  times speed; loot read again, 0.27 ms in a frame at most; the terrain's slowest frame 0.95 ms, under the
+  2 ms hitch line. A site reads the weather once a minute and its settled sand once a half hour; between,
+  two lerps. Its ground at its last two steps is kept, 13 KB a step for a house; a chunk with structures keeps its
+  dunes, 18 KB near and 5 KB mid. `sites.newly_exposed` within 140 m takes 56 µs. A drift tick for a
+  line with 18 sites near is 0.27 ms, 16 µs with none, so the drift a clock jump draws (540 ticks at most)
+  can cost a few tens of milliseconds once where sites stand thick.
+- **Probes:** kits 3 (a loaded site follows the storm, smoothly, and never buries you), kits 4 (exposure is
+  pure, and a storm works a site), loot 7 (what a storm bares blows downwind), sightlines 4 (a glint
+  through the dust only near), saves 23 (a save never buries you). Each fails on a deliberately broken build: no hold over you, no ground
+  pressed afresh, a look that doesn't follow; the storm's sand never coming back, or read only on its
+  ticks; drift shed upwind as well; glints through the dust at any range, or every bare glint; a
+  resume that forgets the held sand.
+- **To see it** (unseen, on a GPU): `look/exposure/shoot.sh <dir>` stands a hab pod where a storm lays it
+  bare by day and shoots it from off its ground in the clear before the storm, rising half out of the
+  sand in it, at its height and in the clear after, and from out in the dust its bared windows glinting
+  through, and builds `~/Desktop/exposure.png`.
 
 ## Defaults
 
@@ -1150,6 +1282,12 @@ group.
 - Exposure's window: 12 hours of world time in 30-minute ticks; a storm's heart strips 0.5 m a tick, the
   wind lays 0.2 m back every tick, and a tick's work counts less the older it is, down to nothing 12 hours
   back.
+- A storm's own work on a site: 0.8 m a minute in its heart where its dunes move off it, as much onto it
+  where they move on, back over about 5 minutes, its last 25 counting; the dunes' patches 400 m across,
+  changing over 15 minutes, leaning a quarter toward moving off and swinging 1.3. Sand never back over you
+  or your camp; once you're off, back at 5 cm a second at most. Site drift 120 things an hour in a heart,
+  laid a level bare, carried 150 m, 4 m wide and 15 cm wider a metre. A glint through the dust to 90 m at
+  0.7 of the glare; a clang heard to 140 m.
 - Where a structure may stand: the most the dunes over its ground may rise and how steep they may be,
   and how far it may look along its line for ground that takes it, per kit piece (the era files).
 - Spawns: the Surveyor 0.6 to 3 km from an artery or spoke (first set at 2 to 4, brought in to a fair
@@ -1174,18 +1312,19 @@ group.
   a storm's heart, 0.25 snagging in the open and 1.0 more in a full lee, drawn every 20 s, 8 to a line.
 
 - Geology ([Geology](#geology)): the rift 8 to 11 km either way from Aitch, its floor 600 m across and
-  its walls to 1.6 km; the tapped vents 1.5 to 3 km along it, the live one 5 to 7.5 km; a live vent's
-  breath a fifth over 170 and 410 s, a burst in a 1,800 s slot 55% of the time, rising 25 s, holding
-  40 s, fading by e every 180 s, 4 to 7 times the seep, ash a fifth seeping and 85% at a peak; the
-  magnetized crust across the rift's walls, 2 km past its ends and over the volcano's footprint to 6 km;
-  the mouth's pit, rampart and 56 m apron, sliding up to 24 m along the rift.
+  its walls to 1.6 km; the tapped vents 1.5 to 3 km along it, the live ones 5 to 7.5 km either way; the
+  volcano's flank vent 1.2 to 2.4 km from its summit; a live vent's breath a fifth over 170 and 410 s,
+  a burst in a 1,200 s slot 60% of the time, rising 10 s, holding 40 s, fading by e every 150 s, 300 to
+  2,000 times the seep, ash a fifth seeping and 85% at a peak; gas pockets 1.5 to 13 km from the point
+  under Tu, one in two 500 s slots, blowing 20 to 50 s at 1 to 4 times the seep; the magnetized crust
+  across the rift's walls, 2 km past its ends and over the volcano's footprint to 6 km; the mouth's
+  pit, rampart and 56 m apron, sliding up to 24 m along the rift.
 
 ## Open
 
 - **The rift's and the volcano's landforms.** Geology holds the rift's line, floor and walls for the
-  landform package to carve; until then the vent's mouth stands on the dunes as they are. The far
-  side's heat waits on the volcano's ground: its summit vent is capped, and a live flank vent there
-  is the natural second plume.
+  landform package to carve; until then the vents' mouths stand on the dunes as they are, the flank
+  vent's on the dunes where the volcano will be.
 - **The tapped vents' ground.** The vent stations stand on cold vents; their kit, when it's built,
   carries the old vent's scar.
 - **Seams at high latitude.** Near the poles cells are small and dead reckoning is unsteady. History is

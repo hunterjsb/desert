@@ -202,6 +202,25 @@ How each X was chosen, from the probes' numbers:
   <id>` grants one, `deeds` lists what's done and what isn't, and `deeds clear` forgets them all.
 - **Probes** 17 to 22, and Menus & UI probe 11.
 
+## Starts on the chassis, and two new kits (agreed, 2026-10-18 spec; not built)
+
+From the [chassis spec](../chassis-kits-dunes-2026-10-18.md); balance targets the Surveyor only.
+- **The Surveyor:** two chassis joined as a deck and a frame with an upright on its side, its gear
+  stuck on so the system is learned by sight: a battery, the shield, a compass, and the hoverboard
+  hung on the upright. It keeps the board: it's how the Surveyor tows its camp and kites.
+- **The archaeologist** (a woman on a Daventry-funded university expedition, hunting proof of why
+  humanity must be careful; Zan only partly fits that story: the hive-mind war mattered, but
+  abandonment, oversight and human failings killed it): ground radar on a Console, a digging tool
+  and sifting gear. Opened by two hard deeds: assemble the archaeology setup; dig a ruin out of a
+  dune yourself, its site laid bare by your digging rather than a storm's.
+- **The Varran settler** (an imperial settler who trusted tech over the land): a minimal fast sailing
+  rig, an out-of-place heavy navigation computer rich in wind and storm, two batteries, a small
+  shield carried with its own battery and raised round himself in storms (never on the sail: the
+  bubble would block its wind), riding a hoverboard as the keel. Opened by building and using a
+  dune sailboat. What sits outside his bubble wears in a long storm, as anything does; a light
+  panel can go on top, weakly.
+- **The Salvager and Homesteader** stay deed-opened and get reworked onto the chassis.
+
 ## Ending flags (proposed)
 
 *Session 4, part 3 ([lore session](../lore-session-2026-10-17-part-3.md)); proposed, and none of it
@@ -277,9 +296,10 @@ calls them from Save, Save & quit, Resume, New game, the death screen and Option
   radio's dial, volume, beacon and charge, one saved before the dial on its channel's
   carrier; a save from before, with five slots, resumes with
   their contents carried), what's in your hands, at your waist or being
-  hauled, and the board you ride with its ride as it stood), the clock, how long the run
-  has been played (a save from before kept none, and its run never counts it) and when it
-  was saved, the moon position, the engine's origin, and where power, wear, farming and
+  hauled, and the board you ride with its ride as it stood), the clock and when on it the
+  run began (its day 1; a save from before kept none and counts from the clock's zero),
+  how long the run has been played (a save from before kept none, and its run never
+  counts it) and when it was saved, the moon position, the engine's origin, and where power, wear, farming and
   your body are in their ticks. Then everything of yours: each thing by its
   catalog id, where it is and how it's moving, its wear, charge, water, growth and
   harvests, a shield's switch and how far its bubble has bloomed, a stake driven or not,
@@ -395,6 +415,9 @@ calls them from Save, Save & quit, Resume, New game, the death screen and Option
     hut is three ages; onto a second-age house ruin too, Carbon Dated is done.
 22. **Six pieces, one deck.** A deck of five beside one of three is no six-piece deck; the first
     deck's sixth piece makes Six Pack.
+23. **A save never buries you** (2026-10-18). Saved standing on a cistern's floor as the storm that
+    dug it out lets go, the sand held off it over you, a resume brings it back dug out round you, the
+    sand at your feet and not over them, though the weather alone would have it filled.
 
 ## Out of scope
 

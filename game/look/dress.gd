@@ -36,6 +36,34 @@ static func needle() -> ArrayMesh:
 		return b.commit())
 
 
+## A radio's needle, standing up its own +Y across the band: thin, red, and
+## lit while it plays.
+static func dial_needle() -> ArrayMesh:
+	return _cached(&"needle", &"radio", func() -> ArrayMesh:
+		var b := Paint.Pieces.new()
+		b.box(Vector3(0.0022, Radio.BAND_HEIGHT - 0.008, 0.0016), Vector3.ZERO,
+			Paint.coat(Color(0.85, 0.12, 0.06), 0.0, 0.0, 0.4, 0.0, 1.2), 0.0005)
+		return b.commit())
+
+
+## A radio's knob, facing out along its own +Z from its back at the origin:
+## black and ridged for the grip, with a bone line to show how far it's
+## turned, faintly lit so it reads in the dark.
+static func knob() -> ArrayMesh:
+	return _cached(&"knob", &"radio", func() -> ArrayMesh:
+		var b := Paint.Pieces.new()
+		var black := Paint.coat(Paint.BLACK, 0.3, 0.3, 0.6)
+		var r := 0.026
+		var out := Basis(Vector3.RIGHT, PI / 2.0)
+		b.drum(r, 0.02, Vector3(0.0, 0.0, 0.01), black, out, 18)
+		for i in 12:
+			var turn := Basis(Vector3.BACK, i * TAU / 12.0)
+			b.box(Vector3(0.005, 0.004, 0.018), turn * Vector3(0.0, r, 0.0) + Vector3(0.0, 0.0, 0.01), black, 0.001, turn)
+		b.drum(r * 0.8, 0.004, Vector3(0.0, 0.0, 0.021), Paint.coat(Paint.GUNMETAL, 0.4, 0.5, 0.45), out, 18)
+		b.box(Vector3(0.004, r * 0.75, 0.002), Vector3(0.0, r * 0.42, 0.0235), Paint.coat(Paint.BONE, 0.0, 0.0, 0.6, 0.0, 0.6), 0.0005)
+		return b.commit())
+
+
 ## What turns on a frame's mast head, about its own +Z, or null for none: a
 ## turbine's hub and blades, something to see turn into the wind, not to touch.
 static func rotor(id: StringName) -> ArrayMesh:
@@ -296,16 +324,20 @@ static func _frame(id: StringName, size: Vector3, extra: float) -> ArrayMesh:
 			for z in [-0.35, 0.35]:
 				b.drum(0.07, 0.012, Vector3(0.0, -h.y + 0.005, z), Paint.coat(Color(0.45, 0.8, 1.0), 0.0, 0.0, 0.3, 0.3, 2.0), Basis.IDENTITY, 16)
 		&"radio":
-			# A set made to carry: a speaker's slats and a dial that lights
-			# while it plays on its face, a handle, an aerial up from the back.
+			# A set made to carry: across the top of its face a band scale that
+			# lights while it plays, under it a speaker's slats and the bosses
+			# its knobs turn on; a handle, an aerial up from the back. The
+			# needle and knobs are the radio's own, to turn.
 			b.box(Vector3(size.x - 0.02, size.y - 0.02, size.z - 0.02), Vector3.ZERO, teal, 0.02)
 			for x in [-1, 1]:
 				b.box(Vector3(0.03, size.y, size.z), Vector3(x * (h.x - 0.015), 0.0, 0.0), gun, 0.008)
 				b.box(Vector3(0.02, 0.04, 0.02), Vector3(x * 0.09, h.y + 0.02, 0.0), gun, 0.004)
-			for i in 6:
-				b.box(Vector3(0.13, 0.012, 0.01), Vector3(-0.06, -0.065 + i * 0.026, h.z - 0.004), black, 0.002)
-			b.box(Vector3(0.1, 0.045, 0.012), Vector3(0.08, 0.04, h.z - 0.004), Paint.coat(Color(1.0, 0.7, 0.35), 0.0, 0.0, 0.3, 0.2, 2.5), 0.003)
-			b.drum(0.022, 0.02, Vector3(0.08, -0.04, h.z + 0.006), black, Basis(Vector3.RIGHT, PI / 2.0), 14)
+			for i in 4:
+				b.box(Vector3(0.14, 0.01, 0.01), Vector3(-0.055, -0.075 + i * 0.02, h.z - 0.004), black, 0.002)
+			_band(b, Vector3(0.0, Radio.BAND_Y, h.z))
+			for knob: Vector3 in [Radio.KNOB_AT, Radio.VOLUME_AT]:
+				var r := 0.034 if knob == Radio.KNOB_AT else 0.019
+				b.drum(r, 0.016, knob + Vector3(0.0, 0.0, -0.008), gun, Basis(Vector3.RIGHT, PI / 2.0), 16)
 			b.box(Vector3(0.2, 0.02, 0.025), Vector3(0.0, h.y + 0.045, 0.0), gun, 0.006)
 			b.drum(0.006, 0.3, Vector3(-h.x + 0.045, h.y + 0.15, -h.z + 0.03), Paint.coat(Paint.STEEL, 0.8, 0.6), Basis.IDENTITY, 8)
 		&"chassis":
@@ -628,6 +660,57 @@ static func _cells(b: Paint.Pieces, area: Vector2, cols: int, rows: int, turn: B
 
 
 ## Black and yellow: the bands a safety officer would sign off.
+## A radio's band scale, its middle at `at` on the face: a lit window in a
+## gunmetal bezel, a tick every 100 kHz and a long one every 500, numbered in
+## hundreds as old sets were.
+static func _band(b: Paint.Pieces, at: Vector3) -> void:
+	var gun := Paint.coat(Paint.GUNMETAL)
+	var ink := Paint.coat(Color(0.12, 0.09, 0.07), 0.0, 0.0, 0.7, 0.0)
+	var wide := Radio.BAND_WIDTH
+	var high := Radio.BAND_HEIGHT
+	# Set into the case, the bezel standing proud of the window.
+	b.box(Vector3(wide, high, 0.014), at + Vector3(0.0, 0.0, -0.005), Paint.coat(Color(1.0, 0.82, 0.55), 0.0, 0.0, 0.5, 0.0, 1.0), 0.001)
+	for s in [-1, 1]:
+		b.box(Vector3(wide + 0.016, 0.008, 0.018), at + Vector3(0.0, s * (high * 0.5 + 0.004), -0.003), gun, 0.002)
+		b.box(Vector3(0.008, high, 0.018), at + Vector3(s * (wide * 0.5 + 0.004), 0.0, -0.003), gun, 0.002)
+	var face := at.z + 0.0025
+	var foot := -0.016
+	b.box(Vector3(Radio.BAND.y - Radio.BAND.x + 0.0014, 0.001, 0.001), at + Vector3(0.0, foot, face - at.z), ink, 0.0)
+	for i in 21:
+		var x := lerpf(Radio.BAND.x, Radio.BAND.y, i / 20.0)
+		var long := i % 5 == 0
+		var tall := 0.011 if long else 0.006
+		b.box(Vector3(0.0014 if long else 0.001, tall, 0.001), Vector3(x, at.y + foot + tall * 0.5, face), ink, 0.0)
+		if long:
+			_numeral(b, str(i), Vector3(x, at.y + 0.008, face), 0.011, ink)
+
+
+## A number in block strokes, `tall` m high, its middle at `at`, facing +Z.
+static func _numeral(b: Paint.Pieces, text: String, at: Vector3, tall: float, look: Paint.Coat) -> void:
+	# Strokes a to g: top, top right, bottom right, bottom, bottom left, top left, middle.
+	const STROKES := {"0": "abcdef", "1": "bc", "2": "abged", "5": "afgcd"}
+	const PLACES := {"a": Vector2(0.0, 0.5), "g": Vector2.ZERO, "d": Vector2(0.0, -0.5), "b": Vector2(0.5, 0.25),
+		"c": Vector2(0.5, -0.25), "e": Vector2(-0.5, -0.25), "f": Vector2(-0.5, 0.25)}
+	var wide := tall * 0.55
+	var line := tall * 0.13
+	var gap := wide * 0.5
+	# A 1 is one stroke, as narrow as it.
+	var widths: Array[float] = []
+	var span := -gap
+	for digit in text:
+		widths.append(line if digit == "1" else wide)
+		span += widths[-1] + gap
+	var x := at.x - span * 0.5
+	for i in text.length():
+		for stroke in STROKES[text[i]]:
+			var where: Vector2 = PLACES[stroke]
+			if text[i] == "1":
+				where.x = 0.0
+			var size := Vector3(wide + line, line, 0.001) if stroke in "adg" else Vector3(line, tall * 0.5 + line, 0.001)
+			b.box(size, Vector3(x + widths[i] * 0.5 + where.x * wide, at.y + where.y * tall, at.z), look, 0.0)
+		x += widths[i] + gap
+
+
 static func _hazard(b: Paint.Pieces, size: Vector3, at: Vector3, turn: Basis) -> void:
 	b.box(size, at, Paint.coat(Paint.YELLOW, 0.75), 0.003, turn)
 	var n := int(size.x / (size.y * 1.6))

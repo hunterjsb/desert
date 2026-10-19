@@ -242,12 +242,17 @@ set aside to its right; over a run, in the middle on the soft dark field.
   and says what the prop shows (`Words.shows`), the kit at home if nothing; back slides it
   home. New game over a save asks "this ends your saved run", the prop already aside, with
   the safe answer highlighted, and back declines too.
-- **Who you come as**, with nothing written above: the origins down the left, well spaced,
-  each with a few smaller words under it (tows a camp, rides light, stays put) that
-  brighten with it, and ???? for one still locked, which the selection passes over; the
-  origin last played is highlighted, the Surveyor before any, so the piece on show stays as
-  it is. The highlighted origin's piece shows aside, the last one shrinking away and the
-  next growing in as the selection moves, and under it on the right its gear in bare words
+- **Who you come as**, with nothing written above: the origins down the left, each with a
+  few smaller words under it (tows a camp, rides light, stays put) that brighten with it, and
+  ???? for one still locked, which the selection passes over. The Surveyor leads, alone at the
+  top in larger words (48, its line 18), a shade brighter at rest than the rest; after a clear
+  gap the starts the deeds open stand apart beneath it, smaller (26, their lines 15), closer
+  together and dimmer, coming up a moment after it as the choice opens, and one still locked
+  fainter still (`Words.set_apart`). Their pieces stand back from the crate's place, shown
+  smaller, at home and aside (`Showpiece.NOVEL`). The origin last played is highlighted, the
+  Surveyor before any, so the piece on show stays as it is. The highlighted origin's piece
+  shows aside, the last one shrinking away and the next growing in as the selection moves,
+  and under it on the right its gear in bare words
   at 20, off-white with the theme's soft dark edge and a faint halo, no panel: each thing
   and how many, read from the kit as a run sets it down (`Kit.gear`), two to a line once
   there are many. Then which mode, laid out the same over the chosen origin's piece
@@ -260,7 +265,8 @@ set aside to its right; over a run, in the middle on the soft dark field.
   of it, 8 at most, each with everything seated in it and its state (charge, crops, a
   shield's switch), seen from where you stood toward it and fitted to the crate's span.
   Under it, the save's numbers: time played, when it was saved by the clock on the wall
-  (today 13:40, yesterday 21:05, 3 days ago), the run's day, and who you came as; then how many
+  (today 13:40, yesterday 21:05, 3 days ago), the run's day (counted from its own start, the
+  day it began day 1), and who you came as; then how many
   deeds show done ("Deeds 6 of 15"). A save
   from before time played was kept lists the rest. Confirm carries on; back goes back.
 - **Music** at the main menu: Hunter's "Salt" (`assets/audio/menu_theme.ogg`, 80 s, looping,
@@ -320,7 +326,8 @@ set aside to its right; over a run, in the middle on the soft dark field.
   is the same from then on.
 - `look/menus` shoots the main menu, with its title and crate, in a storm, on a clear day
   and with its music off; Options, its controls list and the question over a save with
-  the prop aside; who you come as with each origin's piece and gear, one locked, and the
+  the prop aside; who you come as on a first run, the Surveyor alone open, then with each
+  origin highlighted, its piece and gear, and with one locked beside one open, and the
   modes; the main menu after a Homesteader's run; the system menu; Resume with that run's
   camp (and the save `LOOK_SAVE` names, if set); and the main menu and Resume at the
   menu's darkest, to judge by eye (`look/menus/shoot.sh` builds the sheet).
@@ -370,6 +377,9 @@ set aside to its right; over a run, in the middle on the soft dark field.
     panel.
 12. **The menu theme.** On the main menu "Salt" fades in on the menus' bus while the world is
     muted; a new run fades it out and stops it; Save & quit brings it back from its start.
+13. **The Surveyor leads** (2026-10-18). On a fresh profile New game opens on the Surveyor, first
+    and highlighted, its crate on show, and down passes over the starts still locked; with every
+    start open it still opens there, its word larger than the rest.
 
 ## Out of scope
 

@@ -46,7 +46,11 @@ var field: WeatherField
 var day: DayCycle
 var map: StormMap
 var sky: SkyView
-var plume: Plume
+## The plumes drawn now, each its own source's.
+var plumes: Array[Plume] = []
+var rumbles: Rumbles
+var _plumes_due := 0.0
+var _plumes_at := 0.0
 var lee: Lee
 var eye: Eye
 ## The weather at the player this tick, which the game plays by.
@@ -110,9 +114,14 @@ func setup(world: World) -> void:
 	sky = SkyView.new()
 	add_child(sky)
 	sky.setup(world, day, _environment, face, _sun)
-	plume = Plume.new()
-	add_child(plume)
-	plume.setup(world, self)
+	for i in Plume.AT_ONCE:
+		var plume := Plume.new()
+		add_child(plume)
+		plume.setup(world, self)
+		plumes.append(plume)
+	rumbles = Rumbles.new()
+	add_child(rumbles)
+	rumbles.setup(world, self)
 
 
 ## Each felt_*() reads now, or a given world time t: power ticks read theirs.
@@ -139,6 +148,16 @@ func open_wind(at: Vector3, t := NAN) -> Vector3:
 func felt_light(at: Vector3, t := NAN) -> float:
 	return day.sunlight(_when(t), _world.moon.latitude, _world.moon.longitude) \
 		* (1.0 - _tuning.storm_darkness * field_storm(at, t))
+
+
+## What an anomaly makes of a storm's damage at a place, now or at world
+## time t: times what the clean curve deals, in particles (x) and in wind past
+## what's stood (y); 1 and 1 outside one. The one door to its hidden term for
+## everything that deals damage: wear, harm, crops and a shield's load. Every
+## forecast and instrument reads the clean field instead.
+func hidden(at: Vector3, t := NAN) -> Vector2:
+	var h := field.anomaly_at(_world.world_x(at.x), _world.world_z(at.z), _when(t))
+	return Vector2(lerpf(1.0, _tuning.anomaly_particles, h), lerpf(1.0, _tuning.anomaly_wind, h))
 
 
 ## The storm the field makes at a place, as if no shelter stood.
@@ -256,6 +275,13 @@ func _exit_tree() -> void:
 
 ## Every drawn frame, after the world has moved and shifted.
 func _process(delta: float) -> void:
+	# Before the plumes draw: each its source in sight, looked over a few
+	# times a second, and at once after a jump.
+	_plumes_due -= delta
+	if _plumes_due <= 0.0 or absf(_world.time - _plumes_at) > 2.0:
+		_plumes_due = 0.25
+		Plume.assign(plumes, _world)
+	_plumes_at = _world.time
 	if _meter.enabled != _tuning.eye_adapts:
 		_meter.enabled = _tuning.eye_adapts
 		eye.settle()
@@ -270,6 +296,14 @@ func _process(delta: float) -> void:
 			glows.append(shelter.glow)
 	face.sync(_world.time, holes, glows)
 	atmosphere.carve(holes)
+
+
+## The plume drawing a source of Geology's, by its id, or null.
+func plume_for(id: StringName) -> Plume:
+	for plume in plumes:
+		if plume.source.get("id") == id:
+			return plume
+	return null
 
 
 ## How much the wind grabs a body: its own say if it has one, else its
@@ -400,9 +434,11 @@ func _show(delta: float) -> void:
 		_environment.fog_density))
 	# The light round the camera, which a shell's glass catches.
 	face.set_light("shell_light", _linear(_environment.ambient_light_color) * _environment.ambient_light_energy)
-	plume.light(sun, sun_light, sky_light, ring_light, _linear(haze_color) * haze_light,
-		Vector3(_environment.fog_depth_begin, _environment.fog_depth_end, _environment.fog_density),
-		day.tu_direction(t, moon.latitude, moon.longitude), _linear(SkyView.TU_SHINE_COLOR) * _sun_energy * tu_light)
+	var tu := day.tu_direction(t, moon.latitude, moon.longitude)
+	for plume in plumes:
+		plume.light(sun, sun_light, sky_light, ring_light, _linear(haze_color) * haze_light,
+			Vector3(_environment.fog_depth_begin, _environment.fog_depth_end, _environment.fog_density),
+			tu, _linear(SkyView.TU_SHINE_COLOR) * _sun_energy * tu_light)
 
 	# Outside a bubble the dust is the storm's own: it rides the open air's
 	# wind, slowed in a lee, and thickens with the storm, and the bubble only
@@ -420,12 +456,14 @@ func _report() -> void:
 	var t := _world.time
 	var hours := day.time_of_day(t, _world.moon.longitude) * 24.0
 	var warp := "" if _world.time_warp == 1.0 else " x%d" % _world.time_warp
-	Dev.put("weather/t", "d%d %02d:%02d%s" % [day.day(t, _world.moon.longitude), floori(hours),
+	Dev.put("weather/t", "d%d %02d:%02d%s" % [day.day(t, _world.moon.longitude, _world.began), floori(hours),
 		floori(fmod(hours, 1.0) * 60.0), warp])
 	# Compass bearing the wind comes from; north is -z.
 	var from := fposmod(rad_to_deg(atan2(-wind.x, wind.z)), 360.0)
 	Dev.put("weather/wind", "%.1fm/s %03d" % [wind.length(), roundi(from) % 360])
 	Dev.put("weather/stm", "%d%%" % roundi(storm * 100.0) if in_storm else "clear")
+	var anomaly := field.anomaly_at(_world.player_world_x(), _world.player_world_z(), t)
+	Dev.put("weather/anom", "%d%%" % roundi(anomaly * 100.0) if anomaly > 0.0 else "-")
 	Dev.put("weather/wall", "-" if seen_front == -INF else ("in %dm" % roundi(seen_front)
 		if seen_front >= 0.0 else "%dm" % roundi(-seen_front)))
 	Dev.put("weather/seen", "%d%%" % roundi(seen_storm * 100.0))

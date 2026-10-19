@@ -3,9 +3,9 @@ extends RefCounted
 ## The site index: every site, path piece and landmark laid on the ground near
 ## you, in world metres and hashed by the chunks they touch. It answers what
 ## chunks and systems ask: what touches this area, whose ground is under this
-## point, what's nearest. A site whose kind has a kit is a Structure, built on
-## the ground once its ground is; the index holds its exposure as it was read
-## while any ground built over it is loaded.
+## point, what's nearest, what a storm has newly laid bare. A site whose kind
+## has a kit is a Structure, built on the ground once its ground is; while
+## any ground built over it is loaded it follows the weather there.
 ##
 ## History is laid by the sheet. The flat ground can't hold the moon, so the
 ## history near you is laid from where you are: a moon cell, or a landmark,
@@ -133,6 +133,9 @@ var _by_hand := BY_HAND
 ## Where laying was last asked from, and how far round it everything is laid.
 var _ready_at := Vector2(INF, INF)
 var _ready_m := -1.0
+## Sand a resumed save had held off sites over you or your camp, by site id, m:
+## each taken up as that site's ground is built again.
+var _kept := {}
 
 
 func _init(world_history: History, shape: TerrainShape, tuning: Tuning) -> void:
@@ -320,9 +323,8 @@ func nearest(x: float, z: float, radius: float, wanted: Callable, planned := fal
 
 
 ## The structures a chunk's ground is built with: every one standing whose
-## ground touches it, its exposure held from now while that ground is loaded,
-## read now if nothing held it. Asked on the main thread as the build is
-## launched; the build itself surveys them, on its worker.
+## ground touches it, following the weather from now while that ground is
+## loaded. Asked on the main thread as the build is launched.
 func hold(coord: Vector2i) -> Array[Structure]:
 	var held: Array[Structure] = []
 	if not _built:
@@ -332,20 +334,42 @@ func hold(coord: Vector2i) -> Array[Structure]:
 		if each == null or _yields(each, true):
 			continue
 		if each.holders.is_empty():
-			each.decide(_ctx.clock.call())
+			each.hold_ground(_kept.get(each.id, NAN))
+			_kept.erase(each.id)
 		each.holders[coord] = true
 		held.append(each)
 	return held
 
 
-## A chunk's ground is gone: what only it held can read afresh next time.
+## A chunk's ground is gone: what only it held is the weather's alone again.
+## The desert ate it: come back and it's as the weather has it then.
 func release(coord: Vector2i) -> void:
 	if not _built:
 		return
 	for site in query(_square(coord)):
 		var each := site as Structure
 		if each != null and each.holders.erase(coord) and each.holders.is_empty():
-			each.forget()
+			each.release_ground()
+
+
+## The structures near a world place a storm has newly laid bare, those whose
+## ground it's working on now has them further out of the sand than their
+## settled sand would, nearest first, as [structure, how much further, in
+## levels]: what the glints and clangs come from, and the hook a particle
+## sensor or ground radar on the Console will pin them with.
+func newly_exposed(x: float, z: float, radius: float, least := 0.05) -> Array[Array]:
+	var found: Array[Array] = []
+	if not _built:
+		return found
+	for site in query(Rect2(x - radius, z - radius, radius * 2.0, radius * 2.0), false):
+		var each := site as Structure
+		if each == null or not each.stands() or each.yields == 1 or each.distance_to(x, z) > radius:
+			continue
+		var bared := each.bared()
+		if bared >= least:
+			found.append([each, bared])
+	found.sort_custom(func(a: Array, b: Array) -> bool: return a[0].distance_to(x, z) < b[0].distance_to(x, z))
+	return found
 
 
 ## A chunk's square, with the border its build samples.
@@ -464,6 +488,41 @@ func anchored() -> bool:
 ## Nothing waiting to be laid.
 func is_idle() -> bool:
 	return _queue.is_empty() and _surveying.is_empty()
+
+
+## What a save keeps of the sand held off sites over you or your camp:
+## [site id, sand off it, m] for each so held.
+func held() -> Array:
+	var out := []
+	for unit in units():
+		for site in unit.sites:
+			var each := site as Structure
+			if each != null and not is_nan(each.held_sand()):
+				out.append([each.id, each.held_sand()])
+	return out
+
+
+## A resumed run's held sand: each site comes back as held as it was, never
+## burying what of yours stands on it, until the resume is done (resumed).
+func recall_held(memories: Array) -> void:
+	_kept.clear()
+	for each: Array in memories:
+		_kept[each[0]] = each[1]
+	# What's held already, its ground kept from before the resume.
+	for unit in units():
+		for site in unit.sites:
+			if site is Structure and not site.holders.is_empty() and _kept.has(site.id):
+				site.keep(_kept[site.id])
+				_kept.erase(site.id)
+
+
+## A resume is done: held sand is the live rule's again.
+func resumed() -> void:
+	_kept.clear()
+	for unit in units():
+		for site in unit.sites:
+			if site is Structure:
+				site.resumed()
 
 
 ## What a save keeps: each laid unit's key and the anchor it was laid from.

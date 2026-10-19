@@ -11,6 +11,9 @@ extends RefCounted
 const NOISE := "#%*~/\\:;=+"
 ## The distortion and the cuts change this often, s.
 const SLICE := 0.6
+## An anomaly's crackle bursts this often, s, sounding this share of them.
+const CRACKLE := 0.07
+const CRACKLE_ON := 0.45
 
 
 ## How much storm stands in the way from a place toward a god, 0 to 1: the
@@ -72,3 +75,11 @@ static func distort(line: String, clean: float, t: float, id: StringName) -> Str
 
 static func _chance(key: Array) -> float:
 	return float(hash(key) & 0xffffff) / float(0x1000000)
+
+
+## An anomaly's crackle at world time t: whether a burst sounds now (x, 0 or
+## 1) and how high it's pitched (y, 0 to 1). Short and uneven, nothing like
+## a storm's steady hiss.
+static func crackle(t: float) -> Vector2:
+	var slice := floori(t / CRACKLE)
+	return Vector2(1.0 if _chance([slice, "crackle"]) < CRACKLE_ON else 0.0, _chance([slice, "pitch"]))

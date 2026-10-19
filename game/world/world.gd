@@ -34,6 +34,9 @@ var origin_chunk := Vector2i.ZERO
 var time := 0.0
 ## How many seconds the clock moves per second; 0 stops it.
 var time_warp := 1.0
+## The clock when the run began, its day 1: a start looks days on for its
+## morning (Runs). 0 in a save from before it was kept.
+var began := 0.0
 ## Seconds of the run played, whatever the clock's warp; NAN in a run
 ## resumed from a save that never kept it, so it's never short.
 var played := 0.0
@@ -98,11 +101,12 @@ func _ready() -> void:
 
 
 ## Puts the player down at a world place and run time, facing yaw, as a
-## fresh spawn: distance from spawn and the moon position start over there,
-## at the run's start on the moon.
+## fresh spawn: distance from spawn, the moon position and the run's days
+## start over there, at the run's start on the moon.
 func respawn(x: float, z: float, yaw: float, at_time: float) -> void:
 	player.step_off()
 	time = at_time
+	began = at_time
 	time_warp = 1.0
 	var at := Vector3(engine_x(x), height_at(x, z) + 0.1, engine_z(z))
 	teleport(player, Transform3D(Basis(Vector3.UP, yaw), at))

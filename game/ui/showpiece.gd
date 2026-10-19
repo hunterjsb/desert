@@ -21,6 +21,9 @@ const SLIDE_SECONDS := 0.6
 const SWAP_SECONDS := 0.3
 ## A piece wider corner to corner than this, m, is shown smaller, to fit where the crate does.
 const SPAN := 2.4
+## Another origin's piece stands back from the crate's place, this much smaller:
+## a variation on the Surveyor, the game as meant.
+const NOVEL := 0.78
 ## Turned to show its front, the board racked beyond it, and tipped to show
 ## what rides on top, degrees.
 const YAW := 205.0
@@ -132,7 +135,10 @@ func _build(from: Kit) -> Array:
 	_light_up(device)
 	var piece := _looks(device)
 	piece.basis = Basis(Vector3.UP, deg_to_rad(from.shown_turn))
-	return _framed([piece])
+	var framed := _framed([piece])
+	if from.id != Kit.standard().id:
+		framed[2] *= NOVEL
+	return framed
 
 
 ## The camp as the save holds it, each thing with its state and what's

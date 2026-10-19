@@ -1,10 +1,11 @@
 extends Probe
 ## Salvage & ruins probe 5: harder weather, better finds, the expedition.
 ## History's structures round towns on two worlds, each read at moments
-## through three days as its ground would be built then: at the moment the
-## storms had taken the most sand off it, more of a site's loot is within
-## reach than at the moment they'd taken the least, and better; an era's best
-## lies only where a storm stripped past. Every kind a site's tables hold
+## through three days and at its storm's height, the moment in a day a storm
+## worked hardest on it: at the moment the storms had taken the most sand off
+## it, more of a site's loot is within reach than at the moment they'd taken
+## the least, and better; an era's best lies only where a storm stripped
+## past. Every kind a site's tables hold
 ## turns up, over the sites history put round the great sites and the Rim.
 ## And open sand's few loose finds still come from the deep layer where the
 ## weather has been hard.
@@ -14,8 +15,9 @@ const TOWNS := 6
 ## Moments each structure is read at.
 const MOMENTS := 6
 ## The most stripped moments must show this many times what the least did,
-## and this much better a find.
-const MORE := 1.2
+## and this much better a find. A site coming out of the sand shows what
+## stands proud of it on the way, so the least stripped already show some.
+const MORE := 1.12
 const RISE := 0.03
 ## Sites drawn round each of these landmarks for every kind to turn up, m.
 const AROUND: Array[StringName] = [&"halloran", &"black_site", &"port_morgan", &"halfrise", &"starcom"]
@@ -36,6 +38,7 @@ func run() -> void:
 	var drawn := {}
 	for run_seed: int in SEEDS:
 		var shape := TerrainShape.new(run_seed, tuning)
+		var field := WeatherField.new(run_seed, tuning)
 		for town in StructureKit.starts_among(run_seed, tuning, Sphere.point(0.0, 0.0), ground, TOWNS):
 			shape.sites.follow(ground.x, ground.y, Sphere.latitude(town), Sphere.longitude(town), 1.0, tuning.history_lay_m)
 			for unit in shape.sites.units():
@@ -44,8 +47,12 @@ func run() -> void:
 						continue
 					sites += 1
 					var readings: Array[Vector3] = []
+					var moments := []
 					for k in MOMENTS:
-						site.decide(rng.randf() * 3.0 * 24.0 * 3600.0)
+						moments.append(rng.randf() * 3.0 * 24.0 * 3600.0)
+					moments.append(_storm_height(field, site, tuning))
+					for moment: float in moments:
+						site.decide(moment)
 						var found := SiteLoot.plan(site, shape.height_at)
 						var tiers := 0
 						for spec in found:
@@ -62,6 +69,19 @@ func run() -> void:
 			_loose(shape, run_seed, tuning, loose)
 		_drawn(shape.history, drawn)
 	_verdict(sites, ends, drawn, early, loose)
+
+
+## When a storm worked hardest on a site in the first day, world time.
+func _storm_height(field: WeatherField, site: Site, tuning: Tuning) -> float:
+	var memo := Exposure.Memo.new()
+	var most := -1.0
+	var at := 0
+	for m in 24 * 60:
+		var s := Exposure.surge_at(field, site.x, site.z, m, tuning, memo)
+		if s > most:
+			most = s
+			at = m
+	return (at + 1) * Exposure.SURGE_STEP_S
 
 
 ## Every socket of history's built sites round the great sites, drawn.
