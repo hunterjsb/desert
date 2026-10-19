@@ -1,32 +1,47 @@
 class_name Chassis
 extends Device
-## A chassis piece: a flat square frame with a ring on each edge, a bottom
-## mount for its own tray and a deck mount on top, and nothing else. Pieces
-## join edge to edge by their rings into a deck. A piece brought to a free
-## ring snaps flush beside it, any hook in its way popping off and any loose
-## part there moved clear, a line on either still tied, and its frame, sockets
-## and whatever is in them
-## move into the first piece's body, as a fitted part's shapes do: a deck is
-## one rigid body in whatever shape it's laid out, with nothing between its
-## pieces to wobble. Off again, a bare piece the rest still holds together
-## without takes back all that's its own. Its trays lift it where they are,
-## and what stands on its deck mounts shares its power.
+## A chassis piece: a flat square whose whole top and bottom are sticky, with
+## a ring on each edge, and nothing else. Anything sticks anywhere it fits on
+## its faces (Stick): parts join its body as fitted parts do, devices stay
+## bodies of their own held fast on it, and all of it is one power pool.
+## Pieces join edge to edge by their rings into a deck; a frame stuck square
+## on a piece takes a piece on each of its other faces, upright as a wall or
+## flat as a shelf. A piece brought to a free ring snaps flush beside it, any
+## hook in its way popping off and any loose part there moved clear, a line on
+## either still tied, and its frame, sockets and whatever is on them move into
+## the first piece's body, as a fitted part's shapes do: a deck is one rigid
+## body in whatever shape it's laid out, with nothing between its pieces to
+## wobble. Off again, a bare piece the rest still holds together without takes
+## back all that's its own. Its trays lift it where they are, toward the sand
+## they face.
 
-## A piece's width, m: the pitch its neighbours sit at across its rings.
+## A piece's width, m: the pitch its neighbours sit at across its rings, and
+## how thick it is.
 const WIDTH := 1.0
+const THICK := 0.12
 const QUARTER := PI / 2.0
 ## What a join moves out of its way lands this far past the deck's edge, m.
 const CLEAR := 0.1
 ## The ways across a piece's four edges, in the order a deck is walked.
 const STEPS: Array[Vector2i] = [Vector2i(1, 0), Vector2i(0, 1), Vector2i(-1, 0), Vector2i(0, -1)]
+## Its two sticky faces, in its own frame: +Z out of the face, +X along the
+## piece's own, so a thing's place on one is (x, y) in it.
+const TOP := &"top"
+const BOTTOM := &"bottom"
+const FACES := {
+	TOP: Transform3D(Basis(Vector3.RIGHT, -PI / 2.0), Vector3(0.0, THICK * 0.5, 0.0)),
+	BOTTOM: Transform3D(Basis(Vector3.RIGHT, PI / 2.0), Vector3(0.0, -THICK * 0.5, 0.0)),
+}
+## Off the grid, a piece on a frame has no grid place: far off it.
+const OFF_GRID := Vector2i(1 << 20, 1 << 20)
 
-## The pieces joined to this one, each after one it sits beside, as they
-## joined or as a save rebuilds them. Each waits off the tree meanwhile, its
-## own nodes living in this body.
+## The pieces joined to this one, each after one it sits beside or on a
+## frame it hangs from, as they joined or as a save rebuilds them. Each waits
+## off the tree meanwhile, its own nodes living in this body.
 var joined: Array[Chassis] = []
-## Joined: the deck it's part of, the ring it sits across from one before it,
-## its place on the first piece's grid and how many quarter turns it sits at
-## there.
+## Joined: the deck it's part of, the ring it sits across from one before it
+## or the frame's face it's on, its place on the first piece's grid and how
+## many quarter turns it sits at there.
 var deck: Chassis
 var joined_at: Socket
 var cell := Vector2i.ZERO
@@ -45,13 +60,26 @@ func pieces() -> Array[Chassis]:
 	return all
 
 
+## The pieces that lie flat on the deck's grid, joined edge to edge.
+func grid() -> Array[Chassis]:
+	return pieces().filter(func(p: Chassis) -> bool: return not p.on_frame())
+
+
+## Joined on a frame's face: a wall, or a shelf.
+func on_frame() -> bool:
+	return joined_at != null and joined_at.kind == &"face"
+
+
 ## Whether a piece can come off: the rest of the deck still holds together
-## without it. A lone piece is no deck to come off.
+## without it. A lone piece is no deck to come off; one on a frame holds
+## nothing else up.
 func outer(piece: Chassis) -> bool:
 	if joined.is_empty() or not pieces().has(piece):
 		return false
+	if piece.on_frame():
+		return true
 	var left := {}
-	for each in pieces():
+	for each in grid():
 		if each != piece:
 			left[each.cell] = true
 	var start: Vector2i = left.keys()[0]
@@ -67,38 +95,63 @@ func outer(piece: Chassis) -> bool:
 
 
 ## Whether a piece comes off by hand: bare, nothing fitted to it and nothing
-## standing on it, and outer. Take anywhere else holds the whole deck, so
+## stuck on it, and outer. Take anywhere else holds the whole deck, so
 ## dragging a deck never takes it apart (Hunter, 2026-10-17).
 func comes_off(piece: Chassis) -> bool:
-	if not outer(piece):
+	if piece == null or not outer(piece):
 		return false
 	for socket in sockets():
-		if not socket.has_meta(&"socket") and _cell_of(socket) == piece.cell \
+		if not socket.has_meta(&"socket") and own_piece(socket) == piece \
 				and (socket.part != null or socket.mounted != null):
 			return false
 	return true
 
 
-## Where a joined piece sits in the deck's frame.
+## Where a joined piece sits in the deck's frame: on the grid, or on its
+## frame's face.
 func pose() -> Transform3D:
+	if on_frame():
+		return joined_at.transform * Frame.piece_seat()
 	return Transform3D(Basis(Vector3.UP, turns * QUARTER), Vector3(cell.x, 0.0, cell.y) * WIDTH)
 
 
-## The piece of the deck under a place in the world, or null.
+## A piece's sticky face in the deck's frame.
+func face_frame(piece: Chassis, face: StringName) -> Transform3D:
+	return piece.pose() * FACES[face]
+
+
+## The piece of the deck a place in the world is on or in, or null: whichever
+## plate it's nearest inside, else the grid place under it.
 func piece_at(point: Vector3) -> Chassis:
+	var best: Chassis = null
+	var nearest := INF
+	for piece in pieces():
+		var local := (global_transform * piece.pose()).affine_inverse() * point
+		if absf(local.x) <= WIDTH * 0.5 + 0.02 and absf(local.z) <= WIDTH * 0.5 + 0.02 \
+				and absf(local.y) < nearest and absf(local.y) <= THICK:
+			nearest = absf(local.y)
+			best = piece
+	if best != null:
+		return best
 	var local := global_transform.affine_inverse() * point
 	var at := Vector2i(roundi(local.x / WIDTH), roundi(local.z / WIDTH))
-	for piece in pieces():
+	for piece in grid():
 		if piece.cell == at:
 			return piece
 	return null
+
+
+## The piece a socket of this deck is its own, through what it's fitted in.
+func own_piece(socket: Socket) -> Chassis:
+	var piece := _piece_of(socket)
+	return piece if piece != null else self
 
 
 func frame_sockets() -> Array[Socket]:
 	var own: Array[Socket] = []
 	if deck != null:
 		for node in _own:
-			if node is Socket:
+			if node is Socket and not (node as Socket).stuck():
 				own.append(node)
 		return own
 	for socket in super():
@@ -107,29 +160,43 @@ func frame_sockets() -> Array[Socket]:
 	return own
 
 
-## A lone piece fits a free ring of a deck that has room beyond it.
+## A lone piece fits a free ring of a deck that has room beyond it, or a free
+## face of a frame on one.
 func fits_in(socket: Socket) -> bool:
 	var other := socket.get_parent() as Chassis
-	return other != null and other._turns_for(self, socket, Basis.IDENTITY) >= 0
+	if other == null:
+		return false
+	if socket.kind == &"face":
+		return other._takes_on_face(self, socket)
+	return other._turns_for(self, socket, Basis.IDENTITY) >= 0
 
 
-## Where a piece joined at one of this deck's rings would sit, in the ring's
-## frame: flush beyond it, turned the way nearest `held`, how it's held.
+## Where a piece joined at one of this deck's rings or frames' faces would
+## sit, in that socket's frame: flush beyond a ring, turned the way nearest
+## `held`, how it's held, or flat on a face.
 func seat_in(ring: Socket, held: Basis) -> Transform3D:
 	var other := ring.get_parent() as Chassis
+	if ring.kind == &"face":
+		return Frame.piece_seat()
 	var k := maxi(other._turns_for(self, ring, held), 0)
 	return ring.transform.affine_inverse() * other._pose_at(ring, k)
 
 
 ## Joins a lone piece at a free ring of this deck, turned `k` quarter turns
-## (or the way it now faces): everything of it moves into this body exactly
-## where it sat beside it, and it leaves the physics world.
+## (or the way it now faces), or on a frame's free face: everything of it
+## moves into this body exactly where it sat beside it, and it leaves the
+## physics world.
 func join(piece: Chassis, ring: Socket, k := -1) -> void:
-	if k < 0:
+	var facing := ring.kind == &"face"
+	if facing:
+		assert(_takes_on_face(piece, ring))
+		k = 0
+	elif k < 0:
 		k = _turns_for(piece, ring, piece.global_basis)
 	assert(k >= 0 and ring.get_parent() == self)
-	_make_way(piece, ring, k)
-	piece.cell = _cell_of(ring) + _step(ring)
+	if not facing:
+		_make_way(piece, ring, k)
+	piece.cell = OFF_GRID if facing else _cell_of(ring) + _step(ring)
 	piece.turns = k
 	piece.deck = self
 	piece.joined_at = ring
@@ -165,14 +232,15 @@ func join(piece: Chassis, ring: Socket, k := -1) -> void:
 	_deeds()
 
 
-## Takes an outer piece off again, with all that's its own and whatever
-## stands on it, loose where it sat; the caller moves it clear across the
-## ring it leaves (ring_to). The first piece is this body, so for it another
-## piece takes its place first and what comes off is that one's.
+## Takes an outer piece off again, with all that's its own and whatever is
+## stuck on it, loose where it sat; the caller moves it clear across the
+## ring or off the face it leaves (ring_to, its joined_at). The first piece
+## is this body, so for it another piece takes its place first and what
+## comes off is that one's.
 func detach(piece: Chassis) -> Chassis:
 	assert(outer(piece))
 	if piece == self:
-		piece = _reroot(joined[0])
+		piece = _reroot(_first_on_grid())
 	joined.erase(piece)
 	var back := piece.pose().affine_inverse()
 	var nodes: Array[Node3D] = []
@@ -207,13 +275,22 @@ func detach(piece: Chassis) -> Chassis:
 	return piece
 
 
+## The first joined piece on the grid beside this one, to take its place.
+func _first_on_grid() -> Chassis:
+	for piece in joined:
+		if not piece.on_frame():
+			return piece
+	return joined[0]
+
+
 ## The ring of the deck facing a place in the world from beside it, or null:
 ## where a piece just off it came across.
 func ring_to(point: Vector3) -> Socket:
 	var local := global_transform.affine_inverse() * point
 	var at := Vector2i(roundi(local.x / WIDTH), roundi(local.z / WIDTH))
 	for socket in sockets():
-		if socket.kind == &"ring" and not socket.has_meta(&"socket") and _cell_of(socket) + _step(socket) == at:
+		if socket.kind == &"ring" and not socket.has_meta(&"socket") and not own_piece(socket).on_frame() \
+				and _cell_of(socket) + _step(socket) == at:
 			return socket
 	return null
 
@@ -240,7 +317,7 @@ func _reroot(to: Chassis) -> Chassis:
 			first.append(node)
 	to._own = first
 	for each in joined:
-		if each != to:
+		if each != to and not each.on_frame():
 			_place(each, back * each.pose())
 	_place(to, back)
 	var view := frame_view
@@ -269,11 +346,13 @@ static func _place(piece: Chassis, at: Transform3D) -> void:
 
 
 ## Puts the joined pieces in an order each joins one before it, outward from
-## this one, each at the ring of the one it joins: how a save rebuilds it.
+## this one, each at the ring of the one it joins, then those on frames after
+## the piece their frame stands on: how a save rebuilds it.
 func _reorder() -> void:
 	var at := {}
 	for piece in joined:
-		at[piece.cell] = piece
+		if not piece.on_frame():
+			at[piece.cell] = piece
 	var order: Array[Chassis] = []
 	var next: Array[Chassis] = [self]
 	var i := 0
@@ -288,8 +367,20 @@ func _reorder() -> void:
 			next.append(piece)
 			for socket in sockets():
 				if socket.kind == &"ring" and not socket.has_meta(&"socket") and _cell_of(socket) == from.cell \
-						and _step(socket) == step:
+						and own_piece(socket) == from and _step(socket) == step:
 					piece.joined_at = socket
+	var hanging := joined.filter(func(p: Chassis) -> bool: return p.on_frame())
+	while not hanging.is_empty():
+		var placed := false
+		for piece: Chassis in hanging.duplicate():
+			var host := own_piece(piece.joined_at)
+			if host == self or order.has(host):
+				order.append(piece)
+				hanging.erase(piece)
+				placed = true
+		if not placed:
+			order.append_array(hanging)
+			break
 	joined = order
 
 
@@ -301,7 +392,7 @@ func _turns_for(piece: Chassis, ring: Socket, held: Basis) -> int:
 			or not free_ring(ring) or ring.get_parent() != self or wrecked() or piece.wrecked():
 		return -1
 	var to := _cell_of(ring) + _step(ring)
-	for each in pieces():
+	for each in grid():
 		if each.cell == to:
 			return -1
 	var facing := global_basis.orthonormalized().inverse() * held.orthonormalized()
@@ -317,10 +408,21 @@ func _turns_for(piece: Chassis, ring: Socket, held: Basis) -> int:
 	return best
 
 
-## Whether a piece could join across a ring: a deck edge's own, with no piece
-## beyond it and nothing seated there. A hook on it pops off (Hunter, 2026-10-17).
+## Whether a lone, sound piece could go on a frame's face of this deck: the
+## face free, nothing standing too tall under a shelf.
+func _takes_on_face(piece: Chassis, face: Socket) -> bool:
+	return face.kind == &"face" and face.get_parent() == self and face.is_open() and piece != self \
+		and deck == null and piece.deck == null and piece.joined.is_empty() and not wrecked() and not piece.wrecked()
+
+
+## Whether a piece could join across a ring: a deck edge's own on its grid,
+## with no piece beyond it and nothing seated there. A hook on it pops off
+## (Hunter, 2026-10-17).
 static func free_ring(ring: Socket) -> bool:
-	return ring.kind == &"ring" and not ring.has_meta(&"socket") and not ring.closed and ring.mounted == null
+	if ring.kind != &"ring" or ring.has_meta(&"socket") or ring.closed or ring.mounted != null:
+		return false
+	var deck := ring.get_parent() as Chassis
+	return deck == null or not deck.own_piece(ring).on_frame()
 
 
 ## Hooks where a piece joins pop off onto the sand just outside the deck, any
@@ -334,11 +436,11 @@ func _make_way(piece: Chassis, ring: Socket, k: int) -> void:
 		return
 	var to := _cell_of(ring) + _step(ring)
 	var cells := {to: true}
-	for each in pieces():
+	for each in grid():
 		cells[each.cell] = true
 	for socket in sockets():
 		if socket.kind == &"ring" and not socket.has_meta(&"socket") and socket.part != null \
-				and _cell_of(socket) + _step(socket) == to:
+				and not own_piece(socket).on_frame() and _cell_of(socket) + _step(socket) == to:
 			_put_outside(pop(socket), socket.position, cells)
 	var at := _pose_at(ring, k)
 	for socket in piece.frame_sockets():
@@ -445,7 +547,7 @@ func _pose_at(ring: Socket, k: int) -> Transform3D:
 ## The grid place of the piece a socket of this deck belongs to; the first
 ## piece's is the middle of the grid.
 func _cell_of(socket: Socket) -> Vector2i:
-	return (socket.get_meta(&"piece") as Chassis).cell if socket.has_meta(&"piece") else cell
+	return own_piece(socket).cell
 
 
 ## The way across a ring, one place on the grid.
@@ -469,7 +571,7 @@ func _piece_of(node: Node) -> Chassis:
 	return null
 
 
-## A device seated on a deck mount moves from one body to another with its socket.
+## A device stuck on a deck moves from one body to another with its socket.
 static func _take_seat(from: Chassis, to: Chassis, seated: Device) -> void:
 	var socket: Socket = null
 	for each in from._seats:
@@ -482,22 +584,29 @@ static func _take_seat(from: Chassis, to: Chassis, seated: Device) -> void:
 	if seated.parts_changed.is_connected(from._recompute):
 		seated.parts_changed.disconnect(from._recompute)
 		seated.parts_changed.connect(to._recompute)
-	seated.transform = socket.transform * seated.seat()
+	seated.transform = socket.transform * seated.seat_for(socket)
 
 
-## Edge rings between two pieces close, the rest open; then its weight,
-## look and what it can do follow.
+## Edge rings between two pieces on the grid close, and a frame's face with a
+## piece on it, the rest open; then its weight, look and what it can do follow.
 func _after_change() -> void:
 	var cells := {}
-	for piece in pieces():
+	for piece in grid():
 		cells[piece.cell] = true
+	var filled := {}
+	for piece in joined:
+		if piece.on_frame():
+			filled[piece.joined_at] = true
 	for socket in sockets():
-		if socket.kind != &"ring" or socket.has_meta(&"socket"):
+		if socket.kind == &"face":
+			socket.closed = filled.has(socket)
+		elif socket.kind != &"ring" or socket.has_meta(&"socket"):
 			continue
-		socket.closed = cells.has(_cell_of(socket) + _step(socket))
+		else:
+			socket.closed = not own_piece(socket).on_frame() and cells.has(_cell_of(socket) + _step(socket))
 		if socket.marker != null:
 			socket.marker.visible = socket.is_open()
-	# A deck, or one with something standing on it, is too much to carry.
+	# A deck, or one with a device on it, is too much to carry.
 	carryable = joined.is_empty() and mounted().is_empty()
 	remove_meta(&"hands_box")
 	show_wear()
@@ -510,13 +619,22 @@ func mount(other: Device, socket: Socket) -> void:
 	_deeds()
 
 
+func fit(part: Part, socket: Socket) -> void:
+	super(part, socket)
+	if socket.stuck():
+		_deeds()
+
+
 ## The deck's deeds as it grows: enough pieces in one, and a home's three
-## standing on it.
+## on it.
 func _deeds() -> void:
 	if world == null or not world.counts_deeds:
 		return
 	Deeds.measure(world, &"deck_pieces", pieces().size())
-	var on := mounted().map(func(d: Device) -> StringName: return d.get_meta(&"catalog", &""))
+	var on := []
+	for socket in stuck():
+		var thing: Node = socket.part if socket.part != null else socket.mounted
+		on.append(thing.get_meta(&"catalog", &""))
 	Deeds.measure(world, &"deck_home", Deeds.HOME.filter(func(id: StringName) -> bool: return on.has(id)).size())
 
 
@@ -537,6 +655,23 @@ func stats() -> Dictionary:
 	var now := super()
 	now["pieces"] = pieces().size()
 	return now
+
+
+## Its whole-face plates, as [middle, way out, m², what it is], in its own
+## frame: the pieces on its frames' faces and what fills the rest. Wind on
+## faces reads them (not yet: Wind & storms).
+func plates() -> Array:
+	var out := []
+	for piece in joined:
+		if piece.on_frame():
+			var at := piece.pose()
+			out.append([at.origin, at.basis.y.normalized(), WIDTH * WIDTH, &"chassis"])
+	for socket in sockets():
+		if socket.kind == &"face" and socket.part != null:
+			var box := Hands._shapes_box(socket.fitted)
+			out.append([socket.position, socket.transform.basis.z.normalized(), box.size.x * box.size.y,
+				socket.part.get_meta(&"catalog", &"")])
+	return out
 
 
 ## Flat, the wind meets its pieces and what's fitted to them side on, and

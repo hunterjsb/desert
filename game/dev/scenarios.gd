@@ -13,7 +13,7 @@ extends RefCounted
 ## "survive" starts you over on sealed water, with a crude camp to keep you.
 ## "ruin" stands you in front of history's house ruin nearest where the run
 ## began on the moon, however far, dug out, clear and calm, with finds round
-## it and a bare crate frame of your own. "farm"
+## it and a bare chassis of your own. "farm"
 ## sets two planters growing in front of you, one with a harvester, and a
 ## shield for the storm on its way. "radio" sets a radio and a shield in front
 ## of you with a storm on its way, to sit it out and follow a beacon: beside a
@@ -23,8 +23,8 @@ extends RefCounted
 ## parks the reference camp round you on a floating deck, running, to be left
 ## alone, its farm watered by a condenser on hoses. "lee" stands you at the foot of a tall
 ## slip face, facing up it into the wind coming over its crest, with a storm
-## on its way and a catch line strung across the wind for its drift. "chassis" lays out pieces, their trays, a crate, a
-## condenser, hooks and a coil to build a deck from, one piece's hook moored to a stake where the next piece pops it. "console" stands a Console with every
+## on its way and a catch line strung across the wind for its drift. "chassis" lays out pieces, their trays, a frame,
+## batteries, a shield, a condenser, hooks and a coil to build a deck from, one piece's hook moored to a stake where the next piece pops it. "console" stands a Console with every
 ## instrument and a radio on a small deck beside a shield, with a storm due
 ## in a few minutes, to watch its screen as it comes. "anomaly" stands you
 ## where an anomaly's heart comes over minutes after its storm's wall, beside
@@ -64,7 +64,7 @@ const LIST: Array[Dictionary] = [
 		"distance": 500.0, "day": [0.35, 0.55], "camp": true},
 	{"key": "survive", "label": "survive a few days: sealed water, a crude condenser, a shield, at dawn", "kind": "clear",
 		"day": [0.25, 0.3], "survive": true},
-	{"key": "ruin", "label": "go looking: a ruin and finds near you, your own bare crate frame, clear and calm",
+	{"key": "ruin", "label": "go looking: a ruin and finds near you, your own bare chassis, clear and calm",
 		"kind": "ruin", "day": [0.35, 0.5], "calm": 6.0},
 	# A clear morning, with a storm due in time to pick the root-tubers first
 	# and before the noon heat that wilts fungus, and far enough off that the
@@ -72,7 +72,7 @@ const LIST: Array[Dictionary] = [
 	# s, in place of ten clear minutes.
 	{"key": "farm", "label": "farm: root-tubers ripening in the clear, vat fungus for the storm due in minutes, a saltbush that folds before it, a harvester, a shield",
 		"kind": "clear", "day": [0.33, 0.37], "due": [150.0, 200.0], "farm": true},
-	{"key": "board", "label": "ride: a charged hoverboard at your feet by a small camp, a shield and a crate, clear and calm",
+	{"key": "board", "label": "ride: a charged hoverboard at your feet by a small camp, a shield on its plate and a bare chassis, clear and calm",
 		"kind": "clear", "day": [0.35, 0.5], "calm": 6.0, "board": true},
 	{"key": "radio", "label": "radio: a radio and a charged shield in front of you, a storm 300 m off", "kind": "front",
 		"distance": 300.0, "day": [0.35, 0.55], "radio": true, "among": true},
@@ -87,15 +87,15 @@ const LIST: Array[Dictionary] = [
 	# A storm due soon, so the lee is felt in the clear and then as it comes over the crest.
 	{"key": "lee", "label": "lee: at the foot of a tall slip face, the wind over its crest, a storm minutes off, a catch line strung across it",
 		"kind": "lee", "day": [0.35, 0.55], "due": [120.0, 360.0], "drift": true},
-	{"key": "chassis", "label": "chassis: pieces, their trays, a crate, a condenser, hooks and a coil to build a deck from, one hook moored where the next piece pops it, clear and calm",
+	{"key": "chassis", "label": "chassis: pieces, their trays, a frame and a spare piece for a wall, batteries, a light shield, a condenser, hooks and a coil to build a deck from, one hook moored where the next piece pops it, clear and calm",
 		"kind": "clear", "day": [0.35, 0.5], "calm": 6.0, "chassis": true},
 	# A steady breeze across open sand: the wind on your left, the camp
 	# facing across it ahead of you, ready to raise its sail and go.
-	{"key": "sail", "label": "sail: a 2x2 deck on skates with a mast and sail, a crate, a shield (off), the sheet at your waist, the board at your feet, a steady breeze on open sand",
+	{"key": "sail", "label": "sail: a 2x2 deck on skates with a mast and sail, two big batteries, a shield (off), the sheet at your waist, the board at your feet, a steady breeze on open sand",
 		"kind": "sail", "day": [0.35, 0.5], "breeze": [8.5, 11.5], "sail": true},
 	{"key": "sail_tow", "label": "sail and tow: the rig ahead on its sheet, the camp behind on skates with a shield (off), both lines at your waist, the board at your feet, a steady breeze",
 		"kind": "sail", "day": [0.35, 0.5], "breeze": [8.5, 11.5], "tow": true},
-	{"key": "yacht", "label": "yacht: a floating 3x2 deck with a keel, a mast and sail, a helm seat and a crate, the sheet at your waist, a steady breeze",
+	{"key": "yacht", "label": "yacht: a floating 3x2 deck with a keel, a mast and sail, a helm seat and two big batteries, the sheet at your waist, a steady breeze",
 		"kind": "sail", "day": [0.35, 0.5], "breeze": [8.5, 11.5], "yacht": true},
 	{"key": "wreck", "label": "scrap: every wreck in a fan ahead of you, dug out, a heat cutter, a scoop, sealant, stakes and a med kit, clear and calm",
 		"kind": "clear", "day": [0.36, 0.5], "calm": 6.0, "wreck": true},
@@ -109,9 +109,10 @@ const LIST: Array[Dictionary] = [
 		"kind": "anomaly", "day": [0.3, 0.6], "due": [150.0, 300.0], "anomaly": true},
 ]
 
-## The test kit, as [catalog id, metres to your right, metres ahead]: empty
-## frames, a shield generator among them, and parts for every kind of socket.
-const KIT_DEVICES := [[&"crate_frame", -1.0, 3.0], [&"planter", 1.2, 3.2], [&"charger", -2.4, 1.5],
+## The test kit, as [catalog id, metres to your right, metres ahead]: bare
+## chassis to stick things on, a planter, a turbine and a shield, and parts
+## for every sticky face and slot.
+const KIT_DEVICES := [[&"chassis", -1.0, 3.0], [&"planter", 1.2, 3.2], [&"chassis", -2.4, 1.6],
 	[&"turbine", 2.6, 1.6], [&"shield", 0.05, 3.2]]
 ## Where the kit's common cable, strong cable and hose land, right and ahead.
 const KIT_CABLE := [0.0, 2.3]
@@ -120,31 +121,39 @@ const KIT_HOSE := [0.0, 1.3]
 const KIT_PARTS := [
 	[&"battery", -1.6, 1.6], [&"big_battery", -1.2, 1.7], [&"hook", -0.8, 1.6], [&"hook", -0.55, 1.7],
 	[&"lamp", -0.25, 1.6], [&"root_tuber", 0.1, 1.7], [&"root_tuber", 0.35, 1.6], [&"saltbush", 0.6, 1.7],
-	[&"vat_fungus", 0.95, 1.6], [&"battery", 1.3, 1.7], [&"hover_tray", -2.6, 2.4],
-	[&"hover_tray", 2.8, 2.6], [&"solar_panel", -2.6, 3.6], [&"solar_panel", -3.0, 2.2],
-	[&"hook", 1.65, 1.7], [&"hook", 1.95, 1.6], [&"canister", -2.0, 1.2],
+	[&"vat_fungus", 0.95, 1.6], [&"battery", 1.3, 1.7], [&"hover_tray", -2.6, 3.2],
+	[&"hover_tray", 2.8, 2.6], [&"solar_panel", -3.4, 2.6], [&"solar_panel", -3.6, 1.6],
+	[&"hook", 1.65, 1.7], [&"hook", 1.95, 1.6], [&"canister", -2.0, 1.2], [&"frame", -1.2, 5.0],
+	[&"fabric", 0.4, 4.6],
 ]
 ## Stakes lying across your way, and rope coils, right and ahead.
 const KIT_STAKES := [[-1.3, 1.15], [-1.3, 1.3], [-1.3, 1.45]]
 const KIT_COILS := [[0.6, 1.2], [1.2, 1.2]]
-## The camp: floating devices [catalog id, right, ahead] each on a line to a
-## stake further upwind, a charged shield generator, and spare stakes and coils by your feet.
-const CAMP_DEVICES := [[&"planter", -2.0, 4.0], [&"crate_frame", 2.0, 4.0]]
+## The camp: floaters each on a line to a stake further upwind, a planter and
+## a chassis with a tray and a battery, a charged shield on its own plate, and
+## spare stakes and coils by your feet: right and ahead.
+const CAMP_PLANTER := [-2.0, 4.0]
+const CAMP_FLOATER := [2.0, 4.0]
 const CAMP_SHIELD := [0.0, 2.6]
 const CAMP_STAKE_AHEAD := 3.0
 const CAMP_STAKES := [[-0.6, 1.2], [-0.6, 1.35], [-0.6, 1.5], [-0.6, 1.65]]
 const CAMP_COILS := [[0.4, 1.2], [0.9, 1.2], [1.4, 1.2]]
 
-## Survival's start, right and ahead: the condenser, the shield generator, the
-## cable to join them, and spare rations.
-const SURVIVE_CONDENSER := [-0.9, 2.6]
-const SURVIVE_SHIELD := [0.9, 2.3]
-const SURVIVE_CABLE := [0.0, 1.7]
+## Survival's start, right and ahead: a deck of two resting on the sand with
+## the condenser and its panel and battery, and the shield on its own
+## battery; and spare rations.
+const SURVIVE_DECK := [-0.5, 2.6]
+const SURVIVE_RIG := [[&"piece", Vector2i(1, 0)],
+	[&"stick", Vector2i(0, 0), &"top", Vector2(0.0, 0.2), 180.0, [&"condenser", [&"canister"]], &"condenser"],
+	[&"stick", Vector2i(0, 0), &"top", Vector2(0.0, -0.3), 0.0, &"solar_panel"],
+	[&"stick", Vector2i(1, 0), &"top", Vector2(-0.2, 0.2), 0.0, &"shield", &"shield"],
+	[&"stick", Vector2i(1, 0), &"top", Vector2(0.25, 0.25), 0.0, &"battery"],
+	[&"stick", Vector2i(1, 0), &"top", Vector2(0.25, -0.25), 0.0, &"battery"]]
 const SURVIVE_RATIONS := [[0.35, 1.3], [0.6, 1.3]]
 
 ## The farm, right and ahead: a planter to pick by hand, one with a
-## harvester, the shield generator between them so its bubble takes both and
-## their stakes, and a canister to fit to a water socket. Its crops start
+## harvester, the shield between them on its plate so its bubble takes both
+## and their stakes, and a canister to fit to a water socket. Its crops start
 ## part grown, so the root-tubers ripen within a minute in the clear and the
 ## vat fungus within a few once the storm's dark is on it and the bubble's
 ## still air round it. The one you pick by hand has a saltbush in place of a
@@ -160,12 +169,16 @@ const FARM_GROWN := {&"root_tuber": 0.85, &"vat_fungus": 0.5, &"saltbush": 0.6}
 ## The board, nose ahead, and the small camp beside you: right and ahead.
 const BOARD_AT := [0.0, 1.3]
 const BOARD_SHIELD := [-2.0, 3.0]
-const BOARD_CRATE := [2.2, 3.4]
+const BOARD_CHASSIS := [2.2, 3.4]
 
 ## The radio, its face to you and far enough out to be in view as you
-## arrive, and the shield to sit the storm out by it.
+## arrive, and the shield on its plate to sit the storm out by it.
 const RADIO_AT := [0.4, 2.4]
 const RADIO_SHIELD := [-1.0, 3.2]
+
+## A plate: one chassis on the sand with a few things stuck on its top, at
+## these places on it in turn.
+const PLATE_SPOTS := [Vector2(-0.22, 0.22), Vector2(0.25, -0.25), Vector2(0.25, 0.25), Vector2(-0.25, -0.25)]
 
 ## The reference camp on a deck two pieces by two, right and ahead, facing
 ## upwind: its first piece upwind on the left, the others to its right and
@@ -176,15 +189,36 @@ const AFK_DECK := [-1.0, 2.5]
 const AFK_STAKE := [-1.0, 3.9]
 const AFK_PLANTERS := [[-2.2, 4.3], [1.2, 4.3]]
 const AFK_PLANTER_STAKES := [[-2.2, 5.8], [1.2, 5.8]]
-const AFK_TURBINE := [-1.25, -4.95]
-## What stands on each piece, by its place on the first one's grid (right,
-## then downwind): the condenser upwind, its hoses toward the planters; the
-## shield on the piece across from the crate, so the crate's port, toward the
-## turbine, is as far from it as a deck this size allows.
-const AFK_CONDENSER_ON := Vector2i(0, 0)
-const AFK_SHIELD_ON := Vector2i(1, 0)
-const AFK_CRATE_ON := Vector2i(0, 1)
-const AFK_SPARE_ON := Vector2i(1, 1)
+## The turbine stands this far straight back from the light panel's port, m,
+## its strong cable all but taut.
+const AFK_TURBINE_BACK := 5.6
+## Upwind, the condenser, its tap toward the planters, with the bank's
+## batteries and a lamp; the shield across at the front, so the light
+## panel's port downwind, toward the turbine, is as far from it as a deck
+## this size allows; the panels downwind. A tray under every piece and a
+## hook on every free ring.
+const AFK_RIG := [[&"piece", Vector2i(1, 0)], [&"piece", Vector2i(0, 1)], [&"piece", Vector2i(1, 1)],
+	[&"stick", Vector2i(0, 0), &"bottom", Vector2.ZERO, 0.0, &"hover_tray"],
+	[&"stick", Vector2i(1, 0), &"bottom", Vector2.ZERO, 0.0, &"hover_tray"],
+	[&"stick", Vector2i(0, 1), &"bottom", Vector2.ZERO, 0.0, &"hover_tray"],
+	[&"stick", Vector2i(1, 1), &"bottom", Vector2.ZERO, 0.0, &"hover_tray"],
+	[&"hook", Vector2i(0, 0), Vector2i(-1, 0)], [&"hook", Vector2i(0, 0), Vector2i(0, -1)],
+	[&"hook", Vector2i(1, 0), Vector2i(1, 0)], [&"hook", Vector2i(1, 0), Vector2i(0, -1)],
+	[&"hook", Vector2i(0, 1), Vector2i(-1, 0)], [&"hook", Vector2i(0, 1), Vector2i(0, 1)],
+	[&"hook", Vector2i(1, 1), Vector2i(1, 0)], [&"hook", Vector2i(1, 1), Vector2i(0, 1)],
+	[&"stick", Vector2i(0, 0), &"top", Vector2(-0.2, 0.2), 180.0, &"condenser", &"condenser"],
+	[&"stick", Vector2i(0, 0), &"top", Vector2(0.32, 0.3), 0.0, &"big_battery"],
+	[&"stick", Vector2i(0, 0), &"top", Vector2(0.32, 0.05), 0.0, &"big_battery"],
+	[&"stick", Vector2i(0, 0), &"top", Vector2(0.32, -0.25), 0.0, &"battery"],
+	[&"stick", Vector2i(0, 0), &"top", Vector2(-0.2, -0.3), 0.0, &"lamp"],
+	[&"stick", Vector2i(1, 0), &"top", Vector2(0.0, 0.28), 0.0, &"shield", &"shield"],
+	[&"stick", Vector2i(1, 0), &"top", Vector2(-0.3, -0.15), 0.0, &"big_battery"],
+	[&"stick", Vector2i(1, 0), &"top", Vector2(0.0, -0.15), 0.0, &"big_battery"],
+	[&"stick", Vector2i(1, 0), &"top", Vector2(0.3, -0.15), 0.0, &"big_battery"],
+	[&"stick", Vector2i(0, 1), &"top", Vector2(0.0, 0.27), 0.0, &"solar_panel"],
+	[&"stick", Vector2i(0, 1), &"top", Vector2(0.0, -0.29), 0.0, &"light_panel", &"port"],
+	[&"stick", Vector2i(1, 1), &"top", Vector2(0.0, 0.27), 0.0, &"solar_panel"],
+	[&"stick", Vector2i(1, 1), &"top", Vector2(0.0, -0.27), 0.0, &"solar_panel"]]
 ## What you carry, as you'd leave yourself: nothing brings you water yet, the
 ## condenser waters only the farm, so this many canisters, and no food: the
 ## farm drops it onto you. Spare stakes, a coil and a hose, to move the
@@ -192,11 +226,15 @@ const AFK_SPARE_ON := Vector2i(1, 1)
 const AFK_CANISTERS := 3
 const AFK_STAKES := 3
 
-## The chassis pieces lying in a row ahead of you, a tray in front of each,
-## and the crate and condenser to stand on the deck either side: right and ahead.
+## The chassis pieces lying in a row ahead of you, a tray in front of each, a
+## spare piece for a wall and a frame to raise it on, two batteries, the
+## light shield and the condenser to stick on the deck: right and ahead.
 const CHASSIS_PIECES := [[-1.8, 3.6], [-0.6, 3.6], [0.6, 3.6], [1.8, 3.6]]
 const CHASSIS_TRAYS := [[-1.8, 2.2], [-0.6, 2.2], [0.6, 2.2], [1.8, 2.2]]
-const CHASSIS_CRATE := [3.4, 2.4]
+const CHASSIS_SPARE := [0.0, 5.2]
+const CHASSIS_FRAME := [2.4, 5.4]
+const CHASSIS_BATTERIES := [[3.0, 2.0], [3.2, 2.3]]
+const CHASSIS_SHIELD := [3.4, 2.8]
 const CHASSIS_CONDENSER := [-3.4, 2.4]
 ## The first piece's outer ring has a hook moored to a stake just short of
 ## where a piece joined there goes, so that join pops it; two hooks and a coil
@@ -205,15 +243,22 @@ const CHASSIS_STAKE := [-2.8, 2.6]
 const CHASSIS_HOOKS := [[-0.3, 1.4], [0.3, 1.4]]
 const CHASSIS_COIL := [0.9, 1.4]
 
-## The sailing camp on a deck two by two, right and ahead, facing across the
-## wind ahead of you: its first piece at the front on the windward side, the
-## mast on it and the crate behind it, ballast to windward, the shield (off)
-## behind on the leeward side. The board lies at your feet, and the sheet's
-## laid this much longer than the way from the boom's end to your waist, m.
+## The sailing camp on a deck two by two on skates, right and ahead, facing
+## across the wind ahead of you: its first piece at the front on the windward
+## side, the mast on it and two batteries behind it, ballast to windward, the
+## shield (off) behind on the leeward side. The board lies at your feet, and
+## the sheet's laid this much longer than the way from the boom's end to your
+## waist, m.
 const SAIL_DECK := [-0.5, 7.0]
-const SAIL_MAST_ON := Vector2i(0, 0)
-const SAIL_CRATE_ON := Vector2i(0, 1)
-const SAIL_SHIELD_ON := Vector2i(1, 1)
+const SKATES := [[&"stick", Vector2i(0, 0), &"bottom", Vector2.ZERO, 0.0, &"skates"],
+	[&"stick", Vector2i(1, 0), &"bottom", Vector2.ZERO, 0.0, &"skates"],
+	[&"stick", Vector2i(0, 1), &"bottom", Vector2.ZERO, 0.0, &"skates"],
+	[&"stick", Vector2i(1, 1), &"bottom", Vector2.ZERO, 0.0, &"skates"]]
+const SQUARE := [[&"piece", Vector2i(1, 0)], [&"piece", Vector2i(0, 1)], [&"piece", Vector2i(1, 1)]]
+const SAIL_MAST := [&"stick", Vector2i(0, 0), &"top", Vector2.ZERO, 180.0, [&"mast", [&"sail"]], &"mast"]
+const SAIL_BALLAST := [[&"stick", Vector2i(0, 1), &"top", Vector2(-0.2, 0.0), 0.0, &"big_battery"],
+	[&"stick", Vector2i(0, 1), &"top", Vector2(0.2, 0.0), 0.0, &"big_battery"]]
+const SAIL_SHIELD := [&"stick", Vector2i(1, 1), &"top", Vector2(0.0, 0.1), 0.0, &"shield", &"shield"]
 const SAIL_BOARD := [0.6, 1.0]
 const SAIL_SHEET_SLACK := 1.5
 ## The sheet starts eased to let the boom swing this far out, degrees.
@@ -222,17 +267,27 @@ const SAIL_EASED := 75.0
 ## ahead, its shield at its front, so its bubble takes you and not the sail;
 ## its line from the hook on its front left ring.
 const TOW_CAMP := [-0.5, -5.0]
-const TOW_SHIELD_ON := Vector2i(1, 0)
-const TOW_CRATE_ON := Vector2i(0, 1)
+const TOW_STORES := [[&"stick", Vector2i(1, 0), &"top", Vector2(0.0, 0.1), 0.0, &"shield", &"shield"],
+	[&"stick", Vector2i(0, 1), &"top", Vector2(-0.2, 0.0), 0.0, &"big_battery"],
+	[&"stick", Vector2i(0, 1), &"top", Vector2(0.2, 0.0), 0.0, &"big_battery"],
+	[&"hook", Vector2i(0, 0), Vector2i(0, -1)]]
 ## The yacht: a deck three pieces across and two long, right and ahead,
 ## floating: the mast at its front to windward, the helm seat on its middle
-## line aft, where a tray takes your weight, the crate to windward of it as
-## ballast and the keel under the aft leeward piece.
+## line aft, where a tray takes your weight, two batteries to windward of it
+## as ballast and the keel under the aft leeward piece, lengthwise.
 const YACHT_DECK := [-3.5, 2.5]
-const YACHT_CELLS := [Vector2i(0, 0), Vector2i(1, 0), Vector2i(2, 0), Vector2i(0, 1), Vector2i(1, 1), Vector2i(2, 1)]
-const YACHT_KEEL_ON := Vector2i(2, 1)
-const YACHT_HELM_ON := Vector2i(1, 1)
-const YACHT_CRATE_ON := Vector2i(0, 1)
+const YACHT_RIG := [[&"piece", Vector2i(1, 0)], [&"piece", Vector2i(2, 0)], [&"piece", Vector2i(0, 1)],
+	[&"piece", Vector2i(1, 1)], [&"piece", Vector2i(2, 1)],
+	[&"stick", Vector2i(0, 0), &"bottom", Vector2.ZERO, 0.0, &"hover_tray"],
+	[&"stick", Vector2i(1, 0), &"bottom", Vector2.ZERO, 0.0, &"hover_tray"],
+	[&"stick", Vector2i(2, 0), &"bottom", Vector2.ZERO, 0.0, &"hover_tray"],
+	[&"stick", Vector2i(0, 1), &"bottom", Vector2.ZERO, 0.0, &"hover_tray"],
+	[&"stick", Vector2i(1, 1), &"bottom", Vector2.ZERO, 0.0, &"hover_tray"],
+	[&"stick", Vector2i(2, 1), &"bottom", Vector2.ZERO, 0.0, &"keel"],
+	[&"stick", Vector2i(0, 0), &"top", Vector2.ZERO, 180.0, [&"mast", [&"sail"]], &"mast"],
+	[&"stick", Vector2i(1, 1), &"top", Vector2.ZERO, 180.0, &"helm_seat", &"helm"],
+	[&"stick", Vector2i(0, 1), &"top", Vector2(-0.2, 0.0), 0.0, &"big_battery"],
+	[&"stick", Vector2i(0, 1), &"top", Vector2(0.2, 0.0), 0.0, &"big_battery"]]
 ## Open sand to sail on: level within this much, m, for this far either way
 ## across the run's long-term wind, m, read every so far along it, m, and
 ## sought this far up and down the wind from where the run began, m, in
@@ -249,19 +304,37 @@ const OPEN_WIDE := [0.0, 40.0, -40.0]
 ## At most this share of a full lee there.
 const OPEN_LEE := 0.05
 
-## The Console's deck, two pieces, right and ahead of you; the Console on the
-## first, its screen to you, and the base shield on the second. What the
-## Console holds; the stake that moors the deck, upwind beyond it.
+## The Console's deck, two pieces floating on a tray each, right and ahead of
+## you: the Console on the first, its screen to you, two big batteries and a
+## radio behind it, and the base shield and its battery on the second; the
+## stake that moors the deck, upwind beyond it.
 const CONSOLE_DECK := [-0.5, 2.3]
-const CONSOLE_PARTS := [&"big_battery", &"big_battery", &"screen", &"anemometer", &"barometer", &"hygrometer",
-	&"particle_sensor", &"radar"]
+const CONSOLE_PARTS := [&"screen", &"anemometer", &"barometer", &"hygrometer", &"particle_sensor", &"radar"]
+const CONSOLE_RIG := [[&"piece", Vector2i(1, 0)],
+	[&"stick", Vector2i(0, 0), &"bottom", Vector2.ZERO, 0.0, &"hover_tray"],
+	[&"stick", Vector2i(1, 0), &"bottom", Vector2.ZERO, 0.0, &"hover_tray"],
+	[&"stick", Vector2i(0, 0), &"top", Vector2(0.0, -0.18), 180.0, [&"console", CONSOLE_PARTS], &"console"],
+	[&"stick", Vector2i(0, 0), &"top", Vector2(-0.3, 0.32), 0.0, &"big_battery"],
+	[&"stick", Vector2i(0, 0), &"top", Vector2(0.0, 0.32), 0.0, &"big_battery"],
+	[&"stick", Vector2i(0, 0), &"top", Vector2(0.3, 0.32), 0.0, [&"radio", [&"battery"]], &"radio"],
+	[&"stick", Vector2i(1, 0), &"top", Vector2(-0.2, -0.1), 0.0, &"shield", &"shield"],
+	[&"stick", Vector2i(1, 0), &"top", Vector2(0.27, 0.25), 0.0, &"battery"]]
 const CONSOLE_STAKE := [-0.5, 4.6]
 
 ## The camp built for wind, on the reference camp's deck plan resting on the
-## sand, moored upwind: a Console reading the wind and the sand with a radio
-## on its top, the base shield on one battery, a bare crate whose port holds
-## the turbine out downwind beyond the bubble.
+## sand, moored upwind: a Console reading the wind and the sand, a radio on
+## the weather station behind it whose port holds the turbine out downwind
+## beyond the bubble, the base shield on one battery across at the front.
 const ANOMALY_CONSOLE := [&"screen", &"anemometer", &"particle_sensor"]
+const ANOMALY_RIG := [[&"piece", Vector2i(1, 0)], [&"piece", Vector2i(0, 1)], [&"piece", Vector2i(1, 1)],
+	[&"hook", Vector2i(0, 0), Vector2i(-1, 0)], [&"hook", Vector2i(0, 0), Vector2i(0, -1)],
+	[&"hook", Vector2i(1, 0), Vector2i(1, 0)], [&"hook", Vector2i(1, 0), Vector2i(0, -1)],
+	[&"hook", Vector2i(0, 1), Vector2i(-1, 0)], [&"hook", Vector2i(0, 1), Vector2i(0, 1)],
+	[&"hook", Vector2i(1, 1), Vector2i(1, 0)], [&"hook", Vector2i(1, 1), Vector2i(0, 1)],
+	[&"stick", Vector2i(0, 0), &"top", Vector2(0.0, 0.0), 180.0, [&"console", ANOMALY_CONSOLE], &"console"],
+	[&"stick", Vector2i(1, 0), &"top", Vector2(0.0, 0.28), 0.0, &"shield", &"shield"],
+	[&"stick", Vector2i(1, 0), &"top", Vector2(0.25, -0.2), 0.0, &"battery"],
+	[&"stick", Vector2i(0, 1), &"top", Vector2(0.0, -0.3), 0.0, &"radio", &"radio"]]
 ## An anomaly's heart is looked for this far round where the run began, m,
 ## over at most this many days from the clock's start, coming over at most
 ## this long after its wall, s. Hearts are sparse: 30 km and 30 days found
@@ -271,7 +344,7 @@ const ANOMALY_SEARCH := 60000.0
 const ANOMALY_DAYS := 200.0
 const ANOMALY_WALL := 300.0
 
-## Your own frame, to fit what you find to: right and ahead.
+## Your own chassis, to stick what you find on: right and ahead.
 const YOURS := [1.5, 2.5]
 ## A catch line's stakes, right and ahead: across the wind you face.
 const CATCH_LINE := [[-3.0, 3.0], [3.0, 3.0]]
@@ -893,34 +966,42 @@ static func kit(world: World) -> Array[Node3D]:
 	return dropped
 
 
-## Drops the camp in front of the player: each floating device, its battery
-## and tray fitted and a hook on every ring mount, on one line from a hook to
-## a stake driven upwind of it, and a shield generator with a full battery,
-## switched off. Returns what it dropped.
+## Drops the camp in front of the player: a planter and a chassis floating,
+## each with a battery and a tray and a hook on every ring, on one line from
+## a hook to a stake driven upwind of it, and a shield on its plate with a
+## full battery, switched off. Returns what it dropped.
 static func camp(world: World) -> Array[Node3D]:
 	var dropped: Array[Node3D] = []
-	for entry: Array in CAMP_DEVICES:
-		dropped.append_array(_tethered(world, entry[0], entry[1], entry[2]))
-	dropped.append(standing(world, &"shield", [&"battery"], CAMP_SHIELD))
+	dropped.append_array(_tethered(world, &"planter", CAMP_PLANTER[0], CAMP_PLANTER[1]))
+	dropped.append_array(_tethered(world, &"chassis", CAMP_FLOATER[0], CAMP_FLOATER[1]))
+	dropped.append_array(plate(world, [&"shield", &"battery"], CAMP_SHIELD))
 	dropped.append_array(stakes_and_coils(world, CAMP_STAKES, CAMP_COILS))
 	return dropped
 
 
-## A device floating in front of you, its battery and tray fitted and a hook
-## on every ring mount, on one line from a hook to a stake driven upwind of
-## it: [device, stake].
+## A floater in front of you, a battery and a tray in it or stuck on it and a
+## hook on every ring, on one line from a hook to a stake driven upwind of
+## it: [device, what's stuck on it, stake].
 static func _tethered(world: World, id: StringName, right: float, ahead: float) -> Array[Node3D]:
 	var player := world.player
-	var device := Catalog.device(id)
-	drop(world, device, Transform3D(Basis(Vector3.UP, player.global_rotation.y),
-		Vector3(0.0, world.tuning.hover_height, 0.0)), right, ahead)
+	var device: Device
+	if id == &"chassis":
+		device = rig_at(world, [[&"stick", Vector2i.ZERO, &"bottom", Vector2.ZERO, 0.0, &"hover_tray"],
+			[&"stick", Vector2i.ZERO, &"top", Vector2.ZERO, 0.0, &"battery"]], [right, ahead]).deck
+	else:
+		device = Catalog.device(id)
+		drop(world, device, Transform3D(Basis(Vector3.UP, player.global_rotation.y),
+			Vector3(0.0, world.tuning.hover_height, 0.0)), right, ahead)
+		for socket in device.sockets():
+			var fill: Variant = {&"battery": &"battery", &"bottom": &"hover_tray"}.get(socket.kind)
+			if fill != null:
+				var part := Catalog.part(fill)
+				world.content.add_child(part)
+				device.fit(part, socket)
 	for socket in device.sockets():
-		var fill: Variant = {&"battery": &"battery", &"bottom": &"hover_tray", &"ring": &"hook"}.get(socket.kind)
-		if fill != null:
-			var part := Catalog.part(fill)
-			world.content.add_child(part)
-			device.fit(part, socket)
-	device.global_position.y += device.rest_height() - world.tuning.hover_height
+		if socket.kind == &"ring" and socket.is_open():
+			device.fit(Catalog.part(&"hook"), socket)
+	_afloat(world, device)
 	var stake := Catalog.stake()
 	var at := device.global_position - player.global_basis.z * CAMP_STAKE_AHEAD
 	world.content.add_child(stake)
@@ -930,21 +1011,15 @@ static func _tethered(world: World, id: StringName, right: float, ahead: float) 
 
 
 ## A run's sealed-water start: you fed, watered and whole, carrying a fresh
-## suit's kit, and on the sand in front of you a crude condenser with a
-## battery, a panel and an empty canister, a charged shield generator, a
-## cable to join them, and spare rations. Returns what it dropped.
+## suit's kit, and on the sand in front of you a deck of two with a crude
+## condenser, its panel and an empty canister, and a charged shield on two
+## batteries, all one pool; and spare rations. Returns what it dropped.
 static func survive(world: World) -> Array[Node3D]:
 	world.player.vitals.fresh()
-	var condenser := standing(world, &"condenser", [&"battery", &"solar_panel", &"canister"], SURVIVE_CONDENSER)
-	(condenser as Condenser).canister().drain(INF)
-	var dropped: Array[Node3D] = [condenser, standing(world, &"shield", [&"battery"], SURVIVE_SHIELD)]
-	var player := world.player
-	var at := player.global_position + player.global_basis.x * SURVIVE_CABLE[0] - player.global_basis.z * SURVIVE_CABLE[1]
-	at.y = world.height_under(at)
-	var cable := Catalog.cable(world, at)
-	dropped.append(cable)
-	dropped.append_array(cable.plugs)
-	var yaw := Basis(Vector3.UP, player.global_rotation.y)
+	var rig := rig_at(world, SURVIVE_RIG, SURVIVE_DECK, false)
+	(rig.named.condenser as Condenser).canister().drain(INF)
+	var dropped := _of(rig)
+	var yaw := Basis(Vector3.UP, world.player.global_rotation.y)
 	for entry: Array in SURVIVE_RATIONS:
 		var ration := Catalog.part(&"ration")
 		drop(world, ration, Transform3D(yaw * Basis(Vector3.RIGHT, -PI / 2.0), Vector3.ZERO), entry[0], entry[1])
@@ -956,10 +1031,10 @@ static func survive(world: World) -> Array[Node3D]:
 ## in the camp, sown with root-tubers and a vat fungus part grown, one tank
 ## full and one half: one to pick by hand, a saltbush among its root-tubers,
 ## and one with a harvester that keeps its slots sown and drops food onto
-## you. A charged shield generator, switched off, stands between them, with a
-## full canister by your feet to fit to the half-full one's water socket,
-## which keeps its tank full. You start fed, watered and whole, on a fresh
-## suit's kit and a spare root-tuber to sow. Returns what it dropped.
+## you. A charged shield on its plate, switched off, stands between them,
+## with a full canister by your feet to fit to the half-full one's water
+## socket, which keeps its tank full. You start fed, watered and whole, on a
+## fresh suit's kit and a spare root-tuber to sow. Returns what it dropped.
 static func farm(world: World) -> Array[Node3D]:
 	world.player.vitals.fresh()
 	world.player.suit.carried.append(Catalog.part(&"root_tuber"))
@@ -977,7 +1052,7 @@ static func farm(world: World) -> Array[Node3D]:
 			plant.set_growth(FARM_GROWN[plant.crop])
 		planter.tank_l = world.tuning.planter_tank_litres * (1.0 if planter.harvests() else 0.5)
 		dropped.append_array(tied)
-	dropped.append(standing(world, &"shield", [&"battery"], FARM_SHIELD))
+	dropped.append_array(plate(world, [&"shield", &"battery"], FARM_SHIELD))
 	var yaw := Basis(Vector3.UP, world.player.global_rotation.y)
 	var canister := Catalog.part(&"canister")
 	drop(world, canister, Transform3D(yaw * Basis(Vector3.RIGHT, -PI / 2.0), Vector3.ZERO), FARM_CANISTER[0], FARM_CANISTER[1])
@@ -987,16 +1062,20 @@ static func farm(world: World) -> Array[Node3D]:
 
 ## A hoverboard lying at your feet, nose ahead, a full battery in it, and a
 ## small camp beside you for the range warnings to watch: a charged shield
-## generator, switched off, and a bare crate frame. Returns what it dropped.
+## on its plate, switched off, and a bare chassis. Returns what it dropped.
 static func board(world: World) -> Array[Node3D]:
-	return [standing(world, &"board", [&"battery"], BOARD_AT), standing(world, &"shield", [&"battery"], BOARD_SHIELD),
-		standing(world, &"crate_frame", [], BOARD_CRATE)]
+	var dropped: Array[Node3D] = [standing(world, &"board", [&"battery"], BOARD_AT)]
+	dropped.append_array(plate(world, [&"shield", &"battery"], BOARD_SHIELD))
+	dropped.append(standing(world, &"chassis", [], BOARD_CHASSIS))
+	return dropped
 
 
 ## A radio with a full battery on the sand in front of you, switched off, and
-## a charged shield generator beside it, switched off. Returns what it dropped.
+## a charged shield on its plate beside it, switched off. Returns what it dropped.
 static func radio(world: World) -> Array[Node3D]:
-	return [standing(world, &"radio", [&"battery"], RADIO_AT), standing(world, &"shield", [&"battery"], RADIO_SHIELD)]
+	var dropped: Array[Node3D] = [standing(world, &"radio", [&"battery"], RADIO_AT)]
+	dropped.append_array(plate(world, [&"shield", &"battery"], RADIO_SHIELD))
+	return dropped
 
 
 ## The radio of "radio" switched on and tuned to the weather station, the
@@ -1021,20 +1100,18 @@ static func music_station(world: World) -> Array[Node3D]:
 
 ## The reference camp, parked round you and left running, on a deck two
 ## pieces by two floating on a tray under every piece, a hook on every free
-## ring, everything on it one pool: upwind, a condenser with a battery and a
-## panel, and the base shield with a big battery; downwind, the crate, its
-## tray off, two big batteries in it, the light panel and a found panel on
-## its top mounts, and a second crate with two more, a panel and a lamp.
-## The deck is moored to a stake upwind of it. Beyond the stake two planters
-## with harvesters float on their own trays, sown and watered, near enough
-## to drop food onto you, each on a hose from the condenser, the second on
-## the first's end, so it waters both. Each is moored to a stake of its own
-## upwind of it: a hose's weight draws a floating planter in toward the deck.
-## The crate holds a turbine out in the wind beyond the bubble on a strong
-## cable: a turbine only works planted, and a loose one slides off in a
-## storm. You start fed and watered, stocked up to leave it running, with
-## spare stakes, a coil and a hose. Returns what it dropped, the deck before
-## what stands on it.
+## ring, everything on it one pool: upwind, the condenser and the bank's
+## batteries and a lamp, and the base shield across from it; downwind, the
+## panels, the light panel's port toward the turbine. The deck is moored to a
+## stake upwind of it. Beyond the stake two planters with harvesters float on
+## their own trays and batteries, sown and watered, near enough to drop food
+## onto you, each on a hose from the condenser, the second on the first's
+## end, so it waters both. Each is moored to a stake of its own upwind of it:
+## a hose's weight draws a floating planter in toward the deck. The light
+## panel holds a turbine out in the wind beyond the bubble on a strong cable:
+## a turbine only works planted, and a loose one slides off in a storm. You
+## start fed and watered, stocked up to leave it running, with spare stakes,
+## a coil and a hose. Returns what it dropped, the deck before what's on it.
 static func afk(world: World) -> Array[Node3D]:
 	var player := world.player
 	player.vitals.fresh()
@@ -1051,23 +1128,15 @@ static func afk(world: World) -> Array[Node3D]:
 		rolled.set_meta(&"rolled", id)
 		carried.append(rolled)
 	player.suit.carry_devices()
-	var deck := standing(world, &"chassis", [], AFK_DECK) as Chassis
-	for at: Array in [[Vector2i.ZERO, Vector2i(1, 0)], [Vector2i.ZERO, Vector2i(0, 1)], [Vector2i(1, 0), Vector2i(0, 1)]]:
-		deck.join(Catalog.device(&"chassis") as Chassis, _on_piece(deck, at[0], &"ring", at[1]), 0)
-	for i in deck.pieces().size():
-		fill(world, deck, [&"hover_tray", &"hook", &"hook"])
-	var condenser := _stand_on(world, deck, &"condenser", [&"battery", &"solar_panel"], AFK_CONDENSER_ON)
-	var shield := _stand_on(world, deck, &"shield", [&"big_battery"], AFK_SHIELD_ON) as ShieldGenerator
-	var crate := _stand_on(world, deck, &"crate_frame", [&"big_battery", &"big_battery", &"solar_panel"], AFK_CRATE_ON)
-	crate.mount(Catalog.device(&"light_panel"), _free(crate, &"top"))
-	var spare := _stand_on(world, deck, &"crate_frame", [&"big_battery", &"big_battery", &"solar_panel", &"lamp"],
-		AFK_SPARE_ON)
-	_afloat(world, deck)
-	var dropped: Array[Node3D] = [deck, condenser, shield, crate, spare]
+	var rig := rig_at(world, AFK_RIG, AFK_DECK)
+	var deck := rig.deck
+	var condenser: Condenser = rig.named.condenser
+	var shield: ShieldGenerator = rig.named.shield
+	var dropped := _of(rig)
 	var stake := _driven(world, AFK_STAKE)
 	dropped.append(stake)
 	# Nearly taut, so the strong cable's weight doesn't draw the deck in toward the turbine.
-	dropped.append(Line.between(world, _deck_tie(deck, AFK_CONDENSER_ON, Vector2i(0, -1)),
+	dropped.append(Line.between(world, _deck_tie(deck, Vector2i.ZERO, Vector2i(0, -1)),
 		stake.free_tie(deck.global_position), 0.05))
 	for i in AFK_PLANTERS.size():
 		var planter := standing(world, &"planter", [&"battery", &"hover_tray", &"harvester", &"hook", &"hook"] + FARM_CROPS,
@@ -1079,11 +1148,10 @@ static func afk(world: World) -> Array[Node3D]:
 		dropped.append(Line.between(world, planter.free_tie(own.global_position), own.free_tie(planter.global_position)))
 		# Its plugs and ends go with the devices they're in.
 		dropped.append(plumb(world, condenser, planter))
-	var turbine := standing(world, &"turbine", [&"battery"], AFK_TURBINE)
-	# Its port toward the crate's.
-	turbine.global_basis = turbine.global_basis.rotated(Vector3.UP, PI / 2.0)
+	var port: Device = rig.named.port
+	var turbine := _behind(world, &"turbine", [&"battery"], port, deck, AFK_TURBINE_BACK)
 	dropped.append(turbine)
-	dropped.append(wire(world, crate, turbine, true))
+	dropped.append(wire(world, port, turbine, true))
 	shield.stand(true)
 	return dropped
 
@@ -1091,56 +1159,45 @@ static func afk(world: World) -> Array[Node3D]:
 ## A camp built for wind, as the forecast would have it: the reference
 ## camp's deck of four pieces resting on the sand with a hook on every ring,
 ## moored to a stake upwind; on it a Console with its screen, an anemometer
-## and a particle sensor, a radio on its top on the weather station, the base
-## shield on one battery, running, and a bare crate whose strong cable holds
-## a turbine out in the wind beyond the bubble: enough for any ordinary
-## storm's 200 W. You start fed and watered, a compass in your suit. Returns
-## what it dropped, the deck first.
+## and a particle sensor, a radio behind it on the weather station, the base
+## shield on one battery, running, and the radio's strong cable holding a
+## turbine out in the wind beyond the bubble: enough for any ordinary storm's
+## 200 W. You start fed and watered, a compass in your suit. Returns what it
+## dropped, the deck first.
 static func anomaly_camp(world: World) -> Array[Node3D]:
 	var player := world.player
 	player.vitals.fresh()
 	player.suit.carried.append(Catalog.part(&"compass"))
-	var deck := standing(world, &"chassis", [], AFK_DECK) as Chassis
-	for at: Array in [[Vector2i.ZERO, Vector2i(1, 0)], [Vector2i.ZERO, Vector2i(0, 1)], [Vector2i(1, 0), Vector2i(0, 1)]]:
-		deck.join(Catalog.device(&"chassis") as Chassis, _on_piece(deck, at[0], &"ring", at[1]), 0)
-	for i in deck.pieces().size():
-		fill(world, deck, [&"hook", &"hook"])
-	var made := _stand_on(world, deck, &"console", ANOMALY_CONSOLE, AFK_CONDENSER_ON) as Console
-	var radio := Catalog.device(&"radio")
-	world.content.add_child(radio)
-	made.mount(radio, _free(made, &"top"))
+	var rig := rig_at(world, ANOMALY_RIG, AFK_DECK, false)
+	var deck := rig.deck
+	var radio: Radio = rig.named.radio
 	radio.on = true
 	radio.frequency = Radio.gods_of(world).carrier(&"walker", world.time)
-	var shield := _stand_on(world, deck, &"shield", [&"battery"], AFK_SHIELD_ON) as ShieldGenerator
-	var crate := _stand_on(world, deck, &"crate_frame", [], AFK_CRATE_ON)
+	var shield: ShieldGenerator = rig.named.shield
 	var stake := _driven(world, AFK_STAKE)
-	var line := Line.between(world, _deck_tie(deck, AFK_CONDENSER_ON, Vector2i(0, -1)),
+	var line := Line.between(world, _deck_tie(deck, Vector2i.ZERO, Vector2i(0, -1)),
 		stake.free_tie(deck.global_position), 0.05)
-	var turbine := standing(world, &"turbine", [], AFK_TURBINE)
-	turbine.global_basis = turbine.global_basis.rotated(Vector3.UP, PI / 2.0)
-	var cable := wire(world, crate, turbine, true)
+	var turbine := _behind(world, &"turbine", [], radio, deck, AFK_TURBINE_BACK)
+	var cable := wire(world, radio, turbine, true)
 	shield.stand(true)
-	return [deck, made, radio, shield, crate, stake, line, turbine, cable]
+	var dropped := _of(rig)
+	dropped.append_array([stake, line, turbine, cable])
+	return dropped
 
 
-## A device standing on a deck's piece at a place on its grid, with these
-## parts fitted.
-static func _stand_on(world: World, deck: Chassis, id: StringName, parts: Array, cell: Vector2i) -> Device:
+## A device on the sand this far straight back from another on a deck, the
+## deck's own back, its port turned toward that one's.
+static func _behind(world: World, id: StringName, parts: Array, from: Device, deck: Device, back: float) -> Device:
+	var at := from.global_position + deck.global_basis.z.normalized() * back
+	at.y = world.height_under(at)
 	var device := Catalog.device(id)
+	var size: Vector3 = Catalog.DEVICES[id].size
 	world.content.add_child(device)
+	var to := from.global_position - at
+	# Its port on its right: turned so its right faces back toward `from`.
+	device.global_transform = Transform3D(Basis(Vector3.UP, atan2(-to.z, to.x)), at + Vector3.UP * size.y * 0.5)
 	fill(world, device, parts)
-	deck.mount(device, _on_piece(deck, cell, &"deck"))
 	return device
-
-
-## A deck's socket of a kind on the piece at a place on its grid; a ring,
-## the one facing `toward` along the grid.
-static func _on_piece(deck: Chassis, cell: Vector2i, kind: StringName, toward := Vector2i.ZERO) -> Socket:
-	for socket in deck.sockets():
-		if socket.kind == kind and not socket.has_meta(&"socket") and deck._cell_of(socket) == cell \
-				and (kind != &"ring" or Chassis._step(socket) == toward):
-			return socket
-	return null
 
 
 ## A stake driven into the sand, right and ahead of you.
@@ -1155,24 +1212,57 @@ static func _driven(world: World, where: Array) -> Stake:
 
 ## Where a line ties to a deck: the hook on a piece's edge ring.
 static func _deck_tie(deck: Chassis, cell: Vector2i, toward: Vector2i) -> Socket:
-	for node in _on_piece(deck, cell, &"ring", toward).fitted:
+	for node in Rig.ring_of(deck, cell, toward).fitted:
 		if node is Socket:
 			return node
 	return null
 
 
-## Floating where it stands, as high as its trays hold it over the sand
-## under it, on average.
+## A rig built from its steps, set down right and ahead of you squared to
+## you: floating as high as its trays hold it, or its runners, over the sand
+## under it, or resting on the sand.
+static func rig_at(world: World, steps: Array, where: Array, floating := true) -> Rig:
+	var rig := Rig.build(null, steps)
+	rig.deck.resting = not floating
+	rig.deck.lift_share = 1.0 if floating else 0.0
+	drop(world, rig.deck, Transform3D(Basis(Vector3.UP, world.player.global_rotation.y), Vector3.ZERO), where[0], where[1])
+	_afloat(world, rig.deck)
+	return rig
+
+
+## What a rig dropped, the deck first and the devices on it after.
+static func _of(rig: Rig) -> Array[Node3D]:
+	var out: Array[Node3D] = []
+	for each in rig.made:
+		out.append(each as Node3D)
+	return out
+
+
+## A plate: one chassis resting on the sand right and ahead of you, these
+## stuck on its top, each with its own slots filled. What it dropped.
+static func plate(world: World, ids: Array, where: Array) -> Array[Node3D]:
+	var steps := []
+	for i in ids.size():
+		steps.append([&"stick", Vector2i.ZERO, Chassis.TOP, PLATE_SPOTS[i], 0.0, ids[i]])
+	return _of(rig_at(world, steps, where, false))
+
+
+## Where it stands: floating as high as its trays hold it over the sand under
+## it, on average, or resting on the highest of it.
 static func _afloat(world: World, device: Device) -> void:
 	var spots: Array = [Vector3.ZERO]
 	if device is Chassis:
-		spots = (device as Chassis).pieces().map(func(p: Chassis) -> Vector3: return p.pose().origin)
+		spots = (device as Chassis).grid().map(func(p: Chassis) -> Vector3: return p.pose().origin)
 	var sand := 0.0
+	var top := -INF
 	var middle := Vector3.ZERO
 	for spot: Vector3 in spots:
-		sand += world.height_under(device.global_transform * spot) / spots.size()
+		var under := world.height_under(device.global_transform * spot)
+		sand += under / spots.size()
+		top = maxf(top, under)
 		middle += spot / spots.size()
-	device.global_position.y += sand + device.rest_height() - (device.global_transform * middle).y
+	var up := device.rest_height() if not device.resting else -Finds.bounds(device).position.y + 0.02
+	device.global_position.y += (top if device.resting else sand) + up - (device.global_transform * middle).y
 
 
 ## A cable laid between two devices, plugged into the port of each; a
@@ -1188,17 +1278,17 @@ static func wire(world: World, a: Device, b: Device, strong := false) -> Cable:
 
 
 ## Four chassis pieces lying on the sand ahead of you, a hover tray on its
-## back in front of each, and either side a crate frame with two charged
-## batteries, whose power floats the deck once it stands on it, and a
-## condenser with a battery and an empty canister. The first piece's outer
-## ring has a hook with a line to a stake, which a piece joined there pops;
-## two more hooks and a coil lie at your feet. Returns what it dropped.
+## back in front of each, a spare piece and a frame to raise it on as a wall,
+## two charged batteries and the light shield to power a deck, and a
+## condenser with an empty canister. The first piece's outer ring has a hook
+## with a line to a stake, which a piece joined there pops; two more hooks
+## and a coil lie at your feet. Returns what it dropped.
 static func chassis(world: World) -> Array[Node3D]:
 	var dropped: Array[Node3D] = []
 	for where: Array in CHASSIS_PIECES:
 		dropped.append(standing(world, &"chassis", [], where))
 	var first := dropped[0] as Chassis
-	first.fit(Catalog.part(&"hook"), _on_piece(first, Vector2i.ZERO, &"ring", Vector2i(-1, 0)))
+	first.fit(Catalog.part(&"hook"), Rig.ring_of(first, Vector2i.ZERO, Vector2i(-1, 0)))
 	var stake := _driven(world, CHASSIS_STAKE)
 	Line.between(world, _deck_tie(first, Vector2i.ZERO, Vector2i(-1, 0)), stake.free_tie(first.global_position))
 	dropped.append(stake)
@@ -1212,44 +1302,38 @@ static func chassis(world: World) -> Array[Node3D]:
 		drop(world, hook, Transform3D(yaw, Vector3(0.0, 0.04, 0.0)), where[0], where[1])
 		dropped.append(hook)
 	dropped.append_array(stakes_and_coils(world, [], [CHASSIS_COIL]))
-	dropped.append(standing(world, &"crate_frame", [&"battery", &"battery"], CHASSIS_CRATE))
-	var condenser := standing(world, &"condenser", [&"battery", &"canister"], CHASSIS_CONDENSER) as Condenser
+	dropped.append(standing(world, &"chassis", [], CHASSIS_SPARE))
+	var frame := Catalog.part(&"frame")
+	drop(world, frame, Transform3D(yaw * Basis(Vector3.RIGHT, -PI / 2.0), Vector3.ZERO), CHASSIS_FRAME[0], CHASSIS_FRAME[1])
+	dropped.append(frame)
+	for where: Array in CHASSIS_BATTERIES:
+		var cell := Catalog.part(&"battery")
+		drop(world, cell, Transform3D(yaw * Basis(Vector3.RIGHT, -PI / 2.0), Vector3.ZERO), where[0], where[1])
+		dropped.append(cell)
+	dropped.append(standing(world, &"light_shield", [], CHASSIS_SHIELD))
+	var condenser := standing(world, &"condenser", [&"canister"], CHASSIS_CONDENSER) as Condenser
 	condenser.canister().drain(INF)
 	dropped.append(condenser)
 	return dropped
 
 
 ## A Console on a deck of two pieces floating on a tray each, its screen to
-## you at your eyes, two big batteries in it, its screen, every instrument and
-## a radio on its top; the base shield beside it on the other piece with a
-## battery, switched off, smart from the Console; the deck moored by a hook on
-## its far ring to a stake upwind. You start fed and watered. Returns what it
-## dropped, the deck first.
+## you at your eyes, its screen and every instrument in its ports, two big
+## batteries and a radio behind it; the base shield beside it on the other
+## piece with a battery, switched off, smart from the Console; the deck
+## moored by a hook on its far ring to a stake upwind. You start fed and
+## watered. Returns what it dropped, the deck first.
 static func console(world: World) -> Array[Node3D]:
 	world.player.vitals.fresh()
-	var deck := standing(world, &"chassis", [], CONSOLE_DECK) as Chassis
-	deck.join(Catalog.device(&"chassis") as Chassis, _on_piece(deck, Vector2i.ZERO, &"ring", Vector2i(1, 0)), 0)
-	fill(world, deck, [&"hover_tray", &"hover_tray"])
-	var made := _stand_on(world, deck, &"console", CONSOLE_PARTS, Vector2i.ZERO) as Console
-	var radio := Catalog.device(&"radio")
-	world.content.add_child(radio)
-	fill(world, radio, [&"battery"])
-	made.mount(radio, _free(made, &"top"))
-	var shield := _stand_on(world, deck, &"shield", [&"battery"], Vector2i(1, 0))
-	# Its screen to you.
-	var screen := made.global_basis * Vector3.FORWARD
-	if screen.dot(world.player.global_position - made.global_position) < 0.0:
-		deck.global_basis = deck.global_basis.rotated(Vector3.UP, PI)
-	_afloat(world, deck)
+	var rig := rig_at(world, CONSOLE_RIG, CONSOLE_DECK)
+	var deck := rig.deck
 	var stake := _driven(world, CONSOLE_STAKE)
-	var far := Vector2i(0, -1) if deck.global_basis.z.dot(world.player.global_basis.z) > 0.0 else Vector2i(0, 1)
-	var hook := _on_piece(deck, Vector2i.ZERO, &"ring", far)
+	var hook := Rig.ring_of(deck, Vector2i.ZERO, Vector2i(0, -1))
 	deck.fit(Catalog.part(&"hook"), hook)
-	var tie: Socket = null
-	for node in hook.fitted:
-		if node is Socket:
-			tie = node
-	return [deck, made, radio, shield, stake, Line.between(world, tie, stake.free_tie(deck.global_position), 0.3)]
+	var dropped := _of(rig)
+	dropped.append(stake)
+	dropped.append(Line.between(world, _deck_tie(deck, Vector2i.ZERO, Vector2i(0, -1)), stake.free_tie(deck.global_position), 0.3))
+	return dropped
 
 
 ## A hose laid from one device to another, an end in the water socket of
@@ -1274,84 +1358,54 @@ static func _free(device: Device, kind: StringName) -> Socket:
 
 ## The sailing camp: a deck two pieces by two on skates under every piece,
 ## facing across the wind ahead of you, a mast with its sail furled on the
-## front piece to windward, a crate with two batteries behind it and a
-## charged shield, switched off, behind to leeward. The sheet runs from the
-## boom's end to your waist, and a charged board lies at your feet. Use the
-## mast to raise the sail, and ride.
+## front piece to windward, two big batteries behind it and a charged
+## shield, switched off, behind to leeward. The sheet runs from the boom's
+## end to your waist, and a charged board lies at your feet. Use the mast to
+## raise the sail, and ride.
 static func sail(world: World) -> Array[Node3D]:
-	var deck := square_deck(world, SAIL_DECK, [&"skates", &"skates", &"skates", &"skates"])
-	var mast := _stand_on(world, deck, &"mast", [&"sail"], SAIL_MAST_ON) as Mast
-	var crate := _stand_on(world, deck, &"crate_frame", [&"battery", &"battery"], SAIL_CRATE_ON)
-	var shield := _stand_on(world, deck, &"shield", [&"battery"], SAIL_SHIELD_ON)
-	_afloat(world, deck)
+	var rig := rig_at(world, SQUARE + SKATES + [SAIL_MAST] + SAIL_BALLAST + [SAIL_SHIELD], SAIL_DECK)
+	var mast: Mast = rig.named.mast
 	var board := standing(world, &"board", [&"battery"], SAIL_BOARD)
 	var sheet := sheet_to_waist(world, mast)
 	# Eased for a start across the wind: reel in as it picks up speed.
 	mast.trim = 2.0 * Mast.BOOM * sin(deg_to_rad(SAIL_EASED) * 0.5)
-	return [deck, mast, crate, shield, board, sheet]
-
-
-## A deck two pieces by two, right and ahead of you and squared to you, these
-## carried under its pieces in order: its first piece, then the one to its
-## right, the one behind it, and behind that one.
-static func square_deck(world: World, where: Array, under: Array) -> Chassis:
-	var deck := standing(world, &"chassis", [], where) as Chassis
-	for at: Array in [[Vector2i.ZERO, Vector2i(1, 0)], [Vector2i.ZERO, Vector2i(0, 1)], [Vector2i(1, 0), Vector2i(0, 1)]]:
-		deck.join(Catalog.device(&"chassis") as Chassis, _on_piece(deck, at[0], &"ring", at[1]), 0)
-	for i in under.size():
-		var part := Catalog.part(under[i])
-		world.content.add_child(part)
-		deck.fit(part, _on_piece(deck, [Vector2i(0, 0), Vector2i(1, 0), Vector2i(0, 1), Vector2i(1, 1)][i], &"bottom"))
-	return deck
+	var dropped := _of(rig)
+	dropped.append_array([board, sheet])
+	return dropped
 
 
 ## Sailing a larger camp: the rig ahead as the sail scenario's deck, less its
 ## shield, and behind you the camp, a deck two by two on skates with the
-## shield (off) at its front and a crate. The rig's sheet and a line from the
-## camp's front both at your waist, so the rig tows the camp on a hidden line
-## of its own past you; the board at your feet. Raise the sail, ride, and
-## carve to steer.
+## shield (off) at its front and two big batteries. The rig's sheet and a
+## line from the camp's front both at your waist, so the rig tows the camp on
+## a hidden line of its own past you; the board at your feet. Raise the
+## sail, ride, and carve to steer.
 static func sail_tow(world: World) -> Array[Node3D]:
-	var rig := square_deck(world, SAIL_DECK, [&"skates", &"skates", &"skates", &"skates"])
-	var mast := _stand_on(world, rig, &"mast", [&"sail"], SAIL_MAST_ON) as Mast
-	var crate := _stand_on(world, rig, &"crate_frame", [&"battery", &"battery"], SAIL_CRATE_ON)
-	_afloat(world, rig)
-	var camp := square_deck(world, TOW_CAMP, [&"skates", &"skates", &"skates", &"skates"])
-	var shield := _stand_on(world, camp, &"shield", [&"battery"], TOW_SHIELD_ON)
-	var stores := _stand_on(world, camp, &"crate_frame", [&"battery", &"battery"], TOW_CRATE_ON)
-	var hook := Catalog.part(&"hook")
-	world.content.add_child(hook)
-	camp.fit(hook, _on_piece(camp, Vector2i.ZERO, &"ring", Vector2i(0, -1)))
-	_afloat(world, camp)
+	var rig := rig_at(world, SQUARE + SKATES + [SAIL_MAST] + SAIL_BALLAST, SAIL_DECK)
+	var mast: Mast = rig.named.mast
+	var camp := rig_at(world, SQUARE + SKATES + TOW_STORES, TOW_CAMP)
 	var board := standing(world, &"board", [&"battery"], SAIL_BOARD)
 	var sheet := sheet_to_waist(world, mast)
-	var line := to_waist(world, _deck_tie(camp, Vector2i.ZERO, Vector2i(0, -1)))
+	var line := to_waist(world, _deck_tie(camp.deck, Vector2i.ZERO, Vector2i(0, -1)))
 	mast.trim = 2.0 * Mast.BOOM * sin(deg_to_rad(SAIL_EASED) * 0.5)
-	return [rig, mast, crate, camp, shield, stores, board, sheet, line]
+	var dropped := _of(rig) + _of(camp)
+	dropped.append_array([board, sheet, line])
+	return dropped
 
 
 ## A land yacht from found parts: a deck three by two floating on hover
 ## trays, a keel under one piece in place of a tray, the mast and its sail on
-## its front to windward, the helm seat aft on its middle line and a crate
-## with two batteries beside it to windward; the sheet at your waist. Raise
-## the sail, sit at the helm, and reel in.
+## its front to windward, the helm seat aft on its middle line and two big
+## batteries beside it to windward; the sheet at your waist. Raise the sail,
+## sit at the helm, and reel in.
 static func yacht(world: World) -> Array[Node3D]:
-	var deck := standing(world, &"chassis", [], YACHT_DECK) as Chassis
-	for i in range(1, YACHT_CELLS.size()):
-		var cell: Vector2i = YACHT_CELLS[i]
-		var from := cell - Vector2i(1, 0) if cell.x > 0 else cell - Vector2i(0, 1)
-		deck.join(Catalog.device(&"chassis") as Chassis, _on_piece(deck, from, &"ring", cell - from), 0)
-	for cell: Vector2i in YACHT_CELLS:
-		var part := Catalog.part(&"keel" if cell == YACHT_KEEL_ON else &"hover_tray")
-		world.content.add_child(part)
-		deck.fit(part, _on_piece(deck, cell, &"bottom"))
-	var mast := _stand_on(world, deck, &"mast", [&"sail"], SAIL_MAST_ON) as Mast
-	var helm := _stand_on(world, deck, &"helm_seat", [], YACHT_HELM_ON) as Helm
-	var crate := _stand_on(world, deck, &"crate_frame", [&"battery", &"battery"], YACHT_CRATE_ON)
-	_afloat(world, deck)
+	var rig := rig_at(world, YACHT_RIG, YACHT_DECK)
+	var mast: Mast = rig.named.mast
 	var sheet := sheet_to_waist(world, mast)
 	mast.trim = 2.0 * Mast.BOOM * sin(deg_to_rad(SAIL_EASED) * 0.5)
-	return [deck, mast, helm, crate, sheet]
+	var dropped := _of(rig)
+	dropped.append(sheet)
+	return dropped
 
 
 ## A line from a mast's boom's end to your waist, a little slack.
@@ -1389,9 +1443,9 @@ static func catch_line(world: World) -> Array[Node3D]:
 	return dropped
 
 
-## Your own bare crate frame on the sand beside you, to fit what you find to.
+## Your own bare chassis on the sand beside you, to stick what you find on.
 static func yours(world: World) -> Array[Node3D]:
-	return [standing(world, &"crate_frame", [], YOURS)]
+	return [standing(world, &"chassis", [], YOURS)]
 
 
 ## A device standing on the sand, squared to you, with these parts fitted.

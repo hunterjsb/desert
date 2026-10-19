@@ -1,23 +1,24 @@
 class_name Hands
 extends Node3D
 ## Your hands, with room for one thing: a part, or a device small enough to
-## carry, like a stake. Look at a loose part and take it, or at a fitted one and
-## it slides out the way it went in. Carry it in front of your eyes and look at
-## a device: it's offered the free socket of its kind there, the only one or
-## the one nearest your aim, facing you, or one you aim right at on any device.
-## It leans in, a ghost shows the spot, and take seats it home with a soft click. Only
-## a part held here ever snaps, and only when you take it home; nothing fits by
-## being bumped. Take picks up, takes out, puts in and puts down; use works what
-## you look at or uses what you hold. Finds lying in the sand are taken the same
-## way, and whatever you take, take from, fit to or use becomes yours. A small
-## device that seats in a socket, like a shield on a top mount, fits the same
-## way, and take lifts it off again whole. A chassis piece joins a deck at a
-## free edge ring the same way. Take on a deck takes hold of the whole of it,
-## and only a bare piece comes off. Having hold of a device that stands on a
-## deck, a free deck mount near it is offered, and take seats it there
-## instead of letting go; having hold of a piece with something standing on
-## it, a deck's free ring is offered, and take joins it there. Whenever take
-## or use can't do what you aim at, it says why, with a soft knock.
+## carry, like a stake. Look at a loose part and take it, or at a fitted or
+## stuck one and it slides out the way it went in. Carry it and look at a
+## chassis's sticky face: the thing itself goes there, flat on the face or
+## upright on a wall, where it would stick, touching nothing until it's set;
+## it edges to the face's edges and its neighbours, the rotate gesture turns
+## it, settling into soft detents, and it tints red with a few words where it
+## won't go. Take leaves it there. A plug, a hose's end, a hook, a crop or a
+## mod goes in its slot instead: the slot leans it in, a ghost shows the
+## spot, and take seats it home. Nothing sticks or fits by being bumped. Take
+## picks up, takes out, puts in and puts down; use works what you look at or
+## uses what you hold. Finds lying in the sand are taken the same way, and
+## whatever you take, take from, stick on or use becomes yours. A chassis
+## piece joins a deck at a free edge ring, or on a frame's face, the same
+## way. Take on a deck takes hold of the whole of it, and only a bare piece
+## comes off. Having hold of something too heavy to carry, a Console or a
+## loaded piece, it goes where it would stick or join as you look there, and
+## take sets it; a throw punches what you have hold of. Whenever take or use
+## can't do what you aim at, it says why, with a soft knock.
 
 signal fitted(part: Part, device: Device, socket: Socket)
 signal taken(part: Part, device: Device, socket: Socket)
@@ -74,9 +75,14 @@ const TUNES := {&"reel_in": [1, false, false], &"pay_out": [-1, false, false],
 	&"volume_up": [1, false, true], &"volume_down": [-1, false, true]}
 ## What you have hold of comes no nearer than this clear of you, m.
 const GRASP_CLEAR := 0.1
-## Having hold of a device, a free deck mount whose seat is this near it is
-## offered, m: it can't get nearer, held off by the deck's edge.
+## Having hold of a lone piece, a deck's free ring or frame face whose place
+## is this near it is offered, m: it can't get nearer, held off by the deck's edge.
 const STAND_REACH := 1.2
+## What you hold eases onto where it would stick in about this long, s, and
+## a red tint, or amber for a warning, shows where it won't go.
+const PLACE_SECONDS := 0.08
+const BLOCKED := Color(1.0, 0.2, 0.15, 0.5)
+const WARNED := Color(1.0, 0.65, 0.15, 0.35)
 ## Something too heavy to carry comes off its seat this far, m, so it starts
 ## clear of what it sat on; a chassis piece slides this far off its deck
 ## before it comes to your hand.
@@ -88,7 +94,7 @@ const TOUCHES := 64
 ## What a refusal calls each kind of socket that's full.
 const SOCKET_NAMES := {&"battery": "battery slot", &"ring": "ring", &"bottom": "tray mount", &"top": "top mount",
 	&"plant_pot": "pot", &"plant_standard": "planter", &"plant_deep": "deep bed", &"port": "port", &"tie": "hook",
-	&"water": "water socket", &"mod": "mod mount", &"food": "food slot", &"rack": "rack", &"deck": "deck mount",
+	&"water": "water socket", &"mod": "mod mount", &"food": "food slot", &"face": "frame face",
 	&"computer_mod": "computer-mod port", &"computer_top": "computer-mod top", &"screen": "screen port", &"sail": "sail mount"}
 const RIDING := "not from the board"
 const STUNNED := "your hands won't close"
@@ -108,9 +114,8 @@ var held: RigidBody3D
 var phase := Phase.EMPTY
 ## What you hold that's too heavy to carry.
 var grasp: Grasp
-## The free deck mount what you have hold of would stand on, if you took it
-## home, or the deck's free ring a piece would join at; where it would sit
-## there and, for a piece, at how many quarter turns; or why there's none.
+## The deck's free ring or frame face a piece you have hold of would join
+## at; where it would sit there and at how many quarter turns; or why there's none.
 var stand: Socket
 var _stand_pose := Transform3D.IDENTITY
 var _stand_turns := 0
@@ -148,6 +153,10 @@ var notice := ""
 ## Empty-handed at a deck, the pieces take would move, as they're
 ## highlighted: every piece of it, or the bare one that comes off.
 var moves: Array[Chassis] = []
+## Where what you hold, or have hold of, would stick: the sticky face your
+## look meets, as {deck, piece, face, pose in the deck's frame, out, why,
+## warn}; {} where it meets none.
+var sticking := {}
 
 var _player: Player
 var _tuning := Tuning.current()
@@ -177,19 +186,27 @@ var _from := Transform3D.IDENTITY
 var _stuck := 0.0
 var _slide := 0.0
 ## How far from its socket a part starts sliding out: past the crop, when
-## picking leaves one there.
+## picking leaves one there. Where it starts and which way it slides, in its
+## source's frame.
 var _slide_from := 0.0
+var _slide_at := Transform3D.IDENTITY
+var _slide_way := Vector3.BACK
+## Where what you hold would stick, in the deck's frame, eased toward as it
+## moves; in the world as last placed; and how far it's gone there, 0 to 1.
+var _stick_local := Transform3D.IDENTITY
+var _stick_world := Transform3D.IDENTITY
+var _placing := 0.0
+## What's tinted now and how, so a tint is set and cleared once.
+var _tinted: Node3D
+var _tint := Color(0.0, 0.0, 0.0, 0.0)
+var _tints := {}
 ## The device a part is coming out of, held still meanwhile so it can't drop
 ## onto the part, and what it was doing before.
 var _source: Device
-var _source_socket: Socket
 var _source_was := {}
 ## The socket a part just came out of: it won't tug again, nor its device offer
 ## anything, until you look away.
 var _rearm: Socket
-## The deck mount what you have hold of just came off: its deck offers
-## nothing until it's been carried clear of it.
-var _stood: Socket
 var _aim := Vector3.ZERO
 ## Where on the device you look at you aim, for its offer.
 var _offer_at := Vector3.ZERO
@@ -272,6 +289,11 @@ func grab() -> bool:
 		if stand != null:
 			_stand_on(stand)
 			return true
+		if not sticking.is_empty():
+			if sticking.why != "":
+				return refuse(sticking.why)
+			_stick_grasped()
+			return true
 		var why := _stand_why
 		grasp.let_go()
 		if why != "":
@@ -282,6 +304,11 @@ func grab() -> bool:
 			return false
 		if socket != null:
 			_fit(socket)
+			return true
+		if not sticking.is_empty():
+			if sticking.why != "":
+				return refuse(sticking.why)
+			_stick_held()
 			return true
 		var why := _no_fit()
 		if why != "":
@@ -510,6 +537,8 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed("hands_throw") and held != null and not Controls.mouse_free:
 		throw()
 		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("hands_throw") and not Controls.mouse_free and punch():
+		get_viewport().set_input_as_handled()
 	elif _tunes(event):
 		get_viewport().set_input_as_handled()
 	# Exactly, so bringing near or pushing out never reels a line too.
@@ -567,10 +596,9 @@ func tuned_by_look() -> Radio:
 		return look_device
 	var console := look_device as Console
 	if console != null:
-		for each in console.linked():
-			for seated in each.mounted():
-				if seated is Radio:
-					return seated
+		for device in console._system():
+			if device is Radio:
+				return device
 	return null
 
 
@@ -691,7 +719,7 @@ func _physics_process(delta: float) -> void:
 	if grasp.slipped:
 		grasp.slipped = false
 		refuse("it won't shift")
-	_find_stand()
+	_find_stand(delta)
 	_unblock_released()
 	_show(delta)
 
@@ -788,7 +816,7 @@ func _under() -> void:
 		if device == null or device.host() != null or device.has_meta(&"buried") or _far(device):
 			continue
 		for each in device.sockets():
-			if each.part == null or _frame_of(each).basis.z.y > -0.7:
+			if each.part == null or (device.global_basis * each.outward()).y > -0.7:
 				continue
 			var d := _gap_to(device.global_transform, _shapes_box(each.fitted))
 			if d < nearest:
@@ -971,44 +999,46 @@ func _pick_up(body: RigidBody3D) -> void:
 	_play(Sounds.SAND_TAKE)
 
 
-## Its host holds still while a seated device lifts straight off along the
-## socket's +Z, then it comes to your hand; too heavy to carry, it comes off
-## standing where it stood, and you have hold of it.
+## Its host holds still while a stuck device lifts straight off its face,
+## then it comes to your hand; too heavy to carry, it comes off standing on
+## the sand beside the deck, and you have hold of it.
 func _take_off(device: Device) -> void:
 	var host := device.host()
 	var from := host.seat_of(device)
+	var way := from.outward()
 	if not device.carryable:
 		host.dismount(from)
-		var beside := _beside_deck(device, host) if from.kind == &"deck" else Transform3D()
+		var beside := _beside_deck(device, host) if host is Chassis else Transform3D()
 		if beside != Transform3D():
 			_player.world.teleport(device, beside)
 		else:
-			# Clear of all that's fitted under its foot too, so it never starts off
-			# inside what it stood on.
-			var below := device.seat().origin.z + _shapes_box(device.get_children()).position.y
-			_player.world.teleport(device, device.global_transform.translated(
-				_frame_of(from).basis.z * (maxf(-below, 0.0) + LIFT_OFF)))
+			_player.world.teleport(device, device.global_transform.translated(host.global_basis * way * LIFT_OFF))
 		grasp.take(device)
-		_stood = from
 		_play(Sounds.UNSEAT)
 		return
-	_source = host
-	_source_socket = from
-	_source_was = {"freeze": host.freeze, "velocity": host.linear_velocity, "spin": host.angular_velocity}
-	host.freeze = true
+	_begin_slide(host, device.transform, way)
 	host.dismount(from)
 	_grip(device)
 	_slide = _bounds.size.y + 0.02
 	_slide_from = 0.0
 	_t = 0.0
 	phase = Phase.TAKING
-	_rearm = from
 	_play(Sounds.UNSEAT)
 
 
+## What you take out holds its source still, and slides from where it sat
+## there along its way out, both in the source's frame.
+func _begin_slide(source: Device, at: Transform3D, way: Vector3) -> void:
+	_source = source
+	_source_was = {"freeze": source.freeze, "velocity": source.linear_velocity, "spin": source.angular_velocity}
+	source.freeze = true
+	_slide_at = at
+	_slide_way = way.normalized()
+
+
 ## Off a deck, a device comes down on the sand beside it, on the clear side
-## nearest you: left standing on a floating deck, dragging it would rub the
-## deck along with it. Empty if no side is clear.
+## nearest you: left on a floating deck, dragging it would rub the deck
+## along with it. Empty if no side is clear.
 func _beside_deck(device: Device, deck: Device) -> Transform3D:
 	var reach := _shapes_box(deck.get_children())
 	var own := _shapes_box(device.get_children())
@@ -1042,17 +1072,19 @@ func _beside_deck(device: Device, deck: Device) -> Transform3D:
 
 
 ## A bare piece comes off the deck the way one goes on, out across a ring it
-## leaves while the deck holds still, then to your hand.
+## leaves or off the frame's face it was on, while the deck holds still, then
+## to your hand.
 func _unjoin(deck: Chassis, off: Chassis) -> void:
 	var at := deck.global_transform * off.pose().origin
+	var out := deck.global_basis * off.joined_at.transform.basis.z if off.on_frame() else Vector3.ZERO
 	var was := {"freeze": deck.freeze, "velocity": deck.linear_velocity, "spin": deck.angular_velocity}
 	var piece := deck.detach(off)
 	var from := deck.ring_to(at)
+	if out == Vector3.ZERO and from != null:
+		out = deck.global_basis * from.transform.basis.z
 	_play(Sounds.UNSEAT)
-	_source = deck
-	_source_socket = from
+	_begin_slide(deck, deck.global_transform.affine_inverse() * piece.global_transform, deck.global_basis.inverse() * out)
 	_source_was = was
-	deck.freeze = true
 	_grip(piece)
 	_slide = SLIDE_OFF
 	_slide_from = 0.0
@@ -1061,74 +1093,67 @@ func _unjoin(deck: Chassis, off: Chassis) -> void:
 	_rearm = from
 
 
-## Having hold of a device that stands on a deck: the free deck mount whose
-## seat is nearest it, within reach and with nothing else in the way there.
-## The deck it just came off waits until it's been taken clear, so take lets
-## go rather than standing it straight back on. Having hold of a lone piece,
-## the deck's free ring it would join at.
-func _find_stand() -> void:
-	var device := grasp.body as Device
-	var piece := device as Chassis
+## Having hold of a lone piece: the deck's free ring or frame face it would
+## join at. Having hold of something that sticks: where your look would
+## stick it. Either way the real thing is shown there, until it's set or you
+## look away.
+func _find_stand(delta: float) -> void:
+	var body := grasp.body
+	var piece := body as Chassis
 	if piece != null and not (piece.joined.is_empty() and piece.deck == null):
 		piece = null
-	if device == null or not device.stands_on_deck:
-		device = null
-		_stood = null
 	var best: Socket = null
 	_stand_why = ""
 	if piece != null:
 		best = _find_ring(piece)
-	elif device != null:
-		if _stood != null and (not is_instance_valid(_stood) or _stand_gap(device, _stood) > STAND_REACH):
-			_stood = null
-		var nearest := STAND_REACH
-		for each in _near():
-			if not (each is Chassis) or each == device or _stood != null and each == _stood.get_parent():
-				continue
-			for socket in each.sockets():
-				if socket.kind == &"deck" and socket.is_open():
-					var d := _stand_gap(device, socket)
-					if d < nearest:
-						nearest = d
-						best = socket
-		if best != null and not _stands_clear(device, best):
-			_stand_why = "something's in the way"
-			best = null
-		# The deck's trays or runners carry what stands on it; its own would sit in the deck.
-		if best != null and device.carriage() != &"":
-			_stand_why = "take its tray off first" if device.has_tray() else "take its runners off first"
-			say(_stand_why)
-			best = null
-		if best != null:
-			_stand_pose = _frame_of(best) * device.seat()
-	if best != stand:
-		stand = best
-		if held == null:
-			_clear_ghost()
-			if stand != null:
-				_build_ghost(grasp.body)
+	stand = best
+	if held == null:
+		sticking = _stick_target(body, grasp.held_basis()) if body != null and best == null else {}
+	var share := 1.0 - exp(-SWING * delta)
+	if body != null and stand != null:
+		grasp.show_at(_stand_pose, share)
+	elif body != null and not sticking.is_empty():
+		grasp.show_at(sticking.deck.global_transform * sticking.pose, share)
+	elif grasp.showing():
+		grasp.unshow()
+	if held == null:
+		_tint_as(body if grasp.showing() else null, sticking)
 
 
-## The free edge ring of a deck a lone piece you have hold of would join at:
-## the one whose place beside it is nearest the piece, within reach, with
-## room there. Two whole decks don't merge yet.
+## The free edge ring or frame face of a deck a lone piece you have hold of
+## would join at: the one whose place is nearest the piece, within reach,
+## with room there. Two whole decks don't merge yet.
 func _find_ring(piece: Chassis) -> Socket:
 	var best: Socket = null
 	var nearest := STAND_REACH
+	var at := grasp.where()
 	for each in _near():
 		var deck := each as Chassis
 		if deck == null or deck == piece or deck.deck != null:
 			continue
 		for ring in deck.sockets():
-			if not Chassis.free_ring(ring):
+			var place := Transform3D()
+			if Chassis.free_ring(ring):
+				place = deck.global_transform * deck._pose_at(ring, 0)
+			elif ring.kind == &"face" and ring.is_open():
+				place = deck.global_transform * ring.transform * Frame.piece_seat()
+			else:
 				continue
-			var d := (deck.global_transform * deck._pose_at(ring, 0)).origin.distance_to(piece.global_position)
+			var d := place.origin.distance_to(at)
 			if d < nearest:
 				nearest = d
 				best = ring
 	if best == null:
 		return null
 	var deck := best.get_parent() as Chassis
+	if best.kind == &"face":
+		var on_face := deck.global_transform * best.transform * Frame.piece_seat()
+		if not piece.fits_in(best) or Stick.clear(piece, on_face, _player) != "":
+			_stand_why = "something's in the way"
+			return null
+		_stand_pose = on_face
+		_stand_turns = 0
+		return best
 	if _mixes(piece, deck):
 		_stand_why = "runners and trays don't mix"
 		return null
@@ -1152,66 +1177,106 @@ static func _mixes(piece: Device, deck: Device) -> bool:
 	return a != &"" and b != &"" and a != b
 
 
-## How far a device is from where it would stand on a deck mount, m.
-func _stand_gap(device: Device, socket: Socket) -> float:
-	return (_frame_of(socket) * device.seat()).origin.distance_to(device.global_position)
-
-
-## Whether a device would stand on a deck mount touching nothing but the
-## deck: not another device, a loose thing, nor you.
-func _stands_clear(device: Device, socket: Socket) -> bool:
-	var pose := _frame_of(socket) * device.seat()
-	var space := get_world_3d().direct_space_state
-	var query := PhysicsShapeQueryParameters3D.new()
-	var skip: Array[RID] = [(socket.get_parent() as Device).get_rid()]
-	var riding: Array[Device] = [device]
-	while not riding.is_empty():
-		var each: Device = riding.pop_back()
-		skip.append(each.get_rid())
-		riding.append_array(each.mounted())
-	query.exclude = skip
-	for child in device.get_children():
-		var shape := child as CollisionShape3D
-		if shape == null or shape.shape == null:
-			continue
-		query.shape = _skin(shape.shape)
-		query.transform = pose * shape.transform
-		for hit in space.intersect_shape(query, TOUCHES):
-			if not _sand(hit):
-				return false
-	return true
-
-
-## Seats what you have hold of on a deck mount, standing, or joins the piece
-## you have hold of to a deck at its ring.
+## Joins the piece you have hold of to a deck at its ring or on a frame's face.
 func _stand_on(socket: Socket) -> void:
-	var device := grasp.body as Device
-	var deck := socket.get_parent() as Device
-	grasp.let_go()
+	var piece := grasp.body as Chassis
+	var deck := socket.get_parent() as Chassis
+	grasp.let_go(false)
 	stand = null
-	_clear_ghost()
+	_tint_as(null, {})
 	_player.world.salvage.claim(deck)
-	if socket.kind == &"ring":
-		(deck as Chassis).join(device as Chassis, socket, _stand_turns)
-	else:
-		deck.mount(device, socket)
+	deck.join(piece, socket, _stand_turns)
 	_seat_sound()
 
 
-## The device holds still while the part slides straight out along its
-## socket's +Z, then the part comes to your hand.
+## Where a thing would stick: the sticky face your look meets within reach,
+## the thing under your look, turned as it's held, edged and settled there
+## (Stick.aim), and why it can't go there, or a warning that it would sink a
+## floating deck; {} where your look meets no sticky face.
+func _stick_target(thing: RigidBody3D, held_basis: Basis) -> Dictionary:
+	if thing == null or not Stick.sticks(thing) or not thing.is_inside_tree():
+		return {}
+	var ray := PhysicsRayQueryParameters3D.create(sight_from, sight_from - _player.camera.global_basis.z * _tuning.reach)
+	var skip := _exclusions()
+	skip.append(thing.get_rid())
+	ray.exclude = skip
+	var hit := get_world_3d().direct_space_state.intersect_ray(ray)
+	var deck := hit.get("collider") as Chassis
+	if deck == null:
+		return {}
+	var shape := deck.shape_owner_get_owner(deck.shape_find_owner(hit.shape)) as Node
+	var on := Stick.face_hit(deck, shape, hit.normal, -_player.camera.global_basis.z)
+	if on.is_empty():
+		return {}
+	var placed := Stick.aim(deck, on[0], on[1], hit.position, held_basis, thing)
+	var pose := Stick.pose_on(deck, on[0], on[1], placed[0], placed[1], thing)
+	var why := Stick.why_not(deck, on[0], on[1], thing)
+	if why == "":
+		why = Stick.clear(thing, deck.global_transform * pose, _player)
+	# Floating now, and too much for its trays with this on: it'd settle.
+	var now := deck.stats()
+	var warn := "too heavy" if now.can_float and not deck.resting \
+		and now.lift_kg + _lift_of(thing) < deck.mass + thing.mass else ""
+	return {"deck": deck, "piece": on[0], "face": on[1], "pose": pose,
+		"out": deck.face_frame(on[0], on[1]).basis.z, "why": why, "warn": warn}
+
+
+## What a thing lifts once it's stuck facing down: a tray its lift, else none.
+static func _lift_of(thing: Node) -> float:
+	var part := thing as Part
+	return part.stats.get("lift_kg", 0.0) if part != null else 0.0
+
+
+## Sticks what you hold where it's shown, with a soft clunk.
+func _stick_held() -> void:
+	var target := sticking
+	var thing := held
+	var deck: Chassis = target.deck
+	_player.world.salvage.claim(deck)
+	_let_go()
+	var into := deck.stick(thing, target.pose, target.out, target.piece)
+	_seat_sound()
+	if thing is Part:
+		fitted.emit(thing, deck, into)
+
+
+## Sticks what you have hold of where it's shown.
+func _stick_grasped() -> void:
+	var target := sticking
+	var thing := grasp.body as Device
+	var deck: Chassis = target.deck
+	_player.world.salvage.claim(deck)
+	grasp.let_go(false)
+	sticking = {}
+	_tint_as(null, {})
+	deck.stick(thing, target.pose, target.out, target.piece)
+	_seat_sound()
+
+
+## Having hold of something, a throw punches it where you look: a small shove
+## to right a tipped rig with. Says whether it did.
+func punch() -> bool:
+	var body := grasp.body
+	if body == null or grasp.showing() or held != null:
+		return false
+	var at := look_point if look_device == body else body.global_transform * _box_of(body).get_center()
+	body.apply_impulse(-_player.camera.global_basis.z * _tuning.punch_impulse, at - body.global_position)
+	_play(Sounds.SEAT[_seated_count % Sounds.SEAT.size()])
+	return true
+
+
+## The device holds still while the part slides straight out its socket's
+## way, or off the face it was stuck on, then the part comes to your hand.
 func _take_out(device: Device, from: Socket) -> void:
-	_source = device
-	_source_socket = from
-	_source_was = {"freeze": device.freeze, "velocity": device.linear_velocity, "spin": device.angular_velocity}
-	device.freeze = true
+	_begin_slide(device, from.transform, from.outward())
 	var part := device.take(from)
 	_grip(part)
 	_slide = part.depth()
 	_slide_from = from.part.depth() if from.part != null else 0.0
 	_t = 0.0
 	phase = Phase.TAKING
-	_rearm = from
+	# Just stuck off, it's shown where it would stick again as you look: no wait.
+	_rearm = null if from.stuck() else from
 	_play(Sounds.PICK if device is Planter and part.kind == &"food" else Sounds.UNSEAT)
 	taken.emit(part, device, from)
 
@@ -1275,6 +1340,7 @@ func _arrive(delta: float) -> void:
 
 
 func _tug(delta: float) -> void:
+	var was: Variant = sticking.get("deck")
 	_find_socket()
 	var want := 0.0
 	if socket != null:
@@ -1282,6 +1348,17 @@ func _tug(delta: float) -> void:
 		want = maxf(smoothstep(_tuning.snap_reach, _tuning.snap_home, gap), OFFER)
 		_lean = seat if pull == 0.0 else _blend(_lean, seat, 1.0 - exp(-SWING * delta))
 	pull = move_toward(pull, want, delta / _tuning.tug_seconds)
+	# Where it would stick, eased toward in the deck's frame, so it rides a floating deck.
+	if not sticking.is_empty():
+		var deck: Chassis = sticking.deck
+		if _placing <= 0.0 or not is_instance_valid(was) or was != deck:
+			_stick_local = deck.global_transform.affine_inverse() * held.global_transform
+		var share := 1.0 - exp(-SWING * delta)
+		_stick_local = Transform3D(_stick_local.basis.orthonormalized().slerp(sticking.pose.basis.orthonormalized(), share),
+			_stick_local.origin.lerp(sticking.pose.origin, share))
+		_stick_world = deck.global_transform * _stick_local
+	_placing = move_toward(_placing, 1.0 if not sticking.is_empty() else 0.0, delta / PLACE_SECONDS)
+	_tint_as(held if not sticking.is_empty() else null, sticking)
 
 
 ## The free socket of the held part's kind nearest your line of sight, among
@@ -1307,9 +1384,12 @@ func _find_socket() -> void:
 			if d < nearest and _open(_frame_of(each), device) and _within_reach(seat) == seat:
 				nearest = d
 				best = each
+	sticking = {}
 	if nearest >= _tuning.snap_reach:
 		best = null
-		if target != null and not (_rearm != null and _on(_rearm)):
+		# Short of a slot you aim right at, a sticky face your look meets wins.
+		sticking = _stick_target(held, _held_basis())
+		if sticking.is_empty() and target != null and not (_rearm != null and _on(_rearm)):
 			best = _offer(target)
 		nearest = _sight_gap(_seat(best)) if best != null else INF
 	gap = nearest
@@ -1411,13 +1491,16 @@ func _takes(each: Socket) -> bool:
 	if held is Chassis and each.kind == &"ring":
 		return (held as Chassis).fits_in(each) and not _mixes(held, each.get_parent()) \
 			and (each.get_parent() as Chassis).room_for(held, _seat(each))
-	if not each.is_open():
+	if held is Chassis and each.kind == &"face":
+		return (held as Chassis).fits_in(each) and Stick.clear(held, _seat(each), _player) == ""
+	if not each.is_open() or each.stuck():
 		return false
-	# Standing on a deck a device takes no tray or runners, and a device
-	# takes trays or runners, never both.
+	# A device takes trays or runners, never both.
 	if held is Part and (each.get_parent() as Device).refuses(held) != "":
 		return false
-	return (held as Device).fits_in(each) if held is Device else each.kind == held.get(&"kind")
+	if held is Device:
+		return (held as Device).fits_in(each)
+	return each.kind == held.get(&"kind") or each.kind == &"face" and Frame.takes(held)
 
 
 ## Whether a hit is the sand's own surface, which a deck lifts itself clear
@@ -1493,7 +1576,7 @@ func _settle_in(seat: Transform3D) -> Transform3D:
 func _fit(into: Socket) -> void:
 	var device := into.get_parent() as Device
 	_player.world.salvage.claim(device)
-	if held is Chassis and into.kind == &"ring":
+	if held is Chassis and into.kind in [&"ring", &"face"]:
 		var piece := held as Chassis
 		var turn := _held_basis()
 		_let_go()
@@ -1543,9 +1626,12 @@ func _let_go() -> void:
 
 func _forget() -> void:
 	_release_source()
+	_tint_as(null, {})
 	held = null
 	phase = Phase.EMPTY
 	socket = null
+	sticking = {}
+	_placing = 0.0
 	pull = 0.0
 	gap = INF
 	_clear_ghost()
@@ -1558,7 +1644,6 @@ func _release_source() -> void:
 			_source.linear_velocity = _source_was.velocity
 			_source.angular_velocity = _source_was.spin
 	_source = null
-	_source_socket = null
 
 
 func _unblock_released() -> void:
@@ -1581,9 +1666,15 @@ func _unblock(part: RigidBody3D) -> void:
 
 
 ## Where the held part sits: in your hand, leaning toward a socket as hard as
-## the tug pulls; as drawn this frame, or as the tick knows it.
+## the tug pulls, or gone where it would stick; as drawn this frame, or as
+## the tick knows it.
 func _pose(drawn: bool) -> Transform3D:
 	var hand := _hand(drawn)
+	if _placing > 0.0:
+		var there := _stick_world
+		if drawn and not sticking.is_empty() and is_instance_valid(sticking.deck):
+			there = (sticking.deck as Node3D).global_transform * _stick_local
+		return _blend(hand, there, smoothstep(0.0, 1.0, _placing))
 	return hand if pull <= 0.0 else _blend(hand, _lean, smoothstep(0.0, 1.0, pull))
 
 
@@ -1649,8 +1740,7 @@ func _clear(pose: Transform3D) -> bool:
 
 func _sliding() -> Transform3D:
 	var out := 1.0 - (1.0 - _t) * (1.0 - _t)
-	return _frame_of(_source_socket).translated_local(Vector3(0.0, 0.0, _slide_from + _slide * out)) \
-		* _seated(_source_socket)
+	return (_source.global_transform * _slide_at).translated(_source.global_basis * _slide_way * (_slide_from + _slide * out))
 
 
 ## Where what you hold sits in a socket, in the world.
@@ -1664,9 +1754,10 @@ func _frame_of(into: Socket) -> Transform3D:
 
 
 ## Where what you hold sits in a socket's frame: a part on it, a device
-## upright on it, a chassis piece flush beyond a deck's edge ring.
+## upright on it, a chassis piece flush beyond a deck's edge ring or flat on
+## a frame's face.
 func _seated(into: Socket) -> Transform3D:
-	if held is Chassis and into.kind == &"ring":
+	if held is Chassis and into.kind in [&"ring", &"face"]:
 		return (held as Chassis).seat_in(into, _held_basis())
 	return (held as Device).seat() if held is Device else Transform3D.IDENTITY
 
@@ -1720,6 +1811,7 @@ func _on_origin_shifted(by: Vector2i) -> void:
 	_from.origin -= offset
 	_lean.origin -= offset
 	_ticked.origin -= offset
+	_stick_world.origin -= offset
 
 
 func _build_ghost(part: RigidBody3D) -> void:
@@ -1782,6 +1874,31 @@ func _clear_ghost() -> void:
 	_ghost.visible = false
 
 
+## Tints what's shown where it would stick: red where it won't go, amber
+## with a warning, else as it is. Set and cleared once each.
+func _tint_as(body: Node3D, target: Dictionary) -> void:
+	var color := Color(0.0, 0.0, 0.0, 0.0)
+	if body != null and not target.is_empty():
+		color = BLOCKED if target.why != "" else (WARNED if target.warn != "" else color)
+	if body == _tinted and color == _tint:
+		return
+	if is_instance_valid(_tinted):
+		for mesh: MeshInstance3D in _tinted.find_children("*", "MeshInstance3D", true, false):
+			mesh.material_overlay = null
+	_tinted = body if color.a > 0.0 else null
+	_tint = color
+	if _tinted == null:
+		return
+	if not _tints.has(color):
+		var look := StandardMaterial3D.new()
+		look.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		look.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		look.albedo_color = color
+		_tints[color] = look
+	for mesh: MeshInstance3D in _tinted.find_children("*", "MeshInstance3D", true, false):
+		mesh.material_overlay = _tints[color]
+
+
 func _play(stream: AudioStream) -> void:
 	_sound.stream = stream
 	_sound.play()
@@ -1839,10 +1956,13 @@ func _part_stats(part: Part) -> Dictionary:
 	return now
 
 
-## What the look-at line says now: why take or use did nothing, else what you look at.
+## What the look-at line says now: why take or use did nothing, why what you
+## hold won't stick where it's shown or what to mind, else what you look at.
 func line() -> String:
 	if notice != "":
 		return notice
+	if not sticking.is_empty() and (sticking.why != "" or sticking.warn != ""):
+		return sticking.why if sticking.why != "" else sticking.warn
 	if look_wreck != null and (look_work != null or look_scrap != null):
 		return look_wreck.describe(look_work if look_work != null else look_scrap)
 	if look_part != null:
@@ -1873,11 +1993,6 @@ func _show(delta: float) -> void:
 	if socket != null:
 		_ghost.global_transform = _seat(socket)
 		_ghost_look.albedo_color.a = 0.2 + 0.3 * pull
-	elif stand != null and grasp.body is Device:
-		# Where what you have hold of would stand, or join.
-		_ghost.visible = true
-		_ghost.global_transform = _stand_pose
-		_ghost_look.albedo_color.a = 0.35
 	elif held is Stake and phase == Phase.HELD and look_sand:
 		# Where it will go in.
 		_ghost.visible = true

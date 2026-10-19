@@ -120,9 +120,9 @@ func _first_time() -> void:
 	SiteLoot.prepare()
 	Dress.prepare()
 	Wreckage.prepare()
-	var spec := {"id": &"crate_frame", "device": true, "layer": Finds.DEEP, "x": 0.0, "z": 0.0, "yaw": 0.0,
+	var spec := {"id": &"chassis", "device": true, "layer": Finds.DEEP, "x": 0.0, "z": 0.0, "yaw": 0.0,
 		"lean": 0.0, "lean_by": 0.0, "bury": 0.3, "sound": 0.5, "charge": 0.5,
-		"fill": [[0, &"battery", 0.5], [5, &"hook", 0.0], [1, &"hover_tray", 0.0], [2, &"solar_panel", 0.0]]}
+		"fill": [[0, &"hook", 0.0], [4, &"hover_tray", 0.0], [5, &"battery", 0.5], [6, &"solar_panel", 0.0]]}
 	var stand_in := Finds.make(spec)
 	stand_in.transform = Finds.pose(stand_in, spec, func(_x: float, _z: float) -> float: return -1000.0)
 	stand_in.freeze = true

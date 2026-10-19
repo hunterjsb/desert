@@ -317,8 +317,8 @@ func get_on(on: Hoverboard) -> bool:
 		waist.let_go(holding)
 		_boarding = on
 		return true
-	# Racked, it comes off the crate straight under your feet, its own pool again.
-	if on.racked():
+	# On a deck, it comes off straight under your feet, its own pool again.
+	if on.on_deck():
 		on.host().dismount(on.host().seat_of(on))
 		world.power.wake(on)
 	board = on

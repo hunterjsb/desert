@@ -28,6 +28,8 @@ const PARTS := {
 		[&"plug", 3],
 		[&"hose_end", 2],
 		[&"compass", 1],
+		[&"frame", 1],
+		[&"fabric", 1],
 	],
 	DEEP: [
 		[&"big_battery", 3],
@@ -40,26 +42,25 @@ const PARTS := {
 		[&"sail", 2],
 		[&"skates", 2],
 		[&"board_plate", 2],
+		[&"frame", 2],
 	],
 }
 const DEVICES := {
 	SURFACE: [
-		[&"crate_frame", 3],
-		[&"charger", 2],
+		[&"chassis", 4],
+		[&"light_panel", 2],
 		[&"planter", 2],
 		[&"stake", 2],
 		[&"survival_kit", 1],
 		[&"radio", 2],
-		[&"chassis", 1],
 		[&"bedroll", 1],
 	],
 	DEEP: [
-		[&"crate_frame", 2],
+		[&"chassis", 3],
 		[&"turbine", 2],
 		[&"condenser", 2],
 		[&"shield", 2],
 		[&"board", 1],
-		[&"chassis", 1],
 		[&"console", 1],
 		[&"mast", 1],
 	],
@@ -71,9 +72,10 @@ const SURVIVAL_KIT := {&"water": [&"canister"], &"food": [&"ration"], &"plant_st
 	&"plant_pot": [&"vat_fungus"]}
 const KIT_FILL := 0.75
 const KIT_SEEDS_IN_THE_OPEN := 0.1
-## What a found device's sockets hold, by socket kind; a kind not listed is
-## found empty. A Console is a deep find, and its screen and instruments come
-## only in one.
+## What a found device's sockets hold, by socket kind, and a found chassis's
+## spots, by the fills each names (top, battery, bottom); a kind not listed
+## is found empty. A Console is a deep find, and its screen and instruments
+## come only in one.
 const FILLS := {
 	SURFACE: {&"battery": [&"battery"], &"ring": [&"hook"], &"top": [&"lamp"], &"water": [&"canister"]},
 	DEEP: {&"battery": [&"big_battery", &"battery"], &"ring": [&"hook"], &"bottom": [&"hover_tray"],
@@ -226,15 +228,27 @@ static func _fill(spec: Dictionary, rng: RandomNumberGenerator) -> void:
 		return
 	var packed: bool = spec.id == &"survival_kit"
 	var fills: Dictionary = SURVIVAL_KIT if packed else FILLS[layer]
-	var sockets: Array = Catalog.DEVICES[spec.id].sockets
-	for i in sockets.size():
-		if not fills.has(sockets[i][0]):
+	var holds := holds(spec.id)
+	for i in holds.size():
+		if not fills.has(holds[i]):
 			continue
 		var share: float = kind.fill
 		if packed:
-			share = KIT_SEEDS_IN_THE_OPEN if sockets[i][0] in [&"plant_pot", &"plant_standard", &"plant_deep"] else KIT_FILL
+			share = KIT_SEEDS_IN_THE_OPEN if holds[i] in [&"plant_pot", &"plant_standard", &"plant_deep"] else KIT_FILL
 		if rng.randf() < share:
-			spec.fill.append([i, _any(rng, fills[sockets[i][0]]), rng.randf_range(kind.charge.x, kind.charge.y)])
+			spec.fill.append([i, _any(rng, fills[holds[i]]), rng.randf_range(kind.charge.x, kind.charge.y)])
+
+
+## What a found device can hold, in order, each by the fills it draws from:
+## its sockets by kind, then a chassis's spots.
+static func holds(id: StringName) -> Array[StringName]:
+	var out: Array[StringName] = []
+	var spec: Dictionary = Catalog.DEVICES[id]
+	for socket: Array in spec.sockets:
+		out.append(socket[0])
+	for spot: Array in spec.get("spots", []):
+		out.append(spot[3])
+	return out
 
 
 ## Somewhere on the chunk's open sand on the way, clear of structures and of
@@ -305,7 +319,12 @@ static func fit(device: Device, spec: Dictionary, k: int) -> void:
 	var part := _part(entry[1], entry[2], spec.layer, spec.id == &"survival_kit" or spec.get("sealed", false))
 	if spec.has("era"):
 		Catalog.found_in(part, spec.era, spec.kind, hash([spec.seed, k]))
-	device.fit(part, device.sockets()[entry[0]])
+	var slots: Array = Catalog.DEVICES[spec.id].sockets
+	if entry[0] < slots.size():
+		device.fit(part, device.frame_sockets()[entry[0]])
+		return
+	var spot: Array = Catalog.DEVICES[spec.id].spots[entry[0] - slots.size()]
+	Stick.put(device as Chassis, device as Chassis, spot[0], spot[1], deg_to_rad(spot[2]), part)
 
 
 ## Nothing found runs until it's yours; its light still shows what it holds.

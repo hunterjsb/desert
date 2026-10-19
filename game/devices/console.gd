@@ -184,10 +184,19 @@ func gear() -> Dictionary:
 			continue
 		for key: String in each._fitted():
 			count[key] = count.get(key, 0) + 1
-		for seated in each.mounted():
-			if seated is Radio and seated.powered and not seated.wrecked():
-				count["radio"] = count.get("radio", 0) + 1
+	for radio in radios():
+		count["radio"] = count.get("radio", 0) + 1
 	return count
+
+
+## The running radios in its system: its deck gives a Console a voice.
+func radios() -> Array[Radio]:
+	var found: Array[Radio] = []
+	for device in _system():
+		var radio := device as Radio
+		if radio != null and radio.powered and not radio.wrecked():
+			found.append(radio)
+	return found
 
 
 ## Cells across its storm map, by the gear in its system: a radar alone
@@ -370,18 +379,17 @@ func _read(now: Dictionary, t: float) -> void:
 			"was": sand_of(field, field.raw_storm_at(x, z, t - SAND_TREND)), "stormy": field.raw_storm_at(x, z, t) > 0.0}
 	if now.get("radar", 0) > 0 and _swept:
 		readings["front"] = _front(field, x, z, t, now.radar_m)
-	for each in mounted():
-		var radio := each as Radio
-		if radio != null and radio.powered and not radio.wrecked():
-			if t >= _forecast_at + _tuning.radio_forecast_every or t < _forecast_at or not readings.has("forecast"):
-				_forecast_at = t
-				var rx := world.world_x(radio.global_position.x)
-				var rz := world.world_z(radio.global_position.z)
-				var said := Radio.forecast(field, rx, rz, t, _tuning.radio_forecast_minutes * 60.0, Weather.FORECAST_STEP)
-				said["t"] = t
-				_forecast = said
-			readings["forecast"] = _forecast
-			break
+	var voices := radios()
+	if not voices.is_empty():
+		var radio := voices[0]
+		if t >= _forecast_at + _tuning.radio_forecast_every or t < _forecast_at or not readings.has("forecast"):
+			_forecast_at = t
+			var rx := world.world_x(radio.global_position.x)
+			var rz := world.world_z(radio.global_position.z)
+			var said := Radio.forecast(field, rx, rz, t, _tuning.radio_forecast_minutes * 60.0, Weather.FORECAST_STEP)
+			said["t"] = t
+			_forecast = said
+		readings["forecast"] = _forecast
 
 
 ## The air's pressure where the storm field stands at `raw`, hPa: it falls as

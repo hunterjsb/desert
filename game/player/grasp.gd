@@ -9,6 +9,9 @@ extends RefCounted
 ## Rotate turns how you'd have it, so you roll a tipped thing back upright.
 ## Walk off from what you can't shift and it slips from your hands. It pulls
 ## back on you the way a line does, so hauling something heavy digs you in.
+## Shown where it would stick or join, it's held still there, touching
+## nothing, the real thing in its place, until it's set there or taken away
+## again, back where it was.
 
 ## Held farther than hold_slip from where you'd have it this long, it slips, s.
 const SLIP_SECONDS := 0.5
@@ -39,6 +42,10 @@ var _heading := 0.0
 var _slipping := 0.0
 ## It just slipped from your hands, for the hands to say so.
 var slipped := false
+## While it's shown where it would go: how it was before, [layer, mask,
+## freeze, freeze mode, pose], and where it's shown now.
+var _shown: Array = []
+var _shown_at := Transform3D.IDENTITY
 
 
 func _init(player: Player) -> void:
@@ -46,6 +53,7 @@ func _init(player: Player) -> void:
 
 
 func take(what: RigidBody3D) -> void:
+	unshow()
 	body = what
 	_heading = _player.global_rotation.y
 	var flat := Basis(Vector3.UP, -_heading)
@@ -61,8 +69,59 @@ func take(what: RigidBody3D) -> void:
 	what.sleeping = false
 
 
-func let_go() -> void:
+## Lets go: back where it was if it was being shown somewhere, unless it's
+## being set there (`back` false).
+func let_go(back := true) -> void:
+	unshow(back)
 	body = null
+
+
+## How you'd have it turned, in the world.
+func held_basis() -> Basis:
+	return Basis(Vector3.UP, _player.global_rotation.y) * _hold
+
+
+## Shows it at a pose, eased there from where it's shown now: held still,
+## touching nothing.
+func show_at(pose: Transform3D, share: float) -> void:
+	if body == null:
+		return
+	if _shown.is_empty():
+		_shown = [body.collision_layer, body.collision_mask, body.freeze, body.freeze_mode, body.global_transform]
+		_shown_at = body.global_transform
+		body.collision_layer = 0
+		body.collision_mask = 0
+		body.freeze_mode = RigidBody3D.FREEZE_MODE_KINEMATIC
+		body.freeze = true
+	_shown_at = Transform3D(_shown_at.basis.orthonormalized().slerp(pose.basis.orthonormalized(), share),
+		_shown_at.origin.lerp(pose.origin, share))
+	body.global_transform = _shown_at
+
+
+func showing() -> bool:
+	return not _shown.is_empty()
+
+
+## Where it really is: where it was before it was shown, or where it is.
+func where() -> Vector3:
+	return (_shown[4] as Transform3D).origin if showing() else body.global_position
+
+
+## No longer shown: solid again, back where it was, or where it's shown if
+## it's being set there.
+func unshow(back := true) -> void:
+	if _shown.is_empty() or not is_instance_valid(body):
+		_shown.clear()
+		return
+	body.collision_layer = _shown[0]
+	body.collision_mask = _shown[1]
+	body.freeze_mode = _shown[3]
+	body.freeze = _shown[2]
+	if back:
+		_player.world.teleport(body, _shown[4])
+	body.linear_velocity = Vector3.ZERO
+	body.angular_velocity = Vector3.ZERO
+	_shown.clear()
 
 
 ## Rotate: turns how you'd have it by `by`, a turn in your flat frame.
@@ -105,7 +164,13 @@ func recall(what: RigidBody3D, kept: Dictionary) -> void:
 func step(h: float) -> void:
 	if body == null:
 		return
-	if not is_instance_valid(body) or body.freeze:
+	if not is_instance_valid(body):
+		body = null
+		_shown.clear()
+		return
+	if showing():
+		return
+	if body.freeze:
 		body = null
 		return
 	var tuning := _player.world.tuning

@@ -1,15 +1,17 @@
 class_name Catalog
 extends RefCounted
 ## Every device frame and part the skeleton knows, built in code as boxes
-## with their sockets in defined spots, and drawn in B's paint (Dress). Salvage
-## finds them, and the test kit scenario drops a set round you.
+## with their few sockets in defined spots, and drawn in B's paint (Dress).
+## The only slots left are plugs and water taps, and what's a thing's own (a
+## planter's beds, a Console's ports, a mast's sail, a carried thing's
+## battery); everything else sticks on a chassis's sticky faces (Stick).
+## Salvage finds them, and the test kit scenario drops a set round you.
 
 ## Socket kinds, with the colour of the tell that marks a free one.
 const KINDS := {
 	&"battery": Color(0.95, 0.75, 0.2),
 	&"ring": Color(0.85, 0.85, 0.85),
 	&"bottom": Color(0.3, 0.7, 0.95),
-	&"top": Color(0.4, 0.9, 0.5),
 	&"plant_pot": Color(0.55, 0.85, 0.3),
 	&"plant_standard": Color(0.35, 0.65, 0.2),
 	&"plant_deep": Color(0.25, 0.45, 0.15),
@@ -18,8 +20,7 @@ const KINDS := {
 	&"water": Color(0.3, 0.6, 1.0),
 	&"mod": Color(0.75, 0.35, 0.7),
 	&"food": Color(0.8, 0.7, 0.35),
-	&"rack": Color(0.95, 0.35, 0.3),
-	&"deck": Color(0.55, 0.45, 0.95),
+	&"face": Color(0.55, 0.45, 0.95),
 	&"sail": Color(0.92, 0.86, 0.7),
 	&"computer_mod": Color(0.25, 0.9, 0.9),
 	&"computer_top": Color(0.65, 1.0, 0.95),
@@ -27,8 +28,10 @@ const KINDS := {
 }
 
 ## Parts: the socket kind they fit, weight, size (z is how far they stand out
-## from their socket), colour and what they give a device. A "tie" is the ring
-## a part adds while it's fitted, where a line's end snaps on.
+## from their socket, or from the face they're stuck on), colour and what they
+## give a device. A "tie" is the ring a part adds while it's fitted, where a
+## line's end snaps on. A part sticks on a chassis unless its kind is one
+## SLOT_ONLY names.
 const PARTS := {
 	&"battery": {"kind": &"battery", "label": "Battery", "mass": 4.0, "size": Vector3(0.22, 0.14, 0.12),
 		"color": Color(0.2, 0.2, 0.22), "stats": {"capacity_wh": 100.0}},
@@ -60,11 +63,19 @@ const PARTS := {
 	# boom's end.
 	&"sail": {"kind": &"sail", "label": "Sail", "mass": 5.0, "size": Vector3(0.18, 0.18, 2.2),
 		"color": Color(0.85, 0.8, 0.68), "stats": {"sail_m2": 5.5}, "tie": Vector3(0.0, 0.0, 2.26)},
-	# Half a crate's top, so two ride side by side.
-	&"solar_panel": {"kind": &"top", "label": "Solar panel", "mass": 5.0, "size": Vector3(0.8, 0.4, 0.04),
+	# Half a piece across, so two lie side by side.
+	&"solar_panel": {"kind": &"panel", "label": "Solar panel", "mass": 5.0, "size": Vector3(0.8, 0.4, 0.04),
 		"color": Color(0.1, 0.15, 0.35), "stats": {"solar_w": 60.0}},
-	&"lamp": {"kind": &"top", "label": "Lamp", "mass": 1.0, "size": Vector3(0.12, 0.12, 0.25),
+	&"lamp": {"kind": &"panel", "label": "Lamp", "mass": 1.0, "size": Vector3(0.12, 0.12, 0.25),
 		"color": Color(0.95, 0.9, 0.6), "stats": {"light_w": 5.0}},
+	# An open cube of rails that sticks square on a piece's top and takes a
+	# piece, a screen or fabric on each other face (Frame). Its size is its
+	# bounds: it's built of rails.
+	&"frame": {"kind": &"frame", "label": "Frame", "mass": 4.0, "size": Vector3(Frame.WIDE, Frame.WIDE, Frame.TALL),
+		"color": Color(0.3, 0.32, 0.33), "stats": {}},
+	# A crude sail on a frame's face: stiff, it can't belly or be trimmed.
+	&"fabric": {"kind": &"face", "label": "Fabric", "mass": 1.5, "size": Vector3(0.94, 0.94, 0.012),
+		"color": Color(0.78, 0.7, 0.55), "stats": {}},
 	# Crops, sown in a planter's slots. Each is all data, read by one growth
 	# path (Plant): its kind is the planter it fits (a pot, a standard planter
 	# or a deep bed), and its "crop" says how it grows:
@@ -171,10 +182,15 @@ const PARTS := {
 
 ## Parts by the names older saves knew them by.
 const RENAMED := {&"carrot": &"root_tuber", &"fungus": &"vat_fungus", &"carrots": &"tubers"}
+## Part kinds that go only in a slot of their own, never stuck loose on a
+## chassis: hooks on rings, plugs in ports, a line's end, a hose's end, crops
+## in beds, mods in their mounts, a sail on its mast.
+const SLOT_ONLY: Array[StringName] = [&"ring", &"port", &"tie", &"plant_pot", &"plant_standard", &"plant_deep",
+	&"mod", &"computer_mod", &"computer_top", &"screen", &"sail", &"face"]
 
 ## Who made each thing colonial hands made, as its stamp says (art
 ## direction's maker's marks): commodity parts carry none.
-const MAKERS := {&"crate_frame": &"tilg", &"chassis": &"tilg", &"condenser": &"rmc", &"console": &"rmc",
+const MAKERS := {&"chassis": &"tilg", &"frame": &"tilg", &"condenser": &"rmc", &"console": &"rmc",
 	&"shield": &"rmc", &"light_shield": &"shield_maker", &"turbine": &"wind_maker"}
 ## Where a lineage's marks sit on what isn't a box: round about its top's
 ## axis, as [its radius over its half width, and the shares of its height its
@@ -185,7 +201,7 @@ const ROUND := {&"shield": [0.88, 0.22, 0.8], &"light_shield": [0.88, 0.22, 0.8]
 ## keep its numbers: the ends of lines, a coil, the dish, the screen's glass,
 ## a compass's card.
 const BARE: Array[StringName] = [&"hook", &"plug", &"strong_plug", &"hose_end", &"rope_end", &"coil", &"radar",
-	&"screen", &"compass"]
+	&"screen", &"compass", &"frame", &"fabric"]
 ## The stake's frame, which has no entry of its own.
 const STAKE := {"mass": 2.0, "stats": {"toughness": INF}}
 ## What things with no entry of their own are called.
@@ -193,34 +209,15 @@ const NAMES := {&"stake": "Stake", &"line": "Line", &"cable": "Cable", &"strong_
 	&"hose": "Hose"}
 
 ## Frames: their box, weight, wind catch and sockets as [kind, position, outward].
-## Those marked "deck" stand on a chassis piece's deck mount too. A "short"
-## name is what a Console's screen calls it, where its label is too long.
+## "sticks" goes on a chassis's sticky face; "stands" only upright on one
+## facing up; "tall" too tall to stand under a frame. A "short" name is what
+## a Console's screen calls it, where its label is too long. A chassis's
+## "spots" are where a find of one has things stuck: [face, place on it,
+## turn in degrees, the fills it draws from].
 const DEVICES := {
-	# Two batteries, a ring front and back, a tray under it and two top mounts,
-	# so a panel rides beside a lamp or a shield; a camp with more lines rides
-	# a chassis. The first battery sits in the middle of its back, so a crate
-	# with one hangs level on its lines. A board is longer than the crate, so
-	# its rack runs along the top of the left side, away from the charge light.
-	# The side rings went on 2026-10-17: older saves number its sockets with
-	# them (Snapshot.RENUMBERED).
-	&"crate_frame": {"label": "Crate frame", "short": "Crate",
-		"size": Vector3(0.8, 0.5, 0.8), "mass": 15.0, "deck": true,
-		"sockets": [
-			[&"battery", Vector3(0.0, 0.0, 0.4), Vector3.BACK],
-			[&"bottom", Vector3(0.0, -0.25, 0.0), Vector3.DOWN],
-			[&"top", Vector3(0.0, 0.25, -0.2), Vector3.UP],
-			[&"port", Vector3(0.25, 0.1, -0.4), Vector3.FORWARD],
-			[&"battery", Vector3(-0.15, 0.0, -0.4), Vector3.FORWARD],
-			[&"ring", Vector3(0.0, 0.15, 0.4), Vector3.BACK],
-			[&"ring", Vector3(0.25, -0.1, -0.4), Vector3.FORWARD],
-			[&"top", Vector3(0.0, 0.25, 0.2), Vector3.UP],
-			[&"rack", Vector3(-0.4, 0.17, 0.0), Vector3.LEFT],
-		]},
 	# Its own water tank, fed from its water socket, and a mod mount on its
-	# back for a harvester. The water socket is last, so older saves keep their
-	# sockets. Its three standard planters were the small slots its carrots
-	# grew in and its pot the large one its fungus had, so a save from then
-	# finds root-tubers and vat fungus where they fit.
+	# back for a harvester; it floats on its own tray and stands as it always
+	# has, beside a camp rather than on one.
 	&"planter": {"label": "Planter", "size": Vector3(1.0, 0.35, 0.6), "mass": 10.0, "planter": true,
 		"sockets": [
 			[&"plant_standard", Vector3(-0.3, 0.175, -0.12), Vector3.UP],
@@ -235,13 +232,6 @@ const DEVICES := {
 			[&"mod", Vector3(0.3, 0.0, 0.3), Vector3.BACK],
 			[&"water", Vector3(-0.3, 0.0, 0.3), Vector3.BACK],
 		]},
-	# Put a panel on top and a battery in front, and it charges the battery in the sun.
-	&"charger": {"label": "Charger", "size": Vector3(0.45, 0.25, 0.35), "mass": 5.0, "deck": true,
-		"sockets": [
-			[&"battery", Vector3(0.0, 0.0, 0.175), Vector3.BACK],
-			[&"top", Vector3(0.0, 0.125, 0.0), Vector3.UP],
-			[&"port", Vector3(0.225, 0.0, 0.0), Vector3.RIGHT],
-		]},
 	# Strongest in a storm, and only while planted on the sand; built to stand
 	# out in one, so the weather wears it four times slower.
 	&"turbine": {"label": "Wind turbine", "size": Vector3(0.5, 0.3, 0.5), "mass": 18.0,
@@ -250,64 +240,56 @@ const DEVICES := {
 			[&"battery", Vector3(0.0, 0.0, 0.25), Vector3.BACK],
 			[&"port", Vector3(0.25, 0.0, 0.0), Vector3.RIGHT],
 		]},
-	# Pulls water out of the air into the canister fitted in it, best in the cold of the night.
-	&"condenser": {"label": "Condenser", "size": Vector3(0.6, 0.7, 0.6), "mass": 14.0, "condenser": true, "deck": true,
+	# Pulls water out of the air into the canister in its tap, best in the
+	# cold of the night, on its deck's power.
+	&"condenser": {"label": "Condenser", "size": Vector3(0.6, 0.7, 0.6), "mass": 14.0, "condenser": true,
+		"sticks": true, "stands": true, "tall": true,
 		"sockets": [
 			[&"water", Vector3(0.0, -0.1, 0.3), Vector3.BACK],
-			[&"battery", Vector3(0.3, -0.1, 0.0), Vector3.RIGHT],
-			[&"top", Vector3(0.0, 0.35, 0.0), Vector3.UP],
 			[&"port", Vector3(-0.3, 0.1, 0.0), Vector3.LEFT],
-			[&"ring", Vector3(-0.3, -0.15, 0.0), Vector3.LEFT],
-			[&"bottom", Vector3(0.0, -0.35, 0.0), Vector3.DOWN],
 		]},
 	# The base shield: small and light, use switches it, and its bubble keeps
-	# out wind and storm wherever it goes, a crate's top mount included.
+	# out wind and storm wherever it goes, on its deck's power.
 	&"shield": {"label": "Shield generator", "short": "Shield",
-		"size": Vector3(0.4, 0.42, 0.4), "mass": 6.0, "shield": true,
-		"fits": &"top", "deck": true,
+		"size": Vector3(0.4, 0.42, 0.4), "mass": 6.0, "shield": true, "sticks": true, "stands": true,
 		"sockets": [
-			[&"battery", Vector3(0.0, -0.05, 0.2), Vector3.BACK],
-			[&"ring", Vector3(-0.2, -0.05, 0.0), Vector3.LEFT],
-			[&"bottom", Vector3(0.0, -0.21, 0.0), Vector3.DOWN],
 			[&"port", Vector3(0.2, -0.05, 0.0), Vector3.RIGHT],
 		]},
 	# The light shield you start with: a smaller bubble that lets a little of
 	# the wind through, built light enough that the light panel keeps it going.
 	&"light_shield": {"label": "Light shield generator", "short": "Light shield",
-		"size": Vector3(0.3, 0.32, 0.3), "mass": 4.0, "shield": true,
-		"fits": &"top", "deck": true, "stats": {"radius_m": 4.0, "clear_w": 2.0, "storm_w": 20.0, "wind_block": 0.85},
+		"size": Vector3(0.3, 0.32, 0.3), "mass": 4.0, "shield": true, "sticks": true, "stands": true,
+		"stats": {"radius_m": 4.0, "clear_w": 2.0, "storm_w": 20.0, "wind_block": 0.85},
 		"sockets": [
-			[&"battery", Vector3(0.0, -0.04, 0.15), Vector3.BACK],
-			[&"ring", Vector3(-0.15, -0.04, 0.0), Vector3.LEFT],
-			[&"bottom", Vector3(0.0, -0.16, 0.0), Vector3.DOWN],
 			[&"port", Vector3(0.15, -0.04, 0.0), Vector3.RIGHT],
 		]},
 	# The light solar panel you start with, half a found panel's watts on half
-	# a crate's top, so it rides beside a shield: seat it, set it down, cable
-	# it in, pick it up again. Lying flat, the wind meets its edge.
+	# a piece, so it lies beside a shield: stick it, set it down, cable it in,
+	# pick it up again. Lying flat, the wind meets its edge.
 	&"light_panel": {"label": "Light solar panel", "short": "Light panel",
-		"size": Vector3(0.8, 0.05, 0.4), "mass": 5.0, "carryable": true,
-		"fits": &"top", "stats": {"solar_w": 30.0, "face_m2": 0.04},
+		"size": Vector3(0.8, 0.05, 0.4), "mass": 5.0, "carryable": true, "sticks": true,
+		"stats": {"solar_w": 30.0, "face_m2": 0.04},
 		"sockets": [
 			[&"port", Vector3(0.4, 0.0, 0.0), Vector3.RIGHT],
 		]},
 	# A heat cutter: held, it cuts a wreck's plates away while use is held
 	# down, on its own battery (Cutter).
 	&"cutter": {"label": "Heat cutter", "size": Vector3(0.12, 0.16, 0.55), "mass": 3.0, "cutter": true,
-		"carryable": true,
+		"carryable": true, "sticks": true,
 		"sockets": [
 			[&"battery", Vector3(0.0, 0.08, -0.1), Vector3.UP],
 		]},
 	# Music, the weather station and beacons, a channel a use. Carried, set
-	# down or seated on a top mount, it runs on its battery or what it sits on.
-	&"radio": {"label": "Radio", "size": Vector3(0.32, 0.22, 0.16), "mass": 2.5, "radio": true, "fits": &"top",
-		"carryable": true,
+	# down or stuck on a deck, it runs on its battery or its deck's power.
+	&"radio": {"label": "Radio", "size": Vector3(0.32, 0.22, 0.16), "mass": 2.5, "radio": true,
+		"carryable": true, "sticks": true,
 		"sockets": [
 			[&"battery", Vector3(0.0, -0.02, -0.08), Vector3.FORWARD],
 			[&"port", Vector3(0.16, -0.035, -0.01), Vector3.RIGHT],
 		]},
 	# A sealed case of what keeps you going: a canister, a ration and seeds.
 	&"survival_kit": {"label": "Survival kit", "size": Vector3(0.5, 0.25, 0.35), "mass": 3.0, "carryable": true,
+		"sticks": true,
 		"sockets": [
 			[&"water", Vector3(-0.13, 0.0, 0.175), Vector3.BACK],
 			[&"food", Vector3(0.13, 0.0, 0.175), Vector3.BACK],
@@ -316,68 +298,56 @@ const DEVICES := {
 			[&"plant_pot", Vector3(0.15, 0.125, 0.0), Vector3.UP],
 		]},
 	# Just for you: it runs on its own battery, at its nose, and nothing ties
-	# to it, so it tows nothing. Its port charges it from a cable, and a crate's
-	# rack from the camp. Found buried on end, nose down. Lying flat, the wind
-	# meets its edge.
+	# to it, so it tows nothing. Its port charges it from a cable, and a deck
+	# it's stuck on charges it from its pool. Found buried on end, nose down.
+	# Lying flat, the wind meets its edge.
 	&"board": {"label": "Hoverboard", "size": Vector3(0.36, 0.08, 1.3), "mass": 7.0, "board": true, "on_end": true,
-		"carryable": true, "fits": &"rack", "stats": {"face_m2": 0.1},
+		"carryable": true, "sticks": true, "stats": {"face_m2": 0.1},
 		"sockets": [
 			[&"battery", Vector3(0.0, 0.04, -0.5), Vector3.UP],
 			[&"port", Vector3(0.0, 0.0, 0.65), Vector3.BACK],
 		]},
-	# Something to sleep on (Sleep): laid on the sand, carried, or rolled in a
-	# crate's rack where the board would go. Round and low, it lets most of a
-	# breeze over it: a storm slides it, a breeze doesn't.
+	# Something to sleep on (Sleep): laid on the sand, carried, or stuck on a
+	# deck. Round and low, it lets most of a breeze over it: a storm slides
+	# it, a breeze doesn't.
 	&"bedroll": {"label": "Bedroll", "size": Vector3(0.24, 0.24, 0.9), "mass": 3.0, "bedroll": true,
-		"carryable": true, "fits": &"rack", "stats": {"face_m2": 0.13}, "sockets": []},
-	# A sail's mount: a pole that seats on a top mount or stands on a deck
-	# mount, stowed short to carry and standing its full height once seated,
-	# its sail fitting low on it at the boom's root. Found buried on end.
-	&"mast": {"label": "Mast", "size": Vector3(0.14, 1.3, 0.14), "mass": 8.0, "rig": true, "fits": &"top",
-		"deck": true, "carryable": true, "on_end": true, "stats": {"face_m2": 0.18},
+		"carryable": true, "sticks": true, "stats": {"face_m2": 0.13}, "sockets": []},
+	# A sail's mount: a pole that stands on a deck, stowed short to carry and
+	# standing its full height once stuck, its sail fitting low on it at the
+	# boom's root. Found buried on end.
+	&"mast": {"label": "Mast", "size": Vector3(0.14, 1.3, 0.14), "mass": 8.0, "rig": true,
+		"carryable": true, "on_end": true, "sticks": true, "stands": true, "stats": {"face_m2": 0.18},
 		"sockets": [
 			[&"sail", Vector3(0.0, 0.3, -0.07), Vector3.FORWARD],
 		]},
-	# A skimmer pilot's seat, stood on a deck mount: use on it sits you at
-	# the helm (Helm).
+	# A skimmer pilot's seat, stuck on a deck: use on it sits you at the helm (Helm).
 	&"helm_seat": {"label": "Helm seat", "short": "Helm", "size": Vector3(0.5, 0.5, 0.55), "mass": 7.0, "helm": true,
-		"deck": true, "carryable": true, "sockets": []},
-	# A piece of a bigger floater: a flat frame a little wider than a crate,
-	# a ring on each edge where the next piece joins or a hook goes, its own
-	# tray under it and one device standing on top. No battery, no port: the
-	# power comes from what stands on it. Lying flat, the wind meets its edge.
-	# Found buried on edge, as the dunes would leave a sheet that wide.
+		"carryable": true, "sticks": true, "stands": true, "sockets": []},
+	# The one structure: a flat square a little wider than a crate was, its
+	# whole top and bottom sticky, a ring on each edge where the next piece
+	# joins or a hook goes. No battery, no port: the power comes from what's
+	# stuck on it. Lying flat, the wind meets its edge. Found buried on edge,
+	# as the dunes would leave a sheet that wide.
 	&"chassis": {"label": "Chassis piece", "short": "Deck",
-		"size": Vector3(1.0, 0.12, 1.0), "mass": 9.0, "chassis": true,
+		"size": Vector3(Chassis.WIDTH, Chassis.THICK, Chassis.WIDTH), "mass": 9.0, "chassis": true,
 		"carryable": true, "on_end": true, "stats": {"face_m2": 0.12},
 		"sockets": [
 			[&"ring", Vector3(0.5, 0.0, 0.0), Vector3.RIGHT],
 			[&"ring", Vector3(-0.5, 0.0, 0.0), Vector3.LEFT],
 			[&"ring", Vector3(0.0, 0.0, 0.5), Vector3.BACK],
 			[&"ring", Vector3(0.0, 0.0, -0.5), Vector3.FORWARD],
-			[&"bottom", Vector3(0.0, -0.06, 0.0), Vector3.DOWN],
-			[&"deck", Vector3(0.0, 0.06, 0.0), Vector3.UP],
-		]},
+		],
+		"spots": [[&"bottom", Vector2.ZERO, 0.0, &"bottom"], [&"top", Vector2(-0.22, -0.24), 0.0, &"battery"],
+			[&"top", Vector2(0.16, 0.22), 0.0, &"top"]]},
 	# The camp's computer, a rack standing tall and narrow so its whole front
 	# is a big screen, as tall as the radar page wants and its middle at your
-	# eyes once it floats. Its batteries sit low at its back, its frame is
-	# heaviest at its foot, and its tray mount sits back under that weight, so
-	# one tray holds it upright; its rings are down beside the batteries, near
-	# that weight, so a line pulls it along rather than over. Its back
-	# takes the batteries, two rings and the port; each side three
-	# computer-mod ports down it; its top a regular mount, where a radio gives
-	# it a voice, and a computer-mod top for a radar. It floats on a tray and
-	# stands on a deck mount. The list keeps its order, so older saves keep
-	# their sockets.
+	# eyes on a floating deck. Its frame is heaviest at its foot, so it stands
+	# steady. Its ports are its own: the screen the whole front, each side
+	# three computer-mod ports down it, a computer-mod top for a radar, and a
+	# power port at its back. It runs on its deck's power.
 	&"console": {"label": "Console", "size": Vector3(0.7, 1.3, 0.6), "mass": 10.0, "middle": Vector3(0.0, -0.45, 0.0),
-		"console": true, "deck": true, "stats": {"draw_w": 4.0},
+		"console": true, "sticks": true, "stands": true, "tall": true, "stats": {"draw_w": 4.0},
 		"sockets": [
-			[&"battery", Vector3(-0.13, -0.47, 0.3), Vector3.BACK],
-			[&"battery", Vector3(0.13, -0.47, 0.3), Vector3.BACK],
-			[&"ring", Vector3(-0.3, -0.4, 0.3), Vector3.BACK],
-			[&"ring", Vector3(0.3, -0.4, 0.3), Vector3.BACK],
-			[&"bottom", Vector3(0.0, -0.65, 0.12), Vector3.DOWN],
-			[&"top", Vector3(0.0, 0.65, 0.14), Vector3.UP],
 			[&"computer_top", Vector3(0.0, 0.65, -0.14), Vector3.UP],
 			[&"screen", Vector3(0.0, 0.01, -0.3), Vector3.FORWARD],
 			[&"port", Vector3(0.0, -0.24, 0.3), Vector3.BACK],
@@ -408,7 +378,8 @@ static func part(id: StringName) -> Part:
 		else (Supply.new() if Supply.HOLDS.has(spec.kind) and id != Hose.END \
 		else (Plant.new() if spec.has("crop") \
 		else (Compass.new() if spec.kind == &"compass" \
-		else (Remedy.new() if spec.kind == &"medicine" else Part.new()))))
+		else (Frame.new() if spec.kind == &"frame" \
+		else (Remedy.new() if spec.kind == &"medicine" else Part.new())))))
 	made.kind = spec.kind
 	made.label = spec.label
 	made.mass = spec.mass
@@ -416,8 +387,12 @@ static func part(id: StringName) -> Part:
 	made.set_meta(&"catalog", id)
 	made.stats = spec.stats.duplicate()
 	var size: Vector3 = spec.size
-	# Standing out from its socket along +Z.
-	var look := _add_box(made, size, Vector3(0.0, 0.0, size.z * 0.5), spec.color, Dress.part(id, size))
+	var look: MeshInstance3D = null
+	if made is Frame:
+		Frame.build(made, Dress.part(id, size))
+	else:
+		# Standing out from its socket along +Z.
+		look = _add_box(made, size, Vector3(0.0, 0.0, size.z * 0.5), spec.color, Dress.part(id, size))
 	Paint.show_age(made, Paint.age_of(&"", 1.0))
 	if made is Battery:
 		# Found full, for now; salvage will find them at any charge.
@@ -577,8 +552,9 @@ static func device(id: StringName) -> Device:
 	made.frame_mass = spec.mass
 	made.frame_middle = spec.get("middle", Vector3.ZERO)
 	made.frame_stats = spec.get("stats", {}).duplicate()
-	made.kind = spec.get("fits", &"")
-	made.stands_on_deck = spec.get("deck", false)
+	made.sticks = spec.get("sticks", false)
+	made.stands = spec.get("stands", false)
+	made.tall = spec.get("tall", false)
 	if spec.get("carryable", false):
 		made.carryable = true
 	var size: Vector3 = spec.size

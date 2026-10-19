@@ -34,11 +34,10 @@ const ORIGINS: Array[String] = [STANDARD, "res://game/survival/salvager_kit.tres
 ## Set down beside you: a catalog id, or the name of something assembled, each
 ## at its place, m to your right and ahead of where you start.
 @export var beside: Dictionary[StringName, Vector2] = {}
-## Devices that come put together, by name: "frame", a catalog device, and
-## "sockets", what fills them by their place in its list, a part fitted or a
-## device seated; a thing beside you named there comes seated in it instead,
-## as the board racked on the crate. A plain device beside you comes with its
-## batteries.
+## What comes put together, by name: a deck as "rig", its steps (Rig), and
+## "floating" whether it starts on its trays; or a plain device as "frame", a
+## catalog device, and "sockets", what fills its own slots by their place in
+## its list. A plain device beside you comes with its batteries.
 @export var assembled: Dictionary[StringName, Dictionary] = {}
 ## Lines laid between two things beside you, by name, each a coil's length:
 ## a floater moored to its stake, the stake to be taken up to tow it.
@@ -106,11 +105,15 @@ func gear() -> Dictionary[StringName, int]:
 			_count(out, &"line" if id == &"coil" else id)
 			continue
 		var spec: Dictionary = assembled.get(id, {"frame": id, "sockets": {}})
+		if spec.has("rig"):
+			var counted := {}
+			Rig.count(spec.rig, counted)
+			for each: StringName in counted:
+				_count(out, each, counted[each])
+			continue
 		_count(out, spec.frame)
 		for k: int in spec.sockets:
-			# A thing beside you seated in it counts as itself.
-			if not beside.has(spec.sockets[k]):
-				_count(out, spec.sockets[k])
+			_count(out, spec.sockets[k])
 		if not assembled.has(id):
 			for socket: Array in Catalog.DEVICES[id].sockets:
 				if socket[0] == &"battery":
