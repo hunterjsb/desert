@@ -344,7 +344,8 @@ Liked, and not to be built yet:
 - **Wind power surge:** turbines spike and charge batteries hard.
 - **Static harvest:** particle storms build charge, and a lightning rod or collector captures a big
   spike, risking fried electronics. Ties to quietbloom.
-- **Deep exposure:** mid-storm sand movement briefly opens the deepest ruin layers.
+- **Deep exposure:** mid-storm sand movement briefly opens the deepest ruin layers. *Built 2026-10-18 as the
+  storm's own work on a site ([Storms with a payoff](#storms-with-a-payoff-agreed-2026-10-18-spec)).*
 - **Storm blooms:** storm crops fruit only now.
 - **Radio windows:** some conditions carry distant transmissions.
 - **Glass forming:** lightning in heat storms fuses sand into glass, a crafting material collected in
@@ -380,8 +381,11 @@ From Hunter's [storms, signals & sailing spec](../storms-signals-sailing-2026-10
 - **How often** (the spec's open question). One storm in ten that passes a still camp holds one: 123
   of 1,250 storms over 12 seeds and 90 days each, about one every six hours of play (the median gap
   3.1 hours), and more for a camp travelling into the wind, which meets more storms. A third of
-  those bring the heart's full over the camp. None comes in a run's first five days, 100 minutes:
-  ordinary storms are learnt first. One in ten is rare enough to be a story and frequent enough that
+  those bring the heart's full over the camp. None comes in a run's first five days, 100 minutes,
+  counted from its own start (`World.began`; a new run begins days into the weather's clock, on day
+  11 for the probes' seed): ordinary storms are learnt first. A heart whose life began in those days
+  never forms, so none fades in either. The anomaly scenario asks for one, so its dev run has no such
+  days (`World.anomalies_any_time`). One in ten is rare enough to be a story and frequent enough that
   a long run meets two or three, enough to learn the tells and to record one for the Walker.
 - **How strong the skew** (the other half). At the heart the real damage is 5 times the clean
   curve's in particles and 1.5 times in wind past what's stood: of what it adds, eight parts go to
@@ -431,8 +435,10 @@ From Hunter's [storms, signals & sailing spec](../storms-signals-sailing-2026-10
   reference camp's deck resting on the sand, moored upwind; a Console reading the wind and the sand;
   a radio on the weather station; the base shield on one battery, running; and a turbine out in the
   gale on a strong cable, enough for an ordinary storm. A compass is in your suit. It's searched
-  round where the run began, wherever a heart passes, over 30 days from the grace's end. The dev
-  overlay shows the hidden term where you stand (`weather/anom`).
+  wherever a heart passes within 60 km of where the run began, from the clock's start for up to 200
+  days: hearts are sparse, and 30 km and 30 days found none on one seed in eight (how Hunter met
+  it, 2026-10-18), where this finds one within 23 days on each of 60 seeds tried. The dev overlay
+  shows the hidden term where you stand (`weather/anom`).
 - **A deed, proposed and not added.** "Survive an anomaly" fits, as the first step of teaching the
   Walker, but the deeds grid names every deed, so its tile would say anomalies exist before you've
   learnt them by their tells. The proposal: a hidden deed (the table has the flag; none uses it yet),
@@ -455,6 +461,42 @@ by a big dune becomes a way to play: let the ruins come to you.
 - **Lazy loading:** a buried site costs nothing at chunk load, a seed only; exposure checks run on a
   low-priority queue by distance, and a site builds only once bared and you've slowed nearby, so a
   fast rider never stutters on what they pass.
+
+**What there was already** (the spec's open question: "How much storm-exposed loot and reburial already
+exists in code?", answered 2026-10-18). A good part of it, held still. A site's exposure was the
+weather's: the sand off it was summed over the last 12 hours of storms in 30-minute ticks, so a storm
+that had come and gone left it deeper and calm let the sand back, and its loot was gated by it (buried,
+19 of 305 things showed; dug out, 298; an era's best only past a storm). But it was read when the site's
+ground was first built and held while that ground was loaded: nothing changed in front of you, and a
+17-minute storm could fall between two ticks and count for nothing. Drift was the storm's own stream,
+caught on a line between stakes, five times as much in a lee, from nowhere in particular. Skyline's glints
+showed bare metal by a site's state and went out in any storm. Nothing was "newly" exposed, nothing
+clanged, and no site shed anything.
+
+**As built (2026-10-18)**, the first two bullets ([the world system](../world-system.md#what-storms-do-to-sites-now)
+has the detail):
+- **A storm works the site it sits on.** Its heart moves sand a minute at a time where its big dunes move,
+  off a site or onto it, in patches 400 m across that change over 15 minutes, and what it moved comes back
+  within minutes once it lets go: in a storm's heart it has more than a metre off a site 45% of the time,
+  and after a storm's height its sand is back to a tenth in a median 13 minutes. A ruin seen mid-storm may
+  be gone by morning. It's a pure function of the field's history, read between minute ticks, so a site's
+  state at any moment is known without anyone having watched it: saves, sleep and far stand-ins agree.
+- **A loaded site changes live**, a frame at a time: its look, its boxes and what it holds rise out of the
+  sand or sink back, its ground pressed afresh in steps of 2.5 cm, never popping and never over you or
+  your camp; what you've taken stays taken. **A chunk unloading is the desert eating it:** come back and
+  the site is as the weather has it then.
+- **The best loot shows mid-storm.** A site's deepest sockets open only once a storm strips past them, so
+  mid-storm they're open for the active player who goes out: at 1.4 m deep, 38% of the time in a storm's
+  heart against 1% on the settled sand alone. This builds the back burner's "deep exposure."
+- **Lower-tier loot blows downwind.** A site laid bare sheds its light lesser things into the drift
+  stream, carried along the wind and caught by the same lines and lees: about one thing a storm on an 8 m
+  line 30 m downwind in the open, five times as many in a lee.
+- **Finding them in the dust.** What a storm newly lays bare glints through the dust out to 90 m in the
+  dust's glow, whichever way it faces you, Skyline's glints let through near; and clangs on the wind now
+  and then, heard to 140 m
+  after the sound's trip, duller the further. The particle sensor and ground radar are a hook for now:
+  `sites.newly_exposed` lists the sites a storm has newly laid bare near a place, for the Console to pin.
+- **Probes:** kits 3 and 4, loot 7, sightlines 4, saves 23.
 
 ## Dune archaeology (agreed, 2026-10-18 spec; not built)
 
@@ -743,9 +785,9 @@ Readings, not in the session:
 - Wind particles and sound, with Sand Game's particles and recordings as the reference.
 - **Storms wear dunes down** (Hunter, 2026-10-17, loose: "later on in the game, when we
   have better systems, this could even erode part of the dune and spawn loot"). A storm
-  scouring a dune could cut into it and lay bare a find. Loaded ground never changes
-  (World & terrain), so this would happen where you aren't, or be staged, and it ties in
-  with storms uncovering finds (Salvage & ruins).
+  scouring a dune could cut into it and lay bare a find. *Partly built 2026-10-18: a storm
+  moves the sand over a site, live, as a pure function of the field; the open dunes
+  themselves still never change while loaded (World & terrain, rule 2).*
 
 ## Probes
 
@@ -805,6 +847,9 @@ All run without a window, with a fixed seed.
     is a half and at its heart, the compass leans further toward the heart and the radio crackles
     louder; at the heart the shield's load on the Console's stats is past three full storms' while
     its wind and sand read an ordinary storm.
+21. **No anomaly in a run's first days** (2026-10-18). A fresh run begins where and when a new one
+    would, days into the weather's clock; through its first five days no heart comes within 60 km of
+    where it began, where with them lifted, as for a dev run that asks for one, some would.
 
 ## Out of scope
 
@@ -919,4 +964,5 @@ in the living docs, so this PRD follows it as direction and says so on each line
   now." Read as bursts agreed and the "only" held back ([Farming](farming.md#open-questions)).
 - **Storm-driven dune movement.** The session's own open question: how much the terrain can support.
   Here, loaded ground never changes (World & terrain, rule 2), and "Storms wear dunes down" is
-  already a loose full-version line.
+  already a loose full-version line. *Since 2026-10-18 a site's ground follows a storm's work live,
+  pressed afresh in fine steps; whether the open dunes may follow the same way is still open.*

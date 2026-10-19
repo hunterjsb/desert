@@ -12,9 +12,10 @@ extends WeatherProbe
 ## piece's hook moored to a stake; a Console on a
 ## floating deck shows its finest map and every reading, the storm coming, its
 ## shield smart and off; the anomaly stands you where its heart comes over
-## minutes after its wall, by a camp built for wind; scrapping stands every
-## wreck in a fan ahead of you, dug out, with a charged heat cutter, a scoop,
-## sealant, stakes and a med kit at your feet; the eclipse faces Tu
+## minutes after its wall, by a camp built for wind, and is found on other
+## seeds' weather too; scrapping stands every wreck in a fan ahead of you, dug
+## out, with a charged heat cutter, a scoop, sealant, stakes and a med kit at
+## your feet; the eclipse faces Tu
 ## just before the sun goes behind it; the far side has no Tu. Checked against
 ## the field itself and against what the game then shows.
 
@@ -24,6 +25,7 @@ const SLACK := 1.0
 func run() -> void:
 	await load_weather(1234, true)
 	world.player.set_physics_process(false)
+	_anomaly_on_other_weather()
 	for scenario in Scenarios.LIST:
 		var place := Scenarios.find(world, scenario)
 		check(not place.is_empty(), "%s: found in this run's weather" % scenario.key)
@@ -133,6 +135,16 @@ func run() -> void:
 		if scenario.has("moon"):
 			check(is_equal_approx(rad_to_deg(world.moon.latitude), scenario.moon[0]) and tu.y < -sin(day.tu_radius()),
 				"%s: %d° north, where Tu never rises" % [what, scenario.moon[0]])
+
+
+## The anomaly's search finds one on the weather of seeds where it once came
+## up empty, one the windowed game met: as far as it looks from where the run began.
+func _anomaly_on_other_weather() -> void:
+	var own := world.weather.field
+	for each in [2239642621, 15838, 142542]:
+		world.weather.field = WeatherField.new(each, world.tuning)
+		check(not Scenarios.find(world, Scenarios.by_key("anomaly")).is_empty(), "anomaly: found on seed %d's weather" % each)
+	world.weather.field = own
 
 
 ## Metres along `along` until the storm state differs from `inside`.

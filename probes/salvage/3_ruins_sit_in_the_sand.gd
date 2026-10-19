@@ -147,18 +147,18 @@ func _in_the_world() -> void:
 			var hit := space.intersect_ray(PhysicsRayQueryParameters3D.create(top + Vector3.UP * 0.5, top - Vector3.UP))
 			floor_off = maxf(floor_off, INF if hit.is_empty() else absf(hit.position.y - ruin.floor_y))
 	check(floor_off < 0.001, "every room's floor is solid at its top (%.4f m)" % floor_off)
-	var boxes := _ruin_boxes(chunk)
+	var boxes := _ruin_boxes(chunk, ruin)
 	check(boxes == Ruin.boxes().size(), "its boxes are in its chunk's collision (%d)" % boxes)
 	# Away until its sand isn't solid: its boxes go with it.
 	var middle := Vector2(ruin.center)
 	await go(middle.x + 5.0 * world.tuning.chunk_size, middle.y)
-	check(not chunk.has_collision() and _ruin_boxes(chunk) == 0, "its boxes go when its sand stops being solid")
+	check(not chunk.has_collision() and _ruin_boxes(chunk, ruin) == 0, "its boxes go when its sand stops being solid")
 	await go(at.x, at.y)
-	check(_ruin_boxes(chunk) == Ruin.boxes().size(), "and come back with it")
+	check(_ruin_boxes(chunk, ruin) == Ruin.boxes().size(), "and come back with it")
 
 
-func _ruin_boxes(chunk: TerrainChunk) -> int:
-	for child in chunk.get_children():
-		if child is StaticBody3D:
-			return child.get_children().filter(func(c: Node) -> bool: return (c as CollisionShape3D).shape is BoxShape3D).size()
-	return 0
+func _ruin_boxes(chunk: TerrainChunk, ruin: Ruin) -> int:
+	var body := chunk.body_of(ruin)
+	if body == null:
+		return 0
+	return body.get_children().filter(func(c: Node) -> bool: return (c as CollisionShape3D).shape is BoxShape3D).size()

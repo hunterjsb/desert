@@ -35,7 +35,7 @@ func run() -> void:
 			var site := _standing(shape, kind, k)
 			k += 1
 			var t := _stripped_moment(field, site, tuning)
-			var taken := Exposure.stripped(field, site.x, site.z, t, tuning)
+			var taken := Exposure.taken(field, site.x, site.z, t, tuning)
 			# As deep as makes each state, and between a deep socket's depth and past it.
 			for state in 3:
 				site.depth = [taken * 4.0, taken * 1.5, taken * 0.5][state]
@@ -104,7 +104,7 @@ func _stripped_moment(field: WeatherField, site: Site, tuning: Tuning) -> float:
 	var best := 0.0
 	var most := -1.0
 	for n in 144:
-		var taken := Exposure.stripped(field, site.x, site.z, n * step, tuning)
+		var taken := Exposure.taken(field, site.x, site.z, n * step, tuning)
 		if taken > most:
 			most = taken
 			best = n * step

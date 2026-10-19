@@ -11,6 +11,11 @@ const HEARTS_KEPT := 4096
 
 var _storm := FastNoiseLite.new()
 var _gust := FastNoiseLite.new()
+var _shift := FastNoiseLite.new()
+var _shift_m: float
+var _shift_s: float
+var _shift_lean: float
+var _shift_swing: float
 var _threshold: float
 var _ramp: float
 var _lead: float
@@ -31,6 +36,9 @@ var _cell: float
 var _span: float
 var _chance: float
 var _grace: float
+## No heart reaches before this, run seconds: a run's first days from its own
+## start (World), or never held back for a dev run that asked for one.
+var quiet_until: float
 var _radius: float
 var _reach: float
 var _hearts := {}
@@ -45,6 +53,14 @@ func _init(run_seed: int, tuning: Tuning) -> void:
 	_gust.seed = run_seed + 1
 	_gust.noise_type = FastNoiseLite.TYPE_SIMPLEX_SMOOTH
 	_gust.frequency = 1.0 / tuning.gust_wavelength
+	_shift.seed = run_seed + 2
+	_shift.noise_type = FastNoiseLite.TYPE_SIMPLEX_SMOOTH
+	_shift.frequency = 1.0
+	_shift.fractal_octaves = 2
+	_shift_m = tuning.dune_shift_m
+	_shift_s = tuning.dune_shift_minutes * 60.0
+	_shift_lean = tuning.dune_shift_lean
+	_shift_swing = tuning.dune_shift_swing
 	_threshold = tuning.storm_threshold
 	_ramp = tuning.storm_ramp
 	_lead = tuning.storm_outflow_lead
@@ -61,6 +77,7 @@ func _init(run_seed: int, tuning: Tuning) -> void:
 	_span = 2.0 * tuning.anomaly_hours * 3600.0
 	_chance = tuning.anomaly_chance
 	_grace = tuning.anomaly_grace_days * tuning.day_minutes * 60.0
+	quiet_until = _grace
 	_reach = tuning.anomaly_reach
 
 	var rng := RandomNumberGenerator.new()
@@ -129,6 +146,14 @@ func outflow_of(raw: float) -> float:
 	return clampf((raw + _lead) / (_lead + _ramp), 0.0, 1.0)
 
 
+## Where a storm's big dunes move at a place, -1 to 1: off it where it's
+## above 0, onto it below. Patches of ground that change over minutes, so a
+## storm lays one site bare while burying the next, and may turn on either.
+func dune_shift_at(x: float, z: float, t: float) -> float:
+	return clampf(_shift_lean + _shift.get_noise_3d(x / _shift_m, z / _shift_m, t / _shift_s) * _shift_swing,
+		-1.0, 1.0)
+
+
 ## The wind without its gusts, m/s, in world x and z: the prevailing wind and
 ## a front's outflow along it, what a forecast can speak of.
 func steady_wind_at(x: float, z: float, t: float) -> Vector2:
@@ -175,7 +200,7 @@ func next_change(x: float, z: float, t: float, horizon: float, step: float) -> f
 ## stays the clean curve every forecast and instrument reads; only damage
 ## and the tells read this.
 func anomaly_at(x: float, z: float, t: float) -> float:
-	if t < _grace:
+	if t < quiet_until:
 		return 0.0
 	var d := drift_at(t)
 	var u := x - d.x
@@ -201,7 +226,7 @@ func anomaly_at(x: float, z: float, t: float) -> float:
 ## the place, before its storm's. A map and the Walker's feed read this.
 func anomalies_near(x: float, z: float, t: float, reach: float) -> Array[Dictionary]:
 	var found: Array[Dictionary] = []
-	if t < _grace:
+	if t < quiet_until:
 		return found
 	var d := drift_at(t)
 	var u := x - d.x
@@ -226,9 +251,10 @@ func _share(heart: Vector3, u: float, v: float, t: float) -> float:
 	return 0.0 if off >= 1.0 else _life(heart, t) * (1.0 - smoothstep(0.25, 1.0, off))
 
 
-## How strong a heart stands at time t: full for the middle third of its life.
+## How strong a heart stands at time t: full for the middle third of its
+## life. One whose life began while the run is quiet never forms.
 func _life(heart: Vector3, t: float) -> float:
-	if is_nan(heart.z):
+	if is_nan(heart.z) or heart.z - _span * 0.5 < quiet_until:
 		return 0.0
 	var age := absf(t - heart.z) / (_span * 0.5)
 	return 0.0 if age >= 1.0 else 1.0 - smoothstep(1.0 / 3.0, 1.0, age)
@@ -242,10 +268,8 @@ func _heart(i: int, j: int, k: int) -> Vector3:
 		return _hearts[key]
 	var h := hash([_seed, i, j, k])
 	var heart := Vector3(NAN, NAN, NAN)
-	var peak := (k + _unit(h, 3)) * _span
-	# One that would show before the grace is over never forms.
-	if _unit(h, 0) < _chance and peak - _span * 0.5 >= _grace:
-		heart = Vector3((i + _unit(h, 1)) * _cell, (j + _unit(h, 2)) * _cell, peak)
+	if _unit(h, 0) < _chance:
+		heart = Vector3((i + _unit(h, 1)) * _cell, (j + _unit(h, 2)) * _cell, (k + _unit(h, 3)) * _span)
 	if _hearts.size() >= HEARTS_KEPT:
 		_hearts.clear()
 	_hearts[key] = heart
@@ -255,3 +279,8 @@ func _heart(i: int, j: int, k: int) -> Vector3:
 ## A cell's own draw, 0 to 1, from its hash.
 static func _unit(h: int, n: int) -> float:
 	return float(hash([h, n]) & 0xffffff) / float(0x1000000)
+
+
+## Holds anomalies back for a run's first days, from `began`; -INF never.
+func quiet_from(began: float) -> void:
+	quiet_until = began + _grace

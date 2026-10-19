@@ -414,6 +414,22 @@ static func _frame(id: StringName, size: Vector3, extra: float) -> ArrayMesh:
 						Basis(Vector3.RIGHT, PI / 2.0), 8)
 			b.box(Vector3(size.x - 0.08, 0.04, 0.03), Vector3(0.0, h.y - 0.06, -h.z - 0.015), black, 0.005, front)
 			_hazard(b, Vector3(size.x * 0.8, 0.03, 0.012), Vector3(0.0, -h.y + 0.045, -h.z - 0.004), front)
+		&"helm_seat":
+			# A skimmer pilot's seat on its pedestal: an olive cushion and back,
+			# armrests, a hazard band round the post and the crew's patch on its back.
+			var olive := Paint.coat(SkimmerKit.OLIVE, 1.0, 0.4, 0.6)
+			var canvas := Paint.coat(SkimmerKit.CANVAS, 0.2, 0.0, 0.95)
+			b.box(Vector3(size.x, 0.05, size.z), Vector3(0.0, -h.y + 0.025, 0.0), gun, 0.01)
+			b.drum(0.07, h.y - 0.1, Vector3(0.0, -h.y * 0.5 - 0.05, 0.0), gun, Basis.IDENTITY, 12)
+			_hazard(b, Vector3(0.15, 0.04, 0.012), Vector3(0.0, -0.17, 0.073), Basis.IDENTITY)
+			b.box(Vector3(size.x - 0.04, 0.08, size.z - 0.06), Vector3(0.0, -0.04, 0.03), olive, 0.02)
+			b.box(Vector3(size.x - 0.1, 0.03, size.z - 0.16), Vector3(0.0, 0.01, 0.05), canvas, 0.01)
+			b.box(Vector3(size.x - 0.04, h.y, 0.07), Vector3(0.0, h.y * 0.5, -h.z + 0.035), olive, 0.02)
+			b.box(Vector3(size.x - 0.12, h.y - 0.08, 0.02), Vector3(0.0, h.y * 0.5, -h.z + 0.08), canvas, 0.006)
+			b.stamp(Paint.Mark.SKIMMER_CREW, Vector3(0.0, h.y * 0.5, -h.z - 0.002), 0.2, Basis(Vector3.UP, PI), Paint.Ink.PALE)
+			for x in [-1, 1]:
+				b.box(Vector3(0.04, 0.04, size.z * 0.6), Vector3(x * (h.x - 0.02), 0.08, 0.0), gun, 0.008)
+				b.box(Vector3(0.03, 0.08, 0.03), Vector3(x * (h.x - 0.02), 0.03, 0.12), gun, 0.006)
 		&"stake":
 			var iron := Paint.coat(Paint.RUST.lightened(0.1), 1.4, 0.3, 0.8)
 			b.box(Vector3(0.05, Stake.LENGTH - 0.12, 0.05), Vector3(0.0, 0.03, 0.0), iron, 0.01)
@@ -461,6 +477,18 @@ static func _part(id: StringName, size: Vector3, count := -1) -> ArrayMesh:
 				for y in [-1, 1]:
 					b.drum(0.08, 0.02, Vector3(x * 0.18, y * 0.18, 0.065), Paint.coat(Paint.BLACK, 0.3, 0.3), along, 16)
 					b.drum(0.06, 0.012, Vector3(x * 0.18, y * 0.18, 0.074), Paint.coat(Color(0.45, 0.8, 1.0), 0.0, 0.0, 0.3, 0.3, 2.0), along, 16)
+		&"keel":
+			# A skimmer's ventral strake: a narrow olive plate, the fin under it
+			# tapering fore and aft, its field's emitter glowing down its edge.
+			b.box(Vector3(size.x, size.y, 0.025), Vector3(0.0, 0.0, 0.0125), Paint.coat(SkimmerKit.OLIVE, 1.0, 0.4, 0.6), 0.008)
+			b.box(Vector3(0.05, size.y - 0.12, size.z - 0.03), Vector3(0.0, 0.0, 0.025 + (size.z - 0.03) * 0.5), gun, 0.008)
+			for y in [-1, 1]:
+				b.box(Vector3(0.05, 0.1, size.z - 0.04), Vector3(0.0, y * (h.y - 0.1), 0.02 + (size.z - 0.04) * 0.5), gun, 0.006,
+					Basis(Vector3.RIGHT, y * 0.5))
+			b.box(Vector3(0.02, size.y - 0.18, 0.008), Vector3(0.0, 0.0, size.z - 0.002),
+				Paint.coat(Color(0.45, 0.8, 1.0), 0.0, 0.0, 0.3, 0.3, 2.0), 0.002)
+			for x in [-1, 1]:
+				_hazard(b, Vector3(size.y * 0.5, 0.03, 0.01), Vector3(x * (h.x - 0.02), 0.0, 0.03), Basis(Vector3.BACK, PI * 0.5))
 		&"skates":
 			# Two long blades below a frame across them, reaching past it to the
 			# sand, their noses turned up so a crest's lip never digs one in.

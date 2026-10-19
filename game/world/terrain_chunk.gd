@@ -1,13 +1,18 @@
 class_name TerrainChunk
 extends Node3D
 ## One square of ground, and the structures whose middle stands on it. Its
-## collision is built once from the same samples as its mesh, with their boxes
-## in its first body, and never reshaped while it exists.
+## collision is built from the same samples as its mesh. Where a storm works
+## a structure on it, the structure rises out of the sand or sinks back a
+## frame at a time, its look and its boxes together, and the ground round it
+## follows in steps too fine to see (Structure.ground), mesh and collision
+## swapped together.
 
 ## Its collision is this many heightmaps a side, each a body of its own with a
 ## lip all round (Terrain.LIP): a quarter's build is a quarter of the main
 ## thread's time, so the terrain's budget can hold one.
 const SPLIT := 2
+## A structure moves once it's this far from where it's drawn, m.
+const MOVES := 0.001
 
 var coord: Vector2i
 ## Metres a side.
@@ -17,23 +22,44 @@ var step := 0
 var heights: PackedFloat32Array
 ## What its collision is built from (ChunkBuild.pieces).
 var pieces: Array[PackedFloat32Array] = []
+## The dunes alone under it, kept where structures press into it; every
+## structure pressed in, and the step each is pressed at now.
+var dunes: PackedFloat32Array
+var carved: Array[Structure] = []
+var carved_steps := PackedInt32Array()
 
 var _view: GeometryInstance3D
 ## A RenderingServer mesh, owned here: a worker made it, so no Mesh resource does.
 var _mesh: RID
 var _bodies: Array[StaticBody3D] = []
 var _shapes: Array[HeightMapShape3D] = []
-## The structures standing on it, part of its ground, each in the state its
-## build read: drawn from the first build, solid with the sand.
+## The structures standing on it, drawn from the first build, solid with the
+## sand; each one's look as [view, the state its look is of, how far it's
+## sunk], and its boxes as [body, the state they're of].
 var _structures: Array[Structure] = []
-var _states := PackedInt32Array()
 var _views := {}
+var _boxes := {}
 
 
 func show_build(build: ChunkBuild) -> void:
 	if _view == null:
 		_view = GeometryInstance3D.new()
 		add_child(_view)
+	_show_ground(build)
+	_show_structures(build.structures)
+
+
+## A build of the same ground with what stands in it pressed in afresh: each
+## piece of collision it changed takes its new samples.
+func show_pressed(build: ChunkBuild) -> void:
+	var was := pieces
+	_show_ground(build)
+	for piece in _shapes.size():
+		if piece < was.size() and pieces[piece] != was[piece]:
+			_shapes[piece].map_data = pieces[piece]
+
+
+func _show_ground(build: ChunkBuild) -> void:
 	_view.set_base(build.mesh)
 	if _mesh.is_valid():
 		RenderingServer.free_rid(_mesh)
@@ -42,27 +68,61 @@ func show_build(build: ChunkBuild) -> void:
 	step = build.step
 	heights = build.heights
 	pieces = build.pieces
-	_show_structures(build.structures, build.states)
+	dunes = build.dunes
+	carved = build.carved
+	carved_steps = build.carved_steps
 
 
-## Draws what stands on it as this build read it, keeping what's unchanged.
-func _show_structures(structures: Array[Structure], states: PackedInt32Array) -> void:
+## Draws what stands on it as it stands now, keeping what's already drawn.
+func _show_structures(structures: Array[Structure]) -> void:
 	var kept := {}
-	for i in structures.size():
-		var each := structures[i]
-		var had: Array = _views.get(each, [])
-		if not had.is_empty() and had[1] == states[i]:
-			kept[each] = had
+	for each in structures:
+		if _views.has(each):
+			kept[each] = _views[each]
 			_views.erase(each)
 			continue
-		var made := each.view(_at(each, states[i]), states[i])
+		var s := StructureKit.Piece.shown_state(each.level())
+		var made := each.view(Vector3.ZERO, s)
 		add_child(made)
-		kept[each] = [made, states[i]]
+		kept[each] = [made, s, NAN]
 	for gone: Array in _views.values():
 		gone[0].free()
 	_views = kept
 	_structures = structures
-	_states = states
+	follow_structures()
+
+
+## Moves what stands on it to where it stands now: out of the sand or into
+## it, its look and its boxes together. True if anything moved.
+func follow_structures() -> bool:
+	var moved := false
+	for each in _structures:
+		var level := each.level()
+		var s := StructureKit.Piece.shown_state(level)
+		var sink := each.piece.sink_at(level)
+		var view: Array = _views[each]
+		if view[1] == s and absf(sink - view[2]) < MOVES:
+			continue
+		moved = true
+		var mesh: MeshInstance3D = view[0]
+		if view[1] != s:
+			mesh.mesh = each.look(s)
+			view[1] = s
+		view[2] = sink
+		var at := _at(each, level)
+		mesh.transform = each.placed(at)
+		# Its look's sand stain was drawn at its state's sand line.
+		mesh.set_instance_shader_parameter(&"foot_shift", sink - each.piece.sink[s])
+		var boxes: Array = _boxes.get(each, [])
+		if boxes.is_empty():
+			continue
+		if boxes[1] != s:
+			for shape in (boxes[0] as Node).get_children():
+				shape.free()
+			each.add_shapes(boxes[0], s)
+			boxes[1] = s
+		(boxes[0] as StaticBody3D).transform = each.placed(at)
+	return moved
 
 
 ## Its next piece of collision; true once it has all of them. Needs 1 m
@@ -83,8 +143,17 @@ func add_collision_piece(size: int, sand: PhysicsMaterial) -> bool:
 	body.physics_material_override = sand
 	body.add_child(holder)
 	if piece == 0:
-		for i in _structures.size():
-			_structures[i].add_shapes(body, _at(_structures[i], _states[i]), _states[i])
+		# Each structure's boxes are a body of their own, moved as it rises or
+		# sinks: what stands on it is lifted with it.
+		for each in _structures:
+			var level := each.level()
+			var s := StructureKit.Piece.shown_state(level)
+			var boxes := StaticBody3D.new()
+			boxes.physics_material_override = sand
+			each.add_shapes(boxes, s)
+			boxes.transform = each.placed(_at(each, level))
+			body.add_child(boxes)
+			_boxes[each] = [boxes, s]
 	add_child(body)
 	_bodies.append(body)
 	_shapes.append(shape)
@@ -97,6 +166,7 @@ func remove_collision() -> void:
 		body.free()
 	_bodies.clear()
 	_shapes.clear()
+	_boxes.clear()
 
 
 ## All of it, not some.
@@ -104,7 +174,7 @@ func has_collision() -> bool:
 	return _bodies.size() == SPLIT * SPLIT
 
 
-## The structures standing on it, and the state each stands in.
+## The structures standing on it.
 func structures() -> Array[Structure]:
 	return _structures
 
@@ -114,9 +184,28 @@ func view_of(structure: Structure) -> MeshInstance3D:
 	return _views.get(structure, [null])[0]
 
 
+## A structure's boxes as this chunk makes them solid, or null.
+func body_of(structure: Structure) -> StaticBody3D:
+	return _boxes.get(structure, [null])[0]
+
+
+## The state a structure's look stands in, as drawn now; -1 if it isn't.
 func state_of(structure: Structure) -> int:
-	var i := _structures.find(structure)
-	return _states[i] if i >= 0 else -1
+	return structure.state() if _views.has(structure) else -1
+
+
+## How far a structure's look is sunk under its pad, as drawn now; NAN if it isn't.
+func sink_of(structure: Structure) -> float:
+	return _views.get(structure, [null, 0, NAN])[2]
+
+
+## Whether a structure pressed into it stands at another step than its
+## ground was pressed at, by at least `least` steps.
+func behind(least := 1) -> bool:
+	for k in carved.size():
+		if carved[k].ground >= 0 and absi(carved[k].ground - carved_steps[k]) >= least:
+			return true
+	return false
 
 
 ## The house ruin its finds are laid out in, if any: of those standing on
@@ -129,9 +218,10 @@ func ruin() -> Ruin:
 	return first
 
 
-## Where a structure's frame sits in this chunk's, in a state.
-func _at(structure: Structure, state: int) -> Vector3:
-	return Vector3(structure.x - coord.x * side, structure.floor_in(state), structure.z - coord.y * side)
+## Where a structure's frame sits in this chunk's, at a level.
+func _at(structure: Structure, level: float) -> Vector3:
+	return Vector3(structure.x - coord.x * side, structure.pad() - structure.piece.sink_at(level),
+		structure.z - coord.y * side)
 
 
 ## The samples its collision holds inside its edges, its pieces put together

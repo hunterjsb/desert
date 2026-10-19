@@ -97,6 +97,17 @@ func run() -> void:
 			lying.distance_to(fallen)])
 		check(again.state() != Exposure.EXPOSED and lying.distance_to(fallen) < 0.05,
 			"buried, its fallen plate still lies where it fell")
+		# A storm strips it while you stand there: it rises out of the sand,
+		# its scrapping with it, and the plate on the sand stays put.
+		var sunk := wreck.global_position.y
+		again.depth = 0.0
+		await physics_frames(60)
+		print("stripped while loaded, it rose %.2f m to stand at its site's floor (%.3f m off); its plate %.3f m from where it fell"
+			% [wreck.global_position.y - sunk, absf(wreck.transform.origin.y - again.floor_y),
+			_fallen_at(wreck, plate).distance_to(fallen)])
+		check(wreck.global_position.y > sunk + 1.0 and absf(wreck.transform.origin.y - again.floor_y) < 0.01
+			and _fallen_at(wreck, plate).distance_to(fallen) < 0.05,
+			"stripped while you stand there, it rises with its site, the fallen plate staying put")
 
 	# Lifted, forgotten.
 	await go(here.x + LIFTED, here.y)
@@ -153,7 +164,7 @@ func _as_left(wreck: Wreckage, plate: int, fallen: Vector3, bank: int, how: Stri
 		return
 	var lying := _fallen_at(wreck, plate)
 	var body: Node3D = null
-	for child in wreck.get_children():
+	for child in wreck.find_children("*", "StaticBody3D", true, false):
 		if child.has_meta(&"fallen_plate") and child.get_meta(&"fallen_plate") == plate:
 			body = child
 	check(wreck.plate_body(plate) == null and body != null and body.global_position.distance_to(fallen) < 0.05

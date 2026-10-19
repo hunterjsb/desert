@@ -21,6 +21,13 @@ const STILL_SPEED := 0.05
 const STILL_SECONDS := 0.3
 ## A clock that jumps (a resume, a scenario, sleep) draws this many ticks of drift at most.
 const DRIFT_MOST := 540
+## A loaded site a storm works on is read again each time this much more sand
+## is off it or back on, or it has risen or sunk this far, m; what it holds
+## eases to where it lies now over about this long, s, coming up out of the
+## sand or sinking back into it.
+const RE_READ_M := 0.02
+const RE_READ_MOVE := 0.03
+const EASE_S := 0.25
 
 ## Main-thread time laying out finds took, the most any frame has, ms.
 var slowest_ms := 0.0
@@ -40,6 +47,9 @@ var _settling: Array[Array] = []
 ## null until a resumed run's is laid again, {socket: true}, what was done to
 ## it if it's a wreck (Wreckage.state)].
 var _sites := {}
+## Site finds easing to where they lie now: [body, its transform in its
+## chunk's frame to come to, whether it's sinking out of reach].
+var _easing: Array[Array] = []
 ## Each wreck's scrapping built now, by its site.
 var _wreckage := {}
 ## Whether a chunk has gone since the sites' memory was last pruned.
@@ -55,6 +65,13 @@ class Lot:
 	var taken := {}
 	var finds: Array[RigidBody3D] = []
 	var chunk: TerrainChunk
+	## Each structure's finds lying here, by socket; the sand off it and its
+	## floor when it was last read; how many of its sockets wait to be read
+	## again; and what each socket holds, drawn once, by [site, socket].
+	var sites := {}
+	var seen := {}
+	var waiting := {}
+	var drawn := {}
 	var wrecks: Array[Wreckage] = []
 
 
@@ -69,14 +86,18 @@ class Piece:
 	var socket := -1
 	var body: RigidBody3D
 	var fitted := 0
+	## Read again as a storm works on its site: what's newly within reach
+	## comes up out of the sand.
+	var again := false
 	## A wreck's scrapping still being built, a piece a step.
 	var wreck: Wreckage
 
-	func _init(at: Vector2i, find := {}, of: Structure = null, i := -1) -> void:
+	func _init(at: Vector2i, find := {}, of: Structure = null, i := -1, anew := false) -> void:
 		coord = at
 		spec = find
 		site = of
 		socket = i
+		again = anew
 
 
 func setup(world: World) -> void:
@@ -141,13 +162,14 @@ func stream(deadline: int) -> void:
 		elif piece.wreck != null:
 			if not is_instance_valid(piece.wreck) or piece.wreck.build_step():
 				_queue.pop_front()
-		elif piece.site != null:
+		elif piece.again:
+			_queue.pop_front()
+			_read_again(piece, lot)
+		elif piece.site != null and piece.spec.is_empty():
 			_queue.pop_front()
 			var spec := SiteLoot.within_reach(piece.site, piece.socket, _world.height_at, _taken_from(piece.site))
 			if not spec.is_empty():
-				if spec.get("module", false):
-					spec.structure = piece.site
-				_queue.push_front(Piece.new(piece.coord, spec))
+				_queue.push_front(Piece.new(piece.coord, spec, piece.site, piece.socket))
 		elif piece.spec.is_empty():
 			_queue.pop_front()
 			_plan(piece.coord, lot)
@@ -159,8 +181,117 @@ func stream(deadline: int) -> void:
 		else:
 			_queue.pop_front()
 			Finds.dark(piece.body)
-			_lay_out(piece.coord, lot, piece.spec, piece.body)
+			_lay_out(piece.coord, lot, piece.spec, piece.body, piece.site)
 	slowest_ms = maxf(slowest_ms, (Time.get_ticks_usec() - started) / 1000.0)
+
+
+## A loaded site a storm is working on, read again when enough sand has
+## come off it or gone back: called each time its chunk moves what stands on it.
+func follow(chunk: TerrainChunk) -> void:
+	var lot: Lot = _lots.get(chunk.coord)
+	if lot == null or lot.chunk != chunk:
+		return
+	for site in chunk.structures():
+		var was: Variant = lot.seen.get(site)
+		if was == null or lot.waiting.has(site):
+			continue
+		var now := Vector2(site.taken(), site.floor_y)
+		if absf(now.x - (was as Vector2).x) < RE_READ_M and absf(now.y - (was as Vector2).y) < RE_READ_MOVE:
+			continue
+		lot.seen[site] = now
+		lot.waiting[site] = site.piece.sockets.size()
+		for i in site.piece.sockets.size():
+			_queue.append(Piece.new(chunk.coord, {}, site, i, true))
+
+
+## What a site's socket holds within reach now against what lies there: a
+## find still within reach eases to where it lies now, one gone out of reach
+## sinks into the sand, and one come within reach is laid, coming up out of
+## it. What was taken stays taken.
+func _read_again(piece: Piece, lot: Lot) -> void:
+	var site := piece.site
+	var i := piece.socket
+	lot.waiting[site] = int(lot.waiting.get(site, 1)) - 1
+	if lot.waiting[site] <= 0:
+		lot.waiting.erase(site)
+	var lying: Dictionary = lot.sites.get(site, {})
+	var got: Variant = lying.get(i)
+	var had: RigidBody3D = got if is_instance_valid(got) and got.has_meta(&"find") else null
+	if had == null:
+		lying.erase(i)
+	if had == null and _laying(site, i):
+		return
+	var key := [site, i]
+	if not lot.drawn.has(key):
+		lot.drawn[key] = SiteLoot.draw(site, i)
+	var spec := SiteLoot.lying(site, i, lot.drawn[key], _world.height_at, _taken_from(site))
+	if spec.is_empty():
+		if had != null:
+			lying.erase(i)
+			lot.finds.erase(had)
+			_sink(had)
+	elif had != null:
+		_ease(had, _placed(lot, had, spec))
+		if spec.bury > 0.0:
+			had.set_meta(&"buried", true)
+		elif had.has_meta(&"buried"):
+			had.remove_meta(&"buried")
+	else:
+		spec.emerging = true
+		_queue.append(Piece.new(piece.coord, spec, site, i))
+
+
+## Whether a find for a site's socket waits to be laid.
+func _laying(site: Structure, i: int) -> bool:
+	for each in _queue:
+		if each.site == site and each.socket == i and not each.spec.is_empty():
+			return true
+	return false
+
+
+## Where a find lies for its spec, in its chunk's frame.
+func _placed(lot: Lot, body: RigidBody3D, spec: Dictionary) -> Transform3D:
+	var pose := _stowed(body, spec) if spec.has("base") else Finds.pose(body, spec, _world.height_at)
+	var at := Vector3(_world.engine_x(pose.origin.x), pose.origin.y, _world.engine_z(pose.origin.z))
+	return Transform3D(pose.basis, at - lot.chunk.position)
+
+
+## A find eases to a transform in its chunk's frame.
+func _ease(body: RigidBody3D, to: Transform3D, sinking := false) -> void:
+	for each in _easing:
+		if each[0] == body:
+			each[1] = to
+			each[2] = sinking
+			return
+	_easing.append([body, to, sinking])
+
+
+## A find gone out of reach sinks into the sand and is gone: nothing takes it on the way.
+func _sink(body: RigidBody3D) -> void:
+	body.remove_meta(&"find")
+	body.collision_layer = 0
+	_ease(body, body.transform.translated(Vector3.DOWN * (Finds.bounds(body).size.length() + 0.05)), true)
+
+
+func _process(delta: float) -> void:
+	if _easing.is_empty():
+		return
+	var k := 1.0 - exp(-delta / EASE_S)
+	for i in range(_easing.size() - 1, -1, -1):
+		var each: Array = _easing[i]
+		if not is_instance_valid(each[0]):
+			_easing.remove_at(i)
+			continue
+		var body: RigidBody3D = each[0]
+		var to: Transform3D = each[1]
+		body.transform = body.transform.interpolate_with(to, k)
+		if body.transform.origin.distance_to(to.origin) > 0.002 or not body.transform.basis.is_equal_approx(to.basis):
+			continue
+		body.transform = to
+		_easing.remove_at(i)
+		if each[2]:
+			body.visible = false
+			_forgotten.append(body)
 
 
 ## Nothing left to lay out or settle.
@@ -236,6 +367,9 @@ func claim(body: Node) -> void:
 	if body.has_meta(&"module"):
 		body.remove_meta(&"module")
 	var lot: Lot = _lots.get(from[0])
+	for i in range(_easing.size() - 1, -1, -1):
+		if _easing[i][0] == body:
+			_easing.remove_at(i)
 	if from.size() > 2:
 		var memory: Array = _sites.get(from[2], [])
 		if memory.is_empty():
@@ -335,6 +469,10 @@ func _forget(coord: Vector2i, lot: Lot) -> void:
 			_wreckage.erase(wreck.site)
 			wreck.queue_free()
 	lot.wrecks.clear()
+	lot.sites.clear()
+	lot.seen.clear()
+	lot.waiting.clear()
+	lot.drawn.clear()
 	for i in range(_queue.size() - 1, -1, -1):
 		if _queue[i].coord == coord:
 			_drop(i)
@@ -350,6 +488,7 @@ func _forget(coord: Vector2i, lot: Lot) -> void:
 func _plan(coord: Vector2i, lot: Lot) -> void:
 	var size := _tuning.chunk_size
 	for site in lot.chunk.structures():
+		lot.seen[site] = Vector2(site.taken(), site.floor_y)
 		if site.piece.wreck != null:
 			_build_wreck(lot, site)
 		for i in site.piece.sockets.size():
@@ -362,13 +501,12 @@ func _plan(coord: Vector2i, lot: Lot) -> void:
 			_queue.append(Piece.new(coord, spec))
 
 
-## A wreck's scrapping, built as it was left, in the state its chunk holds it.
+## A wreck's scrapping, built as it was left, where its site stands now.
 func _build_wreck(lot: Lot, site: Structure) -> void:
 	var memory := _memory_of(site)
 	var wreck := Wreckage.new(site, memory[2], _world.height_at)
 	var chunk := lot.chunk
-	var s := chunk.state_of(site)
-	wreck.transform = Transform3D(site.basis(), Vector3(site.x - chunk.coord.x * chunk.side, site.floor_in(s),
+	wreck.transform = Transform3D(site.basis(), Vector3(site.x - chunk.coord.x * chunk.side, site.floor_y,
 		site.z - chunk.coord.y * chunk.side))
 	chunk.add_child(wreck)
 	lot.wrecks.append(wreck)
@@ -519,15 +657,23 @@ func lay(coord: Vector2i, spec: Dictionary) -> RigidBody3D:
 	return _lay_out(coord, _lots[coord], spec, Finds.make(spec))
 
 
-func _lay_out(coord: Vector2i, lot: Lot, spec: Dictionary, body: RigidBody3D) -> RigidBody3D:
-	var pose := _stowed(body, spec) if spec.has("base") else Finds.pose(body, spec, _world.height_at)
-	var at := Vector3(_world.engine_x(pose.origin.x), pose.origin.y, _world.engine_z(pose.origin.z))
-	body.transform = Transform3D(pose.basis, at - lot.chunk.position)
+## A find laid where it lies, in its chunk; one a storm has just brought
+## within reach comes up out of the sand.
+func _lay_out(coord: Vector2i, lot: Lot, spec: Dictionary, body: RigidBody3D, site: Structure = null) -> RigidBody3D:
+	var placed := _placed(lot, body, spec)
+	body.transform = placed
+	if spec.get("emerging", false):
+		body.transform = placed.translated(Vector3.DOWN * (Finds.bounds(body).size.length() + 0.05))
+		_ease(body, placed)
+	if site != null:
+		var lying: Dictionary = lot.sites.get(site, {})
+		lot.sites[site] = lying
+		lying[spec.index] = body
 	body.set_meta(&"find", [coord, spec.index, spec.site] if spec.has("site") else [coord, spec.index])
 	if spec.bury > 0.0:
 		body.set_meta(&"buried", true)
-	if spec.has("structure"):
-		body.set_meta(&"module", [spec.structure, spec.index])
+	if site != null and spec.get("module", false):
+		body.set_meta(&"module", [site, spec.index])
 	body.freeze = spec.bury > 0.0 or spec.get("frozen", false)
 	lot.chunk.add_child(body)
 	if body is Device:
@@ -587,10 +733,11 @@ func _drift() -> void:
 	var lines := Drift.lines(_world)
 	for each in lines:
 		var piled := Drift.pile(_world, each[1], each[2])
+		var near := Drift.near_line(_world, each[1], each[2])
 		for k in range(from, tick + 1):
 			if piled >= _tuning.drift_most:
 				break
-			var spec := Drift.caught(_world, each[1], each[2], k)
+			var spec := Drift.caught(_world, each[1], each[2], k, near)
 			if not spec.is_empty():
 				Drift.lay(_world, spec)
 				piled += 1

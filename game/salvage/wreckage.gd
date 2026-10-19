@@ -33,6 +33,8 @@ const COOL := 0.4
 ## cells are each asked only once its foot comes this near the sand.
 const UNDER_SAND := 0.03
 const NEAR_SAND := 0.4
+## Risen or sunk this far since, m, it reads the sand round it again.
+const RESAMPLE_M := 0.1
 ## A hazard's box, m.
 const HAZARD_BOX := Vector3(0.5, 0.6, 0.4)
 ## A plate cut free falls, and once it's been still this long, s (or after
@@ -69,6 +71,11 @@ var state: Dictionary
 ## The world's one ground function, world metres.
 var _height: Callable
 var _lean: Node3D
+## The dunes' mean under its middle, in its frame: where what's fallen off it
+## lies, kept still while the wreck rises out of the sand or sinks back.
+var _ground: Node3D
+## Where it last read the sand round its plates and its level holds, m up.
+var _sampled_y := NAN
 var _plates := {}
 var _beads := {}
 var _buried := {}
@@ -138,6 +145,11 @@ func build_step() -> bool:
 		_lean.name = "Lean"
 		_lean.transform = site.lean_frame()
 		add_child(_lean)
+		_ground = Node3D.new()
+		_ground.name = "Ground"
+		_ground.position.y = site.pad() - transform.origin.y
+		add_child(_ground)
+		_sampled_y = transform.origin.y
 		_steps = []
 		for i in plan.plates.size():
 			_steps.append([&"plate", i])
@@ -451,24 +463,30 @@ func _standing(i: int) -> void:
 	var cells: PackedFloat32Array = state.cut[i]
 	var heat := PackedFloat32Array()
 	heat.resize(p.cells.size())
-	var buried := PackedByteArray()
-	buried.resize(p.cells.size())
-	# Each cell's sand is asked only of a plate whose foot comes near the
-	# sand round it: most stand well clear.
-	var frame := site.frame()
-	var near := _near_sand(p, frame)
 	for c in p.cells.size():
 		beads.set_instance_transform(c, _bead_at(p, c, cells[c] >= 1.0))
 		beads.set_instance_custom_data(c, Color(0.0, cells[c], 0.0, 0.0))
-		if near:
-			var w := frame * p.cells[c]
-			buried[c] = 1 if w.y < float(_height.call(w.x, w.z)) + UNDER_SAND else 0
 	var view := MultiMeshInstance3D.new()
 	view.multimesh = beads
 	view.material_override = _bead_material()
 	body.add_child(view)
 	_beads[i] = beads
 	_heat[i] = heat
+	_bury(i)
+
+
+## Which of a plate's seam cells the sand holds now. Each cell's sand is
+## asked only of a plate whose foot comes near the sand round it: most stand
+## well clear.
+func _bury(i: int) -> void:
+	var p: WreckPlan.Plate = plan.plates[i]
+	var buried := PackedByteArray()
+	buried.resize(p.cells.size())
+	var frame := site.frame()
+	if _near_sand(p, frame):
+		for c in p.cells.size():
+			var w := frame * p.cells[c]
+			buried[c] = 1 if w.y < float(_height.call(w.x, w.z)) + UNDER_SAND else 0
 	_buried[i] = buried
 
 
@@ -504,8 +522,8 @@ func _lying(i: int) -> void:
 	Paint.show_age(body, 0.85)
 	body.set_meta(&"fallen_plate", i)
 	body.set_meta(&"wreckage", self)
-	body.transform = lying_at(i)
-	add_child(body)
+	body.transform = state.fallen[i]
+	_ground.add_child(body)
 
 
 ## Cut through: it comes away and falls outward off the hull, its welds
@@ -529,7 +547,7 @@ func _fall(i: int) -> void:
 	body.mass = clampf(area * p.box.size[p.thin] * ALLOY * 0.25, 8.0, 80.0)
 	body.set_meta(&"fallen_plate", i)
 	body.set_meta(&"wreckage", self)
-	add_child(body)
+	_ground.add_child(body)
 	var out := plate_normal(i)
 	body.global_transform = standing.global_transform.translated_local(p.box.get_center()).translated(
 		out * (p.box.size[p.thin] + 0.04))
@@ -728,6 +746,9 @@ func _patch(body: StaticBody3D) -> void:
 
 
 func _physics_process(delta: float) -> void:
+	if _lean == null:
+		return
+	_follow()
 	_settle(delta)
 	_cool(delta)
 	_blink = fposmod(_blink + delta, 1.2)
@@ -757,7 +778,7 @@ func _settle(delta: float) -> void:
 			look.set_instance_shader_parameter(&"lit", maxf(0.6 - each[2] * 0.15, 0.0))
 		if each[3] >= SETTLE or each[2] >= SETTLE_MOST:
 			body.freeze = true
-			state.fallen[each[0]] = _kept(body.transform)
+			state.fallen[each[0]] = body.transform
 			_falling.remove_at(n)
 
 
@@ -791,20 +812,44 @@ func _exit_tree() -> void:
 	for each in _falling:
 		var body: RigidBody3D = each[1]
 		if is_instance_valid(body):
-			state.fallen[each[0]] = _kept(body.transform)
+			state.fallen[each[0]] = body.transform
 	_falling.clear()
 
 
-## Where a fallen plate lies, as kept: from the wreck's middle on the dunes'
-## mean, not from its floor, which sinks and rises with its state while the
-## sand the plate lies on outside it doesn't.
-func _kept(lying: Transform3D) -> Transform3D:
-	return lying.translated(Vector3.UP * (transform.origin.y - site.pad()))
-
-
-## Where a fallen plate lies now, from the wreck's floor in the state it's in.
+## Where a fallen plate lies now, in its frame. It's kept from its middle on
+## the dunes' mean, not its floor, which rises and sinks as storms work on it
+## while the sand outside, where the plate lies, doesn't.
 func lying_at(i: int) -> Transform3D:
-	return (state.fallen[i] as Transform3D).translated(Vector3.UP * (site.pad() - transform.origin.y))
+	return _ground.transform * (state.fallen[i] as Transform3D)
+
+
+## Follows its site as a storm works on it: rising out of the sand or sinking
+## back with its look and boxes, what's fallen off it staying where it lies;
+## and once it's moved enough, the sand round its plates and in its level
+## holds read afresh.
+func _follow() -> void:
+	var y := site.floor_y
+	var moved := y - transform.origin.y
+	if absf(moved) < 0.0005:
+		return
+	transform.origin.y = y
+	_ground.position.y -= moved
+	if absf(y - _sampled_y) < RESAMPLE_M:
+		return
+	_sampled_y = y
+	for i: int in _plates:
+		_bury(i)
+	for h in plan.holds.size():
+		if (plan.holds[h] as WreckPlan.Hold).from == WreckPlan.TOP:
+			_repack(h)
+
+
+## A hold's slices made again for the sand round it now.
+func _repack(h: int) -> void:
+	for body: Variant in _slices.get(h, []):
+		if body != null and is_instance_valid(body):
+			_gone(body)
+	_pack(h)
 
 
 func _cut_through(i: int) -> bool:

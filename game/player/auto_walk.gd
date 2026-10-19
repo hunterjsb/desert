@@ -40,11 +40,11 @@ func is_on() -> bool:
 	return heading != Vector2.ZERO
 
 
-## On along the way you face, or off. Never from the board.
+## On along the way you face, or off. Never from the board or the helm.
 func toggle() -> void:
 	if is_on():
 		stop()
-	elif _player.board == null and not _player.flying and Controls.playing():
+	elif _player.board == null and _player.helm == null and not _player.flying and Controls.playing():
 		var ahead := -_player.global_basis.z
 		heading = Vector2(ahead.x, ahead.z).normalized()
 		_let_go = false

@@ -102,7 +102,10 @@ const KINDS := {
 	# A wreck's modules are what its crew stowed: the skimmer era's single
 	# items, the Provisional's military kit and the black site's, colonial
 	# freight and a lifeboat's survival stores, the Knights' convoy gear.
-	&"wreck_hull": {"kept": 0.9,
+	# A skimmer's pilot sat in its helm seat and it rode its ventral keel, so
+	# the land yacht's two parts lie deep in its wreck, with what else it carried.
+	&"wreck_hull": {"kept": 0.9, BEST: [[&"helm_seat", 3], [&"keel", 3], [&"shield", 2], [&"board", 2], [&"radar", 1],
+		[&"harvester", 1], [&"big_battery", 1]],
 		MODULE: [[&"survival_kit", 3], [&"radio", 2], [&"charger", 2], [&"shield", 1], [&"light_shield", 2]]},
 	&"tithe_hauler": {"kept": 0.9,
 		MODULE: [[&"shield", 3], [&"light_shield", 2], [&"radio", 2], [&"survival_kit", 2]],
@@ -217,10 +220,15 @@ static func plan(site: Structure, height: Callable, taken := {}) -> Array[Dictio
 
 ## What one socket holds within reach now, or {}.
 static func within_reach(site: Structure, i: int, height: Callable, taken := {}) -> Dictionary:
-	if taken.has(i):
+	return {} if taken.has(i) else lying(site, i, draw(site, i), height)
+
+
+## The same from what it holds, drawn already.
+static func lying(site: Structure, i: int, drawn: Dictionary, height: Callable, taken := {}) -> Dictionary:
+	if taken.has(i) or drawn.is_empty():
 		return {}
-	var spec := draw(site, i)
-	return spec if not spec.is_empty() and _lies(site, i, spec, height) else {}
+	var spec := drawn.duplicate()
+	return spec if _lies(site, i, spec, height) else {}
 
 
 ## Works out every socket's resting spots for what it may hold while the
@@ -281,7 +289,8 @@ static func _lies(site: Structure, i: int, spec: Dictionary, height: Callable) -
 	var p := Vector2(socket.at.x, socket.at.z)
 	var surface := socket.at.y
 	if piece.lean == 0.0 or site.tilt == 0.0:
-		var spot := _spot(piece, state, i, size)
+		# On what stands of it now, between states too.
+		var spot := _spot(piece, StructureKit.Piece.shown_state(site.level()), i, size)
 		if not spot.is_finite():
 			return false
 		p = Vector2(spot.x, spot.y)
