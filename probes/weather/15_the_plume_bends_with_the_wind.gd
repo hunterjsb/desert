@@ -3,8 +3,8 @@ extends WeatherProbe
 ## run's wind shapes it. What left the vent at each moment lies where the
 ## field's drift has carried it since; in a strong wind the plume bends over
 ## low and runs out long, in a light one it stands taller; a storm between
-## you and it hides it, where clear air shows it; and what towers over a
-## storm's roof shows over it.
+## you and it hides it, where clear air shows it, and from inside one nothing
+## of it shows; and what towers over a storm's roof shows over it.
 
 ## How far downwind the bend is compared, m.
 const DOWNWIND := 300.0
@@ -53,6 +53,9 @@ func run() -> void:
 	print("its mouth seen through a storm between %.2f, through clear air %.2f" % [hidden, shown])
 	check(hidden < 0.05, "a storm between hides it")
 	check(shown > 0.9, "clear air shows it")
+	var engulfed := find_time(func(t: float) -> bool: return field.raw_storm_at(eye.x, eye.y, t) > 0.05)
+	var from_in := Plume.seen_through(field, world.tuning, Vector3(eye.x, 2.0, eye.y), root + Vector3.UP * 4000.0, engulfed)
+	check(from_in < 0.05, "from inside a storm even what towers 4 km up is lost (%.2f)" % from_in)
 
 	# A storm by the vent, clear air nearer you: its foot is lost, and what
 	# towers over the storm's roof shows.

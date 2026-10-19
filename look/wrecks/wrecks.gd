@@ -6,7 +6,8 @@ extends Node
 ## next seam, its beam and sparks; and stripped, every plate fallen, every
 ## hold cleared, every hazard made safe, its modules showing.
 ##   godot --path . --resolution 1280x720 res://look/wrecks/wrecks.tscn -- --capture <dir>
-## Each shot is <kind>_<whole|work|cutting|stripped>.png, and the skimmer
+## Each shot is <kind>_<whole|work|cutting|stripped>.png, each plate face on
+## as <kind>_plate<i>.png, and the skimmer
 ## hull's <kind>_hands.png, a cutter in your hands firing along its seam.
 
 const SEED := 1234
@@ -113,6 +114,22 @@ func _shoot(site: Structure, out: String) -> void:
 	cutter.queue_free()
 	if piece.kind == &"wreck_hull":
 		await _in_hands(out, wreck, next, normal)
+
+	# Every plate face on, its holds cleared: each seam in plain sight.
+	for h in piece.wreck.holds.size():
+		for k in piece.wreck.holds[h].slices:
+			var slice := wreck.slice_body(h, k)
+			if slice != null:
+				wreck.clear(slice, wreck.slice_seconds(h, k) + 0.01)
+	for i in piece.wreck.plates.size():
+		var body := wreck.plate_body(i)
+		if body == null:
+			continue
+		var at := body.global_transform * piece.wreck.plates[i].face()
+		var front := at + wreck.plate_normal(i) * 2.2 + Vector3.UP * 0.4
+		await _look(Vector3(world.world_x(front.x), front.y, world.world_z(front.z)),
+			Vector3(world.world_x(at.x), at.y, world.world_z(at.z)))
+		_save(out, "%s_plate%d" % [piece.kind, i])
 
 	# Stripped: everything done, plates fallen, modules showing.
 	for i in piece.wreck.plates.size():

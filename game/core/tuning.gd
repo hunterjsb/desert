@@ -884,8 +884,9 @@ static var _current: Tuning
 
 @export_group("Plume")
 ## A live vent's seep as a buoyancy flux, m⁴/s³ at this tuning's gravity: how
-## hard what it lets out climbs. Bursts multiply it (Geology).
-@export var plume_buoyancy: float = 25000.0
+## hard the hot gas it lets out climbs, lifting its column of dust 1.5 to 3
+## km. Bursts multiply it (Geology).
+@export var plume_buoyancy: float = 300000.0
 ## A plume dissolves into the distance between these, m: further than the
 ## storm walls, since what towers over the haze stands clear of it.
 @export var plume_fade_m := Vector2(30000.0, 45000.0)
