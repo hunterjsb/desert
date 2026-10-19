@@ -1,5 +1,5 @@
 extends WeatherProbe
-## Wind & storms probe 23: the rumble is felt. 300 m off the rift's live vent
+## Wind & storms probe 25: the rumble is felt. 300 m off the rift's live vent
 ## a burst's deep build grows as it nears and the ground trembles at its
 ## onset, jostling a crate on the sand; 1.5 km off, less of both; 12 km off,
 ## none of either, and the crate lies as still as it did before.

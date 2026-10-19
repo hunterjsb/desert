@@ -840,7 +840,7 @@ look-test; the one frame after a jump in time or place works a whole line out at
     looking every minute: 15 of 18 starts see a plume from 5 km or more (it must be three in four), a
     median 7% of the time (it must be 3%), most often a burst's column over the storms, which holds its
     height for a minute and a half.
-23. **The rumble is felt** (2026-10-19). 300 m off the rift's live vent a burst's build grows as it
+25. **The rumble is felt** (2026-10-19). 300 m off the rift's live vent a burst's build grows as it
     nears (0.20 of its file's loudness 25 s before, 0.64 at 5 s) and the ground trembles at its onset
     (0.76), jostling a crate on the sand (0.11 m/s); 1.5 km off, less of both (0.35, 0.33); 12 km
     off, none of either, and the crate lies as still as it did before.
