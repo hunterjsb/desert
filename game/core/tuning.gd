@@ -278,6 +278,15 @@ static var _current: Tuning
 @export var lee_reach: float = 250.0
 @export var lee_samples: int = 32
 
+@export_group("Sand on the wind")
+## Wind on open sand starts to lift it at this, m/s, and lifts all it can by
+## this: loose sand moves on an ordinary breezy afternoon, not only in a storm.
+## For looks only (WindMap).
+@export var transport_wind: Vector2 = Vector2(5.0, 8.0)
+## The share of the afternoon's sand still moving at night, the air lying still
+## on cold sand; a front's outflow drives it day or night.
+@export var transport_night: float = 0.25
+
 @export_group("Storm")
 ## How far you can see inside a storm, in metres.
 @export var storm_visibility: float = 20.0

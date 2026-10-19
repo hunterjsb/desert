@@ -161,7 +161,8 @@ func steady_wind_at(x: float, z: float, t: float) -> Vector2:
 
 
 ## The wind, m/s, in world x and z: the prevailing wind, gusts that ride it,
-## and outflow blowing hardest just ahead of a front and inside it.
+## and outflow blowing hardest just ahead of a front and inside it. Its GPU
+## twin is WIND_GLSL.
 func wind_at(x: float, z: float, t: float) -> Vector2:
 	var outflow := outflow_at(x, z, t)
 	var d := drift_at(t)
@@ -173,6 +174,39 @@ func wind_at(x: float, z: float, t: float) -> Vector2:
 func _steady(t: float, outflow: float) -> Vector2:
 	var prevailing := prevailing_at(t)
 	return prevailing + prevailing.normalized() * _outflow * outflow
+
+
+## wind_at() on the GPU, for the wind map (WindMap), reading what pack_wind()
+## packs into its params block p: change one, change the other. It takes a
+## place less the air's drift, m, and gives the wind and the outflow there.
+const WIND_PARAMS := "vec4 air; vec4 blow; vec4 storm; Noise storm_noise; Noise gust_noise;"
+const WIND_GLSL := """
+vec3 wind_on(vec2 drifted) {
+	float raw = noise3(p.storm_noise, vec3(drifted, p.air.z)) - p.storm.x;
+	float outflow = clamp((raw + p.storm.z) / (p.storm.z + p.storm.y), 0.0, 1.0);
+	float gust = noise3(p.gust_noise, vec3(drifted, p.air.w)) * mix(p.blow.w, p.storm.w, outflow);
+	vec2 prevailing = p.blow.xy;
+	float blowing = length(prevailing);
+	vec2 steady = prevailing + (blowing > 0.0 ? prevailing / blowing : vec2(0.0)) * p.blow.z * outflow;
+	return vec3(steady * (1.0 + gust), outflow);
+}
+"""
+
+
+## What of WIND_GLSL's params moves with time: air and blow's first half,
+## its places counted from world x and z.
+func wind_now(x: float, z: float, t: float) -> PackedFloat32Array:
+	var d := drift_at(t)
+	var prevailing := prevailing_at(t)
+	return PackedFloat32Array([x - d.x, z - d.y, t * _evolve, t * _gust_evolve, prevailing.x, prevailing.y])
+
+
+## The rest of WIND_GLSL's params, after wind_now's.
+func pack_wind(into: StreamPeerBuffer) -> void:
+	for v: float in [_outflow, _gust_strength, _threshold, _ramp, _lead, _gust_storm_strength]:
+		into.put_float(v)
+	NoiseGLSL.pack(_storm, into)
+	NoiseGLSL.pack(_gust, into)
 
 
 ## Seconds from t until the storm state at a place flips, looking at most
