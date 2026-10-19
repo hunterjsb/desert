@@ -121,7 +121,8 @@ names it), and so can a kit variant or a mark on your gear (Hunter: "they should
   - Shield: take X of a storm's wear on a shield; **Hermit**, a full day under a shield.
   - Farming: grow three kinds of crop; two planters in tow at once.
   - Sailing: **Set Sail**, a sail's sheet tied at your waist.
-  - Camp: six chassis pieces joined in one deck; a Console, a condenser and a crate on one deck.
+  - Camp: six chassis pieces joined in one deck; a Console, a condenser and a battery on one
+    deck (the crate the first list named went with the chassis, 2026-10-18).
   - Power: over X W made in one system.
   - Story: **The Old City**, reach Port Morgan; **Hot Tourist Destinations**, reach every named
     landmark; a structure of each of the four ages stood in.
@@ -146,7 +147,7 @@ stays. Green Thumb is new, so Crop Rotation has one before it.
 | `crop` | Green Thumb | Grow a crop | | a planter's harvest, by hand or by its harvester |
 | `crops` | Crop Rotation | Grow 3 kinds of crop | Green Thumb | the same, each kind counted once a profile |
 | `planters_towed` | Meals on Wheels | Have 2 planters in tow at once | Green Thumb | a line tied or moved, something tied at your waist or taken in your hand: planters along the lines from you, or standing on what they reach, short of a driven stake |
-| `deck_home` | All Mod Cons | A Console, a condenser and a crate on one deck | | a device standing on a deck, or a piece joining with one on it |
+| `deck_home` | All Mod Cons | A Console, a condenser and a battery on one deck | | a device or a part stuck on a deck, or a piece joining with one on it |
 | `sail_waist` | Set Sail | Tie a sail's sheet at your waist | | your waist, once the sheet tied on there is laid |
 | `deck_pieces` | Six Pack | Join 6 chassis pieces into one deck | All Mod Cons | a piece joining a deck |
 | `power` | Power Trip | Make 300 W in one system | Set Sail | Power's tick, by what each pool makes |
@@ -202,7 +203,7 @@ How each X was chosen, from the probes' numbers:
   <id>` grants one, `deeds` lists what's done and what isn't, and `deeds clear` forgets them all.
 - **Probes** 17 to 22, and Menus & UI probe 11.
 
-## Starts on the chassis, and two new kits (agreed, 2026-10-18 spec; not built)
+## Starts on the chassis, and two new kits (agreed, 2026-10-18 spec; the starts built, the kits not)
 
 From the [chassis spec](../chassis-kits-dunes-2026-10-18.md); balance targets the Surveyor only.
 - **The Surveyor:** two chassis joined as a deck and a frame with an upright on its side, its gear
@@ -220,6 +221,26 @@ From the [chassis spec](../chassis-kits-dunes-2026-10-18.md); balance targets th
   dune sailboat. What sits outside his bubble wears in a long storm, as anything does; a light
   panel can go on top, weakly.
 - **The Salvager and Homesteader** stay deed-opened and get reworked onto the chassis.
+
+**Built (2026-10-18), the three origins on the chassis.** Each start is a rig, data steps the
+one builder (`Rig`) puts together, as the scenarios and the showpiece are (Devices & mods):
+- **The Surveyor:** two pieces joined, floating on a tray under each, set back under its
+  weight so it rides within 2° of level; a frame on the second piece with a wall on its back,
+  the board hung on the wall's outside with a compass beside it; a battery, the light shield
+  and the light panel stuck on the first piece; a hook on its outer ring, moored to a stake on
+  a 6 m line. 68 kg, it draws about 136 W floating (the crate drew 91 W), so its trays give way
+  at about 0.43 days on the probes' seed instead of 0.56, while the shield runs the whole first
+  day (Power). Still floating, as a camp you tow should, and viable; the kits agent may
+  rebalance it. Carried, as before: a canister, a ration and the bedroll.
+- **The Salvager:** a plate, one chassis resting on the sand with the light shield and a full
+  battery stuck on it, beside the board and the heat cutter; the scoop, sealant and med kit
+  carried.
+- **The Homesteader:** a deck of two resting on the sand, its homestead: the base shield, a big
+  battery and a solar panel on one piece, the condenser with its canister and a battery on the
+  other, all one pool; the planter and the turbine beside it as they stand, with a common and
+  a strong cable to wire them.
+- **The main menu's showpiece** builds the origin's rig, so the Surveyor shows its deck, wall
+  and board.
 
 ## Ending flags (proposed)
 
@@ -303,8 +324,8 @@ calls them from Save, Save & quit, Resume, New game, the death screen and Option
   your body are in their ticks. Then everything of yours: each thing by its
   catalog id, where it is and how it's moving, its wear, charge, water, growth and
   harvests, a shield's switch and how far its bubble has bloomed, a stake driven or not,
-  and every part in every socket, down to a line's end on a hook's ring and a shield
-  seated on a crate. Every line and strong cable with its ends, length and load, and its
+  every part in every slot, down to a line's end on a hook's ring, and on a chassis
+  everything stuck on each piece (version 2, below). Every line and strong cable with its ends, length and load, and its
   strand's points as drawn, so nothing snaps or flings on resume. Of the finds, only the
   chunks near you: how hard the weather had been when each came near, and which finds were
   taken. No ground, no weather, no untouched find. A camp mid-storm saves in about 13 KB.
@@ -319,11 +340,17 @@ calls them from Save, Save & quit, Resume, New game, the death screen and Option
 - **Versioned:** each file opens with what it is and its version, and one of another
   version, or not a save at all, is refused with the reason (`refused`) before any of it
   is read. A refused profile is never written over, except by a reset.
-- **A frame that changes keeps older saves** (2026-10-17). A save says how it numbers
-  each frame's sockets. One without that is from before the crate lost its side rings,
-  and is renumbered as it resumes: every part goes back in its own socket, and a hook
-  from a side ring goes on a free ring or comes out beside the crate (Devices & mods).
-  The file's version is unchanged, so those saves aren't refused.
+- **Version 2** (2026-10-18, the chassis): each body is saved with what's in its slots by
+  their place in its frame's list, and with what's stuck on it, each by the piece it's on,
+  its pose on that piece and the face's way out, and its own record: a part with its state,
+  or a device with its own slots and state. A deck's pieces are saved in the order they
+  joined, each saying how: across a ring (the piece it joined, that piece's ring, its quarter
+  turns) or on a frame's face (the piece the frame stands on, the frame among what's stuck
+  there, the face's name). Resuming builds each piece alone with what's on it, then joins it,
+  so nothing joins before what it hangs from. A version 1 save, from before, is refused before
+  a byte of it is read, and the menu says plainly why: "it was saved before camps were rebuilt
+  round the chassis, so nothing in it would sit where it was". The profile, its deeds and its
+  unlocks carry on untouched; only the run is lost, an alpha's honest break.
 - **A death in Ironman deletes the save,** so the main menu offers only New game, and
   a new Ironman run begins at once.
 - **A dev scenario's run is never saved,** and a death in it begins a new run without
@@ -340,7 +367,7 @@ calls them from Save, Save & quit, Resume, New game, the death screen and Option
 - **The default kit** is the starting kit's data resource (`game/survival/standard_kit.tres`).
 - **Probes** run on a folder of their own, never the player's save or profile.
 - **Found along the way:** a device seated on another trailed its seat a little every
-  tick, which added up on a floating crate; it's held on its seat every tick now.
+  tick, which added up on a floating deck; it's held on its seat every tick now.
 
 ## Full version
 
@@ -374,24 +401,20 @@ calls them from Save, Save & quit, Resume, New game, the death screen and Option
     puts you back where and when you saved, through the fade. In Ironman neither saves
     nor loads, and a dev scenario's run never saves.
 12. **A deck resumes.** A floating deck of three pieces, two of them turned, left when the
-    first piece joined came off its end, moored by a hook on its ring, with a charged
-    crate and a running light shield standing on it, is
-    saved and resumed: the same pieces stand on the same places, turned as they were,
-    with every tray, what stood where with its charge, the shield running and the line
-    tied, and it floats on.
+    first piece joined came off its end, trays under all, moored by a hook on its ring, a
+    frame with a wall and a shelf on one piece, the board on the wall and a battery on the
+    shelf, a running light shield and two batteries on another, is saved and resumed: the
+    same pieces stand on the same places, every thing on the same face of the same piece in
+    the same pose with its charge, the shield running and the line tied, and it floats on.
 13. **What you carry.** Saved carrying a radio on the weather station, a compass and
     three canisters and resumed, the radio is carried on the same frequency with the same
     charge, playing from you with its words showing, the compass is carried, and the
     canisters stack as one, each with its water. A save from before, with five slots and a
     radio kept as a channel, resumes with their contents carried, the radio on that channel's
     carrier.
-14. **An older crate.** Two crates saved as a build from before 2026-10-17 numbered
-    them, side rings and all: one floating, moored by hooks on both side rings, and one
-    resting with a hook on all four rings, its side hooks tied to stakes. Resumed, every
-    part and seated device is in its own socket; the first's side hooks are on its front
-    and back rings with their lines, let out where they must be to reach, the second's
-    lie beside it with their lines' ends loose, and the first floats on, moored, nothing
-    flung.
+14. **An older save is refused** (2026-10-18). A version 1 run save isn't offered, says
+    plainly why, and resuming it changes nothing, while the profile's unlocks and deeds
+    carry on.
 15. **A farm from before.** A save the build before the crop roster wrote, of a
     harvester planter with three carrots and a ripe fungus, carrots stored, a survival kit
     with seeds and carrots carried, resumes as root-tubers in the standard planters, a
