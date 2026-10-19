@@ -47,6 +47,7 @@ var _spot := Vector2.ZERO
 var _only := PackedStringArray()
 ## Each --try's values, shot after "after" as try1, try2, ...
 var _tries: Array[Dictionary] = []
+## What a try replaced, put back before the next look.
 var _kept := {}
 
 

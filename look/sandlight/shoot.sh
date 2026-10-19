@@ -34,7 +34,7 @@ for pair in "noon:noon" "low_into:low sun, facing it" "low_behind:low sun behind
 		args+=(-label "$label" "$file")
 	done
 done
-montage "${args[@]}" -tile 2x -geometry 960x540+6+6 -pointsize 20 -background '#f4efe6' "$out/moments.png"
+montage "${args[@]}" -tile 2x -geometry 1446x813+6+6 -pointsize 24 -background '#f4efe6' "$out/moments.png"
 
 # The glitter: a patch of each frame at three times, nearest-neighbour, so a
 # pixel that crawls shows: sliding sideways, then walking on.
