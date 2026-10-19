@@ -27,7 +27,8 @@ static var _kept := [
 	[Battery, ["charge_wh"]],
 	[Plant, ["growth", "fruit", "state", "wild"]],
 	[Mast, ["raised", "raise", "boom", "boom_spin", "trim", "load_n", "bend_n", "extend"]],
-	[Device, ["resting", "lift_share", "lamps"]],
+	[PowerBox, ["held"]],
+	[Device, ["resting", "lift_share", "lamps", "priority", "switched_off"]],
 ]
 const PLAYER := ["stamina", "flying", "mode", "crouched", "own", "slope", "wind", "low", "sink", "_sliding",
 	"_jumped", "_since_ground", "_touchdown", "_jump_buffer", "_jump_was", "_jump_queued", "_crouch_was",

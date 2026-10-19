@@ -34,6 +34,11 @@ const TIPPED := deg_to_rad(25.0)
 ## How much its draw matters when its pool runs short: lower ranks give way
 ## first, so what keeps you alive keeps its power (Power).
 @export var rank := 0
+## Set from a Console through a power box that allows it: its own rank in its
+## pool's order (-1 for its kind's), and switched off, a draw the pool skips.
+## Only while a box in its pool allows them (Power.control).
+var priority := -1
+var switched_off := false
 
 ## Set by Power each tick: false once its battery and sources can't meet its draw.
 var powered := true
@@ -203,6 +208,17 @@ func batteries() -> Array[Battery]:
 ## The batteries it lends its pool (Power).
 func pooled() -> Array[Battery]:
 	return batteries()
+
+
+## Those of them its pool may draw on: a bay held to charge only gives nothing.
+func supplies() -> Array[Battery]:
+	return pooled()
+
+
+## Its charge where it's shown, after each power tick.
+func show_charge() -> void:
+	if charge_light != null:
+		ChargeLight.paint(charge_light, charge_share())
 
 
 ## How full its batteries are together, 0 to 1; 0 with none.

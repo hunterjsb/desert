@@ -48,6 +48,7 @@ func _held_out() -> void:
 	var door := Vector2(-3.0, 2.0)
 	await _stand(find, door)
 	check(await _strip(find), "a part comes out of the found %s" % find.label)
+	await _stand(find, door)
 	check(await _take_hold(find), "you take hold of the %s you took from" % find.label)
 	_moving(true)
 	var slipped := {"at": INF}
@@ -177,23 +178,26 @@ func _stand(body: Node3D, toward: Vector2) -> void:
 	await simulate(1.0 / 60.0)
 
 
-## Takes out the first part of a device your eyes can see the socket of, and
-## sets it aside. Whether one came out.
+## Takes out the first part of a device your eyes can see the socket of, from
+## where you stand or else before its open side, as you'd step round to a
+## power box's front, and sets it aside. Whether one came out.
 func _strip(device: Device) -> bool:
-	var from := eye()
+	var stood := eye()
 	for part in device.parts():
-		look(from, seat(part.socket) * Vector3(0.0, 0.0, 0.05))
-		await simulate(1.0 / 60.0)
-		hands._look()
-		if hands.look_socket != part.socket or not hands.grab():
-			continue
-		for i in 60:
+		var at := seat(part.socket)
+		for from: Vector3 in [stood, at.origin + at.basis.z * 0.9 + Vector3.UP * 0.3]:
+			look(from, at * Vector3(0.0, 0.0, 0.05))
 			await simulate(1.0 / 60.0)
-			if hands.phase == Hands.Phase.HELD:
-				hands.stow().queue_free()
-				look(from, device.global_position)
-				await simulate(0.2)
-				return true
+			hands._look()
+			if hands.look_socket != part.socket or not hands.grab():
+				continue
+			for i in 60:
+				await simulate(1.0 / 60.0)
+				if hands.phase == Hands.Phase.HELD:
+					hands.stow().queue_free()
+					look(from, device.global_position)
+					await simulate(0.2)
+					return true
 	return false
 
 
