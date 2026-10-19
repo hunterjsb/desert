@@ -10,7 +10,7 @@ Oct 18, 2026 · @Hunter Boyd
 
 **Applied, not asked**
 
-- **The five renames** (and Kesselside to Crakeside) are swept through the living docs: the lore research, the vision, the world system, art direction, the skeleton plan and the Salvage PRD. It is one commit of its own, with the command in its message. The older session records keep the old names, and so do the code's identifiers (`history.gd`, `eras.gd`, `marks.py`, `paint.gd`, `lineage.gd`), which are not touched.
+- **The five renames** (and Kesselside to Crakeside) are swept through the living docs: the lore research, the vision, the world system, art direction, the skeleton plan and the Salvage PRD. It is one commit of its own, with the command in its message. The older session records keep the old names, and so do the code's identifiers (`history.gd`, `eras.gd`, `marks.py`, `paint.gd`, `lineage.gd`), which are not touched. *Later (2026-10-19): the older session records and the code carry the new names too.*
 - **One plain fix:** "Stokes" in the Wow section reads **Stoker** (the god who ends Zan; no Stokes is anywhere in the docs). Fixed in place below.
 
 **Clashes with earlier text**
@@ -255,4 +255,4 @@ Left undecided on purpose:
 - [ ] A name for the deserter Knight
 - [ ] A name for the second-era High Clerk, if that role survives Mother Ash
 - [ ] Whether the Port Morgan harbourmaster AI exists as a separate (dead) entity, now that the dead god slot went to Mitchell
-- [ ] Older docs still use Okafor, Kessel, Arkwright, Vante and Kesselside: replace with the new names
+- [x] Older docs still use Okafor, Kessel, Arkwright, Vante and Kesselside: replace with the new names

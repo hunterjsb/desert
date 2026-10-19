@@ -6,7 +6,7 @@ Oct 17, 2026 · @Hunter Boyd
 
 Decisions and ideas from the 17 Oct session (part 3), after the Console doc. Merge into the lore docs, marking each item **Agreed** or **Idea** as labelled. It supplements the two earlier 17 Oct docs and the 16 Oct doc; where it conflicts with them, keep this one and flag the clash. Don't invent beyond what's here; flag anything ambiguous.
 
-**Also update from earlier today:** the post-collapse medieval era lasts **a few thousand years** (not \~12,000), so Tilg & Standard outlasts it. The military order guarding the Ledger is the **Knights Requisitioner** (agreed). The Provisional's governor is **Plimsoll**. Port Morgan's great families now come from: **Okafor** (the harbourmaster who stayed), **Arkwright** (the IOU dockworkers' union), **Kessel** (water), **Vante** (agriculture). This replaces the earlier origins (Kessels as IOU bosses, Arkwrights as engineers).
+**Also update from earlier today:** the post-collapse medieval era lasts **a few thousand years** (not \~12,000), so Tilg & Standard outlasts it. The military order guarding the Ledger is the **Knights Requisitioner** (agreed). The Provisional's governor is **Plimsoll**. Port Morgan's great families now come from: **Haberjack** (the harbourmaster who stayed), **Crake** (the IOU dockworkers' union), **Pellicott** (water), **Vonatelli** (agriculture). This replaces the earlier origins (Pellicotts as IOU bosses, Crakes as engineers).
 
 ## Principles
 
@@ -33,7 +33,7 @@ Roughly from most achievable to rarest. Order, not exact tiers.
 | Bringing Zan back | Court Tilg & Standard into investing and terraforming. The rarest; funnels in every other ending. See below. | Agreed |
 | Atmosphere | Outlast everything until the air runs out. Not chosen: it arises from a world clock. | Agreed, needs the clock (not built) |
 
-**Ideas still loose:** *Wrong answer* (you call out and something that isn't Tilg answers) fits the hive mind start as the way you discover what you are. *Okafor line*: an underground bunker with a holdout. *Radio ending* (from earlier docs) remains undesigned.
+**Ideas still loose:** *Wrong answer* (you call out and something that isn't Tilg answers) fits the hive mind start as the way you discover what you are. *Haberjack line*: an underground bunker with a holdout. *Radio ending* (from earlier docs) remains undesigned.
 
 ## The freighter
 
@@ -64,7 +64,7 @@ Roughly from most achievable to rarest. Order, not exact tiers.
 
 - **Agreed.** The capstone, and the only ending that saves Zan rather than leaving it. It requires a bit of everything: a camp that sustains itself through the worst storms; the far-side ice; the restored observatory; a working call (StarCom or the station antenna); and the Ledger and Quartermaster connected so Zan's own systems vouch for the claim.
 - **Agreed.** It must beat the atmosphere clock: whoever comes has to fix the leak (terraforming), not just visit.
-- **Agreed.** It fans out into variants by construction, not menus: the player should know Zan plays out as they intended, even if it isn't simulated. Epilogue as a few still frames. Proposed levers: who you call (Tilg & Standard, the outpost drifters, the nomads); registered or kept "temporary" (Okafor's old question); which god leads (Ledger, Mother Cistern, or you if uploaded); and what you did about the nomads (below).
+- **Agreed.** It fans out into variants by construction, not menus: the player should know Zan plays out as they intended, even if it isn't simulated. Epilogue as a few still frames. Proposed levers: who you call (Tilg & Standard, the outpost drifters, the nomads); registered or kept "temporary" (Haberjack's old question); which god leads (Ledger, Mother Cistern, or you if uploaded); and what you did about the nomads (below).
 - **Open.** The Provisional is gone by the player's era. How the war ended and what human government exists now is deliberately undecided.
 
 ## Modifier: the observatory (Beyond the Eye)
@@ -97,6 +97,6 @@ Roughly from most achievable to rarest. Order, not exact tiers.
 - How the war ended; what government exists in the player's era.
 - Nomad reactions and communicating the pilgrimage without dialogue.
 - Cost of keeping the Walker broadcasting.
-- Wrong answer, Okafor-line bunker and the radio ending: develop or drop.
+- Wrong answer, Haberjack-line bunker and the radio ending: develop or drop.
 - The world clock behind the atmosphere ending.
 - Exact era year figures (still deferred).

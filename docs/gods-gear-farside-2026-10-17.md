@@ -7,7 +7,7 @@ Oct 17, 2026 · @Hunter Boyd
 Part 4 had two errors. Where this doc and part 4 disagree, this doc wins; for first-age detail, part 2 is canon.
 
 1. **The Dark Age was missing from the timeline.** The full sequence is: colonial → collapse → skimmer era → **First Kingdoms** (first age) → **Dark Age** → second age → feral. World gen's history pass should run in that order. The Dark Age generates no sites of its own (section 3).
-2. **The first age is the First Kingdoms, not a generic era.** Three powers raiding constantly and never at peace: Port Morgan (dominant), Halloran, and the loose Rim kingdoms, with family feuds inside each. Port Morgan's ruling families are **Okafor, Kessel, Arkwright and Vante**. Tu religion is only emerging. The era ends when the volcanic vents shift beyond reach. After the Dark Age, the Rim unites under **Halfrise** and campaigns to retake Mon.
+2. **The first age is the First Kingdoms, not a generic era.** Three powers raiding constantly and never at peace: Port Morgan (dominant), Halloran, and the loose Rim kingdoms, with family feuds inside each. Port Morgan's ruling families are **Haberjack, Pellicott, Crake and Vonatelli**. Tu religion is only emerging. The era ends when the volcanic vents shift beyond reach. After the Dark Age, the Rim unites under **Halfrise** and campaigns to retake Mon.
 
 First-age structures and loot should follow part 2's description, not part 4's summary.
 
@@ -111,16 +111,16 @@ The colonial-era gods call the Eye "the young god," with contempt. The Walker to
 
 **Launching** still needs both the Ledger and the Quartermaster to authorise. With only the Ledger you are shot down by paperwork. Linking them can be done any of three ways: carry the Quartermaster module to Port Morgan, bounce through a repaired Starcom, or run a cable. Carrying always runs one way, since the Ledger can't move.
 
-## 8. The Ledger and the Okafor bunker
+## 8. The Ledger and the Haberjack bunker
 
 The Ledger is Tilg property, so the surveyor's Tilg login works on it. Other kits need a **second door**: the original Harbourmaster was never formally fired, so their credentials are still valid.
 
-**The Okafor sticky note.** The Harbourmaster's credentials survive on a sticky note deep in the Port Morgan ruins. This is why the Okafors became a great First Kingdoms family: they descended from the last Harbourmaster, the one person holding the god's keys.
+**The Haberjack sticky note.** The Harbourmaster's credentials survive on a sticky note deep in the Port Morgan ruins. This is why the Haberjacks became a great First Kingdoms family: they descended from the last Harbourmaster, the one person holding the god's keys.
 
-**The Okafor bunker.** A sealed First Kingdoms vault under Port Morgan.
+**The Haberjack bunker.** A sealed First Kingdoms vault under Port Morgan.
 
 - Life support still runs on the colonial power tap. Nobody is left.
-- Generations of Okafor family marks and heraldry on the walls.
+- Generations of Haberjack family marks and heraldry on the walls.
 - At its heart: the sticky note under glass in a reliquary, guarded for generations by people who didn't know what it opened.
 
 Two outcomes, mutually exclusive:
@@ -267,7 +267,7 @@ These follow part 4's ten items. Gear and world work comes first; the gods build
 7. **God module framework:** mountable gods as crate modules with innate powers; stationary gods as consoles; per-god state (willing, captive, fed, corrupted).
 8. **Dispatch items:** sealed packets with sender, recipient and opened/forged flags.
 9. **Gods, in order:** Quartermaster, Mother Cistern, Almanac, Stoker, Eye. (Walker and Ledger already exist in part 2 canon.)
-10. **Endings:** Okafor bunker, captive-launch rule, blow up the moon.
+10. **Endings:** Haberjack bunker, captive-launch rule, blow up the moon.
 
 Deferred: hoppers, orbital strike, storm radio windows, hive mind forgery, Eye growth beyond corruption.
 

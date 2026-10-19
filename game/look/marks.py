@@ -166,8 +166,8 @@ def escutcheon(ink):
     ink.line(pts, fill=255, width=5, joint="curve")
 
 
-def okafor(ink, daub, rng):
-    """Okafor: a key. They kept the last Harbourmaster's, not knowing what it opened."""
+def haberjack(ink, daub, rng):
+    """Haberjack: a key. They kept the last Harbourmaster's, not knowing what it opened."""
     escutcheon(ink)
     ink.ellipse([116, 24, 140, 48], outline=255, width=5)
     ink.line([(128, 48), (128, 96)], fill=255, width=5)
@@ -175,8 +175,8 @@ def okafor(ink, daub, rng):
         ink.line([(128, y), (142, y)], fill=255, width=5)
 
 
-def kessel(ink, daub, rng):
-    """Kessel: a cauldron on three legs, steam over it."""
+def pellicott(ink, daub, rng):
+    """Pellicott: a cauldron on three legs, steam over it."""
     escutcheon(ink)
     ink.arc([102, 44, 154, 92], 0, 180, fill=255, width=5)
     ink.line([(98, 68), (158, 68)], fill=255, width=5)
@@ -186,8 +186,8 @@ def kessel(ink, daub, rng):
         ink.line([(x, 56), (x - 4, 46), (x + 2, 36), (x - 2, 26)], fill=255, width=3, joint="curve")
 
 
-def arkwright(ink, daub, rng):
-    """Arkwright: an arch on its pillars, its keystone set."""
+def crake(ink, daub, rng):
+    """Crake: an arch on its pillars, its keystone set."""
     escutcheon(ink)
     ink.arc([104, 30, 152, 78], 180, 360, fill=255, width=5)
     for x in (106, 150):
@@ -196,8 +196,8 @@ def arkwright(ink, daub, rng):
     ink.line([(98, 98), (158, 98)], fill=255, width=5)
 
 
-def vante(ink, daub, rng):
-    """Vante: a tower, crenellated, a door at its foot."""
+def vonatelli(ink, daub, rng):
+    """Vonatelli: a tower, crenellated, a door at its foot."""
     escutcheon(ink)
     ink.rectangle([110, 36, 146, 100], outline=255, width=5)
     for x in (110, 124, 138):
@@ -218,7 +218,7 @@ def tu_sign(ink, daub, rng):
 
 MARKS = [contractor, shield_maker, wind_maker, consignment, skimmer_crew, member_state]
 # The bottom row's, numbered on from the six (Paint.Mark).
-AFTER = [okafor, kessel, arkwright, vante, tu_sign]
+AFTER = [haberjack, pellicott, crake, vonatelli, tu_sign]
 # The marks that change from era to era take the row and give the drawing.
 BY_ERA = (consignment, skimmer_crew)
 

@@ -588,7 +588,7 @@ func _make(rec: Dictionary) -> RigidBody3D:
 		Finds.mark(body, rec.found)
 	# Before its parts are fitted and it's in the world, as a find is given it.
 	if rec.has("lineage"):
-		Catalog.inherit(body, rec.lineage)
+		Catalog.inherit(body, Eras.current(rec.lineage))
 	if rec.has("rolled"):
 		body.set_meta(&"rolled", rec.rolled)
 	if rec.has("rolled_m"):

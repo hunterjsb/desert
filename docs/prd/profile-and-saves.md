@@ -210,6 +210,9 @@ How each X was chosen, from the probes' numbers:
   toward each that's a number. Achievements
   attach at `Profile.deed`, as unlocks do at `unlock`. Only reset empties them, and the dev
   console's `deeds clear`.
+- **Names from before** (2026-10-19): session 5 renamed the houses, Kesselside and the Okafor
+  bunker. A profile or run saved before reads their old ids as the new ones as it loads
+  (`History.RENAMED`, `Eras.RENAMED`), so neither format's version changed.
 - **The dev console**, at the main menu too: `unlockall` opens every start whatever deeds are done
   (through `Profile.unlock`, so forgetting the deeds leaves them open; reset closes them), `deed
   <id>` grants one, `deeds` lists what's done and what isn't, and `deeds clear` forgets them all.
@@ -527,6 +530,9 @@ calls them from Save, Save & quit, Resume, New game, the death screen and Option
 23. **A save never buries you** (2026-10-18). Saved standing on a cistern's floor as the storm that
     dug it out lets go, the sand held off it over you, a resume brings it back dug out round you, the
     sand at your feet and not over them, though the weather alone would have it filled.
+24. **Names from before** (2026-10-19). A profile with Kesselside and the Okafor bunker counted
+    toward Hot Tourist Destinations counts Crakeside and the Haberjack bunker instead; a chassis an
+    Okafor marked, saved and resumed, is a Haberjack's and wears their heraldry.
 
 ## Out of scope
 
