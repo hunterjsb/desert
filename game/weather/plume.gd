@@ -46,8 +46,10 @@ const THINS := 0.7
 ## vent's dust for its lift.
 const DUSTY := 12.0
 ## The sand falls out of it by e over this many s, leaving this share, the
-## fine dust that stays up; its oldest fifth fades out.
+## fine dust that stays up; its oldest fifth fades out. The gas gathers it up
+## round the mouth as it rises, all of it by this many s.
 const FALLS := Vector2(150.0, 0.35)
+const GATHERS := 60.0
 ## A burst's ash, its faint trace: how much of a burst's core it darkens at
 ## most, falling out by e over this many s.
 const ASHEN := Vector2(0.3, 90.0)
@@ -329,7 +331,8 @@ func _streak(t: float, which := PackedInt32Array()) -> void:
 		var deep := parcel[1].x
 		var thick := THICK.z * v.x * pow(THICK.x * THICK.y / (deep * parcel[1].y), THINS) \
 			* (DUSTY if source.state == Geology.POCKET else 1.0) \
-			* (FALLS.y + (1.0 - FALLS.y) * exp(-age / FALLS.x)) * (1.0 - smoothstep(0.8, 1.0, age / OLDEST))
+			* (FALLS.y + (1.0 - FALLS.y) * exp(-age / FALLS.x)) * (1.0 - smoothstep(0.8, 1.0, age / OLDEST)) \
+			* smoothstep(-GATHERS * 0.25, GATHERS, age)
 		var ash := ASHEN.x * clampf((v.y - Geology.ASH.x) / (Geology.ASH.y - Geology.ASH.x), 0.0, 1.0) \
 			* exp(-age / ASHEN.y)
 		line[k] = parcel[0]

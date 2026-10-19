@@ -35,10 +35,12 @@ const vec2 BILLOW_RISE = vec2(0.35, 0.15);
 // big amplitudes hide that, but on a column it would leave smooth stretches,
 // so its billow is read this much harder, unclamped, so none goes flat.
 const float BILLOW_CONTRAST = 1.6;
-// Its face softens over this share of its width; however dense, its dust
+// Its face softens over this share of its width, never less than the next,
+// m, so its narrow foot is no hard ball; however dense, its dust
 // takes this many optical depths a width at most, so a face builds over a
 // few steps and shows its billows, not where a step happened to land.
 const float SKIN = 0.2;
+const float SKIN_LEAST = 70.0;
 const float DENSEST = 2.5;
 // Near you it isn't drawn: it dissolves over these, m, into the air round you.
 const vec2 NEAR = vec2(120.0, 500.0);
@@ -325,8 +327,8 @@ void fragment() {
 		float along;
 		float clear;
 		float inside = column(p, t, spans, q, width, sigma, squash, k, along, clear);
-		// Coarse while it's still dissolving near you.
-		float dt = max(max(width * STEP.x, t * STEP.y), STEP.z) * (t < NEAR.y ? 2.0 : 1.0);
+		// Coarse while it's still dissolving near you, easing in as it does.
+		float dt = max(max(width * STEP.x, t * STEP.y), STEP.z) * (2.0 - smoothstep(NEAR.x, NEAR.y, t));
 		if (clear > 10.0) {
 			// Clear of all of it: on by how far it must be.
 			t += clear * 0.9;
@@ -340,7 +342,7 @@ void fragment() {
 			dt *= 0.5 + jitter;
 		}
 		float veil = mix(1.0, mix(dust[k].z, dust[k + 1].z, along), smoothstep(far_fade.x, far_fade.y, t));
-		float d = min(sigma, DENSEST / width) * smoothstep(0.0, width * SKIN, face) * smoothstep(NEAR.x, NEAR.y, t)
+		float d = min(sigma, DENSEST / width) * smoothstep(0.0, max(width * SKIN, SKIN_LEAST), face) * smoothstep(NEAR.x, NEAR.y, t)
 			* (1.0 - smoothstep(reach.y, reach.z, t)) * veil;
 		if (d > 1.0e-6) {
 			float a = 1.0 - exp(-d * dt);
