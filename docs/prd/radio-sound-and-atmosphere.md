@@ -418,6 +418,8 @@ that teaching it takes evidence for each tell.
   bearing a line from where the Walker stood along its half of the moon, that spot a dot; the fix a ring;
   and once the Walker's taught, the anomalies. Its tab joins the Console's once it has noted a bearing or
   the Walker's taught. Under it: how many bearings, the fix's distance and way, and its evidence, n of 3.
+  It's what the one map's navigation filter shows once that's built (Devices & mods, one map with
+  filters), and its anomalies the weather filter's.
 - **The living city** (`LivingCity`, `game/radio/city.gd`): seeded and stateless, worked from the seed and
   the clock alone, so a save keeps nothing of it. It keeps on the far side, 105° to 160° from under Tu,
   moored 12 to 24 days at a time (`city_moored_days`), then making a leg of 4 to 9 km (`city_leg_m`) on
