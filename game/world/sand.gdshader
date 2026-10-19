@@ -1,10 +1,12 @@
 shader_type spatial;
 // The sand: the flat colour plus what makes dune shapes read. Slip faces are
 // smooth avalanche sand, a shade deeper and warmer, so they read even under a
-// noon sun that lights every face alike; gentler slopes carry wind ripples
-// across the wind, faded out before they alias, over a longer swell that holds
-// on further out; crests catch a thin highlight; and broad patches vary the
-// colour so distance reads. Its own light() lights it as sand, not paint.
+// noon sun that lights every face alike, streaked down the fall line by its
+// grainflows; gentler slopes carry wind ripples across the wind, lopsided,
+// forking and ending, faded out before they alias, their crests coarse and a
+// shade darker, over a longer swell that holds on further out; crests catch a
+// thin highlight; and patches drawn out along the wind vary the colour so
+// distance reads. Its own light() lights it as sand, not paint.
 
 uniform vec3 sand : source_color = vec3(0.71, 0.59, 0.43);
 // Shares of the sand's colour each channel keeps on slip faces and in troughs.
@@ -16,6 +18,20 @@ uniform vec2 downwind = vec2(1.0, 0.0);
 uniform vec2 origin = vec2(0.0);
 uniform float ripple_spacing = 0.16;
 uniform float ripple_depth = 0.12;
+// How lopsided ripples are on flats and on windward slopes, where the wind
+// keeps them crisp: 0 a sine, toward 1 a sawtooth, steep on the lee.
+uniform vec2 ripple_lean = vec2(0.4, 0.58);
+// Defects, where a crest forks or ends: the share of 2.4 m cells holding a pair.
+uniform float ripple_defects = 0.8;
+// The coarse grains a ripple's crest gathers and the fines its trough holds:
+// the share of each channel they take away and add.
+uniform vec3 sorting = vec3(0.025, 0.045, 0.06);
+// Grainflows down a slip face, their share either way; the small mottle of
+// the sand everywhere, under a metre across; and the grains themselves,
+// the spread (one standard deviation) of a 2 mm patch's lightness.
+uniform float grainflow = 0.04;
+uniform float mottle = 0.03;
+uniform float grains = 0.07;
 uniform float crest_glow = 0.12;
 uniform float patchiness = 0.04;
 // The swell: sand waves a dozen ripples long, gentler, so sand that has lost
@@ -95,8 +111,12 @@ const vec3 SHEEN = vec3(1.0, 0.89, 0.77);
 
 #include "res://game/weather/wind_map.gdshaderinc"
 
-float hash(vec2 p) {
-	return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
+// A lattice point's number, 0 to 1. Integer: a sin hash came out unlike
+// itself from one cell to the next this far from the origin, which tore the
+// ripples along straight lines.
+float lattice(ivec2 p) {
+	uint h = (uint(p.x) * 1597334677u ^ uint(p.y) * 3812015801u) * 1597334677u;
+	return float(h ^ (h >> 16u)) * (1.0 / 4294967295.0);
 }
 
 // Integer hash (PCG3D): sin-hashes band at the millions of cells glitter
@@ -125,15 +145,69 @@ vec4 glint(vec2 xz, vec2 origin_xz, float cell, int scale, mat2 to_px, vec3 norm
 	hash6(ivec3(ivec2(id), scale), r, lean);
 	vec2 off = to_px * ((0.25 + 0.5 * r.xy - fract(local)) * cell);
 	float spot = 1.0 - smoothstep(0.7, 1.7, length(off));
-	return vec4(normalize(normal + LEAN * (lean * 2.0 - 1.0)), spot * r.z * r.z);
+	// Few grains flash full; most, faintly.
+	float bright = r.z * r.z;
+	return vec4(normalize(normal + LEAN * (lean * 2.0 - 1.0)), spot * bright * bright);
+}
+
+// Ripple defects: each a pair of opposite twists of the ripples' phase, 5 to
+// 12 crests apart, which adds one crest between them and leaves the rest be,
+// faded out within the reach of the four cells round a pixel. Cycles.
+const float DEFECT_CELL = 2.4;
+const float DEFECT_REACH = 1.75;
+float defects(vec2 at, vec2 across, float share) {
+	vec2 corner = floor(at / DEFECT_CELL - 0.5);
+	float twist = 0.0;
+	for (int k = 0; k < 4; k++) {
+		vec2 id = corner + vec2(float(k & 1), float(k >> 1));
+		vec3 r;
+		vec3 q;
+		hash6(ivec3(ivec2(id), 99), r, q);
+		vec2 off = at - (id + 0.5 + (r.xy - 0.5) * 0.5) * DEFECT_CELL;
+		float far = dot(off, off);
+		// Most pixels lie beyond most pairs' reach: they skip the twist.
+		if (q.z > share || far > DEFECT_REACH * DEFECT_REACH) {
+			continue;
+		}
+		float reach = mix(0.4, 0.95, q.x);
+		vec2 half_way = normalize(across + downwind * (q.y - 0.5) * 1.6) * (r.z < 0.5 ? -reach : reach);
+		vec2 a = off - half_way;
+		vec2 b = off + half_way;
+		twist += (1.0 - smoothstep(reach + 0.15, DEFECT_REACH, sqrt(far))) * atan(a.y * b.x - a.x * b.y, dot(a, b) + 1e-7);
+	}
+	return twist / TAU;
 }
 
 float value_noise(vec2 p) {
-	vec2 i = floor(p);
+	ivec2 i = ivec2(floor(p));
 	vec2 f = fract(p);
 	f = f * f * (3.0 - 2.0 * f);
-	return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), f.x),
-		mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x), f.y);
+	return mix(mix(lattice(i), lattice(i + ivec2(1, 0)), f.x),
+		mix(lattice(i + ivec2(0, 1)), lattice(i + ivec2(1, 1)), f.x), f.y);
+}
+
+// Value noise and its gradient by p.
+vec3 value_noise_d(vec2 p) {
+	ivec2 i = ivec2(floor(p));
+	vec2 f = fract(p);
+	vec2 u = f * f * (3.0 - 2.0 * f);
+	float a = lattice(i);
+	float b = lattice(i + ivec2(1, 0));
+	float c = lattice(i + ivec2(0, 1));
+	float k = a - b - c + lattice(i + ivec2(1, 1));
+	return vec3(a + (b - a) * u.x + (c - a) * u.y + k * u.x * u.y,
+		6.0 * f * (1.0 - f) * (vec2(b - a, c - a) + k * u.yx));
+}
+
+// Value noise over cells of the engine's xz, counted from the origin's own
+// cell so it holds still through origin shifts, as the glitter's do.
+float cell_noise(vec2 xz, float cell) {
+	vec2 local = xz / cell;
+	ivec2 i = ivec2(floor(local)) + ivec2(floor(origin / cell + 0.5));
+	vec2 f = fract(local);
+	f = f * f * (3.0 - 2.0 * f);
+	return mix(mix(lattice(i), lattice(i + ivec2(1, 0)), f.x),
+		mix(lattice(i + ivec2(0, 1)), lattice(i + ivec2(1, 1)), f.x), f.y);
 }
 
 float track_at(vec2 xz) {
@@ -162,14 +236,47 @@ void vertex() {
 void fragment() {
 	vec3 n = normalize(world_normal);
 	vec2 at = world_pos.xz + origin;
+	vec2 across = vec2(-downwind.y, downwind.x);
 	float grade = length(n.xz) / max(n.y, 0.05);
+	float facing = dot(normalize(n.xz + 1e-5), downwind);
+	// How far a pixel spans on the ground, m, by which detail fades out.
+	vec3 dpx = dFdx(world_pos);
+	vec3 dpy = dFdy(world_pos);
+	float foot = max(length(dpx.xz), length(dpy.xz));
 	// Steep and facing downwind: a slip face.
-	float lee = smoothstep(0.42, 0.55, grade) * smoothstep(-0.2, 0.3, dot(normalize(n.xz + 1e-5), downwind));
+	float lee = smoothstep(0.42, 0.55, grade) * smoothstep(-0.2, 0.3, facing);
 
-	float broad = value_noise(at / 90.0) * 0.6 + value_noise(at / 23.0) * 0.4;
+	// The wind draws sand sheets out along itself.
+	vec2 along = vec2(dot(at, across), dot(at, downwind));
+	float broad = value_noise(at / 90.0) * 0.6 + value_noise(along / vec2(16.0, 48.0)) * 0.4;
 	vec3 colour = sand * mix(trough_shade, vec3(1.0), smoothstep(0.2, 0.8, broad) * 0.5 + 0.5);
-	colour *= 1.0 + (value_noise(at / 7.0) - 0.5) * patchiness;
+	// Patches, drawn out down the wind as ribbons of coarser and finer sand.
+	colour *= 1.0 + (value_noise(along / vec2(7.0, 30.0)) - 0.5) * 2.0 * patchiness;
+	if (foot < 0.3) {
+		colour *= 1.0 + (value_noise(at / 0.6) - 0.5) * 2.0 * mottle * (1.0 - smoothstep(0.15, 0.5, foot / 0.6));
+	}
 	colour *= mix(vec3(1.0), slip_shade, lee * 0.8);
+	if (lee > 0.0) {
+		// Grainflows run straight down the fall line, which turns with the
+		// face: the two nearest of a fan of headings, blended. Tongues a hand
+		// or two wide and a few metres long, and a metre wide and longer,
+		// fresh in places and long smoothed in others.
+		float fan = atan(dot(n.xz, across), dot(n.xz, downwind)) / 0.4;
+		float k = floor(fan);
+		float flow = 0.0;
+		for (int i = 0; i < 2; i++) {
+			float turn = (k + float(i)) * 0.4;
+			vec2 fall = downwind * cos(turn) + across * sin(turn);
+			vec2 q = vec2(dot(at, vec2(-fall.y, fall.x)), dot(at, fall));
+			float tongue = (value_noise(q / vec2(1.1, 9.0) + 7.0) - 0.5) * (1.0 - smoothstep(0.15, 0.5, foot / 1.1));
+			if (foot < 0.15) {
+				tongue += (value_noise(q / vec2(0.3, 3.0)) - 0.5) * (1.0 - smoothstep(0.15, 0.5, foot / 0.3));
+			}
+			flow += tongue * (i == 0 ? 1.0 - smoothstep(0.25, 0.75, fan - k) : smoothstep(0.25, 0.75, fan - k));
+		}
+		float fresh = smoothstep(0.25, 0.75, value_noise(along / vec2(5.0, 14.0) + 3.0));
+		colour *= 1.0 + flow * 2.0 * grainflow * lee * fresh;
+	}
 	if (vent_ash.z > 0.0) {
 		vec2 off = at - vent_ash.xy;
 		float down = dot(off, downwind);
@@ -186,15 +293,10 @@ void fragment() {
 	}
 
 	// Convex where the normal turns the way the surface runs: a crest.
-	vec3 dpx = dFdx(world_pos);
-	vec3 dpy = dFdy(world_pos);
 	float bend = (dot(dFdx(world_normal), dpx) + dot(dFdy(world_normal), dpy)) / max(dot(dpx, dpx) + dot(dpy, dpy), 1e-4);
 	colour *= 1.0 + crest_glow * smoothstep(0.06, 0.2, bend);
 
-	// Ripples: a lopsided wave across the wind, wandering a little, gone on
-	// slip faces and wherever a pixel spans more than about a tenth of one.
-	vec2 across = vec2(-downwind.y, downwind.x);
-	float phase = (dot(at, downwind) + 0.6 * sin(dot(at, across) * 0.9) + 1.5 * value_noise(at / 3.0)) / ripple_spacing;
+	float phase = dot(at, downwind) / ripple_spacing;
 	// Tracks: trodden sand is darker and sees less sky, a mark's walls tilt
 	// the light, and the loose lip round it is lighter. Nothing glows: at
 	// night and in a storm the contrast is the sand's own.
@@ -218,17 +320,45 @@ void fragment() {
 		AO = 1.0 - track_occlusion * smoothstep(0.0, 0.6, c);
 	}
 
-	float shown = 1.0 - smoothstep(0.06, 0.18, fwidth(phase));
-	float fade = shown * (1.0 - lee) * (1.0 - trodden) * ripple_depth;
-	float wave = phase * TAU;
-	float slope = sin(wave) + 0.35 * sin(2.0 * wave);
+	// Ripples across the wind, gone wherever a pixel spans more than about a
+	// quarter of one, easing to a plain wave first so nothing finer than a
+	// pixel is drawn. Their heading and spacing drift over metres; they fork
+	// and end; patchy, crisp on windward slopes, where the wind keeps them up,
+	// and gone toward a slip face over a ragged line, where grainflows wipe
+	// them out. The way they run tilts the light.
+	float spans = fwidth(phase);
+	float shown = 1.0 - smoothstep(0.09, 0.27, spans);
+	float fade = shown * (1.0 - trodden);
+	vec2 way = vec2(0.0);
+	if (fade > 0.0) {
+		vec3 drift = value_noise_d(at / 9.0) * vec3(0.9, 0.1, 0.1) + value_noise_d(at / 2.3) * vec3(0.3, 0.13, 0.13);
+		phase += drift.x / ripple_spacing + defects(at, across, ripple_defects);
+		vec2 heading = downwind + drift.yz;
+		if (grade > 0.25 && facing > -0.3) {
+			fade *= 1.0 - smoothstep(0.32, 0.5, grade + 0.14 * (value_noise(at / 0.8) - 0.5)) * smoothstep(-0.3, 0.2, facing);
+		}
+		float windward = smoothstep(0.06, 0.2, grade) * smoothstep(0.0, 0.4, -facing);
+		float strength = (0.55 + 0.75 * value_noise(at / 5.0 + 31.0)) * (0.9 + 0.2 * windward);
+		// Lopsided: the slope of a rounded sawtooth, a long gentle windward
+		// side and a short steep lee, scaled to keep the old wave's mean
+		// square, 0.56.
+		float lean = mix(ripple_lean.x, ripple_lean.y, windward) * (1.0 - 0.9 * smoothstep(0.08, 0.2, spans));
+		float wave = phase * TAU;
+		float bow = cos(wave);
+		float slope = (lean * lean - lean * bow) / (1.0 + lean * lean - 2.0 * lean * bow)
+			* 0.75 * sqrt(2.0 * (1.0 - lean * lean)) / lean;
+		// Coarse grains ride the crests, a shade darker and redder; fines lie
+		// in the troughs. The crest is where the slope turns down.
+		colour *= 1.0 - sorting * cos(wave + acos(lean)) * fade * strength;
+		way = normalize(heading) * slope * fade * strength * ripple_depth;
+	}
 	// The swell, wandering more and stronger in patches.
 	float swell_phase = (dot(at, downwind) + 0.8 * sin(dot(at, across) * 0.23) + 2.5 * value_noise(at / 11.0)) / swell_spacing;
 	float swell_shown = 1.0 - smoothstep(0.06, 0.18, fwidth(swell_phase));
 	float swell = swell_shown * (1.0 - lee) * (1.0 - trodden) * swell_depth * (0.4 + 0.6 * broad);
 	float swell_wave = swell_phase * TAU;
-	slope = slope * fade + (sin(swell_wave) + 0.35 * sin(2.0 * swell_wave)) * swell;
-	vec3 tilt = vec3(downwind.x, 0.0, downwind.y) * slope;
+	way += downwind * (sin(swell_wave) + 0.35 * sin(2.0 * swell_wave)) * swell;
+	vec3 tilt = vec3(way.x, 0.0, way.y);
 	vec3 rippled = normalize(n - tilt + dent);
 
 	// What the ripples and swell no longer draw still scatters the light: the
@@ -248,7 +378,6 @@ void fragment() {
 	// grain drawn round on screen a pixel or two across, so none is ever
 	// smaller than a pixel to crawl. Gone with distance, on tracks (trodden
 	// sand is rough) and in the dust.
-	float foot = max(length(dpx.xz), length(dpy.xz));
 	float level = max(log2(foot * CELL_PIXELS / GRAIN), 0.0);
 	float scale = floor(level);
 	float blend = level - scale;
@@ -267,6 +396,20 @@ void fragment() {
 		glint_seen = vec4(mat3(VIEW_MATRIX) * grain.xyz, grain.w * near);
 	}
 
+	// The grains, a few dozen to a pixel close up. A pixel's mean of n grains
+	// varies as 1/sqrt(n), so cells two pixels or so across, stepped by powers
+	// of two as the glitter's are and blended, vary the less the larger they
+	// are: grainy at your feet, gone within 5 m, and never crawling.
+	if (foot < 0.016) {
+		const float SPECK = 1.0 / 512.0;
+		float speck_level = max(log2(foot * 2.0 / SPECK), 0.0);
+		float speck_scale = floor(speck_level);
+		float speck_cell = SPECK * exp2(speck_scale);
+		float speck = mix(cell_noise(world_pos.xz, speck_cell) - 0.5, (cell_noise(world_pos.xz, speck_cell * 2.0) - 0.5) * 0.5,
+			speck_level - speck_scale);
+		// 0.16 is value noise's own spread.
+		colour *= 1.0 + speck / 0.16 * grains * exp2(-speck_scale) * (1.0 - smoothstep(0.008, 0.016, foot));
+	}
 	ALBEDO = wind_view_colour(colour, world_pos.xz, wind_vertex);
 	ROUGHNESS = 1.0;
 	NORMAL = normalize((VIEW_MATRIX * vec4(rippled, 0.0)).xyz);

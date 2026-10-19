@@ -16,9 +16,12 @@ godot=${GODOT:-scripts/unseen.sh}
 mkdir -p "$out"
 git show "${BEFORE:-master}:game/world/sand.gdshader" >"$out/before.gdshader" || exit 2
 
+# --only without the storm skips the storm's pass.
+only=$(printf '%s\n' "$@" | grep -A1 -x -- --only | tail -n +2)
 for weather in clear storm; do
 	flag=()
 	[[ $weather == storm ]] && flag=(--storm)
+	[[ $weather == storm && -n $only && ,$only, != *,storm,* ]] && continue
 	timeout 900 "$godot" --path . --disable-vsync res://look/sandlight/sandlight.tscn -- \
 		--capture "$out" --before "$out/before.gdshader" "${flag[@]}" "$@" 2>&1 | grep -E '^sandlight|SHADER ERROR'
 done
@@ -26,7 +29,9 @@ done
 args=()
 for pair in "noon:noon" "low_into:low sun, facing it" "air_low:the same from 200 m up" \
 	"low_behind:low sun behind you" "dusk:dusk, the sun behind you" "night:a full-Tu night, Tu behind you" \
-	"lamp:the same, by the headlamp" "storm:deep in a storm by day" "track:a walked track, midmorning"; do
+	"lamp:the same, by the headlamp" "storm:deep in a storm by day" "track:a walked track, midmorning" \
+	"feet:at your feet, noon" "ripples:ripples over a dune, a low sun" "slip:a slip face from its foot"; do
+	[[ -f $out/${pair%%:*}_after.png ]] || continue
 	for look in before after; do
 		file="$out/${pair%%:*}_$look.png"
 		label="${pair#*:}, $look"
@@ -56,9 +61,12 @@ for motion in "slide:+0+60:sliding sideways" "walk:+0+140:walking on"; do
 		done
 	done
 done
-montage "${crops[@]}" -tile 3x -geometry 960x540+6+6 -pointsize 20 -background '#f4efe6' "$out/glitter.png"
-
-montage -label "" "$out/moments.png" -label "" "$out/glitter.png" -tile 1x -geometry +0+12 -background '#f4efe6' \
+parts=(-label "" "$out/moments.png")
+if [[ -f $out/slide_0_after.png ]]; then
+	montage "${crops[@]}" -tile 3x -geometry 960x540+6+6 -pointsize 20 -background '#f4efe6' "$out/glitter.png"
+	parts+=(-label "" "$out/glitter.png")
+fi
+montage "${parts[@]}" -tile 1x -geometry +0+12 -background '#f4efe6' \
 	-title "The sand's own light: before (left) and after (right); then the glitter as the camera moves, blown up three times" \
 	-pointsize 28 -depth 8 "$sheet"
 echo "sheet: $sheet"
