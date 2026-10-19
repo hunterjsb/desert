@@ -4,7 +4,8 @@ extends WreckProbe
 ## hold cleared, its bank grounded. Walked far enough that its ground goes and
 ## back, it's built again as it was left: the plate lying where it fell, the
 ## slice gone, the bank dead. Saved and resumed, the same, and a save of it
-## holds what was done and nothing of an untouched wreck. Once you've gone so
+## holds what was done and nothing of an untouched wreck; buried by a storm
+## while you're away, its plate still lies where it fell. Once you've gone so
 ## far the sheet lifts it, it's forgotten, as any site is.
 
 ## Gone this far, m: the ground goes, the site stays laid; then far enough
@@ -84,6 +85,19 @@ func run() -> void:
 	wreck = await _built(again)
 	_as_left(wreck, plate, fallen, bank, "resumed at")
 
+	# Buried by a storm while you're away, it's sunk deep; the plate lying on
+	# the sand outside it hasn't moved.
+	again.depth = again.taken() * 4.0 + 1.0
+	await go(here.x + AWAY, here.y)
+	await go(here.x, here.y)
+	wreck = await _built(again)
+	if wreck != null:
+		var lying := _fallen_at(wreck, plate)
+		print("buried, the wreck is %s; its plate lies %.3f m from where it fell" % [Exposure.NAMES[again.state()],
+			lying.distance_to(fallen)])
+		check(again.state() != Exposure.EXPOSED and lying.distance_to(fallen) < 0.05,
+			"buried, its fallen plate still lies where it fell")
+
 	# Lifted, forgotten.
 	await go(here.x + LIFTED, here.y)
 	await physics_frames(5)
@@ -121,7 +135,7 @@ func _plate(wreck: Wreckage) -> int:
 func _fallen_at(wreck: Wreckage, i: int) -> Vector3:
 	if not wreck.state.fallen.has(i):
 		return Vector3(NAN, NAN, NAN)
-	return wreck.global_transform * (wreck.state.fallen[i] as Transform3D).origin
+	return wreck.global_transform * wreck.lying_at(i).origin
 
 
 func _built(site: Structure) -> Wreckage:

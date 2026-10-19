@@ -91,7 +91,7 @@ func _seams(kind: StringName, wreck: Wreckage) -> void:
 	check(wreck.state.fallen.has(i), "it comes to rest")
 	if not wreck.state.fallen.has(i):
 		return
-	var lying: Transform3D = wreck.global_transform * (wreck.state.fallen[i] as Transform3D)
+	var lying: Transform3D = wreck.global_transform * wreck.lying_at(i)
 	var moved := lying.origin - before
 	var under := world.height_under(lying.origin)
 	print("%s: its %s fell %.2f m outward, %.2f m down, lying %.2f m over the sand" % [kind, p.label,

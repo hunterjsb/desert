@@ -62,7 +62,8 @@ static var _bead_look: ShaderMaterial
 var site: Structure
 var plan: WreckPlan
 ## {"cut": [PackedFloat32Array per plate], "cleared": PackedFloat32Array per
-## hold, "hazards": {socket: SAFE or SPENT}, "fallen": {plate: Transform3D}}.
+## hold, "hazards": {socket: SAFE or SPENT}, "fallen": {plate: where it lies
+## from its middle on the dunes' mean}}.
 var state: Dictionary
 
 ## The world's one ground function, world metres.
@@ -503,7 +504,7 @@ func _lying(i: int) -> void:
 	Paint.show_age(body, 0.85)
 	body.set_meta(&"fallen_plate", i)
 	body.set_meta(&"wreckage", self)
-	body.transform = state.fallen[i]
+	body.transform = lying_at(i)
 	add_child(body)
 
 
@@ -756,8 +757,7 @@ func _settle(delta: float) -> void:
 			look.set_instance_shader_parameter(&"lit", maxf(0.6 - each[2] * 0.15, 0.0))
 		if each[3] >= SETTLE or each[2] >= SETTLE_MOST:
 			body.freeze = true
-			state.fallen[each[0]] = transform.affine_inverse() * (get_parent() as Node3D).global_transform.affine_inverse() \
-				* body.global_transform if get_parent() is Node3D else body.transform
+			state.fallen[each[0]] = _kept(body.transform)
 			_falling.remove_at(n)
 
 
@@ -791,8 +791,20 @@ func _exit_tree() -> void:
 	for each in _falling:
 		var body: RigidBody3D = each[1]
 		if is_instance_valid(body):
-			state.fallen[each[0]] = body.transform
+			state.fallen[each[0]] = _kept(body.transform)
 	_falling.clear()
+
+
+## Where a fallen plate lies, as kept: from the wreck's middle on the dunes'
+## mean, not from its floor, which sinks and rises with its state while the
+## sand the plate lies on outside it doesn't.
+func _kept(lying: Transform3D) -> Transform3D:
+	return lying.translated(Vector3.UP * (transform.origin.y - site.pad()))
+
+
+## Where a fallen plate lies now, from the wreck's floor in the state it's in.
+func lying_at(i: int) -> Transform3D:
+	return (state.fallen[i] as Transform3D).translated(Vector3.UP * (site.pad() - transform.origin.y))
 
 
 func _cut_through(i: int) -> bool:
