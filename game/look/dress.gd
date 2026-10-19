@@ -323,6 +323,17 @@ static func _frame(id: StringName, size: Vector3, extra: float) -> ArrayMesh:
 			for s in [-1, 1]:
 				b.box(Vector3(size.x, size.y, 0.03), Vector3(0.0, 0.0, s * (h.z - 0.015)), gun, 0.006)
 			_cells(b, Vector2(size.x - 0.04, size.z - 0.08), 4, 2, Basis(Vector3.RIGHT, -PI / 2.0), Vector3(0.0, 0.008, 0.0))
+		&"sailing_notes":
+			# A salt-stained field booklet, pale pages held by a dark cloth spine.
+			b.box(Vector3(size.x, 0.008, size.z), Vector3(0.0, -h.y + 0.004, 0.0), teal, 0.003)
+			b.box(Vector3(size.x - 0.015, size.y - 0.016, size.z - 0.012), Vector3.ZERO, Paint.coat(Paint.BONE), 0.002)
+			b.box(Vector3(size.x, 0.008, size.z), Vector3(0.0, h.y - 0.006, 0.0), teal, 0.003)
+			b.box(Vector3(0.022, size.y, size.z), Vector3(-h.x + 0.011, 0.0, 0.0), black, 0.003)
+			# A pale sail and its mast identify it even before the look-at label.
+			b.box(Vector3(0.008, 0.002, 0.18), Vector3(-0.025, h.y - 0.001, 0.0), Paint.coat(Paint.BONE), 0.0)
+			for i in 8:
+				var width := 0.02 + i * 0.009
+				b.box(Vector3(width, 0.002, 0.017), Vector3(-0.02 + width * 0.5, h.y - 0.001, -0.07 + i * 0.02), Paint.coat(Paint.BONE), 0.0)
 		&"bedroll":
 			# Company canvas rolled tight on its pad, the pale lining showing at
 			# each end, two black straps round it.

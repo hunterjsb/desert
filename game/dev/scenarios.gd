@@ -66,7 +66,7 @@ const LIST: Array[Dictionary] = [
 		"kind": "clear", "day": [0.35, 0.5], "calm": 6.0, "lays": &"chassis"},
 	# A steady breeze across open sand: the wind on your left, the camp
 	# facing across it ahead of you, ready to raise its sail and go.
-	{"key": "sail", "label": "a 2x2 deck on skates, its mast and sail, the sheet at your waist, a breeze",
+	{"key": "sail", "label": "a 2x2 deck on skates, its mast and sail, the sheet at your waist, a breeze; sailing notes by the board",
 		"kind": "sail", "day": [0.35, 0.5], "breeze": [8.5, 11.5], "lays": &"sail"},
 	{"key": "sail_tow", "label": "the sail rig towing a camp past you on a hidden line, the board at your feet",
 		"kind": "sail", "day": [0.35, 0.5], "breeze": [8.5, 11.5], "lays": &"sail_tow"},
@@ -1402,14 +1402,17 @@ static func _free(device: Device, kind: StringName) -> Socket:
 ## end to your waist, and a charged board lies at your feet. Use the mast to
 ## raise the sail, and ride.
 static func sail(world: World) -> Array[Node3D]:
-	var rig := rig_at(world, SQUARE + [SAIL_TAIL] + SKATES + [SAIL_MAST] + SAIL_BALLAST + [SAIL_SHIELD], SAIL_DECK)
+	var rig := rig_at(world, SQUARE + [SAIL_TAIL] + SKATES + [SAIL_MAST,
+		[&"up", &"mast", &"front", Vector2(0.0, 0.5), 0.0, &"streamer"]] + SAIL_BALLAST + [SAIL_SHIELD], SAIL_DECK)
 	var mast: Mast = rig.named.mast
 	var board := standing(world, &"board", [&"battery"], SAIL_BOARD)
 	var sheet := sheet_to_waist(world, mast)
 	# Eased for a start across the wind: reel in as it picks up speed.
 	mast.trim = 2.0 * Mast.BOOM * sin(deg_to_rad(SAIL_EASED) * 0.5)
 	var dropped := _of(rig)
-	dropped.append_array([board, sheet])
+	dropped.append_array([board, sheet, standing(world, &"sailing_notes", [], [-0.75, 0.8])])
+	if Controls.ui != null:
+		Controls.ui.teach("sailing_notes", "Sailing field notes lie beside the board. Look at them and {interact} to read, or take them with you.")
 	return dropped
 
 
