@@ -118,7 +118,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		_jump_queued = true
 	elif event.is_action_pressed("auto_walk"):
 		walker.toggle()
-	elif event is InputEventMouseMotion and not Controls.mouse_free:
+	elif event is InputEventMouseMotion and not Controls.mouse_free and not vitals.wounds.stunned():
 		if hands.turn(event.relative * _tuning.mouse_sensitivity):
 			return
 		rotate_y(-event.relative.x * _tuning.mouse_sensitivity)
@@ -127,8 +127,9 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _physics_process(delta: float) -> void:
+	# Stunned by a shock, you go nowhere.
 	var input := Input.get_vector("move_left", "move_right", "move_forward", "move_back") \
-		if Controls.playing() else Vector2.ZERO
+		if Controls.playing() and not vitals.wounds.stunned() else Vector2.ZERO
 	walker.check(input)
 	if flying:
 		mode = "fly"

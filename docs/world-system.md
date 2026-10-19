@@ -897,6 +897,14 @@ Shared files each package may touch, and nothing else outside its own: `Tuning` 
   laid, so it can't see history's structures yet: the spawns package's to order. The performance pass's
   `held_height_at` and `highest_in` on master ask `ruins.covering` and `RuinSites.MARGIN`: on this branch
   they become `sites.covering` and `sites.narrowest()`, the narrowest any structure's ground is.
+- **Wrecks** (2026-10-18, the `wrecks` branch): five kit pieces with a scrapping plan, in one file of
+  their own (`WreckKit`): the skimmer hull (the wreck fields' hull, now at half its site's lean), the
+  tithe hauler (wreck fields and the black site's checkpoints), the freight pod (by frontier towns,
+  1 to 3 m deep, a kind's own burial over its era's: `SiteKinds.burial`), the lifeboat (a row off the
+  roads into Port Morgan, within 16 km of it: a row may say how `near` a landmark it lies) and the
+  Knights' hopper (a row along the artery, and by crusader bunkers). New kinds are appended to their
+  settlements' members and to the rows, so every older site keeps its stream. Their plates, packed
+  holds, held modules and hazards are [Salvage & ruins'](prd/salvage-and-ruins.md#wrecks-and-scrapping-hunter-2026-10-18-built).
 - **Planned only, still:** survey beacons, pump stations, farm domes, vent stations, checkpoints,
   generator shrines, caravanserais, stepwells, ration gates, granaries, earthworks, bunkers and the signs:
   history's plan, for the map and the packages to come.

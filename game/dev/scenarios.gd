@@ -29,7 +29,10 @@ extends RefCounted
 ## in a few minutes, to watch its screen as it comes. "anomaly" stands you
 ## where an anomaly's heart comes over minutes after its storm's wall, beside
 ## a camp built for wind. "eclipse" faces Tu in
-## the clear, the sun `eclipse` s from going behind it. "moon" stands you elsewhere on the moon:
+## the clear, the sun `eclipse` s from going behind it. "wreck" stands one of
+## every wreck in a fan ahead of you, dug out, each turned to show you its way
+## in, with what strips them at your feet: a heat cutter, a scoop, sealant,
+## stakes and a med kit. "moon" stands you elsewhere on the moon:
 ## [latitude, degrees east of the point under Tu], so [30, 180] is the far
 ## side, 30° north. Times of day are local.
 const LIST: Array[Dictionary] = [
@@ -90,6 +93,8 @@ const LIST: Array[Dictionary] = [
 		"kind": "sail", "day": [0.35, 0.5], "breeze": [8.5, 11.5], "sail": true},
 	# Far enough off that the radar sees the front coming before the smart
 	# shield switches itself on.
+	{"key": "wreck", "label": "scrap: every wreck in a fan ahead of you, dug out, a heat cutter, a scoop, sealant, stakes and a med kit, clear and calm",
+		"kind": "clear", "day": [0.36, 0.5], "calm": 6.0, "wreck": true},
 	{"key": "console", "label": "console: a Console with every instrument and a radio on a small deck with a shield, a storm due in a few minutes",
 		"kind": "clear", "day": [0.35, 0.55], "due": [240.0, 360.0], "console": true},
 	# Its heart comes over minutes after the wall, on a camp ready for an
@@ -300,7 +305,7 @@ static func apply(world: World, scenario: Dictionary) -> void:
 			or scenario.get("farm", false) or scenario.get("board", false) or scenario.get("radio", false)
 			or scenario.get("afk", false) or scenario.get("chassis", false) or scenario.get("console", false)
 			or scenario.get("sail", false) or scenario.get("drift", false) or scenario.get("walker", false)
-			or scenario.get("music", false) or scenario.get("anomaly", false)):
+			or scenario.get("music", false) or scenario.get("anomaly", false) or scenario.get("wreck", false)):
 		return
 	# Bodies dropped before the sand under them has collision would be frozen or forgotten.
 	while is_instance_valid(world) and not world.terrain.is_settled_around(place.x, place.z):
@@ -336,9 +341,76 @@ static func apply(world: World, scenario: Dictionary) -> void:
 		dropped = catch_line(world)
 	elif scenario.get("anomaly", false):
 		dropped = anomaly_camp(world)
+	elif scenario.get("wreck", false):
+		dropped = await wrecks(world)
 	else:
 		dropped = camp(world) if scenario.get("camp", false) else survive(world)
 	world.set_meta(&"scenario_kit", dropped)
+
+
+## Every wreck kind, dug out, in a fan this far ahead of you, m, this far
+## apart round it, degrees; each tries further out where the dunes won't take
+## it.
+const WRECKS_AHEAD := 40.0
+const WRECKS_APART := 32.0
+
+
+## One of every wreck in a fan ahead of you, laid by hand as history would
+## lay them, dug out, each turned so its way in faces you; the skimmer era's
+## lean as a wreck of theirs would. At your feet what strips them: a heat
+## cutter with a full battery, a sand scoop, two sealant canisters, two
+## stakes and a med kit. Returns the tools once the wrecks are built.
+static func wrecks(world: World) -> Array[Node3D]:
+	var sites := world.shape.sites
+	var me := Vector2(world.player_world_x(), world.player_world_z())
+	var ahead := -world.player.global_basis.z
+	var facing := atan2(ahead.x, -ahead.z)
+	var kinds: Array[StringName] = []
+	for kind: StringName in StructureKit.kinds():
+		if StructureKit.piece(kind).wreck != null:
+			kinds.append(kind)
+	var placed: Array[Structure] = []
+	for i in kinds.size():
+		var piece := StructureKit.piece(kinds[i])
+		var lean := deg_to_rad(Eras.TILT.get(piece.era, Vector2.ZERO).y * 0.6)
+		var way := facing + deg_to_rad(WRECKS_APART * (i - (kinds.size() - 1) * 0.5))
+		var fan := me + Vector2(sin(way), -cos(way)) * WRECKS_AHEAD
+		# Out from its place in the fan on a spiral, nearest first, clear of
+		# the others' ground.
+		for j in 300:
+			var at := fan + Vector2.from_angle(j * 2.39996) * 4.0 * sqrt(j)
+			if placed.any(func(o: Structure) -> bool: return o.distance_to(at.x, at.y) < o.reach + piece.reach):
+				continue
+			# Turned so its approach is the side nearest you.
+			var best: Structure = null
+			var near := INF
+			for k in 8:
+				var tried := sites.by_hand(kinds[i], at.x, at.y, TAU * k / 8.0, 0.0, lean)
+				var d := tried.to_world(piece.approach).distance_to(me)
+				if d < near:
+					near = d
+					best = tried
+			if best.stands():
+				sites.add(best)
+				placed.append(best)
+				break
+	# The ground they changed is built again, and what they hold laid out.
+	for frame in 600:
+		await world.get_tree().physics_frame
+		if not is_instance_valid(world):
+			return []
+		if placed.all(func(s: Structure) -> bool: return world.salvage.wreckage_of(s) != null or not world.tuning.salvage) 				and world.salvage.is_idle():
+			break
+	var tools: Array[Node3D] = [standing(world, &"cutter", [&"battery"], [0.7, 1.3])]
+	for each: Array in [[&"sand_scoop", -0.7], [&"sealant", -0.3], [&"sealant", -0.15], [&"med_kit", 0.15]]:
+		var made := Catalog.part(each[0])
+		drop(world, made, Transform3D(Basis.IDENTITY, Vector3(0.0, 0.1, 0.0)), each[1], 1.1)
+		tools.append(made)
+	for right: float in [1.2, 1.45]:
+		var stake := Catalog.stake()
+		drop(world, stake, Transform3D(Basis.IDENTITY, Vector3(0.0, 0.1, 0.0)), right, 1.0)
+		tools.append(stake)
+	return tools
 
 
 ## Frees what a kit set down that's still lying about, and forgets the list:
