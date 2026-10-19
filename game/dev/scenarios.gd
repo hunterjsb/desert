@@ -9,7 +9,7 @@ extends RefCounted
 ## kind: "spawn", "clear", "front" (a storm `distance` m upwind, coming at
 ## you), "deep" (inside, far from any edge), "back" (inside, clear air
 ## `distance` m upwind), "sky" (clear, facing the light), or a search of its
-## own: "ruin", "lee", "sail", "anomaly", "vent" and "dig". day is the window of
+## own: "ruin", "lee", "sail", "anomaly", "vent", "dig" and "walker". day is the window of
 ## local time of day to look in: 0 is midnight, 0.5 noon; calm and breeze
 ## bound the wind, m/s; due is when a storm comes, s, in place of ten clear
 ## minutes; moon is [latitude, degrees east of the point under Tu], so
@@ -90,6 +90,9 @@ const LIST: Array[Dictionary] = [
 	# Before the sand comes back over it: stand on it and it stays off.
 	{"key": "dig", "label": "a big dune's ruin a storm has just laid bare, a scoop in hand and a sieve carried",
 		"kind": "dig", "lays": &"dig"},
+	# Where the run's start puts the Walker, ahead of it as it comes: plug in as it passes.
+	{"key": "walker", "label": "beside the Walker as it comes, a Console holding all three tells, its cable in hand",
+		"kind": "walker", "day": [0.35, 0.5], "lays": &"walker_camp"},
 ]
 
 ## A floater's stake is driven this far further upwind of it, m.
@@ -421,6 +424,7 @@ static func lay(world: World, scenario: Dictionary, place: Dictionary) -> Array[
 		&"sleep": dropped = sleep(world)
 		&"vent": dropped = vent(world)
 		&"dig": dropped = dig(world)
+		&"walker_camp": dropped = walker_camp(world)
 	world.set_meta(&"scenario_kit", dropped)
 	return dropped
 
@@ -563,6 +567,8 @@ static func find(world: World, scenario: Dictionary) -> Dictionary:
 		return _before_anomaly(world, scenario)
 	if scenario.kind == "vent":
 		return _before_burst(world, scenario)
+	if scenario.kind == "walker":
+		return _before_walker(world, scenario)
 	if scenario.kind == "dig":
 		var found := bared_dune_ruin(world, world.spawn, DUNE_SEARCH, 3.0, 0.25, true)
 		if found.is_empty():
@@ -1059,6 +1065,62 @@ static func weather_station(world: World) -> Array[Node3D]:
 static func _on_station(world: World, tuned: Radio) -> void:
 	tuned.on = true
 	tuned.frequency = Radio.gods_of(world).carrier(&"walker", world.time)
+
+
+## Beside the Walker: a clear day where the run's start puts it as the run
+## begins, the clock's moment then, this far ahead of it on its route and
+## off its right, its port's side, facing it as it comes.
+const WALKER_AHEAD := 60.0
+const WALKER_ASIDE := 4.5
+
+
+static func _before_walker(world: World, scenario: Dictionary) -> Dictionary:
+	var gods := Radio.gods_of(world)
+	var radius := world.shape.history.radius
+	# Begun at any moment, the run puts it at the same place then.
+	gods.place_walker(world.start, 0.0)
+	var q := gods.home(&"walker", 0.0)
+	var heading := Sphere.bearing(q, gods.home(&"walker", 10.0))
+	var spot := Sphere.toward(Sphere.toward(q, heading, WALKER_AHEAD / radius), heading + PI * 0.5, WALKER_ASIDE / radius)
+	var place := _search(world, {"kind": "clear", "day": scenario.day}, world.spawn, Sphere.longitude(spot))
+	if place.is_empty():
+		return {}
+	place.moon = Vector2(rad_to_deg(Sphere.latitude(spot)), rad_to_deg(Sphere.longitude(spot)))
+	place.yaw = -Sphere.bearing(spot, q)
+	return place
+
+
+## A Console on a deck of two resting on the sand at your side, its screen,
+## anemometer and particle sensor fitted, a radio on the Walker's carrier, the
+## base shield and a compass stuck on it; the Console holding evidence of all
+## three tells, a cable in its port and the cable's other plug in your hands.
+const WALKER_CONSOLE := [&"screen", &"anemometer", &"particle_sensor"]
+const WALKER_DECK := [1.0, 1.2]
+const WALKER_RIG := [[&"piece", Vector2i(-1, 0)],
+	[&"stick", Vector2i(0, 0), &"top", Vector2(0.0, -0.18), 180.0, [&"console", WALKER_CONSOLE], &"console"],
+	[&"stick", Vector2i(0, 0), &"top", Vector2(0.0, 0.32), 0.0, &"big_battery"],
+	[&"stick", Vector2i(0, 0), &"top", Vector2(0.3, 0.32), 0.0, [&"radio", [&"battery"]], &"radio"],
+	[&"stick", Vector2i(-1, 0), &"top", Vector2(-0.2, -0.1), 0.0, &"shield", &"shield"],
+	[&"stick", Vector2i(-1, 0), &"top", Vector2(0.27, 0.25), 0.0, &"battery"],
+	[&"stick", Vector2i(-1, 0), &"top", Vector2(0.25, -0.3), 0.0, &"compass"]]
+
+
+static func walker_camp(world: World) -> Array[Node3D]:
+	world.player.vitals.fresh()
+	world.player.suit.restock()
+	var rig := rig_at(world, WALKER_RIG, WALKER_DECK, false)
+	var console: Console = rig.named.console
+	_on_station(world, rig.named.radio)
+	for tell: StringName in Deeds.TELLS:
+		console.evidence[tell] = {"t": world.time, "value": 1.0}
+	var at := console.global_position
+	at.y = world.height_under(at)
+	var cable := Catalog.cable(world, at)
+	console.fit(cable.plugs[0], _free(console, &"port"))
+	world.player.hands.hold(cable.plugs[1])
+	var dropped := _of(rig)
+	dropped.append(cable)
+	return dropped
 
 
 ## The radio of "radio" switched on and tuned to the music, the relay's

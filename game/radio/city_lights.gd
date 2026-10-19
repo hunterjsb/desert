@@ -25,9 +25,10 @@ const INK := Color(0.012, 0.011, 0.012)
 const FADE_IN := 500.0
 const FADE_OUT := 100.0
 ## How often what's between you and it is read again, s; the deed looks
-## this often too, its middle this high, m, over the dunes at this many points.
+## this often too, at its middle and either end this high, where its upper
+## decks' lamps hang, m, over the dunes at this many points.
 const LOOK_EVERY := 0.5
-const MIDDLE := 6.0
+const LAMPS_HIGH := 12.0
 const SIGHT_STEPS := 24
 
 ## How much of it shows now, 0 to 1: night, range and dousing; and past the
@@ -90,12 +91,15 @@ func _process(_delta: float) -> void:
 ## in view, over the dunes and past the storms.
 func _look_over(eye: Vector3) -> void:
 	var field := _world.weather.field
-	var to := global_position + Vector3(0.0, MIDDLE, 0.0)
+	var to := global_position + Vector3(0.0, LAMPS_HIGH, 0.0)
 	var from := Vector3(_world.world_x(eye.x), eye.y, _world.world_z(eye.z))
 	var far := Vector3(_world.world_x(to.x), to.y, _world.world_z(to.z))
 	veil = Plume.seen_through(field, _tuning, from, far, _world.time) * (1.0 - _world.weather.seen_storm)
-	if shown > 0.5 and veil > 0.5 and Deeds.waiting(_world, &"living_city") and sees(_world, eye, to):
-		Deeds.done(_world, &"living_city")
+	if shown > 0.5 and veil > 0.5 and Deeds.waiting(_world, &"living_city"):
+		for along: float in [0.0, -LONG, LONG]:
+			if sees(_world, eye, to + global_basis.z * along):
+				Deeds.done(_world, &"living_city")
+				return
 
 
 ## Whether a place far off is in your view and over the dunes from your eye.

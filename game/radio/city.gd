@@ -98,20 +98,20 @@ func contacts(gods: Gods, t: float, count: int) -> Array[Dictionary]:
 
 
 ## Which motif its chatter plays in the slot holding world time t, from what's
-## true at the city then: a storm due within city_warn_s, storm coming; one
-## on it, tether in; else under way, city moving; else all clear; and every
-## few slots, while no storm is due or on it, its place. `field` and `ground`
-## are the storm field and the city's place in world metres.
+## true at the city then: a storm due within city_warn_s on clear air, storm
+## coming; else under way, city moving; else a storm on it, tether in; else
+## all clear; and every few slots, moored with no storm due, its place.
+## `field` and `ground` are the storm field and the city's place in world metres.
 func motif(field: WeatherField, ground: Vector2, t: float) -> StringName:
 	var slot := slot_start(t)
 	var stormy := field.raw_storm_at(ground.x, ground.y, slot) > 0.0
-	if stormy:
-		return TETHER
-	if field.next_change(ground.x, ground.y, slot, _tuning.city_warn_s, Weather.FORECAST_STEP) < INF:
+	if not stormy and field.next_change(ground.x, ground.y, slot, _tuning.city_warn_s, Weather.FORECAST_STEP) < INF:
 		return STORM
+	if moving(slot):
+		return MOVING
 	if floori(slot / _tuning.city_chatter_every) % POSITION_EVERY == POSITION_EVERY - 1:
 		return POSITION
-	return MOVING if moving(slot) else CLEAR
+	return TETHER if stormy else CLEAR
 
 
 ## When the slot holding world time t began.
