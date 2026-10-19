@@ -980,111 +980,91 @@ a water socket of its own on top, so a canister or another hose goes on there to
 
 ## Probes
 
-1. **No accidental snaps.** Drop, throw and drag parts against devices thousands of
-   times. Nothing snaps unless it's held and aimed. Standing by a crate on the sand,
-   looking at it offers a held tray its bottom mount, a hook the ring on your side or,
-   from a side where neither ring faces you, the one nearer your aim, and a shield the
-   nearer top mount; each waits for take. A fitted part still comes out to an empty hand.
-2. **Fitted is rigid.** A fully fitted device gets thrown around, towed through gusts
-   and floated. Its parts never move relative to it.
-3. **Weight adds up.** A device's weight is its frame plus its parts, and its hover draw
-   follows.
-4. **The snap lands exactly.** A fitted part sits precisely at its socket.
-5. **Out the way it went in.** Remove every part from every angle. No part ever passes
-   through its device on the way out.
-6. **Loose stacks are stable.** A stack of loose objects on a floating device in still
-   air for ten minutes shows no jitter, no creeping and no explosions. Outside the
-   shield, a gust knocks them off cleanly.
-7. **Origin shifts are invisible.** Fitted parts and loose stacks come through a shift
-   untouched.
-8. **Nothing falls through.** No device or part ever ends up under the sand.
-9. **Arranging by hand.** Walking into a floating device pushes it no faster than you
-   walk. Taking hold of one, it follows as you back away and swings round as you turn,
-   and let go it stops rather than flies. One too heavy to drag barely moves and slips
+1. **No accidental snaps or sticks.** Drop, throw and drag parts against slots and sticky
+   faces thousands of times, and let go mid-tug or while shown where they'd stick: nothing
+   goes on unless it's held, aimed and taken. Standing by a chassis, a held tray is shown
+   under it, a hook offered the near ring, a shield shown on its top; at a planter, the ring
+   nearer your aim; each waits for take.
+2. **Stuck and fitted are rigid.** A chassis with parts stuck all over it and a full
+   planter, thrown and gusted, keep every part exactly in place: no loose bodies, no joints.
+3. **Weight adds up.** A chassis's weight is its own plus what's stuck and fitted, through
+   sticking, fitting and taking off at random; a known push agrees, and its trays draw for it.
+4. **It lands exactly.** A part sits precisely at its slot, or at its pose on a face, top
+   or underside.
+5. **Off the way it went on.** Every part on a loaded floating chassis and a planter comes
+   off from eight directions, straight out of its slot or off its face, never through the
+   body, and goes back on through the hands at the same spot.
+6. **Loose stacks are stable.** A loose stack on a floating chassis stays still ten
+   minutes, then a gust knocks it all off cleanly.
+7. **Origin shifts are invisible.** Stuck parts and a loose stack come through a shift untouched.
+8. **Nothing falls through.** A dying floating chassis, chassis dropped from 3 m, thrown
+   parts, a cable popping off a drifting chassis, a battery under a falling planter: none
+   ends up under the sand.
+9. **Arranging by hand.** Walking into a floating planter pushes it no faster than you walk;
+   taken hold of, it follows and swings round, and let go it stops; a 200 kg condenser slips
    from your hands.
-10. **Small things come easy.** Aim at the sand beside a small loose thing and it's the
-    one you'd take; between two, a wavering aim settles on one. Nothing is taken through
+10. **Small things come easy.** Aim at the sand beside a small loose thing and it's the one
+    you'd take; between two, a wavering aim settles on one; nothing is taken through
     something in the way.
-11. **Keys come from the bindings.** Rebind an action and every key shown for it
-    follows, a mouse button too, and the new key works.
-12. **Turned by hand.** Holding rotate, the mouse turns what you hold and not your view;
-    let go, it looks again. A crate and a planter on their sides, taken hold of, roll
-    back upright and stand once let go. A shield lying on its side is turned in your
-    hands and set down standing. Having hold of a crate, looking up lifts it, unless
-    it's too heavy for your strength.
-13. **Use rests a tray.** Use at the kit crate's frame sets it resting: it settles
-    gently on the sand and its tray draws nothing, while use at the shield seated on it
-    switches the shield and leaves the tray be. Use again and it floats, drawing as
-    before. Saved resting, it resumes resting.
-14. **Trays come out standing.** Standing by a floating crate, a look at its frame's lower
-    edge or just under it is a look at its tray: use there still sets the crate resting,
-    and take takes the tray out. A look at the frame's middle still takes hold of it. A
-    standing look at a chassis piece's top or edge is the piece, not its tray.
-15. **The ghost in sight.** A socket offered on a crate's far side shows no ghost through
-    the crate; walk round and it does, and a tray's shows under it.
-16. **One rigid deck.** Five pieces joined by hand into a long L sit flush on the grid,
-    square to each other; a ring with a crate standing beyond it isn't offered. Floating
-    with trays and a crate in a gusting storm for two minutes, moored by one line at its
-    far end as a tow would hold it, its pieces never move against each other, and it
-    stays level, with no jitter and nothing flung.
-17. **Trays lift where they are** (replacing "every piece needs its tray"). A deck three
-    pieces by three with a crate in its middle floats level on four trays at its corners.
-    Loaded heavier it rides lower, still level; too heavy for four, it rests drawing
-    nothing, and a tray under every piece floats it again, drawing for all it holds up.
-    Use sets the whole deck resting and floating. Light again, its trays bunched along one
-    edge, it tips its far edge onto the sand and draws for less than its weight.
-18. **A crate on a deck.** Having hold of a crate beside a deck with its own tray in, no
-    deck mount is offered and the readout says why; tray out, its
-    nearer deck mount is offered and take stands it there. It takes a battery into its own
-    slot by hand, a light shield goes onto the other piece, and the deck floats on the
-    crate's batteries while the shield runs on them, one pool. Take has the crate off into
-    your hold, clear of the deck, even with a tray an older save left in it.
-19. **Only a bare piece comes off** (replacing "any outer piece comes off", 2026-10-17).
-    Three pieces in a row, a hook on the first and a crate on the last: aimed at the
-    middle, at the first and at the last, every piece is highlighted, and take has hold
-    of all of it, nothing coming off. Its hook out, the first is bare: it's highlighted
-    alone, and take has it off into your hands, never through the deck.
-20. **A load off centre leans.** A crate on its one tray with a panel on each top mount
-    floats level; one with a big battery in its back slot leans toward it and floats on,
-    still, nowhere near tipping.
-21. **A loaded piece joins from your hold.** A piece with a crate standing on it lies just
-    beyond a deck's far ring. Taken hold of, that ring is offered with its ghost, and take
-    joins it there, the crate standing on the deck now, in its pool.
-22. **A refusal says why.** A battery held to a crate whose slots are full stays in your
-    hands; a crate with its tray in, taken hold of beside a deck, is let go; a piece held
-    to one with a crate standing beyond every ring, its hooked one too, stays in your
-    hands; use at a bare crate frame has nothing to work. Each time the readout says why
-    in five words at most and the knock sounds.
-24. **Consoles on a deck are one system** (2026-10-17). Two Consoles on a deck, one with an
-    anemometer and one with a barometer, each show both readings; a third on the sand beside
-    them shows only its own and lends them nothing. A radar on each of the two, both draw one
-    map, finer than one radar alone would. Lifted off the deck, each keeps only its own.
-25. **Instruments add detail** (2026-10-18, replacing "an instrument shows only when it's
-    fitted"). A Console with a battery and a screen reads nothing and has no map. Fitted one by
-    one, each instrument puts its own reading on the stats page and no other's, a radio on its
-    top the forecast, and the map comes with the first and grows finer with each: estimated
-    before the radar, swept by it after. Taken off in turn, each takes its reading, and the map
-    coarsens but stays until the last is gone.
-26. **The rack rides upright** (2026-10-18). A Console as heavy as one is ever found floats on
-    its one tray leaning only a little, then rides two minutes of a gusting storm moored by one
-    line from its back ring, upright, never rocking over. Standing on a deck of two pieces on
-    their trays beside a shield, the deck moored by its own ring, it rides as steady.
-27. **A hook in the way pops off** (2026-10-18). A piece with a hook on its east and west
-    rings, each with a line to a stake beyond: a piece carried to the east ring is offered
-    it and joins, and a piece with a crate on it joins at the west from your hold. Each
-    hook lies loose on the sand clear of the deck, its line still tied to it, and still
-    does once saved and resumed; taken up and put on a free ring, its line ties the deck
-    again. A third piece carried to where the east hook landed joins there, and the hook
-    moves clear again, still tied.
-28. **Switched from the screen** (2026-10-18). A Console with a radio on its top, a shield and a
-    crate with a lamp stand on a floating deck of three pieces. Use on the screen's power tab
-    opens the power page, and its switches, pressed where they're drawn, work each device as its
-    own use would: the shield on and off, the radio's switch, sweep and volume, the lamp off, the deck's trays
-    resting. What the panel says is drawn is what the pool's devices draw, and its bank what
-    they hold.
-29. **The gyro points Tu-ward** (2026-10-18). A Console with an anemometer, carried round the
-    moon: on the near side, the Rim and the far side, its gyro's Tu-ward mark is the way Tu
-    stands in the sky there, or would past the horizon, to within a degree.
+11. **Keys come from the bindings.** Rebind an action and every key shown for it follows, a
+    mouse button too, and the new key works.
+12. **Turned by hand.** Holding rotate turns what you hold and not your view; a condenser and
+    a planter on their sides roll upright; a shield is set down standing; looking up lifts a
+    light condenser but not a heavy one.
+13. **Use rests a deck.** Use at the Surveyor's deck sets it resting, settling gently and
+    drawing nothing, and floating again; use at the shield on it switches only the shield;
+    saved resting, it resumes resting.
+14. **Trays come out standing.** A look at a floating planter's lower edge is a look at its
+    tray; a standing look at a chassis's top or edge is the piece, not the tray under it.
+15. **The ghost in sight.** A slot offered on a planter's far side shows no ghost through it;
+    walk round and it does; a tray's shows under it.
+16. **One rigid deck.** Five pieces joined by hand into an L sit flush and square; a
+    condenser beyond a ring blocks it; with trays, a condenser and batteries the deck rides a
+    gusting storm moored, its pieces never moving against each other.
+17. **Trays lift where they are,** so a balanced rig floats and a lopsided one tips. A deck
+    three by three floats level on four corner trays, rides lower loaded, rests too heavy and
+    floats again on a tray under every piece; with its trays bunched along one edge it tips
+    its far edge onto the sand.
+18. **A condenser onto a deck.** Having hold of one and looking at a deck, the condenser
+    itself is shown there, touching nothing, and back in your hold when you look away; take
+    sticks it; a loose battery on the deck runs it and a shield as one pool; taken off again
+    it drags away and the deck stays.
+19. **Take takes what you aim at.** One battery taken out of a crowd comes off alone and goes
+    straight back on with take again, the aim never leaving, and a radio's own battery the
+    same; aimed at a deck's plate, take has hold of the whole deck; only a bare piece comes
+    off, out across its ring.
+20. **A load off centre leans.** A piece with its load over its one tray floats level; with a
+    big battery at its back edge it leans 3 to 20° and stays still.
+21. **A loaded piece joins from your hold,** the real piece shown at the ring, its condenser
+    in the deck's pool once it joins.
+22. **A refusal says why,** with a knock: a full battery slot, a condenser shown where a
+    shield stands, a piece with something beyond every ring, use at a bare chassis.
+23. **A device freed under it.** A shield stuck on a floating chassis freed outright: the
+    chassis runs on and another shield sticks in the same place.
+24. **Consoles on a deck are one system.** Two on a deck pool their readings, one on its own
+    plate doesn't; two radars draw a finer map; moved off, each keeps only its own.
+25. **Instruments add detail.** A Console on a plate gains a reading per instrument and a
+    radio stuck beside it the forecast; its map grows finer with each and coarsens as they go.
+26. **The Console rides upright.** The heaviest Console, stuck on a two-piece deck with a
+    shield and big batteries, floats leaning only a little and rides a gusting storm upright,
+    moored by the deck's ring.
+27. **A hook in the way pops off,** keeping its line through a save; the piece that joins from
+    your hold carries a condenser.
+28. **Switched from the screen.** The power page switches the shield, the radio, the deck's
+    lamp and its trays; its watts and bank are the pool's.
+29. **The gyro points Tu-ward** from a Console on a plate, round the moon.
+30. **It sticks on every face.** Held to a piece's top a battery is shown there itself and
+    take sticks it flat where you aim; a tray aimed at the top goes under, facing the sand;
+    a frame stands square; pieces join a frame as a wall and a shelf; the board sticks on the
+    wall's outer face, batteries on the shelf and the wall's inner face, fabric on the frame.
+31. **Blocked shows red.** Where another stands it's red and "blocked", and take keeps it with
+    a knock; clear, it sticks. Past a floating piece's lift it's amber, "too heavy", sticks
+    all the same, and the piece no longer floats.
+32. **A tray lifts the way it faces:** fully under, 0.71 tipped halfway, nothing on a wall
+    (and the deck counts none), nothing flipped over, drawing nothing.
+33. **Frames take walls and shelves,** and go only on a top; a Console never under one nor a
+    frame over it; a chassis never sticks; a shelf's rings take hooks but no piece; a frame
+    with walls on won't come off.
 
 ## Out of scope
 
