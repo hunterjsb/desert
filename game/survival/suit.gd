@@ -61,6 +61,7 @@ func _ready() -> void:
 	_layer.add_child(_view)
 	_waist_lines = WaistLines.new()
 	_waist_lines.reel = (_player.get_node("Hands") as Hands).reel
+	_waist_lines.waist = _player.get_node("Waist") as Waist
 	_view.add_child(_waist_lines)
 	restock()
 
@@ -471,7 +472,7 @@ func _on_view_input(event: InputEvent) -> void:
 
 
 func _waist_height() -> float:
-	return WaistLines.HEIGHT if not _player.hands.reel.waist_lines().is_empty() else 0.0
+	return WaistLines.HEIGHT if not _player.waist.tied.is_empty() else 0.0
 
 
 func _process(_delta: float) -> void:
@@ -559,11 +560,15 @@ func _draw_view() -> void:
 		_text(&"Readout", box.position + Vector2(6.0, PICTURE.y + 32.0), _brief(things), TILE.x - 12.0)
 	var under := tile_rect(tiles - 1, tiles).end.y
 	var tied := PackedStringArray()
+	var selectable := _player.hands.reel.waist_lines()
 	for body in _player.waist.tied:
-		if is_instance_valid(body):
+		if is_instance_valid(body) and not selectable.has(body):
 			tied.append(str(body.get(&"label")))
-	var waist_words := "waist · click a line to keep it selected" if _waist_height() > 0.0 \
-		else "waist: " + (", ".join(tied) if not tied.is_empty() else "-")
+	var waist_words := "waist: " + ", ".join(tied) if not tied.is_empty() else "waist"
+	if not selectable.is_empty():
+		waist_words += " · select a line below"
+	elif tied.is_empty():
+		waist_words += ": -"
 	_text(&"Label", Vector2(left, under + 16.0), waist_words, width)
 	_waist_lines.position = Vector2(left, under + 22.0)
 	_waist_lines.size = Vector2(width, _waist_height())

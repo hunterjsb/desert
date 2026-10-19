@@ -66,6 +66,8 @@ static var _current: Tuning
 @export var deed_crop_kinds: int = 3
 @export var deed_planters_towed: int = 2
 @export var deed_deck_pieces: int = 6
+## A bulk release counts the live lines actually let go together.
+@export var deed_release_lines: int = 2
 ## Ground made against the wind under one sail, m, through its tacks: a
 ## keeled yacht's half a day close-hauled, a camp on skates' most of one.
 @export var deed_upwind_m: float = 500.0

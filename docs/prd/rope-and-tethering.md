@@ -395,14 +395,48 @@ opposing load stayed below the existing injury threshold. Release control and
 feedback must distinguish returning an end to the hands from dropping it, and
 resultant towing pull from opposing strain.
 
+## Release all waist lines (Hunter, 2026-10-19; agreed)
+
+The carry view offers a deliberate Release all waist lines action. Hunter chose
+normal one-second untying with visible progress, using the existing untie duration
+in tuning. Lines stay tied and apply their full normal load throughout that delay;
+completion drops the ends rather than returning them to the hands. Neither player
+nor rig momentum is reset. Held lines remain held: this releases waist ties only.
+An untie already in progress must finish before another release can start.
+
+Show remaining time and a progress bar in the carry view, and remaining time in
+the gameplay readout if the view closes. Closing a panel or opening a menu does
+not pause or cancel physical untying. Include stake-carried waist lines even when
+there is no individually selectable reel end. Existing save fields retain an
+in-progress all-line release; no new save state is required.
+
+Cast Off records releasing two or more live lines together at actual completion,
+not clicking the control or starting the timer. It uses the existing knot/rope
+release event, so equivalent physical releases count too.
+
+**As built:** `Waist.release_all` starts the existing timed drop operation only
+when no untie is already running. The carry view shows a countdown and progress
+bar; closing it leaves a countdown by the aim point. The list remains available
+for a tied stake even when no single line can be selected. Cast Off counts unique
+live ropes at actual drop completion, with its goal set in tuning; existing save
+fields already preserve an in-progress all-line drop.
+
+A rendered 1280×720 loaded Varran sequence used the actual carry-view click:
+three ties remained at 0.717 s left, still carrying 90.9 N on the observed line.
+A second click at 0.617 s left did not change the timer. All three ties dropped
+after 61 physics ticks, with the rider still moving at about 5.7 m/s. Captures show
+the bar and countdown fitting the carry view and the countdown continuing after
+it closes. The helper reported no script errors and did report teardown resource
+warnings. No new behavior probes were added for this control.
+
 ## Open questions
 
 **Waist-line selection (Hunter playtest, 2026-10-19; agreed follow-up).** Several lines need
 one understandable target. Keep the existing gaze selection for reeling, show that line's
 name, length and current tension while a waist line is selected, and make empty-handed use
 take that same line back from the waist. Once untying begins, retain that chosen end through
-the untie delay even if the view turns. A held line still takes priority when reeling. No new
-binding, release-all interaction or player-force cap is part of this change; those remain open.
+the untie delay even if the view turns. A held line still takes priority when reeling. That first follow-up added no binding, release-all interaction or force cap. Release all
+is now agreed above; a player-force cap remains open.
 
 - **How much rope do you carry,** and is every coil the same length? The skeleton's
   coils are all 12 m.

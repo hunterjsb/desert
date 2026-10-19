@@ -92,6 +92,26 @@ func give_back() -> bool:
 	return true
 
 
+## A deliberate release starts a full untie, never shortcuts one in progress.
+func release_all() -> bool:
+	if untying >= 0.0:
+		return false
+	return let_go()
+
+
+func release_readout() -> String:
+	if untying < 0.0 or _to_hand:
+		return ""
+	var what := "all waist lines" if _only.is_empty() else "waist lines"
+	return "Releasing %s · %.1f s · still tied" % [what, maxf(untying, 0.0)]
+
+
+func release_progress() -> float:
+	if release_readout() == "":
+		return 0.0
+	return 1.0 - clampf(untying / _tuning.untie_seconds, 0.0, 1.0) if _tuning.untie_seconds > 0.0 else 1.0
+
+
 ## Lets go of every line tied on, or only `these`, once they're untied. Says
 ## whether there was any.
 func let_go(these: Array[RigidBody3D] = []) -> bool:
@@ -148,12 +168,21 @@ func _undone() -> void:
 	if not _only.is_empty():
 		going.assign(_only.filter(func(b: RigidBody3D) -> bool: return tied.has(b)))
 	_only = []
+	var released: Array[Rope] = []
 	for body: RigidBody3D in going:
+		if not is_instance_valid(body):
+			continue
+		for child in body.get_children():
+			if child is RopeEnd:
+				for rope: Rope in _player.world.ropes.lines_on(child):
+					if not released.has(rope):
+						released.append(rope)
 		untie(body)
 		# Down at your feet, moving as you were; it can't push you until it's clear.
 		body.linear_velocity = _player.velocity
 		body.add_collision_exception_with(_player)
 		_falling.append(body)
+	Deeds.measure(_player.world, &"cast_off", released.size())
 
 
 func _clear_of_you() -> void:

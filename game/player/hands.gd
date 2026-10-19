@@ -2076,7 +2076,9 @@ func _show(delta: float) -> void:
 	if _notice_left <= 0.0:
 		notice = ""
 	var said := line()
-	var waisted := reel.waist_readout()
+	var waisted := _player.waist.release_readout()
+	if waisted == "":
+		waisted = reel.waist_readout()
 	if waisted != "":
 		said += ("\n" if said != "" else "") + waisted
 	if said != "" and said != _readout.text:

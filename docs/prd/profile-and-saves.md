@@ -284,7 +284,7 @@ the frame is a part stuck on the deck.
 - **Nomad ties the trees together:** its card stands apart, with a line from each of the five
   trees, lit where you've done one. It waits on any one deed of a tree, not a named one, so the
   table's `after` gains "any of a family".
-- **The grid holds every tree** (built for step 1, Menus & UI): 47 deeds in eleven families since step 4, Yard Sale and the nomads' gear, each a
+- **The grid holds every tree** (built for step 1, Menus & UI): 48 deeds in eleven families since step 4, Yard Sale and the nomads' gear, each a
   branch or two beside its name down the left, as round one's were (eleven columns side by side
   wouldn't stand left of the prop). It scrolls, and opens on the latest done.
 - **The order.** Each part waits for what it reads to land:
@@ -362,6 +362,12 @@ How each X was chosen, from the probes' numbers (the probes' seed, 2026-10-19):
   ground radar is fitted), and 34, the Archaeologist locked until both of hers; 35, the Walker's deeds
   through play (Taught as the plug goes in its port, Triangulated as its noted contacts fix the city,
   The Living City from a kilometre off on a clear night).
+
+**Cast Off (Sanddune, agreed 2026-10-19):** in Wind after Set Sail, release two
+or more waist lines together. `Waist._undone` records it when live line ends
+actually drop, including an all-line release resumed during its untie delay.
+Selecting a line, starting a timer, or returning an end to the hand does not count.
+The existing sail icon is reused.
 
 **New features come with deeds (Hunter, 2026-10-19).** "I love all the new deeds, we should keep
 the creed that new features should be exposed via deeds." Every feature that lands brings a deed
