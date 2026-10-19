@@ -207,6 +207,25 @@ even storms that last for days.
   between the last tick and this one; the ticks never see it.
 - The numbers are in Tuning's Hoverboard group.
 
+### The ride's feel, and boards by make (Hunter, 2026-10-18; building)
+
+"slide on hard turns and landings, not just brakes. orient the board properly when in the air and
+taking off. allow for hard landing and turn skidding. consider crashes. lets also add some variety
+to the look and feel for diff makes of boards. lore accurate. more sounds and audio queues too"
+- **It slides:** a hard carve past its grip skids sideways, and a landing at speed or at an angle
+  slides out before it bites, not only the dig's stop.
+- **It flies true:** off a lip the board pitches with its path and rolls with its carve, and in the
+  air it eases toward the way it's going; it lands on the slope it meets.
+- **Hard landings and crashes:** a landing too steep, too fast or crossed slides out, jars you, or
+  past worse throws you off as the dig's wipeout does; a crash into something solid at speed is a
+  wipeout too, gentle in cost.
+- **Boards by make:** each era and maker builds its own, true to the lore (the hoverboard is
+  skimmer-culture gear; a colonial issue board, a knights' patrol board and the second age's
+  temple-made ones differ): their looks, weight, grip, top speed, hover height and sound differ as
+  data on one ride.
+- **It sounds like riding:** carve and skid hiss, lip pops, landings by how hard, wind rush with
+  speed, the hum by make, and a knock on a crash.
+
 ### Dig and carve (agreed, 2026-10-18 spec; built)
 
 From Hunter's [storms, signals & sailing spec](../storms-signals-sailing-2026-10-18.md). The board's feel stays (never sinks, gets
