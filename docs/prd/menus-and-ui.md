@@ -219,8 +219,9 @@ set aside to its right; over a run, in the middle on the soft dark field.
   the story a landmark's mast and pennant. Done, it's lit; open but not done, dimmer; still waiting on another, only its
   thing's outline in faint ink and ????.
 - **The pictures** are Dress's looks of each thing's frame and what's fitted (`ItemIcons`), drawn
-  once in a little world of their own the first time they're asked for and kept, so a card costs a
-  texture. With no screen to draw on, as in a probe, they stay blank.
+  once in a little world of their own as the game starts and kept, so a card costs a texture. (Drawn
+  later in a session, once the menu's world had run a few seconds, they came out as slivers, 2026-10-18;
+  why is still open.) With no screen to draw on, as in a probe, they stay blank.
 - **The card highlighted,** by the mouse over it or the menu's selection, which moves between the
   cards as between words and starts on the deed done last, has a small panel beside it, on whichever side
   has room: the deed's name, what it asks, how far along you are where it's a number or a count

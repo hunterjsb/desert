@@ -68,6 +68,10 @@ func _ready() -> void:
 	add_child(_how_to)
 	_badge = DeedBadge.new()
 	add_child(_badge)
+	# The deeds' pictures drawn now, before the world: drawn later in a session
+	# they come out as slivers.
+	for id: StringName in ItemIcons.LOOKS:
+		ItemIcons.of(get_tree(), id)
 	dev_console = DevConsole.new()
 	dev_console.ui = self
 	add_child(dev_console)
@@ -170,9 +174,11 @@ func close_top() -> void:
 		Controls.free_mouse(false)
 
 
-## Everything open, the console too: the run is changing over, or is over.
+## Everything open, the console too, and any deed's badge: the run is
+## changing over, or is over.
 func close_all() -> void:
 	dev_console.close()
+	_badge.clear()
 	while not _menus.is_empty():
 		var menu: Words = _menus.pop_back()
 		remove_child(menu)

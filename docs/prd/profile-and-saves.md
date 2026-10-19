@@ -133,7 +133,8 @@ names it), and so can a kit variant or a mark on your gear (Hunter: "they should
   screen, under the notes and how-tos at the top, the deed's card picture beside "Deed done" and its
   name; it rises into place over a third of a second, stays three and a half, and fades. Its sound,
   three soft bell notes rising (`deed.wav`, made here, CC0), plays as it shows, on the menus' bus.
-  Two done at once wait their turn, each shown and heard alone. Nothing else is said: no note.
+  Two done at once wait their turn, each shown and heard alone, and the run's end takes any still
+  waiting. Nothing else is said: no note.
   The marks are the profile's (`Profile.is_new`, `seen`): each deed done, and each start it opens
   that wasn't open, is new until the deeds menu is opened, or that start highlighted.
 - **Shown in a grid,** reached from the main menu and the system menu: each deed a tile, named,

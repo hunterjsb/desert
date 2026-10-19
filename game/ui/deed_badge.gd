@@ -2,7 +2,7 @@ class_name DeedBadge
 extends PanelContainer
 ## A deed just done, shown a moment over the game: its card's picture and
 ## name under a quiet word, with a sound of its own. Several done at once
-## wait their turn, so each is seen and heard alone.
+## wait their turn, so each is seen and heard alone. They go with the run.
 
 ## Coming up, held and going, then the pause before the next, s.
 const IN_SECONDS := 0.35
@@ -21,6 +21,7 @@ var showing := &""
 var _waiting: Array[StringName] = []
 var _row: HBoxContainer
 var _name: Label
+var _shown: Tween
 
 
 func _init() -> void:
@@ -54,6 +55,15 @@ func _init() -> void:
 	words.add_child(_name)
 
 
+## None waiting, and the one showing gone.
+func clear() -> void:
+	_waiting.clear()
+	if _shown != null:
+		_shown.kill()
+	modulate.a = 0.0
+	_next()
+
+
 ## Shows it now, or after those before it.
 func add(id: StringName) -> void:
 	if id == showing or id in _waiting:
@@ -79,12 +89,12 @@ func _next() -> void:
 	Sounds.play(get_tree().root, Sounds.DEED, Sounds.UI)
 	offset_top = RISE
 	offset_bottom = RISE
-	var shown := create_tween()
-	shown.tween_property(self, "modulate:a", 1.0, IN_SECONDS)
+	_shown = create_tween()
+	_shown.tween_property(self, "modulate:a", 1.0, IN_SECONDS)
 	for side in ["offset_top", "offset_bottom"]:
-		shown.parallel().tween_property(self, side, 0.0, IN_SECONDS).set_ease(Tween.EASE_OUT) \
+		_shown.parallel().tween_property(self, side, 0.0, IN_SECONDS).set_ease(Tween.EASE_OUT) \
 			.set_trans(Tween.TRANS_CUBIC)
-	shown.tween_interval(HOLD_SECONDS)
-	shown.tween_property(self, "modulate:a", 0.0, OUT_SECONDS)
-	shown.tween_interval(BETWEEN_SECONDS)
-	shown.tween_callback(_next)
+	_shown.tween_interval(HOLD_SECONDS)
+	_shown.tween_property(self, "modulate:a", 0.0, OUT_SECONDS)
+	_shown.tween_interval(BETWEEN_SECONDS)
+	_shown.tween_callback(_next)

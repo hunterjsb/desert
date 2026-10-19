@@ -59,7 +59,8 @@ func _ready() -> void:
 	main.ui.badge(&"shield_storm")
 	await get_tree().create_timer(DeedBadge.IN_SECONDS + 0.3).timeout
 	_shoot(out.path_join("deeds_badge.png"))
-	await get_tree().create_timer(DeedBadge.HOLD_SECONDS + DeedBadge.OUT_SECONDS + DeedBadge.BETWEEN_SECONDS).timeout
+	await get_tree().create_timer(DeedBadge.HOLD_SECONDS + DeedBadge.OUT_SECONDS + DeedBadge.BETWEEN_SECONDS
+		+ DeedBadge.IN_SECONDS).timeout
 	_shoot(out.path_join("deeds_badge_next.png"))
 	main.ui.back()
 	await _opened(main, &"shield_storm")
