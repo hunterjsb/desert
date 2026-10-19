@@ -429,8 +429,13 @@ From Hunter's [storms, signals & sailing spec](../storms-signals-sailing-2026-10
     ordinary storm (at the probes' heart: load 500%, sand 1.35 g/m³, wind 27 m/s).
 - **The hook** for the map and the Walker's feed: `WeatherField.anomalies_near(x, z, t, reach)`
   lists every heart within reach at a moment, where it is, its reach, when it peaks, how strong it
-  stands and its share at the place. Only the compass reads it now; teaching the Walker is its own
-  quest line.
+  stands and its share at the place. The compass reads it, and once the Walker's taught, every
+  Console's radar map and chart and the Walker's feed (built 2026-10-19,
+  [Radio](radio-sound-and-atmosphere.md#the-walkers-quest-and-the-living-city-agreed-2026-10-19-built-2026-10-19)).
+- **Teaching the Walker** (built 2026-10-19, the Walker's quest in Radio): a Console keeps evidence of
+  each tell its system witnesses, by the sensor that sees it: a compass stuck on its deck for the lean,
+  a radio on it for the crackle, and a shield on it for the load, read against its particle sensor's
+  sand. Plugged into the Walker with all three, it teaches it, a world flag the run's save keeps.
 - **The scenario,** "anomaly": clear, its storm due in two and a half to five minutes, the heart's
   full over you within five minutes of the wall, facing upwind beside a camp built for wind: the
   reference camp's deck resting on the sand, moored upwind; a Console reading the wind and the sand;
@@ -442,7 +447,8 @@ From Hunter's [storms, signals & sailing spec](../storms-signals-sailing-2026-10
   it, 2026-10-18), where this finds one within 23 days on each of 60 seeds tried. The dev overlay
   shows the hidden term where you stand (`weather/anom`).
 - **Its deeds** (agreed 2026-10-18): Eye of the Anomaly and Tells, hidden, in the Weather tree (built
-  2026-10-19), and Taught with the Walker's quest ([Profile & saves](profile-and-saves.md#round-two-the-trees-that-tie-it-together-agreed-2026-10-18-step-1-built-2026-10-19)).
+  2026-10-19), and Taught, hidden, with the Walker's quest (built 2026-10-19, [Profile &
+  saves](profile-and-saves.md#round-two-the-trees-that-tie-it-together-agreed-2026-10-18-step-1-built-2026-10-19)).
 
 ## Dune archaeology (agreed, 2026-10-18 spec; built 2026-10-19)
 
@@ -773,11 +779,31 @@ close it's no thing at all: walking into it the air thickens round you, as walki
   a landmark: the haze takes it as if it were only as far as distance to the 0.3 power says. Dunes in
   front hide it. The flat world shows it further than a real moon's curve would.
 - **Booms and a roar:** [Radio, sound &
-  atmosphere](radio-sound-and-atmosphere.md#distant-phenomena-agreed-2026-10-18-spec).
+  atmosphere](radio-sound-and-atmosphere.md#distant-phenomena-agreed-2026-10-18-spec). Each boom
+  now rolls on with a long low roll under it whose low end carries, so from far off a boom is
+  bigger and longer, mostly roll.
+- **Felt near** (`Rumbles`, built 2026-10-19 from the playtest below). Within 5 km of a live vent
+  its ground is felt: fully within 300 m, past it falling as the root of distance (the shaking
+  spreads over the ground, not through the air), gone by 5 km; a gas pocket only booms. Fifty
+  seconds before a burst a deep build starts up from the vent's way (`vent_build.ogg`, a harmonic
+  tremor at 31 Hz over brown rumble), growing as the square of how near the burst is and rising a
+  quarter in pitch, as loud as the burst is big (a vent's least two thirds of its greatest). At the
+  onset the ground jolts, dying by e over 4 s, and roars, dying over 8 s; through the burst's
+  push it trembles on, up to a third. The build trembles the ground up to three fifths of the jolt.
+  The tremble shakes your view by how near and how big (Feel: a few slow waves together, up to
+  2 cm, half a degree tipped and a third of one rolled, on top of any other shake), and a boom
+  arriving within that reach jolts it once more. Loose things on the sand within 40 m of you, up to
+  40 kg, are jostled eight times a second while it trembles past a twentieth: kicked up to 0.35
+  m/s and spun to 0.6 rad/s by the root of how hard, each its own way by where it lies, so a crate
+  hops and rattles; nothing floating or stuck is touched. In the "vent" scenario, 1.5 km off, the
+  build comes in ten seconds after you're stood there and rises 7 LU over the wind and the roar, the
+  ground trembles at a third at the onset, and the boom comes 4.3 s later (the levels are in the
+  [credits](../../assets/audio/CREDITS.md)).
 - **The "vent" dev scenario** stands you 1.5 km across the rift from its live vent, facing it, a
   minute before a burst in clear daylight, with a charged board at your feet.
 - **The dev overlay** names the nearest live vent drawn, how far and which way, and whether it's
-  seeping or bursting (`weather/vent`), and a pocket blowing (`weather/pocket`); `goto live_vent`,
+  seeping or bursting (`weather/vent`), a pocket blowing (`weather/pocket`), and how hard the
+  ground trembles under you and how loud the build is (`weather/ground`); `goto live_vent`,
   `goto live_vent_2` and `goto flank_vent` stand you by them.
 
 ### What it costs
@@ -814,6 +840,10 @@ look-test; the one frame after a jump in time or place works a whole line out at
     looking every minute: 15 of 18 starts see a plume from 5 km or more (it must be three in four), a
     median 7% of the time (it must be 3%), most often a burst's column over the storms, which holds its
     height for a minute and a half.
+25. **The rumble is felt** (2026-10-19). 300 m off the rift's live vent a burst's build grows as it
+    nears (0.20 of its file's loudness 25 s before, 0.64 at 5 s) and the ground trembles at its onset
+    (0.76), jostling a crate on the sand (0.11 m/s); 1.5 km off, less of both (0.35, 0.33); 12 km
+    off, none of either, and the crate lies as still as it did before.
 
 Geology's own probes are the world system's (geology 1 and 2), and the kits' probes take the mouth
 like any piece.
@@ -848,10 +878,12 @@ m), shoots from inside a storm, and the rift vent's mouth up close, times each, 
 - **The far plume is the weather's.** Storms cover most of the near side most of the time, so from where
   you are a plume shows only now and then (probe 18), and in a gale a seep lies low.
 
-**Playtest (Hunter, 2026-10-19; agreed, not built).** "Im finally liking vents, and we should lean
+**Playtest (Hunter, 2026-10-19; built 2026-10-19).** "Im finally liking vents, and we should lean
 into the rumble more." The rumble is felt as well as heard: a deep build before a burst, the ground
 trembling under you near a vent, the view shaking by how near and how big, and a boom from far off
-rolling in after the plume.
+rolling in after the plume. *Built (Felt near, and Booms, above).* **To hear it:**
+`look/rumble/record.tscn` records the "vent" scenario's build and burst and one 12 km off, the whole
+mix and the rumble's own buses, for the meter.
 
 ## Hooks from the sky (proposed, not settled)
 
@@ -971,6 +1003,16 @@ All run without a window, with a fixed seed.
     storm, on open sand: just behind it the wind is cut by about a full lee's share and the storm's
     wear and harm by theirs; beside it, upwind of it and seven heights behind it, nothing is; edge-on
     it shelters nothing. A light box resting behind it stays put where one in the open slides.
+23. **Evidence needs each tell** (2026-10-19). A Console on a deck in a storm, a radio on and a
+    shield running beside it, keeps nothing in the storm alone; as an anomaly's staged heart comes
+    over it keeps the radio's crackle, but not the shield's load with no particle sensor, nor the
+    compass's lean with no compass on the deck; with a compass stuck on and a particle sensor fitted, all
+    three.
+24. **Teaching flags anomalies** (2026-10-19). The "walker" scenario: a Console with two tells uploads
+    and teaches nothing; its plug put in the Walker's port as it passes, with three, teaches it. Before,
+    no map shows a staged heart 4 km off and the feed says nothing; after, the radar's map and the chart
+    show it, the Walker's feed flags it ("anomaly 4.0 km north-east, full in 10 min"), and the run's save
+    keeps it taught.
 
 ## Out of scope
 

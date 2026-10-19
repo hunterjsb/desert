@@ -14,8 +14,9 @@ const UI := &"UI"
 ## The radio's, through World: a small speaker's, everything under
 ## radio_highpass_hz cut. Made in code the first time a radio asks for it.
 const RADIO := &"Radio"
-## Far booms, and a vent's roar, each through its own low-pass, which takes
-## more of the high end the further off it is, then muffled with the weather.
+## Far booms and their rolls, and a vent's roar and build, each through its
+## own low-pass, which takes more of the high end the further off it is, then
+## muffled with the weather.
 const BOOMS := &"Booms"
 const VENTS := &"Vents"
 
@@ -53,8 +54,9 @@ const BOARD_ON := preload("res://assets/audio/board_on.ogg")
 const BOARD_OFF := preload("res://assets/audio/board_off.ogg")
 # The ride, made here (make_board_sounds.py): a carve's hiss, the wind's
 # rush, a pop off a lip, a landing and a hard one, a crash's knock, a skid
-# biting again, and each make's hum, the issue's the hover's own; and the
-# battery's two cues, low and then critical.
+# biting again, and each make's hum, the issue's the hover's own; the
+# battery's two cues, low and then critical; and two of your body hitting the
+# sand as you tumble.
 const BOARD_CARVE := preload("res://assets/audio/board_carve.wav")
 const BOARD_RUSH := preload("res://assets/audio/board_rush.wav")
 const BOARD_POP := preload("res://assets/audio/board_pop.wav")
@@ -67,6 +69,8 @@ const BOARD_HUMS := {&"board": HOVER, &"racer_board": preload("res://assets/audi
 	&"temple_board": preload("res://assets/audio/hum_temple.wav")}
 const BATTERY_LOW := preload("res://assets/audio/battery_low.wav")
 const BATTERY_CRITICAL := preload("res://assets/audio/battery_critical.wav")
+const TUMBLE: Array[AudioStream] = [preload("res://assets/audio/tumble_a.wav"),
+	preload("res://assets/audio/tumble_b.wav")]
 # Devices.
 const SHIELD_BOOT := preload("res://assets/audio/shield_boot.ogg")
 const SHIELD_HUM := preload("res://assets/audio/shield_hum.ogg")
@@ -91,6 +95,11 @@ const RADIO_CLEAR_SKIES := preload("res://assets/audio/radio_clear_skies.ogg")
 const RADIO_STOKER := preload("res://assets/audio/radio_stoker.ogg")
 # The Eye's drone, now and then out of the dark.
 const RADIO_EYE := preload("res://assets/audio/radio_eye.ogg")
+# The living city's chatter, made here (make_city_motifs.py): five motifs of
+# reed tones, by what each tells.
+const CITY_MOTIFS := {&"storm": preload("res://assets/audio/city_storm.wav"),
+	&"tether": preload("res://assets/audio/city_tether.wav"), &"moving": preload("res://assets/audio/city_moving.wav"),
+	&"clear": preload("res://assets/audio/city_clear.wav"), &"position": preload("res://assets/audio/city_position.wav")}
 # Scrapping a wreck, made here (make_scrap_sounds.py): the heat cutter's
 # roar, a plate coming free and landing, a live capacitor bank's crackle and
 # its shock, a breached store's hiss, the scoop and the sealant.
@@ -107,9 +116,12 @@ const STORM := preload("res://assets/audio/storm.ogg")
 const WIND := preload("res://assets/audio/wind.ogg")
 # What a storm has just laid bare, banging on the wind.
 const CLANG := preload("res://assets/audio/clang.ogg")
-# The ground: a burst's or a pocket's boom, and a live vent's roar.
+# The ground: a burst's or a pocket's boom and the low roll it rolls on with,
+# a live vent's roar, and its deep build as a burst nears.
 const BOOM := preload("res://assets/audio/boom.ogg")
+const BOOM_ROLL := preload("res://assets/audio/boom_roll.ogg")
 const VENT_ROAR := preload("res://assets/audio/vent_roar.ogg")
+const VENT_BUILD := preload("res://assets/audio/vent_build.ogg")
 # Menus: very quiet.
 const MENU_MOVE := preload("res://assets/audio/menu_move.ogg")
 const MENU_CONFIRM := preload("res://assets/audio/menu_confirm.ogg")

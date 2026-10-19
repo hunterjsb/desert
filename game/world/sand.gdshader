@@ -246,8 +246,9 @@ float cell_noise(vec2 xz, float cell) {
 		mix(lattice(i + ivec2(0, 1)), lattice(i + ivec2(1, 1)), f.x), f.y);
 }
 
+// Up to twice a full mark: a skid's gouge (Tracks.DEEPEST).
 float track_at(vec2 xz) {
-	return clamp(textureLod(track_map, xz / track_extent + track_shift, 0.0).r - track_clock, 0.0, 1.0);
+	return clamp(textureLod(track_map, xz / track_extent + track_shift, 0.0).r - track_clock, 0.0, 2.0);
 }
 
 bool in_tracks(vec2 xz) {

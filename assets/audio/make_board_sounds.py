@@ -1,6 +1,7 @@
 """Makes the ride's sounds (game/board): a carve's hiss, the wind's rush, a
 pop off a lip, a landing and a hard one, a crash's knock, a skid biting
-again, three makes' hums, and the battery's low and critical cues. Synthesised here, numpy only, as 16-bit mono
+again, three makes' hums, the battery's low and critical cues, and your body
+hitting the sand as you tumble, two ways. Synthesised here, numpy only, as 16-bit mono
 WAV at 44.1 kHz; CC0. Loops are whole cycles of everything in them, so they
 repeat without a seam. Run from anywhere:
 
@@ -204,3 +205,31 @@ def do_doo(high, low, gap, length, bright, tau):
 save("battery_low.wav", do_doo(659.3, 523.3, 0.2, 0.6, 0.05, 0.16), -34.0)
 save("battery_critical.wav", do_doo(440.0, 329.6, 0.14, 0.5, 0.25, 0.1)
      * (1.0 + 0.25 * np.sin(2 * np.pi * 18.0 * t(0.64))), -30.0)
+
+# Tumbling, your body hits the sand: a padded thud and whump, the sand
+# crunching under you, a spray of it pattering back down and your kit knocking. Two, so hit
+# after hit never sounds the same.
+
+
+def body_hit(low, crunch_hi, knocks):
+    d = 0.8
+    thud = glide(low * 1.9, low, d, 0.05) * decay(0.08, d, 0.002)
+    whump = band(noise(d), 100.0, 450.0) * decay(0.06, d, 0.003) * 1.6
+    crunch = band(noise(d), 220.0, crunch_hi) * decay(0.045, d, 0.002) * 1.4
+    spray = band(noise(d), 1600.0, 7000.0) * decay(0.2, d, 0.02) * 0.3
+    patter = np.zeros(int(d * RATE))
+    for at in rng.uniform(0.04, 0.5, 40):
+        i = int(at * RATE)
+        n = int(0.004 * RATE)
+        patter[i:i + n] += rng.standard_normal(n) * np.exp(-t(0.004) / 0.001) * (1.0 - at)
+    patter = band(patter, 2500.0, 9000.0) * 0.8
+    kit = np.zeros(int(d * RATE))
+    for at, f in knocks:
+        i = int(at * RATE)
+        n = int(0.06 * RATE)
+        kit[i:i + n] += np.sin(2 * np.pi * f * t(0.06)) * np.exp(-t(0.06) / 0.01) * 0.25
+    return thud + whump + crunch + spray + patter + kit
+
+
+save("tumble_a.wav", body_hit(62.0, 1600.0, [(0.015, 720.0), (0.06, 1040.0)]), -29.0)
+save("tumble_b.wav", body_hit(55.0, 1300.0, [(0.03, 610.0), (0.09, 880.0), (0.12, 1190.0)]), -29.0)

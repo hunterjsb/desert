@@ -6,8 +6,11 @@ extends Node3D
 ## view leaning as the board under you does, a dug edge's or a skid's rooster
 ## tail of sand and its hiss, a shake as the edge bites, a jar as a landing
 ## slams, a harder one as you're thrown off and a knock if you hit something,
-## a shake while lines wrench you past what your body takes, and your view smoothed
-## between ticks, which at its speed would otherwise stutter. It reads the
+## then your view tumbling over the sand with you, a thud and a burst of sand
+## each time you hit it, till you're up again; a shake while lines wrench you
+## past what your body takes, the ground's own trembling near a live vent
+## (Rumbles), and your view smoothed between ticks, which at its speed would
+## otherwise stutter. It reads the
 ## player and never writes to it, so none of it can change where you go: it
 ## moves only the camera, and makes only sound and dust.
 
@@ -41,6 +44,23 @@ const SHAKE_SECONDS := 0.18
 const BITE_SHAKE := 0.35
 ## A landing at its jar shakes your view this share of the hardest.
 const JAR_SHAKE := 0.7
+## How far the ground trembling at its hardest moves your view, m, tips it
+## and rolls it, radians: slower and lower than a jolt's shake.
+const TREMBLE_REACH := 0.02
+const TREMBLE_PITCH := 0.008
+const TREMBLE_ROLL := 0.006
+## Tumbling (Tumble): down on the sand your eyes are this high over it, m;
+## your view rolls with your body no further than ROLL_MOST, and pitches into
+## the sand as far as PITCH_MOST as you go face down, radians, so it never
+## turns over however you do; a hit this hard, m/s, thuds and throws the most.
+const LYING_EYE := 0.25
+const ROLL_MOST := deg_to_rad(75.0)
+const PITCH_MOST := deg_to_rad(60.0)
+const TUMBLE_HARD := 8.0
+## A hit's sand is thrown up this far ahead of you, m, along your way, and
+## carries this share of it, so it flies on ahead rather than in your eyes.
+const BURST_AHEAD := 0.8
+const BURST_CARRY := 0.7
 
 var _player: Player
 var _tuning := Tuning.current()
@@ -71,6 +91,15 @@ var _knock: AudioStreamPlayer
 var _spray: CPUParticles3D
 var _tail: CPUParticles3D
 var _puff: CPUParticles3D
+## A tumble's thuds and bursts of sand, taken in turn so one never cuts the
+## last short, and the hits so far; its pitch on top of where you look, and
+## the pitch as this left it, so one set from outside (a respawn, a load)
+## is taken as where you look.
+var _bumps: Array[AudioStreamPlayer] = []
+var _bursts: Array[CPUParticles3D] = []
+var _hits := 0
+var _pitched := 0.0
+var _pitch_left := 0.0
 
 
 func _ready() -> void:
@@ -93,7 +122,12 @@ func _ready() -> void:
 	_tail.color_ramp.add_point(0.15, Color(_tuning.sand_color, 0.5))
 	_tail.color_ramp.set_color(0, Color(_tuning.sand_color, 0.0))
 	_puff = _sand(32, 0.7, true)
+	for i in 2:
+		_bumps.append(_voice(Sounds.TUMBLE[i]))
+		_bursts.append(_sand(64, 0.9, true))
+		_bursts[i].emission_box_extents = Vector3(0.5, 0.05, 0.5)
 	_player.landed.connect(_on_landed)
+	_player.tumbled.connect(_on_tumbled)
 	_player.jumped.connect(_on_jumped)
 	_player.edge_bit.connect(_on_edge_bit)
 	_player.wiped_out.connect(_on_wiped_out)
@@ -173,8 +207,12 @@ func _process(delta: float) -> void:
 	if ride != null:
 		between = to_you * -ride.last_step * (1.0 - Engine.get_physics_interpolation_fraction())
 	_bank = _ease(_bank, _view_lean(ride, to_you) if ride != null else 0.0, EYE_SECONDS, delta)
+	var tumble := _player.tumble
+	var tumbled := _tumble_view(tumble)
+	if tumble != null:
+		between = to_you * -tumble.last_step * (1.0 - Engine.get_physics_interpolation_fraction())
 
-	var sliding := _player.mode == "slide"
+	var sliding := _player.mode == "slide" or (tumble != null and tumble.ploughing())
 	# The sand judders through you on a fast slide.
 	var judder := Vector3(sin(_clock * 41.0), sin(_clock * 53.0 + 1.3), 0.0) * 0.003 \
 		* clampf(speed / FAST, 0.0, 1.0) if sliding else Vector3.ZERO
@@ -183,13 +221,31 @@ func _process(delta: float) -> void:
 	if ropes != null and ropes.wrench_n > t.fulcrum_n:
 		_shake = maxf(_shake, BITE_SHAKE * clampf(ropes.wrench_n / t.fulcrum_n - 1.0, 0.2, 1.0))
 	var shake := Vector3(sin(_clock * 67.0), sin(_clock * 79.0 + 0.7), 0.0) * SHAKE_REACH * _shake
-	camera.position = _rest + bob + _spring + _lean + judder + shake + Vector3.DOWN * _drop + between
-	camera.rotation.z = roll + _roll + _bank + sin(_clock * 59.0 + 2.1) * SHAKE_ROLL * _shake
+	camera.position = _rest + bob + _spring + _lean + judder + shake + Vector3.DOWN * maxf(_drop, tumbled.x) + between
+	camera.rotation.z = roll + _roll + _bank + tumbled.y + sin(_clock * 59.0 + 2.1) * SHAKE_ROLL * _shake
+	var tip := _tremble(camera)
+	var looked := camera.rotation.x - (_pitched if is_equal_approx(camera.rotation.x, _pitch_left) else 0.0)
+	_pitched = tumbled.z + tip
+	camera.rotation.x = looked + _pitched
+	_pitch_left = camera.rotation.x
 	camera.fov = _fov + _widen
 	var grit := _grit(ride) if ride != null else (clampf(speed / FAST * 1.5, 0.15, 1.0) if sliding and speed > 0.3 else 0.0)
 	_sound_slide(grit, speed / (t.board_top_speed if ride != null else FAST), delta)
 	_throw_sand(sliding and ride == null, own, speed)
 	_dig_sand(ride, grit)
+
+
+## The ground trembling under you near a live vent: your view moved and
+## rolled by a few slow waves together, on top of everything else; and how
+## far they tip it, radians, which goes on your look with the tumble's pitch.
+func _tremble(camera: Camera3D) -> float:
+	var weather := _player.world.weather
+	var amount := weather.rumbles.tremble if weather != null and weather.rumbles != null else 0.0
+	var c := _clock
+	camera.position += Vector3(sin(c * 23.0 + 0.4) + 0.5 * sin(c * 37.0), sin(c * 29.0) + 0.5 * sin(c * 43.0 + 1.1),
+		0.0) * TREMBLE_REACH * amount
+	camera.rotation.z += (sin(c * 31.0 + 0.9) + 0.4 * sin(c * 47.0)) * TREMBLE_ROLL * amount
+	return (sin(c * 27.0 + 2.0) + 0.5 * sin(c * 41.0)) * TREMBLE_PITCH * amount
 
 
 ## Ground covered between footfalls at a pace, m: tracks print feet where these land.
@@ -228,6 +284,41 @@ func _on_jumped() -> void:
 func _view_lean(ride: Ride, to_you: Basis) -> float:
 	var up := to_you * ride.board_pose(true).basis.y
 	return -atan2(up.x, up.y) * BANK_SHARE
+
+
+## How far a tumble drops, rolls and pitches your view: down onto the sand
+## as you go over, rolled with your body and into the sand face down, and
+## righted as you get up.
+func _tumble_view(tumble: Tumble) -> Vector3:
+	if tumble == null:
+		return Vector3.ZERO
+	var at := tumble.view(true)
+	var held := 1.0 - smoothstep(0.0, 1.0, at.z)
+	return Vector3((_rest.y - LYING_EYE) * smoothstep(0.0, 1.0, at.y) * held, -ROLL_MOST * sin(at.x) * held,
+		-PITCH_MOST * maxf(0.0, -cos(at.x)) * held)
+
+
+## Tumbling, you hit the sand: a thud by how hard, a burst of sand thrown up
+## ahead of you and a jolt through your view.
+func _on_tumbled(speed: float) -> void:
+	var hard := clampf(speed / TUMBLE_HARD, 0.25, 1.0)
+	_shake = maxf(_shake, hard)
+	_kick(Vector3.DOWN * MOST_KICK * hard)
+	var bump := _bumps[_hits % 2]
+	bump.pitch_scale = _rng.randf_range(0.9, 1.1)
+	bump.volume_db = linear_to_db(hard)
+	bump.play()
+	var burst := _bursts[_hits % 2]
+	var way := Vector3(_player.own.x, 0.0, _player.own.y)
+	var ahead := way.normalized() if way.length() > 0.5 else -_player.global_basis.z
+	burst.global_position = _player.global_position + ahead * BURST_AHEAD + Vector3.UP * 0.1
+	burst.direction = (ahead * 0.6 + Vector3.UP).normalized()
+	burst.initial_velocity_min = 1.0 + 1.5 * hard + way.length() * BURST_CARRY * 0.8
+	burst.initial_velocity_max = 2.0 + 3.0 * hard + way.length() * BURST_CARRY * 1.2
+	burst.scale_amount_max = 0.06 + 0.08 * hard
+	burst.gravity = Vector3.DOWN * _player.world.gravity
+	burst.restart()
+	_hits += 1
 
 
 ## The edge bit: a small shake, harder the faster you go.

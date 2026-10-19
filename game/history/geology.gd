@@ -214,6 +214,12 @@ func next_burst(each: Dictionary, t: float) -> float:
 	return INF
 
 
+## A vent's next burst after t: when, and how many times the seep; or INF and 0.
+func coming_burst(each: Dictionary, t: float) -> Vector2:
+	var when := next_burst(each, t)
+	return Vector2(INF, 0.0) if when == INF else _burst_at(each, floori(when / BURST_SLOT))
+
+
 ## A burst's push over the seep at t: the slot it's in and the one before,
 ## whose fade may run on into it.
 func _burst(each: Dictionary, t: float) -> float:
