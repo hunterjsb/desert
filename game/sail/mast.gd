@@ -36,9 +36,9 @@ const MOST := deg_to_rad(85.0)
 ## against swinging, N·m·s/rad: the air the sail swings through does the rest.
 const SWING_MASS := 12.0
 const SWING_DRAG := 8.0
-## The cloth swinging meets the air as its middle would swinging this much
-## faster: further out it sweeps faster, and over more of it (the cloth's
-## second moment over its area and the middle's distance squared).
+## Swinging, the cloth's twist meets the air as its middle's would swinging
+## this much faster: further out it sweeps faster, and over more of it (the
+## cloth's second moment over its area and the middle's distance squared).
 const SWEPT := 3.0
 ## Taut, the sheet holds the boom springing back this many times a second.
 const SHEET_HZ := 6.0
@@ -325,6 +325,8 @@ func _sail(on: Device, area: float, h: float) -> void:
 		boom_spin = spin * way
 		into += (held * way + SWING_DRAG * boom_spin) * step
 		sheet_n = held / (BOOM * cos(out * 0.5))
+	# What the camp takes is the cloth's push as its middle meets the air.
+	felt = air - axis.cross(turned * (_middle_at(boom) - BOOM_AT)) * boom_spin
 	force = _push(felt, boom, showing, catch * felt.length_squared(), turned)
 	_felt = felt.length()
 	var at := global_transform * Vector3(0.0, BOOM_AT.y + MIDDLE.x * raise, 0.0)

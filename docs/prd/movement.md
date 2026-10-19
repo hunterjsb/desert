@@ -252,7 +252,7 @@ both answered below.
   `board_wipeout_hurt` and `board_wipeout_winded`.
 - **Towed** (a sail's sheet, a kite), a line's pull drags the hover's grip out from under
   it, so only the dug edge holds against the line's sideways pull, and left alone the board
-  trails its own way (a camp tows you at 2.9 m/s held across the wind; it towed you at 3.5 before
+  trails its own way (a camp tows you at 2.8 m/s held across the wind; it towed you at 3.5 before
   the dig, 3.3 before its sail's twist reached it whole). Pulled 3 m/s² downwind
   with the board steered 60° across, undug it runs straight downwind at 2.9 m/s; dug in it
   holds its line 60° across at 3.8 m/s, 34 m in 10 s. That's the tack.
@@ -424,14 +424,14 @@ your own camp's parts rather than found whole:
 - **Points of sail.** The "sail" deck, 89 kg on skates, steered and its sheet tended, in a
   steady 10 m/s wind: dead downwind 3.4 m/s, under the wind's speed; a broad reach (120°) 4.5;
   a beam reach 4.3, sliding sideways 0.1 m/s; a close reach (70°) 2.9; close-hauled at 60° 1.9,
-  making 1.0 m/s upwind. At 50° it can't get going from rest: bear away to build speed, then
-  head up. Head to wind it makes no ground, blown back 0.7 m/s, so you tack. On a plate the beam
+  making 1.0 m/s upwind. From rest at 60° it barely gets going, and at 50° not at all: bear away
+  to build speed, then head up. Head to wind it makes no ground, blown back 0.7 m/s, so you tack. On a plate the beam
   reach is 2.9 m/s. A 6 m/s breeze is too light to start it; at 14 m/s it heels 12° and must be
   eased to hold a beam reach, at 4.6 m/s.
 - **Heel and capsize.** In 10 m/s on a beam reach its windward blades unload and it leans under
   a degree or two. A 12.5 m/s gust with the sheet made fast lifts its windward runners, leaning
   it 3 to 5°, and it comes back down as the gust passes. In an 18 m/s blast held to its course it
-  goes over, 4.0 rad/s at most, and comes to rest lying on its edge and its mast: the
+  goes over, 3.9 rad/s at most, and comes to rest lying on its edge and its mast: the
   masthead and the boom's end meet the sand, and whatever stands on a tipped device rests on
   its frame's corners, so nothing it carries goes through. You right it as you right anything:
   take hold of it and rotate.
@@ -450,7 +450,7 @@ your own camp's parts rather than found whole:
   across the pull ([the dig](#dig-and-carve-agreed-2026-10-18-spec-built)). It pushes and
   kicks against no line, so it still tows nothing.
   Reeling works riding, so you trim the sheet as you go. On the "sail" deck in 10 m/s, the sheet
-  tended and the camp held across the wind, it tows you at 2.9 m/s on the end of the sheet, itself
+  tended and the camp held across the wind, it tows you at 2.8 m/s on the end of the sheet, itself
   at 2.6. Left to steer itself with its sheet tended, it bears off onto a run, its boom at its 85°
   stop, and slows: before the sail's twist reached the camp whole (2026-10-18) it held a broad
   reach and towed you at 3.3 m/s.
@@ -466,12 +466,15 @@ your own camp's parts rather than found whole:
   changed, so older saves load as before.
 - **Stability.** Physics ticks only. The runners hold the load up together, solved for the
   body's rise and tilt at once, and plough by the way it went before anything pushed it this
-  tick, so a reach sails the same at 30, 60 and 120 ticks a second (2.938, 2.938 and 2.936 m/s,
-  51.2 m in 20 s each). In four minutes back and forth in gusts, over eight chunk seams and
-  through three origin shifts, no tick changes its way by more than 0.12 m/s, it never spins
-  faster than 1.2 rad/s, leans 7° at most and never touches the sand but by its blades.
-- **Cost.** About 100 µs a tick for a deck's runners and 80 µs for its sail, measured in the
-  probes on a loaded machine; a camp on runners spends nothing floating.
+  tick, so a reach sails the same at 30, 60 and 120 ticks a second (2.903, 2.902 and 2.900 m/s,
+  50.4, 50.3 and 50.2 m in 20 s). In four minutes back and forth in gusts, over eight chunk seams
+  and through three origin shifts, no tick changes its way by more than 0.13 m/s, it spins no
+  faster than 1.6 rad/s, turning hard about at each end, leans under 8° and never touches the
+  sand but by its blades. (It turned at 1.2 rad/s while its swinging boom dragged on it as hard
+  as the air does; now only its gooseneck does.)
+- **Cost.** About 100 to 130 µs a tick for a deck's runners and 110 µs for its sail, its drawn
+  sheet with it, measured in the probes on a loaded machine; a camp on runners spends nothing
+  floating.
 - **The "sail" scenario** stands you on level open sand in a steady 8.5 to 11.5 m/s breeze out
   of any lee, facing across it with the wind on your left. Ahead stands a deck two pieces by
   two on skates, the mast and its furled sail on its front piece to windward, a crate with two
@@ -525,7 +528,7 @@ as built, unchanged.
 - **Steering is the carve.** Dig in and carve off the line and its bend pulls the boom's end and
   the camp's nose toward you; the dug edge holds you there, as it holds a tack. Out to windward the
   rig bears away, to leeward it heads up. On the "sail_tow" camp on a broad reach in 10 m/s, a 20°
-  carve dug a third in turns the rig +50° off the wind in 2.5 s to windward and −46° to leeward,
+  carve dug a third in turns the rig +49° off the wind in 2.5 s to windward and −46° to leeward,
   against −2° with no carve. Left alone the rig rounds up and stops, as stage 1's does, so you keep
   steering; the probes hold its course as a helmsman would, by a turn on the rig.
 - **The numbers.** The rig is the "sail" deck less its shield, 88 kg on skates; the camp a deck two
@@ -541,7 +544,7 @@ as built, unchanged.
   each other plus any line's bend round you. Held past your strength, 400 N (`fulcrum_n`), for as
   long as a line's load is held, you lose 8 health a second for each share more (`fulcrum_hurt`),
   never your last, and your view shakes. Braced 4 m to windward of the hidden line with the camp
-  moored, the line bends round you at up to 510 N in 12 m/s and takes 9 health in 10 s; the lines
+  moored, the line bends round you at up to 500 N in 12 m/s and takes 9 health in 10 s; the lines
   hold. Riding either stage you're never hurt.
 - **Stage 3: the helm seat** (`helm_seat`, 7 kg), a skimmer pilot's, fitted to the camp the way
   anything is (a deck mount, for now). Use on it sits you there: you ride the camp as what's seated
@@ -573,7 +576,7 @@ as built, unchanged.
   hoverboard is skimmer-culture gear already; wrecks lie shallow and tilted, exposed and reburied
   fast, so they're an expedition's find, near the Salvager's start. Each is 3 in 13 of a wreck's best.
 - **Frame-rate proof.** Physics ticks only. Over 15 s at 30, 60 and 120 ticks a second the yacht
-  sails 38.1, 38.3 and 38.4 m and the towing rig 29.5, 31.9 and 32.0 m (the lines swing you a tick at
+  sails 38.1, 38.2 and 38.2 m and the towing rig 29.4, 31.4 and 31.9 m (the lines swing you a tick at
   a time); nothing changes its way faster than 4.3 m/s² or spins past 0.5 rad/s.
 - **Scenarios:** "sail_tow" (stage 2, both lines at your waist, the board at your feet) and "yacht"
   (the sheet at your waist, by the helm), in the sail scenario's breeze. The look-test `look/sail`
