@@ -722,8 +722,8 @@ static func _part(id: StringName, size: Vector3, count := -1) -> ArrayMesh:
 					b.box(Vector3(size.x - 2.0 * r - 0.01, r * 0.9, r * 0.9), Vector3(0.0, s * e, z), gun, 0.006)
 					b.box(Vector3(r * 0.9, size.y - 2.0 * r - 0.01, r * 0.9), Vector3(s * e, 0.0, z), gun, 0.006)
 		&"fabric":
-			# Coarse canvas, its hem stitched and its corners grommeted.
-			b.box(Vector3(size.x, size.y, size.z), Vector3(0.0, 0.0, h.z), Paint.coat(Color(0.78, 0.7, 0.55), 0.0, 0.0, 0.95), 0.002)
+			# Its hem stitched and its corners grommeted; the canvas is its own
+			# cloth, which bellies and flutters (Faces).
 			for s in [-1, 1]:
 				b.box(Vector3(size.x, 0.025, size.z + 0.004), Vector3(0.0, s * (h.y - 0.0125), h.z), Paint.coat(Color(0.62, 0.55, 0.42), 0.0, 0.0, 0.95), 0.001)
 				b.box(Vector3(0.025, size.y, size.z + 0.004), Vector3(s * (h.x - 0.0125), 0.0, h.z), Paint.coat(Color(0.62, 0.55, 0.42), 0.0, 0.0, 0.95), 0.001)

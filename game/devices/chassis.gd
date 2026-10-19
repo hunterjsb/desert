@@ -56,8 +56,10 @@ var _own: Array[Node3D] = []
 ## that day began, world metres.
 var _today := -1
 var _day_from := Vector2.ZERO
-## What its pieces and what's fitted to them show the wind, m², until they change.
-var _flat_face := NAN
+## What the wind grabs of it but its whole faces, until they change.
+var _loose := NAN
+## The wind on its whole faces, and the lee they cast.
+var faces := Faces.new()
 
 
 ## Every piece of the deck, the first one first.
@@ -710,44 +712,79 @@ func stats() -> Dictionary:
 	return now
 
 
-## Its whole-face plates, as [middle, way out, m², what it is], in its own
-## frame: the pieces on its frames' faces and what fills the rest. Wind on
-## faces reads them (not yet: Wind & storms).
+## Its whole-face plates in its own frame, each as [middle, way out, m², what
+## it is, half its width and half its height along it, the frame's face it's
+## on]: the pieces on its frames' faces and what fills the rest. Wind on
+## faces reads them (Faces).
 func plates() -> Array:
 	var out := []
 	for piece in joined:
 		if piece.on_frame():
 			var at := piece.pose()
-			out.append([at.origin, at.basis.y.normalized(), WIDTH * WIDTH, &"chassis"])
+			out.append([at.origin, at.basis.y.normalized(), WIDTH * WIDTH, &"chassis",
+				at.basis.x.normalized() * WIDTH * 0.5, at.basis.z.normalized() * WIDTH * 0.5, piece.joined_at])
 	for socket in sockets():
 		if socket.kind == &"face" and socket.part != null:
-			var box := Hands._shapes_box(socket.fitted)
-			out.append([socket.position, socket.transform.basis.z.normalized(), box.size.x * box.size.y,
-				socket.part.get_meta(&"catalog", &"")])
+			var id: StringName = socket.part.get_meta(&"catalog", &"")
+			var size: Vector3 = Catalog.PARTS[id].size
+			var b := socket.transform.basis.orthonormalized()
+			out.append([socket.position + b.z * size.z * 0.5, b.z, size.x * size.y, id,
+				b.x * size.x * 0.5, b.y * size.y * 0.5, socket])
 	return out
 
 
-## Flat, the wind meets its pieces and what's fitted to them side on, and
-## takes what stands on it too.
+## What the wind grabs of it as a loose body's catch counts it: its whole
+## faces at the wind's way now, and the rest less what their lee keeps from
+## it (Faces).
 func wind_catch() -> float:
-	if is_nan(_flat_face):
-		_flat_face = 0.0
-		for piece in pieces():
-			_flat_face += piece.frame_stats.get("face_m2", 0.0)
-		for child in get_children():
-			var shape := child as CollisionShape3D
-			if shape != null and shape.has_meta(&"socket"):
-				var size := (shape.transform * Catalog.bounds(shape.shape)).size
-				_flat_face += maxf(size.x, size.z) * size.y
-	var catch := _flat_face * world.tuning.wind_catch_per_m2 if world != null else 0.0
+	return middle_catch() + faces.catch_now
+
+
+## What the wind pushes at its middle now: all but its whole faces, less
+## what their lee keeps from what stands behind them.
+func middle_catch() -> float:
+	return loose_catch() if is_nan(faces.loose_now) else faces.loose_now
+
+
+## What the wind grabs of it but its whole faces, as if none stood.
+func loose_catch() -> float:
+	if is_nan(_loose):
+		_loose = 0.0
+		for item: Array in loose_items():
+			_loose += item[1]
+	return _loose
+
+
+## What the wind grabs of it but its whole faces, each as [where in its
+## frame, its catch]: flat, the wind meets its pieces and what's fitted to
+## them side on, and takes what stands on it too.
+func loose_items() -> Array:
+	var items := []
+	if world == null:
+		return items
+	var rate := world.tuning.wind_catch_per_m2
+	for piece in pieces():
+		items.append([piece.pose().origin, piece.frame_stats.get("face_m2", 0.0) * rate])
+	# What's fitted, a part at a time, where its shapes are on average.
+	var parts := {}
+	for child in get_children():
+		var shape := child as CollisionShape3D
+		if shape != null and shape.has_meta(&"socket") and (shape.get_meta(&"socket") as Socket).kind != &"face":
+			var box := shape.transform * Catalog.bounds(shape.shape)
+			var catch := maxf(box.size.x, box.size.z) * box.size.y * rate
+			var item: Array = parts.get_or_add(shape.get_meta(&"socket"), [Vector3.ZERO, 0.0])
+			item[0] = (item[0] * item[1] + box.get_center() * catch) / maxf(item[1] + catch, 1e-9)
+			item[1] += catch
+	items.append_array(parts.values())
 	for seated in mounted():
-		catch += seated.wind_catch()
-	return catch
+		items.append([seated.position, seated.wind_catch()])
+	return items
 
 
 func _shapes_changed() -> void:
 	super()
-	_flat_face = NAN
+	_loose = NAN
+	faces.forget()
 
 
 func show_wear() -> void:

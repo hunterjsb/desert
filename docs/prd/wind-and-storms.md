@@ -571,10 +571,38 @@ turbine.
   so when the wind turns past a 2° step the camp's 14 points cost about 1 ms in that
   one tick, once every half minute or more.
 - **On the dev overlay,** `lee` beside `shel` shows the share of the wind the ground
-  keeps from you.
+  keeps from you, and a camp's walls with it (below).
 - **The lee scenario** stands you at the foot of a tall slip face, its crest at least
   15 m above you and a lee at least nine-tenths full, facing up it into the wind coming
   over the crest, in the clear with a storm due in two to six minutes.
+
+### A wall's lee (built, 2026-10-19)
+
+Hunter's [spec](../chassis-kits-dunes-2026-10-18.md#wind-on-faces): a camp's upright faces
+catch the wind and shelter what's behind them like a small dune, edge-on to travel and
+broadside as a windbreak when camped. Each deck's faces standing across the wind and still
+in it (a wall, a screen, fabric; Devices & mods, wind on faces) cast a lee, through the same
+felt-weather wrapper as a dune's, so everything that feels the wind feels it: you, crops,
+devices' wear, loose things, ropes, the turbine and other decks' faces.
+
+- **Where it is.** Behind the face along the wind blowing at its deck, full for two of its
+  heights and gone by seven, as a crest's, and across and up as wide and high as the face
+  stands to the wind, fading out within three tenths of its height past its edges. An
+  angled face casts a narrower lee and a weaker one, by how squarely it meets the wind;
+  edge-on, none; a shelf, level, none.
+- **How strong.** A full lee's share, as a dune's: two-thirds of the wind (65%) and a third
+  of a storm's wear and harm (33%). Behind a 1 m wall broadside to a 12 m/s wind, the wind
+  1.5 m back is cut by 65%, and a 3 kg box resting there stays put where the same box in
+  the open slides 5 m in two seconds (probe 22). Under a dune it takes its share of what the
+  ground's lee lets through, and a bubble keeps out its share of what's left.
+- **Its own deck.** A deck's own walls don't shelter its own faces, which shade one another
+  instead, but the rest of it behind them (devices, what's stuck, its pieces' edges) catches
+  only the wind they let through: the Surveyor's camp with its wall upwind catches about half
+  at its middle what it does with the wall to leeward. A frame open away from the wind with
+  its back closed shelters its inside the same way.
+- **As it stands now.** Read as shelters are, at any time asked; worked out again only when
+  the wind's way across the deck turns 3°, and a deck held in your hands casts none. A read
+  costs about 2 µs near a camp's walls and 1 µs elsewhere, on top of the field's wind.
 
 ## Plumes
 
@@ -869,6 +897,10 @@ All run without a window, with a fixed seed.
 21. **No anomaly in a run's first days** (2026-10-18). A fresh run begins where and when a new one
     would, days into the weather's clock; through its first five days no heart comes within 60 km of
     where it began, where with them lifted, as for a dev run that asks for one, some would.
+22. **A wall shelters what's behind it** (2026-10-19). A camp's wall broadside to a steady wind in a
+    storm, on open sand: just behind it the wind is cut by about a full lee's share and the storm's
+    wear and harm by theirs; beside it, upwind of it and seven heights behind it, nothing is; edge-on
+    it shelters nothing. A light box resting behind it stays put where one in the open slides.
 
 ## Out of scope
 
