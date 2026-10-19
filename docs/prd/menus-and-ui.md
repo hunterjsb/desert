@@ -217,7 +217,8 @@ resets"): `unlockall` opens every start, and deeds can be granted or cleared to 
   hands are free, which `god` makes light work of. Rope, wire and hose come rolled, as found. A line
   under the grid says where the last one went. Opening it makes the run a dev run, and the first time
   that line says so. Too big for the screen, it's drawn smaller to fit. Its pictures are drawn as the
-  game starts, with the deeds'. `look/creative` shoots it over a run.
+  game starts, with the deeds'. `look/creative` shoots it over a run, and with `--scenarios` the
+  still camp, every make of board, and the vent as you arrive and as it bursts.
 - **`scenario`** alone, or `scenarios`, lists each with a line on what it stages. Each scenario names
   what it lays (`lays`), and `Scenarios.lay` lays it, so dev probe 1 starts every one as the console
   does. A scenario clearing the last one's things unties that one's lines from your waist too, so a
@@ -232,7 +233,7 @@ resets"): `unlockall` opens every start, and deeds can be granted or cleared to 
   | camp | remade as sleep | lone floaters each on a line, a duplicate of afk's moored deck; now dusk at a still camp, a deck of two resting on the sand with the bedroll, the base shield running, a wall to windward on a frame and a radio on the weather station |
   | board | remade | one board by a plate and a bare piece; now a board of every make, charged, by a deck of two resting on the sand |
   | boards | cut | merged into board |
-  | vent | new | across the rift from its live vent, facing it, a minute before it bursts, a charged board at your feet |
+  | vent | new | across the rift from its live vent, facing it, a minute before it bursts in clear daylight, a charged board at your feet |
 - **Probes:** Dev probe 6 (the creative menu) and dev probe 1 (every scenario starts and lays what it
   stages without an error).
 

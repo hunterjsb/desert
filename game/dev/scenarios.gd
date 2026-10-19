@@ -84,9 +84,9 @@ const LIST: Array[Dictionary] = [
 		"kind": "anomaly", "day": [0.3, 0.6], "due": [150.0, 300.0], "lays": &"anomaly_camp"},
 	{"key": "sleep", "label": "dusk at a still camp: a bedroll, a running shield, a wall to windward",
 		"kind": "clear", "day": [0.72, 0.745], "lays": &"sleep"},
-	# Clear long enough for the burst to tower and fade.
+	# Clear long enough for the burst to tower, and by daylight.
 	{"key": "vent", "label": "across the rift from its live vent, a minute before it bursts", "kind": "vent",
-		"day": [0.27, 0.7], "due": [240.0, INF], "lays": &"vent"},
+		"day": [0.2, 0.62], "due": [180.0, INF], "lays": &"vent"},
 ]
 
 ## A floater's stake is driven this far further upwind of it, m.
@@ -330,7 +330,7 @@ const SLEEP_RIG := [[&"piece", Vector2i(1, 0)],
 ## most days it bursts, at any hour, and over the rift it's often stormy.
 const VENT_OFF := 1500.0
 const VENT_LEAD := 60.0
-const VENT_DAYS := 200.0
+const VENT_DAYS := 400.0
 
 ## Your own chassis, to stick what you find on: right and ahead.
 const YOURS := [1.5, 2.5]
@@ -499,7 +499,7 @@ static func _clear(world: World, key: StringName, now: bool) -> void:
 		# A line of its own at your waist, a sheet or a tow, goes with it.
 		if body is Line:
 			for end in (body as Line).ends:
-				if player.waist.holds(end):
+				if is_instance_valid(end) and player.waist.holds(end):
 					player.waist.untie(end)
 		if now:
 			body.free()
@@ -757,7 +757,9 @@ static func _before_anomaly(world: World, scenario: Dictionary) -> Dictionary:
 
 ## Across the rift from its live vent, facing it, on fresh ground with the
 ## moon's point put there, VENT_LEAD s before a burst at a moment in the day's
-## window that's clear, there and over the vent, until the next storm's due.
+## window that's clear, there and over the vent, until the next storm's due,
+## and no eclipse while the burst towers: near the point under Tu, noon's
+## goes dark.
 static func _before_burst(world: World, scenario: Dictionary) -> Dictionary:
 	var history := world.shape.history
 	var geology := history.geology
@@ -775,7 +777,10 @@ static func _before_burst(world: World, scenario: Dictionary) -> Dictionary:
 		var burst := geology.next_burst(vent, t)
 		var start := burst - VENT_LEAD
 		var hour := world.weather.day.time_of_day(start, longitude)
-		if start >= 0.0 and hour >= scenario.day[0] and hour <= scenario.day[1] \
+		var towers := VENT_LEAD + Geology.BURST_SHAPE.x + Geology.BURST_SHAPE.y
+		var sunlit := range(0, int(towers) + 1, 10).all(func(s: int) -> bool:
+			return world.weather.day.sun_shown(start + s) == 1.0)
+		if start >= 0.0 and hour >= scenario.day[0] and hour <= scenario.day[1] and sunlit \
 				and not _place(field, scenario, at, Vector2.ZERO, start).is_empty() \
 				and not _place(field, scenario, mouth, Vector2.ZERO, start).is_empty():
 			return {"x": at.x, "z": at.y, "yaw": yaw, "time": start,

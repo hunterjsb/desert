@@ -98,8 +98,9 @@ func run() -> void:
 			"vent":
 				var vent: Dictionary = world.shape.history.geology.live()[0]
 				var burst := world.shape.history.geology.next_burst(vent, t) - t
-				check(not stormy and absf(burst - Scenarios.VENT_LEAD) < 1.0,
-					"vent: clear, the vent bursting in %d s (%.0f s)" % [Scenarios.VENT_LEAD, burst])
+				check(not stormy and absf(burst - Scenarios.VENT_LEAD) < 1.0
+					and world.weather.day.sun_shown(t + burst) == 1.0,
+					"vent: clear, the vent bursting in sunlight in %d s (%.0f s)" % [Scenarios.VENT_LEAD, burst])
 			"deep":
 				check(field.storm_at(at.x, at.y, t) == 1.0, "deep: full storm")
 				check(_edge(at, upwind, t, true) > 250.0 and _edge(at, -upwind, t, true) > 250.0,

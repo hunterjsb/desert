@@ -180,7 +180,8 @@ func _lay_out() -> void:
 		var items: Array = GROUPS[i][1]
 		for k in items.size():
 			var card := _card(items[k])
-			card.position = at + Vector2(k % ACROSS * (CARD.x + GAP), HEAD + floorf(k / float(ACROSS)) * (CARD.y + GAP))
+			var row := floorf(k / float(ACROSS))
+			card.position = at + Vector2(k % ACROSS * (CARD.x + GAP), HEAD + row * (CARD.y + GAP))
 			_drawn.add_child(card)
 			_cards[items[k]] = card
 		at.y += tall[i] + GROUP_GAP
@@ -207,14 +208,14 @@ func _card(id: StringName) -> Button:
 	look.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	look.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	column.add_child(look)
-	var name := Label.new()
-	name.theme_type_variation = &"DeedCardName"
-	name.text = name_of(id)
-	name.uppercase = true
-	name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	name.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	name.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	column.add_child(name)
+	var title := Label.new()
+	title.theme_type_variation = &"DeedCardName"
+	title.text = name_of(id)
+	title.uppercase = true
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	title.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	column.add_child(title)
 	card.mouse_entered.connect(card.grab_focus)
 	card.focus_entered.connect(func() -> void: Sounds.play(get_tree().root, Sounds.MENU_MOVE, Sounds.UI))
 	card.pressed.connect(_pick.bind(id))

@@ -63,9 +63,12 @@ func _ready() -> void:
 ## A scenario started as the console starts it, its things down and settled.
 func _scenario(key: String) -> void:
 	var world := _main.world()
-	world.remove_meta(&"scenario_kit")
+	var was: Variant = world.get_meta(&"scenario_kit") if world.has_meta(&"scenario_kit") else null
 	_main.start_scenario(Scenarios.by_key(key))
-	while not world.has_meta(&"scenario_kit"):
+	while not world.has_meta(&"scenario_kit") or world.get_meta(&"scenario_kit") == was:
+		if str(Dev.read("world/scn")).ends_with("none found"):
+			print("no %s in this run's weather" % key)
+			break
 		await get_tree().physics_frame
 	world.set_meta(&"arrived", world.time)
 	await _idle()
@@ -75,7 +78,8 @@ func _scenario(key: String) -> void:
 func _shoot(path: String) -> void:
 	await get_tree().process_frame
 	get_viewport().get_texture().get_image().save_png(path)
-	print("shot ", path)
+	var world := _main.world()
+	print("shot %s at %.3f of the day" % [path, world.weather.day.time_of_day(world.time, world.moon.longitude)])
 
 
 func _press(action: StringName) -> void:
