@@ -1,7 +1,7 @@
 class_name DevConsole
 extends Control
-## Dev: a line to type commands into over the running game, or over the main
-## menu for what needs no world, with what they said above it. The UI root
+## Dev: a line to type commands into over the run or any menu,
+## with what they said above it. Worldless commands work outside a run. The UI root
 ## opens and closes it and keeps every key from the game while it's up; up
 ## and down step through what was typed before, the focus-next key finishes
 ## a command's name, a scenario or an id, and the wheel, the page actions and

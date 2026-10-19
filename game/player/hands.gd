@@ -2050,6 +2050,9 @@ func line() -> String:
 		return notice
 	if not sticking.is_empty() and (sticking.why != "" or sticking.warn != ""):
 		return sticking.why if sticking.why != "" else sticking.warn
+	if not sticking.is_empty() and (held is CrowsNest or grasp.body is CrowsNest) \
+			and sticking.deck is Mast and sticking.face == Mast.MASTHEAD:
+		return "Crow's nest on masthead"
 	if look_wreck != null and (look_work != null or look_scrap != null):
 		return look_wreck.describe(look_work if look_work != null else look_scrap)
 	if look_part != null:
