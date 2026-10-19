@@ -242,7 +242,8 @@ static var _current: Tuning
 ## one, about one every six hours of play.
 @export var anomaly_cell_m: float = 20000.0
 @export var anomaly_chance: float = 0.37
-## None comes in a run's first days: ordinary storms are learnt first.
+## None comes in a run's first days, from its own start: ordinary storms are
+## learnt first.
 @export var anomaly_grace_days: float = 5.0
 ## How far ahead of its storm's front its hidden term reaches, in the field's
 ## own units (about a kilometre or two): a heart riding in on the wall shows
@@ -276,6 +277,15 @@ static var _current: Tuning
 ## 300 m; past this a crest's last faint shelter fades out.
 @export var lee_reach: float = 250.0
 @export var lee_samples: int = 32
+
+@export_group("Sand on the wind")
+## Wind on open sand starts to lift it at this, m/s, and lifts all it can by
+## this: loose sand moves on an ordinary breezy afternoon, not only in a storm.
+## For looks only (WindMap).
+@export var transport_wind: Vector2 = Vector2(5.0, 8.0)
+## The share of the afternoon's sand still moving at night, the air lying still
+## on cold sand; a front's outflow drives it day or night.
+@export var transport_night: float = 0.25
 
 @export_group("Storm")
 ## How far you can see inside a storm, in metres.
@@ -602,6 +612,10 @@ static var _current: Tuning
 ## loses the sail and then the mast before its line or its stake.
 @export var sail_tear_n: float = 600.0
 @export var mast_snap_n: float = 1000.0
+## At the helm, the sideways moves turn the camp as a hovercraft's do: toward
+## this fast a turn, rad/s, by a turning push of at most this much, N·m.
+@export var helm_turn: float = 0.5
+@export var helm_torque: float = 800.0
 
 @export_group("Rope")
 ## A line's own weight, kg per metre. It's what makes a lightly loaded line
@@ -638,6 +652,11 @@ static var _current: Tuning
 @export var waist_slow: float = 0.3
 @export var waist_catch: float = 0.12
 @export var untie_seconds: float = 1.0
+## Your body between lines pulling it apart, or bent round by one, takes this
+## much held, N, and past it loses this much health a second for each share
+## more.
+@export var fulcrum_n: float = 400.0
+@export var fulcrum_hurt: float = 8.0
 
 @export_group("Power")
 ## Seconds of world time per power tick.

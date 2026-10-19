@@ -89,8 +89,11 @@ const KINDS := {
 	# The inspection hatch: the line's own hose, valves and water.
 	&"pipeline_segment": {BEST: [[&"hose_end", 3], [&"canister", 2], [&"condenser", 1], [&"strong_plug", 1],
 		[&"big_battery", 1]]},
-	# A wreck nobody reached before the sand did, and a deserters' dugout.
-	&"wreck_hull": {"kept": 0.9},
+	# A wreck nobody reached before the sand did, and a deserters' dugout. A
+	# skimmer's pilot sat in its helm seat and it rode its ventral keel, so the
+	# land yacht's two parts lie deep in its wreck, with what else it carried.
+	&"wreck_hull": {"kept": 0.9, BEST: [[&"helm_seat", 3], [&"keel", 3], [&"shield", 2], [&"board", 2], [&"radar", 1],
+		[&"harvester", 1], [&"big_battery", 1]]},
 	# Where deserters slept: their bedrolls and kits, and what kept them.
 	&"dugout": {"kept": 0.8, FLOOR: [[&"bedroll", 3], [&"survival_kit", 3], [&"radio", 1], [&"battery", 2],
 		[&"ration", 2], [&"coil", 1]]},

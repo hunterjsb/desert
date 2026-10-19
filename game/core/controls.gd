@@ -8,7 +8,7 @@ extends Node
 const HELP := [
 	["MOVING", [["{move_forward}{move_left}{move_back}{move_right}", "move"], ["{sprint}", "sprint"],
 		["{auto_walk}", "auto-walk"], ["{jump}", "jump"], ["{crouch}", "crouch, slide"],
-		["{ride}", "board on or off"]]],
+		["{ride}", "board on or off, up from the helm"]]],
 	["HANDS", [["{hands_grab}", "take, put down"], ["{interact}", "use"], ["{hands_throw}", "throw"],
 		["{hands_rotate}", "turn what you hold"], ["{bring_near} / {push_out}", "nearer, further"],
 		["{reel_in} / {pay_out}", "reel in, pay out; tune a radio"],

@@ -74,6 +74,7 @@ const vec3 SULPHUR = vec3(0.69, 0.54, 0.1);
 
 varying vec3 world_pos;
 varying vec3 world_normal;
+varying vec4 wind_vertex;
 // Handed from fragment() to light(), which has no neighbours to measure the
 // pixel by: the grain's facet (view space) and weight, and the sheen's share,
 // its lobe's power and that lobe's peak.
@@ -91,6 +92,8 @@ const float LEAN = 0.3;
 const float GLINT_SHARP = 400.0;
 // Grains are pale quartz: the sheen is the light's colour, warmed a little.
 const vec3 SHEEN = vec3(1.0, 0.89, 0.77);
+
+#include "res://game/weather/wind_map.gdshaderinc"
 
 float hash(vec2 p) {
 	return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
@@ -145,6 +148,7 @@ bool in_tracks(vec2 xz) {
 void vertex() {
 	world_pos = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	world_normal = normalize((MODEL_MATRIX * vec4(NORMAL, 0.0)).xyz);
+	wind_vertex = wind_view_vertex(world_pos.xz);
 	if (in_tracks(world_pos.xz)) {
 		// The deepest mark within half a lattice square, so one between
 		// vertices still lifts the sand round it.
@@ -263,7 +267,7 @@ void fragment() {
 		glint_seen = vec4(mat3(VIEW_MATRIX) * grain.xyz, grain.w * near);
 	}
 
-	ALBEDO = colour;
+	ALBEDO = wind_view_colour(colour, world_pos.xz, wind_vertex);
 	ROUGHNESS = 1.0;
 	NORMAL = normalize((VIEW_MATRIX * vec4(rippled, 0.0)).xyz);
 }
