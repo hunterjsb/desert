@@ -234,6 +234,7 @@ resets"): `unlockall` opens every start, and deeds can be granted or cleared to 
   | board | remade | one board by a plate and a bare piece; now a board of every make, charged, by a deck of two resting on the sand |
   | boards | cut | merged into board |
   | vent | new | across the rift from its live vent, facing it, a minute before it bursts in clear daylight, a charged board at your feet |
+  | dig | new (2026-10-19) | by a big dune's ruin a storm has just laid bare, the slip face behind it, a scoop in your hands and a sieve carried: dune archaeology's dig, to be tried |
 - **Probes:** Dev probe 6 (the creative menu) and dev probe 1 (every scenario starts and lays what it
   stages without an error).
 
@@ -242,7 +243,7 @@ is a menu of its own, reached from the main menu and the system menu.
 
 **Built** (2026-10-18, `game/ui/deeds_grid.gd`), after Hunter's "show relations and a hierarchy":
 Deeds stands under New game on the main menu and under Options in the system menu. It opens a tree
-of every deed under how many show done ("16 of 37 deeds"), with Back: a branch or two for each family
+of every deed under how many show done ("16 of 40 deeds"), with Back: a branch or two for each family
 (Board, Wind, Weather, Camp, Farming, Ruins, Scrap, Signals, Far, Story, Nomad since round two,
 2026-10-19, named down the left), each deed a step right of the furthest it waits on, and a line across
 from each to what it opens, brighter once that's open. It's laid out as every menu is where it opens:

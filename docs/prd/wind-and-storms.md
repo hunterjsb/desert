@@ -444,7 +444,7 @@ From Hunter's [storms, signals & sailing spec](../storms-signals-sailing-2026-10
 - **Its deeds** (agreed 2026-10-18): Eye of the Anomaly and Tells, hidden, in the Weather tree (built
   2026-10-19), and Taught with the Walker's quest ([Profile & saves](profile-and-saves.md#round-two-the-trees-that-tie-it-together-agreed-2026-10-18-step-1-built-2026-10-19)).
 
-## Dune archaeology (agreed, 2026-10-18 spec; not built)
+## Dune archaeology (agreed, 2026-10-18 spec; built 2026-10-19)
 
 From the [chassis spec](../chassis-kits-dunes-2026-10-18.md): the lee, drift and exposure systems talk to each other, so camping
 by a big dune becomes a way to play: let the ruins come to you.
@@ -493,9 +493,74 @@ has the detail):
 - **Finding them in the dust.** What a storm newly lays bare glints through the dust out to 90 m in the
   dust's glow, whichever way it faces you, Skyline's glints let through near; and clangs on the wind now
   and then, heard to 140 m
-  after the sound's trip, duller the further. The particle sensor and ground radar are a hook for now:
-  `sites.newly_exposed` lists the sites a storm has newly laid bare near a place, for the Console to pin.
+  after the sound's trip, duller the further. `sites.newly_exposed` lists the sites a storm has newly
+  laid bare near a place; the ground radar pins them on a Console's survey page (below).
 - **Probes:** kits 3 and 4, loot 7, sightlines 4, saves 23.
+
+**As built (2026-10-19), the rest** ([the world system](../world-system.md#what-storms-do-to-sites-now) has
+the detail):
+- **The dune term.** Where a site lies among the dunes weighs its exposure (`Exposure.dune_at`), -1 to 1,
+  read from the bare dunes along the run's long-term wind, which they face: toward 1 on a windward face or a
+  crest, toward -1 on a slip face or in a crest's lee. On a face or crest the weather strips up to twice as
+  hard, the storm's work off it too; in a lee the sand comes back up to twice as fast, the storm's work onto
+  it too **(defaults)**. Still pure, in the dunes and the field's history. Over three days of seed 1234's
+  weather, halfway up a big dune's windward face 3.6 times the sand is off that open sand would have off, and
+  in its lee a third.
+- **Dune ruins.** One seeded ruin to each 300 m of a big dune's crest, a dune standing 14 m or more over
+  the trough past its slip face, in its own lee: on the flat past the foot of its slip face, where the dune
+  term has the lee deep, a colony's hab pod or now and then a First Kingdoms hut, 5.5 to 6.5 m deep
+  **(defaults)**. 35 of the 40 big dunes within 1.5 km of the start hold one. Their weather is any site's;
+  the lee and the depth keep them: through two days, storms that never bring their heart over one leave it
+  under the sand (8 bared of 1,162), and one whose heart holds over it half an hour or more lays nearly
+  every one bare (136 of 160). Once the storm lets go it's back under in minutes, unless you're standing on
+  it. What they hold is kept whole under the dunes, survey gear among it: sieves on their shelves, a ground
+  radar most often in their deepest cache (`SiteLoot.DUNE`).
+- **Light loot over the crest.** In a storm light things fall out of the slowed wind in the lee of a crest
+  near camp with no line at all: within 24 m of you or a deck of yours, wherever the lee is half or more,
+  0.5 things an hour on a hundred square metres of full lee in a storm's heart, a pile's worth at most (8)
+  lying there **(defaults)**. Under a tall slip face, a storm's hour round its heart lets about 3.6 fall
+  round you, open sand none. It's the open drift's stream, what the wind carries, laid as drift is: on the
+  sand, held there, yours.
+- **Lazy loading.** Checked first: `structure.gd` builds every standing site at chunk load whatever its
+  state, its ground pressed, its look and boxes made and its loot laid. A dune's ruin is a seed only
+  (`DuneRuins`) and costs a chunk's load nothing. While you're slow (under 4.5 m/s for 2 s), a worker at low
+  priority finds where the seeds within 300 m lie and reads how far out of the sand each is, nearest first,
+  each again every 15 s of world time; a ground radar's place is looked over whatever your pace. One a storm
+  has bared builds into the site index once you're within 150 m and slow, the chunks under it pressed afresh
+  with it on a worker **(defaults)**. Ridden past bared at 20 m/s 40 m off, nothing of it is found, read or
+  built, and the seeds cost the frame 0.03 ms. Measured on a 1.5 km ride along the crests at 20 m/s: built
+  as history's are (every one found, bared or not, slow or not), 10 ruins built on the way and the terrain's
+  slowest frame was 4.5 ms (laying their finds 4.2 ms, a worker's turn finding them 28 ms); built lazily,
+  none, and 0.95 ms. Once built a ruin is a site like any other until the sheet lifts it 1.8 km off.
+- **The archaeology setup** (the spec's open question, decided 2026-10-19): a ground radar fitted to a
+  Console, a sand scoop and a sieve, all on one deck ([Devices & mods](devices-and-mods.md#the-ground-radar-and-the-sieve-built-2026-10-19)).
+  Why these: the radar is a Console sensor mod, as the spec asks, and its page the survey Devices & mods
+  already planned; the scoop is the dig there already is (a wreck's packed holds), so the digging tool
+  builds on it rather than adding a second; the sieve is the one new thing, and earns its place by sifting
+  what the scoop digs. One deck, because a setup is a camp you put together, as the home's three are.
+- **Digging a ruin out yourself** (the other open question, decided 2026-10-19). The scoop held on the sand
+  over a site's ground digs it out as a storm would lay it bare: its footprint's area a metre deep at 1.5 s
+  a cubic metre **(default)**, a hab pod a metre in 72 s, rising out of the sand as it goes through the
+  same exposure, ground steps and finds a storm's work does. What's dug is the site's memory, apart from the
+  weather's function, so a storm never undoes it, and never past dug out, so the deepest sockets still want
+  a storm. A wreck's sand is its holds' and the ground's own isn't dug. A dune's ruin still only a seed
+  (found by the radar under the sand) can be dug too, and builds once something of it shows. **It's yours,
+  not a storm's,** when a dune's ruin comes dug out with at least half its depth off by your hand: what the
+  storm took counts against you, so it's a ruin dug after the sand came back, not one a storm handed you.
+  Why: it reads the deed as it's worded and is plain to see. "No digging under the surface" holds: what
+  comes off is the site's own sand, its rooms' fill and the drift on its walls, never the dunes' and never
+  below its floor.
+- **Sifting.** A sieve in your suit, or set down or stuck on a deck within 4 m, sifts what the scoop digs:
+  a light thing of the site's lesser rows for every 50 m³ (0.02 a cubic metre) **(default)**, from its own
+  stream of the site and how many have come, laid at your feet. A dune's ruin dug out yields about five.
+- **The three ways to play,** as built: up the windward crest mid-storm (the dune term strips it hardest);
+  in the lee, letting light things fall round you; and after, the ruin a storm bared, held bare while you
+  stand on it and dug out by hand. Storm chasing is as before, the dune ruins among the sites it reaches.
+- **The `dig` scenario** stands you by a big dune's ruin a storm has just laid bare, a scoop in your hands
+  and a sieve carried.
+- **Probes:** kits 6 (the dune term strips a windward face more than its lee), 7 (a big dune's ruin bares
+  only past an intense storm), 8 (a buried site costs nothing until it's bared and you've slowed by), loot 8
+  (light loot falls in a crest's lee) and loot 7 standing its ruin in the open; Profile & saves 32 and 33.
 
 ## What storms do to everything else
 

@@ -99,7 +99,7 @@ func run() -> void:
 	for i in 300:
 		world.time += 0.5
 		await get_tree().physics_frame
-		if "DUNE RUIN" in console.screen_text(Console.Page.GROUND):
+		if "DUNE RUIN" in console.screen_text(Console.Page.SURVEY):
 			lists = true
 			break
 	check(lists, "its page finds the ruin")

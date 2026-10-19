@@ -717,6 +717,7 @@ drawn by the skyline ([Salvage & ruins](prd/salvage-and-ruins.md#whats-built-202
 | Memory | under 8 MB for the history and the sheet | 3.6 MB with a Rim sheet laid |
 | Per tick, for anything static | zero: no site, path or landmark has a process step | none: standing still for 300 ticks, the sheet never ran |
 | A storm working loaded sites | only the sites on loaded ground near you each frame, the rest a few chunks a frame, never all sites | 6 µs a frame for each site moving near you ([What storms do to sites now](#what-storms-do-to-sites-now)) |
+| A big dune's ruin you pass | nothing at a chunk's load, a seed only; looked at on a worker only once you've slowed, built only once bared | 0.03 ms a frame riding past at 20 m/s, nothing found or built (kits probe 8) |
 
 The pass, the cells and the index are `RefCounted`, with no node and no process step. Laying runs in the
 terrain's streaming step, inside its budget, and only when the ground under you changes chunk.
@@ -1232,9 +1233,10 @@ paint's age.
   4 m wide by 15 cm a metre and thinning as what it carries falls out, most of it within 150 m
   **(defaults)**, the sites asked of the index by area. A catch line catches it as it catches the open
   drift, the lee and all, its own lesser things falling just past the line in the site's era's look.
-  Through the storm a house ruin is dug out by (loot probe 7), an 8 m line 30 m downwind catches about
-  one thing of the house's in the open (1.1 expected, 0.08 at 200 m, none upwind, aside or past 450 m),
-  five times as many in a full lee: a stationary camp downwind gets some.
+  Through the storm a house ruin out in the open is dug out by (loot probe 7), an 8 m line 30 m downwind
+  catches about three things of the house's (3.0 expected, 0.21 at 200 m, none upwind or past 450 m, and
+  aside only as the wind swings through the storm, 0.04), five times as many in a full lee: a stationary
+  camp downwind gets some.
 - **A glint through the dust** (Skyline). Inside a storm everything far off takes the storm's veil
   (`Plume.seen_through`, the far saltbush round's) and is hidden, glints and all, but what the storm has
   newly laid bare near you, the metal or glass its settled sand would still cover, glints through the
@@ -1246,8 +1248,8 @@ paint's age.
   chance every 4 s of world time by how far it's laid bare, heard from the site after the sound's trip
   there, duller the further (`clang.ogg`, from Sand Game's metal clank, its ring kept).
 - **The hook for the Console's sensors.** `sites.newly_exposed(x, z, radius)` lists the sites near a place a
-  storm has newly laid bare, nearest first, with how much further out of the sand it has them: what a
-  particle sensor or ground radar will pin on the Console. Nothing calls it from the Console yet.
+  storm has newly laid bare, nearest first, with how much further out of the sand it has them: the ground
+  radar marks them bared on a Console's survey page (2026-10-19, below).
 - **Cost** (17 sites by hand coming out of the sand round you as a storm rises, headless; `terrain/site` on
   the dev overlay, and `terrain/dust` the glints through the dust): following them, 0.10 ms a frame on average and 0.43 at most, about 6 µs a moving
   site, and nothing for sites the weather isn't moving; 12 presses a minute at play speed, each 4 ms on a
@@ -1258,6 +1260,57 @@ paint's age.
   dunes, 18 KB near and 5 KB mid. `sites.newly_exposed` within 140 m takes 56 µs. A drift tick for a
   line with 18 sites near is 0.27 ms, 16 µs with none, so the drift a clock jump draws (540 ticks at most)
   can cost a few tens of milliseconds once where sites stand thick.
+- **Where it lies among the dunes** (2026-10-19, `Exposure.dune_at`): -1 to 1 from the bare dunes along
+  the run's long-term wind, which they face, read where the site is surveyed and kept with it. Toward 1:
+  the ground climbing downwind through it (a windward face, from a rise of 0.02 to 0.15 a metre), or
+  standing 2 to 10 m over the ground 50 m either way along the wind (a crest), off a slip face. Toward -1:
+  a slip face (the ground falling 0.2 to 0.45 a metre downwind), or a crest upwind within 128 m sheltering
+  it, as the lee's own reading would (Lee's heights and tall). The term times `site_dune_strip` (1) more
+  stripping and more of the storm's work off it; less than none times `site_dune_bury` (1) more sand back
+  and more of the storm's work onto it **(defaults)**. Every reader of a site's weather takes its term:
+  its memo is its own. Kits probe 6.
+- **A seeded ruin in each big dune's lee** (2026-10-19, `DuneRuins`, the sites' `dunes`). Cells along the
+  run's wind a dune spacing long (260 m) and 300 m across it **(default)**; through a seeded line across
+  each, every 2 m, the highest crest whose top lies in the cell, standing at least 14 m over the trough past
+  its slip face, is a big dune; its ruin lies on the flat past the foot of its slip face, tried every 5 m
+  down it and 60 m along the crest either way until the ground takes it (its kind's own survey) where the
+  dune term is -0.3 or less. Its kind, bearing, depth (5.5 to 6.5 m) and loot are its seed's; its id
+  stays clear of history's; `source` says `dune`. Finding one costs a worker 0.5 to 28 ms (2.6 on average
+  round the start), most of it surveys.
+- **A seed until it's needed.** Nothing at a chunk's load: a dune's ruin isn't in the index until it's
+  built. Each frame (`Sites.step_dunes`, from the world's tick) your pace is read from where you are; slower
+  than 4.5 m/s for 2 s you've slowed, and then a worker at low priority takes up to three seeds within 300 m
+  that want a look, nearest first, a turn at most every 0.2 s, finds where each lies if it hasn't, and reads
+  how far out of the sand it is, again every 15 s of world time **(defaults)**. A ground radar's place is
+  looked over the same way whatever your pace. One read with something of it showing, within 150 m while
+  you're slow, joins the index (`Sites.join`): a unit of its own, never saved with the sheet, over no other
+  structure's ground (where one stands the dunes took it). The loaded chunks under it hold it from then and
+  are pressed afresh with it on a worker (`Terrain.join`), sampling their dunes again where they kept none;
+  the one its middle stands on draws it and makes it solid once that's in, and its finds are laid
+  (`Salvage.adopt`). A chunk still building when it joins is pressed once it's built. From then it's a site
+  like any other, held, followed and released with its ground, until the sheet lifts it; lifted, it's a
+  seed again and what was dug off it is forgotten with it. **A save keeps** the seeds dug or built (`dunes`:
+  each one's cell, the sand dug off it, whether it was built and how much a sieve sifted), and resumed, one
+  built is built again as soon as the sheet is laid.
+- **Digging** (2026-10-19, `Sites.dig_at`, `Structure.dig`): sand off a site by hand, m, kept on it
+  (`dug_m`) apart from the weather's (`pure_taken`), and added to it only up to dug out (`with_dug`), so the
+  deepest sockets still need a storm to strip past them, and what's dug never reads as a storm's baring
+  (`bared` leaves it out). A seed not built yet takes it on itself until it builds. History's sites keep
+  theirs in the index's memory while they're laid (`dug`: each one's id, m dug and m³ sifted, in the save).
+- **Light things fall in a crest's lee** (2026-10-19, `Drift.lee_ground`, `Drift.fallen`). Each tick of
+  drift, round you and each deck of yours on solid ground, the 6 m squares within 24 m whose lee at the
+  tick's wind is half or more each draw from their own stream of the seed (the square and the tick) at
+  `drift_lee_fall` things an hour on a hundred square metres of full lee in a storm's heart, times how hard
+  it blows there **(defaults)**; what falls, what the wind carries, lies on the sand in the square, as drift
+  does. Fewer than a pile's worth (8) lie round you first; a clock that jumps draws its last 90 ticks of
+  them at most. Loot probe 8.
+- **Cost, dune archaeology.** A ride's frame pays 0.03 ms for the seeds, nothing found or built (kits probe
+  8, 20 m/s 40 m off a bared one). Built as history's are, as you pass, the same ride along the crests
+  hitched the terrain's frame to 4.5 ms, laying their finds 4.2 ms (a found Console among them), against
+  0.95 ms lazily. A build, once you've slowed: the index's join and the chunks' hold well under a
+  millisecond on the main thread, each chunk pressed on a worker in a few ms and swapped in within 0.2 ms,
+  and its finds a socket at a time in the streaming budget. Lee falls: a tick reads the wind and the lee at
+  about 60 squares, every 20 s, only while the weather blows; a clock that jumps, 90 ticks at most.
 - **Wrecks follow it too.** A wreck's scrapping (`Wreckage`) stands at its floor as its chunk draws it,
   so its plates, hazards and packed holds rise and sink with its hull, and its modules are read again
   as any finds are; what's cut and cleared is its memory, apart from the weather's function, so a
@@ -1266,14 +1319,20 @@ paint's age.
   [Salvage & ruins](prd/salvage-and-ruins.md#wrecks-and-scrapping-hunter-2026-10-18-built)).
 - **Probes:** kits 3 (a loaded site follows the storm, smoothly, and never buries you), kits 4 (exposure is
   pure, and a storm works a site), loot 7 (what a storm bares blows downwind), sightlines 4 (a glint
-  through the dust only near), saves 23 (a save never buries you). Each fails on a deliberately broken build: no hold over you, no ground
+  through the dust only near), saves 23 (a save never buries you); and for dune archaeology kits 6 (the dune
+  term strips a windward face more than its lee), kits 7 (a big dune's ruin bares only past an intense
+  storm), kits 8 (a buried site costs nothing until bared and slowed by), loot 8 (light loot falls in a
+  crest's lee), saves 32 (the dune deeds through play). Kits 1 and loot 2 read a site's weather through
+  the site, its dune term and all. Each fails on a deliberately broken build: no hold over you, no ground
   pressed afresh, a look that doesn't follow; the storm's sand never coming back, or read only on its
   ticks; drift shed upwind as well; glints through the dust at any range, or every bare glint; a
   resume that forgets the held sand.
 - **To see it** (unseen, on a GPU): `look/exposure/shoot.sh <dir>` stands a hab pod where a storm lays it
   bare by day and shoots it from off its ground in the clear before the storm, rising half out of the
   sand in it, at its height and in the clear after, and from out in the dust its bared windows glinting
-  through, and builds `~/Desktop/exposure.png`.
+  through, and builds `~/Desktop/exposure.png`. `look/archaeology/shoot.sh <dir>` shoots a big dune's ruin
+  bared after a big storm, the archaeology setup on a deck beside it and its survey page, and what a
+  storm let fall in a crest's lee round you, and builds `~/Desktop/dunes.png`.
 
 ## Defaults
 

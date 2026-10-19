@@ -160,9 +160,9 @@ func _draw() -> void:
 		"POWER":
 			_draw_header()
 			_draw_power()
-		"GROUND":
+		"SURVEY":
 			_draw_header()
-			_draw_ground(keys_top)
+			_draw_survey(keys_top)
 		_:
 			_draw_header()
 			_draw_rows(keys_top)
@@ -210,10 +210,11 @@ func _draw_radar(keys_top: float) -> void:
 
 
 ## The ground radar's map, the Console in its middle and north up, rings
-## every hundred metres: a structure a square, a dune's ruin a triangle, an
-## outline while the sand's over it, amber while a storm lays it bare, solid
-## once it's out; and under the map the nearest, listed.
-func _draw_ground(keys_top: float) -> void:
+## every hundred metres: the old lines under the sand faint, a structure a
+## square, a dune's ruin a triangle, an outline while the sand's over it,
+## amber while a storm lays it bare, solid once it's out; and under the map
+## the nearest, listed.
+func _draw_survey(keys_top: float) -> void:
 	var text := _color(&"text")
 	var dim := _color(&"dim")
 	var accent := _color(&"accent")
@@ -227,6 +228,13 @@ func _draw_ground(keys_top: float) -> void:
 		var scale := side * 0.5 / reach
 		for ring in range(100, int(reach) + 1, 100):
 			draw_arc(middle, ring * scale, 0.0, TAU, 64, Color(dim, 0.35), 2.0)
+		var inside := Rect2(box.position, box.size)
+		for points: PackedVector2Array in survey.get("lines", []):
+			for i in points.size() - 1:
+				var a := middle + points[i] * scale * (-1.0 if _model.flip else 1.0)
+				var b := middle + points[i + 1] * scale * (-1.0 if _model.flip else 1.0)
+				if inside.has_point(a) or inside.has_point(b):
+					draw_line(_clamped(a, inside), _clamped(b, inside), Color(accent, 0.35), 3.0)
 		for each: Dictionary in survey.get("sites", []):
 			var at: Vector2 = each.at * scale * (-1.0 if _model.flip else 1.0)
 			if absf(at.x) > side * 0.5 or absf(at.y) > side * 0.5:
@@ -253,6 +261,10 @@ func _draw_ground(keys_top: float) -> void:
 			break
 		_table_row(row, MARGIN, y, STATS_COLUMNS)
 		y += ROW
+
+
+static func _clamped(at: Vector2, box: Rect2) -> Vector2:
+	return at.clamp(box.position, box.end)
 
 
 ## Each cell its storm, as dense as its sand where a sensor reads it, or its

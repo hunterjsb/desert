@@ -9,8 +9,8 @@ extends Device
 ## gear, the finer it is, and with less it coarsens, never going. Then every
 ## reading in detail as a table, the deck's electrics as a panel with each
 ## device's switches, and its log. A shield in the system is smart: with a
-## radar it switches itself on as a front nears. A ground radar adds a page of
-## what lies under the sand round it. Its messages go out through
+## radar it switches itself on as a front nears. A ground radar adds a survey
+## page of what lies under the sand round it. Its messages go out through
 ## its Terminal, a radio in its system sounding them and saying its battery
 ## running out, and its screen draws only when what it shows has changed.
 ## Use on the screen presses the key you aim at, a tab along its foot or a
@@ -18,18 +18,18 @@ extends Device
 
 ## Its pages, numbered as older saves knew them: the Shield page's number is
 ## Power's now, so a save on it opens there.
-enum Page { RADAR, POWER, LOG, STATS, GROUND }
-## The tabs along its foot, in order; the ground radar's page joins them
+enum Page { RADAR, POWER, LOG, STATS, SURVEY }
+## The tabs along its foot, in order; the ground radar's survey joins them
 ## while its system has one.
 const TABS: Array[Page] = [Page.RADAR, Page.STATS, Page.POWER, Page.LOG]
-const PAGE_NAMES := ["RADAR", "POWER", "LOG", "STATS", "GROUND"]
+const PAGE_NAMES := ["RADAR", "POWER", "LOG", "STATS", "SURVEY"]
 ## The sender its own lines go out under.
 const SENDER := "CON"
 ## What each computer mod is called in its own lines, by the stat it adds.
 const INSTRUMENTS := {"anemometer": "ANEMOMETER", "barometer": "BAROMETER", "hygrometer": "HYGROMETER",
 	"particle_sensor": "PARTICLE SENSOR", "radar": "RADAR", "ground_radar": "GROUND RADAR"}
-## The ground page lists this many of what lies nearest.
-const GROUND_ROWS := 9
+## The survey lists this many of what lies nearest, two rows each.
+const SURVEY_ROWS := 5
 const POINTS := ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"]
 ## How hard a storm will hit: the most sand in this far of it past its
 ## front, m, read in these many steps.
@@ -765,7 +765,7 @@ func _draw_screen() -> void:
 func _model(on: Page, all: Dictionary) -> Dictionary:
 	var tabs: Array[Page] = TABS.duplicate()
 	if all.has("ground"):
-		tabs.append(Page.GROUND)
+		tabs.append(Page.SURVEY)
 	var shown := {"page": PAGE_NAMES[on], "clock": _clock(world.time, true), "aim": _aim,
 		"flip": world.moon.north().z > 0.0, "tabs": tabs.map(func(p: Page) -> Dictionary:
 			return {"text": PAGE_NAMES[p], "lit": p == on, "act": _go.bind(p), "device": null, "to": p})}
@@ -784,8 +784,8 @@ func _model(on: Page, all: Dictionary) -> Dictionary:
 				shown["history"] = [all.pressure.history, _tuning.air_pressure_hpa]
 		Page.POWER:
 			_panel(shown, all)
-		Page.GROUND:
-			_ground(shown, all)
+		Page.SURVEY:
+			_survey_page(shown, all)
 		Page.LOG:
 			var rows := PackedStringArray()
 			for line: Dictionary in Terminal.merged(linked().map(func(c: Console) -> Terminal: return c.terminal), 18):
@@ -894,15 +894,25 @@ func _radar(shown: Dictionary, all: Dictionary) -> void:
 			shown["forecast"] = "STORM IN %s FROM %s" % [_span(r.change - now), _point(r.from)]
 
 
-## The ground radar's sweep, a reading: every structure standing on the
-## ground or under it within its reach, and each big dune's ruin it finds
-## there, built or still only a seed, nearest first, as {at, m east and
-## south of it; name; m of sand over it, 0 once dug out; bared, a storm
-## laying it bare now; dune, a dune's ruin}. Its place is watched while it
-## runs, so the dunes' ruins round it are looked at whatever your pace.
+## The ground radar's sweep, a reading: the old lines under the sand within
+## its reach, and every structure standing on the ground or under it there
+## and each big dune's ruin it finds, built or still only a seed, nearest
+## first, as {at, m east and south of it; name; m of sand over it, 0 once
+## dug out; bared, a storm laying it bare now; dune, a dune's ruin}. Its
+## place is watched while it runs, so the dunes' ruins round it are looked
+## at whatever your pace.
 func _survey(x: float, z: float, reach: float) -> Dictionary:
 	var sites := world.shape.sites
 	sites.dunes.watch(get_instance_id(), x, z, reach, world.time)
+	var lines := []
+	for piece in sites.paths_in(Rect2(x - reach, z - reach, reach * 2.0, reach * 2.0)):
+		var points := PackedVector2Array()
+		for p in piece.points:
+			points.append(p - Vector2(x, z))
+		lines.append(points)
+	var bare := {}
+	for each: Array in sites.newly_exposed(x, z, reach):
+		bare[each[0]] = true
 	var found := []
 	for site in sites.query(Rect2(x - reach, z - reach, reach * 2.0, reach * 2.0), false):
 		var each := site as Structure
@@ -910,34 +920,40 @@ func _survey(x: float, z: float, reach: float) -> Dictionary:
 				or each.era == Eras.GEOLOGY:
 			continue
 		found.append({"at": Vector2(each.x - x, each.z - z), "name": _site_name(each), "under": maxf(each.depth - each.taken(), 0.0),
-			"bared": each.bared() >= 0.05, "dune": each.source == &"dune"})
+			"bared": bare.has(each), "dune": each.source == &"dune"})
 	for seed in sites.dunes.near(x, z, reach):
 		if not seed.built:
 			found.append({"at": Vector2(seed.site.x - x, seed.site.z - z), "name": _site_name(seed.site),
 				"under": maxf(seed.site.depth - seed.taken, 0.0), "bared": seed.level > 0.0, "dune": true})
 	found.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return a.at.length() < b.at.length())
-	return {"reach": reach, "sites": found}
+	return {"reach": reach, "sites": found, "lines": lines}
 
 
 static func _site_name(site: Structure) -> String:
 	return "DUNE RUIN" if site.source == &"dune" else String(site.kind).replace("_", " ").to_upper()
 
 
-## The ground page: what the ground radar finds, on a map round it to its
-## reach, each a mark by how far out of the sand it is, and the nearest
-## listed under it with how far, which way and how much sand is over it.
-func _ground(shown: Dictionary, all: Dictionary) -> void:
+## The survey page: what the ground radar finds, on a map round it to its
+## reach, the old lines under the sand and each structure a mark by how far
+## out of the sand it is, and the nearest listed under it with how far,
+## which way and how much sand is over it.
+func _survey_page(shown: Dictionary, all: Dictionary) -> void:
 	if not all.has("ground"):
 		shown["rows"] = PackedStringArray(["NO GROUND RADAR", " fit one to a side port"])
 		return
 	var ground: Dictionary = all.ground
 	shown["survey"] = ground
 	var rows := PackedStringArray()
-	for each: Dictionary in ground.sites.slice(0, GROUND_ROWS):
+	for each: Dictionary in ground.sites.slice(0, SURVEY_ROWS):
 		var at: Vector2 = each.at
-		var how := "BARED" if each.bared else ("OUT" if each.under <= 0.0 else "%.1f m down" % each.under)
 		rows.append(("!" if each.bared else "") + _row(each.name, _distance_parts(at.length())[0],
-			_distance_parts(at.length())[1], "%s %s" % [_point(Radio.bearing(at)), how]))
+			_distance_parts(at.length())[1], _point(Radio.bearing(at))))
+		if each.bared:
+			rows.append("!" + _row(" bared", "", "", "a storm's"))
+		elif each.under <= 0.0:
+			rows.append(_row(" dug out"))
+		else:
+			rows.append(_row(" sand over", "%.1f" % each.under, "m"))
 	if rows.is_empty():
 		rows.append("nothing within %s" % _distance(ground.reach))
 	shown["rows"] = rows
@@ -1019,6 +1035,10 @@ func _readout(all: Dictionary) -> PackedStringArray:
 		var g: float = all.sand.g_m3
 		rows.append(("!" if g >= _tuning.sand_full_g_m3 * 0.5 else "") + _row("SAND", "%.2f" % g, "g/m³",
 			_trend(g - all.sand.was, 0.01)))
+	if all.has("ground"):
+		var sites: Array = all.ground.sites
+		rows.append(_row("GROUND", "%d" % sites.size(), "found", "%d bared" % sites.filter(
+			func(each: Dictionary) -> bool: return each.bared).size()))
 	if all.has("front"):
 		var f: Dictionary = all.front
 		var moving := _row(" moving", "%d" % roundi(f.speed), "m/s", _point(f.moving))
