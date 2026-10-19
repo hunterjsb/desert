@@ -422,8 +422,7 @@ four steps of 190 px cards); over a run, in the middle on the soft dark field.
   the fade; New run is New game in Normal, on a new seed, the save deleted. Dying before
   the run has ever been saved offers only New run. In Ironman there's no screen: the
   caption says you died and a new run begins at once.
-- **The dev console** (`game/dev/dev_console.gd`), opened by the console action in a run with
-  nothing else open: a dark panel hanging from the top of the screen, a line to type into
+- **The dev console** (`game/dev/dev_console.gd`), opened by the console action over a run or any menu: a dark panel hanging from the top of the screen, a line to type into
   under what it said, its bar beside it, pulled to any size within the screen and kept so. While it's up every key goes to it and nothing
   reaches the game: held keys wait as under a menu, the mouse is free, and the world
   runs on. Back closes it before anything else, and so does the console action. Up and
@@ -437,8 +436,8 @@ four steps of 190 px cards); over a run, in the middle on the soft dark field.
   watered and whole, carrying what you carried; and the deeds' (2026-10-18): `unlockall`, every start
   open whatever deeds are done, `deed <id>`, one granted, `deeds`, which are done, and `deeds
   clear`, all forgotten (Profile & saves). Those and `help` and `scenarios` need no world, so the
-  console opens over the main menu too, with nothing else open there, standing over its words;
-  the rest say "only in a run". Closed there, the menu's word is highlighted again. The keys list and Options' controls list
+  console opens over the main menu and its nested menus too;
+  the rest say "only in a run". Closed there, the covered menu and its focus return. The keys list and Options' controls list
   show the console action, the creative menu's and the dev overlay's under a heading of their own, and the
   function keys the dev tools held now go to quick save and quick load (Profile & saves).
   The look-tests keep their own keys and have no console.
@@ -544,3 +543,5 @@ four steps of 190 px cards); over a run, in the middle on the soft dark field.
 ## Playtest follow-up (Hunter, 2026-10-19; agreed, in progress)
 
 "I had to go back to main menu ... for unlockall, I should be able to do that from any menu." The console action opens over every menu, including nested origin selection, options, deeds, pause/system menus and creative search. Suspend the covered menu's input, then restore the previous selection and exact usable focus on close. Profile-changing commands such as unlockall refresh a menu already showing locked starts; returning to the main menu is not required.
+
+**Built:** `UIRoot` takes the console action before focused controls can consume it, covers the current menu, and restores its exact word, deed card or search field on close. The origin list is rebuilt with its prior selection so `unlockall` takes effect immediately. Menus probe 18 exercises origin selection, options, deeds, the run system menu, nested run options and creative search; existing console probe 8 still passes.

@@ -187,8 +187,12 @@ static func _under(deck: Device, socket: Socket) -> Array:
 
 ## The face a thing aimed at a piece's face goes on: a tray or runners aimed
 ## at a top facing up go under it, below where you aim, since a tray lifts
-## toward the sand it faces and a top lies on it.
+## toward the sand it faces and a top lies on it. A nest aimed at a standing
+## mast fits on its head, from the deck.
 static func face_for(deck: Device, piece: Device, face: StringName, thing: Node) -> StringName:
+	# A lookout is fitted from the deck, aiming at the pole below its head.
+	if thing is CrowsNest and deck is Mast and (deck as Mast).standing():
+		return Mast.MASTHEAD
 	var part := thing as Part
 	if deck is Chassis and part != null and Device.carries(part) != &"" and face == Chassis.TOP \
 			and frame_of(deck, piece, face).basis.z.y >= UPWARD:

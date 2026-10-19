@@ -332,6 +332,8 @@ gives a long view for spotting glints, plumes and storm fronts." Found with the 
 - **The crow's nest** (`crows_nest`, 12 kg, `CrowsNest`, a `Helm`): a lookout's basket of wooden posts
   and bent pipe on a plank floor, cloth wound round its lower rail, its rope ladder hung 3.4 m down
   the mast's front. It goes on a standing mast's head and nowhere else ("it goes on a mast's head").
+  Holding it and aiming at the standing pole from the deck previews it on the head; the readout
+  names the masthead and take fits it there, without jumping.
   Loose or carried, its ladder is folded: only the basket rests on the sand. On a standing mast,
   the ladder deploys with its reachable rungs, so its stowed shape never floats the basket above a floor.
   Use on it, on its ladder from the deck, climbs you in: a seat as the helm is, steering nothing. You
@@ -1542,3 +1544,5 @@ note](../lore-session-2026-10-18-mitchell-wow-shoemaker.md#clashes).
 ## Playtest follow-up (Hunter, 2026-10-19; agreed, in progress)
 
 The streamer is "one of my fav items" and "helps a lot"; keep its readable wind response. The crow's nest is inaccessible to place: "cant hop up high enough." Holding a nest and aiming at an accessible part of a standing mast should target the masthead for fitting, with an understandable placement preview; jumping is not required. The resulting seat stays on the head and still respects blocked placement, weight, climbing and dismounting. The sail scenario should also offer readable sailing notes; mechanics and the open multiple-line design are recorded in Movement.
+
+**Built:** `Stick.face_for` redirects a held nest aimed at a standing mast to its head; the normal placement preview, collision refusal and weight rules still apply. Devices probe 41 now fits it with eyes below 2 m over the deck, refuses a second nest on the occupied head, and retains the measured 6.2 m eye height and 2.59 m centre-of-mass rise when climbed into.

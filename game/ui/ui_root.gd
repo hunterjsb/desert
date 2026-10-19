@@ -22,6 +22,8 @@ var main: Main
 var dev_console: DevConsole
 ## Open menus, the topmost last.
 var _menus: Array[Words] = []
+## The exact word, card or search field to return to after the console.
+var _console_focus: WeakRef
 var _fade: Panel
 var _fading := false
 var _note: Label
@@ -121,11 +123,14 @@ func _shown_for(words: Control, fading: Tween, seconds: float) -> Tween:
 	return tween
 
 
-## The console over a run with nothing else open, or over the main menu
-## alone for what needs no world: typing goes to it, over every menu.
+## The console over any menu or the run: typing goes to it alone.
 func open_dev_console() -> void:
-	if main == null or (is_open() if main.in_run() else not (_menus.size() == 1 and top().root)):
+	if main == null or _fading or dev_console.visible:
 		return
+	var focused := get_viewport().gui_get_focus_owner()
+	_console_focus = weakref(focused) if focused != null else null
+	if is_open():
+		top().cover()
 	move_child(dev_console, -1)
 	move_child(_fade, -1)
 	dev_console.open()
@@ -156,9 +161,26 @@ func creative(world: World, line := "") -> Words:
 func close_dev_console() -> void:
 	dev_console.close()
 	if is_open():
-		top().highlight()
+		if top().has_meta(&"origins"):
+			# Profile commands can unlock starts while their list is covered.
+			var old := _menus.pop_back() as Words
+			var at := old._was
+			remove_child(old)
+			old.queue_free()
+			var menu := origins()
+			menu.open_on(at)
+			_menus.append(menu)
+			add_child(menu)
+			move_child(menu, _fade.get_index())
+			top().highlight()
+		else:
+			top().uncover()
+			var focused := _console_focus.get_ref() as Control if _console_focus != null else null
+			if is_instance_valid(focused) and focused.is_visible_in_tree():
+				focused.grab_focus()
 	elif main != null and main.in_run():
 		Controls.free_mouse(false)
+	_console_focus = null
 
 
 func is_fading() -> bool:
@@ -238,7 +260,13 @@ func fade(to_black: bool) -> void:
 func _input(event: InputEvent) -> void:
 	if _fading:
 		get_viewport().set_input_as_handled()
-	elif dev_console.visible and (event.is_action_pressed(&"console") or event.is_action_pressed(&"ui_cancel")):
+	elif event.is_action_pressed(&"console"):
+		if dev_console.visible:
+			close_dev_console()
+		else:
+			open_dev_console()
+		get_viewport().set_input_as_handled()
+	elif dev_console.visible and event.is_action_pressed(&"ui_cancel"):
 		back()
 		get_viewport().set_input_as_handled()
 
@@ -246,9 +274,6 @@ func _input(event: InputEvent) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed(&"ui_cancel"):
 		back()
-		get_viewport().set_input_as_handled()
-	elif event.is_action_pressed(&"console") and not dev_console.visible:
-		open_dev_console()
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed(&"creative") and not dev_console.visible:
 		if is_open() and top().has_meta(&"creative"):
@@ -365,6 +390,7 @@ func system_menu() -> Words:
 ## marked until it's been highlighted.
 func origins() -> Words:
 	var menu := _menu()
+	menu.set_meta(&"origins", true)
 	var all := Kit.origins()
 	var profile := main.profile()
 	menu.open_on(all.find(main.last_kit()))

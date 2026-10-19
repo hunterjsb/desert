@@ -1,6 +1,6 @@
 extends DeckProbe
 ## Devices & mods probe 41: the crow's nest seats you and sees farther. A
-## crow's nest held over a standing mast's head sticks there, nowhere else;
+## crow's nest aimed at a standing mast from the deck fits on its head;
 ## from the deck, use on its ladder climbs you in: a seat as the helm is,
 ## your eyes the mast's height over the deck and your weight high on the
 ## camp. From up there more of the ground round you shows over the crests:
@@ -24,9 +24,20 @@ func run() -> void:
 	check(Finds.bounds(nest).size.y <= Catalog.DEVICES[&"crows_nest"].size.y + 0.01,
 		"loose, its folded ladder leaves the basket resting on its floor")
 	check(Stick.why_not(deck, deck, Chassis.TOP, nest) != "", "a crow's nest goes nowhere but a mast's head")
-	var head := mast.global_transform * Vector3(0.0, Mast.HEAD_Y, 0.0)
-	check(await stick_by_hand(nest, head, Vector3(0.9, 1.3, 0.3)) and nest.host() == mast,
-		"held over the mast's head, it sticks there")
+	var pole := mast.global_transform * Vector3(Mast.POLE_R, 0.4, 0.0)
+	await hold_at(nest, pole, mast.global_basis.x * 1.2)
+	check(eye().y < deck.global_position.y + 2.0 and not hands.sticking.is_empty()
+		and hands.sticking.face == Mast.MASTHEAD and hands.line().contains("masthead"),
+		"aiming at the pole from deck height previews the nest at the masthead")
+	check(hands.grab() and nest.host() == mast
+		and absf(mast.to_local(nest.global_position).y - Mast.HEAD_Y - 0.5) < 0.1,
+		"take mounts the nest at full height without jumping")
+	var another := Catalog.device(&"crows_nest") as CrowsNest
+	await hold_at(another, pole, mast.global_basis.x * 1.2)
+	check(not hands.sticking.is_empty() and hands.sticking.why == "blocked" and hands.grab()
+		and another.host() == null, "an occupied masthead refuses another nest from the deck")
+	hands.drop()
+	another.queue_free()
 	var weight := deck.global_transform * deck.center_of_mass
 	var ladder := nest.global_transform * Vector3(0.0, -0.5 - CrowsNest.LADDER * 0.6, -0.15)
 	var top := deck.global_position.y + Chassis.THICK * 0.5
