@@ -432,6 +432,13 @@ Death means a new run (see Runs in the vision).
   while it's open, and take works on the world as ever, not on what you carry; so does
   use, but over a thing it's the thing's (below). Closing it captures the mouse again, as
   does a run ending while it's open.
+- **Choose waist lines in the carry view** (Hunter, 2026-10-19, agreed for
+  Sanddune). Show named live lines, lengths and tension below the carried things.
+  Choose one to retain it while looking around, or Follow gaze for automatic
+  selection. The list scrolls when needed and remains inside the view. Choosing
+  changes the handling target only; use after closing the view still performs the
+  normal delayed untie. The world continues running. See the
+  [rope PRD](rope-and-tethering.md#sanddune-explicit-waist-line-selection-agreed-2026-10-19).
 - **Stakes go in too** (Hunter, 2026-10-16: "we should be able to put stakes in our inv"):
   a stake that isn't driven and has nothing tied to it goes in as it is, and comes out to
   your hands ready to drive. A found one goes in once it's taken up. A driven stake stays

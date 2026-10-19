@@ -39,6 +39,7 @@ var hover := -1
 var _player: Player
 var _layer: CanvasLayer
 var _view: Control
+var _waist_lines: WaistLines
 ## Each stack's picture, made as the view first needs them.
 var _looks: Array[InventoryLook] = []
 
@@ -58,6 +59,9 @@ func _ready() -> void:
 	_view.gui_input.connect(_on_view_input)
 	_view.mouse_exited.connect(func() -> void: hover = -1)
 	_layer.add_child(_view)
+	_waist_lines = WaistLines.new()
+	_waist_lines.reel = (_player.get_node("Hands") as Hands).reel
+	_view.add_child(_waist_lines)
 	restock()
 
 
@@ -427,7 +431,7 @@ func tile_rect(at: int, count := -1) -> Rect2:
 	var cols := mini(count, across)
 	var rows := ceili(float(count) / across)
 	var width := cols * TILE.x + (cols - 1) * GAP
-	var top := size.y - FOOT - rows * TILE.y - (rows - 1) * GAP
+	var top := size.y - FOOT - _waist_height() - rows * TILE.y - (rows - 1) * GAP
 	return Rect2(Vector2((size.x - width) * 0.5 + (at % across) * (TILE.x + GAP), top + (at / across) * (TILE.y + GAP)),
 		TILE)
 
@@ -466,8 +470,13 @@ func _on_view_input(event: InputEvent) -> void:
 	_view.accept_event()
 
 
+func _waist_height() -> float:
+	return WaistLines.HEIGHT if not _player.hands.reel.waist_lines().is_empty() else 0.0
+
+
 func _process(_delta: float) -> void:
 	if open:
+		_waist_lines.refresh()
 		_show_looks(stacks())
 		_view.queue_redraw()
 
@@ -549,8 +558,12 @@ func _draw_view() -> void:
 	for body in _player.waist.tied:
 		if is_instance_valid(body):
 			tied.append(str(body.get(&"label")))
-	_text(&"Label", Vector2(left, under + 16.0), "waist: " + (", ".join(tied) if not tied.is_empty() else "-"), width)
-	Controls.draw_keys(_view, Vector2(left, under + 30.0), HINT)
+	var waist_words := "waist · click a line to keep it selected" if _waist_height() > 0.0 \
+		else "waist: " + (", ".join(tied) if not tied.is_empty() else "-")
+	_text(&"Label", Vector2(left, under + 16.0), waist_words, width)
+	_waist_lines.position = Vector2(left, under + 22.0)
+	_waist_lines.size = Vector2(width, _waist_height())
+	Controls.draw_keys(_view, Vector2(left, under + 30.0 + _waist_height()), HINT)
 
 
 func _palette(color: StringName) -> Color:

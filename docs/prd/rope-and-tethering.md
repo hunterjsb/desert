@@ -361,6 +361,40 @@ Every probe is first run against a deliberately broken rope, to prove it can fai
 - Climbing, swinging and grappling.
 - Cutting ropes to arbitrary lengths with physics. Lengths are set when you attach.
 
+## Sanddune: explicit waist-line selection (agreed, 2026-10-19)
+
+Hunter chose carry-view selection with a gaze option. The existing carry view
+lists named waist lines with their current length and tension. Choosing one keeps
+that line selected while looking around; Follow gaze restores the existing automatic
+selection. Reeling and empty-handed use work the same selected line. A held line
+still takes priority, and a selected end that is removed or loses its live rope
+returns selection to gaze. Selection alone never unties, releases or reels anything.
+The untie delay still retains the end chosen when it starts. This adds no force cap
+or new binding. Selection is a transient handling preference and defaults to gaze
+on resume; it does not change saved ropes or their physical loads. Existing sailing
+and rope-handling deeds continue to record the physical actions.
+
+**As built:** `Reel.choose` retains a live waist end ahead of gaze selection, below
+held-line priority. `WaistLines` shows the same names and live numbers as the sailing
+readout in a bounded, scrolling carry-view list, using the shared theme and PageBar.
+Choosing Follow gaze or losing the selected tie clears the preference. Gameplay
+look-at text is hidden while the carry view or a menu covers it. Rendered
+1280×720 captures show the gaze option and all three Varran lines within the view,
+with the chosen sheet marked and no gameplay readout over the carried objects.
+The visual helper reported teardown resource warnings; it reported no script errors.
+Focused behavior probes were not added or run for this change.
+
+**Load measurements before choosing release behavior:** in steady 10 m/s wind, a
+powered three-line Varran reach had mean resultant pull 301 N and mean opposing
+load 4.45 N; their independent peaks were 1,282 N and 14.43 N. Releasing just the
+sheet in the on-foot case left mean 110 N resultant on the two bow lines, peaking
+at 553 N; releasing every remaining end removed continuing rope force after the
+existing untie delay. These are delivered solver loads, not a proposed safe-force
+limit. A forced overrun's injury was a 13.27 m/s chassis collision; measured
+opposing load stayed below the existing injury threshold. Release control and
+feedback must distinguish returning an end to the hands from dropping it, and
+resultant towing pull from opposing strain.
+
 ## Open questions
 
 **Waist-line selection (Hunter playtest, 2026-10-19; agreed follow-up).** Several lines need

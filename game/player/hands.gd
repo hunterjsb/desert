@@ -2071,6 +2071,7 @@ func line() -> String:
 
 
 func _show(delta: float) -> void:
+	_readout.visible = not _player.suit.open and Controls.playing()
 	_notice_left = maxf(_notice_left - delta, 0.0)
 	if _notice_left <= 0.0:
 		notice = ""

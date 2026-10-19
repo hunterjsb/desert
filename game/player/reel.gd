@@ -2,7 +2,7 @@ class_name Reel
 extends Node3D
 ## Working a line hand over hand: reel in draws it in a notch, pay out gives a
 ## notch back, up to all there is of it. It works the line's end in your
-## hand, else the line at your waist you look nearest along. Only the line draws, pulling
+## hand, else the chosen waist line or the one you look nearest along. Only the line draws, pulling
 ## both its ends, so what's on it comes only as hard as your strength allows;
 ## against a stake, or anything too heavy to come, you step in along it
 ## instead. A sheet runs through its block, so what comes in is its inboard,
@@ -25,6 +25,8 @@ const STROKE := 0.04
 const STICKY := 0.7
 
 var rope: Rope
+## A chosen waist end, or null to follow the gaze. Never a physical tie.
+var _chosen: RigidBody3D
 ## The length it's being reeled to, m.
 var wanted := 0.0
 ## Where your reel walks you in, m/s along engine x and z: toward what won't come.
@@ -62,13 +64,17 @@ func _ready() -> void:
 
 
 ## The line reel in and pay out work now: its end in your hand, else, of
-## the lines at your waist, the one whose far end you look nearest, so with
+## the chosen waist line or, among those at your waist, the one whose far end
+## you look nearest, so with
 ## a sheet and a mooring line both there you trim looking at the sail; the
 ## last tied on a tie. None while a coil still pays it out.
 func line() -> Rope:
 	var held := in_hand()
 	if held != null:
 		return held
+	var chosen := chosen_body()
+	if chosen != null:
+		return _line_of(chosen)
 	var tied := _player.waist.tied
 	var eye := _player.camera.global_transform
 	var best: Rope = null
@@ -86,13 +92,42 @@ func line() -> Rope:
 	return best
 
 
+## Live waist ends that can be worked individually, in tie order.
+func waist_lines() -> Array[RigidBody3D]:
+	var found: Array[RigidBody3D] = []
+	for body in _player.waist.tied:
+		if _live_waist(body):
+			found.append(body)
+	return found
+
+
+## Explicit selection is lost when its physical tie is lost.
+func chosen_body() -> RigidBody3D:
+	if not _live_waist(_chosen):
+		_chosen = null
+	return _chosen
+
+
+## Null restores gaze selection; selecting never changes a rope or tie.
+func choose(body: RigidBody3D) -> void:
+	_chosen = body if _live_waist(body) else null
+
+
+func _live_waist(body: RigidBody3D) -> bool:
+	if not is_instance_valid(body) or not _player.waist.holds(body):
+		return false
+	var on := _line_of(body)
+	return on != null and _player.world.ropes.ropes.has(on) \
+		and is_instance_valid(on.a) and is_instance_valid(on.b)
+
+
 ## The line whose end is in your hand, or null.
 func in_hand() -> Rope:
 	var hands := _player.hands
 	return _line_of(hands.held) if hands.phase == Hands.Phase.HELD and is_instance_valid(hands.held) else null
 
 
-## The waist end selected by the same gaze as the reel, if one is selected.
+## The waist end selected for reeling, whether explicitly or by gaze.
 func waist_body() -> RigidBody3D:
 	var selected := line()
 	if selected == null:
@@ -108,7 +143,14 @@ func waist_readout() -> String:
 	var body := waist_body()
 	if body == null:
 		return ""
-	var selected := line()
+	return waist_description(body) + (" · selected" if body == chosen_body() else "")
+
+
+## The same name and live numbers in the carry view and the sailing readout.
+func waist_description(body: RigidBody3D) -> String:
+	if not _live_waist(body):
+		return ""
+	var selected := _line_of(body)
 	var label := "Sail sheet" if Mast.sheet_end(body) else "Waist line"
 	var far := _far(selected)
 	if label == "Waist line" and far.holder is Chassis and _player._bridled():
