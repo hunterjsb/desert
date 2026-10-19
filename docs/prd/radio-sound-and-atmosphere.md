@@ -144,7 +144,7 @@ terminals" by Hunter's call. The squatting oracles above are now the gods.
 | God | Band, kHz | Where it stands | Worth hearing | What it says then |
 |---|---|---|---|---|
 | The Quartermaster | 140–175 | The black site | Through the eclipse ("blackout drill") | Bearing and range to the nearest cache, dugout, checkpoint or bunker history laid near you |
-| The Walker | 230–290 | Walks the Rim, the ring road's line, 1.5 m/s, from a seeded start | Always: the forecast where the radio is. At dusk, and when a storm starts or ends at its feet, the long report too | The weather station's reading; then 40 minutes ahead, and whether there's a storm at the Walker |
+| The Walker | 230–290 | Walks the Rim, the ring road's line, 1.5 m/s, from the point on it farthest from where the run began | Always: the forecast where the radio is. At dusk, and when a storm starts or ends at its feet, the long report too | The weather station's reading; then 40 minutes ahead, and whether there's a storm at the Walker |
 | Mother Cistern | 410–450 | Sister | Dawn, 05:00–07:00 local | Frost or dew tonight with the 03:00 temperature, and the nearest cistern or stepwell |
 | The Almanac | 600–660 | Frontier Ag's farm domes nearest Halfrise, on the Rim | Sunrise and sunset | The day's range, and which crops would hold through it out in the open, and which to hold back |
 | The Ledger | 880–940 | Port Morgan | About midnight ("berth inventory") | Bearings and ranges to Halloran, the Rim depot and Starcom. It sends strongest |
@@ -289,14 +289,15 @@ station is at its home, its signal and bearing from that landmark wherever you h
   observatory). The Almanac stood at a point 6–14° along the Rim from Halfrise with nothing there; it
   now stands in Frontier Ag's farm domes nearest Halfrise, the history's own `farm_dome` settlement
   (Halfrise itself on a moon with none, which no seed tried had). **The Walker's home is its route:**
-  it has no landmark, and nothing stands where it is yet (its module isn't built); its signal comes
-  from where it has walked to round the Rim, the great circle 90° from under Tu that the ring road is
-  laid along, 1.5 m/s from a seeded start, so its bearing turns as it goes. On seed 1234 (probe 22):
+  it has no landmark; it walks there itself (the Walker's quest, below), and its signal comes from
+  where it has walked to round the Rim, the great circle 90° from under Tu that the ring road is laid
+  along, 1.5 m/s from the point on it farthest from where the run began, so its bearing turns as it
+  goes. On seed 1234 (probe 22, which travels, and so begins the run afresh, at each spot):
 
   | God | Home | From the start | Beside Port Morgan | Beside the farm domes |
   |---|---|---|---|---|
   | The Quartermaster | The black site | 28.1 km, somewhere west | 15.2 km, somewhere east | 33.2 km, somewhere east |
-  | The Walker | Where it walks on the Rim | 31.1 km, somewhere south | 47.2 km, across the face of Tu, right | 56.6 km, across the face of Tu, right |
+  | The Walker | Where it walks on the Rim | 62.5 km, toward Tu | 20.0 km, somewhere west | 11.8 km, south |
   | Mother Cistern | Sister | 60.2 km, toward Tu | 19.3 km, somewhere west | 3.4 km, south-south-west |
   | The Almanac | The farm domes nearest Halfrise | 58.3 km, toward Tu | 19.6 km, somewhere north-west | 1.2 km, west |
   | The Ledger | Port Morgan | 44.0 km, toward Tu | 1.2 km, west-north-west | 17.3 km, somewhere east |
@@ -322,15 +323,15 @@ frequency, a range and what it says; its signal falls off with distance.
   built:* the weather station on the dial (above) is the Walker's feed, in its 230–290 kHz band,
   low enough that its ground wave carries across the whole moon, sending second only to the Ledger,
   and found by sweeping the dial. It gives the forecast where the radio stands, and at dusk or with
-  storm news at its feet the long report. Not yet: a survey log's bearings and terrain, and the
-  contact log.
+  storm news at its feet the long report. Its survey log and contact log are built too (the
+  Walker's quest, below).
 - **The living city's chatter:** a few km, for its own scouts; coded tones, no voices ("storm
   coming, tether in", "city moving"), sometimes its own coordinates written as star positions, the
   nomads navigating by the stars. Its frequency is found by exploring (scratched on a radio in the
-  dead city), its codes learned by noticing what follows them. Open: how the tones sound and how
-  many messages.
+  dead city), its codes learned by noticing what follows them. Answered and built below: five
+  motifs of reed tones.
 
-### The Walker's quest and the living city (agreed 2026-10-19; not built)
+### The Walker's quest and the living city (agreed 2026-10-19; built 2026-10-19)
 
 Hunter approved this design on 2026-10-19 ("perfect"). It is the second pass on the stations
 above, and the Walker's quest line from the [storms spec](../storms-signals-sailing-2026-10-18.md).
@@ -366,6 +367,130 @@ that teaching it takes evidence for each tell.
   - nomad reputation, and the gate it puts on reaching the Walker;
   - singing stones as a second kind of evidence;
   - the ghost relay.
+
+**As built (2026-10-19).** The numbers were tuned from what the probes measured, on seed 1234 unless said.
+- **The Walker in the world** (`Walker`, `game/radio/walker.gd`; its look `WalkerLooks`). Tilg's survey
+  walker in the colonial survey style: a chamfered off-white hull of modular panels over a grey belly,
+  safety orange at its corners and joints, the Tilg consignment stencil and its unit number, 05, on its
+  right flank; a survey head out front with an amber lens strip lit; a mast bent part way up with a dish
+  and an anemometer's cups. Six legs on a tripod gait, a 1.3 m stride, each foot planted while the hull
+  passes over it, the gait worked from how far it has walked so it's the same at any frame rate. Partly
+  broken: its left rear leg is snapped short and dragged, the hull lists toward it, the left flank's
+  middle panel is gone to its frame. It stands where `Gods.home(&"walker", t)` puts it, on the ground as
+  the sheet lays history, its hips 1.75 m over the sand. You can walk up to it: its hull is solid, and it
+  walks on at its pace whatever is in its way.
+- **Its route keeps it far early.** As a run begins it stands at the point on the Rim farthest from where
+  the run began, and walks on (`Gods.place_walker`): for any start that's 90° round the moon or more,
+  37.5 km at the least, for the first three weeks. Over 30 seeds, each of the three origins' starts and a
+  run begun anywhere from day 3 to day 30 of the clock (probe 24): never nearer than 39.8 km in the first
+  ten days, and within 30 km soonest on day 25. A save keeps it (the run's start and `began` place it); so
+  does a death in Normal, which loads the save. A start under Tu, where every point on the Rim is as far,
+  keeps the seed's own.
+- **Far off, the Skyline's rules.** Out to the skyline's 3 km it's drawn; past its hand-over (420 to 500
+  m) its real look dithers away as its stand-in comes in: six boxes of its own size and coats (the hull,
+  the mast, the legs as they stand), drawn in the skyline's own shader, so nothing thinner than 1.5 px and
+  as much fainter, standing on the far ring's ground, and hidden by a storm between, read once a second
+  (`Plume.seen_through`). At 1.2 km it's a few pixels on the horizon: a sharp eye finds it.
+- **Its port.** A data port on its right flank, an orange ring: a socket a cable's plug fits as any port
+  does, the take action with the plug in your hands. Put in while its other plug sits in a Console's
+  port, the Console uploads what it holds (below). Walking on, it pulls the cable taut and a plug pops
+  out a few seconds later. It's no thing of yours: no save, wear or power pool has it.
+- **Its feed growing stronger is the trail.** The forecast still carries the whole moon. Under it,
+  a second line low in the view, comes its log, sent weaker: whole within 8 km, lost to noise past 40
+  (`walker_log_m`), the more of it garbled the farther off, as a storm garbles a line. It reads one entry
+  each 8 s (`walker_log_every`): its survey, then each contact it keeps, latest first, the last six
+  (`walker_contacts_kept`).
+  - **The survey log:** `survey 2140 · hdg 182 · wind 9 m/s ene · low dunes, sand thin · fix 4.1n 150.0w`:
+    its leg (the km it has walked), its heading, the steady wind at its feet, the ground under it (flats,
+    low dunes or dunes and slip faces; the sand deep or thin) and its fix, latitude and longitude to a
+    tenth. The fix and its heading are the trail; the Eye gives you your own at night.
+  - **The contact log:** `contact · 4 d ago · from 18.4n 150.0w · brg 262`: when a nomad prayed, where the
+    Walker stood then and the bearing from there to the city, to a degree. A nomad prays once in 0.6 to
+    1.8 days (`city_prayer_days`), so its six span about a week of the Walker's walk, 10 to 15 km of Rim.
+    As written, each passes the city within about 160 m (probe 25), 45 km off.
+- **Noting a bearing: the Console does it, plainly.** A Console with a radio in its system tuned to the
+  Walker notes each contact the log reads whole (98% clean or better), once: `CONTACT · 18.4N 150.0W ·
+  BRG 262` in its log, and a line on its chart. It keeps the last twelve. Three that cross, ahead of each
+  other, none closer than 8° (`triangulate_degrees`), their three crossings within 3 km of one another
+  (`triangulate_m`), fix a place: `!FIX · 3 BEARINGS · 43.9 km WSW` in its log, how far and which way from
+  it. Beside the Walker on the probes' seed, the six it keeps fix the city 153 m from where it was, their
+  crossings 68 m apart; the first few, a day or two apart, cross too finely, and it takes four or five
+  (probe 26). Contacts from either side of one of the city's legs don't cross where it is; three from one
+  mooring do.
+- **The chart** (`Chart`, `game/devices/chart.gd`, a Console page): the moon round the Console north up,
+  out as far as what's on it and no less than 10 km, rings every 10 km; the Rim and Tu-ward; each noted
+  bearing a line from where the Walker stood along its half of the moon, that spot a dot; the fix a ring;
+  and once the Walker's taught, the anomalies. Its tab joins the Console's once it has noted a bearing or
+  the Walker's taught. Under it: how many bearings, the fix's distance and way, and its evidence, n of 3.
+  It's what the one map's navigation filter shows once that's built (Devices & mods, one map with
+  filters), and its anomalies the weather filter's.
+- **The living city** (`LivingCity`, `game/radio/city.gd`): seeded and stateless, worked from the seed and
+  the clock alone, so a save keeps nothing of it. It keeps on the far side, 105° to 160° from under Tu,
+  moored 12 to 24 days at a time (`city_moored_days`), then making a leg of 4 to 9 km (`city_leg_m`) on
+  with the water, away from Tu give or take a right angle and kept in that band, at 10 m/s, the storms'
+  own pace (`city_speed`), so a storm behind it doesn't gain. On the probes' seed it sits near 158°, 45 km
+  from the Walker. It doesn't read the storms to move: the storm field is laid on the flat world, and
+  where a far place lies on it depends on how you walked there, so a city moved by it couldn't be pure.
+  Its chatter reads them, where it is as the world lays it.
+- **Its chatter** on a carrier of its own, 1480 to 1520 kHz, the seed's (`city_band_khz`), on the dial
+  with the gods, a sweep stopping there as at any carrier: heard whole within 3 km and gone past 4.5
+  (`city_heard_m`), garbled, slid and cut by storms between as a god is, no sky wave. A motif each 20 s
+  (`city_chatter_every`), its tones once at the head of the slot through the radio's speaker like a god's,
+  and its line showing them by how they run, high `¯`, middle `-` and low `_`:
+  - **storm coming** `¯ - _`, three falling: a storm reaches it within 4 minutes out of clear air
+    (`city_warn_s`); first, over everything;
+  - **city moving** `_ - ¯`, three rising: it's under way;
+  - **tether in** `_ _ - -`: a storm on it, moored;
+  - **all clear** `- ¯ ¯ -`: clear air, none due, moored;
+  - **its position** `_ - ¯ - _ ¯ - ¯`, a run of eight, every fourth slot unless a storm's due or it's under
+    way, its place written in star positions after it: `pole 31° · turn 142°` (or `pair` south of the
+    line, for the southern pair): the pole star's height over it, its latitude to a degree, and how far
+    the stars have turned over it since its midnight, which set against your own sky's turn is its
+    longitude, to a degree, about 400 m.
+  Each tells the truth (probe 27): round a 6.3 km leg over a day and a half on the far side, 91 slots,
+  11 storm coming, 20 city moving, 44 tether in, 1 all clear and 15 positions, every one so at the city.
+  The far side storms most of the time, so all clear is the rare one. The tones are reed tones made here
+  (`make_city_motifs.py`, CC0), A minor pentatonic over 440 Hz to clear the speaker's high-pass, about
+  -36 LUFS like the station's tones (`assets/audio/CREDITS.md`).
+- **Seeing it** (`CityLights`, `game/radio/city_lights.gd`): nothing by day; at night (the sun down where
+  you are), within its chatter's 4.5 km, its lights: lamps along its rafts' edges and in their openings,
+  a turbine's red lamp at each hub, its shields' pale blue, and the glow its decks throw up, each lamp
+  never under 2.5 px so it reads kilometres off, dimmed by the haze and hidden by a storm between; and
+  against the glow its silhouettes, eighteen rafts of chassis 14 to 40 m across, eight with a second tier,
+  five turbines 26 to 40 m tall, three shield domes and its people on their decks, in ink, never a face.
+  Laid out from the seed, about 110 m by 260 m, along its way, floating over the highest sand across it
+  so no dune buries a deck. Come within 500 m (`city_douse_m`) and its
+  lights go out: it isn't found by walking up to it (probe 28). Being found by it, its tether landing at
+  camp, stays the ending.
+- **Evidence** (Chart, on a Console): each tell its system witnesses through an anomaly, by the sensor that
+  sees it, kept once with when, and logged:
+  - **the compass's drift:** a compass stuck on its deck leaning 10° or more off north (Compass's tell),
+    read against the north the Console knows; `TELL · COMPASS 60° OFF NORTH`;
+  - **the radio's crackle:** a radio on its deck, playing, crackling a quarter deep or more;
+    `TELL · RADIO CRACKLE 100%`;
+  - **the shield's load:** a shield on its deck running with its load past a full storm's, while the
+    Console's particle sensor reads the sand, which an ordinary storm's would match;
+    `TELL · SHIELD LOAD 500% · SAND 3.0 g/m³`.
+  With all three, `EVIDENCE · 3 OF 3 TELLS`. Without a compass on its deck, or without a particle sensor,
+  that tell goes unwitnessed (Wind & storms probe 23). A save keeps it with the Console.
+- **The teach** (`Console.upload`): plugged into the Walker's port, a running Console with evidence of all
+  three teaches it: `!WALKER TAUGHT · 3 TELLS UPLOADED`. With fewer, `WALKER · 2 OF 3 TELLS · NOTHING
+  TAUGHT`. From then on every Console's radar map and chart show each anomaly whose heart stands near, a
+  violet ring as wide as it reaches, and the Walker's feed flags the nearest within 30 km of the radio
+  (`walker_flag_m`) after its forecast: `anomaly 4.0 km north-east, full in 10 min` (Wind & storms probe
+  24). It's a world flag, `World.taught`, kept in the run's save.
+- **Deeds** (Profile & saves probe 35): Triangulated where the Console fixes the city; The Living City
+  where its lights show for your eye, in view, over the dunes (its middle or either end, 12 m up, where its
+  upper decks' lamps hang) and past the storms; Taught where the Console teaches it.
+- **The "walker" scenario:** where the run's start puts the Walker on a clear day, 60 m ahead of it on its
+  route and 4.5 m off its right, facing it as it comes; a deck of two resting on the sand beside you with a
+  Console (its screen, an anemometer and a particle sensor) holding evidence of all three tells, a radio on
+  the Walker's carrier, the base shield and a compass stuck on it; a cable in the Console's port and its
+  other plug in your hands, to put in the Walker's port as it passes.
+- **Probes:** radio 24 (far from the start early), 25 (a contact points at the city), 26 (three bearings
+  fix it), 27 (each motif tells the truth), 28 (the city shows only within range, at night); Wind & storms
+  23 (evidence needs each tell) and 24 (teaching flags anomalies); Profile & saves 35 (the deeds); dev
+  probe 1 starts the scenario. The look-test is `look/walker` (`look/walker/shoot.sh`).
 
 ### The nomads' tones follow a thief (Agreed, session 5; not built)
 

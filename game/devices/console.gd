@@ -18,11 +18,12 @@ extends Device
 
 ## Its pages, numbered as older saves knew them: the Shield page's number is
 ## Power's now, so a save on it opens there.
-enum Page { RADAR, POWER, LOG, STATS, SURVEY }
+enum Page { RADAR, POWER, LOG, STATS, SURVEY, CHART }
 ## The tabs along its foot, in order; the ground radar's survey joins them
-## while its system has one.
+## while its system has one, and the chart once it has noted a bearing or
+## the Walker's taught.
 const TABS: Array[Page] = [Page.RADAR, Page.STATS, Page.POWER, Page.LOG]
-const PAGE_NAMES := ["RADAR", "POWER", "LOG", "STATS", "SURVEY"]
+const PAGE_NAMES := ["RADAR", "POWER", "LOG", "STATS", "SURVEY", "CHART"]
 ## The sender its own lines go out under.
 const SENDER := "CON"
 ## What each computer mod is called in its own lines, by the stat it adds.
@@ -69,6 +70,10 @@ var log_lines: Array:
 ## This Console's own readings, by what reads them; the screen shows those of
 ## every Console linked with it.
 var readings := {}
+## For the Walker (Chart): each anomaly tell its system witnessed, by tell,
+## {t, value}; and the contacts it noted off the Walker's log, {t, lat, lon, brg}.
+var evidence := {}
+var bearings: Array = []
 ## Alerts given for the storm coming now, so each prints once, and whether
 ## the radar had a front within the smart shield's reach at the last read.
 var _alerts := {}
@@ -410,6 +415,12 @@ func _read(now: Dictionary, t: float) -> void:
 			said["t"] = t
 			_forecast = said
 		readings["forecast"] = _forecast
+	Chart.witness(self, t)
+
+
+## Plugged into the Walker's port: what it holds goes up to it (Chart).
+func upload() -> void:
+	Chart.upload(self)
 
 
 ## The air's pressure where the storm field stands at `raw`, hPa: it falls as
@@ -769,6 +780,8 @@ func _model(on: Page, all: Dictionary) -> Dictionary:
 	var tabs: Array[Page] = TABS.duplicate()
 	if all.has("ground"):
 		tabs.append(Page.SURVEY)
+	if not bearings.is_empty() or world.taught:
+		tabs.append(Page.CHART)
 	var shown := {"page": PAGE_NAMES[on], "clock": _clock(world.time, true), "aim": _aim,
 		"flip": world.moon.north().z > 0.0, "tabs": tabs.map(func(p: Page) -> Dictionary:
 			return {"text": PAGE_NAMES[p], "lit": p == on, "act": _go.bind(p), "device": null, "to": p})}
@@ -789,6 +802,8 @@ func _model(on: Page, all: Dictionary) -> Dictionary:
 			_panel(shown, all)
 		Page.SURVEY:
 			_survey_page(shown, all)
+		Page.CHART:
+			Chart.model(self, shown)
 		Page.LOG:
 			var rows := PackedStringArray()
 			for line: Dictionary in Terminal.merged(linked().map(func(c: Console) -> Terminal: return c.terminal), 18):
@@ -873,6 +888,7 @@ func _radar(shown: Dictionary, all: Dictionary) -> void:
 				map["front"] = _along(deg_to_rad(front.bearing)) * front.d
 				shown["front"] = "%s · %s" % [_distance(front.d), _span(front.eta)]
 	shown["map"] = map
+	map["anomalies"] = Chart.anomalies(self, map.get("reach", 0.0))
 	if all.has("wind"):
 		shown["wind"] = "%d m/s %s" % [roundi(all.wind.speed), _point(all.wind.from)]
 		map["gyro"] = _gyro(all.wind)

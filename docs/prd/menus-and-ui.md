@@ -239,6 +239,7 @@ resets"): `unlockall` opens every start, and deeds can be granted or cleared to 
   | boards | cut | merged into board |
   | vent | new | across the rift from its live vent, facing it, a minute before it bursts in clear daylight, a charged board at your feet |
   | dig | new (2026-10-19) | by a big dune's ruin a storm has just laid bare, the slip face behind it, a scoop in your hands and a sieve carried: dune archaeology's dig, to be tried |
+  | walker | new (2026-10-19) | where the run's start puts the Walker, 60 m ahead of it on its route as it comes, a Console holding all three tells beside you on a deck of two, its cable's plug in your hands: the Walker's quest, to plug in as it passes |
 - **Probes:** Dev probe 6 (the creative menu) and dev probe 1 (every scenario starts and lays what it
   stages without an error).
 

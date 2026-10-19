@@ -429,8 +429,13 @@ From Hunter's [storms, signals & sailing spec](../storms-signals-sailing-2026-10
     ordinary storm (at the probes' heart: load 500%, sand 1.35 g/m³, wind 27 m/s).
 - **The hook** for the map and the Walker's feed: `WeatherField.anomalies_near(x, z, t, reach)`
   lists every heart within reach at a moment, where it is, its reach, when it peaks, how strong it
-  stands and its share at the place. Only the compass reads it now; teaching the Walker is its own
-  quest line.
+  stands and its share at the place. The compass reads it, and once the Walker's taught, every
+  Console's radar map and chart and the Walker's feed (built 2026-10-19,
+  [Radio](radio-sound-and-atmosphere.md#the-walkers-quest-and-the-living-city-agreed-2026-10-19-built-2026-10-19)).
+- **Teaching the Walker** (built 2026-10-19, the Walker's quest in Radio): a Console keeps evidence of
+  each tell its system witnesses, by the sensor that sees it: a compass stuck on its deck for the lean,
+  a radio on it for the crackle, and a shield on it for the load, read against its particle sensor's
+  sand. Plugged into the Walker with all three, it teaches it, a world flag the run's save keeps.
 - **The scenario,** "anomaly": clear, its storm due in two and a half to five minutes, the heart's
   full over you within five minutes of the wall, facing upwind beside a camp built for wind: the
   reference camp's deck resting on the sand, moored upwind; a Console reading the wind and the sand;
@@ -442,7 +447,8 @@ From Hunter's [storms, signals & sailing spec](../storms-signals-sailing-2026-10
   it, 2026-10-18), where this finds one within 23 days on each of 60 seeds tried. The dev overlay
   shows the hidden term where you stand (`weather/anom`).
 - **Its deeds** (agreed 2026-10-18): Eye of the Anomaly and Tells, hidden, in the Weather tree (built
-  2026-10-19), and Taught with the Walker's quest ([Profile & saves](profile-and-saves.md#round-two-the-trees-that-tie-it-together-agreed-2026-10-18-step-1-built-2026-10-19)).
+  2026-10-19), and Taught, hidden, with the Walker's quest (built 2026-10-19, [Profile &
+  saves](profile-and-saves.md#round-two-the-trees-that-tie-it-together-agreed-2026-10-18-step-1-built-2026-10-19)).
 
 ## Dune archaeology (agreed, 2026-10-18 spec; built 2026-10-19)
 
@@ -971,6 +977,16 @@ All run without a window, with a fixed seed.
     storm, on open sand: just behind it the wind is cut by about a full lee's share and the storm's
     wear and harm by theirs; beside it, upwind of it and seven heights behind it, nothing is; edge-on
     it shelters nothing. A light box resting behind it stays put where one in the open slides.
+23. **Evidence needs each tell** (2026-10-19). A Console on a deck in a storm, a radio on and a
+    shield running beside it, keeps nothing in the storm alone; as an anomaly's staged heart comes
+    over it keeps the radio's crackle, but not the shield's load with no particle sensor, nor the
+    compass's lean with no compass on the deck; with a compass stuck on and a particle sensor fitted, all
+    three.
+24. **Teaching flags anomalies** (2026-10-19). The "walker" scenario: a Console with two tells uploads
+    and teaches nothing; its plug put in the Walker's port as it passes, with three, teaches it. Before,
+    no map shows a staged heart 4 km off and the feed says nothing; after, the radar's map and the chart
+    show it, the Walker's feed flags it ("anomaly 4.0 km north-east, full in 10 min"), and the run's save
+    keeps it taught.
 
 ## Out of scope
 

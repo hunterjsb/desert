@@ -17,8 +17,9 @@ extends WeatherProbe
 ## ahead of you, dug out, with what strips them at your feet; the still camp
 ## lets you sleep at dusk; the vent's plume stands ahead of you a minute
 ## before it bursts; the eclipse faces Tu just before the sun goes behind it;
-## the far side has no Tu. Checked against the field itself and against what
-## the game then shows.
+## the far side has no Tu; the Walker comes at you on its route, a Console
+## holding three tells beside you, its plug in your hands. Checked against
+## the field itself and against what the game then shows.
 
 const SLACK := 1.0
 
@@ -135,6 +136,7 @@ func run() -> void:
 			&"chassis": await _chassis_lands(dropped)
 			&"console": await _console_lands(dropped)
 			&"anomaly_camp": await _anomaly_camp_lands(dropped)
+			&"walker_camp": await _walker_camp_lands(dropped)
 			&"wrecks": _wrecks_stand(dropped)
 			&"sleep": await _sleep_comes(dropped, upwind)
 			&"vent": await _plume_ahead(ahead)
@@ -200,6 +202,21 @@ func _anomaly_camp_lands(dropped: Array[Node3D]) -> void:
 	check(console.running() and console.gear().has("anemometer") and console.gear().has("particle_sensor")
 		and radio.playing() and world.player.suit.carried.any(func(p: RigidBody3D) -> bool: return p is Compass),
 		"anomaly: a Console reading wind and sand, the radio playing, a compass in your suit")
+
+
+## Beside the Walker: it walks toward you along its route, and its Console
+## holds all three tells, a cable in its port and the other plug in your hands.
+func _walker_camp_lands(dropped: Array[Node3D]) -> void:
+	await physics_frames(10)
+	var walker: Walker = get_tree().get_nodes_in_group(&"walker")[0]
+	var console: Console = _first(dropped, Console)
+	var plug := world.player.hands.held as Part
+	var off := walker.global_position - world.player.global_position
+	check(walker.visible and Vector2(off.x, off.z).length() < Scenarios.WALKER_AHEAD + 5.0
+		and Vector2(off.x, off.z).normalized().dot(Vector2(-world.player.global_basis.z.x, -world.player.global_basis.z.z).normalized()) > 0.9,
+		"walker: the Walker ahead of you, coming (%.0f m)" % Vector2(off.x, off.z).length())
+	check(console.running() and console.evidence.size() == Deeds.TELLS.size() and plug != null and plug.kind == &"port"
+		and console.parts().any(func(p: Part) -> bool: return p.kind == &"port"), "walker: a Console holding three tells, its plug in your hands")
 
 
 ## The reference camp stands round you, running, on its deck: a tray under

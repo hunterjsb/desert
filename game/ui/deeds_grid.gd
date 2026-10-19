@@ -344,7 +344,8 @@ static func _silhouette() -> ShaderMaterial:
 ## A mark drawn in the theme's ink, faint while locked, where no thing fits:
 ## a landmark's mast with its pennant, a sail, a storm's wall, an anomaly's
 ## eye, a ruin bared, a wreck, a mast's signal, the eclipse, a glint, a vent
-## and its boom, Tu overhead, the dark side's stars, the sun's days.
+## and its boom, Tu overhead, the dark side's stars, the sun's days, bearings
+## crossing, the living city's decks and the Walker.
 static func _draw_mark(on: Control, mark: StringName, locked: bool) -> void:
 	var ink := on.get_theme_color(&"faint" if locked else &"text", &"Palette")
 	var s := on.size
@@ -449,6 +450,34 @@ static func _draw_mark(on: Control, mark: StringName, locked: bool) -> void:
 			for at: Vector2 in [Vector2(0.2, 0.2), Vector2(0.5, 0.14), Vector2(0.78, 0.26), Vector2(0.34, 0.42),
 					Vector2(0.66, 0.5)]:
 				on.draw_circle(Vector2(u * at.x, s.y * at.y), u * 0.03, ink)
+		&"bearings":
+			# Three lines from three places crossing at one.
+			var at := Vector2(c.x + u * 0.08, s.y * 0.3)
+			for from: Vector2 in [Vector2(0.12, 0.86), Vector2(0.5, 0.9), Vector2(0.9, 0.78)]:
+				var stood := Vector2(u * from.x, s.y * from.y)
+				on.draw_line(stood, stood + (at - stood) * 1.25, ink, 2.0, true)
+				on.draw_circle(stood, u * 0.035, ink)
+			on.draw_arc(at, u * 0.09, 0.0, TAU, 16, ink, 2.0, true)
+		&"city":
+			# A raft's decks dark against their glow, lamps along them, a turbine.
+			on.draw_circle(Vector2(c.x, s.y * 0.66), u * 0.3, ink * Color(1.0, 1.0, 1.0, 0.3))
+			for deck: Array in [[0.12, 0.62, 0.3, 0.26], [0.36, 0.52, 0.3, 0.36], [0.62, 0.6, 0.28, 0.28]]:
+				on.draw_rect(Rect2(u * deck[0], s.y * deck[1], u * deck[2], s.y * deck[3]), ink)
+			on.draw_line(Vector2(u * 0.48, s.y * 0.52), Vector2(u * 0.48, s.y * 0.14), ink, 2.0, true)
+			for k in 3:
+				on.draw_line(Vector2(u * 0.48, s.y * 0.14), Vector2(u * 0.48, s.y * 0.14) + Vector2.from_angle(TAU * k / 3.0 - 0.3) * u * 0.14, ink, 2.0, true)
+			for k in 7:
+				on.draw_circle(Vector2(u * (0.16 + 0.11 * k), s.y * (0.5 + 0.06 * (k % 2))), u * 0.022, ink)
+		&"walker":
+			# A legged walker on its route, its mast up.
+			ground.call()
+			on.draw_rect(Rect2(u * 0.28, s.y * 0.38, u * 0.44, s.y * 0.16), ink)
+			on.draw_line(Vector2(u * 0.6, s.y * 0.38), Vector2(u * 0.64, s.y * 0.14), ink, 2.0, true)
+			for k in 3:
+				var hip := Vector2(u * (0.32 + 0.18 * k), s.y * 0.5)
+				var knee := hip + Vector2(u * (0.06 * (k - 1)), -s.y * 0.1)
+				on.draw_line(hip, knee + Vector2(0.0, 0.0), ink, 2.0, true)
+				on.draw_line(knee, Vector2(knee.x + u * 0.04 * (k - 1), foot.y if k != 0 else foot.y - s.y * 0.1), ink, 2.0, true)
 		&"sun":
 			# The sun up over the horizon, its rays: the days.
 			ground.call()

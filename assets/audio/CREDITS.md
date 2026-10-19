@@ -98,6 +98,18 @@ loudest 400 ms (momentary LUFS) on the menus' bus:
 |---|---|---|---|---|---|
 | deed.wav | a deed done, as its badge shows | made here: three soft bell notes rising, A, E and A an octave up, over a warm low swell and a breath of high air | CC0 | -28 | -18 |
 
+The living city's chatter is made here too, numpy only, by `make_city_motifs.py` (CC0), as WAV at
+22.05 kHz: each tone a soft reed, odd harmonics over its fundamental, a breath of air on its attack and a
+slow vibrato, played through the radio's speaker like a god's tones:
+
+| File | What it is | Made from | Licence | Heard at | Peak |
+|---|---|---|---|---|---|
+| city_storm.wav | storm coming: three falling, G, E and A | made here: reed tones | CC0 | -36 | -31 |
+| city_tether.wav | tether in: two low and two higher, A A D D | made here: reed tones | CC0 | -37 | -31 |
+| city_moving.wav | city moving: three rising, A, D and G | made here: reed tones | CC0 | -36 | -31 |
+| city_clear.wav | all clear: up and back, E A A E | made here: reed tones | CC0 | -36 | -31 |
+| city_position.wav | its position: a run of eight | made here: reed tones | CC0 | -37 | -31 |
+
 **The radio's voice** (`voice/`, one OGG a phrase, named by its words) reads the weather
 station's reports and a Console's battery warnings. It's rendered here, once, by
 `voice/make_voice.py` with [Piper](https://github.com/OHF-Voice/piper1-gpl) 1.8.0 and the
