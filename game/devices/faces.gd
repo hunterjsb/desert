@@ -361,8 +361,8 @@ static func cloth(size: Vector3) -> MeshInstance3D:
 	var grid := PlaneMesh.new()
 	grid.orientation = PlaneMesh.FACE_Z
 	grid.size = Vector2(size.x, size.y)
-	grid.subdivide_width = 10
-	grid.subdivide_depth = 10
+	grid.subdivide_width = 14
+	grid.subdivide_depth = 14
 	grid.material = _material()
 	grid.custom_aabb = AABB(Vector3(-size.x * 0.5, -size.y * 0.5, -0.2), Vector3(size.x, size.y, 0.4))
 	var view := MeshInstance3D.new()

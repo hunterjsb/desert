@@ -109,7 +109,7 @@ func _capture(out_dir: String) -> void:
 	_blow(FRESH, 0.2)
 	await _ticks(120)
 	var cup := scoop.global_transform * Vector3(0.0, 0.6, 0.5)
-	await _look(cup + Vector3(1.4, 0.7, 1.7), cup)
+	await _look(cup + Vector3(1.3, 0.25, 0.75), cup + Vector3(-0.3, 0.0, 0.05))
 	await _shoot(out_dir, "scoop", scoop)
 	get_tree().quit()
 
