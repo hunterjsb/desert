@@ -50,7 +50,12 @@ func place_step() -> bool:
 	return true
 
 
-func _made(dx: float, dz: float, _s: int) -> Vector2:
+## The same at every step.
+func _make_grid(_step: int) -> PackedFloat32Array:
+	return _grid_of_points(Exposure.DUG_OUT)
+
+
+func _made(dx: float, dz: float, _level: float) -> Vector2:
 	var d := GeologyKit.from_slot(plan(dx, dz))
 	var own := pad() + GeologyKit.profile(d)
 	var shape: TerrainShape = _ctx.shape.get_ref()

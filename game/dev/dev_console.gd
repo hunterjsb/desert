@@ -25,10 +25,11 @@ const COMMANDS := {
 	"unlockall": ["", "every start open, deeds or not"],
 	"deed": ["<id>", "a deed done, by its id"],
 	"deeds": ["[clear]", "which deeds are done; clear forgets them all"],
+	"reset": ["", "forget the profile: deeds, starts opened, finds, how-tos, as Options' reset"],
 	"meltdown": ["", "the Stoker plays its furnace song on its frequency, once, from now"],
 }
 ## What works with no world, at the main menu too.
-const WORLDLESS := ["help", "scenarios", "unlockall", "deed", "deeds"]
+const WORLDLESS := ["help", "scenarios", "unlockall", "deed", "deeds", "reset"]
 ## How far from a landmark's middle goto stands you, facing it, m.
 const STANDOFF := 60.0
 ## Parts that only come on something else: a cable's plugs, a hose's ends, a line's ends.
@@ -308,6 +309,14 @@ func _deed(args: PackedStringArray, _world: World) -> void:
 	var id := StringName(args[0])
 	var name: String = Deeds.TABLE[id].name
 	_say(("%s done" if profile.deed(id, {"dev": true}) else "%s was done already") % name)
+
+
+func _reset(_args: PackedStringArray, _world: World) -> void:
+	if ui == null or ui.main == null or ui.main.profile() == null:
+		_say("no profile")
+		return
+	ui.main.reset_profile()
+	_say("profile forgotten: only the Surveyor open, no deeds")
 
 
 func _deeds(args: PackedStringArray, _world: World) -> void:

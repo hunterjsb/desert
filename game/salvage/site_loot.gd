@@ -89,8 +89,11 @@ const KINDS := {
 	# The inspection hatch: the line's own hose, valves and water.
 	&"pipeline_segment": {BEST: [[&"hose_end", 3], [&"canister", 2], [&"condenser", 1], [&"strong_plug", 1],
 		[&"big_battery", 1]]},
-	# A wreck nobody reached before the sand did, and a deserters' dugout.
-	&"wreck_hull": {"kept": 0.9},
+	# A wreck nobody reached before the sand did, and a deserters' dugout. A
+	# skimmer's pilot sat in its helm seat and it rode its ventral keel, so the
+	# land yacht's two parts lie deep in its wreck, with what else it carried.
+	&"wreck_hull": {"kept": 0.9, BEST: [[&"helm_seat", 3], [&"keel", 3], [&"shield", 2], [&"board", 2], [&"radar", 1],
+		[&"harvester", 1], [&"big_battery", 1]]},
 	# Where deserters slept: their bedrolls and kits, and what kept them.
 	&"dugout": {"kept": 0.8, FLOOR: [[&"bedroll", 3], [&"survival_kit", 3], [&"radio", 1], [&"battery", 2],
 		[&"ration", 2], [&"coil", 1]]},
@@ -175,10 +178,15 @@ static func plan(site: Structure, height: Callable, taken := {}) -> Array[Dictio
 
 ## What one socket holds within reach now, or {}.
 static func within_reach(site: Structure, i: int, height: Callable, taken := {}) -> Dictionary:
-	if taken.has(i):
+	return {} if taken.has(i) else lying(site, i, draw(site, i), height)
+
+
+## The same from what it holds, drawn already.
+static func lying(site: Structure, i: int, drawn: Dictionary, height: Callable, taken := {}) -> Dictionary:
+	if taken.has(i) or drawn.is_empty():
 		return {}
-	var spec := draw(site, i)
-	return spec if not spec.is_empty() and _lies(site, i, spec, height) else {}
+	var spec := drawn.duplicate()
+	return spec if _lies(site, i, spec, height) else {}
 
 
 ## Works out every socket's resting spots for what it may hold while the
@@ -218,7 +226,8 @@ static func _lies(site: Structure, i: int, spec: Dictionary, height: Callable) -
 	var p := Vector2(socket.at.x, socket.at.z)
 	var surface := socket.at.y
 	if piece.lean == 0.0 or site.tilt == 0.0:
-		var spot := _spot(piece, state, i, size)
+		# On what stands of it now, between states too.
+		var spot := _spot(piece, StructureKit.Piece.shown_state(site.level()), i, size)
 		if not spot.is_finite():
 			return false
 		p = Vector2(spot.x, spot.y)

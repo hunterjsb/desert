@@ -31,7 +31,9 @@ extends RefCounted
 ## a camp built for wind. "eclipse" faces Tu in
 ## the clear, the sun `eclipse` s from going behind it. "moon" stands you elsewhere on the moon:
 ## [latitude, degrees east of the point under Tu], so [30, 180] is the far
-## side, 30° north. Times of day are local.
+## side, 30° north. Times of day are local. "sail_tow" and "yacht" stand you
+## in the sail scenario's breeze: a rig towing a larger camp past you, and a
+## land yacht with its helm seat and keel.
 const LIST: Array[Dictionary] = [
 	{"key": "spawn", "label": "spawn: where and when the run began", "kind": "spawn"},
 	{"key": "clear", "label": "clear day, no storm for 10 min", "kind": "clear", "day": [0.42, 0.55]},
@@ -88,6 +90,10 @@ const LIST: Array[Dictionary] = [
 	# facing across it ahead of you, ready to raise its sail and go.
 	{"key": "sail", "label": "sail: a 2x2 deck on skates with a mast and sail, a crate, a shield (off), the sheet at your waist, the board at your feet, a steady breeze on open sand",
 		"kind": "sail", "day": [0.35, 0.5], "breeze": [8.5, 11.5], "sail": true},
+	{"key": "sail_tow", "label": "sail and tow: the rig ahead on its sheet, the camp behind on skates with a shield (off), both lines at your waist, the board at your feet, a steady breeze",
+		"kind": "sail", "day": [0.35, 0.5], "breeze": [8.5, 11.5], "tow": true},
+	{"key": "yacht", "label": "yacht: a floating 3x2 deck with a keel, a mast and sail, a helm seat and a crate, the sheet at your waist, a steady breeze",
+		"kind": "sail", "day": [0.35, 0.5], "breeze": [8.5, 11.5], "yacht": true},
 	# Far enough off that the radar sees the front coming before the smart
 	# shield switches itself on.
 	{"key": "console", "label": "console: a Console with every instrument and a radio on a small deck with a shield, a storm due in a few minutes",
@@ -207,6 +213,21 @@ const SAIL_BOARD := [0.6, 1.0]
 const SAIL_SHEET_SLACK := 1.5
 ## The sheet starts eased to let the boom swing this far out, degrees.
 const SAIL_EASED := 75.0
+## Sailing a larger camp: the camp a deck two by two behind you, right and
+## ahead, its shield at its front, so its bubble takes you and not the sail;
+## its line from the hook on its front left ring.
+const TOW_CAMP := [-0.5, -5.0]
+const TOW_SHIELD_ON := Vector2i(1, 0)
+const TOW_CRATE_ON := Vector2i(0, 1)
+## The yacht: a deck three pieces across and two long, right and ahead,
+## floating: the mast at its front to windward, the helm seat on its middle
+## line aft, where a tray takes your weight, the crate to windward of it as
+## ballast and the keel under the aft leeward piece.
+const YACHT_DECK := [-3.5, 2.5]
+const YACHT_CELLS := [Vector2i(0, 0), Vector2i(1, 0), Vector2i(2, 0), Vector2i(0, 1), Vector2i(1, 1), Vector2i(2, 1)]
+const YACHT_KEEL_ON := Vector2i(2, 1)
+const YACHT_HELM_ON := Vector2i(1, 1)
+const YACHT_CRATE_ON := Vector2i(0, 1)
 ## Open sand to sail on: level within this much, m, for this far either way
 ## across the run's long-term wind, m, read every so far along it, m, and
 ## sought this far up and down the wind from where the run began, m, in
@@ -237,10 +258,12 @@ const CONSOLE_STAKE := [-0.5, 4.6]
 ## the turbine out downwind beyond the bubble.
 const ANOMALY_CONSOLE := [&"screen", &"anemometer", &"particle_sensor"]
 ## An anomaly's heart is looked for this far round where the run began, m,
-## over this many days from the grace's end, coming over at most this long
-## after its wall, s.
-const ANOMALY_SEARCH := 30000.0
-const ANOMALY_DAYS := 30.0
+## over at most this many days from the clock's start, coming over at most
+## this long after its wall, s. Hearts are sparse: 30 km and 30 days found
+## none on one seed in eight; this finds one within 23 days on every seed
+## tried, in a few tens of milliseconds.
+const ANOMALY_SEARCH := 60000.0
+const ANOMALY_DAYS := 200.0
 const ANOMALY_WALL := 300.0
 
 ## Your own frame, to fit what you find to: right and ahead.
@@ -289,7 +312,7 @@ static func apply(world: World, scenario: Dictionary) -> void:
 		return
 	var place := find(world, scenario)
 	if place.is_empty():
-		Dev.put("world/scn", "%s: none in 3 days" % scenario.key)
+		Dev.put("world/scn", "%s: none found" % scenario.key)
 		return
 	stand(world, scenario, place)
 	Dev.put("world/scn", scenario.key)
@@ -297,7 +320,8 @@ static func apply(world: World, scenario: Dictionary) -> void:
 	if not (scenario.kind in ["kit", "ruin"] or scenario.get("camp", false) or scenario.get("survive", false)
 			or scenario.get("farm", false) or scenario.get("board", false) or scenario.get("radio", false)
 			or scenario.get("afk", false) or scenario.get("chassis", false) or scenario.get("console", false)
-			or scenario.get("sail", false) or scenario.get("drift", false) or scenario.get("walker", false)
+			or scenario.get("sail", false) or scenario.get("tow", false) or scenario.get("yacht", false)
+			or scenario.get("drift", false) or scenario.get("walker", false)
 			or scenario.get("music", false) or scenario.get("anomaly", false)):
 		return
 	# Bodies dropped before the sand under them has collision would be frozen or forgotten.
@@ -328,6 +352,10 @@ static func apply(world: World, scenario: Dictionary) -> void:
 		dropped = chassis(world)
 	elif scenario.get("sail", false):
 		dropped = sail(world)
+	elif scenario.get("tow", false):
+		dropped = sail_tow(world)
+	elif scenario.get("yacht", false):
+		dropped = yacht(world)
 	elif scenario.get("console", false):
 		dropped = console(world)
 	elif scenario.get("drift", false):
@@ -528,18 +556,14 @@ static func _at_ruin(world: World, scenario: Dictionary) -> Dictionary:
 				continue
 			var door := ruin.to_world(Ruin.DOORS[0][0])
 			var longitude := Sphere.longitude(point)
-			var tick := NAN
-			var dug := false
+			var memo := Exposure.Memo.new()
 			var t := 0.0
 			while t < HORIZON:
 				var hour := day.time_of_day(t, longitude)
 				if hour >= scenario.day[0] and hour <= scenario.day[1] \
 						and not _place(field, scenario, at, Vector2.ZERO, t).is_empty():
-					var now := floorf(t / (world.tuning.site_exposure_step_minutes * 60.0))
-					if now != tick:
-						tick = now
-						dug = Exposure.state(ruin.depth, Exposure.stripped(field, ruin.x, ruin.z, t, world.tuning)) \
-							== Exposure.EXPOSED
+					var dug := Exposure.state(ruin.depth, Exposure.taken(field, ruin.x, ruin.z, t, world.tuning, memo)) \
+						== Exposure.EXPOSED
 					if dug:
 						var facing := (door - at).normalized()
 						return {"x": at.x, "z": at.y, "yaw": atan2(-facing.x, -facing.y), "time": t,
@@ -574,15 +598,16 @@ static func _in_lee(world: World, scenario: Dictionary) -> Dictionary:
 ## Where an anomaly's heart, at its full, comes over within ANOMALY_WALL s
 ## of its storm's wall, at a moment in the day's window that's clear there
 ## with that storm due in the window asked, facing upwind: it rides the
-## air, so it's met wherever it passes, round where the run began.
+## air, so it's met wherever it passes, round where the run began. Asking
+## for one, the dev run meets them whatever its days.
 static func _before_anomaly(world: World, scenario: Dictionary) -> Dictionary:
+	world.anomalies_any_time = true
 	var field := world.weather.field
 	var day := world.weather.day
 	var longitude := moon_at(world, scenario).y
 	var due: Array = scenario.due
-	var day_s := world.tuning.day_minutes * 60.0
-	var t := world.tuning.anomaly_grace_days * day_s
-	var last := t + ANOMALY_DAYS * day_s
+	var t := 0.0
+	var last := ANOMALY_DAYS * world.tuning.day_minutes * 60.0
 	while t < last:
 		for heart in field.anomalies_near(world.spawn.x, world.spawn.y, t, ANOMALY_SEARCH):
 			var at := Vector2(heart.x, heart.z)
@@ -1181,11 +1206,7 @@ static func _free(device: Device, kind: StringName) -> Socket:
 ## boom's end to your waist, and a charged board lies at your feet. Use the
 ## mast to raise the sail, and ride.
 static func sail(world: World) -> Array[Node3D]:
-	var deck := standing(world, &"chassis", [], SAIL_DECK) as Chassis
-	for at: Array in [[Vector2i.ZERO, Vector2i(1, 0)], [Vector2i.ZERO, Vector2i(0, 1)], [Vector2i(1, 0), Vector2i(0, 1)]]:
-		deck.join(Catalog.device(&"chassis") as Chassis, _on_piece(deck, at[0], &"ring", at[1]), 0)
-	for i in deck.pieces().size():
-		fill(world, deck, [&"skates"])
+	var deck := square_deck(world, SAIL_DECK, [&"skates", &"skates", &"skates", &"skates"])
 	var mast := _stand_on(world, deck, &"mast", [&"sail"], SAIL_MAST_ON) as Mast
 	var crate := _stand_on(world, deck, &"crate_frame", [&"battery", &"battery"], SAIL_CRATE_ON)
 	var shield := _stand_on(world, deck, &"shield", [&"battery"], SAIL_SHIELD_ON)
@@ -1195,6 +1216,69 @@ static func sail(world: World) -> Array[Node3D]:
 	# Eased for a start across the wind: reel in as it picks up speed.
 	mast.trim = 2.0 * Mast.BOOM * sin(deg_to_rad(SAIL_EASED) * 0.5)
 	return [deck, mast, crate, shield, board, sheet]
+
+
+## A deck two pieces by two, right and ahead of you and squared to you, these
+## carried under its pieces in order: its first piece, then the one to its
+## right, the one behind it, and behind that one.
+static func square_deck(world: World, where: Array, under: Array) -> Chassis:
+	var deck := standing(world, &"chassis", [], where) as Chassis
+	for at: Array in [[Vector2i.ZERO, Vector2i(1, 0)], [Vector2i.ZERO, Vector2i(0, 1)], [Vector2i(1, 0), Vector2i(0, 1)]]:
+		deck.join(Catalog.device(&"chassis") as Chassis, _on_piece(deck, at[0], &"ring", at[1]), 0)
+	for i in under.size():
+		var part := Catalog.part(under[i])
+		world.content.add_child(part)
+		deck.fit(part, _on_piece(deck, [Vector2i(0, 0), Vector2i(1, 0), Vector2i(0, 1), Vector2i(1, 1)][i], &"bottom"))
+	return deck
+
+
+## Sailing a larger camp: the rig ahead as the sail scenario's deck, less its
+## shield, and behind you the camp, a deck two by two on skates with the
+## shield (off) at its front and a crate. The rig's sheet and a line from the
+## camp's front both at your waist, so the rig tows the camp on a hidden line
+## of its own past you; the board at your feet. Raise the sail, ride, and
+## carve to steer.
+static func sail_tow(world: World) -> Array[Node3D]:
+	var rig := square_deck(world, SAIL_DECK, [&"skates", &"skates", &"skates", &"skates"])
+	var mast := _stand_on(world, rig, &"mast", [&"sail"], SAIL_MAST_ON) as Mast
+	var crate := _stand_on(world, rig, &"crate_frame", [&"battery", &"battery"], SAIL_CRATE_ON)
+	_afloat(world, rig)
+	var camp := square_deck(world, TOW_CAMP, [&"skates", &"skates", &"skates", &"skates"])
+	var shield := _stand_on(world, camp, &"shield", [&"battery"], TOW_SHIELD_ON)
+	var stores := _stand_on(world, camp, &"crate_frame", [&"battery", &"battery"], TOW_CRATE_ON)
+	var hook := Catalog.part(&"hook")
+	world.content.add_child(hook)
+	camp.fit(hook, _on_piece(camp, Vector2i.ZERO, &"ring", Vector2i(0, -1)))
+	_afloat(world, camp)
+	var board := standing(world, &"board", [&"battery"], SAIL_BOARD)
+	var sheet := sheet_to_waist(world, mast)
+	var line := to_waist(world, _deck_tie(camp, Vector2i.ZERO, Vector2i(0, -1)))
+	mast.trim = 2.0 * Mast.BOOM * sin(deg_to_rad(SAIL_EASED) * 0.5)
+	return [rig, mast, crate, camp, shield, stores, board, sheet, line]
+
+
+## A land yacht from found parts: a deck three by two floating on hover
+## trays, a keel under one piece in place of a tray, the mast and its sail on
+## its front to windward, the helm seat aft on its middle line and a crate
+## with two batteries beside it to windward; the sheet at your waist. Raise
+## the sail, sit at the helm, and reel in.
+static func yacht(world: World) -> Array[Node3D]:
+	var deck := standing(world, &"chassis", [], YACHT_DECK) as Chassis
+	for i in range(1, YACHT_CELLS.size()):
+		var cell: Vector2i = YACHT_CELLS[i]
+		var from := cell - Vector2i(1, 0) if cell.x > 0 else cell - Vector2i(0, 1)
+		deck.join(Catalog.device(&"chassis") as Chassis, _on_piece(deck, from, &"ring", cell - from), 0)
+	for cell: Vector2i in YACHT_CELLS:
+		var part := Catalog.part(&"keel" if cell == YACHT_KEEL_ON else &"hover_tray")
+		world.content.add_child(part)
+		deck.fit(part, _on_piece(deck, cell, &"bottom"))
+	var mast := _stand_on(world, deck, &"mast", [&"sail"], SAIL_MAST_ON) as Mast
+	var helm := _stand_on(world, deck, &"helm_seat", [], YACHT_HELM_ON) as Helm
+	var crate := _stand_on(world, deck, &"crate_frame", [&"battery", &"battery"], YACHT_CRATE_ON)
+	_afloat(world, deck)
+	var sheet := sheet_to_waist(world, mast)
+	mast.trim = 2.0 * Mast.BOOM * sin(deg_to_rad(SAIL_EASED) * 0.5)
+	return [deck, mast, helm, crate, sheet]
 
 
 ## A line from a mast's boom's end to your waist, a little slack.

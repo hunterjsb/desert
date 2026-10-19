@@ -36,7 +36,16 @@ var time := 0.0
 var time_warp := 1.0
 ## The clock when the run began, its day 1: a start looks days on for its
 ## morning (Runs). 0 in a save from before it was kept.
-var began := 0.0
+var began := 0.0:
+	set(to):
+		began = to
+		_quiet()
+## A dev run that asked for an anomaly meets one whatever its days; any other
+## has none in its first (Wind & storms, the anomaly).
+var anomalies_any_time := false:
+	set(to):
+		anomalies_any_time = to
+		_quiet()
 ## Seconds of the run played, whatever the clock's warp; NAN in a run
 ## resumed from a save that never kept it, so it's never short.
 var played := 0.0
@@ -429,3 +438,9 @@ func _set_scene() -> void:
 	environment.fog_mode = Environment.FOG_MODE_DEPTH
 	environment.fog_depth_begin = tuning.haze_begin
 	environment.fog_depth_end = tuning.haze_end
+
+
+## No anomaly reaches a run in its first days, counted from its own start.
+func _quiet() -> void:
+	if weather != null and weather.field != null:
+		weather.field.quiet_from(-INF if anomalies_any_time else began)

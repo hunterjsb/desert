@@ -3,7 +3,7 @@ extends MenuProbe
 ## and the Homesteader behind their deeds, a fresh profile has only the
 ## Surveyor open. The console action opens the console over the main menu,
 ## with no run; unlockall there opens every start, and New game then shows
-## none locked. Forgetting the deeds leaves them open.
+## none locked. Forgetting the deeds leaves them open; reset locks them again.
 
 
 ## Held, so the locks stay on the kits every lookup finds.
@@ -28,3 +28,6 @@ func run() -> void:
 		% [Kit.open_to(profile).size(), all])
 	press(&"ui_accept")
 	check(not main.ui.top().words().has("????"), "New game shows none locked (%s)" % ", ".join(main.ui.top().words()))
+	press(&"ui_cancel")
+	console.run("reset")
+	check(Kit.open_to(profile).size() == 1, "reset locks them again, the Surveyor alone (%d)" % Kit.open_to(profile).size())

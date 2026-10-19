@@ -7,3 +7,6 @@
   (c) 2023 Adrián. No code was copied: that one draws particles into a SubViewport
   every frame; this one presses marks into tiles from code, wraps them round a window
   that follows you, and fills them by a clock instead of fading them per texel.
+- **Noise on the GPU** (`noise_glsl.gd`): a GLSL port of the smooth simplex (OpenSimplex2S)
+  and FBm of [FastNoiseLite](https://github.com/Auburn/FastNoiseLite) 1.1, as Godot ships it,
+  gradient tables included. MIT License, Copyright (c) 2023 Jordan Peck and contributors.

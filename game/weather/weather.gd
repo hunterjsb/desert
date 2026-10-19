@@ -57,6 +57,8 @@ var rumbles: Rumbles
 var _plumes_due := 0.0
 var _plumes_at := 0.0
 var lee: Lee
+## The wind, the lee and the sand they move round you, as the GPU draws with them.
+var wind_map: WindMap
 var eye: Eye
 ## The weather at the player this tick, which the game plays by.
 var storm := 0.0
@@ -99,6 +101,8 @@ func setup(world: World) -> void:
 	day = DayCycle.new(_tuning)
 	map = StormMap.new(world, field)
 	lee = Lee.new(world)
+	wind_map = WindMap.new(world)
+	wind_map.feed(world.terrain.sand_material)
 	_environment = (world.get_node("WorldEnvironment") as WorldEnvironment).environment
 	_sun = world.get_node("Sun")
 	_sun_energy = _sun.light_energy
@@ -276,6 +280,8 @@ func _physics_process(delta: float) -> void:
 func _exit_tree() -> void:
 	if map != null:
 		map.finish()
+	if wind_map != null:
+		wind_map.finish()
 
 
 ## Every drawn frame, after the world has moved and shifted.
@@ -301,6 +307,7 @@ func _process(delta: float) -> void:
 			glows.append(shelter.glow)
 	face.sync(_world.time, holes, glows)
 	atmosphere.carve(holes)
+	wind_map.bake()
 
 
 ## The plume drawing a source of Geology's, by its id, or null.

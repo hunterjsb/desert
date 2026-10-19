@@ -110,7 +110,8 @@ even storms that last for days.
   untied first (it takes its moment) and you step on once it's free, and riding you
   take only loose things on no line. A sail's sheet at your waist stays tied, so your camp
   can tow you, and the board pushes against no line (2026-10-18,
-  [sailing](#sailing-the-camp-hunter-2026-10-17)).
+  [sailing](#sailing-the-camp-hunter-2026-10-17)); so does a camp's line beside it, which
+  its rig tows past you ([stage 2](#sailing-from-kite-to-yacht-agreed-2026-10-18-spec-built)).
 - **Racked** (2026-10-16). A crate frame's rack runs along the top of its left side. The
   board is longer than the crate, 1.3 m against 0.8 m, so it overhangs 25 cm front and
   back. It stands on its edge, nose forward and deck out, 1 cm off the side and 17 cm
@@ -313,7 +314,9 @@ The base gets faster through a progression of haulers:
    this world. It's fast with the wind, it can zigzag upwind (tacking), and a real land
    yacht can go faster than the wind itself. A good one might outrun a storm with the
    camp aboard. *Built as your own camp rigged to sail ([above](#sailing-the-camp-hunter-2026-10-17)):
-   the light deck it's tuned on goes at a running pace, not yet past the wind or a storm's front.*
+   the light deck it's tuned on goes at a running pace; floating on a keel and sailed from its helm
+   ([the yacht](#sailing-from-kite-to-yacht-agreed-2026-10-18-spec-built)), near the wind's speed
+   off it, not yet past it or a storm's front.*
 4. **Big carriers,** like the walker farmer, that carry the farm and the shield.
 
 Early on you weather storms. Later, the yacht lets you choose between weathering one
@@ -418,7 +421,8 @@ your own camp's parts rather than found whole:
   on the "sail" deck rounds up gently into the wind and stops: its crate to windward drags its
   windward runners a little harder.
 - **Towed on the board.** Stepping onto the board, a sheet at your waist stays tied, while any
-  other line at your waist is untied first, as before. Towed, the board runs where the line
+  other line at your waist is untied first, as before, but for a camp's line beside the sheet
+  ([stage 2](#sailing-from-kite-to-yacht-agreed-2026-10-18-spec-built)). Towed, the board runs where the line
   leads and your keys turn it; only its dug edge holds against the line, so dug it carves
   across the pull ([the dig](#dig-and-carve-agreed-2026-10-18-spec-built)). It pushes and
   kicks against no line, so it still tows nothing.
@@ -458,7 +462,7 @@ your own camp's parts rather than found whole:
   couldn't be raised once brought down: the furled bundle's drag over the last of the cloth
   showing read as a tearing load). Profile & saves probe 16: a rigged camp resumes.
 
-### Sailing, from kite to yacht (agreed, 2026-10-18 spec; not built)
+### Sailing, from kite to yacht (agreed, 2026-10-18 spec; built)
 
 Sailing is how hybrid play travels fast enough that storms are worth avoiding; the strongest wind
 is a storm's, so the fastest move is running just ahead of a front on its wind
@@ -471,8 +475,84 @@ is a storm's, so the fastest move is running just ahead of a front on its wind
 And the camp can sail itself downwind while you scout alongside.
 **Never make you the link between a heavy sail and a heavy camp:** it would fold you in half, and a
 small body under tension from both sides is where Jolt jitters. Without lateral grip you can only
-run downwind; the dug edge or the keel is what tacks. Open: where the helm seat and keel are found,
-and from which era.
+run downwind; the dug edge or the keel is what tacks. Open then: where the helm seat and keel are
+found, and from which era; answered below.
+
+**Built (2026-10-18, `game/rope/ropes.gd`, `game/rope/rope.gd`, `game/sail/helm.gd`,
+`game/devices/runners.gd`, `probes/sail/`).** Stage 1 is [Sailing the camp](#sailing-the-camp-hunter-2026-10-17)
+as built, unchanged.
+- **Stage 2, set up with the actions you have.** The sail's sheet at your waist, as for stage 1,
+  and a line from the camp at your waist too: take a coil's end to a ring on the camp, walk off
+  paying out, and use ties it at your waist. With a sheet and a line to another device (not a
+  stake) both there, you'd be the link, so the rope system runs a hidden line of its own from the
+  sheet's tie on the boom's end, through a ring at your waist, to where the camp's line ties on. The
+  camp's line rides on it, drawn as it lies past you; its length is the camp's line's plus how far
+  your waist was from the boom's end when it formed, so reeling the camp's line shortens it. The ring
+  slides: running straight through you, the line's pull passes you by, and your body bears only its
+  bend. Meanwhile the sheet runs through its block, under the boom's end hauled right in on the rig's
+  middle line, so its own pull, now only yours, lands there: you're towed as a light load and your
+  side of the line steers. Step onto the board and both stay tied (any other line is untied first,
+  as before); untie either and the hidden line is gone, the camp's line let out to reach you. Seated
+  at a helm you're aboard, and no hidden line forms.
+- **Steering is the carve.** Dig in and carve off the line and its bend pulls the boom's end and
+  the camp's nose toward you; the dug edge holds you there, as it holds a tack. Out to windward the
+  rig bears away, to leeward it heads up. On the "sail_tow" camp on a broad reach in 10 m/s, a 20°
+  carve dug a third in turns the rig +50° off the wind in 2.5 s to windward and −45° to leeward,
+  against +15° with no carve. Left alone the rig rounds up and stops, as stage 1's does, so you keep
+  steering; the probes hold its course as a helmsman would, by a turn on the rig.
+- **The numbers.** The rig is the "sail" deck less its shield, 88 kg on skates; the camp a deck two
+  by two on skates with the shield and a crate, 86 kg, its line from the hook on its front left
+  ring. On a broad reach (120°) in a steady 10 m/s, held to its course, the rig makes 2.1 m/s
+  towing the camp (3.5 m/s towing you alone): the hidden line carries 69 N, your sheet 21 N, and the
+  lines on you pull 58 N all told, against 66 N with the rig towing you alone. As the link you'd have
+  borne about 200 N. A skates camp halves a rig's speed; a floating one is blown downwind round
+  the rig and rounds it up, and plates drag too hard to tow.
+- **The fulcrum.** Rope & tethering's rule, which the spec takes as there already and wasn't: lines
+  snap past their load (1,500 N held, as ever), and your body bears what the lines on it pull against
+  each other plus any line's bend round you. Held past your strength, 400 N (`fulcrum_n`), for as
+  long as a line's load is held, you lose 8 health a second for each share more (`fulcrum_hurt`),
+  never your last, and your view shakes. Braced 4 m to windward of the hidden line with the camp
+  moored, the line bends round you at up to 527 N in 12 m/s and takes 13 health in 10 s; the lines
+  hold. Riding either stage you're never hurt.
+- **Stage 3: the helm seat** (`helm_seat`, 7 kg), a skimmer pilot's, fitted to the camp the way
+  anything is (a deck mount, for now). Use on it sits you there: you ride the camp as what's seated
+  on it does, your weight its, low in the seat, touching nothing, and lines at your waist pull the
+  deck. The sideways moves turn the camp as a hovercraft's do, its hover field pushing it round
+  toward a turn of 0.5 rad/s by up to 800 N·m (`helm_turn`, `helm_torque`), and letting go holds
+  its heading. Reeling works the sheet at your waist. Ride, or use on it again, stands you up off the
+  side it slides away from, onto the sand with its way; leaning past 40° throws you off. The first
+  sit teaches, once a profile, what the controls do (`Helm.HOW_TO_SAYS`). Saves keep you at the helm.
+- **The keel** (`keel`, 7 kg), a skimmer's ventral strake: a hover tray drawn out into a fin, fitted
+  where a tray goes and lifting 60 kg. Floating, its field bites the sand across its length as a
+  runner ploughs, taking the slip out as a runner does, exactly over the tick, as hard as 0.6 of
+  the weight its camp floats; along it, it drags 0.02 of that. It lies along its deck however its
+  piece is turned. Its grip and its seat's ways are the parts' own, found by what they are, not
+  where they fit.
+- **The yacht.** The "yacht" scenario: a deck three by two floating on five trays and the keel
+  (under the aft leeward piece), the mast at its front to windward, the helm seat aft on its middle
+  line over a tray, a crate to windward of it; 134 kg, 224 kg with you, on 460 kg of lift. (Sat at a
+  corner of a deck two by two, a tray can't hold you and the corner drops to the sand.) In a steady
+  10 m/s, steered from its helm up to 60° off the wind, it makes 4.9 m/s and 36 m upwind in 20 s,
+  sliding 0.1 m/s; with a tray in the keel's place it slides off at 7.5 m/s and goes 137 m
+  downwind however it's steered. Floating, it has no runners' drag: borne away to a broad reach
+  it's at 9.6 m/s 20 s on, near the wind's own speed.
+- **Sailing itself downwind** still works: the "sail" deck floating, its sheet made fast and nobody
+  aboard, runs downwind at 8.1 m/s in 10 m/s while you ride where you like.
+- **Where they're found.** Both lie in skimmer wrecks, in the wreck hull's best: what its deep cache
+  holds once a storm strips past it, and in Han a third of its floors and caches. The skimmer era is
+  the best single-item gear, a skimmer's pilot sat in that seat and it rode that strake, and the
+  hoverboard is skimmer-culture gear already; wrecks lie shallow and tilted, exposed and reburied
+  fast, so they're an expedition's find, near the Salvager's start. Each is 3 in 13 of a wreck's best.
+- **Frame-rate proof.** Physics ticks only. Over 15 s at 30, 60 and 120 ticks a second the yacht
+  sails 38.1, 38.3 and 38.4 m and the towing rig 29.5, 31.9 and 32.0 m (the lines swing you a tick at
+  a time); nothing changes its way faster than 4.3 m/s² or spins past 0.5 rad/s.
+- **Scenarios:** "sail_tow" (stage 2, both lines at your waist, the board at your feet) and "yacht"
+  (the sheet at your waist, by the helm), in the sail scenario's breeze. The look-test `look/sail`
+  shoots them as its fifth and sixth shots.
+- **Probes** (`probes/sail/`): 9, the hidden tow line, your load and the carve steering, and the
+  fulcrum; 10, the yacht tacks with its keel and only runs downwind without, a floating camp sails
+  itself downwind, and a save at the helm resumes there; 11, nothing flings aboard at 30, 60 and 120
+  ticks a second.
 
 ### The dune sailboat (Agreed, session 4, part 3; not built)
 
