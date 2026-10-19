@@ -145,6 +145,7 @@ func begin(data: Dictionary) -> Array[Vector2]:
 	world.time = data.time
 	world.began = data.get("began", 0.0)
 	world.played = data.get("played", NAN)
+	world.counts_deeds = world.counts_deeds and not data.get("dev_run", false)
 	world.set_gravity(data.gravity)
 	world.shift_origin(data.origin - world.origin_chunk)
 	var moon: Dictionary = data.moon
@@ -325,6 +326,9 @@ func _take() -> Dictionary:
 		"ledger": [world.power.generated_wh, world.power.used_wh, world.power.spilled_wh]}
 	if not is_nan(world.played):
 		data.played = world.played
+	# A run the dev console changed stays a dev run when it's resumed.
+	if not world.counts_deeds:
+		data.dev_run = true
 	var you := {"at": _transform_out(player.global_transform), "pitch": player.camera.rotation.x,
 		"v": player.velocity, "drag": player.get_meta(&"rope_drag", Vector3.ZERO), "state": {}, "vitals": {}}
 	for key in PLAYER:

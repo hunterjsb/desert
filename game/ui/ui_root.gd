@@ -28,6 +28,7 @@ var _note: Label
 var _note_fading: Tween
 var _how_to: RichTextLabel
 var _how_to_fading: Tween
+var _badge: DeedBadge
 
 
 func _enter_tree() -> void:
@@ -65,6 +66,12 @@ func _ready() -> void:
 	_how_to.grow_horizontal = Control.GROW_DIRECTION_BOTH
 	_how_to.modulate.a = 0.0
 	add_child(_how_to)
+	_badge = DeedBadge.new()
+	add_child(_badge)
+	# The deeds' pictures drawn now, before the world: drawn later in a session
+	# they come out as slivers.
+	for id: StringName in ItemIcons.LOOKS:
+		ItemIcons.of(get_tree(), id)
 	dev_console = DevConsole.new()
 	dev_console.ui = self
 	add_child(dev_console)
@@ -85,6 +92,11 @@ func holds_input() -> bool:
 func note(text: String) -> void:
 	_note.text = text
 	_note_fading = _shown_for(_note, _note_fading, NOTE_SECONDS)
+
+
+## A deed just done, its badge shown a moment, after any still showing.
+func badge(id: StringName) -> void:
+	_badge.add(id)
 
 
 ## A how-to, the first time this profile meets what it's about and never
@@ -162,9 +174,11 @@ func close_top() -> void:
 		Controls.free_mouse(false)
 
 
-## Everything open, the console too: the run is changing over, or is over.
+## Everything open, the console too, and any deed's badge: the run is
+## changing over, or is over.
 func close_all() -> void:
 	dev_console.close()
+	_badge.clear()
 	while not _menus.is_empty():
 		var menu: Words = _menus.pop_back()
 		remove_child(menu)
@@ -226,7 +240,8 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 ## The title, and Resume (with a save), New game, Deeds, Options, Quit, over
-## the live desert, and the music's switch in the bottom left.
+## the live desert, and the music's switch in the bottom left. Deeds is
+## marked while a deed done hasn't been looked at there.
 func show_main_menu(note := "") -> void:
 	close_all()
 	Dev.show_hint(false)
@@ -238,7 +253,7 @@ func show_main_menu(note := "") -> void:
 	if main.has_save():
 		menu.add("Resume", func() -> void: open(resume_view()))
 	menu.add("New game", _new_game)
-	menu.add("Deeds", _deeds)
+	menu.mark_new(menu.add("Deeds", _deeds), func() -> bool: return not Deeds.unseen(main.profile()).is_empty())
 	menu.add("Options", func() -> void: open(options()))
 	menu.add("Quit", main.quit)
 	menu.add_corner(func() -> bool: return Settings.music, func() -> void:
@@ -320,22 +335,29 @@ func system_menu() -> Words:
 ## Who the new run comes as, down the left, the origin last played
 ## highlighted, so the piece on show stays as it stands aside; each with a
 ## few words under it, and one still locked shown as ????. The piece aside
-## and the gear under it follow the highlight.
+## and the gear under it follow the highlight. A start a deed has opened is
+## marked until it's been highlighted.
 func origins() -> Words:
 	var menu := _menu()
 	var all := Kit.origins()
+	var profile := main.profile()
 	menu.open_on(all.find(main.last_kit()))
 	for kit in all:
 		# The Surveyor is the game as meant; the starts deeds open are variations on it.
 		if kit != all[0]:
 			menu.set_apart()
-		if kit.is_open_to(main.profile()):
-			menu.add(kit.label, func() -> void: open(modes(kit)), Callable(), kit.about)
+		if kit.is_open_to(profile):
+			var word := menu.add(kit.label, func() -> void: open(modes(kit)), Callable(), kit.about)
+			if profile != null:
+				menu.mark_new(word, profile.is_new.bind(profile.start(kit.id)))
 		else:
 			menu.add("????", Callable())
 	menu.moved.connect(func(at: int) -> void:
 		menu.shows = all[at].id
-		menu.set_aside(gear(all[at])))
+		menu.set_aside(gear(all[at]))
+		if profile != null:
+			profile.seen(profile.start(all[at].id))
+		menu.refresh())
 	return menu
 
 

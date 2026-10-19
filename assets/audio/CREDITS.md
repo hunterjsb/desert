@@ -90,6 +90,13 @@ levelled the same way (a loop by its whole):
 
 The issue board's hum is still `hover.ogg`. The rope's snap is still made in code (`ropes.gd`), at about -28 LUFS from 8 m.
 
+A deed's sound is made here too, numpy only, by `make_deed_sound.py` (CC0), as WAV, levelled by its
+loudest 400 ms (momentary LUFS) on the menus' bus:
+
+| File | What it is | Made from | Licence | Heard at | Peak |
+|---|---|---|---|---|---|
+| deed.wav | a deed done, as its badge shows | made here: three soft bell notes rising, A, E and A an octave up, over a warm low swell and a breath of high air | CC0 | -28 | -18 |
+
 **The radio's voice** (`voice/`, one OGG a phrase, named by its words) reads the weather
 station's reports and a Console's battery warnings. It's rendered here, once, by
 `voice/make_voice.py` with [Piper](https://github.com/OHF-Voice/piper1-gpl) 1.8.0 and the
