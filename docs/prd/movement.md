@@ -101,8 +101,8 @@ even storms that last for days.
 **Built (2026-10-16, Stage 10, `game/board/`).**
 - **A find.** The board is a catalog device in salvage's deep layer, one in nine of its
   devices, found buried on end, nose down. Its battery sits at its nose and comes filled
-  like any deep find's; its port charges it from a cable. The "ride" scenario
-  lays a charged one at your feet.
+  like any deep find's; its port charges it from a cable. The "board" scenario
+  lays a charged one of every make at your feet.
 - **On and off.** The ride action steps you onto the board in your hands, the one you
   look at, or the nearest at your feet, if it has charge, and steps you off again,
   keeping your way: faster than you can run, you skid, and the board goes on as a body.
@@ -286,7 +286,7 @@ stop and the crouch drift ride as they did.
   before; racers in the skimmer era's floors and best, a wreck hull's best among them; patrol
   boards in a watchtower's cache and as a Knights' hopper's best; temple boards among the second
   age's best. The Salvager starts with a new racer, plain; every other run racks the issue. The
-  `boards` scenario lays one of each in front of you. The patrol board's superchassis is still
+  `board` scenario lays one of each at your feet. The patrol board's superchassis is still
   [proposed](#the-patrol-board-a-superchassis-agreed-session-4-part-3-not-built): the Knights' board
   is a make of the one ride, not the Daventry kit.
 - **Sounds** (`RideSound`, made here, `assets/audio/make_board_sounds.py`): each make's hum, rising

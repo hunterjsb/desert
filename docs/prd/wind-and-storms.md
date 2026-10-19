@@ -497,23 +497,6 @@ has the detail):
   `sites.newly_exposed` lists the sites a storm has newly laid bare near a place, for the Console to pin.
 - **Probes:** kits 3 and 4, loot 7, sightlines 4, saves 23.
 
-## Dune archaeology (agreed, 2026-10-18 spec; not built)
-
-From the [chassis spec](../chassis-kits-dunes-2026-10-18.md): the lee, drift and exposure systems talk to each other, so camping
-by a big dune becomes a way to play: let the ruins come to you.
-- **Exposure gets a dune term:** more stripping on a windward face and crest, more burial in the
-  lee, still stateless.
-- **Dune ruins:** a seeded ruin under each big dune, uncovered only past an intense storm, so nearly
-  every big dune yields something in a big one; seeded, never spawned on noticing the player.
-- **Light loot over the crest:** in a storm it falls out in the lee of crests near camp too, not
-  only at staked lines.
-- **Three ways to play it:** up to the windward crest mid-storm for medium loot; stay in the lee and
-  let light loot come; wait and dig the bared ruin after. **Storm chasing** is the same high tier
-  metered: many freshly bared sites in their window, volume over depth, no new table.
-- **Lazy loading:** a buried site costs nothing at chunk load, a seed only; exposure checks run on a
-  low-priority queue by distance, and a site builds only once bared and you've slowed nearby, so a
-  fast rider never stutters on what they pass.
-
 ## What storms do to everything else
 
 These are owned by their own PRDs and listed here so the field serves them all.
@@ -698,6 +681,8 @@ close it's no thing at all: walking into it the air thickens round you, as walki
   front hide it. The flat world shows it further than a real moon's curve would.
 - **Booms and a roar:** [Radio, sound &
   atmosphere](radio-sound-and-atmosphere.md#distant-phenomena-agreed-2026-10-18-spec).
+- **The "vent" dev scenario** stands you 1.5 km across the rift from its live vent, facing it, a
+  minute before a burst in clear daylight, with a charged board at your feet.
 - **The dev overlay** names the nearest live vent drawn, how far and which way, and whether it's
   seeping or bursting (`weather/vent`), and a pocket blowing (`weather/pocket`); `goto live_vent`,
   `goto live_vent_2` and `goto flank_vent` stand you by them.

@@ -19,8 +19,8 @@ const LANDMARKS := [
 		[[&"bunker", "the Quartermaster's bunker", 0.0, 0.0, 60.0], [&"specimen_case", "the specimen case", 0.0, -15.0, 5.0]]],
 	[&"port_morgan", "Port Morgan", 1600.0, "pylons and pad lights over the plateau",
 		[[&"bastion", "the Bastion", 0.0, 0.0, 300.0], [&"pads", "the Pads", 0.0, 700.0, 400.0],
-		[&"kesselside", "Kesselside", 700.0, -200.0, 400.0], [&"lowtown", "Lowtown", -800.0, -100.0, 450.0],
-		[&"okafor_bunker", "the Okafor bunker", 60.0, 40.0, 30.0]]],
+		[&"crakeside", "Crakeside", 700.0, -200.0, 400.0], [&"lowtown", "Lowtown", -800.0, -100.0, 450.0],
+		[&"haberjack_bunker", "the Haberjack bunker", 60.0, 40.0, 30.0]]],
 	[&"halfrise", "Halfrise", 400.0, "walls on the Rim", [[&"citadel", "the citadel", 0.0, 0.0, 200.0]]],
 	[&"sister", "Sister", 300.0, "the temple's dome",
 		[[&"temple", "Mother Cistern's temple", 0.0, 0.0, 80.0], [&"basin", "the basin", 20.0, 10.0, 10.0],
@@ -31,6 +31,8 @@ const LANDMARKS := [
 	[&"observatory", "the observatory", 3000.0, "the tower over the volcano",
 		[[&"tower", "the elevator stub's tower", 0.0, 0.0, 40.0], [&"vent_cap", "the vent cap", 0.0, 0.0, 120.0]]],
 ]
+## Parts by the ids older profiles counted them by (session 5's renames).
+const RENAMED := {&"kesselside": &"crakeside", &"okafor_bunker": &"haberjack_bunker"}
 ## Where they stand, by rule (defaults): angles from the point under Tu,
 ## degrees, or distances from the landmark placed before, m.
 const HALLORAN := Vector2(3.0, 5.0)

@@ -68,10 +68,10 @@ func _ready() -> void:
 	add_child(_how_to)
 	_badge = DeedBadge.new()
 	add_child(_badge)
-	# The deeds' pictures drawn now, before the world: drawn later in a session
-	# they come out as slivers.
-	for id: StringName in ItemIcons.LOOKS:
-		ItemIcons.of(get_tree(), id)
+	# The deeds' and the creative menu's pictures drawn now, before the world:
+	# drawn later in a session they come out as slivers.
+	for id: StringName in ItemIcons.LOOKS.keys() + CreativeGrid.ids():
+		ItemIcons.of(get_tree(), CreativeGrid.ROLLED.get(id, id))
 	dev_console = DevConsole.new()
 	dev_console.ui = self
 	add_child(dev_console)
@@ -130,6 +130,26 @@ func open_dev_console() -> void:
 	move_child(_fade, -1)
 	dev_console.open()
 	Controls.free_mouse(true)
+
+
+## The creative menu over a run, in place of the console if it's up. Opening
+## it makes the run a dev run, whose deeds never count, and the first time it
+## says so under its grid.
+func open_creative() -> void:
+	var world := main.world() if main != null else null
+	if world == null or is_open():
+		return
+	var was := world.counts_deeds
+	world.counts_deeds = false
+	open(creative(world, DevConsole.DEV_RUN if was else ""))
+
+
+## Every part and device by group, to take straight into your hands.
+func creative(world: World, line := "") -> Words:
+	var menu := _menu("Creative")
+	menu.set_meta(&"creative", true)
+	CreativeGrid.fill(menu, world, close_top).say(line)
+	return menu
 
 
 ## Back to the run, or to the menu it was opened over.
@@ -229,6 +249,12 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed(&"console") and not dev_console.visible:
 		open_dev_console()
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed(&"creative") and not dev_console.visible:
+		if is_open() and top().has_meta(&"creative"):
+			close_top()
+		else:
+			open_creative()
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed(&"fullscreen"):
 		# The same switch as Options', so either shows how it stands.

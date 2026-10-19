@@ -233,7 +233,9 @@ under the fade, and a save made on waking resumes as you woke.
 Console's radar doesn't sweep, so sleep with the shield on; what drifts never snags on a dune or a
 ruin; a line's share of the wind is what it holds itself, so a deck on a line to a deck on a line to
 a stake puts only the second deck's push on the last line. The dev overlay's `sleep/last` says how
-long the last night was and what it cost.
+long the last night was and what it cost. The **"sleep"** dev scenario stands you at dusk by a still
+camp to try it: a deck of two resting on the sand, the bedroll and the base shield running on it, a
+wall to windward on a frame and a radio on the weather station.
 
 **After sleeping it** (Hunter, 2026-10-18): "we should be able to place the bedroll... allow them to
 place it but you cant sleep until your camp is stable. and so right now cant you hack the game by

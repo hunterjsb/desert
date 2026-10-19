@@ -11,10 +11,10 @@ extends "res://look/style/style.gd"
 const ROW := [
 	["issued", [], -4.2],
 	["colonial", [[Eras.COLONIAL, &"made", [&"tilg"]]], -2.8],
-	["first", [[Eras.COLONIAL, &"made", [&"tilg"]], [Eras.FIRST, &"marked", [&"okafor"]]], -1.4],
+	["first", [[Eras.COLONIAL, &"made", [&"tilg"]], [Eras.FIRST, &"marked", [&"haberjack"]]], -1.4],
 	["skimmer", [[Eras.SKIMMER, &"made", []]], 0.0],
 	["remade", [[Eras.COLONIAL, &"made", [&"tilg"]], [Eras.DARK, &"remade", [&"plate", &"cord"]]], 1.4],
-	["second", [[Eras.COLONIAL, &"made", [&"tilg"]], [Eras.FIRST, &"marked", [&"kessel"]],
+	["second", [[Eras.COLONIAL, &"made", [&"tilg"]], [Eras.FIRST, &"marked", [&"pellicott"]],
 		[Eras.DARK, &"remade", [&"wood", &"cord", &"ceramic"]], [Eras.SECOND, &"blessed", [&"tu", &"charm"]]], 2.8],
 	["cistern", [[Eras.COLONIAL, &"made", [&"tilg"]], [Eras.DARK, &"remade", [&"cord", &"ceramic"]],
 		[Eras.SECOND, &"blessed", [&"cistern", &"charm"]]], 4.2],
