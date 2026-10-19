@@ -38,7 +38,6 @@ integrated loudness, peaks never past -6 dBTP. A hard limiter on Master holds -1
 | food_drop.ogg | the harvester's food landing on you | Kenney Impact `impactSoft_medium_001` and RPG Audio `cloth2` | CC0 | -36 | -16 |
 | drip_a.ogg, drip_b.ogg | the condenser's drip | made here: water drops | CC0 | -40 at 2 m | -24 |
 | chime_first/last/lost.ogg | the camp-range warnings | made here: soft bell notes | CC0 | -32, -30, -30 | -21 to -24 |
-| low_tick.ogg | the board's low-battery tick | made here | CC0 | -38 | -17 |
 | hover.ogg | the board's ride | Sand Game `object_bubbleplanter_hover.wav`, cut to a seamless loop | Sand Game | -34 | -21 |
 | board_on.ogg, board_off.ogg | getting on and off the board; a hover tray lifting off and settling | made here: a soft rising and falling hum | CC0 | -32 | -19, -21 |
 | shield_boot/hum/down.ogg | the shield | Sand Game `object_shield-boot`, `-sustain`, `-powerdown` | Sand Game | -26, -49 (the hum played 15 dB down), -28 at 4 m | -12, -22, -12 |
@@ -71,4 +70,22 @@ the game:
 | scoop.wav | a stroke of the scoop | made here: a blade through packed sand | CC0 | about -31 | -14 |
 | seal.wav | sealant over a breach | made here: a spray and the plop of it setting | CC0 | about -30 | -14 |
 
-The rope's snap is still made in code (`ropes.gd`), at about -28 LUFS from 8 m.
+The ride's sounds are made here too, numpy only, by `make_board_sounds.py` (CC0), as WAV,
+levelled the same way (a loop by its whole):
+
+| File | What it is | Made from | Licence | Heard at | Peak |
+|---|---|---|---|---|---|
+| board_carve.wav | a carve's hiss as the hover holds you round, looped | made here: an airy hiss over a faint rustle, breathing | CC0 | about -36 at its hardest | -21 |
+| board_rush.wav | the wind's rush at speed, looped | made here: wide low noise gusting slowly, a thin whistle over it | CC0 | about -33 flat out | -20 |
+| board_pop.wav | a pop off a lip, or a hop | made here: a soft low thup and a fwip of air | CC0 | about -33 | -18 |
+| board_land.wav | a landing, by how hard | made here: a muffled whumph and a burst of sand | CC0 | about -31 at the jar | -17 |
+| board_slam.wav | a landing past the jar | made here: a deep thud, more sand and the deck's rattle | CC0 | about -27 | -14 |
+| board_knock.wav | a crash into something solid | made here: a hollow body's short-ringing knock, again as it comes back, a thud under | CC0 | about -27 | -14 |
+| board_bite.wav | a skid taking hold again | made here: a short scuff and the field's chirp | CC0 | about -36 | -17 |
+| hum_racer.wav | the skimmer racer's hum, looped | made here: a thin whine at 330 Hz with a buzz in it, a little vibrato | CC0 | about -35 | -31 |
+| hum_patrol.wav | the Knights' patrol board's hum, looped | made here: a deep thrum at 110 Hz pulsing like a rotor, a growl under it | CC0 | about -34 | -27 |
+| hum_temple.wav | the temple board's hum, looped | made here: a soft hum at 196 Hz, a ceramic ring of two beating partials, a breath of air | CC0 | about -35 | -28 |
+| battery_low.wav | a board's battery low, once, about a minute from flat | made here: a soft falling two-note "do-doo" | CC0 | about -34 | -24 |
+| battery_critical.wav | and critical, once, about 15 s from flat | made here: the same, lower, shorter and trembling | CC0 | about -30 | -19 |
+
+The issue board's hum is still `hover.ogg`. The rope's snap is still made in code (`ropes.gd`), at about -28 LUFS from 8 m.
