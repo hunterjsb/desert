@@ -34,8 +34,8 @@ const APART_SECONDS := 0.4
 const LOCKED := 0.5
 ## The mark of something new after a word: a dot, across as a share of the
 ## word's height, and how far it stands off the word, px.
-const NEW_DOT := 0.16
-const NEW_GAP := 4.0
+const NEW_DOT := 0.2
+const NEW_GAP := 9.0
 
 ## Back never closes it: the main menu is the bottom of the stack.
 var root := false
