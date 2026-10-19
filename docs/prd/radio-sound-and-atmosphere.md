@@ -53,13 +53,13 @@ Crackly music while a storm roars outside is the cozy moment.
 it and it crackles.
 
 **As built (2026-10-17, Stage 11):**
-- **A device, as this PRD says,** and an instrument for a top mount (Devices & mods): a
-  small set, 2.5 kg, with a battery slot on its back and a port. You carry it, set it down
-  or seat it on a top mount the way the shield seats, and it plays from where it is,
-  heard at its level within 3 m. It draws 2 W while it's on, from its battery or the pool
-  of the crate it sits on, so a base battery runs it for 50 hours and a dark one is silent.
-  It's a find on the surface, about one in six of the surface layer's devices, and in
-  ruins. It isn't in the starting kit. The "radio" scenario sets one at your feet with a
+- **A device, as this PRD says** (Devices & mods): a small set, 2.5 kg, with a battery slot
+  on its back and a port, its own since it works away from any deck. You carry it, set it down
+  or stick it on a deck the way the shield sticks, and it plays from where it is, heard at its
+  level within 3 m. It draws 2 W while it's on, from its battery or the pool of the deck it's
+  stuck on, so a base battery runs it for 50 hours and a dark one is silent. Anywhere on a
+  Console's deck it's the Console's voice. It's a find on the surface, one in seven of the
+  surface layer's devices, and in ruins. It isn't in the starting kit. The "radio" scenario sets one at your feet with a
   charged shield and a storm 300 m off.
 - **Use turns the dial:** off, music, weather, beacon and off again, with a burst of static
   between stations. Its dial lights while it's on, and the look-at readout names the
@@ -546,7 +546,8 @@ standing.
   instrument table, the screen shows every stat, and audio "comes from a radio on a top mount."
   Not said whether a radio seated on the Console's top slot feeds the screen by being seated or
   needs a computer-mod port, or whether the screen replaces the line as how a broadcast is
-  delivered (the question above).
+  delivered (the question above). *Settled in part by the chassis (2026-10-18):* the top slots
+  are gone, and a radio stuck anywhere on a Console's deck gives it the forecast and its tones.
 
 The endings session and session 4, part 3 (2026-10-17) add four. Each is quoted on both sides and
 left standing.

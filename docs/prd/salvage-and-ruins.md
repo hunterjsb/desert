@@ -276,7 +276,7 @@ skeleton version below). The relocation is the session's eighth step
 
 **Built: the loot (2026-10-18).** Loot is history's now. Every kit piece's sockets hold what its era's
 table says, a row for each kind of socket, its kind's own where the kind says what fits, its region how
-generous, each socket drawn from the site's loot seed alone: colonial infrastructure (crates, chassis,
+generous, each socket drawn from the site's loot seed alone: colonial infrastructure (chassis and frames,
 condensers and turbines, big batteries, trays and panels, at its best Consoles and shield generators),
 the skimmer era's single items (survival kits, radios, hoverboards, at its best military shield
 generators, radar and harvesters), the First Kingdoms' working machines (condensers, turbines, planters,
@@ -373,7 +373,7 @@ the same ruin, so revisiting pays.
 
 | Era | Best for |
 |---|---|
-| Colonial | Infrastructure: power, crates, big systems |
+| Colonial | Infrastructure: power, chassis, big systems |
 | Skimmer era | **Best single-item gear:** military weapons, armour, mods from deserters and the black site |
 | First Kingdoms (first age) | Intact working colonial tech used in new ways |
 | Dark Age | No sites, so no loot of its own: it is the lineage of the second age's gear (below) |
@@ -913,22 +913,22 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
   in Hunter's playtest (2026-10-16): a find you'd taken from or tied a line to stayed
   frozen, so a stripped device on a ruin's floor could never be taken hold of, and a line
   tied to one held you as an anchor would. Nothing found is too heavy to drag by hand:
-  the heaviest, a crate with every socket filled, is 51 kg, 250 N of your 400 N on a
-  ruin's floor or the sand. A Console with every socket filled is 49.7 kg.
-- **What's found** is the catalog's own parts and devices. The surface layer holds
-  batteries, hooks, lamps, empty canisters, rope coils, cable plugs, hoses and compasses
-  (2026-10-17, compasses one in twenty-one of the surface layer's parts), and crate
-  frames, chargers, planters, stakes, survival kits, radios (Stage 11, two in thirteen of
-  the surface layer's devices) and chassis pieces (2026-10-17, one in thirteen). The deep
-  layer holds big batteries,
-  batteries, hover trays, solar panels, hooks, strong cable plugs and harvesters, and
-  crate frames, wind turbines, condensers, shield generators and, rarer, hoverboards
-  (Stage 10, one in eleven of the deep layer's devices; a ruin's hall never holds one,
-  since it promises parts to strip), chassis pieces (one in eleven) and Consoles
-  (2026-10-17, one in eleven), whose screens and instruments come only in them. A ruin's floor holds all
-  its layer's finds and more: seeds (carrots and fungus), sealed rations and survival
-  kits. A device comes with some of its sockets filled from its own layer, a third of
-  them at the surface and three in five deep. Over 3,000 chunks on two seeds, rope coils
+  the heaviest was a crate with every socket filled, 51 kg, 250 N of your 400 N on a
+  ruin's floor or the sand. With the crate gone, and the Console's batteries, rings and
+  tray with it, finds are lighter; the heaviest is not yet re-measured.
+- **What's found** is the catalog's own parts and devices (`Finds`, rebuilt round the chassis
+  2026-10-18). The surface layer holds batteries, hooks, lamps, empty canisters, rope coils,
+  cable plugs, hoses, compasses, frames and fabric, and chassis pieces (two in seven of its
+  devices), light solar panels, planters, stakes, survival kits, radios and bedrolls. The deep
+  layer holds big batteries, batteries, hover trays, solar panels, hooks, strong cable plugs,
+  harvesters, sails, runners and frames, and chassis pieces (one in four of its devices), wind
+  turbines, condensers, shield generators, masts and, rarer, hoverboards and Consoles (one in
+  twelve each; a ruin's hall never holds a board, since it promises parts to strip), whose
+  screens and instruments come only in them. A ruin's floor holds all its layer's finds and
+  more: seeds, sealed rations and survival kits. A device comes with some of its sockets
+  filled from its own layer, a third of them at the surface and three in five deep, and a
+  found chassis with things stuck where they'd have been left on it (`spots` in the catalog):
+  a tray under it (deep only), a battery and a lamp or panel on its top. Over 3,000 chunks on two seeds, rope coils
   and plugs are each about one find in fourteen, strong plugs one in thirty-five, survival
   kits one in thirty-three (a seventh of them on ruins' floors), and the harvester, at one in
   sixty, is the rarest part on open sand (2026-10-16, before radios). With radios,
@@ -995,7 +995,7 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
   socket tells share their looks.
 - **The "go looking" scenario** stands you 12 m out from the front door of the
   ruin nearest the run's start, facing it, at a clear and calm moment (no storm for ten
-  minutes, wind under 6 m/s), with a bare crate frame of your own beside you. The
+  minutes, wind under 6 m/s), with a bare chassis piece of your own beside you. The
   ruin's hall always holds a device with at least two parts to strip. *Since 2026-10-18:
   history's house ruin nearest the run's start on the moon, however far, at a moment it's
   dug out, you on fresh ground before it. The hall's device was a later visitor's and lies
@@ -1008,8 +1008,8 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
   in ruins and the harvester is the rarest part; **probe 2** lays by hand any kind its
   walk didn't meet; **probe 6** strips a survival kit and unrolls a found coil, plug and
   strong plug through the hands.
-- **Probe 8** walks the heaviest find, stripped of a part, out of the ruin's front door
-  in your hands, and tows a found crate out of a roofed room and the back door on a line
+- **Probe 8** walks a heavy find, stripped of a part, out of the ruin's front door
+  in your hands, and tows a found device out of a roofed room and the back door on a line
   tied at your waist, dragged first into line with the door.
 - **Probes** 1 to 8 pass, each checked against a deliberately broken build. Probes of
   other systems run without ruins and finds, as ground probes run in still air; salvage's
@@ -1106,8 +1106,8 @@ Session 4's clashes with what's above are quoted and left standing. Nothing here
   placeholder," and the base case is "pillars and wall stubs," which have no hall. Not said:
   where a find sits at a stub, and whether the walk-in building becomes the colonial bunker's
   entrance or goes.
-- **What counts as a big item.** Here: "Nothing found is too heavy to drag by hand: the
-  heaviest, a crate with every socket filled, is 51 kg." The notes: "To get big items out, keep
+- **What counts as a big item.** Here: "Nothing found is too heavy to drag by hand" (the crate,
+  51 kg, was the heaviest; finds are lighter since the chassis rework). The notes: "To get big items out, keep
   both a sand-choked cargo ramp... and a dead freight lift." Nothing found today needs either.
   The big finds they serve, late-game base gear, don't exist yet.
 - **The collector against frozen finds.** Here: a find "is part of its chunk until it's yours:

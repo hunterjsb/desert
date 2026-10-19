@@ -158,7 +158,7 @@ off the hidden line with the camp moored: it bends round you at 527 N and hurts 
 Every object that can be tethered has a **wind catch**: how much the wind grabs it,
 alongside its weight. The force comes from `wind_at` (Wind & storms), so gusts and
 storm outflow load the ropes for free. A floating planter catches a lot and weighs
-little, while a crate catches little and weighs a lot. Rope's job is to carry that load
+little, while a loaded deck catches little and weighs a lot. Rope's job is to carry that load
 to the anchors without drama.
 
 ## Moving the camp
@@ -235,14 +235,14 @@ The hoverboard tows nothing.
   pulling on you now, so one gesture unstakes them and the next stakes them again.
   It goes in only where your look meets the sand itself within reach, at the ground's
   height there (2026-10-17). Used at sand farther off, or at anything else near, like a
-  crate or a ruin's wall, it stays in your hand and the readout says why; before, one
+  deck or a ruin's wall, it stays in your hand and the readout says why; before, one
   with lines on it went to your waist instead and stood in the air in front of you.
   Used looking out over the sand, not down at it, one with lines on it ties at your
   waist, to tow what's on them.
-- **A crate has two rings,** front and back (2026-10-17), so it takes two lines; a
-  chassis piece has one on every edge for more. Probe 4's crate is turned across the
-  wind, a battery at its front and back so it hangs balanced, to hang on two parallel
-  lines from them.
+- **Rings are a chassis's and a planter's** (since the chassis rework, 2026-10-18): a
+  chassis piece has one on every edge, which takes a hook or the next piece, and a planter
+  two, front and back; nothing else takes a hook. A deck takes as many lines as it has
+  free rings with hooks on them.
 - **A snapped line** parts into two lines, each with a loose end where it broke.
 - **The hard stop** stops a line stretching any further at once. Nothing in a line,
   its spring or its stop, pulls its ends together faster than 3 m/s, however far it
@@ -283,7 +283,7 @@ Reliability is the whole point here, so this list is long. All run without a win
    it's dragged off is dragged free, never flung. *(2026-10-18: the probe's snag had
    been the next chunk's collision edge, not the dune face it was laid for, and
    with that edge gone nothing on open sand snags a loose end: laid before a 30° slip
-   face, the end climbs it at the crate's own pace. Taking the cap off the line's
+   face, the end climbs it at its own pace. Taking the cap off the line's
    closing speed changed nothing the old snag measured, either. So the probe lets go
    of a line stretched past its stop, as a snag on something solid leaves one: it
    drags its end back at 3.1 m/s, and 52 m/s without the cap.)*
@@ -301,15 +301,15 @@ Reliability is the whole point here, so this list is long. All run without a win
     sand and on a slip face.
 12. **Last on, first off.** Aimed at a hook with a line tied to it, take unties the line
     and leaves the hook; once the hook is bare, take has the hook.
-13. **Reeled by hand.** Reeling in draws a floating crate in about the notches reeled,
+13. **Reeled by hand.** Reeling in draws a floating piece in about the notches reeled,
     paying out lets it back no further than the line's length, and against a stake it
     steps you in instead.
 14. **Tied standing.** A coil out of what you carry, its first end in hand, ties to a
     stake a step and a half ahead from a standing look at its foot; walked off paying
     out, its second end ties to the next stake's ring the same way, laid long enough to
     reach between them.
-15. **Only into the sand.** The kit's stake, taken up with the crate's line on it, used
-    at sand out of reach and then at the crate, stays in your hand each time, neither
+15. **Only into the sand.** The kit's stake, taken up with the deck's line on it, used
+    at sand out of reach and then at the deck, stays in your hand each time, neither
     driven nor at your waist, and the readout says why. At sand in reach it goes in at
     the ground's height; looking out over the sand, use ties it at your waist.
 16. **The line you look along.** A sail's sheet and a line to a stake both at your waist:

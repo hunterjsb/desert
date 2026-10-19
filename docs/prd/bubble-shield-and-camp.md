@@ -130,10 +130,12 @@ The shield decides how much of it is safe. All three grow with upgrades.
 - The probes below, all passing.
 
 **As built in the skeleton (2026-10-15):**
-- **The generator** is a catalog device you can carry: 6 kg, 10 kg with its battery,
-  with a battery slot, a ring mount, a bottom mount and a port, so it can be tied,
-  floated, cabled and charged like any device. Use on it, or in your hands, switches it;
-  with nothing to run on it only fizzles. Its light shows its charge.
+- **The generator** is a catalog device you can carry, 6 kg. Since the chassis rework
+  (2026-10-18) its only socket is a port: it stands on a deck's top and runs on the deck's pool,
+  any battery stuck there, or on what a cable joins it to
+  ([Devices & mods](devices-and-mods.md#the-chassis-as-the-one-structure-built-2026-10-18)). Use
+  on it, or in your hands, switches it; with nothing to run on it only fizzles. Its charge
+  shows on the batteries it draws from, each with its own light.
 - **Draw by state:** off it draws nothing; running it sips 10 W in the clear and draws
   200 W holding back a full storm, between the two in a lesser one, so a base battery
   lasts thirty minutes in a storm. A wider bubble costs more by its shell's area. It
@@ -152,17 +154,17 @@ The shield decides how much of it is safe. All three grow with upgrades.
   85% of the wind (Hunter, 2026-10-16: blocks most of the wind, so you barely drift
   inside; at half, he was "being blown by the wind gently despite being in the bubble
   shield"). It sips 2 W in the clear and draws 20 W holding back a full storm, so the
-  30 W light panel keeps it going. It starts seated on the kit's floating crate, where
-  it ranks above the tray and keeps the battery's last quarter (Power). The base
+  30 W light panel keeps it going. It starts stuck on the Surveyor's floating deck beside a
+  battery, where it ranks above the trays and keeps the battery's last quarter (Power). The base
   shield, found in the deep layer, is the upgrade: a 7 m
   bubble of still air. Its numbers are its frame's own stats, so another kind is data.
-- **Seated on a crate** (2026-10-16): the generator fits a top mount (a crate's, a
-  charger's or a condenser's) and the bubble rides with it, so towing or dragging the
-  crate on its line carries the bubble (shield probe 4 tows one 200 m through a storm).
-  Seated, it shares the device's power pool: with no battery of its own it runs on the
-  crate's, at the same 10 W sip in the clear, and a panel on the crate's other top mount
-  charges the generator's own battery in the sun (shield probe 5). Use still switches
-  it, and take lifts it off whole, running. Its warning reads the whole pool's charge.
+- **On a deck** (2026-10-18, replacing seated on a crate): the generator stands upright on a
+  deck's top, a body of its own held fast there, and the bubble rides with it, so towing or
+  dragging the deck on its line carries the bubble (shield probe 4). It's in the deck's one pool:
+  it runs on any battery stuck anywhere on the deck, at the same 10 W sip in the clear, and a
+  panel on the deck charges those batteries in the sun (shield probe 5). Use still switches it,
+  and take lifts it off whole; off the deck it has nothing to run on and goes dark. Its warning
+  reads the whole pool's charge.
 - **Wear:** one durability per device, until parts wear on their own. A full storm
   wrecks a device in 10 minutes; wind past 20 m/s wears it too (10 m/s past, 30
   minutes). The turbine, built to stand out in storms, is four times tougher. Wrecked,
@@ -175,8 +177,10 @@ The shield decides how much of it is safe. All three grow with upgrades.
 description of what's built. The starts are tentative, as the notes say.*
 
 **What's built.** The light shield every run starts with is round and bone white, 4 kg, with a
-4 m bubble. The kit's floating crate carries it on a top mount (As built, above). It already
-runs while carried: take lifts it off whole, running, and you can walk with it in your hands.
+4 m bubble. The Surveyor's floating deck carries it stuck on its top (As built, above). Since the
+chassis rework it has no battery of its own, so lifted off the deck it goes dark in your hands:
+carrying one running needs a pool that travels with you, the Varran settler's carried shield
+([Profile & saves](profile-and-saves.md)), which isn't built.
 
 **What the notes describe.** "New **light shield**: flat, weaker, mounts on a crate like other
 shields and takes a battery like other shields, but is light enough to carry, switched on,
@@ -227,7 +231,7 @@ Readings, not in the session:
   radius, its warning, which reads the whole pool's charge, and whether it is on. The screen
   shows what the shield knows. It would need no new state of its own.
 - **Controlled from the screen** means a second place to switch it from. Today use at it, or in
-  your hands, switches it, and a seated shield stays a body of its own on its host's pool. On/off
+  your hands, switches it, and a shield stuck on a deck stays a body of its own on its pool. On/off
   is all a shield has to control: its radius and its protection are its frame's numbers.
 - **Auto-on with a radar** is the one example given. The radar reads the front's distance and
   heading ([Wind & storms](wind-and-storms.md#instruments-and-the-console-screen-proposed-first-version-built)).
@@ -238,8 +242,8 @@ Readings, not in the session:
   is the open part (open questions).
 
 **As built (2026-10-17, a first version):**
-- **Which shields are smart:** every shield in a Console's system, standing on its deck, seated
-  on its top mount, or seated on anything on the deck. A shield off the deck isn't.
+- **Which shields are smart:** every shield in a Console's system: stuck anywhere on its deck. A
+  shield off the deck isn't.
 - **What it reports:** a line on the screen's stats page, what it draws and how it's switched,
   and its row on the power page, where the pool's charge and time left read for everything on it
   ([the Console](devices-and-mods.md#the-console-proposed-first-version-built)).
@@ -333,7 +337,8 @@ The Console session (2026-10-17) adds three, quoted on both sides and left stand
   seated it "shares the device's power pool." The session: "a shield on a Console becomes
   'smart'." A Console has one regular top slot, which the radio also wants (Devices & mods, open
   questions). Not said: whether smart means seated on that top slot, or also standing on the deck
-  beside the Console, or anywhere in its link.
+  beside the Console, or anywhere in its link. *Settled by the chassis (2026-10-18):* the top slots
+  are gone, and every shield stuck on a Console's deck is smart.
 - **Auto-on against the switch.** Here: "Use on it, or in your hands, switches it," and "the main
   way to save power is simple: switch the shield off, and stay out of storms." The session:
   "auto-on when a regular radar is attached." Not said: what triggers it (a front within what
