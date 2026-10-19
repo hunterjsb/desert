@@ -69,6 +69,8 @@ class Piece:
 	var socket := -1
 	var body: RigidBody3D
 	var fitted := 0
+	## A wreck's scrapping still being built, a piece a step.
+	var wreck: Wreckage
 
 	func _init(at: Vector2i, find := {}, of: Structure = null, i := -1) -> void:
 		coord = at
@@ -96,6 +98,7 @@ func _first_time() -> void:
 	Ruin.prepare()
 	SiteLoot.prepare()
 	Dress.prepare()
+	Wreckage.prepare()
 	var spec := {"id": &"crate_frame", "device": true, "layer": Finds.DEEP, "x": 0.0, "z": 0.0, "yaw": 0.0,
 		"lean": 0.0, "lean_by": 0.0, "bury": 0.3, "sound": 0.5, "charge": 0.5,
 		"fill": [[0, &"battery", 0.5], [5, &"hook", 0.0], [1, &"hover_tray", 0.0], [2, &"solar_panel", 0.0]]}
@@ -135,6 +138,9 @@ func stream(deadline: int) -> void:
 		var lot: Lot = _lots.get(piece.coord)
 		if lot == null or not is_instance_valid(lot.chunk) or not lot.chunk.has_collision():
 			_drop(0)
+		elif piece.wreck != null:
+			if not is_instance_valid(piece.wreck) or piece.wreck.build_step():
+				_queue.pop_front()
 		elif piece.site != null:
 			_queue.pop_front()
 			var spec := SiteLoot.within_reach(piece.site, piece.socket, _world.height_at, _taken_from(piece.site))
@@ -365,9 +371,12 @@ func _build_wreck(lot: Lot, site: Structure) -> void:
 	wreck.transform = Transform3D(site.basis(), Vector3(site.x - chunk.coord.x * chunk.side, site.floor_in(s),
 		site.z - chunk.coord.y * chunk.side))
 	chunk.add_child(wreck)
-	wreck.build()
 	lot.wrecks.append(wreck)
 	_wreckage[site] = wreck
+	# Built a piece at a time inside the streaming budget, ahead of what it holds.
+	var step := Piece.new(chunk.coord)
+	step.wreck = wreck
+	_queue.push_front(step)
 
 
 ## The wrecks' scrapping built now, in every loaded chunk.

@@ -64,6 +64,10 @@ const HOLD_NEAREST := 0.5
 const HOLD_FARTHEST := 2.0
 ## How fast what you carry eases to a new distance, 1/s.
 const HOLD_EASE := 12.0
+## Where a heat cutter's carried, from your eyes, m: low at your right, and
+## this far ahead.
+const TOOL_AT := Vector3(0.28, -0.32, 0.0)
+const TOOL_AWAY := 0.55
 ## How each tuning action works a radio: [notches, fine, the volume knob].
 const TUNES := {&"reel_in": [1, false, false], &"pay_out": [-1, false, false],
 	&"tune_fine_up": [1, true, false], &"tune_fine_down": [-1, true, false],
@@ -623,7 +627,7 @@ func scrap(delta: float) -> bool:
 		Sounds.play_at(_player, Sounds.SCOOP, -4.0, 2.0)
 		ScrapFx.spray(_player.world.content, look_point, sight_from - look_point, Wreckage.SAND)
 	if not wreck.clear(look_work, delta):
-		say(Wreckage.FIRST)
+		say(wreck.not_yet(look_work))
 		return false
 	return true
 
@@ -1555,6 +1559,15 @@ func _hand(drawn: bool) -> Transform3D:
 		eye.origin = _player.global_transform * _player.feel.steady_eye()
 	var basis := Basis(Vector3.UP, _player.global_rotation.y) * _carry
 	var ahead := -eye.basis.z.normalized() * _held_at
+	if held is Cutter:
+		# A cutter's carried low at your right, aimed where you look, so what
+		# it bites is in sight.
+		var at := eye.origin + eye.basis * TOOL_AT
+		var aim := (sight_to - at) if (sight_to - at).length() > 0.3 else -eye.basis.z
+		basis = Basis.looking_at(aim.normalized(), Vector3.UP if absf(aim.normalized().y) < 0.98 else Vector3.BACK)
+		ahead = -eye.basis.z.normalized() * TOOL_AWAY
+		var low := Transform3D(basis, at - basis * _middle)
+		return low.translated(ahead * _sweep(low, ahead))
 	var start := Transform3D(basis, eye.origin - basis * _middle)
 	return start.translated(ahead * _sweep(start, ahead))
 

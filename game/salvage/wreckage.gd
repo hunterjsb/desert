@@ -29,8 +29,10 @@ const SNAP := 0.18
 const KERF := 0.11
 ## A cell just cut glows, cooling by this much a second.
 const COOL := 0.4
-## A seam's cell no higher than this over the sand is under it, m.
+## A seam's cell no higher than this over the sand is under it, m; a plate's
+## cells are each asked only once its foot comes this near the sand.
 const UNDER_SAND := 0.03
+const NEAR_SAND := 0.4
 ## A hazard's box, m.
 const HAZARD_BOX := Vector3(0.5, 0.6, 0.4)
 ## A plate cut free falls, and once it's been still this long, s (or after
@@ -50,8 +52,11 @@ const FALLING := 0.94
 const BEHIND := "behind the %s · cut it away"
 const PACKED := "packed in sand · clear the %s"
 const FIRST := "clear the sand in front of it first"
+const FIRST_TOP := "clear the sand on top of it first"
 
 static var _bead_mesh: BoxMesh
+## Each plate's look, standing and fallen, made once.
+static var _plate_meshes := {}
 static var _bead_look: ShaderMaterial
 
 var site: Structure
@@ -70,6 +75,8 @@ var _heat := {}
 var _slices := {}
 var _hazards := {}
 var _falling: Array[Array] = []
+## What's left to build, a piece at a time.
+var _steps: Array = []
 var _blink := 0.0
 var _cooling := false
 
@@ -84,6 +91,25 @@ func _init(at: Structure, kept: Dictionary, height: Callable) -> void:
 	name = "Wreckage"
 
 
+## Makes every wreck's plates' looks, its hazards' and its materials while
+## the world loads, so no wreck pays for them inside the streaming budget.
+static func prepare() -> void:
+	for kind: StringName in StructureKit.kinds():
+		var piece := StructureKit.piece(kind)
+		if piece.wreck == null:
+			continue
+		for p in piece.wreck.plates:
+			_plate_mesh(p)
+			_plate_mesh(p, true)
+	_bank_mesh()
+	_store_mesh()
+	_bead()
+	_bead_material()
+	_unit_box()
+	_sand_material()
+	ScrapFx.prepare()
+
+
 ## A wreck as found: nothing cut or cleared, every hazard live.
 static func fresh(of: WreckPlan) -> Dictionary:
 	var cut := []
@@ -96,23 +122,48 @@ static func fresh(of: WreckPlan) -> Dictionary:
 	return {"cut": cut, "cleared": cleared, "hazards": {}, "fallen": {}}
 
 
-## Builds what's left of it: the plates still on and those cut away lying
-## where they fell, the sand still packed in its holds, its hazards.
+## Builds what's left of it all at once: the plates still on and those cut
+## away lying where they fell, the sand still packed in its holds, its hazards.
 func build() -> void:
-	_lean = Node3D.new()
-	_lean.name = "Lean"
-	_lean.transform = site.lean_frame()
-	add_child(_lean)
-	for i in plan.plates.size():
-		if state.fallen.has(i):
-			_lying(i)
-		elif not done(i):
-			_standing(i)
-	for h in plan.holds.size():
-		_pack(h)
-	for socket: int in plan.modules:
-		if (plan.modules[socket] as WreckPlan.Module).hazard != &"":
-			_hazard(socket)
+	while not build_step():
+		pass
+
+
+## Builds the next piece of it, a plate, a hold or a hazard, so the streaming
+## budget can spread it over frames; true once it's all built.
+func build_step() -> bool:
+	if _lean == null:
+		_lean = Node3D.new()
+		_lean.name = "Lean"
+		_lean.transform = site.lean_frame()
+		add_child(_lean)
+		_steps = []
+		for i in plan.plates.size():
+			_steps.append([&"plate", i])
+		for h in plan.holds.size():
+			_steps.append([&"hold", h])
+		for socket: int in plan.modules:
+			if (plan.modules[socket] as WreckPlan.Module).hazard != &"":
+				_steps.append([&"hazard", socket])
+	if _steps.is_empty():
+		return true
+	var step: Array = _steps.pop_front()
+	match step[0]:
+		&"plate":
+			if state.fallen.has(step[1]):
+				_lying(step[1])
+			elif not done(step[1]):
+				_standing(step[1])
+		&"hold":
+			_pack(step[1])
+		&"hazard":
+			_hazard(step[1])
+	return _steps.is_empty()
+
+
+## Whether all of it is built.
+func built() -> bool:
+	return _lean != null and _steps.is_empty()
 
 
 # --- What it asks. ---
@@ -256,6 +307,14 @@ func clear(body: Object, seconds: float) -> bool:
 	return true
 
 
+## Why a scoop on a slice behind the open one does nothing, or "".
+func not_yet(body: Object) -> String:
+	var what := work_of(body)
+	if what.is_empty() or what[0] != CLEAR or what[2] == cleared(what[1]):
+		return ""
+	return FIRST_TOP if (plan.holds[what[1]] as WreckPlan.Hold).from == WreckPlan.TOP else FIRST
+
+
 ## Makes a hazard safe with what does it: a stake grounding a capacitor bank,
 ## sealant on a breached store. Says whether it did.
 func make_safe(body: Object, op: StringName) -> bool:
@@ -393,12 +452,16 @@ func _standing(i: int) -> void:
 	heat.resize(p.cells.size())
 	var buried := PackedByteArray()
 	buried.resize(p.cells.size())
+	# Each cell's sand is asked only of a plate whose foot comes near the
+	# sand round it: most stand well clear.
 	var frame := site.frame()
+	var near := _near_sand(p, frame)
 	for c in p.cells.size():
 		beads.set_instance_transform(c, _bead_at(p, c, cells[c] >= 1.0))
 		beads.set_instance_custom_data(c, Color(0.0, cells[c], 0.0, 0.0))
-		var w := frame * p.cells[c]
-		buried[c] = 1 if w.y < float(_height.call(w.x, w.z)) + UNDER_SAND else 0
+		if near:
+			var w := frame * p.cells[c]
+			buried[c] = 1 if w.y < float(_height.call(w.x, w.z)) + UNDER_SAND else 0
 	var view := MultiMeshInstance3D.new()
 	view.multimesh = beads
 	view.material_override = _bead_material()
@@ -406,6 +469,26 @@ func _standing(i: int) -> void:
 	_beads[i] = beads
 	_heat[i] = heat
 	_buried[i] = buried
+
+
+## Whether a plate's foot comes within reach of the sand round it: its outer
+## face's lowest corner against the highest sand at its corners and middle.
+func _near_sand(p: WreckPlan.Plate, frame: Transform3D) -> bool:
+	var axes := [(p.thin + 1) % 3, (p.thin + 2) % 3]
+	var low := INF
+	var sand := -INF
+	var spots: Array[Vector3] = [p.face()]
+	for su in [-1.0, 1.0]:
+		for sv in [-1.0, 1.0]:
+			var at := p.face()
+			at[axes[0]] += su * p.box.size[axes[0]] * 0.5
+			at[axes[1]] += sv * p.box.size[axes[1]] * 0.5
+			spots.append(at)
+	for at in spots:
+		var w := frame * at
+		low = minf(low, w.y)
+		sand = maxf(sand, float(_height.call(w.x, w.z)))
+	return low < sand + NEAR_SAND
 
 
 ## A plate cut away, lying where it fell.
@@ -797,6 +880,13 @@ static func _bead_material() -> ShaderMaterial:
 ## A plate: one sheet of rust-brown alloy, a stencilled band to cut along
 ## inside its welds, and its rivets; fallen, centred on itself.
 static func _plate_mesh(p: WreckPlan.Plate, centred := false) -> ArrayMesh:
+	var key := [p, centred]
+	if not _plate_meshes.has(key):
+		_plate_meshes[key] = _made_plate(p, centred)
+	return _plate_meshes[key]
+
+
+static func _made_plate(p: WreckPlan.Plate, centred: bool) -> ArrayMesh:
 	var pieces := Paint.Pieces.new()
 	var middle := Vector3.ZERO if centred else p.box.get_center()
 	var coat := Paint.coat(PLATE, 1.0, 0.55, 0.62, 1.0, 1.4)

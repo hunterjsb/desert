@@ -9,6 +9,12 @@ static var _dot: GradientTexture2D
 static var _looks := {}
 
 
+## Its materials, made while the world loads.
+static func prepare() -> void:
+	_look(true)
+	_look(false)
+
+
 ## The cutter's sparks: a spray off a seam, falling and fading from white
 ## to red. Set `emitting` while it cuts; it follows where it's put.
 static func sparks() -> CPUParticles3D:
