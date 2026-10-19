@@ -12,7 +12,10 @@ extends MovementProbe
 const RATES := [30, 60, 120]
 ## A few millimetres apart at most, over a ride of about 100 m.
 const SAME_PLACE := 0.005
-const SAME_CHARGE := 1e-6
+## A tenth of a 30 Hz tick's draw flat out, Wh: a landing or a skid biting
+## a tick apart moves the charge that much, where a rate-bound drain is ticks.
+const SAME_CHARGE := 3e-4
+const SAME_STAMINA := 1e-6
 const ROUTE := [[0.0, ["sprint"]], [1.0, ["move_forward", "sprint"]], [2.0, ["move_forward", "move_left"]],
 	[3.5, ["move_forward", "jump"]], [3.6, ["move_forward"]], [4.5, ["move_right", "crouch"]], [6.0, []],
 	[6.5, ["move_right", "move_back"]], [7.3, ["move_back"]], [9.0, ["move_forward", "sprint"]],
@@ -50,7 +53,7 @@ func run() -> void:
 			check(apart < SAME_PLACE, "%s: the ride at %d ticks follows the path at 60 (%.4f m apart)" % [make, rate, apart])
 			check(absf(charges[rate] - charges[60]) < SAME_CHARGE, "and leaves the same charge (%.6f Wh apart)"
 				% absf(charges[rate] - charges[60]))
-			check(absf(stamina[rate] - stamina[60]) < SAME_CHARGE, "and the same stamina (%.6f apart)"
+			check(absf(stamina[rate] - stamina[60]) < SAME_STAMINA, "and the same stamina (%.6f apart)"
 				% absf(stamina[rate] - stamina[60]))
 			print("the hockey stop at %d ticks: %.4f m, at 60 %.4f m" % [rate, stops[rate], stops[60]])
 			check(absf(stops[rate] - stops[60]) < SAME_PLACE, "and stops in the same distance (%.4f m apart)"
