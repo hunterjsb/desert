@@ -1,7 +1,7 @@
 class_name Settings
 extends RefCounted
-## The options on this machine: volume, the main menu's music and a few
-## graphics settings. Kept in their own small file, apart from the profile
+## The options on this machine: volume, the main menu's music, a few
+## graphics settings and the dev console's size. Kept in their own small file, apart from the profile
 ## and the run, and written only when someone changes one.
 
 ## Where they're kept; probes and look-tests point it at a folder of their own.
@@ -18,6 +18,8 @@ static var fullscreen := false
 static var vsync := true
 ## The 3D view's resolution, as a share of the window's.
 static var render_scale := 1.0
+## The dev console as it was last resized, px; none, its own first size.
+static var console_size := Vector2.ZERO
 
 
 static func load_saved() -> void:
@@ -30,6 +32,7 @@ static func load_saved() -> void:
 	fullscreen = file.get_value("graphics", "fullscreen", fullscreen)
 	vsync = file.get_value("graphics", "vsync", vsync)
 	render_scale = file.get_value("graphics", "render_scale", render_scale)
+	console_size = file.get_value("dev", "console_size", console_size)
 
 
 static func save() -> void:
@@ -40,6 +43,7 @@ static func save() -> void:
 	file.set_value("graphics", "fullscreen", fullscreen)
 	file.set_value("graphics", "vsync", vsync)
 	file.set_value("graphics", "render_scale", render_scale)
+	file.set_value("dev", "console_size", console_size)
 	file.save(path)
 
 

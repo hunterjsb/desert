@@ -306,6 +306,15 @@ stop and the crouch drift ride as they did.
   2.5, `board_land_jar` 9, `board_land_throw` 15, `board_crash` 7; the makes in `BoardMakes.MAKES`.
   The look-test `look/boards/shoot.sh` shoots each make, a skid, a hard landing and a pop's pitch.
 
+**Playtest (Hunter, 2026-10-19; agreed, not built).** "Hover boards are feeling better, but
+skidding should leave deep marks, and is it still possible to fall off the board? i liked that
+feature. just make it clear youre really tumbling."
+- **A skid gouges the sand:** deep, wide marks where the board slides sideways, plainly more than a
+  carve's line, kept the way tracks are.
+- **Falling off is kept,** and reads as a real tumble: your view rolls and tumbles over the sand
+  with you, sand thrown and thuds as you hit, before you come to rest. Falling off still happens on
+  a landing past the throw, a crash and the edge catch.
+
 ### Dig and carve (agreed, 2026-10-18 spec; built)
 
 From Hunter's [storms, signals & sailing spec](../storms-signals-sailing-2026-10-18.md). The board's feel stays (never sinks, gets
@@ -730,6 +739,21 @@ the board, your dug edge its only grip across the wind: the Varran rides his boa
   beam reach and runs at 11 m/s, its sail at the edge of tearing: furl it, or run.
 - **Probe** 13: the rig sails with you on the board as its keel, both lines kept as you step on, on
   either tack, and undug it runs off downwind.
+
+**Playtest (Hunter, 2026-10-19; agreed, not built).**
+- **The boom is solid to you.** "The horizontal part of the mast hitting you in the face and phasing
+  through you. it should run into you and do damage at speed and potentially knock you off the
+  craft, forcing you to design around it." A swinging boom strikes you by its speed where it meets
+  you: a knock, harm at speed, and a hard one throws you off the deck. Where you sit or stand
+  against where the boom sweeps is part of designing a rig.
+- **Sailing stays hard and real, with a way to learn it.** "Sailing is cool rn but im bad at it so
+  i think having an ideal comparison would help learn, an easy mode if you will, cuz i want to keep
+  sailing hard and realistic." A Console with navigation equipment on a yacht shows the ideal: the
+  sheet and heading that would sail best for where you're going, against what you're doing.
+- **Console control:** "a mod that is some sort of rotor you can tie the sail rope to if you want
+  console control." A winch, stuck on a deck, that takes the sheet. With a Console it trims the
+  sail to the ideal, and with a keel, helps you drive: driving by computer shows you what ideal
+  sailing looks like.
 
 ### The dune sailboat (Agreed, session 4, part 3; superseded)
 

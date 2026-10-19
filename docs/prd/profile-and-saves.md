@@ -352,6 +352,11 @@ How each X was chosen, from the probes' numbers (the probes' seed, 2026-10-19):
   through play (Taught as the plug goes in its port, Triangulated as its noted contacts fix the city,
   The Living City from a kilometre off on a clear night).
 
+**New features come with deeds (Hunter, 2026-10-19).** "I love all the new deeds, we should keep
+the creed that new features should be exposed via deeds." Every feature that lands brings a deed
+or more for doing what it's for, in the tree it fits, recorded where it happens. A deed makes a new
+system something you go and do.
+
 ## Starts on the chassis, and two new kits (agreed, 2026-10-18 spec; built)
 
 From the [chassis spec](../chassis-kits-dunes-2026-10-18.md); balance targets the Surveyor only.

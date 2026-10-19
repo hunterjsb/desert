@@ -854,6 +854,11 @@ m), shoots from inside a storm, and the rift vent's mouth up close, times each, 
 - **The far plume is the weather's.** Storms cover most of the near side most of the time, so from where
   you are a plume shows only now and then (probe 18), and in a gale a seep lies low.
 
+**Playtest (Hunter, 2026-10-19; agreed, not built).** "Im finally liking vents, and we should lean
+into the rumble more." The rumble is felt as well as heard: a deep build before a burst, the ground
+trembling under you near a vent, the view shaking by how near and how big, and a boom from far off
+rolling in after the plume.
+
 ## Hooks from the sky (proposed, not settled)
 
 *Proposal, session 4, part 2 ([lore session](../lore-session-2026-10-17-part-2.md)). Not settled
