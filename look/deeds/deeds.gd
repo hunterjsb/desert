@@ -91,8 +91,8 @@ func _opened(main: Main, highlighted: StringName, down: float, fresh := true) ->
 		if card.get_meta(&"deed", &"") == highlighted:
 			card.grab_focus()
 	await _ticks(2)
-	var scroll: ScrollContainer = main.ui.top().find_children("*", "ScrollContainer", true, false)[0]
-	scroll.scroll_vertical = roundi(down * scroll.get_v_scroll_bar().max_value)
+	var tree: DeedsGrid = main.ui.top().find_children("*", "DeedsGrid", true, false)[0]
+	tree.scroll = down * (tree._page.size.y - tree.size.y)
 	await _ticks(10)
 
 

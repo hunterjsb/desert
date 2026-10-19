@@ -3,8 +3,9 @@ extends Control
 ## Every deed as a card in a tree (Deeds): a branch or two for each family,
 ## its name down the left, each deed right of the ones it waits on, a line
 ## from each to what it opens, narrow enough to stand left of the prop
-## aside. Taller than the screen has room for, it scrolls, and keeps the
-## card highlighted in view.
+## aside. Taller than the screen has room for, it shows a part of its page at
+## a time, scrolled by the wheel or the selection, keeps the card highlighted
+## in view, and draws its bar beside it in the theme's faint ink.
 ## A card shows its name and its thing: lit once done, dimmer while open but
 ## not done, and a dark silhouette while what it waits on isn't done. A
 ## hidden deed is ???? with no picture until it shows done, though its place
@@ -33,10 +34,13 @@ const HEAD := 96.0
 const TIP := 300.0
 const TIP_OFF := 12.0
 const TIP_EDGE := 16.0
-## Of the screen's height, the most the tree shows at once; the rest scrolls.
+## Of the screen's height, the most the tree shows at once; the rest scrolls,
+## this far a notch of the wheel, px, keeping a highlighted card this far
+## inside what shows. Its bar is this wide and this far off the page.
 const SHOWN := 0.66
-## The scroll's bar, px across.
-const BAR := 4.0
+const WHEEL := 70.0
+const MARGIN := 12.0
+const BAR := Vector2(4.0, 8.0)
 ## A deed open but not done, at this share of a done one's brightness; one
 ## still locked, only its thing's outline, faint.
 const UNLIT := 0.55
@@ -45,8 +49,18 @@ const SILHOUETTE := "shader_type canvas_item;\nuniform vec4 ink : source_color;\
 
 static var _shadow: ShaderMaterial
 
+## How far down its page it's scrolled, px.
+var scroll := 0.0:
+	set(to):
+		scroll = clampf(to, 0.0, maxf(_page.size.y - size.y, 0.0))
+		_page.position.y = -scroll
+		queue_redraw()
+
 var _profile: Node
 var _tuning: Tuning
+## Everything it shows, as tall as all of it: the families, the cards and the
+## lines between them.
+var _page := Control.new()
 ## Each deed's card, and where its middle stands, px.
 var _cards := {}
 var _at := {}
@@ -56,15 +70,10 @@ var _said: Array[Label] = []
 var _told: Button
 
 
-## The tree in a menu laid out for where it opens, scrolling, and Back under it.
+## The tree in a menu laid out for where it opens, and Back under it.
 static func fill(words: Words, profile: Node, back: Callable) -> void:
 	var tree := DeedsGrid.new(profile, Tuning.current())
-	var scroll := ScrollContainer.new()
-	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	scroll.follow_focus = true
-	scroll.mouse_filter = Control.MOUSE_FILTER_PASS
-	scroll.add_child(tree)
-	words.add_body(scroll)
+	words.add_body(tree)
 	var word := words.add("Back", back)
 	word.focus_neighbor_top = word.get_path_to(tree.first())
 	for id in Deeds.unseen(profile):
@@ -74,7 +83,11 @@ static func fill(words: Words, profile: Node, back: Callable) -> void:
 func _init(profile: Node, tuning: Tuning) -> void:
 	_profile = profile
 	_tuning = tuning
-	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	clip_contents = true
+	mouse_filter = Control.MOUSE_FILTER_PASS
+	_page.mouse_filter = Control.MOUSE_FILTER_PASS
+	_page.draw.connect(_draw_lines)
+	add_child(_page)
 	_lay_out()
 	# Over everything round it, so a scroll never cuts it off.
 	_tip = PanelContainer.new()
@@ -97,13 +110,19 @@ func _init(profile: Node, tuning: Tuning) -> void:
 
 
 func _ready() -> void:
-	var scroll := get_parent() as ScrollContainer
-	if scroll != null:
-		scroll.custom_minimum_size = Vector2(custom_minimum_size.x + BAR * 3.0,
-			minf(custom_minimum_size.y, get_viewport_rect().size.y * SHOWN))
-		_dress(scroll.get_v_scroll_bar())
+	custom_minimum_size = Vector2(_page.size.x + BAR.y + BAR.x,
+		minf(_page.size.y, get_viewport_rect().size.y * SHOWN))
+	size = custom_minimum_size
 	# Over Back, which the menu highlights as it opens.
 	_open.call_deferred()
+
+
+## The wheel scrolls it.
+func _gui_input(event: InputEvent) -> void:
+	var wheel := event as InputEventMouseButton
+	if wheel != null and wheel.pressed and wheel.button_index in [MOUSE_BUTTON_WHEEL_UP, MOUSE_BUTTON_WHEEL_DOWN]:
+		scroll += WHEEL * (-1.0 if wheel.button_index == MOUSE_BUTTON_WHEEL_UP else 1.0) * wheel.factor
+		accept_event()
 
 
 ## The panel follows its card as the tree scrolls under it.
@@ -140,15 +159,8 @@ func _open() -> void:
 	if not is_inside_tree():
 		return
 	var card := opening()
+	scroll = card.position.y + CARD.y * 0.5 - size.y * 0.5
 	card.grab_focus()
-	# Once the menu has laid it out.
-	get_tree().process_frame.connect(_center.bind(card), CONNECT_ONE_SHOT)
-
-
-func _center(card: Button) -> void:
-	var scroll := get_parent() as ScrollContainer
-	if scroll != null:
-		scroll.scroll_vertical = roundi(card.position.y + CARD.y * 0.5 - scroll.size.y * 0.5)
 
 
 ## Each family a branch per deed at its widest step, each deed one step
@@ -182,12 +194,13 @@ func _lay_out() -> void:
 		head.size = Vector2(HEAD, tall)
 		head.position = Vector2(0.0, y)
 		head.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-		add_child(head)
+		_page.add_child(head)
 		y += tall + FAMILY_GAP
-	custom_minimum_size = Vector2(HEAD + (deepest + 1) * (CARD.x + STEP) - STEP, y - FAMILY_GAP)
+	_page.size = Vector2(HEAD + (deepest + 1) * (CARD.x + STEP) - STEP, y - FAMILY_GAP)
+	custom_minimum_size = _page.size
 	for id: StringName in Deeds.TABLE:
 		_cards[id] = _card(id)
-		add_child(_cards[id])
+		_page.add_child(_cards[id])
 
 
 func _card(id: StringName) -> Button:
@@ -197,6 +210,7 @@ func _card(id: StringName) -> Button:
 	var card := Button.new()
 	card.theme_type_variation = &"DeedCard"
 	card.focus_mode = Control.FOCUS_ALL
+	card.mouse_filter = Control.MOUSE_FILTER_PASS
 	card.size = CARD
 	card.position = _at[id] - CARD * 0.5
 	card.set_meta(&"deed", id)
@@ -251,8 +265,17 @@ func _tell(id: StringName) -> void:
 		_said[i].text = lines[i]
 		_said[i].visible = lines[i] != ""
 	_told = _cards[id]
+	_show_card(_told)
 	_place_tip(_told)
 	_tip.visible = true
+
+
+## Scrolled as little as keeps a card wholly in what shows.
+func _show_card(card: Button) -> void:
+	if card.position.y - MARGIN < scroll:
+		scroll = card.position.y - MARGIN
+	elif card.position.y + CARD.y + MARGIN > scroll + size.y:
+		scroll = card.position.y + CARD.y + MARGIN - size.y
 
 
 ## Beside the card, on whichever side has room on the screen, kept on it:
@@ -266,26 +289,19 @@ func _place_tip(card: Button) -> void:
 		clampf(at.position.y, TIP_EDGE, maxf(room.y - _tip.size.y - TIP_EDGE, TIP_EDGE)))
 
 
-## The scroll's bar as a thin line in the theme's faint ink, brighter under
-## the mouse or held.
-func _dress(bar: VScrollBar) -> void:
-	bar.custom_minimum_size.x = BAR
-	var track := StyleBoxFlat.new()
-	track.bg_color = get_theme_color(&"faint", &"Palette") * Color(1.0, 1.0, 1.0, 0.35)
-	track.set_corner_radius_all(2)
-	var grip := track.duplicate() as StyleBoxFlat
-	grip.bg_color = get_theme_color(&"faint", &"Palette")
-	var held := track.duplicate() as StyleBoxFlat
-	held.bg_color = get_theme_color(&"dim", &"Palette")
-	bar.add_theme_stylebox_override(&"scroll", track)
-	bar.add_theme_stylebox_override(&"scroll_focus", track)
-	bar.add_theme_stylebox_override(&"grabber", grip)
-	bar.add_theme_stylebox_override(&"grabber_highlight", held)
-	bar.add_theme_stylebox_override(&"grabber_pressed", held)
+## Its bar beside the page while there's more than shows: what shows, along
+## the whole, in the theme's dim ink over its faint.
+func _draw() -> void:
+	var whole := _page.size.y
+	if whole <= size.y + 0.5:
+		return
+	var x := _page.size.x + BAR.y
+	draw_rect(Rect2(x, 0.0, BAR.x, size.y), get_theme_color(&"faint", &"Palette") * Color(1.0, 1.0, 1.0, 0.5))
+	draw_rect(Rect2(x, size.y * scroll / whole, BAR.x, size.y * size.y / whole), get_theme_color(&"dim", &"Palette"))
 
 
 ## From each deed across to each it opens: brighter once it's open.
-func _draw() -> void:
+func _draw_lines() -> void:
 	var lit := get_theme_color(&"dim", &"Palette")
 	var faint := get_theme_color(&"faint", &"Palette")
 	for id: StringName in Deeds.TABLE:
@@ -293,7 +309,7 @@ func _draw() -> void:
 			var from: Vector2 = _at[before] + Vector2(CARD.x * 0.5, 0.0)
 			var to: Vector2 = _at[id] - Vector2(CARD.x * 0.5, 0.0)
 			var bend := (from.x + to.x) * 0.5
-			draw_polyline(PackedVector2Array([from, Vector2(bend, from.y), Vector2(bend, to.y), to]),
+			_page.draw_polyline(PackedVector2Array([from, Vector2(bend, from.y), Vector2(bend, to.y), to]),
 				lit if Deeds.is_open(_profile, id) else faint, 2.0, true)
 
 

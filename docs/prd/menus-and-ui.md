@@ -249,9 +249,10 @@ from each to what it opens, brighter once that's open. It's laid out as every me
 over the main menu it stands on the left, narrow enough for the prop set aside to its right (940 px,
 four steps of 190 px cards); over a run, in the middle on the soft dark field.
 - **It scrolls** (round two): taller than the screen has room for (1,062 px), it shows at most two
-  thirds of the screen's height, a thin bar in the theme's faint ink at its right, and the wheel or the
-  selection moves it, keeping the card highlighted in view. It opens scrolled to stand the deed done
-  last in the middle of what shows.
+  thirds of the screen's height of its page, and the wheel or the selection moves it, keeping the card
+  highlighted in view. It draws its own bar at its right, what shows in the theme's dim ink over the
+  whole in its faint, so nothing in it reaches past the one theme (an engine scroll container's own
+  parts style themselves). It opens scrolled to stand the deed done last in the middle of what shows.
 - **A card** is the deed's name and a picture of its thing: the board, the shield, a crop, a planter,
   the Console, a chassis piece, the turbine, the helm, the compass, the heat cutter, a survival kit,
   sealant, a radio, the bedroll; drawn in the theme's ink, a sail on its mast, a storm's wall, an

@@ -28,10 +28,9 @@ func run() -> void:
 	tree = await _opened()
 	eye = tree._cards[&"anomaly_eye"]
 	check(_name(eye) == "Eye of the Anomaly" and _pictured(eye), "done, its name and picture")
-	var scroll := tree.get_parent() as ScrollContainer
 	var slept: Button = tree._cards[&"slept_it_off"]
-	check(scroll.size.y < tree.size.y and scroll.scroll_vertical > 0, "taller than it shows, scrolled down")
-	check(get_viewport().gui_get_focus_owner() == slept and scroll.get_global_rect().encloses(slept.get_global_rect()),
+	check(tree.size.y < tree._page.size.y and tree.scroll > 0.0, "taller than it shows, scrolled down")
+	check(get_viewport().gui_get_focus_owner() == slept and tree.get_global_rect().encloses(slept.get_global_rect()),
 		"on the deed done last, in view")
 	check(tree._tip.visible and absf(tree._tip.position.y - slept.get_global_rect().position.y) < 1.0,
 		"its panel beside it")
