@@ -237,7 +237,7 @@ const CONSOLE_STAKE := [-0.5, 4.6]
 ## the turbine out downwind beyond the bubble.
 const ANOMALY_CONSOLE := [&"screen", &"anemometer", &"particle_sensor"]
 ## An anomaly's heart is looked for this far round where the run began, m,
-## over at most this many days from the grace's end, coming over at most
+## over at most this many days from the clock's start, coming over at most
 ## this long after its wall, s. Hearts are sparse: 30 km and 30 days found
 ## none on one seed in eight; this finds one within 23 days on every seed
 ## tried, in a few tens of milliseconds.
@@ -572,15 +572,16 @@ static func _in_lee(world: World, scenario: Dictionary) -> Dictionary:
 ## Where an anomaly's heart, at its full, comes over within ANOMALY_WALL s
 ## of its storm's wall, at a moment in the day's window that's clear there
 ## with that storm due in the window asked, facing upwind: it rides the
-## air, so it's met wherever it passes, round where the run began.
+## air, so it's met wherever it passes, round where the run began. Asking
+## for one, the dev run meets them whatever its days.
 static func _before_anomaly(world: World, scenario: Dictionary) -> Dictionary:
+	world.anomalies_any_time = true
 	var field := world.weather.field
 	var day := world.weather.day
 	var longitude := moon_at(world, scenario).y
 	var due: Array = scenario.due
-	var day_s := world.tuning.day_minutes * 60.0
-	var t := world.tuning.anomaly_grace_days * day_s
-	var last := t + ANOMALY_DAYS * day_s
+	var t := 0.0
+	var last := ANOMALY_DAYS * world.tuning.day_minutes * 60.0
 	while t < last:
 		for heart in field.anomalies_near(world.spawn.x, world.spawn.y, t, ANOMALY_SEARCH):
 			var at := Vector2(heart.x, heart.z)
