@@ -156,6 +156,9 @@ func add_title(name: String) -> void:
 	version = Label.new()
 	version.theme_type_variation = &"Version"
 	version.text = ProjectSettings.get_setting("application/config/version", "")
+	var release_name: String = ProjectSettings.get_setting("application/config/release_name", "")
+	if not release_name.is_empty():
+		version.text += " · " + release_name
 	version.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT, Control.PRESET_MODE_MINSIZE, 10)
 	version.grow_horizontal = Control.GROW_DIRECTION_BEGIN
 	version.grow_vertical = Control.GROW_DIRECTION_BEGIN

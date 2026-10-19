@@ -52,17 +52,28 @@ They can be split into named minor releases after their scope is agreed.
 2. **Ecology and economy:** mark each agreed crop, propagation rule, processor,
    planter and salvage tier built/partial/missing from
    [farming](prd/farming.md) and [salvage](prd/salvage-and-ruins.md).
-   Crossbreeding and the Almanac are labelled ideas; do not silently make them
-   Alpha blockers.
+   Eleven crops are agreed while three are built; complete the agreed roster,
+   clean-to-wild/going-to-seed rules and missing deep-bed frame. Track the kiln,
+   burner, humidifier and water-producing crops as sustainability dependencies.
+   Repair actions and materials are still unbuilt despite implemented gear lineage
+   and era stats ([world system](world-system.md)). Almanac crossbreeding is an
+   idea; the Almanac's god, module, yield and habitat role are agreed in the
+   devices PRD. Audit those separately rather than treating all Almanac work as optional.
 3. **World and weather:** reconcile [world](world-system.md),
    [terrain](prd/world-and-terrain.md) and [storms](prd/wind-and-storms.md).
    Protect the single terrain truth, stable origins, deterministic history and
-   bounded residency while extending exploration.
+   bounded residency while extending exploration. Audit landmark landforms and
+   persistent interactive interiors, the full water rhythm and thermal suit/travel
+   gates explicitly; generated history alone does not complete these packages.
 4. **Endings:** the [vision's ladder](vision.md#the-ladder) describes several
    agreed and proposed outcomes, modifiers and prerequisites; it is not a built
    campaign. Select the required Alpha routes explicitly. Audit the observatory,
    radio/god interactions, far-side access, nomad reputation and world-clock
-   dependencies before estimating them. Proposed variants stay proposed.
+   dependencies before estimating them. The Walker quest and city have built
+   accounts; the general god module/state/dispatch framework, Cistern restoration
+   and links, and offstage axes need separate dependency audits. Proposed variants
+   stay proposed. Deferred hoppers, orbital strikes and forgery are not implicit
+   Alpha promises.
 5. **Persistence and presentation:** complete the agreed progression in
    [profile](prd/profile-and-saves.md), [menus](prd/menus-and-ui.md),
    [radio](prd/radio-sound-and-atmosphere.md) and [art direction](art-direction.md).

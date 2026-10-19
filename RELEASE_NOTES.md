@@ -1,4 +1,4 @@
-## 0.2.1-alpha — release candidate
+## 0.2.1-alpha “Sailboat” — release candidate
 
 This patch gathers the current sand and Nomad gear work with playtest fixes.
 Cross-platform publication is pending verification of the combined candidate.

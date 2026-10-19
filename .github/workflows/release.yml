@@ -42,6 +42,8 @@ jobs:
             exit 1
           fi
           echo "version=$version" >>"$GITHUB_OUTPUT"
+          release_name=$(sed -n 's/^config\/release_name="\(.*\)"$/\1/p' project.godot)
+          echo "release_name=$release_name" >>"$GITHUB_OUTPUT"
           echo "Desert $version, a pre-release of:"
           ls -l "${zips[@]}"
 
@@ -50,6 +52,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           VERSION: ${{ steps.what.outputs.version }}
+          RELEASE_NAME: ${{ steps.what.outputs.release_name }}
         run: |
           gh release create "v$VERSION" build/desert-"$VERSION"-*.zip --verify-tag --prerelease \
-            --title "Desert $VERSION" --notes-file RELEASE_NOTES.md
+            --title "Desert $VERSION${RELEASE_NAME:+ — $RELEASE_NAME}" --notes-file RELEASE_NOTES.md
