@@ -10,6 +10,7 @@ Cross-platform publication is pending verification of the combined candidate.
 - A crow's nest can be placed on a standing mast from deck height.
 - The Varran's sheet ring rests on the deck, and waist ropes follow the rider's displayed movement.
 - Waist lines show the selected line's name, length and tension; reeling and untying work that same line.
+- The board can catch up on slack lines and carry momentum around a sailing rig. Motor assistance is limited under load; heavy towing grounds it and makes it sputter until you ease off.
 - A physical sailing field guide in the sail scenario explains wind, trim, steering and the Varran bridle.
 - Shorter weather announcements, spoken when storm news changes.
 
