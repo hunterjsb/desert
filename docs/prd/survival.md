@@ -192,7 +192,9 @@ deck's load on its trays, a planted turbine.
 - **What nothing holds drifts.** Each group of things joined by lines with nothing in it held fast (a
   driven stake, a find) goes with the wind at its speed less what the sand's friction holds back, none
   of it while it floats, as a body slides once the wind beats its friction live. Carried off the ground
-  the world keeps, it's gone.
+  the world keeps, it's gone. Against live, in steady 24 to 40 m/s winds (2026-10-19): a crate slides
+  within 2% of it, and the Surveyor's camp, leaning on its edge as it goes, 10% to 25% slower, so a
+  night carries a loose camp a little farther than living it would.
 - **Against live play** (probe 16): the reference camp lives a day and a night of the probes' seed, a
   storm over a fifth of it or more, at the time warp's fastest, and sleeps the same: its batteries
   1733.6 Wh slept against 1734.2 lived (0.04%), the shield's pool 1567.2 against 1567.8, held both

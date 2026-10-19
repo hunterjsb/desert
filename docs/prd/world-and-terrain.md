@@ -431,7 +431,7 @@ This is the minimum that makes the whole game loop possible. Every item gets bui
   heightmap's edge is a real edge to Jolt, and a small body riding a centimetre into
   the sand hit the next one's like a step: a rope's loose end dragged across a seam at
   13 m/s came out at 3, against 10.7 mid-chunk. With the lip it comes out at 9.8, what
-  the slope costs it there. Rope probe 5's loose end had been snagging on a seam, not
+  the slope costs it there; 8.3 since the sand holds by its full friction (2026-10-19). Rope probe 5's loose end had been snagging on a seam, not
   the dune face it was laid for.)*
 - A **crude far ring**: low-detail ground, visual only, reaching a few kilometres
   out. It proves early that the far view is cheap and stays separate from collision
@@ -556,6 +556,11 @@ All of these run without a window, use a fixed seed, and assert:
     faster than calm, a 500 m walk back through a storm still reads after three
     minutes more of it, and `height_at` and the collision under the path are exactly
     as they were.
+11. **The sand holds what grip says.** A crate resting on the sand, pushed sideways by a
+    force rising slowly, starts to slide at `sand_friction` of its weight (0.53 measured
+    against 0.5), as `World.grip`, the sleep's drift and the wind's balance count on.
+    Godot's Jolt takes the lesser of two frictions, not their mean: the sand's own number
+    against every body's 1.0. Squared, as it was, it held them by 0.27.
 
 Every probe gets checked against a deliberately broken build first, to prove it can
 fail.

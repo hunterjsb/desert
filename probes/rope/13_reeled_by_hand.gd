@@ -16,6 +16,9 @@ const ROUGHLY := 0.2
 const LENGTH := 0.03
 ## Nothing on a line goes faster than its closing speed, m/s.
 const FLUNG := 3.0
+## How far short of your reach a planter dragged on the sand may stop, m: its
+## friction against the hold's give takes 0.2.
+const SHORT := 0.25
 
 var _seen := {"fastest": 0.0, "length": 0.0, "reeling": 0}
 
@@ -174,7 +177,7 @@ func _grasped() -> void:
 	print("a planter you have hold of from %.2f m: out %.2f, as far as you reach %.2f; in %.2f, as near as it comes %.2f"
 		% apart)
 	check(hands.grasp.body == planter, "it never slips from your hands")
-	check(apart[1] > apart[0] + 0.3 and apart[2] > apart[1] and absf(apart[2] - world.tuning.reach) < 0.15,
+	check(apart[1] > apart[0] + 0.3 and apart[2] > apart[1] and absf(apart[2] - world.tuning.reach) < SHORT,
 		"with ctrl the wheel pushes it out, as far as you reach")
 	check(apart[3] < apart[2] - 0.6 and apart[4] < apart[3] and apart[4] > 0.9,
 		"and brings it in, no nearer than clears you")

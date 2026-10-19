@@ -658,7 +658,7 @@ devices' wear, loose things, ropes, the turbine and other decks' faces.
 - **How strong.** A full lee's share, as a dune's: two-thirds of the wind (65%) and a third
   of a storm's wear and harm (33%). Behind a 1 m wall broadside to a 12 m/s wind, the wind
   1.5 m back is cut by 65%, and a 3 kg box resting there stays put where the same box in
-  the open slides 5 m in two seconds (probe 22). Under a dune it takes its share of what the
+  the open slides 1 m in two seconds (probe 22). Under a dune it takes its share of what the
   ground's lee lets through, and a bubble keeps out its share of what's left.
 - **Its own deck.** A deck's own walls don't shelter its own faces, which shade one another
   instead, but the rest of it behind them (devices, what's stuck, its pieces' edges) catches

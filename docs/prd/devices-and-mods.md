@@ -270,20 +270,23 @@ sim, no new bodies or joints. `Faces` does it for each deck, from `Chassis.plate
 - **Its walls shelter what's behind them,** as a small dune does, through the felt weather
   ([Wind & storms](wind-and-storms.md#a-walls-lee-built-2026-10-19)).
 - **Balance and flipping** (measured 2026-10-19, storm gusts half the wind). The sand holds
-  a resting body by a quarter of its weight, so a resting camp left loose slides in a strong
-  wind whatever stands on it: the Surveyor's, 70 kg, holds at 12 m/s and slides from 15,
-  with its wall broadside or with none. Moored as it starts, by its line to a stake 4 m
-  upwind, its wall broadside upwind is a windbreak that holds: in a 24 m/s storm it leans
-  14°, at 30 m/s 18° with its line peaking at 1,600 N, and at 36 m/s 22°, its line holding,
-  the wall's lee keeping half the wind off the rest of the camp. The same wall to leeward
-  shelters nothing on it: it holds at 24 m/s, leaning 17°, its line parts at 30 and at 36 it
-  goes over. Floating moored, the Surveyor's leans 2° at 15 m/s and 11° at 30. A light deck
-  (one piece on one tray, a frame and a wall, 34 kg) moored leans 5° to 15 m/s, 10° at 30
-  and 18° in 36 m/s gusts, and goes over once its line parts in a steady 50; adrift it leans
-  33° at 30 m/s and goes over in 36 m/s gusts. A tall wall is the real risk: a second storey
-  on the Surveyor's (a shelf on the frame, a frame on that and a wall, 2 m of wall in all)
-  leans 9° moored in 10 m/s and flips at 15; on a lone piece it won't float upright even in
-  still air, and resting moored it leans 25° at 15 m/s and flips at 24.
+  a resting body by half its weight (World probe 11), so a resting camp left loose slides
+  only in a strong wind: the Surveyor's, 70 kg, holds at 15 m/s with its wall broadside,
+  creeps half a metre in ten seconds at 20 and slides off at 24; with no wall it holds to 20
+  and slides from 22. Moored as it starts, by its line to a stake 4 m upwind, its wall
+  broadside upwind is a windbreak that holds: in a 24 m/s storm it leans 14°, at 30 m/s 21°
+  with its line peaking at 1,600 N, and at 36 m/s 24°, its line holding, the wall's lee
+  keeping half the wind off the rest of the camp. The same wall to leeward shelters nothing
+  on it: it holds at 24 m/s, leaning 18°; at 30 it leans 22° to 31° and went over once in
+  four tries, and at 36 its line parts and it goes over three times in four. Floating
+  moored, the Surveyor's leans 2° at 15 m/s and 11° at 30. A light deck (one piece on one
+  tray, a frame and a wall, 34 kg) moored leans 5° to 15 m/s, 10° at 30 and 18° in 36 m/s
+  gusts, and goes over once its line parts in a steady 50; adrift it trips where it runs up
+  the next dune at 18 m/s, going over in 30 m/s gusts as in 36. A tall wall is the real
+  risk: a second storey on the Surveyor's (a shelf on the frame, a frame on that and a wall,
+  2 m of wall in all) leans 9° moored in 10 m/s and flips at 15; on a lone piece it won't
+  float upright even in still air, and resting moored it leans 30° to 36° at 15 m/s and 52°
+  to 64° at 24, held short of going over.
 - **Cost** (the dev machine, someone playing): a camp of six faces takes about 18 µs a tick,
   the felt wind it reads included; a rig of 45 (a deck three by three, a frame on each piece
   with three walls, fabric and a shelf) about 50 µs. Turning, its shading and lee are worked
