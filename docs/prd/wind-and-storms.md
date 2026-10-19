@@ -439,11 +439,8 @@ From Hunter's [storms, signals & sailing spec](../storms-signals-sailing-2026-10
   days: hearts are sparse, and 30 km and 30 days found none on one seed in eight (how Hunter met
   it, 2026-10-18), where this finds one within 23 days on each of 60 seeds tried. The dev overlay
   shows the hidden term where you stand (`weather/anom`).
-- **A deed, proposed and not added.** "Survive an anomaly" fits, as the first step of teaching the
-  Walker, but the deeds grid names every deed, so its tile would say anomalies exist before you've
-  learnt them by their tells. The proposal: a hidden deed (the table has the flag; none uses it yet),
-  recorded by Vitals when the term where you stand has reached its full and fallen back to nothing
-  with you alive; or none, leaving the moment to the Walker's quest line.
+- **Its deeds** (agreed 2026-10-18): Eye of the Anomaly and Tells, hidden, in the Weather tree, and
+  Taught with the Walker's quest ([Profile & saves](profile-and-saves.md#round-two-the-trees-that-tie-it-together-agreed-2026-10-18-not-built)).
 
 ## Dune archaeology (agreed, 2026-10-18 spec; not built)
 

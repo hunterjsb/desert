@@ -858,6 +858,102 @@ measured 0.2 to 0.3 ms the same way, so the times and the count agree.
 - Times were taken with Hunter's game on the same GPU; between runs a frame's own time moved by
   2 ms, and only the alternated differences hold.
 
+**Built: sand that reads as sand (2026-10-18).** Hunter, after the light: "glitter is decent, and
+yeah the glow is nice, but i wanted the sand to be a little more... realistic?" Set against real
+dune fields, what read unreal was mostly the ripples: one pattern everywhere, swirled like a
+fingerprint, torn along straight lines, with smooth plastic between them close up. The colour, the
+third of the light sent back, Ridges, the palette, the eye and the light are as they were.
+- **Ripples no longer tear.** The sand's noise hashed its lattice with `sin`, which out here,
+  kilometres from the origin, gave the same corner different numbers in the cells either side of it
+  (most likely as the GPU folds the arithmetic differently), so the noise jumped at its lattice lines;
+  the ripples, warped by it, tore along lines 3 m apart, the jagged seams at dusk that read as a slip
+  face's edge. The noise now hashes integers (`lattice()`).
+- **Lopsided ripples,** a long gentle windward side and a short steep lee, as sand climbs a ripple
+  and spills off its crest: about 4° and 11° to 14° at most, a height about 5% of their length,
+  where real ripples' is 4 to 7%. It's a rounded sawtooth (the slope of arg(1 - k e^-iw)), crisper
+  on windward slopes (k 0.58) than on flats (0.4), with the old wave's mean square, so the sheen and
+  the light overall are as they were. A low sun now leaves thin shadows on their lee faces.
+- **Ripples fork and end,** as real ones do, never one unbroken crest for metres: pairs of opposite
+  twists in their phase (dislocations) 5 to 12 crests apart, one pair in four-fifths of 2.4 m cells,
+  each adding one short crest with a fork at each end.
+- **Their heading and spacing drift** by about 10° over a few metres, where the old warp swirled
+  them by up to 40° and more in 3 m; their light tilts the way they run. They're patchy, 0.55 to 1.3
+  of their depth over 5 m, and fade toward a slip face over a ragged line rather than at the
+  lattice's triangles.
+- **They reach about half again further,** fading out as a pixel spans from a tenth to a quarter of
+  a ripple (it was a sixteenth to a sixth), easing to a plain wave first so nothing finer than a pixel
+  is drawn: at a low sun the ripples' grain runs on into the middle distance where it stopped short.
+- **Coarse crests, fine troughs.** The wind sorts grains: the coarser gather on the crests, a shade
+  darker and redder (2.5, 4.5 and 6% off red, green and blue at a full crest, as much added in a
+  trough), so even at noon, when the light can't show the ripples, they show faintly. It fades with
+  the ripples, so the sand's mean colour is unchanged.
+- **Grainflows down slip faces:** tongues a hand or two wide and a few metres long, and a metre wide
+  and longer, a few percent lighter or darker, down the fall line (the nearest two of a fan of
+  headings, blended, as the face turns), fresh in some places and smoothed in others. They read from
+  the next dune.
+- **Ribbons down the wind.** The broad colour's 23 m patches and the 7 m ones are drawn out down the
+  wind, 16 by 48 m and 7 by 30 m (the small ones now ±4%), as the wind lays coarser and finer sand
+  in ribbons; and a small mottle, ±3% over 0.6 m, out to about 20 m.
+- **Grains at your feet.** A pixel's mean of n grains varies as 1/√n, so cells two pixels or so
+  across, stepped by powers of two and blended as the glitter's are, vary the less the larger they
+  are (7% for a 2 mm cell): grainy at your feet, gone within 5 m, and holding still as you move.
+- **Fewer glints flash full.** A grain's weight is its draw to the fourth power, not the square, so
+  most glint faintly and few clip to white: the even white dots at your feet read as stylised.
+
+Weighed and left out:
+- **A sharper brink,** turning the light faster than the lattice between a windward grade and a slip
+  face's: from 200 m it changed 35 pixels of the frame. The lattice already turns within a pixel or
+  two.
+- **Cooler shade on the shadow side.** On Earth the shade is cooled by a blue sky; this sky is dust,
+  and Godot's sky light already lights the shade with it.
+- **The wind map orienting the ripples.** Its wind is one heading for the whole window (the
+  prevailing wind and its gusts), turning with the hours, so it has nothing to steer ripples by
+  place; ripples that turn with the wind, with the minutes of lag real ones have, are P6's. Ripples
+  and grainflows follow the dunes' own downwind, the long-term wind that built them.
+- **Finer crests and coarse interdunes** at the dunes' own scale: the shader doesn't know a place's
+  height above its dune's foot. From 200 m the sand changed least.
+
+**How it looks,** master's sand against this, shot as the light was (`look/sandlight/shoot.sh`,
+which now also shoots your feet at noon, ripples from a crest down its windward face with the sun
+14° up, and the tallest slip face near the spot from its foot; `--only` without `storm` skips the
+storm's pass). The sheet is `~/Desktop/sandreal.png`, its last rows at full size. A different hash
+lays the patches differently, so the same shot lands on different ones, and lightness moves by about
+a level either way for that alone.
+
+| Moment | L* before, after | Spread before, after |
+|---|---|---|
+| Noon | 81.9, 82.1 | 1.3, 2.1 |
+| Your feet at noon | 82.3, 83.1 | 5.0, 5.6 |
+| Ripples over a dune, the sun 14° up | 62.1, 63.1 | 16.3, 16.4 |
+| A low sun (8°) ahead | 51.8, 51.9 | 7.3, 8.3 |
+| The same from 200 m up | 56.9, 56.4 | 17.1, 16.9 |
+| The same sun behind you | 55.7, 55.0 | 13.5, 15.5 |
+| Dusk (2°), the sun behind you | 45.8, 44.3 | 14.1, 16.8 |
+| A slip face from its foot | 79.0, 79.0 | 3.7, 5.1 |
+| A full-Tu night; by the headlamp | 4.8, 4.9; 23.6, 23.9 | 0.8, 1.0; 73.9, 74.2 |
+| Deep in a storm by day | 24.2, 24.3 | 9.4, 9.8 |
+| A walked track at midmorning | 77.5, 77.1 | 6.2, 5.9 |
+
+The low sun and dusk changed most: ripples that fork and end, lean, shadow on their lee and run on
+into the distance, untorn. At your feet the sand is grainy, with fewer, fainter glints; slip faces
+carry grainflows; noon shows the ripples faintly by their crests' colour. From the air little
+changed, and the night, the lamp, the storm and the track are as they were.
+
+**What it costs,** on the RTX 3070 at 1920x1080 with Hunter's game on the GPU, the middle of nine
+alternated rounds, over three runs: 0.12 to 0.29 ms a frame at noon, 0.46 to 0.63 into a low sun,
+0.15 to 0.65 with sand filling the frame, and 0.16 in a storm; the same shader against itself
+measured within 0.2 ms either way. Almost all of it is near you, behind branches: the ripples'
+drift, defects, profile and sorting where ripples show, the grains within 5 m, the mottle within
+20 m, the grainflows on slip faces. A first cut that did the ripples' work everywhere cost 1.7 ms.
+Each defect pair skips pixels out of its reach, so a pixel takes the twist of one or two, not four.
+
+**Fragile:**
+- Any new noise in the sand hashes integers (`lattice()`, `hash6`): a `sin` hash tears this far out.
+- The ripples' phase is laid along the dunes' fixed downwind. Ripples that turn with the wind (P6)
+  need it accumulated instead, and the defects and drift with it.
+- The grains' cells, like the glitter's, hold still through origin shifts only because a 64 m chunk
+  holds whole cells.
+
 ## Open questions
 
 - **Tu's palette** (open in the spec: "Tu's palette, to be settled against
