@@ -81,7 +81,7 @@ behind them, and since 2026-10-18 are bigger and roomier still, below.)
 - **Each origin shows one compact piece,** not its kit scattered: the Surveyor its deck as
   put together, the Salvager its board, the Homesteader its planter, the Varran settler his rig
   (2026-10-19), its sail raised as a sail on show always is, its boom swung a little off, and the
-  Archaeologist her dig camp, the Console's survey on it. Under the piece, on the
+  Archaeologist her dig camp of three. Under the piece, on the
   right, its gear is listed, each thing and how many, in bare words with no background
   behind them (Hunter, 2026-10-18: no translucent panel), big enough and edged enough to
   read on their own over bright sand.
