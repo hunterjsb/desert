@@ -242,7 +242,7 @@ the frame is a part stuck on the deck.
 | Weather | Hermit, Sandblasted | (as now) | | Wear |
 | Weather | **Eye of the Anomaly** (hidden) | Live through an anomaly's heart | Sandblasted | `Vitals`' tick, asleep too: the hidden term where you stand reaches its full (0.99), then falls back to nothing with you alive. Kept in the save |
 | Weather | **Tells** (hidden) | Notice each of an anomaly's three tells | Eye of the Anomaly | each where it's shown to you, once a profile: the compass in your hands leaning 10° or more toward a heart (`Compass`); a radio you hear crackling a quarter deep or more (`Radio`); a shield's load past 100%, its hum straining with you in its bubble (`ShieldGenerator`) or its load row on the stats page of a Console near enough to read (`Console`) |
-| Weather | **Taught** (hidden) | Teach the Walker the anomaly | Tells | the Walker, once it holds evidence for each tell (the session 5 ruling); built with its quest |
+| Weather | **Taught** (hidden) | Teach the Walker the anomaly | Tells | `Console.upload`: a Console plugged into the Walker's port, holding evidence of each tell (the session 5 ruling), teaches it (built 2026-10-19) |
 | Ruins | Carbon Dated | (as now) | | the world |
 | Ruins | **Bared** | Take loot from a site a storm has stripped | Carbon Dated | `Salvage.claim`: a find taken from a site the storm working on it has further out of the sand than its settled sand would (`Structure.bared`) |
 | Ruins | **Storm Chaser** | Reach 3 freshly bared sites in one storm | Bared | the world, stepping onto a site so bared while you're in a storm, each counted once; the count goes the moment you're out of the storm |
@@ -255,8 +255,8 @@ the frame is a part stuck on the deck.
 | Scrap | **Bonepicker** | Scrap one of each of the five wreck kinds | Clean Hands | `Salvage.claim`: a module taken from a wreck counts its kind, hull, hauler, freight pod, lifeboat or hopper (`Wreckage.kinds`), once a profile |
 | Signals | **First Light** | Hear a god inside its window | | `Radio`'s tick: tuned to a god while its words are useful, coming through and not cut, and you hearing it: its line in your view, or its sound within earshot with the volume up |
 | Signals | **Pantheon** | Hear all seven gods | First Light | the same, each god counted once a profile |
-| Signals | **Triangulated** | Take three bearings on the living city | Pantheon | the Walker's contact log; built with the stations' second pass |
-| Signals | **The Living City** | Find the living city | Triangulated | the world; built with it |
+| Signals | **Triangulated** | Fix the living city with three crossing bearings | Pantheon | the Console noting the Walker's contact log (`Chart`): three of its noted bearings crossing within 3 km, 8° apart or more (built 2026-10-19) |
+| Signals | **The Living City** | See the living city's lights | Triangulated | `CityLights`: its lights shown for your eye at night within its chatter's range, in view, over the dunes and past the storms (built 2026-10-19) |
 | Far | **Totality** | Watch a whole eclipse out in the open | | `SkyView`, each frame: the sun seen going in behind Tu, through totality and out again, up all the while, you in no bubble, the clock never jumping |
 | Far | **Glint** | Reach a site whose glint you saw from 1,000 m off | Totality | `Skyline`, as it reads the storms between you and what it draws: a stand-in's glint that far off shining for your eye, as a start's sighting is judged, over the dunes and past the storms with the sun up; then the world, stepping onto that site |
 | Far | **Live Vent** | Stand at a live vent's mouth | Glint | the world, stepping inside a vent mouth's rampart (every mouth is a live vent's) |
@@ -280,7 +280,7 @@ the frame is a part stuck on the deck.
 - **Nomad ties the trees together:** its card stands apart, with a line from each of the five
   trees, lit where you've done one. It waits on any one deed of a tree, not a named one, so the
   table's `after` gains "any of a family".
-- **The grid holds every tree** (built for step 1, Menus & UI): 40 deeds in eleven families since step 3, each a
+- **The grid holds every tree** (built for step 1, Menus & UI): 43 deeds in eleven families since step 4, each a
   branch or two beside its name down the left, as round one's were (eleven columns side by side
   wouldn't stand left of the prop). It scrolls, and opens on the latest done.
 - **The order.** Each part waits for what it reads to land:
@@ -291,8 +291,10 @@ the frame is a part stuck on the deck.
   2. With the chassis spec's starts and kits: Storm Runner opens the Varran settler. Built 2026-10-19.
   3. **Built 2026-10-19,** with dune archaeology: Dune Reader, Field Kit and Spadework, the last two
      opening the Archaeologist together.
-  4. With the radio stations' second pass and the Walker's quest (designed 2026-10-19, [Radio](radio-sound-and-atmosphere.md#the-walkers-quest-and-the-living-city-agreed-2026-10-19-not-built)): Triangulated, The Living City,
-     and Taught.
+  4. **Built 2026-10-19,** with the radio stations' second pass and the Walker's quest
+     ([Radio](radio-sound-and-atmosphere.md#the-walkers-quest-and-the-living-city-agreed-2026-10-19-built-2026-10-19)):
+     Triangulated, The Living City, and Taught, hidden; 43 deeds now. Their cards are marks drawn
+     (DeedsGrid): three lines crossing, the city's decks dark against their glow, the Walker.
   5. Last, once every tree it reads has landed: Nomad and its "any of a family", so that what it
      asks never changes after someone has earned it.
 
@@ -346,7 +348,9 @@ How each X was chosen, from the probes' numbers (the probes' seed, 2026-10-19):
 
 - **Probes** 25 to 31, one a tree, and Menus & UI probe 16; 33, the dune deeds through play (a ruin
   stepped onto, dug out by hand and not before half its sand is yours, and the setup not done until its
-  ground radar is fitted), and 34, the Archaeologist locked until both of hers.
+  ground radar is fitted), and 34, the Archaeologist locked until both of hers; 35, the Walker's deeds
+  through play (Taught as the plug goes in its port, Triangulated as its noted contacts fix the city,
+  The Living City from a kilometre off on a clear night).
 
 ## Starts on the chassis, and two new kits (agreed, 2026-10-18 spec; built)
 

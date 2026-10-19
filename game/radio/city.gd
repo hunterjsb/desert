@@ -39,6 +39,9 @@ var _rng := RandomNumberGenerator.new()
 var _prayers := PackedFloat64Array()
 var _prayer_rng := RandomNumberGenerator.new()
 var _khz: float
+## The last motif worked out, and for which field and slot.
+var _motif := &""
+var _motif_for := []
 
 
 func _init(world_history: History, seed_value: int, tuning: Tuning) -> void:
@@ -104,6 +107,15 @@ func contacts(gods: Gods, t: float, count: int) -> Array[Dictionary]:
 ## `field` and `ground` are the storm field and the city's place in world metres.
 func motif(field: WeatherField, ground: Vector2, t: float) -> StringName:
 	var slot := slot_start(t)
+	# Read once a slot: it holds for the slot.
+	if _motif_for == [field, slot]:
+		return _motif
+	_motif_for = [field, slot]
+	_motif = _motif_in(field, ground, slot)
+	return _motif
+
+
+func _motif_in(field: WeatherField, ground: Vector2, slot: float) -> StringName:
 	var stormy := field.raw_storm_at(ground.x, ground.y, slot) > 0.0
 	if not stormy and field.next_change(ground.x, ground.y, slot, _tuning.city_warn_s, Weather.FORECAST_STEP) < INF:
 		return STORM

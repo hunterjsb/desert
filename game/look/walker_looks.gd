@@ -23,7 +23,7 @@ const MAST := 1.9
 const KINK := 0.9
 const KINK_TURN := 0.22
 ## The data port on its right flank, out along +X.
-const PORT := Vector3(0.71, 0.05, -0.2)
+const PORT := Vector3(0.73, 0.25, -0.1)
 
 static var _made := {}
 

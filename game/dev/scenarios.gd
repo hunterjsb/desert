@@ -1117,6 +1117,9 @@ static func walker_camp(world: World) -> Array[Node3D]:
 	at.y = world.height_under(at)
 	var cable := Catalog.cable(world, at)
 	console.fit(cable.plugs[0], _free(console, &"port"))
+	# Whatever you held goes down at your feet: the plug's in your hands.
+	if world.player.hands.held != null:
+		world.player.hands.drop()
 	world.player.hands.hold(cable.plugs[1])
 	var dropped := _of(rig)
 	dropped.append(cable)
