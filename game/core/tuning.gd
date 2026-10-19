@@ -834,6 +834,11 @@ static var _current: Tuning
 @export var drift_tick_s: float = 20.0
 @export var drift_most: int = 8
 @export var drift_shortest_m: float = 1.5
+## With no line at all, light things fall out in the lee of a crest near
+## camp: this many an hour on a hundred square metres of full lee in a storm's
+## heart, within this far of you or a deck of yours, m.
+@export var drift_lee_fall: float = 1.0
+@export var drift_lee_fall_m: float = 24.0
 ## Drift off a site a storm lays bare (Drift.from_sites): things an hour it
 ## sheds in a storm's heart once the storm has dug it right out; how far
 ## downwind the stream carries before most of it has fallen out, m; and how
@@ -913,6 +918,12 @@ static var _current: Tuning
 @export var site_surge_m: float = 0.8
 @export var site_surge_return_minutes: float = 5.0
 @export var site_surge_window_minutes: float = 25.0
+## Where a site lies among the dunes (Exposure.dune_at): on a windward face
+## or crest the wind strips this much more, the storm's work off it too; in a
+## lee or on a slip face the sand comes back this much more, the storm's work
+## onto it too, each a share at its fullest.
+@export var site_dune_strip: float = 1.0
+@export var site_dune_bury: float = 1.0
 ## Where a storm's dunes move off ground or onto it (WeatherField.dune_shift_at):
 ## patches this many metres across, changing over this many minutes, leaning
 ## this far toward moving off and swinging this hard.
@@ -923,6 +934,29 @@ static var _current: Tuning
 ## Sand never comes back over a site while you or your camp stand on its
 ## ground; once you're off, it comes back this fast at most, m/s.
 @export var site_rebury_m_s: float = 0.05
+
+@export_group("Dune ruins")
+## A ruin lies in the lee of each big dune (DuneRuins): one to a cell this
+## long along its crest, m, under a dune standing at least this tall over the
+## trough past its slip face, m, as deep as this, m, least and most.
+@export var dune_ruin_cell_m: float = 300.0
+@export var dune_ruin_big_m: float = 14.0
+@export var dune_ruin_depth_m := Vector2(5.5, 6.5)
+## Each is a seed until it's needed. Slower than this, m/s, for this long, s,
+## you've slowed: the seeds round you are looked at out to this far, m, each
+## again this often, s of world time; and one bared builds once you're this near, m.
+@export var dune_ruin_slow_m_s: float = 4.5
+@export var dune_ruin_slow_s: float = 2.0
+@export var dune_ruin_check_m: float = 300.0
+@export var dune_ruin_recheck_s: float = 15.0
+@export var dune_ruin_build_m: float = 150.0
+## Digging a site out with a scoop: seconds through each m³ of its sand, its
+## footprint's area a metre deep, and the share of its depth the dig must take
+## for it to be yours, not a storm's. A sieve sifts this many finds out of
+## each m³ dug.
+@export var dig_seconds_per_m3: float = 1.5
+@export var dig_own_share: float = 0.5
+@export var sift_per_m3: float = 0.02
 
 @export_group("Plume")
 ## A live vent's seep as a buoyancy flux, m⁴/s³ at this tuning's gravity: how

@@ -324,6 +324,7 @@ func _physics_process(delta: float) -> void:
 	_last_z = z
 	if terrain.chunk_at(x, z) != _followed or moon.jumps != _followed_jumps or not shape.sites.anchored():
 		_follow_history()
+	shape.sites.step_dunes(x, z, time, delta)
 	if counts_deeds:
 		_step_onto(x, z)
 		if not weather.in_storm:
@@ -352,7 +353,7 @@ func _physics_process(delta: float) -> void:
 
 ## Stepping onto a structure's ground counts its age toward standing in one
 ## of each age that built; reaches it freshly bared, in the storm baring it,
-## or as the site whose glint you saw from far off. A live vent's mouth is
+## or as the site whose glint you saw from far off; or finds a dune's ruin. A live vent's mouth is
 ## stood at once you're inside its rampart's crest.
 func _step_onto(x: float, z: float) -> void:
 	var at := Vector2i(floori(x), floori(z))
@@ -369,6 +370,8 @@ func _step_onto(x: float, z: float) -> void:
 			Deeds.measure(self, &"storm_chaser", chased.size())
 		if terrain.skyline.glinted.has(site.id):
 			Deeds.done(self, &"glint")
+		if site.source == &"dune":
+			Deeds.done(self, &"dune_reader")
 	if site is VentMouth and GeologyKit.from_slot(site.plan(x - site.x, z - site.z)) <= GeologyKit.CREST:
 		Deeds.done(self, &"live_vent")
 

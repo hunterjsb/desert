@@ -11,6 +11,8 @@ extends RefCounted
 ## the wind ramps over is the best farm. A site a storm lays bare sheds its
 ## lesser things into the same stream, carried off downwind and caught by the
 ## same lines and lees: a camp sitting a storm out downwind of one gets some.
+## And light things fall out of the slowed wind in the lee of a crest near
+## camp with no line at all (fallen): stay in the lee and let them come.
 
 ## What the wind carries, as [catalog id, weight]: leaves and salt off the
 ## feral saltbush, a wild cutting, scraps of old gear.
@@ -25,6 +27,11 @@ const PILE := 1.5
 const CHARGE := 0.2
 ## Nothing heavier than this blows off a site, kg.
 const CARRIED_KG := 4.0
+## Lee ground near camp is looked at in squares this wide, m, those this deep
+## in a lee at least; and a clock that jumps draws this many of its ticks at most.
+const LEE_CELL := 6.0
+const LEE_LEAST := 0.5
+const LEE_TICKS_MOST := 90
 
 
 ## Things an hour a metre of line straight across the wind catches at a
@@ -161,7 +168,7 @@ static func near_line(world: World, a: Vector2, b: Vector2) -> Array:
 ## enough for a storm to carry, by its era and kind.
 static func carried_from(site: Structure) -> Array:
 	var era: Dictionary = SiteLoot.ERAS[site.era]
-	var kind: Dictionary = SiteLoot.KINDS.get(site.kind, {})
+	var kind: Dictionary = SiteLoot.DUNE if site.source == &"dune" else SiteLoot.KINDS.get(site.kind, {})
 	var rows := []
 	for row: StringName in [SiteLoot.FLOOR, SiteLoot.SHELF, SiteLoot.CACHE, SiteLoot.BED]:
 		for entry: Array in kind.get(row, era[row]):
@@ -169,6 +176,67 @@ static func carried_from(site: Structure) -> Array:
 			if not part.is_empty() and float(part.mass) <= CARRIED_KG:
 				rows.append(entry)
 	return rows if not rows.is_empty() else CARRIES
+
+
+## The squares of lee ground near camp (you, and each deck of yours on solid
+## ground) where light things fall out at world time t: [square, its middle,
+## how deep a lee], world metres.
+static func lee_ground(world: World, t: float) -> Array[Array]:
+	var out: Array[Array] = []
+	var tuning := world.tuning
+	var near := tuning.drift_lee_fall_m
+	var camps: Array[Vector2] = [Vector2(world.player_world_x(), world.player_world_z())]
+	for node in world.content.get_children():
+		if node is Chassis and node != world.player.hands.held:
+			camps.append(Vector2(world.world_x(node.global_position.x), world.world_z(node.global_position.z)))
+	var seen := {}
+	for camp in camps:
+		var lo := Vector2i(((camp - Vector2.ONE * near) / LEE_CELL).floor())
+		var hi := Vector2i(((camp + Vector2.ONE * near) / LEE_CELL).floor())
+		for j in range(lo.y, hi.y + 1):
+			for i in range(lo.x, hi.x + 1):
+				var cell := Vector2i(i, j)
+				var mid := (Vector2(cell) + Vector2.ONE * 0.5) * LEE_CELL
+				if seen.has(cell) or mid.distance_to(camp) > near or not world.terrain.has_collision_at(mid.x, mid.y):
+					continue
+				seen[cell] = true
+				var wind := world.weather.field.wind_at(mid.x, mid.y, t)
+				if wind.length_squared() < 1e-6:
+					continue
+				var lee := world.weather.lee.share(mid.x, mid.y, wind.angle())
+				if lee >= LEE_LEAST:
+					out.append([cell, mid, lee])
+	return out
+
+
+## What falls out of the slowed wind on one square of lee ground in one tick
+## of drift, from its own stream of the seed: what the wind carries, as many
+## an hour as drift_lee_fall on a hundred square metres of full lee in a
+## storm's heart. {id, x, z, yaw, charge} where it falls, or {}.
+static func fallen(world: World, ground: Array, tick: int) -> Dictionary:
+	var tuning := world.tuning
+	var t := tick * tuning.drift_tick_s
+	var mid: Vector2 = ground[1]
+	var rate: float = tuning.drift_lee_fall * LEE_CELL * LEE_CELL / 100.0 * ground[2] \
+		* Exposure.reading(world.weather.field, mid.x, mid.y, t, tuning)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = hash([world.run_seed, "lee fall", ground[0], tick])
+	if rng.randf() >= rate * tuning.drift_tick_s / 3600.0:
+		return {}
+	var at := mid + Vector2(rng.randf_range(-0.5, 0.5), rng.randf_range(-0.5, 0.5)) * LEE_CELL
+	return {"id": Finds._pick(rng, CARRIES), "x": at.x, "z": at.y, "yaw": rng.randf() * TAU,
+		"charge": rng.randf() * CHARGE}
+
+
+## How many things the drift has laid within `radius` m of a world place.
+static func fallen_near(world: World, at: Vector2, radius: float) -> int:
+	var count := 0
+	for node in world.content.get_children():
+		var body := node as RigidBody3D
+		if body != null and body.has_meta(&"drift") and Vector2(world.world_x(body.global_position.x),
+				world.world_z(body.global_position.z)).distance_to(at) <= radius:
+			count += 1
+	return count
 
 
 ## How many things lie in a line's pile now.

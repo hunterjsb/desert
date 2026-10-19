@@ -655,6 +655,19 @@ static func _part(id: StringName, size: Vector3, count := -1) -> ArrayMesh:
 			b.drum(0.035, 0.07, Vector3(0.0, 0.0, 0.095), Paint.coat(Paint.BLACK, 0.4, 0.3, 0.5), along, 14, 0.03)
 			b.drum(0.037, 0.012, Vector3(0.0, 0.0, 0.125), Paint.coat(Paint.YELLOW, 0.6), along, 14)
 			b.drum(0.02, 0.006, Vector3(0.0, 0.0, size.z - 0.003), Paint.coat(Color(0.03, 0.03, 0.03), 0.0, 0.0, 0.9), along, 12)
+		&"ground_radar":
+			# A sealed survey set off the port: its antenna's face turned down to
+			# the sand, the contractor's amber band, three pilot lights.
+			var deep := size.z - 0.05
+			b.box(Vector3(size.x, size.y, 0.05), Vector3(0.0, 0.0, 0.025), gun, 0.01)
+			b.box(Vector3(size.x - 0.02, size.y - 0.02, deep), Vector3(0.0, 0.0, 0.05 + deep * 0.5),
+				Paint.coat(Paint.BONE, 0.4, 0.1, 0.6), 0.012)
+			b.box(Vector3(size.x - 0.006, 0.025, deep * 0.9), Vector3(0.0, h.y * 0.45, 0.05 + deep * 0.5),
+				Paint.coat(Paint.YELLOW, 0.6), 0.004)
+			b.box(Vector3(size.x - 0.04, 0.012, deep - 0.02), Vector3(0.0, -h.y + 0.006, 0.05 + deep * 0.5), black, 0.003)
+			for i in 3:
+				b.drum(0.008, 0.006, Vector3(-0.04 + i * 0.04, -0.02, size.z + 0.002),
+					Paint.coat(Paint.TEAL, 0.0, 0.0, 0.4, 0.3, 1.5), along, 8)
 		&"radar":
 			# A dish on a post, up from the Console's top.
 			b.drum(0.07, 0.04, Vector3(0.0, 0.0, 0.02), gun, along, 16)
@@ -689,6 +702,19 @@ static func _part(id: StringName, size: Vector3, count := -1) -> ArrayMesh:
 			b.box(Vector3(size.x, 0.006, 0.02), Vector3(0.0, -h.y + 0.02, size.z - 0.01), steel, 0.002)
 			b.drum(0.016, size.z * 0.5, Vector3(0.0, 0.0, size.z * 0.25), Paint.coat(Paint.ROPE, 0.0, 0.0, 1.0, 0.4), along, 8)
 			b.box(Vector3(0.1, 0.03, 0.03), Vector3(0.0, 0.0, 0.02), black, 0.006)
+		&"sieve":
+			# A riddle: a saltwood hoop rimmed in steel, its mesh worn bright
+			# where the sand ran through.
+			var wood := Paint.coat(Paint.SALTWOOD, 0.2, 0.0, 0.85)
+			for z in [0.012, size.z - 0.012]:
+				b.ring(h.x - 0.026, h.x, Vector3(0.0, 0.0, z), wood, along, 28)
+			b.ring(h.x - 0.012, h.x + 0.004, Vector3(0.0, 0.0, size.z * 0.5), steel, along, 28)
+			var mesh := Paint.coat(Paint.STEEL, 0.9, 0.7, 0.35)
+			for i in 9:
+				var across := (i - 4) * (h.x - 0.03) / 4.5
+				var long := 2.0 * sqrt(maxf(pow(h.x - 0.02, 2.0) - across * across, 0.0))
+				b.box(Vector3(0.004, long, 0.004), Vector3(across, 0.0, 0.03), mesh, 0.0)
+				b.box(Vector3(long, 0.004, 0.004), Vector3(0.0, across, 0.034), mesh, 0.0)
 		&"sealant":
 			b.drum(h.x * 0.95, size.z * 0.75, Vector3(0.0, 0.0, size.z * 0.375), Paint.coat(Paint.YELLOW, 0.5, 0.2), along, 14)
 			b.drum(h.x * 0.6, size.z * 0.12, Vector3(0.0, 0.0, size.z * 0.81), black, along, 12)

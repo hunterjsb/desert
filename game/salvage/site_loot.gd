@@ -97,7 +97,7 @@ const KINDS := {
 	&"hab_pod": {SHELF: [[&"vat_fungus", 3], [&"ration", 2], [&"lamp", 1], [&"battery", 1]]},
 	# The mast's cabinet: its instruments and its power.
 	&"relay_mast": {SHELF: [[&"battery", 2], [&"big_battery", 1], [&"barometer", 1], [&"anemometer", 1],
-		[&"compass", 1], [&"strong_plug", 1]]},
+		[&"compass", 1], [&"strong_plug", 1], [&"ground_radar", 1]]},
 	# The inspection hatch: the line's own hose, valves and water.
 	&"pipeline_segment": {BEST: [[&"hose_end", 3], [&"canister", 2], [&"condenser", 1], [&"strong_plug", 1],
 		[&"big_battery", 1]]},
@@ -144,6 +144,13 @@ const KINDS := {
 	&"house_ruin": {HALL: [[&"chassis", 8], [&"planter", 2], [&"survival_kit", 3],
 		[&"radio", 2], [&"turbine", 2], [&"condenser", 2], [&"shield", 2], [&"console", 1]]},
 }
+## What a big dune's ruin holds in place of its kind's (DuneRuins): kept
+## whole under the dunes, a colony's survey gear among it, its deepest a
+## ground radar's; its sieves for the silt.
+const DUNE := {"kept": 0.85,
+	SHELF: [[&"sieve", 3], [&"battery", 2], [&"lamp", 1], [&"compass", 1], [&"sand_scoop", 1], [&"ration", 1]],
+	CACHE: [[&"sieve", 1], [&"big_battery", 2], [&"strong_plug", 1], [&"screen", 1], [&"ground_radar", 1]],
+	BEST: [[&"ground_radar", 4], [&"console", 2], [&"big_battery", 2], [&"shield", 1], [&"screen", 1]]}
 ## Per region: how much of each site's loot is left, and the chance any
 ## floor or cache holds its era's best: Han is "the jackpot for single
 ## items: sparse, dangerous, rewarding"; the calm far side has less.
@@ -170,7 +177,7 @@ static func draw(site: Site, i: int) -> Dictionary:
 	var piece := StructureKit.piece(site.kind)
 	var socket: StructureKit.SiteSocket = piece.sockets[i]
 	var era: Dictionary = ERAS[site.era]
-	var kind: Dictionary = KINDS.get(site.kind, {})
+	var kind: Dictionary = DUNE if site.source == &"dune" else KINDS.get(site.kind, {})
 	var region: Dictionary = REGIONS.get(site.region, REGIONS[&"rim"])
 	var rng := _stream(site.loot, i)
 	var hall := kind.has(HALL) and i == 0
@@ -248,7 +255,8 @@ static func prepare() -> void:
 			var socket: StructureKit.SiteSocket = piece.sockets[i]
 			if socket.kind in MODULES:
 				continue
-			var tables: Array = [own.get(socket.kind, era[socket.kind]), own.get(BEST, era[BEST]), own.get(HALL, [])]
+			var tables: Array = [own.get(socket.kind, era[socket.kind]), own.get(BEST, era[BEST]), own.get(HALL, []),
+				DUNE.get(socket.kind, []), DUNE[BEST]]
 			for table: Array in tables:
 				for entry: Array in table:
 					var size := _size({"id": entry[0], "device": Catalog.DEVICES.has(entry[0])})

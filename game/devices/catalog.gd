@@ -164,6 +164,10 @@ const PARTS := {
 		"color": Color(0.18, 0.4, 0.43), "stats": {"hygrometer": 1, "draw_w": 0.3}},
 	&"particle_sensor": {"kind": &"computer_mod", "label": "Particle sensor", "mass": 0.7, "size": Vector3(0.16, 0.12, 0.14),
 		"color": Color(0.86, 0.62, 0.12), "stats": {"particle_sensor": 1, "draw_w": 1.5}},
+	# Reads what lies under the sand this far round its Console, m, and gives
+	# it a page of its own.
+	&"ground_radar": {"kind": &"computer_mod", "label": "Ground radar", "mass": 1.4, "size": Vector3(0.18, 0.16, 0.16),
+		"color": Color(0.8, 0.76, 0.66), "stats": {"ground_radar": 1, "ground_radar_m": 300.0, "draw_w": 4.0}},
 	# Scrapping: a scoop to clear the sand storms packed into a wreck, a
 	# canister of sealant for a breached store, what a cut plate drops as, and
 	# a med kit for what a breached store leaves you with. "tool" is the work
@@ -172,6 +176,10 @@ const PARTS := {
 		"color": Color(0.6, 0.58, 0.5), "stats": {}, "tool": &"clear"},
 	&"sealant": {"kind": &"tool", "label": "Sealant canister", "mass": 0.8, "size": Vector3(0.1, 0.1, 0.22),
 		"color": Color(0.86, 0.62, 0.12), "stats": {}, "tool": &"seal"},
+	# Sifts what a scoop digs off a ruin, carried or set down near the dig
+	# (Hands): nothing takes it, and it sticks on a deck.
+	&"sieve": {"kind": &"sieve", "label": "Sieve", "mass": 1.2, "size": Vector3(0.5, 0.5, 0.09),
+		"color": Color(0.45, 0.39, 0.3), "stats": {}},
 	&"hull_plate": {"kind": &"scrap", "label": "Hull plate", "mass": 6.0, "size": Vector3(0.6, 0.6, 0.04),
 		"color": Color(0.4, 0.36, 0.3), "stats": {}},
 	&"med_kit": {"kind": &"medicine", "label": "Med kit", "mass": 0.5, "size": Vector3(0.18, 0.12, 0.07),

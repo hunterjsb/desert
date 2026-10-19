@@ -338,7 +338,8 @@ func _unlockall(_args: PackedStringArray, _world: World) -> void:
 	var names := PackedStringArray()
 	for kit in Kit.origins():
 		if not kit.is_open_to(profile):
-			profile.unlock(kit.unlock)
+			for each in kit.unlocks():
+				profile.unlock(each)
 		names.append(kit.label)
 	_say("open: " + ", ".join(names))
 

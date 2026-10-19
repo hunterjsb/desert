@@ -523,6 +523,18 @@ func _plan(coord: Vector2i, lot: Lot) -> void:
 			_queue.append(Piece.new(coord, spec))
 
 
+## Structures just laid over a solid chunk (a dune's ruin): what each holds,
+## a socket a piece of work, as the chunk's plan would have laid it.
+func adopt(chunk: TerrainChunk, sites: Array[Structure]) -> void:
+	var lot: Lot = _lots.get(chunk.coord)
+	if lot == null or lot.chunk != chunk:
+		return
+	for site in sites:
+		lot.seen[site] = Vector2(site.taken(), site.floor_y)
+		for i in site.piece.sockets.size():
+			_queue.append(Piece.new(chunk.coord, {}, site, i))
+
+
 ## A wreck's scrapping, built as it was left, at its floor as its chunk draws it.
 func _build_wreck(lot: Lot, site: Structure) -> void:
 	var memory := _memory_of(site)
@@ -764,6 +776,24 @@ func _drift() -> void:
 			if not spec.is_empty():
 				Drift.lay(_world, spec)
 				piled += 1
+				caught += 1
+	_lee_falls(maxi(from, tick - Drift.LEE_TICKS_MOST), tick)
+
+
+## Light things falling out of the slowed wind in the lee of crests near
+## camp, no line needed, while fewer than drift_most lie there already.
+func _lee_falls(from: int, tick: int) -> void:
+	var here := Vector2(_world.player_world_x(), _world.player_world_z())
+	var lying := Drift.fallen_near(_world, here, _tuning.drift_lee_fall_m)
+	for k in range(from, tick + 1):
+		if lying >= _tuning.drift_most or Exposure.reading(_world.weather.field, here.x, here.y,
+				k * _tuning.drift_tick_s, _tuning) <= 0.0:
+			continue
+		for ground in Drift.lee_ground(_world, k * _tuning.drift_tick_s):
+			var spec := Drift.fallen(_world, ground, k)
+			if not spec.is_empty() and lying < _tuning.drift_most:
+				Drift.lay(_world, spec)
+				lying += 1
 				caught += 1
 
 
