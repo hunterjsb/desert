@@ -91,8 +91,10 @@ func deed(id: String, run := {}) -> bool:
 	var opens := Deeds.opens(id).filter(func(kit: Kit) -> bool: return not kit.is_open_to(self))
 	_deeds[id] = record
 	_new[id] = true
+	# A start waiting on more deeds than this one isn't opened by it yet.
 	for kit: Kit in opens:
-		_new[start(kit.id)] = true
+		if kit.is_open_to(self):
+			_new[start(kit.id)] = true
 	_write()
 	deed_done.emit(id)
 	return true

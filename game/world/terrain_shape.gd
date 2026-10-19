@@ -163,6 +163,12 @@ func dunes(x: float, z: float) -> float:
 	return land * _land_height + _ridges(u, v, _sand_on(x, z, land))
 
 
+## The run's long-term wind, which the dunes face: downwind, a unit vector in
+## world x and z.
+func downwind() -> Vector2:
+	return _down
+
+
 ## How much sand lies here, 0 to 1: dune seas where it's high.
 func sand_at(x: float, z: float) -> float:
 	return _sand_on(x, z, _land.get_noise_2d(x, z))

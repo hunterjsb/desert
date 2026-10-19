@@ -356,8 +356,8 @@ device already stays a body of its own on the host's power pool.
   never under a frame. Its frame is heaviest at its foot, so a deck carrying it rides steady:
   moored by the deck's own ring, a deck rides a storm with it.
 - **What it draws.** 4 W itself, the screen 3 W more, and each instrument its own: the radar
-  6 W, the particle sensor 1.5 W, the anemometer 0.5 W, the hygrometer 0.3 W and the barometer
-  0.2 W. With the full set that's about 16 W, from its deck's pool. Running short, it gives
+  6 W, the ground radar 4 W, the particle sensor 1.5 W, the anemometer 0.5 W, the hygrometer 0.3 W
+  and the barometer 0.2 W. With the full set that's about 16 W, from its deck's pool. Running short, it gives
   way before a shield, as a deck's trays do. Dark, its screen goes black and
   its instruments stop reading.
 - **Where it comes from.** It's a find in the deep layer only, at the same weight as the chassis
@@ -520,7 +520,7 @@ device already stays a body of its own on the host's power pool.
   arrives while you watch.
 - **What's under the sand gets its own page** when mods detect it (Hunter, 2026-10-18): old
   lines and buried structures, as the dev map draws them, on a Survey page among the tabs, not
-  over the weather radar. Not built.
+  over the weather radar. Built 2026-10-19 with the ground radar (below).
 - **The navigation computer** (2026-10-19, `nav_computer`, a give id): a Console of the Varran
   empire's make, the Varran settler's, out of place and heavy on his minimal rig (Profile & saves). The
   Console's rack in an armoured case, imperial blue under ivory corners with chrome handles, 30 kg, its
@@ -531,8 +531,34 @@ device already stays a body of its own on the host's power pool.
   port are the Console's, with two computer-mod ports for more; a built-in instrument counts as fitted
   everywhere a Console counts its gear (`Console._fitted`). It's new make, not found: no lineage marks.
 - **Still proposed:** the final layout, any part on the computer-mod top besides the radar (an
-  antenna), the survey mod and its page, god modules, makers' Consoles past the Varrans', a Console
-  linked by cable, and devices other than shields made smart.
+  antenna), god modules, makers' Consoles past the Varrans', a Console linked by cable, and devices
+  other than shields made smart.
+
+### The ground radar and the sieve (built 2026-10-19)
+
+Dune archaeology's setup ([Wind & storms](wind-and-storms.md#dune-archaeology-agreed-2026-10-18-spec-built-2026-10-19)):
+a ground radar fitted to a Console, a sand scoop and a sieve, all on one deck.
+- **The ground radar** (`ground_radar`) is a computer mod for a side port, as the other sensors are:
+  a sealed survey set, its antenna's face turned down to the sand, the contractor's amber band, 1.4 kg,
+  4 W. It reads 300 m round its Console **(default)**: the old lines under the sand (history's paths),
+  every structure on the ground or under it, and each big dune's ruin, built or still a seed, its place
+  looked over whatever your pace while it runs. `GROUND RADAR ONLINE` goes to the log as it's fitted,
+  and the stats page adds how many it finds and how many a storm is baring. It doesn't sharpen the
+  storm map: it reads the sand, not the weather.
+- **The Survey page** joins the tabs while the system has a ground radar: a map round the Console out to
+  the radar's reach, north up, rings every 100 m, the old lines faint, a structure a square and a dune's
+  ruin a triangle, an outline while the sand is over it, amber while a storm lays it bare
+  (`sites.newly_exposed`), solid once it's out. Under it the nearest five, each its name, how far and which
+  way, and a row under that: the sand over it, "bared" or "dug out".
+- **The sieve** (`sieve`), a saltwood hoop rimmed in steel with a worn steel mesh, half a metre across,
+  1.2 kg. Nothing takes it; it sticks on a deck. Carried, or set down or stuck on a deck within 4 m of
+  where you dig, it sifts what a scoop digs off a ruin (Salvage & ruins).
+- **Where they come from.** Dune ruins hold them: sieves on their shelves and in their caches, a ground
+  radar most often in their deepest cache; a relay mast's cabinet now and then holds a ground radar.
+- **Assembled** (Field Kit, Profile & saves): a Console with a ground radar fitted, a scoop and a sieve
+  stuck on one deck, recorded as a piece joins or something sticks, and as the radar comes online.
+- **The give and the creative menu** make both by their ids, `ground_radar` among the devices and `sieve`
+  among the tools.
 
 **Ending-linked Console pieces (endings session; proposed, not built).** The endings give the
 Console two late uses ([the vision](../vision.md#landmarks-and-endings)):

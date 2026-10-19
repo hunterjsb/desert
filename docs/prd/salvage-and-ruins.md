@@ -47,7 +47,8 @@ in. See [the lore research](../lore-research.md).
 - **Ruins you can walk into.** These are structures sitting in the dunes, with sand
   drifted against their walls. Everything is above ground: there's no digging and
   nothing underground, bar Wow's resting place (Hunter, 2026-10-18, after session 5: the one thing
-  allowed below, still unplaced).
+  allowed below, still unplaced). A scoop digs a ruin's own sand off it (2026-10-19, [Digging a
+  ruin out](#digging-a-ruin-out-built-2026-10-19)), never the dunes and never below its floor.
 - **Ruin types follow the terrain.** Skimmer cradles, tethers and catch stations stand on
   high ground, refineries cluster near volcanic vents, tank farms sit buried in basins,
   and port cradles and beacons stand on the heights. Gardens, water-cracking and power
@@ -732,6 +733,30 @@ inside a wreck, above the ground, and nothing is dug out of the dunes.
 - **Not yet:** a use for cut plates (Hunter: "just scrap for now"), a freighter wreck as the big dig
   site the lore promises, and more hazards (a pressurised tank was offered and set aside).
 
+## Digging a ruin out (built 2026-10-19)
+
+Dune archaeology's "dig a ruin out of a dune yourself" ([Wind &
+storms](wind-and-storms.md#dune-archaeology-agreed-2026-10-18-spec-built-2026-10-19)), built on the dig
+there already was, the scoop clearing a wreck's packed holds.
+- **The scoop on a ruin's sand.** Hold use with a sand scoop on the sand over a structure's ground and it
+  digs the site out, a stroke and a spray of sand at a time, as a storm would lay it bare: its footprint's
+  area a metre deep at 1.5 s a cubic metre (Tuning `dig_seconds_per_m3`), so a hab pod comes up a metre
+  every 72 s. It rises out of the sand through the same exposure a storm's work goes through, its ground in
+  steps, what it holds coming within reach. Never past dug out: the deepest sockets still want a storm. A
+  wreck's sand is its holds' (scrapping, above) and isn't dug this way; the ground's own never is, so a
+  scoop on open sand says there's no ruin under it, and on one dug out that what's left is the weather's.
+- **Kept.** What's dug is the site's memory, apart from the weather's function, so a storm never undoes
+  it; the save keeps it; it goes with the site once the sheet lifts it. A big dune's ruin found under the
+  sand and dug before it was built builds once something of it shows.
+- **A sieve sifts it.** Carried, or set down or stuck on a deck within 4 m, a sieve sifts what the scoop
+  digs: one of the light things the site's lesser rows hold (what a storm would shed off it) for every
+  50 m³ (Tuning `sift_per_m3`), from its own stream of the site and how many have come, laid at your feet.
+- **A big dune's ruin holds survey gear:** kept whole under the dunes (85% of its sockets hold something),
+  its shelves sieves, batteries, a lamp, a compass, a scoop or a ration; its caches big batteries, a
+  screen, a sieve or a ground radar; its deepest a ground radar most often, else a Console, big batteries,
+  a shield or a screen (`SiteLoot.DUNE`). A relay mast's cabinet now and then holds a ground radar.
+- **Probes:** Profile & saves 33 digs one out through the hands.
+
 ## Nomad gear (agreed, 2026-10-18 spec; not built)
 
 From the [chassis spec](../chassis-kits-dunes-2026-10-18.md): a neglected tier, common and found all over, open wilderness
@@ -1107,7 +1132,8 @@ Wrecks have their own seven, in `probes/wrecks/` ([Wrecks and scrapping](#wrecks
 
 ## Out of scope
 
-- Digging, and anything underground, bar Wow's resting place (Hunter, 2026-10-18).
+- Digging, and anything underground, bar Wow's resting place (Hunter, 2026-10-18). A ruin's own sand
+  dug off it is the one dig there is (2026-10-19).
 - NPCs, trading and crafting. (A device auto-crafting its own recipes, such as Mitchell's module, is an
   Idea and no player crafting.)
 

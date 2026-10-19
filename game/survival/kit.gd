@@ -9,7 +9,8 @@ extends Resource
 const STANDARD := "res://game/survival/standard_kit.tres"
 ## The origins New game offers, the default first.
 const ORIGINS: Array[String] = [STANDARD, "res://game/survival/salvager_kit.tres",
-	"res://game/survival/homesteader_kit.tres", "res://game/survival/varran_kit.tres"]
+	"res://game/survival/homesteader_kit.tres", "res://game/survival/varran_kit.tres",
+	"res://game/survival/archaeologist_kit.tres"]
 
 ## Who you came as, by id and by name, and the few words New game says
 ## under the name.
@@ -25,9 +26,8 @@ const ORIGINS: Array[String] = [STANDARD, "res://game/survival/salvager_kit.tres
 @export var start: StringName = &""
 ## One of the three the game is balanced round. Only those have Ironman.
 @export var balanced := false
-## What opens it on the profile: a deed (Deeds), or an unlock. None, it's
-## open from the first run, as every start is until Hunter says which deeds
-## open which.
+## What opens it on the profile: a deed (Deeds), or an unlock; several apart
+## by commas, all of them. None, it's open from the first run.
 @export var unlock := ""
 ## Carried by the suit, in order.
 @export var carried: Dictionary[StringName, int] = {}
@@ -88,7 +88,19 @@ static func open_to(profile: Node) -> Array[Kit]:
 
 
 func is_open_to(profile: Node) -> bool:
-	return unlock == "" or (profile != null and profile.has(unlock))
+	if unlock == "":
+		return true
+	if profile == null:
+		return false
+	for each in unlocks():
+		if not profile.has(each):
+			return false
+	return true
+
+
+## Each thing its unlock names.
+func unlocks() -> PackedStringArray:
+	return unlock.split(",", false)
 
 
 ## What's carried, one id a thing.

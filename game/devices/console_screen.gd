@@ -160,6 +160,9 @@ func _draw() -> void:
 		"POWER":
 			_draw_header()
 			_draw_power()
+		"SURVEY":
+			_draw_header()
+			_draw_survey(keys_top)
 		_:
 			_draw_header()
 			_draw_rows(keys_top)
@@ -204,6 +207,64 @@ func _draw_radar(keys_top: float) -> void:
 		draw_string(FONT, Vector2(MARGIN, side - 16.0), fits, HORIZONTAL_ALIGNMENT_CENTER, side - 2.0 * MARGIN, SMALL, text)
 	draw_rect(Rect2(Vector2.ZERO, Vector2(side, side)), Color(accent, 0.5), false, 2.0)
 	_draw_legend(map, Rect2(0.0, side + 8.0, side, keys_top - side - 8.0))
+
+
+## The ground radar's map, the Console in its middle and north up, rings
+## every hundred metres: the old lines under the sand faint, a structure a
+## square, a dune's ruin a triangle, an outline while the sand's over it,
+## amber while a storm lays it bare, solid once it's out; and under the map
+## the nearest, listed.
+func _draw_survey(keys_top: float) -> void:
+	var text := _color(&"text")
+	var dim := _color(&"dim")
+	var accent := _color(&"accent")
+	var side := size.x - 2.0 * MARGIN
+	var box := Rect2(Vector2(MARGIN, TOP), Vector2(side, side))
+	draw_rect(box, UNKNOWN)
+	var middle := box.get_center()
+	var survey: Dictionary = _model.get("survey", {})
+	var reach: float = survey.get("reach", 0.0)
+	if reach > 0.0:
+		var scale := side * 0.5 / reach
+		for ring in range(100, int(reach) + 1, 100):
+			draw_arc(middle, ring * scale, 0.0, TAU, 64, Color(dim, 0.35), 2.0)
+		var inside := Rect2(box.position, box.size)
+		for points: PackedVector2Array in survey.get("lines", []):
+			for i in points.size() - 1:
+				var a := middle + points[i] * scale * (-1.0 if _model.flip else 1.0)
+				var b := middle + points[i + 1] * scale * (-1.0 if _model.flip else 1.0)
+				if inside.has_point(a) or inside.has_point(b):
+					draw_line(_clamped(a, inside), _clamped(b, inside), Color(accent, 0.35), 3.0)
+		for each: Dictionary in survey.get("sites", []):
+			var at: Vector2 = each.at * scale * (-1.0 if _model.flip else 1.0)
+			if absf(at.x) > side * 0.5 or absf(at.y) > side * 0.5:
+				continue
+			var spot := middle + at
+			var color := URGENT if each.bared else (text if each.under <= 0.0 else dim)
+			var mark := PackedVector2Array([spot + Vector2(0.0, -12.0), spot + Vector2(11.0, 8.0), spot + Vector2(-11.0, 8.0)]) \
+				if each.dune else PackedVector2Array([spot + Vector2(-8.0, -8.0), spot + Vector2(8.0, -8.0),
+					spot + Vector2(8.0, 8.0), spot + Vector2(-8.0, 8.0)])
+			if each.bared or each.under <= 0.0:
+				draw_colored_polygon(mark, color)
+			else:
+				mark.append(mark[0])
+				draw_polyline(mark, color, 3.0)
+	draw_line(middle - Vector2(10.0, 0.0), middle + Vector2(10.0, 0.0), text, 3.0)
+	draw_line(middle - Vector2(0.0, 10.0), middle + Vector2(0.0, 10.0), text, 3.0)
+	_label(box.position + Vector2(10.0, 8.0), "N", MID, accent)
+	if _model.get("cells", "") != "":
+		_label(box.position + Vector2(10.0, side - 36.0), _model.cells, SMALL - 4, dim)
+	draw_rect(box, Color(accent, 0.5), false, 2.0)
+	var y := TOP + side + 12.0
+	for row: String in _model.get("rows", []):
+		if y + ROW > keys_top:
+			break
+		_table_row(row, MARGIN, y, STATS_COLUMNS)
+		y += ROW
+
+
+static func _clamped(at: Vector2, box: Rect2) -> Vector2:
+	return at.clamp(box.position, box.end)
 
 
 ## Each cell its storm, as dense as its sand where a sensor reads it, or its

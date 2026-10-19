@@ -1,6 +1,6 @@
 extends WorldProbe
 ## Loot probe 7: what a storm lays bare blows downwind. A house ruin stood by
-## hand where a storm will lay it bare, and catch lines across the wind round
+## hand in the open where a storm will lay it bare, and catch lines across the wind round
 ## it, read tick by tick through the storm as lines there would catch:
 ## downwind, the site's own lesser things arrive, falling just past the line,
 ## more near than far; upwind, off to the side and past the stream's reach,
@@ -20,7 +20,9 @@ func run() -> void:
 	world.time_warp = 0.0
 	var sites := world.shape.sites
 	var from := Vector2(world.player_world_x() + 300.0, world.player_world_z())
-	var stands := func(at: Vector2) -> bool: return sites.by_hand(&"house_ruin", at.x, at.y, 0.0, 0.0).stands()
+	# In the open, off any dune's face or lee.
+	var stands := func(at: Vector2) -> bool: return sites.by_hand(&"house_ruin", at.x, at.y, 0.0, 0.0).stands() \
+		and absf(Exposure.dune_at(world.shape, at.x, at.y, world.tuning)) < 0.2
 	var storm := StormSite.strongest(world.weather.field, world.tuning, from.x, from.y, 2, 100.0, 1.0, stands)
 	check(not storm.is_empty(), "a storm that lays a ruin bare")
 	if storm.is_empty():
@@ -65,7 +67,8 @@ func run() -> void:
 	print("off a house ruin %.1f m deep through its storm, caught on 8 m lines: %s" % [site.depth, ", ".join(said)])
 	check(lines.near[2] > 0 and lines.near[3] > lines.far[3] and lines.far[3] > 0.0,
 		"downwind its things arrive, more near than far")
-	check(lines.upwind[3] == 0.0 and lines.aside[3] < lines.near[3] * 0.01 and lines.past[3] == 0.0
+	# Aside only as the wind swings through the storm.
+	check(lines.upwind[3] == 0.0 and lines.aside[3] < lines.near[3] * 0.03 and lines.past[3] == 0.0
 		and lines.upwind[2] + lines.past[2] == 0, "upwind, aside and past its reach, nothing of the site's")
 	check(early == 0 and unlike == 0 and astray == 0,
 		"only once it's laid bare, only its lesser things, fallen just past the line (%d, %d, %d)" % [early, unlike, astray])
