@@ -1,23 +1,23 @@
 extends Node
 ## Look-test: the plumes. The rift's live vent in moments the run's own
-## weather gives (a calm, a strong wind, a burst, dusk, a front coming over it
-## and a storm over it, night), each shot from the side across the wind, near
-## and far; a burst towering over a storm by the vent from 15 km; a gas
-## pocket's dust; the far-side volcano's flank vent; and the rift vent's mouth
-## up close. Each shot also times the GPU with the plumes drawn and without.
+## weather gives (a calm, a strong wind, a burst, dusk, a front coming over it,
+## night), each shot from the side across the wind, far and mid; walking into
+## its dust in the calm and standing in it; from inside a storm; a burst
+## towering over a storm by the vent from 15 km; a gas pocket's dust; the
+## far-side volcano's flank vent; and the rift vent's mouth up close. Each
+## shot also times the GPU with the plumes drawn and without.
 ##   scripts/unseen.sh --path . --disable-vsync res://look/plume/plume.tscn -- --capture <dir> [--only a_b,c_d]
 ## Each shot is <moment>_<range>.png.
 
 const SEED := 1234
 ## The shots: [moment, range, m off, eye's height over the sand, m].
 const SHOTS := [
-	["calm", "near", 260.0, 6.0], ["calm", "mid", 1500.0, 3.0], ["calm", "far", 7000.0, 2.0],
-	["wind", "near", 260.0, 6.0], ["wind", "mid", 1500.0, 3.0], ["wind", "far", 7000.0, 2.0],
-	["burst", "near", 1500.0, 3.0], ["burst", "mid", 7000.0, 2.0], ["burst", "far", 25000.0, 2.0],
-	["over", "far", 15000.0, 2.0],
-	["dusk", "mid", 1500.0, 3.0],
-	["storm", "mid", 1500.0, 3.0], ["swallowed", "mid", 1500.0, 3.0], ["night", "mid", 1500.0, 3.0],
-	["pocket", "far", 6000.0, 2.0], ["flank", "far", 7000.0, 2.0],
+	["calm", "far", 7000.0, 2.0], ["burst", "far", 25000.0, 2.0], ["flank", "far", 7000.0, 2.0],
+	["calm", "mid", 1500.0, 3.0], ["burst", "mid", 7000.0, 2.0], ["burst", "near", 1500.0, 3.0],
+	["approach", "near", 450.0, 2.0], ["into", "near", 40.0, 1.7],
+	["storm", "mid", 1500.0, 3.0], ["over", "far", 15000.0, 2.0], ["instorm", "mid", 1500.0, 2.0],
+	["night", "mid", 1500.0, 3.0], ["dusk", "mid", 1500.0, 3.0], ["pocket", "far", 6000.0, 2.0],
+	["wind", "mid", 1500.0, 3.0],
 ]
 ## Frames timed in each turn with the plumes drawn, and without, and the turns.
 const TIMED := 12
@@ -99,6 +99,9 @@ func _moment(shot: Array, after := 600.0) -> Dictionary:
 	var geology := world.shape.history.geology
 	var field := world.weather.field
 	var moment: String = shot[0]
+	# Walking into it and standing in it, in the calm.
+	if moment in ["approach", "into"]:
+		moment = "calm"
 	var span := DAYS * world.tuning.day_minutes * 60.0
 	var source := _vent
 	if moment == "flank":
@@ -130,8 +133,10 @@ func _moment(shot: Array, after := 600.0) -> Dictionary:
 				var eye := _eye(root, t, shot, turn * PI / 4.0, false)
 				var foot := Plume.seen_through(field, world.tuning, eye, root + Vector3.UP * 50.0, t)
 				var tower := Plume.seen_through(field, world.tuning, eye, top, t)
+				# Far off, its middle shows too, not just its top past walls by you.
+				var middle := Plume.seen_through(field, world.tuning, eye, top.lerp(root, 0.5), t) if far else 1.0
 				var wanted: bool = foot < 0.1 and tower > 0.8 if moment == "over" \
-					else tower > 0.8 and (foot > 0.9 or far)
+					else tower > 0.8 and middle > 0.8 and (foot > 0.9 or far)
 				if (_clear_eye(eye, t) or far and world.weather.field.raw_storm_at(eye.x, eye.z, t) < -0.05) and wanted:
 					return {"t": t, "source": source, "root": root, "turn": turn * PI / 4.0,
 						"says": "venting x%.0f, its top %.1f km up" % [geology.venting(source, t).x, top.y / 1000.0]}
@@ -154,13 +159,14 @@ func _moment(shot: Array, after := 600.0) -> Dictionary:
 			"storm":
 				var raw := field.raw_storm_at(root.x, root.z, t)
 				wanted = daylight.call(t) and raw > -0.03 and raw < -0.005
-			"swallowed":
-				wanted = daylight.call(t) and field.raw_storm_at(root.x, root.z, t) > 0.08
+			"instorm":
+				wanted = daylight.call(t) and v < 1.3 and field.raw_storm_at(root.x, root.z, t) < -0.05
 		if wanted:
 			var eye := _eye(root, t, shot)
-			var line: bool = moment in ["storm", "swallowed"] or (clear.call(root, t) and clear.call(root, t - 600.0)
+			var line: bool = moment in ["storm", "instorm"] or (clear.call(root, t) and clear.call(root, t - 600.0)
 				and Plume.seen_through(field, world.tuning, eye, root + Vector3.UP * 50.0, t) > 0.9)
-			if line and _clear_eye(eye, t):
+			var placed := field.raw_storm_at(eye.x, eye.z, t) > 0.05 if moment == "instorm" else _clear_eye(eye, t)
+			if line and placed:
 				var wind := field.steady_wind_at(root.x, root.z, t).length()
 				var says := "steady wind %.1f m/s" % wind
 				if moment == "calm" and wind < best_wind or moment == "wind" and wind > best_wind:
@@ -238,7 +244,7 @@ func _shoot(name: String, found: Dictionary, shot: Array, out: String, keep := t
 	# At the bend, or for a burst its middle height, a pocket's what's blown up;
 	# far off, where it's drawn, which the ground's laying puts a little aside.
 	var target := _top(source, root, t).lerp(root, 0.5) if shot[0] in ["burst", "over", "pocket"] \
-		else (plume._point(25.0 if shot[1] == "near" else 45.0) if plume != null else root)
+		else (plume._point(12.0 if shot[0] == "into" else 45.0) if plume != null else root)
 	if plume != null and shot[0] in ["burst", "over", "pocket"]:
 		target += plume.root - root
 	await _look(eye, target)

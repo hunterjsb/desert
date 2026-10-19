@@ -24,6 +24,11 @@ const SUN_COLOR := Color(1.0, 0.95, 0.86)
 const AMBIENT_COLOR := Color(0.8, 0.72, 0.62)
 ## Light that has come through a storm's dust is reddened by it, as the dust is.
 const STORM_TINT := Color(0.95, 0.8, 0.62)
+## Inside a storm the haze closes in to these, m: all of anything past the
+## second is lost in the dust, as Plume.seen_through counts a storm's dust.
+const STORM_FOG := Vector2(50.0, 400.0)
+## Stood in a plume's dust, the light dims by this share of a storm's.
+const PLUME_SHADE := 0.5
 ## Grains in the air are lit from every side and throw the sun forward, so they
 ## show half again brighter than the same sand lying on the ground.
 const GRAIN_GLOW := 1.5
@@ -382,7 +387,14 @@ func _show(delta: float) -> void:
 	# while their shadows go. A bubble clears the air, not the light.
 	var towering := atan2(_tuning.wall_height - here.y, maxf(-seen_front, 1.0)) / (PI * 0.5)
 	var coverage := lerpf(clampf(towering, 0.0, 1.0) * 0.5, 1.0, seen_shade)
-	var dim := lerpf(1.0, 1.0 - _tuning.storm_darkness, seen_shade)
+	# A plume's dust round you: the deepest you stand in, and how far it lets you see.
+	var in_plume := 0.0
+	var plume_seen := INF
+	for plume in plumes:
+		if plume.visible and plume.air > in_plume:
+			in_plume = plume.air
+			plume_seen = plume.seen_m
+	var dim := lerpf(1.0, 1.0 - _tuning.storm_darkness, maxf(seen_shade, in_plume * PLUME_SHADE))
 	var sky_left := 1.0 - 0.55 * coverage
 	var overhead := Vector3(sun.x * 0.15, 1.0, sun.z * 0.15).normalized()
 	var light_from := sun.slerp(overhead, seen_shade * up)
@@ -408,11 +420,15 @@ func _show(delta: float) -> void:
 	# dust itself is the storm pass's; the haze only closes in behind it, never
 	# within the few metres the dust leaves.
 	var haze_light := daylight * sky_left * dim
-	var haze_color := _haze_color.lerp(_tuning.storm_fog_color, seen_storm) * fill
+	# In a plume the air closes in the same way, to how far its dust lets you see.
+	var haze_color := _haze_color.lerp(_tuning.storm_fog_color, maxf(seen_storm, in_plume)) * fill
 	_environment.fog_light_color = haze_color
 	_environment.fog_light_energy = haze_light
-	_environment.fog_depth_begin = lerpf(_tuning.haze_begin, 50.0, seen_storm)
-	_environment.fog_depth_end = lerpf(_tuning.haze_end, 400.0, seen_storm)
+	var fog_end := lerpf(_tuning.haze_end, STORM_FOG.y, seen_storm)
+	_environment.fog_depth_begin = lerpf(lerpf(_tuning.haze_begin, STORM_FOG.x, seen_storm),
+		minf(STORM_FOG.x, plume_seen * 0.1), in_plume)
+	_environment.fog_depth_end = lerpf(fog_end, minf(fog_end, plume_seen), in_plume)
+	_environment.fog_density = lerpf(_tuning.haze_strength, 1.0, in_plume)
 	_world.terrain.show_far(not in_storm)
 	var air := lerpf(1.0, 0.45, coverage) * dim
 	sky.show(t, here, sun, shown, Vector3(fill.r, fill.g, fill.b) * daylight * air,
@@ -436,7 +452,8 @@ func _show(delta: float) -> void:
 	face.set_light("shell_light", _linear(_environment.ambient_light_color) * _environment.ambient_light_energy)
 	var tu := day.tu_direction(t, moon.latitude, moon.longitude)
 	for plume in plumes:
-		plume.light(sun, sun_light, sky_light, ring_light, _linear(haze_color) * haze_light,
+		# A column faces half the sky, as a wall does.
+		plume.light(sun, sun_light, sky_light * 0.6, ring_light, _linear(haze_color) * haze_light,
 			Vector3(_environment.fog_depth_begin, _environment.fog_depth_end, _environment.fog_density),
 			tu, _linear(SkyView.TU_SHINE_COLOR) * _sun_energy * tu_light)
 
@@ -449,7 +466,8 @@ func _show(delta: float) -> void:
 	var ring_grains := ring_light * face.ring_at(here, sun) if ring > 0.0 else Vector3.ZERO
 	atmosphere.show_eclipse(sun, _linear(_tuning.sand_color) * GRAIN_GLOW * ring_grains, (1.0 - shown) * up, delta)
 	atmosphere.show_weather(camera, _world.height_under(here), open_wind(_world.player.global_position),
-		shelter_at(here, &"storm"), seen_shade, near, grains, face.sigma() * seen_shade, _world.time_warp > 0.0, delta)
+		shelter_at(here, &"storm"), seen_shade, in_plume, near, grains,
+		maxf(face.sigma() * seen_shade, 3.0 / plume_seen * in_plume), _world.time_warp > 0.0, delta)
 
 
 func _report() -> void:

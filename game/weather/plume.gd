@@ -1,90 +1,92 @@
 class_name Plume
-extends MultiMeshInstance3D
+extends MeshInstance3D
 ## A plume as it looks from where you stand: a live vent's, or a gas pocket's
-## blowing out. Gas shows only by what rides it: a vent's ash, dark and soon
-## fallen out, steam where the air is cold enough to hold it, and the pale
-## sulphate haze its gas makes over minutes; a pocket's dust, the sand it
-## blew out. It rises as a buoyant plume does in wind (Briggs's rise: bent
-## over by the wind, levelling where the air's stability stops it, and there
-## spreading out as an umbrella) and rides the field's own drift away, so its
-## tail curls as the wind turns. Here, each frame, its streakline (where what
-## left at each age is now, how wide and what it carries) is worked out from
-## the time, the source and the weather alone; the shader hangs one draw of
-## soft puffs on it, each a parcel that left at a moment. Nothing in the world
-## reads it. Past the camera's reach it's the same puffs drawn nearer and
-## smaller; storms between hide what's under their roofs, and what towers
-## over them shows.
+## blowing out. The vents let out mostly gas, hot and invisible, and what shows
+## is the sand and dust it sweeps up from round the mouth and lifts: a vast
+## column of the storms' own dust, towering over the haze far off and, near,
+## only the air thickening round you. It rises as a buoyant plume does in wind
+## (Briggs's rise: bent over by the wind, levelling where the air's stability
+## stops it, and there spreading out as an umbrella) and rides the field's own
+## drift away, so its tail curls as the wind turns. Here, each frame, its
+## streakline (where what left at each age is now, how wide and how much dust
+## it carries) is worked out from the time, the source and the weather alone;
+## the shader marches the column round it as the storm walls are marched,
+## billowed and lit as they are. Nothing in the world reads it. Storms between
+## hide what's under their roofs, and what towers over them shows.
 
 const SHADER := preload("res://game/weather/plume.gdshader")
 ## How many plumes can be drawn at once, the nearest sources first.
 const AT_ONCE := 3
 ## The streakline: this many points, the oldest this many s, crowded toward
-## the source by this power.
+## the source by this power; the column is drawn through these of them.
 const POINTS := 24
 const OLDEST := 600.0
 const CROWD := 1.6
-## The puffs hung on it, by kind in the shader's order: [how many, youngest
-## s, oldest s]: ash falling out under it, the steam and gas at the mouth, the
-## column, the bent-over body, the thinning tail. Ages count from the source,
-## the falling ash's from when it left the column.
-const FAMILIES := [[36, 0.0, 150.0], [28, 0.0, 14.0], [64, 0.0, 80.0], [72, 60.0, 300.0], [48, 260.0, 600.0]]
-## Parcels are numbered round this many, so a family's ids never run out.
-const PARCELS := 1048576.0
-## What leaves rises from this wide, m.
-const MOUTH := 6.0
+const COLUMN := [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 23]
+## What leaves rises from this wide, m: the gas sweeps up the sand round its
+## mouth, not just what's in its throat.
+const MOUTH := 150.0
 ## The air's stability, its buoyancy frequency by day and by night, 1/s.
 const STABILITY := Vector2(0.009, 0.016)
 ## A rising plume widens by this share of its rise, and downwind spreads by
 ## this share of how far it's gone. Levelled, it spreads out sideways as a
 ## current in the stable air does, at this share of its stability times its
 ## height, m/s: what makes a burst's umbrella.
-const WIDEN := 0.4
+const WIDEN := 0.25
 const SPREAD := 0.04
 const UMBRELLA := 0.25
-## How thick it is through its depth: at this depth, m, and wind, m/s,
+## How thick its dust is through its depth: at this depth, m, and wind, m/s,
 ## seeping, this optical depth; thinner as it deepens or the wind stretches
-## it, by this power of the two.
+## it, by this power of the two, since what's left is the finest and shows
+## the most.
 const THICK := Vector3(30.0, 10.0, 8.0)
 const THINS := 0.7
-## Ash falls out of it over this many s, a pocket's dust over the second; the
-## gas makes its haze over this many; steam lasts from the first in the heat
-## to the second in the cold, s, and shows below the first air temperature,
-## fully below the second, °C. How thick each looks for what it is: ash or
-## dust, steam, haze.
-const ASH_FALLS := Vector2(90.0, 35.0)
-const HAZE_FORMS := 120.0
-const STEAM_LASTS := Vector2(15.0, 240.0)
-const STEAM_AIR := Vector2(30.0, -5.0)
-const SHOWS := Vector3(1.0, 1.5, 0.6)
-## A pocket's dust is this many times as thick as a seep's ash for its lift,
-## and its gas, no volcano's, makes this share of a seep's haze.
-const DUSTY := 4.0
-const POCKET_HAZE := 0.05
-## What a vent's ash looks like, and a pocket's dust, linear; and how much
-## light its shaded side keeps, thick: sand scatters on most of what reaches
-## it, so light works through a dust cloud as it can't through basalt ash.
-const ASH_TONE := Vector4(0.075, 0.068, 0.062, 0.0)
-const DUST_TONE := Vector4(0.36, 0.25, 0.15, 0.45)
+## The sand falls out of it by e over this many s, leaving this share, the
+## fine dust that stays up; its oldest fifth fades out.
+const FALLS := Vector2(150.0, 0.35)
+## A burst's ash, its faint trace: how much of a burst's core it darkens at
+## most, falling out by e over this many s.
+const ASHEN := Vector2(0.3, 90.0)
+## Two points of the column whose sources vented more than this many times
+## apart aren't drawn as one stretch: a burst began between them, and its
+## first gas joining them is thin.
+const JOINS := 4.0
 ## The line changes slowly, its young end fastest in a burst: of its first
 ## this many points one is worked out again every other frame, and of the rest
 ## one every this many frames, a quarter as often once you're this far off, m;
-## the air's stability and warmth this often, s.
+## the air's stability this often, s.
 const YOUNG := 6
 const OLD_EVERY := 8
 const FAR_OFF := 3000.0
 const AIR_EVERY := 10.0
 ## Its source moving further than this is a jump, m, not the sheet's seams.
 const JUMP := 5.0
-## Storms between you and it, and their shadow on it, are read at these ages,
-## s, one read every fourth frame; the storm field this near its threshold
-## counts as part way in.
+## Storms between you and it past the storm map, and their shadow on it, are
+## read at these ages, s, one read every fourth frame.
 const READS := [0.0, 40.0, 150.0, 400.0]
-const VEIL_EDGE := 0.006
-## Past this the puffs are drawn nearer and smaller, m: the camera's far plane.
-## Past the skyline's reach the haze takes it as if it were only as far as
-## distance to this power says, more slowly than the air between would.
+## Past this the column is drawn nearer and smaller, m: the camera's far
+## plane. Past the skyline's reach the haze takes it as if it were only as far
+## as distance to this power says, more slowly than the air between would.
 const NEAR_REACH := 4200.0
 const FAR_FALL := 0.3
+## Its billows stand out past its width by this share of it at most (the
+## shader's).
+const BILLOWS := 0.39
+## Stood in, its dust closes in from this share of its width outside its edge
+## to all of it this share inside, all round you once this many m of it would
+## hide what's behind; and you see through it as through a storm's (3 over
+## its dust a metre), never less far than the first, m, or further than the
+## second.
+const AIR_EDGE := Vector2(0.3, 0.2)
+const AIR_THICK := 300.0
+const SEEN_IN := Vector2(60.0, 4000.0)
+## A storm's dust between: the field this near its threshold counts as part
+## way in, and none lies further out than its value over this, its steepest a
+## metre; so the march strides by that, never less than the first, m, nor
+## more than the second, the third times at most.
+const VEIL_EDGE := 0.006
+const STEEPEST := 4.0e-4
+const SEEN_STEPS := Vector3i(60, 1500, 64)
 ## A vent's ash fan on the sand runs down the long-term wind, by e this often,
 ## m; laid within this far of you, the far ring's reach.
 const FAN := 260.0
@@ -98,15 +100,18 @@ var source := {}
 var root := Vector3.ZERO
 var slot := Vector2(0.0, 1.0)
 ## The streakline: each point's place from the root, m in engine axes, and
-## width; what it carries, as optical depths through it of ash or dust, steam
-## and haze, and its depth, m; the storms' veil between you and it, and the
-## sun left on it.
+## width; the optical depth of its dust through it, its depth, m, its ash's
+## darkening, and how hard its source vented as it left; the storms' veil
+## between you and it, and the sun left on it.
 var line := PackedVector4Array()
 var matter := PackedVector4Array()
 var seen := PackedVector4Array()
 ## How hard its source is venting now, as a share of the rift's seep, and its
 ## ash share.
 var venting := Vector2.ZERO
+## How far into its dust the camera stands, 0 to 1, and how far it sees there, m.
+var air := 0.0
+var seen_m := INF
 ## Main-thread time it took this frame, and the most any has, ms.
 var frame_ms := 0.0
 var slowest_ms := 0.0
@@ -117,20 +122,28 @@ static var _depositor: Plume
 var _world: World
 var _weather: Weather
 var _tuning: Tuning
-var _total := 0
 var _veil := PackedFloat32Array()
 var _sun := PackedFloat32Array()
 var _read := 0
 var _next_young := 0
 var _next_old := 0
 var _stable := 0.012
-var _cold := 0.0
 var _air_read_at := -INF
 var _frames := 0
 var _distance := 0.0
 var _last_t := -INF
 ## The line or the reads have changed since they were last handed the shader.
 var _changed := true
+## The column as the shader reads it: each point's place and width; its dust
+## a metre, depth for its width, veil and sun; its ash; and its bounds.
+var _shape := PackedVector4Array()
+var _dust := PackedVector4Array()
+var _ashen := PackedVector2Array()
+var _lo := Vector3.ZERO
+var _hi := Vector3.ZERO
+## The storm map's textures as last handed the shader.
+var _map_a: Texture2D
+var _map_b: Texture2D
 ## What the sand was last told of this plume's ash, if it's this plume's.
 var _laid_ash := Vector3.INF
 ## The storm map's first moment when the storms were last read in full.
@@ -147,32 +160,28 @@ func setup(world: World, weather: Weather) -> void:
 	material.shader = SHADER
 	# After the storm pass, which overwrites the scene, and before the dust round you.
 	material.render_priority = -50
-	material.set_shader_parameter("noise", Paint.noise())
-	var families := PackedVector4Array()
-	for each: Array in FAMILIES:
-		families.append(Vector4(_total, each[0], each[1], each[2]))
-		_total += each[0]
-	material.set_shader_parameter("families", families)
-	material.set_shader_parameter("total", _total)
-	material.set_shader_parameter("oldest", OLDEST)
-	material.set_shader_parameter("crowd", CROWD)
+	material.set_shader_parameter("storm_noise", weather.face.material.get_shader_parameter("storm_noise"))
+	material.set_shader_parameter("storm_height", _tuning.wall_height)
+	material.set_shader_parameter("storm_roof_soft", _tuning.wall_roof_soft)
+	material.set_shader_parameter("dust_albedo", _linear(_tuning.wall_dust_color))
+	material.set_shader_parameter("storm_glow", _tuning.wall_glow)
+	material.set_shader_parameter("far_fade", Vector2(_tuning.wall_fade_begin, _tuning.wall_fade_end))
 	material.set_shader_parameter("reach", Vector3(NEAR_REACH, _tuning.plume_fade_m.x, _tuning.plume_fade_m.y))
 	material.set_shader_parameter("landmark", Vector2(_tuning.skyline_m, FAR_FALL))
-	var quad := QuadMesh.new()
-	quad.size = Vector2.ONE
-	var puffs := MultiMesh.new()
-	puffs.transform_format = MultiMesh.TRANSFORM_3D
-	puffs.mesh = quad
-	puffs.instance_count = _total
+	var box := BoxMesh.new()
+	box.size = Vector3.ONE
+	mesh = box
 	# Placed in the shader, so never culled.
-	puffs.custom_aabb = AABB(Vector3.ONE * -1.0e5, Vector3.ONE * 2.0e5)
-	multimesh = puffs
-	custom_aabb = puffs.custom_aabb
+	custom_aabb = AABB(Vector3.ONE * -1.0e5, Vector3.ONE * 2.0e5)
 	material_override = material
 	cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	line.resize(POINTS)
 	matter.resize(POINTS)
 	seen.resize(POINTS)
+	seen.fill(Vector4(1.0, 1.0, 0.0, 0.0))
+	_shape.resize(COLUMN.size())
+	_dust.resize(COLUMN.size())
+	_ashen.resize(COLUMN.size())
 	_veil.resize(READS.size())
 	_sun.resize(READS.size())
 	_veil.fill(1.0)
@@ -246,6 +255,11 @@ func _process(_delta: float) -> void:
 		elif _frames % 4 == 1:
 			_read_storms(_world.time)
 		_upload()
+		if whole or _frames % 4 == 3:
+			_around()
+	else:
+		air = 0.0
+		seen_m = INF
 	_last_t = _world.time
 	frame_ms = (Time.get_ticks_usec() - started) / 1000.0
 	slowest_ms = maxf(slowest_ms, frame_ms)
@@ -292,22 +306,16 @@ func _root() -> void:
 ## The streakline at world time t: the points of it given, or all of them.
 ## Each is what left `age` s ago, as hard as it was venting then, carried by
 ## the drift since and a front's outflow, risen as far as its buoyancy took it
-## in that wind, and spread out once it's levelled. The air's stability and
-## its warmth for steam change slowly, so they're read only now and then.
+## in that wind, and spread out once it's levelled. The air's stability
+## changes slowly, so it's read only now and then.
 func _streak(t: float, which := PackedInt32Array()) -> void:
 	var geology := _world.shape.history.geology
 	var field := _weather.field
 	var g := _world.gravity / _tuning.gravity
-	var dusty: bool = source.state == Geology.POCKET
 	if which.is_empty() or absf(t - _air_read_at) > AIR_EVERY:
 		_air_read_at = t
 		var moon := _world.moon
 		_stable = stability(_weather.day, t, moon.latitude, moon.longitude, g)
-		# A pocket's gas comes up cold and dry: dust, no steam, little haze.
-		_cold = 0.0 if dusty else smoothstep(STEAM_AIR.x, STEAM_AIR.y,
-			_weather.temperature_under(field.storm_at(root.x, root.z, t), t))
-	var lasts := lerpf(STEAM_LASTS.x, STEAM_LASTS.y, _cold)
-	var falls := ASH_FALLS.y if dusty else ASH_FALLS.x
 	venting = geology.venting(source, t)
 	var now := air_now(field, Vector2(root.x, root.z), t)
 	for k in (range(POINTS) if which.is_empty() else which):
@@ -315,23 +323,16 @@ func _streak(t: float, which := PackedInt32Array()) -> void:
 		var v := venting if k == 0 else geology.venting(source, t - age)
 		var parcel := parcel_at(field, _tuning, Vector2(root.x, root.z), t, age, v.x, _stable, g, now)
 		var deep := parcel[1].x
-		# Thinner as it deepens and the wind draws it out; less than mass alone
-		# says, since what's left is the finest and shows the most.
-		var thick := THICK.z * v.x * pow(THICK.x * THICK.y / (deep * parcel[1].y), THINS)
-		var ash := v.y * exp(-age / falls) * SHOWS.x * (DUSTY if dusty else 1.0)
-		var steam := _cold * exp(-age / lasts) * SHOWS.y
-		var haze := (1.0 - exp(-age / HAZE_FORMS)) * (1.0 - 0.5 * v.y) * SHOWS.z * (POCKET_HAZE if dusty else 1.0)
+		var thick := THICK.z * v.x * pow(THICK.x * THICK.y / (deep * parcel[1].y), THINS) \
+			* (FALLS.y + (1.0 - FALLS.y) * exp(-age / FALLS.x)) * (1.0 - smoothstep(0.8, 1.0, age / OLDEST))
+		var ash := ASHEN.x * clampf((v.y - Geology.ASH.x) / (Geology.ASH.y - Geology.ASH.x), 0.0, 1.0) \
+			* exp(-age / ASHEN.y)
 		line[k] = parcel[0]
-		matter[k] = Vector4(thick * ash, thick * steam, thick * haze, deep)
+		matter[k] = Vector4(thick, deep, ash, v.x)
 	_changed = true
 	if which.is_empty():
 		for i in READS.size() * 2:
 			_read_storms(t)
-	# The steady wind runs along the prevailing one, as hard as the air reads.
-	var blowing := field.prevailing_at(t).normalized() * now.w
-	material.set_shader_parameter("wind", Vector3(blowing.x, 0.0, blowing.y))
-	material.set_shader_parameter("now_mix", Vector4(venting.x if not dusty else 0.0, venting.y, _cold, 0.0))
-	material.set_shader_parameter("ash_tone", DUST_TONE if dusty else ASH_TONE)
 
 
 ## What left a source at world x and z `age` s before t, `hard` times the
@@ -403,7 +404,8 @@ static func levelled_at(f: float, u: float, n: float) -> float:
 
 ## One read in turn: whether storms stand between you and the line at an
 ## age, or how much sun they leave on it there; every point takes the reads
-## either side of its age.
+## either side of its age. The shader hides what's behind a storm the storm
+## map holds itself; these are for what's past it.
 func _read_storms(t: float) -> void:
 	var i := (_read / 2) % READS.size()
 	var at := _point(READS[i])
@@ -433,18 +435,41 @@ func _read_storms(t: float) -> void:
 
 ## How much of what's at a world place, metres with its height, shows from an
 ## eye at another past the storms on the line between, 0 to 1, by the field
-## itself: nothing through a storm's dust, all of it over a storm's roof.
+## itself: a storm's dust takes what's behind it as the air in one does, all
+## of it past a few hundred metres, and only what's over its roof (its
+## billows' tops too) shows. The march strides through clear air by how far
+## the field says the nearest dust must be, so no storm is stepped over.
 static func seen_through(field: WeatherField, tuning: Tuning, from: Vector3, to: Vector3, t: float) -> float:
-	var through := 1.0
-	var flat := Vector2(to.x - from.x, to.z - from.z).length()
-	var count := clampi(ceili(flat / 800.0), 2, 10)
-	for k in range(1, count + 1):
-		var at := from.lerp(to, float(k) / count)
-		var dust := smoothstep(-VEIL_EDGE, VEIL_EDGE, field.raw_storm_at(at.x, at.z, t))
-		var roofed := 1.0 - smoothstep(tuning.wall_height - tuning.wall_roof_soft,
-			tuning.wall_height + tuning.wall_roof_soft, at.y)
-		through *= 1.0 - dust * roofed
-	return through
+	var top := tuning.wall_height + tuning.wall_roof_soft + StormFace.ROOF_OVER
+	var low := tuning.wall_height - tuning.wall_roof_soft
+	var rise := to.y - from.y
+	var start := 0.0
+	var end := 1.0
+	if absf(rise) > 1.0e-3:
+		var at_top := (top - from.y) / rise
+		if rise > 0.0:
+			end = minf(end, at_top)
+		else:
+			start = maxf(start, at_top)
+	elif from.y >= top:
+		return 1.0
+	var length := from.distance_to(to)
+	if end <= start or length < 1.0e-3:
+		return 1.0
+	var dust_m := 0.0
+	var s := start
+	for i in SEEN_STEPS.z:
+		var at := from.lerp(to, s)
+		var raw := field.raw_storm_at(at.x, at.z, t)
+		var step := clampf(absf(raw) / STEEPEST, SEEN_STEPS.x, SEEN_STEPS.y)
+		step = minf(step, (end - s) * length)
+		dust_m += smoothstep(-2.0 * VEIL_EDGE, 0.0, raw) * (1.0 - smoothstep(low, top, at.y)) * step
+		if dust_m >= Weather.STORM_FOG.y:
+			return 0.0
+		s += step / length
+		if s >= end - 1.0e-6:
+			break
+	return 1.0 - smoothstep(Weather.STORM_FOG.x, Weather.STORM_FOG.y, dust_m)
 
 
 ## The streakline's place at an age, world metres.
@@ -460,34 +485,86 @@ func top() -> Vector3:
 	var high := root
 	for k in POINTS:
 		var p := root + Vector3(line[k].x, line[k].y, line[k].z)
-		if p.y > high.y and matter[k].x + matter[k].y + matter[k].z > 0.05:
+		if p.y > high.y and matter[k].x > 0.05:
 			high = p
 	return high
 
 
-func _upload() -> void:
+## How far into its dust the camera stands, as the shader would find it: its
+## depth inside the column's smooth surface, nearest stretch first.
+func _around() -> void:
 	var camera := _world.player.camera.global_position
+	var p := Vector3(_world.world_x(camera.x), camera.y, _world.world_z(camera.z)) - root
+	var best := INF
+	var at := 0
+	var along := 0.0
+	for j in COLUMN.size() - 1:
+		if _ashen[j].y < 0.5:
+			continue
+		var a := _shape[j]
+		var b := _shape[j + 1]
+		var ab := Vector3(b.x - a.x, b.y - a.y, b.z - a.z)
+		var h := clampf((p - Vector3(a.x, a.y, a.z)).dot(ab) / maxf(ab.length_squared(), 1.0e-3), 0.0, 1.0)
+		var q := p - Vector3(a.x, a.y, a.z) - ab * h
+		q.y /= maxf(lerpf(_dust[j].y, _dust[j + 1].y, h), 0.2)
+		var d := q.length() - lerpf(a.w, b.w, h)
+		if d < best:
+			best = d
+			at = j
+			along = h
+	var width := lerpf(_shape[at].w, _shape[at + 1].w, along)
+	var dust := lerpf(_dust[at].x, _dust[at + 1].x, along)
+	air = smoothstep(-AIR_EDGE.x * width, AIR_EDGE.y * width, -best) * (1.0 - exp(-dust * AIR_THICK))
+	seen_m = clampf(3.0 / maxf(dust, 1.0e-6), SEEN_IN.x, SEEN_IN.y)
+
+
+func _upload() -> void:
 	var at := Vector3(_world.engine_x(root.x), root.y, _world.engine_z(root.z))
-	var young := at + Vector3(line[0].x, line[0].y, line[0].z)
-	var old := at + Vector3(line[POINTS - 1].x, line[POINTS - 1].y, line[POINTS - 1].z)
 	material.set_shader_parameter("root", at)
-	if _changed:
-		_changed = false
-		material.set_shader_parameter("slot_dir", Vector3(slot.x, 0.0, slot.y))
-		material.set_shader_parameter("line", line)
-		material.set_shader_parameter("matter", matter)
-		material.set_shader_parameter("seen", seen)
-	# Back to front along it: the far end's parcels first.
-	material.set_shader_parameter("reverse", camera.distance_to(old) > camera.distance_to(young))
-	var clocks := PackedVector2Array()
-	for each: Array in FAMILIES:
-		var cycle: float = _world.time / ((each[2] - each[1]) / each[0])
-		clocks.append(Vector2(cycle - floorf(cycle), fmod(floorf(cycle), PARCELS)))
-	material.set_shader_parameter("clocks", clocks)
+	var map := _weather.map
+	var values := _weather.face.uniforms
+	if values.is_empty():
+		return
+	if map.texture_a != _map_a or map.texture_b != _map_b:
+		_map_a = map.texture_a
+		_map_b = map.texture_b
+		material.set_shader_parameter("storm_map_a", _map_a)
+		material.set_shader_parameter("storm_map_b", _map_b)
+		material.set_shader_parameter("storm_map_extent", values.storm_map_extent)
+		material.set_shader_parameter("storm_map_cells", values.storm_map_cells)
+	for key: String in ["storm_map_blend", "storm_map_shift", "storm_air", "storm_map_ready"]:
+		material.set_shader_parameter(key, values[key])
+	material.set_shader_parameter("storm_time", _world.time)
+	if not _changed:
+		return
+	_changed = false
+	var lo := Vector3.INF
+	var hi := -Vector3.INF
+	for j in COLUMN.size():
+		var k: int = COLUMN[j]
+		var p := line[k]
+		var deep := matter[k].y
+		_shape[j] = p
+		var squash := clampf(deep / p.w, 0.2, 1.0)
+		_dust[j] = Vector4(matter[k].x / (2.0 * deep), squash, seen[k].x, seen[k].y)
+		var next: int = COLUMN[mini(j + 1, COLUMN.size() - 1)]
+		var apart := maxf(matter[k].w, matter[next].w) / maxf(minf(matter[k].w, matter[next].w), 1.0e-3)
+		_ashen[j] = Vector2(matter[k].z, 1.0 if apart < JOINS else 0.0)
+		var out := Vector3(p.w, p.w * squash, p.w) * (1.0 + BILLOWS)
+		lo = lo.min(Vector3(p.x, p.y, p.z) - out)
+		hi = hi.max(Vector3(p.x, p.y, p.z) + out)
+	_lo = lo
+	_hi = hi
+	material.set_shader_parameter("shape", _shape)
+	material.set_shader_parameter("dust", _dust)
+	material.set_shader_parameter("ashen", _ashen)
+	material.set_shader_parameter("box_lo", _lo)
+	material.set_shader_parameter("box_hi", _hi)
 
 
-## The ash the vent has laid on the sand round its mouth and down the wind:
-## one vent's at a time, the plume's that's near enough to lay it.
+## The ash the vent has laid on the sand round its mouth and down the wind,
+## the long record of its old eruptions: one vent's at a time, the plume's
+## that's near enough to lay it.
 func _deposit(shown: bool) -> void:
 	if not shown and _depositor != self:
 		return
@@ -512,3 +589,8 @@ func _dev(off: Vector2) -> void:
 	var state := "blowing" if source.state == Geology.POCKET else ("bursting" if venting.x > 1.6 else "seeping")
 	Dev.put("weather/" + ("pocket" if source.state == Geology.POCKET else "vent"), "%.1fkm %s %s" % [
 		off.length() / 1000.0, Radio.compass(rad_to_deg(atan2(-off.x, off.y))), state])
+
+
+static func _linear(c: Color) -> Vector3:
+	var l := c.srgb_to_linear()
+	return Vector3(l.r, l.g, l.b)
