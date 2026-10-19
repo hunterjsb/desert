@@ -572,6 +572,9 @@ func _inboard_anchor() -> Vector3:
 
 
 func _process(_delta: float) -> void:
+	# The camp can advance after its physics callback, before this frame is drawn.
+	if _ring.visible and carrier() != null:
+		_ring.global_position = _inboard_anchor()
 	if _inboard.visible and is_instance_valid(_inboard.b):
 		_inboard.pin_ends(_ring.global_position, _inboard.b.global_position)
 
