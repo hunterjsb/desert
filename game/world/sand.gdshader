@@ -2,8 +2,9 @@ shader_type spatial;
 // The sand: the flat colour plus what makes dune shapes read. Slip faces are
 // smooth avalanche sand, a shade deeper and warmer, so they read even under a
 // noon sun that lights every face alike; gentler slopes carry wind ripples
-// across the wind, faded out before they alias; crests catch a thin highlight;
-// and broad patches vary the colour so distance reads.
+// across the wind, faded out before they alias, over a longer swell that holds
+// on further out; crests catch a thin highlight; and broad patches vary the
+// colour so distance reads. Its own light() lights it as sand, not paint.
 
 uniform vec3 sand : source_color = vec3(0.71, 0.59, 0.43);
 // Shares of the sand's colour each channel keeps on slip faces and in troughs.
@@ -17,6 +18,27 @@ uniform float ripple_spacing = 0.16;
 uniform float ripple_depth = 0.12;
 uniform float crest_glow = 0.12;
 uniform float patchiness = 0.04;
+// The swell: sand waves a dozen ripples long, gentler, so sand that has lost
+// its ripples to distance still shows the wind's grain.
+uniform float swell_spacing = 1.9;
+uniform float swell_depth = 0.06;
+
+// The light (light()). Grains shade each other, so sand glows powdery with a
+// low sun behind you and dims looking into it (Fujii's Oren-Nayar): 0 is plain
+// Lambert, 1 the roughest.
+uniform float backscatter = 0.6;
+// The sheen, the brighter of two, not both: the sun's broad glare off the
+// grains, as off a sea ("ocean"); and the rim, light skimming off grains seen
+// edge-on toward the sun, as Fresnel has it (1 is what Godot's own rough
+// specular gave, which the ripples facing a low sun were read by).
+uniform float ocean = 0.02;
+uniform float ocean_power = 50.0;
+uniform float rim = 1.0;
+// Glitter: a grain's facet turned just right to flash the light at you.
+uniform float glitter = 10.0;
+// How deep in a storm the light is (Weather's seen_shade): in the dust the
+// light comes from all round, so nothing glints or shines.
+uniform float storm = 0.0;
 
 // Tracks (game/world/tracks.gd): each texel holds the fill clock's reading at
 // which its mark will be filled, so a mark's depth is that less the clock.
@@ -52,9 +74,41 @@ const vec3 SULPHUR = vec3(0.69, 0.54, 0.1);
 
 varying vec3 world_pos;
 varying vec3 world_normal;
+// Handed from fragment() to light(), which has no neighbours to measure the
+// pixel by: each scale's glint facet (view space) and weight; the sheen's
+// share and its lobe's power.
+varying vec4 glint_fine;
+varying vec4 glint_coarse;
+varying vec2 shine;
+varying vec3 sheen_tint;
+
+// The finest glitter cell, m: a power of two, so a chunk holds whole cells
+// and cells stay put through origin shifts.
+const float GRAIN = 1.0 / 64.0;
+// How many pixels a cell spans, each one chance of a glint, so how thick they
+// lie; how far facets lean from the surface; and how closely one must face
+// the half-way of light and eye to flash.
+const float CELL_PIXELS = 12.0;
+const float LEAN = 0.3;
+const float GLINT_SHARP = 400.0;
 
 float hash(vec2 p) {
 	return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
+}
+
+// Integer hash (PCG3D): sin-hashes band at the millions of cells glitter
+// counts. Six numbers, 0 to 1, from each word's two halves.
+void hash6(ivec3 p, out vec3 a, out vec3 b) {
+	uvec3 v = uvec3(p) * 1664525u + 1013904223u;
+	v.x += v.y * v.z;
+	v.y += v.z * v.x;
+	v.z += v.x * v.y;
+	v ^= v >> 16u;
+	v.x += v.y * v.z;
+	v.y += v.z * v.x;
+	v.z += v.x * v.y;
+	a = vec3(v >> 16u) * (1.0 / 65535.0);
+	b = vec3(v & uvec3(65535u)) * (1.0 / 65535.0);
 }
 
 float value_noise(vec2 p) {
@@ -146,13 +200,91 @@ void fragment() {
 		AO = 1.0 - track_occlusion * smoothstep(0.0, 0.6, c);
 	}
 
-	float fade = (1.0 - smoothstep(0.06, 0.18, fwidth(phase))) * (1.0 - lee) * (1.0 - trodden) * ripple_depth;
+	float shown = 1.0 - smoothstep(0.06, 0.18, fwidth(phase));
+	float fade = shown * (1.0 - lee) * (1.0 - trodden) * ripple_depth;
 	float wave = phase * TAU;
 	float slope = sin(wave) + 0.35 * sin(2.0 * wave);
-	vec3 tilt = vec3(downwind.x, 0.0, downwind.y) * slope * fade;
+	// The swell, wandering more and stronger in patches.
+	float swell_phase = (dot(at, downwind) + 0.8 * sin(dot(at, across) * 0.23) + 2.5 * value_noise(at / 11.0)) / swell_spacing;
+	float swell_shown = 1.0 - smoothstep(0.06, 0.18, fwidth(swell_phase));
+	float swell = swell_shown * (1.0 - lee) * (1.0 - trodden) * swell_depth * (0.4 + 0.6 * broad);
+	float swell_wave = swell_phase * TAU;
+	slope = slope * fade + (sin(swell_wave) + 0.35 * sin(2.0 * swell_wave)) * swell;
+	vec3 tilt = vec3(downwind.x, 0.0, downwind.y) * slope;
 	vec3 rippled = normalize(n - tilt + dent);
+
+	// What the ripples and swell no longer draw still scatters the light: the
+	// slope variance they lose to distance widens the sheen (Toksvig), so far
+	// dunes keep a soft sheen rather than a hard glare or none. 0.56 is the
+	// mean square of the lopsided wave's slope.
+	float lost = 0.56 * (ripple_depth * ripple_depth * (1.0 - shown * shown)
+		+ swell_depth * swell_depth * (1.0 - swell_shown * swell_shown));
+	float clear = 1.0 - storm;
+	shine = vec2((1.0 - 0.7 * trodden) * clear, ocean_power / (1.0 + ocean_power * lost));
+
+	// Glitter, after Wang and Bowles: cells sized to the pixel, each with one
+	// jittered grain and its own facet. Two scales a factor of two apart,
+	// blended by the footprint, so a cell never pops as you walk; and each
+	// grain drawn round on screen a pixel or two across, so none is ever
+	// smaller than a pixel to crawl. Gone with distance, on tracks (trodden
+	// sand is rough) and in the dust.
+	float det = dpx.x * dpy.z - dpy.x * dpx.z;
+	mat2 to_px = mat2(vec2(dpy.z, -dpx.z), vec2(-dpy.x, dpx.x)) / (det < 0.0 ? min(det, -1e-14) : max(det, 1e-14));
+	float foot = max(length(dpx.xz), length(dpy.xz));
+	float level = max(log2(foot * CELL_PIXELS / GRAIN), 0.0);
+	float scale = floor(level);
+	float blend = level - scale;
+	float near = (1.0 - smoothstep(0.03, 0.12, foot)) * (1.0 - trodden) * clear * clear;
+	vec4 glints[2];
+	for (int k = 0; k < 2; k++) {
+		float cell = GRAIN * exp2(scale + float(k));
+		vec2 local = world_pos.xz / cell;
+		vec2 id = floor(local) + floor(origin / cell + 0.5);
+		vec3 r;
+		vec3 r2;
+		hash6(ivec3(ivec2(id), int(scale) + k), r, r2);
+		vec2 off = to_px * ((0.25 + 0.5 * r.xy - fract(local)) * cell);
+		float spot = 1.0 - smoothstep(0.7, 1.7, length(off));
+		vec3 facet = normalize(rippled + LEAN * (r2 * 2.0 - 1.0));
+		float weight = spot * (k == 0 ? 1.0 - blend : blend) * near * r.z * r.z;
+		glints[k] = vec4(mat3(VIEW_MATRIX) * facet, weight);
+	}
+	glint_fine = glints[0];
+	glint_coarse = glints[1];
+	// Grains are pale quartz: the sheen is the light's colour, warmed a little.
+	sheen_tint = mix(vec3(1.0), colour / max(colour.r, 1e-3), 0.35);
 
 	ALBEDO = colour;
 	ROUGHNESS = 1.0;
 	NORMAL = normalize((VIEW_MATRIX * vec4(rippled, 0.0)).xyz);
+}
+
+void light() {
+	float nl = dot(NORMAL, LIGHT);
+	float lit = max(nl, 0.0);
+	float nv = max(dot(NORMAL, VIEW), 1e-3);
+	vec3 incoming = LIGHT_COLOR * ATTENUATION;
+	// Fujii's Oren-Nayar, as Lambert where grains hide nothing (s = 0). Only
+	// a sky light under about 20 degrees: higher, or a lamp by your eye, it
+	// flattens the ripples, as the full Moon looks flat; and Tu stands 30
+	// degrees up where a run begins.
+	float s = dot(LIGHT, VIEW) - nl * nv;
+	float up = dot(LIGHT, VIEW_MATRIX[1].xyz);
+	float rough = LIGHT_IS_DIRECTIONAL ? backscatter * (1.0 - smoothstep(0.17, 0.5, up)) : 0.0;
+	float fon = 1.0 + rough * (s > 0.0 ? s / max(max(lit, nv), 1e-3) : s);
+	DIFFUSE_LIGHT += incoming * lit * max(fon, 0.0) / PI;
+	// Normalised Blinn-Phong, so a wider lobe is a dimmer one.
+	vec3 h = normalize(LIGHT + VIEW);
+	float p = shine.y;
+	float sea = ocean * (p + 8.0) / (8.0 * PI) * pow(max(dot(NORMAL, h), 0.0), p);
+	// Schlick's Fresnel over a lobe as wide as it gets (GGX at roughness 1).
+	float fresnel = 0.04 + 0.96 * pow(1.0 - max(dot(LIGHT, h), 0.0), 5.0);
+	float grazing = rim * fresnel * 0.5 / (PI * (lit + nv));
+	SPECULAR_LIGHT += incoming * max(sea, grazing) * lit * shine.x * sheen_tint;
+	// Most pixels hold no grain: they skip it.
+	if (glint_fine.w + glint_coarse.w > 0.0) {
+		float flash = glint_fine.w * pow(max(dot(reflect(-LIGHT, glint_fine.xyz), VIEW), 0.0), GLINT_SHARP)
+			+ glint_coarse.w * pow(max(dot(reflect(-LIGHT, glint_coarse.xyz), VIEW), 0.0), GLINT_SHARP);
+		SPECULAR_LIGHT += incoming * flash * glitter * smoothstep(0.0, 0.1, nl);
+	}
 }
