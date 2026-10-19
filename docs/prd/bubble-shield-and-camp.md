@@ -179,8 +179,9 @@ description of what's built. The starts are tentative, as the notes say.*
 **What's built.** The light shield every run starts with is round and bone white, 4 kg, with a
 4 m bubble. The Surveyor's floating deck carries it stuck on its top (As built, above). Since the
 chassis rework it has no battery of its own, so lifted off the deck it goes dark in your hands:
-carrying one running needs a pool that travels with you, the Varran settler's carried shield
-([Profile & saves](profile-and-saves.md)), which isn't built.
+carrying one running needs a pool that travels with you, as the Varran settler's personal shield
+has: a battery of its own ([below](#the-varran-settlers-personal-shield-built-2026-10-19), built
+2026-10-19).
 
 **What the notes describe.** "New **light shield**: flat, weaker, mounts on a crate like other
 shields and takes a battery like other shields, but is light enough to carry, switched on,
@@ -214,6 +215,27 @@ oyster starts," and the docs read "nomad" as the hybrid. Session 4, part 2 makes
 different start (from the moving city, a mythic kit), so that reading is gone. Today there is
 one kit, the built one, and Survival says: "Only this standard kit is balanced; choosing a kit
 waits." The session balances the first three kits.
+
+## The Varran settler's personal shield (built, 2026-10-19)
+
+The chassis spec's "small shield carried with its own battery, raised around himself in storms"
+([Profile & saves](profile-and-saves.md#starts-on-the-chassis-and-two-new-kits-agreed-2026-10-18-spec-the-starts-and-the-varran-settler-built-the-archaeologist-not)),
+and the seam the chassis rework left for it: a shield off a deck goes dark, so this one keeps a
+battery of its own, as the radio and the heat cutter do. Not a built-in cell and not a pocketable
+flag, both rejected above: a battery slot, and the suit's rule that a device you carry works on you.
+- **What it is** (`personal_shield`, a give id): a flat puck in the empire's blue and ivory with a
+  dome for its emitter, 3 kg, its battery cradled at its back, 7 kg with it. A 2.5 m bubble round one
+  person that keeps out the storm and 85% of the wind, as the light shield's does. Cheap and hungry: 3 W
+  in the clear and 50 W holding back a full storm, so a battery lasts 33 hours in the clear and two
+  hours of full storm, six storms of twenty minutes.
+- **Carried, it runs:** in your hands, or in your suit, where it rides on you and use in the inventory
+  switches it; its bubble goes where you go, on the board too. Stuck on a deck it runs on its battery
+  and the deck's pool, as the radio does, and charges there.
+- **Never on the sail:** stuck on his rig, its bubble would take in the sail and the sail would feel
+  no wind. Raised round you at the end of the rig's lines, it takes in only you: the sail feels the
+  whole wind and the rig sails on, while you feel what the bubble lets through (shield probe 10).
+- **What sits outside it wears,** as anything does: his rig, his computer and his sail in a long
+  storm, and a storm's wind tears a raised sail.
 
 ## The smart shield (proposed; first version built)
 
@@ -300,6 +322,10 @@ Readings, not in the session:
    and the screen logs it. A shield on the sand nearby, off the deck, stays off. Switched
    off from the screen's power page, it stays off while the front holds near; switched on
    there, it's on.
+10. **The Varran settler's personal shield** (2026-10-19). His kit's shield rides in your suit with
+    a full battery of its own; used there it stands round you on that battery alone, in no other
+    pool. Raised round you while his rig tows you across a steady 10 m/s, the sail still feels the
+    whole wind and the rig sails on, you feel 15% of it, and its battery pays its 3 W.
 
 ## Out of scope
 

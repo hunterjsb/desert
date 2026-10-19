@@ -213,7 +213,8 @@ workstation) rather than filled slots.
   thing stuck on each piece by its pose on that piece and the face's way out, with its own
   state (Profile & saves).
 - **The kits** start on rigs built by `Rig` from data steps, as the scenarios, the main menu's
-  showpiece and found chassis are (Profile & saves). The Surveyor's: two pieces joined, a tray
+  showpiece and found chassis are (Profile & saves); a hook's step can name it, as a stick's can, for
+  a line a kit lays from it. The Surveyor's: two pieces joined, a tray
   under each set back under the weight, a frame on the second with a wall on its back, the
   board and a compass hung on the wall, and a battery, the light shield and the light panel on
   the first; 68 kg, floating within 2° of level.
@@ -520,9 +521,18 @@ device already stays a body of its own on the host's power pool.
 - **What's under the sand gets its own page** when mods detect it (Hunter, 2026-10-18): old
   lines and buried structures, as the dev map draws them, on a Survey page among the tabs, not
   over the weather radar. Built 2026-10-19 with the ground radar (below).
+- **The navigation computer** (2026-10-19, `nav_computer`, a give id): a Console of the Varran
+  empire's make, the Varran settler's, out of place and heavy on his minimal rig (Profile & saves). The
+  Console's rack in an armoured case, imperial blue under ivory corners with chrome handles, 30 kg, its
+  weight at its foot; its radar under a dome on its head and an anemometer's cups beside it. Its five
+  weather instruments are built into its frame, so it reads the wind, the pressure, the humidity and
+  the sand with nothing fitted, and its radar reaches 9 km, half again a Console's: its map is 24
+  cells across, 9 km each way, with its screen alone. It draws 14 W, the screen 3 more. Its screen port and power
+  port are the Console's, with two computer-mod ports for more; a built-in instrument counts as fitted
+  everywhere a Console counts its gear (`Console._fitted`). It's new make, not found: no lineage marks.
 - **Still proposed:** the final layout, any part on the computer-mod top besides the radar (an
-  antenna), god modules, other makers' Consoles, a Console linked by cable, and devices other than
-  shields made smart.
+  antenna), god modules, makers' Consoles past the Varrans', a Console linked by cable, and devices
+  other than shields made smart.
 
 ### The ground radar and the sieve (built 2026-10-19)
 

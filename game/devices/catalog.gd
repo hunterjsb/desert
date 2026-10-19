@@ -319,6 +319,16 @@ const DEVICES := {
 		"sockets": [
 			[&"port", Vector3(0.15, -0.04, 0.0), Vector3.RIGHT],
 		]},
+	# The Varran settler's: a small bubble round one person, cheap and
+	# hungry, on a battery of its own so it runs carried, in your hands or
+	# your suit. Stuck on a deck, it joins the pool too.
+	&"personal_shield": {"label": "Personal shield generator", "short": "Personal shield",
+		"size": Vector3(0.3, 0.18, 0.3), "mass": 3.0, "shield": true, "carryable": true, "sticks": true, "stands": true,
+		"stats": {"radius_m": 2.5, "clear_w": 3.0, "storm_w": 50.0, "wind_block": 0.85},
+		"sockets": [
+			[&"battery", Vector3(0.0, -0.03, 0.15), Vector3.BACK],
+			[&"port", Vector3(0.15, -0.04, 0.0), Vector3.RIGHT],
+		]},
 	# The light solar panel you start with, half a found panel's watts on half
 	# a piece, so it lies beside a shield: stick it, set it down, cable it in,
 	# pick it up again. Lying flat, the wind meets its edge.
@@ -417,6 +427,21 @@ const DEVICES := {
 			[&"computer_mod", Vector3(-0.35, 0.36, 0.0), Vector3.LEFT],
 			[&"computer_mod", Vector3(-0.35, 0.12, 0.0), Vector3.LEFT],
 			[&"computer_mod", Vector3(-0.35, -0.12, 0.0), Vector3.LEFT],
+		]},
+	# The Varran settler's navigation computer: a Console of the empire's make,
+	# a rack the Console's size in an armoured case, three times its weight,
+	# its weather instruments built in and its radar reaching half again as
+	# far. Its screen port and its power port are the Console's; two
+	# computer-mod ports take more.
+	&"nav_computer": {"label": "Navigation computer", "short": "Nav computer", "size": Vector3(0.7, 1.3, 0.6),
+		"mass": 30.0, "middle": Vector3(0.0, -0.45, 0.0), "console": true, "sticks": true, "stands": true, "tall": true,
+		"stats": {"draw_w": 14.0, "anemometer": 1, "barometer": 1, "hygrometer": 1, "particle_sensor": 1, "radar": 1,
+			"radar_m": 9000.0},
+		"sockets": [
+			[&"screen", Vector3(0.0, 0.01, -0.3), Vector3.FORWARD],
+			[&"port", Vector3(0.0, -0.24, 0.3), Vector3.BACK],
+			[&"computer_mod", Vector3(0.35, 0.36, 0.0), Vector3.RIGHT],
+			[&"computer_mod", Vector3(-0.35, 0.36, 0.0), Vector3.LEFT],
 		]},
 	# Power boxes: battery bays sticking on a deck, joining its pool, each make
 	# on its own terms (PowerBox). The colony's cabinet, rare and heavy: eight

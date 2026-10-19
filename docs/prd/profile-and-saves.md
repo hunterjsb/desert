@@ -99,8 +99,8 @@ the profile (`Kit.is_open_to`, through `Profile.has`) as ????. A kit's `unlock` 
 the board) opens the Salvager, and Hermit (a whole day under a shield) the Homesteader (Hunter,
 2026-10-18: "let's lock the two other starts behind some deeds"). The dev console's `unlockall`
 opens both for testing. The profile keeps the origin a run was last begun or resumed as (`Profile.last_origin`), whose
-kit the main menu shows; reset forgets it. The novelty kits aren't built; an origin that
-isn't balanced is offered Normal only. The run keeps its origin (`World.kit`) and so does its save
+kit the main menu shows; reset forgets it. Of the novelty kits only the Varran settler is built (below); an
+origin that isn't balanced is offered Normal only. The run keeps its origin (`World.kit`) and so does its save
 (`kit`); a new run after a death comes as the same origin. A save from before origins has none and
 resumes as it was, from the tuning's start. Spawns probes 2 and 3.
 
@@ -288,7 +288,7 @@ the frame is a part stuck on the deck.
      flag, the grid holding every tree, the moves above, and every deed whose system is built: Wind
      (without its start), Weather to Tells, Ruins to Storm Chaser, Scrap, Signals to Pantheon, Far,
      and Nomad's first three.
-  2. With the chassis spec's starts and kits: Storm Runner opens the Varran settler.
+  2. With the chassis spec's starts and kits: Storm Runner opens the Varran settler. Built 2026-10-19.
   3. **Built 2026-10-19,** with dune archaeology: Dune Reader, Field Kit and Spadework, the last two
      opening the Archaeologist together.
   4. With the radio stations' second pass and the Walker's quest (designed 2026-10-19, [Radio](radio-sound-and-atmosphere.md#the-walkers-quest-and-the-living-city-agreed-2026-10-19-not-built)): Triangulated, The Living City,
@@ -348,7 +348,7 @@ How each X was chosen, from the probes' numbers (the probes' seed, 2026-10-19):
   stepped onto, dug out by hand and not before half its sand is yours, and the setup not done until its
   ground radar is fitted), and 34, the Archaeologist locked until both of hers.
 
-## Starts on the chassis, and two new kits (agreed, 2026-10-18 spec; the starts built, the kits not)
+## Starts on the chassis, and two new kits (agreed, 2026-10-18 spec; the starts and the Varran settler built, the archaeologist not)
 
 From the [chassis spec](../chassis-kits-dunes-2026-10-18.md); balance targets the Surveyor only.
 - **The Surveyor:** two chassis joined as a deck and a frame with an upright on its side, its gear
@@ -386,6 +386,36 @@ one builder (`Rig`) puts together, as the scenarios and the showpiece are (Devic
   a strong cable to wire them.
 - **The main menu's showpiece** builds the origin's rig, so the Surveyor shows its deck, wall
   and board.
+
+**The Surveyor's first day, measured again (2026-10-19), kept as it is.** On the probes' seed its
+trays give way at 0.43 days, a run's first storm due three to eight minutes in, so the camp floats
+for the first eight or so minutes, long enough to tow it a few hundred metres to the shelter you
+choose before that storm, then settles and keeps the battery's last quarter for the shield, which
+runs the whole first day and into the next morning (Survival probe 4); it rides within 2° of level.
+A good first day as it stands, so nothing changed.
+
+**Built (2026-10-19), the Varran settler** (`varran_kit.tres`, the fourth origin, Kit.ORIGINS). A
+novelty start: not balanced, so Normal only, and opened by Storm Runner, the Wind tree's last deed
+(Hunter's spec said a dune sailboat built and used; round two's tree settled it). It begins where the
+Surveyor's would, deep desert with an artery to find. "Sails the storms."
+- **His rig,** behind you to your right as the run begins, resting on the sand with its sail furled: a
+  deck two pieces by two on four hover trays set out at its corners, his navigation computer on its
+  front on the middle line, the mast behind it, two batteries and the light panel aft, and a hook on
+  each front piece's outer side ring. No runners and no keel: he's the keel, on his board
+  ([Movement](movement.md#sailing-from-kite-to-yacht-agreed-2026-10-18-spec-built)). 121 kg; floating it
+  draws 261 W (244 W its trays, 17 W the computer and its screen), so its two batteries float it about
+  46 minutes, two and a third days, and the light panel gives 30 W at best. Narrower decks were tried
+  and are no rig: two pieces abreast or in a line go over or hang luffing on the lines, and three in an
+  L fly only one tack.
+- **Its two lines at your waist from the start:** the bow line from its left side hook, laid 1.5 m
+  slack, and the sheet from the boom's end, 0.5 m; a kit's `waist` lays them, by what its rig's steps
+  name (a rig's hook can be named now, as a stick can). The board lies at your feet, its battery full.
+- **Carried:** a canister, a ration and his personal shield, with a battery of its own
+  ([Bubble shield](bubble-shield-and-camp.md#the-varran-settlers-personal-shield-built-2026-10-19)).
+  A device a kit carries comes with its batteries, as one beside you does. Every battery starts full.
+- **To sail:** use the mast to raise the sail, use a piece to float the deck, step onto the board and
+  dig in. What sits outside his bubble wears in a long storm as anything does: the rig, the computer
+  and the sail, which a storm's wind tears.
 
 ## Ending flags (proposed)
 
@@ -594,6 +624,10 @@ calls them from Save, Save & quit, Resume, New game, the death screen and Option
 24. **Names from before** (2026-10-19). A profile with Kesselside and the Okafor bunker counted
     toward Hot Tourist Destinations counts Crakeside and the Haberjack bunker instead; a chassis an
     Okafor marked, saved and resumed, is a Haberjack's and wears their heraldry.
+
+32. **Storm Runner opens the Varran settler** (2026-10-19). On a fresh profile New game lists four
+    starts, the Surveyor first and highlighted, the Varran's ????; the Wind tree's earlier deeds don't
+    open it, Storm Runner does, marked new, and it offers Normal only.
 
 ## Out of scope
 

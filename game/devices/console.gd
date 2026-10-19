@@ -301,9 +301,12 @@ func _process(_delta: float) -> void:
 	_draw_screen()
 
 
-## Its own instruments, by the stat each adds.
+## Its own instruments, by the stat each adds: built into its frame, or fitted.
 func _fitted() -> Dictionary:
 	var found := {}
+	for key: String in INSTRUMENTS:
+		if frame_stats.get(key, 0) > 0:
+			found[key] = self
 	for part in parts():
 		for key: String in INSTRUMENTS:
 			if part.stats.get(key, 0) > 0:
