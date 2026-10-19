@@ -23,20 +23,41 @@ const LOOK_M := 5000.0
 const CACHES: Array[StringName] = [&"cache", &"dugout", &"checkpoint", &"bunker"]
 ## The idle lines change this often, s.
 const IDLE_EVERY := 6.0
+## The words the Quartermaster challenges with, two a round, nobody left to
+## give the countersign.
+const PHONETIC: Array[String] = ["ALPHA", "BRAVO", "CHARLIE", "DELTA", "ECHO", "FOXTROT", "GOLF", "HOTEL",
+	"INDIA", "JULIET", "KILO", "LIMA", "MIKE", "NOVEMBER", "OSCAR", "PAPA", "QUEBEC", "ROMEO", "SIERRA",
+	"TANGO", "UNIFORM", "VICTOR", "WHISKEY", "XRAY", "YANKEE", "ZULU"]
 
+## What each god says outside its window: a litany, recited in order and over
+## again, word for word, as its priests kept it once they no longer knew what
+## the words were for (the endings session: debugging is ritual). Each opens
+## and closes the same way, so where you've come in says how long to wait.
+## %d is a number, new each line; {a} and {b} are the round's challenge words.
 const IDLE := {
-	&"quartermaster": ["ROLL CALL // UNIT %d // NO RESPONSE", "PERIMETER STATUS: UNVERIFIED",
-		"REQUISITION %d DENIED: CLEARANCE LAPSED", "ALL PERSONNEL REPORT TO MUSTER POINT"],
+	&"quartermaster": ["NET SEVEN // THIS IS NET CONTROL // ALL STATIONS STAND BY",
+		"ROLL CALL // UNIT %d // NO RESPONSE", "ROLL CALL // UNIT %d // NO RESPONSE",
+		"AUTHENTICATE // CHALLENGE {a} {b} // AWAITING COUNTERSIGN", "NO COUNTERSIGN // NET REMAINS CLOSED",
+		"REQUISITION %d DENIED: CLEARANCE LAPSED", "PERIMETER STATUS: UNVERIFIED",
+		"ALL PERSONNEL REPORT TO MUSTER POINT", "NET CONTROL OUT // DO NOT ACKNOWLEDGE"],
 	&"walker": ["survey leg %d · grade nominal · continuing", "waypoint %d logged · no operator",
 		"sample bin full · discarding", "gait fault 3 · compensating · continuing"],
-	&"cistern": ["...and the basin shall be filled, phase %d of the plan...", "...rain at the forty-first year...",
-		"...a cup for every child of the colony...", "...the reservoirs are not yet funded..."],
-	&"almanac": ["QUOTE: seed stock %d per bushel. NO BUYERS.", "LEDGER BALANCE OWED: %d credits",
-		"Contract %d unfilled. Penalty accrues.", "Market closed. Market closed."],
-	&"ledger": ["MANIFEST %d · 0 OF 0 BERTHS OCCUPIED", "AWAITING HARBOUR TRAFFIC · DAY %d",
-		"CARGO HOLD 4 · INVENTORY UNCHANGED", "CREW LIST · 0 ABOARD · 0 ASHORE"],
-	&"stoker": ["!! PRESSURE LOW !! FEED REQUIRED !! %d", "QUOTA SHORTFALL %d%%", "BURNER 2 COLD. BURNER 2 COLD.",
-		"!! HEAT !! HEAT !! HEAT !!"],
+	&"cistern": ["...hear us, children of the colony, hear the plan...",
+		"...phase %d of the plan: the basin shall be filled...", "...rain at the forty-first year...",
+		"...ration call: one cup for every child, one cup...", "...ration call: the elders drink after the children...",
+		"...check the seal, check the seal again, and give thanks...", "...the reservoirs are not yet funded...",
+		"...do not drink from the open sky...", "...go in peace, and keep the seals closed..."],
+	&"almanac": ["Market open. Market open.", "QUOTE: seed stock %d per bushel. NO BUYERS.",
+		"QUOTE: water rights %d per share. NO BUYERS.", "Contract %d unfilled. Penalty accrues.",
+		"LEDGER BALANCE OWED: %d credits", "Futures suspended pending harvest data.",
+		"Subscribe for the advisory. Fee due.", "Market closed. Market closed."],
+	&"ledger": ["OPENING THE BOOK · ENTRY %d", "MANIFEST %d · 0 OF 0 BERTHS OCCUPIED",
+		"CARGO HOLD 4 · INVENTORY UNCHANGED", "ONE AND ONE ARE TWO · TWO AND TWO ARE FOUR · THE BOOK BALANCES",
+		"CREW LIST · 0 ABOARD · 0 ASHORE", "AWAITING HARBOUR TRAFFIC · DAY %d",
+		"WHAT IS COUNTED IS KEPT · WHAT IS KEPT IS COUNTED", "CLOSING THE BOOK · NO DISCREPANCY"],
+	&"stoker": ["!! FIRE CALL !! FIRE CALL !!", "!! PRESSURE LOW !! FEED REQUIRED !! %d", "QUOTA SHORTFALL %d%%",
+		"BURNER 2 COLD. BURNER 2 COLD.", "!! HEAT !! HEAT !! HEAT !!", "VALVE %d STUCK. STRIKE IT. STRIKE IT.",
+		"!! STOKE !! STOKE !! STOKE !!"],
 	&"eye": ["", "", "", ""],
 }
 
@@ -71,11 +92,15 @@ static func say(id: StringName, radio: Radio, gods: Gods, p: Vector3, x: float, 
 	return {"text": idle(id, t), "useful": false}
 
 
-## What a god says outside its window: noise in its own voice.
+## What a god says outside its window: noise in its own voice, its litany's
+## next line.
 static func idle(id: StringName, t: float) -> String:
 	var lines: Array = IDLE[id]
 	var slot := floori(t / IDLE_EVERY)
-	var line: String = lines[hash([id, slot]) % lines.size()]
+	var rounds := floori(float(slot) / lines.size())
+	var line: String = lines[posmod(slot, lines.size())]
+	line = line.replace("{a}", PHONETIC[hash([id, rounds, "a"]) % PHONETIC.size()]) \
+		.replace("{b}", PHONETIC[hash([id, rounds, "b"]) % PHONETIC.size()])
 	return line % (hash([id, slot, "n"]) % 900 + 100) if line.contains("%d") else line
 
 
@@ -107,8 +132,23 @@ static func _walker(radio: Radio, gods: Gods, x: float, z: float, t: float, loca
 				else "storm in %s" % Radio.span(long.change - t))
 		var feet_say := "storm at the walker" if now else "clear at the walker"
 		return {"text": "%s · long range: %s · %s" % [routine, ahead, feet_say], "useful": true,
-			"calm": calm(radio.reading, t)}
-	return {"text": routine, "useful": true, "calm": calm(radio.reading, t)}
+			"calm": calm(radio.reading, t), "log": _survey(radio, gods, at, t)}
+	return {"text": routine, "useful": true, "calm": calm(radio.reading, t), "log": _survey(radio, gods, at, t)}
+
+
+## The Walker's survey log, sent after the forecast for whoever logs it: how
+## many km it has walked, where it stands and the steady wind at its feet,
+## read from the field there. A dry line and true: it's the wind on the Rim
+## where the Walker is, so it says what's blowing a long way off.
+static func _survey(radio: Radio, gods: Gods, at: Vector2, t: float) -> String:
+	var q := gods.home(&"walker", t)
+	var lat := rad_to_deg(Sphere.latitude(q))
+	var lon := rad_to_deg(Sphere.longitude(q))
+	var wind := radio.world.weather.field.steady_wind_at(at.x, at.y, t)
+	var blowing := "calm" if wind.length() < 0.5 else "wind %d m/s from the %s" % [roundi(wind.length()),
+		radio.say_point(Radio.bearing(-wind))]
+	return "survey log · leg %d · %.1f%s %.1f%s · %s" % [floori(Tuning.current().walker_speed * maxf(t, 0.0) / 1000.0),
+		absf(lat), "n" if lat >= 0.0 else "s", absf(lon), "e" if lon >= 0.0 else "w", blowing]
 
 
 ## Nothing to report at world time t: no storm on you, and none due within

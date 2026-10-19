@@ -219,7 +219,10 @@ terminals" by Hunter's call. The squatting oracles above are now the gods.
   flat, as a voice in your ear, and headless there's none.
 - **The Eye's drone** (Hunter: "implement this as a random ambient track that can play from 'the eye'"):
   the Eye's frequency begins a run silent, then now and then plays Hunter's drone (`radio_eye.ogg`, 66 s)
-  through once, each silence before it 2 to 8 minutes (`eye_quiet_minutes`), the seed's pick. Between
+  through once, each silence before it 2 to 8 minutes (`eye_quiet_minutes`), the seed's pick. **Two
+  drones** (Hunter, 2026-10-18: "put this as a random ambient track for the eye"): each time it plays,
+  the seed picks it or Hunter's tunnel ambience (`radio_eye_tunnel.ogg`, 164 s), levelled to match, and
+  it plays through to its own end. Between
   drones there's nothing on its frequency, not even tones. Like the Eye itself it comes down by sky wave,
   so it's heard at night; by day it's on, too faint to hear. It runs on its own schedule
   (`Gods.song`), and its pitch slides with a storm's warp.
@@ -233,8 +236,8 @@ terminals" by Hunter's call. The squatting oracles above are now the gods.
   moves the dial to that carrier once the radio is back in its world, the weather station's to the
   Walker's carrier that day, with the save's version unchanged.
 - **Probes:** radio 6 (each god has its bearing), 7 (storms garble the gods), 8 (the dial finds each
-  god), 9 (useful only in its window), 10 (the volume knob), 11 (clear skies, and the Stoker's song), 12 (the clear-skies scenario), 13 (the relay carries the music), 14 (spoken reports, and the meltdown), 15 (storms tell you which way), 16 (the Eye's drone), 17 (the relay at night), 18 (static sinks under a signal), 19 (the music goes in a far-side
-  storm) and 20 (tuning shares reel in with the reel). Probes 1, 2, 4 and 5 tune by the dial, and so do Survival 12, Profile & saves 13 and
+  god), 9 (useful only in its window), 10 (the volume knob), 11 (clear skies, and the Stoker's song), 12 (the clear-skies scenario), 13 (the relay carries the music), 14 (spoken reports, and the meltdown), 15 (storms tell you which way), 16 (the Eye's drones), 17 (the relay at night), 18 (static sinks under a signal), 19 (the music goes in a far-side
+  storm), 20 (tuning shares reel in with the reel) and 23 (each god signs its own). Probes 1, 2, 4 and 5 tune by the dial, and so do Survival 12, Profile & saves 13 and
   Devices & mods 28, the power page's row.
 - **Not yet:** a god's own voice beyond tones, frequencies as finds, antennas, and the far end's
   signal.
@@ -292,6 +295,47 @@ station is at its home, its signal and bearing from that landmark wherever you h
 - **Probes:** radio 21 (tuning brings the dial close: in and out, the knob and needle by the notch, held
   and on a Console) and 22 (each god at its home, against where the world lays it).
 
+### Signatures and litanies (2026-10-18; built, on the `signatures` branch)
+
+*Fleshing out the broadcasts.* Every god but the Eye had sounded the same three tones, only pitched
+apart, so a carrier told you nothing until you read its line. Now each signs its own, and what it says
+outside its window is a liturgy with a shape, not a shuffle.
+
+- **Interval signals** (`game/radio/signature.gd`). Between its words, every 8 s, a god sends a few
+  notes nobody else sends, as old stations did, so you learn whom you've found by ear and the dial still
+  names nothing. Made in code, mono, peaking at -25 dBFS as `radio_tones.ogg` did; a storm still wobbles
+  their pitch.
+
+  | God | Its signal |
+  |---|---|
+  | The Quartermaster | Its call in Morse, Q M (`--.- --`), keyed hard at 760 Hz |
+  | The Walker | Four steps at its pace, heel and toe, a third of a second apart |
+  | Mother Cistern | Three drops falling into a basin, each sliding down an octave |
+  | The Almanac | The market bell: a rising C major arpeggio |
+  | The Ledger | A tally of five quick ticks, then the till's two notes |
+  | The Stoker | A boiler alarm, two tones, three times |
+  | The Eye | Nothing. It never announces itself, and between drones it's silent as before |
+
+  The weather station's own tones are the Walker's steps. A Console's radio still chimes with the old
+  tones when the Console speaks.
+- **Litanies.** Outside its window a god recites its litany in order, one line every 6 s, and starts
+  over, word for word, as its priests kept it once they no longer knew what the words were for (the
+  endings session: "debugging is ritual, kept word for word"). Each opens and closes the same way, so
+  where you've come in says how long until it repeats. The Quartermaster opens its net, calls the roll,
+  and **challenges for a countersign nobody can give** (two phonetic words, new each round), then closes
+  the net. Mother Cistern's are ration calls and the seal check as a prayer; the Almanac opens and closes
+  its market; the Ledger opens and closes its book, its tallies as psalms; the Stoker's are fire calls and
+  a stuck valve. Numbers in them are noise. What a god says in its window is unchanged.
+- **The Walker's survey log.** After the forecast, every other 6 s on the line, the Walker sends its log:
+  the leg it's on (km walked since the clock began), where it stands as latitude and longitude, and the
+  steady wind at its feet, from the field there. It's true, and it's the weather far off, on the Rim where
+  the Walker is. It's never in the spoken report.
+- **Probe:** radio 23 (each god signs its own: each signal its own and short, the Quartermaster's in
+  Morse, levelled as the tones were, the one the radio plays when tuned; the litany opening and closing
+  each round with a new challenge; the survey log's leg and wind true, on the line and never spoken).
+- **Not yet:** the living city's coded tones, a god's voice beyond its signal and its line, and the
+  survey log's terrain.
+
 ### Stations: the Walker and the living city (agreed, 2026-10-18 spec)
 
 From Hunter's [storms, signals & sailing spec](../storms-signals-sailing-2026-10-18.md). A station is a node with a place, a
@@ -303,8 +347,8 @@ frequency, a range and what it says; its signal falls off with distance.
   built:* the weather station on the dial (above) is the Walker's feed, in its 230–290 kHz band,
   low enough that its ground wave carries across the whole moon, sending second only to the Ledger,
   and found by sweeping the dial. It gives the forecast where the radio stands, and at dusk or with
-  storm news at its feet the long report. Not yet: a survey log's bearings and terrain, and the
-  contact log.
+  storm news at its feet the long report. Its survey log is built (Signatures and litanies, above).
+  Not yet: the log's terrain, and the contact log.
 - **The living city's chatter:** a few km, for its own scouts; coded tones, no voices ("storm
   coming, tether in", "city moving"), sometimes its own coordinates written as star positions, the
   nomads navigating by the stars. Its frequency is found by exploring (scratched on a radio in the

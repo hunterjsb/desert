@@ -34,6 +34,8 @@ var _homes := {}
 ## how long a silence can be, s.
 var _plays := {}
 var _silences := {}
+## Which of its songs each play is, by god, as far as worked out.
+var _tracks := {}
 var _quiet := {}
 ## When the Stoker's furnace song was last called up, world time: the dev
 ## console's meltdown, for now.
@@ -122,38 +124,48 @@ func home(id: StringName, t: float) -> Vector3:
 	return _homes[id]
 
 
-## Where a god's song is at world time t, s into it, or -1 when it isn't
-## playing. The Stoker's plays through once each time it's called up (a
-## meltdown); the Eye's drone comes after a silence, plays through, falls
-## silent again for a few minutes, the seed's pick each time, and so on.
-## `length` is the song's, s. The station keeps world time, so it's the same
-## whenever you tune in.
-func song(id: StringName, t: float, length: float) -> float:
+## Which of a god's songs is playing at world time t and where it is, s into
+## it: (song, s), or (-1, -1) when none is. The Stoker's plays through once
+## each time it's called up (a meltdown); the Eye's drones come after a
+## silence, one of them, the seed's pick, plays through, it falls silent again
+## for a few minutes, the seed's pick each time, and so on. `lengths` are its
+## songs', s, always the same for a god. The station keeps world time, so it's
+## the same whenever you tune in.
+func song(id: StringName, t: float, lengths: Array[float]) -> Vector2:
 	if id == &"stoker":
-		return t - meltdown_at if t >= meltdown_at and t - meltdown_at < length else -1.0
+		var into := stoker_song(t, lengths[0])
+		return Vector2(0.0 if into >= 0.0 else -1.0, into)
 	if t < 0.0:
-		return -1.0
+		return Vector2(-1.0, -1.0)
 	if not _plays.has(id):
 		_plays[id] = [_silence(id, -1)]
 		_silences[id] = []
+		_tracks[id] = [_track(id, 0, lengths.size())]
 	var plays: Array = _plays[id]
 	var silences: Array = _silences[id]
+	var tracks: Array = _tracks[id]
 	while plays[-1] <= t:
 		var k := plays.size() - 1
-		silences.append(plays[k] + length)
-		plays.append(plays[k] + length + _silence(id, k))
+		silences.append(plays[k] + lengths[tracks[k]])
+		plays.append(silences[k] + _silence(id, k))
+		tracks.append(_track(id, k + 1, lengths.size()))
 	var i := plays.bsearch(t, false) - 1
-	return t - plays[i] if i >= 0 and t < silences[i] else -1.0
+	return Vector2(tracks[i], t - plays[i]) if i >= 0 and t < silences[i] else Vector2(-1.0, -1.0)
 
 
 ## Where the Stoker's song is at world time t, s into it, or -1 when it isn't playing.
 func stoker_song(t: float, length: float) -> float:
-	return song(&"stoker", t, length)
+	return t - meltdown_at if t >= meltdown_at and t - meltdown_at < length else -1.0
 
 
 ## The Stoker's furnace song called up at world time t, from its start.
 func meltdown(t: float) -> void:
 	meltdown_at = t
+
+
+## Which of a god's `count` songs its k-th play is: the seed's pick.
+func _track(id: StringName, k: int, count: int) -> int:
+	return hash([run_seed, id, k, "song"]) % maxi(count, 1)
 
 
 ## How long a god's k-th silence lasts, s: the seed's pick.

@@ -74,8 +74,9 @@ const RADIO_TONES := preload("res://assets/audio/radio_tones.ogg")
 # Stoker's furnace song on its frequency.
 const RADIO_CLEAR_SKIES := preload("res://assets/audio/radio_clear_skies.ogg")
 const RADIO_STOKER := preload("res://assets/audio/radio_stoker.ogg")
-# The Eye's drone, now and then out of the dark.
+# The Eye's drones, now and then out of the dark, one or the other.
 const RADIO_EYE := preload("res://assets/audio/radio_eye.ogg")
+const RADIO_EYE_TUNNEL := preload("res://assets/audio/radio_eye_tunnel.ogg")
 # Weather.
 const STORM := preload("res://assets/audio/storm.ogg")
 const WIND := preload("res://assets/audio/wind.ogg")

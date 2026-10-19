@@ -38,7 +38,7 @@ const HEARD := 6.0
 ## Of full static, the hiss under a clean signal, and with nothing to hear.
 const CARRIER := 0.2
 const NOTHING := 0.6
-## A god's tones sound this often, s.
+## A god's interval signal (Signature) sounds this often, s.
 const TONES_EVERY := 8.0
 ## A beacon pings this often from as far as FAINT and this often close by, s.
 ## Past FAINT it's faint, past CLEAR clear, nearer strong, and within HERE, m,
@@ -51,8 +51,8 @@ const HERE := 15.0
 ## Tuned within this many widths of a carrier, the dial counts it as on it.
 const ON_IT := 2.0
 ## The gods that play a song now and then on their frequency, silent between:
-## the Stoker's furnace song and the Eye's drone.
-const SONGS := {&"stoker": Sounds.RADIO_STOKER, &"eye": Sounds.RADIO_EYE}
+## the Stoker's furnace song and the Eye's drones, one of them each time.
+const SONGS := {&"stoker": [Sounds.RADIO_STOKER], &"eye": [Sounds.RADIO_EYE, Sounds.RADIO_EYE_TUNNEL]}
 ## A carrier slid its storm warp's full width slides a song's pitch this share.
 const PITCH_SLIDE := 0.04
 ## An anomaly's crackle: the static pitched between these, a burst at a time,
@@ -164,7 +164,7 @@ func _ready() -> void:
 		loop.loop = true
 	# The Stoker's song and the Eye's drone play through once, then a silence:
 	# the station keeps its time.
-	for once: AudioStreamOggVorbis in [Sounds.RADIO_STOKER, Sounds.RADIO_EYE]:
+	for once: AudioStreamOggVorbis in [Sounds.RADIO_STOKER, Sounds.RADIO_EYE, Sounds.RADIO_EYE_TUNNEL]:
 		once.loop = false
 	music = _voice()
 	hiss = _voice()
@@ -485,23 +485,29 @@ func _listen(delta: float) -> void:
 			elif now == WEATHER and not reception.cut and reception.clean > 0.0:
 				# Something to report: read aloud now as it breaks in, and again every so often.
 				if _on_air == Sounds.RADIO_CLEAR_SKIES or t >= spoken_at + _tuning.radio_speak_every or t < spoken_at:
-					spoken = speech(reception.words, reception.clean, t)
+					spoken = speech(reception.report, reception.clean, t)
 					spoken_count += 1
 					spoken_at = t
 			elif SONGS.has(id):
-				var own: AudioStream = SONGS[id]
-				into = gods_of(world).song(id, t, own.get_length())
+				var own: Array = SONGS[id]
+				var lengths: Array[float] = []
+				for each: AudioStream in own:
+					lengths.append(each.get_length())
+				var at := gods_of(world).song(id, t, lengths)
+				into = at.y
 				# Between drones the Eye is silent; the Stoker, its song not called up, talks as ever.
 				quiet = into < 0.0 and id != &"stoker"
 				if into >= 0.0:
-					song = own
+					song = own[roundi(at.x)]
 					music.pitch_scale = 1.0 + PITCH_SLIDE * reception.warp / maxf(_tuning.storm_warp_khz, 0.01)
 			# A faint signal still carries its song: down by the root of how clean it is.
 			_level = 0.0 if reception.cut else sqrt(reception.clean)
 			if song == null and not quiet and not reception.cut and reception.clean > 0.0:
-				_signal.pitch_scale = (0.6 + Gods.ids().find(id) * 0.12) \
-					* (1.0 + 0.08 * reception.storm * sin(t * 3.1))
-				_every(delta, TONES_EVERY, Sounds.RADIO_TONES)
+				# Its own interval signal, so you know whom you've found by ear.
+				var own := Signature.of(id)
+				if own != null:
+					_signal.pitch_scale = 1.0 + 0.08 * reception.storm * sin(t * 3.1)
+					_every(delta, TONES_EVERY, own)
 		BEACON:
 			var heard := Dial.pull(frequency - Dial.BEACON_KHZ, _tuning.dial_width_khz)
 			if target.is_empty():
@@ -523,7 +529,7 @@ func _listen(delta: float) -> void:
 			Sounds.play_at(self, Sounds.RADIO_TUNE, -6.0, HEARD)
 		music.stop()
 		_on_air = null
-	if not song in SONGS.values() and now != MUSIC:
+	if not _is_song(song) and now != MUSIC:
 		music.pitch_scale = 1.0
 	# The static sinks under whatever you can hear, and is all there is when there's nothing.
 	var through := 0.0
@@ -564,10 +570,16 @@ func receive(id: StringName, x: float, z: float, t: float) -> Dictionary:
 		* Dial.strength(id, khz, metres, night, _tuning)
 	var clean := smoothstep(_tuning.signal_floor, WHOLE, strength) * Interference.let_through(storm, _tuning)
 	var words := Transmissions.say(id, self, gods, p, x, z, t)
+	# The Walker's survey log rides after its forecast every other spell, on the
+	# line and never in the spoken report.
+	var line: String = words.text
+	if words.has("log") and posmod(floori(t / Transmissions.IDLE_EVERY), 2) == 1:
+		line += " · " + words.log
 	return {"id": id, "khz": khz, "metres": metres, "bearing": ground,
 		"way": Dial.way(world.shape.history, p, q, ground, say_point, _tuning), "storm": storm,
 		"warp": slid, "strength": strength, "clean": clean, "cut": Interference.cut(storm, t, id, _tuning),
-		"useful": words.useful, "calm": words.get("calm", false), "words": words.text, "text": Interference.distort(words.text, clean, t, id)}
+		"useful": words.useful, "calm": words.get("calm", false), "words": line, "report": words.text,
+		"text": Interference.distort(line, clean, t, id)}
 
 
 ## The relay's signal as it reaches a place at world time t: where the relay
@@ -589,6 +601,14 @@ func receive_relay(x: float, z: float, t: float) -> Dictionary:
 	var clean := smoothstep(_tuning.signal_floor, WHOLE, strength) * Interference.let_through(storm, _tuning)
 	return {"id": &"music", "elevation": sky.elevation, "bearing": ground, "metres": sky.metres, "storm": storm,
 		"warp": slid, "strength": strength, "clean": clean, "cut": Interference.cut(storm, t, &"relay", _tuning)}
+
+
+## Whether a stream is one a god plays now and then (SONGS).
+static func _is_song(stream: AudioStream) -> bool:
+	for own: Array in SONGS.values():
+		if own.has(stream):
+			return true
+	return false
 
 
 ## A song on the air, from where its station is in it: it plays on whether
