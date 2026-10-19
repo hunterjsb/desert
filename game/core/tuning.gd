@@ -242,7 +242,8 @@ static var _current: Tuning
 ## one, about one every six hours of play.
 @export var anomaly_cell_m: float = 20000.0
 @export var anomaly_chance: float = 0.37
-## None comes in a run's first days: ordinary storms are learnt first.
+## None comes in a run's first days, from its own start: ordinary storms are
+## learnt first.
 @export var anomaly_grace_days: float = 5.0
 ## How far ahead of its storm's front its hidden term reaches, in the field's
 ## own units (about a kilometre or two): a heart riding in on the wall shows

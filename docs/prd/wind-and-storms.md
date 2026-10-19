@@ -381,8 +381,11 @@ From Hunter's [storms, signals & sailing spec](../storms-signals-sailing-2026-10
 - **How often** (the spec's open question). One storm in ten that passes a still camp holds one: 123
   of 1,250 storms over 12 seeds and 90 days each, about one every six hours of play (the median gap
   3.1 hours), and more for a camp travelling into the wind, which meets more storms. A third of
-  those bring the heart's full over the camp. None comes in a run's first five days, 100 minutes:
-  ordinary storms are learnt first. One in ten is rare enough to be a story and frequent enough that
+  those bring the heart's full over the camp. None comes in a run's first five days, 100 minutes,
+  counted from its own start (`World.began`; a new run begins days into the weather's clock, on day
+  11 for the probes' seed): ordinary storms are learnt first. A heart whose life began in those days
+  never forms, so none fades in either. The anomaly scenario asks for one, so its dev run has no such
+  days (`World.anomalies_any_time`). One in ten is rare enough to be a story and frequent enough that
   a long run meets two or three, enough to learn the tells and to record one for the Walker.
 - **How strong the skew** (the other half). At the heart the real damage is 5 times the clean
   curve's in particles and 1.5 times in wind past what's stood: of what it adds, eight parts go to
@@ -432,7 +435,7 @@ From Hunter's [storms, signals & sailing spec](../storms-signals-sailing-2026-10
   reference camp's deck resting on the sand, moored upwind; a Console reading the wind and the sand;
   a radio on the weather station; the base shield on one battery, running; and a turbine out in the
   gale on a strong cable, enough for an ordinary storm. A compass is in your suit. It's searched
-  wherever a heart passes within 60 km of where the run began, from the grace's end for up to 200
+  wherever a heart passes within 60 km of where the run began, from the clock's start for up to 200
   days: hearts are sparse, and 30 km and 30 days found none on one seed in eight (how Hunter met
   it, 2026-10-18), where this finds one within 23 days on each of 60 seeds tried. The dev overlay
   shows the hidden term where you stand (`weather/anom`).
@@ -844,6 +847,9 @@ All run without a window, with a fixed seed.
     is a half and at its heart, the compass leans further toward the heart and the radio crackles
     louder; at the heart the shield's load on the Console's stats is past three full storms' while
     its wind and sand read an ordinary storm.
+21. **No anomaly in a run's first days** (2026-10-18). A fresh run begins where and when a new one
+    would, days into the weather's clock; through its first five days no heart comes within 60 km of
+    where it began, where with them lifted, as for a dev run that asks for one, some would.
 
 ## Out of scope
 
