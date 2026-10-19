@@ -493,12 +493,13 @@ as built, unchanged.
   middle line, so its own pull, now only yours, lands there: you're towed as a light load and your
   side of the line steers. Step onto the board and both stay tied (any other line is untied first,
   as before); untie either and the hidden line is gone, the camp's line let out to reach you. Seated
-  at a helm you're aboard, and nothing hides.
+  at a helm you're aboard, and no hidden line forms.
 - **Steering is the carve.** Dig in and carve off the line and its bend pulls the boom's end and
   the camp's nose toward you; the dug edge holds you there, as it holds a tack. Out to windward the
   rig bears away, to leeward it heads up. On the "sail_tow" camp on a broad reach in 10 m/s, a 20°
   carve dug a third in turns the rig +50° off the wind in 2.5 s to windward and −45° to leeward,
-  against +15° with no carve.
+  against +15° with no carve. Left alone the rig rounds up and stops, as stage 1's does, so you keep
+  steering; the probes hold its course as a helmsman would, by a turn on the rig.
 - **The numbers.** The rig is the "sail" deck less its shield, 88 kg on skates; the camp a deck two
   by two on skates with the shield and a crate, 86 kg, its line from the hook on its front left
   ring. On a broad reach (120°) in a steady 10 m/s, held to its course, the rig makes 2.1 m/s
