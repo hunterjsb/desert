@@ -326,6 +326,43 @@ frequency, a range and what it says; its signal falls off with distance.
   dead city), its codes learned by noticing what follows them. Open: how the tones sound and how
   many messages.
 
+### The Walker's quest and the living city (agreed 2026-10-19; not built)
+
+Hunter approved this design on 2026-10-19 ("perfect"). It is the second pass on the stations
+above, and the Walker's quest line from the [storms spec](../storms-signals-sailing-2026-10-18.md).
+It follows the rulings that the Walker walks alone, that finding it must never happen early, and
+that teaching it takes evidence for each tell.
+- **Finding the Walker.** It is a legged survey robot, partly broken, on its fixed route round the
+  Rim, where its station already places it. Its feed growing stronger is the trail to it. The route
+  keeps it far from where a run starts for the first ten days or more.
+- **Its feed, second pass:**
+  - **The survey log:** dry bearings, wind readings and terrain notes.
+  - **The contact log:** each nomad who prays to it is a bearing, taken from where the Walker stood
+    then. Bearings you note go on the Console's map as lines, and three that cross from different
+    places triangulate the living city.
+- **The living city's chatter** answers the spec's open question:
+  - **Five motifs,** each three or four reed-like tones and no voice: storm coming, tether in, city
+    moving, all clear, and a longer run giving its position in star positions.
+  - **Learned** by what follows each one.
+  - **Range:** a few km.
+- **Seeing it.** The deed is seeing its lights: within its chatter's range, its back-lit decks
+  crossing the dark, silhouettes only. Being found by it, its tether landing at camp, stays the
+  nomad city ending.
+- **Teaching the Walker.** A Console on your deck with the right sensors keeps evidence of each tell
+  it witnessed through an anomaly: the compass's drift, the radio's crackle and a shield's load. Plug
+  that Console into the Walker to teach it. From then on anomalies show on your map, and the
+  Walker's feed flags them for anyone listening.
+- **Its deeds** (Profile & saves, round two, step 4):
+  - **Triangulated:** three crossing bearings;
+  - **The Living City:** seeing its lights;
+  - **Taught:** the teaching, which is hidden.
+- **Not this round:**
+  - taking the Walker (its core, its whole body, copying its data);
+  - pilgrimage and aggro;
+  - nomad reputation, and the gate it puts on reaching the Walker;
+  - singing stones as a second kind of evidence;
+  - the ghost relay.
+
 ### The nomads' tones follow a thief (Agreed, session 5; not built)
 
 *[Session 5](../lore-session-2026-10-18-mitchell-wow-shoemaker.md), "Nomad reputation." The whole

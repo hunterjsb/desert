@@ -289,7 +289,7 @@ the frame is a part stuck on the deck.
      and Nomad's first three.
   2. With the chassis spec's starts and kits: Storm Runner opens the Varran settler.
   3. With dune archaeology: Dune Reader and the archaeologist's two, which open the Archaeologist.
-  4. With the radio stations' second pass and the Walker's quest: Triangulated, The Living City,
+  4. With the radio stations' second pass and the Walker's quest (designed 2026-10-19, [Radio](radio-sound-and-atmosphere.md#the-walkers-quest-and-the-living-city-agreed-2026-10-19-not-built)): Triangulated, The Living City,
      and Taught.
   5. Last, once every tree it reads has landed: Nomad and its "any of a family", so that what it
      asks never changes after someone has earned it.
