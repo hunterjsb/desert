@@ -51,8 +51,6 @@ class Seed:
 	var level := -1.0
 	var read_at := -INF
 	var built := false
-	## Built when a save was made: built again as soon as the sheet is laid.
-	var again := false
 	## Sand dug off it by hand, m, and of that what a sieve sifted, m³, kept
 	## while its cell is.
 	var dug := 0.0
@@ -73,6 +71,10 @@ var _tuning: Tuning
 var _seed: int
 var _cells := {}
 var _task := -1
+## The seeds a worker's turn has in hand: nothing else reads them until it's
+## done. And those a resumed save had built, to build again.
+var _working: Array[Seed] = []
+var _again: Array[Seed] = []
 var _turn_at := -INF
 ## Places a ground radar asks about: id -> [x, z, radius, world time asked].
 var _watch := {}
@@ -104,9 +106,9 @@ func step(x: float, z: float, t: float, delta: float) -> Array[Seed]:
 			return due
 		WorkerThreadPool.wait_for_task_completion(_task)
 		_task = -1
-	for seed: Seed in _cells.values():
-		if seed.again and seed.site != null and not seed.built:
-			due.append(seed)
+		_working.clear()
+	due.append_array(_again)
+	_again.clear()
 	if slowed():
 		for seed in near(x, z, _tuning.dune_ruin_build_m):
 			if seed.site != null and not seed.built and seed.level > 0.0:
@@ -116,6 +118,7 @@ func step(x: float, z: float, t: float, delta: float) -> Array[Seed]:
 		var batch := _stale(here, t)
 		if not batch.is_empty():
 			_turn_at = now
+			_working = batch
 			_task = WorkerThreadPool.add_task(_turn.bind(batch, t), false)
 	_forget(here)
 	slowest_step_ms = maxf(slowest_step_ms, (Time.get_ticks_usec() - started) / 1000.0)
@@ -136,7 +139,7 @@ func watch(id: int, x: float, z: float, radius: float, t: float) -> void:
 func near(x: float, z: float, radius: float) -> Array[Seed]:
 	var out: Array[Seed] = []
 	for seed in cells_near(Vector2(x, z), radius, false):
-		if seed.found and seed.site != null and seed.site.distance_to(x, z) <= radius:
+		if seed.found and seed.site != null and not _working.has(seed) and seed.site.distance_to(x, z) <= radius:
 			out.append(seed)
 	out.sort_custom(func(a: Seed, b: Seed) -> bool: return a.site.distance_to(x, z) < b.site.distance_to(x, z))
 	return out
@@ -145,7 +148,7 @@ func near(x: float, z: float, radius: float) -> Array[Seed]:
 ## The seed found whose ground a world place is on, or null.
 func under(x: float, z: float) -> Seed:
 	for seed in cells_near(Vector2(x, z), 1.0, false):
-		if seed.found and seed.site != null and seed.site.reaches(x, z):
+		if seed.found and seed.site != null and not _working.has(seed) and seed.site.reaches(x, z):
 			return seed
 	return null
 
@@ -360,6 +363,7 @@ func finish() -> void:
 	if _task >= 0:
 		WorkerThreadPool.wait_for_task_completion(_task)
 		_task = -1
+	_working.clear()
 
 
 ## What a save keeps: each seed dug or built, [cell x, cell y, dug m, built,
@@ -379,6 +383,7 @@ func memories() -> Array:
 func recall(memories: Array) -> void:
 	finish()
 	_cells.clear()
+	_again.clear()
 	for each: Array in memories:
 		var key := Vector2i(each[0], each[1])
 		var seed := Seed.new()
@@ -391,4 +396,5 @@ func recall(memories: Array) -> void:
 		if seed.site != null:
 			seed.site.dug_m = seed.dug
 			seed.site.sifted_m3 = seed.sifted
-			seed.again = each[3]
+			if each[3]:
+				_again.append(seed)

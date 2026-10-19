@@ -12,7 +12,7 @@ const EYE := 1.65
 const LIGHT := Vector2(0.32, 0.7)
 ## Down its lee from the ruin's ground, m; the deck this far to your right
 ## and ahead of where you stand for that.
-const OFF := 5.0
+const OFF := 1.0
 const DECK := [4.0, -3.0]
 
 @onready var world: World = $World
@@ -57,20 +57,18 @@ func _ready() -> void:
 	var kit: Kit = load("res://game/survival/archaeologist_kit.tres")
 	var rig := Scenarios.rig_at(world, kit.assembled.camp.rig, DECK, false)
 	var console: Console = rig.named.console
-	for i in 120:
-		await get_tree().physics_frame
-	# In front of the Console's screen and to one side, looking down on the deck.
-	var middle := Vector3.ZERO
-	for piece in rig.deck.pieces():
-		middle += piece.global_position / rig.deck.pieces().size()
-	var eye := console.global_transform * Vector3(1.4, 0.9, -2.4)
-	await _look(Vector3(world.world_x(eye.x), eye.y, world.world_z(eye.z)),
-		Vector3(world.world_x(middle.x), middle.y + 0.2, world.world_z(middle.z)))
-	_shot(out, "deck", "a Console with a ground radar, a scoop and a sieve on a deck of three")
 	console.page = Console.Page.SURVEY
 	for i in 240:
 		world.time += 0.25
 		await get_tree().physics_frame
+	# The way the Console's screen faces, off to one side and up, looking down on the deck.
+	var middle := rig.deck.global_transform * Vector3(Chassis.WIDTH, 0.0, 0.0)
+	var facing := console.global_basis * Vector3.FORWARD
+	facing = Vector3(facing.x, 0.0, facing.z).normalized()
+	var eye := middle + facing * 2.6 + facing.cross(Vector3.UP) * 1.1 + Vector3.UP * 1.7
+	await _look(Vector3(world.world_x(eye.x), eye.y, world.world_z(eye.z)),
+		Vector3(world.world_x(middle.x), middle.y + 0.35, world.world_z(middle.z)))
+	_shot(out, "deck", "a Console with a ground radar on its survey, a scoop and a sieve on a deck of three")
 	await RenderingServer.frame_post_draw
 	var page := console._viewport.get_texture().get_image()
 	if page != null:

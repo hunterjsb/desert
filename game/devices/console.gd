@@ -949,7 +949,7 @@ func _survey_page(shown: Dictionary, all: Dictionary) -> void:
 		rows.append(("!" if each.bared else "") + _row(each.name, _distance_parts(at.length())[0],
 			_distance_parts(at.length())[1], _point(Radio.bearing(at))))
 		if each.bared:
-			rows.append("!" + _row(" bared", "", "", "a storm's"))
+			rows.append("!" + _row(" bared now"))
 		elif each.under <= 0.0:
 			rows.append(_row(" dug out"))
 		else:

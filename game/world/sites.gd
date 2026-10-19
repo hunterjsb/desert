@@ -493,19 +493,20 @@ func finish() -> void:
 # --- Dune archaeology. ---
 
 ## Each frame, from where you are: the dune ruins' seeds looked over, and a
-## bared one near you built once you've slowed, one a frame.
+## bared one near you built once you've slowed.
 func step_dunes(x: float, z: float, t: float, delta: float) -> void:
 	if not _built or _anchor == null:
 		return
 	var started := Time.get_ticks_usec()
 	for seed in dunes.step(x, z, t, delta):
-		seed.again = false
+		if seed.built:
+			continue
 		if join(seed.site):
 			seed.built = true
 			dunes.builds += 1
-			break
-		# Over a structure standing already: the dunes took it.
-		seed.site = null
+		else:
+			# Over a structure standing already: the dunes took it.
+			seed.site = null
 	dunes.slowest_ms = maxf(dunes.slowest_ms, (Time.get_ticks_usec() - started) / 1000.0)
 	Dev.put("terrain/dune", "%d seen %d built %.2fms" % [dunes.reads, dunes.builds, dunes.slowest_ms])
 
