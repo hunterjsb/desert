@@ -2778,7 +2778,7 @@ narrows.*
    Vonatelli (agriculture). This replaces the earlier origins (Pellicotts as IOU bosses, Crakes as
    engineers)." The docs follow the new ([section 7](#the-first-kingdoms-the-first-age-agreed-session-4-part-2-restored-in-part-5)).
    Knock-ons the session doesn't address:
-   - Crakeside (renamed in session 5) is "named for the fallen Pellicotts" and stands in "the old IOU
+   - Kesselside, Crakeside since session 5, was "named for the fallen Kessels" and stands in "the old IOU
      freight districts," which are now the Crakes' origin. The rename answers it.
    - Who kept the offline archives that let the First Kingdoms "keep their knowledge" is not
      said, now the Crakes are not the engineers.

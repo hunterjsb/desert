@@ -90,7 +90,7 @@ Three powers, always raiding each other, never merging or making lasting peace. 
 | Enclave | What it is |
 | --- | --- |
 | The Bastion | The military order's fortress around the Ledger's mainframe. |
-| Crakeside | Salvage quarter in the old IOU freight districts, named for the fallen Pellicotts. Diggers and black market. |
+| Crakeside | Salvage quarter in the old IOU freight districts, named for the fallen Crakes. Diggers and black market. |
 | The Pads | Settlement on the old landing field; caravans and traders. |
 | Lowtown | Squatters in half-buried districts, sand to the windows. Poor and independent. |
 
