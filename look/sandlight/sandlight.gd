@@ -5,8 +5,9 @@ extends Node
 ## and then with the game's own, the light, the eye and the frame unchanged:
 ## noon; a low sun ahead, from the ground and from 200 m up, and behind you
 ## where it lights what you see; dusk the same; a full-Tu night with Tu behind
-## you, and by the headlamp; a walked track at midmorning; and close up into
-## the low sun, the camera sliding a centimetre a frame and then walking on, to
+## you, and by the headlamp; a walked track at midmorning; your feet at noon;
+## ripples over a dune and a slip face from its foot; and close up into the
+## low sun, the camera sliding a centimetre a frame and then walking on, to
 ## see the glitter hold still. With --storm, deep in a storm by day instead.
 ## It prints the ground's lightness, spread and clipped share (look/dunes'
 ## measure), the eye, and the GPU's frame time either way, alternated. --only
@@ -35,6 +36,10 @@ const SLIDE := 0.012
 const WALK_PITCH := -16.0
 const STRIDE := 0.05
 const MOVES := 3
+## Looking down at your feet, degrees; and standing this far from a slip
+## face's foot, m.
+const FEET_PITCH := -68.0
+const SLIP_OFF := 7.0
 const GPU_FRAMES := 60
 const GPU_ROUNDS := 9
 
@@ -177,7 +182,14 @@ func _capture() -> void:
 	# Back behind the track's start, looking along it.
 	var back := Vector2(sin(toward), cos(toward)) * 2.5
 	await _pair("track", mid, toward, -28.0, start + back)
+	# At your feet at noon.
+	await _pair("feet", noon, atan2(-upwind.x, -upwind.y), FEET_PITCH)
 	var close := _sun_at(CLOSE_SUN, true)
+	# Ripples over a dune: from a crest down its windward face, the sun low.
+	await _pair("ripples", close, atan2(-upwind.x, -upwind.y), -10.0, _crest(-upwind) + upwind * 3.0)
+	# A slip face from its foot, at the hour that lights it most.
+	var toe := _toe(-upwind)
+	await _pair("slip", _lighting(-upwind), atan2(-upwind.x, -upwind.y), 8.0, toe - upwind * SLIP_OFF)
 	sun = _sun(close)
 	var yaw := atan2(-sun.x, -sun.z)
 	# Sliding sideways, looking down; then walking on, looking ahead, where
@@ -312,6 +324,50 @@ func _backlit(sun: Vector3) -> Vector2:
 			if score > most:
 				most = score
 				best = at
+	return best
+
+
+## The foot of the tallest slip face within 240 m of the spot, facing `down`.
+func _toe(down: Vector2) -> Vector2:
+	var best := _spot
+	var most := 0.0
+	for i in range(-40, 41):
+		for j in range(-40, 41):
+			var at := _spot + Vector2(i, j) * 6.0
+			var h := world.height_at(at.x, at.y)
+			var ahead := at + down * 8.0
+			var steep := world.height_at(at.x - down.x * 3.0, at.y - down.y * 3.0) - h > 1.5
+			var flat := absf(world.height_at(ahead.x, ahead.y) - h) < 0.8
+			var tall := world.height_at(at.x - down.x * 16.0, at.y - down.y * 16.0) - h
+			if steep and flat and tall > most:
+				most = tall
+				best = at
+	return best
+
+
+## The highest crest within 120 m of the spot along the wind.
+func _crest(down: Vector2) -> Vector2:
+	var best := _spot
+	for i in range(-40, 41):
+		var at := _spot + down * i * 3.0
+		if world.height_at(at.x, at.y) > world.height_at(best.x, best.y):
+			best = at
+	return best
+
+
+## The morning or afternoon hour the sun lights a slip face facing `down`
+## most, kept off noon's flat light.
+func _lighting(down: Vector2) -> float:
+	var face := Vector3(down.x * sin(0.55), cos(0.55), down.y * sin(0.55))
+	var best := _at_hour(0.35)
+	for k in 41:
+		var hour := 0.3 + k * 0.01
+		if absf(hour - 0.5) < 0.07:
+			continue
+		var t := _at_hour(hour)
+		var sun := _sun(t)
+		if sun.y > 0.2 and face.dot(sun) > face.dot(_sun(best)):
+			best = t
 	return best
 
 
