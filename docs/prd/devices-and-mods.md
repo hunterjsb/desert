@@ -1550,3 +1550,21 @@ The streamer is "one of my fav items" and "helps a lot"; keep its readable wind 
 **Moving sheet-ring follow-up (2026-10-19).** A loaded Varran GPU capture measured the cosmetic mast sheet ring 0.102 m behind its freshly computed chassis anchor after a rendered frame, compared with the visible ring's 0.065 m outer radius; refreshing it reduced the error below 0.01 mm. Keep that visible anchor on the current chassis during the render pass before pinning the drawn inboard sheet. Rope forces and their physics attachment remain unchanged.
 
 Final buffered loaded/turn recordings cover 210 rendered frames: maximum ring-anchor error 0.016 mm, top-surface error 0.001 mm, and zero error at either drawn inboard endpoint. Actual capture cadence was approximately 60–61 FPS with variable intervals; this is not evidence of 144 Hz playback.
+
+### Battery-warning silence observation (2026-10-19)
+
+A low-battery warning is spoken once until rearmed. Its previous clip finishing is not a
+second announcement. Devices probe 30 observes new active reader playback instances during
+each read window, while keeping the existing expected-clip, radio-bus and log-once checks.
+This preserves the silence requirement without assuming the audio backend finishes its
+previous voice on the physics clock. No Console or radio behaviour changes.
+
+Measured on Linux with Godot 4.7.2: the original check passed normally. An external diagnostic
+slowed only the reader's voice to expose a prior clip tail across read windows: the low warning
+was still playing at 0.493 s into its clip, with no queued phrases, when the original silence
+assertion failed. The same happened after the critical warning. The revised focused probe
+passed (25 s), and the slow-tail diagnostic passed without clearing or stopping the old voice.
+Injecting a second `radio.announce` without a new log failed specifically at the silence check;
+the committed probe contains no injected announcement.
+Native macOS verification is still required; this reproduction demonstrates the observation
+error without claiming to measure the failed runner's audio backend schedule.

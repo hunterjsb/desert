@@ -50,10 +50,12 @@ func _charge(made: Console, share: float) -> void:
 ## meanwhile ("" for none), checking its radio said `aloud`, or nothing.
 func _heard(made: Console, radio: Radio, aloud: String) -> String:
 	var before := made.log_lines.size()
+	# Finishing the previous warning is not saying it again.
+	var previous := radio.reader.get_stream_playback() if radio.reader.playing else null
 	var spoke: AudioStream = null
 	for i in roundi(Engine.physics_ticks_per_second * (Tuning.current().console_read_every * 2.0 + 1.5)):
 		await get_tree().physics_frame
-		if radio.reader.playing:
+		if radio.reader.playing and radio.reader.get_stream_playback() != previous:
 			spoke = radio.reader.stream
 	var said := "" if made.log_lines.size() == before else String(made.log_lines[-1].text)
 	check(spoke == (Radio.clip(aloud) if aloud != "" else null) and radio.reader.bus == Sounds.RADIO,
