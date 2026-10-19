@@ -1051,8 +1051,8 @@ static var _current: Tuning
 ## Hunter judged, so floating things swing and drift and resting ones slide
 ## only when the wind beats their friction.
 @export var wind_catch_per_m2: float = 0.5
-## What something resting on the sand feels. Jolt takes the geometric mean of
-## two frictions, so the sand itself is this squared, against a body's 1.0.
+## The share of its weight the sand holds a resting body by: the sand's own
+## friction, as Godot's Jolt takes the lesser of two and bodies keep 1.0.
 @export var sand_friction: float = 0.5
 
 @export_group("Wind on faces")
