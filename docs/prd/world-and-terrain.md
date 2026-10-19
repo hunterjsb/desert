@@ -428,8 +428,8 @@ slope; quarter-metre texels still set the smallest detail. Tuning holds the draw
 64 MB, and stamping and filling are unchanged. These values are provisional until the
 rendered comparison and GPU measurements pass.
 
-The focused tracks probe passes, including filling, marks under objects, and unchanged
-height/collision. An earlier derivative-based rim prototype exposed grid facets in actual
+The focused tracks and origin-shift probes pass, including filling, marks under objects,
+unchanged height/collision, and stable world coordinates. An earlier derivative-based rim prototype exposed grid facets in actual
 captures and was replaced with central differences. The final shader has **not** yet had
 its visual or GPU check: the graphics driver faulted at the earlier capture's teardown.
 `look/tracks` now accepts `--before <shader>` and `--lights low,day,...`, freezes the scene
