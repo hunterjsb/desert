@@ -433,7 +433,22 @@ func clear() -> void:
 func _process(_delta: float) -> void:
 	for rope in ropes:
 		if is_instance_valid(rope.a) and is_instance_valid(rope.b):
-			rope.strand.pin_ends(rope.a.global_position, rope.b.global_position)
+			rope.strand.pin_ends(_shown_end(rope.a), _shown_end(rope.b), Engine.get_physics_interpolation_fraction())
+
+
+## The camera and board draw between ticks. Waist lines must start in that
+## same frame; held ends already follow the hands' drawn pose.
+func _shown_end(end: RopeEnd, fraction := Engine.get_physics_interpolation_fraction()) -> Vector3:
+	var player := world.player
+	var at := end.global_position
+	if end.holder != player and not player.waist.holds(end.holder):
+		return at
+	var moved := Vector3.ZERO
+	if player.ride != null:
+		moved = player.ride.last_step
+	if player.tumble != null:
+		moved = player.tumble.last_step
+	return at - moved * (1.0 - fraction)
 
 
 func _physics_process(delta: float) -> void:

@@ -519,21 +519,23 @@ static func _streamed(on: Device) -> bool:
 
 ## The sheet's inboard drawn from its ring to the block at the boom's end, as
 ## long as it is: straight while it holds the boom, sagging slack. The ring
-## sits on the camp under where the boom's end lies hauled right in, so the
-## line is straight exactly when the inboard is.
+## sits on the nearest actual deck surface beneath the hauled boom. Compact
+## rigs need no imaginary tail to support their ring.
 func _draw_inboard(h: float) -> void:
 	var tip: Node3D = _tie().part.get_meta(&"tip") if _sheet != null else null
 	var rigged := is_instance_valid(tip) and carrier() != null and world != null
 	_ring.visible = rigged
+	if rigged:
+		_ring.global_position = _inboard_anchor()
 	_inboard.visible = rigged and trim > 0.02
 	if not _inboard.visible:
 		_inboard_taut = false
 		return
 	# As long as from the ring to the block, and what's slack in the inboard.
-	var drop := _ring.position.distance_to(BOOM_AT + Vector3(0.0, 0.0, -BOOM))
-	var chord := 2.0 * BOOM * sin(absf(boom) * 0.5)
 	var span := _ring.global_position.distance_to(tip.global_position)
-	var slack := maxf(Vector2(trim, drop).length() - Vector2(chord, drop).length(), 0.0)
+	var swing := trimmed_to() * (-1.0 if boom < 0.0 else 1.0)
+	var eased := global_transform * (BOOM_AT + Vector3(-sin(swing) * BOOM, 0.0, -cos(swing) * BOOM))
+	var slack := maxf(_ring.global_position.distance_to(eased) - span, 0.0)
 	# Hung afresh on another sheet, or once the world's origin has moved under it.
 	if _inboard.b != tip or _inboard.points.is_empty() or _inboard.points[0].distance_to(_ring.global_position) > 1.0:
 		_inboard.hang(world, span + slack, _ring, tip)
@@ -543,6 +545,30 @@ func _draw_inboard(h: float) -> void:
 		_inboard.set_length(span + slack)
 		_inboard.step(h, _wind)
 	_inboard_taut = slack <= 0.0
+
+
+## The sheet's deck ring needs a real piece under it. Compact rigs have
+## no tail beneath the fully hauled boom, so use their nearest top surface.
+func _inboard_anchor() -> Vector3:
+	var size: Vector3 = Catalog.DEVICES[&"mast"].size
+	var want := global_transform * Vector3(0.0, -size.y * 0.5 + 0.06, -BOOM)
+	var on := carrier() as Chassis
+	if on == null:
+		return global_transform * Vector3(0.0, -size.y * 0.5 + 0.06, 0.0)
+	var closest := global_position
+	var nearest := INF
+	for piece in on.pieces():
+		var pose := on.global_transform * piece.pose()
+		var local := pose.affine_inverse() * want
+		var edge := Chassis.WIDTH * 0.5 - RopeStrand.RADIUS
+		local = Vector3(clampf(local.x, -edge, edge), Chassis.THICK * 0.5 + RopeStrand.RADIUS,
+			clampf(local.z, -edge, edge))
+		var at := pose * local
+		var apart := at.distance_squared_to(want)
+		if apart < nearest:
+			nearest = apart
+			closest = at
+	return closest
 
 
 func _process(_delta: float) -> void:
