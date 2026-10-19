@@ -1,28 +1,31 @@
 extends WeatherProbe
 ## Devices & mods probe 28: devices switch from the Console's power page. A
-## Console with a radio on its top, a shield and a crate with a lamp stand on
-## a floating deck of three pieces. Use on the screen's power tab opens the
+## Console, a radio, a shield, a lamp and two big batteries are stuck on a
+## floating deck of three pieces. Use on the screen's power tab opens the
 ## page, and its switches, pressed where they're drawn, work each device as
 ## its own use would: the shield on and off, the radio on, swept to the next
-## carrier and turned down, the lamp off, the deck's trays resting. The panel's watts are the pool's: what it says
-## is drawn is what the pool's devices draw, and its bank what they hold.
+## carrier and turned down, the deck's lamp off, its trays resting. The
+## panel's watts are the pool's: what it says is drawn is what the pool's
+## devices draw, and its bank what they hold.
 
 
 func run() -> void:
 	await load_weather()
 	world.player.set_physics_process(false)
-	var deck := Scenarios.standing(world, &"chassis", [], [0.0, 3.0]) as Chassis
-	for at: Vector2i in [Vector2i(1, 0), Vector2i(-1, 0)]:
-		deck.join(Catalog.device(&"chassis") as Chassis, Scenarios._on_piece(deck, Vector2i.ZERO, &"ring", at), 0)
-	Scenarios.fill(world, deck, [&"hover_tray", &"hover_tray", &"hover_tray"])
-	var made := Scenarios._stand_on(world, deck, &"console", [&"big_battery", &"screen"], Vector2i.ZERO) as Console
-	var radio := Catalog.device(&"radio") as Radio
-	world.content.add_child(radio)
-	Scenarios.fill(world, radio, [&"battery"])
-	made.mount(radio, Scenarios._free(made, &"top"))
-	var shield := Scenarios._stand_on(world, deck, &"shield", [&"battery"], Vector2i(1, 0)) as ShieldGenerator
-	var crate := Scenarios._stand_on(world, deck, &"crate_frame", [&"big_battery", &"lamp"], Vector2i(-1, 0))
-	Scenarios._afloat(world, deck)
+	var rig := Scenarios.rig_at(world, [[&"piece", Vector2i(1, 0)], [&"piece", Vector2i(-1, 0)],
+		[&"stick", Vector2i(0, 0), &"bottom", Vector2.ZERO, 0.0, &"hover_tray"],
+		[&"stick", Vector2i(1, 0), &"bottom", Vector2.ZERO, 0.0, &"hover_tray"],
+		[&"stick", Vector2i(-1, 0), &"bottom", Vector2.ZERO, 0.0, &"hover_tray"],
+		[&"stick", Vector2i(0, 0), &"top", Vector2(0.0, -0.15), 0.0, [&"console", [&"screen"]], &"console"],
+		[&"stick", Vector2i(0, 0), &"top", Vector2(0.3, 0.35), 0.0, [&"radio", [&"battery"]], &"radio"],
+		[&"stick", Vector2i(1, 0), &"top", Vector2.ZERO, 0.0, &"shield", &"shield"],
+		[&"stick", Vector2i(-1, 0), &"top", Vector2(-0.2, 0.0), 0.0, &"big_battery"],
+		[&"stick", Vector2i(-1, 0), &"top", Vector2(0.2, 0.0), 0.0, &"big_battery"],
+		[&"stick", Vector2i(-1, 0), &"top", Vector2(0.0, 0.3), 0.0, &"lamp"]], [0.0, 3.0])
+	var deck := rig.deck
+	var made: Console = rig.named.console
+	var radio: Radio = rig.named.radio
+	var shield: ShieldGenerator = rig.named.shield
 	await physics_frames(60)
 
 	_press(made, null, Console.Page.POWER)
@@ -39,12 +42,12 @@ func run() -> void:
 	_press(made, radio, &"quieter")
 	check(radio.on and radio.frequency > khz and radio.tuned_to() != &""
 		and is_equal_approx(radio.volume, 1.0 - Radio.VOLUME_STEP), "the radio comes on, sweeps to a carrier and turns down")
-	var lit := crate.demand_w()
-	_press(made, crate, false)
+	var lit := deck.demand_w()
+	_press(made, deck, false)
 	await physics_frames(10)
-	var light := crate.find_children("*", "Light3D", true, false)
-	check(crate.demand_w() < lit and light.all(func(l: Light3D) -> bool: return not l.visible),
-		"the lamp goes off (%.1f W to %.1f W)" % [lit, crate.demand_w()])
+	var light := deck.get_children().filter(func(n: Node) -> bool: return n is Light3D)
+	check(deck.demand_w() < lit and not light.is_empty() and light.all(func(l: Light3D) -> bool: return not l.visible),
+		"the deck's lamp goes off (%.1f W to %.1f W)" % [lit, deck.demand_w()])
 	_press(made, deck, &"rest")
 	check(deck.resting, "the deck's trays rest")
 

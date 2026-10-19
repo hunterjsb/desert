@@ -519,6 +519,7 @@ func _drop_freed_seats() -> void:
 			socket.mounted = null
 			if socket.marker != null:
 				socket.marker.visible = true
+			_unmade(socket)
 	if kept.size() != _seats.size():
 		_seats = kept
 		_recompute()

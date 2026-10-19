@@ -1,10 +1,10 @@
 extends MovementProbe
 ## Devices probe 12: rotate turns what you hold. Held down with a part in your
 ## hands, the mouse turns the part and not your view; let go, the mouse looks
-## again. A crate and a planter tipped on their sides, taken hold of, roll back
-## upright with it and stand once let go; a shield generator lying on its side
-## is picked up, turned upright and set down standing. Having hold of a crate,
-## looking up lifts it, unless it's too heavy for your strength.
+## again. A condenser and a planter tipped on their sides, taken hold of, roll
+## back upright with it and stand once let go; a shield generator lying on its
+## side is picked up, turned upright and set down standing. Having hold of a
+## condenser, looking up lifts it, unless it's too heavy for your strength.
 
 const AHEAD := Vector2(1.0, 0.0)
 
@@ -39,7 +39,7 @@ func run() -> void:
 	player.hands.drop()
 	await simulate(1.0)
 
-	for id: StringName in [&"crate_frame", &"planter"]:
+	for id: StringName in [&"condenser", &"planter"]:
 		var tipped := _tipped(id)
 		await simulate(1.5)
 		_look_at(tipped)
@@ -73,19 +73,19 @@ func run() -> void:
 
 	var rises := []
 	for kg: float in [15.0, 60.0]:
-		var crate := _resting(&"crate_frame", 1.6, kg)
+		var heavy := _resting(&"condenser", 1.6, kg)
 		await simulate(1.0)
-		_look_at(crate)
-		check(player.hands.grab() and player.hands.grasp.body == crate, "you take hold of a %d kg crate" % kg)
-		var low := crate.global_position.y
+		_look_at(heavy)
+		check(player.hands.grab() and player.hands.grasp.body == heavy, "you take hold of a %d kg condenser" % kg)
+		var low := heavy.global_position.y
 		await _drag(Vector2(0.0, -quarter / 3.0))
 		await simulate(2.0)
-		rises.append(crate.global_position.y - low)
+		rises.append(heavy.global_position.y - low)
 		player.hands.grab()
-		crate.queue_free()
+		heavy.queue_free()
 		_look_at(null)
-	print("looking up 30°, a 15 kg crate rose %.2f m and a 60 kg one %.2f m" % rises)
-	check(rises[0] > 0.5, "looking up lifts a crate you can take the weight of (%.2f m)" % rises[0])
+	print("looking up 30°, a 15 kg condenser rose %.2f m and a 60 kg one %.2f m" % rises)
+	check(rises[0] > 0.5, "looking up lifts a condenser you can take the weight of (%.2f m)" % rises[0])
 	check(rises[1] < 0.05, "but not one too heavy for your strength (%.2f m)" % rises[1])
 
 

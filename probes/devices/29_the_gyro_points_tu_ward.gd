@@ -1,7 +1,8 @@
 extends WeatherProbe
 ## Devices & mods probe 29: the gyro points Tu-ward. A Console with an
-## anemometer, carried round the moon: on the near side, the Rim and the far
-## side its gyro marks the way Tu stands in the sky, or would past the horizon.
+## anemometer on a plate with a battery, carried round the moon: on the near
+## side, the Rim and the far side its gyro marks the way Tu stands in the sky,
+## or would past the horizon.
 
 ## Latitude and degrees east of the point under Tu, and where that is.
 const PLACES := [[0.0, 60.0, "near side, where a run begins"], [35.0, -25.0, "near side, north"],
@@ -12,8 +13,11 @@ func run() -> void:
 	await load_weather()
 	world.time_warp = 0.0
 	world.player.set_physics_process(false)
-	var made := Scenarios.standing(world, &"console", [&"battery", &"screen", &"anemometer"], [0.0, 2.0]) as Console
-	made.freeze = true
+	var plate := Scenarios.rig_at(world, [[&"stick", Vector2i.ZERO, &"top", Vector2(-0.32, 0.38), 0.0, &"big_battery"],
+		[&"stick", Vector2i.ZERO, &"top", Vector2.ZERO, 0.0, [&"console", [&"screen", &"anemometer"]], &"console"]],
+		[0.0, 2.0], false)
+	plate.deck.freeze = true
+	var made: Console = plate.named.console
 	await physics_frames(120)
 	var day := world.weather.day
 	for place: Array in PLACES:
