@@ -225,6 +225,11 @@ func host() -> Device:
 	return get_parent() as Device
 
 
+## Whether its trays hold it up now: they lift its weight, and have the power.
+func hovering() -> bool:
+	return _hovering
+
+
 ## Whether it has a hover tray fitted.
 func has_tray() -> bool:
 	return not _trays.is_empty()
@@ -343,12 +348,17 @@ func wear(share: float) -> void:
 			ChargeLight.paint(charge_light, 0.0)
 
 
+## What of it wears its paint: its frame and what turns on its mast.
+func painted() -> Array[MeshInstance3D]:
+	return [frame_view, rotor]
+
+
 ## Its paint: its make's era, then what the weather took, so a deep find is
 ## crisp, a surface one rusty, and a wrecked frame down to the metal. Its
 ## maker's mark is its era's too.
 func show_wear() -> void:
 	var amount := Paint.age_for(self, durability)
-	for view: MeshInstance3D in [frame_view, rotor]:
+	for view: MeshInstance3D in painted():
 		if view != null:
 			view.set_instance_shader_parameter(&"age", amount)
 			view.set_instance_shader_parameter(&"era", Paint.row_for(self))

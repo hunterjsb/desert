@@ -59,16 +59,18 @@ func fresh() -> void:
 
 ## Health a second each harm takes at a place, now or at world time t: the
 ## storm's scouring, wind past what you can stand, and temperature past the
-## suit's limits. Nothing touches you flying, which is only for looking.
+## suit's limits, an anomaly's as it really is. Nothing touches you flying,
+## which is only for looking.
 func harms_at(at: Vector3, t := NAN) -> Dictionary:
 	var tuning := _player.world.tuning
 	var weather := _player.world.weather
 	if _player.flying:
 		return {&"wind": 0.0, &"storm": 0.0, &"temperature": 0.0}
 	var felt := weather.felt_temperature(at, t)
+	var hidden := weather.hidden(at, t)
 	return {
-		&"wind": maxf(weather.felt_wind(at, t).length() - tuning.wind_hurts_from, 0.0) * tuning.wind_harm,
-		&"storm": weather.felt_storm(at, t) * tuning.storm_harm,
+		&"wind": maxf(weather.felt_wind(at, t).length() - tuning.wind_hurts_from, 0.0) * tuning.wind_harm * hidden.y,
+		&"storm": weather.felt_storm(at, t) * tuning.storm_harm * hidden.x,
 		&"temperature": (maxf(felt - tuning.suit_hot, 0.0) + maxf(tuning.suit_cold - felt, 0.0))
 			* tuning.temperature_harm,
 	}
@@ -122,6 +124,13 @@ func _physics_process(_delta: float) -> void:
 		_next += step
 	harms = harms_at(_player.global_position)
 	_report()
+
+
+## One tick lived by a sleep, which steps the clock itself (Sleep).
+func live(seconds: float, t: float) -> void:
+	if not dead:
+		_tick(seconds, t)
+	_next = t + seconds
 
 
 func _tick(seconds: float, t: float) -> void:

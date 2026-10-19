@@ -29,7 +29,7 @@ static var _current: Tuning
 ## m, and walking in toward Tu crosses one within the second.
 @export var start_artery_m := Vector2(600.0, 3000.0)
 ## What a Surveyor has in sight stands this far off, m: on its horizon, not
-## at its feet, and near enough to know at a glance.
+## at its feet; a sharp eye's find, and its glint the eye's (Starts.GLINT_).
 @export var start_horizon_m := Vector2(600.0, 1000.0)
 ## No path and no settlement comes within this of a Surveyor's start, m:
 ## past the ground you can see.
@@ -118,23 +118,21 @@ static var _current: Tuning
 
 @export_group("Skyline")
 ## What stands on the dunes past the built ground, out to the far ring's
-## reach: tall structures' stand-ins, glints, and the saltbush lines on the
-## roads. Off, nothing shows past the built ground but the dunes.
+## reach: tall structures' stand-ins, glints, and the saltbush on the roads.
+## Off, nothing shows past the built ground but the dunes.
 @export var skyline: bool = true
 ## How far it draws, m.
 @export var skyline_m: float = 3000.0
-## The thinnest a stand-in is drawn, pixels, so what's far off never breaks
-## into flickering bits; a saltbush line's least thickness.
-@export var skyline_thinnest_px: float = 2.0
-@export var skyline_line_px: float = 3.0
-## The least a landmark (a mast, a tower) stands on screen at a kilometre,
-## pixels wide and tall, shrinking more slowly than perspective past it: the
-## thing on the horizon the eye snags on.
-@export var skyline_landmark_px := Vector2(4.0, 14.0)
+## The thinnest a stand-in or a far bush is drawn, pixels, so what's far off
+## never breaks into flickering bits (drawn as much fainter).
+@export var skyline_thinnest_px: float = 1.5
+## Where a structure's real look hands over to its stand-in, m from you:
+## crossfaded between, so you never see one switch for the other.
+@export var skyline_handover_m := Vector2(420.0, 500.0)
 ## A glint's sparkle, pixels across as it lights and at its brightest, and
 ## how bright, times the sun on white.
-@export var glint_px := Vector2(8.0, 16.0)
-@export var glint_brightness: float = 9.0
+@export var glint_px := Vector2(7.0, 12.0)
+@export var glint_brightness: float = 7.0
 
 @export_group("Light")
 ## The sand in full light, before the sun and sky light it. Real desert sand
@@ -220,6 +218,30 @@ static var _current: Tuning
 @export var gust_storm_strength: float = 0.5
 @export var gust_wavelength: float = 80.0
 @export var gust_evolve_speed: float = 4.0
+
+@export_group("Anomaly")
+## The storm the Walker misjudged: at its heart the real damage is this many
+## times what its clean curve, which every forecast and instrument reads,
+## deals in particles, and this many times in wind, so a camp built for the
+## wind is wrecked by the sand.
+@export var anomaly_particles: float = 5.0
+@export var anomaly_wind: float = 1.5
+## Its reach from its heart, m, full within a quarter of it, riding the air
+## as storms do; and how long it lives either side of its peak, hours of run
+## time, full for the middle third.
+@export var anomaly_radius_m: float = 8000.0
+@export var anomaly_hours: float = 2.0
+## One may stand in each patch of air this wide, m, in each span of its whole
+## life, with this chance: one storm in ten that passes a still camp holds
+## one, about one every six hours of play.
+@export var anomaly_cell_m: float = 20000.0
+@export var anomaly_chance: float = 0.37
+## None comes in a run's first days: ordinary storms are learnt first.
+@export var anomaly_grace_days: float = 5.0
+## How far ahead of its storm's front its hidden term reaches, in the field's
+## own units (about a kilometre or two): a heart riding in on the wall shows
+## its tells before it.
+@export var anomaly_reach: float = 0.25
 
 @export_group("Lee")
 ## The most of the wind, and of a storm's wear, a dune's lee takes, close
@@ -402,10 +424,24 @@ static var _current: Tuning
 ## The share of that drag that's the air's, felt against the wind: a tailwind
 ## carries you faster, a headwind holds you back, and a tuck shows it less.
 @export var board_air_share: float = 0.35
-## Move back brakes this hard, m/s²; coasting, the hover's own drag slows
-## you this much, m/s².
+## Steering back against your way brakes this hard, m/s²; coasting, the
+## hover's own drag slows you this much, m/s².
 @export var board_brake: float = 8.0
 @export var board_coast: float = 0.3
+## The dig, move back: one edge drops into the sand. Slicing along its length
+## the dug edge grips this many times as hard as the hover, so a carve holds;
+## dragged across, as in a hockey stop, no harder than the hover. Dug, the
+## sand drags this share of your speed a second, and the board rides this much
+## lower, m, its low edge down to the sand.
+@export var board_dig_grip: float = 2.5
+@export var board_dig_drag: float = 0.25
+@export var board_dig_depth: float = 0.3
+## Dig times the way across the board past this, m/s, and the edge catches:
+## you're thrown off, losing this much health and stamina. A full hockey stop
+## from flat out catches; up to about 17 m/s it holds.
+@export var board_dig_catch: float = 6.5
+@export var board_wipeout_hurt: float = 5.0
+@export var board_wipeout_winded: float = 25.0
 ## How fast the board turns under you, rad/s; the most sideways pull its
 ## hover grips with, m/s², before a carve slides out into a skid; and the
 ## share of its speed a full sideways skid bleeds a second.
@@ -434,7 +470,8 @@ static var _current: Tuning
 ## floats, faster and it twitches.
 @export var board_tilt_hertz: float = 5.0
 @export var board_lean_hertz: float = 1.2
-## Its underside rides this high over the sand, m, and never comes nearer than this.
+## Its underside rides this high over the sand, m, and its edges never come
+## nearer than this but dug.
 @export var board_ride_height: float = 0.35
 @export var board_clearance: float = 0.08
 ## The hover's spring: stiff pressed toward the sand, softer lifting off it,
@@ -635,8 +672,8 @@ static var _current: Tuning
 ## weight: up to this much, kg, you don't feel it; past it you sink into the
 ## sand and slow, by this much sunk in as far as hauling digs you in, and
 ## slower still for every kilogram more. The kit you start with carries
-## 2.9 kg, and every carryable thing of it, its stake, its board with the
-## board's battery and the light panel too, 20.9 kg.
+## 5.9 kg, and every carryable thing of it, its stake, its board with the
+## board's battery and the light panel too, 23.9 kg.
 @export var carry_easy_kg: float = 30.0
 @export var carry_sunk_kg: float = 60.0
 ## A sealed canister holds this much water, L, and a ration this much food, kcal.
@@ -653,13 +690,32 @@ static var _current: Tuning
 ## The compass needle follows Tu's weak field: it swings about it once in this
 ## many seconds and settles by this damping (1 would never overshoot). Tu's
 ## field is tipped from its spin, so the needle sways this far either way once
-## each turn of Tu; a full storm's charged dust swims it up to this far.
+## each turn of Tu; a full storm's charged dust swims it up to this far. At
+## an anomaly's heart it leans toward the heart, steadily, up to this far.
 @export var compass_swing_seconds: float = 3.0
 @export var compass_damping: float = 0.4
 @export var compass_sway_degrees: float = 10.0
 @export var compass_storm_degrees: float = 35.0
+@export var compass_anomaly_degrees: float = 60.0
 ## Over the most magnetized old volcanic ground, the needle swims this far either way.
 @export var compass_ground_degrees: float = 40.0
+
+@export_group("Sleep")
+## A night is lived in steps this long, s of world time: each system's own
+## sums over each, the camp held still (live, they tick every power_tick).
+## No sleep runs past sleep_most_days, whatever it waits for.
+@export var sleep_tick: float = 10.0
+@export var sleep_most_days: float = 4.0
+## So many hours, of the 24 in a day, is first offered as this many.
+@export var sleep_hours: int = 8
+## The camp is your devices and stakes within this of you, m; it's still
+## while none moves faster than this, m/s, or turns faster than this, rad/s.
+@export var sleep_camp_m: float = 30.0
+@export var sleep_still_speed: float = 0.5
+@export var sleep_still_spin: float = 1.0
+## Asleep with nothing left to drink or eat, you wake once thirst or hunger
+## falls to this share.
+@export var sleep_wake_need: float = 0.25
 
 @export_group("Farming")
 ## A planter's water tank, L. Found empty.
@@ -780,6 +836,9 @@ static var _current: Tuning
 ## A live vent's seep as a buoyancy flux, m⁴/s³ at this tuning's gravity: how
 ## hard what it lets out climbs. Bursts multiply it (Geology).
 @export var plume_buoyancy: float = 25000.0
+## A plume dissolves into the distance between these, m: further than the
+## storm walls, since what towers over the haze stands clear of it.
+@export var plume_fade_m := Vector2(30000.0, 45000.0)
 
 @export_group("Radio")
 ## What a radio draws while it's on, W.
@@ -834,6 +893,13 @@ static var _current: Tuning
 @export var dial_width_khz: float = 3.0
 @export var dial_notch_khz: float = 5.0
 @export var dial_fine_khz: float = 1.0
+## Tuning brings the view in to the radio's face: this far off it, m,
+## through this narrow a lens, degrees, easing in and out over about this
+## long, s; it stays this long after the last turn, s, while you look at it.
+@export var dial_close_m: float = 0.45
+@export var dial_close_fov: float = 40.0
+@export var dial_close_seconds: float = 0.35
+@export var dial_close_hold: float = 3.0
 ## A god's bearing is given to sixteen points within the first distance, m,
 ## to eight within the second, and past that only as a way across the moon.
 @export var god_exact_m: float = 12000.0

@@ -128,26 +128,142 @@ the active phase. Three layers fix the early wait:
   many hours, until a time, or through the storm; gear such as a radio adds more (wake for a
   broadcast). **Physics never fast-forwards:** the camp freezes, its batteries and shield are worked
   out against the storm curve over the hours slept, and the result is applied ("shield held", "a
-  crate broke loose"). A bedroll may share the hoverboard's mount on a crate.
+  crate broke loose"). A bedroll may share the hoverboard's mount on a crate. Built ([Sleep, as
+  built](#sleep-as-built-2026-10-18)).
 - **Something to do under the shield:** swapping mods and repairing gear, watching for loot blowing
   in, the radio.
 
-Open: which failures can happen asleep and how likely.
+Open: which failures can happen asleep and how likely. *Answered as built (below):* the shield
+running dry, a line giving at the storm's peak, wear on what's outside a bubble, and your water or
+food running out, each from the night's own numbers rather than dice.
+
+## Sleep, as built (2026-10-18)
+
+*Hunter's [spec](../storms-signals-sailing-2026-10-18.md#sleep), built 2026-10-18 (`game/survival/sleep.gd`).*
+
+**Where you sleep.**
+- **The bedroll** is a device by the catalog's rules: the rack seats devices (the board), and a part
+  becomes its device's shapes, worked by nothing. Rolled company canvas 0.9 m long, 3 kg, low and
+  round, so a breeze leaves it be on the sand and a storm slides it. Use on it laid on the sand, among
+  what you carry, or in a crate's rack in the board's place asks how long to sleep. In your hands, use
+  lays it out where you look, fore and aft as you face, or at your feet when nothing flat is in reach;
+  setting it down asks nothing of the camp, only sleeping does. The Surveyor and the Homesteader start
+  carrying one; the Salvager, riding light, finds one or a ruin's bed. It's found on deserters' dugout floors (3 in 12 of
+  their draws, beside their survival kits) and now and then lying on open sand (1 in 14 of the
+  surface's devices). There's no sleeping on bare sand without one: the bedroll is how you sleep in the
+  open.
+- **Ruin beds.** A kit piece marks boxes as beds (`StructureKit.bed`): the hab pod's bunk, and a
+  sleeping bench of saltbush wood, a dyed mat on it, in the house ruin's back room. Looking at one, the
+  line says "Bed", and use sleeps there. Buried, it's under the sand with the rest.
+
+**The words.** Use on a bed brings up words over the running game, as the system menu does, nothing
+paused: "Through the storm", only while one's on you or due within the weather's own forecast; "Sleep
+8 h", left and right changing the hours, 1 to 24; "Until morning", left and right stepping morning
+(06:00 local), noon, dusk (18:00) and night (midnight); and with a radio in earshot that has power,
+"Until a storm's called", offered while the weather station holds its calm (no storm on you and none
+due within five minutes, six hours of the day): the radio comes on to the Walker's carrier as you lie
+down, its dial kept on it as it moves from day to day, and the Walker breaking its calm to report a
+storm wakes you if the radio hears it, the report on its line as you wake. A god's broadcast at a fixed
+hour, the session's sleep clock, isn't built. Through the storm needs a running shield over you.
+
+**Only a still camp sleeps**, read off the physics as it runs: you on your feet and still, your hands
+free, nothing at your waist; your devices and stakes within 30 m slower than 0.5 m/s and 1 rad/s, and no sail raised there (the night reckons the wind on what's held, not a
+sail's pull); and no harm reaching you where you lie, which in a storm means under a running
+shield and out of one, wind under 20 m/s and the air within the suit's limits. Then the screen goes
+black over half a second while the physics runs on and the camp is watched. Anything over those marks,
+then or at the start, and you don't sleep: use's line says why with the soft knock ("no shield", "the
+crate's still moving", naming what moved as you lay down or as the screen went dark, "sail up", "too
+windy", "hands full", "a line at your waist").
+
+**The night.** Physics never steps. The camp is held where it stands and the clock steps to when you
+wake 10 s of world time at a time (`sleep_tick`), each system living each step by its own sums in the
+order a frame runs them, through its `live` tick: Power (panels and turbines by the felt weather,
+every draw, the shield's by the storm where it stands, the reserve and the restart), each shield's
+bubble straight to what its power says, Wear on what's outside a bubble, the Farm (crops, wild plants,
+the hoses' water) and the condenser through Power, then your needs, drinking and eating from what you
+carry as the suit does, and the tracks the wind fills. A shield's held storm and a day under the bubble
+count toward their deeds asleep as awake. What the physics fed them stays as it stood: a floating
+deck's load on its trays, a planted turbine.
+- **Lines** meet the wind each step as Ropes reckons it (`load_at`): what a line bore as you lay
+  down, plus its share of how much harder the wind then pushes what it holds, held still (Weather's
+  `wind_load`: its catch by the felt wind's square, at the hardest gust of the step, read each second).
+  A thing on several lines shares its push, so one gone leaves more to the rest. Against live tension in
+  steady 20 to 40 m/s winds it's within 11%, mostly a little under.
+- **What nothing holds drifts.** Each group of things joined by lines with nothing in it held fast (a
+  driven stake, a find) goes with the wind at its speed less what the sand's friction holds back, none
+  of it while it floats, as a body slides once the wind beats its friction live. Carried off the ground
+  the world keeps, it's gone.
+- **Against live play** (probe 16): the reference camp lives a day and a night of the probes' seed, a
+  storm over a fifth of it or more, at the time warp's fastest, and sleeps the same: its batteries
+  1733.6 Wh slept against 1734.2 lived (0.04%), the shield's pool 1567.2 against 1567.8, held both
+  times; the turbine's wear and the farm's food agree, and water and thirst agree once the next drink's
+  taken. At a 2 s step it's 0.01%, at 20 s 0.08%. A day costs about 0.3 s to sleep and four days about
+  1 s, lived in one frame while the screen is black.
+
+**What wakes you:** the hour chosen, the storm passing where you lie, the station's call, never more
+than 4 days (`sleep_most_days`); or sooner, any harm reaching you (the storm or the wind as a bubble
+goes, the heat, the cold), or thirst or hunger down to a quarter with nothing left to take.
+**Sleep is no dodge:** under a bubble the night works the storm out on your camp, and asleep out in
+the open, with no bubble over you, a storm's arrival wakes you, the night lived up to its front and no
+further ("The storm woke you"). On the probes' seed, a storm due 354 s on woke you 360 s on, the
+first sleep tick inside it (probe 20).
+
+**What goes wrong asleep** (the spec's open question), each out of the same numbers, no dice, so a camp
+that would come through live comes through asleep and one that wouldn't, doesn't:
+1. **The shield runs dry.** Its pool can't meet the storm's draw; its bubble collapses, the storm
+   floods in and you wake to it ("Light shield gave out", "The storm woke you").
+2. **A line gives at the storm's peak.** Loaded past its strength it gives as it would live: rope
+   snaps, a hose pops an end, a stake pulled past its holding comes out. What it held breaks loose and
+   goes where the wind takes it ("Crate broke loose", or "Crate blew away" carried off the ground).
+3. **Wear.** What was outside a bubble wears as it would; one wrecked is said ("Panel wrecked").
+4. **Your water or food runs out.** You wake with a quarter left ("Woke thirsty"). The Surveyor's one
+   canister wakes you about 45 hours into a long storm.
+
+**Waking.** A few lines at the top of the screen as it comes back from black, for 7 s, in the
+caption's capitals: how long you slept, what woke you if it was early, each shield that was up, what
+broke loose or blew away, what's wrecked. The world goes on as it now is: every ticking system's next tick
+is on the new hour, none to catch up; the forecast reads from it and the eye settles, as for any cut;
+the storm pass's map is drawn for it while the screen is still black, so none is drawn in a hitch; the
+sky and the day are the clock's, and the plume works its streak out whole for the new hour on the
+first frame, as for any jump; and a catch line's drift since you lay down comes in at once, as after
+any jump. Nothing is saved mid-night, which is one frame
+under the fade, and a save made on waking resumes as you woke.
+
+**Probes** 16 to 20 (below). **Not yet:** a smart shield doesn't switch itself on asleep, since the
+Console's radar doesn't sweep, so sleep with the shield on; what drifts never snags on a dune or a
+ruin; a line's share of the wind is what it holds itself, so a crate on a line to a crate on a line to
+a stake puts only the second crate's push on the last line. The dev overlay's `sleep/last` says how
+long the last night was and what it cost.
+
+**After sleeping it** (Hunter, 2026-10-18): "we should be able to place the bedroll... allow them to
+place it but you cant sleep until your camp is stable. and so right now cant you hack the game by
+sleeping before a storm hits you?... it took me 3 sleeps and about 100 hours to sleep through that
+storm":
+- **The bedroll goes down anywhere;** only sleeping waits for a still camp, and it says what's
+  moving. *Built (above).*
+- **Sleep is no dodge:** the night already works the storm out on your camp; and asleep out in the
+  open, with no bubble over you, a storm's arrival wakes you. *Built (above).*
+- **A storm that runs for days** is the field's long tail, not an anomaly ([Wind &
+  storms](wind-and-storms.md#the-anomaly-as-built-2026-10-18) for the anomaly, built 2026-10-18).
+  *Built:* the run's first storm passes in five to twenty minutes ([the starting
+  kit](#skeleton-version)), and no anomaly comes in a run's first five days; the tail itself is
+  [Wind & storms](wind-and-storms.md#open-questions)'s question. A night slept through an anomaly
+  lives its real damage on a plan made from the clean curve.
 
 ## Sleep (proposed)
 
-*Hunter, 2026-10-17 ([session](../console-sensors-sleep-2026-10-17.md)). Direction, not agreed.
-The session calls the main choice "not settled" and the physics proposal "Not agreed," so all of
-this is proposed, and none of it is built. It sits against this PRD's out-of-scope line on sleep
-(open questions).*
+*Hunter, 2026-10-17 ([session](../console-sensors-sleep-2026-10-17.md)). The 2026-10-18 spec agreed
+it and it's built ([above](#sleep-as-built-2026-10-18)); kept for its readings and its problem's
+numbers.*
 
 **The problem.** "Storm days are about 20 minutes and storms can last several days; waiting one
 out early game is boring. Storm-loot mechanics will help once they're in." In this game's numbers
 most storms are short: the median is 17 minutes and 71% pass within a base shield's 30 ([Wind &
 storms](wind-and-storms.md#open-questions)). The rest don't. A day is 20 minutes, so a storm of
 several days is an hour or more of waiting. The longest ran past three hours, and the kit's own
-first storm sits on the spawn for more than three and a half days on the probes' seed (the
-starting kit, in the skeleton's list below).
+first storm sat on the spawn for more than three and a half days on the probes' seed (the
+starting kit, in the skeleton's list below). *Now (2026-10-18) the run's first storm is an ordinary
+one, five to twenty minutes.*
 
 **Sleep, not auto-walk.** "Sleep to fast-forward is the preferred fix over auto-walk, but not
 settled." Auto-walk was then in no doc and no code; the 2026-10-18 spec put it first, and it's built
@@ -281,9 +397,9 @@ Death means a new run (see Runs in the vision).
     way hauling on a line digs you in (Movement): lower by a few centimetres, slower and
     tiring faster on the move, standing too but tiring only as you walk. By 60 kg you're
     sunk in as far as hauling takes you, at 65% of your pace, and every kilogram past
-    that slows you further (at 90 kg, a third of it). The run's kit carries 2.9 kg, a
-    canister and a ration; every carryable thing of the kit, its stake, its board with
-    the board's battery and the light panel too, comes to 20.9 kg, comfortably under.
+    that slows you further (at 90 kg, a third of it). The run's kit carries 5.9 kg, a
+    canister, a ration and a bedroll (2026-10-18); every carryable thing of the kit, its stake, its
+    board with the board's battery and the light panel too, comes to 23.9 kg, comfortably under.
     Probe 14 measured 1.80 m/s with the kit and 1.17 m/s at 59.9 kg, sunk 6.5 cm. Only
     what you carry counts, not what's in your hands. On a board you ride as ever.
   - **Stacks.** Like things stack as one: canisters, rations, batteries, stakes, hooks,
@@ -406,7 +522,8 @@ Death means a new run (see Runs in the vision).
 - **Sealed water and food.** A canister holds 2 L and a ration 1,000 kcal, found sealed and
   full. Like a battery, a canister carries what's in it and its light shows how full it
   is. A ration eaten to the end is gone; an empty canister stays, to be filled again.
-  Every run starts carrying one canister and one ration. Sealed water is found
+  Every run starts carrying one canister and one ration, and the Surveyor's and the
+  Homesteader's a bedroll ([Sleep](#sleep-as-built-2026-10-18)). Sealed water is found
   in survival kits, and sealed rations in kits and on ruins' floors (Salvage).
 - **Needs** are health, hunger and thirst out of 100, on the same fixed tick of world
   time as power, so the dev time warp runs them with everything else. Hunger empties in
@@ -475,7 +592,7 @@ Death means a new run (see Runs in the vision).
   about two days at the equator. Each more canister is about another day.
 - **Death starts a new run.** The world goes with everything in it, and a fresh one on a
   new seed takes its place. You start at its spawn, fed and watered, carrying the
-  canister and the ration.
+  canister, the ration and the bedroll.
 - **The starting kit** (Hunter, 2026-10-16, after playing the first one: "start the
   player with floating crate, shield and hoverboard already mounted ... we should at
   least add a hook so we can tow it"). The kit is data, `game/survival/standard_kit.tres`
@@ -491,8 +608,17 @@ Death means a new run (see Runs in the vision).
   with the sun well up, a third of the way through the day, so the panel makes about
   half its 30 W from the first minute, and the first storm due in three to eight
   minutes, facing where it will come from (Hunter, 2026-10-16: "it spawns me in a
-  storm!"), and starts with it: carrying the canister and the ration, and beside you,
-  once the ground there is solid:
+  storm!"). That storm is an ordinary one, passing in five to twenty minutes, a quarter
+  of a day to a day (Hunter, 2026-10-18: "it took me 3 sleeps and about 100 hours to sleep
+  through that storm"): the start looks on through the mornings for one, so the run's
+  clock may begin days in, and with none in reach it takes the first storm that comes.
+  The run's days count from its own start, kept in its save, so it begins on day 1
+  wherever a day is shown (Resume, the Console's clock).
+  On ninety starts (thirty worlds, each origin) the first storm ran 5 to 20 minutes, the
+  median 14, the clock beginning on day 10 at the median and day 122 at the latest;
+  before, a third ran past a day, the longest 92 minutes, and the clock began by day 24.
+  The run starts with it: carrying the canister, the ration and a bedroll, and beside
+  you, once the ground there is solid:
   - **a floating crate** at your front right: a crate frame with a hover tray, a
     battery half charged and a hook on its back, floating at the tray's height. The
     **light shield generator**, switched off, sits on its front top mount and the
@@ -521,14 +647,11 @@ Death means a new run (see Runs in the vision).
   board charges from the crate at up to 50 W, far more than the 30 W panel can keep up
   with, so the crate floats on what its battery holds, and the shield ranks above both:
   neither the tray nor the board ever takes the battery's last quarter (Power). On the
-  probes' seed, over the run's own first day (a storm from 0.33 days in, through the
-  night) the crate floated until 0.56 days, when, with the battery at 25 Wh, it settled
-  onto the sand; with the board lying beside it instead, it floated until 1.00 days. The
-  shield ran on, 20.9 Wh left at 1.25 days (23.8 with the board beside), the panel
-  having made 3.3 Wh to the shield's 6.3. That storm sits on the spawn for more than
-  three and a half days; with the board beside, the shield was still up at 4 days with
-  7.1 Wh left. Under clear skies the panel brings the battery from a quarter back to 30%
-  in 1.35 days and the crate floats again until it's back at a quarter: a clear day is
+  probes' seed, over the run's own first 1.25 days (its storm from 0.31 days in, 12
+  minutes long, then clear into the next day) the crate floated until 0.55 days, when,
+  with the battery at 25 Wh, it settled onto the sand. The shield ran on, 24.9 Wh left at
+  1.25 days, the panel having made 5.1 Wh to the shield's 4.3. Under clear skies the
+  panel brings the battery from a quarter back to 30% in 1.35 days and the crate floats again until it's back at a quarter: a clear day is
   worth a few minutes of floating, fewer while the board charges. The quarter kept back runs the light shield for 75 minutes of
   full storm with no sun, almost four days of it. A dev scenario that drops its own
   camp clears the run's kit first.
@@ -625,11 +748,29 @@ Death means a new run (see Runs in the vision).
     one turn of Tu, its needle sways with the turn, ten degrees east of north and ten west,
     never further. Spun half round in half a second it's dragged along, swings back after
     more than a second, not snapping, and settles within a degree inside ten.
+16. **A night slept comes out as lived.** The reference camp lives a day and a night of the probes'
+    seed, a storm through it, at the time warp's fastest, and sleeps the same: its batteries, its
+    shield's pool and whether the shield held agree within 1% of all it stores.
+17. **Only a still camp sleeps.** Under a running shield in a full storm with a crate floating beside
+    you, you can; with the crate swinging, or set swinging as the screen goes dark, or out in the
+    storm, you can't, it says what moved, and no night passes. The bedroll goes down all the same:
+    with the crate swinging, use in your hands lays it on the sand, and use on it says "the crate's
+    still moving".
+18. **A line gives at the storm's peak.** Asleep under a shield with a storm coming on, two crates on
+    the sand past its bubble on lines to stakes: the one made stronger than the night's peak load
+    holds its crate where it was, the weaker gives and its crate is gone where the wind took it, and
+    waking says so.
+19. **Waking jumps cleanly.** Eight hours asleep, you wake eight hours on: every ticking system stands
+    on the new hour, the forecast reads from it, no storm map is drawn in a hitch after, and a save
+    made on waking resumes as you woke.
+20. **Sleep is no dodge** (2026-10-18). Asleep in the open on the probes' seed, no bubble over you, a
+    storm due in the morning: its arrival wakes you, the night lived up to it, and waking says the storm
+    woke you.
 
 ## Out of scope
 
-- Disease, injuries to specific body parts, and sleep. *(A sleep that skips time is proposed
-  above. Whether this line covers it is an open question.)*
+- Disease, injuries to specific body parts, and sleep as a need. *(Sleep to wait out a storm is
+  built, above; it adds no bar and restores nothing time and the shield don't.)*
 
 ## Open questions
 
@@ -640,8 +781,9 @@ Death means a new run (see Runs in the vision).
   a light panel goes in as easily as a battery of the same weight (Hunter, 2026-10-17:
   still open). Not built.
 
-The sleep proposal (2026-10-17) is not agreed. Its own open questions come first, then what
-folding it in raised. Each is quoted on both sides and left standing.
+The sleep proposal (2026-10-17) raised these; the 2026-10-18 spec agreed it, and what's built
+answers most ([Sleep, as built](#sleep-as-built-2026-10-18)). Each is quoted on both sides, with what
+was built.
 
 - **The sleep simulation approach.** Open in the session. Here: the arithmetic runs on ticks of
   world time, and under the dev time warp the physics still steps a sixtieth of a second a tick
@@ -650,27 +792,36 @@ folding it in raised. Each is quoted on both sides and left standing.
   said: what "stable" means in the check (lines holding, nothing loose, the shield's pool
   outlasting the span), how long the real physics runs before the skip, or whether the physics
   runs again for the last stretch before you wake. How the arithmetic is run is Power's question.
+  *Built:* stable is you and the camp still and no harm reaching you, read as the physics runs and
+  watched over the half-second fade; each system's own tick, in 10 s steps; the physics never runs
+  for the night, and the world goes on from it as it stands.
 - **Sleep against "Out of scope... sleep."** Here: "Disease, injuries to specific body parts,
   and sleep," and the needs are health, hunger, thirst and stamina, with no sleep bar. The
   session: sleep as a way to fast-forward, "preferred... over auto-walk." Not said: whether the
   line means sleep as a need, which the proposal doesn't add, or sleep at all. Also not said:
   whether sleeping restores anything past what rest and time in the shield already do.
+  *Built:* no need bar; the line now reads "sleep as a need," and sleeping restores only what time
+  does (healing, unharmed, fed and watered).
 - **Sleep against "The game never pauses."** Here (Menus & UI, rule 2 and probe 1): "world time,
   weather and physics advance exactly as they do" with a menu open. A sleep isn't a pause, but
   it skips a stretch the physics never lives through, which that rule was written to keep out of
-  menus. Not said whether the rule is about menus only.
+  menus. Not said whether the rule is about menus only. *The spec:* sleep is "needed despite the
+  no-pause philosophy." The words don't pause; the night is a jump the physics doesn't live.
 - **What wakes you.** The session: "sleep through the storm." Here: a shield whose pool runs dry
   collapses, and the storm floods in; thirst empties in a day. Not said whether a bed refuses a
   sleep the camp can't last, warns, or wakes you early when the pool nears the shield's reserve
-  or a need runs low.
+  or a need runs low. *Built:* it never refuses for the span; harm wakes you (the bubble going),
+  and so does thirst or hunger at a quarter with nothing left.
 - **Where each start sleeps.** Here: the Surveyor starts with the board racked, the Salvager has
   "Hoverboard and the light shield; little else" (read here as no crate, so no rack), and oysters
   "never find ruins" (the vision's playstyles). The session: bedrolls share the rack, and some
   ruins have beds. Not said where a hover punk keeps a bedroll, or whether a Surveyor unracks
-  the board to sleep. An oyster never sees a ruin bed.
+  the board to sleep. An oyster never sees a ruin bed. *Built:* the Surveyor and the Homesteader
+  carry a bedroll, so the rack keeps the board; the Salvager has none and finds one, or a ruin's bed.
 - **How you name a time.** The session: "sleep until a time." Here the game has no clock you can
   read: the sun by day, and in a storm the radio's music, day or night. Not said what a time is
-  made of: hours, dawn and dusk, or a broadcast.
+  made of: hours, dawn and dusk, or a broadcast. *Built:* hours, the four moments of the local day
+  (morning, noon, dusk, night), the storm passing, and the weather station's call.
 - **The broadcasts and the era.** The session: "second-era religious broadcasts." Read here as
   the second age. In session 3's six eras the second is the war, and in session 4, part 4's numbered
   list it is the skimmer era. Not said which is meant (the endings session later writes
@@ -679,7 +830,9 @@ folding it in raised. Each is quoted on both sides and left standing.
 - **Which broadcast is the clock.** The endings session (2026-10-17): second-age broadcasts "still
   air at reliable times and can serve as a sleep clock." Not said which god's broadcast, whether the Ledger is still on the air, or whether a clock has to be a
   voice and not tones and numbers ([Radio, sound & atmosphere](radio-sound-and-atmosphere.md#open-questions)).
+  *Narrowed:* the weather station's call is built as the radio's wake; a fixed-hour broadcast isn't.
 - **A bubble on a board for sleeping.** Session 4, part 3: the patrol board's bedroll is there to
   "sleep out storms under the shield." Here: a sleep through a storm is a sleep inside a
   running shield whose pool outlasts the span, and the sleep session wants the camp checked for
-  stability first. Not said what "stable" means for a board, which has no camp.
+  stability first. Not said what "stable" means for a board, which has no camp. *Still open:* the
+  patrol board isn't built; as built, a racked board and a bedroll can't both ride one rack.

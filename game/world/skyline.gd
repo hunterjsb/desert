@@ -2,14 +2,16 @@ class_name Skyline
 extends Node3D
 ## What you see of history past the built ground, so a site is found by eye.
 ## Tall structures stand on the far ring as stand-ins, a few boxes of their
-## shape in their paint's tone; bare metal, glass and glaze glints when the
-## sun catches it, near and far; and the saltbush lines on the second age's
-## roads run on across the dunes. All of it is what the sheet laid, or what
-## it would lay from where you are, surveyed as it would be: a stand-in
-## stands where its structure will, as high as the sand leaves it, so what's
-## far off is what you find there. A worker makes it each time the sheet
-## follows you; the main thread swaps it in, and hides a stand-in once its
-## chunk draws the real thing.
+## shape at their own size in the coats their real look shows; bare metal,
+## glass and glaze glints when the sun catches it, near and far; and the
+## saltbush on the second age's roads stands on past it, bush by bush. All of
+## it is what the sheet laid, or what it would lay from where you are,
+## surveyed as it would be: a stand-in stands where its structure will, as
+## high as the sand leaves it, so what's far off is what you find there. A
+## worker makes it each time the sheet follows you; the main thread swaps it
+## in. Over the built ground a stand-in comes in across the hand-over as the
+## real thing dithers away. A storm between you and any of it hides it, as it
+## hides the ground behind and the plume (Plume.seen_through).
 
 ## The eye over the sand, m, and what a pixel spans at the screen's middle,
 ## rad: 1080 rows under the camera's 75°.
@@ -18,16 +20,20 @@ const PIXEL := 0.00142
 ## A sighting the anchor moves less than this keeps its survey, m: the
 ## sheet's seams move what's far off a little as you walk.
 const KEEP_M := 1.0
-## Lines are draped on the far ground at this spacing, m.
-const DRAPE_M := 8.0
-## Main-thread time a frame may take looking over newly laid units, µs.
+## Main-thread time a frame may take looking over newly laid units, and
+## reading the storms between you and what's drawn, µs.
 const UNITS_US := 250
-## Past the hand-over a landmark's least size falls off as distance to this
-## power, slower than perspective, so the eye still snags on it far off.
-const LANDMARK_FALL := 0.3
-## Floats an instance of a box and of a glint takes in its view's buffer.
+const VEIL_US := 100
+## What's drawn is read for storms afresh once the clock has run this long,
+## s, or you've gone this far, m, since the last reading began: a storm
+## moves metres in that time.
+const VEIL_EVERY := Vector2(1.0, 25.0)
+## Floats an instance of a box or a far bush, and of a glint, takes in its
+## view's buffer.
 const BOX_FLOATS := 20
 const GLINT_FLOATS := 20
+## A far bush's metalness and roughness: the real leaf's.
+const BUSH_FINISH := Vector2(0.12, 0.62)
 
 const BOX_SHADER := preload("res://game/world/skyline.gdshader")
 const GLINT_SHADER := preload("res://game/world/glint.gdshader")
@@ -46,19 +52,29 @@ var _boxes: RID
 var _box_view: RID
 var _glints: RID
 var _glint_view: RID
-var _line_view: RID
-## The lines' mesh drawn now; each job's own is a worker's to fill.
-var _line_mesh: RID
+var _bushes: RID
+var _bush_view: RID
 var _environment: Environment
 var _box_look: ShaderMaterial
 var _glint_look: ShaderMaterial
-var _line_look: ShaderMaterial
 var _box_room := 0
 var _glint_room := 0
-## The meshes every stand-in box and glint is drawn from, kept: the views
-## hold only their RIDs.
+var _bush_room := 0
+## The meshes every stand-in box, glint and far bush is drawn from, kept:
+## the views hold only their RIDs.
 var _cube := BoxMesh.new()
 var _quad := QuadMesh.new()
+var _mound := _mound_mesh()
+## How much of each thing drawn shows past the storms between you and it, by
+## the index its instances carry, a few read afresh each frame in turn; and
+## where each is looked at, world metres.
+var _veils := PackedFloat32Array()
+var _aims := PackedVector3Array()
+var _veil_next := 0
+## When and where the last reading began; NAN once one is due.
+var _veil_t := NAN
+var _veil_eye := Vector3.ZERO
+var _veil_texture := ImageTexture.new()
 ## What's drawn now: the job it came from, and each thing's entry.
 var _shown: Job
 var _task := -1
@@ -78,12 +94,14 @@ var _cells := {}
 ## centre.
 class Entry:
 	var site: Structure
+	## Its veil's index.
+	var index: int
 	## Its state as the job read it, on the worker: reading the weather that
 	## far back costs too much for the main thread.
 	var state: int
 	var ground: float
 	var boxes: Array[PackedFloat32Array] = []
-	## A landmark's boxes over its own built ground, till the real thing takes over.
+	## Its boxes over its own built ground, coming in as the real thing goes.
 	var near_boxes: Array[PackedFloat32Array] = []
 	var far_glints: Array[PackedFloat32Array] = []
 	var near_glints: Array[PackedFloat32Array] = []
@@ -106,8 +124,14 @@ class Job:
 	var before := {}
 	var sightings := {}
 	var entries: Array[Entry] = []
-	var lines: RID
-	var lined := 0
+	## The far bushes by the chunk they stand on, each chunk's a slice of the
+	## view's buffer from the job's centre, and how many in all.
+	var bushes := {}
+	var bushed := 0
+	## What each veil's index is of, a site's id or a chunk's coord, and where
+	## it's looked at: a structure's middle, a chunk's bushes' ground.
+	var keys := []
+	var aims := PackedVector3Array()
 
 
 func setup(world: World) -> void:
@@ -119,37 +143,29 @@ func setup(world: World) -> void:
 	# The pieces are loaded here, on the main thread, before a worker asks for one.
 	StructureKit.kinds()
 	var scenario := get_world_3d().scenario
+	_upload_veils()
 	_box_look = ShaderMaterial.new()
 	_box_look.shader = BOX_SHADER
 	_box_look.set_shader_parameter("thinnest_px", _tuning.skyline_thinnest_px)
-	_box_look.set_shader_parameter("landmark_px", _tuning.skyline_landmark_px)
-	_box_look.set_shader_parameter("landmark_fall", LANDMARK_FALL)
+	_box_look.set_shader_parameter("handover", _tuning.skyline_handover_m)
+	_box_look.set_shader_parameter("veils", _veil_texture)
 	_boxes = RenderingServer.multimesh_create()
 	_cube.size = Vector3.ONE
 	RenderingServer.multimesh_set_mesh(_boxes, _cube.get_rid())
 	_box_view = _instance(_boxes, _box_look, scenario)
+	# A far bush is drawn as a stand-in box is, on a mound from its foot.
+	_bushes = RenderingServer.multimesh_create()
+	RenderingServer.multimesh_set_mesh(_bushes, _mound.get_rid())
+	_bush_view = _instance(_bushes, _box_look, scenario)
 	_glint_look = ShaderMaterial.new()
 	_glint_look.shader = GLINT_SHADER
 	_glint_look.set_shader_parameter("sparkle_px", _tuning.glint_px)
-	_glint_look.set_shader_parameter("landmark_px", _tuning.skyline_landmark_px)
-	_glint_look.set_shader_parameter("landmark_fall", LANDMARK_FALL)
 	_glint_look.set_shader_parameter("brightness", _tuning.glint_brightness)
+	_glint_look.set_shader_parameter("veils", _veil_texture)
 	_glints = RenderingServer.multimesh_create()
 	_quad.size = Vector2.ONE * 2.0
 	RenderingServer.multimesh_set_mesh(_glints, _quad.get_rid())
 	_glint_view = _instance(_glints, _glint_look, scenario)
-	_line_look = ShaderMaterial.new()
-	_line_look.shader = BOX_SHADER
-	_line_look.set_shader_parameter("thinnest_px", _tuning.skyline_thinnest_px)
-	_line_look.set_shader_parameter("draped", true)
-	# The leaf's shade side: a line far off reads by how it darkens the sand.
-	_line_look.set_shader_parameter("leaf", Feral.LEAF[2].srgb_to_linear())
-	_line_look.set_shader_parameter("line_px", _tuning.skyline_line_px)
-	_line_view = RenderingServer.instance_create()
-	RenderingServer.instance_set_scenario(_line_view, scenario)
-	RenderingServer.instance_geometry_set_material_override(_line_view, _line_look.get_rid())
-	RenderingServer.instance_geometry_set_cast_shadows_setting(_line_view, RenderingServer.SHADOW_CASTING_SETTING_OFF)
-	RenderingServer.instance_set_extra_visibility_margin(_line_view, 1.0e6)
 	world.terrain.child_entered_tree.connect(func(_node: Node) -> void: _dirty = true)
 	world.terrain.unloaded.connect(func(_coord: Vector2i) -> void: _dirty = true)
 
@@ -163,9 +179,7 @@ func _exit_tree() -> void:
 	if _task != -1:
 		WorkerThreadPool.wait_for_task_completion(_task)
 		_task = -1
-	if _job != null and _job != _shown and _job.lines.is_valid():
-		RenderingServer.free_rid(_job.lines)
-	for rid in [_box_view, _glint_view, _line_view, _boxes, _glints, _line_mesh]:
+	for rid in [_box_view, _glint_view, _bush_view, _boxes, _glints, _bushes]:
 		if rid.is_valid():
 			RenderingServer.free_rid(rid)
 
@@ -177,7 +191,7 @@ func _process(_delta: float) -> void:
 	var shown := _tuning.skyline and _world.terrain.is_far_shown()
 	RenderingServer.instance_set_visible(_box_view, shown)
 	RenderingServer.instance_set_visible(_glint_view, shown)
-	RenderingServer.instance_set_visible(_line_view, shown)
+	RenderingServer.instance_set_visible(_bush_view, shown)
 	if not _tuning.skyline:
 		return
 	var swapped := false
@@ -199,9 +213,11 @@ func _process(_delta: float) -> void:
 		_dirty = false
 		_draw()
 	_shade()
+	_read_storms()
 	frame_ms = (Time.get_ticks_usec() - started) / 1000.0
 	slowest_ms = maxf(slowest_ms, frame_ms)
-	Dev.put("terrain/sky", "%d %.2fms" % [_shown.entries.size() if _shown != null else 0, frame_ms])
+	Dev.put("terrain/sky", "%d %d %.2fms" % [_shown.entries.size() if _shown != null else 0,
+		_shown.bushed if _shown != null else 0, frame_ms])
 
 
 ## Nothing being made.
@@ -240,7 +256,7 @@ func stand_in(site: Structure) -> Dictionary:
 
 ## A structure's glints as drawn now: on its stand-in past the built
 ## ground, on it where its chunk draws it; each [world place, the way it
-## faces, the cosine of how wide it sweeps].
+## faces, how wide it sweeps, rad].
 func glints_of(site: Structure) -> Array[Array]:
 	var out: Array[Array] = []
 	if _shown == null:
@@ -253,8 +269,50 @@ func glints_of(site: Structure) -> Array[Array]:
 		var rows := entry.near_glints[s] if _world.terrain.is_loaded_at(site.x, site.z) else entry.far_glints[s]
 		for k in range(0, rows.size(), GLINT_FLOATS):
 			out.append([Vector3(rows[k + 3], rows[k + 7], rows[k + 11]) + shift, Vector3(rows[k + 16], rows[k + 17],
-				rows[k + 18]), rows[k + 19]])
+				rows[k + 18]), acos(rows[k + 19])])
 	return out
+
+
+## How much of a structure seen from afar shows past the storms between you
+## and it as drawn now, 0 to 1: its stand-in, its boxes over its own ground
+## and its glints alike. 1 for what isn't drawn.
+func veil_of(site: Structure) -> float:
+	if _shown != null:
+		for entry in _shown.entries:
+			if entry.site == site:
+				return _veils[entry.index]
+	return 1.0
+
+
+## The far bushes drawn now, by the chunk they stand on: [how many, how much
+## of them shows past the storms between you and them, their middle in world
+## metres].
+func far_bushes() -> Dictionary:
+	var out := {}
+	if _shown != null:
+		var shift := Vector2(_shown.center) * _size
+		for i in range(_shown.entries.size(), _shown.keys.size()):
+			var coord: Vector2i = _shown.keys[i]
+			if _loaded(coord):
+				continue
+			var rows: PackedFloat32Array = _shown.bushes[coord]
+			var middle := Vector2.ZERO
+			for k in range(0, rows.size(), BOX_FLOATS):
+				middle += Vector2(rows[k + 3], rows[k + 11])
+			out[coord] = [rows.size() / BOX_FLOATS, _veils[i], shift + middle / (rows.size() / BOX_FLOATS)]
+	return out
+
+
+## How brightly a glint, [where, the way it faces, how wide it sweeps],
+## shines toward an eye with the sun that way, 0 to 1, before the air and
+## the sky take their share (glint.gdshader).
+static func shine(glint: Array, eye: Vector3, sun: Vector3) -> float:
+	var n: Vector3 = glint[1]
+	var v := (eye - (glint[0] as Vector3)).normalized()
+	if n.dot(v) <= 0.0 or n.dot(sun) <= 0.0:
+		return 0.0
+	var edge := cos(glint[2] as float)
+	return smoothstep(edge, lerpf(edge, 1.0, 0.75), n.dot((v + sun).normalized()))
 
 
 ## Every structure seen from afar now, laid or sighted.
@@ -366,8 +424,6 @@ func _launch() -> void:
 		job.laid_pieces.append_array(own[1])
 	_of_unit = kept
 	_follows = _sites.follows
-	# Made here: the main thread makes the RIDs, a worker fills them.
-	job.lines = RenderingServer.mesh_create()
 	_job = job
 	_task = WorkerThreadPool.add_task(_make.bind(job))
 
@@ -418,12 +474,11 @@ func _make(job: Job) -> void:
 			shown.append(site)
 	for site: Structure in shown:
 		if site.distance_to(here.x, here.y) <= reach:
-			job.entries.append(_entry(site, job.center))
-	var arrays := _drape(history, pieces, job.center)
-	if not arrays.is_empty():
-		job.lined = (arrays[Mesh.ARRAY_INDEX] as PackedInt32Array).size() / 3
-		RenderingServer.mesh_add_surface_from_arrays(job.lines, RenderingServer.PRIMITIVE_TRIANGLES, arrays, [], {},
-			RenderingServer.ARRAY_CUSTOM_RGBA_FLOAT << RenderingServer.ARRAY_FORMAT_CUSTOM0_SHIFT)
+			var entry := _entry(site, job.center, job.keys.size())
+			job.entries.append(entry)
+			job.keys.append(site.id)
+			job.aims.append(Vector3(site.x, entry.ground + site.top_in(entry.state) * 0.5, site.z))
+	_bushes_of(history, pieces, job)
 	job_ms = (Time.get_ticks_usec() - started) / 1000.0
 
 
@@ -438,133 +493,154 @@ func _records(history: History, cell: int) -> Array:
 	return had
 
 
-## How a structure is drawn in each state, from the job's centre.
-func _entry(site: Structure, center: Vector2i) -> Entry:
+## How a structure is drawn in each state, from the job's centre, its
+## instances carrying their veil's index.
+func _entry(site: Structure, center: Vector2i, index: int) -> Entry:
 	var entry := Entry.new()
 	entry.site = site
+	entry.index = index
 	entry.state = site.state()
 	entry.ground = FarRing.ground(_world.shape, _tuning, site.x, site.z)
 	var shift := Vector3(center.x * _size, 0.0, center.y * _size)
-	var rng := RandomNumberGenerator.new()
-	var landmark := site.piece.far_landmark
 	for s in 3:
 		var frame := site.frame_on(s, entry.ground).translated(-shift)
 		var own := site.frame_on(s, site.pad()).translated(-shift)
-		var tall := site.top_in(s)
-		entry.boxes.append(_boxes_of(site, s, frame, entry.ground, tall if landmark else 0.0, shift))
-		entry.near_boxes.append(_boxes_of(site, s, own, site.pad(), -tall, shift) if landmark else PackedFloat32Array())
-		var far := PackedFloat32Array()
-		var near := PackedFloat32Array()
-		rng.seed = site.loot
-		for each in site.bare_glints(s):
-			# No two sites' plates lie quite the same way.
-			var facing := (Basis(Vector3.UP, rng.randf_range(-0.3, 0.3)) * Basis(Vector3.RIGHT, rng.randf_range(-0.12, 0.12))
-				* (each[1] as Vector3)).normalized()
-			# On a landmark it rides with its stand-in as that's drawn larger.
-			for into: Array in [[far, frame, entry.ground, tall], [near, own, site.pad(), -tall]]:
-				var at: Transform3D = into[1]
-				var spot := at * (each[0] as Vector3)
-				var foot := Vector3(site.x, into[2], site.z) - shift
-				_put_glint(into[0], spot, (at.basis * facing).normalized(), each[2], foot - spot,
-					into[3] if landmark else 0.0)
-		entry.far_glints.append(far)
-		entry.near_glints.append(near)
+		entry.boxes.append(_boxes_of(site, s, frame, false, index))
+		entry.near_boxes.append(_boxes_of(site, s, own, true, index))
+		for into: Array in [[entry.far_glints, frame], [entry.near_glints, own]]:
+			var rows := PackedFloat32Array()
+			for each in glints_on(site, s, into[1]):
+				_put_glint(rows, each[0], each[1], each[2], index)
+			into[0].append(rows)
 	return entry
 
 
-## A stand-in's boxes in a state on a frame, each with the way to its foot
-## and, for a landmark, how tall it stands (negative over its own ground).
-func _boxes_of(site: Structure, s: int, frame: Transform3D, ground: float, tall: float, shift: Vector3) -> PackedFloat32Array:
+## A structure's glints in a state on a frame, as [where, the way it faces,
+## how wide it sweeps]: what's bare of sand, no two sites' plates lying quite
+## the same way.
+static func glints_on(site: Structure, s: int, frame: Transform3D) -> Array[Array]:
+	var out: Array[Array] = []
+	var rng := RandomNumberGenerator.new()
+	rng.seed = site.loot
+	for each in site.bare_glints(s):
+		var facing := (Basis(Vector3.UP, rng.randf_range(-0.3, 0.3)) * Basis(Vector3.RIGHT, rng.randf_range(-0.12, 0.12))
+			* (each[1] as Vector3)).normalized()
+		out.append([frame * (each[0] as Vector3), (frame.basis * facing).normalized(), each[2]])
+	return out
+
+
+## A stand-in's boxes in a state on a frame, each in its coat's colour as
+## the worn look takes it, how solid it is, whether it's drawn over its own
+## built ground, its coat's metalness and roughness, and its veil's index.
+static func _boxes_of(site: Structure, s: int, frame: Transform3D, over_own: bool, index: int) -> PackedFloat32Array:
 	var rows := PackedFloat32Array()
-	var foot := Vector3(site.x, ground, site.z) - shift
 	for each in site.far_look(s):
 		var box := frame * (each[0] as Transform3D)
 		var b := box.basis
-		var tone := (each[1] as Color).srgb_to_linear()
-		var to := foot - box.origin
+		var tone: Color = each[1]
+		var finish: Vector2 = each[2]
 		rows.append_array(PackedFloat32Array([b.x.x, b.y.x, b.z.x, box.origin.x, b.x.y, b.y.y, b.z.y, box.origin.y,
-			b.x.z, b.y.z, b.z.z, box.origin.z, tone.r, tone.g, tone.b, 1.0, to.x, to.y, to.z, tall]))
+			b.x.z, b.y.z, b.z.z, box.origin.z, tone.r, tone.g, tone.b, tone.a, 1.0 if over_own else 0.0,
+			finish.x, finish.y, index]))
 	return rows
 
 
-## A glint: where it is, with the way to its foot and its landmark's height
-## as the box's are, then the way it faces and how wide it sweeps.
-static func _put_glint(into: PackedFloat32Array, at: Vector3, facing: Vector3, sweep: float, to: Vector3,
-		tall: float) -> void:
+## A glint: where it is, its veil's index, the way it faces and how wide it
+## sweeps.
+static func _put_glint(into: PackedFloat32Array, at: Vector3, facing: Vector3, sweep: float, index: int) -> void:
 	into.append_array(PackedFloat32Array([1.0, 0.0, 0.0, at.x, 0.0, 1.0, 0.0, at.y, 0.0, 0.0, 1.0, at.z,
-		to.x, to.y, to.z, tall, facing.x, facing.y, facing.z, cos(sweep)]))
+		index, 0.0, 0.0, 0.0, facing.x, facing.y, facing.z, cos(sweep)]))
 
 
-## The lines' arrays: each living stretch draped on the far ground as a low
-## ridge, past the chunks loaded round the centre, where Feral's own stand.
-func _drape(history: History, pieces: Array[Sites.Piece], center: Vector2i) -> Array:
-	var vertices := PackedVector3Array()
-	var normals := PackedVector3Array()
-	var spread := PackedFloat32Array()
-	var indices := PackedInt32Array()
+## The close lines' wild plants in reach, each a bush on the far ground where
+## its chunk would stand it, at its own size, in the leaf's own sage, grouped
+## by that chunk: a group gives way to the real bushes while its chunk is
+## drawn, and is veiled as one.
+func _bushes_of(history: History, pieces: Array[Sites.Piece], job: Job) -> void:
 	var shape := _world.shape
-	var origin := Vector2(center) * _size
-	var inner := Rect2(origin - Vector2.ONE * _tuning.view_radius * _size, Vector2.ONE * (2 * _tuning.view_radius + 1) * _size)
-	var reach := _tuning.skyline_m
+	var origin := Vector2(job.center) * _size
 	var here := origin + Vector2.ONE * _size * 0.5
+	var reach := _tuning.skyline_m
+	var near := Rect2(here - Vector2.ONE * reach, Vector2.ONE * reach * 2.0)
+	var by_chunk := {}
 	var seen := {}
 	for piece in pieces:
 		var key := Vector2i(piece.path, piece.first)
 		if seen.has(key):
 			continue
 		seen[key] = true
-		for line in Feral.far_lines(history, piece):
-			var a: Vector2 = line[0]
-			var b: Vector2 = line[1]
-			var length := a.distance_to(b)
-			var steps := maxi(1, ceili(length / DRAPE_M))
-			var across := (b - a).orthogonal().normalized()
-			var last := -1
-			for k in steps + 1:
-				var at := a.lerp(b, float(k) / steps)
-				if inner.has_point(at) or at.distance_to(here) > reach:
-					last = -1
-					continue
-				var y := FarRing.ground(shape, _tuning, at.x, at.y)
-				var base := vertices.size()
-				for side in [-1.0, 0.0, 1.0]:
-					var lift: float = line[2] if side == 0.0 else -0.15
-					vertices.append(Vector3(at.x - origin.x, y, at.y - origin.y))
-					var out := Vector3(across.x * side * line[3] * 0.5, lift, across.y * side * line[3] * 0.5)
-					spread.append_array(PackedFloat32Array([out.x, out.y, out.z, 0.0]))
-					normals.append(Vector3(across.x * side, 1.0, across.y * side).normalized())
-				if last >= 0:
-					indices.append_array(PackedInt32Array([last, last + 1, base, base, last + 1, base + 1,
-						last + 1, last + 2, base + 1, base + 1, last + 2, base + 2]))
-				last = base
-	if indices.is_empty():
-		return []
-	var arrays := []
-	arrays.resize(Mesh.ARRAY_MAX)
-	arrays[Mesh.ARRAY_VERTEX] = vertices
-	arrays[Mesh.ARRAY_NORMAL] = normals
-	arrays[Mesh.ARRAY_CUSTOM0] = spread
-	arrays[Mesh.ARRAY_INDEX] = indices
-	return arrays
+		for each in Feral.far_plants(history, piece, near):
+			if Vector2(each.x, each.z).distance_to(here) <= reach:
+				var coord := Vector2i(floori(each.x / _size), floori(each.z / _size))
+				if not by_chunk.has(coord):
+					by_chunk[coord] = []
+				by_chunk[coord].append(each)
+	var tone := Feral.LEAF[1].srgb_to_linear()
+	var grown := Vector3(Feral.BUSH_WIDE, Feral.BUSH_TALL, Feral.BUSH_WIDE)
+	for coord: Vector2i in by_chunk:
+		var index := job.keys.size()
+		var middle := (Vector2(coord) + Vector2.ONE * 0.5) * _size
+		job.keys.append(coord)
+		job.aims.append(Vector3(middle.x, FarRing.ground(shape, _tuning, middle.x, middle.y), middle.y))
+		var rows := PackedFloat32Array()
+		for each: Dictionary in by_chunk[coord]:
+			var b := Basis(Vector3.UP, each.yaw) * Basis.from_scale(grown * each.size)
+			var foot := Vector3(each.x - origin.x, FarRing.ground(shape, _tuning, each.x, each.z) - Feral.SINK,
+				each.z - origin.y)
+			rows.append_array(PackedFloat32Array([b.x.x, b.y.x, b.z.x, foot.x, b.x.y, b.y.y, b.z.y, foot.y,
+				b.x.z, b.y.z, b.z.z, foot.z, tone.r, tone.g, tone.b, 1.0, 0.0, BUSH_FINISH.x, BUSH_FINISH.y, index]))
+		job.bushes[coord] = rows
+		job.bushed += rows.size() / BOX_FLOATS
+
+
+## A bush far off: a low mound a metre across, rising a metre from its foot
+## before it's sized.
+static func _mound_mesh() -> ArrayMesh:
+	var dome := SphereMesh.new()
+	dome.radius = 0.5
+	dome.height = 1.0
+	dome.radial_segments = 8
+	dome.rings = 3
+	dome.is_hemisphere = true
+	var arrays := dome.get_mesh_arrays()
+	var box := dome.get_aabb()
+	var at: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+	for i in at.size():
+		at[i] = Vector3(at[i].x, (at[i].y - box.position.y) / box.size.y, at[i].z)
+	arrays[Mesh.ARRAY_VERTEX] = at
+	var mesh := ArrayMesh.new()
+	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
+	return mesh
 
 
 # --- Drawn on the main thread. ---
 
 func _swap(job: Job) -> void:
+	# What was drawn keeps its veil; what's new is hidden until it's read.
+	var had := {}
+	if _shown != null:
+		for i in _shown.keys.size():
+			had[_shown.keys[i]] = _veils[i]
+	var veils := PackedFloat32Array()
+	for key: Variant in job.keys:
+		veils.append(had.get(key, 0.0))
+	_veils = veils
+	_aims = job.aims
+	_veil_next = 0
+	_veil_t = NAN
+	_upload_veils()
 	_shown = job
 	_place()
-	RenderingServer.instance_set_base(_line_view, job.lines)
-	if _line_mesh.is_valid():
-		RenderingServer.free_rid(_line_mesh)
-	_line_mesh = job.lines
 	_dirty = true
 
 
 ## Every entry's look in its state now: a stand-in and its glints past the
-## built ground, its own glints on it where its chunk draws it.
+## built ground, its own glints on it where its chunk draws it; and the far
+## bushes on every chunk not drawn.
 func _draw() -> void:
 	var boxes := PackedFloat32Array()
 	var glints := PackedFloat32Array()
+	var bushes := PackedFloat32Array()
 	var terrain := _world.terrain
 	for entry in _shown.entries:
 		# Its ground, built since, gave way to a bigger one's.
@@ -577,8 +653,16 @@ func _draw() -> void:
 		else:
 			boxes.append_array(entry.boxes[s])
 			glints.append_array(entry.far_glints[s])
+	for coord: Vector2i in _shown.bushes:
+		if not _loaded(coord):
+			bushes.append_array(_shown.bushes[coord])
 	_box_room = _fill(_boxes, boxes, _box_room, BOX_FLOATS, true)
 	_glint_room = _fill(_glints, glints, _glint_room, GLINT_FLOATS, true)
+	_bush_room = _fill(_bushes, bushes, _bush_room, BOX_FLOATS, true)
+
+
+func _loaded(coord: Vector2i) -> bool:
+	return _world.terrain.is_loaded_at((coord.x + 0.5) * _size, (coord.y + 0.5) * _size)
 
 
 ## An entry's state now: as its chunk's build read it where that's drawn,
@@ -605,7 +689,7 @@ static func _fill(multimesh: RID, buffer: PackedFloat32Array, room: int, stride:
 func _place() -> void:
 	var at := Vector3((_shown.center.x - _world.origin_chunk.x) * _size, 0.0,
 		(_shown.center.y - _world.origin_chunk.y) * _size)
-	RenderingServer.instance_set_transform(_line_view, Transform3D(Basis.IDENTITY, at))
+	RenderingServer.instance_set_transform(_bush_view, Transform3D(Basis.IDENTITY, at))
 	RenderingServer.instance_set_transform(_box_view, Transform3D(Basis.IDENTITY, at))
 	RenderingServer.instance_set_transform(_glint_view, Transform3D(Basis.IDENTITY, at))
 
@@ -622,10 +706,48 @@ func _shade() -> void:
 	_glint_look.set_shader_parameter("glare", glare)
 	_glint_look.set_shader_parameter("haze", Vector3(_environment.fog_depth_begin, _environment.fog_depth_end,
 		_tuning.haze_strength))
-	if weather.map != null:
-		var uniforms := weather.map.uniforms(t)
-		for key: String in uniforms:
-			_glint_look.set_shader_parameter(key, uniforms[key])
+
+
+## What's drawn read for the storms between you and it, a few each frame in
+## turn within VEIL_US, a reading at a time (VEIL_EVERY).
+func _read_storms() -> void:
+	var count := _veils.size()
+	if count == 0:
+		return
+	var camera := _world.player.camera.global_position
+	var eye := Vector3(_world.world_x(camera.x), camera.y, _world.world_z(camera.z))
+	if _veil_next == 0:
+		if not is_nan(_veil_t) and absf(_world.time - _veil_t) < VEIL_EVERY.x \
+				and eye.distance_to(_veil_eye) < VEIL_EVERY.y:
+			return
+		_veil_t = _world.time
+		_veil_eye = eye
+	var weather := _world.weather
+	var round_you := 1.0 - weather.seen_storm
+	var until := Time.get_ticks_usec() + VEIL_US
+	var changed := false
+	while Time.get_ticks_usec() < until:
+		var through := Plume.seen_through(weather.field, _tuning, eye, _aims[_veil_next], _world.time) * round_you
+		if absf(through - _veils[_veil_next]) > 0.005:
+			_veils[_veil_next] = through
+			changed = true
+		_veil_next = (_veil_next + 1) % count
+		if _veil_next == 0:
+			break
+	if changed:
+		_upload_veils()
+
+
+## The veils as the shaders read them, a texel each.
+func _upload_veils() -> void:
+	var wide := maxi(64, nearest_po2(_veils.size()))
+	var texels := _veils.duplicate()
+	texels.resize(wide)
+	var image := Image.create_from_data(wide, 1, false, Image.FORMAT_RF, texels.to_byte_array())
+	if _veil_texture.get_width() == wide:
+		_veil_texture.update(image)
+	else:
+		_veil_texture.set_image(image)
 
 
 static func _instance(multimesh: RID, look: Material, scenario: RID) -> RID:
@@ -635,4 +757,3 @@ static func _instance(multimesh: RID, look: Material, scenario: RID) -> RID:
 	# Its instances stand kilometres apart; the view never culls them as one box.
 	RenderingServer.instance_set_extra_visibility_margin(view, 1.0e6)
 	return view
-

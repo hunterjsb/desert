@@ -21,7 +21,8 @@ const HELP := [
 const DEV_HELP := [["{console}", "console"], ["{toggle_dev_overlay}", "numbers"]]
 ## Riding takes more than its key says, so it's taught the first time you ride.
 const RIDE_HOW_TO := "ride"
-const RIDE_HOW_TO_SAYS := "The move keys push and carve where they point; {move_back} only brakes.\n" \
+const RIDE_HOW_TO_SAYS := "The move keys push and carve where they point; {move_back} digs an edge in, to bite into a carve" \
+	+ " or, alone, to stop.\n" \
 	+ "{sprint} kicks off the sand, {jump} hops, {crouch} tucks; crouched into a hard carve, you drift."
 ## A heading in the keys list sits back in the theme's dim text.
 static var DIM: Color:

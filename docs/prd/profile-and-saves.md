@@ -95,10 +95,10 @@ last played highlighted and the Surveyor before any (Menus & UI). Each is a `Kit
 system](../world-system.md#the-feral-layer-and-spawns)), whether it's balanced, what unlocks it
 and what of it the main menu shows. The menu lists every origin, one not open to
 the profile (`Kit.is_open_to`, through `Profile.has`) as ????. A kit's `unlock` can name a deed
-(below), which then opens it. Frequent Flyer (a long ride on the board) is proposed for the Salvager
-and Hermit (a whole day under a shield) for the Homesteader, but Hunter hasn't decided whether they
-should be locked, so all three are open from the first run; locking one is its kit's `unlock`, one
-line. The profile keeps the origin a run was last begun or resumed as (`Profile.last_origin`), whose
+(below), which then opens it. The Surveyor is open from the first run; Frequent Flyer (a long ride on
+the board) opens the Salvager, and Hermit (a whole day under a shield) the Homesteader (Hunter,
+2026-10-18: "let's lock the two other starts behind some deeds"). The dev console's `unlockall`
+opens both for testing. The profile keeps the origin a run was last begun or resumed as (`Profile.last_origin`), whose
 kit the main menu shows; reset forgets it. The novelty kits aren't built; an origin that
 isn't balanced is offered Normal only. The run keeps its origin (`World.kit`) and so does its save
 (`kit`); a new run after a death comes as the same origin. A save from before origins has none and
@@ -138,10 +138,10 @@ stays. Green Thumb is new, so Crop Rotation has one before it.
 
 | Id | Name | Asks | After | Recorded |
 |---|---|---|---|---|
-| `board_distance` | Frequent Flyer | Ride a board 5,000 m without stepping off; proposed to open the Salvager | | the ride, by how far it has come (kept in the save mid-ride) |
+| `board_distance` | Frequent Flyer | Ride a board 5,000 m without stepping off; opens the Salvager | | the ride, by how far it has come (kept in the save mid-ride) |
 | `board_height` | Big Air | Fly 8 m over the sand on a board | Frequent Flyer | the ride, each tick, by the board's height over the sand under it |
 | `board_storm` | Flying Bling | Ride into a storm by night or in an eclipse | Big Air | the ride, the tick you go from clear air into a storm, the sun down or partly behind Tu |
-| `shield_day` | Hermit | Spend a whole day under a shield, never stepping out; proposed to open the Homesteader | | Wear's tick: time under a bubble without a break, a day's length, kept in the save |
+| `shield_day` | Hermit | Spend a whole day under a shield, never stepping out; opens the Homesteader | | Wear's tick: time under a bubble without a break, a day's length, kept in the save |
 | `shield_storm` | Sandblasted | Hold off 60 minutes of storm with one shield | Hermit | Wear's tick: a running shield counts the storm where it stands, kept on the shield and in the save |
 | `crop` | Green Thumb | Grow a crop | | a planter's harvest, by hand or by its harvester |
 | `crops` | Crop Rotation | Grow 3 kinds of crop | Green Thumb | the same, each kind counted once a profile |
@@ -201,6 +201,25 @@ How each X was chosen, from the probes' numbers:
   (through `Profile.unlock`, so forgetting the deeds leaves them open; reset closes them), `deed
   <id>` grants one, `deeds` lists what's done and what isn't, and `deeds clear` forgets them all.
 - **Probes** 17 to 22, and Menus & UI probe 11.
+
+## Starts on the chassis, and two new kits (agreed, 2026-10-18 spec; not built)
+
+From the [chassis spec](../chassis-kits-dunes-2026-10-18.md); balance targets the Surveyor only.
+- **The Surveyor:** two chassis joined as a deck and a frame with an upright on its side, its gear
+  stuck on so the system is learned by sight: a battery, the shield, a compass, and the hoverboard
+  hung on the upright. It keeps the board: it's how the Surveyor tows its camp and kites.
+- **The archaeologist** (a woman on a Daventry-funded university expedition, hunting proof of why
+  humanity must be careful; Zan only partly fits that story: the hive-mind war mattered, but
+  abandonment, oversight and human failings killed it): ground radar on a Console, a digging tool
+  and sifting gear. Opened by two hard deeds: assemble the archaeology setup; dig a ruin out of a
+  dune yourself, its site laid bare by your digging rather than a storm's.
+- **The Varran settler** (an imperial settler who trusted tech over the land): a minimal fast sailing
+  rig, an out-of-place heavy navigation computer rich in wind and storm, two batteries, a small
+  shield carried with its own battery and raised round himself in storms (never on the sail: the
+  bubble would block its wind), riding a hoverboard as the keel. Opened by building and using a
+  dune sailboat. What sits outside his bubble wears in a long storm, as anything does; a light
+  panel can go on top, weakly.
+- **The Salvager and Homesteader** stay deed-opened and get reworked onto the chassis.
 
 ## Ending flags (proposed)
 
@@ -277,9 +296,10 @@ calls them from Save, Save & quit, Resume, New game, the death screen and Option
   radio's dial, volume, beacon and charge, one saved before the dial on its channel's
   carrier; a save from before, with five slots, resumes with
   their contents carried), what's in your hands, at your waist or being
-  hauled, and the board you ride with its ride as it stood), the clock, how long the run
-  has been played (a save from before kept none, and its run never counts it) and when it
-  was saved, the moon position, the engine's origin, and where power, wear, farming and
+  hauled, and the board you ride with its ride as it stood), the clock and when on it the
+  run began (its day 1; a save from before kept none and counts from the clock's zero),
+  how long the run has been played (a save from before kept none, and its run never
+  counts it) and when it was saved, the moon position, the engine's origin, and where power, wear, farming and
   your body are in their ticks. Then everything of yours: each thing by its
   catalog id, where it is and how it's moving, its wear, charge, water, growth and
   harvests, a shield's switch and how far its bubble has bloomed, a stake driven or not,

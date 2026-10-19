@@ -6,7 +6,8 @@
 script = ExtResource("1_kit")
 carried = Dictionary[StringName, int]({
 &"canister": 1,
-&"ration": 1
+&"ration": 1,
+&"bedroll": 1
 })
 beside = Dictionary[StringName, Vector2]({
 &"floating_crate": Vector2(1.8, 1.8),

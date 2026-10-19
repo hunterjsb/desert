@@ -394,6 +394,12 @@ func view(at: Vector3, s: int) -> MeshInstance3D:
 	made.transform = Transform3D(basis(), at) * _lean()
 	made.set_instance_shader_parameter(&"age", _age)
 	made.set_instance_shader_parameter(&"era", float(piece.marks))
+	# Far off its stand-in takes over (Skyline): it dithers away as that comes in.
+	if not piece.far.is_empty() and _ctx.tuning.skyline:
+		var handover: Vector2 = _ctx.tuning.skyline_handover_m
+		made.visibility_range_end = handover.x
+		made.visibility_range_end_margin = handover.y - handover.x
+		made.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
 	return made
 
 
@@ -406,6 +412,8 @@ func add_shapes(body: StaticBody3D, at: Vector3, s: int) -> void:
 		var holder := CollisionShape3D.new()
 		holder.shape = piece.shape(i)
 		holder.transform = placed.translated_local(piece.boxes[i].get_center())
+		if i in piece.beds:
+			holder.set_meta(&"bed", true)
 		body.add_child(holder)
 
 
@@ -423,7 +431,7 @@ func frame_on(s: int, ground: float) -> Transform3D:
 
 
 ## Its far look in a state: each box as [a unit cube's transform in its
-## frame, tone], cut off at the sand.
+## frame, tone, finish], cut off at the sand.
 func far_look(s: int) -> Array[Array]:
 	var out: Array[Array] = []
 	var line := piece.sink[s] if piece.lean == 0.0 else -INF
@@ -434,7 +442,7 @@ func far_look(s: int) -> Array[Array]:
 			continue
 		var size := Vector3(box.size.x, box.end.y - lo, box.size.z)
 		out.append([Transform3D(Basis.from_scale(size), Vector3(box.get_center().x, lo + size.y * 0.5,
-			box.get_center().z)), each[1]])
+			box.get_center().z)), each[1], each[2]])
 	return out
 
 

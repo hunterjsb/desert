@@ -127,6 +127,21 @@ Readings, not in the session:
 - **"Restored vent taps" read as the colonial vent power stations** along the rift (part 4's generated
   pieces), which feed the Stoker. Whether a restored tap can also power a camp is not said.
 
+## The deck's pool and the power box (agreed, 2026-10-18 spec; not built)
+
+From the [chassis spec](../chassis-kits-dunes-2026-10-18.md): battery slots leave every device. Everything on one deck shares
+one pool, loose batteries included; cables and hoses only reach other bodies (a turbine staked on
+the sand), and they drag but are much weaker than rope. Early on: one chassis on a tray with a
+loose battery, a panel, the shield and the bedroll on top. The **power box** is the upgrade: many
+battery bays, each charging or supplying, a light strip per bay reading direction and fill at a
+glance; a Console's Power page mirrors it with exact numbers, priorities and switches.
+- **By era** (the spec's riff, confirmed): **colonial** (Tilg or RMC) a big clean industrial
+  cabinet, many bays, precise readouts, full Console integration, rare and heavy; **First
+  Kingdoms** have no model of their own, they ran colonial cabinets patched and repurposed;
+  **skimmer** a bodged rack of mismatched bays, some dead, high capacity, shared pool only, no
+  priorities; **second age** temple-made, few bays, ornate, crude; **company issue** small, light,
+  about four bays, clean but built to a budget. Nomads have none.
+
 ## What draws power
 
 - **Shields,** by type. A full base shield lasts about 30 minutes in a storm. The main
@@ -369,7 +384,10 @@ standing.
   [Sleep](survival.md#sleep-proposed)). Not said: whether a sleep runs the ticks in a batch or
   sums them in closed form. Either way rule 1, "Energy is conserved," has to hold across it, and
   a probe that a slept span and the same span lived leave the same charge is the obvious check.
-  Length is cheap: a three-day storm is an hour of world time, 14,400 ticks.
+  Length is cheap: a three-day storm is an hour of world time, 14,400 ticks. *Built
+  (2026-10-18):* a batch, Power's own tick lived 10 s of world time a step (`Power.live`), and the
+  slept span and the lived one leave the same charge within 0.04% ([Survival probe
+  16](survival.md#sleep-as-built-2026-10-18)).
 - **What a Console and its mods draw.** Here: "Instruments, farming gear and tools draw small
   amounts," and the radio draws 2 W. The session: a Console "still takes a hover tray,
   batteries and power like a crate." Not said: what a screen, a radar or another computer mod

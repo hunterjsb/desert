@@ -115,7 +115,9 @@ const KINDS := {
 	&"hopper": {"kept": 0.85,
 		MODULE: [[&"turbine", 3], [&"charger", 2], [&"radio", 1]],
 		BAY: [[&"console", 2], [&"condenser", 3], [&"crate_frame", 3], [&"shield", 1]]},
-	&"dugout": {"kept": 0.8},
+	# Where deserters slept: their bedrolls and kits, and what kept them.
+	&"dugout": {"kept": 0.8, FLOOR: [[&"bedroll", 3], [&"survival_kit", 3], [&"radio", 1], [&"battery", 2],
+		[&"ration", 2], [&"coil", 1]]},
 	# Fuel and its tap.
 	&"fuel_bladder": {FLOOR: [[&"battery", 2], [&"canister", 2], [&"hose_end", 2], [&"plug", 1]],
 		CACHE: [[&"big_battery", 2], [&"battery", 2], [&"hose_end", 2], [&"strong_plug", 1]]},

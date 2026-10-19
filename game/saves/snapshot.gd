@@ -35,7 +35,7 @@ const PLAYER := ["stamina", "flying", "mode", "crouched", "own", "slope", "wind"
 ## A ride's own state, besides its running means of the sand.
 const RIDE := ["velocity", "ahead", "y", "vy", "gap", "last_step", "bank", "pitch", "roll", "drifting", "kicks",
 	"bottomed", "hardest", "ticks", "waited", "_ground", "_came", "_hopping", "_tilting", "_tilt_was", "_ahead_was",
-	"_kick_wait", "_stroke"]
+	"_kick_wait", "_stroke", "dig", "_bitten"]
 const VITALS := ["health", "hunger", "thirst", "dead", "harms", "taken", "drunk", "eaten", "_next"]
 const ROPE := ["length", "kg_per_m", "breaking", "frequency", "damping", "max_stretch", "tension", "sustained",
 	"spring_impulse", "stop_impulse"]
@@ -97,7 +97,7 @@ static func problem(data: Dictionary) -> String:
 ## them), the run's day, and who you came as, by id (none from before origins).
 static func summary(data: Dictionary) -> Dictionary:
 	return {"played": data.get("played", NAN), "kit": data.get("kit", &""),
-		"day": DayCycle.new(Tuning.current()).day(data.time, data.moon.longitude)}
+		"day": DayCycle.new(Tuning.current()).day(data.time, data.moon.longitude, data.get("began", 0.0))}
 
 
 ## What stood round you in a save, made from its own data with no world
@@ -143,6 +143,7 @@ func begin(data: Dictionary) -> Array[Vector2]:
 	# A resumed run has its own things: no new run's kit is set down in it.
 	world.set_meta(&"resumed", true)
 	world.time = data.time
+	world.began = data.get("began", 0.0)
 	world.played = data.get("played", NAN)
 	world.set_gravity(data.gravity)
 	world.shift_origin(data.origin - world.origin_chunk)
@@ -305,7 +306,8 @@ func _take() -> Dictionary:
 	var ropes := world.ropes
 	var player := world.player
 	var hands := player.hands
-	var data := {"layout": LAYOUT, "seed": world.run_seed, "time": world.time, "gravity": world.gravity,
+	var data := {"layout": LAYOUT, "seed": world.run_seed, "time": world.time, "began": world.began,
+		"gravity": world.gravity,
 		"origin": world.origin_chunk,
 		"moon": {"latitude": world.moon.latitude, "longitude": world.moon.longitude,
 			"_spawn_latitude": world.moon._spawn_latitude, "_spawn_longitude": world.moon._spawn_longitude,

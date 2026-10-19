@@ -139,10 +139,10 @@ static func wreck_hull() -> StructureKit.Piece:
 	p.approach = Vector2(6.0, 12.0)
 	p.look = _hull_look
 	# Its hull and fin over the dunes, and the glass and bare plate the sun catches.
-	StructureKit.far_box(p, Vector3(-2.2, -0.25, -6.0), Vector3(2.2, 3.25, 6.0), SkimmerKit.GUNMETAL)
-	StructureKit.far_box(p, Vector3(-0.12, 3.25, 2.4), Vector3(0.12, 4.6, 5.9), SkimmerKit.OLIVE)
+	StructureKit.far_box(p, Vector3(-2.2, -0.25, -6.0), Vector3(2.2, 3.25, 6.0), coats().hull)
+	StructureKit.far_box(p, Vector3(-0.12, 3.25, 2.4), Vector3(0.12, 4.6, 5.9), coats().olive)
 	for side in [-1.0, 1.0]:
-		StructureKit.far_box(p, Vector3(side * 2.7 - 0.6, 0.6, 1.0), Vector3(side * 2.7 + 0.6, 1.8, 5.5), SkimmerKit.GUNMETAL)
+		StructureKit.far_box(p, Vector3(side * 2.7 - 0.6, 0.6, 1.0), Vector3(side * 2.7 + 0.6, 1.8, 5.5), coats().hull)
 	StructureKit.glint(p, Vector3(0.0, 1.9, -6.22), Vector3(0.0, 0.3, -1.0), 3.0)
 	StructureKit.glint(p, Vector3(2.21, 1.6, -1.5), Vector3(1.0, 0.25, 0.1), 3.0)
 	StructureKit.glint(p, Vector3(0.6, 3.27, -2.0), Vector3(0.1, 1.0, -0.2), 4.0)
@@ -241,7 +241,7 @@ static func _tithe_hauler() -> StructureKit.Piece:
 	p.tour = PackedVector2Array([Vector2(-8.0, -4.0), Vector2(-3.5, -4.0), Vector2(-8.0, -4.0)])
 	p.approach = Vector2(-11.0, 2.0)
 	p.look = _hauler_look
-	StructureKit.far_box(p, Vector3(-2.5, 0.0, -8.2), Vector3(2.5, 3.85, 8.4), ARMOUR)
+	StructureKit.far_box(p, Vector3(-2.5, 0.0, -8.2), Vector3(2.5, 3.85, 8.4), coats().armour)
 	StructureKit.glint(p, Vector3(0.0, 2.45, 8.41), Vector3(0.0, 0.3, 1.0), 3.0)
 	StructureKit.glint(p, Vector3(-2.51, 2.85, 6.8), Vector3(-1.0, 0.3, 0.0), 3.0)
 	StructureKit.glint(p, Vector3(1.0, 3.86, -4.0), Vector3(0.1, 1.0, 0.1), 4.0)
@@ -331,7 +331,7 @@ static func _freight_pod() -> StructureKit.Piece:
 	p.tour = PackedVector2Array([Vector2(0.0, 12.0), Vector2(0.0, 6.8), Vector2(0.0, 12.0)])
 	p.approach = Vector2(7.0, 12.0)
 	p.look = _pod_look
-	StructureKit.far_box(p, Vector3(-3.0, -0.25, -6.0), Vector3(3.0, 4.2, 6.0), ColonialKit.PANEL)
+	StructureKit.far_box(p, Vector3(-3.0, -0.25, -6.0), Vector3(3.0, 4.2, 6.0), coats().panel)
 	StructureKit.glint(p, Vector3(0.0, 4.21, 2.0), Vector3(0.0, 1.0, 0.2), 4.0)
 	StructureKit.glint(p, Vector3(-3.01, 3.0, -3.0), Vector3(-1.0, 0.3, 0.0), 3.0)
 	StructureKit.glint(p, Vector3(0.0, 0.09, 8.6), Vector3(0.0, 1.0, 0.4), 5.0)
@@ -410,7 +410,7 @@ static func _lifeboat() -> StructureKit.Piece:
 	p.tour = PackedVector2Array([Vector2(-7.0, 0.0), Vector2(-2.6, -0.2), Vector2(-7.0, 0.0)])
 	p.approach = Vector2(-9.0, 4.0)
 	p.look = _lifeboat_look
-	StructureKit.far_box(p, Vector3(-2.0, -0.55, -4.5), Vector3(2.0, 3.2, 4.5), ColonialKit.PANEL)
+	StructureKit.far_box(p, Vector3(-2.0, -0.55, -4.5), Vector3(2.0, 3.2, 4.5), coats().panel)
 	StructureKit.glint(p, Vector3(0.0, 2.1, 4.51), Vector3(0.0, 0.3, 1.0), 3.0)
 	StructureKit.glint(p, Vector3(1.0, 3.21, 0.0), Vector3(0.2, 1.0, 0.0), 4.0)
 	return p
@@ -500,9 +500,9 @@ static func _hopper() -> StructureKit.Piece:
 	p.tour = PackedVector2Array([Vector2(0.0, -12.0), Vector2(0.0, -6.0), Vector2(0.0, -12.0)])
 	p.approach = Vector2(-8.0, -11.0)
 	p.look = _hopper_look
-	StructureKit.far_box(p, Vector3(-1.6, -0.25, -5.5), Vector3(1.6, 2.8, 6.4), SecondAgeKit.LIME)
-	StructureKit.far_box(p, Vector3(-5.6, 0.8, -4.0), Vector3(3.4, 1.0, 1.0), SecondAgeKit.LIME)
-	StructureKit.far_box(p, Vector3(-0.12, 2.8, -5.5), Vector3(0.12, 4.2, -3.2), SecondAgeKit.DAUB)
+	StructureKit.far_box(p, Vector3(-1.6, -0.25, -5.5), Vector3(1.6, 2.8, 6.4), coats().lime)
+	StructureKit.far_box(p, Vector3(-5.6, 0.8, -4.0), Vector3(3.4, 1.0, 1.0), coats().lime)
+	StructureKit.far_box(p, Vector3(-0.12, 2.8, -5.5), Vector3(0.12, 4.2, -3.2), coats().daub)
 	StructureKit.glint(p, Vector3(0.0, 2.41, 4.8), Vector3(0.0, 1.0, 0.5), 5.0)
 	StructureKit.glint(p, Vector3(-3.0, 1.01, -1.5), Vector3(0.0, 1.0, 0.0), 4.0)
 	return p

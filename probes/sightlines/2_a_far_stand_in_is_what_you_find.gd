@@ -54,9 +54,11 @@ func run() -> void:
 			print("laid %.2f m from where its stand-in last stood, %.1f m from where it first stood" % [off,
 				Vector2(laid.x - first.x, laid.z - first.z).length()])
 			check(off < 2.5, "the sheet lays it where its stand-in last stood (%.2f m off)" % off)
-		var chunk := world.terrain.chunk_under(far.x, far.z)
-		view = chunk.view_of(laid) if laid != null and chunk != null else null
+		# What's laid there now, on the chunk its middle stands on.
+		var chunk := world.terrain.chunk_under(found.x, found.z) if found != null else null
+		view = chunk.view_of(found) if chunk != null else null
 		if view != null:
+			laid = found
 			break
 		x += way.x * STEP
 		z += way.y * STEP

@@ -7,6 +7,7 @@ extends Device
 ## draws by what it's doing: a sip in the clear, the most while it holds back
 ## a storm. Low on power its hum sags and its shell flickers; flat, the bubble
 ## collapses for everything at once, and blooms again once there's power.
+## Past a full storm's load, an anomaly's, its hum strains higher.
 
 ## Sand Game's shield blue.
 const BLUE := Color(0.25, 0.67, 0.87)
@@ -17,6 +18,8 @@ const FLARE := 1.2
 const HUM_PITCH := 0.9
 const SAG_PITCH := 0.65
 const GONE_PITCH := 0.5
+## Where it strains to holding back an anomaly's heart.
+const STRAIN_PITCH := 1.25
 ## The hum sits far under everything else, there if you listen for it
 ## (Hunter, 2026-10-17: "way, way softer"), dB.
 const HUM_DB := -15.0
@@ -171,15 +174,37 @@ func stand(up: bool) -> void:
 	_show()
 
 
-## A sip in the clear, the most holding back a full storm, by the storm where
-## it stands; a wider bubble costs more by its shell's area. Off, only what
-## its parts draw.
+## Straight to what its power says, open or down, with no bloom: the clock
+## stepped past both while the camp was held still (Sleep).
+func settle() -> void:
+	if running() == _up:
+		return
+	_up = running()
+	_since = INF
+	if _up and not hum.playing:
+		hum.pitch_scale = HUM_PITCH
+		hum.play()
+	elif not _up:
+		hum.stop()
+	_show()
+
+
+## A sip in the clear, the most holding back a full storm, by its load; a
+## wider bubble costs more by its shell's area. Off, only what its parts draw.
 func demand_w(t := NAN) -> float:
 	var parts_w := super(t)
 	if not on or wrecked() or world == null:
 		return parts_w
-	var storm := world.weather.field_storm(global_position, t)
-	return parts_w + lerpf(_clear_w, _storm_w, storm) * pow(size / _radius, 2.0)
+	return parts_w + lerpf(_clear_w, _storm_w, particle_load(t)) * pow(size / _radius, 2.0)
+
+
+## The particles it holds back where it stands, now or at world time t, as a
+## share of a full storm's: the storm's as it really is, so an anomaly's
+## climbs past a whole while the wind and every forecast read an ordinary one.
+func particle_load(t := NAN) -> float:
+	if world == null:
+		return 0.0
+	return world.weather.field_storm(global_position, t) * world.weather.hidden(global_position, t).x
 
 
 ## Seconds of world time its pool's batteries last at what it draws now, less
@@ -226,7 +251,9 @@ func _show() -> void:
 		# Over the last of its power the hum sags, and the shell flickers more
 		# and more often.
 		var low := clampf(1.0 - seconds_left() / _tuning.shield_warning_seconds, 0.0, 1.0)
-		hum.pitch_scale = lerpf(HUM_PITCH, SAG_PITCH, low)
+		# Holding back more than a full storm's sand, it strains up in pitch.
+		var strain := clampf((particle_load() - 1.0) / (_tuning.anomaly_particles - 1.0), 0.0, 1.0)
+		hum.pitch_scale = lerpf(lerpf(HUM_PITCH, STRAIN_PITCH, strain), SAG_PITCH, low)
 		if low > 0.0 and randf() < 0.1 + 0.4 * low:
 			glow *= FLICKER
 	elif hum.playing:

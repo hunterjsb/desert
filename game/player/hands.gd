@@ -123,6 +123,8 @@ var look_part: Part
 var look_device: Device
 var look_socket: Socket
 var look_sand := false
+## Looking at a ruin's bed, which sleeps you there.
+var look_bed := false
 var look_point := Vector3.ZERO
 var look_normal := Vector3.UP
 ## A piece of a wreck that some work takes away: a plate, a layer of sand, a
@@ -202,6 +204,7 @@ var _mark_look: StandardMaterial3D
 var _readout: Label
 ## The aim dot and its line, out of the way while a menu is up.
 var _hud: CanvasLayer
+var _dot: Control
 var _sound: AudioStreamPlayer
 ## Until a cutter or a scoop at work sounds again, s.
 ## Until a scoop's next stroke, s.
@@ -348,6 +351,8 @@ func grab() -> bool:
 ## your waist comes back to your hands. Says whether it did anything.
 func interact() -> bool:
 	_look()
+	if look_bed and held == null and look_device == null and look_part == null:
+		return _player.world.sleep.offer(_player)
 	if look_work != null:
 		return _work_once()
 	var op := Wreckage.tool_op(held) if phase == Phase.HELD else &""
@@ -358,6 +363,8 @@ func interact() -> bool:
 		return refuse(_player.world.salvage.held_fast(look_device))
 	if look_device != null and look_device.interact(_player):
 		_player.world.salvage.claim(look_device)
+		if look_device is Radio:
+			_player.close_up.tuned(look_device)
 		return true
 	if held == null:
 		if grasp.body == null and _player.waist.give_back():
@@ -370,6 +377,8 @@ func interact() -> bool:
 		used = (held as Part).use(_player, look_point)
 	elif held is Device:
 		used = (held as Device).use(_player, look_point)
+	if used and held is Radio:
+		_player.close_up.tuned(held)
 	if used or _player.waist.take_from_hands():
 		return true
 	return refuse("no use for it there") if look_device != null else false
@@ -523,7 +532,10 @@ func _tunes(event: InputEvent) -> bool:
 			if radio == null:
 				return false
 			var how: Array = TUNES[action]
-			return radio.turn_volume(how[0]) if how[2] else radio.tune(how[0], how[1])
+			var turned := radio.turn_volume(how[0]) if how[2] else radio.tune(how[0], how[1])
+			if turned:
+				_player.close_up.tuned(radio)
+			return turned
 	return false
 
 
@@ -531,9 +543,14 @@ func _tunes(event: InputEvent) -> bool:
 ## the system of a console you look at, unless you're reeling the line in
 ## your hand; else the one you hold, while there's no line at your waist to reel.
 func dialled() -> Radio:
+	_look()
+	return dial()
+
+
+## The radio the tuning actions work, as your look last fell.
+func dial() -> Radio:
 	if reel.in_hand() != null:
 		return null
-	_look()
 	var radio := tuned_by_look()
 	if radio == null and held is Radio and phase == Phase.HELD and reel.line() == null:
 		radio = held
@@ -647,6 +664,10 @@ func _physics_process(delta: float) -> void:
 	else:
 		_stroke = 0.0
 	_held_at = _away + (_held_at - _away) * exp(-HOLD_EASE * delta)
+	# A radio in your hands you tune turns its face up to your eyes, to read its dial.
+	if held is Radio and _player.close_up.radio == held:
+		var to_eyes := Basis(Vector3.RIGHT, _player.camera.rotation.x)
+		_carry = _carry.slerp(to_eyes, 1.0 - exp(-HOLD_EASE * delta)).orthonormalized()
 	match phase:
 		Phase.TAKING:
 			if not is_instance_valid(_source):
@@ -677,6 +698,8 @@ func _physics_process(delta: float) -> void:
 func _process(_delta: float) -> void:
 	if _hud != null:
 		_hud.visible = Controls.playing()
+		# Close up on a dial the view isn't your aim.
+		_dot.visible = _player.close_up.close < 0.5
 	if phase == Phase.HELD and is_instance_valid(held):
 		held.global_transform = _within_reach(_pose(true))
 		held.global_position += reel.stroke(held)
@@ -696,6 +719,7 @@ func _look() -> void:
 	look_work = null
 	look_wreck = null
 	look_scrap = null
+	look_bed = false
 	var eye := _player.camera.global_transform
 	sight_from = eye.origin
 	sight_to = eye.origin - eye.basis.z * _tuning.reach
@@ -722,6 +746,7 @@ func _look() -> void:
 	elif body is StaticBody3D and not look_sand and _player.world != null:
 		# A structure's boxes are its chunk's ground: on a wreck's, its shell.
 		look_wreck = _player.world.salvage.wreckage_near(hit.position)
+	look_bed = _is_bed(hit)
 	if look_part != null or look_device != null:
 		# Assisted: the small thing you aimed near, not the sand under it.
 		return
@@ -778,6 +803,15 @@ static func _is_sand(hit: Dictionary) -> bool:
 		return false
 	var shape := body.shape_owner_get_owner(body.shape_find_owner(hit.shape)) as CollisionShape3D
 	return shape != null and shape.shape is HeightMapShape3D
+
+
+## A box of a ruin's that's a bed.
+static func _is_bed(hit: Dictionary) -> bool:
+	var body := hit.collider as StaticBody3D
+	if body == null:
+		return false
+	var shape := body.shape_owner_get_owner(body.shape_find_owner(hit.shape)) as Node
+	return shape != null and shape.has_meta(&"bed")
 
 
 ## How far along your look it meets something, out to `far`, m, or INF.
@@ -1768,6 +1802,7 @@ func _build_hud() -> void:
 	add_child(hud)
 	_hud = hud
 	var dot := Control.new()
+	_dot = dot
 	dot.set_anchors_preset(Control.PRESET_CENTER)
 	dot.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	dot.draw.connect(func() -> void:
@@ -1812,7 +1847,7 @@ func line() -> String:
 	if look_socket != null and look_socket.part != null:
 		return describe(look_socket.part.label, _part_stats(look_socket.part))
 	if look_device == null:
-		return ""
+		return "Bed" if look_bed else ""
 	var stats := look_device.stats()
 	# A device's charge is on its light.
 	stats.erase("charge_wh")

@@ -15,8 +15,11 @@ const WORLD := preload("res://game/world/world.tscn")
 const CAPTION_SECONDS := 4.0
 ## A run begins on a clear morning, the sun well up so a panel makes something
 ## from the start, with the first storm due in three to eight minutes, facing
-## where it will come from: time to set the kit up and batten down.
-const START := {"key": "start", "kind": "clear", "day": [0.33, 0.45], "due": [180.0, 480.0]}
+## where it will come from: time to set the kit up and batten down. That storm
+## is an ordinary one, five to twenty minutes, a quarter of a day to a day:
+## the field's tail sits on a place for days, too long a first test of a camp.
+const START := {"key": "start", "kind": "clear", "day": [0.33, 0.45], "due": [180.0, 480.0],
+	"lasts": [300.0, 1200.0]}
 
 ## The run's mode, fixed when it starts and kept in its save (Profile & saves).
 var ironman := false
@@ -112,6 +115,11 @@ func _begin(at: World) -> void:
 		if arg.begins_with("--scenario="):
 			return
 	var place := Scenarios.find(at, START)
+	if place.is_empty():
+		# No morning in the search's reach has an ordinary first storm: any storm, then.
+		var any := START.duplicate()
+		any.erase("lasts")
+		place = Scenarios.find(at, any)
 	if not place.is_empty():
 		at.respawn(place.x, place.z, place.yaw, place.time)
 

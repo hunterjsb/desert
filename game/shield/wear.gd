@@ -34,19 +34,30 @@ func _physics_process(_delta: float) -> void:
 	if _world.time < _next - step or _world.time - _next > 60.0:
 		_next = _world.time
 	while _next + step <= _world.time + 1e-9:
-		for device in _world.devices():
-			device.wear(rate_at(device.global_position, _next) * step)
-			if device is ShieldGenerator:
-				_held(device, step, _next)
-		_under(step)
+		_tick(step, _next)
 		_next += step
 
 
-## The full storm a running shield holds off, minutes of it, kept on the shield.
+## One tick lived by a sleep, which steps the clock itself (Sleep).
+func live(seconds: float, t: float) -> void:
+	_tick(seconds, t)
+	_next = t + seconds
+
+
+func _tick(seconds: float, t: float) -> void:
+	for device in _world.devices():
+		device.wear(rate_at(device.global_position, t) * seconds)
+		if device is ShieldGenerator:
+			_held(device, seconds, t)
+	_under(seconds)
+
+
+## The full storm a running shield holds off, minutes of it, kept on the
+## shield: its load, so an anomaly's counts as what it really was.
 func _held(shield: ShieldGenerator, step: float, t: float) -> void:
 	if not shield.running():
 		return
-	shield.held_minutes += _world.weather.field_storm(shield.global_position, t) * step / 60.0
+	shield.held_minutes += shield.particle_load(t) * step / 60.0
 	Deeds.measure(_world, &"shield_storm", shield.held_minutes)
 
 
@@ -61,13 +72,14 @@ func _under(step: float) -> void:
 
 
 ## The share of a new device's life the weather at a place takes a second,
-## now or at world time t.
+## now or at world time t: an anomaly's, as it really is.
 func rate_at(at: Vector3, t := NAN) -> float:
 	# Inside a bubble that keeps out all of both, nothing's left to wear it.
 	var weather := _world.weather
 	if weather.shelter_at(at, &"wind") == 1.0 and weather.shelter_at(at, &"storm") == 1.0:
 		return 0.0
 	var tuning := _world.tuning
-	var past := maxf(_world.weather.felt_wind(at, t).length() - tuning.wind_harm_speed, 0.0)
-	return _world.weather.felt_storm(at, t) / (tuning.storm_wreck_minutes * 60.0) \
+	var hidden := weather.hidden(at, t)
+	var past := maxf(weather.felt_wind(at, t).length() - tuning.wind_harm_speed, 0.0) * hidden.y
+	return weather.felt_storm(at, t) * hidden.x / (tuning.storm_wreck_minutes * 60.0) \
 		+ past / (WIND_SPAN * tuning.wind_wreck_minutes * 60.0)
