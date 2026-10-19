@@ -1457,10 +1457,11 @@ static func _root(device: Device) -> Device:
 
 
 ## The devices your hands look over: yours in the world, the finds round
-## you, and whatever stands on a deck, which keeps its own sockets.
+## you, whatever stands on a deck, which keeps its own sockets, and the Walker.
 func _near() -> Array[Device]:
 	var found: Array[Device] = []
-	for child in _player.world.content.get_children() + _player.world.salvage.near(sight_from):
+	for child in _player.world.content.get_children() + _player.world.salvage.near(sight_from) \
+			+ Walker.near(_player.world):
 		var device := child as Device
 		if device != null:
 			found.append(device)

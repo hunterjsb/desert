@@ -91,6 +91,11 @@ const RADIO_CLEAR_SKIES := preload("res://assets/audio/radio_clear_skies.ogg")
 const RADIO_STOKER := preload("res://assets/audio/radio_stoker.ogg")
 # The Eye's drone, now and then out of the dark.
 const RADIO_EYE := preload("res://assets/audio/radio_eye.ogg")
+# The living city's chatter, made here (make_city_motifs.py): five motifs of
+# reed tones, by what each tells.
+const CITY_MOTIFS := {&"storm": preload("res://assets/audio/city_storm.wav"),
+	&"tether": preload("res://assets/audio/city_tether.wav"), &"moving": preload("res://assets/audio/city_moving.wav"),
+	&"clear": preload("res://assets/audio/city_clear.wav"), &"position": preload("res://assets/audio/city_position.wav")}
 # Scrapping a wreck, made here (make_scrap_sounds.py): the heat cutter's
 # roar, a plate coming free and landing, a live capacitor bank's crackle and
 # its shock, a breached store's hiss, the scoop and the sealant.

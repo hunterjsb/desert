@@ -14,7 +14,10 @@ extends Device
 ## crackle of its own, which no forecast speaks of. With nothing to report,
 ## the weather station holds: its clear-skies song plays, and it breaks off
 ## for a report the moment there's a storm on you or in sight, read aloud in
-## short phrases from a bank of recorded words. The Stoker's
+## short phrases from a bank of recorded words. Under it comes the Walker's
+## log, sent weaker, whole only near it. A few km from the living city its
+## scouts' chatter comes in on a carrier of its own, motifs of reed tones
+## that each tell the truth of the city. The Stoker's
 ## frequency carries its furnace song. Both come through the weather between
 ## like any signal, fading, sliding and dropping out. Its volume knob turns
 ## all of it down, to silence if you like, and it plays on. It draws a little
@@ -29,7 +32,8 @@ const WEATHER := 2
 const BEACON := 3
 const GOD := 4
 const STATIC := 5
-const CHANNELS: Array[String] = ["off", "music", "weather", "beacon", "god", "static"]
+const CITY := 6
+const CHANNELS: Array[String] = ["off", "music", "weather", "beacon", "god", "static", "city"]
 const POINTS: Array[String] = ["north", "north-north-east", "north-east", "east-north-east", "east",
 	"east-south-east", "south-east", "south-south-east", "south", "south-south-west", "south-west",
 	"west-south-west", "west", "west-north-west", "north-west", "north-north-west"]
@@ -128,6 +132,8 @@ var read_at := -INF
 var reception := {}
 ## What it says now, for the line in view; "" while it plays music, or doesn't play.
 var said := ""
+## The Walker's log entry as it comes through, the line under it; "" off the Walker.
+var logged := ""
 ## The report it reads aloud, as its phrases, how many it has read, and when
 ## it last read one, world time. A storm loses phrases of it as it does the
 ## line's characters, "..." in their place.
@@ -170,6 +176,8 @@ var _done_at := 0.0
 var _local := false
 ## What the dial read last tick; UNHEARD before its first, so a save's beacon keeps its target.
 var _was := UNHEARD
+## The city's chatter slot whose motif last sounded.
+var _motif_slot := NAN
 ## An old save's channel, waiting for its world to place it on the dial.
 var _wanted := UNHEARD
 
@@ -212,10 +220,11 @@ func _exit_tree() -> void:
 	_off_air()
 
 
-## The gods of a world's history, made once.
+## The gods of a world's history, made once, the Walker placed for its run.
 static func gods_of(of: World) -> Gods:
 	if _gods == null or _gods.history != of.shape.history:
 		_gods = Gods.new(of.shape.history, of.run_seed, Tuning.current())
+	_gods.place_walker(of.start, of.began)
 	return _gods
 
 
@@ -422,6 +431,8 @@ func _reads() -> int:
 			return WEATHER
 		&"beacon":
 			return BEACON
+		&"city":
+			return CITY
 		&"":
 			return STATIC
 	return GOD
@@ -467,6 +478,7 @@ func _listen(delta: float) -> void:
 		noise = 0.0
 		odd = 0.0
 		said = ""
+		logged = ""
 		spoken = PackedStringArray()
 		reception = {}
 		if _on_air != null or _hissing:
@@ -491,6 +503,7 @@ func _listen(delta: float) -> void:
 	var quiet := false
 	_level = 1.0
 	reception = {}
+	logged = ""
 	if now == MUSIC:
 		# The music comes down from the relay, while it's over the horizon.
 		reception = receive_relay(x, z, t)
@@ -516,6 +529,7 @@ func _listen(delta: float) -> void:
 				said = dial + "static"
 			else:
 				said = dial + reception.text
+				logged = reception.get("log", "")
 			under = NOTHING if reception.cut else lerpf(NOTHING, CARRIER, reception.clean)
 			# A song on the air comes and goes with the signal, never restarting.
 			if now == WEATHER and reception.calm:
@@ -553,6 +567,12 @@ func _listen(delta: float) -> void:
 				_every(delta, lerpf(PING_NEAR, PING_FAR, clampf(far / FAINT, 0.0, 1.0)), Sounds.RADIO_PING)
 		STATIC:
 			said = dial + "static"
+		CITY:
+			reception = receive_city(x, z, t)
+			said = dial + ("· · ·" if reception.cut else ("static" if reception.clean <= 0.0 else reception.text))
+			under = NOTHING if reception.cut else lerpf(NOTHING, CARRIER, reception.clean)
+			_level = 0.0 if reception.cut else sqrt(reception.clean)
+			_chatter(reception)
 	if song != null:
 		_put_on(song, t, into)
 	elif _on_air != null:
@@ -571,6 +591,8 @@ func _listen(delta: float) -> void:
 		through = 0.0 if quiet or reception.cut else reception.clean
 	elif now == BEACON and not target.is_empty():
 		through = Dial.pull(frequency - Dial.BEACON_KHZ, _tuning.dial_width_khz)
+	elif now == CITY:
+		through = 0.0 if reception.cut else reception.clean
 	var ducked := lerpf(1.0, db_to_linear(-_tuning.radio_static_duck_db), clampf(through, 0.0, 1.0))
 	hiss.volume_db = linear_to_db(maxf(noise, under) * ducked + 0.0001) + knob_db()
 	# An anomaly's static sputters: the hiss thinned and pitched up, cut in and
@@ -605,11 +627,57 @@ func receive(id: StringName, x: float, z: float, t: float) -> Dictionary:
 		* Dial.strength(id, khz, metres, night, _tuning)
 	var clean := smoothstep(_tuning.signal_floor, WHOLE, strength) * Interference.let_through(storm, _tuning)
 	var words := Transmissions.say(id, self, gods, p, x, z, t)
-	return {"id": id, "khz": khz, "metres": metres, "bearing": ground,
+	var heard := {"id": id, "khz": khz, "metres": metres, "bearing": ground,
 		"way": Dial.way(world.shape.history, p, q, ground, say_point, _tuning), "storm": storm,
 		"warp": slid, "strength": strength, "clean": clean, "cut": Interference.cut(storm, t, id, _tuning),
 		"useful": words.useful, "calm": words.get("calm", false), "words": words.text,
 		"spoken": words.get("spoken", PackedStringArray()), "text": Interference.distort(words.text, clean, t, id)}
+	if words.has("log"):
+		# Its log goes out weaker than its forecast: whole only near it.
+		var near := _tuning.walker_log_m
+		heard["log_clean"] = clean * (1.0 - smoothstep(near.x, near.y, metres))
+		heard["log"] = Interference.distort(words.log, heard.log_clean, t, &"walker_log")
+		heard["contact"] = words.contact
+	return heard
+
+
+## The living city's chatter as it reaches a place at world time t: how far
+## off it is, how much storm lies between, how clean it arrives inside its
+## few km, whether it's cut, the motif in its slot and the line, its tones by
+## how they run and, giving its place, its star positions.
+func receive_city(x: float, z: float, t: float) -> Dictionary:
+	var city := gods_of(world).city
+	var p := point_at(x, z)
+	var q := city.at(t)
+	var metres := Sphere.angle(p, q) * world.moon.radius
+	var ground := ground_bearing(rad_to_deg(Sphere.bearing(p, q)))
+	var storm := Interference.along(world.weather.field, x, z, ground, metres, t, _tuning)
+	var slid := Interference.warp(storm, t, &"city", _tuning)
+	var near := 1.0 - smoothstep(_tuning.city_heard_m.x, _tuning.city_heard_m.y, metres)
+	var strength := Dial.pull(frequency - city.carrier() - slid, _tuning.dial_width_khz) * near
+	var clean := smoothstep(_tuning.signal_floor, WHOLE, strength) * Interference.let_through(storm, _tuning)
+	var heard := {"id": &"city", "khz": city.carrier(), "metres": metres, "bearing": ground, "storm": storm,
+		"warp": slid, "strength": strength, "clean": clean, "cut": Interference.cut(storm, t, &"city", _tuning),
+		"motif": &"", "slot": city.slot_start(t), "text": ""}
+	if clean > 0.0:
+		var motif := city.motif(world.weather.field, Walker.ground(world, q), t)
+		var line: String = LivingCity.SHAPES[motif]
+		if motif == LivingCity.POSITION:
+			line += "  " + city.stars(heard.slot, world.weather.day)
+		heard.motif = motif
+		heard.text = Interference.distort(line, clean, t, &"city")
+	return heard
+
+
+## Its chatter's motif sounds once at the head of each slot it comes through
+## in, sliding with the storm's warp.
+func _chatter(heard: Dictionary) -> void:
+	if heard.motif == &"" or heard.cut or heard.slot == _motif_slot:
+		return
+	_motif_slot = heard.slot
+	_signal.stream = Sounds.CITY_MOTIFS[heard.motif]
+	_signal.pitch_scale = 1.0 + PITCH_SLIDE * heard.warp / maxf(_tuning.storm_warp_khz, 0.01)
+	_signal.play()
 
 
 ## The relay's signal as it reaches a place at world time t: where the relay

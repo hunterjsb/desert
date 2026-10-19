@@ -1019,6 +1019,38 @@ static var _current: Tuning
 ## The Walker's pace round the Rim, m/s.
 @export var walker_speed: float = 1.5
 
+@export_group("The Walker and the living city")
+## The Walker's log goes out weaker than its forecast: whole within the first
+## distance, m, lost to noise past the second. It reads one entry this often,
+## s: its survey, then each contact it keeps, the last this many.
+@export var walker_log_m := Vector2(8000.0, 40000.0)
+@export var walker_log_every: float = 8.0
+@export var walker_contacts_kept: int = 6
+## Taught, its feed flags an anomaly whose heart is this near the radio, m.
+@export var walker_flag_m: float = 30000.0
+## Where the living city keeps on the far side, degrees from under Tu; moored
+## this many days at a time; each leg this long, m, made at the storms' own
+## pace, m/s.
+@export var city_from_tu_degrees := Vector2(105.0, 160.0)
+@export var city_moored_days := Vector2(12.0, 24.0)
+@export var city_leg_m := Vector2(4000.0, 9000.0)
+@export var city_speed: float = 10.0
+## One of its nomads prays to the Walker once in this many days.
+@export var city_prayer_days := Vector2(0.6, 1.8)
+## Its chatter on its own carrier in this band, kHz: whole within the first
+## distance, m, and gone past the second; a motif this often, s. Storm coming
+## warns this long ahead, s.
+@export var city_band_khz := Vector2(1480.0, 1520.0)
+@export var city_heard_m := Vector2(3000.0, 4500.0)
+@export var city_chatter_every: float = 20.0
+@export var city_warn_s: float = 240.0
+## Its lights go out when you come this near, m: it isn't found by walking up.
+@export var city_douse_m: float = 500.0
+## Three noted bearings fix a place where they cross within this far of one
+## another, m, none of them closer than this many degrees to another.
+@export var triangulate_m: float = 3000.0
+@export var triangulate_degrees: float = 8.0
+
 @export_group("Console")
 ## How often a Console's instruments read the field, s of world time, and how
 ## often its screen looks for a change to draw, s. It draws only while someone

@@ -67,6 +67,9 @@ const WALL := Color(0.86, 0.6, 0.24)
 const HEART := Color(0.6, 0.26, 0.08)
 ## Tu-ward's mark, Tu's lit rim.
 const TU := Color("#9fc0f0")
+## The chart's noted bearings, and an anomaly on any map once the Walker's taught.
+const BEARING := Color(0.55, 0.9, 0.8)
+const ANOMALY := Color(0.85, 0.4, 0.95)
 ## The pressure bar's span either side of the storm's line, in the field's units.
 const BAR_SPAN := 0.6
 ## The gyro's vectors are full length at this wind, m/s.
@@ -160,6 +163,8 @@ func _draw() -> void:
 		"POWER":
 			_draw_header()
 			_draw_power()
+		"CHART":
+			_draw_chart(keys_top)
 		_:
 			_draw_header()
 			_draw_rows(keys_top)
@@ -178,6 +183,8 @@ func _draw_radar(keys_top: float) -> void:
 	draw_rect(Rect2(Vector2.ZERO, Vector2(side, side)), UNKNOWN)
 	if not map.is_empty() and map.has("cells"):
 		_draw_cells(map, side)
+	if map.has("reach"):
+		_draw_anomalies(map.get("anomalies", []), map.reach, side)
 	var middle := Vector2(side, side) * 0.5
 	var text := _color(&"text")
 	var accent := _color(&"accent")
@@ -236,6 +243,78 @@ func _draw_cells(map: Dictionary, side: float) -> void:
 				for s in 3:
 					var from := box.position + Vector2(box.size.x * s / 3.0, box.size.y)
 					draw_line(from, from + Vector2(box.size.x / 3.0, -box.size.y / 3.0), GLASS, 2.0)
+
+
+## The chart: the moon round the Console, north up, rings each 10 km; the
+## Rim and Tu-ward; each noted bearing a line from where the Walker stood,
+## that spot a dot; a fix where three cross; and once the Walker's taught,
+## the anomalies. Its rows under it.
+func _draw_chart(keys_top: float) -> void:
+	var side := size.x
+	var chart: Dictionary = _model.get("chart", {})
+	var text := _color(&"text")
+	var dim := _color(&"dim")
+	var accent := _color(&"accent")
+	draw_rect(Rect2(Vector2.ZERO, Vector2(side, side)), UNKNOWN)
+	var middle := Vector2(side, side) * 0.5
+	var reach: float = chart.get("reach", 1.0)
+	var scale := side * 0.5 / reach
+	for k in range(1, int(reach / 10000.0) + 1):
+		draw_arc(middle, k * 10000.0 * scale, 0.0, TAU, 48, Color(dim, 0.25), 1.0)
+	var on := func(at: Vector2) -> Vector2: return middle + at * scale
+	_polyline(chart.get("rim", PackedVector2Array()), on, Color(TU, 0.5), 2.0, side)
+	if chart.has("tu"):
+		var tu: Vector2 = on.call(chart.tu)
+		if Rect2(Vector2.ZERO, Vector2(side, side)).has_point(tu):
+			draw_circle(tu, 8.0, TU)
+			_label(tu + Vector2(10.0, -10.0), "TU", KEY, TU)
+	_draw_anomalies(chart.get("anomalies", []), reach, side)
+	for line: PackedVector2Array in chart.get("lines", []):
+		_polyline(line, on, Color(BEARING, 0.8), 2.0, side)
+		draw_circle(on.call(line[0]), 5.0, BEARING)
+	if chart.has("fix"):
+		var fix: Vector2 = on.call(chart.fix)
+		draw_arc(fix, 16.0, 0.0, TAU, 24, URGENT, 3.0)
+		_label_at(fix, "FIX", MID, URGENT, side)
+	draw_line(middle - Vector2(10.0, 0.0), middle + Vector2(10.0, 0.0), text, 3.0)
+	draw_line(middle - Vector2(0.0, 10.0), middle + Vector2(0.0, 10.0), text, 3.0)
+	_label(Vector2(MARGIN, MARGIN), "N", MID, accent)
+	draw_rect(Rect2(Vector2.ZERO, Vector2(side, side)), Color(accent, 0.5), false, 2.0)
+	var y := side + 16.0
+	for row: String in _model.get("rows", []):
+		if y + ROW > keys_top:
+			break
+		_table_row(row, MARGIN, y, STATS_COLUMNS)
+		y += ROW
+	_label(Vector2(side - 200.0, side - 44.0), "%d km across" % roundi(reach * 2.0 / 1000.0), SMALL - 4, dim)
+
+
+## A line of map places, kept to the map's square.
+func _polyline(points: PackedVector2Array, on: Callable, color: Color, width: float, side: float) -> void:
+	var box := Rect2(Vector2.ZERO, Vector2(side, side))
+	for i in points.size() - 1:
+		var a: Vector2 = on.call(points[i])
+		var b: Vector2 = on.call(points[i + 1])
+		if box.has_point(a) or box.has_point(b):
+			draw_line(a.clamp(Vector2.ZERO, Vector2(side, side)), b.clamp(Vector2.ZERO, Vector2(side, side)), color, width)
+
+
+## Each anomaly as a ring as wide as it reaches, as bright as it stands
+## strong, its heart marked: its place east and south of the map's middle.
+func _draw_anomalies(hearts: Array, reach: float, side: float) -> void:
+	var middle := Vector2(side, side) * 0.5
+	var scale := side * 0.5 / maxf(reach, 1.0)
+	for heart: Dictionary in hearts:
+		var at: Vector2 = heart.at
+		var spot := middle + at * scale
+		var r: float = heart.radius * scale
+		if (spot - middle).length() - r > side * 0.5:
+			continue
+		draw_arc(spot, r, 0.0, TAU, 48, Color(ANOMALY, 0.4 + 0.5 * heart.strength), 3.0)
+		draw_arc(spot, r * 0.25, 0.0, TAU, 24, ANOMALY, 2.0)
+		draw_circle(spot, 6.0, ANOMALY)
+		if Rect2(Vector2.ZERO, Vector2(side, side)).has_point(spot):
+			_label_at(spot, "ANOMALY", SMALL, ANOMALY, side)
 
 
 ## Pressure as a bar down the map's edge, the storm's line across it, filled

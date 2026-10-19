@@ -23,7 +23,7 @@ static var _kept := [
 	[Planter, ["tank_l", "split", "stored", "seeds", "ripened", "replanted", "banked", "dropped", "picked",
 		"fed_kcal", "_owed"]],
 	[Condenser, ["made_l"]],
-	[Console, ["page", "log_lines", "_alerts", "_front_near"]],
+	[Console, ["page", "log_lines", "_alerts", "_front_near", "evidence", "bearings"]],
 	[Battery, ["charge_wh"]],
 	[Plant, ["growth", "fruit", "state", "wild"]],
 	[Mast, ["raised", "raise", "boom", "boom_spin", "trim", "load_n", "bend_n", "extend", "upwind_m", "outflow_m"]],
@@ -132,6 +132,7 @@ func begin(data: Dictionary) -> Array[Vector2]:
 	world.set_meta(&"resumed", true)
 	world.time = data.time
 	world.began = data.get("began", 0.0)
+	world.taught = data.get("taught", false)
 	world.played = data.get("played", NAN)
 	world.counts_deeds = world.counts_deeds and not data.get("dev_run", false)
 	world.set_gravity(data.gravity)
@@ -292,7 +293,7 @@ func _take() -> Dictionary:
 	var ropes := world.ropes
 	var player := world.player
 	var hands := player.hands
-	var data := {"seed": world.run_seed, "time": world.time, "began": world.began,
+	var data := {"seed": world.run_seed, "time": world.time, "began": world.began, "taught": world.taught,
 		"gravity": world.gravity,
 		"origin": world.origin_chunk,
 		"moon": {"latitude": world.moon.latitude, "longitude": world.moon.longitude,
