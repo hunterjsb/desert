@@ -375,6 +375,8 @@ func _step_onto(x: float, z: float) -> void:
 			Deeds.measure(self, &"storm_chaser", chased.size())
 		if terrain.skyline.glinted.has(site.id):
 			Deeds.done(self, &"glint")
+		if site.kind == &"nomad_camp":
+			Deeds.done(self, &"just_missed")
 		if site.source == &"dune":
 			Deeds.done(self, &"dune_reader")
 	if site is VentMouth and GeologyKit.from_slot(site.plan(x - site.x, z - site.z)) <= GeologyKit.CREST:

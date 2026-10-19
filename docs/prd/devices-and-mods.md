@@ -295,6 +295,62 @@ sim, no new bodies or joints. `Faces` does it for each deck, from `Chassis.plate
   read of the walls' lee costs about 2 µs near a camp's walls, 1 µs elsewhere. On the dev
   overlay, `faces` is what the wind on decks' faces took last tick.
 
+## Mast mounts, the streamer and the crow's nest (built, 2026-10-19)
+
+Hunter's [spec](../chassis-kits-dunes-2026-10-18.md#sails-and-nomad-gear): "things should mount on the
+sail's mast, generically (with top slots gone, that's a sticky spot on the mast). Heavy things up high
+raise the centre of mass," and a crow's nest, "a mast mount you climb into. It counts as a seat and
+gives a long view for spotting glints, plumes and storm fronts." Found with the [nomads' gear](salvage-and-ruins.md#nomad-gear-agreed-2026-10-18-spec-built-2026-10-19).
+
+- **A standing mast is sticky** (`Mast.face_frame`), as a chassis's faces are, through the same
+  `Stick` rules for your hands, the kits and the finds: the four sides of its upper pole, from 1.4 m
+  over the deck to its head at 4.4 m, and its head. A thing sits on a side by its base, a part on its
+  back and a device on its foot, centred on the pole at the height you aim; things that stand go only
+  on its head. Nothing tall goes on a mast, no frame and no mast ("too big for a mast"), and only while
+  it stands on a camp ("stand the mast on a deck first"). Your hands meet its upper pole while it
+  stands (an `Area3D` for them alone, so what the sand and anything round the mast meet is still the
+  stowed pole, as before). A mast with something on it stays on its deck ("take what's on it off
+  first"); saves keep what's stuck on it as a piece's.
+- **What's high on a camp raises its middle.** A device stuck on another adds its weight to its host
+  where its own middle is, not where its foot is (`Device._recompute`), so what's on a mast's pole
+  weighs on the camp up there, and a seated device's own low or high middle (a Console's heavy foot)
+  counts. A 9 kg big battery 3.2 m up the pole of a mast on a floating deck two by two stands the
+  camp's middle 0.376 m higher than the same battery on its deck, what its weight there says, and the
+  same push heels it 4.3° against 3.6° (probe 40). Nothing seated touches anything of what carries it,
+  all the way down.
+- **The wind streamer** (`streamer`, 0.2 kg, `Streamer`): a strip of rust-dyed cloth on a saltbush wand
+  whipped with cord, a brass ring at its tip, a bone toggle at its foot. It streams downwind of the air
+  it feels, that air less its own way, as a telltale does, and flaps as a wave runs down it: hanging in
+  still air, standing out from about 4 m/s, flapping faster and wider the harder it blows. In your hand
+  it's the air where you are; in your suit too, drawn as it streams (the inventory's picture from
+  behind and above, your way ahead up it, redrawn as it flaps); stuck on a deck or a mast, the air its
+  camp goes through, so on a sailing rig it shows the trim. The anemometer stays the one that gives
+  numbers. Measured (probe 42): hanging straight down in still air; in 5 m/s level, 2° off downwind,
+  its end flapping 0.06 m wide 2.8 times a second; in 16 m/s level, 5° off, 0.18 m wide 7.8 times a
+  second; on a deck going 4 m/s through still air, straight aft; in your suit, 5.0 m/s from the wind's
+  own way.
+- **The crow's nest** (`crows_nest`, 12 kg, `CrowsNest`, a `Helm`): a lookout's basket of wooden posts
+  and bent pipe on a plank floor, cloth wound round its lower rail, its rope ladder hung 3.4 m down
+  the mast's front. It goes on a standing mast's head and nowhere else ("it goes on a mast's head").
+  Loose or carried, its ladder is folded: only the basket rests on the sand. On a standing mast,
+  the ladder deploys with its reachable rungs, so its stowed shape never floats the basket above a floor.
+  Use on it, on its ladder from the deck, climbs you in: a seat as the helm is, steering nothing. You
+  stand in it, your eyes 6.2 m over the deck; your weight and its are the camp's, up there: on a bare
+  deck of four pieces you stand its middle 2.59 m higher, so a hard gust heels it further. Ride or use
+  again climbs you down off the deck's side. Its first sit teaches what it is (`CrowsNest.NEST_HOW_TO`).
+- **The view is height alone.** Nothing draws farther from up there and no lens closes in: the dunes
+  are what hide what's far off, and over the crests round you more of the ground shows, and what
+  stands on it. Round the probe's deck, 25% of the ground out to 2.5 km is in sight from the nest against
+  19% from the deck (probe 41). A glint the crests hid from the deck, a plume's foot, a front's sand
+  under its wall: each is there or not by the same sightlines the Glint deed reads. Why not more: a
+  farther haze or skyline from up there would be a rule the ground doesn't keep, and the sightline
+  already rewards height.
+- **Probes:** 40, a heavy thing up the mast raises the camp's middle by its weight and heels it
+  further; nothing tall on a mast, and a mast with something on it stays on its deck. 41, the crow's
+  nest goes only on a mast's head, seats you from its ladder, your eyes and weight high, and more of
+  the ground shows from it. 42, the streamer hangs, streams and flaps by the wind, shows a moving
+  deck's air, and reads in your suit.
+
 ## The Console (proposed; first version built)
 
 *Hunter, 2026-10-17 ([session](../console-sensors-sleep-2026-10-17.md)), a voice session. Its own
@@ -1044,7 +1100,7 @@ Readings, not in the session:
   ([Wind & storms](wind-and-storms.md#the-anomaly-as-built-2026-10-18)), and it is audio. The off-key note
   reads the same hidden term the other tells do; the plain note is the wind's.
 - **"No attachments" means no sockets,** so it is a typed part with nothing seated on it, mounted like a
-  wind streamer ([nomad gear](salvage-and-ruins.md#nomad-gear-agreed-2026-10-18-spec-not-built)).
+  wind streamer ([nomad gear](salvage-and-ruins.md#nomad-gear-agreed-2026-10-18-spec-built-2026-10-19)).
 - **Not said:** the note's pitch and loudness, whether several stones change it, how far ahead of an anomaly
   the off-key note is, and where stones are found beyond the black stones in the sand, Halfrise's cradles and
   Sister's stone.
@@ -1292,6 +1348,14 @@ a water socket of its own on top, so a canister or another hose goes on there to
 39. **The cloth shows its load.** Its load goes as its push, the same share of it in a breeze
     as in a fresh wind; slack in the breeze, taut in a gale, bellied the other way with the
     wind round, and bearing nothing edge-on while the air stirs it.
+40. **A heavy thing up the mast.** Stuck high on a standing mast, a big battery stands its camp's
+    middle higher by what its weight there says, and the same push heels it further; nothing tall
+    goes on a mast, and a mast with something on it stays on its deck.
+41. **The crow's nest.** It goes only on a mast's head; its ladder climbs you in, seated, your
+    eyes over 5 m above the deck and your weight high on it; more of the ground shows from up there.
+42. **The streamer.** It hangs in still air, streams downwind in a breeze and stands out level in a
+    gale, flapping wider and faster; stuck on a moving deck it streams aft; in your suit it reads the
+    air where you are.
 
 ## Out of scope
 

@@ -293,7 +293,10 @@ static func make(spec: Dictionary) -> RigidBody3D:
 ## its site's era and kind, before it's in the world.
 static func bare(spec: Dictionary) -> RigidBody3D:
 	var body: RigidBody3D
-	if not spec.device:
+	if spec.has("rig"):
+		# A rig kept whole: its deck and all that's on it, one find.
+		body = Rig.build(null, spec.rig, spec.charge).deck
+	elif not spec.device:
 		body = _part(spec.id, spec.charge, spec.layer, spec.get("sealed", false))
 	else:
 		body = Catalog.stake() if spec.id == &"stake" else Catalog.device(spec.id)

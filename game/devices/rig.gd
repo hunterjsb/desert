@@ -15,6 +15,9 @@ extends RefCounted
 ##                                       `toward` along the grid; `name`
 ##                                       optional, for lines
 ##   [&"face", cell, face, id]           a screen or fabric on a frame's face
+##   [&"up", mast, face, place, turn°, thing, name]   something stuck on a
+##       named mast standing on it: on its head, or a side of its pole at a
+##       place up it (Mast); `name` optional
 ## Batteries start as full as `charge` says.
 
 ## What it built: the deck, every device made, the deck first, and the named
@@ -63,6 +66,14 @@ func _step(step: Array, charge: float) -> void:
 		&"face":
 			var part := Catalog.part(step[3])
 			deck.fit(part, face_of(deck, step[1], step[2]))
+		&"up":
+			var mast: Mast = named[step[1]]
+			var thing := make(step[5], charge)
+			Stick.put(mast, mast, step[2], step[3], deg_to_rad(step[4]), thing)
+			if thing is Device:
+				made.append(thing)
+			if step.size() > 6:
+				named[step[6]] = thing
 
 
 ## A thing for a step: a catalog part or device, its own slots filled, its
@@ -146,7 +157,7 @@ static func count(steps: Array, into: Dictionary) -> void:
 				_add(into, &"hook")
 			&"face":
 				_add(into, step[3])
-			&"stick":
+			&"stick", &"up":
 				var spec: Variant = step[5]
 				_add(into, spec[0] if spec is Array else spec)
 				if spec is Array:

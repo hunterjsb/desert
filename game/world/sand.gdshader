@@ -21,6 +21,8 @@ uniform vec2 downwind = vec2(1.0, 0.0);
 uniform vec2 origin = vec2(0.0);
 uniform float ripple_spacing = 0.16;
 uniform float ripple_depth = 0.12;
+// Nearby crests cover their troughs along the view ray, fading from 2 to 6 m.
+uniform float ripple_relief = 1.0;
 // How lopsided ripples are on flats and on windward slopes, where the wind
 // keeps them crisp: 0 a sine, toward 1 a sawtooth, steep on the lee.
 uniform vec2 ripple_lean = vec2(0.4, 0.58);
@@ -272,6 +274,12 @@ void vertex() {
 	}
 }
 
+// Depth below a ripple's crest: the integral of its rounded sawtooth slope.
+float ripple_below(float phase, float lean, float height) {
+	float wave = phase * TAU;
+	return max(height * (asin(lean) + atan(lean * sin(wave), 1.0 - lean * cos(wave))), 0.0);
+}
+
 void fragment() {
 	vec3 n = normalize(world_normal);
 	vec2 at = world_pos.xz + origin;
@@ -386,6 +394,39 @@ void fragment() {
 		// side and a short steep lee, scaled to keep the old wave's mean
 		// square, 0.56.
 		float lean = mix(ripple_lean.x, ripple_lean.y, windward) * (1.0 - 0.9 * smoothstep(0.08, 0.2, spans));
+		float spacing_here = ripple_spacing / max(length(heading), 0.2);
+		float height = 0.75 * sqrt(2.0 * (1.0 - lean * lean)) / lean * fade * strength * ripple_depth * spacing_here / TAU;
+		vec3 eye = INV_VIEW_MATRIX[3].xyz - world_pos;
+		float relief = ripple_relief * (1.0 - smoothstep(2.0, 6.0, length(eye)));
+		if (relief > 0.001) {
+			// The first crossing of the view ray and ripple, then three refinements.
+			// A grazing view is bounded so the search cannot skip several crests.
+			vec3 view = normalize(eye);
+			vec2 ray = -view.xz / max(dot(view, n), 0.2);
+			float phase_step = dot(ray, heading) / ripple_spacing;
+			float deepest = 2.0 * height * asin(lean);
+			float low = 0.0;
+			float high = deepest;
+			for (int i = 1; i <= 8; i++) {
+				float depth = deepest * float(i) / 8.0;
+				if (depth >= ripple_below(phase + phase_step * depth, lean, height)) {
+					high = depth;
+					break;
+				}
+				low = depth;
+			}
+			for (int i = 0; i < 3; i++) {
+				float depth = (low + high) * 0.5;
+				if (depth >= ripple_below(phase + phase_step * depth, lean, height)) {
+					high = depth;
+				} else {
+					low = depth;
+				}
+			}
+			vec2 offset = ray * ((low + high) * 0.5 * relief);
+			phase += dot(offset, heading) / ripple_spacing;
+			at += offset;
+		}
 		float wave = phase * TAU;
 		float bow = cos(wave);
 		float slope = (lean * lean - lean * bow) / (1.0 + lean * lean - 2.0 * lean * bow)
@@ -396,9 +437,7 @@ void fragment() {
 		way = normalize(heading) * slope * fade * strength * ripple_depth;
 		// Volume: the ripple's own height, the integral of that slope, for its
 		// shadow and its trough's sky.
-		float spacing_here = ripple_spacing / max(length(heading), 0.2);
-		float height = 0.75 * sqrt(2.0 * (1.0 - lean * lean)) / lean * fade * strength * ripple_depth * spacing_here / TAU;
-		float under = height * (asin(lean) + atan(lean * sin(wave), 1.0 - lean * bow));
+		float under = ripple_below(phase, lean, height);
 		float since = fract(phase + acos(lean) / TAU);
 		ripple_light = vec3(under, since * spacing_here, (1.0 - since) * spacing_here);
 		vec2 runs = normalize(heading);

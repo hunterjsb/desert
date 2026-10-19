@@ -26,6 +26,10 @@ const MODULE_PARTS := 2
 ## The house ruin's first floor spot: a later visitor's device with parts to
 ## strip, on whatever sand is in the hall.
 const HALL := &"hall"
+## What a nomads' rig carries, always: a wrecked one's mast with its sail
+## (RIGGED); and a camp's kept rig whole, a deck as Rig steps (RIG).
+const RIGGED := &"rigged"
+const RIG := &"rig"
 
 ## Per era: the share of its sockets still holding something, how its finds
 ## read (Finds' layer: the paint, the marks and the look-at line's word), a
@@ -80,7 +84,7 @@ const ERAS := {
 		FLOOR: [[&"battery", 4], [&"hook", 4], [&"lamp", 2], [&"canister", 2], [&"coil", 3], [&"plug", 3],
 			[&"hose_end", 2], [&"compass", 1], [&"chassis", 4], [&"frame", 1], [&"fabric", 1], [&"planter", 2],
 			[&"survival_kit", 5], [&"radio", 2], [&"root_tuber", 6], [&"vat_fungus", 4],
-			[&"ration", 2], [&"salt", 2], [&"saltbush", 2], [&"power_shrine", 1]],
+			[&"ration", 2], [&"salt", 2], [&"saltbush", 2], [&"power_shrine", 1], [&"sail", 1]],
 		SHELF: [[&"canister", 3], [&"salt", 3], [&"saltbush", 2], [&"root_tuber", 2], [&"ration", 2],
 			[&"coil", 2], [&"lamp", 1], [&"compass", 1], [&"hook", 1]],
 		CACHE: [[&"survival_kit", 2], [&"canister", 2], [&"coil", 2], [&"radio", 1], [&"compass", 1]],
@@ -89,6 +93,20 @@ const ERAS := {
 			[&"strong_plug", 2], [&"harvester", 1], [&"chassis", 3], [&"turbine", 2], [&"condenser", 2],
 			[&"shield", 2], [&"temple_board", 1], [&"console", 1], [&"survival_kit", 2],
 			[&"root_tuber", 4], [&"vat_fungus", 4], [&"ration", 1], [&"power_shrine", 1]]},
+	# The nomads' own, now: mobility, sailing gear and what keeps them going,
+	# out in the weather but kept up; whatever any era left them, each thing's
+	# lineage drawn from `from`, by weight.
+	Eras.NOMAD: {"kept": 0.75, "layer": Finds.SURFACE, "charge": Vector2(0.2, 0.8), "sound": Vector2(0.55, 0.9),
+		"fills": Finds.DEEP, "fill": 0.5, "sealed": true,
+		"from": {Eras.COLONIAL: 2, Eras.SKIMMER: 2, Eras.FIRST: 1, Eras.SECOND: 3},
+		FLOOR: [[&"coil", 3], [&"streamer", 2], [&"skates", 1], [&"board_plate", 1], [&"bedroll", 2], [&"chassis", 3],
+			[&"frame", 2], [&"fabric", 2], [&"canister", 2], [&"survival_kit", 1], [&"battery", 2], [&"board", 1]],
+		SHELF: [[&"streamer", 3], [&"coil", 2], [&"hook", 3], [&"canister", 2], [&"ration", 2], [&"compass", 1],
+			[&"battery", 1], [&"salt", 1]],
+		CACHE: [[&"canister", 3], [&"ration", 2], [&"streamer", 1], [&"med_kit", 1], [&"coil", 1], [&"saltbush", 1]],
+		BED: [[&"saltbush", 2], [&"root_tuber", 1]],
+		BEST: [[&"sail", 3], [&"mast", 2], [&"skates", 2], [&"keel", 1], [&"helm_seat", 1], [&"crows_nest", 1],
+			[&"racer_board", 1], [&"anemometer", 1]]},
 }
 ## What a kind holds in place of its era's, by socket kind (and "kept": its
 ## own share left holding something): the kind says what fits.
@@ -143,6 +161,21 @@ const KINDS := {
 		[&"compass", 1], [&"coil", 2], [&"big_battery", 1], [&"patrol_board", 1]]},
 	&"house_ruin": {HALL: [[&"chassis", 8], [&"planter", 2], [&"survival_kit", 3],
 		[&"radio", 2], [&"turbine", 2], [&"condenser", 2], [&"shield", 2], [&"console", 1]]},
+	# A nomads' rig, wrecked: its mast down beside it with its sail always,
+	# what they stowed in its locker, the rack they scavenged for its power.
+	&"nomad_rig": {"kept": 0.85, "tier": 1, RIGGED: [[&"mast", 1]],
+		MODULE: [[&"survival_kit", 3], [&"radio", 2], [&"light_shield", 1], [&"streamer", 1]],
+		BAY: [[&"power_rack", 1]]},
+	# A nomads' camp, kept up and just left: their rig, and anything of any era.
+	&"nomad_camp": {"kept": 1.0, RIG: [[&"runner", 2], [&"yacht", 1]],
+		FLOOR: [[&"chassis", 3], [&"frame", 2], [&"turbine", 1], [&"condenser", 1], [&"shield", 1],
+			[&"light_shield", 1], [&"big_battery", 1], [&"radio", 1], [&"survival_kit", 2], [&"bedroll", 2],
+			[&"planter", 1], [&"skates", 1], [&"coil", 2], [&"canister", 2], [&"power_rack", 1], [&"sail", 1],
+			[&"mast", 1]],
+		SHELF: [[&"streamer", 3], [&"compass", 2], [&"canister", 2], [&"ration", 2], [&"coil", 2], [&"med_kit", 1],
+			[&"anemometer", 1], [&"barometer", 1], [&"battery", 2], [&"lamp", 1]],
+		CACHE: [[&"canister", 4], [&"ration", 3], [&"med_kit", 1], [&"saltbush", 1]],
+		BED: [[&"saltbush", 3], [&"root_tuber", 1]]},
 }
 ## What a big dune's ruin holds in place of its kind's (DuneRuins): kept
 ## whole under the dunes, a colony's survey gear among it, its deepest a
@@ -156,6 +189,11 @@ const DUNE := {"kept": 0.85,
 ## items: sparse, dangerous, rewarding"; the calm far side has less.
 const REGIONS := {&"rim": {"kept": 1.0, "best": 0.0}, &"mon": {"kept": 0.9, "best": 0.08},
 	&"han": {"kept": 0.75, "best": 0.35}, &"far": {"kept": 0.6, "best": 0.05}}
+## Nomads loot as you do and leave what they don't need: this share of what
+## lies loose in other eras' wrecks is theirs, from this table.
+const LEFT_SHARE := 0.2
+const LEFT := [[&"coil", 3], [&"streamer", 3], [&"canister", 2], [&"skates", 1], [&"bedroll", 1], [&"fabric", 1],
+	[&"sail", 1]]
 ## A find laid at a site rests this far above what it's on, frozen there: placed, never dropped.
 const DROP := 0.005
 ## Sand within this of a socket's surface leaves what's there lying on it.
@@ -183,12 +221,20 @@ static func draw(site: Site, i: int) -> Dictionary:
 	var hall := kind.has(HALL) and i == 0
 	if socket.kind in MODULES:
 		return _module(site, i, socket, kind, era, rng)
+	if socket.kind in [RIGGED, RIG]:
+		return _rigged(site, i, socket, kind, era, rng)
 	if not hall and rng.randf() >= float(kind.get("kept", era.kept)) * region.kept:
 		return {}
 	var best: bool = socket.deep > 0.0 or (socket.kind in [FLOOR, CACHE] and rng.randf() < region.best)
 	var table: Array = kind[HALL] if hall else (kind.get(BEST, era[BEST]) if best else kind.get(socket.kind, era[socket.kind]))
+	var made := site.era
+	if not best and not hall and piece.wreck != null and site.era != Eras.NOMAD and socket.kind in [FLOOR, SHELF, CACHE] \
+			and _stream(site.loot, i, "nomads").randf() < LEFT_SHARE:
+		table = LEFT
+		made = Eras.NOMAD
 	var id := Finds._pick(rng, table)
-	var spec := {"id": id, "device": Catalog.DEVICES.has(id), "layer": era.layer, "era": site.era, "kind": site.kind,
+	var spec := {"id": id, "device": Catalog.DEVICES.has(id), "layer": era.layer, "era": _made_in(site.loot, i, made),
+		"kind": site.kind, "nomads": made == Eras.NOMAD,
 		"seed": hash([site.loot, i]), "tier": 2 if best else 1, "index": i, "site": site.id, "yaw": rng.randf() * TAU,
 		"lean": rng.randf() * TAU,
 		"lean_by": deg_to_rad(rng.randf() * Finds.LEAN), "sealed": era.sealed, "frozen": true, "drop": DROP}
@@ -206,14 +252,53 @@ static func draw(site: Site, i: int) -> Dictionary:
 static func _module(site: Site, i: int, socket: StructureKit.SiteSocket, kind: Dictionary, era: Dictionary,
 		rng: RandomNumberGenerator) -> Dictionary:
 	var id := Finds._pick(rng, kind[socket.kind])
-	var spec := {"id": id, "device": true, "layer": era.layer, "era": site.era, "kind": site.kind,
-		"seed": hash([site.loot, i]), "tier": 2, "index": i, "site": site.id, "yaw": rng.randf_range(-0.12, 0.12),
+	var spec := {"id": id, "device": true, "layer": era.layer, "era": _made_in(site.loot, i, site.era), "kind": site.kind,
+		"seed": hash([site.loot, i]), "tier": kind.get("tier", 2), "index": i, "site": site.id, "yaw": rng.randf_range(-0.12, 0.12),
 		"lean": 0.0, "lean_by": 0.0, "sealed": era.sealed, "frozen": true, "drop": DROP, "module": true}
 	spec.charge = rng.randf_range(era.charge.x, era.charge.y)
 	spec.sound = rng.randf_range(maxf(era.sound.x, 0.6), maxf(era.sound.y, 0.85))
 	spec.fill = []
 	_fill(spec, rng, era, MODULE_PARTS)
 	return spec
+
+
+## What a nomads' rig carries, always there: a wrecked one's mast with its
+## sail fitted, lying as its socket turns it; a camp's kept rig whole, its
+## deck built from its Rig steps. Kept up, they're sound.
+static func _rigged(site: Site, i: int, socket: StructureKit.SiteSocket, kind: Dictionary, era: Dictionary,
+		rng: RandomNumberGenerator) -> Dictionary:
+	var id := Finds._pick(rng, kind[socket.kind])
+	var whole := socket.kind == RIG
+	var spec := {"id": &"chassis" if whole else id, "device": true, "layer": era.layer,
+		"era": _made_in(site.loot, i, site.era), "kind": site.kind, "seed": hash([site.loot, i]), "tier": kind.get("tier", 2), "index": i,
+		"site": site.id, "yaw": socket.turn if is_finite(socket.turn) else rng.randf() * TAU, "lean": 0.0, "lean_by": 0.0,
+		"sealed": era.sealed, "frozen": true, "drop": DROP}
+	spec.charge = rng.randf_range(era.charge.x, era.charge.y)
+	spec.sound = rng.randf_range(maxf(era.sound.x, 0.7), maxf(era.sound.y, 0.9))
+	spec.fill = []
+	if whole:
+		spec.rig = NomadKit.RIGS[id]
+	else:
+		_fill(spec, rng, era, 1)
+	return spec
+
+
+## The era a find's lineage is drawn as: a nomads' thing is whatever any era
+## made, by their row's `from`, from the loot seed alone.
+static func _made_in(loot: int, i: int, era: StringName) -> StringName:
+	if era != Eras.NOMAD:
+		return era
+	var weights: Dictionary = ERAS[Eras.NOMAD].from
+	var rng := _stream(loot, i, "made")
+	var total := 0.0
+	for each: StringName in weights:
+		total += weights[each]
+	var at := rng.randf() * total
+	for each: StringName in weights:
+		at -= weights[each]
+		if at < 0.0:
+			return each
+	return weights.keys()[-1]
 
 
 ## What lies within reach at a structure now, as find specs: what its sockets
@@ -253,7 +338,7 @@ static func prepare() -> void:
 		var own: Dictionary = KINDS.get(kind, {})
 		for i in piece.sockets.size():
 			var socket: StructureKit.SiteSocket = piece.sockets[i]
-			if socket.kind in MODULES:
+			if socket.kind in MODULES or socket.kind in [RIG, RIGGED]:
 				continue
 			var tables: Array = [own.get(socket.kind, era[socket.kind]), own.get(BEST, era[BEST]), own.get(HALL, []),
 				DUNE.get(socket.kind, []), DUNE[BEST]]
@@ -427,6 +512,8 @@ static func _highest(height: Callable, at: Vector3, r: float) -> float:
 ## height stood on end in the sand, m.
 static func _size(spec: Dictionary) -> Vector3:
 	var id: StringName = spec.id
+	if spec.has("rig"):
+		return Vector3(1.6, 0.6, 0.6)
 	if not spec.device:
 		var s: Vector3 = Catalog.PARTS[id].size
 		return Vector3(Vector2(s.x, s.y).length() * 0.5, s.z, maxf(s.x, maxf(s.y, s.z)))
@@ -459,9 +546,9 @@ static func _fill(spec: Dictionary, rng: RandomNumberGenerator, era: Dictionary,
 ## Every catalog id a site's tables hold, for probes.
 static func ids() -> Array[StringName]:
 	var out: Array[StringName] = []
-	for rows: Dictionary in ERAS.values() + KINDS.values():
+	for rows: Dictionary in ERAS.values() + KINDS.values() + [{FLOOR: LEFT}]:
 		for key: Variant in rows:
-			if rows[key] is Array:
+			if rows[key] is Array and key != RIG:
 				for entry: Array in rows[key]:
 					if not out.has(entry[0]):
 						out.append(entry[0])

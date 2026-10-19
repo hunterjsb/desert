@@ -26,6 +26,10 @@ const HOW_TO_SAYS := "At the helm, {move_left} and {move_right} turn the camp; a
 ## Who sits here, or null, and how hard they turn it: -1 left to 1 right.
 var rider: Player
 var turning := 0.0
+## Whether it turns its camp, and whether you sit low in it; a lookout's
+## seat does neither.
+var steers := true
+var sits := true
 ## The ground its camp has covered under sail, keeled, since you sat, m.
 var sailed_m := 0.0
 
@@ -55,6 +59,11 @@ func feet() -> Vector3:
 	return global_transform * FEET
 
 
+## What the first sit in it teaches, once a profile: [its key, its words].
+func how_to() -> Array[String]:
+	return [HOW_TO, HOW_TO_SAYS]
+
+
 ## Its deck's way at where you sit, m/s.
 func carried_at(point: Vector3) -> Vector3:
 	var on := carrier()
@@ -76,9 +85,9 @@ func _physics_process(delta: float) -> void:
 	var on := carrier()
 	if rider == null:
 		sailed_m = 0.0
-	elif world.counts_deeds:
+	elif world.counts_deeds and steers:
 		_sail_on(on, delta)
-	if rider == null or on == null or on.freeze or turning == 0.0 and absf(on.angular_velocity.y) < 1e-3:
+	if not steers or rider == null or on == null or on.freeze or turning == 0.0 and absf(on.angular_velocity.y) < 1e-3:
 		return
 	var state := PhysicsServer3D.body_get_direct_state(on.get_rid())
 	var up := on.global_basis.y.normalized()

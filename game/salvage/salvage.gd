@@ -364,6 +364,9 @@ func lying(body: Node) -> bool:
 ## from now on, loose unless the sand still holds it, running if its battery
 ## can, and its chunk won't lay it out again while it's loaded.
 func claim(body: Node) -> void:
+	# What's seated on a found rig is the rig's: the whole rig becomes yours.
+	while body is Device and not body.has_meta(&"find") and (body as Device).host() != null:
+		body = (body as Device).host()
 	if body == null or not body.has_meta(&"find"):
 		return
 	var from: Array = body.get_meta(&"find")
@@ -382,6 +385,9 @@ func claim(body: Node) -> void:
 			_sites[from[2]] = memory
 		memory[1][from[1]] = true
 		_deeds(memory, module)
+		var site: Structure = memory[0].get_ref() if memory[0] != null else null
+		if site != null and site.piece.sockets[from[1]].kind == SiteLoot.RIGGED:
+			Deeds.done(_world, &"hand_me_down")
 	elif lot != null:
 		lot.taken[from[1]] = true
 	if lot != null:
@@ -446,7 +452,9 @@ func unbury(body: RigidBody3D) -> void:
 			var corner := body.global_transform * box.get_endpoint(i)
 			rise = maxf(rise, _world.height_under(corner) - corner.y)
 		body.global_position.y += rise + Finds.DROP
-	body.freeze = false
+	# What's seated on a rig stays held fast on it.
+	if not (body is Device and (body as Device).host() != null):
+		body.freeze = false
 
 
 func _on_grounded(chunk: TerrainChunk) -> void:

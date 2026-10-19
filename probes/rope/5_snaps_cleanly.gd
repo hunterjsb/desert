@@ -1,7 +1,8 @@
 extends RopeProbe
 ## Rope & tethering probe 5: too much load breaks something, and never
 ## explodes. A gust spike far past a line's breaking strength, too brief to
-## sustain, leaves it holding. Then the wind rises until the line's sustained
+## sustain, leaves it holding, and it never pulls past its strength: it gives
+## at that and rides it out. Then the wind rises until the line's sustained
 ## load passes its strength: it snaps near its rating, the floater drifts off
 ## downwind no faster than the wind, and nothing spikes. A strong line on a
 ## weak stake pulls the stake out instead, and the stake goes with the floater.
@@ -67,13 +68,16 @@ func _line_snaps() -> void:
 	var rope := stake_line(spot(0.0, 0.0), floater, 0.3, WEAK, INF)
 	await simulate(6.0)
 	# A gust worth two and a half times the line's strength, for a tenth of a second.
-	var peak := {"pull": 0.0}
+	var peak := {"pull": 0.0, "asked": 0.0}
+	var watch_peak := func() -> void:
+		peak.pull = maxf(peak.pull, rope.tension)
+		peak.asked = maxf(peak.asked, rope.asked)
 	_blowing = 45.0
-	await simulate(0.1, func() -> void: peak.pull = maxf(peak.pull, rope.tension))
+	await simulate(0.1, watch_peak)
 	_blowing = 12.0
-	await simulate(3.0, func() -> void: peak.pull = maxf(peak.pull, rope.tension))
-	print("a 0.1 s spike pulled %.0f N on a %.0f N line" % [peak.pull, WEAK])
-	check(peak.pull > WEAK, "the spike really pulled past the breaking strength")
+	await simulate(3.0, watch_peak)
+	print("a 0.1 s spike asked %.0f N of a %.0f N line, which pulled %.0f N at most" % [peak.asked, WEAK, peak.pull])
+	check(peak.asked > WEAK and peak.pull <= WEAK + 0.5, "the spike asked past the breaking strength, and the line never pulled past it")
 	check(ropes.ropes.has(rope), "and the line held, since it wasn't sustained")
 
 	# Watched from before the snap, so the tick it lets go is seen too.

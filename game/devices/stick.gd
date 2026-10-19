@@ -1,7 +1,9 @@
 class_name Stick
 extends RefCounted
-## Sticking things on a chassis's sticky faces: one set of rules for your
-## hands, the kits, the scenarios and the finds. A thing sits on a face by its
+## Sticking things on a chassis's sticky faces, and a standing mast's: one set
+## of rules for your hands, the kits, the scenarios and the finds. A host is a
+## deck (its pieces' tops and bottoms) or a mast (its pole's sides and its
+## head, Mast). A thing sits on a face by its
 ## base, a part's back or a device's foot, at a place on the face and turned
 ## about the face's way out; a frame sits square on a piece's top. The limits
 ## are space, which your hands test (clear), and a few rules of what goes
@@ -37,49 +39,76 @@ static func seat(thing: Node, at: Vector2, yaw: float) -> Transform3D:
 
 
 ## A thing's pose on a piece's face in the deck's frame, at a place and a turn.
-static func pose_on(deck: Chassis, piece: Chassis, face: StringName, at: Vector2, yaw: float, thing: Node) -> Transform3D:
-	return deck.face_frame(piece, face) * seat(thing, at, yaw)
+static func pose_on(deck: Device, piece: Device, face: StringName, at: Vector2, yaw: float, thing: Node) -> Transform3D:
+	return frame_of(deck, piece, face) * seat(thing, at, yaw)
+
+
+## A host's sticky face in its own frame: a deck's piece's, or a mast's.
+static func frame_of(host: Device, piece: Device, face: StringName) -> Transform3D:
+	return (host as Chassis).face_frame(piece as Chassis, face) if host is Chassis else (host as Mast).face_frame(face)
+
+
+## Where on a face a thing may sit, [min, max] in the face's frame.
+static func room_on(host: Device, face: StringName) -> Rect2:
+	return Rect2(-Vector2.ONE * WIDE_HALF, Vector2.ONE * WIDE_HALF * 2.0) if host is Chassis else (host as Mast).face_room(face)
+
+
+## The piece of a host a socket on it is on: a deck's own piece, a mast itself.
+static func piece_of(host: Device, socket: Socket) -> Device:
+	return (host as Chassis).own_piece(socket) if host is Chassis else host
 
 
 ## Sticks a thing on a piece's face at a place and turn: a frame square and
 ## centred. The socket it's in.
-static func put(deck: Chassis, piece: Chassis, face: StringName, at: Vector2, yaw: float, thing: RigidBody3D) -> Socket:
+static func put(deck: Device, piece: Device, face: StringName, at: Vector2, yaw: float, thing: RigidBody3D) -> Socket:
 	if thing is Frame:
 		at = Vector2.ZERO
 		yaw = roundf(yaw / Chassis.QUARTER) * Chassis.QUARTER
-	var frame := deck.face_frame(piece, face)
+	var frame := frame_of(deck, piece, face)
 	return deck.stick(thing, frame * seat(thing, at, yaw), frame.basis.z, piece)
 
 
 ## Why a thing can't stick on a piece's face, or "": a device that stands
 ## goes only on a face that faces up, and a frame only square on a top; a
 ## tall device and a frame never share a piece; a tray and runners never
-## share a deck.
-static func why_not(deck: Chassis, piece: Chassis, face: StringName, thing: Node) -> String:
+## share a deck. A mast takes no frame, nothing tall and no mast, only
+## while it stands; a crow's nest goes on nothing but a mast's head.
+static func why_not(deck: Device, piece: Device, face: StringName, thing: Node) -> String:
 	if not sticks(thing):
 		return "it doesn't stick"
-	var up := deck.face_frame(piece, face).basis.z.y >= UPWARD
+	var up := frame_of(deck, piece, face).basis.z.y >= UPWARD
 	var device := thing as Device
+	if thing is CrowsNest and not (deck is Mast and face == Mast.MASTHEAD):
+		return "it goes on a mast's head"
+	if deck is Mast:
+		if thing is Frame or device != null and (device.tall or device is Mast):
+			return "too big for a mast"
+		if (deck as Mast).extend < 1.0:
+			return "stand the mast on a deck first"
+		if device != null and device.stands and not up:
+			return "it stands on the mast's head"
+		return ""
+	var on := deck as Chassis
 	if thing is Frame:
 		if face != Chassis.TOP or not up:
 			return "frames go on a deck's top"
-		if _on_top(deck, piece).any(func(d: Node) -> bool: return d is Device and (d as Device).tall):
+		if _on_top(on, piece).any(func(d: Node) -> bool: return d is Device and (d as Device).tall):
 			return "too tall for a frame"
-		if _on_top(deck, piece).any(func(d: Node) -> bool: return d is Frame):
+		if _on_top(on, piece).any(func(d: Node) -> bool: return d is Frame):
 			return "a frame's there"
 	elif device != null:
 		if device.stands and not up:
 			return "it stands on a deck's top"
-		if device.tall and (piece.on_frame() or _on_top(deck, piece).any(func(d: Node) -> bool: return d is Frame)):
+		if device.tall and ((piece as Chassis).on_frame() or _on_top(on, piece).any(func(d: Node) -> bool: return d is Frame)):
 			return "too tall for a frame"
-	elif thing is Part and deck.refuses(thing as Part) != "":
-		return deck.refuses(thing as Part)
+	elif thing is Part and on.refuses(thing as Part) != "":
+		return on.refuses(thing as Part)
 	return ""
 
 
 ## What's stuck on a piece's top.
-static func _on_top(deck: Chassis, piece: Chassis) -> Array[Node]:
-	var top := deck.face_frame(piece, Chassis.TOP)
+static func _on_top(deck: Chassis, piece: Device) -> Array[Node]:
+	var top := deck.face_frame(piece as Chassis, Chassis.TOP)
 	var found: Array[Node] = []
 	for socket in deck.stuck():
 		if deck.own_piece(socket) == piece and socket.out.dot(top.basis.z) > 0.99:
@@ -115,14 +144,24 @@ static func clear(thing: Node3D, pose: Transform3D, player: Node) -> String:
 ## clip it rather than nowhere.
 static func face_hit(hit: Dictionary, looking: Vector3) -> Array:
 	var body := hit.get("collider") as CollisionObject3D
+	if body is Area3D and body.get_parent() is Mast and (body.get_parent() as Mast).standing():
+		var reach := body.get_parent() as Mast
+		return [reach, reach, reach.face_toward(hit.normal, looking)]
 	if body == null:
 		return []
 	var shape := body.shape_owner_get_owner(body.shape_find_owner(hit.shape)) as Node
 	var deck := body as Chassis
 	var device := body as Device
-	if deck == null and device != null and device.host() is Chassis:
+	var mast := body as Mast
+	if mast != null and mast.standing() and shape is CollisionShape3D and not shape.has_meta(&"socket"):
+		return [mast, mast, mast.face_toward(hit.normal, looking)]
+	if mast != null and shape != null and shape.has_meta(&"socket"):
+		var held_on: Socket = shape.get_meta(&"socket")
+		if held_on.stuck() and held_on.get_parent() == mast:
+			return _under(mast, held_on)
+	if deck == null and device != null and (device.host() is Chassis or device.host() is Mast):
 		var seat := device.host().seat_of(device)
-		return _under(device.host() as Chassis, seat) if seat != null and seat.stuck() else []
+		return _under(device.host(), seat) if seat != null and seat.stuck() else []
 	if deck == null or shape == null or not shape is CollisionShape3D:
 		return []
 	if shape.has_meta(&"socket"):
@@ -138,19 +177,21 @@ static func face_hit(hit: Dictionary, looking: Vector3) -> Array:
 
 
 ## The face what's stuck in a socket stands on.
-static func _under(deck: Chassis, socket: Socket) -> Array:
-	var piece := deck.own_piece(socket)
-	var top := deck.face_frame(piece, Chassis.TOP).basis.z
+static func _under(deck: Device, socket: Socket) -> Array:
+	if deck is Mast:
+		return [deck, deck, (deck as Mast).face_of(socket)]
+	var piece := (deck as Chassis).own_piece(socket)
+	var top := (deck as Chassis).face_frame(piece, Chassis.TOP).basis.z
 	return [deck, piece, Chassis.TOP if socket.out.dot(top) > 0.0 else Chassis.BOTTOM]
 
 
 ## The face a thing aimed at a piece's face goes on: a tray or runners aimed
 ## at a top facing up go under it, below where you aim, since a tray lifts
 ## toward the sand it faces and a top lies on it.
-static func face_for(deck: Chassis, piece: Chassis, face: StringName, thing: Node) -> StringName:
+static func face_for(deck: Device, piece: Device, face: StringName, thing: Node) -> StringName:
 	var part := thing as Part
-	if part != null and Device.carries(part) != &"" and face == Chassis.TOP \
-			and deck.face_frame(piece, face).basis.z.y >= UPWARD:
+	if deck is Chassis and part != null and Device.carries(part) != &"" and face == Chassis.TOP \
+			and frame_of(deck, piece, face).basis.z.y >= UPWARD:
 		return Chassis.BOTTOM
 	return face
 
@@ -159,8 +200,8 @@ static func face_for(deck: Chassis, piece: Chassis, face: StringName, thing: Nod
 ## the point, turned as it's held about the face's way out, its edges edged
 ## flush with the face's and its neighbours' and its turn settled on a detent
 ## when near one. `held` is how it's turned in the world now.
-static func aim(deck: Chassis, piece: Chassis, face: StringName, point: Vector3, held: Basis, thing: Node) -> Array:
-	var frame := deck.global_transform * deck.face_frame(piece, face)
+static func aim(deck: Device, piece: Device, face: StringName, point: Vector3, held: Basis, thing: Node) -> Array:
+	var frame := deck.global_transform * frame_of(deck, piece, face)
 	# On the face, under the point: aimed through the plate at its other face too.
 	var local := frame.affine_inverse() * point
 	local.z = 0.0
@@ -169,8 +210,8 @@ static func aim(deck: Chassis, piece: Chassis, face: StringName, point: Vector3,
 		yaw = roundf(_turn(frame.basis, held, thing) / Chassis.QUARTER) * Chassis.QUARTER
 		return [Vector2.ZERO, yaw]
 	yaw = _settle(_turn(frame.basis, held, thing))
-	var half := WIDE_HALF
-	var at := Vector2(clampf(local.x, -half, half), clampf(local.y, -half, half))
+	var room := room_on(deck, face)
+	var at := Vector2(clampf(local.x, room.position.x, room.end.x), clampf(local.y, room.position.y, room.end.y))
 	var box := footprint(thing, yaw)
 	at += _edge(deck, piece, face, at, box, thing)
 	return [at, yaw]
@@ -214,12 +255,14 @@ static func footprint(thing: Node, yaw: float) -> Rect2:
 ## How far to move a footprint at a place so its edges come flush with the
 ## face's edges or a neighbour's, or its middle in line with one's, when one
 ## is within EDGE: the smallest such move along each way.
-static func _edge(deck: Chassis, piece: Chassis, face: StringName, at: Vector2, box: Rect2, thing: Node) -> Vector2:
+static func _edge(deck: Device, piece: Device, face: StringName, at: Vector2, box: Rect2, thing: Node) -> Vector2:
+	if deck is Mast:
+		return Vector2.ZERO
 	var lines_x: Array[float] = [-WIDE_HALF, WIDE_HALF]
 	var lines_y: Array[float] = [-WIDE_HALF, WIDE_HALF]
 	var middles_x: Array[float] = []
 	var middles_y: Array[float] = []
-	var frame := deck.face_frame(piece, face)
+	var frame := frame_of(deck, piece, face)
 	var back := frame.affine_inverse()
 	for socket in deck.stuck():
 		var other: Node = socket.part if socket.part != null else socket.mounted
@@ -258,7 +301,7 @@ static func _nearest(edges: Array, lines: Array[float], middle: float, middles: 
 
 ## What's stuck in a socket as a footprint on a face (`back` is the face's
 ## frame undone), and how far its lowest point stands off the face.
-static func _box_on(deck: Chassis, socket: Socket, back: Transform3D) -> Array:
+static func _box_on(deck: Device, socket: Socket, back: Transform3D) -> Array:
 	var nodes: Array = socket.fitted
 	var to_face := back
 	if socket.mounted != null:

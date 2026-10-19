@@ -602,7 +602,9 @@ your own camp's parts rather than found whole:
   leads and your keys turn it; only its dug edge holds against the line, so dug it carves
   across the pull ([the dig](#dig-and-carve-agreed-2026-10-18-spec-built)). It pushes and
   kicks against no line, so it still tows nothing.
-  Reeling works riding, so you trim the sheet as you go. On the "sail" deck in 10 m/s, the sheet
+  Reeling works riding, so you trim the sheet as you go. Its push never runs you past what your
+  lines lead to while they're slack (2026-10-19): it gives out as you come 1 m/s faster than it, so
+  an overrun goes slack and comes taut again firmly, never with a snatch. On the "sail" deck in 10 m/s, the sheet
   tended and the camp held across the wind, it tows you at 2.8 m/s on the end of the sheet, itself
   at 2.6. Left to steer itself with its sheet tended, it bears off onto a run, its boom at its 85°
   stop, and slows: before the sail's twist reached the camp whole (2026-10-18) it held a broad
@@ -683,8 +685,9 @@ as built, unchanged.
 - **Steering is the carve.** Dig in and carve off the line and its bend pulls the boom's end and
   the camp's nose toward you; the dug edge holds you there, as it holds a tack. Out to windward the
   rig bears away, to leeward it heads up. On the "sail_tow" camp on a broad reach in 10 m/s, a 20°
-  carve dug a third in turns the rig +49° off the wind in 2.5 s to windward and −46° to leeward,
-  against −2° with no carve. Left alone the rig rounds up and stops, as stage 1's does, so you keep
+  carve dug a third in turns the rig +25° off the wind in 2.5 s to windward and −39° to leeward,
+  against −2° with no carve (2026-10-19, the rebuilt decks, the board's push giving out past what
+  tows you; +31° to windward on them before that, and +49° and −46° with the crate's rig). Left alone the rig rounds up and stops, as stage 1's does, so you keep
   steering; the probes hold its course as a helmsman would, by a turn on the rig.
 - **The numbers** (measured with the crate's rig; not yet re-measured on the rebuilt decks, whose
   ballast sits in a frame where the crate stood). The rig is the "sail" deck less its shield, 88 kg
@@ -755,13 +758,37 @@ the board, your dug edge its only grip across the wind: the Varran rides his boa
   end like a flag and only drags you downwind; nothing holds the sail at an angle to the wind. So its
   bow line goes to your waist too, from a hook on one of its front corners' outer rings: hung from
   that hook and its boom's end, the rig lies across its lines and flies out to one side of the wind.
-  The hook sets the side: with the wind on your left, the hook on its left; for the other tack, move
-  the line to the other. With its sheet at your waist, a line from the sheet's own rig stays tied as
-  you step onto the board, as a camp's line its rig tows past you does; anything else is untied, as
-  before. The two lines go to one body, so you're never the link between two.
+  With its sheet at your waist, a line from the sheet's own rig stays tied as you step onto the board,
+  as a camp's line its rig tows past you does; anything else is untied, as before. Its lines go to one
+  body, so you're never the link between two.
+- **Both tacks without moving a line** (2026-10-19; before, the hook set the side and nothing in the
+  game said to move the line to the other for the other tack). A bow line runs from each bow hook,
+  both at your waist with the sheet: a kite's bridle, its two legs meeting at you. The one nearer
+  you flies it and the far one hangs slack, so one set of lines does on either tack. To change tack
+  you send it across as a kite rider does, by pulling on the side you're going to: look at its far
+  bow corner and reel that line in as you bear away and turn, and it pulls the rig across onto the
+  new side; pay it out again once it's there. In 10 m/s on a beam reach, the far line taken in 6 m at
+  your hands' pace as you turn and let out again, it tows you 4.9 m/s across with the wind on your
+  left and 3.9 m/s with it on your right, every line where it was laid; on the new tack it flies
+  from the same near hook, its sheet pulling 150 N. The first ride after the board's own how-to
+  teaches it (`Mast.BRIDLE_HOW_TO`). Why this and not a bridle that turns it by itself: tried in the
+  probes, the rig won't come round on its own. A bridle's apex a metre or so off its bow (the bow
+  line's end carried over where two legs from both hooks would put it) keeps whichever tack it was
+  launched on and drags you backwards on the other; one 3 m off weathervanes it into hanging
+  downwind, flying neither; the bow line at the mast's foot hangs it downwind like a flag; and a turn,
+  a gybe or a stop alone never swings it across. It has to be steered across, and a kite rider
+  steers by pulling the side they're turning to.
 - **Steered by where you ride, trimmed by its sheet.** You look and press the way you mean to go,
   dig the edge in, and the rig flies out ahead and to leeward; reeling, as ever, works the line you
-  look nearest along: look at the sail to trim it, at the rig's corner to shorten its bow line.
+  look nearest along: look at the sail to trim it, at a bow corner to work its line.
+- **An overrun goes slack, then pulls** (2026-10-19). Holding forward on a run used to let the
+  board's push take you past the rig at 15 m/s while its lines lay slack; they came taut again at
+  7.6 m/s and snatched to 6,750 N for a tick, past their 1,500 N rating without breaking, and once
+  threw the rider. Now slack in the lines never lets the board's push run you past what they lead to:
+  it gives out as you come more than 1 m/s faster than it (`Ride.OUTRUN`), as far as the lines are
+  slack. Held forward on a run the lines go slack for 7 s and come taut again at 1,080 N at most,
+  you riding on; and no line ever pulls past its strength (Rope & tethering, "Holds or parts"):
+  thrown past the rig at 12 m/s, its lines pull 1,500 N at most and hold.
 - **Why a deck two by two.** Narrower decks were tried in the probes and are no rig: two pieces abreast
   or in a line go over or hang luffing on the lines, and three in an L fly one tack only, by which side
   its weight is on. Its four trays sit out at its corners, which keeps it up in 14 m/s on a beam
@@ -779,10 +806,13 @@ the board, your dug edge its only grip across the wind: the Varran rides his boa
   At 75° in 10 m/s it makes 0.8 m/s against the wind, and at 60° crawls, 0.4 of its 0.8 upwind: a
   kite points no higher than a close reach. It's the same on either tack (4.77 and 4.80 m/s on a beam reach), each
   line pulls about 170 N, and it heels 3° in 10 m/s and 10° in 14. Undug on that beam reach it makes
-  1.6 m/s across and is blown 5.0 m/s downwind: the edge is the keel. In 18 m/s it goes over on a
+  1.6 m/s across and is blown 5.0 m/s downwind: the edge is the keel. (Measured on one bow line; on
+  two, 4.9 m/s, the far one slack, and undug 1.2 across and 1.8 downwind.) In 18 m/s it goes over on a
   beam reach and runs at 11 m/s, its sail at the edge of tearing: furl it, or run.
-- **Probe** 13: the rig sails with you on the board as its keel, both lines kept as you step on, on
-  either tack, and undug it runs off downwind.
+- **Probes** 13: the rig sails with you on the board as its keel, its three lines kept as you step on,
+  on one tack and then, its far bow line reeled in and out as you turn, the other, no line moved;
+  undug it runs off downwind. 14: an overrun goes slack, then pulls under the lines' strength, and
+  forced past it, a line never pulls past its strength.
 
 **Playtest (Hunter, 2026-10-19; agreed, not built).**
 - **The boom is solid to you.** "The horizontal part of the mast hitting you in the face and phasing

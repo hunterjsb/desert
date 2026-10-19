@@ -393,6 +393,15 @@ const DEVICES := {
 	# A skimmer pilot's seat, stuck on a deck: use on it sits you at the helm (Helm).
 	&"helm_seat": {"label": "Helm seat", "short": "Helm", "size": Vector3(0.5, 0.5, 0.55), "mass": 7.0, "helm": true,
 		"carryable": true, "sticks": true, "stands": true, "sockets": []},
+	# The nomads': a wind streamer, a strip of cloth on a wand that streams
+	# downwind of the air it feels (Streamer). Read in your hand or your suit,
+	# or stuck anywhere on a rig, a mast too, as a telltale.
+	&"streamer": {"label": "Wind streamer", "short": "Streamer", "size": Vector3(0.04, 0.36, 0.04), "mass": 0.2,
+		"streamer": true, "carryable": true, "sticks": true, "stats": {"face_m2": 0.01}, "sockets": []},
+	# A lookout's basket for a mast's head, its rope ladder hung down the mast:
+	# use on it climbs you in, a seat as the helm is (CrowsNest).
+	&"crows_nest": {"label": "Crow's nest", "short": "Nest", "size": Vector3(0.9, 1.0, 0.9), "mass": 12.0, "nest": true,
+		"helm": true, "carryable": true, "sticks": true, "stands": true, "stats": {"face_m2": 0.5}, "sockets": []},
 	# The one structure: a flat square a little wider than a crate was, its
 	# whole top and bottom sticky, a ring on each edge where the next piece
 	# joins or a hook goes. No battery, no port: the power comes from what's
@@ -649,12 +658,14 @@ static func device(id: StringName) -> Device:
 		else (Hoverboard.new() if spec.get("board", false) \
 		else (Radio.new() if spec.get("radio", false) \
 		else (Mast.new() if spec.get("rig", false) \
+		else (Streamer.new() if spec.get("streamer", false) \
+		else (CrowsNest.new() if spec.get("nest", false) \
 		else (Helm.new() if spec.get("helm", false) \
 		else (Chassis.new() if spec.get("chassis", false) \
 		else (Bedroll.new() if spec.get("bedroll", false) \
 		else (Console.new() if spec.get("console", false) \
 		else (PowerBox.new() if spec.get("power_box", false) \
-		else (Cutter.new() if spec.get("cutter", false) else Device.new())))))))))))
+		else (Cutter.new() if spec.get("cutter", false) else Device.new())))))))))))))
 	made.set_meta(&"catalog", id)
 	made.label = spec.label
 	made.frame_mass = spec.mass

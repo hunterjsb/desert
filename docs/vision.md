@@ -523,7 +523,7 @@ runs through gifts, shrines and radio tones, which keeps the nomads secret.
 Readings, not in the session: the rep is a running value kept with the run, like the axes
 ([Profile & saves](prd/profile-and-saves.md#ending-flags-proposed)); a gift "the next storm brings" rides the
 drift channel ([Salvage & ruins](prd/salvage-and-ruins.md#two-channels-agreed)); the sail is a broken nomad
-rig's ([nomad gear](prd/salvage-and-ruins.md#nomad-gear-agreed-2026-10-18-spec-not-built)). Not said: what a
+rig's ([nomad gear](prd/salvage-and-ruins.md#nomad-gear-agreed-2026-10-18-spec-built-2026-10-19)). Not said: what a
 shrine is, how much rep a gift or a theft is, or what "tend to" the Walker does.
 
 ### The three axes: Varran, Daventry and Cistern

@@ -956,22 +956,55 @@ Each defect pair skips pixels out of its reach, so a pixel takes the twist of on
 - The grains' cells, like the glitter's, hold still through origin shifts only because a 64 m chunk
   holds whole cells.
 
-**Playtest (Hunter, 2026-10-19; agreed, not built):** "improved but we still need more volume." Read
+**Playtest (Hunter, 2026-10-19; built):** "improved but we still need more volume." Read
 as the sand needing to look solid rather than painted on:
 - **Dune-scale shading:** crests lighter and hollows darker, from the ground's own height, which
-  the shader doesn't read yet.
+  the shader reads from the streamed vertices.
 - **Ripple relief near you:** real ripples in the surface close up, the roadmap's displaced patch,
   not only in the shading.
 - **Shadow in the hollows:** soft shadow in the troughs and under the brinks, so the ripples and
   dunes have depth at every sun.
 
-**Implementation (2026-10-19, in progress):** keep dune shading baked into the streamed vertices.
-For close ripple relief, trace the view through the same rounded, lopsided ripple profile the
-shader already lights: a short parallax search through its millimetre-scale crests and troughs,
-fading out over a few metres. This lets nearby crests cover their troughs as you move. Keep the
-ground's metre lattice and collision authoritative, and the complete visual change under the
-existing roughly 0.8 ms GPU budget. Measure the bake and the close relief separately against the
-previous shader, and inspect noon, low sun, night, tracks and storm captures before landing.
+**Built (2026-10-19):** dune shading is baked into the streamed vertices, including the far ring
+(`TerrainShape.shade`, `ChunkBuild`, `FarRing`, shader `CUSTOM0`). The height over the local dune
+mean sorts crests paler and hollows darker. The crests' two horizons hide the hollows' sky and
+extend their soft directional shadows past the shadow map; near it, the real shadow map takes
+precedence. The ripple profile supplies its own soft shadow and trough occlusion.
+
+Close ripple relief traces the view through that same rounded, lopsided profile: up to eight
+steps to its first crossing, then three refinements. Crests cover their troughs as you move;
+the grain pattern follows that surface. `ripple_relief` fades from full at 2 m to none at 6 m,
+with grazing views bounded and tracks flattening the relief. These are millimetre-scale parallax
+ripples; the ground's metre lattice and collision remain authoritative. This completes close
+relief without a separately streamed displaced mesh patch.
+
+Measured at 1920 × 1080 on the shared machine's RTX 3070, nine alternating rounds of 60 measured
+frames per look after ten settling frames, with no other Godot running. Each entry is the median
+paired GPU difference; medians of different pairs need not add exactly. The baseline is the
+previous sand shader (`14cb3d0`); switching only `ripple_relief` off separates the trace's cost.
+
+| View | Complete change | Dune and ripple shading, relief off | Close relief alone |
+| --- | ---: | ---: | ---: |
+| Noon from eye height | +0.326 ms | +0.274 ms | +0.049 ms |
+| Low sun, sand filling the frame | +0.652 ms | +0.272 ms | +0.516 ms |
+| Noon at your feet | +0.598 ms | -0.013 ms (noise) | +0.401 ms |
+
+The complete change stays below the roughly 0.8 ms budget in these median samples. Individual
+rounds vary with desktop load; this is a measurement on this GPU, not a guarantee for every GPU.
+The vertex bake costs worker CPU time: a 64 m near chunk at 1 m steps takes 30.552 ms against
+17.777 ms before (+12.775 ms); a mid chunk at 2 m steps, 8.062 against 4.755 ms (+3.307 ms).
+It adds no per-frame CPU bake, and stores four floats per vertex including the skirts.
+
+World probe 12 checks continuous shade across chunk seams. The reported long-walk leak did not
+reproduce after integration. A diagnostic found resource and orphan-node counts fixed while
+resident chunk and collision counts changed. World probe 3 now compares memory back at the same
+settled location after warming up and after 20 km, preserving its original 10% object and 64 MB
+memory limits: 4,946 → 4,943 objects, 220.8 → 221.1 MB. It still checks the complete route's
+collision, dropped boxes and maximum resident chunks.
+
+The before/after capture covers noon, low sun from eye height and above, dusk from above, full-Tu
+night, the headlamp, storm, a walked track, and close ripples. The look-test can measure each
+`--try` separately and now measures only the selected views, including a view at your feet.
 
 ## Open questions
 

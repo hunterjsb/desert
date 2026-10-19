@@ -17,7 +17,7 @@ const GROUPS := [
 	["Devices", [&"shield", &"light_shield", &"personal_shield", &"condenser", &"console", &"nav_computer", &"screen",
 		&"anemometer", &"barometer", &"hygrometer", &"particle_sensor", &"radar", &"ground_radar", &"radio", &"lamp",
 		&"planter", &"harvester", &"bedroll", &"survival_kit"]],
-	["Sail and rope", [&"mast", &"sail", &"keel", &"helm_seat", &"coil", &"hook", &"stake"]],
+	["Sail and rope", [&"mast", &"sail", &"keel", &"helm_seat", &"crows_nest", &"streamer", &"coil", &"hook", &"stake"]],
 	["Tools", [&"cutter", &"sand_scoop", &"sieve", &"sealant", &"med_kit", &"compass", &"hull_plate"]],
 	["Food and water", [&"canister", &"hose", &"ration", &"tubers", &"fungus_caps", &"saltbush_leaves", &"salt",
 		&"root_tuber", &"vat_fungus", &"saltbush"]],

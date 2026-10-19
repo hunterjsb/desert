@@ -613,8 +613,8 @@ static func _take_seat(from: Chassis, to: Chassis, seated: Device) -> void:
 			socket = each
 	from._seats.erase(socket)
 	to._seats.append(socket)
-	seated.remove_collision_exception_with(from)
-	seated.add_collision_exception_with(to)
+	seated.touch_none_of(from, false)
+	seated.touch_none_of(to, true)
 	if seated.parts_changed.is_connected(from._recompute):
 		seated.parts_changed.disconnect(from._recompute)
 		seated.parts_changed.connect(to._recompute)

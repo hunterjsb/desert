@@ -488,6 +488,8 @@ func _show_looks(shown: Array[Array]) -> void:
 			look.show_thing(thing)
 		if thing is Compass:
 			look.turn_needle((thing as Compass).needle_on(face, _player.world))
+		elif thing is Streamer:
+			look.stream(thing as Streamer, Time.get_ticks_msec() / 1000.0)
 
 
 ## The picture of a stack, for anything that reads the view.

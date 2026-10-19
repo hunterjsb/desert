@@ -55,6 +55,9 @@ const AIR_LIE := 0.1
 ## A line at your waist pulling you this hard, m/s², and the board's push
 ## gives nothing: it tows nothing, and towed, your keys only turn it.
 const HELD_BACK := 0.6
+## Its push gives out as you come this much faster than what your lines lead
+## to, m/s, as far as they're slack: slack in a tow never lets you run past it.
+const OUTRUN := 1.0
 ## The edge goes in and comes out over about this long, s.
 const DIG_SECONDS := 0.2
 ## Stopping, the board swings across your way this fast, rad/s, faster than
@@ -169,8 +172,10 @@ var _ahead_was := Vector2(0.0, -1.0)
 ## Steps until you can kick again, and steps left of a kick's push.
 var _kick_wait := 0
 var _stroke := 0
-## What the lines at your waist pulled you by this tick, m/s along engine x and z.
+## What the lines at your waist pulled you by this tick, m/s along engine x
+## and z, and how fast what each leads to goes.
 var _towed := Vector2.ZERO
+var _leads: Array[Vector2] = []
 ## Whether the edge has bitten since it last came out.
 var _bitten := false
 ## In a storm as the last tick ended, so riding into one is noticed.
@@ -195,9 +200,24 @@ func _init(by: Player, on: Hoverboard) -> void:
 
 
 ## A line's pull on you this tick, as the change in your way it makes: your
-## camp towing you, sand-kiting, or a line holding you back.
-func tow(by: Vector3) -> void:
+## camp towing you, sand-kiting, or a line holding you back; and how fast
+## what the lines lead to goes.
+func tow(by: Vector3, leads: Array[Vector3] = []) -> void:
 	_towed += Vector2(by.x, by.z)
+	_leads.clear()
+	for lead in leads:
+		_leads.append(Vector2(lead.x, lead.z))
+
+
+## How much of its push the board gives going this fast: none once you'd
+## outrun what your lines lead to.
+func _keeps_behind(way: Vector2) -> float:
+	if _leads.is_empty():
+		return 1.0
+	var fastest := 0.0
+	for lead in _leads:
+		fastest = maxf(fastest, lead.length())
+	return clampf(1.0 - (way.length() - fastest) / OUTRUN, 0.0, 1.0)
 
 
 ## One tick: `dir` is where your keys steer, flat, forward and to the sides;
@@ -379,7 +399,7 @@ func step(delta: float, dir: Vector2, hop: bool, digging := 0.0, kick := false, 
 			var swing := (t.board_drift_turn if drifting else turn_rate) * h
 			yawed = clampf(ahead.angle_to(dir), -swing, swing)
 			ahead = ahead.rotated(yawed)
-			pushing = clampf(ahead.dot(dir), 0.0, 1.0) * contact * (1.0 - dig) * free
+			pushing = clampf(ahead.dot(dir), 0.0, 1.0) * contact * (1.0 - dig) * free * lerpf(1.0, _keeps_behind(velocity), free)
 			velocity += ahead * push * pushing * h
 		elif lead != Vector2.ZERO:
 			# Nothing holding it sideways, it trails its own way, as a towed ski does.
@@ -405,7 +425,7 @@ func step(delta: float, dir: Vector2, hop: bool, digging := 0.0, kick := false, 
 			kicks += 1
 		if _stroke > 0:
 			_stroke -= 1
-			var spare := clampf(1.0 - velocity.length() / top, 0.0, 1.0) * free
+			var spare := clampf(1.0 - velocity.length() / top, 0.0, 1.0) * free * lerpf(1.0, _keeps_behind(velocity), free)
 			velocity += ahead * t.board_kick / KICK_SECONDS * spare * contact * h
 		if not kick:
 			player.stamina = minf(player.stamina + t.stamina_regen * h, t.stamina_max)

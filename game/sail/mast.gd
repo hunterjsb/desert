@@ -54,6 +54,12 @@ const EXTEND_SECONDS := 0.6
 const HOW_TO := "sheet"
 const HOW_TO_SAYS := "The rope at your waist is the sail's sheet: it runs through the boom's end to a ring on the camp.\n" \
 	+ "{reel_in} draws the boom in toward the ring, {pay_out} lets the wind take it out.\nYou steer by where you walk, as with a tiller."
+## What a rig flown from both its bow corners teaches, the first time you
+## ride it: the bridle's two bow lines, and changing tack by them.
+const BRIDLE_HOW_TO := "bridle"
+const BRIDLE_HOW_TO_SAYS := "The rig flies on its sheet and a bow line from each bow corner, both at your waist.\n" \
+	+ "To change tack, look at its far bow corner and {reel_in} that line as you bear away: it pulls the rig across.\n" \
+	+ "Head up onto the new side and {pay_out} it again."
 ## Lift rises to its most at this angle of attack and stalls past it; drag
 ## grows with lift's square, and square on it pushes as any face that size.
 const LIFT_MOST := 1.3
@@ -79,6 +85,15 @@ const FLOGS := deg_to_rad(2.0)
 const LIGHT_AIR := 3.0
 ## Lying over this far, its masthead and boom's end can rest on the sand, rad.
 const TOUCH_TILT := deg_to_rad(25.0)
+## Standing, it takes things stuck on it as a deck's faces do: on its pole's
+## four sides, up the reach that stands out of its stowed pole, and on its
+## head. Its head, over its middle, m; its upper pole's half width; and the
+## span of the pole things stick on, m over its middle.
+const MASTHEAD := &"head"
+const SIDES := {&"front": Vector3.FORWARD, &"back": Vector3.BACK, &"left": Vector3.LEFT, &"right": Vector3.RIGHT}
+const HEAD_Y := BOOM_AT.y + LUFF + 0.15
+const POLE_R := 0.045
+const POLE := Vector2(0.75, HEAD_Y - 0.06)
 
 ## Use raises it, or furls it: where the sail is headed, and how far up it is, 0 to 1.
 var raised := false
@@ -135,6 +150,9 @@ var _top: MeshInstance3D
 var _inboard: RopeStrand
 var _ring: Node3D
 var _inboard_taut := false
+## Its upper reach as your hands meet it, there only while it stands: the
+## pole the sand and what's round it meet stays the stowed one, as it was.
+var _reach: Area3D
 static var _look: ShaderMaterial
 
 
@@ -236,6 +254,7 @@ func _physics_process(delta: float) -> void:
 	var started := Time.get_ticks_usec()
 	var on := carrier()
 	extend = move_toward(extend, 1.0 if on != null else 0.0, delta / EXTEND_SECONDS)
+	_stand_reach(extend >= 1.0 and on != null)
 	# Off its mount, its sail comes down.
 	if on == null:
 		raised = false
@@ -481,7 +500,21 @@ func _haul(step: float) -> float:
 		return step
 	var was := trim
 	trim = clampf(trim + step, 0.0, all_out())
+	if trim != was and world != null and world.counts_deeds and raise >= 1.0 and carrier() != null \
+			and sailed_by_you(carrier()) and _streamed(carrier()):
+		Deeds.done(world, &"telltale")
 	return step - (trim - was)
+
+
+## Whether a streamer flies anywhere on a camp, its mast's too: a telltale to trim by.
+static func _streamed(on: Device) -> bool:
+	var riding: Array[Device] = [on]
+	while not riding.is_empty():
+		var each: Device = riding.pop_back()
+		if each is Streamer:
+			return true
+		riding.append_array(each.mounted())
+	return false
 
 
 ## The sheet's inboard drawn from its ring to the block at the boom's end, as
@@ -515,6 +548,81 @@ func _draw_inboard(h: float) -> void:
 func _process(_delta: float) -> void:
 	if _inboard.visible and is_instance_valid(_inboard.b):
 		_inboard.pin_ends(_ring.global_position, _inboard.b.global_position)
+
+
+## Whether it stands at its full height on a camp, taking things stuck on it.
+func standing() -> bool:
+	return extend >= 1.0 and carrier() != null
+
+
+## A sticky face in its own frame, +Z out of it: a side of its pole, along
+## the pole's middle, or its head.
+func face_frame(face: StringName) -> Transform3D:
+	if face == MASTHEAD:
+		return Transform3D(Basis(Vector3.RIGHT, -PI / 2.0), Vector3(0.0, HEAD_Y, 0.0))
+	var out: Vector3 = SIDES[face]
+	var z := out
+	var x := Vector3.UP.cross(z)
+	return Transform3D(Basis(x, Vector3.UP, z), out * POLE_R + Vector3.UP * (POLE.x + POLE.y) * 0.5)
+
+
+## Where on a face a thing may sit, in the face's frame: up and down the
+## pole's middle, or on the head's middle.
+func face_room(face: StringName) -> Rect2:
+	if face == MASTHEAD:
+		return Rect2()
+	var half := (POLE.y - POLE.x) * 0.5
+	return Rect2(Vector2(0.0, -half), Vector2(0.0, 2.0 * half))
+
+
+## The face something stuck on it is on, by its way out.
+func face_of(socket: Socket) -> StringName:
+	return face_out(socket.out)
+
+
+## The face whose way out, in its own frame, is nearest `out`.
+static func face_out(out: Vector3) -> StringName:
+	if out.y > 0.7:
+		return MASTHEAD
+	var best := &"front"
+	var most := -INF
+	for face: StringName in SIDES:
+		var along := (SIDES[face] as Vector3).dot(out)
+		if along > most:
+			most = along
+			best = face
+	return best
+
+
+## The face a look meets on it, by the way out where it met and, on its
+## pole's edge, the way you look from.
+func face_toward(normal: Vector3, looking: Vector3) -> StringName:
+	var out := global_basis.orthonormalized().inverse() * normal
+	if absf(out.y) < 0.7 and Vector2(out.x, out.z).length() < 0.5:
+		out = -(global_basis.orthonormalized().inverse() * looking)
+	return face_out(out) if out.y < 0.7 else MASTHEAD
+
+
+## Its upper reach is there for your hands only while it stands, so a stowed
+## mast is the pole you carry.
+func _stand_reach(up: bool) -> void:
+	if up == (_reach != null):
+		return
+	if up:
+		_reach = Area3D.new()
+		_reach.monitoring = false
+		var shape := CollisionShape3D.new()
+		var box := BoxShape3D.new()
+		var low: float = Catalog.DEVICES[&"mast"].size.y * 0.5
+		box.size = Vector3(POLE_R * 2.0, HEAD_Y - low, POLE_R * 2.0)
+		shape.shape = box
+		shape.position = Vector3(0.0, (HEAD_Y + low) * 0.5, 0.0)
+		_reach.add_child(shape)
+		add_child(_reach)
+	else:
+		remove_child(_reach)
+		_reach.queue_free()
+		_reach = null
 
 
 ## The sail's middle at a swing of the boom, in its own frame.

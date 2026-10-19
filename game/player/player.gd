@@ -349,8 +349,23 @@ func get_on(on: Hoverboard) -> bool:
 	_sliding = false
 	_jumped = false
 	if Controls.ui != null and Controls.playing():
-		Controls.ui.teach(Controls.RIDE_HOW_TO, Controls.RIDE_HOW_TO_SAYS)
+		# One how-to a ride: the board's first, then a bridled rig's.
+		if not Controls.ui.teach(Controls.RIDE_HOW_TO, Controls.RIDE_HOW_TO_SAYS) and _bridled():
+			Controls.ui.teach(Mast.BRIDLE_HOW_TO, Mast.BRIDLE_HOW_TO_SAYS)
 	return true
+
+
+## Whether a sail's rig flies from your waist on its sheet and two lines more.
+func _bridled() -> bool:
+	var rigs := {}
+	for body in waist.tied:
+		if is_instance_valid(body) and Mast.sheet_end(body) and world.ropes.far_holder(body) != null:
+			rigs[world.ropes.far_holder(body)] = 0
+	for body in waist.tied:
+		var far: Node3D = world.ropes.far_holder(body) if is_instance_valid(body) else null
+		if far != null and rigs.has(far) and not Mast.sheet_end(body):
+			rigs[far] += 1
+	return rigs.values().any(func(n: int) -> bool: return n >= 2)
 
 
 ## Off the board onto the sand, keeping your way: faster than you can run,
@@ -515,7 +530,8 @@ func sit(at: Helm) -> bool:
 	_sliding = false
 	_place_at_helm()
 	if Controls.ui != null and Controls.playing():
-		Controls.ui.teach(Helm.HOW_TO, Helm.HOW_TO_SAYS)
+		var teaches := at.how_to()
+		Controls.ui.teach(teaches[0], teaches[1])
 	return true
 
 
@@ -565,8 +581,8 @@ func _at_helm(input: Vector2) -> void:
 		stand_up()
 		return
 	helm.turning = input.x
-	crouched = true
-	low = 1.0
+	crouched = helm.sits
+	low = 1.0 if helm.sits else 0.0
 	_place_at_helm()
 	wind = world.weather.felt_wind(camera.global_position)
 	mode = "helm"

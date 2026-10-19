@@ -134,6 +134,10 @@ const POLES := Vector3(50.0, 80.0, 0.3)
 const WRECKS := Vector2(0.02, 0.002)
 
 const HERMITS := 0.012
+## How likely a cell holds a nomads' wrecked rig, anywhere, wilds and all;
+## and one of their camps, kept and just left: the moon is presumed empty.
+const NOMAD_RIGS := 0.08
+const NOMAD_CAMPS := 0.002
 
 var run_seed: int
 var radius: float
@@ -767,6 +771,15 @@ func _off_network(cell: int, out: Array[Dictionary]) -> void:
 	var alone := _stream(["h", cell])
 	if not _cell_paths.has(cell) and not _cell_settlements.has(cell) and alone.randf() < HERMITS:
 		out.append(_site(&"pipe_wall_hut", middle, alone.randf() * TAU, alone, ["h", cell], &"hermit"))
+	# The nomads', anywhere: a wrecked rig, now and then one of their camps.
+	for nomads: Array in [[&"nomad_rig", NOMAD_RIGS, "n"], [&"nomad_camp", NOMAD_CAMPS, "nc"]]:
+		var roam := _stream([nomads[2], cell])
+		if roam.randf() >= nomads[1]:
+			continue
+		var at := Sphere.point(roam.randf_range(lerpf(lat0, lat1, 0.1), lerpf(lat0, lat1, 0.9)),
+			roam.randf_range(lerpf(lon0, lon1, 0.1), lerpf(lon0, lon1, 0.9)))
+		if cells.cell_at(at) == cell and not _in_landmark(at):
+			out.append(_site(nomads[0], at, roam.randf() * TAU, roam, [nomads[2], cell], &"nomads"))
 
 
 func _site(kind: StringName, p: Vector3, bearing: float, rng: RandomNumberGenerator, parts: Array,

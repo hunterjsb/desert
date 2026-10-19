@@ -344,7 +344,10 @@ func grab() -> bool:
 	if look_device != null and look_device.host() != null and not (look_device.on_deck() and own_part):
 		if riding:
 			return refuse(RIDING)
-		# Last on, first off: a seated device comes off whole, whatever of it you aim at.
+		# Last on, first off: a seated device comes off whole, whatever of it you
+		# aim at, once nothing's stuck on it.
+		if not look_device.stuck().is_empty():
+			return refuse("take what's on it off first")
 		_take_off(look_device)
 		return true
 	if look_part != null:
@@ -1086,6 +1089,7 @@ func _pick_up(body: RigidBody3D) -> void:
 ## then it comes to your hand; too heavy to carry, it comes off standing on
 ## the sand beside the deck, and you have hold of it.
 func _take_off(device: Device) -> void:
+	_player.world.salvage.claim(device)
 	var host := device.host()
 	var from := host.seat_of(device)
 	var way := from.outward()
@@ -1282,11 +1286,13 @@ func _stick_target(thing: RigidBody3D, held_basis: Basis) -> Dictionary:
 	var skip := _exclusions()
 	skip.append(thing.get_rid())
 	ray.exclude = skip
+	# A standing mast's upper reach is there for your hands alone.
+	ray.collide_with_areas = true
 	var hit := get_world_3d().direct_space_state.intersect_ray(ray)
 	var on := Stick.face_hit(hit, -_player.camera.global_basis.z)
 	if on.is_empty():
 		return {}
-	var deck: Chassis = on[0]
+	var deck: Device = on[0]
 	var face := Stick.face_for(deck, on[1], on[2], thing)
 	var placed := Stick.aim(deck, on[1], face, hit.position, held_basis, thing)
 	var pose := Stick.pose_on(deck, on[1], face, placed[0], placed[1], thing)
@@ -1294,11 +1300,14 @@ func _stick_target(thing: RigidBody3D, held_basis: Basis) -> Dictionary:
 	if why == "":
 		why = Stick.clear(thing, deck.global_transform * pose, _player)
 	# Floating now, and too much for its trays with this on: it'd settle.
-	var now := deck.stats()
-	var warn := "too heavy" if now.can_float and not deck.resting \
-		and now.lift_kg + _lift_of(thing) < deck.mass + thing.mass else ""
+	var camp := deck
+	while camp.host() != null:
+		camp = camp.host()
+	var now := camp.stats()
+	var warn := "too heavy" if now.can_float and not camp.resting \
+		and now.lift_kg + _lift_of(thing) < camp.mass + thing.mass else ""
 	return {"deck": deck, "piece": on[1], "face": face, "pose": pose,
-		"out": deck.face_frame(on[1], face).basis.z, "why": why, "warn": warn}
+		"out": Stick.frame_of(deck, on[1], face).basis.z, "why": why, "warn": warn}
 
 
 ## What a thing lifts once it's stuck facing down: a tray its lift, else none.
@@ -1311,7 +1320,7 @@ static func _lift_of(thing: Node) -> float:
 func _stick_held() -> void:
 	var target := sticking
 	var thing := held
-	var deck: Chassis = target.deck
+	var deck: Device = target.deck
 	_player.world.salvage.claim(deck)
 	_let_go()
 	var into := deck.stick(thing, target.pose, target.out, target.piece)
@@ -1324,7 +1333,7 @@ func _stick_held() -> void:
 func _stick_grasped() -> void:
 	var target := sticking
 	var thing := grasp.body as Device
-	var deck: Chassis = target.deck
+	var deck: Device = target.deck
 	_player.world.salvage.claim(deck)
 	grasp.let_go(false)
 	sticking = {}
@@ -1428,7 +1437,7 @@ func _tug(delta: float) -> void:
 	pull = move_toward(pull, want, delta / _tuning.tug_seconds)
 	# Where it would stick, eased toward in the deck's frame, so it rides a floating deck.
 	if not sticking.is_empty():
-		var deck: Chassis = sticking.deck
+		var deck: Device = sticking.deck
 		if _placing <= 0.0 or not is_instance_valid(was) or was != deck:
 			_stick_local = deck.global_transform.affine_inverse() * held.global_transform
 		var share := 1.0 - exp(-SWING * delta)

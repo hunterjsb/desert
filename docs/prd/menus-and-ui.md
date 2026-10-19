@@ -248,7 +248,7 @@ is a menu of its own, reached from the main menu and the system menu.
 
 **Built** (2026-10-18, `game/ui/deeds_grid.gd`), after Hunter's "show relations and a hierarchy":
 Deeds stands under New game on the main menu and under Options in the system menu. It opens a tree
-of every deed under how many show done ("16 of 40 deeds"), with Back: a branch or two for each family
+of every deed under how many show done ("16 of 44 deeds"), with Back: a branch or two for each family
 (Board, Wind, Weather, Camp, Farming, Ruins, Scrap, Signals, Far, Story, Nomad since round two,
 2026-10-19, named down the left), each deed a step right of the furthest it waits on, and a line across
 from each to what it opens, brighter once that's open. It's laid out as every menu is where it opens:

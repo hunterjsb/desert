@@ -50,6 +50,10 @@ const KINDS := {
 	&"hopper": {"era": Eras.SECOND},
 	# The ground's own: a live vent's mouth on the rift.
 	&"vent_mouth": {"era": Eras.GEOLOGY},
+	# The nomads', now, out anywhere: their wrecked rigs, too new for the
+	# sand to have taken, and their camps, kept: neither buried.
+	&"nomad_rig": {"era": Eras.NOMAD, "burial": Vector2.ZERO},
+	&"nomad_camp": {"era": Eras.NOMAD, "burial": Vector2.ZERO},
 	# Signs: the Dark Age's markers on the migration routes.
 	&"cairn": {"era": Eras.DARK, "reach": 1.0, "sign": true},
 	&"cache": {"era": Eras.DARK, "reach": 1.0, "sign": true},
