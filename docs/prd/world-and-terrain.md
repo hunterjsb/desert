@@ -456,8 +456,25 @@ rounds of 60 measured frames after 30 settling frames, reversing the order each 
 | Cross-lit skid, clear day | 5.382 ms | 5.687 ms | +0.159 ms |
 
 Individual round differences were noisy (-0.153 to +1.821 ms walking, -0.225 to
-+1.889 ms at the skid). The direct combined sand/trail budget check against `14cb3d0`
-is pending; adding measurements from different camera cases would not establish it.
++1.889 ms at the skid).
+
+**Combined sand/trail budget**, measured directly against shader `14cb3d0` in the
+same skid view rather than adding results from different cameras:
+
+| View | Before volume/trails, mean | Candidate, mean | Median paired difference | Round range |
+| --- | ---: | ---: | ---: | ---: |
+| Clear day, cross-lit skid | 5.264 ms | 5.625 ms | +0.204 ms | -0.136 to +1.596 ms |
+| Low sun, cross-lit skid | 5.342 ms | 5.801 ms | +0.365 ms | +0.033 to +0.934 ms |
+
+Both scene means and median additions stay within the approximate 0.8 ms additional
+rendering budget. The low-sun check used the same nine-round method and warmed both
+pipelines for 60 physics frames before measuring. Individual rounds still contain
+outliers; the process diagnostic also counted other Godot processes in the low run.
+These are representative view costs, not a bound on every frame. The low-sun lateral
+sequence keeps the resting board seated and the rim attached to the surrounding sand;
+no grid facets or edge jumps appeared. A final focused tracks probe on the combined
+candidate again passes ground/collision invariance and filling/lifetime checks.
+
 The quarter-metre map still limits boot detail; true contact silhouettes would require
 a finer mesh patch. No map expansion or separate patch is added here.
 
