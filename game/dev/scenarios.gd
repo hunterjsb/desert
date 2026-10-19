@@ -426,7 +426,7 @@ static func wrecks(world: World) -> Array[Node3D]:
 		if not is_instance_valid(world):
 			return []
 		if placed.all(func(s: Structure) -> bool: return world.salvage.wreckage_of(s) != null or not world.tuning.salvage) \
-				and world.salvage.is_idle():
+				and world.salvage.is_idle() and world.terrain.is_idle():
 			break
 	var tools: Array[Node3D] = [standing(world, &"cutter", [&"battery"], [0.7, 1.3])]
 	for each: Array in [[&"sand_scoop", -0.7], [&"sealant", -0.3], [&"sealant", -0.15], [&"med_kit", 0.15]]:
