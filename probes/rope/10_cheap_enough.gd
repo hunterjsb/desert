@@ -18,7 +18,7 @@ func run() -> void:
 	blow(Vector2(wind.storm_speed(), 0.0), world.tuning.gust_storm_strength)
 	for i in DEVICES:
 		var at := spot((i % 5) * 9.0 - 14.0, (i / 5) * 10.0 - 10.0)
-		var piece := floating(&"planter" if i % 2 == 0 else &"crate_frame", at)
+		var piece := floating(&"planter" if i % 2 == 0 else &"chassis", at)
 		for side in [-2.0, 2.0]:
 			var stake := driven_stake(at + Vector3(-6.0, 0.0, side))
 			Line.between(world, piece.free_tie(stake.global_position), stake.free_tie(at), 0.3)

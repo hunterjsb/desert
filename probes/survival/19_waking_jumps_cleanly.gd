@@ -18,10 +18,13 @@ func run() -> void:
 	saves = get_node("/root/Saves")
 	await load_world(1234, false)
 	var here := world.player.global_position
+	# The shield on a plate: a chassis with a big battery stuck beside it.
+	var plate := Catalog.device(&"chassis") as Chassis
+	world.content.add_child(plate)
+	plate.global_position = Vector3(here.x - 1.0, world.height_under(here) + Chassis.THICK * 0.5 + 0.01, here.z)
 	var shield := Catalog.device(&"shield") as ShieldGenerator
-	world.content.add_child(shield)
-	shield.global_position = Vector3(here.x - 1.0, world.height_under(here) + 0.22, here.z)
-	fit_part(shield, &"big_battery")
+	Stick.put(plate, plate, Chassis.TOP, Vector2.ZERO, 0.0, shield)
+	Stick.put(plate, plate, Chassis.TOP, Vector2(0.32, 0.3), 0.0, Catalog.part(&"big_battery"))
 	shield.stand(true)
 	var planter := Catalog.device(&"planter") as Planter
 	world.content.add_child(planter)

@@ -1,15 +1,15 @@
 extends WorldProbe
 ## Survival probe 4: a clean new run. The game as it runs: the run starts
-## with its kit (Kit, data) beside you: a crate floating on its hover tray,
-## its battery half charged, the light shield and the light solar panel
-## seated on its two top mounts clear of each other, moored by its hook to a
-## driven stake on the kit's short line, and a hoverboard racked on it ready
-## to ride; none of it overlaps you or each other, and none of it goes in
-## with what you carry while it's seated on the crate, nor the crate, too
+## with its kit (Kit, data) beside you: a deck floating on its hover trays,
+## its loose battery half charged, the light shield and the light solar
+## panel stuck on it clear of each other, moored by its hook to a driven
+## stake on the kit's short line, and a hoverboard hung on its frame's wall
+## ready to ride; none of it overlaps you or each other, and none of it goes
+## in with what you carry while it's stuck on the deck, nor the deck, too
 ## heavy to carry; a loose shield generator does.
 ## The light shield is clearly weaker than a found one. Switched on, it runs
 ## the run's first day and into the next morning in its own weather on the
-## crate's power without going dark: the crate floats until the battery is
+## deck's power without going dark: the deck floats until the battery is
 ## down to its last quarter, then settles and leaves it to the shield. Then a
 ## run lived in: the sealed-water start set down, its shield up, a line
 ## between two stakes, a ration in your hands, a canister half drunk, the
@@ -152,7 +152,7 @@ func _kit_in(at: World) -> Array:
 	return []
 
 
-## A kit's crate, shield, panel, board, stake and line by name, or {} if any is missing.
+## A kit's deck, shield, panel, board, stake and line by name, or {} if any is missing.
 func _pieces(kit: Array) -> Dictionary:
 	var found := {}
 	for node: Node in kit:
@@ -166,8 +166,8 @@ func _pieces(kit: Array) -> Dictionary:
 			found.line = node
 		elif node is Device and (node as Device).stats().solar_w > 0.0:
 			found.panel = node
-		elif node is Device and (node as Device).stats().lift_kg > 0.0:
-			found.crate = node
+		elif node is Chassis:
+			found.deck = node
 	return found if found.size() == 6 else {}
 
 
@@ -181,49 +181,45 @@ func _check_kit(kit: Array, run: String) -> void:
 		"%s begins on a clear morning (%.2f of the day), the first storm due in %.0f s" % [run, hour, due])
 	var standard := Kit.standard()
 	var pieces := _pieces(kit)
-	check(not pieces.is_empty(), "%s starts with a crate, a light shield, a light panel, a board, a stake and a line" % run)
+	check(not pieces.is_empty(), "%s starts with a deck, a light shield, a light panel, a board, a stake and a line" % run)
 	if pieces.is_empty():
 		return
-	var crate: Device = pieces.crate
+	var deck: Chassis = pieces.deck
 	var shield: ShieldGenerator = pieces.shield
 	var panel: Device = pieces.panel
 	var board: Hoverboard = pieces.board
 	var stake: Stake = pieces.stake
 	var line: Line = pieces.line
-	var now := crate.stats()
-	check(now.hovering and absf(clearance(crate) - crate.rest_height()) < 0.1 and now.hooks == 1
-		and crate.charge_share() >= standard.charge - 0.01 and crate.charge_share() <= standard.charge,
-		"%s: the crate floats %.2f m up on its tray, a hook fitted, its battery %d%% charged"
-			% [run, clearance(crate), roundi(standard.charge * 100.0)])
-	check(shield.host() == crate and panel.host() == crate and not shield.on and shield.battery() == null,
-		"%s: the light shield, switched off, and the light panel are seated on the crate, on its power" % run)
+	var now := deck.stats()
+	check(now.hovering and absf(clearance(deck) - deck.rest_height()) < 0.1 and now.hooks == 1
+		and deck.charge_share() >= standard.charge - 0.01 and deck.charge_share() <= standard.charge,
+		"%s: the deck floats %.2f m up on its trays, a hook fitted, its battery %d%% charged"
+			% [run, clearance(deck), roundi(standard.charge * 100.0)])
+	check(shield.host() == deck and panel.host() == deck and not shield.on and shield.battery() == null,
+		"%s: the light shield, switched off, and the light panel are stuck on the deck, on its power" % run)
 	check(line.state == Line.State.LAID and absf(line.full - standard.rope_m) < 1e-3 and stake.driven
-		and line.ends.any(func(e: Part) -> bool: return e.socket.get_parent() == crate)
+		and line.ends.any(func(e: Part) -> bool: return e.socket.get_parent() == deck)
 		and line.ends.any(func(e: Part) -> bool: return e.socket.get_parent() == stake),
-		"%s: the crate is moored by its hook to a driven stake on a %d m line" % [run, roundi(standard.rope_m)])
-	check(board.host() == crate and board.racked() and board.battery() != null and board.can_run()
-		and board.charge_share() >= standard.charge - 0.01,
-		"%s: the hoverboard is racked on the crate, its battery %d%% charged, ready to ride"
+		"%s: the deck is moored by its hook to a driven stake on a %d m line" % [run, roundi(standard.rope_m)])
+	check(board.host() == deck and board.on_deck() and deck.own_piece(deck.seat_of(board)).on_frame()
+		and board.battery() != null and board.can_run() and board.charge_share() >= standard.charge - 0.01,
+		"%s: the hoverboard hangs on the deck's wall, its battery %d%% charged, ready to ride"
 			% [run, roundi(standard.charge * 100.0)])
 	var start := Vector3(world.engine_x(world.spawn.x), 0.0, world.engine_z(world.spawn.y))
-	check([crate, board].all(func(b: Node3D) -> bool:
-		return Vector2(b.global_position.x - start.x, b.global_position.z - start.z).length() < 3.5),
-		"%s: the crate and the board are beside you" % run)
-	# Seated side by side, nothing of one inside the other or the crate.
-	var tops := [_box_in(crate, shield), _box_in(crate, panel)]
-	var racked := _box_in(crate, board)
-	var frame := Finds.bounds(crate).grow(-1e-4)
-	check(not tops[0].intersects(tops[1]) and tops.all(func(b: AABB) -> bool: return not b.intersects(frame)),
-		"%s: the shield and the panel sit clear on the two top mounts (%.3f m apart)"
-			% [run, maxf(tops[1].position.z - tops[0].end.z, tops[0].position.z - tops[1].end.z)])
-	check(not racked.intersects(frame) and tops.all(func(b: AABB) -> bool: return not b.intersects(racked)),
-		"%s: the board sits clear of the crate, its shield and its panel in the rack" % run)
-	var bodies: Array[AABB] = [_box_in(null, world.player), _box_in(null, crate), _box_in(null, shield),
+	check([deck, board].all(func(b: Node3D) -> bool:
+		return Vector2(b.global_position.x - start.x, b.global_position.z - start.z).length() < 4.0),
+		"%s: the deck and the board are beside you" % run)
+	# Stuck side by side, nothing of one inside another or the deck.
+	var stuck_clear := [shield, panel, board].map(func(d: Device) -> String:
+		return Stick.clear(d, d.global_transform, world.player))
+	check(stuck_clear.all(func(why: String) -> bool: return why == ""),
+		"%s: the shield, the panel and the board sit clear of each other and the deck (%s)" % [run, stuck_clear])
+	var bodies: Array[AABB] = [_box_in(null, world.player), _box_in(null, deck), _box_in(null, shield),
 		_box_in(null, panel), _box_in(null, board), _box_in(null, stake)]
 	var clashes := 0
 	for i in bodies.size():
 		for j in range(i + 1, bodies.size()):
-			# What's seated touches its crate by design.
+			# What's stuck on the deck touches it by design.
 			if i >= 1 and i <= 4 and j <= 4:
 				continue
 			clashes += int(bodies[i].intersects(bodies[j]))
@@ -236,8 +232,8 @@ func _check_kit(kit: Array, run: String) -> void:
 		"%s: the kit's shield and panel are clearly weaker than found ones (%.0f m against %.0f m, %d W against %d W)"
 			% [run, shield.size, base.size, panel.stats().solar_w, deep_panel.stats.solar_w])
 	var suit := world.player.suit
-	check([crate, board, shield, panel].all(func(b: Object) -> bool: return not suit.fits(b)) and suit.fits(base),
-		"%s: nothing of the kit goes in with what you carry while it's on the crate, nor the crate; a loose shield does"
+	check([deck, board, shield, panel].all(func(b: Object) -> bool: return not suit.fits(b)) and suit.fits(base),
+		"%s: nothing of the kit goes in with what you carry while it's on the deck, nor the deck; a loose shield does"
 			% run)
 	base.free()
 	deep_panel.free()
@@ -250,16 +246,16 @@ func _box_in(frame: Node3D, body: Node3D) -> AABB:
 
 
 ## Switched on, the kit's shield runs a day of the run's own weather from its
-## start without going dark, on the crate's battery and the light panel: the
-## crate floats while the battery holds more than its reserve, then settles
+## start without going dark, on the deck's battery and the light panel: the
+## deck floats while the battery holds more than its reserve, then settles
 ## onto the sand and leaves the rest to the shield.
 func _run_the_day(kit: Array) -> void:
 	var pieces := _pieces(kit)
 	if pieces.is_empty():
 		return
-	var crate: Device = pieces.crate
+	var deck: Chassis = pieces.deck
 	var shield: ShieldGenerator = pieces.shield
-	var cell := crate.battery()
+	var cell := deck.battery()
 	# The run's own moment, with the kit as it was laid: the ground took as
 	# long to build as the machine took.
 	var begin: Dictionary = Scenarios.find(world, Runs.START)
@@ -292,7 +288,7 @@ func _run_the_day(kit: Array) -> void:
 		if storm and storm_at < 0.0:
 			storm_at = float(i) / frames
 		shield_wh += shield.demand_w() * step * int(shield.running())
-		if crate.powered:
+		if deck.powered:
 			floated += 1
 			floating_low = minf(floating_low, cell.charge_wh)
 		elif settled < 0.0:
@@ -301,7 +297,7 @@ func _run_the_day(kit: Array) -> void:
 	world.player.vitals.set_physics_process(true)
 	var end := cell.charge_wh
 	var reserve := Power.RESERVE * cell.capacity()
-	print(("the kit's first %.2f days, %d%% of it under a storm from %.2f days: the crate floated %d%% of it%s; its battery %.1f to %.1f Wh"
+	print(("the kit's first %.2f days, %d%% of it under a storm from %.2f days: the deck floated %d%% of it%s; its battery %.1f to %.1f Wh"
 		+ " (lowest %.1f, floating %.1f); the panel made %.1f Wh, the shield drew %.1f")
 		% [KIT_DAYS, roundi(100.0 * stormy / frames), storm_at * KIT_DAYS, roundi(100.0 * floated / frames),
 			", settling at %.2f days" % (settled * KIT_DAYS) if settled >= 0.0 else "", from, end, lowest, floating_low,

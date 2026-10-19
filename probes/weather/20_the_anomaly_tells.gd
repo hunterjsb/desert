@@ -11,9 +11,9 @@ func run() -> void:
 	var met := await meet_anomaly()
 	if met.is_empty():
 		return
-	var console: Console = met.camp[1]
-	var radio: Radio = met.camp[2]
-	var shield: ShieldGenerator = met.camp[3]
+	var console: Console = met.camp.filter(func(n: Node) -> bool: return n is Console)[0]
+	var radio: Radio = met.camp.filter(func(n: Node) -> bool: return n is Radio)[0]
+	var shield: ShieldGenerator = met.camp.filter(func(n: Node) -> bool: return n is ShieldGenerator)[0]
 	var here := world.player.global_position
 	# Between carriers, so no signal ducks the static.
 	while radio.channel != Radio.STATIC:

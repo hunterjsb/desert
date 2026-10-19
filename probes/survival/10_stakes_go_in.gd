@@ -3,10 +3,10 @@ extends LineProbe
 ## you carry as it is, riding on you, and the view shows it as a stake. A
 ## driven stake, or one with a line on its eye, stays out. A loose stake goes
 ## in and comes out in your hands ready to drive: used over the sand it goes
-## in, and holds a crate floating downwind on a line. The found one, saved
+## in, and holds a chassis floating downwind on a line. The found one, saved
 ## carried and resumed into a fresh world, comes out and does the same.
 
-## The breeze the crates float in, m/s, downwind along +x.
+## The breeze the floaters float in, m/s, downwind along +x.
 const BREEZE := 8.0
 
 var suit: Suit
@@ -85,16 +85,16 @@ func _drives(stake: Stake, at: Vector3) -> bool:
 	return hands.interact() and stake.driven and hands.held == null
 
 
-## A crate floating on a line from a driven stake, in a breeze: the stake
+## A chassis floating on a line from a driven stake, in a breeze: the stake
 ## stays where it was driven, taking the pull.
 func _holds(stake: Stake) -> bool:
-	var crate := floating(&"crate_frame", stake.global_position + Vector3(1.5, 0.0, 0.0))
-	var line := lay(crate, stake, 0.5)
+	var floater := floating(&"chassis", stake.global_position + Vector3(1.5, 0.0, 0.0))
+	var line := lay(floater, stake, 0.5)
 	var at := stake.global_position
 	blow(Vector2(BREEZE, 0.0))
 	await simulate(5.0)
 	blow(Vector2.ZERO)
-	var off := flat(crate.global_position - at).length()
-	print("in %.0f m/s: the stake takes %.1f N, the crate %.2f m off on %.2f m of line"
+	var off := flat(floater.global_position - at).length()
+	print("in %.0f m/s: the stake takes %.1f N, the chassis %.2f m off on %.2f m of line"
 		% [BREEZE, stake.sustained, off, line.full])
 	return ropes.ropes.has(line.rope) and stake.driven and stake.global_position == at and stake.sustained > 0.0

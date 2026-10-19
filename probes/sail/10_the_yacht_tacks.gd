@@ -116,12 +116,15 @@ func _set_up(keeled: bool) -> void:
 	deck = kit[0]
 	mast = kit[1]
 	if not keeled:
-		for socket in deck.sockets():
+		for socket in deck.stuck():
 			if socket.part != null and socket.part.stats.has("keel"):
-				deck.take(socket).free()
-				var tray := Catalog.part(&"hover_tray")
-				world.content.add_child(tray)
-				deck.fit(tray, socket)
+				# A tray stuck where the keel was, under the same piece.
+				var pose := socket.transform
+				var out := socket.out
+				var piece := deck.own_piece(socket)
+				deck.unstick(socket).free()
+				deck.stick(Catalog.part(&"hover_tray"), pose, out, piece)
+				break
 	await physics_frames(30)
 	blow(downwind * 10.0)
 	hoist(60.0)

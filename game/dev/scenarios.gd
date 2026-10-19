@@ -91,11 +91,11 @@ const LIST: Array[Dictionary] = [
 		"kind": "clear", "day": [0.35, 0.5], "calm": 6.0, "chassis": true},
 	# A steady breeze across open sand: the wind on your left, the camp
 	# facing across it ahead of you, ready to raise its sail and go.
-	{"key": "sail", "label": "sail: a 2x2 deck on skates with a mast and sail, two big batteries, a shield (off), the sheet at your waist, the board at your feet, a steady breeze on open sand",
+	{"key": "sail", "label": "sail: a 2x2 deck on skates with a mast and sail, its ballast in a frame, a shield (off), the sheet at your waist, the board at your feet, a steady breeze on open sand",
 		"kind": "sail", "day": [0.35, 0.5], "breeze": [8.5, 11.5], "sail": true},
 	{"key": "sail_tow", "label": "sail and tow: the rig ahead on its sheet, the camp behind on skates with a shield (off), both lines at your waist, the board at your feet, a steady breeze",
 		"kind": "sail", "day": [0.35, 0.5], "breeze": [8.5, 11.5], "tow": true},
-	{"key": "yacht", "label": "yacht: a floating 3x2 deck with a keel, a mast and sail, a helm seat and two big batteries, the sheet at your waist, a steady breeze",
+	{"key": "yacht", "label": "yacht: a floating 3x2 deck with a keel, a mast and sail, a helm seat and its ballast in a frame, the sheet at your waist, a steady breeze",
 		"kind": "sail", "day": [0.35, 0.5], "breeze": [8.5, 11.5], "yacht": true},
 	{"key": "wreck", "label": "scrap: every wreck in a fan ahead of you, dug out, a heat cutter, a scoop, sealant, stakes and a med kit, clear and calm",
 		"kind": "clear", "day": [0.36, 0.5], "calm": 6.0, "wreck": true},
@@ -245,8 +245,9 @@ const CHASSIS_COIL := [0.9, 1.4]
 
 ## The sailing camp on a deck two by two on skates, right and ahead, facing
 ## across the wind ahead of you: its first piece at the front on the windward
-## side, the mast on it and two batteries behind it, ballast to windward, the
-## shield (off) behind on the leeward side. The board lies at your feet, and
+## side, the mast on it and behind it the ballast, three batteries in an open
+## frame where the crate stood, catching the wind as it did, the shield (off)
+## behind on the leeward side. The board lies at your feet, and
 ## the sheet's laid this much longer than the way from the boom's end to your
 ## waist, m.
 const SAIL_DECK := [-0.5, 7.0]
@@ -256,8 +257,10 @@ const SKATES := [[&"stick", Vector2i(0, 0), &"bottom", Vector2.ZERO, 0.0, &"skat
 	[&"stick", Vector2i(1, 1), &"bottom", Vector2.ZERO, 0.0, &"skates"]]
 const SQUARE := [[&"piece", Vector2i(1, 0)], [&"piece", Vector2i(0, 1)], [&"piece", Vector2i(1, 1)]]
 const SAIL_MAST := [&"stick", Vector2i(0, 0), &"top", Vector2.ZERO, 180.0, [&"mast", [&"sail"]], &"mast"]
-const SAIL_BALLAST := [[&"stick", Vector2i(0, 1), &"top", Vector2(-0.2, 0.0), 0.0, &"big_battery"],
-	[&"stick", Vector2i(0, 1), &"top", Vector2(0.2, 0.0), 0.0, &"big_battery"]]
+const SAIL_BALLAST := [[&"frame", Vector2i(0, 1), 0],
+	[&"stick", Vector2i(0, 1), &"top", Vector2(-0.25, 0.0), 0.0, &"big_battery"],
+	[&"stick", Vector2i(0, 1), &"top", Vector2(0.0, 0.0), 0.0, &"battery"],
+	[&"stick", Vector2i(0, 1), &"top", Vector2(0.25, 0.0), 0.0, &"big_battery"]]
 const SAIL_SHIELD := [&"stick", Vector2i(1, 1), &"top", Vector2(0.0, 0.1), 0.0, &"shield", &"shield"]
 const SAIL_BOARD := [0.6, 1.0]
 const SAIL_SHEET_SLACK := 1.5
@@ -273,8 +276,8 @@ const TOW_STORES := [[&"stick", Vector2i(1, 0), &"top", Vector2(0.0, 0.1), 0.0, 
 	[&"hook", Vector2i(0, 0), Vector2i(0, -1)]]
 ## The yacht: a deck three pieces across and two long, right and ahead,
 ## floating: the mast at its front to windward, the helm seat on its middle
-## line aft, where a tray takes your weight, two batteries to windward of it
-## as ballast and the keel under the aft leeward piece, lengthwise.
+## line aft, where a tray takes your weight, the ballast in its frame to
+## windward of it and the keel under the aft leeward piece, lengthwise.
 const YACHT_DECK := [-3.5, 2.5]
 const YACHT_RIG := [[&"piece", Vector2i(1, 0)], [&"piece", Vector2i(2, 0)], [&"piece", Vector2i(0, 1)],
 	[&"piece", Vector2i(1, 1)], [&"piece", Vector2i(2, 1)],
@@ -286,8 +289,10 @@ const YACHT_RIG := [[&"piece", Vector2i(1, 0)], [&"piece", Vector2i(2, 0)], [&"p
 	[&"stick", Vector2i(2, 1), &"bottom", Vector2.ZERO, 0.0, &"keel"],
 	[&"stick", Vector2i(0, 0), &"top", Vector2.ZERO, 180.0, [&"mast", [&"sail"]], &"mast"],
 	[&"stick", Vector2i(1, 1), &"top", Vector2.ZERO, 180.0, &"helm_seat", &"helm"],
-	[&"stick", Vector2i(0, 1), &"top", Vector2(-0.2, 0.0), 0.0, &"big_battery"],
-	[&"stick", Vector2i(0, 1), &"top", Vector2(0.2, 0.0), 0.0, &"big_battery"]]
+	[&"frame", Vector2i(0, 1), 0],
+	[&"stick", Vector2i(0, 1), &"top", Vector2(-0.25, 0.0), 0.0, &"big_battery"],
+	[&"stick", Vector2i(0, 1), &"top", Vector2(0.0, 0.0), 0.0, &"battery"],
+	[&"stick", Vector2i(0, 1), &"top", Vector2(0.25, 0.0), 0.0, &"big_battery"]]
 ## Open sand to sail on: level within this much, m, for this far either way
 ## across the run's long-term wind, m, read every so far along it, m, and
 ## sought this far up and down the wind from where the run began, m, in
@@ -1358,7 +1363,7 @@ static func _free(device: Device, kind: StringName) -> Socket:
 
 ## The sailing camp: a deck two pieces by two on skates under every piece,
 ## facing across the wind ahead of you, a mast with its sail furled on the
-## front piece to windward, two big batteries behind it and a charged
+## front piece to windward, its ballast in a frame behind it and a charged
 ## shield, switched off, behind to leeward. The sheet runs from the boom's
 ## end to your waist, and a charged board lies at your feet. Use the mast to
 ## raise the sail, and ride.
@@ -1395,8 +1400,8 @@ static func sail_tow(world: World) -> Array[Node3D]:
 
 ## A land yacht from found parts: a deck three by two floating on hover
 ## trays, a keel under one piece in place of a tray, the mast and its sail on
-## its front to windward, the helm seat aft on its middle line and two big
-## batteries beside it to windward; the sheet at your waist. Raise the sail,
+## its front to windward, the helm seat aft on its middle line and its
+## ballast in a frame beside it to windward; the sheet at your waist. Raise the sail,
 ## sit at the helm, and reel in.
 static func yacht(world: World) -> Array[Node3D]:
 	var rig := rig_at(world, YACHT_RIG, YACHT_DECK)
