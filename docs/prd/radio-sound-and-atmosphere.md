@@ -579,6 +579,8 @@ left standing.
   carrying a dispatch. Part 5 also amends "speak only through terminals": machines may talk through
   terminals, and whether a god is ever heard as a voice is still this PRD's open question
   ([the lore](../lore-research.md#dispatches-how-gods-talk-agreed-session-4-part-5)).*
+  *Session 5, ruled by Hunter (2026-10-18): the gods do have links. Mother Cistern can switch Mitchell off,
+  so "no link" is read as "most links lost."*
 - **Ritual text against rule 1.** Here: "Broadcasts read the real systems" and "never makes things
   up." The session's proposed voices include Mother Cistern's calls "tied to rations and rain"
   when it has never rained, the Quartermaster's "authentication challenge nobody can answer," and

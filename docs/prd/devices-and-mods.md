@@ -523,9 +523,13 @@ Console two late uses ([the vision](../vision.md#landmarks-and-endings)):
   device the size of a crate.
 - **Teaching and taking the Walker** (agreed, 2026-10-18, [spec](../storms-signals-sailing-2026-10-18.md)).
   The Walker is a legged survey robot that exists only to understand Zan's weather, indifferent to
-  its flock; the nomads followed it for centuries until it walked them into the anomaly. Survive
-  an anomaly recording your own sensor logs, plug your Console into the Walker and upload them,
-  and from then anomalies show on your map and its moon-wide feed flags them, for anyone
+  its flock; the nomads followed it for centuries until it walked them into the anomaly, and then they
+  abandoned it (Hunter, 2026-10-18: it walks alone, and they still listen and pray). Teaching it takes
+  evidence for each of the anomaly's tells (the compass drift, the radio's crackle, the shield's load; Hunter,
+  2026-10-18, after session 5). Your own sensor logs, recorded through an anomaly and uploaded by plugging
+  your Console into the Walker, are one form of that evidence, and a singing stone
+  ([below](#the-singing-stone-agreed-session-5-not-built)) is another, "at least those two things, probably
+  more." Once it is taught, anomalies show on your map and its moon-wide feed flags them, for anyone
   listening. It doesn't mind its chassis being taken as long as it keeps roaming and surveying;
   kept still too long it goes bad (its feed degrades, its draw rises, its logs turn subtly wrong).
   Taken before the nomads' line is done, they may go on pilgrimage and find their god gone, and
@@ -1025,6 +1029,9 @@ Fragments of Shoemaker, black, glassy and scored with melted grooves, warm and s
   compass drift is starting.
 - **A quest piece.** The Walker can't sense anomalies and a stone can, so delivering one teaches the Walker
   the anomaly tell, tying into its quest line ([Console](#the-console-proposed-first-version-built)).
+  **Ruled (Hunter, 2026-10-18):** teaching takes one piece of evidence for each tell, and the stone and your
+  own sensor logs are two forms of it, "at least those two things, probably more." Which form gives which
+  tell is not said; the stone's off-key note is the compass drift's, a reading.
 
 Readings, not in the session:
 - **It is one more tell,** beside the compass drift, the odd static and the shield's particle load
@@ -1044,7 +1051,8 @@ and carried as a console module, like the other non-stationary gods. What it doe
 mechanic (not designed yet)," so it is an Idea. The lore is in [the lore
 research](../lore-research.md#mitchell-the-dead-god-agreed-session-5).*
 - **Idea:** it heals or makes medicine on credit, and starts quietly charging in water or salvage if you
-  fall too far behind.
+  fall too far behind. **Ruled (Hunter, 2026-10-18):** the player crafts nothing. The module would
+  auto-craft its recipes, turning resources into health or healing on its own. Still an Idea.
 - **Beside the Quartermaster:** the Quartermaster grants Mitchell clearance it gives no one else (Idea:
   perhaps unlocking military med-tech recipes), and Mitchell immediately opens a tab on the Quartermaster.
 - **Beside the Ledger:** they won't get on. **Beside Mother Cistern:** carrying it costs you her, at least
@@ -1059,7 +1067,8 @@ Readings, not in the session:
   the table above grows a fifth row; the session gives it no innate powers beyond the Idea.
 - **A tab is a number on the part,** printed on the terminal, and charging is the same move as the
   Quartermaster's requisitioned power and the Almanac's royalty: a god takes a cut. Health already mends
-  with rest ([Survival](survival.md)), so "heals" is a faster mend, and "makes medicine" is the open part.
+  with rest ([Survival](survival.md)), so "heals" is a faster mend, and the auto-crafted healing turns
+  resources (water, salvage, food) into it.
 - **The Clerk's field synthesiser** is a found device in the second age's ruins; the session says players
   find "working Clerk synthesisers" and not what one does.
 
@@ -1442,20 +1451,18 @@ it as direction and says so on each line.
   The session gives a module no draw. Not said whether a Quartermaster's hardening, a Walker's sensing or
   a Cistern's forecasts cost power, or whether a god module can be left without any.
 
-Session 5 (2026-10-18, [the Mitchell session](../lore-session-2026-10-18-mitchell-wow-shoemaker.md)) adds
-the following. The session has no labels and does not say the newer wins, so each is quoted old and new and
-left standing, as its [Clashes note](../lore-session-2026-10-18-mitchell-wow-shoemaker.md#clashes) has them.
+Session 5 (2026-10-18, [the Mitchell session](../lore-session-2026-10-18-mitchell-wow-shoemaker.md)) raised
+the following. Hunter ruled on the first three afterwards (2026-10-18), and the rulings replace the old
+wording above; the last is still open. Each clash is in the session's [Clashes
+note](../lore-session-2026-10-18-mitchell-wow-shoemaker.md#clashes).
 
-- **Eight gods against seven.** Here: "Zan has seven gods," four of them mountable. The session: Mitchell, a
-  dead god, carried as a console module "like the other non-stationary gods." Folded as a fifth mountable
-  module; the pantheon tables are not rewritten.
-- **Medicine, a tab and recipes against "crafting, for now" out of scope.** Here: parts are found, never
-  crafted. The session's Idea: Mitchell "heals or makes medicine on credit," charges in water or salvage, and
-  with the Quartermaster "perhaps" unlocks "military med-tech recipes." Not said what a recipe is in a game
-  with no crafting.
-- **A stone against the sensor logs.** Here (the storms spec): the Walker is taught by surviving an anomaly
-  recording your own logs and uploading them. The session: a singing stone "is how the player teaches the
-  Walker the anomaly tell." Not said whether the stone is a second route, a first step or a replacement.
+- **Eight gods against seven. Ruled:** Mitchell is a dead god who can be revived to become an eighth. It is
+  a fifth mountable module beside the four above; the seven stay seven.
+- **Medicine, a tab and recipes against "crafting, for now" out of scope. Ruled:** no player crafting. A
+  device such as Mitchell's module would auto-craft its recipes, turning resources into health or healing on
+  its own (Idea). Crafting stays out of scope for the player.
+- **A stone against the sensor logs. Ruled:** both. Teaching the Walker takes evidence for each tell of the
+  anomaly, and a singing stone and your own sensor logs are two forms of it.
 - **A module that costs you another god.** The session: carrying Mitchell "costs you" Mother Cistern. Here:
   nothing but a module's own draw ("What a god module draws," above). Not said how the loss is counted, or
   how it sits with the Cistern axis, which wants her restored and linked.

@@ -1354,7 +1354,8 @@ group.
   besides the grid's ruins, Mon half that: open desert with structures strung along the roads. The rows
   and settlements tables set it, and the kit package will tune it in play.
 - **Session 5's places** ([the lore](lore-research.md#mitchell-the-dead-god-agreed-session-5)). The Counting House
-  in Crakeside, Wow under the black site and Halfrise's stone cradles are not parts of any landmark yet. The
-  Counting House is the likeliest new part of Port Morgan; the other two wait on their kits.
+  in Crakeside and Halfrise's stone cradles are not parts of any landmark yet. The Counting House is the
+  likeliest new part of Port Morgan; the cradles wait on their kit. Wow's resting place is unplaced (Hunter,
+  2026-10-18: not under the black site), so it is no part of any landmark.
 - **The Rim's far stretch.** The second-age empire is "centred on the stretch of Rim closest to Port
   Morgan." How built up the Rim is on the far side of the sub-Tu point is the richness default.
