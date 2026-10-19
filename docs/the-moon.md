@@ -76,6 +76,25 @@ What it changes here, as readings and not in the session:
   spots cluster toward the two sides without sitting exactly on the two points (a reading from memory, not
   checked). The docs take the session's two points as the rule and leave the offset to the lore.
 
+## The neighbour that fell (Agreed, session 5)
+
+*[Session 5](lore-session-2026-10-18-mitchell-wow-shoemaker.md), "Shoemaker and the singing stones." A lore
+rule, not built; the story is in [the lore](lore-research.md#shoemaker-and-the-singing-stones-agreed-session-5).*
+A neighbouring moon, **Shoemaker**, fell into Tu. No human ever observed it, so it has no official
+designation and is only a theory, inferred from Zan's wobbling orbit and the black stones in the sand. Its
+fragments rained on Zan for weeks: black, glassy, scored with melted grooves, warm and strongly magnetic.
+
+Readings, not in the session:
+- **The wobble is the orbit's eccentricity,** which nods Tu by about a degree each day (Day length, below).
+  Shoemaker is read as the lost sister moon whose loss left the orbit eccentric; the session never says so.
+- **"Fell into Tu" is not "ejected."** The lore's leaning favoured ejection, since losing a resonant partner
+  doesn't pump a survivor. A fall can: it is Comet Shoemaker-Levy 9's end, a body broken up and taken in.
+  It also sits beside the Stoker ending's ring ([Clashes, item 9](lore-session-2026-10-18-mitchell-wow-shoemaker.md#clashes)).
+- **The stones are magnetic like the rift's and the volcano's crust,** where lava that cooled in the old
+  field moves the compass ([World system](world-system.md#geology)). Whether it is one effect is not said.
+- **When it fell is not said.** If Wow saw it after its network went quiet, it was recent against the millions
+  of years the orbit needs to round out ([the lore](lore-research.md#3-the-geological-clock-a-lost-sister-moon)).
+
 ## Water goes through all three phases every day
 
 Liquid water needs enough air pressure; below about 0.6% of Earth's, ice turns straight

@@ -297,7 +297,7 @@ shorter table of StarCom, Launch, Shot down, Nomad city and Radio.
 **Ideas still loose.** *Wrong answer* (you call out and something that isn't Tilg answers) fits
 the hive mind start as the way you discover what you are. *Haberjack line*: an underground bunker
 with a holdout (developed by session 4, part 5 into [the Haberjack bunker](#the-haberjack-bunker-agreed-session-4-part-5), where the holdout is the player). *Radio ending* (from earlier docs, "Find the right frequencies to reach Tilg or
-the last town") remains undesigned. *Quietbloom* (session 4, part 4, **Idea**, open: "confirm or
+the last town") remains undesigned. *Wow* (session 5, a sketch): see the ascendancy notes below. *Quietbloom* (session 4, part 4, **Idea**, open: "confirm or
 drop"): carrying the alien crystal lattice onto a freighter or into the AI endings could be a quiet
 modifier ([Farming](prd/farming.md#each-crop-ancestor-engineering-drift-and-hooks-agreed)).
 
@@ -357,6 +357,13 @@ revealed; that stays with the stolen freighter.
   Kept as the endings session wrote it. It clashes with part 3's "hive mind start only," which is
   the newer, so as things stand it is an Idea with nowhere to land ([section
   17](lore-research.md#17-open-after-the-endings-session-and-session-4-part-3)).
+- **Idea (session 5, a sketch): Wow.** A hive mind survey probe buried under the black site wants two
+  things: Mother Cistern woken and linked to its climate models, so rain falls over Sister (toward Bringing
+  Zan back), and its network reached again (toward ascendancy: help it assimilate other AIs, betray it,
+  assimilate yourself, or let it contact the greater possum).
+  It may be the "captured hive mind tech" above, a reading. Only its name is settled; how players meet it is
+  open ([the lore](lore-research.md#wow-the-probe-under-facility-4-a-sketch-session-5); it sits against the
+  rule that the far end is never confirmed in game).
 
 ### Bringing Zan back (staying)
 
@@ -375,6 +382,9 @@ revealed; that stays with the stolen freighter.
   Proposed levers: who you call (Tilg & Standard, the outpost drifters, the nomads); registered or
   kept "temporary" (Haberjack's old question); which god leads (Ledger, Mother Cistern, or you if
   uploaded); and what you did about the nomads (below).
+- **Idea (session 5, a sketch):** Wow's first wish leads toward this ending: wake Mother Cistern and link her
+  to its climate models ([above](#ascendancy-regular-and-true)). The Almanac is probably part of the
+  Mother Cistern ending too (Idea; the session's pantheon reminder).
 - **Answered by session 4, part 3.** The endings session left it open: "The Provisional is gone by
   the player's era. How the war ended and what human government exists now is deliberately
   undecided." The war ended in quarantine and fracture, and the states are Varran, Daventry and
@@ -491,6 +501,28 @@ Quartermaster gets you shot down, and "one flag covers freighter, pod and hopper
   "explaining yourself" or prior contact means with no NPCs (idea: actions, like switching the
   broadcast back on or returning the Walker).
 
+### Nomad reputation (Agreed, session 5; not built)
+
+*[Session 5](lore-session-2026-10-18-mitchell-wow-shoemaker.md), "Nomad reputation and Mario."* A
+repeatable way to build rep with the nomads without ever putting one on screen. The whole relationship
+runs through gifts, shrines and radio tones, which keeps the nomads secret.
+- **Return a nomad's sail** (or leave goods) at a shrine, and the next storm brings back a gift, such as a
+  stitched patch for your board.
+- **Steal from them** and their short-range radio tones follow you around, getting ruder
+  ([Radio](prd/radio-sound-and-atmosphere.md#the-nomads-tones-follow-a-thief-agreed-session-5-not-built)).
+- **High rep lets you tend to the Walker.** Beyond that, rep mostly feeds endings. The Walker's quest is
+  also taught by delivering a singing stone (Agreed, session 5: [the lore](lore-research.md#shoemaker-and-the-singing-stones-agreed-session-5)).
+  Neither fits the Walker's quest line as written, which has no reputation and teaches it from your sensor
+  logs ([Clashes, items 5 and 6](lore-session-2026-10-18-mitchell-wow-shoemaker.md#clashes)).
+- **Lore root:** an old Tabbed custom carried on by the Ashwalkers, debts settled with gifts left at shrines
+  ([the lore](lore-research.md#mitchells-company-agreed-session-5)).
+
+Readings, not in the session: the rep is a running value kept with the run, like the axes
+([Profile & saves](prd/profile-and-saves.md#ending-flags-proposed)); a gift "the next storm brings" rides the
+drift channel ([Salvage & ruins](prd/salvage-and-ruins.md#two-channels-agreed)); the sail is a broken nomad
+rig's ([nomad gear](prd/salvage-and-ruins.md#nomad-gear-agreed-2026-10-18-spec-not-built)). Not said: what a
+shrine is, how much rep a gift or a theft is, or what "tend to" the Walker does.
+
 ### The three axes: Varran, Daventry and Cistern
 
 *Agreed, session 4, part 3.* They are cross-cutting modifiers beside the observatory and the
@@ -595,7 +627,8 @@ is in the lore sessions ([part 1](lore-session-2026-10-14.md), [part
 4](session-notes-2026-10-17.md), [session 4, part 2](lore-session-2026-10-17-part-2.md), [the
 endings session](endings-and-radio-2026-10-17.md), [session 4, part
 3](lore-session-2026-10-17-part-3.md), [session 4, part 4](plants-worldgen-ruins-2026-10-17.md) and
-[session 4, part 5](gods-gear-farside-2026-10-17.md)) and [the lore research](lore-research.md).
+[session 4, part 5](gods-gear-farside-2026-10-17.md) and [session
+5](lore-session-2026-10-18-mitchell-wow-shoemaker.md)) and [the lore research](lore-research.md).
 
 You're a **scavenger and a survivor, in a suit**, because nobody survives here without
 one. The suit is the one gift this world gives you. Why you're out here gets revealed

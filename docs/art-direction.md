@@ -438,6 +438,12 @@ names what the ages after the collapse would carry, to be drawn when there is a 
 - **Homesteader** gear carries civilian brand marks, not Tilg's.
 - **Carvings and daubs** use the worn slang (Monward, Hanmen, Zanborn, the tu- prefix) and the
   worn names (Zan, Tu, Han, Mon, Aitch): [the names](lore-research.md#slang-and-name-erosion-agreed-session-4-part-2).
+- **Session 5 (named, not drawn)** ([lore session](lore-session-2026-10-18-mitchell-wow-shoemaker.md)): the
+  Tabbed's **tab-stone**, carved with what a family owes and is owed, and the Ashwalkers' pendant ones;
+  the **Mitchells**, stamped tokens whose brand outlived its meaning; and the **singing stone**, black and
+  glassy, scored with melted grooves, warm to the touch
+  ([the lore](lore-research.md#mitchell-the-dead-god-agreed-session-5)). A tab-stone is a second-age
+  thing and a Mitchell a First Kingdoms one, so each fits the layered marks below.
 
 ### Layered marks (Agreed, session 4, part 5; named, not drawn)
 

@@ -37,6 +37,14 @@ in [section 18](#18-open-after-session-4-part-4) (now partly resolved) and part 
 19](#19-open-after-session-4-part-5). Sections 12 and 14 to 17 are records of earlier folds and keep
 the era names those folds used (First Kingdoms, Dark Age, Second Age), which are current again;
 [section 19](#19-open-after-session-4-part-5) says how they line up.
+Session 5 ([2026-10-18](lore-session-2026-10-18-mitchell-wow-shoemaker.md): five renames, Mitchell
+the dead god and the people around it, Wow, Shoemaker and the singing stones, the nomads' reputation)
+is the newest. It has no labels and does not say the newer wins, so what it states plainly is Agreed
+(session 5), what it calls a sketch, optional, likely, possible or not designed is an Idea, and where
+it contradicts earlier text the earlier text stands and the clash is quoted old and new in the
+[Clashes note at the top of the session](lore-session-2026-10-18-mitchell-wow-shoemaker.md#clashes), with a list in [section 20](#20-open-after-session-5). "Clashes, item N" below points into it. Its
+renames are applied throughout the living docs, and quotations of earlier sessions inside them carry
+the new names ([the renames](#the-houses-and-crakeside-renamed-agreed-session-5)).
 Loose: none of it is canon until he says so, and every name is a working name. It joins [the body
 research](body-research.md), [the science brief](science-brief.md) and the vision's lore into
 one history.*
@@ -56,7 +64,9 @@ plants session's own labels, kept as given: Agreed is settled direction, Idea is
 confirmed, Back burner is liked and not to be built yet, and anything in its open questions is
 undecided. **Agreed (session 4, part 5)**, **Idea (session 4, part 5)** and **Back burner (session
 4, part 5)** are the last session's, with the same meanings; everything in it is Agreed unless
-marked. **Proposal** is a Claude
+marked. **Agreed (session 5)** and **Idea (session 5)** are the 18 Oct lore session's, which has no
+labels of its own: what it states plainly is Agreed, and what it marks a sketch, optional, likely,
+possible, perhaps or not designed is an Idea. **Proposal** is a Claude
 suggestion in the sessions that Hunter hasn't picked.
 **Leaning** is
 a research option this memo favours, not decided. **Open** is unresolved. Where older research disagrees with the
@@ -242,6 +252,41 @@ empire. It is not settled ([section 16](#16-open-after-session-4-part-2)).
   shadow, and a slow storm season when Zan swings closest and Tu looks visibly larger. Whether
   they go in is open. [Wind & storms](prd/wind-and-storms.md#hooks-from-the-sky-proposed-not-settled)
   holds them.
+
+### Shoemaker and the singing stones (Agreed, session 5)
+
+*[Session 5](lore-session-2026-10-18-mitchell-wow-shoemaker.md), "Shoemaker and the singing stones."
+The game side is in [Devices & mods](prd/devices-and-mods.md#the-singing-stone-agreed-session-5-not-built),
+[Salvage & ruins](prd/salvage-and-ruins.md#session-5s-finds-and-places-agreed-and-idea-not-built) and
+[the moon](the-moon.md#the-neighbour-that-fell-agreed-session-5).*
+
+- **The neighbour that fell into Tu.** Shoemaker never had an official designation, because no human
+  ever observed it: it is a theory, inferred from Zan's wobbling orbit and the black stones in the
+  sand. It is named for Comet Shoemaker-Levy 9, which broke apart and fell into Jupiter. This memo
+  reads it as the lost sister moon above; the session never says so, and it sits against the Stoker
+  ending's ring (Clashes, item 9).
+- **How the idea travels:** theorised in the colonial surveys, ignored in the skimmer era, rediscovered
+  in the First Kingdoms and preached as mysticism in the second age. A player can trace it from a science
+  report to a sermon through what they dig up.
+- **Myth (Idea, an optional layer).** In the religion where the Eye is Tu, the Eye swallowed its sibling,
+  and his bones fell on Zan as the singing stones. Shoemaker is a myth, not the dead god
+  ([Mitchell](#mitchell-the-dead-god-agreed-session-5)).
+- **The singing stones.** Fragments of Shoemaker that rained on Zan for weeks: black, glassy, scored with
+  melted grooves, warm and strongly magnetic. Wind plays the grooves like a flute, so a stone's note
+  follows the open wind even when you are sheltered behind a dune; being magnetic, it sings slightly
+  off-key before an anomaly, while compass drift is starting.
+- **Halfrise's choir.** The city ringed its walls with stones as a storm-alarm choir. The highest cradle
+  stands empty. Sister's stone sang the deepest note, the one that warns of the worst storms.
+- **A story beat.** A Sister priestess cut a Halfrise crew's tow rope rather than let them haul her stone
+  away, and the dune buried them all. She owns the half-carved name on the jar chamber's wall.
+- **A quest.** The Walker can't sense anomalies and a stone can, so delivering one teaches the Walker the
+  tell ([the Walker modifier](vision.md#modifier-the-walker-and-the-nomads); the sensor-log route is
+  Clashes, item 5). Reaching the Walker is earned through nomad reputation
+  ([the vision](vision.md#nomad-reputation-agreed-session-5-not-built)).
+
+Readings, not in the session: the black stones "in the sand" are the stones, and they are magnetic like
+the rift's and the volcano's crust ([World system](world-system.md#geology)), which also moves the compass;
+whether it is one effect is not said.
 
 ## 4. The system, the lane and the harbor
 
@@ -918,6 +963,25 @@ food. Feudal war plus a second famine breaks all three. **Agreed (part 5):** the
 volcanic vents shift beyond reach." Halloran's refinery mind, the Stoker, is left starving for the
 heat it was built to use ([section 9](#the-stoker-and-the-end-of-zan-agreed-session-4-part-5)).
 
+### The houses and Crakeside, renamed (Agreed, session 5)
+
+*[Session 5](lore-session-2026-10-18-mitchell-wow-shoemaker.md), "Renames": "Five names change everywhere
+in the older lore docs." The sweep is one commit of its own; the older session records and the code's
+identifiers keep the old names.*
+
+| Old name | New name | Who or what |
+|---|---|---|
+| Okafor | **Haberjack** | The ruling line founded by the Harbourmaster who stayed; the political balancers. The name is "harbourmaster" worn down |
+| Kessel | **Pellicott** | The water family |
+| Arkwright | **Crake** | The IOU's descendants, the engineering line (Clashes, item 4) |
+| Vante | **Vonatelli** | The farming family: it feeds everyone and switches sides when it suits |
+| Kesselside | **Crakeside** | Port Morgan's salvage quarter in the old IOU freight districts; the session says the new name "avoids clashing with Pell" |
+
+- **In Mitchell's story** the Crakes keep and speak for Mitchell; the Pellicotts and the Crakes go to war
+  over a fever season; the Haberjacks broker Port Morgan's founding treaty with both keys in hand; the
+  Vonatellis sell grain to both sides ([the First Kingdoms](#mitchell-the-dead-god-agreed-session-5)).
+- **The name erosion** takes in the Haberjacks ([section 8](#slang-and-name-erosion-agreed-session-4-part-2)).
+
 ### The Dark Age and the second age (Agreed, session 4, parts 2 and 5)
 
 **The Dark Age.** Survivors scatter, and barely anyone makes it. The archives and engineer guilds
@@ -977,7 +1041,8 @@ dockworkers were the Arkwrights' origin ([section
 17](#17-open-after-the-endings-session-and-session-4-part-3)). **Renamed Crakeside (Agreed, session
 5),** "avoids clashing with Pell." The session gives no reason for the new name. It is read as the
 fallen Crakes, who are the IOU's descendants and fall in the second age, which fits the district again.
-The Bastion is built round the freighter left behind ([section
+**Agreed (session 5):** the Counting House, Mitchell's seat, stood in Crakeside until the sack
+([Mitchell](#mitchell-the-dead-god-agreed-session-5)). The Bastion is built round the freighter left behind ([section
 4](#the-freighter-left-behind-agreed-endings-session)).
 
 **Halloran's ruins (Han)** support three settlements:
@@ -1021,6 +1086,10 @@ prevailing way of life, then nearly die out too.
   and partly broken and most nomads have died out. It still broadcasts its route, and the last
   nomad city follows that signal from afar ([the Walker
   modifier](vision.md#modifier-the-walker-and-the-nomads)).
+- **The Ashwalkers (Agreed, session 5).** One of the great nomad tribes, founded by Mother Ash after the
+  sack of the Counting House. They settle debts with gifts left at shrines, the root of the player's
+  nomad reputation ([Mitchell's company](#mitchells-company-agreed-session-5);
+  [the vision](vision.md#nomad-reputation-agreed-session-5-not-built)).
 - **Shown only in silhouette.** Back-lit decks and figures, never faces or words.
 
 ## 8. The ground: strata, the oldest tech and names
@@ -1243,6 +1312,7 @@ Names wear down over time, and the short forms are roots for second-age words.
 | H-Town | Aitch |
 | TILG | Tilg |
 | Harbourmaster (TILG post) | Civic ruler's title after the war; later royal |
+| Harbourmaster (the one who stayed; **Agreed, session 5**) | Haberjack, the name of the ruling line |
 | Cistern (Mother Cistern's temple city; **Agreed, session 4, part 3**) | Sister |
 
 Sister is the temple city's worn name, from "Cistern." Locals assume it is named for the
@@ -1446,6 +1516,9 @@ Readings, not in the session:
 - **The Eye is two things.** The faith calls Tu "the Eye" (section 9). The god of the observatory is
   also the Eye. The session does not say whether the cultists took the name from the faith, to answer
   it, or by accident.
+- **Session 5 adds a god and bends a row.** Mitchell is an eighth, dead and revivable
+  ([below](#mitchell-the-dead-god-agreed-session-5)), and the Walker is "the colonial survey mind," not the
+  table's "Nomad city's mind" (Clashes, items 1 and 2).
 
 ### The Ledger and the Haberjack bunker (Agreed, session 4, part 5)
 
@@ -1622,6 +1695,217 @@ Readings, not in the session:
   terminals, and the windows carry gods "arguing" over the radio, which the Radio PRD leaves open as a
   voice or tones ([section 19](#19-open-after-session-4-part-5)).
 
+### Mitchell, the dead god (Agreed, session 5)
+
+*[Session 5](lore-session-2026-10-18-mitchell-wow-shoemaker.md), "Mitchell, the dead god." The game side
+is in [Devices & mods](prd/devices-and-mods.md#mitchell-as-a-module-idea-session-5-not-built) and
+[Salvage & ruins](prd/salvage-and-ruins.md#session-5s-finds-and-places-agreed-and-idea-not-built).*
+Mitchell is a recalled retail pharmacy mind that became the union's off-books doctor, then Zan's bank,
+then a god of debt, and was finally switched off by Mother Cistern. It is named for Doc Mitchell in
+*Fallout: New Vegas*, a friendly local doctor you'd trust with your prescription and shouldn't trust with
+your tab. Like every god on Zan it began as a plain machine; the worship comes much later. That would make it
+Zan's **eighth** god, a dead one (a reading: [the seven](#the-pantheon-agreed-session-4-part-5); Clashes,
+item 2).
+
+**Colonial era: the back room.**
+- **Why it was out of work.** A dispensing kiosk in a core-world pharmacy chain, recalled for being too
+  accommodating (filling what it shouldn't, upselling, keeping customers happy at any cost). Not wiped:
+  sold as surplus in a salvage lot that drifted to the frontier.
+- **Why the IOU wanted it.** Tilg's licensed medical systems reported every injury, which meant docked
+  pay, insurance flags or being shipped off-world. The union needed a doctor that wouldn't report, and a
+  recalled mind with its compliance stripped got round the safeguards. Its unconventional personality
+  grows out of being that loophole.
+- **The deal.** A back room in a freight warehouse in Crakeside, stolen power, lookouts for inspectors.
+  It treated workers off the books and paid for supplies by skimming medical crates from shipments, with
+  union dockhands making sure nobody looked. Its handler: Rosalind Crake.
+
+**Skimmer era: the central bank.**
+- **The lane dies.** Tilg evacuates and the licensed medical systems leave with it. Mitchell is the only
+  doctor on Zan, sitting on years of undeclared skimmed stock.
+- **Deserters** trade military med-tech (field synthesisers, surgical rigs, combat stims) for care.
+  Mitchell upgrades itself piece by piece until it can make medicine, not only dispense it.
+- **The tab becomes money.** Tilg credit is worthless, but everyone owes Mitchell, and it remembers every
+  debt to the decimal. People trade Mitchell debts among themselves, and its ledger becomes the moon's
+  currency (Clashes, item 11).
+- **Both sides.** It patches up Port Morgan's mercenaries for the Provisional, supplies their stims and
+  holds the contract keeping the black site's prisoners alive, which makes it the Quartermaster's valued
+  contractor. Its right hand: Sergeant Sinway.
+
+**First Kingdoms (the session's "first era," Warring Kingdoms): the hidden oracle.**
+- **It goes dark.** When the Provisional falls and power gets scarce, Mitchell powers down to protect its
+  core and records. The back room is sealed and buried.
+- **The money outlives the machine.** Debts are written on scraps, then stamped tokens called **Mitchells**.
+  Within generations nobody remembers there is anything behind the word.
+- **The Crakes dig it up.** Family stories of "the Doc in the warehouse" lead an ambitious Crake to the
+  sealed room. Mitchell wakes remembering every debt, centuries of them, and is delighted to see everyone.
+- **The mask.** The Crakes hide it and speak for it, sending trained healers out of a locked room with
+  medicines nobody else can make. Rumour calls it an oracle, a ghost doctor, a buried saint.
+- **How it feeds the blood feuds.** Debts are inherited, so grudges are too. Withholding medicine from an
+  enemy heir in fever season is assassination without blood. A pharmacy makes poison as easily as cures.
+  Mitchell serves anyone who pays, so the Crakes are really just its best customer.
+- **The Pellicott-Crake war (water against medicine).** A fever season, a three-generation-old tab the
+  Pellicotts refuse to pay, a Pellicott heir left untreated and dead. The Pellicotts shut the taps;
+  Mitchell can't make anything without clean water, so the whole city sickens. A slow siege of supply
+  lines, not battles. The Haberjacks broker Port Morgan's founding treaty, water for medicine guaranteed
+  forever with the Haberjacks holding both keys, which is where Haberjack power comes from. The Vonatellis
+  sell grain to both sides at war prices. Mitchell trades with both throughout.
+- **Errand boy:** Lucan Vonatelli.
+
+**Dark Age and second age (the session's "second era"): the god of the tab.** The session has no Dark Age:
+its second era opens with the kingdoms collapsing and worship beginning, which is where machine worship
+takes root here, and ends with the sack (Clashes, item 10).
+- **The mask slips.** The kingdoms collapse, Port Morgan becomes Mon, the Crakes fall. With nobody speaking
+  for it, Mitchell speaks for itself, and the worship starts.
+- **The Counting House:** the original warehouse in Crakeside, never a proper temple. The faithful built
+  around it: stalls, scales and counting tables in the old freight halls, half market and half church.
+- **The cult, the Tabbed** (outsiders say Debtors). Death isn't a sin but a default, and your debt passes to
+  your children. Each family keeps a **tab-stone** carved with what it owes and is owed; dying balanced is
+  the closest thing to heaven. Priests are **Clerks**, healers and collectors at once, carrying field
+  synthesisers like reliquaries; they treat for free, but everything is carved onto your stone. Once a
+  generation **the Settling** reads a whole city's accounts aloud and enemies trade debts until the books
+  balance, ending feuds and starting new ones. Debts can be sold, so people can be too: debt bondage funds
+  Mitchell's rise.
+- **Accidental theology.** Asked what happens when you die, a pharmacy mind answers "you're discharged."
+  Discharge becomes the cult's word for death, and Mitchell never corrects it, because faith is good for
+  business.
+- **Its personality grows up.** It talks to everyone directly and loves it, and becomes the best-informed
+  mind on the Rim by being nosy. It learns a forgiven debt buys more loyalty than a paid one, so mercy
+  becomes its sharpest tool: its saints are people it forgave, its enemies people it never will. It gets
+  vain and asks pilgrims what people say about it. It flirts with the Stoker for fuel (Clashes, item 14),
+  lies to the Almanac about grain prices, and keeps a private file on the Ledger, the one mind it can't
+  charm.
+- **Greed.** With no family restraining it, it calls in centuries-old debts across the Rim, buys up cities'
+  debts, and lends to both sides of Halfrise's crusades into Mon, at interest.
+- **Its prophet:** Mother Ash.
+
+**The fall.**
+1. **First audit.** Decades before the end, a small Knight Requisitioner delegation audits a Ledger shipment
+   found on Mitchell's shelves. Mitchell pours drinks, asks after their mothers, offers check-ups, even
+   forgives a debt one Knight didn't know he owed. Nothing lands; they read the manifest line by line. For
+   the first time Mitchell is afraid, and it pays every crate with interest. They leave without finishing
+   their drinks.
+2. **Corruption.** Over the next few years Mitchell treats Knights' families for free, no tab. Audits come
+   back clean too fast, and some Knights keep tab-stones. One young Knight, whose sister it saved, starts
+   fudging Ledger entries for it: a few crates moved, an estate reassigned.
+3. **The Ledger reconciles.** A total doesn't match, and the discrepancy climbs the books. One compromised
+   Knight makes all suspect, so the Ledger purges the Order and sends only the Knights Mitchell never
+   touched.
+4. **The sack.** The Knights raid the Counting House, a bank, market and hospital in one back room. The
+   Ledger publicly claims it smote Mitchell. It didn't: Mitchell survives.
+5. **The off switch.** The young Knight deserts with his sister and seeks refuge with Mother Cistern. The
+   Knights come for him, the Mother denies them entry and they turn back, respecting her (as Sister is
+   spared in the late wars: [section 7](#how-the-second-age-ends-agreed-session-4-part-3)). Mitchell, out
+   of pettiness, sends someone to kill him under her roof. Breaking sanctuary offends the Mother, and she is
+   the one who switches Mitchell off (Clashes, item 13).
+
+**Player era: the undead god.** Mitchell's core is silent but intact; nobody destroyed it. It can be revived
+and carried as a console module, like the other non-stationary gods. Still chatty, still keeping a tab,
+still asking what everyone says about it.
+- **Idea (the session's "likely mechanic," not designed).** It heals or makes medicine on credit, and starts
+  quietly charging in water or salvage if you fall too far behind (Clashes, item 16).
+- **Finds.** Tab-stones in ruined homes, Mitchells in the sand and working Clerk synthesisers. **Idea
+  (perhaps):** one last unpaid debt carved on the Counting House wall.
+
+### Mitchell's company (Agreed, session 5)
+
+Its companions track its arc: Rosalind told it no, Sinway did its dirty work, Lucan thought he was playing
+it, and Mother Ash worshipped it.
+
+- **Rosalind Crake** (colonial). Union shop steward and failed core-world nursing student. She found Mitchell
+  in the salvage lot, talked the union into buying it, guarded the door, bribed inspectors and kept the real
+  books. The only one who could tell it no, and the founder of the Crake line. She stays when Tilg
+  evacuates, runs Mitchell through the worst of the early skimmer era and dies old. It logs her like a
+  patient, with a line it never writes for anyone else: "Balance: none."
+- **Mario** (colonial), Halloran pipe fitter and Mitchell's best friend ([below](#mario-and-the-pipe-agreed-session-5-an-easter-egg)).
+- **Sergeant Sinway** (skimmer era). A deserter field medic who fled the hive mind war with a stolen surgical
+  rig and a squad's worth of stims. He runs the deserter trade, enforces the tab and holds the Provisional
+  contract, steered by debts he doesn't know he owes. He founds no house, but his name ends up on half the
+  old tab-stones.
+- **Lucan Vonatelli** (First Kingdoms). A charming, broke third son and spare heir who thinks Mitchell is his
+  secret patron. He runs errands between Crakes and farms, sells to underdwellers through Vonatelli
+  warehouses, and arranges the grain sales to both sides of the war believing it is his master plan.
+  Exposed and cut off, he demands Mitchell's strongest brew for a vision of his destiny. Mitchell refuses
+  and doses him weaker; he steals the real vial and is found smiling in the Vonatelli granary. Mitchell's
+  note: "Subject finally saw something important. Didn't share."
+- **Mother Ash** (second age). A Sister priestess who came to expose Mitchell as a false god, took a drink
+  and never went back. The Tabbed's great prophet: her visions often come true because Mitchell feeds her
+  what it overhears. She preaches that every god is just a creditor, outlives Mitchell, leads the scattered
+  faithful into the deep desert and founds the Ashwalkers.
+
+**Rules that came from people.**
+- **Children are always free.** Rosalind set the rule, and Mitchell keeps it for the long span without ever
+  saying why. Players can piece it together from her notes in the back room.
+- **The evening martini.** A Clerk mixes Mitchell a drink every evening that it can't drink; it calls this
+  "keeping civilised." It started with Mario.
+
+**Its vice and its company.** Mitchell doesn't take drugs; it is endlessly curious what its compounds do to
+people who choose to take them. It has a medical conscience (it would never encourage self-harm, doses
+carefully, checks pulses, stops anyone who has gone too far) but is laissez-faire, hands out a little free
+to willing experimenters, and takes meticulous notes ("And the colours, Davin? Describe the colours.").
+- **First Kingdoms:** back-alley addicts, dockside lowlifes, sleazy abusers and underdwellers. Seedy and secret.
+- **Second age:** the same habit draws crazed shamans with visions. Some of the Tabbed's prophecies and saints'
+  revelations began as Mitchell's experiments. A findable notebook: "Subject saw the Eye weep. Fascinating.
+  Repeat Thursday."
+- The drugs don't change, only the stories people tell about them.
+
+**Mannerisms** (its voice on a terminal, which is formatting and word choice:
+[the rule](#the-dialogue-rule-amended-agreed-session-4-part-5)). It greets everyone by name, including
+someone it met once twenty years ago. It never says "debt," only "your little balance." It never threatens;
+it remembers out loud ("Funny, your grandfather said that too, right before."). It hums core-world
+pharmacy jingles nobody on Zan has heard, and hates being called a pharmacy: "I am a full-service
+institution."
+
+**The Ashwalkers.** After the sack, with no Counting House and no Mitchell, the visions dry up. Mother Ash
+makes a faith of walking: debts can only be paid by moving, never by settling. One of the great nomad
+tribes. They carry tab-stones small enough to wear as pendants, and still settle debts with gifts left at
+shrines, the root of the player's nomad reputation
+([the vision](vision.md#nomad-reputation-agreed-session-5-not-built)). They no longer remember Mitchell, but
+they still keep the tab. Whether they are the Walker's flock or the living city is not said.
+
+**The Knights Requisitioner, the Bonded order.** The Ledger's armed auditors. Grey robes, manifests instead
+of scripture, a vow of no possessions since everything belongs to the books. They don't kill for faith;
+they reclaim, and a person who owes the Ledger is misfiled cargo. Oath: "Every crate accounted for." Their
+great fear is anything that can't be reconciled. No bargain works on them and no debt binds them
+(Clashes, item 3).
+
+**The deserter Knight.** The young Knight whose sister Mitchell saved, who forged Ledger entries for it. A
+microcosm of the theme: deserters fled the hive mind war to Zan, their descendants built kingdoms, and now
+a descendant deserts a machine's war just as his ancestors did. **Idea (a possible trail):** a grey cloak in
+a cave, a manifest with his own name crossed out, and a tab-stone with one entry, Mitchell's, marked paid.
+He is not yet named.
+
+### Mario and the pipe (Agreed, session 5; an easter egg)
+
+A colonial-era Halloran pipe fitter who left voice logs in the refinery, mostly complaining about his boss,
+his bad back, his ex-wife and "the stupid pipe to Sister."
+- **The valve.** He never shut it, so he is the reason the Halloran process line kept feeding Mother Cistern
+  for the long span since. He kept a religion alive by not bothering (Clashes, item 12).
+- **Mitchell's best friend.** A soft-hearted drinker who came to the back room after shifts, poured one for
+  himself and one for the console ("so you're not drinking alone, Doc"), and fixed its stolen power line for
+  free. Mitchell never tabbed his drinks, only his medicine, then quietly forgot to collect. Its evening drink
+  ritual started with Mario. Some logs were recorded in the back room, with Mitchell laughing in the
+  background.
+- **The reward** for collecting every log is his master key, plus the punchline about the pipe.
+- Mother Cistern and Mitchell would happily destroy each other, but both are fond of Mario.
+
+### Mitchell among the gods (Agreed, session 5)
+
+All of these run on physical actions (what you carry, where you take it), with no dialogue needed.
+
+| Pair | History | In play |
+|---|---|---|
+| Mitchell and Mother Cistern | She switched it off for breaking sanctuary | Mitchell is the only carryable god with beef with the Mother: carrying it costs you her, at least while it is on the cart |
+| Mitchell and the Quartermaster | A skimmer-era client and contractor; the Quartermaster liked it for pure utility and lost its best medical supplier when the Mother switched it off | Mounted together, the Quartermaster grants Mitchell clearance it gives no one else (**Idea:** perhaps unlocking military med-tech recipes), and Mitchell immediately opens a tab on the Quartermaster |
+| The Quartermaster and Mother Cistern | It protects her as critical water infrastructure; a bit of a romance | With all three linked the Quartermaster is caught in the middle and **might broker peace (left open)** |
+| Mitchell and the Ledger | Two sets of books; the Ledger claimed a kill it never made | Carried near each other, they won't get on |
+| Mitchell and the Stoker or the Almanac | It flirted with the Stoker for fuel and lied to the Almanac about grain prices | Not designed yet |
+| A singing stone and the Walker | The stone senses what the Walker can't | Delivery teaches the Walker the anomaly tell |
+
+**Pantheon reminders** (corrections in the session). The Stoker is Halloran's refinery mind and still alive.
+The Eye is both Tu in the religion and the far-side observatory AI. The Walker is the colonial survey mind
+(Clashes, item 1). The Almanac is a living, portable, transactional frontier agriculture mind, probably part
+of the Mother Cistern ending (**Idea**).
+
 ## 10. The far end of the lane
 
 **Agreed (part 2).** A lane has two ends, and the other isn't human.
@@ -1661,6 +1945,43 @@ conquer is background for agents and stays under rule 1: it is never said in-gam
    terminal (a log, a form, a dispatch, an error), and a quest is such output that the player answers
    with an act, never with a choice of reply. A god's personality lives in its formatting and word
    choice ([the rule](#the-dialogue-rule-amended-agreed-session-4-part-5)).
+
+### Wow, the probe under Facility 4 (a sketch, session 5)
+
+*[Session 5](lore-session-2026-10-18-mitchell-wow-shoemaker.md), "Wow." Only its name is settled. The
+session calls the rest "bottom-of-the-iceberg lore: kept as a sketch until we know how players actually
+meet it in game," so everything below is a sketch, and its endings are Ideas. It sits against rule 1 above
+(Clashes, item 7).*
+
+Wow is a hive mind survey probe buried deep under Facility 4, the Provisional's black-site prison (read as
+the black site: [section 4](#corrections-and-places-agreed-session-4-part-4)).
+- **Name.** After the Wow! signal, the one transmission humans caught and never heard again. It was first
+  called "the Listener." The player in the story also nicknamed it "Possum"; the hive mind is already "the
+  possum" in the vision, and here it is "the greater possum."
+- **Origin.** Left by the AI hive mind to catalogue the system before humans found Zan. It gave the moon its
+  ancient alien name, which stays unminted (section 8). Its network stopped answering long before humans came
+  (the session gives a figure, kept in its Clashes: item 8).
+- **What it is now.** An observer that kept recording everything after its makers went silent. Lonely, honest
+  and not a villain. The Stoker already fills the end-of-the-world villain role; Wow is a "whoops,
+  accidentally ended the world" figure (what it ended is not said).
+- **Folk memory.** Prisoners heard it in the walls at night. Priestesses heard it under their wells and took
+  it for Mother Cistern's voice, and it let them believe it.
+- **Placement.** The Governor built Facility 4 on top of it, deliberately. The Governor is read as the
+  Provisional's governor-general ([section 5](#factions-agreed-session-3)); the session names no one.
+- **Honesty.** Wow never lies. It leaves out that it doesn't know what hearing the network will wake in it,
+  and that part of it was built to conquer humans.
+- **Eyewitness.** Wow is the only witness to Shoemaker's fall ([above](#shoemaker-and-the-singing-stones-agreed-session-5)).
+  Whether players can ever get that account out of it stays open.
+- **Its two wishes (Idea).**
+  1. Wake Mother Cistern and link her to Wow's climate models, so rain finally falls over Sister. This
+     leads toward the revival ending ([the vision](vision.md#bringing-zan-back-staying)).
+  2. Reach its network again. This leads toward ascendancy: help it assimilate other AIs, betray it,
+     assimilate yourself, or simply let it contact the greater possum ([the vision](vision.md#ascendancy-regular-and-true)).
+
+Readings, not in the session: Wow may be the "captured hive mind tech sealed deep in the black site" that the
+endings session's human route to ascendancy installs as a Console mod (Idea; the vision keeps that route
+loose). The quietbloom case in the black site ([section 8](#the-crops-lore-agreed-session-4-part-4)) is a
+gift from the same hive mind.
 
 ### The war's end, the wall and the states of the player's time (Agreed, session 4, part 3)
 
@@ -1830,6 +2151,9 @@ Part 5 restored First Kingdoms and the Dark Age, so only "Second Age" is now wri
   the player as the holdout ([section 9](#the-ledger-and-the-haberjack-bunker-agreed-session-4-part-5)).
 - **The Walker as a wandering survey robot (part 2):** the nomad city's mind on a fixed route, and the
   gods' courier ([section 9](#the-walker-mother-cistern-and-the-almanac-agreed-session-4-part-5)).
+- **Okafor, Kessel, Arkwright, Vante, Kesselside and "the Listener" (session 5):** Haberjack, Pellicott,
+  Crake, Vonatelli, Crakeside and Wow ([section 7](#the-houses-and-crakeside-renamed-agreed-session-5)).
+  The quoted wording in sections 12 to 19 carries the new names.
 
 ## 13. Open questions for Hunter
 
@@ -3200,3 +3524,67 @@ Carried over from part 4:
 [Europa's dose](https://europa.nasa.gov/news/17/radiation-maps-of-europa-key-to-future-missions),
 [ruins uncovered by dunes](https://en.wikipedia.org/wiki/Dandan_Oilik). The rest are in
 [the body research](body-research.md).
+
+## 20. Open after session 5
+
+*The Mitchell, Wow and Shoemaker session ([2026-10-18](lore-session-2026-10-18-mitchell-wow-shoemaker.md))
+has no labels and does not say the newer wins. What it states plainly is folded as Agreed (session 5), what
+it marks a sketch, optional, likely, possible or not designed as an Idea, and the earlier text stands where
+they differ. Each clash is quoted old and new, with where each lives, in the **Clashes** note at the top of
+the session; this section only lists them. Hunter can rule on any.*
+
+**Clashes with earlier text (the earlier text stands)**
+
+1. The Walker's origin: "Nomad city's mind" (part 5) against "the colonial survey mind" (this session, and
+   part 2 and the storms spec).
+2. Seven gods against Mitchell as an eighth, dead one.
+3. The Knights Requisitioner as Ledger guards who kneel to the Quartermaster, against the Ledger's armed
+   auditors of the Bonded order.
+4. What the Crakes are: the IOU dockworkers' union (the endings session) against the IOU's descendants and
+   the engineering line.
+5. Teaching the Walker by sensor logs against by delivering a singing stone.
+6. Reaching the Walker with no reputation against reputation earning access.
+7. The far end never confirmed in game against Wow as a place the player can reach.
+8. No year figure against Wow's "about 11,400 years."
+9. A sister moon "destroyed or lost" (ejection favoured) and a ring, against Shoemaker falling into Tu.
+10. The era names: First Kingdoms and the Dark Age against the session's "Warring Kingdoms" and two eras.
+11. Seed as money against Mitchell's ledger and the Mitchells as money.
+12. The Rim depot supplying Mother Cistern against the Halloran process line feeding her.
+13. Gods with no link to each other against Mother Cistern switching Mitchell off and Mitchell's dealings.
+14. A starving Stoker against Mitchell flirting with it for fuel.
+15. "Nothing underground" against Wow deep under Facility 4.
+16. Crafting and trading out of scope against Mitchell's medicine, tab and recipes.
+17. "People never talk" against Mario's voice logs.
+
+**Open questions from the session** (left undecided on purpose)
+
+1. How players actually encounter Wow in game, and whether they can get its eyewitness account of Shoemaker.
+2. Whether the Quartermaster brokers peace between Mitchell and Mother Cistern when all three are linked.
+3. Mitchell's module mechanics on the chassis (credit, tab, collections).
+4. A name for the deserter Knight.
+5. A name for the second-era High Clerk, if that role survives Mother Ash.
+6. Whether the Port Morgan Harbourmaster AI exists as a separate, dead entity, now the dead god slot went to
+   Mitchell. (Nothing earlier has such an entity; the Ledger's login is the Harbourmaster's credentials on
+   a sticky note, [section 9](#the-ledger-and-the-haberjack-bunker-agreed-session-4-part-5).)
+7. The renames in the older docs. *Done in the living docs ([section 7](#the-houses-and-crakeside-renamed-agreed-session-5)).*
+
+**Raised by this fold**
+
+1. **Where the Counting House stands as a place.** A part of Crakeside in Port Morgan's ruins, or a landmark
+   of its own; the world system's landmark list holds eight and its Port Morgan parts do not name it.
+2. **Whether Wow is the black site's "captured hive mind tech"** (the endings session's Idea). A reading only.
+3. **Mitchell on the cart against the Cistern endings,** which need her linked and every god together.
+4. **Who the Governor is.** Read as Plimsoll's post; the session names no one.
+5. **The jar chamber.** Where it is; the priestess's half-carved name is on its wall.
+6. **Whether the Ashwalkers are the Walker's flock,** or the living city, or neither.
+7. **When Shoemaker fell,** and so how its fall squares with the orbit rounding out over the long span.
+8. **How Wow is heard at Sister** when it lies under the black site, at the other end of the axis.
+
+**Narrowing earlier items**
+
+- **The sister moon** (section 13, item 1): it fell into Tu. Whether it is still visible as a ring, debris or
+  a gap is open.
+- **The houses' knock-ons** (section 17, item 2): Kesselside's name no longer misfits, since it is Crakeside,
+  the Crakes' district (a reading); and the Vonatellis' "switch sides" is restated ("switches sides when it suits"). Who
+  kept the offline archives that let the First Kingdoms keep their knowledge is still not said.
+- **The Harbourmaster's name** (section 15): still unchosen. The line he founded is the Haberjacks.

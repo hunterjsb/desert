@@ -1353,5 +1353,8 @@ group.
 - **How dense history should be.** Away from the great sites the Rim has about one structure a km²
   besides the grid's ruins, Mon half that: open desert with structures strung along the roads. The rows
   and settlements tables set it, and the kit package will tune it in play.
+- **Session 5's places** ([the lore](lore-research.md#mitchell-the-dead-god-agreed-session-5)). The Counting House
+  in Crakeside, Wow under the black site and Halfrise's stone cradles are not parts of any landmark yet. The
+  Counting House is the likeliest new part of Port Morgan; the other two wait on their kits.
 - **The Rim's far stretch.** The second-age empire is "centred on the stretch of Rim closest to Port
   Morgan." How built up the Rim is on the far side of the sub-Tu point is the richness default.
