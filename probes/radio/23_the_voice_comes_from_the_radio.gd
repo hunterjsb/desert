@@ -1,8 +1,8 @@
 extends WeatherProbe
 ## Radio probe 23: the weather station's voice comes from the radio. It reads
 ## a report in a few short phrases, not its line: a storm on its way is
-## "Storm coming. From the <point>. <when>. Wind speed <n>.", one on you
-## "Storm here. Wind speed <n>. Clearing, <when>.", and every phrase it can
+## "Storm coming. From the <point>. <when>.", one on you
+## "Storm here. Clearing, <when>.", and every phrase it can
 ## say is in its bank of recordings. Breaking in on the clear-skies scenario's radio, it reads from
 ## the radio itself, on the radio's bus, after its tones, the volume knob
 ## turning it down.

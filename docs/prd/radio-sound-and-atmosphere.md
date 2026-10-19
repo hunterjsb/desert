@@ -217,9 +217,9 @@ terminals" by Hunter's call. The squatting oracles above are now the gods.
   kept only once Whisper hears it right through the radio's speaker; licences in
   `assets/audio/CREDITS.md`), so it sounds the same on every computer. **The phrases** are its own,
   shorter than the line in view, which stays as it is (`Radio.report`): a storm on its way is "Storm
-  coming. From the north-east. Four minutes. Wind speed forty."; one on you, "Storm here. Wind speed
-  twenty-six. Clearing, ten minutes." (or "No clearing, twenty minutes."); at dusk or with news at the
-  Walker's feet it adds "Long range. Next storm, thirty minutes." Numbers are exact to sixty and to the
+  coming. From the north-east. Four minutes."; one on you, "Storm here.
+  Clearing, ten minutes." (or "No clearing, twenty minutes."). Wind speed and the
+  long-range outlook remain written, without extending the spoken interruption. Numbers are exact to sixty and to the
   ten past it; spans are seconds to the ten under a minute and a half, else minutes. Bare "South.",
   "Storm." and "Winds forty." were heard as "So", "Store" and "Wins forty" over the speaker, hence "From
   the", "Storm coming" and "Wind speed".
@@ -227,7 +227,7 @@ terminals" by Hunter's call. The squatting oracles above are now the gods.
   breath between, on its bus through the speaker's high-pass, over its static and an anomaly's crackle,
   its volume knob turning it down, and coming and going with the signal as a song does: silent while a
   storm cuts it, and the phrases a weak signal loses left as gaps of static ("..." in what it said). Its
-  tones keep off till it's done. Tuned away, held for Clear Skies or switched off with Options' "Radio
+  tones keep off till it's done. Tuned away or switched off with Options' "Radio
   voice" (on by default), it stops. A Console with the radio in its system speaks in the same voice,
   through the radio's speaker whatever it's tuned to: "Battery low." and "Battery critical."
   ([Devices & mods](devices-and-mods.md)). (It was the system's text-to-speech, heard flat in your ear.)
