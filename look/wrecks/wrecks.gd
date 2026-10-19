@@ -6,7 +6,8 @@ extends Node
 ## next seam, its beam and sparks; and stripped, every plate fallen, every
 ## hold cleared, every hazard made safe, its modules showing.
 ##   godot --path . --resolution 1280x720 res://look/wrecks/wrecks.tscn -- --capture <dir>
-## Each shot is <kind>_<whole|work|cutting|stripped>.png.
+## Each shot is <kind>_<whole|work|cutting|stripped>.png, and the skimmer
+## hull's <kind>_hands.png, a cutter in your hands firing along its seam.
 
 const SEED := 1234
 const APART := 70.0
@@ -110,6 +111,8 @@ func _shoot(site: Structure, out: String) -> void:
 			cutter.fire(next, true))
 	_save(out, "%s_cutting" % piece.kind)
 	cutter.queue_free()
+	if piece.kind == &"wreck_hull":
+		await _in_hands(out, wreck, next, normal)
 
 	# Stripped: everything done, plates fallen, modules showing.
 	for i in piece.wreck.plates.size():
@@ -132,6 +135,28 @@ func _shoot(site: Structure, out: String) -> void:
 	_save(out, "%s_stripped" % piece.kind)
 	print("wrecks: %s at %.0f,%.0f, %d plates, %d holds, %d modules" % [piece.kind, site.x, site.z,
 		piece.wreck.plates.size(), piece.wreck.holds.size(), piece.wreck.modules.size()])
+
+
+## As you'd see it: a cutter in your hands, firing along the seam.
+func _in_hands(out: String, wreck: Wreckage, next: Vector3, normal: Vector3) -> void:
+	var hands := world.player.hands
+	var cutter := Catalog.device(&"cutter") as Cutter
+	world.content.add_child(cutter)
+	Scenarios.fill(world, cutter, [&"battery"])
+	cutter.global_position = world.player.camera.global_position - world.player.camera.global_basis.z * 0.6
+	hands.hold(cutter)
+	var eye := next + normal * 1.3 + Vector3.UP * 0.35
+	await _look(Vector3(world.world_x(eye.x), eye.y, world.world_z(eye.z)),
+		Vector3(world.world_x(next.x), next.y, world.world_z(next.z)), func() -> void:
+			hands.scrap(1.0 / Engine.physics_ticks_per_second))
+	var layers := world.find_children("*", "CanvasLayer", true, false)
+	for layer: CanvasLayer in layers:
+		layer.visible = true
+	await RenderingServer.frame_post_draw
+	_save(out, "%s_hands" % wreck.site.kind)
+	for layer: CanvasLayer in layers:
+		layer.visible = false
+	hands.drop()
 
 
 func _wreckage(site: Structure) -> Wreckage:
