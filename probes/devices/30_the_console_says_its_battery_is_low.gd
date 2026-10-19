@@ -15,6 +15,8 @@ func run() -> void:
 		[&"stick", Vector2i.ZERO, &"top", Vector2(0.25, 0.35), 0.0, &"radio", &"radio"]], [0.0, 3.0], false)
 	var made: Console = rig.named.console
 	var radio: Radio = rig.named.radio
+	# Below every band, so no station's report speaks over the battery lines.
+	radio.frequency = 100.0
 	rig.deck.freeze = true
 	await physics_frames(10)
 	var tuning := Tuning.current()
