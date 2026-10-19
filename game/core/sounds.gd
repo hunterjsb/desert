@@ -14,8 +14,9 @@ const UI := &"UI"
 ## The radio's, through World: a small speaker's, everything under
 ## radio_highpass_hz cut. Made in code the first time a radio asks for it.
 const RADIO := &"Radio"
-## Far booms, and a vent's roar, each through its own low-pass, which takes
-## more of the high end the further off it is, then muffled with the weather.
+## Far booms and their rolls, and a vent's roar and build, each through its
+## own low-pass, which takes more of the high end the further off it is, then
+## muffled with the weather.
 const BOOMS := &"Booms"
 const VENTS := &"Vents"
 
@@ -107,9 +108,12 @@ const STORM := preload("res://assets/audio/storm.ogg")
 const WIND := preload("res://assets/audio/wind.ogg")
 # What a storm has just laid bare, banging on the wind.
 const CLANG := preload("res://assets/audio/clang.ogg")
-# The ground: a burst's or a pocket's boom, and a live vent's roar.
+# The ground: a burst's or a pocket's boom and the low roll it rolls on with,
+# a live vent's roar, and its deep build as a burst nears.
 const BOOM := preload("res://assets/audio/boom.ogg")
+const BOOM_ROLL := preload("res://assets/audio/boom_roll.ogg")
 const VENT_ROAR := preload("res://assets/audio/vent_roar.ogg")
+const VENT_BUILD := preload("res://assets/audio/vent_build.ogg")
 # Menus: very quiet.
 const MENU_MOVE := preload("res://assets/audio/menu_move.ogg")
 const MENU_CONFIRM := preload("res://assets/audio/menu_confirm.ogg")

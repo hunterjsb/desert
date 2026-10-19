@@ -6,7 +6,8 @@ extends Node3D
 ## view leaning as the board under you does, a dug edge's or a skid's rooster
 ## tail of sand and its hiss, a shake as the edge bites, a jar as a landing
 ## slams, a harder one as you're thrown off and a knock if you hit something,
-## a shake while lines wrench you past what your body takes, and your view smoothed
+## a shake while lines wrench you past what your body takes, the ground's own
+## trembling near a live vent (Rumbles), and your view smoothed
 ## between ticks, which at its speed would otherwise stutter. It reads the
 ## player and never writes to it, so none of it can change where you go: it
 ## moves only the camera, and makes only sound and dust.
@@ -41,6 +42,11 @@ const SHAKE_SECONDS := 0.18
 const BITE_SHAKE := 0.35
 ## A landing at its jar shakes your view this share of the hardest.
 const JAR_SHAKE := 0.7
+## How far the ground trembling at its hardest moves your view, m, tips it
+## and rolls it, radians: slower and lower than a jolt's shake.
+const TREMBLE_REACH := 0.02
+const TREMBLE_PITCH := 0.008
+const TREMBLE_ROLL := 0.006
 
 var _player: Player
 var _tuning := Tuning.current()
@@ -57,6 +63,8 @@ var _widen := 0.0
 var _bank := 0.0
 var _hiss := 0.0
 var _shake := 0.0
+## The tremble's tip last frame, taken back off your look before the next.
+var _tipped := 0.0
 var _clock := 0.0
 var _last_own := Vector2.ZERO
 var _last_gust := -1.0
@@ -118,6 +126,8 @@ func _process(delta: float) -> void:
 	if _player.flying or _player.world == null:
 		camera.position = _rest
 		camera.rotation.z = 0.0
+		camera.rotation.x -= _tipped
+		_tipped = 0.0
 		camera.fov = _fov
 		_slide.stream_paused = true
 		_spray.emitting = false
@@ -186,10 +196,25 @@ func _process(delta: float) -> void:
 	camera.position = _rest + bob + _spring + _lean + judder + shake + Vector3.DOWN * _drop + between
 	camera.rotation.z = roll + _roll + _bank + sin(_clock * 59.0 + 2.1) * SHAKE_ROLL * _shake
 	camera.fov = _fov + _widen
+	_tremble(camera)
 	var grit := _grit(ride) if ride != null else (clampf(speed / FAST * 1.5, 0.15, 1.0) if sliding and speed > 0.3 else 0.0)
 	_sound_slide(grit, speed / (t.board_top_speed if ride != null else FAST), delta)
 	_throw_sand(sliding and ride == null, own, speed)
 	_dig_sand(ride, grit)
+
+
+## The ground trembling under you near a live vent: your view moved, tipped
+## and rolled by a few slow waves together, on top of everything else.
+func _tremble(camera: Camera3D) -> void:
+	var weather := _player.world.weather
+	var amount := weather.rumbles.tremble if weather != null and weather.rumbles != null else 0.0
+	var c := _clock
+	camera.position += Vector3(sin(c * 23.0 + 0.4) + 0.5 * sin(c * 37.0), sin(c * 29.0) + 0.5 * sin(c * 43.0 + 1.1),
+		0.0) * TREMBLE_REACH * amount
+	camera.rotation.z += (sin(c * 31.0 + 0.9) + 0.4 * sin(c * 47.0)) * TREMBLE_ROLL * amount
+	var tip := (sin(c * 27.0 + 2.0) + 0.5 * sin(c * 41.0)) * TREMBLE_PITCH * amount
+	camera.rotation.x += tip - _tipped
+	_tipped = tip
 
 
 ## Ground covered between footfalls at a pace, m: tracks print feet where these land.
