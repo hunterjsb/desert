@@ -87,6 +87,7 @@ levelled the same way (a loop by its whole):
 | hum_temple.wav | the temple board's hum, looped | made here: a soft hum at 196 Hz, a ceramic ring of two beating partials, a breath of air | CC0 | about -35 | -28 |
 | battery_low.wav | a board's battery low, once, about a minute from flat | made here: a soft falling two-note "do-doo" | CC0 | about -34 | -24 |
 | battery_critical.wav | and critical, once, about 15 s from flat | made here: the same, lower, shorter and trembling | CC0 | about -30 | -19 |
+| tumble_a.wav, tumble_b.wav | your body hitting the sand as you tumble, by how hard | made here: a padded thud and whump, the sand crunching, a spray pattering back and your kit knocking | CC0 | about -29 at the hardest | -12, -14 |
 
 The issue board's hum is still `hover.ogg`. The rope's snap is still made in code (`ropes.gd`), at about -28 LUFS from 8 m.
 
