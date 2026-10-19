@@ -1006,9 +1006,6 @@ static var _current: Tuning
 ## often it reads it again, s of world time.
 @export var radio_forecast_minutes: float = 20.0
 @export var radio_forecast_every: float = 5.0
-## With something to report, the weather station reads it aloud this often, s
-## of world time, and at once when a report breaks in.
-@export var radio_speak_every: float = 30.0
 ## The weather station has nothing to report, and plays its clear-skies song,
 ## while no storm is on you or due within this many minutes. Clear for 5
 ## minutes ahead is about half of all clear time; for 20, almost never.

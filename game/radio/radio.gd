@@ -140,6 +140,8 @@ var logged := ""
 var spoken := PackedStringArray()
 var spoken_count := 0
 var spoken_at := -INF
+## Remember the weather news, not its changing countdown or signal quality.
+var _spoken_weather := -1
 ## How much of the storm's static gets in now, 0 to 1, and of an anomaly's
 ## own, which crackles where a storm's hisses.
 var noise := 0.0
@@ -534,12 +536,20 @@ func _listen(delta: float) -> void:
 			# A song on the air comes and goes with the signal, never restarting.
 			if now == WEATHER and reception.calm:
 				song = Sounds.RADIO_CLEAR_SKIES
+				if not reception.cut and reception.clean > 0.0:
+					if _spoken_weather > 0:
+						var clear := PackedStringArray(["All clear."])
+						_read_out(speech(clear, reception.clean, t), clear)
+						spoken_count += 1
+						spoken_at = t
+					_spoken_weather = 0
 			elif now == WEATHER and not reception.cut and reception.clean > 0.0:
-				# Something to report: read aloud now as it breaks in, and again every so often.
-				if _on_air == Sounds.RADIO_CLEAR_SKIES or t >= spoken_at + _tuning.radio_speak_every or t < spoken_at:
+				var news := 2 if reading.get("stormy", false) else 1
+				if news != _spoken_weather or t < spoken_at:
 					_read_out(speech(reception.spoken, reception.clean, t), reception.spoken)
 					spoken_count += 1
 					spoken_at = t
+					_spoken_weather = news
 			elif SONGS.has(id):
 				var own: AudioStream = SONGS[id]
 				into = gods_of(world).song(id, t, own.get_length())
@@ -751,27 +761,23 @@ static func speech(phrases: PackedStringArray, clean: float, t: float) -> Packed
 
 
 ## What the weather station says aloud of its last reading, in short radio
-## phrases, the storm first: "Storm coming. From the north-east. Four minutes.
-## Wind speed forty." With `long`, the long report's reading, its outlook after.
-func report(t: float, long := {}) -> PackedStringArray:
+## phrases, the storm first: "Storm coming. From the north-east. Four minutes."
+## Wind and the long outlook stay in the continuous written report.
+func report(t: float, _long := {}) -> PackedStringArray:
 	var out := PackedStringArray()
 	if reading.is_empty():
 		out.append("No reading.")
 		return out
 	var horizon := _tuning.radio_forecast_minutes * 60.0
-	var wind := "Wind speed %s." % number_words(roundi(reading.wind))
 	if reading.stormy:
-		out.append_array(PackedStringArray(["Storm here.", wind]))
+		out.append("Storm here.")
 		out.append_array(_ahead(reading, t, horizon))
 	elif not Transmissions.calm(reading, t):
 		out.append_array(PackedStringArray(["Storm coming.", "From the %s." % say_point(reading.from),
-			_sentence(spoken_span(reading.change - t)), wind]))
+			_sentence(spoken_span(reading.change - t))]))
 	else:
 		out.append("All clear.")
 		out.append_array(_ahead(reading, t, horizon))
-	if not long.is_empty():
-		out.append("Long range.")
-		out.append_array(_ahead(long, t, horizon * 2.0))
 	return out
 
 
@@ -862,7 +868,7 @@ func _read(delta: float, now: int) -> void:
 	if _lines.is_empty():
 		return
 	if not Settings.radio_voice or not powered or wrecked() \
-			or not _local and (now != WEATHER or reception.get("calm", false)):
+			or not _local and now != WEATHER:
 		_hush()
 		return
 	_since_signal = 0.0

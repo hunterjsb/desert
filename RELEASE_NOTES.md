@@ -1,3 +1,16 @@
+## 0.2.1-alpha — release candidate
+
+This patch gathers the current sand and Nomad gear work with playtest fixes.
+Cross-platform publication is pending verification of the combined candidate.
+
+- More depth and shade in dune sand and nearby ripples.
+- Nomad wrecks and camps with recoverable sailing gear, a streamer and a crow's nest.
+- The dev console can open over any menu; unlocking origins updates the open menu.
+- A crow's nest can be placed on a standing mast from deck height.
+- Shorter weather announcements, spoken when storm news changes.
+
+### 0.2.0-alpha
+
 The second alpha of a cozy survival game on a dead desert moon. Your home is a bubble
 shield you carry with you, on a rig you build and tie down against the wind. Everything
 is still rough: grey boxes, placeholder sounds, numbers still moving. It's here to be

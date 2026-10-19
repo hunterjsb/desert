@@ -25,9 +25,9 @@ func run() -> void:
 	radio.reading = {"stormy": true, "change": t + 600.0, "back": INF, "wind": 26.4, "from": from}
 	var on_you := radio.report(t)
 	print("coming: \"%s\"; on you: \"%s\"" % [" ".join(coming), " ".join(on_you)])
-	check(" ".join(coming) == "Storm coming. From the %s. Four minutes. Wind speed forty." % radio.say_point(from),
-		"a storm on its way, in four short phrases")
-	check(" ".join(on_you) == "Storm here. Wind speed twenty-six. Clearing, ten minutes.", "and one on you")
+	check(" ".join(coming) == "Storm coming. From the %s. Four minutes." % radio.say_point(from),
+		"a storm on its way, in three short phrases")
+	check(" ".join(on_you) == "Storm here. Clearing, ten minutes.", "and one on you")
 
 	var missing := {}
 	for stormy in [false, true]:

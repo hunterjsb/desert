@@ -6,13 +6,11 @@ extends ShieldProbe
 ## over. The weather station says nothing aloud while it holds on Clear
 ## Skies; once a storm breaks in, it reads the report aloud at once, in
 ## phrases from its bank of recordings, the storm taking some, in the radio's
-## own voice, and again every radio_speak_every s while there's something to
-## report.
+## own voice. Unchanged news stays quiet; clearing brings one short update.
 
 
 func run() -> void:
 	await load_storm(0.0)
-	var tuning := Tuning.current()
 	var radio := Scenarios.standing(world, &"radio", [&"battery"], [0.0, 2.0]) as Radio
 	radio.freeze = true
 	await physics_frames(2)
@@ -58,12 +56,19 @@ func run() -> void:
 		return phrase == "..." or Radio.clip(phrase) != null), "a storm breaking in, it reads the report aloud from its bank")
 	check(radio.reader.bus == Sounds.RADIO, "in the radio's own voice")
 	var first := radio.spoken_at
-	world.time = first + tuning.radio_speak_every * 0.5
+	world.time = first + 15.0
 	await physics_frames(5)
-	check(radio.spoken_count == 1, "not again before %d s" % roundi(tuning.radio_speak_every))
-	world.time = first + tuning.radio_speak_every + 1.0
+	check(radio.spoken_count == 1, "unchanged news stays quiet")
+	world.time = first + 31.0
 	for i in 120:
 		await get_tree().physics_frame
 		if radio.spoken_count > 1:
 			break
-	check(radio.spoken_count == 2, "and again after")
+	check(radio.spoken_count == 1, "unchanged storm news stays unspoken after the old repeat interval")
+	weather_everywhere(0.0)
+	radio.read_at = -INF
+	await physics_frames(10)
+	check(radio.spoken_count == 2 and radio.spoken == PackedStringArray(["All clear."]),
+		"clearing brings one short announcement")
+	await physics_frames(10)
+	check(radio.spoken_count == 2, "continued clear skies stay quiet")

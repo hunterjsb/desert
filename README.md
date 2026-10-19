@@ -23,6 +23,12 @@ Sand Game, the prototype this replaces, lives on the
 
 ## Releasing
 
+Fix releases increment the patch version (for example `0.2.1-alpha`). Alpha
+sub-releases increment the minor version, reset the patch to zero, and always
+have a name. The next minor release is **0.3 “Sanddune”**. Patch releases keep
+their minor release's identity. Versions change per release, not per commit.
+The [1.0 Alpha roadmap](docs/alpha-roadmap.md) tracks the proposed completion gate.
+
 The version lives in one place, `application/config/version` in `project.godot`, and
 shows in the main menu's corner. `scripts/export.sh` exports the Linux, Windows and
 macOS builds (`export_presets.cfg`) and zips each as `desert-<version>-<os>.zip`; it

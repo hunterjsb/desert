@@ -766,7 +766,8 @@ there already was, the scoop clearing a wreck's packed holds.
 
 From the [chassis spec](../chassis-kits-dunes-2026-10-18.md): a neglected tier, common and found all over, open wilderness
 included: ruins give power and tech, the wilderness gives mobility. Wrecked nomad rigs are its
-common source, and nomads leave their gear in other eras' wrecks too, looting as you do. Active
+common source, and nomads leave their gear in other eras' wrecks too, looting as you do. Deep-desert
+starts may have nomad wrecks nearby; they still avoid every site's actual footprint. Active
 nomad camps are very rare and nobody's ever home, always just gone, their rig kept up with decent
 sailing gear and anything of any era, all lootable. Sails come from it: a broken nomad rig always
 carries one, and now and then one lies in a second-age ruin. A **wind streamer** points downwind and
