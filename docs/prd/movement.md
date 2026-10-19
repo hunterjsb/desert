@@ -439,7 +439,8 @@ bedroll and tow, as a chassis rather than special-cased slots. A narrow shield t
 riding. This also generalises the existing board." [Devices & mods](devices-and-mods.md#the-patrol-board-as-a-superchassis-proposed-not-built)
 has the frame's side.
 
-Readings, not in the session:
+Historical readings, not in the session (the ordinary-board towing restriction below is
+superseded by Hunter's 2026-10-19 powered-board decision):
 - **The standard board stays as built.** "Generalises the existing board" is read as the same idea
   with more sockets, not a change to the board in this PRD: the kit's board, hung on its deck,
   still tows nothing, and the probes above are unchanged.
@@ -1093,7 +1094,7 @@ The sleep session (2026-10-17) adds one. It is quoted on both sides and left sta
 
 ## Playtest follow-up (Hunter, 2026-10-19; in progress)
 
-- **Board and rig:** "board speed is broken ... cant speed up to normal board speeds when attached to the rig." Investigate and measure the powered board's attached behavior against its free behavior and the existing protection against pushing a slack tow into free energy. The previous tow-speed restriction is intentional in the implementation; the desired powered-board behavior needs reconciliation with this playtest.
+- **Board and rig:** "board speed is broken ... cant speed up to normal board speeds when attached to the rig." The approved redesign below replaces the blanket tow-speed restriction with battery-funded, load-limited motor assistance, preserving momentum and slack-line catch-up.
 - **Varran attachment bug:** "the second line on the sail is attached to a floating hook, not on a chassis." Every bridle end must stay seated in its actual chassis hook across initial assembly, riding, hauling, saving and resuming. Fix the attachment before evaluating the three-line rig's handling.
 - **Rope motion:** the waist-to-rig rope looks "glitchy and nauseating ... blurry and jumping around erratically" when looking down while sailing. Make its presentation follow the displayed camera and attachment positions smoothly; preserve the physical simulation and real tension.
 - **Several waist lines (design open):** "not so sure about having three ropes tied to your waist"; explain and manage which line is tied, untied and reeled. Measure both the resultant pull and opposing loads on the player before choosing a safe-force limit or release behavior. Do not silently remove the bridle or invent a force cap.
@@ -1136,7 +1137,7 @@ motor and battery behavior together, retaining rope strength and anti-launch saf
 
 **Sailing notes implementation plan (2026-10-19).** One physical, carryable and mountable field booklet lies beside the sail scenario's starting board; a streamer on the mast supplies the wind cue it explains. Use on the booklet, loose or held, opens a chapter list and short readable pages through the existing menu root. Chapters explain felt wind and points of sail, raising/furling and sheet trim, the board's edge and powered limitations while tied, Varran's three-line bridle and tack, and named gaze-based line selection shared by reeling and untying. Controls render from action bindings. Reading adds no deed: this dev-scenario teaching aid points to the existing sailing actions whose deeds already record practice.
 
-**As built:** `SailingNotes` is the `sailing_notes` catalog device, a 0.3 kg cloth-bound field booklet with a sail on its cover. `scenario sail` puts it within reach beside the board and mounts a streamer on the practice mast. Use reads it loose or carried. Six chapters are split into 18 short pages, with Next/Previous/Chapters through the normal menu stack. The notes explain the current board motor restriction and gaze-selected rope handling; they invent no release-all control or force cap. Menus probe 19 starts the real sail scenario, uses the booklet from the player's starting position, traverses pages and back, measures every text and navigation rectangle at 1280×720, and reopens the carried booklet with console focus restored. A GPU capture remains pending the machine's rendering recovery; headless layout checks passed.
+**As built:** `SailingNotes` is the `sailing_notes` catalog device, a 0.3 kg cloth-bound field booklet with a sail on its cover. `scenario sail` puts it within reach beside the board and mounts a streamer on the practice mast. Use reads it loose or carried. Six chapters are split into 18 short pages, with Next/Previous/Chapters through the normal menu stack. The notes explain loaded motor assistance, overload recovery and gaze-selected rope handling; they invent no release-all control or force cap. Menus probe 19 starts the real sail scenario, uses the booklet from the player's starting position, traverses pages and back, measures every text and navigation rectangle at 1280×720, and reopens the carried booklet with console focus restored. Rendered captures confirm the booklet is reachable and its trim/bridle pages fit at 1280×720. Focused menu checks also cover hiding background how-to hints while reading and restoring them afterward.
 
 
 **Powered sailing implementation plan (2026-10-19).** Preserve the rope solver's impulses

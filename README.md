@@ -31,7 +31,8 @@ their minor release's identity. Versions change per release, not per commit.
 The [1.0 Alpha roadmap](docs/alpha-roadmap.md) tracks the proposed completion gate.
 
 The version lives in one place, `application/config/version` in `project.godot`, and
-shows in the main menu's corner. `scripts/export.sh` exports the Linux, Windows and
+shows in the main menu's corner alongside `application/config/release_name`.
+The release name also appears in the GitHub release title. `scripts/export.sh` exports the Linux, Windows and
 macOS builds (`export_presets.cfg`) and zips each as `desert-<version>-<os>.zip`; it
 needs the pinned export templates installed. CI runs it on every push, then launches
 each build on its own OS for a smoke test (`scripts/probe.sh smoke <game>`).
