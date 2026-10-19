@@ -17,8 +17,13 @@ const TILT_B := Basis(Vector3(0.6967, 0.3307, 0.6366), Vector3(-0.4258, 0.9047, 
 const NOISE := 64
 ## Twin of the shader's: the ring's light counts each metre of depth as this many.
 const RING_DEPTH := 8.0
+## Twin of the shader's roof_max: past this over the wall's height, softened
+## roof and all, no ray meets dust, m.
+const ROOF_OVER := 400.0
 
 var material := ShaderMaterial.new()
+## The storm map's uniforms as last handed the shader, which the plumes share.
+var uniforms := {}
 
 var _world: World
 var _field: WeatherField
@@ -64,6 +69,7 @@ func sigma() -> float:
 ## glows how brightly its shell shows.
 func sync(t: float, holes: PackedVector4Array, glows: PackedFloat32Array) -> void:
 	var values := _map.uniforms(t)
+	uniforms = values
 	for key: String in values:
 		material.set_shader_parameter(key, values[key])
 	material.set_shader_parameter("storm_time", t)
