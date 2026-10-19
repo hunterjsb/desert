@@ -468,6 +468,22 @@ static var _current: Tuning
 ## The push from a standstill, m/s²; drag grows with speed² until it matches
 ## the push at top speed. Enough to climb a slip face at about 11 m/s.
 @export var board_push: float = 6.5
+## A loaded motor can tow slowly; sustained opposing load grounds the hover.
+@export var board_tow_force_n: float = 90.0
+@export var board_tow_work_w: float = 80.0
+@export var board_tow_load_n: float = 15.0
+@export var board_tow_overload_n: float = 70.0
+@export var board_tow_response_s: float = 0.2
+@export var board_tow_hot_s: float = 0.6
+@export var board_tow_stall_speed: float = 0.1
+@export var board_tow_latch: float = 0.6
+@export var board_tow_ground_height: float = 0.04
+@export var board_tow_ground_drag: float = 3.0
+@export var board_tow_efficiency: float = 0.8
+@export var board_tow_sputter_hz: float = 6.0
+@export var board_tow_sputter_on: float = 0.25
+@export var board_tow_hum_pitch: float = 0.55
+@export var board_tow_hum_db: float = -12.0
 ## The share of that drag that's the air's, felt against the wind: a tailwind
 ## carries you faster, a headwind holds you back, and a tuck shows it less.
 @export var board_air_share: float = 0.35

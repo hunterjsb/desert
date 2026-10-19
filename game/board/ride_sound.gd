@@ -80,6 +80,8 @@ func _process(delta: float) -> void:
 	var low := clampf(1.0 - _board.seconds_left() / Hoverboard.WARNING, 0.0, 1.0)
 	var load := ride.dig * clampf(going / DUG_FAST, 0.0, 1.0)
 	_hum.pitch_scale = lerpf(make.hum[0], make.hum[1], speed) * lerpf(1.0, HUM_SAG, low) * lerpf(1.0, HUM_DUG, load)
+	_hum.pitch_scale *= lerpf(1.0, _tuning.board_tow_hum_pitch, ride.overload)
+	_hum.volume_db = _tuning.board_tow_hum_db * (1.0 - ride.motor_pulse)
 	# The hover holding a carve hisses as hard as it leans, until it lets go.
 	var holding := absf(sin(ride.tilt(true).z)) / sin(Ride.BANK) * clampf(going / 8.0, 0.0, 1.0)
 	if ride.skidding or ride.drifting or ride.gap > Ride.AIR_FROM:

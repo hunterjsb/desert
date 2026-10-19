@@ -39,7 +39,7 @@ const PLAYER := ["stamina", "flying", "mode", "crouched", "own", "slope", "wind"
 ## A ride's own state, besides its running means of the sand.
 const RIDE := ["velocity", "ahead", "y", "vy", "gap", "last_step", "bank", "pitch", "roll", "drifting", "kicks",
 	"bottomed", "hardest", "ticks", "waited", "_ground", "_came", "_hopping", "_tilting", "_tilt_was", "_ahead_was",
-	"_kick_wait", "_stroke", "dig", "_bitten"]
+	"_kick_wait", "_stroke", "dig", "_bitten", "overload", "motor_pulse", "_motor_load", "_line_load", "_motor_age"]
 const VITALS := ["health", "hunger", "thirst", "dead", "harms", "taken", "drunk", "eaten", "_next", "in_heart"]
 const ROPE := ["length", "kg_per_m", "breaking", "frequency", "damping", "max_stretch", "tension", "sustained",
 	"spring_impulse", "stop_impulse"]

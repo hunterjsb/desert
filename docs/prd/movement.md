@@ -89,7 +89,7 @@ even storms that last for days.
   rotation on the curve of a dune so you can do tricks.
 - **It's for scouting and escaping.** Unloaded and charged, it outruns a storm front. It
   runs on its own battery.
-- **It tows nothing.** That keeps it fun, and it keeps it from competing with the camp.
+- **It overloads before becoming a hauler** (Hunter, 2026-10-19). Slack sailing lines allow free powered catch-up; a tiny loaded rig crawls, and a big load grounds the hover and makes its motor sputter. The rider may race ahead, swing the rig and counterbalance it with real momentum. This supersedes the earlier blanket no-tow rule.
 - **It travels on the camp** (Hunter, 2026-10-16: "i like a rack"; the rack went with the
   crate, 2026-10-18). Stuck on a deck, hung on an upright as often as not, it rides wherever
   the deck goes and charges from the camp's power, after the shield. Pack up and walk with the
@@ -106,12 +106,12 @@ even storms that last for days.
 - **On and off.** The ride action steps you onto the board in your hands, the one you
   look at, or the nearest at your feet, if it has charge, and steps you off again,
   keeping your way: faster than you can run, you skid, and the board goes on as a body.
-  It tows nothing: a line or a grip in your hands is let go, a line at your waist is
+  For safe boarding, a line or a grip in your hands is let go, a line at your waist is
   untied first (it takes its moment) and you step on once it's free, and riding you
   take only loose things on no line. A sail's sheet at your waist stays tied, so your camp
-  can tow you, and the board pushes against no line (2026-10-18,
-  [sailing](#sailing-the-camp-hunter-2026-10-17)); so does a camp's line beside it, which
-  its rig tows past you ([stage 2](#sailing-from-kite-to-yacht-agreed-2026-10-18-spec-built)).
+  can tow you. The same holds for a camp's line beside it, which its rig tows past you
+  ([stage 2](#sailing-from-kite-to-yacht-agreed-2026-10-18-spec-built)). Limited motor
+  work against those lines was approved on 2026-10-19; see powered sailing below.
 - **On a deck** (2026-10-18, replacing the crate's rack). The board sticks on any sticky face
   of a chassis it fits, flat on its underside: across a deck's top, or hung on an upright's
   face ([Devices & mods](devices-and-mods.md#the-chassis-as-the-one-structure-built-2026-10-18)).
@@ -601,8 +601,8 @@ your own camp's parts rather than found whole:
   ([stage 2](#sailing-from-kite-to-yacht-agreed-2026-10-18-spec-built)). Towed, the board runs where the line
   leads and your keys turn it; only its dug edge holds against the line, so dug it carves
   across the pull ([the dig](#dig-and-carve-agreed-2026-10-18-spec-built)). It pushes and
-  kicks against no line, so it still tows nothing.
-  Reeling works riding, so you trim the sheet as you go. Its push never runs you past what your
+  can now motor against a line within its small towing reserve (2026-10-19, powered sailing below).
+  Reeling works riding, so you trim the sheet as you go. **Historical motor limit, superseded by the powered-sailing decision below:** its push never ran you past what your
   lines lead to while they're slack (2026-10-19): it gives out as you come 1 m/s faster than it, so
   an overrun goes slack and comes taut again firmly, never with a snatch. On the "sail" deck in 10 m/s, the sheet
   tended and the camp held across the wind, it tows you at 2.8 m/s on the end of the sheet, itself
@@ -1075,7 +1075,7 @@ Session 4, part 3 (2026-10-17) adds three. Each is quoted on both sides and left
 - **The board's tow.** Here: "It tows nothing. That keeps it fun, and it keeps it from competing
   with the camp." The session: the patrol board has a "Tow," and the sailboat's "tow capacity
   [is] well above the board." Not said whether the standard board towing something small is
-  meant, or only the patrol board; this PRD follows the second.
+  meant, or only the patrol board. **Settled by Hunter, 2026-10-19:** the standard board may make limited, battery-funded pulls through sailing lines; heavy towing overloads it.
 - **A slow sailboat against a fast yacht.** Here: the yacht is "the real fast base-mover" and
   "might outrun a storm with the camp aboard." The session: a "slow hauler." Not said how the two
   relate.
@@ -1116,16 +1116,16 @@ position through five fractions of a frame and confirms drawing leaves simulatio
 unchanged. The existing rendered-ring/length/sag, origin-shift, towing and sheet-hauling probes
 pass. Actual GPU capture remains required before visual acceptance.
 
-**Powered-board measurement, design still open.** With the actual Varran board in still air,
+**Powered-board measurement before the approved redesign.** With the actual Varran board in still air,
 its stationary rig's three lines extended to 100 m and carrying zero tension, holding forward
 for eight seconds reached 0.992 m/s. Detaching those lines, resetting board velocity and holding
 forward for another eight seconds reached 19.753 m/s. The magnitude-based tow limiter therefore
 suppresses even unloaded repositioning. Simply allowing thrust toward the rig is insufficient:
 the resulting momentum can pass it and load the ropes later. Any future motor assistance must
 account for that stored energy, or explicitly accept battery-funded towing. The current board
-physics is unchanged while that decision remains open.
+physics was left unchanged until the following decision was approved.
 
-**Powered-board direction approved (Hunter, 2026-10-19; implementation pending).** The board
+**Powered-board direction approved (Hunter, 2026-10-19).** The board
 may influence its rig by pulling or racing ahead; its momentum as a keel, swing and
 counterbalance is part of the fun. Replace the blanket no-tow speed suppression with motor
 overload: towing a tiny rig should crawl, while a large rig should ground the board and make
@@ -1137,3 +1137,46 @@ motor and battery behavior together, retaining rope strength and anti-launch saf
 **Sailing notes implementation plan (2026-10-19).** One physical, carryable and mountable field booklet lies beside the sail scenario's starting board; a streamer on the mast supplies the wind cue it explains. Use on the booklet, loose or held, opens a chapter list and short readable pages through the existing menu root. Chapters explain felt wind and points of sail, raising/furling and sheet trim, the board's edge and powered limitations while tied, Varran's three-line bridle and tack, and named gaze-based line selection shared by reeling and untying. Controls render from action bindings. Reading adds no deed: this dev-scenario teaching aid points to the existing sailing actions whose deeds already record practice.
 
 **As built:** `SailingNotes` is the `sailing_notes` catalog device, a 0.3 kg cloth-bound field booklet with a sail on its cover. `scenario sail` puts it within reach beside the board and mounts a streamer on the practice mast. Use reads it loose or carried. Six chapters are split into 18 short pages, with Next/Previous/Chapters through the normal menu stack. The notes explain the current board motor restriction and gaze-selected rope handling; they invent no release-all control or force cap. Menus probe 19 starts the real sail scenario, uses the booklet from the player's starting position, traverses pages and back, measures every text and navigation rectangle at 1280×720, and reopens the carried booklet with console focus restored. A GPU capture remains pending the machine's rendering recovery; headless layout checks passed.
+
+
+**Powered sailing implementation plan (2026-10-19).** Preserve the rope solver's impulses
+and the board's momentum; remove the speed limit derived from the rig's speed. Any taut
+line load changes the motor to a bounded low-force, low-power tow mode. Only opposing
+load heats the motor; aiding sail pull and unpowered carving do not overload it. Sustained opposing load overheats the
+hover, lowers its ride toward the sand and adds sand drag; thrust and the existing hum
+sputter while overloaded, then recover after unloading. Motor work delivered against the
+line is metered in addition to the free ride's existing stylized draw, with an efficiency
+loss; stalled attempts still consume power. New load, force, power, response and sound
+settings belong in tuning.tres. Probes measure slack catch-up, small-load crawl, heavy-load
+grounding and recovery, turning momentum, rope strength, and battery accounting.
+
+
+**Powered sailing as built (2026-10-19).** `Ride` no longer reads a rig-speed ceiling.
+Three fully slack waist lines allow a charged board to pass 10 m/s within four seconds;
+turning retains more than 90% of its old-direction momentum over the next tick (sailing 18).
+Line load blends motor assist into a 90 N / 80 W mechanical towing reserve; opposing load
+alone heats it. The load response is 0.2 s, the overload reference 70 N, and stalled motion
+below 0.1 m/s heats the hover over 0.6 s. A grounded, still-commanded motor stays hot until
+the rider eases or the sail moves it again. Full overload lowers the target ride height to
+0.04 m, adds 3 m/s² sand drag and pulses motor thrust and the existing hum at 6 Hz, 25% on.
+These numbers are in `tuning.tres`; ropes still transfer momentum through the existing solver.
+
+A one-piece grounded cargo moves at under 3 m/s and uses additional battery power (sailing 16).
+A four-piece grounded deck drives heat above 90%, lowers the rider's feet within 0.2 m of the
+sand and produces both audible on and off pulses; releasing the throttle recovers the hover
+within two seconds (17). The separate 13.8 kg skates fixture crawled at 0.24 m/s, averaging
+34 W of extra motor input. The existing 40 W hover plus up to 260 W commanded drive remains
+billed during a stalled attempt; positive motor work against the line is added at 80%
+efficiency, then scaled by the board make. Heat, load and sputter phase save with the ride;
+the existing save-mid-ride probe passes.
+
+In a steady 10 m/s, the powered Varran makes 5.96 m/s on one beam reach and 5.13 on the other,
+with zero overload during the final ten seconds of aiding wind load on either tack (600
+loaded ticks each). A powered tack now eases and brakes first, bears away, hauls the far bow
+line 6 m at the normal hand pace, holds it while the rig crosses, then gradually heads up
+while paying it out. Paying it out before the crossing has settled can send it back to its
+old side. Sailing 13 exercises that sequence without moving an attachment; the field notes
+teach it. The undug wind-only comparison and movement's dug-edge probe explicitly disable
+motor force to isolate the wind's sideways shove from the newly permitted powered steering.
+Sailing 14 retains the no-catapult and at-most-rope-rating checks when racing past the rig.
+Visual and sound acceptance still requires a GPU capture and listening on the desktop.
