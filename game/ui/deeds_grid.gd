@@ -266,16 +266,17 @@ func _place_tip(card: Button) -> void:
 		clampf(at.position.y, TIP_EDGE, maxf(room.y - _tip.size.y - TIP_EDGE, TIP_EDGE)))
 
 
-## The scroll's bar as a thin line in the theme's ink, brighter where it's held.
+## The scroll's bar as a thin line in the theme's faint ink, brighter under
+## the mouse or held.
 func _dress(bar: VScrollBar) -> void:
 	bar.custom_minimum_size.x = BAR
 	var track := StyleBoxFlat.new()
-	track.bg_color = get_theme_color(&"faint", &"Palette") * Color(1.0, 1.0, 1.0, 0.5)
+	track.bg_color = get_theme_color(&"faint", &"Palette") * Color(1.0, 1.0, 1.0, 0.35)
 	track.set_corner_radius_all(2)
 	var grip := track.duplicate() as StyleBoxFlat
-	grip.bg_color = get_theme_color(&"dim", &"Palette")
+	grip.bg_color = get_theme_color(&"faint", &"Palette")
 	var held := track.duplicate() as StyleBoxFlat
-	held.bg_color = get_theme_color(&"text", &"Palette")
+	held.bg_color = get_theme_color(&"dim", &"Palette")
 	bar.add_theme_stylebox_override(&"scroll", track)
 	bar.add_theme_stylebox_override(&"scroll_focus", track)
 	bar.add_theme_stylebox_override(&"grabber", grip)
