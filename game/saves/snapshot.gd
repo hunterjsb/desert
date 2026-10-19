@@ -30,6 +30,7 @@ static var _kept := [
 	[Helm, ["sailed_m"]],
 	[Chassis, ["_today", "_day_from"]],
 	[PowerBox, ["held"]],
+	[Bedroll, ["laid"]],
 	[Device, ["resting", "lift_share", "lamps", "priority", "switched_off"]],
 ]
 const PLAYER := ["stamina", "flying", "mode", "crouched", "own", "slope", "wind", "low", "sink", "_sliding",

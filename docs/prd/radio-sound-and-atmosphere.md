@@ -640,20 +640,30 @@ plumes are [Wind & storms](wind-and-storms.md#plumes)'):
   not how fast it goes). So a burst 10 km off is heard half a minute after its column starts up.
 - **Quieter and duller with distance.** -2 dB over its file at a kilometre for a vent's least burst,
   louder by its size, 8 dB less for a pocket's, and 6 dB less each time the distance doubles, as sound
-  spreads; and through its own low-pass (the Booms bus) at 3 kHz by a kilometre, falling as distance to
+  spreads, never louder than its file however near (2026-10-19: felt, not loud); and through its own
+  low-pass (the Booms bus) at 3 kHz by a kilometre, falling as distance to
   the 0.9 past it, 300 Hz at 13 km and 100 Hz past 40: air takes a sound's high end first, and thin air
   the more. Bigger bursts are lower, a pocket's blowout sharper.
+- **Its low end rolls on** (2026-10-19, Hunter's playtest: "lean into the rumble more"). Each boom
+  plays with a roll under it, 16 s of low rumble surging back off the rift's walls and the dunes,
+  6 dB under the thump at a kilometre. Its low end carries along the ground: past a kilometre it
+  spreads 1.5 dB a doubling less than the thump and plays 7% lower and longer a doubling, three
+  quarters as high past 11 km, so far off the boom is bigger and longer, mostly roll.
 - **From its way.** The boom is played 20 m off you toward its source, so it's heard from the vent's
-  bearing as the column is seen there; no camera shake, sound alone.
+  bearing as the column is seen there. Far off it's sound alone; near a live vent its build and
+  its ground are felt too ([Wind & storms](wind-and-storms.md#plumes), "Felt near").
 - **A live vent's roar near:** within 2.5 km of a live vent, its steady roar, at its file's level 150 m
   off and fading with distance, harder as it vents harder, through its own low-pass (the Vents bus),
   from its way. Both buses run through Weather, so a bubble muffles them as it does the storm.
-- **Sounds:** `boom.ogg` and `vent_roar.ogg`, made here with Python and ffmpeg, CC0
-  ([credits](../../assets/audio/CREDITS.md)).
+- **Sounds:** `boom.ogg` and `vent_roar.ogg`, made here with Python and ffmpeg, and `boom_roll.ogg`
+  and the build's `vent_build.ogg` (`make_rumble_sounds.py`), all CC0
+  ([credits](../../assets/audio/CREDITS.md)). The build plays from the vent's way through the Vents
+  bus, as the roar does.
 - **Probe** (wind & storms 17): from 3 km and from 12 km off the rift's live vent a burst's boom comes
   as long after it began as sound takes to come that far (9.35 and 36.97 s), never before; from 12 km
-  it's 9 dB quieter and under half as bright (323 Hz against 1,116); it comes from the vent's way, to
-  under 2°; and a jump in time past it plays nothing late.
+  it's 9 dB quieter and under half as bright (323 Hz against 1,116), its roll lower, longer and more
+  of it against the thump; it comes from the vent's way, to under 2°; and a jump in time past it
+  plays nothing late. Wind & storms 23 is the felt part.
 
 ## Atmosphere
 
