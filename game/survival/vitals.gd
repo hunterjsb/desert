@@ -12,6 +12,8 @@ signal died
 
 const FULL := 100.0
 const HARMS: Array[StringName] = [&"wind", &"storm", &"temperature"]
+## An anomaly's hidden term this deep where you stand is its heart.
+const HEART := 0.99
 
 var health := FULL
 var hunger := FULL
@@ -25,6 +27,8 @@ var taken := {&"wind": 0.0, &"storm": 0.0, &"temperature": 0.0}
 ## What you've drunk, L, and eaten, kcal.
 var drunk := 0.0
 var eaten := 0.0
+## Stood in an anomaly's heart, and not yet out of it.
+var in_heart := false
 
 ## What a wreck's hazards left you with (Wounds).
 var wounds: Wounds
@@ -160,7 +164,22 @@ func _tick(seconds: float, t: float) -> void:
 	health = maxf(health - loss, 0.0)
 	if health <= 0.0:
 		dead = true
+		in_heart = false
 		died.emit()
+	_heart(at, t)
+
+
+## Into an anomaly's heart where you stand, and out of it alive.
+func _heart(at: Vector3, t: float) -> void:
+	var world := _player.world
+	if not in_heart and not Deeds.waiting(world, &"anomaly_eye"):
+		return
+	var deep := world.weather.anomaly(at, t)
+	if deep >= HEART:
+		in_heart = true
+	elif deep <= 0.0 and in_heart and not dead:
+		in_heart = false
+		Deeds.done(world, &"anomaly_eye")
 
 
 ## Below its mark, the suit tops you up from what you carry, one supply after another.

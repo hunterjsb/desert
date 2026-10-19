@@ -26,7 +26,9 @@ static var _kept := [
 	[Console, ["page", "log_lines", "_alerts", "_front_near"]],
 	[Battery, ["charge_wh"]],
 	[Plant, ["growth", "fruit", "state", "wild"]],
-	[Mast, ["raised", "raise", "boom", "boom_spin", "trim", "load_n", "bend_n", "extend"]],
+	[Mast, ["raised", "raise", "boom", "boom_spin", "trim", "load_n", "bend_n", "extend", "upwind_m", "outflow_m"]],
+	[Helm, ["sailed_m"]],
+	[Chassis, ["_today", "_day_from"]],
 	[Device, ["resting", "lift_share", "lamps"]],
 ]
 const PLAYER := ["stamina", "flying", "mode", "crouched", "own", "slope", "wind", "low", "sink", "_sliding",
@@ -36,7 +38,7 @@ const PLAYER := ["stamina", "flying", "mode", "crouched", "own", "slope", "wind"
 const RIDE := ["velocity", "ahead", "y", "vy", "gap", "last_step", "bank", "pitch", "roll", "drifting", "kicks",
 	"bottomed", "hardest", "ticks", "waited", "_ground", "_came", "_hopping", "_tilting", "_tilt_was", "_ahead_was",
 	"_kick_wait", "_stroke", "dig", "_bitten"]
-const VITALS := ["health", "hunger", "thirst", "dead", "harms", "taken", "drunk", "eaten", "_next"]
+const VITALS := ["health", "hunger", "thirst", "dead", "harms", "taken", "drunk", "eaten", "_next", "in_heart"]
 const ROPE := ["length", "kg_per_m", "breaking", "frequency", "damping", "max_stretch", "tension", "sustained",
 	"spring_impulse", "stop_impulse"]
 const STRAND := ["length", "_rest", "_velocity", "_ground", "_slope", "_near", "_bulge", "_age", "_phase",

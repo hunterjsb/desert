@@ -995,6 +995,9 @@ func _readout(all: Dictionary) -> PackedStringArray:
 			# storm's, while the wind and sand read ordinary, is an anomaly.
 			var bears := shield.particle_load()
 			rows.append(("!" if bears > 1.0 else "") + _row(" load", "%d" % roundi(bears * 100.0), "%"))
+			if bears > 1.0 and world.player.camera.global_position.distance_to(global_position) \
+					<= _tuning.console_screen_seen_m:
+				Deeds.done(world, &"tells", &"load")
 	return rows
 
 

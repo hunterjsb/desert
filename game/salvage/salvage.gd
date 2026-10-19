@@ -368,6 +368,7 @@ func claim(body: Node) -> void:
 		return
 	var from: Array = body.get_meta(&"find")
 	body.remove_meta(&"find")
+	var module: Array = body.get_meta(&"module", [])
 	if body.has_meta(&"module"):
 		body.remove_meta(&"module")
 	var lot: Lot = _lots.get(from[0])
@@ -380,6 +381,7 @@ func claim(body: Node) -> void:
 			memory = [_laid_site(from[2]), {}, {}]
 			_sites[from[2]] = memory
 		memory[1][from[1]] = true
+		_deeds(memory, module)
 	elif lot != null:
 		lot.taken[from[1]] = true
 	if lot != null:
@@ -396,6 +398,22 @@ func claim(body: Node) -> void:
 	if body is Device:
 		_world.power.wake(body)
 	_discovered(body)
+
+
+## Site loot taken: from a site a storm working on it has bared; a wreck's
+## module freed, its last, and its kind scrapped.
+func _deeds(memory: Array, module: Array) -> void:
+	var site: Structure = memory[0].get_ref() if memory[0] != null else null
+	if site != null and Deeds.waiting(_world, &"bared") and site.bared() > 0.0:
+		Deeds.done(_world, &"bared")
+	if module.is_empty():
+		return
+	var wreck: Structure = module[0]
+	Deeds.done(_world, &"bonepicker", wreck.kind)
+	for i in wreck.piece.sockets.size():
+		if wreck.piece.sockets[i].kind in SiteLoot.MODULES and not memory[1].has(i):
+			return
+	Deeds.done(_world, &"stripped")
 
 
 ## Every kind of thing a find held, reported to the profile: the first of

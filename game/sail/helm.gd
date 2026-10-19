@@ -26,6 +26,8 @@ const HOW_TO_SAYS := "At the helm, {move_left} and {move_right} turn the camp; a
 ## Who sits here, or null, and how hard they turn it: -1 left to 1 right.
 var rider: Player
 var turning := 0.0
+## The ground its camp has covered under sail, keeled, since you sat, m.
+var sailed_m := 0.0
 
 
 ## Use sits you here, or stands you up; empty-handed, and on a camp.
@@ -72,6 +74,10 @@ func tipped() -> bool:
 func _physics_process(delta: float) -> void:
 	super(delta)
 	var on := carrier()
+	if rider == null:
+		sailed_m = 0.0
+	elif world.counts_deeds:
+		_sail_on(on, delta)
 	if rider == null or on == null or on.freeze or turning == 0.0 and absf(on.angular_velocity.y) < 1e-3:
 		return
 	var state := PhysicsServer3D.body_get_direct_state(on.get_rid())
@@ -81,6 +87,17 @@ func _physics_process(delta: float) -> void:
 	var want := -turning * world.tuning.helm_turn
 	var most := world.tuning.helm_torque
 	on.apply_torque(up * clampf(inertia * (want - spin) / TURN_SECONDS, -most, most))
+
+
+## Its camp under a raised sail, floating on a keel: the ground it covers counts.
+func _sail_on(on: Device, h: float) -> void:
+	if on == null or not on.hovering() or not Deeds.waiting(world, &"land_yacht") or Runners.keels(on).is_empty():
+		return
+	for each in on.mounted():
+		if each is Mast and (each as Mast).raise > 0.0:
+			sailed_m += Vector2(on.linear_velocity.x, on.linear_velocity.z).length() * h
+			Deeds.measure(world, &"land_yacht", sailed_m)
+			return
 
 
 ## A rider's weight is the seat's, so the deck's hover holds you up and the

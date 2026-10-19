@@ -104,6 +104,11 @@ var bend_n := 0.0
 var extend := 0.0
 ## What a tick of its sail costs, µs, on average.
 var cost_us := 0.0
+## Since it was last yours to sail: the ground its camp has made against the
+## wind, m, kept through its tacks; and how far it has run on a front's
+## outflow ahead of the wall, m, without leaving it.
+var upwind_m := 0.0
+var outflow_m := 0.0
 ## What the sail made last tick: its push, N, the angle of attack and lift,
 ## and the air it felt, m/s, for the readout and the look.
 var force := Vector3.ZERO
@@ -243,6 +248,8 @@ func _physics_process(delta: float) -> void:
 	if on != null and not on.freeze and world != null:
 		_sail(on, area, delta)
 		_touch(on, delta)
+		if world.counts_deeds:
+			_deeds(on, delta)
 	else:
 		_trimmed = NAN
 	if _sheet != null:
@@ -340,6 +347,42 @@ func _sail(on: Device, area: float, h: float) -> void:
 	_strain(h)
 	if not _held:
 		trim = maxf(trim, 2.0 * BOOM * sin(absf(boom) * 0.5))
+
+
+## Sailed by you, all the way up: what its camp makes against the field's
+## wind, and runs on a storm's outflow short of its wall.
+func _deeds(on: Device, h: float) -> void:
+	if not (Deeds.waiting(world, &"close_hauled") or Deeds.waiting(world, &"storm_runner")):
+		return
+	if raise < 1.0 or not sailed_by_you(on):
+		upwind_m = 0.0
+		outflow_m = 0.0
+		return
+	var way := Vector2(on.linear_velocity.x, on.linear_velocity.z)
+	var blowing := world.weather.field_wind(on.global_position)
+	if blowing.length() > 0.1:
+		upwind_m = maxf(upwind_m - way.dot(Vector2(blowing.x, blowing.z).normalized()) * h, 0.0)
+		Deeds.measure(world, &"close_hauled", upwind_m)
+	var x := world.world_x(on.global_position.x)
+	var z := world.world_z(on.global_position.z)
+	var field := world.weather.field
+	if field.outflow_at(x, z, world.time) > 0.0 and field.raw_storm_at(x, z, world.time) <= 0.0:
+		outflow_m += way.length() * h
+		Deeds.measure(world, &"storm_runner", outflow_m)
+	else:
+		outflow_m = 0.0
+
+
+## Whether you sail it: its sheet on you, or you at the helm of its camp.
+func sailed_by_you(on: Device) -> bool:
+	var player := world.player
+	if player.helm != null and player.helm.carrier() == on:
+		return true
+	if _sheet == null or not _held:
+		return false
+	var mine: RopeEnd = _tie().part.get_meta(&"tip")
+	var other := _sheet.b if _sheet.a == mine else _sheet.a
+	return is_instance_valid(other) and world.ropes.on_you(other.holder)
 
 
 ## The sail's push at a swing of the boom: lift across the air flowing past
