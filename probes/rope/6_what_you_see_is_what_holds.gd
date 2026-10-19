@@ -86,6 +86,9 @@ func run() -> void:
 	check(hands.grab(), "you take a line's end off a stake")
 	await simulate(0.5)
 	check(hands.held == held.ends[1] and held.state == Line.State.LAID, "and hold it")
+	# Looking out past the stake, so the ring it came off doesn't offer it back.
+	look(far_stake.global_position + Vector3(0.0, 1.4, 0.9), far_stake.global_position + Vector3(0.0, 0.45, -2.0))
+	await simulate(0.5)
 	var watch := LastInFrame.new()
 	watch.each = _watch
 	add_child(watch)

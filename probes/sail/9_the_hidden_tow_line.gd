@@ -85,10 +85,10 @@ func run() -> void:
 		"as the fulcrum you're hurt (%.0f health)" % player.vitals.health)
 	check(ropes.hidden != null and ropes.ropes.size() == 2, "and below their breaking the lines hold")
 	tending = 0.0
-	var sheet: Rope = (kit[7] as Line).rope
-	var carried: Rope = (kit[8] as Line).rope
+	var sheet: Rope = (_of(Line, 0) as Line).rope
+	var carried: Rope = (_of(Line, 1) as Line).rope
 	var was := [mast.trim, carried.length]
-	look(eye(), Line._tip((kit[7] as Line).ends[0]).global_position)
+	look(eye(), Line._tip((_of(Line, 0) as Line).ends[0]).global_position)
 	check(hands.reel.line() == sheet and hands.reel.notch(2), "looking along the rig, the reel works its sheet")
 	await simulate(1.0, _steer)
 	check(absf(was[0] - mast.trim - 2.0 * Reel.NOTCH) < 0.01 and absf(carried.length - was[1]) < 0.01 and ropes.hidden != null,
