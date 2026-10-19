@@ -10,7 +10,7 @@ extends VBoxContainer
 ## filling the left side and then the right.
 const GROUPS := [
 	["Chassis and frames", [&"chassis", &"frame", &"fabric", &"hover_tray", &"skates", &"board_plate"]],
-	["Power", [&"battery", &"big_battery", &"solar_panel", &"light_panel", &"turbine", &"cable", &"strong_cable"]],
+	["Power", [&"battery", &"big_battery", &"power_box", &"power_cabinet", &"power_rack", &"power_shrine", &"solar_panel", &"light_panel", &"turbine", &"cable", &"strong_cable"]],
 	["Devices", [&"shield", &"light_shield", &"condenser", &"console", &"screen", &"anemometer", &"barometer",
 		&"hygrometer", &"particle_sensor", &"radar", &"radio", &"lamp", &"planter", &"harvester", &"bedroll",
 		&"survival_kit"]],
