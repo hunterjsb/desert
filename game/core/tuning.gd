@@ -1050,6 +1050,21 @@ static var _current: Tuning
 @export var relay_period_minutes: float = 6.5
 @export var relay_doppler_khz: float = 1.5
 @export var relay_rise_degrees: float = 8.0
+## Zan and Tu's Lagrange points, where the relay and the Pendulum hang (a moon
+## that keeps one face to its planet has no stationary orbit): this many moon
+## radii from Zan's middle, toward Tu (L1) and away (L2), at the leaning size's
+## real scale; each loops round its point on a halo this many radii across
+## the line to Tu, once in this many minutes, about half a day as a real
+## halo's is about half a month.
+@export var lagrange_radii: float = 8.0
+@export var halo_radii: float = 0.9
+@export var halo_minutes: float = 10.0
+## The relay sends the port's music down on the FM band from L1 by a dish aimed
+## at Zan: this many dB over Port Morgan's own station's margin at a kilometre,
+## so from so far it still clears the noise, until the ground near you hides it.
+## The ground toward a satellite is read this far out, m.
+@export var relay_fm_db: float = 55.0
+@export var fm_sky_reach_m: float = 3000.0
 @export var dust_height_m: float = 1500.0
 ## The Eye's drone comes now and then out of silences of between these many
 ## minutes, its first one included.

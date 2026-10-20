@@ -16,8 +16,12 @@ func run() -> void:
 	Scenarios.fill(world, radio, [&"fm_converter"])
 	check(radio.has_fm(), "the converter fits the radio's side")
 	check(radio.switch_band() and radio.band == Radio.FM_BAND, "with one it switches to FM")
-	radio.interact(world.player)
-	var port: float = Fm.stations(Radio.gods_of(world), world.run_seed, Tuning.current())[0].mhz
+	var stations := Fm.stations(Radio.gods_of(world), world.run_seed, Tuning.current())
+	var port: float = stations.filter(func(each: Dictionary) -> bool: return each.id == &"port_fm")[0].mhz
+	for each in stations:
+		radio.interact(world.player)
+		if radio.tuned_to() == &"port_fm":
+			break
 	check(is_equal_approx(radio.fm_mhz, port) and radio.tuned_to() == &"port_fm",
 		"use sweeps to the port's station (%.1f MHz, %.1f)" % [radio.fm_mhz, port])
 	check(str(radio.stats().tuned) == "%.1f MHz" % port, "its dial reads MHz: %s" % radio.stats().tuned)

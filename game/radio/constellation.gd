@@ -50,11 +50,12 @@ enum Shape { POINT, CROSS, BAR, RING, PAIR, DIAMOND, HULK }
 ## to Zan's side it is) and drift (a slow wander of its own). Targets: pitch (scale), volume (dB), cutoff (Hz), drive (0 to 1),
 ## tremolo (Hz, 0 for none) and pulse (s between plays).
 const ROSTER := [
-	# Its orbit long since knocked out of true: an ellipse that swings round, and a slow tumble.
-	# (Thirteen in all: this, the formation's eight, the crop survey skimming low, the ghost,
-	# the cinder and the lantern round Tu.)
+	# Hung at L1, beside Tu in the near side's sky, looping slowly round it: it sends the
+	# port's music down on the FM band, not this dial (Fm), and glints as it turns.
+	# (Fourteen in all: this, the Pendulum at L2, the formation's eight, the crop survey
+	# skimming low, the ghost, the cinder and the lantern round Tu.)
 	{"id": &"relay", "era": "colonial", "band": Vector2(1020.0, 1020.0),
-		"orbit": {"eccentricity": 0.3, "precess": 40.0, "apsides": 70.0},
+		"orbit": {"lagrange": 1},
 		"look": {"color": Color(1.0, 0.97, 0.9), "size": 1.0, "shape": Shape.POINT, "light": 0.35},
 		"sound": {}, "lfo": [], "duty": [], "behave": {"tumble": [0.05, 0.3]}},
 	# Frontier Ag's crop survey, skimming the dunes to read the ground's heat: so low it's a
@@ -75,12 +76,20 @@ const ROSTER := [
 		"look": {"color": Color(0.85, 1.0, 0.35), "size": 1.0, "shape": Shape.DIAMOND, "light": 0.3},
 		"sound": {"track": Sounds.STORM, "db": -6.0, "pulse": 0.0},
 		"lfo": [[&"drift", &"pitch", 0.6, 1.6], [&"sun", &"cutoff", 800.0, 6000.0]], "duty": []},
-	# StarCom's timing beacon: its tick quickens as the eclipse comes.
+	# StarCom's timing beacon, hung at L2 over the far side's middle, where the
+	# observatory stands: its tick quickens as the eclipse comes.
 	{"id": &"pendulum", "era": "StarCom", "band": Vector2(700.0, 730.0),
-		"orbit": {"slot": 1},
+		"orbit": {"lagrange": 2},
 		"look": {"color": Color(0.4, 0.9, 1.0), "size": 1.1, "shape": Shape.CROSS, "light": 0.32},
 		"sound": {"track": Sounds.RADIO_PING, "db": 0.0, "pulse": 2.0},
 		"lfo": [[&"eclipse", &"pulse", 3.0, 0.25], [&"drift", &"pitch", 0.97, 1.03]], "duty": []},
+	# StarCom's navigation beacon, a quick double ping, higher the higher it stands:
+	# it took the Pendulum's plane in the formation when the Pendulum went to L2.
+	{"id": &"sextant", "era": "StarCom", "band": Vector2(975.0, 1000.0),
+		"orbit": {"slot": 1},
+		"look": {"color": Color(0.8, 0.92, 1.0), "size": 1.2, "shape": Shape.POINT, "light": 0.3},
+		"sound": {"track": Sounds.RADIO_PING, "db": -3.0, "pulse": 0.45},
+		"lfo": [[&"elevation", &"pitch", 1.35, 1.8], [&"drift", &"cutoff", 2500.0, 6000.0]], "duty": []},
 	# A weather satellite: it roars as the wind does where you are, and frays in a storm.
 	{"id": &"windsock", "era": "StarCom", "band": Vector2(1032.0, 1060.0),
 		"orbit": {"slot": 2},

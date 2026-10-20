@@ -7,7 +7,7 @@ extends WeatherProbe
 ## and whips across overhead, many times faster; it's drawn far bigger
 ## overhead than low down, and shows as its shadow, even in Zan's.
 ## By day only the nearest and brightest show: the low hull always, the dim
-## formation never, the relay only as near as its ellipse brings it.
+## formation never.
 
 
 func run() -> void:
@@ -103,23 +103,6 @@ func run() -> void:
 	var sounder := Constellation.voiced().find(&"sounder")
 	print("by day: the survey hull shows %.2f, the sounder %.2f" % [forms[at].z, forms[sounder].z])
 	check(forms[at].z == 1.0 and forms[sounder].z == 0.0, "by day the low hull shows, a dim one of the formation doesn't")
-	var relay := sky.relay()
-	var bright := _first(func(u: float) -> bool: return _relay_by_day(relay, p, u) and relay.nearness(u) > 1.6)
-	world.time = bright
-	await physics_frames(3)
-	var near_day: float = material.get_shader_parameter("relay_day")
-	var dim := _first(func(u: float) -> bool: return _relay_by_day(relay, p, u) and relay.nearness(u) < 0.8)
-	world.time = dim
-	await physics_frames(3)
-	print("the relay by day: %.2f near its perigee, %.2f far out" % [near_day, material.get_shader_parameter("relay_day")])
-	check(near_day > 0.2 and material.get_shader_parameter("relay_day") == 0.0,
-		"the relay shows by day only as near as its ellipse brings it")
-
-
-## Whether the relay is up by day, high and sunlit, from point p at world time t.
-func _relay_by_day(relay: Satellite, p: Vector3, t: float) -> bool:
-	var day := world.weather.day
-	return day.is_day(t, world.moon.longitude) and relay.seen_from(p, t).elevation > deg_to_rad(30.0) 		and relay.sunlit(t, day.sun_toward(t))
 
 
 ## Which way it is in the sky from point p at world time t.

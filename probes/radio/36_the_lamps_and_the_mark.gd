@@ -1,7 +1,7 @@
 extends ShieldProbe
 ## Radio probe 36: the signal lamps and the mark's name. Nothing on the radio
 ## is written but its frequency, so its face shows what it hears by its row of
-## lamps: tuned onto the music with the relay high, nearly all lit; between
+## lamps: tuned onto the music at night, nearly all lit; between
 ## carriers with nothing near, none; switched off, all dark. On a frequency
 ## you've marked, the look-at line names the mark after the frequency. The
 ## wheel spun fast goes farther a notch each time, up to dial_spin_most, and
@@ -17,15 +17,14 @@ func run() -> void:
 	var x := world.world_x(radio.global_position.x)
 	var z := world.world_z(radio.global_position.z)
 	var p := radio.point_at(x, z)
-	var relay := Radio.relay_of(world)
-	var high := _first(world.time, func(u: float) -> bool: return relay.seen_from(p, u).elevation > deg_to_rad(40.0))
+	var high := _first(world.time, func(u: float) -> bool: return not world.weather.day.is_day(u, world.moon.longitude))
 	world.time = high
 	radio.on = true
 	radio.frequency = Dial.MUSIC_KHZ
 	await physics_frames(40)
 	var on_music := _lit(radio)
-	print("on the music, the relay high: %.2f heard, %d of %d lamps lit" % [radio.lamp_level, on_music, Radio.LAMPS])
-	check(on_music >= Radio.LAMPS - 2, "tuned onto the music with the relay high, nearly all lit")
+	print("on the music at night: %.2f heard, %d of %d lamps lit" % [radio.lamp_level, on_music, Radio.LAMPS])
+	check(on_music >= Radio.LAMPS - 2, "tuned onto the music at night, nearly all lit")
 
 	# The quietest place on the dial now: as far as can be from every carrier.
 	var all := radio.carriers()

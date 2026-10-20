@@ -3,8 +3,9 @@ extends ShieldProbe
 ## heard whole on its carrier, and near it at a share of its strength, so
 ## you hear it as you tune toward it and tune in on it; far off, nothing. A
 ## god heard off its carrier is still the one the dial hears, faint. Two
-## broadcasts near each other on the dial, the relay's music and a satellite,
-## are heard together between their carriers, each the louder nearer its own.
+## broadcasts near each other on the dial, the port's music at night and a
+## satellite, are heard together between their carriers, each the louder
+## nearer its own.
 ## Under clear skies everywhere.
 
 
@@ -48,18 +49,19 @@ func run() -> void:
 	radio.frequency = home + Dial.reach(tuning) + 15.0
 	check(radio.tuned_to() != best, "past its skirt it's gone")
 
-	# The music and the windsock, both overhead: heard together between them.
+	# The music at night, come round from the port, and the windsock overhead:
+	# heard together between them.
 	var sky := Radio.constellation_of(world)
 	var p := radio.point_at(x, z)
 	var both := _first(t, func(u: float) -> bool:
-		return sky.relay().seen_from(p, u).elevation > deg_to_rad(20.0) \
+		return not world.weather.day.is_day(u, world.moon.longitude) \
 			and sky.orbits[&"windsock"].seen_from(p, u).elevation > deg_to_rad(20.0))
 	world.time = both
 	var windsock := sky.carrier(&"windsock", both)
 	var between := roundf((Dial.MUSIC_KHZ + windsock) * 0.5)
 	radio.frequency = between
 	await physics_frames(5)
-	var music: float = radio.receive_relay(x, z, both).clean
+	var music: float = radio.receive_music(x, z, both).clean
 	var satellite: float = radio.sky.levels.get(&"windsock", 0.0)
 	print("at %.0f s, tuned to %d kHz between the music (1020) and the windsock (%d): music %.2f, windsock %.2f" % [
 		both, roundi(between), roundi(windsock), music, satellite])
@@ -68,7 +70,7 @@ func run() -> void:
 	radio.frequency = windsock
 	await physics_frames(3)
 	var on_windsock: float = radio.sky.levels.get(&"windsock", 0.0)
-	check(on_windsock > satellite and radio.receive_relay(x, z, world.time).clean < music,
+	check(on_windsock > satellite and radio.receive_music(x, z, world.time).clean < music,
 		"tuned onto the windsock, it's the louder and the music the fainter (%.2f)" % on_windsock)
 
 

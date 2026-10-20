@@ -17,16 +17,22 @@ const HIGHEST := 108.0
 const C_MHZ := 299.792458
 
 
-## Every station on the band: [{id, mhz, at (a point on the sphere), mast_m}],
-## low to high. So far one: Port Morgan's own station, the port's music on its
-## mast, on an odd tenth of a MHz the seed picks (as North America spaces them).
-## A station is locked to its frequency, so it never wanders.
+## Every station on the band, low to high: Port Morgan's own, the port's music
+## on its mast ({id, mhz, at (a point on the sphere), mast_m}); and the relay at
+## L1 sending the same music down from the sky ({id, mhz, sky (its id in the
+## constellation)}). Each on an odd tenth of a MHz the seed picks (as North
+## America spaces them), apart from each other, and locked there: a station
+## never wanders.
 static func stations(gods: Gods, run_seed: int, tuning: Tuning) -> Array[Dictionary]:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = hash([run_seed, "port_fm"])
-	var mhz := 88.1 + 0.2 * rng.randi_range(0, 99)
-	return [{"id": &"port_fm", "mhz": snappedf(mhz, 0.1), "at": gods.home(&"ledger", 0.0),
-		"mast_m": tuning.fm_mast_m}]
+	var port := snappedf(88.1 + 0.2 * rng.randi_range(0, 99), 0.1)
+	# The relay's somewhere else on the band, at least a MHz off the port's.
+	var relay := snappedf(fposmod(port - 88.1 + 1.0 + 0.2 * rng.randi_range(0, 89), 20.0) + 88.1, 0.1)
+	var out: Array[Dictionary] = [{"id": &"port_fm", "mhz": port, "at": gods.home(&"ledger", 0.0),
+		"mast_m": tuning.fm_mast_m}, {"id": &"relay", "mhz": relay, "sky": &"relay"}]
+	out.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return a.mhz < b.mhz)
+	return out
 
 
 ## How far a station's signal clears the noise where it arrives, dB: its
@@ -64,6 +70,30 @@ static func edge_loss(from: Vector2, from_top: float, to: Vector2, to_top: float
 		var above: float = ground.call(at.x, at.y) + bulge - lerpf(from_top, to_top, f)
 		worst = maxf(worst, above * sqrt(2.0 * d / (wave * d1 * d2)))
 	return knife_edge_db(worst)
+
+
+## How far a satellite's signal clears the noise where it arrives, dB: the
+## margin a ground station has at a kilometre, `boost` over it for the dish it
+## aims at Zan, less the spreading over `metres`, less what the ground near you
+## costs it toward the satellite, `elevation` rad up along `bearing` (degrees
+## from -z): read along that way out to fm_sky_reach_m, the ground falling away
+## with the moon's curve as radio sees it, each point against the straight line
+## up to it, a knife edge for the worst. From the radio's antenna `top` m high,
+## at world x, z.
+static func sky_margin(x: float, z: float, top: float, elevation: float, bearing: float, metres: float,
+		boost: float, mhz: float, radius: float, ground: Callable, tuning: Tuning) -> float:
+	var spread := 20.0 * log(maxf(metres, 1.0) / 1000.0) / log(10.0)
+	var wave := C_MHZ / mhz
+	var bend := radius * tuning.fm_bend
+	var dir := Vector2(sin(deg_to_rad(bearing)), -cos(deg_to_rad(bearing)))
+	var worst := -INF
+	var points := maxi(tuning.fm_profile_points, 2)
+	for i in range(1, points + 1):
+		var d := tuning.fm_sky_reach_m * float(i) / points
+		var at := Vector2(x, z) + dir * d
+		var above: float = ground.call(at.x, at.y) - d * d / (2.0 * bend) - (top + d * tan(elevation))
+		worst = maxf(worst, above * sqrt(2.0 / (wave * d)))
+	return tuning.fm_margin_db + boost - maxf(spread, 0.0) - knife_edge_db(worst)
 
 
 ## A knife edge's loss, dB, by how far it stands into the way (v, the

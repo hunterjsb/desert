@@ -86,9 +86,11 @@ const ONES: Array[String] = ["zero", "one", "two", "three", "four", "five", "six
 const TENS: Array[String] = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"]
 const UNHEARD := -1
 ## On FM, it works out again how far each station clears the ground between
-## once it's moved this far, m; and a tick's move longer than this is the
-## world shifting under it, not it moving.
+## once it's moved this far, m, or this long has gone by, s (a satellite
+## moves); and a tick's move longer than this is the world shifting under it,
+## not it moving.
 const FM_RECKON_M := 2.0
+const FM_RECKON_S := 1.0
 const FM_JUMP_M := 50.0
 ## Its dial on its face (+Z), m: the band window's middle and size, the band
 ## running from 0 kHz to 2000 across these x, and where the tuning and
@@ -253,6 +255,7 @@ var _moved := 0.0
 var _last_at := Vector3.INF
 var _margins := {}
 var _margins_at := Vector3.INF
+var _margins_t := -INF
 
 
 func _init() -> void:
@@ -853,8 +856,8 @@ func _listen(delta: float) -> void:
 	reception = {}
 	logged = ""
 	if now == MUSIC:
-		# The music comes down from the relay, while it's over the horizon.
-		reception = receive_relay(x, z, t)
+		# The port's music, on AM from its own mast.
+		reception = receive_music(x, z, t)
 		said = "" if not reception.cut and reception.clean > 0.0 else dial + ("· · ·" if reception.cut else "static")
 		under = NOTHING if reception.cut else lerpf(NOTHING, 0.0, reception.clean)
 		song = Sounds.RADIO_DAY if world.weather.day.is_day(t, world.moon.longitude) else Sounds.RADIO_NIGHT
@@ -1010,7 +1013,7 @@ func _listen_fm(delta: float, x: float, z: float, t: float) -> void:
 			music.stop()
 			_on_air = null
 	else:
-		# Port Morgan's station plays the port's music, as the relay does.
+		# Port Morgan's station and the relay both play the port's music.
 		_put_on(Sounds.RADIO_DAY if world.weather.day.is_day(t, world.moon.longitude) else Sounds.RADIO_NIGHT, t)
 		music.pitch_scale = 1.0
 		_level = reception.heard
@@ -1039,9 +1042,11 @@ func _listen_fm(delta: float, x: float, z: float, t: float) -> void:
 ## whole; within the capture ratio of each other they fight, and it's dirty.
 func receive_fm(x: float, z: float, t: float) -> Dictionary:
 	var here := Vector3(x, global_position.y, z)
-	if _margins_at == Vector3.INF or here.distance_to(_margins_at) > FM_RECKON_M:
+	if _margins_at == Vector3.INF or here.distance_to(_margins_at) > FM_RECKON_M \
+			or absf(t - _margins_t) > FM_RECKON_S:
 		_margins = {}
 		_margins_at = here
+		_margins_t = t
 	var ground := func(gx: float, gz: float) -> float: return world.height_at(gx, gz)
 	var best := {}
 	var rival := -INF
@@ -1049,7 +1054,13 @@ func receive_fm(x: float, z: float, t: float) -> Dictionary:
 		var share := Dial.pull(fm_mhz - each.mhz, _tuning.fm_width_mhz)
 		if share < 0.01:
 			continue
-		if not _margins.has(each.id):
+		if not _margins.has(each.id) and each.has("sky"):
+			# From the sky: over the horizon, and clear of the ground near you.
+			var seen: Dictionary = constellation_of(world).orbits[each.sky].seen_from(point_at(x, z), t)
+			_margins[each.id] = Fm.sky_margin(x, z, global_position.y, seen.elevation,
+				ground_bearing(rad_to_deg(seen.bearing)), seen.metres, _tuning.relay_fm_db, each.mhz,
+				world.moon.radius, ground, _tuning)
+		elif not _margins.has(each.id):
 			var from := ground_of(each.at)
 			_margins[each.id] = Fm.margin(from, world.height_at(from.x, from.y) + each.mast_m, Vector2(x, z),
 				global_position.y, each.mhz, world.moon.radius, ground, _tuning)
@@ -1171,11 +1182,30 @@ func signal_bus() -> StringName:
 	return bus
 
 
-## The relay's signal as it reaches a place at world time t (receive_from).
-func receive_relay(x: float, z: float, t: float) -> Dictionary:
-	var heard := receive_from(relay_of(world), Dial.MUSIC_KHZ, &"relay", x, z, t)
-	heard.id = &"music"
-	return heard
+## The port's music on the AM dial as it reaches a place at world time t:
+## sent from Port Morgan's own mast on Dial.MUSIC_KHZ, carried as AM is
+## (Dial.strength: a short ground wave by day at that frequency, round the
+## moon past the skip at night), through the storm between, as a god's is.
+## The port's strongest sender is the Ledger's, so it sends as strongly.
+## The relay at L1 sends the same music down on the FM band (receive_fm).
+func receive_music(x: float, z: float, t: float) -> Dictionary:
+	var p := point_at(x, z)
+	var q := gods_of(world).home(&"ledger", t)
+	var metres := Sphere.angle(p, q) * world.moon.radius
+	var ground := ground_bearing(rad_to_deg(Sphere.bearing(p, q)))
+	var night := not world.weather.day.is_day(t, Sphere.longitude(p))
+	var storm := Interference.along(world.weather.field, x, z, ground, metres, t, _tuning)
+	var slid := Interference.warp(storm, t, &"music", _tuning)
+	var share := Dial.heard(frequency - Dial.MUSIC_KHZ - slid, _tuning)
+	var power := Dial.strength(&"ledger", Dial.MUSIC_KHZ, metres, night, _tuning)
+	var jammed := constellation_of(world).jamming(frequency, p, t)
+	var through := Interference.let_through(storm, _tuning)
+	var clean := smoothstep(_tuning.signal_floor, WHOLE, share * power) * through * (1.0 - jammed)
+	var dirt := Garble.dirt(power, through, jammed, odd,
+		1.0 - Dial.pull(frequency - Dial.MUSIC_KHZ - slid, _tuning.dial_width_khz), _tuning)
+	return {"id": &"music", "khz": Dial.MUSIC_KHZ, "metres": metres, "bearing": ground, "storm": storm,
+		"warp": slid, "strength": share * power, "clean": clean, "cut": Interference.cut(storm, t, &"music", _tuning),
+		"share": share, "dirt": dirt}
 
 
 ## A satellite's signal on carrier `khz` as it reaches a place at world time

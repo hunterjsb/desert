@@ -39,7 +39,9 @@ func _heard_at(beside: float, up: float) -> Dictionary:
 	var z := world.world_z(radio.global_position.z)
 	radio.global_position.y = world.height_at(x, z) + up
 	radio.switch_band()
-	radio.interact(world.player)
+	radio.on = true
+	radio.fm_mhz = Fm.stations(Radio.gods_of(world), world.run_seed, Tuning.current()).filter(
+		func(each: Dictionary) -> bool: return each.id == &"port_fm")[0].mhz
 	await physics_frames(2)
 	var heard := radio.receive_fm(x, z, world.time)
 	radio.free()

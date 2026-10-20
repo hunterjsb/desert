@@ -6,9 +6,8 @@ extends Probe
 ## perigee swing round, so each lap takes a new route. It's on the air in
 ## fits, about its share of the time, the spells of uneven length; its carrier
 ## hops round its band at uneven gaps; it tumbles, its signal swelling and
-## fading and its light flashing. The relay's ellipse swings round too, and a
-## run still begins with it over where it began; it tumbles slowly. The
-## cinder's orbit decays, sinking lap by lap until a burn throws it back up,
+## fading and its light flashing. The relay, hung at L1 (radio probe 13),
+## tumbles slowly. The cinder's orbit decays, sinking lap by lap until a burn throws it back up,
 ## and its roar brightens as it sinks. Nearer, each looks brighter. The
 ## formation stays as it was: circles that don't turn.
 
@@ -21,7 +20,6 @@ func run() -> void:
 	var start := Sphere.point(deg_to_rad(12.0), deg_to_rad(40.0))
 	var sky := Constellation.new(SEED, tuning, start)
 	var ghost: Satellite = sky.orbits[&"ghost"]
-	var relay: Satellite = sky.orbits[&"relay"]
 
 	# Its ellipse: low and fast, high and slow.
 	var lowest := INF
@@ -42,7 +40,7 @@ func run() -> void:
 	check(fastest > slowest * 10.0, "sweeping fast at its perigee and crawling at its apogee")
 
 	# Each lap a new route: its plane swung round, lap on lap.
-	for row: Array in [[&"ghost", ghost, 20.0], [&"relay", relay, 10.0]]:
+	for row: Array in [[&"ghost", ghost, 20.0]]:
 		var orbit: Satellite = row[1]
 		var plane := _plane(orbit, 0.0)
 		var later := _plane(orbit, orbit.period * 3.0)
@@ -54,7 +52,6 @@ func run() -> void:
 	check(held < 0.5, "the formation's planes hold still (%.2f°)" % held)
 	check(formation.eccentricity == 0.0 and formation.precession == 0.0 and absf(formation.height(0.0)
 		- formation.height(formation.period * 0.37)) < 1e-4, "the formation's orbits stay circles that don't turn")
-	check(relay.under(0.0).angle_to(start) < 1e-3, "a run still begins with the relay over where it began")
 
 	# On in fits, for spells of uneven length.
 	var on := 0

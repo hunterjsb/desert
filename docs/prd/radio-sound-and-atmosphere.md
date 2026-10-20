@@ -178,6 +178,8 @@ terminals" by Hunter's call. The squatting oracles above are now the gods.
   its pitch sliding with the storm's warp, and as loud at its peaks as Clear Skies (Hunter: "stoker track
   too quiet"). Both come through like any signal: down by the root of how clean it is,
   silent while it's cut, and never started over by a dropout.
+  *Superseded 2026-10-20: the relay now hangs at L1 beside Tu and sends the music on the FM band, and the
+  1020 kHz music comes from Port Morgan's own mast (Bands, below). The passes described here are gone.*
   **The relay** (Hunter, 2026-10-18: "Tie the existing music channel to an orbiting satellite, loosely
   simulate this satellite's position in orbit and give it interference just like the other freqs based on
   it's simulated position," and "Make the satellite visible in the night sky if it's overhead"): the
@@ -356,7 +358,8 @@ they swap to their next saved frequency."*
   skirt: `dial_skirt_share` (0.35) over `dial_skirt_khz` (20) either side (`Dial.heard`). So 10 kHz off a
   carrier you hear about a fifth of it, at 50 kHz nothing. The dial counts the nearest god, music or beacon
   within 30 kHz (`Dial.reach`) as the one it hears, so tuning toward one brings it in faint, then whole.
-- **The constellation** (`game/radio/constellation.gd`). Thirteen satellites, the relay among them, each from an
+- **The constellation** (`game/radio/constellation.gd`). Thirteen satellites, the relay among them (fourteen since
+  2026-10-20, with the sextant), each from an
   era, in a band of its own (its carrier a fresh place inside it each moon day), on a route of its own,
   and each its own in the night sky by colour, shape (a point, a cross, a bar, a ring, a pair or a
   diamond) and size; one blinks. A radio hears each while it's over the horizon
@@ -442,11 +445,12 @@ they swap to their next saved frequency."*
 
   | Satellite | Era | Band, kHz | Looks | Orbit | Sound (placeholder) | Turned by |
   |---|---|---|---|---|---|---|
-  | The relay | colonial | 1020 | white point, glinting | an ellipse (0.3) about 3 radii, 6.5 min, swinging round | the music, as before | a slow tumble: swells and fades every 20 s |
+  | The relay | colonial | the FM band (since 2026-10-20) | white point, glinting | hung at L1 beside Tu, on a halo 0.9 radii across, 10 min (since 2026-10-20) | the music | a slow tumble: its glint |
   | Thermal | Frontier Ag | 320–350 | a great dark hull against its own amber running lights | skimming 1.9 km up, 6.37 min, swinging 37° a lap; over the start as a run begins | tunnel drone | pitch by the temperature; tone by its height |
   | Sounder | StarCom | 560–590 | lime diamond | formation, plane 1 | the storm's roar | pitch wandering; brighter by day |
   | Lantern | StarCom | 1590–1620 | never seen | round Tu, 60 radii off, 11 min; heard only on Zan's side of Tu | the day song, slowed | faint; clearest straight between Tu and Zan |
-  | Pendulum | StarCom | 700–730 | cyan cross | formation, plane 2 | a ping, pulsed | its tick quickening toward the eclipse |
+  | Pendulum | StarCom | 700–730 | cyan cross | hung at L2 over the far side's middle, on a halo (since 2026-10-20) | a ping, pulsed | its tick quickening toward the eclipse |
+  | Sextant | StarCom | 975–1000 | pale blue point | formation, plane 2 (since 2026-10-20, in the Pendulum's place) | a quick double ping (placeholder) | pitch by its height |
   | Windsock | StarCom | 1032–1060 | green ring | formation, plane 3 | the wind | loudness and tone by the wind; grit by a storm |
   | Choir | colonial | 430–470 | lavender pair | formation, plane 4 | the Eye's drone | pitch sinking with the sun; tone drifting |
   | Babel | the war | 1290–1340 | red diamond, blinking | formation, plane 5 | tones, chirped | pulse and pitch wandering; grit by an anomaly |
@@ -625,7 +629,38 @@ crystal set and kite, the loop's direction finding, natural radio, the dish, and
 - **The deed** Line of Sight: hear an FM station come through quiet.
 - **Probes:** radio 42 (the converter reaches FM and its loss takes it away) and 43 (height is range).
 - **Not yet:** a second FM station for the capture effect to be heard; an FM set that plays it wide;
-  FM's own scale painted on the face; the relay at L1.
+  FM's own scale painted on the face.
+
+**The relay at L1 and the Pendulum at L2, as built (2026-10-20, slice C):**
+- **The Lagrange points** (`Satellite._at_lagrange`): 8 moon radii from Zan's middle toward Tu (L1) and
+  away (L2) (`lagrange_radii`), each satellite looping round its point on a halo 0.9 radii across the line
+  to Tu, once in 10 minutes (`halo_radii`, `halo_minutes`), its place on the halo the seed's. Tu stands
+  still in the moon's frame, so the points do too.
+- **The relay hangs beside Tu.** From where a run begins it stands a few degrees off Tu all day and never
+  sets, looping slowly (radio probe 13); it holds its place while the stars turn past (probe 17). It's
+  drawn as before, a glinting point while sunlit. It's never up on the far side.
+- **The relay sends the music on the FM band**, on its own odd tenth of a MHz at least 1 MHz off the
+  port's (`Fm.stations`). A dish aimed at Zan gives it 55 dB over the port's station (`relay_fm_db`), less
+  its spreading over the distance; the ground near you toward it is read out to 3 km
+  (`fm_sky_reach_m`), the curve falling away, a knife edge for the worst (`Fm.sky_margin`), so low on the
+  horizon, toward the Rim, a dune can hide it. A storm doesn't touch it. With a converter, the music is
+  clean anywhere on the near side Tu shows, every hour, as thin as the AM set plays.
+- **The AM music comes from the port's own mast** on 1020 kHz (`Radio.receive_music`), as strongly as the
+  Ledger sends, carried as AM is: a short ground wave by day at that frequency, round the moon past the
+  skip at night, through the storm between as a god's is. At the start, 44 km off, it's faint and chewed
+  up by day and clean at night; on the far side it comes only at night (probe 19, the **"far_storm"**
+  scenario now at night). The relay's Doppler slide on it is gone.
+- **The Pendulum hangs at L2**, over the anti-Tu point where the observatory stands: heard only from the
+  far side and the Rim. It stays on its 700–730 kHz band until the constellation goes up through the
+  ceiling (the next slice).
+- **The Sextant** takes the Pendulum's plane in the formation, so "always two overhead" still holds
+  (probe 34): StarCom's navigation beacon, a pale blue point, a quick double ping whose pitch climbs as it
+  does, on 975–1000 kHz.
+- **The "night" scenario** faces the relay beside Tu, 10–50° up; "relay_up" is gone with the passes.
+- **Probes:** 13 rewritten (the relay hangs beside Tu), and 17, 19, 31, 32, 35, 36 and 38 follow the
+  relay's move: no passes, no ellipse, the music at night where they needed it clean.
+- **Not yet:** the constellation through the ceiling; a link from L1 to L2 carrying the music to the far
+  side; Tu's shadow on the relay in the eclipse.
 
 ### Litanies and the survey log (2026-10-18; built, on the `signatures` branch)
 
