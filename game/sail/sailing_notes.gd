@@ -74,7 +74,7 @@ func page(at: int, paragraph := 0) -> Words:
 func _visual_page(at: int) -> Words:
 	var leaves := pages()
 	var menu := Words.new("%s · %d / %d" % [leaves[at][0], at + 1, leaves.size()])
-	menu._list.add_theme_constant_override("separation", 8)
+	menu._list.theme_type_variation = &"BookMenuList"
 	var image := TextureRect.new()
 	image.texture = load(leaves[at][2])
 	image.expand_mode = TextureRect.EXPAND_IGNORE_SIZE

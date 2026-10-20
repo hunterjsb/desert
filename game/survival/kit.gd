@@ -46,6 +46,8 @@ const ORIGINS: Array[String] = [STANDARD, "res://game/survival/salvager_kit.tres
 ## rig's steps name, each this much slack, m: from a mast, its sheet at the
 ## boom's end; from a hook, its tie; else the thing's free tie nearest you.
 @export var waist: Dictionary[StringName, float] = {}
+## Named waist sheets installed through an ordinary removable guide hook.
+@export var guided_sheets: PackedStringArray = []
 ## How full the batteries in what's beside you and the devices you carry
 ## start, 0 to 1.
 @export var charge := 1.0
@@ -140,6 +142,8 @@ func gear() -> Dictionary[StringName, int]:
 		_count(out, &"line")
 	for id in waist:
 		_count(out, &"line")
+	for id in guided_sheets:
+		_count(out, &"hook")
 	var on_you := carried_gear()
 	for id in on_you:
 		_count(out, id, on_you[id])

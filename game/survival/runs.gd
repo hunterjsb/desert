@@ -204,7 +204,7 @@ static func kit(world: World, from: Kit = null) -> Array[Node]:
 			var line := Line.to_waist(world, tie, from.waist[id])
 			line.full = maxf(line.full, world.tuning.rope_coil_length)
 			line.rope.full = line.full
-			if named[id] is Mast:
+			if named[id] is Mast and id in from.guided_sheets:
 				(named[id] as Mast).rig_sheet(line)
 			made.append(line)
 	return made

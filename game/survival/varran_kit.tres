@@ -5,6 +5,7 @@
 [resource]
 script = ExtResource("1_kit")
 id = &"varran"
+guided_sheets = PackedStringArray("mast")
 label = "Varran settler"
 about = "sails the storms"
 start = &"artery"

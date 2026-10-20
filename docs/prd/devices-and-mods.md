@@ -1696,3 +1696,7 @@ face-placement and overlap/overload probes (devices 31 and 32) pass unchanged; t
 new mixed-deck fixture joins an equipped skate piece through the hands and sticks
 a true hover keel to a separate clear underside. Restoring the category ban makes
 that actual hand join fail. Mass recomputation, power demand and geometry are unchanged.
+
+Starter sheet guides are authored kit data: each declared guided waist sheet
+installs one ordinary removable hook. The origin gear listing counts that same
+hook; constructing the kit must not silently add unlisted equipment.

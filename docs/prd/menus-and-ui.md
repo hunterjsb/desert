@@ -631,7 +631,7 @@ Each caption is 12–21 words before action binding expansion. The last explains
 that one line works automatically and multiple lines are chosen in the carry view;
 it does not teach the proposed held-end bundle. Image rows dispatch to a compact
 Words layout; the Surveyor subclass's two-column text rows retain the prior reader.
-No global theme or Guide content changes. Captions use existing KeysList Geist
+BookMenuList supplies compact spacing through the shared theme; Guide content is unchanged. Captions use existing KeysList Geist
 prose at 20 px, not the numeric mono face.
 
 The four intentional PNG assets are actual unseen game captures with the photo
@@ -647,3 +647,8 @@ normal Next/Previous/Chapters controls remain within the screen. Action macros
 render current bindings. The Surveyor Guide still has five prose pages and no
 image nodes; its first page was also viewed in the same capture. No new repository
 probe, wording pin, global UI refactor or reading deed was added.
+
+Combined verification correction: visual booklet spacing belongs in the shared
+theme as a MenuList variation, rather than a per-control override. Origin gear
+counts must include each real starter sheet guide declared by the kit, matching
+the removable hook installed when that waist sheet is laid.
