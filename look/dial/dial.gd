@@ -7,6 +7,7 @@ extends Node
 ## its scale lit. Three frequencies are marked, in a profile of the look-test's
 ## own, so their ticks show on the band, and its signal lamps show what it hears. The real close-up, driven a frame at a time:
 ##   godot --path . --disable-vsync res://look/dial/dial.tscn -- --capture <dir>
+## Add --720p after the capture directory for a 1280 by 720 UI check.
 ## look/dial/shoot.sh builds the sheet. A small window that never takes
 ## focus, nothing but this script moving anything, and silence.
 
@@ -44,7 +45,7 @@ func _capture(out_dir: String) -> void:
 	window.unfocusable = true
 	window.size = Vector2i(960, 540)
 	window.content_scale_mode = Window.CONTENT_SCALE_MODE_VIEWPORT
-	window.content_scale_size = Vector2i(1920, 1080)
+	window.content_scale_size = Vector2i(1280, 720) if OS.get_cmdline_user_args().has("--720p") else Vector2i(1920, 1080)
 	AudioServer.set_bus_mute(0, true)
 	var player := world.player
 	player.set_process_unhandled_input(false)
@@ -59,6 +60,8 @@ func _capture(out_dir: String) -> void:
 		Profile.mark(each[0], "", each[1], 1.0)
 	await _ground()
 	await Scenarios.apply(world, Scenarios.by_key("clear_skies"))
+	# The unified clear setup supplies a flare; this fixture needs free hands.
+	player.hands.drop()
 	await _ground()
 	var radio: Radio = world.get_meta(&"scenario_kit").filter(func(n: Node) -> bool: return n is Radio)[0]
 	player.set_physics_process(false)
@@ -93,6 +96,10 @@ func _capture(out_dir: String) -> void:
 	radio.freeze = false
 	player.hands.hold(radio)
 	await _ticks(30)
+	if player.hands.held != radio:
+		push_error("The held dial capture must hold its radio")
+		get_tree().quit(1)
+		return
 	radio.tune(-3)
 	close.tuned(radio)
 	await _ticks(40)
@@ -134,7 +141,7 @@ func _eyes(eye: Vector3, target: Vector3) -> void:
 
 func _shoot(out_dir: String, name: String, radio: Radio) -> void:
 	for layer: CanvasLayer in world.find_children("*", "CanvasLayer", true, false):
-		layer.visible = false
+		layer.visible = layer.name == &"RadioTuningControls" or (OS.get_cmdline_user_args().has("--720p") and layer is Bars)
 	await get_tree().process_frame
 	await get_tree().process_frame
 	get_viewport().get_texture().get_image().save_png(out_dir.path_join(name + ".png"))
