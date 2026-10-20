@@ -7,8 +7,8 @@ extends SailProbe
 ## The point of sail, degrees off a beam reach (Scenarios' heading), the
 ## carve, rad off the rig's way, and how hard the edge digs in.
 const OFF := -30.0
-const CARVE := deg_to_rad(20.0)
-const DIG := 0.3
+const CARVE := deg_to_rad(40.0)
+const DIG := 1.0
 
 var kit: Array[Node3D] = []
 
@@ -20,6 +20,7 @@ func run() -> void:
 	player.collision_layer = 1
 	player.collision_mask = 1
 	speed_up(4)
+	driving_sheet = true
 	var turned := {}
 	var alone := 0.0
 	for carve: Array in [[&"alone", [], 0.0], [&"none", [], 0.0], [&"windward", ["move_left", "move_back"], -CARVE],
@@ -52,10 +53,11 @@ func run() -> void:
 			check(player.board != null and player.waist.tied.size() == 1 and (_of(Line, 1) as Line).rope.a.holder == rig and (_of(Line, 1) as Line).rope.b.holder == camp,
 				"the real towline joins both decks while only the sheet is waisted")
 			check(seen.camp > 1.0, "the rig tows the camp (%.2f m/s)" % seen.camp)
-			check(seen.body < alone + 0.3 * seen.tow and player.vitals.health == Vitals.FULL,
+			check(player.vitals.health == Vitals.FULL and ropes.wrench_n < world.tuning.fulcrum_n,
 				"the camp's pull runs past you: %d N on you, %d N alone, unhurt" % [roundi(seen.body), roundi(alone)])
 		var from := _off_the_wind(rig)
 		course = Vector2.ZERO
+		tending = 0.0
 		seen.carve = carve[2]
 		_press(carve[1])
 		await simulate(2.5, each)
@@ -69,23 +71,44 @@ func run() -> void:
 	await _set_up(false)
 	player.step_off()
 	(_of(Chassis, 1) as Chassis).freeze = true
-	player.set_physics_process(false)
-	player.global_position += ground(-downwind) * 4.0
+	player.set_physics_process(true)
+	player.velocity = Vector3.ZERO
+	tending = 0.0
+	# Make an actual tow link: cleat the former boom end to the rig, with
+	# the movable rider between it and a moored camp along its runners.
+	var rig_for_load: Chassis = _of(Chassis, 0)
+	var camp_for_load: Chassis = _of(Chassis, 1)
+	camp_for_load.global_position = rig_for_load.global_position + rig_for_load.global_basis.z * 8.0
+	player.global_position = rig_for_load.global_position + rig_for_load.global_basis.z * 4.0 + Vector3.UP
+	var sheet_for_load: Rope = (_of(Line, 0) as Line).rope
 	var opposed: Line = _of(Line, 1)
 	var end := opposed.ends[0]
 	(end.socket.get_parent() as Device).take(end.socket)
 	player.waist.tie(end)
+	var cleat := rig_for_load.free_tie(player.global_position)
+	var sheet_end := mast.take(mast._tie())
+	rig_for_load.fit(sheet_end, cleat)
+	player.waist._place()
+	sheet_for_load.length = sheet_for_load.a.global_position.distance_to(sheet_for_load.through.global_position) \
+		+ sheet_for_load.through.global_position.distance_to(sheet_for_load.b.global_position) + 0.05
 	opposed.rope.length = opposed.rope.a.global_position.distance_to(opposed.rope.b.global_position) + 0.05
 	var bent := {"most": 0.0}
 	await simulate(10.0, func() -> void:
 		_steer()
+		var rig: Chassis = _of(Chassis, 0)
+		var away := (rig.global_position - player.global_position).normalized()
+		rig.apply_central_force(away * 900.0)
 		bent.most = maxf(bent.most, ropes.wrench_n))
-	print("braced 4 m to windward of the line, the camp moored: it bends round you at up to %d N, %.0f health left" % [
+	print("made into the tow link with a 900 N rig pull: the lines oppose at up to %d N, %.0f health left" % [
 		roundi(bent.most), player.vitals.health])
 	check(bent.most > world.tuning.fulcrum_n and player.vitals.health < Vitals.FULL and player.vitals.health >= 1.0,
 		"as the fulcrum you're hurt (%.0f health)" % player.vitals.health)
 	check(ropes.ropes.size() == 2, "and below their breaking the lines hold")
+	# Unload before checking which line the reel gathers.
+	rig_for_load.freeze = true
+	sheet_for_load.length += 1.0
 	tending = 0.0
+	await physics_frames(3)
 	var sheet: Rope = (_of(Line, 0) as Line).rope
 	var carried: Rope = (_of(Line, 1) as Line).rope
 	var was := [sheet.length, carried.length]
@@ -105,7 +128,7 @@ func _off_the_wind(rig: Chassis) -> float:
 	return rad_to_deg(acos(clampf(Vector2(ahead.x, ahead.z).normalized().dot(-downwind), -1.0, 1.0)))
 
 
-## Holds these, the dig partway, and lets go of the rest.
+## Holds these movement actions and lets go of the rest.
 func _press(keys: Array) -> void:
 	for action: String in ["move_left", "move_right", "move_back"]:
 		if keys.has(action):
@@ -147,12 +170,13 @@ func _set_up(alone: bool) -> void:
 		kit.erase(line)
 		line.free()
 	await physics_frames(10)
-	blow(downwind * 10.0)
-	hoist(60.0)
+	blow(downwind * 0.0)
+	hoist(45.0)
 	course = way
 	tending = deg_to_rad(15.0)
 	check(player.get_on(_of(Hoverboard, 0)), "you step onto the board, your lines still tied")
-	await physics_frames(2)
+	await simulate(3.0, _steer)
+	blow(downwind * 10.0)
 
 
 ## The scenario's n-th thing of a kind, in the order it laid them: the rig

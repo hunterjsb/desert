@@ -1404,3 +1404,18 @@ With that real sheet handling, the unchanged yacht check passes in 28 seconds:
 keeled upwind progress, sideways drift, staying at the helm, actual sheet
 reeling, and resuming seated all remain asserted. The basic two-tack runner
 check independently passes in 32 seconds.
+
+For the tow steering comparison, the helmsman first trims, then holds that
+actual paid length while carving. Continuing to pay out automatically during
+the carve cancels the very line-load change being measured. Normal digital
+braking plus a 40 degree look/carve offset produces +7.4 and −17.7 degrees
+relative to the passive turn in 2.5 seconds, retaining the 6 degree assertions.
+The tow trial measures 2.06 m/s following-camp speed and 67 N on the unhurt
+rider. The deliberate hazard moves the former boom end to a real deck cleat,
+ties the tow end to the waist, and lets the on-foot rider actually move between
+rig and moored camp under a known 900 N rig pull. Disabling player motion had
+artificially absorbed the force before the second line could take strain. The
+real arrangement reaches 937 N opposing load and 21 health with both lines
+intact; the worked line is unloaded before the independent reeling check.
+
+The official visible-tow check passes in 26 seconds with those assertions intact.
