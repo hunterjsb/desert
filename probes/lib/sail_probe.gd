@@ -107,6 +107,11 @@ func set_down(device: Device) -> void:
 
 ## The sail up at once, its boom free to swing as far as `degrees` either way.
 func hoist(degrees: float) -> void:
+	# Authored fixtures carry a braked halyard; start it at its hauled length.
+	var halyard := mast.halyard()
+	if halyard != null and halyard.through == mast.pulley:
+		halyard.length = halyard.full - Mast.LUFF
+		halyard.strand.set_length(halyard.length)
 	mast.raised = true
 	mast.raise = 1.0
 	trim(degrees)

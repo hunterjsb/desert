@@ -221,7 +221,8 @@ const SKATES := [[&"stick", Vector2i(0, 0), &"bottom", Vector2.ZERO, 0.0, &"skat
 	[&"stick", Vector2i(0, 1), &"bottom", Vector2.ZERO, 0.0, &"skates"],
 	[&"stick", Vector2i(1, 1), &"bottom", Vector2.ZERO, 0.0, &"skates"]]
 const SQUARE := [[&"piece", Vector2i(1, 0)], [&"piece", Vector2i(0, 1)], [&"piece", Vector2i(1, 1)]]
-const SAIL_MAST := [&"stick", Vector2i(0, 0), &"top", Vector2.ZERO, 180.0, [&"mast", [&"sail"]], &"mast"]
+const SAIL_MAST := [&"stick", Vector2i(0, 0), &"top", Vector2(0.4, 0.0), 180.0, [&"mast", [&"sail"]], &"mast"]
+const SAIL_WINCH := [&"stick", Vector2i(1, 0), &"top", Vector2(0.0, 0.0), 0.0, &"hand_winch", &"hoist"]
 const SAIL_BALLAST := [[&"frame", Vector2i(0, 1), 0],
 	[&"stick", Vector2i(0, 1), &"top", Vector2(-0.25, 0.0), 0.0, &"big_battery"],
 	[&"stick", Vector2i(0, 1), &"top", Vector2(0.0, 0.0), 0.0, &"battery"],
@@ -248,17 +249,17 @@ const YACHT_DECK := [-3.5, 2.5]
 const YACHT_RIG := [[&"piece", Vector2i(1, 0)], [&"piece", Vector2i(2, 0)], [&"piece", Vector2i(0, 1)],
 	[&"piece", Vector2i(1, 1)], [&"piece", Vector2i(2, 1)],
 	[&"stick", Vector2i(0, 0), &"bottom", Vector2.ZERO, 0.0, &"hover_tray"],
-	[&"stick", Vector2i(1, 0), &"bottom", Vector2.ZERO, 0.0, &"hover_tray"],
+	[&"stick", Vector2i(1, 0), &"bottom", Vector2.ZERO, 0.0, &"keel"],
 	[&"stick", Vector2i(2, 0), &"bottom", Vector2.ZERO, 0.0, &"hover_tray"],
-	[&"stick", Vector2i(0, 1), &"bottom", Vector2(0.0, 0.25), 0.0, &"hover_tray"],
-	[&"stick", Vector2i(1, 1), &"bottom", Vector2.ZERO, 0.0, &"hover_tray"],
-	[&"stick", Vector2i(2, 1), &"bottom", Vector2.ZERO, 0.0, &"keel"],
-	[&"stick", Vector2i(0, 0), &"top", Vector2.ZERO, 180.0, [&"mast", [&"sail"]], &"mast"],
+	[&"stick", Vector2i(0, 1), &"bottom", Vector2.ZERO, 0.0, &"hover_tray"],
+	[&"stick", Vector2i(1, 1), &"bottom", Vector2.ZERO, 0.0, &"keel"],
+	[&"stick", Vector2i(2, 1), &"bottom", Vector2.ZERO, 0.0, &"hover_tray"],
+	[&"stick", Vector2i(1, 0), &"top", Vector2.ZERO, 180.0, [&"mast", [&"sail"]], &"mast"],
 	[&"stick", Vector2i(1, 1), &"top", Vector2.ZERO, 180.0, &"helm_seat", &"helm"],
-	[&"frame", Vector2i(0, 1), 0],
-	[&"stick", Vector2i(0, 1), &"top", Vector2(-0.25, 0.0), 0.0, &"big_battery"],
-	[&"stick", Vector2i(0, 1), &"top", Vector2(0.0, 0.0), 0.0, &"battery"],
-	[&"stick", Vector2i(0, 1), &"top", Vector2(0.25, 0.0), 0.0, &"big_battery"]]
+	[&"stick", Vector2i(2, 0), &"top", Vector2.ZERO, 0.0, &"hand_winch", &"hoist"],
+	[&"stick", Vector2i(0, 1), &"top", Vector2.ZERO, 0.0, &"big_battery"],
+	[&"stick", Vector2i(0, 0), &"top", Vector2(0.0, 0.0), 0.0, &"battery"],
+	[&"stick", Vector2i(2, 1), &"top", Vector2.ZERO, 0.0, &"big_battery"]]
 ## Open sand to sail on: level within this much, m, for this far either way
 ## across the run's long-term wind, m, read every so far along it, m, and
 ## sought this far up and down the wind from where the run began, m, in
@@ -1426,18 +1427,19 @@ static func _free(device: Device, kind: StringName) -> Socket:
 ## facing across the wind ahead of you, a mast with its sail furled on the
 ## front piece to windward, its ballast in a frame behind it and a charged
 ## shield, switched off, behind to leeward. The sheet runs from the boom's
-## end to your waist, and a charged board lies at your feet. Use the mast to
+## end to your waist, and a charged board lies at your feet. Work the hand winch to
 ## raise the sail, and ride.
 static func sail(world: World) -> Array[Node3D]:
-	var rig := rig_at(world, SQUARE + [SAIL_TAIL] + SKATES + [SAIL_MAST,
+	var rig := rig_at(world, SQUARE + [SAIL_TAIL] + SKATES + [SAIL_MAST, SAIL_WINCH,
 		[&"up", &"mast", &"front", Vector2(0.0, 0.5), 0.0, &"streamer"]] + SAIL_BALLAST + [SAIL_SHIELD], SAIL_DECK)
 	var mast: Mast = rig.named.mast
+	var hoist := mast.rig_hoist(rig.named.hoist)
 	var board := standing(world, &"board", [&"battery"], SAIL_BOARD)
 	var sheet := sheet_to_waist(world, mast)
 	# Eased for a start across the wind: reel in as it picks up speed.
 
 	var dropped := _of(rig)
-	dropped.append_array([board, sheet, standing(world, &"sailing_notes", [], [-0.75, 0.8])])
+	dropped.append_array([hoist, board, sheet, standing(world, &"sailing_notes", [], [-0.75, 0.8])])
 	if Controls.ui != null:
 		Controls.ui.teach("sailing_notes", "Sailing field notes lie beside the board. Look at them and {interact} to read, or take them with you.")
 	return dropped
@@ -1450,15 +1452,16 @@ static func sail(world: World) -> Array[Node3D]:
 ## your waist, with the board at your feet. Raise the
 ## sail, ride, and carve to steer.
 static func sail_tow(world: World) -> Array[Node3D]:
-	var rig := rig_at(world, SQUARE + [SAIL_TAIL] + SKATES + [SAIL_MAST] + SAIL_BALLAST + [[&"hook", Vector2i(0, 2), Vector2i(0, 1)]], SAIL_DECK)
+	var rig := rig_at(world, SQUARE + [SAIL_TAIL] + SKATES + [SAIL_MAST, SAIL_WINCH] + SAIL_BALLAST + [[&"hook", Vector2i(0, 2), Vector2i(0, 1)]], SAIL_DECK)
 	var mast: Mast = rig.named.mast
+	var hoist := mast.rig_hoist(rig.named.hoist)
 	var camp := rig_at(world, SQUARE + SKATES + TOW_STORES, TOW_CAMP)
 	var board := standing(world, &"board", [&"battery"], SAIL_BOARD)
 	var sheet := sheet_to_waist(world, mast)
 	var line := Line.between(world, _deck_tie(rig.deck, Vector2i(0, 2), Vector2i(0, 1)), _deck_tie(camp.deck, Vector2i.ZERO, Vector2i(0, -1)), 0.5)
 
 	var dropped := _of(rig) + _of(camp)
-	dropped.append_array([board, sheet, line])
+	dropped.append_array([hoist, board, sheet, line])
 	return dropped
 
 
@@ -1468,12 +1471,13 @@ static func sail_tow(world: World) -> Array[Node3D]:
 ## ballast in a frame beside it to windward; the sheet at your waist. Raise the sail,
 ## sit at the helm, and reel in.
 static func yacht(world: World) -> Array[Node3D]:
-	var rig := rig_at(world, YACHT_RIG + [SAIL_TAIL], YACHT_DECK)
+	var rig := rig_at(world, YACHT_RIG + [[&"piece", Vector2i(1, 2)]], YACHT_DECK)
 	var mast: Mast = rig.named.mast
+	var hoist := mast.rig_hoist(rig.named.hoist)
 	var sheet := sheet_to_waist(world, mast)
 
 	var dropped := _of(rig)
-	dropped.append(sheet)
+	dropped.append_array([hoist, sheet])
 	return dropped
 
 

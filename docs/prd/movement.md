@@ -1736,3 +1736,20 @@ Actual unseen GPU captures at 1280×720 inspect the wheel, pulley and partly
 hoisted rig (`look/hoist/hoist.tscn`). The metal/teal drum, wound rope, yellow
 handle, mounting plate and masthead block use the established worn materials.
 The catalog footprint contains the moving wheel and grip.
+
+
+### Authored rig balance and hoist hardware (agreed follow-up, 2026-10-20)
+
+The playtest accepts that real ropes and collisions govern the sail, while
+skate craft stall and hover craft tend to circle. Improve authored construction
+rather than adding a course-holding force. Put the yacht's mast and lateral
+resistance on its centreline, use symmetric corner lift and distribute its
+finite ballast. Check reach, heel and steering under the actual sheet. Bring
+the skated rig's mast closer to its middle without exceeding its mounting
+face, and verify real hook clearance.
+
+Every new authored sailing scenario and Varran start supplies a fitted manual
+winch and ordinary pre-rigged halyard. Kit data names both endpoints and counts
+the supplied line. Generated salvage can provide the same winch so a player
+can assemble the mechanism outside a dev scenario. Refresh the illustrated
+sailing controls to include hoisting at the wheel.

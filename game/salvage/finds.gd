@@ -67,6 +67,7 @@ const DEVICES := {
 		[&"board", 1],
 		[&"console", 1],
 		[&"mast", 1],
+		[&"hand_winch", 1],
 	],
 }
 ## What a survival kit holds, by socket kind, and the share of its slots
