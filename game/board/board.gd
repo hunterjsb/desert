@@ -138,19 +138,20 @@ func meter(from: float, to: float, seconds: float) -> void:
 		_drawn.append([from, to, wh])
 
 
-## Now, what it draws; read by a power tick ending at world time t, the mean
+## Now, what it draws; read by a power tick starting at world time t, the mean
 ## over that tick of what the ticks ridden in it drew. On a deck, its charging.
 func demand_w(t := NAN) -> float:
 	var parts_w := super(t) + charge_w()
 	if is_nan(t):
 		return parts_w + draw_w()
 	var step := _tuning.power_tick
+	var end := t + step
 	var wh := 0.0
 	var later: Array[Array] = []
 	for each: Array in _drawn:
 		var span: float = maxf(each[1] - each[0], 1e-9)
-		wh += each[2] * clampf(minf(each[1], t) - maxf(each[0], t - step), 0.0, span) / span
-		if each[1] > t:
+		wh += each[2] * clampf(minf(each[1], end) - maxf(each[0], t), 0.0, span) / span
+		if each[1] > end:
 			later.append(each)
 	# A jump back in time (a scenario) leaves ticks no power tick will reach.
 	_drawn = later if later.size() < 1000 else []

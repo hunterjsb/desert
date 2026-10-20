@@ -83,6 +83,8 @@ func _trace(rate: int, x: float, z: float, drawn := true, make := BoardMakes.ISS
 	board.set_process(drawn)
 	player.stamina = world.tuning.stamina_max
 	check(player.get_on(board), "you step onto the board")
+	# An adverse quarter phase leaves a late-billed slice at 30 Hz but not 60.
+	world.power._next = world.time - world.tuning.power_tick * 0.1
 	var path: Array[Vector3] = [where()]
 	var at := {"tick": 0, "step": 0}
 	var every := rate / 30
