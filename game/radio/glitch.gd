@@ -35,6 +35,13 @@ func _init(on: AudioStreamPlayer3D) -> void:
 	_rng.seed = hash([on.get_instance_id(), "glitch"])
 
 
+## A new playback cannot catch up to a fragment from the previous one.
+func reset() -> void:
+	kind = &""
+	_left = 0.0
+	_since = 0.0
+
+
 ## What to do to the voice this tick, `delta` s on, at this dirt: (a share of
 ## its loudness, a scale of its pitch).
 func tick(delta: float, dirt: float) -> Vector2:

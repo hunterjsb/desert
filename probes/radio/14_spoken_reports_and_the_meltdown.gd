@@ -36,8 +36,16 @@ func run() -> void:
 	var at := radio.music.get_playback_position()
 	print("2 s into a meltdown: on air %s, %.1f s into it" % [radio.on_air(), at])
 	check(radio.on_air() == Sounds.RADIO_STOKER and absf(at - 2.0) < 1.0, "a meltdown calls up its song from its start")
+	# A new call must not inherit a fragment stuck in the previous occurrence.
+	radio._glitch.kind = &"stutter"
+	radio._glitch._anchor = at
+	radio._glitch._length = 2.0
+	radio._glitch._left = 2.0
+	radio._glitch._period = 0.001
+	radio._glitch._since = 0.0
 	gods.meltdown(world.time)
 	await physics_frames(5)
+	print("called up again: %.3f s into it, interference %s" % [radio.music.get_playback_position(), radio._glitch.kind])
 	check(radio.music.get_playback_position() < 1.0, "called up again, it starts over")
 	world.time += length + 1.0
 	await physics_frames(5)

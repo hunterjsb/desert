@@ -1145,6 +1145,23 @@ threshold and playback checks pass (5 s). Separate forced-drop coverage confirms
 zero gain, normal recovery and preserved playback (3 s); scheduled-clock and
 forced-stutter regressions also pass (4 s and 3 s).
 
+### New song occurrences discard old interference fragments (2026-10-20)
+
+An intentional new occurrence, including another meltdown of the same recording,
+starts at its own station phase. Discard an old occurrence's active interference
+without seeking its catch-up position into the new playback. Keep fragment
+repetition and catch-up within the same occurrence unchanged. The meltdown
+regression forces an old stutter just before calling the song again and keeps
+its existing restart cursor threshold; log that cursor for diagnosis.
+
+As built: Glitch resets its active state without calling its fragment catch-up
+when Radio intentionally creates a new playback. The same-occurrence early
+return keeps current interference. Before the fix, forcing an old stutter in
+the meltdown check put the newly called song back at 2.003 s, failing only the
+existing restart check. With the reset, that check passes (7 s), alongside
+weather continuity (6 s), scheduled-clock continuity (5 s), intentional fragment
+repeat/catch-up (3 s) and dropout recovery (3 s). No thresholds changed.
+
 ## Survey receiver (agreed and built 2026-10-20)
 
 An early, cheaper receiver hears only existing ruin loot beacons. It shares the radio's
