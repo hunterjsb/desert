@@ -41,6 +41,15 @@ func _ready() -> void:
 	_show_dial()
 
 
+## This tier's loop and needle replace the broadcast set's face controls.
+func has_dial_marks() -> bool:
+	return false
+
+
+func _make_lamps() -> void:
+	pass
+
+
 func interact(_by: Player) -> bool:
 	return switch(not on)
 
@@ -142,6 +151,7 @@ func signal_strength() -> float:
 
 
 func _listen(delta: float) -> void:
+	_to_your_ears(carried())
 	_teach()
 	if scan_pending and playing():
 		_acquire()
@@ -207,6 +217,8 @@ func _clear_signal() -> void:
 
 
 func _process(delta: float) -> void:
+	if carried() and hiss != null:
+		_to_your_ears(true)
 	var k := 1.0 - exp(-delta / TURN_SECONDS)
 	_shown_strength = lerpf(_shown_strength, float(meter_step) / _tuning.receiver_meter_steps, k)
 	shown_khz = lerpf(shown_khz, frequency, k)

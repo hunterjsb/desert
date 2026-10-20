@@ -126,6 +126,9 @@ func run() -> void:
 		var dropped := await Scenarios.lay(world, scenario, place)
 		check(dropped.is_empty() != scenario.has("lays"), "%s: lays what it stages, %d things" % [what, dropped.size()])
 		match scenario.get("lays", &""):
+			&"surveyor":
+				check(world.player.hands.held is Flare and world.player.hands.held in dropped,
+					"surveyor: its flare starts in your hands")
 			&"yours": await _ruin_finds(dropped)
 			&"survive": await _survival_starts(dropped)
 			&"farm": await _farm_lands(dropped)
@@ -141,6 +144,8 @@ func run() -> void:
 			&"sleep": await _sleep_comes(dropped, upwind)
 			&"vent": await _plume_ahead(ahead)
 		# Cleared as the next scenario would, and gone before it lays its own.
+		# Each independent setup starts empty-handed; scenario changes preserve held gear.
+		world.player.hands.drop()
 		Scenarios._clear(world, &"scenario_kit", false)
 		await physics_frames(2)
 

@@ -153,6 +153,12 @@ const PARTS := {
 	# Nothing takes a compass: it's read, in your hand or in the inventory.
 	&"compass": {"kind": &"compass", "label": "Compass", "mass": 0.2, "size": Vector3(0.12, 0.12, 0.03),
 		"color": Color(0.26, 0.28, 0.29), "stats": {}},
+	# A signal flare: lit, it calls the Surveyor's cannon down on itself as it passes (Flare).
+	&"flare": {"kind": &"flare", "label": "Signal flare", "mass": 0.3, "size": Vector3(0.05, 0.05, 0.3),
+		"color": Color(0.75, 0.12, 0.08), "stats": {}},
+	# What the Surveyor's cannon fires down (Airdrop): a container, its contents to come.
+	&"cargo": {"kind": &"cargo", "label": "Cargo container", "mass": 80.0, "size": Vector3(0.8, 0.8, 1.3),
+		"color": Color(0.85, 0.45, 0.12), "stats": {}},
 	# A Console's screen and its computer mods: each instrument adds its own
 	# readings to the screen (Console), and draws a little while it runs. The
 	# radar sweeps the field this far out, m.
@@ -213,7 +219,7 @@ const ROUND := {&"shield": [0.88, 0.22, 0.8], &"light_shield": [0.88, 0.22, 0.8]
 ## keep its numbers: the ends of lines, a coil, the dish, the screen's glass,
 ## a compass's card.
 const BARE: Array[StringName] = [&"hook", &"plug", &"strong_plug", &"hose_end", &"rope_end", &"coil", &"radar",
-	&"screen", &"compass", &"frame", &"fabric"]
+	&"screen", &"compass", &"frame", &"fabric", &"flare"]
 ## The stake's frame, which has no entry of its own.
 const STAKE := {"mass": 2.0, "stats": {"toughness": INF}}
 ## What things with no entry of their own are called.
@@ -505,7 +511,7 @@ static func part(id: StringName) -> Part:
 		else (Compass.new() if spec.kind == &"compass" \
 		else (Frame.new() if spec.kind == &"frame" \
 		else (Remedy.new() if spec.kind == &"medicine" else (RopeHook.new() if id == &"hook" \
-		else (RopeTip.new() if id == &"rope_end" else Part.new())))))))
+		else (RopeTip.new() if id == &"rope_end" else (Flare.new() if spec.kind == &"flare" else Part.new()))))))))
 	made.kind = spec.kind
 	made.label = spec.label
 	made.mass = spec.mass

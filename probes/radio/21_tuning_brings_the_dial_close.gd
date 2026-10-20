@@ -6,6 +6,8 @@ extends HandsProbe
 ## after the last notch the view eases back out, and looking away it eases
 ## out at once. A radio in your hands turns its face to you as you tune it,
 ## and looking at a Console tunes, and closes in on, the radio on its top.
+## Off (dial_close_up), a notch leaves the view your own, and only a fine
+## step brings it in; on, any tuning does.
 
 
 func run() -> void:
@@ -20,6 +22,20 @@ func run() -> void:
 	look(eye(), radio.global_position)
 	await simulate(1.0)
 	check(close.close == 0.0 and world.player.camera.current, "before tuning, the view is your own")
+	check(not tuning.dial_close_up, "the close-up is off")
+	press(&"reel_in")
+	await simulate(0.6)
+	check(close.close == 0.0 and world.player.camera.current and is_equal_approx(radio.frequency,
+		600.0 + tuning.dial_notch_khz), "off, a notch tunes it and leaves the view your own")
+	press(&"tune_fine_up")
+	await simulate(0.6)
+	print("a fine step: closed in %.2f" % close.close)
+	check(close.close == 1.0 and close.current, "but a fine step brings the view in")
+	await simulate(tuning.dial_close_hold + 0.5)
+	check(close.close == 0.0 and world.player.camera.current, "and lets it go a while after")
+	radio.frequency = 600.0
+	tuning.dial_close_up = true
+	await simulate(0.5)
 	var turned := radio.knob.basis.get_euler().z
 	var needle := radio.needle.position.x
 

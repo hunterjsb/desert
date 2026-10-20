@@ -14,7 +14,10 @@ extends RefCounted
 ## bound the wind, m/s; due is when a storm comes, s, in place of ten clear
 ## minutes; moon is [latitude, degrees east of the point under Tu], so
 ## [30, 180] is the far side, 30° north. lays names what's laid.
+const SURVEYOR_LEAD := 30.0
 const LIST: Array[Dictionary] = [
+	{"key": "surveyor", "label": "a clear afternoon, a flare, the Surveyor passing over in 30 s",
+		"kind": "clear", "day": [0.55, 0.65], "lays": &"surveyor"},
 	{"key": "spawn", "label": "where and when the run began", "kind": "spawn"},
 	{"key": "clear", "label": "a clear day, no storm for 10 min", "kind": "clear", "day": [0.42, 0.55]},
 	{"key": "wall", "label": "a storm's wall on the horizon, 3 km off", "kind": "front", "distance": 3000.0,
@@ -407,6 +410,7 @@ static func lay(world: World, scenario: Dictionary, place: Dictionary) -> Array[
 	_clear(world, &"kit", true)
 	var dropped: Array[Node3D] = []
 	match lays:
+		&"surveyor": dropped = surveyor_pass(world)
 		&"yours": dropped = yours(world)
 		&"survive": dropped = survive(world)
 		&"farm": dropped = farm(world)
@@ -951,7 +955,7 @@ static func _facing(world: World, scenario: Dictionary, moon: Vector2, upwind: V
 static func _relay_from(world: World, moon: Vector2, t: float) -> Vector3:
 	var relay := Radio.relay_of(world)
 	var p := Sphere.point(moon.x, moon.y)
-	return DayCycle.local((relay.under(t) * (1.0 + relay.altitude) - p).normalized(), moon.x, moon.y)
+	return DayCycle.local((relay.at(t) - p).normalized(), moon.x, moon.y)
 
 
 ## Whether the relay shows in the night sky from a place at world time t: sunlit,
@@ -1131,6 +1135,26 @@ static func walker_camp(world: World) -> Array[Node3D]:
 
 ## The radio of "radio" switched on and tuned to the music, the relay's
 ## carrier, beside its charged shield, switched off.
+## A flare in your hands, and the Surveyor forced over you in SURVEYOR_LEAD
+## s: light it as it comes over and its cannon fires. Returns the flare.
+static func surveyor_pass(world: World) -> Array[Node3D]:
+	var player := world.player
+	var flare := Catalog.part(&"flare")
+	world.content.add_child(flare)
+	flare.global_position = player.global_position + Vector3.UP
+	player.hands.hold(flare)
+	surveyor_over(world, SURVEYOR_LEAD)
+	return [flare]
+
+
+## The Surveyor's low pass forced: its orbit turned to bring it straight over
+## you `lead` s from now (Satellite.pass_over).
+static func surveyor_over(world: World, lead: float) -> void:
+	var moon := world.moon
+	var orbit: Satellite = Radio.constellation_of(world).orbits[Airdrop.SURVEYOR]
+	orbit.pass_over(Sphere.point(moon.latitude, moon.longitude), world.time + lead)
+
+
 static func music_station(world: World) -> Array[Node3D]:
 	var dropped := radio(world)
 	var tuned := dropped[0] as Radio

@@ -15,7 +15,7 @@ func run() -> void:
 	var radio: Radio = met.camp.filter(func(n: Node) -> bool: return n is Radio)[0]
 	var shield: ShieldGenerator = met.camp.filter(func(n: Node) -> bool: return n is ShieldGenerator)[0]
 	var here := world.player.global_position
-	# Between carriers, so no signal ducks the static.
+	# Between carriers, so no signal stills the static.
 	while radio.channel != Radio.STATIC:
 		radio.tune(1)
 	var tells := []
@@ -25,6 +25,9 @@ func run() -> void:
 		while Interference.crackle(t).x < 1.0:
 			t += Interference.CRACKLE
 		world.time = t
+		# Static only plays while nothing does: the quietest place on the dial now,
+		# farthest from every carrier, the satellites' overhead too.
+		radio.frequency = _quietest(radio)
 		await physics_frames(10)
 		var deep := field.anomaly_at(world.player_world_x(), world.player_world_z(), t)
 		# With north a quarter turn off the heart's way, how far the needle leans.
@@ -55,3 +58,17 @@ func _load(console: Console) -> int:
 		if row.strip_edges().begins_with("load "):
 			return row.strip_edges().get_slice(" ", 1).to_int()
 	return -1
+
+
+## The place on the dial farthest from every carrier it could hear now, kHz.
+func _quietest(radio: Radio) -> float:
+	var all := radio.carriers()
+	all.push_front(Dial.LOWEST)
+	all.append(Dial.HIGHEST)
+	var gap := 0.0
+	var quiet := 0.0
+	for i in all.size() - 1:
+		if all[i + 1] - all[i] > gap:
+			gap = all[i + 1] - all[i]
+			quiet = roundf((all[i] + all[i + 1]) * 0.5)
+	return quiet

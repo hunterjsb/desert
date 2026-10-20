@@ -1,5 +1,5 @@
 extends SailProbe
-## Profile & saves probe 16: a rigged camp resumes. A deck on skates with its
+## Profile & saves probe 41: a rigged camp resumes. A deck on skates with its
 ## mast, the sail raised and its sheet made fast, sails across a steady wind.
 ## Saved and resumed into a fresh world on the same seed, the same camp is
 ## where it was: on runners under every piece, the mast standing on its
