@@ -157,13 +157,13 @@ func sample(x: float, z: float, on: Structure = null) -> float:
 
 ## The dunes alone at a lattice point, before any structure. Its GPU twin
 ## is DUNES_GLSL.
-func dunes(x: float, z: float) -> float:
+func dunes(x: float, z: float, profiles: Array[Landforms.Hill] = []) -> float:
 	var land := _land.get_noise_2d(x, z)
 	# Down the wind, and across it.
 	var u := x * _down.x + z * _down.y
 	var v := z * _down.x - x * _down.y
 	var sand := land * _land_height + _ridges(u, v, _sand_on(x, z, land))
-	return landforms.ground(x, z, sand)
+	return landforms.ground(x, z, sand) if profiles.is_empty() else Landforms.ground_from(profiles, x, z, sand)
 
 
 ## The run's long-term wind, which the dunes face: downwind, a unit vector in
@@ -223,9 +223,9 @@ func _ridge_set(u: float, v: float, meander: FastNoiseLite, rise: float, bare: f
 ## hide its sky; w, how far those crests turn from the dunes' downwind,
 ## radians. Read from the ridges as _ridges lays them, each set's period
 ## taken as repeating here, its crests as high as this one's.
-func shade(x: float, z: float, ground: float) -> Vector4:
+func shade(x: float, z: float, ground: float, profiles: Array[Landforms.Hill] = []) -> Vector4:
 	# Buried dune crests cannot shadow the bedrock that rises above them.
-	var mountain := landforms.rise(x, z)
+	var mountain := landforms.rise(x, z) if profiles.is_empty() else Landforms.rise_from(profiles, x, z)
 	if mountain > 0.0 and ground <= mountain + 0.01:
 		return Vector4.ZERO
 	var land := _land.get_noise_2d(x, z)

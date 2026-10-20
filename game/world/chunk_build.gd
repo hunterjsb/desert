@@ -33,19 +33,23 @@ static func make(shape: TerrainShape, coord: Vector2i, size: int, step: int, ski
 	var z0 := float(coord.y * size)
 	# One sample of border, so edge normals match the neighbour's.
 	var w := n + 3
+	var profiles := shape.landforms.profiles()
 	var bordered := PackedFloat32Array()
 	bordered.resize(w * w)
 	for j in w:
 		for i in w:
-			bordered[j * w + i] = shape.dunes(x0 + (i - 1) * step, z0 + (j - 1) * step)
-	return pressed(shape, bordered, coord, size, step, skirt, indices, held, steps)
+			bordered[j * w + i] = shape.dunes(x0 + (i - 1) * step, z0 + (j - 1) * step, profiles)
+	return pressed(shape, bordered, coord, size, step, skirt, indices, held, steps, profiles)
 
 
 ## A chunk from its dunes, with structures pressed in at steps: a whole
 ## build's last part, and all of a loaded chunk's as a storm moves what
 ## stands on it.
 static func pressed(shape: TerrainShape, bordered: PackedFloat32Array, coord: Vector2i, size: int, step: int, skirt: float,
-		indices: PackedInt32Array, held: Array[Structure], steps: PackedInt32Array) -> ChunkBuild:
+		indices: PackedInt32Array, held: Array[Structure], steps: PackedInt32Array,
+		profiles: Array[Landforms.Hill] = []) -> ChunkBuild:
+	if profiles.is_empty():
+		profiles = shape.landforms.profiles()
 	var build := ChunkBuild.new()
 	build.coord = coord
 	build.step = step
@@ -113,7 +117,7 @@ static func pressed(shape: TerrainShape, bordered: PackedFloat32Array, coord: Ve
 			vertices[k] = Vector3(i * step, ground[b], j * step)
 			normals[k] = Vector3(ground[b - 1] - ground[b + 1], 2.0 * step,
 				ground[b - w] - ground[b + w]).normalized()
-			put_shade(shades, k, shape.shade(x0 + i * step, z0 + j * step, ground[b]))
+			put_shade(shades, k, shape.shade(x0 + i * step, z0 + j * step, ground[b], profiles))
 
 	# Skirts hang below each edge, hiding cracks where a detailed chunk meets a coarse one.
 	var v := grid

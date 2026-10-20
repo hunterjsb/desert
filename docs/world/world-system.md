@@ -1410,9 +1410,9 @@ group.
 
 ## Open
 
-- **The rift's and the volcano's landforms.** Geology holds the rift's line, floor and walls for the
-  landform package to carve; until then the vents' mouths stand on the dunes as they are, the flank
-  vent's on the dunes where the volcano will be.
+- **The rift's landform.** Geology holds the rift's line, floor and walls for a later carve.
+  The far-side volcano now has real ground and an elevated flank vent; the rift vents still
+  stand on the dunes. See [reachable horizons](../prd/world-and-terrain.md#reachable-horizons-built-2026-10-20).
 - **The tapped vents' ground.** The vent stations stand on cold vents; their kit, when it's built,
   carries the old vent's scar.
 - **Seams at high latitude.** Near the poles cells are small and dead reckoning is unsteady. History is

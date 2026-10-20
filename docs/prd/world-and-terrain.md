@@ -32,7 +32,8 @@ how long a visible post-storm opportunity lasts.
 procedural dunes with a maximum rather than adding their slopes together. Dunes remain
 at the foot and in hollows; smaller structures still survey and carve normally. Projections
 are pinned within the terrain/far-ring reach, and old loaded sheets retain their ground.
-Taking a worker's profile-array reference is locked against save restoration and reprojection.
+Taking a worker's profile-array reference is locked against save restoration and reprojection;
+chunk and far-ring jobs hold one snapshot for their entire build.
 
 `Horizons` draws 128 m samples beyond the ordinary 3 km far ring, lowered 8 m into its
 overlap. This is a finite approximation, not a second physical surface. Silhouettes fade

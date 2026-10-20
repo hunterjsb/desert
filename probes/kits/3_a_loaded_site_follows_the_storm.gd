@@ -81,9 +81,10 @@ func run() -> void:
 		await _at(t)
 		fastest = maxf(fastest, last - site.taken())
 		last = site.taken()
-		if site.taken() <= site.pure_taken(t):
+		# The live interpolation keeps its endpoints in a float32 Vector4.
+		if site.taken() <= site.pure_taken(t) + 1e-5:
 			break
-	check(fastest <= world.tuning.site_rebury_m_s * 1.0001 and fastest > 0.0 and site.taken() <= site.pure_taken(t),
+	check(fastest <= world.tuning.site_rebury_m_s * 1.0001 and fastest > 0.0 and site.taken() <= site.pure_taken(t) + 1e-5,
 		"off its ground the sand comes back, no faster than %.2f m/s (%.3f)" % [world.tuning.site_rebury_m_s, fastest])
 
 	# Away until its ground is forgotten, and back.

@@ -22,6 +22,7 @@ static func ground(shape: TerrainShape, tuning: Tuning, x: float, z: float) -> f
 
 
 static func make(shape: TerrainShape, center: Vector2i, tuning: Tuning) -> Array:
+	var profiles := shape.landforms.profiles()
 	var size := tuning.chunk_size
 	var step := tuning.far_step
 	var reach := ceili(tuning.far_radius / size) * size
@@ -37,7 +38,7 @@ static func make(shape: TerrainShape, center: Vector2i, tuning: Tuning) -> Array
 	bordered.resize(w * w)
 	for j in w:
 		for i in w:
-			bordered[j * w + i] = shape.dunes(x0 + lo + (i - 1) * step, z0 + lo + (j - 1) * step)
+			bordered[j * w + i] = shape.dunes(x0 + lo + (i - 1) * step, z0 + lo + (j - 1) * step, profiles)
 
 	var vertices := PackedVector3Array()
 	var normals := PackedVector3Array()
@@ -52,7 +53,7 @@ static func make(shape: TerrainShape, center: Vector2i, tuning: Tuning) -> Array
 			vertices[k] = Vector3(lo + i * step, bordered[b] - tuning.far_drop, lo + j * step)
 			normals[k] = Vector3(bordered[b - 1] - bordered[b + 1], 2.0 * step,
 				bordered[b - w] - bordered[b + w]).normalized()
-			ChunkBuild.put_shade(shades, k, shape.shade(x0 + lo + i * step, z0 + lo + j * step, bordered[b]))
+			ChunkBuild.put_shade(shades, k, shape.shade(x0 + lo + i * step, z0 + lo + j * step, bordered[b], profiles))
 
 	var indices := PackedInt32Array()
 	for j in cells:

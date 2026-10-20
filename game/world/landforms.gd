@@ -82,15 +82,21 @@ func profiles() -> Array[Hill]:
 	return held
 
 func rise(x: float, z: float) -> float:
+	return rise_from(profiles(), x, z)
+
+static func rise_from(held: Array[Hill], x: float, z: float) -> float:
 	var h := 0.0
-	for hill in profiles():
+	for hill in held:
 		if absf(x - hill.at.x) < hill.radius and absf(z - hill.at.y) < hill.radius:
 			h = maxf(h, hill.rise(x, z))
 	return h
 
 
 func ground(x: float, z: float, sand: float) -> float:
-	for hill in profiles():
+	return ground_from(profiles(), x, z, sand)
+
+static func ground_from(held: Array[Hill], x: float, z: float, sand: float) -> float:
+	for hill in held:
 		if absf(x - hill.at.x) < hill.radius and absf(z - hill.at.y) < hill.radius:
 			sand = maxf(sand, hill.rise(x, z))
 	return sand
