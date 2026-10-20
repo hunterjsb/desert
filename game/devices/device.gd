@@ -152,6 +152,9 @@ func interact(by: Player) -> bool:
 func rest(down: bool) -> bool:
 	if down == resting or stats()["lift_kg"] <= 0.0 or wrecked():
 		return false
+	# Removing a dark tray's demand can power it again; it must not lift on the way off.
+	if down and not hovering():
+		lift_share = 0.0
 	resting = down
 	Sounds.play_at(self, Sounds.BOARD_OFF if resting else Sounds.BOARD_ON)
 	return true

@@ -1568,3 +1568,22 @@ Injecting a second `radio.announce` without a new log failed specifically at the
 the committed probe contains no injected announcement.
 Native macOS verification is still required; this reproduction demonstrates the observation
 error without claiming to measure the failed runner's audio backend schedule.
+
+### Depleted hover shutdown (2026-10-19; agreed and built)
+
+A starter deck with its battery drained, hover still switched on and the deck already
+on the sand rose 0.376 m at up to 0.425 m/s when hover was switched off. Turning it off
+removes its demand; Power can then mark the free load powered again. Its remaining
+full-height lift ramp briefly raises the grounded deck before lowering it again.
+When asked to rest while not currently hovering, finish its lift ramp at zero before
+changing the demand. A powered floating deck keeps the existing gentle descent.
+Do not reset linear or angular velocity, move collision shapes or change ground support.
+
+With that change, aiming at the depleted starter deck and using it registered the deck
+as the target, switched it off, and raised it less than 0.000001 m over five seconds
+(upward speed below 0.000001 m/s). The powered baseline descended at up to 0.631 m/s
+without rising. These are physics-frame measurements in still air, not a rendered
+capture. The fix writes only the remaining lift share; existing velocity is preserved.
+
+Existing focused devices probes 13 and 17 pass: powered gentle settling and lift-off,
+rested save/resume, and large balanced, overloaded and lopsided deck behavior remain.
