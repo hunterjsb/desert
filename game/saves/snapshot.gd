@@ -138,6 +138,7 @@ func begin(data: Dictionary) -> Array[Vector2]:
 	world.began = data.get("began", 0.0)
 	world.taught = data.get("taught", false)
 	world.stoker_state = data.get("stoker", {}).duplicate(true)
+	world.stoker.recall()
 	world.played = data.get("played", NAN)
 	world.counts_deeds = world.counts_deeds and not data.get("dev_run", false)
 	world.set_gravity(data.gravity)
