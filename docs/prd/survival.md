@@ -1,7 +1,7 @@
 # PRD: Survival
 
 *Draft, 2026-10-13. Answers to [the vision](../vision.md). The physical reasoning behind
-air, temperature and water is in [the moon](../the-moon.md).*
+air, temperature and water is in [the moon](../world/the-moon.md).*
 
 ## Why this system exists
 
@@ -81,7 +81,7 @@ Sources, from early to late:
    near side and cold-traps as frost and ground ice on the far side, so the far side's colder air
    is where a condenser makes most. The condenser already reads the felt temperature where it
    stands (below), so the hook is the far side being colder; the game has no near and far side
-   yet, only latitude, so it waits for them ([the lore](../lore-research.md#tu-the-tidal-lock-and-the-water-agreed-session-4-part-2)).
+   yet, only latitude, so it waits for them ([the lore](../world/lore-research.md#tu-the-tidal-lock-and-the-water-agreed-session-4-part-2)).
 4. **Water-storing plants,** like the yucca. Session 4, part 4 (proposed, not built) replaces the
    yucca with the roster's water crops: dewleaf (a night trickle, collected at dawn), stormcup (water
    from a storm, tainted when wild) and sandroot (starch and water, dug from a deep root)
@@ -95,7 +95,7 @@ temple at Sister is dormant but "still drips a trickle into a basin: a reliable 
 until restored" ([World & terrain](world-and-terrain.md#landmarks), [Salvage &
 ruins](salvage-and-ruins.md#landmarks)). Every source above is carried, towed or found where you
 are. A basin you can return to is the opposite, so what it does to "your home goes with you" is
-open ([the lore](../lore-research.md#17-open-after-the-endings-session-and-session-4-part-3)).
+open ([the lore](../world/lore-research.md#17-open-after-the-endings-session-and-session-4-part-3)).
 
 ## Food
 
@@ -117,7 +117,7 @@ With the setup right, you can go fully AFK. You just have to build it.
 
 ## Waiting out a storm: auto-walk, then sleep (agreed, 2026-10-18 spec)
 
-Hunter's [storms, signals & sailing spec](../storms-signals-sailing-2026-10-18.md) settles the sleep question below: storms are the
+Hunter's [storms, signals & sailing spec](../briefs/storms-signals-sailing-2026-10-18.md) settles the sleep question below: storms are the
 cozy stress test of your build, tanking them is the stationary, AFK way to play, and clear weather is
 the active phase. Three layers fix the early wait:
 - **Auto-walk first:** it holds your heading while you steer by the compass or the Console, so a storm
@@ -139,7 +139,7 @@ food running out, each from the night's own numbers rather than dice.
 
 ## Sleep, as built (2026-10-18)
 
-*Hunter's [spec](../storms-signals-sailing-2026-10-18.md#sleep), built 2026-10-18 (`game/survival/sleep.gd`).*
+*Hunter's [spec](../briefs/storms-signals-sailing-2026-10-18.md#sleep), built 2026-10-18 (`game/survival/sleep.gd`).*
 
 **Where you sleep.**
 - **The bedroll** is a device by the catalog's rules: devices stay bodies of their own when they're
@@ -267,7 +267,7 @@ up).*
 
 ## Sleep (proposed)
 
-*Hunter, 2026-10-17 ([session](../console-sensors-sleep-2026-10-17.md)). The 2026-10-18 spec agreed
+*Hunter, 2026-10-17 ([session](../briefs/console-sensors-sleep-2026-10-17.md)). The 2026-10-18 spec agreed
 it and it's built ([above](#sleep-as-built-2026-10-18)); kept for its readings and its problem's
 numbers.*
 
@@ -342,7 +342,7 @@ unlocks options; a radio adds some."
 session, later the same day, repeats it from the Console doc: they "can serve as a sleep clock,"
 and says why they keep time, below.) Readings: the
 era is the second age, in which the faith of Tu dominates and whose daily rite is the
-noon eclipse, "predicted to the second" ([the lore](../lore-research.md#the-faith-of-tu-and-the-ai-gods-agreed-session-4-part-2)).
+noon eclipse, "predicted to the second" ([the lore](../world/lore-research.md#the-faith-of-tu-and-the-ai-gods-agreed-session-4-part-2)).
 A broadcast that airs at a fixed time of day is a clock that reads the real day, so it fits the
 radio's rule that broadcasts read the real systems. It would be automatic, as the ghost relay is. The game has
 no eclipse yet and no clock you can read: the sun shows the day, and in a storm only the radio's
@@ -353,7 +353,7 @@ to name.
 second-age people kept an arcane understanding of the transmitters in which debugging is ritual,
 "kept word for word." Radio priest is a role inside each god's cult, so a broadcast is a ritual
 procedure run the same way each time ([the
-lore](../lore-research.md#second-age-radio-and-its-priests-agreed-and-idea-endings-session)). The
+lore](../world/lore-research.md#second-age-radio-and-its-priests-agreed-and-idea-endings-session)). The
 reading is that a procedure kept word for word does not drift, which is why it airs at reliable
 times. The session says only that they "still air at reliable times." Which god's broadcast serves
 as the clock is open. The Ledger has the strongest signal, so its broadcast is the easiest to
@@ -365,7 +365,7 @@ still the second age's own clock, and the radio's rule is that broadcasts read t
 **Its links.** [Power](power.md): the shield's draw by storm strength is what a sleep sums, and
 the sum has to be lived through. [Devices & mods](devices-and-mods.md): the deck a bedroll sticks on. [Salvage &
 ruins](salvage-and-ruins.md): the beds. [Radio, sound & atmosphere](radio-sound-and-atmosphere.md)
-and [the lore](../lore-research.md#the-faith-of-tu-and-the-ai-gods-agreed-session-4-part-2): the
+and [the lore](../world/lore-research.md#the-faith-of-tu-and-the-ai-gods-agreed-session-4-part-2): the
 broadcasts. [Wind & storms](wind-and-storms.md): the curve.
 
 ## On screen
@@ -598,7 +598,7 @@ Death means a new run (see Runs in the vision).
   at a pole) and a full storm halves it. A bubble holds its share of the way to 20 °C.
   At the equator the suit keeps you within its limits; the heat starts to harm about
   13° out (5 km), and the cold about 20° out. Temperature is what the poles cost.
-- **The eclipse cools the air** (2026-10-17, [the Tu spec](../tu-and-day-2026-10-17.md)).
+- **The eclipse cools the air** (2026-10-17, [the Tu spec](../briefs/tu-and-day-2026-10-17.md)).
   The temperature follows local time, which follows longitude, and on the near side it
   dips while the sun is behind Tu: deeper the longer the sun has been hidden and the
   higher it stood, so a wider Tu's longer eclipse dips further, and a storm's blanket
@@ -620,7 +620,7 @@ Death means a new run (see Runs in the vision).
 - **The starting kit** (Hunter, 2026-10-16, after playing the first one: "start the
   player with floating crate, shield and hoverboard already mounted ... we should at
   least add a hook so we can tow it"; reworked round the chassis, 2026-10-18, from [the
-  chassis spec](../chassis-kits-dunes-2026-10-18.md)). The kit is data,
+  chassis spec](../briefs/chassis-kits-dunes-2026-10-18.md)). The kit is data,
   `game/survival/standard_kit.tres` (a `Kit`: what the suit carries, what's set down beside you
   and where, what comes put together, a deck as its rig's steps ([Devices &
   mods](devices-and-mods.md#the-chassis-as-the-one-structure-built-2026-10-18)), which lines are

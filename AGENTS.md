@@ -5,7 +5,7 @@
 - Read `docs/vision.md` and the relevant system's `docs/prd/*.md` before changing its design.
 - Use `docs/code-map.md` to find that system's entry points and checks.
 - Record agreed design decisions in the PRD before implementation; update its as-built account with measured results.
-- `docs/art-direction.md` governs looks; `docs/world-system.md` describes the world. `README.md` has release steps.
+- `docs/art-direction.md` governs looks; `docs/world/world-system.md` describes the world. `README.md` has release steps.
 - Personal preferences, machine details, in-flight handoffs and session records belong outside the repository.
 
 ## Worktrees and landing

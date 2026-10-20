@@ -308,7 +308,7 @@ These probes need content the skeleton doesn't have:
 - Survival 5 (the water rhythm).
 
 **A proposed build order for the lore and kits pieces (part 3's, kept for reference).** Session 4,
-part 3 (2026-10-17, [the lore session](lore-session-2026-10-17-part-3.md)) lists seven buildable
+part 3 (2026-10-17, the lore session) lists seven buildable
 pieces, roughly in order of how soon they could land. The same day's part 4 lists ten of its own,
 which is the newer proposed order ([below](#the-newer-proposed-order-session-4-part-4)); where the two
 overlap part 4's wins. This is a proposed order, not a schedule. None has a stage or a date,
@@ -354,12 +354,12 @@ history pass and its landmarks and paths, structures by era with their exposure,
 comes from sites and storms instead of open sand, item lineage and layered marks, the feral
 layer, and spawns by kit. It starts with its architecture and spine (one design, one set of
 interfaces), then parallel builders on top of it. The architecture is [the world
-system](world-system.md); its spine (the history pass, the landmarks, the path network and the site
+system](world/world-system.md); its spine (the history pass, the landmarks, the path network and the site
 index) is built (2026-10-17), and its build plan names the five packages that follow.
 
 ### The newer proposed order: session 4, part 4
 
-*Session 4, part 4 (2026-10-17, [the plants session](plants-worldgen-ruins-2026-10-17.md)) lists ten
+*Session 4, part 4 (2026-10-17, [the plants session](briefs/plants-worldgen-ruins-2026-10-17.md)) lists ten
 steps, "roughly in the order things can land. Follow existing conventions; no one-off exceptions in
 core systems." It is a proposed order, not a schedule: none has a stage or a date, none is built, and
 each waits for the skeleton's gate as the full version does. It is the newer, so it supersedes part
@@ -414,7 +414,7 @@ and part 4 adds none.
 
 ### The newest proposed order: session 4, part 5
 
-*Session 4, part 5 (2026-10-17, [the gods session](gods-gear-farside-2026-10-17.md)) lists ten steps. They
+*Session 4, part 5 (2026-10-17, [the gods session](briefs/gods-gear-farside-2026-10-17.md)) lists ten steps. They
 "follow part 4's ten items. Gear and world work comes first; the gods build on top." This is a proposed
 order, not a schedule: none has a stage or a date, none is built, and each waits for the skeleton's gate
 as the full version does. It is the newest, so it supersedes the earlier lists where they overlap.*

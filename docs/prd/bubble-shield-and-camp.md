@@ -15,7 +15,7 @@ over the moon, and the one you start with is its common model. A rival maker sel
 design philosophy at the same tier, and a couple of small makers sell niche builds. The rarest
 shield is military: government-issue, off the supply chain, carried here by a deserter, and it
 blocks heat and dust together, which commercial shields can't. Maker names are placeholders,
-and none of this is final canon; see [the lore research](../lore-research.md).
+and none of this is final canon; see [the lore research](../world/lore-research.md).
 
 ## What the player experiences
 
@@ -173,7 +173,7 @@ The shield decides how much of it is safe. All three grow with upgrades.
 
 ## The carried light shield and the starts (not built)
 
-*Hunter, 2026-10-17 ([notes](../session-notes-2026-10-17.md)). This is a change to make, not a
+*Hunter, 2026-10-17 (notes). This is a change to make, not a
 description of what's built. The starts are tentative, as the notes say.*
 
 **What's built.** The light shield every run starts with is round and bone white, 4 kg, with a
@@ -239,7 +239,7 @@ flag, both rejected above: a battery slot, and the suit's rule that a device you
 
 ## The smart shield (proposed; first version built)
 
-*Hunter, 2026-10-17 ([session](../console-sensors-sleep-2026-10-17.md)). Direction, not a final
+*Hunter, 2026-10-17 ([session](../briefs/console-sensors-sleep-2026-10-17.md)). Direction, not a final
 spec; a first version is built (As built, below). It rides on [the Console](devices-and-mods.md#the-console-proposed-first-version-built),
 which is itself due for a rework.*
 

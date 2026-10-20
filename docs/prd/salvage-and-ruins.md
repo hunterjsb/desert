@@ -53,7 +53,7 @@ component, the contractor/integrator that assembled or fitted it, and the compan
 or consigned it. A mark is not automatically a maker's mark. Why a find is rare depends on why
 it's on the moon: ordinary goods are common, goods only the hub ran on were only ever made in
 small numbers, and contraband, such as a deserter's military kit, is rare because someone
-carried it in. See [the lore research](../lore-research.md).
+carried it in. See [the lore research](../world/lore-research.md).
 
 ## What you find
 
@@ -72,8 +72,8 @@ carried it in. See [the lore research](../lore-research.md).
   different roles; they do not all identify the maker. Commodity parts such as batteries carry
   none, so a mark means something where it appears. The player reconstructs the supply chain
   from salvage alone, with no exposition. The entities are in
-  [the lore session](../lore-session-2026-10-14.md), and the makers beneath them in
-  [part 2](../lore-session-2026-10-14-part-2.md).
+  the lore session, and the makers beneath them in
+  part 2.
 - **Radio frequencies** to tune into (Radio, sound & atmosphere).
 - **Water:** still open. How you get it and how you make it is a hard question that
   belongs to Survival.
@@ -117,7 +117,7 @@ second empire, the first empire and Colonial. "The second empire," the layer abo
 became **Bronze Age** and held both feudal eras. "The first empire," which the PRD called the
 smuggler era below the ash band, is now **Skimmer era**; whether the two names cover the same
 years is open (ambiguity D in [the lore
-research](../lore-research.md#14-open-after-session-3)). **Surface** and **Colonial** keep
+research](../world/lore-research.md#14-open-after-session-3)). **Surface** and **Colonial** keep
 their names, and Colonial is the corporate tech. Nothing else about the layers changed, and
 the skeleton's two layers are untouched.
 
@@ -125,7 +125,7 @@ the skeleton's two layers are untouched.
 **First Kingdoms to Second Age**, because the session retires the term and puts three ages in
 place of the two feudal eras. It is one layer spanning all three, as the two shared one before.
 Whether the three should stack as three layers instead is open (the lore research, [section
-16](../lore-research.md#16-open-after-session-4-part-2)).
+16](../world/lore-research.md#16-open-after-session-4-part-2)).
 
 **Renamed a third time (Agreed, session 4, part 4, 2026-10-17), and back (session 4, part 5).** Part 4's
 eras were "colonial → collapse → skimmer era → first age → second age," with no First Kingdoms and no
@@ -133,7 +133,7 @@ Dark Age, so the last fold called the layer **first age to second age** and kept
 "the scattering." Part 5 says part 4 had two errors: the first age is the First Kingdoms and the Dark
 Age is missing. The newest session wins, so the layer is **First Kingdoms to second age** again, one
 layer for three ages, of which the Dark Age has no sites of its own
-([the lore research](../lore-research.md#era-names-again-agreed-session-4-part-4-corrected-in-part-5)).
+([the lore research](../world/lore-research.md#era-names-again-agreed-session-4-part-4-corrected-in-part-5)).
 The history above is left as the earlier folds wrote it.
 
 **The ash band** is the paroxysm, and a readable depth cue in storm-cut dunes. It no longer
@@ -172,11 +172,11 @@ land ahead is always as rich.
 
 ## Gear and ruins by era
 
-*Hunter, 2026-10-17 ([notes](../session-notes-2026-10-17.md)); loose, and none of it built. The
+*Hunter, 2026-10-17 (notes); loose, and none of it built. The
 current ruin is a placeholder, and large structures are out of scope for now.*
 
 **What the eras left (Agreed, session 4).** The colonisation era lasted `{COLONIAL_ERA_SPAN}`
-([placeholders](../lore-research.md#placeholders)), and hover trays and true space-age tech
+([placeholders](../world/lore-research.md#placeholders)), and hover trays and true space-age tech
 were only shipped in then. So the best loot is **intact, sealed colonial facilities**, with
 space-age power generation and late-game base gear. Most scattered ruins were stripped by the
 societies after the collapse (the notes' wording predates the rename), so they hold **worn,
@@ -194,7 +194,7 @@ fragile, because Zan wasn't a desert yet and gear wasn't built for storms," and 
 kilogram." Part 5 replaces the table: "All eras interoperate: any crate takes any module, and there
 are no per-era compatibility rules. Eras differ only in stats, along one axis: **efficiency vs
 repairability**" ([Devices & mods](devices-and-mods.md#frames-by-era-agreed-session-4-part-5-not-built)
-has the table; [the lore](../lore-research.md#gear-by-era-and-the-kiln-agreed-session-4-part-5) the
+has the table; [the lore](../world/lore-research.md#gear-by-era-and-the-kiln-agreed-session-4-part-5) the
 story). Colonial gear is the most efficient and mended only with finite colonial parts; First Kingdoms
 gear is near-colonial and more durable, mended with metal; second-age gear is crude and lossy, mended
 with what is grown and gathered. The skimmer era is not in part 5's table, and its old row is the only
@@ -221,10 +221,10 @@ them).
 
 ## Crusader bunkers on older sites
 
-*Agreed, session 4, part 2 ([lore session](../lore-session-2026-10-17-part-2.md)); loose, and
+*Agreed, session 4, part 2 (lore session); loose, and
 none of it is built.* The second-age empire can't reliably hold Port Morgan, so holding it is a
 Templar-style holy war, kept by a military order with water convoys and fortified outposts dug
-into colonial ruins ([the lore](../lore-research.md#the-dark-age-and-the-second-age-agreed-session-4-parts-2-and-5)).
+into colonial ruins ([the lore](../world/lore-research.md#the-dark-age-and-the-second-age-agreed-session-4-parts-2-and-5)).
 **The gameplay, the session's own: crusader bunkers sit on top of much older sites.**
 
 Readings, not in the session:
@@ -235,10 +235,10 @@ Readings, not in the session:
 
 ## Seed vaults (Agreed, session 4, part 3; not built)
 
-*Session 4, part 3 ([lore session](../lore-session-2026-10-17-part-3.md)); loose, and none of it is
+*Session 4, part 3 (lore session); loose, and none of it is
 built.* Mother Cistern's priestesses seeded hardy strains along pilgrim roads and irrigation lines
 as devotion, and those plantings went wild ([the
-lore](../lore-research.md#life-on-zan-feral-plants-agreed-session-4-part-3)). **The loot half, the
+lore](../world/lore-research.md#life-on-zan-feral-plants-agreed-session-4-part-3)). **The loot half, the
 session's own: the order's seed vaults hold preserved colonial seed stock that powers farming
 setups.** A line of feral scrub "tends to lead toward a Cistern shrine and water," so the plants
 point the way too.
@@ -247,7 +247,7 @@ Readings, not in the session:
 - A vault is a find site of its own: a second-age building (the order's religious symbols) holding
   colonial stock, so like a crusader bunker it stacks two eras. The colonial layer already holds
   "sealed seed stores, where the oldest seed is the best seed" ([the
-  lore](../lore-research.md#8-the-ground-strata-the-oldest-tech-and-names)), and the vaults are
+  lore](../world/lore-research.md#8-the-ground-strata-the-oldest-tech-and-names)), and the vaults are
   where the order kept that stock.
 - "Seeds keep only out of the weather" ([Farming](farming.md)): a sealed vault is where they do.
   Its seeds are the same kind of find as a ruin floor's, only more of them and better kept, a
@@ -262,11 +262,11 @@ Readings, not in the session:
 
 ## Structures by era and the loot model (Agreed, session 4, part 4; the kits and the loot built)
 
-*Designed whole in [the world system](../world-system.md): the structure framework, exposure, the loot
+*Designed whole in [the world system](../world/world-system.md): the structure framework, exposure, the loot
 model and the migration of today's loose finds are its packages. The first, the structure kits, is
-built (2026-10-18, below and [in the world system](../world-system.md#what-the-structure-kits-do-now)),
+built (2026-10-18, below and [in the world system](../world/world-system.md#what-the-structure-kits-do-now)),
 and the second, the loot (2026-10-18, below and [in the world
-system](../world-system.md#what-loot-does-now)); lineage is not yet.*
+system](../world/world-system.md#what-loot-does-now)); lineage is not yet.*
 
 **Built: the structure kits (2026-10-18).** Every era's repeatable kit stands where history put it, as
 data in one shared system, each piece with its three exposure states:
@@ -302,7 +302,7 @@ The house ruin no longer stands on a grid in every few chunks: only where histor
 Rim towns, salvage towns and along roads, and where the dunes take it. A buried piece shows only its
 top; partly exposed, the tops of its walls; exposed, it's dug out, as below in the skeleton's ruin.
 
-*[Session 4, part 4](../plants-worldgen-ruins-2026-10-17.md), with its labels as given: **Agreed** is
+*[Session 4, part 4](../briefs/plants-worldgen-ruins-2026-10-17.md), with its labels as given: **Agreed** is
 settled, **Idea** is proposed and not confirmed, **Back burner** is liked and not to be built yet, and
 anything under its open questions is undecided. None of it is built. It follows "Gear and ruins by
 era" above, the notes' simple version, and where they differ the newest session wins. Its scope
@@ -861,7 +861,7 @@ inside a wreck, above the ground, and nothing is dug out of the dunes.
   through the torn tail · slice 1 of 3"), naming use by its binding; a cutter or scoop used on the hull
   says where its work is.
 - **Storms work wrecks too** (2026-10-18, on master's live exposure: [What storms do to sites
-  now](../world-system.md#what-storms-do-to-sites-now)). A wreck rises out of the sand and sinks back as a
+  now](../world/world-system.md#what-storms-do-to-sites-now)). A wreck rises out of the sand and sinks back as a
   storm works it, and its scrapping goes with it frame by frame: its plates, hazards and packed holds
   stand at its floor as its chunk draws it (`Wreckage.follow`, from `Salvage.follow`), and its modules
   are read again as any site's finds are. A storm moves no sand on a wreck's ground (no drift, and its
@@ -928,7 +928,7 @@ there already was, the scoop clearing a wreck's packed holds.
 
 ## Nomad gear (agreed, 2026-10-18 spec; built 2026-10-19)
 
-From the [chassis spec](../chassis-kits-dunes-2026-10-18.md): a neglected tier, common and found all over, open wilderness
+From the [chassis spec](../briefs/chassis-kits-dunes-2026-10-18.md): a neglected tier, common and found all over, open wilderness
 included: ruins give power and tech, the wilderness gives mobility. Wrecked nomad rigs are its
 common source, and nomads leave their gear in other eras' wrecks too, looting as you do. Deep-desert
 starts may have nomad wrecks nearby; they still avoid every site's actual footprint. Active
@@ -997,7 +997,7 @@ nothing records what you take from them.
 
 ## The Dark Age as a lineage rule (Agreed, session 4, part 5; not built)
 
-*[Session 4, part 5](../gods-gear-farside-2026-10-17.md), section 3. Loose, and none of it is built.*
+*[Session 4, part 5](../briefs/gods-gear-farside-2026-10-17.md), section 3. Loose, and none of it is built.*
 "The Dark Age has no structures of its own. It exists in world gen as a rule on loot: it was the
 workshop era, when survivors broke down colonial and First Kingdoms gear and remade it to last without
 a supply chain." So the Dark Age adds no ruin type, no kit piece and no layer of sites. What it adds is
@@ -1049,7 +1049,7 @@ What it means for this PRD, as readings:
 **Sister (Agreed, session 4, part 3).** The first landmark with a description: "a fixed-coordinate
 prefab landmark: half-buried temple, dormant terminal, basin that refills slowly. Restoration and
 linking can wait for the endings work." It is Mother Cistern's temple city near Halfrise ([the
-lore](../lore-research.md#mother-cistern-and-her-order-agreed-session-4-part-3)). At the player's
+lore](../world/lore-research.md#mother-cistern-and-her-order-agreed-session-4-part-3)). At the player's
 arrival the temple is abandoned, half buried and intact, and Mother Cistern is dormant but still
 drips a trickle into a basin, "a reliable small water source until restored." Readings, not in
 the session:
@@ -1081,9 +1081,9 @@ The Haberjack bunker, the Almanac's ag complex and the Stoker's terraces are not
 
 ## Session 5's finds and places (Agreed and Idea; not built)
 
-*[Session 5](../lore-session-2026-10-18-mitchell-wow-shoemaker.md); direction, and none of it is built.
+*Session 5; direction, and none of it is built.
 What the session states plainly is Agreed and what it marks perhaps, possible or a sketch is an Idea. The
-stories are in [the lore research](../lore-research.md#mitchell-the-dead-god-agreed-session-5).*
+stories are in [the lore research](../world/lore-research.md#mitchell-the-dead-god-agreed-session-5).*
 
 **Finds (Agreed).**
 - **Tab-stones** in ruined homes: the Tabbed's family stones, carved with what a family owes and is owed;
@@ -1118,7 +1118,7 @@ stories are in [the lore research](../lore-research.md#mitchell-the-dead-god-agr
 Readings, not in the session:
 - **The Counting House is one more place in Mon's ruins.** It is a part of Crakeside beside the Bastion, the
   Pads and Lowtown, or a landmark of its own; the session does not say, and the world system's eight do not
-  include it ([World system](../world-system.md#landmarks)).
+  include it ([World system](../world/world-system.md#landmarks)).
 - **A sealed, buried room is the colonial bunker's case:** you camp outside and go down. The same open
   question applies ("Buried bunkers against 'nothing underground'"); Wow's resting place is the one
   place the rule is amended to allow.
@@ -1141,7 +1141,7 @@ holdout. Session 4, part 3 says Zan has the last nomad city "and possibly a bunk
 holdout would be a person, against the rule above, in a bunker underground, against this PRD's
 "nothing underground." The session says to develop it or drop it. **Developed by session 4, part 5:**
 the Haberjack bunker, a sealed First Kingdoms vault under Port Morgan with nobody left in it, where the
-holdout is the player who seals the door ([the lore](../lore-research.md#the-ledger-and-the-haberjack-bunker-agreed-session-4-part-5)).
+holdout is the player who seals the door ([the lore](../world/lore-research.md#the-ledger-and-the-haberjack-bunker-agreed-session-4-part-5)).
 
 ## What Sand Game taught us
 
@@ -1368,13 +1368,13 @@ the eighth the nomad rig's sail ([Nomad gear](#nomad-gear-agreed-2026-10-18-spec
 Lore starts in **item descriptions**. They hint and never state. The game never says
 outright what happened here. In the world, spelling carries age: X-spelled names
 (XN-118-7, Xanathivin) are old and official, and the Z-spelled Zan is late and colloquial
-([the lore research](../lore-research.md#names-the-ug-catalog-and-the-moon)). Session 3 adds
+([the lore research](../world/lore-research.md#names-the-ug-catalog-and-the-moon)). Session 3 adds
 that the forms between them, skimmer-era slang and the variants of the ages after the collapse,
 date a ruin too, and that the giant's name, Tu, wears down the same way from a designation
-number ([the names](../lore-research.md#hierarchy-and-the-name-decay-agreed-session-3)).
+number ([the names](../world/lore-research.md#hierarchy-and-the-name-decay-agreed-session-3)).
 Session 4, part 2 adds worn names and slang to use in carvings and radio chatter: Zan, Tu, Han,
 Mon, Aitch, Monward, Hanmen, Zanborn and the tu- prefix
-([the names](../lore-research.md#slang-and-name-erosion-agreed-session-4-part-2)).
+([the names](../world/lore-research.md#slang-and-name-erosion-agreed-session-4-part-2)).
 
 ## Open questions
 
@@ -1382,7 +1382,7 @@ Session 4's clashes with what's above are quoted and left standing. Nothing here
 
 - Where the ash band sits among the four layers. It used to divide the second and first
   empire layers, and no longer has to ([the lore
-  research](../lore-research.md#14-open-after-session-3), ambiguity D).
+  research](../world/lore-research.md#14-open-after-session-3), ambiguity D).
 - **Buried bunkers against "nothing underground".** Here: "Everything is above ground:
   there's no digging and nothing underground," and out of scope, "Digging, and anything
   underground" (World & terrain agrees: "Caves, water and anything underground"). The notes:
@@ -1464,7 +1464,7 @@ The sleep session (2026-10-17) adds two. Each is quoted on both sides and left s
   surfaces yet; a catch line's drift since you lay down comes in at once on waking, as after any
   jump, at most its bound.
 
-Session 4, part 4 (2026-10-17, [the plants session](../plants-worldgen-ruins-2026-10-17.md)) adds the
+Session 4, part 4 (2026-10-17, [the plants session](../briefs/plants-worldgen-ruins-2026-10-17.md)) adds the
 following. Each is quoted old and new. The newest session wins in the living docs, so this PRD follows
 it as direction and says so on each line. The built skeleton is not changed.
 
@@ -1484,7 +1484,7 @@ it as direction and says so on each line. The built skeleton is not changed.
   have to be a staged swap of placed pieces, and whether that fits rule 2 is open. *Answered by the
   2026-10-18 spec: a site changes while you stand there, mid-storm, as a pure function of the weather,
   its pieces and loot rising and sinking smoothly and its ground pressed afresh, rule 2's one exception
-  ([the world system](../world-system.md#what-storms-do-to-sites-now)).*
+  ([the world system](../world/world-system.md#what-storms-do-to-sites-now)).*
 - **Digging against "no digging and nothing underground."** Here: "Everything is above ground:
   there's no digging and nothing underground," and out of scope, "Digging, and anything underground."
   The session: colonial sites, "dig or find a breach; the best loot is deepest"; first-age sites,
@@ -1498,7 +1498,7 @@ it as direction and says so on each line. The built skeleton is not changed.
   carried by storm wind." *Follows the session as the target; the skeleton stands until step 8.* Not
   said what the first hour finds, since a start is on or near an artery and not near loose finds. The
   session's "99%" is its own estimate: this PRD counts seeds, 58 of 99 in ruins, and puts a ruin in
-  each 5 by 5 chunks. *Built 2026-10-18 ([the loot](../world-system.md#what-loot-does-now)): open sand
+  each 5 by 5 chunks. *Built 2026-10-18 ([the loot](../world/world-system.md#what-loot-does-now)): open sand
   keeps a tenth, on the way; the first hour finds the sites by each origin's start, measured on six
   seeds.*
 - **Weapons and armour in a game with no combat.** Here and in the vision: "Cozy, not hostile. No
@@ -1523,11 +1523,11 @@ it as direction and says so on each line. The built skeleton is not changed.
   chunks, or what happens when its chunk unloads. *Built 2026-10-18: a stream read from
   the weather and the ground at a catch line, a body only where the line catches it, held where it
   fell until you take it up; nothing caught on a chunk not solid ([the
-  loot](../world-system.md#what-loot-does-now)).*
+  loot](../world/world-system.md#what-loot-does-now)).*
 - **Second-age structures: how much makes the first pass.** The session's own open question. Its
   order starts with the wayshrine, the watchtower and the house ruin.
 
-Session 4, part 5 (2026-10-17, [the gods session](../gods-gear-farside-2026-10-17.md)) adds the
+Session 4, part 5 (2026-10-17, [the gods session](../briefs/gods-gear-farside-2026-10-17.md)) adds the
 following. Each is quoted old and new. The newest session wins in the living docs, so this PRD follows
 it as direction and says so on each line. The built skeleton is not changed.
 
@@ -1559,10 +1559,10 @@ it as direction and says so on each line. The built skeleton is not changed.
   yards, terraforming equipment." Here: a hopper is a vehicle and the game has none but the board and
   the tray. Hoppers are deferred in the session; a wrecked one is a prop until they are built.
 
-Session 5 (2026-10-18, [the Mitchell session](../lore-session-2026-10-18-mitchell-wow-shoemaker.md)) raised
+Session 5 (2026-10-18, the Mitchell session) raised
 the following. Hunter ruled on the first and the third afterwards (2026-10-18), and the rulings replace the
-old wording above. Each clash is in the session's [Clashes
-note](../lore-session-2026-10-18-mitchell-wow-shoemaker.md#clashes).
+old wording above. Each clash is in the session's Clashes
+note.
 
 - **Wow deep underground against "nothing underground." Ruled:** Wow lies under something else, not Facility
   4, still unplaced, and "nothing underground" is amended to allow Wow's resting place. The buried bunker, the

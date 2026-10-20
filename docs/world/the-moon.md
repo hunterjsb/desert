@@ -2,8 +2,8 @@
 
 *Proposal, 2026-10-13, updated 2026-10-14. Not settled yet. This is the physical profile
 the systems lean on: wind, storms, temperature and water. The aim is to stay consistent
-with real physics everywhere except one deliberate cheat. Where the [lore
-session](lore-session-2026-10-14.md) overrides it (the air's origin and its pressure), this
+with real physics everywhere except one deliberate cheat. Where the lore
+session overrides it (the air's origin and its pressure), this
 page follows the session.*
 
 ## Where it is
@@ -18,7 +18,7 @@ A lap of the moon is **about 150 km** in the game, so circling it is an epic and
 poles are reachable. That's compressed distance, the same way the 20-minute day is
 compressed time. **The real body is far bigger** (decided 2026-10-14): nobody in the
 world lives on a 24 km rock. A body that small couldn't hold gravity or air. The real
-size is whatever makes the rest of this profile honest; [the body research](body-research.md)
+size is whatever makes the rest of this profile honest; [the body research](../briefs/body-research.md)
 works it out from the feel we want. The leaning is **0.4–0.5 g** (a radius of roughly
 3,500–3,900 km), pending Hunter's call. The game's gravity is unchanged for now, and the
 dev gravity toggle tries the lower value. **Everything else stays honest.**
@@ -59,7 +59,7 @@ dev gravity toggle tries the lower value. **Everything else stays honest.**
 
 ## Where the heat concentrates (Agreed, session 4, part 5)
 
-*[Session 4, part 5](gods-gear-farside-2026-10-17.md), "The twin fires." A lore rule, not built.*
+*[Session 4, part 5](../briefs/gods-gear-farside-2026-10-17.md), "The twin fires." A lore rule, not built.*
 Zan is tidally locked to Tu, so "tidal heating peaks at the two bulges: the point facing Tu and the
 point directly opposite. Volcanism clusters at both." The sub-Tu point is Halloran's rift vents, and the
 anti-Tu point, far-side centre on the equator, is a great volcano. The heat was never only under Tu.
@@ -78,7 +78,7 @@ What it changes here, as readings and not in the session:
 
 ## The neighbour that fell (Agreed, session 5)
 
-*[Session 5](lore-session-2026-10-18-mitchell-wow-shoemaker.md), "Shoemaker and the singing stones." A lore
+*Session 5, "Shoemaker and the singing stones." A lore
 rule, not built; the story is in [the lore](lore-research.md#shoemaker-and-the-singing-stones-agreed-session-5).*
 A neighbouring moon, **Shoemaker**, fell into Tu. No human ever observed it, so it has no official
 designation and is only a theory, inferred from Zan's wobbling orbit and the black stones in the sand. Its
@@ -120,7 +120,7 @@ gives water a daily rhythm:
   towed, and they work best at night, and better toward the far side (below).
 - **Plants that store water,** like the yucca. Session 4, part 4 (proposed, not built) names the
   roster's water crops instead: dewleaf gathers dew at night, which fits the dawn harvest above, and
-  stormcup gathers a storm's moisture ([Farming](prd/farming.md#the-plant-system-agreed-session-4-part-4-partly-built)).
+  stormcup gathers a storm's moisture ([Farming](../prd/farming.md#the-plant-system-agreed-session-4-part-4-partly-built)).
 - **Sealed fresh water in ruins** keeps you going early on.
 - **Water drifts to the far side** (Agreed, session 4, part 2). The near side is heated by the
   sun and by Tu's infrared, and the far side runs colder. Water evaporates on the warm side and
@@ -132,7 +132,7 @@ gives water a daily rhythm:
 
 A day lasts about 20 minutes, start to finish, and it's fixed. That's compressed game
 time, the way most survival games handle days. **Zan is tidally locked to Tu** ([the Tu
-spec](tu-and-day-2026-10-17.md), 2026-10-17): one face always points at the giant, and the
+spec](../briefs/tu-and-day-2026-10-17.md), 2026-10-17): one face always points at the giant, and the
 real day is one lap round it.
 
 **Three sizes of Tu are under trial** (Hunter, 2026-10-17, lore session part 2: "Keep
@@ -143,7 +143,7 @@ run. **9° is the default now** (2026-10-17): Hunter leaned "6 or 9 probably" af
 all three and asked which makes the most sense, and 9° was picked for its 26 s eclipse and
 landmark, its orbit inside Tu's belts, which gives the air its slow leak (the world's clock)
 while the air column keeps the ground's dose mild. Not final until he says so. The working is in [the body
-research](body-research.md#tus-size-under-trial).
+research](../briefs/body-research.md#tus-size-under-trial).
 
 | | 6° | 9° (the default) | 13° |
 |---|---|---|---|
@@ -171,7 +171,7 @@ It follows Tu's size, since the size sets the day (the table above). From where 
 with Tu in the west, its clouds sink toward the horizon as the sun does, about half as fast as
 the stars go over. Built true to scale; one turn a day and three are under trial against it
 (`~/Desktop/tu.png`, the look-test `look/tu`). Its tipped field turns with it and sways the
-compass once a turn ([survival](prd/survival.md)).
+compass once a turn ([survival](../prd/survival.md)).
 
 **Local time follows longitude.** The sun and the stars turn round the sky once a day and
 only Tu stays put, so the further east you are, the later in the day it is. There's still
@@ -190,7 +190,7 @@ with the sun's corona past it. Its red light is all the light there is: the land
 coppery, the air glowing low all round the horizon, and in a storm the dust glowing from
 within about the ring's bearing. The wind's sound hushes, the air cools a few degrees, and
 solar makes nothing, so a camp needs storage or wind to ride it out ([as
-built](art-direction.md#the-eclipse-as-built)). It falls at noon at the
+built](../art-direction.md#the-eclipse-as-built)). It falls at noon at the
 sub-Tu point and later the further east you are: where a run starts, at 16:00.
 
 **The Rim** (Hunter, 2026-10-17, lore session part 2). Between the near side and the far
@@ -211,7 +211,7 @@ physical value, so how bright a night is can be tuned apart from Tu's size. It s
 which is physical. At that, a full-Tu night at 13° has a seventh of the light the game's
 nights had before; at 9° a fifteenth, and at 6° a thirty-fourth. Shown as it is, the dunes
 are barely there. A scale of 3 was suggested (`~/Desktop/tu_more.png`), and Hunter chose eye
-adaptation instead ([art direction](art-direction.md#eye-adaptation)). On a full-Tu night at
+adaptation instead ([art direction](../art-direction.md#eye-adaptation)). On a full-Tu night at
 9°, the eye opens about six times: the dunes read as the 13° night did, which Hunter found
 bright enough, and it's still plainly night.
 The far side never sees Tu, and its nights are truly dark, lit by the stars alone.
@@ -221,10 +221,10 @@ pole and a close pair the south, so the height of either above the horizon is yo
 latitude, and the same stars at the same local hour, night after night, show how far east
 or west you've come. Tu's disc, the sun and the dust hide them.
 
-**Open** (quoted in [the body research](body-research.md#open-after-the-tu-spec-2026-10-17)):
+**Open** (quoted in [the body research](../briefs/body-research.md#open-after-the-tu-spec-2026-10-17)):
 which size; where runs start relative to the sub-Tu point, and whether they
 reach the far side; whether the eclipse kicks the weather; Tu's body number; and Tu's
-palette ([art direction](art-direction.md#open-questions)).
+palette ([art direction](../art-direction.md#open-questions)).
 
 **Open: seasons** (deferred by Hunter, 2026-10-14). The skeleton gives the moon no axial
 tilt, so the sun rises due east, sets due west, and climbs only as high as the latitude

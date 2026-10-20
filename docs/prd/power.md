@@ -24,7 +24,7 @@ camp you can walk away from.
 commodity maker: everywhere, cheap and useless in storms, which is why it's the common starting
 power. Wind comes from a different maker: planted gear that's strong in storms and ties you
 down. Batteries are anonymous commodity infrastructure, like screws or rope, and carry no
-maker's mark. See [the lore research](../lore-research.md).
+maker's mark. See [the lore research](../world/lore-research.md).
 
 ## What the player experiences
 
@@ -83,7 +83,7 @@ the felt-weather rule.
 
 ## Fuel crops and the burner (proposed, not built)
 
-*[Session 4, part 4](../plants-worldgen-ruins-2026-10-17.md); implied equipment, direction only, with no
+*[Session 4, part 4](../briefs/plants-worldgen-ruins-2026-10-17.md); implied equipment, direction only, with no
 number set. It is the fuel half of "Fuel grown from plants" above.*
 
 **Coalcane is the only renewable fuel crop** ([Farming](farming.md#each-crop-ancestor-engineering-drift-and-hooks-agreed)):
@@ -118,7 +118,7 @@ Readings, not in the session:
 
 ## The kiln and its fuel (Agreed, session 4, part 5; not built)
 
-*[Session 4, part 5](../gods-gear-farside-2026-10-17.md), section 5; direction only, with no number set.
+*[Session 4, part 5](../briefs/gods-gear-farside-2026-10-17.md), section 5; direction only, with no number set.
 [Devices & mods](devices-and-mods.md#the-kiln-agreed-session-4-part-5-not-built) has the kiln itself.*
 "The kiln is a new processing device that burns coalcane," in three era variants: the colonial **electric
 furnace** ("most efficient; runs on power, not coalcane"), the First Kingdoms' **brass-fitted forge**
@@ -127,7 +127,7 @@ furnace** ("most efficient; runs on power, not coalcane"), the First Kingdoms' *
 
 Readings, not in the session:
 - **Coalcane has more mouths.** The burner turns it to power, the kiln to heat, and the Stoker eats it
-  ("feeding... calms it"; [the lore](../lore-research.md#the-stoker-and-the-end-of-zan-agreed-session-4-part-5)).
+  ("feeding... calms it"; [the lore](../world/lore-research.md#the-stoker-and-the-end-of-zan-agreed-session-4-part-5)).
   Cane is thirsty and rare, and the session sets no figure for a stalk's energy or its water, so whether
   a farm can feed all three is a number to set (the burner's own loop is unset already).
 - **The kiln's heat is not power.** A stalk burned in the kiln gives ceramic, salt or safe water and no
@@ -142,7 +142,7 @@ Readings, not in the session:
 
 ## The deck's pool and the power box (agreed, 2026-10-18 spec; the pool built 2026-10-18, the box 2026-10-19)
 
-From the [chassis spec](../chassis-kits-dunes-2026-10-18.md): battery slots leave every device. Everything on one deck shares
+From the [chassis spec](../briefs/chassis-kits-dunes-2026-10-18.md): battery slots leave every device. Everything on one deck shares
 one pool, loose batteries included; cables and hoses only reach other bodies (a turbine staked on
 the sand), and they drag but are much weaker than rope. Early on: one chassis on a tray with a
 loose battery, a panel, the shield and the bedroll on top. The **power box** is the upgrade: many
@@ -379,10 +379,10 @@ batteries in its bays is stored power you carry or drag like anything else.
   and runs down over a few seconds, stands still while the turbine makes nothing
   (wrecked, moving, in a bubble or a calm), and swings round on its mast to face into
   the wind. It's only drawn: it reads what the power tick worked out and touches nothing.
-- **The eclipse is a power check** (2026-10-17, [the Tu spec](../tu-and-day-2026-10-17.md)).
+- **The eclipse is a power check** (2026-10-17, [the Tu spec](../briefs/tu-and-day-2026-10-17.md)).
   Once a day on the near side the sun goes behind Tu, and solar reads the light it feels, so
   it falls to nothing for the eclipse: 16, 26 or 40 seconds of totality at the three sizes
-  under trial, 6°, 9° and 13° ([the moon](../the-moon.md#day-length)), with a few seconds of
+  under trial, 6°, 9° and 13° ([the moon](../world/the-moon.md#day-length)), with a few seconds of
   partial phase either side. A camp rides it out on storage or wind. Tu's own light at night is far too
   weak for panels, so they make nothing by it. Solar also follows local time now, which
   follows longitude, so a panel carried east sees an earlier sunset.
@@ -500,7 +500,7 @@ session as direction.
   how much water, light and time a stalk takes, or how much power it gives, so whether burning it pays
   is unset.
 
-Session 4, part 5 (2026-10-17, [the gods session](../gods-gear-farside-2026-10-17.md)) adds the
+Session 4, part 5 (2026-10-17, [the gods session](../briefs/gods-gear-farside-2026-10-17.md)) adds the
 following. Each is quoted old and new, and the PRD follows the session as direction.
 
 - **A second burner of coalcane.** Here (Fuel crops and the burner): coalcane "is the only renewable fuel

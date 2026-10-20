@@ -1,11 +1,11 @@
 # The body: working back from the feel
 
 *Research memo, 2026-10-14. Loose: options and a leaning, not canon. It follows
-[lore research](lore-research.md): the 150 km lap is compressed distance, so this works out
+[lore research](../world/lore-research.md): the 150 km lap is compressed distance, so this works out
 what real system, body and failing shield would produce the feel in
-[the vision](vision.md), [the moon](the-moon.md) and the PRDs.*
+[the vision](../vision.md), [the moon](../world/the-moon.md) and the PRDs.*
 
-> **Superseded by the lore session.** [The 2026-10-14 lore session](lore-session-2026-10-14.md)
+> **Superseded by the lore session.** The 2026-10-14 lore session
 > drops the sky shield, and with it the story told here about the air. The air is the
 > moon's own: outgassed during an eccentric-orbit phase, then lost to a very slow escape as
 > tidal heating fades. So these no longer hold: the shield-era air and the "kind of nice"
@@ -17,7 +17,7 @@ what real system, body and failing shield would produce the feel in
 > gravity and pressure window (§3, which is the thin-air table the session points to) and
 > the candidate bodies (§4). Its escape figures stand too, because the session's loss is
 > geological, not on the scale of `{YEARS_SINCE_FALL}`. The text below is left as written,
-> and the notes mark the spots. [The lore research](lore-research.md) has the current
+> and the notes mark the spots. [The lore research](../world/lore-research.md) has the current
 > picture.
 
 ## 1. The short answer
@@ -60,7 +60,7 @@ toward the moon's natural nitrogen floor, at the pace of the shield's slow death
 
 ### Why ships stop here at all
 
-> **Session 3 keeps this.** The [FTL ruling](lore-research.md#4-the-system-the-lane-and-the-harbor)
+> **Session 3 keeps this.** The [FTL ruling](../world/lore-research.md#4-the-system-the-lane-and-the-harbor)
 > replaces "no FTL" with two regimes: information crosses near-instantly and anything with
 > mass crosses at one fixed slow rate, so lane crossings take years. The refuelling rationale
 > below stands as written.
@@ -245,7 +245,7 @@ below; what the sizes rub against is quoted in [section 6](#open-after-the-tu-sp
 
 #### Tu's size, under trial
 
-*Hunter, 2026-10-17 ([lore session](lore-session-2026-10-17-part-2.md)): "Keep angular size a
+*Hunter, 2026-10-17 (lore session): "Keep angular size a
 tuning value; test 6°, 9° and 13° in game before fixing the orbit. Physics follows the look."*
 The earlier leaning here was 6–8°, at 15–20 giant radii. The giant's width across the sky is the
 game's tuning value, and the three presets are built, 13° by default and switched by the dev
@@ -286,7 +286,7 @@ The 9° and 13° presets put the moon closer in than the earlier 15–20 radii, 
 and Io end of the list (Europa's bare surface gets about 5.4 Sv a day, against 0.08 and less at
 15–20 radii). A closer preset redoes the radiation, the tidal heating and the real day, which
 shortens with the orbit: that is what "physics follows the look" asks for. [The
-moon](the-moon.md#day-length) gives the same in brief.
+moon](../world/the-moon.md#day-length) gives the same in brief.
 
 ## 4. Three candidate bodies
 
@@ -316,7 +316,7 @@ the Jeans parameter for nitrogen is 40 (Mars-sized), 63 and 161, so 0.2 bar last
 Mars-sized moon. **No size makes the air leak away in `{YEARS_SINCE_FALL}`.** Fading it that
 fast would take ~10,000 tonnes a second (worked for the span this memo first assumed; redo
 when the placeholder is set). Redone at the placeholder's rough current value (session 4,
-part 2; [Placeholders](lore-research.md#placeholders)): about 12,000 tonnes a second for 0.2 bar
+part 2; [Placeholders](../world/lore-research.md#placeholders)): about 12,000 tonnes a second for 0.2 bar
 from a Mars-sized moon, the same order, so the conclusion stands.
 
 ## 5. The shield: what it did and how it fails
@@ -365,8 +365,8 @@ It's the middle of the window. Walking stays a walk, dust walls come in at about
 ### Open after the Tu spec (2026-10-17)
 
 *[The Tu spec](tu-and-day-2026-10-17.md) is the newest direction and is built as written.
-Where it rubs against this memo or [the moon](the-moon.md), both sides are quoted here and
-stand, as [the lore research](lore-research.md#15-open-after-session-4) does. The spec's own
+Where it rubs against this memo or [the moon](../world/the-moon.md), both sides are quoted here and
+stand, as [the lore research](../world/lore-research.md#15-open-after-session-4) does. The spec's own
 open items are listed last.*
 
 **Clashes**
@@ -386,14 +386,14 @@ open items are listed last.*
    the belts and the upper air is sputtered harder. Not said whether that matters.
 3. **Long days and the swing (9° and 13°).** Earlier: "Long days make it honest. A 5–7
    Earth-day day gives sun-baked ground of roughly 60–90 °C in the clear tropics, and
-   nights of −60 to −100 °C," and [the moon](the-moon.md): "The real day is the moon's
+   nights of −60 to −100 °C," and [the moon](../world/the-moon.md): "The real day is the moon's
    orbit, about 5–7 Earth days." The 13° orbit's day is 1.9 Earth days, about 23 hours of
    sun and 23 of night, and the 9° orbit's 3.2, so the honest swing is narrower. The 6°
    orbit's 6.0 days fits. The game's swing is tuned, not
    derived, and is unchanged. Not said whether to narrow it.
 4. **Tidal heating (9° and 13°, a fit).** Section 2: "Mild tidal heating from a weak orbital
    resonance... not Io's hell." The lore buries H-Town's floor in eruptions and pipes the
-   refinery down to vents ([lore research](lore-research.md#halloran-isotope-and-h-town-agreed-session-4)).
+   refinery down to vents ([lore research](../world/lore-research.md#halloran-isotope-and-h-town-agreed-session-4)).
    At the same eccentricity the 9° orbit heats about 20 times as much as the 6°, and the
    13° about 330 times, which suits vents and eruptions and leans toward Io. Not said how hot the interior runs today.
 5. **"Midday" and "midnight."** The spec: "The midday eclipse," and "At local noon on the
@@ -402,7 +402,7 @@ open items are listed last.*
    Tu's place in your sky, later in the day the further east you are. Where a run starts,
    60° east, it's 16:00, and full Tu is at 04:00. Built as the geometry gives it.
 6. **"Fixed overhead."** Earlier: "the giant hangs fixed overhead" (section 3 and [the
-   moon](the-moon.md), as they were). The spec: "a spot set by where you stand." It's
+   moon](../world/the-moon.md), as they were). The spec: "a spot set by where you stand." It's
    overhead only at the sub-Tu point.
 7. **How bright a near-side night is.** Earlier: "Near-side nights are lit by a full giant
    at ~150–270 lux... That makes the board's 'night as safe exploration' honest." Now 140,
@@ -413,25 +413,25 @@ open items are listed last.*
    scale for that, 1 (physical) by default, and a scale of 3 was suggested. **Answered
    (Hunter, 2026-10-17):** eye adaptation, with Tu's light kept physical, so the scale stays
    at 1. Built: on a full-Tu night at 13° the eye opens about three times, where the dunes
-   read as they did at 3 ([art direction](art-direction.md#eye-adaptation)).
+   read as they did at 3 ([art direction](../art-direction.md#eye-adaptation)).
 
 **Open in the spec**
 
 - Tu's final size and orbital period, and Tu's body number ([the lore
-  research](lore-research.md#14-open-after-session-3), its open question 1).
+  research](../world/lore-research.md#14-open-after-session-3), its open question 1).
 - Where a run starts relative to the sub-Tu point, and whether runs reach the far side.
   The build starts 60° east of it, with Tu 30° up, and builds the far side without
   deciding where runs go.
 - Whether the eclipse also affects the weather, such as a pressure or wind kick. Not
   built.
-- Tu's palette, to be settled against [art direction](art-direction.md#open-questions).
+- Tu's palette, to be settled against [art direction](../art-direction.md#open-questions).
 
 ## 7. What's now wrong in the-moon.md
 
 > **Superseded by the lore session** in part. The first bullet's "it isn't leaking to
 > space" no longer holds: under the session it does leak, very slowly and without any
 > shield. The third bullet's 0.15-0.2 bar is now about 0.3 bar or more. [The
-> moon](the-moon.md) has been updated to match.
+> moon](../world/the-moon.md) has been updated to match.
 
 - **"Still slowly leaking away since their magnetic shield failed."** It isn't leaking
   to space. It's freezing onto the poles and rusting into the sand, and the shield was a
