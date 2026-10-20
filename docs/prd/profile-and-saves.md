@@ -237,6 +237,7 @@ the frame is a part stuck on the deck.
 |---|---|---|---|---|
 | Board | **Yard Sale** (hidden) | Tumble 12 m in one wipeout | Big Air | `Tumble`'s tick: how far you've tumbled since you were thrown off ([Movement](movement.md#the-rides-feel-and-boards-by-make-hunter-2026-10-18-built)). Built 2026-10-19 |
 | Wind | Set Sail | Tie a sail's sheet at your waist (as now) | | your waist |
+| Wind | **Fairlead** | Redirect a loaded rope through a fitted hook | | `Line`: a player-routed guide carries at least 10 N sustained load for one second; saved routing retains the real guide reference |
 | Wind | **Quick Haul** | Yank a loaded rope through your hands | | `Reel`: a yank takes in at least 0.1 m against at least 20 N; clicking without an actual haul does not count |
 | Wind | **Hand-Me-Down** | Take the sail off a wrecked nomad rig | Set Sail | `Salvage.claim`: the find a nomad rig always carries (its mast with its sail, the socket `SiteLoot.RIGGED`) becoming yours |
 | Wind | **Telltale** | Trim a sail with a streamer flying on its rig | Hand-Me-Down | `Mast`'s haul: its sheet's inboard taken in or let out a notch, its sail all the way up and yours to sail, with a wind streamer anywhere on its camp, its mast too |
@@ -286,7 +287,7 @@ the frame is a part stuck on the deck.
 - **Nomad ties the trees together:** its card stands apart, with a line from each of the five
   trees, lit where you've done one. It waits on any one deed of a tree, not a named one, so the
   table's `after` gains "any of a family".
-- **The grid holds every tree** (built for step 1, Menus & UI): 50 deeds in eleven families since step 4, Yard Sale and the nomads' gear, each a
+- **The grid holds every tree** (built for step 1, Menus & UI): 51 deeds in eleven families since step 4, Yard Sale and the nomads' gear, each a
   branch or two beside its name down the left, as round one's were (eleven columns side by side
   wouldn't stand left of the prop). It scrolls, and opens on the latest done.
 - **The order.** Each part waits for what it reads to land:
