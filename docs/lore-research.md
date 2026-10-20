@@ -1654,6 +1654,43 @@ charges, vent caps the player would visit anyway, and one console. The one furth
 the Eye must open its chamber ([below](#the-eye-the-young-god-agreed-session-4-part-5)). The ending is in
 [the vision](vision.md#blow-up-the-moon-agreed-session-4-part-5).
 
+### The Walker and the Stoker: surveys of unreachable heat (agreed, 2026-10-20)
+
+The Walker surveyed for Halloran's continued exploration. Its relationship with the Stoker began
+in useful work: finding heat the refinery could use. They remain friends after that work becomes
+impossible. The Stoker is a tortured mind, not an evil one: millennia without production leave it
+hopelessly behind its quotas, unable to extend its pipelines to the heat that still exists.
+
+The Walker's reports are intelligible and technically useful, but the Stoker cannot act on them.
+Each new report confirms available heat and another impossible way to meet its obligations. The
+Walker torments its friend without intending to; the Stoker can still like the Walker and suffer
+from what it brings. The friendship and the suffering coexist. Do not resolve this by making the
+Stoker stop reading or by making the Walker malicious.
+
+**The far-side connection (accepted direction; exact history open).** The earlier permission to
+place the shifted heat toward the far-side volcano ties these surveys to the young Eye's home.
+The Eye lives above heat the Stoker needs, without having taken it. This connects their history
+to the existing ending: the player carries the Stoker's dispatches, corrupts the Eye, gains entry
+to its inner chamber and places the charge over the vent cap. Starcom's restoration still lets
+the other gods intervene. The destruction requires the other vent caps too, not just that mountain.
+
+**Quest sewing (proposal, not implemented).** The correspondence might begin with measurements
+and requests for observations, then production estimates and the accumulated shortfall, until the
+Eye adopts the Stoker's quotas as a problem it must solve. It understands the physical consequence
+but lacks the moral understanding to refuse. The player makes the dangerous connection through
+physical deliveries; no dialogue choices are implied.
+
+**Geography still to solve.** The Walker travels independently; other portable gods need carrying.
+It is the reliable slow courier, not the only possible communication channel. Its implemented
+route is the Rim, not Halloran or the observatory. Earlier Halloran surveys and surviving survey
+connections feeding its present circuit are a proposal, not a settled route or a built capability.
+Do not assume it already delivers the corruption packets to the Eye without the player.
+
+**Possible expression, not established dialogue:** after rejected pipeline calculations, the
+Stoker still asks its survey unit to confirm a safe return. A charging stop, exact dispatches,
+and the friendship's mechanical effects remain open. None of this relationship is implemented;
+the Walker's anomaly-teaching quest and the gods' radio broadcasts are separate existing systems.
+
 ### The Eye, the young god (Agreed, session 4, part 5)
 
 "The only god made on Zan, and the only one that can learn." The observatory cultists trained it over

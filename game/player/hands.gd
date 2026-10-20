@@ -996,10 +996,8 @@ func _no_fit() -> String:
 	if not free:
 		return "no free %s" % SOCKET_NAMES.get(named, "socket")
 	if piece != null:
-		if _mixes(piece, target):
-			return "runners and trays don't mix"
 		return "wrecked" if piece.wrecked() or target.wrecked() else "no room at that ring"
-	return target.refuses(held) if held is Part else ""
+	return ""
 
 
 ## Last on, first off: aimed at a hook with a line tied to it, it's the line's
@@ -1254,9 +1252,6 @@ func _find_ring(piece: Chassis) -> Socket:
 		_stand_pose = on_face
 		_stand_turns = 0
 		return best
-	if _mixes(piece, deck):
-		_stand_why = "runners and trays don't mix"
-		return null
 	var turns := deck._turns_for(piece, best, piece.global_basis)
 	if turns < 0:
 		_stand_why = "wrecked" if piece.wrecked() or deck.wrecked() else "no room at that ring"
@@ -1268,13 +1263,6 @@ func _find_ring(piece: Chassis) -> Socket:
 	_stand_pose = pose
 	_stand_turns = turns
 	return best
-
-
-## Whether a piece joining a deck would put trays and runners on one deck.
-static func _mixes(piece: Device, deck: Device) -> bool:
-	var a := piece.carriage()
-	var b := deck.carriage()
-	return a != &"" and b != &"" and a != b
 
 
 ## Joins the piece you have hold of to a deck at its ring or on a frame's face.
@@ -1589,14 +1577,11 @@ func _far(device: Device) -> bool:
 func _takes(each: Socket) -> bool:
 	# A hook on a deck's ring, or a loose part beyond it, gets out of a joining piece's way.
 	if held is Chassis and each.kind == &"ring":
-		return (held as Chassis).fits_in(each) and not _mixes(held, each.get_parent()) \
+		return (held as Chassis).fits_in(each) \
 			and (each.get_parent() as Chassis).room_for(held, _seat(each))
 	if held is Chassis and each.kind == &"face":
 		return (held as Chassis).fits_in(each) and Stick.clear(held, _seat(each), _player) == ""
 	if not each.is_open() or each.stuck():
-		return false
-	# A device takes trays or runners, never both.
-	if held is Part and (each.get_parent() as Device).refuses(held) != "":
 		return false
 	if held is Device:
 		return (held as Device).fits_in(each)

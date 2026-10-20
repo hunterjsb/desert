@@ -55,7 +55,7 @@ through one place in the hands, and the "no" is a dull knock cut from a Sand Gam
 Where what you hold is shown red, take keeps it in your hands and says "blocked" (or "you're
 in the way"); a frame held to a wall says "frames go on a deck's top", a Console held under a
 frame "too tall for a frame", a standing device held to a wall "it stands on a deck's top",
-and trays and runners on one deck "runners and trays don't mix". Holding a part at a device
+and incompatible physical placement says why. Holding a part at a device
 whose slots of its kind are all full says "no free battery slot" (or ring, port and so on);
 at a device with none of its kind, take still puts it down. A piece held to a deck whose free
 rings are all blocked says "no room at that ring", and aiming at a frame with walls on it
@@ -1217,8 +1217,8 @@ There's no flag for it: no device is an exception.
 
 **Runners and the mast** (2026-10-18). Runners stick under a deck as a tray does: skates or a
 board plate, which ride the sand on their blades, slide along their length and grip across it,
-lengthwise the way they're stuck. A deck carries one or the other, never both, and mixing refuses
-with "runners and trays don't mix". The mast stands on a deck, and its sail fits its sail mount.
+lengthwise the way they're stuck. The former category ban on mixing runners and hover
+parts is superseded by the mixed-carriage decision below. The mast stands on a deck, and its sail fits its sail mount.
 How they sail is in [Movement](movement.md#sailing-the-camp-hunter-2026-10-17).
 
 **The keel and the helm seat** (2026-10-18). The keel sticks where a tray would and lifts like
@@ -1656,3 +1656,23 @@ Snapshot adds only acquired-from distance and pending acquisition to inherited
 Radio state. Carry view redraws only on coarse needle interval changes.
 Actual input/save/empty-cell/arrival and mounted direction measurements are
 recorded in the radio PRD; no local whole suite or new repository probe was added.
+
+## Mixed runners and hover parts (agreed and built 2026-10-20)
+
+Skates, hover trays and the hover keel may share a deck when their actual shapes fit.
+The same rule applies while fitting a bottom socket, sticking on a face, previewing
+placement, and joining already equipped pieces. Remove the category refusal rather
+than inventing a new mixed-carriage mode. Keep overlap, mounting orientation, pooled
+mass, available lift and electrical power checks. A hybrid can be too heavy to float.
+
+Runner blades support and resist motion only through their existing ground-contact
+load. The skate statistic named `keel` is blade penetration, not hover-fin grip: only
+a part with positive lift and a keel statistic contributes an airborne hover keel.
+No assembly action, binding, force limit, part statistic or new deed is introduced.
+
+As built, the obsolete device-level carriage/refusal API and its duplicated hands
+and sticking checks are removed. The per-part underside routing remains. Existing
+face-placement and overlap/overload probes (devices 31 and 32) pass unchanged; the
+new mixed-deck fixture joins an equipped skate piece through the hands and sticks
+a true hover keel to a separate clear underside. Restoring the category ban makes
+that actual hand join fail. Mass recomputation, power demand and geometry are unchanged.
