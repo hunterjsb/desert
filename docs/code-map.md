@@ -26,6 +26,7 @@ owns the behavior and the probes that exercise it. Paths below are relative to t
 | Power, water and farming | `game/power/power.gd`, `power_box.gd`; `game/water/`; `game/farming/farm.gd`, `planter.gd`, `plant.gd`; `game/shield/` holds weather out | `probes/power`, `probes/farming`, `probes/shield` |
 | Menus and pictures | `game/ui/ui_root.gd`, `creative_grid.gd: GROUPS`, `deeds_grid.gd`, `item_icons.gd`, `page_bar.gd`; `game/look/dress.gd` and themed look builders draw catalog gear | `probes/menus`, `probes/dev` |
 | Saves and deeds | `game/saves/snapshot.gd` captures run state; `deeds.gd: TABLE` defines deeds; gameplay systems record the action when it happens | `probes/saves` |
+| Desktop launcher | `launcher/main.py` installs published releases and launches local Git worktrees; `.github/workflows/launcher-release.yml` packages the launcher | Standalone app; see `docs/prd/launcher.md` |
 
 Probe hosts and system helpers live in `probes/lib/`. Use the nearest existing helper and a
 targeted probe for the failure being fixed. `scripts/probe.sh` imports assets before running;

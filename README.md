@@ -70,4 +70,12 @@ probes/    headless probes, one folder per PRD (lib/ is the framework)
 look/      look-tests, judged by eye
 assets/    only what's in use, copied from the archive branch
 docs/      vision and PRDs, with world references and supporting briefs grouped by topic
+launcher/  the standalone desktop app for published releases and local source worktrees
 ```
+
+## Desert Launcher
+
+The separate desktop launcher installs and runs published game releases or opens a
+checked-out source worktree in Godot. See [launcher/README.md](launcher/README.md) and
+the [launcher PRD](docs/prd/launcher.md). Its cross-platform builds publish from
+`launcher-v*` tags independently of the game version.

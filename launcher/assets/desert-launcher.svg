@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#18212d"/>
+      <stop offset="1" stop-color="#282238"/>
+    </linearGradient>
+    <linearGradient id="mark" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffd08a"/>
+      <stop offset="1" stop-color="#ed805d"/>
+    </linearGradient>
+    <linearGradient id="orbit" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#67d8d0"/>
+      <stop offset="1" stop-color="#9be9d5"/>
+    </linearGradient>
+    <clipPath id="tile"><rect x="4" y="4" width="120" height="120" rx="30"/></clipPath>
+  </defs>
+  <g clip-path="url(#tile)">
+    <rect x="4" y="4" width="120" height="120" fill="url(#background)"/>
+    <circle cx="63" cy="62" r="44" fill="#ffffff" opacity=".025"/>
+    <path d="M43 31v66h17c21 0 34-13 34-33S81 31 60 31H43Z"
+          fill="none" stroke="url(#mark)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M24 84c15 9 34 11 51 4 13-5 23-16 29-31"
+          fill="none" stroke="url(#orbit)" stroke-width="4.5" stroke-linecap="round"/>
+    <circle cx="104" cy="53" r="5" fill="#9be9d5"/>
+  </g>
+</svg>
