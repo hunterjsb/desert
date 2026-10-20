@@ -188,3 +188,7 @@ receiver_hiss_clear = 0.035
 receiver_hiss_empty = 0.15
 receiver_hiss_storm = 0.25
 receiver_hiss_duck = 0.8
+
+board_surface_rise_m = 0.18
+board_surface_shapes = 64
+board_surface_reach_m = 16.0

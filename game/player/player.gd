@@ -766,7 +766,8 @@ func _after_move(from: Vector3, meant: Vector2, delta: float, was_on_floor: bool
 	for i in get_slide_collision_count():
 		var hit := get_slide_collision(i)
 		var normal := hit.get_normal()
-		var sand := hit.get_collider() is StaticBody3D
+		var holder := hit.get_collider_shape() as CollisionShape3D
+		var sand := holder != null and holder.shape is HeightMapShape3D
 		if normal.angle_to(up_direction) <= floor_max_angle:
 			_on_sand = sand
 			open = open and sand

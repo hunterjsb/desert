@@ -1282,3 +1282,22 @@ probe or gameplay behavior run was performed for this teaching-only change. A la
 1280×720 capture showed the existing mooring stake held and both instruction lines
 fitting at the top of the view. The external helper hit a teardown-only script error
 after saving the image; its call was corrected without changing game code.
+
+## Solid wreck support (2026-10-20; built)
+
+The board's hover previously read sand alone, so even an existing solid roof
+was an obstacle rather than ground. Read reachable walkable faces of actual
+static box colliders alongside sand, with one capped broadphase query per
+outer tick and cached analytic faces for the inner integration. Preserve
+ordinary wall/crash behavior, ceilings, hops, and sand's existing height field.
+The wreck collision account is in Salvage & ruins.
+
+As built: `Ride._height` reads sand plus cached reachable static box faces.
+`TerrainChunk.ground_bodies()` lets the one outer-tick query exclude all live
+quarter-heightmaps; a capped result receives five footprint ray samples.
+`_move` treats walkable static contacts as floor and respects resolved ceiling
+height. `Player._after_move` recognizes sand by HeightMap shape rather than
+all static bodies. Actual controls climbed a partly buried 15.76° skimmer roof
+without a throw; walking remained on it. Existing wall-crash and on-foot
+frame-rate checks pass. The Salvage & ruins account records the measurements
+and synthetic 64-face cost limit.

@@ -17,8 +17,9 @@ extends RefCounted
 ## Slopes pull it along as they pull a slide, drag holds it to its top speed,
 ## and the air's share of that drag is felt against the felt wind, so shelter
 ## applies to it. Its hover rides the ground's one function, never the sand's
-## collision, so no seam between chunks can catch it: stiff toward the sand
-## and soft off it, it skims a slope and floats off a crest. It hits things
+## collision, so no seam between chunks can catch it. Reachable solid box
+## faces support it too. Stiff toward the ground and soft off it, it skims
+## a slope and floats off a crest. It hits things
 ## and ruins. Its make (BoardMakes) sets its numbers. Stepped at a fixed rate
 ## inside each tick, as a slide is, so the same keys trace the same path at
 ## 30, 60 or 120 ticks a second; only drawing smooths between ticks.
@@ -184,6 +185,10 @@ var _stormy := false
 ## came down at the sand meanwhile, m/s.
 var _flying := false
 var _falling := 0.0
+## Actual static box faces near this tick's path: inverse frame, half-size,
+## upward normal and plane offset. Inner height reads never query physics.
+var _surfaces: Array[Array] = []
+var _surface_shape := BoxShape3D.new()
 
 
 func _init(by: Player, on: Hoverboard) -> void:
@@ -195,7 +200,9 @@ func _init(by: Player, on: Hoverboard) -> void:
 	ahead = Vector2(facing.x, facing.z).normalized()
 	_ahead_was = ahead
 	var at := Vector2(by.global_position.x, by.global_position.z)
-	y = maxf(by.global_position.y - _thick, _floor(at))
+	y = by.global_position.y - _thick
+	_cache_surfaces(at, 0.0)
+	y = maxf(y, _floor(at))
 	_stormy = by.world.weather.in_storm
 
 
@@ -226,6 +233,7 @@ func step(delta: float, dir: Vector2, hop: bool, digging := 0.0, kick := false, 
 	var h := delta / n
 	var from := player.global_position
 	var at := Vector2(from.x, from.z)
+	_cache_surfaces(at, delta)
 	# Its make's numbers on the tuning's.
 	var top: float = t.board_top_speed * m.top
 	var push: float = t.board_push * m.push
@@ -605,6 +613,7 @@ func _move(from: Vector3, moved: Vector2, delta: float) -> void:
 	player.velocity = Vector3(moved.x, y + _thick - from.y, moved.y) / delta
 	player.move_and_slide()
 	var open := true
+	var ceiling := false
 	for i in player.get_slide_collision_count():
 		var hit := player.get_slide_collision(i)
 		var holder := hit.get_collider_shape() as CollisionShape3D
@@ -612,6 +621,10 @@ func _move(from: Vector3, moved: Vector2, delta: float) -> void:
 			continue
 		open = false
 		var normal := hit.get_normal()
+		ceiling = ceiling or normal.y <= -cos(player.floor_max_angle)
+		# Walkable solid ground takes the hover, not the wall/crash response.
+		if hit.get_collider() is StaticBody3D and normal.y >= cos(player.floor_max_angle):
+			continue
 		var loose := hit.get_collider() as RigidBody3D
 		if loose != null and not loose.freeze:
 			player.shove(loose, hit.get_position(), -normal, moved / delta, delta)
@@ -627,7 +640,11 @@ func _move(from: Vector3, moved: Vector2, delta: float) -> void:
 	if open:
 		player.global_position = Vector3(from.x + moved.x, y + _thick, from.z + moved.y)
 	else:
-		y = maxf(y, _floor(Vector2(player.global_position.x, player.global_position.z)))
+		if ceiling:
+			y = minf(y, player.global_position.y - _thick)
+			vy = minf(vy, 0.0)
+		else:
+			y = maxf(y, _floor(Vector2(player.global_position.x, player.global_position.z)))
 		player.global_position.y = y + _thick
 	player.velocity = Vector3(velocity.x, vy, velocity.y)
 	last_step = player.global_position - from
@@ -676,10 +693,90 @@ func _lowest(middle: float, nose: float, tail: float) -> float:
 	return maxf(middle, (nose + tail) * 0.5) + lerpf(_tuning.board_clearance, SKIM, dig) + _edge * absf(sin(bank))
 
 
-## The ground's one function under an engine place.
+## Sand remains authoritative; reached solid faces can carry the same hover.
 func _height(at: Vector2) -> float:
 	var world := player.world
-	return world.height_at(world.world_x(at.x), world.world_z(at.y))
+	var ground := world.height_at(world.world_x(at.x), world.world_z(at.y))
+	for face in _surfaces:
+		var normal: Vector3 = face[2]
+		var height: float = (face[3] - normal.x * at.x - normal.z * at.y) / normal.y
+		if height <= ground or height > y + _tuning.board_surface_rise_m:
+			continue
+		var local: Vector3 = face[0] * Vector3(at.x, height, at.y)
+		var half: Vector3 = face[1]
+		if absf(local.x) <= half.x + 0.001 and absf(local.y) <= half.y + 0.001 and absf(local.z) <= half.z + 0.001:
+			ground = height
+	return ground
+
+
+## Collect only live, solid collision, once per outer tick. The path's look-
+## ahead is included, while its low ceiling cannot reach an overhead roof.
+func _cache_surfaces(at: Vector2, delta: float) -> void:
+	_surfaces.clear()
+	var speed := velocity.length()
+	var reach := minf(_tuning.board_surface_reach_m, maxf(_half, speed * _tuning.board_look_seconds) + speed * delta + _half)
+	var rise := _tuning.board_surface_rise_m
+	_surface_shape.size = Vector3(2.0 * reach, 2.0 * REACH + rise, 2.0 * reach)
+	var query := PhysicsShapeQueryParameters3D.new()
+	query.shape = _surface_shape
+	query.transform.origin = Vector3(at.x, y - REACH + rise * 0.5, at.y)
+	query.collision_mask = player.collision_mask
+	var excluded: Array[RID] = [player.get_rid()]
+	var world := player.world
+	var terrain := world.terrain
+	var lo := terrain.chunk_at(world.world_x(at.x - reach - 1.0), world.world_z(at.y - reach - 1.0))
+	var hi := terrain.chunk_at(world.world_x(at.x + reach + 1.0), world.world_z(at.y + reach + 1.0))
+	for z in range(lo.y, hi.y + 1):
+		for x in range(lo.x, hi.x + 1):
+			var chunk := terrain.chunk_under(x * _tuning.chunk_size, z * _tuning.chunk_size)
+			if chunk != null:
+				excluded.append_array(chunk.ground_bodies())
+	query.exclude = excluded
+	var space := player.get_world_3d().direct_space_state
+	var hits := space.intersect_shape(query, _tuning.board_surface_shapes)
+	var kept := {}
+	for hit in hits:
+		_surface_hit(hit, kept)
+	if hits.size() == _tuning.board_surface_shapes:
+		# Dense clutter cannot spend every candidate on the wrong side of the
+		# board. Five direct samples give its footprint priority at the cap.
+		for hit in hits:
+			if not hit.collider is StaticBody3D and not hit.rid in excluded:
+				excluded.append(hit.rid)
+		var across := Vector2(-ahead.y, ahead.x)
+		for offset: Vector2 in [Vector2.ZERO, ahead * _half, -ahead * _half, across * _edge, -across * _edge]:
+			var point := at + offset
+			var ray := PhysicsRayQueryParameters3D.create(Vector3(point.x, y + rise, point.y),
+				Vector3(point.x, y - 2.0 * REACH, point.y), player.collision_mask, excluded)
+			var hit := space.intersect_ray(ray)
+			if not hit.is_empty():
+				_surface_hit(hit, kept)
+
+
+func _surface_hit(hit: Dictionary, kept: Dictionary) -> void:
+	var body := hit.collider as StaticBody3D
+	if body == null:
+		return
+	var key := [body.get_instance_id(), hit.shape]
+	if kept.has(key):
+		return
+	kept[key] = true
+	var owner := body.shape_find_owner(hit.shape)
+	var holder := body.shape_owner_get_owner(owner) as CollisionShape3D
+	if holder == null or holder.disabled or not holder.shape is BoxShape3D:
+		return
+	var pose := holder.global_transform
+	var inverse := pose.affine_inverse()
+	var half := (holder.shape as BoxShape3D).size * 0.5
+	for axis in 3:
+		var normal := pose.basis[axis].normalized()
+		var sign_up := 1.0 if normal.y >= 0.0 else -1.0
+		normal *= sign_up
+		if normal.y < cos(player.floor_max_angle):
+			continue
+		var point := Vector3.ZERO
+		point[axis] = half[axis] * sign_up
+		_surfaces.append([inverse, half, normal, normal.dot(pose * point)])
 
 
 ## The mean of the sand along the way you went over the last `length` m, read

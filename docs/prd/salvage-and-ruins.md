@@ -618,6 +618,75 @@ on probe 1's three worlds, as before).
   with a loot table, and the step that builds them replaces the notes' base case of "pillars and wall
   stubs."
 
+## Exposed wreck surfaces (Hunter, 2026-10-20; built)
+
+Exposed wreck skin must stop feet and support a board as the sand reveals it.
+The catalogue audit found the hopper's tilted canopy, the skimmer's aft roof
+ribs, and the nomad rig's tipped deck and rack cover drawn without matching
+solid shapes. Add small oriented boxes matching these existing pieces. Keep
+open roofs, cuttable plates, hatches and packed holds independent: no enclosing
+hull proxy or sealed opening. Supplemental shapes follow the same structure
+transform through lean, exposure and origin shifts, including when buried.
+
+The board will continue sampling sand analytically. Once per outer physics
+tick, collect a capped set of nearby actual static box shapes, then read their
+walkable upper faces analytically inside its 240 Hz integration. Only surfaces
+within a small rise of the current underside can become support; walls and
+unreached overhead roofs remain collision obstacles. Use the player's collision
+mask and slope limit. Do not turn thin scenery into an invisible ramp or snap
+the board onto a high roof. Verify actual foot capsule and board controls on
+partly buried/leaning surfaces, plus ceiling and cut-opening regressions.
+
+### As built and measured
+
+`Piece.fitted_boxes` adds matching oriented boxes without changing existing
+box or socket indices: two skimmer ribs, the hopper canopy and two benches,
+and the nomad's tipped deck and rack cover. These shapes use the structure's
+existing placement, exposure and collision retirement; saves need no new fields.
+The main roof plates already had collision. A systematic partly exposed-world
+sweep found zero misses at 150 exposed broad-plate points across all six kinds
+(21 skimmer, 36 hauler, 9 freight pod, 18 lifeboat, 57 hopper, 9 nomad).
+
+The board caches actual static box faces once per outer tick, using the player's
+collision mask and floor-angle limit. Query reach is capped at 16 m, broadphase
+results at 64; a full cap adds five footprint rays. Duplicate shape hits are
+removed. Every live quarter-heightmap RID in the nearby chunks is excluded
+before the query: Jolt otherwise returned 63 copies of sand triangle hits in a
+64-result query and omitted the actual roof. RIDs are read afresh each tick,
+not retained across chunk retirement. Sand heights remain analytic. Tops more
+than 0.18 m above the current underside cannot become hover ground; genuine
+walls remain obstacles. Walking now classifies only HeightMap shapes as sand,
+so solid roof contacts do not apply sand's horizontal correction. Board ceiling
+contacts retain the body's resolved height rather than restoring the attempted
+hop height.
+
+A scripted actual-control check drove from sand onto a partly exposed skimmer
+roof leaning 15.76°: 7.91 m travelled, 1.24 m gained, 8.30 m/s peak, 0.148 m
+minimum underside clearance, at most 0.0365 m rise in one 60 Hz tick, no throw.
+Actual walking covered 1.56 m on that roof, ending on the floor 0.0141 m above
+its local top. The unseen start and close roof captures were inspected. These
+are controlled diagnostics, not an unassisted expedition.
+
+On the shared machine at 60 Hz, the whole ramp `Ride.step` took median
+0.626 ms, p95 1.067 ms, max 1.213 ms over 104 ticks. Cache-only measurements
+while held on that roof (21 faces) were 0.323 / 0.418 / 0.457 ms. A separate
+headless baseline on sand measured 0.399 / 0.537 / 0.636 ms; these are different
+runs, not a paired overhead estimate. A deliberately synthetic cap stress with
+70 overlapping static floors cached 64 faces: two runs measured median
+1.423–1.871 ms, p95 1.904–2.250 ms, maximum 2.559 ms for the whole outer
+step. Only static box surfaces participate; moving rigid-body platforms keep their existing
+handling. Crowded fallback samples the footprint rather than mapping every
+possible distant surface.
+
+New Wreck 9 drops the player's capsule onto a leaning exposed aft rib and
+checks the torn roof beside it remains open. It passes; removing the matching
+ribs makes the same capsule fall 3.217 m and fail. Existing Wreck 5 hand scrapping,
+Wreck 6 cost, Movement 27 wall crashes, and Movement 11 frame-rate proof on foot
+pass unchanged. A boundary diagnostic confirmed a real ceiling contact during a
+4 m/s hop without clipping through, rejected the overhead roof as hover ground,
+rejected a tall wall's top, and retained floor support with the broadphase cap
+forced to one. No whole local suite was run.
+
 ## Wrecks and scrapping (Hunter, 2026-10-18; built)
 
 *Hunter's direction, 2026-10-18: "embed loot into larger structures out in the sand, and require a

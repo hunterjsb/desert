@@ -580,6 +580,12 @@ static var _current: Tuning
 ## It reads the sand this many seconds of travel ahead and behind, so it
 ## rounds a dip's bottom instead of slamming into it.
 @export var board_look_seconds: float = 0.45
+## Maximum newly reachable solid support above the underside, m; a wall stays a wall.
+@export var board_surface_rise_m: float = 0.18
+## One outer-tick broadphase cap; no space queries inside the board's inner steps.
+@export var board_surface_shapes: int = 64
+## Bound the broadphase and nearby chunk collection even after an abnormal shove.
+@export var board_surface_reach_m: float = 16.0
 ## A hop, m/s up, and this much more from a full crouch.
 @export var board_hop: float = 4.0
 @export var board_pop: float = 1.5
