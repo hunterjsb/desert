@@ -332,6 +332,21 @@ frequency, a range and what it says; its signal falls off with distance.
   dead city), its codes learned by noticing what follows them. Answered and built below: five
   motifs of reed tones.
 
+### The Walker's Halloran surveys and the Stoker (agreed lore, 2026-10-20; not built)
+
+The Walker and the Stoker remain friends from Halloran's survey work. Reports of reachable-in-principle
+heat torment the Stoker because it cannot build the pipelines needed to meet its accumulated quotas.
+The Walker does not intend that harm. The far-side heat connects this history to the Eye and the
+existing destruction ending; [the lore](../lore-research.md#the-walker-and-the-stoker-surveys-of-unreachable-heat-agreed-2026-10-20)
+separates the accepted relationship from the proposed dispatch progression.
+
+The proposed quest starts with observations and develops into the Eye adopting the Stoker's
+production priorities through packets the player carries. It must retain Starcom's protective
+intervention and the need to place charges at all major vent caps. No dispatch system, friendship
+state, refinery interaction or Eye-corruption gameplay is implemented by this decision. The
+Walker's Rim route remains unchanged; how its earlier Halloran work and current survey information
+connect to that route is still open. Do not fold this into the built anomaly-teaching quest below.
+
 ### The Walker's quest and the living city (agreed 2026-10-19; built 2026-10-19)
 
 Hunter approved this design on 2026-10-19 ("perfect"). It is the second pass on the stations

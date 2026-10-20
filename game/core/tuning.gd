@@ -468,6 +468,15 @@ static var _current: Tuning
 ## How quickly you dig in and come back up, s.
 @export var haul_seconds: float = 0.4
 
+@export_group("Ledge vault")
+## Reach above the current feet, forward reach, m; jump rise is not added again.
+@export var vault_height: float = 0.65
+@export var vault_reach: float = 0.9
+@export var vault_clearance: float = 0.02
+@export var vault_seconds: float = 0.3
+@export var vault_stamina: float = 4.0
+@export var vault_settle_speed: float = 0.1
+
 @export_group("Hoverboard")
 ## Flat out on the flat in still air, m/s: 72 km/h, faster than any storm
 ## front rides the wind (the prevailing wind's 10 m/s swings up to 14).
