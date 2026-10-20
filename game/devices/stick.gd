@@ -26,7 +26,7 @@ const PLANE := 0.01
 static func sticks(thing: Node) -> bool:
 	var part := thing as Part
 	if part != null:
-		return not part.kind in Catalog.SLOT_ONLY
+		return part is RopeHook or not part.kind in Catalog.SLOT_ONLY
 	var device := thing as Device
 	return device != null and device.sticks
 

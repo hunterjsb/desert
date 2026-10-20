@@ -5,11 +5,8 @@ extends Node3D
 ## belong to the camp, not the land, so they live here, never in a chunk, and
 ## their strands move with every origin shift. Whatever is in your hands or
 ## at your waist is you, as far as a rope is concerned: its pull lands on you.
-## You're never the link between a sail and a camp: with a sail's sheet and a
-## camp's line both at your waist, the sail's rig tows the camp on a hidden
-## line of its own, through a ring at your waist, so its pull runs past you
-## and your body bears only the line's bend. Held between lines pulling apart,
-## or bent round by one, you're hurt.
+## Every force follows a real line and its explicitly routed guide. Held between
+## lines pulling apart, or bent round by one, you bear their physical load.
 
 signal snapped(rope: Rope)
 
@@ -45,17 +42,8 @@ var creak: AudioStream
 var tick_ms := 0.0
 var cost_ms := 0.0
 
-## The hidden line, from the sheet's tie on the boom's end through a ring at
-## your waist to where the camp's line ties on, or null; the camp's line it
-## carries, the sheet that made it, and the block the sheet runs through
-## meanwhile, so its own pull lands on the rig's middle line. The camp's line
-## keeps its own length; the hidden one is that and how far your waist was
-## from the boom's end when it formed.
+## Kept temporarily for callers of the retired automatic tow; never constructed.
 var hidden: Rope
-var _carried: Rope
-var _sheet: Rope
-var _hidden_from := 0.0
-var _block: RopeEnd
 ## What your body bears between the lines on it, N, as long as a line's load
 ## is held: their pulls against each other, and a line's bend round you.
 var wrench_n := 0.0
@@ -279,7 +267,11 @@ func reach(end: RopeEnd, want: Vector3) -> Vector3:
 	var body := world.player.global_position + Vector3.UP * HAND_AT.y
 	for rope in lines_on(end):
 		var other := (rope.b if rope.a == end else rope.a).global_position
-		var most := maxf((rope.full if rope.paying else rope.length) * (1.0 + SWING_SLACK),
+		var available := (rope.full if rope.paying else rope.length) * (1.0 + SWING_SLACK)
+		if is_instance_valid(rope.through):
+			available -= other.distance_to(rope.through.global_position)
+			other = rope.through.global_position
+		var most := maxf(available,
 			other.distance_to(body) - _tuning.hold_distance)
 		var off := want - other
 		if off.length() > most:
@@ -287,105 +279,9 @@ func reach(end: RopeEnd, want: Vector3) -> Vector3:
 	return want
 
 
-## The sheet and the camp's line at your waist that would make you the link
-## between a sail's rig and a camp, [sheet, line]; else none. At the helm
-## you're aboard, and no link.
+## Legacy callers cannot infer a physical connection from two lines at the waist.
 func link_pair() -> Array[Rope]:
-	var player := world.player
-	var pair: Array[Rope] = []
-	if player.helm != null or player.flying:
-		return pair
-	var sheet: Rope = null
-	var rig: Node3D = null
-	var camps: Array[Rope] = []
-	for body in player.waist.tied:
-		var line := line_at(body)
-		# A scenario cleared away may leave a line whose far end is gone.
-		if line == null or not is_instance_valid(line.a) or not is_instance_valid(line.b) \
-				or not _attached(line.a) or not _attached(line.b):
-			continue
-		var far := _far_from_you(line)
-		if Mast.sheet_end(body):
-			if sheet == null:
-				sheet = line
-				rig = far.holder
-		elif far.holder is Device and not far.holder is Stake and not on_you(far.holder):
-			camps.append(line)
-	for line in camps:
-		if sheet != null and _far_from_you(line).holder != rig:
-			pair.assign([sheet, line])
-			break
-	return pair
-
-
-## The hidden line formed, kept, or gone as the lines at your waist say.
-func _hide() -> void:
-	var pair := link_pair()
-	if hidden != null and (pair.is_empty() or pair[0] != _sheet or pair[1] != _carried
-			or not is_instance_valid(hidden.a) or not is_instance_valid(hidden.b) or not is_instance_valid(hidden.through)
-			or not is_instance_valid(_block) or _block.holder != hidden.a.holder):
-		_unhide()
-	if pair.is_empty() or hidden != null:
-		return
-	var mast := _far_from_you(pair[0]).get_parent() as Mast
-	var rig := mast.carrier() if mast != null else null
-	if rig == null:
-		return
-	var line := pair[1]
-	var ring := line.a if on_you(line.a.holder) else line.b
-	var block := RopeEnd.make(rig, rig.to_local(mast.block()), false)
-	hidden = Rope.new()
-	hidden.a = _far_from_you(pair[0])
-	hidden.b = _far_from_you(line)
-	hidden.through = ring
-	_block = block
-	_hidden_from = hidden.a.global_position.distance_to(ring.global_position)
-	hidden.length = _hidden_from + line.length
-	hidden.full = hidden.length
-	hidden.breaking = line.breaking
-	hidden.frequency = _tuning.rope_hertz
-	hidden.damping = _tuning.rope_damping
-	hidden.max_stretch = _tuning.rope_max_stretch
-	_carried = line
-	_sheet = pair[0]
-	# The sheet runs through the same block on its way to you.
-	if on_you(_sheet.b.holder):
-		_sheet.at_a = block
-	else:
-		_sheet.at_b = block
-
-
-## Gone: the camp's line is its own again, let out to reach where you are.
-func _unhide() -> void:
-	if hidden == null:
-		return
-	if is_instance_valid(_block):
-		_block.queue_free()
-	_block = null
-	if _sheet != null:
-		_sheet.at_a = null
-		_sheet.at_b = null
-	if ropes.has(_carried) and is_instance_valid(_carried.a) and is_instance_valid(_carried.b):
-		var span := _carried.a.global_position.distance_to(_carried.b.global_position)
-		if span > _carried.length:
-			_carried.length = span
-			_carried.full = maxf(_carried.full, span)
-		_carried.strand.set_length(_carried.length)
-	hidden = null
-	_carried = null
-	_sheet = null
-
-
-## The camp's line rides on the hidden one: its pull is that line's, and it's
-## drawn as long as the hidden line leaves it past your waist.
-func _ride_on() -> void:
-	_carried.tension = hidden.tension
-	_carried.asked = hidden.asked
-	_carried.opening = hidden.opening
-	_carried.stretch = hidden.stretch
-	_carried.sag = NAN
-	var span := hidden.point_p.distance_to(hidden.point_b)
-	_carried.strand.set_length(maxf(hidden.length - hidden.point_a.distance_to(hidden.point_p), span))
+	return []
 
 
 ## The one line on a thing at your waist, or null.
@@ -416,7 +312,6 @@ func _waist_end(end: RopeEnd) -> bool:
 
 
 func clear() -> void:
-	_unhide()
 	for strand in strands:
 		strand.queue_free()
 	for rope in ropes:
@@ -471,22 +366,8 @@ func _solve(h: float) -> void:
 	_pulls.clear()
 	_on_you.clear()
 	_bent = Vector3.ZERO
-	_hide()
 	var live: Array[Rope] = []
-	if hidden != null:
-		hidden.body_a = _body(hidden.a.holder, h)
-		hidden.body_b = _body(hidden.b.holder, h)
-		hidden.body_p = _body(hidden.through.holder, h)
-		hidden.length = _hidden_from + _carried.length
-		hidden.full = hidden.length
-		hidden.prepare(h, world.gravity)
-		if hidden.torn():
-			_unhide()
-		else:
-			live.append(hidden)
 	for rope: Rope in ropes.duplicate():
-		if rope == _carried and hidden != null:
-			continue
 		if not is_instance_valid(rope.a) or not is_instance_valid(rope.b):
 			# What it was tied to is gone altogether: so is the rope.
 			_drop(rope)
@@ -499,6 +380,11 @@ func _solve(h: float) -> void:
 			continue
 		rope.body_a = _body(rope.a.holder, h)
 		rope.body_b = _body(rope.b.holder, h)
+		if not is_instance_valid(rope.through) or not _attached(rope.through):
+			rope.through = null
+		rope.strand.through = rope.through
+		if rope.through != null:
+			rope.body_p = _body(rope.through.holder, h)
 		rope.prepare(h, world.gravity)
 		if rope.torn():
 			# Its ends jumped apart (a dev teleport): no rope stretches to twice
@@ -518,8 +404,6 @@ func _solve(h: float) -> void:
 		_deliver(rope.body_b, rope.impulse_b(), rope.point_b, h)
 		if rope.through != null:
 			_deliver(rope.body_p, rope.bend() * (rope.spring_impulse + rope.stop_impulse), rope.point_p, h, true)
-	if hidden != null:
-		_ride_on()
 	for id: int in _bodies.keys():
 		var body: RopeBody = _bodies[id]
 		if body.tick != _tick:

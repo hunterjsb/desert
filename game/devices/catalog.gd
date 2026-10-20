@@ -497,7 +497,8 @@ static func part(id: StringName) -> Part:
 		else (Plant.new() if spec.has("crop") \
 		else (Compass.new() if spec.kind == &"compass" \
 		else (Frame.new() if spec.kind == &"frame" \
-		else (Remedy.new() if spec.kind == &"medicine" else Part.new())))))
+		else (Remedy.new() if spec.kind == &"medicine" else (RopeHook.new() if id == &"hook" \
+		else (RopeTip.new() if id == &"rope_end" else Part.new())))))))
 	made.kind = spec.kind
 	made.label = spec.label
 	made.mass = spec.mass
@@ -547,6 +548,8 @@ static func part(id: StringName) -> Part:
 		made.continuous_cd = true
 	if spec.has("tie"):
 		_add_tie(made, spec.tie, Vector3.BACK)
+		if made is RopeHook:
+			made.guide = RopeEnd.make(made, spec.tie, false)
 	if spec.has("adds"):
 		var adds := Socket.new()
 		adds.kind = spec.adds[0]

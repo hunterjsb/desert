@@ -3,6 +3,8 @@
 [ext_resource type="Script" path="res://game/core/tuning.gd" id="1_tuning"]
 
 [resource]
+deed_fairlead_n = 10.0
+deed_fairlead_seconds = 1.0
 script = ExtResource("1_tuning")
 run_seed = 0
 moon_circumference = 150000.0

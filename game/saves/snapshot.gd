@@ -368,6 +368,7 @@ func _take() -> Dictionary:
 	data.carried = player.suit.carried.filter(_known).map(func(p: RigidBody3D) -> Dictionary: return _body(p, false))
 	var strands := ropes.strands.filter(func(s: RopeStrand) -> bool: return is_instance_valid(s))
 	data.lines = lines.map(func(line: Line) -> Dictionary: return {"state": line.state, "full": line.full,
+		"routed_by_player": line.routed_by_player, "route_loaded_seconds": line.route_loaded_seconds,
 		"first": line._first, "coil": _ref(line.coil) if is_instance_valid(line.coil) else null,
 		"ends": line.ends.map(_ref),
 		"rope": _rope_out(line.rope, strands) if line.rope != null and ropes.ropes.has(line.rope) else null})
@@ -675,6 +676,8 @@ func _line(rec: Dictionary) -> Line:
 	line.state = rec.state
 	line.full = rec.full
 	line._first = rec.first
+	line.routed_by_player = rec.get("routed_by_player", false)
+	line.route_loaded_seconds = rec.get("route_loaded_seconds", 0.0)
 	if rec.coil != null:
 		line._coil_up()
 		_made[rec.coil] = line.coil
@@ -689,6 +692,8 @@ func _line(rec: Dictionary) -> Line:
 
 func _rope_out(rope: Rope, strands: Array) -> Dictionary:
 	var out := {"strand": strands.find(rope.strand), "index": _world.ropes.ropes.find(rope)}
+	if is_instance_valid(rope.through):
+		out.through = _end_out(rope.through)
 	for key in ROPE:
 		out[key] = rope.get(key)
 	return out
@@ -698,6 +703,8 @@ func _rope_out(rope: Rope, strands: Array) -> Dictionary:
 func _rope_in(rope: Rope, rec: Dictionary) -> RopeStrand:
 	for key in ROPE:
 		rope.set(key, rec[key])
+	rope.through = _end_in(rec.get("through"))
+	rope.strand.through = rope.through
 	return rope.strand
 
 

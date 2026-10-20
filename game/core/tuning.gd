@@ -65,6 +65,8 @@ static var _current: Tuning
 ## Kinds of crop grown, planters towed at once, and chassis pieces in one deck.
 @export var deed_crop_kinds: int = 3
 @export var deed_planters_towed: int = 2
+@export var deed_fairlead_n: float = 10.0
+@export var deed_fairlead_seconds: float = 1.0
 @export var deed_deck_pieces: int = 6
 ## A bulk release counts the live lines actually let go together.
 @export var deed_release_lines: int = 2

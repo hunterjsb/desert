@@ -592,3 +592,53 @@ each endpoint and the guide's bend. When multiple points share one rigid body,
 effective mass uses their summed linear and angular Jacobians; treating those
 points as independent masses misses their cancellation and cross terms. Rope
 strength and closing-speed limits remain unchanged.
+## Player-routed lines (Hunter, 2026-10-20; built generic routing, sailing integration pending)
+
+A player can pass a real line through a physical hook, as the built-in sheet runs
+through its block. Tie the first end normally, hold the other end, aim at a fitted
+rope hook and Use to pass it through; continue walking and tie that end or put it at
+the waist using the existing actions. Use on the same guide while holding that line
+removes the route. The first bounded implementation has one guide per line; trying a
+different guide explains that the existing route must be removed first. It never
+silently replaces a route or creates another rope.
+
+The line's total paid-out length covers both legs. Its existing three-body rope
+constraint transmits tension to both endpoints and the actual guide holder, including
+its bend load. Visual rope runs through the same ring. Offsetting a visual line alone
+is not routing. A guide that is removed from its mounting remains the physical guide
+while carried or loose; a deleted guide releases the route cleanly. Saves add optional
+route references through existing item/end identity, with old saves defaulting to a
+direct line. Existing hooks and attachment sockets retain their identities and saves.
+
+
+### Generic routing as built
+
+The existing rope-end id now uses `RopeTip.route_at(player)`, also available to a
+bundle's selected end. It answers only when the aim meets a fitted hook. A plain
+label shows the live Use action binding and whether it passes through or removes
+the route. Normal endpoint tying, magnetic sockets, placement and waist transfer
+remain the physical actions. A second guide is refused until the first is removed;
+a laid line too short for a proposed path asks for more payout rather than creating
+rope or deliberately snapping it. Held-end reach subtracts the other leg's length.
+
+Regular ropes initialize the real guide's solver body and draw two legs through
+that guide. Optional saved through references use the existing part/end identity;
+old saves have no route. Player-made routes also keep their deed eligibility and
+loaded time. The Fairlead action hook requires a player-routed line carrying at
+least 10 N sustained load for 1 s (tuning data); deed-table registration is combined
+with the sailing work.
+
+In an unseen 1280×720 interaction fixture: place hook by hand, take a real coil,
+tie the first end, Use at the hook while holding the second, then tie the second
+end normally. Both endpoint ties and routing succeeded. Its two-leg path was
+4.019 m with 4.519 m paid out; the drawn physics point at the ring differed by
+0.0 m. Snapshot saved the physical guide reference and an in-place restore
+reconnected it to the restored physical holder. A separate headless repeat of
+that restore passed without exit cleanup warnings. This is a controlled interaction
+fixture, not an unassisted sailing expedition or a measured boom validation.
+
+The old automatic hidden tow constraint has been removed from the solver. The
+legacy `hidden` value remains null and `link_pair()` returns no inferred connection
+until their old callers/checks are migrated with the sailing integration. Existing
+`_towing()` remains solely the planter-towing deed accounting. Built-in sheets and
+new boom mechanics require the separate sailing integration before full verification.
