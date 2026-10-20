@@ -2,6 +2,43 @@
 
 *Draft, 2026-10-13. Answers to [the vision](../vision.md).*
 
+## Halloran: first fire (built, 2026-10-20)
+
+Build one connected playable route from Aitch through the Crossing to one Stoker furnace bay.
+Colonial hab foundations and pipework carry Warring Kingdoms fortification and later Aitch homes,
+Muster's devotional fittings and toll shelters. The rest of Halloran remains a planned landmark.
+The route is a single terrain-aware structure assembly at Halloran's seeded spherical location,
+with a lower street, a graded climb, a gate and an upper service terrace. Its ground is pressed
+through Structure/Sites, using the same samples for terrain and collision. Its apron blends into
+the dunes; no second terrain plane or absolute world-coordinate placement. This is a local
+section of escarpment, not the entire rift. Burial varies with storms, with local floor-relative
+sand in the lower rooms; the essential climb and furnace access stay passable. Existing holds
+prevent sand returning over the player or camp. Landmark discovery must not depend on terrain
+survey luck, nor should the assembly erase dunes outside its footprint.
+
+The player retrieves finite preserved coalcane stock from the lower store and physically feeds
+the furnace. A short burn steadies its light and sound, changes its operational status, and opens
+a service cache of useful existing camp equipment. The remainder of the refinery stays dead.
+Fuel taken, fuel consumed, burn timing, cache opening and claimed rewards persist after leaving,
+returning and saving. No repeatable stock or reward duplication. First successful feeding earns
+First Fire. No Walker changes or destruction-ending implementation are required.
+
+**As built.** The connected fragment spans 660 m and climbs 36 m. Eight lower hab shells,
+reused industrial slabs, later stone walls and patched upper rooms lead to the Crossing's
+fortified gate and devotional fitting, then to the refinery's cold stacks and single working bay.
+The furnace has a flanged vessel, ceramic feet, gauge, feed mouth and physical status panel.
+Three preserved coalcane bundles feed 30-second maintenance burns. The first completed burn
+releases a finite cache containing a large battery, solar panel and sealant, taken one at a time.
+First Fire is awarded at feeding. The existing Stoker radio status also reflects the burn.
+
+**Validation.** The physical hands-action probe passes the stock → feed → cache route,
+rejects feeding beyond reach, and checks departure and return (15 s). Save/resume retains a
+part-finished burn and claimed stock (5 s). Actual Godot 4.7.2 GPU captures inspect Aitch,
+the gate, refinery and cold/burning furnace, including furnace readability in heavy dust; reproduce with `look/halloran/shoot.sh <output>`.
+These are a first playable fragment, not the full city, rift, crop loop or destruction ending.
+Walker logic and assets are untouched; the shared integration points are World, Hands,
+Snapshot, Deeds, catalog/creative entries and the Stoker branch of Transmissions.
+
 ## Why this system exists
 
 Parts are found, never crafted, so **salvage is the whole economy**. Every upgrade,
@@ -619,6 +656,53 @@ on probe 1's three worlds, as before).
   wayshrine, a watchtower and a house ruin are three smaller or taller pieces of the same kind, each
   with a loot table, and the step that builds them replaces the notes' base case of "pillars and wall
   stubs."
+
+## The Surveyor's care packages (gonkhub, 2026-10-20; built, on the `signatures` branch)
+
+*gonkhub: "give the agricultural survey craft a care-package cannon for firing supplies down to the moon's
+surface. Add a signal flare to go with this- if the player lights the signal flare during the Surveyor's
+pass overhead, it will fire the cannon (this should be both heard and seen at distance), sending a cargo
+container crashing into the surface near the flare's location. Give the cargo container's landing plenty
+of polish. I want sand kicked up in a cloud, a smooth lerp from sky to ground, and correct angular velocity
+coming from where the surveyor was when it fired the cargo. Right now don't worry about what's inside the
+cargo just get the feature in."* The Surveyor is Frontier Ag's low crop-survey craft, the H-shaped hull
+skimming 1.9 km up ([Radio](radio-sound-and-atmosphere.md), the satellite `thermal`).
+
+- **The signal flare** (`game/survival/flare.gd`, catalog `flare`): a red tube with a black striker cap,
+  0.3 kg. Use lights it, held or set down: it burns at its tip for 60 s (`flare_burn_seconds`) with a
+  flickering red light reaching 16 m, sparks and a red smoke, and a fizz, then it's spent and won't light
+  again (use refuses). How long it has burnt is in its stats, so a spent one stays spent through a save.
+  Every kit carries two, and they're surface finds (3 in the weights, beside the lamp's 2).
+- **The cannon** (`game/salvage/airdrop.gd`). While a flare burns, the Surveyor passing 35° or more over
+  it (`airdrop_elevation_degrees`) fires once at it. **Seen:** its muzzle flashes in the sky at the craft,
+  twelve times as bright fading over half a second, by day as well as night, a white burst at the hull's
+  middle. **Heard:** the boom comes from the craft's way, as long after the shot as sound takes through the
+  air there (the Rumbles' speed of sound: 9.3 s from 3.1 km), quieter the farther.
+- **The fall.** The container leaves the muzzle where the craft is, carrying the craft's own motion for a
+  moment, then curves down a quadratic Bezier (the muzzle, a bend 1.2 s along the craft's way, the ground)
+  over 14 s (`airdrop_fall_seconds`), eased so it starts even and gathers speed as it falls. It lands 12
+  to 35 m from the flare (`airdrop_land_m`), toward the craft's side, a little either way. Behind it a smoke
+  trail, drawn clear of the haze so it shows a kilometre up and shrinking near the ground; on it a red
+  beacon, the same size on screen however far, blinking, so you can follow it down.
+- **Its spin.** It tumbles end over end about the axis across the way it comes in (up crossed with its
+  horizontal way), rolling forward, away from where the craft was; the hit hands that roll on to the body
+  (half of it) with 7 m/s along its way and 3 down, so it skids and rolls a little further.
+- **The hit.** A cloud of sand thrown up and swelling, 420 lit puffs 3 to 9 m across, and a ring of it
+  thrown out along the ground, 220 more; the impact's boom, a clang and a thud. The container is a body
+  again (catalog `cargo`, 80 kg, an orange shell banded in black), its beacon still blinking; after 7 s the
+  drop lets it go into the world. Nothing's inside it yet.
+- **Dev console:** `surveyor [s]` forces the Surveyor's low pass (gonkhub, 2026-10-20: "make a command to force
+  the surveyor's low pass. add a scenario for it"): its orbit turned to bring it straight over you in s
+  seconds, 20 alone, its height, lap and tilt as they were (`Satellite.pass_over`), the clock left alone.
+  `airdrop` sets the clock to 15 s before the Surveyor's next pass high over you and puts a flare in your
+  hands; `airdrop now` fires at you at once.
+- **Scenario `surveyor`:** a clear afternoon, a flare in your hands, and the Surveyor's low pass forced
+  straight over you in 30 s (`Scenarios.SURVEYOR_LEAD`): light the flare as it comes over.
+- **Probes:** salvage 9 (the Surveyor's care package) and 10 (the Surveyor forced over). **Look-test:** `look/airdrop`, by day: the trail, the
+  fall, the hit, the cloud and its settling.
+- **Fixed in passing:** a billboard particle drops its scale unless told to keep it, so puffs sized in
+  metres came out all the same small size (`billboard_keep_scale`).
+- **Not yet:** what's inside. Active-drop saves are handled by the repair below.
 
 ## Exposed wreck surfaces (Hunter, 2026-10-20; built)
 
@@ -1490,3 +1574,24 @@ note](../lore-session-2026-10-18-mitchell-wow-shoemaker.md#clashes).
   "half market and half church," in Crakeside. Read as one more enclave before the sack; nobody is shown.
 - **Mario's logs against "no NPCs, no exposition." Ruled:** they are a rare easter-egg exception to "people
   never talk" (an Idea). Not said whether they are heard or read.
+
+
+### Delivery persistence repair (2026-10-20; built on the PR branch)
+
+Save the active drop's trajectory, clock, impact state and cargo reference.
+Resume the same container at its saved pose, falling or already landed; do not
+replay the cannon or impact. Once released, the ordinary cargo save owns it.
+Persist whether a flare is burning and whether it has called a delivery, along
+with burn time. Restoring a burning flare recreates its effects without resetting
+its delivery flag. A reload cannot consume a flare silently or summon a second
+container. Old saves without these fields keep their previous interpretation.
+
+Measured: saves 37 restores a still-burning, already-called flare without a
+second delivery (5 s). Saves 38 round-trips flight, the post-impact interval and
+released cargo, preserving the delivery clock and impact state with one
+container throughout (9 s). The existing full flare/cannon/impact check passes
+in 12 s. The impact state is observed after a drawn frame before taking a save.
+
+A GPU capture after a Snapshot round trip during flight shows the resumed trail,
+falling container and impact cloud on the actual renderer. Effects are rebuilt
+on resume; the already-fired cannon is not replayed.

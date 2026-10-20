@@ -288,7 +288,7 @@ func sand(at_x: float, at_z: float, dunes: float) -> float:
 ## Its ground as a chunk's build presses it in at a step: [what each lattice
 ## point is made, the first lattice point's x and z, how many across and
 ## down]; what's outside it is the dunes'.
-func carve(step: int) -> Array:
+func carve(step: int, _rect := Rect2()) -> Array:
 	return [_grid_for(step), _grid_x, _grid_z, float(_grid_w), _grid_d]
 
 

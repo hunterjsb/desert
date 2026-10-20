@@ -13,6 +13,7 @@ extends Node
 signal unlocked(id: String)
 signal discovered(kind: String)
 signal deed_done(id: String)
+signal marks_changed
 
 const KIND := "sandgame profile"
 const VERSION := 1
@@ -40,11 +41,51 @@ var _best := {}
 ## opened, by start().
 var _new := {}
 var _origin := ""
+## The frequencies you've marked on the radio, low to high: {khz, name, color
+## (as html)}. Kept across runs, as what you've learned of the dial.
+var _marks: Array = []
 var _loaded := false
 
 
 func path() -> String:
 	return dir.path_join("profile.save")
+
+
+## Every frequency marked, low to high: [{khz, name, color}].
+func marks() -> Array:
+	_load()
+	return _marks.duplicate(true)
+
+
+## The mark within `near` kHz of a frequency, or {}.
+func mark_at(khz: float, near: float) -> Dictionary:
+	for each: Dictionary in marks():
+		if absf(each.khz - khz) <= near:
+			return each
+	return {}
+
+
+## A frequency marked with a name and a colour, in place of any mark within
+## `near` kHz of it.
+func mark(khz: float, name: String, color: Color, near: float) -> void:
+	_load()
+	_marks = _marks.filter(func(each: Dictionary) -> bool: return absf(each.khz - khz) > near)
+	_marks.append({"khz": khz, "name": name, "color": color.to_html(false)})
+	_marks.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return a.khz < b.khz)
+	_write()
+	marks_changed.emit()
+
+
+## Any mark within `near` kHz of a frequency taken off. Says whether there was one.
+func unmark(khz: float, near: float) -> bool:
+	_load()
+	var before := _marks.size()
+	_marks = _marks.filter(func(each: Dictionary) -> bool: return absf(each.khz - khz) > near)
+	if _marks.size() == before:
+		return false
+	_write()
+	marks_changed.emit()
+	return true
 
 
 ## Says whether it's new.
@@ -209,6 +250,7 @@ func reset() -> void:
 	_best.clear()
 	_new.clear()
 	_origin = ""
+	_marks.clear()
 	_loaded = true
 	refused = ""
 	_write()
@@ -237,9 +279,10 @@ func _load() -> void:
 	_best = data.get("best", {})
 	_new = data.get("new", {})
 	_origin = str(data.get("origin", ""))
+	_marks = data.get("marks", [])
 
 
 func _write() -> void:
 	if refused == "":
 		SaveFile.write(path(), KIND, VERSION, {"unlocks": _unlocks, "found": _found, "taught": _taught,
-			"deeds": _deeds, "toward": _toward, "best": _best, "new": _new, "origin": _origin})
+			"deeds": _deeds, "toward": _toward, "best": _best, "new": _new, "origin": _origin, "marks": _marks})

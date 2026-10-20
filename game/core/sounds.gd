@@ -97,8 +97,12 @@ const RADIO_TONES := preload("res://assets/audio/radio_tones.ogg")
 # Stoker's furnace song on its frequency.
 const RADIO_CLEAR_SKIES := preload("res://assets/audio/radio_clear_skies.ogg")
 const RADIO_STOKER := preload("res://assets/audio/radio_stoker.ogg")
-# The Eye's drone, now and then out of the dark.
+# The Eye's drones, now and then out of the dark, one or the other.
 const RADIO_EYE := preload("res://assets/audio/radio_eye.ogg")
+const RADIO_EYE_TUNNEL := preload("res://assets/audio/radio_eye_tunnel.ogg")
+# The satellites' own tracks, gonkhub's (the rest still play placeholders).
+const RADIO_SAT_CINDER := preload("res://assets/audio/radio_sat_cinder.ogg")
+const RADIO_SAT_METRONOME := preload("res://assets/audio/radio_sat_metronome.ogg")
 # The living city's chatter, made here (make_city_motifs.py): five motifs of
 # reed tones, by what each tells.
 const CITY_MOTIFS := {&"storm": preload("res://assets/audio/city_storm.wav"),

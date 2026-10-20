@@ -7,15 +7,50 @@ extends RefCounted
 ## day, so it rises and sets and each pass crosses the sky somewhere new. It
 ## starts each run passing over where the run began. A radio hears it only
 ## while it's over the horizon, faint low down, and its carrier slides a
-## little as it comes and goes (a Doppler shift, made audible).
+## little as it comes and goes (a Doppler shift, made audible). The others in
+## the constellation (Constellation) orbit the same way on orbits of their
+## own: each its height, its lap and its tilt, from where the seed starts it.
+##
+## An orbit can be irregular, as gonkhub asked of those outside the formation
+## (2026-10-19): an ellipse (eccentricity), so it swoops low and fast at its
+## perigee and hangs high and slow at its apogee, by Kepler's equation; its
+## plane swinging round the pole lap by lap (nodal precession), and its
+## perigee wandering round the ellipse (apsidal precession), so each pass
+## takes a route of its own. Loosely: a real moon's pull wouldn't turn an
+## orbit this fast. And it can decay: sinking lap by lap through a span of
+## heights until a burn throws it back up, over and over. A circle that
+## doesn't turn or sink is the plain orbit above.
 
 ## How far its orbit's tilt can be from the equator, degrees.
 const TILT := Vector2(25.0, 65.0)
 
 var radius: float
+## Its mean height over the ground, moon radii: half way between its lowest
+## and highest, the ellipse's semi-major axis less the moon.
 var altitude: float
 var period: float
 var day_seconds: float
+## How far from a circle, 0 a circle; and how fast its plane and its perigee
+## turn, rad/s.
+var eccentricity := 0.0
+var precession := 0.0
+var apsidal := 0.0
+## How far it sinks before its burn, radii, and over how long, s; 0 for none.
+var decay := 0.0
+var decay_seconds := 0.0
+
+## Orbiting Tu instead of Zan: Tu's middle, in the moon's frame, moon radii
+## (Zan keeps one face to Tu, so Tu stands still in that frame); and its ring
+## round Tu, as two axes and a radius, moon radii. A zero radius is an orbit of Zan.
+var _around := Vector3.ZERO
+var _ring_u := Vector3.ZERO
+var _ring_v := Vector3.ZERO
+var _ring_r := 0.0
+
+## Where its perigee is round the orbit at the run's start, rad from the node.
+var _perigee := 0.0
+## Its mean anomaly at the run's start, rad.
+var _mean := 0.0
 
 ## The orbit as two axes in its plane, in the moon's frame at the run's start
 ## (x toward 0° longitude, y toward 90° east, z north), and where on it the
@@ -25,21 +60,199 @@ var _across: Vector3
 var _phase: float
 
 
-## Its orbit for a run, passing over `start` (a point on the sphere) at world time 0.
-func _init(run_seed: int, tuning: Tuning, start: Vector3) -> void:
+## Its orbit for a run, passing over `start` (a point on the sphere) at world
+## time 0. `orbit` gives another satellite's own, {id, altitude (radii),
+## minutes (a lap), tilt (degrees from the equator, the least and most),
+## backward (the share of seeds it goes round backwards)}, starting it over a
+## point of the seed's choosing instead; left empty, it's the relay's. With a
+## slot ({slot, count, phasing, inclination}), it's one of a formation instead
+## (Constellation.FORMATION): its own plane of `count` spread evenly round,
+## each `phasing` / `count` of a lap on from the last, all at one tilt, the
+## seed turning and mirroring the whole formation as one. Any orbit can be
+## irregular too: {eccentricity, precess (degrees its plane swings round the
+## pole a lap), apsides (degrees its perigee wanders a lap)}; its perigee
+## starts where the seed puts it.
+func _init(run_seed: int, tuning: Tuning, start: Vector3, orbit := {}) -> void:
 	radius = tuning.moon_circumference / TAU
-	altitude = tuning.relay_altitude_radii
-	period = tuning.relay_period_minutes * 60.0
+	altitude = orbit.get("altitude", tuning.relay_altitude_radii)
+	period = orbit.get("minutes", tuning.relay_period_minutes) * 60.0
 	day_seconds = tuning.day_minutes * 60.0
+	if orbit.has("decay"):
+		decay = minf(orbit.decay[0], altitude)
+		decay_seconds = orbit.decay[1] * period
+	# Never so eccentric it grazes the ground, sunk as far as it sinks: its
+	# perigee a fifth of a radius up at least.
+	eccentricity = clampf(orbit.get("eccentricity", 0.0), 0.0, 1.0 - 1.2 / (1.0 + altitude - decay * 0.5))
+	precession = deg_to_rad(orbit.get("precess", 0.0)) / period
+	apsidal = deg_to_rad(orbit.get("apsides", 0.0)) / period
+	if orbit.has("slot"):
+		_in_formation(run_seed, orbit)
+		_start_on_ellipse(run_seed, orbit)
+		return
+	if orbit.has("around_tu"):
+		_round_tu(run_seed, tuning, orbit)
+		return
+	var relay: bool = orbit.get("id", &"relay") == &"relay"
 	var rng := RandomNumberGenerator.new()
-	rng.seed = hash([run_seed, "relay"])
+	rng.seed = hash([run_seed, "relay"]) if relay else hash([run_seed, "satellite", orbit.id])
+	if not relay and not orbit.get("over_start", false):
+		# Low enough that any tilt it may have still crosses it.
+		start = Sphere.point(asin(rng.randf_range(-0.3, 0.3)), rng.randf() * TAU)
 	var latitude := Sphere.latitude(start)
-	var tilt := maxf(deg_to_rad(rng.randf_range(TILT.x, TILT.y)), absf(latitude) + 0.01)
-	if rng.randf() < 0.5:
+	var range_deg: Vector2 = orbit.get("tilt", TILT)
+	var tilt := maxf(deg_to_rad(rng.randf_range(range_deg.x, range_deg.y)), absf(latitude) + 0.01)
+	if rng.randf() < orbit.get("backward", 0.5):
 		tilt = PI - tilt
 	# Where on a tilted circle a point at that latitude lies, and the node that puts it under start.
 	_phase = asin(clampf(sin(latitude) / sin(tilt), -1.0, 1.0))
 	var node_longitude := Sphere.longitude(start) - atan2(cos(tilt) * sin(_phase), cos(_phase))
+	_node = Vector3(cos(node_longitude), sin(node_longitude), 0.0)
+	_across = Vector3(-sin(node_longitude) * cos(tilt), cos(node_longitude) * cos(tilt), sin(tilt))
+	_start_on_ellipse(run_seed, orbit)
+
+
+## Where on its ellipse it starts, keeping it over the point its plane puts it
+## at the start (_phase, rad round from the node): its perigee where the seed
+## puts it, and the mean anomaly that has it there. A circle starts as it is.
+func _start_on_ellipse(run_seed: int, orbit: Dictionary) -> void:
+	if eccentricity <= 0.0:
+		_mean = _phase
+		return
+	var rng := RandomNumberGenerator.new()
+	rng.seed = hash([run_seed, "perigee", orbit.get("id", &"relay")])
+	_perigee = rng.randf() * TAU
+	var true_anomaly := _phase - _perigee
+	var e := eccentricity
+	var eccentric := 2.0 * atan2(sqrt(1.0 - e) * sin(true_anomaly * 0.5), sqrt(1.0 + e) * cos(true_anomaly * 0.5))
+	_mean = eccentric - e * sin(eccentric)
+
+
+## An orbit of Tu (gonkhub, 2026-10-19: "an 11th satellite orbiting Tu"): Tu
+## where it hangs, tu_distance_radii off toward the point under it, its size
+## the share of the sky tu_degrees gives it; the ring round it so many of Tu's
+## radii out, a lap in its minutes, its plane holding Zan's line, so it swings
+## round in front of Tu, toward Zan, and round behind, from where the seed starts it.
+func _round_tu(run_seed: int, tuning: Tuning, orbit: Dictionary) -> void:
+	var toward := Sphere.point(0.0, deg_to_rad(tuning.tu_longitude_degrees))
+	var far: float = orbit.around_tu.distance
+	_around = toward * far
+	var tu_radius := far * tan(deg_to_rad(tuning.tu_degrees * 0.5))
+	_ring_r = tu_radius * orbit.around_tu.radii
+	var rng := RandomNumberGenerator.new()
+	rng.seed = hash([run_seed, "satellite", orbit.id])
+	# Its plane holds the line to Zan, tilted round it by the seed.
+	var side := Vector3(0.0, 0.0, 1.0).cross(toward).normalized().rotated(toward, rng.randf_range(-0.6, 0.6))
+	_ring_u = side
+	_ring_v = -toward
+	_phase = rng.randf() * TAU
+	altitude = far - 1.0
+
+
+## How far round to Zan's side of Tu it is at world time t, 0 at Tu's limb
+## or behind it, 1 straight between Tu and Zan; 0 for an orbit of Zan.
+func facing(t: float) -> float:
+	if _ring_r <= 0.0:
+		return 0.0
+	return maxf(0.0, (at(t) - _around).normalized().dot(-_around.normalized()))
+
+
+## Its place at world time t, in the moon's frame, moon radii from its middle:
+## round its ellipse by Kepler's equation, its perigee and plane turned as far
+## as they've turned, less the turn the moon has made under it since.
+func at(t: float) -> Vector3:
+	if _ring_r > 0.0:
+		var angle := _phase + TAU * t / period
+		return _around + (_ring_u * cos(angle) + _ring_v * sin(angle)) * _ring_r
+	var a := 1.0 + altitude + sinking(t)
+	var mean := _mean + TAU * t / period
+	var u: float
+	var r := a
+	if eccentricity <= 0.0:
+		u = mean
+	else:
+		var e := eccentricity
+		var eccentric := mean
+		for i in 6:
+			eccentric -= (eccentric - e * sin(eccentric) - mean) / (1.0 - e * cos(eccentric))
+		var true_anomaly := 2.0 * atan2(sqrt(1.0 + e) * sin(eccentric * 0.5), sqrt(1.0 - e) * cos(eccentric * 0.5))
+		r = a * (1.0 - e * cos(eccentric))
+		u = _perigee + apsidal * t + true_anomaly
+	var inertial := (_node * cos(u) + _across * sin(u)) * r
+	return inertial.rotated(Vector3(0.0, 0.0, 1.0), precession * t - TAU * t / day_seconds)
+
+
+## Turned onto an orbit that brings it straight over point p on the sphere
+## at world time t, its height, lap and tilt as they were (tilted no less than
+## p's latitude needs), only its plane and its place round it moved: where p
+## will be among the stars at t, the moon's turn under it and its plane's own
+## swing taken back, put on its plane, and it there at t. A circle's orbit
+## (the Surveyor's); an ellipse would need its perigee moved too.
+func pass_over(p: Vector3, t: float) -> void:
+	var q := p.rotated(Vector3(0.0, 0.0, 1.0), TAU * t / day_seconds - precession * t)
+	var latitude := Sphere.latitude(q)
+	var tilt := acos(clampf(_node.cross(_across).z, -1.0, 1.0))
+	var least := asin(minf(absf(sin(latitude)) + 0.02, 1.0))
+	if tilt < PI * 0.5:
+		tilt = maxf(tilt, least)
+	else:
+		tilt = minf(tilt, PI - least)
+	var round_to := asin(clampf(sin(latitude) / sin(tilt), -1.0, 1.0))
+	var node_longitude := Sphere.longitude(q) - atan2(cos(tilt) * sin(round_to), cos(round_to))
+	_node = Vector3(cos(node_longitude), sin(node_longitude), 0.0)
+	_across = Vector3(-sin(node_longitude) * cos(tilt), cos(node_longitude) * cos(tilt), sin(tilt))
+	_phase = round_to - TAU * t / period
+	_mean = _phase
+
+
+## Its height over the ground at world time t, moon radii.
+func height(t: float) -> float:
+	return at(t).length() - 1.0
+
+
+## How far its decay has it off its mean height at world time t, radii: from
+## half its span up, sinking to half down, then its burn throws it back.
+func sinking(t: float) -> float:
+	if decay <= 0.0:
+		return 0.0
+	return decay * (0.5 - fposmod(t, decay_seconds) / decay_seconds)
+
+
+## The lowest and highest it ever flies, its middle's distance, moon radii.
+func reach() -> Vector2:
+	var a := 1.0 + altitude
+	return Vector2(a * (1.0 - eccentricity) - decay * 0.5, a * (1.0 + eccentricity) + decay * 0.5)
+
+
+## How high it is in its range at world time t, 0 at its lowest, 1 at its
+## highest; a plain circle is always half way.
+func highness(t: float) -> float:
+	var span := reach()
+	if span.y - span.x < 1e-4:
+		return 0.5
+	return clampf(inverse_lerp(span.x, span.y, at(t).length()), 0.0, 1.0)
+
+
+## How much brighter it looks than at its mean distance, as light falls off
+## with the square of distance: a near swoop bright, far out dim.
+func nearness(t: float) -> float:
+	return clampf(pow((1.0 + altitude) / at(t).length(), 2.0), 0.25, 4.0)
+
+
+## Its place in a formation (a Walker constellation, as real ones are laid
+## out): a plane of its own at the formation's tilt, its node and its place
+## round it spread evenly through the formation from where the seed turns it.
+func _in_formation(run_seed: int, orbit: Dictionary) -> void:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = hash([run_seed, "formation"])
+	var turn := rng.randf() * TAU
+	var along := rng.randf() * TAU
+	var tilt := deg_to_rad(orbit.inclination)
+	if rng.randf() < 0.5:
+		tilt = PI - tilt
+	var k: int = orbit.slot
+	var count: int = orbit.count
+	var node_longitude := turn + TAU * k / count
+	_phase = along + TAU * orbit.phasing * k / count
 	_node = Vector3(cos(node_longitude), sin(node_longitude), 0.0)
 	_across = Vector3(-sin(node_longitude) * cos(tilt), cos(node_longitude) * cos(tilt), sin(tilt))
 
@@ -47,9 +260,7 @@ func _init(run_seed: int, tuning: Tuning, start: Vector3) -> void:
 ## The point on the sphere it's over at world time t, in the moon's frame:
 ## round its orbit, less the turn the moon has made under it since.
 func under(t: float) -> Vector3:
-	var at := _phase + TAU * t / period
-	var inertial := _node * cos(at) + _across * sin(at)
-	return inertial.rotated(Vector3(0.0, 0.0, 1.0), -TAU * t / day_seconds).normalized()
+	return at(t).normalized()
 
 
 ## Where it is, seen from a point on the sphere at world time t: {elevation
@@ -65,15 +276,17 @@ func seen_from(p: Vector3, t: float) -> Dictionary:
 ## Whether the sun lights it at world time t, or it's in Zan's shadow:
 ## behind the moon from the sun and within the moon's width of the line to it.
 func sunlit(t: float, sun: Vector3) -> bool:
-	var at := under(t) * (1.0 + altitude)
-	return at.dot(sun) > 0.0 or (at - sun * at.dot(sun)).length() > 1.0
+	var where := at(t)
+	return where.dot(sun) > 0.0 or (where - sun * where.dot(sun)).length() > 1.0
 
 
-## The fastest it ever draws away or nears, m/s: for scaling its slide.
+## The fastest it ever draws away or nears, m/s: for scaling its slide. On an
+## ellipse, as fast as it goes at its perigee.
 func top_rate() -> float:
-	return TAU * radius * ((1.0 + altitude) / period + 1.0 / day_seconds)
+	var swoop := sqrt((1.0 + eccentricity) / (1.0 - eccentricity))
+	return TAU * radius * ((1.0 + altitude) / period * swoop + 1.0 / day_seconds)
 
 
 func _from(p: Vector3, t: float) -> Dictionary:
-	var to := under(t) * (1.0 + altitude) - p
+	var to := at(t) - p
 	return {"elevation": asin(clampf(to.normalized().dot(p), -1.0, 1.0)), "metres": to.length() * radius}

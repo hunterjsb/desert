@@ -13,7 +13,8 @@ const HELP := [
 		["{hands_rotate}", "turn what you hold"], ["{bring_near} / {push_out}", "nearer, further"],
 		["{reel_in} / {pay_out}", "reel in, pay out; tune a radio"],
 		["{rope_yank}", "yank the worked rope"],
-		["{tune_fine_up} / {tune_fine_down}", "fine tune"], ["{volume_up} / {volume_down}", "radio volume"]]],
+		["{tune_fine_up} / {tune_fine_down}", "fine tune"], ["{volume_up} / {volume_down}", "radio volume"],
+		["{mark_frequency}", "mark or unmark a radio's frequency; then {interact} goes to the next"]]],
 	["YOU", [["{inventory}", "what you carry"], ["{headlamp}", "headlamp"]]],
 	["GAME", [["{ui_cancel}", "back, menu"], ["{quick_save}", "quick save"], ["{quick_load}", "quick load"],
 		["{toggle_keys}", "these keys"], ["{fullscreen}", "fullscreen"]]],
@@ -62,6 +63,8 @@ const KEYS := {
 	"inventory": KEY_TAB,
 	"ride": KEY_R,
 	"headlamp": KEY_B,
+	# A radio in your hands: mark where its dial stands.
+	"mark_frequency": KEY_M,
 }
 
 ## Mouse buttons, the same way.

@@ -16,6 +16,7 @@ extends RefCounted
 
 ## What each kind of thing keeps besides where it is, by property.
 static var _kept := [
+	[Flare, ["lit", "called"]],
 	[Stake, ["driven", "pulled", "sustained", "holding", "pull"]],
 	[ShieldGenerator, ["on", "smart", "size", "_up", "_since", "held_minutes"]],
 	# A save from before the dial kept "channel": setting it places the dial.
@@ -136,6 +137,7 @@ func begin(data: Dictionary) -> Array[Vector2]:
 	world.weather.field.restore_wind(data.get("test_wind", {}))
 	world.began = data.get("began", 0.0)
 	world.taught = data.get("taught", false)
+	world.stoker_state = data.get("stoker", {}).duplicate(true)
 	world.played = data.get("played", NAN)
 	world.counts_deeds = world.counts_deeds and not data.get("dev_run", false)
 	world.set_gravity(data.gravity)
@@ -295,6 +297,10 @@ func finish(data: Dictionary) -> void:
 	var grasped: Variant = data.grasp.get("body")
 	if grasped != null and _made.has(grasped):
 		hands.grasp.recall(_made[grasped], data.grasp)
+	for drop: Dictionary in data.get("airdrops", []):
+		var cargo := _made.get(drop.cargo) as Part
+		if is_instance_valid(cargo):
+			Airdrop.recall(world, cargo, _transform_in(drop.at), drop.state)
 	world.shape.sites.resumed()
 
 
@@ -303,7 +309,7 @@ func _take() -> Dictionary:
 	var ropes := world.ropes
 	var player := world.player
 	var hands := player.hands
-	var data := {"seed": world.run_seed, "time": world.time, "began": world.began, "taught": world.taught,
+	var data := {"seed": world.run_seed, "time": world.time, "began": world.began, "taught": world.taught, "stoker": world.stoker_state.duplicate(true),
 		"gravity": world.gravity,
 		"origin": world.origin_chunk,
 		"moon": {"latitude": world.moon.latitude, "longitude": world.moon.longitude,
@@ -338,6 +344,7 @@ func _take() -> Dictionary:
 	var lines: Array[Line] = []
 	var cables: Array[Cable] = []
 	var order := []
+	var drops := []
 	for child in world.content.get_children():
 		if child is Line:
 			order.append(["l", lines.size()])
@@ -345,6 +352,10 @@ func _take() -> Dictionary:
 		elif child is Cable:
 			order.append(["c", cables.size()])
 			cables.append(child)
+		elif child is Airdrop and is_instance_valid(child.cargo) and child.cargo.get_parent() == child:
+			order.append(["b", _ref(child.cargo)])
+			things.append(_body(child.cargo, true))
+			drops.append({"cargo": _ref(child.cargo), "at": _transform_out(child.global_transform), "state": child.memory()})
 		elif child is RigidBody3D and child.has_meta(&"catalog"):
 			order.append(["b", _ref(child)])
 			things.append(_body(child, true))
@@ -373,6 +384,7 @@ func _take() -> Dictionary:
 	if player.helm != null and _refs.has(player.helm):
 		data.helm = _refs[player.helm]
 	data.things = things
+	data.airdrops = drops
 	data.order = order
 	data.carried = player.suit.carried.filter(_known).map(func(p: RigidBody3D) -> Dictionary: return _body(p, false))
 	var strands := ropes.strands.filter(func(s: RopeStrand) -> bool: return is_instance_valid(s))

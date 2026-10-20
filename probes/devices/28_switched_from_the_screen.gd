@@ -40,7 +40,7 @@ func run() -> void:
 	var khz := radio.frequency
 	_press(made, radio, &"sweep")
 	_press(made, radio, &"quieter")
-	check(radio.on and radio.frequency > khz and radio.tuned_to() != &""
+	check(radio.on and radio.frequency > khz and radio.carriers().has(radio.frequency)
 		and is_equal_approx(radio.volume, 1.0 - Radio.VOLUME_STEP), "the radio comes on, sweeps to a carrier and turns down")
 	var lit := deck.demand_w()
 	_press(made, deck, false)

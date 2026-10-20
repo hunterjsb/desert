@@ -1,9 +1,11 @@
 extends WeatherProbe
 ## Radio probe 8: the dial finds each god. Each god's carrier lies inside its
-## own band and moves to a fresh place each day. Tuned to it, the dial is on
+## own band and wanders each day, never more than carrier_drift_khz from the
+## day before. Tuned to it, the dial is on
 ## that god; tuned halfway to the next carrier, it hears only static, and the
 ## line says nothing but the frequency and static. Use sweeps up through every
-## carrier on the dial, the gods, the music and the beacon, and then off.
+## carrier on the dial, the gods, the music, the beacon and the satellites on
+## the air overhead, and then off.
 
 
 func run() -> void:
@@ -23,6 +25,17 @@ func run() -> void:
 		for d in range(1, 6):
 			moved = moved or gods.carrier(id, t + d * day) != khz
 		check(moved, "%s's carrier moves from day to day" % Gods.title(id))
+		var most := 0.0
+		var inside := true
+		var last := gods.carrier(id, t)
+		for d in range(1, 61):
+			var now := gods.carrier(id, t + d * day)
+			most = maxf(most, absf(now - last))
+			inside = inside and now > band.x and now < band.y
+			last = now
+		check(most <= world.tuning.carrier_drift_khz and inside,
+			"%s's never more than %d kHz from the day before, over 60 days (%.0f at most)" % [Gods.title(id),
+			roundi(world.tuning.carrier_drift_khz), most])
 		radio.on = true
 		radio.frequency = khz
 		check(radio.tuned_to() == id and radio.channel == (Radio.WEATHER if id == &"walker" else Radio.GOD),
@@ -41,11 +54,16 @@ func run() -> void:
 	radio.on = false
 	var swept: Array[float] = []
 	radio.interact(world.player)
-	while radio.on and swept.size() <= carriers.size():
+	while radio.on and swept.size() <= carriers.size() + Constellation.ROSTER.size():
 		swept.append(radio.frequency)
 		radio.interact(world.player)
 	var all: Array[float] = []
 	for each in carriers:
 		all.append(each[0])
+	var x := world.world_x(radio.global_position.x)
+	var z := world.world_z(radio.global_position.z)
+	for each in Radio.constellation_of(world).carriers(radio.point_at(x, z), t):
+		all.append(each[0])
+	all.sort()
 	print("use swept %s" % [swept])
 	check(swept == all and not radio.on, "use sweeps every carrier, low to high, then off")
