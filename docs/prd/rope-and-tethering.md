@@ -545,6 +545,20 @@ connected rope, zero individual reel targets and no selected rope. The readable 
 return cue replaced the hover/click instruction and stayed above the carry tiles. Import
 and the capture completed without script or teardown errors; no local probes were run.
 
+### Removed selected ends (2026-10-19; lifetime correction)
+
+A selected rope end can be freed while its line is recovered or removed. Clear an
+invalid selected body before passing it into a typed helper: Godot rejects a freed
+object at the call boundary, before that helper's own validity guard runs. Selection
+then remains empty until an explicit new choice, preserving carry-view selection.
+This fixes the reproduced script error during rope recovery without changing ties,
+reeling forces or the selection policy. The guard is useful for ordinary line
+removal independently of the kite prototype where the failure was observed.
+
+The existing selected-line untie/save/resume check (rope18) passes in9s with the
+guard. That check covers ordinary selection behavior; the freed-reference failure
+was observed separately during the prototype recovery loop. No probe assertions changed.
+
 ## Lost line ends leave the waist (2026-10-19 lifecycle correction)
 
 A line removed without ordinary parting, such as a dev teleport separating its ends,

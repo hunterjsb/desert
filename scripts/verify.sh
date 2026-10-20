@@ -20,15 +20,37 @@ if [[ -z $(git diff --name-only origin/master "$sha" -- . ':!docs' ':!*.md') ]];
 fi
 # Quiet: GitHub's remote lines offer a pull request for every new branch.
 git push -q -f origin "HEAD:refs/heads/verify-$name" 2> >(grep -v '^remote:' >&2)
+branch="verify-$name"
+# Workflow, branch and commit all matter: a release or another branch may
+# have a successful run of this same commit without verifying this push.
+find_run() {
+	gh run list -w probes.yml -b "$branch" -c "$sha" --limit 20 \
+		--json databaseId,event \
+		-q 'map(select(.event == "push" or .event == "workflow_dispatch")) | .[0].databaseId'
+}
 id=""
-for _ in $(seq 60); do
-	id=$(gh run list -c "$sha" --json databaseId -q '.[0].databaseId' 2>/dev/null || true)
+for attempt in $(seq 7); do
+	id=$(find_run)
 	[[ -n $id ]] && break
-	sleep 10
+	[[ $attempt == 7 ]] || sleep 5
 done
-[[ -n $id ]] || { echo "no CI run for ${sha:0:7}" >&2; exit 1; }
-while [[ $(gh run view "$id" --json status -q .status) != completed ]]; do
-	sleep 30
+if [[ -z $id ]]; then
+	# Dispatch resolves a branch now, so refuse if another verifier moved it.
+	remote_sha=$(git ls-remote origin "refs/heads/$branch" | cut -f1)
+	[[ $remote_sha == "$sha" ]] || { echo "$branch moved: verify again" >&2; exit 1; }
+	echo "no push run after 30s: dispatching Linux verification for $branch at ${sha:0:7}"
+	gh workflow run probes.yml --ref "$branch" -f full_platforms=false
+	for attempt in $(seq 6); do
+		id=$(find_run)
+		[[ -n $id ]] && break
+		[[ $attempt == 6 ]] || sleep 60
+	done
+fi
+[[ -n $id ]] || { echo "no Probes run for $branch at ${sha:0:7}" >&2; exit 1; }
+while :; do
+	status=$(gh run view "$id" --json status -q .status)
+	[[ $status == completed ]] && break
+	sleep 60
 done
 conclusion=$(gh run view "$id" --json conclusion -q .conclusion)
 echo "$conclusion: run $id at ${sha:0:7}"
