@@ -101,6 +101,27 @@ These are candidates for prioritization, not an implementation commitment or a
 requirement to finish the full crop roster in Sanddune. Each selected goal needs
 its system design decisions and a concrete playtest outcome before work begins.
 
+## Current playtest follow-up (2026-10-20; in progress)
+
+The verified playtest confirms useful rope reeling/yanking, physical boom
+constraints, the delivery scenario, radio stowing, voice clarity and music.
+It does not establish easy sailing: skate craft tend to stall and hover
+craft circle. Improve force balance through visible craft layout and ordinary
+rigging; preserve the player's control and the working physical constraints.
+
+| Next-pass work | Current status and acceptance |
+| --- | --- |
+| Manual sail hoist | In progress: chassis-mounted hand winch, halyard and masthead pulley. Separate sail height from the sheet; hold paid length on release. New starter/scenario rigs need usable hardware, old saves need compatibility. |
+| Sail removal, board-line detachment and ground-rope recovery | In progress. The reported rope endpoint is the board, correcting the initial sail-end report. Pick up loose rope with ordinary actions and preserve attached ends/line identity. |
+| Clear scenarios and craft naming | Focused check passes; integration CI pending. One clear-weather/radio/flare/drone setup, old names as aliases. Delivery craft is “the drone”; Surveyor origin and Guide retain their names. |
+| Vault feel | Focused checks and GPU fixture pass; integration CI and human acceptance pending. Climb the measured ledge height with continuous travel through rounded corners, retaining obstruction and moving-deck checks. |
+| Radio controls and voices | In progress: live control hints only in the tune view, distinct machine voice identities grounded in the gods' lore. Keep the approved weather voice and music. Music follows world time; current speech starts reports on tuning, so a shared continuous speech schedule is not built. |
+| Halloran stock and cache | In progress: ordinary pickup for visible coalcane; the completed burn unlocks physically preplaced rewards. Check individual claims, locked access, legacy saves and no duplication after return/reload. |
+| Halloran models and pipeline | In progress: improve homes/ruins and give the pipeline a connected, supported route with meaningful terminals. Inspect actual gameplay captures. |
+
+These changes are separate from the prepared 0.2.2 patch cutoff. Their
+implementation and checks must land before this table can describe them as built.
+
 ## Consolidated feature register
 
 This register carries forward the later kite, camp and opening discussions so they
