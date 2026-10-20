@@ -8,6 +8,8 @@ var _player: Player
 var _support: Node3D
 var _points: Array[Vector3] = []
 var _elapsed := 0.0
+var _duration := 0.0
+var _distances: Array[float] = []
 var _used := false
 var _last := Vector3.ZERO
 var _origin := Vector2i.ZERO
@@ -73,9 +75,21 @@ func begin(direction: Vector2) -> bool:
 	_support = down.get_collider() as Node3D
 	if _support == null:
 		return false
+	# Only lift far enough to clear this top; a low step is not a full mantle.
+	var lift := Vector3.UP * (rise + _tuning.vault_lift_margin)
+	var corners: Array[Vector3] = [start, start + lift, start + lift + ahead, landing]
+	var path := _round_corners(corners)
+	for i in range(1, path.size()):
+		if _sweep(path[i - 1], path[i] - path[i - 1]).get_collision_count() > 0:
+			return false
 	_points.clear()
-	for point: Vector3 in [start, start + up, start + up + ahead, landing]:
+	_distances.assign([0.0])
+	for point: Vector3 in path:
+		if not _points.is_empty():
+			_distances.append(_distances[-1] + point.distance_to(_support.to_global(_points[-1])))
 		_points.append(_support.to_local(point))
+	var nominal := _tuning.vault_height + _tuning.vault_reach + 2.0 * _tuning.vault_lift_margin
+	_duration = _tuning.vault_seconds * _distances[-1] / nominal
 	_elapsed = 0.0
 	_last = start
 	_origin = _player.world.origin_chunk
@@ -97,10 +111,12 @@ func step(delta: float) -> void:
 		cancel()
 		return
 	var first := _elapsed == 0.0
-	_elapsed = minf(_elapsed + delta, _tuning.vault_seconds)
-	var progress := _elapsed / _tuning.vault_seconds
-	var segment := mini(2, int(progress * 3.0))
-	var along := smoothstep(0.0, 1.0, progress * 3.0 - segment)
+	_elapsed = minf(_elapsed + delta, _duration)
+	var travel := smoothstep(0.0, 1.0, _elapsed / _duration) * _distances[-1]
+	var segment := 0
+	while segment < _points.size() - 2 and travel > _distances[segment + 1]:
+		segment += 1
+	var along := inverse_lerp(_distances[segment], _distances[segment + 1], travel)
 	var target := _support.to_global(_points[segment].lerp(_points[segment + 1], along))
 	var drag: Vector3 = _player.get_meta(&"rope_drag", Vector3.ZERO)
 	_drag_offset += drag * delta
@@ -125,7 +141,7 @@ func step(delta: float) -> void:
 	if _player.global_position.distance_to(target) > _tuning.vault_clearance * 3.0:
 		cancel()
 		return
-	if _elapsed >= _tuning.vault_seconds:
+	if _elapsed >= _duration:
 		# Establish the actual floor through CharacterBody's usual platform tracking.
 		_player.velocity = Vector3.DOWN * _tuning.vault_settle_speed
 		var snap := _player.floor_snap_length
@@ -148,3 +164,21 @@ func _sweep(at: Vector3, motion: Vector3) -> PhysicsTestMotionResult3D:
 	var result := PhysicsTestMotionResult3D.new()
 	PhysicsServer3D.body_test_motion(_player.get_rid(), parameters, result)
 	return result
+
+
+## Round only above the landing, where the feet already clear the edge.
+func _round_corners(corners: Array[Vector3]) -> Array[Vector3]:
+	var path: Array[Vector3] = [corners[0]]
+	for i in [1, 2]:
+		var before := corners[i - 1] - corners[i]
+		var after := corners[i + 1] - corners[i]
+		var radius := minf(_tuning.vault_lift_margin - _tuning.vault_clearance,
+			minf(before.length(), after.length()) * 0.5)
+		var entry := corners[i] + before.normalized() * maxf(radius, 0.0)
+		var leave := corners[i] + after.normalized() * maxf(radius, 0.0)
+		path.append(entry)
+		for step in range(1, 5):
+			var t := step / 4.0
+			path.append(entry.lerp(corners[i], t).lerp(corners[i].lerp(leave, t), t))
+	path.append(corners[-1])
+	return path

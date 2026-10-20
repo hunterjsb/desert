@@ -1694,3 +1694,25 @@ remain usable; refresh the visual notes when their illustrated controls change.
 Status: design recorded only. The current verified play build still raises and
 furls by use on the mast. This attachment is not part of the prepared 0.2.2
 release candidate.
+
+
+### Vault motion follow-up (2026-10-20; focused checks pass)
+
+Playtesting confirms reachable ledges work, but the climb feels artificial.
+The current path rises to maximum reach even at a low ledge, then stops at
+each of three equally timed phases. Keep the reach, obstruction sweeps and
+actual moving support. Shape the path around the measured top height with
+just enough clearance to round the upper corners; use distance along that
+path for continuous travel rather than a stop at every waypoint. A larger
+ledge should take longer than a small step. Tune timing and lift margin in
+Tuning. Inspect actual approach/climb/landing captures; these changes need
+a fresh human feel test and do not claim a full body/hand animation.
+
+As built for this follow-up: the crossing runs 0.06 m above the measured top,
+with rounded upper corners and distance-based progress. Full-height reference
+time is 0.42 s; shorter paths take proportionally less time. The focused
+Movement 32 obstruction/moving-deck/origin-shift checks pass (11 s), as does
+new Movement 35: a 0.2 m ledge is crossed with feet below 0.32 m peak instead
+of lifting to the full 0.65 m reach (6 s). Actual unseen 1280×720 approach,
+rise, crossing and landing frames were inspected on a solid fixture; the same
+Movement 32 checks pass on the GPU run. Human feel acceptance remains pending.
