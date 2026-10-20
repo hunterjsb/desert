@@ -54,7 +54,7 @@ func tick(delta: float, dirt: float) -> Vector2:
 		&"stutter":
 			if _since >= _period:
 				_since = 0.0
-				voice.seek(_anchor)
+				_seek(_anchor)
 		&"drop":
 			out.x = 0.0
 		&"jump":
@@ -94,5 +94,16 @@ func _start() -> void:
 func _end() -> void:
 	if kind == &"stutter":
 		# Caught up with where it would have been, as if it never stuck.
-		voice.seek(fposmod(_anchor + _length, voice.stream.get_length()))
+		_seek(fposmod(_anchor + _length, voice.stream.get_length()))
 	kind = &""
+
+
+## A player seek replaces its stream; repeat within this decoder instead.
+## Its state belongs to the mixer, so hold the driver lock while seeking it.
+func _seek(to: float) -> void:
+	if not voice.has_stream_playback():
+		return
+	var playback := voice.get_stream_playback()
+	AudioServer.lock()
+	playback.seek(to)
+	AudioServer.unlock()
