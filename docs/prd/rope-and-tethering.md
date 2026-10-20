@@ -107,12 +107,10 @@ hands take it in at up to 1 m/s, and only the line draws, on both its ends, so w
 it comes only as hard as your hand strength (400 N): the draw eases off from half your
 strength and stops at all of it. Whatever doesn't come, a stake or something too heavy,
 you step in to along the line instead, at about 0.5 m/s. Nothing on a line ever closes
-faster than its 3 m/s. **Which line reels** (2026-10-18): the line in your hand first;
-else, of the lines at your waist, the one whose far end you look nearest, so with a sheet
-and a mooring line both there you trim by looking at the sail and reel the mooring by
-looking at its stake. The line being reeled stays the one until another's far end is
-30% nearer your aim; with two equally near, the last tied wins. Before, it was
-always the last tied, so a stake line tied on after the sheet took the reel off the sail.
+faster than its 3 m/s. **Which line reels** (updated 2026-10-19): the line in your hand first;
+else only the waist rope explicitly chosen by clicking its physical curve in the carry view.
+Looking around does not change the choice. Without one, reeling asks you to choose a rope;
+losing a selected tie clears the choice without picking another, even if only one remains.
 **A radio shares them** (2026-10-18): looking at a radio, and not reeling the line in your
 hand, reel in and pay out tune it instead of reeling the line at your waist; holding one,
 they tune it while there's no line at your waist to reel ([Radio](radio-sound-and-atmosphere.md#the-dial-and-the-gods-on-the-air-hunter-2026-10-18-built)).
@@ -336,8 +334,8 @@ Reliability is the whole point here, so this list is long. All run without a win
     at sand out of reach and then at the deck, stays in your hand each time, neither
     driven nor at your waist, and the readout says why. At sand in reach it goes in at
     the ground's height; looking out over the sand, use ties it at your waist.
-16. **The line you look along.** A sail's sheet and a line to a stake both at your waist:
-    looking along the sheet, two notches haul half a metre of the sheet's inboard in and
+16. **The line you choose.** A sail's sheet and a line to a stake both at your waist:
+    choosing the sheet, two notches haul half a metre of the sheet's inboard in and
     leave the stake's line be; looking along the stake's line, two notches draw it in half a
     metre and leave the trim be.
 
@@ -361,7 +359,7 @@ Every probe is first run against a deliberately broken rope, to prove it can fai
 - Climbing, swinging and grappling.
 - Cutting ropes to arbitrary lengths with physics. Lengths are set when you attach.
 
-## Sanddune: explicit waist-line selection (agreed, 2026-10-19)
+## Sanddune: explicit waist-line selection (initial design, superseded by physical choice below)
 
 Hunter chose carry-view selection with a gaze option. The existing carry view
 lists named waist lines with their current length and tension. Choosing one keeps
@@ -499,3 +497,50 @@ and Follow gaze cleared the explicit choice. Release progress reached 0.5 while 
 remained attached; its active in-game countdown was readable, and ordinary play showed no
 waist-stat HUD. Import and capture completed without script/runtime errors. The existing rope
 18 HUD assertion follows the revised contract; no new probes or local test runs were added.
+
+### Explicit physical-rope choice only (agreed, 2026-10-19 playtest)
+
+Physical carry-view hover and click selection works; remove Follow gaze because automatic
+aiming selection is unreliable. No waist rope is chosen automatically, even when exactly one
+is connected. Hover previews; clicking chooses. Losing that tie clears the choice without
+switching to another rope. Held-line reeling still takes priority. Reeling or empty-handed
+untying without a chosen rope gives a readable cue to open the carry view and choose one.
+
+The carry view always explains hovering/clicking ropes and shows the number of distinct live
+ropes connected across all waist holders, including a Stake. Orphan ends do not count. Remove
+the last-tied fallback in empty-handed untie; retain only the distinct return of a sole waist
+Stake that has no individual reel target. Timed Release all remains. No input binding or
+force rule changes; sailing notes teach the same explicit physical-rope interaction.
+
+**As built:** `Reel.line` now resolves a held line or an explicit live choice only. Its
+connected-rope count deduplicates active Rope instances with valid endpoints and holders,
+including connections carried by a Stake. `Waist.give_back` refuses a missing rope choice,
+retaining only the sole non-reelable Stake return. Reeling or use without a choice
+shows the readable carry-view cue. The physical picker has no gaze button; its shared-theme
+20 px hint and count remain visible while the carry view is open. Mast help and sailing
+notes teach clicking the physical rope. Existing physics probes select their fixture rope
+explicitly; the former gaze assertions now check no implicit choice and retained selection.
+
+A 1280×720 normal Varran capture began with no selected rope and three connected ropes.
+Each of the three curves was hovered and clicked independently, selecting its corresponding
+physical end. The hint, count, selected context and active release countdown fit the screen;
+Release all reached 0.5 progress while all three ties remained attached. Import completed
+without script errors. The visual helper reported 16 ObjectDB instances and eight resources
+still in use on teardown, with no gameplay script error. No local probes or suites were run.
+
+The count also remains visible at zero after releasing the last tie; its unavailable Release
+all control is hidden. A follow-up 720p capture showed zero connected ropes and no selection,
+and the unselected reel attempt returned false while displaying the readable choose-a-rope
+cue. That follow-up helper exited cleanly with no script or resource-teardown errors.
+
+The sole-Stake return also works after its rope breaks: it returns that one physical object,
+without selecting any rope. Its missing connections still contribute zero to the live count.
+
+When the sole waist holder is a Stake with no individual reel target, the carry view keeps
+the real connected count and explains the existing empty-handed Use return. It does not
+promise clickable individual ropes for that whole-stake case.
+
+A 1280×720 Surveyor capture with its normal mooring Stake tied at the waist showed one live
+connected rope, zero individual reel targets and no selected rope. The readable whole-stake
+return cue replaced the hover/click instruction and stayed above the carry tiles. Import
+and the capture completed without script or teardown errors; no local probes were run.

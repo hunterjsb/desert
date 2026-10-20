@@ -432,13 +432,13 @@ Death means a new run (see Runs in the vision).
   while it's open, and take works on the world as ever, not on what you carry; so does
   use, but over a thing it's the thing's (below). Closing it captures the mouse again, as
   does a run ending while it's open.
-- **Choose waist lines in the carry view** (Hunter, 2026-10-19, agreed for
-  Sanddune). Show named live lines, lengths and tension below the carried things.
-  Choose one to retain it while looking around, or Follow gaze for automatic
-  selection. The list scrolls when needed and remains inside the view. Choosing
-  changes the handling target only; use after closing the view still performs the
-  normal delayed untie. The world continues running. See the
-  [rope PRD](rope-and-tethering.md#sanddune-explicit-waist-line-selection-agreed-2026-10-19).
+- **Choose waist ropes in the carry view** (Hunter, 2026-10-19 playtest).
+  Hover an actual visible rope to highlight and name it, then click to select it. A readable
+  hint explains this and gives the distinct live connected-rope count. There is no automatic
+  selection or gaze option. Looking around keeps the choice; losing its tie clears it.
+  Reeling and delayed empty-handed untie use that choice; a held line takes priority.
+  Timed Release all remains available. The world continues running. See the
+  [rope PRD](rope-and-tethering.md#explicit-physical-rope-choice-only-agreed-2026-10-19-playtest).
 - **Stakes go in too** (Hunter, 2026-10-16: "we should be able to put stakes in our inv"):
   a stake that isn't driven and has nothing tied to it goes in as it is, and comes out to
   your hands ready to drive. A found one goes in once it's taken up. A driven stake stays
@@ -887,3 +887,50 @@ and Follow gaze cleared the explicit choice. Release progress reached 0.5 while 
 remained attached; its active in-game countdown was readable, and ordinary play showed no
 waist-stat HUD. Import and capture completed without script/runtime errors. The existing rope
 18 HUD assertion follows the revised contract; no new probes or local test runs were added.
+
+### Explicit physical-rope choice only (agreed, 2026-10-19 playtest)
+
+Physical carry-view hover and click selection works; remove Follow gaze because automatic
+aiming selection is unreliable. No waist rope is chosen automatically, even when exactly one
+is connected. Hover previews; clicking chooses. Losing that tie clears the choice without
+switching to another rope. Held-line reeling still takes priority. Reeling or empty-handed
+untying without a chosen rope gives a readable cue to open the carry view and choose one.
+
+The carry view always explains hovering/clicking ropes and shows the number of distinct live
+ropes connected across all waist holders, including a Stake. Orphan ends do not count. Remove
+the last-tied fallback in empty-handed untie; retain only the distinct return of a sole waist
+Stake that has no individual reel target. Timed Release all remains. No input binding or
+force rule changes; sailing notes teach the same explicit physical-rope interaction.
+
+**As built:** `Reel.line` now resolves a held line or an explicit live choice only. Its
+connected-rope count deduplicates active Rope instances with valid endpoints and holders,
+including connections carried by a Stake. `Waist.give_back` refuses a missing rope choice,
+retaining only the sole non-reelable Stake return. Reeling or use without a choice
+shows the readable carry-view cue. The physical picker has no gaze button; its shared-theme
+20 px hint and count remain visible while the carry view is open. Mast help and sailing
+notes teach clicking the physical rope. Existing physics probes select their fixture rope
+explicitly; the former gaze assertions now check no implicit choice and retained selection.
+
+A 1280×720 normal Varran capture began with no selected rope and three connected ropes.
+Each of the three curves was hovered and clicked independently, selecting its corresponding
+physical end. The hint, count, selected context and active release countdown fit the screen;
+Release all reached 0.5 progress while all three ties remained attached. Import completed
+without script errors. The visual helper reported 16 ObjectDB instances and eight resources
+still in use on teardown, with no gameplay script error. No local probes or suites were run.
+
+The count also remains visible at zero after releasing the last tie; its unavailable Release
+all control is hidden. A follow-up 720p capture showed zero connected ropes and no selection,
+and the unselected reel attempt returned false while displaying the readable choose-a-rope
+cue. That follow-up helper exited cleanly with no script or resource-teardown errors.
+
+The sole-Stake return also works after its rope breaks: it returns that one physical object,
+without selecting any rope. Its missing connections still contribute zero to the live count.
+
+When the sole waist holder is a Stake with no individual reel target, the carry view keeps
+the real connected count and explains the existing empty-handed Use return. It does not
+promise clickable individual ropes for that whole-stake case.
+
+A 1280×720 Surveyor capture with its normal mooring Stake tied at the waist showed one live
+connected rope, zero individual reel targets and no selected rope. The readable whole-stake
+return cue replaced the hover/click instruction and stayed above the carry tiles. Import
+and the capture completed without script or teardown errors; no local probes were run.

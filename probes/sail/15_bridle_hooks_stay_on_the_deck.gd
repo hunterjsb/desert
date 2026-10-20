@@ -21,6 +21,9 @@ func run() -> void:
 	check(world.player.get_on(board), "you ride with the bridle tied")
 	await physics_frames(2)
 	look(eye(), mast.global_position)
+	for body in world.player.waist.tied:
+		if Mast.sheet_end(body):
+			hands.reel.choose(body)
 	check(hands.reel.notch(2), "you haul the sheet")
 	await simulate(1.0)
 	check(_supported() and _attached(), "riding and hauling leave the ring supported and all three lines attached")

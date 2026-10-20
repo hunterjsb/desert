@@ -17,6 +17,7 @@ func run() -> void:
 	radio.on = true
 	radio.frequency = Dial.MUSIC_KHZ
 	var moored := Scenarios.to_waist(world, stake.free_tie(player.global_position))
+	hands.reel.choose(moored.ends[1])
 	await simulate(0.5)
 
 	look(eye(), radio.global_position)

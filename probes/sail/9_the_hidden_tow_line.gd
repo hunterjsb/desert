@@ -89,7 +89,8 @@ func run() -> void:
 	var carried: Rope = (_of(Line, 1) as Line).rope
 	var was := [mast.trim, carried.length]
 	look(eye(), Line._tip((_of(Line, 0) as Line).ends[0]).global_position)
-	check(hands.reel.line() == sheet and hands.reel.notch(2), "looking along the rig, the reel works its sheet")
+	hands.reel.choose((_of(Line, 0) as Line).ends[1])
+	check(hands.reel.line() == sheet and hands.reel.notch(2), "choosing the sheet, the reel works it")
 	await simulate(1.0, _steer)
 	check(absf(was[0] - mast.trim - 2.0 * Reel.NOTCH) < 0.01 and absf(carried.length - was[1]) < 0.01 and ropes.hidden != null,
 		"two notches haul its inboard in half a metre, the camp's line and the hidden one let be (%.2f m, %.2f m)" % [

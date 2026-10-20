@@ -84,9 +84,11 @@ func give_back() -> bool:
 	if untying >= 0.0 or tied.is_empty() or _player.hands.held != null:
 		return false
 	_taking = _player.hands.reel.waist_body()
-	# A stake carrying several lines has no single reel target.
+	# A sole stake returns as a whole; ropes never fall back to the last tie.
+	if _taking == null and tied.size() == 1 and tied[0] is Stake:
+		_taking = tied[0]
 	if _taking == null:
-		_taking = tied.back()
+		return false
 	untying = _tuning.untie_seconds
 	_to_hand = true
 	return true

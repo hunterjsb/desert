@@ -415,6 +415,8 @@ func interact() -> bool:
 	if held == null:
 		if grasp.body == null and _player.waist.give_back():
 			return true
+		if not reel.connected_ropes().is_empty() and reel.chosen_body() == null:
+			return refuse(Reel.CHOOSE_LINE)
 		return refuse("wrecked" if look_device.wrecked() else "nothing to use") if look_device != null else false
 	if phase != Phase.HELD:
 		return false

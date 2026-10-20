@@ -20,7 +20,7 @@ func _ready() -> void:
 
 
 func refresh() -> void:
-	visible = not waist.tied.is_empty()
+	visible = true
 	_paths.clear()
 	var player := waist.get_parent() as Player
 	var camera := player.camera
@@ -45,7 +45,7 @@ func refresh() -> void:
 func point_at(point: Vector2) -> void:
 	_pointer = point
 	hovered = null
-	if _follow().has_point(point) or _release().has_point(point):
+	if not waist.tied.is_empty() and _release().has_point(point):
 		return
 	var nearest := PICK
 	for path in _paths:
@@ -62,9 +62,7 @@ func click(point: Vector2) -> bool:
 	if not visible:
 		return false
 	point_at(point)
-	if _follow().has_point(point):
-		reel.choose(null)
-	elif _release().has_point(point):
+	if not waist.tied.is_empty() and _release().has_point(point):
 		waist.release_all()
 	elif is_instance_valid(hovered):
 		reel.choose(hovered)
@@ -84,12 +82,8 @@ func _visible_point(at: Vector3) -> bool:
 	return hit.is_empty() or (hit.position as Vector3).distance_to(at) < RopeStrand.RADIUS
 
 
-func _follow() -> Rect2:
-	return Rect2(controls_at, BUTTON)
-
-
 func _release() -> Rect2:
-	return Rect2(controls_at + Vector2(BUTTON.x + 12.0, 0.0), BUTTON)
+	return Rect2(controls_at, BUTTON)
 
 
 func _draw() -> void:
@@ -101,8 +95,8 @@ func _draw() -> void:
 			continue
 		var preview: bool = path.body == hovered
 		draw_line(path.from, path.to, _ink(&"accent" if preview else &"text"), 4.0 if preview else 2.0, true)
-	_button(_follow(), "Follow gaze", chosen == null)
-	_button(_release(), "Release all", false)
+	if not waist.tied.is_empty():
+		_button(_release(), "Release all", false)
 	var handling := waist.release_readout()
 	if handling != "":
 		var bar := _release()
@@ -112,17 +106,22 @@ func _draw() -> void:
 		bar.size.x *= waist.release_progress()
 		draw_rect(bar, _ink(&"accent"))
 	var body := hovered if is_instance_valid(hovered) else chosen
+	var count := reel.connected_ropes().size()
+	var stake_only := waist.tied.size() == 1 and waist.tied[0] is Stake and reel.waist_lines().is_empty()
+	var hint := "Stake at your waist" if stake_only else "Hover a rope, click to select"
+	_words(Vector2(32.0, 42.0), "%d connected rope%s · %s" % [count, "" if count == 1 else "s", hint], size.x - 64.0)
 	var context := handling
-	var instruction := ""
+	if context == "" and waist.untying >= 0.0:
+		context = "Untying · %.1f s" % waist.untying
+	if context == "" and stake_only:
+		context = "%s with empty hands · take the stake back" % Controls.key_for(&"interact")
 	if context == "" and is_instance_valid(body):
 		context = ("Preview · " if body == hovered and body != chosen else "Selected · ") + reel.waist_description(body)
-		instruction = "Click the highlighted rope to select" if body == hovered and body != chosen else "Follow gaze restores aiming along a line"
 		if reel.in_hand() != null:
-			instruction = "The line in your hands takes priority"
-	if context != "":
-		_words(Vector2(32.0, 42.0), context, size.x - 64.0)
-		if instruction != "":
-			_words(Vector2(32.0, 72.0), instruction, size.x - 64.0, &"dim")
+			context += " · held line takes priority"
+	if context == "":
+		context = "No rope selected"
+	_words(Vector2(32.0, 74.0), context, size.x - 64.0)
 
 
 func _button(box: Rect2, text: String, selected: bool) -> void:

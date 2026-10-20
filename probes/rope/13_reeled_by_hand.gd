@@ -66,6 +66,7 @@ func run() -> void:
 	check(absf(rope.length - full) < 1e-3, "but never past the line's length")
 
 	check(hands.interact() and player.waist.holds(line.ends[1]), "you tie it at your waist")
+	hands.reel.choose(line.ends[1])
 	await _settled(rope, planter)
 	var waist_from := _apart(planter)
 	await _reel(NOTCHES / 2, [planter, player], rope)

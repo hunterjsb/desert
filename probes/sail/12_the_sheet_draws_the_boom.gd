@@ -17,6 +17,7 @@ func run() -> void:
 	course = heading()
 	follow(deck.global_position + Vector3(0.0, 0.0, 6.0))
 	var sheet := Scenarios.sheet_to_waist(world, mast)
+	hands.reel.choose(sheet.ends[1])
 	look(eye(), Line._tip(sheet.ends[0]).global_position)
 	await _hold_for(4.0)
 	var reel := hands.reel

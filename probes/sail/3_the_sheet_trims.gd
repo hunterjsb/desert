@@ -34,6 +34,7 @@ func run() -> void:
 	hoist(35.0)
 	follow(deck.global_position + Vector3(0.0, 0.0, 6.0))
 	var sheet := Scenarios.sheet_to_waist(world, mast)
+	hands.reel.choose(sheet.ends[1])
 	await physics_frames(2)
 	trim(35.0)
 	var was := mast.trim

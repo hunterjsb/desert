@@ -21,6 +21,7 @@ func run() -> void:
 	player.velocity = Vector3.ZERO
 	await physics_frames(10)
 	var sheet := Scenarios.sheet_to_waist(world, mast)
+	hands.reel.choose(sheet.ends[1])
 	var board := Catalog.device(&"board")
 	world.content.add_child(board)
 	fit_part(board, &"battery")

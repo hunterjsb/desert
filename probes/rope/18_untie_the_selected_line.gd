@@ -11,10 +11,11 @@ func run() -> void:
 	var sheet := Scenarios.sheet_to_waist(world, mast)
 	var me := world.player.global_position
 	var stake := driven_stake(me + flat(me - deck.global_position).normalized() * 3.0)
-	var moored := Scenarios.to_waist(world, stake.free_tie(me))
+	Scenarios.to_waist(world, stake.free_tie(me))
 	await physics_frames(2)
 	look(eye(), Line._tip(sheet.ends[0]).global_position)
 	await physics_frames(2)
+	hands.reel.choose(sheet.ends[1])
 	var sheet_readout := hands.reel.waist_readout()
 	check(hands.reel.waist_body() == sheet.ends[1] and not sheet_readout.is_empty(),
 		"the sheet is selected for the reel and its live readout")
@@ -22,8 +23,8 @@ func run() -> void:
 		"use starts untying that sheet, even though the stake line was tied last")
 	look(eye(), stake.global_position + Stake.RING)
 	await physics_frames(2)
-	check(hands.reel.waist_body() == moored.ends[1] and hands.reel.waist_readout() != sheet_readout,
-		"looking along the other line selects it and shows a different readout")
+	check(hands.reel.waist_body() == sheet.ends[1],
+		"looking along another rope keeps the explicit choice")
 	hands._show(1.0)
 	check(not hands._readout.text.contains(hands.reel.waist_readout()), "waist stats stay out of the crosshair readout")
 	check(get_node(^"/root/Saves").save(world), "saved during the untie delay")
