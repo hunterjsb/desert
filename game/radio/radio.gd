@@ -33,7 +33,11 @@ const BEACON := 3
 const GOD := 4
 const STATIC := 5
 const CITY := 6
-const CHANNELS: Array[String] = ["off", "music", "weather", "beacon", "god", "static", "city"]
+const FM := 7
+const CHANNELS: Array[String] = ["off", "music", "weather", "beacon", "god", "static", "city", "fm"]
+## Its bands: the AM dial, and the FM band through a converter fitted in its side.
+const AM_BAND := &"am"
+const FM_BAND := &"fm"
 const POINTS: Array[String] = ["north", "north-north-east", "north-east", "east-north-east", "east",
 	"east-south-east", "south-east", "south-south-east", "south", "south-south-west", "south-west",
 	"west-south-west", "west", "west-north-west", "north-west", "north-north-west"]
@@ -81,6 +85,11 @@ const ONES: Array[String] = ["zero", "one", "two", "three", "four", "five", "six
 	"eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"]
 const TENS: Array[String] = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"]
 const UNHEARD := -1
+## On FM, it works out again how far each station clears the ground between
+## once it's moved this far, m; and a tick's move longer than this is the
+## world shifting under it, not it moving.
+const FM_RECKON_M := 2.0
+const FM_JUMP_M := 50.0
 ## Its dial on its face (+Z), m: the band window's middle and size, the band
 ## running from 0 kHz to 2000 across these x, and where the tuning and
 ## volume knobs turn.
@@ -137,6 +146,10 @@ var on := false:
 		on = to
 		_recompute()
 var frequency := 0.0
+## Which band it's on (AM_BAND or FM_BAND), and where its FM dial stands, MHz:
+## each band keeps its own place, so switching back finds where you were.
+var band := AM_BAND
+var fm_mhz := Fm.LOWEST
 ## Where its volume knob stands, 0 silent to 1 full: everything it plays.
 var volume := 1.0
 ## What the dial reads now (OFF to STATIC). Set, as old saves do, it moves
@@ -234,6 +247,12 @@ var _was := UNHEARD
 var _motif_slot := NAN
 ## An old save's channel, waiting for its world to place it on the dial.
 var _wanted := UNHEARD
+## How far it has moved, m, for the fade it passes through on FM; where it was
+## last tick; and each FM station's margin as last worked out, and where.
+var _moved := 0.0
+var _last_at := Vector3.INF
+var _margins := {}
+var _margins_at := Vector3.INF
 
 
 func _init() -> void:
@@ -266,7 +285,7 @@ func _ready() -> void:
 	reader = _voice()
 	if _wanted != UNHEARD:
 		_tune_to_channel(_wanted)
-	shown_khz = frequency
+	shown_khz = _needle_khz()
 	shown_volume = volume
 	_show_dial()
 	_show_marks()
@@ -324,15 +343,18 @@ func interact(_by: Player) -> bool:
 	# Found in the sand, it's yours as you use it, so this use can start it.
 	world.salvage.claim(self)
 	var before := channel
-	if not on:
-		frequency = Dial.LOWEST
-		on = true
-	var next := _carrier_above(frequency + _tuning.dial_width_khz * ON_IT)
-	if is_nan(next):
-		frequency = Dial.LOWEST
-		on = false
+	if band == FM_BAND:
+		_sweep_fm()
 	else:
-		frequency = next
+		if not on:
+			frequency = Dial.LOWEST
+			on = true
+		var next := _carrier_above(frequency + _tuning.dial_width_khz * ON_IT)
+		if is_nan(next):
+			frequency = Dial.LOWEST
+			on = false
+		else:
+			frequency = next
 	_retuned(before)
 	if powered:
 		_click(Sounds.RADIO_TUNE, minf(_tuning.radio_loudness_db, 3.0))
@@ -361,10 +383,85 @@ func tune(notches: int, fine := false) -> bool:
 		_spun_at = now
 		_spun_way = signi(notches)
 		step = _tuning.dial_notch_khz * _spin
+	if band == FM_BAND:
+		var mhz := _tuning.fm_fine_mhz if fine else _tuning.fm_notch_mhz
+		fm_mhz = clampf(snappedf(fm_mhz + notches * mhz * (1.0 if fine else _spin), mhz), Fm.LOWEST, Fm.HIGHEST)
+		_retuned(before)
+		return true
 	var snap := _tuning.dial_fine_khz if fine else _tuning.dial_notch_khz
 	frequency = clampf(snappedf(frequency + notches * step, snap), Dial.LOWEST, Dial.HIGHEST)
 	_retuned(before)
 	return true
+
+
+## On FM, use sweeps up to the next station, and off past the last, coming
+## on at the band's bottom.
+func _sweep_fm() -> void:
+	if not on:
+		fm_mhz = Fm.LOWEST
+		on = true
+	var above := fm_mhz + _tuning.fm_width_mhz * ON_IT
+	for each in Fm.stations(gods_of(world), world.run_seed, _tuning):
+		if each.mhz > above:
+			fm_mhz = each.mhz
+			return
+	fm_mhz = Fm.LOWEST
+	on = false
+
+
+## Whether an FM converter is fitted in its side, so it reaches the FM band.
+func has_fm() -> bool:
+	for part in parts():
+		if part.stats.get("fm", 0) > 0:
+			return true
+	return false
+
+
+## The band switch: from the AM dial to the FM band and back, with a burst of
+## static, if a converter is fitted to reach it. Says whether it switched.
+func switch_band() -> bool:
+	if wrecked() or world == null or (band == AM_BAND and not has_fm()):
+		return false
+	world.salvage.claim(self)
+	var before := channel
+	band = FM_BAND if band == AM_BAND else AM_BAND
+	_retuned(before)
+	_show_marks()
+	if powered:
+		_click(Sounds.RADIO_TUNE, minf(_tuning.radio_loudness_db, 3.0))
+	return true
+
+
+## Where its dial stands, kHz, on whichever band it's on: an FM frequency as
+## kHz too, so a mark keeps one number on either.
+func dial_khz() -> float:
+	return roundf(fm_mhz * 1000.0) if band == FM_BAND else frequency
+
+
+## How wide a frequency is on the band it's on, kHz: a mark within this of
+## the dial is on it.
+func dial_near_khz() -> float:
+	return _tuning.fm_width_mhz * 1000.0 if band == FM_BAND else _tuning.dial_width_khz
+
+
+## Whether a frequency, kHz, is on the band it's on.
+func on_band(khz: float) -> bool:
+	if band == FM_BAND:
+		return khz >= Fm.LOWEST * 1000.0 and khz <= Fm.HIGHEST * 1000.0
+	return khz >= Dial.LOWEST and khz <= Dial.HIGHEST
+
+
+## Where a frequency, kHz, stands across the dial's window, 0 at the band's
+## bottom to 1 at its top.
+func dial_share(khz: float) -> float:
+	if band == FM_BAND:
+		return Fm.share(khz / 1000.0)
+	return khz / Dial.HIGHEST
+
+
+## What the dial reads, as the set shows it: "262 kHz", or "96.7 MHz" on FM.
+func dial_reading() -> String:
+	return "%.1f MHz" % fm_mhz if band == FM_BAND else "%d kHz" % roundi(frequency)
 
 
 ## On or off, the dial where it stands, with a burst of static, as the
@@ -393,12 +490,12 @@ func has_dial_marks() -> bool:
 func toggle_mark() -> bool:
 	if not has_dial_marks():
 		return false
-	var near := _tuning.dial_width_khz
-	var khz := roundf(frequency)
+	var near := dial_near_khz()
+	var khz := roundf(dial_khz())
 	if Profile.unmark(khz, near):
 		_click(Sounds.MENU_BACK, -6.0)
 		return false
-	Profile.mark(khz, "%d kHz" % roundi(khz), Color.from_hsv(randf(), MARK_SATURATION, MARK_VALUE), near)
+	Profile.mark(khz, dial_reading(), Color.from_hsv(randf(), MARK_SATURATION, MARK_VALUE), near)
 	_click(Sounds.MENU_CONFIRM, -6.0)
 	return true
 
@@ -407,18 +504,21 @@ func toggle_mark() -> bool:
 ## the lowest past the highest, with a burst of static. A dark radio comes on.
 ## Says whether there was a mark to go to.
 func next_mark() -> bool:
-	var marks := Profile.marks()
+	var marks := Profile.marks().filter(func(each: Dictionary) -> bool: return on_band(each.khz))
 	if not has_dial_marks() or marks.is_empty() or wrecked() or world == null:
 		return false
 	world.salvage.claim(self)
 	var to: float = marks[0].khz
 	for each: Dictionary in marks:
-		if each.khz > frequency + 0.5:
+		if each.khz > dial_khz() + 0.5:
 			to = each.khz
 			break
 	var before := channel
 	on = true
-	frequency = to
+	if band == FM_BAND:
+		fm_mhz = to / 1000.0
+	else:
+		frequency = to
 	_retuned(before)
 	if powered:
 		_click(Sounds.RADIO_TUNE, minf(_tuning.radio_loudness_db, 3.0))
@@ -447,6 +547,14 @@ func tuned_to() -> StringName:
 	if world == null:
 		return &""
 	var best := &""
+	if band == FM_BAND:
+		var near := _tuning.fm_width_mhz * ON_IT
+		for each in Fm.stations(gods_of(world), world.run_seed, _tuning):
+			var off: float = absf(fm_mhz - each.mhz)
+			if off <= near:
+				near = off
+				best = each.id
+		return best
 	var nearest := Dial.reach(_tuning)
 	for each in Dial.carriers(gods_of(world), world.time):
 		var off := absf(frequency - each[0])
@@ -486,9 +594,9 @@ func demand_w(t := NAN) -> float:
 
 func stats() -> Dictionary:
 	var now := super()
-	now["tuned"] = "%d kHz" % roundi(frequency) if on else "off"
+	now["tuned"] = dial_reading() if on else "off"
 	# On a frequency you've marked, its name too.
-	var mark := Profile.mark_at(frequency, _tuning.dial_width_khz) if on else {}
+	var mark := Profile.mark_at(dial_khz(), dial_near_khz()) if on else {}
 	if not mark.is_empty() and mark.name != now.tuned:
 		now["tuned"] += " · " + str(mark.name)
 	return now
@@ -514,10 +622,11 @@ func _process(delta: float) -> void:
 	# Carried, its voices keep up with your eyes every frame, not just every tick.
 	if carried() and music != null:
 		_to_your_ears(true)
-	if shown_khz == frequency and shown_volume == volume:
+	var to := _needle_khz()
+	if shown_khz == to and shown_volume == volume:
 		return
 	var k := 1.0 - exp(-delta / TURN_SECONDS)
-	shown_khz = frequency if absf(frequency - shown_khz) < 0.01 else lerpf(shown_khz, frequency, k)
+	shown_khz = to if absf(to - shown_khz) < 0.01 else lerpf(shown_khz, to, k)
 	shown_volume = volume if absf(volume - shown_volume) < 0.001 else lerpf(shown_volume, volume, k)
 	_show_dial()
 
@@ -525,6 +634,12 @@ func _process(delta: float) -> void:
 ## How far the tuning knob stands turned at a frequency, rad clockwise.
 static func knob_turn(khz: float) -> float:
 	return TAU * khz / KHZ_A_TURN
+
+
+## Where the needle stands on its window, as the AM dial's kHz across it:
+## the FM band spread over the same window.
+func _needle_khz() -> float:
+	return Dial.HIGHEST * Fm.share(fm_mhz) if band == FM_BAND else frequency
 
 
 ## Its needle on the band and its knobs turned to what they show.
@@ -544,6 +659,8 @@ func _show_marks() -> void:
 	if not has_dial_marks():
 		return
 	for each: Dictionary in Profile.marks():
+		if not on_band(each.khz):
+			continue
 		var tick := MeshInstance3D.new()
 		var box := BoxMesh.new()
 		box.size = MARK_TICK
@@ -553,7 +670,7 @@ func _show_marks() -> void:
 		box.material = paint
 		tick.mesh = box
 		add_child(tick)
-		tick.position = Vector3(lerpf(BAND.x, BAND.y, each.khz / Dial.HIGHEST),
+		tick.position = Vector3(lerpf(BAND.x, BAND.y, dial_share(each.khz)),
 			BAND_Y + BAND_HEIGHT * 0.5 - MARK_TICK.y * 0.5 - 0.0015, FACE.z + 0.003)
 		_ticks.append(tick)
 
@@ -613,6 +730,8 @@ func heard() -> bool:
 func _reads() -> int:
 	if not on:
 		return OFF
+	if band == FM_BAND:
+		return FM if tuned_to() != &"" else STATIC
 	match tuned_to():
 		&"music":
 			return MUSIC
@@ -632,6 +751,8 @@ func _reads() -> int:
 func _tune_to_channel(to: int) -> void:
 	on = to != OFF
 	_wanted = to if world == null else UNHEARD
+	# Every channel an old save or a scenario names is on the AM dial.
+	band = AM_BAND
 	match to:
 		MUSIC:
 			frequency = Dial.MUSIC_KHZ
@@ -680,6 +801,7 @@ func _retuned(before: int) -> void:
 ## What it plays this tick, from the systems it reads.
 func _listen(delta: float) -> void:
 	_to_your_ears(carried())
+	_track_moves()
 	if not playing():
 		noise = 0.0
 		odd = 0.0
@@ -699,6 +821,13 @@ func _listen(delta: float) -> void:
 	var x := world.world_x(global_position.x)
 	var z := world.world_z(global_position.z)
 	var t := world.time
+	if band == FM_BAND and not has_fm():
+		# Its converter taken off, it's back on the AM dial.
+		band = AM_BAND
+		_show_marks()
+	if band == FM_BAND:
+		_listen_fm(delta, x, z, t)
+		return
 	var field := world.weather.field
 	# A storm front's static, and any a jammer overhead sprays round the dial.
 	noise = maxf(field.outflow_at(x, z, t), constellation_of(world).jamming(frequency, point_at(x, z), t))
@@ -834,7 +963,7 @@ func _listen(delta: float) -> void:
 	# What it plays, chewed up as dirty as it comes through, glitching.
 	dirt = reception.get("dirt", 0.0) if now != BEACON else 1.0 - Dial.pull(frequency - Dial.BEACON_KHZ,
 		_tuning.dial_width_khz)
-	Garble.shape(AudioServer.get_bus_index(signal_bus()), 0, dirt, t, get_instance_id())
+	Garble.shape(AudioServer.get_bus_index(signal_bus()), 0, dirt, t, get_instance_id(), _tuning.am_audio_hz)
 	var broke := _glitch.tick(delta, dirt)
 	music.volume_db += linear_to_db(maxf(broke.x, 0.0001))
 	music.pitch_scale = maxf(0.05, music.pitch_scale * broke.y)
@@ -843,6 +972,102 @@ func _listen(delta: float) -> void:
 		hiss.play(fposmod(t, hiss.stream.get_length()))
 		crackle.play(fposmod(t * 0.7, crackle.stream.get_length()))
 		_hissing = true
+
+
+## How far it has moved, in the world's own metres so the world shifting
+## under it doesn't count.
+func _track_moves() -> void:
+	if world == null:
+		return
+	var here := Vector3(world.world_x(global_position.x), global_position.y, world.world_z(global_position.z))
+	if _last_at != Vector3.INF:
+		var step := here.distance_to(_last_at)
+		if step < FM_JUMP_M:
+			_moved += step
+	_last_at = here
+
+
+## What it plays this tick on the FM band: the station the dial takes, clean,
+## or lost under hiss at its threshold, fluttering as it moves near it. A
+## storm's static isn't heard here: FM's limiter clips it off. The satellites
+## aren't either: they're on the AM dial.
+func _listen_fm(delta: float, x: float, z: float, t: float) -> void:
+	var now := channel
+	if now != _was:
+		_retuned(_was)
+		_was = now
+	if sky != null:
+		sky.silence()
+	noise = 0.0
+	odd = 0.0
+	said = ""
+	logged = ""
+	reception = receive_fm(x, z, t)
+	var under := NOTHING
+	_level = 0.0
+	if reception.is_empty():
+		if _on_air != null:
+			music.stop()
+			_on_air = null
+	else:
+		# Port Morgan's station plays the port's music, as the relay does.
+		_put_on(Sounds.RADIO_DAY if world.weather.day.is_day(t, world.moon.longitude) else Sounds.RADIO_NIGHT, t)
+		music.pitch_scale = 1.0
+		_level = reception.heard
+		under = NOTHING * (1.0 - reception.quiet)
+		if reception.quiet >= WHOLE and volume > 0.0 and heard():
+			Deeds.done(world, &"fm_heard")
+	_show_lamps(_level, delta)
+	hiss.volume_db = linear_to_db(under + 0.0001) + knob_db()
+	crackle.volume_db = linear_to_db(0.0001)
+	_loudness()
+	# Through the converter it plays as the AM set does, as narrow.
+	dirt = reception.get("dirt", 0.0)
+	Garble.shape(AudioServer.get_bus_index(signal_bus()), 0, dirt, t, get_instance_id(), _tuning.am_audio_hz)
+	_read(delta, now)
+	if not _hissing:
+		hiss.play(fposmod(t, hiss.stream.get_length()))
+		crackle.play(fposmod(t * 0.7, crackle.stream.get_length()))
+		_hissing = true
+
+
+## The FM station the dial takes where it stands, x, z at world time t:
+## {id, mhz, margin (dB it clears the noise by, its fade and how far off it
+## the dial is taken off), share (how near its frequency the dial is),
+## quiet (0 lost to hiss, 1 quiet), heard (how loud, 0 to 1), dirt}, or {}
+## with none near the dial. Of two on one frequency the stronger takes it
+## whole; within the capture ratio of each other they fight, and it's dirty.
+func receive_fm(x: float, z: float, t: float) -> Dictionary:
+	var here := Vector3(x, global_position.y, z)
+	if _margins_at == Vector3.INF or here.distance_to(_margins_at) > FM_RECKON_M:
+		_margins = {}
+		_margins_at = here
+	var ground := func(gx: float, gz: float) -> float: return world.height_at(gx, gz)
+	var best := {}
+	var rival := -INF
+	for each in Fm.stations(gods_of(world), world.run_seed, _tuning):
+		var share := Dial.pull(fm_mhz - each.mhz, _tuning.fm_width_mhz)
+		if share < 0.01:
+			continue
+		if not _margins.has(each.id):
+			var from := ground_of(each.at)
+			_margins[each.id] = Fm.margin(from, world.height_at(from.x, from.y) + each.mast_m, Vector2(x, z),
+				global_position.y, each.mhz, world.moon.radius, ground, _tuning)
+		var margin: float = _margins[each.id] + 20.0 * log(share) / log(10.0) - Fm.fade_db(_moved, each.mhz)
+		if best.is_empty() or margin > best.margin:
+			if not best.is_empty():
+				rival = best.margin
+			best = {"id": each.id, "mhz": each.mhz, "margin": margin, "share": share}
+		else:
+			rival = maxf(rival, margin)
+	if best.is_empty():
+		return {}
+	var fought := 1.0 - smoothstep(0.0, _tuning.fm_capture_db, best.margin - rival) if rival > -INF else 0.0
+	best["quiet"] = Fm.quieting(best.margin, _tuning)
+	best["heard"] = sqrt(best.share) * smoothstep(_tuning.fm_threshold_db - 6.0, _tuning.fm_threshold_db, best.margin)
+	best["dirt"] = clampf((1.0 - best.share) * Garble.OFF_TUNE + fought * 0.5, 0.0, 1.0)
+	best["cut"] = false
+	return best
 
 
 ## A god's signal as it reaches a place at world time t: how far it came and

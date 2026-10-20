@@ -577,6 +577,12 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed("interact"):
 		if interact():
 			get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("switch_band"):
+		# The band switch, on the radio the tuning actions work.
+		var radio := dialled()
+		if radio != null and radio.switch_band():
+			_player.close_up.tuned(radio, false)
+			get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("mark_frequency"):
 		# A radio in your hands: mark where its dial stands, or unmark it.
 		if held is Radio and phase == Phase.HELD and (held as Radio).has_dial_marks() and not (held as Radio).wrecked():

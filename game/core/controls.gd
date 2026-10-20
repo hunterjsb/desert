@@ -14,6 +14,7 @@ const HELP := [
 		["{reel_in} / {pay_out}", "reel in, pay out; tune a radio"],
 		["{rope_yank}", "yank the worked rope"],
 		["{tune_fine_up} / {tune_fine_down}", "fine tune"], ["{volume_up} / {volume_down}", "radio volume"],
+		["{switch_band}", "a radio's band, with a converter to reach it"],
 		["{mark_frequency}", "mark or unmark a radio's frequency; then {interact} goes to the next"]]],
 	["YOU", [["{inventory}", "what you carry"], ["{headlamp}", "headlamp"]]],
 	["GAME", [["{ui_cancel}", "back, menu"], ["{quick_save}", "quick save"], ["{quick_load}", "quick load"],
@@ -65,6 +66,8 @@ const KEYS := {
 	"headlamp": KEY_B,
 	# A radio in your hands: mark where its dial stands.
 	"mark_frequency": KEY_M,
+	# The radio the tuning actions work: its band switch.
+	"switch_band": KEY_V,
 }
 
 ## Mouse buttons, the same way.

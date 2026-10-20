@@ -589,6 +589,44 @@ opposite horizons. The music's relay goes to L1, and the Pendulum to L2.
 FM by line of sight; the relay at L1 and the Pendulum at L2; the constellation to shortwave and Tu's roar; then the
 crystal set and kite, the loop's direction finding, natural radio, the dish, and the uplink.
 
+**The FM band, as built (2026-10-20, slice B):**
+- **The FM converter** (`fm_converter`), a radio mod: a gunmetal box with its own small dial, an AM/FM throw
+  and a short whip, 0.6 kg, drawing 0.5 W from the radio's battery or pool. It fits a new socket on the
+  radio's left side (kind `radio_mod`). Found on colonial and First Kingdom shelves and in a relay mast's
+  cabinet; the creative menu has it beside the radio.
+- **The band switch** is a new action on the radio the tuning actions work (the one you look at, on a
+  Console you look at, or in your hands): from the AM dial to the FM band and back, with a burst of
+  static, only with a converter fitted. Each band keeps its own place. Take the converter off and the
+  radio is back on the AM dial where it was.
+- **The FM dial** runs 87.5 to 108 MHz, a notch 0.1 MHz and a fine step 0.02 (`fm_notch_mhz`,
+  `fm_fine_mhz`), spun fast as the AM dial is; a station comes in 0.08 MHz either side and has no skirt
+  (`fm_width_mhz`). The needle spreads the band over the same window. The look-at line reads
+  "Radio · 96.7 MHz". Use sweeps to the next station, and off past the last. Marks work on either
+  band and show on the band they're on.
+- **Port Morgan's station**, on its 60 m mast in the port (`fm_mast_m`), on an odd tenth of a MHz the
+  seed picks, locked there as real stations are. It plays the port's music, the songs the relay carries.
+- **Line of sight** (`Fm.margin`): a station clears the noise by 30 dB a kilometre off with nothing in
+  the way (`fm_margin_db`), less 6 dB each time the distance doubles past that, less the worst edge between:
+  the ground read at 24 points on the way, raised by the moon's curve as radio sees it (4/3 of the
+  true radius, `fm_bend`), each against the line between the antennas, scored by knife-edge
+  diffraction (ITU-R P.526's approximation), so a station fades in as you crest a rise. Seed 1234,
+  radio probe 43: 800 m from the port at 1.5 m up, 29.5 dB; 9 km off on the ground, -16 dB; 9 km off,
+  2.5 km up, 10.9 dB. On the ground Port Morgan's station is a local one.
+- **Its sound.** Over the threshold (0 dB, `fm_threshold_db`) it quiets over 14 dB (`fm_quiet_db`);
+  under it, hiss takes it. No storm static and no anomaly crackle: the limiter clips both. A station's
+  bounce off the ground fades it as the radio moves, a dip every half wavelength or so, some deep
+  (`Fm.fade_db`): strong, it rides over them; near the threshold walking it flutters, and a step out of
+  a dip brings it back. Of two on one frequency the stronger takes it whole, and within 2 dB of each other
+  they fight (`fm_capture_db`); with one station that's waiting for a second. Through the converter it
+  plays as narrow as the AM set does.
+- **AM is narrow now:** everything on the AM dial, the satellites too, plays up to 5 kHz at its
+  cleanest (`am_audio_hz`, through `Garble.shape`'s new `top`), where it went up to 16 kHz. AM's
+  own sound, and the gap a real FM set will open.
+- **The deed** Line of Sight: hear an FM station come through quiet.
+- **Probes:** radio 42 (the converter reaches FM and its loss takes it away) and 43 (height is range).
+- **Not yet:** a second FM station for the capture effect to be heard; an FM set that plays it wide;
+  FM's own scale painted on the face; the relay at L1.
+
 ### Litanies and the survey log (2026-10-18; built, on the `signatures` branch)
 
 *Fleshing out the broadcasts.* What a god says outside its window is a liturgy with a shape, not a

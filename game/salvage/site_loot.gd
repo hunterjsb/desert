@@ -45,7 +45,7 @@ const ERAS := {
 		FLOOR: [[&"chassis", 5], [&"frame", 2], [&"condenser", 1], [&"turbine", 1],
 			[&"big_battery", 2], [&"hover_tray", 2], [&"solar_panel", 2], [&"strong_plug", 2], [&"board", 1]],
 		SHELF: [[&"battery", 3], [&"big_battery", 1], [&"lamp", 2], [&"strong_plug", 2], [&"plug", 1],
-			[&"barometer", 1], [&"hygrometer", 1], [&"compass", 1], [&"med_kit", 1]],
+			[&"barometer", 1], [&"hygrometer", 1], [&"compass", 1], [&"med_kit", 1], [&"fm_converter", 1]],
 		CACHE: [[&"big_battery", 2], [&"strong_plug", 2], [&"hover_tray", 1], [&"screen", 1]],
 		BED: [[&"root_tuber", 3], [&"vat_fungus", 2]],
 		BEST: [[&"console", 2], [&"shield", 2], [&"turbine", 2], [&"condenser", 1], [&"big_battery", 3],
@@ -71,7 +71,7 @@ const ERAS := {
 		FLOOR: [[&"condenser", 3], [&"turbine", 2], [&"frame", 2], [&"planter", 2], [&"chassis", 2],
 			[&"radio", 1], [&"canister", 2], [&"hose_end", 2], [&"battery", 2], [&"power_cabinet", 1]],
 		SHELF: [[&"battery", 2], [&"barometer", 2], [&"hygrometer", 2], [&"compass", 2], [&"lamp", 2],
-			[&"hose_end", 2], [&"canister", 1]],
+			[&"hose_end", 2], [&"canister", 1], [&"fm_converter", 1]],
 		CACHE: [[&"battery", 2], [&"big_battery", 1], [&"canister", 2], [&"compass", 1]],
 		BED: [[&"root_tuber", 3], [&"saltbush", 1], [&"vat_fungus", 1]],
 		BEST: [[&"condenser", 2], [&"turbine", 2], [&"shield", 2], [&"console", 1], [&"big_battery", 2],
@@ -115,7 +115,7 @@ const KINDS := {
 	&"hab_pod": {SHELF: [[&"vat_fungus", 3], [&"ration", 2], [&"lamp", 1], [&"battery", 1]]},
 	# The mast's cabinet: its instruments and its power.
 	&"relay_mast": {SHELF: [[&"battery", 2], [&"big_battery", 1], [&"barometer", 1], [&"anemometer", 1],
-		[&"compass", 1], [&"strong_plug", 1], [&"ground_radar", 1]]},
+		[&"compass", 1], [&"strong_plug", 1], [&"ground_radar", 1], [&"fm_converter", 1]]},
 	# The inspection hatch: the line's own hose, valves and water.
 	&"pipeline_segment": {BEST: [[&"hose_end", 3], [&"canister", 2], [&"condenser", 1], [&"strong_plug", 1],
 		[&"big_battery", 1]]},

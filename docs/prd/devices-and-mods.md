@@ -1199,7 +1199,7 @@ its own; everything else sticks on a chassis's sticky faces.
 | Helm seat | | | | use on it sits you at the helm ([Movement](movement.md#sailing-from-kite-to-yacht-agreed-2026-10-18-spec-built)) | stands |
 | Light solar panel | | | 1 | | any face |
 | Hoverboard | 1 | | 1 | | any face; charges from a deck's pool |
-| Radio | 1 | | 1 | | any face |
+| Radio | 1 | | 1 | a radio mod on its left side (the FM converter, 2026-10-20) | any face |
 | Heat cutter | 1 | | | | any face |
 | Bedroll | | | | use on it sleeps, and in your hands lays it out ([Survival](survival.md#sleep-as-built-2026-10-18)) | any face |
 | Survival kit | | | | a water and a food socket, 2 standard and 1 pot slot | any face |

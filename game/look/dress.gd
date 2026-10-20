@@ -761,6 +761,18 @@ static func _part(id: StringName, size: Vector3, count := -1) -> ArrayMesh:
 			for i in 3:
 				b.drum(0.008, 0.006, Vector3(-0.04 + i * 0.04, -0.02, size.z + 0.002),
 					Paint.coat(Paint.TEAL, 0.0, 0.0, 0.4, 0.3, 1.5), along, 8)
+		&"fm_converter":
+			# A gunmetal box off the set's side: a bone face with its own small
+			# dial and an AM/FM throw, and a short whip for the band it hears.
+			b.box(Vector3(size.x, size.y, size.z - 0.01), Vector3(0.0, 0.0, (size.z - 0.01) * 0.5), gun, 0.008)
+			b.box(Vector3(size.x - 0.016, size.y - 0.03, 0.006), Vector3(0.0, -0.006, size.z - 0.006),
+				Paint.coat(Paint.BONE, 0.5, 0.1, 0.6), 0.002)
+			b.drum(0.014, 0.012, Vector3(0.026, -0.008, size.z + 0.004), black, along, 12)
+			b.box(Vector3(0.012, 0.022, 0.008), Vector3(-0.03, -0.008, size.z + 0.002), steel, 0.002)
+			b.box(Vector3(size.x - 0.03, 0.008, 0.004), Vector3(0.0, h.y - 0.01, size.z - 0.004),
+				Paint.coat(Paint.TEAL, 0.6), 0.001)
+			b.drum(0.006, 0.02, Vector3(-h.x + 0.016, h.y + 0.01, size.z * 0.5), steel, Basis.IDENTITY, 8)
+			b.drum(0.0025, 0.22, Vector3(-h.x + 0.016, h.y + 0.13, size.z * 0.5), steel, Basis.IDENTITY, 6)
 		&"radar":
 			# A dish on a post, up from the Console's top.
 			b.drum(0.07, 0.04, Vector3(0.0, 0.0, 0.02), gun, along, 16)

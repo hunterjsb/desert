@@ -1096,6 +1096,31 @@ static var _current: Tuning
 ## you want (gonkhub, 2026-10-19). Within this many skirts of a carrier, the
 ## dial counts it as the one it hears.
 @export var dial_skirt_khz: float = 20.0
+## The FM band (VHF, 87.5 to 108 MHz, through an FM converter): a notch of
+## tuning moves this far, MHz, or a fine step this far; a station comes in
+## this wide either side, MHz.
+@export var fm_notch_mhz: float = 0.1
+@export var fm_fine_mhz: float = 0.02
+@export var fm_width_mhz: float = 0.08
+## How a VHF station reaches you, by line of sight over the moon's curve and
+## the ground between: the curve as radio bends round it, against the true one
+## (4/3, a standard atmosphere's); a station's margin over the noise a
+## kilometre off with nothing in the way, dB; and how many points along the
+## way the ground is read at.
+@export var fm_bend: float = 1.3333
+@export var fm_margin_db: float = 30.0
+@export var fm_profile_points: int = 24
+## The FM threshold: under this margin, dB, it's lost to hiss, and this many
+## dB over it it's fully quiet. Two stations on one frequency: the stronger
+## takes it whole once it's this many dB ahead (the capture ratio).
+@export var fm_threshold_db: float = 0.0
+@export var fm_quiet_db: float = 14.0
+@export var fm_capture_db: float = 2.0
+## Port Morgan's FM mast, m over the port's ground.
+@export var fm_mast_m: float = 60.0
+## The AM dial plays sound up to this, Hz: AM's narrow audio, and the FM
+## converter's too, since it plays through the AM set.
+@export var am_audio_hz: float = 5000.0
 ## A signal flare burns this long, s (Flare). The Surveyor fires its
 ## care-package cannon at a lit one it passes this high over, degrees, and the
 ## container takes this long to come down, s, landing this near the flare, m,

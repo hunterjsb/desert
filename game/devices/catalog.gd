@@ -25,6 +25,7 @@ const KINDS := {
 	&"computer_mod": Color(0.25, 0.9, 0.9),
 	&"computer_top": Color(0.65, 1.0, 0.95),
 	&"screen": Color(0.9, 0.95, 0.95),
+	&"radio_mod": Color(0.95, 0.4, 0.55),
 }
 
 ## Parts: the socket kind they fit, weight, size (z is how far they stand out
@@ -192,6 +193,11 @@ const PARTS := {
 		"color": Color(0.4, 0.36, 0.3), "stats": {}},
 	&"med_kit": {"kind": &"medicine", "label": "Med kit", "mass": 0.5, "size": Vector3(0.18, 0.12, 0.07),
 		"color": Color(0.8, 0.76, 0.66), "stats": {}},
+	# A colonial FM converter, as AM car radios once took: it hears the FM band
+	# on its own whip and hands it to the set as a carrier the set already
+	# tunes, so the radio reaches FM, still as narrow as AM sounds.
+	&"fm_converter": {"kind": &"radio_mod", "label": "FM converter", "mass": 0.6, "size": Vector3(0.12, 0.1, 0.06),
+		"color": Color(0.22, 0.23, 0.22), "stats": {"fm": 1, "draw_w": 0.5}},
 	&"radar": {"kind": &"computer_top", "label": "Weather radar", "mass": 2.5, "size": Vector3(0.32, 0.32, 0.26),
 		"color": Color(0.8, 0.76, 0.66), "stats": {"radar": 1, "radar_m": 6000.0, "draw_w": 6.0}},
 }
@@ -202,7 +208,7 @@ const RENAMED := {&"carrot": &"root_tuber", &"fungus": &"vat_fungus", &"carrots"
 ## chassis: hooks on rings, plugs in ports, a line's end, a hose's end, crops
 ## in beds, mods in their mounts, a sail on its mast.
 const SLOT_ONLY: Array[StringName] = [&"ring", &"port", &"tie", &"plant_pot", &"plant_standard", &"plant_deep",
-	&"mod", &"computer_mod", &"computer_top", &"screen", &"sail", &"face"]
+	&"mod", &"computer_mod", &"computer_top", &"screen", &"sail", &"face", &"radio_mod"]
 
 ## The colonial entity mark on each thing (art direction): TILG is the
 ## consignor; RMC is a legacy contractor placeholder, not mapped one-to-one
@@ -365,6 +371,8 @@ const DEVICES := {
 		"sockets": [
 			[&"battery", Vector3(0.0, -0.02, -0.08), Vector3.FORWARD],
 			[&"port", Vector3(0.16, -0.035, -0.01), Vector3.RIGHT],
+			# Its left side takes a band's front end: an FM converter.
+			[&"radio_mod", Vector3(-0.16, -0.01, -0.01), Vector3.LEFT],
 		]},
 	# A sealed case of what keeps you going: a canister, a ration and seeds.
 	&"survival_kit": {"label": "Survival kit", "size": Vector3(0.5, 0.25, 0.35), "mass": 3.0, "carryable": true,

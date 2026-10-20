@@ -93,6 +93,8 @@ const TABLE := {
 	&"bonepicker": {"name": "Bonepicker", "asks": "Scrap one of each kind of wreck", "family": &"scrap",
 		"after": [&"clean_hands"], "icon": &"wreck", "goal": "wrecks", "parts": true, "unit": "kinds"},
 	&"god_heard": {"name": "First Light", "asks": "Hear a god inside its window", "family": &"signals", "icon": &"radio"},
+	&"fm_heard": {"name": "Line of Sight", "asks": "Hear an FM station come through quiet", "family": &"signals",
+		"after": [&"god_heard"], "icon": &"radio"},
 	&"gods": {"name": "Pantheon", "asks": "Hear all seven gods", "family": &"signals", "after": [&"god_heard"],
 		"icon": &"signal", "goal": "gods", "parts": true, "unit": "gods"},
 	&"triangulated": {"name": "Triangulated", "asks": "Fix the living city with three crossing bearings",

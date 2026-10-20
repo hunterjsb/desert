@@ -20,7 +20,7 @@ static var _kept := [
 	[Stake, ["driven", "pulled", "sustained", "holding", "pull"]],
 	[ShieldGenerator, ["on", "smart", "size", "_up", "_since", "held_minutes"]],
 	# A save from before the dial kept "channel": setting it places the dial.
-	[Radio, ["on", "frequency", "volume", "target"]],
+	[Radio, ["on", "frequency", "band", "fm_mhz", "volume", "target"]],
 	[SurveyReceiver, ["acquired_from", "scan_pending"]],
 	[Planter, ["tank_l", "split", "stored", "seeds", "ripened", "replanted", "banked", "dropped", "picked",
 		"fed_kcal", "_owed"]],

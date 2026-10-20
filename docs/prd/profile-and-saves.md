@@ -268,6 +268,7 @@ the frame is a part stuck on the deck.
 | Scrap | **Bonepicker** | Scrap one of each kind of wreck | Clean Hands | `Salvage.claim`: a module taken from a wreck counts its kind, hull, hauler, freight pod, lifeboat, hopper or nomad rig (`Wreckage.kinds`; six since 2026-10-19, when it said five), once a profile |
 | Signals | **Follow the Signal** | Reach a real ruin beacon using a survey receiver | | `SurveyReceiver`: acquire at least 60 m away, then arrive within 15 m carrying or holding the live receiver, tuned to its beacon; target and acquisition distance persist in a save |
 | Signals | **First Light** | Hear a god inside its window | | `Radio`'s tick: tuned to a god while its words are useful, coming through and not cut, and you hearing it: its line in your view, or its sound within earshot with the volume up |
+| Signals | **Line of Sight** | Hear an FM station come through quiet | First Light | `Radio`'s tick on the FM band: a station over its threshold enough to be quiet, the volume up and you hearing it (built 2026-10-20, [Radio](radio-sound-and-atmosphere.md)) |
 | Signals | **Pantheon** | Hear all seven gods | First Light | the same, each god counted once a profile |
 | Signals | **Triangulated** | Fix the living city with three crossing bearings | Pantheon | the Console noting the Walker's contact log (`Chart`): three of its noted bearings crossing within 3 km, 8° apart or more (built 2026-10-19) |
 | Signals | **The Living City** | See the living city's lights | Triangulated | `CityLights`: its lights shown for your eye at night within its chatter's range, in view, over the dunes and past the storms (built 2026-10-19) |
@@ -295,7 +296,7 @@ the frame is a part stuck on the deck.
 - **Nomad ties the trees together:** its card stands apart, with a line from each of the five
   trees, lit where you've done one. It waits on any one deed of a tree, not a named one, so the
   table's `after` gains "any of a family".
-- **The grid holds every tree** (built for step 1, Menus & UI): 54 deeds in eleven families since step 4, Yard Sale and the nomads' gear, each a
+- **The grid holds every tree** (built for step 1, Menus & UI): 55 deeds in eleven families since step 4, Yard Sale and the nomads' gear (Line of Sight since 2026-10-20), each a
   branch or two beside its name down the left, as round one's were (eleven columns side by side
   wouldn't stand left of the prop). It scrolls, and opens on the latest done.
 - **The order.** Each part waits for what it reads to land:
