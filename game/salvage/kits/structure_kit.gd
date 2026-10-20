@@ -102,6 +102,9 @@ class Piece:
 	## takes, by name.
 	var boxes: Array[AABB] = []
 	var coats := PackedStringArray()
+	## Solid details not aligned to the plan: [BoxShape3D, local Transform3D].
+	## Kept separate so existing box indices, sockets and openings stay stable.
+	var fitted_boxes: Array[Array] = []
 	## The boxes you can sleep on, by their place in boxes: a bunk, a bench.
 	var beds := PackedInt32Array()
 	var sockets: Array[SiteSocket] = []
@@ -539,3 +542,10 @@ static func rod(b: Paint.Pieces, from: Vector3, to: Vector3, thick: float, look:
 	var y := along.normalized()
 	var x := y.cross(Vector3.FORWARD if absf(y.z) < 0.9 else Vector3.RIGHT).normalized()
 	b.box(Vector3(thick, along.length(), thick), (from + to) * 0.5, look, thick * 0.2, Basis(x, y, x.cross(y)))
+
+
+## A solid detail matching an existing drawn panel, including its tilt.
+static func fitted_box(p: Piece, size: Vector3, at: Vector3, turn := Basis.IDENTITY) -> void:
+	var shape := BoxShape3D.new()
+	shape.size = size
+	p.fitted_boxes.append([shape, Transform3D(turn, at)])

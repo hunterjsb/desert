@@ -636,6 +636,11 @@ func add_shapes(body: CollisionObject3D, s: int) -> void:
 		if i in piece.beds:
 			holder.set_meta(&"bed", true)
 		body.add_child(holder)
+	for fitted in piece.fitted_boxes:
+		var holder := CollisionShape3D.new()
+		holder.shape = fitted[0]
+		holder.transform = fitted[1]
+		body.add_child(holder)
 
 
 ## Where its frame's origin is, world metres.

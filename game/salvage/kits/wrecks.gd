@@ -146,6 +146,9 @@ static func wreck_hull() -> StructureKit.Piece:
 	p.wreck = w
 	p.tour = PackedVector2Array([Vector2(0.0, 12.0), Vector2(0.0, 5.3), Vector2(0.0, 12.0)])
 	p.approach = Vector2(6.0, 12.0)
+	# Bare roof ribs carry feet across the torn bay.
+	for v: float in [4.8, 5.4]:
+		StructureKit.fitted_box(p, Vector3(4.4, 0.12, 0.12), Vector3(0.0, 3.1, v))
 	p.look = _hull_look
 	# Its hull and fin over the dunes, and the glass and bare plate the sun catches.
 	StructureKit.far_box(p, Vector3(-2.2, -0.25, -6.0), Vector3(2.2, 3.25, 6.0), coats().hull)
@@ -523,6 +526,9 @@ static func _hopper() -> StructureKit.Piece:
 	p.wreck = w
 	p.tour = PackedVector2Array([Vector2(0.0, -12.0), Vector2(0.0, -6.0), Vector2(0.0, -12.0)])
 	p.approach = Vector2(-8.0, -11.0)
+	StructureKit.fitted_box(p, Vector3(2.9, 0.5, 1.4), Vector3(0.0, 2.0, 4.75), Basis(Vector3.RIGHT, -0.5))
+	for side in [-1.0, 1.0]:
+		StructureKit.fitted_box(p, Vector3(0.45, 0.45, 4.0), Vector3(side * 1.15, 0.22, -3.0))
 	p.look = _hopper_look
 	# Its limed body stepping down to the cockpit and nose, the port wing and
 	# the starboard stub, the fan's dark nacelle and the fin; the canopy and
@@ -634,6 +640,8 @@ static func _nomad_rig() -> StructureKit.Piece:
 	p.wreck = w
 	p.tour = PackedVector2Array([Vector2(4.0, -0.2), Vector2(1.45, -0.2), Vector2(4.0, -0.2)])
 	p.approach = Vector2(5.0, -4.0)
+	StructureKit.fitted_box(p, Vector3(1.0, 0.12, 1.0), Vector3(1.65, 0.17, 1.05), Basis(Vector3.BACK, 0.32))
+	StructureKit.fitted_box(p, Vector3(1.0, 0.02, 0.5), Vector3(0.5, 1.21, -1.05), Basis(Vector3.RIGHT, 0.12))
 	p.look = _nomad_rig_look
 	# Its post and pennant over the dunes, and the brass on the post the sun catches.
 	var c := coats()

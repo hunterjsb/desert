@@ -1398,3 +1398,30 @@ below 0.92 degrees and support about 3,993 N, near its weight. No sustained spin
 defect was demonstrated. Solver means were 0.16–0.28 ms/tick across these phases.
 This covers one offset mixed assembly and battery transition, without mast, ropes,
 steep terrain or player loads; the helper emitted teardown warnings after passing.
+
+## Solid wreck support (2026-10-20; built)
+
+The board's hover previously read sand alone, so even an existing solid roof
+was an obstacle rather than ground. Read reachable walkable faces of actual
+static box colliders alongside sand, with one capped broadphase query per
+outer tick and cached analytic faces for the inner integration. Preserve
+ordinary wall/crash behavior, ceilings, hops, and sand's existing height field.
+The wreck collision account is in Salvage & ruins.
+
+As built: `Ride._height` reads sand plus cached reachable static box faces.
+`TerrainChunk.ground_bodies()` lets the one outer-tick query exclude all live
+quarter-heightmaps; a capped result receives five footprint ray samples.
+`_move` treats walkable static contacts as floor and respects resolved ceiling
+height. `Player._after_move` recognizes sand by HeightMap shape rather than
+all static bodies. Actual controls climbed a partly buried 15.76° skimmer roof
+without a throw; walking remained on it. Existing wall-crash and on-foot
+frame-rate checks pass. The Salvage & ruins account records the measurements
+and synthetic 64-face cost limit.
+
+Movement 33 now keeps that board approach in CI: actual forward input moves
+from sand onto the partly exposed, leaning skimmer roof. It checks the board's
+underside remains above the roof, gains height and progresses without a throw;
+it reads the wreck's geometry rather than reproducing the support cache. The
+focused check passes in 10 s. An external control using the old sand-only height
+read travelled 4.63 m without gaining height, put even the player's feet below
+the roof (local 3.136 m against its 3.25 m top), and failed the approach check.
