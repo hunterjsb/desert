@@ -1106,6 +1106,27 @@ restarts the same occurrence. The clock-lag regression fails on the old code
 and passes with the fix (5 s), including a distinct replay of the same asset.
 The unchanged weather/Stoker continuity check and Eye song check pass (6 s each).
 
+### Interference fragments keep the same decoder (2026-10-20)
+
+The designed stutter intentionally repeats a short fragment, then catches up to
+where that fragment would have ended. Godot's high-level player seek stops and
+replays its stream, so this can change playback identity even when the scheduled
+song itself has not restarted. Keep those fragment and catch-up positions, but
+seek the existing stream playback under the audio-server lock so the Vorbis
+decoder cannot be changed while the mixer reads it. A pending voice without an
+active playback has nothing to seek yet.
+
+A forced-stutter regression passes the intended public cursor positions on the
+old code while failing identity preservation at both repeat and catch-up. Keep
+that position coverage alongside identity, and keep the separate scheduled-clock
+regression and original weather-transition continuity check unchanged.
+
+As built: both stutter seeks use the existing AudioStreamPlayback under the
+audio-server lock. The forced imported-Vorbis repeat/catch-up check passes (2 s);
+the unchanged weather/Stoker continuity, scheduled-clock drift, Eye song and
+independent-radio effect checks also pass (5 s each). Public player cursors
+follow both intended seek targets without replacing the playback.
+
 ## Survey receiver (agreed and built 2026-10-20)
 
 An early, cheaper receiver hears only existing ruin loot beacons. It shares the radio's
