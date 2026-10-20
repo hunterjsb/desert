@@ -648,9 +648,11 @@ inside a wreck, above the ground, and nothing is dug out of the dunes.
     skirts, its plates twice as slow to cut. A plated cargo door, a requisition locker behind a plated
     door inside, a cab the storms filled through a breach in its roof, sand sifted over its cargo deck.
     One in some wreck fields, and at some of the black site's checkpoints.
-  - **The freight pod** (colonial; a Remote Moon Contractor pod): its front hold packed full through its
-    open hatch, its rear hold behind a welded side panel. By some frontier towns, under 1 to 3 m of
-    sand (shallower than the colonial era's own, since it came down at the end).
+  - **The freight pod** (colonial; its current salvage entry calls it an RMC/Remote Moon Contractor pod):
+    the RMC name is a legacy placeholder, now replaced in lore by Moonco as prime contractor. Its exact
+    installation contractor and OEM are unsettled. The front hold is packed full through its open hatch,
+    its rear hold behind a welded side panel. By some frontier towns, under 1 to 3 m of sand (shallower
+    than the colonial era's own, since it came down at the end).
   - **The lifeboat** (colonial; a Tilg freighter's boat, its consignment stencil on its flanks): down on
     its skids, its boarding hatch fused shut, its cabin sanded through a cracked viewport, its battery
     room behind an aft access panel. Off the roads into Port Morgan, within 16 km of it.

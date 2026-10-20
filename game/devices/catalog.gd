@@ -197,8 +197,9 @@ const SLOT_ONLY: Array[StringName] = [&"ring", &"port", &"tie", &"plant_pot", &"
 	&"mod", &"computer_mod", &"computer_top", &"screen", &"sail", &"face"]
 
 ## The colonial entity mark on each thing (art direction): TILG is the
-## consignor; RMC is the contractor/integrator; only the shield and wind
-## marks stand for OEMs. Commodity parts carry none.
+## consignor; RMC is a legacy contractor placeholder, not mapped one-to-one
+## to Moonco or its specialists; only shield and wind marks stand for OEMs.
+## Commodity parts carry none.
 const COLONIAL_MARKS := {&"chassis": &"tilg", &"frame": &"tilg", &"board": &"tilg", &"condenser": &"rmc", &"console": &"rmc",
 	&"shield": &"rmc", &"light_shield": &"shield_maker", &"turbine": &"wind_maker", &"power_cabinet": &"rmc"}
 ## Where a lineage's marks sit on what isn't a box: round about its top's

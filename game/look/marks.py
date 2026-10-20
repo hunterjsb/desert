@@ -72,7 +72,11 @@ def arc(cx, cy, r, a0, a1, n=40):
 
 
 def contractor(ink, daub, rng):
-    """The Remote Moon Contractor's tag: a notched plate round its letters."""
+    """The legacy RMC contractor placeholder: a notched plate round its letters.
+
+    Current lore calls the colonial prime contractor Moonco; these marks have
+    not yet been reassigned among Moonco and its specialists.
+    """
     w, h = CELL
     n = 12
     plate = [(14 + n, 16), (w - 14 - n, 16), (w - 14, 16 + n), (w - 14, h - 16 - n), (w - 14 - n, h - 16),

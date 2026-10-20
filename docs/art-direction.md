@@ -297,7 +297,7 @@ ragged and flaked in patches. They read close up; at 5 m they're a smudge.
 
 | Mark | What it stands for | Carried by |
 |---|---|---|
-| **Contractor's tag:** "RMC" on a notched plate | The Remote Moon Contractor: a colonial-era contractor and integrator that built and maintained infrastructure and fitted imported equipment. It is not the equipment's OEM ([part 1 §4](lore-session-2026-10-14.md#4-whos-there-the-entity-stack), [part 2 §1](lore-session-2026-10-14-part-2.md#1-the-oem-tier-who-actually-makes-things)) | The condenser; a found shield's housing; the ruin, beside each stencilled 07 |
+| **Legacy contractor tag:** "RMC" on a notched plate | Placeholder lettering still in the build. Current lore names Moonco as the prime contractor and Geologix, ProvWorks, GHe3, United Biotech and Teresa among its specialists. Which organization marked or installed each surviving device is not settled ([colonial contractors](lore-research.md#colonial-contractors-moonco-and-its-network-agreed-2026-10-20)). | The condenser; a found shield's housing; the ruin, beside each stencilled 07 |
 | **Member state's seal:** rings round a chevron, in another hand's paint | One of the governments the UG federated, before it stood as one: early ruins show member-state and corporate markings that don't match ([session 3](lore-research.md#factions-agreed-session-3)) | The ruin, beside the contractor's tag |
 | **Shield maker's sign:** a bubble on its ground, the emitter beneath | The main shield OEM, the common make; it's unnamed, and "Acme Shield Corporation" is the lore's own placeholder ([part 2 §3](lore-session-2026-10-14-part-2.md#3-shields)) | The light shield you start with, on its body; a found shield, small, on its emitter cap |
 | **Wind maker's sign:** three vanes in a ring | Wind's maker, a different one from solar's ([part 2 §4](lore-session-2026-10-14-part-2.md#4-power)) | The turbine |
@@ -307,23 +307,27 @@ ragged and flaked in patches. They read close up; at 5 m they're a smudge.
 **What the build currently attributes.** These are equipment and marks already represented in
 the game; the marks' letterforms and designs remain placeholders for the planned logo redesign.
 TILG's colonial consignment and Tilg & Standard's present-day company issue are different
-provenances. The Skimmer racer carries a crew patch, which identifies a crew/culture rather than
-a single Skimmers corporation or manufacturer. The Knights Requisitioner have a patrol board
-and a hopper; Mother Cistern's temple has a temple board. First Kingdoms house heraldry (Haberjack,
-Pellicott, Crake and Vonatelli) can appear as a layer on older gear, and Second Age religious
-marks can bless reused gear: neither makes those houses or orders the original OEM. Gear placed
-in the Provisional's tithe hauler and black site is military/Provisional-associated salvage.
-Halloran Isotope and Frontier Ag are named makers in planned designs, not logos on current gear.
+provenances. The RMC stamp is still drawn on the condenser, found shield housing and ruin, but is
+a legacy placeholder, not a confirmed faction name or a final Moonco logo. The Skimmer racer
+carries a crew patch, identifying a crew/culture rather than a single Skimmers corporation or
+manufacturer. The Knights Requisitioner have a patrol board and a hopper; Mother Cistern's temple
+has a temple board. First Kingdoms house heraldry (Haberjack, Pellicott, Crake and Vonatelli) can
+appear as a layer on older gear, and Second Age religious marks can bless reused gear: neither
+makes those houses or orders the original OEM. Gear placed in the Provisional's tithe hauler and
+black site is military/Provisional-associated salvage. Halloran Isotope and Frontier Ag are named
+makers in planned designs, not logos on current gear.
 
 **Why these.** The marks go where the lore names a maker or issuer. The ruin's wall shows
-session 3's early markings that don't match: a corporate builder's tag and number beside a
+session 3's early markings that don't match: a contractor-placeholder tag and number beside a
 member state's seal, in two hands' paint. The same contractor's tag on the devices found in the
 sand lets the player tie them to the buildings. Its build-out is the overbuilt colonial tech
 ([part 1 §6](lore-session-2026-10-14.md#6-history-runs-backwards-in-the-ground)), and corporate tech lies deepest
 ([session 3](lore-research.md#the-surface-today-agreed-session-3)). The two shields show issuer
 against maker. The light shield was bought new, so it carries only its maker's sign. A found
-one carries the tag of the contractor who fitted it, with the maker's sign small on the core
-inside. The crate is the lore's own example of the box and its label.
+one carries the legacy RMC placeholder on its housing, with the maker's sign small on the core
+inside. This does not yet identify which Moonco specialist installed it. The crate is the lore's
+own example of the box and its label. The current Moonco/specialist network does not yet specify
+this gear's acceptance, installation or OEM marks.
 
 **Left blank on purpose.** Batteries and the other commodity parts carry no mark ([part 2
 §4](lore-session-2026-10-14-part-2.md#4-power)). So does the survival kit (and so did the charger, until it went), since the lore doesn't say who made
@@ -373,8 +377,9 @@ on Zan itself), and its marks would be the war era's standardised, severe ones.
 
 **Placeholders.** Every design and ink colour is a placeholder. So are these:
 
-- "RMC," the Remote Moon Contractor, is part 1's working name. It names the colonial contractor/
-  integrator, not an equipment manufacturer; session 3 does not name the contractor or the OEMs.
+- "RMC" is the old atlas placeholder for the colonial contractor tier, superseded in lore by
+  Moonco and its specialist network. Existing RMC stamps are not yet reassigned to one of those
+  organizations; nor is any of them an equipment OEM by default.
 - The member state is unnamed, and so is its seal.
 - The shield maker and the wind maker are unnamed.
 - In "XN 0217", only XN comes from the lore; the number is invented. The moon's own

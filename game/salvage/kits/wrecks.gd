@@ -12,8 +12,9 @@ extends RefCounted
 ## - The tithe hauler: a Provisional armoured hauler from the war, listing on
 ##   its skirts, a plated cargo door, a requisition locker behind a plated
 ##   door inside, a cab the storms filled through a breach in the roof.
-## - The freight pod: a Remote Moon Contractor pod of the colonial era, its
-##   front hold packed full through its open hatch, its rear behind a plate.
+## - The freight pod: a colonial consignment pod; the old RMC name is a
+##   legacy contractor placeholder, not its settled installer or OEM. Its
+##   front hold is packed full through its open hatch, its rear behind a plate.
 ## - The lifeboat: one of a Tilg freighter's boats, down on its skids, its
 ##   boarding hatch fused shut, its cabin sanded through a cracked viewport,
 ##   its battery room behind an access panel.
