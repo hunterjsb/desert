@@ -691,3 +691,23 @@ selected-line isolation, recovery, end of haul and ordinary-held-object priority
 (5 s). Its isolated fixture enables deed counting and earns Quick Haul through
 the physical haul, without calling the deed directly. These checks do not yet
 establish final Varran handling with the new articulated boom.
+
+
+## Sailing disassembly and dropped-rope follow-up (2026-10-20; not fixed)
+
+Playtest report: Hunter could not disconnect/remove the sail, or detach the
+rope from the board. The latter corrects the initial report of a rope on the
+sail: investigate the board attachment, not a reported sail-end detachment bug.
+Reproduce both interactions before assigning a cause. Sail removal should use
+the existing physical fitting/removal flow, and board lines should be detachable
+through the ordinary rope interactions.
+
+Requested next: loose rope on the ground must be recoverable through normal
+pickup, including dropped ends. Establish whether picking the strand itself
+should take its nearest loose end or whether the loose end needs a clearer
+pickup target; do not silently detach an anchored line. Check untied, dropped
+and snapped cases, remaining connected ends, and save/load without losing or
+duplicating rope.
+
+Status: recorded for the next sailing pass alongside the chassis-mounted hoist.
+These reports are not reproduced or fixed, and are not claims in the 0.2.2 notes.
