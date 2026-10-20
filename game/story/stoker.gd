@@ -1,7 +1,7 @@
 class_name Stoker
 extends Node3D
 ## The furnace's state belongs to the run, not the streamed city. Fixtures
-## dispense only when used, so unclaimed stock never becomes respawning loot.
+## hold real finite stock; claimed parts join the ordinary world and its saves.
 
 var world: World
 var site: HalloranSite
@@ -11,12 +11,19 @@ var _door: StaticBody3D
 var _light: OmniLight3D
 var _fire: MeshInstance3D
 var _sound: AudioStreamPlayer3D
-var _stock: Array[MeshInstance3D] = []
+var _stock: Array[Part] = []
+var _cache: Array[Part] = []
 var _poll := 0.0
 
 func _ready() -> void:
 	world = get_parent() as World
 	add_to_group(&"stoker")
+	world.origin_shifted.connect(_shifted)
+
+
+## Fixtures live outside Content, so they must follow the floating origin in the same tick.
+func _shifted(by: Vector2i) -> void:
+	global_position -= Vector3(by.x, 0.0, by.y) * world.tuning.chunk_size
 
 
 func _process(delta: float) -> void:
@@ -41,8 +48,6 @@ func _process(delta: float) -> void:
 	at.origin.z = world.engine_z(at.origin.z)
 	global_transform = at
 	var burning := active(world)
-	for k in _stock.size():
-		_stock[k].visible = k >= int(world.stoker_state.get("stock", 0))
 	_light.light_energy = (2.8 + 0.2 * sin(world.time * 3.0)) if burning else 0.1
 	_fire.visible = burning
 	if burning and not _sound.playing:
@@ -94,35 +99,69 @@ func operate(by: Player, action: StringName) -> bool:
 			fuel.queue_free()
 		Deeds.done(world, &"first_fire")
 		return true
-	if hands.held != null or hands.grasp.body != null:
-		return hands.refuse("free your hands")
-	var id: StringName
-	if action == &"stock":
-		var taken: int = world.stoker_state.get("stock", 0)
-		if taken >= world.tuning.stoker_stock:
-			return hands.refuse("the coalcane store is empty")
-		world.stoker_state["stock"] = taken + 1
-		id = &"coalcane_bundle"
-	elif action == &"cache":
-		if not world.stoker_state.get("opened", false):
-			return hands.refuse("service hatch locked")
-		var taken: int = world.stoker_state.get("cache", 0)
-		var rewards := [&"big_battery", &"solar_panel", &"sealant"]
-		if taken >= rewards.size():
-			return hands.refuse("the service cache is empty")
-		id = rewards[taken]
-		world.stoker_state["cache"] = taken + 1
+	return false
+
+
+## An old count represents the first slots taken; new claims may be in any order.
+func claimed(bank: StringName) -> Array:
+	var key := str(bank) + "_taken"
+	if not world.stoker_state.has(key):
+		world.stoker_state[key] = range(int(world.stoker_state.get(bank, 0)))
+	return world.stoker_state[key]
+
+
+## Called by the ordinary salvage pickup path, before the part enters the hand.
+func claim(body: Node) -> void:
+	if not body.has_meta(&"stoker_slot") or locked(body):
+		return
+	var slot: Array = body.get_meta(&"stoker_slot")
+	var taken := claimed(slot[0])
+	if not taken.has(slot[1]):
+		taken.append(slot[1])
+	world.stoker_state[slot[0]] = taken.size()
+	body.remove_meta(&"stoker_slot")
+	body.reparent(world.content)
+	(body as RigidBody3D).freeze = false
+
+
+## The same small-object aim assistance used by ordinary salvage includes these shelves.
+func loose() -> Array[RigidBody3D]:
+	var parts: Array[RigidBody3D] = []
+	for part in _stock + _cache:
+		if is_instance_valid(part) and part.has_meta(&"stoker_slot"):
+			parts.append(part)
+	return parts
+
+
+func locked(body: Node) -> bool:
+	return body != null and body.has_meta(&"stoker_slot") \
+		and body.get_meta(&"stoker_slot")[0] == &"cache" and not world.stoker_state.get("opened", false)
+
+
+## Fixture bodies belong to the previous snapshot, not the resumed stock state.
+func recall() -> void:
+	_clear()
+	_poll = 0.0
+
+
+func _place(bank: StringName, index: int, id: StringName, at: Vector3, turn := Basis.IDENTITY) -> void:
+	if claimed(bank).has(index):
+		return
+	var part := Catalog.part(id)
+	part.freeze = true
+	part.set_meta(&"stoker_slot", [bank, index])
+	_fixtures.add_child(part)
+	var bounds := Transform3D(turn, Vector3.ZERO) * Finds.bounds(part)
+	part.transform = Transform3D(turn, at - Vector3.UP * bounds.position.y)
+	if bank == &"stock":
+		_stock.append(part)
 	else:
-		return false
-	var item := Catalog.part(id)
-	world.content.add_child(item)
-	item.global_transform = by.camera.global_transform.translated_local(Vector3(0, -0.2, -0.6))
-	hands.hold(item)
-	return true
+		_cache.append(part)
 
 
 func _clear() -> void:
 	_stock.clear()
+	_cache.clear()
 	if is_instance_valid(_fixtures):
 		_fixtures.free()
 	_fixtures = null
@@ -156,29 +195,38 @@ func _build() -> void:
 	_sound.volume_db = -17
 	_fixtures.add_child(_sound)
 	var store := HalloranKit.STORE
-	_target(&"stock", store + Vector3(0, 0.7, 0), Vector3(3.4, 1.4, 1.8), rust)
-	for x in [-1.5, 1.5]:
-		_box(_fixtures, Vector3(0.15, 1.45, 1.9), store + Vector3(x, 0.72, 0), steel)
-	_box(_fixtures, Vector3(2.8, 0.7, 0.08), store + Vector3(0, 1.0, -0.94), steel)
-	var stock_label := _label("PRESERVED COALCANE\nUSE · TAKE BUNDLE", store + Vector3(0, 1.0, -1.0), PI)
+	# Open shelves carry actual loose bundles, not an invisible dispenser target.
+	_box(_fixtures, Vector3(3.4, 0.15, 1.7), store + Vector3(0, 1.0, 0), steel, true)
+	for x in [-1.55, 1.55]:
+		_box(_fixtures, Vector3(0.12, 1.8, 1.75), store + Vector3(x, 0.9, 0), rust, true)
+	_box(_fixtures, Vector3(3.4, 0.4, 0.12), store + Vector3(0, 1.65, 0.85), steel, true)
+	var stock_label := _label("PRESERVED COALCANE", store + Vector3(0, 1.65, -0.84), PI)
 	stock_label.pixel_size = 0.003
 	for k in world.tuning.stoker_stock:
-		var bundle := MeshInstance3D.new()
-		bundle.mesh = Dress.part(&"coalcane_bundle", Catalog.PARTS[&"coalcane_bundle"].size)
-		bundle.position = store + Vector3(-1.1 + k * 0.5, 1.5, 0)
-		_fixtures.add_child(bundle)
-		_stock.append(bundle)
+		_place(&"stock", k, &"coalcane_bundle", store + Vector3(-1.0 + k * 0.65, 1.08, -0.35))
 	var cache := HalloranKit.CACHE
-	_target(&"cache", cache + Vector3(0, 1, 0), Vector3(2, 2, 1), steel)
-	for x in [-1.5, 1.5]:
-		_box(_fixtures, Vector3(0.25, 4, 0.4), cache + Vector3(x, 2, -1), rust)
-	_box(_fixtures, Vector3(3.3, 0.75, 0.4), cache + Vector3(0, 4.1, -1), steel)
-	var cache_label := _label("SERVICE STOCK\nUSE · TAKE PART", cache + Vector3(0, 4.1, -1.23), PI)
+	# The hatch encloses the stock on every side; its opening grants physical access.
+	_box(_fixtures, Vector3(3.3, 0.25, 2.5), cache + Vector3(0, 0.1, 0), steel, true)
+	_box(_fixtures, Vector3(3.3, 0.25, 2.5), cache + Vector3(0, 2.65, 0), steel, true)
+	_box(_fixtures, Vector3(3.3, 2.5, 0.2), cache + Vector3(0, 1.4, 1.15), rust, true)
+	for x in [-1.55, 1.55]:
+		_box(_fixtures, Vector3(0.2, 2.5, 2.5), cache + Vector3(x, 1.4, 0), steel, true)
+	_box(_fixtures, Vector3(3.0, 0.12, 2.2), cache + Vector3(0, 0.95, 0), steel, true)
+	var cache_label := _label("SERVICE STOCK / BAY 02", cache + Vector3(0, 2.8, -1.3), PI)
 	cache_label.pixel_size = 0.003
+	_place(&"cache", 0, &"big_battery", cache + Vector3(-0.85, 1.015, -0.5))
+	_place(&"cache", 1, &"solar_panel", cache + Vector3(0.15, 1.015, -0.5), Basis(Vector3.UP, PI))
+	_place(&"cache", 2, &"sealant", cache + Vector3(1.0, 1.015, -0.5))
+	for x in [-1.7, 1.7]:
+		_box(_fixtures, Vector3(0.16, 5.4, 0.28), cache + Vector3(x, 2.7, -1.0), steel, true)
+	_box(_fixtures, Vector3(3.7, 0.25, 0.4), cache + Vector3(0, 5.4, -1.0), rust, true)
 	_door = StaticBody3D.new()
 	_door.position = cache + Vector3(0, 1.2, -1.0)
 	_fixtures.add_child(_door)
-	_box(_door, Vector3(2.8, 2.6, 0.25), Vector3.ZERO, orange, true)
+	_box(_door, Vector3(2.9, 2.65, 0.25), Vector3.ZERO, orange, true)
+	for x in [-1.3, 1.3]:
+		_box(_door, Vector3(0.1, 2.3, 0.1), Vector3(x, 0, -0.2), steel)
+	_box(_door, Vector3(0.45, 0.12, 0.2), Vector3(0, 0, -0.25), steel)
 
 
 func _target(action: StringName, at: Vector3, size: Vector3, coat: Paint.Coat) -> void:
@@ -197,12 +245,16 @@ func _box(parent: Node3D, size: Vector3, at: Vector3, coat: Paint.Coat, solid :=
 	view.position = at
 	parent.add_child(view)
 	if solid:
+		var solid_parent := parent as CollisionObject3D
+		if solid_parent == null:
+			solid_parent = StaticBody3D.new()
+			parent.add_child(solid_parent)
 		var shape := CollisionShape3D.new()
 		var box := BoxShape3D.new()
 		box.size = size
 		shape.shape = box
 		shape.position = at
-		parent.add_child(shape)
+		solid_parent.add_child(shape)
 	return view
 
 

@@ -21,7 +21,7 @@ salvage, boards, sailing, radio, saves and deeds already exist in playable form.
 Generated history, era-specific structures, loot and feral plants also have
 as-built accounts. They need completion and playtesting, not replacement.
 
-Use the current accounts in [world-system](world-system.md),
+Use the current accounts in [world-system](world/world-system.md),
 [profile and saves](prd/profile-and-saves.md#starts-on-the-chassis-and-two-new-kits-agreed-2026-10-18-spec-built),
 and [farming](prd/farming.md#as-built-the-feral-layer-2026-10-18).
 The [skeleton plan](skeleton-plan.md) records earlier stage gates; its waiting
@@ -229,10 +229,10 @@ passes, not when every branch has a commit.
    clean-to-wild/going-to-seed rules and missing deep-bed frame. Track the kiln,
    burner, humidifier and water-producing crops as sustainability dependencies.
    Repair actions and materials are still unbuilt despite implemented gear lineage
-   and era stats ([world system](world-system.md)). Almanac crossbreeding is an
+   and era stats ([world system](world/world-system.md)). Almanac crossbreeding is an
    idea; the Almanac's god, module, yield and habitat role are agreed in the
    devices PRD. Audit those separately rather than treating all Almanac work as optional.
-3. **World and weather:** reconcile [world](world-system.md),
+3. **World and weather:** reconcile [world](world/world-system.md),
    [terrain](prd/world-and-terrain.md) and [storms](prd/wind-and-storms.md).
    Protect the single terrain truth, stable origins, deterministic history and
    bounded residency while extending exploration. Audit landmark landforms and

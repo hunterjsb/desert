@@ -100,7 +100,7 @@ its exact unlock as open.
 mode: the Surveyor, the Salvager and the Homesteader, each with a few words under it, the origin
 last played highlighted and the Surveyor before any (Menus & UI). Each is a `Kit` resource
 (`game/survival/`): its id, name and words, its start on the moon ([the world
-system](../world-system.md#the-feral-layer-and-spawns)), whether it's balanced, what unlocks it
+system](../world/world-system.md#the-feral-layer-and-spawns)), whether it's balanced, what unlocks it
 and what of it the main menu shows. The menu lists every origin, one not open to
 the profile (`Kit.is_open_to`, through `Profile.has`) as ????. A kit's `unlock` can name a deed
 (below), which then opens it. The Surveyor is open from the first run; Frequent Flyer (a long ride on
@@ -387,7 +387,7 @@ system something you go and do.
 
 ## Starts on the chassis, and two new kits (agreed, 2026-10-18 spec; built)
 
-From the [chassis spec](../chassis-kits-dunes-2026-10-18.md); balance targets the Surveyor only.
+From the [chassis spec](../briefs/chassis-kits-dunes-2026-10-18.md); balance targets the Surveyor only.
 - **The Surveyor:** two chassis joined as a deck and a frame with an upright on its side, its gear
   stuck on so the system is learned by sight: a battery, the shield, a compass, and the hoverboard
   hung on the upright. It keeps the board: it's how the Surveyor tows its camp and kites.
@@ -487,7 +487,7 @@ than hauling the lab.
 
 ## Ending flags (proposed)
 
-*Session 4, part 3 ([lore session](../lore-session-2026-10-17-part-3.md)); proposed, and none of it
+*Session 4, part 3 (lore session); proposed, and none of it
 is built.* The build note: "Track the Daventry axis as a running 'loudness' value from dead-lane
 transmissions and launches, and the Cistern axis as dormant / restored / linked. Don't build
 epilogues yet." The axes are the endings' cross-cutting modifiers ([the

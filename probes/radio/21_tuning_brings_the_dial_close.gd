@@ -21,7 +21,7 @@ func run() -> void:
 	radio.frequency = 600.0
 	look(eye(), radio.global_position)
 	await simulate(1.0)
-	check(close.close == 0.0 and world.player.camera.current, "before tuning, the view is your own")
+	check(close.close == 0.0 and world.player.camera.current and not close._controls.visible, "before tuning, the view is your own without tuning reminders")
 	check(not tuning.dial_close_up, "the close-up is off")
 	press(&"reel_in")
 	await simulate(0.6)
@@ -30,9 +30,20 @@ func run() -> void:
 	press(&"tune_fine_up")
 	await simulate(0.6)
 	print("a fine step: closed in %.2f" % close.close)
-	check(close.close == 1.0 and close.current, "but a fine step brings the view in")
+	check(close.close == 1.0 and close.current and close._controls.visible, "a fine step brings the view and its controls in")
+	var original := InputMap.action_get_events(&"mark_frequency")
+	InputMap.action_erase_events(&"mark_frequency")
+	var remapped := InputEventKey.new()
+	remapped.physical_keycode = KEY_P
+	InputMap.action_add_event(&"mark_frequency", remapped)
+	await simulate(0.1)
+	check(close._controls.text.contains(Controls.tint(Controls.key_for(&"mark_frequency"))),
+		"the close-view reminder follows the live binding")
+	InputMap.action_erase_events(&"mark_frequency")
+	for binding in original:
+		InputMap.action_add_event(&"mark_frequency", binding)
 	await simulate(tuning.dial_close_hold + 0.5)
-	check(close.close == 0.0 and world.player.camera.current, "and lets it go a while after")
+	check(close.close == 0.0 and world.player.camera.current and not close._controls.visible, "leaving tuning removes its controls")
 	radio.frequency = 600.0
 	tuning.dial_close_up = true
 	await simulate(0.5)

@@ -100,7 +100,7 @@ upgrade the camp → the camp sustains more of itself → go further, or into th
 
 ## Playstyles
 
-*Hunter, 2026-10-17 ([notes](session-notes-2026-10-17.md)); loose.* Three are supported, and
+*Hunter, 2026-10-17 (notes); loose.* Three are supported, and
 the game is balanced around the first.
 
 1. **Hybrid (intended).** Drag the camp for heavier challenges (power checks, for example),
@@ -122,10 +122,10 @@ where you are. The pillars above describe the hybrid. How the two extremes sit w
 
 ## Player origins and kits
 
-*Agreed, session 4, part 2 ([lore session](lore-session-2026-10-17-part-2.md)); loose, and none
+*Agreed, session 4, part 2 (lore session); loose, and none
 of it is built. Only the standard kit exists today. The last two rows before the hive mind start,
-the Varran settler and the Daventry patrol board, are session 4, part 3's ([lore
-session](lore-session-2026-10-17-part-3.md)).*
+the Varran settler and the Daventry patrol board, are session 4, part 3's (lore
+session).*
 
 The region is healing and people are exploring again, so Zan is being rediscovered by several
 kinds of arrival at once. **Balance only the first three.** The rest are novelty starts, excluded
@@ -154,10 +154,10 @@ a counterpart to the other: a slow hauler and a fast armoured board. Both hand t
 something normally hard to get, as a sidegrade, not overpowered without the rest of a setup.
 Balance stays around the Surveyor, the Salvager and the Homesteader. These two, like the other
 novelty kits, aren't balanced and get no Ironman. The states themselves stay offstage ([lore
-research](lore-research.md#the-wars-end-the-wall-and-the-states-of-the-players-time-agreed-session-4-part-3));
+research](world/lore-research.md#the-wars-end-the-wall-and-the-states-of-the-players-time-agreed-session-4-part-3));
 a kit names its state and nothing more, and whether even that fits "galaxy lore stays offstage"
 is an open point ([section
-17](lore-research.md#17-open-after-the-endings-session-and-session-4-part-3)). What the kits are
+17](world/lore-research.md#17-open-after-the-endings-session-and-session-4-part-3)). What the kits are
 built on is proposed in [Devices & mods](prd/devices-and-mods.md#the-patrol-board-as-a-superchassis-proposed-not-built)
 (the board's superchassis) and [Movement](prd/movement.md#the-dune-sailboat-agreed-session-4-part-3-not-built)
 (the sailboat). Their unlocks are in [Profile & saves](prd/profile-and-saves.md#kits-are-data).
@@ -212,11 +212,11 @@ the moving city's mythic start.
 ## Landmarks and endings
 
 *Agreed, session 4, part 2; the ladder, the variants and the modifiers are the endings session's
-([endings and radio](endings-and-radio-2026-10-17.md)), each item **Agreed** or **Idea** as that
+([endings and radio](briefs/endings-and-radio-2026-10-17.md)), each item **Agreed** or **Idea** as that
 session labels it, and the pathfinder, the ascendancy split and the three axes are session 4,
-part 3's ([lore session](lore-session-2026-10-17-part-3.md)). Where they differ part 3 is the
+part 3's (lore session). Where they differ part 3 is the
 newer. Loose, and none of it is built. The replaced table, the clashes and what stays open are in
-[the lore research, section 17](lore-research.md#17-open-after-the-endings-session-and-session-4-part-3).*
+[the lore research, section 17](world/lore-research.md#17-open-after-the-endings-session-and-session-4-part-3).*
 
 The game reads as an infinite survival game. Endings exist only for players who choose them for
 story reasons, and many players will never see one.
@@ -231,7 +231,7 @@ story reasons, and many players will never see one.
   arrive as terminal output and are answered physically (carrying, slotting, feeding, placing, stealing),
   never by choosing a reply. A god's personality lives in its formatting and word choice. The old line
   mostly stands; the clashes are in [the lore research, section
-  19](lore-research.md#19-open-after-session-4-part-5).
+  19](world/lore-research.md#19-open-after-session-4-part-5).
 - **Agreed.** Endings fall into two families: **official** (clearance, a login, a rescue, an
   invitation) and **outlaw** (slipping away the skimmer way, unnoticed). The session doesn't say
   which ending is which; a reading is the escapes, the long wait and the nomad city as official,
@@ -251,7 +251,7 @@ fixed coordinates:** they are "placed procedurally per seed, but always present,
 depend on them," and the list is Port Morgan, the Halloran refinery and H-Town (Aitch), the black
 site, Starcom, the observatory, the orbital launch site, Sister and Halfrise. Part 2 had them "at
 fixed coordinates on the planet grid, the same in every run." The newer won ([lore research,
-section 18](lore-research.md#18-open-after-session-4-part-4)). **Session 4, part 5 (the newest)
+section 18](world/lore-research.md#18-open-after-session-4-part-4)). **Session 4, part 5 (the newest)
 replaces the orbital launch site** with the Rim depot, a suborbital port near Sister, and makes the
 observatory the elevator stub on the far-side volcano at the anti-Tu point ([World &
 terrain](prd/world-and-terrain.md#the-rim-depot-the-twin-fires-and-the-elevator-stub-agreed-session-4-part-5-not-built)). The endings need more places (the sealed hangar in Aitch, the observatory, the far-side
@@ -294,7 +294,7 @@ shorter table of StarCom, Launch, Shot down, Nomad city and Radio.
   and a radio on the right frequency. The city finds you; a tether line lands at camp and pulls you
   in. Silhouettes only. Giga-rare; best fit for oysters. The ladder says only "Find the last
   city," so both stand and which one triggers the ending is not said ([section
-  17](lore-research.md#17-open-after-the-endings-session-and-session-4-part-3)).
+  17](world/lore-research.md#17-open-after-the-endings-session-and-session-4-part-3)).
 
 **Ideas still loose.** *Wrong answer* (you call out and something that isn't Tilg answers) fits
 the hive mind start as the way you discover what you are. *Haberjack line*: an underground bunker
@@ -305,7 +305,7 @@ modifier ([Farming](prd/farming.md#each-crop-ancestor-engineering-drift-and-hook
 
 **The freighter** is lore: one freighter was left behind at Port Morgan, the Ledger is its
 mainframe, and the launch endings use it or a smaller ship from it ([lore
-research](lore-research.md#the-freighter-left-behind-agreed-endings-session)).
+research](world/lore-research.md#the-freighter-left-behind-agreed-endings-session)).
 
 ### Up the well, variants
 
@@ -358,14 +358,14 @@ revealed; that stays with the stolen freighter.
   eats them instead of bridging them. Nothing warns you; the radio going quiet is the only sign.
   Kept as the endings session wrote it. It clashes with part 3's "hive mind start only," which is
   the newer, so as things stand it is an Idea with nowhere to land ([section
-  17](lore-research.md#17-open-after-the-endings-session-and-session-4-part-3)).
+  17](world/lore-research.md#17-open-after-the-endings-session-and-session-4-part-3)).
 - **Idea (session 5, a sketch): Wow.** A hive mind survey probe buried deep under a place not yet chosen
   wants two things: Mother Cistern woken and linked to its climate models, so rain falls over Sister (toward
   Bringing Zan back), and its network reached again (toward ascendancy: help it assimilate other AIs, betray
   it, assimilate yourself, or let it contact the greater possum). **Ruled (Hunter, 2026-10-18):** you cannot
   reach Wow. It is confirmed, but extremely rare and almost implied; you can tell it is. So the wishes are the
   lore behind those endings, and how a player serves them is open ([the
-  lore](lore-research.md#wow-the-hive-mind-probe-a-sketch-session-5)).
+  lore](world/lore-research.md#wow-the-hive-mind-probe-a-sketch-session-5)).
 
 ### Bringing Zan back (staying)
 
@@ -391,12 +391,12 @@ revealed; that stays with the stolen freighter.
   the player's era. How the war ended and what human government exists now is deliberately
   undecided." The war ended in quarantine and fracture, and the states are Varran, Daventry and
   the Rump UG ([lore
-  research](lore-research.md#the-wars-end-the-wall-and-the-states-of-the-players-time-agreed-session-4-part-3)).
+  research](world/lore-research.md#the-wars-end-the-wall-and-the-states-of-the-players-time-agreed-session-4-part-3)).
 
 ### Blow up the moon (Agreed, session 4, part 5)
 
-*[Session 4, part 5](gods-gear-farside-2026-10-17.md), section 11; the lore is in [the lore
-research](lore-research.md#the-stoker-and-the-end-of-zan-agreed-session-4-part-5).* The Stoker, Halloran's
+*[Session 4, part 5](briefs/gods-gear-farside-2026-10-17.md), section 11; the lore is in [the lore
+research](world/lore-research.md#the-stoker-and-the-end-of-zan-agreed-session-4-part-5).* The Stoker, Halloran's
 starving refinery mind, has a smidge of helium-3 left, not enough for fusion, and no way to ever meet its
 energy quotas. This ending is "the one act that meets and exceeds every quota at once, and the only
 moment it is ever at peace."
@@ -418,12 +418,12 @@ Cistern, the Almanac and the Quartermaster each talk it out of it.
 
 Not placed on the ladder by the session, and not named official or outlaw. A reading: a high tier, since it
 asks for a pilgrimage, a corrupted Eye and a silent Starcom, which also shuts out the long wait. The
-clashes are in [the lore research, section 19](lore-research.md#19-open-after-session-4-part-5).
+clashes are in [the lore research, section 19](world/lore-research.md#19-open-after-session-4-part-5).
 
 ### The Haberjack bunker (Agreed, session 4, part 5)
 
-*[Session 4, part 5](gods-gear-farside-2026-10-17.md), section 8; the lore is in [the lore
-research](lore-research.md#the-ledger-and-the-haberjack-bunker-agreed-session-4-part-5).* A sealed First
+*[Session 4, part 5](briefs/gods-gear-farside-2026-10-17.md), section 8; the lore is in [the lore
+research](world/lore-research.md#the-ledger-and-the-haberjack-bunker-agreed-session-4-part-5).* A sealed First
 Kingdoms vault under Port Morgan, with life support still running on the colonial power tap and nobody
 left in it. The walls carry generations of Haberjack family marks and heraldry, and at its heart is the
 Harbourmaster's sticky note under glass in a reliquary, guarded for generations by people who didn't
@@ -438,7 +438,7 @@ Not placed on the ladder. A reading: low, since it is a place to find and a door
 
 ### The captive launch rule (Agreed, session 4, part 5)
 
-*[Session 4, part 5](gods-gear-farside-2026-10-17.md), section 9.* The launch endings still need the
+*[Session 4, part 5](briefs/gods-gear-farside-2026-10-17.md), section 9.* The launch endings still need the
 Ledger and the Quartermaster to authorise, and the Quartermaster is a module you can carry. **A stolen
 Quartermaster grudgingly authorises launches, except any ending that goes into hive mind space.** Then it
 fires the net and kills you both rather than be carried to the enemy.
@@ -463,7 +463,7 @@ Quartermaster gets you shot down, and "one flag covers freighter, pod and hopper
   built over by the heretics, and the god in it is the Eye, the young god: "if you can interpret it and
   goad it, it reads you coordinates of things to look at in space: satellites, the outpost, an incoming
   rescue light." The seeing version of every ending is read from it
-  ([the lore](lore-research.md#the-eye-the-young-god-agreed-session-4-part-5)).
+  ([the lore](world/lore-research.md#the-eye-the-young-god-agreed-session-4-part-5)).
 - **Proposed effects.** Shot down: spot the old defence satellites, so you know you need the
   Quartermaster. Freighter escape: plot a real course. Long wait: watch the rescue ship's light
   approach, a countdown. Up the well and outpost: coordinates and the outpost's glint. Stolen
@@ -496,7 +496,7 @@ Quartermaster gets you shot down, and "one flag covers freighter, pod and hopper
   called it the nomad city's mind; **ruled by Hunter, 2026-10-18:** it is the colonial survey mind, as in
   part 2); stealing its core cuts the post, and over time the other gods' logs complain that it
   stopped. It stays "indifferent... equally content in its old chassis or upgraded"
-  ([the lore](lore-research.md#the-walker-mother-cistern-and-the-almanac-agreed-session-4-part-5)).
+  ([the lore](world/lore-research.md#the-walker-mother-cistern-and-the-almanac-agreed-session-4-part-5)).
 - **Idea, open.** Meeting the city while holding their god: if their pilgrimage is underway and
   you never contacted them, they're hostile and kill you (an ending); if they haven't set out,
   they're shocked; if you had prior contact, they're not hostile. Hard parts: showing the
@@ -507,7 +507,7 @@ Quartermaster gets you shot down, and "one flag covers freighter, pod and hopper
 
 ### Nomad reputation (Agreed, session 5; not built)
 
-*[Session 5](lore-session-2026-10-18-mitchell-wow-shoemaker.md), "Nomad reputation and Mario."* A
+*Session 5, "Nomad reputation and Mario."* A
 repeatable way to build rep with the nomads without ever putting one on screen. The whole relationship
 runs through gifts, shrines and radio tones, which keeps the nomads secret.
 - **Return a nomad's sail** (or leave goods) at a shrine, and the next storm brings back a gift, such as a
@@ -518,9 +518,9 @@ runs through gifts, shrines and radio tones, which keeps the nomads secret.
   2026-10-18):** the Walker's own quest line has no reputation, but it ties closely to the nomad quest line,
   which has. Its quest ends with teaching it the anomaly's tells, one piece of evidence for each (the compass
   drift, the radio's crackle, the shield's load), and the singing stone and your own sensor logs are two
-  forms of that evidence, "probably more" ([the lore](lore-research.md#shoemaker-and-the-singing-stones-agreed-session-5)).
+  forms of that evidence, "probably more" ([the lore](world/lore-research.md#shoemaker-and-the-singing-stones-agreed-session-5)).
 - **Lore root:** an old Tabbed custom carried on by the Ashwalkers, debts settled with gifts left at shrines
-  ([the lore](lore-research.md#mitchells-company-agreed-session-5)).
+  ([the lore](world/lore-research.md#mitchells-company-agreed-session-5)).
 
 Readings, not in the session: the rep is a running value kept with the run, like the axes
 ([Profile & saves](prd/profile-and-saves.md#ending-flags-proposed)); a gift "the next storm brings" rides the
@@ -558,7 +558,7 @@ The table has no row for regular ascendancy.
 **Running gags to keep.** The Ledger is Tilg property, so the surveyor is the only person on Zan
 with a login to the god of the crusades. The Quartermaster is the Provisional's, so a Tilg login
 means nothing to it ([the AI
-gods](lore-research.md#the-faith-of-tu-and-the-ai-gods-agreed-session-4-part-2)). *Session 4, part 5:*
+gods](world/lore-research.md#the-faith-of-tu-and-the-ai-gods-agreed-session-4-part-2)). *Session 4, part 5:*
 other kits need a **second door**, the original Harbourmaster's credentials on a sticky note, because
 the Harbourmaster "was never formally fired" ([the Haberjack bunker](#the-haberjack-bunker-agreed-session-4-part-5)).
 
@@ -581,11 +581,11 @@ dedicated hive mind ending." That ending is told on the radio, not in a cutscene
 - **It's a moon, not a plane.** Your position is tracked as latitude and longitude, so
   walking far enough brings you back round and the poles are real places. The ground
   near you is still flat.
-- **Two halves of Zan** ([the Tu spec](tu-and-day-2026-10-17.md), 2026-10-17). Zan is
+- **Two halves of Zan** ([the Tu spec](briefs/tu-and-day-2026-10-17.md), 2026-10-17). Zan is
   tidally locked to Tu. On the near side, the god's side, the giant hangs fixed in the sky
   as a landmark, lights the nights and eclipses the sun once a day. The far side has black
   nights, the stars and no landmark. Local time follows longitude ([the
-  moon](the-moon.md#day-length)).
+  moon](world/the-moon.md#day-length)).
 - **Latitude is the second difficulty dial.** Toward the poles, storms weaken but the
   temperature swings get wider: hotter days, colder nights. Difficulty changes kind
   rather than amount. The equator is stormy and mild, while the poles are clear and
@@ -597,7 +597,7 @@ dedicated hive mind ending." That ending is told on the radio, not in a cutscene
   locked to Tu, so where you stand under the giant is a third dial beside wind and latitude:
   under Tu (hottest, the longest eclipses, the richest ruins), the Rim (mild, farmland, Tu
   half-risen on the horizon) or the far side (cold, black nights, where the water ends up). The
-  game has only latitude today. [The lore research](lore-research.md#tu-the-tidal-lock-and-the-water-agreed-session-4-part-2)
+  game has only latitude today. [The lore research](world/lore-research.md#tu-the-tidal-lock-and-the-water-agreed-session-4-part-2)
   has the regions.
 - **World coordinates are always tracked**, so distance from spawn is known even
   though the land isn't kept. A fixed underlying topography (the large shapes the dunes
@@ -621,19 +621,14 @@ it. It became a smuggler moon, until a volcanic paroxysm cut every outside link 
 most of the people who understood the machines. The First Kingdoms (the first age), the Dark Age
 and the second age rebuilt in the ashes, medieval in shape, and rose and fell in turn, until
 nomads were all that was left, leaving an apocalypse world. `{YEARS_SINCE_FALL}` after the collapse, a time
-not yet set ([placeholders](lore-research.md#placeholders)), the moon has reverted to
+not yet set ([placeholders](world/lore-research.md#placeholders)), the moon has reverted to
 near-uninhabitable: ruins, dunes, one nomad city that still moves. The region is starting to
 heal, though, and Zan is being rediscovered by surveyors, salvagers and homesteaders (the
 origins below).
 The air is thin and fading, the days scorch, the nights freeze, and water goes through
-all three phases every day. The physics is in [the moon](the-moon.md), and the history
-is in the lore sessions ([part 1](lore-session-2026-10-14.md), [part
-2](lore-session-2026-10-14-part-2.md), [session 3](lore-session-2026-10-16.md), [session
-4](session-notes-2026-10-17.md), [session 4, part 2](lore-session-2026-10-17-part-2.md), [the
-endings session](endings-and-radio-2026-10-17.md), [session 4, part
-3](lore-session-2026-10-17-part-3.md), [session 4, part 4](plants-worldgen-ruins-2026-10-17.md) and
-[session 4, part 5](gods-gear-farside-2026-10-17.md) and [session
-5](lore-session-2026-10-18-mitchell-wow-shoemaker.md)) and [the lore research](lore-research.md).
+all three phases every day. The physical profile is in [the moon](world/the-moon.md), and the consolidated history is in
+[the lore research](world/lore-research.md). Supporting dated design briefs live in
+[`briefs/`](briefs/); voice-session records are archived outside the repository.
 
 You're a **scavenger and a survivor, in a suit**, because nobody survives here without
 one. The suit is the one gift this world gives you. Why you're out here gets revealed
@@ -734,7 +729,7 @@ The order we build them in is the [skeleton plan](skeleton-plan.md).
   "People are only ever hinted at"; the Replacement start against "practically unreachable"; the
   Surveyor's kit against the built one. The newer session wins, so they are applied above and
   quoted old and new in [the lore research, section
-  16](lore-research.md#16-open-after-session-4-part-2), with what they leave open: where each
+  16](world/lore-research.md#16-open-after-session-4-part-2), with what they leave open: where each
   origin spawns, how the sky's regions meet latitude, and how a fixed landmark sits on a seeded
   world.
 - **The endings session's and session 4, part 3's clashes with this page.** The five-row ending
@@ -742,7 +737,7 @@ The order we build them in is the [skeleton plan](skeleton-plan.md).
   "It tows nothing" for the hoverboard against the patrol board's tow; the sand yacht against the
   dune sailboat; and "There's no base to return to" against Sister's basin, a fixed water source.
   The newer session wins, so they are applied above and quoted old and new in [the lore research,
-  section 17](lore-research.md#17-open-after-the-endings-session-and-session-4-part-3), with what
+  section 17](world/lore-research.md#17-open-after-the-endings-session-and-session-4-part-3), with what
   they leave open: how the three axes are implemented and learned without exposition, the exact
   Daventry unlock, the world clock behind the atmosphere ending, whether the Ledger still
   broadcasts, and which loose ideas (wrong answer, the Haberjack line, the radio ending) to develop
@@ -754,7 +749,7 @@ The order we build them in is the [skeleton plan](skeleton-plan.md).
   enemies to fight"; sand beetles against "no creature rigging"; and a burial depth by era against
   "history runs backwards in the ground." The newest session wins, so they are applied above as
   direction and quoted old and new in [the lore research, section
-  18](lore-research.md#18-open-after-session-4-part-4) and in the PRDs named there, with what they
+  18](world/lore-research.md#18-open-after-session-4-part-4) and in the PRDs named there, with what they
   leave open: what the first hour finds, what a weapon is for, how a dig fits the one-function
   ground, and where the orbital launch site stands.
 - **Session 4, part 5's clashes with this page.** The dialogue rule amended to let machines talk through
@@ -764,6 +759,6 @@ The order we build them in is the [skeleton plan](skeleton-plan.md).
   ground" against gear by era (eased: efficiency falls with age, and repair is the trade); and the Cistern
   axis against a Mother Cistern you can carry away. The newest session wins, so they are applied above as
   direction and quoted old and new in [the lore research, section
-  19](lore-research.md#19-open-after-session-4-part-5), with what they leave open: whether the two new
+  19](world/lore-research.md#19-open-after-session-4-part-5), with what they leave open: whether the two new
   endings sit anywhere on the ladder, where an Up the well skimmer gets its launch fuel, how a carried
   Mother Cistern counts for the axis, and how Starcom's repair sits with the Stoker ending.

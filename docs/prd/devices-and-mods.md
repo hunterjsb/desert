@@ -17,7 +17,7 @@ feel great: intuitive, reactive and satisfying, every single time.
 could: the moon had no fabs, so every part came from somewhere else. A found object can show
 several distinct roles: the OEM that made a component, the contractor/integrator that fitted
 it, and the company that consigned or issued it. One mark does not imply the others. Batteries
-are the exception and carry no stamp. See [the lore research](../lore-research.md).
+are the exception and carry no stamp. See [the lore research](../world/lore-research.md).
 
 ## What the player experiences
 
@@ -123,7 +123,7 @@ it, take hold of it, and let go.
 
 ## The chassis as the one structure (built, 2026-10-18)
 
-Hunter's [chassis, kits & dune archaeology spec](../chassis-kits-dunes-2026-10-18.md), from his
+Hunter's [chassis, kits & dune archaeology spec](../briefs/chassis-kits-dunes-2026-10-18.md), from his
 brother's playtest ("a board he could just stick things to"): the crate and nearly every slot
 went; the chassis is the one structure, a sticky square you tile, tow by its edge rings and stick
 anything on freely, so a camp is truly the player's own, laid out in stations (power, weather,
@@ -227,7 +227,7 @@ workstation) rather than filled slots.
 
 ## Wind on faces (built, 2026-10-19)
 
-Hunter's [spec](../chassis-kits-dunes-2026-10-18.md#wind-on-faces): every vertical and fabric
+Hunter's [spec](../briefs/chassis-kits-dunes-2026-10-18.md#wind-on-faces): every vertical and fabric
 face is a flat plate that catches the wind, as close to real as can be had cheaply: no cloth
 sim, no new bodies or joints. `Faces` does it for each deck, from `Chassis.plates()`.
 
@@ -297,7 +297,7 @@ sim, no new bodies or joints. `Faces` does it for each deck, from `Chassis.plate
 
 ## Mast mounts, the streamer and the crow's nest (built, 2026-10-19)
 
-Hunter's [spec](../chassis-kits-dunes-2026-10-18.md#sails-and-nomad-gear): "things should mount on the
+Hunter's [spec](../briefs/chassis-kits-dunes-2026-10-18.md#sails-and-nomad-gear): "things should mount on the
 sail's mast, generically (with top slots gone, that's a sticky spot on the mast). Heavy things up high
 raise the centre of mass," and a crow's nest, "a mast mount you climb into. It counts as a seat and
 gives a long view for spotting glints, plumes and storm fronts." Found with the [nomads' gear](salvage-and-ruins.md#nomad-gear-agreed-2026-10-18-spec-built-2026-10-19).
@@ -355,7 +355,7 @@ gives a long view for spotting glints, plumes and storm fronts." Found with the 
 
 ## The Console (proposed; first version built)
 
-*Hunter, 2026-10-17 ([session](../console-sensors-sleep-2026-10-17.md)), a voice session. Its own
+*Hunter, 2026-10-17 ([session](../briefs/console-sensors-sleep-2026-10-17.md)), a voice session. Its own
 framing: "Treat them as direction, not a final spec: the Console's slot layout is explicitly due
 for a rework." So this is direction. A first version is built (As built, below), and its layout is
 a starting point for that rework. Where the session clashes with what is built, the clash is in
@@ -636,7 +636,7 @@ Console two late uses ([the vision](../vision.md#landmarks-and-endings)):
   a storm mini-map ([Wind & storms](wind-and-storms.md#instruments-and-the-console-screen-proposed-first-version-built)).
   Not said: what frame a legged robot is, or whether it stands on a deck mount, which takes one
   device the size of a crate.
-- **Teaching and taking the Walker** (agreed, 2026-10-18, [spec](../storms-signals-sailing-2026-10-18.md)).
+- **Teaching and taking the Walker** (agreed, 2026-10-18, [spec](../briefs/storms-signals-sailing-2026-10-18.md)).
   The Walker is a legged survey robot that exists only to understand Zan's weather, indifferent to
   its flock; the nomads followed it for centuries until it walked them into the anomaly, and then they
   abandoned it (Hunter, 2026-10-18: it walks alone, and they still listen and pray). Teaching it takes
@@ -653,7 +653,7 @@ Console two late uses ([the vision](../vision.md#landmarks-and-endings)):
 - **Captured hive mind tech (Idea).** Sealed deep in the black site, it "looks like an incredibly
   powerful Console mod," the endings session's route for a human to consume the other gods.
   Session 4, part 3 makes that ending hive mind start only, so this is an Idea with a clash
-  ([lore research](../lore-research.md#17-open-after-the-endings-session-and-session-4-part-3)).
+  ([lore research](../world/lore-research.md#17-open-after-the-endings-session-and-session-4-part-3)).
   As a part it is a computer mod (a kind of its own, in the socket types below), found in a
   landmark and never crafted.
 
@@ -679,7 +679,7 @@ navigation (bearings, the Walker's contacts, the course and the sail's ideal).
 
 ## The patrol board as a superchassis (proposed, not built)
 
-*Session 4, part 3 ([lore session](../lore-session-2026-10-17-part-3.md)). Direction, not a spec:
+*Session 4, part 3 (lore session). Direction, not a spec:
 no number is set and none of it is built.* The Daventry patrol board's build note asks for "mount
 points for a shield, battery, radio, condenser, bedroll and tow, as a chassis rather than
 special-cased slots," and says this "also generalises the existing board."
@@ -807,7 +807,7 @@ room. Either way the kit's board, hung on the Surveyor's upright, is unchanged.
 
 ## Frames by era (Agreed, session 4, part 5; not built)
 
-*[Session 4, part 5](../gods-gear-farside-2026-10-17.md), section 4; it supersedes the 17 Oct notes'
+*[Session 4, part 5](../briefs/gods-gear-farside-2026-10-17.md), section 4; it supersedes the 17 Oct notes'
 "trade-offs, not a ladder" crate table ([Salvage & ruins](salvage-and-ruins.md#gear-and-ruins-by-era)
 has the eras and the ruins). Today there is one crate frame, and none of this is built.*
 
@@ -852,7 +852,7 @@ Found mods ride along. First Kingdoms finds can carry mods such as tuning for lo
 mod fits a mount and adds to the device, as the extra-hook mod does (below). Today only the planter has a
 mod mount.
 
-**Built 2026-10-18** ([the world system](../world-system.md#era-stats)): every frame and part has its
+**Built 2026-10-18** ([the world system](../world/world-system.md#era-stats)): every frame and part has its
 era's stats, from its lineage, as factors on the numbers it already has (`Eras.GEAR`). Against colonial
 make, the First Kingdoms keep 0.92 of a battery's capacity, a panel's or a turbine's watts and a tray's
 lift, draw 1.05 times as much (a tray a kilogram, a shield, an instrument, a lamp) and stand the weather
@@ -866,7 +866,7 @@ the catalog and no rule for what a mend gives back.
 
 ## Item lineage (Agreed, session 4, part 5; not built)
 
-*[Session 4, part 5](../gods-gear-farside-2026-10-17.md), section 3, "The Dark Age: a lineage rule, not
+*[Session 4, part 5](../briefs/gods-gear-farside-2026-10-17.md), section 3, "The Dark Age: a lineage rule, not
 a site layer." Nothing is built.* "A second-age item is a colonial or first-age item remade in the Dark
 Age. Item data should record lineage: original era plus remake history." The marks that show it are in
 [art direction](../art-direction.md#layered-marks-agreed-session-4-part-5-named-not-drawn), and the rule
@@ -884,7 +884,7 @@ Readings, not in the session:
   seed, as its layer and its fitted parts are. Only a part you carry needs it kept, with the part.
 - **Typed parts hold.** Lineage is a field of the part, not a new part (rule 6).
 
-**Built 2026-10-18** ([the world system](../world-system.md#what-lineage-does-now)): a find's lineage is
+**Built 2026-10-18** ([the world system](../world/world-system.md#what-lineage-does-now)): a find's lineage is
 drawn from its loot seed and its site's era and kind (`Eras.lineage`) and given with `Catalog.found_in`,
 the loot package's one call; what you take keeps it through a save. It drives the look (layered marks,
 [art direction](../art-direction.md#layered-marks-agreed-session-4-part-5-named-not-drawn)), and its last
@@ -893,7 +893,7 @@ three deep. A thing without one is the company's issue, or, from an older save, 
 
 ## Crate makers (Agreed direction, session 4, part 4; not built)
 
-*[Session 4, part 4](../plants-worldgen-ruins-2026-10-17.md), "Agreed direction." Nothing is built, and
+*[Session 4, part 4](../briefs/plants-worldgen-ruins-2026-10-17.md), "Agreed direction." Nothing is built, and
 today there is one crate frame.* "Multiple manufacturers make crates with different slot mixes. A
 crate's maker tells you its era and its job; the slot mix is the variety axis." This sits beside
 frames by era above: the era sets a frame's trade-off between efficiency and repair, and the maker sets what it is for.
@@ -928,13 +928,13 @@ Readings, not in the session:
 - **TILG and Tilg & Standard are separate companies.** TILG is the colonial-era issuer and its
   consignment stencil remains on old gear; it is not the crate's OEM. Tilg & Standard formed
   thousands of years after the war by merging TILG and Standard Freight, and is the Surveyor's current contractor/issuer
-  ([lore research](../lore-research.md#factions-agreed-session-3)). The table's colonial row is
+  ([lore research](../world/lore-research.md#factions-agreed-session-3)). The table's colonial row is
   therefore TILG; the successor's issue is a later, current make if/when maker-specific crates
   are built.
 
 ## The burner and the humidifier (proposed, not built)
 
-*[Session 4, part 4](../plants-worldgen-ruins-2026-10-17.md): "New equipment implied: burner/generator
+*[Session 4, part 4](../briefs/plants-worldgen-ruins-2026-10-17.md): "New equipment implied: burner/generator
 (for coalcane fuel), humidifier. Both are crate parts like the existing devices." Implied, not
 specified; direction only.*
 
@@ -955,7 +955,7 @@ Readings, not in the session:
 
 ## The kiln (Agreed, session 4, part 5; not built)
 
-*[Session 4, part 5](../gods-gear-farside-2026-10-17.md), section 5. Nothing is built, and no number is
+*[Session 4, part 5](../briefs/gods-gear-farside-2026-10-17.md), section 5. Nothing is built, and no number is
 set.* "The kiln is a new processing device that burns coalcane. It is what makes second-age repair
 possible." Four chains:
 
@@ -991,7 +991,7 @@ Readings, not in the session:
 
 ## The terminal output system (proposed, session 4, part 5; first piece built)
 
-*[Session 4, part 5](../gods-gear-farside-2026-10-17.md), sections 2 and 14, step 6: "Terminal output
+*[Session 4, part 5](../briefs/gods-gear-farside-2026-10-17.md), sections 2 and 14, step 6: "Terminal output
 system: short god logs, forms and dispatches rendered on consoles. One system serves every god." The
 session labels the design pieces Agreed and gives no detail of how they are built, so what follows is
 direction, a proposal. Its first piece is built, for the Console's own messages (As built, below).*
@@ -1000,7 +1000,7 @@ The rule behind it is the amended one: people never talk, and "machines can talk
 terminals." Allowed output is "short logs, requisition forms, incident reports, dispatches, error
 messages, licensing notices, and rare clipped lines ('Unacceptable.')." "Quests arrive as terminal
 output. The player answers physically... Never by choosing a reply." "A god's personality lives in its
-formatting and word choice, not in paragraphs." ([The lore](../lore-research.md#the-dialogue-rule-amended-agreed-session-4-part-5)
+formatting and word choice, not in paragraphs." ([The lore](../world/lore-research.md#the-dialogue-rule-amended-agreed-session-4-part-5)
 has the rule.)
 
 Proposed, in this PRD's terms:
@@ -1056,7 +1056,7 @@ Readings, not in the session:
 
 ## God modules as crate modules (proposed, session 4, part 5; not built)
 
-*[Session 4, part 5](../gods-gear-farside-2026-10-17.md), sections 7 to 14. The pantheon is Agreed; how it
+*[Session 4, part 5](../briefs/gods-gear-farside-2026-10-17.md), sections 7 to 14. The pantheon is Agreed; how it
 is built is the session's proposal, step 7: "God module framework: mountable gods as crate modules with
 innate powers; stationary gods as consoles; per-god state (willing, captive, fed, corrupted)." Nothing
 is built.* Four gods are mountable (the Walker, the Quartermaster, Mother Cistern, the Almanac), and three
@@ -1091,8 +1091,8 @@ Proposed, in this PRD's terms:
 
 ## The singing stone (Agreed, session 5; not built)
 
-*[Session 5](../lore-session-2026-10-18-mitchell-wow-shoemaker.md), "Singing stones." Direction, not a
-spec; nothing is built. The lore is in [the lore research](../lore-research.md#shoemaker-and-the-singing-stones-agreed-session-5).*
+*Session 5, "Singing stones." Direction, not a
+spec; nothing is built. The lore is in [the lore research](../world/lore-research.md#shoemaker-and-the-singing-stones-agreed-session-5).*
 Fragments of Shoemaker, black, glassy and scored with melted grooves, warm and strongly magnetic.
 - **The item:** low tech, no attachments, mountable on a chassis.
 - **What it tells you.** Wind plays its grooves like a flute, so its note follows the open wind even when
@@ -1116,11 +1116,11 @@ Readings, not in the session:
 
 ## Mitchell as a module (Idea, session 5; not built)
 
-*[Session 5](../lore-session-2026-10-18-mitchell-wow-shoemaker.md), "Player era: the undead god" and "Relationships
+*Session 5, "Player era: the undead god" and "Relationships
 and module interactions." The core is **Agreed**: Mitchell's core is silent but intact, and it can be revived
 and carried as a console module, like the other non-stationary gods. What it does is the session's "likely
 mechanic (not designed yet)," so it is an Idea. The lore is in [the lore
-research](../lore-research.md#mitchell-the-dead-god-agreed-session-5).*
+research](../world/lore-research.md#mitchell-the-dead-god-agreed-session-5).*
 - **Idea:** it heals or makes medicine on credit, and starts quietly charging in water or salvage if you
   fall too far behind. **Ruled (Hunter, 2026-10-18):** the player crafts nothing. The module would
   auto-craft its recipes, turning resources into health or healing on its own. Still an Idea.
@@ -1145,7 +1145,7 @@ Readings, not in the session:
 
 ## Dispatch items (proposed, session 4, part 5; not built)
 
-*[Session 4, part 5](../gods-gear-farside-2026-10-17.md), section 13 and step 8: "Dispatch items: sealed
+*[Session 4, part 5](../briefs/gods-gear-farside-2026-10-17.md), section 13 and step 8: "Dispatch items: sealed
 packets with sender, recipient and opened/forged flags." Nothing is built.* "Dispatches are the quest
 system: a god's console prints a sealed packet for another god, and you carry it."
 
@@ -1492,7 +1492,7 @@ in the living docs, so this PRD follows it as direction and says so on each line
   with the makers: a Halloran piece and a hand-built first-age piece in one deck. *Answered for eras by
   session 4, part 5 (below); makers are not named.*
 
-Session 4, part 5 (2026-10-17, [the gods session](../gods-gear-farside-2026-10-17.md)) adds the
+Session 4, part 5 (2026-10-17, [the gods session](../briefs/gods-gear-farside-2026-10-17.md)) adds the
 following. Each is quoted old and new. The newest session wins in the living docs, so this PRD follows
 it as direction and says so on each line.
 
@@ -1533,10 +1533,10 @@ it as direction and says so on each line.
   The session gives a module no draw. Not said whether a Quartermaster's hardening, a Walker's sensing or
   a Cistern's forecasts cost power, or whether a god module can be left without any.
 
-Session 5 (2026-10-18, [the Mitchell session](../lore-session-2026-10-18-mitchell-wow-shoemaker.md)) raised
+Session 5 (2026-10-18, the Mitchell session) raised
 the following. Hunter ruled on the first three afterwards (2026-10-18), and the rulings replace the old
-wording above; the last is still open. Each clash is in the session's [Clashes
-note](../lore-session-2026-10-18-mitchell-wow-shoemaker.md#clashes).
+wording above; the last is still open. Each clash is in the session's Clashes
+note.
 
 - **Eight gods against seven. Ruled:** Mitchell is a dead god who can be revived to become an eighth. It is
   a fifth mountable module beside the four above; the seven stay seven.

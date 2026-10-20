@@ -2,9 +2,9 @@
 
 *Draft, 2026-10-17. The contract for every builder of the world system: the history pass, the
 landmarks, the paths, the sites, the structures, exposure, loot, lineage, the feral layer and spawns.
-It answers [World & terrain](prd/world-and-terrain.md) and [Salvage & ruins](prd/salvage-and-ruins.md)
-and builds part 4 ([plants, world gen and ruins](plants-worldgen-ruins-2026-10-17.md)) and part 5
-([gods, gear and the far side](gods-gear-farside-2026-10-17.md)) as one system.*
+It answers [World & terrain](../prd/world-and-terrain.md) and [Salvage & ruins](../prd/salvage-and-ruins.md)
+and builds part 4 ([plants, world gen and ruins](../briefs/plants-worldgen-ruins-2026-10-17.md)) and part 5
+([gods, gear and the far side](../briefs/gods-gear-farside-2026-10-17.md)) as one system.*
 
 Hunter, 2026-10-17: "flesh out the ruin gen... so we can stop just having totally random loot just all
 over the desert. actually lets go for the whole system, who am i kidding? half assing is what killed
@@ -41,7 +41,7 @@ says what grows along it. **Spawns** say where a run starts in it.
 
 ## The law, and how this keeps it
 
-The rules of [World & terrain](prd/world-and-terrain.md#rules) don't bend for history.
+The rules of [World & terrain](../prd/world-and-terrain.md#rules) don't bend for history.
 
 1. **The ground is one function.** A site that changes the ground does it through its kind's carve,
    inside `height_at`, as the ruin does today. Nothing else shapes ground.
@@ -208,12 +208,12 @@ with the world and the save, keyed by the landmark's id, and is the endings work
 ## Geology
 
 *Built 2026-10-18, on the `plumes` branch, from Hunter's brief ([geology and
-plumes](geology-and-plumes-2026-10-18.md)): "Give Zan's plumes a convincing geological source and a
+plumes](../briefs/geology-and-plumes-2026-10-18.md)): "Give Zan's plumes a convincing geological source and a
 consistent relationship to wind, the atmosphere, and the moon's history. Start with one compelling
 plume, not a sprawling simulation." The plumes' look was settled in a third round, when the smoke didn't
 sit right with him: "its mostly emitting gas at this point so its just massive sand plumes that are epic
 from a distance but really just blend into the storm and or the haze when up close cuz theyres so big"
-([Wind & storms](prd/wind-and-storms.md#plumes)).*
+([Wind & storms](../prd/wind-and-storms.md#plumes)).*
 
 The ground the landmarks stand on, made once a run (`Geology`, on `History`) after the landmarks and
 before the colonial layer, which reads it. It holds only what something reads.
@@ -270,7 +270,7 @@ before the colonial layer, which reads it. It holds only what something reads.
   tried, a third of them slid); nothing round it is steeper than its 24° throat. It's the same in every exposure state (a live vent keeps itself clear),
   laid by the sheet like any site (a cell part of its own), and never gives way to a structure: the
   ground's own comes first. Its ash fan on the sand is the sand's look
-  ([Wind & storms](prd/wind-and-storms.md#plumes)).
+  ([Wind & storms](../prd/wind-and-storms.md#plumes)).
 - **Determinism.** Geology draws only from its own streams (the seed, "geology", what it's for), and
   runs after the landmarks, which never read it. The colonial layer's vent stations now stand on its
   tapped vents and their pipelines run to them, in the same order and number as before, so nothing else
@@ -304,10 +304,10 @@ before the colonial layer, which reads it. It holds only what something reads.
 6. **The smallest rendering?** The storm walls' own: a dust volume marched round a line of points
    computed on the main thread, up to three plumes in one compute pass at half the screen's size and
    brought up by depth, with the walls' billows, light and haze, and near you the haze and grit you stand in rather than anything drawn; the
-   sand's look for the old ash; no particle simulation ([Wind & storms](prd/wind-and-storms.md#plumes)).
+   sand's look for the old ash; no particle simulation ([Wind & storms](../prd/wind-and-storms.md#plumes)).
 7. **Visual only, or more?** Visual and atmospheric, with history's vent stations moved onto the
    vents, the magnetized crust for the compass, and booms and a roar ([Radio, sound &
-   atmosphere](prd/radio-sound-and-atmosphere.md#distant-phenomena-agreed-2026-10-18-spec)). No hazard
+   atmosphere](../prd/radio-sound-and-atmosphere.md#distant-phenomena-agreed-2026-10-18-spec)). No hazard
    and no visibility cut.
 8. **Which physical assumptions now?** Settled now: the plume's rise and bend follow Briggs's
    buoyant-plume laws in the field's wind and an air stability that's steadier by night; gravity enters
@@ -509,7 +509,7 @@ sockets (`Ruin.SPOTS`) and mesh.
 
 The burial table orders the skimmer era above the First Kingdoms, as part 4 does for structures; the
 loot strata of the vision ("history runs backwards in the ground") still hold for what lies loose, since
-a standing wreck sits higher than a low foundation ([Salvage & ruins](prd/salvage-and-ruins.md#readings-not-in-the-session)).
+a standing wreck sits higher than a low foundation ([Salvage & ruins](../prd/salvage-and-ruins.md#readings-not-in-the-session)).
 
 ## Exposure
 
@@ -520,7 +520,7 @@ watched it: a save, sleep, a far stand-in and the loaded site all agree.
 - **The settled sand** is the weather's work at the site over a long window: the same reading as finds
   (how deep into a storm, how far past the prevailing wind's strongest), summed over the last 12 hours of
   world time in 30-minute ticks **(default)**, so one big storm strips a lot and calm lets the sand return.
-- **The storm's own work** (the 2026-10-18 spec, [Wind & storms](prd/wind-and-storms.md#storms-with-a-payoff-agreed-2026-10-18-spec)):
+- **The storm's own work** (the 2026-10-18 spec, [Wind & storms](../prd/wind-and-storms.md#storms-with-a-payoff-agreed-2026-10-18-spec)):
   while a storm works on a site its big dunes move, a minute at a time, laying it bare where they're
   moving off it and burying it again where they're moving on, and what they moved comes back within
   minutes once the storm lets go. A ruin seen mid-storm may be gone by morning.
@@ -554,7 +554,7 @@ loose in open sand."
   across chunks: it is a stream computed from the storm and the camp's place, made into bodies only
   where something catches it (a net or tether mod), so it stays stateless. Its rate is the wind through
   the catcher, and terrain matters: "a camp in a sheltered valley below a dune crest where high winds ramp
-  over" catches most, which is the lee ([Wind & storms](prd/wind-and-storms.md#the-lee-of-a-dune)): the
+  over" catches most, which is the lee ([Wind & storms](../prd/wind-and-storms.md#the-lee-of-a-dune)): the
   wind slows there and what it carries falls out. Steady and low value.
 - **Expedition.** After a big storm, sites are exposed for a while, and the good loot is in them. The
   radio's beacon, a surveyor's detection and the surface signs say where.
@@ -584,10 +584,10 @@ lineage: original era plus remake history."
 - **Drawn, not saved, for finds.** A find's lineage comes from its loot seed and its site's era by the Dark
   Age's rule (`Eras.lineage`). Only a thing that's yours keeps it, with the thing.
 - **Layered marks are driven by it**, readable without text ([art
-  direction](art-direction.md#layered-marks-agreed-session-4-part-5-named-not-drawn)): the stencil, the
+  direction](../art-direction.md#layered-marks-agreed-session-4-part-5-named-not-drawn)): the stencil, the
   heraldry cut over it, the repair on top.
 - **Era stats are data.** Efficiency against repairability per era, on the frame
-  ([Devices & mods](prd/devices-and-mods.md#frames-by-era-agreed-session-4-part-5-not-built)), with the
+  ([Devices & mods](../prd/devices-and-mods.md#frames-by-era-agreed-session-4-part-5-not-built)), with the
   repair material per era: finite colonial parts, metal, and cord, ceramic and saltbush wood. The skimmer
   era is "the light cheap gear from before" (Hunter, 2026-10-17). Lineage drives the look; the frame's
   era drives the stats.
@@ -646,7 +646,7 @@ nearest bare flats, where the horizon is far; its search sets it out behind a re
 the mast stands on a spot of that ground it shows from, along a way the mast's glints shine back at you
 some time on the run's first day (looked for first in its first nine minutes): drawn true to its size,
 a mast that far off is a sharp eye's find, and its glint is what catches the eye. What's in sight is
-drawn by the skyline ([Salvage & ruins](prd/salvage-and-ruins.md#whats-built-2026-10-18-the-sightlines-branch)).
+drawn by the skyline ([Salvage & ruins](../prd/salvage-and-ruins.md#whats-built-2026-10-18-the-sightlines-branch)).
 
 ### What the feral layer does now
 
@@ -766,7 +766,7 @@ the terrain's, after these: it reads the landmark footprints. The endings' work 
 parts.
 
 Shared files each package may touch, and nothing else outside its own: `Tuning` (its own group),
-`docs/world-system.md` (its own section) and its PRD.
+`docs/world/world-system.md` (its own section) and its PRD.
 
 ## What the spine does now
 
@@ -911,7 +911,7 @@ Shared files each package may touch, and nothing else outside its own: `Tuning` 
   roads into Port Morgan, within 16 km of it: a row may say how `near` a landmark it lies) and the
   Knights' hopper (a row along the artery, and by crusader bunkers). New kinds are appended to their
   settlements' members and to the rows, so every older site keeps its stream. Their plates, packed
-  holds, held modules and hazards are [Salvage & ruins'](prd/salvage-and-ruins.md#wrecks-and-scrapping-hunter-2026-10-18-built).
+  holds, held modules and hazards are [Salvage & ruins'](../prd/salvage-and-ruins.md#wrecks-and-scrapping-hunter-2026-10-18-built).
 - **Planned only, still:** survey beacons, pump stations, farm domes, vent stations, checkpoints,
   generator shrines, caravanserais, stepwells, ration gates, granaries, earthworks, bunkers and the signs:
   history's plan, for the map and the packages to come.
@@ -1075,7 +1075,7 @@ paint's age.
     wind and particle instruments. A wreck still holds nine things in ten it carried, a dugout eight;
     found light and fragile, half to nine tenths sound. A wreck hull's best is its own (2026-10-18):
     the land yacht's helm seat and keel, 3 in 13 each, with shields, boards, radar, a harvester and a
-    big battery ([Movement](prd/movement.md#sailing-from-kite-to-yacht-agreed-2026-10-18-spec-built)).
+    big battery ([Movement](../prd/movement.md#sailing-from-kite-to-yacht-agreed-2026-10-18-spec-built)).
   - **First Kingdoms,** working colonial machines kept running: condensers, turbines, frames, planters
     and chassis pieces, three sockets in four filled, instruments on the shelves, water kept sealed; a cistern's
     floor water and hose, its bed and a field plot's seed and saltbush. Near sound.
@@ -1174,7 +1174,7 @@ paint's age.
 
 ## What storms do to sites now
 
-*Built 2026-10-18, on the `exposure` branch: the first two bullets of [Storms with a payoff](prd/wind-and-storms.md#storms-with-a-payoff-agreed-2026-10-18-spec).*
+*Built 2026-10-18, on the `exposure` branch: the first two bullets of [Storms with a payoff](../prd/wind-and-storms.md#storms-with-a-payoff-agreed-2026-10-18-spec).*
 
 - **A storm works the site it sits on** (`Exposure.surge`). Besides the settled sand, a storm's heart moves
   sand a minute at a time where its big dunes move (`WeatherField.dune_shift_at`: patches 400 m across,
@@ -1323,7 +1323,7 @@ paint's age.
   as any finds are; what's cut and cleared is its memory, apart from the weather's function, so a
   storm never undoes it. A cut plate rides the wreck it lies on, and one on the sand is buried with
   the wreck as it sinks deeper than when it fell, never lifted off its sand as it rises (wrecks probe 7;
-  [Salvage & ruins](prd/salvage-and-ruins.md#wrecks-and-scrapping-hunter-2026-10-18-built)).
+  [Salvage & ruins](../prd/salvage-and-ruins.md#wrecks-and-scrapping-hunter-2026-10-18-built)).
 - **Probes:** kits 3 (a loaded site follows the storm, smoothly, and never buries you), kits 4 (exposure is
   pure, and a storm works a site), loot 7 (what a storm bares blows downwind), sightlines 4 (a glint
   through the dust only near), saves 23 (a save never buries you); and for dune archaeology kits 6 (the dune

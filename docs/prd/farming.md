@@ -2,13 +2,13 @@
 
 *Draft, 2026-10-13. Answers to [the vision](../vision.md).*
 
-*Updated 2026-10-17: [session 4, part 4](../plants-worldgen-ruins-2026-10-17.md) replaces the
+*Updated 2026-10-17: [session 4, part 4](../briefs/plants-worldgen-ruins-2026-10-17.md) replaces the
 placeholder carrots and fungus with a roster of eleven crops in two families, with propagation,
 growth stages, wild habitats and planter sizes as socket kinds ([The plant
 system](#the-plant-system-agreed-session-4-part-4-partly-built)). Its first three steps are built
 (2026-10-17): crops as data, root-tuber, vat fungus and saltbush, and the planter kinds; the rest is
 direction, and the "as built" notes below say what stands. [Session 4, part
-5](../gods-gear-farside-2026-10-17.md) adds the Almanac, the god of growth, and a kiln for processing
+5](../briefs/gods-gear-farside-2026-10-17.md) adds the Almanac, the god of growth, and a kiln for processing
 ([The Almanac and crossbreeding](#the-almanac-and-crossbreeding-idea-session-4-part-5-not-built)).*
 
 *Updated 2026-10-18: part 4's step 9 is built. The feral layer grows wild saltbush, root-tuber and vat
@@ -35,7 +35,7 @@ replaces ([below](#the-plant-system-agreed-session-4-part-4-partly-built)), and 
 is not in the roster: its water goes to the roster's water crops (open questions).
 
 **Why fungus loves storms, physically.** Storms are dark, and their dust blankets the
-day-night temperature swing (see [the moon](../the-moon.md)). Inside a long storm,
+day-night temperature swing (see [the moon](../world/the-moon.md)). Inside a long storm,
 ordinary crops starve for light while fungus gets the darkness and the steady
 temperature it wants. Away from the equator the swings get too wide for it.
 
@@ -85,7 +85,7 @@ why the temperature shield sets how big the farm can be (Bubble shield & camp).
 
 ## The plant system (Agreed, session 4, part 4; partly built)
 
-*Session 4, part 4 ([the plants session](../plants-worldgen-ruins-2026-10-17.md)). Its labels are kept
+*Session 4, part 4 ([the plants session](../briefs/plants-worldgen-ruins-2026-10-17.md)). Its labels are kept
 as given: **Agreed** is settled direction, **Idea** is proposed and not confirmed, **Back burner** is
 liked and not to be built yet, and anything under its open questions is undecided, so it is not
 hard-coded. Its design principle is this PRD's rule 3 grown up: "one shared system per area, with a
@@ -95,11 +95,11 @@ session calls the built carrots and fungus "placeholders".*
 
 The session replaces them with a roster of Earth-lineage crops that colonial biotech engineered for
 Zan and that then went feral over the long span since (the session gives a rough length; by the
-standing rule it is held in [the lore's placeholders](../lore-research.md#placeholders) and not
+standing rule it is held in [the lore's placeholders](../world/lore-research.md#placeholders) and not
 repeated here).
 Every crop has three layers: **Earth ancestor, engineered traits, feral drift.** The stories behind
 them (who made them, the Sisters' roads, the black site's specimen case, the Sister vault) are in
-[the crops' lore](../lore-research.md#the-crops-lore-agreed-session-4-part-4).
+[the crops' lore](../world/lore-research.md#the-crops-lore-agreed-session-4-part-4).
 
 ### Two families (Agreed)
 
@@ -371,7 +371,7 @@ Readings, not in the session:
 
 ### The Almanac and crossbreeding (Idea, session 4, part 5; not built)
 
-*[Session 4, part 5](../gods-gear-farside-2026-10-17.md), section 10, and its open question "Whether the
+*[Session 4, part 5](../briefs/gods-gear-farside-2026-10-17.md), section 10, and its open question "Whether the
 Almanac is how crossbreeding works." The Almanac and what it enforces are **Agreed**; that it is how the
 player crosses strains is an **Idea** ("probably crossbreeding"). Nothing is built.*
 
@@ -400,18 +400,18 @@ Readings, not in the session:
 - **Habitat reveals pair with the wild habitat table** (above): it would show where a wild crop is
   found. How it shows is the screen's business ([Devices & mods](devices-and-mods.md#the-terminal-output-system-proposed-session-4-part-5-first-piece-built)).
 - **Session 5 (Idea):** the pantheon reminder calls the Almanac "a living, portable, transactional frontier
-  agriculture mind, probably part of the Mother Cistern ending" ([the lore](../lore-research.md#mitchell-among-the-gods-agreed-session-5)).
+  agriculture mind, probably part of the Mother Cistern ending" ([the lore](../world/lore-research.md#mitchell-among-the-gods-agreed-session-5)).
   Not said how it figures in that ending.
 - **It may be the squatting oracle.** The oracle runs "on an agriculture company's platform" and
   broadcasts planting timing and "which feral strains tolerate ash soil"; the Almanac is an agriculture
-  company's farm mind. The session does not say they are one ([the lore](../lore-research.md#the-pantheon-agreed-session-4-part-5)).
+  company's farm mind. The session does not say they are one ([the lore](../world/lore-research.md#the-pantheon-agreed-session-4-part-5)).
 
 ## Feral plants and a crop's history (Agreed, session 4, part 3; not built)
 
-*Session 4, part 3 ([lore session](../lore-session-2026-10-17-part-3.md)); loose, and none of it is
+*Session 4, part 3 (lore session); loose, and none of it is
 built.* Zan has no native life, only feral colonial imports ("rogue plants"). They are not the
 planter's crops: they grow wild, in the world, and the farm's two crops are unchanged. They do four
-jobs at once ([the lore](../lore-research.md#life-on-zan-feral-plants-agreed-session-4-part-3)):
+jobs at once ([the lore](../world/lore-research.md#life-on-zan-feral-plants-agreed-session-4-part-3)):
 - **Weather sign.** Feral scrub closes up or turns its leaves before a storm, a free, slotless,
   low-tech barometer ([Wind & storms](wind-and-storms.md#feral-plants-the-free-barometer-agreed-session-4-part-3-not-built)).
 - **Trail.** The priestesses of Mother Cistern seeded hardy strains along pilgrim roads and
@@ -451,7 +451,7 @@ the session does not say how). Still open: how far ahead a plant's pose reads.
 ### As built: the feral layer (2026-10-18)
 
 *Part 4's step 9, the feral package of the world system ([the world
-system](../world-system.md#what-the-feral-layer-does-now) has the habitats and the numbers).*
+system](../world/world-system.md#what-the-feral-layer-does-now) has the habitats and the numbers).*
 - **Wild plants are the roster's crops, growing where history left them,** never at random: saltbush
   in silver lines along the pilgrim roads and the other roads of the second age, and in clumps at the
   Dark Age's plantings on the First Kingdoms' water lines; root-tuber in patches by the colonial
@@ -751,7 +751,7 @@ Session 4, part 3 (2026-10-17) adds three. Each is quoted on both sides and left
   drift for each of eleven crops.* "Every crop system should carry its history." The farm has
   carrots and fungus, with yucca and fuel crops to come. Not said how it shows without exposition.
 
-Session 4, part 4 (2026-10-17, [the plants session](../plants-worldgen-ruins-2026-10-17.md)) adds
+Session 4, part 4 (2026-10-17, [the plants session](../briefs/plants-worldgen-ruins-2026-10-17.md)) adds
 the following. Each is quoted old and new. The newest session wins in the living docs, so this PRD
 follows the session wherever it can, and says so on each line. The built skeleton is not changed.
 
@@ -828,7 +828,7 @@ The session's own open questions that belong here, not decided and not to be har
 - Does any water crop beat the condenser in some niche?
 - Quietbloom as an ending modifier: confirm or drop.
 
-Session 4, part 5 (2026-10-17, [the gods session](../gods-gear-farside-2026-10-17.md)) adds the
+Session 4, part 5 (2026-10-17, [the gods session](../briefs/gods-gear-farside-2026-10-17.md)) adds the
 following. Each is quoted old and new. The newest session wins in the living docs, so this PRD follows
 it as direction and says so on each line.
 

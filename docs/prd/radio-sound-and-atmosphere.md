@@ -14,7 +14,7 @@ PRD sets the systems and stays loose on the art.
 local models that drifted. The far end of the lane, if it is ever heard at all, is one very
 rare, coherent, unanswering frequency, unlike the drifting oracles, and its purpose is never
 stated or confirmed in-game (a standing rule from the lore session). See [the lore
-research](../lore-research.md).
+research](../world/lore-research.md).
 
 ## The radio
 
@@ -38,7 +38,7 @@ range still to tune. Better radios and antenna mods hear more clearly. Tune it, 
   broadcast strange, fragmentary material. Taken as scripture it's noise. Decoded, it's
   real information, like planting timing or storm precursors, so **decoding the signal is
   a skill.** Rule 1 still holds: what decodes is true to the real systems. See
-  [the lore session](../lore-session-2026-10-14.md).
+  the lore session.
 - **Maybe a voice.** One of the hints that someone might still be out there (Salvage &
   ruins). It's never confirmed.
 
@@ -556,7 +556,7 @@ scrapped by gonkhub, 2026-10-19: every god still sounds the same tones, pitched 
 
 ### Stations: the Walker and the living city (agreed, 2026-10-18 spec)
 
-From Hunter's [storms, signals & sailing spec](../storms-signals-sailing-2026-10-18.md). A station is a node with a place, a
+From Hunter's [storms, signals & sailing spec](../briefs/storms-signals-sailing-2026-10-18.md). A station is a node with a place, a
 frequency, a range and what it says; its signal falls off with distance.
 - **The Walker's survey feed:** moon-wide, the strongest after the Ledger's; a dry log of bearings,
   wind readings and terrain, the planet's weather hard to read but very useful. Found by scanning.
@@ -578,7 +578,7 @@ frequency, a range and what it says; its signal falls off with distance.
 The Walker and the Stoker remain friends from Halloran's survey work. Reports of reachable-in-principle
 heat torment the Stoker because it cannot build the pipelines needed to meet its accumulated quotas.
 The Walker does not intend that harm. The far-side heat connects this history to the Eye and the
-existing destruction ending; [the lore](../lore-research.md#the-walker-and-the-stoker-surveys-of-unreachable-heat-agreed-2026-10-20)
+existing destruction ending; [the lore](../world/lore-research.md#the-walker-and-the-stoker-surveys-of-unreachable-heat-agreed-2026-10-20)
 separates the accepted relationship from the proposed dispatch progression.
 
 The proposed quest starts with observations and develops into the Eye adopting the Stoker's
@@ -591,7 +591,7 @@ connect to that route is still open. Do not fold this into the built anomaly-tea
 ### The Walker's quest and the living city (agreed 2026-10-19; built 2026-10-19)
 
 Hunter approved this design on 2026-10-19 ("perfect"). It is the second pass on the stations
-above, and the Walker's quest line from the [storms spec](../storms-signals-sailing-2026-10-18.md).
+above, and the Walker's quest line from the [storms spec](../briefs/storms-signals-sailing-2026-10-18.md).
 It follows the rulings that the Walker walks alone, that finding it must never happen early, and
 that teaching it takes evidence for each tell.
 - **Finding the Walker.** It is a legged survey robot, partly broken, on its fixed route round the
@@ -751,7 +751,7 @@ that teaching it takes evidence for each tell.
 
 ### The nomads' tones follow a thief (Agreed, session 5; not built)
 
-*[Session 5](../lore-session-2026-10-18-mitchell-wow-shoemaker.md), "Nomad reputation." The whole
+*Session 5, "Nomad reputation." The whole
 relationship with the nomads runs through gifts, shrines and radio tones, so they stay secret
 ([the vision](../vision.md#nomad-reputation-agreed-session-5-not-built)).* Steal from them and **their
 short-range radio tones follow you around, getting ruder.**
@@ -767,11 +767,11 @@ Readings, not in the session:
 
 ### The ghost relay
 
-*Agreed, session 4, part 2 ([lore session](../lore-session-2026-10-17-part-2.md)); loose, and not
+*Agreed, session 4, part 2 (lore session); loose, and not
 built.* A nomad radio relay still broadcasts storm and water reports in Zan-Han-Mon slang on
 automatic, a ghost station long after its builders died. The waymarks, caches and camp scars the
 player finds belong to the same dead tribes ([the
-lore](../lore-research.md#the-decline-nomads-and-the-moving-city-agreed-session-4-part-2)).
+lore](../world/lore-research.md#the-decline-nomads-and-the-moving-city-agreed-session-4-part-2)).
 
 Readings, not in the session:
 - It fits the radio as built: another automated station beside the weather broadcast. Rule 1
@@ -787,9 +787,9 @@ last town" ([the vision](../vision.md#landmarks-and-endings)). It isn't designed
 
 ### Second-age broadcasts (Agreed and Idea, endings session; not built)
 
-*The endings session ([endings and radio](../endings-and-radio-2026-10-17.md)); loose, and none of
+*The endings session ([endings and radio](../briefs/endings-and-radio-2026-10-17.md)); loose, and none of
 it is built. Each item keeps the session's own label ([the
-lore](../lore-research.md#second-age-radio-and-its-priests-agreed-and-idea-endings-session)).*
+lore](../world/lore-research.md#second-age-radio-and-its-priests-agreed-and-idea-endings-session)).*
 - **Agreed.** Getting transmissions working is genuinely hard. With no manuals, second-age people
   cobbled together an arcane, mythological understanding of the transmitters: how to run,
   interpret and debug them. **Debugging is ritual, kept word for word.**
@@ -823,10 +823,10 @@ Readings, not in the session:
 
 ### Offstage states on the air (Agreed, session 4, part 3; not built)
 
-*Session 4, part 3 ([lore session](../lore-session-2026-10-17-part-3.md)); loose, and none of it is
+*Session 4, part 3 (lore session); loose, and none of it is
 built.* The session's hard rule is no NPCs, no dialogue and no exposition, and "galaxy lore stays
 offstage until the endings." The war, Varran and Daventry appear in normal play only as faint
-radio ([the lore](../lore-research.md#the-wars-end-the-wall-and-the-states-of-the-players-time-agreed-session-4-part-3)).
+radio ([the lore](../world/lore-research.md#the-wars-end-the-wall-and-the-states-of-the-players-time-agreed-session-4-part-3)).
 - **Varran** is heard only from the orbital station: above the storms the antenna hears Varran
   broadcasts, the pathfinder's second step. The Varran settler's own radio is "tuned to home
   frequencies it can't hear from the surface."
@@ -884,7 +884,7 @@ Everything that matters can be heard, so you can read the world by ear:
 ### Distant phenomena (agreed, 2026-10-18 spec)
 
 Gas-pocket dust plumes and far volcano plumes stay distant spectacles, never close enough to hurt
-([spec](../storms-signals-sailing-2026-10-18.md)): a gentle rumble by distance and no camera shake, arriving after you see it as
+([spec](../briefs/storms-signals-sailing-2026-10-18.md)): a gentle rumble by distance and no camera shake, arriving after you see it as
 thunder does after lightning (the delay sells the scale), losing its high end with distance, and
 a big plume marking a vent's direction to steer by.
 
@@ -930,7 +930,7 @@ plumes are [Wind & storms](wind-and-storms.md#plumes)'):
   warm inside it, and the radio crackles.
 - **The day:** a 20-minute cycle of scorching noon, long shadows, a freezing night under
   the stars, and frost glittering at dawn (see the water rhythm in Survival). On the near
-  side Tu hangs over it all, and once a day it eclipses the sun ([the moon](../the-moon.md#day-length)).
+  side Tu hangs over it all, and once a day it eclipses the sun ([the moon](../world/the-moon.md#day-length)).
   The day and night music follow the sun where you are, so they change at your local
   sunrise and sunset, and the eclipse's dark is still the day.
 
@@ -995,7 +995,7 @@ standing.
   voice or are just tones and numbers." Here: "Maybe a voice" is never confirmed, voice acting is out of scope, and the
   skeleton sounds a station's tones with one line of words. The ghost relay is automatic too. The
   lore: the AI gods "speak only through terminals," and it asks whether they ever broadcast
-  ([section 16](../lore-research.md#16-open-after-session-4-part-2), item 8). Not said which a
+  ([section 16](../world/lore-research.md#16-open-after-session-4-part-2), item 8). Not said which a
   second-age broadcast is. The skeleton's tones and a line already read as "tones and numbers."
   A voice would be the maybe-voice, which the game never confirms.
 - **When the broadcasts air.** The session: "second-era religious broadcasts still air at
@@ -1025,7 +1025,7 @@ left standing.
   route, rare storm radio windows that catch "fragments of gods arguing" (back burner), and the player
   carrying a dispatch. Part 5 also amends "speak only through terminals": machines may talk through
   terminals, and whether a god is ever heard as a voice is still this PRD's open question
-  ([the lore](../lore-research.md#dispatches-how-gods-talk-agreed-session-4-part-5)).*
+  ([the lore](../world/lore-research.md#dispatches-how-gods-talk-agreed-session-4-part-5)).*
   *Session 5, ruled by Hunter (2026-10-18): the gods do have links. Mother Cistern can switch Mitchell off,
   so "no link" is read as "most links lost."*
 - **Ritual text against rule 1.** Here: "Broadcasts read the real systems" and "never makes things
@@ -1106,6 +1106,45 @@ restarts the same occurrence. The clock-lag regression fails on the old code
 and passes with the fix (5 s), including a distinct replay of the same asset.
 The unchanged weather/Stoker continuity check and Eye song check pass (6 s each).
 
+### Interference fragments keep the same decoder (2026-10-20)
+
+The designed stutter intentionally repeats a short fragment, then catches up to
+where that fragment would have ended. Godot's high-level player seek stops and
+replays its stream, so this can change playback identity even when the scheduled
+song itself has not restarted. Keep those fragment and catch-up positions, but
+seek the existing stream playback under the audio-server lock so the Vorbis
+decoder cannot be changed while the mixer reads it. A pending voice without an
+active playback has nothing to seek yet.
+
+A forced-stutter regression passes the intended public cursor positions on the
+old code while failing identity preservation at both repeat and catch-up. Keep
+that position coverage alongside identity, and keep the separate scheduled-clock
+regression and original weather-transition continuity check unchanged.
+
+As built: both stutter seeks use the existing AudioStreamPlayback under the
+audio-server lock. The forced imported-Vorbis repeat/catch-up check passes (2 s);
+the unchanged weather/Stoker continuity, scheduled-clock drift, Eye song and
+independent-radio effect checks also pass (5 s each). Public player cursors
+follow both intended seek targets without replacing the playback.
+
+### Weather gain checks isolate transient dropouts (2026-10-20)
+
+Measure weather attenuation with neutral transient interference in its fixture.
+The receiver still computes its real weather field, reception, loudness and
+station playback; only the independent random Glitch multiplier is held at one.
+Keep the existing attenuation threshold and playback-identity assertions. Test
+real dropout silence and recovery separately with a forced dropout, so a muted
+clear-sky sample cannot hide the weather gain difference. Runtime interference
+remains unchanged.
+
+As built: the weather fixture uses a neutral Glitch subclass; production code is
+unchanged. Forcing a drop on the clear sample reproduces the release failure:
+reception level is 1.0, but clear and storm samples both read -65 dB, failing
+only the gain comparison. With isolated interference, the original weather
+threshold and playback checks pass (5 s). Separate forced-drop coverage confirms
+zero gain, normal recovery and preserved playback (3 s); scheduled-clock and
+forced-stutter regressions also pass (4 s and 3 s).
+
 ## Survey receiver (agreed and built 2026-10-20)
 
 An early, cheaper receiver hears only existing ruin loot beacons. It shares the radio's
@@ -1179,3 +1218,58 @@ Three real speech plans were exported and checked with speech recognition: wind
 remain intelligible. This is a recognition check, not a substitute for listening
 in play. The added PCM bank is 24.4 MB; its import stays uncompressed so its
 sample ranges are exact. Full recordings are reused whenever available.
+
+### Tuning controls and station voices (agreed 2026-10-20; built on the follow-up branch)
+
+The tuning close view shows a short, readable reminder of tuning, fine tuning,
+volume, mark/unmark and next-mark controls. Resolve current action bindings through
+Controls and use the shared UI type. The reminder belongs only to the radio close
+view: hide it when looking away, leaving tuning or opening a menu. It must not
+cover the dial or become permanent carried-radio HUD text.
+
+Keep the approved LJ Speech weather/Walker voice, Console announcements and music.
+Give the other speaking stations distinct machine voices, using pitch, cadence and
+speech-only EQ on private per-radio buses. These are different treatments of the
+same bundled recording source, not additional actors. Mother Cistern is warmer and
+slower; the Quartermaster clipped and commanding; the Ledger lower and measured;
+the Almanac brisk; the Stoker urgent and metallic. Keep the Eye's speech silence
+and the living city's coded tones. Profiles are tuning data; exact numbers and
+all dynamic content remain unchanged. Local Console speech bypasses these profiles.
+
+This pass does not change transmission scheduling. Music joins its world-time
+position; current speech begins a fresh report when tuning in, then follows its
+existing cadence. A globally continuous shared speech schedule is a separate
+proposal, not an as-built claim.
+
+**As built.** The close view uses a four-line, 20 px KeysList reminder with
+current action bindings; sets without frequency marks omit that line. It fades
+with the close camera, disappears while menus hold input, and leaves room for
+the auto-walk mark below. The existing dial capture keeps this layer visible;
+its optional `--720p` mode includes survival bars at 1280×720.
+
+Station profiles live in tuning data. Each radio owns a speech-only pitch/EQ
+bus feeding its existing private interference chain. Playback rate also changes
+queue clip durations and resume offsets, preserving complete words at slower
+cadences. A removed receiver releases its own speech bus. The existing God
+Heard deed records listening; cosmetic voice differences add no new action.
+
+Focused checks pass on Godot 4.7.2: close-view/live-binding controls (24 s),
+station cadence and bus ownership (5 s), native weather reader (7 s), transmitted
+words (6 s), independent radio effects/lifetime (6 s), and local Console speech
+(26 s). These are targeted checks, not a full platform verification claim.
+
+Actual GPU captures were inspected at 1920×1080 and 1280×720; the latter includes
+survival bars and retains all four reminder lines below the dial without overlap.
+The headless mixer rendered the same wind 40, temperature minus 3 and bearing 173
+through all seven voice profiles. Recognition retained those readings in each
+sample (some transcriptions punctuate the bearing's number words separately).
+Measured rendered loudness spans -24.1 to -21.4 LUFS and true peaks -8.8 to -4.7
+dBFS, without clipping. This checks intelligibility and levels, not final character
+acceptance in play. `look/radio_voices/record.tscn` reproduces the comparison through
+the actual speech buses without changing player data or opening a game window.
+
+After combining the clear scenarios, the dial capture puts down the supplied
+flare before staging its held radio and refuses a held-view capture unless that
+radio is actually in hand. The unified clear setup check passes (6 s), and the
+held 1280×720 frame was inspected again with survival bars visible. The shared
+one-theme check also passes (6 s).

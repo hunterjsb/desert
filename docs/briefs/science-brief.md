@@ -2,7 +2,7 @@
 
 *Source material Hunter shared on 2026-10-14, written outside this repo. It's kept
 verbatim apart from removed citation markup; the references are listed at the end. Not
-canon. How it fits with the shield arc is in [the lore research](lore-research.md).*
+canon. How it fits with the shield arc is in [the lore research](../world/lore-research.md).*
 
 **Project:** Barren Moon Survival Game
 **Document type:** Scientific worldbuilding, environmental lore, and simulation requirements

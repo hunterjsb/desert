@@ -948,6 +948,31 @@ func signal_bus() -> StringName:
 	return bus
 
 
+## A station's voice has its own character before this set's reception dirt.
+## Neither the music nor another set inherits its speech treatment.
+func _speech_bus(profile: Dictionary) -> StringName:
+	if profile.is_empty():
+		return signal_bus()
+	var bus := StringName("RadioSpeech_%d" % get_instance_id())
+	var index := AudioServer.get_bus_index(bus)
+	if index == -1:
+		var destination := signal_bus()
+		AudioServer.add_bus()
+		index = AudioServer.bus_count - 1
+		AudioServer.set_bus_name(index, bus)
+		AudioServer.set_bus_send(index, destination)
+		AudioServer.add_bus_effect(index, AudioEffectPitchShift.new())
+		AudioServer.add_bus_effect(index, AudioEffectEQ6.new())
+		_effect_buses.append(bus)
+	var pitch := AudioServer.get_bus_effect(index, 0) as AudioEffectPitchShift
+	pitch.pitch_scale = profile.get("pitch", 1.0) / reader.pitch_scale
+	var eq := AudioServer.get_bus_effect(index, 1) as AudioEffectEQ6
+	var bands: PackedFloat32Array = profile.get("eq", PackedFloat32Array())
+	for band in eq.get_band_count():
+		eq.set_band_gain_db(band, bands[band] if band < bands.size() else 0.0)
+	return bus
+
+
 ## The relay's signal as it reaches a place at world time t (receive_from).
 func receive_relay(x: float, z: float, t: float) -> Dictionary:
 	var heard := receive_from(relay_of(world), Dial.MUSIC_KHZ, &"relay", x, z, t)
@@ -1144,13 +1169,15 @@ func announce(phrases: PackedStringArray) -> void:
 
 
 func _queue(heard: PackedStringArray, whole: PackedStringArray, lead: float) -> void:
-	reader.bus = Sounds.radio_bus() if _local else signal_bus()
+	var profile: Dictionary = {} if _local else _tuning.radio_voice_profiles.get(tuned_to(), {})
+	reader.pitch_scale = profile.get("rate", 1.0)
+	reader.bus = Sounds.radio_bus() if _local else _speech_bus(profile)
 	var at := lead + STOP_GAP
 	for i in whole.size():
 		for entry: Array in RadioSpeech.plan(whole[i], Radio.clip):
 			var own: AudioStream = entry[0]
 			_lines.append([own if heard[i] != "..." else null, at])
-			_done_at = at + own.get_length()
+			_done_at = at + own.get_length() / reader.pitch_scale
 			at = _done_at + (STOP_GAP if entry[1] else _tuning.radio_word_gap_seconds)
 		if whole[i].ends_with(","):
 			at = _done_at + COMMA_GAP
@@ -1181,7 +1208,7 @@ func _read(delta: float, now: int) -> void:
 	if _line > 0 and not reader.playing:
 		var current: Array = _lines[_line - 1]
 		var own: AudioStream = current[0]
-		var into: float = _reading_for - current[1]
+		var into: float = (_reading_for - current[1]) * reader.pitch_scale
 		if own != null and into >= 0.0 and into < own.get_length():
 			reader.stream = own
 			reader.play(into)

@@ -6,9 +6,12 @@
 - Storm-stripped ruins refill more slowly in calmer air, leaving a short window to
   investigate after the dust clears. Strong storms can still bury them again.
 
-## 0.2.2-alpha “Sailboat”
+## 0.2.3-alpha “Sailboat”
 
 Physical sailing controls, clearer radio reception, and a first encounter at Halloran.
+
+The 0.2.2 tag remained an unpublished candidate after its verification gate failed.
+This patch keeps that scope and includes the measured-height vault follow-up.
 
 - Select waist lines by hovering and clicking in the carry view. A single line reels
   without selection; release all uses timed progress and preserves momentum.
@@ -16,14 +19,14 @@ Physical sailing controls, clearer radio reception, and a first encounter at Hal
   Fit hooks to clear surfaces, route ropes through them, and yank a worked line for
   a quick tug. Four short illustrated pages replace the long sailing tutorial.
 - Skates, hover parts and keels can share decks where they physically fit. Vault onto
-  reachable ledges and moving decks; exposed wreck roofs provide solid walking and
-  hoverboard surfaces.
+  reachable ledges and moving decks with a climb scaled to the ledge height; exposed
+  wreck roofs provide solid walking and hoverboard surfaces.
 - Fix distant stake placement, depleted-deck hover shutdown, freed rope selections,
   and frame-rate-dependent ridden-board battery use.
 - Radios gain station marks, independent sound effects and steadier carried audio.
   Scheduled songs keep playing through mixer/world-clock drift instead of restarting under load.
   Bundled weather, god and beacon speech works without an external voice service.
-- Thirteen satellites broadcast overhead. Signal the Surveyor with a flare to call
+- Thirteen satellites broadcast overhead. Signal the delivery drone with a flare to call
   a cargo drop; active deliveries and used flares survive saving and loading.
 - Explore Halloran's lower homes and Crossing, feed the Stoker's maintenance furnace,
   and claim a finite service cache after the burn. Fuel, burn progress and rewards persist.
@@ -32,7 +35,7 @@ Physical sailing controls, clearer radio reception, and a first encounter at Hal
 
 ### Current limits
 
-- Surveyor cargo containers are empty; supply contents are not implemented yet.
+- Drone cargo containers are empty; supply contents are not implemented yet.
 - The Halloran maintenance burn is a bounded encounter, not a portable generator,
   sustainable fuel loop or completed ending.
 - Kites, camp beacons and keeping distant camps loaded remain planned work.

@@ -20,6 +20,7 @@ var close := 0.0
 var _player: Player
 var _tuning := Tuning.current()
 var _since := INF
+var _controls: RichTextLabel
 
 
 func _ready() -> void:
@@ -27,6 +28,7 @@ func _ready() -> void:
 	top_level = true
 	# After your hands draw what you hold, so a radio in them is framed where it's drawn.
 	process_priority = 10
+	_build_controls()
 
 
 ## The tuning actions just worked this radio, finely or not. Only the fine
@@ -49,6 +51,10 @@ func _process(delta: float) -> void:
 	var keep := radio != null and _since < _tuning.dial_close_hold and Controls.playing() \
 		and _player.hands.dial() == radio
 	close = move_toward(close, 1.0 if keep else 0.0, delta / maxf(_tuning.dial_close_seconds, 0.001))
+	_controls.visible = close > 0.0 and Controls.playing()
+	_controls.modulate.a = close
+	if _controls.visible:
+		_controls.text = controls_text()
 	if close <= 0.0:
 		radio = null
 		if current:
@@ -85,3 +91,29 @@ func _between(from: Transform3D, to: Transform3D, k: float) -> Transform3D:
 	var b := to.origin - middle
 	var way := b.normalized() if a.angle_to(b) > PI - 0.01 else a.normalized().slerp(b.normalized(), k)
 	return Transform3D(from.basis.orthonormalized().slerp(to.basis, k), middle + way * lerpf(a.length(), b.length(), k))
+
+
+## The dial remains the focus; reminders live below it only while tuning.
+func _build_controls() -> void:
+	var layer := CanvasLayer.new()
+	layer.name = &"RadioTuningControls"
+	layer.layer = 98
+	add_child(layer)
+	_controls = Controls.keys_label()
+	_controls.theme_type_variation = &"KeysList"
+	_controls.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
+	_controls.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	_controls.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	_controls.offset_top = -44.0
+	_controls.offset_bottom = -44.0
+	_controls.visible = false
+	layer.add_child(_controls)
+
+
+func controls_text() -> String:
+	var lines := ["{reel_in} / {pay_out}  tune",
+		"{tune_fine_up} / {tune_fine_down}  fine tune",
+		"{volume_up} / {volume_down}  volume"]
+	if is_instance_valid(radio) and radio.has_dial_marks():
+		lines.append("{mark_frequency}  mark / unmark    {interact}  next mark")
+	return "[center]%s[/center]" % Controls.bbcode("\n".join(lines))
