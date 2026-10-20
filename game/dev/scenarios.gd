@@ -16,10 +16,9 @@ extends RefCounted
 ## [30, 180] is the far side, 30° north. lays names what's laid.
 const SURVEYOR_LEAD := 30.0
 const LIST: Array[Dictionary] = [
-	{"key": "surveyor", "label": "a clear afternoon, a flare, the Surveyor passing over in 30 s",
-		"kind": "clear", "day": [0.55, 0.65], "lays": &"surveyor"},
 	{"key": "spawn", "label": "where and when the run began", "kind": "spawn"},
-	{"key": "clear", "label": "a clear day, no storm for 10 min", "kind": "clear", "day": [0.42, 0.55]},
+	{"key": "clear", "label": "clear skies, weather radio, a flare and the drone passing overhead in 30 s",
+		"kind": "clear", "day": [0.35, 0.55], "due": [540.0, 840.0], "lays": &"clear"},
 	{"key": "wall", "label": "a storm's wall on the horizon, 3 km off", "kind": "front", "distance": 3000.0,
 		"day": [0.35, 0.5]},
 	{"key": "storm_500", "label": "a storm 500 m off, coming at you", "kind": "front", "distance": 500.0,
@@ -56,11 +55,6 @@ const LIST: Array[Dictionary] = [
 		"day": [0.35, 0.5], "among": true, "lays": &"receiver"},
 	{"key": "radio", "label": "a radio and a charged shield, a beacon in reach, a storm 300 m off", "kind": "front",
 		"distance": 300.0, "day": [0.35, 0.55], "among": true, "lays": &"radio"},
-	# The next storm far enough off that the weather station has nothing to
-	# report for a few minutes, then breaks off its song when it comes within
-	# radio_calm_minutes.
-	{"key": "clear_skies", "label": "a radio on the weather station's song, the next storm 9 to 14 min off",
-		"kind": "clear", "day": [0.35, 0.55], "due": [540.0, 840.0], "lays": &"weather_station"},
 	# A morning like a run's, the first storm minutes off, so it soon shows what the camp does in one.
 	{"key": "afk", "label": "the reference camp running on a floating 2x2 deck, its farm on hoses", "kind": "clear",
 		"day": [0.3, 0.4], "due": [180.0, 480.0], "lays": &"afk"},
@@ -410,6 +404,9 @@ static func lay(world: World, scenario: Dictionary, place: Dictionary) -> Array[
 	_clear(world, &"kit", true)
 	var dropped: Array[Node3D] = []
 	match lays:
+		&"clear":
+			dropped = weather_station(world)
+			dropped.append_array(surveyor_pass(world))
 		&"surveyor": dropped = surveyor_pass(world)
 		&"yours": dropped = yours(world)
 		&"survive": dropped = survive(world)
@@ -552,6 +549,9 @@ static func moon_at(world: World, scenario: Dictionary) -> Vector2:
 
 
 static func by_key(key: String) -> Dictionary:
+	# Existing console histories and capture scripts still reach the one setup.
+	if key in ["clear_skies", "surveyor", "drone"]:
+		key = "clear"
 	for scenario in LIST:
 		if scenario.key == key:
 			return scenario
@@ -1135,7 +1135,7 @@ static func walker_camp(world: World) -> Array[Node3D]:
 
 ## The radio of "radio" switched on and tuned to the music, the relay's
 ## carrier, beside its charged shield, switched off.
-## A flare in your hands, and the Surveyor forced over you in SURVEYOR_LEAD
+## A flare in your hands, and the drone forced over you in SURVEYOR_LEAD
 ## s: light it as it comes over and its cannon fires. Returns the flare.
 static func surveyor_pass(world: World) -> Array[Node3D]:
 	var player := world.player
@@ -1147,7 +1147,7 @@ static func surveyor_pass(world: World) -> Array[Node3D]:
 	return [flare]
 
 
-## The Surveyor's low pass forced: its orbit turned to bring it straight over
+## The drone's low pass forced: its orbit turned to bring it straight over
 ## you `lead` s from now (Satellite.pass_over).
 static func surveyor_over(world: World, lead: float) -> void:
 	var moon := world.moon

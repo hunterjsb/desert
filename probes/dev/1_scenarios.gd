@@ -126,9 +126,11 @@ func run() -> void:
 		var dropped := await Scenarios.lay(world, scenario, place)
 		check(dropped.is_empty() != scenario.has("lays"), "%s: lays what it stages, %d things" % [what, dropped.size()])
 		match scenario.get("lays", &""):
-			&"surveyor":
+			&"clear":
 				check(world.player.hands.held is Flare and world.player.hands.held in dropped,
-					"surveyor: its flare starts in your hands")
+					"clear: the drone flare starts in your hands")
+				check(dropped.any(func(n: Node) -> bool: return n is Radio and n.tuned_to() == &"walker"),
+					"clear: the weather radio shares the delivery setup")
 			&"yours": await _ruin_finds(dropped)
 			&"survive": await _survival_starts(dropped)
 			&"farm": await _farm_lands(dropped)
