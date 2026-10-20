@@ -42,8 +42,6 @@ var creak: AudioStream
 var tick_ms := 0.0
 var cost_ms := 0.0
 
-## Kept temporarily for callers of the retired automatic tow; never constructed.
-var hidden: Rope
 ## What your body bears between the lines on it, N, as long as a line's load
 ## is held: their pulls against each other, and a line's bend round you.
 var wrench_n := 0.0
@@ -231,8 +229,8 @@ func towed() -> Array[Node3D]:
 		var from := reached[i]
 		i += 1
 		for rope in ropes:
-			var a := player if on_you(rope.a.holder) else rope.a.holder
-			var b := player if on_you(rope.b.holder) else rope.b.holder
+			var a := player if on_you(rope.a.holder) else _carried_body(rope.a.holder)
+			var b := player if on_you(rope.b.holder) else _carried_body(rope.b.holder)
 			var other: Node3D = b if a == from else (a if b == from else null)
 			if other != null and not reached.has(other) and not (other is Stake and (other as Stake).driven):
 				reached.append(other)
@@ -280,11 +278,6 @@ func reach(end: RopeEnd, want: Vector3) -> Vector3:
 	return want
 
 
-## Legacy callers cannot infer a physical connection from two lines at the waist.
-func link_pair() -> Array[Rope]:
-	return []
-
-
 ## The one line on a thing at your waist, or null.
 func line_at(body: Node) -> Rope:
 	if not is_instance_valid(body):
@@ -305,7 +298,7 @@ func far_holder(body: Node) -> Node3D:
 	var line := line_at(body)
 	if line == null or not is_instance_valid(line.a) or not is_instance_valid(line.b):
 		return null
-	return _far_from_you(line).holder
+	return _carried_body(_far_from_you(line).holder)
 
 
 func _waist_end(end: RopeEnd) -> bool:
@@ -472,7 +465,8 @@ func _body(holder: Node3D, h: float) -> RopeBody:
 
 func _inverse_inertia(rigid: RigidBody3D) -> Basis:
 	if rigid.inertia == Vector3.ZERO:
-		return rigid.get_inverse_inertia_tensor()
+		# The node cache is not synchronized yet on the first restored tick.
+		return PhysicsServer3D.body_get_direct_state(rigid.get_rid()).inverse_inertia_tensor
 	var turn := rigid.global_basis.orthonormalized()
 	return turn * Basis.from_scale(Vector3.ONE / rigid.inertia) * turn.transposed()
 
@@ -684,3 +678,12 @@ func _articulate(live: Array[Rope], h: float) -> void:
 				var articulation := RopeArticulation.new()
 				articulation.configure(bodies, pivots, axes)
 				_articulations.append(articulation)
+
+
+## Boarding and tow discovery concern the rig; impulses still pull its boom.
+func _carried_body(body: Node3D) -> Node3D:
+	if body != null and body.has_meta(&"boom_mast"):
+		var mast: Mast = body.get_meta(&"boom_mast")
+		if is_instance_valid(mast) and mast.carrier() != null:
+			return mast.carrier()
+	return body

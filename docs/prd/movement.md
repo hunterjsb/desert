@@ -1304,10 +1304,10 @@ retain its relative pose and velocity. Measurements follow implementation.
 Initial physical diagnostic: the old tall ballast-frame fixture stops the spar
 at 16.2 degrees through real contact. With that obstruction removed, the boom
 passes the former 85-degree stop (92.8 degrees measured). Settled hinge pivot
-error is 0.009–0.13 mm; after an origin shift it is 0.016 mm. Starter scenario
-ballast remains low on the deck without the tall empty frame in its sweep.
-The Varran's bow lines now share the sheet's 0.5 m departure slack; the sheet
-also includes its actual guide path and enough eased line for either tack,
+error is 0.009–0.13 mm; after an origin shift it is 0.016 mm. The later higher gooseneck clears that frame, retaining its original 4 kg
+ballast and avoiding the gust-recovery pitch failure caused by removing it.
+The Varran keeps 1.5 m departure slack on both bow lines; the sheet
+includes its actual guide path and enough eased line for either tack,
 instead of catching the rider first through the old trim spring. These are
 initial diagnostics, not yet acceptance of handling or safety.
 
@@ -1317,3 +1317,64 @@ This is a visible hardware clearance, not a collision exemption or angular stop.
 Arbitrarily tall player-fitted gear can still obstruct the boom. The additional
 height changes sail leverage and centre of mass and must be measured during
 loading, tipping, furling and save/resume checks.
+
+The `sail_tow` scenario now lays a visible ordinary towline from the sailing
+deck's stern hook to the following camp's bow hook. The rider has an independent
+sheet, so the camp's load follows that explicit rope instead of a hidden bypass
+or a pair of opposed waist lines. Deliberately tying opposed loads still uses
+the normal injury and rope-strength rules.
+
+The physical boom save also retains its complete relative transform and world
+linear/angular velocities. Relative yaw and hinge spin alone omit small solver
+constraint errors and carrier motion, so are insufficient for a resumed rigid
+body. The original hinge anchors are restored before applying that saved state.
+Native spar/sand collisions replace the previous duplicate analytic boom-tip
+contact; the existing uncollided upper-mast sand support remains.
+
+The rope solver's previous-tick velocity predictor also keeps the derived boom
+body by its owning mast reference. A boom has no independent catalog identity;
+skipping its cache silently changes the first resumed rope step.
+
+The compact Varran's aft mast leaves only about 0.7 m to a supported aft
+guide. In a forward-swept boom position this approaches a dead centre: about
+0.1 m effective sheet lever was observed with 500 N sheet tension and roughly
+100 N wind drive, overloading the rider. Move the mast to the front row and
+the heavy navigation computer aft. The actual supported guide can then sit
+about 1.7 m aft of the hinge, providing real mechanical leverage. The higher
+gooseneck clears the computer. This changes physical layout, never torque by
+an invisible correction.
+
+Starter lines have a normal coil's capacity (at least their initially paid
+length), with only the initial route paid out. The old factory gave a sheet
+no unused real rope; its removed virtual inboard had concealed that limit.
+Gybes use the real coil reserve rather than a hidden trim allowance. The
+Varran course retains its release/brake, far-bow haul and payout sequence; the
+helmsman tends actual sheet at the normal reel rate.
+
+The first restored rope solve reads Jolt's direct inverse inertia tensor rather
+than the RigidBody node cache: engine state synchronization has not populated
+that cache before the first callback. The prior cached identity contributed to
+a first-tick angular error and 8.9 cm of four-second save/resume drift despite
+identical saved poses and velocities; the direct read reduces this to 6.24 cm,
+which still fails the unchanged 5 cm check and remains under investigation.
+
+The overrun fixture uses the opposite outboard passing lane, avoiding a real
+chassis collision while retaining slack, retension, riding, and full-strength
+radial overload assertions. Official overrun check passes in 13 seconds; the
+Varran reach/tack course passes in 31 seconds. These precede final combined
+verification.
+
+The old hidden-tow check's cross-run subtraction of sheet force is superseded
+by direct deck-to-deck rope topology, one independent waisted sheet, and normal
+opposed-load/injury measurements. Towing changes apparent wind and heel, so an
+independent sheet force cannot be inferred by subtracting another run. Its
+motion, directional carving, deliberate fulcrum injury and strength thresholds
+remain unchanged.
+
+The remaining first-step audit finds the fresh physics direct state still at
+identity while the restored node has its saved transform: its inertia tensor is
+therefore expressed in the wrong orientation during the first custom solve.
+Restoration must synchronize the actual physics pose before creating dependent
+hinges and before allowing custom rope/runner callbacks; merely assigning the
+scene transform is insufficient at this between-tick point. Verify this against
+the unchanged future-pose tolerance before acceptance.

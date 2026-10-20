@@ -166,11 +166,14 @@ func _launch(across: Vector2, down: Vector2) -> void:
 	var mast: Mast = rig.named.mast
 	lines.clear()
 	for id: StringName in kit.waist:
-		lines.append(Line.to_waist(world, Runs._tie_of(rig.named[id], player.global_position), kit.waist[id]))
+		var line := Line.to_waist(world, Runs._tie_of(rig.named[id], player.global_position), kit.waist[id])
+		if rig.named[id] is Mast:
+			(rig.named[id] as Mast).rig_sheet(line)
+		lines.append(line)
 	player.get_on(board)
 	mast.raised = true
 	mast.raise = 1.0
-	mast.trim = 2.0 * Mast.BOOM * sin(deg_to_rad(10.0))
+	_set_sheet(mast, 20.0)
 	await ticks(2)
 
 
@@ -178,8 +181,10 @@ func _tend(meeting: float) -> void:
 	var mast: Mast = rig.named.mast
 	if mast.sail() == null:
 		return
-	var want := clampf(mast.trimmed_to() + absf(mast.attack) - meeting, 0.0, Mast.MOST)
-	mast.trim = lerpf(mast.trim, 2.0 * Mast.BOOM * sin(want * 0.5), 0.05)
+	var want := clampf(absf(mast.boom) + absf(mast.attack) - meeting, 0.0, deg_to_rad(85.0))
+	var sheet := mast.sheet()
+	if sheet != null:
+		sheet.length = lerpf(sheet.length, mast.eased_length(rad_to_deg(want)), 0.05)
 
 
 func _clear() -> void:
@@ -223,3 +228,10 @@ func shoot(name: String, from: Vector3, to: Vector3) -> void:
 	if image != null:
 		image.save_png(out.path_join(name + ".png"))
 	print("varran: shot ", name)
+
+
+func _set_sheet(mast: Mast, degrees: float) -> void:
+	var sheet := mast.sheet()
+	if sheet != null:
+		sheet.length = mast.eased_length(degrees)
+		sheet.full = maxf(sheet.full, sheet.length)

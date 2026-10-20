@@ -27,7 +27,7 @@ static var _kept := [
 	[Console, ["page", "log_lines", "_alerts", "_front_near", "evidence", "bearings"]],
 	[Battery, ["charge_wh"]],
 	[Plant, ["growth", "fruit", "state", "wild"]],
-	[Mast, ["raised", "raise", "boom", "boom_spin", "trim", "load_n", "bend_n", "extend", "upwind_m", "outflow_m"]],
+	[Mast, ["raised", "raise", "boom", "boom_spin", "boom_pose", "boom_velocity", "boom_angular", "trim", "load_n", "bend_n", "extend", "upwind_m", "outflow_m"]],
 	[Helm, ["sailed_m"]],
 	[Chassis, ["_today", "_day_from"]],
 	[PowerBox, ["held"]],
@@ -204,6 +204,7 @@ func finish(data: Dictionary) -> void:
 		if body.get_parent() == null:
 			world.content.add_child(body)
 		body.global_transform = _transform_in(rec.at)
+		PhysicsServer3D.body_set_state(body.get_rid(), PhysicsServer3D.BODY_STATE_TRANSFORM, body.global_transform)
 		body.linear_velocity = rec.v
 		body.angular_velocity = rec.w
 		body.freeze = rec.freeze
@@ -383,9 +384,19 @@ func _take() -> Dictionary:
 	data.strands = strands.map(_strand_out)
 	data.solver = {"tick": ropes._tick, "drag": ropes._drag, "bodies": []}
 	for body: RopeBody in ropes._bodies.values():
-		if is_instance_valid(body.node) and (body.node == player or _refs.has(body.node)):
-			data.solver.bodies.append(["player" if body.node == player else _refs[body.node], body.tick, body.left,
-				body.left_spin])
+		if not is_instance_valid(body.node):
+			continue
+		var ref: Variant = null
+		if body.node == player:
+			ref = "player"
+		elif _refs.has(body.node):
+			ref = _refs[body.node]
+		elif body.node.has_meta(&"boom_mast"):
+			var mast: Mast = body.node.get_meta(&"boom_mast")
+			if _refs.has(mast):
+				ref = {"boom": _refs[mast]}
+		if ref != null:
+			data.solver.bodies.append([ref, body.tick, body.left, body.left_spin])
 	data.waist = {"tied": player.waist.tied.filter(_known).map(_ref), "untying": player.waist.untying,
 		"to_hand": player.waist._to_hand,
 		"taking": _ref(player.waist._taking) if _known(player.waist._taking) else null}
@@ -776,7 +787,12 @@ func _solver_in(rec: Dictionary) -> void:
 	ropes._tick = rec.tick
 	ropes._drag = rec.drag
 	for entry: Array in rec.bodies:
-		var node: Node3D = _world.player if entry[0] is String else _made.get(entry[0])
+		var node: Node3D
+		if entry[0] is Dictionary:
+			var mast := _made.get(entry[0].get("boom")) as Mast
+			node = mast._boom_body if is_instance_valid(mast) else null
+		else:
+			node = _world.player if entry[0] is String else _made.get(entry[0])
 		if node == null:
 			continue
 		var body := RopeBody.new()

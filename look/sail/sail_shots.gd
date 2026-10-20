@@ -56,7 +56,7 @@ func _ready() -> void:
 	player.set_physics_process(true)
 	player.get_on(board)
 	await ticks(60 * 6)
-	mast.trim = 2.0 * Mast.BOOM * sin(deg_to_rad(50.0) * 0.5)
+	_set_sheet(mast, 50.0)
 	await ticks(60 * 8)
 	await shoot(2, player.global_position - ahead * 4.0 - wind * 1.5 + Vector3.UP * 2.2, deck.global_position + Vector3.UP * 1.2)
 	# A fresh gust: it heels.
@@ -119,7 +119,7 @@ func _the_yacht(player: Player) -> void:
 	(kit[2] as Helm).interact(player)
 	var wind := world.weather.field_wind(deck.global_position).normalized()
 	var across := -deck.global_basis.z
-	mast.trim = 2.0 * Mast.BOOM * sin(deg_to_rad(40.0) * 0.5)
+	_set_sheet(mast, 40.0)
 	for i in 60 * 10:
 		await ticks(1)
 		var ahead := -deck.global_basis.z
@@ -195,3 +195,10 @@ func _board(kit: Array) -> Hoverboard:
 		if body is Hoverboard:
 			return body
 	return null
+
+
+func _set_sheet(mast: Mast, degrees: float) -> void:
+	var sheet := mast.sheet()
+	if sheet != null:
+		sheet.length = mast.eased_length(degrees)
+		sheet.full = maxf(sheet.full, sheet.length)

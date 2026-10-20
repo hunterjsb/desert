@@ -225,7 +225,7 @@ const SKATES := [[&"stick", Vector2i(0, 0), &"bottom", Vector2.ZERO, 0.0, &"skat
 	[&"stick", Vector2i(1, 1), &"bottom", Vector2.ZERO, 0.0, &"skates"]]
 const SQUARE := [[&"piece", Vector2i(1, 0)], [&"piece", Vector2i(0, 1)], [&"piece", Vector2i(1, 1)]]
 const SAIL_MAST := [&"stick", Vector2i(0, 0), &"top", Vector2.ZERO, 180.0, [&"mast", [&"sail"]], &"mast"]
-const SAIL_BALLAST := [
+const SAIL_BALLAST := [[&"frame", Vector2i(0, 1), 0],
 	[&"stick", Vector2i(0, 1), &"top", Vector2(-0.25, 0.0), 0.0, &"big_battery"],
 	[&"stick", Vector2i(0, 1), &"top", Vector2(0.0, 0.0), 0.0, &"battery"],
 	[&"stick", Vector2i(0, 1), &"top", Vector2(0.25, 0.0), 0.0, &"big_battery"]]
@@ -258,6 +258,7 @@ const YACHT_RIG := [[&"piece", Vector2i(1, 0)], [&"piece", Vector2i(2, 0)], [&"p
 	[&"stick", Vector2i(2, 1), &"bottom", Vector2.ZERO, 0.0, &"keel"],
 	[&"stick", Vector2i(0, 0), &"top", Vector2.ZERO, 180.0, [&"mast", [&"sail"]], &"mast"],
 	[&"stick", Vector2i(1, 1), &"top", Vector2.ZERO, 180.0, &"helm_seat", &"helm"],
+	[&"frame", Vector2i(0, 1), 0],
 	[&"stick", Vector2i(0, 1), &"top", Vector2(-0.25, 0.0), 0.0, &"big_battery"],
 	[&"stick", Vector2i(0, 1), &"top", Vector2(0.0, 0.0), 0.0, &"battery"],
 	[&"stick", Vector2i(0, 1), &"top", Vector2(0.25, 0.0), 0.0, &"big_battery"]]
@@ -1420,17 +1421,17 @@ static func sail(world: World) -> Array[Node3D]:
 
 ## Sailing a larger camp: the rig ahead as the sail scenario's deck, less its
 ## shield, and behind you the camp, a deck two by two on skates with the
-## shield (off) at its front and two big batteries. The rig's sheet and a
-## line from the camp's front both at your waist, so the rig tows the camp on
-## a hidden line of its own past you; the board at your feet. Raise the
+## shield (off) at its front and two big batteries. An explicit towline joins
+## the rig's stern hook to the camp's bow hook; only the sail's sheet goes to
+## your waist, with the board at your feet. Raise the
 ## sail, ride, and carve to steer.
 static func sail_tow(world: World) -> Array[Node3D]:
-	var rig := rig_at(world, SQUARE + [SAIL_TAIL] + SKATES + [SAIL_MAST] + SAIL_BALLAST, SAIL_DECK)
+	var rig := rig_at(world, SQUARE + [SAIL_TAIL] + SKATES + [SAIL_MAST] + SAIL_BALLAST + [[&"hook", Vector2i(0, 2), Vector2i(0, 1)]], SAIL_DECK)
 	var mast: Mast = rig.named.mast
 	var camp := rig_at(world, SQUARE + SKATES + TOW_STORES, TOW_CAMP)
 	var board := standing(world, &"board", [&"battery"], SAIL_BOARD)
 	var sheet := sheet_to_waist(world, mast)
-	var line := to_waist(world, _deck_tie(camp.deck, Vector2i.ZERO, Vector2i(0, -1)))
+	var line := Line.between(world, _deck_tie(rig.deck, Vector2i(0, 2), Vector2i(0, 1)), _deck_tie(camp.deck, Vector2i.ZERO, Vector2i(0, -1)), 0.5)
 
 	var dropped := _of(rig) + _of(camp)
 	dropped.append_array([board, sheet, line])

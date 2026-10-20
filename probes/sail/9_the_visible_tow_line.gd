@@ -1,13 +1,8 @@
 extends SailProbe
-## Sailing probe 9: the hidden tow line. The "sail_tow" camp on a broad reach
-## in a steady 10 m/s wind: the rig's sheet and the camp's line both at your
-## waist, you ride the board between them and the rig tows the camp on a line
-## of its own past you: the lines on you pull hardly harder than with the rig
-## towing you alone, where as the link you'd bear the camp's pull twice over.
-## Carving out to windward bears the rig away, to leeward heads it up,
-## against the same start with no carve. Braced off its way with the camp
-## moored, you're the fulcrum the line bends round, and it hurts you; looking
-## along the rig there, reeling hauls its sheet and leaves the camp's line be.
+## Sailing probe 9: an explicit towline carries the following camp's load.
+## The rider's independent sheet steers the sailing rig, with no hidden bypass.
+## Deliberately moving the towline's rig end to the waist makes opposed loads
+## injure the rider normally; reeling the selected sheet leaves that line alone.
 
 ## The point of sail, degrees off a beam reach (Scenarios' heading), the
 ## carve, rad off the rig's way, and how hard the edge digs in.
@@ -42,7 +37,8 @@ func run() -> void:
 			seen.t += 1
 			if seen.t > 480 and seen.t <= 720:
 				seen.sheet += sheet.rope.tension / 240.0
-				seen.tow += (ropes.hidden.tension if ropes.hidden != null else 0.0) / 240.0
+				var tow: Line = _of(Line, 1)
+				seen.tow += (tow.rope.tension if tow != null else 0.0) / 240.0
 				seen.body += ropes.pull_n / 240.0
 				seen.camp += Vector2(camp.linear_velocity.x, camp.linear_velocity.z).length() / 240.0
 		await simulate(12.0, each)
@@ -51,10 +47,10 @@ func run() -> void:
 			print("the rig towing you alone: %.2f m/s, the lines on you pull %d N" % [way().length(), roundi(alone)])
 			continue
 		if carve[0] == &"none":
-			print("towing the camp on a broad reach: the rig at %.2f m/s, the camp %.2f; the hidden line %d N, your sheet %d N, the lines on you %d N (as the link, %d N)" % [
+			print("towing the camp on a broad reach: the rig at %.2f m/s, the camp %.2f; the visible towline %d N, your sheet %d N, the lines on you %d N (as the link, %d N)" % [
 				way().length(), seen.camp, roundi(seen.tow), roundi(seen.sheet), roundi(seen.body), roundi(alone + 2.0 * seen.tow)])
-			check(ropes.hidden != null and player.board != null and player.waist.tied.size() == 2,
-				"riding with both lines at your waist, the hidden line holds")
+			check(player.board != null and player.waist.tied.size() == 1 and (_of(Line, 1) as Line).rope.a.holder == rig and (_of(Line, 1) as Line).rope.b.holder == camp,
+				"the real towline joins both decks while only the sheet is waisted")
 			check(seen.camp > 1.0, "the rig tows the camp (%.2f m/s)" % seen.camp)
 			check(seen.body < alone + 0.3 * seen.tow and player.vitals.health == Vitals.FULL,
 				"the camp's pull runs past you: %d N on you, %d N alone, unhurt" % [roundi(seen.body), roundi(alone)])
@@ -75,6 +71,11 @@ func run() -> void:
 	(_of(Chassis, 1) as Chassis).freeze = true
 	player.set_physics_process(false)
 	player.global_position += ground(-downwind) * 4.0
+	var opposed: Line = _of(Line, 1)
+	var end := opposed.ends[0]
+	(end.socket.get_parent() as Device).take(end.socket)
+	player.waist.tie(end)
+	opposed.rope.length = opposed.rope.a.global_position.distance_to(opposed.rope.b.global_position) + 0.05
 	var bent := {"most": 0.0}
 	await simulate(10.0, func() -> void:
 		_steer()
@@ -83,18 +84,18 @@ func run() -> void:
 		roundi(bent.most), player.vitals.health])
 	check(bent.most > world.tuning.fulcrum_n and player.vitals.health < Vitals.FULL and player.vitals.health >= 1.0,
 		"as the fulcrum you're hurt (%.0f health)" % player.vitals.health)
-	check(ropes.hidden != null and ropes.ropes.size() == 2, "and below their breaking the lines hold")
+	check(ropes.ropes.size() == 2, "and below their breaking the lines hold")
 	tending = 0.0
 	var sheet: Rope = (_of(Line, 0) as Line).rope
 	var carried: Rope = (_of(Line, 1) as Line).rope
-	var was := [mast.trim, carried.length]
+	var was := [sheet.length, carried.length]
 	look(eye(), Line._tip((_of(Line, 0) as Line).ends[0]).global_position)
 	hands.reel.choose((_of(Line, 0) as Line).ends[1])
 	check(hands.reel.line() == sheet and hands.reel.notch(2), "choosing the sheet, the reel works it")
 	await simulate(1.0, _steer)
-	check(absf(was[0] - mast.trim - 2.0 * Reel.NOTCH) < 0.01 and absf(carried.length - was[1]) < 0.01 and ropes.hidden != null,
-		"two notches haul its inboard in half a metre, the camp's line and the hidden one let be (%.2f m, %.2f m)" % [
-		was[0] - mast.trim, carried.length - was[1]])
+	check(absf(was[0] - sheet.length - 2.0 * Reel.NOTCH) < 0.01 and absf(carried.length - was[1]) < 0.01,
+		"two notches take in half a metre of sheet while the camp line stays unchanged (%.2f m, %.2f m)" % [
+		was[0] - sheet.length, carried.length - was[1]])
 	speed_up(1)
 
 
@@ -139,7 +140,12 @@ func _set_up(alone: bool) -> void:
 	mast = _of(Mast, 0)
 	if alone:
 		var line: Line = _of(Line, 1)
-		player.waist.untie(line.ends[1])
+		ropes.untie(line.rope)
+		for end in line.ends:
+			(end.socket.get_parent() as Device).take(end.socket)
+			end.free()
+		kit.erase(line)
+		line.free()
 	await physics_frames(10)
 	blow(downwind * 10.0)
 	hoist(60.0)
