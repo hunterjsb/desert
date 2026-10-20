@@ -1,9 +1,25 @@
+## 0.2.4-alpha “Sailboat”
+
+A manual sail hoist, physical salvage rewards and clearer radio handling.
+Includes the sailing, traversal and exploration baseline described below.
+
+- Raise and lower sails with a fitted hand winch and a real halyard over the masthead.
+  Starter and found rigs supply the hardware; fully hauled sails retain wind-deed progress.
+- Remove fitted sails and board rope ends, and recover loose ropes without losing anchors.
+  The authored yacht uses visible ballast, four hover trays and two centreline keels.
+- Show tuning controls in the radio close view and give stations distinct machine voices.
+  New reports discard interference fragments left over from the previous playback.
+- Pick up Halloran coalcane normally and unlock a physical service cache after the burn.
+  Homes, refinery fittings and the connected pipeline gain modeled detail.
+- Add a short illustrated hoisting page to the sailing notes.
+
 ## 0.2.3-alpha “Sailboat”
 
 Physical sailing controls, clearer radio reception, and a first encounter at Halloran.
 
-The 0.2.2 tag remained an unpublished candidate after its verification gate failed.
-This patch keeps that scope and includes the measured-height vault follow-up.
+The 0.2.2 and 0.2.3 tags remained unpublished candidates. The first failed its
+verification gate; the second was withheld after a repeat-report interference bug
+was reproduced. Version 0.2.4 includes their scope and fixes that bug.
 
 - Select waist lines by hovering and clicking in the carry view. A single line reels
   without selection; release all uses timed progress and preserves momentum.
