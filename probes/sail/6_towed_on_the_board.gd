@@ -1,5 +1,5 @@
 extends SailProbe
-## Sailing probe 6: your camp tows you on the board. Standing behind a camp
+## Sailing probe 6: your camp tows you on the board on a broad reach. Standing behind a camp
 ## on skates with its sheet tied at your waist, you step onto a board and the
 ## sheet stays tied. The sail up in a steady 10 m/s wind, keys let go, the
 ## sheet tended and the camp held across the wind as you'd steer it by its
@@ -13,8 +13,8 @@ func run() -> void:
 	player.set_physics_process(true)
 	player.collision_layer = 1
 	player.collision_mask = 1
-	rig(open, heading(), &"skates", 1, false)
-	var ahead := ground(heading())
+	rig(open, heading(1, -30.0), &"skates", 1, false)
+	var ahead := ground(heading(1, -30.0))
 	var at := deck.global_position - ahead * 7.0
 	at.y = world.height_under(at) + 0.1
 	world.teleport(player, Transform3D(Basis(Vector3.UP, atan2(-ahead.x, -ahead.z)), at))
@@ -32,8 +32,9 @@ func run() -> void:
 	blow(downwind * 10.0)
 	hoist(60.0)
 	# You tend the sheet at your waist as you go, and steer by where you pull.
+	driving_sheet = true
 	tending = deg_to_rad(15.0)
-	course = heading()
+	course = heading(1, -30.0)
 	# Lambdas copy what they're given: what they change lives in here.
 	var seen := {"pulled": 0.0}
 	await simulate(25.0, func() -> void:

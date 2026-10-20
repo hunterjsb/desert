@@ -271,6 +271,8 @@ func _trim_length(degrees: float, side: float) -> float:
 	var sheet := mast.sheet()
 	var mine: RopeEnd = mast._tie().part.get_meta(&"tip")
 	var other := sheet.b if sheet.a == mine else sheet.a
+	if not is_instance_valid(sheet.through):
+		return mast.eased_length(degrees, side)
 	var outboard := sheet.through.global_position.distance_to(other.global_position)
 	if sheet != _working_sheet:
 		_working_sheet = sheet
