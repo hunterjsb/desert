@@ -644,11 +644,13 @@ is open ([section 14](#14-open-after-session-3)).
   session 3):** the label is a pretext, and part 1's "proper analysis" wording is updated to
   match ([section 4](#4-the-system-the-lane-and-the-harbor)). This adds a shape and a motive to
   the Tilg of part 1 §4 and part 2 §1; it doesn't restate their roles. **Agreed (session 4,
-  part 2):** TILG and its old rival Standard Freight became one company, **Tilg & Standard**,
-  which the surveyor's contract comes from ([the vision](vision.md#player-origins-and-kits)).
-  Part 2 put the merger "long after the war." **Agreed (session 4, part 3)** has Tilg & Standard
-  "nationalised in the war, later un-nationalised, and stayed merged," so the merger is no later
-  than the war, and the docs follow that ([section
+  part 2; clarified by Hunter, 2026-10-20):** TILG and Standard Freight remain separate
+  companies through the war and for thousands of years after it. They merge much later to survive
+  in the changed aftermath of the war, forming **Tilg & Standard**, the successor company the
+  surveyor's contract comes from ([the vision](vision.md#player-origins-and-kits)). This
+  clarification supersedes session 4, part 3's earlier wording that Tilg & Standard was
+  nationalised during the war: wartime nationalisation and un-nationalisation concern the two
+  companies before their later merger ([section
   10](#the-wars-end-the-wall-and-the-states-of-the-players-time-agreed-session-4-part-3),
   [section 17](#17-open-after-the-endings-session-and-session-4-part-3)). **Agreed (endings
   session):** the company outlasts the post-collapse era, which the session shortens to
@@ -661,7 +663,8 @@ is open ([section 14](#14-open-after-session-3)).
   federally aligned ships. It has been losing to Tilg for about a century because it won't
   adapt. It competes with Tilg on the lane and also takes subcontracted dirty, risky runs, and
   the governor has ties to it. The war gives it a brief, bitter comeback. Its ruins are heavy,
-  overbuilt, plainly stamped hulls. It ends inside Tilg & Standard (above).
+  overbuilt, plainly stamped hulls. It remains separate from TILG for thousands of years after
+  the war, then merges into Tilg & Standard (above).
 - **The AI hive mind.** It exported He-3 to humans (it doesn't need it as they do) and
   imported human goods to study humanity in order to conquer it. It probably started the war
   (**Leaning**, Hunter, 2026-10-16: probably, not certain). It is an outside power, not
@@ -744,11 +747,12 @@ mods](prd/devices-and-mods.md#crate-makers-agreed-direction-session-4-part-4-not
 - **Tilg terraforming** made saltbush and rainseed: the division behind the terraforming projection
   that Mother Cistern's scripture preserves ([section 9](#mother-cistern-and-her-order-agreed-session-4-part-3)).
 - **Hab contractors** made vat fungus and glowcap, for the colony's dark hab tunnels. Unnamed.
-- **Halloran Isotope** and **Tilg & Standard** make crates (the standard all-rounder and the rugged
-  industrial one), and the First Kingdoms and the second age hand-build theirs, the Sisters' for water storage.
-  The session writes "Tilg & Standard" for a colonial maker, which is the company's name once it
-  merged ([section 5](#factions-agreed-session-3)); read as the same company, and flagged
-  ([section 18](#18-open-after-session-4-part-4)).
+- **Halloran Isotope** makes the rugged industrial crate in the proposed roster. The common
+  colonial logistics crate is TILG consigned, with its OEM unassigned; Tilg & Standard is a
+  separate, much later successor and current issuer, not its colonial maker. The First Kingdoms
+  and the second age hand-build their own, the Sisters' for water storage. This corrects the
+  proposed table's former "Tilg & Standard | Colonial" row ([section 5](#factions-agreed-session-3),
+  clarified by Hunter, 2026-10-20; [Devices & mods](prd/devices-and-mods.md#crate-makers-agreed-direction-session-4-part-4-not-built)).
 - **The hive mind** made quietbloom, the only non-Earth organism on Zan.
 - **Sandroot has no maker.** Frontier Ag or Tilg terraforming is the session's open question.
 
@@ -2152,8 +2156,11 @@ and the wall looks like overcaution.
   the few uncontested claims.
 - **Daventry suspects the truth** about the hive mind, with no special evidence. The fear simply
   justifies their security state. They are right for the wrong reasons.
-- **Tilg & Standard** was nationalised in the war, later un-nationalised, and stayed merged. It
-  eyes the forbidden lanes: an alien hive mind implies alien trade partners.
+- **Tilg & Standard** eyes the forbidden lanes: an alien hive mind implies alien trade partners.
+  The player's-time company formed thousands of years after the war by merging the still-distinct
+  TILG and Standard Freight; the session 4, part 3 wording that it was already merged and
+  nationalised in the war is superseded ([section 5](#factions-agreed-session-3), clarified by
+  Hunter, 2026-10-20).
 - **Open.** The Rump UG's name ("the UG," "the Union," "the Core," or all three by speaker), and
   Varro as the Varran capital.
 
@@ -2948,12 +2955,11 @@ narrows.*
    the hive mind is an AI built (almost certainly) by a non-human civilisation whose makers may
    be gone, not the merged civilisation itself. It doesn't say the merged reading is dead, only
    that the game never settles it.
-10. **The merger.** Earlier (session 4, part 2): "Long after the war, TILG merged with its old
-    rival Standard Freight." Session 4, part 3: "Tilg & Standard was nationalised in the war,
-    later un-nationalised, and stayed merged." The docs follow the new: the merger is no later
-    than the war (section 5). A reading, not said: the nationalisation is what merged them.
-    Standard Freight's "brief, bitter comeback" in the war (session 3) then ends inside the
-    merged company.
+10. **The merger (clarified by Hunter, 2026-10-20).** TILG and Standard Freight stay separate
+    through the war and for thousands of years after it, then merge to survive. This supersedes
+    session 4, part 3's earlier wording that Tilg & Standard was nationalised and already merged
+    during the war. Their wartime nationalisation and later un-nationalisation happen before the
+    merger; Standard Freight's "brief, bitter comeback" in the war stays intact.
 11. **Zan on the lane.** Earlier (section 4): Zan "sits on an interstellar lane midway between
     powers, a stop on the way to civilisation and not the customs port into United Government
     space," and (session 3) the Provisional "isn't a direct border system, so there are no
@@ -3224,12 +3230,11 @@ undid both, so read them as:
    power and listens to radio, shows in normal play that something non-human was here, which the
    earlier rule kept for the endings. It still says nothing of why, and the far end's purpose stays
    unstated. Hunter may want it kept to the black site's case only.
-8. **"Tilg & Standard" in the colonial row.** Earlier: the merger "is no later than the war" (section
-   17), after the colonial era, and the colonial crate's stencil is the acronym TILG (art direction).
-   Session 4, part 4's maker table: "Tilg & Standard | Colonial | Standard logistics all-rounder, most
-   common." The docs follow the session's table, reading it as the company's name as it is known, and
-   flag the anachronism ([Devices & mods](prd/devices-and-mods.md#crate-makers-agreed-direction-session-4-part-4-not-built)).
-   If colonial crates should read Tilg, it is a one-word change.
+8. **"Tilg & Standard" in the colonial row (resolved by Hunter, 2026-10-20).** The companies
+   merge thousands of years after the war (section 5), so the colonial maker is TILG alone. The
+   successor Tilg & Standard is a separate, much later company. The planned crate roster and the
+   marks guidance now use that distinction ([Devices & mods](prd/devices-and-mods.md#crate-makers-agreed-direction-session-4-part-4-not-built),
+   [art direction](art-direction.md#makers-marks)).
 
 **Clashes between the two newest sessions (session 4, part 4 wins)**
 

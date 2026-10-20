@@ -40,8 +40,8 @@ const MARKS := preload("res://game/look/marks.png")
 ## A lineage's look (Eras.lineage). How worn its paint starts by its last
 ## hands' era, as ERA does by a find's layer: colonial gear sealed away, the
 ## First Kingdoms' kept clean, the skimmer era's worn hard, the second age's
-## out in the weather. Its maker's stamp is from its first hands' row: later
-## hands add their marks over it and never paint it out.
+## out in the weather. Its first provenance mark is from its first hands' row:
+## later hands add their marks over it and never paint it out.
 const AGE_BY_ERA := {Eras.COLONIAL: 0.05, Eras.FIRST: 0.1, Eras.SKIMMER: 0.3, Eras.SECOND: 0.45, Eras.NEW: 0.15}
 const ROW_BY_ERA := {Eras.COLONIAL: 2, Eras.SKIMMER: 2, Eras.NEW: 0}
 ## A part has no soundness of its own yet: it looks this sound.
