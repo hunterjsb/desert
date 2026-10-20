@@ -37,3 +37,7 @@ func run() -> void:
 		var site := unit.sites[0] as Structure
 		check(absf(site.pad() - hill.height) < 10 and site.piece.sockets.size() > 0 and not site.piece.beds.is_empty(),
 			"arrival has shelter, a resting place and salvage at the summit")
+
+		for seed in shape.sites.dunes.cells_near(hill.at, 200):
+			shape.sites.dunes.locate(seed)
+			check(seed.site == null, "a mountain summit is not a wind-excavatable dune")

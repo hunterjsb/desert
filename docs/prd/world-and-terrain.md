@@ -30,7 +30,8 @@ how long a visible post-storm opportunity lasts.
 **As built.** `Landforms` projects two immutable, saved terrain profiles: Starcom rises
 600 m over a 2.4 km foot radius, the observatory 950 m over 3.6 km. Bedrock meets the
 procedural dunes with a maximum rather than adding their slopes together. Dunes remain
-at the foot and in hollows; smaller structures still survey and carve normally. Projections
+at the foot and in hollows; smaller structures still survey and carve normally. Dune
+archaeology excludes exposed bedrock crests: wind does not excavate the volcano itself. Projections
 are pinned within the terrain/far-ring reach, and old loaded sheets retain their ground.
 Taking a worker's profile-array reference is locked against save restoration and reprojection;
 chunk and far-ring jobs hold one snapshot for their entire build.

@@ -1148,3 +1148,10 @@ The exposure probe's before/after sampling is now an hour apart to include the l
 Existing geological plumes keep their sources, timing, sound and renderer. The far-side
 flank now reads the volcano's real elevation and pinned projection. Mountains enter the GPU
 wind-map height function too, so sand transport and lee rendering agree with their CPU ground.
+
+**Measured first hour with the wake:** on actual Surveyor starts for seeds 1234, 1 and 42,
+respectively 6/16, 2/9 and 2/21 natural dune ruins within 1 km showed at some point; 3, 2
+and 2 were newly revealed. Across those sites the clear-air opportunity totalled 10, 11
+and 7 ruin-minutes. This is an opportunity to notice and investigate, not a guaranteed
+find next to every camp. A controlled fifteen-minute stripping storm leaves a 6 m-deep
+site partly visible ten calm minutes later and buried again after ninety minutes.

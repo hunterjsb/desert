@@ -324,7 +324,8 @@ float dunes(vec2 at) {
 		vec4 hill = p.hills[i];
 		if (hill.z > 0.0) {
 			vec2 off = at - hill.xy;
-			float d = length(off) / hill.z * (1.0 + 0.05 * (1.0 + cos(5.0 * atan(off.y, off.x))));
+			float angle = dot(off, off) > 0.0 ? atan(off.y, off.x) : 0.0;
+			float d = length(off) / hill.z * (1.0 + 0.05 * (1.0 + cos(5.0 * angle)));
 			mountain = max(mountain, (hill.w + p.mountain.x) * (1.0 - smoothstep(0.08, 1.0, d)) - p.mountain.x);
 		}
 	}
