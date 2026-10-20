@@ -8,9 +8,16 @@ extends ShieldProbe
 ## starting it over.
 
 
+class SteadySignal extends Glitch:
+	func tick(_delta: float, _dirt: float) -> Vector2:
+		return Vector2.ONE
+
+
 func run() -> void:
 	await load_storm(0.0)
 	var radio := Scenarios.standing(world, &"radio", [&"battery"], [0.0, 2.0]) as Radio
+	# Measure weather gain without an unrelated random dropout muting either sample.
+	radio._glitch = SteadySignal.new(radio.music)
 	radio.freeze = true
 	await physics_frames(2)
 	var gods := Radio.gods_of(world)

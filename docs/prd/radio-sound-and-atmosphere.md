@@ -1127,6 +1127,24 @@ the unchanged weather/Stoker continuity, scheduled-clock drift, Eye song and
 independent-radio effect checks also pass (5 s each). Public player cursors
 follow both intended seek targets without replacing the playback.
 
+### Weather gain checks isolate transient dropouts (2026-10-20)
+
+Measure weather attenuation with neutral transient interference in its fixture.
+The receiver still computes its real weather field, reception, loudness and
+station playback; only the independent random Glitch multiplier is held at one.
+Keep the existing attenuation threshold and playback-identity assertions. Test
+real dropout silence and recovery separately with a forced dropout, so a muted
+clear-sky sample cannot hide the weather gain difference. Runtime interference
+remains unchanged.
+
+As built: the weather fixture uses a neutral Glitch subclass; production code is
+unchanged. Forcing a drop on the clear sample reproduces the release failure:
+reception level is 1.0, but clear and storm samples both read -65 dB, failing
+only the gain comparison. With isolated interference, the original weather
+threshold and playback checks pass (5 s). Separate forced-drop coverage confirms
+zero gain, normal recovery and preserved playback (3 s); scheduled-clock and
+forced-stutter regressions also pass (4 s and 3 s).
+
 ## Survey receiver (agreed and built 2026-10-20)
 
 An early, cheaper receiver hears only existing ruin loot beacons. It shares the radio's
