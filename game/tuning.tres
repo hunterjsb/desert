@@ -209,5 +209,22 @@ board_surface_rise_m = 0.18
 board_surface_shapes = 64
 board_surface_reach_m = 16.0
 
+radio_word_gap_seconds = 0.04
+radio_report_every = 120.0
+advisory_fast_ms = 14.5
+advisory_long_minutes = 45.0
+advisory_look_minutes = 60.0
+dial_spin_seconds = 0.15
+dial_spin_most = 5.0
+dial_skirt_khz = 20.0
+flare_burn_seconds = 60.0
+airdrop_elevation_degrees = 35.0
+airdrop_fall_seconds = 14.0
+airdrop_land_m = Vector2(12.0, 35.0)
+carrier_drift_khz = 5.0
+dial_skirt_share = 0.35
+dial_skirt_reach = 1.5
+dial_close_up = false
+
 stoker_burn_s = 30.0
 stoker_stock = 3

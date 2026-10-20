@@ -30,7 +30,7 @@ const GARBLE_FROM := 2
 func _ready() -> void:
 	radio = get_parent() as Radio
 	for id: StringName in Constellation.voiced():
-		var voice := radio.add_voice(bus_for(id))
+		var voice := radio.add_voice(Sounds.radio_bus())
 		voice.stream = track(id)
 		_voices[id] = voice
 		_glitches[id] = Glitch.new(voice)
@@ -73,6 +73,8 @@ func listen(delta: float, x: float, z: float, t: float) -> float:
 		voice.volume_db = linear_to_db(level * tremble + 0.0001) + radio.knob_db() + sound.db + shape.volume
 		voice.pitch_scale = maxf(0.05, shape.pitch * (1.0 + Radio.PITCH_SLIDE * heard.warp
 			/ maxf(tuning.storm_warp_khz, 0.01)))
+		# Allocate the private chain only when this satellite reaches the dial.
+		voice.bus = bus_for(id)
 		_shape_bus(id, shape)
 		# Chewed up as dirty as it comes through, and glitching.
 		Garble.shape(AudioServer.get_bus_index(bus_for(id)), GARBLE_FROM, heard.dirt, t, hash(id))
@@ -120,8 +122,8 @@ static func track(id: StringName) -> AudioStream:
 
 ## A satellite's own bus, on into the radio's: a low-pass for its tone and a
 ## distortion for its grit, both open until its LFOs turn them.
-static func bus_for(id: StringName) -> StringName:
-	var bus_name := StringName("RadioSky_%s" % id)
+func bus_for(id: StringName) -> StringName:
+	var bus_name := StringName("RadioSky_%d_%s" % [radio.get_instance_id(), id])
 	if AudioServer.get_bus_index(bus_name) == -1:
 		AudioServer.add_bus()
 		var i := AudioServer.bus_count - 1
@@ -135,10 +137,11 @@ static func bus_for(id: StringName) -> StringName:
 		AudioServer.add_bus_effect(i, grit)
 		AudioServer.set_bus_effect_enabled(i, 1, false)
 		Garble.add_chain(i)
+		radio._effect_buses.append(bus_name)
 	return bus_name
 
 
-static func _shape_bus(id: StringName, shape: Dictionary) -> void:
+func _shape_bus(id: StringName, shape: Dictionary) -> void:
 	var i := AudioServer.get_bus_index(bus_for(id))
 	(AudioServer.get_bus_effect(i, 0) as AudioEffectLowPassFilter).cutoff_hz = shape.cutoff
 	var gritty: bool = shape.drive > 0.01

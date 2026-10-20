@@ -163,3 +163,8 @@ Original mono sounds generated for Desert by `scripts/make_receiver_sounds.py`
 | receiver_switch.wav | the field receiver power latch | -34.0 LUFS | -10.0 dBTP |
 | receiver_tick.wav | the field receiver tuning detent | -35.3 LUFS | -9.1 dBTP |
 | receiver_pulse.wav | the directional field receiver contact pulse | -33.9 LUFS | -19.6 dBTP |
+
+`voice/word_bank.wav` extends that same public-domain LJ Speech voice with
+bundled words and common fragments for exact dynamic radio readouts. It uses
+the same model, trimming and levels (`voice/make_words.py`); `VoiceWords` keeps
+the sample ranges. Generation tools and voice weights remain offline.

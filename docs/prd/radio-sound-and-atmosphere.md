@@ -101,7 +101,7 @@ it and it crackles.
   as one held that close and stowing it changes nothing you hear. It turns with you, and has no panning
   while carried (gonkhub: "ensure camera movement will not affect panning"), so however fast you look round
   it never swings from side to side; it's placed again every frame. Its voices sound
-  from its middle, the point your hands hold, carried or not. Probe: radio 30.
+  from its middle, the point your hands hold, carried or not. Probe: radio 24.
 - **Not yet:** bumps crackling, distorted tracks in storms, more channels, lore, oracles,
   frequencies as finds and antennas.
 
@@ -220,62 +220,30 @@ terminals" by Hunter's call. The squatting oracles above are now the gods.
   further the carrier slides off where you tuned, up to 6 kHz either way, so you chase it (**warping**,
   with the tones wobbling too), and the more often it drops out, up to 60% of the time
   (**cutting**). A weak signal frays the same way. Below the floor it's only static.
-- **Spoken reports** (Hunter: "implement text-to-speech weather broadcast readouts"; then, hearing the
-  OS voice, "that TTS just scared me. is it talking out of the radio?" and "the TTS is too crazy of a
-  voice, can we do something smoother? and shorter phrases?"; he chose a bundled voice): with something to
-  report, the weather station reads it aloud, once when a storm becomes due, arrives or clears; unchanged news stays quiet. **The voice** is Piper's LJ Speech voice, public
-  domain, rendered once into a bank of 165 phrases (`assets/audio/voice/`, by `make_voice.py`, each take
-  kept only once Whisper hears it right through the radio's speaker; licences in
-  `assets/audio/CREDITS.md`), so it sounds the same on every computer. **The phrases** are its own,
-  shorter than the line in view, which stays as it is (`Radio.report`): a storm on its way is "Storm
-  coming. From the north-east. Four minutes."; one on you, "Storm here.
-  Clearing, ten minutes." (or "No clearing, twenty minutes."). Wind speed and the
-  long-range outlook remain written, without extending the spoken interruption. Numbers are exact to sixty and to the
-  ten past it; spans are seconds to the ten under a minute and a half, else minutes. Bare "South.",
-  "Storm." and "Winds forty." were heard as "So", "Store" and "Wins forty" over the speaker, hence "From
-  the", "Storm coming" and "Wind speed".
-  **From the radio:** the station's tones sound, then each phrase plays from the radio itself with a
-  breath between, on its bus through the speaker's high-pass, over its static and an anomaly's crackle,
-  its volume knob turning it down, and coming and going with the signal as a song does: silent while a
-  storm cuts it, and the phrases a weak signal loses left as gaps of static ("..." in what it said). Its
-  tones keep off till it's done. Tuned away or switched off with Options' "Radio
-  voice" (on by default), it stops. A Console with the radio in its system speaks in the same voice,
-  through the radio's speaker whatever it's tuned to: "Battery low." and "Battery critical."
-  ([Devices & mods](devices-and-mods.md)). (It was the system's text-to-speech, heard flat in your ear.)
-  **Playtest (Hunter, 2026-10-19; built):** "Voice is better, just make the sentences
-  shorter still. and probably announce less often." Two to four words a sentence, and a report
-  spoken only when it has news: a storm newly due or arriving, or its clearing. A calm repeat stays
-  in the line low in your view, unspoken. Spoken reports omit wind speed and the long-range
-  extension; those remain in the continuous written report. Clearing says “All clear.”
-  once before holding on music. Focused radio probes 14 and 23 pass.
-  **Reworked by gonkhub, 2026-10-19/20, on the `signatures` branch** ("It doesn't always read out the whole
-  thing, often missing numbers or words. Weather channel should give a regular report (every 2 real life
-  min) on current time of day, wind speed, current temperature, and interrupt at any time to issue a weather
-  advisory - for anomalous weather events we may add in the future, or for abnormally large/fast
-  sandstorms"; and, merging with the voice bank, keep the bank's voice and record the phrases it lacks):
-  - **Every phrase is read** (`Radio.speech` keeps them all): a weak or stormy signal is in how the voice
-    sounds through the radio, not in phrases lost to gaps. Words went missing because each was dropped at a
-    chance of how unclean the signal was, and clean falls with distance and with tuning off a carrier too.
-  - **A regular report**, every 2 minutes (`radio_report_every`, 120 s of world time, which runs at real
-    time) and at once as you tune in, Clear Skies or not, in the bank's voice (`Radio.report_phrases`):
-    "Weather station. Local time, fourteen, thirty. Wind speed seven. From the north-west. Temperature,
-    thirty-one, degrees.", then the outlook above (`Radio.report`). All read from the world where the radio
-    stands. A report due while the voice is still reading waits for it to finish. This replaces the quiet
-    on unchanged news above, by gonkhub's call.
-  - **Advisories** (`game/radio/advisories.gd`) break off whatever's being read, the moment one's due, once
-    per event: "Weather advisory. Fast sandstorm, from the north-west. Four minutes. Moving, sixteen, metres
-    a second. Lasting, thirty minutes. Take shelter." A sandstorm on you or due within the forecast is
-    **fast** riding a prevailing wind of 14.5 m/s or more (`advisory_fast_ms`) and **large** lasting 45
-    minutes or more (`advisory_long_minutes`), looked ahead an hour (`advisory_look_minutes`). Measured over
-    12 seeds of 6 hours, the prevailing wind is 10.7 m/s at the median and 14.8 at the top tenth, and a storm
-    lasts 16 minutes at the median and 54 at the top tenth, so each is about the top tenth. Each fresh
-    reading is checked once, as soon as the signal's through. A storm warned of before it came counts as the
-    same storm once it's on you, until it clears. New kinds of weather add a check of their own; the anomaly
-    stays out on purpose, since no forecast speaks of it.
-  - **New phrases** for the report and the advisories, recorded in the same Piper voice: the numbers zero
-    to seventy, "Weather station.", "Local time,", "Hundred.", "Oh one." to "Oh nine.", "Temperature,",
-    "Minus,", "Degrees.", "Weather advisory.", the three kinds of sandstorm, "On you now.", "Moving,",
-    "Metres a second.", "Lasting,", "Lasting more than," and "Take shelter." (`assets/audio/voice/`).
+- **Spoken reports** (Hunter's bundled-voice choice retained; the regular reports and advisories
+  requested on 2026-10-19 are combined with it). The voice is the same public-domain LJ Speech voice
+  on every computer: the existing 165 full phrases plus a bundled bank of 783 words and common
+  fragments for dynamic readings. No system TTS or HUD transcript is used. `RadioSpeech` preserves
+  exact numbers, composes short fragments and spells an unknown name rather than dropping it.
+  - **Regular weather:** at tuning and every 120 s (`radio_report_every`), local time, actual wind,
+    temperature and the real outlook where the set stands, with units in words. Clear Skies can
+    continue under a report. The Walker's survey/contact log is included when its weaker channel
+    is readable; distant log data stays unavailable.
+  - **Advisories:** a fast or large sandstorm interrupts the current reading once per event.
+    `advisory_fast_ms` is 14.5 m/s, `advisory_long_minutes` 45, and `advisory_look_minutes` 60.
+    These follow the measured upper-tenth prevailing wind and storm duration from the earlier
+    twelve-seed survey. Forecasts still never invent an anomaly warning.
+  - **Gods and beacons:** their transmitted words and actual compass bearing use the same bundled
+    reader. A changing transmission waits for the current one to finish; an unchanged one repeats
+    at the regular interval. A god's music does not suppress its words. The living city keeps its
+    existing coded tones.
+  - **From the set:** its own reader follows the radio's middle or its carried position, with its
+    volume knob, speaker filter and private interference chain. Interference affects the sound,
+    without randomly deleting words before playback. Options' Radio voice stops all speech.
+    A Console's local battery announcements use the original full recordings and bypass over-air
+    interference. Reparenting preserves an in-progress reading.
+  - **Compatibility:** `Radio.report` retains its short recorded-phrase form for existing callers;
+    ordinary scheduled reports use the richer readout. See the integration measurements below.
 - **The Eye's drone** (Hunter: "implement this as a random ambient track that can play from 'the eye'"):
   the Eye's frequency begins a run silent, then now and then plays Hunter's drone (`radio_eye.ogg`, 66 s)
   through once, each silence before it 2 to 8 minutes (`eye_quiet_minutes`), the seed's pick. **Two
@@ -296,7 +264,7 @@ terminals" by Hunter's call. The squatting oracles above are now the gods.
   Walker's carrier that day, with the save's version unchanged.
 - **Probes:** radio 6 (each god has its bearing), 7 (storms garble the gods), 8 (the dial finds each
   god), 9 (useful only in its window), 10 (the volume knob), 11 (clear skies, and the Stoker's song), 12 (the clear-skies scenario), 13 (the relay carries the music), 14 (spoken reports, and the meltdown), 15 (storms tell you which way), 16 (the Eye's drone), 17 (the relay at night), 18 (static sinks under a signal), 19 (the music goes in a far-side
-  storm), 20 (tuning shares reel in with the reel) 23 (the voice comes from the radio), 29 (litanies), 30 (carried, in your ears), 31 (skirts), 32 (the constellation), 33 (marks), 34 (always two overhead), 35 (the irregular ones), 36 (the lamps and the mark), 37 (the jammer and the burn) and 38 (round Tu, and skimming low). Probes 1, 2, 4 and 5 tune by the dial, and so do Survival 12, Profile & saves 13 and
+  storm), 20 (tuning shares reel in with the reel) and 23 (the voice comes from the radio). Probes 1, 2, 4 and 5 tune by the dial, and so do Survival 12, Profile & saves 13 and
   Devices & mods 28, the power page's row.
 - **Not yet:** a voice for the other gods beyond tones, frequencies as finds, antennas, and the far end's
   signal.
@@ -469,7 +437,7 @@ they swap to their next saved frequency."*
   would drift them out of formation), so they differ by route, colour, shape and size; the relay and the
   ghost keep laps of their own. Before, on independent orbits, fewer than two were up 31.5% of the time
   and sometimes none. Now, over 16 seeds, 46 places each from pole to pole and four days every 4 s
-  (radio probe 34), never fewer than two: two 20.5% of the time, three 42.5%, four 33.8%, five or six 3%.
+  (radio probe 28), never fewer than two: two 20.5% of the time, three 42.5%, four 33.8%, five or six 3%.
   Storms can still cut them, as they do any signal. Use's sweep stops on the satellites overhead too.
 
   | Satellite | Era | Band, kHz | Looks | Orbit | Sound (placeholder) | Turned by |
@@ -541,14 +509,13 @@ they swap to their next saved frequency."*
   radio's band as a short tick in their colour, along the top of the window over the numerals. **With marks, use (F) on a radio in your hands goes to the
   next mark** above where the dial stands, round to the lowest past the highest, in place of its sweep;
   with none, use sweeps as ever. A mark within a carrier's width of another replaces it.
-- **Probes:** radio 31 (broadcasts overlap on their skirts), 32 (the constellation: distinct looks and
+- **Probes:** radio 25 (broadcasts overlap on their skirts), 26 (the constellation: distinct looks and
   routes, the dial changing over six hours, every satellite heard, the LFOs following the heat and the
-  eclipse, one played overhead, the sky drawing them), 33 (marked frequencies), 34 (always two overhead),
-  35 (the irregular ones: the ghost, the relay and the cinder), 36 (the lamps and the mark's name), 37 (the
-  jammer and the burn) and 38 (round Tu, and skimming low); renumbered past master's radio probes 23 to 28
-  when the branches met. Radio 4 is the storm getting into the music, and 18 static only when nothing plays.
-  Radio 13 checks the relay's slide by nearing and drawing away. Radio 8's sweep counts the satellites
-  overhead.
+  eclipse, one played overhead, the sky drawing them), 27 (marked frequencies), 28 (always two
+  overhead), 29 (the irregular ones: the ghost, the relay and the cinder), 30 (the lamps and the
+  mark's name), 31 (the jammer and the burn) and 32 (round Tu, and skimming low). Radio 4 is now the storm getting into the music, and 18
+  static only when nothing plays. Radio 13 checks the relay's slide by nearing and drawing away. Radio 8's sweep counts
+  the satellites overhead.
 - **gonkhub's own tracks** (2026-10-20, from `Desktop/ableton/exports`): the cinder's "Cinder" and the
   metronome's "satellite1" are in (`assets/audio/CREDITS.md`); a radio's 400 Hz high-pass takes the low end
   off them, as off everything it plays. The cinder's pitch now swings 0.9 to 1.1 with its height, and the
@@ -564,7 +531,7 @@ they swap to their next saved frequency."*
   high each is, how far from Tu and how bright it shows; `look/dial` marks three frequencies in a profile of
   its own, so their ticks and the lamps show.
 
-### Litanies (2026-10-18; built, on the `signatures` branch)
+### Litanies and the survey log (2026-10-18; built, on the `signatures` branch)
 
 *Fleshing out the broadcasts.* What a god says outside its window is a liturgy with a shape, not a
 shuffle. (Interval signals, a few notes of each god's own in place of the shared tones, were tried and
@@ -578,10 +545,14 @@ scrapped by gonkhub, 2026-10-19: every god still sounds the same tones, pitched 
   the net. Mother Cistern's are ration calls and the seal check as a prayer; the Almanac opens and closes
   its market; the Ledger opens and closes its book, its tallies as psalms; the Stoker's are fire calls and
   a stuck valve. Numbers in them are noise. What a god says in its window is unchanged.
-- **The Walker's survey log** went with the merge of master: its own log (the Walker's quest, below)
-  replaces the one built here.
-- **Probe:** radio 29 (litanies: the litany opening and closing each round with a new challenge).
-- **Not yet:** a god's voice beyond its tones and its line.
+- **The Walker's survey log.** After the forecast, every other 6 s on the line, the Walker sends its log:
+  the leg it's on (km walked since the clock began), where it stands as latitude and longitude, and the
+  steady wind at its feet, from the field there. It's true, and it's the weather far off, on the Rim where
+  the Walker is. It's never in the spoken report.
+- **Probe:** radio 23 (litanies and the survey log: the litany opening and closing each round with a
+  new challenge; the survey log's leg and wind true, on the line and never spoken).
+- **Not yet:** the living city's coded tones, a god's voice beyond its tones and its line, and the
+  survey log's terrain.
 
 ### Stations: the Walker and the living city (agreed, 2026-10-18 spec)
 
@@ -1083,6 +1054,21 @@ docs, so the radio follows it as direction.
   being one more real system to read, which the session never explains. Not said what a pattern
   sounds like, whether it needs the Console, or which storms carry better.
 
+### Review repairs (2026-10-20; built on the PR branch)
+
+Sound-only output must carry the gods' transmitted words and a loot beacon's
+bearing as well as weather reports. Include the Walker's log in its regular
+report; a song does not suppress a god's words. Read a newly tuned station at once, with
+bounded repeats for changing readings; never speak an unreadable signal. Keep
+interference effect buses private to each radio, including satellite buses,
+and release those buses when their radio is freed. A second set cannot alter
+the first set's reception. The bundled-voice integration below is now implemented.
+
+Measured: radio 39 checks actual god reception and beacon bearings reaching the
+speech consumer; radio 40 checks independent effects and bus cleanup. Both pass
+in 4 s. Existing volume, static and scheduled weather checks pass; weather
+counts begin after the Stoker's newly audible transmissions. Satellite chains
+are allocated only when their signal reaches the dial.
 ### Dropout continuity check (2026-10-19)
 
 The Stoker's song must keep the same active playback when a storm cuts its signal. Radio probe
@@ -1148,3 +1134,28 @@ strength 0.8759 → 0.07008; its Console found zero forecast radios and did not
 speak through the receiver. The held and carry views and four-line 20 px action
 hint were inspected at 720p. Capture audio was muted; subjective sound quality
 still needs listening in play.
+
+### Combining the sound-only radio with the bundled voice (2026-10-20)
+
+Preserve the bundled LJ Speech voice and the Console's local announcements.
+The new regular weather reports, god messages and beacon bearings play from
+the radio's own reader through its private interference chain. No system TTS
+or HUD transcript is restored. Keep the existing full-phrase recordings; add
+a bundled vocabulary and common fragments for dynamic readouts, with exact
+numbers assembled from recorded words. Unknown proper names can be spelled
+with recorded letters, so a missing word never silently discards information.
+Reports use the new two-minute cadence and urgent advisories interrupt; an
+ordinary transmission waits for the current one to finish. Keep the newer
+Walker's contacts, living-city channel and receiver tier. This integration
+supersedes older descriptions of OS speech and the weather-only reader.
+
+Combined checks: radio 14 (schedule/advisories), 23 (native reader), 25 (Walker
+contacts), 29 (litanies), 33 (bookmarks), 39/40 (messages/effects) and 41
+(receiver controls and carried-speaker placement) pass, as does devices 30
+(Console battery speech). The receiver retains its own loop/needle controls,
+but shares the radio's camera-relative carried sound and physical speaker when taken out.
+Three real speech plans were exported and checked with speech recognition: wind
+16 m/s, temperature minus 3, north-north-west, bearing 173 and range 1.2 km
+remain intelligible. This is a recognition check, not a substitute for listening
+in play. The added PCM bank is 24.4 MB; its import stays uncompressed so its
+sample ranges are exact. Full recordings are reused whenever available.

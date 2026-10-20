@@ -124,6 +124,8 @@ const TABLE := {
 		"after": [&"ten_days"], "icon": &"chassis", "goal": "deed_moved_m", "unit": "m", "step": 250.0},
 	&"slept_it_off": {"name": "Slept It Off", "asks": "Sleep through a storm with nothing lost from your camp",
 		"family": &"nomad", "after": [&"ten_days"], "icon": &"bedroll"},
+	&"care_package": {"name": "Care Package", "asks": "Call the Surveyor with a signal flare",
+		"family": &"signals", "icon": &"flare"},
 	&"follow_signal": {"name": "Follow the Signal", "asks": "Find a ruin by following a survey receiver's signal",
 		"family": &"signals", "icon": &"survey_receiver"},
 	&"up_and_over": {"name": "Up and Over", "asks": "Vault onto a ledge",

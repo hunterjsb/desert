@@ -12,9 +12,8 @@ extends RefCounted
 ## than nine in ten do) or abnormally large (lasting longer than nine in ten,
 ## looked ahead past the forecast). New kinds of weather add their own check
 ## to check(). The anomaly is left out on purpose: no forecast speaks of it.
-## Each gives {kind, at, phrases}: at is when the event comes, world time, or
-## NOW for one you're in; phrases, what the radio reads aloud, in its bank's
-## recordings (Radio.clip).
+## Each gives {kind, at, words}: at is when the event comes, world time, or
+## NOW for one you're in.
 
 ## Two warnings of one kind this near in time are of the same event, s.
 const SAME := 180.0
@@ -46,19 +45,11 @@ static func _sandstorm(radio: Radio, reading: Dictionary, x: float, z: float, t:
 	var large := lasts >= tuning.advisory_long_minutes * 60.0
 	if not fast and not large:
 		return {}
-	# In the bank's phrases, as the radio reads them: "Weather advisory. Fast
-	# sandstorm, from the north-west. Four minutes. Moving, sixteen, metres a
-	# second. Lasting, thirty minutes. Take shelter."
-	var phrases := PackedStringArray(["Weather advisory.",
-		"Fast and large sandstorm," if fast and large else ("Fast sandstorm," if fast else "Large sandstorm,"),
-		"From the %s." % radio.say_point(reading.from)])
-	phrases.append("On you now." if reading.stormy else Radio._sentence(Radio.spoken_span(comes - t)))
-	if speed >= 1.0:
-		phrases.append_array(PackedStringArray(["Moving,", Radio.number_words(roundi(speed)) + ",", "Metres a second."]))
-	if lasts == INF:
-		phrases.append_array(PackedStringArray(["Lasting more than,", Radio._sentence(Radio.spoken_span(
-			tuning.advisory_look_minutes * 60.0))]))
-	else:
-		phrases.append_array(PackedStringArray(["Lasting,", Radio._sentence(Radio.spoken_span(lasts))]))
-	phrases.append("Take shelter.")
-	return {"kind": &"sandstorm", "at": NOW if reading.stormy else comes, "phrases": phrases}
+	var what := "a fast and large sandstorm" if fast and large else ("a fast sandstorm" if fast else "a large sandstorm")
+	var when := "on you now" if reading.stormy else "in %s" % Radio.span(comes - t)
+	var long := "lasting more than %d minutes" % roundi(tuning.advisory_look_minutes) if lasts == INF \
+		else "lasting %d minutes" % roundi(lasts / 60.0)
+	return {"kind": &"sandstorm", "at": NOW if reading.stormy else comes,
+		"words": "Weather advisory. %s from the %s, %s, %s%s. Take shelter." % [
+			what[0].to_upper() + what.substr(1), radio.say_point(reading.from), when,
+			"moving %d metres a second, " % roundi(speed) if speed >= 1.0 else "", long]}

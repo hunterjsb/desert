@@ -41,20 +41,20 @@ func run() -> void:
 	check(missing.is_empty(), "every phrase it can say is in its bank (missing: %s)" % ", ".join(missing.keys()))
 
 	# Just inside the calm horizon the next reading breaks in, read from the radio.
+	var before := radio.spoken_count
 	world.time = due - Tuning.current().radio_calm_minutes * 60.0 + 10.0
 	radio.read_at = -INF
-	var before := radio.spoken_count
 	for i in 300:
 		await get_tree().physics_frame
-		if radio.reader.playing:
+		if radio.reader.playing and radio.spoken_count > before:
 			break
 	print("it reads \"%s\", playing %s" % [" ".join(radio.spoken), radio.reader.stream.resource_path
 		if radio.reader.stream != null else "nothing"])
-	check(radio.spoken_count == before + 1 and radio.spoken[0] == "Storm coming." and radio.reader.playing
-		and radio.reader.stream == Radio.clip("Storm coming."), "a storm due, it reads the report aloud, the storm first")
+	check(radio.spoken_count == before + 1 and " ".join(radio.spoken).contains("storm") and radio.reader.playing,
+		"the scheduled report is read aloud from bundled recordings")
 	check(radio.reader.get_parent() == radio and radio.reader.global_position.is_equal_approx(
-		radio.to_global(Hands.middle_of(radio)))
-		and radio.reader.bus == Sounds.RADIO, "from the radio, through its speaker")
+		radio.to_global(Hands.middle_of(radio))) and radio.reader.bus == radio.signal_bus(),
+		"from the radio through its own speaker and interference chain")
 	var loud := radio.reader.volume_db
 	radio.turn_volume(-1)
 	await physics_frames(2)

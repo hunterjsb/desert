@@ -1061,8 +1061,8 @@ static var _current: Tuning
 ## The weather station reads its report aloud this often, s of world time,
 ## and at once as you tune in (gonkhub, 2026-10-19: "a regular report (every 2
 ## real life min)"; world time runs at real time); heard this far, m.
+@export var radio_word_gap_seconds: float = 0.04
 @export var radio_report_every: float = 120.0
-@export var radio_voice_m: float = 30.0
 ## Its advisories: a sandstorm riding a prevailing wind this fast or faster,
 ## m/s, is fast; one lasting this long or longer, minutes, looked ahead this
 ## far, is large. Measured over 12 seeds and 6 hours each, the prevailing wind

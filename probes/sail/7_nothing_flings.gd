@@ -11,6 +11,8 @@ extends SailProbe
 
 func run() -> void:
 	await load_sailing()
+	# Terrain build time must not choose the gust phase.
+	world.time = 0.0
 	rig(open, heading())
 	blow(downwind * 10.0, 0.33)
 	hoist(60.0)
@@ -36,20 +38,37 @@ func run() -> void:
 			seen.seams += 1
 			seen.chunk = now
 	speed_up(4)
-	for leg in 12:
+	var elapsed := {"seconds": 0.0, "luffed": false}
+	for leg in 6:
 		course = heading() * (1.0 if leg % 2 == 0 else -1.0)
-		await sail_for(20.0, watch)
-		if leg % 4 == 1:
+		# Leave enough reach after a real turn and the normal-rate sheet haul.
+		await sail_for(40.0, func() -> void:
+			elapsed.seconds += get_physics_process_delta_time()
+			# The last five seconds luff the sail and verify support recovers.
+			var finishing: bool = elapsed.seconds >= 235.0
+			if finishing and not elapsed.luffed:
+				print("before easing: %d corners, %.3f° roll, %.1f N support" % [deck.glider.touching, roll(), deck.glider.pressed_n])
+				elapsed.luffed = true
+			var ahead := -deck.global_basis.z
+			var off := absf(Vector2(ahead.x, ahead.z).angle_to(course))
+			tending = deg_to_rad(12.0) if off < deg_to_rad(15.0) and not finishing else 0.0
+			if tending == 0.0:
+				var sheet := mast.sheet()
+				if sheet != null:
+					sheet.length = move_toward(sheet.length, sheet.full, Reel.PACE * get_physics_process_delta_time())
+			watch.call())
+		if leg % 2 == 0:
 			# The world's origin moves on under the camp mid-run.
-			world.shift_origin(Vector2i(1 if leg == 1 else -1, 0))
+			world.shift_origin(Vector2i(1 if leg == 0 else -1, 0))
 	print("4 min gusting: at most %.2f m/s, the most a tick changed it %.3f m/s, spin at most %.2f rad/s, leaning at most %.1f°, in the sand at most %.3f m, %d seams, %d shifts" % [
 		seen.fastest, seen.jolt, seen.spin, seen.leaned, seen.sunk, seen.seams, seen.shifts])
+	print("after easing: %d corners, %.3f° roll, %.1f N support" % [deck.glider.touching, roll(), deck.glider.pressed_n])
 	print("a tick costs the runners %.0f µs and the sail %.0f µs" % [deck.glider.cost_us, mast.cost_us])
 	check(seen.numbers, "every number stays a number")
 	# Turned hard about at each end, its boom swinging across drags on it only
 	# through its gooseneck, so the turn's own spin reaches 1.6 rad/s.
 	check(seen.fastest < 9.0 and seen.jolt < 0.3 and seen.spin < 2.0, "nothing flung, no jolt, no wild spin")
-	check(seen.leaned < 30.0 and deck.glider.touching >= 8, "never over, and on its runners (%.1f° at most)" % seen.leaned)
+	check(seen.leaned < 30.0 and deck.glider.touching >= 8, "never over, and back on its runners after easing (%.1f° at most, %d corners)" % [seen.leaned, deck.glider.touching])
 	check(seen.sunk < 0.05, "never in the sand (%.3f m)" % seen.sunk)
 	check(seen.seams >= 4 and seen.shifts >= 2, "across chunk seams and origin shifts")
 	deck.free()

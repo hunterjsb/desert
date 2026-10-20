@@ -579,7 +579,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("mark_frequency"):
 		# A radio in your hands: mark where its dial stands, or unmark it.
-		if held is Radio and phase == Phase.HELD and not (held as Radio).wrecked():
+		if held is Radio and phase == Phase.HELD and (held as Radio).has_dial_marks() and not (held as Radio).wrecked():
 			(held as Radio).toggle_mark()
 			get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("hands_throw") and held != null and not Controls.mouse_free:

@@ -14,9 +14,10 @@ extends RefCounted
 ## bound the wind, m/s; due is when a storm comes, s, in place of ten clear
 ## minutes; moon is [latitude, degrees east of the point under Tu], so
 ## [30, 180] is the far side, 30° north. lays names what's laid.
-## The surveyor scenario brings the Surveyor over this soon, s.
 const SURVEYOR_LEAD := 30.0
 const LIST: Array[Dictionary] = [
+	{"key": "surveyor", "label": "a clear afternoon, a flare, the Surveyor passing over in 30 s",
+		"kind": "clear", "day": [0.55, 0.65], "lays": &"surveyor"},
 	{"key": "spawn", "label": "where and when the run began", "kind": "spawn"},
 	{"key": "clear", "label": "a clear day, no storm for 10 min", "kind": "clear", "day": [0.42, 0.55]},
 	{"key": "wall", "label": "a storm's wall on the horizon, 3 km off", "kind": "front", "distance": 3000.0,
@@ -97,9 +98,6 @@ const LIST: Array[Dictionary] = [
 	# Where the run's start puts the Walker, ahead of it as it comes: plug in as it passes.
 	{"key": "walker", "label": "beside the Walker as it comes, a Console holding all three tells, its cable in hand",
 		"kind": "walker", "day": [0.35, 0.5], "lays": &"walker_camp"},
-	# The Surveyor forced over you, its cannon waiting on a lit flare (Airdrop).
-	{"key": "surveyor", "label": "a clear afternoon, a flare in your hands, the Surveyor's low pass straight over you in 30 s",
-		"kind": "clear", "day": [0.55, 0.65], "lays": &"surveyor"},
 ]
 
 ## A floater's stake is driven this far further upwind of it, m.
@@ -412,6 +410,7 @@ static func lay(world: World, scenario: Dictionary, place: Dictionary) -> Array[
 	_clear(world, &"kit", true)
 	var dropped: Array[Node3D] = []
 	match lays:
+		&"surveyor": dropped = surveyor_pass(world)
 		&"yours": dropped = yours(world)
 		&"survive": dropped = survive(world)
 		&"farm": dropped = farm(world)
@@ -433,7 +432,6 @@ static func lay(world: World, scenario: Dictionary, place: Dictionary) -> Array[
 		&"vent": dropped = vent(world)
 		&"dig": dropped = dig(world)
 		&"walker_camp": dropped = walker_camp(world)
-		&"surveyor": dropped = surveyor_pass(world)
 	world.set_meta(&"scenario_kit", dropped)
 	return dropped
 
@@ -1135,6 +1133,8 @@ static func walker_camp(world: World) -> Array[Node3D]:
 	return dropped
 
 
+## The radio of "radio" switched on and tuned to the music, the relay's
+## carrier, beside its charged shield, switched off.
 ## A flare in your hands, and the Surveyor forced over you in SURVEYOR_LEAD
 ## s: light it as it comes over and its cannon fires. Returns the flare.
 static func surveyor_pass(world: World) -> Array[Node3D]:
@@ -1155,8 +1155,6 @@ static func surveyor_over(world: World, lead: float) -> void:
 	orbit.pass_over(Sphere.point(moon.latitude, moon.longitude), world.time + lead)
 
 
-## The radio of "radio" switched on and tuned to the music, the relay's
-## carrier, beside its charged shield, switched off.
 static func music_station(world: World) -> Array[Node3D]:
 	var dropped := radio(world)
 	var tuned := dropped[0] as Radio

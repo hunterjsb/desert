@@ -28,6 +28,14 @@ var _fizz: AudioStreamPlayer3D
 var _flicker := FastNoiseLite.new()
 
 
+## Rebuild the effects after all saved properties have been restored.
+func restored() -> void:
+	if lit and not spent():
+		light()
+	else:
+		lit = false
+
+
 ## How long it has burnt, s.
 var burnt: float:
 	get:
@@ -100,6 +108,7 @@ func _physics_process(delta: float) -> void:
 	if not called and world != null and is_inside_tree() and Airdrop.overhead(world, global_position):
 		called = true
 		Airdrop.fire(world, global_position)
+		Deeds.done(world, &"care_package")
 
 
 func _go_out() -> void:
