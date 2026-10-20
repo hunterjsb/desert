@@ -580,3 +580,8 @@ navigation fit; body heights were 216, 243, 216, 243 and 297 px. All action macr
 resolved, Back returned to chapters, and closing chapters restored the open carry
 view with its mouse free. The guide's pale survey-cross cover is distinct from the
 teal sailing booklet, built from existing procedural pieces and materials.
+
+The Guide's introductory hint uses local 20 px BBCode text, with a shorter first
+survey sentence, so it is readable at 720p without changing other hints or the
+reader. A second unseen 1280 by 720 capture shows both lines fitting without extra
+wrapping or clipping; the five reader pages retain the same measured heights.

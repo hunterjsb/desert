@@ -12,8 +12,8 @@ const GUIDE_PAGES := [
 
 
 const HOW_TO := "surveyor_guide"
-const HOW_TO_SAYS := "Your first survey: find a route or ruin from a nearby rise, bring back a useful find and fit it to camp.\n" \
-	+ "Open {inventory}, point at the Surveyor's Guide and {interact} to read."
+const HOW_TO_SAYS := "[font_size=20]Your first survey: bring one useful find back to improve camp.\n" \
+	+ "Open {inventory}, point at the Surveyor's Guide and {interact} to read.[/font_size]"
 
 var _introduced := false
 
