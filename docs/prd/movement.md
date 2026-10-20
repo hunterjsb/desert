@@ -1403,3 +1403,86 @@ navigation computer, all three lines, and the real guide foot seated on an
 interior panel clear of the case and deck edge. At 4.53 m/s its sheet carries
 61.7 N and hinge pivot error is 0.071 mm. The field-note images use the actual
 higher boom and ordinary routed hook geometry.
+## Vaulting small ledges (agreed and source built 2026-10-20)
+
+On foot, sprint into a small ledge or jump toward it to vault onto its walkable
+top, including a floating chassis. Use the existing sprint and jump actions; no
+boarding binding or requirement to lower the craft first. Walking into a wall
+should not unexpectedly climb it. Jumping adds only the height the ordinary jump
+has actually gained: the vault's reach is measured above the current feet, not
+an additional jump impulse or a resettable airborne climb. One vault per takeoff
+or grounded approach; no repeated wall climbing.
+
+Sweep the player's full capsule up, across and down before starting, accepting
+only a walkable top with standing clearance. During the brief climb, sweep each
+movement again so newly obstructed paths cancel safely. Track the support's local
+frame on translating/rotating decks; do not teleport to a stale world point,
+apply a boarding impulse, freeze the craft, or override its angular velocity.
+Rope drag still acts during the climb; excessive displacement aborts it. Keep
+the view free, disallow riding/seated/stunned/crouched vaults, and cancel on menus,
+loss of support or external relocation. A save keeps the current safe physical
+position; a resumed run can settle naturally rather than restoring a stale climb.
+
+Tune ledge reach, forward reach, duration, clearance and stamina in Tuning. Record
+Up and Over on completing a real vault. Acceptance: sprint boards a reachable
+ledge; plain walking, tall walls and low ceilings refuse; a jump reaches higher
+only by its actual rise; moving/rotating support does not leave the player behind
+or receive an artificial kick. Large irregular deck support and exposed wreck
+collision are related checks, not a reason to relax vault clearance.
+
+As built in `game/player/ledge_vault.gd`: 0.65 m above current feet, 0.9 m forward,
+0.3 s across three swept phases, 0.02 m clearance and four stamina. The view
+interpolates the real climb between physics ticks; looking remains free. A
+recreated player does not resume a stale climb. Origin shifts preserve the local
+support path. Focused movement 32 passes: ordinary walking refuses, sprint climbs
+0.5 m, a 0.95 m top needs actual jump rise, a 1.6 m wall and low ceiling refuse,
+a newly inserted obstacle cancels, and a translating/rotating 200 kg support stays
+underfoot across an origin shift. During the climb its velocity/spin stay within
+0.02 m/s and 0.01 rad/s of their imposed values. Ordinary physical contact after
+landing is allowed to push a craft; no separate boarding impulse is applied.
+Movement 10 and 11 pass unchanged (ordinary jump/gravity and on-foot frame-rate
+checks). Real unseen 1280×720 captures of approach, rise, crossing and landing
+were inspected in clear light on a simple collision fixture; this validates the
+visible path/clearance, not final craft art or a human judgment of movement feel.
+
+### Large mixed-deck baseline (measured 2026-10-20)
+
+A focused Godot 4.7.2/Jolt audit compared 4-piece and 27-piece decks and a 108-piece
+notched deck, alternating skates and trays, hover off/on and yaw 0/45 degrees.
+The 108-piece craft weighed 1,584 kg, with 54 skates, 54 trays and 18 batteries.
+On real near-level sand (0.12–0.14 m height spread), after settling and then eight
+seconds in 12 m/s wind, grounded support was about 15,508 N, spin stayed below
+0.00029 rad/s and tilt below 0.66 degrees. Floating runner support was zero; it
+drifted downwind at 4.23 m/s with spin below 0.0068 rad/s and tilt below 0.72 degrees.
+No unstable-support or runaway-spin defect was demonstrated in these cases.
+
+Support-solver CPU cost was about 0.11 ms/tick for four grounded pieces,
+0.33 ms for 27 and 1.21–1.24 ms for 108; the latter cost 0.59–0.60 ms airborne.
+These are local headless CPU timings, not total frame or GPU budgets. Mounted
+masts/independent booms, rope impulses, boarding/landings, steep terrain and empty
+battery transitions remain unmeasured in this audit and need combined checks.
+The stress helper emitted teardown resource/instance warnings after completing;
+their cause is unresolved. Preserve this measured baseline when changing support,
+contact or pooled inertia; do not infer stability of every large craft from it.
+
+A separate actual-craft boarding diagnostic also passed on the integrated hybrid
+assembly source: 16 joined chassis, alternating eight skates/eight hover trays,
+one big battery, 233 kg total. Its powered deck sat about 1.039 m above local
+sand. Real sprint/jump input engaged the vault and finished with feet 0.060034 m
+above its local origin (the 0.06 m deck top). Peak angular speed was 0.0632 rad/s,
+peak tilt 0.79 degrees, and runner support zero. This covers one powered boarding
+case; it does not establish steep-terrain or mast/rope-loaded boarding. Like the
+larger stress helper, this external diagnostic reported teardown resource/instance
+warnings after passing; no claim of clean lifecycle follows from the result.
+
+Final edge handling: the first swept rise clears stale grounded state and consumes
+the current takeoff, preventing a canceled climb from counting as another ground
+approach. A vertical ray under the candidate feet also requires an actual top;
+rounded capsule contact against an edge alone is insufficient. Final seating snaps
+at most 0.04 m, so a removed top leaves the player airborne rather than dropping
+them instantly to distant ground. Cancel/save uses the approach pace plus the
+support's point velocity, never the faster controlled climb motion. Movement 32
+captures a live mid-climb Snapshot and checks that its saved vertical velocity is
+not an extra jump, and checks removal of a top while the climb is active. The
+final clear-light GPU run passed these same input cases and its captures were
+inspected again.

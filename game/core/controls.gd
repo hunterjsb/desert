@@ -6,7 +6,7 @@ extends Node
 ## {action} drawn as its key, and what it does in a word or two. The rest is
 ## learned where it's needed (UIRoot.teach) or by doing.
 const HELP := [
-	["MOVING", [["{move_forward}{move_left}{move_back}{move_right}", "move"], ["{sprint}", "sprint"],
+	["MOVING", [["{move_forward}{move_left}{move_back}{move_right}", "move"], ["{sprint}", "sprint / vault"],
 		["{auto_walk}", "auto-walk"], ["{jump}", "jump"], ["{crouch}", "crouch, slide"],
 		["{ride}", "board on or off, up from the helm"]]],
 	["HANDS", [["{hands_grab}", "take, put down"], ["{interact}", "use"], ["{hands_throw}", "throw"],

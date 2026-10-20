@@ -78,6 +78,8 @@ var tumble: Tumble
 ## The helm you sit at, or null.
 var helm: Helm
 
+var vault: LedgeVault
+
 var _tuning := Tuning.current()
 var _sliding := false
 var _jumped := false
@@ -113,6 +115,7 @@ var _touching := Vector2i.ONE
 
 
 func _ready() -> void:
+	vault = LedgeVault.new(self)
 	stamina = _tuning.stamina_max
 	feel = Feel.new()
 	add_child(feel)
@@ -151,6 +154,7 @@ func _physics_process(delta: float) -> void:
 		if Controls.playing() and not vitals.wounds.stunned() else Vector2.ZERO
 	walker.check(input)
 	if flying:
+		vault.cancel()
 		mode = "fly"
 		Dev.put("player/mode", mode)
 		var boost := 5.0 if Controls.held("sprint") else 1.0
@@ -162,10 +166,12 @@ func _physics_process(delta: float) -> void:
 	_clear_of_board()
 	_clear_of_deck()
 	if helm != null:
+		vault.cancel()
 		_at_helm(input)
 		return
 	# A board freed under you (a scenario's, say) still leaves a ride to end.
 	if ride != null:
+		vault.cancel()
 		_ride(delta, input)
 		return
 	if tumble != null:
@@ -183,6 +189,11 @@ func _physics_process(delta: float) -> void:
 	if world == null or not world.has_ground_under(global_position):
 		_stop()
 		return
+	if vault.active:
+		_since_ground += delta
+		vault.step(delta)
+		_left = velocity
+		return
 	if velocity != _left:
 		own = Vector2(velocity.x, velocity.z)
 		_sliding = false
@@ -198,6 +209,7 @@ func _physics_process(delta: float) -> void:
 	var on_floor := is_on_floor()
 	_since_ground = 0.0 if on_floor else _since_ground + delta
 	if on_floor:
+		vault.grounded()
 		_jumped = false
 	var crouch := Controls.held("crouch")
 	var pressed := crouch and not _crouch_was
@@ -265,6 +277,13 @@ func _physics_process(delta: float) -> void:
 		velocity.z += shove.z
 	velocity += get_meta(&"rope_drag", Vector3.ZERO)
 	velocity.y = lift
+	if not crouch and not _sliding and dir != Vector2.ZERO \
+			and (sprinting or _jumped) and vault.begin(dir):
+		_jumped = true
+		_jump_buffer = 0.0
+		vault.step(delta)
+		_left = velocity
+		return
 	var from := global_position
 	var meant := Vector2(velocity.x, velocity.z) * delta
 	move_and_slide()
@@ -369,6 +388,8 @@ func _bridled() -> bool:
 ## Off the board onto the sand, keeping your way: faster than you can run,
 ## you skid. The board goes on as it was going, a body again.
 func step_off() -> void:
+	if vault != null:
+		vault.cancel()
 	if board == null:
 		return
 	var going := Vector3(ride.velocity.x, ride.vy, ride.velocity.y)

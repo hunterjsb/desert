@@ -124,6 +124,8 @@ const TABLE := {
 		"family": &"nomad", "after": [&"ten_days"], "icon": &"bedroll"},
 	&"follow_signal": {"name": "Follow the Signal", "asks": "Find a ruin by following a survey receiver's signal",
 		"family": &"signals", "icon": &"survey_receiver"},
+	&"up_and_over": {"name": "Up and Over", "asks": "Vault onto a ledge",
+		"family": &"nomad", "icon": &"chassis"},
 	&"quick_haul": {"name": "Quick Haul", "asks": "Yank a loaded rope through your hands", "family": &"wind",
 		"icon": &"coil"},
 	&"fairlead": {"name": "Fairlead", "asks": "Redirect a loaded rope through a fitted hook", "family": &"wind",

@@ -204,6 +204,8 @@ func _process(delta: float) -> void:
 	_widen = _ease(_widen, widen, VIEW_SECONDS, delta)
 	# Drawn where you were between the last tick and this one, as the board is.
 	var between := Vector3.ZERO
+	if _player.vault.active:
+		between = to_you * -_player.vault.last_step * (1.0 - Engine.get_physics_interpolation_fraction())
 	if ride != null:
 		between = to_you * -ride.last_step * (1.0 - Engine.get_physics_interpolation_fraction())
 	_bank = _ease(_bank, _view_lean(ride, to_you) if ride != null else 0.0, EYE_SECONDS, delta)
