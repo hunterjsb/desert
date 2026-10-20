@@ -163,3 +163,8 @@ Original mono sounds generated for Desert by `scripts/make_receiver_sounds.py`
 bundled words and common fragments for exact dynamic radio readouts. It uses
 the same model, trimming and levels (`voice/make_words.py`); `VoiceWords` keeps
 the sample ranges. Generation tools and voice weights remain offline.
+
+The speaking stations also reuse this LJ Speech source. Their individual machine
+voices are runtime pitch, cadence and EQ treatments of those same recordings;
+no additional speaker recordings or voice model weights are distributed. Weather,
+local Console announcements and music retain their existing treatment.

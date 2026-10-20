@@ -7,6 +7,7 @@ extends Node
 ## its scale lit. Three frequencies are marked, in a profile of the look-test's
 ## own, so their ticks show on the band, and its signal lamps show what it hears. The real close-up, driven a frame at a time:
 ##   godot --path . --disable-vsync res://look/dial/dial.tscn -- --capture <dir>
+## Add --720p after the capture directory for a 1280 by 720 UI check.
 ## look/dial/shoot.sh builds the sheet. A small window that never takes
 ## focus, nothing but this script moving anything, and silence.
 
@@ -44,7 +45,7 @@ func _capture(out_dir: String) -> void:
 	window.unfocusable = true
 	window.size = Vector2i(960, 540)
 	window.content_scale_mode = Window.CONTENT_SCALE_MODE_VIEWPORT
-	window.content_scale_size = Vector2i(1920, 1080)
+	window.content_scale_size = Vector2i(1280, 720) if OS.get_cmdline_user_args().has("--720p") else Vector2i(1920, 1080)
 	AudioServer.set_bus_mute(0, true)
 	var player := world.player
 	player.set_process_unhandled_input(false)
@@ -134,7 +135,7 @@ func _eyes(eye: Vector3, target: Vector3) -> void:
 
 func _shoot(out_dir: String, name: String, radio: Radio) -> void:
 	for layer: CanvasLayer in world.find_children("*", "CanvasLayer", true, false):
-		layer.visible = false
+		layer.visible = layer.name == &"RadioTuningControls" or (OS.get_cmdline_user_args().has("--720p") and layer is Bars)
 	await get_tree().process_frame
 	await get_tree().process_frame
 	get_viewport().get_texture().get_image().save_png(out_dir.path_join(name + ".png"))

@@ -1063,6 +1063,8 @@ static var _current: Tuning
 ## real life min)"; world time runs at real time); heard this far, m.
 @export var radio_word_gap_seconds: float = 0.04
 @export var radio_report_every: float = 120.0
+## Speech-only station character; weather and local computer speech stay unchanged.
+@export var radio_voice_profiles: Dictionary = {}
 ## Its advisories: a sandstorm riding a prevailing wind this fast or faster,
 ## m/s, is fast; one lasting this long or longer, minutes, looked ahead this
 ## far, is large. Measured over 12 seeds and 6 hours each, the prevailing wind
