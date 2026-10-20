@@ -1700,3 +1700,19 @@ that actual hand join fail. Mass recomputation, power demand and geometry are un
 Starter sheet guides are authored kit data: each declared guided waist sheet
 installs one ordinary removable hook. The origin gear listing counts that same
 hook; constructing the kit must not silently add unlisted equipment.
+
+
+### Manual hand winch (built 2026-10-20; integration pending)
+
+A 3 kg removable drum fits suitable chassis faces, with a 0.34 × 0.36 × 0.48 m
+footprint containing its wheel and grip. Its ordinary tie takes a rope end.
+Look at the mounted wheel with empty hands and work the existing reel/pay-out
+actions; no separate binding. The manual stroke slows under line load and stops
+when attention/reach or free hands are lost. The brake keeps the achieved paid
+length. It consumes no battery. It can wind ordinary lines as well as a sail's
+separate halyard; it does not command a boom angle, steer or automate trim.
+
+The catalog/creative menu expose `hand_winch`. All Hands is earned by winding
+a real halyard until the cloth is essentially fully raised. The movement PRD
+records hoist/migration behavior and focused evidence. Existing saves lacking
+hoist fields retain their mast toggle until converted to a real halyard.

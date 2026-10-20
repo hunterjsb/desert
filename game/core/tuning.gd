@@ -1283,3 +1283,12 @@ static func current() -> Tuning:
 ## clearance round the mast, m. Sail mass remains the fitted part's mass.
 @export var boom_hinge_drag: float = 0.8
 @export var boom_root_clearance: float = 0.01
+
+@export_group("Hand winch")
+@export var winch_notch_m: float = 0.25
+@export var winch_pace_mps: float = 0.9
+@export var winch_pull_n: float = 500.0
+@export var winch_min_m: float = 0.2
+@export var winch_drum_radius: float = 0.09
+@export var halyard_lower_seconds: float = 1.5
+@export var winch_hoist_deed: float = 0.95

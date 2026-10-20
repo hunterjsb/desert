@@ -207,6 +207,10 @@ static func kit(world: World, from: Kit = null) -> Array[Node]:
 			if named[id] is Mast and id in from.guided_sheets:
 				(named[id] as Mast).rig_sheet(line)
 			made.append(line)
+	for id in from.hoists:
+		var hoist := (named[id] as Mast).rig_hoist(named[from.hoists[id]])
+		if hoist != null:
+			made.append(hoist)
 	return made
 
 

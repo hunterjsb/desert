@@ -295,7 +295,7 @@ the frame is a part stuck on the deck.
 - **Nomad ties the trees together:** its card stands apart, with a line from each of the five
   trees, lit where you've done one. It waits on any one deed of a tree, not a named one, so the
   table's `after` gains "any of a family".
-- **The grid holds every tree** (built for step 1, Menus & UI): 54 deeds in eleven families since step 4, Yard Sale and the nomads' gear, each a
+- **The grid holds every tree** (built for step 1, Menus & UI): 55 deeds in eleven families since step 4, Yard Sale and the nomads' gear, each a
   branch or two beside its name down the left, as round one's were (eleven columns side by side
   wouldn't stand left of the prop). It scrolls, and opens on the latest done.
 - **The order.** Each part waits for what it reads to land:
@@ -768,3 +768,10 @@ The first burning flare to call a real Surveyor delivery records `care_package`
 (**Care Package**, Signals, flare icon). The flare records it at the successful
 call, alongside its persistent one-call flag. Developer scenarios/commands do
 not award it, following the existing deed contract.
+
+
+**Manual hoist deed (2026-10-20).** All Hands brings the roster to 55 deeds
+in eleven families. It is recorded where a worked hand winch winds an actual
+halyard to the configured raised fraction; setting cloth height or loading a
+save alone does not award it. Mast hoist/legacy state joins ordinary rig state;
+the existing line/end/guide references preserve its physical halyard route.

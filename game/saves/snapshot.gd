@@ -28,7 +28,7 @@ static var _kept := [
 	[Console, ["page", "log_lines", "_alerts", "_front_near", "evidence", "bearings"]],
 	[Battery, ["charge_wh"]],
 	[Plant, ["growth", "fruit", "state", "wild"]],
-	[Mast, ["raised", "raise", "boom", "boom_spin", "boom_pose", "boom_velocity", "boom_angular", "trim", "load_n", "bend_n", "extend", "upwind_m", "outflow_m"]],
+	[Mast, ["hoist_enabled", "legacy_hoist", "raised", "raise", "boom", "boom_spin", "boom_pose", "boom_velocity", "boom_angular", "trim", "load_n", "bend_n", "extend", "upwind_m", "outflow_m"]],
 	[Helm, ["sailed_m"]],
 	[Chassis, ["_today", "_day_from"]],
 	[PowerBox, ["held"]],
@@ -388,7 +388,7 @@ func _take() -> Dictionary:
 	data.airdrops = drops
 	data.order = order
 	data.carried = player.suit.carried.filter(_known).map(func(p: RigidBody3D) -> Dictionary: return _body(p, false))
-	var strands := ropes.strands.filter(func(s: RopeStrand) -> bool: return is_instance_valid(s))
+	var strands := ropes.strands.filter(func(s: RopeStrand) -> bool: return is_instance_valid(s) and not s.has_meta(&"unclaimed_rig"))
 	data.lines = lines.map(func(line: Line) -> Dictionary: return {"state": line.state, "full": line.full,
 		"routed_by_player": line.routed_by_player, "route_loaded_seconds": line.route_loaded_seconds,
 		"first": line._first, "coil": _ref(line.coil) if is_instance_valid(line.coil) else null,
@@ -606,6 +606,8 @@ func _state(body: RigidBody3D) -> Dictionary:
 
 func _set_state(body: RigidBody3D, rec: Dictionary) -> void:
 	var state: Dictionary = rec.state
+	if body is Mast and not state.has("hoist_enabled"):
+		body.legacy_hoist = true
 	var part := body as Part
 	if part != null and state.has("stats"):
 		part.stats = state.stats.duplicate(true)

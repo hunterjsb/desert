@@ -105,7 +105,7 @@ const ERAS := {
 			[&"battery", 1], [&"salt", 1]],
 		CACHE: [[&"canister", 3], [&"ration", 2], [&"streamer", 1], [&"med_kit", 1], [&"coil", 1], [&"saltbush", 1]],
 		BED: [[&"saltbush", 2], [&"root_tuber", 1]],
-		BEST: [[&"sail", 3], [&"mast", 2], [&"skates", 2], [&"keel", 1], [&"helm_seat", 1], [&"crows_nest", 1],
+		BEST: [[&"sail", 3], [&"mast", 2], [&"hand_winch", 2], [&"skates", 2], [&"keel", 1], [&"helm_seat", 1], [&"crows_nest", 1],
 			[&"racer_board", 1], [&"anemometer", 1]]},
 }
 ## What a kind holds in place of its era's, by socket kind (and "kept": its

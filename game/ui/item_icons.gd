@@ -102,6 +102,8 @@ static func _thing(spec: Dictionary) -> Node3D:
 	var frame: Dictionary = Catalog.DEVICES[spec.frame]
 	var size: Vector3 = frame.size
 	_mesh(thing, Dress.frame(spec.frame, size, frame.get("mast", 0.0)), Transform3D.IDENTITY)
+	if spec.frame == &"hand_winch":
+		_mesh(thing, Dress.winch_wheel(), Transform3D(Basis.IDENTITY, Vector3(0, 0.035, 0)))
 	if frame.has("mast"):
 		_mesh(thing, Dress.rotor(spec.frame), Transform3D(Basis(), Vector3(0.0, size.y * 0.5 + frame.mast, 0.0)))
 	var sockets: Dictionary = spec.get("sockets", {})

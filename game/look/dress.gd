@@ -25,6 +25,41 @@ static func part(id: StringName, size: Vector3, count := -1) -> ArrayMesh:
 	return _cached(&"part", key, func() -> ArrayMesh: return _part(id, size, count))
 
 
+static func halyard_block() -> ArrayMesh:
+	return _cached(&"fitting", &"halyard_block", func() -> ArrayMesh:
+		var b := Paint.Pieces.new()
+		var steel := Paint.coat(Paint.STEEL, 0.2, 0.7)
+		for x in [-0.027, 0.027]:
+			b.box(Vector3(0.012, 0.12, 0.10), Vector3(x, 0, 0), steel, 0.006)
+		b.drum(0.043, 0.045, Vector3.ZERO, Paint.coat(Paint.YELLOW), Basis(Vector3.BACK, PI / 2.0), 16)
+		return b.commit())
+
+
+static func halyard_mount() -> ArrayMesh:
+	return _cached(&"fitting", &"halyard_mount", func() -> ArrayMesh:
+		var b := Paint.Pieces.new()
+		var steel := Paint.coat(Paint.STEEL, 0.2, 0.7)
+		b.box(Vector3(0.16, 0.025, 0.10), Vector3(-0.06, 0.04, 0.025), steel, 0.003)
+		b.drum(0.016, 0.05, Vector3(0, 0.06, 0), steel, Basis.IDENTITY, 10)
+		return b.commit())
+
+
+static func winch_wheel() -> ArrayMesh:
+	return _cached(&"moving", &"winch_wheel", func() -> ArrayMesh:
+		var b := Paint.Pieces.new()
+		var steel := Paint.coat(Paint.STEEL, 0.12, 0.8)
+		var paint := Paint.coat(Paint.YELLOW)
+		var turn := Basis(Vector3.RIGHT, PI / 2.0)
+		b.ring(0.115, 0.14, Vector3(0, 0, 0.17), steel, turn, 20)
+		for i in 3:
+			var a := i * TAU / 3.0
+			b.box(Vector3(0.012, 0.11, 0.016), Vector3(sin(a) * 0.055, cos(a) * 0.055, 0.17),
+				steel, 0.003, Basis(Vector3.BACK, -a))
+		b.drum(0.02, 0.06, Vector3(0.0, 0.12, 0.205), paint, turn, 10)
+		b.drum(0.025, 0.035, Vector3(0, 0, 0.16), steel, turn, 12)
+		return b.commit())
+
+
 ## A compass's needle, its north tip along +Y: red, and lit so it glows a
 ## little, over a steel south half on a black pivot.
 static func needle() -> ArrayMesh:
@@ -489,6 +524,19 @@ static func _frame(id: StringName, size: Vector3, extra: float) -> ArrayMesh:
 				var turn := Basis(Vector3.UP, side * PI * 0.5)
 				for x in [-0.22, 0.22]:
 					_hazard(b, Vector3(0.2, 0.03, 0.012), turn * Vector3(x, 0.0, h.z - 0.004), turn)
+		&"hand_winch":
+			b.box(Vector3(0.31, 0.04, 0.28), Vector3(0, -0.16, 0), gun, 0.014)
+			for x in [-0.12, 0.12]:
+				b.box(Vector3(0.035, 0.22, 0.18), Vector3(x, -0.02, 0), teal, 0.012)
+			var axle := Basis(Vector3.RIGHT, PI / 2.0)
+			b.drum(0.087, 0.21, Vector3(0, 0.035, 0), black, axle, 16)
+			for z in [-0.105, 0.105]:
+				b.drum(0.11, 0.018, Vector3(0, 0.035, z), gun, axle, 20)
+			for z in [-0.07, -0.035, 0.0, 0.035, 0.07]:
+				b.ring(0.083, 0.092, Vector3(0, 0.035, z), Paint.coat(Color(0.42, 0.31, 0.2)), axle, 16)
+			for x in [-0.12, 0.12]:
+				for z in [-0.1, 0.1]:
+					b.drum(0.014, 0.012, Vector3(x, -0.115, z), gun, Basis.IDENTITY, 6)
 		&"mast":
 			# A stowed pole, its upper reach telescoped inside, a collar at its
 			# foot and the gooseneck the boom swings on.

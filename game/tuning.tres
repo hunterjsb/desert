@@ -237,3 +237,10 @@ dial_close_up = false
 
 stoker_burn_s = 30.0
 stoker_stock = 3
+winch_notch_m = 0.25
+winch_pace_mps = 0.9
+winch_pull_n = 500.0
+winch_min_m = 0.2
+winch_drum_radius = 0.09
+halyard_lower_seconds = 1.5
+winch_hoist_deed = 0.95

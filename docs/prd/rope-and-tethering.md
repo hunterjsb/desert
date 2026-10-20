@@ -692,22 +692,48 @@ selected-line isolation, recovery, end of haul and ordinary-held-object priority
 the physical haul, without calling the deed directly. These checks do not yet
 establish final Varran handling with the new articulated boom.
 
+### Sailing disassembly and ground recovery (built 2026-10-20; integration pending)
 
-## Sailing disassembly and dropped-rope follow-up (2026-10-20; not fixed)
+Playtest reports concern removal of the sail and rope detachment from the board
+(the board corrects the initial report of a sail-end detachment bug). Trace the
+actual pick ray before assigning a cause. All physical boom hits must map back
+to their removable fitted sail, and visible board tie ends must remain pickable
+through normal take interactions. No new detachment action.
 
-Playtest report: Hunter could not disconnect/remove the sail, or detach the
-rope from the board. The latter corrects the initial report of a rope on the
-sail: investigate the board attachment, not a reported sail-end detachment bug.
-Reproduce both interactions before assigning a cause. Sail removal should use
-the existing physical fitting/removal flow, and board lines should be detachable
-through the ordinary rope interactions.
+A fully loose line lying on the ground can be recovered by aiming at its
+strand and taking it, preserving its total length as a coil. A line still
+anchored at either end must not be silently detached or reeled from an arbitrary
+middle point: take its loose end instead. Snapped halves obey the same rule.
+Check occlusion and reach, plus persistence and no duplicate rope.
 
-Requested next: loose rope on the ground must be recoverable through normal
-pickup, including dropped ends. Establish whether picking the strand itself
-should take its nearest loose end or whether the loose end needs a clearer
-pickup target; do not silently detach an anchored line. Check untied, dropped
-and snapped cases, remaining connected ends, and save/load without losing or
-duplicating rope.
+**As built and measured.** A real ray against the new articulated spar previously
+returned no removable object; the focused sail-take check failed twice before
+mapping the physical boom back to its fitted sail, then passed (7 s). Occupied
+tie knots receive bounded, front-side, occlusion-checked aiming assistance.
+A device hit now permits the existing small-item assist, fixing a reproduced
+case where a dropped end beside a stake lost to the stake's occupied socket.
+Board-hook detachment followed by floor-end pickup preserves the far anchor (7 s).
+The original exact playtest setup is not known.
 
-Status: recorded for the next sailing pass alongside the chassis-mounted hoist.
-These reports are not reproduced or fixed, and are not claims in the 0.2.2 notes.
+Taking the middle of a fully loose strand gathers and reopens that same Line;
+its full length is retained and no second rope appears (6 s). A partly anchored
+line still requires its free end. Ground-strand targeting checks reach and
+line of sight. Actual pulley captures revealed spline overshoot above a sharp
+guide: only the two curve links adjoining the real guide now follow their
+legs, on CPU and GPU. A focused curve check keeps the displayed bend on the
+pulley (9 s); rope forces and paid lengths are unchanged.
+
+
+**Integration correction (2026-10-20).** Ring-hole aiming assistance applies
+to tie sockets supplied by fitted hooks. It must not replace a hit on a
+carryable stake's own frame: taking the stake whole, with its line attached,
+remains the camp-towing interaction. Native tie knots remain directly pickable.
+Sailing tow fixtures identify sheet and tow lines separately from the new
+halyard, and keep the halyard in ordinary rope accounting.
+
+The combined-candidate regression reproduced all three CI failures locally.
+After restricting assistance, whole-stake pickup and a 40 m camp tow pass
+(35 s), and the board's full take, mount, charging and save cycle passes
+(67 s). Hook-end detachment and floor-end recovery still pass (9 s). The
+corrected tow fixture passes its original steering, opposed-load injury and
+selected-line reeling thresholds with all three real ropes intact (28 s).
