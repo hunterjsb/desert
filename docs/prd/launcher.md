@@ -14,8 +14,9 @@ to open the launcher, see the latest available game version, and install or play
 
 - Keep **Play** and **Source** as distinct areas. Play is the default and shows published
   GitHub game releases, installed versions and install state. Source is a developer tool.
-- In Play, list releases newest first, identify the latest release, show its version and
-  release notes, and let the user install, launch, update or uninstall a game version.
+- In Play, use a version dropdown ordered newest first, identify the latest published
+  release, show its version and scrollable release notes, and let the user install,
+  launch, update or uninstall a game version.
   Download the matching Linux, Windows or macOS archive from the repository's GitHub
   release. Keep user saves outside managed install folders.
 - Find existing installations in the launcher's known user-data locations and let users
@@ -24,11 +25,12 @@ to open the launcher, see the latest available game version, and install or play
 - Manage only launcher-owned install folders. Uninstall removes the selected game build
   and its files, after a clear confirmation; it does not remove saves or user-selected
   folders.
-- In Source, present known Git worktrees as a sortable table with branch/worktree name,
+- In Source, present known Git worktrees in a searchable table with branch/worktree name,
   latest commit time, truncated latest commit message, project version and local-change
-  state. Offer explicit **Run game** and **Open editor** buttons. Do not show arbitrary
-  branches without a checked-out project; provide a refresh and a way to hide stale
-  entries. Never delete worktrees or branches automatically.
+  state. Keep pinned branches at the top, with `master` pinned by default. Offer explicit
+  **Run game** and **Open editor** buttons. Do not show arbitrary branches without a
+  checked-out project; provide a refresh and a way to hide stale entries. Never delete
+  worktrees or branches automatically.
 - Source discovery is scoped to a selected repository and its Git worktrees. Users can
   choose a different repository path when discovery fails. No machine-specific absolute
   paths are part of the app.
@@ -40,9 +42,6 @@ to open the launcher, see the latest available game version, and install or play
 
 ## Product decisions still open
 
-- Whether launcher's first public release is a separately tagged GitHub release or part
-  of each game release. Initial implementation should use a separate launcher tag and
-  release workflow so launcher updates do not require a game version bump.
 - Whether an update replaces the prior installed version or keeps multiple versions.
   Initial implementation should keep multiple versions so the version browser remains
   useful and rollback is straightforward.
@@ -51,6 +50,13 @@ to open the launcher, see the latest available game version, and install or play
   worktree/branch deletion needs a separate, explicit design.
 - How installer signing/notarization will be handled for public Windows and macOS
   distribution. Initial CI may produce unsigned packages and must label them accurately.
+
+## Resolved release decisions
+
+- The launcher releases independently of the game, starting with tag
+  `launcher-v0.1.0`.
+- The initial Windows and macOS builds are unsigned; the GitHub release must say so and
+  note that macOS builds are not notarized.
 
 ## Implementation shape
 
@@ -68,16 +74,26 @@ to open the launcher, see the latest available game version, and install or play
 ## As built
 
 **First implementation, 2026-10-20:** `launcher/main.py` is a standalone PySide6 desktop
-app. Play opens on the GitHub release list, selects the newest release, shows release
-notes and supports platform-matched download, launch, update, uninstall and opening the
-install folder. It remembers a custom install location, searches standard user game
-folders for version-named exports, and limits uninstall to folders registered with the
-launcher. Game saves are outside these install folders.
+app. Play opens on a GitHub release version dropdown, selects the newest published game
+release and shows its full release notes in a scrollable panel. It supports
+platform-matched download, launch, update, uninstall and opening the install folder. It
+remembers a custom install location, searches standard user game folders for version-
+named exports, and limits uninstall to folders registered with the launcher. Game saves
+are outside these install folders.
 
 Source discovers checked-out Git worktrees, with branch, local folder name, commit date,
-truncated summary, `project.godot` version and dirty state. Run and editor are separate
-buttons. Users can select a repository path and hide or show worktrees without removing
-files. Branch-only refs are not shown because they have no checked-out game to launch.
+truncated summary, `project.godot` version and dirty state. A text filter narrows the
+list; pinned branches sort above recent unpinned worktrees, with `master` pinned by
+default. Run and editor are separate buttons. Users can select a repository path and
+hide or show worktrees without removing files. Branch-only refs are not shown because
+they have no checked-out game to launch.
+
+The app uses a compact orbital monogram rather than the game's dune illustration for its
+window and launcher icon.
+
+The Play browser shows published game releases only. The current source project's
+`project.godot` version can be newer than GitHub's latest published release; the UI
+labels the selected version as the latest **published** release so these states are clear.
 
 `launcher-release.yml` packages Linux x86_64, Windows x86_64, and macOS arm64 and x86_64
 builds on launcher tags. Signing and notarization remain open. This is an initial

@@ -1,26 +1,26 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
   <defs>
-    <linearGradient id="sky" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#21243a"/>
-      <stop offset="1" stop-color="#39243b"/>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#18212d"/>
+      <stop offset="1" stop-color="#282238"/>
     </linearGradient>
-    <linearGradient id="dune" x1="0" y1="0" x2="0.85" y2="1">
-      <stop offset="0" stop-color="#f3bd72"/>
-      <stop offset="1" stop-color="#ca684d"/>
+    <linearGradient id="mark" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffd08a"/>
+      <stop offset="1" stop-color="#ed805d"/>
     </linearGradient>
-    <clipPath id="round"><rect x="4" y="4" width="120" height="120" rx="28"/></clipPath>
+    <linearGradient id="orbit" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#67d8d0"/>
+      <stop offset="1" stop-color="#9be9d5"/>
+    </linearGradient>
+    <clipPath id="tile"><rect x="4" y="4" width="120" height="120" rx="30"/></clipPath>
   </defs>
-  <g clip-path="url(#round)">
-    <rect x="4" y="4" width="120" height="120" fill="url(#sky)"/>
-    <circle cx="96" cy="31" r="19" fill="#e8aa68"/>
-    <circle cx="103" cy="25" r="18" fill="#29243b"/>
-    <circle cx="33" cy="32" r="2" fill="#f5d9a4"/>
-    <circle cx="53" cy="18" r="1.7" fill="#f5d9a4"/>
-    <circle cx="73" cy="42" r="1.5" fill="#f5d9a4"/>
-    <path d="M5 82c20-5 27-24 46-27 17-3 22 8 34 7-8 8-19 9-25 15 13-4 26-4 39-1 13 4 19 11 29 13v41H5z" fill="#754044"/>
-    <path d="M4 100c21-14 36-19 55-16 19 3 32 16 65 10v38H4z" fill="url(#dune)"/>
-    <path d="M15 91c18-11 31-12 47-9 11 2 20 9 30 13-20-4-34-5-48-1-9 2-17 5-29 7z" fill="#f0c27c"/>
-    <path d="M25 72c12-11 29-17 42-15 9 1 13 6 16 11-10-4-17-4-24-1-8 4-13 10-24 12 12-8 18-15 28-18-13 1-26 6-38 17z" fill="none" stroke="#f0b365" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M78 85c8-4 17-5 27-4" fill="none" stroke="#f7d39a" stroke-width="3" stroke-linecap="round" opacity=".9"/>
+  <g clip-path="url(#tile)">
+    <rect x="4" y="4" width="120" height="120" fill="url(#background)"/>
+    <circle cx="63" cy="62" r="44" fill="#ffffff" opacity=".025"/>
+    <path d="M43 31v66h17c21 0 34-13 34-33S81 31 60 31H43Z"
+          fill="none" stroke="url(#mark)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M24 84c15 9 34 11 51 4 13-5 23-16 29-31"
+          fill="none" stroke="url(#orbit)" stroke-width="4.5" stroke-linecap="round"/>
+    <circle cx="104" cy="53" r="5" fill="#9be9d5"/>
   </g>
 </svg>

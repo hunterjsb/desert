@@ -74,4 +74,4 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ github.ref_name }}
-        run: gh release create "$TAG" dist/* --title "Desert Launcher ${TAG#launcher-v}" --generate-notes
+        run: gh release create "$TAG" dist/* --title "Desert Launcher ${TAG#launcher-v}" --notes "Cross-platform desktop launcher packages. Windows builds are unsigned and may show SmartScreen. macOS builds are unsigned and not notarized, so macOS may block them on first launch."

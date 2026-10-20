@@ -20,9 +20,9 @@ from pathlib import Path
 from PySide6.QtCore import Qt, QThread, Signal
 from PySide6.QtGui import QFont, QIcon
 from PySide6.QtWidgets import (
-    QApplication, QCheckBox, QFileDialog, QHBoxLayout, QLabel, QLineEdit,
-    QMainWindow, QMessageBox, QPushButton, QTabWidget, QTableWidget,
-    QTableWidgetItem, QVBoxLayout, QWidget,
+    QApplication, QCheckBox, QComboBox, QFileDialog, QHBoxLayout, QLabel,
+    QHeaderView, QLineEdit, QMainWindow, QMessageBox, QPushButton, QTabWidget,
+    QTableWidget, QTableWidgetItem, QTextBrowser, QVBoxLayout, QWidget,
 )
 
 OWNER = "hunterjsb"
@@ -123,7 +123,7 @@ def fetch_releases() -> list[Release]:
         asset = next((a for a in assets if a.get("name", "").startswith("desert-") and a.get("name", "").endswith(f"-{suffix}.zip")), None) if suffix else None
         results.append(Release(
             tag=tag, title=entry.get("name") or tag, version=tag.removeprefix("v"),
-            published=entry.get("published_at", "")[:10], notes=entry.get("body") or "",
+            published=entry.get("published_at", ""), notes=entry.get("body") or "",
             asset_url=asset.get("browser_download_url") if asset else None,
             asset_name=asset.get("name") if asset else None,
         ))
@@ -319,16 +319,19 @@ class Launcher(QMainWindow):
             QTabBar::tab:selected { background: #34312b; color: #f3bc61; }
             QTableWidget { background: #202223; alternate-background-color: #252728; gridline-color: #383a3b; border: 1px solid #393b3c; border-radius: 6px; }
             QHeaderView::section { background: #2b2d2e; color: #c6c0b5; padding: 8px; border: 0; }
-            QPushButton { background: #37393a; border: 1px solid #555657; border-radius: 6px; padding: 9px 15px; }
+            QComboBox, QLineEdit, QTextBrowser { background: #202223; border: 1px solid #444647; border-radius: 6px; padding: 9px 11px; }
+            QTextBrowser { padding: 12px; }
+            QPushButton { background: #37393a; border: 1px solid #555657; border-radius: 6px; padding: 9px 14px; }
             QPushButton:hover { background: #47494a; }
             QPushButton#primary { background: #d59a43; color: #171819; border: 0; font-weight: 700; }
             QPushButton#primary:hover { background: #e6aa50; }
-            QLineEdit { background: #202223; border: 1px solid #4b4d4e; border-radius: 5px; padding: 8px; }
+            QComboBox::drop-down { border: 0; width: 28px; }
         """)
 
         center = QWidget()
         outer = QVBoxLayout(center)
         outer.setContentsMargins(28, 24, 28, 24)
+        outer.setSpacing(12)
         title = QLabel("DESERT")
         title.setObjectName("title")
         subtitle = QLabel("A quiet place in a very large desert.")
@@ -346,6 +349,8 @@ class Launcher(QMainWindow):
     def _play_page(self):
         page = QWidget()
         layout = QVBoxLayout(page)
+        layout.setContentsMargins(18, 18, 18, 18)
+        layout.setSpacing(12)
         top = QHBoxLayout()
         self.release_status = QLabel("Checking for releases…")
         self.refresh_release_button = QPushButton("Refresh")
@@ -354,19 +359,20 @@ class Launcher(QMainWindow):
         top.addStretch(1)
         top.addWidget(self.refresh_release_button)
         layout.addLayout(top)
-        self.release_table = QTableWidget(0, 4)
-        self.release_table.setHorizontalHeaderLabels(["Version", "Release", "Published", "Status"])
-        self.release_table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
-        self.release_table.setSelectionMode(QTableWidget.SelectionMode.SingleSelection)
-        self.release_table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
-        self.release_table.setAlternatingRowColors(True)
-        self.release_table.verticalHeader().hide()
-        self.release_table.horizontalHeader().setStretchLastSection(True)
-        self.release_table.itemSelectionChanged.connect(self.show_release_notes)
-        layout.addWidget(self.release_table, 2)
-        self.release_notes = QLabel("Select a release to view its notes.")
-        self.release_notes.setWordWrap(True)
-        self.release_notes.setMinimumHeight(85)
+        release_line = QHBoxLayout()
+        release_line.addWidget(QLabel("Game version"))
+        self.release_selector = QComboBox()
+        self.release_selector.setMinimumHeight(42)
+        self.release_selector.currentIndexChanged.connect(self.show_release_notes)
+        release_line.addWidget(self.release_selector, 1)
+        layout.addLayout(release_line)
+        self.release_meta = QLabel("The newest published version will be selected automatically.")
+        self.release_meta.setObjectName("subtitle")
+        layout.addWidget(self.release_meta)
+        self.release_notes = QTextBrowser()
+        self.release_notes.setPlaceholderText("Release notes will appear here.")
+        self.release_notes.setOpenExternalLinks(True)
+        self.release_notes.setMinimumHeight(165)
         layout.addWidget(self.release_notes, 1)
         self.install_root = QLineEdit(str(self.settings.get("install_root") or user_data() / "games"))
         self.install_root.setReadOnly(True)
@@ -398,6 +404,8 @@ class Launcher(QMainWindow):
     def _source_page(self):
         page = QWidget()
         layout = QVBoxLayout(page)
+        layout.setContentsMargins(18, 18, 18, 18)
+        layout.setSpacing(10)
         repo_line = QHBoxLayout()
         self.repo_path = QLineEdit(default_repo(self.settings))
         self.repo_path.setPlaceholderText("Choose the Desert repository folder")
@@ -412,17 +420,34 @@ class Launcher(QMainWindow):
         layout.addLayout(repo_line)
         self.source_status = QLabel("Choose a repository to list its worktrees.")
         layout.addWidget(self.source_status)
+        filter_line = QHBoxLayout()
+        self.source_filter = QLineEdit()
+        self.source_filter.setPlaceholderText("Find a branch, worktree, or commit…")
+        self.source_filter.textChanged.connect(self.render_sources)
+        filter_line.addWidget(self.source_filter, 1)
+        self.pin_source = QPushButton("Pin branch")
+        self.pin_source.clicked.connect(self.toggle_source_pin)
+        filter_line.addWidget(self.pin_source)
+        layout.addLayout(filter_line)
         self.source_table = QTableWidget(0, 5)
         self.source_table.setHorizontalHeaderLabels(["Branch / worktree", "Last commit", "Commit message", "Version", "State"])
         self.source_table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         self.source_table.setSelectionMode(QTableWidget.SelectionMode.SingleSelection)
         self.source_table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
         self.source_table.verticalHeader().hide()
-        self.source_table.horizontalHeader().setStretchLastSection(True)
+        header = self.source_table.horizontalHeader()
+        header.setSectionResizeMode(0, QHeaderView.ResizeMode.Interactive)
+        header.setSectionResizeMode(1, QHeaderView.ResizeMode.Interactive)
+        header.setSectionResizeMode(2, QHeaderView.ResizeMode.Stretch)
+        header.setSectionResizeMode(3, QHeaderView.ResizeMode.Interactive)
+        header.setSectionResizeMode(4, QHeaderView.ResizeMode.Interactive)
+        for column, width in ((0, 210), (1, 140), (3, 110), (4, 150)):
+            self.source_table.setColumnWidth(column, width)
         self.source_table.setAlternatingRowColors(True)
         self.source_table.itemSelectionChanged.connect(self.update_source_actions)
         layout.addWidget(self.source_table)
         self.hidden_sources = set(self.settings.get("hidden_sources", []))
+        self.pinned_sources = list(self.settings.get("pinned_sources", ["branch:master"]))
         self.show_hidden = QCheckBox("Show hidden worktrees")
         self.show_hidden.toggled.connect(self.refresh_sources)
         layout.addWidget(self.show_hidden)
@@ -460,33 +485,35 @@ class Launcher(QMainWindow):
         if error:
             self.release_status.setText(f"Could not reach GitHub: {error}")
             return
+        previous_tag = self.selected_release().tag if self.selected_release() else None
         self.releases = releases
-        installed = installed_games()
-        self.release_table.setRowCount(len(releases))
-        for row, release in enumerate(releases):
-            state = "Installed" if installation_for(release.version, installed) else ("Available" if release.asset_url else "Unavailable on this platform")
-            for column, value in enumerate((release.version, release.title, release.published, state)):
-                item = QTableWidgetItem(value)
-                item.setData(Qt.ItemDataRole.UserRole, row)
-                self.release_table.setItem(row, column, item)
-        self.release_table.resizeColumnsToContents()
+        self.release_selector.blockSignals(True)
+        self.release_selector.clear()
+        for index, release in enumerate(releases):
+            latest = " · Latest published" if index == 0 else ""
+            self.release_selector.addItem(f"{release.version} — {release.title}{latest}", release.tag)
+        selected = self.release_selector.findData(previous_tag) if previous_tag else -1
+        self.release_selector.setCurrentIndex(selected if selected >= 0 else (0 if releases else -1))
+        self.release_selector.blockSignals(False)
         latest = releases[0].version if releases else ""
-        self.release_status.setText(f"Latest: Desert {latest} · {len(releases)} releases" if latest else "No releases found.")
-        if releases:
-            self.release_table.selectRow(0)
-        self.update_play_buttons()
+        self.release_status.setText(f"Latest published: Desert {latest} · {len(releases)} versions" if latest else "No published game releases found.")
+        self.show_release_notes()
 
     def selected_release(self):
-        row = self.release_table.currentRow()
-        return self.releases[row] if 0 <= row < len(self.releases) else None
+        tag = self.release_selector.currentData()
+        return next((release for release in self.releases if release.tag == tag), None)
 
     def show_release_notes(self):
         release = self.selected_release()
         if release:
-            excerpt = release.notes.strip() or "No release notes."
-            if len(excerpt) > 1200:
-                excerpt = excerpt[:1200].rsplit(" ", 1)[0] + "…"
-            self.release_notes.setText(excerpt)
+            self.release_notes.setMarkdown(release.notes.strip() or "No release notes.")
+            installed = installation_for(release.version, installed_games())
+            state = "Installed" if installed else ("Available" if release.asset_url else "Unavailable on this platform")
+            published = release.published[:10] or "date unknown"
+            self.release_meta.setText(f"Published {published}  ·  {state}")
+        else:
+            self.release_notes.clear()
+            self.release_meta.setText("No published game releases found.")
         self.update_play_buttons()
 
     def update_play_buttons(self):
@@ -541,9 +568,11 @@ class Launcher(QMainWindow):
             self.refresh_installed_status()
 
     def refresh_installed_status(self):
-        installed = installed_games()
-        for row, release in enumerate(self.releases):
-            self.release_table.item(row, 3).setText("Installed" if installation_for(release.version, installed) else ("Available" if release.asset_url else "Unavailable on this platform"))
+        release = self.selected_release()
+        if release:
+            installed = installation_for(release.version, installed_games())
+            state = "Installed" if installed else ("Available" if release.asset_url else "Unavailable on this platform")
+            self.release_meta.setText(f"Published {release.published[:10] or 'date unknown'}  ·  {state}")
         self.update_play_buttons()
 
     def uninstall_selected(self):
@@ -603,7 +632,35 @@ class Launcher(QMainWindow):
         except RuntimeError as error:
             self.source_rows = []
             error_text = str(error)
+        self.source_error = error_text
+        self.render_sources()
+
+    @staticmethod
+    def source_identity(tree: SourceTree) -> str:
+        if tree.branch.startswith("detached "):
+            return f"path:{tree.path}"
+        return f"branch:{tree.branch}"
+
+    def visible_sources(self) -> list[SourceTree]:
+        query = self.source_filter.text().strip().casefold()
         visible = [tree for tree in self.source_rows if self.show_hidden.isChecked() or str(tree.path) not in self.hidden_sources]
+        if query:
+            visible = [tree for tree in visible if query in " ".join((tree.branch, tree.path.name, str(tree.path), tree.message, tree.version)).casefold()]
+        pin_order = {key: index for index, key in enumerate(self.pinned_sources)}
+        visible.sort(key=lambda tree: (
+            0 if self.source_identity(tree) in pin_order else 1,
+            pin_order.get(self.source_identity(tree), 0),
+            -int(tree.timestamp or 0),
+            tree.branch.casefold(),
+        ))
+        return visible
+
+    def render_sources(self):
+        current_row = self.source_table.currentRow()
+        current_item = self.source_table.item(current_row, 0) if current_row >= 0 else None
+        previous_path = current_item.toolTip() if current_item else None
+        visible = self.visible_sources()
+        repo = Path(self.repo_path.text()).expanduser()
         self.source_table.setRowCount(len(visible))
         for row, tree in enumerate(visible):
             try:
@@ -611,15 +668,15 @@ class Launcher(QMainWindow):
             except (ValueError, OSError):
                 date = "Unknown"
             state = "Uncommitted changes" if tree.dirty else "Clean"
-            values = (f"{tree.branch} · {tree.path.name}", date, tree.message[:72] + ("…" if len(tree.message) > 72 else ""), tree.version, state)
+            pin = "★ " if self.source_identity(tree) in self.pinned_sources else ""
+            values = (f"{pin}{tree.branch} · {tree.path.name}", date, tree.message[:72] + ("…" if len(tree.message) > 72 else ""), tree.version, state)
             for column, value in enumerate(values):
                 item = QTableWidgetItem(value)
                 item.setToolTip(str(tree.path) if column == 0 else tree.message)
                 item.setData(Qt.ItemDataRole.UserRole, row)
                 self.source_table.setItem(row, column, item)
-        self.source_table.resizeColumnsToContents()
-        if error_text:
-            self.source_status.setText(error_text)
+        if self.source_error:
+            self.source_status.setText(self.source_error)
         elif visible:
             self.source_status.setText(f"{len(visible)} playable worktree(s) in {repo}")
         else:
@@ -628,7 +685,7 @@ class Launcher(QMainWindow):
         self.open_editor.setEnabled(bool(visible))
         if visible:
             self.source_table.selectRow(0)
-            last_path = self.settings.get("worktree")
+            last_path = previous_path or self.settings.get("worktree")
             for row, tree in enumerate(visible):
                 if str(tree.path) == last_path:
                     self.source_table.selectRow(row)
@@ -637,7 +694,7 @@ class Launcher(QMainWindow):
 
     def selected_source(self):
         row = self.source_table.currentRow()
-        visible = [tree for tree in self.source_rows if self.show_hidden.isChecked() or str(tree.path) not in self.hidden_sources]
+        visible = self.visible_sources()
         return visible[row] if 0 <= row < len(visible) else None
 
     def hide_selected_source(self):
@@ -661,8 +718,24 @@ class Launcher(QMainWindow):
     def update_source_actions(self):
         tree = self.selected_source()
         hidden = bool(tree and str(tree.path) in self.hidden_sources)
+        pinned = bool(tree and self.source_identity(tree) in self.pinned_sources)
         self.hide_source.setEnabled(bool(tree and not hidden))
         self.restore_source.setEnabled(bool(tree and hidden))
+        self.pin_source.setText("Unpin branch" if pinned else "Pin branch")
+        self.pin_source.setEnabled(bool(tree))
+
+    def toggle_source_pin(self):
+        tree = self.selected_source()
+        if not tree:
+            return
+        identity = self.source_identity(tree)
+        if identity in self.pinned_sources:
+            self.pinned_sources.remove(identity)
+        else:
+            self.pinned_sources.append(identity)
+        self.settings["pinned_sources"] = self.pinned_sources
+        write_settings(self.settings)
+        self.render_sources()
 
     def launch_source(self, editor: bool):
         tree = self.selected_source()
