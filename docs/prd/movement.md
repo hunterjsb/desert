@@ -1673,3 +1673,24 @@ onto different sand and produced a 0.362 m/s tick change, above the unchanged
 0.3 bound. The original-lane fixture correction does not resolve or classify
 that separate contact case. It does not establish stability on every slope
 or replace unassisted sailing acceptance.
+
+
+### Chassis-mounted sail hoist (agreed direction, 2026-10-20; not built)
+
+Hunter wants a new wheel attachment on the chassis to raise the sail, replacing
+the current use-on-mast toggle. A hand winch is the wheel/drum that winds a line;
+a pulley redirects it, and the sail's lifting line is its halyard. This is a
+manual sailing attachment, separate from the proposed powered/Console sheet trimmer.
+
+Proposed interaction: mount a hand winch where it fits, connect the halyard via
+a masthead pulley, and work the wheel to hoist or lower the cloth. The winch
+holds its paid length when released. Keep the halyard distinct from the sheet:
+raising cloth and controlling the boom are different actions. Reuse ordinary
+line attachment/routing and the existing work-line controls; add no dedicated
+key. Exact rigging, mechanical load model and old-save migration need design
+and verification before implementation. New and existing sailing setups must
+remain usable; refresh the visual notes when their illustrated controls change.
+
+Status: design recorded only. The current verified play build still raises and
+furls by use on the mast. This attachment is not part of the prepared 0.2.2
+release candidate.
