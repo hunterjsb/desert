@@ -60,6 +60,8 @@ func _capture(out_dir: String) -> void:
 		Profile.mark(each[0], "", each[1], 1.0)
 	await _ground()
 	await Scenarios.apply(world, Scenarios.by_key("clear_skies"))
+	# The unified clear setup supplies a flare; this fixture needs free hands.
+	player.hands.drop()
 	await _ground()
 	var radio: Radio = world.get_meta(&"scenario_kit").filter(func(n: Node) -> bool: return n is Radio)[0]
 	player.set_physics_process(false)
@@ -94,6 +96,10 @@ func _capture(out_dir: String) -> void:
 	radio.freeze = false
 	player.hands.hold(radio)
 	await _ticks(30)
+	if player.hands.held != radio:
+		push_error("The held dial capture must hold its radio")
+		get_tree().quit(1)
+		return
 	radio.tune(-3)
 	close.tuned(radio)
 	await _ticks(40)

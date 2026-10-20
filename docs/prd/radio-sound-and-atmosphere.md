@@ -1208,3 +1208,9 @@ Measured rendered loudness spans -24.1 to -21.4 LUFS and true peaks -8.8 to -4.7
 dBFS, without clipping. This checks intelligibility and levels, not final character
 acceptance in play. `look/radio_voices/record.tscn` reproduces the comparison through
 the actual speech buses without changing player data or opening a game window.
+
+After combining the clear scenarios, the dial capture puts down the supplied
+flare before staging its held radio and refuses a held-view capture unless that
+radio is actually in hand. The unified clear setup check passes (6 s), and the
+held 1280×720 frame was inspected again with survival bars visible. The shared
+one-theme check also passes (6 s).
