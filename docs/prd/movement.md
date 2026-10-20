@@ -1737,6 +1737,12 @@ hoisted rig (`look/hoist/hoist.tscn`). The metal/teal drum, wound rope, yellow
 handle, mounting plate and masthead block use the established worn materials.
 The catalog footprint contains the moving wheel and grip.
 
+Additional narrow checks preserve the previous save record shape without hoist
+fields, then restore and furl through the legacy control (11 s), and clear
+cloth hauling load immediately when the sail is removed (6 s). Final GPU
+inspection corrected the handwheel's rotation pivot to the drum axle and lets
+the sheave swivel toward its actual tail under a fixed mast bracket.
+
 
 ### Authored rig balance and hoist hardware (agreed follow-up, 2026-10-20)
 
@@ -1753,3 +1759,4 @@ winch and ordinary pre-rigged halyard. Kit data names both endpoints and counts
 the supplied line. Generated salvage can provide the same winch so a player
 can assemble the mechanism outside a dev scenario. Refresh the illustrated
 sailing controls to include hoisting at the wheel.
+

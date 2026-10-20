@@ -74,6 +74,7 @@ const POLE := Vector2(0.75, HEAD_Y - 0.06)
 var hoist_enabled := false
 var legacy_hoist := false
 var pulley: RopeEnd
+var _pulley_block: MeshInstance3D
 var _head_at := 0.0
 var _halyard_load: Rope
 var raised := false
@@ -154,10 +155,14 @@ func _ready() -> void:
 	process_physics_priority = -15
 	_build_look()
 	pulley = RopeEnd.make(self, PULLEY_AT, false)
-	var block := MeshInstance3D.new()
-	block.mesh = Dress.halyard_block()
-	block.position = PULLEY_AT - _top.position - Vector3.UP * 0.043
-	_top.add_child(block)
+	_pulley_block = MeshInstance3D.new()
+	_pulley_block.mesh = Dress.halyard_block()
+	_pulley_block.position = PULLEY_AT - _top.position - Vector3.UP * 0.043
+	_top.add_child(_pulley_block)
+	var bracket := MeshInstance3D.new()
+	bracket.mesh = Dress.halyard_mount()
+	bracket.position = _pulley_block.position
+	_top.add_child(bracket)
 	if world != null:
 		world.origin_shifted.connect(_shift_boom)
 
@@ -261,6 +266,8 @@ func _hoist(delta: float, area: float) -> void:
 		var head := halyard_socket()
 		var tip := Line._tip(head.part)
 		var far := rope.b if rope.a == tip else rope.a
+		var toward := global_basis.inverse() * (far.global_position - pulley.global_position)
+		_pulley_block.rotation.y = atan2(-toward.x, -toward.z)
 		if far.has_meta(&"socket") or world.ropes.on_you(far.holder):
 			var inboard := far.global_position.distance_to(pulley.global_position)
 			wanted = clampf(1.0 - (rope.length - inboard - 0.16) / LUFF, 0.0, 1.0)
