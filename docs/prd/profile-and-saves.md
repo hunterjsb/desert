@@ -455,13 +455,24 @@ round her as there are anywhere the sand runs deep.
 - **Opened by both her deeds,** Field Kit and Spadework (Dune Reader before them in the grid). A kit's
   `unlock` names one deed or unlock, or several apart by commas, all of them needed (`Kit.unlocks`);
   each one says it opens her, and she's marked new only once the last is done.
-- **The full archaeology setup on a rig** (`Rig`), beside you to your right, resting on the sand: a deck
+- **The archaeology setup on a rig** (`Rig`), beside you to your right, resting on the sand: a deck
   of three pieces in a line, a Console on the first with its screen and a ground radar fitted, its
-  survey page in reach, two batteries in front of it; the light shield and the solar panel on the
-  second; the sieve and the scoop on the third, to take up when she goes to dig. 61 kg; it draws 11 W
-  (the Console, its screen and its radar), so its two batteries, starting at 80%, keep the survey
-  running about fourteen and a half hours of world time with no sun, and the panel gives 60 W at best.
-- **Carried:** a canister, two rations, the bedroll and a med kit.
+  survey page in reach, two batteries in front of it; the light shield and solar panel on the
+  second. The third is a clear work surface. Its mass is about 58.3 kg, removing the 1.5 kg scoop
+  and 1.2 kg sieve from the earlier measured 61 kg; it draws 11 W (the Console, screen and radar),
+  so its two batteries, starting at 80%, keep the survey running about fourteen and a half hours
+  of world time with no sun, and the panel gives 60 W at best.
+- **Carried:** a canister, two rations, the bedroll, a med kit, a radio with its battery, the scoop
+  and the sieve. The scoop and sieve are on her, so she can work at a remote dune; the sieve sifts
+  from her suit. A separate hoverboard with its own battery gives her scouting mobility. It doesn't
+  tow the heavy lab, which stays as a powered base.
+
+**Playability pass (2026-10-19):** the expedition's roughly 58 kg lab is a stationary home base,
+not something the hoverboard can tow. The Archaeologist therefore starts with a separate
+hoverboard for scouting, and carries the radio, scoop and sieve so a dune dig works away from the
+Console. The lab keeps its ground radar, power, solar panel and light shield; Surveyor remains the
+sole balance target. This is still a novelty start, and the board is for the player's travel rather
+than hauling the lab.
 
 ## Ending flags (proposed)
 
