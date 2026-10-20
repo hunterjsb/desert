@@ -49,6 +49,8 @@ const LIST: Array[Dictionary] = [
 	{"key": "board", "label": "a board of every make at your feet by a deck of two, clear and calm", "kind": "clear",
 		"day": [0.35, 0.5], "calm": 6.0, "lays": &"board"},
 	# Beside a town where history left house ruins, so a beacon is in reach.
+	{"key": "receiver", "label": "a survey receiver with a battery among old ruins", "kind": "clear",
+		"day": [0.35, 0.5], "among": true, "lays": &"receiver"},
 	{"key": "radio", "label": "a radio and a charged shield, a beacon in reach, a storm 300 m off", "kind": "front",
 		"distance": 300.0, "day": [0.35, 0.55], "among": true, "lays": &"radio"},
 	# The next storm far enough off that the weather station has nothing to
@@ -409,6 +411,7 @@ static func lay(world: World, scenario: Dictionary, place: Dictionary) -> Array[
 		&"survive": dropped = survive(world)
 		&"farm": dropped = farm(world)
 		&"board": dropped = board(world)
+		&"receiver": dropped = [standing(world, &"survey_receiver", [&"battery"], RADIO_AT)]
 		&"radio": dropped = radio(world)
 		&"weather_station": dropped = weather_station(world)
 		&"music": dropped = music_station(world)

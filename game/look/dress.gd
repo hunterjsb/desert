@@ -447,6 +447,8 @@ static func _frame(id: StringName, size: Vector3, extra: float) -> ArrayMesh:
 			for z in [-0.3, 0.32]:
 				b.drum(0.075, 0.014, Vector3(0.0, -h.y + 0.004, z), ceramic, Basis.IDENTITY, 16)
 				b.drum(0.055, 0.016, Vector3(0.0, -h.y + 0.004, z), Paint.coat(Color(0.45, 0.8, 1.0), 0.0, 0.0, 0.3, 0.3, 1.6), Basis.IDENTITY, 14)
+		&"survey_receiver":
+			return SurveyReceiverLooks.frame()
 		&"radio":
 			# A set made to carry: across the top of its face a band scale that
 			# lights while it plays, under it a speaker's slats and the bosses

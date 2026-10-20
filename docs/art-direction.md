@@ -1052,3 +1052,43 @@ measured paired median increments of 0.204 ms in daylight and 0.365 ms in low su
 Those representative views remain below the roughly 0.8 ms budget; individual rounds
 are noisier. These are direct measurements, not a sum of different camera cases.
 See [Tracks](prd/world-and-terrain.md) for the full profile and measured checks.
+
+## Survey receiver (2026-10-20)
+
+A first receiver tier using the existing signal system, modelled as a complete
+handheld field instrument. Keep B's bevelled, worn industrial language: a bone enamel
+cast housing, teal recessed front, black impact corners, brass fittings and an open
+loop aerial. A large cream analogue meter with a red moving needle is the visual
+focus, balanced by a deeply ribbed tuning wheel and a small power lamp. Speaker
+slots, a rear battery cradle, hinge pins, screws and a contractor's plate explain
+how it is assembled and held. Avoid decorative detail across the meter or controls.
+
+Use merged procedural Godot meshes and the existing Paint shader so wear, era
+lineage, sand and lighting remain native to the game. Separate the needle, tuning and volume
+wheels from the case for readable movement. Inspect actual close/held/mounted and dust
+captures before acceptance. Original switch, tuning and pulse sounds should be
+quiet and tactile, with signal audibility tied to the real receiver state.
+
+
+**As built and inspected (2026-10-20).** `SurveyReceiverLooks` uses four cached
+single-surface meshes: case 3,336 triangles, needle 140, tuning wheel 1,484 and
+aerial 880. A second scaled wheel supplies volume, making 7,324 submitted triangles
+across five mesh instances before the fitted battery/socket. These are geometry
+counts, not a measured frame-time cost. The aerial has physical hinge lugs and
+support posts meeting its ring; the case has a rear cell cradle and feet meeting
+the placement floor.
+
+Actual Forward+ renders on Godot 4.7.2 show front, side and rear assembly, the live
+needle and both controls in hand, and the receiver in the carry view at 720p. Turning
+through a quarter turn changed measured signal strength from 0.8664 to 0.0693 and
+the visible meter from step 7 to 1. The meter reads signal strength; no compass or
+range digits were added to its face. Three original mono 48 kHz switch, detent and
+contact-pulse sounds ship with a reproducible generator; measured levels are in
+[audio credits](../assets/audio/CREDITS.md). The existing static bed supplies hiss.
+Automated unseen runs use dummy audio, so these checks establish playback state
+and measured levels, not subjective listening quality.
+
+Mounted views were also inspected in daylight dust and local midnight dust, with
+a small staged warm light for the night inspection. The face, needle, lamp and
+both wheels remain distinct against the worn chassis. This is a rendered model
+readability check; the staged light does not establish unlit night legibility.

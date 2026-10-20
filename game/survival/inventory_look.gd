@@ -92,6 +92,8 @@ func show_thing(thing: RigidBody3D) -> void:
 			for param in PARAMS:
 				copy.set_instance_shader_parameter(param, look.get_instance_shader_parameter(param))
 		copy.transform = _within(thing, look)
+		if thing is SurveyReceiver and look == (thing as SurveyReceiver).needle:
+			copy.transform = (thing as SurveyReceiver).meter_pose()
 		_model.add_child(copy)
 		if thing is Compass and look == (thing as Compass).needle:
 			needle = copy
@@ -100,7 +102,7 @@ func show_thing(thing: RigidBody3D) -> void:
 		var each := copy.transform * look.get_aabb()
 		box = each if first else box.merge(each)
 		first = false
-	var view := READ if thing is Compass else (STREAMING if thing is Streamer else VIEW)
+	var view := READ if thing is Compass or thing is SurveyReceiver else (STREAMING if thing is Streamer else VIEW)
 	var turn := Basis(Vector3.RIGHT, deg_to_rad(view.y)) * Basis(Vector3.UP, deg_to_rad(view.x))
 	_model.transform = Transform3D(turn, -(turn * box.get_center()))
 	var reach := box.size.length() * 0.5 * ROOM
