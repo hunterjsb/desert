@@ -45,8 +45,15 @@ func follow(anchor: Sites.Anchor, jumped := false, loaded := Callable()) -> void
 		if not jumped and old != null and old.at.distance_to(Vector2(anchor.x, anchor.z)) < old.radius + _tuning.far_radius + _tuning.history_lay_m:
 			next.append(old)
 		else:
-			next.append(_make(id, anchor))
-			changed = true
+			var proposed := _make(id, anchor)
+			# Changing moon coordinates in place must not raise fresh ground through
+			# bodies on an already loaded sheet. Travel uses fresh sheet coordinates.
+			if old != null and loaded.is_valid() and loaded.call(Rect2(proposed.at - Vector2.ONE * proposed.radius, Vector2.ONE * proposed.radius * 2)):
+				next.append(old)
+				kept.erase(old)
+			else:
+				next.append(proposed)
+				changed = true
 	if changed:
 		hills = next
 		_retired = kept

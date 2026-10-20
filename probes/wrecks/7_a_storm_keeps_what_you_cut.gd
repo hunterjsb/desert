@@ -14,7 +14,7 @@ extends WreckProbe
 const KIND := &"tithe_hauler"
 const BEARING := 0.4
 ## Seconds of weather a frame as you watch.
-const WARP := 3.0
+const WARP := 6.0
 
 var _site: Structure
 var _wreck: Wreckage
@@ -31,7 +31,7 @@ func run() -> void:
 	var stands := func(at: Vector2) -> bool:
 		var tried := sites.by_hand(KIND, at.x, at.y, BEARING, 0.0, lean)
 		return tried.stands() and tried.distance_to(at.x, at.y) < 1.0
-	var storm := StormSite.find(world.weather.field, world.tuning, from.x, from.y, 2, 100.0, 1.0, 0.5, stands, world.shape)
+	var storm := StormSite.find(world.weather.field, world.tuning, from.x, from.y, 3, 120.0, 2.0, 0.5, stands, world.shape)
 	check(not storm.is_empty(), "a storm that lays a hauler bare between sand before and after")
 	if storm.is_empty():
 		return

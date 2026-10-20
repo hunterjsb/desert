@@ -1,6 +1,6 @@
 extends WeatherProbe
-## Radio probe 27: each of the living city's motifs tells the truth. Over a
-## day and a half round one of its legs, every slot's motif is so at the
+## Radio probe 27: each of the living city's motifs tells the truth. Over several
+## days round its route, every slot's motif is so at the
 ## city as the world lays it: storm coming, a storm reaching it within
 ## city_warn_s out of clear air; city moving, under way; tether in, a storm
 ## on it moored; all clear, clear air and none due, moored; its position,
@@ -38,7 +38,9 @@ func run() -> void:
 	var every := world.tuning.city_chatter_every
 	var t: float = city.slot_start(from) + every
 	var warn := world.tuning.city_warn_s
-	while t < leg[2] + 0.5 * day:
+	# A fresh travel sheet changes local weather; cover several legs rather
+	# than assuming every motif occurs on the first one.
+	while t < leg[2] + 6.0 * day:
 		var at := Walker.ground(world, city.at(t))
 		var motif := city.motif(field, at, t)
 		var stormy := field.raw_storm_at(at.x, at.y, t) > 0.0
@@ -55,7 +57,7 @@ func run() -> void:
 		check(truth, "day %.2f: %s is so at the city" % [t / day, motif])
 		counts[motif] = counts.get(motif, 0) + 1
 		t += every
-	print("round a leg of %.1f km: %s" % [Sphere.angle(leg[0], leg[3]) * world.shape.history.radius / 1000.0, counts])
+	print("over several days near a %.1f km leg: %s" % [Sphere.angle(leg[0], leg[3]) * world.shape.history.radius / 1000.0, counts])
 	for motif in LivingCity.MOTIFS:
 		check(counts.has(motif), "%s plays" % motif)
 

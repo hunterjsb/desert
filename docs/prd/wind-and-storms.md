@@ -1143,7 +1143,9 @@ not abruptly vanish. This remains a stateless minute-history integral with frame
 shared by loaded sites, distant signs, saves and fast-forward. It adds no spawn timer or
 player-dependent ruin. Strong storms can still actively rebury a site. Deep dunes remain
 strong-storm finds; a weak shower arriving during a previous storm's wake is not a new excavation.
-The exposure probe's before/after sampling is now an hour apart to include the longer wake.
+Burial/reburial probes sample an hour either side of the peak to include the longer wake.
+Excavation waits for measured reburial, and loot comparisons sample both actual exposure
+extremes. Drift checks use the current wind: a wake can outlast the peak’s wind direction.
 
 Existing geological plumes keep their sources, timing, sound and renderer. The far-side
 flank now reads the volcano's real elevation and pinned projection. Mountains enter the GPU

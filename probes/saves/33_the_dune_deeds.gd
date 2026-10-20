@@ -48,7 +48,12 @@ func run() -> void:
 	# Off its ground, the storm's sand back over it before the dig.
 	teleport(near.x, near.y)
 	await physics_frames(3)
-	world.time += 1800.0
+	# A calm wake can now outlast half an hour. Dig only once enough sand
+	# has returned for the deed to be earned by hand.
+	for minute in 3 * 24 * 60:
+		world.time += 60.0
+		if site.pure_taken(world.time) < site.depth * (1.0 - world.tuning.dig_own_share) * 0.9:
+			break
 	await physics_frames(3)
 
 	# Your eyes over its apron's sand, looking down on it.

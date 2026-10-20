@@ -107,3 +107,10 @@ func _seek(to: float) -> void:
 	AudioServer.lock()
 	playback.seek(to)
 	AudioServer.unlock()
+
+
+## A new playback cannot inherit a fragment from the previous one.
+func reset() -> void:
+	kind = &""
+	_left = 0.0
+	_since = 0.0

@@ -34,7 +34,8 @@ at the foot and in hollows; smaller structures still survey and carve normally. 
 archaeology excludes exposed bedrock crests: wind does not excavate the volcano itself. Projections
 are pinned within the terrain/far-ring reach, and old loaded sheets retain their ground.
 Taking a worker's profile-array reference is locked against save restoration and reprojection;
-chunk and far-ring jobs hold one snapshot for their entire build.
+chunk and far-ring jobs hold one snapshot for their entire build. Moon-only relocation also
+defers any new mountain that would intersect loaded ground, preventing rises beneath bodies.
 
 `Horizons` draws 128 m samples beyond the ordinary 3 km far ring, lowered 8 m into its
 overlap. This is a finite approximation, not a second physical surface. Silhouettes fade
@@ -44,7 +45,8 @@ beds and ordinary salvage sockets. Starcom's receiving array and the broken elev
 are distinct silhouettes. These are first exterior slices, not completed quests or interiors.
 
 Checks cover radial upper approaches, chunk height agreement, saved projections and streamed
-arrival with cargo resting on physical gallery ground. GPU captures cover spawn, both summits
+arrival with cargo resting on physical gallery ground. Twelve loot draws per summit verify
+that surviving supplies are reachable on the actual foundation. GPU captures cover spawn, both summits
 at 15 km and 150 m, and the volcano at 4 km. GPU wind-map heights agree with the CPU within
 7 mm in those captures. Mountain surfaces suppress the shading of dunes buried beneath them.
 The look harness is `look/horizons/horizons.tscn`; `--storm` exercises obscured views.

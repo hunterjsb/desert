@@ -1025,6 +1025,7 @@ func _put_on(song: AudioStream, t: float, into := NAN) -> void:
 		return
 	if _on_air != null:
 		_click(Sounds.RADIO_TUNE, -6.0)
+	_glitch.reset()
 	music.stream = song
 	music.play(into if not is_nan(into) else fposmod(t, song.get_length()))
 	_on_air = song

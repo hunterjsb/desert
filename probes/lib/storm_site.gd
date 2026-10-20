@@ -35,7 +35,7 @@ static func strongest(field: WeatherField, tuning: Tuning, x: float, z: float, r
 		days := 1.0, places := Callable()) -> Dictionary:
 	var best := {}
 	var score := 0.0
-	for each in _storms(field, tuning, x, z, rings, apart, days, places):
+	for each in _storms(field, tuning, x, z, rings, apart, days, places, null, 30.0, 20.0):
 		var taken: Array = each.taken
 		var settled := Exposure.settled(field, each.x, each.z, each.peak, tuning)
 		var this: float = (taken[1] - settled) / (settled + 0.1)
@@ -48,7 +48,7 @@ static func strongest(field: WeatherField, tuning: Tuning, x: float, z: float, r
 
 ## Each place's strongest storm work in `days`: {x, z, before, peak, after, taken}.
 static func _storms(field: WeatherField, tuning: Tuning, x: float, z: float, rings: int, apart: float,
-		days: float, places: Callable, shape: TerrainShape = null) -> Array[Dictionary]:
+		days: float, places: Callable, shape: TerrainShape = null, before := BEFORE, after := AFTER) -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
 	for ring in rings + 1:
 		var count := maxi(1, 8 * ring)
@@ -60,13 +60,13 @@ static func _storms(field: WeatherField, tuning: Tuning, x: float, z: float, rin
 			var dune := Exposure.dune_at(shape, at.x, at.y, tuning) if shape != null else 0.0
 			var most := -1.0
 			var tick := 0
-			for m in range(ceili(BEFORE), roundi(days * 24.0 * 60.0)):
+			for m in range(ceili(before), roundi(days * 24.0 * 60.0)):
 				var s := Exposure.surge_at(field, at.x, at.y, m, tuning, memo, dune)
 				if s > most:
 					most = s
 					tick = m
 			var peak := (tick + 1) * Exposure.SURGE_STEP_S
-			var times := [peak - BEFORE * 60.0, peak, peak + AFTER * 60.0]
+			var times := [peak - before * 60.0, peak, peak + after * 60.0]
 			out.append({"x": at.x, "z": at.y, "before": times[0], "peak": times[1], "after": times[2],
 				"taken": times.map(func(t: float) -> float: return Exposure.taken(field, at.x, at.y, t, tuning, memo, dune))})
 	return out

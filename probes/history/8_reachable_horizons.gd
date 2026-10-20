@@ -41,3 +41,13 @@ func run() -> void:
 		for seed in shape.sites.dunes.cells_near(hill.at, 200):
 			shape.sites.dunes.locate(seed)
 			check(seed.site == null, "a mountain summit is not a wind-excavatable dune")
+
+		for loot_seed in 12:
+			site.loot = loot_seed
+			site.depth = 0
+			site.decide(0)
+			var drawn := 0
+			for socket in site.piece.sockets.size():
+				drawn += int(not SiteLoot.draw(site, socket).is_empty())
+			check(SiteLoot.plan(site, shape.height_at).size() == drawn, "every surviving summit supply is within reach")
+			site.forget()
