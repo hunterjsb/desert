@@ -400,6 +400,8 @@ const DEVICES := {
 		"streamer": true, "carryable": true, "sticks": true, "stats": {"face_m2": 0.01}, "sockets": []},
 	&"sailing_notes": {"label": "Sailing field notes", "short": "Sailing notes", "size": Vector3(0.28, 0.05, 0.36),
 		"mass": 0.3, "notes": true, "carryable": true, "sticks": true, "sockets": []},
+	&"surveyor_guide": {"label": "Surveyor's Guide", "short": "Survey guide", "size": Vector3(0.28, 0.05, 0.36),
+		"mass": 0.3, "notes": true, "surveyor_guide": true, "carryable": true, "sticks": true, "sockets": []},
 	# A lookout's basket for a mast's head, its rope ladder hung down the mast:
 	# use on it climbs you in, a seat as the helm is (CrowsNest).
 	&"crows_nest": {"label": "Crow's nest", "short": "Nest", "size": Vector3(0.9, 1.0, 0.9), "mass": 12.0, "nest": true,
@@ -668,7 +670,7 @@ static func device(id: StringName) -> Device:
 		else (Console.new() if spec.get("console", false) \
 		else (PowerBox.new() if spec.get("power_box", false) \
 		else (Cutter.new() if spec.get("cutter", false) \
-		else (SailingNotes.new() if spec.get("notes", false) else Device.new()))))))))))))))
+		else ((SurveyorGuide.new() if spec.get("surveyor_guide", false) else SailingNotes.new()) if spec.get("notes", false) else Device.new()))))))))))))))
 	made.set_meta(&"catalog", id)
 	made.label = spec.label
 	made.frame_mass = spec.mass

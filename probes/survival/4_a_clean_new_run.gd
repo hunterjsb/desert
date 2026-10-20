@@ -113,7 +113,7 @@ func run() -> void:
 	check(fresh.get("you") == [Vitals.FULL, Vitals.FULL, Vitals.FULL, false, 0.0, 0.0, 0.0, 0.0, 0.0, null, 0]
 		and fresh.get("spawn", INF) < 1.0 and fresh.get("time", INF) == 0.0,
 		"you start fresh, empty-handed, at the run's beginning")
-	check(fresh.get("carried") == ["Water canister 1.00", "Ration 1.00", "Bedroll -1.00"],
+	check(fresh.get("carried") == ["Water canister 1.00", "Ration 1.00", "Bedroll -1.00", "Surveyor's Guide -1.00"],
 		"you carry only what the kit carries")
 	_check_kit(fresh_kit, "the run after death")
 

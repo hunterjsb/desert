@@ -562,3 +562,21 @@ objects and waist list are hidden while a menu covers them; closing the reader
 restores that view with its mouse free. Deed toasts are hidden over menus as
 how-to hints already are, so they do not overlap chapter headings. Their normal
 timeout continues and the profile retains its unread-deed indication.
+
+## Surveyor field guide reader (agreed and built 2026-10-19)
+
+The Surveyor's carried Guide uses the existing SailingNotes reader through overridable
+book title and page data. Preserve sailing chapter/paragraph navigation and reading
+from hands, world and carry view. The Guide has five concise single-page chapters;
+using it opens its chapter list, with ordinary Back/Chapters navigation. Carry-view
+instructions expose Use to read, reinforced by the short first-carried hint; no
+automatic reader popup or new reading deed.
+Check both existing booklet behavior and the real Guide at 1280 by 720.
+
+As built, SailingNotes exposes `book_title()` and `pages()`; the Surveyor subclass
+supplies its own content and first-carried hint. Existing sailing reader probe 19
+passes unchanged. In actual 1280 by 720 captures all five Guide pages and their
+navigation fit; body heights were 216, 243, 216, 243 and 297 px. All action macros
+resolved, Back returned to chapters, and closing chapters restored the open carry
+view with its mouse free. The guide's pale survey-cross cover is distinct from the
+teal sailing booklet, built from existing procedural pieces and materials.

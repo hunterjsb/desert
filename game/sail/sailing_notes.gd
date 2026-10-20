@@ -43,17 +43,27 @@ func _read() -> bool:
 	return true
 
 
+func book_title() -> String:
+	return "Sailing field notes"
+
+
+func pages() -> Array:
+	return PAGES
+
+
 func chapters() -> Words:
-	var menu := Words.new("Sailing field notes")
-	for i in PAGES.size():
-		menu.add(PAGES[i][0], func() -> void: Controls.ui.open(page(i)))
+	var leaves := pages()
+	var menu := Words.new(book_title())
+	for i in leaves.size():
+		menu.add(leaves[i][0], func() -> void: Controls.ui.open(page(i)))
 	menu.add("Close", Controls.ui.close_top)
 	return menu
 
 
 func page(at: int, paragraph := 0) -> Words:
-	var parts: PackedStringArray = PAGES[at][1].split("\n\n", false)
-	var menu := Words.new("%s · %d / %d" % [PAGES[at][0], paragraph + 1, parts.size()])
+	var leaves := pages()
+	var parts: PackedStringArray = leaves[at][1].split("\n\n", false)
+	var menu := Words.new("%s · %d / %d" % [leaves[at][0], paragraph + 1, parts.size()])
 	var body := Controls.keys_label()
 	body.theme_type_variation = &"KeysList"
 	body.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -62,12 +72,12 @@ func page(at: int, paragraph := 0) -> Words:
 	menu.add_body(body)
 	if paragraph + 1 < parts.size():
 		menu.add("Next", _turn_page.bind(at, paragraph + 1))
-	elif at + 1 < PAGES.size():
+	elif at + 1 < leaves.size():
 		menu.add("Next chapter", _turn_page.bind(at + 1, 0))
 	if paragraph > 0:
 		menu.add("Previous", _turn_page.bind(at, paragraph - 1))
 	elif at > 0:
-		var previous: PackedStringArray = PAGES[at - 1][1].split("\n\n", false)
+		var previous: PackedStringArray = leaves[at - 1][1].split("\n\n", false)
 		menu.add("Previous chapter", _turn_page.bind(at - 1, previous.size() - 1))
 	menu.add("Chapters", Controls.ui.close_top)
 	return menu
