@@ -1403,6 +1403,7 @@ navigation computer, all three lines, and the real guide foot seated on an
 interior panel clear of the case and deck edge. At 4.53 m/s its sheet carries
 61.7 N and hinge pivot error is 0.071 mm. The field-note images use the actual
 higher boom and ordinary routed hook geometry.
+
 ## Vaulting small ledges (agreed and source built 2026-10-20)
 
 On foot, sprint into a small ledge or jump toward it to vault onto its walkable
