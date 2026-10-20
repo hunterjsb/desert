@@ -17,9 +17,24 @@ Sand Game, the prototype this replaces, lives on the
   `scripts/probe.sh`; it needs a `godot` binary on your PATH, or set `GODOT`.
   `scripts/probe.sh selftest` proves the runner itself can fail. It runs in bash 3.2 and
   up, so in macOS's own and in Git Bash on Windows too. CI runs both on every push, on
-  Linux, macOS and Windows.
+  Linux; master and tags also run the native macOS and Windows checks.
 - **Writing a probe:** extend `Probe`, put the body in `run()`, and call `check()`. Probes
   run on a fixed seed and never find nodes by name.
+
+## Verifying a change
+
+Work in a sibling worktree. Copy `scripts/verify.sh` outside the checkout, then run
+that copy from the worktree with `<name>` (or `<name> --land` after merging current
+`origin/master`). It pushes `verify-<name>` and waits only for that branch's exact
+commit in `probes.yml`, accepting push or manual-dispatch runs. If no push run appears
+within about 30 seconds, it dispatches the same branch with `full_platforms=false`:
+the existing nine Linux groups, with all failures still blocking landing. Run polling
+is once a minute. Documentation-only changes skip CI as before.
+
+Master and tags always run Linux, native macOS/Windows probes and build smoke checks.
+Manual Probes dispatches default to `full_platforms=true`, retaining full preview
+coverage; only an explicit branch dispatch with `full_platforms=false` omits the native
+and build jobs. Master/tag coverage cannot be disabled by that input.
 
 ## Releasing
 

@@ -7,6 +7,11 @@ on:
   pull_request:
     paths-ignore: ['docs/**', '**/*.md']
   workflow_dispatch:
+    inputs:
+      full_platforms:
+        description: Run native platform probes and build smoke checks
+        type: boolean
+        default: true
 
 jobs:
   probes:
@@ -51,9 +56,9 @@ jobs:
           fi
 
   elsewhere:
-    # Only on master, a tag or by hand: a verify branch waits on Linux alone,
+    # Always on master/tags; manual previews default to all platforms: a verify branch waits on Linux alone,
     # since these take three times as long.
-    if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
+    if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.full_platforms)
     # The whole suite on macOS and Windows, in fewer groups of about equal
     # wall clock; macOS runs it on the bash 3.2 it ships. Keep REST_EXCEPT in
     # step with the groups. These runners are slower and noisier than the
@@ -96,5 +101,5 @@ jobs:
           fi
 
   builds:
-    if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
+    if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.full_platforms)
     uses: ./.github/workflows/builds.yml

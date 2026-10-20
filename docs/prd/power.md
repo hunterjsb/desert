@@ -504,3 +504,27 @@ following. Each is quoted old and new, and the PRD follows the session as direct
   quietbloom is above.
 - **A god module's draw.** The session gives none for the Walker, the Quartermaster, Mother Cistern or
   the Almanac. Not said whether a module runs on the deck's pool, its own battery, or nothing.
+
+## Board meter interval correction (2026-10-19; agreed and built)
+
+Power passes each device a quarter's start time. The board incorrectly treated it as
+an ending time, reading `[t - step, t]` and billing a quarter late. A deterministic
+quarter offset of 0.225 s reproduces the movement frame-charge CI failure: the racer
+meters 0.800364690915 Wh at 30 Hz but bills only 0.800059135359 Wh after dismount and
+its normal catch-up; at 60 Hz it bills the full amount. The 0.000305555556 Wh gap is
+exactly 25 ms at its 44 W idle hover, rather than different motor work or lost energy
+in the battery ledger. Unconsumed meter history shows the remaining slice.
+
+Read the board's history over `[t, t + step]`, retaining anything after that end, to
+match Power's existing interval convention. Keep physics, motor effort, the power
+quarter and charge tolerance unchanged. Pin the existing frame-rate route to this
+adverse quarter phase so the same assertion catches late billing deterministically.
+
+As built: the existing movement probe 6 places the quarter's start 25 ms before the
+ride (the same 0.225 s phase modulo a quarter), keeping the beginning of the ride
+inside an accounting interval. With the old code it fails at the exact reported
+0.000306 Wh racer difference while path checks pass. With the correction it passes:
+racer charge is 99.199635 Wh at 30, 60 and 120 Hz, issued-board charge 99.208370 Wh;
+paths agree to the printed 0.0000 m. Charge tolerance remains 0.0003 Wh, all route
+coverage and other assertions unchanged. No ride dynamics or steering changed.
+The existing power probe 12 also passes for shared deck power and the board’s own battery.
