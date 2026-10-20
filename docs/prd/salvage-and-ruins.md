@@ -39,6 +39,56 @@ These are a first playable fragment, not the full city, rift, crop loop or destr
 Walker logic and assets are untouched; the shared integration points are World, Hands,
 Snapshot, Deeds, catalog/creative entries and the Stoker branch of Transmissions.
 
+## Halloran physical stock and model pass (built, 2026-10-20)
+
+The lower store's coalcane uses the ordinary take/put-down action, like other loose
+salvage. A fixture-use action must not manufacture a bundle in the player's hand.
+Preplace finite real bundles on a reachable rack. The completed maintenance burn
+unlocks a physical service hatch; its battery, panel and sealant already occupy
+shelves inside. Take those real parts with ordinary pickup, in any order. Keep
+feeding on the existing use action. Locked cache parts cannot be reached through
+the hatch or claimed through another interaction.
+
+Each stock/reward slot remembers its own claim, including out-of-order pickups;
+legacy count-based saves treat the first counted slots as claimed. Claimed objects
+join ordinary world content and its save/physics rules. Unclaimed stock remains
+owned by the streamed fixtures and is recreated only for unclaimed slots. Restore
+must clear stale fixture objects before rebuilding, without duplicating carried loot.
+
+Improve Aitch's homes as readable inhabited structures built into colonial ruins:
+real door and window openings, lintels, plaster/stone repairs, roof structure,
+shutters and industrial utility details. Replace the disconnected repeated pipe
+stubs with a supported line following the grade, with joined flanges and explicit
+connections to the lower utility block and refinery. These improvements remain
+within the existing route footprint, preserve walking/boarding access and use the
+chosen worn-industrial geometry/material language. Inspect actual GPU captures.
+
+**As built and measured.** The store has three real catalog bundles on a solid
+rack; the cache has the large battery, solar panel and sealant on a solid shelf
+inside a closed cabinet. The ordinary salvage query includes remaining shelf
+parts in its existing reach/occlusion-limited small-item aim assistance. The hatch
+has physical walls, roof, shelf and guide rails; locked parts also refuse claims.
+Pickup reparents the actual part into ordinary content and records its slot.
+Stock/reward slot arrays supplement legacy counts, which migrate without resetting
+stock. Restoring clears stale fixtures before rebuilding. A floating-origin signal
+moves the fixtures in the same tick as the player and terrain; waiting until the
+next drawn frame left the collider behind during a long route traversal.
+
+Focused Godot 4.7.2 checks pass: ordinary stock pickup, feed reach, locked hatch,
+existing-part pickup and stream return (Kits 11, 18 s); nonsequential slot claims,
+midburn resume, held-reward resume, no duplication and legacy counts (Saves 39,
+14 s); all-rotation/burial grade and apron checks (Kits 10, 3 s). These do not
+replace combined/native CI or user acceptance of the settlement models.
+
+Actual 1280×720 Forward+ captures inspect the lower homes, close masonry and
+openings, coalcane shelf, continuous flanged service main, Crossing, revised refinery
+frame, cold/burning furnace and opened cache (`look/halloran/shoot.sh`). The pipe
+follows one joined graded path into a lower cabinet and the furnace manifold;
+collision follows its spans. Homes retain real openings and partially buried floors,
+with repaired stone courses, window sills/shutters, door lintels/canopies and roof
+battens. Refinery columns and clerestory openings replace blank slabs. This is a
+model pass on the existing fragment, not the full city or a working power network.
+
 ## Why this system exists
 
 Parts are found, never crafted, so **salvage is the whole economy**. Every upgrade,

@@ -12,6 +12,14 @@ the burn or replenish stock. The full refinery and vent reconnection remain late
 and a 30-second burn (`stoker_stock`, `stoker_burn_s` in `game/tuning.tres`).
 
 
+## Maintenance-cache interaction correction (agreed, 2026-10-20)
+
+The burn releases a real hatch over preplaced finite service equipment, rather than
+using the cache to dispense a newly spawned part. Stock pickup uses the normal take
+action; feeding the furnace remains use. Burn timing and finite fuel/reward state
+retain their existing persistence rules. The connected visible service pipe is
+landmark geometry, not an implementation of refinery-wide power production.
+
 ## Why this system exists
 
 Power turns the stuff you haul into stuff that works. It keeps the shield up, the camp
