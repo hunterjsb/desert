@@ -285,7 +285,7 @@ the frame is a part stuck on the deck.
 - **Nomad ties the trees together:** its card stands apart, with a line from each of the five
   trees, lit where you've done one. It waits on any one deed of a tree, not a named one, so the
   table's `after` gains "any of a family".
-- **The grid holds every tree** (built for step 1, Menus & UI): 49 deeds in eleven families since step 4, Yard Sale and the nomads' gear, each a
+- **The grid holds every tree** (built for step 1, Menus & UI): 50 deeds in eleven families since step 4, Yard Sale and the nomads' gear, each a
   branch or two beside its name down the left, as round one's were (eleven columns side by side
   wouldn't stand left of the prop). It scrolls, and opens on the latest done.
 - **The order.** Each part waits for what it reads to land:
@@ -749,3 +749,5 @@ As built, `salvager_kit.tres` puts `personal_shield` in carried gear and removes
 plate assembly. Suit.restock fits its battery using the kit's existing full-charge
 setting. The existing origin-showpiece/gear-list/new-run/save check (menus9) passes
 in9s with no assertion changes; other origin resources and the unlock are unchanged.
+
+**Up and Over (2026-10-20):** complete a swept on-foot vault onto a real walkable ledge. Recorded by LedgeVault only after the player establishes floor contact; a blocked or interrupted attempt does not count.

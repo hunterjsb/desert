@@ -188,3 +188,10 @@ receiver_hiss_clear = 0.035
 receiver_hiss_empty = 0.15
 receiver_hiss_storm = 0.25
 receiver_hiss_duck = 0.8
+
+vault_height = 0.65
+vault_reach = 0.9
+vault_clearance = 0.02
+vault_seconds = 0.3
+vault_stamina = 4.0
+vault_settle_speed = 0.1

@@ -124,6 +124,8 @@ const TABLE := {
 		"family": &"nomad", "after": [&"ten_days"], "icon": &"bedroll"},
 	&"follow_signal": {"name": "Follow the Signal", "asks": "Find a ruin by following a survey receiver's signal",
 		"family": &"signals", "icon": &"survey_receiver"},
+	&"up_and_over": {"name": "Up and Over", "asks": "Vault onto a ledge",
+		"family": &"nomad", "icon": &"chassis"},
 }
 ## The hook: a deed done in this world's run, now. With a `part`, that thing
 ## counts toward it, and it's done once enough different ones have. Says
