@@ -858,3 +858,32 @@ was built.
   running shield whose pool outlasts the span, and the sleep session wants the camp checked for
   stability first. Not said what "stable" means for a board, which has no camp. *Still open:* the
   patrol board isn't built.
+
+### Physical waist-line selection (agreed, 2026-10-19)
+
+The carry view selects the actual ropes in the world rather than listing their names. Hover a
+visible rope curve to preview and highlight it; click that curve to keep it selected. Hover
+never changes the committed choice. Follow gaze restores aiming-based selection. Curves
+behind the camera or hidden by solid gear are not pick targets, and the shared near-waist
+cluster is avoided. The held line still takes priority and a lost tie clears its selection.
+
+Context in the carry view uses readable shared-theme text for the hovered or selected line.
+Remove the persistent crosshair waist-stat line during ordinary play; show handling progress
+only while an untie is active. Keep the existing timed Release all action and progress in a
+compact carry-view control. This does not implement a player body or physical storage system.
+
+**As built:** `WaistLines` projects `Rope.strand.shown()` through the player's current camera.
+It rejects segments crossing the near plane, avoids the first metre by the eyes, and checks
+solid-world occlusion before hover selection or highlighting. Hover is a thick accent curve;
+a different committed selection is a thin pale curve. Highlights draw behind inventory cards.
+`Suit` routes tiles first, then rope/control clicks, then its existing empty-space stow action.
+Follow gaze and timed Release all remain compact controls. `Hands` no longer appends waist
+statistics at the crosshair; its ordinary context and active untie countdown use the shared
+20 px AsideValue style with space for two lines.
+
+A 1280×720 unseen capture of the normal three-line Varran start inspected each curve separately:
+hovering left the prior selection intact, clicking selected each corresponding physical end,
+and Follow gaze cleared the explicit choice. Release progress reached 0.5 while all three ties
+remained attached; its active in-game countdown was readable, and ordinary play showed no
+waist-stat HUD. Import and capture completed without script/runtime errors. The existing rope
+18 HUD assertion follows the revised contract; no new probes or local test runs were added.

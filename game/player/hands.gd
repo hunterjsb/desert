@@ -2017,13 +2017,13 @@ func _build_hud() -> void:
 		dot.draw_circle(Vector2.ZERO, 1.5, dot.get_theme_color(&"text", &"Palette")))
 	hud.add_child(dot)
 	_readout = Label.new()
-	_readout.theme_type_variation = &"Readout"
+	_readout.theme_type_variation = &"AsideValue"
 	_readout.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_readout.set_anchors_preset(Control.PRESET_CENTER)
 	_readout.offset_left = -400.0
 	_readout.offset_right = 400.0
 	_readout.offset_top = 10.0
-	_readout.offset_bottom = 28.0
+	_readout.offset_bottom = 70.0
 	_readout.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_readout.modulate.a = 0.0
 	hud.add_child(_readout)
@@ -2077,8 +2077,8 @@ func _show(delta: float) -> void:
 		notice = ""
 	var said := line()
 	var waisted := _player.waist.release_readout()
-	if waisted == "":
-		waisted = reel.waist_readout()
+	if waisted == "" and _player.waist.untying >= 0.0:
+		waisted = "Untying line · %.1f s" % _player.waist.untying
 	if waisted != "":
 		said += ("\n" if said != "" else "") + waisted
 	if said != "" and said != _readout.text:

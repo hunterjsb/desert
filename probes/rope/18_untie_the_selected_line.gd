@@ -25,7 +25,7 @@ func run() -> void:
 	check(hands.reel.waist_body() == moored.ends[1] and hands.reel.waist_readout() != sheet_readout,
 		"looking along the other line selects it and shows a different readout")
 	hands._show(1.0)
-	check(hands._readout.text.contains(hands.reel.waist_readout()), "the selected line appears in the hands readout")
+	check(not hands._readout.text.contains(hands.reel.waist_readout()), "waist stats stay out of the crosshair readout")
 	check(get_node(^"/root/Saves").save(world), "saved during the untie delay")
 	check(await resume(), "resumed")
 	await simulate(world.tuning.untie_seconds + 0.4)

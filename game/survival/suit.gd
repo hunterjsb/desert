@@ -62,6 +62,7 @@ func _ready() -> void:
 	_waist_lines = WaistLines.new()
 	_waist_lines.reel = (_player.get_node("Hands") as Hands).reel
 	_waist_lines.waist = _player.get_node("Waist") as Waist
+	_waist_lines.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_view.add_child(_waist_lines)
 	restock()
 
@@ -465,9 +466,13 @@ func _unhandled_input(event: InputEvent) -> void:
 func _on_view_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
 		hover = _stack_at(event.position)
+		_waist_lines.point_at(event.position if hover == -1 else Vector2(-100.0, -100.0))
 	elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		hover = _stack_at(event.position)
-		click(hover)
+		if hover != -1:
+			click(hover)
+		elif not _waist_lines.click(event.position):
+			click(-1)
 	_view.accept_event()
 
 
@@ -481,6 +486,8 @@ func _process(_delta: float) -> void:
 		Controls.free_mouse(true)
 	_layer.visible = showing
 	if showing:
+		var last := tile_rect(stacks().size()).end
+		_waist_lines.controls_at = Vector2(tile_rect(0).position.x, last.y + 12.0)
 		_waist_lines.refresh()
 		_show_looks(stacks())
 		_view.queue_redraw()
@@ -564,14 +571,8 @@ func _draw_view() -> void:
 	for body in _player.waist.tied:
 		if is_instance_valid(body) and not selectable.has(body):
 			tied.append(str(body.get(&"label")))
-	var waist_words := "waist: " + ", ".join(tied) if not tied.is_empty() else "waist"
-	if not selectable.is_empty():
-		waist_words += " · select a line below"
-	elif tied.is_empty():
-		waist_words += ": -"
-	_text(&"Label", Vector2(left, under + 16.0), waist_words, width)
-	_waist_lines.position = Vector2(left, under + 22.0)
-	_waist_lines.size = Vector2(width, _waist_height())
+	if not tied.is_empty():
+		_text(&"Label", Vector2(left, under + 16.0), "waist: " + ", ".join(tied), width)
 	Controls.draw_keys(_view, Vector2(left, under + 30.0 + _waist_height()), HINT)
 
 
