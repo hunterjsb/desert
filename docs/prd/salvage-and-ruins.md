@@ -34,7 +34,7 @@ First Fire is awarded at feeding. The existing Stoker radio status also reflects
 **Validation.** The physical hands-action probe passes the stock → feed → cache route,
 rejects feeding beyond reach, and checks departure and return (15 s). Save/resume retains a
 part-finished burn and claimed stock (5 s). Actual Godot 4.7.2 GPU captures inspect Aitch,
-the gate, refinery and cold/burning furnace; reproduce with `look/halloran/shoot.sh <output>`.
+the gate, refinery and cold/burning furnace, including furnace readability in heavy dust; reproduce with `look/halloran/shoot.sh <output>`.
 These are a first playable fragment, not the full city, rift, crop loop or destruction ending.
 Walker logic and assets are untouched; the shared integration points are World, Hands,
 Snapshot, Deeds, catalog/creative entries and the Stoker branch of Transmissions.
