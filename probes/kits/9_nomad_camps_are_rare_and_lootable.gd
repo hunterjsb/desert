@@ -70,8 +70,9 @@ func run() -> void:
 		"its kept rig lies whole, its mast and sail on it")
 	if rig == null:
 		return
-	var to := rig.global_transform * Finds.bounds(rig).get_center()
-	look(to + Vector3(2.4, 1.4, 0.4), to)
+	# Aim at the actual deck panel; the rig's bounds include empty air below its spar.
+	var to := rig.global_transform * Vector3(-0.3, 0.04, 0.3)
+	look(to + Vector3(1.6, 1.0, 0.4), to)
 	await physics_frames(2)
 	hands.grab()
 	await physics_frames(20)
