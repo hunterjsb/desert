@@ -8,8 +8,12 @@ extends WeatherProbe
 
 func run() -> void:
 	await load_weather()
-	Scenarios.apply(world, Scenarios.by_key("clear_skies"))
+	Scenarios.apply(world, Scenarios.by_key("clear"))
 	var dropped := await _landed()
+	check(world.player.hands.held is Flare and world.player.hands.held in dropped,
+		"the same clear setup supplies the drone signal flare")
+	for alias in ["clear_skies", "surveyor", "drone"]:
+		check(Scenarios.by_key(alias) == Scenarios.by_key("clear"), "old setup names reach the unified clear scenario")
 	check(not dropped.is_empty() and dropped[0] is Radio and dropped.any(func(n: Node) -> bool: return n is ShieldGenerator),
 		"it sets a radio and a shield on its plate in front of you")
 	if dropped.is_empty():

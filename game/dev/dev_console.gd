@@ -34,14 +34,15 @@ const COMMANDS := {
 	"deeds": ["[clear]", "which deeds are done; clear forgets them all"],
 	"reset": ["", "forget the profile: deeds, starts opened, finds, how-tos, as Options' reset"],
 	"meltdown": ["", "the Stoker plays its furnace song on its frequency, once, from now"],
-	"surveyor": ["[s]", "the Surveyor's low pass forced: it comes straight over you in s seconds, 20 alone"],
-	"airdrop": ["[now]", "on to just before the Surveyor's next pass high over you, a flare in your hands; now, its cannon fires at you at once"],
+	"drone": ["[s]", "the drone's low pass forced: it comes straight over you in s seconds, 20 alone"],
+	"surveyor": ["[s]", "alias of drone; the Surveyor starter kit is unchanged"],
+	"airdrop": ["[now]", "on to just before the drone's next pass high over you, a flare in your hands; now, its cannon fires at you at once"],
 }
 ## What works with no world, at the main menu too.
 const WORLDLESS := ["help", "scenarios", "unlockall", "deed", "deeds", "reset"]
-## surveyor brings the Surveyor over this soon, s, unless told.
+## surveyor brings the drone over this soon, s, unless told.
 const SURVEYOR_LEAD := 20.0
-## airdrop sets the clock this long before the Surveyor's pass, s.
+## airdrop sets the clock this long before the drone's pass, s.
 const AIRDROP_LEAD := 15.0
 ## How far from a landmark's middle goto stands you, facing it, m.
 const STANDOFF := 60.0
@@ -372,10 +373,14 @@ func _give(args: PackedStringArray, world: World) -> void:
 	_say("%d %s" % [count, id])
 
 
+func _drone(args: PackedStringArray, world: World) -> void:
+	_surveyor(args, world)
+
+
 func _surveyor(args: PackedStringArray, world: World) -> void:
 	var lead := float(args[0]) if args.size() > 0 and args[0].is_valid_float() else SURVEYOR_LEAD
 	Scenarios.surveyor_over(world, lead)
-	_say("surveyor: straight over you in %d s, %.1f km up; light a flare as it comes over" % [roundi(lead),
+	_say("drone: straight over you in %d s, %.1f km up; light a flare as it comes over" % [roundi(lead),
 		Airdrop.surveyor(world, world.player.global_position, world.time + lead).metres / 1000.0])
 
 
@@ -393,7 +398,7 @@ func _airdrop(args: PackedStringArray, world: World) -> void:
 	while t < until and Airdrop.surveyor(world, player.global_position, t).up < high:
 		t += 1.0
 	if t >= until:
-		_say("airdrop: the Surveyor doesn't pass high over here for a long while")
+		_say("airdrop: the drone doesn't pass high over here for a long while")
 		return
 	world.time = t - AIRDROP_LEAD
 	if player.hands.held == null:
@@ -401,7 +406,7 @@ func _airdrop(args: PackedStringArray, world: World) -> void:
 		world.content.add_child(flare)
 		flare.global_position = player.global_position + Vector3.UP
 		player.hands.hold(flare)
-	_say("airdrop: the Surveyor passes high over you in %d s; light the flare (use)" % roundi(AIRDROP_LEAD))
+	_say("airdrop: the drone passes high over you in %d s; light the flare (use)" % roundi(AIRDROP_LEAD))
 
 
 func _meltdown(_args: PackedStringArray, world: World) -> void:
