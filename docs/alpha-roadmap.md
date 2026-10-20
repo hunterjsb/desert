@@ -111,13 +111,13 @@ rigging; preserve the player's control and the working physical constraints.
 
 | Next-pass work | Current status and acceptance |
 | --- | --- |
-| Manual sail hoist | In progress: chassis-mounted hand winch, halyard and masthead pulley. Separate sail height from the sheet; hold paid length on release. New starter/scenario rigs need usable hardware, old saves need compatibility. |
-| Sail removal, board-line detachment and ground-rope recovery | In progress. The reported rope endpoint is the board, correcting the initial sail-end report. Pick up loose rope with ordinary actions and preserve attached ends/line identity. |
-| Clear scenarios and craft naming | Focused check passes; integration CI pending. One clear-weather/radio/flare/drone setup, old names as aliases. Delivery craft is “the drone”; Surveyor origin and Guide retain their names. |
+| Manual sail hoist | Implemented; focused checks pass, integration CI pending: chassis-mounted hand winch, halyard and masthead pulley. Separate sail height from the sheet; hold paid length on release. Starter/scenario and kept Nomad rigs include usable hardware; old saves retain their controls until converted. Unclaimed Nomad rig lines unload with their find and become ordinary saved lines when claimed. |
+| Sail removal, board-line detachment and ground-rope recovery | Implemented; focused checks pass, integration CI pending. The reported rope endpoint is the board, correcting the initial sail-end report. Pick up loose rope with ordinary actions and preserve attached ends/line identity. |
+| Clear scenarios and craft naming | Landed; native checks pending. One clear-weather/radio/flare/drone setup, old names as aliases. Delivery craft is “the drone”; Surveyor origin and Guide retain their names. |
 | Vault feel | Focused checks and GPU fixture pass; integration CI and human acceptance pending. Climb the measured ledge height with continuous travel through rounded corners, retaining obstruction and moving-deck checks. |
-| Radio controls and voices | In progress: live control hints only in the tune view, distinct machine voice identities grounded in the gods' lore. Keep the approved weather voice and music. Music follows world time; current speech starts reports on tuning, so a shared continuous speech schedule is not built. |
-| Halloran stock and cache | In progress: ordinary pickup for visible coalcane; the completed burn unlocks physically preplaced rewards. Check individual claims, locked access, legacy saves and no duplication after return/reload. |
-| Halloran models and pipeline | In progress: improve homes/ruins and give the pipeline a connected, supported route with meaningful terminals. Inspect actual gameplay captures. |
+| Radio controls and voices | Implemented; focused checks and 720p captures pass, integration CI pending: live control hints only in the tune view, distinct machine voice identities grounded in the gods' lore. Keep the approved weather voice and music. Music follows world time; current speech starts reports on tuning, so a shared continuous speech schedule is not built. |
+| Halloran stock and cache | Implemented; physical pickup, save and migration checks pass, integration CI pending: ordinary pickup for visible coalcane; the completed burn unlocks physically preplaced rewards. Check individual claims, locked access, legacy saves and no duplication after return/reload. |
+| Halloran models and pipeline | Implemented; actual GPU captures inspected, integration CI pending: homes with constructed openings/repairs and a connected, supported pipeline with physical terminals. |
 
 These changes are separate from the prepared 0.2.2 patch cutoff. Their
 implementation and checks must land before this table can describe them as built.
