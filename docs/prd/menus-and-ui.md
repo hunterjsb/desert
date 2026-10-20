@@ -35,6 +35,12 @@ world. The pressure comes from the moon, and a menu is no shelter from it.
 - **Type:** Geist for UI text, Geist Mono for numeric readouts (power, weight, charge).
   Menu text is small, uppercase, widely letter-spaced and light.
 
+## The game icon
+
+The game uses a separate, simple icon: one large sand dune silhouette against a quiet
+sky, with no lettering or extra scene details. It is the Godot project's icon, distinct
+from the worktree picker's launcher icon (Hunter, 2026-10-19).
+
 ## The main menu
 
 A title at the top, "Desert" for now in a light logo like the prototype's, and the

@@ -13,14 +13,18 @@ carried = Dictionary[StringName, int]({
 &"canister": 1,
 &"ration": 2,
 &"bedroll": 1,
-&"med_kit": 1
+&"med_kit": 1,
+&"radio": 1,
+&"sand_scoop": 1,
+&"sieve": 1
 })
 beside = Dictionary[StringName, Vector2]({
-&"camp": Vector2(1.6, 2.4)
+&"camp": Vector2(1.6, 2.4),
+&"board": Vector2(0.6, -1.0)
 })
 assembled = Dictionary[StringName, Dictionary]({
 &"camp": {
-"rig": [[&"piece", Vector2i(1, 0)], [&"piece", Vector2i(2, 0)], [&"stick", Vector2i(0, 0), &"top", Vector2(0, -0.18), 180.0, [&"console", [&"screen", &"ground_radar"]], &"console"], [&"stick", Vector2i(0, 0), &"top", Vector2(-0.3, 0.32), 0.0, &"battery"], [&"stick", Vector2i(0, 0), &"top", Vector2(0.3, 0.32), 0.0, &"battery"], [&"stick", Vector2i(1, 0), &"top", Vector2(-0.2, -0.2), 0.0, &"light_shield"], [&"stick", Vector2i(1, 0), &"top", Vector2(0, 0.27), 0.0, &"solar_panel"], [&"stick", Vector2i(2, 0), &"top", Vector2(0.18, 0.18), 0.0, &"sieve"], [&"stick", Vector2i(2, 0), &"top", Vector2(-0.26, -0.12), 90.0, &"sand_scoop"]]
+"rig": [[&"piece", Vector2i(1, 0)], [&"piece", Vector2i(2, 0)], [&"stick", Vector2i(0, 0), &"top", Vector2(0, -0.18), 180.0, [&"console", [&"screen", &"ground_radar"]], &"console"], [&"stick", Vector2i(0, 0), &"top", Vector2(-0.3, 0.32), 0.0, &"battery"], [&"stick", Vector2i(0, 0), &"top", Vector2(0.3, 0.32), 0.0, &"battery"], [&"stick", Vector2i(1, 0), &"top", Vector2(-0.2, -0.2), 0.0, &"light_shield"], [&"stick", Vector2i(1, 0), &"top", Vector2(0, 0.27), 0.0, &"solar_panel"]]
 }
 })
 charge = 0.8
