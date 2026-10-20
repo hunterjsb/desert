@@ -722,3 +722,18 @@ line of sight. Actual pulley captures revealed spline overshoot above a sharp
 guide: only the two curve links adjoining the real guide now follow their
 legs, on CPU and GPU. A focused curve check keeps the displayed bend on the
 pulley (9 s); rope forces and paid lengths are unchanged.
+
+
+**Integration correction (2026-10-20).** Ring-hole aiming assistance applies
+to tie sockets supplied by fitted hooks. It must not replace a hit on a
+carryable stake's own frame: taking the stake whole, with its line attached,
+remains the camp-towing interaction. Native tie knots remain directly pickable.
+Sailing tow fixtures identify sheet and tow lines separately from the new
+halyard, and keep the halyard in ordinary rope accounting.
+
+The combined-candidate regression reproduced all three CI failures locally.
+After restricting assistance, whole-stake pickup and a 40 m camp tow pass
+(35 s), and the board's full take, mount, charging and save cycle passes
+(67 s). Hook-end detachment and floor-end recovery still pass (9 s). The
+corrected tow fixture passes its original steering, opposed-load injury and
+selected-line reeling thresholds with all three real ropes intact (28 s).

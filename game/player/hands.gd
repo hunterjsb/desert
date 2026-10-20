@@ -966,6 +966,9 @@ func _near_tie(hit_at: Vector3) -> void:
 	for socket in look_device.sockets():
 		if socket.kind != &"tie" or socket.part == null:
 			continue
+		# A hook's hole needs help; a stake's own frame must still come up whole.
+		if not socket.has_meta(&"socket") or not (socket.get_meta(&"socket") as Socket).part is RopeHook:
+			continue
 		var at := look_device.global_transform * socket.position
 		if at.distance_to(sight_from) > _tuning.reach or at.distance_to(sight_from) > hit_at.distance_to(sight_from) + best:
 			continue

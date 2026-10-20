@@ -103,7 +103,7 @@ func run() -> void:
 		roundi(bent.most), player.vitals.health])
 	check(bent.most > world.tuning.fulcrum_n and player.vitals.health < Vitals.FULL and player.vitals.health >= 1.0,
 		"as the fulcrum you're hurt (%.0f health)" % player.vitals.health)
-	check(ropes.ropes.size() == 2, "and below their breaking the lines hold")
+	check(ropes.ropes.size() == 3 and mast.halyard() != null, "and below their breaking the sheet, towline and halyard hold")
 	# Unload before checking which line the reel gathers.
 	rig_for_load.freeze = true
 	sheet_for_load.length += 1.0
@@ -180,7 +180,14 @@ func _set_up(alone: bool) -> void:
 
 
 ## The scenario's n-th thing of a kind, in the order it laid them: the rig
-## before the camp, the sheet before the camp's line.
+## before the camp, the sheet before the camp's line; the independent halyard
+## stays on its drum and is not one of the two lines whose load we compare.
 func _of(kind: Variant, n: int) -> Node3D:
-	var found := kit.filter(func(body: Node) -> bool: return is_instance_of(body, kind))
+	var found: Array[Node3D] = []
+	for body in kit:
+		if not is_instance_valid(body) or not is_instance_of(body, kind):
+			continue
+		if kind == Line and (body as Line).rope == mast.halyard():
+			continue
+		found.append(body)
 	return found[n] if n < found.size() else null
