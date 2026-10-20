@@ -190,6 +190,7 @@ func _physics_process(delta: float) -> void:
 		_stop()
 		return
 	if vault.active:
+		_since_ground += delta
 		vault.step(delta)
 		_left = velocity
 		return
@@ -278,6 +279,8 @@ func _physics_process(delta: float) -> void:
 	velocity.y = lift
 	if not crouch and not _sliding and dir != Vector2.ZERO \
 			and (sprinting or _jumped) and vault.begin(dir):
+		_jumped = true
+		_jump_buffer = 0.0
 		vault.step(delta)
 		_left = velocity
 		return

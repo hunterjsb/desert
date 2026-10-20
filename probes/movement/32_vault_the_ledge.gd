@@ -20,7 +20,12 @@ func run() -> void:
 	check(player.global_position.x < _base.x, "plain walking does not automatically climb the ledge")
 	await _start()
 	hold(["move_forward", "sprint"])
-	await simulate(0.9)
+	var saved := {"data": {}}
+	await simulate(0.9, func() -> void:
+		if player.vault.active and player.vault._elapsed > 0.06 and saved.data.is_empty():
+			saved.data = Snapshot.take(world))
+	check(not saved.data.is_empty() and absf(saved.data.player.v.y) < 0.01,
+		"saving mid-climb does not store the upward climb speed as a jump")
 	print("sprint landing ", player.global_position - _base, " active ", player.vault.active)
 	check(player.global_position.x > _base.x + 0.3 and player.global_position.y > _base.y + 0.45,
 		"sprinting vaults onto the reachable top")
@@ -36,6 +41,20 @@ func run() -> void:
 		"a newly blocked path cancels instead of clipping through")
 	if is_instance_valid(obstruction.wall):
 		obstruction.wall.queue_free()
+
+	await _start()
+	var vanished := {"removed": false, "end_height": -INF, "on_floor": true}
+	hold(["move_forward", "sprint"])
+	await simulate(0.9, func() -> void:
+		if player.vault.active and player.vault._elapsed > 0.08 and not vanished.removed:
+			(_ledge.get_child(0) as CollisionShape3D).set_deferred("disabled", true)
+			vanished.removed = true
+		elif vanished.removed and not player.vault.active and vanished.end_height == -INF:
+			vanished.end_height = player.global_position.y - _base.y
+			vanished.on_floor = player.is_on_floor())
+	print("vanished top ", vanished)
+	check(vanished.removed and not vanished.on_floor and vanished.end_height > world.tuning.vault_clearance,
+		"a vanished top leaves you to fall instead of snapping to distant ground")
 
 	_ledge.queue_free()
 	await get_tree().physics_frame

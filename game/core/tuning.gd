@@ -434,15 +434,6 @@ static var _current: Tuning
 ## gravity throws you higher and keeps you up longer.
 @export var jump_height: float = 0.45
 @export var jump_stamina: float = 6.0
-@export_group("Ledge vault")
-## Reach above the current feet, forward reach, m; jump rise is not added again.
-@export var vault_height: float = 0.65
-@export var vault_reach: float = 0.9
-@export var vault_clearance: float = 0.02
-@export var vault_seconds: float = 0.3
-@export var vault_stamina: float = 4.0
-@export var vault_settle_speed: float = 0.1
-@export_group("Movement")
 ## A jump still works this long after the ground goes, and a press this long
 ## before you land jumps as you touch down, s.
 @export var coyote_seconds: float = 0.12
@@ -476,6 +467,15 @@ static var _current: Tuning
 @export var haul_stamina_drain: float = 10.0
 ## How quickly you dig in and come back up, s.
 @export var haul_seconds: float = 0.4
+
+@export_group("Ledge vault")
+## Reach above the current feet, forward reach, m; jump rise is not added again.
+@export var vault_height: float = 0.65
+@export var vault_reach: float = 0.9
+@export var vault_clearance: float = 0.02
+@export var vault_seconds: float = 0.3
+@export var vault_stamina: float = 4.0
+@export var vault_settle_speed: float = 0.1
 
 @export_group("Hoverboard")
 ## Flat out on the flat in still air, m/s: 72 km/h, faster than any storm

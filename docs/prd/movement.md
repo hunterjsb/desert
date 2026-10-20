@@ -1375,3 +1375,15 @@ peak tilt 0.79 degrees, and runner support zero. This covers one powered boardin
 case; it does not establish steep-terrain or mast/rope-loaded boarding. Like the
 larger stress helper, this external diagnostic reported teardown resource/instance
 warnings after passing; no claim of clean lifecycle follows from the result.
+
+Final edge handling: the first swept rise clears stale grounded state and consumes
+the current takeoff, preventing a canceled climb from counting as another ground
+approach. A vertical ray under the candidate feet also requires an actual top;
+rounded capsule contact against an edge alone is insufficient. Final seating snaps
+at most 0.04 m, so a removed top leaves the player airborne rather than dropping
+them instantly to distant ground. Cancel/save uses the approach pace plus the
+support's point velocity, never the faster controlled climb motion. Movement 32
+captures a live mid-climb Snapshot and checks that its saved vertical velocity is
+not an extra jump, and checks removal of a top while the climb is active. The
+final clear-light GPU run passed these same input cases and its captures were
+inspected again.

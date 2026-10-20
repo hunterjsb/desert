@@ -26,10 +26,19 @@ func grounded() -> void:
 
 func cancel() -> void:
 	if active:
-		_player.velocity.y = minf(_player.velocity.y, 0.0)
+		_player.velocity = release_velocity()
 	active = false
 	_support = null
 	_points.clear()
+
+
+## Ending or saving the climb keeps travel, not the scripted hand-over-hand pace.
+func release_velocity() -> Vector3:
+	var motion := Vector3(_carry.x, 0.0, _carry.y)
+	var body := _support as RigidBody3D if is_instance_valid(_support) else null
+	if body != null:
+		motion += body.linear_velocity + body.angular_velocity.cross(_player.global_position - body.global_position)
+	return motion
 
 
 func begin(direction: Vector2) -> bool:
@@ -50,6 +59,12 @@ func begin(direction: Vector2) -> bool:
 		return false
 	var down := _sweep(start + up + ahead, -up - Vector3.UP * _tuning.vault_clearance)
 	if down.get_collision_count() == 0 or down.get_collision_normal().y < cos(_player.floor_max_angle):
+		return false
+	# A capsule can rest against an edge with its feet still outside the top.
+	var query := PhysicsRayQueryParameters3D.create(start + up + ahead, start + ahead - Vector3.UP * _tuning.vault_clearance,
+		_player.collision_mask, [_player.get_rid()])
+	var top := _player.get_world_3d().direct_space_state.intersect_ray(query)
+	if top.is_empty() or top.collider != down.get_collider() or top.normal.y < cos(_player.floor_max_angle):
 		return false
 	var landing := start + up + ahead + down.get_travel()
 	var rise := landing.y - start.y
@@ -81,6 +96,7 @@ func step(delta: float) -> void:
 			or _player.vitals.wounds.stunned() or _player.global_position.distance_to(_last) > _tuning.vault_reach:
 		cancel()
 		return
+	var first := _elapsed == 0.0
 	_elapsed = minf(_elapsed + delta, _tuning.vault_seconds)
 	var progress := _elapsed / _tuning.vault_seconds
 	var segment := mini(2, int(progress * 3.0))
@@ -90,7 +106,14 @@ func step(delta: float) -> void:
 	_drag_offset += drag * delta
 	var move := target + _drag_offset - _player.global_position
 	var before := _player.global_position
-	var collision := _player.move_and_collide(move)
+	var collision: KinematicCollision3D
+	if first:
+		# Clear the previous floor flag on takeoff; later sweeps don't update it.
+		_player.velocity = move / delta
+		_player.move_and_slide()
+		collision = _player.get_last_slide_collision()
+	else:
+		collision = _player.move_and_collide(move)
 	last_step = _player.global_position - before
 	_last = _player.global_position
 	_player.velocity = move / delta
@@ -105,7 +128,11 @@ func step(delta: float) -> void:
 	if _elapsed >= _tuning.vault_seconds:
 		# Establish the actual floor through CharacterBody's usual platform tracking.
 		_player.velocity = Vector3.DOWN * _tuning.vault_settle_speed
+		var snap := _player.floor_snap_length
+		_player.floor_snap_length = minf(snap, _tuning.vault_clearance * 2.0)
 		_player.move_and_slide()
+		_player.apply_floor_snap()
+		_player.floor_snap_length = snap
 		_player.own = _carry
 		_player.velocity = Vector3(_carry.x, 0.0, _carry.y)
 		if _player.is_on_floor():

@@ -318,6 +318,9 @@ func _take() -> Dictionary:
 		data.dev_run = true
 	var you := {"at": _transform_out(player.global_transform), "pitch": player.camera.rotation.x,
 		"v": player.velocity, "drag": player.get_meta(&"rope_drag", Vector3.ZERO), "state": {}, "vitals": {}}
+	# A climb is an interrupted action, not a ballistic launch on resume.
+	if player.vault.active:
+		you.v = player.vault.release_velocity()
 	for key in PLAYER:
 		you.state[key] = player.get(key)
 	for key in VITALS:
