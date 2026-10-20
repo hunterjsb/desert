@@ -138,7 +138,8 @@ the sand), and they drag but are much weaker than rope. Early on: one chassis on
 loose battery, a panel, the shield and the bedroll on top. The **power box** is the upgrade: many
 battery bays, each charging or supplying, a light strip per bay reading direction and fill at a
 glance; a Console's Power page mirrors it with exact numbers, priorities and switches.
-- **By era** (the spec's riff, confirmed): **colonial** (Tilg or RMC) a big clean industrial
+- **By era** (the spec's riff, confirmed): **colonial** (TILG consignment; legacy RMC contractor
+  placeholder; installer and OEM unassigned) a big clean industrial
   cabinet, many bays, precise readouts, full Console integration, rare and heavy; **First
   Kingdoms** have no model of their own, they ran colonial cabinets patched and repurposed;
   **skimmer** a bodged rack of mismatched bays, some dead, high capacity, shared pool only, no
@@ -170,7 +171,7 @@ batteries in its bays is stored power you carry or drag like anything else.
 
 | Model | Id | Bays | Frame | Strips | Sticks | Its terms |
 |---|---|---|---|---|---|---|
-| Colonial cabinet (RMC's) | `power_cabinet` | 8, two columns of four, numbered | 0.8 × 1.2 × 0.45 m, 30 kg | 10 segments; its bank read out across its head (Wh, %, W) | stands, tall | held by hand; from a Console its bays set, ranks and switches |
+| Colonial cabinet (legacy RMC mark) | `power_cabinet` | 8, two columns of four, numbered | 0.8 × 1.2 × 0.45 m, 30 kg | 10 segments; its bank read out across its head (Wh, %, W) | stands, tall | held by hand; from a Console its bays set, ranks and switches |
 | Company issue | `power_box` | 4, set in its face | 0.62 × 0.12 × 0.5 m, 6 kg, carried | 5 segments | any face, a wall too | held by hand; switches |
 | Skimmer rack | `power_rack` | 12, mismatched, 3 dead | 0.96 × 1.06 × 0.36 m, 16 kg (11.2 found, the era's make) | 4 segments, under each bay | stands, tall | shared pool only: nothing |
 | Second-age shrine | `power_shrine` | 3 niches | 0.8 × 0.9 × 0.38 m, 16 kg | a smooth sand-glass tube | stands | held by hand; ranks |

@@ -268,9 +268,9 @@ stop and the crouch drift ride as they did.
   thing, and every make has the issue's box and rack seat. Its ride is shares of the Hoverboard
   tuning; its look is Dress's; its lineage's marks go over it as over anything.
 
-  | Make | Who made it | Weight | Flat out | Rides | Grip and skid | Landing | Draw | Hum |
+  | Make | Provenance / attribution | Weight | Flat out | Rides | Grip and skid | Landing | Draw | Hum |
   |---|---|---|---|---|---|---|---|---|
-  | Hoverboard (`board`) | Tilg & Standard's issue, the colony's yard and survey board and still the company's: gunmetal, teal and safety yellow, its batch stencil on the tail (TILG XN 0217 on a deep one) | 7 kg | 20 m/s | 0.35 m | grips 18 m/s², skids keeping 0.9 and bleeding 0.6 | jars at 9 m/s, throws at 15 | 40 W + 260 W | the hover's own |
+  | Hoverboard (`board`) | Tilg & Standard's present-day issue: the colony's yard and survey board, still the company's standard. Gunmetal, teal and safety yellow, with its current batch stencil on the tail; a deep colonial find carries the older TILG consignment stencil, from before the successor company existed. | 7 kg | 20 m/s | 0.35 m | grips 18 m/s², skids keeping 0.9 and bleeding 0.6 | jars at 9 m/s, throws at 15 | 40 W + 260 W | the hover's own |
   | Skimmer racer (`racer_board`) | The skimmer era's own: light, cheap imports H-Town's crews raced while Zan wasn't a desert; narrow and pointed, a kicked tail, hand-painted crew red with a pale stripe, tape round its rails, three small pads, the crew's patch on its tail | 5.5 kg | 23 m/s | 0.42 m, springier | grips 15.3 m/s², breaks loose soonest and skids longest, keeping 0.72 of it and bleeding 0.39 | throws you sooner (0.85 of the thresholds), slower to bite | 1.1 times | a thin bright whine |
   | Patrol board (`patrol_board`) | The Knights Requisitioner's, the Ledger's armed auditors, ridden ahead of the crusade's water convoys: wide and plated, olive armour down its rails, a steel bumper lashed with cord, its deck the order's grey with their daubed sign, as on their hopper, and a stencil on its tail, every crate accounted for; four dim pads | 11 kg | 18 m/s | 0.30 m | grips 22.5 m/s², skids short and scrubby, keeping 0.99 and bleeding 0.78 | sturdiest (1.3), bites back fast | 1.15 times | a deep pulsing thrum |
   | Temple board (`temple_board`) | Made at Mother Cistern's temple: an old hover core under saltbush planks lashed with fern cord, a round ceramic cap on its nose in her blue glaze, the sign of Tu on a limewashed patch, a water vial and a tassel | 9 kg | 17 m/s | 0.46 m, the softest spring | grips 17.1 m/s², slides soft, keeping 0.81 and bleeding 0.48 | the biggest cushion (1.35), sturdy 1.1, slowest to bite | 1.25 times | a soft hum with a ceramic ring |
@@ -1419,3 +1419,23 @@ real arrangement reaches 937 N opposing load and 21 health with both lines
 intact; the worked line is unloaded before the independent reeling check.
 
 The official visible-tow check passes in 26 seconds with those assertions intact.
+## Hybrid runner and hover carriage (agreed and built 2026-10-20)
+
+Allow skates and a hover keel or tray on different clear places of one deck. Their
+existing physical systems decide support: powered lift can raise its runners clear;
+runners on the sand push and grip only by their actual contact load. An airborne
+skate must neither plough nor count as a hover keel merely because its blade has a
+penetration statistic. True hover-fin grip remains proportional to the weight the
+hover field actually supports. Preserve lift capacity, mass, power and placement
+geometry; this is a correction to the former assembly restriction, not new tuning.
+
+As built, hover-fin discovery requires positive lift as well as a keel statistic.
+The runner contact solver and hover-support solver need no new coupling: each
+blade corner is already gated by ground distance and its actual support impulse,
+and fin grip already uses the mass the hover field really carries. The mixed-deck
+fixture has zero runner support in flight. From 4 m/s sideways it retains over
+3.9 m/s after half a second without a fin; a real fin reduces that speed by more
+than 0.5 m/s, still with zero runner support. Restoring the old discovery code
+incorrectly yields 3.714 m/s from airborne skates alone and fails the physical
+assertion. Restored source passes sail 19 (12 s); existing ground-runner sailing
+and hover-keel tacking checks (sail 1 and 10) pass unchanged. No tuning changed.

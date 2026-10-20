@@ -83,13 +83,14 @@ const SHARES := {
 
 
 ## A thing's lineage, found at a site of this era and kind, from the loot
-## draw's seed alone: [era, what was done, how] from its making on. Nothing
+## draw's seed alone: [era, what was done, how] from its first making on. Nothing
 ## after the colony was manufactured but the skimmer era's imports, so the
 ## rest started colonial: the First Kingdoms kept it and marked it with a
 ## house's heraldry; a second-age thing is a colonial or First Kingdoms one
 ## remade in the Dark Age, and maybe blessed after. A Dark Age cache holds
-## the remade thing before any blessing. Who made it is the thing's own
-## (Catalog.MAKERS), so a made entry's how is left empty here.
+## the remade thing before any blessing. Its colonial entity mark is assigned
+## from its catalog id (Catalog.COLONIAL_MARKS), so a made entry's how is
+## left empty here.
 static func lineage(era: StringName, kind: StringName, seed_value: int) -> Array:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = hash([seed_value, &"lineage"])
@@ -132,7 +133,7 @@ static func era_of(line: Array) -> StringName:
 	return SECOND if last == DARK else last
 
 
-## Who first made it: the era its maker's stamp is of.
+## The era of the first making in a lineage.
 static func origin(line: Array) -> StringName:
 	return NEW if line.is_empty() else line[0][0]
 

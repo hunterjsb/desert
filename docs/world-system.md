@@ -922,9 +922,11 @@ Shared files each package may touch, and nothing else outside its own: `Tuning` 
 
 - **A lineage is a short list on the thing** (its `lineage`, saved with it), each entry [era, what was
   done, how], from its making on:
-  - [colonial, made, who]: who made it, as its stamp says (`Catalog.MAKERS`): Tilg on chassis pieces
-    and frames, the contractor RMC on the condenser, the Console and the fitted shield, the shield's
-    maker on the light shield, the wind maker on the turbine; commodity parts name none.
+  - [colonial, made, mark]: the item's colonial provenance mark (`Catalog.COLONIAL_MARKS`):
+    TILG's consignment label on chassis pieces and frames; the legacy RMC contractor placeholder
+    on the condenser, Console and fitted shield; the OEM's sign on the light shield and turbine;
+    commodity parts name none. Current lore names Moonco and its specialist network but has not
+    reassigned those legacy RMC marks to specific organizations ([lore research](lore-research.md#colonial-contractors-moonco-and-its-network-agreed-2026-10-20)).
   - [First Kingdoms, marked, house]: a Port Morgan house kept it and marked it: Haberjack, Pellicott, Crake
     or Vonatelli.
   - [Dark Age, remade, work]: what held it together, one of five sets of cord, ceramic, a saltbush-wood
@@ -994,8 +996,8 @@ your own, a new lashing or cap on its look.
 
 Readable without text, through the paint pass, stacked in lineage order (art direction, "Layered
 marks"):
-- **Its maker's stamp** is the look's own, from its first hands' row: the colonial row (TILG XN 0217,
-  RMC), the new row for the company's issue.
+- **Its first provenance mark** is the look's own, from its first hands' row: the colonial row
+  (TILG XN 0217, legacy RMC placeholder), the new row for Tilg & Standard's present-day issue.
 - **A First Kingdoms house's** is an enamel band in the house's colour round the top edges of a frame,
   round a round housing or round a part's end, and an enamel plaque with the house's crest cut through to
   bright metal, riveted in brass: Haberjack's key, Pellicott's cauldron, Crake's arch, Vonatelli's tower; deep

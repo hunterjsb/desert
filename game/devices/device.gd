@@ -258,22 +258,9 @@ func has_tray() -> bool:
 	return not _trays.is_empty()
 
 
-## What carries it: &"tray" for hover trays, &"runner" for runners on the
-## sand, or none.
-func carriage() -> StringName:
-	return &"tray" if has_tray() else (&"runner" if glider != null else &"")
-
-
 ## What a part in a bottom mount carries its device on, or none.
 static func carries(part: Part) -> StringName:
 	return &"tray" if part.stats.get("lift_kg", 0.0) > 0.0 else (&"runner" if part.stats.has("glide") else &"")
-
-
-## Why a part can't go on it, or "": trays and runners don't mix on one body.
-func refuses(part: Part) -> String:
-	var kind := carries(part)
-	var now := carriage()
-	return "runners and trays don't mix" if kind != &"" and now != &"" and now != kind else ""
 
 
 ## Stuck on a chassis, where it keeps its own sockets.
