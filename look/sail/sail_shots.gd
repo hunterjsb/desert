@@ -49,7 +49,7 @@ func _ready() -> void:
 	var wind := world.weather.field_wind(deck.global_position).normalized()
 	var ahead := -deck.global_basis.z
 	player.set_physics_process(false)
-	mast.raised = true
+	_hoist(mast, 1.0)
 	await ticks(150)
 	await shoot(0, deck.global_position - wind * 7.0 + ahead * 5.0 + Vector3.UP * 3.5, deck.global_position + Vector3.UP * 1.5)
 	# On the board, towed across the wind, the sheet reeled in as it picks up speed.
@@ -71,7 +71,7 @@ func _ready() -> void:
 	ahead = -deck.global_basis.z
 	await shoot(1, deck.global_position + ahead * 7.0 + wind * 4.5 + Vector3.UP * 1.6, deck.global_position + Vector3.UP * 1.4)
 	# Furled.
-	mast.raised = false
+	_hoist(mast, 0.0)
 	world.weather.field = WeatherField.new(world.run_seed, world.tuning)
 	player.step_off()
 	await ticks(60 * 6)
@@ -91,7 +91,7 @@ func _in_tow(player: Player) -> void:
 	var kit := await _scenario("sail_tow")
 	var rig: Chassis = kit[0]
 	var mast := _mast(kit)
-	mast.raised = true
+	_hoist(mast, 1.0)
 	player.get_on(_board(kit))
 	var wind := world.weather.field_wind(rig.global_position).normalized()
 	var flat := Vector3(wind.x, 0.0, wind.z).normalized()
@@ -115,7 +115,7 @@ func _the_yacht(player: Player) -> void:
 	var kit := await _scenario("yacht")
 	var deck: Chassis = kit[0]
 	var mast := _mast(kit)
-	mast.raised = true
+	_hoist(mast, 1.0)
 	(kit[2] as Helm).interact(player)
 	var wind := world.weather.field_wind(deck.global_position).normalized()
 	var across := -deck.global_basis.z
@@ -202,3 +202,12 @@ func _set_sheet(mast: Mast, degrees: float) -> void:
 	if sheet != null:
 		sheet.length = mast.eased_length(degrees)
 		sheet.full = maxf(sheet.full, sheet.length)
+
+
+func _hoist(mast: Mast, share: float) -> void:
+	var halyard := mast.halyard()
+	if halyard != null:
+		halyard.length = halyard.full - Mast.LUFF * share
+		halyard.strand.set_length(halyard.length)
+	else:
+		mast.raised = share > 0.0

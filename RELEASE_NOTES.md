@@ -15,7 +15,7 @@ Physical sailing controls, clearer radio reception, and a first encounter at Hal
 - Radios gain station marks, independent sound effects and steadier carried audio.
   Scheduled songs keep playing through mixer/world-clock drift instead of restarting under load.
   Bundled weather, god and beacon speech works without an external voice service.
-- Thirteen satellites broadcast overhead. Signal the Surveyor with a flare to call
+- Thirteen satellites broadcast overhead. Signal the delivery drone with a flare to call
   a cargo drop; active deliveries and used flares survive saving and loading.
 - Explore Halloran's lower homes and Crossing, feed the Stoker's maintenance furnace,
   and claim a finite service cache after the burn. Fuel, burn progress and rewards persist.
@@ -24,7 +24,7 @@ Physical sailing controls, clearer radio reception, and a first encounter at Hal
 
 ### Current limits
 
-- Surveyor cargo containers are empty; supply contents are not implemented yet.
+- Drone cargo containers are empty; supply contents are not implemented yet.
 - The Halloran maintenance burn is a bounded encounter, not a portable generator,
   sustainable fuel loop or completed ending.
 - Kites, camp beacons and keeping distant camps loaded remain planned work.

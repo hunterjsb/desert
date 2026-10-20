@@ -101,6 +101,27 @@ These are candidates for prioritization, not an implementation commitment or a
 requirement to finish the full crop roster in Sanddune. Each selected goal needs
 its system design decisions and a concrete playtest outcome before work begins.
 
+## Current playtest follow-up (2026-10-20; in progress)
+
+The verified playtest confirms useful rope reeling/yanking, physical boom
+constraints, the delivery scenario, radio stowing, voice clarity and music.
+It does not establish easy sailing: skate craft tend to stall and hover
+craft circle. Improve force balance through visible craft layout and ordinary
+rigging; preserve the player's control and the working physical constraints.
+
+| Next-pass work | Current status and acceptance |
+| --- | --- |
+| Manual sail hoist | Implemented; focused checks pass, integration CI pending: chassis-mounted hand winch, halyard and masthead pulley. Separate sail height from the sheet; hold paid length on release. Starter/scenario and kept Nomad rigs include usable hardware; old saves retain their controls until converted. Unclaimed Nomad rig lines unload with their find and become ordinary saved lines when claimed. |
+| Sail removal, board-line detachment and ground-rope recovery | Implemented; focused checks pass, integration CI pending. The reported rope endpoint is the board, correcting the initial sail-end report. Pick up loose rope with ordinary actions and preserve attached ends/line identity. |
+| Clear scenarios and craft naming | Landed; native checks pending. One clear-weather/radio/flare/drone setup, old names as aliases. Delivery craft is “the drone”; Surveyor origin and Guide retain their names. |
+| Vault feel | Focused checks and GPU fixture pass; integration CI and human acceptance pending. Climb the measured ledge height with continuous travel through rounded corners, retaining obstruction and moving-deck checks. |
+| Radio controls and voices | Implemented; focused checks and 720p captures pass, integration CI pending: live control hints only in the tune view, distinct machine voice identities grounded in the gods' lore. Keep the approved weather voice and music. Music follows world time; current speech starts reports on tuning, so a shared continuous speech schedule is not built. |
+| Halloran stock and cache | Implemented; physical pickup, save and migration checks pass, integration CI pending: ordinary pickup for visible coalcane; the completed burn unlocks physically preplaced rewards. Check individual claims, locked access, legacy saves and no duplication after return/reload. |
+| Halloran models and pipeline | Implemented; actual GPU captures inspected, integration CI pending: homes with constructed openings/repairs and a connected, supported pipeline with physical terminals. |
+
+These changes are separate from the prepared 0.2.2 patch cutoff. Their
+implementation and checks must land before this table can describe them as built.
+
 ## Consolidated feature register
 
 This register carries forward the later kite, camp and opening discussions so they
@@ -132,9 +153,6 @@ fixes may ship as patches on the way to this named minor release.
 | Salvager's personal shield | **Built**: carried personal shield replaces the former camp shield in this start. | Sanddune start identity; useful and reachable first salvage still needs broader opening playtests. |
 | Sailing control and physics corrections | **Built**: sole-line automatic reeling, brief strength-limited yank, Varran stake/layout changes, native freely hinged boom and ordinary routed sheet. Mixed skates/hover/keel support is integrated; scalar trim/angle targets and hidden towing helpers are removed. | Sanddune fixes. Combined Linux, Windows and macOS checks pass, including active sailing, aboard motion and rig save/resume. Unassisted handling, board catch-up/counterbalance feel and player-load acceptance remain playtest gates. |
 | Placeable rope hook and player routing | **Built**: removable physical hook fits suitable solid faces and redirects an ordinary line through one guide, preserving line identity, total length, bend load, visible route and save state. | Sanddune control clarity. Real-hand routing and restore checks pass; players still need to learn the interaction in ordinary sailing. Multiple guides per line remain outside this first implementation. |
-| Delivery craft naming | **Agreed / planned**, not renamed: call the craft currently called “the Surveyor” in the Surveyor scenario **“the drone”** for now, avoiding confusion with the Surveyor starter kit. | Next cleanup pass. Keep the starter-kit name; audit player-facing craft/scenario wording. Internal ids and console-command migration need not change solely for the display rename. |
-| Sail disassembly, board-line detachment and loose-rope recovery | **Reported / planned**, not reproduced or fixed: investigate removing the sail and detaching rope from the board; allow recovering dropped rope from the ground. The board endpoint corrects the initial sail-rope report. | Next Sanddune sailing pass with the hoist; preserve remaining attachments, rope identity and saves. See the rope PRD. |
-| Chassis-mounted sail hoist | **Planned**, not built: a wheel attachment raises the sail instead of use on the mast. Manual winch, halyard and masthead pulley are the proposed arrangement; exact rigging and migration remain to settle. | Sanddune sailing follow-up; separate from the 0.2.2 fix candidate and later powered sheet automation. See the movement PRD. |
 | Short visual sailing notes and UI consistency | **Built**: four actual gameplay screenshot pages, brief sailing-only captions and shared UI fonts. All pages were inspected at 1280×720: 533×300 px images, two-line 20 px captions and visible navigation. | Sanddune teaching. The separate Surveyor Guide retains its prose pages. Unassisted comprehension and handling acceptance remain; refresh images if the illustrated geometry changes. |
 | Deck boarding and exposed wreck traversal | **Built**: sprint/jump ledge vault, exposed wreck panel collision, board-on-roof support and the Hopper ramp repair are integrated and pass all 19 platform/build checks. | Sanddune movement polish. Physical contact, walkable tops and cut openings are covered. Near-level mixed-deck baselines reach 108 pieces; one 16-piece powered boarding and one 27-piece offset-mount battery transition passed. Steep terrain and boarding large mast/rope-loaded craft still need combined coverage and playtesting. |
 | Developer playtest controls | **Built**: prevailing wind speed/bearing and reset, plus real held-cell or connected-pool charge controls. Wind drift stays continuous and saves/resumes; commands mark the run as developer use. | Support repeatable Sanddune checks. These do not establish viable ordinary play or unassisted expedition acceptance. |

@@ -1675,27 +1675,6 @@ that separate contact case. It does not establish stability on every slope
 or replace unassisted sailing acceptance.
 
 
-### Chassis-mounted sail hoist (agreed direction, 2026-10-20; not built)
-
-Hunter wants a new wheel attachment on the chassis to raise the sail, replacing
-the current use-on-mast toggle. A hand winch is the wheel/drum that winds a line;
-a pulley redirects it, and the sail's lifting line is its halyard. This is a
-manual sailing attachment, separate from the proposed powered/Console sheet trimmer.
-
-Proposed interaction: mount a hand winch where it fits, connect the halyard via
-a masthead pulley, and work the wheel to hoist or lower the cloth. The winch
-holds its paid length when released. Keep the halyard distinct from the sheet:
-raising cloth and controlling the boom are different actions. Reuse ordinary
-line attachment/routing and the existing work-line controls; add no dedicated
-key. Exact rigging, mechanical load model and old-save migration need design
-and verification before implementation. New and existing sailing setups must
-remain usable; refresh the visual notes when their illustrated controls change.
-
-Status: design recorded only. The current verified play build still raises and
-furls by use on the mast. This attachment is not part of the prepared 0.2.2
-release candidate.
-
-
 ### Vault motion follow-up (2026-10-20; focused checks pass)
 
 Playtesting confirms reachable ledges work, but the climb feels artificial.
@@ -1716,3 +1695,76 @@ new Movement 35: a 0.2 m ledge is crossed with feet below 0.32 m peak instead
 of lifting to the full 0.65 m reach (6 s). Actual unseen 1280×720 approach,
 rise, crossing and landing frames were inspected on a solid fixture; the same
 Movement 32 checks pass on the GPU run. Human feel acceptance remains pending.
+
+
+### Manual sail hoist (built 2026-10-20; integration pending)
+
+A removable hand winch fits an ordinary chassis surface. Its halyard goes from
+an accessible sail-head tie over a visible masthead pulley to the winch; this
+is a separate ordinary line from the sheet. Turning the wheel hauls/eases the
+paid rope at a bounded manual rate and the brake holds when released. Sail
+height follows the available halyard path, without commanding boom angle,
+rotation or rig velocity. A disconnected halyard lets cloth lower. A loose
+mast's cloth cannot stay hoisted. Existing sheet, yank and selected-line
+controls retain their behavior; looking at a mounted winch with empty hands
+works that wheel before a waist line. No new binding or powered auto-trimmer.
+
+Rigged starts supply the wheel and halyard. Old save records without hoist
+state retain their old mast toggle until explicitly converted, avoiding
+spawning hardware into an occupied custom deck. New masts use the hoist.
+Focus checks must cover actual wheel input, lowering after disconnection,
+untouched sheet length, and partial-height save/resume; pictures must show
+real attachment and route geometry. The integrated gameplay setups and refreshed tutorial pictures remain part of the landing gate.
+
+**As built.** `ManualWinch` winds an ordinary `Line`, with its existing saved
+endpoints and one real masthead guide. A vertical cloth-height constraint consumes
+the available halyard path; the cloth is not a separate falling rigid body. Its
+weight is the manual hauling load while supported, and that load clears when the
+cloth, route or supporting tie goes away. The physical boom hinge is untouched.
+A queued stroke stops when the operator looks away, leaves reach, opens a menu
+or takes something in hand. The brake retains the achieved paid length.
+
+Focused Godot 4.7.2 checks: physical wheel input raises the sail, preserves sheet
+length, earns All Hands through actual winding, holds with no further input and
+lowers after disconnection (13 s). A separate attention check cancels winding
+on looking away (7 s). Partial-height save/resume retains the same halyard,
+route and winch tie, and continues lowering (11 s). The existing rig round-trip,
+selected untie, yank and furl/rehoist checks also pass. These do not establish
+final default-craft balance or replace combined native CI/playtesting.
+
+Actual unseen GPU captures at 1280×720 inspect the wheel, pulley and partly
+hoisted rig (`look/hoist/hoist.tscn`). The metal/teal drum, wound rope, yellow
+handle, mounting plate and masthead block use the established worn materials.
+The catalog footprint contains the moving wheel and grip.
+
+Additional narrow checks preserve the previous save record shape without hoist
+fields, then restore and furl through the legacy control (11 s), and clear
+cloth hauling load immediately when the sail is removed (6 s). Final GPU
+inspection corrected the handwheel's rotation pivot to the drum axle and lets
+the sheave swivel toward its actual tail under a fixed mast bracket.
+
+
+### Authored rig balance and hoist hardware (agreed follow-up, 2026-10-20)
+
+The playtest accepts that real ropes and collisions govern the sail, while
+skate craft stall and hover craft tend to circle. Improve authored construction
+rather than adding a course-holding force. Put the yacht's mast and lateral
+resistance on its centreline, use symmetric corner lift and distribute its
+finite ballast. Check reach, heel and steering under the actual sheet. Bring
+the skated rig's mast closer to its middle without exceeding its mounting
+face, and verify real hook clearance.
+
+Every new authored sailing scenario and Varran start supplies a fitted manual
+winch and ordinary pre-rigged halyard. Kit data names both endpoints and counts
+the supplied line. Generated salvage can provide the same winch so a player
+can assemble the mechanism outside a dev scenario. Refresh the illustrated
+sailing controls to include hoisting at the wheel.
+
+
+
+The authored hoists and revised layouts pass the actual aboard-motion/rate
+check (Sail 11, 70 s) and Varran handling check (Sail 13, 32 s). Each scenario
+tracks its supplied halyard for cleanup; Varran counts and saves its fourth
+line independently from the three waist lines. These checks do not establish
+unassisted straight-line handling. The yacht's keel/no-keel comparison now
+removes both physical keels rather than leaving one in its control fixture.

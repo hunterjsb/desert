@@ -668,3 +668,15 @@ Call the delivery craft “the drone” for now to avoid confusion with the
 Surveyor origin and its Guide. Rename player-facing craft descriptions and
 provide a drone console command; keep old technical ids and command aliases
 compatible. This renames no starter kit.
+
+
+### Sailing hoist picture (2026-10-20; focused checks pass)
+
+The sailing booklet now has five short picture pages, with a new first page
+showing the real mounted hand winch and its halyard. Its caption renders the
+hoist/lower bindings and explains the brake. The wind, sheet and guide photos
+were recaptured from the updated actual rig; the unchanged board model retains
+its existing photograph. All five pages were inspected on the GPU at 1280×720:
+533×300 images and two-line 20 px captions, with normal navigation. The
+booklet's menu/pickup/reader check passes (6 s). Human teaching acceptance
+remains a playtest gate.
