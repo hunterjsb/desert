@@ -513,7 +513,7 @@ quoted. The game side is in [World & terrain](prd/world-and-terrain.md#world-gen
 
 **Agreed (working names; part 1 §4 has the table).** Eleven entities, sovereign to software:
 the **United Government**, a regional interstellar government, the **IOU**, the **Skimmers
-Association**, **Tilg**, the **Remote Moon Contractor**, **StarCom**, a spaceship builder,
+Association**, **Tilg**, **Moonco** (the former Remote Moon Contractor placeholder), **StarCom**, a spaceship builder,
 tritium refineries, a moon regional government, and an interconnected software company. Every
 one leaves its maker's mark, so the player reconstructs the supply chain from salvage. The
 keystone fragility is that **the hub makes nothing high-tech itself.** Every controller,
@@ -521,12 +521,12 @@ skimmer and beacon runs on imported chips (Xandaris's `tech_level.go` already de
 Electronics supply stops).
 
 **Agreed (part 2): an OEM tier sits underneath.** The stack is operators, regulators and
-integrators, who deploy things. The Remote Moon Contractor sets up and maintains
+integrators, who deploy things. Moonco and its contracted specialists set up and maintain
 infrastructure until steady state, then Tilg runs it until the town stands alone. Neither
 fabricates the core technology; they buy it from the **OEMs**, the hardware makers back in
 civilisation whose components everyone resells, integrates and rebrands.
 - **Issuer versus maker.** The integrator's mark is on the assembly and the OEM's is on the
-  component. A shield housing says Remote Moon Contractor, but the emitter core inside names a
+  component. A shield housing carries its installation contractor’s mark, but the emitter core inside names a
   maker most settlers never heard of.
 - **The box.** A crate is addressed to an operator, and each part inside carries its own
   maker's stamp. The label says who ordered it; the contents say who made it.
@@ -559,6 +559,59 @@ possibly lost tithe collectors. **Agreed (session 4, part 2) exception:** what t
 built on Zan itself was never carried in by anyone: the black site, the Quartermaster that runs
 it, and the air-defence net behind the Launch ending ([the AI
 gods](#the-faith-of-tu-and-the-ai-gods-agreed-session-4-part-2)).
+
+### Colonial contractors: Moonco and its network (agreed, 2026-10-20)
+
+**Names and roles.** The moon is XN-118-7, in system XN-118. Tilg commissions the initial transit
+hub; Moonco coordinates the specialist organisations that deliver it. The former **Remote Moon
+Contractor / RMC** was a working placeholder, now resolved to Moonco. This is lore direction,
+not a completed replacement of the RMC marks currently drawn on equipment.
+
+| Organisation | Role in the colonial build-out |
+|---|---|
+| **Moonco** | The Provisional's remote-moon exploration and surveying division, generically called Moonco. The provincial prime contractor: arranges specialist contracts, permits, integration, commissioning and acceptance. Its exact formal title remains open. |
+| **Geologix** | Technically independent, based in the frontier province. Surveying, exploration and field installation; brings the Walker. It also delivers and installs habitat equipment with United Biotech. Keep this spelling, including the final x. |
+| **ProvWorks** | A nickname for a provincial heavy-construction contractor: groundworks, launch pads, foundations, freight yards and heavy assembly. Its full institutional name is open. |
+| **GHe3 — General Helium Three** | Power systems and integration. Capital G and H, lowercase e, then 3. The division between its own manufacturing and bought-in components remains open. |
+| **United Biotech** | Specialist habitat and life-support equipment, working with Geologix, which delivers and installs it. A possible source in Mitchell's earlier commercial lineage, below. |
+| **Teresa** | Water systems: storage, reclamation, condensers and distribution. Mother Cistern's corporate ancestry; her later title need not be an explicit derivation of the company name. |
+| **StarCom** | Communications installation and the connection to the external network. |
+| **Frontier Ag** | Agricultural equipment, crops, growing systems and their commissioning. Its established crop and grow-crate provenance still stands. |
+
+**The provincial bargain.** The Provisional steers Tilg toward Moonco and provincial contractors.
+Tilg accepts the arrangement in part because it helps with UG taxes. **The precise tax mechanism
+is open.** Do not invent a statutory exemption or merge it with Tilg's separately established
+“temporary hub” pretext for avoiding the Provisional's military upkeep. Nearby provincial
+contractors are practical choices for heavy equipment and construction as well as political ones.
+Halloran's refinery development follows Port Morgan by years, possibly decades; it is a later
+industrial project, not the initial hub's power contract. GHe3 and Halloran are distinct entities.
+
+**Moonco cultivates Geologix to reach beyond the province.** Moonco's public remit limits its
+ability to act outside provincial jurisdiction. Geologix is technically independent and can take
+external contracts. Moonco feeds it work such as Zan to build its fleet, expertise and reputation,
+growing a contractor that can operate where Moonco itself cannot freely go. Their overlapping
+survey remits are deliberate: Moonco owns the programme and Geologix supplies field capability.
+They have a shared interest in Geologix's growth, with room for tension over budgets, credit and
+control. **Ownership, equity, personal connections and obligations in return remain open.**
+Contract patronage does not establish a secret subsidiary or a particular ownership structure.
+
+**The Walker's provenance.** Geologix brings and deploys the survey machine; later work for
+Halloran connects it to the Stoker. The built Walker's Tilg stencil can remain an ownership or
+consignment mark alongside its deployment history. This does not establish that Geologix made
+the hardware or trained its base model. Additional marks and their placement are not implemented.
+
+**United Biotech and Mitchell (possible link, not resolved).** It could have supplied the original
+pharmacy system or operated the chain that recalled him; which relationship, if either, is open.
+Rosalind still finds the recalled mind in a surplus salvage lot and secures it for the union's
+off-books clinic. Do not turn that into an authorised colonial medical deployment.
+
+**Marks and scale.** Distinguish the commissioning organisation, the installation contractor,
+the equipment maker and the operator. Moonco's acceptance mark need not replace every old RMC
+mark one-for-one: a device may chiefly carry Teresa's or Geologix's plate, with a different OEM
+inside. Logo designs and asset replacement are separate work. The suggested peak workforce of
+roughly 150 across eight organisations was a planning sketch, **not a settled headcount**; staffing,
+arrival waves and operating crews remain open. The eight rows are not an exhaustive list of
+suppliers, employers or institutions on Zan.
 
 ### Factions (Agreed, session 3)
 
@@ -1121,7 +1174,7 @@ are refitted to the same strata and named Surface, First Kingdoms to second age,
 and Colonial; the PRD says how. Session 4, part 4's burial table puts the skimmer era above the First
 Kingdoms, against this order ([section 18](#18-open-after-session-4-part-4)).
 
-**Agreed: the oldest tech is StarCom and the Remote Moon Contractor's build-out,** overbuilt
+**Agreed: the oldest tech is StarCom and Moonco's contracted build-out,** overbuilt
 for these exact conditions while everything later was built for a world that no longer
 exists. **StarCom is precious because it's fragmentary:** its flagship stood on the mountain
 that blew, so the player finds shards, relays and hardened modules, never a whole one.
