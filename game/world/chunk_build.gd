@@ -59,7 +59,7 @@ static func pressed(shape: TerrainShape, bordered: PackedFloat32Array, coord: Ve
 		var each := held[k]
 		if not each.stands():
 			continue
-		carves.append(each.carve(steps[k]))
+		carves.append(each.carve(steps[k], square.grow(step)))
 		build.carved.append(each)
 		build.carved_steps.append(steps[k])
 		if square.has_point(Vector2(each.x, each.z)):

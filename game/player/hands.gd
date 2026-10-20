@@ -394,6 +394,8 @@ func grab() -> bool:
 ## your waist comes back to your hands. Says whether it did anything.
 func interact() -> bool:
 	_look()
+	if _player.world.stoker != null and _player.world.stoker.interact(_player):
+		return true
 	if look_bed and held == null and look_device == null and look_part == null:
 		return _player.world.sleep.offer(_player)
 	if look_work != null:

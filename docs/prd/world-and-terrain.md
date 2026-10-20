@@ -2,6 +2,29 @@
 
 *Draft, 2026-10-13. Answers to [the vision](../vision.md).*
 
+## Halloran's first playable ground (built, 2026-10-20)
+
+Aitch–Crossing–furnace is one connected Structure assembly laid with the Halloran landmark unit,
+anchored to the moon's seeded position and reprojected by Sites when revisited. One local grade
+holds the approach together while its surrounding apron returns to procedural dunes. The assembly
+uses the existing terrain mesh/collision carve and exposure holds; lower rooms collect sand relative
+to their own floors. Essential access stays above burial. Large-scale rift carving remains deferred.
+Persistent encounter state belongs to the run, keyed independently of transient site instances.
+
+**As built and checked.** `HalloranSite` uses a local 36 m rise over 480 m, a 100 m blending
+apron, and floor-relative burial from 1.6 m to zero. The clear spine's sampled grade stays
+below 0.2 in all three exposure states and three rotations; lattice heights agree between
+CPU queries and chunk carving within 1 mm (kit probe 10, 2 s). The apron restores untouched
+dunes outside the footprint. Its sides can form steep escarpment; only the central approach
+is guaranteed walkable. This multi-level assembly has its own burial/grade probe rather than
+the ordinary single-floor building survey's slope requirement.
+
+Each chunk asks the assembly for only its own carve rectangle, avoiding a full landmark grid
+per exposure step. Ordinary building carves retain their cached grids. Landmark reach stays
+out of the ordinary-cell query margin. The seeded landmark appears exactly once on tested
+sheets for seeds 1234, 7 and 99, retaining its identity at remote world coordinates and reversed
+north (history probe 7, 3 s). The real streamed interaction check also leaves and revisits it.
+
 ## Why this system exists
 
 The desert is the stage for everything else. It has to be endless, it has to look like

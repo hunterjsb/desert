@@ -248,6 +248,8 @@ static func _ledger(radio: Radio, gods: Gods, p: Vector3) -> String:
 
 static func _stoker(radio: Radio, t: float) -> String:
 	var world := radio.world
+	if Stoker.active(world):
+		return "BAY 02 · MAINTENANCE BURN · PRESSURE STABLE · QUOTA OUTSTANDING"
 	var day := world.weather.day
 	var dark := day.next_eclipse(t) - t
 	var peak := -INF

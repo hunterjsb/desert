@@ -757,7 +757,14 @@ func _begun(key: int, anchor: Anchor) -> Unit:
 	unit.key = key
 	unit.anchor = anchor
 	if key < 0:
-		_lay_mark(unit, history.landmarks[-1 - key])
+		var landmark: Dictionary = history.landmarks[-1 - key]
+		_lay_mark(unit, landmark)
+		if _built and landmark.id == &"halloran":
+			var crossing: Dictionary = landmark.parts.filter(func(p: Dictionary) -> bool: return p.id == &"crossing")[0]
+			unit.sites.append(_site({"id": -7001, "kind": &"halloran_route", "era": Eras.COLONIAL,
+				"p": crossing.p, "bearing": landmark.bearing + PI, "reach": SiteKinds.reach(&"halloran_route"),
+				"depth": 1.0, "tilt": 0.0, "loot": hash([landmark.p, "halloran"]),
+				"source": &"landmark", "region": &"han"}, anchor))
 		return unit
 	var cells := history.cells
 	var ground := Rect2(anchor.place(cells.center(key)), Vector2.ZERO)
