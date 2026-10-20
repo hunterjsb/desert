@@ -1555,3 +1555,22 @@ along the actual plane; sand retains its original deterministic correction.
 Movement 34 passes both actual approaches (four legs, no stuck leg or snag),
 in 21 s; Movement 32 and 33 pass in 10 s each. The unchanged full Kits 2
 traversal remains the acceptance gate for every kind's openings.
+
+### Combined sailing verification repair (2026-10-20)
+
+The combined check exposed fixture helmsmen still reserving the entire outboard
+leg after approaching the helm or rig, leaving the physical sail unloaded. A
+fixture that actively tends a driving reach must work the current complete rope
+path at the normal reel speed, as the yacht and visible tow checks already do.
+Its reel increment must use the actual physics interval at every tick rate.
+This does not add production automatic trim or alter force, injury, rope strength,
+frame-rate consistency or movement acceptance bounds. Route loss and native
+frame-rate behavior remain separate measured failure modes to investigate.
+
+The multi-rate aboard check also initialized later cases with the previous case's
+wind still blowing, while the first case began calm. Each case now settles the
+hoisted articulated craft and boarded rider in calm air for three seconds before
+starting the same driving-sheet policy and selected tick rate. It passes in 70 s
+without changing the 20 m/s² jolt, 1.5 rad/s spin, full health/aboard, or 10% tow
+and 3% yacht distance bounds. This is fixture initialization and normal-rate
+control, not a new production constraint or force correction.

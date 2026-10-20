@@ -155,7 +155,7 @@ func _steer() -> void:
 			if sheet != null:
 				var aimed := mast.eased_length(rad_to_deg(want), 1.0) if driving_sheet else _trim_length(rad_to_deg(want), 1.0)
 				var length := clampf(aimed, Line.SHORTEST, sheet.full)
-				sheet.length = move_toward(sheet.length, length, Reel.PACE / 60.0)
+				sheet.length = move_toward(sheet.length, length, Reel.PACE * get_physics_process_delta_time())
 	if course == Vector2.ZERO or deck == null:
 		return
 	var ahead := -deck.global_basis.z
