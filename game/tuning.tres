@@ -229,3 +229,15 @@ dial_close_up = false
 
 stoker_burn_s = 30.0
 stoker_stock = 3
+starcom_mountain = Vector2(2400, 600)
+observatory_mountain = Vector2(3600, 950)
+horizon_step = 128.0
+horizon_range = Vector2(24000, 42000)
+site_surge_return_minutes = 5.0
+site_surge_window_minutes = 90.0
+site_surge_m = 0.8
+site_wake_return_minutes = 18.0
+mountain_bedrock_depth = 40.0
+horizon_drop_m = 8.0
+mountain_rock = Color(0.38, 0.34, 0.30, 1)
+mountain_rock_height = Vector2(60, 180)

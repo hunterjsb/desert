@@ -171,6 +171,8 @@ func begin(data: Dictionary) -> Array[Vector2]:
 	# What was taken from each site; a save from before kept none.
 	world.salvage.recall_sites(data.get("sites", []))
 	# History laid where it was; a save from before has none, and lays afresh.
+	world.shape.landforms.recall(data.get("landforms", []))
+	world.shape._held.clear()
 	world.shape.sites.recall(data.get("sheet", []))
 	# Sand held off a site over you or your camp stays off it: a pit you
 	# stood in comes back dug out.
@@ -430,6 +432,7 @@ func _take() -> Dictionary:
 	data.finds = world.salvage.memories()
 	data.sites = world.salvage.site_memories()
 	data.sheet = world.shape.sites.memories()
+	data.landforms = world.shape.landforms.memories()
 	data.held = world.shape.sites.held()
 	data.dug = world.shape.sites.dug_memories()
 	data.dunes = world.shape.sites.dunes.memories()

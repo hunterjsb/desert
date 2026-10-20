@@ -11,6 +11,8 @@ extends RefCounted
 ## of its own.
 
 const KINDS := {
+	&"starcom_summit": {"era": Eras.COLONIAL, "burial": Vector2(1.0, 1.0)},
+	&"observatory_summit": {"era": Eras.COLONIAL, "burial": Vector2(1.0, 1.0)},
 	&"halloran_route": {"era": Eras.COLONIAL, "burial": Vector2(1.0, 1.0)},
 	# Colonial: the skeleton's pieces, and the colonial settlements'.
 	&"pylon_stub": {"era": Eras.COLONIAL},
@@ -87,7 +89,7 @@ static func most_reach() -> float:
 	var most := 0.0
 	for kind: StringName in KINDS:
 		# Landmark units already carry their full footprint; ordinary cells stay small.
-		if kind == &"halloran_route":
+		if kind in [&"halloran_route", &"starcom_summit", &"observatory_summit"]:
 			continue
 		most = maxf(most, reach(kind))
 	return most

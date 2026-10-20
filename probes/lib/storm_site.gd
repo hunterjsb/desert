@@ -4,8 +4,8 @@ extends RefCounted
 ## deep such a site lies.
 
 ## Minutes before and after a storm's strongest work the site is read.
-const BEFORE := 30.0
-const AFTER := 20.0
+const BEFORE := 60.0
+const AFTER := 60.0
 
 
 ## Round (x, z), out to `rings` rings `apart` m apart, the place within `days`
@@ -15,10 +15,10 @@ const AFTER := 20.0
 ## past its deepest sockets (`deep`, a share of its depth) at the peak; {} if
 ## none does.
 static func find(field: WeatherField, tuning: Tuning, x: float, z: float, rings := 3, apart := 120.0,
-		days := 1.0, deep := 0.5, places := Callable()) -> Dictionary:
+		days := 1.0, deep := 0.5, places := Callable(), shape: TerrainShape = null) -> Dictionary:
 	var best := {}
 	var score := 1.0
-	for each in _storms(field, tuning, x, z, rings, apart, days, places):
+	for each in _storms(field, tuning, x, z, rings, apart, days, places, shape):
 		var taken: Array = each.taken
 		var depth := maxf(3.0 * maxf(taken[0], taken[2]) * 1.15, 0.1)
 		var this: float = taken[1] / (depth * (1.0 + deep) * 1.05)
@@ -48,7 +48,7 @@ static func strongest(field: WeatherField, tuning: Tuning, x: float, z: float, r
 
 ## Each place's strongest storm work in `days`: {x, z, before, peak, after, taken}.
 static func _storms(field: WeatherField, tuning: Tuning, x: float, z: float, rings: int, apart: float,
-		days: float, places: Callable) -> Array[Dictionary]:
+		days: float, places: Callable, shape: TerrainShape = null) -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
 	for ring in rings + 1:
 		var count := maxi(1, 8 * ring)
@@ -57,15 +57,16 @@ static func _storms(field: WeatherField, tuning: Tuning, x: float, z: float, rin
 			if places.is_valid() and not places.call(at):
 				continue
 			var memo := Exposure.Memo.new()
+			var dune := Exposure.dune_at(shape, at.x, at.y, tuning) if shape != null else 0.0
 			var most := -1.0
 			var tick := 0
 			for m in range(ceili(BEFORE), roundi(days * 24.0 * 60.0)):
-				var s := Exposure.surge_at(field, at.x, at.y, m, tuning, memo)
+				var s := Exposure.surge_at(field, at.x, at.y, m, tuning, memo, dune)
 				if s > most:
 					most = s
 					tick = m
 			var peak := (tick + 1) * Exposure.SURGE_STEP_S
 			var times := [peak - BEFORE * 60.0, peak, peak + AFTER * 60.0]
 			out.append({"x": at.x, "z": at.y, "before": times[0], "peak": times[1], "after": times[2],
-				"taken": times.map(func(t: float) -> float: return Exposure.taken(field, at.x, at.y, t, tuning, memo))})
+				"taken": times.map(func(t: float) -> float: return Exposure.taken(field, at.x, at.y, t, tuning, memo, dune))})
 	return out

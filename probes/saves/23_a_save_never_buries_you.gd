@@ -17,7 +17,7 @@ func run() -> void:
 	var sites := world.shape.sites
 	var from := Vector2(world.player_world_x() + 320.0, world.player_world_z())
 	var stands := func(at: Vector2) -> bool: return sites.by_hand(KIND, at.x, at.y, 0.0, 0.0).stands()
-	var storm := StormSite.find(world.weather.field, world.tuning, from.x, from.y, 2, 100.0, 1.0, 0.0, stands)
+	var storm := StormSite.find(world.weather.field, world.tuning, from.x, from.y, 2, 100.0, 1.0, 0.0, stands, world.shape)
 	check(not storm.is_empty(), "a storm that digs a cistern out")
 	if storm.is_empty():
 		return

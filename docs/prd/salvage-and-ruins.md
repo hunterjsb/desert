@@ -1595,3 +1595,14 @@ in 12 s. The impact state is observed after a drawn frame before taking a save.
 A GPU capture after a Snapshot round trip during flight shows the resumed trail,
 falling container and impact cloud on the actual renderer. Effects are rebuilt
 on resume; the already-fired cannon is not replayed.
+
+## Expedition landmarks (agreed, 2026-10-20)
+
+The first hour still leads toward ordinary salvage, shelter and a workable camp. Storm
+archaeology and agriculture support different middle-game lives. Starcom and the far-side
+observatory are optional expedition destinations: real silhouettes, actual traversable
+mountains and colonial remains at the summit. Arrival should offer shelter and the normal
+salvage loop even before their ending quests exist. Discovery uses existing landmark deeds.
+Distant volcanic columns retain their real, dangerous vent mouths. None promises an easy
+rescue or a safe water source. Location can be learned visually or through existing map and
+radio tools; this first slice adds no exposition dump or mandatory travel objective.

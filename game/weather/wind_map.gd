@@ -162,8 +162,9 @@ func _pack(t: float) -> PackedByteArray:
 	var bytes := PackedInt32Array([corner.x, corner.y, first.x, first.y]).to_byte_array()
 	bytes.append_array(PackedFloat32Array([tuning.transport_wind.x, tuning.transport_wind.y, day_share(t), 0.0]).to_byte_array())
 	bytes.append_array(weather.field.wind_now(corner.x * TEXEL, corner.y * TEXEL, t).to_byte_array())
-	if _still_of != [weather.field, weather.lee]:
-		_still_of = [weather.field, weather.lee]
+	if _still_of != [weather.field, weather.lee, _world.shape.landforms.revision]:
+		_still_of = [weather.field, weather.lee, _world.shape.landforms.revision]
+		_filled = UNFILLED
 		var into := StreamPeerBuffer.new()
 		weather.field.pack_wind(into)
 		weather.lee.pack_lee(into)

@@ -31,3 +31,14 @@ Probe hosts and system helpers live in `probes/lib/`. Use the nearest existing h
 targeted probe for the failure being fixed. `scripts/probe.sh` imports assets before running;
 `scripts/verify.sh` handles whole-suite CI and landing. `AGENTS.md` describes the shared worktree,
 locking and capture rules.
+
+## Reachable mountain horizons
+
+- `game/world/landforms.gd`: pinned/saved moon projections and bedrock heights;
+  `TerrainShape` and its GPU twin feed terrain, collision and the wind map.
+- `game/world/horizons.gd`, `horizon.gdshader`, `mountain.gdshaderinc`: coarse ground,
+  atmospheric distance and the summit meshes beyond ordinary streaming.
+- `game/story/summit_kit.gd`, `summit_site.gd`: actual Starcom and observatory galleries,
+  receiving array and broken elevator foot, laid by `Sites` at their history landmarks.
+- Focused checks: history 8, kits 12/13; existing exposure, burial and spawn probes.
+  Captures: `look/horizons/horizons.tscn`. First-hour audit: `look/exposure/first_hour.tscn`.

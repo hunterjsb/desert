@@ -1129,3 +1129,22 @@ in the living docs, so this PRD follows it as direction and says so on each line
   Here, loaded ground never changes (World & terrain, rule 2), and "Storms wear dunes down" is
   already a loose full-version line. *Since 2026-10-18 a site's ground follows a storm's work live,
   pressed afresh in fine steps; whether the open dunes may follow the same way is still open.*
+
+## Storm wakes and expedition horizons (2026-10-20)
+
+The first-hour audit explains an easy-to-miss payoff: with the previous five-minute refill,
+none of sixteen natural dune ruins within 1 km of seed 1234's Surveyor start showed during
+that hour. Seeds 7 (fallback start) and 42 did expose some, but all three samples had zero
+visible ruin-minutes in clear air. A passing storm was often hiding its own reward.
+
+The storm still moves and refills sand quickly while its heart is present. In calmer air,
+refill now relaxes over eighteen minutes; history covers ninety minutes so that tail does
+not abruptly vanish. This remains a stateless minute-history integral with frame interpolation,
+shared by loaded sites, distant signs, saves and fast-forward. It adds no spawn timer or
+player-dependent ruin. Strong storms can still actively rebury a site. Deep dunes remain
+strong-storm finds; a weak shower arriving during a previous storm's wake is not a new excavation.
+The exposure probe's before/after sampling is now an hour apart to include the longer wake.
+
+Existing geological plumes keep their sources, timing, sound and renderer. The far-side
+flank now reads the volcano's real elevation and pinned projection. Mountains enter the GPU
+wind-map height function too, so sand transport and lee rendering agree with their CPU ground.

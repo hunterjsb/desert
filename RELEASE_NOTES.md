@@ -1,3 +1,11 @@
+## Unreleased
+
+- Reach Starcom's relay mountain and the far-side observatory volcano: hazy distant
+  silhouettes become real slopes, colonial galleries and salvage when approached.
+  The existing volcanic plume rises from the mountain's flank.
+- Storm-stripped ruins refill more slowly in calmer air, leaving a short window to
+  investigate after the dust clears. Strong storms can still bury them again.
+
 ## 0.2.2-alpha “Sailboat”
 
 Physical sailing controls, clearer radio reception, and a first encounter at Halloran.

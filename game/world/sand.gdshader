@@ -1,4 +1,5 @@
 shader_type spatial;
+#include "res://game/world/mountain.gdshaderinc"
 // The sand: the flat colour plus what makes dune shapes read. Slip faces are
 // smooth avalanche sand, a shade deeper and warmer, so they read even under a
 // noon sun that lights every face alike, streaked down the fall line by its
@@ -294,6 +295,7 @@ float ripple_below(float phase, float lean, float height) {
 }
 
 void fragment() {
+
 	vec3 n = normalize(world_normal);
 	vec2 at = world_pos.xz + origin;
 	vec2 across = vec2(-downwind.y, downwind.x);
@@ -582,6 +584,7 @@ void fragment() {
 	AO *= occluded;
 	dune_light = vec4(dune_shade.yz, smoothstep(0.6, 0.8, -VERTEX.z / shadow_reach), mix(1.0, occluded, cavity_light));
 	crest_way = mat3(VIEW_MATRIX) * vec3(across_crests.x, 0.0, across_crests.y);
+	colour = mountain_colour(colour, world_pos.y, normalize(world_normal));
 	ALBEDO = wind_view_colour(colour, world_pos.xz, wind_vertex);
 	ROUGHNESS = 1.0;
 	NORMAL = normalize((VIEW_MATRIX * vec4(rippled, 0.0)).xyz);

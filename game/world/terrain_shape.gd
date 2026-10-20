@@ -44,6 +44,7 @@ var _saddle := FastNoiseLite.new()
 ## answers for every site on the ground.
 var history: History
 var sites: Sites
+var landforms: Landforms
 ## Lattice points the main thread has read, by packed i and j; emptied
 ## when it holds HELD_MAX, a few chunks' worth.
 const HELD_MAX := 16384
@@ -66,6 +67,7 @@ func _init(run_seed: int, tuning: Tuning) -> void:
 	_field(_fork_patch, run_seed + 15, tuning.dune_fork_wavelength, 1)
 	_field(_saddle, run_seed + 16, tuning.dune_saddle_wavelength, 1)
 	history = History.new(run_seed, tuning)
+	landforms = Landforms.new(history, tuning)
 	sites = Sites.new(history, self, tuning)
 
 
@@ -160,7 +162,8 @@ func dunes(x: float, z: float) -> float:
 	# Down the wind, and across it.
 	var u := x * _down.x + z * _down.y
 	var v := z * _down.x - x * _down.y
-	return land * _land_height + _ridges(u, v, _sand_on(x, z, land))
+	var sand := land * _land_height + _ridges(u, v, _sand_on(x, z, land))
+	return landforms.ground(x, z, sand)
 
 
 ## The run's long-term wind, which the dunes face: downwind, a unit vector in
@@ -221,13 +224,17 @@ func _ridge_set(u: float, v: float, meander: FastNoiseLite, rise: float, bare: f
 ## radians. Read from the ridges as _ridges lays them, each set's period
 ## taken as repeating here, its crests as high as this one's.
 func shade(x: float, z: float, ground: float) -> Vector4:
+	# Buried dune crests cannot shadow the bedrock that rises above them.
+	var mountain := landforms.rise(x, z)
+	if mountain > 0.0 and ground <= mountain + 0.01:
+		return Vector4.ZERO
 	var land := _land.get_noise_2d(x, z)
 	var u := x * _down.x + z * _down.y
 	var v := z * _down.x - x * _down.y
 	var sand := _sand_on(x, z, land)
 	var saddle := 1.0 - SADDLE_DEPTH + SADDLE_DEPTH * _saddle.get_noise_2d(u * WANDER_STRETCH, v)
 	var bare := lerpf(BARE.x, BARE.y, sand)
-	var h := ground - land * _land_height
+	var h := ground - mountain - land * _land_height
 	var s := _crests(u, v, _meander, _rise * sand * saddle, bare, h)
 	var fork := smoothstep(0.05, 0.45, _fork_patch.get_noise_2d(u, v)) * sand
 	if fork > 0.0:
@@ -271,7 +278,7 @@ static func _rounded_max0(a: float, k: float) -> float:
 ## dunes() on the GPU, for the wind map's lee (WindMap), reading what
 ## pack_dunes() packs into its params block p: change one, change the other.
 ## No structures: their ground is pressed in on the CPU only.
-const DUNES_PARAMS := "vec4 dune_a; vec4 dune_b; vec4 dune_c; vec4 dune_d; Noise land; Noise sand; Noise meander; Noise fork_meander; Noise fork_patch; Noise saddle;"
+const DUNES_PARAMS := "vec4 dune_a; vec4 dune_b; vec4 dune_c; vec4 dune_d; Noise land; Noise sand; Noise meander; Noise fork_meander; Noise fork_patch; Noise saddle; vec4 hills[2]; vec4 mountain;"
 const DUNES_GLSL := """
 float dune_rounded_min(float a, float b, float k) {
 	float h = max(k - abs(a - b), 0.0) / k;
@@ -312,7 +319,16 @@ float dunes(vec2 at) {
 		h = -dune_rounded_min(-h, -dune_ridge_set(u + 0.5 * p.dune_a.x, v, p.fork_meander, rise * fork * saddle, bare),
 			p.dune_c.w * fork);
 	}
-	return land * p.dune_b.w + h;
+	float mountain = -1e20;
+	for (int i = 0; i < 2; i++) {
+		vec4 hill = p.hills[i];
+		if (hill.z > 0.0) {
+			vec2 off = at - hill.xy;
+			float d = length(off) / hill.z * (1.0 + 0.05 * (1.0 + cos(5.0 * atan(off.y, off.x))));
+			mountain = max(mountain, (hill.w + p.mountain.x) * (1.0 - smoothstep(0.08, 1.0, d)) - p.mountain.x);
+		}
+	}
+	return max(mountain, land * p.dune_b.w + h);
 }
 """
 
@@ -323,3 +339,5 @@ func pack_dunes(into: StreamPeerBuffer) -> void:
 		into.put_float(v)
 	for noise in [_land, _sand, _meander, _fork_meander, _fork_patch, _saddle]:
 		NoiseGLSL.pack(noise, into)
+
+	landforms.pack(into)

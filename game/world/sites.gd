@@ -443,9 +443,13 @@ func ready(rect: Rect2) -> bool:
 func follow(x: float, z: float, latitude: float, longitude: float, facing: float, due: float) -> void:
 	follows += 1
 	var anchor := Anchor.new(x, z, Sphere.point(latitude, longitude), facing, history.radius)
-	if _anchor != null and _jumped(anchor):
+	var jumped := _anchor != null and _jumped(anchor)
+	if jumped:
 		_new_sheet()
 	_anchor = anchor
+	var shape: TerrainShape = _ctx.shape.get_ref()
+	shape.landforms.follow(anchor, jumped, loaded)
+	shape._held.clear()
 	for unit: Unit in _units.values():
 		if _off(unit, x, z):
 			_take_up(unit)
@@ -758,7 +762,19 @@ func _begun(key: int, anchor: Anchor) -> Unit:
 	unit.anchor = anchor
 	if key < 0:
 		var landmark: Dictionary = history.landmarks[-1 - key]
+		if landmark.id in [&"starcom", &"observatory"]:
+			var shape: TerrainShape = _ctx.shape.get_ref()
+			var hill := shape.landforms.get_hill(landmark.id)
+			if hill != null:
+				anchor = hill.anchor
+				unit.anchor = anchor
 		_lay_mark(unit, landmark)
+		if _built and landmark.id in [&"starcom", &"observatory"]:
+			var kind := StringName(String(landmark.id) + "_summit")
+			unit.sites.append(_site({"id": -7100 + key, "kind": kind, "era": Eras.COLONIAL,
+				"p": landmark.p, "bearing": landmark.bearing, "reach": SiteKinds.reach(kind),
+				"depth": 1.0, "tilt": 0.0, "loot": hash([landmark.p, "summit"]),
+				"source": &"landmark", "region": &"han"}, anchor))
 		if _built and landmark.id == &"halloran":
 			var crossing: Dictionary = landmark.parts.filter(func(p: Dictionary) -> bool: return p.id == &"crossing")[0]
 			unit.sites.append(_site({"id": -7001, "kind": &"halloran_route", "era": Eras.COLONIAL,

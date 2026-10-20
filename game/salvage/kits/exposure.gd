@@ -34,6 +34,7 @@ class Memo:
 	var settled := {}
 	var works := {}
 	var surges := {}
+	var keeps := {}
 
 
 ## How hard the weather is at a place and moment, 0 to 1: how deep into a
@@ -97,7 +98,7 @@ static func surge_at(field: WeatherField, x: float, z: float, tick: int, tuning:
 	if known != null:
 		return known
 	var count := maxi(1, roundi(tuning.site_surge_window_minutes * 60.0 / SURGE_STEP_S))
-	var keep := exp(-SURGE_STEP_S / (tuning.site_surge_return_minutes * 60.0))
+
 	var off := 1.0 + tuning.site_dune_strip * maxf(dune, 0.0)
 	var on := 1.0 + tuning.site_dune_bury * maxf(-dune, 0.0)
 	var sum := 0.0
@@ -108,7 +109,14 @@ static func surge_at(field: WeatherField, x: float, z: float, tick: int, tuning:
 			work = _work(field, x, z, (tick - k) * SURGE_STEP_S, tuning)
 			_keep(memo, &"works", tick - k, work, count)
 		sum += float(work) * (off if float(work) > 0.0 else on) * weight
-		weight *= keep
+		var keep: Variant = _recall(memo, &"keeps", tick - k)
+		if keep == null:
+			var heart := smoothstep(0.0, tuning.exposure_storm_full,
+				field.raw_storm_at(x, z, (tick - k) * SURGE_STEP_S))
+			var minutes := lerpf(tuning.site_wake_return_minutes, tuning.site_surge_return_minutes, heart)
+			keep = exp(-SURGE_STEP_S / (minutes * 60.0))
+			_keep(memo, &"keeps", tick - k, keep, count)
+		weight *= float(keep)
 	var out := maxf(sum, 0.0)
 	_keep(memo, &"surges", tick, out, 4)
 	return out
