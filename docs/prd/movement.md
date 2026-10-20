@@ -1365,3 +1365,13 @@ battery transitions remain unmeasured in this audit and need combined checks.
 The stress helper emitted teardown resource/instance warnings after completing;
 their cause is unresolved. Preserve this measured baseline when changing support,
 contact or pooled inertia; do not infer stability of every large craft from it.
+
+A separate actual-craft boarding diagnostic also passed on the integrated hybrid
+assembly source: 16 joined chassis, alternating eight skates/eight hover trays,
+one big battery, 233 kg total. Its powered deck sat about 1.039 m above local
+sand. Real sprint/jump input engaged the vault and finished with feet 0.060034 m
+above its local origin (the 0.06 m deck top). Peak angular speed was 0.0632 rad/s,
+peak tilt 0.79 degrees, and runner support zero. This covers one powered boarding
+case; it does not establish steep-terrain or mast/rope-loaded boarding. Like the
+larger stress helper, this external diagnostic reported teardown resource/instance
+warnings after passing; no claim of clean lifecycle follows from the result.
