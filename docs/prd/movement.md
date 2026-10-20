@@ -1265,7 +1265,7 @@ source changed.
 
 Sanddune's minimum unassisted Surveyor departure needs the existing mooring actions to be
 findable. First holding a stake with a live attached line teaches the two meanings of Use:
-look out past nearby gear to tie it at the waist and tow; return it to the hand, aim at
+aim at an open, level horizon or into the sky to tie it at the waist and tow; return it to the hand, aim at
 nearby sand and Use to drive it again. Dropping a stake leaves it loose, not anchored.
 This uses `UIRoot.teach` once per profile, with live action bindings. A bare stake, a
 not-yet-held pickup and menu/showpiece gear do not trigger it. No handling, load or binding

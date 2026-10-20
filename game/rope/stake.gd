@@ -19,7 +19,7 @@ const AIMED := 5.0
 const NOT_SAND := "not sand"
 const OUT_OF_REACH := "out of reach"
 const HOW_TO := "mooring_stake"
-const HOW_TO_SAYS := "With this mooring stake in hand, look out past nearby gear and {interact} to tie it at your waist and tow.\n" \
+const HOW_TO_SAYS := "With this mooring stake in hand, aim at an open, level horizon or into the sky and {interact} to tie it at your waist and tow.\n" \
 	+ "To anchor, return it to your hand, aim at nearby sand and {interact}. Dropping it leaves it loose."
 
 ## Newtons of sustained pull it holds.
@@ -82,6 +82,8 @@ func use(by: Player, at: Vector3) -> bool:
 		Sounds.play_at(self, Sounds.STAKE)
 		return true
 	var off := hands.meets(AIMED)
+	if off == INF and hands.sand_beyond_reach():
+		return hands.refuse(OUT_OF_REACH)
 	if off == INF and by.waist.carries_line(self):
 		return false
 	return hands.refuse(NOT_SAND if off <= Tuning.current().reach else OUT_OF_REACH)

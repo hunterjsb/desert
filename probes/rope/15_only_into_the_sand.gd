@@ -19,10 +19,11 @@ func run() -> void:
 	check(hands.grab() and hands.held == stake, "you take up the kit's stake")
 	await simulate(0.5)
 
-	var ahead := world.player.global_position - toward * 3.0
-	_stand(world.player.global_position, Vector3(ahead.x, world.height_under(ahead), ahead.z))
-	await simulate(2.0 / 60.0)
-	check(_kept(), "used at sand out of reach, it stays in your hand and says why")
+	for distance: float in [3.0, 8.0]:
+		var ahead := world.player.global_position - toward * distance
+		_stand(world.player.global_position, Vector3(ahead.x, world.height_under(ahead), ahead.z))
+		await simulate(2.0 / 60.0)
+		check(_kept(), "used at sand %.0f m away, it stays in your hand and says why" % distance)
 	await walk_to(deck.global_position - toward * 1.8)
 	_stand(world.player.global_position, deck.global_position)
 	await simulate(2.0 / 60.0)
@@ -37,10 +38,12 @@ func run() -> void:
 	await simulate(2.0 / 60.0)
 	hands.grab()
 	await simulate(0.5)
-	_stand(world.player.global_position, world.player.global_position - toward * 10.0 + Vector3.UP * 1.6)
+	var sky := world.player.global_position - toward * 10.0
+	sky.y = world.height_under(world.player.global_position) + world.player.camera.position.y + 1.0
+	_stand(world.player.global_position, sky)
 	await simulate(2.0 / 60.0)
 	check(hands.held == stake and hands.interact() and world.player.waist.holds(stake),
-		"looking out over the sand, use ties it at your waist")
+		"looking into open sky, use ties it at your waist")
 
 
 ## Standing at a place, your eyes at their height, looking at a point.

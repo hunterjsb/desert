@@ -429,6 +429,36 @@ the bar and countdown fitting the carry view and the countdown continuing after
 it closes. The helper reported no script errors and did report teardown resource
 warnings. No new behavior probes were added for this control.
 
+## Distant planting aim must not become a waist tie (2026-10-19 correction)
+
+Using a held stake at sand outside reach must keep it in the hand with the existing
+out-of-reach refusal, even when the sand lies beyond the short nearby-object check.
+Preserve deliberate waist tying when looking level or skyward over an open horizon.
+A downward look with no nearby collision is not proof of an open horizon: the aimed
+sand can lie beyond streamed collision. Refuse that planting attempt conservatively.
+For level or rising looks, actual terrain farther along the same sight ray also means
+a distant planting aim; use the camera's existing far range, not a new reach value.
+
+Reproduced on the played revision: aiming at sand 8 m away while holding the starter
+mooring stake gave no nearby hit, silently tied it at the waist and left its middle
+0.55 m above the sand, `driven=false`. It looked planted in air but was a waist tie.
+A genuine near planting stayed at the correct ground height after half a second;
+its passed hit point and `Stake.drive` height were not the failing path. Add a guard
+before the existing horizon fallback; do not change planting height or rope physics.
+
+As built on the later verified play base: `Hands.sand_beyond_reach` distinguishes a
+downward aim (including missing streamed collision) or a farther real terrain hit from
+an open horizon. `Stake.use` gives the existing refusal before generic waist tying.
+The mooring hint now explicitly says to aim at an open, level horizon or into the sky.
+Existing rope 15 passes with both 3 m and 8 m planting refusals, nearby sand planting,
+nearby deck refusal and a deliberate skyward waist tie. Its former horizon setup used
+a fixed height that could point below the actual eye; the tie case now aims explicitly
+above the eye. Real Take and Use input events also kept the stake held and said "out of
+reach" at 8 m in headless and unseen graphical checks. The inspected 1280×720 frame
+shows that refusal and the stake still in hand. A downward aim with no collision within
+the camera's far range likewise refused instead of tying. No rope forces or planting
+height changed.
+
 ## Open questions
 
 **Waist-line selection (Hunter playtest, 2026-10-19; agreed follow-up).** Several lines need

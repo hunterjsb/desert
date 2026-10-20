@@ -940,6 +940,18 @@ func meets(far: float) -> float:
 	return INF if hit.is_empty() else eye.origin.distance_to(hit.position)
 
 
+## A distant planting aim must not become a waist tie just because its
+## sand is past reach, or past the ground whose collision is streamed.
+func sand_beyond_reach() -> bool:
+	var eye := _player.camera.global_transform
+	if eye.basis.z.y > 0.0:
+		return true
+	var ray := PhysicsRayQueryParameters3D.create(eye.origin, eye.origin - eye.basis.z * _player.camera.far)
+	ray.exclude = _exclusions()
+	var hit := get_world_3d().direct_space_state.intersect_ray(ray)
+	return not hit.is_empty() and _is_sand(hit)
+
+
 ## Says in the readout, for a moment, why use did nothing.
 func say(why: String) -> void:
 	notice = why
