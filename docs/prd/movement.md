@@ -1476,9 +1476,10 @@ one big battery, 233 kg total. Its powered deck sat about 1.039 m above local
 sand. Real sprint/jump input engaged the vault and finished with feet 0.060034 m
 above its local origin (the 0.06 m deck top). Peak angular speed was 0.0632 rad/s,
 peak tilt 0.79 degrees, and runner support zero. This covers one powered boarding
-case; it does not establish steep-terrain or mast/rope-loaded boarding. Like the
-larger stress helper, this external diagnostic reported teardown resource/instance
-warnings after passing; no claim of clean lifecycle follows from the result.
+case; it does not establish steep-terrain or mast/rope-loaded boarding. The final
+repeat on the interrupted-vault/save fix passed and exited without warnings; an
+earlier repeat reported teardown warnings. The larger stress helper warnings
+remain unresolved.
 
 Final edge handling: the first swept rise clears stale grounded state and consumes
 the current takeoff, preventing a canceled climb from counting as another ground
@@ -1491,6 +1492,16 @@ captures a live mid-climb Snapshot and checks that its saved vertical velocity i
 not an extra jump, and checks removal of a top while the climb is active. The
 final clear-light GPU run passed these same input cases and its captures were
 inspected again.
+
+A separate 27-piece notched deck (407 kg, nine skates and eighteen trays) used
+offset mounts and mixed quarter-turns in 12 m/s wind, with six-second hover-off,
+hover-on, empty-battery and post-touchdown phases. Powered transition spin peaked
+at 0.0186 rad/s. Empty-battery touchdown briefly reached 0.475 rad/s, mostly roll
+and pitch, then settled: the next six seconds peaked at 0.00086 rad/s, with tilt
+below 0.92 degrees and support about 3,993 N, near its weight. No sustained spin
+defect was demonstrated. Solver means were 0.16–0.28 ms/tick across these phases.
+This covers one offset mixed assembly and battery transition, without mast, ropes,
+steep terrain or player loads; the helper emitted teardown warnings after passing.
 
 ## Solid wreck support (2026-10-20; built)
 
