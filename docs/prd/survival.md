@@ -957,3 +957,10 @@ hint appeared without opening a menu. Existing clean-new-run probe 4 passes with
 its exact kit fixture extended for the Guide; other origin kit data is unchanged.
 The current camp streaming/persistence limits remain outside this teaching change;
 the Guide does not promise a permanent distant camp or introduce arrival machinery.
+
+The first integrated remote CI run found one stale development-scenario fixture:
+`survive` restocks the normal Surveyor suit, so its carried set now also contains
+the Guide. Dev probe 1 still expected only water, a ration and a bedroll, although
+the run contained all four intended objects. Extend that existing exact gear list
+for the Guide; preserve its health, hunger, thirst, sealed-water and condenser checks.
+This changes the fixture only, with no scenario or supply behavior change.
