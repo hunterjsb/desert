@@ -240,11 +240,9 @@ const TOW_STORES := [[&"stick", Vector2i(1, 0), &"top", Vector2(0.0, 0.1), 0.0, 
 	[&"stick", Vector2i(0, 1), &"top", Vector2(-0.2, 0.0), 0.0, &"big_battery"],
 	[&"stick", Vector2i(0, 1), &"top", Vector2(0.2, 0.0), 0.0, &"big_battery"],
 	[&"hook", Vector2i(0, 0), Vector2i(0, -1)]]
-## The yacht: a deck three pieces across and two long, right and ahead,
-## floating: the mast at its front to windward, the helm seat on its middle
-## line aft, where a tray takes your weight, the ballast in its frame to
-## windward of it and the keel under the aft leeward piece, lengthwise; the
-## sail's tail behind the ballast, its tray set back toward it to keep it level.
+## The yacht: a centred mast and two centreline keels keep the wind and
+## lateral resistance aligned. Four corner trays lift it, two batteries sit
+## opposite each other aft, and the helm and sheet tail stay on its middle.
 const YACHT_DECK := [-3.5, 2.5]
 const YACHT_RIG := [[&"piece", Vector2i(1, 0)], [&"piece", Vector2i(2, 0)], [&"piece", Vector2i(0, 1)],
 	[&"piece", Vector2i(1, 1)], [&"piece", Vector2i(2, 1)],
@@ -1466,9 +1464,8 @@ static func sail_tow(world: World) -> Array[Node3D]:
 
 
 ## A land yacht from found parts: a deck three by two floating on hover
-## trays, a keel under one piece in place of a tray, the mast and its sail on
-## its front to windward, the helm seat aft on its middle line and its
-## ballast in a frame beside it to windward; the sheet at your waist. Raise the sail,
+## trays and two centreline keels, the mast forward on that same line, and
+## the helm aft between balanced batteries; the sheet at your waist. Hoist,
 ## sit at the helm, and reel in.
 static func yacht(world: World) -> Array[Node3D]:
 	var rig := rig_at(world, YACHT_RIG + [[&"piece", Vector2i(1, 2)]], YACHT_DECK)
