@@ -1,3 +1,34 @@
+## 0.2.2-alpha “Sailboat”
+
+Physical sailing controls, clearer radio reception, and a first encounter at Halloran.
+
+- Select waist lines by hovering and clicking in the carry view. A single line reels
+  without selection; release all uses timed progress and preserves momentum.
+- Sailing booms turn on physical hinges, constrained by real sheets and routed lines.
+  Fit hooks to clear surfaces, route ropes through them, and yank a worked line for
+  a quick tug. Four short illustrated pages replace the long sailing tutorial.
+- Skates, hover parts and keels can share decks where they physically fit. Vault onto
+  reachable ledges and moving decks; exposed wreck roofs provide solid walking and
+  hoverboard surfaces.
+- Fix distant stake placement, depleted-deck hover shutdown, freed rope selections,
+  and frame-rate-dependent ridden-board battery use.
+- Radios gain station marks, independent sound effects and steadier carried audio.
+  Bundled weather, god and beacon speech works without an external voice service.
+- Thirteen satellites broadcast overhead. Signal the Surveyor with a flare to call
+  a cargo drop; active deliveries and used flares survive saving and loading.
+- Explore Halloran's lower homes and Crossing, feed the Stoker's maintenance furnace,
+  and claim a finite service cache after the burn. Fuel, burn progress and rewards persist.
+- Add a directional survey receiver, a physical Surveyor's Guide, a playable
+  Archaeologist kit and a personal shield for the Salvager start.
+
+### Current limits
+
+- Surveyor cargo containers are empty; supply contents are not implemented yet.
+- The Halloran maintenance burn is a bounded encounter, not a portable generator,
+  sustainable fuel loop or completed ending.
+- Kites, camp beacons and keeping distant camps loaded remain planned work.
+- Scenario runs do not save. Use a Normal run to test persistence.
+
 ## 0.2.1-alpha “Sailboat”
 
 Richer sand and trails, recoverable Nomad sailing gear, and fixes from sailing playtests.
