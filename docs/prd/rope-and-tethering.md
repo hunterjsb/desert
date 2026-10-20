@@ -544,3 +544,28 @@ A 1280×720 Surveyor capture with its normal mooring Stake tied at the waist sho
 connected rope, zero individual reel targets and no selected rope. The readable whole-stake
 return cue replaced the hover/click instruction and stayed above the carry tiles. Import
 and the capture completed without script or teardown errors; no local probes were run.
+
+## Lost line ends leave the waist (2026-10-19 lifecycle correction)
+
+A line removed without ordinary parting, such as a dev teleport separating its ends,
+already leaves bare ends rather than a working rope. Those ends must also leave waist
+management: a vanished line must not leave an untargetable permanent waist tie. Preserve
+bare ends in the world and any end already in the hands; restore the existing physical
+state of waist ends through `Waist.untie`. This is cleanup after the line is gone, not a
+shortcut to the duration of a player's ordinary untie or a change to rope forces.
+
+A reproduced Varran-to-yacht console transition retained the three old waist ends after
+their lines disappeared, then added the yacht sheet (four ties, one live selectable line).
+`Line._lost` removed metadata and freed its line before the delayed scenario-kit cleanup
+could find it and untie its surviving ends. Clean those waist ends when losing the line.
+This residue reproduced in source/debug and a release diagnostic; neither reproduced the
+separately reported native crash, so this correction is not evidence that crash is fixed.
+
+As built: losing a line unties its surviving waist ends before stripping their line
+metadata, reusing the ordinary physical-state restoration and leaving bare/held ends
+intact. The same Varran-to-yacht diagnostic now leaves exactly one tie and one selectable
+line, the new yacht sheet, including after closing the console and reopening the actual
+carry view. Existing dev 2, rope 18 (selected untie) and rope 5 (clean parting) pass.
+The original reported native crash was not reproduced in source, headless release or an
+unseen graphical release run; this fixes the measured orphan ties, not that unconfirmed
+crash cause. No force, untie duration, save format or deed behavior changed.

@@ -310,5 +310,8 @@ func _lost() -> void:
 	rope = null
 	for end in ends:
 		if is_instance_valid(end):
+			# A bare end left after a lost line is no longer a waist tether.
+			if _world.player.waist.holds(end):
+				_world.player.waist.untie(end)
 			end.remove_meta(&"line")
 	queue_free()
