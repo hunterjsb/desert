@@ -51,14 +51,19 @@ func run() -> void:
 	deck.gravity_scale = 0.0
 	mast._boom_body.gravity_scale = 0.0
 	deck.linear_damp = 10.0
+	deck.angular_damp = 10.0
 	world.teleport(deck, Transform3D(Basis(Vector3.UP, deck.rotation.y), deck.global_position))
+	PhysicsServer3D.body_set_state(deck.get_rid(), PhysicsServer3D.BODY_STATE_TRANSFORM, deck.global_transform)
 	deck.linear_velocity = Vector3.ZERO
 	deck.angular_velocity = Vector3.ZERO
 	mast.boom_spin = 0.0
 	mast.restored()
-	await _hold_for(6.0)
-	check(absf(mast.boom_spin) < 0.01 and deck.linear_velocity.length() < 0.02,
-		"still-air fixture is quiescent before paying out")
+	for _second in 16:
+		await _hold_for(1.0)
+		if _quiescent():
+			break
+	check(_quiescent(),
+		"still-air fixture is quiescent before paying out (%.4f rad/s, %.4f m/s)" % [mast.boom_spin, deck.linear_velocity.length()])
 	var was := absf(mast.boom)
 	check(reel.notch(-4), "paying out in still air")
 	await _hold_for(2.0)
@@ -116,3 +121,9 @@ func _over() -> float:
 func _path() -> float:
 	var rope := mast.sheet()
 	return rope.a.global_position.distance_to(rope.through.global_position) + rope.through.global_position.distance_to(rope.b.global_position)
+
+
+func _quiescent() -> bool:
+	return absf(mast.boom_spin) < 0.01 and deck.linear_velocity.length() < 0.02 \
+		and deck.angular_velocity.length() < 0.005 and mast._boom_body.linear_velocity.length() < 0.02 \
+		and mast._boom_body.angular_velocity.length() < 0.01

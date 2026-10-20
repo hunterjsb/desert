@@ -1439,3 +1439,31 @@ than 0.5 m/s, still with zero runner support. Restoring the old discovery code
 incorrectly yields 3.714 m/s from airborne skates alone and fails the physical
 assertion. Restored source passes sail 19 (12 s); existing ground-runner sailing
 and hover-keel tacking checks (sail 1 and 10) pass unchanged. No tuning changed.
+
+The still-air payout setup explicitly commits the leveled carrier's physics
+pose before restoring its boom. Otherwise the live deck remains at its prior
+heel in the server until synchronization while its child is already level,
+introducing a fixture hinge impulse. Quiescence and the payout-without-torque
+assertions remain unchanged. The merged Varran course passes again in 31 seconds.
+
+After leveling, the six-second still-air delay still leaves real bearing/rope
+relaxation at 0.0487 rad/s, despite carrier motion below 0.02 m/s. The payout
+fixture therefore waits for its existing quiescence criterion, bounded to
+16 seconds, instead of assuming six seconds always suffices. Neither its
+0.01 rad/s setup threshold nor subsequent payout angle/slack limits change.
+
+A full six-DOF trace shows why relative hinge speed alone is insufficient for
+that setup: carrier angular speed remains about 0.058 rad/s and boom centre
+speed 0.178 m/s, despite relative hinge speed below 0.001 rad/s. This is not
+an unforced sail. The isolated still-air fixture damps carrier rotation as
+well as translation and verifies both bodies' actual motion before payout;
+it does not change production damping or the loaded reel/payout cases.
+
+The full-quiescence sheet check passes in 38 seconds, retaining its original
+1.5 degree/tick smoothness, loaded movement time, positive tension, paid-path
+stretch, still-air payout and wind-return assertions. A real rendered Varran
+run shows the higher spar above the normal navigation computer, the guide
+mounted on an interior supported panel, and all three lines. At 4.53 m/s its
+sheet carries 61.7 N and the hinge pivot gap is 0.071 mm; carrier plus boom
+mass is 121.6 kg. Close stern and overhead views confirm the visible guide
+foot is supported, clear of the case and deck edge.
