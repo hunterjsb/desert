@@ -853,3 +853,20 @@ docs, so the radio follows it as direction.
   ([Wind & storms](wind-and-storms.md#storm-only-mechanics-back-burner)). Read as a plant's pattern
   being one more real system to read, which the session never explains. Not said what a pattern
   sounds like, whether it needs the Console, or which storms carry better.
+
+### Review repairs (2026-10-20; built on the PR branch)
+
+Sound-only output must carry the gods' transmitted words and a loot beacon's
+bearing as well as weather reports. Include the Walker's log in its regular
+report; a song does not suppress a god's words. Read a newly tuned station at once, with
+bounded repeats for changing readings; never speak an unreadable signal. Keep
+interference effect buses private to each radio, including satellite buses,
+and release those buses when their radio is freed. A second set cannot alter
+the first set's reception. These repairs apply to this branch's speech path;
+integration with master's newer bundled voice must preserve that voice system.
+
+Measured: radio 39 checks actual god reception and beacon bearings reaching the
+speech consumer; radio 40 checks independent effects and bus cleanup. Both pass
+in 4 s. Existing volume, static and scheduled weather checks pass; weather
+counts begin after the Stoker's newly audible transmissions. Satellite chains
+are allocated only when their signal reaches the dial.

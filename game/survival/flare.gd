@@ -28,6 +28,14 @@ var _fizz: AudioStreamPlayer3D
 var _flicker := FastNoiseLite.new()
 
 
+## Rebuild the effects after all saved properties have been restored.
+func restored() -> void:
+	if lit and not spent():
+		light()
+	else:
+		lit = false
+
+
 ## How long it has burnt, s.
 var burnt: float:
 	get:

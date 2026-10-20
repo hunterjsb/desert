@@ -134,6 +134,12 @@ func _launch(craft: Dictionary, t: float) -> void:
 	cargo.freeze = true
 	add_child(cargo)
 	cargo.position = _from
+	_effects()
+	_fly(t)
+
+
+## Only effects: loading a drop must not fire the cannon or play an impact again.
+func _effects() -> void:
 	_beacon = _make_beacon()
 	cargo.add_child(_beacon)
 	_trail = puffs(260, 7.0, Color(0.36, 0.33, 0.3, 0.75), Color(0.5, 0.46, 0.42, 0.0), TRAIL_SIZE, false, true)
@@ -143,7 +149,37 @@ func _launch(craft: Dictionary, t: float) -> void:
 	_trail.gravity = Vector3.ZERO
 	add_child(_trail)
 	_trail.emitting = true
-	_fly(t)
+	_trail.global_position = cargo.global_position
+
+
+## State relative to the landing point, which Snapshot stores in world metres.
+func memory() -> Dictionary:
+	return {"fired_at": fired_at, "lands_at": lands_at, "landed": landed,
+		"from": _from, "bend": _bend, "axis": _axis, "pose": _pose,
+		"metres": _metres, "boomed": _boomed, "hit_velocity": hit_velocity, "hit_spin": hit_spin}
+
+
+static func recall(world: World, body: Part, at: Transform3D, state: Dictionary) -> Airdrop:
+	var drop := Airdrop.new()
+	drop._world = world
+	world.content.add_child(drop)
+	drop.global_transform = at
+	drop.cargo = body
+	body.reparent(drop, true)
+	drop.fired_at = state.fired_at
+	drop.lands_at = state.lands_at
+	drop.landed = state.landed
+	drop._from = state.from
+	drop._bend = state.bend
+	drop._axis = state.axis
+	drop._pose = state.pose
+	drop._metres = state.metres
+	drop._boomed = state.boomed
+	drop.hit_velocity = state.hit_velocity
+	drop.hit_spin = state.hit_spin
+	drop._effects()
+	drop._trail.emitting = not drop.landed
+	return drop
 
 
 ## How far down its path it is at world time t, 0 at the muzzle to 1 on the
@@ -166,7 +202,12 @@ func velocity(t: float) -> Vector3:
 func _process(_delta: float) -> void:
 	if _world == null or not is_instance_valid(_world):
 		return
+	if not is_instance_valid(cargo) or cargo.get_parent() != self:
+		queue_free()
+		return
 	var t := _world.time
+	if _beacon != null:
+		_beacon.visible = fmod(t, 1.0) < 0.5
 	if not _boomed and t >= fired_at + _metres / _world.weather.rumbles.speed():
 		_boomed = true
 		_muzzle_boom()

@@ -43,7 +43,7 @@ func run() -> void:
 	weather_everywhere(0.25)
 	radio.frequency = gods.carrier(best, world.time)
 	await physics_frames(5)
-	var bus := AudioServer.get_bus_index(Radio.SIGNAL_BUS)
+	var bus := AudioServer.get_bus_index(radio.signal_bus())
 	var crushed := AudioServer.is_bus_effect_enabled(bus, Garble.Stage.CRUSH)
 	var warbling := AudioServer.is_bus_effect_enabled(bus, Garble.Stage.WARBLE)
 	var level := Radio.audible(radio.reception)

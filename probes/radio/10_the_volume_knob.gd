@@ -23,7 +23,7 @@ func run() -> void:
 	# its signal by way of its interference chain first.
 	var bus := AudioServer.get_bus_index(Sounds.RADIO)
 	var cut := AudioServer.get_bus_effect(bus, 0) as AudioEffectHighPassFilter if bus >= 0 else null
-	check(radio.music.bus == Radio.SIGNAL_BUS and AudioServer.get_bus_send(AudioServer.get_bus_index(Radio.SIGNAL_BUS))
+	check(radio.music.bus == radio.signal_bus() and AudioServer.get_bus_send(AudioServer.get_bus_index(radio.signal_bus()))
 		== Sounds.RADIO and radio.hiss.bus == Sounds.RADIO and cut != null
 		and is_equal_approx(cut.cutoff_hz, Tuning.current().radio_highpass_hz)
 		and AudioServer.get_bus_send(bus) == Sounds.WORLD, "it plays through a high-pass at %d Hz, into the world's sound"

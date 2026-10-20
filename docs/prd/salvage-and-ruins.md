@@ -659,7 +659,7 @@ skimming 1.9 km up ([Radio](radio-sound-and-atmosphere.md), the satellite `therm
   fall, the hit, the cloud and its settling.
 - **Fixed in passing:** a billboard particle drops its scale unless told to keep it, so puffs sized in
   metres came out all the same small size (`billboard_keep_scale`).
-- **Not yet:** what's inside; a save made while a container is falling isn't handled (untested).
+- **Not yet:** what's inside. Active-drop saves are handled by the repair below.
 
 ## Nomad gear (agreed, 2026-10-18 spec; not built)
 
@@ -1185,3 +1185,23 @@ it as direction and says so on each line. The built skeleton is not changed.
 - **The depot's loot.** The session: the Rim depot "gives the Rim real colonial loot: hoppers, pads, rail
   yards, terraforming equipment." Here: a hopper is a vehicle and the game has none but the board and
   the tray. Hoppers are deferred in the session; a wrecked one is a prop until they are built.
+
+### Delivery persistence repair (2026-10-20; built on the PR branch)
+
+Save the active drop's trajectory, clock, impact state and cargo reference.
+Resume the same container at its saved pose, falling or already landed; do not
+replay the cannon or impact. Once released, the ordinary cargo save owns it.
+Persist whether a flare is burning and whether it has called a delivery, along
+with burn time. Restoring a burning flare recreates its effects without resetting
+its delivery flag. A reload cannot consume a flare silently or summon a second
+container. Old saves without these fields keep their previous interpretation.
+
+Measured: saves 37 restores a still-burning, already-called flare without a
+second delivery (5 s). Saves 38 round-trips flight, the post-impact interval and
+released cargo, preserving the delivery clock and impact state with one
+container throughout (9 s). The existing full flare/cannon/impact check passes
+in 12 s. The impact state is observed after a drawn frame before taking a save.
+
+A GPU capture after a Snapshot round trip during flight shows the resumed trail,
+falling container and impact cloud on the actual renderer. Effects are rebuilt
+on resume; the already-fired cannon is not replayed.

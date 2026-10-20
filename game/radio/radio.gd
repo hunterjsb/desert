@@ -168,6 +168,9 @@ var crackle: AudioStreamPlayer3D
 var _tuning := Tuning.current()
 ## Every voice it plays through, its satellites' too.
 var _voices: Array[AudioStreamPlayer3D] = []
+var _effect_buses: Array[StringName] = []
+var _spoken_station: StringName = &""
+var _last_words := ""
 ## What it hears from the satellites.
 var sky: SkyVoices
 var _signal: AudioStreamPlayer3D
@@ -242,6 +245,14 @@ func _exit_tree() -> void:
 	_off_air()
 	if sky != null:
 		sky.silence()
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_PREDELETE:
+		for bus in _effect_buses:
+			var index := AudioServer.get_bus_index(bus)
+			if index >= 0:
+				AudioServer.remove_bus(index)
 
 
 ## The gods of a world's history, made once.
@@ -617,6 +628,8 @@ func _listen(delta: float) -> void:
 		odd = 0.0
 		said = ""
 		spoken = ""
+		_spoken_station = &""
+		_last_words = ""
 		reception = {}
 		if _on_air != null or _hissing:
 			_off_air()
@@ -632,6 +645,12 @@ func _listen(delta: float) -> void:
 	noise = maxf(field.outflow_at(x, z, t), constellation_of(world).jamming(frequency, point_at(x, z), t))
 	odd = field.anomaly_at(x, z, t)
 	var now := channel
+	var station := tuned_to()
+	if station != _spoken_station:
+		_spoken_station = station
+		spoken = ""
+		_last_words = ""
+		spoken_at = -INF
 	if now != _was:
 		if _was != UNHEARD or target.is_empty():
 			_retuned(_was)
@@ -702,6 +721,10 @@ func _listen(delta: float) -> void:
 				_every(delta, lerpf(PING_NEAR, PING_FAR, clampf(far / FAINT, 0.0, 1.0)), Sounds.RADIO_PING)
 		STATIC:
 			said = dial + "static"
+	if now == GOD and not reception.cut and audible(reception) > 0.0:
+		_transmit(reception.words, t)
+	elif now == BEACON and not target.is_empty() and voice_level() > 0.0:
+		_transmit(said.trim_prefix(dial), t)
 	if song != null:
 		_put_on(song, t, into)
 	elif _on_air != null:
@@ -736,7 +759,7 @@ func _listen(delta: float) -> void:
 	# What it plays, chewed up as dirty as it comes through, glitching.
 	dirt = reception.get("dirt", 0.0) if now != BEACON else 1.0 - Dial.pull(frequency - Dial.BEACON_KHZ,
 		_tuning.dial_width_khz)
-	Garble.shape(AudioServer.get_bus_index(SIGNAL_BUS), 0, dirt, t, get_instance_id())
+	Garble.shape(AudioServer.get_bus_index(signal_bus()), 0, dirt, t, get_instance_id())
 	var broke := _glitch.tick(delta, dirt)
 	music.volume_db += linear_to_db(maxf(broke.x, 0.0001))
 	music.pitch_scale = maxf(0.05, music.pitch_scale * broke.y)
@@ -778,7 +801,7 @@ func receive(id: StringName, x: float, z: float, t: float) -> Dictionary:
 		"way": Dial.way(world.shape.history, p, q, ground, say_point, _tuning), "storm": storm,
 		"warp": slid, "strength": strength, "clean": clean, "cut": Interference.cut(storm, t, id, _tuning),
 		"share": share, "dirt": dirt, "useful": words.useful, "calm": words.get("calm", false), "words": line, "report": words.text,
-		"text": Interference.distort(line, clean, t, id)}
+		"log_words": words.get("log", ""), "text": Interference.distort(line, clean, t, id)}
 
 
 ## How loud a signal plays, 0 to 1, before the knob: by how near its carrier
@@ -793,14 +816,16 @@ static func audible(heard: Dictionary) -> float:
 
 ## The bus its signal plays through, the music, a god's song or tones: the
 ## interference chain (Garble) on into the radio's own. One for every radio.
-static func signal_bus() -> StringName:
-	if AudioServer.get_bus_index(SIGNAL_BUS) == -1:
+func signal_bus() -> StringName:
+	var bus := StringName("%s_%d" % [SIGNAL_BUS, get_instance_id()])
+	if AudioServer.get_bus_index(bus) == -1:
 		AudioServer.add_bus()
 		var i := AudioServer.bus_count - 1
-		AudioServer.set_bus_name(i, SIGNAL_BUS)
+		AudioServer.set_bus_name(i, bus)
 		AudioServer.set_bus_send(i, Sounds.radio_bus())
 		Garble.add_chain(i)
-	return SIGNAL_BUS
+		_effect_buses.append(bus)
+	return bus
 
 
 ## The relay's signal as it reaches a place at world time t (receive_from).
@@ -924,7 +949,29 @@ func _report(x: float, z: float, t: float) -> void:
 			_say_aloud(advisory.words, true, t)
 			return
 	if t >= spoken_at + _tuning.radio_report_every or t < spoken_at:
-		_say_aloud(report_words(x, z, t), false, t)
+		var report := report_words(x, z, t)
+		if reception.get("log_words", "") != "":
+			report += ". " + reception.log_words
+		_say_aloud(report, false, t)
+
+
+## A god's words or a beacon's bearing, without the dial's visual prefix.
+## A changing line has a bounded cadence; an unchanged reading repeats less often.
+func _transmit(words: String, t: float) -> void:
+	if words.strip_edges() == "":
+		return
+	var every := _tuning.radio_report_every if words == _last_words else Transmissions.IDLE_EVERY
+	if t < spoken_at + every and t >= spoken_at:
+		return
+	_last_words = words
+	_say_aloud(words, false, t)
+
+
+## Beacons use their own dial strength rather than a god's reception record.
+func voice_level() -> float:
+	if channel == BEACON:
+		return 0.0 if target.is_empty() else Dial.heard(frequency - Dial.BEACON_KHZ, _tuning)
+	return audible(reception)
 
 
 ## Whether an advisory's event has been warned of already.

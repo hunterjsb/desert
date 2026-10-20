@@ -43,18 +43,19 @@ func run() -> void:
 	await physics_frames(5)
 	check(radio.on_air() == null and gods.stoker_song(world.time + 600.0, length) < 0.0, "then it stops, and stays stopped")
 
-	# The weather station's voice.
+	# Count weather reports after the Stoker's own transmissions.
+	var earlier := radio.spoken_count
 	world.time = 0.0
 	radio.frequency = gods.carrier(&"walker", world.time)
 	var broadcast := world.player.get_node(^"Broadcast") as Broadcast
-	await _heard(radio, 1)
+	await _heard(radio, earlier + 1)
 	var x := world.world_x(radio.global_position.x)
 	var z := world.world_z(radio.global_position.z)
 	var heat := roundi(world.weather.field_temperature(radio.global_position, radio.spoken_at))
 	var local := world.weather.day.time_of_day(radio.spoken_at, Sphere.longitude(radio.point_at(x, z)))
 	var minutes := roundi(local * 24.0 * 60.0) % (24 * 60)
 	print("tuned in: \"%s\"; you hear \"%s\"" % [radio.spoken, broadcast.reading])
-	check(radio.on_air() == Sounds.RADIO_CLEAR_SKIES and radio.spoken_count == 1, "tuned in, it reports at once, Clear Skies or not")
+	check(radio.on_air() == Sounds.RADIO_CLEAR_SKIES and radio.spoken_count == earlier + 1, "tuned in, it reports at once, Clear Skies or not")
 	check(radio.spoken.contains("Local time %d:%02d" % [minutes / 60, minutes % 60])
 		and radio.spoken.contains("Temperature %s degrees" % (str(heat) if heat >= 0 else "minus %d" % -heat))
 		and (radio.spoken.contains("Wind") or radio.spoken.contains("Calm")),
@@ -64,21 +65,21 @@ func run() -> void:
 	var first := radio.spoken_at
 	world.time = first + tuning.radio_report_every * 0.5
 	await physics_frames(5)
-	check(radio.spoken_count == 1, "not again before %d s" % roundi(tuning.radio_report_every))
+	check(radio.spoken_count == earlier + 1, "not again before %d s" % roundi(tuning.radio_report_every))
 	world.time = first + tuning.radio_report_every + 1.0
-	await _heard(radio, 2)
-	check(radio.spoken_count == 2, "and again after")
+	await _heard(radio, earlier + 2)
+	check(radio.spoken_count == earlier + 2, "and again after")
 
 	# A storm the same everywhere never ends: large, so an advisory at once,
 	# read whole through the dirty signal; then the report in its turn, whole.
 	weather_everywhere(0.3)
 	radio.read_at = -INF
-	await _heard(radio, 3)
+	await _heard(radio, earlier + 3)
 	print("a thin storm that never ends (dirt %.2f): \"%s\"" % [radio.dirt, radio.spoken])
 	check(radio.spoken_urgent and radio.spoken.contains("large") and not radio.spoken.contains("..."),
 		"a storm that lasts and lasts: an advisory, read whole")
 	world.time = radio.spoken_at + tuning.radio_report_every + 1.0
-	await _heard(radio, 4)
+	await _heard(radio, earlier + 4)
 	print("its report: \"%s\"" % radio.spoken)
 	check(radio.dirt > 0.3 and not radio.spoken_urgent and radio.spoken.contains("Temperature")
 		and radio.spoken.contains("In a storm") and not radio.spoken.contains("..."),
