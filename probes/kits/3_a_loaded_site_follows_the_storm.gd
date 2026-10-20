@@ -13,7 +13,7 @@ extends WorldProbe
 
 const KIND := &"house_ruin"
 ## Seconds of weather a frame as you watch.
-const WARP := 3.0
+const WARP := 6.0
 
 
 func run() -> void:

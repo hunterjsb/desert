@@ -155,8 +155,8 @@ func sample(x: float, z: float, on: Structure = null) -> float:
 	return h if on == null else on.sand(x, z, h)
 
 
-## The dunes alone at a lattice point, before any structure. Its GPU twin
-## is DUNES_GLSL.
+## Natural ground before any structure: dunes against fixed bedrock. Worker
+## builds hold one profile snapshot throughout. Its GPU twin is DUNES_GLSL.
 func dunes(x: float, z: float, profiles: Array[Landforms.Hill] = []) -> float:
 	var land := _land.get_noise_2d(x, z)
 	# Down the wind, and across it.

@@ -18,6 +18,8 @@ static func pieces() -> Array[StructureKit.Piece]:
 			_box(p, Vector3(x - signf(x) * 6, 3, -22), Vector3(14, 6, 1.2), "concrete")
 			for z in [-18.0, 0.0, 18.0]:
 				_box(p, Vector3(x - signf(x) * 12, 3, z), Vector3(0.6, 6, 0.6), "grey")
+			_box(p, Vector3(x - signf(x) * 4, 0.4, -15), Vector3(4, 0.8, 4), "grey")
+			_box(p, Vector3(x - signf(x) * 5, 0.4, 12), Vector3(4, 0.8, 3), "grey")
 			p.sockets.append(StructureKit.SiteSocket.new(Vector3(x - signf(x) * 4, 0.8, -15), &"cache"))
 			p.sockets.append(StructureKit.SiteSocket.new(Vector3(x - signf(x) * 5, 0.8, 12), &"shelf"))
 		StructureKit.bed(p, Vector3(23, 0, 1), Vector3(27, 0.8, 3), "grey")
