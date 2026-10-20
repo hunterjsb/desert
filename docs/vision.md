@@ -135,7 +135,7 @@ the Surveyor is the hybrid, the Salvager the hover punk and the Homesteader the 
 | Kit | Who | Starting gear | Unlock |
 |---|---|---|---|
 | **Surveyor** (default, balanced) | Tilg & Standard contractor: spend a decade or as long as you can, build a real base, set for life. No interstellar comms ("not in the budget"). | Tilg-issued crate, standard shield, hover tray, Tilg multi-compass, stake tether, radio. Roughly today's kit. | Default |
-| **Salvager** (the hover punk) | Independent scavenger with a board and nerve. | Hoverboard and the light shield; little else. | Playstyle, e.g. long board distance or surviving a storm on carried gear |
+| **Salvager** (the hover punk) | Independent scavenger with a board and nerve. | Hoverboard and a carried personal shield; home assembled from finds. | Playstyle, e.g. long board distance or surviving a storm on carried gear |
 | **Homesteader** (the oyster) | Settler come for cheap land, naive about why everyone left. | Full agriculture setup, solid shield, collector (wind net); likely turbine, battery bank, condenser, extra stakes. **No hover.** Civilian brand marks, not Tilg's. | Playstyle, e.g. riding out big storms without moving camp |
 | Archaeologist | Daventry-funded university expedition, digging for proof of why humanity must be careful. | Ground-penetrating radar and powered dig station, carried scoop and sieve, radio, separate hoverboard for scouting, weak camp shield. | Field Kit and Spadework deeds |
 | Replacement | The next Tilg surveyor, sent on schedule since Tilg can't know the first is dead. | Starts at the previous run's last camp, among its wreckage. | Needs a prior save |

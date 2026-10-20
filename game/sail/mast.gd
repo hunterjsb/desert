@@ -1,27 +1,12 @@
 class_name Mast
 extends Device
-## A mast for a sail. It stands on a deck's top, and the sail fitted to it
-## swings round it on its boom, held by its sheet, a line from the boom's
-## end. Use raises or furls the sail.
-##
-## Raised, the sail makes lift and drag by its angle to the wind it feels, the
-## felt wind less the camp's own way: lift peaks near 18° and stalls past it,
-## drag grows toward square on. The push acts where the sail's middle is, high
-## up, so its camp heels and, overpowered, tips. The sheet runs from its far
-## end through a block at the boom's end and in to a ring on the camp, under
-## where that end lies hauled right in; the wind swings the boom out to
-## leeward until that inboard length holds it. Reeling it in takes line in
-## through the block and draws the boom in against the wind; paying out lets
-## the wind take it, as fast as the boom swings, the sheet slack till it
-## catches up. With nothing holding the sheet's far end it runs and the boom
-## swings free. Held, the sail's twist goes into the camp through the sheet;
-## swinging, only the boom's drag does. Overloaded, the sail tears, and past
-## that the mast snaps.
+## A mast with a freely hinged physical boom. The wind, ordinary sheet and
+## real collision geometry determine its swing; reeling only changes rope length.
 
 ## The boom's root, in the mast's frame: it swings about the mast's axis.
 ## Seated, a device faces its host's back, so its boom, lying along its own
 ## front, trails behind the host: a camp sails the way it faces.
-const BOOM_AT := Vector3(0.0, 0.3, 0.0)
+const BOOM_AT := Vector3(0.0, 0.8, 0.0)
 ## The boom's end, m from the mast, where the sheet ties: the sail's tie.
 const BOOM := 2.33
 ## The sail's height up the mast over the boom, and its head's width, m.
@@ -30,20 +15,6 @@ const HEAD := 1.0
 ## Where the sail's push acts, over the boom and back from the mast, m: up at
 ## its middle, and back about a third of its chord, where a filled sail draws.
 const MIDDLE := Vector2(1.47, 0.6)
-## The boom swings out no farther than this either way, rad.
-const MOST := deg_to_rad(85.0)
-## The boom and the sail on it turn this hard, kg·m², and the gooseneck drags
-## against swinging, N·m·s/rad: the air the sail swings through does the rest.
-const SWING_MASS := 12.0
-const SWING_DRAG := 8.0
-## Swinging, the cloth's twist meets the air as its middle's would swinging
-## this much faster: further out it sweeps faster, and over more of it (the
-## cloth's second moment over its area and the middle's distance squared).
-const SWEPT := 3.0
-## Taut, the sheet holds the boom springing back this many times a second.
-const SHEET_HZ := 6.0
-## The boom swings at this rate within a tick, so a gybe never skips past its sheet.
-const STEP_HZ := 120.0
 ## Raising or furling takes this long, s.
 const RAISE_SECONDS := 1.5
 ## Seated, it stands to its full height over this long, s.
@@ -52,8 +23,9 @@ const EXTEND_SECONDS := 0.6
 ## controls do, never how to sail well (Hunter, 2026-10-18: "we want this to
 ## require skill").
 const HOW_TO := "sheet"
-const HOW_TO_SAYS := "The rope at your waist is the sail's sheet: it runs through the boom's end to a ring on the camp.\n" \
-	+ "Open {inventory}, hover its rope and click to select it. {reel_in} draws the boom in, {pay_out} lets the wind take it out.\nYou steer by where you walk, as with a tiller."
+const HOW_TO_SAYS := "The sheet runs from the boom's end through a real deck hook to your waist.\n" \
+	+ "{reel_in} takes in rope; {pay_out} gives slack. Wind and the rope move the boom.\n" \
+	+ "With several waist lines, open {inventory}, hover one and click to choose which to work."
 ## What a rig flown from both its bow corners teaches, the first time you
 ## ride it: the bridle's two bow lines, and changing tack by them.
 const BRIDLE_HOW_TO := "bridle"
@@ -101,9 +73,8 @@ var raise := 0.0
 ## The boom's swing off straight back, rad, and how fast it swings.
 var boom := 0.0
 var boom_spin := 0.0
-## The sheet's inboard length, m, from the block at the boom's end to its ring:
-## the boom swings out only as far as keeps its end this near where it lies
-## hauled right in. And what the sheet holds it in with now, N; slack, none.
+## Legacy save field, no longer a physical trim control. The ordinary sheet
+## owns all paid length; old records may still contain this value.
 var trim := 0.0
 var sheet_n := 0.0
 ## What the wind does to the sail, felt long enough to tear it, N, as if on
@@ -132,9 +103,26 @@ var lift := 0.0
 var _felt := 0.0
 ## The wind at the sail last tick, for its slack sheet to stir in.
 var _wind := Vector3.ZERO
-## How far out the sheet let the boom swing last tick, rad; NAN if nothing held it.
-var _trimmed := NAN
-
+var _boom_body: RigidBody3D
+var _boom_joint: HingeJoint3D
+var _boom_carrier: Device
+var _physical_part: Part
+var _saved_boom := {}
+var boom_pose: Transform3D:
+	get:
+		return global_transform.affine_inverse() * _boom_body.global_transform if is_instance_valid(_boom_body) else Transform3D(Basis(Vector3.UP, boom), Vector3.ZERO)
+	set(value):
+		_saved_boom.pose = value
+var boom_velocity: Vector3:
+	get:
+		return _boom_body.linear_velocity if is_instance_valid(_boom_body) else Vector3.ZERO
+	set(value):
+		_saved_boom.velocity = value
+var boom_angular: Vector3:
+	get:
+		return _boom_body.angular_velocity if is_instance_valid(_boom_body) else Vector3.ZERO
+	set(value):
+		_saved_boom.angular = value
 var _sheet: Rope
 var _held := false
 ## Each node swinging with the boom, as it lies with the boom straight back,
@@ -146,14 +134,6 @@ var _cloth: MeshInstance3D
 var _looks := -Vector4.ONE
 var _spar: MeshInstance3D
 var _top: MeshInstance3D
-## The sheet's inboard as it's drawn, and its ring on the camp.
-var _inboard: RopeStrand
-var _ring: Node3D
-var _ring_on: Chassis
-var _ring_mount := Transform3D.IDENTITY
-var _ring_dirty := true
-var _ring_supported := false
-var _inboard_taut := false
 ## Its upper reach as your hands meet it, there only while it stands: the
 ## pole the sand and what's round it meet stays the stowed one, as it was.
 var _reach: Area3D
@@ -162,9 +142,11 @@ static var _look: ShaderMaterial
 
 func _ready() -> void:
 	super()
-	# After the ropes have pulled, before its camp's runners hold: they see its push.
-	process_physics_priority = -5
+	# Refresh the boom endpoint before the ordinary rope solver reads it.
+	process_physics_priority = -15
 	_build_look()
+	if world != null:
+		world.origin_shifted.connect(_shift_boom)
 
 
 ## Use raises or furls its sail; with none fitted, or wrecked, nothing to do.
@@ -205,16 +187,6 @@ func sheeted() -> bool:
 	return _held
 
 
-## The swing its sheet's inboard lets the boom out to, rad; past MOST, none.
-func trimmed_to() -> float:
-	return 2.0 * asin(clampf(trim / (2.0 * BOOM), 0.0, 1.0))
-
-
-## The sheet's inboard with the boom all the way out, m: all of it there is.
-static func all_out() -> float:
-	return 2.0 * BOOM * sin(MOST * 0.5)
-
-
 ## Whether a line's end is a sheet's: the other end of its line is tied at a
 ## sail's boom.
 static func sheet_end(end: Node) -> bool:
@@ -223,13 +195,6 @@ static func sheet_end(end: Node) -> bool:
 	if not is_instance_valid(line) or line.rope == null:
 		return false
 	return line.rope.a.get_parent() is Mast or line.rope.b.get_parent() is Mast
-
-
-## Where its sheet would run through a block on the camp: under the boom's
-## end hauled right in, on the camp's middle line. A camp it tows goes from
-## here.
-func block() -> Vector3:
-	return global_transform * (BOOM_AT + Vector3(0.0, 0.0, -BOOM))
 
 
 ## The device whose body takes its push: what it's seated on, all the way down.
@@ -243,6 +208,7 @@ func carrier() -> Device:
 ## Out the way it went in: the sail comes off with its boom straight back.
 func take(socket: Socket) -> Part:
 	if socket == _sail_socket():
+		_release_boom()
 		boom = 0.0
 		boom_spin = 0.0
 		sheet_n = 0.0
@@ -254,6 +220,7 @@ func take(socket: Socket) -> Part:
 
 
 func _physics_process(delta: float) -> void:
+	follow_mount()
 	super(delta)
 	var started := Time.get_ticks_usec()
 	var on := carrier()
@@ -262,6 +229,9 @@ func _physics_process(delta: float) -> void:
 	# Off its mount, its sail comes down.
 	if on == null:
 		raised = false
+	_physical_boom(on)
+	_read_boom()
+	_swing_nodes()
 	_find_sheet()
 	var area := sail_m2() if not wrecked() else 0.0
 	raise = move_toward(raise, 1.0 if raised and area > 0.0 else 0.0, delta / RAISE_SECONDS)
@@ -273,14 +243,7 @@ func _physics_process(delta: float) -> void:
 		_touch(on, delta)
 		if world.counts_deeds:
 			_deeds(on, delta)
-	else:
-		_trimmed = NAN
-	if _sheet != null:
-		# Hauling takes in what holds the boom; once it's all in, the line.
-		_sheet.haul_n = sheet_n if trim > 0.0 else 0.0
-		_sheet.haul_gathered = all_out() - trim
-	_swing_nodes()
-	_draw_inboard(delta)
+	_show()
 	if on == null or on.freeze or world == null:
 		return
 	cost_us += (Time.get_ticks_usec() - started - cost_us) * 0.05
@@ -292,84 +255,32 @@ func _physics_process(delta: float) -> void:
 ## A tick of the sail on its carrier: the boom swings as the wind pushes it,
 ## held by its sheet, and the push goes into the carrier.
 func _sail(on: Device, area: float, h: float) -> void:
-	var state := PhysicsServer3D.body_get_direct_state(on.get_rid())
+	if not is_instance_valid(_boom_body):
+		return
 	var axis := global_basis.y.normalized()
-	var middle := on.global_transform * on.center_of_mass
 	var centre := global_transform * _middle_at(boom)
+	var state := PhysicsServer3D.body_get_direct_state(_boom_body.get_rid())
+	var middle := _boom_body.global_transform * _boom_body.center_of_mass
 	var moving := state.linear_velocity + state.angular_velocity.cross(centre - middle)
 	_wind = world.weather.felt_wind(centre)
 	var air := _wind - moving
 	var beating := world.tuning.wind_catch_per_m2 / SQUARE * air.length_squared()
 	air -= axis * air.dot(axis)
-	var showing := area * raise
-	# Lying over, the sail meets the sand, not the wind.
 	var upright := clampf(inverse_lerp(cos(deg_to_rad(70.0)), cos(deg_to_rad(40.0)), axis.dot(Vector3.UP)), 0.0, 1.0)
 	var catch := world.tuning.wind_catch_per_m2 / SQUARE * upright
-	# Taut, the sheet is a stiff spring on the swing, damped as a line is.
-	var spring := SWING_MASS * pow(TAU * SHEET_HZ, 2.0)
-	var damper := 2.0 * world.tuning.rope_damping * SWING_MASS * TAU * SHEET_HZ
-	# Where the sheet holds it, drawn from where it held it last tick, and how
-	# fast that moves: the line's own stretch is what the sheet damps.
-	var trimmed := trimmed_to()
-	var was := _trimmed if is_finite(_trimmed) else trimmed
-	_trimmed = trimmed if _held else NAN
-	var drawn := (trimmed - was) / h
-	var n := maxi(1, roundi(h * STEP_HZ))
-	var step := h / n
-	# What the swing puts into the camp about the mast, N·m·s.
-	var into := 0.0
-	var felt := air
-	var turned := global_basis
-	for i in n:
-		var arm := turned * (_middle_at(boom) - BOOM_AT)
-		# Swinging, the sail meets the air it swings through.
-		felt = air - axis.cross(arm) * boom_spin * SWEPT
-		var push := _push(felt, boom, showing, catch * felt.length_squared(), turned)
-		var twist := arm.cross(push).dot(axis)
-		# Worked as how far out it is, either side.
-		var way := signf(boom) if boom != 0.0 else (signf(twist) if twist != 0.0 else 1.0)
-		var out := absf(boom)
-		var spin := (boom_spin * way + twist * way / SWING_MASS * step) / (1.0 + SWING_DRAG / SWING_MASS * step)
-		var held := 0.0
-		var most := lerpf(was, trimmed, (i + 1.0) / n) if _held else INF
-		if out + spin * step > most:
-			# Taut: solved for where the step leaves it, so no stiffness overshoots.
-			var taut := (boom_spin * way + (twist * way - spring * (out - most) + damper * drawn) / SWING_MASS * step) \
-				/ (1.0 + (damper + SWING_DRAG) / SWING_MASS * step + spring / SWING_MASS * step * step)
-			held = spring * (out + taut * step - most) + damper * (taut - drawn)
-			if held > 0.0:
-				# No line draws its end in faster than a rope closes.
-				spin = maxf(taut, -Rope.CLOSING_SPEED / BOOM)
-				if spin != taut:
-					held = twist * way - SWING_DRAG * spin - SWING_MASS * (spin - boom_spin * way) / step
-			else:
-				held = 0.0
-		out += spin * step
-		if out > MOST:
-			out = MOST
-			if spin > 0.0:
-				# Brought up at its stop: the swing goes into the camp.
-				into += SWING_MASS * spin * way
-				spin = 0.0
-		boom = out * way
-		boom_spin = spin * way
-		into += (held * way + SWING_DRAG * boom_spin) * step
-		sheet_n = held / (BOOM * cos(out * 0.5))
-	# What the camp takes is the cloth's push as its middle meets the air.
-	felt = air - axis.cross(turned * (_middle_at(boom) - BOOM_AT)) * boom_spin
-	force = _push(felt, boom, showing, catch * felt.length_squared(), turned)
-	_felt = felt.length()
-	var at := global_transform * Vector3(0.0, BOOM_AT.y + MIDDLE.x * raise, 0.0)
-	on.apply_impulse(force * h, at - on.global_position)
-	on.apply_torque_impulse(axis * into)
-	# Luffing or lying over, a raised sail flogs as hard as the wind it stands in.
+	force = _push(air, boom, area * raise, catch * air.length_squared(), global_basis)
+	_felt = air.length()
+	_boom_body.apply_impulse(force * h, centre - _boom_body.global_position)
+	# Bearing friction is an equal and opposite torque, never an angle target.
+	var friction := axis * boom_spin * world.tuning.boom_hinge_drag * h
+	_boom_body.apply_torque_impulse(-friction)
+	on.apply_torque_impulse(friction)
+	sheet_n = _sheet.tension if _sheet != null else 0.0
 	var whole: float = Catalog.PARTS[&"sail"].stats.sail_m2
-	var pressing := maxf(_per_m2, beating) * whole if showing > 0.0 else 0.0
+	var pressing := maxf(_per_m2, beating) * whole if area * raise > 0.0 else 0.0
 	load_n += (pressing - load_n) * (1.0 - exp(-h / LOAD_SECONDS))
 	bend_n += (force.length() - bend_n) * (1.0 - exp(-h / BEND_SECONDS))
 	_strain(h)
-	if not _held:
-		trim = maxf(trim, 2.0 * BOOM * sin(absf(boom) * 0.5))
 
 
 ## Sailed by you, all the way up: what its camp makes against the field's
@@ -469,8 +380,10 @@ func _strain(h: float) -> void:
 func _touch(on: Device, h: float) -> void:
 	if global_basis.y.normalized().dot(Vector3.UP) > cos(TOUCH_TILT):
 		return
-	for point in [Vector3(0.0, BOOM_AT.y + LUFF * extend, 0.0), _boom_end()]:
-		Runners.touch(on, world, global_transform * point, 0.6, h)
+	# The spar has its own real collider; only the uncollided upper mast needs
+	# this existing sand contact approximation.
+	var head := Vector3(0.0, BOOM_AT.y + LUFF * extend, 0.0)
+	Runners.touch(on, world, global_transform * head, 0.6, h)
 
 
 ## Its sheet: the line on the boom's end, which reeling hauls through the
@@ -483,31 +396,16 @@ func _find_sheet() -> void:
 		if lines.size() == 1:
 			found = lines[0]
 	if found != _sheet:
-		if _sheet != null and _sheet.hauls == _haul:
+		if _sheet != null and _sheet.hauls == _worked:
 			_sheet.hauls = Callable()
-			_sheet.haul_n = 0.0
-			_sheet.haul_gathered = 0.0
 		_sheet = found
+	if _sheet != null:
+		_sheet.hauls = _worked
 	_held = false
 	if _sheet != null:
-		_sheet.hauls = _haul
 		var mine: RopeEnd = tie.part.get_meta(&"tip")
 		var other := _sheet.b if _sheet.a == mine else _sheet.a
 		_held = is_instance_valid(other) and not (other.holder is Part and not world.ropes.on_you(other.holder))
-
-
-## Reeling the sheet takes line in through the block at the boom's end, or
-## gives it back, as far as its inboard goes; past that, the line itself is
-## reeled. Returns what's left of the step for the line.
-func _haul(step: float) -> float:
-	if _sheet == null or _sheet.hauls != _haul:
-		return step
-	var was := trim
-	trim = clampf(trim + step, 0.0, all_out())
-	if trim != was and world != null and world.counts_deeds and raise >= 1.0 and carrier() != null \
-			and sailed_by_you(carrier()) and _streamed(carrier()):
-		Deeds.done(world, &"telltale")
-	return step - (trim - was)
 
 
 ## Whether a streamer flies anywhere on a camp, its mast's too: a telltale to trim by.
@@ -521,78 +419,10 @@ static func _streamed(on: Device) -> bool:
 	return false
 
 
-## The sheet's inboard drawn from its ring to the block at the boom's end, as
-## long as it is: straight while it holds the boom, sagging slack. The ring
-## sits on the nearest actual deck surface beneath the hauled boom. Compact
-## rigs need no imaginary tail to support their ring.
-func _draw_inboard(h: float) -> void:
-	var tip: Node3D = _tie().part.get_meta(&"tip") if _sheet != null else null
-	var rigged := is_instance_valid(tip) and carrier() != null and world != null
-	if rigged:
-		_update_ring_mount()
-		rigged = _ring_supported
-	_ring.visible = rigged
-	if rigged:
-		_ring.global_transform = _ring_on.global_transform * _ring_mount
-	_inboard.visible = rigged and trim > 0.02
-	if not _inboard.visible:
-		_inboard_taut = false
-		return
-	# As long as from the ring to the block, and what's slack in the inboard.
-	var span := _ring.global_position.distance_to(tip.global_position)
-	var swing := trimmed_to() * (-1.0 if boom < 0.0 else 1.0)
-	var eased := global_transform * (BOOM_AT + Vector3(-sin(swing) * BOOM, 0.0, -cos(swing) * BOOM))
-	var slack := maxf(_ring.global_position.distance_to(eased) - span, 0.0)
-	# Hung afresh on another sheet, or once the world's origin has moved under it.
-	if _inboard.b != tip or _inboard.points.is_empty() or _inboard.points[0].distance_to(_ring.global_position) > 1.0:
-		_inboard.hang(world, span + slack, _ring, tip)
-		_inboard_taut = false
-	# Taut, it's drawn straight between its ends each frame: no chain to step.
-	if slack > 0.0 or not _inboard_taut:
-		_inboard.set_length(span + slack)
-		_inboard.step(h, _wind)
-	_inboard_taut = slack <= 0.0
-
-
-## Layout changes choose a real seat once; moving the camp only transforms it.
-func _update_ring_mount() -> void:
-	var on := carrier() as Chassis
-	if on != _ring_on:
-		if is_instance_valid(_ring_on) and _ring_on.parts_changed.is_connected(_ring_changed):
-			_ring_on.parts_changed.disconnect(_ring_changed)
-		_ring_on = on
-		if on != null:
-			on.parts_changed.connect(_ring_changed)
-		_ring_dirty = true
-	if not _ring_dirty:
-		return
-	_ring_dirty = false
-	_ring_supported = false
-	if on == null:
-		return
-	var size: Vector3 = Catalog.DEVICES[&"mast"].size
-	var want := global_transform * Vector3(0.0, -size.y * 0.5 + 0.06, -BOOM)
-	var seats := SheetEye.seat(on, want)
-	if not seats.is_empty():
-		_ring_mount = seats[0]
-		_ring_supported = true
-
-
-func _ring_changed() -> void:
-	_ring_dirty = true
-
-
-func _inboard_anchor() -> Vector3:
-	_update_ring_mount()
-	return (_ring_on.global_transform * _ring_mount).origin if _ring_supported else global_position
-
-
 func _process(_delta: float) -> void:
-	# The camp can advance after its physics callback, before this frame is drawn.
-	if _ring.visible and is_instance_valid(_ring_on):
-		_ring.global_transform = _ring_on.global_transform * _ring_mount
-	if _inboard.visible and is_instance_valid(_inboard.b):
-		_inboard.pin_ends(_ring.global_position, _inboard.b.global_position)
+	if is_instance_valid(_boom_body):
+		_read_boom()
+		_swing_nodes()
 
 
 ## Whether it stands at its full height on a camp, taking things stuck on it.
@@ -707,8 +537,8 @@ func _swing_nodes() -> void:
 		var tie := _tie()
 		if tie != null:
 			on.append_array(tie.fitted)
-	var turn := Transform3D(Basis(Vector3.UP, boom), Vector3.ZERO)
-	var moved := boom != _shown or on.size() != _base.size()
+	var turn := global_transform.affine_inverse() * _boom_body.global_transform if is_instance_valid(_boom_body) else Transform3D(Basis(Vector3.UP, boom), Vector3.ZERO)
+	var moved := is_instance_valid(_boom_body) or boom != _shown or on.size() != _base.size()
 	var seen := {}
 	for node in on:
 		if not _base.has(node):
@@ -719,10 +549,16 @@ func _swing_nodes() -> void:
 	if moved:
 		for node in on:
 			node.transform = turn * (_base[node] as Transform3D)
+			if node is CollisionShape3D:
+				(node as CollisionShape3D).disabled = is_instance_valid(_boom_body)
 		for node in _base.keys():
 			if not seen.has(node):
 				_base.erase(node)
 		_shapes_changed()
+	var tie := _tie()
+	if tie != null and tie.part != null and tie.part.has_meta(&"tip"):
+		var tip: RopeEnd = tie.part.get_meta(&"tip")
+		tip.holder = _boom_body if is_instance_valid(_boom_body) else (carrier() as Node3D if carrier() != null else self)
 	_shown = boom
 	_show()
 
@@ -743,7 +579,7 @@ func _show() -> void:
 	_top.scale = Vector3(1.0, maxf(extend, 0.01), 1.0)
 	_cloth.visible = on and raise > 0.01
 	_spar.visible = on and raise >= 0.3
-	var swing := Transform3D(Basis(Vector3.UP, boom), BOOM_AT)
+	var swing := (global_transform.affine_inverse() * _boom_body.global_transform * Transform3D(Basis.IDENTITY, BOOM_AT)) if is_instance_valid(_boom_body) else Transform3D(Basis(Vector3.UP, boom), BOOM_AT)
 	_cloth.transform = swing
 	_spar.transform = swing * Transform3D(Basis(Vector3.UP, PI), Vector3.ZERO)
 	if _cloth.visible:
@@ -803,18 +639,202 @@ func _build_look() -> void:
 	_top.position = Vector3(0.0, size.y * 0.5, 0.0)
 	_top.visible = false
 	add_child(_top)
-	_ring = Node3D.new()
-	var eye := MeshInstance3D.new()
-	eye.mesh = SheetEye.mesh()
-	eye.position.y = -SheetEye.EYE_UP
-	_ring.add_child(eye)
-	_ring.visible = false
-	add_child(_ring)
-	_inboard = RopeStrand.new()
-	_inboard.visible = false
-	add_child(_inboard)
 	show_wear()
 
 
 func _crack() -> void:
 	Sounds.play_at(self, Sounds.LANDING)
+
+
+## The sail belongs to a separate rigid body while mounted: count it once.
+func _fitted_mass(socket: Socket) -> float:
+	return 0.0 if (socket == _sail_socket() or socket == _tie()) and is_instance_valid(_boom_body) else super(socket)
+
+
+func _physical_boom(on: Device) -> void:
+	if on == _boom_carrier and sail() == _physical_part and is_instance_valid(_boom_body):
+		_boom_body.freeze = on.freeze
+		_weigh_boom()
+		return
+	_release_boom()
+	if on == null or sail() == null or world == null or wrecked():
+		return
+	_boom_carrier = on
+	_physical_part = sail()
+	_boom_body = RigidBody3D.new()
+	_boom_body.name = "PhysicalBoom"
+	_boom_body.set_meta(&"boom_mast", self)
+	_boom_body.top_level = true
+	_boom_body.mass = sail().mass
+	_boom_body.can_sleep = false
+	_boom_body.center_of_mass_mode = RigidBody3D.CENTER_OF_MASS_MODE_CUSTOM
+	_boom_body.center_of_mass = BOOM_AT + Vector3(0.0, MIDDLE.x, -MIDDLE.y)
+	# A cloth rectangle and its spar supply the inertia around their own middle.
+	_boom_body.inertia = sail().mass / 12.0 * Vector3(LUFF * LUFF + BOOM * BOOM, BOOM * BOOM, LUFF * LUFF)
+	_boom_body.collision_layer = on.collision_layer
+	_boom_body.collision_mask = on.collision_mask
+	add_child(_boom_body)
+	# Configure the hinge in its authored rest frame, independent of saved yaw.
+	_boom_body.global_transform = global_transform
+	PhysicsServer3D.body_set_state(_boom_body.get_rid(), PhysicsServer3D.BODY_STATE_TRANSFORM, _boom_body.global_transform)
+	_boom_body.linear_velocity = on.linear_velocity + on.angular_velocity.cross(_boom_body.global_position - on.global_position)
+	_boom_body.angular_velocity = on.angular_velocity + global_basis.y * boom_spin
+	_boom_body.freeze = on.freeze
+	var shape := CollisionShape3D.new()
+	var spar := BoxShape3D.new()
+	var pole: Vector3 = Catalog.DEVICES[&"mast"].size
+	var clear := Vector2(pole.x, pole.z).length() * 0.5 + 0.035 + world.tuning.boom_root_clearance
+	spar.size = Vector3(0.07, 0.07, BOOM - clear)
+	shape.shape = spar
+	shape.position = BOOM_AT + Vector3(0.0, 0.0, -(BOOM + clear) * 0.5)
+	_boom_body.add_child(shape)
+	_weigh_boom()
+	_reweigh()
+	_boom_joint = HingeJoint3D.new()
+	add_child(_boom_joint)
+	# HingeJoint's local Z is its free axis.
+	_boom_joint.transform = Transform3D(Basis(Vector3.RIGHT, -PI / 2.0), BOOM_AT)
+	_boom_joint.node_a = _boom_joint.get_path_to(on)
+	_boom_joint.node_b = _boom_joint.get_path_to(_boom_body)
+	_boom_joint.set_flag(HingeJoint3D.FLAG_USE_LIMIT, false)
+	_boom_joint.exclude_nodes_from_collision = false
+	_boom_body.global_transform = global_transform * Transform3D(Basis(Vector3.UP, boom), Vector3.ZERO)
+	_inherit_boom_velocity()
+
+
+func _weigh_boom() -> void:
+	var tip := _tie()
+	var end_mass := tip.part.mass if tip != null and tip.part != null else 0.0
+	var cloth_mass := sail().mass
+	var total := cloth_mass + end_mass
+	# A rectangular mass surrogate follows the gathering cloth; the tip's
+	# mass is separate. The real spar collider supplies contact, not inertia.
+	var height := maxf(0.18, LUFF * raise)
+	var cloth_middle := BOOM_AT + Vector3(0.0, height * 0.5, -BOOM * 0.5)
+	var end_middle := BOOM_AT + Vector3(0.0, 0.0, -BOOM)
+	var middle := (cloth_mass * cloth_middle + end_mass * end_middle) / total
+	var inert := cloth_mass / 12.0 * Vector3(height * height + BOOM * BOOM, BOOM * BOOM + 0.07 * 0.07, height * height + 0.07 * 0.07)
+	for entry in [[cloth_mass, cloth_middle], [end_mass, end_middle]]:
+		var r: Vector3 = entry[1] - middle
+		inert += entry[0] * Vector3(r.y * r.y + r.z * r.z, r.x * r.x + r.z * r.z, r.x * r.x + r.y * r.y)
+	if _boom_body.mass != total:
+		_boom_body.mass = total
+	if _boom_body.center_of_mass != middle:
+		_boom_body.center_of_mass = middle
+	if _boom_body.inertia != inert:
+		_boom_body.inertia = inert
+
+
+
+func _read_boom() -> void:
+	if not is_instance_valid(_boom_body):
+		return
+	var chord := global_basis.inverse() * -_boom_body.global_basis.z
+	boom = atan2(-chord.x, -chord.z)
+	boom_spin = (_boom_body.angular_velocity - _boom_carrier.angular_velocity).dot(global_basis.y.normalized())
+
+
+func _release_boom() -> void:
+	var had_body := is_instance_valid(_boom_body)
+	if is_instance_valid(_boom_joint):
+		_boom_joint.free()
+	_boom_joint = null
+	if is_instance_valid(_boom_body):
+		_boom_body.free()
+	_boom_body = null
+	_boom_carrier = null
+	_physical_part = null
+	if had_body:
+		_reweigh()
+
+
+func _reweigh() -> void:
+	var on: Device = self
+	while on != null:
+		on._recompute()
+		on = on.host()
+
+
+func _shift_boom(by: Vector2i) -> void:
+	if is_instance_valid(_boom_body):
+		var offset := Vector3(by.x * world.tuning.chunk_size, 0.0, by.y * world.tuning.chunk_size)
+		world.teleport(_boom_body, _boom_body.global_transform.translated(-offset))
+
+
+func restored() -> void:
+	_physical_boom(carrier())
+	if is_instance_valid(_boom_body):
+		_boom_body.global_transform = global_transform * _saved_boom.get("pose", Transform3D(Basis(Vector3.UP, boom), Vector3.ZERO))
+		PhysicsServer3D.body_set_state(_boom_body.get_rid(), PhysicsServer3D.BODY_STATE_TRANSFORM, _boom_body.global_transform)
+		_inherit_boom_velocity()
+		_boom_body.linear_velocity = _saved_boom.get("velocity", _boom_body.linear_velocity)
+		_boom_body.angular_velocity = _saved_boom.get("angular", _boom_body.angular_velocity)
+	_saved_boom.clear()
+	_swing_nodes()
+
+
+## Starter rigging is a real removable hook and one ordinary routed line.
+## Its length includes the whole path; no virtual inboard is gathered on the reel.
+func rig_sheet(line: Line, eased_degrees := 55.0) -> bool:
+	var on := carrier() as Chassis
+	if on == null or line.rope == null:
+		return false
+	var want := global_transform * Vector3(0.0, -Catalog.DEVICES[&"mast"].size.y * 0.5 + 0.06, -BOOM)
+	var seats := SheetEye.seat(on, want)
+	if seats.is_empty():
+		return false
+	var hook := Catalog.part(&"hook") as RopeHook
+	var mount := seats[0]
+	mount.basis = Basis(Vector3.RIGHT, -PI / 2.0)
+	mount.origin -= Vector3.UP * SheetEye.EYE_UP
+	on.stick(hook, mount, Vector3.UP)
+	line.rope.through = hook.guide
+	line.rope.strand.through = hook.guide
+	var direct := line.rope.a.global_position.distance_to(line.rope.b.global_position)
+	var path := line.rope.a.global_position.distance_to(hook.guide.global_position) + hook.guide.global_position.distance_to(line.rope.b.global_position)
+	var slack := maxf(line.rope.length - direct, 0.0)
+	var middle := hook.guide.global_position
+	# Enough real line for either tack at departure, measured through this hook.
+	for side: float in [-1.0, 1.0]:
+		var swing := deg_to_rad(eased_degrees) * side
+		var tip := global_transform * (BOOM_AT + Vector3(-sin(swing) * BOOM, 0.0, -cos(swing) * BOOM))
+		path = maxf(path, tip.distance_to(middle) + middle.distance_to(line.rope.b.global_position))
+	line.rope.length = path + slack
+	line.full = maxf(line.rope.length, world.tuning.rope_coil_length)
+	line.rope.full = line.full
+	return true
+
+
+## Actual line path at an eased departure swing, with this guide and endpoint.
+func eased_length(degrees: float, side := 0.0) -> float:
+	var rope := sheet()
+	if rope == null:
+		return 0.0
+	var mine: RopeEnd = _tie().part.get_meta(&"tip")
+	var other := rope.b if rope.a == mine else rope.a
+	var guide := rope.through
+	var path := 0.0
+	for way: float in ([-1.0, 1.0] if side == 0.0 else [side]):
+		var swing := deg_to_rad(degrees) * way
+		var tip := global_transform * (BOOM_AT + Vector3(-sin(swing) * BOOM, 0.0, -cos(swing) * BOOM))
+		var span := tip.distance_to(other.global_position)
+		if is_instance_valid(guide):
+			span = tip.distance_to(guide.global_position) + guide.global_position.distance_to(other.global_position)
+		path = maxf(path, span)
+	return path
+
+
+## Observe the existing trimming action without taking any of its rope length.
+func _worked(step: float) -> float:
+	if step != 0.0 and world != null and world.counts_deeds and raise >= 1.0 and carrier() != null \
+			and sailed_by_you(carrier()) and _streamed(carrier()):
+		Deeds.done(world, &"telltale")
+	return step
+
+
+func _inherit_boom_velocity() -> void:
+	var root_middle := _boom_carrier.global_transform * PhysicsServer3D.body_get_direct_state(_boom_carrier.get_rid()).center_of_mass_local
+	var middle := _boom_body.global_transform * _boom_body.center_of_mass
+	var axis := global_basis.y.normalized()
+	_boom_body.linear_velocity = _boom_carrier.linear_velocity + _boom_carrier.angular_velocity.cross(middle - root_middle) + axis.cross(middle - global_transform * BOOM_AT) * boom_spin
+	_boom_body.angular_velocity = _boom_carrier.angular_velocity + axis * boom_spin

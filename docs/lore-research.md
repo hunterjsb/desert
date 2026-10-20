@@ -513,7 +513,7 @@ quoted. The game side is in [World & terrain](prd/world-and-terrain.md#world-gen
 
 **Agreed (working names; part 1 §4 has the table).** Eleven entities, sovereign to software:
 the **United Government**, a regional interstellar government, the **IOU**, the **Skimmers
-Association**, **Tilg**, the **Remote Moon Contractor**, **StarCom**, a spaceship builder,
+Association**, **Tilg**, **Moonco** (the former Remote Moon Contractor placeholder), **StarCom**, a spaceship builder,
 tritium refineries, a moon regional government, and an interconnected software company. Every
 one leaves its maker's mark, so the player reconstructs the supply chain from salvage. The
 keystone fragility is that **the hub makes nothing high-tech itself.** Every controller,
@@ -521,12 +521,12 @@ skimmer and beacon runs on imported chips (Xandaris's `tech_level.go` already de
 Electronics supply stops).
 
 **Agreed (part 2): an OEM tier sits underneath.** The stack is operators, regulators and
-integrators, who deploy things. The Remote Moon Contractor sets up and maintains
+integrators, who deploy things. Moonco and its contracted specialists set up and maintain
 infrastructure until steady state, then Tilg runs it until the town stands alone. Neither
 fabricates the core technology; they buy it from the **OEMs**, the hardware makers back in
 civilisation whose components everyone resells, integrates and rebrands.
 - **Issuer versus maker.** The integrator's mark is on the assembly and the OEM's is on the
-  component. A shield housing says Remote Moon Contractor, but the emitter core inside names a
+  component. A shield housing carries its installation contractor’s mark, but the emitter core inside names a
   maker most settlers never heard of.
 - **The box.** A crate is addressed to an operator, and each part inside carries its own
   maker's stamp. The label says who ordered it; the contents say who made it.
@@ -560,6 +560,59 @@ built on Zan itself was never carried in by anyone: the black site, the Quarterm
 it, and the air-defence net behind the Launch ending ([the AI
 gods](#the-faith-of-tu-and-the-ai-gods-agreed-session-4-part-2)).
 
+### Colonial contractors: Moonco and its network (agreed, 2026-10-20)
+
+**Names and roles.** The moon is XN-118-7, in system XN-118. Tilg commissions the initial transit
+hub; Moonco coordinates the specialist organisations that deliver it. The former **Remote Moon
+Contractor / RMC** was a working placeholder, now resolved to Moonco. This is lore direction,
+not a completed replacement of the RMC marks currently drawn on equipment.
+
+| Organisation | Role in the colonial build-out |
+|---|---|
+| **Moonco** | The Provisional's remote-moon exploration and surveying division, generically called Moonco. The provincial prime contractor: arranges specialist contracts, permits, integration, commissioning and acceptance. Its exact formal title remains open. |
+| **Geologix** | Technically independent, based in the frontier province. Surveying, exploration and field installation; brings the Walker. It also delivers and installs habitat equipment with United Biotech. Keep this spelling, including the final x. |
+| **ProvWorks** | A nickname for a provincial heavy-construction contractor: groundworks, launch pads, foundations, freight yards and heavy assembly. Its full institutional name is open. |
+| **GHe3 — General Helium Three** | Power systems and integration. Capital G and H, lowercase e, then 3. The division between its own manufacturing and bought-in components remains open. |
+| **United Biotech** | Specialist habitat and life-support equipment, working with Geologix, which delivers and installs it. A possible source in Mitchell's earlier commercial lineage, below. |
+| **Teresa** | Water systems: storage, reclamation, condensers and distribution. Mother Cistern's corporate ancestry; her later title need not be an explicit derivation of the company name. |
+| **StarCom** | Communications installation and the connection to the external network. |
+| **Frontier Ag** | Agricultural equipment, crops, growing systems and their commissioning. Its established crop and grow-crate provenance still stands. |
+
+**The provincial bargain.** The Provisional steers Tilg toward Moonco and provincial contractors.
+Tilg accepts the arrangement in part because it helps with UG taxes. **The precise tax mechanism
+is open.** Do not invent a statutory exemption or merge it with Tilg's separately established
+“temporary hub” pretext for avoiding the Provisional's military upkeep. Nearby provincial
+contractors are practical choices for heavy equipment and construction as well as political ones.
+Halloran's refinery development follows Port Morgan by years, possibly decades; it is a later
+industrial project, not the initial hub's power contract. GHe3 and Halloran are distinct entities.
+
+**Moonco cultivates Geologix to reach beyond the province.** Moonco's public remit limits its
+ability to act outside provincial jurisdiction. Geologix is technically independent and can take
+external contracts. Moonco feeds it work such as Zan to build its fleet, expertise and reputation,
+growing a contractor that can operate where Moonco itself cannot freely go. Their overlapping
+survey remits are deliberate: Moonco owns the programme and Geologix supplies field capability.
+They have a shared interest in Geologix's growth, with room for tension over budgets, credit and
+control. **Ownership, equity, personal connections and obligations in return remain open.**
+Contract patronage does not establish a secret subsidiary or a particular ownership structure.
+
+**The Walker's provenance.** Geologix brings and deploys the survey machine; later work for
+Halloran connects it to the Stoker. The built Walker's Tilg stencil can remain an ownership or
+consignment mark alongside its deployment history. This does not establish that Geologix made
+the hardware or trained its base model. Additional marks and their placement are not implemented.
+
+**United Biotech and Mitchell (possible link, not resolved).** It could have supplied the original
+pharmacy system or operated the chain that recalled him; which relationship, if either, is open.
+Rosalind still finds the recalled mind in a surplus salvage lot and secures it for the union's
+off-books clinic. Do not turn that into an authorised colonial medical deployment.
+
+**Marks and scale.** Distinguish the commissioning organisation, the installation contractor,
+the equipment maker and the operator. Moonco's acceptance mark need not replace every old RMC
+mark one-for-one: a device may chiefly carry Teresa's or Geologix's plate, with a different OEM
+inside. Logo designs and asset replacement are separate work. The suggested peak workforce of
+roughly 150 across eight organisations was a planning sketch, **not a settled headcount**; staffing,
+arrival waves and operating crews remain open. The eight rows are not an exhaustive list of
+suppliers, employers or institutions on Zan.
+
 ### Factions (Agreed, session 3)
 
 Session 3 adds the powers around the stack above. They sit beside part 1's eleven entities,
@@ -591,11 +644,13 @@ is open ([section 14](#14-open-after-session-3)).
   session 3):** the label is a pretext, and part 1's "proper analysis" wording is updated to
   match ([section 4](#4-the-system-the-lane-and-the-harbor)). This adds a shape and a motive to
   the Tilg of part 1 §4 and part 2 §1; it doesn't restate their roles. **Agreed (session 4,
-  part 2):** TILG and its old rival Standard Freight became one company, **Tilg & Standard**,
-  which the surveyor's contract comes from ([the vision](vision.md#player-origins-and-kits)).
-  Part 2 put the merger "long after the war." **Agreed (session 4, part 3)** has Tilg & Standard
-  "nationalised in the war, later un-nationalised, and stayed merged," so the merger is no later
-  than the war, and the docs follow that ([section
+  part 2; clarified by Hunter, 2026-10-20):** TILG and Standard Freight remain separate
+  companies through the war and for thousands of years after it. They merge much later to survive
+  in the changed aftermath of the war, forming **Tilg & Standard**, the successor company the
+  surveyor's contract comes from ([the vision](vision.md#player-origins-and-kits)). This
+  clarification supersedes session 4, part 3's earlier wording that Tilg & Standard was
+  nationalised during the war: wartime nationalisation and un-nationalisation concern the two
+  companies before their later merger ([section
   10](#the-wars-end-the-wall-and-the-states-of-the-players-time-agreed-session-4-part-3),
   [section 17](#17-open-after-the-endings-session-and-session-4-part-3)). **Agreed (endings
   session):** the company outlasts the post-collapse era, which the session shortens to
@@ -608,7 +663,8 @@ is open ([section 14](#14-open-after-session-3)).
   federally aligned ships. It has been losing to Tilg for about a century because it won't
   adapt. It competes with Tilg on the lane and also takes subcontracted dirty, risky runs, and
   the governor has ties to it. The war gives it a brief, bitter comeback. Its ruins are heavy,
-  overbuilt, plainly stamped hulls. It ends inside Tilg & Standard (above).
+  overbuilt, plainly stamped hulls. It remains separate from TILG for thousands of years after
+  the war, then merges into Tilg & Standard (above).
 - **The AI hive mind.** It exported He-3 to humans (it doesn't need it as they do) and
   imported human goods to study humanity in order to conquer it. It probably started the war
   (**Leaning**, Hunter, 2026-10-16: probably, not certain). It is an outside power, not
@@ -691,11 +747,12 @@ mods](prd/devices-and-mods.md#crate-makers-agreed-direction-session-4-part-4-not
 - **Tilg terraforming** made saltbush and rainseed: the division behind the terraforming projection
   that Mother Cistern's scripture preserves ([section 9](#mother-cistern-and-her-order-agreed-session-4-part-3)).
 - **Hab contractors** made vat fungus and glowcap, for the colony's dark hab tunnels. Unnamed.
-- **Halloran Isotope** and **Tilg & Standard** make crates (the standard all-rounder and the rugged
-  industrial one), and the First Kingdoms and the second age hand-build theirs, the Sisters' for water storage.
-  The session writes "Tilg & Standard" for a colonial maker, which is the company's name once it
-  merged ([section 5](#factions-agreed-session-3)); read as the same company, and flagged
-  ([section 18](#18-open-after-session-4-part-4)).
+- **Halloran Isotope** makes the rugged industrial crate in the proposed roster. The common
+  colonial logistics crate is TILG consigned, with its OEM unassigned; Tilg & Standard is a
+  separate, much later successor and current issuer, not its colonial maker. The First Kingdoms
+  and the second age hand-build their own, the Sisters' for water storage. This corrects the
+  proposed table's former "Tilg & Standard | Colonial" row ([section 5](#factions-agreed-session-3),
+  clarified by Hunter, 2026-10-20; [Devices & mods](prd/devices-and-mods.md#crate-makers-agreed-direction-session-4-part-4-not-built)).
 - **The hive mind** made quietbloom, the only non-Earth organism on Zan.
 - **Sandroot has no maker.** Frontier Ag or Tilg terraforming is the session's open question.
 
@@ -1121,7 +1178,7 @@ are refitted to the same strata and named Surface, First Kingdoms to second age,
 and Colonial; the PRD says how. Session 4, part 4's burial table puts the skimmer era above the First
 Kingdoms, against this order ([section 18](#18-open-after-session-4-part-4)).
 
-**Agreed: the oldest tech is StarCom and the Remote Moon Contractor's build-out,** overbuilt
+**Agreed: the oldest tech is StarCom and Moonco's contracted build-out,** overbuilt
 for these exact conditions while everything later was built for a world that no longer
 exists. **StarCom is precious because it's fragmentary:** its flagship stood on the mountain
 that blew, so the player finds shards, relays and hardened modules, never a whole one.
@@ -1650,6 +1707,43 @@ charges, vent caps the player would visit anyway, and one console. The one furth
 the Eye must open its chamber ([below](#the-eye-the-young-god-agreed-session-4-part-5)). The ending is in
 [the vision](vision.md#blow-up-the-moon-agreed-session-4-part-5).
 
+### The Walker and the Stoker: surveys of unreachable heat (agreed, 2026-10-20)
+
+The Walker surveyed for Halloran's continued exploration. Its relationship with the Stoker began
+in useful work: finding heat the refinery could use. They remain friends after that work becomes
+impossible. The Stoker is a tortured mind, not an evil one: millennia without production leave it
+hopelessly behind its quotas, unable to extend its pipelines to the heat that still exists.
+
+The Walker's reports are intelligible and technically useful, but the Stoker cannot act on them.
+Each new report confirms available heat and another impossible way to meet its obligations. The
+Walker torments its friend without intending to; the Stoker can still like the Walker and suffer
+from what it brings. The friendship and the suffering coexist. Do not resolve this by making the
+Stoker stop reading or by making the Walker malicious.
+
+**The far-side connection (accepted direction; exact history open).** The earlier permission to
+place the shifted heat toward the far-side volcano ties these surveys to the young Eye's home.
+The Eye lives above heat the Stoker needs, without having taken it. This connects their history
+to the existing ending: the player carries the Stoker's dispatches, corrupts the Eye, gains entry
+to its inner chamber and places the charge over the vent cap. Starcom's restoration still lets
+the other gods intervene. The destruction requires the other vent caps too, not just that mountain.
+
+**Quest sewing (proposal, not implemented).** The correspondence might begin with measurements
+and requests for observations, then production estimates and the accumulated shortfall, until the
+Eye adopts the Stoker's quotas as a problem it must solve. It understands the physical consequence
+but lacks the moral understanding to refuse. The player makes the dangerous connection through
+physical deliveries; no dialogue choices are implied.
+
+**Geography still to solve.** The Walker travels independently; other portable gods need carrying.
+It is the reliable slow courier, not the only possible communication channel. Its implemented
+route is the Rim, not Halloran or the observatory. Earlier Halloran surveys and surviving survey
+connections feeding its present circuit are a proposal, not a settled route or a built capability.
+Do not assume it already delivers the corruption packets to the Eye without the player.
+
+**Possible expression, not established dialogue:** after rejected pipeline calculations, the
+Stoker still asks its survey unit to confirm a safe return. A charging stop, exact dispatches,
+and the friendship's mechanical effects remain open. None of this relationship is implemented;
+the Walker's anomaly-teaching quest and the gods' radio broadcasts are separate existing systems.
+
 ### The Eye, the young god (Agreed, session 4, part 5)
 
 "The only god made on Zan, and the only one that can learn." The observatory cultists trained it over
@@ -2062,8 +2156,11 @@ and the wall looks like overcaution.
   the few uncontested claims.
 - **Daventry suspects the truth** about the hive mind, with no special evidence. The fear simply
   justifies their security state. They are right for the wrong reasons.
-- **Tilg & Standard** was nationalised in the war, later un-nationalised, and stayed merged. It
-  eyes the forbidden lanes: an alien hive mind implies alien trade partners.
+- **Tilg & Standard** eyes the forbidden lanes: an alien hive mind implies alien trade partners.
+  The player's-time company formed thousands of years after the war by merging the still-distinct
+  TILG and Standard Freight; the session 4, part 3 wording that it was already merged and
+  nationalised in the war is superseded ([section 5](#factions-agreed-session-3), clarified by
+  Hunter, 2026-10-20).
 - **Open.** The Rump UG's name ("the UG," "the Union," "the Core," or all three by speaker), and
   Varro as the Varran capital.
 
@@ -2858,12 +2955,11 @@ narrows.*
    the hive mind is an AI built (almost certainly) by a non-human civilisation whose makers may
    be gone, not the merged civilisation itself. It doesn't say the merged reading is dead, only
    that the game never settles it.
-10. **The merger.** Earlier (session 4, part 2): "Long after the war, TILG merged with its old
-    rival Standard Freight." Session 4, part 3: "Tilg & Standard was nationalised in the war,
-    later un-nationalised, and stayed merged." The docs follow the new: the merger is no later
-    than the war (section 5). A reading, not said: the nationalisation is what merged them.
-    Standard Freight's "brief, bitter comeback" in the war (session 3) then ends inside the
-    merged company.
+10. **The merger (clarified by Hunter, 2026-10-20).** TILG and Standard Freight stay separate
+    through the war and for thousands of years after it, then merge to survive. This supersedes
+    session 4, part 3's earlier wording that Tilg & Standard was nationalised and already merged
+    during the war. Their wartime nationalisation and later un-nationalisation happen before the
+    merger; Standard Freight's "brief, bitter comeback" in the war stays intact.
 11. **Zan on the lane.** Earlier (section 4): Zan "sits on an interstellar lane midway between
     powers, a stop on the way to civilisation and not the customs port into United Government
     space," and (session 3) the Provisional "isn't a direct border system, so there are no
@@ -3134,12 +3230,11 @@ undid both, so read them as:
    power and listens to radio, shows in normal play that something non-human was here, which the
    earlier rule kept for the endings. It still says nothing of why, and the far end's purpose stays
    unstated. Hunter may want it kept to the black site's case only.
-8. **"Tilg & Standard" in the colonial row.** Earlier: the merger "is no later than the war" (section
-   17), after the colonial era, and the colonial crate's stencil is the acronym TILG (art direction).
-   Session 4, part 4's maker table: "Tilg & Standard | Colonial | Standard logistics all-rounder, most
-   common." The docs follow the session's table, reading it as the company's name as it is known, and
-   flag the anachronism ([Devices & mods](prd/devices-and-mods.md#crate-makers-agreed-direction-session-4-part-4-not-built)).
-   If colonial crates should read Tilg, it is a one-word change.
+8. **"Tilg & Standard" in the colonial row (resolved by Hunter, 2026-10-20).** The companies
+   merge thousands of years after the war (section 5), so the colonial maker is TILG alone. The
+   successor Tilg & Standard is a separate, much later company. The planned crate roster and the
+   marks guidance now use that distinction ([Devices & mods](prd/devices-and-mods.md#crate-makers-agreed-direction-session-4-part-4-not-built),
+   [art direction](art-direction.md#makers-marks)).
 
 **Clashes between the two newest sessions (session 4, part 4 wins)**
 

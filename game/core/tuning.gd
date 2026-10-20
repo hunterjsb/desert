@@ -65,6 +65,8 @@ static var _current: Tuning
 ## Kinds of crop grown, planters towed at once, and chassis pieces in one deck.
 @export var deed_crop_kinds: int = 3
 @export var deed_planters_towed: int = 2
+@export var deed_fairlead_n: float = 10.0
+@export var deed_fairlead_seconds: float = 1.0
 @export var deed_deck_pieces: int = 6
 ## A bulk release counts the live lines actually let go together.
 @export var deed_release_lines: int = 2
@@ -468,6 +470,15 @@ static var _current: Tuning
 ## How quickly you dig in and come back up, s.
 @export var haul_seconds: float = 0.4
 
+@export_group("Ledge vault")
+## Reach above the current feet, forward reach, m; jump rise is not added again.
+@export var vault_height: float = 0.65
+@export var vault_reach: float = 0.9
+@export var vault_clearance: float = 0.02
+@export var vault_seconds: float = 0.3
+@export var vault_stamina: float = 4.0
+@export var vault_settle_speed: float = 0.1
+
 @export_group("Hoverboard")
 ## Flat out on the flat in still air, m/s: 72 km/h, faster than any storm
 ## front rides the wind (the prevailing wind's 10 m/s swings up to 14).
@@ -580,6 +591,12 @@ static var _current: Tuning
 ## It reads the sand this many seconds of travel ahead and behind, so it
 ## rounds a dip's bottom instead of slamming into it.
 @export var board_look_seconds: float = 0.45
+## Maximum newly reachable solid support above the underside, m; a wall stays a wall.
+@export var board_surface_rise_m: float = 0.18
+## One outer-tick broadphase cap; no space queries inside the board's inner steps.
+@export var board_surface_shapes: int = 64
+## Bound the broadphase and nearby chunk collection even after an abnormal shove.
+@export var board_surface_reach_m: float = 16.0
 ## A hop, m/s up, and this much more from a full crouch.
 @export var board_hop: float = 4.0
 @export var board_pop: float = 1.5
@@ -667,6 +684,12 @@ static var _current: Tuning
 @export var throw_speed: float = 6.0
 ## Your strength on what you hold too heavy to carry, or walk into, N.
 @export var hand_strength: float = 400.0
+## A yank is a short reel stroke, with the same strength limit as normal hauling.
+@export var rope_yank_m: float = 0.5
+@export var rope_yank_seconds: float = 0.2
+@export var rope_yank_recover_seconds: float = 0.4
+@export var rope_yank_deed_m: float = 0.1
+@export var rope_yank_deed_n: float = 20.0
 ## Having hold of something, a throw punches it where you look instead, a
 ## small shove to right a tipped rig with, N·s.
 @export var punch_impulse: float = 45.0
@@ -1182,9 +1205,33 @@ static var _current: Tuning
 @export var face_cup: float = 1.3
 
 
+@export_group("Survey receiver")
+@export var receiver_reach_m: float = 1200.0
+@export var receiver_w: float = 0.5
+@export var receiver_band_khz: float = 40.0
+@export var receiver_side_gain: float = 0.08
+@export var receiver_meter_steps: int = 8
+@export var receiver_approach_m: float = 60.0
+@export var receiver_arrive_m: float = 15.0
+@export var receiver_faint: float = 0.2
+@export var receiver_strong: float = 0.6
+@export var receiver_signal_min: float = 0.01
+@export var receiver_deed_strength: float = 0.05
+@export var receiver_storm_loss: float = 0.5
+@export var receiver_hiss_clear: float = 0.035
+@export var receiver_hiss_empty: float = 0.15
+@export var receiver_hiss_storm: float = 0.25
+@export var receiver_hiss_duck: float = 0.8
+
+
 ## One shared instance, held here so probe overrides can't be dropped by the
 ## resource cache between being set and being read.
 static func current() -> Tuning:
 	if _current == null:
 		_current = load(PATH)
 	return _current
+
+## Physical sail boom: gooseneck rotational damping and the spar's collision
+## clearance round the mast, m. Sail mass remains the fitted part's mass.
+@export var boom_hinge_drag: float = 0.8
+@export var boom_root_clearance: float = 0.01

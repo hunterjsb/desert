@@ -432,6 +432,23 @@ func interact() -> bool:
 	return refuse("no use for it there") if look_device != null else false
 
 
+func _look_hook() -> RopeHook:
+	if look_part is RopeHook and (look_part as RopeHook).socket != null:
+		return look_part as RopeHook
+	var at := look_socket
+	while at != null:
+		if at.part is RopeHook:
+			return at.part as RopeHook
+		at = at.get_meta(&"socket") if at.has_meta(&"socket") else null
+	# Looking through the ring's hole meets its mounting face, not its small stem.
+	if look_device != null:
+		for seat in look_device.sockets():
+			var hook := seat.part as RopeHook
+			if hook != null and hook.guide.global_position.distance_to(look_point) <= _tuning.snap_reach:
+				return hook
+	return null
+
+
 ## Rotate held down: the mouse turns what you hold, or have hold of, instead
 ## of your view, `by` rad along and up the screen, its near side following the
 ## mouse: across turns it about the vertical, up and down about your view's
@@ -450,7 +467,8 @@ func turn(by: Vector2) -> bool:
 ## Whether rotate has the mouse: held down, with something in your hands, and
 ## the mouse looking rather than free to click.
 func rotating() -> bool:
-	return (held != null or grasp.body != null) and not Controls.mouse_free and Controls.held(&"hands_rotate")
+	return (held != null or grasp.body != null) and reel.in_hand() == null \
+		and not Controls.mouse_free and Controls.held(&"hands_rotate")
 
 
 ## Takes a body straight into your hands from wherever it is, if they're free:
@@ -557,6 +575,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("hands_throw") and not Controls.mouse_free and punch():
 		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("rope_yank", false, true) and not Controls.mouse_free \
+			and grasp.body == null and (held == null or reel.in_hand() != null):
+		if reel.yank():
+			get_viewport().set_input_as_handled()
 	elif _tunes(event):
 		get_viewport().set_input_as_handled()
 	# Exactly, so bringing near or pushing out never reels a line too.
@@ -996,10 +1018,8 @@ func _no_fit() -> String:
 	if not free:
 		return "no free %s" % SOCKET_NAMES.get(named, "socket")
 	if piece != null:
-		if _mixes(piece, target):
-			return "runners and trays don't mix"
 		return "wrecked" if piece.wrecked() or target.wrecked() else "no room at that ring"
-	return target.refuses(held) if held is Part else ""
+	return ""
 
 
 ## Last on, first off: aimed at a hook with a line tied to it, it's the line's
@@ -1254,9 +1274,6 @@ func _find_ring(piece: Chassis) -> Socket:
 		_stand_pose = on_face
 		_stand_turns = 0
 		return best
-	if _mixes(piece, deck):
-		_stand_why = "runners and trays don't mix"
-		return null
 	var turns := deck._turns_for(piece, best, piece.global_basis)
 	if turns < 0:
 		_stand_why = "wrecked" if piece.wrecked() or deck.wrecked() else "no room at that ring"
@@ -1268,13 +1285,6 @@ func _find_ring(piece: Chassis) -> Socket:
 	_stand_pose = pose
 	_stand_turns = turns
 	return best
-
-
-## Whether a piece joining a deck would put trays and runners on one deck.
-static func _mixes(piece: Device, deck: Device) -> bool:
-	var a := piece.carriage()
-	var b := deck.carriage()
-	return a != &"" and b != &"" and a != b
 
 
 ## Joins the piece you have hold of to a deck at its ring or on a frame's face.
@@ -1589,14 +1599,11 @@ func _far(device: Device) -> bool:
 func _takes(each: Socket) -> bool:
 	# A hook on a deck's ring, or a loose part beyond it, gets out of a joining piece's way.
 	if held is Chassis and each.kind == &"ring":
-		return (held as Chassis).fits_in(each) and not _mixes(held, each.get_parent()) \
+		return (held as Chassis).fits_in(each) \
 			and (each.get_parent() as Chassis).room_for(held, _seat(each))
 	if held is Chassis and each.kind == &"face":
 		return (held as Chassis).fits_in(each) and Stick.clear(held, _seat(each), _player) == ""
 	if not each.is_open() or each.stuck():
-		return false
-	# A device takes trays or runners, never both.
-	if held is Part and (each.get_parent() as Device).refuses(held) != "":
 		return false
 	if held is Device:
 		return (held as Device).fits_in(each)
@@ -2062,6 +2069,10 @@ func _part_stats(part: Part) -> Dictionary:
 func line() -> String:
 	if notice != "":
 		return notice
+	if phase == Phase.HELD and held is Part and held.has_meta(&"line") and _look_hook() != null:
+		var laid: Line = held.get_meta(&"line")
+		return Controls.key_for(&"interact") + " · " + ("remove line from hook" if laid.rope != null \
+			and laid.rope.through == _look_hook().guide else "pass line through hook")
 	if not sticking.is_empty() and (sticking.why != "" or sticking.warn != ""):
 		return sticking.why if sticking.why != "" else sticking.warn
 	if not sticking.is_empty() and (held is CrowsNest or grasp.body is CrowsNest) \

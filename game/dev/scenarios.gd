@@ -49,6 +49,8 @@ const LIST: Array[Dictionary] = [
 	{"key": "board", "label": "a board of every make at your feet by a deck of two, clear and calm", "kind": "clear",
 		"day": [0.35, 0.5], "calm": 6.0, "lays": &"board"},
 	# Beside a town where history left house ruins, so a beacon is in reach.
+	{"key": "receiver", "label": "a survey receiver with a battery among old ruins", "kind": "clear",
+		"day": [0.35, 0.5], "among": true, "lays": &"receiver"},
 	{"key": "radio", "label": "a radio and a charged shield, a beacon in reach, a storm 300 m off", "kind": "front",
 		"distance": 300.0, "day": [0.35, 0.55], "among": true, "lays": &"radio"},
 	# The next storm far enough off that the weather station has nothing to
@@ -68,7 +70,7 @@ const LIST: Array[Dictionary] = [
 	# facing across it ahead of you, ready to raise its sail and go.
 	{"key": "sail", "label": "a sailing rig on skates, sheet at your waist, board and field notes",
 		"kind": "sail", "day": [0.35, 0.5], "breeze": [8.5, 11.5], "lays": &"sail"},
-	{"key": "sail_tow", "label": "the sail rig towing a camp past you on a hidden line, the board at your feet",
+	{"key": "sail_tow", "label": "the sail rig towing a camp on a real towline, the board at your feet",
 		"kind": "sail", "day": [0.35, 0.5], "breeze": [8.5, 11.5], "lays": &"sail_tow"},
 	{"key": "yacht", "label": "a floating 3x2 deck with a keel, a mast and a helm seat, a breeze", "kind": "sail",
 		"day": [0.35, 0.5], "breeze": [8.5, 11.5], "lays": &"yacht"},
@@ -409,6 +411,7 @@ static func lay(world: World, scenario: Dictionary, place: Dictionary) -> Array[
 		&"survive": dropped = survive(world)
 		&"farm": dropped = farm(world)
 		&"board": dropped = board(world)
+		&"receiver": dropped = [standing(world, &"survey_receiver", [&"battery"], RADIO_AT)]
 		&"radio": dropped = radio(world)
 		&"weather_station": dropped = weather_station(world)
 		&"music": dropped = music_station(world)
@@ -1408,7 +1411,7 @@ static func sail(world: World) -> Array[Node3D]:
 	var board := standing(world, &"board", [&"battery"], SAIL_BOARD)
 	var sheet := sheet_to_waist(world, mast)
 	# Eased for a start across the wind: reel in as it picks up speed.
-	mast.trim = 2.0 * Mast.BOOM * sin(deg_to_rad(SAIL_EASED) * 0.5)
+
 	var dropped := _of(rig)
 	dropped.append_array([board, sheet, standing(world, &"sailing_notes", [], [-0.75, 0.8])])
 	if Controls.ui != null:
@@ -1418,18 +1421,18 @@ static func sail(world: World) -> Array[Node3D]:
 
 ## Sailing a larger camp: the rig ahead as the sail scenario's deck, less its
 ## shield, and behind you the camp, a deck two by two on skates with the
-## shield (off) at its front and two big batteries. The rig's sheet and a
-## line from the camp's front both at your waist, so the rig tows the camp on
-## a hidden line of its own past you; the board at your feet. Raise the
+## shield (off) at its front and two big batteries. An explicit towline joins
+## the rig's stern hook to the camp's bow hook; only the sail's sheet goes to
+## your waist, with the board at your feet. Raise the
 ## sail, ride, and carve to steer.
 static func sail_tow(world: World) -> Array[Node3D]:
-	var rig := rig_at(world, SQUARE + [SAIL_TAIL] + SKATES + [SAIL_MAST] + SAIL_BALLAST, SAIL_DECK)
+	var rig := rig_at(world, SQUARE + [SAIL_TAIL] + SKATES + [SAIL_MAST] + SAIL_BALLAST + [[&"hook", Vector2i(0, 2), Vector2i(0, 1)]], SAIL_DECK)
 	var mast: Mast = rig.named.mast
 	var camp := rig_at(world, SQUARE + SKATES + TOW_STORES, TOW_CAMP)
 	var board := standing(world, &"board", [&"battery"], SAIL_BOARD)
 	var sheet := sheet_to_waist(world, mast)
-	var line := to_waist(world, _deck_tie(camp.deck, Vector2i.ZERO, Vector2i(0, -1)))
-	mast.trim = 2.0 * Mast.BOOM * sin(deg_to_rad(SAIL_EASED) * 0.5)
+	var line := Line.between(world, _deck_tie(rig.deck, Vector2i(0, 2), Vector2i(0, 1)), _deck_tie(camp.deck, Vector2i.ZERO, Vector2i(0, -1)), 0.5)
+
 	var dropped := _of(rig) + _of(camp)
 	dropped.append_array([board, sheet, line])
 	return dropped
@@ -1444,7 +1447,7 @@ static func yacht(world: World) -> Array[Node3D]:
 	var rig := rig_at(world, YACHT_RIG + [SAIL_TAIL], YACHT_DECK)
 	var mast: Mast = rig.named.mast
 	var sheet := sheet_to_waist(world, mast)
-	mast.trim = 2.0 * Mast.BOOM * sin(deg_to_rad(SAIL_EASED) * 0.5)
+
 	var dropped := _of(rig)
 	dropped.append(sheet)
 	return dropped
@@ -1452,7 +1455,9 @@ static func yacht(world: World) -> Array[Node3D]:
 
 ## A line from a mast's boom's end to your waist, a little slack.
 static func sheet_to_waist(world: World, mast: Mast) -> Line:
-	return to_waist(world, mast._tie())
+	var line := to_waist(world, mast._tie())
+	mast.rig_sheet(line, SAIL_EASED)
+	return line
 
 
 ## A line from a device's tie socket to your waist, a little slack.

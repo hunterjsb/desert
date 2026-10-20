@@ -78,6 +78,8 @@ var tumble: Tumble
 ## The helm you sit at, or null.
 var helm: Helm
 
+var vault: LedgeVault
+
 var _tuning := Tuning.current()
 var _sliding := false
 var _jumped := false
@@ -113,6 +115,7 @@ var _touching := Vector2i.ONE
 
 
 func _ready() -> void:
+	vault = LedgeVault.new(self)
 	stamina = _tuning.stamina_max
 	feel = Feel.new()
 	add_child(feel)
@@ -151,6 +154,7 @@ func _physics_process(delta: float) -> void:
 		if Controls.playing() and not vitals.wounds.stunned() else Vector2.ZERO
 	walker.check(input)
 	if flying:
+		vault.cancel()
 		mode = "fly"
 		Dev.put("player/mode", mode)
 		var boost := 5.0 if Controls.held("sprint") else 1.0
@@ -162,10 +166,12 @@ func _physics_process(delta: float) -> void:
 	_clear_of_board()
 	_clear_of_deck()
 	if helm != null:
+		vault.cancel()
 		_at_helm(input)
 		return
 	# A board freed under you (a scenario's, say) still leaves a ride to end.
 	if ride != null:
+		vault.cancel()
 		_ride(delta, input)
 		return
 	if tumble != null:
@@ -183,6 +189,11 @@ func _physics_process(delta: float) -> void:
 	if world == null or not world.has_ground_under(global_position):
 		_stop()
 		return
+	if vault.active:
+		_since_ground += delta
+		vault.step(delta)
+		_left = velocity
+		return
 	if velocity != _left:
 		own = Vector2(velocity.x, velocity.z)
 		_sliding = false
@@ -198,6 +209,7 @@ func _physics_process(delta: float) -> void:
 	var on_floor := is_on_floor()
 	_since_ground = 0.0 if on_floor else _since_ground + delta
 	if on_floor:
+		vault.grounded()
 		_jumped = false
 	var crouch := Controls.held("crouch")
 	var pressed := crouch and not _crouch_was
@@ -265,6 +277,13 @@ func _physics_process(delta: float) -> void:
 		velocity.z += shove.z
 	velocity += get_meta(&"rope_drag", Vector3.ZERO)
 	velocity.y = lift
+	if not crouch and not _sliding and dir != Vector2.ZERO \
+			and (sprinting or _jumped) and vault.begin(dir):
+		_jumped = true
+		_jump_buffer = 0.0
+		vault.step(delta)
+		_left = velocity
+		return
 	var from := global_position
 	var meant := Vector2(velocity.x, velocity.z) * delta
 	move_and_slide()
@@ -369,6 +388,8 @@ func _bridled() -> bool:
 ## Off the board onto the sand, keeping your way: faster than you can run,
 ## you skid. The board goes on as it was going, a body again.
 func step_off() -> void:
+	if vault != null:
+		vault.cancel()
 	if board == null:
 		return
 	var going := Vector3(ride.velocity.x, ride.vy, ride.velocity.y)
@@ -492,18 +513,16 @@ func _get_up() -> void:
 
 
 ## What's at your waist that would hold the board back: every line but a
-## sail's sheet, a camp's line its rig tows past you, and a line from the
+## sail's sheet and a line from the
 ## sheet's own rig, which with the sheet flies it as a kite's lines do.
 func _holding_back() -> Array[RigidBody3D]:
 	var back: Array[RigidBody3D] = []
-	var towed := world.ropes.link_pair()
 	var rigs := []
 	for body in waist.tied:
 		if is_instance_valid(body) and Mast.sheet_end(body) and world.ropes.far_holder(body) != null:
 			rigs.append(world.ropes.far_holder(body))
 	for body in waist.tied:
 		if is_instance_valid(body) and not Mast.sheet_end(body) \
-				and not (towed.size() == 2 and world.ropes.line_at(body) == towed[1]) \
 				and not rigs.has(world.ropes.far_holder(body)):
 			back.append(body)
 	return back
@@ -763,13 +782,18 @@ func _haul(dir: Vector2, pace: float, delta: float) -> float:
 func _after_move(from: Vector3, meant: Vector2, delta: float, was_on_floor: bool, vy: float) -> void:
 	_on_sand = true
 	var open := true
+	var solid_normal := Vector3.ZERO
 	for i in get_slide_collision_count():
 		var hit := get_slide_collision(i)
 		var normal := hit.get_normal()
-		var sand := hit.get_collider() is StaticBody3D
+		var holder := hit.get_collider_shape() as CollisionShape3D
+		var sand := holder != null and holder.shape is HeightMapShape3D
 		if normal.angle_to(up_direction) <= floor_max_angle:
 			_on_sand = sand
-			open = open and sand
+			var fixed := hit.get_collider() is StaticBody3D
+			open = open and fixed
+			if fixed and not sand:
+				solid_normal = _support_normal(hit)
 			continue
 		open = false
 		var loose := hit.get_collider() as RigidBody3D
@@ -784,9 +808,17 @@ func _after_move(from: Vector3, meant: Vector2, delta: float, was_on_floor: bool
 				walker.stop()
 	if open and was_on_floor and is_on_floor():
 		var off := meant - Vector2(global_position.x - from.x, global_position.z - from.z)
-		global_position += Vector3(off.x, _slope_at(global_position).dot(off), off.y)
-		velocity.x = meant.x / delta
-		velocity.z = meant.y / delta
+		if solid_normal != Vector3.ZERO:
+			# Keep pace along the real face, sweeping so an edge or nearby wall
+			# still stops the correction. Sand keeps its deterministic path.
+			var slope := -Vector2(solid_normal.x, solid_normal.z) / solid_normal.y
+			move_and_collide(Vector3(off.x, slope.dot(off), off.y))
+			velocity.x = (global_position.x - from.x) / delta
+			velocity.z = (global_position.z - from.z) / delta
+		else:
+			global_position += Vector3(off.x, _slope_at(global_position).dot(off), off.y)
+			velocity.x = meant.x / delta
+			velocity.z = meant.y / delta
 	if is_on_ceiling():
 		vy = minf(vy, 0.0)
 	_touchdown = 0.0
@@ -834,7 +866,31 @@ func _slope_here() -> Vector2:
 	if _on_sand or not is_on_floor():
 		return _slope_at(global_position)
 	var normal := get_floor_normal()
+	for i in get_slide_collision_count():
+		var hit := get_slide_collision(i)
+		if hit.get_normal().angle_to(up_direction) <= floor_max_angle:
+			normal = _support_normal(hit)
+			break
 	return -Vector2(normal.x, normal.z) / maxf(normal.y, 0.1)
+
+
+## At a small box lip, the capsule's rounded contact is steeper than the
+## supporting face. Only an already walkable contact can select a real face.
+func _support_normal(hit: KinematicCollision3D) -> Vector3:
+	var normal := hit.get_normal()
+	if normal.angle_to(up_direction) > floor_max_angle:
+		return normal
+	var holder := hit.get_collider_shape() as CollisionShape3D
+	if not hit.get_collider() is StaticBody3D or holder == null or not holder.shape is BoxShape3D:
+		return normal
+	var pose := holder.global_transform
+	var best := Vector3.ZERO
+	for axis in 3:
+		var face := pose.basis[axis].normalized()
+		face *= 1.0 if face.y >= 0.0 else -1.0
+		if face.y >= cos(floor_max_angle) and face.y > best.y:
+			best = face
+	return best if best != Vector3.ZERO else normal
 
 
 func _slope_at(at: Vector3) -> Vector2:

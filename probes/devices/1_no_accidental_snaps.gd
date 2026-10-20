@@ -269,17 +269,22 @@ func _fits_standing() -> void:
 		"take sticks the tray under the chassis, lifted clear of the sand (lowest %.2f m)" % _lowest(plate))
 	await simulate(1.0)
 
-	var ring := _socket_on(plate, &"ring", Vector3(0.0, 0.0, 0.5))
 	var hook := await _take_in_hand(&"hook")
 	look(_stand_by(plate, Vector3.BACK), plate.global_transform * Vector3(0.05, 0.06, 0.3))
-	await _offered(hook, ring, "looking at the chassis's top, a held hook")
+	await simulate(0.6)
+	check(not hands.sticking.is_empty() and hands.sticking.why == "" and hook.socket == null,
+		"looking at the chassis's top, a held hook is shown on its face and waits for take")
 	hands.grab()
-	check(ring.part == hook, "take seats the hook on the ring on your side")
+	var placed := hook.socket
+	check(placed != null and placed.get_parent() == plate and placed.stuck(), "take fits the hook where aimed on the deck")
 	await simulate(0.2)
-	look(_stand_by(plate, Vector3.BACK), seat(ring) * middle(hook))
+	look(_stand_by(plate, Vector3.BACK), seat(placed) * middle(hook))
 	await simulate(1.0 / 60.0)
-	check(hands.grab() and hands.held == hook and hands.phase == Hands.Phase.TAKING and ring.part == null,
+	check(hands.grab() and hands.held == hook and hands.phase == Hands.Phase.TAKING and hook.socket == null,
 		"looking straight at the fitted hook, an empty hand takes it out")
+	await simulate(0.5)
+	# Put the removed hook aside before offering a larger device on the panel.
+	look(eye(), eye() + plate.global_basis.z)
 	await simulate(0.5)
 	hands.drop()
 	await simulate(0.5)

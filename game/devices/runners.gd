@@ -67,13 +67,13 @@ static func of(device: Device) -> Array:
 	return found
 
 
-## The keels fitted to a device, as [the middle of its face, its length's
+## The hover fins fitted to a device, as [the middle of its face, its length's
 ## way, keel, keel_drag], in its device's frame, turned along its length as
-## runners are.
+## runners are. A runner's own keel stat measures blade penetration, not hover grip.
 static func keels(device: Device) -> Array:
 	var found: Array = []
 	for socket in device.sockets():
-		if socket.part == null or not socket.part.stats.has("keel"):
+		if socket.part == null or socket.part.stats.get("lift_kg", 0.0) <= 0.0 or not socket.part.stats.has("keel"):
 			continue
 		var shape := _lengthwise(socket)
 		if shape == null:
@@ -155,10 +155,30 @@ func glide(body: RigidBody3D, world: World, h: float) -> void:
 	var middle := body.global_transform * body.center_of_mass
 	var v := state.linear_velocity + Vector3.DOWN * world.gravity * h
 	var w := state.angular_velocity
+	var linear_force := Basis.from_scale(Vector3.ONE * inv_mass)
+	var angular_force := Basis(Vector3.ZERO, Vector3.ZERO, Vector3.ZERO)
+	var linear_torque := angular_force
+	var angular_torque := turn
+	var supported_mass := body.mass
+	var model := RopeArticulation.native(body as Device)
+	if model != null:
+		var coupled := model.bodies[0]
+		middle = coupled.center
+		v = coupled.velocity + Vector3.DOWN * world.gravity * h
+		w = coupled.spin
+		supported_mass = model.total
+		var mobility := model.root_mobility()
+		linear_force = mobility[0]
+		angular_force = mobility[1]
+		linear_torque = mobility[2]
+		angular_torque = mobility[3]
+	var answers := Basis(Vector3(linear_force.y.y, angular_force.y.x, angular_force.y.z),
+		Vector3(linear_torque.x.y, angular_torque.x.x, angular_torque.x.z),
+		Vector3(linear_torque.z.y, angular_torque.z.x, angular_torque.z.z))
 	# Each corner's spring and damper, a share of what holds up the whole load.
 	var corners_all := runners.size() * 4
-	var stiff := body.mass * world.gravity / (SINK * corners_all)
-	var damp := 2.0 * RATIO * sqrt(stiff * body.mass / corners_all)
+	var stiff := supported_mass * world.gravity / (SINK * corners_all)
+	var damp := 2.0 * RATIO * sqrt(stiff * supported_mass / corners_all)
 	# Each touching corner's three ways (up the sand's slope, along the
 	# runner, across it), the lever each has on the body and how that turns
 	# it, the mass each meets, and what it may push; packed, as this runs
@@ -166,6 +186,7 @@ func glide(body: RigidBody3D, world: World, h: float) -> void:
 	var ways := PackedVector3Array()
 	var levers := PackedVector3Array()
 	var turns := PackedVector3Array()
+	var movements := PackedVector3Array()
 	var masses := PackedFloat64Array()
 	var gaps := PackedFloat64Array()
 	var limits := PackedFloat64Array()
@@ -196,17 +217,19 @@ func glide(body: RigidBody3D, world: World, h: float) -> void:
 			var arm := at[i] - middle
 			for way: Vector3 in [normal, along, across]:
 				var lever := arm.cross(way)
-				var spin := turn * lever
+				var spin := angular_force * way + angular_torque * lever
+				var drift := linear_force * way + linear_torque * lever
 				ways.append(way)
 				levers.append(lever)
 				turns.append(spin)
-				masses.append(1.0 / (inv_mass + lever.dot(spin)))
+				movements.append(drift)
+				masses.append(1.0 / (way.dot(drift) + lever.dot(spin)))
 			var slide := absf(v.dot(along) + w.dot(levers[levers.size() - 2]))
 			gaps.append(gap)
 			limits.append(lerpf(runner[5], runner[2] + runner[3] * slide, smoothstep(SETTLED.x, SETTLED.y, slide)))
 			limits.append(runner[4])
 	var count := gaps.size()
-	var pushes := _support(count, ways, levers, gaps, v, w, inv_mass, turn, stiff, damp, h)
+	var pushes := _support(count, ways, levers, gaps, v, w, answers, stiff, damp, h)
 	var impulse := Vector3.ZERO
 	var twist := Vector3.ZERO
 	for i in count:
@@ -217,7 +240,7 @@ func glide(body: RigidBody3D, world: World, h: float) -> void:
 		if gaps[i] > 0.0:
 			pushed = maxf(0.0, -masses[k] * (v.dot(ways[k]) + w.dot(levers[k]) + (gaps[i] + LANDING) / h))
 			pushes[i] = pushed
-		v += ways[k] * (pushed * inv_mass)
+		v += movements[k] * pushed
 		w += turns[k] * pushed
 		impulse += ways[k] * pushed
 		twist += levers[k] * pushed
@@ -226,7 +249,7 @@ func glide(body: RigidBody3D, world: World, h: float) -> void:
 		# Along: held up to its share of its push, dragged past it.
 		var most := limits[i * 2] * pushes[i]
 		var held := clampf(-masses[k + 1] * (v.dot(ways[k + 1]) + w.dot(levers[k + 1])), -most, most)
-		v += ways[k + 1] * (held * inv_mass)
+		v += movements[k + 1] * held
 		w += turns[k + 1] * held
 		impulse += ways[k + 1] * held
 		twist += levers[k + 1] * held
@@ -251,7 +274,7 @@ func glide(body: RigidBody3D, world: World, h: float) -> void:
 ## corner that would have to pull lets go, and the rest are solved again.
 ## Returns each corner's push up, N·s.
 static func _support(count: int, ways: PackedVector3Array, levers: PackedVector3Array, gaps: PackedFloat64Array,
-		v: Vector3, w: Vector3, inv_mass: float, turn: Basis, stiff: float, damp: float, h: float) -> PackedFloat64Array:
+		v: Vector3, w: Vector3, answers: Basis, stiff: float, damp: float, h: float) -> PackedFloat64Array:
 	var pushes := PackedFloat64Array()
 	pushes.resize(count)
 	var on := PackedByteArray()
@@ -259,7 +282,6 @@ static func _support(count: int, ways: PackedVector3Array, levers: PackedVector3
 	for i in count:
 		on[i] = 1 if gaps[i] <= 0.0 else 0
 	# The ways the body answers a push up: rising, and tipping about x and z.
-	var answers := Vector3(inv_mass, turn.x.x, turn.z.z)
 	var give := (stiff * h + damp) * h
 	for attempt in 3:
 		var rows: Array[Vector3] = [Vector3.ZERO, Vector3.ZERO, Vector3.ZERO]

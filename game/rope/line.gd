@@ -24,6 +24,8 @@ var ends: Array[Part] = []
 var rope: Rope
 ## The longest it lays, m.
 var full := 12.0
+var routed_by_player := false
+var route_loaded_seconds := 0.0
 ## Which end went first; the other is the coil's.
 var _first := 0
 var _world: World
@@ -125,7 +127,7 @@ static func _gone(node: Node) -> void:
 	node.queue_free()
 
 
-func _physics_process(_delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	var hands := _world.player.hands
 	if state == State.COILED:
 		if not is_instance_valid(coil):
@@ -137,6 +139,12 @@ func _physics_process(_delta: float) -> void:
 			or not _world.ropes.ropes.has(rope):
 		_lost()
 		return
+	if routed_by_player and is_instance_valid(rope.through) and rope.sustained >= _world.tuning.deed_fairlead_n:
+		route_loaded_seconds += delta * _world.time_warp
+		if route_loaded_seconds >= _world.tuning.deed_fairlead_seconds:
+			Deeds.done(_world, &"fairlead")
+	else:
+		route_loaded_seconds = 0.0
 	var first := ends[_first]
 	var other := ends[1 - _first]
 	match state:
@@ -193,11 +201,41 @@ func _uncoil() -> void:
 ## under `least`, and a coil feeding out pulls nothing until it's all out.
 func _pay(least := SHORTEST) -> void:
 	var span := rope.a.global_position.distance_to(rope.b.global_position)
+	if is_instance_valid(rope.through):
+		span = rope.a.global_position.distance_to(rope.through.global_position) \
+			+ rope.through.global_position.distance_to(rope.b.global_position)
 	var length := clampf(span + _world.tuning.rope_pay_slack, least, full)
 	rope.paying = true
 	rope.length = length
 	rope.kg_per_m = 0.0 if length < full else _world.tuning.rope_kg_per_m
 	rope.strand.set_length(length)
+
+
+## Passing the held end through a ring changes the path, never the amount of rope.
+func route(guide: RopeEnd) -> String:
+	if rope == null or not state in [State.PAYING, State.LAID]:
+		return "tie the first end before passing the line through a hook"
+	if rope.through == guide:
+		rope.through = null
+	elif is_instance_valid(rope.through):
+		return "remove this line's existing route first"
+	else:
+		var span := rope.a.global_position.distance_to(guide.global_position) \
+			+ guide.global_position.distance_to(rope.b.global_position)
+		if span > full:
+			return "not enough rope to pass through that hook"
+		if state == State.LAID and span > rope.length * (1.0 + rope.max_stretch):
+			return "pay out more rope before passing through that hook"
+		rope.through = guide
+		if state == State.PAYING:
+			_pay()
+	# A changed path cannot reuse an impulse from the old direction.
+	rope.spring_impulse = 0.0
+	rope.stop_impulse = 0.0
+	rope.strand.through = rope.through
+	routed_by_player = rope.through != null
+	route_loaded_seconds = 0.0
+	return ""
 
 
 ## Dropped before its first end was on anything: the coil goes down whole,

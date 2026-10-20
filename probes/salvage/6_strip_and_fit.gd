@@ -119,7 +119,8 @@ func _strip(id: StringName, k: int, tally: Dictionary) -> void:
 				continue
 		tally.out += 1
 		var put := false
-		if mine is Chassis and Stick.sticks(part):
+		# Keep existing edge rings for hooks, leaving the panel free for large gear.
+		if mine is Chassis and Stick.sticks(part) and not part is RopeHook:
 			put = await _stick_into(mine as Chassis, part, stuck_on)
 			stuck_on += 1
 		else:

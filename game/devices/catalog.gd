@@ -196,9 +196,11 @@ const RENAMED := {&"carrot": &"root_tuber", &"fungus": &"vat_fungus", &"carrots"
 const SLOT_ONLY: Array[StringName] = [&"ring", &"port", &"tie", &"plant_pot", &"plant_standard", &"plant_deep",
 	&"mod", &"computer_mod", &"computer_top", &"screen", &"sail", &"face"]
 
-## Who made each thing colonial hands made, as its stamp says (art
-## direction's maker's marks): commodity parts carry none.
-const MAKERS := {&"chassis": &"tilg", &"frame": &"tilg", &"board": &"tilg", &"condenser": &"rmc", &"console": &"rmc",
+## The colonial entity mark on each thing (art direction): TILG is the
+## consignor; RMC is a legacy contractor placeholder, not mapped one-to-one
+## to Moonco or its specialists; only shield and wind marks stand for OEMs.
+## Commodity parts carry none.
+const COLONIAL_MARKS := {&"chassis": &"tilg", &"frame": &"tilg", &"board": &"tilg", &"condenser": &"rmc", &"console": &"rmc",
 	&"shield": &"rmc", &"light_shield": &"shield_maker", &"turbine": &"wind_maker", &"power_cabinet": &"rmc"}
 ## Where a lineage's marks sit on what isn't a box: round about its top's
 ## axis, as [its radius over its half width, and the shares of its height its
@@ -347,6 +349,9 @@ const DEVICES := {
 		]},
 	# Music, the weather station and beacons, a channel a use. Carried, set
 	# down or stuck on a deck, it runs on its battery or its deck's power.
+	&"survey_receiver": {"label": "Survey receiver", "size": Vector3(0.36, 0.50, 0.26), "mass": 1.4,
+		"radio": true, "receiver": true, "carryable": true, "sticks": true,
+		"sockets": [[&"battery", Vector3(0.0, -0.12, -0.10), Vector3.FORWARD]]},
 	&"radio": {"label": "Radio", "size": Vector3(0.32, 0.22, 0.16), "mass": 2.5, "radio": true,
 		"carryable": true, "sticks": true,
 		"sockets": [
@@ -388,7 +393,7 @@ const DEVICES := {
 	&"mast": {"label": "Mast", "size": Vector3(0.14, 1.3, 0.14), "mass": 8.0, "rig": true,
 		"carryable": true, "on_end": true, "sticks": true, "stands": true, "stats": {"face_m2": 0.18},
 		"sockets": [
-			[&"sail", Vector3(0.0, 0.3, -0.07), Vector3.FORWARD],
+			[&"sail", Mast.BOOM_AT + Vector3(0.0, 0.0, -0.07), Vector3.FORWARD],
 		]},
 	# A skimmer pilot's seat, stuck on a deck: use on it sits you at the helm (Helm).
 	&"helm_seat": {"label": "Helm seat", "short": "Helm", "size": Vector3(0.5, 0.5, 0.55), "mass": 7.0, "helm": true,
@@ -400,6 +405,8 @@ const DEVICES := {
 		"streamer": true, "carryable": true, "sticks": true, "stats": {"face_m2": 0.01}, "sockets": []},
 	&"sailing_notes": {"label": "Sailing field notes", "short": "Sailing notes", "size": Vector3(0.28, 0.05, 0.36),
 		"mass": 0.3, "notes": true, "carryable": true, "sticks": true, "sockets": []},
+	&"surveyor_guide": {"label": "Surveyor's Guide", "short": "Survey guide", "size": Vector3(0.28, 0.05, 0.36),
+		"mass": 0.3, "notes": true, "surveyor_guide": true, "carryable": true, "sticks": true, "sockets": []},
 	# A lookout's basket for a mast's head, its rope ladder hung down the mast:
 	# use on it climbs you in, a seat as the helm is (CrowsNest).
 	&"crows_nest": {"label": "Crow's nest", "short": "Nest", "size": Vector3(0.9, 1.0, 0.9), "mass": 12.0, "nest": true,
@@ -495,7 +502,8 @@ static func part(id: StringName) -> Part:
 		else (Plant.new() if spec.has("crop") \
 		else (Compass.new() if spec.kind == &"compass" \
 		else (Frame.new() if spec.kind == &"frame" \
-		else (Remedy.new() if spec.kind == &"medicine" else Part.new())))))
+		else (Remedy.new() if spec.kind == &"medicine" else (RopeHook.new() if id == &"hook" \
+		else (RopeTip.new() if id == &"rope_end" else Part.new())))))))
 	made.kind = spec.kind
 	made.label = spec.label
 	made.mass = spec.mass
@@ -545,6 +553,8 @@ static func part(id: StringName) -> Part:
 		made.continuous_cd = true
 	if spec.has("tie"):
 		_add_tie(made, spec.tie, Vector3.BACK)
+		if made is RopeHook:
+			made.guide = RopeEnd.make(made, spec.tie, false)
 	if spec.has("adds"):
 		var adds := Socket.new()
 		adds.kind = spec.adds[0]
@@ -658,7 +668,7 @@ static func device(id: StringName) -> Device:
 		else (Condenser.new() if spec.get("condenser", false) \
 		else (Planter.new() if spec.get("planter", false) \
 		else (Hoverboard.new() if spec.get("board", false) \
-		else (Radio.new() if spec.get("radio", false) \
+		else ((SurveyReceiver.new() if spec.get("receiver", false) else Radio.new()) if spec.get("radio", false) \
 		else (Mast.new() if spec.get("rig", false) \
 		else (Streamer.new() if spec.get("streamer", false) \
 		else (CrowsNest.new() if spec.get("nest", false) \
@@ -668,7 +678,7 @@ static func device(id: StringName) -> Device:
 		else (Console.new() if spec.get("console", false) \
 		else (PowerBox.new() if spec.get("power_box", false) \
 		else (Cutter.new() if spec.get("cutter", false) \
-		else (SailingNotes.new() if spec.get("notes", false) else Device.new()))))))))))))))
+		else ((SurveyorGuide.new() if spec.get("surveyor_guide", false) else SailingNotes.new()) if spec.get("notes", false) else Device.new()))))))))))))))
 	made.set_meta(&"catalog", id)
 	made.label = spec.label
 	made.frame_mass = spec.mass
@@ -721,12 +731,13 @@ static func lineal(id: StringName) -> bool:
 
 ## The loot's one call (docs/world-system.md, "What lineage does now"): a
 ## find's lineage from the site it lay in, drawn from the loot draw's seed
-## (Eras.lineage) and given it, with who made it. What it was given.
+## (Eras.lineage) and given it, with its colonial entity mark by catalog id.
+## What it was given.
 static func found_in(body: Node, era: StringName, kind: StringName, seed_value: int) -> Array:
 	var line := Eras.lineage(era, kind, seed_value)
 	var id: StringName = body.get_meta(&"catalog", &"")
-	if not line.is_empty() and line[0][0] == Eras.COLONIAL and MAKERS.has(id):
-		line[0][2] = [MAKERS[id]]
+	if not line.is_empty() and line[0][0] == Eras.COLONIAL and COLONIAL_MARKS.has(id):
+		line[0][2] = [COLONIAL_MARKS[id]]
 	inherit(body, line)
 	return body.get_meta(&"lineage", [])
 

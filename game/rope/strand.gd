@@ -43,6 +43,8 @@ var length: float
 ## The ends it hangs from; null is a free end, after a snap or a let-go.
 var a: Node3D
 var b: Node3D
+## A physical fairlead: drawing and the solver share this same bend point.
+var through: Node3D
 var points := PackedVector3Array()
 var _previous := PackedVector3Array()
 var _velocity := PackedVector3Array()
@@ -140,6 +142,11 @@ func set_length(to: float) -> void:
 ## from its own points. Slack links interpolate between ticks and follow
 ## the ends' displayed poses; a snap still uses the simulation's positions.
 func pin_ends(at_a: Vector3, at_b: Vector3, fraction := 1.0) -> void:
+	if is_instance_valid(through):
+		var via := through.get_global_transform_interpolated().origin
+		var routed := _routed(at_a, via, at_b)
+		_upload(routed, _bulges(routed))
+		return
 	var shown := points.duplicate()
 	var last := shown.size() - 1
 	if not _hanging and _previous.size() == shown.size():
@@ -255,6 +262,13 @@ func drawn_length() -> float:
 func step(h: float, wind: Vector3, sag := NAN) -> void:
 	_previous = points.duplicate()
 	_age += h
+	if is_instance_valid(through) and is_instance_valid(a) and is_instance_valid(b):
+		points = _routed(a.global_position, through.global_position, b.global_position)
+		for i in points.size():
+			_velocity[i] = (points[i] - _previous[i]) / h
+		_hanging = false
+		_show()
+		return
 	var t := _age
 	var n := points.size()
 	var last := n - 1
@@ -348,6 +362,27 @@ func step(h: float, wind: Vector3, sag := NAN) -> void:
 			points[i] = p
 			_velocity[i] *= 1.0 - hung
 	_show()
+
+
+## Split slack by span: both legs pass through the guide, rather than cut its corner.
+func _routed(from: Vector3, via: Vector3, to: Vector3) -> PackedVector3Array:
+	var out := points.duplicate()
+	var pivot := clampi(out.size() / 2, 1, out.size() - 2)
+	var one := from.distance_to(via)
+	var two := via.distance_to(to)
+	var span := maxf(one + two, 0.0001)
+	for i in out.size():
+		var first := i <= pivot
+		var t := float(i) / pivot if first else float(i - pivot) / (out.size() - 1 - pivot)
+		var a_leg := from if first else via
+		var b_leg := via if first else to
+		var chord := one if first else two
+		var sag := sqrt(maxf(0.0, 3.0 * chord * (length - span) * chord / span / 8.0))
+		var p := a_leg.lerp(b_leg, t) + Vector3.DOWN * sag * 4.0 * t * (1.0 - t)
+		if i != 0 and i != pivot and i != out.size() - 1:
+			p.y = maxf(p.y, world.height_under(p) + RADIUS)
+		out[i] = p
+	return out
 
 
 ## Where the drawn tube's centre runs, t of the way along link i: the curve

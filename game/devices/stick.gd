@@ -26,7 +26,7 @@ const PLANE := 0.01
 static func sticks(thing: Node) -> bool:
 	var part := thing as Part
 	if part != null:
-		return not part.kind in Catalog.SLOT_ONLY
+		return part is RopeHook or not part.kind in Catalog.SLOT_ONLY
 	var device := thing as Device
 	return device != null and device.sticks
 
@@ -101,8 +101,6 @@ static func why_not(deck: Device, piece: Device, face: StringName, thing: Node) 
 			return "it stands on a deck's top"
 		if device.tall and ((piece as Chassis).on_frame() or _on_top(on, piece).any(func(d: Node) -> bool: return d is Frame)):
 			return "too tall for a frame"
-	elif thing is Part and on.refuses(thing as Part) != "":
-		return on.refuses(thing as Part)
 	return ""
 
 

@@ -20,6 +20,8 @@ const COMMANDS := {
 	"fly": ["", "fly through the world, or walk again"],
 	"warp": ["[n]", "the clock n times as fast; alone, the next of x1, x10, x60"],
 	"gravity": ["[m/s²]", "gravity; alone, low gravity or back"],
+	"wind": ["<m/s> [from degrees] | reset", "set prevailing wind for testing; gusts and fronts remain"],
+	"charge": ["<0-100>", "set held battery or held/looked-at device pool charge, percent"],
 	"time": ["<0-1>", "on to the next such moment of your local day: 0 is midnight, 0.5 noon"],
 	"tu": ["[6|9|13]", "Tu's width across the sky under trial, degrees; alone, the next"],
 	"give": ["<id> [n]", "a part in your hands or a device at your feet, by its catalog id"],
@@ -233,6 +235,65 @@ func _gravity(args: PackedStringArray, world: World) -> void:
 		return
 	_changed(world)
 	_say("gravity %.2f m/s², %.2f g" % [world.gravity, world.gravity / Player.ONE_G])
+
+
+func _wind(args: PackedStringArray, world: World) -> void:
+	var field := world.weather.field
+	if args.size() == 1 and args[0].to_lower() == "reset":
+		field.set_test_wind(Vector2.ZERO, world.time, true)
+	elif args.size() in [1, 2] and args[0].is_valid_float():
+		var speed := args[0].to_float()
+		var bearing := Radio.bearing(-field.prevailing_at(world.time))
+		if args.size() == 2:
+			if not args[1].is_valid_float():
+				_say(_usage("wind"))
+				return
+			bearing = args[1].to_float()
+		if speed < 0.0 or not is_finite(speed) or not is_finite(bearing):
+			_say(_usage("wind"))
+			return
+		var angle := deg_to_rad(bearing)
+		field.set_test_wind(Vector2(-sin(angle), cos(angle)) * speed, world.time)
+	else:
+		_say(_usage("wind"))
+		return
+	_changed(world)
+	world.weather.forecast_now()
+	var wind := field.prevailing_at(world.time)
+	_say("prevailing %.1f m/s from %.0f°; gusts and fronts remain" % [wind.length(), Radio.bearing(-wind)])
+
+
+func _charge(args: PackedStringArray, world: World) -> void:
+	if args.size() != 1 or not args[0].is_valid_float():
+		_say(_usage("charge"))
+		return
+	var percent := args[0].to_float()
+	if not is_finite(percent) or percent < 0.0 or percent > 100.0:
+		_say(_usage("charge"))
+		return
+	var held := world.player.hands.held
+	var cells: Array[Battery] = []
+	var pool: Array = []
+	if held is Battery:
+		cells.append(held)
+	else:
+		var device := held as Device if held is Device else world.player.hands.look_device
+		if device != null:
+			pool = world.power.pool_of(device)
+			for member: Device in pool:
+				for cell in member.supplies():
+					if not cells.has(cell):
+						cells.append(cell)
+	if cells.is_empty():
+		_say("hold a battery, or hold or look at a device with batteries")
+		return
+	_changed(world)
+	for cell in cells:
+		cell.charge_wh = cell.capacity() * percent / 100.0
+		cell.flow_w = 0.0
+	if not pool.is_empty():
+		world.power.wake(pool[0])
+	_say("%d batteries at %.0f%%" % [cells.size(), percent])
 
 
 func _time(args: PackedStringArray, world: World) -> void:

@@ -53,6 +53,7 @@ const DEVICES := {
 		[&"stake", 2],
 		[&"survival_kit", 1],
 		[&"radio", 2],
+		[&"survey_receiver", 2],
 		[&"bedroll", 1],
 		# What a company surveyor before you dropped: its own issue.
 		[&"power_box", 1],
@@ -198,9 +199,10 @@ static func on_way(sites: Sites, x: float, z: float, scatter: float) -> bool:
 ## whose hall `taken(site id, socket)` says is yours already; picked through
 ## the site index. {x, z, coord, index, site} in world metres, or {} if none
 ## is in reach.
-static func beacon(_run_seed: int, sites: Sites, x: float, z: float, tuning: Tuning, taken: Callable) -> Dictionary:
+static func beacon(_run_seed: int, sites: Sites, x: float, z: float, tuning: Tuning, taken: Callable, reach_m := -1.0) -> Dictionary:
 	var size := float(tuning.chunk_size)
-	var ruin := sites.nearest(x, z, tuning.radio_reach_m, func(site: Site) -> bool:
+	var reach := tuning.radio_reach_m if reach_m < 0.0 else reach_m
+	var ruin := sites.nearest(x, z, reach, func(site: Site) -> bool:
 		return site is Ruin and SiteLoot._stream(site.loot, BEACON).randf() < tuning.beacon_share \
 			and not taken.call(site.id, 0)) as Ruin
 	if ruin == null:

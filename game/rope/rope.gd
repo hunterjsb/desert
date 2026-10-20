@@ -104,6 +104,7 @@ var _rp := Vector3.ZERO
 var _turn_a := Vector3.ZERO
 var _turn_b := Vector3.ZERO
 var _turn_p := Vector3.ZERO
+var _response := []
 var _mass := 0.0
 var _beyond := 0.0
 ## How far apart its ends were last tick, and whether they're further now.
@@ -169,15 +170,35 @@ func prepare(h: float, gravity: float) -> void:
 	_was_apart = distance
 	var arm_a := _ra.cross(normal)
 	var arm_b := _rb.cross(normal_b)
-	_turn_a = body_a.inv_inertia * arm_a
-	_turn_b = body_b.inv_inertia * arm_b
-	var k := normal.dot(body_a.inv_mass * normal) + arm_a.dot(_turn_a) \
-		+ normal_b.dot(body_b.inv_mass * normal_b) + arm_b.dot(_turn_b)
+	var points := [body_a, body_b]
+	var linear := [normal, -normal_b]
+	var angular := [arm_a, -arm_b]
 	if through != null:
-		var turned := bend()
-		var arm_p := _rp.cross(turned)
-		_turn_p = body_p.inv_inertia * arm_p
-		k += turned.dot(body_p.inv_mass * turned) + arm_p.dot(_turn_p)
+		points.append(body_p)
+		linear.append(bend())
+		angular.append(_rp.cross(bend()))
+	_response.clear()
+	var seen := {}
+	for body: RopeBody in points:
+		var articulation: RopeArticulation = body.articulation.get_ref() if body.articulation != null else null
+		if articulation != null:
+			if not seen.has(articulation):
+				seen[articulation] = true
+				_response.append_array(articulation.response(points, linear, angular))
+		elif not seen.has(body):
+			seen[body] = true
+			var push := Vector3.ZERO
+			var twist := Vector3.ZERO
+			for i in points.size():
+				if points[i] == body:
+					push += linear[i]
+					twist += angular[i]
+			_response.append([body, body.inv_mass * push, body.inv_inertia * twist])
+	var k := 0.0
+	for i in points.size():
+		for entry: Array in _response:
+			if entry[0] == points[i]:
+				k += linear[i].dot(entry[1]) + angular[i].dot(entry[2])
 	_mass = 1.0 / k if k > 1e-9 else 0.0
 	if h != _h or _stop == Vector3.ZERO:
 		_stop = soft_step(STOP_HERTZ, STOP_DAMPING, h)
@@ -295,10 +316,7 @@ func bend() -> Vector3:
 ## Tension pulls each end toward the other, at its attachment point; a ring
 ## between is pushed into the bend.
 func _push(amount: float) -> void:
-	body_a.velocity += body_a.inv_mass * normal * amount
-	body_a.spin += _turn_a * amount
-	body_b.velocity -= body_b.inv_mass * normal_b * amount
-	body_b.spin -= _turn_b * amount
-	if through != null:
-		body_p.velocity += body_p.inv_mass * bend() * amount
-		body_p.spin += _turn_p * amount
+	for entry: Array in _response:
+		var body: RopeBody = entry[0]
+		body.velocity += entry[1] * amount
+		body.spin += entry[2] * amount

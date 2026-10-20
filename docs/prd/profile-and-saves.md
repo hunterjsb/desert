@@ -237,6 +237,8 @@ the frame is a part stuck on the deck.
 |---|---|---|---|---|
 | Board | **Yard Sale** (hidden) | Tumble 12 m in one wipeout | Big Air | `Tumble`'s tick: how far you've tumbled since you were thrown off ([Movement](movement.md#the-rides-feel-and-boards-by-make-hunter-2026-10-18-built)). Built 2026-10-19 |
 | Wind | Set Sail | Tie a sail's sheet at your waist (as now) | | your waist |
+| Wind | **Fairlead** | Redirect a loaded rope through a fitted hook | | `Line`: a player-routed guide carries at least 10 N sustained load for one second; saved routing retains the real guide reference |
+| Wind | **Quick Haul** | Yank a loaded rope through your hands | | `Reel`: a yank takes in at least 0.1 m against at least 20 N; clicking without an actual haul does not count |
 | Wind | **Hand-Me-Down** | Take the sail off a wrecked nomad rig | Set Sail | `Salvage.claim`: the find a nomad rig always carries (its mast with its sail, the socket `SiteLoot.RIGGED`) becoming yours |
 | Wind | **Telltale** | Trim a sail with a streamer flying on its rig | Hand-Me-Down | `Mast`'s haul: its sheet's inboard taken in or let out a notch, its sail all the way up and yours to sail, with a wind streamer anywhere on its camp, its mast too |
 | Wind | **Close-Hauled** | Make 500 m upwind under sail | Set Sail | `Mast`'s tick: while its sail is all the way up and yours to sail (its sheet on you, or you at the helm of its camp), its camp's way against the field's wind, kept through tacks and never below none; gone once it isn't yours to sail. Kept in the save |
@@ -256,6 +258,7 @@ the frame is a part stuck on the deck.
 | Scrap | **Stripped** | Free every module on one wreck | First Cut | `Salvage.claim`: a wreck's module taken out once it's free, every module of that wreck taken |
 | Scrap | **Clean Hands** | Make a live wreck's hazards safe without a shock or a sickness | Stripped | `Wreckage.make_safe`: its last hazard made safe, every one of them safe and none set off |
 | Scrap | **Bonepicker** | Scrap one of each kind of wreck | Clean Hands | `Salvage.claim`: a module taken from a wreck counts its kind, hull, hauler, freight pod, lifeboat, hopper or nomad rig (`Wreckage.kinds`; six since 2026-10-19, when it said five), once a profile |
+| Signals | **Follow the Signal** | Reach a real ruin beacon using a survey receiver | | `SurveyReceiver`: acquire at least 60 m away, then arrive within 15 m carrying or holding the live receiver, tuned to its beacon; target and acquisition distance persist in a save |
 | Signals | **First Light** | Hear a god inside its window | | `Radio`'s tick: tuned to a god while its words are useful, coming through and not cut, and you hearing it: its line in your view, or its sound within earshot with the volume up |
 | Signals | **Pantheon** | Hear all seven gods | First Light | the same, each god counted once a profile |
 | Signals | **Triangulated** | Fix the living city with three crossing bearings | Pantheon | the Console noting the Walker's contact log (`Chart`): three of its noted bearings crossing within 3 km, 8° apart or more (built 2026-10-19) |
@@ -284,7 +287,7 @@ the frame is a part stuck on the deck.
 - **Nomad ties the trees together:** its card stands apart, with a line from each of the five
   trees, lit where you've done one. It waits on any one deed of a tree, not a named one, so the
   table's `after` gains "any of a family".
-- **The grid holds every tree** (built for step 1, Menus & UI): 48 deeds in eleven families since step 4, Yard Sale and the nomads' gear, each a
+- **The grid holds every tree** (built for step 1, Menus & UI): 52 deeds in eleven families since step 4, Yard Sale and the nomads' gear, each a
   branch or two beside its name down the left, as round one's were (eleven columns side by side
   wouldn't stand left of the prop). It scrolls, and opens on the latest done.
 - **The order.** Each part waits for what it reads to land:
@@ -734,3 +737,19 @@ living docs, so this PRD follows it as direction.
   changes are read as "a record keyed by the landmark," kept whatever the distance. The session places
   each landmark per seed, so a record is keyed by the landmark in this run's world, which is another
   reason it lives in the run save and not the profile.
+
+## Salvager personal kit (Hunter, 2026-10-19; agreed correction)
+
+The Salvager carries a personal shield with its own full battery instead of starting
+with a light shield on a chassis plate. The racer board and cutter remain nearby;
+the existing carried supplies and tools remain. The first chassis/home is found in
+salvage. Keep the existing deed unlock and generated wreck-field start. The existing
+personal shield trades a smaller bubble and higher storm draw for portability; its
+tuning is unchanged. Existing saves keep their current equipment.
+
+As built, `salvager_kit.tres` puts `personal_shield` in carried gear and removes the
+plate assembly. Suit.restock fits its battery using the kit's existing full-charge
+setting. The existing origin-showpiece/gear-list/new-run/save check (menus9) passes
+in9s with no assertion changes; other origin resources and the unlock are unchanged.
+
+**Up and Over (2026-10-20):** complete a swept on-foot vault onto a real walkable ledge. Recorded by LedgeVault only after the player establishes floor contact; a blocked or interrupted attempt does not count.

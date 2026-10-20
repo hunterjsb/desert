@@ -17,39 +17,57 @@ func run() -> void:
 	course = heading()
 	follow(deck.global_position + Vector3(0.0, 0.0, 6.0))
 	var sheet := Scenarios.sheet_to_waist(world, mast)
+	trim(60.0)
 	hands.reel.choose(sheet.ends[1])
 	look(eye(), Line._tip(sheet.ends[0]).global_position)
 	await _hold_for(4.0)
 	var reel := hands.reel
-	check(mast.sheeted() and mast.sheet_n > 0.0 and absf(rad_to_deg(absf(mast.boom) - mast.trimmed_to())) < 1.0,
+	check(mast.sheeted() and mast.sheet_n > 0.0 and _over() <= 0.01,
 		"the wind holds the boom out against its sheet (%.0f°, %d N)" % [rad_to_deg(absf(mast.boom)), roundi(mast.sheet_n)])
 
 	# Reeling in: line through the block, the boom drawn in after it.
 	var seen := _watch()
 	check(reel.notch(8), "the reel works the sheet at your waist")
 	await _hold_for(3.0, func() -> void: _note(seen))
-	print("reeled in 2 m: the boom %.0f° to %.0f° over %.2f s, at most %.2f° a tick, %.1f° off the line at most, the sheet %d to %d N" % [
+	print("reeled in 2 m: the boom %.0f° to %.0f° over %.2f s, at most %.2f° a tick, %.3f m beyond its stretch limit at most, the sheet %d to %d N" % [
 		seen.from, rad_to_deg(absf(mast.boom)), seen.moving, seen.most_tick, seen.off, roundi(seen.least_n), roundi(seen.most_n)])
 	check(seen.moving > 1.5 and seen.most_tick < 1.5, "the boom comes in over time, never in a step (%.2f s, %.2f° a tick)" % [seen.moving, seen.most_tick])
-	check(seen.least_n > 0.0 and seen.off < 2.0, "the sheet pulls it the whole way, taut (%d N at least)" % roundi(seen.least_n))
+	check(seen.least_n > 0.0 and seen.off <= 0.01, "the sheet pulls it the whole way, taut (%d N at least)" % roundi(seen.least_n))
 
 	# Paying out: the wind takes it out after the line.
 	seen = _watch()
 	check(reel.notch(-8), "the reel pays the sheet out")
 	await _hold_for(3.0, func() -> void: _note(seen))
-	print("paid out 2 m: the boom %.0f° to %.0f° over %.2f s, %.1f° behind the line at most, the sheet taut again at %d N" % [
+	print("paid out 2 m: the boom %.0f° to %.0f° over %.2f s, %.3f m beyond its stretch limit at most, the sheet taut again at %d N" % [
 		seen.from, rad_to_deg(absf(mast.boom)), seen.moving, seen.off, roundi(mast.sheet_n)])
-	check(seen.moving > 1.5 and mast.sheet_n > 0.0 and absf(rad_to_deg(absf(mast.boom) - mast.trimmed_to())) < 1.0,
+	check(seen.moving > 1.5 and mast.sheet_n > 0.0 and _over() <= 0.01,
 		"the wind takes it out after the line, till the sheet holds it again")
 
 	# No wind: paying out leaves it, the sheet slack.
 	await _haul_to(30.0)
 	blow(Vector2.ZERO)
-	await _hold_for(2.0)
+	# Remove external weight and residual motion for the unforced payout case:
+	# gravity on a heeled mast and apparent wind are real reasons to swing.
+	deck.gravity_scale = 0.0
+	mast._boom_body.gravity_scale = 0.0
+	deck.linear_damp = 10.0
+	deck.angular_damp = 10.0
+	world.teleport(deck, Transform3D(Basis(Vector3.UP, deck.rotation.y), deck.global_position))
+	PhysicsServer3D.body_set_state(deck.get_rid(), PhysicsServer3D.BODY_STATE_TRANSFORM, deck.global_transform)
+	deck.linear_velocity = Vector3.ZERO
+	deck.angular_velocity = Vector3.ZERO
+	mast.boom_spin = 0.0
+	mast.restored()
+	for _second in 16:
+		await _hold_for(1.0)
+		if _quiescent():
+			break
+	check(_quiescent(),
+		"still-air fixture is quiescent before paying out (%.4f rad/s, %.4f m/s)" % [mast.boom_spin, deck.linear_velocity.length()])
 	var was := absf(mast.boom)
 	check(reel.notch(-4), "paying out in still air")
 	await _hold_for(2.0)
-	var slack := mast.trim - 2.0 * Mast.BOOM * sin(absf(mast.boom) * 0.5)
+	var slack := mast.sheet().length - _path()
 	print("in still air, paid out 1 m: the boom %.0f° to %.0f°, the sheet %.2f m slack, %d N" % [
 		rad_to_deg(was), rad_to_deg(absf(mast.boom)), slack, roundi(mast.sheet_n)])
 	check(absf(absf(mast.boom) - was) < deg_to_rad(3.0) and slack > 0.8 and mast.sheet_n == 0.0,
@@ -82,13 +100,30 @@ func _note(seen: Dictionary) -> void:
 	seen.most_tick = maxf(seen.most_tick, rad_to_deg(moved))
 	seen.was = now
 	if hands.reel.rope != null and absf(hands.reel.wanted - hands.reel.rope.length) > 1e-4:
-		seen.off = maxf(seen.off, rad_to_deg(absf(now - mast.trimmed_to())))
+		seen.off = maxf(seen.off, _over())
 		seen.least_n = minf(seen.least_n, mast.sheet_n)
 		seen.most_n = maxf(seen.most_n, mast.sheet_n)
 
 
 ## Reeled to hold the boom near this swing, degrees.
 func _haul_to(degrees: float) -> void:
-	var notches := roundi((mast.trim - 2.0 * Mast.BOOM * sin(deg_to_rad(degrees) * 0.5)) / Reel.NOTCH)
+	var notches := roundi((mast.sheet().length - mast.eased_length(degrees, _swing_side())) / Reel.NOTCH)
 	hands.reel.notch(notches)
 	await _hold_for(absf(notches) * Reel.NOTCH / Reel.PACE + 1.5)
+
+
+## A real sheet may stretch; it cannot exceed its declared stop at this load.
+func _over() -> float:
+	var rope := mast.sheet()
+	return _path() - rope.length * (1.0 + rope.max_stretch)
+
+
+func _path() -> float:
+	var rope := mast.sheet()
+	return rope.a.global_position.distance_to(rope.through.global_position) + rope.through.global_position.distance_to(rope.b.global_position)
+
+
+func _quiescent() -> bool:
+	return absf(mast.boom_spin) < 0.01 and deck.linear_velocity.length() < 0.02 \
+		and deck.angular_velocity.length() < 0.005 and mast._boom_body.linear_velocity.length() < 0.02 \
+		and mast._boom_body.angular_velocity.length() < 0.01

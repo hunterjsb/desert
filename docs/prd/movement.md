@@ -268,9 +268,9 @@ stop and the crouch drift ride as they did.
   thing, and every make has the issue's box and rack seat. Its ride is shares of the Hoverboard
   tuning; its look is Dress's; its lineage's marks go over it as over anything.
 
-  | Make | Who made it | Weight | Flat out | Rides | Grip and skid | Landing | Draw | Hum |
+  | Make | Provenance / attribution | Weight | Flat out | Rides | Grip and skid | Landing | Draw | Hum |
   |---|---|---|---|---|---|---|---|---|
-  | Hoverboard (`board`) | Tilg & Standard's issue, the colony's yard and survey board and still the company's: gunmetal, teal and safety yellow, its batch stencil on the tail (TILG XN 0217 on a deep one) | 7 kg | 20 m/s | 0.35 m | grips 18 m/s², skids keeping 0.9 and bleeding 0.6 | jars at 9 m/s, throws at 15 | 40 W + 260 W | the hover's own |
+  | Hoverboard (`board`) | Tilg & Standard's present-day issue: the colony's yard and survey board, still the company's standard. Gunmetal, teal and safety yellow, with its current batch stencil on the tail; a deep colonial find carries the older TILG consignment stencil, from before the successor company existed. | 7 kg | 20 m/s | 0.35 m | grips 18 m/s², skids keeping 0.9 and bleeding 0.6 | jars at 9 m/s, throws at 15 | 40 W + 260 W | the hover's own |
   | Skimmer racer (`racer_board`) | The skimmer era's own: light, cheap imports H-Town's crews raced while Zan wasn't a desert; narrow and pointed, a kicked tail, hand-painted crew red with a pale stripe, tape round its rails, three small pads, the crew's patch on its tail | 5.5 kg | 23 m/s | 0.42 m, springier | grips 15.3 m/s², breaks loose soonest and skids longest, keeping 0.72 of it and bleeding 0.39 | throws you sooner (0.85 of the thresholds), slower to bite | 1.1 times | a thin bright whine |
   | Patrol board (`patrol_board`) | The Knights Requisitioner's, the Ledger's armed auditors, ridden ahead of the crusade's water convoys: wide and plated, olive armour down its rails, a steel bumper lashed with cord, its deck the order's grey with their daubed sign, as on their hopper, and a stencil on its tail, every crate accounted for; four dim pads | 11 kg | 18 m/s | 0.30 m | grips 22.5 m/s², skids short and scrubby, keeping 0.99 and bleeding 0.78 | sturdiest (1.3), bites back fast | 1.15 times | a deep pulsing thrum |
   | Temple board (`temple_board`) | Made at Mother Cistern's temple: an old hover core under saltbush planks lashed with fern cord, a round ceramic cap on its nose in her blue glaze, the sign of Tu on a limewashed patch, a water vial and a tassel | 9 kg | 17 m/s | 0.46 m, the softest spring | grips 17.1 m/s², slides soft, keeping 0.81 and bleeding 0.48 | the biggest cushion (1.35), sturdy 1.1, slowest to bite | 1.25 times | a soft hum with a ceramic ring |
@@ -1282,3 +1282,353 @@ probe or gameplay behavior run was performed for this teaching-only change. A la
 1280×720 capture showed the existing mooring stake held and both instruction lines
 fitting at the top of the view. The external helper hit a teardown-only script error
 after saving the image; its call was corrected without changing game code.
+
+## Hybrid runner and hover carriage (agreed and built 2026-10-20)
+
+Allow skates and a hover keel or tray on different clear places of one deck. Their
+existing physical systems decide support: powered lift can raise its runners clear;
+runners on the sand push and grip only by their actual contact load. An airborne
+skate must neither plough nor count as a hover keel merely because its blade has a
+penetration statistic. True hover-fin grip remains proportional to the weight the
+hover field actually supports. Preserve lift capacity, mass, power and placement
+geometry; this is a correction to the former assembly restriction, not new tuning.
+
+As built, hover-fin discovery requires positive lift as well as a keel statistic.
+The runner contact solver and hover-support solver need no new coupling: each
+blade corner is already gated by ground distance and its actual support impulse,
+and fin grip already uses the mass the hover field really carries. The mixed-deck
+fixture has zero runner support in flight. From 4 m/s sideways it retains over
+3.9 m/s after half a second without a fin; a real fin reduces that speed by more
+than 0.5 m/s, still with zero runner support. Restoring the old discovery code
+incorrectly yields 3.714 m/s from airborne skates alone and fails the physical
+assertion. Restored source passes sail 19 (12 s); existing ground-runner sailing
+and hover-keel tacking checks (sail 1 and 10) pass unchanged. No tuning changed.
+
+## Sailing correction: physical boom and explicit routing (agreed and built, 2026-10-20)
+
+The user's sailing playtest rejects the one-sided angular latch, diagonal-only
+control and reeling that appears to rotate a yacht magically. Boom control comes
+from actual rope forces and usable hooks. A separate rigid boom body runs on a
+free mast-axis Jolt hinge, with no motor or angular limit. Local apparent wind
+acts on the sail body; the hinge and ordinary sheet transmit its loads. Reeling
+changes actual paid length. Real contact geometry bounds movement. Rope strength,
+closing-speed protections and opposed-load injury remain unchanged.
+
+This supersedes the hidden automatic tow link. Starter sheets run through an
+actual removable fitted hook. The tow scenario has an explicit deck-to-deck
+line and an independent waisted sheet; it does not silently bypass the player
+or automatically tie a second load to them. Deliberately retying opposed loads
+still exposes the rider to the normal physical injury rules.
+
+### Geometry and loading
+
+The shared gooseneck/sail socket rises 0.5 m on the existing telescopic mast.
+The actual spar, hinge, fitted tip and cloth share that frame. Normal navigation
+computer and ballast geometry clears it; arbitrarily tall custom gear can still
+obstruct it. The original 4 kg ballast frame is retained: removing it caused a
+real gust-recovery pitch failure. Native spar contact replaces the duplicate
+analytic boom-tip ground force; the existing upper-mast ground support remains.
+
+The Varran mast moves to the front row and the navigation computer aft. Its old
+aft mast had only about 0.7 m to a supported guide, approaching a 0.1 m effective
+lever at dead centre: about 500 N sheet tension was observed against roughly
+100 N wind drive. The new supported guide sits about 1.7 m aft of the hinge,
+providing real leverage. Both bow lines retain 1.5 m departure slack; the sheet
+includes its whole routed path and eased departure swing. Starter lines retain
+a normal coil's capacity, with only the initial path paid out. A carried stake
+is included in the Varran kit.
+
+The physical sail and fitted tip total 5.3 kg, excluded from the carrier's fitted
+mass and counted once in the boom. A rectangular gathering-cloth mass surrogate
+sets its centre and inertia. The complete Varran carrier plus boom is 121.6 kg.
+Rope effective mass accounts for the actual centres of mass, combined Jacobians
+when a guide shares an endpoint's body, and coupled free-hinge response. Actual
+impulses still land only at the real attachment points; Jolt supplies the hinge
+reactions. A two-boom response diagnostic conserves linear impulse within
+6e-8 and angular impulse within 7e-7, with hinge velocity closure within 3e-8.
+
+### Resume and mounted-pose ordering
+
+A save retains the boom's complete relative transform, world linear/angular
+velocities, and its rope predictor cache by the owning mast reference. Yaw and
+relative hinge speed alone omit real constraint error and carrier motion. Final
+mass properties precede hinge configuration in its authored rest frame; saved
+body poses are explicitly committed to the physics server. The first rope step
+reads the direct inertia tensor rather than an unsynchronized node cache.
+
+A matched phase trace also isolates a mounted-pose ordering defect: the first
+wind, rope and runner impulses match, but a fresh kinematic mast then retains
+the prior world pose while its carrier advances about 0.046 m. Mast's early
+physics callback precedes the parent's normal seat refresh. `follow_mount`
+synchronizes mounted ancestor/socket poses before hinge, wind and endpoint work.
+This adds no force, damping or angular constraint. The unchanged rig-resume
+check passes; a repeated measured continuation differs by 0.0085 m after four
+seconds, within the existing 0.05 m tolerance. Origin-shift diagnostics retain
+hinge pivot error of 0.016 mm.
+
+### Physical checks and presentation
+
+The sheet check uses actual routed extension against paid length and the rope's
+declared maximum stretch, rather than an ideal angular latch. Its original
+1.5 degree/tick smoothness, movement time, positive tension, still-air payout and
+wind-return assertions remain. The isolated still-air phase stabilizes the
+carrier and verifies both bodies' actual motion before payout; relative hinge
+speed alone had concealed a moving base. It passes in 38 seconds.
+
+The yacht/tow fixture helmsman works the current complete route at normal reel
+speed: a reserve captured ashore must not remain artificial slack after sitting
+at the nearer helm. It chooses driving lift and deliberately holds its requested
+attack, rather than the fixture's old automatic roll feathering. The production
+game adds no automatic control. For a tow carve it first trims, then holds the
+paid length; automatic payout during the carve would cancel the load change.
+Normal digital braking with a 40 degree look/carve offset gives +7.4 and −17.7
+degrees relative to passive turning in 2.5 seconds, retaining both 6 degree limits.
+The following camp moves at 2.06 m/s, with 67 N on the unhurt rider. The visible
+tow check passes in 26 seconds; the unchanged yacht check passes in 28 seconds.
+
+The deliberate fulcrum phase cleats the former boom end to the rig and ties the
+tow end to the movable rider between it and a moored camp. A known 900 N rig pull
+produces 937 N opposing load and 21 health, with both lines intact. Immobilizing
+the player would absorb the first pull before the second line took strain.
+The worked line is unloaded before testing independent reeling.
+
+The overrun fixture takes a clear outboard lane instead of racing into the
+chassis. Slack, retension, staying aboard, the full 1500 N strength bound and
+forced radial overload are retained; it passes in 13 seconds. The two-tack
+runner check passes in 32 seconds and the Varran reach/tack course in 31 seconds.
+After combining the verified vault work and visual sailing notes, the same
+focused checks pass: visible tow 26 s, yacht 29 s, sheet 38 s, Varran 31 s,
+overrun 15 s and mounted hooks 9 s. Rig resume passes again in 24 s; line
+selection and single-line fallback pass in 8 s, and loaded yank in 6 s. These
+outcomes precede final combined CI and native verification.
+
+Actual rendered Varran wide and close views show the higher spar above the
+navigation computer, all three lines, and the real guide foot seated on an
+interior panel clear of the case and deck edge. At 4.53 m/s its sheet carries
+61.7 N and hinge pivot error is 0.071 mm. The field-note images use the actual
+higher boom and ordinary routed hook geometry.
+
+## Vaulting small ledges (agreed and source built 2026-10-20)
+
+On foot, sprint into a small ledge or jump toward it to vault onto its walkable
+top, including a floating chassis. Use the existing sprint and jump actions; no
+boarding binding or requirement to lower the craft first. Walking into a wall
+should not unexpectedly climb it. Jumping adds only the height the ordinary jump
+has actually gained: the vault's reach is measured above the current feet, not
+an additional jump impulse or a resettable airborne climb. One vault per takeoff
+or grounded approach; no repeated wall climbing.
+
+Sweep the player's full capsule up, across and down before starting, accepting
+only a walkable top with standing clearance. During the brief climb, sweep each
+movement again so newly obstructed paths cancel safely. Track the support's local
+frame on translating/rotating decks; do not teleport to a stale world point,
+apply a boarding impulse, freeze the craft, or override its angular velocity.
+Rope drag still acts during the climb; excessive displacement aborts it. Keep
+the view free, disallow riding/seated/stunned/crouched vaults, and cancel on menus,
+loss of support or external relocation. A save keeps the current safe physical
+position; a resumed run can settle naturally rather than restoring a stale climb.
+
+Tune ledge reach, forward reach, duration, clearance and stamina in Tuning. Record
+Up and Over on completing a real vault. Acceptance: sprint boards a reachable
+ledge; plain walking, tall walls and low ceilings refuse; a jump reaches higher
+only by its actual rise; moving/rotating support does not leave the player behind
+or receive an artificial kick. Large irregular deck support and exposed wreck
+collision are related checks, not a reason to relax vault clearance.
+
+As built in `game/player/ledge_vault.gd`: 0.65 m above current feet, 0.9 m forward,
+0.3 s across three swept phases, 0.02 m clearance and four stamina. The view
+interpolates the real climb between physics ticks; looking remains free. A
+recreated player does not resume a stale climb. Origin shifts preserve the local
+support path. Focused movement 32 passes: ordinary walking refuses, sprint climbs
+0.5 m, a 0.95 m top needs actual jump rise, a 1.6 m wall and low ceiling refuse,
+a newly inserted obstacle cancels, and a translating/rotating 200 kg support stays
+underfoot across an origin shift. During the climb its velocity/spin stay within
+0.02 m/s and 0.01 rad/s of their imposed values. Ordinary physical contact after
+landing is allowed to push a craft; no separate boarding impulse is applied.
+Movement 10 and 11 pass unchanged (ordinary jump/gravity and on-foot frame-rate
+checks). Real unseen 1280×720 captures of approach, rise, crossing and landing
+were inspected in clear light on a simple collision fixture; this validates the
+visible path/clearance, not final craft art or a human judgment of movement feel.
+
+### Large mixed-deck baseline (measured 2026-10-20)
+
+A focused Godot 4.7.2/Jolt audit compared 4-piece and 27-piece decks and a 108-piece
+notched deck, alternating skates and trays, hover off/on and yaw 0/45 degrees.
+The 108-piece craft weighed 1,584 kg, with 54 skates, 54 trays and 18 batteries.
+On real near-level sand (0.12–0.14 m height spread), after settling and then eight
+seconds in 12 m/s wind, grounded support was about 15,508 N, spin stayed below
+0.00029 rad/s and tilt below 0.66 degrees. Floating runner support was zero; it
+drifted downwind at 4.23 m/s with spin below 0.0068 rad/s and tilt below 0.72 degrees.
+No unstable-support or runaway-spin defect was demonstrated in these cases.
+
+Support-solver CPU cost was about 0.11 ms/tick for four grounded pieces,
+0.33 ms for 27 and 1.21–1.24 ms for 108; the latter cost 0.59–0.60 ms airborne.
+These are local headless CPU timings, not total frame or GPU budgets. Mounted
+masts/independent booms, rope impulses, boarding/landings, steep terrain and empty
+battery transitions remain unmeasured in this audit and need combined checks.
+The stress helper emitted teardown resource/instance warnings after completing;
+their cause is unresolved. Preserve this measured baseline when changing support,
+contact or pooled inertia; do not infer stability of every large craft from it.
+
+A separate actual-craft boarding diagnostic also passed on the integrated hybrid
+assembly source: 16 joined chassis, alternating eight skates/eight hover trays,
+one big battery, 233 kg total. Its powered deck sat about 1.039 m above local
+sand. Real sprint/jump input engaged the vault and finished with feet 0.060034 m
+above its local origin (the 0.06 m deck top). Peak angular speed was 0.0632 rad/s,
+peak tilt 0.79 degrees, and runner support zero. This covers one powered boarding
+case; it does not establish steep-terrain or mast/rope-loaded boarding. The final
+repeat on the interrupted-vault/save fix passed and exited without warnings; an
+earlier repeat reported teardown warnings. The larger stress helper warnings
+remain unresolved.
+
+Final edge handling: the first swept rise clears stale grounded state and consumes
+the current takeoff, preventing a canceled climb from counting as another ground
+approach. A vertical ray under the candidate feet also requires an actual top;
+rounded capsule contact against an edge alone is insufficient. Final seating snaps
+at most 0.04 m, so a removed top leaves the player airborne rather than dropping
+them instantly to distant ground. Cancel/save uses the approach pace plus the
+support's point velocity, never the faster controlled climb motion. Movement 32
+captures a live mid-climb Snapshot and checks that its saved vertical velocity is
+not an extra jump, and checks removal of a top while the climb is active. The
+final clear-light GPU run passed these same input cases and its captures were
+inspected again.
+
+A separate 27-piece notched deck (407 kg, nine skates and eighteen trays) used
+offset mounts and mixed quarter-turns in 12 m/s wind, with six-second hover-off,
+hover-on, empty-battery and post-touchdown phases. Powered transition spin peaked
+at 0.0186 rad/s. Empty-battery touchdown briefly reached 0.475 rad/s, mostly roll
+and pitch, then settled: the next six seconds peaked at 0.00086 rad/s, with tilt
+below 0.92 degrees and support about 3,993 N, near its weight. No sustained spin
+defect was demonstrated. Solver means were 0.16–0.28 ms/tick across these phases.
+This covers one offset mixed assembly and battery transition, without mast, ropes,
+steep terrain or player loads; the helper emitted teardown warnings after passing.
+
+## Solid wreck support (2026-10-20; built)
+
+The board's hover previously read sand alone, so even an existing solid roof
+was an obstacle rather than ground. Read reachable walkable faces of actual
+static box colliders alongside sand, with one capped broadphase query per
+outer tick and cached analytic faces for the inner integration. Preserve
+ordinary wall/crash behavior, ceilings, hops, and sand's existing height field.
+The wreck collision account is in Salvage & ruins.
+
+As built: `Ride._height` reads sand plus cached reachable static box faces.
+`TerrainChunk.ground_bodies()` lets the one outer-tick query exclude all live
+quarter-heightmaps; a capped result receives five footprint ray samples.
+`_move` treats walkable static contacts as floor and respects resolved ceiling
+height. `Player._after_move` recognizes sand by HeightMap shape rather than
+all static bodies. Actual controls climbed a partly buried 15.76° skimmer roof
+without a throw; walking remained on it. Existing wall-crash and on-foot
+frame-rate checks pass. The Salvage & ruins account records the measurements
+and synthetic 64-face cost limit.
+
+Movement 33 now keeps that board approach in CI: actual forward input moves
+from sand onto the partly exposed, leaning skimmer roof. It checks the board's
+underside remains above the roof, gains height and progresses without a throw;
+it reads the wreck's geometry rather than reproducing the support cache. The
+focused check passes in 10 s. An external control using the old sand-only height
+read travelled 4.63 m without gaining height, put even the player's feet below
+the roof (local 3.136 m against its 3.25 m top), and failed the approach check.
+
+### Hopper ramp edge correction (2026-10-20; agreed before implementation)
+
+Combined CI found one real opening snag in Kits 2: the hopper's lowered aft
+ramp, near world (214.5193, 349.6859) in the fixed fixture. An isolated replay
+reproduced it in both orientations. The capsule's rounded contact against the
+small ramp edge produced normals with Y about 0.744–0.80, interpreted as a
+roughly 40-degree slope despite the box's flat top. With static floors correctly
+separated from sand, this repeatedly requested passive sliding; pace oscillated
+around 0.03–0.25 m/s. The old all-static-as-sand classification had masked it.
+
+Keep sand classification accurate. For an actual walkable contact on a static
+box, read the box face at that contact instead of the capsule's rounded normal;
+a tilted roof keeps its real tilt. Restore missing walking pace along that
+actual support plane with a collision sweep, preserving wall obstruction and
+floor edges. Keep the unchanged full opening traversal check, and add one
+focused actual-player hopper ramp regression in Movement 34.
+
+After-frame tracing also exposed the ramp's geometry: the front of its
+horizontal slab stands about 0.109 m above the approached sand, giving a real
+46.15-degree capsule contact before a walkable top is reached. Do not promote
+that wall contact. Make this existing ramp a shallow inclined slab, lowering
+only its outer edge to floor level and retaining the inner 0.08 m deck
+connection. Draw and collide the same rotated box; preserve its existing box
+index, all openings, loot/socket indices, and exposure/sand profile. Once a real
+walkable contact exists, use the actual upward box face without a nearest-face
+tie that can vary across the rounded edge.
+
+As built, the ramp keeps its original box index. Its shared local box rotation
+is 2.41 degrees; the outer top is approximately 0 m and the inner top 0.08 m
+above the structure's floor. The existing apron covers the roughly 2 mm plan
+extent added by the rotation. Exposure state/profile, room floors, openings,
+loot and socket indices are unchanged. Static-floor pace compensation sweeps
+along the actual plane; sand retains its original deterministic correction.
+Movement 34 passes both actual approaches (four legs, no stuck leg or snag),
+in 21 s; Movement 32 and 33 pass in 10 s each. The unchanged full Kits 2
+traversal remains the acceptance gate for every kind's openings.
+
+### Combined sailing verification repair (2026-10-20)
+
+The combined check exposed fixture helmsmen still reserving the entire outboard
+leg after approaching the helm or rig, leaving the physical sail unloaded. A
+fixture that actively tends a driving reach must work the current complete rope
+path at the normal reel speed, as the yacht and visible tow checks already do.
+Its reel increment must use the actual physics interval at every tick rate.
+This does not add production automatic trim or alter force, injury, rope strength,
+frame-rate consistency or movement acceptance bounds. Route loss and native
+frame-rate behavior remain separate measured failure modes to investigate.
+
+The multi-rate aboard check also initialized later cases with the previous case's
+wind still blowing, while the first case began calm. Each case now settles the
+hoisted articulated craft and boarded rider in calm air for three seconds before
+starting the same driving-sheet policy and selected tick rate. It passes in 70 s
+without changing the 20 m/s² jolt, 1.5 rad/s spin, full health/aboard, or 10% tow
+and 3% yacht distance bounds. This is fixture initialization and normal-rate
+control, not a new production constraint or force correction.
+
+The combined branch also changed the mass reference for every ordinary rope
+body while adding hinged assemblies. An isolated control retaining the existing
+ordinary-body reference passes the unchanged loose-plug and waist-reel checks;
+the broader change fails both. Limit the new native centre-of-mass model to
+actual hinged assemblies, where the coupled response needs it. Ordinary ropes
+retain their established mass-origin approximation; improving that approximation
+is separate work with its own contact and closing-speed evidence. The current
+3 m/s solver closing bound, 5 m/s loose-plug acceptance and waist-reel tolerance
+remain unchanged.
+
+Other combined fixtures retain their actual actions and bounds. The nomad claim
+aims at a real panel within the existing 2.5 m reach, rather than empty air in
+the old spar envelope from 2.8 m away. The fabric comparison sheets the full
+sail broadside to the same world wind with a real cleated line, accounting for
+the deck having turned during the earlier fabric drift; a freely luffing sail
+is not a matched maximum-drive comparison. The quarter-force bound is retained.
+The fitting check puts a removed hook aside before fitting a larger shield;
+strip-and-fit uses the existing edge rings for hooks, preserving panel space
+for batteries and panels. Free placement remains covered through actual hands.
+
+### Native hinge response at the sand (2026-10-20)
+
+Use the same free hinge degrees of freedom for the rope iteration's initial
+velocity and the runner's support/contact response. Aerodynamic impulses
+already on the boom contain relative motion that the native hinge will block.
+Project both current and expected virtual motion through the assembly matrix.
+The runner takes a fresh native assembly snapshot, independent of whether
+ropes exist, so untying the last line cannot change its support. Resolve
+force/torque coupling once per runner tick using six root impulse responses;
+use the whole supported mass for spring/damping coefficients. Apply native
+contact impulses only on the hull; Jolt supplies the real hinge reactions.
+Non-hinged craft retain their ordinary response and no tuning changes.
+
+Measured in isolation with the same fixed sheet: 30/60/120 Hz reaches
+2.907/2.908/2.908 m/s after 51.26/51.30/51.32 m, with roll
+0.93/0.85/0.82 degrees, within the existing rate bounds. The four-minute
+Sail 7 gust/turn/seam/origin-shift check passes in 95 s when its active
+helmsman works the full driving sheet path, as other active sailing fixtures
+already do. All motion, crossing and rate acceptance bounds remain unchanged.
+A conservative retained-side pilot crosses too few seams even over eight
+minutes; extending duration was rejected. No production auto-trim is added.
+
+Combined focused checks pass: sailing aboard (Sail 11, 71 s), visible tow
+(Sail 9, 28 s), rig save/load (Saves 16, 27 s), and mixed skates/hover
+(Sail 19, 14 s). These retain the existing motion, health, save drift and
+mixed-support bounds. Full combined CI remains the landing gate.

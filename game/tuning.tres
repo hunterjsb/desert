@@ -3,6 +3,8 @@
 [ext_resource type="Script" path="res://game/core/tuning.gd" id="1_tuning"]
 
 [resource]
+deed_fairlead_n = 10.0
+deed_fairlead_seconds = 1.0
 script = ExtResource("1_tuning")
 run_seed = 0
 moon_circumference = 150000.0
@@ -172,3 +174,37 @@ face_shaded = 0.1
 face_cup = 1.3
 
 deed_release_lines = 2
+boom_hinge_drag = 0.8
+boom_root_clearance = 0.01
+receiver_reach_m = 1200.0
+receiver_w = 0.5
+receiver_band_khz = 40.0
+receiver_side_gain = 0.08
+receiver_meter_steps = 8
+receiver_approach_m = 60.0
+receiver_arrive_m = 15.0
+receiver_faint = 0.2
+receiver_strong = 0.6
+receiver_signal_min = 0.01
+receiver_deed_strength = 0.05
+receiver_storm_loss = 0.5
+receiver_hiss_clear = 0.035
+receiver_hiss_empty = 0.15
+receiver_hiss_storm = 0.25
+receiver_hiss_duck = 0.8
+rope_yank_m = 0.5
+rope_yank_seconds = 0.2
+rope_yank_recover_seconds = 0.4
+rope_yank_deed_m = 0.1
+rope_yank_deed_n = 20.0
+
+vault_height = 0.65
+vault_reach = 0.9
+vault_clearance = 0.02
+vault_seconds = 0.3
+vault_stamina = 4.0
+vault_settle_speed = 0.1
+
+board_surface_rise_m = 0.18
+board_surface_shapes = 64
+board_surface_reach_m = 16.0

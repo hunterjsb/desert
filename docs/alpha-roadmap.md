@@ -1,6 +1,6 @@
 # Toward 1.0 Alpha
 
-Proposed release scope, 2026-10-19. This is a planning map, not a claim that
+Release direction and status, updated 2026-10-20. This is a planning map, not a claim that
 everything below is built or approved for implementation. The vision and each
 system's PRD remain the design sources. A full Alpha means a complete playable
 game loop with progression and conclusions; final art and final balance can follow.
@@ -58,7 +58,7 @@ proposal for Alpha. The release sequence below chooses outcomes from this invent
 | --- | --- | --- |
 | 0.2.1 patch | Current sand/Nomad work and reported playtest fixes work together. | Combined CI, real trail/rope captures, start/save checks and smoke-tested builds on three OSes. |
 | 0.3 “Sanddune” minimum | A new player can travel, sail, salvage and maintain a camp without developer guidance. | Tutorial playtest; explicit line management and understood board/rig speeds; storm preparation and recovery; measured rendering budget. |
-| 0.4 “Spaceport” | Next named minor release; scope remains to be selected, with unfinished Sanddune stretch work eligible. | Agree its playable outcome and acceptance checks when selecting scope. |
+| 0.4 “Spaceport” | One-line salvage kite as a defining feature; further navigation and suit work remain candidates, with unfinished Sanddune stretch work eligible. | Demonstrate launch, board travel, recovery and camp anchoring; select the remaining scope and acceptance checks. |
 | Camp progression | Salvage and farming make the camp progressively self-sufficient. | Audit remaining crop roster, propagation, processing and equipment against the farming PRD; demonstrate sustainable clear/night/storm power, water and food. |
 | Exploration progression | Better gear opens meaningful new journeys across latitude and history. | Audit biome/era loot and thermal gates; complete agreed instrument and navigation dependencies; prove viable trips and returns with ordinary finds. |
 | Conclusions | Long runs have discoverable destinations and outcomes. | Choose and implement a coherent ending ladder and its prerequisites; save/resume each route and record completion/unlocks. |
@@ -71,7 +71,8 @@ They can be split into named minor releases after their scope is agreed.
 
 **Agreed, 2026-10-19:** the Sanddune outcome above is a bare minimum, with stretch
 goals that may ship in Sanddune or move to **0.4 “Spaceport”**. The name Spaceport is
-reserved; its feature scope is open.
+reserved; the later agreement targets its defining salvage kite, while the rest of
+its feature scope remains open (see the consolidated register below).
 
 The minimum has three connected acceptance goals:
 
@@ -99,6 +100,97 @@ blocking Sanddune.
 These are candidates for prioritization, not an implementation commitment or a
 requirement to finish the full crop roster in Sanddune. Each selected goal needs
 its system design decisions and a concrete playtest outcome before work begins.
+
+## Consolidated feature register
+
+This register carries forward the later kite, camp and opening discussions so they
+are visible here even while their detailed design records remain on development
+branches. It supersedes older claims above that Spaceport has no selected feature.
+System PRDs still govern implementation; move the corresponding decisions into
+current PRDs before building each feature. No release dates are assigned.
+
+**Status definitions:** **Built** means integrated on verified master, not necessarily
+published or installed in the play build. **In progress** means source work or a
+prototype exists separately and still needs integration/acceptance. **Planned** means
+agreed direction without a complete implementation. **Exploratory** means a possible
+design, with its inclusion and details undecided. Release targets express intent;
+they do not turn a prototype into a shipping feature.
+
+### 0.3 “Sanddune”: learn, depart, discover, return
+
+Finish more of the ordinary expedition loop before moving to Spaceport. Immediate
+fixes may ship as patches on the way to this named minor release.
+
+| Feature | Status as of 2026-10-20 | Target and remaining evidence |
+| --- | --- | --- |
+| Core travel, modular camp, sailing, survival, salvage, saves and deeds | **Built**, with the limitations in the system inventory above. | Sanddune foundation; continue real playtests rather than treating the presence of each system as a complete expedition. |
+| Physical waist-line selection and release | **Built**: carry-view hover/select, selected-line reeling and timed release-all preserving momentum. | Sanddune minimum; keep normal sailing viable while actively controlling one line. Persistent crosshair statistics and gaze selection were rejected. |
+| Surveyor's Guide and departure guidance | **Built**: carried physical guide with a short first expedition; current kit is unchanged. | Sanddune onboarding foundation. This does not implement the pod or remove starting supplies. |
+| Cheap survey receiver | **Built**: battery-powered directional signals from real ruin beacons, persistent acquisition and Follow the Signal deed. | Sanddune discovery foundation. More receiver tiers remain planned; this is not yet a camp-homing receiver. |
+| Salvager's personal shield | **Built**: carried personal shield replaces the former camp shield in this start. | Sanddune start identity; useful and reachable first salvage still needs broader opening playtests. |
+| Sailing control and physics corrections | **In progress**: sole-line automatic reeling, brief yank through ordinary rope forces, Varran stake/layout changes, real hinged boom and routed sheet. Mixed skates/hover/keel assembly is **built on master**, with native checks passed; the physical boom overhaul remains separate. | Sanddune fixes. Remove artificial trim/angle controls and hidden towing helpers; demonstrate predictable swing, loads, board catch-up/counterbalance, all sailing scenarios and save/resume. |
+| Placeable rope hook and player routing | **In progress**: actual hook item can fit suitable solid faces and redirect an ordinary line; source and focused checks exist. | Sanddune control clarity. Preserve line identity, length, load, visible route and save state; no cosmetic or invisible special scenario hook. |
+| Short visual sailing notes and UI consistency | **In progress**: four real screenshot pages with brief captions and shared UI fonts, separately committed. | Sanddune teaching. Validate readability in the integrated candidate and keep it sailing-specific. |
+| Deck boarding and exposed wreck traversal | **Built**: sprint/jump ledge vault passed all 19 platform/build checks. Exposed wreck panel collision, board-on-roof support and the Hopper ramp repair are on master after all nine Linux groups passed; the unchanged full kit-opening check also passed locally. Native platform verification for the wreck repair is queued; cross-platform acceptance is still pending. | Sanddune movement polish. Preserve physical contact, walkable tops and cut openings. Near-level mixed-deck baselines cover up to 108 pieces; a 16-piece powered deck boarding and a 27-piece offset-mount battery transition also passed. Mounted rigs and steep dunes still need combined coverage. |
+| Developer playtest controls | **In progress**: wind setting/reset and battery charge controls implemented separately. | Support Sanddune checks; developer controls are not a replacement for viable ordinary play. |
+| Marked camp residency | **In progress, foundation only**: shared terrain-residency logic has a verified separate implementation; retaining a distant camp is **not built**. | Sanddune expedition priority. Implement bounded camp support, persistence and return before claiming scouting can safely leave camp behind. Exact acceptance scope remains to be settled. |
+| Homing beacon and basic camp return | **Planned direction**: small chassis-mounted marker, known player/camp locations, no automatic terrain survey. | Sanddune navigation priority leading toward Spaceport; hardware, acquisition, power, range, count and final display are undecided. Camp persistence and a usable return cue must work together. |
+| Continued-release line gathering and batch mooring | **Exploratory**: continue the existing untie action to collect separate ends in hand, then tie or drop them together. | Sanddune control candidate, not an implemented “stake all” shortcut. No dedicated binding; preserve each line's length, load and identity. Decide hand/bundle and tie/drop behavior first. |
+
+The marked camp should include its attached chassis assembly and claimed loose
+belongings inside its attached shield's configured envelope. Shield shutdown or a
+brownout must not erase membership. Support connected stakes, ropes, guides and
+gear extending outside the bubble without claiming untouched salvage. Resolve
+membership changes, distant terrain/collision, origin precision, weather, power,
+farming, save/resume and a bounded simulation budget. Full-detail distant rendering
+is not required; simply preventing item deletion is not sufficient.
+
+Repair/salvage progression, one complete farming/processing chain and further
+navigation remain the stretch candidates listed above. They can move to Spaceport;
+the full crop roster is not a Sanddune gate.
+
+### 0.4 “Spaceport”: one-line kite and the next exploration layer
+
+| Feature | Status as of 2026-10-20 | Scope and remaining evidence |
+| --- | --- | --- |
+| Salvage kite | **In progress**: isolated prototype and verification exist; not integrated or accepted as finished. **Agreed Spaceport defining feature.** | Found, contained light rig using existing rope/attachment systems. One controllable tether, item-owned bridle, board/rider as keel and counterbalance. Wind, line length and rider position govern flight; looking around must not secretly steer it. |
+| Kite at camp | **Planned** as part of the same kite feature. | Tie it to camp as a moving decorative landmark with possible small pull. Demonstrate launch, board travel, reel/recovery, camp anchoring and finding it again from a nearby dune. Weather and terrain may still obscure it; it complements electronic navigation. |
+| Wind-powered board energy behavior | **Planned requirement**, existing motor/hover accounting is a foundation. | Wind supplies propulsion; hover/equipment still draw power and powered catch-up remains available. Measure energy under real towing, steering and motor assistance rather than assuming speed alone determines draw. |
+| Camp navigation equipment and receiver progression | **Planned direction**, with the cheap survey receiver already built. | Extend the Sanddune camp-return foundation; select additional tiers and supported signals without replacing the existing radio. Starcom expansion is a possible later connection, not a built quest dependency. |
+| Suit and wrist instrument | **Exploratory Spaceport candidate**. | Carry-view equipment could give the headlamp, harness, protection and beacon receiver physical homes. A wrist field instrument could show self and known beacons on an initially blank/no-data display instead of a permanent minimap. No full HUD rewrite, fixed device or extra survival meter is approved. |
+
+Multi-line kite controls are outside the first kite. They require a deeper control
+design and quicker line selection before adoption. Suit battery costs, upgrades,
+physical storage limits, radiation/atmospheric protection and the HUD's eventual
+relationship to equipment need separate design decisions. Existing baseline
+protection remains unchanged. “Spaceport” does not itself commit to a functional
+spaceport destination or an orbital travel system.
+
+### Meaningful arrivals and repeat runs — release placement undecided
+
+These are preserved commitments and ideas, not implicit Sanddune or Spaceport
+release gates. Select a bounded slice and its release explicitly after design.
+
+| Feature | Status | Intended experience and open decisions |
+| --- | --- | --- |
+| Surveyor pod arrival | **Planned, agreed direction**; guide-first step is already built. | Arrive for a purpose, crash-land in a pod, dismantle recoverable structure into the chassis and travelling camp. Use normal physical assembly. Design landing presentation, pod layout, recoverable parts, carried supplies, site placement and saving during arrival/teardown. Do not remove today's starter kit before the replacement works. |
+| Starter camp cloth sail | **Planned candidate**, not built. | A small cloth in the existing frame makes the first camp a sailing toy and teaches the wind. Define fitting and balance before adding it to an opening. |
+| Seeded pod/loadout variation | **Planned direction**. | Vary circumstances and usable pieces while retaining agency, origin identity and essential survival. Preserve the resolved opening through save/resume; loading must not reroll it. |
+| Deed-unlocked origin variants | **Planned direction**, exact model undecided. | Reuse deeds/profile unlocks for selectable variants within an origin; favor tradeoffs rather than strictly stronger kits. Define concrete variants, actions and unlocks at implementation. |
+| Salvager's first salvage opportunity | **Planned direction**, existing seeded wreck-field placement is a foundation. | Start near varied ruins/wrecks whose reachable, useful finds shape the first home. Check actual access, hazards and viability rather than proximity alone. |
+| Other origins' meaningful arrivals | **Planned direction**. | Give each an appropriate reason, situation and physical equipment source; do Surveyor first rather than copy its pod to every origin. |
+| Choices during descent | **Exploratory, back burner**. | An optional way to express opening variation. No decision interface or random reward selection is approved. |
+| Tinkering with a carried radio or console while travelling | **Exploratory future interaction**. | Existing instruments are the foundation; select useful interactions and availability without requiring late equipment to make the opening interesting. |
+
+### Beyond these releases
+
+Keep the broader inventory and full Alpha audit below active: sustainable farming
+and processing, repair and equipment progression, thermal travel, richer exploration,
+god/module interactions and a selected set of actual conclusions. Their dependency
+groups remain unnumbered until their release scope is chosen. Input remapping,
+accessibility, persistence, performance and supported-platform acceptance apply
+throughout. A named release is complete only when its combined playable outcome
+passes, not when every branch has a commit.
 
 ## Scope audit before committing the full Alpha
 

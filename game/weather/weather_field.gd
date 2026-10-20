@@ -29,6 +29,11 @@ var _gust_evolve: float
 ## time. Their sum stays shorter than the mean, so the wind never reverses.
 var _mean: Vector2
 var _sway: Array[Vector3] = []
+var _generated_mean := Vector2.ZERO
+var _generated_sway: Array[Vector3] = []
+var _wind_from := 0.0
+var _wind_drift := Vector2.ZERO
+var _wind_changed := false
 ## The anomaly's lattice: patches of the moving air, spans of time, and the
 ## chance each pair holds one (anomalies_near).
 var _seed: int
@@ -87,6 +92,8 @@ func _init(run_seed: int, tuning: Tuning) -> void:
 	# Counter-rotating, at periods that never line up.
 	_sway.append(Vector3(tuning.prevailing_sway, TAU / period, rng.randf() * TAU))
 	_sway.append(Vector3(tuning.prevailing_sway * 0.6, -TAU / (period * 2.7), rng.randf() * TAU))
+	_generated_mean = _mean
+	_generated_sway.assign(_sway)
 
 
 ## The run's long-term wind heading, radians: the dunes face it.
@@ -103,10 +110,35 @@ static func _heading(rng: RandomNumberGenerator) -> float:
 
 ## How far the air, and every storm in it, has moved since the run began.
 func drift_at(t: float) -> Vector2:
-	var d := _mean * t
+	var d := _wind_drift + _mean * (t - _wind_from)
 	for s in _sway:
-		d += Vector2(sin(s.y * t + s.z) - sin(s.z), cos(s.z) - cos(s.y * t + s.z)) * (s.x / s.y)
+		d += Vector2(sin(s.y * t + s.z) - sin(s.y * _wind_from + s.z),
+			cos(s.y * _wind_from + s.z) - cos(s.y * t + s.z)) * (s.x / s.y)
 	return d
+
+
+## Change the test wind without teleporting the storm field it carries.
+func set_test_wind(velocity: Vector2, t: float, reset := false) -> void:
+	var was := drift_at(t)
+	_mean = _generated_mean if reset else velocity
+	_sway.assign(_generated_sway if reset else [])
+	_wind_from = t
+	_wind_drift = was
+	_wind_changed = true
+
+
+func wind_state() -> Dictionary:
+	return {"mean": _mean, "sway": _sway.duplicate(), "at": _wind_from, "drift": _wind_drift} if _wind_changed else {}
+
+
+func restore_wind(state: Dictionary) -> void:
+	if state.is_empty():
+		return
+	_mean = state.mean
+	_sway.assign(state.sway)
+	_wind_from = state.at
+	_wind_drift = state.drift
+	_wind_changed = true
 
 
 ## The prevailing wind, m/s, in world x and z. Storms ride it.

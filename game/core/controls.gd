@@ -6,12 +6,13 @@ extends Node
 ## {action} drawn as its key, and what it does in a word or two. The rest is
 ## learned where it's needed (UIRoot.teach) or by doing.
 const HELP := [
-	["MOVING", [["{move_forward}{move_left}{move_back}{move_right}", "move"], ["{sprint}", "sprint"],
+	["MOVING", [["{move_forward}{move_left}{move_back}{move_right}", "move"], ["{sprint}", "sprint / vault"],
 		["{auto_walk}", "auto-walk"], ["{jump}", "jump"], ["{crouch}", "crouch, slide"],
 		["{ride}", "board on or off, up from the helm"]]],
 	["HANDS", [["{hands_grab}", "take, put down"], ["{interact}", "use"], ["{hands_throw}", "throw"],
 		["{hands_rotate}", "turn what you hold"], ["{bring_near} / {push_out}", "nearer, further"],
 		["{reel_in} / {pay_out}", "reel in, pay out; tune a radio"],
+		["{rope_yank}", "yank the worked rope"],
 		["{tune_fine_up} / {tune_fine_down}", "fine tune"], ["{volume_up} / {volume_down}", "radio volume"]]],
 	["YOU", [["{inventory}", "what you carry"], ["{headlamp}", "headlamp"]]],
 	["GAME", [["{ui_cancel}", "back, menu"], ["{quick_save}", "quick save"], ["{quick_load}", "quick load"],
@@ -67,6 +68,7 @@ const KEYS := {
 const BUTTONS := {
 	"hands_throw": MOUSE_BUTTON_LEFT,
 	"hands_rotate": MOUSE_BUTTON_RIGHT,
+	"rope_yank": MOUSE_BUTTON_RIGHT,
 	"reel_in": MOUSE_BUTTON_WHEEL_UP,
 	"pay_out": MOUSE_BUTTON_WHEEL_DOWN,
 }

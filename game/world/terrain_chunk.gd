@@ -262,3 +262,12 @@ func collision_data() -> PackedFloat32Array:
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_PREDELETE and _mesh.is_valid():
 		RenderingServer.free_rid(_mesh)
+
+
+## Exclude triangle-based sand from solid-surface queries; sand has its own
+## analytic height and Jolt reports a heightmap once per intersected triangle.
+func ground_bodies() -> Array[RID]:
+	var out: Array[RID] = []
+	for body in _bodies:
+		out.append(body.get_rid())
+	return out

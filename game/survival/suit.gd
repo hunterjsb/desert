@@ -503,7 +503,8 @@ func _show_looks(shown: Array[Array]) -> void:
 	for i in shown.size():
 		var look := _looks[i]
 		var thing: RigidBody3D = shown[i][0]
-		var now := [thing, _brief(shown[i]), thing is Device and (thing as Device).powered]
+		var now := [thing, _brief(shown[i]), thing is Device and (thing as Device).powered,
+			(thing as SurveyReceiver).meter_step if thing is SurveyReceiver else null]
 		if now != look.key:
 			look.key = now
 			look.show_thing(thing)

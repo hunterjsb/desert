@@ -387,3 +387,11 @@ docs, so this PRD follows it as direction.
   farming manages light and water with lamps and humidifiers ([Farming](farming.md#progression-agreed)).
   "There is no heat shield in the game yet." *Follows the session.* Not said what blocks radiation, or
   whether a shield blocks humidity (a storm crop's input) as it blocks the storm's wind and dust.
+
+## The Salvager's personal shield (Hunter, 2026-10-19)
+
+The Salvager now uses the existing carried personal shield, as the Varran does, with
+an independent full battery. This supersedes the earlier light-shield-on-plate
+starting arrangement for new Salvager runs. The personal shield retains its existing
+2.5 m radius, 3 W clear/50 W storm draw and 85% wind protection. No shield tuning or
+protection mechanic changes. Its portability supports scouting before finding a home.

@@ -108,7 +108,7 @@ func _draw() -> void:
 	var body := hovered if is_instance_valid(hovered) else chosen
 	var count := reel.connected_ropes().size()
 	var stake_only := waist.tied.size() == 1 and waist.tied[0] is Stake and reel.waist_lines().is_empty()
-	var hint := "Stake at your waist" if stake_only else "Hover a rope, click to select"
+	var hint := "Stake at your waist" if stake_only else ("Sole rope ready" if count == 1 else "Hover a rope, click to select")
 	_words(Vector2(32.0, 42.0), "%d connected rope%s · %s" % [count, "" if count == 1 else "s", hint], size.x - 64.0)
 	var context := handling
 	if context == "" and waist.untying >= 0.0:
@@ -119,6 +119,8 @@ func _draw() -> void:
 		context = ("Preview · " if body == hovered and body != chosen else "Selected · ") + reel.waist_description(body)
 		if reel.in_hand() != null:
 			context += " · held line takes priority"
+	if context == "" and count == 1 and not stake_only:
+		context = "Sole rope · ready to reel"
 	if context == "":
 		context = "No rope selected"
 	_words(Vector2(32.0, 74.0), context, size.x - 64.0)
@@ -135,8 +137,8 @@ func _ink(name: StringName) -> Color:
 
 
 func _words(at: Vector2, text: String, width: float, color := &"text") -> void:
-	var font := get_theme_font(&"font", &"AsideValue")
-	var font_size := get_theme_font_size(&"font_size", &"AsideValue")
+	var font := get_theme_font(&"font", &"AsideName")
+	var font_size := get_theme_font_size(&"font_size", &"AsideName")
 	draw_string_outline(font, at, text, HORIZONTAL_ALIGNMENT_LEFT, width, font_size,
 		get_theme_constant(&"outline_size", &"Label"), _ink(&"shadow"))
 	draw_string(font, at, text, HORIZONTAL_ALIGNMENT_LEFT, width, font_size, _ink(color))
