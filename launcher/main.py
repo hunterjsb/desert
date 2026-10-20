@@ -693,6 +693,7 @@ def main() -> int:
     app = QApplication(sys.argv)
     app.setApplicationName("desert-launcher")
     app.setApplicationDisplayName(APP_NAME)
+    app.setDesktopFileName("desert-worktree-picker")
     app.setFont(QFont("Noto Sans", 10))
     app.setWindowIcon(QIcon(str(resource_path("launcher/assets/desert-launcher.svg"))))
     window = Launcher()
