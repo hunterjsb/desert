@@ -47,7 +47,9 @@ are distinct silhouettes. These are first exterior slices, not completed quests 
 Checks cover radial upper approaches, chunk height agreement, saved projections and streamed
 arrival with cargo resting on physical gallery ground. Twelve loot draws per summit verify
 that surviving supplies are reachable on the actual foundation. GPU captures cover spawn, both summits
-at 15 km and 150 m, and the volcano at 4 km. GPU wind-map heights agree with the CPU within
+at 15 km and 150 m, and the volcano at 4 km and 800 m. On this approach the broad
+volcanic shoulder hides the observatory from the foot; the rails emerge during the climb,
+visible at 800 m before the near mesh takes over. GPU wind-map heights agree with the CPU within
 7 mm in those captures. Mountain surfaces suppress the shading of dunes buried beneath them.
 The look harness is `look/horizons/horizons.tscn`; `--storm` exercises obscured views.
 

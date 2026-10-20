@@ -22,7 +22,7 @@ func _ready() -> void:
 	for layer: CanvasLayer in world.find_children("*", "CanvasLayer", true, false):
 		layer.visible = false
 	await shoot("spawn")
-	for shot in [[&"starcom", 15000.0], [&"starcom", 150.0], [&"observatory", 15000.0], [&"observatory", 4000.0], [&"observatory", 150.0]]:
+	for shot in [[&"starcom", 15000.0], [&"starcom", 150.0], [&"observatory", 15000.0], [&"observatory", 4000.0], [&"observatory", 800.0], [&"observatory", 150.0]]:
 		var mark := world.shape.history.landmark(shot[0])
 		var p := Sphere.toward(mark.p, mark.bearing + 0.5, shot[1] / world.shape.history.radius)
 		world.travel(rad_to_deg(Sphere.latitude(p)), rad_to_deg(Sphere.longitude(p)), 0)

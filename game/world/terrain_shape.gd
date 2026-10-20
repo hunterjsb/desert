@@ -234,7 +234,7 @@ func shade(x: float, z: float, ground: float, profiles: Array[Landforms.Hill] = 
 	var sand := _sand_on(x, z, land)
 	var saddle := 1.0 - SADDLE_DEPTH + SADDLE_DEPTH * _saddle.get_noise_2d(u * WANDER_STRETCH, v)
 	var bare := lerpf(BARE.x, BARE.y, sand)
-	var h := ground - mountain - land * _land_height
+	var h := ground - land * _land_height
 	var s := _crests(u, v, _meander, _rise * sand * saddle, bare, h)
 	var fork := smoothstep(0.05, 0.45, _fork_patch.get_noise_2d(u, v)) * sand
 	if fork > 0.0:
