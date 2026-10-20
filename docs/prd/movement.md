@@ -1632,3 +1632,44 @@ Combined focused checks pass: sailing aboard (Sail 11, 71 s), visible tow
 (Sail 9, 28 s), rig save/load (Saves 16, 27 s), and mixed skates/hover
 (Sail 19, 14 s). These retain the existing motion, health, save drift and
 mixed-support bounds. Full combined CI remains the landing gate.
+
+### Repeatable tacks in the sailing stability fixture (2026-10-20)
+
+The four-minute gust fixture previously launched wherever its open-sand search
+finished, while terrain loading advanced the gust clock by a machine-dependent
+amount. Its repeated twenty-second hard-tack pilot can slow almost to rest between
+grid boundaries despite passing the motion checks. A controlled first eighty
+seconds at a fixed launch clock retained all 5.5 m² of sail, raised, with
+endpoint loads below 229 N; sail damage was not demonstrated in that diagnostic.
+An unchanged local repeat crossed four seams, three during its first minute and the fourth only late in the run; combined CI crossed two.
+Neither result establishes a runtime force failure or acceptable sailing feel.
+
+Keep the original open-sand lane and fix the launch clock. During a reversal,
+the fixture pilot eases the ordinary sheet at the normal reel rate while the
+hull is more than fifteen degrees from its next course, then resumes its existing
+sheet tending. The final five seconds ease the ordinary sheet to luff and settle
+inside the same four-minute span. Heel remains monitored throughout; the existing
+eight-corner support check verifies recovery after easing, not eight contacts
+on every underway tick. It does not rotate the boom or change either body's
+velocity.
+Count only actual changes of world-coordinate chunk under the moving deck;
+explicit origin shifts remain a separate counter. Give each physical turn and
+normal-rate sheet haul enough time for a reach: six forty-second legs retain the same four-minute duration and turn both ways.
+Keep the four-seam minimum and every speed, jolt, spin, heel, penetration and rate
+bound unchanged. Unassisted control and recovery from a stalled tack remain
+playtest gates.
+
+The complete focused check passes in 96 s: eleven genuine seams and three
+origin shifts, at most 4.12 m/s, 0.095 m/s tick change, 0.67 rad/s spin,
+12.3 degrees roll and 0.014 m penetration. Just before the final ease, five
+corners carried the load at 3.623 degrees roll; after it, sixteen corners
+supported the hull at 0.373 degrees. All six reach endpoints retained the full
+5.5 m² sail, raised. The unchanged 30/60/120 Hz reach remains
+2.907/2.908/2.908 m/s after 51.26/51.30/51.32 m, with
+0.93/0.85/0.82 degrees roll.
+
+A discarded setup thirty metres before a nearby grid corner moved the route
+onto different sand and produced a 0.362 m/s tick change, above the unchanged
+0.3 bound. The original-lane fixture correction does not resolve or classify
+that separate contact case. It does not establish stability on every slope
+or replace unassisted sailing acceptance.
