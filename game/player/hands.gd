@@ -467,7 +467,8 @@ func turn(by: Vector2) -> bool:
 ## Whether rotate has the mouse: held down, with something in your hands, and
 ## the mouse looking rather than free to click.
 func rotating() -> bool:
-	return (held != null or grasp.body != null) and not Controls.mouse_free and Controls.held(&"hands_rotate")
+	return (held != null or grasp.body != null) and reel.in_hand() == null \
+		and not Controls.mouse_free and Controls.held(&"hands_rotate")
 
 
 ## Takes a body straight into your hands from wherever it is, if they're free:
@@ -574,6 +575,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("hands_throw") and not Controls.mouse_free and punch():
 		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("rope_yank", false, true) and not Controls.mouse_free \
+			and grasp.body == null and (held == null or reel.in_hand() != null):
+		if reel.yank():
+			get_viewport().set_input_as_handled()
 	elif _tunes(event):
 		get_viewport().set_input_as_handled()
 	# Exactly, so bringing near or pushing out never reels a line too.

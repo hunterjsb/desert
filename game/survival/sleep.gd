@@ -157,7 +157,7 @@ func storm_due() -> bool:
 func radio() -> Radio:
 	var at := _world.player.camera.global_position
 	for each: Radio in get_tree().get_nodes_in_group(Radio.GROUP):
-		if each.world != _world or each.wrecked() or each.global_position.distance_to(at) > Broadcast.EARSHOT:
+		if each is SurveyReceiver or each.world != _world or each.wrecked() or each.global_position.distance_to(at) > Broadcast.EARSHOT:
 			continue
 		if each.powered and (_world.power.pool_wh(each) > 0.0 or each.production_w() > 0.0):
 			return each

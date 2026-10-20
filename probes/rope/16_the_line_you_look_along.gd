@@ -31,6 +31,10 @@ func run() -> void:
 	drawn = await _reeled(moored)
 	check(absf(drawn.line - 2.0 * Reel.NOTCH) < 0.01 and absf(drawn.trim) < 0.01,
 		"choosing the stake's line, reeling draws it in, the trim left be (%.2f m, %.2f m)" % [drawn.line, drawn.trim])
+	hands.reel.choose(null)
+	world.player.waist.untie(moored.ends[1])
+	check(hands.reel.line() == sheet.rope and hands.reel.chosen_body() == null and hands.reel.notch(1),
+		"a sole remaining rope reels without creating an explicit choice")
 
 
 ## Two notches on the chosen line: how much the sail's trim and the stake's line each took in, m.

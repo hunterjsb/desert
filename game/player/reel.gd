@@ -36,6 +36,10 @@ var _player: Player
 var _tuning := Tuning.current()
 var _coil: MeshInstance3D
 var _sound: AudioStreamPlayer
+var _yank_left := 0.0
+var _yank_wait := 0.0
+var _yank_m := 0.0
+var _yank_n := 0.0
 
 
 func _ready() -> void:
@@ -61,13 +65,16 @@ func _ready() -> void:
 	add_child(_sound)
 
 
-## A held line wins; otherwise only the explicit carry-view choice is worked.
+## A held line wins; one connection needs no choice, several keep the chosen line.
 func line() -> Rope:
 	var held := in_hand()
 	if held != null:
 		return held
 	var chosen := chosen_body()
-	return _line_of(chosen) if chosen != null else null
+	if chosen != null:
+		return _line_of(chosen)
+	var connected := connected_ropes()
+	return connected[0] if connected.size() == 1 else null
 
 
 ## Live waist ends that can be worked individually, in tie order.
@@ -164,6 +171,7 @@ func waist_description(body: RigidBody3D) -> String:
 
 ## A notch in, or out for a negative `by`. Says whether there was a line to work.
 func notch(by: int) -> bool:
+	_yank_left = 0.0
 	var now := line()
 	if now == null:
 		if not connected_ropes().is_empty():
@@ -176,6 +184,24 @@ func notch(by: int) -> bool:
 	# sail can't take, the line won't give past all there is of it.
 	var most := INF if now.hauls.is_valid() else now.full
 	wanted = clampf(wanted - by * NOTCH, minf(SHORTEST, now.length), most)
+	return true
+
+
+## A short haul does work through the rope; it never applies a body impulse.
+func yank() -> bool:
+	if not working() or _yank_wait > 0.0:
+		return false
+	var now := line()
+	if now == null:
+		if not connected_ropes().is_empty():
+			_player.hands.say(CHOOSE_LINE)
+		return false
+	rope = now
+	wanted = maxf(minf(SHORTEST, now.length), now.length - _tuning.rope_yank_m)
+	_yank_left = _tuning.rope_yank_seconds
+	_yank_wait = _tuning.rope_yank_seconds + _tuning.rope_yank_recover_seconds
+	_yank_m = 0.0
+	_yank_n = 0.0
 	return true
 
 
@@ -195,10 +221,18 @@ func stroke(body: Node) -> Vector3:
 
 func _physics_process(delta: float) -> void:
 	walk_in = Vector2.ZERO
+	_yank_wait = maxf(0.0, _yank_wait - delta)
 	if rope != null and (not _player.world.ropes.ropes.has(rope) or line() != rope):
 		rope = null
+		_yank_left = 0.0
+	var yanking := _yank_left > 0.0
+	var stroke_seconds := minf(delta, _yank_left) if yanking else delta
+	_yank_left = maxf(0.0, _yank_left - delta)
 	var off := wanted - rope.length if rope != null else 0.0
 	if absf(off) < 1e-5 or not working():
+		if yanking and (not working() or _yank_left == 0.0):
+			_yank_left = 0.0
+			wanted = rope.length if rope != null else 0.0
 		# A stroke under way finishes; the next starts afresh.
 		if _stroke > 0.0:
 			_stroke += delta * PACE / NOTCH
@@ -206,6 +240,8 @@ func _physics_process(delta: float) -> void:
 				_stroke = 0.0
 		return
 	var pace := PACE
+	if yanking:
+		pace = _tuning.rope_yank_m / maxf(_tuning.rope_yank_seconds, 0.001)
 	_way = signf(-off)
 	if off < 0.0:
 		# Slower as the pull nears your strength, a sheet's sail's too: what
@@ -214,13 +250,20 @@ func _physics_process(delta: float) -> void:
 		pace *= 1.0 - maxf(strain, smoothstep(STRAIN, 1.0, rope.haul_n / _tuning.hand_strength))
 		var far := _far(rope).global_position - _player.global_position
 		walk_in = Vector2(far.x, far.z).normalized() * PACE * strain
-	var step := clampf(off, -pace * delta, pace * delta)
+	var step := clampf(off, -pace * stroke_seconds, pace * stroke_seconds)
 	# What a sheet takes in hauls its sail instead, and the line needn't.
 	var left: float = rope.hauls.call(step) if rope.hauls.is_valid() else step
 	left = minf(left, rope.full - rope.length)
 	wanted -= step - left
 	rope.length += left
 	rope.strand.set_length(rope.length)
+	if yanking and step < 0.0:
+		_yank_m -= step
+		_yank_n = maxf(_yank_n, maxf(rope.tension, rope.haul_n))
+		if _yank_m >= _tuning.rope_yank_deed_m and _yank_n >= _tuning.rope_yank_deed_n:
+			Deeds.done(_player.world, &"quick_haul")
+	if yanking and _yank_left == 0.0:
+		wanted = rope.length
 	if _stroke == 0.0 and step != 0.0:
 		_rub()
 	_stroke += absf(step) / NOTCH

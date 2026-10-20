@@ -669,6 +669,12 @@ static var _current: Tuning
 @export var throw_speed: float = 6.0
 ## Your strength on what you hold too heavy to carry, or walk into, N.
 @export var hand_strength: float = 400.0
+## A yank is a short reel stroke, with the same strength limit as normal hauling.
+@export var rope_yank_m: float = 0.5
+@export var rope_yank_seconds: float = 0.2
+@export var rope_yank_recover_seconds: float = 0.4
+@export var rope_yank_deed_m: float = 0.1
+@export var rope_yank_deed_n: float = 20.0
 ## Having hold of something, a throw punches it where you look instead, a
 ## small shove to right a tipped rig with, N·s.
 @export var punch_impulse: float = 45.0
@@ -1182,6 +1188,25 @@ static var _current: Tuning
 ## about, catches this many times what its back would flat: a parachute's
 ## cup against a flat plate's drag.
 @export var face_cup: float = 1.3
+
+
+@export_group("Survey receiver")
+@export var receiver_reach_m: float = 1200.0
+@export var receiver_w: float = 0.5
+@export var receiver_band_khz: float = 40.0
+@export var receiver_side_gain: float = 0.08
+@export var receiver_meter_steps: int = 8
+@export var receiver_approach_m: float = 60.0
+@export var receiver_arrive_m: float = 15.0
+@export var receiver_faint: float = 0.2
+@export var receiver_strong: float = 0.6
+@export var receiver_signal_min: float = 0.01
+@export var receiver_deed_strength: float = 0.05
+@export var receiver_storm_loss: float = 0.5
+@export var receiver_hiss_clear: float = 0.035
+@export var receiver_hiss_empty: float = 0.15
+@export var receiver_hiss_storm: float = 0.25
+@export var receiver_hiss_duck: float = 0.8
 
 
 ## One shared instance, held here so probe overrides can't be dropped by the

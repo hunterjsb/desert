@@ -88,6 +88,10 @@ const RADIO_NIGHT := preload("res://assets/audio/radio_night.ogg")
 const RADIO_STATIC := preload("res://assets/audio/radio_static.ogg")
 const RADIO_TUNE := preload("res://assets/audio/radio_tune.ogg")
 const RADIO_PING := preload("res://assets/audio/radio_ping.ogg")
+# The field receiver: detents, a switch latch and a quiet contact pulse.
+const RECEIVER_SWITCH := preload("res://assets/audio/receiver_switch.wav")
+const RECEIVER_TICK := preload("res://assets/audio/receiver_tick.wav")
+const RECEIVER_PULSE := preload("res://assets/audio/receiver_pulse.wav")
 const RADIO_TONES := preload("res://assets/audio/radio_tones.ogg")
 # The weather station's hold music while there's nothing to report, and the
 # Stoker's furnace song on its frequency.

@@ -20,6 +20,7 @@ static var _kept := [
 	[ShieldGenerator, ["on", "smart", "size", "_up", "_since", "held_minutes"]],
 	# A save from before the dial kept "channel": setting it places the dial.
 	[Radio, ["on", "frequency", "volume", "target"]],
+	[SurveyReceiver, ["acquired_from", "scan_pending"]],
 	[Planter, ["tank_l", "split", "stored", "seeds", "ripened", "replanted", "banked", "dropped", "picked",
 		"fed_kcal", "_owed"]],
 	[Condenser, ["made_l"]],
@@ -132,6 +133,7 @@ func begin(data: Dictionary) -> Array[Vector2]:
 	# A resumed run has its own things: no new run's kit is set down in it.
 	world.set_meta(&"resumed", true)
 	world.time = data.time
+	world.weather.field.restore_wind(data.get("test_wind", {}))
 	world.began = data.get("began", 0.0)
 	world.taught = data.get("taught", false)
 	world.played = data.get("played", NAN)
@@ -325,6 +327,9 @@ func _take() -> Dictionary:
 	you.wounds = {"sick": player.vitals.wounds.sick, "shocks": player.vitals.wounds.shocks,
 		"sicknesses": player.vitals.wounds.sicknesses}
 	data.player = you
+	var test_wind := world.weather.field.wind_state()
+	if not test_wind.is_empty():
+		data.test_wind = test_wind
 	var things := []
 	var lines: Array[Line] = []
 	var cables: Array[Cable] = []

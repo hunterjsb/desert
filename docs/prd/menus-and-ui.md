@@ -585,3 +585,32 @@ The Guide's introductory hint uses local 20 px BBCode text, with a shorter first
 survey sentence, so it is readable at 720p without changing other hints or the
 reader. A second unseen 1280 by 720 capture shows both lines fitting without extra
 wrapping or clipping; the five reader pages retain the same measured heights.
+
+## Sailing playtest tools and visual instructions (Hunter, 2026-10-20)
+
+The sailing booklet should be a few actual game screenshots, each with a very
+short explanation of a sailing mechanic. It should not teach the whole game.
+Keep the physical booklet and existing menu/back behavior, use the existing UI
+type, and show current action bindings rather than fixed key names. The Surveyor's
+Guide remains a separate reader of its own pages.
+
+For repeatable playtests, the developer console should allow a steady prevailing
+wind by speed and bearing, with a reset to the generated wind, and setting charge
+on the held or looked-at battery/device pool. These commands mark a run as a dev
+run. Wind must be read by the shared field, forecasts and visual wind alike;
+battery commands change real cell charge, not the power-status flag. Gusts and
+front outflow remain real weather; changing prevailing wind keeps storm drift
+continuous. A saved dev run retains the changed wind and its drift offset.
+
+The new commands are `wind <m/s> [from degrees]`, `wind reset` and
+`charge <0-100>`. Direction is a compass bearing the wind comes from. Charge
+uses the held cell first, otherwise the held or looked-at device's connected
+power pool; it changes each cell's actual watt-hours. Both commands mark the
+run as dev. The wind's drift anchor survives save/resume, and switching wind
+or resetting it preserves the storm field's position at that instant.
+
+Focused checks: Dev 7 changes the real wind, resets it and saves/resumes its
+drift anchor (6 s); Dev 8 empties/refills a held cell and empties both cells
+in a deck pool (4 s). The existing one-theme check passed (6 s), and Saves 1's
+normal round trip passed (53 s). General rope-picker labels now use the shared
+Geist UI face rather than the numeric readout face.

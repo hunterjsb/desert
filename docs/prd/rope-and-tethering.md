@@ -656,3 +656,38 @@ terms and parallel-axis inertia. Actual impulses are applied only at real rope
 points; Jolt supplies the hinge reactions. This prevents the rope's stiffness
 and closing prediction from crediting translations or rotations blocked by the
 hinge, without imposing an angle target or duplicating reaction torque.
+## Sailing handling follow-up (Hunter, 2026-10-20)
+
+A sole live connected rope works without an explicit carry-view selection. A held
+line still wins; with several waist ropes the selected line is the one worked.
+Looking around does not change that choice. This supersedes the previous requirement
+to select even a single rope.
+
+The yank action gives the worked rope a short, faster haul through the existing
+strength-limited reel. It changes rope length over physics ticks, never the rig's
+rotation or either body's velocity directly. Its travel, duration and recovery are
+tuning data; slack takes up before a load can turn anything. It shares the physical
+hand stroke and rope sound. Rotating an ordinary held object keeps its existing
+interaction. Carry-view rope labels use the theme's UI type, with numeric readouts
+remaining in the established numeric style elsewhere.
+
+The earlier proposed batch transfer on planting a stake is on hold. Hunter is
+considering holding Use to untie successive waist ends into a hand-held bundle,
+then dropping or fastening the gathered ends through the normal interactions. No
+new dedicated batch-mooring key is wanted. Bundle representation and transfer
+semantics are still a design discussion; the sole-rope fallback and yank do not
+implement them.
+
+As built for this follow-up: the yank requests at most 0.5 m over 0.2 s,
+followed by 0.4 s recovery. The normal tension/hand-strength slowdown still
+applies; any remainder is cancelled when the stroke ends or a menu interrupts
+it. A held ordinary object retains its rotation action. Quick Haul records an
+actual stroke of at least 0.1 m against a measured load of at least 20 N.
+
+Focused checks on Godot 4.7.2: existing Rope 16 passed with the sole-line
+fallback added (7 s), Rope 13's ordinary reeling passed (29 s), and Rope 18's
+selected untie/save passed (9 s). Rope 20 exercised the actual yank binding,
+selected-line isolation, recovery, end of haul and ordinary-held-object priority
+(5 s). Its isolated fixture enables deed counting and earns Quick Haul through
+the physical haul, without calling the deed directly. These checks do not yet
+establish final Varran handling with the new articulated boom.

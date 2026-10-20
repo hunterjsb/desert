@@ -347,6 +347,9 @@ const DEVICES := {
 		]},
 	# Music, the weather station and beacons, a channel a use. Carried, set
 	# down or stuck on a deck, it runs on its battery or its deck's power.
+	&"survey_receiver": {"label": "Survey receiver", "size": Vector3(0.36, 0.50, 0.26), "mass": 1.4,
+		"radio": true, "receiver": true, "carryable": true, "sticks": true,
+		"sockets": [[&"battery", Vector3(0.0, -0.12, -0.10), Vector3.FORWARD]]},
 	&"radio": {"label": "Radio", "size": Vector3(0.32, 0.22, 0.16), "mass": 2.5, "radio": true,
 		"carryable": true, "sticks": true,
 		"sockets": [
@@ -663,7 +666,7 @@ static func device(id: StringName) -> Device:
 		else (Condenser.new() if spec.get("condenser", false) \
 		else (Planter.new() if spec.get("planter", false) \
 		else (Hoverboard.new() if spec.get("board", false) \
-		else (Radio.new() if spec.get("radio", false) \
+		else ((SurveyReceiver.new() if spec.get("receiver", false) else Radio.new()) if spec.get("radio", false) \
 		else (Mast.new() if spec.get("rig", false) \
 		else (Streamer.new() if spec.get("streamer", false) \
 		else (CrowsNest.new() if spec.get("nest", false) \
