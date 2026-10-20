@@ -1086,6 +1086,26 @@ it fail specifically at the continuity assertion. After removing that mutation i
 Native macOS verification remains required; Linux diagnostics explain the timing assumption
 but do not establish the failed runner's exact audio schedule.
 
+### Scheduled-song continuity under slow simulation (2026-10-20)
+
+A receiver must keep the same playback throughout one scheduled song occurrence,
+even when the real audio mixer advances faster than capped simulation ticks.
+World time still selects the occurrence and the phase joined on tuning in. A new
+occurrence of the same recording starts a new playback; signal strength, weather
+and normal mixer/simulation drift must not repeatedly restart it.
+
+The previous same-recording path compared the mixer position with world elapsed
+seconds and replayed whenever they differed by more than 1.5 s. A focused
+regression reproduces the resulting identity change by allowing 2.2 real seconds
+of mixing while advancing the scheduled station clock by only 0.1 s. Keep the
+existing weather-transition playback-identity check unchanged.
+
+As built: identify an explicit scheduled occurrence by its start world time
+(`t - into`), using an absolute near-zero comparison. Mixer position no longer
+restarts the same occurrence. The clock-lag regression fails on the old code
+and passes with the fix (5 s), including a distinct replay of the same asset.
+The unchanged weather/Stoker continuity check and Eye song check pass (6 s each).
+
 ## Survey receiver (agreed and built 2026-10-20)
 
 An early, cheaper receiver hears only existing ruin loot beacons. It shares the radio's
@@ -1159,3 +1179,58 @@ Three real speech plans were exported and checked with speech recognition: wind
 remain intelligible. This is a recognition check, not a substitute for listening
 in play. The added PCM bank is 24.4 MB; its import stays uncompressed so its
 sample ranges are exact. Full recordings are reused whenever available.
+
+### Tuning controls and station voices (agreed 2026-10-20; built on the follow-up branch)
+
+The tuning close view shows a short, readable reminder of tuning, fine tuning,
+volume, mark/unmark and next-mark controls. Resolve current action bindings through
+Controls and use the shared UI type. The reminder belongs only to the radio close
+view: hide it when looking away, leaving tuning or opening a menu. It must not
+cover the dial or become permanent carried-radio HUD text.
+
+Keep the approved LJ Speech weather/Walker voice, Console announcements and music.
+Give the other speaking stations distinct machine voices, using pitch, cadence and
+speech-only EQ on private per-radio buses. These are different treatments of the
+same bundled recording source, not additional actors. Mother Cistern is warmer and
+slower; the Quartermaster clipped and commanding; the Ledger lower and measured;
+the Almanac brisk; the Stoker urgent and metallic. Keep the Eye's speech silence
+and the living city's coded tones. Profiles are tuning data; exact numbers and
+all dynamic content remain unchanged. Local Console speech bypasses these profiles.
+
+This pass does not change transmission scheduling. Music joins its world-time
+position; current speech begins a fresh report when tuning in, then follows its
+existing cadence. A globally continuous shared speech schedule is a separate
+proposal, not an as-built claim.
+
+**As built.** The close view uses a four-line, 20 px KeysList reminder with
+current action bindings; sets without frequency marks omit that line. It fades
+with the close camera, disappears while menus hold input, and leaves room for
+the auto-walk mark below. The existing dial capture keeps this layer visible;
+its optional `--720p` mode includes survival bars at 1280×720.
+
+Station profiles live in tuning data. Each radio owns a speech-only pitch/EQ
+bus feeding its existing private interference chain. Playback rate also changes
+queue clip durations and resume offsets, preserving complete words at slower
+cadences. A removed receiver releases its own speech bus. The existing God
+Heard deed records listening; cosmetic voice differences add no new action.
+
+Focused checks pass on Godot 4.7.2: close-view/live-binding controls (24 s),
+station cadence and bus ownership (5 s), native weather reader (7 s), transmitted
+words (6 s), independent radio effects/lifetime (6 s), and local Console speech
+(26 s). These are targeted checks, not a full platform verification claim.
+
+Actual GPU captures were inspected at 1920×1080 and 1280×720; the latter includes
+survival bars and retains all four reminder lines below the dial without overlap.
+The headless mixer rendered the same wind 40, temperature minus 3 and bearing 173
+through all seven voice profiles. Recognition retained those readings in each
+sample (some transcriptions punctuate the bearing's number words separately).
+Measured rendered loudness spans -24.1 to -21.4 LUFS and true peaks -8.8 to -4.7
+dBFS, without clipping. This checks intelligibility and levels, not final character
+acceptance in play. `look/radio_voices/record.tscn` reproduces the comparison through
+the actual speech buses without changing player data or opening a game window.
+
+After combining the clear scenarios, the dial capture puts down the supplied
+flare before staging its held radio and refuses a held-view capture unless that
+radio is actually in hand. The unified clear setup check passes (6 s), and the
+held 1280×720 frame was inspected again with survival bars visible. The shared
+one-theme check also passes (6 s).
