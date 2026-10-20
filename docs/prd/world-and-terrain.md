@@ -775,3 +775,18 @@ planner catches up. Existing carried/ridden exceptions, freeze/thaw behavior and
 streaming budget stay in place. A later marked-camp area must extend the shared
 policy at all of these gates together. This preparation does not retain distant
 camps or introduce a beacon, navigation UI, new save state or new deed.
+
+### As built: shared policy foundation
+
+`TerrainResidency` now owns the square-distance, ground-retention and collision
+predicates used by terrain planning/retirement and world-body lifetime. The
+player-area policy and its one-chunk retirement margins are unchanged. No second
+area is scheduled and distant belongings still follow the existing warning,
+freeze/thaw and deletion behavior.
+
+The combined candidate `ca614c86` passed all nine Linux groups in
+[verification](https://github.com/hunterjsb/desert/actions/runs/39489022676).
+Focused origin-shift, seam and camp warning/deletion/turnback checks also passed
+(11 s, 6 s and 172 s). Native platform acceptance remains pending. These checks
+cover the existing player-area behavior; marked membership, distant terrain,
+saving anchors and homing remain unimplemented.

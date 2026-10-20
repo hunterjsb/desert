@@ -135,7 +135,8 @@ fixes may ship as patches on the way to this named minor release.
 | Short visual sailing notes and UI consistency | **Built**: four actual gameplay screenshot pages, brief sailing-only captions and shared UI fonts. All pages were inspected at 1280×720: 533×300 px images, two-line 20 px captions and visible navigation. | Sanddune teaching. The separate Surveyor Guide retains its prose pages. Unassisted comprehension and handling acceptance remain; refresh images if the illustrated geometry changes. |
 | Deck boarding and exposed wreck traversal | **Built**: sprint/jump ledge vault, exposed wreck panel collision, board-on-roof support and the Hopper ramp repair are integrated and pass all 19 platform/build checks. | Sanddune movement polish. Physical contact, walkable tops and cut openings are covered. Near-level mixed-deck baselines reach 108 pieces; one 16-piece powered boarding and one 27-piece offset-mount battery transition passed. Steep terrain and boarding large mast/rope-loaded craft still need combined coverage and playtesting. |
 | Developer playtest controls | **Built**: prevailing wind speed/bearing and reset, plus real held-cell or connected-pool charge controls. Wind drift stays continuous and saves/resumes; commands mark the run as developer use. | Support repeatable Sanddune checks. These do not establish viable ordinary play or unassisted expedition acceptance. |
-| Marked camp residency | **In progress, foundation only**: shared terrain-residency logic has a verified separate implementation; retaining a distant camp is **not built**. | Sanddune expedition priority. Implement bounded camp support, persistence and return before claiming scouting can safely leave camp behind. Exact acceptance scope remains to be settled. |
+| Shared terrain residency policy | **Built, foundation only**: terrain construction, collision retirement and object lifetime share the existing player-area rules. Radii, retirement margins, carried/ridden exceptions and freeze/thaw behavior are unchanged. | Sanddune preparation for a second supported area. Full Linux verification and focused origin, seam and camp warning/deletion checks pass. This does not retain a distant camp. |
+| Marked camp residency | **Planned**: retaining a distant camp is not implemented. | Sanddune expedition priority. Build bounded camp support, persistent membership and return navigation together before claiming scouting can safely leave camp behind. Exact acceptance scope remains to be settled. |
 | Homing beacon and basic camp return | **Planned direction**: small chassis-mounted marker, known player/camp locations, no automatic terrain survey. | Sanddune navigation priority leading toward Spaceport; hardware, acquisition, power, range, count and final display are undecided. Camp persistence and a usable return cue must work together. |
 | Continued-release line gathering and batch mooring | **Exploratory**: continue the existing untie action to collect separate ends in hand, then tie or drop them together. | Sanddune control candidate, not an implemented “stake all” shortcut. No dedicated binding; preserve each line's length, load and identity. Decide hand/bundle and tie/drop behavior first. |
 
@@ -148,6 +149,12 @@ existing motion bounds. These controlled results establish the integrated
 regression baseline; Hunter's unassisted playtest remains the acceptance gate
 for sailing feel and the complete expedition. Detailed measurements and limits
 remain in the movement, rope and menus PRDs.
+
+The radio/delivery integration and subsequent terrain-policy extraction passed
+all nine Linux groups in their respective [radio](https://github.com/hunterjsb/desert/actions/runs/39488290224)
+and [terrain](https://github.com/hunterjsb/desert/actions/runs/39489022676) verification runs.
+Native platform and build acceptance of the latest code remains pending in
+[master verification](https://github.com/hunterjsb/desert/actions/runs/39490654541).
 
 The marked camp should include its attached chassis assembly and claimed loose
 belongings inside its attached shield's configured envelope. Shield shutdown or a
