@@ -1605,3 +1605,30 @@ is not a matched maximum-drive comparison. The quarter-force bound is retained.
 The fitting check puts a removed hook aside before fitting a larger shield;
 strip-and-fit uses the existing edge rings for hooks, preserving panel space
 for batteries and panels. Free placement remains covered through actual hands.
+
+### Native hinge response at the sand (2026-10-20)
+
+Use the same free hinge degrees of freedom for the rope iteration's initial
+velocity and the runner's support/contact response. Aerodynamic impulses
+already on the boom contain relative motion that the native hinge will block.
+Project both current and expected virtual motion through the assembly matrix.
+The runner takes a fresh native assembly snapshot, independent of whether
+ropes exist, so untying the last line cannot change its support. Resolve
+force/torque coupling once per runner tick using six root impulse responses;
+use the whole supported mass for spring/damping coefficients. Apply native
+contact impulses only on the hull; Jolt supplies the real hinge reactions.
+Non-hinged craft retain their ordinary response and no tuning changes.
+
+Measured in isolation with the same fixed sheet: 30/60/120 Hz reaches
+2.907/2.908/2.908 m/s after 51.26/51.30/51.32 m, with roll
+0.93/0.85/0.82 degrees, within the existing rate bounds. The four-minute
+Sail 7 gust/turn/seam/origin-shift check passes in 95 s when its active
+helmsman works the full driving sheet path, as other active sailing fixtures
+already do. All motion, crossing and rate acceptance bounds remain unchanged.
+A conservative retained-side pilot crosses too few seams even over eight
+minutes; extending duration was rejected. No production auto-trim is added.
+
+Combined focused checks pass: sailing aboard (Sail 11, 71 s), visible tow
+(Sail 9, 28 s), rig save/load (Saves 16, 27 s), and mixed skates/hover
+(Sail 19, 14 s). These retain the existing motion, health, save drift and
+mixed-support bounds. Full combined CI remains the landing gate.

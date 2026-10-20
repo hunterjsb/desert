@@ -680,6 +680,7 @@ func _articulate(live: Array[Rope], h: float) -> void:
 					body.center = body.rigid.global_transform * state.center_of_mass_local
 				var articulation := RopeArticulation.new()
 				articulation.configure(bodies, pivots, axes)
+				articulation.project_velocities()
 				_articulations.append(articulation)
 
 

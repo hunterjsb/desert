@@ -13,6 +13,63 @@ var total := 0.0
 var inverse: Array[PackedFloat64Array] = []
 
 
+## A fresh native snapshot, including untethered craft: runner support must
+## not change when the last rope is untied.
+static func native(root: Device) -> RopeArticulation:
+	if root == null or root.freeze:
+		return null
+	var nodes: Array[RigidBody3D] = [root]
+	var pivots: Array[Vector3] = []
+	var along: Array[Vector3] = []
+	var mounted: Array[Device] = [root]
+	while not mounted.is_empty():
+		var device: Device = mounted.pop_back()
+		mounted.append_array(device.mounted())
+		if device is Mast and is_instance_valid(device._boom_body) and not device._boom_body.freeze:
+			nodes.append(device._boom_body)
+			pivots.append(device.global_transform * Mast.BOOM_AT)
+			along.append(device.global_basis.y.normalized())
+	if nodes.size() == 1:
+		return null
+	var on: Array[RopeBody] = []
+	for rigid in nodes:
+		var state := PhysicsServer3D.body_get_direct_state(rigid.get_rid())
+		var body := RopeBody.new()
+		body.node = rigid
+		body.rigid = rigid
+		body.center = rigid.global_transform * state.center_of_mass_local
+		body.inv_mass = Vector3.ONE / rigid.mass
+		body.inv_inertia = state.inverse_inertia_tensor
+		if rigid.inertia != Vector3.ZERO:
+			# Restored custom inertia precedes the native cache's first tick.
+			var turn := rigid.global_basis.orthonormalized()
+			body.inv_inertia = turn * Basis.from_scale(Vector3.ONE / rigid.inertia) * turn.transposed()
+		body.velocity = state.linear_velocity
+		body.spin = state.angular_velocity
+		on.append(body)
+	var model := RopeArticulation.new()
+	model.configure(on, pivots, along)
+	model.project_velocities()
+	return model
+
+
+## The root's translation and spin for unit force and torque impulses.
+func root_mobility() -> Array[Basis]:
+	var root := bodies[0]
+	var zero := Basis(Vector3.ZERO, Vector3.ZERO, Vector3.ZERO)
+	var blocks: Array[Basis] = [zero, zero, zero, zero]
+	for axis in 3:
+		var direction := Vector3.ZERO
+		direction[axis] = 1.0
+		var force: Array = response([root], [direction], [Vector3.ZERO])[0]
+		blocks[0][axis] = force[1]
+		blocks[1][axis] = force[2]
+		var torque: Array = response([root], [Vector3.ZERO], [direction])[0]
+		blocks[2][axis] = torque[1]
+		blocks[3][axis] = torque[2]
+	return blocks
+
+
 func configure(on: Array[RopeBody], pivots: Array[Vector3], along: Array[Vector3]) -> void:
 	bodies = on
 	axes = along
@@ -50,6 +107,25 @@ func configure(on: Array[RopeBody], pivots: Array[Vector3], along: Array[Vector3
 	inverse = _invert(matrix)
 	for body in bodies:
 		body.articulation = weakref(self)
+
+
+func project_velocities() -> void:
+	for predicted in [false, true]:
+		var linear := []
+		var angular := []
+		for i in bodies.size():
+			var body := bodies[i]
+			linear.append(masses[i] * (body.expected if predicted else body.velocity))
+			angular.append(body.inv_inertia.inverse() * (body.expected_spin if predicted else body.spin))
+		var projected := response(bodies, linear, angular)
+		for entry: Array in projected:
+			var body: RopeBody = entry[0]
+			if predicted:
+				body.expected = entry[1]
+				body.expected_spin = entry[2]
+			else:
+				body.velocity = entry[1]
+				body.spin = entry[2]
 
 
 ## Unit-impulse velocities for all bodies, including the hinge reactions.
