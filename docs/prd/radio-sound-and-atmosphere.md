@@ -531,6 +531,64 @@ they swap to their next saved frequency."*
   high each is, how far from Tu and how bright it shows; `look/dial` marks three frequencies in a profile of
   its own, so their ticks and the lamps show.
 
+### Bands: the ceiling, the sets and who's on the air (agreed, 2026-10-20; partly built)
+
+*From a research session with gonkhub, 2026-10-20: "distinguish between frequency ranges and radio technology as a
+progression lever ... add more sonic areas to unlock and explore," and "I want this to feel grounded in actual
+tech." The pitch was approved whole: "all your suggestions look good."*
+
+Two rules from real radio carry this. **The band decides how far a signal goes; the modulation decides what it takes
+to hear it and how it sounds.** And **the air has a ceiling:** the charged layer high in Zan's air (its ionosphere,
+fed by Tu's belts) that bounces the dial's night sky wave back down also turns back anything under a few MHz sent
+from above. So nothing in orbit can be heard on the 0–2000 kHz dial, and the constellation goes up through the
+ceiling to bands of its own, each needing a part to hear. What's under the ceiling is the ground's: the gods,
+beacons, the nomads' relics, the living city.
+
+**The band map.**
+
+| Band | Gets there | Hearing it | Draw | Who's on it |
+|---|---|---|---|---|
+| Natural radio, 0–30 kHz | moon-wide | a long wire and an amplifier | ~0 | the clicks of charged-dust storms' discharges before the storm shows, whistlers, chorus near the poles; your own base's hum masks it |
+| LW/MW, 30–2000 kHz (the dial as built) | ground wave, and at night past the skip | crystal set, then the transistor set | 0, then 2 W | the gods; beacons sending their names in Morse; distress beacons on 500 kHz in wrecks; the nomads' ghost relay; the living city's homing carrier (only something kilometres across can send low frequencies well); the port's music, thin |
+| Shortwave, 2–30 MHz | skip, with a dead zone between | a wire dipole on ropes or a kite | ~1 W | Tu's roar on a timetable; weather maps by fax; wartime numbers and the jammer; the formation, low in the band's top |
+| VHF/UHF, 30 MHz–1 GHz | line of sight: height is range | the FM converter, then an FM set; a whip; a handheld beam | 0.5–2 W | Port Morgan's FM station; the living city's scouts; ruin intercoms; the skimmer field's navigation beacon; the relay at L1 |
+| L/S, 1–4 GHz | space | dish, LNB and decoder | 5–10 W | a digital bundle; the crop survey's downlink |
+| X, 8 GHz and up | deep space | a big dish and a cooled amplifier | high | Varran, and the far end of the lane, from the far side's quiet |
+
+**Three sounds, one a technology.** AM hisses and crackles in a storm, whooshes as it fades at night, whistles where
+two carriers beat, and is thin (about 5 kHz of audio). FM is near silent and full range; where two share a frequency
+the stronger takes it whole (the capture effect) and the weaker is gone, not mixed; at its fringe hiss breaks in
+all at once and it flutters as you walk between dunes. Digital is perfect or nothing: a short blockage rides on its
+buffer, a long one mutes, and between the two it warbles and stutters (the glitch chain as built is digital's).
+
+**The set is a chain of parts:** antenna, front end (a converter or an LNB), set, decoder, and a speaker or a
+printer. Each is a find or a build that plugs in; a band switch on the set's face lights only the bands its parts
+reach. Receiving is cheap, as in real radio, so upgrades are **gain** (antenna size and aim), **quiet** (amplifiers;
+cold nights really are quieter), **knowing** (time, place and an orbit's elements to aim a tracking dish: the Eye
+and the Pendulum become prerequisites) and **talking back**, where the real power goes.
+
+**Stationary points.** A tidally locked moon has no stationary orbit: one would need a lap as long as Zan's orbit of
+Tu, about 49,000 km out at the leaning size, past the 30,000 km where Zan's pull holds anything against Tu's. The
+real answer is the Lagrange points' halo orbits: **L1**, between Zan and Tu, hangs near Tu in the near side's sky,
+looping slowly round its point (half a day a loop); **L2**, behind Zan, hangs straight over the anti-Tu point, the
+observatory, as Queqiao hangs past the Moon's far side for Chang'e 4. A halo is wide enough that each sees the
+other round the moon, so the port's signal can go Port Morgan → L1 → L2 → the far side. The Rim sees both, low on
+opposite horizons. The music's relay goes to L1, and the Pendulum to L2.
+
+**Decided with it:**
+- The port also sends the music on 1020 kHz from the ground, thin, carrying as AM does by day and far at night;
+  the relay at L1 sends it full, on the FM band.
+- The FM converter is the first step, as the 1960s converters for AM car radios were: it takes FM, turns it to a
+  carrier the set already tunes, and plays as thin as the set does. A real FM set is the second.
+- "Always two overhead" (radio probe 34) moves with the formation to the shortwave band's top, where a wire hears
+  it (real satellites have sent at 29 MHz); a satellite leaving the formation is replaced in its plane.
+- Talking back is allowed with machines only (no NPCs): commanding the Surveyor's cannon, a satellite's stored
+  dump. It's also how Daventry could hear you.
+
+**Slices, each landing on its own:** this map (docs); the band switch, the FM band, the converter and Port Morgan's
+FM by line of sight; the relay at L1 and the Pendulum at L2; the constellation to shortwave and Tu's roar; then the
+crystal set and kite, the loop's direction finding, natural radio, the dish, and the uplink.
+
 ### Litanies and the survey log (2026-10-18; built, on the `signatures` branch)
 
 *Fleshing out the broadcasts.* What a god says outside its window is a liturgy with a shape, not a
@@ -986,7 +1044,9 @@ plumes are [Wind & storms](wind-and-storms.md#plumes)'):
   *The skeleton sounds a station's tones and puts one line of words low in the view, as
   a stand-in.*
 - **Exactly how far does a radio reach,** and how much does an antenna add? *First
-  number: a beacon is heard from 3 km.*
+  number: a beacon is heard from 3 km.* Partly answered by the bands (above, 2026-10-20): under
+  the ceiling a bigger antenna adds little, since the world's own noise sets the floor; above it
+  an antenna is gain, and the price of gain is aim.
 
 The Console and sleep sessions (2026-10-17) add three. Each is quoted on both sides and left
 standing.
