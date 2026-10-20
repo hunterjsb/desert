@@ -1628,3 +1628,23 @@ Sailing 15 now checks the complete base against the visible panel and retains
 riding/reeling/resuming and endpoint checks (passed, 8 s). Sailing 3's force/trim and
 sheet-hauling checks also pass (21 s). The uncached placement search averaged about
 0.23–0.24 ms on the Varran layout; it is not repeated for the camp's motion each render frame.
+
+## Survey receiver device (agreed and built 2026-10-20)
+
+A battery-powered survey receiver is a normal carryable, stickable device using radio
+input handling. It reads a strength meter and plays pulses rather than displaying a
+precise bearing. Its directional loop follows its actual world orientation, including
+when worn in the carry view or mounted to a turning chassis. The procedural model and
+original switch/tuning/pulse sounds distinguish it from the full radio; no radio carrier
+or god framework is added. Receiver target and acquired-from distance survive a save.
+
+
+As built: catalog `survey_receiver` weighs 1.4 kg and uses a 0.36 × 0.50 ×
+0.26 m case with a rear battery socket. Shallow device salvage has weight 2
+in the existing weighted pool; creative Devices and the receiver scenario also
+offer it. No Surveyor starter equipment or normal ruin beacon plan changes.
+The optional Finds beacon reach argument leaves full-radio callers unchanged.
+Snapshot adds only acquired-from distance and pending acquisition to inherited
+Radio state. Carry view redraws only on coarse needle interval changes.
+Actual input/save/empty-cell/arrival and mounted direction measurements are
+recorded in the radio PRD; no local whole suite or new repository probe was added.

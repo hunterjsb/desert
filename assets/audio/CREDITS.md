@@ -144,3 +144,14 @@ and out over 5 and 30 ms so phrases join without a click, and levelled to -23 dB
 its voiced part, peaks under -6 dBFS; a report through the radio's speaker reads at about
 -25 LUFS, 3 dB over the music, to come through the static. Mono Vorbis at 22.05 kHz, about
 40 kbps: 165 phrases, 1.4 MB.
+
+## Field receiver (2026-10-20)
+
+Original mono sounds generated for Desert by `scripts/make_receiver_sounds.py`
+(Python and ffmpeg, no third-party recordings; CC0). Measured with ffmpeg ebur128.
+
+| File | Sound | Integrated loudness | True peak |
+|---|---|---|---|
+| receiver_switch.wav | the field receiver power latch | -34.0 LUFS | -10.0 dBTP |
+| receiver_tick.wav | the field receiver tuning detent | -35.3 LUFS | -9.1 dBTP |
+| receiver_pulse.wav | the directional field receiver contact pulse | -33.9 LUFS | -19.6 dBTP |

@@ -814,3 +814,52 @@ failed. The corrected probe passed; temporarily forcing `music.play(0.0)` on sto
 it fail specifically at the continuity assertion. After removing that mutation it passed again.
 Native macOS verification remains required; Linux diagnostics explain the timing assumption
 but do not establish the failed runner's exact audio schedule.
+
+## Survey receiver (agreed and built 2026-10-20)
+
+An early, cheaper receiver hears only existing ruin loot beacons. It shares the radio's
+battery, mounting, carry-use, wheel/fine tuning and volume controls, but a narrow beacon
+band and shorter tuned reach are data. Use powers it on and acquires one real untaken
+beacon; it keeps that target through power cycling and saving until the target is invalid.
+A subsequent explicit power-on can acquire again. Taking the find or leaving range stops
+reception; no moving or invented beacon replaces it silently.
+
+Turn the case's loop while holding it, carrying it or on a deck: two opposite signal
+lobes vary a coarse strength needle and pulse cadence/level. It is not a compass bearing
+or distance meter, and has no music, gods, weather forecast or map. Empty battery/off
+clears its sound and needle. A new Signals deed records arriving at a valid acquired
+beacon from at least 60 m away while personally carrying or holding the live receiver.
+It comes from shallow finds and the creative menu; a developer receiver scenario places
+one with a battery among real ruins, without manufacturing a beacon.
+
+### As built and measured
+
+`SurveyReceiver` reuses the physical Radio controls and power contract, with a
+0.5 W draw, 1200 m reach, 1930 ± 40 kHz band and eight needle intervals, all in
+`tuning.tres`. It adds a soft static bed: detuning and dust raise it, a stronger
+real signal ducks it. Pulse cadence and level follow strength. Volume zero mutes
+the pulse, static, switch and tuning sounds. Both lobes remain intentional;
+the player must compare readings while moving rather than read a hidden bearing.
+Console voice/forecast instruments and weather-station sleep exclude this tier;
+its local Console power/volume controls still work.
+
+Focused existing checks passed: radio 2 (real beacon finds), 10 (volume), 20
+(tuning/reeling), saves 1 (round trip), and devices 30 (Console battery voice).
+An unseen 1280×720 input diagnostic acquired a real generated beacon 299.15 m
+away through Use. A quarter turn changed strength 0.8664 → 0.06929 and the
+needle from interval 7 → 1. Coarse/fine actions moved 1930 → 1935 → 1934 kHz;
+volume zero put both static and pulse at −80 dB. Carry Use switched off; empty
+cells immediately cleared needle/static/pulse. Save/resume retained the exact
+target, acquired-from distance, frequency, power switch and volume. Leaving
+range silenced reception without replacing the target. Taking its actual ruin
+find through Hands Grab marked it taken and silenced the receiver.
+
+A separate normal-run diagnostic, with an isolated profile and real generated
+ruins, triggered `follow_signal` on arrival after acquisition 282.18 m away.
+The fixture used scripted travel and spawned receiver equipment; this checks
+the real action's deed path, not an unassisted player expedition. The developer
+scenario correctly awarded no deeds. A mounted receiver's quarter turn changed
+strength 0.8759 → 0.07008; its Console found zero forecast radios and did not
+speak through the receiver. The held and carry views and four-line 20 px action
+hint were inspected at 720p. Capture audio was muted; subjective sound quality
+still needs listening in play.
