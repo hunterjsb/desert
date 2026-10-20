@@ -1396,7 +1396,11 @@ The overrun fixture takes a clear outboard lane instead of racing into the
 chassis. Slack, retension, staying aboard, the full 1500 N strength bound and
 forced radial overload are retained; it passes in 13 seconds. The two-tack
 runner check passes in 32 seconds and the Varran reach/tack course in 31 seconds.
-These focused outcomes precede final combined native verification.
+After combining the verified vault work and visual sailing notes, the same
+focused checks pass: visible tow 26 s, yacht 29 s, sheet 38 s, Varran 31 s,
+overrun 15 s and mounted hooks 9 s. Rig resume passes again in 24 s; line
+selection and single-line fallback pass in 8 s, and loaded yank in 6 s. These
+outcomes precede final combined CI and native verification.
 
 Actual rendered Varran wide and close views show the higher spar above the
 navigation computer, all three lines, and the real guide foot seated on an
