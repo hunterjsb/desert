@@ -93,4 +93,3 @@ func _physics_process(delta: float) -> void:
 						var mast := end.socket.get_parent() as Mast
 						if mast.hoist_enabled and mast.raise >= world.tuning.winch_hoist_deed:
 							Deeds.done(world, &"hand_hoist")
-
