@@ -388,10 +388,10 @@ func _routed(from: Vector3, via: Vector3, to: Vector3) -> PackedVector3Array:
 ## Where the drawn tube's centre runs, t of the way along link i: the curve
 ## rope.gdshader draws through the points.
 func drawn(i: int, t: float) -> Vector3:
-	return _curve(points, i, t, _bulge[i])
+	return _curve(points, i, t, _bulge[i], _guide_index())
 
 
-static func _curve(through: PackedVector3Array, i: int, t: float, bulge: float) -> Vector3:
+static func _curve(through: PackedVector3Array, i: int, t: float, bulge: float, guide := -1) -> Vector3:
 	var n := through.size()
 	var p0 := through[maxi(i - 1, 0)]
 	var p1 := through[i]
@@ -400,6 +400,8 @@ static func _curve(through: PackedVector3Array, i: int, t: float, bulge: float) 
 	var a := 2.0 * p0 - 5.0 * p1 + 4.0 * p2 - p3
 	var b := -p0 + 3.0 * p1 - 3.0 * p2 + p3
 	var p := 0.5 * (2.0 * p1 + (p2 - p0) * t + a * t * t + b * t * t * t)
+	if i == guide - 1 or i == guide:
+		p = p1.lerp(p2, t)
 	p.y = maxf(p.y, lerpf(p1.y, p2.y, t) + bulge * 4.0 * t * (1.0 - t))
 	return p
 
@@ -433,7 +435,7 @@ func _bulges(through: PackedVector3Array) -> PackedFloat32Array:
 		var bow := 0.0
 		for r in range(1, RINGS_PER_LINK):
 			var t := float(r) / RINGS_PER_LINK
-			var short := world.height_under(_curve(through, i, t, 0.0)) + RADIUS \
+			var short := world.height_under(_curve(through, i, t, 0.0, _guide_index())) + RADIUS \
 				- lerpf(through[i].y, through[i + 1].y, t)
 			bow = maxf(bow, short / (4.0 * t * (1.0 - t)))
 		bulge[i] = bow
@@ -451,7 +453,12 @@ func _same(through: PackedVector3Array, from: int, to: int) -> bool:
 	return true
 
 
+func _guide_index() -> int:
+	return clampi(points.size() / 2, 1, points.size() - 2) if is_instance_valid(through) else -1
+
+
 func _upload(through: PackedVector3Array, bulge: PackedFloat32Array) -> void:
+	_look.set_shader_parameter("guide", _guide_index())
 	_look.set_shader_parameter("points", through)
 	_look.set_shader_parameter("bulge", bulge)
 

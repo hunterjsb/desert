@@ -131,6 +131,7 @@ var reel: Reel
 ## part, that part's socket, or the sand itself (not a ruin standing in it);
 ## and where it hit.
 var look_part: Part
+var look_line: Line
 var look_device: Device
 var look_socket: Socket
 var look_sand := false
@@ -338,6 +339,11 @@ func grab() -> bool:
 		return refuse(fast)
 	if salvage.touched(target, _player) == Wreckage.ELECTRICAL:
 		return true
+	if look_line != null:
+		var gathered := look_line.gather(look_point)
+		if gathered != null:
+			_pick_up(gathered)
+			return true
 	var riding := _player.board != null
 	# Standing on a deck, a device keeps its sockets: a part you aim at comes out of it.
 	var own_part := look_socket != null and look_socket.part != null
@@ -595,8 +601,12 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 	# Exactly, so bringing near or pushing out never reels a line too.
 	elif event.is_action_pressed("reel_in", false, true) or event.is_action_pressed("pay_out", false, true):
-		# Each wheel step is a press: a notch.
-		if reel.working() and reel.notch(1 if event.is_action_pressed("reel_in", false, true) else -1):
+		# A worked drum wins over waist lines, so hoisting never trims the sheet too.
+		_look()
+		if reel.working() and held == null and grasp.body == null and look_device is ManualWinch:
+			(look_device as ManualWinch).notch(1 if event.is_action_pressed("reel_in", false, true) else -1, _player)
+			get_viewport().set_input_as_handled()
+		elif reel.working() and reel.notch(1 if event.is_action_pressed("reel_in", false, true) else -1):
 			get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("bring_near") or event.is_action_pressed("push_out"):
 		if scroll(1 if event.is_action_pressed("bring_near") else -1):
@@ -868,6 +878,7 @@ func _look() -> void:
 	look_part = null
 	look_device = null
 	look_socket = null
+	look_line = null
 	look_sand = false
 	look_work = null
 	look_wreck = null
@@ -879,11 +890,12 @@ func _look() -> void:
 	var ray := PhysicsRayQueryParameters3D.create(sight_from, sight_to)
 	ray.exclude = _exclusions()
 	var hit := get_world_3d().direct_space_state.intersect_ray(ray)
-	if hit.is_empty() or hit.collider is StaticBody3D:
+	if hit.is_empty() or not hit.collider is Part:
 		_assist(eye)
 	if hit.is_empty():
 		if look_part == null and look_device == null:
 			_under()
+			_ground_line()
 		return
 	sight_to = hit.position
 	look_point = hit.position
@@ -903,16 +915,76 @@ func _look() -> void:
 	if look_part != null or look_device != null:
 		# Assisted: the small thing you aimed near, not the sand under it.
 		return
-	if body is Part:
+	if body is RigidBody3D and body.has_meta(&"boom_mast"):
+		# The spar is articulated, but taking it still removes its fitted sail.
+		look_device = body.get_meta(&"boom_mast") as Mast
+		look_socket = look_device._sail_socket()
+	elif body is Part:
 		look_part = body
 	elif body is Device:
 		look_device = body
 		var met := look_device.shape_owner_get_owner(look_device.shape_find_owner(hit.shape)) as Node
 		look_socket = _outermost(look_device.socket_of(met))
+		if held == null:
+			_near_tie(hit.position)
 		if look_socket == null and not _low_on(look_device, met as CollisionShape3D, hit.position):
 			return
 	if look_part == null and look_socket == null:
 		_under()
+	if look_part == null and look_device == null:
+		_ground_line()
+
+
+## The drawn strand is pickable without colliders along every moving segment.
+func _ground_line() -> void:
+	if held != null or grasp.body != null:
+		return
+	var best := _tuning.pick_assist
+	for child in _player.world.content.get_children():
+		var line := child as Line
+		if line == null or not line.recoverable():
+			continue
+		var points := line.rope.strand.points
+		for i in range(1, points.size()):
+			var near := Geometry3D.get_closest_points_between_segments(sight_from, sight_to, points[i - 1], points[i])
+			var gap := near[0].distance_to(near[1])
+			if gap >= best:
+				continue
+			var ray := PhysicsRayQueryParameters3D.create(sight_from, near[1])
+			ray.exclude = _exclusions()
+			var hit := get_world_3d().direct_space_state.intersect_ray(ray)
+			if not hit.is_empty() and hit.position.distance_to(near[1]) > RopeStrand.RADIUS * 2.0:
+				continue
+			best = gap
+			look_line = line
+			look_point = near[1]
+
+
+## A ring's hole has no collider: aim near its visible end to take the knot.
+func _near_tie(hit_at: Vector3) -> void:
+	var best := _tuning.pick_assist
+	for socket in look_device.sockets():
+		if socket.kind != &"tie" or socket.part == null:
+			continue
+		var at := look_device.global_transform * socket.position
+		if at.distance_to(sight_from) > _tuning.reach or at.distance_to(sight_from) > hit_at.distance_to(sight_from) + best:
+			continue
+		var gap := Geometry3D.get_closest_point_to_segment(at, sight_from, sight_to).distance_to(at)
+		if gap >= best or (sight_from - at).dot(look_device.global_basis * socket.outward()) <= 0.0:
+			continue
+		var tip := Line._tip(socket.part) if socket.part.has_meta(&"tip") else null
+		var target := tip.global_position if tip != null else at
+		var ray := PhysicsRayQueryParameters3D.create(sight_from, target)
+		ray.exclude = _exclusions()
+		var seen := get_world_3d().direct_space_state.intersect_ray(ray)
+		if not seen.is_empty():
+			if seen.collider != look_device:
+				continue
+			var met := look_device.shape_owner_get_owner(look_device.shape_find_owner(seen.shape)) as Node
+			if _outermost(look_device.socket_of(met)) != socket:
+				continue
+		best = gap
+		look_socket = socket
 
 
 ## Whether a look meets a frame low enough to mean what's fitted under it.
@@ -2110,12 +2182,16 @@ func line() -> String:
 		return "Crow's nest on masthead"
 	if look_wreck != null and (look_work != null or look_scrap != null):
 		return look_wreck.describe(look_work if look_work != null else look_scrap)
+	if look_line != null:
+		return Controls.key_for(&"hands_grab") + " · gather rope · %.1f m" % look_line.full
 	if look_part != null:
 		return describe(look_part.label, _part_stats(look_part))
 	if look_socket != null and look_socket.part != null:
 		return describe(look_socket.part.label, _part_stats(look_socket.part))
 	if look_device == null:
 		return "Bed" if look_bed else ""
+	if look_device is ManualWinch:
+		return "%s · %s / %s" % [look_device.label, Controls.key_for(&"reel_in"), Controls.key_for(&"pay_out")]
 	var stats := look_device.stats()
 	# A device's charge is on its light.
 	stats.erase("charge_wh")

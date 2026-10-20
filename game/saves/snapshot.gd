@@ -28,7 +28,7 @@ static var _kept := [
 	[Console, ["page", "log_lines", "_alerts", "_front_near", "evidence", "bearings"]],
 	[Battery, ["charge_wh"]],
 	[Plant, ["growth", "fruit", "state", "wild"]],
-	[Mast, ["raised", "raise", "boom", "boom_spin", "boom_pose", "boom_velocity", "boom_angular", "trim", "load_n", "bend_n", "extend", "upwind_m", "outflow_m"]],
+	[Mast, ["hoist_enabled", "legacy_hoist", "raised", "raise", "boom", "boom_spin", "boom_pose", "boom_velocity", "boom_angular", "trim", "load_n", "bend_n", "extend", "upwind_m", "outflow_m"]],
 	[Helm, ["sailed_m"]],
 	[Chassis, ["_today", "_day_from"]],
 	[PowerBox, ["held"]],
@@ -605,6 +605,8 @@ func _state(body: RigidBody3D) -> Dictionary:
 
 func _set_state(body: RigidBody3D, rec: Dictionary) -> void:
 	var state: Dictionary = rec.state
+	if body is Mast and not state.has("hoist_enabled"):
+		body.legacy_hoist = true
 	var part := body as Part
 	if part != null and state.has("stats"):
 		part.stats = state.stats.duplicate(true)
