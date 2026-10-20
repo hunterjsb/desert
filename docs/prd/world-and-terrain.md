@@ -790,3 +790,35 @@ Focused origin-shift, seam and camp warning/deletion/turnback checks also passed
 (11 s, 6 s and 172 s). Native platform acceptance remains pending. These checks
 cover the existing player-area behavior; marked membership, distant terrain,
 saving anchors and homing remain unimplemented.
+
+
+### Marked camp implementation dependencies (reviewed 2026-10-20; not built)
+
+The next implementation must cover history and restoration alongside terrain.
+`Sites.follow()` currently retires history units by player distance, while
+`Sites.ready()` exposes one player-centered ready area. A retained camp therefore
+needs its own history support and readiness; keeping its terrain chunks alone
+would still remove structures. `Terrain._launch()` currently returns when its
+first queued rectangle is not ready, so pending camp work must not starve player
+terrain. `Saves._ready_at()` waits for saved bodies' ground; camp support must be
+requested before restoration waits for a distant body.
+
+Recommended sequence, pending detailed hardware and display decisions:
+
+1. Record one explicit marked chassis and bounded claimed membership, including
+   its mounted assembly, owned loose belongings and supporting lines/anchors.
+   Shield shutdown must not erase membership; untouched salvage is not adopted.
+2. Persist that identity and a geographic anchor. Admit the camp's supporting
+   history, terrain and collision as a second area using the shared policy at
+   every scheduling, upload, retirement and body-lifetime gate.
+3. Verify ordinary remote simulation and restoration before exposing safe camp
+   departure. Audit position-based daylight/temperature and origin/history-sheet
+   changes; a local scouting check does not establish moon-wide accuracy.
+4. Add a requested return cue using the same saved camp identity. Receiver tier,
+   transmitter power and the final presentation remain decisions to settle.
+
+First acceptance must include departure beyond the existing deletion boundary,
+shield brownout, outside stakes/guides, distant save/resume, history/origin changes,
+near/far simulation equivalence and bounded combined player/camp work. No second
+area, camp marker or return UI is implemented by this review. Numerical admission
+budgets and supported range require measurements rather than product promises.
