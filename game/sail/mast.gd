@@ -220,6 +220,7 @@ func take(socket: Socket) -> Part:
 
 
 func _physics_process(delta: float) -> void:
+	follow_mount()
 	super(delta)
 	var started := Time.get_ticks_usec()
 	var on := carrier()

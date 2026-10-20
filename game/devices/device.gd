@@ -248,6 +248,20 @@ func host() -> Device:
 	return get_parent() as Device
 
 
+## Early-working devices need their seats before the carrier's later callback:
+## fresh kinematic bodies can otherwise report the previous world pose.
+func follow_mount() -> void:
+	var on := host()
+	if on == null:
+		return
+	on.follow_mount()
+	for i in on._seats.size():
+		var socket = on._seats[i]
+		if is_instance_valid(socket) and socket.mounted == self:
+			transform = socket.transform * seat_for(socket)
+			return
+
+
 ## Whether its trays hold it up now: they lift its weight, and have the power.
 func hovering() -> bool:
 	return _hovering
