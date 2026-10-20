@@ -1378,3 +1378,29 @@ Restoration must synchronize the actual physics pose before creating dependent
 hinges and before allowing custom rope/runner callbacks; merely assigning the
 scene transform is insufficient at this between-tick point. Verify this against
 the unchanged future-pose tolerance before acceptance.
+
+The yacht/tow fixture helmsman must choose an apparent-wind attack angle whose
+lift drives along the hull, rather than simply choosing the nearest angle.
+With a genuinely free boom, the nearest choice can drive backwards; an angular
+latch previously concealed that fixture mistake. This changes only deliberate
+probe sheet handling at normal reel speed, not game wind forces or controls.
+
+The yacht trace measures about 0.2 degrees attack and 8 N sail force. Its
+fixture auto-feather rule was investigated alongside the stale outboard
+reserve. The explicit yacht/tow driving mode holds the requested attack
+instead of applying the inherited 2–6 degree fixture roll cutoff; this is
+normal deliberate sheet handling. Actual hull tilt, injury, still-aboard,
+strength and progress assertions remain; gust/tipping fixtures retain their
+existing heel response. No game automatic control is added.
+
+The yacht's apparent zero attack also exposes an outboard-length error in the
+fixture: its reserve was captured while the player stood ashore, then preserved
+after sitting at the nearer helm. A yacht/tow helmsman tending a chosen attack
+must account for the current complete routed path and gather that real slack,
+still at normal reel rate. The Varran tack helper retains its departure reserve
+so it does not silently winch a moving multi-line rider into the rig.
+
+With that real sheet handling, the unchanged yacht check passes in 28 seconds:
+keeled upwind progress, sideways drift, staying at the helm, actual sheet
+reeling, and resuming seated all remain asserted. The basic two-tack runner
+check independently passes in 32 seconds.

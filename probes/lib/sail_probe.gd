@@ -134,20 +134,27 @@ var helm := 300.0
 ## sail meets the wind past this angle of attack, rad, and easing it as the
 ## camp starts to heel; 0 leaves the trim be.
 var tending := 0.0
+## A helmsman on a hull chooses forward drive; a free Varran tack can retain
+## its current side while its bow lines turn the rig.
+var driving_sheet := false
 
 
 func _steer() -> void:
 	if tending > 0.0 and is_instance_valid(mast) and mast.sail() != null:
-		var meet := tending * clampf(1.0 - (roll() - 2.0) / 4.0, 0.0, 1.0)
+		var meet := tending if driving_sheet else tending * clampf(1.0 - (roll() - 2.0) / 4.0, 0.0, 1.0)
 		var air := _apparent_air()
 		if air.length() > 0.01:
 			var flow := atan2(-air.x, -air.z)
 			var one := wrapf(flow - meet, -PI, PI)
 			var two := wrapf(flow + meet, -PI, PI)
 			var want := one if absf(angle_difference(mast.boom, one)) < absf(angle_difference(mast.boom, two)) else two
+			if driving_sheet:
+				var across := mast.global_basis.y.cross(mast.global_basis * air)
+				want = one if across.dot(-deck.global_basis.z) > 0.0 else two
 			var sheet := mast.sheet()
 			if sheet != null:
-				var length := clampf(_trim_length(rad_to_deg(want), 1.0), Line.SHORTEST, sheet.full)
+				var aimed := mast.eased_length(rad_to_deg(want), 1.0) if driving_sheet else _trim_length(rad_to_deg(want), 1.0)
+				var length := clampf(aimed, Line.SHORTEST, sheet.full)
 				sheet.length = move_toward(sheet.length, length, Reel.PACE / 60.0)
 	if course == Vector2.ZERO or deck == null:
 		return

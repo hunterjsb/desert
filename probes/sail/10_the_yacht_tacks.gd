@@ -18,6 +18,7 @@ func run() -> void:
 	player.collision_layer = 1
 	player.collision_mask = 1
 	speed_up(4)
+	driving_sheet = true
 	var made := {}
 	for keeled: bool in [true, false]:
 		await _set_up(keeled)

@@ -70,7 +70,7 @@ const LIST: Array[Dictionary] = [
 	# facing across it ahead of you, ready to raise its sail and go.
 	{"key": "sail", "label": "a sailing rig on skates, sheet at your waist, board and field notes",
 		"kind": "sail", "day": [0.35, 0.5], "breeze": [8.5, 11.5], "lays": &"sail"},
-	{"key": "sail_tow", "label": "the sail rig towing a camp past you on a hidden line, the board at your feet",
+	{"key": "sail_tow", "label": "the sail rig towing a camp on a real towline, the board at your feet",
 		"kind": "sail", "day": [0.35, 0.5], "breeze": [8.5, 11.5], "lays": &"sail_tow"},
 	{"key": "yacht", "label": "a floating 3x2 deck with a keel, a mast and a helm seat, a breeze", "kind": "sail",
 		"day": [0.35, 0.5], "breeze": [8.5, 11.5], "lays": &"yacht"},
