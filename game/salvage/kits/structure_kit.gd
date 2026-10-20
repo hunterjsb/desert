@@ -102,6 +102,11 @@ class Piece:
 	## takes, by name.
 	var boxes: Array[AABB] = []
 	var coats := PackedStringArray()
+	## Optional local rotation about a box centre, shared by its look and collision.
+	var box_turns := {}
+	## Solid details not aligned to the plan: [BoxShape3D, local Transform3D].
+	## Kept separate so existing box indices, sockets and openings stay stable.
+	var fitted_boxes: Array[Array] = []
 	## The boxes you can sleep on, by their place in boxes: a bunk, a bench.
 	var beds := PackedInt32Array()
 	var sockets: Array[SiteSocket] = []
@@ -465,7 +470,9 @@ static func room(lo: Vector2, hi: Vector2, floor := 0.0, ramp := Vector3(-1.0, 0
 	return r
 
 
-static func box(p: Piece, lo: Vector3, hi: Vector3, coat: String) -> void:
+static func box(p: Piece, lo: Vector3, hi: Vector3, coat: String, turn := Basis.IDENTITY) -> void:
+	if turn != Basis.IDENTITY:
+		p.box_turns[p.boxes.size()] = turn
 	p.boxes.append(AABB(lo, hi - lo))
 	p.coats.append(coat)
 
@@ -522,7 +529,8 @@ static func draw_boxes(b: Paint.Pieces, p: Piece, state: int, coats: Dictionary,
 		if p.coats[i].is_empty():
 			continue
 		var each := p.boxes[i]
-		b.box(each.size, each.get_center(), coats[p.coats[i]], minf(cut, minf(each.size.x, minf(each.size.y, each.size.z)) * 0.3))
+		b.box(each.size, each.get_center(), coats[p.coats[i]], minf(cut, minf(each.size.x, minf(each.size.y, each.size.z)) * 0.3),
+			p.box_turns.get(i, Basis.IDENTITY))
 
 
 ## Whether a decoration whose top is at `y1`, standing at plan `at`, shows
@@ -539,3 +547,10 @@ static func rod(b: Paint.Pieces, from: Vector3, to: Vector3, thick: float, look:
 	var y := along.normalized()
 	var x := y.cross(Vector3.FORWARD if absf(y.z) < 0.9 else Vector3.RIGHT).normalized()
 	b.box(Vector3(thick, along.length(), thick), (from + to) * 0.5, look, thick * 0.2, Basis(x, y, x.cross(y)))
+
+
+## A solid detail matching an existing drawn panel, including its tilt.
+static func fitted_box(p: Piece, size: Vector3, at: Vector3, turn := Basis.IDENTITY) -> void:
+	var shape := BoxShape3D.new()
+	shape.size = size
+	p.fitted_boxes.append([shape, Transform3D(turn, at)])
