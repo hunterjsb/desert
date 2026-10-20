@@ -153,10 +153,10 @@ const PARTS := {
 	# Nothing takes a compass: it's read, in your hand or in the inventory.
 	&"compass": {"kind": &"compass", "label": "Compass", "mass": 0.2, "size": Vector3(0.12, 0.12, 0.03),
 		"color": Color(0.26, 0.28, 0.29), "stats": {}},
-	# A signal flare: lit, it calls the Surveyor's cannon down on itself as it passes (Flare).
+	# A signal flare: lit, it calls the drone's cannon down on itself as it passes (Flare).
 	&"flare": {"kind": &"flare", "label": "Signal flare", "mass": 0.3, "size": Vector3(0.05, 0.05, 0.3),
 		"color": Color(0.75, 0.12, 0.08), "stats": {}},
-	# What the Surveyor's cannon fires down (Airdrop): a container, its contents to come.
+	# What the drone's cannon fires down (Airdrop): a container, its contents to come.
 	&"cargo": {"kind": &"cargo", "label": "Cargo container", "mass": 80.0, "size": Vector3(0.8, 0.8, 1.3),
 		"color": Color(0.85, 0.45, 0.12), "stats": {}},
 	# A Console's screen and its computer mods: each instrument adds its own
@@ -402,7 +402,11 @@ const DEVICES := {
 		"carryable": true, "on_end": true, "sticks": true, "stands": true, "stats": {"face_m2": 0.18},
 		"sockets": [
 			[&"sail", Mast.BOOM_AT + Vector3(0.0, 0.0, -0.07), Vector3.FORWARD],
+			[&"tie", Mast.HALYARD_FOOT, Vector3.FORWARD],
 		]},
+	&"hand_winch": {"label": "Hand winch", "size": Vector3(0.34, 0.36, 0.48), "mass": 3.0,
+		"winch": true, "carryable": true, "sticks": true, "stands": true,
+		"sockets": [[&"tie", Vector3(0.0, 0.04, -0.17), Vector3.FORWARD]]},
 	# A skimmer pilot's seat, stuck on a deck: use on it sits you at the helm (Helm).
 	&"helm_seat": {"label": "Helm seat", "short": "Helm", "size": Vector3(0.5, 0.5, 0.55), "mass": 7.0, "helm": true,
 		"carryable": true, "sticks": true, "stands": true, "sockets": []},
@@ -677,6 +681,7 @@ static func device(id: StringName) -> Device:
 		else (Planter.new() if spec.get("planter", false) \
 		else (Hoverboard.new() if spec.get("board", false) \
 		else ((SurveyReceiver.new() if spec.get("receiver", false) else Radio.new()) if spec.get("radio", false) \
+		else (ManualWinch.new() if spec.get("winch", false) \
 		else (Mast.new() if spec.get("rig", false) \
 		else (Streamer.new() if spec.get("streamer", false) \
 		else (CrowsNest.new() if spec.get("nest", false) \
@@ -686,7 +691,7 @@ static func device(id: StringName) -> Device:
 		else (Console.new() if spec.get("console", false) \
 		else (PowerBox.new() if spec.get("power_box", false) \
 		else (Cutter.new() if spec.get("cutter", false) \
-		else ((SurveyorGuide.new() if spec.get("surveyor_guide", false) else SailingNotes.new()) if spec.get("notes", false) else Device.new()))))))))))))))
+		else ((SurveyorGuide.new() if spec.get("surveyor_guide", false) else SailingNotes.new()) if spec.get("notes", false) else Device.new())))))))))))))))
 	made.set_meta(&"catalog", id)
 	made.label = spec.label
 	made.frame_mass = spec.mass

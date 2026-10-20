@@ -691,3 +691,34 @@ selected-line isolation, recovery, end of haul and ordinary-held-object priority
 (5 s). Its isolated fixture enables deed counting and earns Quick Haul through
 the physical haul, without calling the deed directly. These checks do not yet
 establish final Varran handling with the new articulated boom.
+
+### Sailing disassembly and ground recovery (built 2026-10-20; integration pending)
+
+Playtest reports concern removal of the sail and rope detachment from the board
+(the board corrects the initial report of a sail-end detachment bug). Trace the
+actual pick ray before assigning a cause. All physical boom hits must map back
+to their removable fitted sail, and visible board tie ends must remain pickable
+through normal take interactions. No new detachment action.
+
+A fully loose line lying on the ground can be recovered by aiming at its
+strand and taking it, preserving its total length as a coil. A line still
+anchored at either end must not be silently detached or reeled from an arbitrary
+middle point: take its loose end instead. Snapped halves obey the same rule.
+Check occlusion and reach, plus persistence and no duplicate rope.
+
+**As built and measured.** A real ray against the new articulated spar previously
+returned no removable object; the focused sail-take check failed twice before
+mapping the physical boom back to its fitted sail, then passed (7 s). Occupied
+tie knots receive bounded, front-side, occlusion-checked aiming assistance.
+A device hit now permits the existing small-item assist, fixing a reproduced
+case where a dropped end beside a stake lost to the stake's occupied socket.
+Board-hook detachment followed by floor-end pickup preserves the far anchor (7 s).
+The original exact playtest setup is not known.
+
+Taking the middle of a fully loose strand gathers and reopens that same Line;
+its full length is retained and no second rope appears (6 s). A partly anchored
+line still requires its free end. Ground-strand targeting checks reach and
+line of sight. Actual pulley captures revealed spline overshoot above a sharp
+guide: only the two curve links adjoining the real guide now follow their
+legs, on CPU and GPU. A focused curve check keeps the displayed bend on the
+pulley (9 s); rope forces and paid lengths are unchanged.

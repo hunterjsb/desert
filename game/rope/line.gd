@@ -263,6 +263,20 @@ func _coil_up() -> void:
 	_world.content.add_child(coil)
 
 
+## Only an entirely loose line can be gathered from its middle.
+func recoverable() -> bool:
+	return state == State.LAID and rope != null and _world.ropes.ropes.has(rope) \
+		and ends.size() == 2 and ends.all(func(end: Part) -> bool: return is_instance_valid(end) and _loose(end))
+
+
+func gather(at: Vector3) -> Part:
+	if not recoverable():
+		return null
+	_roll_up(ends[0])
+	coil.global_position = at
+	return coil
+
+
 ## On a ring, or tied at your waist: somewhere the coil can pay out from.
 func _placed(end: Part) -> bool:
 	return end.socket != null or _world.player.waist.holds(end)

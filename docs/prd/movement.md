@@ -1695,3 +1695,44 @@ new Movement 35: a 0.2 m ledge is crossed with feet below 0.32 m peak instead
 of lifting to the full 0.65 m reach (6 s). Actual unseen 1280×720 approach,
 rise, crossing and landing frames were inspected on a solid fixture; the same
 Movement 32 checks pass on the GPU run. Human feel acceptance remains pending.
+
+
+### Manual sail hoist (built 2026-10-20; integration pending)
+
+A removable hand winch fits an ordinary chassis surface. Its halyard goes from
+an accessible sail-head tie over a visible masthead pulley to the winch; this
+is a separate ordinary line from the sheet. Turning the wheel hauls/eases the
+paid rope at a bounded manual rate and the brake holds when released. Sail
+height follows the available halyard path, without commanding boom angle,
+rotation or rig velocity. A disconnected halyard lets cloth lower. A loose
+mast's cloth cannot stay hoisted. Existing sheet, yank and selected-line
+controls retain their behavior; looking at a mounted winch with empty hands
+works that wheel before a waist line. No new binding or powered auto-trimmer.
+
+Rigged starts supply the wheel and halyard. Old save records without hoist
+state retain their old mast toggle until explicitly converted, avoiding
+spawning hardware into an occupied custom deck. New masts use the hoist.
+Focus checks must cover actual wheel input, lowering after disconnection,
+untouched sheet length, and partial-height save/resume; pictures must show
+real attachment and route geometry. The integrated gameplay setups and refreshed tutorial pictures remain part of the landing gate.
+
+**As built.** `ManualWinch` winds an ordinary `Line`, with its existing saved
+endpoints and one real masthead guide. A vertical cloth-height constraint consumes
+the available halyard path; the cloth is not a separate falling rigid body. Its
+weight is the manual hauling load while supported, and that load clears when the
+cloth, route or supporting tie goes away. The physical boom hinge is untouched.
+A queued stroke stops when the operator looks away, leaves reach, opens a menu
+or takes something in hand. The brake retains the achieved paid length.
+
+Focused Godot 4.7.2 checks: physical wheel input raises the sail, preserves sheet
+length, earns All Hands through actual winding, holds with no further input and
+lowers after disconnection (13 s). A separate attention check cancels winding
+on looking away (7 s). Partial-height save/resume retains the same halyard,
+route and winch tie, and continues lowering (11 s). The existing rig round-trip,
+selected untie, yank and furl/rehoist checks also pass. These do not establish
+final default-craft balance or replace combined native CI/playtesting.
+
+Actual unseen GPU captures at 1280×720 inspect the wheel, pulley and partly
+hoisted rig (`look/hoist/hoist.tscn`). The metal/teal drum, wound rope, yellow
+handle, mounting plate and masthead block use the established worn materials.
+The catalog footprint contains the moving wheel and grip.
