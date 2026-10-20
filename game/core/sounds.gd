@@ -77,6 +77,9 @@ const RADIO_STOKER := preload("res://assets/audio/radio_stoker.ogg")
 # The Eye's drones, now and then out of the dark, one or the other.
 const RADIO_EYE := preload("res://assets/audio/radio_eye.ogg")
 const RADIO_EYE_TUNNEL := preload("res://assets/audio/radio_eye_tunnel.ogg")
+# The satellites' own tracks, gonkhub's (the rest still play placeholders).
+const RADIO_SAT_CINDER := preload("res://assets/audio/radio_sat_cinder.ogg")
+const RADIO_SAT_METRONOME := preload("res://assets/audio/radio_sat_metronome.ogg")
 # Weather.
 const STORM := preload("res://assets/audio/storm.ogg")
 const WIND := preload("res://assets/audio/wind.ogg")

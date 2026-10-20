@@ -887,9 +887,6 @@ static var _current: Tuning
 @export var radio_volume_range_db: float = 60.0
 ## A radio is a small speaker: everything it plays loses what's under this, Hz.
 @export var radio_highpass_hz: float = 400.0
-## Under anything you can hear (a song, a god, the beacon), the static sinks
-## this far, dB, by how clearly it comes through; with nothing, it's all there is.
-@export var radio_static_duck_db: float = 18.0
 @export var radio_heard_m: float = 15.0
 ## The relay satellite that carries the music: how high it orbits, in the
 ## moon's radii, and how long a lap takes, minutes of world time. Its carrier
@@ -911,10 +908,19 @@ static var _current: Tuning
 ## often it reads it again, s of world time.
 @export var radio_forecast_minutes: float = 20.0
 @export var radio_forecast_every: float = 5.0
-## With something to report, the weather station reads it aloud this often, s
-## of world time, and at once when a report breaks in; heard this far, m.
-@export var radio_speak_every: float = 30.0
+## The weather station reads its report aloud this often, s of world time,
+## and at once as you tune in (gonkhub, 2026-10-19: "a regular report (every 2
+## real life min)"; world time runs at real time); heard this far, m.
+@export var radio_report_every: float = 120.0
 @export var radio_voice_m: float = 30.0
+## Its advisories: a sandstorm riding a prevailing wind this fast or faster,
+## m/s, is fast; one lasting this long or longer, minutes, looked ahead this
+## far, is large. Measured over 12 seeds and 6 hours each, the prevailing wind
+## is 10.7 m/s at the median and 14.8 at the top tenth; a storm lasts 16
+## minutes at the median and 54 at the top tenth.
+@export var advisory_fast_ms: float = 14.5
+@export var advisory_long_minutes: float = 45.0
+@export var advisory_look_minutes: float = 60.0
 ## The weather station has nothing to report, and plays its clear-skies song,
 ## while no storm is on you or due within this many minutes. Clear for 5
 ## minutes ahead is about half of all clear time; for 20, almost never.
@@ -926,11 +932,40 @@ static var _current: Tuning
 ## The dial: a carrier comes in this wide either side, kHz (its fall to a
 ## sixtieth), and a notch of tuning moves it this far, or a fine step this far.
 @export var dial_width_khz: float = 3.0
-@export var dial_notch_khz: float = 5.0
+@export var dial_notch_khz: float = 10.0
 @export var dial_fine_khz: float = 1.0
-## Tuning brings the view in to the radio's face: this far off it, m,
+## Spun fast, the wheel goes farther a notch (gonkhub, 2026-10-19: "speed up
+## frequency scrubbing with scrollwheel"): a notch within this long of the
+## last, s, the same way, goes a notch farther than that one did, up to this
+## many notches at once. Fine steps never speed up.
+@export var dial_spin_seconds: float = 0.15
+@export var dial_spin_most: float = 5.0
+## Every broadcast is picked up near its home frequency too, at a share of its
+## strength: a skirt this wide either side, kHz (its fall to a sixtieth of that
+## share), so broadcasts near each other overlap and you tune in on the one
+## you want (gonkhub, 2026-10-19). Within this many skirts of a carrier, the
+## dial counts it as the one it hears.
+@export var dial_skirt_khz: float = 20.0
+## A signal flare burns this long, s (Flare). The Surveyor fires its
+## care-package cannon at a lit one it passes this high over, degrees, and the
+## container takes this long to come down, s, landing this near the flare, m,
+## the least and most (Airdrop).
+@export var flare_burn_seconds: float = 60.0
+@export var airdrop_elevation_degrees: float = 35.0
+@export var airdrop_fall_seconds: float = 14.0
+@export var airdrop_land_m: Vector2 = Vector2(12.0, 35.0)
+## A home frequency wanders inside its band, no farther than this, kHz, from
+## one moon day (or one hop) to the next (gonkhub, 2026-10-20).
+@export var carrier_drift_khz: float = 5.0
+@export var dial_skirt_share: float = 0.35
+@export var dial_skirt_reach: float = 1.5
+## Whether every tuning action brings the view in to the radio's face; off
+## since gonkhub, 2026-10-19: "Stop the radio from zooming to the interface
+## when interacting." The fine steps always do ("Bring back the pov zoom when
+## using fine-tune shift scrolling"). It comes in this far off it, m,
 ## through this narrow a lens, degrees, easing in and out over about this
 ## long, s; it stays this long after the last turn, s, while you look at it.
+@export var dial_close_up: bool = false
 @export var dial_close_m: float = 0.45
 @export var dial_close_fov: float = 40.0
 @export var dial_close_seconds: float = 0.35

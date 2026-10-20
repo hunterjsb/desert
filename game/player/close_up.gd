@@ -1,6 +1,7 @@
 class_name CloseUp
 extends Camera3D
-## Tuning brings the radio up close. Turn a radio's dial or its volume, or
+## Fine-tuning brings the radio up close, and with dial_close_up on, any
+## tuning does (it's off: gonkhub would rather the rest didn't zoom). Turn a radio's dial or its volume, or
 ## sweep it, and the view eases in to its face, near it and through a
 ## narrower lens, so its band, needle and knobs fill the view; it eases back
 ## out once you've stopped tuning a while, or look away. A camera of its own,
@@ -28,8 +29,13 @@ func _ready() -> void:
 	process_priority = 10
 
 
-## The tuning actions just worked this radio.
-func tuned(by: Radio) -> void:
+## The tuning actions just worked this radio, finely or not. Only the fine
+## steps bring the view in (gonkhub, 2026-10-19: "Bring back the pov zoom when
+## using fine-tune shift scrolling"), unless dial_close_up has every tuning
+## action do it.
+func tuned(by: Radio, fine := false) -> void:
+	if not fine and not _tuning.dial_close_up:
+		return
 	radio = by
 	_since = 0.0
 

@@ -1,0 +1,137 @@
+extends WeatherProbe
+## Radio probe 32: round Tu, and skimming low. The lantern orbits Tu, not
+## Zan: it's on the air only while it's on Zan's side of the planet, about
+## half of each lap; heard from under Tu, never from Zan's far side, where Tu
+## never rises; fainter than the rest; and never drawn in the sky. The crop
+## survey skims about two km up: from below it crawls along near the horizon
+## and whips across overhead, many times faster; it's drawn far bigger
+## overhead than low down, and shows as its shadow, even in Zan's.
+## By day only the nearest and brightest show: the low hull always, the dim
+## formation never, the relay only as near as its ellipse brings it.
+
+
+func run() -> void:
+	await load_weather()
+	world.player.set_physics_process(false)
+	var tuning := Tuning.current()
+	var sky := Radio.constellation_of(world)
+	var lantern: Satellite = sky.orbits[&"lantern"]
+	var under_tu := Sphere.point(0.0, deg_to_rad(tuning.tu_longitude_degrees))
+
+	# Round Tu: on the air half of each lap, while it faces Zan.
+	var facing := 0
+	var samples := 0
+	var agree := true
+	var t := 0.0
+	while t < lantern.period * 3.0:
+		var on := sky.on_air(&"lantern", t)
+		facing += int(on)
+		samples += 1
+		agree = agree and on == (lantern.facing(t) > 0.0)
+		t += 2.0
+	var share := float(facing) / samples
+	print("the lantern faces Zan %.0f%% of three laps" % (100.0 * share))
+	check(agree and absf(share - 0.5) < 0.05, "on the air only while on Zan's side of Tu, about half of each lap")
+	var near := 99.0
+	var far := -99.0
+	t = 0.0
+	while t < lantern.period:
+		near = minf(near, rad_to_deg(lantern.seen_from(under_tu, t).elevation))
+		far = maxf(far, rad_to_deg(lantern.seen_from(-under_tu, t).elevation))
+		t += 5.0
+	print("from under Tu it stands at least %.0f° up; from Zan's far side at most %.0f°" % [near, far])
+	check(near > 70.0 and far < 0.0, "heard from under Tu, never from Zan's far side")
+	check(sky.tumble(&"lantern", 0.0) < 1.0, "fainter than the rest, from so far")
+	var index := Constellation.voiced().find(&"lantern")
+	var material := world.weather.sky.material
+	var never := true
+	for k in 6:
+		world.time += 200.0
+		await physics_frames(2)
+		never = never and (material.get_shader_parameter("sat_color") as PackedColorArray)[index].a == 0.0
+	check(never, "and never drawn in the sky")
+
+	# Skimming low: crawling at the horizon, whipping overhead.
+	var survey: Satellite = sky.orbits[&"thermal"]
+	print("the crop survey flies %.0f to %.0f m up" % [survey.height(0.0) * survey.radius,
+		survey.height(survey.period * 0.5) * survey.radius])
+	check(survey.height(0.0) * survey.radius < 2500.0, "the crop survey skims about two km up")
+	var p := world.start
+	var overhead := 0.0
+	var low := 0.0
+	t = -survey.period * 0.25
+	while t < survey.period * 0.25:
+		var e: float = survey.seen_from(p, t).elevation
+		var rate := rad_to_deg(_sky_dir(survey, p, t).angle_to(_sky_dir(survey, p, t + 0.5))) / 0.5
+		if e > deg_to_rad(75.0):
+			overhead = maxf(overhead, rate)
+		elif e > deg_to_rad(3.0) and e < deg_to_rad(10.0):
+			low = maxf(low, rate)
+		t += 0.25
+	print("crossing the sky at %.2f°/s near the horizon, %.2f°/s overhead" % [low, overhead])
+	check(low > 0.0 and overhead > low * 5.0, "it crawls near the horizon and whips across overhead")
+
+	# Drawn big overhead, smaller low down, as its shadow.
+	var at := Constellation.voiced().find(&"thermal")
+	var up_at := _first(func(u: float) -> bool: return survey.seen_from(p, u).elevation > deg_to_rad(80.0))
+	world.time = up_at
+	await physics_frames(3)
+	var big: float = (material.get_shader_parameter("sat_form") as PackedVector3Array)[at].y
+	var shown: float = (material.get_shader_parameter("sat_color") as PackedColorArray)[at].a
+	var down_at := _first(func(u: float) -> bool:
+		var e: float = survey.seen_from(p, u).elevation
+		return e > deg_to_rad(5.0) and e < deg_to_rad(12.0), up_at)
+	world.time = down_at
+	await physics_frames(3)
+	var small: float = (material.get_shader_parameter("sat_form") as PackedVector3Array)[at].y
+	print("drawn %.1f points across overhead, %.1f low down; shown at %.2f overhead, sunlit %s" % [big, small, shown,
+		survey.sunlit(up_at, world.weather.day.sun_toward(up_at))])
+	check(big > small * 2.5 and big > 5.0, "drawn far bigger overhead than low down")
+	check(shown > 0.0, "and drawn, its shadow, sunlit or not")
+	var shade := _first(func(u: float) -> bool:
+		return survey.seen_from(p, u).elevation > deg_to_rad(30.0) and not survey.sunlit(u, world.weather.day.sun_toward(u)))
+	world.time = shade
+	await physics_frames(3)
+	check((material.get_shader_parameter("sat_color") as PackedColorArray)[at].a > 0.0, "even in Zan's shadow")
+
+	# By day: only the nearest and brightest.
+	var noon := _first(func(u: float) -> bool:
+		return world.weather.day.is_day(u, world.moon.longitude) and survey.seen_from(p, u).elevation > deg_to_rad(20.0))
+	world.time = noon
+	await physics_frames(3)
+	var forms := material.get_shader_parameter("sat_form") as PackedVector3Array
+	var sounder := Constellation.voiced().find(&"sounder")
+	print("by day: the survey hull shows %.2f, the sounder %.2f" % [forms[at].z, forms[sounder].z])
+	check(forms[at].z == 1.0 and forms[sounder].z == 0.0, "by day the low hull shows, a dim one of the formation doesn't")
+	var relay := sky.relay()
+	var bright := _first(func(u: float) -> bool: return _relay_by_day(relay, p, u) and relay.nearness(u) > 1.6)
+	world.time = bright
+	await physics_frames(3)
+	var near_day: float = material.get_shader_parameter("relay_day")
+	var dim := _first(func(u: float) -> bool: return _relay_by_day(relay, p, u) and relay.nearness(u) < 0.8)
+	world.time = dim
+	await physics_frames(3)
+	print("the relay by day: %.2f near its perigee, %.2f far out" % [near_day, material.get_shader_parameter("relay_day")])
+	check(near_day > 0.2 and material.get_shader_parameter("relay_day") == 0.0,
+		"the relay shows by day only as near as its ellipse brings it")
+
+
+## Whether the relay is up by day, high and sunlit, from point p at world time t.
+func _relay_by_day(relay: Satellite, p: Vector3, t: float) -> bool:
+	var day := world.weather.day
+	return day.is_day(t, world.moon.longitude) and relay.seen_from(p, t).elevation > deg_to_rad(30.0) 		and relay.sunlit(t, day.sun_toward(t))
+
+
+## Which way it is in the sky from point p at world time t.
+func _sky_dir(orbit: Satellite, p: Vector3, t: float) -> Vector3:
+	return (orbit.at(t) - p).normalized()
+
+
+func _first(wanted: Callable, from := 0.0) -> float:
+	var t := from
+	while t < from + 3.0 * 24.0 * 3600.0:
+		if wanted.call(t):
+			return t
+		t += 1.0
+	check(false, "found a moment")
+	return from

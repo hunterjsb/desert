@@ -1,0 +1,9 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://look/satellites/satellites.gd" id="1_satellites"]
+[ext_resource type="PackedScene" path="res://game/world/world.tscn" id="2_world"]
+
+[node name="SatellitesTest" type="Node"]
+script = ExtResource("1_satellites")
+
+[node name="World" parent="." instance=ExtResource("2_world")]

@@ -26,9 +26,47 @@ static func carriers(gods: Gods, t: float) -> Array[Array]:
 	return out
 
 
+## A home frequency that wanders inside its band from one spell to the next
+## (a moon day for most, a hop for one that hops), never more than `step`
+## kHz from where it was (gonkhub, 2026-10-20: "ensure a 'home frequency' cannot
+## shift more than 5khz from where it was last"), turning back off the band's
+## edges: a walk from the run's start, the seed's steps. `walked` holds each
+## spell's frequency as far as worked out, the caller's own for this carrier;
+## `key` seeds it. Spells before the first are the first.
+static func walk(walked: Array, key: Array, spell: int, band: Vector2, margin: float, step: float) -> float:
+	var low := band.x + margin
+	var high := band.y - margin
+	var rng := RandomNumberGenerator.new()
+	if walked.is_empty():
+		rng.seed = hash(key + [0])
+		walked.append(snappedf(rng.randf_range(low, high), 1.0))
+	while walked.size() <= spell:
+		rng.seed = hash(key + [walked.size()])
+		var next: float = walked[-1] + rng.randf_range(-step, step)
+		# Off an edge it turns back, by as much as it would have gone past.
+		if next < low:
+			next = low + (low - next)
+		elif next > high:
+			next = high - (next - high)
+		walked.append(snappedf(clampf(next, low, high), 1.0))
+	return walked[maxi(spell, 0)]
+
+
 ## How much of a carrier a radio tuned `off` kHz from it gets, 0 to 1.
 static func pull(off: float, width: float) -> float:
 	return exp(-2.0 * pow(off / width, 2.0)) if width > 0.0 else (1.0 if off == 0.0 else 0.0)
+
+
+## How much of a broadcast a radio tuned `off` kHz from its carrier hears, 0
+## to 1: all of it on its carrier, falling off within dial_width_khz, and a
+## share of it farther out across its skirt, so near ones overlap.
+static func heard(off: float, tuning: Tuning) -> float:
+	return maxf(pull(off, tuning.dial_width_khz), tuning.dial_skirt_share * pull(off, tuning.dial_skirt_khz))
+
+
+## How far from a carrier the dial still counts it as the one it hears, kHz.
+static func reach(tuning: Tuning) -> float:
+	return maxf(tuning.dial_skirt_khz * tuning.dial_skirt_reach, tuning.dial_width_khz * 2.0)
 
 
 ## How strong a god's signal arrives over `metres` of ground, 0 to about 1.5:

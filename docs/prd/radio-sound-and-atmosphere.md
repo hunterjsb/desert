@@ -93,6 +93,15 @@ it and it crackles.
   and plays from you on its own battery, its line of words showing, and use on it in the
   inventory turns the dial (Survival). Its spoken bearings, a beacon's or where storms come
   from, are by the moon's north, so past a pole they agree with the compass.
+- **In your ears** (gonkhub, 2026-10-19: "when the radio is inside the player's inventory, play its audio
+  directly to the player," and "the volume level in the inventory should match when held very close to the
+  player ... that way, there is not a jump in audio when they stow it"): carried, everything it plays,
+  its dial's clicks too, sounds from straight ahead of your eyes, as far off as a radio held as near as
+  bring near takes it (`Hands.nearest_hold`, 0.5 m or a little more for a bigger thing), so it's as loud
+  as one held that close and stowing it changes nothing you hear. It turns with you, and has no panning
+  while carried (gonkhub: "ensure camera movement will not affect panning"), so however fast you look round
+  it never swings from side to side; it's placed again every frame. Its voices sound
+  from its middle, the point your hands hold, carried or not. Probe: radio 24.
 - **Not yet:** bumps crackling, distorted tracks in storms, more channels, lore, oracles,
   frequencies as finds and antennas.
 
@@ -138,8 +147,10 @@ terminals" by Hunter's call. The squatting oracles above are now the gods.
   ([Devices & mods](devices-and-mods.md)).
 - **Carriers:** the music at 1020 kHz and the beacon at 1930, both behaving as above, and the seven
   gods. The weather station is **the Walker** (Stations, below): its band is where the forecast is.
-- **Each god's carrier** lies inside its band and moves to a fresh place each moon day, from the seed,
-  so it has to be found. A signal comes in within about 3 kHz either side (`dial_width_khz`).
+- **Each god's carrier** lies inside its band and wanders each moon day, from the seed, so it has to be
+  found; since 2026-10-20 never more than 5 kHz from where it was the day before (`carrier_drift_khz`;
+  gonkhub: "ensure a 'home frequency' cannot shift more than 5khz from where it was last"), turning back off
+  the band's edges (`Dial.walk`). The satellites' carriers wander the same way, the ghost's by the hop. A signal comes in within about 3 kHz either side (`dial_width_khz`).
 
 | God | Band, kHz | Where it stands | Worth hearing | What it says then |
 |---|---|---|---|---|
@@ -209,19 +220,41 @@ terminals" by Hunter's call. The squatting oracles above are now the gods.
   further the carrier slides off where you tuned, up to 6 kHz either way, so you chase it (**warping**,
   with the tones wobbling too), and the more often it drops out, up to 60% of the time
   (**cutting**). A weak signal frays the same way. Below the floor it's only static.
-- **Spoken reports** (Hunter: "implement text-to-speech weather broadcast readouts"): with something to
-  report, the weather station reads it aloud through the system's text-to-speech (Godot's, the OS voice),
-  at once as a report breaks in on Clear Skies and every 30 s after (`radio_speak_every`); never while it
-  holds. Units are read in words, and words a storm garbles are lost to "...". You hear the nearest radio
-  on the weather station within 30 m (`radio_voice_m`), as loud as its knob, its signal and the distance
-  allow; tuned away or left behind, the voice stops. A report already reaching you is read to its end
-  through a dropout. The OS voice can't be placed in the world or run through the static: it's heard
-  flat, as a voice in your ear, and headless there's none.
+- **Spoken reports** (Hunter: "implement text-to-speech weather broadcast readouts"; reworked by gonkhub, 2026-10-19:
+  "It doesn't always read out the whole thing, often missing numbers or words. Weather channel should give
+  a regular report (every 2 real life min) on current time of day, wind speed, current temperature, and
+  interrupt at any time to issue a weather advisory - for anomalous weather events we may add in the
+  future, or for abnormally large/fast sandstorms"). Read aloud through the system's text-to-speech
+  (Godot's, the OS voice).
+  - **Why words went missing:** each word was lost to "..." at a chance of how unclean the signal was,
+    and clean falls with distance and with tuning off a carrier too, so on a clear day a far Walker lost
+    its numbers; and the voice, taking up a radio the tick its report began, counted that report as heard
+    already, so the report as you tuned in was never read. Now every word is read, whatever the signal
+    (interference is in the sound), and a report begun within 3 s is read to someone just come in earshot.
+  - **The regular report**, every 2 minutes (`radio_report_every`, 120 s of world time, which runs at real
+    time) and at once as you tune in, Clear Skies or not: "Weather station. Local time 14:05. Wind 7 metres a
+    second from the north-west. Temperature 31 degrees.", then its outlook, the storm it's in or the next
+    ("A storm from the west in 6 minutes, winds to 27 metres a second, for 12 minutes") or "Clear for 20
+    minutes and more". All read from the world where the radio stands; units in words.
+  - **Advisories** (`game/radio/advisories.gd`) break off whatever's being read, the moment one's due,
+    once per event: "Weather advisory. A fast sandstorm from the north-west, in 4 minutes, moving 16 metres
+    a second, lasting 30 minutes. Take shelter." A sandstorm on you or due within the forecast is **fast**
+    riding a prevailing wind of 14.5 m/s or more (`advisory_fast_ms`) and **large** lasting 45 minutes or
+    more (`advisory_long_minutes`), looked ahead an hour (`advisory_look_minutes`). Measured over 12 seeds
+    of 6 hours, the prevailing wind is 10.7 m/s at the median and 14.8 at the top tenth, and a storm lasts
+    16 minutes at the median and 54 at the top tenth, so each is about the top tenth. Each fresh reading is
+    checked once, as soon as the signal's through. A storm warned of before it came counts as the same
+    storm once it's on you, until it clears. New kinds of weather add a check of their own; the anomaly
+    stays out on purpose, since no forecast speaks of it.
+  - You hear the nearest radio on the weather station within 30 m (`radio_voice_m`), as loud as its knob,
+    its signal's loudness and the distance allow; tuned away or left behind, the voice stops. A report
+    reaching you is read to its end; an advisory cuts in over it. The OS voice can't be placed in the world
+    or run through the interference chain: it's heard flat, as a voice in your ear, and headless there's none.
 - **The Eye's drone** (Hunter: "implement this as a random ambient track that can play from 'the eye'"):
   the Eye's frequency begins a run silent, then now and then plays Hunter's drone (`radio_eye.ogg`, 66 s)
   through once, each silence before it 2 to 8 minutes (`eye_quiet_minutes`), the seed's pick. **Two
-  drones** (Hunter, 2026-10-18: "put this as a random ambient track for the eye"): each time it plays,
-  the seed picks it or Hunter's tunnel ambience (`radio_eye_tunnel.ogg`, 164 s), levelled to match, and
+  drones** (gonkhub, 2026-10-18: "put this as a random ambient track for the eye"): each time it plays,
+  the seed picks it or gonkhub's tunnel ambience (`radio_eye_tunnel.ogg`, 164 s), levelled to match, and
   it plays through to its own end. Between
   drones there's nothing on its frequency, not even tones. Like the Eye itself it comes down by sky wave,
   so it's heard at night; by day it's on, too faint to hear. It runs on its own schedule
@@ -236,13 +269,25 @@ terminals" by Hunter's call. The squatting oracles above are now the gods.
   moves the dial to that carrier once the radio is back in its world, the weather station's to the
   Walker's carrier that day, with the save's version unchanged.
 - **Probes:** radio 6 (each god has its bearing), 7 (storms garble the gods), 8 (the dial finds each
-  god), 9 (useful only in its window), 10 (the volume knob), 11 (clear skies, and the Stoker's song), 12 (the clear-skies scenario), 13 (the relay carries the music), 14 (spoken reports, and the meltdown), 15 (storms tell you which way), 16 (the Eye's drones), 17 (the relay at night), 18 (static sinks under a signal), 19 (the music goes in a far-side
-  storm), 20 (tuning shares reel in with the reel) and 23 (each god signs its own). Probes 1, 2, 4 and 5 tune by the dial, and so do Survival 12, Profile & saves 13 and
+  god), 9 (useful only in its window), 10 (the volume knob), 11 (clear skies, and the Stoker's song), 12 (the clear-skies scenario), 13 (the relay carries the music), 14 (spoken reports, advisories and the meltdown), 15 (storms tell you which way), 16 (the Eye's drones), 17 (the relay at night), 18 (static only when nothing plays), 19 (the music goes in a far-side
+  storm), 20 (tuning shares reel in with the reel), 23 (litanies and the survey log), 24 (carried, in your ears), 25 (skirts), 26 (the constellation), 27 (marks), 28 (always two overhead), 29 (the irregular ones), 30 (the lamps and the mark), 31 (the jammer and the burn) and 32 (round Tu, and skimming low). Probes 1, 2, 4 and 5 tune by the dial, and so do Survival 12, Profile & saves 13 and
   Devices & mods 28, the power page's row.
 - **Not yet:** a god's own voice beyond tones, frequencies as finds, antennas, and the far end's
   signal.
 
 ### The dial in your hands (Hunter, 2026-10-18; built)
+
+*Since 2026-10-19 the close-up comes only with the fine steps* (gonkhub: "Stop the radio from zooming to the
+interface when interacting," then "Bring back the pov zoom when using fine-tune shift scrolling"): the
+wheel's notches, use's sweep, the next mark and the volume leave the view your own, and shift's fine steps
+ease it in as below; with `dial_close_up` on every tuning action does (the dial look-test turns it on to
+shoot it). The tuning knob goes once round across the whole dial, 0 to 2000 kHz (gonkhub, 2026-10-20: "make
+the visual for the knob turning match the bandwidth, so going from 0-20k is one full knob turn"); it went
+round every 100 kHz. And the wheel is quicker (gonkhub: "speed up frequency
+scrubbing with scrollwheel"): a notch is 10 kHz (`dial_notch_khz`, was 5), and spun fast, a notch within
+0.15 s of the last the same way goes a notch farther than that one did, up to five at once, 50 kHz
+(`dial_spin_seconds`, `dial_spin_most`); rested or turned back, a notch is a notch again. Fine steps stay
+1 kHz and never speed up. Radio probe 30 checks the spin, and 21 that only a fine step closes in.
 
 *Hunter: "the radio dial, we should have you zoom in and turn the physical dial, and make sure we tie
 our god stations to their homes."* Tuning brings the radio up close and you turn its dial itself: the
@@ -295,29 +340,208 @@ station is at its home, its signal and bearing from that landmark wherever you h
 - **Probes:** radio 21 (tuning brings the dial close: in and out, the knob and needle by the notch, held
   and on a Console) and 22 (each god at its home, against where the world lays it).
 
-### Signatures and litanies (2026-10-18; built, on the `signatures` branch)
+### Sound only, the constellation, skirts and marks (gonkhub, 2026-10-19; built, on the `signatures` branch)
 
-*Fleshing out the broadcasts.* Every god but the Eye had sounded the same three tones, only pitched
-apart, so a carrier told you nothing until you read its line. Now each signs its own, and what it says
-outside its window is a liturgy with a shape, not a shuffle.
+*gonkhub: "Remove all text dialogue from the radio. Audio only." "Let's have many satellites orbiting the
+moon, each with different broadcasts on different frequency ranges." "Ensure each broadcast can be
+picked up near its home frequency at reduced signal strength ... overlapping signals that each have a
+home frequency so the player can focus on what they are trying to listen to, but the whole frequency
+range is dynamic." "Most broadcasts should be cosmetic ... Many ambient tracks will be tied to some
+environmental factor ... like an LFO." "Each satellite in orbit needs to be visually distinct." "Allow the
+player to mark frequencies, and give them a name + color. If the player presses f when holding the radio,
+they swap to their next saved frequency."*
 
-- **Interval signals** (`game/radio/signature.gd`). Between its words, every 8 s, a god sends a few
-  notes nobody else sends, as old stations did, so you learn whom you've found by ear and the dial still
-  names nothing. Made in code, mono, peaking at -25 dBFS as `radio_tones.ogg` did; a storm still wobbles
-  their pitch.
+- **Sound only.** Nothing the radio says is written in the view any more: the line low in the view is
+  gone. The weather station still reads its reports aloud (that's sound), and the look-at line still names
+  the dial's frequency, "Radio · 262 kHz", which is the set's own reading rather than anything said.
+  What a god would say is still worked out (`Radio.said`, `reception.text`) for the spoken report, the dev
+  overlay and the probes, and is never shown.
+- **Skirts.** Every broadcast, the gods', the music, the beacon and the satellites', is heard whole on its
+  carrier, falling off within `dial_width_khz` (3), and at a share of its strength farther out across a
+  skirt: `dial_skirt_share` (0.35) over `dial_skirt_khz` (20) either side (`Dial.heard`). So 10 kHz off a
+  carrier you hear about a fifth of it, at 50 kHz nothing. The dial counts the nearest god, music or beacon
+  within 30 kHz (`Dial.reach`) as the one it hears, so tuning toward one brings it in faint, then whole.
+- **The constellation** (`game/radio/constellation.gd`). Thirteen satellites, the relay among them, each from an
+  era, in a band of its own (its carrier a fresh place inside it each moon day), on a route of its own,
+  and each its own in the night sky by colour, shape (a point, a cross, a bar, a ring, a pair or a
+  diamond) and size; one blinks. A radio hears each while it's over the horizon
+  and on the air, through the storm on the way as the relay is, all at once (`SkyVoices`, a radio's child):
+  between two near carriers you hear both, the nearer louder. Some bands overlap the gods' and each other's
+  on purpose. So what's on the dial keeps changing with the hour and the sky.
+- **The irregular ones** (gonkhub, 2026-10-19: "Give the remaining satellites outside the formation highly
+  irregular orbits/behaviors"). The relay, the ghost and the cinder, those outside the formation, fly ellipses by
+  Kepler's equation (`Satellite.at`), swooping low and fast at perigee and hanging high and slow at apogee,
+  and their orbits turn as they go: the plane swings round the pole (`precess`, degrees a lap) and the
+  perigee wanders round the ellipse (`apsides`), so every lap takes a new route. That's loose: a real
+  moon's pull wouldn't turn an orbit so fast. On their ellipses the Doppler slide follows how fast each
+  nears or draws away, so a satellite climbing outward as it rises slides down, not up.
+  - **The ghost:** eccentricity 0.75, from 0.75 to over 11 radii up, sweeping 2.9°/s round the moon at
+    perigee and 0.23 at apogee; its plane swings 110° a lap and its perigee 80°. It's on the air **in fits**,
+    about 30% of the time, in spells of uneven length (three slow waves out of step decide it), not on a
+    timetable. Its carrier **hops** round its band every 14 to 27 s, the gaps never even. It **tumbles**
+    about every 3 s: its signal swells and fades to a fifth, and in the sky it dims and flashes.
+  - **The relay:** eccentricity 0.3, its plane swinging 40° a lap and its perigee 70°, and a slow tumble,
+    the music swelling and fading by up to 30% every 20 s and the point glinting. A run still begins with it
+    over where it began; it still carries the music at 1020 kHz.
+  - **The cinder** (added 2026-10-19), a spent wartime tug: its orbit **decays**, sinking 1.6 radii over five
+    laps of 4.4 minutes until a burn throws it back up, over and over (`decay`), on a slight ellipse
+    swinging round 160° a lap. Its roar follows how low it is (a new LFO source, `height`, 0 at the lowest
+    its orbit takes it and 1 the highest): skimming the air it's bright and high (the low-pass open to
+    about 6 kHz), far out a dull rumble (under 600 Hz). It spins, glinting. Its band, 1150–1175 kHz, sits
+    under the Stoker's skirt. The ghost's pitch follows its height too, lower far out.
+  - **The cinder's burn:** as its decay bottoms out it fires, flaring six times as bright in the night sky for
+    four seconds (`Constellation.burning`), and climbs back up.
+  - **Babel jams** (added 2026-10-19). The wartime jammer, though in the formation, still does its job: while
+    it's up and on the air it sprays static over the dial round its carrier, up to 0.7 of full static on it
+    and falling off over 60 kHz either side (`Constellation.jamming`), and whatever else is near it, a god or a
+    satellite, comes through that much less clean, buried. Far along the dial there's none of it, and babel
+    doesn't bury itself. Its band, 1290–1340 kHz, sits above the Stoker's and the cinder's, so when it's
+    overhead those two are hard to hear.
+  - **Brighter near.** Every satellite looks as bright as the square of how near it is against its mean
+    distance, and a little bigger (`Satellite.nearness`, a quarter to four times): the ghost flares four times
+    over at perigee and fades to a third at apogee; a circle looks the same all round.
+  - **The crop survey skims low** (gonkhub, 2026-10-19: "an extremely low orbiting object. Low enough that its
+    silhouette is partially visible against its own lighting, and it's much larger in the night sky than the
+    others ... moving slowly near the horizon then quickly crossing the center of the sky"). Thermal left the
+    formation (the sounder, a StarCom ionospheric sounder, took its plane) for an orbit of its own 1.9 km up
+    (0.08 radii), a lap in 6.37 minutes, its plane swinging 37° a lap, so its track sweeps over every place in
+    time instead of retracing the same lines every hour (a 6-minute lap would have). A run begins with it
+    passing over. From below it crawls along near the horizon, about 2°/s, and whips overhead at 17°/s, from
+    the geometry alone. That low it's in Zan's shadow nearly all night, so it lights itself: the sky draws a
+    new shape, HULK, an H (gonkhub: "make it H shaped," "a thin connecting hull attached to two sharp uprights
+    with lights at the ends," then "Remove the glow and dim the lights, and make it larger so it's mostly
+    shadow blocking out the background stars, with only the small orange lights on the uprights"): a dark
+    hull joining two broad uprights that taper to points at both ends, mostly shadow, blotting out the stars
+    behind it and three quarters of the night's own glow (`HULL_SHADE`), unlit: it had a small dim orange
+    light at each of its four points until gonkhub's "remove the surveyor's lights" (2026-10-20), and now
+    it's only a shadow, but for its cannon's muzzle flash ([Salvage](salvage-and-ruins.md)). Drawn 16 points across overhead, as small
+    as a fifth of that out toward the horizon (by how far it is from you), far bigger than any other. It's seen within about 6 km of its track,
+    so from any one place it's a rare, short sight, and overhead rarer still.
+  - **The lantern** (gonkhub, 2026-10-19: "a satellite orbiting Tu, its broadcast accessible when it is on the
+    side of the planet facing Zan. Not visible though"): StarCom's Tu survey probe, circling Tu 60 moon radii
+    off, 1.8 of Tu's radii out, a lap in 11 minutes, its plane holding the line to Zan, so it swings round in
+    front of Tu and behind it. It's on the air only while it's on Zan's side of Tu, half of each lap, and only
+    where Tu is over the horizon, so never on Zan's far side; it comes in at 0.6 of the others' strength, its
+    tone clearest and loudest straight between Tu and Zan (a new LFO source, `facing`). The sky never draws it.
+  - **By day** (gonkhub, 2026-10-20: "the closest and brightest satellites should still be visible during the
+    daytime"): a satellite shows against the day sky once it looks bright enough, its light times how near
+    it is, from 0.3 and fully at 0.5 (`SkyView.DAY_FROM`, `DAY_FULL`), drawn three times as bright as at
+    night so it stands out (`DAY_BOOST`). So the formation, at 0.28 to 0.33, stays out of the day sky but
+    for a faint gold tollgate; the relay shows as its ellipse brings it near, the ghost at its perigee and
+    the cinder sinking low; and the crop survey's hull always, a dusky H against the bright sky with its
+    four lights at the points.
+  - The formation stays as it was, circles that don't turn, so its guarantee holds.
+- **Always two overhead** (gonkhub, 2026-10-19: "there is always at least two active signals throughout a
+  full day night cycle"). Eight of them fly in a formation (`Constellation.FORMATION`), laid out as real
+  constellations are (a Walker pattern): eight planes 45° apart round the pole, one satellite in each,
+  each 2/8 of a lap on from the last, all tilted 55°, 5 radii up, a lap in 9 minutes, always on the air.
+  Searched over patterns of 5 to 8 satellites (offline, numpy), it's the least that keeps at least two of
+  them 8° or more over the horizon everywhere on the moon at every moment, twice the margin asked; and
+  since that holds for the formation however it stands, the moon's turn under it can't break it. The seed
+  turns and mirrors the whole formation, so each run's sky is its own. They share one lap (different laps
+  would drift them out of formation), so they differ by route, colour, shape and size; the relay and the
+  ghost keep laps of their own. Before, on independent orbits, fewer than two were up 31.5% of the time
+  and sometimes none. Now, over 16 seeds, 46 places each from pole to pole and four days every 4 s
+  (radio probe 28), never fewer than two: two 20.5% of the time, three 42.5%, four 33.8%, five or six 3%.
+  Storms can still cut them, as they do any signal. Use's sweep stops on the satellites overhead too.
 
-  | God | Its signal |
-  |---|---|
-  | The Quartermaster | Its call in Morse, Q M (`--.- --`), keyed hard at 760 Hz |
-  | The Walker | Four steps at its pace, heel and toe, a third of a second apart |
-  | Mother Cistern | Three drops falling into a basin, each sliding down an octave |
-  | The Almanac | The market bell: a rising C major arpeggio |
-  | The Ledger | A tally of five quick ticks, then the till's two notes |
-  | The Stoker | A boiler alarm, two tones, three times |
-  | The Eye | Nothing. It never announces itself, and between drones it's silent as before |
+  | Satellite | Era | Band, kHz | Looks | Orbit | Sound (placeholder) | Turned by |
+  |---|---|---|---|---|---|---|
+  | The relay | colonial | 1020 | white point, glinting | an ellipse (0.3) about 3 radii, 6.5 min, swinging round | the music, as before | a slow tumble: swells and fades every 20 s |
+  | Thermal | Frontier Ag | 320–350 | a great dark hull against its own amber running lights | skimming 1.9 km up, 6.37 min, swinging 37° a lap; over the start as a run begins | tunnel drone | pitch by the temperature; tone by its height |
+  | Sounder | StarCom | 560–590 | lime diamond | formation, plane 1 | the storm's roar | pitch wandering; brighter by day |
+  | Lantern | StarCom | 1590–1620 | never seen | round Tu, 60 radii off, 11 min; heard only on Zan's side of Tu | the day song, slowed | faint; clearest straight between Tu and Zan |
+  | Pendulum | StarCom | 700–730 | cyan cross | formation, plane 2 | a ping, pulsed | its tick quickening toward the eclipse |
+  | Windsock | StarCom | 1032–1060 | green ring | formation, plane 3 | the wind | loudness and tone by the wind; grit by a storm |
+  | Choir | colonial | 430–470 | lavender pair | formation, plane 4 | the Eye's drone | pitch sinking with the sun; tone drifting |
+  | Babel | the war | 1290–1340 | red diamond, blinking | formation, plane 5 | tones, chirped | pulse and pitch wandering; grit by an anomaly |
+  | Lullaby | colonial | 860–895 | small pink point | formation, plane 6 | the night song | slower in the cold; louder after dark |
+  | Tollgate | Mon | 1500–1540 | large gold cross | formation, plane 7 | the shield's hum | pitch by the sun; tremolo drifting |
+  | Ghost | unknown | 60–100 | dim blue ring, flashing | a wild ellipse (0.75), 0.75 to 11 radii up, 23 min, swinging round | tunnel drone, low | on in fits, hopping its band, tumbling; loudest in a storm |
+  | Cinder | the war | 1150–1175 | large ember point | decaying: sinks 1.6 radii over 5 laps of 4.4 min, then burns back up; swinging round | **gonkhub's "Cinder"** (`radio_sat_cinder.ogg`, 3 min 40 s, looping) | brighter, louder and a little higher as it sinks; spinning |
+  | Metronome | Frontier Ag | 1695–1735 | mint bar | formation, plane 8 | **gonkhub's "satellite1"** (`radio_sat_metronome.ogg`, a 2 s loop) | pitch rising a little with the sun (0.9 to 1.1); tone by its height |
 
-  The weather station's own tones are the Walker's steps. A Console's radio still chimes with the old
-  tones when the Console speaks.
+  **The LFOs.** Each binding maps a source, 0 to 1, onto a target between two values. Sources: the
+  temperature where the radio is (-40 to 70 °C), the sun (local midnight to noon), night, the wind (to
+  25 m/s), the time to the next eclipse, the storm, an anomaly, the satellite's height, and a slow drift of
+  its own. Targets: pitch, loudness, tone (a low-pass, swept by octaves), grit (a distortion), tremolo and
+  pulse rate. Tone and grit are on a bus of the satellite's own (`RadioSky_<id>`) into the radio's. The
+  thermal survey, the timing beacon and the windsock are the useful ones, by ear; the rest are flavour or
+  gibberish. **Most tracks are placeholders**, sounds the game already has, until gonkhub's: each is one line
+  in the roster (`sound.track`, with a trim, `sound.db`).
+- **Interference as sound** (gonkhub, 2026-10-19: "Only plays static if nothing is currently playing on the
+  radio. And instead of just reducing volume and increasing static for interference, let's run signals
+  through distortion based on their interference ... bit crushing or just like glitchy effects ... a lot
+  more layered and a lot more textured"). Each signal now has two numbers apart: how loud it plays,
+  only by how near its carrier the dial stands (`share`), and how dirty it comes through (`dirt`, 0 to 1,
+  `Garble.dirt`): how weak it is where it arrives, how much a storm on the way lets through, how much a
+  jammer buries it, an anomaly near (up to half), and being off its carrier out on its skirt (up to a
+  third). Loudness no longer falls with interference: a signal plays as loud as the dial has it, chewed up
+  as dirty as it is, fading away only once it's all but lost (dirt past 0.92), or dropping out when the
+  storm cuts it (`Radio.audible`).
+  - **The chain** (`game/radio/garble.gd`), on the bus a signal plays through: the music, a god's song and
+    tones on `RadioSignal`, each satellite on its own after its tone and grit. In order: a **narrowing band**
+    (the lows thinning to 900 Hz and the highs closing from 16 kHz to 1.3 kHz, ringing a little, as weak AM
+    does); a **crusher** (Godot's lo-fi distortion, the bits and the rate falling away, down to 700 Hz kept);
+    **grit**, an overdrive, past a little dirt; a **warble**, a phaser sweeping up to 4 Hz; and a **smear**,
+    short echoes feeding back, past a quarter dirt. Its settings **jump** in small uneven steps, a fresh roll
+    every 0.09 to 0.36 s, the dirtier the oftener, so it never sits still.
+  - **Glitches** (`game/radio/glitch.gd`), on each voice, past a little dirt, up to about five a second at the
+    worst: it **stutters** (a fragment of 40 to 120 ms caught and repeated two to six times, then caught up
+    with where it would have been, so a station keeps its time), **drops out** for a moment, **jumps** in
+    pitch, or **drags** down and back like a finger on the reel.
+  - **Static only when nothing plays.** The hiss, a jammer's spray and an anomaly's crackle are heard only
+    while nothing comes through: gone once what the radio hears plays at 0.12 of full (from 0.02). Between
+    stations, or with the way blocked, static is all there is. `radio_static_duck_db` is gone with the
+    ducking it set.
+  - Which god, satellite or song is useful, its window, its words and the spoken report are unchanged: they
+    still go by `clean`, which still falls with all of it together.
+  - One `RadioSignal` bus serves every radio, and one bus each satellite: two radios playing at once share
+    their chains, the last to listen setting them. A satellite or god heard on two radios at once is rare.
+- **Signal lamps** (added 2026-10-19). Under the band window a row of eight lamps, green climbing to amber,
+  lights as strongly as the strongest thing the radio hears comes through, the last partly, following in
+  about a tenth of a second: all lit on the music with the relay high, none between carriers, dark when off.
+  So you find a station by eye as well as by ear, and still nothing is written. (`Radio.heard`, the lamps
+  under `LAMPS`.)
+- **The look-at line** names a mark: on a frequency you've marked, "Radio · 1040 kHz · Windsock", within a
+  carrier's width of it. A radio with a battery used to show the battery's charge there instead of its
+  frequency (the charge came first in `Hands._state`); its frequency now comes first, as this PRD has it.
+- **Marks** (`Radio.toggle_mark`). With a radio in your hands, **M** (`mark_frequency`) marks where its dial
+  stands, in a bright colour picked at random, with a soft click; pressed on a mark (within a carrier's
+  width), it takes it off. No menu, nothing to type (gonkhub, 2026-10-19: "Remove the marker menu. Just
+  place a randomly colored marker when m is pressed, or remove the marker if one is already present"; the
+  panel with a name and eight colours it replaced is gone). A mark is named by its frequency. Marks are kept in the profile (`Profile.marks`), so they last across runs, and show on every
+  radio's band as a short tick in their colour, along the top of the window over the numerals. **With marks, use (F) on a radio in your hands goes to the
+  next mark** above where the dial stands, round to the lowest past the highest, in place of its sweep;
+  with none, use sweeps as ever. A mark within a carrier's width of another replaces it.
+- **Probes:** radio 25 (broadcasts overlap on their skirts), 26 (the constellation: distinct looks and
+  routes, the dial changing over six hours, every satellite heard, the LFOs following the heat and the
+  eclipse, one played overhead, the sky drawing them), 27 (marked frequencies), 28 (always two
+  overhead), 29 (the irregular ones: the ghost, the relay and the cinder), 30 (the lamps and the
+  mark's name), 31 (the jammer and the burn) and 32 (round Tu, and skimming low). Radio 4 is now the storm getting into the music, and 18
+  static only when nothing plays. Radio 13 checks the relay's slide by nearing and drawing away. Radio 8's sweep counts
+  the satellites overhead.
+- **gonkhub's own tracks** (2026-10-20, from `Desktop/ableton/exports`): the cinder's "Cinder" and the
+  metronome's "satellite1" are in (`assets/audio/CREDITS.md`); a radio's 400 Hz high-pass takes the low end
+  off them, as off everything it plays. The cinder's pitch now swings 0.9 to 1.1 with its height, and the
+  metronome's 0.9 to 1.1 with the sun, gentler than their placeholders'.
+- **Not yet:** gonkhub's own tracks for the other satellites, satellites that carry spoken or encoded data, and
+  marks shown anywhere but on the band and the look-at line.
+- **Fixes in passing** (2026-10-19): the sky drew the relay and the satellites behind Tu, as it does the
+  stars, though they orbit Zan far nearer; they show in front of it now. A radio taken out of the world
+  stops its satellites' voices too. A radio works out the storm on the way only for satellites on the air,
+  over the horizon and near its dial, not all of them every tick.
+- **Look-test:** `look/satellites` waits on a clear night with several satellites up and lit, from over the
+  dunes, and shoots each in the middle of the frame with a crop round it blown up four times, printing how
+  high each is, how far from Tu and how bright it shows; `look/dial` marks three frequencies in a profile of
+  its own, so their ticks and the lamps show.
+
+### Litanies and the survey log (2026-10-18; built, on the `signatures` branch)
+
+*Fleshing out the broadcasts.* What a god says outside its window is a liturgy with a shape, not a
+shuffle. (Interval signals, a few notes of each god's own in place of the shared tones, were tried and
+scrapped by gonkhub, 2026-10-19: every god still sounds the same tones, pitched apart.)
+
 - **Litanies.** Outside its window a god recites its litany in order, one line every 6 s, and starts
   over, word for word, as its priests kept it once they no longer knew what the words were for (the
   endings session: "debugging is ritual, kept word for word"). Each opens and closes the same way, so
@@ -330,10 +554,9 @@ outside its window is a liturgy with a shape, not a shuffle.
   the leg it's on (km walked since the clock began), where it stands as latitude and longitude, and the
   steady wind at its feet, from the field there. It's true, and it's the weather far off, on the Rim where
   the Walker is. It's never in the spoken report.
-- **Probe:** radio 23 (each god signs its own: each signal its own and short, the Quartermaster's in
-  Morse, levelled as the tones were, the one the radio plays when tuned; the litany opening and closing
-  each round with a new challenge; the survey log's leg and wind true, on the line and never spoken).
-- **Not yet:** the living city's coded tones, a god's voice beyond its signal and its line, and the
+- **Probe:** radio 23 (litanies and the survey log: the litany opening and closing each round with a
+  new challenge; the survey log's leg and wind true, on the line and never spoken).
+- **Not yet:** the living city's coded tones, a god's voice beyond its tones and its line, and the
   survey log's terrain.
 
 ### Stations: the Walker and the living city (agreed, 2026-10-18 spec)
@@ -347,7 +570,7 @@ frequency, a range and what it says; its signal falls off with distance.
   built:* the weather station on the dial (above) is the Walker's feed, in its 230–290 kHz band,
   low enough that its ground wave carries across the whole moon, sending second only to the Ledger,
   and found by sweeping the dial. It gives the forecast where the radio stands, and at dusk or with
-  storm news at its feet the long report. Its survey log is built (Signatures and litanies, above).
+  storm news at its feet the long report. Its survey log is built (Litanies and the survey log, above).
   Not yet: the log's terrain, and the contact log.
 - **The living city's chatter:** a few km, for its own scouts; coded tones, no voices ("storm
   coming, tether in", "city moving"), sometimes its own coordinates written as star positions, the

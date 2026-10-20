@@ -23,6 +23,7 @@ const PARTS := {
 		[&"battery", 4],
 		[&"hook", 4],
 		[&"lamp", 2],
+		[&"flare", 3],
 		[&"canister", 2],
 		[&"coil", 3],
 		[&"plug", 3],

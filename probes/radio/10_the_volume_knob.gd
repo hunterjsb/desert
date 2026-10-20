@@ -19,10 +19,12 @@ func run() -> void:
 	await physics_frames(5)
 	look(eye(), radio.global_position)
 	await physics_frames(2)
-	# A small speaker: all it plays through the radio bus, its lows cut, on into the world's.
-	var bus := AudioServer.get_bus_index(radio.music.bus)
+	# A small speaker: all it plays through the radio bus, its lows cut, on into the world's;
+	# its signal by way of its interference chain first.
+	var bus := AudioServer.get_bus_index(Sounds.RADIO)
 	var cut := AudioServer.get_bus_effect(bus, 0) as AudioEffectHighPassFilter if bus >= 0 else null
-	check(radio.music.bus == Sounds.RADIO and radio.hiss.bus == Sounds.RADIO and cut != null
+	check(radio.music.bus == Radio.SIGNAL_BUS and AudioServer.get_bus_send(AudioServer.get_bus_index(Radio.SIGNAL_BUS))
+		== Sounds.RADIO and radio.hiss.bus == Sounds.RADIO and cut != null
 		and is_equal_approx(cut.cutoff_hz, Tuning.current().radio_highpass_hz)
 		and AudioServer.get_bus_send(bus) == Sounds.WORLD, "it plays through a high-pass at %d Hz, into the world's sound"
 		% roundi(Tuning.current().radio_highpass_hz))

@@ -44,8 +44,9 @@ func run() -> void:
 	press(&"interact")
 	await simulate(1.0)
 	var swept := radio.channel
-	print("used where it is: %s; the line says \"%s\"" % [Radio.CHANNELS[swept], broadcast.said])
-	check(swept != Radio.MUSIC and swept != Radio.OFF and broadcast.said.begins_with("%d kHz · " % roundi(radio.frequency)),
+	print("used where it is: %s at %d kHz; it would say \"%s\"" % [Radio.CHANNELS[swept], roundi(radio.frequency),
+		broadcast.said])
+	check(radio.frequency > Dial.MUSIC_KHZ and swept != Radio.OFF and broadcast.said.begins_with("%d kHz · " % roundi(radio.frequency)),
 		"use on it turns its dial, and its words show")
 	var canister := suit.supply(&"water")
 	var water := canister.amount

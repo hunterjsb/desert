@@ -10,6 +10,15 @@ extends Node
 const TU_SHINE_COLOR := Color(0.78, 0.86, 1.0)
 ## Tu's edge is softened over this much, radians, where it cuts the sun.
 const TU_EDGE := 0.0008
+## A low satellite looks no smaller than this share of its size overhead.
+const LOW_SMALLEST := 0.2
+## By day only the nearest and brightest show (gonkhub, 2026-10-20: "the
+## closest and brightest satellites should still be visible during the
+## daytime"): one starts to show once it looks this bright (its light, times
+## how near it is), and shows fully at this. A low hull always shows by day,
+## a dark shape against the bright sky.
+const DAY_FROM := 0.3
+const DAY_FULL := 0.5
 ## How bright the relay shows at night, against the brightest stars' 0.09.
 const RELAY_LIGHT := 0.35
 
@@ -75,6 +84,7 @@ func show(t: float, eye: Vector3, sun: Vector3, sun_shown: float, glow: Vector3,
 	material.set_shader_parameter("eclipse", _day.eclipse(t))
 	material.set_shader_parameter("eclipse_air", ring_air)
 	_show_relay(t)
+	_show_satellites(t)
 	_face.set_light("tu_dir", tu)
 	_face.set_light("tu_edge", Vector2(cos(radius + TU_EDGE), cos(radius - TU_EDGE)))
 	_face.set_light("sun_shown", sun_shown)
@@ -103,12 +113,72 @@ func _show_relay(t: float) -> void:
 	var moon := _world.moon
 	var relay := Radio.relay_of(_world)
 	var p := Sphere.point(moon.latitude, moon.longitude)
-	var to := relay.under(t) * (1.0 + relay.altitude) - p
+	var to := relay.at(t) - p
 	var dir := DayCycle.local(to.normalized(), moon.latitude, moon.longitude)
 	var lit := relay.sunlit(t, _day.sun_toward(t))
 	var up := smoothstep(0.0, deg_to_rad(4.0), asin(clampf(dir.y, -1.0, 1.0)))
+	var light := RELAY_LIGHT * up * (1.0 if lit else 0.0) * Radio.constellation_of(_world).glint(&"relay", t) \
+		* relay.nearness(t)
 	material.set_shader_parameter("relay_dir", dir)
-	material.set_shader_parameter("relay_light", RELAY_LIGHT * up * (1.0 if lit else 0.0))
+	material.set_shader_parameter("relay_light", light)
+	material.set_shader_parameter("relay_day", smoothstep(DAY_FROM, DAY_FULL, light))
+
+
+## The other satellites, each as the constellation has it look, while it's
+## over the horizon and the sun lights it; one that blinks, blinking.
+func _show_satellites(t: float) -> void:
+	var moon := _world.moon
+	var sky := Radio.constellation_of(_world)
+	var p := Sphere.point(moon.latitude, moon.longitude)
+	var sun := _day.sun_toward(t)
+	var dirs := PackedVector3Array()
+	var colors := PackedColorArray()
+	var forms := PackedVector3Array()
+	for id: StringName in Constellation.voiced():
+		var orbit: Satellite = sky.orbits[id]
+		var look: Dictionary = sky.rows[id].look
+		if look.get("hidden", false):
+			# Heard and never seen: the one round Tu.
+			dirs.append(Vector3.DOWN)
+			colors.append(Color(0.0, 0.0, 0.0, 0.0))
+			forms.append(Vector3.ZERO)
+			continue
+		var to := orbit.at(t) - p
+		var dir := DayCycle.local(to.normalized(), moon.latitude, moon.longitude)
+		var up := smoothstep(0.0, deg_to_rad(4.0), asin(clampf(dir.y, -1.0, 1.0)))
+		var near := orbit.nearness(t)
+		var lit := 1.0 if orbit.sunlit(t, sun) else 0.0
+		if look.get("low", false):
+			# So low it shows as its shadow, sunlit or not; and as big as it is near:
+			# overhead at its own height, the size it's drawn; out toward the horizon, smaller.
+			lit = 1.0
+			near = clampf(orbit.height(t) * orbit.radius / maxf(to.length() * orbit.radius, 1.0), LOW_SMALLEST, 1.0)
+		var light: float = look.light * up * lit * (near if not look.get("low", false) else 1.0)
+		if look.get("blink", false) and fposmod(t + float(hash(id) % 100) * 0.01, 1.2) > 0.25:
+			light *= 0.15
+		light *= sky.glint(id, t)
+		# A decaying one flares as it fires its burn; one that fires its cannon, as it fires.
+		if sky.burning(id, t):
+			light *= Constellation.BURN_FLARE
+		var flash := sky.flash(id, t)
+		light *= flash
+		var color: Color = look.color
+		color.a = light
+		dirs.append(dir)
+		colors.append(color)
+		# Nearer, it looks a little bigger too; a low one, as big as it is near. By day
+		# only the nearest and brightest show; a low hull always.
+		# A muzzle flash shows by day as well as night, whitening as it flares.
+		if flash > 1.0:
+			color = color.lerp(Color.WHITE, 0.6)
+			color.a = light
+			colors[-1] = color
+		var by_day := 1.0 if look.get("low", false) or flash > 1.0 else smoothstep(DAY_FROM, DAY_FULL, light)
+		forms.append(Vector3(look.shape, look.size * (near if look.get("low", false) else sqrt(near)), by_day))
+	material.set_shader_parameter("sat_count", dirs.size())
+	material.set_shader_parameter("sat_dir", dirs)
+	material.set_shader_parameter("sat_color", colors)
+	material.set_shader_parameter("sat_form", forms)
 
 
 func _report(t: float, tu: Vector3) -> void:

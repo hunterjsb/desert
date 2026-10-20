@@ -27,6 +27,9 @@ var run_seed: int
 
 var _day_seconds: float
 var _radius: float
+## Each god's carrier, day by day, as far as worked out; and how far it may wander a day, kHz.
+var _walked := {}
+var _drift: float
 var _walk: float
 var _homes := {}
 ## The songs some gods play now and then, by god: when each play began, world
@@ -53,6 +56,7 @@ func _init(world_history: History, seed_value: int, tuning: Tuning) -> void:
 	run_seed = seed_value
 	_day_seconds = tuning.day_minutes * 60.0
 	_radius = world_history.radius
+	_drift = tuning.carrier_drift_khz
 	_walk = tuning.walker_speed
 	_quiet[&"eye"] = tuning.eye_quiet_minutes * 60.0
 	var rng := RandomNumberGenerator.new()
@@ -176,10 +180,10 @@ func _silence(id: StringName, k: int) -> float:
 	return rng.randf_range(range_s.x, range_s.y)
 
 
-## The god's carrier at world time t, kHz: a fresh place in its band each
-## moon day, the same for the whole moon.
+## The god's carrier at world time t, kHz: a place in its band that wanders
+## each moon day, never more than carrier_drift_khz from the day before
+## (Dial.walk), the same for the whole moon.
 func carrier(id: StringName, t: float) -> float:
-	var b := band(id)
-	var rng := RandomNumberGenerator.new()
-	rng.seed = hash([run_seed, id, floori(t / _day_seconds)])
-	return snappedf(rng.randf_range(b.x + BAND_MARGIN, b.y - BAND_MARGIN), 1.0)
+	if not _walked.has(id):
+		_walked[id] = []
+	return Dial.walk(_walked[id], [run_seed, id], floori(t / _day_seconds), band(id), BAND_MARGIN, _drift)

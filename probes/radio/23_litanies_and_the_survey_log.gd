@@ -1,9 +1,5 @@
 extends ShieldProbe
-## Radio probe 23: each god signs its own. Between its words every god but
-## the Eye sends an interval signal nobody else sends, so you know whom
-## you've found by ear: the Quartermaster its call in Morse, Q M, and the rest
-## each a pattern of their own, all short enough to finish before the next.
-## Tuned to a god, that's what the radio plays. Outside its window a god
+## Radio probe 23: litanies and the survey log. Outside its window a god
 ## recites its litany in order and over again, word for word, opening and
 ## closing the same way each round. The Walker's survey log, after its
 ## forecast, is true: how far it has walked, and the steady wind at its feet,
@@ -19,40 +15,6 @@ func run() -> void:
 	radio.freeze = true
 	await physics_frames(2)
 	var gods := Radio.gods_of(world)
-
-	# Every god but the Eye signs, each its own way, each over before the next.
-	var seen := []
-	var distinct := true
-	var short := true
-	for id in Gods.ids():
-		if id == &"eye":
-			continue
-		var notes: Array = Signature.NOTES[id]
-		distinct = distinct and not seen.has(notes)
-		seen.append(notes)
-		short = short and Signature.of(id) != null and Signature.length(id) < Radio.TONES_EVERY * 0.5
-		print("%s: %d notes over %.2f s" % [Gods.title(id), notes.size(), Signature.length(id)])
-	check(distinct, "each god's interval signal is its own")
-	check(short, "each is a sound, done well before the next")
-	check(Signature.of(&"eye") == null, "the Eye never announces itself")
-	var qm: Array = Signature.NOTES[&"quartermaster"]
-	var marks := ""
-	for note: Array in qm:
-		marks += "-" if note[1] > Signature.DOT * 2.0 else "."
-	check(marks == "--.---", "the Quartermaster keys its call, Q M: %s" % marks)
-	var peak := 0
-	var data := Signature.of(&"stoker").data
-	for i in range(0, data.size(), 2):
-		peak = maxi(peak, absi(data.decode_s16(i)))
-	check(absf(linear_to_db(peak / 32767.0) + 25.0) < 1.5, "levelled as the tones were, peak -25 dBFS: %.1f" % linear_to_db(peak / 32767.0))
-
-	# Tuned to a god, its own signal is what plays.
-	radio.on = true
-	radio.frequency = gods.carrier(&"quartermaster", world.time)
-	await physics_frames(5)
-	print("the Quartermaster: clean %.2f, \"%s\"" % [radio.reception.get("clean", 0.0), radio.said])
-	check(radio.reception.clean > 0.0 and radio._signal.stream == Signature.of(&"quartermaster"),
-		"tuned to the Quartermaster, the radio sends its call")
 
 	# A litany, in order, round after round.
 	var lines: Array = Transmissions.IDLE[&"quartermaster"]
@@ -81,6 +43,7 @@ func run() -> void:
 	check(walker.log.contains("leg %d" % leg), "its log gives the km it has walked, %d" % leg)
 	check(absf(wind.length() - WIND) < 0.01 and walker.log.contains("wind %d m/s" % roundi(WIND)),
 		"and the wind at its feet, %.1f m/s" % wind.length())
+	radio.on = true
 	radio.frequency = gods.carrier(&"walker", t)
 	world.time = (floori(t / every / 2.0) * 2.0 + 1.5) * every
 	await physics_frames(5)

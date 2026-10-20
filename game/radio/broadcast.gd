@@ -1,13 +1,18 @@
 class_name Broadcast
 extends Node
-## What the nearest radio you can hear says, as one line low in the view: the
-## weather station's reading or a beacon's bearing, while you're in earshot of
-## a radio tuned to one. A stand-in for a voice (Radio PRD, open question).
+## What the nearest radio you can hear says. The radio is sound only
+## (gonkhub, 2026-10-19: "Remove all text dialogue from the radio. Audio
+## only."): nothing it says is written in the view. `said` keeps what the
+## nearest one in earshot would say, for the dev overlay and the probes, and
+## the weather station's reports are still read aloud.
 
 ## Heard from this far, m: anywhere in a light shield's bubble round it.
 const EARSHOT := 5.0
+## A report begun within this long, s, is still worth reading from its start
+## to someone who's just come in earshot of it.
+const FRESH := 3.0
 
-## What the line says now, "" when it's down.
+## What the nearest radio in earshot says now, "" when none does. Never shown.
 var said := ""
 ## What the weather station's voice last read, and from which radio.
 var reading := ""
@@ -17,28 +22,13 @@ var _heard_count := -1
 var _voice := ""
 
 var _player: Player
-var _line: Label
 
 
 func _ready() -> void:
 	_player = get_parent() as Player
-	var layer := CanvasLayer.new()
-	layer.layer = 98
-	add_child(layer)
-	_line = Label.new()
-	_line.theme_type_variation = &"Readout"
-	_line.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_line.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
-	_line.offset_left = -400.0
-	_line.offset_right = 400.0
-	_line.offset_top = -64.0
-	_line.offset_bottom = -44.0
-	_line.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_line.modulate.a = 0.0
-	layer.add_child(_line)
 
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	said = ""
 	var nearest := EARSHOT
 	for radio: Radio in get_tree().get_nodes_in_group(Radio.GROUP):
@@ -46,9 +36,6 @@ func _process(delta: float) -> void:
 		if radio.said != "" and far < nearest:
 			nearest = far
 			said = radio.said
-	if said != "":
-		_line.text = said
-	_line.modulate.a = move_toward(_line.modulate.a, 1.0 if said != "" else 0.0, delta * 6.0)
 	_speak()
 
 
@@ -72,17 +59,22 @@ func _speak() -> void:
 		if _speaker != null and reading != "":
 			_stop_voice()
 		_speaker = speaker
-		_heard_count = speaker.spoken_count if speaker != null and not broken else -1
 		if broken:
+			_heard_count = -1
 			return
+		# A report it has only just begun is yours to hear: as you tune in, it
+		# reports at once, and that one mustn't be passed over as already heard.
+		var fresh: bool = speaker.world != null and speaker.world.time - speaker.spoken_at < FRESH
+		_heard_count = speaker.spoken_count - (1 if fresh else 0)
 	if speaker.spoken_count == _heard_count:
 		return
 	_heard_count = speaker.spoken_count
 	reading = speaker.spoken
 	var near := clampf(tuning.radio_heard_m / maxf(nearest, 0.01), 0.0, 1.0)
-	var loud := speaker.knob_share() * sqrt(speaker.reception.get("clean", 0.0)) * near
+	var loud := speaker.knob_share() * Radio.audible(speaker.reception) * near
 	if _can_speak() and loud > 0.01:
-		DisplayServer.tts_speak(reading, _voice, roundi(loud * 100.0), 1.0, 1.05, 0, true)
+		# An advisory breaks off what's being read; a report waits its turn, whole.
+		DisplayServer.tts_speak(reading, _voice, roundi(loud * 100.0), 1.0, 1.05, 0, speaker.spoken_urgent)
 
 
 func _stop_voice() -> void:

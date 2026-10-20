@@ -319,6 +319,10 @@ func grab() -> bool:
 ## your waist comes back to your hands. Says whether it did anything.
 func interact() -> bool:
 	_look()
+	# A radio in your hands with frequencies marked: use goes to the next.
+	if held is Radio and phase == Phase.HELD and (held as Radio).next_mark():
+		_player.close_up.tuned(held)
+		return true
 	if look_bed and held == null and look_device == null and look_part == null:
 		return _player.world.sleep.offer(_player)
 	if look_device != null and look_device.interact(_player):
@@ -390,7 +394,7 @@ func scroll(notches: int) -> bool:
 		grasp.bring(by, _body_radius + Vector2(box.size.x, box.size.z).length() * 0.5 + GRASP_CLEAR, _tuning.reach)
 		return true
 	if held != null and phase == Phase.HELD:
-		var nearest := maxf(HOLD_NEAREST, _body_radius + _bounds.size.length() * 0.5)
+		var nearest := nearest_hold(_bounds)
 		_away = clampf(_away - by, nearest, maxf(HOLD_FARTHEST, nearest))
 		return true
 	return false
@@ -429,8 +433,8 @@ static func describe(label: String, stats: Dictionary) -> String:
 
 
 ## The first of these a thing has: a crop ripe or why it isn't growing, a
-## device that would run but has no power, what a thing holds, a radio's
-## frequency, then power, said as the device does it: output, or draws.
+## device that would run but has no power, a radio's frequency, what a thing
+## holds, then power, said as the device does it: output, or draws.
 static func _state(stats: Dictionary) -> String:
 	if stats.get("ripe", false):
 		return "ripe"
@@ -444,10 +448,11 @@ static func _state(stats: Dictionary) -> String:
 		return "%.1f/%.1f L" % [stats.get("water_left_l", 0.0), stats.water_l]
 	if stats.has("food_kcal"):
 		return "%d kcal" % roundi(stats.get("food_left_kcal", 0.0))
-	if stats.has("charge_wh") and stats.get("capacity_wh", 0.0) > 0.0:
-		return "%d/%d Wh" % [floori(stats.charge_wh), roundi(stats.capacity_wh)]
+	# A radio's frequency before its battery's charge: its dial is what you need.
 	if stats.has("tuned"):
 		return str(stats.tuned)
+	if stats.has("charge_wh") and stats.get("capacity_wh", 0.0) > 0.0:
+		return "%d/%d Wh" % [floori(stats.charge_wh), roundi(stats.capacity_wh)]
 	if stats.get("in_w", 0.0) > 0.0:
 		return "output %d W" % roundi(stats.in_w)
 	if stats.get("out_w", 0.0) > 0.0:
@@ -463,6 +468,11 @@ func _unhandled_input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("interact"):
 		if interact():
+			get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("mark_frequency"):
+		# A radio in your hands: mark where its dial stands, or unmark it.
+		if held is Radio and phase == Phase.HELD and not (held as Radio).wrecked():
+			(held as Radio).toggle_mark()
 			get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("hands_throw") and held != null and not Controls.mouse_free:
 		throw()
@@ -494,7 +504,7 @@ func _tunes(event: InputEvent) -> bool:
 			var how: Array = TUNES[action]
 			var turned := radio.turn_volume(how[0]) if how[2] else radio.tune(how[0], how[1])
 			if turned:
-				_player.close_up.tuned(radio)
+				_player.close_up.tuned(radio, how[1])
 			return turned
 	return false
 
@@ -804,6 +814,24 @@ static func _box_of(body: RigidBody3D) -> AABB:
 	var box := _body_box(body)
 	body.set_meta(&"hands_box", box)
 	return box
+
+
+## How near your eyes something held comes at its nearest, m, its middle
+## straight ahead: HOLD_NEAREST, or farther for one too big to come so near.
+## `bounds` are its own.
+func nearest_hold(bounds: AABB) -> float:
+	return maxf(HOLD_NEAREST, _body_radius + bounds.size.length() * 0.5)
+
+
+## A body's middle in its own frame, by its shapes as they stand now: the
+## point held ahead of your eyes.
+static func middle_of(body: Node3D) -> Vector3:
+	return _body_box(body).get_center()
+
+
+## nearest_hold() for a body, by its shapes as they stand now.
+func nearest_hold_of(body: Node3D) -> float:
+	return nearest_hold(_body_box(body))
 
 
 ## A body's bounds in its own frame, as its shapes stand now.

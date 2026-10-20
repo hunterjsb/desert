@@ -2,10 +2,11 @@ extends ShieldProbe
 ## Radio probe 13: the relay carries the music. A run begins with the relay
 ## satellite passing over where it began, so the music comes in clean. Some
 ## time later it has set, and the music channel is only static, the song on
-## silently until it rises again. Rising it nears, and its carrier slides
-## up; setting, it draws away and slides down. A storm over you garbles it as
-## it does any god. At night, over the horizon and in the sun's light, it
-## shows in the sky as a bright point; set, it doesn't.
+## silently until it rises again. Nearing, its carrier slides up; drawing
+## away, down: on its ellipse that isn't always as it rises and sets, since it
+## can climb away as it rises. A storm over you garbles it as it does any god.
+## At night, over the horizon and in the sun's light, it shows in the sky as a
+## bright point; set, it doesn't.
 
 ## The clock is searched this often, s.
 const STEP := 5.0
@@ -43,10 +44,17 @@ func run() -> void:
 	print("set: music at %.1f dB, \"%s\"" % [radio.music.volume_db, radio.said])
 	check(radio.track() != null and radio.music.volume_db < -40.0 and radio.said.ends_with("static"),
 		"set, the music channel is static, the song on silently")
-	var rising: float = radio.receive_relay(x, z, rise_at + 20.0).warp
-	var setting: float = radio.receive_relay(x, z, set_at - 20.0).warp
-	print("its carrier rising %+.2f kHz, setting %+.2f kHz" % [rising, setting])
-	check(rising > 0.1 and setting < -0.1, "rising its carrier slides up, setting down")
+	var fast := relay.top_rate() * 0.25
+	var nearing_at := _first(world.time, func(u: float) -> bool:
+		var seen := relay.seen_from(p, u)
+		return seen.elevation > 0.1 and seen.rate < -fast)
+	var leaving_at := _first(world.time, func(u: float) -> bool:
+		var seen := relay.seen_from(p, u)
+		return seen.elevation > 0.1 and seen.rate > fast)
+	var nearing: float = radio.receive_relay(x, z, nearing_at).warp
+	var leaving: float = radio.receive_relay(x, z, leaving_at).warp
+	print("its carrier nearing %+.2f kHz, drawing away %+.2f kHz" % [nearing, leaving])
+	check(nearing > 0.1 and leaving < -0.1, "nearing its carrier slides up, drawing away down")
 
 	world.time = 0.0
 	weather_everywhere(0.8)

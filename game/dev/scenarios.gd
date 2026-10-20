@@ -34,9 +34,14 @@ extends RefCounted
 ## side, 30° north. Times of day are local. "sail_tow" and "yacht" stand you
 ## in the sail scenario's breeze: a rig towing a larger camp past you, and a
 ## land yacht with its helm seat and keel.
+## The surveyor scenario brings the Surveyor over this soon, s.
+const SURVEYOR_LEAD := 30.0
 const LIST: Array[Dictionary] = [
 	{"key": "spawn", "label": "spawn: where and when the run began", "kind": "spawn"},
 	{"key": "clear", "label": "clear day, no storm for 10 min", "kind": "clear", "day": [0.42, 0.55]},
+	# The Surveyor forced over you, its cannon waiting on a lit flare (Airdrop).
+	{"key": "surveyor", "label": "surveyor: a clear afternoon, a flare in your hands, the Surveyor's low pass straight over you in 30 s",
+		"kind": "clear", "day": [0.55, 0.65], "surveyor": true},
 	{"key": "wall", "label": "wall on the horizon, 3 km", "kind": "front", "distance": 3000.0, "day": [0.35, 0.5]},
 	{"key": "storm_500", "label": "storm 500 m away", "kind": "front", "distance": 500.0, "day": [0.35, 0.55]},
 	{"key": "storm_100", "label": "storm 100 m away", "kind": "front", "distance": 100.0, "day": [0.35, 0.55]},
@@ -322,7 +327,7 @@ static func apply(world: World, scenario: Dictionary) -> void:
 			or scenario.get("afk", false) or scenario.get("chassis", false) or scenario.get("console", false)
 			or scenario.get("sail", false) or scenario.get("tow", false) or scenario.get("yacht", false)
 			or scenario.get("drift", false) or scenario.get("walker", false)
-			or scenario.get("music", false) or scenario.get("anomaly", false)):
+			or scenario.get("music", false) or scenario.get("anomaly", false) or scenario.get("surveyor", false)):
 		return
 	# Bodies dropped before the sand under them has collision would be frozen or forgotten.
 	while is_instance_valid(world) and not world.terrain.is_settled_around(place.x, place.z):
@@ -362,6 +367,8 @@ static func apply(world: World, scenario: Dictionary) -> void:
 		dropped = catch_line(world)
 	elif scenario.get("anomaly", false):
 		dropped = anomaly_camp(world)
+	elif scenario.get("surveyor", false):
+		dropped = surveyor_pass(world)
 	else:
 		dropped = camp(world) if scenario.get("camp", false) else survive(world)
 	world.set_meta(&"scenario_kit", dropped)
@@ -769,7 +776,7 @@ static func _facing(world: World, scenario: Dictionary, moon: Vector2, upwind: V
 static func _relay_from(world: World, moon: Vector2, t: float) -> Vector3:
 	var relay := Radio.relay_of(world)
 	var p := Sphere.point(moon.x, moon.y)
-	return DayCycle.local((relay.under(t) * (1.0 + relay.altitude) - p).normalized(), moon.x, moon.y)
+	return DayCycle.local((relay.at(t) - p).normalized(), moon.x, moon.y)
 
 
 ## Whether the relay shows in the night sky from a place at world time t: sunlit,
@@ -938,6 +945,26 @@ static func weather_station(world: World) -> Array[Node3D]:
 
 ## The radio of "radio" switched on and tuned to the music, the relay's
 ## carrier, beside its charged shield, switched off.
+## A flare in your hands, and the Surveyor forced over you in SURVEYOR_LEAD
+## s: light it as it comes over and its cannon fires. Returns the flare.
+static func surveyor_pass(world: World) -> Array[Node3D]:
+	var player := world.player
+	var flare := Catalog.part(&"flare")
+	world.content.add_child(flare)
+	flare.global_position = player.global_position + Vector3.UP
+	player.hands.hold(flare)
+	surveyor_over(world, SURVEYOR_LEAD)
+	return [flare]
+
+
+## The Surveyor's low pass forced: its orbit turned to bring it straight over
+## you `lead` s from now (Satellite.pass_over).
+static func surveyor_over(world: World, lead: float) -> void:
+	var moon := world.moon
+	var orbit: Satellite = Radio.constellation_of(world).orbits[Airdrop.SURVEYOR]
+	orbit.pass_over(Sphere.point(moon.latitude, moon.longitude), world.time + lead)
+
+
 static func music_station(world: World) -> Array[Node3D]:
 	var dropped := radio(world)
 	var tuned := dropped[0] as Radio

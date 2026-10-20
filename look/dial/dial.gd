@@ -4,7 +4,8 @@ extends Node
 ## standing over it, then the view easing in as you tune it, closed in at
 ## several places on the band with the knobs turned, easing out as you look
 ## away and back to your own view; one in your hands, and one at dusk with
-## its scale lit. The real close-up, driven a frame at a time:
+## its scale lit. Three frequencies are marked, in a profile of the look-test's
+## own, so their ticks show on the band, and its signal lamps show what it hears. The real close-up, driven a frame at a time:
 ##   godot --path . --disable-vsync res://look/dial/dial.tscn -- --capture <dir>
 ## look/dial/shoot.sh builds the sheet. A small window that never takes
 ## focus, nothing but this script moving anything, and silence.
@@ -26,6 +27,8 @@ func _enter_tree() -> void:
 	tuning.run_seed = SEED
 	tuning.eye_adapts = false
 	tuning.salvage = false
+	# The close-up is off in play; this shoots it.
+	tuning.dial_close_up = true
 
 
 func _ready() -> void:
@@ -49,6 +52,11 @@ func _capture(out_dir: String) -> void:
 	world.set_process_unhandled_input(false)
 	Dev.hide_overlays()
 	DirAccess.make_dir_recursive_absolute(out_dir)
+	# Marks of its own, never the player's.
+	Profile.dir = OS.get_temp_dir().path_join("desert-look-dial-%d" % OS.get_process_id())
+	Profile.reset()
+	for each: Array in [[262.0, Color("e8604c")], [1048.0, Color("4fc3d9")], [1520.0, Color("f2d55c")]]:
+		Profile.mark(each[0], "", each[1], 1.0)
 	await _ground()
 	await Scenarios.apply(world, Scenarios.by_key("clear_skies"))
 	await _ground()

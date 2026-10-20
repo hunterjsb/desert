@@ -520,6 +520,17 @@ static func _part(id: StringName, size: Vector3, count := -1) -> ArrayMesh:
 			b.drum(0.03, 0.17, Vector3(0.0, 0.0, 0.085), gun, along, 10)
 			b.drum(0.055, 0.08, Vector3(0.0, 0.0, 0.205), Paint.coat(Paint.YELLOW, 0.7), along, 16)
 			b.drum(0.045, 0.01, Vector3(0.0, 0.0, size.z - 0.003), Paint.coat(Color(1.0, 0.85, 0.6), 0.0, 0.0, 0.2, 0.2, 3.0), along, 16)
+		&"flare":
+			# A red tube with a black striker cap at its tip, where it burns.
+			b.drum(h.x, size.z - 0.04, Vector3(0.0, 0.0, (size.z - 0.04) * 0.5), Paint.coat(Color(0.75, 0.12, 0.08), 0.5), along, 10)
+			b.drum(h.x * 1.05, 0.04, Vector3(0.0, 0.0, size.z - 0.02), Paint.coat(Color(0.08, 0.08, 0.08), 0.3), along, 10)
+		&"cargo":
+			# A drop container: an orange shell banded in black, its ends capped.
+			b.box(Vector3(size.x, size.y, size.z - 0.12), Vector3(0.0, 0.0, size.z * 0.5), Paint.coat(Color(0.85, 0.45, 0.12), 0.45, 0.2), 0.04)
+			for z in [0.03, size.z - 0.03]:
+				b.box(Vector3(size.x + 0.02, size.y + 0.02, 0.06), Vector3(0.0, 0.0, z), Paint.coat(Color(0.08, 0.08, 0.08), 0.4, 0.3), 0.02)
+			for z in [size.z * 0.35, size.z * 0.65]:
+				b.box(Vector3(size.x + 0.01, size.y + 0.01, 0.05), Vector3(0.0, 0.0, z), Paint.coat(Color(0.1, 0.1, 0.1), 0.4, 0.3), 0.01)
 		&"plug", &"strong_plug":
 			var collar := Paint.coat(Color(1.0, 0.5, 0.1) if id == &"plug" else Color(0.7, 0.15, 0.1), 0.5)
 			b.drum(h.x * 0.95, 0.025, Vector3(0.0, 0.0, 0.0125), collar, along, 12)
