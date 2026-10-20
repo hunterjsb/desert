@@ -51,7 +51,7 @@ func run() -> void:
 	tending = 0.0
 	course = Vector2.ZERO
 	trim(35.0)
-	var was := mast.trim
+	var was := mast.sheet().length
 	check(player.hands.reel.notch(-2), "the reel works the sheet riding")
 	await simulate(1.0)
-	check(absf(mast.trim - was - 2.0 * Reel.NOTCH) < 0.01, "paying out two notches eases the sail (%.2f m to %.2f m)" % [was, mast.trim])
+	check(absf(mast.sheet().length - was - 2.0 * Reel.NOTCH) < 0.01, "paying out two notches eases the sail (%.2f m to %.2f m)" % [was, mast.sheet().length])

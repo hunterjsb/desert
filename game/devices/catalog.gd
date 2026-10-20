@@ -388,7 +388,7 @@ const DEVICES := {
 	&"mast": {"label": "Mast", "size": Vector3(0.14, 1.3, 0.14), "mass": 8.0, "rig": true,
 		"carryable": true, "on_end": true, "sticks": true, "stands": true, "stats": {"face_m2": 0.18},
 		"sockets": [
-			[&"sail", Vector3(0.0, 0.3, -0.07), Vector3.FORWARD],
+			[&"sail", Mast.BOOM_AT + Vector3(0.0, 0.0, -0.07), Vector3.FORWARD],
 		]},
 	# A skimmer pilot's seat, stuck on a deck: use on it sits you at the helm (Helm).
 	&"helm_seat": {"label": "Helm seat", "short": "Helm", "size": Vector3(0.5, 0.5, 0.55), "mass": 7.0, "helm": true,

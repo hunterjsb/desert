@@ -37,16 +37,13 @@ func run() -> void:
 	hands.reel.choose(sheet.ends[1])
 	await physics_frames(2)
 	trim(35.0)
-	var was := mast.trim
 	var length := sheet.rope.length
-	var coiled := sheet.rope.haul_gathered
+	var coiled := sheet.full - length
 	check(hands.reel.notch(2), "the reel works the sheet at your waist")
 	await simulate(1.0)
-	print("reeled two notches: trim %.2f m from %.2f, line %.2f m from %.2f, coiled %.2f m more" % [mast.trim, was,
-		sheet.rope.length, length, sheet.rope.haul_gathered - coiled])
-	check(absf(was - mast.trim - 2.0 * Reel.NOTCH) < 0.01 and absf(sheet.rope.length - length) < 0.01
-		and absf(sheet.rope.haul_gathered - coiled - 2.0 * Reel.NOTCH) < 0.01,
-		"two notches haul the inboard in half a metre, the line to you as long as it was, the coil the longer")
+	check(absf(length - sheet.rope.length - 2.0 * Reel.NOTCH) < 0.01
+		and absf(sheet.full - sheet.rope.length - coiled - 2.0 * Reel.NOTCH) < 0.01,
+		"two notches take in half a metre of actual sheet and gather it on the coil")
 	world.player.waist.untie(sheet.ends[1])
 	await sail_for(2.0)
 	check(not mast.sheeted() and absf(mast.boom) > deg_to_rad(60.0), "let go, the sheet runs and the sail swings free (%.0f°)" % rad_to_deg(mast.boom))

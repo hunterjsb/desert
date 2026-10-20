@@ -223,7 +223,7 @@ const SKATES := [[&"stick", Vector2i(0, 0), &"bottom", Vector2.ZERO, 0.0, &"skat
 	[&"stick", Vector2i(1, 1), &"bottom", Vector2.ZERO, 0.0, &"skates"]]
 const SQUARE := [[&"piece", Vector2i(1, 0)], [&"piece", Vector2i(0, 1)], [&"piece", Vector2i(1, 1)]]
 const SAIL_MAST := [&"stick", Vector2i(0, 0), &"top", Vector2.ZERO, 180.0, [&"mast", [&"sail"]], &"mast"]
-const SAIL_BALLAST := [[&"frame", Vector2i(0, 1), 0],
+const SAIL_BALLAST := [
 	[&"stick", Vector2i(0, 1), &"top", Vector2(-0.25, 0.0), 0.0, &"big_battery"],
 	[&"stick", Vector2i(0, 1), &"top", Vector2(0.0, 0.0), 0.0, &"battery"],
 	[&"stick", Vector2i(0, 1), &"top", Vector2(0.25, 0.0), 0.0, &"big_battery"]]
@@ -256,7 +256,6 @@ const YACHT_RIG := [[&"piece", Vector2i(1, 0)], [&"piece", Vector2i(2, 0)], [&"p
 	[&"stick", Vector2i(2, 1), &"bottom", Vector2.ZERO, 0.0, &"keel"],
 	[&"stick", Vector2i(0, 0), &"top", Vector2.ZERO, 180.0, [&"mast", [&"sail"]], &"mast"],
 	[&"stick", Vector2i(1, 1), &"top", Vector2.ZERO, 180.0, &"helm_seat", &"helm"],
-	[&"frame", Vector2i(0, 1), 0],
 	[&"stick", Vector2i(0, 1), &"top", Vector2(-0.25, 0.0), 0.0, &"big_battery"],
 	[&"stick", Vector2i(0, 1), &"top", Vector2(0.0, 0.0), 0.0, &"battery"],
 	[&"stick", Vector2i(0, 1), &"top", Vector2(0.25, 0.0), 0.0, &"big_battery"]]
@@ -1408,7 +1407,7 @@ static func sail(world: World) -> Array[Node3D]:
 	var board := standing(world, &"board", [&"battery"], SAIL_BOARD)
 	var sheet := sheet_to_waist(world, mast)
 	# Eased for a start across the wind: reel in as it picks up speed.
-	mast.trim = 2.0 * Mast.BOOM * sin(deg_to_rad(SAIL_EASED) * 0.5)
+
 	var dropped := _of(rig)
 	dropped.append_array([board, sheet, standing(world, &"sailing_notes", [], [-0.75, 0.8])])
 	if Controls.ui != null:
@@ -1429,7 +1428,7 @@ static func sail_tow(world: World) -> Array[Node3D]:
 	var board := standing(world, &"board", [&"battery"], SAIL_BOARD)
 	var sheet := sheet_to_waist(world, mast)
 	var line := to_waist(world, _deck_tie(camp.deck, Vector2i.ZERO, Vector2i(0, -1)))
-	mast.trim = 2.0 * Mast.BOOM * sin(deg_to_rad(SAIL_EASED) * 0.5)
+
 	var dropped := _of(rig) + _of(camp)
 	dropped.append_array([board, sheet, line])
 	return dropped
@@ -1444,7 +1443,7 @@ static func yacht(world: World) -> Array[Node3D]:
 	var rig := rig_at(world, YACHT_RIG + [SAIL_TAIL], YACHT_DECK)
 	var mast: Mast = rig.named.mast
 	var sheet := sheet_to_waist(world, mast)
-	mast.trim = 2.0 * Mast.BOOM * sin(deg_to_rad(SAIL_EASED) * 0.5)
+
 	var dropped := _of(rig)
 	dropped.append(sheet)
 	return dropped
@@ -1452,7 +1451,9 @@ static func yacht(world: World) -> Array[Node3D]:
 
 ## A line from a mast's boom's end to your waist, a little slack.
 static func sheet_to_waist(world: World, mast: Mast) -> Line:
-	return to_waist(world, mast._tie())
+	var line := to_waist(world, mast._tie())
+	mast.rig_sheet(line, SAIL_EASED)
+	return line
 
 
 ## A line from a device's tie socket to your waist, a little slack.

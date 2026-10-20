@@ -17,11 +17,12 @@ func run() -> void:
 	course = heading()
 	follow(deck.global_position + Vector3(0.0, 0.0, 6.0))
 	var sheet := Scenarios.sheet_to_waist(world, mast)
+	trim(60.0)
 	hands.reel.choose(sheet.ends[1])
 	look(eye(), Line._tip(sheet.ends[0]).global_position)
 	await _hold_for(4.0)
 	var reel := hands.reel
-	check(mast.sheeted() and mast.sheet_n > 0.0 and absf(rad_to_deg(absf(mast.boom) - mast.trimmed_to())) < 1.0,
+	check(mast.sheeted() and mast.sheet_n > 0.0 and _off() < 1.0,
 		"the wind holds the boom out against its sheet (%.0f°, %d N)" % [rad_to_deg(absf(mast.boom)), roundi(mast.sheet_n)])
 
 	# Reeling in: line through the block, the boom drawn in after it.
@@ -39,17 +40,17 @@ func run() -> void:
 	await _hold_for(3.0, func() -> void: _note(seen))
 	print("paid out 2 m: the boom %.0f° to %.0f° over %.2f s, %.1f° behind the line at most, the sheet taut again at %d N" % [
 		seen.from, rad_to_deg(absf(mast.boom)), seen.moving, seen.off, roundi(mast.sheet_n)])
-	check(seen.moving > 1.5 and mast.sheet_n > 0.0 and absf(rad_to_deg(absf(mast.boom) - mast.trimmed_to())) < 1.0,
+	check(seen.moving > 1.5 and mast.sheet_n > 0.0 and _off() < 1.0,
 		"the wind takes it out after the line, till the sheet holds it again")
 
 	# No wind: paying out leaves it, the sheet slack.
 	await _haul_to(30.0)
 	blow(Vector2.ZERO)
-	await _hold_for(2.0)
+	await _hold_for(4.0)
 	var was := absf(mast.boom)
 	check(reel.notch(-4), "paying out in still air")
 	await _hold_for(2.0)
-	var slack := mast.trim - 2.0 * Mast.BOOM * sin(absf(mast.boom) * 0.5)
+	var slack := mast.sheet().length - _path()
 	print("in still air, paid out 1 m: the boom %.0f° to %.0f°, the sheet %.2f m slack, %d N" % [
 		rad_to_deg(was), rad_to_deg(absf(mast.boom)), slack, roundi(mast.sheet_n)])
 	check(absf(absf(mast.boom) - was) < deg_to_rad(3.0) and slack > 0.8 and mast.sheet_n == 0.0,
@@ -82,13 +83,23 @@ func _note(seen: Dictionary) -> void:
 	seen.most_tick = maxf(seen.most_tick, rad_to_deg(moved))
 	seen.was = now
 	if hands.reel.rope != null and absf(hands.reel.wanted - hands.reel.rope.length) > 1e-4:
-		seen.off = maxf(seen.off, rad_to_deg(absf(now - mast.trimmed_to())))
+		seen.off = maxf(seen.off, _off())
 		seen.least_n = minf(seen.least_n, mast.sheet_n)
 		seen.most_n = maxf(seen.most_n, mast.sheet_n)
 
 
 ## Reeled to hold the boom near this swing, degrees.
 func _haul_to(degrees: float) -> void:
-	var notches := roundi((mast.trim - 2.0 * Mast.BOOM * sin(deg_to_rad(degrees) * 0.5)) / Reel.NOTCH)
+	var notches := roundi((mast.sheet().length - mast.eased_length(degrees, _swing_side())) / Reel.NOTCH)
 	hands.reel.notch(notches)
 	await _hold_for(absf(notches) * Reel.NOTCH / Reel.PACE + 1.5)
+
+
+## Angular-equivalent path error, without assuming an ideal centreline block.
+func _off() -> float:
+	return rad_to_deg(absf(_path() - mast.sheet().length) / Mast.BOOM)
+
+
+func _path() -> float:
+	var rope := mast.sheet()
+	return rope.a.global_position.distance_to(rope.through.global_position) + rope.through.global_position.distance_to(rope.b.global_position)

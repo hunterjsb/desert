@@ -27,8 +27,8 @@ assembled = Dictionary[StringName, Dictionary]({
 })
 waist = Dictionary[StringName, float]({
 &"mast": 0.5,
-&"bow": 1.5,
-&"bow_right": 1.5
+&"bow": 0.5,
+&"bow_right": 0.5
 })
 charge = 1.0
 shown = &"rig"

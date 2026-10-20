@@ -36,8 +36,8 @@ func run() -> void:
 ## Two notches on the chosen line: how much the sail's trim and the stake's line each took in, m.
 func _reeled(moored: Line) -> Dictionary:
 	await physics_frames(2)
-	var trim_was := mast.trim
+	var trim_was := mast.sheet().length
 	var line_was := moored.rope.length
 	check(hands.reel.notch(2), "there's a line at your waist to reel")
 	await simulate(1.0)
-	return {"trim": trim_was - mast.trim, "line": line_was - moored.rope.length}
+	return {"trim": trim_was - mast.sheet().length, "line": line_was - moored.rope.length}

@@ -6,7 +6,7 @@ extends Device
 ## The boom's root, in the mast's frame: it swings about the mast's axis.
 ## Seated, a device faces its host's back, so its boom, lying along its own
 ## front, trails behind the host: a camp sails the way it faces.
-const BOOM_AT := Vector3(0.0, 0.3, 0.0)
+const BOOM_AT := Vector3(0.0, 0.8, 0.0)
 ## The boom's end, m from the mast, where the sheet ties: the sail's tie.
 const BOOM := 2.33
 ## The sail's height up the mast over the boom, and its head's width, m.
@@ -151,7 +151,7 @@ static var _look: ShaderMaterial
 
 func _ready() -> void:
 	super()
-	# After the ropes have pulled, before its camp's runners hold: they see its push.
+	# Refresh the boom endpoint before the ordinary rope solver reads it.
 	process_physics_priority = -15
 	_build_look()
 	if world != null:
@@ -420,7 +420,12 @@ func _find_sheet() -> void:
 		var lines := world.ropes.lines_on(tie.part.get_meta(&"tip")) if world != null else []
 		if lines.size() == 1:
 			found = lines[0]
-	_sheet = found
+	if found != _sheet:
+		if _sheet != null and _sheet.hauls == _worked:
+			_sheet.hauls = Callable()
+		_sheet = found
+	if _sheet != null:
+		_sheet.hauls = _worked
 	_held = false
 	if _sheet != null:
 		var mine: RopeEnd = tie.part.get_meta(&"tip")
@@ -599,8 +604,8 @@ func _swing_nodes() -> void:
 		var tie := _tie()
 		if tie != null:
 			on.append_array(tie.fitted)
-	var turn := Transform3D(Basis(Vector3.UP, boom), Vector3.ZERO)
-	var moved := boom != _shown or on.size() != _base.size()
+	var turn := global_transform.affine_inverse() * _boom_body.global_transform if is_instance_valid(_boom_body) else Transform3D(Basis(Vector3.UP, boom), Vector3.ZERO)
+	var moved := is_instance_valid(_boom_body) or boom != _shown or on.size() != _base.size()
 	var seen := {}
 	for node in on:
 		if not _base.has(node):
@@ -641,7 +646,7 @@ func _show() -> void:
 	_top.scale = Vector3(1.0, maxf(extend, 0.01), 1.0)
 	_cloth.visible = on and raise > 0.01
 	_spar.visible = on and raise >= 0.3
-	var swing := Transform3D(Basis(Vector3.UP, boom), BOOM_AT)
+	var swing := (global_transform.affine_inverse() * _boom_body.global_transform * Transform3D(Basis.IDENTITY, BOOM_AT)) if is_instance_valid(_boom_body) else Transform3D(Basis(Vector3.UP, boom), BOOM_AT)
 	_cloth.transform = swing
 	_spar.transform = swing * Transform3D(Basis(Vector3.UP, PI), Vector3.ZERO)
 	if _cloth.visible:
@@ -720,12 +725,13 @@ func _crack() -> void:
 
 ## The sail belongs to a separate rigid body while mounted: count it once.
 func _fitted_mass(socket: Socket) -> float:
-	return 0.0 if socket == _sail_socket() and is_instance_valid(_boom_body) else super(socket)
+	return 0.0 if (socket == _sail_socket() or socket == _tie()) and is_instance_valid(_boom_body) else super(socket)
 
 
 func _physical_boom(on: Device) -> void:
 	if on == _boom_carrier and sail() == _physical_part and is_instance_valid(_boom_body):
 		_boom_body.freeze = on.freeze
+		_weigh_boom()
 		return
 	_release_boom()
 	if on == null or sail() == null or world == null or wrecked():
@@ -734,6 +740,7 @@ func _physical_boom(on: Device) -> void:
 	_physical_part = sail()
 	_boom_body = RigidBody3D.new()
 	_boom_body.name = "PhysicalBoom"
+	_boom_body.set_meta(&"boom_mast", self)
 	_boom_body.top_level = true
 	_boom_body.mass = sail().mass
 	_boom_body.can_sleep = false
@@ -750,7 +757,8 @@ func _physical_boom(on: Device) -> void:
 	_boom_body.freeze = on.freeze
 	var shape := CollisionShape3D.new()
 	var spar := BoxShape3D.new()
-	var clear := world.tuning.boom_root_clearance
+	var pole: Vector3 = Catalog.DEVICES[&"mast"].size
+	var clear := Vector2(pole.x, pole.z).length() * 0.5 + 0.035 + world.tuning.boom_root_clearance
 	spar.size = Vector3(0.07, 0.07, BOOM - clear)
 	shape.shape = spar
 	shape.position = BOOM_AT + Vector3(0.0, 0.0, -(BOOM + clear) * 0.5)
@@ -763,7 +771,32 @@ func _physical_boom(on: Device) -> void:
 	_boom_joint.node_b = _boom_joint.get_path_to(_boom_body)
 	_boom_joint.set_flag(HingeJoint3D.FLAG_USE_LIMIT, false)
 	_boom_joint.exclude_nodes_from_collision = false
+	_weigh_boom()
 	_reweigh()
+
+
+func _weigh_boom() -> void:
+	var tip := _tie()
+	var end_mass := tip.part.mass if tip != null and tip.part != null else 0.0
+	var cloth_mass := sail().mass
+	var total := cloth_mass + end_mass
+	# A rectangular mass surrogate follows the gathering cloth; the tip's
+	# mass is separate. The real spar collider supplies contact, not inertia.
+	var height := maxf(0.18, LUFF * raise)
+	var cloth_middle := BOOM_AT + Vector3(0.0, height * 0.5, -BOOM * 0.5)
+	var end_middle := BOOM_AT + Vector3(0.0, 0.0, -BOOM)
+	var middle := (cloth_mass * cloth_middle + end_mass * end_middle) / total
+	var inert := cloth_mass / 12.0 * Vector3(height * height + BOOM * BOOM, BOOM * BOOM + 0.07 * 0.07, height * height + 0.07 * 0.07)
+	for entry in [[cloth_mass, cloth_middle], [end_mass, end_middle]]:
+		var r: Vector3 = entry[1] - middle
+		inert += entry[0] * Vector3(r.y * r.y + r.z * r.z, r.x * r.x + r.z * r.z, r.x * r.x + r.y * r.y)
+	if _boom_body.mass != total:
+		_boom_body.mass = total
+	if _boom_body.center_of_mass != middle:
+		_boom_body.center_of_mass = middle
+	if _boom_body.inertia != inert:
+		_boom_body.inertia = inert
+
 
 
 func _read_boom() -> void:
@@ -805,3 +838,62 @@ func restored() -> void:
 		_boom_body.global_transform = global_transform * Transform3D(Basis(Vector3.UP, boom), Vector3.ZERO)
 		_boom_body.angular_velocity = _boom_carrier.angular_velocity + global_basis.y * boom_spin
 	_swing_nodes()
+
+
+## Starter rigging is a real removable hook and one ordinary routed line.
+## Its length includes the whole path; no virtual inboard is gathered on the reel.
+func rig_sheet(line: Line, eased_degrees := 55.0) -> bool:
+	var on := carrier() as Chassis
+	if on == null or line.rope == null:
+		return false
+	var want := global_transform * Vector3(0.0, -Catalog.DEVICES[&"mast"].size.y * 0.5 + 0.06, -BOOM)
+	var seats := SheetEye.seat(on, want)
+	if seats.is_empty():
+		return false
+	var hook := Catalog.part(&"hook") as RopeHook
+	var mount := seats[0]
+	mount.basis = Basis(Vector3.RIGHT, -PI / 2.0)
+	mount.origin -= Vector3.UP * SheetEye.EYE_UP
+	on.stick(hook, mount, Vector3.UP)
+	line.rope.through = hook.guide
+	line.rope.strand.through = hook.guide
+	var direct := line.rope.a.global_position.distance_to(line.rope.b.global_position)
+	var path := line.rope.a.global_position.distance_to(hook.guide.global_position) + hook.guide.global_position.distance_to(line.rope.b.global_position)
+	var slack := maxf(line.rope.length - direct, 0.0)
+	var middle := hook.guide.global_position
+	# Enough real line for either tack at departure, measured through this hook.
+	for side: float in [-1.0, 1.0]:
+		var swing := deg_to_rad(eased_degrees) * side
+		var tip := global_transform * (BOOM_AT + Vector3(-sin(swing) * BOOM, 0.0, -cos(swing) * BOOM))
+		path = maxf(path, tip.distance_to(middle) + middle.distance_to(line.rope.b.global_position))
+	line.full = path + slack
+	line.rope.full = line.full
+	line.rope.length = line.full
+	return true
+
+
+## Actual line path at an eased departure swing, with this guide and endpoint.
+func eased_length(degrees: float, side := 0.0) -> float:
+	var rope := sheet()
+	if rope == null:
+		return 0.0
+	var mine: RopeEnd = _tie().part.get_meta(&"tip")
+	var other := rope.b if rope.a == mine else rope.a
+	var guide := rope.through
+	var path := 0.0
+	for way: float in ([-1.0, 1.0] if side == 0.0 else [side]):
+		var swing := deg_to_rad(degrees) * way
+		var tip := global_transform * (BOOM_AT + Vector3(-sin(swing) * BOOM, 0.0, -cos(swing) * BOOM))
+		var span := tip.distance_to(other.global_position)
+		if is_instance_valid(guide):
+			span = tip.distance_to(guide.global_position) + guide.global_position.distance_to(other.global_position)
+		path = maxf(path, span)
+	return path
+
+
+## Observe the existing trimming action without taking any of its rope length.
+func _worked(step: float) -> float:
+	if step != 0.0 and world != null and world.counts_deeds and raise >= 1.0 and carrier() != null \
+			and sailed_by_you(carrier()) and _streamed(carrier()):
+		Deeds.done(world, &"telltale")
+	return step

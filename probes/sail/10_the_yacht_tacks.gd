@@ -61,13 +61,13 @@ func run() -> void:
 	await _set_up(true)
 	check((kit[2] as Helm).interact(player), "back at the helm")
 	await simulate(3.0)
-	var trimmed := mast.trim
+	var trimmed := mast.sheet().length
 	for body in player.waist.tied:
 		if Mast.sheet_end(body):
 			hands.reel.choose(body)
 	check(hands.reel.notch(2), "at the helm, the reel works the sheet at your waist")
 	await simulate(1.0)
-	check(absf(trimmed - mast.trim - 2.0 * Reel.NOTCH) < 0.01, "and two notches haul its inboard in half a metre (%.2f m)" % (trimmed - mast.trim))
+	check(absf(trimmed - mast.sheet().length - 2.0 * Reel.NOTCH) < 0.01, "and two notches take in half a metre of its routed sheet (%.2f m)" % (trimmed - mast.sheet().length))
 	check(get_node(^"/root/Saves").save(world), "saved at the helm")
 	check(await resume(), "resumed")
 	var at := world.player.helm

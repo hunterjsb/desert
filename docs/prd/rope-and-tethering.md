@@ -642,3 +642,17 @@ legacy `hidden` value remains null and `link_pair()` returns no inferred connect
 until their old callers/checks are migrated with the sailing integration. Existing
 `_towing()` remains solely the planter-towing deed accounting. Built-in sheets and
 new boom mechanics require the separate sailing integration before full verification.
+
+The solver's rigid-body lever arms and point velocities must be measured from
+the actual centre of mass, including fitted-device mass offsets. Godot's impulse
+application API still takes an offset from the body origin; these two coordinate
+conventions must remain distinct. The physical-boom check exposed the previous
+origin-as-centre assumption.
+
+A freely hinged boom's rope response includes its carrier and every boom on that
+carrier. The custom rope iteration uses the positive mass matrix for total-COM
+translation, carrier rotation and each relative hinge spin, including cross
+terms and parallel-axis inertia. Actual impulses are applied only at real rope
+points; Jolt supplies the hinge reactions. This prevents the rope's stiffness
+and closing prediction from crediting translations or rotations blocked by the
+hinge, without imposing an angle target or duplicating reaction torque.

@@ -1300,3 +1300,20 @@ constraint bypasses the player. Starting rigs provide a real deck guide and
 usable eased sheet geometry, and the Varran carries a mooring stake. Independent
 boom mass must not remain counted in the carrier; save/resume and origin shifts
 retain its relative pose and velocity. Measurements follow implementation.
+
+Initial physical diagnostic: the old tall ballast-frame fixture stops the spar
+at 16.2 degrees through real contact. With that obstruction removed, the boom
+passes the former 85-degree stop (92.8 degrees measured). Settled hinge pivot
+error is 0.009–0.13 mm; after an origin shift it is 0.016 mm. Starter scenario
+ballast remains low on the deck without the tall empty frame in its sweep.
+The Varran's bow lines now share the sheet's 0.5 m departure slack; the sheet
+also includes its actual guide path and enough eased line for either tack,
+instead of catching the rider first through the old trim spring. These are
+initial diagnostics, not yet acceptance of handling or safety.
+
+The gooseneck and sail socket rise together by 0.5 m on the telescopic mast,
+putting the actual boom above the normal navigation computer and ballast frame.
+This is a visible hardware clearance, not a collision exemption or angular stop.
+Arbitrarily tall player-fitted gear can still obstruct the boom. The additional
+height changes sail leverage and centre of mass and must be measured during
+loading, tipping, furling and save/resume checks.

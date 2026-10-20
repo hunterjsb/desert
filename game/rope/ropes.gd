@@ -54,6 +54,7 @@ var _on_you: Array[Vector3] = []
 var _bent := Vector3.ZERO
 
 var _tuning: Tuning
+var _articulations: Array[RopeArticulation] = []
 var _bodies := {}
 var _tick := 0
 var _pulls := {}
@@ -363,6 +364,7 @@ func _physics_process(delta: float) -> void:
 
 func _solve(h: float) -> void:
 	_tick += 1
+	_articulations.clear()
 	_pulls.clear()
 	_on_you.clear()
 	_bent = Vector3.ZERO
@@ -385,14 +387,16 @@ func _solve(h: float) -> void:
 		rope.strand.through = rope.through
 		if rope.through != null:
 			rope.body_p = _body(rope.through.holder, h)
+		live.append(rope)
+	_articulate(live, h)
+	var ready: Array[Rope] = []
+	for rope in live:
 		rope.prepare(h, world.gravity)
 		if rope.torn():
-			# Its ends jumped apart (a dev teleport): no rope stretches to twice
-			# its length, so it parts rather than fling what's on it, with no
-			# break anywhere to leave new ends at.
 			snap(rope, false)
-			continue
-		live.append(rope)
+		else:
+			ready.append(rope)
+	live = ready
 	for rope in live:
 		rope.warm_start()
 	for i in ITERATIONS:
@@ -435,11 +439,13 @@ func _body(holder: Node3D, h: float) -> RopeBody:
 		body.stake = holder is Stake
 		_bodies[id] = body
 	body.tick = _tick
+	body.articulation = null
 	body.expected = Vector3.ZERO
 	body.expected_spin = Vector3.ZERO
 	var rigid := body.rigid
 	if rigid != null and not rigid.freeze:
-		body.center = holder.global_position
+		var state := PhysicsServer3D.body_get_direct_state(rigid.get_rid())
+		body.center = rigid.global_transform * state.center_of_mass_local
 		body.inv_mass = Vector3.ONE / rigid.mass
 		body.inv_inertia = _inverse_inertia(rigid)
 		body.velocity = rigid.linear_velocity
@@ -481,7 +487,7 @@ func _deliver(body: RopeBody, push: Vector3, at: Vector3, h: float, bent := fals
 			_on_you.append(push / h)
 	if body.inv_mass != Vector3.ZERO:
 		if body.rigid != null:
-			body.rigid.apply_impulse(push, at - body.center)
+			body.rigid.apply_impulse(push, at - body.rigid.global_position)
 		else:
 			_drag += body.inv_mass * push
 	elif body.stake:
@@ -648,3 +654,33 @@ static func _crack_sound() -> AudioStreamWAV:
 	sound.mix_rate = rate
 	sound.data = data
 	return sound
+
+
+## Match the custom rope velocity iteration to the real free hinges in Jolt.
+func _articulate(live: Array[Rope], h: float) -> void:
+	var seen := {}
+	for rope in live:
+		for end in [rope.a, rope.b, rope.through]:
+			if end == null:
+				continue
+			var root := end.holder as Device
+			if end.holder.has_meta(&"boom_mast"):
+				root = (end.holder.get_meta(&"boom_mast") as Mast).carrier()
+			if root == null or root.freeze or seen.has(root):
+				continue
+			seen[root] = true
+			var bodies: Array[RopeBody] = [_body(root, h)]
+			var pivots: Array[Vector3] = []
+			var axes: Array[Vector3] = []
+			var mounted: Array[Device] = [root]
+			while not mounted.is_empty():
+				var device: Device = mounted.pop_back()
+				mounted.append_array(device.mounted())
+				if device is Mast and is_instance_valid(device._boom_body) and not device._boom_body.freeze:
+					bodies.append(_body(device._boom_body, h))
+					pivots.append(device.global_transform * Mast.BOOM_AT)
+					axes.append(device.global_basis.y.normalized())
+			if bodies.size() > 1:
+				var articulation := RopeArticulation.new()
+				articulation.configure(bodies, pivots, axes)
+				_articulations.append(articulation)

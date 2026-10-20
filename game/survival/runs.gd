@@ -201,7 +201,10 @@ static func kit(world: World, from: Kit = null) -> Array[Node]:
 	for id in from.waist:
 		var tie := _tie_of(named[id], world.player.global_position)
 		if tie != null:
-			made.append(Line.to_waist(world, tie, from.waist[id]))
+			var line := Line.to_waist(world, tie, from.waist[id])
+			if named[id] is Mast:
+				(named[id] as Mast).rig_sheet(line)
+			made.append(line)
 	return made
 
 
