@@ -387,7 +387,7 @@ func _take() -> Dictionary:
 	data.airdrops = drops
 	data.order = order
 	data.carried = player.suit.carried.filter(_known).map(func(p: RigidBody3D) -> Dictionary: return _body(p, false))
-	var strands := ropes.strands.filter(func(s: RopeStrand) -> bool: return is_instance_valid(s))
+	var strands := ropes.strands.filter(func(s: RopeStrand) -> bool: return is_instance_valid(s) and not s.has_meta(&"unclaimed_rig"))
 	data.lines = lines.map(func(line: Line) -> Dictionary: return {"state": line.state, "full": line.full,
 		"routed_by_player": line.routed_by_player, "route_loaded_seconds": line.route_loaded_seconds,
 		"first": line._first, "coil": _ref(line.coil) if is_instance_valid(line.coil) else null,

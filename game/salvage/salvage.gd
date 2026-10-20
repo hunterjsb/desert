@@ -272,6 +272,7 @@ func _ease(body: RigidBody3D, to: Transform3D, sinking := false) -> void:
 
 ## A find gone out of reach sinks into the sand and is gone: nothing takes it on the way.
 func _sink(body: RigidBody3D) -> void:
+	Finds.hide_rig_lines(body)
 	body.remove_meta(&"find")
 	body.collision_layer = 0
 	_ease(body, body.transform.translated(Vector3.DOWN * (Finds.bounds(body).size.length() + 0.05)), true)
@@ -395,6 +396,7 @@ func claim(body: Node) -> void:
 	for i in range(_settling.size() - 1, -1, -1):
 		if _settling[i][0] == body:
 			_settling.remove_at(i)
+	Finds.claim_rig_lines(body, _world)
 	body.reparent(_world.content)
 	# Only the sand holds a find still: left frozen, one you'd stripped or tied
 	# a line to could never be taken hold of, pushed or towed.
@@ -491,6 +493,7 @@ func _forget(coord: Vector2i, lot: Lot) -> void:
 			# Out of sight and touching nothing until it's freed.
 			body.freeze = true
 			body.visible = false
+			Finds.hide_rig_lines(body)
 			body.collision_layer = 0
 			_forgotten.append(body)
 	lot.finds.clear()
@@ -719,6 +722,7 @@ func _lay_out(coord: Vector2i, lot: Lot, spec: Dictionary, body: RigidBody3D, si
 		body.set_meta(&"module", [site, spec.index])
 	body.freeze = spec.bury > 0.0 or spec.get("frozen", false)
 	lot.chunk.add_child(body)
+	Finds.rig_hoists(body)
 	if body is Device:
 		Finds.age(body, spec.sound)
 	lot.finds.append(body)
