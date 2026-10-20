@@ -303,7 +303,7 @@ func reposition() -> void:
 
 
 func _distance(coord: Vector2i) -> int:
-	return maxi(absi(coord.x - _center.x), absi(coord.y - _center.y))
+	return TerrainResidency.distance(coord, _center)
 
 
 func _plan() -> void:
@@ -319,7 +319,7 @@ func _plan() -> void:
 		for dx in range(-r, r + 1):
 			var coord := _center + Vector2i(dx, dz)
 			var d := maxi(absi(dx), absi(dz))
-			var step := NEAR_STEP if d <= _tuning.near_radius else _tuning.mid_step
+			var step := NEAR_STEP if TerrainResidency.needs_collision(coord, _center, _tuning) else _tuning.mid_step
 			var chunk: TerrainChunk = _chunks.get(coord)
 			if chunk and chunk.step != 0 and chunk.step <= step:
 				continue
@@ -377,9 +377,8 @@ func _collect() -> void:
 
 
 func _upload(build: ChunkBuild) -> void:
-	var d := _distance(build.coord)
 	var chunk: TerrainChunk = _chunks.get(build.coord)
-	if d > _tuning.view_radius + 1 or (chunk and chunk.step != 0 and chunk.step <= build.step):
+	if not TerrainResidency.keeps_ground(build.coord, _center, _tuning) or (chunk and chunk.step != 0 and chunk.step <= build.step):
 		RenderingServer.free_rid(build.mesh)
 		if chunk == null:
 			_world.shape.sites.release(build.coord)
@@ -398,7 +397,7 @@ func _upload(build: ChunkBuild) -> void:
 	if not chunk.carved.is_empty():
 		# A storm may have moved what stands in it while it was built.
 		_behind[chunk.coord] = true
-	if build.step == NEAR_STEP and d <= _tuning.near_radius and not chunk.has_collision() \
+	if build.step == NEAR_STEP and TerrainResidency.needs_collision(build.coord, _center, _tuning) and not chunk.has_collision() \
 			and not _to_ground.has(chunk):
 		_to_ground.append(chunk)
 
@@ -409,7 +408,7 @@ func _upload(build: ChunkBuild) -> void:
 func _ground() -> void:
 	while not _to_ground.is_empty() and not _out_of_time():
 		var chunk: TerrainChunk = _to_ground[0]
-		if chunk.step != NEAR_STEP or chunk.has_collision() or _distance(chunk.coord) > _tuning.near_radius:
+		if chunk.step != NEAR_STEP or chunk.has_collision() or not TerrainResidency.needs_collision(chunk.coord, _center, _tuning):
 			_to_ground.pop_front()
 		elif chunk.add_collision_piece(_size, _sand):
 			_to_ground.pop_front()
@@ -422,8 +421,7 @@ func _retire() -> void:
 		var chunk: TerrainChunk = _chunks.get(coord)
 		if chunk == null:
 			continue
-		var d := _distance(coord)
-		if d > _tuning.view_radius + 1:
+		if not TerrainResidency.keeps_ground(coord, _center, _tuning):
 			unloaded.emit(coord)
 			_to_ground.erase(chunk)
 			# Freed now, not queued, so the cost lands inside the budget.
@@ -431,12 +429,12 @@ func _retire() -> void:
 			_chunks.erase(coord)
 			_standing.erase(coord)
 			_joined.erase(coord)
-		elif d > _tuning.near_radius + 1:
+		elif not TerrainResidency.keeps_collision(coord, _center, _tuning):
 			if chunk.has_collision():
 				ungrounded.emit(chunk)
 			_to_ground.erase(chunk)
 			chunk.remove_collision()
-		elif d <= _tuning.near_radius and chunk.step == NEAR_STEP and not chunk.has_collision() \
+		elif TerrainResidency.needs_collision(coord, _center, _tuning) and chunk.step == NEAR_STEP and not chunk.has_collision() \
 				and not _to_ground.has(chunk):
 			# Back in range after leaving it: the same samples, so the same ground.
 			_to_ground.append(chunk)

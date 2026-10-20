@@ -757,3 +757,21 @@ it as direction and says so on each line.
   quiet. The session: the heat peaks at two points and the volcano at the far one is a vent cap that
   still matters at the end. Not said where the First Kingdoms' vents went, or whether they went to the far
   side ([the lore, section 19](../lore-research.md#19-open-after-session-4-part-5)).
+
+## Marked camp preparation (2026-10-20)
+
+Hunter's next Sanddune phase is the expedition loop: leave the camp to investigate
+signals, then return with finds. A marked camp needs a bounded second area of
+supporting ground, not just immunity from deletion. Its terrain scheduling, late
+worker uploads, collision retirement and world-body culling must agree about which
+areas remain present. Explicit camp membership, saved anchors and navigation follow
+this foundation; none is implemented by this preparation alone.
+
+First consolidate the current player-area rules into one terrain residency policy.
+Keep the existing square chunk distances, detail radius, collision radius and
+one-chunk retirement margin. Terrain uses its planned player centre; body culling
+continues to use the player's current grid position, including before the render
+planner catches up. Existing carried/ridden exceptions, freeze/thaw behavior and
+streaming budget stay in place. A later marked-camp area must extend the shared
+policy at all of these gates together. This preparation does not retain distant
+camps or introduce a beacon, navigation UI, new save state or new deed.
