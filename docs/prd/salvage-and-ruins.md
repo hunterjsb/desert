@@ -2,6 +2,43 @@
 
 *Draft, 2026-10-13. Answers to [the vision](../vision.md).*
 
+## Halloran: first fire (built, 2026-10-20)
+
+Build one connected playable route from Aitch through the Crossing to one Stoker furnace bay.
+Colonial hab foundations and pipework carry Warring Kingdoms fortification and later Aitch homes,
+Muster's devotional fittings and toll shelters. The rest of Halloran remains a planned landmark.
+The route is a single terrain-aware structure assembly at Halloran's seeded spherical location,
+with a lower street, a graded climb, a gate and an upper service terrace. Its ground is pressed
+through Structure/Sites, using the same samples for terrain and collision. Its apron blends into
+the dunes; no second terrain plane or absolute world-coordinate placement. This is a local
+section of escarpment, not the entire rift. Burial varies with storms, with local floor-relative
+sand in the lower rooms; the essential climb and furnace access stay passable. Existing holds
+prevent sand returning over the player or camp. Landmark discovery must not depend on terrain
+survey luck, nor should the assembly erase dunes outside its footprint.
+
+The player retrieves finite preserved coalcane stock from the lower store and physically feeds
+the furnace. A short burn steadies its light and sound, changes its operational status, and opens
+a service cache of useful existing camp equipment. The remainder of the refinery stays dead.
+Fuel taken, fuel consumed, burn timing, cache opening and claimed rewards persist after leaving,
+returning and saving. No repeatable stock or reward duplication. First successful feeding earns
+First Fire. No Walker changes or destruction-ending implementation are required.
+
+**As built.** The connected fragment spans 660 m and climbs 36 m. Eight lower hab shells,
+reused industrial slabs, later stone walls and patched upper rooms lead to the Crossing's
+fortified gate and devotional fitting, then to the refinery's cold stacks and single working bay.
+The furnace has a flanged vessel, ceramic feet, gauge, feed mouth and physical status panel.
+Three preserved coalcane bundles feed 30-second maintenance burns. The first completed burn
+releases a finite cache containing a large battery, solar panel and sealant, taken one at a time.
+First Fire is awarded at feeding. The existing Stoker radio status also reflects the burn.
+
+**Validation.** The physical hands-action probe passes the stock → feed → cache route,
+rejects feeding beyond reach, and checks departure and return (15 s). Save/resume retains a
+part-finished burn and claimed stock (5 s). Actual Godot 4.7.2 GPU captures inspect Aitch,
+the gate, refinery and cold/burning furnace, including furnace readability in heavy dust; reproduce with `look/halloran/shoot.sh <output>`.
+These are a first playable fragment, not the full city, rift, crop loop or destruction ending.
+Walker logic and assets are untouched; the shared integration points are World, Hands,
+Snapshot, Deeds, catalog/creative entries and the Stoker branch of Transmissions.
+
 ## Why this system exists
 
 Parts are found, never crafted, so **salvage is the whole economy**. Every upgrade,

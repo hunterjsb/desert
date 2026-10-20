@@ -225,3 +225,6 @@ carrier_drift_khz = 5.0
 dial_skirt_share = 0.35
 dial_skirt_reach = 1.5
 dial_close_up = false
+
+stoker_burn_s = 30.0
+stoker_stock = 3

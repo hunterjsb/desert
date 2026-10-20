@@ -394,6 +394,8 @@ func grab() -> bool:
 ## your waist comes back to your hands. Says whether it did anything.
 func interact() -> bool:
 	_look()
+	if _player.world.stoker != null and _player.world.stoker.interact(_player):
+		return true
 	# A radio in your hands with frequencies marked: use goes to the next.
 	if held is Radio and phase == Phase.HELD and (held as Radio).next_mark():
 		_player.close_up.tuned(held)

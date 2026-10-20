@@ -137,6 +137,7 @@ func begin(data: Dictionary) -> Array[Vector2]:
 	world.weather.field.restore_wind(data.get("test_wind", {}))
 	world.began = data.get("began", 0.0)
 	world.taught = data.get("taught", false)
+	world.stoker_state = data.get("stoker", {}).duplicate(true)
 	world.played = data.get("played", NAN)
 	world.counts_deeds = world.counts_deeds and not data.get("dev_run", false)
 	world.set_gravity(data.gravity)
@@ -308,7 +309,7 @@ func _take() -> Dictionary:
 	var ropes := world.ropes
 	var player := world.player
 	var hands := player.hands
-	var data := {"seed": world.run_seed, "time": world.time, "began": world.began, "taught": world.taught,
+	var data := {"seed": world.run_seed, "time": world.time, "began": world.began, "taught": world.taught, "stoker": world.stoker_state.duplicate(true),
 		"gravity": world.gravity,
 		"origin": world.origin_chunk,
 		"moon": {"latitude": world.moon.latitude, "longitude": world.moon.longitude,

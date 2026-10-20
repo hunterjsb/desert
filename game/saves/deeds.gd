@@ -99,6 +99,8 @@ const TABLE := {
 		"family": &"signals", "after": [&"gods"], "icon": &"bearings"},
 	&"living_city": {"name": "The Living City", "asks": "See the living city's lights", "family": &"signals",
 		"after": [&"triangulated"], "icon": &"city"},
+	&"first_fire": {"name": "First Fire", "asks": "Feed the Stoker at Halloran", "family": &"far",
+		"icon": &"coalcane_bundle", "hidden": true},
 	&"totality": {"name": "Totality", "asks": "Watch a whole eclipse out in the open", "family": &"far",
 		"icon": &"eclipse"},
 	&"glint": {"name": "Glint", "asks": "Reach a site whose glint you saw from %s m off", "family": &"far",

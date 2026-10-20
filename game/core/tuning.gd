@@ -21,6 +21,10 @@ static var _current: Tuning
 ## world shifts back, keeping 32-bit positions precise.
 @export var origin_shift_chunks: int = 4
 
+@export_group("Stoker")
+@export var stoker_burn_s: float = 30.0
+@export var stoker_stock: int = 3
+
 @export_group("Spawns")
 ## Every run starts this near the equator, degrees: inside it the clear's
 ## widest swing stays within the suit's limits.

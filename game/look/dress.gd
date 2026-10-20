@@ -586,6 +586,12 @@ static func _part(id: StringName, size: Vector3, count := -1) -> ArrayMesh:
 	var black := Paint.coat(Paint.BLACK, 0.4, 0.2)
 	var along := Basis(Vector3.RIGHT, PI / 2.0)
 	match id:
+		&"coalcane_bundle":
+			for x in [-0.12, 0.0, 0.12]:
+				for y in [-0.07, 0.07]:
+					b.drum(0.065, size.z, Vector3(x, y, h.z), Paint.coat(Color(0.24, 0.15, 0.07), 0.7), along, 8)
+			for z in [0.12, size.z - 0.12]:
+				b.box(Vector3(size.x, size.y, 0.045), Vector3(0, 0, z), Paint.coat(Paint.CORD, 0.7), 0.025)
 		&"battery", &"big_battery":
 			# Commodity: no maker's mark, only safety yellow on its terminals.
 			b.box(size - Vector3(0.01, 0.01, 0.01), Vector3(0.0, 0.0, h.z), Paint.coat(Color(0.2, 0.21, 0.19), 0.6), 0.012)
