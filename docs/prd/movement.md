@@ -1283,6 +1283,27 @@ probe or gameplay behavior run was performed for this teaching-only change. A la
 fitting at the top of the view. The external helper hit a teardown-only script error
 after saving the image; its call was corrected without changing game code.
 
+## Hybrid runner and hover carriage (agreed and built 2026-10-20)
+
+Allow skates and a hover keel or tray on different clear places of one deck. Their
+existing physical systems decide support: powered lift can raise its runners clear;
+runners on the sand push and grip only by their actual contact load. An airborne
+skate must neither plough nor count as a hover keel merely because its blade has a
+penetration statistic. True hover-fin grip remains proportional to the weight the
+hover field actually supports. Preserve lift capacity, mass, power and placement
+geometry; this is a correction to the former assembly restriction, not new tuning.
+
+As built, hover-fin discovery requires positive lift as well as a keel statistic.
+The runner contact solver and hover-support solver need no new coupling: each
+blade corner is already gated by ground distance and its actual support impulse,
+and fin grip already uses the mass the hover field really carries. The mixed-deck
+fixture has zero runner support in flight. From 4 m/s sideways it retains over
+3.9 m/s after half a second without a fin; a real fin reduces that speed by more
+than 0.5 m/s, still with zero runner support. Restoring the old discovery code
+incorrectly yields 3.714 m/s from airborne skates alone and fails the physical
+assertion. Restored source passes sail 19 (12 s); existing ground-runner sailing
+and hover-keel tacking checks (sail 1 and 10) pass unchanged. No tuning changed.
+
 ## Vaulting small ledges (agreed and source built 2026-10-20)
 
 On foot, sprint into a small ledge or jump toward it to vault onto its walkable
