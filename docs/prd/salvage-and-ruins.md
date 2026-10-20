@@ -1645,3 +1645,32 @@ in 12 s. The impact state is observed after a drawn frame before taking a save.
 A GPU capture after a Snapshot round trip during flight shows the resumed trail,
 falling container and impact cloud on the actual renderer. Effects are rebuilt
 on resume; the already-fired cannon is not replayed.
+
+### Kept nomad rig hoists (built 2026-10-20; integration pending)
+
+The new manual hoist must not turn a kept, ready sailing rig into an unusable
+find. Both complete nomad rig recipes supply a mounted hand winch and actual
+halyard, installed only after the found assembly has its world and final pose.
+An unclaimed site's internal line belongs to that found rig, unloads with it,
+and is excluded from the player's snapshot. Working the wheel or taking gear
+claims the whole find and promotes its line into ordinary run ownership, so
+its existing endpoints, route and height save normally. Reloading an unclaimed
+site must create exactly one new halyard, with no orphan strand or loose coil.
+A wrecked loose mast is still salvage needing assembly, rather than a ready rig.
+
+**As built and measured.** Both kept recipes carry a wheel; runner coil and
+winch occupy separate clear places. Real salvage layout installs their Line
+after world placement, parents it to the unclaimed deck and marks its strand
+as transient. Claiming moves it to ordinary content and clears that mark.
+Unloading hides it with the rig, then frees it with the found assembly.
+
+Focused Godot 4.7.2 checks pass for both ready rigs' real wheel input and
+physical equipment clearance (11 s); unclaimed snapshot exclusion, actual
+stream cleanup and exactly one halyard on relaying (10 s); claimed partial
+height/paid length/route save-resume (13 s). Existing hand-hoist and partial
+rig save checks also pass after the geometry update (14 s each).
+Actual 1280×720 unseen captures (`look/hoist/nomad.tscn`) inspect the kept
+yacht and masthead underneath its crow's nest. The pulley turns eight
+centimetres above the full cloth head, below the basket floor; winch end
+stop and hoist height use the same geometry constant. These checks do not
+establish the old nomad yacht's final sailing balance or replace native CI.

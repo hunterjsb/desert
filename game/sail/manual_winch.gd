@@ -22,8 +22,10 @@ func line() -> Rope:
 	if world == null:
 		return null
 	for socket in frame_sockets():
-		if socket.kind == &"tie" and socket.part != null and socket.part.has_meta(&"line"):
-			var laid: Line = socket.part.get_meta(&"line")
+		if socket.kind == &"tie" and is_instance_valid(socket.part) and socket.part.has_meta(&"line"):
+			var laid: Variant = socket.part.get_meta(&"line")
+			if not is_instance_valid(laid) or not laid is Line:
+				continue
 			if laid.rope != null and world.ropes.ropes.has(laid.rope):
 				return laid.rope
 	return null
@@ -35,6 +37,7 @@ func notch(by: int, player: Player) -> bool:
 	var rope := line()
 	if rope == null:
 		return player.hands.refuse("tie a line to the winch drum")
+	player.world.salvage.claim(self)
 	if rope != _worked:
 		_worked = rope
 		wanted = rope.length
@@ -45,7 +48,7 @@ func notch(by: int, player: Player) -> bool:
 			var mast := socket.get_parent() as Mast
 			if mast != null and socket == mast.halyard_socket() and rope.through == mast.pulley:
 				var other: RopeEnd = rope.b if rope.a == end else rope.a
-				least = maxf(least, other.global_position.distance_to(mast.pulley.global_position) + 0.16)
+				least = maxf(least, other.global_position.distance_to(mast.pulley.global_position) + Mast.HALYARD_CLEARANCE)
 	_operator = player
 	wanted = clampf(wanted - by * world.tuning.winch_notch_m, least, rope.full)
 	Sounds.play_at(self, Sounds.REEL)

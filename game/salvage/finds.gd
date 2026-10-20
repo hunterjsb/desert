@@ -299,7 +299,10 @@ static func bare(spec: Dictionary) -> RigidBody3D:
 	var body: RigidBody3D
 	if spec.has("rig"):
 		# A rig kept whole: its deck and all that's on it, one find.
-		body = Rig.build(null, spec.rig, spec.charge).deck
+		var rig := Rig.build(null, spec.rig, spec.charge)
+		body = rig.deck
+		if rig.named.has(&"mast") and rig.named.has(&"hoist"):
+			body.set_meta(&"find_hoists", [[rig.named.mast, rig.named.hoist]])
 	elif not spec.device:
 		body = _part(spec.id, spec.charge, spec.layer, spec.get("sealed", false))
 	else:
@@ -310,6 +313,35 @@ static func bare(spec: Dictionary) -> RigidBody3D:
 	if spec.has("era"):
 		Catalog.found_in(body, spec.era, spec.kind, spec.seed)
 	return body
+
+
+## Internal rig lines belong to the streamed find until the player claims it.
+static func rig_hoists(body: RigidBody3D) -> void:
+	if not body.has_meta(&"find_hoists"):
+		return
+	for pair: Array in body.get_meta(&"find_hoists"):
+		var line := (pair[0] as Mast).rig_hoist(pair[1])
+		if line != null:
+			line.set_meta(&"find_rig_line", true)
+			line.rope.strand.set_meta(&"unclaimed_rig", true)
+			line.reparent(body)
+	body.remove_meta(&"find_hoists")
+
+
+static func claim_rig_lines(body: Node, world: World) -> void:
+	for child in body.get_children():
+		if child is Line and child.has_meta(&"find_rig_line"):
+			if child.rope != null and is_instance_valid(child.rope.strand):
+				child.rope.strand.remove_meta(&"unclaimed_rig")
+			child.remove_meta(&"find_rig_line")
+			child.reparent(world.content)
+
+
+static func hide_rig_lines(body: Node) -> void:
+	for child in body.get_children():
+		if child is Line and child.has_meta(&"find_rig_line") \
+				and child.rope != null and is_instance_valid(child.rope.strand):
+			child.rope.strand.visible = false
 
 
 ## A find's layer, which its paint shows: older is better. A part has no

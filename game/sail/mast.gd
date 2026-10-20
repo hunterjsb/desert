@@ -66,7 +66,8 @@ const MASTHEAD := &"head"
 const SIDES := {&"front": Vector3.FORWARD, &"back": Vector3.BACK, &"left": Vector3.LEFT, &"right": Vector3.RIGHT}
 const HEAD_Y := BOOM_AT.y + LUFF + 0.15
 const HALYARD_FOOT := Vector3(0.12, BOOM_AT.y, 0.0)
-const PULLEY_AT := Vector3(0.12, BOOM_AT.y + LUFF + 0.16, -0.08)
+const HALYARD_CLEARANCE := 0.08
+const PULLEY_AT := Vector3(0.12, BOOM_AT.y + LUFF + HALYARD_CLEARANCE, -0.08)
 const POLE_R := 0.045
 const POLE := Vector2(0.75, HEAD_Y - 0.06)
 
@@ -201,6 +202,8 @@ func halyard_socket() -> Socket:
 
 ## Used by real rig recipes: ordinary endpoints and a saved, visible route.
 func rig_hoist(winch: ManualWinch) -> Line:
+	follow_mount()
+	winch.follow_mount()
 	var head := halyard_socket()
 	if head == null or not head.is_open() or winch.free_tie(global_position) == null:
 		return null
@@ -223,9 +226,11 @@ func rig_hoist(winch: ManualWinch) -> Line:
 
 func halyard() -> Rope:
 	var head := halyard_socket()
-	if head == null or head.part == null or not head.part.has_meta(&"line"):
+	if head == null or not is_instance_valid(head.part) or not head.part.has_meta(&"line"):
 		return null
-	var line: Line = head.part.get_meta(&"line")
+	var line: Variant = head.part.get_meta(&"line")
+	if not is_instance_valid(line) or not line is Line:
+		return null
 	return line.rope if line.rope != null and world.ropes.ropes.has(line.rope) else null
 
 
@@ -270,7 +275,7 @@ func _hoist(delta: float, area: float) -> void:
 		_pulley_block.rotation.y = atan2(-toward.x, -toward.z)
 		if far.has_meta(&"socket") or world.ropes.on_you(far.holder):
 			var inboard := far.global_position.distance_to(pulley.global_position)
-			wanted = clampf(1.0 - (rope.length - inboard - 0.16) / LUFF, 0.0, 1.0)
+			wanted = clampf(1.0 - (rope.length - inboard - HALYARD_CLEARANCE) / LUFF, 0.0, 1.0)
 			# Lifting cloth is internal to the rig; the hand drum still works against its weight.
 			rope.haul_n = sail().mass * world.tuning.gravity
 			_halyard_load = rope
