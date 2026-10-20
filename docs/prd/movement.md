@@ -1713,3 +1713,9 @@ Actual unseen GPU captures at 1280×720 inspect the wheel, pulley and partly
 hoisted rig (`look/hoist/hoist.tscn`). The metal/teal drum, wound rope, yellow
 handle, mounting plate and masthead block use the established worn materials.
 The catalog footprint contains the moving wheel and grip.
+
+Additional narrow checks preserve the previous save record shape without hoist
+fields, then restore and furl through the legacy control (11 s), and clear
+cloth hauling load immediately when the sail is removed (6 s). Final GPU
+inspection corrected the handwheel's rotation pivot to the drum axle and lets
+the sheave swivel toward its actual tail under a fixed mast bracket.

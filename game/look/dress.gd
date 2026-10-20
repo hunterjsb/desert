@@ -32,7 +32,15 @@ static func halyard_block() -> ArrayMesh:
 		for x in [-0.027, 0.027]:
 			b.box(Vector3(0.012, 0.12, 0.10), Vector3(x, 0, 0), steel, 0.006)
 		b.drum(0.043, 0.045, Vector3.ZERO, Paint.coat(Paint.YELLOW), Basis(Vector3.BACK, PI / 2.0), 16)
-		b.box(Vector3(0.16, 0.025, 0.10), Vector3(-0.06, 0.065, 0.025), steel, 0.003)
+		return b.commit())
+
+
+static func halyard_mount() -> ArrayMesh:
+	return _cached(&"fitting", &"halyard_mount", func() -> ArrayMesh:
+		var b := Paint.Pieces.new()
+		var steel := Paint.coat(Paint.STEEL, 0.2, 0.7)
+		b.box(Vector3(0.16, 0.025, 0.10), Vector3(-0.06, 0.04, 0.025), steel, 0.003)
+		b.drum(0.016, 0.05, Vector3(0, 0.06, 0), steel, Basis.IDENTITY, 10)
 		return b.commit())
 
 
@@ -42,12 +50,13 @@ static func winch_wheel() -> ArrayMesh:
 		var steel := Paint.coat(Paint.STEEL, 0.12, 0.8)
 		var paint := Paint.coat(Paint.YELLOW)
 		var turn := Basis(Vector3.RIGHT, PI / 2.0)
-		b.ring(0.115, 0.14, Vector3(0, 0.035, 0.17), steel, turn, 20)
+		b.ring(0.115, 0.14, Vector3(0, 0, 0.17), steel, turn, 20)
 		for i in 3:
 			var a := i * TAU / 3.0
-			b.box(Vector3(0.012, 0.11, 0.016), Vector3(sin(a) * 0.055, 0.035 + cos(a) * 0.055, 0.17),
+			b.box(Vector3(0.012, 0.11, 0.016), Vector3(sin(a) * 0.055, cos(a) * 0.055, 0.17),
 				steel, 0.003, Basis(Vector3.BACK, -a))
-		b.drum(0.02, 0.06, Vector3(0.0, 0.155, 0.205), paint, turn, 10)
+		b.drum(0.02, 0.06, Vector3(0.0, 0.12, 0.205), paint, turn, 10)
+		b.drum(0.025, 0.035, Vector3(0, 0, 0.16), steel, turn, 12)
 		return b.commit())
 
 

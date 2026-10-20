@@ -14,6 +14,7 @@ func _ready() -> void:
 	process_physics_priority = -17
 	_wheel = MeshInstance3D.new()
 	_wheel.mesh = Dress.winch_wheel()
+	_wheel.position = Vector3(0, 0.035, 0)
 	add_child(_wheel)
 
 
