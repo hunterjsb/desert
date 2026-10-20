@@ -100,7 +100,7 @@ func _live_rope(on: Rope) -> bool:
 
 ## Explicit selection is lost when its physical tie is lost.
 func chosen_body() -> RigidBody3D:
-	if not _live_waist(_chosen):
+	if not is_instance_valid(_chosen) or not _live_waist(_chosen):
 		_chosen = null
 	return _chosen
 
